@@ -40,7 +40,6 @@
 #include <pcl/io/auto_io.h>
 #include <pcl/common/time.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/common/common.h>
 
 #include <pcl/octree/octree_pointcloud_voxelcentroid.h>

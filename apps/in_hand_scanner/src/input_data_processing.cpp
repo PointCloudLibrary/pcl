@@ -42,7 +42,6 @@
 
 #include <pcl/common/point_tests.h>
 #include <pcl/features/integral_image_normal.h>
-#include <pcl/apps/in_hand_scanner/boost.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 

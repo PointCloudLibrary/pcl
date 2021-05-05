@@ -4,7 +4,7 @@
 #include <iostream>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/range_image/range_image_planar.h>
-#include <pcl/common/common_headers.h>
+#include <pcl/common/angles.h> // for pcl::deg2rad
 #include <pcl/visualization/range_image_visualizer.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/console/parse.h>

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/range_image/range_image_planar.h>
-#include <pcl/common/common_headers.h>
+#include <pcl/common/time.h> // for pcl::getTime
 #include <pcl/visualization/range_image_visualizer.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/features/range_image_border_extractor.h>

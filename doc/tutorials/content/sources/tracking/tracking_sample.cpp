@@ -1,23 +1,15 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
-#include <pcl/console/parse.h>
-#include <pcl/common/time.h>
 #include <pcl/common/centroid.h>
+#include <pcl/common/transforms.h> // for transformPointCloud
 
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/io/pcd_io.h>
 
 #include <pcl/filters/passthrough.h>
-#include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/approximate_voxel_grid.h>
-
-#include <pcl/sample_consensus/method_types.h>
-#include <pcl/sample_consensus/model_types.h>
-
-#include <pcl/search/pcl_search.h>
-#include <pcl/common/transforms.h>
 
 #include <pcl/tracking/tracking.h>
 #include <pcl/tracking/particle_filter.h>
@@ -25,7 +17,6 @@
 #include <pcl/tracking/particle_filter_omp.h>
 #include <pcl/tracking/coherence.h>
 #include <pcl/tracking/distance_coherence.h>
-#include <pcl/tracking/hsv_color_coherence.h>
 #include <pcl/tracking/approx_nearest_pair_point_cloud_coherence.h>
 #include <pcl/tracking/nearest_pair_point_cloud_coherence.h>
 

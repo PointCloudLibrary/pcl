@@ -41,7 +41,6 @@
 #pragma once
 
 #include <pcl/common/transforms.h>
-#include <pcl/registration/boost.h>
 #include <pcl/registration/boost_graph.h>
 #include <pcl/correspondence.h>
 #include <pcl/memory.h>

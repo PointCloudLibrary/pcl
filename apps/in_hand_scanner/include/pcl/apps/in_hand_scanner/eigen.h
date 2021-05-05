@@ -43,7 +43,7 @@
 #ifdef __GNUC__
 #  pragma GCC system_header
 #endif
-
+PCL_DEPRECATED_HEADER(1, 15, "Please include the needed eigen headers directly.")
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <Eigen/Cholesky>
