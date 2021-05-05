@@ -61,6 +61,12 @@ if(VTK_RENDERING_BACKEND_OPENGL_VERSION VERSION_LESS 2)
     "src/vtk/vtkVertexBufferObject.cxx"
     "src/vtk/vtkVertexBufferObjectMapper.cxx"
   )
+
+  # Code in this module may use deprecated declarations when using OpenGLv1
+  # Add the GCC exclusive rules for -Werror only for OpenGLv1 compile to avoid build interruption
+  if(CMAKE_COMPILER_IS_GNUCXX)
+    add_compile_options("-Wno-error=deprecated-declarations")
+  endif()
 endif()
 
 if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
