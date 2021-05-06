@@ -91,11 +91,12 @@ TEST(PolygonMesh, concatenate_cloud)
 
 TEST(PolygonMesh, concatenate_vertices)
 {
-    PolygonMesh test, dummy;
-    test.cloud.width = 10;
-    test.cloud.height = 5;
-
     const std::size_t size = 15;
+
+    PolygonMesh test, dummy;
+    test.cloud.width = dummy.cloud.width = size;
+    test.cloud.height = dummy.cloud.height = 1;
+
     for (std::size_t i = 0; i < size; ++i)
     {
         dummy.polygons.emplace_back();
@@ -120,8 +121,10 @@ TEST(PolygonMesh, concatenate_vertices)
         {
             EXPECT_EQ(dummy.polygons[i].vertices[j],
                       test.polygons[i].vertices[j]);
-            EXPECT_EQ(dummy.polygons[i].vertices[j] + cloud_size,
+            EXPECT_EQ(dummy.polygons[i].vertices[j] + size,
                       test.polygons[i + dummy.polygons.size()].vertices[j]);
+            EXPECT_LT(test.polygons[i].vertices[j], cloud_size);
+            EXPECT_LT(test.polygons[i + dummy.polygons.size()].vertices[j], cloud_size);
         }
     }
 }
