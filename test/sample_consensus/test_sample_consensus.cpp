@@ -110,6 +110,16 @@ TYPED_TEST(SacTest, InfiniteLoop)
   SampleConsensusModelSpherePtr model (new SampleConsensusModelSphere<PointXYZ> (cloud.makeShared ()));
   TypeParam sac (model, 0.03);
 
+  // This test sometimes fails for LMedS on azure, but always passes when run locally.
+  // Enable all output for LMedS, so that when it fails next time, we hopefully see why.
+  // This can be removed again when the failure reason is found and fixed.
+  int debug_verbosity_level = 0;
+  const auto previous_verbosity_level = pcl::console::getVerbosityLevel();
+  if (std::is_same<TypeParam, LeastMedianSquares<PointXYZ>>::value) {
+    debug_verbosity_level = 2;
+    pcl::console::setVerbosityLevel(pcl::console::L_VERBOSE);
+  }
+
   // Set up timed conditions
   std::condition_variable cv;
   std::mutex mtx;
@@ -117,7 +127,7 @@ TYPED_TEST(SacTest, InfiniteLoop)
   // Create the RANSAC object
   std::thread thread ([&] ()
   {
-    sac.computeModel (0);
+    sac.computeModel (debug_verbosity_level);
 
     // Notify things are done
     std::lock_guard<std::mutex> lock (mtx);
@@ -135,6 +145,8 @@ TYPED_TEST(SacTest, InfiniteLoop)
   // release lock to avoid deadlock
   lock.unlock();
   thread.join ();
+
+  pcl::console::setVerbosityLevel(previous_verbosity_level); // reset verbosity level
 }
 
 int
