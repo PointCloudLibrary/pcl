@@ -4,7 +4,7 @@
   \section secSampleConsensusPresentation Overview
 
   The <b>pcl_sample_consensus</b> library holds SAmple Consensus (SAC) methods like 
-  <a href="http://en.wikipedia.org/wiki/RANSAC">RANSAC</a> and models like planes and cylinders.  These can
+  <a href="http://en.wikipedia.org/wiki/RANSAC">RANSAC</a> and models like planes and cylinders.  These can be
   combined freely in order to detect specific models and their parameters in point clouds.
 
   Some of the models implemented in this library include: lines, planes, cylinders, and spheres.  Plane fitting
