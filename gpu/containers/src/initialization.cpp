@@ -116,10 +116,16 @@ namespace
             int Cores;
         };
 
+<<<<<<< HEAD
         std::array<SMtoCores, 15> gpuArchCoresPerSM = {{
             {0x30, 192}, {0x32, 192}, {0x35, 192}, {0x37, 192}, {0x50, 128}, {0x52, 128},
             {0x53, 128}, {0x60, 64}, {0x61, 128}, {0x62, 128}, {0x70,  64}, {0x72,  64},
             {0x75,  64}, {0x80,  64}, {0x86, 128}
+=======
+        std::array<SMtoCores, 13> gpuArchCoresPerSM = {{
+            {0x10,   8}, {0x11,   8}, {0x12,   8}, {0x13,  8}, {0x20,  32}, {0x21, 48}, {0x30, 192},
+            {0x35, 192}, {0x50, 128}, {0x52, 128}, {0x53, 128}, {0x60, 64}, {0x61, 128}
+>>>>>>> 67fe996d0... removed unnessary element
         }};
         for (const auto& sm2cores : gpuArchCoresPerSM) {
             if (sm2cores.SM == ((major << 4) + minor) )
