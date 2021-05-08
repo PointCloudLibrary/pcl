@@ -519,6 +519,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
     #pcl_message("No include directory found for pcl_${component}.")
   endif()
 
+  set(FPHSA_NAME_MISMATCHED 1) # Suppress warnings, see https://cmake.org/cmake/help/v3.17/module/FindPackageHandleStandardArgs.html
   # Skip find_library for header only modules
   list(FIND pcl_header_only_components ${component} _is_header_only)
   if(_is_header_only EQUAL -1)
@@ -555,6 +556,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
     find_package_handle_standard_args(PCL_${COMPONENT} DEFAULT_MSG
       PCL_${COMPONENT}_INCLUDE_DIR)
   endif()
+  unset(FPHSA_NAME_MISMATCHED)
 
   if(PCL_${COMPONENT}_FOUND)
     if(NOT "${PCL_${COMPONENT}_INCLUDE_DIRS}" STREQUAL "")

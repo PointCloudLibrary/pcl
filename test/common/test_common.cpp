@@ -503,7 +503,7 @@ TEST (PCL, computeMedian)
   EXPECT_EQ(median1, 3.5f);
 
   std::vector<double> vector2{1.0, 25.0, 9.0, 4.0, 16.0};
-  const auto median2 = computeMedian (vector2.begin (), vector2.end (), static_cast<double(*)(double)>(std::sqrt));
+  const auto median2 = computeMedian (vector2.begin (), vector2.end (), [](const double& x){ return std::sqrt(x); });
   EXPECT_EQ(median2, 3.0);
 
   std::vector<double> vector3{1.0, 2.0, 6.0, 5.0, 4.0, 3.0};

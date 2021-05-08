@@ -40,7 +40,6 @@
 #include <thread>
 #include <mutex>
 
-#include <pcl/io/boost.h>
 #include <pcl/io/grabber.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>

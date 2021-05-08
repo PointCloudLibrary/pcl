@@ -5,7 +5,7 @@
 #include <iostream>
 
 int
-main(int argc, char** argv)
+main()
 {
   using XYZCloud = pcl::PointCloud<pcl::PointXYZ>;
   const auto cloud = pcl::make_shared<XYZCloud>();

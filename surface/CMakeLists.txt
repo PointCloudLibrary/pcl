@@ -49,6 +49,21 @@ endif()
 
 set(BUILD_surface_on_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds using openNURBS")
 if(BUILD_surface_on_nurbs)
+  # Add the GCC exclusive rules for -Werror only for 3rd party OpenNURBS compile
+  # -Wno-error = (deprecated-declarations, class-memaccess, deprecated-copy, uninitialized, parentheses)
+  # Note: class-memaccess warning added exactly in GCC 8.0, see here: https://www.gnu.org/software/gcc/gcc-8/changes.html
+  #       deprecated-copy warning added exactly in GCC 9.1, see here: https://www.gnu.org/software/gcc/gcc-9/changes.html
+  #       Since GCC8 and GCC9 are still widely-used, compile version check is required for the two options.
+  if(CMAKE_COMPILER_IS_GNUCXX)
+    add_compile_options("-Wno-error=deprecated-declarations" "-Wno-error=uninitialized" "-Wno-error=parentheses")
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 8.0)
+      add_compile_options("-Wno-error=class-memaccess")
+    endif()
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 9.1)
+      add_compile_options("-Wno-error=deprecated-copy")
+    endif()
+  endif()
+  
   include(src/3rdparty/opennurbs/openNURBS.cmake)
   include(src/on_nurbs/on_nurbs.cmake)
 endif()

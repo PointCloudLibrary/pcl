@@ -58,6 +58,15 @@ set(visualization_incs
   "include/pcl/${SUBSYS_NAME}/visualization/scene.h"
   "include/pcl/${SUBSYS_NAME}/visualization/viewport.h"
 )
+
+# Code in subdirectory `visualization` may use deprecated declarations when using OpenGLv1
+# Add the GCC exclusive rules for -Werror only for OpenGLv1 compile to avoid build interruption
+if(VTK_RENDERING_BACKEND_OPENGL_VERSION VERSION_LESS 2)
+  if(CMAKE_COMPILER_IS_GNUCXX)
+    add_compile_options("-Wno-error=deprecated-declarations")
+  endif()
+endif()
+
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")

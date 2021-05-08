@@ -40,7 +40,7 @@
 
 #pragma once
 
-#include <pcl/geometry/boost.h>
+#include <boost/operators.hpp>
 
 #include <iostream>
 

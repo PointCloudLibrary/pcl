@@ -38,7 +38,6 @@
 #include <pcl/point_types.h>
 #include <pcl/common/io.h>
 #include <pcl/io/ply_io.h>
-#include <pcl/io/boost.h>
 
 #include <cstdlib>
 #include <fstream>
@@ -49,6 +48,7 @@
 // https://www.boost.org/doc/libs/1_70_0/libs/filesystem/doc/index.htm#Coding-guidelines
 #define BOOST_FILESYSTEM_NO_DEPRECATED
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp> // for split
 
 namespace fs = boost::filesystem;
 

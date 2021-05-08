@@ -40,10 +40,11 @@
 #include <pcl/conversions.h> // for fromPCLPointCloud2, toPCLPointCloud2
 #include <pcl/point_cloud.h> // for PointCloud
 #include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
-#include <pcl/io/boost.h>
 #include <cmath>
 #include <sstream>
 #include <Eigen/Geometry> // for Quaternionf
+#include <boost/numeric/conversion/cast.hpp> // for numeric_cast
+#include <boost/algorithm/string/predicate.hpp> // for iequals
 
 namespace pcl
 {

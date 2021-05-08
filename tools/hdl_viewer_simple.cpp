@@ -43,7 +43,6 @@
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
-#include <pcl/visualization/boost.h>
 #include <pcl/visualization/mouse_event.h>
 
 #include <boost/algorithm/string.hpp>

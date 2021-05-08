@@ -51,7 +51,7 @@
 #include <pcl/octree/octree_search.h>
 #include <pcl/octree/octree_pointcloud_adjacency.h>
 #include <pcl/search/search.h>
-#include <pcl/segmentation/boost.h>
+#include <boost/ptr_container/ptr_list.hpp> // for ptr_list
 
 
 

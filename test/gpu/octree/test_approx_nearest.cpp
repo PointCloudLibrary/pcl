@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <array> // for std::array
 
 TEST(PCL_OctreeGPU, approxNearesSearch)
 {

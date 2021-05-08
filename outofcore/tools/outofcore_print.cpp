@@ -56,6 +56,7 @@
 #include <boost/accumulators/statistics/max.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
 #include <boost/accumulators/statistics/variance.hpp>
+#include <boost/algorithm/string/replace.hpp> // for replace_first
 
 namespace ba = boost::accumulators;
 
