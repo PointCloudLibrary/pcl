@@ -324,12 +324,10 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
     points[j + 2] = static_cast<coordT> ((*input_)[(*indices_)[i]].z);
   }
 
-  static FILE* null = fopen("/dev/null", "w");
-
   qhT qh_qh;
   qhT* qh = &qh_qh;
   QHULL_LIB_CHECK
-  qh_zero(qh, null);
+  qh_zero(qh, errfile);
 
   // Compute convex hull
   int exitcode = qh_new_qhull (qh, dimension, static_cast<int> (indices_->size ()), points, ismalloc, const_cast<char*> (flags), outfile, errfile);
