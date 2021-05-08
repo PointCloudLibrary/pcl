@@ -48,25 +48,14 @@
 
 extern "C"
 {
-#ifdef HAVE_QHULL_2011
-#  include "libqhull_r/libqhull_r.h"
-#  include "libqhull_r/mem_r.h"
-#  include "libqhull_r/qset_r.h"
-#  include "libqhull_r/geom_r.h"
-#  include "libqhull_r/merge_r.h"
-#  include "libqhull_r/poly_r.h"
-#  include "libqhull_r/io_r.h"
-#  include "libqhull_r/stat_r.h"
-#else
-#  include "qhull/qhull.h"
-#  include "qhull/mem.h"
-#  include "qhull/qset.h"
-#  include "qhull/geom.h"
-#  include "qhull/merge.h"
-#  include "qhull/poly.h"
-#  include "qhull/io.h"
-#  include "qhull/stat.h"
-#endif
+#include "libqhull_r/libqhull_r.h"
+#include "libqhull_r/mem_r.h"
+#include "libqhull_r/qset_r.h"
+#include "libqhull_r/geom_r.h"
+#include "libqhull_r/merge_r.h"
+#include "libqhull_r/poly_r.h"
+#include "libqhull_r/io_r.h"
+#include "libqhull_r/stat_r.h"
 }
 
 #endif
