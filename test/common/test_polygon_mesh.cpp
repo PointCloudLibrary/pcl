@@ -116,12 +116,11 @@ TEST(PolygonMesh, concatenate_vertices)
       for (const auto& vertex : polygon.vertices)
         EXPECT_LT(vertex, cloud_size);
 
-    auto offsetter = [&size](const pcl::index_t& v) { return v + size; };
     for (std::size_t i = 0; i < size; ++i) {
-        auto& v1 = dummy.polygons[i].vertices;
-        EXPECT_EQ_VECTORS(v1, test.polygons[i].vertices);
-        std::transform(v1.begin(), v1.end(), v1.begin(), offsetter);
-        EXPECT_EQ_VECTORS(v1, test.polygons[i + size].vertices);
+        auto& vertices = dummy.polygons[i].vertices;
+        EXPECT_EQ_VECTORS(vertices, test.polygons[i].vertices);
+        for (auto& vertex : vertices) vertex += size;
+        EXPECT_EQ_VECTORS(vertices, test.polygons[i + size].vertices);
     }
 }
 
