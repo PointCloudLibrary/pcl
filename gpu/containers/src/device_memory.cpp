@@ -282,6 +282,21 @@ pcl::gpu::DeviceMemory::upload(const void* host_ptr_arg, std::size_t sizeBytes_a
   cudaSafeCall(cudaDeviceSynchronize());
 }
 
+bool
+pcl::gpu::DeviceMemory::upload(void* host_ptr_arg,
+                               std::size_t device_begin_byte_offset,
+                               std::size_t device_end_byte_offset)
+{
+  if (device_end_byte_offset < device_begin_byte_offset) {
+    return false;
+  }
+  const void* const begin = static_cast<char*>(data_) + device_begin_byte_offset;
+  std::size_t bytes = device_end_byte_offset - device_begin_byte_offset;
+  cudaSafeCall(cudaMemcpy(host_ptr_arg, begin, bytes, cudaMemcpyHostToDevice));
+  cudaSafeCall(cudaDeviceSynchronize());
+  return true;
+}
+
 void
 pcl::gpu::DeviceMemory::download(void* host_ptr_arg) const
 {

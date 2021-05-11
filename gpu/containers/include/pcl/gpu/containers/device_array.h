@@ -41,7 +41,6 @@
 
 #include <vector>
 
-<<<<<<< HEAD
 namespace pcl {
 namespace gpu {
 //////////////////////////////////////////////////////////////////////////////
@@ -108,9 +107,19 @@ public:
   void
   upload(const T* host_ptr, std::size_t size);
 
+  /** \brief Uploads data from CPU memory to internal buffer.
+   * Returns false if device_offset < device_begin_offset
+   * \param host_ptr pointer to buffer to upload
+   * \param device_begin_offset begin upload
+   * \param device_end_offset end upload
+   * */
+  bool
+  upload(T* host_ptr, std::size_t device_begin_offset, std::size_t device_end_offset);
+
   /** \brief Downloads data from internal buffer to CPU memory
    * \param host_ptr pointer to buffer to download
    * */
+
   void
   download(T* host_ptr) const;
 
@@ -120,6 +129,7 @@ public:
    * \param device_begin_offset begin download location
    * \param device_end_offset end download location
    * */
+
   bool
   download(T* host_ptr,
            std::size_t device_begin_offset,

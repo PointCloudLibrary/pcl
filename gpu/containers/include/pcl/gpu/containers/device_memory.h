@@ -102,6 +102,17 @@ public:
   void
   upload(const void* host_ptr_arg, std::size_t sizeBytes_arg);
 
+  /** \brief Uploads data from CPU memory to device array
+   * Returns true if upload successfull
+   * \param host_ptr_arg pointer to buffer to upload
+   * \param device_begin_byte_offset first byte position to upload to
+   * \param device_end_byte_offset last byte position to upload to
+   * */
+  bool
+  upload(void* host_ptr,
+         std::size_t device_begin_byte_offset,
+         std::size_t device_end_byte_offset);
+
   /** \brief Downloads data from internal buffer to CPU memory
    * \param host_ptr_arg pointer to buffer to download
    * */
