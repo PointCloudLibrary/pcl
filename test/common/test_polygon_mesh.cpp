@@ -112,20 +112,16 @@ TEST(PolygonMesh, concatenate_vertices)
     EXPECT_EQ(2 * dummy.polygons.size(), test.polygons.size());
 
     const auto cloud_size = test.cloud.width * test.cloud.height;
-    for (std::size_t i = 0; i < dummy.polygons.size(); ++i)
-    {
-        EXPECT_EQ(dummy.polygons[i].vertices.size(), test.polygons[i].vertices.size());
-        EXPECT_EQ(dummy.polygons[i].vertices.size(),
-                  test.polygons[i + dummy.polygons.size()].vertices.size());
-        for (std::size_t j = 0; j < size; ++j)
-        {
-            EXPECT_EQ(dummy.polygons[i].vertices[j],
-                      test.polygons[i].vertices[j]);
-            EXPECT_EQ(dummy.polygons[i].vertices[j] + size,
-                      test.polygons[i + dummy.polygons.size()].vertices[j]);
-            EXPECT_LT(test.polygons[i].vertices[j], cloud_size);
-            EXPECT_LT(test.polygons[i + dummy.polygons.size()].vertices[j], cloud_size);
-        }
+    for (const auto& polygon : test.polygons)
+      for (const auto& vertex : polygon.vertices)
+        EXPECT_LT(vertex, cloud_size);
+
+    auto offsetter = [&size](const pcl::index_t& v) { return v + size; };
+    for (std::size_t i = 0; i < size; ++i) {
+        auto& v1 = dummy.polygons[i].vertices;
+        EXPECT_EQ_VECTORS(v1, test.polygons[i].vertices);
+        std::transform(v1.begin(), v1.end(), v1.begin(), offsetter);
+        EXPECT_EQ_VECTORS(v1, test.polygons[i + size].vertices);
     }
 }
 
