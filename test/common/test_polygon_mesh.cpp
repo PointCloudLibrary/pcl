@@ -117,11 +117,11 @@ TEST(PolygonMesh, concatenate_vertices)
       for (const auto& vertex : polygon.vertices)
         EXPECT_LT(vertex, cloud_size);
 
+    pcl::Indices vertices(size);
     for (std::size_t i = 0; i < size; ++i) {
-        // This copy is intended for further modification.
-        pcl::Indices vertices{dummy.polygons[i].vertices};
+        vertices.assign(dummy.polygons[i].vertices.cbegin(),
+                        dummy.polygons[i].vertices.cend());
         EXPECT_EQ_VECTORS(vertices, test.polygons[i].vertices);
-        // The vertex identifiers must be shifted correctly.
         for (auto& vertex : vertices) vertex += size;
         EXPECT_EQ_VECTORS(vertices, test.polygons[i + size].vertices);
     }
