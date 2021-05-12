@@ -94,6 +94,7 @@ TEST(PolygonMesh, concatenate_vertices)
     const std::size_t size = 15;
 
     PolygonMesh test, dummy;
+    // The algorithm works regardless of the organization.
     test.cloud.width = dummy.cloud.width = size;
     test.cloud.height = dummy.cloud.height = 1;
 
@@ -117,8 +118,10 @@ TEST(PolygonMesh, concatenate_vertices)
         EXPECT_LT(vertex, cloud_size);
 
     for (std::size_t i = 0; i < size; ++i) {
-        auto& vertices = dummy.polygons[i].vertices;
+        // This copy is intended for further modification.
+        pcl::Indices vertices{dummy.polygons[i].vertices};
         EXPECT_EQ_VECTORS(vertices, test.polygons[i].vertices);
+        // The vertex identifiers must be shifted correctly.
         for (auto& vertex : vertices) vertex += size;
         EXPECT_EQ_VECTORS(vertices, test.polygons[i + size].vertices);
     }
