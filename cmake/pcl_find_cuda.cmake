@@ -13,38 +13,44 @@ if(CUDA_FOUND)
   enable_language(CUDA)
   set(HAVE_CUDA TRUE)
 
-  # Find a complete list for CUDA compute capabilities at http://developer.nvidia.com/cuda-gpus
-  
-  # For a list showing CUDA toolkit version support for compute capabilities see: https://en.wikipedia.org/wiki/CUDA
-  # or the nvidia release notes ie: 
-  # https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html#cuda-general-new-features
-  # or
-  # https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html#deprecated-features
-  
-  if(NOT ${CUDA_VERSION_STRING} VERSION_LESS "11.0")
-    set(__cuda_arch_bin "35;37;50;52;53;60;61;62;70;72;75;80;86")
-  elseif(NOT ${CUDA_VERSION_STRING} VERSION_LESS "10.0")
-    set(__cuda_arch_bin "30;32;35;37;50;52;53;60;61;62;70;72;75")
-  elseif(NOT ${CUDA_VERSION_STRING} VERSION_LESS "9.0")
-    set(__cuda_arch_bin "30;32;35;37;50;52;53;60;61;62;70;72")
+  if (CMAKE_CUDA_COMPILER_ID STREQUAL "NVIDIA")
+    if(${CUDA_VERSION_STRING} VERSION_GREATER "11.0")
+      execute_process(COMMAND ${CMAKE_CUDA_COMPILER} --list-gpu-code RESULT_VARIABLE EXIT_CODE OUTPUT_VARIABLE OUTPUT_VAL)
+      if(EXIT_CODE EQUAL 0)
+        #Remove sm_
+        string(REPLACE "sm_" "" OUTPUT_VAL ${OUTPUT_VAL})
+        #Convert to list
+        string(REPLACE "\n" ";" __CUDA_ARCH_BIN ${OUTPUT_VAL})
+        #Remove last empty entry
+        list(REMOVE_AT __CUDA_ARCH_BIN -1)
+      else()
+        message(FATAL_ERROR "Failed to run NVCC to get list of GPU codes: ${EXIT_CODE}")
+      endif()
+    elseif(${CUDA_VERSION_STRING} VERSION_GREATER "10.0")
+      set(__CUDA_ARCH_BIN "35;37;50;52;53;60;61;62;70;72;75")
+    elseif(${CUDA_VERSION_STRING} VERSION_GREATER "9.0")
+      set(__CUDA_ARCH_BIN "30;32;35;37;50;52;53;60;61;62;70;72;75")
+    else()
+      set(__CUDA_ARCH_BIN "30;32;35;37;50;52;53;60;61;62;70;72")
+    endif()
+  elseif (CMAKE_CUDA_COMPILER_ID STREQUAL "Clang")
+    set(__CUDA_ARCH_BIN "all")
+  else()
+    message(FATAL_ERROR "Unkown CUDA compiler ${CMAKE_CUDA_COMPILER_ID}.")
   endif()
 
-  set(CUDA_ARCH_BIN ${__cuda_arch_bin} CACHE STRING "Specify 'real' GPU architectures to build binaries for")
+  set(CUDA_ARCH_BIN ${__CUDA_ARCH_BIN} CACHE STRING "Specify 'real' GPU architectures to build binaries for")
   
   if(POLICY CMP0104)
     cmake_policy(SET CMP0104 NEW)
-    foreach(ver ${CUDA_ARCH_BIN})
-      set(CMAKE_CUDA_ARCHITECTURES "${ver}-real;${ver}-virtual;${CMAKE_CUDA_ARCHITECTURES}")
-    endforeach()
+    set(CMAKE_CUDA_ARCHITECTURES ${CUDA_ARCH_BIN})
     message(STATUS "CMAKE_CUDA_ARCHITECTURES: ${CMAKE_CUDA_ARCHITECTURES}")
     
     #Add empty project as its not required with newer CMake
     add_library(pcl_cuda INTERFACE)
   else()
     # Generate SASS
-    foreach(ver ${CUDA_ARCH_BIN})
-      set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -gencode arch=compute_${ver},code=sm_${ver}")
-    endforeach()
+    set(CMAKE_CUDA_ARCHITECTURES ${CUDA_ARCH_BIN})
     # Generate PTX for last architecture
     list(GET CUDA_ARCH_BIN -1 ver)
     set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -gencode arch=compute_${ver},code=compute_${ver}")
