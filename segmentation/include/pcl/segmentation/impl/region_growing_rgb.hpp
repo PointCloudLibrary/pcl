@@ -482,24 +482,19 @@ pcl::RegionGrowingRGB<PointT, NormalT>::applyRegionMergingAlgorithm ()
       num_seg_in_homogeneous_region[i_reg] = 0;
       final_segment_number -= 1;
 
-      int nghbr_number = static_cast<int> (region_neighbours[reg_index].size ());
-      for (int i_nghbr = 0; i_nghbr < nghbr_number; i_nghbr++)
+      for (auto& nghbr : region_neighbours[reg_index])
       {
-        if ( segment_labels_[ region_neighbours[reg_index][i_nghbr].second ] == reg_index )
+        if ( segment_labels_[ nghbr.second ] == reg_index )
         {
-          region_neighbours[reg_index][i_nghbr].first = std::numeric_limits<float>::max ();
-          region_neighbours[reg_index][i_nghbr].second = 0;
+          nghbr.first = std::numeric_limits<float>::max ();
+          nghbr.second = 0;
         }
       }
-      nghbr_number = static_cast<int> (region_neighbours[i_reg].size ());
-      for (int i_nghbr = 0; i_nghbr < nghbr_number; i_nghbr++)
+      for (const auto& nghbr : region_neighbours[i_reg])
       {
-        if ( segment_labels_[ region_neighbours[i_reg][i_nghbr].second ] != reg_index )
+        if ( segment_labels_[ nghbr.second ] != reg_index )
         {
-          std::pair<float, int> pair;
-          pair.first = region_neighbours[i_reg][i_nghbr].first;
-          pair.second = region_neighbours[i_reg][i_nghbr].second;
-          region_neighbours[reg_index].push_back (pair);
+          region_neighbours[reg_index].push_back (nghbr);
         }
       }
       region_neighbours[i_reg].clear ();
@@ -533,11 +528,9 @@ pcl::RegionGrowingRGB<PointT, NormalT>::findRegionNeighbours (std::vector< std::
 
   for (int i_reg = 0; i_reg < region_number; i_reg++)
   {
-    int segment_num = static_cast<int> (regions_in[i_reg].size ());
-    neighbours_out[i_reg].reserve (segment_num * region_neighbour_number_);
-	for (int i_seg = 0; i_seg < segment_num; i_seg++)
+    neighbours_out[i_reg].reserve (regions_in[i_reg].size () * region_neighbour_number_);
+    for (const auto& curr_segment : regions_in[i_reg])
     {
-      int curr_segment = regions_in[i_reg][i_seg];
       int nghbr_number = static_cast<int> (segment_neighbours_[curr_segment].size ());
       std::pair<float, int> pair;
       for (int i_nghbr = 0; i_nghbr < nghbr_number; i_nghbr++)
@@ -571,10 +564,8 @@ pcl::RegionGrowingRGB<PointT, NormalT>::assembleRegions (std::vector<unsigned in
 
   std::vector<int> counter;
   counter.resize (num_regions, 0);
-  int point_number = static_cast<int> (indices_->size ());
-  for (int i_point = 0; i_point < point_number; i_point++)
+  for (const auto& point_index : (*indices_))
   {
-    int point_index = (*indices_)[i_point];
     int index = point_labels_[point_index];
     index = segment_labels_[index];
     clusters_[index].indices[ counter[index] ] = point_index;
@@ -735,22 +726,15 @@ pcl::RegionGrowingRGB<PointT, NormalT>::getSegmentFromPoint (pcl::index_t index,
     }
     // if we have already made the segmentation, then find the segment
     // to which this point belongs
-    for (auto i_segment = clusters_.cbegin (); i_segment != clusters_.cend (); i_segment++)
+    for (const auto& i_segment : clusters_)
     {
-      bool segment_was_found = false;
-      for (std::size_t i_point = 0; i_point < i_segment->indices.size (); i_point++)
+      const auto it = std::find (i_segment.indices.cbegin (), i_segment.indices.cend (), index);
+      if (it != i_segment.indices.cend())
       {
-        if (i_segment->indices[i_point] == index)
-        {
-          segment_was_found = true;
-          cluster.indices.clear ();
-          cluster.indices.reserve (i_segment->indices.size ());
-          std::copy (i_segment->indices.begin (), i_segment->indices.end (), std::back_inserter (cluster.indices));
-          break;
-        }
-      }
-      if (segment_was_found)
-      {
+        // if segment was found
+        cluster.indices.clear ();
+        cluster.indices.reserve (i_segment.indices.size ());
+        std::copy (i_segment.indices.begin (), i_segment.indices.end (), std::back_inserter (cluster.indices));
         break;
       }
     }// next segment
