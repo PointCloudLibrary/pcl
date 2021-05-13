@@ -119,10 +119,9 @@ TEST(PolygonMesh, concatenate_vertices)
 
     pcl::Indices vertices(size);
     for (std::size_t i = 0; i < size; ++i) {
-        vertices.assign(dummy.polygons[i].vertices.cbegin(),
-                        dummy.polygons[i].vertices.cend());
+        vertices = dummy.polygons[i].vertices;
         EXPECT_EQ_VECTORS(vertices, test.polygons[i].vertices);
-        for (auto& vertex : vertices) vertex += size;
+        for (auto& vertex : vertices) { vertex += size; }
         EXPECT_EQ_VECTORS(vertices, test.polygons[i + size].vertices);
     }
 }
