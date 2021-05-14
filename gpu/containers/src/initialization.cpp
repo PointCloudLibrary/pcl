@@ -40,6 +40,7 @@
 #include "cuda.h"
 #include <cstdio>
 #include <array>
+#include <algorithm>
 
 #define HAVE_CUDA
 //#include <pcl_config.h>
@@ -121,9 +122,9 @@ namespace
             {0x53, 128}, {0x60, 64}, {0x61, 128}, {0x62, 128}, {0x70,  64}, {0x72,  64},
             {0x75,  64}, {0x80,  64}, {0x86, 128}
         }};
-        for (const auto& [sm, cores] : gpuArchCoresPerSM) {
-            if (sm == ((major << 4) + minor) ) 
-                return cores;
+        for (const auto& sm2cores : gpuArchCoresPerSM) {
+            if (sm2cores.SM == ((major << 4) + minor) )
+                return sm2cores.Cores;
         }
         printf("\nCan't determine number of cores. Unknown SM version %d.%d!\n", major, minor);
         return 0;
