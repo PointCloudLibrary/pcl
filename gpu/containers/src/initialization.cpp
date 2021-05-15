@@ -40,7 +40,6 @@
 #include "cuda.h"
 #include <cstdio>
 #include <array>
-#include <algorithm>
 
 #define HAVE_CUDA
 //#include <pcl_config.h>
