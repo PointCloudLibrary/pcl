@@ -23,16 +23,14 @@ PointCloudT::Ptr cloud;
 TEST(PCL, DistanceBetweenFeatures)
 {
   pcl::detail::MultiscaleFeaturePersistenceTest<PointT, FPFHSignature> test_distance;
-  std::vector<float> a{101, -11, 24, 3, 18, 27, 65};
-  std::vector<float> b{89, 29, 24, 1008, -57, 106, 85};
+  std::vector<float> a{1, 12, 23, 34, 45, 56, 67};
+  std::vector<float> b{12, -34, 56, -78, 91, -23, 45};
 
   // L1
-
   test_distance.distance_metric_ = pcl::L1;
   EXPECT_EQ(test_distance.distanceBetweenFeatures(a, b), pcl::L1_Norm(a, b, a.size()));
 
   // L2_SQR
-
   test_distance.distance_metric_ = pcl::L2_SQR;
   EXPECT_EQ(test_distance.distanceBetweenFeatures(a, b),
             pcl::L2_Norm_SQR(a, b, a.size()));
@@ -81,17 +79,21 @@ TEST(PCL, DistanceBetweenFeatures)
 TEST(PCL, CalculateMeanFeature)
 {
   pcl::detail::MultiscaleFeaturePersistenceTest<PointT, FPFHSignature> test_mean;
-  test_mean.features_at_scale_vectorized_ = {{{1, 2, 3, 4, 5}, {6, 2, 9, 4, 21}},
-                                             {{19, 22, 93, 4, -57}, {6, 2, 4, 7, 8}},
-                                             {{11, 2, 78, 35, 89}, {2, 3, 7, 7, 14}}};
+  test_mean.features_at_scale_vectorized_ = {
+      {{1, 2, 3, 4, 5}, {11, 12, 13, 14, 15}},
+      {{1, -23, 34, -45, 56}, {-65, 54, -43, 32, -1}},
+      {{25, 24, 23, 22, 21}, {-52, 43, -34, 25, -16}}};
   test_mean.mean_feature_.resize(5);
   test_mean.calculateMeanFeature();
 
-  std::vector<float> gt_mean{7.5f, 5.5f, 32.3333f, 10.1666f, 13.3333f};
-  for (auto gt_it = gt_mean.begin(), result_it = gt_mean.begin();
+  // gt_mean[i] = mean of the features in all scales[s, x, i], s in [0,
+  // features_at_scale_vectorized_.size()], x in [0,
+  // features_at_scale_vectorized_[s].size()]
+  std::vector<float> gt_mean{-13.1666f, 18.6666f, -0.6666f, 8.6666f, 13.3333f};
+  for (auto gt_it = gt_mean.begin(), result_it = test_mean.mean_feature_.begin();
        gt_it != gt_mean.end();
        ++gt_it, ++result_it) {
-    EXPECT_FLOAT_EQ(*gt_it, *result_it);
+    EXPECT_NEAR(*gt_it, *result_it, 1e-4);
   }
 }
 
@@ -101,9 +103,9 @@ TEST(PCL, ExtractUniqueFeatures)
   pcl::detail::MultiscaleFeaturePersistenceTest<PointT, FPFHSignature>
       test_unique_feature_extraction;
   test_unique_feature_extraction.features_at_scale_vectorized_ = {
-      {{1, 2, 3, 4, 5}, {6, 2, 9, 4, 21}},
-      {{19, 22, 93, 4, -57}, {6, 2, 4, 7, 8}},
-      {{11, 2, 78, 35, 89}, {2, 3, 7, 7, 14}}};
+      {{1, 2, 3, 4, 5}, {11, 12, 13, 14, 15}},
+      {{1, -23, 34, -45, 56}, {-65, 54, -43, 32, -1}},
+      {{25, 24, 23, 22, 21}, {-52, 43, -34, 25, -16}}};
   test_unique_feature_extraction.mean_feature_.resize(5);
   test_unique_feature_extraction.calculateMeanFeature();
   test_unique_feature_extraction.distance_metric_ = pcl::L1;
@@ -112,8 +114,8 @@ TEST(PCL, ExtractUniqueFeatures)
   std::vector<std::list<std::size_t>> gt_unique_features_indices_;
   std::vector<std::vector<bool>> gt_unique_features_table_;
   // alpha is 0.5
-  gt_unique_features_indices_ = {{0, 1}, {0}, {0}};
-  gt_unique_features_table_ = {{true, true}, {true, false}, {true, false}};
+  gt_unique_features_indices_ = {{0, 1}, {0, 1}, {0, 1}};
+  gt_unique_features_table_ = {{true, true}, {true, true}, {true, true}};
   test_unique_feature_extraction.alpha_ = 0.5f;
   test_unique_feature_extraction.extractUniqueFeatures();
   for (size_t scale_i = 0; scale_i < gt_unique_features_table_.size(); ++scale_i) {
@@ -135,8 +137,8 @@ TEST(PCL, ExtractUniqueFeatures)
   }
 
   // alpha is 1
-  gt_unique_features_indices_ = {{0}, {0}, {0}};
-  gt_unique_features_table_ = {{true, false}, {true, false}, {true, false}};
+  gt_unique_features_indices_ = {{1}, {0}, {1}};
+  gt_unique_features_table_ = {{false, true}, {true, false}, {false, true}};
   test_unique_feature_extraction.alpha_ = 1;
   test_unique_feature_extraction.extractUniqueFeatures();
   for (size_t scale_i = 0; scale_i < gt_unique_features_table_.size(); ++scale_i) {
