@@ -2402,9 +2402,48 @@ namespace traits
   template <typename PointT>
   using HasNoIntensity = std::enable_if_t<!has_intensity_v<PointT>, bool>;
 
-  /** Metafunction to check if a given point type has either rgb or rgba field. */
+  /** Metafunction to check if a given point type has L*a*b* fields. */
   template <typename PointT>
-  struct has_color : has_any_field<PointT, boost::mpl::vector<pcl::fields::rgb,
+  struct has_Lab : has_all_fields<PointT, boost::mpl::vector<pcl::fields::L,
+                                                             pcl::fields::a,
+                                                             pcl::fields::b> >
+  { };
+
+  template <typename PointT>
+  constexpr auto has_Lab_v = has_Lab<PointT>::value;
+
+  template <typename PointT>
+  using HasLab = std::enable_if_t<has_Lab_v<PointT>, bool>;
+
+  template <typename PointT>
+  using HasNoLab = std::enable_if_t<!has_Lab_v<PointT>, bool>;
+
+  /** Metafunction to check if a given point type has HSV color space fields. */
+  template <typename PointT>
+  struct has_HSV : has_all_fields<PointT, boost::mpl::vector<pcl::fields::h,
+                                                             pcl::fields::s,
+                                                             pcl::fields::v> >
+  { };
+
+  template <typename PointT>
+  constexpr auto has_HSV_v = has_HSV<PointT>::value;
+
+  template <typename PointT>
+  using HasHSV = std::enable_if_t<has_HSV_v<PointT>, bool>;
+
+  template <typename PointT>
+  using HasNoHSV = std::enable_if_t<!has_HSV_v<PointT>, bool>;
+
+  /** Metafunction to check if a given point type has x, y, and z fields. */
+  template <typename PointT>
+  struct has_xyz : has_all_fields<PointT, boost::mpl::vector<pcl::fields::x,
+                                                             pcl::fields::y,
+                                                             pcl::fields::z> >
+  { };
+
+  template <typename PointT>
+  struct PCL_DEPRECATED_HEADER(1, 15, "Please use has_rgb instead.")
+  has_color : has_any_field<PointT, boost::mpl::vector<pcl::fields::rgb,
                                                               pcl::fields::rgba> >
   { };
 
@@ -2416,6 +2455,28 @@ namespace traits
 
   template <typename PointT>
   using HasNoColor = std::enable_if_t<!has_color_v<PointT>, bool>;
+
+  /** Metafunction to check if a given point type has either rgb or rgba field. */
+  template <typename PointT>
+  struct has_rgb : has_any_field<PointT, boost::mpl::vector<pcl::fields::rgb,
+                                                              pcl::fields::rgba> >
+  { };
+
+  template <typename PointT>
+  constexpr auto has_rgb_v = has_rgb<PointT>::value;
+
+  template <typename PointT>
+  using HasRGB = std::enable_if_t<has_rgb_v<PointT>, bool>;
+
+  template <typename PointT>
+  using HasNoRGB = std::enable_if_t<!has_rgb_v<PointT>, bool>;
+
+  /** Metafunction to check if a given point type has any color (e.g. rgb, rgba, hsv, lab) field. */
+  template <typename PointT>
+  using HasAnyColor = std::enable_if_t<has_rgb_v<PointT> || has_HSV_v<PointT> || has_Lab_v<PointT> || has_intensity_v<PointT>, bool>;
+
+  template <typename PointT>
+  using HasNoAnyColor = std::enable_if_t<!has_rgb_v<PointT> && !has_HSV_v<PointT> && !has_Lab_v<PointT> && !has_intensity_v<PointT>, bool>;
 
   /** Metafunction to check if a given point type has label field. */
   template <typename PointT>
