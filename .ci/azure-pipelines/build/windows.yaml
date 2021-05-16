@@ -2,39 +2,28 @@ steps:
   - checkout: self
     # find the commit hash on a quick non-forced update too
     fetchDepth: 10
-  - pwsh: Get-PSDrive
-    displayName: "Check free space"
   - script: |
-      vcpkg.exe install eigen3 flann gtest qhull ^
-      boost-date-time boost-filesystem boost-iostreams ^
-      boost-property-tree boost-graph boost-interprocess ^
-      boost-signals2 boost-sort boost-multi-array boost-asio ^
-      boost-ptr-container ^
-      --triplet %PLATFORM%-windows && vcpkg.exe list
-    displayName: 'Install C++ Dependencies Via Vcpkg'
-  - script: |
-      mkdir %BUILD_DIR% && cd %BUILD_DIR%
+      mkdir %BUILD_DIR% && cd %BUILD_DIR% && dir
       cmake $(Build.SourcesDirectory) ^
-        -G"%GENERATOR%" ^
+        -G%GENERATOR% ^
+        -DVCPKG_TARGET_TRIPLET=%PLATFORM%-windows-rel ^
         -DCMAKE_BUILD_TYPE="MinSizeRel" ^
-        -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake ^
+        -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ^
         -DVCPKG_APPLOCAL_DEPS=ON ^
         -DPCL_BUILD_WITH_BOOST_DYNAMIC_LINKING_WIN32=ON ^
         -DPCL_BUILD_WITH_FLANN_DYNAMIC_LINKING_WIN32=ON ^
         -DPCL_BUILD_WITH_QHULL_DYNAMIC_LINKING_WIN32=ON ^
         -DBUILD_global_tests=ON ^
         -DBUILD_tools=OFF ^
-        -DBUILD_surface_on_nurbs=ON
+        -DBUILD_surface_on_nurbs=ON ^
+        -DPCL_DISABLE_VISUALIZATION_TESTS=ON
     displayName: 'CMake Configuration'
-    workingDirectory: 'c:'
   - script: |
       cd %BUILD_DIR% && cmake --build . --config %CONFIGURATION%
     displayName: 'Build Library'
-    workingDirectory: 'c:'
   - script: |
       cd %BUILD_DIR% && cmake --build . --target tests --config %CONFIGURATION%
     displayName: 'Run Unit Tests'
-    workingDirectory: 'c:'
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'CTest'

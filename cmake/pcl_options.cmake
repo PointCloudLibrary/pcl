@@ -89,3 +89,6 @@ endif()
 # (Used to prevent gpu tests from executing in CI where GPU hardware is unavailable)
 option(PCL_DISABLE_GPU_TESTS "Disable running GPU tests. If disabled, tests will still be built." OFF)
 
+# Set whether visualizations tests should be run
+# (Used to prevent visualizations tests from executing in CI where visualization is unavailable)
+option(PCL_DISABLE_VISUALIZATION_TESTS "Disable running visualizations tests. If disabled, tests will still be built." OFF)
