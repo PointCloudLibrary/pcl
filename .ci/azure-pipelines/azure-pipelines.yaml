@@ -50,7 +50,7 @@ stages:
               CC: gcc
               CXX: g++
               BUILD_GPU: ON
-              CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON'
+              CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON -DCUDA_HOST_COMPILER=/usr/lib/nvidia-cuda-toolkit/bin/gcc'
             21.04 GCC:  # latest Ubuntu
               CONTAINER: env2104
               CC: gcc
