@@ -39,6 +39,7 @@
 
 #include "cuda.h"
 #include <cstdio>
+#include <array> // replace c-style array with std::array
 
 #define HAVE_CUDA
 //#include <pcl_config.h>
@@ -115,16 +116,14 @@ namespace
             int Cores;
         };
 
-        SMtoCores gpuArchCoresPerSM[] = {
-            {0x10,   8}, {0x11,   8}, {0x12,   8}, {0x13,  8}, {0x20,  32}, {0x21, 48}, {0x30, 192},
-            {0x35, 192}, {0x50, 128}, {0x52, 128}, {0x53, 128}, {0x60, 64}, {0x61, 128}, {-1, -1}
-        };
-        int index = 0;
-        while (gpuArchCoresPerSM[index].SM != -1) 
-        {
-            if (gpuArchCoresPerSM[index].SM == ((major << 4) + minor) ) 
-                return gpuArchCoresPerSM[index].Cores;
-            index++;
+        std::array<SMtoCores, 15> gpuArchCoresPerSM = {{
+            {0x30, 192}, {0x32, 192}, {0x35, 192}, {0x37, 192}, {0x50, 128}, {0x52, 128},
+            {0x53, 128}, {0x60, 64}, {0x61, 128}, {0x62, 128}, {0x70,  64}, {0x72,  64},
+            {0x75,  64}, {0x80,  64}, {0x86, 128}
+        }};
+        for (const auto& sm2cores : gpuArchCoresPerSM) {
+            if (sm2cores.SM == ((major << 4) + minor) )
+                return sm2cores.Cores;
         }
         printf("\nCan't determine number of cores. Unknown SM version %d.%d!\n", major, minor);
         return 0;
