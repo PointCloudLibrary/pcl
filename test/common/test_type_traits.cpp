@@ -111,14 +111,72 @@ TEST (TypeTraits, HasIntensity)
                 "has_intensity<> should detect intensity field");
 }
 
+TEST (TypeTraits, HasLab)
+{
+  static_assert(!pcl::traits::has_Lab_v<pcl::PointXYZ>,
+                "has_Lab<> should detect lack of CIELAB field");
+  static_assert(!pcl::traits::has_Lab_v<pcl::PointXYZRGB>,
+                "has_Lab<> should detect lack of CIELAB field");
+  static_assert(!pcl::traits::has_Lab_v<pcl::PointXYZHSV>,
+                "has_Lab<> should detect lack of CIELAB field");
+  static_assert(pcl::traits::has_Lab_v<pcl::PointXYZLAB>,
+                "has_Lab<> should detect CIELAB field");
+}
+
+TEST (TypeTraits, HasHSV)
+{
+  static_assert(!pcl::traits::has_HSV_v<pcl::PointXYZ>,
+                "has_HSV<> should detect lack of HSV field");
+  static_assert(!pcl::traits::has_HSV_v<pcl::PointXYZRGB>,
+                "has_HSV<> should detect lack of HSV field");
+  static_assert(!pcl::traits::has_HSV_v<pcl::PointXYZLAB>,
+                "has_HSV<> should detect lack of HSV field");
+  static_assert(pcl::traits::has_HSV_v<pcl::PointXYZHSV>,
+                "has_HSV<> should detect HSV field");
+}
+
 TEST (TypeTraits, HasColor)
 {
   static_assert(!pcl::traits::has_color_v<pcl::PointXYZ>,
+                "has_color<> should detect lack of rgb field");
+  static_assert(!pcl::traits::has_color_v<pcl::PointXYZLAB>,
+                "has_color<> should detect lack of rgb field");
+  static_assert(!pcl::traits::has_color_v<pcl::PointXYZHSV>,
                 "has_color<> should detect lack of rgb field");
   static_assert(pcl::traits::has_color_v<pcl::PointXYZRGB>,
                 "has_color<> should detect rgb field");
   static_assert(pcl::traits::has_color_v<pcl::PointXYZRGBA>,
                 "has_color<> should detect rgb field");
+}
+
+TEST (TypeTraits, HasRGB)
+{
+  static_assert(!pcl::traits::has_rgb_v<pcl::PointXYZ>,
+                "has_rgb<> should detect lack of rgb field");
+  static_assert(!pcl::traits::has_rgb_v<pcl::PointXYZLAB>,
+                "has_rgb<> should detect lack of rgb field");
+  static_assert(!pcl::traits::has_rgb_v<pcl::PointXYZHSV>,
+                "has_rgb<> should detect lack of rgb field");
+  static_assert(pcl::traits::has_rgb_v<pcl::PointXYZRGB>,
+                "has_rgb<> should detect rgb field");
+  static_assert(pcl::traits::has_rgb_v<pcl::PointXYZRGBA>,
+                "has_rgb<> should detect rgb field");
+}
+
+TEST (TypeTraits, HasAnyColor)
+{
+  static_assert(!pcl::traits::has_any_color_v<pcl::PointXYZ>,
+                "has_any_color<> should detect lack of color field");
+  static_assert(pcl::traits::has_any_color_v<pcl::PointXYZLAB>,
+                "has_any_color<> should detect color field");
+  static_assert(pcl::traits::has_any_color_v<pcl::PointXYZHSV>,
+                "has_any_color<> should detect color field");
+  static_assert(pcl::traits::has_any_color_v<pcl::PointXYZRGB>,
+                "has_any_color<> should detect color field");
+  static_assert(pcl::traits::has_any_color_v<pcl::PointXYZRGBA>,
+                "has_any_color<> should detect color field");
+  static_assert(pcl::traits::has_any_color_v<pcl::PointXYZI>,
+                "has_any_color<> should detect color field");
 }
 
 TEST (TypeTraits, HasLabel)
