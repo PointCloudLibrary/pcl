@@ -1,12 +1,6 @@
-# For valid combinations, check the following repo:
-# https://gitlab.com/nvidia/container-images/cuda/tree/master/dist
-# To disable cuda, use "--build-arg CUDA_VERSION=" during image build process
-ARG CUDA_VERSION="9.2"
-ARG UBUNTU_VERSION="20.04"
-ARG BASE_CUDA_IMAGE=${CUDA_VERSION:+"nvidia/cuda:${CUDA_VERSION}-devel-ubuntu${UBUNTU_VERSION}"}
-ARG BASE_IMAGE=${BASE_CUDA_IMAGE:-"ubuntu:${UBUNTU_VERSION}"}
+ARG UBUNTU_VERSION=20.04
 
-FROM ${BASE_IMAGE}
+FROM "ubuntu:${UBUNTU_VERSION}"
 
 # Eigen patch (https://eigen.tuxfamily.org/bz/show_bug.cgi?id=1462) to fix issue metioned
 # in https://github.com/PointCloudLibrary/pcl/issues/3729 is available in Eigen 3.3.7.
@@ -47,10 +41,16 @@ RUN apt-get update \
       libusb-1.0-0-dev \
       libvtk${VTK_VERSION}-dev \
       libvtk${VTK_VERSION}-qt-dev \
+      lsb-release \
       qtbase5-dev \
       software-properties-common \
       wget \
       xvfb \
+  && if [ "$(lsb_release -sr)" = "18.04" ]; then \
+       apt-get -V install -y nvidia-cuda-toolkit g++-6 ; \
+     else \
+       apt-get -V install -y nvidia-cuda-toolkit-gcc ; \
+     fi \
  && rm -rf /var/lib/apt/lists/*
 
 # Use libeigen3-dev if it meets the minimal version.
