@@ -36,7 +36,7 @@ main ()
   reader.read ("table_scene_mug_stereo_textured.pcd", *cloud);
   std::cerr << "PointCloud has: " << cloud->size () << " data points." << std::endl;
 
-  // Build a passthrough filter to remove spurious NaNs
+  // Build a passthrough filter to remove spurious NaNs and scene background
   pass.setInputCloud (cloud);
   pass.setFilterFieldName ("z");
   pass.setFilterLimits (0, 1.5);

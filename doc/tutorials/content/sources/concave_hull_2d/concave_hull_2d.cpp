@@ -17,7 +17,7 @@ main ()
   pcl::PCDReader reader;
 
   reader.read ("table_scene_mug_stereo_textured.pcd", *cloud);
-  // Build a filter to remove spurious NaNs
+  // Build a filter to remove spurious NaNs and scene background
   pcl::PassThrough<pcl::PointXYZ> pass;
   pass.setInputCloud (cloud);
   pass.setFilterFieldName ("z");

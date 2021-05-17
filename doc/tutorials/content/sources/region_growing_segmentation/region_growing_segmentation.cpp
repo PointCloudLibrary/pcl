@@ -6,7 +6,7 @@
 #include <pcl/search/kdtree.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/visualization/cloud_viewer.h>
-#include <pcl/filters/passthrough.h>
+#include <pcl/filters/filter_indices.h> // for pcl::removeNaNFromPointCloud
 #include <pcl/segmentation/region_growing.h>
 
 int
@@ -28,11 +28,7 @@ main ()
   normal_estimator.compute (*normals);
 
   pcl::IndicesPtr indices (new std::vector <int>);
-  pcl::PassThrough<pcl::PointXYZ> pass;
-  pass.setInputCloud (cloud);
-  pass.setFilterFieldName ("z");
-  pass.setFilterLimits (0.0, 1.0);
-  pass.filter (*indices);
+  pcl::removeNaNFromPointCloud(*cloud, *indices);
 
   pcl::RegionGrowing<pcl::PointXYZ, pcl::Normal> reg;
   reg.setMinClusterSize (50);
@@ -40,7 +36,7 @@ main ()
   reg.setSearchMethod (tree);
   reg.setNumberOfNeighbours (30);
   reg.setInputCloud (cloud);
-  //reg.setIndices (indices);
+  reg.setIndices (indices);
   reg.setInputNormals (normals);
   reg.setSmoothnessThreshold (3.0 / 180.0 * M_PI);
   reg.setCurvatureThreshold (1.0);
