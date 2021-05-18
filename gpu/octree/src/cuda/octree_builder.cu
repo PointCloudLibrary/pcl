@@ -60,12 +60,12 @@ namespace pcl
         template<typename PointType>
         struct SelectMinPoint
         {
-	        __host__ __device__ __forceinline__ PointType operator()(const PointType& e1, const PointType& e2) const
+	        __host__ __device__ __forceinline__ PointType operator() (const PointType& e1, const PointType& e2) const
 	        {
                 PointType result;
-                result.x = fmin(e1.x, e2.x);
-                result.y = fmin(e1.y, e2.y);
-                result.z = fmin(e1.z, e2.z);
+                result.p.x = fmin(e1.p.x, e2.p.x);
+                result.p.y = fmin(e1.p.y, e2.p.y);
+                result.p.z = fmin(e1.p.z, e2.p.z);
                 return result;		        
 	        }	
         };
@@ -76,9 +76,9 @@ namespace pcl
 	        __host__ __device__ __forceinline__ PointType operator()(const PointType& e1, const PointType& e2) const 
 	        {		
                 PointType result;
-                result.x = fmax(e1.x, e2.x);
-                result.y = fmax(e1.y, e2.y);
-                result.z = fmax(e1.z, e2.z);
+                result.p.x = fmax(e1.p.x, e2.p.x);
+                result.p.y = fmax(e1.p.y, e2.p.y);
+                result.p.z = fmax(e1.p.z, e2.p.z);
                 return result;		    
 	        }	
         };
@@ -90,9 +90,9 @@ namespace pcl
             __device__ __forceinline__ thrust::tuple<float, float, float> operator()(const PointType& arg) const
             {
                 thrust::tuple<float, float, float> res;
-                res.get<0>() = arg.x;
-                res.get<1>() = arg.y;
-                res.get<2>() = arg.z;
+                res.get<0>() = arg.p.x;
+                res.get<1>() = arg.p.y;
+                res.get<2>() = arg.p.z;
                 return res;
             }
         };
@@ -285,6 +285,17 @@ namespace pcl
         __global__ void __launch_bounds__(CTA_SIZE) singleStepKernel(const SingleStepBuild ssb) { ssb(); }
     }
 }
+// functor could be replaced by lambda is cuda compiler is passed correct flags
+template <class T>
+struct callMorton {
+  pcl::device::CalcMorton calc;
+  callMorton(float3 x, float3 y) : calc(x, y){};
+  __device__ pcl::device::Morton::code_t
+  operator()(const T& x) const
+  {
+    return calc(x.p);
+  }
+};
 
 void pcl::device::OctreeImpl::build()
 {       
@@ -343,23 +354,24 @@ void pcl::device::OctreeImpl::build()
 
         {
             PointType atmax, atmin;
-            atmax.x = atmax.y = atmax.z = FLT_MAX;
-            atmin.x = atmin.y = atmin.z = -FLT_MAX;
-            atmax.w = atmin.w = 0;
+            atmax.p.x = atmax.p.y = atmax.p.z = FLT_MAX;
+            atmin.p.x = atmin.p.y = atmin.p.z = -FLT_MAX;
+            atmax.p.w = atmin.p.w = 0;
 
             //ScopeTimer timer("reduce"); 
             PointType minp = thrust::reduce(beg, end, atmax, SelectMinPoint<PointType>());
             PointType maxp = thrust::reduce(beg, end, atmin, SelectMaxPoint<PointType>());
 
-            octreeGlobal.minp = make_float3(minp.x, minp.y, minp.z);
-            octreeGlobal.maxp = make_float3(maxp.x, maxp.y, maxp.z);
+            octreeGlobal.minp = make_float3(minp.p.x, minp.p.y, minp.p.z);
+            octreeGlobal.maxp = make_float3(maxp.p.x, maxp.p.y, maxp.p.z);
         }
     		
         device_ptr<int> codes_beg(codes.ptr());
         device_ptr<int> codes_end = codes_beg + codes.size();
         {
             //ScopeTimer timer("morton"); 
-	        thrust::transform(beg, end, codes_beg, CalcMorton(octreeGlobal.minp, octreeGlobal.maxp));
+            callMorton<PointType> call(octreeGlobal.minp, octreeGlobal.maxp);
+	        thrust::transform(beg, end, codes_beg, call);
         }
 
         device_ptr<int> indices_beg(indices.ptr());

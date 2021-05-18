@@ -40,6 +40,7 @@
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/octree/device_format.hpp>
 #include <pcl/gpu/utils/safe_call.hpp>
+#include <pcl/point_types.h>
 
 namespace pcl
 {
@@ -64,11 +65,15 @@ namespace pcl
             float3 minp, maxp;    
         };
 
+        struct Point {
+            float4 p;
+            short4 rgb;
+        };
 
         class OctreeImpl
         {
         public:
-            using PointType = float4;
+            using PointType = Point;
             using PointArray = DeviceArray<PointType>;
 
             using PointCloud = PointArray;

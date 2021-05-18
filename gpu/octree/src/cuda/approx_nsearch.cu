@@ -94,7 +94,7 @@ public:
     int node_idx = -1;
     if (active) {
       PointType q = batch.queries[query_index];
-      query = make_float3(q.x, q.y, q.z);
+      query = make_float3(q.p.x, q.p.y, q.p.z);
 
       const float3& minp = batch.octree.minp;
       const float3& maxp = batch.octree.maxp;

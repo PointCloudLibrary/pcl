@@ -67,6 +67,10 @@ namespace pcl
             {
                 return (*this)(make_float3(point.x, point.y, point.z));                
             }
+            __device__ __host__ __forceinline__ bool operator()(const OctreeImpl::PointType& point) const
+            {
+                return (*this)(make_float3(point.p.x, point.p.y, point.p.z));
+            }
         };
     }
 }
@@ -78,7 +82,7 @@ void pcl::device::bruteForceRadiusSearch(const OctreeImpl::PointCloud& cloud, co
     if (buffer.size() < cloud.size())
         buffer.create(cloud.size());
 
-    InSphere cond(query.x, query.y, query.z, radius);
+    InSphere cond(query.p.x, query.p.y, query.p.z, radius);
 
     device_ptr<const PointType> cloud_ptr((const PointType*)cloud.ptr());
     device_ptr<int> res_ptr(buffer.ptr());

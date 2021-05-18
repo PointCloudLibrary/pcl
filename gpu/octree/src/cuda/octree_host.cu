@@ -137,7 +137,7 @@ void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float rad
 {            
     out.clear();  
 
-    float3 center = make_float3(query.x, query.y, query.z);
+    float3 center = make_float3(query.p.x, query.p.y, query.p.z);
 
     OctreeIteratorHost iterator;
 
@@ -215,7 +215,7 @@ void  pcl::device::OctreeImpl::approxNearestSearchHost(const PointType& query, i
 {
     const float3& minp = octreeGlobal.minp;
     const float3& maxp = octreeGlobal.maxp;
-    const float3 query_point = make_float3(query.x, query.y, query.z);
+    const float3 query_point = make_float3(query.p.x, query.p.y, query.p.z);
 
     const int node_idx = pcl::device::findNode(minp, maxp, query_point, host_octree.nodes);
 
@@ -230,9 +230,9 @@ void  pcl::device::OctreeImpl::approxNearestSearchHost(const PointType& query, i
         float point_y = host_octree.points_sorted[i + host_octree.points_sorted_step    ];
         float point_z = host_octree.points_sorted[i + host_octree.points_sorted_step * 2];
 
-        float dx = (point_x - query.x);
-        float dy = (point_y - query.y);
-        float dz = (point_z - query.z);
+        float dx = (point_x - query.p.x);
+        float dy = (point_y - query.p.y);
+        float dz = (point_z - query.p.z);
 
         float d2 = dx * dx + dy * dy + dz * dz;
 

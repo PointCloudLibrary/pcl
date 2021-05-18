@@ -105,7 +105,7 @@ namespace pcl { namespace device { namespace knn_search
             if (active)
             {
                 PointType q = batch.queries[query_index];
-                query = make_float3(q.x, q.y, q.z);
+                query = make_float3(q.p.x, q.p.y, q.p.z);
             }
             else                
                 query_index = -1;    

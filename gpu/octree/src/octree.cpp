@@ -117,9 +117,9 @@ void pcl::gpu::Octree::radiusSearchHost(const PointType& center, float radius, s
         internalDownload();
 
     OctreeImpl::PointType query;
-    query.x = center.x;
-    query.y = center.y;
-    query.z = center.z;
+    query.p.x = center.x;
+    query.p.y = center.y;
+    query.p.z = center.z;
     
     static_cast<OctreeImpl*>(impl)->radiusSearchHost(query, radius, out, max_nn);
 }
@@ -130,9 +130,9 @@ void  pcl::gpu::Octree::approxNearestSearchHost(const PointType& query, int& out
         internalDownload();
 
     OctreeImpl::PointType q;
-    q.x = query.x;
-    q.y = query.y;
-    q.z = query.z;
+    q.p.x = query.x;
+    q.p.y = query.y;
+    q.p.z = query.z;
     
     static_cast<OctreeImpl*>(impl)->approxNearestSearchHost(q, out_index, sqr_dist);
 
@@ -208,17 +208,17 @@ void pcl::gpu::Octree::nearestKSearchBatch(const Queries& queries, int k, Neighb
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////// Brute Force Radius Search Mediator //////////////////////////////////
 
-void pcl::gpu::bruteForceRadiusSearchGPU(const Octree::PointCloud& cloud, const PointXYZ& query,  float radius,  DeviceArray<int>& result,  DeviceArray<int>& buffer)
+void pcl::gpu::bruteForceRadiusSearchGPU(const Octree::PointCloud& cloud, const Octree::PointType& query,  float radius,  DeviceArray<int>& result,  DeviceArray<int>& buffer)
 {
     using PointType = OctreeImpl::PointType;
     using PointCloud = OctreeImpl::PointCloud;    
     
     PointType query_local;
-    query_local.x = query.x;
-    query_local.y = query.y;
-    query_local.z = query.z;
+    query_local.p.x = query.x;
+    query_local.p.y = query.y;
+    query_local.p.z = query.z;
 
-    Static<sizeof(PointType) == sizeof(OctreeImpl::PointType)>::check();
+    //Static<sizeof(PointType) == sizeof(OctreeImpl::PointType)>::check();
 
     PointCloud cloud_local((PointType*)cloud.ptr(), cloud.size());
     bruteForceRadiusSearch(cloud_local, query_local, radius, result, buffer);

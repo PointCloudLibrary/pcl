@@ -69,7 +69,7 @@ namespace pcl
             using ConstPtr = shared_ptr<const Octree>;
 
             /** \brief Point typwe supported */
-            using PointType = pcl::PointXYZ;
+            using PointType = pcl::PointXYZRGB;
 
             /** \brief Point cloud supported */
             using PointCloud = DeviceArray<PointType>;
