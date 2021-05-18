@@ -50,9 +50,8 @@
 #include <pcl/type_traits.h>
 #include <pcl/for_each_type.h>
 #include <pcl/console/print.h>
-#ifndef Q_MOC_RUN
+
 #include <boost/foreach.hpp>
-#endif
 
 namespace pcl
 {

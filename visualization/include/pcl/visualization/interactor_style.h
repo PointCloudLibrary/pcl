@@ -46,9 +46,7 @@
 #include <pcl/visualization/mouse_event.h>
 #include <pcl/visualization/point_picking_event.h>
 #include <pcl/visualization/area_picking_event.h>
-#ifndef Q_MOC_RUN
 #include <boost/signals2/signal.hpp>
-#endif
 #include <vtkInteractorStyleRubberBandPick.h>
 #include <vtkRendererCollection.h>
 #include <vtkRenderWindow.h>

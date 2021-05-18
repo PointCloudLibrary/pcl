@@ -37,8 +37,6 @@
 
 #pragma once
 
-// https://bugreports.qt-project.org/browse/QTBUG-22829
-#ifndef Q_MOC_RUN
 #include <boost/mpl/assert.hpp>  // for BOOST_MPL_ASSERT_MSG
 #include <boost/mpl/identity.hpp>  // for boost::mpl::identity
 
@@ -46,7 +44,6 @@
 #include <boost/preprocessor/seq/enum.hpp>  // for BOOST_PP_SEQ_ENUM
 #include <boost/preprocessor/tuple/elem.hpp>  // for BOOST_PP_TUPLE_ELEM
 #include <boost/preprocessor/stringize.hpp> // for BOOST_PP_STRINGIZE
-#endif
 
 // This is required for the workaround at line 84
 #ifdef _MSC_VER

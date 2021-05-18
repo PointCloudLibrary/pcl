@@ -50,15 +50,12 @@
   #pragma warning (disable: 4244)
 #endif
 
-//https://bugreports.qt-project.org/browse/QTBUG-22829
-#ifndef Q_MOC_RUN
 #include <pcl/point_struct_traits.h> // for pcl::traits::POD, POINT_CLOUD_REGISTER_FIELD_(NAME, OFFSET, DATATYPE), POINT_CLOUD_REGISTER_POINT_FIELD_LIST
 #include <boost/mpl/assert.hpp>  // for BOOST_MPL_ASSERT_MSG
 #include <boost/preprocessor/seq/for_each.hpp>  // for BOOST_PP_SEQ_FOR_EACH
 #include <boost/preprocessor/seq/transform.hpp>  // for BOOST_PP_SEQ_TRANSFORM
 #include <boost/preprocessor/tuple/elem.hpp>  // for BOOST_PP_TUPLE_ELEM
 #include <boost/preprocessor/cat.hpp>  // for BOOST_PP_CAT
-#endif
 
 #include <cstdint>  // for std::uint32_t
 #include <type_traits>  // for std::enable_if_t, std::is_array, std::remove_const_t, std::remove_all_extents_t

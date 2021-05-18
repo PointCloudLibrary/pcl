@@ -43,7 +43,6 @@
 #pragma GCC system_header 
 #endif
 
-#ifndef Q_MOC_RUN
 #include <boost/mpl/is_sequence.hpp>
 #include <boost/mpl/begin_end.hpp>
 #include <boost/mpl/next_prior.hpp>
@@ -53,7 +52,6 @@
 #include <boost/mpl/contains.hpp>
 #include <boost/mpl/not.hpp>
 #include <boost/mpl/aux_/unwrap.hpp>
-#endif
 
 #include <type_traits>
 
