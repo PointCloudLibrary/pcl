@@ -412,7 +412,7 @@ int
 pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
     selectBaseTriangle(pcl::Indices& base_indices)
 {
-  int nr_points = static_cast<int>(target_indices_->size());
+  const auto nr_points = target_indices_->size();
   float best_t = 0.f;
 
   // choose random first point

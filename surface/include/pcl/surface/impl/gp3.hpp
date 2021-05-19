@@ -461,13 +461,13 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
           {
             if (doubleEdges[j].index != i)
             {
-              int f = ffn_[nnIdx[doubleEdges[j].index]];
+              const auto& f = ffn_[nnIdx[doubleEdges[j].index]];
               if ((f != nnIdx[i]) && (f != R_))
                 visibility = isVisible(uvn_nn[i], uvn_nn[doubleEdges[j].index], doubleEdges[j].first, Eigen::Vector2f::Zero());
               if (!visibility)
                 break;
 
-              int s = sfn_[nnIdx[doubleEdges[j].index]];
+              const auto& s = sfn_[nnIdx[doubleEdges[j].index]];
               if ((s != nnIdx[i]) && (s != R_))
                 visibility = isVisible(uvn_nn[i], uvn_nn[doubleEdges[j].index], doubleEdges[j].second, Eigen::Vector2f::Zero());
               if (!visibility)
@@ -1087,7 +1087,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::closeTriangle (std::vector<pcl::Ve
 template <typename PointInT> void
 pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
     std::vector<pcl::Vertices> &polygons, 
-    const int prev_index, const int next_index, const int next_next_index, 
+    const pcl::index_t prev_index, const pcl::index_t next_index, const pcl::index_t next_next_index, 
     const Eigen::Vector2f &uvn_current, 
     const Eigen::Vector2f &uvn_prev, 
     const Eigen::Vector2f &uvn_next)
@@ -1383,7 +1383,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
           case 2://next2f:
           {
             addTriangle (current_index_, ffn_[current_index_], next_index, polygons);
-            int neighbor_update = next_index;
+            auto neighbor_update = next_index;
 
             /* updating next_index */
             if (state_[next_index] <= FREE)
@@ -1518,7 +1518,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
           case 3://next2s:
           {
             addTriangle (current_index_, sfn_[current_index_], next_index, polygons);
-            int neighbor_update = next_index;
+            auto neighbor_update = next_index;
 
             /* updating next_index */
             if (state_[next_index] <= FREE)

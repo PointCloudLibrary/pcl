@@ -328,7 +328,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::findRegionsKNN (pcl::index_t index, int 
     for (int i_nghbr = 0; i_nghbr < number_of_neighbours; i_nghbr++)
     {
       // find segment
-      auto segment_index = point_labels_[ point_neighbours_[point_index][i_nghbr] ];
+      const pcl::index_t segment_index = point_labels_[ point_neighbours_[point_index][i_nghbr] ];
 
       if ( segment_index != index )
       {

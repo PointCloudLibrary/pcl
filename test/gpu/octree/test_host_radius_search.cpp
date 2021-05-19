@@ -44,6 +44,7 @@
     #pragma warning (disable: 4521)
 #endif
     
+#include <pcl/pcl_tests.h> // for EXPECT_EQ_VECTORS
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/octree/octree_search.h>
@@ -121,13 +122,8 @@ TEST(PCL_OctreeGPU, hostRadiusSearch)
         std::sort(results_host_gpu.begin(), results_host_gpu.end());
         std::sort(results_host.begin(), results_host.end());
 
-        ASSERT_EQ (results_host_gpu.size(), results_host.size());
-        ASSERT_EQ (results_host_gpu.size(), data.bfresutls[i].size());
-        for(std::size_t j = 0; j < results_host_gpu.size(); ++j)
-        {
-            ASSERT_EQ (results_host_gpu[j], results_host[j]);
-            ASSERT_EQ (results_host_gpu[j], data.bfresutls[i][j]);
-        }
+        pcl::test::EXPECT_EQ_VECTORS (results_host_gpu, results_host);
+        pcl::test::EXPECT_EQ_VECTORS (results_host_gpu, data.bfresutls[i]);
         sizes.push_back(results_host.size());      
     }    
 

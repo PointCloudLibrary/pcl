@@ -347,8 +347,8 @@ loadScene (const char* file_name, PointCloud<PointXYZ>& non_plane_points, PointC
 
   // Make sure that the ids are sorted
   sort (inliers->indices.begin (), inliers->indices.end ());
-  std::size_t j = 0, i = 0;
-  for ( pcl::index_t id = 0 ; i < inliers->indices.size () ; )
+  pcl::uindex_t j = 0, i = 0;
+  for ( pcl::index_t id = 0 ; i < inliers->indices.size () ; ++id)
   {
     if ( id == inliers->indices[i] )
     {
@@ -361,7 +361,6 @@ loadScene (const char* file_name, PointCloud<PointXYZ>& non_plane_points, PointC
       non_plane_normals[j] = (*all_normals)[id];
       ++j;
     }
-    ++id;
   }
 
   // Just copy the rest of the non-plane points
