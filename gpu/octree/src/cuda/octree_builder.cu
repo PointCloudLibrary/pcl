@@ -35,7 +35,8 @@
  */
 
 #include <cfloat>
-#include "internal.hpp"
+#include <pcl/gpu/octree/impl/internal.hpp>
+#include <pcl/point_types.h>
 
 #include "pcl/gpu/utils/timers_cuda.hpp"
 #include "pcl/gpu/utils/device/funcattrib.hpp"
@@ -297,7 +298,8 @@ struct callMorton {
   }
 };
 
-void pcl::device::OctreeImpl::build()
+template <typename T>
+void pcl::device::OctreeImpl<T>::build()
 {       
     using namespace pcl::device;
     host_octree.downloaded = false;
@@ -414,3 +416,5 @@ void pcl::device::OctreeImpl::build()
     cudaSafeCall( cudaGetLastError() );
     cudaSafeCall( cudaDeviceSynchronize() );
 }
+template void pcl::device::OctreeImpl<pcl::PointXYZRGB>::build();
+template void pcl::device::OctreeImpl<pcl::PointXYZ>::build();

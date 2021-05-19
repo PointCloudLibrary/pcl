@@ -43,7 +43,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/PointIndices.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/gpu/octree/octree.hpp>
+#include <pcl/gpu/octree/octree.h>
 
 namespace pcl
 {
@@ -51,7 +51,7 @@ namespace pcl
   {
     template <typename PointT> void
     extractLabeledEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr &host_cloud_,
-                                     const pcl::gpu::Octree::Ptr                 &tree,
+                                     const typename pcl::gpu::Octree<pcl::PointXYZ>::Ptr                 &tree,
                                      float                                       tolerance,
                                      std::vector<PointIndices>                   &clusters,
                                      unsigned int                                min_pts_per_cluster, 
@@ -73,10 +73,10 @@ namespace pcl
         using PointIndicesPtr = PointIndices::Ptr;
         using PointIndicesConstPtr = PointIndices::ConstPtr;
 
-        using GPUTree = pcl::gpu::Octree;
-        using GPUTreePtr = pcl::gpu::Octree::Ptr;
+        using GPUTree = pcl::gpu::Octree<pcl::PointXYZ>;
+        using GPUTreePtr = typename pcl::gpu::Octree<pcl::PointXYZ>::Ptr;
 
-        using CloudDevice = pcl::gpu::Octree::PointCloud;
+        using CloudDevice = typename pcl::gpu::Octree<pcl::PointXYZ>::PointCloud;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /** \brief Empty constructor. */

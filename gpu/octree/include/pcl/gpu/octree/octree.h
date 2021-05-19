@@ -34,8 +34,7 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#ifndef _PCL_GPU_OCTREE_
-#define _PCL_GPU_OCTREE_
+#pragma once
 
 #include <vector>
 
@@ -44,6 +43,9 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/octree/device_format.hpp>
+#include <pcl/pcl_exports.h>
+
+
 
 namespace pcl
 {
@@ -54,6 +56,7 @@ namespace pcl
          * \author  Anaoly Baksheev, Itseez, myname.mysurname@mycompany.com
          */
 
+        template <class T>
         class PCL_EXPORTS Octree
         {
         public:
@@ -69,7 +72,7 @@ namespace pcl
             using ConstPtr = shared_ptr<const Octree>;
 
             /** \brief Point typwe supported */
-            using PointType = pcl::PointXYZRGB;
+            using PointType = T;
 
             /** \brief Point cloud supported */
             using PointCloud = DeviceArray<PointType>;
@@ -183,8 +186,9 @@ namespace pcl
         * \param[out] result indeces of points within give sphere
         * \param[in] buffer buffer for intermediate results. Keep reference to it between calls to eliminate internal allocations
         */             
-        PCL_EXPORTS void bruteForceRadiusSearchGPU(const Octree::PointCloud& cloud, const Octree::PointType& query, float radius, DeviceArray<int>& result, DeviceArray<int>& buffer);
+        template <class T>
+        PCL_EXPORTS void bruteForceRadiusSearchGPU(const typename Octree<T>::PointCloud& cloud, const typename Octree<T>::PointType& query, float radius, DeviceArray<int>& result, DeviceArray<int>& buffer);
     }
 }
 
-#endif /* _PCL_GPU_OCTREE_ */
+#include <pcl/gpu/octree/impl/octree.hpp>

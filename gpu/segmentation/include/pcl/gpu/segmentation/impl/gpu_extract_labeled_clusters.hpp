@@ -42,7 +42,7 @@
 
 template <typename PointT> void
 pcl::gpu::extractLabeledEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr  &host_cloud_,
-                                           const pcl::gpu::Octree::Ptr                  &tree,
+                                           const pcl::gpu::Octree<pcl::PointXYZ>::Ptr                  &tree,
                                            float                                        tolerance,
                                            std::vector<PointIndices>                    &clusters,
                                            unsigned int                                 min_pts_per_cluster,
@@ -73,7 +73,7 @@ pcl::gpu::extractLabeledEuclideanClusters (const typename pcl::PointCloud<PointT
     processed[i] = true;
 
     // Create the query queue on the device, point based not indices
-    pcl::gpu::Octree::Queries queries_device;
+    pcl::gpu::Octree<pcl::PointXYZ>::Queries queries_device;
     // Create the query queue on the host
     pcl::PointCloud<pcl::PointXYZ>::VectorType queries_host;
 
@@ -151,7 +151,7 @@ pcl::gpu::EuclideanLabeledClusterExtraction<PointT>::extract (std::vector<PointI
   // Initialize the GPU search tree
   if (!tree_)
   {
-    tree_.reset (new pcl::gpu::Octree());
+    tree_.reset (new pcl::gpu::Octree<pcl::PointXYZ>());
     ///@todo what do we do if input isn't a PointXYZ cloud?
     tree_->setCloud(input_);
   }
@@ -173,5 +173,5 @@ pcl::gpu::EuclideanLabeledClusterExtraction<PointT>::extract (std::vector<PointI
   std::sort (clusters.rbegin (), clusters.rend (), compareLabeledPointClusters);
 }
 
-#define PCL_INSTANTIATE_extractLabeledEuclideanClusters(T) template void PCL_EXPORTS pcl::gpu::extractLabeledEuclideanClusters<T> (const typename pcl::PointCloud<T>::Ptr  &, const pcl::gpu::Octree::Ptr &,float, std::vector<PointIndices> &, unsigned int, unsigned int);
+#define PCL_INSTANTIATE_extractLabeledEuclideanClusters(T) template void PCL_EXPORTS pcl::gpu::extractLabeledEuclideanClusters<T> (const typename pcl::PointCloud<T>::Ptr  &, const typename pcl::gpu::Octree<pcl::PointXYZ>::Ptr &,float, std::vector<PointIndices> &, unsigned int, unsigned int);
 #define PCL_INSTANTIATE_EuclideanLabeledClusterExtraction(T) template class PCL_EXPORTS pcl::gpu::EuclideanLabeledClusterExtraction<T>;

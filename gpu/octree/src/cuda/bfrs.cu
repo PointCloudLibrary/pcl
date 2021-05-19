@@ -39,7 +39,7 @@
 #include <thrust/device_ptr.h>
 #include <thrust/iterator/counting_iterator.h>
 
-#include "internal.hpp"
+#include <pcl/gpu/octree/impl/internal.hpp>
 
 #include "cuda.h"
 
@@ -67,7 +67,8 @@ namespace pcl
             {
                 return (*this)(make_float3(point.x, point.y, point.z));                
             }
-            __device__ __host__ __forceinline__ bool operator()(const OctreeImpl::PointType& point) const
+            template <typename T>
+            __device__ __host__ __forceinline__ bool operator()(const typename OctreeImpl<T>::PointType& point) const
             {
                 return (*this)(make_float3(point.p.x, point.p.y, point.p.z));
             }
@@ -75,9 +76,11 @@ namespace pcl
     }
 }
 
-void pcl::device::bruteForceRadiusSearch(const OctreeImpl::PointCloud& cloud, const OctreeImpl::PointType& query, float radius, DeviceArray<int>& result, DeviceArray<int>& buffer)
+template <typename T>
+void pcl::device::bruteForceRadiusSearch(const typename OctreeImpl<T>::PointCloud&
+        cloud, const typename OctreeImpl<T>::PointType& query, float radius, DeviceArray<int>& result, DeviceArray<int>& buffer)
 {   
-    using PointType = OctreeImpl::PointType;
+    using PointType = typename OctreeImpl<T>::PointType;
 
     if (buffer.size() < cloud.size())
         buffer.create(cloud.size());

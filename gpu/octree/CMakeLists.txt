@@ -14,8 +14,12 @@ if(NOT build)
 endif()
 
 file(GLOB incs include/pcl/gpu/octree/*.hpp)
+file(GLOB incs include/pcl/gpu/octree/*.h)
+file(GLOB incs_impl include/pcl/gpu/octree/impl/*.hpp)
 file(GLOB srcs src/*.cpp src/*.hpp src/*.cu)
 source_group("Source Files" FILES ${srcs})
+source_group("Header Files\\impl" FILES ${incs_impl})
+list(APPEND incs ${incs_impl})
 
 file(GLOB utils src/utils/*.hpp)
 source_group("Source Files\\utils" FILES ${utils})
@@ -36,3 +40,4 @@ PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_
 
 # Install include files
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_PATH}" ${incs})
+PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_PATH}/impl" ${incs_impl})

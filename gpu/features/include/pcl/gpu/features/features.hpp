@@ -41,7 +41,7 @@
 #include <pcl/point_types.h>
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/octree/device_format.hpp>
-#include <pcl/gpu/octree/octree.hpp>
+#include <pcl/gpu/octree/octree.h>
 
 namespace pcl
 {
@@ -73,7 +73,7 @@ namespace pcl
             float radius_;
             int max_results_;
 
-            Octree octree_;
+            Octree<PointType> octree_;
         };
 
         ////////////////////////////////////////////////////////////////////////////////////////////  

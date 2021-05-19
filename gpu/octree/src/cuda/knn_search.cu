@@ -36,7 +36,7 @@
 
 #include <limits>
 
-#include "internal.hpp"
+#include <pcl/gpu/octree/impl/internal.hpp>
 #include "pcl/gpu/utils/device/warp.hpp"
 
 #include "utils/copygen.hpp"
@@ -47,10 +47,11 @@
 
 namespace pcl { namespace device { namespace knn_search
 {   
-    using PointType = OctreeImpl::PointType;
     
+    template <typename T>
     struct Batch
     {           
+        using PointType = typename OctreeImpl<T>::PointType;
         const PointType* queries;
 
         //int k == 1;
@@ -81,12 +82,13 @@ namespace pcl { namespace device { namespace knn_search
         };
     };
 
+    template <typename T>
     struct Warp_knnSearch
     {   
     public:                        
         using OctreeIterator = OctreeIteratorDeviceNS;
 
-        const Batch& batch;
+        const Batch<T>& batch;
 
         int query_index;        
         float3 query;  
@@ -97,14 +99,14 @@ namespace pcl { namespace device { namespace knn_search
 
         OctreeIterator iterator;     
 
-        __device__ __forceinline__ Warp_knnSearch(const Batch& batch_arg, const int query_index_arg)
+        __device__ __forceinline__ Warp_knnSearch(const Batch<T>& batch_arg, const int query_index_arg)
             : batch(batch_arg), query_index(query_index_arg), min_distance(std::numeric_limits<float>::max()), min_distance_squared(std::numeric_limits<float>::max()), min_idx(0), iterator(batch.octree) { }
 
         __device__ __forceinline__ void launch(bool active)
         {              
             if (active)
             {
-                PointType q = batch.queries[query_index];
+                typename Batch<T>::PointType q = batch.queries[query_index];
                 query = make_float3(q.p.x, q.p.y, q.p.z);
             }
             else                
@@ -257,7 +259,8 @@ namespace pcl { namespace device { namespace knn_search
         }
     };
     
-    __global__ void KernelKNN(const Batch batch) 
+    template <typename T>
+    __global__ void KernelKNN(const Batch<T> batch)
     {           
         const int query_index = blockIdx.x * blockDim.x + threadIdx.x;
                                 
@@ -266,16 +269,17 @@ namespace pcl { namespace device { namespace knn_search
         if (__all_sync(0xFFFFFFFF, active == false)) 
             return;
 
-        Warp_knnSearch search(batch, query_index);
+        Warp_knnSearch<T> search(batch, query_index);
         search.launch(active); 
     }
 
 } } }
 
 
-void pcl::device::OctreeImpl::nearestKSearchBatch(const Queries& queries, int /*k*/, NeighborIndices& results, BatchResultSqrDists& sqr_distances) const
+template <typename T>
+void pcl::device::OctreeImpl<T>::nearestKSearchBatch(const Queries& queries, int /*k*/, NeighborIndices& results, BatchResultSqrDists& sqr_distances) const
 {              
-    using BatchType = pcl::device::knn_search::Batch;
+    using BatchType = pcl::device::knn_search::Batch<T>;
 
     BatchType batch;      
     batch.octree = octreeGlobal;
@@ -291,7 +295,7 @@ void pcl::device::OctreeImpl::nearestKSearchBatch(const Queries& queries, int /*
     batch.points = points_sorted;
     batch.points_step = points_sorted.step()/points_sorted.elem_size;
 
-    cudaSafeCall( cudaFuncSetCacheConfig(pcl::device::knn_search::KernelKNN, cudaFuncCachePreferL1) );    
+    cudaSafeCall( cudaFuncSetCacheConfig(pcl::device::knn_search::KernelKNN<T>, cudaFuncCachePreferL1) );
 
     int block = pcl::device::knn_search::KernelPolicy::CTA_SIZE;
     int grid = (batch.queries_num + block - 1) / block;        

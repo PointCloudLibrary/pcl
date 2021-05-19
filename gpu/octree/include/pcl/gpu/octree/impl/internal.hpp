@@ -45,7 +45,28 @@
 namespace pcl
 {
     namespace device
-    {   
+    {
+
+    template <typename T>
+    struct TypeTraits;
+
+    template <>
+    struct TypeTraits<pcl::PointXYZ> {
+      struct PointXYZ {
+        float4 p;
+      };
+      using PointType = PointXYZ;
+    };
+
+    template <>
+    struct TypeTraits<pcl::PointXYZRGB> {
+      struct PointXYZRGB {
+        float4 p;
+        short4 rgb;
+      };
+      using PointType = PointXYZRGB;
+    };
+
         struct OctreeGlobal
         {             
             int *nodes;
@@ -65,15 +86,16 @@ namespace pcl
             float3 minp, maxp;    
         };
 
-        struct Point {
-            float4 p;
-            short4 rgb;
-        };
+        //struct Point {
+            //float4 p;
+            //short4 rgb;
+        //};
 
+        template <typename T>
         class OctreeImpl
         {
         public:
-            using PointType = Point;
+            using PointType = typename TypeTraits<T>::PointType;
             using PointArray = DeviceArray<PointType>;
 
             using PointCloud = PointArray;
@@ -144,7 +166,8 @@ namespace pcl
             void radiusSearchEx(BatchType& batch, const Queries& queries, NeighborIndices& results);
         };
 
-        void bruteForceRadiusSearch(const OctreeImpl::PointCloud& cloud, const OctreeImpl::PointType& query, float radius, DeviceArray<int>& result, DeviceArray<int>& buffer);
+        template <typename T>
+        void bruteForceRadiusSearch(const typename OctreeImpl<T>::PointCloud& cloud, const typename OctreeImpl<T>::PointType& query, float radius, DeviceArray<int>& result, DeviceArray<int>& buffer);
 
     }
 }

@@ -36,17 +36,15 @@
 
 #include "pcl/gpu/utils/timers_cuda.hpp"
 #include "pcl/gpu/utils/safe_call.hpp"
+#include <pcl/point_types.h>
 
-#include "internal.hpp"
+#include <pcl/gpu/octree/impl/internal.hpp>
 #include "utils/approx_nearest_utils.hpp"
 #include "utils/boxutils.hpp"
 
 #include<algorithm>
 #include<limits>
 #include <tuple>
-
-using namespace pcl::gpu;
-using namespace pcl::device;
 
 namespace pcl
 {
@@ -59,20 +57,32 @@ namespace pcl
     }
 }
 
-void  pcl::device::OctreeImpl::get_gpu_arch_compiled_for(int& bin, int& ptx)
+template <typename T>
+void  pcl::device::OctreeImpl<T>::get_gpu_arch_compiled_for(int& bin, int& ptx)
 {
     cudaFuncAttributes attrs;
     cudaSafeCall( cudaFuncGetAttributes(&attrs, get_cc_kernel) );  
     bin = attrs.binaryVersion;
     ptx = attrs.ptxVersion;
 }
+template void
+pcl::device::OctreeImpl<pcl::PointXYZRGB>::get_gpu_arch_compiled_for(int& bin,
+                                                                     int& ptx);
+template void
+pcl::device::OctreeImpl<pcl::PointXYZ>::get_gpu_arch_compiled_for(int& bin, int& ptx);
 
-void pcl::device::OctreeImpl::setCloud(const PointCloud& input_points)
+template <typename T>
+void pcl::device::OctreeImpl<T>::setCloud(const PointCloud& input_points)
 {
     points = input_points;
 }
+template void
+pcl::device::OctreeImpl<pcl::PointXYZRGB>::setCloud(const PointCloud& input_points);
+template void
+pcl::device::OctreeImpl<pcl::PointXYZ>::setCloud(const PointCloud& input_points);
 
-void pcl::device::OctreeImpl::internalDownload()
+template <typename T>
+void pcl::device::OctreeImpl<T>::internalDownload()
 {
     int number;
     DeviceArray<int>(octreeGlobal.nodes_num, 1).download(&number); 
@@ -87,6 +97,10 @@ void pcl::device::OctreeImpl::internalDownload()
 
     host_octree.downloaded = true;
 }
+template void
+pcl::device::OctreeImpl<pcl::PointXYZRGB>::internalDownload();
+template void
+pcl::device::OctreeImpl<pcl::PointXYZ>::internalDownload();
 
 namespace 
 {
@@ -133,7 +147,8 @@ namespace
 
 }
 
-void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float radius, std::vector<int>& out, int max_nn) const
+template <typename T>
+void pcl::device::OctreeImpl<T>::radiusSearchHost(const PointType& query, float radius, std::vector<int>& out, int max_nn) const
 {            
     out.clear();  
 
@@ -210,8 +225,19 @@ void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float rad
         iterator.gotoNextLevel(first, getBitsNum(children_mask));                
     }
 }
+template void
+pcl::device::OctreeImpl<pcl::PointXYZRGB>::radiusSearchHost(const PointType& query,
+                                                            float radius,
+                                                            std::vector<int>& out,
+                                                            int max_nn) const;
+template void
+pcl::device::OctreeImpl<pcl::PointXYZ>::radiusSearchHost(const PointType& query,
+                                                         float radius,
+                                                         std::vector<int>& out,
+                                                         int max_nn) const;
 
-void  pcl::device::OctreeImpl::approxNearestSearchHost(const PointType& query, int& out_index, float& sqr_dist) const
+template <typename T>
+void  pcl::device::OctreeImpl<T>::approxNearestSearchHost(const PointType& query, int& out_index, float& sqr_dist) const
 {
     const float3& minp = octreeGlobal.minp;
     const float3& maxp = octreeGlobal.maxp;
@@ -245,3 +271,10 @@ void  pcl::device::OctreeImpl::approxNearestSearchHost(const PointType& query, i
 
     out_index = host_octree.indices[out_index];
 }
+template void
+pcl::device::OctreeImpl<pcl::PointXYZRGB>::approxNearestSearchHost(
+    const PointType& query, int& out_index, float& sqr_dist) const;
+template void
+pcl::device::OctreeImpl<pcl::PointXYZ>::approxNearestSearchHost(const PointType& query,
+                                                                int& out_index,
+                                                                float& sqr_dist) const;
