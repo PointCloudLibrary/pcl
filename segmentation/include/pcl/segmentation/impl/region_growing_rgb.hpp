@@ -46,6 +46,7 @@
 #include <pcl/search/kdtree.h>
 
 #include <queue>
+#include <iterator>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
@@ -573,7 +574,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::assembleRegions (std::vector<unsigned in
   }
 
   // now we need to erase empty regions
-  if (clusters_.empty ()) 
+  if (clusters_.empty ())
     return;
 
   std::vector<pcl::PointIndices>::iterator itr1, itr2;
@@ -582,11 +583,11 @@ pcl::RegionGrowingRGB<PointT, NormalT>::assembleRegions (std::vector<unsigned in
 
   while (itr1 < itr2)
   {
-    while (!(itr1->indices.empty ()) && itr1 < itr2) 
+    while (!(itr1->indices.empty ()) && itr1 < itr2)
       ++itr1;
-    while (  itr2->indices.empty ()  && itr1 < itr2) 
+    while (  itr2->indices.empty ()  && itr1 < itr2)
       --itr2;
-	  
+
     if (itr1 != itr2)
       itr1->indices.swap (itr2->indices);
   }

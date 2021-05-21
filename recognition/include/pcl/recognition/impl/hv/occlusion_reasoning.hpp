@@ -142,8 +142,9 @@ pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::computeDepthMap (typename 
     f_ = (cx) / maxC;
   }
 
-  depth_ = new float[cx_ * cy_];
-  std::fill_n(depth_, cx * cy, std::numeric_limits<float>::quiet_NaN());
+  const size_t depth_n = std::ceilf(cx_ * cy_);
+  depth_ = new float[depth_n];
+  std::fill_n(depth_, depth_n, std::numeric_limits<float>::quiet_NaN());
 
   for (const auto& point: *scene)
   {
