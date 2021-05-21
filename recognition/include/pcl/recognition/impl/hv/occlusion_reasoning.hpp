@@ -40,6 +40,7 @@
 #include <pcl/recognition/hv/occlusion_reasoning.h>
 
 #include <algorithm>
+#include <cmath>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template<typename ModelT, typename SceneT>
@@ -142,7 +143,7 @@ pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::computeDepthMap (typename 
     f_ = (cx) / maxC;
   }
 
-  const size_t depth_n = std::ceilf(cx_ * cy_);
+  const size_t depth_n = std::ceil(cx_ * cy_);
   depth_ = new float[depth_n];
   std::fill_n(depth_, depth_n, std::numeric_limits<float>::quiet_NaN());
 
