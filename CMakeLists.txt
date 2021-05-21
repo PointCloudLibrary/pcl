@@ -367,18 +367,6 @@ if(WITH_CUDA)
   include("${PCL_SOURCE_DIR}/cmake/pcl_find_cuda.cmake")
 endif()
 
-option(WITH_QT "Build QT Front-End" TRUE)
-if(WITH_QT)
-  find_package(Qt5 COMPONENTS Concurrent OpenGL Widgets QUIET)
-  if(Qt5_FOUND)
-    set(QT5_FOUND ${Qt5_FOUND})
-    #Set Cmake Auto features to skip .hh files
-    if(POLICY CMP0100)
-      cmake_policy(SET CMP0100 OLD)
-    endif()
-    message(STATUS "Found Qt5 version: ${Qt5_VERSION}")
-  endif()
-endif()
 
 # Find VTK
 option(WITH_VTK "Build VTK-Visualizations" TRUE)
@@ -388,6 +376,22 @@ else()
   set(VTK_FOUND OFF)
 endif()
 
+#VTK can depend on Qt and search for its required version, so search after so we can overwrite Qt5_FOUND if the version we require is not found.
+option(WITH_QT "Build QT Front-End" TRUE)
+if(WITH_QT)
+  find_package(Qt5 5.9.5 COMPONENTS Concurrent OpenGL Widgets)
+  if(Qt5_FOUND)
+    message(STATUS "Qt5 version: ${Qt5_VERSION}")
+    set(QT5_FOUND ${Qt5_FOUND})
+    #Set Cmake Auto features to skip .hh files
+    if(POLICY CMP0100)
+      cmake_policy(SET CMP0100 OLD)
+    endif()
+
+  else()
+    message(STATUS "Qt5 is not found.")
+  endif()
+endif()
 
 #Find PCAP
 option(WITH_PCAP "pcap file capabilities in Velodyne HDL driver" TRUE)
