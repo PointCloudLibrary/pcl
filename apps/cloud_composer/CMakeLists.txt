@@ -6,24 +6,7 @@
 set(SUBSUBSYS_NAME cloud_composer)
 set(SUBSUBSYS_DESC "Cloud Composer - Application for Manipulating Point Clouds")
 set(SUBSUBSYS_DEPS common io visualization filters apps)
-
-# Find VTK
-if(NOT VTK_FOUND)
-  set(DEFAULT AUTO_OFF)
-  set(REASON "VTK was not found.")
-else()
-  set(DEFAULT TRUE)
-  set(REASON)
-endif()
-
-# QT5 Found?
-if(NOT Qt5_FOUND)
-  set(DEFAULT AUTO_OFF)
-  set(REASON "Qt5 was not found.")
-elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
-  set(DEFAULT TRUE)
-  set(REASON)
-endif()
+set(SUBSUBSYS_EXT_DEPS vtk Qt5)
 
 # QVTK?
 if(NOT HAVE_QVTK)
@@ -40,7 +23,7 @@ if("${DEFAULT}" STREQUAL "TRUE")
 endif()
 
 PCL_SUBSUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" ${DEFAULT} "${REASON}")
-PCL_SUBSUBSYS_DEPEND(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" DEPS ${SUBSUBSYS_DEPS} EXT_DEPS vtk)
+PCL_SUBSUBSYS_DEPEND(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" DEPS ${SUBSUBSYS_DEPS} EXT_DEPS ${SUBSUBSYS_EXT_DEPS})
 
 PCL_ADD_DOC(${SUBSUBSYS_NAME})
 

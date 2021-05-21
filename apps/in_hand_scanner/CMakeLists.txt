@@ -2,34 +2,9 @@ set(SUBSUBSYS_NAME in_hand_scanner)
 set(SUBSUBSYS_DESC "In-hand scanner for small objects")
 set(SUBSUBSYS_DEPS     common     features     io     kdtree apps)
 set(SUBSUBSYS_LIBS pcl_common pcl_features pcl_io pcl_kdtree)
+set(SUBSUBSYS_EXT_DEPS Qt5 OpenGL OpenGL_GLU openni)
 
 ################################################################################
-# QT5 Found?
-if(NOT Qt5_FOUND)
-  set(DEFAULT AUTO_OFF)
-  set(REASON "Qt5 was not found.")
-elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
-  set(DEFAULT TRUE)
-  set(REASON)
-endif()
-
-# OpenGL
-if(NOT OPENGL_FOUND AND NOT OPENGL_GLU_FOUND)
-  set(DEFAULT AUTO_OFF)
-  set(REASON "OpenGL & GLU are required for the in_hand_scanner app!")
-elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
-  set(DEFAULT TRUE)
-  set(REASON)
-endif()
-
-#OpenNI
-if(NOT WITH_OPENNI)
-  set(DEFAULT AUTO_OFF)
-  set(REASON "OpenNI was not found or was disabled by the user.")
-elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
-  set(DEFAULT TRUE)
-  set(REASON)
-endif()
 
 # Default to not building for now
 if(${DEFAULT} STREQUAL "TRUE")
@@ -37,7 +12,7 @@ if(${DEFAULT} STREQUAL "TRUE")
 endif()
 
 pcl_subsubsys_option(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
-pcl_subsubsys_depend(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" DEPS ${SUBSYS_DEPS} EXT_DEPS Qt5 OpenGL OpenGL_GLU openni)
+pcl_subsubsys_depend(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" DEPS ${SUBSYS_DEPS} EXT_DEPS ${SUBSUBSYS_EXT_DEPS})
 
 pcl_add_doc("${SUBSUBSYS_NAME}")
 
