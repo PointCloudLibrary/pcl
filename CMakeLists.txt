@@ -371,6 +371,7 @@ option(WITH_QT "Build QT Front-End" TRUE)
 if(WITH_QT)
   find_package(Qt5 COMPONENTS Concurrent OpenGL Widgets QUIET)
   if(Qt5_FOUND)
+    set(QT5_FOUND ${Qt5_FOUND})
     #Set Cmake Auto features to skip .hh files
     if(POLICY CMP0100)
       cmake_policy(SET CMP0100 OLD)
