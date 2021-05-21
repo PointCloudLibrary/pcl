@@ -36,13 +36,14 @@
  */
 
 #include <fstream>
-#include <pcl/io/boost.h>
 #include <pcl/common/io.h>
 #include <pcl/io/ifs_io.h>
 #include <pcl/console/time.h>
 
 #include <cstring>
 #include <cerrno>
+#include <boost/filesystem.hpp> // for exists
+#include <boost/iostreams/device/mapped_file.hpp> // for mapped_file_source
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 int

@@ -42,8 +42,9 @@
 #define PCL_REGISTRATION_IMPL_ELCH_H_
 
 #include <pcl/common/transforms.h>
-#include <pcl/registration/boost.h>
 #include <pcl/registration/registration.h>
+
+#include <boost/graph/dijkstra_shortest_paths.hpp> // for dijkstra_shortest_paths
 
 #include <algorithm>
 #include <list>

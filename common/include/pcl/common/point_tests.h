@@ -69,8 +69,13 @@ namespace pcl
   template<> inline bool isFinite<pcl::BRISKSignature512>(const pcl::BRISKSignature512&) { return (true); }
   template<> inline bool isFinite<pcl::BorderDescription>(const pcl::BorderDescription &) { return true; }
   template<> inline bool isFinite<pcl::Boundary>(const pcl::Boundary&) { return (true); }
+  template<> inline bool isFinite<pcl::CPPFSignature>(const pcl::CPPFSignature&) { return (true); }
   template<> inline bool isFinite<pcl::ESFSignature640>(const pcl::ESFSignature640&) { return (true); }
   template<> inline bool isFinite<pcl::FPFHSignature33>(const pcl::FPFHSignature33&) { return (true); }
+  template<> inline bool isFinite<pcl::GASDSignature512>(const pcl::GASDSignature512&) { return (true); }
+  template<> inline bool isFinite<pcl::GASDSignature984>(const pcl::GASDSignature984&) { return (true); }
+  template<> inline bool isFinite<pcl::GASDSignature7992>(const pcl::GASDSignature7992&) { return (true); }
+  template<> inline bool isFinite<pcl::GRSDSignature21>(const pcl::GRSDSignature21&) { return (true); }
   template<> inline bool isFinite<pcl::Intensity>(const pcl::Intensity&) { return (true); }
   template<> inline bool isFinite<pcl::IntensityGradient>(const pcl::IntensityGradient&) { return (true); }
   template<> inline bool isFinite<pcl::Label>(const pcl::Label&) { return (true); }
@@ -79,7 +84,12 @@ namespace pcl
   template<> inline bool isFinite<pcl::PFHRGBSignature250>(const pcl::PFHRGBSignature250&) { return (true); }
   template<> inline bool isFinite<pcl::PFHSignature125>(const pcl::PFHSignature125&) { return (true); }
   template<> inline bool isFinite<pcl::PPFRGBSignature>(const pcl::PPFRGBSignature&) { return (true); }
-  template<> inline bool isFinite<pcl::PPFSignature>(const pcl::PPFSignature&) { return (true); }
+  
+  template<> inline bool isFinite<pcl::PPFSignature>(const pcl::PPFSignature& pt)
+  {
+    return std::isfinite(pt.f1) && std::isfinite(pt.f2) && std::isfinite(pt.f3) && std::isfinite(pt.f4) && std::isfinite(pt.alpha_m);
+  }
+
   template<> inline bool isFinite<pcl::PrincipalCurvatures>(const pcl::PrincipalCurvatures&) { return (true); }
   template<> inline bool isFinite<pcl::PrincipalRadiiRSD>(const pcl::PrincipalRadiiRSD&) { return (true); }
   template<> inline bool isFinite<pcl::RGB>(const pcl::RGB&) { return (true); }

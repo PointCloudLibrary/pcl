@@ -60,6 +60,7 @@ namespace pcl
   /** \brief Compute the smallest angle between two 3D vectors in radians (default) or degree.
     * \param v1 the first 3D vector (represented as a \a Eigen::Vector4f)
     * \param v2 the second 3D vector (represented as a \a Eigen::Vector4f)
+    * \param in_degree determine if angle should be in radians or degrees
     * \return the angle between v1 and v2 in radians or degrees
     * \note Handles rounding error for parallel and anti-parallel vectors
     * \ingroup common

@@ -376,7 +376,7 @@ Sample Consensus
 
 **Background**
 
-	The *sample_consensus* library holds SAmple Consensus (SAC) methods like RANSAC and models like planes and cylinders. These can combined freely in order to detect specific models and their parameters in point clouds.
+	The *sample_consensus* library holds SAmple Consensus (SAC) methods like RANSAC and models like planes and cylinders. These can be combined freely in order to detect specific models and their parameters in point clouds.
 	
 	A theoretical primer explaining how sample consensus algorithms work can be found in the `Random Sample Consensus tutorial <http://pointclouds.org/documentation/tutorials/random_sample_consensus.php#random-sample-consensus>`_
 

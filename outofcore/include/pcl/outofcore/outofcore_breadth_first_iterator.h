@@ -39,6 +39,9 @@
 #pragma once
 
 #include <pcl/outofcore/outofcore_iterator_base.h>
+
+#include <deque>
+
 namespace pcl
 {
   namespace outofcore

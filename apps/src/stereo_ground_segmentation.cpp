@@ -49,6 +49,7 @@
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/ModelCoefficients.h>
+#include <boost/filesystem.hpp> // for directory_iterator
 
 #include <mutex>
 

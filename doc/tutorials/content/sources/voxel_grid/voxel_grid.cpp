@@ -4,7 +4,7 @@
 #include <pcl/filters/voxel_grid.h>
 
 int
-main (int argc, char** argv)
+main ()
 {
   pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2 ());
   pcl::PCLPointCloud2::Ptr cloud_filtered (new pcl::PCLPointCloud2 ());

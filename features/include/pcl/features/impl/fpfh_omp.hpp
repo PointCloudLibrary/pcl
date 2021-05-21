@@ -119,7 +119,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     int p_idx = spfh_indices_vec[i];
 
     // Find the neighborhood around p_idx
-    if (!isFinite ((*input_)[p_idx]) ||
+    if (!isFinite ((*surface_)[p_idx]) ||
         this->searchForNeighbors (*surface_, p_idx, search_parameter_, nn_indices, nn_dists) == 0)
       continue;
 
