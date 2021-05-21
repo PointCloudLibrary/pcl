@@ -39,8 +39,8 @@
 
 #include "cuda.h"
 
-#include <cstdio>
 #include <array> // replace c-style array with std::array
+#include <cstdio>
 
 #define HAVE_CUDA
 //#include <pcl_config.h>
