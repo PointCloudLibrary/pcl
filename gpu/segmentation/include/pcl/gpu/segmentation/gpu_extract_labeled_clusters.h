@@ -80,7 +80,7 @@ namespace pcl
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /** \brief Empty constructor. */
-        EuclideanLabeledClusterExtraction () = default();
+        EuclideanLabeledClusterExtraction () = default;
 
         /** \brief Provide a pointer to the search object.
           * \param tree a pointer to the spatial search object.
