@@ -44,15 +44,10 @@
 #include <pcl/common/time.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
-#include <pcl/gpu/people/colormap.h>
-#include <pcl/visualization/image_viewer.h>
-#include <Eigen/Core>
-#include <pcl/gpu/people/people_detector.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/gpu/people/people_detector.h>
 #include <pcl/gpu/people/colormap.h>
 #include <pcl/visualization/image_viewer.h>
-#include <pcl/search/pcl_search.h>
 #include <Eigen/Core>
 
 #include <pcl/io/png_io.h>

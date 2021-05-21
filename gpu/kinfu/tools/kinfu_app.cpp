@@ -46,7 +46,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp> // for microsec_clock::local_time
 
-#include <pcl/gpu/containers/initialization.h>
 #include <pcl/gpu/kinfu/kinfu.h>
 #include <pcl/gpu/kinfu/raycaster.h>
 #include <pcl/gpu/kinfu/marching_cubes.h>
