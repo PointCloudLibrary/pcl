@@ -11,6 +11,11 @@ if(NOT build)
   return()
 endif()
 
+#Enable cmakes QT auto features.
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
 # to be filled with all targets the apps subsystem
 set(PCL_APPS_ALL_TARGETS)
 
