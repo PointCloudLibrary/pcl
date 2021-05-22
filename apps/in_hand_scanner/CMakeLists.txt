@@ -53,6 +53,10 @@ set(INCS
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/mesh_processing.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/utils.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/visibility_confidence.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/main_window.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/help_window.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/opengl_viewer.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/in_hand_scanner.h"
 )
 
 set(IMPL_INCS
@@ -72,20 +76,16 @@ set(SRCS
   src/visibility_confidence.cpp
 )
 
-# Qt
-set(MOC_IN_HAND_SCANNER_INC     "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/in_hand_scanner.h")
-set(MOC_OPENGL_VIEWER_INC       "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/opengl_viewer.h")
-set(MOC_OFFLINE_INTEGRATION_INC "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/offline_integration.h")
-
-set(MOC_MAIN_WINDOW_INC "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/main_window.h")
-set(MOC_HELP_WINDOW_INC "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/help_window.h")
-set(UI_MAIN_WINDOW      src/main_window.ui)
-set(UI_HELP_WINDOW      src/help_window.ui)
+set(UI
+  src/main_window.ui
+  src/help_window.ui)
 
 # Offline integration
 set(OI_INCS
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/integration.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/visibility_confidence.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/opengl_viewer.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/offline_integration.h"
 )
 
 set(OI_SRCS
@@ -102,23 +102,20 @@ if(NOT build)
   return()
 endif()
 
-qt5_wrap_cpp(MOC_IN_HAND_SCANNER_SRC     "${MOC_IN_HAND_SCANNER_INC}")
-qt5_wrap_cpp(MOC_OPENGL_VIEWER_SRC       "${MOC_OPENGL_VIEWER_INC}" OPTIONS -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
-qt5_wrap_cpp(MOC_OFFLINE_INTEGRATION_SRC "${MOC_OFFLINE_INTEGRATION_INC}" OPTIONS -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
-
-qt5_wrap_cpp(MOC_MAIN_WINDOW_SRC "${MOC_MAIN_WINDOW_INC}")
-qt5_wrap_cpp(MOC_HELP_WINDOW_SRC "${MOC_HELP_WINDOW_INC}")
-qt5_wrap_ui(UI_MAIN_WINDOW_INC   "${UI_MAIN_WINDOW}")
-qt5_wrap_ui(UI_HELP_WINDOW_INC   "${UI_HELP_WINDOW}")
-
 include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-# In-hand scanner
-list(APPEND INCS "${MOC_IN_HAND_SCANNER_INC}" "${MOC_OPENGL_VIEWER_INC}" "${MOC_MAIN_WINDOW_INC}" "${MOC_HELP_WINDOW_INC}" "${UI_MAIN_WINDOW_INC}" "${UI_HELP_WINDOW_INC}")
-list(APPEND SRCS "${MOC_IN_HAND_SCANNER_SRC}" "${MOC_OPENGL_VIEWER_SRC}" "${MOC_MAIN_WINDOW_SRC}" "${MOC_HELP_WINDOW_SRC}")
-
 set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
-PCL_ADD_EXECUTABLE(${EXE_NAME} COMPONENT ${SUBSUBSYS_NAME} SOURCES ${SRCS} ${INCS} ${IMPL_INCS} BUNDLE)
+
+PCL_ADD_EXECUTABLE(
+  ${EXE_NAME}
+  COMPONENT
+    ${SUBSUBSYS_NAME}
+  SOURCES
+    ${SRCS}
+    ${INCS}
+    ${IMPL_INCS}
+    ${UI}
+  BUNDLE)
 target_link_libraries("${EXE_NAME}" ${SUBSUBSYS_LIBS} ${OPENGL_LIBRARIES} Qt5::Concurrent Qt5::Widgets Qt5::OpenGL)
 
 pcl_add_includes("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${INCS})
@@ -126,11 +123,15 @@ pcl_add_includes("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}/impl" ${IMPL_INCS})
 
 PCL_MAKE_PKGCONFIG(${EXE_NAME} COMPONENT ${SUBSUBSYS_NAME} DESC ${SUBSUBSYS_DESC})
 
-# Offline integration
-list(APPEND OI_INCS "${MOC_OPENGL_VIEWER_INC}" "${MOC_OFFLINE_INTEGRATION_INC}")
-list(APPEND OI_SRCS "${MOC_OPENGL_VIEWER_SRC}" "${MOC_OFFLINE_INTEGRATION_SRC}")
+PCL_ADD_EXECUTABLE(
+  pcl_offline_integration
+  COMPONENT
+    ${SUBSUBSYS_NAME}
+  SOURCES
+    ${OI_SRCS}
+    ${OI_INCS}
+  BUNDLE)
 
-PCL_ADD_EXECUTABLE(pcl_offline_integration COMPONENT ${SUBSUBSYS_NAME} SOURCES ${OI_SRCS} ${OI_INCS} BUNDLE)
 target_link_libraries(pcl_offline_integration ${SUBSUBSYS_LIBS} ${OPENGL_LIBRARIES} Qt5::Concurrent Qt5::Widgets Qt5::OpenGL)
 
 # Add to the compound apps target
