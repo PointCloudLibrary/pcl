@@ -453,7 +453,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::applyRegionMergingAlgorithm ()
     counter[index] += 1;
   }
 
-  std::vector< std::vector< std::pair<float, int> > > region_neighbours;
+  std::vector< std::vector< std::pair<float, pcl::index_t> > > region_neighbours;
   findRegionNeighbours (region_neighbours, final_segments);
 
   int final_segment_number = homogeneous_region_number;
@@ -519,7 +519,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::calculateColorimetricalDifference (std::
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT> void
-pcl::RegionGrowingRGB<PointT, NormalT>::findRegionNeighbours (std::vector< std::vector< std::pair<float, int> > >& neighbours_out, std::vector< std::vector<int> >& regions_in)
+pcl::RegionGrowingRGB<PointT, NormalT>::findRegionNeighbours (std::vector< std::vector< std::pair<float, pcl::index_t> > >& neighbours_out, std::vector< std::vector<int> >& regions_in)
 {
   int region_number = static_cast<int> (regions_in.size ());
   neighbours_out.clear ();
@@ -531,7 +531,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::findRegionNeighbours (std::vector< std::
     for (const auto& curr_segment : regions_in[i_reg])
     {
       const std::size_t nghbr_number = segment_neighbours_[curr_segment].size ();
-      std::pair<float, int> pair;
+      std::pair<float, pcl::index_t> pair;
       for (std::size_t i_nghbr = 0; i_nghbr < nghbr_number; i_nghbr++)
       {
         const auto segment_index = segment_neighbours_[curr_segment][i_nghbr];

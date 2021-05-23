@@ -230,7 +230,7 @@ namespace pcl
         * to the corresponding homogeneous region.
         */
       void
-      findRegionNeighbours (std::vector< std::vector< std::pair<float, int> > >& neighbours_out, std::vector< std::vector<int> >& regions_in);
+      findRegionNeighbours (std::vector< std::vector< std::pair<float, pcl::index_t> > >& neighbours_out, std::vector< std::vector<int> >& regions_in);
 
       /** \brief This function simply assembles the regions from list of point labels.
         * \param[in] num_pts_in_region for each final region it stores the corresponding number of points in it
