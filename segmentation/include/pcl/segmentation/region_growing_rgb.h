@@ -205,7 +205,7 @@ namespace pcl
         * \param[out] dist the array of distances to the corresponding neighbours
         */
       void
-      findRegionsKNN (index_t index, int nghbr_number, Indices& nghbrs, std::vector<float>& dist);
+      findRegionsKNN (pcl::index_t index, pcl::uindex_t nghbr_number, Indices& nghbrs, std::vector<float>& dist);
 
       /** \brief This function implements the merging algorithm described in the article
         * "Color-based segmentation of point clouds"
