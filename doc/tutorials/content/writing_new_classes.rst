@@ -160,7 +160,7 @@ Setting up the structure
 
   If you're not familiar with the PCL file structure already, please go ahead
   and read the `PCL C++ Programming Style Guide
-  <http://www.pointclouds.org/documentation/advanced/pcl_style_guide.php>`_ to
+  <https://pcl.readthedocs.io/projects/advanced/en/latest/pcl_style_guide.html>`_ to
   familiarize yourself with the concepts. 
 
 There're two different ways we could set up the structure: i) set up the code
@@ -193,8 +193,7 @@ skeleton:
 .. code-block:: cpp
    :linenos:
 
-    #ifndef PCL_FILTERS_BILATERAL_H_
-    #define PCL_FILTERS_BILATERAL_H_
+    #pragma once
 
     #include <pcl/filters/filter.h>
 
@@ -206,8 +205,6 @@ skeleton:
       };
     }
 
-    #endif // PCL_FILTERS_BILATERAL_H_
-
 bilateral.hpp
 =============
 
@@ -217,12 +214,9 @@ While we're at it, let's set up two skeleton *bilateral.hpp* and
 .. code-block:: cpp
    :linenos:
 
-    #ifndef PCL_FILTERS_BILATERAL_IMPL_H_
-    #define PCL_FILTERS_BILATERAL_IMPL_H_
+    #pragma once
 
     #include <pcl/filters/bilateral.h>
-    
-    #endif // PCL_FILTERS_BILATERAL_IMPL_H_
 
 This should be straightforward. We haven't declared any methods for
 `BilateralFilter` yet, therefore there is no implementation. 
@@ -511,8 +505,7 @@ header file becomes:
 .. code-block:: cpp
    :linenos:
 
-    #ifndef PCL_FILTERS_BILATERAL_H_
-    #define PCL_FILTERS_BILATERAL_H_
+    #pragma once
 
     #include <pcl/filters/filter.h>
     #include <pcl/kdtree/kdtree.h>
@@ -584,8 +577,6 @@ header file becomes:
       };
     }
 
-    #endif // PCL_FILTERS_BILATERAL_H_
-
 bilateral.hpp
 =============
 
@@ -651,16 +642,13 @@ entry for the class:
 .. code-block:: cpp
    :linenos:
 
-    #ifndef PCL_FILTERS_BILATERAL_IMPL_H_
-    #define PCL_FILTERS_BILATERAL_IMPL_H_
+    #pragma once
 
     #include <pcl/filters/bilateral.h>
 
     ...
 
     #define PCL_INSTANTIATE_BilateralFilter(T) template class PCL_EXPORTS pcl::BilateralFilter<T>;
-
-    #endif // PCL_FILTERS_BILATERAL_IMPL_H_
 
 One additional thing that we can do is error checking on:
 
@@ -709,8 +697,7 @@ The implementation file header thus becomes:
 .. code-block:: cpp
    :linenos:
 
-    #ifndef PCL_FILTERS_BILATERAL_IMPL_H_
-    #define PCL_FILTERS_BILATERAL_IMPL_H_
+    #pragma once
 
     #include <pcl/filters/bilateral.h>
     #include <pcl/kdtree/kdtree_flann.h>
@@ -770,8 +757,6 @@ The implementation file header thus becomes:
      
     #define PCL_INSTANTIATE_BilateralFilter(T) template class PCL_EXPORTS pcl::BilateralFilter<T>;
 
-    #endif // PCL_FILTERS_BILATERAL_IMPL_H_
-
 
 Taking advantage of other PCL concepts
 --------------------------------------
@@ -824,8 +809,7 @@ The implementation file header thus becomes:
 .. code-block:: cpp
    :linenos:
 
-    #ifndef PCL_FILTERS_BILATERAL_IMPL_H_
-    #define PCL_FILTERS_BILATERAL_IMPL_H_
+    #pragma once
 
     #include <pcl/filters/bilateral.h>
     #include <pcl/kdtree/kdtree_flann.h>
@@ -884,8 +868,6 @@ The implementation file header thus becomes:
     }
      
     #define PCL_INSTANTIATE_BilateralFilter(T) template class PCL_EXPORTS pcl::BilateralFilter<T>;
-
-    #endif // PCL_FILTERS_BILATERAL_IMPL_H_
 
 To make :pcl:`indices_<pcl::PCLBase::indices_>` work without typing the full
 construct, we need to add a new line to *bilateral.h* that specifies the class
@@ -1020,8 +1002,7 @@ class look like:
      *
      */
 
-    #ifndef PCL_FILTERS_BILATERAL_H_
-    #define PCL_FILTERS_BILATERAL_H_
+    #pragma once
 
     #include <pcl/filters/filter.h>
     #include <pcl/kdtree/kdtree.h>
@@ -1131,8 +1112,6 @@ class look like:
       };
     }
 
-    #endif // PCL_FILTERS_BILATERAL_H_
-
 And the *bilateral.hpp* likes:
 
 .. code-block:: cpp
@@ -1175,8 +1154,7 @@ And the *bilateral.hpp* likes:
      *
      */
 
-    #ifndef PCL_FILTERS_BILATERAL_IMPL_H_
-    #define PCL_FILTERS_BILATERAL_IMPL_H_
+    #pragma once
 
     #include <pcl/filters/bilateral.h>
     #include <pcl/kdtree/kdtree_flann.h>
@@ -1248,8 +1226,6 @@ And the *bilateral.hpp* likes:
     }
      
     #define PCL_INSTANTIATE_BilateralFilter(T) template class PCL_EXPORTS pcl::BilateralFilter<T>;
-
-    #endif // PCL_FILTERS_BILATERAL_IMPL_H_
 
 
 Testing the new class
