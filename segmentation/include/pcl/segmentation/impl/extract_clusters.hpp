@@ -87,7 +87,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
 
       for (std::size_t j = nn_start_idx; j < nn_indices.size (); ++j)             // can't assume sorted (default isn't!)
       {
-        if (nn_indices[j] == -1 || processed[nn_indices[j]])        // Has this point been processed before ?
+        if (nn_indices[j] == UNAVAILABLE || processed[nn_indices[j]])        // Has this point been processed before ?
           continue;
 
         // Perform a simple Euclidean clustering
@@ -184,7 +184,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
 
       for (std::size_t j = nn_start_idx; j < nn_indices.size (); ++j)             // can't assume sorted (default isn't!)
       {
-        if (nn_indices[j] == -1 || processed[nn_indices[j]])        // Has this point been processed before ?
+        if (nn_indices[j] == UNAVAILABLE || processed[nn_indices[j]])        // Has this point been processed before ?
           continue;
 
         // Perform a simple Euclidean clustering

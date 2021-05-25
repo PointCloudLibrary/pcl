@@ -663,7 +663,7 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::computeClutterCue(Recogn
     std::vector<float> nn_distances;
 
     std::vector < std::pair<int, int> > neighborhood_indices; //first is indices to scene point and second is indices to explained_ scene points
-    for (int i = 0; i < static_cast<int> (recog_model->explained_.size ()); i++)
+    for (pcl::index_t i = 0; i < static_cast<pcl::index_t> (recog_model->explained_.size ()); i++)
     {
       if (scene_downsampled_tree_->radiusSearch ((*scene_cloud_downsampled_)[recog_model->explained_[i]], radius_neighborhood_GO_, nn_indices,
           nn_distances, std::numeric_limits<int>::max ()))

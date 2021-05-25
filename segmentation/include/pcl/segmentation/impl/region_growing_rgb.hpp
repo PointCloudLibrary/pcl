@@ -198,8 +198,8 @@ pcl::RegionGrowingRGB<PointT, NormalT>::extract (std::vector <pcl::PointIndices>
   std::vector<pcl::PointIndices>::iterator cluster_iter = clusters_.begin ();
   while (cluster_iter != clusters_.end ())
   {
-    if (static_cast<int> (cluster_iter->indices.size ()) < min_pts_per_cluster_ ||
-        static_cast<int> (cluster_iter->indices.size ()) > max_pts_per_cluster_)
+    if (cluster_iter->indices.size () < min_pts_per_cluster_ ||
+        cluster_iter->indices.size () > max_pts_per_cluster_)
     {
       cluster_iter = clusters_.erase (cluster_iter);
     }
@@ -311,25 +311,24 @@ pcl::RegionGrowingRGB<PointT, NormalT>::findSegmentNeighbours ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT,typename NormalT> void
-pcl::RegionGrowingRGB<PointT, NormalT>::findRegionsKNN (pcl::index_t index, int nghbr_number, pcl::Indices& nghbrs, std::vector<float>& dist)
+pcl::RegionGrowingRGB<PointT, NormalT>::findRegionsKNN (pcl::index_t index, pcl::uindex_t nghbr_number, pcl::Indices& nghbrs, std::vector<float>& dist)
 {
   std::vector<float> distances;
   float max_dist = std::numeric_limits<float>::max ();
   distances.resize (clusters_.size (), max_dist);
 
-  int number_of_points = num_pts_in_segment_[index];
+  const auto number_of_points = num_pts_in_segment_[index];
   //loop through every point in this segment and check neighbours
-  for (int i_point = 0; i_point < number_of_points; i_point++)
+  for (pcl::uindex_t i_point = 0; i_point < number_of_points; i_point++)
   {
-    int point_index = clusters_[index].indices[i_point];
-    int number_of_neighbours = static_cast<int> (point_neighbours_[point_index].size ());
+    const auto point_index = clusters_[index].indices[i_point];
+    const auto number_of_neighbours = point_neighbours_[point_index].size ();
     //loop through every neighbour of the current point, find out to which segment it belongs
     //and if it belongs to neighbouring segment and is close enough then remember segment and its distance
-    for (int i_nghbr = 0; i_nghbr < number_of_neighbours; i_nghbr++)
+    for (std::size_t i_nghbr = 0; i_nghbr < number_of_neighbours; i_nghbr++)
     {
       // find segment
-      int segment_index = -1;
-      segment_index = point_labels_[ point_neighbours_[point_index][i_nghbr] ];
+      const pcl::index_t segment_index = point_labels_[ point_neighbours_[point_index][i_nghbr] ];
 
       if ( segment_index != index )
       {
@@ -346,15 +345,15 @@ pcl::RegionGrowingRGB<PointT, NormalT>::findRegionsKNN (pcl::index_t index, int 
     if (distances[i_seg] < max_dist)
     {
       segment_neighbours.push (std::make_pair (distances[i_seg], i_seg) );
-      if (int (segment_neighbours.size ()) > nghbr_number)
+      if (segment_neighbours.size () > nghbr_number)
         segment_neighbours.pop ();
     }
   }
 
-  int size = std::min<int> (static_cast<int> (segment_neighbours.size ()), nghbr_number);
+  const std::size_t size = std::min<std::size_t> (segment_neighbours.size (), static_cast<std::size_t>(nghbr_number));
   nghbrs.resize (size, 0);
   dist.resize (size, 0);
-  int counter = 0;
+  pcl::uindex_t counter = 0;
   while ( !segment_neighbours.empty () && counter < nghbr_number )
   {
     dist[counter] = segment_neighbours.top ().first;
@@ -454,13 +453,13 @@ pcl::RegionGrowingRGB<PointT, NormalT>::applyRegionMergingAlgorithm ()
     counter[index] += 1;
   }
 
-  std::vector< std::vector< std::pair<float, int> > > region_neighbours;
+  std::vector< std::vector< std::pair<float, pcl::index_t> > > region_neighbours;
   findRegionNeighbours (region_neighbours, final_segments);
 
   int final_segment_number = homogeneous_region_number;
   for (int i_reg = 0; i_reg < homogeneous_region_number; i_reg++)
   {
-    if (static_cast<int> (num_pts_in_homogeneous_region[i_reg]) < min_pts_per_cluster_)
+    if (num_pts_in_homogeneous_region[i_reg] < min_pts_per_cluster_)
     {
       if ( region_neighbours[i_reg].empty () )
         continue;
@@ -520,7 +519,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::calculateColorimetricalDifference (std::
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT> void
-pcl::RegionGrowingRGB<PointT, NormalT>::findRegionNeighbours (std::vector< std::vector< std::pair<float, int> > >& neighbours_out, std::vector< std::vector<int> >& regions_in)
+pcl::RegionGrowingRGB<PointT, NormalT>::findRegionNeighbours (std::vector< std::vector< std::pair<float, pcl::index_t> > >& neighbours_out, std::vector< std::vector<int> >& regions_in)
 {
   int region_number = static_cast<int> (regions_in.size ());
   neighbours_out.clear ();
@@ -531,11 +530,11 @@ pcl::RegionGrowingRGB<PointT, NormalT>::findRegionNeighbours (std::vector< std::
     neighbours_out[i_reg].reserve (regions_in[i_reg].size () * region_neighbour_number_);
     for (const auto& curr_segment : regions_in[i_reg])
     {
-      int nghbr_number = static_cast<int> (segment_neighbours_[curr_segment].size ());
-      std::pair<float, int> pair;
-      for (int i_nghbr = 0; i_nghbr < nghbr_number; i_nghbr++)
+      const std::size_t nghbr_number = segment_neighbours_[curr_segment].size ();
+      std::pair<float, pcl::index_t> pair;
+      for (std::size_t i_nghbr = 0; i_nghbr < nghbr_number; i_nghbr++)
       {
-        int segment_index = segment_neighbours_[curr_segment][i_nghbr];
+        const auto segment_index = segment_neighbours_[curr_segment][i_nghbr];
         if ( segment_distances_[curr_segment][i_nghbr] == std::numeric_limits<float>::max () )
           continue;
         if (segment_labels_[segment_index] != i_reg)

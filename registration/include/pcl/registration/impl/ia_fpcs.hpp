@@ -60,7 +60,7 @@ pcl::getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud
 
   float mean_dist = 0.f;
   int num = 0;
-  std::vector<int> ids(2);
+  pcl::Indices ids(2);
   std::vector<float> dists_sqr(2);
 
   pcl::utils::ignore(nr_threads);
@@ -412,7 +412,7 @@ int
 pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
     selectBaseTriangle(pcl::Indices& base_indices)
 {
-  int nr_points = static_cast<int>(target_indices_->size());
+  const auto nr_points = target_indices_->size();
   float best_t = 0.f;
 
   // choose random first point
@@ -451,24 +451,20 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
     setupBase(pcl::Indices& base_indices, float (&ratio)[2])
 {
   float best_t = FLT_MAX;
-  const std::vector<int> copy(base_indices.begin(), base_indices.end());
+  const pcl::Indices copy(base_indices.begin(), base_indices.end());
   pcl::Indices temp(base_indices.begin(), base_indices.end());
 
   // loop over all combinations of base points
-  for (std::vector<int>::const_iterator i = copy.begin(), i_e = copy.end(); i != i_e;
-       ++i)
-    for (std::vector<int>::const_iterator j = copy.begin(), j_e = copy.end(); j != j_e;
-         ++j) {
+  for (auto i = copy.begin(), i_e = copy.end(); i != i_e; ++i)
+    for (auto j = copy.begin(), j_e = copy.end(); j != j_e; ++j) {
       if (i == j)
         continue;
 
-      for (std::vector<int>::const_iterator k = copy.begin(), k_e = copy.end();
-           k != k_e;
-           ++k) {
+      for (auto k = copy.begin(), k_e = copy.end(); k != k_e; ++k) {
         if (k == j || k == i)
           continue;
 
-        std::vector<int>::const_iterator l = copy.begin();
+        auto l = copy.begin();
         while (l == i || l == j || l == k)
           ++l;
 

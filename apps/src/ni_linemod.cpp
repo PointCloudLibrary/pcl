@@ -569,7 +569,7 @@ private:
   bool first_frame_;
 
   // Segmentation
-  std::vector<int> indices_fullset_;
+  pcl::Indices indices_fullset_;
   PointIndices::Ptr plane_indices_;
   CloudPtr plane_;
   IntegralImageNormalEstimation<PointT, Normal> ne_;
