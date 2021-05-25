@@ -17,6 +17,10 @@ ARG REALSENSE_VERSION=2.50.0
 # for available packes for choosen UBUNTU_VERSION
 ARG VTK_VERSION=6
 
+# Use the latest version of CMake by adding the Kitware repository if true,
+# otherwise use the default version of CMake of the system.
+ARG USE_LATEST_CMAKE=false
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
@@ -24,7 +28,6 @@ RUN apt-get update \
       build-essential \
       clang \
       clang-tidy \
-      cmake \
       libbenchmark-dev \
       libblas-dev \
       libboost-date-time-dev \
@@ -46,7 +49,16 @@ RUN apt-get update \
       software-properties-common \
       wget \
       xvfb \
-  && if [ "$(lsb_release -sr)" = "18.04" ]; then \
+ && if [ "$USE_LATEST_CMAKE" = true ] ; then \
+      cmake_ubuntu_version=$(lsb_release -cs) ; \
+      if ! wget -q --method=HEAD "https://apt.kitware.com/ubuntu/dists/$cmake_ubuntu_version/Release"; then \
+        cmake_ubuntu_version="focal" ; \
+      fi ; \
+      wget -qO - https://apt.kitware.com/kitware-archive.sh | bash -s -- --release $cmake_ubuntu_version ; \
+      apt-get update ; \
+    fi \
+ && apt-get -V install -y cmake \
+ && if [ "$(lsb_release -sr)" = "18.04" ]; then \
        apt-get -V install -y nvidia-cuda-toolkit g++-6 ; \
      else \
        apt-get -V install -y nvidia-cuda-toolkit-gcc ; \
