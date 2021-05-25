@@ -8,6 +8,7 @@ FROM "ubuntu:${UBUNTU_VERSION}"
 ARG EIGEN_MINIMUM_VERSION=3.3.7
 ARG ENSENSOSDK_VERSION=3.0.311
 ARG REALSENSE_VERSION=2.45.0
+ARG USE_LATEST_CMAKE
 ARG VTK_VERSION=6
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -17,7 +18,6 @@ RUN apt-get update \
       build-essential \
       clang \
       clang-tidy \
-      cmake \
       libbenchmark-dev \
       libblas-dev \
       libboost-date-time-dev \
@@ -39,7 +39,17 @@ RUN apt-get update \
       software-properties-common \
       wget \
       xvfb \
-  && if [ "$(lsb_release -sr)" = "18.04" ]; then \
+ && if [ "$USE_LATEST_CMAKE" = true ] ; then \
+      wget -O- https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor  > /usr/share/keyrings/kitware-keyring.gpg ; \
+      cmake_ubuntu_version=$(lsb_release -cs) ; \
+      if ! wget -q --method=HEAD "https://apt.kitware.com/ubuntu/dists/$cmake_ubuntu_version/Release"; then \
+        cmake_ubuntu_version="focal" ; \
+      fi ; \
+      echo "deb [signed-by=/usr/share/keyrings/kitware-keyring.gpg] https://apt.kitware.com/ubuntu/ $cmake_ubuntu_version main" > /etc/apt/sources.list.d/kitware.list ; \
+      apt-get update ; \
+    fi \
+ && apt-get -V install -y cmake \
+ && if [ "$(lsb_release -sr)" = "18.04" ]; then \
        apt-get -V install -y nvidia-cuda-toolkit g++-6 ; \
      else \
        apt-get -V install -y nvidia-cuda-toolkit-gcc ; \
