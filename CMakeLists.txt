@@ -395,6 +395,8 @@ if(WITH_QT)
   else()
     message(STATUS "Qt5 is not found.")
   endif()
+else()
+  set(Qt5_FOUND FALSE)
 endif()
 
 #Find PCAP
