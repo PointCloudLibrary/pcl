@@ -12,6 +12,7 @@ function(define_composer_tool TOOL_NAME TOOL_SOURCES TOOL_HEADERS DEPS)
   else()
     set_target_properties (${TOOL_TARGET} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CLOUD_COMPOSER_PLUGIN_DIR})
   endif()
+  
   add_definitions(${QT_DEFINITIONS})
   add_definitions(-DQT_PLUGIN)
   add_definitions(-DQT_SHARED)

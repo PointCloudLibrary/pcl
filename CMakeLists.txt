@@ -387,6 +387,10 @@ if(WITH_QT)
     if(POLICY CMP0100)
       cmake_policy(SET CMP0100 OLD)
     endif()
+    
+    get_property(core_def TARGET Qt5::Core PROPERTY INTERFACE_COMPILE_DEFINITIONS)
+    list(APPEND core_def "QT_DISABLE_DEPRECATED_BEFORE=0x050900")
+    set_property(TARGET Qt5::Core PROPERTY INTERFACE_COMPILE_DEFINITIONS ${core_def})
 
   else()
     message(STATUS "Qt5 is not found.")
