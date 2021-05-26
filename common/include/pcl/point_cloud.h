@@ -315,7 +315,7 @@ namespace pcl
       /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the specified dimensions of the PointCloud.
         * \note This method is for advanced users only! Use with care!
         *
-        * \attention Comile time flags used for Eigen might affect the dimension of the Eigen::Map returned. If Eigen
+        * \attention Compile time flags used for Eigen might affect the dimension of the Eigen::Map returned. If Eigen
         *   is using row major storage, the matrix shape would be (number of Points X elements in a Point) else
         *   the matrix shape would be (elements in a Point X number of Points). Essentially,
         *   * Major direction: number of points in cloud
@@ -341,7 +341,7 @@ namespace pcl
       /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the specified dimensions of the PointCloud.
         * \note This method is for advanced users only! Use with care!
         *
-        * \attention Comile time flags used for Eigen might affect the dimension of the Eigen::Map returned. If Eigen
+        * \attention Compile time flags used for Eigen might affect the dimension of the Eigen::Map returned. If Eigen
         *   is using row major storage, the matrix shape would be (number of Points X elements in a Point) else
         *   the matrix shape would be (elements in a Point X number of Points). Essentially,
         *   * Major direction: number of points in cloud
