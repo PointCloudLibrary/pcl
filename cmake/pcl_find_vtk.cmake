@@ -102,27 +102,25 @@ if (vtkMissingComponents)
   message(WARNING "Missing vtk modules: ${vtkMissingComponents}")
 endif()
 
-if(WITH_QT)
-  if(VTK_VERSION VERSION_LESS 9.0)
-    if(";${VTK_MODULES_ENABLED};" MATCHES ";vtkGUISupportQt;" AND ";${VTK_MODULES_ENABLED};" MATCHES ";vtkRenderingQt;")
-      set(HAVE_QVTK TRUE)
-      #PCL_VTK_COMPONENTS is used in the PCLConfig.cmake to refind the required modules.
-      #Pre vtk 9.0, all vtk libraries are linked into pcl_visualizer.
-      #Subprojects can link against pcl_visualizer and directly use VTK-QT libraries.
-      list(APPEND PCL_VTK_COMPONENTS vtkRenderingQt vtkGUISupportQt)
-    else()
-      unset(HAVE_QVTK)
-    endif()
+if(VTK_VERSION VERSION_LESS 9.0)
+  if(";${VTK_MODULES_ENABLED};" MATCHES ";vtkGUISupportQt;" AND ";${VTK_MODULES_ENABLED};" MATCHES ";vtkRenderingQt;")
+    set(HAVE_QVTK TRUE)
+    #PCL_VTK_COMPONENTS is used in the PCLConfig.cmake to refind the required modules.
+    #Pre vtk 9.0, all vtk libraries are linked into pcl_visualizer.
+    #Subprojects can link against pcl_visualizer and directly use VTK-QT libraries.
+    list(APPEND PCL_VTK_COMPONENTS vtkRenderingQt vtkGUISupportQt)
   else()
-	if(";${VTK_AVAILABLE_COMPONENTS};" MATCHES ";GUISupportQt;" AND ";${VTK_AVAILABLE_COMPONENTS};" MATCHES ";RenderingQt;")
-      set(HAVE_QVTK TRUE)
-      #PCL_VTK_COMPONENTS is used in the PCLConfig.cmake to refind the required modules.
-      #Post vtk 9.0, only required libraries are linked against pcl_visualizer.
-      #Subprojects need to manually link to VTK-QT libraries.
-      list(APPEND PCL_VTK_COMPONENTS RenderingQt GUISupportQt)
-    else()
-      unset(HAVE_QVTK)
-    endif()
+    unset(HAVE_QVTK)
+  endif()
+else()
+  if(";${VTK_AVAILABLE_COMPONENTS};" MATCHES ";GUISupportQt;" AND ";${VTK_AVAILABLE_COMPONENTS};" MATCHES ";RenderingQt;")
+    set(HAVE_QVTK TRUE)
+    #PCL_VTK_COMPONENTS is used in the PCLConfig.cmake to refind the required modules.
+    #Post vtk 9.0, only required libraries are linked against pcl_visualizer.
+    #Subprojects need to manually link to VTK-QT libraries.
+    list(APPEND PCL_VTK_COMPONENTS RenderingQt GUISupportQt)
+  else()
+    unset(HAVE_QVTK)
   endif()
 endif()
 
@@ -146,14 +144,10 @@ endif()
 message(STATUS "VTK version: ${VTK_VERSION}")
 message(STATUS "VTK rendering backend: ${VTK_RENDERING_BACKEND}")
 
-if(WITH_QT)
-  if(HAVE_QVTK)
-    message(STATUS "VTK Qt support: YES")
-  else()
-    message(STATUS "VTK Qt support: NOTFOUND")
-  endif()
+if(HAVE_QVTK)
+  message(STATUS "VTK Qt support: YES")
 else()
-  message(STATUS "VTK Qt support: NO")
+  message(STATUS "VTK Qt support: NOTFOUND")
 endif()
 
 if(VTK_INCLUDE_DIRS)
