@@ -76,7 +76,7 @@ RUN if dpkg --compare-versions $(apt-cache show --no-all-versions libeigen3-dev 
       && mkdir build \
       && cd build \
       && cmake .. \
-      && make install \
+      && make -j$(nproc) install \
       && cd ../.. \
       && rm -rf eigen-${EIGEN_MINIMUM_VERSION}/ ; \
     fi
@@ -86,8 +86,7 @@ RUN wget -qO- https://github.com/IntelRealSense/librealsense/archive/v${REALSENS
  && mkdir build \
  && cd build \
  && cmake .. -DBUILD_EXAMPLES=OFF -DBUILD_GRAPHICAL_EXAMPLES=OFF \
- && make -j2 \
- && make install \
+ && make -j$(nproc) install \
  && cd ../.. \
  && rm -rf librealsense-${REALSENSE_VERSION}
 
