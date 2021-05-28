@@ -100,3 +100,17 @@ for Q&A as well as support for troubleshooting, installation and debugging. Do
 remember to tag your questions with the tag `point-cloud-library`.
 * [Discord Server](https://discord.gg/JFFMAXS) for live chat with
 other members of the PCL community and casual discussions
+
+Citation
+--------
+We encourage other researchers to cite PCL if they use PCL or it's components for their work or baselines. The bibtex entry for the same is
+```
+@INPROCEEDINGS{Rusu_3dis,
+    author = {Radu Bogdan Rusu and Steve Cousins},
+    title = {3d is here: Point cloud library (pcl},
+    booktitle = {In Robotics and Automation (ICRA), 2011 IEEE International Conference on},
+    year = {},
+    pages = {1--4},
+    publisher = {IEEE}
+}
+```
