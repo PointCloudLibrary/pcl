@@ -46,6 +46,12 @@ PCL_DEPRECATED_HEADER(1, 15, "Please include the needed boost headers directly."
 #include <boost/version.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/mpl/fold.hpp>
+#include <boost/mpl/inherit.hpp>
+#include <boost/mpl/inherit_linearly.hpp>
+#include <boost/mpl/joint_view.hpp>
+#include <boost/mpl/transform.hpp>
+#include <boost/mpl/vector.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/foreach.hpp>
@@ -58,10 +64,4 @@ PCL_DEPRECATED_HEADER(1, 15, "Please include the needed boost headers directly."
 #endif
 #include <boost/algorithm/string.hpp>
 #include <boost/interprocess/sync/file_lock.hpp>
-#include <boost/mpl/fold.hpp>
-#include <boost/mpl/inherit.hpp>
-#include <boost/mpl/inherit_linearly.hpp>
-#include <boost/mpl/joint_view.hpp>
-#include <boost/mpl/transform.hpp>
-#include <boost/mpl/vector.hpp>
 #endif
