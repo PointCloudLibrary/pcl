@@ -50,10 +50,12 @@
 #include <tuple>
 #include <vector>
 #include <boost/lexical_cast.hpp> // for lexical_cast
+#include <boost/mpl/fold.hpp>
 #include <boost/mpl/inherit.hpp> // for inherit
 #include <boost/mpl/inherit_linearly.hpp> // inherit_linearly
 #include <boost/mpl/joint_view.hpp> // for joint_view
 #include <boost/mpl/transform.hpp> // for transform
+#include <boost/mpl/vector.hpp>
 
 namespace pcl
 {
