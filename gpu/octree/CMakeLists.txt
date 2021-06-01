@@ -13,21 +13,35 @@ if(NOT build)
   return()
 endif()
 
-file(GLOB incs include/pcl/gpu/octree/*.hpp)
-file(GLOB incs include/pcl/gpu/octree/*.h)
-file(GLOB incs_impl include/pcl/gpu/octree/impl/*.hpp)
-file(GLOB srcs src/*.cpp src/*.hpp src/*.cu)
+set(incs
+  "include/pcl/${SUBSYS_PATH}/device_format.hpp"
+  "include/pcl/${SUBSYS_PATH}/octree.h"
+)
+set(incs_impl
+  "include/pcl/${SUBSYS_PATH}/impl/internal.hpp"
+  "include/pcl/${SUBSYS_PATH}/impl/octree.hpp"
+)
+set(srcs
+  "src/cuda/approx_nsearch.cu"
+  "src/cuda/bfrs.cu"
+  "src/cuda/knn_search.cu"
+  "src/cuda/octree_builder.cu"
+  "src/cuda/octree_host.cu"
+  "src/cuda/octree_iterator.hpp"
+  "src/cuda/radius_search.cu"
+  "src/utils/approx_nearest_utils.hpp"
+  "src/utils/bitonic_sort.hpp"
+  "src/utils/boxutils.hpp"
+  "src/utils/copygen.hpp"
+  "src/utils/emulation.hpp"
+  "src/utils/morton.hpp"
+  "src/utils/priority_octree_iterator.hpp"
+  "src/utils/scan_block.hpp"
+  "src/utils/warp_reduce.hpp"
+)
 source_group("Source Files" FILES ${srcs})
 source_group("Header Files\\impl" FILES ${incs_impl})
 list(APPEND incs ${incs_impl})
-
-file(GLOB utils src/utils/*.hpp)
-source_group("Source Files\\utils" FILES ${utils})
-
-file(GLOB cuda src/cuda/*.hpp src/cuda/*.cu)
-source_group("Source Files\\cuda" FILES ${cuda})
-
-list(APPEND srcs ${utils} ${cuda})
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/src" "${CMAKE_CURRENT_SOURCE_DIR}/src/utils")
@@ -35,7 +49,6 @@ PCL_CUDA_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs
 target_link_libraries("${LIB_NAME}" pcl_gpu_containers)
 
 set(EXT_DEPS "")
-#set(EXT_DEPS CUDA)
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS} EXT_DEPS ${EXT_DEPS})
 
 # Install include files
