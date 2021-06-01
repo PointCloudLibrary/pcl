@@ -108,7 +108,7 @@ macro(find_boost)
     "1.59.0" "1.59" "1.58.0" "1.58" "1.57.0" "1.57" "1.56.0" "1.56" "1.55.0" "1.55")
   # Disable the config mode of find_package(Boost)
   set(Boost_NO_BOOST_CMAKE ON)
-  find_package(Boost 1.55.0 ${QUIET_} COMPONENTS @PCLCONFIG_AVAILABLE_BOOST_MODULES@)
+  find_package(Boost 1.65.0 ${QUIET_} COMPONENTS @PCLCONFIG_AVAILABLE_BOOST_MODULES@)
 
   set(BOOST_FOUND ${Boost_FOUND})
   set(BOOST_INCLUDE_DIRS "${Boost_INCLUDE_DIR}")
