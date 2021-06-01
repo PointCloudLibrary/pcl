@@ -144,7 +144,7 @@ struct legally_representable {
 // * either long int or long long int is a valid type for storing Integral
 // * unsigned long long int is handled specially
 template <typename Integral>
-using primary_legal_input_type = std::conditional_t<legally_representable_v<long int, Integral>,
+using primary_legal_input_type = std::conditional_t<legally_representable<long int, Integral>::value,
                                                     long int, long long int>;
 
 // special handling if unsigned [long] int is of same size as long long int

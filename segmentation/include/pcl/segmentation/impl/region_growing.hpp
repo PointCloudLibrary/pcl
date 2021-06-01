@@ -49,6 +49,7 @@
 #include <pcl/search/kdtree.h>
 
 #include <queue>
+#include <iterator>
 #include <cmath>
 #include <ctime>
 
@@ -521,7 +522,7 @@ pcl::RegionGrowing<PointT, NormalT>::validatePoint (pcl::index_t initial_seed, p
 
   // check the residual if needed
   float data_1[4];
-  
+
   data_1[0] = (*input_)[nghbr].data[0];
   data_1[1] = (*input_)[nghbr].data[1];
   data_1[2] = (*input_)[nghbr].data[2];

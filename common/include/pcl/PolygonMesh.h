@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <vector>
 #include <ostream>
+#include <iterator>
 
 // Include the correct Header path here
 #include <pcl/PCLHeader.h>
@@ -31,7 +32,7 @@ namespace pcl
     concatenate (pcl::PolygonMesh &mesh1, const pcl::PolygonMesh &mesh2)
     {
       const auto point_offset = mesh1.cloud.width * mesh1.cloud.height;
-      
+
       bool success = pcl::PCLPointCloud2::concatenate(mesh1.cloud, mesh2.cloud);
       if (success == false) {
         return false;

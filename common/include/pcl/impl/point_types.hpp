@@ -2336,10 +2336,10 @@ namespace traits
   constexpr auto has_xy_v = has_xy<PointT>::value;
 
   template <typename PointT>
-  using HasXY = std::enable_if_t<has_xy_v<PointT>, bool>;
+  using HasXY = std::enable_if_t<has_xy<PointT>::value, bool>;
 
   template <typename PointT>
-  using HasNoXY = std::enable_if_t<!has_xy_v<PointT>, bool>;
+  using HasNoXY = std::enable_if_t<!has_xy<PointT>::value, bool>;
 
   /** Metafunction to check if a given point type has x, y, and z fields. */
   template <typename PointT>
@@ -2352,10 +2352,10 @@ namespace traits
   constexpr auto has_xyz_v = has_xyz<PointT>::value;
 
   template <typename PointT>
-  using HasXYZ = std::enable_if_t<has_xyz_v<PointT>, bool>;
+  using HasXYZ = std::enable_if_t<has_xyz<PointT>::value, bool>;
 
   template <typename PointT>
-  using HasNoXYZ = std::enable_if_t<!has_xyz_v<PointT>, bool>;
+  using HasNoXYZ = std::enable_if_t<!has_xyz<PointT>::value, bool>;
 
   /** Metafunction to check if a given point type has normal_x, normal_y, and
     * normal_z fields. */
@@ -2369,10 +2369,10 @@ namespace traits
   constexpr auto has_normal_v = has_normal<PointT>::value;
 
   template <typename PointT>
-  using HasNormal = std::enable_if_t<has_normal_v<PointT>, bool>;
+  using HasNormal = std::enable_if_t<has_normal<PointT>::value, bool>;
 
   template <typename PointT>
-  using HasNoNormal = std::enable_if_t<!has_normal_v<PointT>, bool>;
+  using HasNoNormal = std::enable_if_t<!has_normal<PointT>::value, bool>;
 
   /** Metafunction to check if a given point type has curvature field. */
   template <typename PointT>
@@ -2383,10 +2383,10 @@ namespace traits
   constexpr auto has_curvature_v = has_curvature<PointT>::value;
 
   template <typename PointT>
-  using HasCurvature = std::enable_if_t<has_curvature_v<PointT>, bool>;
+  using HasCurvature = std::enable_if_t<has_curvature<PointT>::value, bool>;
 
   template <typename PointT>
-  using HasNoCurvature = std::enable_if_t<!has_curvature_v<PointT>, bool>;
+  using HasNoCurvature = std::enable_if_t<!has_curvature<PointT>::value, bool>;
 
   /** Metafunction to check if a given point type has intensity field. */
   template <typename PointT>
@@ -2397,10 +2397,10 @@ namespace traits
   constexpr auto has_intensity_v = has_intensity<PointT>::value;
 
   template <typename PointT>
-  using HasIntensity = std::enable_if_t<has_intensity_v<PointT>, bool>;
+  using HasIntensity = std::enable_if_t<has_intensity<PointT>::value, bool>;
 
   template <typename PointT>
-  using HasNoIntensity = std::enable_if_t<!has_intensity_v<PointT>, bool>;
+  using HasNoIntensity = std::enable_if_t<!has_intensity<PointT>::value, bool>;
 
   /** Metafunction to check if a given point type has either rgb or rgba field. */
   template <typename PointT>
@@ -2412,10 +2412,10 @@ namespace traits
   constexpr auto has_color_v = has_color<PointT>::value;
 
   template <typename PointT>
-  using HasColor = std::enable_if_t<has_color_v<PointT>, bool>;
+  using HasColor = std::enable_if_t<has_color<PointT>::value, bool>;
 
   template <typename PointT>
-  using HasNoColor = std::enable_if_t<!has_color_v<PointT>, bool>;
+  using HasNoColor = std::enable_if_t<!has_color<PointT>::value, bool>;
 
   /** Metafunction to check if a given point type has label field. */
   template <typename PointT>
@@ -2426,10 +2426,10 @@ namespace traits
   constexpr auto has_label_v = has_label<PointT>::value;
 
   template <typename PointT>
-  using HasLabel = std::enable_if_t<has_label_v<PointT>, bool>;
+  using HasLabel = std::enable_if_t<has_label<PointT>::value, bool>;
 
   template <typename PointT>
-  using HasNoLabel = std::enable_if_t<!has_label_v<PointT>, bool>;
+  using HasNoLabel = std::enable_if_t<!has_label<PointT>::value, bool>;
 }
 
 #if defined _MSC_VER
