@@ -172,8 +172,50 @@
   (pcl::BRISKSignature512)      \
   (pcl::Narf36)
 
+// Define all point types that have descriptorSize() member function
+#define PCL_DESCRIPTOR_FEATURE_POINT_TYPES \
+  (pcl::PFHSignature125)        \
+  (pcl::PFHRGBSignature250)     \
+  (pcl::FPFHSignature33)        \
+  (pcl::VFHSignature308)        \
+  (pcl::GASDSignature512)       \
+  (pcl::GASDSignature984)       \
+  (pcl::GASDSignature7992)      \
+  (pcl::GRSDSignature21)        \
+  (pcl::ESFSignature640)        \
+  (pcl::BRISKSignature512)      \
+  (pcl::Narf36)
+
+
 namespace pcl
 {
+  namespace traits
+  {
+    template<typename FeaturePointT> struct descriptorSize {};
+ 
+    template<> struct descriptorSize<PFHSignature125> { static constexpr const int value = 125; };
+    template<> struct descriptorSize<PFHRGBSignature250> { static constexpr const int value = 250; };
+    template<> struct descriptorSize<ShapeContext1980> { static constexpr const int value = 1980; };
+    template<> struct descriptorSize<UniqueShapeContext1960> { static constexpr const int value = 1960; };
+    template<> struct descriptorSize<SHOT352> { static constexpr const int value = 352; };
+    template<> struct descriptorSize<SHOT1344> { static constexpr const int value = 1344; };
+    template<> struct descriptorSize<FPFHSignature33> { static constexpr const int value = 33; };
+    template<> struct descriptorSize<VFHSignature308> { static constexpr const int value = 308; };
+    template<> struct descriptorSize<GRSDSignature21> { static constexpr const int value = 21; };
+    template<> struct descriptorSize<BRISKSignature512> { static constexpr const int value = 512; };
+    template<> struct descriptorSize<ESFSignature640> { static constexpr const int value = 640; };
+    template<> struct descriptorSize<GASDSignature512> { static constexpr const int value = 512; };
+    template<> struct descriptorSize<GASDSignature984> { static constexpr const int value = 984; };
+    template<> struct descriptorSize<GASDSignature7992> { static constexpr const int value = 7992; };
+    template<> struct descriptorSize<GFPFHSignature16> { static constexpr const int value = 16; };
+    template<> struct descriptorSize<Narf36> { static constexpr const int value = 36; };
+    template<int N> struct descriptorSize<Histogram<N>> { static constexpr const int value = N; };
+
+
+    template<typename FeaturePointT>
+    static constexpr int descriptorSize_v = descriptorSize<FeaturePointT>::value;
+  }
+  
 
   using Array3fMap = Eigen::Map<Eigen::Array3f>;
   using Array3fMapConst = const Eigen::Map<const Eigen::Array3f>;
@@ -1307,12 +1349,13 @@ namespace pcl
   struct PFHSignature125
   {
     float histogram[125] = {0.f};
-    static constexpr int descriptorSize () { return 125; }
+    static constexpr int descriptorSize () { return traits::descriptorSize_v<PFHSignature125>; }
 
     inline PFHSignature125 () = default;
 
     friend std::ostream& operator << (std::ostream& os, const PFHSignature125& p);
   };
+
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PFHRGBSignature250& p);
   /** \brief A point structure representing the Point Feature Histogram with colors (PFHRGB).
@@ -1321,7 +1364,7 @@ namespace pcl
   struct PFHRGBSignature250
   {
     float histogram[250] = {0.f};
-    static constexpr int descriptorSize () { return 250; }
+    static constexpr int descriptorSize () { return traits::descriptorSize_v<PFHRGBSignature250>; }
 
     inline PFHRGBSignature250 () = default;
 
@@ -1408,7 +1451,7 @@ namespace pcl
   {
     float descriptor[1980] = {0.f};
     float rf[9] = {0.f};
-    static constexpr int descriptorSize () { return 1980; }
+    static constexpr int descriptorSize () { return traits::descriptorSize_v<ShapeContext1980>; }
 
     inline ShapeContext1980 () = default;
 
@@ -1423,7 +1466,7 @@ namespace pcl
   {
     float descriptor[1960] = {0.f};
     float rf[9] = {0.f};
-    static constexpr int descriptorSize () { return 1960; }
+    static constexpr int descriptorSize () { return traits::descriptorSize_v<UniqueShapeContext1960>; }
 
     inline UniqueShapeContext1960 () = default;
 
@@ -1438,7 +1481,7 @@ namespace pcl
   {
     float descriptor[352] = {0.f};
     float rf[9] = {0.f};
-    static constexpr int descriptorSize () { return 352; }
+    static constexpr int descriptorSize () { return traits::descriptorSize_v<SHOT352>; }
 
     inline SHOT352 () = default;
 
@@ -1454,7 +1497,7 @@ namespace pcl
   {
     float descriptor[1344] = {0.f};
     float rf[9] = {0.f};
-    static constexpr int descriptorSize () { return 1344; }
+    static constexpr int descriptorSize () { return traits::descriptorSize_v<SHOT1344>; }
 
     inline SHOT1344 () = default;
 
@@ -1519,7 +1562,7 @@ namespace pcl
   struct FPFHSignature33
   {
     float histogram[33] = {0.f};
-    static constexpr int descriptorSize () { return 33; }
+    static constexpr int descriptorSize () { return traits::descriptorSize_v<FPFHSignature33>; }
 
     inline FPFHSignature33 () = default;
 
@@ -1533,7 +1576,7 @@ namespace pcl
   struct VFHSignature308
   {
     float histogram[308] = {0.f};
-    static constexpr int descriptorSize () { return 308; }
+    static constexpr int descriptorSize () { return traits::descriptorSize_v<VFHSignature308>; }
 
     inline VFHSignature308 () = default;
 
@@ -1547,7 +1590,7 @@ namespace pcl
   struct GRSDSignature21
   {
     float histogram[21] = {0.f};
-    static constexpr int descriptorSize () { return 21; }
+    static constexpr int descriptorSize () { return traits::descriptorSize_v<GRSDSignature21>; }
 
     inline GRSDSignature21 () = default;
 
@@ -1563,7 +1606,7 @@ namespace pcl
     float scale = 0.f;
     float orientation = 0.f;
     unsigned char descriptor[64] = {0};
-    static constexpr int descriptorSize () { return 64; }
+    static constexpr int descriptorSize () { return traits::descriptorSize_v<BRISKSignature512>; }
 
     inline BRISKSignature512 () = default;
 
@@ -1579,7 +1622,7 @@ namespace pcl
   struct ESFSignature640
   {
     float histogram[640] = {0.f};
-    static constexpr int descriptorSize () { return 640; }
+    static constexpr int descriptorSize () { return traits::descriptorSize_v<ESFSignature640>; }
 
     inline ESFSignature640 () = default;
 
@@ -1593,7 +1636,7 @@ namespace pcl
   struct GASDSignature512
   {
     float histogram[512] = {0.f};
-    static constexpr int descriptorSize() { return 512; }
+    static constexpr int descriptorSize() { return traits::descriptorSize_v<GASDSignature512>; }
 
     inline GASDSignature512 () = default;
 
@@ -1607,7 +1650,7 @@ namespace pcl
   struct GASDSignature984
   {
     float histogram[984] = {0.f};
-    static constexpr int descriptorSize() { return 984; }
+    static constexpr int descriptorSize() { return traits::descriptorSize_v<GASDSignature984>; }
 
     inline GASDSignature984 () = default;
 
@@ -1621,7 +1664,7 @@ namespace pcl
   struct GASDSignature7992
   {
     float histogram[7992] = {0.f};
-    static constexpr int descriptorSize() { return 7992; }
+    static constexpr int descriptorSize() { return traits::descriptorSize_v<GASDSignature7992>; }
 
     inline GASDSignature7992 () = default;
 
@@ -1635,7 +1678,7 @@ namespace pcl
   struct GFPFHSignature16
   {
     float histogram[16] = {0.f};
-    static constexpr int descriptorSize () { return 16; }
+    static constexpr int descriptorSize () { return traits::descriptorSize_v<GFPFHSignature16>; }
 
     inline GFPFHSignature16 () = default;
 
@@ -1650,7 +1693,7 @@ namespace pcl
   {
     float x = 0.f, y = 0.f, z = 0.f, roll = 0.f, pitch = 0.f, yaw = 0.f;
     float descriptor[36] = {0.f};
-    static constexpr int descriptorSize () { return 36; }
+    static constexpr int descriptorSize () { return traits::descriptorSize_v<Narf36>; }
 
     inline Narf36 () = default;
 
@@ -1712,7 +1755,7 @@ namespace pcl
   struct Histogram
   {
     float histogram[N];
-    static constexpr int descriptorSize () { return N; }
+    static constexpr int descriptorSize () { return traits::descriptorSize_v<Histogram<N>>; }
   };
 
   struct EIGEN_ALIGN16 _PointWithScale
