@@ -54,6 +54,7 @@
 #include <boost/mpl/inherit_linearly.hpp> // inherit_linearly
 #include <boost/mpl/joint_view.hpp> // for joint_view
 #include <boost/mpl/transform.hpp> // for transform
+#include <boost/mpl/vector.hpp> // for vector
 
 namespace pcl
 {
