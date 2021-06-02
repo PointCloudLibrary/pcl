@@ -189,33 +189,35 @@
 
 namespace pcl
 {
-  namespace traits
+  namespace detail
   {
-    template<typename FeaturePointT> struct descriptorSize {};
- 
-    template<> struct descriptorSize<PFHSignature125> { static constexpr const int value = 125; };
-    template<> struct descriptorSize<PFHRGBSignature250> { static constexpr const int value = 250; };
-    template<> struct descriptorSize<ShapeContext1980> { static constexpr const int value = 1980; };
-    template<> struct descriptorSize<UniqueShapeContext1960> { static constexpr const int value = 1960; };
-    template<> struct descriptorSize<SHOT352> { static constexpr const int value = 352; };
-    template<> struct descriptorSize<SHOT1344> { static constexpr const int value = 1344; };
-    template<> struct descriptorSize<FPFHSignature33> { static constexpr const int value = 33; };
-    template<> struct descriptorSize<VFHSignature308> { static constexpr const int value = 308; };
-    template<> struct descriptorSize<GRSDSignature21> { static constexpr const int value = 21; };
-    template<> struct descriptorSize<BRISKSignature512> { static constexpr const int value = 512; };
-    template<> struct descriptorSize<ESFSignature640> { static constexpr const int value = 640; };
-    template<> struct descriptorSize<GASDSignature512> { static constexpr const int value = 512; };
-    template<> struct descriptorSize<GASDSignature984> { static constexpr const int value = 984; };
-    template<> struct descriptorSize<GASDSignature7992> { static constexpr const int value = 7992; };
-    template<> struct descriptorSize<GFPFHSignature16> { static constexpr const int value = 16; };
-    template<> struct descriptorSize<Narf36> { static constexpr const int value = 36; };
-    template<int N> struct descriptorSize<Histogram<N>> { static constexpr const int value = N; };
+    namespace traits
+    {
+      template<typename FeaturePointT> struct descriptorSize {};
+   
+      template<> struct descriptorSize<PFHSignature125> { static constexpr const int value = 125; };
+      template<> struct descriptorSize<PFHRGBSignature250> { static constexpr const int value = 250; };
+      template<> struct descriptorSize<ShapeContext1980> { static constexpr const int value = 1980; };
+      template<> struct descriptorSize<UniqueShapeContext1960> { static constexpr const int value = 1960; };
+      template<> struct descriptorSize<SHOT352> { static constexpr const int value = 352; };
+      template<> struct descriptorSize<SHOT1344> { static constexpr const int value = 1344; };
+      template<> struct descriptorSize<FPFHSignature33> { static constexpr const int value = 33; };
+      template<> struct descriptorSize<VFHSignature308> { static constexpr const int value = 308; };
+      template<> struct descriptorSize<GRSDSignature21> { static constexpr const int value = 21; };
+      template<> struct descriptorSize<BRISKSignature512> { static constexpr const int value = 512; };
+      template<> struct descriptorSize<ESFSignature640> { static constexpr const int value = 640; };
+      template<> struct descriptorSize<GASDSignature512> { static constexpr const int value = 512; };
+      template<> struct descriptorSize<GASDSignature984> { static constexpr const int value = 984; };
+      template<> struct descriptorSize<GASDSignature7992> { static constexpr const int value = 7992; };
+      template<> struct descriptorSize<GFPFHSignature16> { static constexpr const int value = 16; };
+      template<> struct descriptorSize<Narf36> { static constexpr const int value = 36; };
+      template<int N> struct descriptorSize<Histogram<N>> { static constexpr const int value = N; };
 
 
-    template<typename FeaturePointT>
-    static constexpr int descriptorSize_v = descriptorSize<FeaturePointT>::value;
+      template<typename FeaturePointT>
+      static constexpr int descriptorSize_v = descriptorSize<FeaturePointT>::value;
+    }
   }
-  
 
   using Array3fMap = Eigen::Map<Eigen::Array3f>;
   using Array3fMapConst = const Eigen::Map<const Eigen::Array3f>;
