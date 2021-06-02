@@ -39,6 +39,7 @@
 #include <pcl/gpu/octree/impl/internal.hpp>
 #include "pcl/gpu/utils/device/warp.hpp"
 
+#include "impl.cu"
 #include "utils/copygen.hpp"
 #include "utils/boxutils.hpp"
 #include "utils/bitonic_sort.hpp"

@@ -44,6 +44,7 @@
 #include "pcl/gpu/utils/device/static_check.hpp"
 #include "utils/scan_block.hpp"
 #include "utils/morton.hpp"
+#include "impl.cu"
 
 #include <thrust/device_ptr.h>
 #include <thrust/sequence.h>
@@ -416,5 +417,3 @@ void pcl::device::OctreeImpl<T>::build()
     cudaSafeCall( cudaGetLastError() );
     cudaSafeCall( cudaDeviceSynchronize() );
 }
-template void pcl::device::OctreeImpl<pcl::PointXYZRGB>::build();
-template void pcl::device::OctreeImpl<pcl::PointXYZ>::build();

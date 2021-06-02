@@ -22,6 +22,7 @@ set(incs_impl
   "include/pcl/${SUBSYS_PATH}/impl/octree.hpp"
 )
 set(srcs
+  "src/cuda/impl.cu"
   "src/cuda/approx_nsearch.cu"
   "src/cuda/bfrs.cu"
   "src/cuda/knn_search.cu"

@@ -41,6 +41,7 @@
 #include "utils/copygen.hpp"
 #include "utils/boxutils.hpp"
 #include "utils/scan_block.hpp"
+#include "impl.cu"
 
 #include "octree_iterator.hpp"
 
@@ -372,14 +373,6 @@ void pcl::device::OctreeImpl<T>::radiusSearch(const Queries& queries, float radi
     batch.queries = queries;
     radiusSearchEx(batch, queries, results);              
 }
-template void
-pcl::device::OctreeImpl<pcl::PointXYZRGB>::radiusSearch(const Queries& queries,
-                                                        float radius,
-                                                        NeighborIndices& results);
-template void
-pcl::device::OctreeImpl<pcl::PointXYZ>::radiusSearch(const Queries& queries,
-                                                     float radius,
-                                                     NeighborIndices& results);
 
 template <typename T>
 void pcl::device::OctreeImpl<T>::radiusSearch(const Queries& queries, const Radiuses& radiuses, NeighborIndices& results)
@@ -391,14 +384,6 @@ void pcl::device::OctreeImpl<T>::radiusSearch(const Queries& queries, const Radi
     batch.queries = queries;
     radiusSearchEx(batch, queries, results);              
 }
-template void
-pcl::device::OctreeImpl<pcl::PointXYZRGB>::radiusSearch(const Queries& queries,
-                                                        const Radiuses& radiuses,
-                                                        NeighborIndices& results);
-template void
-pcl::device::OctreeImpl<pcl::PointXYZ>::radiusSearch(const Queries& queries,
-                                                     const Radiuses& radiuses,
-                                                     NeighborIndices& results);
 
 template <typename T>
 void pcl::device::OctreeImpl<T>::radiusSearch(const Queries& queries, const Indices& indices, float radius, NeighborIndices& results)
@@ -414,13 +399,3 @@ void pcl::device::OctreeImpl<T>::radiusSearch(const Queries& queries, const Indi
 
     radiusSearchEx(batch, queries, results);        
 }
-template void
-pcl::device::OctreeImpl<pcl::PointXYZRGB>::radiusSearch(const Queries& queries,
-                                                        const Indices& indices,
-                                                        float radius,
-                                                        NeighborIndices& results);
-template void
-pcl::device::OctreeImpl<pcl::PointXYZ>::radiusSearch(const Queries& queries,
-                                                     const Indices& indices,
-                                                     float radius,
-                                                     NeighborIndices& results);
