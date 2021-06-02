@@ -109,8 +109,6 @@ if(VTK_VERSION VERSION_LESS 9.0)
     #Pre vtk 9.0, all vtk libraries are linked into pcl_visualizer.
     #Subprojects can link against pcl_visualizer and directly use VTK-QT libraries.
     list(APPEND PCL_VTK_COMPONENTS vtkRenderingQt vtkGUISupportQt)
-  else()
-    unset(HAVE_QVTK)
   endif()
 else()
   if(";${VTK_AVAILABLE_COMPONENTS};" MATCHES ";GUISupportQt;" AND ";${VTK_AVAILABLE_COMPONENTS};" MATCHES ";RenderingQt;")
@@ -119,8 +117,6 @@ else()
     #Post vtk 9.0, only required libraries are linked against pcl_visualizer.
     #Subprojects need to manually link to VTK-QT libraries.
     list(APPEND PCL_VTK_COMPONENTS RenderingQt GUISupportQt)
-  else()
-    unset(HAVE_QVTK)
   endif()
 endif()
 
