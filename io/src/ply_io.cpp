@@ -816,6 +816,9 @@ pcl::PLYWriter::generateHeader (const pcl::PCLPointCloud2 &cloud,
     }
   }
 
+  // vtk requires face entry to load PLY
+  oss << "\nelement face 0";
+
   if (use_camera)
   {
     oss << "\nelement camera 1"
