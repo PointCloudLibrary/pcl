@@ -47,6 +47,7 @@
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/PCLImage.h>
 #include <pcl/point_cloud.h>
+#include <pcl/point_struct_traits.h>
 #include <pcl/type_traits.h>
 #include <pcl/for_each_type.h>
 #include <pcl/console/print.h>
