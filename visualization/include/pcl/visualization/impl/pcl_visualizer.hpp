@@ -96,7 +96,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (
     return (false);
   }
 
-  if (pcl::traits::has_color<PointT>())
+  if (pcl::traits::has_rgb<PointT>())
   {
     PointCloudColorHandlerRGBField<PointT> color_handler_rgb_field (cloud);
     return (fromHandlersToScreen (geometry_handler, color_handler_rgb_field, id, viewport, cloud->sensor_origin_, cloud->sensor_orientation_));

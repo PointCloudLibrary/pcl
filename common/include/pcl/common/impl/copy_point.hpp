@@ -89,8 +89,8 @@ struct CopyPointHelper<PointInT, PointOutT, std::enable_if_t<std::is_same<PointI
 template <typename PointInT, typename PointOutT>
 struct CopyPointHelper<PointInT, PointOutT,
                        std::enable_if_t<boost::mpl::and_<boost::mpl::not_<std::is_same<PointInT, PointOutT>>,
-                                                         boost::mpl::or_<boost::mpl::not_<pcl::traits::has_color<PointInT>>,
-                                                                         boost::mpl::not_<pcl::traits::has_color<PointOutT>>,
+                                                         boost::mpl::or_<boost::mpl::not_<pcl::traits::has_rgb<PointInT>>,
+                                                                         boost::mpl::not_<pcl::traits::has_rgb<PointOutT>>,
                                                                          boost::mpl::and_<pcl::traits::has_field<PointInT, pcl::fields::rgb>,
                                                                                           pcl::traits::has_field<PointOutT, pcl::fields::rgb>>,
                                                                          boost::mpl::and_<pcl::traits::has_field<PointInT, pcl::fields::rgba>,
