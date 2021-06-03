@@ -47,24 +47,34 @@ namespace pcl
     namespace device
     {
 
-    template <typename T>
+    template <typename T, std::size_t n>
     struct TypeTraits;
 
-    template <>
-    struct TypeTraits<pcl::PointXYZ> {
-      struct PointXYZ {
+    template <typename T>
+    struct TypeTraits<T, 16> {
+      struct Point {
         float4 p;
       };
-      using PointType = PointXYZ;
+      using PointType = Point;
     };
 
-    template <>
-    struct TypeTraits<pcl::PointXYZRGB> {
-      struct PointXYZRGB {
+    template <typename T>
+    struct TypeTraits<T, 32> {
+      struct Point {
         float4 p;
         short4 rgb;
       };
-      using PointType = PointXYZRGB;
+      using PointType = Point;
+    };
+
+    template <typename T>
+    struct TypeTraits<T, 48> {
+      struct Point {
+        float4 p;
+        float4 normal;
+        float4 curvature;
+      };
+      using PointType = Point;
     };
 
         struct OctreeGlobal
@@ -95,7 +105,7 @@ namespace pcl
         class OctreeImpl
         {
         public:
-            using PointType = typename TypeTraits<T>::PointType;
+            using PointType = typename TypeTraits<T, sizeof(T)>::PointType;
             using PointArray = DeviceArray<PointType>;
 
             using PointCloud = PointArray;
