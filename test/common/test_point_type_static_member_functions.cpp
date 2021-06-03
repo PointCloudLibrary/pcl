@@ -23,7 +23,7 @@ TYPED_TEST (PointTypeStaticMemberFunctionsTest, DescriptorSizeTests)
 {
   static_assert
   (
-    TypeParam::descriptorSize() == pcl::traits::descriptorSize_v<TypeParam>,
+    TypeParam::descriptorSize() == pcl::traits::detail::descriptorSize_v<TypeParam>,
     "incorrect descriptorSize"
   );
 }
