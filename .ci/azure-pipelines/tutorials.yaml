@@ -1,7 +1,9 @@
 jobs:
   - job: tutorials
     displayName: Building Tutorials
-    condition: and(succeeded(), eq(dependencies.TutorialsDiff.outputs['GitResult.HasTutorialCodeChanges'], 'true'))
+    condition: and(succeeded(), 
+                  or(eq(dependencies.CodesDiff.outputs['GitResult.HasTutorialCodeChanges'], 'true'), 
+                    eq(dependencies.CodesDiff.outputs['GitResult.HasPCLCodeChanges'], 'true')))
     pool:
       vmImage: 'Ubuntu 20.04'
     container: env1804

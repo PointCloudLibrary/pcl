@@ -30,15 +30,21 @@ stages:
     displayName: Tutorials
     dependsOn: []
     jobs:
-      - job: TutorialsDiff
-        displayName: Tutorial Source Code Diff
+      - job: CodesDiff
+        displayName: Tutorial & PCL Source Code Diff
         pool:
           vmImage: 'ubuntu-latest'
         steps:
           - checkout: self
           - script: | 
+              # Add all docs path to this array
+              PCL_DOCS_LISTS=("doc" "*.md")
+              for ENTRY in "${PCL_DOCS_LISTS[@]}"; do
+                PCL_CODES_DIFF_EXCLUDE="':(exclude)${ENTRY}' ${PCL_CODES_DIFF_EXCLUDE}"
+              done
+
               # Specify tutorial source code path
-              DIFF_SPECIFY_PATH="doc/tutorials/content/sources"
+              TUTORIAL_CODE_PATH="doc/tutorials/content/sources"
 
               # Check the CI build reason: Pull Request or Git Push
               BUILD_REASON=$(Build.Reason)
@@ -48,16 +54,34 @@ stages:
                 MERGE_BASE_PAIR="HEAD HEAD~1"
               fi
 
+              ## For Tutorial Code Diff ##
+
               # Initiate HasTutorialCodeChanges variable
               echo "##vso[task.setvariable variable=HasTutorialCodeChanges;isOutput=true]false"
 
-              # Show git diff results of specified path
+              # Show git diff results of specified tutorial sources path
               cd $(Build.SourcesDirectory)
-              git diff $(git merge-base ${MERGE_BASE_PAIR}) -- ${DIFF_SPECIFY_PATH}
+              echo "Tutorial codes diff results"
+              git diff $(git merge-base ${MERGE_BASE_PAIR}) -- ${TUTORIAL_CODE_PATH}
 
               # Set HasTutorialCodeChanges to true, if there are tutorial source codes changed. 
-              git diff --quiet $(git merge-base ${MERGE_BASE_PAIR}) -- ${DIFF_SPECIFY_PATH} || \
+              git diff --quiet $(git merge-base ${MERGE_BASE_PAIR}) -- ${TUTORIAL_CODE_PATH} || \
               echo "##vso[task.setvariable variable=HasTutorialCodeChanges;isOutput=true]true"
+
+              ## For PCL Code Diff ##
+
+              # Initiate HasPCLCodeChanges variable
+              echo "##vso[task.setvariable variable=HasPCLCodeChanges;isOutput=true]false"
+
+              # Show full git diff results
+              cd $(Build.SourcesDirectory)
+              echo "Full git diff results"
+              git diff $(git merge-base ${MERGE_BASE_PAIR})
+
+              # Set HasPCLCodeChanges to true, if there's still file changed when excluding those docs
+              git diff --quiet $(git merge-base ${MERGE_BASE_PAIR}) -- ${PCL_CODES_DIFF_EXCLUDE} || \
+              echo "##vso[task.setvariable variable=HasPCLCodeChanges;isOutput=true]true"
+
             name: GitResult
             displayName: Show Git Diff Result
     
