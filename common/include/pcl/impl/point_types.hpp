@@ -189,9 +189,9 @@
 
 namespace pcl
 {
-  namespace traits
+  namespace detail
   {
-    namespace detail
+    namespace traits
     {
       template<typename FeaturePointT> struct descriptorSize {};
    
@@ -1351,7 +1351,7 @@ namespace pcl
   struct PFHSignature125
   {
     float histogram[125] = {0.f};
-    static constexpr int descriptorSize () { return traits::detail::descriptorSize_v<PFHSignature125>; }
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<PFHSignature125>; }
 
     inline PFHSignature125 () = default;
 
@@ -1366,7 +1366,7 @@ namespace pcl
   struct PFHRGBSignature250
   {
     float histogram[250] = {0.f};
-    static constexpr int descriptorSize () { return traits::detail::descriptorSize_v<PFHRGBSignature250>; }
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<PFHRGBSignature250>; }
 
     inline PFHRGBSignature250 () = default;
 
@@ -1453,7 +1453,7 @@ namespace pcl
   {
     float descriptor[1980] = {0.f};
     float rf[9] = {0.f};
-    static constexpr int descriptorSize () { return traits::detail::descriptorSize_v<ShapeContext1980>; }
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<ShapeContext1980>; }
 
     inline ShapeContext1980 () = default;
 
@@ -1468,7 +1468,7 @@ namespace pcl
   {
     float descriptor[1960] = {0.f};
     float rf[9] = {0.f};
-    static constexpr int descriptorSize () { return traits::detail::descriptorSize_v<UniqueShapeContext1960>; }
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<UniqueShapeContext1960>; }
 
     inline UniqueShapeContext1960 () = default;
 
@@ -1483,7 +1483,7 @@ namespace pcl
   {
     float descriptor[352] = {0.f};
     float rf[9] = {0.f};
-    static constexpr int descriptorSize () { return traits::detail::descriptorSize_v<SHOT352>; }
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<SHOT352>; }
 
     inline SHOT352 () = default;
 
@@ -1499,7 +1499,7 @@ namespace pcl
   {
     float descriptor[1344] = {0.f};
     float rf[9] = {0.f};
-    static constexpr int descriptorSize () { return traits::detail::descriptorSize_v<SHOT1344>; }
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<SHOT1344>; }
 
     inline SHOT1344 () = default;
 
@@ -1564,7 +1564,7 @@ namespace pcl
   struct FPFHSignature33
   {
     float histogram[33] = {0.f};
-    static constexpr int descriptorSize () { return traits::detail::descriptorSize_v<FPFHSignature33>; }
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<FPFHSignature33>; }
 
     inline FPFHSignature33 () = default;
 
@@ -1578,7 +1578,7 @@ namespace pcl
   struct VFHSignature308
   {
     float histogram[308] = {0.f};
-    static constexpr int descriptorSize () { return traits::detail::descriptorSize_v<VFHSignature308>; }
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<VFHSignature308>; }
 
     inline VFHSignature308 () = default;
 
@@ -1592,7 +1592,7 @@ namespace pcl
   struct GRSDSignature21
   {
     float histogram[21] = {0.f};
-    static constexpr int descriptorSize () { return traits::detail::descriptorSize_v<GRSDSignature21>; }
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<GRSDSignature21>; }
 
     inline GRSDSignature21 () = default;
 
@@ -1608,7 +1608,7 @@ namespace pcl
     float scale = 0.f;
     float orientation = 0.f;
     unsigned char descriptor[64] = {0};
-    static constexpr int descriptorSize () { return traits::detail::descriptorSize_v<BRISKSignature512>; }
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<BRISKSignature512>; }
 
     inline BRISKSignature512 () = default;
 
@@ -1624,7 +1624,7 @@ namespace pcl
   struct ESFSignature640
   {
     float histogram[640] = {0.f};
-    static constexpr int descriptorSize () { return traits::detail::descriptorSize_v<ESFSignature640>; }
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<ESFSignature640>; }
 
     inline ESFSignature640 () = default;
 
@@ -1638,7 +1638,7 @@ namespace pcl
   struct GASDSignature512
   {
     float histogram[512] = {0.f};
-    static constexpr int descriptorSize() { return traits::detail::descriptorSize_v<GASDSignature512>; }
+    static constexpr int descriptorSize() { return detail::traits::descriptorSize_v<GASDSignature512>; }
 
     inline GASDSignature512 () = default;
 
@@ -1652,7 +1652,7 @@ namespace pcl
   struct GASDSignature984
   {
     float histogram[984] = {0.f};
-    static constexpr int descriptorSize() { return traits::detail::descriptorSize_v<GASDSignature984>; }
+    static constexpr int descriptorSize() { return detail::traits::descriptorSize_v<GASDSignature984>; }
 
     inline GASDSignature984 () = default;
 
@@ -1666,7 +1666,7 @@ namespace pcl
   struct GASDSignature7992
   {
     float histogram[7992] = {0.f};
-    static constexpr int descriptorSize() { return traits::detail::descriptorSize_v<GASDSignature7992>; }
+    static constexpr int descriptorSize() { return detail::traits::descriptorSize_v<GASDSignature7992>; }
 
     inline GASDSignature7992 () = default;
 
@@ -1680,7 +1680,7 @@ namespace pcl
   struct GFPFHSignature16
   {
     float histogram[16] = {0.f};
-    static constexpr int descriptorSize () { return traits::detail::descriptorSize_v<GFPFHSignature16>; }
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<GFPFHSignature16>; }
 
     inline GFPFHSignature16 () = default;
 
@@ -1695,7 +1695,7 @@ namespace pcl
   {
     float x = 0.f, y = 0.f, z = 0.f, roll = 0.f, pitch = 0.f, yaw = 0.f;
     float descriptor[36] = {0.f};
-    static constexpr int descriptorSize () { return traits::detail::descriptorSize_v<Narf36>; }
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<Narf36>; }
 
     inline Narf36 () = default;
 
@@ -1757,7 +1757,7 @@ namespace pcl
   struct Histogram
   {
     float histogram[N];
-    static constexpr int descriptorSize () { return traits::detail::descriptorSize_v<Histogram<N>>; }
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<Histogram<N>>; }
   };
 
   struct EIGEN_ALIGN16 _PointWithScale
