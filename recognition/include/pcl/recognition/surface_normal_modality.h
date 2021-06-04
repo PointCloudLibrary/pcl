@@ -333,6 +333,18 @@ namespace pcl
       /** \brief Destructor. */
       virtual ~SurfaceNormalModality ();
 
+      inline void
+      setFeatureDistanceThreshold (const float threshold)
+      {
+        feature_distance_threshold_ = threshold;
+      }
+
+      inline void
+      setMinDistanceToBorder (const float distance)
+      {
+        min_distance_to_border_ = distance;
+      }
+
       /** \brief Sets the spreading size.
         * \param[in] spreading_size the spreading size.
         */
@@ -425,8 +437,6 @@ namespace pcl
       virtual void
       processInputDataFromFiltered ();
 
-  protected:
-
       /** \brief Computes the surface normals from the input cloud. */
       void
       computeSurfaceNormals ();
@@ -447,6 +457,18 @@ namespace pcl
       void
       filterQuantizedSurfaceNormals ();
 
+      void clearIntermediateData(bool resetInput = false) {
+        if (resetInput) {
+          input_.reset();
+        }
+        // normal_lookup_ = QuantizedNormalLookUpTable();
+        surface_normals_ = pcl::PointCloud<pcl::Normal>();
+        quantized_surface_normals_ = pcl::QuantizedMap();
+        surface_normal_orientations_ = pcl::LINEMOD_OrientationMap();
+      }
+
+  protected:
+
       /** \brief Computes a distance map from the supplied input mask. 
         * \param[in] input the mask for which a distance map will be computed.
         * \param[out] output the destination for the distance map. 
@@ -465,7 +487,7 @@ namespace pcl
       float min_distance_to_border_;
 
       /** \brief Look-up-table for quantizing surface normals. */
-      QuantizedNormalLookUpTable normal_lookup_;
+      // QuantizedNormalLookUpTable normal_lookup_;
 
       /** \brief The spreading size. */
       size_t spreading_size_;
@@ -493,7 +515,7 @@ SurfaceNormalModality ()
   : variable_feature_nr_ (false)
   , feature_distance_threshold_ (2.0f)
   , min_distance_to_border_ (2.0f)
-  , normal_lookup_ ()
+  // , normal_lookup_ ()
   , spreading_size_ (8)
   , surface_normals_ ()
   , quantized_surface_normals_ ()
@@ -1365,8 +1387,8 @@ pcl::SurfaceNormalModality<PointInT>::extractAllFeatures (
 template <typename PointInT> void
 pcl::SurfaceNormalModality<PointInT>::quantizeSurfaceNormals ()
 {
-  const size_t width = input_->width;
-  const size_t height = input_->height;
+  const size_t width = surface_normals_.width;
+  const size_t height = surface_normals_.height;
 
   quantized_surface_normals_.resize (width, height);
 
@@ -1406,8 +1428,8 @@ pcl::SurfaceNormalModality<PointInT>::quantizeSurfaceNormals ()
 template <typename PointInT> void
 pcl::SurfaceNormalModality<PointInT>::filterQuantizedSurfaceNormals ()
 {
-  const int width = input_->width;
-  const int height = input_->height;
+  const int width = surface_normals_.width;
+  const int height = surface_normals_.height;
 
   filtered_quantized_surface_normals_.resize (width, height);
 
@@ -1466,72 +1488,43 @@ pcl::SurfaceNormalModality<PointInT>::filterQuantizedSurfaceNormals ()
 
 
   // filter data
-  for (int row_index = 2; row_index < height-2; ++row_index)
+  #pragma omp parallel for
+  for (size_t row_index = 2; row_index < height-2; ++row_index)
   {
-    for (int col_index = 2; col_index < width-2; ++col_index)
+    for (size_t col_index = 2; col_index < width-2; ++col_index)
     {
       unsigned char histogram[9] = {0,0,0,0,0,0,0,0,0};
 
-      //{
-      //  unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index-1)*width+col_index-1;
-      //  ++histogram[dataPtr[0]];
-      //  ++histogram[dataPtr[1]];
-      //  ++histogram[dataPtr[2]];
-      //}
-      //{
-      //  unsigned char * dataPtr = quantized_surface_normals_.getData () + row_index*width+col_index-1;
-      //  ++histogram[dataPtr[0]];
-      //  ++histogram[dataPtr[1]];
-      //  ++histogram[dataPtr[2]];
-      //}
-      //{
-      //  unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index+1)*width+col_index-1;
-      //  ++histogram[dataPtr[0]];
-      //  ++histogram[dataPtr[1]];
-      //  ++histogram[dataPtr[2]];
-      //}
-
-      {
-        unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index-2)*width+col_index-2;
-        ++histogram[dataPtr[0]];
-        ++histogram[dataPtr[1]];
-        ++histogram[dataPtr[2]];
-        ++histogram[dataPtr[3]];
-        ++histogram[dataPtr[4]];
-      }
-      {
-        unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index-1)*width+col_index-2;
-        ++histogram[dataPtr[0]];
-        ++histogram[dataPtr[1]];
-        ++histogram[dataPtr[2]];
-        ++histogram[dataPtr[3]];
-        ++histogram[dataPtr[4]];
-      }
-      {
-        unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index)*width+col_index-2;
-        ++histogram[dataPtr[0]];
-        ++histogram[dataPtr[1]];
-        ++histogram[dataPtr[2]];
-        ++histogram[dataPtr[3]];
-        ++histogram[dataPtr[4]];
-      }
-      {
-        unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index+1)*width+col_index-2;
-        ++histogram[dataPtr[0]];
-        ++histogram[dataPtr[1]];
-        ++histogram[dataPtr[2]];
-        ++histogram[dataPtr[3]];
-        ++histogram[dataPtr[4]];
-      }
-      {
-        unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index+2)*width+col_index-2;
-        ++histogram[dataPtr[0]];
-        ++histogram[dataPtr[1]];
-        ++histogram[dataPtr[2]];
-        ++histogram[dataPtr[3]];
-        ++histogram[dataPtr[4]];
-      }
-
+      const unsigned char * data_ptr = quantized_surface_normals_.getData () + (row_index-2)*width+col_index-2;
+      ++histogram[data_ptr[0]];
+      ++histogram[data_ptr[1]];
+      ++histogram[data_ptr[2]];
+      ++histogram[data_ptr[3]];
+      ++histogram[data_ptr[4]];
+      data_ptr += width;
+      ++histogram[data_ptr[0]];
+      ++histogram[data_ptr[1]];
+      ++histogram[data_ptr[2]];
+      ++histogram[data_ptr[3]];
+      ++histogram[data_ptr[4]];
+      data_ptr += width;
+      ++histogram[data_ptr[0]];
+      ++histogram[data_ptr[1]];
+      ++histogram[data_ptr[2]];
+      ++histogram[data_ptr[3]];
+      ++histogram[data_ptr[4]];
+      data_ptr += width;
+      ++histogram[data_ptr[0]];
+      ++histogram[data_ptr[1]];
+      ++histogram[data_ptr[2]];
+      ++histogram[data_ptr[3]];
+      ++histogram[data_ptr[4]];
+      data_ptr += width;
+      ++histogram[data_ptr[0]];
+      ++histogram[data_ptr[1]];
+      ++histogram[data_ptr[2]];
+      ++histogram[data_ptr[3]];
+      ++histogram[data_ptr[4]];
 
       unsigned char max_hist_value = 0;
       int max_hist_index = -1;

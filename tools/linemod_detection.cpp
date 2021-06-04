@@ -81,7 +81,7 @@ main (int argc, char** argv)
 
   LineRGBD<PointXYZRGBA> line_rgbd;
   line_rgbd.setGradientMagnitudeThreshold (grad_mag_thresh);
-  line_rgbd.setDetectionThreshold (detect_thresh);
+  line_rgbd.getLineMOD().setDetectionThreshold (detect_thresh);
 
   // Load the template LMT and PCD files
   for (size_t i = 0; i < lmt_file_indices.size (); ++i)
