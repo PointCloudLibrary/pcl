@@ -18,7 +18,7 @@ elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
 endif()
 
 #Default to not building for now
-if("${DEFAULT}" STREQUAL "TRUE")
+if(${DEFAULT} STREQUAL "TRUE")
   set(DEFAULT FALSE)
 endif()
 

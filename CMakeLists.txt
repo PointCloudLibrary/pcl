@@ -27,7 +27,7 @@ endif()
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "possible configurations" FORCE)
 
 # In case the user does not setup CMAKE_BUILD_TYPE, assume it's RelWithDebInfo
-if("${CMAKE_BUILD_TYPE}" STREQUAL "")
+if(${CMAKE_BUILD_TYPE} STREQUAL "")
   set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "build type default to RelWithDebInfo, set to Release to improve performance" FORCE)
 endif()
 
@@ -91,19 +91,19 @@ endif()
 
 # check for SSE flags
 include("${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake")
-if(PCL_ENABLE_SSE AND "${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
+if(PCL_ENABLE_SSE AND ${CMAKE_CXX_FLAGS} STREQUAL ${CMAKE_CXX_FLAGS_DEFAULT})
   PCL_CHECK_FOR_SSE()
 endif()
 
 # check for AVX flags for windows
-if(PCL_ENABLE_AVX AND "${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
+if(PCL_ENABLE_AVX AND ${CMAKE_CXX_FLAGS} STREQUAL ${CMAKE_CXX_FLAGS_DEFAULT})
   include("${PCL_SOURCE_DIR}/cmake/pcl_find_avx.cmake")
   PCL_CHECK_FOR_AVX()
 endif()
 
 # ---[ Unix/Darwin/Windows specific flags
 if(CMAKE_COMPILER_IS_GNUCXX)
-  if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
+  if(${CMAKE_CXX_FLAGS} STREQUAL ${CMAKE_CXX_FLAGS_DEFAULT})
     if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7)
       string(APPEND CMAKE_CXX_FLAGS " -Wabi=11")
     else()
@@ -116,7 +116,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     string(APPEND CMAKE_CXX_FLAGS " -Werror -fno-strict-aliasing")
   endif()
 
-  if("${CMAKE_SHARED_LINKER_FLAGS}" STREQUAL "" AND NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+  if(${CMAKE_SHARED_LINKER_FLAGS} STREQUAL "" AND NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--as-needed")
   endif()
 
@@ -138,7 +138,7 @@ if(CMAKE_COMPILER_IS_MSVC)
   
   add_compile_options(/bigobj)
   
-  if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
+  if(${CMAKE_CXX_FLAGS} STREQUAL ${CMAKE_CXX_FLAGS_DEFAULT})
     string(APPEND CMAKE_CXX_FLAGS " /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS} ${AVX_FLAGS}")
 
     # Add extra code generation/link optimizations
@@ -186,19 +186,19 @@ if(CMAKE_COMPILER_IS_MSVC)
 endif()
 
 if(CMAKE_COMPILER_IS_PATHSCALE)
-  if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
+  if(${CMAKE_CXX_FLAGS} STREQUAL ${CMAKE_CXX_FLAGS_DEFAULT})
     set(CMAKE_CXX_FLAGS "-Wno-uninitialized -zerouv -mp")
   endif()
-  if("${CMAKE_SHARED_LINKER_FLAGS}" STREQUAL "")
+  if(${CMAKE_SHARED_LINKER_FLAGS} STREQUAL "")
     set(CMAKE_SHARED_LINKER_FLAGS "-mp")
   endif()
 endif()
 
 if(CMAKE_COMPILER_IS_CLANG)
-  if("${CMAKE_C_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
+  if(${CMAKE_C_FLAGS} STREQUAL ${CMAKE_CXX_FLAGS_DEFAULT})
     set(CMAKE_C_FLAGS "-Qunused-arguments")
   endif()
-  if("${CMAKE_CXX_FLAGS}" STREQUAL "")
+  if(${CMAKE_CXX_FLAGS} STREQUAL "")
     set(CMAKE_CXX_FLAGS "-ftemplate-depth=1024 -Qunused-arguments -Wno-invalid-offsetof ${SSE_FLAGS_STR}") # Unfortunately older Clang versions do not have this: -Wno-unnamed-type-template-args
     if(APPLE AND WITH_CUDA AND CUDA_FOUND)
       string(APPEND CMAKE_CXX_FLAGS " -stdlib=libstdc++")
@@ -263,8 +263,8 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}" is_system_dir)
-if("${is_system_dir}" STREQUAL "-1")
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
+if(${is_system_dir} STREQUAL "-1")
+  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
 endif()
 
 ### ---[ Find universal dependencies
