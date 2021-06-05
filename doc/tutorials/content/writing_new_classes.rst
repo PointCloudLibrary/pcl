@@ -160,7 +160,7 @@ Setting up the structure
 
   If you're not familiar with the PCL file structure already, please go ahead
   and read the `PCL C++ Programming Style Guide
-  <http://www.pointclouds.org/documentation/advanced/pcl_style_guide.php>`_ to
+  <https://pcl.readthedocs.io/projects/advanced/en/latest/pcl_style_guide.html>`_ to
   familiarize yourself with the concepts. 
 
 There're two different ways we could set up the structure: i) set up the code
@@ -193,8 +193,7 @@ skeleton:
 .. code-block:: cpp
    :linenos:
 
-    #ifndef PCL_FILTERS_BILATERAL_H_
-    #define PCL_FILTERS_BILATERAL_H_
+    #pragma once
 
     #include <pcl/filters/filter.h>
 
@@ -206,8 +205,6 @@ skeleton:
       };
     }
 
-    #endif // PCL_FILTERS_BILATERAL_H_
-
 bilateral.hpp
 =============
 
@@ -217,12 +214,9 @@ While we're at it, let's set up two skeleton *bilateral.hpp* and
 .. code-block:: cpp
    :linenos:
 
-    #ifndef PCL_FILTERS_BILATERAL_IMPL_H_
-    #define PCL_FILTERS_BILATERAL_IMPL_H_
+    #pragma once
 
     #include <pcl/filters/bilateral.h>
-    
-    #endif // PCL_FILTERS_BILATERAL_IMPL_H_
 
 This should be straightforward. We haven't declared any methods for
 `BilateralFilter` yet, therefore there is no implementation. 
@@ -511,8 +505,7 @@ header file becomes:
 .. code-block:: cpp
    :linenos:
 
-    #ifndef PCL_FILTERS_BILATERAL_H_
-    #define PCL_FILTERS_BILATERAL_H_
+    #pragma once
 
     #include <pcl/filters/filter.h>
     #include <pcl/kdtree/kdtree.h>
@@ -584,8 +577,6 @@ header file becomes:
       };
     }
 
-    #endif // PCL_FILTERS_BILATERAL_H_
-
 bilateral.hpp
 =============
 
@@ -651,16 +642,13 @@ entry for the class:
 .. code-block:: cpp
    :linenos:
 
-    #ifndef PCL_FILTERS_BILATERAL_IMPL_H_
-    #define PCL_FILTERS_BILATERAL_IMPL_H_
+    #pragma once
 
     #include <pcl/filters/bilateral.h>
 
     ...
 
     #define PCL_INSTANTIATE_BilateralFilter(T) template class PCL_EXPORTS pcl::BilateralFilter<T>;
-
-    #endif // PCL_FILTERS_BILATERAL_IMPL_H_
 
 One additional thing that we can do is error checking on:
 
@@ -709,8 +697,7 @@ The implementation file header thus becomes:
 .. code-block:: cpp
    :linenos:
 
-    #ifndef PCL_FILTERS_BILATERAL_IMPL_H_
-    #define PCL_FILTERS_BILATERAL_IMPL_H_
+    #pragma once
 
     #include <pcl/filters/bilateral.h>
     #include <pcl/kdtree/kdtree_flann.h>
@@ -770,8 +757,6 @@ The implementation file header thus becomes:
      
     #define PCL_INSTANTIATE_BilateralFilter(T) template class PCL_EXPORTS pcl::BilateralFilter<T>;
 
-    #endif // PCL_FILTERS_BILATERAL_IMPL_H_
-
 
 Taking advantage of other PCL concepts
 --------------------------------------
@@ -824,8 +809,7 @@ The implementation file header thus becomes:
 .. code-block:: cpp
    :linenos:
 
-    #ifndef PCL_FILTERS_BILATERAL_IMPL_H_
-    #define PCL_FILTERS_BILATERAL_IMPL_H_
+    #pragma once
 
     #include <pcl/filters/bilateral.h>
     #include <pcl/kdtree/kdtree_flann.h>
@@ -885,8 +869,6 @@ The implementation file header thus becomes:
      
     #define PCL_INSTANTIATE_BilateralFilter(T) template class PCL_EXPORTS pcl::BilateralFilter<T>;
 
-    #endif // PCL_FILTERS_BILATERAL_IMPL_H_
-
 To make :pcl:`indices_<pcl::PCLBase::indices_>` work without typing the full
 construct, we need to add a new line to *bilateral.h* that specifies the class
 where `indices_` is declared:
@@ -918,42 +900,14 @@ file, as follows:
 .. code-block:: cpp
    :linenos:
 
-    /*
-     * Software License Agreement (BSD License)
-     *
-     *  Point Cloud Library (PCL) - www.pointclouds.org
-     *  Copyright (c) 2010-2011, Willow Garage, Inc.
-     *
-     *  All rights reserved.
-     *
-     *  Redistribution and use in source and binary forms, with or without
-     *  modification, are permitted provided that the following conditions
-     *  are met:
-     *
-     *   * Redistributions of source code must retain the above copyright
-     *     notice, this list of conditions and the following disclaimer.
-     *   * Redistributions in binary form must reproduce the above
-     *     copyright notice, this list of conditions and the following
-     *     disclaimer in the documentation and/or other materials provided
-     *     with the distribution.
-     *   * Neither the name of Willow Garage, Inc. nor the names of its
-     *     contributors may be used to endorse or promote products derived
-     *     from this software without specific prior written permission.
-     *
-     *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-     *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-     *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-     *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-     *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-     *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-     *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-     *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-     *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-     *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-     *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-     *  POSSIBILITY OF SUCH DAMAGE.
-     *
-     */
+   /*
+   * SPDX-License-Identifier: BSD-3-Clause
+   *
+   *  Point Cloud Library (PCL) - www.pointclouds.org
+   *  Copyright (c) 2014-, Open Perception Inc.
+   *
+   *  All rights reserved
+   */
 
 An additional like can be inserted if additional copyright is needed (or the
 original copyright can be changed):
@@ -983,45 +937,16 @@ class look like:
 .. code-block:: cpp
    :linenos:
 
-    /*
-     * Software License Agreement (BSD License)
-     *
-     *  Point Cloud Library (PCL) - www.pointclouds.org
-     *  Copyright (c) 2010-2011, Willow Garage, Inc.
-     *
-     *  All rights reserved.
-     *
-     *  Redistribution and use in source and binary forms, with or without
-     *  modification, are permitted provided that the following conditions
-     *  are met:
-     *
-     *   * Redistributions of source code must retain the above copyright
-     *     notice, this list of conditions and the following disclaimer.
-     *   * Redistributions in binary form must reproduce the above
-     *     copyright notice, this list of conditions and the following
-     *     disclaimer in the documentation and/or other materials provided
-     *     with the distribution.
-     *   * Neither the name of Willow Garage, Inc. nor the names of its
-     *     contributors may be used to endorse or promote products derived
-     *     from this software without specific prior written permission.
-     *
-     *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-     *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-     *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-     *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-     *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-     *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-     *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-     *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-     *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-     *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-     *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-     *  POSSIBILITY OF SUCH DAMAGE.
-     *
-     */
+   /*
+   * SPDX-License-Identifier: BSD-3-Clause
+   *
+   *  Point Cloud Library (PCL) - www.pointclouds.org
+   *  Copyright (c) 2014-, Open Perception Inc.
+   *
+   *  All rights reserved
+   */
 
-    #ifndef PCL_FILTERS_BILATERAL_H_
-    #define PCL_FILTERS_BILATERAL_H_
+    #pragma once
 
     #include <pcl/filters/filter.h>
     #include <pcl/kdtree/kdtree.h>
@@ -1131,52 +1056,21 @@ class look like:
       };
     }
 
-    #endif // PCL_FILTERS_BILATERAL_H_
-
 And the *bilateral.hpp* likes:
 
 .. code-block:: cpp
    :linenos:
 
-    /*
-     * Software License Agreement (BSD License)
-     *
-     *  Point Cloud Library (PCL) - www.pointclouds.org
-     *  Copyright (c) 2010-2011, Willow Garage, Inc.
-     *
-     *  All rights reserved.
-     *
-     *  Redistribution and use in source and binary forms, with or without
-     *  modification, are permitted provided that the following conditions
-     *  are met:
-     *
-     *   * Redistributions of source code must retain the above copyright
-     *     notice, this list of conditions and the following disclaimer.
-     *   * Redistributions in binary form must reproduce the above
-     *     copyright notice, this list of conditions and the following
-     *     disclaimer in the documentation and/or other materials provided
-     *     with the distribution.
-     *   * Neither the name of Willow Garage, Inc. nor the names of its
-     *     contributors may be used to endorse or promote products derived
-     *     from this software without specific prior written permission.
-     *
-     *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-     *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-     *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-     *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-     *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-     *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-     *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-     *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-     *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-     *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-     *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-     *  POSSIBILITY OF SUCH DAMAGE.
-     *
-     */
+   /*
+   * SPDX-License-Identifier: BSD-3-Clause
+   *
+   *  Point Cloud Library (PCL) - www.pointclouds.org
+   *  Copyright (c) 2014-, Open Perception Inc.
+   *
+   *  All rights reserved
+   */
 
-    #ifndef PCL_FILTERS_BILATERAL_IMPL_H_
-    #define PCL_FILTERS_BILATERAL_IMPL_H_
+    #pragma once
 
     #include <pcl/filters/bilateral.h>
     #include <pcl/kdtree/kdtree_flann.h>
@@ -1248,8 +1142,6 @@ And the *bilateral.hpp* likes:
     }
      
     #define PCL_INSTANTIATE_BilateralFilter(T) template class PCL_EXPORTS pcl::BilateralFilter<T>;
-
-    #endif // PCL_FILTERS_BILATERAL_IMPL_H_
 
 
 Testing the new class

@@ -53,7 +53,6 @@
 #include <pcl/visualization/histogram_visualizer.h>
 #include <pcl/visualization/keyboard_event.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/point_picking_event.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_config.h>

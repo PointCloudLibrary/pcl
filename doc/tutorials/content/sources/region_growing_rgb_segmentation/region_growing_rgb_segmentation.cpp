@@ -7,7 +7,7 @@
 #include <pcl/search/search.h>
 #include <pcl/search/kdtree.h>
 #include <pcl/visualization/cloud_viewer.h>
-#include <pcl/filters/passthrough.h>
+#include <pcl/filters/filter_indices.h> // for pcl::removeNaNFromPointCloud
 #include <pcl/segmentation/region_growing_rgb.h>
 
 using namespace std::chrono_literals;
@@ -25,11 +25,7 @@ main ()
   }
 
   pcl::IndicesPtr indices (new std::vector <int>);
-  pcl::PassThrough<pcl::PointXYZRGB> pass;
-  pass.setInputCloud (cloud);
-  pass.setFilterFieldName ("z");
-  pass.setFilterLimits (0.0, 1.0);
-  pass.filter (*indices);
+  pcl::removeNaNFromPointCloud (*cloud, *indices);
 
   pcl::RegionGrowingRGB<pcl::PointXYZRGB> reg;
   reg.setInputCloud (cloud);

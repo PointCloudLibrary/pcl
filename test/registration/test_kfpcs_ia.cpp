@@ -52,6 +52,8 @@ PointCloud<PointXYZI> cloud_source, cloud_target;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, KFPCSInitialAlignment)
 {
+  const auto previous_verbosity_level = pcl::console::getVerbosityLevel();
+  pcl::console::setVerbosityLevel(pcl::console::L_VERBOSE);
   // create shared pointers
   PointCloud<PointXYZI>::Ptr cloud_source_ptr, cloud_target_ptr;
   cloud_source_ptr = cloud_source.makeShared ();
@@ -93,6 +95,7 @@ TEST (PCL, KFPCSInitialAlignment)
   EXPECT_EQ (cloud_source_aligned.size (), cloud_source.size ());
   EXPECT_NEAR (angle3d, 0.f, max_angle3d);
   EXPECT_NEAR (translation3d, 0.f, max_translation3d);
+  pcl::console::setVerbosityLevel(previous_verbosity_level); // reset verbosity level
 }
 
 

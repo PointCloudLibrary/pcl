@@ -58,7 +58,6 @@
 #include <vtkSelection.h>
 #include <vtkPointPicker.h>
 
-#include <pcl/visualization/boost.h>
 #include <pcl/visualization/vtk/vtkRenderWindowInteractorFix.h>
 #include <pcl/visualization/vtk/pcl_vtk_compatibility.h>
 
@@ -100,12 +99,14 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/common/common.h>
 #include <pcl/common/time.h>
+#include <boost/version.hpp> // for BOOST_VERSION
 #if (BOOST_VERSION >= 106600)
 #include <boost/uuid/detail/sha1.hpp>
 #else
 #include <boost/uuid/sha1.hpp>
 #endif
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp> // for split
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/console/parse.h>
 

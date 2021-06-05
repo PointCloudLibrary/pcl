@@ -40,6 +40,7 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/common/time.h>
 #include <pcl/console/parse.h>
+#include <iomanip> // for setprecision
 
 class SimpleOpenNIProcessor
 {

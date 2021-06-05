@@ -9,14 +9,12 @@
 # If QHULL_USE_STATIC is specified then look for static libraries ONLY else
 # look for shared ones
 
-set(QHULL_MAJOR_VERSION 6)
-
 if(QHULL_USE_STATIC)
-  set(QHULL_RELEASE_NAME qhullstatic)
-  set(QHULL_DEBUG_NAME qhullstatic_d)
+  set(QHULL_RELEASE_NAME qhullstatic_r)
+  set(QHULL_DEBUG_NAME qhullstatic_rd)
 else()
-  set(QHULL_RELEASE_NAME qhull_p qhull${QHULL_MAJOR_VERSION} qhull)
-  set(QHULL_DEBUG_NAME qhull_p_d qhull${QHULL_MAJOR_VERSION}_d qhull_d${QHULL_MAJOR_VERSION} qhull_d)
+  set(QHULL_RELEASE_NAME qhull_r qhull)
+  set(QHULL_DEBUG_NAME qhull_rd qhull_d)
 endif()
 
 find_file(QHULL_HEADER
@@ -30,10 +28,8 @@ set(QHULL_HEADER "${QHULL_HEADER}" CACHE INTERNAL "QHull header" FORCE )
 if(QHULL_HEADER)
   get_filename_component(qhull_header ${QHULL_HEADER} NAME_WE)
   if("${qhull_header}" STREQUAL "qhull")
-    set(HAVE_QHULL_2011 OFF)
     get_filename_component(QHULL_INCLUDE_DIR ${QHULL_HEADER} PATH)
   elseif("${qhull_header}" STREQUAL "libqhull")
-    set(HAVE_QHULL_2011 ON)
     get_filename_component(QHULL_INCLUDE_DIR ${QHULL_HEADER} PATH)
     get_filename_component(QHULL_INCLUDE_DIR ${QHULL_INCLUDE_DIR} PATH)
   endif()

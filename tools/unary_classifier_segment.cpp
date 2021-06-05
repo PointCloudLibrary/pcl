@@ -45,6 +45,7 @@
 #include <pcl/filters/filter.h> // for removeNaNFromPointCloud
 
 #include <pcl/segmentation/unary_classifier.h>
+#include <boost/filesystem.hpp> // for path, exists, ...
 
 using namespace pcl;
 using namespace pcl::io;

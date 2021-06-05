@@ -45,7 +45,6 @@
 
 #include <pcl/io/openni_camera/openni_device_primesense.h>
 #include <pcl/io/openni_camera/openni_image_yuv_422.h>
-#include <pcl/io/boost.h>
 
 #include <iostream>
 #include <mutex>

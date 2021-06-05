@@ -129,7 +129,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::findSimilarFeat
   // Loop over the sampled features
   for (std::size_t i = 0; i < sample_indices.size(); ++i) {
     // Current feature index
-    const int idx = sample_indices[i];
+    const auto& idx = sample_indices[i];
 
     // Find the k nearest feature neighbors to the sampled input feature if they are not
     // in the cache already
@@ -330,7 +330,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness(
     // Check if point is an inlier
     if (nn_dists[0] < max_range) {
       // Update inliers
-      inliers.push_back(static_cast<int>(i));
+      inliers.push_back(i);
 
       // Update fitness score
       fitness_score += nn_dists[0];

@@ -48,7 +48,6 @@
 #include <pcl/gpu/people/people_detector.h>
 #include <pcl/gpu/people/colormap.h>
 #include <pcl/visualization/image_viewer.h>
-#include <pcl/search/pcl_search.h>
 #include <Eigen/Core>
 
 #include <pcl/io/png_io.h>

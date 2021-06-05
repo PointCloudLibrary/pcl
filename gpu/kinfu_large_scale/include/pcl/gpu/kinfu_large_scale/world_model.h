@@ -137,7 +137,7 @@ namespace pcl
         void cleanWorldFromNans () 
         { 
           world_->is_dense = false;
-          std::vector<int> indices; 
+          pcl::Indices indices;
           pcl::removeNaNFromPointCloud (*world_, *world_, indices);
         }
 

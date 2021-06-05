@@ -39,6 +39,7 @@
  */
 
 #include <pcl/apps/in_hand_scanner/visibility_confidence.h>
+#include <Eigen/Geometry> // for Isometry3f
 
 pcl::ihs::Dome::Dome ()
 {

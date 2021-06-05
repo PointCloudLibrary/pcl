@@ -116,6 +116,7 @@ main (int argc, char** argv)
               "         -view_point <x,y,z>       : set the camera viewpoint from where the acquisition will take place\n"
               "         -target_point <x,y,z>     : the target point that the camera should look at (default: 0, 0, 0)\n"
               "         -organized <0|1>          : create an organized, grid-like point cloud of width x height (1), or keep it unorganized with height = 1 (0)\n"
+              "         -scale <double>           : scaling factor to the points XYZ (default 1(m), 1000(mm))\n"
               "         -noise <0|1>              : add gaussian noise (1) or keep the model noiseless (0)\n"
               "         -noise_std <x>            : use X times the standard deviation\n"
               "");
@@ -135,6 +136,9 @@ main (int argc, char** argv)
   console::parse_3x_arguments (argc, argv, "-target_point", tx, ty, tz);
   int organized = 0;
   console::parse_argument (argc, argv, "-organized", organized);
+  double scale = 1;
+  console::parse_argument (argc, argv, "-scale", scale);
+
   if (organized)
     PCL_INFO ("Saving an organized dataset.\n");
   else
@@ -252,6 +256,9 @@ main (int argc, char** argv)
   int sid = -1;
   for (int i = 0; i < number_of_points; i++)
   {
+    // Clear cloud for next view scan
+    cloud.clear();
+
     sphere->GetPoint (i, eye);
     if (std::abs(eye[0]) < EPS) eye[0] = 0;
     if (std::abs(eye[1]) < EPS) eye[1] = 0;
@@ -354,9 +361,9 @@ main (int argc, char** argv)
           pcl::PointWithViewpoint pt;
           if (object_coordinates)
           {
-            pt.x = static_cast<float> (x[0]);
-            pt.y = static_cast<float> (x[1]);
-            pt.z = static_cast<float> (x[2]);
+            pt.x = static_cast<float> (x[0] * scale);
+            pt.y = static_cast<float> (x[1] * scale);
+            pt.z = static_cast<float> (x[2] * scale);
             pt.vp_x = static_cast<float> (eye[0]);
             pt.vp_y = static_cast<float> (eye[1]);
             pt.vp_z = static_cast<float> (eye[2]);
@@ -366,9 +373,9 @@ main (int argc, char** argv)
             // z axis is the viewray
             // y axis is up
             // x axis is -right (negative because z*y=-x but viewray*up=right)
-            pt.x = static_cast<float> (-right[0]*x[1] + up[0]*x[2] + viewray[0]*x[0] + eye[0]);
-            pt.y = static_cast<float> (-right[1]*x[1] + up[1]*x[2] + viewray[1]*x[0] + eye[1]);
-            pt.z = static_cast<float> (-right[2]*x[1] + up[2]*x[2] + viewray[2]*x[0] + eye[2]);
+            pt.x = static_cast<float> ((-right[0]*x[1] + up[0]*x[2] + viewray[0]*x[0] + eye[0])* scale);
+            pt.y = static_cast<float> ((-right[1]*x[1] + up[1]*x[2] + viewray[1]*x[0] + eye[1]) * scale);
+            pt.z = static_cast<float> ((-right[2]*x[1] + up[2]*x[2] + viewray[2]*x[0] + eye[2]) * scale);
             pt.vp_x = pt.vp_y = pt.vp_z = 0.0f;
           }
           cloud.push_back (pt);
