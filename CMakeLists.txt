@@ -1,6 +1,11 @@
 ### ---[ PCL global CMake
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
+if(POLICY CMP0054)
+  #Don't expand quoted variables.
+  cmake_policy(SET CMP0054 NEW)
+endif()
+
 if(POLICY CMP0074)
   # 1. Remove with 3.12.4.
   # 2. Remove search paths with *_ROOT since they will be automatically checked
