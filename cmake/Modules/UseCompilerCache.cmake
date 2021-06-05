@@ -88,7 +88,7 @@ function(UseCompilerCache)
   endif()
 
   # Indirect wrapper is needed for CCache < 3.3 or XCode
-  if(NOT (${xcode_compat} OR ${ccache_compat}))
+  if(NOT (xcode_compat OR ccache_compat))
     # Support Unix Makefiles and Ninja
     message(STATUS "Compiler cache via cmake launcher prefix")
     set(CMAKE_C_COMPILER_LAUNCHER    "${CCACHE_PROGRAM}" PARENT_SCOPE)
@@ -110,13 +110,13 @@ function(UseCompilerCache)
   if (NOT (CMAKE_VERSION VERSION_LESS 3.10) AND CMAKE_CUDA_COMPILER)
     set(cuda_supported TRUE)
   endif()
-  if(${cuda_supported})
+  if(cuda_supported)
     pcl_ccache_compat_file_gen("launch-cuda" ${CCACHE_PROGRAM} ${CMAKE_CUDA_COMPILER})
     execute_process(COMMAND chmod a+rx
                     "${CMAKE_BINARY_DIR}/launch-cuda")
   endif()
 
-  if(${xcode_compat})
+  if(xcode_compat)
     # Set Xcode project attributes to route compilation and linking properly
     message(STATUS "Compiler cache via launch files to support XCode")
     set(CMAKE_XCODE_ATTRIBUTE_CC         "${CMAKE_BINARY_DIR}/launch-c" PARENT_SCOPE)
@@ -127,7 +127,7 @@ function(UseCompilerCache)
     message(STATUS "Compiler cache via launch files to support Unix Makefiles and Ninja")
     set(CMAKE_C_COMPILER_LAUNCHER    "${CMAKE_BINARY_DIR}/launch-c" PARENT_SCOPE)
     set(CMAKE_CXX_COMPILER_LAUNCHER  "${CMAKE_BINARY_DIR}/launch-cxx" PARENT_SCOPE)
-    if (${cuda_supported})
+    if (cuda_supported)
         set(CMAKE_CUDA_COMPILER_LAUNCHER "${CMAKE_BINARY_DIR}/launch-cuda" PARENT_SCOPE)
     endif()
   endif()
