@@ -54,7 +54,7 @@ if(ClangFormat_EXECUTABLE)
                   ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
 endif()
 set(version_regex "^.*clang-format version ([.0-9]+).*")
-if(clang_format_version MATCHES ${version_regex})
+if(clang_format_version MATCHES version_regex)
   # clang_format_version samples:
   # * clang-format version 3.9.1-4ubuntu3~16.04.1 (tags/RELEASE_391/rc2)
   # * Alpine clang-format version 8.0.0 (tags/RELEASE_800/final) (based on LLVM 8.0.0)

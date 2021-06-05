@@ -47,7 +47,7 @@ foreach(_ss ${PCL_SUBSYSTEMS_MODULES})
       foreach(_opt_dep ${_opt_deps})
         string(TOUPPER "WITH_${_opt_dep}" _tmp)
         string(REGEX REPLACE "-(.*)" "" _condition ${_tmp}) #libusb-1.0 case
-        if(${_condition})
+        if(_condition)
           string(APPEND PCLCONFIG_OPTIONAL_DEPENDENCIES "${_opt_dep} ")
         endif()
       endforeach()
@@ -56,7 +56,7 @@ foreach(_ss ${PCL_SUBSYSTEMS_MODULES})
 
     #look for subsystems
     string(TOUPPER "PCL_${_ss}_SUBSYS" PCL_SUBSYS_SUBSYS)
-    if(${PCL_SUBSYS_SUBSYS})
+    if(PCL_SUBSYS_SUBSYS)
       string(TOUPPER "PCL_${_ss}_SUBSYS_STATUS" PCL_SUBSYS_SUBSYS_STATUS)
       foreach(_sub ${${PCL_SUBSYS_SUBSYS}})
         PCL_GET_SUBSUBSYS_STATUS(_sub_status ${_ss} ${_sub})

@@ -30,7 +30,7 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/morphology.hpp"
 )
 
-if(${VTK_FOUND})
+if(VTK_FOUND)
   set(VTK_IO_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets vtkIO vtkImaging)
 endif()
 

@@ -8,13 +8,13 @@ set(REASON "")
 if(NOT HAVE_QVTK)
   set(DEFAULT AUTO_OFF)
   set(REASON "VTK was not built with Qt support.")
-elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
+elseif(NOT DEFAULT STREQUAL "AUTO_OFF")
   set(DEFAULT TRUE)
   set(REASON)
 endif()
 
 # Default to not building for now
-if(${DEFAULT} STREQUAL "TRUE")
+if(DEFAULT STREQUAL "TRUE")
   set(DEFAULT FALSE)
 endif()
 

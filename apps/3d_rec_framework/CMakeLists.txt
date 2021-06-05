@@ -4,7 +4,7 @@ set(SUBSUBSYS_DEPS common geometry io filters sample_consensus segmentation visu
 set(SUBSUBSYS_EXT_DEPS vtk openni)
 
 # Default to not building for now
-if(${DEFAULT} STREQUAL "TRUE")
+if(DEFAULT STREQUAL "TRUE")
   set(DEFAULT FALSE)
 endif()
 
