@@ -432,6 +432,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::createLeafRecursive(
       OctreeNode* child_node = branch_arg->getChildPtr(!buffer_selector_, child_idx);
       if (child_node->getNodeType() == LEAF_NODE) {
         child_leaf = static_cast<LeafNode*>(child_node);
+        child_leaf->getContainer() = LeafContainer(); // Clear contents of leaf
         branch_arg->setChildPtr(buffer_selector_, child_idx, child_node);
       }
       else {
@@ -560,21 +561,17 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::serializeTreeRecursive(
     bool do_XOR_encoding_arg,
     bool new_leafs_filter_arg)
 {
-  // bit pattern
-  char branch_bit_pattern_curr_buffer;
-  char branch_bit_pattern_prev_buffer;
-  char node_XOR_bit_pattern;
-
-  // occupancy bit patterns of branch node  (current and previous octree buffer)
-  branch_bit_pattern_curr_buffer = getBranchBitPattern(*branch_arg, buffer_selector_);
-  branch_bit_pattern_prev_buffer = getBranchBitPattern(*branch_arg, !buffer_selector_);
-
-  // XOR of current and previous occupancy bit patterns
-  node_XOR_bit_pattern =
-      branch_bit_pattern_curr_buffer ^ branch_bit_pattern_prev_buffer;
-
   if (binary_tree_out_arg) {
+    // occupancy bit patterns of branch node  (current octree buffer)
+    const char branch_bit_pattern_curr_buffer =
+        getBranchBitPattern(*branch_arg, buffer_selector_);
     if (do_XOR_encoding_arg) {
+      // occupancy bit patterns of branch node  (previous octree buffer)
+      const char branch_bit_pattern_prev_buffer =
+          getBranchBitPattern(*branch_arg, !buffer_selector_);
+      // XOR of current and previous occupancy bit patterns
+      const char node_XOR_bit_pattern =
+          branch_bit_pattern_curr_buffer ^ branch_bit_pattern_prev_buffer;
       // write XOR bit pattern to output vector
       binary_tree_out_arg->push_back(node_XOR_bit_pattern);
     }
