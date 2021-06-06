@@ -315,9 +315,12 @@ namespace pcl
       /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the specified dimensions of the PointCloud.
         * \note This method is for advanced users only! Use with care!
         *
-        * \attention Since 1.4.0, Eigen matrices are forced to Row Major to increase the efficiency of the algorithms in PCL
-        *   This means that the behavior of getMatrixXfMap changed, and is now correctly mapping 1-1 with a PointCloud structure,
-        *   that is: number of points in a cloud = rows in a matrix, number of point dimensions = columns in a matrix
+        * \attention Compile time flags used for Eigen might affect the dimension of the Eigen::Map returned. If Eigen
+        *   is using row major storage, the matrix shape would be (number of Points X elements in a Point) else
+        *   the matrix shape would be (elements in a Point X number of Points). Essentially,
+        *   * Major direction: number of points in cloud
+        *   * Minor direction: number of point dimensions
+        * By default, as of Eigen 3.3, Eigen uses Column major storage
         *
         * \param[in] dim the number of dimensions to consider for each point
         * \param[in] stride the number of values in each point (will be the number of values that separate two of the columns)
@@ -338,9 +341,12 @@ namespace pcl
       /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the specified dimensions of the PointCloud.
         * \note This method is for advanced users only! Use with care!
         *
-        * \attention Since 1.4.0, Eigen matrices are forced to Row Major to increase the efficiency of the algorithms in PCL
-        *   This means that the behavior of getMatrixXfMap changed, and is now correctly mapping 1-1 with a PointCloud structure,
-        *   that is: number of points in a cloud = rows in a matrix, number of point dimensions = columns in a matrix
+        * \attention Compile time flags used for Eigen might affect the dimension of the Eigen::Map returned. If Eigen
+        *   is using row major storage, the matrix shape would be (number of Points X elements in a Point) else
+        *   the matrix shape would be (elements in a Point X number of Points). Essentially,
+        *   * Major direction: number of points in cloud
+        *   * Minor direction: number of point dimensions
+        * By default, as of Eigen 3.3, Eigen uses Column major storage
         *
         * \param[in] dim the number of dimensions to consider for each point
         * \param[in] stride the number of values in each point (will be the number of values that separate two of the columns)
