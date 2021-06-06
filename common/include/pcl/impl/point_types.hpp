@@ -2435,19 +2435,11 @@ namespace traits
   using HasNoHSV = std::enable_if_t<!has_HSV_v<PointT>, bool>;
 
   /** Deprecated: Metafunction to check if a given point type has either rgb or rgba field. */
-  namespace detail
-  {
-
-    template <typename PointT>
-    struct PCL_DEPRECATED(1, 15, "Please use has_rgb instead.")
-    has_color : has_any_field<PointT, boost::mpl::vector<pcl::fields::rgb,
-                                                                pcl::fields::rgba> >
-    { };
-
-  } //namespace detail
-
   template <typename PointT>
-  using has_color = detail::has_color<PointT>;
+  struct PCL_DEPRECATED(1, 15, "Please use has_rgb instead.")
+  has_color : has_any_field<PointT, boost::mpl::vector<pcl::fields::rgb,
+                                                              pcl::fields::rgba> >
+  { };
 
   template <typename PointT>
   constexpr auto has_color_v = has_color<PointT>::value;
