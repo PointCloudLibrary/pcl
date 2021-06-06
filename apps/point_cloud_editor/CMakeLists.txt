@@ -34,18 +34,15 @@ if(NOT build)
   return()
 endif()
 
-set(MOC_INCS
-  "include/pcl/apps/${SUBSUBSYS_NAME}/cloudEditorWidget.h"
-  "include/pcl/apps/${SUBSUBSYS_NAME}/mainWindow.h"
-  "include/pcl/apps/${SUBSUBSYS_NAME}/denoiseParameterForm.h"
-  "include/pcl/apps/${SUBSUBSYS_NAME}/statisticsDialog.h"
-)
-
 set(RSRC
   resources/pceditor_resources.qrc
 )
 
-set(INCS ${MOC_INCS}
+set(INCS
+  "include/pcl/apps/${SUBSUBSYS_NAME}/cloudEditorWidget.h"
+  "include/pcl/apps/${SUBSUBSYS_NAME}/mainWindow.h"
+  "include/pcl/apps/${SUBSUBSYS_NAME}/denoiseParameterForm.h"
+  "include/pcl/apps/${SUBSUBSYS_NAME}/statisticsDialog.h"
   "include/pcl/apps/${SUBSUBSYS_NAME}/cloud.h"
   "include/pcl/apps/${SUBSUBSYS_NAME}/cloudTransformTool.h"
   "include/pcl/apps/${SUBSUBSYS_NAME}/command.h"
@@ -92,16 +89,20 @@ set(SRCS
   src/denoiseParameterForm.cpp
 )
 
-qt5_wrap_cpp(MOC_SRCS ${MOC_INCS} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
-qt5_add_resources(RESOURCES_SRCS ${RSRC})
-
 include_directories(
   "${CMAKE_CURRENT_BINARY_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
 set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
-PCL_ADD_EXECUTABLE(${EXE_NAME} COMPONENT ${SUBSUBSYS_NAME} SOURCES ${SRCS} ${RESOURCES_SRCS} ${MOC_SRCS} ${INCS})
+PCL_ADD_EXECUTABLE(
+  ${EXE_NAME}
+  COMPONENT
+    ${SUBSUBSYS_NAME}
+  SOURCES
+    ${SRCS}
+    ${RSRC}
+    ${INCS})
 
 target_link_libraries("${EXE_NAME}" Qt5::Widgets Qt5::OpenGL ${OPENGL_LIBRARIES} ${BOOST_LIBRARIES} pcl_common pcl_io pcl_filters)
 
