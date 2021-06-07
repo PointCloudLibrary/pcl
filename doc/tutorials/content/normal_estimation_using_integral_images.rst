@@ -51,7 +51,7 @@ The following normal estimation methods are available:
 	 
 The COVARIANCE_MATRIX mode creates 9 integral images to compute the normal for
 a specific point from the covariance matrix of its local neighborhood. The
-AVERAGE_3D_GRADIENT mode creates 6 integral images to compute smoothed versions
+AVERAGE_3D_GRADIENT mode creates an integral image to compute smoothed versions
 of horizontal and vertical 3D gradients and computes the normals using the
 cross-product between these two gradients. The AVERAGE_DEPTH_CHANGE mode
 creates only a single integral image and computes the normals from the average
