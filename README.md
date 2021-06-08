@@ -103,14 +103,15 @@ other members of the PCL community and casual discussions
 
 Citation
 --------
-We encourage other researchers to cite PCL if they use PCL or it's components for their work or baselines. The bibtex entry for the same is
+We encourage other researchers to cite PCL if they use PCL or its components for their work or baselines. The bibtex entry for the same is
 ```
-@INPROCEEDINGS{Rusu_3dis,
-    author = {Radu Bogdan Rusu and Steve Cousins},
-    title = {3d is here: Point cloud library (pcl},
-    booktitle = {In Robotics and Automation (ICRA), 2011 IEEE International Conference on},
-    year = {},
-    pages = {1--4},
-    publisher = {IEEE}
+@InProceedings{Rusu_ICRA2011_PCL,
+  author    = {Radu Bogdan Rusu and Steve Cousins},
+  title     = {{3D is here: Point Cloud Library (PCL)}},
+  booktitle = {{IEEE International Conference on Robotics and Automation (ICRA)}},
+  month     = {May 9-13},
+  year      = {2011},
+  address   = {Shanghai, China},
+  publisher = {IEEE}
 }
 ```
