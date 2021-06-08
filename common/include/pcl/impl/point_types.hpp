@@ -2435,6 +2435,10 @@ namespace traits
   using HasNoHSV = std::enable_if_t<!has_HSV_v<PointT>, bool>;
 
   /** Deprecated: Metafunction to check if a given point type has either rgb or rgba field. */
+  /* 
+    Deprecations contain has_color, has_color_v, HasColor, HasNoColor. And they will be 
+    removed in PCL 1.15. Please use has_rgb, has_rgb_v, HasRGB, HasNoRGB respectively.
+  */
   template <typename PointT>
   struct PCL_DEPRECATED(1, 15, "Please use has_rgb instead.")
   has_color : has_any_field<PointT, boost::mpl::vector<pcl::fields::rgb,
@@ -2472,8 +2476,10 @@ namespace traits
   template <typename PointT>
   using HasAnyColor = std::enable_if_t<has_any_color_v<PointT>, bool>;
 
-  template <typename PointT>
-  using HasNoAnyColor = std::enable_if_t<!has_any_color_v<PointT>, bool>;
+  // There should be a `HasNoAnyColor` implementation which exactly means no color fields in point types,
+  // but the name seems to be obscure, so we decide to change the behavior of `HasNoColor` for this purpose
+  // as soon as the deprecation of `has_color` families in PCL 1.15.
+  // See here: https://github.com/PointCloudLibrary/pcl/pull/4761#discussion_r646427755
 
   /** Metafunction to check if a given point type has label field. */
   template <typename PointT>
