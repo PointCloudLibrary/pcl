@@ -11,7 +11,6 @@
 #include <pcl/registration/correspondence_rejection_sample_consensus.h>
 #include <pcl/registration/icp.h>
 #include <pcl/registration/transformation_estimation_svd.h>
-#include <pcl/registration/transforms.h>
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/search/kdtree.h>

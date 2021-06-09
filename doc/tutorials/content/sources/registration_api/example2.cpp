@@ -166,8 +166,8 @@ computeTransformation (const PointCloud<PointXYZ>::Ptr &src,
   // Reject correspondences based on their XYZ distance
   rejectBadCorrespondences (all_correspondences, keypoints_src, keypoints_tgt, *good_correspondences);
 
-  for (int i = 0; i < good_correspondences->size (); ++i)
-    std::cerr << good_correspondences->at (i) << std::endl;
+  for (const auto& corr : (*good_correspondences))
+    std::cerr << corr << std::endl;
   // Obtain the best transformation between the two sets of keypoints given the remaining correspondences
   TransformationEstimationSVD<PointXYZ, PointXYZ> trans_est;
   trans_est.estimateRigidTransformation (*keypoints_src, *keypoints_tgt, *good_correspondences, transform);

@@ -984,7 +984,8 @@ protected:
   /** \brief Currently active octree buffer  **/
   unsigned char buffer_selector_;
 
-  // flags indicating if unused branches and leafs might exist in previous buffer
+  /** \brief flags indicating if unused branches and leafs might exist in previous
+   * buffer  **/
   bool tree_dirty_flag_;
 
   /** \brief Octree depth */

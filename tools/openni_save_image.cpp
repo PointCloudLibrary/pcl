@@ -46,11 +46,10 @@
 #include <vtkTIFFWriter.h>
 #include <vtkImageFlip.h>
 
-#include "boost.h"
-
 #include <mutex>
 #include <string>
 #include <vector>
+#include <boost/date_time/posix_time/posix_time.hpp> // for to_iso_string, local_time
 
 
 #define SHOW_FPS 1

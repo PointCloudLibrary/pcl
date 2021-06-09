@@ -46,6 +46,8 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/segmentation/approximate_progressive_morphological_filter.h>
 #include <pcl/segmentation/progressive_morphological_filter.h>
+#include <boost/filesystem.hpp> // for path, exists, ...
+#include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 
 using namespace pcl;
 using namespace pcl::io;

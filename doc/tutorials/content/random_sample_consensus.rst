@@ -10,7 +10,7 @@ Theoretical Primer
 
 The abbreviation of "RANdom SAmple Consensus" is RANSAC, and it is an iterative method that is used to estimate parameters of a mathematical model from a set of data containing outliers.  This algorithm was published by Fischler and Bolles in 1981.  The RANSAC algorithm assumes that all of the data we are looking at is comprised of both inliers and outliers.  Inliers can be explained by a model with a particular set of parameter values, while outliers do not fit that model in any circumstance.  Another necessary assumption is that a procedure which can optimally estimate the parameters of the chosen model from the data is available.
 
-From [Wikipedia]_:
+From [WikipediaRANSAC]_:
 
   *The input to the RANSAC algorithm is a set of observed data values, a parameterized model which can explain or be fitted to the observations, and some confidence parameters.*
 
@@ -38,7 +38,7 @@ From [Wikipedia]_:
    :align: right
    :height: 200px
 
-The pictures to the left and right (From [Wikipedia]_) show a simple application of the RANSAC algorithm on a 2-dimensional set of data. The image on our left is a visual representation of a data set containing both inliers and outliers.  The image on our right shows all of the outliers in red, and shows inliers in blue.  The blue line is the result of the work done by RANSAC.  In this case the model that we are trying to fit to the data is a line, and it looks like it's a fairly good fit to our data.
+The pictures to the left and right (From [WikipediaRANSAC]_) show a simple application of the RANSAC algorithm on a 2-dimensional set of data. The image on our left is a visual representation of a data set containing both inliers and outliers.  The image on our right shows all of the outliers in red, and shows inliers in blue.  The blue line is the result of the work done by RANSAC.  In this case the model that we are trying to fit to the data is a line, and it looks like it's a fairly good fit to our data.
 
 The code
 --------
@@ -123,4 +123,4 @@ It will show you the result of applying RandomSampleConsensus to this data set w
    :align: center
    :height: 400px
 
-.. [Wikipedia] http://en.wikipedia.org/wiki/RANSAC
+.. [WikipediaRANSAC] http://en.wikipedia.org/wiki/RANSAC

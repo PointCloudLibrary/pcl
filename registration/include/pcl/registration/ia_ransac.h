@@ -47,8 +47,8 @@
 namespace pcl {
 /** \brief @b SampleConsensusInitialAlignment is an implementation of the initial
  * alignment algorithm described in section IV of "Fast Point Feature Histograms (FPFH)
- * for 3D Registration," Rusu et al. \author Michael Dixon, Radu B. Rusu \ingroup
- * registration
+ * for 3D Registration," Rusu et al. \author Michael Dixon, Radu B. Rusu
+ * \ingroup registration
  */
 template <typename PointSource, typename PointTarget, typename FeatureT>
 class SampleConsensusInitialAlignment : public Registration<PointSource, PointTarget> {
@@ -261,10 +261,10 @@ protected:
   /** \brief Choose a random index between 0 and n-1
    * \param n the number of possible indices to choose from
    */
-  inline int
+  inline pcl::index_t
   getRandomIndex(int n)
   {
-    return (static_cast<int>(n * (rand() / (RAND_MAX + 1.0))));
+    return (static_cast<pcl::index_t>(n * (rand() / (RAND_MAX + 1.0))));
   };
 
   /** \brief Select \a nr_samples sample points from cloud while making sure that their
@@ -275,9 +275,9 @@ protected:
    */
   void
   selectSamples(const PointCloudSource& cloud,
-                int nr_samples,
+                unsigned int nr_samples,
                 float min_sample_distance,
-                std::vector<int>& sample_indices);
+                pcl::Indices& sample_indices);
 
   /** \brief For each of the sample points, find a list of points in the target cloud
    * whose features are similar to the sample points' features. From these, select one
@@ -288,8 +288,8 @@ protected:
    */
   void
   findSimilarFeatures(const FeatureCloud& input_features,
-                      const std::vector<int>& sample_indices,
-                      std::vector<int>& corresponding_indices);
+                      const pcl::Indices& sample_indices,
+                      pcl::Indices& corresponding_indices);
 
   /** \brief An error metric for that computes the quality of the alignment between the
    * given cloud and the target. \param cloud the input cloud \param threshold distances

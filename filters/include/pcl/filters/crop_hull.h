@@ -37,7 +37,6 @@
 
 #pragma once
 
-#include <pcl/point_types.h>
 #include <pcl/Vertices.h>
 #include <pcl/filters/filter_indices.h>
 

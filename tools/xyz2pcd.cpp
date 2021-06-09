@@ -38,6 +38,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
+#include <boost/algorithm/string/split.hpp> // for split
 
 using namespace pcl;
 using namespace pcl::io;

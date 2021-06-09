@@ -90,6 +90,12 @@ if(PCL_ENABLE_SSE AND "${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}"
   PCL_CHECK_FOR_SSE()
 endif()
 
+# check for AVX flags for windows
+if(PCL_ENABLE_AVX AND "${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
+  include("${PCL_SOURCE_DIR}/cmake/pcl_find_avx.cmake")
+  PCL_CHECK_FOR_AVX()
+endif()
+
 # ---[ Unix/Darwin/Windows specific flags
 if(CMAKE_COMPILER_IS_GNUCXX)
   if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
@@ -98,10 +104,11 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     else()
       string(APPEND CMAKE_CXX_FLAGS " -Wabi")
     endif()
-    string(APPEND CMAKE_CXX_FLAGS " -Wall -Wextra -Wno-unknown-pragmas -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof -Wno-conversion ${SSE_FLAGS_STR}")
-    if(PCL_WARNINGS_ARE_ERRORS)
-      string(APPEND CMAKE_CXX_FLAGS " -Werror")
-    endif()
+    string(APPEND CMAKE_CXX_FLAGS " -Wall -Wextra -Wno-unknown-pragmas -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof -Wno-conversion ${SSE_FLAGS}")
+  endif()
+
+  if(PCL_WARNINGS_ARE_ERRORS)
+    string(APPEND CMAKE_CXX_FLAGS " -Werror -fno-strict-aliasing")
   endif()
 
   if("${CMAKE_SHARED_LINKER_FLAGS}" STREQUAL "" AND NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
@@ -127,7 +134,7 @@ if(CMAKE_COMPILER_IS_MSVC)
   add_compile_options(/bigobj)
   
   if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
-    string(APPEND CMAKE_CXX_FLAGS " /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS_STR}")
+    string(APPEND CMAKE_CXX_FLAGS " /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS} ${AVX_FLAGS}")
 
     # Add extra code generation/link optimizations
     if(CMAKE_MSVC_CODE_LINK_OPTIMIZATION AND (NOT BUILD_CUDA) AND (NOT BUILD_GPU))
@@ -299,10 +306,10 @@ find_package(Eigen 3.1 REQUIRED)
 include_directories(SYSTEM ${EIGEN_INCLUDE_DIRS})
 
 # FLANN (required)
-if(NOT PCL_SHARED_LIBS OR ((WIN32 AND NOT MINGW) AND NOT PCL_BUILD_WITH_FLANN_DYNAMIC_LINKING_WIN32))
-  set(FLANN_USE_STATIC ON)
+find_package(FLANN 1.9.1 REQUIRED)
+if(NOT (${FLANN_LIBRARY_TYPE} MATCHES ${PCL_FLANN_REQUIRED_TYPE}) AND NOT (${PCL_FLANN_REQUIRED_TYPE} MATCHES "DONTCARE"))
+  message(FATAL_ERROR "Flann was selected with ${PCL_FLANN_REQUIRED_TYPE} but found as ${FLANN_LIBRARY_TYPE}")
 endif()
-find_package(FLANN 1.7.0 REQUIRED)
 
 # libusb
 option(WITH_LIBUSB "Build USB RGBD-Camera drivers" TRUE)
@@ -364,6 +371,10 @@ option(WITH_QT "Build QT Front-End" TRUE)
 if(WITH_QT)
   find_package(Qt5 COMPONENTS Concurrent OpenGL Widgets QUIET)
   if(Qt5_FOUND)
+    #Set Cmake Auto features to skip .hh files
+    if(POLICY CMP0100)
+      cmake_policy(SET CMP0100 OLD)
+    endif()
     message(STATUS "Found Qt5 version: ${Qt5_VERSION}")
   endif()
 endif()

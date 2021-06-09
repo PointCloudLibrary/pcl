@@ -280,6 +280,18 @@ namespace pcl
     createCube (double x_min, double x_max,
                 double y_min, double y_max,
                 double z_min, double z_max);
+
+    /** \brief Create an ellipsoid shape from the given parameters.
+      *
+      * \param[in] transform a transformation to apply to the ellipsoid from 0,0,0
+      * \param[in] radius_x the ellipsoid's radius along its local x-axis
+      * \param[in] radius_y the ellipsoid's radius along its local y-axis
+      * \param[in] radius_z the ellipsoid's radius along its local z-axis
+      * \ingroup visualization
+      */
+    PCL_EXPORTS vtkSmartPointer<vtkDataSet> 
+    createEllipsoid (const Eigen::Isometry3d &transform,
+                     double radius_x, double radius_y, double radius_z);
     
     /** \brief Allocate a new unstructured grid smartpointer. For internal use only.
       * \param[out] polydata the resultant unstructured grid. 

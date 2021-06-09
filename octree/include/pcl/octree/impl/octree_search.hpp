@@ -277,7 +277,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
     child_node = search_heap.back().node;
     new_key = search_heap.back().key;
 
-    if (tree_depth < this->octree_depth_) {
+    if (child_node->getNodeType() == BRANCH_NODE) {
       // we have not reached maximum tree depth
       smallest_squared_dist =
           getKNearestNeighborRecursive(point,
@@ -373,7 +373,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
         voxel_squared_diameter / 4.0 + radiusSquared +
             sqrt(voxel_squared_diameter * radiusSquared)) {
 
-      if (tree_depth < this->octree_depth_) {
+      if (child_node->getNodeType() == BRANCH_NODE) {
         // we have not reached maximum tree depth
         getNeighborsWithinRadiusRecursive(point,
                                           radiusSquared,
@@ -468,7 +468,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
 
   child_node = this->getBranchChildPtr(*node, min_child_idx);
 
-  if (tree_depth < this->octree_depth_) {
+  if (child_node->getNodeType() == BRANCH_NODE) {
     // we have not reached maximum tree depth
     approxNearestSearchRecursive(point,
                                  static_cast<const BranchNode*>(child_node),
@@ -483,7 +483,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
 
     const LeafNode* child_leaf = static_cast<const LeafNode*>(child_node);
 
-    double smallest_squared_dist = std::numeric_limits<double>::max();
+    float smallest_squared_dist = std::numeric_limits<float>::max();
 
     // decode leaf node into decoded_point_vector
     (**child_leaf).getPointIndices(decoded_point_vector);
@@ -493,7 +493,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
       const PointT& candidate_point = this->getPointByIndex(index);
 
       // calculate point distance to search point
-      double squared_dist = pointSquaredDist(candidate_point, point);
+      float squared_dist = pointSquaredDist(candidate_point, point);
 
       // check if a closer match is found
       if (squared_dist >= smallest_squared_dist)
@@ -501,7 +501,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
 
       result_index = index;
       smallest_squared_dist = squared_dist;
-      sqr_distance = static_cast<float>(squared_dist);
+      sqr_distance = squared_dist;
     }
   }
 }
@@ -552,7 +552,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::boxSearchRecur
           (lower_voxel_corner(1) > max_pt(1)) || (min_pt(1) > upper_voxel_corner(1)) ||
           (lower_voxel_corner(2) > max_pt(2)) || (min_pt(2) > upper_voxel_corner(2)))) {
 
-      if (tree_depth < this->octree_depth_) {
+      if (child_node->getNodeType() == BRANCH_NODE) {
         // we have not reached maximum tree depth
         boxSearchRecursive(min_pt,
                            max_pt,

@@ -9,7 +9,7 @@ This tutorial is for Ubuntu, other Linux distrubutions can follow a similar proc
 Windows is currently  **not** officially supported for the GPU methods.
 
 Checking CUDA Version
----------------
+---------------------
 
 In order to run the code you will need a system with an Nvidia GPU, having CUDA Toolkit v9.2+ installed. 
 We will not be covering CUDA toolkit installation in this tutorial as there already exists many great tutorials for the same.
@@ -20,7 +20,7 @@ You can check your CUDA toolkit version using the following command::
  
  
 Checking C++ Version
----------------
+--------------------
 
 The GPU methods in PCL require a min version of GCC 7 or Clang 6 onwards (min version unknown). 
 This will not be a problem if you are running Ubuntu 18.04 or later. However on Ubuntu 16.04, you will need to install GCC 7 or Clang 6 (lower versions not tested) manually because the versions available by default are: GCC 5 and Clang 3.8
@@ -46,7 +46,7 @@ $ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 --slave 
 $ sudo update-alternatives --config gcc
 
 Installing Eigen
---------------- 
+----------------
 
 You will also need Eigen v3.3.7+, since the previous versions are incompatible with the latest CUDA versions. 
 If you are on Ubuntu 20 or newer, then there is no issue since Eigen 3.3.7 is shipped by default. 

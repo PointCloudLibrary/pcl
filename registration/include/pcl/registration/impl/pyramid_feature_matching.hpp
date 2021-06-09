@@ -42,6 +42,7 @@
 #ifndef PCL_REGISTRATION_IMPL_PYRAMID_FEATURE_MATCHING_H_
 #define PCL_REGISTRATION_IMPL_PYRAMID_FEATURE_MATCHING_H_
 
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/console/print.h>
 #include <pcl/pcl_macros.h>
 
@@ -309,6 +310,9 @@ PyramidFeatureHistogram<PointFeature>::compute()
 
   for (const auto& point : *input_) {
     std::vector<float> feature_vector;
+    // NaN is converted to very high number that gives out of bound exception.
+    if (!pcl::isFinite(point))
+      continue;
     convertFeatureToVector(point, feature_vector);
     addFeature(feature_vector);
   }

@@ -40,12 +40,10 @@
 #ifndef PCL_IO_AUTO_IO_IMPL_H_
 #define PCL_IO_AUTO_IO_IMPL_H_
 
-// #include <pcl/io/file_io.h>
-// #include <pcl/io/boost.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/io/ifs_io.h>
-// #include <pcl/io/vtk_io.h>
+#include <boost/filesystem.hpp> // for path
 
 namespace pcl
 {

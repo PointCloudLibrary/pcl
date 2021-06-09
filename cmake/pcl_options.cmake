@@ -22,8 +22,10 @@ mark_as_advanced(PCL_SHARED_LIBS)
 option(PCL_BUILD_WITH_BOOST_DYNAMIC_LINKING_WIN32 "Build against a dynamically linked Boost on Win32 platforms." OFF)
 mark_as_advanced(PCL_BUILD_WITH_BOOST_DYNAMIC_LINKING_WIN32)
 
-# Build with dynamic linking for FLANN (advanced users)
-option(PCL_BUILD_WITH_FLANN_DYNAMIC_LINKING_WIN32 "Build against a dynamically linked FLANN on Win32 platforms." OFF)
+# Build with shared/static linking for FLANN (advanced users)
+set(PCL_FLANN_REQUIRED_TYPE "DONTCARE" CACHE STRING "Select build type to use (STATIC/SHARED).")
+set_property(CACHE PCL_FLANN_REQUIRED_TYPE PROPERTY STRINGS DONTCARE SHARED STATIC)
+
 mark_as_advanced(PCL_BUILD_WITH_FLANN_DYNAMIC_LINKING_WIN32)
 
 # Build with dynamic linking for QHull (advanced users)
@@ -41,6 +43,12 @@ mark_as_advanced(PCL_NO_PRECOMPILE)
 # Enable or Disable the check for SSE optimizations
 option(PCL_ENABLE_SSE "Enable or Disable SSE optimizations." ON)
 mark_as_advanced(PCL_ENABLE_SSE)
+
+if(WIN32)
+  # Enable or Disable the check for AVX optimizations
+  option(PCL_ENABLE_AVX "Enable or Disable AVX optimizations." ON)
+  mark_as_advanced(PCL_ENABLE_AVX)
+endif()
 
 # Allow the user to enable compiler cache
 option(PCL_ENABLE_CCACHE "Enable using compiler cache for compilation" OFF)
@@ -81,3 +89,6 @@ endif()
 # (Used to prevent gpu tests from executing in CI where GPU hardware is unavailable)
 option(PCL_DISABLE_GPU_TESTS "Disable running GPU tests. If disabled, tests will still be built." OFF)
 
+# Set whether visualizations tests should be run
+# (Used to prevent visualizations tests from executing in CI where visualization is unavailable)
+option(PCL_DISABLE_VISUALIZATION_TESTS "Disable running visualizations tests. If disabled, tests will still be built." OFF)

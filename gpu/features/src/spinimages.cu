@@ -197,8 +197,10 @@ namespace pcl
 
 					// bilinear interpolation
 					float beta_bin_size = radial ? (PI*0.5f/image_width) : bin_size;
-					int beta_bin  = std::floor(beta  / beta_bin_size) + image_width;
-					int alpha_bin = std::floor(alpha / bin_size);
+					//Using floorf due to changes to MSVC 16.9. See details here: https://devtalk.blender.org/t/cuda-compile-error-windows-10/17886/4
+					//floorf is without std:: see why here: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79700
+					int beta_bin  = floorf(beta  / beta_bin_size) + image_width;
+					int alpha_bin = floorf(alpha / bin_size);
 
 					//alpha_bin = min(simage_cols, max(0, alpha_bin));
 					//beta_bin  = min(simage_rows, max(0,  beta_bin));					

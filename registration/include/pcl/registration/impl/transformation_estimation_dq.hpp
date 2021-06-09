@@ -75,7 +75,7 @@ template <typename PointSource, typename PointTarget, typename Scalar>
 void
 TransformationEstimationDQ<PointSource, PointTarget, Scalar>::
     estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                                const std::vector<int>& indices_src,
+                                const pcl::Indices& indices_src,
                                 const pcl::PointCloud<PointTarget>& cloud_tgt,
                                 Matrix4& transformation_matrix) const
 {
@@ -96,9 +96,9 @@ template <typename PointSource, typename PointTarget, typename Scalar>
 inline void
 TransformationEstimationDQ<PointSource, PointTarget, Scalar>::
     estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                                const std::vector<int>& indices_src,
+                                const pcl::Indices& indices_src,
                                 const pcl::PointCloud<PointTarget>& cloud_tgt,
-                                const std::vector<int>& indices_tgt,
+                                const pcl::Indices& indices_tgt,
                                 Matrix4& transformation_matrix) const
 {
   if (indices_src.size() != indices_tgt.size()) {

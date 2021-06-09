@@ -4,7 +4,7 @@ Tracking object in real time
 ----------------------------
 This tutorial explains 6D object tracking and show example code(tracking_sample.cpp) using pcl::tracking libraries. Implementing this example code, you can see the segment track the target object even if you move tracked object or your sensor device. In example, first, you should initialize tracker and you have to pass target object's point cloud to tracker so that tracker should know what to track. So, before this tutorial, you need to make segmented model with PCD file beforehand. Setting the model to tracker, it starts tracking the object.
 
-Following figure shows how  looks like when trakcing works successfully.
+Following figure shows how  looks like when tracking works successfully.
 
 .. figure:: images/tracking/mergePicture.png
   :height: 600
@@ -60,40 +60,40 @@ Now, let's break down the code piece by piece.
 
 .. literalinclude:: sources/tracking/tracking_sample.cpp
    :language: cpp
-   :lines: 227-242
+   :lines: 219-234
 
 
 First, in main function, these lines set the parameters for tracking. 
 
 .. literalinclude:: sources/tracking/tracking_sample.cpp
    :language: cpp
-   :lines: 246-257
+   :lines: 237-249
 
 Here, we set likelihood function which tracker use when calculate weights.  You can add more likelihood function as you like. By default, there are normals likelihood and color likelihood functions. When you want to add other likelihood function, all you have to do is  initialize new Coherence Class and add the Coherence instance to coherence variable with addPointCoherence function.
 
 .. literalinclude:: sources/tracking/tracking_sample.cpp
    :language: cpp
-   :lines: 259-272
+   :lines: 251-264
 
 In this part, we set the point cloud loaded from pcd file as reference model to tracker and also set model's transform values.
 
 .. literalinclude:: sources/tracking/tracking_sample.cpp
    :language: cpp
-   :lines: 173-180
+   :lines: 165-172
 
 
 Until the counter variable become equal to 10, we ignore the input point cloud, because the point cloud at first few frames often have noise. After counter variable reach to 10 frame, at each loop, we set downsampled input point cloud to tracker and the tracker will compute particles movement.
 
 .. literalinclude:: sources/tracking/tracking_sample.cpp
    :language: cpp
-   :lines: 82-82
+   :lines: 74-74
 
 
 In drawParticles function, you can get particles's positions by calling getParticles().
 
 .. literalinclude:: sources/tracking/tracking_sample.cpp
    :language: cpp
-   :lines: 116-117
+   :lines: 108-109
 
 
 

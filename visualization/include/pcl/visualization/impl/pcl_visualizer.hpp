@@ -1255,7 +1255,7 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   // Draw lines between the best corresponding points
   for (std::size_t i = 0; i < correspondences.size (); i += nth, ++j)
   {
-    if (correspondences[i].index_match == -1)
+    if (correspondences[i].index_match == UNAVAILABLE)
     {
       PCL_WARN ("[addCorrespondences] No valid index_match for correspondence %d\n", i);
       continue;

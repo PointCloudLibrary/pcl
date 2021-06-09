@@ -84,7 +84,7 @@ Mandatory
 The following code libraries are **required** for the compilation and usage of the PCL libraries shown below:
 
 .. note::
-pcl_* denotes all PCL libraries, meaning that the particular dependency is a strict requirement for the usage of anything in PCL.
+   pcl_* denotes all PCL libraries, meaning that the particular dependency is a strict requirement for the usage of anything in PCL.
 
 +---------------------------------------------------------------+-----------------+-------------------------+-------------------+
 | Logo                                                          | Library         | Minimum version         | Mandatory         |

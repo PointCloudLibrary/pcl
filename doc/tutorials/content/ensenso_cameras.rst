@@ -47,6 +47,7 @@ If you have performed and stored an extrinsic calibration it will be temporary r
 If you are using an Ensenso X device you have to calibrate the device before trying to run the PCL driver. If you don't you will get an error like this:
 
 .. code-block:: cpp
+
   Initialising nxLib
   Opening Ensenso stereo camera id = 0
   openDevice: NxLib error ExecutionFailed (17) occurred while accessing item /Execute.

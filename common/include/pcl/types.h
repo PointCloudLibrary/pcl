@@ -49,6 +49,8 @@
 
 #include <cstdint>
 
+#include <Eigen/Core>
+
 namespace pcl
 {
   namespace detail {
@@ -129,5 +131,11 @@ namespace pcl
    * \brief Type used for indices in PCL
    */
   using Indices = IndicesAllocator<>;
+
+  /**
+   * \brief Type used for aligned vector of Eigen objects in PCL
+   */
+  template <typename T>
+  using AlignedVector = std::vector<T, Eigen::aligned_allocator<T>>;
 }  // namespace pcl
 

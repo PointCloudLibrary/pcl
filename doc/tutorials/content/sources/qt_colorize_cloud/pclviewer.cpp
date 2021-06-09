@@ -3,9 +3,9 @@
 
 PCLViewer::PCLViewer (QWidget *parent) :
     QMainWindow (parent),
-    ui (new Ui::PCLViewer),
     filtering_axis_ (1),  // = y
-    color_mode_ (4)  // = Rainbow
+    color_mode_ (4),  // = Rainbow
+    ui (new Ui::PCLViewer)
 {
   ui->setupUi (this);
   this->setWindowTitle ("PCL viewer");
