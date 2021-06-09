@@ -41,6 +41,7 @@
 #include "utils/copygen.hpp"
 #include "utils/scan_block.hpp"
 #include <assert.h>
+#include "impl.cu"
 
 #include <limits>
 #include <tuple>

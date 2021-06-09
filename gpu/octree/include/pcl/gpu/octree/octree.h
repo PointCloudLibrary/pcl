@@ -46,7 +46,6 @@
 #include <pcl/pcl_exports.h>
 
 
-
 namespace pcl
 {
     namespace gpu
@@ -56,7 +55,7 @@ namespace pcl
          * \author  Anaoly Baksheev, Itseez, myname.mysurname@mycompany.com
          */
 
-        template <class T>
+        template <class T = pcl::PointXYZ>
         class PCL_EXPORTS Octree
         {
         public:
@@ -188,6 +187,13 @@ namespace pcl
         */             
         template <class T>
         PCL_EXPORTS void bruteForceRadiusSearchGPU(const typename Octree<T>::PointCloud& cloud, const typename Octree<T>::PointType& query, float radius, DeviceArray<int>& result, DeviceArray<int>& buffer);
+    }
+}
+namespace pcl
+{
+    namespace gpu2 
+    {
+        using Octree = pcl::gpu::Octree<pcl::PointXYZ>;
     }
 }
 
