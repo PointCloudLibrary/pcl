@@ -38,6 +38,7 @@
  * \author: Koen Buys - KU Leuven
  */
 
+#include <ui_manual_registration.h>
 #include <pcl/apps/manual_registration.h>
 #include <pcl/io/pcd_io.h> // for loadPCDFile
 

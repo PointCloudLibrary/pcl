@@ -51,11 +51,14 @@ protected:
   using PCL_Base::indices_;
   using PCL_Base::input_;
 
+private:
   // need to hold a value because lambdas can only be copy or move constructed in C++14
   FunctionObjectT functionObject_;
 
 public:
   /** \brief Constructor.
+   * \param[in] function_object Object of effective type `FilterFunction` in order to
+   * filter out the indices for which it returns false
    * \param[in] extract_removed_indices Set to true if you want to be able to
    * extract the indices of points being removed (default = false).
    */
@@ -100,6 +103,30 @@ public:
         removed_indices_->push_back(index);
       }
     }
+  }
+
+protected:
+  /**
+   * \brief ctor to be used by derived classes with member function as FilterFunction
+   * \param[in] extract_removed_indices Set to true if you want to be able to
+   * extract the indices of points being removed (default = false).
+   * \note The class would be ill-defined until `setFunctionObject` has been called
+   * Do not call any filter routine until then
+   */
+  FunctorFilter(bool extract_removed_indices = false) : Base(extract_removed_indices)
+  {
+    filter_name_ = "functor_filter";
+  }
+
+  /**
+   * \brief utility function for derived class
+   * \param[in] function_object Object of effective type `FilterFunction` in order to
+   * filter out the indices for which it returns false
+   */
+  void
+  setFunctionObject(FunctionObjectT function_object) const noexcept
+  {
+    functionObject_ = std::move(function_object);
   }
 };
 } // namespace advanced
