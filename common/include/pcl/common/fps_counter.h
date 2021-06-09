@@ -11,132 +11,110 @@
 
 #include <pcl/common/time.h>
 
-#include <functional>
-
 namespace pcl {
 
-struct FpsCounterDetails {
+class fpsCounter {
 
-  unsigned counter_type_;
-  unsigned reset_iter_;
-  double fps_;
-  unsigned count_;
+  unsigned tick_;
   double start_time_;
-  double duration_;
-  double last_reset_;
-  FpsCounterDetails(unsigned counter_type = 0, unsigned reset_iter = 10)
-  : counter_type_(counter_type)
-  , reset_iter_(reset_iter)
-  , start_time_(pcl::getTime())
-  , last_reset_(pcl::getTime())
-  {}
-};
 
-class FpsCounter {
-public:
-  FpsCounter() {}
-  FpsCounter(FpsCounterDetails& details) : details_(&details) {}
-
-  FpsCounterDetails* details_;
+  struct ret {
+    double fps = 0, duration = 0;
+  };
 
   void
-  calculateFps(const unsigned& ticks, const double& elapsed_time)
+  reset()
   {
-    details_->fps_ = double(ticks) / double(elapsed_time);
+    tick_ = start_time_ = 0;
+  };
+
+  double
+  now() const
+  {
+    return pcl::getTime();
+  };
+
+protected:
+  std::string what_;
+
+public:
+  fpsCounter(const std::string what) : what_(what), tick_(0) {}
+
+  unsigned
+  tick()
+  {
+    if (tick_ == 0) {
+      start_time_ = now();
+    }
+
+    tick_ += 1;
+    if (resetCondition()) {
+      printCounterDetails();
+      reset();
+    }
+
+    return tick_;
+  };
+
+  virtual bool
+  resetCondition()
+  {
+    return getAvgFps().duration >= 1.0;
+  };
+
+  virtual void
+  printCounterDetails()
+  {
+    std::cout << "Average framerate(" << what_ << "): " << getAvgFps().fps << " Hz"
+              << std::endl;
   };
 
   unsigned
-  getCount()
+  getCount() const
   {
-    return details_->count_;
-  }; // returns the number of frames counted till now
-  double
-  getFps()
-  {
-    return details_->fps_;
+    return tick_;
   };
-  void
-  tick(); // add a frame
-  double
-  now()
+
+  ret
+  getAvgFps() const
   {
-    return pcl::getTime();
-  }; // appropriate return for the time
+    const double delta_t = now() - start_time_;
+    const double fps = (tick_ - 1) / delta_t;
+    return {fps, delta_t};
+  };
 };
 
-class FpsCounterConditional : public FpsCounter {
-public:
-  FpsCounterConditional(pcl::FpsCounterDetails& fps_counter_details,
-                        std::function<void()> print_counter_details)
-  : FpsCounter(fps_counter_details), print_counter_details(print_counter_details)
-  {}
+} // namespace pcl
 
-  void
-  tick()
-  {
+namespace pcl {
 
-    double time_now = now();
+class fpsCounterConditional : public fpsCounter {
 
-    details_->count_++;
-
-    if (details_->counter_type_ != 2)
-      calculateFps(details_->count_, time_now - details_->last_reset_);
-    else
-      calculateFps(details_->count_ - 1, details_->duration_);
-
-    if (resetCondition(time_now)) {
-      print_counter_details();
-      resetFpsCounter(time_now);
-    }
-    else {
-      updateElapsedTime(time_now);
-    }
-  };
-
-private:
-  std::function<void()> print_counter_details;
+  unsigned reset_iter_;
+  bool stop_computing_;
 
   bool
-  resetCondition(const double& now)
+  resetCondition()
   {
-    if (details_->counter_type_ == 0)
-      return (now - details_->last_reset_) >= 1.0;
-    else
-      return details_->count_ == details_->reset_iter_;
+    return getCount() >= reset_iter_;
   };
 
   void
-  resetFpsCounter(const double& now)
+  printCounterDetails()
   {
-    details_->count_ = 0;
-    details_->last_reset_ = now;
-    details_->duration_ = 0.0;
-  };
+    std::cout << "Average framerate(" << what_ << "): " << getAvgFps().fps << " Hz"
+              << std::endl;
 
-  void
-  updateElapsedTime(const double& now)
-  {
-    details_->duration_ += now - details_->start_time_;
-  };
-};
-
-auto simpleFpsCounter = [](pcl::FpsCounterDetails& fps_counter_details,
-                           const std::string& what,
-                           const bool& stop_computing = false) {
-  if (fps_counter_details.counter_type_ == 2 && what == "start") {
-    fps_counter_details.start_time_ = pcl::getTime();
-    return;
-  }
-
-  auto print_counter_details = [&]() {
-    std::cout << "Average framerate(" << what << "): " << fps_counter_details.fps_
-              << " Hz" << std::endl;
-
-    if (stop_computing)
+    if (stop_computing_)
       std::cout << "Press 's' to start computing!\n";
   };
 
-  return FpsCounterConditional(fps_counter_details, print_counter_details).tick();
+public:
+  fpsCounterConditional(const std::string what,
+                        const unsigned& reset_iter = 10,
+                        const bool& stop_computing = false)
+  : fpsCounter(what), reset_iter_(reset_iter), stop_computing_(stop_computing)
+  {}
 };
 
 } // namespace pcl
