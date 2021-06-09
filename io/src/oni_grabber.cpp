@@ -42,7 +42,7 @@
 #include <pcl/point_types.h>
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
-#include <pcl/io/boost.h>  // for boost::shared_array
+#include <boost/shared_array.hpp> // for boost::shared_array
 #include <pcl/memory.h>  // for dynamic_pointer_cast
 #include <pcl/exceptions.h>
 

@@ -39,10 +39,10 @@
 
 #pragma once
 
+#include <set> // for std::set
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
-#include <pcl/segmentation/boost.h>
 #include <pcl/segmentation/comparator.h>
 
 

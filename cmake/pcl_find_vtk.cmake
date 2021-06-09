@@ -37,6 +37,7 @@ endif()
 set(NON_PREFIX_PCL_VTK_COMPONENTS
   ChartsCore
   CommonColor
+  CommonComputationalGeometry
   CommonCore
   CommonDataModel
   CommonExecutionModel

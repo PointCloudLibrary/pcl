@@ -31,7 +31,7 @@ if(CUDA_FOUND)
   # https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html#deprecated-features
   
   if(NOT ${CUDA_VERSION_STRING} VERSION_LESS "11.0")
-    set(__cuda_arch_bin "3.5 3.7 5.0 5.2 5.3 6.0 6.1 6.2 7.0 7.2 7.5 8.0")
+    set(__cuda_arch_bin "3.5 3.7 5.0 5.2 5.3 6.0 6.1 6.2 7.0 7.2 7.5 8.0 8.6")
   elseif(NOT ${CUDA_VERSION_STRING} VERSION_LESS "10.0")
     set(__cuda_arch_bin "3.0 3.2 3.5 3.7 5.0 5.2 5.3 6.0 6.1 6.2 7.0 7.2 7.5")
   elseif(NOT ${CUDA_VERSION_STRING} VERSION_LESS "9.0")

@@ -46,7 +46,6 @@
 #include <QMainWindow>
 #include <QMutex>
 #include <QTimer>
-#include <ui_manual_registration.h>
 
 using PointT = pcl::PointXYZRGBA;
 

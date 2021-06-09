@@ -65,7 +65,7 @@ inline void extractEuclideanClustersSmooth(const typename pcl::PointCloud<PointT
   // Create a bool vector of processed point indices, and initialize it to false
   std::vector<bool> processed (cloud.size (), false);
 
-  std::vector<int> nn_indices;
+  pcl::Indices nn_indices;
   std::vector<float> nn_distances;
   // Process all points in the indices vector
   int size = static_cast<int> (cloud.size ());
@@ -663,7 +663,7 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::computeClutterCue(Recogn
     std::vector<float> nn_distances;
 
     std::vector < std::pair<int, int> > neighborhood_indices; //first is indices to scene point and second is indices to explained_ scene points
-    for (int i = 0; i < static_cast<int> (recog_model->explained_.size ()); i++)
+    for (pcl::index_t i = 0; i < static_cast<pcl::index_t> (recog_model->explained_.size ()); i++)
     {
       if (scene_downsampled_tree_->radiusSearch ((*scene_cloud_downsampled_)[recog_model->explained_[i]], radius_neighborhood_GO_, nn_indices,
           nn_distances, std::numeric_limits<int>::max ()))

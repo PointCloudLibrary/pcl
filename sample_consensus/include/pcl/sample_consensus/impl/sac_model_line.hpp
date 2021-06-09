@@ -98,6 +98,9 @@ pcl::SampleConsensusModelLine<PointT>::computeModelCoefficients (
   model_coefficients[5] = (*input_)[samples[1]].z - model_coefficients[2];
 
   model_coefficients.template tail<3> ().normalize ();
+  PCL_DEBUG ("[pcl::SampleConsensusModelLine::computeModelCoefficients] Model is (%g,%g,%g,%g,%g,%g).\n",
+             model_coefficients[0], model_coefficients[1], model_coefficients[2],
+             model_coefficients[3], model_coefficients[4], model_coefficients[5]);
   return (true);
 }
 

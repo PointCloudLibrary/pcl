@@ -44,7 +44,8 @@ Please visit http://www.pointclouds.org for more information.
   booktitle = {{IEEE International Conference on Robotics and Automation (ICRA)}},
   month     = {May 9-13},
   year      = {2011},
-  address   = {Shanghai, China}
+  address   = {Shanghai, China},
+  publisher = {IEEE}
 }
 </pre>
 <a href="http://www.pointclouds.org/assets/pdf/pcl_icra2011.pdf">Download PDF here</a>.

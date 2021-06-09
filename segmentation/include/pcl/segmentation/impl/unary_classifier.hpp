@@ -174,25 +174,24 @@ pcl::UnaryClassifier<PointT>::getCloudWithLabel (typename pcl::PointCloud<PointT
   // find the 'label' field index
   std::vector <pcl::PCLPointField> fields;
   int label_idx = -1;
-  pcl::PointCloud <PointT> point;
   label_idx = pcl::getFieldIndex<PointT> ("label", fields);
 
   if (label_idx != -1)
   {
-    for (std::size_t i = 0; i < in->size (); i++)
+    for (const auto& point : (*in))
     {
       // get the 'label' field                                                                       
       std::uint32_t label;
-      memcpy (&label, reinterpret_cast<char*> (&(*in)[i]) + fields[label_idx].offset, sizeof(std::uint32_t));
+      memcpy (&label, reinterpret_cast<const char*> (&point) + fields[label_idx].offset, sizeof(std::uint32_t));
 
       if (static_cast<int> (label) == label_num)
       {
-        pcl::PointXYZ point;
+        pcl::PointXYZ tmp;
         // X Y Z
-        point.x = (*in)[i].x;
-        point.y = (*in)[i].y;
-        point.z = (*in)[i].z;
-        out->points.push_back (point);
+        tmp.x = point.x;
+        tmp.y = point.y;
+        tmp.z = point.z;
+        out->push_back (tmp);
       }
     }
     out->width = out->size ();

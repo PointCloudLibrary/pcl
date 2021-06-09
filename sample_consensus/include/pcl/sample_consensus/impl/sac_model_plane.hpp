@@ -107,6 +107,8 @@ pcl::SampleConsensusModelPlane<PointT>::computeModelCoefficients (
   // ... + d = 0
   model_coefficients[3] = -1.0f * (model_coefficients.template head<4>().dot (p0.matrix ()));
 
+  PCL_DEBUG ("[pcl::SampleConsensusModelPlane::computeModelCoefficients] Model is (%g,%g,%g,%g).\n",
+             model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3]);
   return (true);
 }
 

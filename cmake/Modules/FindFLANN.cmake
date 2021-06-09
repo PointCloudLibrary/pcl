@@ -42,16 +42,38 @@ endif()
 
 # First try to locate FLANN using modern config
 find_package(flann NO_MODULE ${FLANN_FIND_VERSION} QUIET)
+
 if(flann_FOUND)
   unset(flann_FOUND)
   set(FLANN_FOUND ON)
+
   # Create interface library that effectively becomes an alias for the appropriate (static/dynamic) imported FLANN target
   add_library(FLANN::FLANN INTERFACE IMPORTED)
-  if(FLANN_USE_STATIC)
+
+  if(TARGET flann::flann_cpp_s AND TARGET flann::flann_cpp)
+    if(PCL_FLANN_REQUIRED_TYPE MATCHES "DONTCARE")
+      if(PCL_SHARED_LIBS)
+        set_property(TARGET FLANN::FLANN APPEND PROPERTY INTERFACE_LINK_LIBRARIES flann::flann_cpp)
+        set(FLANN_LIBRARY_TYPE SHARED)
+      else()
+        set_property(TARGET FLANN::FLANN APPEND PROPERTY INTERFACE_LINK_LIBRARIES flann::flann_cpp_s)
+        set(FLANN_LIBRARY_TYPE STATIC)
+      endif()
+    elseif(PCL_FLANN_REQUIRED_TYPE MATCHES "SHARED")
+      set_property(TARGET FLANN::FLANN APPEND PROPERTY INTERFACE_LINK_LIBRARIES flann::flann_cpp)
+      set(FLANN_LIBRARY_TYPE SHARED)
+    else()
+      set_property(TARGET FLANN::FLANN APPEND PROPERTY INTERFACE_LINK_LIBRARIES flann::flann_cpp_s)
+      set(FLANN_LIBRARY_TYPE STATIC)
+    endif()
+  elseif(TARGET flann::flann_cpp_s)
     set_property(TARGET FLANN::FLANN APPEND PROPERTY INTERFACE_LINK_LIBRARIES flann::flann_cpp_s)
+    set(FLANN_LIBRARY_TYPE STATIC)
   else()
     set_property(TARGET FLANN::FLANN APPEND PROPERTY INTERFACE_LINK_LIBRARIES flann::flann_cpp)
+    set(FLANN_LIBRARY_TYPE SHARED)
   endif()
+
   # Determine FLANN installation root based on the path to the processed Config file
   get_filename_component(_config_dir "${flann_CONFIG}" DIRECTORY)
   get_filename_component(FLANN_ROOT "${_config_dir}/../../.." ABSOLUTE)
@@ -82,43 +104,85 @@ find_path(FLANN_INCLUDE_DIR
     include
 )
 
-if(FLANN_USE_STATIC)
-  set(FLANN_RELEASE_NAME flann_cpp_s)
-  set(FLANN_DEBUG_NAME flann_cpp_s-gd)
+find_library(FLANN_LIBRARY_SHARED
+  NAMES
+    flann_cpp
+  HINTS
+    ${PC_FLANN_LIBRARY_DIRS}
+    ${FLANN_ROOT}
+    $ENV{FLANN_ROOT}
+  PATHS
+    $ENV{PROGRAMFILES}/Flann
+    $ENV{PROGRAMW6432}/Flann
+  PATH_SUFFIXES
+    lib
+)
+
+find_library(FLANN_LIBRARY_DEBUG_SHARED
+  NAMES
+    flann_cpp-gd flann_cppd
+  HINTS
+    ${PC_FLANN_LIBRARY_DIRS}
+    ${FLANN_ROOT}
+    $ENV{FLANN_ROOT}
+  PATHS
+    $ENV{PROGRAMFILES}/Flann
+    $ENV{PROGRAMW6432}/Flann
+  PATH_SUFFIXES
+    lib
+)
+
+find_library(FLANN_LIBRARY_STATIC
+  NAMES
+    flann_cpp_s
+  HINTS
+    ${PC_FLANN_LIBRARY_DIRS}
+    ${FLANN_ROOT}
+    $ENV{FLANN_ROOT}
+  PATHS
+    $ENV{PROGRAMFILES}/Flann
+    $ENV{PROGRAMW6432}/Flann
+  PATH_SUFFIXES
+    lib
+)
+
+find_library(FLANN_LIBRARY_DEBUG_STATIC
+  NAMES
+    flann_cpp_s-gd flann_cpp_sd
+  HINTS
+    ${PC_FLANN_LIBRARY_DIRS}
+    ${FLANN_ROOT}
+    $ENV{FLANN_ROOT}
+  PATHS
+    $ENV{PROGRAMFILES}/Flann
+    $ENV{PROGRAMW6432}/Flann
+  PATH_SUFFIXES
+    lib
+)
+
+if(FLANN_LIBRARY_SHARED AND FLANN_LIBRARY_STATIC)
+  if(PCL_FLANN_REQUIRED_TYPE MATCHES "DONTCARE")
+    if(PCL_SHARED_LIBS)
+      set(FLANN_LIBRARY_TYPE SHARED)
+      set(FLANN_LIBRARY ${FLANN_LIBRARY_SHARED})
+    else()
+      set(FLANN_LIBRARY_TYPE STATIC)
+      set(FLANN_LIBRARY ${FLANN_LIBRARY_STATIC})
+    endif()
+  elseif(PCL_FLANN_REQUIRED_TYPE MATCHES "SHARED")
+    set(FLANN_LIBRARY_TYPE SHARED)
+    set(FLANN_LIBRARY ${FLANN_LIBRARY_SHARED})
+  else()
+    set(FLANN_LIBRARY_TYPE STATIC)
+    set(FLANN_LIBRARY ${FLANN_LIBRARY_STATIC})
+  endif()
+elseif(FLANN_LIBRARY_STATIC)
   set(FLANN_LIBRARY_TYPE STATIC)
-else()
-  set(FLANN_RELEASE_NAME flann_cpp)
-  set(FLANN_DEBUG_NAME flann_cpp-gd)
+  set(FLANN_LIBRARY ${FLANN_LIBRARY_STATIC})
+elseif(FLANN_LIBRARY_SHARED)
   set(FLANN_LIBRARY_TYPE SHARED)
+  set(FLANN_LIBRARY ${FLANN_LIBRARY_SHARED})
 endif()
-
-find_library(FLANN_LIBRARY
-  NAMES
-    ${FLANN_RELEASE_NAME}
-  HINTS
-    ${PC_FLANN_LIBRARY_DIRS}
-    ${FLANN_ROOT}
-    $ENV{FLANN_ROOT}
-  PATHS
-    $ENV{PROGRAMFILES}/Flann
-    $ENV{PROGRAMW6432}/Flann
-  PATH_SUFFIXES
-    lib
-)
-
-find_library(FLANN_LIBRARY_DEBUG
-  NAMES
-    ${FLANN_DEBUG_NAME}
-  HINTS
-    ${PC_FLANN_LIBRARY_DIRS}
-    ${FLANN_ROOT}
-    $ENV{FLANN_ROOT}
-  PATHS
-    $ENV{PROGRAMFILES}/Flann
-    $ENV{PROGRAMW6432}/Flann
-  PATH_SUFFIXES
-    lib
-)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
@@ -132,7 +196,7 @@ if(FLANN_FOUND)
   set_target_properties(FLANN::FLANN PROPERTIES INTERFACE_COMPILE_DEFINITIONS "${PC_FLANN_CFLAGS_OTHER}")
   set_property(TARGET FLANN::FLANN APPEND PROPERTY IMPORTED_CONFIGURATIONS "RELEASE")
   set_target_properties(FLANN::FLANN PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "CXX")
-  if(WIN32 AND NOT FLANN_USE_STATIC)
+  if(WIN32 AND (NOT FLANN_LIBRARY_TYPE MATCHES "STATIC"))
     set_target_properties(FLANN::FLANN PROPERTIES IMPORTED_IMPLIB_RELEASE "${FLANN_LIBRARY}")
   else()
     set_target_properties(FLANN::FLANN PROPERTIES IMPORTED_LOCATION_RELEASE "${FLANN_LIBRARY}")
@@ -140,7 +204,7 @@ if(FLANN_FOUND)
   if(FLANN_LIBRARY_DEBUG)
     set_property(TARGET FLANN::FLANN APPEND PROPERTY IMPORTED_CONFIGURATIONS "DEBUG")
     set_target_properties(FLANN::FLANN PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES_DEBUG "CXX")
-    if(WIN32 AND NOT FLANN_USE_STATIC)
+    if(WIN32 AND (NOT FLANN_LIBRARY_TYPE MATCHES "STATIC"))
       set_target_properties(FLANN::FLANN PROPERTIES IMPORTED_IMPLIB_DEBUG "${FLANN_LIBRARY_DEBUG}")
     else()
       set_target_properties(FLANN::FLANN PROPERTIES IMPORTED_LOCATION_DEBUG "${FLANN_LIBRARY_DEBUG}")

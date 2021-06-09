@@ -43,7 +43,6 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/pcl_base.h>
-#include <pcl/sample_consensus/eigen.h>
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/common/eigen.h>

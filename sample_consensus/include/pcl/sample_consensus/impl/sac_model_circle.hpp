@@ -41,7 +41,7 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CIRCLE_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CIRCLE_H_
 
-#include <pcl/sample_consensus/eigen.h>
+#include <unsupported/Eigen/NonLinearOptimization> // for LevenbergMarquardt
 #include <pcl/sample_consensus/sac_model_circle.h>
 #include <pcl/common/concatenate.h>
 
@@ -102,6 +102,8 @@ pcl::SampleConsensusModelCircle2D<PointT>::computeModelCoefficients (const Indic
   // Radius
   model_coefficients[2] = static_cast<float> (sqrt ((model_coefficients[0] - p0[0]) * (model_coefficients[0] - p0[0]) +
                                                     (model_coefficients[1] - p0[1]) * (model_coefficients[1] - p0[1])));
+  PCL_DEBUG ("[pcl::SampleConsensusModelCircle2D::computeModelCoefficients] Model is (%g,%g,%g).\n",
+             model_coefficients[0], model_coefficients[1], model_coefficients[2]);
   return (true);
 }
 
@@ -445,9 +447,17 @@ pcl::SampleConsensusModelCircle2D<PointT>::isModelValid (const Eigen::VectorXf &
     return (false);
 
   if (radius_min_ != -std::numeric_limits<double>::max() && model_coefficients[2] < radius_min_)
+  {
+    PCL_DEBUG ("[pcl::SampleConsensusModelCircle2D::isModelValid] Radius of circle is too small: should be larger than %g, but is %g.\n",
+               radius_min_, model_coefficients[2]);
     return (false);
+  }
   if (radius_max_ != std::numeric_limits<double>::max() && model_coefficients[2] > radius_max_)
+  {
+    PCL_DEBUG ("[pcl::SampleConsensusModelCircle2D::isModelValid] Radius of circle is too big: should be smaller than %g, but is %g.\n",
+               radius_max_, model_coefficients[2]);
     return (false);
+  }
 
   return (true);
 }

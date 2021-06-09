@@ -58,7 +58,6 @@
 #include <vtkSelection.h>
 #include <vtkPointPicker.h>
 
-#include <pcl/visualization/boost.h>
 #include <pcl/visualization/vtk/vtkRenderWindowInteractorFix.h>
 #include <pcl/visualization/vtk/pcl_vtk_compatibility.h>
 
@@ -100,12 +99,14 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/common/common.h>
 #include <pcl/common/time.h>
+#include <boost/version.hpp> // for BOOST_VERSION
 #if (BOOST_VERSION >= 106600)
 #include <boost/uuid/detail/sha1.hpp>
 #else
 #include <boost/uuid/sha1.hpp>
 #endif
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp> // for split
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/console/parse.h>
 
@@ -2428,6 +2429,34 @@ pcl::visualization::PCLVisualizer::addCube (float x_min, float x_max,
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
   actor->GetProperty ()->SetColor (r, g, b);
+  addActorToRenderer (actor, viewport);
+
+  // Save the pointer/ID pair to the global actor map
+  (*shape_actor_map_)[id] = actor;
+  return (true);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizer::addEllipsoid (
+  const Eigen::Isometry3d &transform,
+  double radius_x, double radius_y, double radius_z,
+  const std::string &id, int viewport)
+{
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  if (am_it != shape_actor_map_->end ())
+  {
+    pcl::console::print_warn (stderr, "[addEllipsoid] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    return (false);
+  }
+
+  vtkSmartPointer<vtkDataSet> data = createEllipsoid (transform, radius_x, radius_y, radius_z);
+
+  // Create an Actor
+  vtkSmartPointer<vtkLODActor> actor;
+  createActorFromVTKDataSet (data, actor);
+  actor->GetProperty ()->SetRepresentationToSurface ();
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map

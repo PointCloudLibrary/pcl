@@ -43,10 +43,9 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/apps/in_hand_scanner/boost.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
 #include <pcl/apps/in_hand_scanner/opengl_viewer.h>
-
+#include <boost/signals2/connection.hpp> // for connection
 #include <mutex>
 #include <string>
 #include <sstream>

@@ -376,43 +376,47 @@ pcl_round (float number)
   #endif
 #endif
 
+namespace pcl {
+
 inline void*
-aligned_malloc (std::size_t size)
+aligned_malloc(std::size_t size)
 {
-  void *ptr;
-#if   defined (MALLOC_ALIGNED)
-  ptr = std::malloc (size);
-#elif defined (HAVE_POSIX_MEMALIGN)
-  if (posix_memalign (&ptr, 16, size))
+  void* ptr;
+#if defined(MALLOC_ALIGNED)
+  ptr = std::malloc(size);
+#elif defined(HAVE_POSIX_MEMALIGN)
+  if (posix_memalign(&ptr, 16, size))
     ptr = 0;
-#elif defined (HAVE_MM_MALLOC)
-  ptr = _mm_malloc (size, 16);
-#elif defined (_MSC_VER)
-  ptr = _aligned_malloc (size, 16);
-#elif defined (ANDROID)
-  ptr = memalign (16, size);
+#elif defined(HAVE_MM_MALLOC)
+  ptr = _mm_malloc(size, 16);
+#elif defined(_MSC_VER)
+  ptr = _aligned_malloc(size, 16);
+#elif defined(ANDROID)
+  ptr = memalign(16, size);
 #else
-  #error aligned_malloc not supported on your platform
+#error aligned_malloc not supported on your platform
   ptr = 0;
 #endif
   return (ptr);
 }
 
 inline void
-aligned_free (void* ptr)
+aligned_free(void* ptr)
 {
-#if   defined (MALLOC_ALIGNED) || defined (HAVE_POSIX_MEMALIGN)
-  std::free (ptr);
-#elif defined (HAVE_MM_MALLOC)
-  _mm_free (ptr);
-#elif defined (_MSC_VER)
-  _aligned_free (ptr);
-#elif defined (ANDROID)
-  free (ptr);
+#if defined(MALLOC_ALIGNED) || defined(HAVE_POSIX_MEMALIGN)
+  std::free(ptr);
+#elif defined(HAVE_MM_MALLOC)
+  _mm_free(ptr);
+#elif defined(_MSC_VER)
+  _aligned_free(ptr);
+#elif defined(ANDROID)
+  free(ptr);
 #else
-  #error aligned_free not supported on your platform
+#error aligned_free not supported on your platform
 #endif
 }
+
+} // namespace pcl
 
 /**
  * \brief Macro to add a no-op or a fallthrough attribute based on compiler feature
@@ -437,4 +441,10 @@ aligned_free (void* ptr)
   #define PCL_NODISCARD [[gnu::warn_unused_result]]
 #else
   #define PCL_NODISCARD
+#endif
+
+#ifdef __cpp_if_constexpr
+  #define PCL_IF_CONSTEXPR(x) if constexpr(x)
+#else
+  #define PCL_IF_CONSTEXPR(x) if (x)
 #endif

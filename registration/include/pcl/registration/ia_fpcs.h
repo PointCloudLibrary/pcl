@@ -64,7 +64,7 @@ getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud,
 template <typename PointT>
 inline float
 getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud,
-                    const std::vector<int>& indices,
+                    const pcl::Indices& indices,
                     float max_dist,
                     int nr_threads = 1);
 
@@ -318,7 +318,7 @@ protected:
    * * = 0 a set of four congruent points was selected
    */
   int
-  selectBase(std::vector<int>& base_indices, float (&ratio)[2]);
+  selectBase(pcl::Indices& base_indices, float (&ratio)[2]);
 
   /** \brief Select randomly a triplet of points with large point-to-point distances.
    * The minimum point sampling distance is calculated based on the estimated point
@@ -330,7 +330,7 @@ protected:
    * * = 0 base triangle succesully selected
    */
   int
-  selectBaseTriangle(std::vector<int>& base_indices);
+  selectBaseTriangle(pcl::Indices& base_indices);
 
   /** \brief Setup the base (four coplanar points) by ordering the points and computing
    * intersection ratios and segment to segment distances of base diagonal.
@@ -339,14 +339,14 @@ protected:
    * \param[out] ratio diagonal intersection ratios of base points
    */
   void
-  setupBase(std::vector<int>& base_indices, float (&ratio)[2]);
+  setupBase(pcl::Indices& base_indices, float (&ratio)[2]);
 
   /** \brief Calculate intersection ratios and segment to segment distances of base
    * diagonals. \param[in] base_indices indices of base B \param[out] ratio diagonal
    * intersection ratios of base points \return quality value of diagonal intersection
    */
   float
-  segmentToSegmentDist(const std::vector<int>& base_indices, float (&ratio)[2]);
+  segmentToSegmentDist(const pcl::Indices& base_indices, float (&ratio)[2]);
 
   /** \brief Search for corresponding point pairs given the distance between two base
    * points.
@@ -375,8 +375,8 @@ protected:
    * * = 0 at least one base match was found
    */
   virtual int
-  determineBaseMatches(const std::vector<int>& base_indices,
-                       std::vector<std::vector<int>>& matches,
+  determineBaseMatches(const pcl::Indices& base_indices,
+                       std::vector<pcl::Indices>& matches,
                        const pcl::Correspondences& pairs_a,
                        const pcl::Correspondences& pairs_b,
                        const float (&ratio)[2]);
@@ -391,7 +391,7 @@ protected:
    * * = 0 edges of match M fits to the ones of base B
    */
   int
-  checkBaseMatch(const std::vector<int>& match_indices, const float (&ds)[4]);
+  checkBaseMatch(const pcl::Indices& match_indices, const float (&ds)[4]);
 
   /** \brief Method to handle current candidate matches. Here we validate and evaluate
    * the matches w.r.t the base and store the best fitting match (together with its
@@ -404,8 +404,8 @@ protected:
    * contains the candidates matches M
    */
   virtual void
-  handleMatches(const std::vector<int>& base_indices,
-                std::vector<std::vector<int>>& matches,
+  handleMatches(const pcl::Indices& base_indices,
+                std::vector<pcl::Indices>& matches,
                 MatchingCandidates& candidates);
 
   /** \brief Sets the correspondences between the base B and the match M by using the
@@ -416,8 +416,8 @@ protected:
    * \param[out] correspondences resulting correspondences
    */
   virtual void
-  linkMatchWithBase(const std::vector<int>& base_indices,
-                    std::vector<int>& match_indices,
+  linkMatchWithBase(const pcl::Indices& base_indices,
+                    pcl::Indices& match_indices,
                     pcl::Correspondences& correspondences);
 
   /** \brief Validate the matching by computing the transformation between the source
@@ -434,8 +434,8 @@ protected:
    * * = 0 MSE smaller than max_mse_
    */
   virtual int
-  validateMatch(const std::vector<int>& base_indices,
-                const std::vector<int>& match_indices,
+  validateMatch(const pcl::Indices& base_indices,
+                const pcl::Indices& match_indices,
                 const pcl::Correspondences& correspondences,
                 Eigen::Matrix4f& transformation);
 

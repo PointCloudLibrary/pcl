@@ -80,7 +80,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 {
   if (indices_) {
     for (const auto& index : *indices_) {
-      assert((index >= 0) && (index < input_->size()));
+      assert((index >= 0) && (static_cast<std::size_t>(index) < input_->size()));
 
       if (isFinite((*input_)[index])) {
         // add points to octree

@@ -41,7 +41,7 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_SPHERE_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_SPHERE_H_
 
-#include <pcl/sample_consensus/eigen.h>
+#include <unsupported/Eigen/NonLinearOptimization> // for LevenbergMarquardt
 #include <pcl/sample_consensus/sac_model_sphere.h>
 
 //////////////////////////////////////////////////////////////////////////
@@ -123,6 +123,8 @@ pcl::SampleConsensusModelSphere<PointT>::computeModelCoefficients (
                                      model_coefficients[1] * model_coefficients[1] +
                                      model_coefficients[2] * model_coefficients[2] - m15 / m11);
 
+  PCL_DEBUG ("[pcl::SampleConsensusModelSphere::computeModelCoefficients] Model is (%g,%g,%g,%g)\n",
+             model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3]);
   return (true);
 }
 

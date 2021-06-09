@@ -46,8 +46,6 @@
 #include <pcl/common/time.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
-#include <pcl/apps/in_hand_scanner/boost.h>
-#include <pcl/apps/in_hand_scanner/eigen.h>
 #include <pcl/apps/in_hand_scanner/opengl_viewer.h>
 
 #include <mutex>

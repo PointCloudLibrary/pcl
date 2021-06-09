@@ -9,13 +9,13 @@
 #include <pcl/surface/convex_hull.h>
 
 int
- main (int argc, char** argv)
+ main ()
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>), cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>), cloud_projected (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PCDReader reader;
   reader.read ("table_scene_mug_stereo_textured.pcd", *cloud);
 
-  // Build a filter to remove spurious NaNs
+  // Build a filter to remove spurious NaNs and scene background
   pcl::PassThrough<pcl::PointXYZ> pass;
   pass.setInputCloud (cloud);
   pass.setFilterFieldName ("z");
