@@ -187,6 +187,7 @@ namespace pcl
             __device__  __forceinline__ void operator()() const
             {             
                 //32 is a performance penalty step for search
+                //TODO: Once PCL requires min CUDA7, replace with static_assert
                 Static<(max_points_per_leaf % 32) == 0>::check();                 
 
                 if (threadIdx.x == 0)

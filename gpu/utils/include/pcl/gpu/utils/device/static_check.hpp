@@ -34,6 +34,9 @@
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
 
+//TODO: Once PCL requires min CUDA7 (allows c++11 on device), remove file
+//Last code implmented in octree_builder.cu, replace by static_assert
+
 #ifndef PCL_GPU_DEVICE_STATIC_CHECK_HPP_
 #define PCL_GPU_DEVICE_STATIC_CHECK_HPP_
 
