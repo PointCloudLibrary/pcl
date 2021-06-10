@@ -67,10 +67,10 @@ namespace pcl
       template<typename U> void operator() ()
       {
         pcl::PCLPointField f;
-        f.name = traits::name<PointT, U>::value;
-        f.offset = traits::offset<PointT, U>::value;
-        f.datatype = traits::datatype<PointT, U>::value;
-        f.count = traits::datatype<PointT, U>::size;
+        f.name = pcl::traits::name<PointT, U>::value;
+        f.offset = pcl::traits::offset<PointT, U>::value;
+        f.datatype = pcl::traits::datatype<PointT, U>::value;
+        f.count = pcl::traits::datatype<PointT, U>::size;
         fields_.push_back (f);
       }
 
@@ -96,14 +96,14 @@ namespace pcl
           {
             FieldMapping mapping;
             mapping.serialized_offset = field.offset;
-            mapping.struct_offset = traits::offset<PointT, Tag>::value;
-            mapping.size = sizeof (typename traits::datatype<PointT, Tag>::type);
+            mapping.struct_offset = pcl::traits::offset<PointT, Tag>::value;
+            mapping.size = sizeof (typename pcl::traits::datatype<PointT, Tag>::type);
             map_.push_back (mapping);
             return;
           }
         }
         // Disable thrown exception per #595: http://dev.pointclouds.org/issues/595
-        PCL_WARN ("Failed to find match for field '%s'.\n", traits::name<PointT, Tag>::value);
+        PCL_WARN ("Failed to find match for field '%s'.\n", pcl::traits::name<PointT, Tag>::value);
         //throw pcl::InvalidConversionException (ss.str ());
       }
 
