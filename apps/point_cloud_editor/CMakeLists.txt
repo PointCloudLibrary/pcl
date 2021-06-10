@@ -1,25 +1,7 @@
 set(SUBSUBSYS_NAME point_cloud_editor)
 set(SUBSUBSYS_DESC "Point Cloud Editor - Simple editor for 3D point clouds")
 set(SUBSUBSYS_DEPS common filters io apps)
-
-# QT5 Found?
-if(NOT Qt5_FOUND)
-  set(DEFAULT AUTO_OFF)
-  set(REASON "Qt5 was not found.")
-elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
-  set(DEFAULT TRUE)
-  set(REASON)
-endif()
-
-# Find OpenGL
-if(NOT OPENGL_FOUND)
-  set(DEFAULT AUTO_OFF)
-  set(REASON "OpenGL was not found.")
-elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
-  set(DEFAULT TRUE)
-  set(REASON)
-endif()
-
+set(SUBSUBSYS_EXT_DEPS vtk Qt5 OpenGL)
 
 # Default to not building for now
 if(${DEFAULT} STREQUAL "TRUE")
@@ -27,7 +9,7 @@ if(${DEFAULT} STREQUAL "TRUE")
 endif()
 
 PCL_SUBSUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
-PCL_SUBSUBSYS_DEPEND(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${SUBSYS_DEPS})
+PCL_SUBSUBSYS_DEPEND(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${SUBSUBSYS_DEPS} EXT_DEPS ${SUBSUBSYS_EXT_DEPS})
 PCL_ADD_DOC(${SUBSUBSYS_NAME})
 
 if(NOT build)
