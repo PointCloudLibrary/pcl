@@ -41,7 +41,6 @@
 
 #include <pcl/gpu/utils/device/algorithm.hpp>
 #include <pcl/gpu/utils/device/warp.hpp>
-#include <pcl/gpu/utils/device/static_check.hpp>
 //#include <pcl/gpu/utils/device/funcattrib.hpp>
 #include <pcl/gpu/utils/safe_call.hpp>
 

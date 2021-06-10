@@ -37,7 +37,6 @@
  */
 
 #include <pcl/gpu/surface/convex_hull.h>
-#include <pcl/gpu/utils/device/static_check.hpp>
 #include "internal.h"
 #include <pcl/exceptions.h>
 

@@ -40,7 +40,6 @@
 #include "pcl/gpu/utils/timers_cuda.hpp"
 #include "pcl/gpu/utils/device/funcattrib.hpp"
 #include "pcl/gpu/utils/device/algorithm.hpp"
-#include "pcl/gpu/utils/device/static_check.hpp"
 #include "utils/scan_block.hpp"
 #include "utils/morton.hpp"
 
@@ -187,8 +186,7 @@ namespace pcl
             __device__  __forceinline__ void operator()() const
             {             
                 //32 is a performance penalty step for search
-                //TODO: Once PCL requires min CUDA7, replace with static_assert
-                Static<(max_points_per_leaf % 32) == 0>::check();                 
+                static_assert((max_points_per_leaf % 32) == 0);
 
                 if (threadIdx.x == 0)
                 {
