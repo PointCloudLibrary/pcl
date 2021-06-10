@@ -604,13 +604,13 @@ namespace pcl
       rgba = p.rgba;
     }
 
-    inline PointXYZRGBA (): PointXYZRGBA (0, 0, 0, 0) {}
+    inline PointXYZRGBA (): PointXYZRGBA (0, 0, 0, 255) {}
 
     inline PointXYZRGBA (std::uint8_t _r, std::uint8_t _g, std::uint8_t _b, std::uint8_t _a):
       PointXYZRGBA (0.f, 0.f, 0.f, _r, _g, _b, _a) {}
 
     inline PointXYZRGBA (float _x, float _y, float _z):
-      PointXYZRGBA (_x, _y, _z, 0, 0, 0, 0) {}
+      PointXYZRGBA (_x, _y, _z, 0, 0, 0, 255) {}
 
     inline PointXYZRGBA (float _x, float _y, float _z, std::uint8_t _r,
                          std::uint8_t _g, std::uint8_t _b, std::uint8_t _a)
