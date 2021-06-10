@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.11)
+cmake_minimum_required(VERSION 3.5)
 
 project(pcl_visualizer)
 
