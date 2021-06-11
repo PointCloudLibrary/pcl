@@ -196,13 +196,10 @@ pcl::gpu::printCudaDeviceInfo(int device)
   cudaSafeCall(cudaRuntimeGetVersion(&runtimeVersion));
 
   const char* computeMode[] = {
-      "Default (multiple host threads can use ::cudaSetDevice() with device "
-      "simultaneously)",
-      "Exclusive (only one host thread in one process is able to use ::cudaSetDevice() "
-      "with this device)",
-      "Prohibited (no host thread can use ::cudaSetDevice() with this device)",
-      "Exclusive Process (many threads in one process is able to use ::cudaSetDevice() "
-      "with this device)",
+      "Default (multiple host threads can use ::cudaSetDevice() simultaneously)",
+      "Exclusive (only one host thread in one process can use ::cudaSetDevice())",
+      "Prohibited (no host thread can use ::cudaSetDevice())",
+      "Exclusive Process (many threads in one process can use ::cudaSetDevice())",
       "Unknown",
       nullptr};
 
