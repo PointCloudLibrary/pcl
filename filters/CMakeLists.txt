@@ -22,6 +22,7 @@ set(srcs
   src/passthrough.cpp
   src/shadowpoints.cpp
   src/project_inliers.cpp
+  src/pyramid.cpp
   src/radius_outlier_removal.cpp
   src/random_sample.cpp
   src/normal_space.cpp
