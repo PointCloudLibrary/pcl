@@ -368,14 +368,15 @@ if(WITH_CUDA)
 endif()
 
 
+# Reset VTK_FOUND to off
+set(VTK_FOUND OFF)
 # Find VTK - VTK has to be found before Qt, otherwise it can overwrite Qt variables
 option(WITH_VTK "Build VTK-Visualizations" TRUE)
-if(WITH_VTK AND NOT ANDROID)
-  include("${PCL_SOURCE_DIR}/cmake/pcl_find_vtk.cmake")
-else()
-  set(VTK_FOUND OFF)
+if(WITH_VTK)
   if(ANDROID)
     message(WARNING "VTK is not supported on Android.")
+  else()
+    include("${PCL_SOURCE_DIR}/cmake/pcl_find_vtk.cmake")
   endif()
 endif()
 
