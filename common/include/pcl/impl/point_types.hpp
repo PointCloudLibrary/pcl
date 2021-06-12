@@ -2467,22 +2467,20 @@ namespace traits
     removed in PCL 1.15. Please use has_rgb, has_rgb_v, HasRGB, HasNoRGB respectively.
   */
   template <typename PointT>
-  struct PCL_DEPRECATED(1, 15, "Please use has_rgb instead.")
-  has_color : has_any_field<PointT, boost::mpl::vector<pcl::fields::rgb,
-                                                       pcl::fields::rgba> >
-  { };
+  using has_color PCL_DEPRECATED(1, 15, "Please use has_rgb instead.")
+    = has_rgb<PointT>;
 
   template <typename PointT>
   PCL_DEPRECATED(1, 15, "Please use has_rgb_v instead.")
-  constexpr auto has_color_v  = has_rgb<PointT>::value;
+  constexpr auto has_color_v = has_rgb<PointT>::value;
 
   template <typename PointT>
-  using HasColor PCL_DEPRECATED(1, 15, "Please use HasRGB instead.") 
-    = std::enable_if_t<has_color_v<PointT>, bool>;
+  using HasColor PCL_DEPRECATED(1, 15, "Please use HasRGB instead.")
+    = HasRGB<PointT>;
 
   template <typename PointT>
   using HasNoColor PCL_DEPRECATED(1, 15, "Please use HasNoRGB instead.")
-    = std::enable_if_t<!has_color_v<PointT>, bool>;
+    = HasNoRGB<PointT>;
 
   /** Metafunction to check if a given point type has label field. */
   template <typename PointT>
