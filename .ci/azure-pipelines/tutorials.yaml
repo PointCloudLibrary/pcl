@@ -1,6 +1,9 @@
 jobs:
   - job: tutorials
     displayName: Building Tutorials
+    # Tutorials need to be built if:
+    # 1) PCL source code changed
+    # 2) Tutorials source code changed
     condition: and(succeeded(), 
                   or(eq(dependencies.CodesDiff.outputs['GitResult.HasTutorialCodeChanges'], 'true'), 
                     eq(dependencies.CodesDiff.outputs['GitResult.HasPCLCodeChanges'], 'true')))

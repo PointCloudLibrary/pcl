@@ -1,3 +1,6 @@
+# Use pipeline trigger only, so set `trigger` and `pr` fields to none to avoid unexamined run.
+# See here, https://docs.microsoft.com/en-us/azure/devops/pipelines/process/pipeline-triggers?tabs=yaml&view=azure-devops#stage-filters
+
 trigger: none
 
 pr: none

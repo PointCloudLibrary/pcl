@@ -3,7 +3,7 @@
 #    this is NOT exclude rules for documentation,
 #    set this rule only to avoid any CI run.
 # 2. DOCS_LISTS in diff script, 
-#    the lists contains all documentation-related files,
+#    the lists contain all documentation-related files,
 #    fill the list to help git-diff recognize docs changes.
 
 trigger:
@@ -12,7 +12,10 @@ trigger:
     - README.md
     - CHANGES.md
     - CONTRIBUTING.md
-    # add more exclude rules, e.g. .ci, .dev, .github
+    - .ci
+    - .dev
+    - .github
+    # add more exclude rules, e.g. fileName, directoryName
     # which won't cause any CI to run.
 
 pr:
@@ -21,7 +24,10 @@ pr:
     - README.md
     - CHANGES.md
     - CONTRIBUTING.md
-    # add more exclude rules, e.g. .ci, .dev, .github
+    - .ci
+    - .dev
+    - .github
+    # add more exclude rules, e.g. fileName, directoryName
     # which won't cause any CI to run.
 
 resources:
