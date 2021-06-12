@@ -108,32 +108,33 @@ public:
   upload(const T* host_ptr, std::size_t size);
 
   /** \brief Uploads data from CPU memory to internal buffer.
-   * Returns false if device_offset < device_begin_offset
+   * Returns false if device_begin_offset + num_elements > size of array
+   * Please noote that in contrast to the other upload function, this function
+   * never allocates memory.
    * \param host_ptr pointer to buffer to upload
    * \param device_begin_offset begin upload
-   * \param device_end_offset end upload
+   * \param num_elements number of elements from device_bein_offset
    * */
   bool
-  upload(T* host_ptr, std::size_t device_begin_offset, std::size_t device_end_offset);
+  upload(T* host_ptr, std::size_t device_begin_offset, std::size_t num_elements);
 
   /** \brief Downloads data from internal buffer to CPU memory
    * \param host_ptr pointer to buffer to download
    * */
-
   void
   download(T* host_ptr) const;
 
+
   /** \brief Downloads data from internal buffer to CPU memory.
-   * Returns false if device_offset < device_begin_offset
+   * Returns false if device_begin_offset + num_elements > size of array
    * \param host_ptr pointer to buffer to download
    * \param device_begin_offset begin download location
-   * \param device_end_offset end download location
+   * \param num_elements number of elements from device_begin_offset
    * */
-
   bool
   download(T* host_ptr,
            std::size_t device_begin_offset,
-           std::size_t device_end_offset) const;
+           std::size_t num_elements) const;
 
   /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to
    * ensure that intenal buffer size is enough.
