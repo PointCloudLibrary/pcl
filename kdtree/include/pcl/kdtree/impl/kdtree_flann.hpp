@@ -41,8 +41,6 @@
 
 #include <flann/flann.hpp>
 
-#include <pcl/pcl_macros.h>
-
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/console/print.h>
 
@@ -56,6 +54,16 @@ pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (bool sorted)
   , param_k_ (::flann::SearchParams (-1 , epsilon_))
   , param_radius_ (::flann::SearchParams (-1, epsilon_, sorted))
 {
+  if (!std::is_same<std::size_t, pcl::index_t>::value) {
+    const auto message = "FLANN is not optimized for current index type. Will incur "
+                         "extra allocations and copy\n";
+    if (std::is_same<int, pcl::index_t>::value) {
+      PCL_DEBUG(message); // since this has been the default behavior till PCL 1.12
+    }
+    else {
+      PCL_WARN(message);
+    }
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -136,9 +144,6 @@ template <typename IndexT>
 struct compat_with_flann: std::false_type {};
 
 template <>
-struct compat_with_flann<int>: std::true_type {};
-
-template <>
 struct compat_with_flann<std::size_t>: std::true_type {};
 
 template <typename IndexT>
@@ -148,11 +153,7 @@ using NotCompatWithFlann = std::enable_if_t<!compat_with_flann<IndexT>::value, b
 
 template <class T, class = void>
 struct IndexMat {
-  IndexMat(pcl::Indices& original) : _vector(original.size()), _original(original)
-  {
-    PCL_WARN("FLANN is not optimized for current index type. Will incur extra "
-              "allocations and copy");
-  }
+  IndexMat(pcl::Indices& original) : _vector(original.size()), _original(original) {}
 
   ~IndexMat() { std::copy(_vector.cbegin(), _vector.cend(), _original.begin()); }
 
