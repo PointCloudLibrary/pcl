@@ -127,7 +127,7 @@ stages:
               CONTAINER: env2004
               CC: clang
               CXX: clang++
-              INDEX_SIGNED: OFF
+              INDEX_SIGNED: ON
               INDEX_SIZE: 64
               CMAKE_ARGS: ''
         container: $[ variables['CONTAINER'] ]
