@@ -283,17 +283,15 @@ pcl::gpu::DeviceMemory::upload(const void* host_ptr_arg, std::size_t sizeBytes_a
 }
 
 bool
-pcl::gpu::DeviceMemory::upload(void* host_ptr_arg,
+pcl::gpu::DeviceMemory::upload(const void* host_ptr_arg,
                                std::size_t device_begin_byte_offset,
                                std::size_t num_bytes)
 {
-  const void* const begin = static_cast<char*>(data_) + device_begin_byte_offset;
-  const char* const upload_end = static_cast<const char*>(begin) + num_bytes;
-  const char* const array_end = static_cast<char*>(data_) + sizeBytes_;
-  if (upload_end > array_end) {
+  if (device_begin_byte_offset + num_bytes > sizeBytes_) {
       return false;
   }
-  cudaSafeCall(cudaMemcpy(host_ptr_arg, begin, num_bytes, cudaMemcpyHostToDevice));
+  void* begin = static_cast<char*>(data_) + device_begin_byte_offset;
+  cudaSafeCall(cudaMemcpy(begin, host_ptr_arg, num_bytes, cudaMemcpyHostToDevice));
   cudaSafeCall(cudaDeviceSynchronize());
   return true;
 }
@@ -310,12 +308,10 @@ pcl::gpu::DeviceMemory::download(void* host_ptr_arg,
                                  std::size_t device_begin_byte_offset,
                                  std::size_t num_bytes) const
 {
-  const void* const begin = static_cast<char*>(data_) + device_begin_byte_offset;
-  const char* const download_end = static_cast<const char*>(begin) + num_bytes;
-  const char* const array_end = static_cast<char*>(data_) + sizeBytes_;
-  if (download_end > array_end) {
+  if (device_begin_byte_offset + num_bytes > sizeBytes_) {
       return false;
   }
+  const void* begin = static_cast<char*>(data_) + device_begin_byte_offset;
   cudaSafeCall(cudaMemcpy(host_ptr_arg, begin, num_bytes, cudaMemcpyDeviceToHost));
   cudaSafeCall(cudaDeviceSynchronize());
   return true;

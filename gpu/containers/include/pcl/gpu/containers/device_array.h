@@ -108,15 +108,15 @@ public:
   upload(const T* host_ptr, std::size_t size);
 
   /** \brief Uploads data from CPU memory to internal buffer.
-   * Returns false if device_begin_offset + num_elements > size of array
-   * Please noote that in contrast to the other upload function, this function
+   * \return true if upload successful
+   * \note In contrast to the other upload function, this function
    * never allocates memory.
    * \param host_ptr pointer to buffer to upload
    * \param device_begin_offset begin upload
    * \param num_elements number of elements from device_bein_offset
    * */
   bool
-  upload(T* host_ptr, std::size_t device_begin_offset, std::size_t num_elements);
+  upload(const T* host_ptr, std::size_t device_begin_offset, std::size_t num_elements);
 
   /** \brief Downloads data from internal buffer to CPU memory
    * \param host_ptr pointer to buffer to download
@@ -124,9 +124,8 @@ public:
   void
   download(T* host_ptr) const;
 
-
   /** \brief Downloads data from internal buffer to CPU memory.
-   * Returns false if device_begin_offset + num_elements > size of array
+   * \return true if download successful
    * \param host_ptr pointer to buffer to download
    * \param device_begin_offset begin download location
    * \param num_elements number of elements from device_begin_offset

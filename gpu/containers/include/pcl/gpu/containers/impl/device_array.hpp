@@ -98,7 +98,7 @@ DeviceArray<T>::upload(const T* host_ptr, std::size_t size)
 
 template <class T>
 inline bool
-DeviceArray<T>::upload(T* host_ptr,
+DeviceArray<T>::upload(const T* host_ptr,
                        std::size_t device_begin_offset,
                        std::size_t num_elements)
 {
