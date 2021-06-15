@@ -179,9 +179,8 @@ public:
     exppd.setInputCloud(cloud);
     exppd.setIndices(indices_but_the_plane);
     exppd.setInputPlanarHull(plane_hull);
-    exppd.setViewPoint((*cloud)[picked_idx].x,
-                       (*cloud)[picked_idx].y,
-                       (*cloud)[picked_idx].z);
+    exppd.setViewPoint(
+        (*cloud)[picked_idx].x, (*cloud)[picked_idx].y, (*cloud)[picked_idx].z);
     exppd.setHeightLimits(0.001, 0.5); // up to half a meter
     exppd.segment(*points_above_plane);
 
