@@ -49,6 +49,7 @@
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/ModelCoefficients.h>
+
 #include <boost/filesystem.hpp> // for directory_iterator
 
 #include <mutex>
@@ -440,8 +441,7 @@ public:
     // note the NAN points in the image as well
     for (std::size_t i = 0; i < cloud->size(); i++) {
       if (!pcl::isFinite((*cloud)[i])) {
-        (*ground_image)[i].b =
-            static_cast<std::uint8_t>(((*cloud)[i].b + 255) / 2);
+        (*ground_image)[i].b = static_cast<std::uint8_t>(((*cloud)[i].b + 255) / 2);
         (*label_image)[i].r = 0;
         (*label_image)[i].g = 0;
         (*label_image)[i].b = 255;

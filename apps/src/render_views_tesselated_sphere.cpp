@@ -6,14 +6,15 @@
  */
 
 #include <pcl/apps/render_views_tesselated_sphere.h>
-#include <pcl/point_types.h>
 #include <pcl/visualization/vtk/pcl_vtk_compatibility.h>
+#include <pcl/point_types.h>
 
 #include <vtkActor.h>
 #include <vtkCamera.h>
 #include <vtkCellArray.h>
 #include <vtkCellData.h>
 #include <vtkHardwareSelector.h>
+#include <vtkIdTypeArray.h>
 #include <vtkLoopSubdivisionFilter.h>
 #include <vtkPlatonicSolidSource.h>
 #include <vtkPointPicker.h>
@@ -27,7 +28,6 @@
 #include <vtkTransformFilter.h>
 #include <vtkTriangle.h>
 #include <vtkWorldPointPicker.h>
-#include <vtkIdTypeArray.h>
 
 #include <array>
 

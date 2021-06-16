@@ -35,8 +35,6 @@
  *
  */
 
-#include <ui_pcd_video_player.h>
-
 #include <pcl/apps/pcd_video_player.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
@@ -49,11 +47,12 @@
 #include <QMutexLocker>
 #include <QObject>
 #include <QRadioButton>
+#include <ui_pcd_video_player.h>
 
 #include <vtkCamera.h>
+#include <vtkGenericOpenGLRenderWindow.h>
 #include <vtkRenderWindow.h>
 #include <vtkRendererCollection.h>
-#include <vtkGenericOpenGLRenderWindow.h>
 
 #include <fstream>
 #include <iostream>
@@ -83,7 +82,7 @@ PCDVideoPlayer::PCDVideoPlayer()
   // Setup the cloud pointer
   cloud_.reset(new pcl::PointCloud<pcl::PointXYZRGBA>);
 
-  //Create the QVTKWidget
+  // Create the QVTKWidget
 #if VTK_MAJOR_VERSION > 8
   auto renderer = vtkSmartPointer<vtkRenderer>::New();
   auto renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
@@ -92,10 +91,12 @@ PCDVideoPlayer::PCDVideoPlayer()
 #else
   vis_.reset(new pcl::visualization::PCLVisualizer("", false));
 #endif // VTK_MAJOR_VERSION > 8
-  setRenderWindowCompat(*(ui_->qvtk_widget),*(vis_->getRenderWindow()));
-  vis_->setupInteractor(getInteractorCompat(*(ui_->qvtk_widget)), getRenderWindowCompat(*(ui_->qvtk_widget)));
+  setRenderWindowCompat(*(ui_->qvtk_widget), *(vis_->getRenderWindow()));
+  vis_->setupInteractor(getInteractorCompat(*(ui_->qvtk_widget)),
+                        getRenderWindowCompat(*(ui_->qvtk_widget)));
 
-  vis_->getInteractorStyle()->setKeyboardModifier(pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
+  vis_->getInteractorStyle()->setKeyboardModifier(
+      pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
 
   refreshView();
 
