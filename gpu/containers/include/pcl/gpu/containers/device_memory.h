@@ -102,11 +102,35 @@ public:
   void
   upload(const void* host_ptr_arg, std::size_t sizeBytes_arg);
 
+  /** \brief Uploads data from CPU memory to device array.
+   * \note This overload never allocates memory in contrast to the
+   * other upload function.
+   * \return true if upload successful
+   * \param host_ptr_arg pointer to buffer to upload
+   * \param device_begin_byte_offset first byte position to upload to
+   * \param num_bytes number of bytes to upload
+   * */
+  bool
+  upload(const void* host_ptr,
+         std::size_t device_begin_byte_offset,
+         std::size_t num_bytes);
+
   /** \brief Downloads data from internal buffer to CPU memory
    * \param host_ptr_arg pointer to buffer to download
    * */
   void
   download(void* host_ptr_arg) const;
+
+  /** \brief Downloads data from internal buffer to CPU memory.
+   * \return true if download successful
+   * \param host_ptr_arg pointer to buffer to download
+   * \param device_begin_byte_offset first byte position to download
+   * \param num_bytes number of bytes to download
+   * */
+  bool
+  download(void* host_ptr,
+           std::size_t device_begin_byte_offset,
+           std::size_t num_bytes) const;
 
   /** \brief Performs swap of data pointed with another device memory.
    * \param other_arg device memory to swap with

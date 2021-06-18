@@ -282,11 +282,39 @@ pcl::gpu::DeviceMemory::upload(const void* host_ptr_arg, std::size_t sizeBytes_a
   cudaSafeCall(cudaDeviceSynchronize());
 }
 
+bool
+pcl::gpu::DeviceMemory::upload(const void* host_ptr_arg,
+                               std::size_t device_begin_byte_offset,
+                               std::size_t num_bytes)
+{
+  if (device_begin_byte_offset + num_bytes > sizeBytes_) {
+    return false;
+  }
+  void* begin = static_cast<char*>(data_) + device_begin_byte_offset;
+  cudaSafeCall(cudaMemcpy(begin, host_ptr_arg, num_bytes, cudaMemcpyHostToDevice));
+  cudaSafeCall(cudaDeviceSynchronize());
+  return true;
+}
+
 void
 pcl::gpu::DeviceMemory::download(void* host_ptr_arg) const
 {
   cudaSafeCall(cudaMemcpy(host_ptr_arg, data_, sizeBytes_, cudaMemcpyDeviceToHost));
   cudaSafeCall(cudaDeviceSynchronize());
+}
+
+bool
+pcl::gpu::DeviceMemory::download(void* host_ptr_arg,
+                                 std::size_t device_begin_byte_offset,
+                                 std::size_t num_bytes) const
+{
+  if (device_begin_byte_offset + num_bytes > sizeBytes_) {
+    return false;
+  }
+  const void* begin = static_cast<char*>(data_) + device_begin_byte_offset;
+  cudaSafeCall(cudaMemcpy(host_ptr_arg, begin, num_bytes, cudaMemcpyDeviceToHost));
+  cudaSafeCall(cudaDeviceSynchronize());
+  return true;
 }
 
 void

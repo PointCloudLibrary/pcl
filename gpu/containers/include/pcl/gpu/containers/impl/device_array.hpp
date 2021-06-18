@@ -97,10 +97,32 @@ DeviceArray<T>::upload(const T* host_ptr, std::size_t size)
 }
 
 template <class T>
+inline bool
+DeviceArray<T>::upload(const T* host_ptr,
+                       std::size_t device_begin_offset,
+                       std::size_t num_elements)
+{
+  std::size_t begin_byte_offset = device_begin_offset * sizeof(T);
+  std::size_t num_bytes = num_elements * sizeof(T);
+  return DeviceMemory::upload(host_ptr, begin_byte_offset, num_bytes);
+}
+
+template <class T>
 inline void
 DeviceArray<T>::download(T* host_ptr) const
 {
   DeviceMemory::download(host_ptr);
+}
+
+template <class T>
+inline bool
+DeviceArray<T>::download(T* host_ptr,
+                         std::size_t device_begin_offset,
+                         std::size_t num_elements) const
+{
+  std::size_t begin_byte_offset = device_begin_offset * sizeof(T);
+  std::size_t num_bytes = num_elements * sizeof(T);
+  return DeviceMemory::download(host_ptr, begin_byte_offset, num_bytes);
 }
 
 template <class T>
