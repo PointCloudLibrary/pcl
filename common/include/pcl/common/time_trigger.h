@@ -39,9 +39,8 @@
 #pragma once
 
 #include <pcl/pcl_macros.h>
-#ifndef Q_MOC_RUN
+
 #include <boost/signals2.hpp>
-#endif
 
 #include <condition_variable>
 #include <functional>

@@ -367,27 +367,43 @@ if(WITH_CUDA)
   include("${PCL_SOURCE_DIR}/cmake/pcl_find_cuda.cmake")
 endif()
 
+
+# Reset VTK_FOUND to off
+set(VTK_FOUND OFF)
+# Find VTK - VTK has to be found before Qt, otherwise it can overwrite Qt variables
+option(WITH_VTK "Build VTK-Visualizations" TRUE)
+if(WITH_VTK)
+  if(ANDROID)
+    message(WARNING "VTK is not supported on Android.")
+  else()
+    include("${PCL_SOURCE_DIR}/cmake/pcl_find_vtk.cmake")
+  endif()
+endif()
+
+#VTK can depend on Qt and search for its required version, so search after so we can overwrite Qt5_FOUND if the version we require is not found.
 option(WITH_QT "Build QT Front-End" TRUE)
 if(WITH_QT)
-  find_package(Qt5 COMPONENTS Concurrent OpenGL Widgets QUIET)
+  find_package(Qt5 5.9.5 COMPONENTS Concurrent OpenGL Widgets)
+  set(QT_DISABLE_PRECATED_BEFORE_VAL "0x050900")
+  
   if(Qt5_FOUND)
+    message(STATUS "Qt5 version: ${Qt5_VERSION}")
     set(QT5_FOUND ${Qt5_FOUND})
     #Set Cmake Auto features to skip .hh files
     if(POLICY CMP0100)
       cmake_policy(SET CMP0100 OLD)
     endif()
-    message(STATUS "Found Qt5 version: ${Qt5_VERSION}")
+    
+    get_property(core_def TARGET Qt5::Core PROPERTY INTERFACE_COMPILE_DEFINITIONS)
+    list(APPEND core_def "QT_DISABLE_DEPRECATED_BEFORE=${QT_DISABLE_PRECATED_BEFORE_VAL}")
+    set_property(TARGET Qt5::Core PROPERTY INTERFACE_COMPILE_DEFINITIONS ${core_def})
+
+  else()
+    message(STATUS "Qt5 is not found.")
   endif()
-endif()
-
-# Find VTK
-option(WITH_VTK "Build VTK-Visualizations" TRUE)
-if(WITH_VTK AND NOT ANDROID)
-  include("${PCL_SOURCE_DIR}/cmake/pcl_find_vtk.cmake")
 else()
-  set(VTK_FOUND OFF)
+  set(Qt5_FOUND FALSE)
 endif()
-
 
 #Find PCAP
 option(WITH_PCAP "pcap file capabilities in Velodyne HDL driver" TRUE)

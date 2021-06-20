@@ -102,28 +102,20 @@ if (vtkMissingComponents)
   message(WARNING "Missing vtk modules: ${vtkMissingComponents}")
 endif()
 
-if(WITH_QT)
-  if(VTK_VERSION VERSION_LESS 9.0)
-    if(";${VTK_MODULES_ENABLED};" MATCHES ";vtkGUISupportQt;" AND ";${VTK_MODULES_ENABLED};" MATCHES ";vtkRenderingQt;")
-      set(HAVE_QVTK TRUE)
-      #PCL_VTK_COMPONENTS is used in the PCLConfig.cmake to refind the required modules.
-      #Pre vtk 9.0, all vtk libraries are linked into pcl_visualizer.
-      #Subprojects can link against pcl_visualizer and directly use VTK-QT libraries.
-      list(APPEND PCL_VTK_COMPONENTS vtkRenderingQt vtkGUISupportQt)
-    else()
-      unset(HAVE_QVTK)
-    endif()
-  else()
-	if(";${VTK_AVAILABLE_COMPONENTS};" MATCHES ";GUISupportQt;" AND ";${VTK_AVAILABLE_COMPONENTS};" MATCHES ";RenderingQt;")
-      set(HAVE_QVTK TRUE)
-      #PCL_VTK_COMPONENTS is used in the PCLConfig.cmake to refind the required modules.
-      #Post vtk 9.0, only required libraries are linked against pcl_visualizer.
-      #Subprojects need to manually link to VTK-QT libraries.
-      list(APPEND PCL_VTK_COMPONENTS RenderingQt GUISupportQt)
-    else()
-      unset(HAVE_QVTK)
-    endif()
-  endif()
+if("vtkGUISupportQt" IN_LIST VTK_MODULES_ENABLED AND "vtkRenderingQt" IN_LIST VTK_MODULES_ENABLED)
+  set(HAVE_QVTK TRUE)
+  #PCL_VTK_COMPONENTS is used in the PCLConfig.cmake to refind the required modules.
+  #Pre vtk 9.0, all vtk libraries are linked into pcl_visualizer.
+  #Subprojects can link against pcl_visualizer and directly use VTK-QT libraries.
+  list(APPEND PCL_VTK_COMPONENTS vtkRenderingQt vtkGUISupportQt)
+elseif("GUISupportQt" IN_LIST VTK_AVAILABLE_COMPONENTS AND "RenderingQt" IN_LIST VTK_AVAILABLE_COMPONENTS)
+  set(HAVE_QVTK TRUE)
+  #PCL_VTK_COMPONENTS is used in the PCLConfig.cmake to refind the required modules.
+  #Post vtk 9.0, only required libraries are linked against pcl_visualizer.
+  #Subprojects need to manually link to VTK-QT libraries.
+  list(APPEND PCL_VTK_COMPONENTS RenderingQt GUISupportQt)
+else()
+  unset(HAVE_QVTK)
 endif()
 
 if(PCL_SHARED_LIBS OR (NOT (PCL_SHARED_LIBS) AND NOT (VTK_BUILD_SHARED_LIBS)))
@@ -146,14 +138,10 @@ endif()
 message(STATUS "VTK version: ${VTK_VERSION}")
 message(STATUS "VTK rendering backend: ${VTK_RENDERING_BACKEND}")
 
-if(WITH_QT)
-  if(HAVE_QVTK)
-    message(STATUS "VTK Qt support: YES")
-  else()
-    message(STATUS "VTK Qt support: NOTFOUND")
-  endif()
+if(HAVE_QVTK)
+  message(STATUS "VTK Qt support: YES")
 else()
-  message(STATUS "VTK Qt support: NO")
+  message(STATUS "VTK Qt support: NOTFOUND")
 endif()
 
 if(VTK_INCLUDE_DIRS)
