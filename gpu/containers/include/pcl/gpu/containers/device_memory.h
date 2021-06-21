@@ -38,6 +38,7 @@
 
 #include <pcl/gpu/containers/kernel_containers.h>
 #include <pcl/pcl_exports.h>
+
 #include <atomic>
 
 namespace pcl {
