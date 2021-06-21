@@ -8,13 +8,13 @@ set(REASON "")
 if(NOT HAVE_QVTK)
   set(DEFAULT AUTO_OFF)
   set(REASON "VTK was not built with Qt support.")
-elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
+elseif(NOT DEFAULT STREQUAL "AUTO_OFF")
   set(DEFAULT TRUE)
   set(REASON)
 endif()
 
 # Default to not building for now
-if(${DEFAULT} STREQUAL "TRUE")
+if(DEFAULT STREQUAL "TRUE")
   set(DEFAULT FALSE)
 endif()
 
@@ -120,7 +120,7 @@ PCL_ADD_EXECUTABLE(
 
 target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_kdtree pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search Qt5::Widgets)
 #TODO: Update when CMAKE 3.10 is available
-if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
+if(NOT (VTK_VERSION VERSION_LESS 9.0))
   target_link_libraries("${EXE_NAME}" VTK::GUISupportQt)
 endif()
 

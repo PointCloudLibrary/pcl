@@ -65,7 +65,7 @@ if(VTK_FOUND)
     PCL_ADD_EXECUTABLE(pcl_pcd_select_object_plane COMPONENT ${SUBSYS_NAME} SOURCES src/pcd_select_object_plane.cpp)
     target_link_libraries(pcl_pcd_select_object_plane pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_features pcl_surface)
     #TODO: Update when CMAKE 3.10 is available
-    if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
+    if(NOT (VTK_VERSION VERSION_LESS 9.0))
       target_link_libraries(pcl_pcd_select_object_plane VTK::FiltersGeometry)
     endif()
   endif()
@@ -95,7 +95,7 @@ if(VTK_FOUND)
       
     target_link_libraries(pcl_manual_registration pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface Qt5::Widgets)
     #TODO: Update when CMAKE 3.10 is available
-    if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
+    if(NOT (VTK_VERSION VERSION_LESS 9.0))
       target_link_libraries(pcl_manual_registration VTK::GUISupportQt)
     endif()
 
@@ -110,7 +110,7 @@ if(VTK_FOUND)
     
     target_link_libraries(pcl_pcd_video_player pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface Qt5::Widgets)
     #TODO: Update when CMAKE 3.10 is available
-    if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
+    if(NOT (VTK_VERSION VERSION_LESS 9.0))
       target_link_libraries(pcl_pcd_video_player VTK::GUISupportQt)
     endif()
   endif()
@@ -178,7 +178,7 @@ if(VTK_FOUND)
           
       target_link_libraries(pcl_openni_passthrough pcl_common pcl_io pcl_filters pcl_visualization Qt5::Widgets)
       #TODO: Update when CMAKE 3.10 is available
-      if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
+      if(NOT (VTK_VERSION VERSION_LESS 9.0))
         target_link_libraries(pcl_openni_passthrough VTK::GUISupportQt)
       endif()
 
@@ -196,7 +196,7 @@ if(VTK_FOUND)
         BUNDLE)
       target_link_libraries(pcl_organized_segmentation_demo pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface Qt5::Widgets)
       #TODO: Update when CMAKE 3.10 is available
-      if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
+      if(NOT (VTK_VERSION VERSION_LESS 9.0))
         target_link_libraries(pcl_organized_segmentation_demo VTK::GUISupportQt)
       endif()      
     endif()
