@@ -55,9 +55,8 @@ pcl::detail::economical_download(const pcl::gpu::NeighborIndices& source_indices
   std::vector<int> tmp;
   for (std::size_t qp = 0; qp < buffer_indices.size(); qp++) {
     std::size_t begin = qp * buffer_size;
-    std::size_t end = begin + buffer_indices[qp];
     tmp.resize(buffer_indices[qp]);
-    source_indices.data.download(&tmp[0], begin, end);
+    source_indices.data.download(&tmp[0], begin, buffer_indices[qp]);
     downloaded_indices.insert(downloaded_indices.end(), tmp.begin(), tmp.end());
   }
 }
