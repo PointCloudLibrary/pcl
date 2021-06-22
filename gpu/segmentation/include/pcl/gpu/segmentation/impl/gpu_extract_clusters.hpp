@@ -39,27 +39,16 @@
 #pragma once
 #include <pcl/common/copy_point.h>
 #include <pcl/gpu/segmentation/gpu_extract_clusters.h>
-#include <cuda_runtime_api.h>
-#include <cuda.h>
 
 namespace pcl {
 namespace detail {
 
-// Downloads only the neccssary cluster indices from the device to the host.
-void economical_download(const pcl::gpu::NeighborIndices& source_indices,
-        const pcl::Indices& buffer_indices, std::size_t buffer_size,
-        pcl::Indices& downloaded_indices) {
-    std::vector<int> tmp;
-    for (std::size_t qp = 0; qp < buffer_indices.size(); qp++) {
-        std::size_t begin = qp * buffer_size;
-        const int* const pdata = source_indices.data.ptr() + begin;
-        tmp.resize(buffer_indices[qp]);
-        const std::size_t bytes = (buffer_indices[qp]) * sizeof(int);
-        cudaMemcpy(&tmp[0], pdata, bytes, cudaMemcpyDeviceToHost);
-        cudaDeviceSynchronize();
-        downloaded_indices.insert(downloaded_indices.end(), tmp.begin(), tmp.end());
-    }
-}
+//// Downloads only the neccssary cluster indices from the device to the host.
+void
+economical_download(const pcl::gpu::NeighborIndices& source_indices,
+                    const pcl::Indices& buffer_indices,
+                    std::size_t buffer_size,
+                    pcl::Indices& downloaded_indices);
 } // namespace detail
 } // namespace pcl
 
