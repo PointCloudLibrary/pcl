@@ -120,7 +120,6 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
       if(queries_host.size () <= 10) ///@todo: adjust this to a variable number settable with method
       {
         PCL_DEBUG(" CPU: ");
-        //data.clear();
         for(std::size_t p = 0; p < queries_host.size (); p++)
         {
           // Execute the radiusSearch on the host

@@ -131,7 +131,6 @@ namespace pcl
           */
         void extract (std::vector<pcl::PointIndices> &clusters);
 
-
       protected:
         /** \brief the input cloud on the GPU */
         CloudDevice input_;
