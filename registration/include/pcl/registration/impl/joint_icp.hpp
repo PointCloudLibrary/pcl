@@ -40,7 +40,6 @@
 #define PCL_REGISTRATION_IMPL_JOINT_ICP_HPP_
 
 #include <pcl/console/print.h>
-#include <pcl/registration/boost.h>
 #include <pcl/correspondence.h>
 
 namespace pcl {

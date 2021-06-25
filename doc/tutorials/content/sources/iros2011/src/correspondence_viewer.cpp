@@ -71,7 +71,7 @@ void
 visualize_correspondences (const PointCloudPtr points1, const PointCloudPtr keypoints1,
                            const PointCloudPtr points2, const PointCloudPtr keypoints2,
                            const std::vector<int> &correspondences,
-                           const std::vector<float> &correspondence_scores, int max_to_display)
+                           const std::vector<float> &correspondence_scores, std::size_t max_to_display)
 { 
   // We want to visualize two clouds side-by-side, so do to this, we'll make copies of the clouds and transform them
   // by shifting one to the left and the other to the right.  Then we'll draw lines between the corresponding points

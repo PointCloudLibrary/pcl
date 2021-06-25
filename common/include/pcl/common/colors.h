@@ -40,6 +40,9 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 
+#include <type_traits>  // for is_floating_point
+#include <array>        // for std::array especially in Clang Darwin and MSVC
+
 namespace pcl
 {
 
@@ -83,4 +86,85 @@ namespace pcl
   using GlasbeyLUT = ColorLUT<pcl::LUT_GLASBEY>;
   using ViridisLUT = ColorLUT<pcl::LUT_VIRIDIS>;
 
-}
+  /**
+   * @brief Returns a Look-Up Table useful in converting RGB to sRGB
+   * @tparam T floating point type with resultant value
+   * @tparam bits depth of RGB
+   * @return 1-D LUT for converting R, G or B into Rs, Gs or Bs
+   * @remarks sRGB was proposed by Stokes et al. as a uniform default color
+   * space for the internet
+   * M. Stokes, M. Anderson, S. Chandrasekar, and R. Motta: A standard default colorspace for the internet - sRGB (Nov 1996)
+   * IEC 61966-2.1 Default RGB Colour Space - sRGB (International Electrotechnical Commission, Geneva, Switzerland, 1999)
+   * www.srgb.com, www.color.org/srgb.html
+   */
+  template <typename T, std::uint8_t bits = 8>
+  PCL_EXPORTS inline std::array<T, 1 << bits>
+  RGB2sRGB_LUT() noexcept
+  {
+    static_assert(std::is_floating_point<T>::value, "LUT value must be a floating point");
+
+    constexpr const std::size_t size = 1 << bits;
+
+    static const auto sRGB_LUT = [&]() {
+      // MSVC wouldn't take `size` here instead of the expression
+      std::array<T, 1 << bits> LUT;
+      for (std::size_t i = 0; i < size; ++i) {
+        T f = static_cast<T>(i) / static_cast<T>(size - 1);
+        if (f > 0.04045) {
+          // ((f + 0.055)/1.055)^2.4
+          LUT[i] = static_cast<T>(
+              std::pow((f + static_cast<T>(0.055)) / static_cast<T>(1.055),
+                       static_cast<T>(2.4)));
+        }
+        else {
+          // f / 12.92
+          LUT[i] = f / static_cast<T>(12.92);
+        }
+      }
+      return LUT;
+    }();
+    return sRGB_LUT;
+  }
+
+  /**
+   * @brief Returns a Look-Up Table useful in converting scaled CIE XYZ into CIE L*a*b*
+   * @details The function assumes that the XYZ values are
+   *   * not normalized using reference illuminant
+   *   * scaled such that reference illuminant has Xn = Yn = Zn = discretizations
+   * @tparam T floating point type with resultant value
+   * @tparam discretizations number of levels for the LUT
+   * @return 1-D LUT with results of f(X/Xn)
+   * @note This function doesn't convert from CIE XYZ to CIE L*a*b*. The actual conversion
+   * is as follows:
+   * L* = 116 * [f(Y/Yn) - 16/116]
+   * a* = 500 * [f(X/Xn) - f(Y/Yn)]
+   * b* = 200 * [f(Y/Yn) - f(Z/Zn)]
+   * Where, Xn, Yn and Zn are values of the reference illuminant (at prescribed angle)
+   *        f is appropriate function such that L* = 100, a* = b* = 0 for white color
+   * Reference: Billmeyer and Saltzman’s Principles of Color Technology
+   */
+  template <typename T, std::size_t discretizations = 4000>
+  PCL_EXPORTS inline const std::array<T, discretizations>&
+  XYZ2LAB_LUT() noexcept
+  {
+    static_assert(std::is_floating_point<T>::value, "LUT value must be a floating point");
+
+    static const auto f_LUT = [&]() {
+      std::array<T, discretizations> LUT;
+      for (std::size_t i = 0; i < discretizations; ++i) {
+        T f = static_cast<T>(i) / static_cast<T>(discretizations);
+        if (f > static_cast<T>(0.008856)) {
+          // f^(1/3)
+          LUT[i] = static_cast<T>(std::pow(f, (static_cast<T>(1) / static_cast<T>(3))));
+        }
+        else {
+          // 7.87 * f + 16/116
+          LUT[i] =
+              static_cast<T>(7.87) * f + (static_cast<T>(16) / static_cast<T>(116));
+        }
+      }
+      return LUT;
+    }();
+    return f_LUT;
+  }
+}  // namespace pcl

@@ -1,25 +1,8 @@
 set(SUBSUBSYS_NAME modeler)
 set(SUBSUBSYS_DESC "PCLModeler: PCL based reconstruction platform")
 set(SUBSUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search apps)
+set(SUBSUBSYS_EXT_DEPS vtk Qt5)
 set(REASON "")
-
-# Find VTK
-if(NOT VTK_FOUND)
-  set(DEFAULT AUTO_OFF)
-  set(REASON "VTK was not found.")
-else()
-  set(DEFAULT TRUE)
-  set(REASON)
-endif()
-
-# QT5 Found?
-if(NOT Qt5_FOUND)
-  set(DEFAULT AUTO_OFF)
-  set(REASON "Qt5 was not found.")
-elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
-  set(DEFAULT TRUE)
-  set(REASON)
-endif()
 
 # QVTK?
 if(NOT HAVE_QVTK)
@@ -36,7 +19,7 @@ if(${DEFAULT} STREQUAL "TRUE")
 endif()
 
 PCL_SUBSUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" ${DEFAULT} "${REASON}")
-PCL_SUBSUBSYS_DEPEND(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" DEPS ${SUBSUBSYS_DEPS} EXT_DEPS vtk)
+PCL_SUBSUBSYS_DEPEND(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" DEPS ${SUBSUBSYS_DEPS} EXT_DEPS ${SUBSUBSYS_EXT_DEPS})
 
 PCL_ADD_DOC("${SUBSUBSYS_NAME}")
 
@@ -51,21 +34,17 @@ set(uis
   main_window.ui
 )
 
-set(moc_incs
-  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/main_window.h"
-  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/scene_tree.h"
-  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/parameter_dialog.h"
-  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/thread_controller.h"
-  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/abstract_worker.h"
-  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/cloud_mesh_item_updater.h"
-)
-
 set(resources
   resources/resources.qrc
 )
 
 set(incs
-  ${moc_incs}
+   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/main_window.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/scene_tree.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/parameter_dialog.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/thread_controller.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/abstract_worker.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/cloud_mesh_item_updater.h"
 
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/dock_widget.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/abstract_item.h"
@@ -124,28 +103,25 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/impl/scene_tree.hpp"
 )
 
-# Qt stuff
-QT5_WRAP_UI(ui_srcs ${uis})
-QT5_WRAP_CPP(moc_srcs ${moc_incs} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
-QT5_ADD_RESOURCES(resource_srcs ${resources})
-
-# Organize files
-source_group("Resources" FILES ${uis} ${resources} ${EXE_ICON})
-source_group("Generated" FILES ${ui_srcs} ${moc_srcs} ${resource_srcs} ${RCS_SOURCES})
-set_source_files_properties(${srcs} PROPERTIES OBJECT_DEPENDS "${ui_srcs}")
+list(APPEND CMAKE_AUTOUIC_SEARCH_PATHS "${CMAKE_CURRENT_SOURCE_DIR}")
 
 # Generate executable
 set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
-PCL_ADD_EXECUTABLE(${EXE_NAME} COMPONENT ${SUBSUBSYS_NAME} SOURCES ${ui_srcs} ${moc_srcs} ${resource_srcs} ${srcs} ${incs} ${impl_incs})
+PCL_ADD_EXECUTABLE(
+  ${EXE_NAME}
+  COMPONENT
+    ${SUBSUBSYS_NAME}
+  SOURCES
+    ${uis}
+    ${resources}
+    ${srcs}
+    ${incs}
+    ${impl_incs})
+
 target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_kdtree pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search Qt5::Widgets)
 #TODO: Update when CMAKE 3.10 is available
 if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
   target_link_libraries("${EXE_NAME}" VTK::GUISupportQt)
-endif()
-
-# Put the ui in the windows project file
-if(("${CMAKE_BUILD_TOOL}" MATCHES "msdev") OR("${CMAKE_BUILD_TOOL}" MATCHES "devenv"))
-  list(APPEND srcs ${uis})
 endif()
 
 # Install include files

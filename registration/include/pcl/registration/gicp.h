@@ -118,9 +118,9 @@ public:
     transformation_epsilon_ = 5e-4;
     corr_dist_threshold_ = 5.;
     rigid_transformation_estimation_ = [this](const PointCloudSource& cloud_src,
-                                              const std::vector<int>& indices_src,
+                                              const pcl::Indices& indices_src,
                                               const PointCloudTarget& cloud_tgt,
-                                              const std::vector<int>& indices_tgt,
+                                              const pcl::Indices& indices_tgt,
                                               Eigen::Matrix4f& transformation_matrix) {
       estimateRigidTransformationBFGS(
           cloud_src, indices_src, cloud_tgt, indices_tgt, transformation_matrix);
@@ -186,16 +186,17 @@ public:
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using an iterative non-linear Levenberg-Marquardt approach. \param[in]
    * cloud_src the source point cloud dataset \param[in] indices_src the vector of
-   * indices describing the points of interest in \a cloud_src \param[in] cloud_tgt the
-   * target point cloud dataset \param[in] indices_tgt the vector of indices describing
-   * the correspondences of the interest points from \a indices_src \param[out]
-   * transformation_matrix the resultant transformation matrix
+   * indices describing the points of interest in \a cloud_src
+   * \param[in] cloud_tgt the target point cloud dataset
+   * \param[in] indices_tgt the vector of indices describing
+   * the correspondences of the interest points from \a indices_src
+   * \param[out] transformation_matrix the resultant transformation matrix
    */
   void
   estimateRigidTransformationBFGS(const PointCloudSource& cloud_src,
-                                  const std::vector<int>& indices_src,
+                                  const pcl::Indices& indices_src,
                                   const PointCloudTarget& cloud_tgt,
-                                  const std::vector<int>& indices_tgt,
+                                  const pcl::Indices& indices_tgt,
                                   Eigen::Matrix4f& transformation_matrix);
 
   /** \brief \return Mahalanobis distance matrix for the given point index */
@@ -275,7 +276,7 @@ public:
   }
 
   /** \brief Set the minimal translation gradient threshold for early optimization stop
-   * \param[in] translation gradient threshold in meters
+   * \param[in] tolerance translation gradient threshold in meters
    */
   void
   setTranslationGradientTolerance(double tolerance)
@@ -293,7 +294,7 @@ public:
   }
 
   /** \brief Set the minimal rotation gradient threshold for early optimization stop
-   * \param[in] rotation gradient threshold in radians
+   * \param[in] tolerance rotation gradient threshold in radians
    */
   void
   setRotationGradientTolerance(double tolerance)
@@ -337,10 +338,10 @@ protected:
   const PointCloudTarget* tmp_tgt_;
 
   /** \brief Temporary pointer to the source dataset indices. */
-  const std::vector<int>* tmp_idx_src_;
+  const pcl::Indices* tmp_idx_src_;
 
   /** \brief Temporary pointer to the target dataset indices. */
-  const std::vector<int>* tmp_idx_tgt_;
+  const pcl::Indices* tmp_idx_tgt_;
 
   /** \brief Input cloud points covariances. */
   MatricesVectorPtr input_covariances_;
@@ -435,9 +436,9 @@ protected:
   };
 
   std::function<void(const pcl::PointCloud<PointSource>& cloud_src,
-                     const std::vector<int>& src_indices,
+                     const pcl::Indices& src_indices,
                      const pcl::PointCloud<PointTarget>& cloud_tgt,
-                     const std::vector<int>& tgt_indices,
+                     const pcl::Indices& tgt_indices,
                      Eigen::Matrix4f& transformation_matrix)>
       rigid_transformation_estimation_;
 };

@@ -44,6 +44,12 @@ mark_as_advanced(PCL_NO_PRECOMPILE)
 option(PCL_ENABLE_SSE "Enable or Disable SSE optimizations." ON)
 mark_as_advanced(PCL_ENABLE_SSE)
 
+if(WIN32)
+  # Enable or Disable the check for AVX optimizations
+  option(PCL_ENABLE_AVX "Enable or Disable AVX optimizations." ON)
+  mark_as_advanced(PCL_ENABLE_AVX)
+endif()
+
 # Allow the user to enable compiler cache
 option(PCL_ENABLE_CCACHE "Enable using compiler cache for compilation" OFF)
 mark_as_advanced(PCL_ENABLE_CCACHE)
@@ -83,3 +89,6 @@ endif()
 # (Used to prevent gpu tests from executing in CI where GPU hardware is unavailable)
 option(PCL_DISABLE_GPU_TESTS "Disable running GPU tests. If disabled, tests will still be built." OFF)
 
+# Set whether visualizations tests should be run
+# (Used to prevent visualizations tests from executing in CI where visualization is unavailable)
+option(PCL_DISABLE_VISUALIZATION_TESTS "Disable running visualizations tests. If disabled, tests will still be built." OFF)

@@ -42,8 +42,6 @@
 
 #cmakedefine HAVE_QHULL 1
 
-#cmakedefine HAVE_QHULL_2011 1
-
 #cmakedefine HAVE_CUDA 1
 
 #cmakedefine HAVE_ENSENSO 1

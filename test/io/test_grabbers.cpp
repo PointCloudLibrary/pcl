@@ -7,6 +7,8 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <boost/filesystem.hpp> // for directory_iterator, extension
+#include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 
 using namespace std::chrono_literals;
 

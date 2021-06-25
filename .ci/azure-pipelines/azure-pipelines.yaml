@@ -1,5 +1,25 @@
+trigger:
+  paths:
+    exclude:
+    - doc
+    - README.md
+    - CHANGES.md
+    - CONTRIBUTING.md
+
+pr:
+  paths:
+    exclude:
+    - doc
+    - README.md
+    - CHANGES.md
+    - CONTRIBUTING.md
+
 resources:
   containers:
+    - container: winx86
+      image: pointcloudlibrary/env:winx86
+    - container: winx64
+      image: pointcloudlibrary/env:winx64
     - container: fmt
       image: pointcloudlibrary/fmt
     - container: env1804
@@ -8,8 +28,6 @@ resources:
       image: pointcloudlibrary/env:20.04
     - container: env2010
       image: pointcloudlibrary/env:20.10
-    - container: doc
-      image: pointcloudlibrary/doc
 
 stages:
   - stage: formatting
@@ -38,8 +56,6 @@ stages:
               CC: gcc
               CXX: g++
               BUILD_GPU: OFF
-              # surface is not ready for re-entrant QHull
-              CMAKE_ARGS: '-DBUILD_tests_surface=OFF'
         container: $[ variables['CONTAINER'] ]
         timeoutInMinutes: 0
         variables:
@@ -126,37 +142,27 @@ stages:
     displayName: Build MSVC
     dependsOn: formatting
     jobs:
-      - job: vs2017
-        displayName: Windows VS2017 Build
+      - job: Windows
+        displayName: Windows Build
         pool:
-          vmImage: 'vs2017-win2016'
+          vmImage: 'windows-2019'
         strategy:
           matrix:
             x86:
+              CONTAINER: winx86
               PLATFORM: 'x86'
               ARCHITECTURE: 'x86'
-              GENERATOR: 'Visual Studio 15 2017'
+              GENERATOR: '"Visual Studio 16 2019" -A Win32'
             x64:
+              CONTAINER: winx64
               PLATFORM: 'x64'
               ARCHITECTURE: 'x86_amd64'
-              GENERATOR: 'Visual Studio 15 2017 Win64'
+              GENERATOR: '"Visual Studio 16 2019" -A x64'
+        container: $[ variables['CONTAINER'] ]
         timeoutInMinutes: 0
         variables:
           BUILD_DIR: 'c:\build'
           CONFIGURATION: 'Release'
-          VCPKG_ROOT: 'C:\vcpkg'
+          VCPKG_ROOT: 'c:\vcpkg'
         steps:
           - template: build/windows.yaml
-
-  - stage: documentation
-    displayName: Documentation
-    dependsOn: []
-    jobs:
-      - template: documentation.yaml
-
-  - stage: tutorials
-    displayName: Tutorials
-    dependsOn: build_gcc
-    jobs:
-      - template: tutorials.yaml
-

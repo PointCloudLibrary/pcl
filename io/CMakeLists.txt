@@ -204,6 +204,10 @@ set(PLY_INCLUDES
 )
 
 PCL_ADD_LIBRARY(pcl_io_ply COMPONENT ${SUBSYS_NAME} SOURCES ${PLY_SOURCES} ${PLY_INCLUDES})
+if(MINGW)
+  # libws2_32 isn't added by default for MinGW
+  target_link_libraries(pcl_io_ply ws2_32)
+endif()
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/ply" ${PLY_INCLUDES})
 target_include_directories(pcl_io_ply PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 

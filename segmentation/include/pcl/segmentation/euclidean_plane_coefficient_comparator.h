@@ -39,7 +39,6 @@
 
 #pragma once
 
-#include <pcl/segmentation/boost.h>
 #include <pcl/segmentation/plane_coefficient_comparator.h>
 
 namespace pcl

@@ -1,7 +1,7 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/common/common.h>
-#include <pcl/common/transforms.h>
+#include <pcl/common/centroid.h> // for compute3DCentroid
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
@@ -10,7 +10,7 @@
 #include <flann/flann.h>
 #include <flann/io/hdf5.h>
 #include <boost/filesystem.hpp>
-
+#include <boost/algorithm/string/replace.hpp> // for replace_last
 typedef std::pair<std::string, std::vector<float> > vfh_model;
 
 /** \brief Loads an n-D histogram file as a VFH signature

@@ -45,7 +45,6 @@
 #include <limits>
 
 #include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/apps/in_hand_scanner/boost.h>
 #include <pcl/apps/in_hand_scanner/visibility_confidence.h>
 #include <pcl/apps/in_hand_scanner/utils.h>
 

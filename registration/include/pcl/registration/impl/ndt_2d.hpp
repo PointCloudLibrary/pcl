@@ -41,8 +41,6 @@
 #ifndef PCL_NDT_2D_IMPL_H_
 #define PCL_NDT_2D_IMPL_H_
 
-#include <pcl/registration/boost.h>
-
 #include <Eigen/Eigenvalues> // for SelfAdjointEigenSolver, EigenSolver
 
 #include <cmath>

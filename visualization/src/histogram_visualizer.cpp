@@ -42,7 +42,6 @@
 #include <pcl/visualization/common/common.h>
 #include <vtkRenderWindowInteractor.h>
 #include <pcl/visualization/histogram_visualizer.h>
-#include <pcl/visualization/boost.h>
 
 #include <vtkVersion.h>
 #include <vtkDoubleArray.h>

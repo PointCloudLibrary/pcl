@@ -88,7 +88,7 @@ public:
 protected:
   void
   refreshView();
-  
+
   pcl::visualization::PCLVisualizer::Ptr vis_;
   pcl::OpenNIGrabber& grabber_;
   std::string device_id_;

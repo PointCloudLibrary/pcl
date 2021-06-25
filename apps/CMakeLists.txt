@@ -1,15 +1,21 @@
 set(SUBSYS_NAME apps)
 set(SUBSYS_DESC "Application examples/samples that show how PCL works")
 set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search recognition ml stereo 2d)
+set(SUBSYS_OPT_DEPS openni vtk Qt5)
 
 set(DEFAULT FALSE)
 set(REASON "Disabled by default")
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
-PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk)
+PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${SUBSYS_OPT_DEPS})
 
 if(NOT build)
   return()
 endif()
+
+#Enable cmakes QT auto features.
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
 # to be filled with all targets the apps subsystem
 set(PCL_APPS_ALL_TARGETS)
@@ -78,18 +84,30 @@ if(VTK_FOUND)
 
   if(Qt5_FOUND AND HAVE_QVTK)
     # Manual registration demo
-    QT5_WRAP_UI(manual_registration_ui src/manual_registration/manual_registration.ui)
-    QT5_WRAP_CPP(manual_registration_moc include/pcl/apps/manual_registration.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
-    PCL_ADD_EXECUTABLE(pcl_manual_registration COMPONENT ${SUBSYS_NAME} SOURCES ${manual_registration_ui} ${manual_registration_moc} src/manual_registration/manual_registration.cpp BUNDLE)
+    PCL_ADD_EXECUTABLE(pcl_manual_registration
+      COMPONENT
+      ${SUBSYS_NAME}
+      SOURCES
+      include/pcl/apps/manual_registration.h
+      src/manual_registration/manual_registration.cpp
+      src/manual_registration/manual_registration.ui
+      BUNDLE)
+      
     target_link_libraries(pcl_manual_registration pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface Qt5::Widgets)
     #TODO: Update when CMAKE 3.10 is available
     if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
       target_link_libraries(pcl_manual_registration VTK::GUISupportQt)
     endif()
 
-    QT5_WRAP_UI(pcd_video_player_ui src/pcd_video_player/pcd_video_player.ui)
-    QT5_WRAP_CPP(pcd_video_player_moc include/pcl/apps/pcd_video_player.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
-    PCL_ADD_EXECUTABLE(pcl_pcd_video_player COMPONENT ${SUBSYS_NAME} SOURCES ${pcd_video_player_ui} ${pcd_video_player_moc} src/pcd_video_player/pcd_video_player.cpp BUNDLE)
+    PCL_ADD_EXECUTABLE(pcl_pcd_video_player
+      COMPONENT
+      ${SUBSYS_NAME}
+      SOURCES
+      include/pcl/apps/pcd_video_player.h
+      src/pcd_video_player/pcd_video_player.cpp
+      src/pcd_video_player/pcd_video_player.ui
+      BUNDLE)
+    
     target_link_libraries(pcl_pcd_video_player pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface Qt5::Widgets)
     #TODO: Update when CMAKE 3.10 is available
     if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
@@ -150,19 +168,32 @@ if(VTK_FOUND)
 
     if(Qt5_FOUND AND HAVE_QVTK)
       # OpenNI Passthrough application demo
-      QT5_WRAP_UI(openni_passthrough_ui src/openni_passthrough.ui)
-      QT5_WRAP_CPP(openni_passthrough_moc include/pcl/apps/openni_passthrough.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
-      PCL_ADD_EXECUTABLE(pcl_openni_passthrough COMPONENT ${SUBSYS_NAME} SOURCES ${openni_passthrough_ui} ${openni_passthrough_moc} src/openni_passthrough.cpp)
+      PCL_ADD_EXECUTABLE(pcl_openni_passthrough
+        COMPONENT
+          ${SUBSYS_NAME}
+        SOURCES
+          include/pcl/apps/openni_passthrough.h
+          src/openni_passthrough.cpp
+          src/openni_passthrough.ui)
+          
       target_link_libraries(pcl_openni_passthrough pcl_common pcl_io pcl_filters pcl_visualization Qt5::Widgets)
       #TODO: Update when CMAKE 3.10 is available
       if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
         target_link_libraries(pcl_openni_passthrough VTK::GUISupportQt)
       endif()
 
+      list(APPEND CMAKE_AUTOUIC_SEARCH_PATHS "src")
+
       # OpenNI Organized Connected Component application demo
-      QT5_WRAP_UI(organized_segmentation_demo_ui src/organized_segmentation_demo.ui)
-      QT5_WRAP_CPP(organized_segmentation_demo_moc include/pcl/apps/organized_segmentation_demo.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
-      PCL_ADD_EXECUTABLE(pcl_organized_segmentation_demo COMPONENT ${SUBSYS_NAME} SOURCES ${organized_segmentation_demo_ui} ${organized_segmentation_demo_moc} src/organized_segmentation_demo.cpp BUNDLE)
+      PCL_ADD_EXECUTABLE(pcl_organized_segmentation_demo
+        COMPONENT
+          ${SUBSYS_NAME}
+        SOURCES
+          include/pcl/apps/organized_segmentation_demo_qt.h
+          include/pcl/apps/organized_segmentation_demo.h
+          src/organized_segmentation_demo.cpp
+          src/organized_segmentation_demo.ui
+        BUNDLE)
       target_link_libraries(pcl_organized_segmentation_demo pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface Qt5::Widgets)
       #TODO: Update when CMAKE 3.10 is available
       if(NOT (${VTK_VERSION} VERSION_LESS 9.0))

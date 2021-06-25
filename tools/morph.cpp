@@ -44,6 +44,8 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <pcl/filters/morphological_filter.h>
+#include <boost/filesystem.hpp> // for path, exists, ...
+#include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 
 using namespace pcl;
 using namespace pcl::io;

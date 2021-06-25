@@ -34,7 +34,7 @@
  */
 
 #include <pcl/filters/extract_indices.h> // for ExtractIndices
-#include <pcl/memory.h> // for pcl::make_shared
+#include <pcl/memory.h>                  // for pcl::make_shared
 
 template <typename PointType>
 void

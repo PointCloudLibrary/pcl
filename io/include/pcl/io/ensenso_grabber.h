@@ -44,7 +44,6 @@
 #include <pcl/common/io.h>
 #include <Eigen/Geometry>
 #include <Eigen/StdVector>
-#include <pcl/io/boost.h>
 
 #include <pcl/io/grabber.h>
 #include <pcl/common/synchronizer.h>
