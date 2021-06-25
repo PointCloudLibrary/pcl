@@ -207,7 +207,7 @@ pcl::gpu::EuclideanClusterExtraction<PointT>::extract (std::vector<pcl::PointInd
 */
   // Extract the actual clusters
   extractEuclideanClusters<PointT> (host_cloud_, tree_, cluster_tolerance_, clusters, min_pts_per_cluster_, max_pts_per_cluster_);
-  std::cout << "INFO: end of extractEuclideanClusters " << std::endl;
+  PCL_DEBUG("INFO: end of extractEuclideanClusters ");
   // Sort the clusters based on their size (largest one first)
   //std::sort (clusters.rbegin (), clusters.rend (), comparePointClusters);
 }
