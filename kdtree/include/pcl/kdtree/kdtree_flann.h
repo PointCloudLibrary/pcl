@@ -222,10 +222,10 @@ namespace pcl
       uindex_t total_nr_points_;
 
       /** \brief The KdTree search parameters for K-nearest neighbors. */
-      ::flann::SearchParams param_k_;
+      ::flann::SearchParams *param_k_;
 
       /** \brief The KdTree search parameters for radius search. */
-      ::flann::SearchParams param_radius_;
+      ::flann::SearchParams *param_radius_;
   };
 }
 
