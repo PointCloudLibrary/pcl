@@ -212,7 +212,10 @@ protected:
     output.height = 1;      // downsampling breaks the organized structure
     output.is_dense = true; // we filter out invalid points
 
-    GridStruct::setUp(this, grid_);
+    if (!GridStruct::setUp(this, grid_)) {
+      output = *input_;
+      return;
+    }
 
     for (const auto& pt : *input_) {
       GridStruct::addPointToGrid(grid_, pt);

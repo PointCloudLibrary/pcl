@@ -226,11 +226,9 @@ public:
   }
 
 protected:
-  void
+  bool
   setUp(const GridFilter<VoxelStructT>* grid_filter, Grid& grid)
   {
-    (void)grid;
-
     double filter_limit_min, filter_limit_max;
     grid_filter->getFilterLimits(filter_limit_min, filter_limit_max);
 
@@ -258,6 +256,44 @@ protected:
 
     div_b_ = (max_b_ - min_b_).array() + 1;
     divb_mul_ = Eigen::Vector4i(1, div_b_[0], div_b_[0] * div_b_[1], 0);
+
+    const size_t dxzy = checkIfOverflow(min_p, max_p);
+    if (dxzy) {
+      grid.reserve(std::min(dxzy, input->size()));
+    }
+    else {
+      PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. "
+               "Integer indices would overflow.\n",
+               filter_name_.c_str());
+      return false;
+    }
+
+    return true;
+  }
+
+  bool
+  checkIfOverflow(const Eigen::Vector4f& min_p, const Eigen::Vector4f& max_p)
+  {
+    // Check that the leaf size is not too small, given the size of the data
+    // Otherwise "wrap around" of unsigned int will happen during hashing a point
+    const std::size_t dx =
+        std::floor((max_p[0] - min_p[0]) * inverse_leaf_size_[0]) + 1;
+    const std::size_t dy =
+        std::floor((max_p[1] - min_p[1]) * inverse_leaf_size_[1]) + 1;
+    const std::size_t dz =
+        std::floor((max_p[2] - min_p[2]) * inverse_leaf_size_[2]) + 1;
+
+    std::size_t dxy, dxyz;
+
+    // built-in function from GCC5
+    // TODO: doesn't work with MSVC, find another way
+    if (__builtin_umull_overflow(dx, dy, &dxy) ||
+        __builtin_umull_overflow(dxy, dz, &dxyz)) {
+      return 0;
+    }
+    else {
+      return dxyz;
+    }
   }
 
   // accessing GridFilter
@@ -302,7 +338,7 @@ protected:
 
 protected:
   /** \brief The filter name. */
-  const std::string filter_name_;
+  std::string filter_name_;
 
   /** \brief The size of a leaf. */
   Eigen::Vector4f leaf_size_;
