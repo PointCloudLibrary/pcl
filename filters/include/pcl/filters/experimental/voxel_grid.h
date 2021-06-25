@@ -227,8 +227,10 @@ public:
 
 protected:
   void
-  setUp(const GridFilter<VoxelStructT>* grid_filter)
+  setUp(const GridFilter<VoxelStructT>* grid_filter, Grid& grid)
   {
+    (void)grid;
+
     double filter_limit_min, filter_limit_max;
     grid_filter->getFilterLimits(filter_limit_min, filter_limit_max);
 
