@@ -88,6 +88,8 @@ set(incs
 )
 set(experimental_incs
   "include/pcl/${SUBSYS_NAME}/experimental/functor_filter.h"
+  "include/pcl/${SUBSYS_NAME}/experimental/grid_filter.h"
+  "include/pcl/${SUBSYS_NAME}/experimental/voxel_grid.h"
 )
 
 set(impl_incs
