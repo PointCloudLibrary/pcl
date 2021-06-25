@@ -107,7 +107,7 @@ namespace pcl
       }
 
       /** \brief Empty destructor */
-      ~SampleConsensusModelParallelLine () {}
+      ~SampleConsensusModelParallelLine () override = default;
 
       /** \brief Set the axis along which we need to search for a line.
         * \param[in] ax the axis along which we need to search for a line

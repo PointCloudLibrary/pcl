@@ -6,10 +6,7 @@
 
 Scene* Scene::instance_ = nullptr;
 
-Scene::Scene ()
-{
-
-}
+Scene::Scene () = default;
 
 // Accessors - Cameras
 // -----------------------------------------------------------------------------

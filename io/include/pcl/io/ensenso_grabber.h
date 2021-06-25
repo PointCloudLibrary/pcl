@@ -85,8 +85,8 @@ namespace pcl
       EnsensoGrabber ();
 
       /** @brief Destructor inherited from the Grabber interface. It never throws. */
-      virtual
-      ~EnsensoGrabber () noexcept;
+      
+      ~EnsensoGrabber () noexcept override;
 
       /** @brief Searches for available devices
        * @returns The number of Ensenso devices connected */
@@ -107,16 +107,16 @@ namespace pcl
       /** @brief Start the point cloud and or image acquisition
        * @note Opens device "0" if no device is open */
       void
-      start ();
+      start () override;
 
       /** @brief Stop the data acquisition */
       void
-      stop ();
+      stop () override;
 
       /** @brief Check if the data acquisition is still running
        * @return True if running, false otherwise */
       bool
-      isRunning () const;
+      isRunning () const override;
 
       /** @brief Check if a TCP port is opened
        * @return True if open, false otherwise */
@@ -126,7 +126,7 @@ namespace pcl
       /** @brief Get class name
        * @returns A string containing the class name */
       std::string
-      getName () const;
+      getName () const override;
 
       /** @brief Configure Ensenso capture settings
        * @param[in] auto_exposure If set to yes, the exposure parameter will be ignored
@@ -282,7 +282,7 @@ namespace pcl
 
       /** @brief Obtain the number of frames per second (FPS) */
       float
-      getFramesPerSecond () const;
+      getFramesPerSecond () const override;
 
       /** @brief Open TCP port to enable access via the [nxTreeEdit](http://www.ensenso.de/manual/software_components.htm) program.
        * @param[in] port The port number
@@ -295,7 +295,7 @@ namespace pcl
        * @warning If you do not close the TCP port the program might exit with the port still open, if it is the case
        * use @code ps -ef @endcode and @code kill PID @endcode to kill the application and effectively close the port. */
       bool
-      closeTcpPort (void);
+      closeTcpPort ();
 
       /** @brief Returns the full NxLib tree as a JSON string
        * @param[in] pretty_format JSON formatting style

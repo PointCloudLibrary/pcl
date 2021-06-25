@@ -94,7 +94,7 @@ public:
   , vd_(){};
 
   /** \brief Empty destructor */
-  ~ELCH() {}
+  ~ELCH() override = default;
 
   /** \brief Add a new point cloud to the internal graph.
    * \param[in] cloud the new point cloud

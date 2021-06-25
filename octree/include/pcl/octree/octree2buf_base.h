@@ -77,7 +77,7 @@ public:
   }
 
   /** \brief Empty constructor. */
-  ~BufferedBranchNode() {}
+  ~BufferedBranchNode() override = default;
 
   /** \brief Method to perform a deep copy of the octree */
   BufferedBranchNode*

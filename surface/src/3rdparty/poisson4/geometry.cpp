@@ -35,14 +35,14 @@ namespace pcl
   namespace poisson
   {
 
-    TriangulationEdge::TriangulationEdge(void){pIndex[0]=pIndex[1]=tIndex[0]=tIndex[1]=-1;}
-    TriangulationTriangle::TriangulationTriangle(void){eIndex[0]=eIndex[1]=eIndex[2]=-1;}
+    TriangulationEdge::TriangulationEdge(){pIndex[0]=pIndex[1]=tIndex[0]=tIndex[1]=-1;}
+    TriangulationTriangle::TriangulationTriangle(){eIndex[0]=eIndex[1]=eIndex[2]=-1;}
 
     /////////////////////////
     // CoredVectorMeshData //
     /////////////////////////
-    CoredVectorMeshData::CoredVectorMeshData( void ) { oocPointIndex = polygonIndex = 0; }
-    void CoredVectorMeshData::resetIterator ( void ) { oocPointIndex = polygonIndex = 0; }
+    CoredVectorMeshData::CoredVectorMeshData( ) { oocPointIndex = polygonIndex = 0; }
+    void CoredVectorMeshData::resetIterator ( ) { oocPointIndex = polygonIndex = 0; }
     int CoredVectorMeshData::addOutOfCorePoint(const Point3D<float>& p){
       oocPoints.push_back(p);
       return int(oocPoints.size())-1;
@@ -76,14 +76,14 @@ namespace pcl
       }
       else return 0;
     }
-    int CoredVectorMeshData::outOfCorePointCount(void){return int(oocPoints.size());}
-    int CoredVectorMeshData::polygonCount( void ) { return int( polygons.size() ); }
+    int CoredVectorMeshData::outOfCorePointCount(){return int(oocPoints.size());}
+    int CoredVectorMeshData::polygonCount( ) { return int( polygons.size() ); }
 
     /////////////////////////
     // CoredVectorMeshData //
     /////////////////////////
-    CoredVectorMeshData2::CoredVectorMeshData2( void ) { oocPointIndex = polygonIndex = 0; }
-    void CoredVectorMeshData2::resetIterator ( void ) { oocPointIndex = polygonIndex = 0; }
+    CoredVectorMeshData2::CoredVectorMeshData2( ) { oocPointIndex = polygonIndex = 0; }
+    void CoredVectorMeshData2::resetIterator ( ) { oocPointIndex = polygonIndex = 0; }
     int CoredVectorMeshData2::addOutOfCorePoint( const CoredMeshData2::Vertex& v )
     {
       oocPoints.push_back( v );
@@ -120,8 +120,8 @@ namespace pcl
       }
       else return 0;
     }
-    int CoredVectorMeshData2::outOfCorePointCount(void){return int(oocPoints.size());}
-    int CoredVectorMeshData2::polygonCount( void ) { return int( polygons.size() ); }
+    int CoredVectorMeshData2::outOfCorePointCount(){return int(oocPoints.size());}
+    int CoredVectorMeshData2::polygonCount( ) { return int( polygons.size() ); }
 
   }
 }

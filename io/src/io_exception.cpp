@@ -47,9 +47,7 @@ pcl::io::IOException::IOException (const std::string& function_name, const std::
   message_long_ = sstream.str ();
 }
 
-pcl::io::IOException::~IOException () noexcept
-{
-}
+pcl::io::IOException::~IOException () noexcept = default;
 
 pcl::io::IOException&
 pcl::io::IOException::operator = (const IOException& exception)

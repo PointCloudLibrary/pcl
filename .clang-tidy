@@ -1,0 +1,3 @@
+---
+Checks: '-*,modernize-deprecated-headers,modernize-redundant-void-arg,modernize-replace-random-shuffle,modernize-use-equals-default,modernize-use-equals-delete,modernize-use-nullptr,modernize-use-override,modernize-use-using'
+WarningsAsErrors: '-*,modernize-deprecated-headers,modernize-redundant-void-arg,modernize-replace-random-shuffle,modernize-use-equals-default,modernize-use-equals-delete,modernize-use-nullptr,modernize-use-override,modernize-use-using'

@@ -122,7 +122,7 @@ namespace pcl
                            unsigned int min_pts_neighb = 0);
       
       /** \brief Empty destructor */
-      ~SpinImageEstimation () {}
+      ~SpinImageEstimation () override = default;
 
       /** \brief Sets spin-image resolution.
         * 

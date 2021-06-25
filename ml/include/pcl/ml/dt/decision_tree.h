@@ -52,7 +52,7 @@ public:
   DecisionTree() : root_() {}
 
   /** Destructor. */
-  virtual ~DecisionTree() {}
+  virtual ~DecisionTree() = default;
 
   /** Sets the root node of the tree.
    *

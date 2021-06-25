@@ -129,7 +129,7 @@ namespace pcl
 
         /** \brief Will recursively delete all children calling recFreeChildrein */
         
-        ~OutofcoreOctreeBaseNode ();
+        ~OutofcoreOctreeBaseNode () override;
 
         //query
         /** \brief gets the minimum and maximum corner of the bounding box represented by this node

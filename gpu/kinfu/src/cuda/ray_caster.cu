@@ -273,7 +273,7 @@ namespace pcl
             break;
           }
 
-        }          /* for(;;)  */
+        }
       }
     };
 

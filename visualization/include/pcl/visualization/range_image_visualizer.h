@@ -56,7 +56,7 @@ namespace pcl
         //! Constructor
         RangeImageVisualizer (const std::string& name="Range Image");
         //! Destructor
-        ~RangeImageVisualizer ();
+        ~RangeImageVisualizer () override;
         
         // =====PUBLIC STATIC METHODS=====
         /** Get a widget visualizing the given range image.

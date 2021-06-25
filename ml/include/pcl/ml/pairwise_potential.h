@@ -54,7 +54,7 @@ public:
                     const float w);
 
   /** Deconstructor for PairwisePotential class. */
-  ~PairwisePotential(){};
+  ~PairwisePotential() = default;
 
   void
   compute(std::vector<float>& out,

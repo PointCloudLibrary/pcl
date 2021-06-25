@@ -151,7 +151,7 @@ namespace pcl
 
       /** \brief Destructor.
         */
-      ~ApproximateVoxelGrid ()
+      ~ApproximateVoxelGrid () override
       {
         delete [] history_;
       }

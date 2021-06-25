@@ -57,7 +57,7 @@ namespace openni_wrapper
   public:
 
     ImageRGB24 (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noexcept;
-    ~ImageRGB24 () noexcept;
+    ~ImageRGB24 () noexcept override;
 
     inline Encoding
     getEncoding () const override

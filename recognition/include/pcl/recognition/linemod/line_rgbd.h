@@ -105,9 +105,7 @@ namespace pcl
       }
 
       /** \brief Destructor */
-      virtual ~LineRGBD ()
-      {
-      }
+      virtual ~LineRGBD () = default;
 
       /** \brief Loads templates from a LMT (LineMod Template) file. Overrides old templates.
         *

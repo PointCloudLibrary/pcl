@@ -128,7 +128,7 @@ namespace pcl
       /** \brief Destructor for KdTreeFLANN.
         * Deletes all allocated data arrays and destroys the kd-tree structures.
         */
-      ~KdTreeFLANN ()
+      ~KdTreeFLANN () override
       {
         cleanup ();
       }

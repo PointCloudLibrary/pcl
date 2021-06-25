@@ -49,7 +49,7 @@ template <class FeatureType, class DataSet, class ExampleIndex>
 class PCL_EXPORTS FeatureHandler {
 public:
   /** Destructor. */
-  virtual ~FeatureHandler(){};
+  virtual ~FeatureHandler() = default;
 
   /** Creates random features.
    *

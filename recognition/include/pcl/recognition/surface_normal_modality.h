@@ -65,7 +65,7 @@ namespace pcl
       /** \brief Constructor. */
       inline LINEMOD_OrientationMap () : width_ (0), height_ (0) {}
       /** \brief Destructor. */
-      inline ~LINEMOD_OrientationMap () {}
+      inline ~LINEMOD_OrientationMap () = default;
 
       /** \brief Returns the width of the modality data map. */
       inline std::size_t
@@ -336,7 +336,7 @@ namespace pcl
       /** \brief Constructor. */
       SurfaceNormalModality ();
       /** \brief Destructor. */
-      ~SurfaceNormalModality ();
+      ~SurfaceNormalModality () override;
 
       /** \brief Sets the spreading size.
         * \param[in] spreading_size the spreading size.
@@ -504,9 +504,7 @@ SurfaceNormalModality ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
-pcl::SurfaceNormalModality<PointInT>::~SurfaceNormalModality ()
-{
-}
+pcl::SurfaceNormalModality<PointInT>::~SurfaceNormalModality () = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void

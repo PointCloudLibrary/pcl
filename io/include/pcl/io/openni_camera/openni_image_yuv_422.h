@@ -56,7 +56,7 @@ namespace openni_wrapper
   {
   public:
     ImageYUV422 (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noexcept;
-    ~ImageYUV422 () noexcept;
+    ~ImageYUV422 () noexcept override;
 
     inline Encoding
     getEncoding () const override

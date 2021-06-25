@@ -109,7 +109,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      ~SampleConsensusModelSphere () {}
+      ~SampleConsensusModelSphere () override = default;
 
       /** \brief Copy constructor.
         * \param[in] source the model to copy into this

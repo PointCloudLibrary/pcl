@@ -89,7 +89,7 @@ namespace pcl
         {}
 
         /** \brief Destructor. */
-        virtual ~PointCloudImageExtractor () {}
+        virtual ~PointCloudImageExtractor () = default;
 
         /** \brief Obtain the image from the given cloud.
           * \param[in] cloud organized point cloud to extract image from
@@ -167,7 +167,7 @@ namespace pcl
         }
 
         /** \brief Destructor. */
-        ~PointCloudImageExtractorWithScaling () {}
+        ~PointCloudImageExtractorWithScaling () override = default;
 
         /** \brief Set scaling method. */
         inline void
@@ -209,10 +209,10 @@ namespace pcl
         using ConstPtr = shared_ptr<const PointCloudImageExtractorFromNormalField<PointT> >;
 
         /** \brief Constructor. */
-        PointCloudImageExtractorFromNormalField () {}
+        PointCloudImageExtractorFromNormalField () = default;
 
         /** \brief Destructor. */
-        ~PointCloudImageExtractorFromNormalField () {}
+        ~PointCloudImageExtractorFromNormalField () override = default;
 
       protected:
 
@@ -236,10 +236,10 @@ namespace pcl
         using ConstPtr = shared_ptr<const PointCloudImageExtractorFromRGBField<PointT> >;
 
         /** \brief Constructor. */
-        PointCloudImageExtractorFromRGBField () {}
+        PointCloudImageExtractorFromRGBField () = default;
 
         /** \brief Destructor. */
-        ~PointCloudImageExtractorFromRGBField () {}
+        ~PointCloudImageExtractorFromRGBField () override = default;
 
       protected:
 
@@ -284,7 +284,7 @@ namespace pcl
         }
 
         /** \brief Destructor. */
-        ~PointCloudImageExtractorFromLabelField () {}
+        ~PointCloudImageExtractorFromLabelField () override = default;
 
         /** \brief Set color mapping mode. */
         inline void
@@ -339,7 +339,7 @@ namespace pcl
         }
 
         /** \brief Destructor. */
-        ~PointCloudImageExtractorFromZField () {}
+        ~PointCloudImageExtractorFromZField () override = default;
 
       protected:
         // Members derived from the base class
@@ -381,7 +381,7 @@ namespace pcl
         }
 
         /** \brief Destructor. */
-        ~PointCloudImageExtractorFromCurvatureField () {}
+        ~PointCloudImageExtractorFromCurvatureField () override = default;
 
       protected:
         // Members derived from the base class
@@ -423,7 +423,7 @@ namespace pcl
         }
 
         /** \brief Destructor. */
-        ~PointCloudImageExtractorFromIntensityField () {}
+        ~PointCloudImageExtractorFromIntensityField () override = default;
 
       protected:
         // Members derived from the base class

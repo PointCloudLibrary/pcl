@@ -52,8 +52,7 @@ template <class FeatureType,
           class ExampleIndex,
           class NodeType>
 DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    DecisionTreeEvaluator()
-{}
+    DecisionTreeEvaluator() = default;
 
 template <class FeatureType,
           class DataSet,
@@ -61,8 +60,7 @@ template <class FeatureType,
           class ExampleIndex,
           class NodeType>
 DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    ~DecisionTreeEvaluator()
-{}
+    ~DecisionTreeEvaluator() = default;
 
 template <class FeatureType,
           class DataSet,

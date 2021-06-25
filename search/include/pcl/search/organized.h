@@ -93,7 +93,7 @@ namespace pcl
         }
 
         /** \brief Empty deconstructor. */
-        ~OrganizedNeighbor () {}
+        ~OrganizedNeighbor () override = default;
 
         /** \brief Test whether this search-object is valid (input is organized AND from projective device)
           *        User should use this method after setting the input cloud, since setInput just prints an error 

@@ -42,7 +42,7 @@ pcl::DigitalElevationMapBuilder::DigitalElevationMapBuilder()
 : resolution_column_(64), resolution_disparity_(32), min_points_in_cell_(1)
 {}
 
-pcl::DigitalElevationMapBuilder::~DigitalElevationMapBuilder() {}
+pcl::DigitalElevationMapBuilder::~DigitalElevationMapBuilder() = default;
 
 void
 pcl::DigitalElevationMapBuilder::setResolution(std::size_t resolution_column,

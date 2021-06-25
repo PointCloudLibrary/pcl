@@ -191,7 +191,7 @@ namespace pcl
       , payload_ ()
       , node_metadata_ (new OutofcoreOctreeNodeMetadata ())
     {
-      assert (tree != NULL);
+      assert (tree != nullptr);
       node_metadata_->setOutofcoreVersion (3);
       init_root_node (bb_min, bb_max, tree, root_name);
     }
@@ -201,7 +201,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::init_root_node (const Eigen::Vector3d& bb_min, const Eigen::Vector3d& bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const boost::filesystem::path& root_name)
     {
-      assert (tree != NULL);
+      assert (tree != nullptr);
 
       parent_ = nullptr;
       root_node_ = this;
@@ -494,7 +494,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> std::uint64_t
     OutofcoreOctreeBaseNode<ContainerT, PointT>::addPointCloud (const typename pcl::PCLPointCloud2::Ptr& input_cloud, const bool skip_bb_check)
     {
-      assert (this->root_node_->m_tree_ != NULL);
+      assert (this->root_node_->m_tree_ != nullptr);
       
       if (input_cloud->height*input_cloud->width == 0)
         return (0);
@@ -558,7 +558,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::randomSample(const AlignedPointTVector& p, AlignedPointTVector& insertBuff, const bool skip_bb_check)
     {
-      assert (this->root_node_->m_tree_ != NULL);
+      assert (this->root_node_->m_tree_ != nullptr);
       
       AlignedPointTVector sampleBuff;
       if (!skip_bb_check)
@@ -613,7 +613,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> std::uint64_t
     OutofcoreOctreeBaseNode<ContainerT, PointT>::addDataAtMaxDepth (const AlignedPointTVector& p, const bool skip_bb_check)
     {
-      assert (this->root_node_->m_tree_ != NULL);
+      assert (this->root_node_->m_tree_ != nullptr);
 
       // Trust me, just add the points
       if (skip_bb_check)
@@ -807,7 +807,7 @@ namespace pcl
 
       //  when adding data and generating sampled LOD 
       // If the max depth has been reached
-      assert (this->root_node_->m_tree_ != NULL );
+      assert (this->root_node_->m_tree_ != nullptr );
       
       if (this->depth_ == this->root_node_->m_tree_->getDepth ())
       {
@@ -1719,7 +1719,7 @@ namespace pcl
       this->parent_ = super;
       root_node_ = super->root_node_;
       m_tree_ = super->root_node_->m_tree_;
-      assert (m_tree_ != NULL);
+      assert (m_tree_ != nullptr);
 
       depth_ = super->depth_ + 1;
       num_children_ = 0;

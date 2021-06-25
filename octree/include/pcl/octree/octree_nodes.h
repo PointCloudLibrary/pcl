@@ -57,9 +57,9 @@ enum node_type_t { BRANCH_NODE, LEAF_NODE };
  */
 class PCL_EXPORTS OctreeNode {
 public:
-  OctreeNode() {}
+  OctreeNode() = default;
 
-  virtual ~OctreeNode() {}
+  virtual ~OctreeNode() = default;
   /** \brief Pure virtual method for receiving the type of octree node (branch or leaf)
    */
   virtual node_type_t
@@ -90,7 +90,7 @@ public:
 
   /** \brief Empty deconstructor. */
 
-  ~OctreeLeafNode() {}
+  ~OctreeLeafNode() override = default;
 
   /** \brief Method to perform a deep copy of the octree */
   OctreeLeafNode<ContainerT>*
@@ -216,7 +216,7 @@ public:
 
   /** \brief Empty deconstructor. */
 
-  ~OctreeBranchNode() {}
+  ~OctreeBranchNode() override = default;
 
   /** \brief Access operator.
    *  \param child_idx_arg: index to child node

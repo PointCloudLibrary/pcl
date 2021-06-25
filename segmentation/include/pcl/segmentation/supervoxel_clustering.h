@@ -199,7 +199,7 @@ namespace pcl
         * finding neighbors. In other words it frees memory.
         */
 
-      ~SupervoxelClustering ();
+      ~SupervoxelClustering () override;
 
       /** \brief Set the resolution of the octree voxels */
       void

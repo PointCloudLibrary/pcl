@@ -106,7 +106,7 @@ namespace pcl
          */
         OutofcoreOctreeBaseMetadata (const boost::filesystem::path& path_arg);
         /** \brief Default destructor*/
-        ~OutofcoreOctreeBaseMetadata ();
+        ~OutofcoreOctreeBaseMetadata () override;
 
         /** \brief Copy constructor */
         OutofcoreOctreeBaseMetadata (const OutofcoreOctreeBaseMetadata& orig);

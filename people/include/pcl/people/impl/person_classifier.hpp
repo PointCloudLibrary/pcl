@@ -44,10 +44,10 @@
 #define PCL_PEOPLE_PERSON_CLASSIFIER_HPP_
 
 template <typename PointT>
-pcl::people::PersonClassifier<PointT>::PersonClassifier () {}
+pcl::people::PersonClassifier<PointT>::PersonClassifier () = default;
 
 template <typename PointT>
-pcl::people::PersonClassifier<PointT>::~PersonClassifier () {}
+pcl::people::PersonClassifier<PointT>::~PersonClassifier () = default;
 
 template <typename PointT> bool
 pcl::people::PersonClassifier<PointT>::loadSVMFromFile (std::string svm_filename)

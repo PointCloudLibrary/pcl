@@ -52,9 +52,7 @@ ImageYUV422::ImageYUV422 (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) no
 {
 }
 
-ImageYUV422::~ImageYUV422 () noexcept
-{
-}
+ImageYUV422::~ImageYUV422 () noexcept = default;
 
 bool ImageYUV422::isResizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const
 {

@@ -76,7 +76,7 @@ namespace pcl
     ImageGrabberBase (const std::vector<std::string>& depth_image_files, float frames_per_second, bool repeat);
 
     /** \brief Virtual destructor. */
-    ~ImageGrabberBase () noexcept;
+    ~ImageGrabberBase () noexcept override;
 
     /** \brief Starts playing the list of PCD files if frames_per_second is > 0. Otherwise it works as a trigger: publishes only the next PCD file in the list. */
     void
@@ -217,7 +217,7 @@ namespace pcl
                   bool repeat = false);
 
     /** \brief Empty destructor */
-    ~ImageGrabber () noexcept {}
+    ~ImageGrabber () noexcept override = default;
 
     // Inherited from FileGrabber
     const typename pcl::PointCloud<PointT>::ConstPtr

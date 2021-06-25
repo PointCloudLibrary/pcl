@@ -49,7 +49,7 @@ namespace mets {
     /// 
     /// @param next Optional next criterium in the chain.
     explicit
-    termination_criteria_chain(termination_criteria_chain* next = 0)
+    termination_criteria_chain(termination_criteria_chain* next = nullptr)
       : next_m(next) 
     { }
     /// purposely not implemented (see Effective C++)
@@ -58,8 +58,7 @@ namespace mets {
 
     /// @brief Virtual destructor.
     virtual 
-    ~termination_criteria_chain() 
-    { }
+    ~termination_criteria_chain() = default;
 
     /// @brief Alternate function that decides if we shoud terminate the
     /// search process
@@ -103,7 +102,7 @@ namespace mets {
 	iterations_m(max) {}
 
     bool 
-    operator()(const feasible_solution& fs)
+    operator()(const feasible_solution& fs) override
     { 
       if (iterations_m <= 0) 
 	return true; 
@@ -113,7 +112,7 @@ namespace mets {
     }
 
     void 
-    reset() 
+    reset() override 
     { iterations_m = max_m; termination_criteria_chain::reset(); }
 
   protected:
@@ -155,8 +154,8 @@ namespace mets {
     { }
 
     bool 
-    operator()(const feasible_solution& fs);
-    void reset() 
+    operator()(const feasible_solution& fs) override;
+    void reset() override 
     { iterations_left_m = max_noimprove_m; 
       second_guess_m = total_iterations_m = resets_m = 0; 
       best_cost_m = std::numeric_limits<gol_type>::max();
@@ -199,7 +198,7 @@ namespace mets {
     { } 
 
     bool 
-    operator()(const feasible_solution& fs)
+    operator()(const feasible_solution& fs) override
     { 
       mets::gol_type current_cost = 
 	dynamic_cast<const evaluable_solution&>(fs).cost_function();
@@ -210,7 +209,7 @@ namespace mets {
       return termination_criteria_chain::operator()(fs); 
     }
 
-    void reset() 
+    void reset() override 
     { termination_criteria_chain::reset(); }
     
   protected:
@@ -233,9 +232,9 @@ namespace mets {
   public:
     forever() : termination_criteria_chain() {}
     bool 
-    operator()(const feasible_solution& /*fs*/)
+    operator()(const feasible_solution& /*fs*/) override
     { return false; }
-    void reset() 
+    void reset() override 
     { termination_criteria_chain::reset(); }
   };
 

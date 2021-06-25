@@ -62,7 +62,7 @@ namespace openni_wrapper
       };
 
       ImageBayerGRBG (pcl::shared_ptr<xn::ImageMetaData> image_meta_data, DebayeringMethod method) noexcept;
-      ~ImageBayerGRBG () noexcept;
+      ~ImageBayerGRBG () noexcept override;
 
       inline Encoding
       getEncoding () const override

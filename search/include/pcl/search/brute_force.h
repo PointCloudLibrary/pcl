@@ -91,9 +91,7 @@ namespace pcl
 
         /** \brief Destructor for KdTree. */
         
-        ~BruteForce ()
-        {
-        }
+        ~BruteForce () override = default;
 
         /** \brief Search for the k-nearest neighbors for the given query point.
           * \param[in] point the given query point

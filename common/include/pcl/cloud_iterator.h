@@ -89,7 +89,7 @@ namespace pcl
       class Iterator
       {
         public:
-          virtual ~Iterator ()  {}
+          virtual ~Iterator ()  = default;
 
           virtual void operator ++ () = 0;
 
@@ -158,7 +158,7 @@ namespace pcl
       class Iterator
       {
         public:
-          virtual ~Iterator ()  {}
+          virtual ~Iterator ()  = default;
 
           virtual void operator ++ () = 0;
 

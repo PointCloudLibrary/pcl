@@ -57,9 +57,9 @@ namespace pcl
   {
     public:
       /** \brief empty constructor */ 
-      FileReader() {}
+      FileReader() = default;
       /** \brief empty destructor */ 
-      virtual ~FileReader() {}
+      virtual ~FileReader() = default;
       /** \brief Read a point cloud data header from a FILE file. 
         *
         * Load only the meta information (number of points, their types, etc),
@@ -163,10 +163,10 @@ namespace pcl
   {
     public:
       /** \brief Empty constructor */ 
-      FileWriter () {}
+      FileWriter () = default;
 
       /** \brief Empty destructor */ 
-      virtual ~FileWriter () {}
+      virtual ~FileWriter () = default;
 
       /** \brief Save point cloud data to a FILE file containing n-D points
         * \param[in] file_name the output file name

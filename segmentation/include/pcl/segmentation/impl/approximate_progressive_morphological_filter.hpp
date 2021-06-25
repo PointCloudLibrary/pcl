@@ -63,9 +63,7 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::ApproximateProgressiveMo
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::ApproximateProgressiveMorphologicalFilter<PointT>::~ApproximateProgressiveMorphologicalFilter ()
-{
-}
+pcl::ApproximateProgressiveMorphologicalFilter<PointT>::~ApproximateProgressiveMorphologicalFilter () = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void

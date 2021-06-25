@@ -62,7 +62,7 @@ namespace pcl
         /** \brief PCL histogram visualizer constructor. */
         PCLHistogramVisualizer ();
 
-        virtual ~PCLHistogramVisualizer () {}
+        virtual ~PCLHistogramVisualizer () = default;
         /** \brief Spin once method. Calls the interactor and updates the screen once. 
           *  \param[in] time - How long (in ms) should the visualization loop be allowed to run.
           */

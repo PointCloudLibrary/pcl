@@ -80,7 +80,7 @@ public:
   {}
 
   /** \brief Empty class constructor. */
-  ~OctreePointCloudPointVector() {}
+  ~OctreePointCloudPointVector() = default;
 };
 } // namespace octree
 } // namespace pcl

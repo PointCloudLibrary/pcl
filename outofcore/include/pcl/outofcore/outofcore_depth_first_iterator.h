@@ -63,7 +63,7 @@ namespace pcl
         OutofcoreDepthFirstIterator (OctreeDisk& octree_arg);
 
         
-        ~OutofcoreDepthFirstIterator ();
+        ~OutofcoreDepthFirstIterator () override;
       
         OutofcoreDepthFirstIterator&
         operator++ ();

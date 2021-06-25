@@ -73,7 +73,7 @@ public:
                     bool repeat);
 
   /** \brief Virtual destructor. */
-  ~StereoGrabberBase() noexcept;
+  ~StereoGrabberBase() noexcept override;
 
   /** \brief Starts playing the list of Stereo images if frames_per_second is > 0.
    * Otherwise it works as a trigger: publishes only the next pair in the list. */

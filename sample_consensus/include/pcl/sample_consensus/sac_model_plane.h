@@ -183,7 +183,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      ~SampleConsensusModelPlane () {}
+      ~SampleConsensusModelPlane () override = default;
 
       /** \brief Check whether the given index samples can form a valid plane model, compute the model coefficients from
         * these samples and store them internally in model_coefficients_. The plane coefficients are:

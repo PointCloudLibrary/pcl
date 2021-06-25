@@ -59,8 +59,7 @@ namespace pcl
 
     public:
       /** \brief Empty constructor for PlanarRegion. */
-      PlanarRegion ()
-      {}
+      PlanarRegion () = default;
 
       /** \brief Constructor for Planar region from a Region3D and a PlanarPolygon. 
         * \param[in] region a Region3D for the input data
@@ -76,7 +75,7 @@ namespace pcl
       }
       
       /** \brief Destructor. */
-      ~PlanarRegion () {}
+      ~PlanarRegion () override = default;
 
       /** \brief Constructor for PlanarRegion.
         * \param[in] centroid the centroid of the region.

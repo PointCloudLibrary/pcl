@@ -56,7 +56,7 @@ namespace openni_wrapper
       ShiftToDepthConverter () : init_(false) {}
 
       /** \brief Destructor. */
-      virtual ~ShiftToDepthConverter () {};
+      virtual ~ShiftToDepthConverter () = default;
 
       /** \brief This method generates a look-up table to convert openni shift values to depth
         */

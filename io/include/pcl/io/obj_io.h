@@ -51,7 +51,7 @@ namespace pcl
       MTLReader ();
 
       /** \brief empty destructor */
-      virtual ~MTLReader() {}
+      virtual ~MTLReader() = default;
 
       /** \brief Read a MTL file given its full path.
         * \param[in] filename full path to MTL file
@@ -94,9 +94,9 @@ namespace pcl
   {
     public:
       /** \brief empty constructor */
-      OBJReader() {}
+      OBJReader() = default;
       /** \brief empty destructor */
-      ~OBJReader() {}
+      ~OBJReader() override = default;
       /** \brief Read a point cloud data header from a FILE file.
         *
         * Load only the meta information (number of points, their types, etc),

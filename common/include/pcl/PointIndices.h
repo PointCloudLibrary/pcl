@@ -13,8 +13,7 @@ namespace pcl
     using Ptr = shared_ptr< ::pcl::PointIndices>;
     using ConstPtr = shared_ptr<const ::pcl::PointIndices>;
 
-    PointIndices ()
-    {}
+    PointIndices () = default;
 
     ::pcl::PCLHeader header;
 

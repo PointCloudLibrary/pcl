@@ -105,7 +105,7 @@ namespace pcl
       };
 
       /** \brief Destructor. */
-      ~OrganizedFastMesh () {};
+      ~OrganizedFastMesh () override = default;
 
       /** \brief Set a maximum edge length. 
         * Using not only the scalar \a a, but also \a b and \a c, allows for using a distance threshold in the form of:

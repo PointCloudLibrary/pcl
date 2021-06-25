@@ -74,9 +74,7 @@ IRImage::IRImage (pcl::shared_ptr<xn::IRMetaData> ir_meta_data) noexcept
 {
 }
 
-IRImage::~IRImage () noexcept
-{
-}
+IRImage::~IRImage () noexcept = default;
 
 unsigned IRImage::getWidth () const throw ()
 {

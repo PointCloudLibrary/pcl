@@ -117,7 +117,7 @@ class PCL_EXPORTS NarfKeypoint : public Keypoint<PointWithRange, int>
     
     // =====CONSTRUCTOR & DESTRUCTOR=====
     NarfKeypoint (RangeImageBorderExtractor* range_image_border_extractor=nullptr, float support_size=-1.0f);
-    ~NarfKeypoint ();
+    ~NarfKeypoint () override;
     
     // =====PUBLIC METHODS=====
     //! Erase all data calculated for the current range image

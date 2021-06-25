@@ -58,9 +58,7 @@ namespace pcl
       using MeshProcessing::input_mesh_;
       using MeshProcessing::initCompute;
       /** \brief Empty constructor */
-      EarClipping ()
-      { 
-      };
+      EarClipping () = default;
 
     protected:
       /** \brief a Pointer to the point cloud data. */

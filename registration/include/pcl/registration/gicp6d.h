@@ -139,7 +139,7 @@ protected:
       trivial_ = false;
     }
 
-    ~MyPointRepresentation() {}
+    ~MyPointRepresentation() override = default;
 
     inline Ptr
     makeShared() const

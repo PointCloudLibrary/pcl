@@ -371,7 +371,7 @@ protected:
 class PCL_EXPORTS GrayStereoMatching : public StereoMatching {
 public:
   GrayStereoMatching();
-  ~GrayStereoMatching();
+  ~GrayStereoMatching() override;
 
   /** \brief stereo processing, it computes a disparity map stored internally by the
    * class
@@ -428,7 +428,7 @@ protected:
 class PCL_EXPORTS BlockBasedStereoMatching : public GrayStereoMatching {
 public:
   BlockBasedStereoMatching();
-  ~BlockBasedStereoMatching(){};
+  ~BlockBasedStereoMatching() override = default;
 
   /** \brief setter for the radius of the squared window
    * \param[in] radius radius of the squared window used to compute the block-based
@@ -465,7 +465,7 @@ class PCL_EXPORTS AdaptiveCostSOStereoMatching : public GrayStereoMatching {
 public:
   AdaptiveCostSOStereoMatching();
 
-  ~AdaptiveCostSOStereoMatching(){};
+  ~AdaptiveCostSOStereoMatching() override = default;
 
   /** \brief setter for the radius (half length) of the column used for cost aggregation
    * \param[in] radius radius (half length) of the column used for cost aggregation; the
