@@ -1,7 +1,8 @@
 # Find and set libusb
 find_package(libusb)
 
-if(libusb_FOUND)
+if(TARGET libusb::libusb)
+  #libusb target is found by the find_package script. VCPKG skip PCLs findlibusb and sets its own variables which is handled below.
   return()
 endif()
 
@@ -11,7 +12,7 @@ find_package_handle_standard_args(libusb DEFAULT_MSG LIBUSB_LIBRARIES LIBUSB_INC
 
 mark_as_advanced(LIBUSB_INCLUDE_DIRS LIBUSB_LIBRARIES)
 
-if(LIBUSB_FOUND)
+if(libusb_FOUND)
   add_library(libusb::libusb UNKNOWN IMPORTED)
   set_target_properties(libusb::libusb PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${LIBUSB_INCLUDE_DIRS}")
   
