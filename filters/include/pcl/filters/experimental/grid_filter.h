@@ -40,10 +40,12 @@ public:
   GridFilter()
   : GridStruct()
   , downsample_all_data_(true)
+  , save_leaf_layout_(false)
   , filter_field_name_("")
   , filter_limit_min_(-FLT_MAX)
   , filter_limit_max_(FLT_MAX)
   , filter_limit_negative_(false)
+  , min_points_per_voxel_(0)
   {
     filter_name_ = GridStruct::filter_name_;
   }
@@ -51,6 +53,9 @@ public:
   /** \brief Destructor. */
   ~GridFilter() {}
 
+  /** \brief Set to true if all fields need to be downsampled, or false if just XYZ.
+   * \param[in] downsample the new value (true/false)
+   */
   inline void
   setDownsampleAllData(bool downsample)
   {
@@ -63,7 +68,42 @@ public:
   inline bool
   getDownsampleAllData() const
   {
-    return (downsample_all_data_);
+    return downsample_all_data_;
+  }
+
+  /** \brief Set the minimum number of points required for a voxel to be used.
+   * \param[in] min_points_per_voxel the minimum number of points for required for a
+   * voxel to be used
+   */
+  inline void
+  setMinimumPointsNumberPerVoxel(unsigned int min_points_per_voxel)
+  {
+    min_points_per_voxel_ = min_points_per_voxel;
+  }
+
+  /** \brief Return the minimum number of points required for a voxel to be used.
+   */
+  inline unsigned int
+  getMinimumPointsNumberPerVoxel() const
+  {
+    return min_points_per_voxel_;
+  }
+
+  /** \brief Set to true if leaf layout information needs to be saved for later access.
+   * \param[in] save_leaf_layout the new value (true/false)
+   */
+  inline void
+  setSaveLeafLayout(bool save_leaf_layout)
+  {
+    save_leaf_layout_ = save_leaf_layout;
+  }
+
+  /** \brief Returns true if leaf layout information will to be saved for later access.
+   */
+  inline bool
+  getSaveLeafLayout() const
+  {
+    return save_leaf_layout_;
   }
 
   /** \brief Provide the name of the field to be used for filtering data. In conjunction
@@ -81,7 +121,7 @@ public:
   inline std::string const
   getFilterFieldName() const
   {
-    return (filter_field_name_);
+    return filter_field_name_;
   }
 
   /** \brief Get the field filter limits (min/max) set by the user. The default values
@@ -122,12 +162,16 @@ public:
   inline bool
   getFilterLimitsNegative() const
   {
-    return (filter_limit_negative_);
+    return filter_limit_negative_;
   }
 
 protected:
   /** \brief Set to true if all fields need to be downsampled, or false if just XYZ. */
   bool downsample_all_data_;
+
+  /** \brief Set to true if leaf layout information needs to be saved in \a
+   * leaf_layout_. */
+  bool save_leaf_layout_;
 
   /** \brief The desired user filter field name. */
   std::string filter_field_name_;
@@ -142,6 +186,11 @@ protected:
    * filter_limit_max_). Default: false. */
   bool filter_limit_negative_;
 
+  /** \brief Minimum number of points per voxel for the centroid to be computed */
+  unsigned int min_points_per_voxel_;
+
+  /** \brief The iterable grid object for storing information of each fraction of space
+   * in the filtering space defined by the grid */
   Grid grid_;
 
   /** \brief Downsample a Point Cloud using a voxelized grid approach
