@@ -313,7 +313,7 @@ class RealSenseViewer
       print_info (" Hz  ");
       print_value ("%dx%d  ", mode.depth_width, mode.depth_height);
       print_info ("Depth");
-      if (pcl::traits::has_color<PointT>::value)
+      if (pcl::traits::has_rgb<PointT>::value)
       {
         print_value ("  %dx%d  ", mode.color_width, mode.color_height);
         print_info ("Color");
