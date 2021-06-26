@@ -344,7 +344,8 @@ pcl::search::FlannSearch<PointT, FlannDistance>::radiusSearch (
     p.checks = checks_;
     // here: max_nn==0: take all neighbors. flann: max_nn==0: return no neighbors, only count them. max_nn==-1: return all neighbors
     p.max_neighbors = max_nn != 0 ? max_nn : -1;
-    index_->radiusSearch (m, k_indices, k_sqr_distances, static_cast<float> (radius * radius), p);
+    radius_search(
+        *index_, m, k_indices, k_sqr_distances, static_cast<float>(radius * radius), p);
 
     delete[] data;
   }

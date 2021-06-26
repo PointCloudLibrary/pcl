@@ -174,6 +174,43 @@ knn_search(A& index, B& query, C& k_indices, D& dists, unsigned int k, F& params
   std::copy(indices.cbegin(), indices.cend(), k_indices.begin());
   return ret;
 }
+
+template <class IndexT, class A, class B, class F, CompatWithFlann<IndexT> = true>
+int
+knn_search(A& index,
+           B& query,
+           std::vector<Indices>& k_indices,
+           std::vector<std::vector<float>>& dists,
+           unsigned int k,
+           F& params)
+{
+  return index.knnSearch(query, k_indices, dists, k, params);
+}
+
+template <class IndexT, class A, class B, class F, NotCompatWithFlann<IndexT> = true>
+int
+knn_search(A& index,
+           B& query,
+           std::vector<Indices>& k_indices,
+           std::vector<std::vector<float>>& dists,
+           unsigned int k,
+           F& params)
+{
+  std::vector<std::vector<std::size_t>> indices;
+  // flann will resize accordingly
+  auto ret = index.knnSearch(query, indices, dists, k, params);
+
+  k_indices.resize(indices.size());
+  {
+    auto it = indices.cbegin();
+    auto jt = k_indices.begin();
+    for (; it != indices.cend(); ++it, ++jt) {
+      jt->resize(it->size());
+      std::copy(it->cbegin(), it->cend(), jt->begin());
+    }
+  }
+  return ret;
+}
 } // namespace detail
 template <class FlannIndex,
           class Query,
@@ -269,6 +306,43 @@ radius_search(A& index, B& query, C& k_indices, D& dists, float radius, F& param
   k_indices.resize(indices[0].size());
   std::copy(indices[0].cbegin(), indices[0].cend(), k_indices.begin());
   return neighbors_in_radius;
+}
+
+template <class IndexT, class A, class B, class F, CompatWithFlann<IndexT> = true>
+int
+radius_search(A& index,
+              B& query,
+              std::vector<Indices>& k_indices,
+              std::vector<std::vector<float>>& dists,
+              float radius,
+              F& params)
+{
+  return index.radiusSearch(query, k_indices, dists, radius, params);
+}
+
+template <class IndexT, class A, class B, class F, NotCompatWithFlann<IndexT> = true>
+int
+radius_search(A& index,
+              B& query,
+              std::vector<Indices>& k_indices,
+              std::vector<std::vector<float>>& dists,
+              float radius,
+              F& params)
+{
+  std::vector<std::vector<std::size_t>> indices;
+  // flann will resize accordingly
+  auto ret = index.radiusSearch(query, indices, dists, radius, params);
+
+  k_indices.resize(indices.size());
+  {
+    auto it = indices.cbegin();
+    auto jt = k_indices.begin();
+    for (; it != indices.cend(); ++it, ++jt) {
+      jt->resize(it->size());
+      std::copy(it->cbegin(), it->cend(), jt->begin());
+    }
+  }
+  return ret;
 }
 } // namespace detail
 template <class FlannIndex,
