@@ -44,4 +44,4 @@ COPY $PLATFORM'-windows-rel.cmake' 'c:\vcpkg\triplets\'$PLATFORM'-windows-rel.cm
 
 RUN cd .\vcpkg;                                                `
     .\bootstrap-vcpkg.bat;                                            `
-    .\vcpkg install boost flann eigen3 qhull vtk[qt,opengl] gtest --triplet $Env:PLATFORM-windows-rel --clean-after-build;
+    .\vcpkg install boost flann eigen3 qhull vtk[qt,opengl] gtest benchmark --triplet $Env:PLATFORM-windows-rel --clean-after-build;
