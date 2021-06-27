@@ -16,6 +16,9 @@
 
 #include <unordered_map>
 
+// For testing protected method
+class VoxelGridProtectedMethods_GridFilters_Test;
+
 namespace pcl {
 namespace experimental {
 
@@ -348,6 +351,9 @@ protected:
   /** \brief The iterable grid object for storing information of each fraction of space
    * in the filtering space defined by the grid */
   Grid grid_;
+
+private:
+  friend class ::VoxelGridProtectedMethods_GridFilters_Test;
 };
 
 template <typename PointT>

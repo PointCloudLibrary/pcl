@@ -33,7 +33,7 @@ isPointApprox(const PointT& p1, const PointT& p2, const float precision)
          precision;
 }
 
-TEST(VoxelGridEquivalentTest, GridFilters)
+TEST(VoxelGridEquivalency, GridFilters)
 {
   PointCloud<PointXYZ> new_out_cloud, old_out_cloud;
 
@@ -51,20 +51,20 @@ TEST(VoxelGridEquivalentTest, GridFilters)
   EXPECT_EQ(new_out_cloud.width, old_out_cloud.width);
   EXPECT_EQ(new_out_cloud.height, old_out_cloud.height);
 
-  for (size_t i = 0; i < new_out_cloud.size(); ++i) {
-    bool same_pt_found = false;
-    for (size_t j = 0; j < old_out_cloud.size(); ++j) {
-      if (isPointApprox(new_out_cloud[i], old_out_cloud[j], PRECISION)) {
-        same_pt_found = true;
-        break;
-      }
-    }
+  // The order of output points are different due to the new grid iterating approach
+  auto pt_cmp = [](const PointXYZ& p1, const PointXYZ& p2) -> bool {
+    return p1.x > p2.x || (p1.x == p2.x && p1.y > p2.y) ||
+           (p1.x == p2.x && p1.y == p2.y && p1.z > p2.z);
+  };
+  std::sort(new_out_cloud.begin(), new_out_cloud.end(), pt_cmp);
+  std::sort(old_out_cloud.begin(), old_out_cloud.end(), pt_cmp);
 
-    EXPECT_TRUE(same_pt_found);
+  for (size_t i = 0; i < new_out_cloud.size(); ++i) {
+    EXPECT_TRUE(isPointApprox(new_out_cloud[i], old_out_cloud[i], PRECISION));
   }
 }
 
-TEST(GridInfoEquivalentTest, GridFilters)
+TEST(VoxelGridSetUpEquivalency, GridFilters)
 {
   PointCloud<PointXYZ> new_out_cloud, old_out_cloud;
 
@@ -93,6 +93,43 @@ TEST(GridInfoEquivalentTest, GridFilters)
   const Eigen::Vector3i new_divb_mul = new_grid.getDivisionMultiplier();
   const Eigen::Vector3i old_divb_mul = old_grid.getDivisionMultiplier();
   EXPECT_TRUE(new_divb_mul.isApprox(old_divb_mul, PRECISION));
+}
+
+TEST(VoxelGridProtectedMethods, GridFilters)
+{
+  PointCloud<PointXYZ> new_out_cloud, old_out_cloud;
+
+  experimental::VoxelGrid<PointXYZ> new_grid;
+  new_grid.setLeafSize(0.02f, 0.02f, 0.02f);
+  new_grid.setInputCloud(cloud);
+  new_grid.filter(new_out_cloud);
+
+  pcl::VoxelGrid<PointXYZ> old_grid;
+  old_grid.setLeafSize(0.02f, 0.02f, 0.02f);
+  old_grid.setInputCloud(cloud);
+  old_grid.filter(old_out_cloud);
+
+  // Test hashing point
+  const Eigen::Vector3i old_min_b = old_grid.getMinBoxCoordinates();
+  const Eigen::Vector3i old_divb_mul = old_grid.getDivisionMultiplier();
+  const Eigen::Vector3f old_inverse_leaf_size = 1 / old_grid.getLeafSize().array();
+
+  // Copied from the old VoxelGrid as there is no dedicated method
+  auto old_hash = [&](const PointXYZ& p) {
+    int ijk0 = static_cast<int>(std::floor(p.x * old_inverse_leaf_size[0]) -
+                                static_cast<float>(old_min_b[0]));
+    int ijk1 = static_cast<int>(std::floor(p.y * old_inverse_leaf_size[1]) -
+                                static_cast<float>(old_min_b[1]));
+    int ijk2 = static_cast<int>(std::floor(p.z * old_inverse_leaf_size[2]) -
+                                static_cast<float>(old_min_b[2]));
+
+    // Compute the centroid leaf index
+    return ijk0 * old_divb_mul[0] + ijk1 * old_divb_mul[1] + ijk2 * old_divb_mul[2];
+  };
+
+  for (size_t i = 0; i < cloud->size(); ++i) {
+    EXPECT_EQ(new_grid.hashPoint(cloud->at(i)), old_hash(cloud->at(i)));
+  }
 }
 
 int
