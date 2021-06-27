@@ -11,7 +11,7 @@
 
 #include <pcl/filters/filter.h>
 
-#include <cfloat> // for FLT_MAX
+#include <limits>
 
 namespace pcl {
 namespace experimental {
@@ -19,12 +19,7 @@ namespace experimental {
 template <typename T>
 using get_point_type = typename T::PointCloud::PointType;
 
-template <typename T>
-using get_grid_type = typename T::Grid;
-
-template <typename GridStruct,
-          typename Grid = get_grid_type<GridStruct>,
-          typename PointT = get_point_type<GridStruct>>
+template <typename GridStruct, typename PointT = get_point_type<GridStruct>>
 class GridFilter : public Filter<PointT>, public GridStruct {
 protected:
   using Filter<PointT>::filter_name_;
@@ -42,8 +37,8 @@ public:
   , downsample_all_data_(true)
   , save_leaf_layout_(false)
   , filter_field_name_("")
-  , filter_limit_min_(-FLT_MAX)
-  , filter_limit_max_(FLT_MAX)
+  , filter_limit_min_(std::numeric_limits<double>::min())
+  , filter_limit_max_(std::numeric_limits<double>::max())
   , filter_limit_negative_(false)
   , min_points_per_voxel_(0)
   {
@@ -57,13 +52,13 @@ public:
    * \param[in] downsample the new value (true/false)
    */
   inline void
-  setDownsampleAllData(bool downsample)
+  setDownsampleAllData(const bool downsample)
   {
     downsample_all_data_ = downsample;
   }
 
-  /** \brief Get the state of the internal downsampling parameter (true if
-   * all fields need to be downsampled, false if just XYZ).
+  /** \brief Get the state of the internal downsampling parameter (true if all fields
+   * need to be downsampled, false if just XYZ).
    */
   inline bool
   getDownsampleAllData() const
@@ -76,14 +71,14 @@ public:
    * voxel to be used
    */
   inline void
-  setMinimumPointsNumberPerVoxel(unsigned int min_points_per_voxel)
+  setMinimumPointsNumberPerVoxel(const std::size_t min_points_per_voxel)
   {
     min_points_per_voxel_ = min_points_per_voxel;
   }
 
   /** \brief Return the minimum number of points required for a voxel to be used.
    */
-  inline unsigned int
+  inline std::size_t
   getMinimumPointsNumberPerVoxel() const
   {
     return min_points_per_voxel_;
@@ -93,7 +88,7 @@ public:
    * \param[in] save_leaf_layout the new value (true/false)
    */
   inline void
-  setSaveLeafLayout(bool save_leaf_layout)
+  setSaveLeafLayout(const bool save_leaf_layout)
   {
     save_leaf_layout_ = save_leaf_layout;
   }
@@ -107,9 +102,9 @@ public:
   }
 
   /** \brief Provide the name of the field to be used for filtering data. In conjunction
-   * with  \a setFilterLimits, points having values outside this interval will be
-   * discarded. \param[in] field_name the name of the field that contains values used
-   * for filtering
+   * with \a setFilterLimits, points having values outside this interval will be
+   * discarded.
+   * \param[in] field_name the name of the field that contains values used for filtering
    */
   inline void
   setFilterFieldName(const std::string& field_name)
@@ -125,7 +120,8 @@ public:
   }
 
   /** \brief Get the field filter limits (min/max) set by the user. The default values
-   * are -FLT_MAX, FLT_MAX. \param[out] limit_min the minimum allowed field value
+   * are numeric_limits<double>::min(), numeric_limits<double>::max().
+   * \param[out] limit_min the minimum allowed field value
    * \param[out] limit_max the maximum allowed field value
    */
   inline void
@@ -136,8 +132,9 @@ public:
   }
 
   /** \brief Set to true if we want to return the data outside the interval specified by
-   * setFilterLimits (min, max). Default: false. \param[in] limit_negative return data
-   * inside the interval (false) or outside (true)
+   * setFilterLimits (min, max).
+   * Default: false.
+   * \param[in] limit_negative return data inside the interval (false) or outside (true)
    */
   inline void
   setFilterLimitsNegative(const bool limit_negative)
@@ -146,8 +143,9 @@ public:
   }
 
   /** \brief Get whether the data outside the interval (min/max) is to be returned
-   * (true) or inside (false). \param[out] limit_negative true if data \b outside the
-   * interval [min; max] is to be returned, false otherwise
+   * (true) or inside (false).
+   * \param[out] limit_negative true if data \b outside the interval [min; max] is to be
+   * returned, false otherwise
    */
   inline void
   getFilterLimitsNegative(bool& limit_negative) const
@@ -156,8 +154,9 @@ public:
   }
 
   /** \brief Get whether the data outside the interval (min/max) is to be returned
-   * (true) or inside (false). \return true if data \b outside the interval [min; max]
-   * is to be returned, false otherwise
+   * (true) or inside (false).
+   * \return true if data \b outside the interval [min; max] is to be returned, false
+   * otherwise
    */
   inline bool
   getFilterLimitsNegative() const
@@ -183,15 +182,12 @@ protected:
   double filter_limit_max_;
 
   /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a
-   * filter_limit_max_). Default: false. */
+   * filter_limit_max_).
+   * Default: false. */
   bool filter_limit_negative_;
 
   /** \brief Minimum number of points per voxel for the centroid to be computed */
-  unsigned int min_points_per_voxel_;
-
-  /** \brief The iterable grid object for storing information of each fraction of space
-   * in the filtering space defined by the grid */
-  Grid grid_;
+  std::size_t min_points_per_voxel_;
 
   /** \brief Downsample a Point Cloud using a voxelized grid approach
    * \param[out] output the resultant point cloud message
@@ -203,8 +199,6 @@ protected:
     if (!input_) {
       PCL_WARN("[pcl::%s::applyFilter] No input dataset given!\n",
                getClassName().c_str());
-      output.width = output.height = 0;
-      output.clear();
       return;
     }
 
@@ -212,17 +206,17 @@ protected:
     output.height = 1;      // downsampling breaks the organized structure
     output.is_dense = true; // we filter out invalid points
 
-    if (!GridStruct::setUp(this, grid_)) {
+    if (!GridStruct::setUp(this)) {
       output = *input_;
       return;
     }
 
     for (const auto& pt : *input_) {
-      GridStruct::addPointToGrid(grid_, pt);
+      GridStruct::addPointToGrid(pt);
     }
 
-    for (auto it = grid_.begin(); it != grid_.end(); ++it) {
-      auto res = GridStruct::filterGrid(it, grid_);
+    for (auto it = GridStruct::grid_.begin(); it != GridStruct::grid_.end(); ++it) {
+      auto res = GridStruct::filterGrid(it);
       if (res) {
         output.push_back(res.value());
       }

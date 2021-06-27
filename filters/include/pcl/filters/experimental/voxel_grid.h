@@ -42,18 +42,8 @@ public:
   , max_b_(Eigen::Vector4i::Zero())
   , div_b_(Eigen::Vector4i::Zero())
   , divb_mul_(Eigen::Vector4i::Zero())
-  , min_points_per_voxel_(0)
+  , grid_()
   {}
-
-  /** \brief Set the minimum number of points required for a voxel to be used.
-   * \param[in] min_points_per_voxel the minimum number of points for required for a
-   * voxel to be used
-   */
-  inline void
-  setMinimumPointsNumberPerVoxel(unsigned int min_points_per_voxel)
-  {
-    min_points_per_voxel_ = min_points_per_voxel;
-  }
 
   /** \brief Set the voxel grid leaf size.
    * \param[in] leaf_size the voxel grid leaf size
@@ -75,7 +65,7 @@ public:
    * \param[in] lz the leaf size for Z
    */
   inline void
-  setLeafSize(float lx, float ly, float lz)
+  setLeafSize(const float lx, const float ly, const float lz)
   {
     leaf_size_[0] = lx;
     leaf_size_[1] = ly;
@@ -94,8 +84,8 @@ public:
     return leaf_size_.head<3>();
   }
 
-  /** \brief Get the minimum coordinates of the bounding box (after
-   * filtering is performed).
+  /** \brief Get the minimum coordinates of the bounding box (after filtering is
+   * performed).
    */
   inline Eigen::Vector3i
   getMinBoxCoordinates() const
@@ -103,8 +93,8 @@ public:
     return min_b_.head<3>();
   }
 
-  /** \brief Get the minimum coordinates of the bounding box (after
-   * filtering is performed).
+  /** \brief Get the minimum coordinates of the bounding box (after filtering is
+   * performed).
    */
   inline Eigen::Vector3i
   getMaxBoxCoordinates() const
@@ -112,8 +102,8 @@ public:
     return max_b_.head<3>();
   }
 
-  /** \brief Get the number of divisions along all 3 axes (after filtering
-   * is performed).
+  /** \brief Get the number of divisions along all 3 axes (after filtering is
+   * performed).
    */
   inline Eigen::Vector3i
   getNrDivisions() const
@@ -121,8 +111,8 @@ public:
     return div_b_.head<3>();
   }
 
-  /** \brief Get the multipliers to be applied to the grid coordinates in
-   * order to find the centroid index (after filtering is performed).
+  /** \brief Get the multipliers to be applied to the grid coordinates in order to find
+   * the centroid index (after filtering is performed).
    */
   inline Eigen::Vector3i
   getDivisionMultiplier() const
@@ -147,12 +137,13 @@ public:
 
   /** \brief Returns the indices in the resulting downsampled cloud of the points at the
    * specified grid coordinates, relative to the grid coordinates of the specified point
-   * (or -1 if the cell was empty/out of bounds). \param[in] reference_point the
-   * coordinates of the reference point (corresponding cell is allowed to be empty/out
-   * of bounds) \param[in] relative_coordinates matrix with the columns being the
-   * coordinates of the requested cells, relative to the reference point's cell \note
-   * for efficiency, user must make sure that the saving of the leaf layout is enabled
-   * and filtering performed
+   * (or -1 if the cell was empty/out of bounds).
+   * \param[in] reference_point the coordinates of the reference point (corresponding
+   * cell is allowed to be empty/out of bounds)
+   * \param[in] relative_coordinates matrix with the columns being the coordinates of
+   * the requested cells, relative to the reference point's cell
+   * \note for efficiency, user must make sure that the saving of the leaf layout is
+   * enabled and filtering performed
    */
   inline std::vector<int>
   getNeighborCentroidIndices(const PointT& reference_point,
@@ -181,9 +172,9 @@ public:
   }
 
   /** \brief Returns the layout of the leafs for fast access to cells relative to
-   * current position. \note position at (i-min_x) + (j-min_y)*div_x +
-   * (k-min_z)*div_x*div_y holds the index of the element at coordinates (i,j,k) in the
-   * grid (-1 if empty)
+   * current position.
+   * \note position at (i-min_x) + (j-min_y)*div_x + (k-min_z)*div_x*div_y holds the
+   * index of the element at coordinates (i,j,k) in the grid (-1 if empty)
    */
   inline std::vector<int>
   getLeafLayout() const
@@ -205,7 +196,8 @@ public:
   }
 
   /** \brief Returns the index in the downsampled cloud corresponding to a given set of
-   * coordinates. \param[in] ijk the coordinates (i,j,k) in the grid (-1 if empty)
+   * coordinates.
+   * \param[in] ijk the coordinates (i,j,k) in the grid (-1 if empty)
    */
   inline int
   getCentroidIndexAt(const Eigen::Vector3i& ijk) const
@@ -227,7 +219,7 @@ public:
 
 protected:
   bool
-  setUp(const GridFilter<VoxelStructT>* grid_filter, Grid& grid)
+  setUp(const GridFilter<VoxelStructT>* grid_filter)
   {
     double filter_limit_min, filter_limit_max;
     grid_filter->getFilterLimits(filter_limit_min, filter_limit_max);
@@ -259,7 +251,7 @@ protected:
 
     const size_t dxzy = checkIfOverflow(min_p, max_p);
     if (dxzy) {
-      grid.reserve(std::min(dxzy, input->size()));
+      grid_.reserve(std::min(dxzy, input->size()));
     }
     else {
       PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. "
@@ -286,7 +278,7 @@ protected:
     std::size_t dxy, dxyz;
 
     // built-in function from GCC5
-    // TODO: doesn't work with MSVC, find another way
+    // TODO: doesn't work with MSVC?
     if (__builtin_umull_overflow(dx, dy, &dxy) ||
         __builtin_umull_overflow(dxy, dz, &dxyz)) {
       return 0;
@@ -297,10 +289,10 @@ protected:
   }
 
   // accessing GridFilter
-  const auto
+  const GridFilter<VoxelStructT>*
   getDerived()
   {
-    return static_cast<GridFilter<VoxelStructT>*>(this);
+    return static_cast<const GridFilter<VoxelStructT>*>(this);
   }
 
   std::size_t
@@ -313,22 +305,21 @@ protected:
   }
 
   void
-  addPointToGrid(Grid& grid, const PointT& pt)
+  addPointToGrid(const PointT& pt)
   {
     // can be batch/running mode
     const std::size_t h = hashPoint(pt);
-    grid[h].centroid += Eigen::Vector3f{pt.x, pt.y, pt.z};
-    grid[h].num_pt++;
+    grid_[h].centroid += Eigen::Vector3f{pt.x, pt.y, pt.z};
+    grid_[h].num_pt++;
   }
 
   boost::optional<PointT>
-  filterGrid(Grid::iterator grid_it, Grid& grid)
+  filterGrid(Grid::iterator grid_it)
   {
-    // Suppress unused warning
-    (void)grid;
-
+    const std::size_t min_points_per_voxel =
+        getDerived()->getMinimumPointsNumberPerVoxel();
     auto& voxel = grid_it->second;
-    if (voxel.num_pt >= min_points_per_voxel_) {
+    if (voxel.num_pt >= min_points_per_voxel) {
       voxel.centroid.array() /= voxel.num_pt;
       return PointT(voxel.centroid[0], voxel.centroid[1], voxel.centroid[2]);
     }
@@ -354,8 +345,9 @@ protected:
    * division multiplier. */
   Eigen::Vector4i min_b_, max_b_, div_b_, divb_mul_;
 
-  /** \brief Minimum number of points per voxel for the centroid to be computed */
-  std::size_t min_points_per_voxel_;
+  /** \brief The iterable grid object for storing information of each fraction of space
+   * in the filtering space defined by the grid */
+  Grid grid_;
 };
 
 template <typename PointT>
