@@ -25,9 +25,6 @@ steps:
   - script: |
       cd %BUILD_DIR% && cmake --build . --target tests --config %CONFIGURATION%
     displayName: 'Run Unit Tests'
-  - script: |
-      cd %BUILD_DIR% && cmake --build . --target run_benchmarks --config %CONFIGURATION%
-    displayName: 'Run Benchmarks'
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'CTest'
