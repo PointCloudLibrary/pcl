@@ -97,16 +97,16 @@ Basic Usage
      .. |mi_3| image:: images/pcl_ccmake.png
                :height: 100px
 
-  * :ref:`compiling_pcl_dependencies_windows`
+  * :ref:`_use_pcl_windows`
 
      ======  ======
-     |mi_4|  Title: **Compiling PCL's dependencies from source on Windows**
+     |mi_4|  Title: **Install PCL using VCPKG**
 
-             Authors: *Alessio Placitelli* and *Mourad Boufarguine*
+             Author: *Lars Glud*
 
-             Compatibility: > PCL 1.0
+             Compatibility: PCL version available on VCPKG and Master, unless VCPKG updates a dependency before PCL is ready for it.
 
-             In this tutorial, we will explain how to compile PCL's 3rd party dependencies from source on Microsoft Windows.
+             In this tutorial,it is explained how to install PCL or PCL dependencies.
      ======  ======
 
      .. |mi_4| image:: images/windows_logo.png
