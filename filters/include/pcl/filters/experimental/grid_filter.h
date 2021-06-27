@@ -16,10 +16,12 @@
 namespace pcl {
 namespace experimental {
 
-template <typename T>
-using get_point_type = typename T::PointCloud::PointType;
+// template <typename GridStructT>
+// using get_point_type = typename GridStructT::PointCloud::PointType;
 
-template <typename GridStruct, typename PointT = get_point_type<GridStruct>>
+#define GET_POINT_TYPE(GridStructT) typename GridStructT::PointCloud::PointType
+
+template <typename GridStruct, typename PointT = GET_POINT_TYPE(GridStruct)>
 class GridFilter : public Filter<PointT>, public GridStruct {
 protected:
   using Filter<PointT>::filter_name_;

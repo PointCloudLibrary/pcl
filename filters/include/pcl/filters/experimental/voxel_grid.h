@@ -33,6 +33,7 @@ public:
   using PointCloud = pcl::PointCloud<PointT>;
   using PointCloudPtr = typename PointCloud::Ptr;
   using PointCloudConstPtr = typename PointCloud::ConstPtr;
+  // using PointType = PointT;
 
   using Grid = std::unordered_map<std::size_t, Voxel>;
 
