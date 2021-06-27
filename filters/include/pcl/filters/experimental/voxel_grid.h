@@ -226,7 +226,7 @@ protected:
 
     const PointCloudConstPtr input = grid_filter->getInputCloud();
     const IndicesConstPtr indices = grid_filter->getIndices();
-    const std::string& filter_field_name = grid_filter->getFilterFieldName();
+    // const std::string& filter_field_name = grid_filter->getFilterFieldName();
 
     Eigen::Vector4f min_p, max_p;
     // Get the minimum and maximum dimensions
@@ -243,8 +243,8 @@ protected:
     // else
     getMinMax3D<PointT>(*input, *indices, min_p, max_p);
 
-    min_b_ = (min_p.array() * inverse_leaf_size_).floor().cast<int>();
-    max_b_ = (max_p.array() * inverse_leaf_size_).floor().cast<int>();
+    min_b_ = (min_p.array() * inverse_leaf_size_).floor().template cast<int>();
+    max_b_ = (max_p.array() * inverse_leaf_size_).floor().template cast<int>();
 
     div_b_ = (max_b_ - min_b_).array() + 1;
     divb_mul_ = Eigen::Vector4i(1, div_b_[0], div_b_[0] * div_b_[1], 0);
