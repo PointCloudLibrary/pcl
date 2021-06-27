@@ -13,4 +13,7 @@ endif()
 find_package(benchmark REQUIRED)
 add_custom_target(run_benchmarks)
 
-PCL_ADD_BENCHMARK(features_normal_3d FILES features/normal_3d.cpp LINK_WITH pcl_io pcl_search pcl_features ARGUMENTS "${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd" "${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd")
+PCL_ADD_BENCHMARK(features_normal_3d FILES features/normal_3d.cpp
+                  LINK_WITH pcl_io pcl_search pcl_features
+                  ARGUMENTS "${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd"
+                            "${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd")
