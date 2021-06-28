@@ -138,7 +138,7 @@ public:
   }
 
   /** \brief extract clusters of a PointCloud given by <setInputCloud(), setIndices()>
-   * \param indices_in 
+   * \param indices_in
    * \param indices_out
    */
   void

@@ -118,7 +118,7 @@ public:
   }
 
   /** \brief Set the minimum number of points that a cluster needs to contain in order
-   * to be considered valid. 
+   * to be considered valid.
    * \param min_cluster_size the minimum cluster size
    */
   inline void
@@ -136,7 +136,7 @@ public:
   }
 
   /** \brief Set the maximum number of points that a cluster needs to contain in order
-   * to be considered valid. 
+   * to be considered valid.
    * \param max_cluster_size the maximum cluster size
    */
   inline void
