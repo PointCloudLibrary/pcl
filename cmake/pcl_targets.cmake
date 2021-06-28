@@ -412,6 +412,46 @@ macro(PCL_ADD_TEST _name _exename)
 endmacro()
 
 ###############################################################################
+# Add a benchmark target.
+# _name The benchmark name.
+# ARGN :
+#    FILES the source files for the benchmark
+#    ARGUMENTS Arguments for benchmark executable
+#    LINK_WITH link benchmark executable with libraries
+function(PCL_ADD_BENCHMARK _name)
+  set(options)
+  set(oneValueArgs)
+  set(multiValueArgs FILES ARGUMENTS LINK_WITH)
+  cmake_parse_arguments(PCL_ADD_BENCHMARK "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+  add_executable(benchmark_${_name} ${PCL_ADD_BENCHMARK_FILES})
+  set_target_properties(benchmark_${_name} PROPERTIES FOLDER "Benchmarks")
+  target_link_libraries(benchmark_${_name} benchmark::benchmark ${PCL_ADD_BENCHMARK_LINK_WITH})
+  set_target_properties(benchmark_${_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+  
+  #Only applies to MSVC
+  if(MSVC)
+    #Requires CMAKE version 3.13.0
+    get_target_property(BenchmarkArgumentWarningShown run_benchmarks PCL_BENCHMARK_ARGUMENTS_WARNING_SHOWN)
+    if(CMAKE_VERSION VERSION_LESS "3.13.0" AND (NOT BenchmarkArgumentWarningShown))
+      message(WARNING "Arguments for benchmark projects are not added - this requires at least CMake 3.13. Can be added manually in \"Project settings -> Debugging -> Command arguments\"")
+      set_target_properties(run_benchmarks PROPERTIES PCL_BENCHMARK_ARGUMENTS_WARNING_SHOWN TRUE)
+    else()
+      #Only add if there are arguments to test
+      if(PCL_ADD_BENCHMARK_ARGUMENTS)
+        string (REPLACE ";" " " PCL_ADD_BENCHMARK_ARGUMENTS_STR "${PCL_ADD_BENCHMARK_ARGUMENTS}")
+        set_target_properties(benchmark_${_name} PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS ${PCL_ADD_BENCHMARK_ARGUMENTS_STR})
+      endif()
+    endif()
+  endif()
+  
+  add_custom_target(run_benchmark_${_name} benchmark_${_name} ${PCL_ADD_BENCHMARK_ARGUMENTS})
+  set_target_properties(run_benchmark_${_name} PROPERTIES FOLDER "Benchmarks")
+  
+  add_dependencies(run_benchmarks run_benchmark_${_name})
+endfunction()
+
+###############################################################################
 # Add an example target.
 # _name The example name.
 # ARGN :
