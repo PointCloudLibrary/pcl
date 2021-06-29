@@ -384,6 +384,9 @@ file(TO_CMAKE_PATH "${PCL_DIR}" PCL_DIR)
 if(WIN32 AND NOT MINGW)
 # PCLConfig.cmake is installed to PCL_ROOT/cmake
   get_filename_component(PCL_ROOT "${PCL_DIR}" PATH)
+  if(EXISTS "${PCL_ROOT}/3rdParty")
+    set(PCL_ALL_IN_ONE_INSTALLER ON)
+  endif()
 else()
 # PCLConfig.cmake is installed to PCL_ROOT/share/pcl-x.y
   get_filename_component(PCL_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
@@ -395,17 +398,11 @@ if(EXISTS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}/pcl
   # pcl_message("Found a PCL installation")
   set(PCL_CONF_INCLUDE_DIR "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
   set(PCL_LIBRARY_DIRS "${PCL_ROOT}/@LIB_INSTALL_DIR@")
-  if(EXISTS "${PCL_ROOT}/3rdParty")
-    set(PCL_ALL_IN_ONE_INSTALLER ON)
-  endif()
 elseif(EXISTS "${PCL_ROOT}/include/pcl/pcl_config.h")
   # Found a non-standard (likely ANDROID) PCL installation
   # pcl_message("Found a PCL installation")
   set(PCL_CONF_INCLUDE_DIR "${PCL_ROOT}/include")
   set(PCL_LIBRARY_DIRS "${PCL_ROOT}/lib")
-  if(EXISTS "${PCL_ROOT}/3rdParty")
-    set(PCL_ALL_IN_ONE_INSTALLER ON)
-  endif()
 elseif(EXISTS "${PCL_DIR}/include/pcl/pcl_config.h")
   # Found PCLConfig.cmake in a build tree of PCL
   # pcl_message("PCL found into a build tree.")
