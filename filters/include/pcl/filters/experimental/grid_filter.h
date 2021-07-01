@@ -121,6 +121,18 @@ public:
     return filter_field_name_;
   }
 
+  /** \brief Set the field filter limits. All points having field values outside this
+   * interval will be discarded.
+   * \param[in] limit_min the minimum allowed field value
+   * \param[in] limit_max the maximum allowed field value
+   */
+  inline void
+  setFilterLimits(const double& limit_min, const double& limit_max)
+  {
+    filter_limit_min_ = limit_min;
+    filter_limit_max_ = limit_max;
+  }
+
   /** \brief Get the field filter limits (min/max) set by the user. The default values
    * are numeric_limits<double>::min(), numeric_limits<double>::max().
    * \param[out] limit_min the minimum allowed field value

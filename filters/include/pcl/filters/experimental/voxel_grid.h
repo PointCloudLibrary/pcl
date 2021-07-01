@@ -142,6 +142,83 @@ public:
   /** \brief Returns the indices in the resulting downsampled cloud of the points at the
    * specified grid coordinates, relative to the grid coordinates of the specified point
    * (or -1 if the cell was empty/out of bounds).
+   * \param[in] x the X coordinate of the reference point (corresponding cell is allowed
+   * to be empty/out of bounds)
+   * \param[in] y the Y coordinate of the reference point (corresponding cell is allowed
+   * to be empty/out of bounds)
+   * \param[in] z the Z coordinate of the reference point (corresponding cell is allowed
+   * to be empty/out of bounds)
+   * \param[out] relative_coordinates matrix with the columns being the coordinates of
+   * the requested cells, relative to the reference point's cell
+   * \note for efficiency,user must make sure that the saving of the leaf layout is
+   * enabled and filtering performed
+   */
+  inline std::vector<int>
+  getNeighborCentroidIndices(float x,
+                             float y,
+                             float z,
+                             const Eigen::MatrixXi& relative_coordinates) const
+  {
+    Eigen::Vector4i ijk(static_cast<int>(std::floor(x * inverse_leaf_size_[0])),
+                        static_cast<int>(std::floor(y * inverse_leaf_size_[1])),
+                        static_cast<int>(std::floor(z * inverse_leaf_size_[2])),
+                        0);
+    Eigen::Array4i diff2min = min_b_ - ijk;
+    Eigen::Array4i diff2max = max_b_ - ijk;
+    std::vector<int> neighbors(relative_coordinates.cols());
+    for (Eigen::Index ni = 0; ni < relative_coordinates.cols(); ni++) {
+      Eigen::Vector4i displacement =
+          (Eigen::Vector4i() << relative_coordinates.col(ni), 0).finished();
+      // checking if the specified cell is in the grid
+      if ((diff2min <= displacement.array()).all() &&
+          (diff2max >= displacement.array()).all())
+        neighbors[ni] = leaf_layout_[(
+            (ijk + displacement - min_b_).dot(divb_mul_))]; // .at() can be omitted
+      else
+        neighbors[ni] = -1; // cell is out of bounds, consider it empty
+    }
+    return (neighbors);
+  }
+
+  /** \brief Returns the indices in the resulting downsampled cloud of the points at the
+   * specified grid coordinates, relative to the grid coordinates of the specified point
+   * (or -1 if the cell was empty/out of bounds).
+   * \param[in] x the X coordinate of the reference point (corresponding cell is allowed
+   * to be empty/out of bounds)
+   * \param[in] y the Y coordinate of the reference point (corresponding cell is allowed
+   * to be empty/out of bounds)
+   * \param[in] z the Z coordinate of the reference point (corresponding cell is allowed
+   * to be empty/out of bounds)
+   * \param[out] relative_coordinates vector with the elements being the coordinates of
+   * the requested cells, relative to the reference point's cell
+   * \note for efficiency, user must make sure that the saving of the leaf layout is
+   * enabled and filtering performed
+   */
+  inline std::vector<int>
+  getNeighborCentroidIndices(
+      float x,
+      float y,
+      float z,
+      const std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i>>&
+          relative_coordinates) const
+  {
+    Eigen::Vector4i ijk(static_cast<int>(std::floor(x * inverse_leaf_size_[0])),
+                        static_cast<int>(std::floor(y * inverse_leaf_size_[1])),
+                        static_cast<int>(std::floor(z * inverse_leaf_size_[2])),
+                        0);
+    std::vector<int> neighbors;
+    neighbors.reserve(relative_coordinates.size());
+    for (const auto& relative_coordinate : relative_coordinates)
+      neighbors.push_back(
+          leaf_layout_[(ijk + (Eigen::Vector4i() << relative_coordinate, 0).finished() -
+                        min_b_)
+                           .dot(divb_mul_)]);
+    return (neighbors);
+  }
+
+  /** \brief Returns the indices in the resulting downsampled cloud of the points at the
+   * specified grid coordinates, relative to the grid coordinates of the specified point
+   * (or -1 if the cell was empty/out of bounds).
    * \param[in] reference_point the coordinates of the reference point (corresponding
    * cell is allowed to be empty/out of bounds)
    * \param[in] relative_coordinates matrix with the columns being the coordinates of
