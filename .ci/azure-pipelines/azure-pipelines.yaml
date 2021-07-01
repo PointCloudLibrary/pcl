@@ -1,33 +1,39 @@
+# Exclude Rules:
+# 1. path-filter in trigger and pr, 
+#    this is NOT exclude rules for documentation,
+#    set this rule only to avoid any CI run.
+# 2. DOCS_LISTS in diff script, 
+#    the lists contain all documentation-related files,
+#    fill the list to help git-diff recognize docs changes.
+
 trigger:
   paths:
     exclude:
-    - doc
     - README.md
     - CHANGES.md
     - CONTRIBUTING.md
+    - .ci
+    - .dev
+    - .github
+    # add more exclude rules, e.g. fileName, directoryName
+    # which won't cause any CI to run.
 
 pr:
   paths:
     exclude:
-    - doc
     - README.md
     - CHANGES.md
     - CONTRIBUTING.md
+    - .ci
+    - .dev
+    - .github
+    # add more exclude rules, e.g. fileName, directoryName
+    # which won't cause any CI to run.
 
 resources:
   containers:
-    - container: winx86
-      image: pointcloudlibrary/env:winx86
-    - container: winx64
-      image: pointcloudlibrary/env:winx64
-    - container: fmt
+    - container: fmt # for formatting.yaml
       image: pointcloudlibrary/fmt
-    - container: env1804
-      image: pointcloudlibrary/env:18.04
-    - container: env2004
-      image: pointcloudlibrary/env:20.04
-    - container: env2010
-      image: pointcloudlibrary/env:20.10
 
 stages:
   - stage: formatting
@@ -35,134 +41,63 @@ stages:
     jobs:
       - template: formatting.yaml
 
-  - stage: build_gcc
-    displayName: Build GCC
-    dependsOn: formatting
+  - stage: diff
+    displayName: Code Changes Diff
     jobs:
-      - job: ubuntu
-        displayName: Ubuntu
+      - job: CodeDiff
+        displayName: Code Diff
         pool:
-          vmImage: 'Ubuntu 20.04'
-        strategy:
-          matrix:
-            18.04 GCC:  # oldest LTS
-              CONTAINER: env1804
-              CC: gcc
-              CXX: g++
-              BUILD_GPU: ON
-              CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON'
-            20.10 GCC:  # latest Ubuntu
-              CONTAINER: env2010
-              CC: gcc
-              CXX: g++
-              BUILD_GPU: OFF
-        container: $[ variables['CONTAINER'] ]
-        timeoutInMinutes: 0
-        variables:
-          BUILD_DIR: '$(Agent.BuildDirectory)/build'
-          CMAKE_CXX_FLAGS: '-Wall -Wextra -Wnoexcept-type'
-          DISPLAY: :99.0 # Checked for in CMake
+          vmImage: 'ubuntu-latest'
         steps:
-          - template: build/ubuntu.yaml
+          - checkout: self
+          - script: | 
+              # Add all docs path to this array
+              DOCS_LISTS=("doc" "*.md")
+              for ENTRY in "${DOCS_LISTS[@]}"; do
+                DIFF_EXCLUDE="':(exclude)${ENTRY}' ${DIFF_EXCLUDE}"
+              done
 
-  - stage: build_clang
-    displayName: Build Clang
-    dependsOn: formatting
-    jobs:
-      - job: osx
-        displayName: macOS
-        pool:
-          vmImage: '$(VMIMAGE)'
-        strategy:
-          matrix:
-            Catalina 10.15:
-              VMIMAGE: 'macOS-10.15'
-              OSX_VERSION: '10.15'
-            Mojave 10.14:
-              VMIMAGE: 'macOS-10.14'
-              OSX_VERSION: '10.14'
-        timeoutInMinutes: 0
-        variables:
-          BUILD_DIR: '$(Agent.WorkFolder)/build'
-          GOOGLE_TEST_DIR: '$(Agent.WorkFolder)/googletest'
-          CMAKE_CXX_FLAGS: '-Wall -Wextra -Wabi -Werror -Wno-error=deprecated-declarations'
-        steps:
-          - template: build/macos.yaml
-      - job: ubuntu
-        displayName: Ubuntu
-        # Placement of Ubuntu Clang job after macOS ensures an extra parallel job doesn't need to be created.
-        # Total time per run remains same since macOS is quicker so it finishes earlier, and remaining time is used by this job
-        # Therefore, number of parallel jobs and total run time of entire pipeline remains unchanged even after addition of this job
-        # The version of Ubuntu is chosen to cover more versions than covered by GCC based CI
-        dependsOn: osx
-        condition: succeededOrFailed()
-        pool:
-          vmImage: 'Ubuntu 20.04'
-        strategy:
-          matrix:
-            20.04 Clang:
-              CONTAINER: env2004
-              CC: clang
-              CXX: clang++
-              BUILD_GPU: ON
-              CMAKE_ARGS: ''
-        container: $[ variables['CONTAINER'] ]
-        timeoutInMinutes: 0
-        variables:
-          BUILD_DIR: '$(Agent.BuildDirectory)/build'
-          CMAKE_CXX_FLAGS: '-Wall -Wextra'
-          DISPLAY: :99.0 # Checked for in CMake
-        steps:
-          - template: build/ubuntu.yaml
-      - job: ubuntu_indices
-        displayName: Ubuntu Indices
-        # Test 64 bit & unsigned indices
-        dependsOn: osx
-        condition: succeededOrFailed()
-        pool:
-          vmImage: 'Ubuntu 20.04'
-        strategy:
-          matrix:
-            20.04 Clang:
-              CONTAINER: env2004
-              CC: clang
-              CXX: clang++
-              INDEX_SIGNED: OFF
-              INDEX_SIZE: 64
-              CMAKE_ARGS: ''
-        container: $[ variables['CONTAINER'] ]
-        timeoutInMinutes: 0
-        variables:
-          BUILD_DIR: '$(Agent.BuildDirectory)/build'
-          CMAKE_CXX_FLAGS: '-Wall -Wextra'
-        steps:
-          - template: build/ubuntu_indices.yaml
+              # Check the CI build reason: Pull Request or Git Push
+              BUILD_REASON=$(Build.Reason)
+              if [ "${BUILD_REASON}" -eq "PullRequest" ]; then
+                MERGE_BASE_PAIR="HEAD origin/master"
+              else
+                MERGE_BASE_PAIR="HEAD HEAD~1"
+              fi
 
-  - stage: build_msvc
-    displayName: Build MSVC
-    dependsOn: formatting
+              # Initiate HasCodeChanges variable
+              echo "##vso[task.setvariable variable=HasCodeChanges;isOutput=true]false"
+
+              # Show full git diff results
+              cd $(Build.SourcesDirectory)
+              git diff $(git merge-base ${MERGE_BASE_PAIR})
+
+              # Set HasCodeChanges to true, if there's still file changed when excluding those docs
+              git diff --quiet $(git merge-base ${MERGE_BASE_PAIR}) -- ${DIFF_EXCLUDE} || \
+              echo "##vso[task.setvariable variable=HasCodeChanges;isOutput=true]true"
+            name: GitResult
+            displayName: Show Git Diff Result
+
+  - stage: documentation
+    displayName: Goto Documentation
+    dependsOn: diff
+    condition: and(succeeded(), eq(dependencies.diff.outputs['CodeDiff.GitResult.HasCodeChanges'], 'false'))
     jobs:
-      - job: Windows
-        displayName: Windows Build
+      - job: prompt
+        displayName: Trigger Prompt
         pool:
-          vmImage: 'windows-2019'
-        strategy:
-          matrix:
-            x86:
-              CONTAINER: winx86
-              PLATFORM: 'x86'
-              ARCHITECTURE: 'x86'
-              GENERATOR: '"Visual Studio 16 2019" -A Win32'
-            x64:
-              CONTAINER: winx64
-              PLATFORM: 'x64'
-              ARCHITECTURE: 'x86_amd64'
-              GENERATOR: '"Visual Studio 16 2019" -A x64'
-        container: $[ variables['CONTAINER'] ]
-        timeoutInMinutes: 0
-        variables:
-          BUILD_DIR: 'c:\build'
-          CONFIGURATION: 'Release'
-          VCPKG_ROOT: 'c:\vcpkg'
+          vmImage: 'ubuntu-latest'
         steps:
-          - template: build/windows.yaml
+          - script: echo Trigger docs-pipeline.yaml...
+
+  - stage: build
+    displayName: Goto Build
+    dependsOn: diff
+    condition: and(succeeded(), eq(dependencies.diff.outputs['CodeDiff.GitResult.HasCodeChanges'], 'true'))
+    jobs:
+      - job: prompt
+        displayName: Trigger Prompt
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - script: echo Trigger build-pipeline.yaml...

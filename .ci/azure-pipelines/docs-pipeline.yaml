@@ -1,46 +1,91 @@
-trigger:
-  paths:
-    include:
-    - doc
+# Use pipeline trigger only, so set `trigger` and `pr` fields to none to avoid unexamined run.
+# See here, https://docs.microsoft.com/en-us/azure/devops/pipelines/process/pipeline-triggers?tabs=yaml&view=azure-devops#stage-filters
 
-pr:
-  paths:
-    include:
-    - doc
+trigger: none
+
+pr: none
 
 resources:
   pipelines:
+    - pipeline: Main-CI
+      source: Main
+      trigger:
+        stages:
+        - documentation
     - pipeline: Build-CI
       source: Build
       trigger:
         stages:
         - build_gcc
   containers:
-    - container: fmt # for formatting.yaml
-      image: pointcloudlibrary/fmt
     - container: doc # for documentation.yaml
       image: pointcloudlibrary/doc
     - container: env1804 # for tutorials.yaml
       image: pointcloudlibrary/env:18.04
 
 stages:
-  - stage: formatting
-    displayName: Formatting
-    # if docs pipeline triggered by build_gcc stage,
-    # the formatting stage has already run, thus it
-    # won't run for a second time here.
-    condition: ne(variables['Build.Reason'], 'ResourceTrigger')
-    jobs:
-      - template: formatting.yaml
-
   - stage: documentation
     displayName: Documentation
-    condition: in(dependencies.formatting.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
     jobs:
       - template: documentation.yaml
 
   - stage: tutorials
     displayName: Tutorials
-    condition: in(dependencies.documentation.result, 'Succeeded', 'SucceededWithIssues')
+    dependsOn: []
     jobs:
+      - job: CodesDiff
+        displayName: Tutorial & PCL Source Code Diff
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: self
+          - script: | 
+              # Add all docs path to this array
+              PCL_DOCS_LISTS=("doc" "*.md")
+              for ENTRY in "${PCL_DOCS_LISTS[@]}"; do
+                PCL_CODES_DIFF_EXCLUDE="':(exclude)${ENTRY}' ${PCL_CODES_DIFF_EXCLUDE}"
+              done
+
+              # Specify tutorial source code path
+              TUTORIAL_CODE_PATH="doc/tutorials/content/sources"
+
+              # Check the CI build reason: Pull Request or Git Push
+              BUILD_REASON=$(Build.Reason)
+              if [ "${BUILD_REASON}" -eq "PullRequest" ]; then
+                MERGE_BASE_PAIR="HEAD origin/master"
+              else
+                MERGE_BASE_PAIR="HEAD HEAD~1"
+              fi
+
+              ## For Tutorial Code Diff ##
+
+              # Initiate HasTutorialCodeChanges variable
+              echo "##vso[task.setvariable variable=HasTutorialCodeChanges;isOutput=true]false"
+
+              # Show git diff results of specified tutorial sources path
+              cd $(Build.SourcesDirectory)
+              echo "Tutorial codes diff results"
+              git diff $(git merge-base ${MERGE_BASE_PAIR}) -- ${TUTORIAL_CODE_PATH}
+
+              # Set HasTutorialCodeChanges to true, if there are tutorial source codes changed. 
+              git diff --quiet $(git merge-base ${MERGE_BASE_PAIR}) -- ${TUTORIAL_CODE_PATH} || \
+              echo "##vso[task.setvariable variable=HasTutorialCodeChanges;isOutput=true]true"
+
+              ## For PCL Code Diff ##
+
+              # Initiate HasPCLCodeChanges variable
+              echo "##vso[task.setvariable variable=HasPCLCodeChanges;isOutput=true]false"
+
+              # Show full git diff results
+              cd $(Build.SourcesDirectory)
+              echo "Full git diff results"
+              git diff $(git merge-base ${MERGE_BASE_PAIR})
+
+              # Set HasPCLCodeChanges to true, if there's still file changed when excluding those docs
+              git diff --quiet $(git merge-base ${MERGE_BASE_PAIR}) -- ${PCL_CODES_DIFF_EXCLUDE} || \
+              echo "##vso[task.setvariable variable=HasPCLCodeChanges;isOutput=true]true"
+
+            name: GitResult
+            displayName: Show Git Diff Result
+    
       - template: tutorials.yaml
