@@ -58,8 +58,9 @@ extractLabeledEuclideanClusters(
     unsigned int max_pts_per_cluster);
 
 /** \brief @b EuclideanLabeledClusterExtraction represents a segmentation class for
- * cluster extraction in an Euclidean sense, depending on pcl::gpu::octree \author Koen
- * Buys, Radu Bogdan Rusu \ingroup segmentation
+ * cluster extraction in an Euclidean sense, depending on pcl::gpu::octree
+ * \author Koen Buys, Radu Bogdan Rusu
+ * \ingroup segmentation
  */
 template <typename PointT>
 class EuclideanLabeledClusterExtraction {
@@ -100,8 +101,7 @@ public:
   }
 
   /** \brief Set the spatial cluster tolerance as a measure in the L2 Euclidean space
-   * \param tolerance the spatial cluster tolerance as a measure in the L2 Euclidean
-   * space
+   * \param tolerance the spatial cluster tolerance mesured by L2 distance
    */
   inline void
   setClusterTolerance(double tolerance)

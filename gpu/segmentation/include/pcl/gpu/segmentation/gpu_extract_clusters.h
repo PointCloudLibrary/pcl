@@ -58,8 +58,9 @@ extractEuclideanClusters(const typename pcl::PointCloud<PointT>::Ptr& host_cloud
                          unsigned int max_pts_per_cluster);
 
 /** \brief @b EuclideanClusterExtraction represents a segmentation class for cluster
- * extraction in an Euclidean sense, depending on pcl::gpu::octree \author Koen Buys,
- * Radu Bogdan Rusu \ingroup segmentation
+ * extraction in an Euclidean sense, depending on pcl::gpu::octree
+ * \author Koen Buys, Radu Bogdan Rusu
+ * \ingroup segmentation
  */
 template <typename PointT>
 class EuclideanClusterExtraction {
