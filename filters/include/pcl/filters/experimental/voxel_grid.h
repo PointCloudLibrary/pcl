@@ -253,9 +253,9 @@ protected:
     div_b_ = (max_b_ - min_b_).array() + 1;
     divb_mul_ = Eigen::Vector4i(1, div_b_[0], div_b_[0] * div_b_[1], 0);
 
-    const size_t dxzy = checkIfOverflow(min_p, max_p);
-    if (dxzy) {
-      grid_.reserve(std::min(dxzy, input->size()));
+    const boost::optional<size_t> num_voxels = checkIfOverflow(min_p, max_p);
+    if (num_voxels) {
+      grid_.reserve(std::min(num_voxels.value(), input->size()));
     }
     else {
       PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. "
@@ -267,7 +267,7 @@ protected:
     return true;
   }
 
-  bool
+  boost::optional<size_t>
   checkIfOverflow(const Eigen::Vector4f& min_p, const Eigen::Vector4f& max_p)
   {
     // Check that the leaf size is not too small, given the size of the data
@@ -278,17 +278,14 @@ protected:
         std::floor((max_p[1] - min_p[1]) * inverse_leaf_size_[1]) + 1;
     const std::size_t dz =
         std::floor((max_p[2] - min_p[2]) * inverse_leaf_size_[2]) + 1;
+    const size_t max_size = std::numeric_limits<size_t>::max();
 
-    std::size_t dxy, dxyz;
-
-    // built-in function from GCC5
-    // TODO: doesn't work with MSVC?
-    if (__builtin_umull_overflow(dx, dy, &dxy) ||
-        __builtin_umull_overflow(dxy, dz, &dxyz)) {
-      return 0;
+    // check unsigned int overflow/wrap-around
+    if (dy > max_size / dx || dx * dy > max_size / dz) {
+      return boost::none;
     }
     else {
-      return dxyz;
+      return dx * dy * dz;
     }
   }
 
