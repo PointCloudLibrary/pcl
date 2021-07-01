@@ -18,14 +18,16 @@ namespace experimental {
 
 /**
  * \brief Filter point clouds based on a templated grid structure
- * \details Used as the base class for filters based on grid structure, e.g. VoxelGrid,
- * ApproximateVoxelGrid. The grid structure has two main components: member functions
- * for filtering opterations, Grid member attribute for storing the information of
- * smaller spaces divided by the grid (e.g. voxels in VoxelGrid).
+ * \details Used as the base class for grid based filters, e.g. VoxelGrid,
+ * ApproximateVoxelGrid. For grid based filters with different behavior, one can
+ * implement a custom grid structure and pass to this class. The templated grid
+ * structure should have two main components: member functions for filtering
+ * opterations, Grid member attribute for storing the information of the smaller spaces
+ * divided by the grid (e.g. voxels in VoxelGrid).
  *
  * Requirements of the grid structure:
- *  1. Several member functions of the grid structure are called in applyFilter and
- * thus required to declare: setUp, addPointToGrid, filterGrid
+ *  1. Three member functions (setUp, addPointToGrid, filterGrid) the grid structure are
+ * called in applyFilter and thus required to declare.
  *  2. A Grid member attribute is required, it can be any type with built-in iterator,
  * e.g. STL container or custom grid with iterator
  * \ingroup filters
