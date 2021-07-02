@@ -58,7 +58,6 @@ protected:
       return;
     }
 
-    // Copy the header (and thus the frame_id) + allocate enough space for points
     output.height = 1;      // downsampling breaks the organized structure
     output.is_dense = true; // we filter out invalid points
 
@@ -73,6 +72,7 @@ protected:
       }
     }
 
+    // allocate enough space for points
     output.reserve(GridStruct::grid_.size());
     for (auto it = GridStruct::grid_.begin(); it != GridStruct::grid_.end(); ++it) {
       const auto& res = GridStruct::filterGrid(it);

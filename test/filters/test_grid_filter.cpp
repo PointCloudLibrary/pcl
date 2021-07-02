@@ -10,6 +10,7 @@
 #include <pcl/filters/experimental/grid_filter_base.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/test/gtest.h>
+#include <pcl/pcl_tests.h>
 #include <pcl/point_types.h>
 
 #include <boost/optional.hpp> // std::optional for C++17
@@ -17,6 +18,7 @@
 #include <unordered_map>
 
 using namespace pcl;
+using namespace pcl::test;
 
 // Grid structure with necessary declarations for input to GridFilterBase
 
@@ -163,6 +165,9 @@ TEST(StructMethods, GridFilter)
   // failed setUp
   EXPECT_TRUE(output.is_dense);
   EXPECT_EQ(output.height, 1);
+  EXPECT_EQ(output.header, input->header);
+  EXPECT_EQ_VECTORS(output.sensor_origin_, input->sensor_origin_);
+  EXPECT_EQ_VECTORS(output.sensor_orientation_.vec(), input->sensor_orientation_.vec());
   EXPECT_EQ(output.size(), input->size());
   output.clear();
 
