@@ -47,6 +47,54 @@
 
 namespace pcl
 {
+namespace detail {
+template <typename PointSource, typename PointFeature>
+class MultiscaleFeaturePersistenceTest {
+public:
+    using FeatureCloudPtr = typename pcl::PointCloud<PointFeature>::Ptr;
+
+    /** \brief Empty constructor */
+    MultiscaleFeaturePersistenceTest();
+
+    /** \brief Empty destructor */
+    ~MultiscaleFeaturePersistenceTest() {}
+
+    /** \brief Function that calculates the scalar difference between two features
+     * \return the difference as a floating point type
+     */
+    float
+    distanceBetweenFeatures(const std::vector<float>& a, const std::vector<float>& b);
+
+    /** \brief Method that averages all the features at all scales in order to obtain the
+     * global mean feature; this value is stored in the mean_feature field
+     */
+    void
+    calculateMeanFeature();
+
+    /** \brief Selects the so-called 'unique' features from the cloud of features at each
+     * level. These features are the ones that fall outside the standard deviation *
+     * alpha_
+     */
+    void
+    extractUniqueFeatures();
+
+public:
+    /** \brief Parameter that determines which distance metric is to be usedto calculate
+   * the difference between feature vectors */
+    NormType distance_metric_;
+    /** \brief Parameter that determines if a feature is to be considered unique or not */
+    float alpha_;
+    std::vector<std::vector<std::vector<float>>> features_at_scale_vectorized_;
+    std::vector<float> mean_feature_;
+    /** \brief The general parameter for determining each scale level */
+    std::vector<float> scale_values_;
+    /** \brief Two structures in which to hold the results of the unique feature extraction process.
+       * They are superfluous with respect to each other, but improve the time performance of the algorithm
+       */
+    std::vector<std::list<std::size_t>> unique_features_indices_;
+    std::vector<std::vector<bool>> unique_features_table_;
+};
+} // namespace detail
   /** \brief Generic class for extracting the persistent features from an input point cloud
    * It can be given any Feature estimator instance and will compute the features of the input
    * over a multiscale representation of the cloud and output the unique ones over those scales.
@@ -60,7 +108,7 @@ namespace pcl
    * \author Alexandru-Eugen Ichim
    */
   template <typename PointSource, typename PointFeature>
-  class MultiscaleFeaturePersistence : public PCLBase<PointSource>
+  class MultiscaleFeaturePersistence : public PCLBase<PointSource>,  public detail::MultiscaleFeaturePersistenceTest<PointSource, PointFeature>
   {
     public:
       using Ptr = shared_ptr<MultiscaleFeaturePersistence<PointSource, PointFeature> >;
@@ -74,7 +122,7 @@ namespace pcl
 
       /** \brief Empty constructor */
       MultiscaleFeaturePersistence ();
-      
+
       /** \brief Empty destructor */
       ~MultiscaleFeaturePersistence () {}
 
@@ -155,35 +203,22 @@ namespace pcl
       computeFeatureAtScale (float &scale,
                              FeatureCloudPtr &features);
 
+  using detail::MultiscaleFeaturePersistenceTest<PointSource,
+                                                 PointFeature>::distanceBetweenFeatures;
 
-      /** \brief Function that calculates the scalar difference between two features
-       * \return the difference as a floating point type
-       */
-      float
-      distanceBetweenFeatures (const std::vector<float> &a,
-                               const std::vector<float> &b);
+  using detail::MultiscaleFeaturePersistenceTest<PointSource,
+                                                 PointFeature>::calculateMeanFeature;
 
-      /** \brief Method that averages all the features at all scales in order to obtain the global mean feature;
-       * this value is stored in the mean_feature field
-       */
-      void
-      calculateMeanFeature ();
+  using detail::MultiscaleFeaturePersistenceTest<PointSource,
+                                                 PointFeature>::extractUniqueFeatures;
 
-      /** \brief Selects the so-called 'unique' features from the cloud of features at each level.
-       * These features are the ones that fall outside the standard deviation * alpha_
-       */
-      void
-      extractUniqueFeatures ();
+  using detail::MultiscaleFeaturePersistenceTest<PointSource,
+                                                 PointFeature>::scale_values_;
 
+  using detail::MultiscaleFeaturePersistenceTest<PointSource, PointFeature>::alpha_;
 
-      /** \brief The general parameter for determining each scale level */
-      std::vector<float> scale_values_;
-
-      /** \brief Parameter that determines if a feature is to be considered unique or not */
-      float alpha_;
-
-      /** \brief Parameter that determines which distance metric is to be usedto calculate the difference between feature vectors */
-      NormType distance_metric_;
+  using detail::MultiscaleFeaturePersistenceTest<PointSource,
+                                                 PointFeature>::distance_metric_;
 
       /** \brief the feature estimator that will be used to determine the feature set at each scale level */
       FeatureEstimatorPtr feature_estimator_;
@@ -193,11 +228,8 @@ namespace pcl
       std::vector<float> mean_feature_;
       FeatureRepresentationConstPtr feature_representation_;
 
-      /** \brief Two structures in which to hold the results of the unique feature extraction process.
-       * They are superfluous with respect to each other, but improve the time performance of the algorithm
-       */
-      std::vector<std::list<std::size_t> > unique_features_indices_;
-      std::vector<std::vector<bool> > unique_features_table_;
+      using detail::MultiscaleFeaturePersistenceTest<PointSource, PointFeature>::unique_features_indices_;
+      using detail::MultiscaleFeaturePersistenceTest<PointSource,PointFeature>::unique_features_table_;
   };
 }
 

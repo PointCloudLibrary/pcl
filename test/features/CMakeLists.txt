@@ -111,6 +111,10 @@ if(BUILD_io)
   PCL_ADD_TEST(feature_organized_edge_detection test_organized_edge_detection
                FILES test_organized_edge_detection.cpp
                LINK_WITH pcl_gtest pcl_features pcl_io)
+  PCL_ADD_TEST(multiscale_feature_persistence test_multiscale_feature_persistence
+               FILES test_multiscale_feature_persistence.cpp
+               LINK_WITH pcl_gtest pcl_features pcl_io pcl_kdtree pcl_filters
+               ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd")
   if(BUILD_keypoints)
     PCL_ADD_TEST(feature_brisk test_brisk
                  FILES test_brisk.cpp
