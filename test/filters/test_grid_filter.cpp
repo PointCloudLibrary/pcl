@@ -7,7 +7,7 @@
  * All rights reserved
  */
 
-#include <pcl/filters/experimental/transform_filter.h>
+#include <pcl/filters/experimental/grid_filter_base.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/test/gtest.h>
 #include <pcl/point_types.h>
@@ -18,7 +18,7 @@
 
 using namespace pcl;
 
-// Grid structure with necessary declarations for input to TransformFilter
+// Grid structure with necessary declarations for input to GridFilterBase
 
 struct EmptyVoxel {
   bool voxel_info = false;
@@ -33,17 +33,16 @@ struct EmptyMapStruct {
   EmptyMapStruct() : filter_name_("empty_map") {}
 
 protected:
-  // accessing TransformFilter
-  const experimental::TransformFilter<EmptyMapStruct>*
+  // accessing GridFilterBase
+  const experimental::GridFilterBase<EmptyMapStruct>*
   getDerived()
   {
-    return static_cast<const experimental::TransformFilter<EmptyMapStruct>*>(this);
+    return static_cast<const experimental::GridFilterBase<EmptyMapStruct>*>(this);
   }
 
   bool
-  setUp(const experimental::TransformFilter<EmptyMapStruct>* grid_filter)
+  setUp()
   {
-    (void)grid_filter;
     // test passed or failed setUp
     return getDerived()->getDownsampleAllData();
   }
@@ -80,9 +79,8 @@ struct EmptyVecStruct {
 
 protected:
   bool
-  setUp(const experimental::TransformFilter<EmptyVecStruct>* grid_filter)
+  setUp()
   {
-    (void)grid_filter;
     return true;
   }
 
@@ -113,11 +111,11 @@ TEST(ApplyFilter, GridFilter)
   PointCloud<PointXYZ> output;
 
   // hash map grid
-  experimental::TransformFilter<EmptyMapStruct<PointXYZ>> mf;
+  experimental::GridFilterBase<EmptyMapStruct<PointXYZ>> mf;
   mf.setDownsampleAllData(true);    // setUp
   mf.setFilterLimitsNegative(true); // filterGrid
   mf.setInputCloud(input);
-  mf.applyFilter(output);
+  mf.filter(output);
 
   std::unordered_map<size_t, bool> coordinates{{10, false}, {20, false}};
 
@@ -128,9 +126,9 @@ TEST(ApplyFilter, GridFilter)
   output.clear();
 
   // vector grid
-  experimental::TransformFilter<EmptyVecStruct<PointXYZ>> vf;
+  experimental::GridFilterBase<EmptyVecStruct<PointXYZ>> vf;
   vf.setInputCloud(input);
-  vf.applyFilter(output);
+  vf.filter(output);
 
   for (std::size_t i = 0; i < input->size(); ++i) {
     EXPECT_EQ(output.at(i).x, input->at(i).x);
@@ -149,9 +147,9 @@ TEST(StructMethods, GridFilter)
 
   PointCloud<PointXYZ> output;
 
-  experimental::TransformFilter<EmptyMapStruct<PointXYZ>> f;
+  experimental::GridFilterBase<EmptyMapStruct<PointXYZ>> f;
   output.is_dense = false;
-  f.applyFilter(output);
+  f.filter(output);
 
   // return if input is empty
   EXPECT_FALSE(output.is_dense);
@@ -160,7 +158,7 @@ TEST(StructMethods, GridFilter)
   f.setInputCloud(input);
   f.setDownsampleAllData(false);    // setUp
   f.setFilterLimitsNegative(false); // filterGrid
-  f.applyFilter(output);
+  f.filter(output);
 
   // failed setUp
   EXPECT_TRUE(output.is_dense);
@@ -171,14 +169,14 @@ TEST(StructMethods, GridFilter)
   // filterGrid return optional
   f.setDownsampleAllData(true);     // setUp
   f.setFilterLimitsNegative(false); // filterGrid
-  f.applyFilter(output);
+  f.filter(output);
   EXPECT_EQ(output.size(), 0);
   output.clear();
 
   // filterGrid return points
   f.setDownsampleAllData(true);    // setUp
   f.setFilterLimitsNegative(true); // filterGrid
-  f.applyFilter(output);
+  f.filter(output);
   EXPECT_EQ(output.size(), input->size());
 }
 
