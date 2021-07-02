@@ -66,8 +66,6 @@ using namespace std::chrono_literals;
 
 using PointT = PointXYZRGBA;
 
-#define SHOW_FPS 1
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class NILinemod {
 public:
@@ -104,7 +102,7 @@ public:
   void
   cloud_callback(const CloudConstPtr& cloud)
   {
-    FPS_CALC("cloud callback");
+    fps_calc("cloud callback", 0);
     std::lock_guard<std::mutex> lock(cloud_mutex_);
     cloud_ = cloud;
     search_.setInputCloud(cloud);

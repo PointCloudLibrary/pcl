@@ -336,7 +336,7 @@ OrganizedSegmentationDemo::cloud_cb(const CloudConstPtr& cloud)
   if (!capture_)
     return;
   QMutexLocker locker(&mtx_);
-  FPS_CALC("computation");
+  fps_calc("computation", 0);
 
   // Estimate Normals
   pcl::PointCloud<pcl::Normal>::Ptr normal_cloud(new pcl::PointCloud<pcl::Normal>);

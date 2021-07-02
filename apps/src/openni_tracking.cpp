@@ -35,8 +35,8 @@
  *
  */
 
+#include <pcl/apps/timer.h>
 #include <pcl/common/centroid.h>
-#include <pcl/common/time.h>
 #include <pcl/common/transforms.h>
 #include <pcl/console/parse.h>
 #include <pcl/features/normal_3d_omp.h>
@@ -71,27 +71,6 @@
 
 #include <mutex>
 #include <thread>
-
-#define FPS_CALC_BEGIN                                                                 \
-  static double duration = 0;                                                          \
-  double start_time = pcl::getTime();
-
-// clang-format off
-#define FPS_CALC_END(_WHAT_)                                                           \
-  {                                                                                    \
-    double end_time = pcl::getTime();                                                  \
-    static unsigned count = 0;                                                         \
-    if (++count == 10) {                                                               \
-      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
-                << double(count) / double(duration) << " Hz" << std::endl;             \
-      count = 0;                                                                       \
-      duration = 0.0;                                                                  \
-    }                                                                                  \
-    else {                                                                             \
-      duration += end_time - start_time;                                               \
-    }                                                                                  \
-  }
-// clang-format on
 
 using namespace pcl::tracking;
 using namespace std::chrono_literals;
@@ -306,21 +285,21 @@ public:
   void
   filterPassThrough(const CloudConstPtr& cloud, Cloud& result)
   {
-    FPS_CALC_BEGIN;
+    fps_calc_begin_end("begin", 0);
     pcl::PassThrough<PointType> pass;
     pass.setFilterFieldName("z");
     pass.setFilterLimits(0.0, 10.0);
     pass.setKeepOrganized(false);
     pass.setInputCloud(cloud);
     pass.filter(result);
-    FPS_CALC_END("filterPassThrough");
+    fps_calc_begin_end("filterPassThrough", 10);
   }
 
   void
   euclideanSegment(const CloudConstPtr& cloud,
                    std::vector<pcl::PointIndices>& cluster_indices)
   {
-    FPS_CALC_BEGIN;
+    fps_calc_begin_end("begin", 0);
     pcl::EuclideanClusterExtraction<PointType> ec;
     KdTreePtr tree(new KdTree());
 
@@ -330,13 +309,13 @@ public:
     ec.setSearchMethod(tree);
     ec.setInputCloud(cloud);
     ec.extract(cluster_indices);
-    FPS_CALC_END("euclideanSegmentation");
+    fps_calc_begin_end("euclideanSegmentation", 10);
   }
 
   void
   gridSample(const CloudConstPtr& cloud, Cloud& result, double leaf_size = 0.01)
   {
-    FPS_CALC_BEGIN;
+    fps_calc_begin_end("begin", 0);
     double start = pcl::getTime();
     pcl::VoxelGrid<PointType> grid;
     grid.setLeafSize(float(leaf_size), float(leaf_size), float(leaf_size));
@@ -344,13 +323,13 @@ public:
     grid.filter(result);
     double end = pcl::getTime();
     downsampling_time_ = end - start;
-    FPS_CALC_END("gridSample");
+    fps_calc_begin_end("gridSample", 10);
   }
 
   void
   gridSampleApprox(const CloudConstPtr& cloud, Cloud& result, double leaf_size = 0.01)
   {
-    FPS_CALC_BEGIN;
+    fps_calc_begin_end("begin", 0);
     double start = pcl::getTime();
     pcl::ApproximateVoxelGrid<PointType> grid;
     grid.setLeafSize(static_cast<float>(leaf_size),
@@ -360,7 +339,7 @@ public:
     grid.filter(result);
     double end = pcl::getTime();
     downsampling_time_ = end - start;
-    FPS_CALC_END("gridSample");
+    fps_calc_begin_end("gridSample", 10);
   }
 
   void
@@ -368,7 +347,7 @@ public:
                     pcl::ModelCoefficients& coefficients,
                     pcl::PointIndices& inliers)
   {
-    FPS_CALC_BEGIN;
+    fps_calc_begin_end("begin", 0);
     pcl::SACSegmentation<PointType> seg;
     seg.setOptimizeCoefficients(true);
     seg.setModelType(pcl::SACMODEL_PLANE);
@@ -377,7 +356,7 @@ public:
     seg.setDistanceThreshold(0.03);
     seg.setInputCloud(cloud);
     seg.segment(inliers, coefficients);
-    FPS_CALC_END("planeSegmentation");
+    fps_calc_begin_end("planeSegmentation", 10);
   }
 
   void
@@ -385,13 +364,13 @@ public:
                   Cloud& result,
                   const pcl::ModelCoefficients::ConstPtr& coefficients)
   {
-    FPS_CALC_BEGIN;
+    fps_calc_begin_end("begin", 0);
     pcl::ProjectInliers<PointType> proj;
     proj.setModelType(pcl::SACMODEL_PLANE);
     proj.setInputCloud(cloud);
     proj.setModelCoefficients(coefficients);
     proj.filter(result);
-    FPS_CALC_END("planeProjection");
+    fps_calc_begin_end("planeProjection", 10);
   }
 
   void
@@ -399,31 +378,31 @@ public:
              Cloud&,
              std::vector<pcl::Vertices>& hull_vertices)
   {
-    FPS_CALC_BEGIN;
+    fps_calc_begin_end("begin", 0);
     pcl::ConvexHull<PointType> chull;
     chull.setInputCloud(cloud);
     chull.reconstruct(*cloud_hull_, hull_vertices);
-    FPS_CALC_END("convexHull");
+    fps_calc_begin_end("convexHull", 10);
   }
 
   void
   normalEstimation(const CloudConstPtr& cloud, pcl::PointCloud<pcl::Normal>& result)
   {
-    FPS_CALC_BEGIN;
+    fps_calc_begin_end("begin", 0);
     ne_.setInputCloud(cloud);
     ne_.compute(result);
-    FPS_CALC_END("normalEstimation");
+    fps_calc_begin_end("normalEstimation", 10);
   }
 
   void
   tracking(const RefCloudConstPtr& cloud)
   {
     double start = pcl::getTime();
-    FPS_CALC_BEGIN;
+    fps_calc_begin_end("begin", 0);
     tracker_->setInputCloud(cloud);
     tracker_->compute();
     double end = pcl::getTime();
-    FPS_CALC_END("tracking");
+    fps_calc_begin_end("tracking", 10);
     tracking_time_ = end - start;
   }
 
@@ -501,7 +480,7 @@ public:
   {
     std::lock_guard<std::mutex> lock(mtx_);
     double start = pcl::getTime();
-    FPS_CALC_BEGIN;
+    fps_calc_begin_end("begin", 0);
     cloud_pass_.reset(new Cloud);
     cloud_pass_downsampled_.reset(new Cloud);
     pcl::ModelCoefficients::Ptr coefficients(new pcl::ModelCoefficients());
@@ -594,7 +573,7 @@ public:
     new_cloud_ = true;
     double end = pcl::getTime();
     computation_time_ = end - start;
-    FPS_CALC_END("computation");
+    fps_calc_begin_end("computation", 10);
     counter_++;
   }
 

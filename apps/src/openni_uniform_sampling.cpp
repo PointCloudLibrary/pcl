@@ -33,7 +33,7 @@
  *
  */
 
-#include <pcl/common/time.h>
+#include <pcl/apps/timer.h>
 #include <pcl/console/parse.h>
 #include <pcl/filters/uniform_sampling.h>
 #include <pcl/io/openni_camera/openni_driver.h>
@@ -46,22 +46,6 @@
 #include <thread>
 
 using namespace std::chrono_literals;
-
-// clang-format off
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-    static unsigned count = 0;                                                         \
-    static double last = pcl::getTime();                                               \
-    double now = pcl::getTime();                                                       \
-    ++count;                                                                           \
-    if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
-                << double(count) / double(now - last) << " Hz" << std::endl;           \
-      count = 0;                                                                       \
-      last = now;                                                                      \
-    }                                                                                  \
-  } while (false)
-// clang-format on
 
 class OpenNIUniformSampling {
 public:
@@ -79,7 +63,7 @@ public:
   cloud_cb_(const CloudConstPtr& cloud)
   {
     std::lock_guard<std::mutex> lock(mtx_);
-    FPS_CALC("computation");
+    fps_calc("computation", 0);
 
     cloud_.reset(new Cloud);
     keypoints_.reset(new pcl::PointCloud<pcl::PointXYZ>);
@@ -101,7 +85,7 @@ public:
       return;
     }
 
-    FPS_CALC("visualization");
+    fps_calc("visualization", 0);
     viz.removePointCloud("raw");
     pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBA> color_handler(
         cloud_);

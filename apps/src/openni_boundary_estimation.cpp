@@ -35,7 +35,7 @@
  *
  */
 
-#include <pcl/common/time.h>
+#include <pcl/apps/timer.h>
 #include <pcl/features/boundary.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/filters/approximate_voxel_grid.h>
@@ -53,22 +53,6 @@ using namespace std::chrono_literals;
 using ColorHandler = pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2>;
 using ColorHandlerPtr = ColorHandler::Ptr;
 using ColorHandlerConstPtr = ColorHandler::ConstPtr;
-
-// clang-format off
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-    static unsigned count = 0;                                                         \
-    static double last = pcl::getTime();                                               \
-    double now = pcl::getTime();                                                       \
-    ++count;                                                                           \
-    if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
-                << double(count) / double(now - last) << " Hz" << std::endl;           \
-      count = 0;                                                                       \
-      last = now;                                                                      \
-    }                                                                                  \
-  } while (false)
-// clang-format on
 
 class OpenNIIntegralImageNormalEstimation {
 public:
@@ -97,7 +81,7 @@ public:
   {
     std::lock_guard<std::mutex> lock(mtx_);
     // lock while we set our cloud;
-    FPS_CALC("computation");
+    fps_calc("computation", 0);
 
     cloud_.reset(new pcl::PointCloud<pcl::PointXYZRGBNormal>);
 
