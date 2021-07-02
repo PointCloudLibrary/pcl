@@ -90,6 +90,7 @@ set(experimental_incs
   "include/pcl/${SUBSYS_NAME}/experimental/functor_filter.h"
   "include/pcl/${SUBSYS_NAME}/experimental/cartesian_filter.h"
   "include/pcl/${SUBSYS_NAME}/experimental/transform_filter.h"
+  "include/pcl/${SUBSYS_NAME}/experimental/voxel_grid.h"
 )
 
 set(impl_incs
