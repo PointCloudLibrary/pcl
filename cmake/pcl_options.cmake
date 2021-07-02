@@ -48,6 +48,14 @@ mark_as_advanced(PCL_ENABLE_SSE)
 option(PCL_ENABLE_AVX "Enable or Disable AVX optimizations." ON)
 mark_as_advanced(PCL_ENABLE_AVX)
 
+if(UNIX)
+  # Enable or Disable the check for March Native optimizations
+  option(PCL_ENABLE_MARCHNATIVE "Enable or Disable march native optimizations." ON)
+  mark_as_advanced(PCL_ENABLE_MARCHNATIVE)
+else()
+  set(PCL_ENABLE_MARCHNATIVE FALSE)
+endif()
+
 # Allow the user to enable compiler cache
 option(PCL_ENABLE_CCACHE "Enable using compiler cache for compilation" OFF)
 mark_as_advanced(PCL_ENABLE_CCACHE)

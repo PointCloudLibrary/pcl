@@ -4,7 +4,7 @@ function(PCL_CHECK_FOR_SSE)
   set(SSE_FLAGS)
   set(SSE_DEFINITIONS)
 
-  if(NOT CMAKE_CROSSCOMPILING)
+  if(PCL_ENABLE_MARCHNATIVE AND (NOT CMAKE_CROSSCOMPILING))
     # Test GCC/G++ and CLANG
     if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
       include(CheckCXXCompilerFlag)
@@ -218,7 +218,7 @@ function(PCL_CHECK_FOR_SSE)
       list(APPEND SSE_FLAGS "-ffloat-store")
     endif()
     
-    if(NOT CMAKE_CROSSCOMPILING)
+    if(PCL_ENABLE_MARCHNATIVE AND (NOT CMAKE_CROSSCOMPILING))
       if(HAVE_MARCH)
           list(APPEND SSE_FLAGS "-march=native")
       else()
