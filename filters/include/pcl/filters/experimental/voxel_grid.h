@@ -11,7 +11,7 @@
 
 #include <pcl/common/centroid.h>
 #include <pcl/common/common.h>
-#include <pcl/filters/experimental/transform_filter.h>
+#include <pcl/filters/experimental/grid_filter_base.h>
 
 #include <boost/optional.hpp> // std::optional for C++17
 
@@ -34,7 +34,7 @@ struct Voxel {
 template <typename PointT>
 class VoxelStructT {
 public:
-  // read by TransformFilter to deduce point type
+  // read by GridFilterBase to deduce point type
   using PointCloud = pcl::PointCloud<PointT>;
   using PointCloudPtr = typename PointCloud::Ptr;
   using PointCloudConstPtr = typename PointCloud::ConstPtr;
@@ -304,16 +304,17 @@ public:
   }
 
 protected:
-  // accessing TransformFilter
-  inline const TransformFilter<VoxelStructT>*
+  // accessing GridFilterBase
+  inline const GridFilterBase<VoxelStructT>*
   getDerived()
   {
-    return static_cast<const TransformFilter<VoxelStructT>*>(this);
+    return static_cast<const GridFilterBase<VoxelStructT>*>(this);
   }
 
   bool
-  setUp(const TransformFilter<VoxelStructT>* grid_filter)
+  setUp()
   {
+    const auto grid_filter = getDerived();
     const PointCloudConstPtr input = grid_filter->getInputCloud();
     const IndicesConstPtr indices = grid_filter->getIndices();
     filter_field_name_ = grid_filter->getFilterFieldName();
@@ -518,7 +519,7 @@ private:
 };
 
 template <typename PointT>
-using VoxelGrid = TransformFilter<VoxelStructT<PointT>>;
+using VoxelGrid = GridFilterBase<VoxelStructT<PointT>>;
 
 } // namespace experimental
 } // namespace pcl
