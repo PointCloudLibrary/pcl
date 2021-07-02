@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <pcl/common/point_tests.h>
 #include <pcl/filters/experimental/grid_filter_base.h>
 
 namespace pcl {
@@ -28,8 +29,8 @@ namespace experimental {
  * Requirements of the grid structure:
  *  1. Three member functions (setUp, addPointToGrid, filterGrid) the grid structure are
  * called in applyFilter and thus required to declare.
- *  2. A Grid member attribute is required, it can be any type with built-in iterator,
- * e.g. STL container or custom grid with iterator
+ *  2. A Grid member attribute is required, it can be any type with built-in iterator
+ * and size() function, e.g. STL container or custom grid with iterator
  * \ingroup filters
  */
 template <typename GridStruct, typename PointT = GET_POINT_TYPE(GridStruct)>
@@ -79,9 +80,12 @@ public:
     }
 
     for (const auto& pt : *input_) {
-      GridStruct::addPointToGrid(pt);
+      if (input_->is_dense || isXYZFinite(pt)) {
+        GridStruct::addPointToGrid(pt);
+      }
     }
 
+    output.reserve(GridStruct::grid_.size());
     for (auto it = GridStruct::grid_.begin(); it != GridStruct::grid_.end(); ++it) {
       const auto& res = GridStruct::filterGrid(it);
       if (res) {
