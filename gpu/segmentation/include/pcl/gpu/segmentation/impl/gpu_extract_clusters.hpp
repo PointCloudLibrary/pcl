@@ -42,7 +42,7 @@
 
 template <typename PointT> void
 pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr  &host_cloud_,
-                                    const typename pcl::gpu::Octree<PointXYZ>::Ptr                &tree,
+                                    const typename pcl::gpu::Octree::Ptr                &tree,
                                     float                                      tolerance,
                                     std::vector<PointIndices>                  &clusters,
                                     unsigned int                               min_pts_per_cluster,
@@ -77,7 +77,7 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
     processed[i] = true;
 
     // Create the query queue on the device, point based not indices
-    typename pcl::gpu::Octree<pcl::PointXYZ>::Queries queries_device;
+    typename pcl::gpu::Octree::Queries queries_device;
     // Create the query queue on the host
     pcl::PointCloud<pcl::PointXYZ>::VectorType queries_host;
 
@@ -219,5 +219,5 @@ pcl::gpu::EuclideanClusterExtraction<PointT>::extract (std::vector<pcl::PointInd
   //std::sort (clusters.rbegin (), clusters.rend (), comparePointClusters);
 }
 
-#define PCL_INSTANTIATE_extractEuclideanClusters(T) template void PCL_EXPORTS pcl::gpu::extractEuclideanClusters<T> (const typename pcl::PointCloud<T>::Ptr  &, const typename pcl::gpu::Octree<pcl::PointXYZ>::Ptr &,float, std::vector<PointIndices> &, unsigned int, unsigned int);
+#define PCL_INSTANTIATE_extractEuclideanClusters(T) template void PCL_EXPORTS pcl::gpu::extractEuclideanClusters<T> (const typename pcl::PointCloud<T>::Ptr  &, const typename pcl::gpu::Octree::Ptr &,float, std::vector<PointIndices> &, unsigned int, unsigned int);
 #define PCL_INSTANTIATE_EuclideanClusterExtraction(T) template class PCL_EXPORTS pcl::gpu::EuclideanClusterExtraction<T>;

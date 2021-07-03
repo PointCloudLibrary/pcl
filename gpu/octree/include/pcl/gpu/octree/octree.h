@@ -50,6 +50,7 @@ namespace pcl
 {
     namespace gpu
     {   
+        namespace details{
         /**
          * \brief   Octree implementation on GPU. It suppors parallel building and parallel batch search as well .       
          * \author  Anaoly Baksheev, Itseez, myname.mysurname@mycompany.com
@@ -189,12 +190,18 @@ namespace pcl
         PCL_EXPORTS void bruteForceRadiusSearchGPU(const typename Octree<T>::PointCloud& cloud, const typename Octree<T>::PointType& query, float radius, DeviceArray<int>& result, DeviceArray<int>& buffer);
     }
 }
-namespace pcl
-{
-    namespace gpu2 
-    {
-        using Octree = pcl::gpu::Octree<pcl::PointXYZ>;
-    }
 }
+namespace pcl {
+namespace gpu {
+using Octree = pcl::gpu::details::Octree<pcl::PointXYZ>;
+
+//const auto bruteForceRadiusSearchGPU = pcl::gpu::details::bruteForceRadiusSearchGPU<pcl::PointXYZ>;
+
+template <class PointT>
+using OcTree [[deprectated("Will be replaced by Octree at PCL 1.15")]] =
+    pcl::gpu::details::Octree<PointT>;
+
+} // namespace gpu
+} // namespace pcl
 
 #include <pcl/gpu/octree/impl/octree.hpp>

@@ -16,6 +16,7 @@ endif()
 set(incs
   "include/pcl/${SUBSYS_PATH}/device_format.hpp"
   "include/pcl/${SUBSYS_PATH}/octree.h"
+  "include/pcl/${SUBSYS_PATH}/octree.hpp"
 )
 set(incs_impl
   "include/pcl/${SUBSYS_PATH}/impl/internal.hpp"
