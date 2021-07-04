@@ -191,7 +191,7 @@ TEST(PCL_OctreeGPU, performance)
     {
         ScopeTime up("gpu_bruteforce-radius-search-all");	         
         for(std::size_t i = 0; i < data.tests_num; ++i)
-            pcl::gpu::details::bruteForceRadiusSearchGPU<pcl::PointXYZ>(cloud_device, data.queries[i], data.radiuses[i], bruteforce_results_device, buffer);
+            pcl::gpu::bruteForceRadiusSearchGPU(cloud_device, data.queries[i], data.radiuses[i], bruteforce_results_device, buffer);
     }
 
     std::cout << "======  Shared radius (" << data.shared_radius << ") =====" << std::endl;
@@ -217,7 +217,7 @@ TEST(PCL_OctreeGPU, performance)
     {
         ScopeTime up("gpu-radius-bruteforce-search-all");	         
         for(std::size_t i = 0; i < data.tests_num; ++i)
-            pcl::gpu::details::bruteForceRadiusSearchGPU<pcl::PointXYZ>(cloud_device, data.queries[i], data.shared_radius, bruteforce_results_device, buffer);
+            pcl::gpu::bruteForceRadiusSearchGPU(cloud_device, data.queries[i], data.shared_radius, bruteforce_results_device, buffer);
     }
 
     std::cout << "======  Approx nearest search =====" << std::endl;

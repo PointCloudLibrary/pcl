@@ -195,11 +195,17 @@ namespace pcl {
 namespace gpu {
 using Octree = pcl::gpu::details::Octree<pcl::PointXYZ>;
 
-//const auto bruteForceRadiusSearchGPU = pcl::gpu::details::bruteForceRadiusSearchGPU<pcl::PointXYZ>;
+const auto bruteForceRadiusSearchGPU =
+    pcl::gpu::details::bruteForceRadiusSearchGPU<pcl::PointXYZ>;
 
 template <class PointT>
 using OcTree [[deprectated("Will be replaced by Octree at PCL 1.15")]] =
     pcl::gpu::details::Octree<PointT>;
+
+template <class PointT>
+const auto bruTeForceRadiusSearchGPU
+    [[deprectated("Will be replaced by bruteForceRadiusSearchGPU at PCL 1.15")]] =
+        pcl::gpu::details::bruteForceRadiusSearchGPU<PointT>;
 
 } // namespace gpu
 } // namespace pcl
