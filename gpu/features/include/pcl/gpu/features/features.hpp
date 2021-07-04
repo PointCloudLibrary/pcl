@@ -73,7 +73,7 @@ namespace pcl
             float radius_;
             int max_results_;
 
-            Octree<PointType> octree_;
+            Octree octree_;
         };
 
         ////////////////////////////////////////////////////////////////////////////////////////////  

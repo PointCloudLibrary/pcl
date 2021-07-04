@@ -234,7 +234,6 @@ void pcl::gpu::details::bruteForceRadiusSearchGPU(const typename Octree<T>::Poin
     Static<sizeof(PointType) == sizeof(typename pcl::device::OctreeImpl<T>::PointType)>::check();
 
     PointCloud cloud_local((PointType*)cloud.ptr(), cloud.size());
-    bruteForceRadiusSearch(cloud_local, query_local, radius, result, buffer);
+    pcl::device::bruteForceRadiusSearch<T>(cloud_local, query_local, radius, result, buffer);
 }
-
 #endif /* PCL_GPU_CONTAINER_DEVICE_ARRAY_IMPL_HPP_ */

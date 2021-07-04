@@ -71,7 +71,7 @@ namespace pcl
             using Ptr = shared_ptr<Octree>;
             using ConstPtr = shared_ptr<const Octree>;
 
-            /** \brief Point typwe supported */
+            /** \brief Point type supported */
             using PointType = T;
 
             /** \brief Point cloud supported */
