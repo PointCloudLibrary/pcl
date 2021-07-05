@@ -18,7 +18,7 @@
 #include <unordered_map>
 
 // For testing protected method
-class VoxelGridProtectedMethods_GridFilters_Test;
+class ProtectedMethods_ExperimentalVoxelGridEquivalency_Test;
 
 namespace pcl {
 namespace experimental {
@@ -502,7 +502,7 @@ protected:
   std::string filter_field_name_;
 
 private:
-  friend class ::VoxelGridProtectedMethods_GridFilters_Test;
+  friend class ::ProtectedMethods_ExperimentalVoxelGridEquivalency_Test;
 };
 
 template <typename PointT>
