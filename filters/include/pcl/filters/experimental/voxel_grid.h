@@ -24,23 +24,14 @@ namespace pcl {
 namespace experimental {
 
 template <typename PointT>
-struct Voxel {
-  // TODO: find if there is better way than storing two centroid types
-  CentroidPoint<PointT> centroid;
-  Eigen::Vector4f coord_centroid = Eigen::Vector4f::Zero();
-  std::size_t num_pt = 0;
-};
-
-template <typename PointT>
 class VoxelStructT {
 public:
   // read by GridFilterBase to deduce point type
   using PointCloud = pcl::PointCloud<PointT>;
   using PointCloudPtr = typename PointCloud::Ptr;
   using PointCloudConstPtr = typename PointCloud::ConstPtr;
-  using Grid = typename std::unordered_map<std::size_t, Voxel<PointT>>;
-  using GridIterator =
-      typename std::unordered_map<std::size_t, CentroidPoint<PointT>>::iterator;
+  using Grid = typename std::unordered_map<std::size_t, CentroidPoint<PointT>>;
+  using GridIterator = typename Grid::iterator;
 
   /** \brief Empty constructor. */
   VoxelStructT()
@@ -351,6 +342,8 @@ protected:
     divb_mul_ = Eigen::Vector4i(1, div_b_[0], div_b_[0] * div_b_[1], 0);
 
     num_voxels_ = 0;
+    grid_.clear();
+
     const boost::optional<std::size_t> max_num_voxels = checkIfOverflow(min_p, max_p);
     if (max_num_voxels) {
       grid_.reserve(std::min(max_num_voxels.value(), input->size()));
@@ -443,14 +436,7 @@ protected:
     }
 
     const std::size_t h = hashPoint(pt);
-
-    const bool downsample_all_data = getDerived()->getDownsampleAllData();
-    if (!downsample_all_data)
-      grid_[h].coord_centroid += pt.getVector4fMap();
-    else
-      grid_[h].centroid.add(pt);
-
-    grid_[h].num_pt++;
+    grid_[h].add(pt);
   }
 
   inline boost::optional<PointT>
@@ -459,7 +445,7 @@ protected:
     auto& voxel = grid_it->second;
     const std::size_t min_points_per_voxel =
         getDerived()->getMinimumPointsNumberPerVoxel();
-    if (voxel.num_pt >= min_points_per_voxel) {
+    if (voxel.getSize() >= min_points_per_voxel) {
 
       const bool save_leaf_layout = getDerived()->getSaveLeafLayout();
       if (save_leaf_layout)
@@ -468,12 +454,13 @@ protected:
       PointT centroid;
       const bool downsample_all_data = getDerived()->getDownsampleAllData();
       if (!downsample_all_data) {
-        voxel.coord_centroid.array() /= voxel.num_pt;
-        centroid.getVector4fMap() = voxel.coord_centroid;
+        PointT pt;
+        voxel.get(pt);
+        centroid.getVector4fMap() = pt.getVector4fMap();
       }
-      else {
-        voxel.centroid.get(centroid);
-      }
+      else
+        voxel.get(centroid);
+
       return centroid;
     }
 
