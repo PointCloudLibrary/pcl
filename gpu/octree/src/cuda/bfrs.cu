@@ -107,3 +107,11 @@ pcl::device::bruteForceRadiusSearch<pcl::PointXYZ>(
     float radius,
     DeviceArray<int>& result,
     DeviceArray<int>& buffer);
+
+template void
+pcl::device::bruteForceRadiusSearch<pcl::PointXYZRGB>(
+    const typename OctreeImpl<pcl::PointXYZRGB>::PointCloud& cloud,
+    const typename OctreeImpl<pcl::PointXYZRGB>::PointType& query,
+    float radius,
+    DeviceArray<int>& result,
+    DeviceArray<int>& buffer);
