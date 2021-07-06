@@ -20,7 +20,7 @@
 using namespace pcl;
 using namespace pcl::test;
 
-// Grid structure with necessary declarations for input to GridFilterBase
+// Grid structure with necessary declarations for GridFilterBase
 
 struct EmptyVoxel {
   bool voxel_info = false;
@@ -34,19 +34,25 @@ struct EmptyMapStruct {
 
   EmptyMapStruct() : filter_name_("empty_map") {}
 
-protected:
-  // accessing GridFilterBase
-  const experimental::GridFilterBase<EmptyMapStruct>*
-  getDerived()
+  // test passed or failed setUp
+  void
+  setPassSetUp(const bool pass_set_up)
   {
-    return static_cast<const experimental::GridFilterBase<EmptyMapStruct>*>(this);
+    pass_set_up_ = pass_set_up;
   }
 
+  // test optional
+  void
+  setReturnPoint(const bool return_point)
+  {
+    return_point_ = return_point;
+  }
+
+protected:
   bool
   setUp()
   {
-    // test passed or failed setUp
-    return getDerived()->getDownsampleAllData();
+    return pass_set_up_;
   }
 
   void
@@ -58,8 +64,8 @@ protected:
   boost::optional<PointT>
   filterGrid(Grid::iterator grid_it)
   {
-    // test optional
-    if (getDerived()->getFilterLimitsNegative()) {
+
+    if (return_point_) {
       // hashing index of the iterating grid
       return PointT(grid_it->first, 0, 0);
     }
@@ -69,6 +75,9 @@ protected:
 protected:
   std::string filter_name_;
   Grid grid_;
+
+  bool pass_set_up_ = true;
+  bool return_point_ = true;
 };
 
 // vector grid
@@ -114,8 +123,6 @@ TEST(ApplyFilter, GridFilter)
 
   // hash map grid
   experimental::GridFilterBase<EmptyMapStruct<PointXYZ>> mf;
-  mf.setDownsampleAllData(true);    // setUp
-  mf.setFilterLimitsNegative(true); // filterGrid
   mf.setInputCloud(input);
   mf.filter(output);
 
@@ -158,8 +165,8 @@ TEST(StructMethods, GridFilter)
   output.clear();
 
   f.setInputCloud(input);
-  f.setDownsampleAllData(false);    // setUp
-  f.setFilterLimitsNegative(false); // filterGrid
+  f.setPassSetUp(false);   // setUp
+  f.setReturnPoint(false); // filterGrid
   f.filter(output);
 
   // failed setUp
@@ -171,16 +178,16 @@ TEST(StructMethods, GridFilter)
   EXPECT_EQ(output.size(), input->size());
   output.clear();
 
-  // filterGrid return optional
-  f.setDownsampleAllData(true);     // setUp
-  f.setFilterLimitsNegative(false); // filterGrid
+  // filterGrid return empty optional
+  f.setPassSetUp(true);    // setUp
+  f.setReturnPoint(false); // filterGrid
   f.filter(output);
   EXPECT_EQ(output.size(), 0);
   output.clear();
 
   // filterGrid return points
-  f.setDownsampleAllData(true);    // setUp
-  f.setFilterLimitsNegative(true); // filterGrid
+  f.setPassSetUp(true);   // setUp
+  f.setReturnPoint(true); // filterGrid
   f.filter(output);
   EXPECT_EQ(output.size(), input->size());
 }
