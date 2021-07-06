@@ -45,7 +45,6 @@ public:
   /** \brief Empty constructor. */
   GridFilterBase()
   : downsample_all_data_(true)
-  , save_leaf_layout_(false)
   , filter_field_name_("")
   , filter_limit_min_(std::numeric_limits<double>::min())
   , filter_limit_max_(std::numeric_limits<double>::max())
@@ -90,23 +89,6 @@ public:
   getMinimumPointsNumberPerVoxel() const
   {
     return min_points_per_voxel_;
-  }
-
-  /** \brief Set to true if leaf layout information needs to be saved for later access.
-   * \param[in] save_leaf_layout the new value (true/false)
-   */
-  inline void
-  setSaveLeafLayout(const bool save_leaf_layout)
-  {
-    save_leaf_layout_ = save_leaf_layout;
-  }
-
-  /** \brief Returns true if leaf layout information will to be saved for later access.
-   */
-  inline bool
-  getSaveLeafLayout() const
-  {
-    return save_leaf_layout_;
   }
 
   /** \brief Provide the name of the field to be used for filtering data. In conjunction
@@ -187,10 +169,6 @@ public:
 protected:
   /** \brief Set to true if all fields need to be downsampled, or false if just XYZ. */
   bool downsample_all_data_;
-
-  /** \brief Set to true if leaf layout information needs to be saved in \a
-   * leaf_layout_. */
-  bool save_leaf_layout_;
 
   /** \brief The desired user filter field name. */
   std::string filter_field_name_;
