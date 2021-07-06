@@ -108,38 +108,27 @@ namespace pcl
       void 
       serialize (std::ostream & stream) const
       {
-        const int width = static_cast<int> (width_);
-        const int height = static_cast<int> (height_);
-        
-        stream.write (reinterpret_cast<const char*> (&width), sizeof (width));
-        stream.write (reinterpret_cast<const char*> (&height), sizeof (height));
+        stream.write (reinterpret_cast<const char*> (&width_), sizeof (width_));
+        stream.write (reinterpret_cast<const char*> (&height_), sizeof (height_));
 
-        const int num_of_elements = static_cast<int> (data_.size ());
+        const size_t num_of_elements = data_.size ();
         stream.write (reinterpret_cast<const char*> (&num_of_elements), sizeof (num_of_elements));
-        for (int element_index = 0; element_index < num_of_elements; ++element_index)
-        {
-          stream.write (reinterpret_cast<const char*> (&(data_[element_index])), sizeof (data_[element_index]));
+        if (num_of_elements) {
+          stream.write (reinterpret_cast<const char*> (data_.data()), num_of_elements * sizeof (*data_.data()));
         }
       }
 
       void 
       deserialize (std::istream & stream)
       {
-        int width;
-        int height;
+        stream.read (reinterpret_cast<char*> (&width_), sizeof (width_));
+        stream.read (reinterpret_cast<char*> (&height_), sizeof (height_));
 
-        stream.read (reinterpret_cast<char*> (&width), sizeof (width));
-        stream.read (reinterpret_cast<char*> (&height), sizeof (height));
-
-        width_ = static_cast<size_t> (width);
-        height_ = static_cast<size_t> (height);
-
-        int num_of_elements;
+        size_t num_of_elements;
         stream.read (reinterpret_cast<char*> (&num_of_elements), sizeof (num_of_elements));
         data_.resize (num_of_elements);
-        for (int element_index = 0; element_index < num_of_elements; ++element_index)
-        {
-          stream.read (reinterpret_cast<char*> (&(data_[element_index])), sizeof (data_[element_index]));
+        if (num_of_elements) {
+          stream.read (reinterpret_cast<char*> (data_.data()), num_of_elements * sizeof (*data_.data()));
         }
       }
 

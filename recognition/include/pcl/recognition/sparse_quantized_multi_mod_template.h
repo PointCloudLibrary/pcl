@@ -109,10 +109,13 @@ namespace pcl
   struct SparseQuantizedMultiModTemplate
   {
     /** \brief Constructor. */
-    SparseQuantizedMultiModTemplate () : features (), region () {}
+    SparseQuantizedMultiModTemplate () : features (), rx (0.f), ry (0.f), rz (0.f), region () {}
 
     /** \brief The storage for the multi-modality features. */
     std::vector<QuantizedMultiModFeature> features;
+
+    /** \brief The rotations assigned to the template. */
+    float rx, ry, rz;
 
     /** \brief The region assigned to the template. */
     RegionXY region;
@@ -128,6 +131,10 @@ namespace pcl
       {
         features[feature_index].serialize (stream);
       }
+
+      write (stream, rx);
+      write (stream, ry);
+      write (stream, rz);
 
       region.serialize (stream);
     }
@@ -146,6 +153,10 @@ namespace pcl
       {
         features[feature_index].deserialize (stream);
       }
+
+      read (stream, rx);
+      read (stream, ry);
+      read (stream, rz);
 
       region.deserialize (stream);
     }

@@ -97,6 +97,9 @@ namespace pcl
       /** \brief Constructor */
       LineRGBD ()
         : intersection_volume_threshold_ (1.0f)
+        , translation_clustering_threshold_2d_ (0)
+        , translation_clustering_threshold_3d_ (0)
+        , rotation_clustering_threshold_ (0)
         , linemod_ ()
         , color_gradient_mod_ ()
         , surface_normal_mod_ ()
@@ -105,7 +108,6 @@ namespace pcl
         , template_point_clouds_ ()
         , bounding_boxes_ ()
         , object_ids_ ()
-        , detections_ ()
       {
       }
 
@@ -129,16 +131,7 @@ namespace pcl
       loadTemplates (const std::string &file_name, size_t object_id = 0);
 
       bool
-      addTemplate (const SparseQuantizedMultiModTemplate & sqmmt, pcl::PointCloud<pcl::PointXYZRGBA> & cloud, size_t object_id = 0);
-
-      /** \brief Sets the threshold for the detection responses. Responses are between 0 and 1, where 1 is a best. 
-        * \param[in] threshold The threshold used to decide where a template is detected.
-        */
-      inline void
-      setDetectionThreshold (float threshold)
-      {
-        linemod_.setDetectionThreshold (threshold);
-      }
+      addTemplate (const SparseQuantizedMultiModTemplate & sqmmt, typename pcl::PointCloud<PointXYZT> & cloud, size_t object_id = 0);
 
       /** \brief Sets the threshold on the magnitude of color gradients. Color gradients with a magnitude below 
         *        this threshold are not considered in the detection process.
@@ -163,28 +156,68 @@ namespace pcl
         intersection_volume_threshold_ = threshold;
       }
 
+      inline pcl::LINEMOD&
+      getLineMOD ()
+      {
+        return linemod_;
+      }
+
+      inline void
+      setClusteringThresholds (const size_t translation_threshold_2d = 0, const size_t translation_threshold_3d = 0, const float rotation_threshold = 0)
+      {
+        translation_clustering_threshold_2d_ = translation_threshold_2d;
+        translation_clustering_threshold_3d_ = translation_threshold_3d;
+        rotation_clustering_threshold_ = rotation_threshold;
+      }
+
+      inline void
+      setSurfaceNormalFeatureDistanceThreshold(const float surfaceNormalFeatureDistanceThreshold = 2.0f)
+      {
+        surface_normal_mod_.setFeatureDistanceThreshold (surfaceNormalFeatureDistanceThreshold);
+      }
+
+      inline void
+      setSurfaceNormalMinDistanceToBorder(const float surfaceNormalMinDistanceToBorder = 2.0f)
+      {
+        surface_normal_mod_.setMinDistanceToBorder (surfaceNormalMinDistanceToBorder);
+      }
+
       /** \brief Sets the input cloud with xyz point coordinates. The cloud has to be organized. 
         * \param[in] cloud The input cloud with xyz point coordinates.
         */
       inline void
-      setInputCloud (const typename pcl::PointCloud<PointXYZT>::ConstPtr & cloud)
+      setInputCloud (const typename pcl::PointCloud<PointXYZT>::ConstPtr & cloud, bool computeModality = true)
       {
         cloud_xyz_ = cloud;
+        if (!computeModality) return;
 
         surface_normal_mod_.setInputCloud (cloud);
         surface_normal_mod_.processInputData ();
+        // surface_normal_mod_.compute.... (cloud);
+        // surface_normal_mod_.filterQuantizedSurfaceNormals ();
+        // surface_normal_mod_.processInputDataFromFiltered ();
+      }
+
+      inline void
+      setColorGradientMagnitudeThreshold(const float colorGradientMagnitudeThreshold = 10.0f)
+      {
+        color_gradient_mod_.setGradientMagnitudeThreshold (colorGradientMagnitudeThreshold);
       }
 
       /** \brief Sets the input cloud with rgb values. The cloud has to be organized. 
         * \param[in] cloud The input cloud with rgb values.
         */
       inline void
-      setInputColors (const typename pcl::PointCloud<PointRGBT>::ConstPtr & cloud)
+      setInputColors (const typename pcl::PointCloud<PointRGBT>::ConstPtr & cloud, bool computeModality = true)
       {
         cloud_rgb_ = cloud;
+        if (!computeModality) return;
 
         color_gradient_mod_.setInputCloud (cloud);
         color_gradient_mod_.processInputData ();
+        // color_gradient_mod_.computeMaxColorGradientsSobel (cloud);
+        // color_gradient_mod_.filterQuantizedColorGradients ();
+        // color_gradient_mod_.processInputDataFromFiltered ();
       }
 
       /** \brief Creates a template from the specified data and adds it to the matching queue. 
@@ -196,18 +229,47 @@ namespace pcl
         */
       int 
       createAndAddTemplate (
-        pcl::PointCloud<pcl::PointXYZRGBA> & cloud,
+        typename pcl::PointCloud<PointXYZT> & pointCloud,
+        typename pcl::PointCloud<PointRGBT> & colorCloud,
         const size_t object_id,
         const MaskMap & mask_xyz,
         const MaskMap & mask_rgb,
-        const RegionXY & region);
+        const RegionXY & region,
+        const size_t nr_features_per_modality = 63);
 
+      void
+      computeAABB (
+        BoundingBoxXYZ & bb,
+        PointXYZT & center,
+        const typename pcl::PointCloud<PointXYZT> & cloud) const;
+
+      void
+      subtractMean (
+        typename pcl::PointCloud<PointXYZT> & cloud,
+        const PointXYZT & center) const;
+
+      void
+      createTemplate (
+        const std::vector<pcl::QuantizableModality*> modalities,
+        const std::vector<MaskMap*> masks,
+        const RegionXY & region,
+        SparseQuantizedMultiModTemplate &linemod_template,
+        const size_t nr_features_per_modality) const;
+
+      void
+      convertDetectionsTo3D (
+        const std::vector<pcl::LINEMODDetection> & linemod_detections,
+        std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections) const;
 
       /** \brief Applies the detection process and fills the supplied vector with the detection instances. 
         * \param[out] detections The storage for the detection instances.
         */
       void 
       detect (std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections);
+
+      void 
+      detect (const std::vector<pcl::QuantizableModality*> & modalities,
+              std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections);
 
       /** \brief Applies the detection process in a semi-scale-invariant manner. This is done by acutally
         *        scaling the template to different sizes.
@@ -218,62 +280,63 @@ namespace pcl
                                 float max_scale = 1.44f,
                                 float scale_multiplier = 1.2f);
 
-      /** \brief Computes and returns the point cloud of the specified detection. This is the template point 
-        *        cloud transformed to the detection coordinates. The detection ID refers to the last call of 
-        *        the method detect (...).
-        * \param[in] detection_id The ID of the detection (according to the last call of the method detect (...)).
-        * \param[out] cloud The storage for the transformed points.
-        */
       void
-      computeTransformedTemplatePoints (const size_t detection_id,
-                                        pcl::PointCloud<pcl::PointXYZRGBA> & cloud);
+      detectSemiScaleInvariant (const std::vector<pcl::QuantizableModality*> & modalities,
+                                std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections,
+                                float min_scale = 0.6944444f,
+                                float max_scale = 1.44f,
+                                float scale_multiplier = 1.2f);
 
-      /** \brief Finds the indices of the points in the input cloud which correspond to the specified detection. 
-        *        The detection ID refers to the last call of the method detect (...).
-        * \param[in] detection_id The ID of the detection (according to the last call of the method detect (...)).
-        */
-      inline std::vector<size_t>
-      findObjectPointIndices (const size_t detection_id)
+      inline typename pcl::PointCloud<PointXYZT> &
+      getTemplateCloud (const int template_id)
       {
-        if (detection_id >= detections_.size ())
-          PCL_ERROR ("ERROR pcl::LineRGBD::computeTransformedTemplatePoints - detection_id is out of bounds\n");
-
-        // TODO: compute transform from detection
-        // TODO: transform template points
-        std::vector<size_t> vec;
-        return (vec);
+        return (template_point_clouds_[template_id]);
       }
 
-
-    protected:
-
-      /** \brief Aligns the template points with the points found at the detection position of the specified detection. 
-        *        The detection ID refers to the last call of the method detect (...). 
-        * \param[in] detection_id The ID of the detection (according to the last call of the method detect (...)).
-        */
-      inline std::vector<size_t>
-      alignTemplatePoints (const size_t detection_id)
+      inline BoundingBoxXYZ &
+      getTemplateBBox (const int template_id)
       {
-        if (detection_id >= detections_.size ())
-          PCL_ERROR ("ERROR pcl::LineRGBD::computeTransformedTemplatePoints - detection_id is out of bounds\n");
+        return (bounding_boxes_[template_id]);
+      }
 
-        // TODO: compute transform from detection
-        // TODO: transform template points
-        std::vector<size_t> vec;
-        return (vec);
+      inline size_t &
+      getTemplateObjectID (const int template_id)
+      {
+        return (object_ids_[template_id]);
+      }
+
+      /** \brief Resize the templates storage. */
+      inline void
+      resizeTemplates (size_t n)
+      {
+        object_ids_.resize (n);
+        bounding_boxes_.resize (n);
+        template_point_clouds_.resize (n);
+        return (linemod_.resizeTemplates (n));
       }
 
       /** \brief Refines the found detections along the depth. */
       void
-      refineDetectionsAlongDepth ();
+      refineDetectionsAlongDepth (
+        std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections) const;
 
       /** \brief Applies projective ICP on detections to find their correct position in depth. */
       void
-      applyProjectiveDepthICPOnDetections ();
+      applyProjectiveDepthICPOnDetections (
+        std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections) const;
 
       /** \brief Checks for overlapping detections, removes them and keeps only the strongest one. */
       void
-      removeOverlappingDetections ();
+      removeOverlappingDetections (
+        std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections,
+        const size_t translation_clustering_threshold,
+        const bool noOverlapBetweenDifferentTemplates = false) const;
+
+      void
+      sortDetections (
+        std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections) const;
+
+    protected:
 
       /** \brief Computes the volume of the intersection between two bounding boxes.
         * \param[in] box1 First bounding box.
@@ -289,9 +352,12 @@ namespace pcl
 
       /** \brief Intersection volume threshold. */
       float intersection_volume_threshold_;
+      size_t translation_clustering_threshold_2d_;
+      size_t translation_clustering_threshold_3d_;
+      float rotation_clustering_threshold_;
 
       /** \brief LINEMOD instance. */
-      public: pcl::LINEMOD linemod_;
+      pcl::LINEMOD linemod_;
       /** \brief Color gradient modality. */
       pcl::ColorGradientModality<PointRGBT> color_gradient_mod_;
       /** \brief Surface normal modality. */
@@ -303,14 +369,11 @@ namespace pcl
       typename pcl::PointCloud<PointRGBT>::ConstPtr cloud_rgb_;
 
       /** \brief Point clouds corresponding to the templates. */
-      pcl::PointCloud<pcl::PointXYZRGBA>::CloudVectorType template_point_clouds_;
+      typename pcl::PointCloud<PointXYZT>::CloudVectorType template_point_clouds_;
       /** \brief Bounding boxes corresonding to the templates. */
       std::vector<pcl::BoundingBoxXYZ> bounding_boxes_;
       /** \brief Object IDs corresponding to the templates. */
       std::vector<size_t> object_ids_;
-
-      /** \brief Detections from last call of method detect (...). */
-      std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> detections_; 
   };
 
 }

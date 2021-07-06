@@ -37,6 +37,7 @@
 
 //#define __SSE2__
 
+#include <pcl/console/print.h>
 #include <pcl/recognition/linemod.h>
 
 #if __AVX2__
@@ -47,12 +48,16 @@
 #endif
 
 #include <fstream>
+#include <map>
+#include <algorithm>
 
 //#define LINEMOD_USE_SEPARATE_ENERGY_MAPS
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::LINEMOD::LINEMOD () 
   : template_threshold_ (0.75f)
+  , translation_clustering_threshold_ (0)  // 0 for disabled
+  , rotation_clustering_threshold_ (0)  // 0 for disabled
   , use_non_max_suppression_ (false)
   , average_detections_ (false)
   , templates_ ()
@@ -90,7 +95,7 @@ pcl::LINEMOD::createTemplate (const std::vector<QuantizableModality*> & modaliti
                               const std::vector<MaskMap*> & masks,
                               const RegionXY & region,
                               SparseQuantizedMultiModTemplate & linemod_template,
-                              size_t nr_features_per_modality)
+                              size_t nr_features_per_modality) const
 {
   const size_t nr_modalities = modalities.size();
   for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
@@ -130,6 +135,200 @@ pcl::LINEMOD::addTemplate (const SparseQuantizedMultiModTemplate & linemod_templ
   templates_.push_back(linemod_template);
 
   return static_cast<int> (templates_.size () - 1);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::LINEMOD::groupAndSortOverlappingDetections (
+    const std::vector<LINEMODDetection> & detections,
+    std::vector<std::vector<LINEMODDetection>>& grouped_detections,
+    const size_t grouping_threshold) const
+{
+  typedef std::tuple<size_t, size_t> GroupingKey;
+  std::map<GroupingKey, std::vector<LINEMODDetection>> groups;
+  const size_t nr_detections = detections.size ();
+  // compute overlap between each detection
+  for (size_t detection_id = 0; detection_id < nr_detections; ++detection_id)
+  {
+    const GroupingKey key = {
+      detections[detection_id].x / grouping_threshold,
+      detections[detection_id].y / grouping_threshold,
+    };
+
+    groups[key].push_back(detections[detection_id]);
+  }
+  grouped_detections.resize(groups.size());
+
+  size_t group_id;
+  std::map<GroupingKey, std::vector<LINEMODDetection>>::iterator it;
+  for (group_id = 0, it = groups.begin(); it != groups.end(); ++group_id, ++it)
+  {
+    std::vector<LINEMODDetection>& detections_group = it->second;
+    sortDetections(detections_group);
+    grouped_detections[group_id] = detections_group;
+  }
+  std::sort(grouped_detections.begin(), grouped_detections.end(), [](const std::vector<LINEMODDetection> & a,
+                                                                     const std::vector<LINEMODDetection> & b) -> bool { return a[0].score > b[0].score; });
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::LINEMOD::removeOverlappingDetections (
+    std::vector<LINEMODDetection> & detections,
+    size_t translation_clustering_threshold,
+    float rotation_clustering_threshold) const
+{
+  // check if clustering is disabled
+  if (translation_clustering_threshold == 0 && rotation_clustering_threshold == 0.f) {
+    return;
+  }
+
+  if (translation_clustering_threshold == 0) {
+    translation_clustering_threshold = 1;
+  }
+  if (rotation_clustering_threshold == 0.f) {
+    rotation_clustering_threshold = std::numeric_limits<float>::epsilon();
+  }
+
+  typedef std::tuple<int, int, int> TemplatesClusteringKey;
+  std::map<TemplatesClusteringKey, std::vector<size_t>> templateClusters;
+  const size_t n_templates = templates_.size ();
+  for (size_t template_index = 0; template_index < n_templates; ++template_index)
+  {
+    const pcl::SparseQuantizedMultiModTemplate& template_ = templates_[template_index];
+    const TemplatesClusteringKey key = {
+      static_cast<int>(template_.rx / rotation_clustering_threshold),
+      static_cast<int>(template_.ry / rotation_clustering_threshold),
+      static_cast<int>(template_.rz / rotation_clustering_threshold),
+    };
+
+    templateClusters[key].push_back(template_index);
+  }
+
+  std::map<size_t, size_t> clusteredTemplates;
+  if (templateClusters.size() <= 1) {
+    PCL_ERROR ("[removeOverlappingDetections] All %u templates got grouped into %u cluster(s). Either rotation threshold=%.4f is too large, or template rotations are not set properly.\n"
+               "Making each template in its own cluster for now...\n", n_templates, templateClusters.size(), rotation_clustering_threshold);
+    for (size_t template_index = 0; template_index < n_templates; ++template_index)
+    {
+      clusteredTemplates[template_index] = template_index;
+    }
+  }
+  else
+  {
+    PCL_INFO ("[removeOverlappingDetections] Grouping %u templates into %u clusters\n", n_templates, templateClusters.size());
+    size_t cluster_id;
+    std::map<TemplatesClusteringKey, std::vector<size_t>>::iterator tempIt;
+    for (cluster_id = 0, tempIt = templateClusters.begin(); tempIt != templateClusters.end(); ++cluster_id, ++tempIt)
+    {
+      const std::vector<size_t>& cluster = tempIt->second;
+      const size_t elements_in_cluster = cluster.size ();
+      for (size_t cluster_index = 0; cluster_index < elements_in_cluster; ++cluster_index)
+      {
+        const size_t template_index = cluster[cluster_index];
+        clusteredTemplates[template_index] = cluster_id;
+      }
+    }
+  }
+
+  // compute overlap between each detection
+  const size_t nr_detections = detections.size ();
+
+  typedef std::tuple<size_t, size_t, size_t> ClusteringKey;
+  std::map<ClusteringKey, std::vector<size_t>> clusters;
+  for (size_t detection_id = 0; detection_id < nr_detections; ++detection_id)
+  {
+    const LINEMODDetection& d = detections[detection_id];
+    const ClusteringKey key = {
+      d.x / translation_clustering_threshold,
+      d.y / translation_clustering_threshold,
+      clusteredTemplates[d.template_id],
+    };
+
+    clusters[key].push_back(detection_id);
+  }
+
+  // compute detection representatives for every cluster
+  std::vector<LINEMODDetection> clustered_detections;
+  size_t cluster_id;
+  std::map<ClusteringKey, std::vector<size_t>>::iterator it;
+  for (cluster_id = 0, it = clusters.begin(); it != clusters.end(); ++cluster_id, ++it)
+  {
+    const std::vector<size_t>& cluster = it->second;
+    float weight_sum = 0.0f;
+
+    float average_score = 0.0f;
+    float average_scale = 0.0f;
+    float average_rx = 0.0f;
+    float average_ry = 0.0f;
+    float average_rz = 0.0f;
+    float average_region_x = 0.0f;
+    float average_region_y = 0.0f;
+
+    const size_t elements_in_cluster = cluster.size ();
+    for (size_t cluster_index = 0; cluster_index < elements_in_cluster; ++cluster_index)
+    {
+      const size_t detection_id = cluster[cluster_index];
+      const LINEMODDetection& d = detections[detection_id];
+      const pcl::SparseQuantizedMultiModTemplate& template_ = templates_[d.template_id];
+
+      const float weight = d.score * d.score;
+
+      weight_sum += weight;
+
+      average_score += d.score * weight;
+      average_scale += d.scale * weight;
+      average_rx += template_.rx * weight;
+      average_ry += template_.ry * weight;
+      average_rz += template_.rz * weight;
+      average_region_x += static_cast<float>(d.x) * weight;
+      average_region_y += static_cast<float>(d.y) * weight;
+    }
+
+    const float inv_weight_sum = 1.0f / weight_sum;
+
+    average_rx *= inv_weight_sum;
+    average_ry *= inv_weight_sum;
+    average_rz *= inv_weight_sum;
+
+    float min_dist2 = std::numeric_limits<float>::max ();
+    size_t best_template_id = detections[cluster[0]].template_id;
+    for (size_t template_index = 0; template_index < n_templates; ++template_index)
+    {
+      // Skip templates that does not belong to the same cluster
+      // This is also important to protect wrong ID assignment in case all rotations are not set, thus ended up to have the same distance
+      if (clusteredTemplates[best_template_id] != clusteredTemplates[template_index]) {
+        continue;
+      }
+
+      const pcl::SparseQuantizedMultiModTemplate& template_ = templates_[template_index];
+      const float dist2 = std::pow(template_.rx - average_rx, 2) + std::pow(template_.ry - average_ry, 2) + std::pow(template_.rz - average_rz, 2);
+      if (dist2 < min_dist2)
+      {
+        min_dist2 = dist2;
+        best_template_id = template_index;
+      }
+    }
+
+    LINEMODDetection detection;
+    detection.template_id = best_template_id;
+    detection.score = average_score * inv_weight_sum * std::exp(-0.5f / elements_in_cluster);
+    detection.scale = average_scale * inv_weight_sum;
+    detection.x = int (average_region_x * inv_weight_sum);
+    detection.y = int (average_region_y * inv_weight_sum);
+
+    clustered_detections.push_back (detection);
+  }
+  detections = clustered_detections;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::LINEMOD::sortDetections (
+    std::vector<LINEMODDetection> & detections) const
+{
+  std::sort(detections.begin(), detections.end(), [](const LINEMODDetection & a,
+                                                     const LINEMODDetection & b) -> bool { return a.score > b.score; });
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -552,6 +751,15 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
     const size_t mem_height = height / step_size;
     const size_t mem_size = mem_width * mem_height;
 
+#ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
+    unsigned short * score_sums_1 = new unsigned short[mem_size];
+    unsigned short * score_sums_2 = new unsigned short[mem_size];
+    unsigned short * score_sums_3 = new unsigned short[mem_size];
+    memset (score_sums_1, 0, mem_size*sizeof (score_sums_1[0]));
+    memset (score_sums_2, 0, mem_size*sizeof (score_sums_2[0]));
+    memset (score_sums_3, 0, mem_size*sizeof (score_sums_3[0]));
+#endif
+
 #ifdef __SSE2__
     unsigned short * score_sums = reinterpret_cast<unsigned short*> (aligned_malloc (mem_size*sizeof(unsigned short)));
     unsigned char * tmp_score_sums = reinterpret_cast<unsigned char*> (aligned_malloc (mem_size*sizeof(unsigned char)));
@@ -636,19 +844,10 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
         
       memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
     }
-#else
+#else  // #ifdef __SSE2__
     unsigned short * score_sums = new unsigned short[mem_size];
     //unsigned char * score_sums = new unsigned char[mem_size];
     memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
-
-#ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
-    unsigned short * score_sums_1 = new unsigned short[mem_size];
-    unsigned short * score_sums_2 = new unsigned short[mem_size];
-    unsigned short * score_sums_3 = new unsigned short[mem_size];
-    memset (score_sums_1, 0, mem_size*sizeof (score_sums_1[0]));
-    memset (score_sums_2, 0, mem_size*sizeof (score_sums_2[0]));
-    memset (score_sums_3, 0, mem_size*sizeof (score_sums_3[0]));
-#endif
 
     int max_score = 0;
     for (size_t feature_index = 0; feature_index < templates_[template_index].features.size (); ++feature_index)
@@ -686,7 +885,7 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
         }
       }
     }
-#endif
+#endif  // #ifdef __SSE2__
 
     const float inv_max_score = 1.0f / float (max_score);
 
@@ -909,7 +1108,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
       unsigned char *energy_map_bin = energy_maps (bin_index);
 
       size_t index = 0;
-#if defined(__AVX2__) && !LINEMOD_USE_SEPARATE_ENERGY_MAPS
+#if defined(__AVX2__) && !defined(LINEMOD_USE_SEPARATE_ENERGY_MAPS)
       const __m256i __val0 = _mm256_set1_epi8(val0);
       const __m256i __val1 = _mm256_set1_epi8(val1);
       const __m256i __val2 = _mm256_set1_epi8(val2);
@@ -959,7 +1158,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
 #endif
   }
 
-  printf("1 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  // printf("1 %f\n", 1000.0*(getTickCount()-start)/1e9);
   start = getTickCount();
   // create linearized maps
   const size_t step_size = 8;
@@ -1049,7 +1248,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
 #endif
   }
 
-  printf("2 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  // printf("2 %f\n", 1000.0*(getTickCount()-start)/1e9);
   start = getTickCount();
 
   // compute scores for templates
@@ -1062,6 +1261,12 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
   #pragma omp parallel
   {
     // Thread local storage
+    #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
+      unsigned short * score_sums_1 = new unsigned short[mem_size];
+      unsigned short * score_sums_2 = new unsigned short[mem_size];
+      unsigned short * score_sums_3 = new unsigned short[mem_size];
+    #endif
+
     #if defined(__AVX2__)
       unsigned short * score_sums;
       unsigned char * tmp_score_sums;
@@ -1072,12 +1277,6 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
       unsigned char * tmp_score_sums = reinterpret_cast<unsigned char*> (aligned_malloc (mem_size*sizeof(unsigned char)));
     #else
       unsigned short * score_sums = new unsigned short[mem_size];
-
-    #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
-      unsigned short * score_sums_1 = new unsigned short[mem_size];
-      unsigned short * score_sums_2 = new unsigned short[mem_size];
-      unsigned short * score_sums_3 = new unsigned short[mem_size];
-    #endif
     #endif
 
     #pragma omp for
@@ -1124,7 +1323,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
 
           ++copy_back_counter;
 
-          if (copy_back_counter > 63) // only valid if each feature has only one bit set..
+          if (copy_back_counter > 31) // only valid if each feature has only one bit set..
           {
             copy_back_counter = 0;
 
@@ -1253,6 +1452,15 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
         {
           const QuantizedMultiModFeature & feature = templates_[template_index].features[feature_index];
 
+          std::vector<LinearizedMaps> &linearized_map_modality = modality_linearized_maps[feature.modality_index];
+  #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
+          std::vector<LinearizedMaps> &linearized_map_modality1 = modality_linearized_maps_1[feature.modality_index];
+          std::vector<LinearizedMaps> &linearized_map_modality2 = modality_linearized_maps_2[feature.modality_index];
+          std::vector<LinearizedMaps> &linearized_map_modality3 = modality_linearized_maps_3[feature.modality_index];
+  #endif
+          const size_t map_x = size_t (float (feature.x) * scale);
+          const size_t map_y = size_t (float (feature.y) * scale);
+
           //feature.modality_index;
           for (size_t bin_index = 0; bin_index < 8; ++bin_index)
           {
@@ -1261,10 +1469,10 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
   #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
               ++max_score;
 
-              unsigned char * data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (feature.x*scale, feature.y*scale);
-              unsigned char * data_1 = modality_linearized_maps_1[feature.modality_index][bin_index].getOffsetMap (feature.x*scale, feature.y*scale);
-              unsigned char * data_2 = modality_linearized_maps_2[feature.modality_index][bin_index].getOffsetMap (feature.x*scale, feature.y*scale);
-              unsigned char * data_3 = modality_linearized_maps_3[feature.modality_index][bin_index].getOffsetMap (feature.x*scale, feature.y*scale);
+              unsigned char * data = linearized_map_modality[bin_index].getOffsetMap(map_x, map_y);
+              unsigned char * data_1 = linearized_map_modality1[bin_index].getOffsetMap(map_x, map_y);
+              unsigned char * data_2 = linearized_map_modality2[bin_index].getOffsetMap(map_x, map_y);
+              unsigned char * data_3 = linearized_map_modality3[bin_index].getOffsetMap(map_x, map_y);
               for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
               {
                 score_sums[mem_index] += data[mem_index];
@@ -1275,7 +1483,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
   #else
               max_score += 4;
 
-              unsigned char * data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (static_cast<size_t> (feature.x*scale), static_cast<size_t> (feature.y*scale));
+              unsigned char * data = linearized_map_modality[bin_index].getOffsetMap(map_x, map_y);
               for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
               {
                 score_sums[mem_index] += data[mem_index];
@@ -1431,7 +1639,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
     #endif
   } // #pragma omp parallel
 
-  printf("3 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  // printf("3 %f\n", 1000.0*(getTickCount()-start)/1e9);
   start = getTickCount();
 
   // release data
@@ -1453,8 +1661,6 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
 #endif
     }
   }
-  printf("4 %f\n", 1000.0*(getTickCount()-start)/1e9);
-  start = getTickCount();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
