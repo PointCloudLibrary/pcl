@@ -38,6 +38,7 @@ public:
   : filter_name_("VoxelGrid")
   , leaf_size_(Eigen::Vector4f::Zero())
   , inverse_leaf_size_(Eigen::Array4f::Zero())
+  , save_leaf_layout_(false)
   , min_b_(Eigen::Vector4i::Zero())
   , max_b_(Eigen::Vector4i::Zero())
   , div_b_(Eigen::Vector4i::Zero())
@@ -246,6 +247,23 @@ public:
         neighbors[ni] = -1; // cell is out of bounds, consider it empty
     }
     return neighbors;
+  }
+
+  /** \brief Set to true if leaf layout information needs to be saved for later access.
+   * \param[in] save_leaf_layout the new value (true/false)
+   */
+  inline void
+  setSaveLeafLayout(const bool save_leaf_layout)
+  {
+    save_leaf_layout_ = save_leaf_layout;
+  }
+
+  /** \brief Returns true if leaf layout information will to be saved for later access.
+   */
+  inline bool
+  getSaveLeafLayout() const
+  {
+    return save_leaf_layout_;
   }
 
   /** \brief Returns the layout of the leafs for fast access to cells relative to
@@ -476,6 +494,10 @@ protected:
 
   /** \brief Internal leaf sizes stored as 1/leaf_size_ for efficiency reasons. */
   Eigen::Array4f inverse_leaf_size_;
+
+  /** \brief Set to true if leaf layout information needs to be saved in \a
+   * leaf_layout_. */
+  bool save_leaf_layout_;
 
   /** \brief The leaf layout information for fast access to cells relative to current
    * position **/
