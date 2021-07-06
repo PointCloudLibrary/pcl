@@ -447,7 +447,7 @@ pcl::VoxelGridCovariance<PointT>::getDisplayCloud (pcl::PointCloud<PointXYZ>& ce
 
   int pnt_per_cell = 1000;
   boost::mt19937 rng;
-  boost::normal_distribution<> nd (0.0, leaf_size_.head (3).norm ());
+  boost::normal_distribution<> nd (0.0, 1.0);
   boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > var_nor (rng, nd);
 
   Eigen::LLT<Eigen::Matrix3d> llt_of_cov;
