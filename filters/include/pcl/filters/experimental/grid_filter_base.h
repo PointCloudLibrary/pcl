@@ -16,8 +16,6 @@
 namespace pcl {
 namespace experimental {
 
-#define GET_POINT_TYPE(GridStructT) typename GridStructT::PointCloud::PointType
-
 template <typename GridStruct, typename PointT = GET_POINT_TYPE(GridStruct)>
 class GridFilterBase : public TransformFilter<GridStruct, PointT> {
 protected:
@@ -164,6 +162,39 @@ public:
   getFilterLimitsNegative() const
   {
     return filter_limit_negative_;
+  }
+
+  inline std::size_t
+  hashPoint(const PointT& pt,
+            const Eigen::Array4f& inverse_leaf_size,
+            const Eigen::Vector4i& min_b,
+            const Eigen::Vector4i& divb_mul)
+  {
+    const std::size_t ijk0 = std::floor(pt.x * inverse_leaf_size[0]) - min_b[0];
+    const std::size_t ijk1 = std::floor(pt.y * inverse_leaf_size[1]) - min_b[1];
+    const std::size_t ijk2 = std::floor(pt.z * inverse_leaf_size[2]) - min_b[2];
+    return ijk0 * divb_mul[0] + ijk1 * divb_mul[1] + ijk2 * divb_mul[2];
+  }
+
+  std::size_t
+  checkHashRange(const Eigen::Vector4f& min_p,
+                 const Eigen::Vector4f& max_p,
+                 const Eigen::Array4f& inverse_leaf_size)
+  {
+    // Check if the leaf size is not too small, given the range of the point cloud
+    // Otherwise "wrap around" of unsigned int will happen during hashing a point
+
+    // Pass inverse_leaf_size[2] = 0 for checking 2D grids
+    const std::size_t dx = std::floor((max_p[0] - min_p[0]) * inverse_leaf_size[0]) + 1;
+    const std::size_t dy = std::floor((max_p[1] - min_p[1]) * inverse_leaf_size[1]) + 1;
+    const std::size_t dz = std::floor((max_p[2] - min_p[2]) * inverse_leaf_size[2]) + 1;
+
+    // check unsigned int overflow/wrap-around
+    const size_t max_size = std::numeric_limits<std::size_t>::max();
+    if (dy > max_size / dx || dx * dy > max_size / dz)
+      return 0;
+    else
+      return dx * dy * dz;
   }
 
 protected:

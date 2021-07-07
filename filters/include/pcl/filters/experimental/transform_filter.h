@@ -15,12 +15,14 @@
 namespace pcl {
 namespace experimental {
 
+#define GET_POINT_TYPE(GridStructT) typename GridStructT::PointCloud::PointType
+
 /**
  * \brief The base of GridFilterBase which has the common member functions and
  * attribute for the grid filters.
  * \ingroup filters
  */
-template <typename GridStruct, typename PointT>
+template <typename GridStruct, typename PointT = GET_POINT_TYPE(GridStruct)>
 class TransformFilter : public Filter<PointT>, public GridStruct {
 protected:
   using Filter<PointT>::filter_name_;
@@ -61,7 +63,7 @@ protected:
     output.height = 1;      // downsampling breaks the organized structure
     output.is_dense = true; // we filter out invalid points
 
-    if (!GridStruct::setUp()) {
+    if (!GridStruct::setUp(this)) {
       output = *input_;
       return;
     }

@@ -8,7 +8,7 @@
  */
 
 #include <pcl/filters/experimental/grid_filter_base.h>
-#include <pcl/io/pcd_io.h>
+#include <pcl/filters/experimental/transform_filter.h>
 #include <pcl/test/gtest.h>
 #include <pcl/pcl_tests.h>
 #include <pcl/point_types.h>
@@ -50,8 +50,9 @@ struct EmptyMapStruct {
 
 protected:
   bool
-  setUp()
+  setUp(const experimental::TransformFilter<EmptyMapStruct>* transform_filter)
   {
+    (void)transform_filter;
     return pass_set_up_;
   }
 
@@ -90,8 +91,9 @@ struct EmptyVecStruct {
 
 protected:
   bool
-  setUp()
+  setUp(const experimental::TransformFilter<EmptyVecStruct>* transform_filter)
   {
+    (void)transform_filter;
     return true;
   }
 
