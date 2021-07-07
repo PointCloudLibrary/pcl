@@ -12,13 +12,11 @@
 #include <pcl/common/centroid.h>
 #include <pcl/common/common.h>
 #include <pcl/filters/experimental/grid_filter_base.h>
+#include <pcl/filters/voxel_grid.h>
 
 #include <boost/optional.hpp> // std::optional for C++17
 
 #include <unordered_map>
-
-// For testing protected method
-class ProtectedMethods_ExperimentalVoxelGridEquivalency_Test;
 
 namespace pcl {
 namespace experimental {
@@ -492,9 +490,6 @@ protected:
   double filter_limit_min_, filter_limit_max_;
 
   std::string filter_field_name_;
-
-private:
-  friend class ::ProtectedMethods_ExperimentalVoxelGridEquivalency_Test;
 };
 
 template <typename PointT>
