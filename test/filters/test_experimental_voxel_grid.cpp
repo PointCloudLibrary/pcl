@@ -114,47 +114,42 @@ TEST(SetUp, ExperimentalVoxelGridEquivalency)
   }
 }
 
-TEST(ProtectedMethods, ExperimentalVoxelGridEquivalency)
+TEST(HashingPoint, ExperimentalVoxelGridEquivalency)
 {
-  // hashing point
-  {
-    PointCloud<PointXYZ> new_out_cloud, old_out_cloud;
+  // For extracting indices
+  PointCloud<PointXYZ> new_out_cloud;
+  experimental::VoxelGrid<PointXYZ> new_grid;
+  new_grid.setLeafSize(0.02f, 0.02f, 0.02f);
+  new_grid.setInputCloud(cloud);
+  new_grid.filter(new_out_cloud);
 
-    experimental::VoxelGrid<PointXYZ> new_grid;
-    pcl::VoxelGrid<PointXYZ> old_grid;
-    new_grid.setLeafSize(0.02f, 0.02f, 0.02f);
-    old_grid.setLeafSize(0.02f, 0.02f, 0.02f);
-    new_grid.setInputCloud(cloud);
-    old_grid.setInputCloud(cloud);
-    new_grid.filter(new_out_cloud);
-    old_grid.filter(old_out_cloud);
+  Eigen::Vector4f min_p, max_p;
+  getMinMax3D<PointXYZ>(*cloud, *(new_grid.getIndices()), min_p, max_p);
 
-    // Test hashing point
-    const Eigen::Vector3i old_min_b = old_grid.getMinBoxCoordinates();
-    const Eigen::Vector3i old_divb_mul = old_grid.getDivisionMultiplier();
-    const Eigen::Vector3f old_inverse_leaf_size = 1 / old_grid.getLeafSize().array();
+  Eigen::Vector4i min_b, max_b, div_b, divb_mul;
+  Eigen::Array4f inverse_leaf_size = 1 / Eigen::Array4f::Constant(0.02);
+  min_b = (min_p.array() * inverse_leaf_size).floor().cast<int>();
+  max_b = (max_p.array() * inverse_leaf_size).floor().cast<int>();
+  div_b = (max_b - min_b).array() + 1;
+  divb_mul = Eigen::Vector4i(1, div_b[0], div_b[0] * div_b[1], 0);
 
-    // Copied from the old VoxelGrid as there is no dedicated method
-    auto old_hash = [&](const PointXYZ& p) {
-      int ijk0 = static_cast<int>(std::floor(p.x * old_inverse_leaf_size[0]) -
-                                  static_cast<float>(old_min_b[0]));
-      int ijk1 = static_cast<int>(std::floor(p.y * old_inverse_leaf_size[1]) -
-                                  static_cast<float>(old_min_b[1]));
-      int ijk2 = static_cast<int>(std::floor(p.z * old_inverse_leaf_size[2]) -
-                                  static_cast<float>(old_min_b[2]));
+  // Copied from the old VoxelGrid as there is no dedicated method auto old_hash =
+  auto old_hash = [&](const PointXYZ& p) {
+    int ijk0 = static_cast<int>(std::floor(p.x * inverse_leaf_size[0]) -
+                                static_cast<float>(min_b[0]));
+    int ijk1 = static_cast<int>(std::floor(p.y * inverse_leaf_size[1]) -
+                                static_cast<float>(min_b[1]));
+    int ijk2 = static_cast<int>(std::floor(p.z * inverse_leaf_size[2]) -
+                                static_cast<float>(min_b[2]));
 
-      // Compute the centroid leaf index
-      return ijk0 * old_divb_mul[0] + ijk1 * old_divb_mul[1] + ijk2 * old_divb_mul[2];
-    };
+    // Compute the centroid leaf index
+    return ijk0 * divb_mul[0] + ijk1 * divb_mul[1] + ijk2 * divb_mul[2];
+  };
 
-    for (size_t i = 0; i < cloud->size(); ++i) {
-      if (isXYZFinite(cloud->at(i))) {
-        EXPECT_EQ(new_grid.hashPoint(cloud->at(i),
-                                     new_grid.inverse_leaf_size_,
-                                     new_grid.min_b_,
-                                     new_grid.divb_mul_),
-                  old_hash(cloud->at(i)));
-      }
+  for (size_t i = 0; i < cloud->size(); ++i) {
+    if (isXYZFinite(cloud->at(i))) {
+      EXPECT_EQ(new_grid.hashPoint(cloud->at(i), inverse_leaf_size, min_b, divb_mul),
+                old_hash(cloud->at(i)));
     }
   }
 }

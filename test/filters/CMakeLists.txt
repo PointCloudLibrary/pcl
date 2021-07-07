@@ -50,6 +50,11 @@ if(BUILD_io)
          FILES test_bilateral.cpp
          LINK_WITH pcl_gtest pcl_filters pcl_io pcl_kdtree
          ARGUMENTS "${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd")
+  
+  PCL_ADD_TEST(experimental_voxel_grid test_experimental_voxel_grid
+         FILES test_experimental_voxel_grid.cpp
+         LINK_WITH pcl_gtest pcl_common pcl_filters pcl_io
+         ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd" "${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd")
 
   if(BUILD_features)
     PCL_ADD_TEST(filters_sampling test_filters_sampling
@@ -61,11 +66,6 @@ if(BUILD_io)
            FILES test_model_outlier_removal.cpp
            LINK_WITH pcl_gtest pcl_filters pcl_io pcl_sample_consensus pcl_kdtree pcl_features
            ARGUMENTS ${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd)
-
-    PCL_ADD_TEST(experimental_voxel_grid test_experimental_voxel_grid
-           FILES test_experimental_voxel_grid.cpp
-           LINK_WITH pcl_gtest pcl_common pcl_filters pcl_io
-           ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd" "${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd")
 
     if(BUILD_segmentation)
       PCL_ADD_TEST(filters_filters test_filters
