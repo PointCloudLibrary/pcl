@@ -26,13 +26,20 @@ const float PRECISION = Eigen::NumTraits<float>::dummy_precision() * 2;
 
 template <typename PointT>
 void
+EXPECT_POINT_EQ(const PointT& pt1, const PointT& pt2)
+{
+  const auto& pt1_vec = pt1.getVector4fMap();
+  const auto& pt_vec = pt2.getVector4fMap();
+  EXPECT_TRUE(pt1_vec.isApprox(pt_vec, PRECISION))
+      << "Point1: " << pt1_vec.transpose() << "\nPoint2: " << pt_vec.transpose()
+      << "\nnorm diff: " << (pt1_vec - pt_vec).norm() << std::endl;
+}
+
+template <typename PointT>
+void
 EXPECT_POINTS_EQ(PointCloud<PointT> pc1, PointCloud<PointT> pc2)
 {
-  EXPECT_EQ(pc1.size(), pc2.size());
-
-  // avoid printing too many error messages
-  if (pc1.size() != pc2.size())
-    return;
+  ASSERT_EQ(pc1.size(), pc2.size());
 
   auto pt_cmp = [](const PointT& p1, const PointT& p2) -> bool {
     return p1.x > p2.x || (p1.x == p2.x && p1.y > p2.y) ||
@@ -41,13 +48,8 @@ EXPECT_POINTS_EQ(PointCloud<PointT> pc1, PointCloud<PointT> pc2)
   std::sort(pc1.begin(), pc1.end(), pt_cmp);
   std::sort(pc2.begin(), pc2.end(), pt_cmp);
 
-  for (size_t i = 0; i < pc1.size(); ++i) {
-    const auto& p1 = pc1.at(i).getVector4fMap();
-    const auto& p2 = pc2.at(i).getVector4fMap();
-    EXPECT_TRUE(p1.isApprox(p2, PRECISION))
-        << "Point1: " << p1.transpose() << "\nPoint2: " << p2.transpose()
-        << "\nnorm diff: " << (p1 - p2).norm() << std::endl;
-  }
+  for (size_t i = 0; i < pc1.size(); ++i)
+    EXPECT_POINT_EQ<PointT>(pc1.at(i), pc2.at(i));
 }
 
 TEST(SetUp, ExperimentalVoxelGridEquivalency)
@@ -154,6 +156,63 @@ TEST(HashingPoint, ExperimentalVoxelGridEquivalency)
   }
 }
 
+TEST(LeafLayout, ExperimentalVoxelGridEquivalency)
+{
+  PointCloud<PointXYZ> new_out_cloud, old_out_cloud;
+
+  experimental::VoxelGrid<PointXYZ> new_grid;
+  pcl::VoxelGrid<PointXYZ> old_grid;
+  new_grid.setLeafSize(0.02f, 0.02f, 0.02f);
+  old_grid.setLeafSize(0.02f, 0.02f, 0.02f);
+  new_grid.setInputCloud(cloud);
+  old_grid.setInputCloud(cloud);
+  new_grid.setSaveLeafLayout(true);
+  old_grid.setSaveLeafLayout(true);
+  new_grid.filter(new_out_cloud);
+  old_grid.filter(old_out_cloud);
+
+  const auto new_leaf = new_grid.getLeafLayout();
+  const auto old_leaf = old_grid.getLeafLayout();
+  ASSERT_EQ(new_leaf.size(), old_leaf.size());
+
+  // Centroid indices are different from the old implememnt because of the order of
+  // iterating grids is different.
+  // But the index should still point to the same point
+
+  // leaf layout content
+  for (size_t i = 0; i < new_leaf.size(); ++i) {
+    if (old_leaf.at(i) == -1) {
+      EXPECT_EQ(new_leaf.at(i), -1);
+    }
+    else {
+      ASSERT_TRUE(new_leaf.at(i) != -1);
+      const auto& new_pt = new_out_cloud.at(new_leaf.at(i));
+      const auto& old_pt = old_out_cloud.at(old_leaf.at(i));
+      EXPECT_POINT_EQ(new_pt, old_pt);
+    }
+  }
+
+  // getCentroidIndex
+  for (const auto& pt : *cloud) {
+    const auto& new_pt = new_out_cloud.at(new_grid.getCentroidIndex(pt));
+    const auto& old_pt = old_out_cloud.at(old_grid.getCentroidIndex(pt));
+    EXPECT_POINT_EQ(new_pt, old_pt);
+  }
+
+  for (const auto& pt : new_out_cloud) {
+    const Eigen::MatrixXi random_pt = Eigen::MatrixXi::Random(3, 1);
+
+    const auto new_idx1 = new_grid.getNeighborCentroidIndices(pt, random_pt)[0];
+    const auto new_idx2 =
+        new_grid.getNeighborCentroidIndices(pt.x, pt.y, pt.z, random_pt)[0];
+
+    const auto old_idx = old_grid.getNeighborCentroidIndices(pt, random_pt)[0];
+
+    EXPECT_EQ(new_idx1, old_idx);
+    EXPECT_EQ(new_idx2, old_idx);
+  }
+}
+
 TEST(PointXYZ, ExperimentalVoxelGridEquivalency)
 {
   PointCloud<PointXYZ> new_out, old_out;
@@ -164,8 +223,6 @@ TEST(PointXYZ, ExperimentalVoxelGridEquivalency)
   old_grid.setLeafSize(0.02f, 0.02f, 0.02f);
   new_grid.setInputCloud(cloud);
   old_grid.setInputCloud(cloud);
-
-  // TODO: leaf_layout
 
   new_grid.setDownsampleAllData(false);
   old_grid.setDownsampleAllData(false);
@@ -228,8 +285,6 @@ TEST(PointXYZRGB, ExperimentalVoxelGridEquivalency)
   old_grid.setLeafSize(0.05f, 0.05f, 0.05f);
   new_grid.setInputCloud(cloud_organized);
   old_grid.setInputCloud(cloud_organized);
-
-  // TODO: leaf_layout
 
   new_grid.setDownsampleAllData(false);
   old_grid.setDownsampleAllData(false);
