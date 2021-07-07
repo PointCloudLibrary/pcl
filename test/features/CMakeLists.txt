@@ -57,6 +57,10 @@ if(BUILD_io)
                FILES test_boundary_estimation.cpp
                LINK_WITH pcl_gtest pcl_features pcl_io
                ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd")
+  PCL_ADD_TEST(feature_range_image_border_extraction test_range_image_border_extraction
+               FILES test_boundary_estimation.cpp
+               LINK_WITH pcl_gtest pcl_features pcl_io
+               ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd")
   PCL_ADD_TEST(feature_curvatures_estimation test_curvatures_estimation
                FILES test_curvatures_estimation.cpp
                LINK_WITH pcl_gtest pcl_features pcl_io

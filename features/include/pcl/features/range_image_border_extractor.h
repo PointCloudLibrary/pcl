@@ -159,24 +159,24 @@ namespace pcl
       getBorderScoresBottom () { extractBorderScoreImages (); return border_scores_bottom_.data (); }
 
       LocalSurface**
-      getSurfaceStructure () { extractLocalSurfaceStructure (); return surface_structure_; }
+      getSurfaceStructure () { extractLocalSurfaceStructure (); return surface_structure_.get(); }
 
       PointCloudOut&
-      getBorderDescriptions () { classifyBorders (); return *border_descriptions_; }
+      getBorderDescriptions() { classifyBorders(); return *border_descriptions_.get(); }
 
       ShadowBorderIndices**
-      getShadowBorderInformations () { findAndEvaluateShadowBorders (); return shadow_border_informations_; }
+      getShadowBorderInformations() { findAndEvaluateShadowBorders(); return shadow_border_informations_.get(); }
 
       Eigen::Vector3f**
-      getBorderDirections () { calculateBorderDirections (); return border_directions_; }
+      getBorderDirections() { calculateBorderDirections(); return border_directions_.get(); }
 
       float*
-      getSurfaceChangeScores () { calculateSurfaceChanges (); return surface_change_scores_; }
+      getSurfaceChangeScores () { calculateSurfaceChanges (); return surface_change_scores_.data(); }
 
       Eigen::Vector3f*
-      getSurfaceChangeDirections () { calculateSurfaceChanges (); return surface_change_directions_; }
-      
-      
+      getSurfaceChangeDirections() { calculateSurfaceChanges(); return surface_change_directions_.get(); }
+
+
     protected:
       // =====PROTECTED MEMBER VARIABLES=====
       Parameters parameters_;
@@ -184,13 +184,12 @@ namespace pcl
       int range_image_size_during_extraction_;
       std::vector<float> border_scores_left_, border_scores_right_;
       std::vector<float> border_scores_top_, border_scores_bottom_;
-      LocalSurface** surface_structure_;
-      PointCloudOut* border_descriptions_;
-      ShadowBorderIndices** shadow_border_informations_;
-      Eigen::Vector3f** border_directions_;
-      
-      float* surface_change_scores_;
-      Eigen::Vector3f* surface_change_directions_;
+      std::unique_ptr<LocalSurface*[]> surface_structure_;
+      std::unique_ptr<PointCloudOut> border_descriptions_;
+      std::unique_ptr<ShadowBorderIndices*[]> shadow_border_informations_;
+      std::unique_ptr<Eigen::Vector3f*[]> border_directions_;
+      std::vector<float> surface_change_scores_;
+      std::unique_ptr<Eigen::Vector3f[]> surface_change_directions_;
       
       
       // =====PROTECTED METHODS=====

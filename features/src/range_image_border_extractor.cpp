@@ -52,7 +52,7 @@ namespace pcl
 RangeImageBorderExtractor::RangeImageBorderExtractor(const RangeImage* range_image) :
   range_image_(range_image), range_image_size_during_extraction_(0),
   surface_structure_(nullptr), border_descriptions_(nullptr), shadow_border_informations_(nullptr), border_directions_(nullptr),
-  surface_change_scores_(nullptr), surface_change_directions_(nullptr)
+  surface_change_directions_(nullptr)
 {
 }
 
@@ -84,13 +84,13 @@ RangeImageBorderExtractor::clearData ()
     if (border_directions_!=nullptr)
       delete border_directions_[i];
   }
-  delete[] surface_structure_; surface_structure_ = nullptr;
-  delete[] shadow_border_informations_; shadow_border_informations_ = nullptr;
-  delete[] border_directions_; border_directions_ = nullptr;
-  delete border_descriptions_; border_descriptions_ = nullptr;
+  surface_structure_.reset();
+  shadow_border_informations_.reset();
+  border_directions_.reset();
+  border_descriptions_.reset();
 
-  delete[] surface_change_scores_;  surface_change_scores_ = nullptr;
-  delete[] surface_change_directions_;  surface_change_directions_ = nullptr;
+  surface_change_directions_.reset();
+  surface_change_scores_.clear();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,7 +106,7 @@ RangeImageBorderExtractor::extractLocalSurfaceStructure ()
   const auto height = range_image_->height;
   range_image_size_during_extraction_ = width*height;
   const auto array_size = range_image_size_during_extraction_;
-  surface_structure_ = new LocalSurface*[array_size];
+  surface_structure_ = std::make_unique<LocalSurface*[]>(array_size);
   const auto step_size = std::max(1, parameters_.pixel_radius_plane_extraction/2);
   //std::cout << PVARN(step_size);
   const auto sqrt_neighbors = parameters_.pixel_radius_plane_extraction/step_size + 1;
@@ -253,7 +253,7 @@ RangeImageBorderExtractor::findAndEvaluateShadowBorders ()
 
   int width  = range_image_->width,
       height = range_image_->height;
-  shadow_border_informations_ = new ShadowBorderIndices*[width*height];
+  shadow_border_informations_ = std::make_unique<ShadowBorderIndices*[]>(width * height);
   for (int y = 0; y < static_cast<int> (height); ++y)
   {
     for (int x = 0; x < static_cast<int> (width); ++x)
@@ -389,7 +389,7 @@ RangeImageBorderExtractor::classifyBorders ()
 
   BorderDescription initial_border_description;
   initial_border_description.traits = 0;
-  border_descriptions_ = new PointCloudOut;
+  border_descriptions_ = std::make_unique<PointCloudOut>();
   border_descriptions_->width = width;
   border_descriptions_->height = height;
   border_descriptions_->is_dense = true;
@@ -484,7 +484,7 @@ RangeImageBorderExtractor::calculateBorderDirections ()
   int width  = range_image_->width,
       height = range_image_->height,
       size   = width*height;
-  border_directions_ = new Eigen::Vector3f*[size];
+  border_directions_ = std::make_unique<Eigen::Vector3f*[]>(size);
   for (int y=0; y<height; ++y)
   {
     for (int x=0; x<width; ++x)
@@ -493,7 +493,7 @@ RangeImageBorderExtractor::calculateBorderDirections ()
     }
   }
 
-  Eigen::Vector3f** average_border_directions = new Eigen::Vector3f*[size];
+  std::unique_ptr<Eigen::Vector3f*[]> average_border_directions(std::make_unique<Eigen::Vector3f*[]>(size));
   int radius = parameters_.pixel_radius_border_direction;
   int minimum_weight = radius+1;
   float min_cos_angle=std::cos(deg2rad(120.0f));
@@ -549,15 +549,14 @@ RangeImageBorderExtractor::calculateBorderDirections ()
 
   for (int i=0; i<size; ++i)
     delete border_directions_[i];
-  delete[] border_directions_;
-  border_directions_ = average_border_directions;
+  border_directions_ = std::move(average_border_directions);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 RangeImageBorderExtractor::calculateSurfaceChanges ()
 {
-  if (surface_change_scores_!=nullptr)
+  if (!surface_change_scores_.empty())
     return;
 
   calculateBorderDirections();
@@ -567,8 +566,8 @@ RangeImageBorderExtractor::calculateSurfaceChanges ()
   int width  = range_image_->width,
       height = range_image_->height,
       size   = width*height;
-  surface_change_scores_ = new float[size];
-  surface_change_directions_ = new Eigen::Vector3f[size];
+  surface_change_scores_.resize(size);
+  surface_change_directions_ = std::make_unique<Eigen::Vector3f[]>(size);
 #pragma omp parallel for \
   default(none) \
   shared(height, width) \
@@ -615,7 +614,7 @@ RangeImageBorderExtractor::blurSurfaceChanges ()
   const RangeImage& range_image = *range_image_;
 
   Eigen::Vector3f* blurred_directions = new Eigen::Vector3f[range_image.width*range_image.height];
-  float* blurred_scores = new float[range_image.width*range_image.height];
+  std::vector<float> blurred_scores(range_image.width*range_image.height);
   for (int y=0; y<int(range_image.height); ++y)
   {
     for (int x=0; x<int(range_image.width); ++x)
@@ -661,9 +660,9 @@ RangeImageBorderExtractor::blurSurfaceChanges ()
         new_score /= counter;
     }
   }
-  delete[] surface_change_directions_;
-  surface_change_directions_ = blurred_directions;
-  delete[] surface_change_scores_;
+  surface_change_directions_.reset();
+  surface_change_directions_ = std::unique_ptr<Eigen::Vector3f[]>(std::move(blurred_directions));
+  surface_change_scores_.clear();
   surface_change_scores_ = blurred_scores;
 }
 
