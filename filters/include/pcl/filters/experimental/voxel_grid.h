@@ -12,7 +12,7 @@
 #include <pcl/common/centroid.h>
 #include <pcl/common/common.h>
 #include <pcl/filters/experimental/grid_filter_base.h>
-#include <pcl/filters/voxel_grid.h>
+#include <pcl/filters/voxel_grid.h> // getMinMax3D with field name
 
 #include <boost/optional.hpp> // std::optional for C++17
 
@@ -32,17 +32,7 @@ public:
   using GridIterator = typename Grid::iterator;
 
   /** \brief Empty constructor. */
-  VoxelStructT()
-  : filter_name_("VoxelGrid")
-  , leaf_size_(Eigen::Vector4f::Zero())
-  , inverse_leaf_size_(Eigen::Array4f::Zero())
-  , save_leaf_layout_(false)
-  , min_b_(Eigen::Vector4i::Zero())
-  , max_b_(Eigen::Vector4i::Zero())
-  , div_b_(Eigen::Vector4i::Zero())
-  , divb_mul_(Eigen::Vector4i::Zero())
-  , grid_()
-  {}
+  VoxelStructT() { filter_name_ = "VoxelGrid"; }
 
   /** \brief Set the voxel grid leaf size.
    * \param[in] leaf_size the voxel grid leaf size
@@ -150,30 +140,31 @@ public:
    * enabled and filtering performed
    */
   inline std::vector<int>
-  getNeighborCentroidIndices(float x,
-                             float y,
-                             float z,
+  getNeighborCentroidIndices(const float x,
+                             const float y,
+                             const float z,
                              const Eigen::MatrixXi& relative_coordinates) const
   {
-    Eigen::Vector4i ijk(static_cast<int>(std::floor(x * inverse_leaf_size_[0])),
-                        static_cast<int>(std::floor(y * inverse_leaf_size_[1])),
-                        static_cast<int>(std::floor(z * inverse_leaf_size_[2])),
-                        0);
-    Eigen::Array4i diff2min = min_b_ - ijk;
-    Eigen::Array4i diff2max = max_b_ - ijk;
+    const Eigen::Vector4i ijk(
+        (Eigen::Vector4i() << getGridCoordinates(x, y, z), 0).finished());
+    const Eigen::Array4i diff2min = min_b_ - ijk;
+    const Eigen::Array4i diff2max = max_b_ - ijk;
+
     std::vector<int> neighbors(relative_coordinates.cols());
     for (Eigen::Index ni = 0; ni < relative_coordinates.cols(); ni++) {
-      Eigen::Vector4i displacement =
+      const Eigen::Vector4i displacement =
           (Eigen::Vector4i() << relative_coordinates.col(ni), 0).finished();
+
       // checking if the specified cell is in the grid
       if ((diff2min <= displacement.array()).all() &&
           (diff2max >= displacement.array()).all())
-        neighbors[ni] = leaf_layout_[(
-            (ijk + displacement - min_b_).dot(divb_mul_))]; // .at() can be omitted
+        // .at() can be omitted
+        neighbors[ni] = leaf_layout_[((ijk + displacement - min_b_).dot(divb_mul_))];
       else
-        neighbors[ni] = -1; // cell is out of bounds, consider it empty
+        // cell is out of bounds, consider it empty
+        neighbors[ni] = -1;
     }
-    return (neighbors);
+    return neighbors;
   }
 
   /** \brief Returns the indices in the resulting downsampled cloud of the points at the
@@ -192,16 +183,14 @@ public:
    */
   inline std::vector<int>
   getNeighborCentroidIndices(
-      float x,
-      float y,
-      float z,
+      const float x,
+      const float y,
+      const float z,
       const std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i>>&
           relative_coordinates) const
   {
-    Eigen::Vector4i ijk(static_cast<int>(std::floor(x * inverse_leaf_size_[0])),
-                        static_cast<int>(std::floor(y * inverse_leaf_size_[1])),
-                        static_cast<int>(std::floor(z * inverse_leaf_size_[2])),
-                        0);
+    const Eigen::Vector4i ijk(
+        (Eigen::Vector4i() << getGridCoordinates(x, y, z), 0).finished());
     std::vector<int> neighbors;
     neighbors.reserve(relative_coordinates.size());
     for (const auto& relative_coordinate : relative_coordinates)
@@ -209,7 +198,7 @@ public:
           leaf_layout_[(ijk + (Eigen::Vector4i() << relative_coordinate, 0).finished() -
                         min_b_)
                            .dot(divb_mul_)]);
-    return (neighbors);
+    return neighbors;
   }
 
   /** \brief Returns the indices in the resulting downsampled cloud of the points at the
@@ -226,26 +215,8 @@ public:
   getNeighborCentroidIndices(const PointT& reference_point,
                              const Eigen::MatrixXi& relative_coordinates) const
   {
-    Eigen::Vector4i ijk(
-        static_cast<int>(std::floor(reference_point.x * inverse_leaf_size_[0])),
-        static_cast<int>(std::floor(reference_point.y * inverse_leaf_size_[1])),
-        static_cast<int>(std::floor(reference_point.z * inverse_leaf_size_[2])),
-        0);
-    Eigen::Array4i diff2min = min_b_ - ijk;
-    Eigen::Array4i diff2max = max_b_ - ijk;
-    std::vector<int> neighbors(relative_coordinates.cols());
-    for (Eigen::Index ni = 0; ni < relative_coordinates.cols(); ni++) {
-      Eigen::Vector4i displacement =
-          (Eigen::Vector4i() << relative_coordinates.col(ni), 0).finished();
-      // checking if the specified cell is in the grid
-      if ((diff2min <= displacement.array()).all() &&
-          (diff2max >= displacement.array()).all())
-        neighbors[ni] = leaf_layout_[(
-            (ijk + displacement - min_b_).dot(divb_mul_))]; // .at() can be omitted
-      else
-        neighbors[ni] = -1; // cell is out of bounds, consider it empty
-    }
-    return neighbors;
+    return getNeighborCentroidIndices(
+        reference_point.x, reference_point.y, reference_point.z, relative_coordinates);
   }
 
   /** \brief Set to true if leaf layout information needs to be saved for later access.
@@ -282,7 +253,7 @@ public:
    * \param[in] z the Z point coordinate to get the (i, j, k) index at
    */
   inline Eigen::Vector3i
-  getGridCoordinates(float x, float y, float z) const
+  getGridCoordinates(const float x, const float y, const float z) const
   {
     return Eigen::Vector3i(static_cast<int>(std::floor(x * inverse_leaf_size_[0])),
                            static_cast<int>(std::floor(y * inverse_leaf_size_[1])),
@@ -296,18 +267,12 @@ public:
   inline int
   getCentroidIndexAt(const Eigen::Vector3i& ijk) const
   {
-    int idx = ((Eigen::Vector4i() << ijk, 0).finished() - min_b_).dot(divb_mul_);
-    if (idx < 0 ||
-        idx >= static_cast<int>(
-                   leaf_layout_.size())) // this checks also if leaf_layout_.size () ==
-                                         // 0 i.e. everything was computed as needed
-    {
-      // if (verbose)
-      //  PCL_ERROR ("[pcl::%s::getCentroidIndexAt] Specified coordinate is outside grid
-      //  bounds, or leaf layout is not saved, make sure to call setSaveLeafLayout(true)
-      //  and filter(output) first!\n", getClassName ().c_str ());
-      return (-1);
-    }
+    const int idx = ((Eigen::Vector4i() << ijk, 0).finished() - min_b_).dot(divb_mul_);
+    // this checks also if leaf_layout_.size () == 0 i.e. everything was computed as
+    // needed
+    if (idx < 0 || idx >= static_cast<int>(leaf_layout_.size()))
+      return -1;
+
     return leaf_layout_[idx];
   }
 
@@ -336,11 +301,10 @@ protected:
                           grid_filter_->getFilterLimitsNegative());
 
       filter_field_idx_ = getFieldIndex<PointT>(filter_field_name_, filter_fields_);
-      if (filter_field_idx_ == -1) {
+      if (filter_field_idx_ == -1)
         PCL_WARN("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.\n",
                  filter_name_.c_str(),
                  filter_field_idx_);
-      }
     }
     else {
       getMinMax3D<PointT>(*input, *indices, min_p, max_p);
@@ -456,14 +420,14 @@ protected:
   std::string filter_name_;
 
   /** \brief The size of a leaf. */
-  Eigen::Vector4f leaf_size_;
+  Eigen::Vector4f leaf_size_ = Eigen::Vector4f::Zero();
 
   /** \brief Internal leaf sizes stored as 1/leaf_size_ for efficiency reasons. */
-  Eigen::Array4f inverse_leaf_size_;
+  Eigen::Array4f inverse_leaf_size_ = Eigen::Array4f::Zero();
 
   /** \brief Set to true if leaf layout information needs to be saved in \a
    * leaf_layout_. */
-  bool save_leaf_layout_;
+  bool save_leaf_layout_ = false;
 
   /** \brief The leaf layout information for fast access to cells relative to current
    * position **/
@@ -471,11 +435,14 @@ protected:
 
   /** \brief The minimum and maximum bin coordinates, the number of divisions, and the
    * division multiplier. */
-  Eigen::Vector4i min_b_, max_b_, div_b_, divb_mul_;
+  Eigen::Vector4i min_b_ = Eigen::Vector4i::Zero(), max_b_ = Eigen::Vector4i::Zero(),
+                  div_b_ = Eigen::Vector4i::Zero(), divb_mul_ = Eigen::Vector4i::Zero();
 
   /** \brief The iterable grid object for storing information of each fraction of space
    * in the filtering space defined by the grid */
   Grid grid_;
+
+  std::string filter_field_name_;
 
   GridFilterBase<VoxelStructT>* grid_filter_;
 
@@ -485,11 +452,7 @@ protected:
 
   int filter_field_idx_;
 
-  // ============== Below variables are duplicates from GridFilterBase ==============
-  // TODO: maybe declaring friend in GridFilterBase is better?
   double filter_limit_min_, filter_limit_max_;
-
-  std::string filter_field_name_;
 };
 
 template <typename PointT>
