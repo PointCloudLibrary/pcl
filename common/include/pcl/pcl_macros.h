@@ -443,6 +443,15 @@ aligned_free(void* ptr)
   #define PCL_NODISCARD
 #endif
 
+// MSVC:
+// error C7555: use of designated initializers requires at least '/std:c++latest'
+#if defined(_MSC_VER)
+  #define PCL_CONSTEXPR_CTOR
+#else
+  #define PCL_CONSTEXPR_CTOR constexpr
+#endif
+
+
 #ifdef __cpp_if_constexpr
   #define PCL_IF_CONSTEXPR(x) if constexpr(x)
 #else
