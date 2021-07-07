@@ -41,14 +41,7 @@ protected:
    */
 public:
   /** \brief Empty constructor. */
-  GridFilterBase()
-  : downsample_all_data_(true)
-  , filter_field_name_("")
-  , filter_limit_min_(std::numeric_limits<double>::min())
-  , filter_limit_max_(std::numeric_limits<double>::max())
-  , filter_limit_negative_(false)
-  , min_points_per_voxel_(0)
-  {}
+  GridFilterBase() {}
 
   /** \brief Destructor. */
   ~GridFilterBase() {}
@@ -199,24 +192,24 @@ public:
 
 protected:
   /** \brief Set to true if all fields need to be downsampled, or false if just XYZ. */
-  bool downsample_all_data_;
+  bool downsample_all_data_ = true;
 
   /** \brief The desired user filter field name. */
   std::string filter_field_name_;
 
   /** \brief The minimum allowed filter value a point will be considered from. */
-  double filter_limit_min_;
+  double filter_limit_min_ = std::numeric_limits<double>::min();
 
   /** \brief The maximum allowed filter value a point will be considered from. */
-  double filter_limit_max_;
+  double filter_limit_max_ = std::numeric_limits<double>::max();
 
   /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a
    * filter_limit_max_).
    * Default: false. */
-  bool filter_limit_negative_;
+  bool filter_limit_negative_ = false;
 
   /** \brief Minimum number of points per voxel for the centroid to be computed */
-  std::size_t min_points_per_voxel_;
+  std::size_t min_points_per_voxel_ = 0;
 };
 
 } // namespace experimental
