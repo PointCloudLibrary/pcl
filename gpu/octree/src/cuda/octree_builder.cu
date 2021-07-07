@@ -287,7 +287,8 @@ namespace pcl
         __global__ void __launch_bounds__(CTA_SIZE) singleStepKernel(const SingleStepBuild ssb) { ssb(); }
     }
 }
-// functor could be replaced by lambda is cuda compiler is passed correct flags
+
+// functor could be replaced by lambda if cuda compiler is passed correct flags
 template <class T>
 struct callMorton {
   pcl::device::CalcMorton calc;
@@ -372,9 +373,9 @@ void pcl::device::OctreeImpl<T>::build()
         device_ptr<int> codes_beg(codes.ptr());
         device_ptr<int> codes_end = codes_beg + codes.size();
         {
-            //ScopeTimer timer("morton"); 
+            // ScopeTimer timer("morton");
             callMorton<PointType> call(octreeGlobal.minp, octreeGlobal.maxp);
-	        thrust::transform(beg, end, codes_beg, call);
+            thrust::transform(beg, end, codes_beg, call);
         }
 
         device_ptr<int> indices_beg(indices.ptr());

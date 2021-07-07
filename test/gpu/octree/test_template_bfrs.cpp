@@ -83,7 +83,7 @@ TEST (PCL_GPU, pclXYZ)
     std::vector<std::size_t> sizes;
     for(std::size_t i = 0; i < data.tests_num; ++i)
     {
-        pcl::gpu::bruTeForceRadiusSearchGPU<pcl::PointXYZ>(cloud_device, data.queries[i], data.radiuses[i], results_device, buffer);
+        pcl::gpu::BruteForceRadiusSearchGPU<pcl::PointXYZ>(cloud_device, data.queries[i], data.radiuses[i], results_device, buffer);
 
         results_device.download(results_host);
         std::sort(results_host.begin(), results_host.end());
@@ -130,7 +130,7 @@ TEST (PCL_GPU, pclXYZRGB)
     for (std::size_t i = 0; i < data.tests_num; ++i) {
       pcl::PointXYZRGB query{
           data.queries[i].x, data.queries[i].y, data.queries[i].z, 0, 0, 1};
-      pcl::gpu::bruTeForceRadiusSearchGPU<pcl::PointXYZRGB>(
+      pcl::gpu::BruteForceRadiusSearchGPU<pcl::PointXYZRGB>(
           cloud_device, query, data.radiuses[i], results_device, buffer);
 
       results_device.download(results_host);
