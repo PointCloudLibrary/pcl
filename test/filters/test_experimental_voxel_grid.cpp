@@ -116,7 +116,7 @@ TEST(SetUp, ExperimentalVoxelGridEquivalency)
 
 TEST(ProtectedMethods, ExperimentalVoxelGridEquivalency)
 {
-  // PointXYZ
+  // hashing point
   {
     PointCloud<PointXYZ> new_out_cloud, old_out_cloud;
 
@@ -149,46 +149,11 @@ TEST(ProtectedMethods, ExperimentalVoxelGridEquivalency)
 
     for (size_t i = 0; i < cloud->size(); ++i) {
       if (isXYZFinite(cloud->at(i))) {
-        EXPECT_EQ(new_grid.hashPoint(cloud->at(i)), old_hash(cloud->at(i)));
-      }
-    }
-  }
-
-  // PointXYZRGB
-  {
-    PointCloud<PointXYZRGB> new_out_cloud, old_out_cloud;
-
-    experimental::VoxelGrid<PointXYZRGB> new_grid;
-    pcl::VoxelGrid<PointXYZRGB> old_grid;
-    new_grid.setLeafSize(0.05f, 0.05f, 0.05f);
-    old_grid.setLeafSize(0.05f, 0.05f, 0.05f);
-    new_grid.setInputCloud(cloud_organized);
-    old_grid.setInputCloud(cloud_organized);
-    new_grid.filter(new_out_cloud);
-    old_grid.filter(old_out_cloud);
-
-    // Test hashing point
-    const Eigen::Vector3i old_min_b = old_grid.getMinBoxCoordinates();
-    const Eigen::Vector3i old_divb_mul = old_grid.getDivisionMultiplier();
-    const Eigen::Vector3f old_inverse_leaf_size = 1 / old_grid.getLeafSize().array();
-
-    // Copied from the old VoxelGrid as there is no dedicated method
-    auto old_hash = [&](const PointXYZRGB& p) {
-      int ijk0 = static_cast<int>(std::floor(p.x * old_inverse_leaf_size[0]) -
-                                  static_cast<float>(old_min_b[0]));
-      int ijk1 = static_cast<int>(std::floor(p.y * old_inverse_leaf_size[1]) -
-                                  static_cast<float>(old_min_b[1]));
-      int ijk2 = static_cast<int>(std::floor(p.z * old_inverse_leaf_size[2]) -
-                                  static_cast<float>(old_min_b[2]));
-
-      // Compute the centroid leaf index
-      return ijk0 * old_divb_mul[0] + ijk1 * old_divb_mul[1] + ijk2 * old_divb_mul[2];
-    };
-
-    for (size_t i = 0; i < cloud_organized->size(); ++i) {
-      if (isXYZFinite(cloud_organized->at(i))) {
-        EXPECT_EQ(new_grid.hashPoint(cloud_organized->at(i)),
-                  old_hash(cloud_organized->at(i)));
+        EXPECT_EQ(new_grid.hashPoint(cloud->at(i),
+                                     new_grid.inverse_leaf_size_,
+                                     new_grid.min_b_,
+                                     new_grid.divb_mul_),
+                  old_hash(cloud->at(i)));
       }
     }
   }

@@ -131,9 +131,10 @@ public:
    * \param[in] p the point to get the index at
    */
   inline int
-  getCentroidIndex(const PointT& p) const
+  getCentroidIndex(const PointT& pt) const
   {
-    return leaf_layout_.at(hashPoint(p));
+    return leaf_layout_.at(
+        grid_filter_->hashPoint(pt, inverse_leaf_size_, min_b_, divb_mul_));
   }
 
   /** \brief Returns the indices in the resulting downsampled cloud of the points at the
@@ -313,21 +314,15 @@ public:
   }
 
 protected:
-  // accessing GridFilterBase
-  inline const GridFilterBase<VoxelStructT>*
-  getDerived()
-  {
-    return static_cast<const GridFilterBase<VoxelStructT>*>(this);
-  }
-
   bool
-  setUp()
+  setUp(TransformFilter<VoxelStructT>* transform_filter)
   {
-    const auto grid_filter = getDerived();
-    const PointCloudConstPtr input = grid_filter->getInputCloud();
-    const IndicesConstPtr indices = grid_filter->getIndices();
-    filter_field_name_ = grid_filter->getFilterFieldName();
-    grid_filter->getFilterLimits(filter_limit_min_, filter_limit_max_);
+    grid_filter_ = static_cast<GridFilterBase<VoxelStructT>*>(transform_filter);
+
+    const PointCloudConstPtr input = grid_filter_->getInputCloud();
+    const IndicesConstPtr indices = grid_filter_->getIndices();
+    filter_field_name_ = grid_filter_->getFilterFieldName();
+    grid_filter_->getFilterLimits(filter_limit_min_, filter_limit_max_);
 
     // Get the minimum and maximum dimensions
     Eigen::Vector4f min_p, max_p;
@@ -340,7 +335,7 @@ protected:
                           static_cast<float>(filter_limit_max_),
                           min_p,
                           max_p,
-                          grid_filter->getFilterLimitsNegative());
+                          grid_filter_->getFilterLimitsNegative());
 
       filter_field_idx_ = getFieldIndex<PointT>(filter_field_name_, filter_fields_);
       if (filter_field_idx_ == -1) {
@@ -362,9 +357,10 @@ protected:
     num_voxels_ = 0;
     grid_.clear();
 
-    const boost::optional<std::size_t> max_num_voxels = checkIfOverflow(min_p, max_p);
-    if (max_num_voxels) {
-      grid_.reserve(std::min(max_num_voxels.value(), input->size()));
+    const std::size_t hash_range =
+        grid_filter_->checkHashRange(min_p, max_p, inverse_leaf_size_);
+    if (hash_range != 0) {
+      grid_.reserve(std::min(hash_range, input->size()));
     }
     else {
       PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. "
@@ -373,7 +369,7 @@ protected:
       return false;
     }
 
-    if (grid_filter->getSaveLeafLayout()) {
+    if (grid_filter_->getSaveLeafLayout()) {
       const std::size_t new_layout_size = div_b_[0] * div_b_[1] * div_b_[2];
       const std::size_t reset_size = std::min(new_layout_size, leaf_layout_.size());
 
@@ -399,35 +395,6 @@ protected:
     return true;
   }
 
-  boost::optional<std::size_t>
-  checkIfOverflow(const Eigen::Vector4f& min_p, const Eigen::Vector4f& max_p)
-  {
-    // Check that the leaf size is not too small, given the size of the data
-    // Otherwise "wrap around" of unsigned int will happen during hashing a point
-    const std::size_t dx =
-        std::floor((max_p[0] - min_p[0]) * inverse_leaf_size_[0]) + 1;
-    const std::size_t dy =
-        std::floor((max_p[1] - min_p[1]) * inverse_leaf_size_[1]) + 1;
-    const std::size_t dz =
-        std::floor((max_p[2] - min_p[2]) * inverse_leaf_size_[2]) + 1;
-    const size_t max_size = std::numeric_limits<std::size_t>::max();
-
-    // check unsigned int overflow/wrap-around
-    if (dy > max_size / dx || dx * dy > max_size / dz)
-      return boost::none;
-    else
-      return dx * dy * dz;
-  }
-
-  inline std::size_t
-  hashPoint(const PointT& pt)
-  {
-    const std::size_t ijk0 = std::floor(pt.x * inverse_leaf_size_[0]) - min_b_[0];
-    const std::size_t ijk1 = std::floor(pt.y * inverse_leaf_size_[1]) - min_b_[1];
-    const std::size_t ijk2 = std::floor(pt.z * inverse_leaf_size_[2]) - min_b_[2];
-    return ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
-  }
-
   inline void
   addPointToGrid(const PointT& pt)
   {
@@ -439,7 +406,7 @@ protected:
              pt_data + filter_fields_[filter_field_idx_].offset,
              sizeof(float));
 
-      if (getDerived()->getFilterLimitsNegative()) {
+      if (grid_filter_->getFilterLimitsNegative()) {
         // Use a threshold for cutting out points which inside the interval
         if ((distance_value < filter_limit_max_) &&
             (distance_value > filter_limit_min_))
@@ -453,7 +420,8 @@ protected:
       }
     }
 
-    const std::size_t h = hashPoint(pt);
+    const std::size_t h =
+        grid_filter_->hashPoint(pt, inverse_leaf_size_, min_b_, divb_mul_);
     grid_[h].add(pt);
   }
 
@@ -462,15 +430,15 @@ protected:
   {
     auto& voxel = grid_it->second;
     const std::size_t min_points_per_voxel =
-        getDerived()->getMinimumPointsNumberPerVoxel();
+        grid_filter_->getMinimumPointsNumberPerVoxel();
     if (voxel.getSize() >= min_points_per_voxel) {
 
-      const bool save_leaf_layout = getDerived()->getSaveLeafLayout();
+      const bool save_leaf_layout = grid_filter_->getSaveLeafLayout();
       if (save_leaf_layout)
         leaf_layout_[grid_it->first] = num_voxels_++;
 
       PointT centroid;
-      const bool downsample_all_data = getDerived()->getDownsampleAllData();
+      const bool downsample_all_data = grid_filter_->getDownsampleAllData();
       if (!downsample_all_data) {
         PointT pt;
         voxel.get(pt);
@@ -510,6 +478,8 @@ protected:
   /** \brief The iterable grid object for storing information of each fraction of space
    * in the filtering space defined by the grid */
   Grid grid_;
+
+  GridFilterBase<VoxelStructT>* grid_filter_;
 
   std::size_t num_voxels_;
 
