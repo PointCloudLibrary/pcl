@@ -43,7 +43,6 @@
 
 #include<algorithm>
 #include<limits>
-#include <tuple>
 
 using namespace pcl::gpu;
 using namespace pcl::device;
@@ -133,11 +132,14 @@ namespace
 
 }
 
-void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float radius, std::vector<int>& out, int max_nn) const
-{            
-    out.clear();  
+void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, const float radius, std::vector<int>& out, std::vector<float>& sqr_distances, const int max_nn, const bool compute_all_distances) const
+{
+    out.reserve(max_nn);
+    sqr_distances.reserve(max_nn);
+    out.clear();
+    sqr_distances.clear();
 
-    float3 center = make_float3(query.x, query.y, query.z);
+    const float3 center = make_float3(query.x, query.y, query.z);
 
     OctreeIteratorHost iterator;
 
@@ -157,6 +159,19 @@ void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float rad
             continue;
         }
 
+        auto getSqrDistance = [&](int idx)->float
+        {
+            const float point_x = host_octree.points_sorted[idx                                     ];
+            const float point_y = host_octree.points_sorted[idx + host_octree.points_sorted_step    ];
+            const float point_z = host_octree.points_sorted[idx + host_octree.points_sorted_step * 2];
+
+            const float dx = (point_x - center.x);
+            const float dy = (point_y - center.y);
+            const float dz = (point_z - center.z);
+
+            return (dx * dx + dy * dy + dz * dz);
+        };
+
         //if true, take all, and go to next
         if (checkIfNodeInsideSphere(node_minp, node_maxp, center, radius))
         {            
@@ -166,6 +181,15 @@ void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float rad
             end = beg + std::min<int>((int)out.size() + end - beg, max_nn) - (int)out.size();
 
             out.insert(out.end(), host_octree.indices.begin() + beg, host_octree.indices.begin() + end);
+
+            if (compute_all_distances)
+            {
+                for (int j = beg; j <  end; ++j)
+                    sqr_distances.push_back(getSqrDistance(j));
+            }
+            else
+                sqr_distances.insert(sqr_distances.end(), (end - beg), NAN);
+
             if (out.size() == (std::size_t)max_nn)
                 return;
 
@@ -185,19 +209,13 @@ void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float rad
 
             for(int j = beg; j < end; ++j)
             {
-                int index = host_octree.indices[j];
-                float point_x = host_octree.points_sorted[j                                     ];
-                float point_y = host_octree.points_sorted[j + host_octree.points_sorted_step    ];
-                float point_z = host_octree.points_sorted[j + host_octree.points_sorted_step * 2];
-
-                float dx = (point_x - center.x);
-                float dy = (point_y - center.y);
-                float dz = (point_z - center.z);
-
-                float dist2 = dx * dx + dy * dy + dz * dz;
+                const float dist2 = getSqrDistance(j);
 
                 if (dist2 < radius * radius)
-                    out.push_back(index);
+                {
+                    out.push_back(host_octree.indices[j]);
+                    sqr_distances.push_back(dist2);
+                }
 
                 if (out.size() == (std::size_t)max_nn)
                     return;

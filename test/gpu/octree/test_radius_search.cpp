@@ -36,201 +36,214 @@
 
 #include <gtest/gtest.h>
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <numeric>
 
 #if defined _MSC_VER
-    #pragma warning (disable: 4521)
+#pragma warning(disable : 4521)
 #endif
 
 #include <pcl/point_cloud.h>
 
 #if defined _MSC_VER
-    #pragma warning (default: 4521)
+#pragma warning(default : 4521)
 #endif
 
-#include <pcl/gpu/octree/octree.hpp>
 #include <pcl/gpu/containers/device_array.h>
+#include <pcl/gpu/octree/octree.hpp>
 
 #include "data_source.hpp"
 
 using namespace pcl::gpu;
 
-//TEST(PCL_OctreeGPU, DISABLED_batchRadiusSearch)
-TEST(PCL_OctreeGPU, batchRadiusSearch)
-{   
-    DataGenerator data;
+void
+verifyResults(std::vector<std::vector<int>>& host_search,
+              std::vector<std::vector<float>>& host_sqr_distances,
+              const NeighborIndices& device_results,
+              const Octree::ResultSqrDists& device_sqr_distances,
+              const std::vector<float>& radiuses,
+              const std::size_t max_answers,
+              const std::size_t query_size,
+              const int step)
+{
+  // download results
+  std::vector<int> sizes;
+  device_results.sizes.download(sizes);
+
+  std::vector<int> downloaded_buffer;
+  device_results.data.download(downloaded_buffer);
+
+  std::vector<float> downloaded_sqr_distances;
+  device_sqr_distances.download(downloaded_sqr_distances);
+
+  // verification
+  for (std::size_t i = 0; i < query_size; i += step) {
+    std::vector<int>& results_host = host_search[i];
+    std::vector<float>& sqr_dist_host = host_sqr_distances[i];
+
+    const int beg = i / step * max_answers;
+    const int end = beg + sizes[i / step];
+
+    const auto beg_dist2 = downloaded_sqr_distances.cbegin() + beg;
+    const auto end_dist2 = downloaded_sqr_distances.cbegin() + end;
+
+    std::vector<int> results_batch(downloaded_buffer.cbegin() + beg,
+                                   downloaded_buffer.cbegin() + end);
+    const std::vector<float> sqr_distances_batch(beg_dist2, end_dist2);
+
+    std::sort(results_batch.begin(), results_batch.end());
+    std::sort(results_host.begin(), results_host.end());
+
+    if (results_batch.size() == max_answers &&
+        results_batch.size() < results_host.size() && max_answers) {
+      results_host.resize(max_answers);
+      sqr_dist_host.resize(max_answers);
+    }
+    const float sqr_radius = radiuses[i] * radiuses[i];
+    for (std::size_t j = 0; j < sqr_dist_host.size(); j++) {
+      EXPECT_LT(sqr_distances_batch[j], sqr_radius);
+      EXPECT_NEAR(sqr_distances_batch[j], sqr_dist_host[j], 0.001);
+    }
+    EXPECT_EQ(results_batch, results_host);
+  }
+}
+
+class PCL_OctreeGPUTest : public ::testing::Test {
+
+protected:
+  void
+  SetUp() override
+  {
     data.data_size = 871000;
     data.tests_num = 10000;
     data.cube_size = 1024.f;
-    data.max_radius    = data.cube_size/30.f;
-    data.shared_radius = data.cube_size/30.f;
+    data.max_radius = data.cube_size / 30.f;
+    data.shared_radius = data.cube_size / 30.f;
     data.printParams();
 
-    const int max_answers = 333;
-
-    //generate
+    // generate
     data();
-        
-    //prepare gpu cloud
 
-    pcl::gpu::Octree::PointCloud cloud_device;
+    // prepare gpu cloud
     cloud_device.upload(data.points);
 
-    //gpu build 
-    pcl::gpu::Octree octree_device;                
-    octree_device.setCloud(cloud_device);	    
+    // gpu build
+    octree_device.setCloud(cloud_device);
     octree_device.build();
 
-    //upload queries
-    pcl::gpu::Octree::Queries queries_device;
-    pcl::gpu::Octree::Radiuses radiuses_device;
-    queries_device.upload(data.queries);                
+    // upload queries
+    queries_device.upload(data.queries);
     radiuses_device.upload(data.radiuses);
-    
-    //prepare output buffers on device
 
-    pcl::gpu::NeighborIndices result_device1(queries_device.size(), max_answers);
-    pcl::gpu::NeighborIndices result_device2(queries_device.size(), max_answers);
-    pcl::gpu::NeighborIndices result_device3(data.indices.size(), max_answers);
-            
-    //prepare output buffers on host
-    std::vector< std::vector<int> > host_search1(data.tests_num);
-    std::vector< std::vector<int> > host_search2(data.tests_num);
-    for(std::size_t i = 0; i < data.tests_num; ++i)
-    {
-        host_search1[i].reserve(max_answers);
-        host_search2[i].reserve(max_answers);
-    }    
-    
-    //search GPU shared
-    octree_device.radiusSearch(queries_device, data.shared_radius, max_answers, result_device1);
+    result_device.create(queries_device.size(), max_answers);
 
-    //search GPU individual
-    octree_device.radiusSearch(queries_device,    radiuses_device, max_answers, result_device2);
+    host_search_shared.resize(data.tests_num);
+    host_sqr_distances_shared.resize(data.tests_num);
+    host_search_individual.resize(data.tests_num);
+    host_sqr_distances_individual.resize(data.tests_num);
 
-    //search GPU shared with indices
-    pcl::gpu::Octree::Indices indices;
-    indices.upload(data.indices);
-    octree_device.radiusSearch(queries_device, indices, data.shared_radius, max_answers, result_device3);
-
-    //search CPU
+    // host search
     octree_device.internalDownload();
-    for(std::size_t i = 0; i < data.tests_num; ++i)
-    {
-        octree_device.radiusSearchHost(data.queries[i], data.shared_radius, host_search1[i], max_answers);
-        octree_device.radiusSearchHost(data.queries[i], data.radiuses[i],   host_search2[i], max_answers);
-    }
-    
-    //download results
-    std::vector<int> sizes1;
-    std::vector<int> sizes2;
-    std::vector<int> sizes3;
-    result_device1.sizes.download(sizes1);
-    result_device2.sizes.download(sizes2);
-    result_device3.sizes.download(sizes3);
 
-    std::vector<int> downloaded_buffer1, downloaded_buffer2, downloaded_buffer3, results_batch;    
-    result_device1.data.download(downloaded_buffer1);
-    result_device2.data.download(downloaded_buffer2);
-    result_device3.data.download(downloaded_buffer3);
-        
-    //data.bruteForceSearch();
+    for (std::size_t i = 0; i < data.tests_num; ++i)
+      octree_device.radiusSearchHost(data.queries[i],
+                                    data.shared_radius,
+                                    host_search_shared[i],
+                                    host_sqr_distances_shared[i],
+                                    max_answers);
 
-    //verify results    
-    for(std::size_t i = 0; i < data.tests_num; ++i)
-    {        
-        std::vector<int>& results_host = host_search1[i];        
-        
-        int beg = i * max_answers;
-        int end = beg + sizes1[i];
+    for (std::size_t i = 0; i < data.tests_num; ++i)
+      octree_device.radiusSearchHost(data.queries[i],
+                                    data.radiuses[i],
+                                    host_search_individual[i],
+                                    host_sqr_distances_individual[i],
+                                    max_answers);
+  }
 
-        results_batch.assign(downloaded_buffer1.begin() + beg, downloaded_buffer1.begin() + end);
+  DataGenerator data;
+  const int max_answers = 333;
+  pcl::gpu::Octree::PointCloud cloud_device;
+  pcl::gpu::Octree octree_device;
+  pcl::gpu::Octree::Queries queries_device;
+  pcl::gpu::Octree::Radiuses radiuses_device;
+  pcl::gpu::Octree::ResultSqrDists result_sqr_distances;
+  pcl::gpu::NeighborIndices result_device;
 
-        std::sort(results_batch.begin(), results_batch.end());
-        std::sort(results_host.begin(), results_host.end());
+  // prepare output buffers on host
+  std::vector<std::vector<int>> host_search_shared;
+  std::vector<std::vector<float>> host_sqr_distances_shared;
+  std::vector<std::vector<int>> host_search_individual;
+  std::vector<std::vector<float>> host_sqr_distances_individual;
+};
 
-        if ((int)results_batch.size() == max_answers && results_batch.size() < results_host.size() && max_answers)
-            results_host.resize(max_answers);
-        
-        ASSERT_EQ ( ( results_batch == results_host ), true );       
-       
-        //vector<int>& results_bf = data.bfresutls[i];
-        //ASSERT_EQ ( ( results_bf == results_batch), true );        
-        //ASSERT_EQ ( ( results_bf == results_host ), true );           
-    }    
+TEST_F(PCL_OctreeGPUTest, shared_radius)
+{
+  octree_device.radiusSearch(queries_device,
+                             data.shared_radius,
+                             max_answers,
+                             result_device,
+                             result_sqr_distances);
 
-    float avg_size1 = std::accumulate(sizes1.begin(), sizes1.end(), 0) * (1.f/sizes1.size());
+  // verify results
+  const std::vector<float> radiuses(data.tests_num, data.shared_radius);
+  verifyResults(host_search_shared,
+                host_sqr_distances_shared,
+                result_device,
+                result_sqr_distances,
+                radiuses,
+                max_answers,
+                data.tests_num,
+                1);
+}
 
-    std::cout << "avg_result_size1 = " << avg_size1 << std::endl;
-    ASSERT_GT(avg_size1, 5);    
+TEST_F(PCL_OctreeGPUTest, individual_radius)
+{
+  octree_device.radiusSearch(queries_device,
+                             radiuses_device,
+                             max_answers,
+                             result_device,
+                             result_sqr_distances);
 
+  // verify results
+  verifyResults(host_search_individual,
+                host_sqr_distances_individual,
+                result_device,
+                result_sqr_distances,
+                data.radiuses,
+                max_answers,
+                data.tests_num,
+                1);
+}
 
-    //verify results    
-    for(std::size_t i = 0; i < data.tests_num; ++i)
-    {        
-        std::vector<int>& results_host = host_search2[i];        
-        
-        int beg = i * max_answers;
-        int end = beg + sizes2[i];
+TEST_F(PCL_OctreeGPUTest, shared_radius_indices)
+{
+  pcl::gpu::Octree::Indices indices;
+  indices.upload(data.indices);
+  octree_device.radiusSearch(queries_device,
+                             indices,
+                             data.shared_radius,
+                             max_answers,
+                             result_device,
+                             result_sqr_distances);
 
-        results_batch.assign(downloaded_buffer2.begin() + beg, downloaded_buffer2.begin() + end);
-
-        std::sort(results_batch.begin(), results_batch.end());
-        std::sort(results_host.begin(), results_host.end());
-
-        if ((int)results_batch.size() == max_answers && results_batch.size() < results_host.size() && max_answers)
-            results_host.resize(max_answers);
-
-        ASSERT_EQ ( ( results_batch == results_host ), true );       
-       
-        //vector<int>& results_bf = data.bfresutls[i];
-        //ASSERT_EQ ( ( results_bf == results_batch), true );        
-        //ASSERT_EQ ( ( results_bf == results_host ), true );           
-    }    
-
-    float avg_size2 = std::accumulate(sizes2.begin(), sizes2.end(), 0) * (1.f/sizes2.size());
-
-    std::cout << "avg_result_size2 = " << avg_size2 << std::endl;
-    ASSERT_GT(avg_size2, 5);
-
-
-    //verify results    
-    for(std::size_t i = 0; i < data.tests_num; i+=2)
-    {                
-        std::vector<int>& results_host = host_search1[i];        
-        
-        int beg = i/2 * max_answers;
-        int end = beg + sizes3[i/2];
-
-        results_batch.assign(downloaded_buffer3.begin() + beg, downloaded_buffer3.begin() + end);
-
-        std::sort(results_batch.begin(), results_batch.end());
-        std::sort(results_host.begin(), results_host.end());
-
-        if ((int)results_batch.size() == max_answers && results_batch.size() < results_host.size() && max_answers)
-            results_host.resize(max_answers);
-        
-        ASSERT_EQ ( ( results_batch == results_host ), true );       
-       
-        //vector<int>& results_bf = data.bfresutls[i];
-        //ASSERT_EQ ( ( results_bf == results_batch), true );        
-        //ASSERT_EQ ( ( results_bf == results_host ), true );           
-    }
-
-    float avg_size3 = std::accumulate(sizes3.begin(), sizes3.end(), 0) * (1.f/sizes3.size());
-
-    std::cout << "avg_result_size3 = " << avg_size3 << std::endl;
-    ASSERT_GT(avg_size3, 5);
+  // verify results
+  const std::vector<float> radiuses(data.tests_num, data.shared_radius);
+  verifyResults(host_search_shared,
+                host_sqr_distances_shared,
+                result_device,
+                result_sqr_distances,
+                radiuses,
+                max_answers,
+                data.tests_num,
+                2);
 }
 
 /* ---[ */
 int
-main (int argc, char** argv)
+main(int argc, char** argv)
 {
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }
 /* ]--- */
-
