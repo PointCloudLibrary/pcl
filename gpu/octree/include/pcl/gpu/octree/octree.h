@@ -172,12 +172,12 @@ const auto bruteForceRadiusSearchGPU =
     pcl::gpu::details::bruteForceRadiusSearchGPU<pcl::PointXYZ>;
 
 template <class PointT>
-using OcTree [[deprectated("Will be replaced by Octree at PCL 1.15")]] =
-    pcl::gpu::details::Octree<PointT>;
+using OcTree
+    PCL_DEPRECATED(1, 15, "Replaced by Octree") = pcl::gpu::details::Octree<PointT>;
 
 template <class PointT>
 const auto BruteForceRadiusSearchGPU
-    [[deprectated("Will be replaced by bruteForceRadiusSearchGPU at PCL 1.15")]] =
+    PCL_DEPRECATED(1, 15, "Replaced by bruteForeceRadiusSearch") =
         pcl::gpu::details::bruteForceRadiusSearchGPU<PointT>;
 
 } // namespace gpu
