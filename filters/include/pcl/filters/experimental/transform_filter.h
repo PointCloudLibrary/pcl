@@ -171,6 +171,7 @@ protected:
       return;
     }
 
+    output.clear();
     output.height = 1;      // downsampling breaks the organized structure
     output.is_dense = true; // we filter out invalid points
 

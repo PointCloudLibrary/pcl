@@ -286,6 +286,8 @@ protected:
     const IndicesConstPtr indices = grid_filter_->getIndices();
     filter_field_name_ = grid_filter_->getFilterFieldName();
     grid_filter_->getFilterLimits(filter_limit_min_, filter_limit_max_);
+    downsample_all_data_ = grid_filter_->getDownsampleAllData();
+    min_points_per_voxel_ = grid_filter_->getMinimumPointsNumberPerVoxel();
 
     // Get the minimum and maximum dimensions
     Eigen::Vector4f min_p, max_p;
@@ -331,7 +333,7 @@ protected:
       return false;
     }
 
-    if (grid_filter_->getSaveLeafLayout()) {
+    if (save_leaf_layout_) {
       const std::size_t new_layout_size = div_b_[0] * div_b_[1] * div_b_[2];
       const std::size_t reset_size = std::min(new_layout_size, leaf_layout_.size());
 
@@ -388,26 +390,23 @@ protected:
   }
 
   inline boost::optional<PointT>
-  filterGrid(GridIterator grid_it)
+  filterGrid(const GridIterator grid_it)
   {
-    auto& voxel = grid_it->second;
-    const std::size_t min_points_per_voxel =
-        grid_filter_->getMinimumPointsNumberPerVoxel();
-    if (voxel.getSize() >= min_points_per_voxel) {
-
-      const bool save_leaf_layout = grid_filter_->getSaveLeafLayout();
-      if (save_leaf_layout)
-        leaf_layout_[grid_it->first] = num_voxels_++;
+    const auto& voxel = grid_it->second;
+    if (voxel.getSize() >= min_points_per_voxel_) {
 
       PointT centroid;
-      const bool downsample_all_data = grid_filter_->getDownsampleAllData();
-      if (!downsample_all_data) {
+      if (!downsample_all_data_) {
         PointT pt;
         voxel.get(pt);
         centroid.getVector4fMap() = pt.getVector4fMap();
       }
-      else
+      else {
         voxel.get(centroid);
+      }
+
+      if (save_leaf_layout_)
+        leaf_layout_[grid_it->first] = num_voxels_++;
 
       return centroid;
     }
@@ -453,6 +452,9 @@ protected:
   int filter_field_idx_;
 
   double filter_limit_min_, filter_limit_max_;
+
+  bool downsample_all_data_;
+  std::size_t min_points_per_voxel_;
 };
 
 template <typename PointT>
