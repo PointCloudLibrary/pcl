@@ -99,19 +99,3 @@ void pcl::device::bruteForceRadiusSearch(const typename OctreeImpl<T>::PointClou
     int count = (int)(thrust::copy_if(first, last, cloud_ptr, res_ptr, cond) - res_ptr);
     result = DeviceArray<int>(buffer.ptr(), count);
 }
-
-template void
-pcl::device::bruteForceRadiusSearch<pcl::PointXYZ>(
-    const typename OctreeImpl<pcl::PointXYZ>::PointCloud& cloud,
-    const typename OctreeImpl<pcl::PointXYZ>::PointType& query,
-    float radius,
-    DeviceArray<int>& result,
-    DeviceArray<int>& buffer);
-
-template void
-pcl::device::bruteForceRadiusSearch<pcl::PointXYZRGB>(
-    const typename OctreeImpl<pcl::PointXYZRGB>::PointCloud& cloud,
-    const typename OctreeImpl<pcl::PointXYZRGB>::PointType& query,
-    float radius,
-    DeviceArray<int>& result,
-    DeviceArray<int>& buffer);
