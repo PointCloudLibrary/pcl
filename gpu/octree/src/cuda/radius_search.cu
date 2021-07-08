@@ -34,12 +34,14 @@
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
 
-#include "internal.hpp"
+#include <pcl/gpu/octree/impl/internal.hpp>
+#include <pcl/point_types.h>
 
 #include "pcl/gpu/utils/device/warp.hpp"
 #include "utils/copygen.hpp"
 #include "utils/boxutils.hpp"
 #include "utils/scan_block.hpp"
+#include "impl.cu"
 
 #include "octree_iterator.hpp"
 
@@ -47,7 +49,8 @@ namespace pcl
 {
     namespace device
     {           
-        using PointType = OctreeImpl::PointType;
+        template <typename T>
+        using PointType = typename OctreeImpl<T>::PointType;
 
         template<typename RadiusStrategy, typename FetchStrategy>
         struct Batch : public RadiusStrategy, public FetchStrategy
@@ -61,24 +64,28 @@ namespace pcl
             mutable int* output_sizes;        
         };
 
+        template <typename T>
         struct DirectQuery
         {
+            using PointType = typename OctreeImpl<T>::PointType;
             PtrSz<PointType> queries;
             __device__ __forceinline__ float3 fetch(const int query_index) const
             {
                 const PointType& q = queries.data[query_index];
-                return make_float3(q.x, q.y, q.z);
+                return make_float3(q.p.x, q.p.y, q.p.z);
             }
         };
 
 
-        struct IndicesQuery : public DirectQuery
+        template <typename T>
+        struct IndicesQuery : public DirectQuery<T>
         {
+            using PointType = typename OctreeImpl<T>::PointType;
             const int* queries_indices;
             __device__ __forceinline__ float3 fetch(const int query_index) const
             {
-                const PointType& q = queries[queries_indices[query_index]];
-                return make_float3(q.x, q.y, q.z);
+                const PointType& q = this->queries[queries_indices[query_index]];
+                return make_float3(q.p.x, q.p.y, q.p.z);
             }
         };
 
@@ -329,9 +336,11 @@ namespace pcl
         }
     }
 }
-
-template<typename BatchType>
-void pcl::device::OctreeImpl::radiusSearchEx(BatchType& batch, const Queries& queries, NeighborIndices& results)
+template <typename T>
+template <typename BatchType>
+void pcl::device::OctreeImpl<T>::radiusSearchEx(BatchType& batch, const
+        typename pcl::device::OctreeImpl<T>::Queries& queries,
+        typename pcl::device::OctreeImpl<T>::NeighborIndices& results)
 {
     batch.indices = indices;
     batch.octree = octreeGlobal;
@@ -354,9 +363,10 @@ void pcl::device::OctreeImpl::radiusSearchEx(BatchType& batch, const Queries& qu
 }
 
 
-void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, float radius, NeighborIndices& results)
+template <typename T>
+void pcl::device::OctreeImpl<T>::radiusSearch(const Queries& queries, float radius, NeighborIndices& results)
 {        
-    using BatchType = Batch<SharedRadius, DirectQuery>;
+    using BatchType = Batch<SharedRadius, DirectQuery<T> >;
 
     BatchType batch;
     batch.radius = radius;
@@ -364,9 +374,10 @@ void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, float radius,
     radiusSearchEx(batch, queries, results);              
 }
 
-void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, const Radiuses& radiuses, NeighborIndices& results)
+template <typename T>
+void pcl::device::OctreeImpl<T>::radiusSearch(const Queries& queries, const Radiuses& radiuses, NeighborIndices& results)
 {
-    using BatchType = Batch<IndividualRadius, DirectQuery>;
+    using BatchType = Batch<IndividualRadius, DirectQuery<T> >;
 
     BatchType batch;
     batch.radiuses = radiuses;
@@ -374,9 +385,10 @@ void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, const Radiuse
     radiusSearchEx(batch, queries, results);              
 }
 
-void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, const Indices& indices, float radius, NeighborIndices& results)
+template <typename T>
+void pcl::device::OctreeImpl<T>::radiusSearch(const Queries& queries, const Indices& indices, float radius, NeighborIndices& results)
 {
-    using BatchType = Batch<SharedRadius, IndicesQuery>;
+    using BatchType = Batch<SharedRadius, IndicesQuery<T> >;
 
     BatchType batch;
     batch.radius = radius;

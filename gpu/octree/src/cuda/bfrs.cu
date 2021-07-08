@@ -39,7 +39,8 @@
 #include <thrust/device_ptr.h>
 #include <thrust/iterator/counting_iterator.h>
 
-#include "internal.hpp"
+#include <pcl/gpu/octree/impl/internal.hpp>
+#include <pcl/gpu/octree/octree.h>
 
 #include "cuda.h"
 
@@ -49,6 +50,7 @@ namespace pcl
 {    
     namespace device
     {
+        template <typename T>
         struct InSphere
         {    
             float x_, y_, z_, radius2_;
@@ -67,18 +69,24 @@ namespace pcl
             {
                 return (*this)(make_float3(point.x, point.y, point.z));                
             }
+            __device__ __host__ __forceinline__ bool operator()(const typename OctreeImpl<T>::PointType& point) const
+            {
+                return (*this)(make_float3(point.p.x, point.p.y, point.p.z));
+            }
         };
     }
 }
 
-void pcl::device::bruteForceRadiusSearch(const OctreeImpl::PointCloud& cloud, const OctreeImpl::PointType& query, float radius, DeviceArray<int>& result, DeviceArray<int>& buffer)
+template <typename T>
+void pcl::device::bruteForceRadiusSearch(const typename OctreeImpl<T>::PointCloud&
+        cloud, const typename OctreeImpl<T>::PointType& query, float radius, DeviceArray<int>& result, DeviceArray<int>& buffer)
 {   
-    using PointType = OctreeImpl::PointType;
+    using PointType = typename OctreeImpl<T>::PointType;
 
     if (buffer.size() < cloud.size())
         buffer.create(cloud.size());
 
-    InSphere cond(query.x, query.y, query.z, radius);
+    InSphere<T> cond(query.p.x, query.p.y, query.p.z, radius);
 
     device_ptr<const PointType> cloud_ptr((const PointType*)cloud.ptr());
     device_ptr<int> res_ptr(buffer.ptr());

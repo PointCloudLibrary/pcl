@@ -36,17 +36,16 @@
 
 #include "pcl/gpu/utils/timers_cuda.hpp"
 #include "pcl/gpu/utils/safe_call.hpp"
+#include <pcl/point_types.h>
 
-#include "internal.hpp"
+#include <pcl/gpu/octree/impl/internal.hpp>
 #include "utils/approx_nearest_utils.hpp"
 #include "utils/boxutils.hpp"
+#include "impl.cu"
 
 #include<algorithm>
 #include<limits>
 #include <tuple>
-
-using namespace pcl::gpu;
-using namespace pcl::device;
 
 namespace pcl
 {
@@ -59,7 +58,8 @@ namespace pcl
     }
 }
 
-void  pcl::device::OctreeImpl::get_gpu_arch_compiled_for(int& bin, int& ptx)
+template <typename T>
+void  pcl::device::OctreeImpl<T>::get_gpu_arch_compiled_for(int& bin, int& ptx)
 {
     cudaFuncAttributes attrs;
     cudaSafeCall( cudaFuncGetAttributes(&attrs, get_cc_kernel) );  
@@ -67,12 +67,14 @@ void  pcl::device::OctreeImpl::get_gpu_arch_compiled_for(int& bin, int& ptx)
     ptx = attrs.ptxVersion;
 }
 
-void pcl::device::OctreeImpl::setCloud(const PointCloud& input_points)
+template <typename T>
+void pcl::device::OctreeImpl<T>::setCloud(const PointCloud& input_points)
 {
     points = input_points;
 }
 
-void pcl::device::OctreeImpl::internalDownload()
+template <typename T>
+void pcl::device::OctreeImpl<T>::internalDownload()
 {
     int number;
     DeviceArray<int>(octreeGlobal.nodes_num, 1).download(&number); 
@@ -133,11 +135,12 @@ namespace
 
 }
 
-void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float radius, std::vector<int>& out, int max_nn) const
+template <typename T>
+void pcl::device::OctreeImpl<T>::radiusSearchHost(const PointType& query, float radius, std::vector<int>& out, int max_nn) const
 {            
     out.clear();  
 
-    float3 center = make_float3(query.x, query.y, query.z);
+    float3 center = make_float3(query.p.x, query.p.y, query.p.z);
 
     OctreeIteratorHost iterator;
 
@@ -211,11 +214,12 @@ void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float rad
     }
 }
 
-void  pcl::device::OctreeImpl::approxNearestSearchHost(const PointType& query, int& out_index, float& sqr_dist) const
+template <typename T>
+void  pcl::device::OctreeImpl<T>::approxNearestSearchHost(const PointType& query, int& out_index, float& sqr_dist) const
 {
     const float3& minp = octreeGlobal.minp;
     const float3& maxp = octreeGlobal.maxp;
-    const float3 query_point = make_float3(query.x, query.y, query.z);
+    const float3 query_point = make_float3(query.p.x, query.p.y, query.p.z);
 
     const int node_idx = pcl::device::findNode(minp, maxp, query_point, host_octree.nodes);
 
@@ -230,9 +234,9 @@ void  pcl::device::OctreeImpl::approxNearestSearchHost(const PointType& query, i
         float point_y = host_octree.points_sorted[i + host_octree.points_sorted_step    ];
         float point_z = host_octree.points_sorted[i + host_octree.points_sorted_step * 2];
 
-        float dx = (point_x - query.x);
-        float dy = (point_y - query.y);
-        float dz = (point_z - query.z);
+        float dx = (point_x - query.p.x);
+        float dy = (point_y - query.p.y);
+        float dz = (point_z - query.p.z);
 
         float d2 = dx * dx + dy * dy + dz * dz;
 

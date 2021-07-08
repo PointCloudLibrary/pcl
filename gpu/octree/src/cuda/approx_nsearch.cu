@@ -34,13 +34,14 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#include "internal.hpp"
+#include <pcl/gpu/octree/impl/internal.hpp>
 #include "pcl/gpu/utils/device/warp.hpp"
 #include "utils/approx_nearest_utils.hpp"
 #include "utils/boxutils.hpp"
 #include "utils/copygen.hpp"
 #include "utils/scan_block.hpp"
 #include <assert.h>
+#include "impl.cu"
 
 #include <limits>
 #include <tuple>
@@ -48,9 +49,10 @@
 namespace pcl {
 namespace device {
 namespace appnearest_search {
-using PointType = OctreeImpl::PointType;
 
+template <typename T>
 struct Batch {
+  using PointType = typename OctreeImpl<T>::PointType;
   const PointType* queries;
 
   const int* indices;
@@ -74,9 +76,11 @@ struct KernelPolicy {
   };
 };
 
+template <typename T>
 struct Warp_appNearestSearch {
 public:
-  const Batch& batch;
+  using PointType = typename OctreeImpl<T>::PointType;
+  const Batch<T>& batch;
 
   int query_index;
   float3 query;
@@ -84,7 +88,7 @@ public:
   float sqr_dist;
 
   __device__ __forceinline__
-  Warp_appNearestSearch(const Batch& batch_arg, int query_index_arg)
+  Warp_appNearestSearch(const Batch<T>& batch_arg, int query_index_arg)
   : batch(batch_arg), query_index(query_index_arg)
   {}
 
@@ -94,7 +98,7 @@ public:
     int node_idx = -1;
     if (active) {
       PointType q = batch.queries[query_index];
-      query = make_float3(q.x, q.y, q.z);
+      query = make_float3(q.p.x, q.p.y, q.p.z);
 
       const float3& minp = batch.octree.minp;
       const float3& maxp = batch.octree.maxp;
@@ -200,8 +204,9 @@ private:
   }
 };
 
+template <typename T>
 __global__ void
-KernelAN(const Batch batch)
+KernelAN(const Batch<T> batch)
 {
   const int query_index = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -210,7 +215,7 @@ KernelAN(const Batch batch)
   if (__all_sync(0xFFFFFFFF, active == false))
     return;
 
-  Warp_appNearestSearch search(batch, query_index);
+  Warp_appNearestSearch<T> search(batch, query_index);
   search.launch(active);
 }
 
@@ -218,12 +223,13 @@ KernelAN(const Batch batch)
 } // namespace device
 } // namespace pcl
 
+template <typename T>
 void
-pcl::device::OctreeImpl::approxNearestSearch(const Queries& queries,
+pcl::device::OctreeImpl<T>::approxNearestSearch(const Queries& queries,
                                              NeighborIndices& results,
                                              BatchResultSqrDists& sqr_distance) const
 {
-  using BatchType = pcl::device::appnearest_search::Batch;
+  using BatchType = pcl::device::appnearest_search::Batch<T>;
 
   BatchType batch;
   batch.indices = indices;
@@ -240,7 +246,7 @@ pcl::device::OctreeImpl::approxNearestSearch(const Queries& queries,
   int block = pcl::device::appnearest_search::KernelPolicy::CTA_SIZE;
   int grid = (batch.queries_num + block - 1) / block;
 
-  cudaSafeCall(cudaFuncSetCacheConfig(pcl::device::appnearest_search::KernelAN,
+  cudaSafeCall(cudaFuncSetCacheConfig(pcl::device::appnearest_search::KernelAN<T>,
                                       cudaFuncCachePreferL1));
 
   pcl::device::appnearest_search::KernelAN<<<grid, block>>>(batch);
