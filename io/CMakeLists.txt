@@ -24,6 +24,9 @@ if(NOT build)
   return()
 endif()
 
+### ---[ Generate compile_commands.json for clang-tidy
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 if(WITH_OPENNI2)
   set(IMAGE_INCLUDES
     include/pcl/io/image_metadata_wrapper.h

@@ -12,6 +12,9 @@ if(NOT build)
   return()
 endif()
 
+### ---[ Generate compile_commands.json for clang-tidy
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 set(incs
   "include/pcl/${SUBSYS_NAME}/branch_estimator.h"
   "include/pcl/${SUBSYS_NAME}/feature_handler.h"
