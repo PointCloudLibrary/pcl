@@ -205,7 +205,7 @@ pcl::LINEMOD::removeOverlappingDetections (
     templateClusters[key].push_back(template_index);
   }
 
-  std::map<size_t, size_t> clusteredTemplates;
+  std::vector<size_t> clusteredTemplates(n_templates, std::numeric_limits<size_t>::max()); // index is template_index
   if (templateClusters.size() <= 1) {
     PCL_ERROR ("[removeOverlappingDetections] All %u templates got grouped into %u cluster(s). Either rotation threshold=%.4f is too large, or template rotations are not set properly.\n"
                "Making each template in its own cluster for now...\n", n_templates, templateClusters.size(), rotation_clustering_threshold);
