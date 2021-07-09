@@ -251,6 +251,11 @@ function(PCL_ADD_LIBRARY _name)
           RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ADD_LIBRARY_OPTION_COMPONENT}
           LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ADD_LIBRARY_OPTION_COMPONENT}
           ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ADD_LIBRARY_OPTION_COMPONENT})
+
+  # Copy PDB if available
+  if(MSVC AND PCL_SHARED_LIBS)
+    install(FILES $<TARGET_PDB_FILE:${_name}> DESTINATION ${BIN_INSTALL_DIR} OPTIONAL)
+  endif()
 endfunction()
 
 ###############################################################################
