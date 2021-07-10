@@ -12,7 +12,6 @@
 #include <pcl/common/centroid.h>
 #include <pcl/common/common.h>
 #include <pcl/filters/experimental/grid_filter_base.h>
-#include <pcl/filters/voxel_grid.h> // getMinMax3D with field name
 
 #include <boost/optional.hpp> // std::optional for C++17
 
@@ -284,33 +283,12 @@ protected:
 
     const PointCloudConstPtr input = grid_filter_->getInputCloud();
     const IndicesConstPtr indices = grid_filter_->getIndices();
-    filter_field_name_ = grid_filter_->getFilterFieldName();
-    grid_filter_->getFilterLimits(filter_limit_min_, filter_limit_max_);
     downsample_all_data_ = grid_filter_->getDownsampleAllData();
     min_points_per_voxel_ = grid_filter_->getMinimumPointsNumberPerVoxel();
 
     // Get the minimum and maximum dimensions
     Eigen::Vector4f min_p, max_p;
-    if (!filter_field_name_.empty()) {
-      // If we don't want to process the entire cloud...
-      getMinMax3D<PointT>(input,
-                          *indices,
-                          filter_field_name_,
-                          static_cast<float>(filter_limit_min_),
-                          static_cast<float>(filter_limit_max_),
-                          min_p,
-                          max_p,
-                          grid_filter_->getFilterLimitsNegative());
-
-      filter_field_idx_ = getFieldIndex<PointT>(filter_field_name_, filter_fields_);
-      if (filter_field_idx_ == -1)
-        PCL_WARN("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.\n",
-                 filter_name_.c_str(),
-                 filter_field_idx_);
-    }
-    else {
-      getMinMax3D<PointT>(*input, *indices, min_p, max_p);
-    }
+    getMinMax3D<PointT>(*input, *indices, min_p, max_p);
 
     min_b_ = (min_p.array() * inverse_leaf_size_).floor().template cast<int>();
     max_b_ = (max_p.array() * inverse_leaf_size_).floor().template cast<int>();
@@ -362,28 +340,6 @@ protected:
   inline void
   addPointToGrid(const PointT& pt)
   {
-    if (!filter_field_name_.empty()) {
-      // Get the distance value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*>(&pt);
-      float distance_value = 0;
-      memcpy(&distance_value,
-             pt_data + filter_fields_[filter_field_idx_].offset,
-             sizeof(float));
-
-      if (grid_filter_->getFilterLimitsNegative()) {
-        // Use a threshold for cutting out points which inside the interval
-        if ((distance_value < filter_limit_max_) &&
-            (distance_value > filter_limit_min_))
-          return;
-      }
-      else {
-        // Use a threshold for cutting out points which are too close/far away
-        if ((distance_value > filter_limit_max_) ||
-            (distance_value < filter_limit_min_))
-          return;
-      }
-    }
-
     const std::size_t h =
         grid_filter_->hashPoint(pt, inverse_leaf_size_, min_b_, divb_mul_);
     grid_[h].add(pt);
@@ -441,19 +397,12 @@ protected:
    * in the filtering space defined by the grid */
   Grid grid_;
 
-  std::string filter_field_name_;
-
   GridFilterBase<VoxelStructT>* grid_filter_;
 
   std::size_t num_voxels_;
 
-  std::vector<pcl::PCLPointField> filter_fields_;
-
-  int filter_field_idx_;
-
-  double filter_limit_min_, filter_limit_max_;
-
   bool downsample_all_data_;
+
   std::size_t min_points_per_voxel_;
 };
 
