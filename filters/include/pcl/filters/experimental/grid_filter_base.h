@@ -82,81 +82,6 @@ public:
     return min_points_per_voxel_;
   }
 
-  /** \brief Provide the name of the field to be used for filtering data. In conjunction
-   * with \a setFilterLimits, points having values outside this interval will be
-   * discarded.
-   * \param[in] field_name the name of the field that contains values used for filtering
-   */
-  inline void
-  setFilterFieldName(const std::string& field_name)
-  {
-    filter_field_name_ = field_name;
-  }
-
-  /** \brief Get the name of the field used for filtering. */
-  inline std::string const
-  getFilterFieldName() const
-  {
-    return filter_field_name_;
-  }
-
-  /** \brief Set the field filter limits. All points having field values outside this
-   * interval will be discarded.
-   * \param[in] limit_min the minimum allowed field value
-   * \param[in] limit_max the maximum allowed field value
-   */
-  inline void
-  setFilterLimits(const double& limit_min, const double& limit_max)
-  {
-    filter_limit_min_ = limit_min;
-    filter_limit_max_ = limit_max;
-  }
-
-  /** \brief Get the field filter limits (min/max) set by the user. The default values
-   * are numeric_limits<double>::min(), numeric_limits<double>::max().
-   * \param[out] limit_min the minimum allowed field value
-   * \param[out] limit_max the maximum allowed field value
-   */
-  inline void
-  getFilterLimits(double& limit_min, double& limit_max) const
-  {
-    limit_min = filter_limit_min_;
-    limit_max = filter_limit_max_;
-  }
-
-  /** \brief Set to true if we want to return the data outside the interval specified by
-   * setFilterLimits (min, max).
-   * Default: false.
-   * \param[in] limit_negative return data inside the interval (false) or outside (true)
-   */
-  inline void
-  setFilterLimitsNegative(const bool limit_negative)
-  {
-    filter_limit_negative_ = limit_negative;
-  }
-
-  /** \brief Get whether the data outside the interval (min/max) is to be returned
-   * (true) or inside (false).
-   * \param[out] limit_negative true if data \b outside the interval [min; max] is to be
-   * returned, false otherwise
-   */
-  inline void
-  getFilterLimitsNegative(bool& limit_negative) const
-  {
-    limit_negative = filter_limit_negative_;
-  }
-
-  /** \brief Get whether the data outside the interval (min/max) is to be returned
-   * (true) or inside (false).
-   * \return true if data \b outside the interval [min; max] is to be returned, false
-   * otherwise
-   */
-  inline bool
-  getFilterLimitsNegative() const
-  {
-    return filter_limit_negative_;
-  }
-
   inline std::size_t
   hashPoint(const PointT& pt,
             const Eigen::Array4f& inverse_leaf_size,
@@ -193,20 +118,6 @@ public:
 protected:
   /** \brief Set to true if all fields need to be downsampled, or false if just XYZ. */
   bool downsample_all_data_ = true;
-
-  /** \brief The desired user filter field name. */
-  std::string filter_field_name_;
-
-  /** \brief The minimum allowed filter value a point will be considered from. */
-  double filter_limit_min_ = std::numeric_limits<double>::min();
-
-  /** \brief The maximum allowed filter value a point will be considered from. */
-  double filter_limit_max_ = std::numeric_limits<double>::max();
-
-  /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a
-   * filter_limit_max_).
-   * Default: false. */
-  bool filter_limit_negative_ = false;
 
   /** \brief Minimum number of points per voxel for the centroid to be computed */
   std::size_t min_points_per_voxel_ = 0;
