@@ -13,8 +13,6 @@
 #include <pcl/common/common.h>
 #include <pcl/filters/experimental/grid_filter_base.h>
 
-#include <boost/optional.hpp> // std::optional for C++17
-
 #include <unordered_map>
 
 namespace pcl {
@@ -345,7 +343,7 @@ protected:
     grid_[h].add(pt);
   }
 
-  inline boost::optional<PointT>
+  inline experimental::optional<PointT>
   filterGrid(const GridIterator grid_it)
   {
     const auto& voxel = grid_it->second;
