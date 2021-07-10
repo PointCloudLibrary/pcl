@@ -245,34 +245,6 @@ TEST(PointXYZ, ExperimentalVoxelGridEquivalency)
   new_grid.filter(new_out);
   old_grid.filter(old_out);
   EXPECT_POINTS_EQ(new_out, old_out);
-  new_grid.setMinimumPointsNumberPerVoxel(0);
-  old_grid.setMinimumPointsNumberPerVoxel(0);
-  new_out.clear();
-  old_out.clear();
-
-  new_grid.setFilterFieldName("z");
-  old_grid.setFilterFieldName("z");
-  new_grid.setFilterLimitsNegative(true);
-  old_grid.setFilterLimitsNegative(true);
-  new_grid.setFilterLimits(std::numeric_limits<float>::max(),
-                           std::numeric_limits<float>::min());
-  old_grid.setFilterLimits(std::numeric_limits<float>::max(),
-                           std::numeric_limits<float>::min());
-  new_grid.filter(new_out);
-  old_grid.filter(old_out);
-  EXPECT_POINTS_EQ(new_out, old_out);
-  new_out.clear();
-  old_out.clear();
-
-  new_grid.setFilterLimitsNegative(false);
-  old_grid.setFilterLimitsNegative(false);
-  new_grid.setFilterLimits(std::numeric_limits<float>::min(),
-                           std::numeric_limits<float>::max());
-  old_grid.setFilterLimits(std::numeric_limits<float>::min(),
-                           std::numeric_limits<float>::max());
-  new_grid.filter(new_out);
-  old_grid.filter(old_out);
-  EXPECT_POINTS_EQ(new_out, old_out);
 }
 
 TEST(PointXYZRGB, ExperimentalVoxelGridEquivalency)
@@ -304,34 +276,6 @@ TEST(PointXYZRGB, ExperimentalVoxelGridEquivalency)
 
   new_grid.setMinimumPointsNumberPerVoxel(5);
   old_grid.setMinimumPointsNumberPerVoxel(5);
-  new_grid.filter(new_out);
-  old_grid.filter(old_out);
-  EXPECT_POINTS_EQ(new_out, old_out);
-  new_grid.setMinimumPointsNumberPerVoxel(0);
-  old_grid.setMinimumPointsNumberPerVoxel(0);
-  new_out.clear();
-  old_out.clear();
-
-  new_grid.setFilterFieldName("z");
-  old_grid.setFilterFieldName("z");
-  new_grid.setFilterLimitsNegative(true);
-  old_grid.setFilterLimitsNegative(true);
-  new_grid.setFilterLimits(std::numeric_limits<float>::max(),
-                           std::numeric_limits<float>::min());
-  old_grid.setFilterLimits(std::numeric_limits<float>::max(),
-                           std::numeric_limits<float>::min());
-  new_grid.filter(new_out);
-  old_grid.filter(old_out);
-  EXPECT_POINTS_EQ(new_out, old_out);
-  new_out.clear();
-  old_out.clear();
-
-  new_grid.setFilterLimitsNegative(false);
-  old_grid.setFilterLimitsNegative(false);
-  new_grid.setFilterLimits(std::numeric_limits<float>::min(),
-                           std::numeric_limits<float>::max());
-  old_grid.setFilterLimits(std::numeric_limits<float>::min(),
-                           std::numeric_limits<float>::max());
   new_grid.filter(new_out);
   old_grid.filter(old_out);
   EXPECT_POINTS_EQ(new_out, old_out);
