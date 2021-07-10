@@ -12,8 +12,13 @@
 #include <pcl/common/point_tests.h>
 #include <pcl/filters/filter.h>
 
+#include <boost/optional.hpp> // std::optional for C++17
+
 namespace pcl {
 namespace experimental {
+
+template <typename PointT>
+using optional = boost::optional<PointT>;
 
 #define GET_POINT_TYPE(GridStructT) typename GridStructT::PointCloud::PointType
 
@@ -106,7 +111,6 @@ protected:
       const optional<PointT> res = grid_struct_.filterGrid(it);
       if (res)
         output.push_back(res.value());
-      }
     }
   }
 
