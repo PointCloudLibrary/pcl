@@ -86,7 +86,7 @@ public:
   hashPoint(const PointT& pt,
             const Eigen::Array4f& inverse_leaf_size,
             const Eigen::Vector4i& min_b,
-            const Eigen::Vector4i& divb_mul)
+            const Eigen::Vector4i& divb_mul) const
   {
     const std::size_t ijk0 = std::floor(pt.x * inverse_leaf_size[0]) - min_b[0];
     const std::size_t ijk1 = std::floor(pt.y * inverse_leaf_size[1]) - min_b[1];
@@ -97,7 +97,7 @@ public:
   std::size_t
   checkHashRange(const Eigen::Vector4f& min_p,
                  const Eigen::Vector4f& max_p,
-                 const Eigen::Array4f& inverse_leaf_size)
+                 const Eigen::Array4f& inverse_leaf_size) const
   {
     // Check if the leaf size is not too small, given the range of the point cloud
     // Otherwise "wrap around" of unsigned int will happen during hashing a point

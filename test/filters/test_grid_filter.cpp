@@ -31,24 +31,28 @@ template <typename PointT>
 struct EmptyMapStruct {
   using PointCloud = pcl::PointCloud<PointT>;
   using Grid = std::unordered_map<std::size_t, EmptyVoxel>;
+  using GridIterator = Grid::iterator;
 
   EmptyMapStruct() : filter_name_("empty_map") {}
 
-  // test passed or failed setUp
-  void
-  setPassSetUp(const bool pass_set_up)
+  std::size_t
+  size() const
   {
-    pass_set_up_ = pass_set_up;
+    return grid_.size();
   }
 
-  // test optional
-  void
-  setReturnPoint(const bool return_point)
+  GridIterator
+  begin()
   {
-    return_point_ = return_point;
+    return grid_.begin();
   }
 
-protected:
+  GridIterator
+  end()
+  {
+    return grid_.end();
+  }
+
   bool
   setUp(const experimental::TransformFilter<EmptyMapStruct>* transform_filter)
   {
@@ -73,10 +77,10 @@ protected:
     return boost::none;
   }
 
-protected:
   std::string filter_name_;
   Grid grid_;
 
+  // for testing
   bool pass_set_up_ = true;
   bool return_point_ = true;
 };
@@ -86,10 +90,28 @@ template <typename PointT>
 struct EmptyVecStruct {
   using PointCloud = pcl::PointCloud<PointT>;
   using Grid = std::vector<std::size_t>;
+  using GridIterator = Grid::iterator;
 
   EmptyVecStruct() : filter_name_("empty_vec") {}
 
-protected:
+  std::size_t
+  size() const
+  {
+    return grid_.size();
+  }
+
+  GridIterator
+  begin()
+  {
+    return grid_.begin();
+  }
+
+  GridIterator
+  end()
+  {
+    return grid_.end();
+  }
+
   bool
   setUp(const experimental::TransformFilter<EmptyVecStruct>* transform_filter)
   {
@@ -110,9 +132,30 @@ protected:
     return PointT(*grid_it, grid_it - grid_.begin(), 0);
   }
 
-protected:
   std::string filter_name_;
   Grid grid_;
+
+  // for testing
+  bool pass_set_up_ = true;
+  bool return_point_ = true;
+};
+
+template <typename GridStruct, typename PointT = GET_POINT_TYPE(GridStruct)>
+class MockFilter : public experimental::GridFilterBase<GridStruct> {
+public:
+  // test passed or failed setUp
+  void
+  setPassSetUp(const bool pass_set_up)
+  {
+    this->getGridStruct().pass_set_up_ = pass_set_up;
+  }
+
+  // test optional
+  void
+  setReturnPoint(const bool return_point)
+  {
+    this->getGridStruct().return_point_ = return_point;
+  }
 };
 
 TEST(ApplyFilter, GridFilter)
@@ -124,7 +167,7 @@ TEST(ApplyFilter, GridFilter)
   PointCloud<PointXYZ> output;
 
   // hash map grid
-  experimental::GridFilterBase<EmptyMapStruct<PointXYZ>> mf;
+  MockFilter<EmptyMapStruct<PointXYZ>> mf;
   mf.setInputCloud(input);
   mf.filter(output);
 
@@ -137,7 +180,7 @@ TEST(ApplyFilter, GridFilter)
   output.clear();
 
   // vector grid
-  experimental::GridFilterBase<EmptyVecStruct<PointXYZ>> vf;
+  MockFilter<EmptyVecStruct<PointXYZ>> vf;
   vf.setInputCloud(input);
   vf.filter(output);
 
@@ -158,7 +201,7 @@ TEST(StructMethods, GridFilter)
 
   PointCloud<PointXYZ> output;
 
-  experimental::GridFilterBase<EmptyMapStruct<PointXYZ>> f;
+  MockFilter<EmptyMapStruct<PointXYZ>> f;
   output.is_dense = false;
   f.filter(output);
 
