@@ -126,45 +126,96 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
 
   pcl::Indices index(1);
   std::vector<float> distance(1);
-  pcl::Correspondence corr;
-  unsigned int nr_valid_correspondences = 0;
+  std::vector<pcl::Correspondences> per_thread_correspondences(num_threads_);
+  for (auto& corrs : per_thread_correspondences) {
+    corrs.reserve(2 * indices_->size() / num_threads_);
+  }
 
   // Check if the template types are the same. If true, avoid a copy.
   // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
   // macro!
   if (isSamePointType<PointSource, PointTarget>()) {
+#pragma omp parallel for default(none)                                                 \
+    shared(max_dist_sqr, per_thread_correspondences) firstprivate(index, distance)     \
+        num_threads(num_threads_)
     // Iterate over the input set of source indices
-    for (const auto& idx : (*indices_)) {
+    for (int i = 0; i < static_cast<int>(indices_->size()); i++) {
+      const auto& idx = (*indices_)[i];
       tree_->nearestKSearch((*input_)[idx], 1, index, distance);
       if (distance[0] > max_dist_sqr)
         continue;
 
+      pcl::Correspondence corr;
       corr.index_query = idx;
       corr.index_match = index[0];
       corr.distance = distance[0];
-      correspondences[nr_valid_correspondences++] = corr;
+
+#ifdef _OPENMP
+      const int thread_num = omp_get_thread_num();
+#else
+      const int thread_num = 0;
+#endif
+
+      per_thread_correspondences[thread_num].emplace_back(std::move(corr));
     }
   }
   else {
-    PointTarget pt;
-
+#pragma omp parallel for default(none)                                                 \
+    shared(max_dist_sqr, per_thread_correspondences) firstprivate(index, distance)     \
+        num_threads(num_threads_)
     // Iterate over the input set of source indices
-    for (const auto& idx : (*indices_)) {
+    for (int i = 0; i < static_cast<int>(indices_->size()); i++) {
+      const auto& idx = (*indices_)[i];
+
       // Copy the source data to a target PointTarget format so we can search in the
       // tree
+      PointTarget pt;
       copyPoint((*input_)[idx], pt);
 
       tree_->nearestKSearch(pt, 1, index, distance);
       if (distance[0] > max_dist_sqr)
         continue;
 
+      pcl::Correspondence corr;
       corr.index_query = idx;
       corr.index_match = index[0];
       corr.distance = distance[0];
-      correspondences[nr_valid_correspondences++] = corr;
+
+#ifdef _OPENMP
+      const int thread_num = omp_get_thread_num();
+#else
+      const int thread_num = 0;
+#endif
+
+      per_thread_correspondences[thread_num].emplace_back(std::move(corr));
     }
   }
-  correspondences.resize(nr_valid_correspondences);
+
+  if (num_threads_ == 1) {
+    correspondences = std::move(per_thread_correspondences.front());
+  }
+  else {
+    const unsigned int nr_correspondences = std::accumulate(
+        per_thread_correspondences.begin(),
+        per_thread_correspondences.end(),
+        static_cast<unsigned int>(0),
+        [](const auto sum, const auto& corr) { return sum + corr.size(); });
+    correspondences.resize(nr_correspondences);
+
+    // Merge per-thread correspondences while keeping them ordered
+    auto insert_loc = correspondences.begin();
+    for (const auto& corrs : per_thread_correspondences) {
+      const auto new_insert_loc = std::move(corrs.begin(), corrs.end(), insert_loc);
+      std::inplace_merge(correspondences.begin(),
+                         insert_loc,
+                         insert_loc + corrs.size(),
+                         [](const auto& lhs, const auto& rhs) {
+                           return lhs.index_query < rhs.index_query;
+                         });
+      insert_loc = new_insert_loc;
+    }
+  }
+
   deinitCompute();
 }
 
@@ -188,51 +239,69 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
   std::vector<float> distance(1);
   pcl::Indices index_reciprocal(1);
   std::vector<float> distance_reciprocal(1);
-  pcl::Correspondence corr;
-  unsigned int nr_valid_correspondences = 0;
-  int target_idx = 0;
+  std::vector<pcl::Correspondences> per_thread_correspondences(num_threads_);
+  for (auto& corrs : per_thread_correspondences) {
+    corrs.reserve(2 * indices_->size() / num_threads_);
+  }
 
   // Check if the template types are the same. If true, avoid a copy.
   // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
   // macro!
   if (isSamePointType<PointSource, PointTarget>()) {
+#pragma omp parallel for default(none)                                                 \
+    shared(max_dist_sqr, per_thread_correspondences)                                   \
+        firstprivate(index, distance, index_reciprocal, distance_reciprocal)           \
+            num_threads(num_threads_)
     // Iterate over the input set of source indices
-    for (const auto& idx : (*indices_)) {
+    for (int i = 0; i < static_cast<int>(indices_->size()); i++) {
+      const auto& idx = (*indices_)[i];
       tree_->nearestKSearch((*input_)[idx], 1, index, distance);
       if (distance[0] > max_dist_sqr)
         continue;
 
-      target_idx = index[0];
+      const auto target_idx = index[0];
 
       tree_reciprocal_->nearestKSearch(
           (*target_)[target_idx], 1, index_reciprocal, distance_reciprocal);
       if (distance_reciprocal[0] > max_dist_sqr || idx != index_reciprocal[0])
         continue;
 
+      pcl::Correspondence corr;
       corr.index_query = idx;
       corr.index_match = index[0];
       corr.distance = distance[0];
-      correspondences[nr_valid_correspondences++] = corr;
+
+#ifdef _OPENMP
+      const int thread_num = omp_get_thread_num();
+#else
+      const int thread_num = 0;
+#endif
+
+      per_thread_correspondences[thread_num].emplace_back(std::move(corr));
     }
   }
   else {
-    PointTarget pt_src;
-    PointSource pt_tgt;
-
+#pragma omp parallel for default(none)                                                 \
+    shared(max_dist_sqr, per_thread_correspondences)                                   \
+        firstprivate(index, distance, index_reciprocal, distance_reciprocal)           \
+            num_threads(num_threads_)
     // Iterate over the input set of source indices
-    for (const auto& idx : (*indices_)) {
+    for (int i = 0; i < static_cast<int>(indices_->size()); i++) {
+      const auto& idx = (*indices_)[i];
       // Copy the source data to a target PointTarget format so we can search in the
       // tree
+      PointTarget pt_src;
       copyPoint((*input_)[idx], pt_src);
 
       tree_->nearestKSearch(pt_src, 1, index, distance);
       if (distance[0] > max_dist_sqr)
         continue;
 
-      target_idx = index[0];
+      const auto target_idx = index[0];
 
       // Copy the target data to a target PointSource format so we can search in the
       // tree_reciprocal
+      PointSource pt_tgt;
       copyPoint((*target_)[target_idx], pt_tgt);
 
       tree_reciprocal_->nearestKSearch(
@@ -240,13 +309,46 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
       if (distance_reciprocal[0] > max_dist_sqr || idx != index_reciprocal[0])
         continue;
 
+      pcl::Correspondence corr;
       corr.index_query = idx;
       corr.index_match = index[0];
       corr.distance = distance[0];
-      correspondences[nr_valid_correspondences++] = corr;
+
+#ifdef _OPENMP
+      const int thread_num = omp_get_thread_num();
+#else
+      const int thread_num = 0;
+#endif
+
+      per_thread_correspondences[thread_num].emplace_back(std::move(corr));
     }
   }
-  correspondences.resize(nr_valid_correspondences);
+
+  if (num_threads_ == 1) {
+    correspondences = std::move(per_thread_correspondences.front());
+  }
+  else {
+    const unsigned int nr_correspondences = std::accumulate(
+        per_thread_correspondences.begin(),
+        per_thread_correspondences.end(),
+        static_cast<unsigned int>(0),
+        [](const auto sum, const auto& corr) { return sum + corr.size(); });
+    correspondences.resize(nr_correspondences);
+
+    // Merge per-thread correspondences while keeping them ordered
+    auto insert_loc = correspondences.begin();
+    for (const auto& corrs : per_thread_correspondences) {
+      const auto new_insert_loc = std::move(corrs.begin(), corrs.end(), insert_loc);
+      std::inplace_merge(correspondences.begin(),
+                         insert_loc,
+                         insert_loc + corrs.size(),
+                         [](const auto& lhs, const auto& rhs) {
+                           return lhs.index_query < rhs.index_query;
+                         });
+      insert_loc = new_insert_loc;
+    }
+  }
+
   deinitCompute();
 }
 
