@@ -1,20 +1,33 @@
 # Options for building PCL.
 
+# By default, PCL restricts the dependency search to only shared or only static libraries,
+# depending on whether PCL itself is built as a shared or static library.
+# This restriction is undesirable when a dependency is available
+# only as a shared library while building PCL as a static library, or vice versa.
+# In such cases, the user may prefer to use the found dependency anyway.
+# For example, the user may prefer to build PCL as a static library
+# using a shared OpenGL library provided by the system.
+# This option allows to override the restriction imposed by default.
+option(PCL_ALLOW_BOTH_SHARED_AND_STATIC_DEPENDENCIES, "Do not force PCL dependencies to be all shared or all static." OFF)
+
 # Build shared libraries by default.
 option(PCL_SHARED_LIBS "Build shared libraries." ON)
 if(PCL_SHARED_LIBS)
   set(PCL_LIB_PREFIX ${CMAKE_SHARED_LIBRARY_PREFIX})
   set(PCL_LIB_SUFFIX ${CMAKE_SHARED_LIBRARY_SUFFIX})
   set(PCL_LIB_TYPE "SHARED")
-#  set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_SHARED_LIBRARY_SUFFIX})
-  if(WIN32)
-    set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_IMPORT_LIBRARY_SUFFIX})
+  if(NOT PCL_ALLOW_BOTH_SHARED_AND_STATIC_DEPENDENCIES)
+    if(WIN32)
+      set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_IMPORT_LIBRARY_SUFFIX})
+    endif()
   endif()
 else()
   set(PCL_LIB_PREFIX ${CMAKE_STATIC_LIBRARY_PREFIX})
   set(PCL_LIB_SUFFIX ${CMAKE_STATIC_LIBRARY_SUFFIX})
   set(PCL_LIB_TYPE "STATIC")
-  set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_STATIC_LIBRARY_SUFFIX})
+  if(NOT PCL_ALLOW_BOTH_SHARED_AND_STATIC_DEPENDENCIES)
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_STATIC_LIBRARY_SUFFIX})
+  endif()
 endif()
 mark_as_advanced(PCL_SHARED_LIBS)
 
