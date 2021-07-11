@@ -69,9 +69,12 @@ namespace pcl
       using Ptr = shared_ptr<NormalSpaceSampling<PointT, NormalT> >;
       using ConstPtr = shared_ptr<const NormalSpaceSampling<PointT, NormalT> >;
 
-      /** \brief Empty constructor. */
-      NormalSpaceSampling ()
-        : sample_ (std::numeric_limits<unsigned int>::max ())
+      /** \brief Constructor.
+        * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
+        */
+      NormalSpaceSampling (bool extract_removed_indices = false)
+        : FilterIndices<PointT> (extract_removed_indices)
+        , sample_ (std::numeric_limits<unsigned int>::max ())
         , seed_ (static_cast<unsigned int> (time (nullptr)))
         , binsx_ ()
         , binsy_ ()
