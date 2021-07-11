@@ -101,7 +101,7 @@ public:
   }
 
   /** \brief Set the spatial cluster tolerance as a measure in the L2 Euclidean space
-   * \param tolerance the spatial cluster tolerance mesured by L2 distance
+   * \param tolerance the spatial cluster tolerance measured by L2 distance
    */
   inline void
   setClusterTolerance(double tolerance)
