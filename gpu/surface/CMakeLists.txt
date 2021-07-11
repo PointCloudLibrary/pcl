@@ -1,7 +1,7 @@
 set(SUBSYS_NAME gpu_surface)
 set(SUBSYS_PATH gpu/surface)
 set(SUBSYS_DESC "Surface algorithms with GPU")
-set(SUBSYS_DEPS common gpu_containers gpu_utils visualization geometry)
+set(SUBSYS_DEPS common gpu_containers gpu_utils geometry)
 
 set(build FALSE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" OFF)
@@ -25,13 +25,10 @@ source_group("Source Files\\cuda" FILES ${cuda})
 
 list(APPEND srcs ${utils} ${cuda})
 
-
-include_directories(SYSTEM ${VTK_INCLUDE_DIRS})
-
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/src" "${CMAKE_CURRENT_SOURCE_DIR}/src/cuda")
 PCL_CUDA_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs})
-target_link_libraries("${LIB_NAME}" pcl_gpu_containers pcl_visualization)
+target_link_libraries("${LIB_NAME}" pcl_gpu_containers)
 
 set(EXT_DEPS "")
 #set(EXT_DEPS CUDA)
