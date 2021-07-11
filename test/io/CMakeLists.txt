@@ -54,3 +54,8 @@ PCL_ADD_TEST(io_octree_compression test_octree_compression
         FILES test_octree_compression.cpp
         LINK_WITH pcl_gtest pcl_common pcl_io pcl_octree
         ARGUMENTS "${PCL_SOURCE_DIR}/test/milk_color.pcd")
+
+PCL_ADD_TEST (io_tim_grabber test_tim_grabber
+              FILES test_tim_grabber.cpp
+              LINK_WITH pcl_gtest pcl_io
+              ARGUMENTS "${PCL_SOURCE_DIR}/test/io/tim_sequences")
