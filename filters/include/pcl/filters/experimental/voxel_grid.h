@@ -18,11 +18,15 @@
 namespace pcl {
 namespace experimental {
 
+/**
+ * \brief VoxelStructT defines the transformation operations and the voxel grid of
+ * VoxelGrid filter \ingroup filters
+ */
 template <typename PointT>
 class VoxelStructT {
 public:
-  // read by GridFilterBase to deduce point type
-  using PointCloud = pcl::PointCloud<PointT>;
+  using PointCloud =
+      pcl::PointCloud<PointT>; // read by GridFilterBase to deduce point type
   using PointCloudPtr = typename PointCloud::Ptr;
   using PointCloudConstPtr = typename PointCloud::ConstPtr;
   using Grid = typename std::unordered_map<std::size_t, CentroidPoint<PointT>>;
@@ -31,27 +35,36 @@ public:
   /** \brief Empty constructor. */
   VoxelStructT() { filter_name_ = "VoxelGrid"; }
 
+  /** \brief Get the number of voxels in the grid. */
   std::size_t
   size() const
   {
     return grid_.size();
   }
 
+  /** \brief Get the begin iterator of the grid. */
   GridIterator
   begin()
   {
     return grid_.begin();
   }
 
+  /** \brief Get the end iterator of the grid. */
   GridIterator
   end()
   {
     return grid_.end();
   }
 
+  /** \brief Set up the voxel grid variables needed for filtering.
+   * \param[in] transform_filter pointer to TransformFilter
+   */
   bool
   setUp(TransformFilter<VoxelStructT>* transform_filter)
   {
+    num_voxels_ = 0;
+    grid_.clear();
+
     grid_filter_ = static_cast<GridFilterBase<VoxelStructT>*>(transform_filter);
 
     const PointCloudConstPtr input = grid_filter_->getInputCloud();
@@ -63,15 +76,17 @@ public:
     Eigen::Vector4f min_p, max_p;
     getMinMax3D<PointT>(*input, *indices, min_p, max_p);
 
+    // Compute the minimum and maximum bounding box values
     min_b_ = (min_p.array() * inverse_leaf_size_).floor().template cast<int>();
     max_b_ = (max_p.array() * inverse_leaf_size_).floor().template cast<int>();
 
+    // Compute the number of divisions needed along all axis
     div_b_ = (max_b_ - min_b_).array() + 1;
+
+    // Set up the division multiplier
     divb_mul_ = Eigen::Vector4i(1, div_b_[0], div_b_[0] * div_b_[1], 0);
 
-    num_voxels_ = 0;
-    grid_.clear();
-
+    // Check that the leaf size is not too small, given the size of the data
     const std::size_t hash_range =
         grid_filter_->checkHashRange(min_p, max_p, inverse_leaf_size_);
     if (hash_range != 0) {
@@ -85,11 +100,15 @@ public:
     }
 
     if (save_leaf_layout_) {
-      const std::size_t new_layout_size = div_b_[0] * div_b_[1] * div_b_[2];
-      const std::size_t reset_size = std::min(new_layout_size, leaf_layout_.size());
-
       // TODO: stop using std::vector<int> for leaf_layout_ because the range of int is
       // smaller than size_t
+
+      // Resizing won't reset old elements to -1.  If leaf_layout_ has been used
+      // previously, it needs to be re-initialized to -1
+      const std::size_t new_layout_size = div_b_[0] * div_b_[1] * div_b_[2];
+
+      // This is the number of elements that need to be re-initialized to -1
+      const std::size_t reset_size = std::min(new_layout_size, leaf_layout_.size());
       std::fill(leaf_layout_.begin(), leaf_layout_.begin() + reset_size, -1);
 
       try {
@@ -110,6 +129,9 @@ public:
     return true;
   }
 
+  /** \brief Add a point to a voxel based on its value.
+   * \param[in] pt the point to add to a voxel
+   */
   inline void
   addPointToGrid(const PointT& pt)
   {
@@ -118,6 +140,9 @@ public:
     grid_[h].add(pt);
   }
 
+  /** \brief Filter out or compute the centroid of a voxel
+   * \param[in] grid_it the iterator of the voxel
+   */
   inline experimental::optional<PointT>
   filterGrid(const GridIterator grid_it)
   {
@@ -165,19 +190,28 @@ public:
   Eigen::Vector4i min_b_ = Eigen::Vector4i::Zero(), max_b_ = Eigen::Vector4i::Zero(),
                   div_b_ = Eigen::Vector4i::Zero(), divb_mul_ = Eigen::Vector4i::Zero();
 
-  /** \brief The iterable grid object for storing information of each fraction of space
-   * in the filtering space defined by the grid */
+  /** \brief Iterable grid object storing the data of voxels. */
   Grid grid_;
 
+  /** \brief Pointer to the GridFilter object */
   GridFilterBase<VoxelStructT>* grid_filter_;
 
+  /** \brief Total number of voxels in the output cloud */
   std::size_t num_voxels_;
 
+  /** \brief Set to true if all fields need to be downsampled, or false if just XYZ. */
   bool downsample_all_data_;
 
+  /** \brief Minimum number of points per voxel for the centroid to be computed */
   std::size_t min_points_per_voxel_;
 };
 
+/**
+ * \brief VoxelFilter represents the base class for voxel filters.
+ * \details Used as the base class for grid based filters: VoxelGrid, VoxelGridLabel,
+ * ApproximateVoxelGrid, etc.
+ * \ingroup filters
+ */
 template <typename GridStruct, typename PointT = GET_POINT_TYPE(GridStruct)>
 class VoxelFilter : public GridFilterBase<GridStruct> {
   using GridFilterBase<GridStruct>::getGridStruct;
@@ -455,6 +489,18 @@ public:
   }
 };
 
+/** \brief VoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples
+ * + filters the data.
+ *
+ * The VoxelGrid class creates a *3D voxel grid* (think about a voxel
+ * grid as a set of tiny 3D boxes in space) over the input point cloud data.
+ * Then, in each *voxel* (i.e., 3D box), all the points present will be
+ * approximated (i.e., *downsampled*) with their centroid. This approach is
+ * a bit slower than approximating them with the center of the voxel, but it
+ * represents the underlying surface more accurately.
+ *
+ * \ingroup filters
+ */
 template <typename PointT>
 using VoxelGrid = VoxelFilter<VoxelStructT<PointT>>;
 
