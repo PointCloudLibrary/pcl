@@ -16,6 +16,10 @@
 namespace pcl {
 namespace experimental {
 
+/**
+ * \brief GridFilterBase represents the base class for grid filters.
+ * \ingroup filters
+ */
 template <typename GridStruct, typename PointT = GET_POINT_TYPE(GridStruct)>
 class GridFilterBase : public TransformFilter<GridStruct, PointT> {
 protected:
@@ -23,22 +27,6 @@ protected:
   using PointCloudPtr = typename PointCloud::Ptr;
   using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-  /**
-   * \brief Filter point clouds based on a templated grid structure
-   * \details Used as the base class for grid based filters, e.g. VoxelGrid,
-   * ApproximateVoxelGrid. For grid based filters with different behavior, one can
-   * implement a custom grid structure and pass to this class. The templated grid
-   * structure should have two main components: member functions for filtering
-   * opterations, Grid member attribute for storing the information of the smaller
-   * spaces divided by the grid (e.g. voxels in VoxelGrid).
-   *
-   * Requirements of the grid structure:
-   *  1. Three member functions (setUp, addPointToGrid, filterGrid) the grid structure
-   * are called in applyFilter and thus required to declare.
-   *  2. A Grid member attribute is required, it can be any type with built-in iterator
-   * and size() function, e.g. STL container or custom grid with iterator
-   * \ingroup filters
-   */
 public:
   /** \brief Empty constructor. */
   GridFilterBase() {}
@@ -82,6 +70,12 @@ public:
     return min_points_per_voxel_;
   }
 
+  /** \brief Hash a point to the index of a grid cell.
+   * \param[in] pt the point to hash
+   * \param[in] inverse_leaf_size the array of 1/leaf_size
+   * \param[in] min_b the minimum bin coordinate
+   * \param[in] divb_mul the division multiplier
+   */
   inline std::size_t
   hashPoint(const PointT& pt,
             const Eigen::Array4f& inverse_leaf_size,
@@ -94,20 +88,24 @@ public:
     return ijk0 * divb_mul[0] + ijk1 * divb_mul[1] + ijk2 * divb_mul[2];
   }
 
+  /** \brief Check if the leaf size is too small, given the range of the point cloud
+   * \param[in] min_b the minimum bin coordinate
+   * \param[in] min_b the minimum bin coordinate
+   * \param[in] inverse_leaf_size the array of 1/leaf_size
+   * \note Return false if hash range is larger than the range of size_t as the unsigned
+   * int "wrap around" effect will occur during hashing a point
+   */
   std::size_t
   checkHashRange(const Eigen::Vector4f& min_p,
                  const Eigen::Vector4f& max_p,
                  const Eigen::Array4f& inverse_leaf_size) const
   {
-    // Check if the leaf size is not too small, given the range of the point cloud
-    // Otherwise "wrap around" of unsigned int will happen during hashing a point
-
     // Pass inverse_leaf_size[2] = 0 for checking 2D grids
     const std::size_t dx = std::floor((max_p[0] - min_p[0]) * inverse_leaf_size[0]) + 1;
     const std::size_t dy = std::floor((max_p[1] - min_p[1]) * inverse_leaf_size[1]) + 1;
     const std::size_t dz = std::floor((max_p[2] - min_p[2]) * inverse_leaf_size[2]) + 1;
 
-    // check unsigned int overflow/wrap-around
+    // Check hashing range
     const size_t max_size = std::numeric_limits<std::size_t>::max();
     if (dy > max_size / dx || dx * dy > max_size / dz)
       return 0;

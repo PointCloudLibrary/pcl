@@ -17,9 +17,10 @@ namespace experimental {
 
 #define GET_POINT_TYPE(GridStructT) typename GridStructT::PointCloud::PointType
 
-/**
- * \brief The base of GridFilterBase which has the common member functions and
- * attribute for the grid filters.
+/** \brief @b TransformFilter represents the base class for filters that performs some
+ * grid based tranformation on a point cloud, contrast to FilterIndices that performs
+ * binary point removel. The tranformation can defined by a GridStruct object passed to
+ * the class.
  * \ingroup filters
  */
 template <typename GridStruct, typename PointT = GET_POINT_TYPE(GridStruct)>
@@ -47,12 +48,14 @@ public:
   ~TransformFilter() {}
 
 protected:
+  /** \brief Return const reference of the GridStruct object */
   const GridStruct&
   getGridStruct() const
   {
     return grid_struct_;
   }
 
+  /** \brief Return reference of the GridStruct object */
   GridStruct&
   getGridStruct()
   {
@@ -81,14 +84,23 @@ protected:
       return;
     }
 
-    for (const auto& pt : *input_) {
-      if (input_->is_dense || isXYZFinite(pt)) {
+    // iterate and add points to the grid
+    if (input_->is_dense) {
+      for (const auto& pt : *input_)
         grid_struct_.addPointToGrid(pt);
+    }
+    else {
+      // filter out points with NAN
+      for (const auto& pt : *input_) {
+        if (isXYZFinite(pt))
+          grid_struct_.addPointToGrid(pt);
       }
     }
 
     // allocate enough space for points
     output.reserve(grid_struct_.size());
+
+    // iterate over the grid cells and compute the output point
     for (auto it = grid_struct_.begin(); it != grid_struct_.end(); ++it) {
       const optional<PointT> res = grid_struct_.filterGrid(it);
       if (res)
@@ -97,6 +109,16 @@ protected:
     }
   }
 
+  /** \brief The object defines the filtering operations and grid cells
+   * \note Require the following member functions:
+   *       1. bool setUp(TransformFilter<GridStruct>*)
+   *       2. void addPointToGrid(PointT&)
+   *       3. std::size size()
+   *       4. begin() and end(), it can return any type which can be incremented and
+   * compared. e.g. iterator for map containers or index for array containers
+   *       5. pcl::experimental::optional<PointT> filterGrid(...), which can accept the
+   * output of begin() and end()
+   */
   GridStruct grid_struct_;
 };
 
