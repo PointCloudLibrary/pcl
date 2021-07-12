@@ -225,8 +225,7 @@ public:
   inline Eigen::Vector3f
   getLeafSize() const
   {
-    const Eigen::Vector4f& leaf_size_ =
-        const_cast<VoxelFilter*>(this)->getGridStruct().leaf_size_;
+    const Eigen::Vector4f& leaf_size_ = getGridStruct().leaf_size_;
     return leaf_size_.head<3>();
   }
 
@@ -236,8 +235,7 @@ public:
   inline Eigen::Vector3i
   getMinBoxCoordinates() const
   {
-    const Eigen::Vector4i& min_b_ =
-        const_cast<VoxelFilter*>(this)->getGridStruct().min_b_;
+    const Eigen::Vector4i& min_b_ = getGridStruct().min_b_;
     return min_b_.head<3>();
   }
 
@@ -247,8 +245,7 @@ public:
   inline Eigen::Vector3i
   getMaxBoxCoordinates() const
   {
-    const Eigen::Vector4i max_b_ =
-        const_cast<VoxelFilter*>(this)->getGridStruct().max_b_;
+    const Eigen::Vector4i max_b_ = getGridStruct().max_b_;
     return max_b_.head<3>();
   }
 
@@ -258,8 +255,7 @@ public:
   inline Eigen::Vector3i
   getNrDivisions() const
   {
-    const Eigen::Vector4i& div_b_ =
-        const_cast<VoxelFilter*>(this)->getGridStruct().div_b_;
+    const Eigen::Vector4i& div_b_ = getGridStruct().div_b_;
     return div_b_.head<3>();
   }
 
@@ -269,8 +265,7 @@ public:
   inline Eigen::Vector3i
   getDivisionMultiplier() const
   {
-    const Eigen::Vector4i& divb_mul_ =
-        const_cast<VoxelFilter*>(this)->getGridStruct().divb_mul_;
+    const Eigen::Vector4i& divb_mul_ = getGridStruct().divb_mul_;
     return divb_mul_.head<3>();
   }
 
@@ -286,14 +281,10 @@ public:
   inline int
   getCentroidIndex(const PointT& pt) const
   {
-    const std::vector<int>& leaf_layout_ =
-        const_cast<VoxelFilter*>(this)->getGridStruct().leaf_layout_;
-    const Eigen::Array4f& inverse_leaf_size_ =
-        const_cast<VoxelFilter*>(this)->getGridStruct().inverse_leaf_size_;
-    const Eigen::Vector4i& min_b_ =
-        const_cast<VoxelFilter*>(this)->getGridStruct().min_b_;
-    const Eigen::Vector4i& divb_mul_ =
-        const_cast<VoxelFilter*>(this)->getGridStruct().divb_mul_;
+    const std::vector<int>& leaf_layout_ = getGridStruct().leaf_layout_;
+    const Eigen::Array4f& inverse_leaf_size_ = getGridStruct().inverse_leaf_size_;
+    const Eigen::Vector4i& min_b_ = getGridStruct().min_b_;
+    const Eigen::Vector4i& divb_mul_ = getGridStruct().divb_mul_;
 
     return leaf_layout_.at(this->hashPoint(pt, inverse_leaf_size_, min_b_, divb_mul_));
   }
@@ -318,14 +309,10 @@ public:
                              const float z,
                              const Eigen::MatrixXi& relative_coordinates) const
   {
-    const std::vector<int>& leaf_layout_ =
-        const_cast<VoxelFilter*>(this)->getGridStruct().leaf_layout_;
-    const Eigen::Vector4i& min_b_ =
-        const_cast<VoxelFilter*>(this)->getGridStruct().min_b_;
-    const Eigen::Vector4i& max_b_ =
-        const_cast<VoxelFilter*>(this)->getGridStruct().min_b_;
-    const Eigen::Vector4i& divb_mul_ =
-        const_cast<VoxelFilter*>(this)->getGridStruct().divb_mul_;
+    const std::vector<int>& leaf_layout_ = getGridStruct().leaf_layout_;
+    const Eigen::Vector4i& min_b_ = getGridStruct().min_b_;
+    const Eigen::Vector4i& max_b_ = getGridStruct().min_b_;
+    const Eigen::Vector4i& divb_mul_ = getGridStruct().divb_mul_;
 
     const Eigen::Vector4i ijk(
         (Eigen::Vector4i() << getGridCoordinates(x, y, z), 0).finished());
@@ -371,12 +358,9 @@ public:
       const std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i>>&
           relative_coordinates) const
   {
-    const std::vector<int>& leaf_layout_ =
-        const_cast<VoxelFilter*>(this)->getGridStruct().leaf_layout_;
-    const Eigen::Vector4i& min_b_ =
-        const_cast<VoxelFilter*>(this)->getGridStruct().min_b_;
-    const Eigen::Vector4i& divb_mul_ =
-        const_cast<VoxelFilter*>(this)->getGridStruct().divb_mul_;
+    const std::vector<int>& leaf_layout_ = getGridStruct().leaf_layout_;
+    const Eigen::Vector4i& min_b_ = getGridStruct().min_b_;
+    const Eigen::Vector4i& divb_mul_ = getGridStruct().divb_mul_;
 
     const Eigen::Vector4i ijk(
         (Eigen::Vector4i() << getGridCoordinates(x, y, z), 0).finished());
@@ -422,7 +406,7 @@ public:
   inline bool
   getSaveLeafLayout() const
   {
-    return const_cast<VoxelFilter*>(this)->getGridStruct().save_leaf_layout_;
+    return getGridStruct().save_leaf_layout_;
   }
 
   /** \brief Returns the layout of the leafs for fast access to cells relative to
@@ -433,7 +417,7 @@ public:
   inline std::vector<int>
   getLeafLayout() const
   {
-    return const_cast<VoxelFilter*>(this)->getGridStruct().leaf_layout_;
+    return getGridStruct().leaf_layout_;
   }
 
   /** \brief Returns the corresponding (i,j,k) coordinates in the grid of point (x,y,z).
@@ -444,8 +428,7 @@ public:
   inline Eigen::Vector3i
   getGridCoordinates(const float x, const float y, const float z) const
   {
-    const Eigen::Array4f& inverse_leaf_size_ =
-        const_cast<VoxelFilter*>(this)->getGridStruct().inverse_leaf_size_;
+    const Eigen::Array4f& inverse_leaf_size_ = getGridStruct().inverse_leaf_size_;
     return Eigen::Vector3i(static_cast<int>(std::floor(x * inverse_leaf_size_[0])),
                            static_cast<int>(std::floor(y * inverse_leaf_size_[1])),
                            static_cast<int>(std::floor(z * inverse_leaf_size_[2])));
@@ -458,12 +441,9 @@ public:
   inline int
   getCentroidIndexAt(const Eigen::Vector3i& ijk) const
   {
-    const std::vector<int>& leaf_layout_ =
-        const_cast<VoxelFilter*>(this)->getGridStruct().leaf_layout_;
-    const Eigen::Vector4i& min_b_ =
-        const_cast<VoxelFilter*>(this)->getGridStruct().min_b_;
-    const Eigen::Vector4i& divb_mul_ =
-        const_cast<VoxelFilter*>(this)->getGridStruct().divb_mul_;
+    const std::vector<int>& leaf_layout_ = getGridStruct().leaf_layout_;
+    const Eigen::Vector4i& min_b_ = getGridStruct().min_b_;
+    const Eigen::Vector4i& divb_mul_ = getGridStruct().divb_mul_;
 
     const int idx = ((Eigen::Vector4i() << ijk, 0).finished() - min_b_).dot(divb_mul_);
     // this checks also if leaf_layout_.size () == 0 i.e. everything was computed as
