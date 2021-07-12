@@ -47,10 +47,17 @@ public:
   ~TransformFilter() {}
 
 protected:
+  const GridStruct&
+  getGridStruct() const
+  {
+    return grid_struct_;
+  }
+
   GridStruct&
   getGridStruct()
   {
-    return grid_struct_;
+    return const_cast<GridStruct&>(
+        const_cast<const TransformFilter*>(this)->getGridStruct());
   }
 
   /** \brief Filter a Point Cloud based on the templated grid structure
