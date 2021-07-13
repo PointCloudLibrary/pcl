@@ -1,0 +1,7 @@
+[
+	{
+			"directory": "/home/divyanshu/Projects/active/pcl/bindings/python/tests",
+			"command": "/usr/bin/clang++ -std=c++14 /home/divyanshu/Projects/active/pcl/common/include/pcl/impl/point_types.hpp",
+			"file": "/home/divyanshu/Projects/active/pcl/common/include/pcl/impl/point_types.hpp"
+	}
+]
