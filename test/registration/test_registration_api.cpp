@@ -54,6 +54,7 @@
 #include <pcl/registration/correspondence_rejection_var_trimmed.h>
 #include <pcl/registration/transformation_estimation_lm.h>
 #include <pcl/registration/transformation_estimation_svd.h>
+#include <pcl/registration/transformation_estimation_eig.h>
 #include <pcl/registration/transformation_estimation_dual_quaternion.h>
 #include <pcl/registration/transformation_estimation_point_to_plane_lls.h>
 #include <pcl/registration/transformation_estimation_point_to_plane.h>
@@ -372,6 +373,67 @@ TEST (PCL, CorrespondenceRejectorVarTrimmed)
       EXPECT_EQ ((*correspondences_result_rej_var_trimmed_dist)[i].index_match, correspondences_dist[i][1]);
     }
   }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, TransformationEstimationEIG)
+{
+  // Ideal conditions for the estimation (no noise, exact correspondences)
+  CloudXYZConstPtr source (new CloudXYZ (cloud_target));
+  CloudXYZPtr      target (new CloudXYZ ());
+  pcl::transformPointCloud (*source, *target, T_ref);
+
+  pcl::registration::use_fs3r = false;
+  Eigen::Matrix4f T_EIG_1;
+  const pcl::registration::TransformationEstimationEIG<PointXYZ, PointXYZ> trans_est_eig;
+  trans_est_eig.estimateRigidTransformation(*source, *target, T_EIG_1);
+
+  const Eigen::Quaternionf   R_EIG_1 (T_EIG_1.topLeftCorner  <3, 3> ());
+  const Eigen::Translation3f t_EIG_1 (T_EIG_1.topRightCorner <3, 1> ());
+
+  EXPECT_NEAR (R_EIG_1.x (), R_ref.x (), 1e-6f);
+  EXPECT_NEAR (R_EIG_1.y (), R_ref.y (), 1e-6f);
+  EXPECT_NEAR (R_EIG_1.z (), R_ref.z (), 1e-6f);
+  EXPECT_NEAR (R_EIG_1.w (), R_ref.w (), 1e-6f);
+
+  EXPECT_NEAR (t_EIG_1.x (), t_ref.x (), 1e-6f);
+  EXPECT_NEAR (t_EIG_1.y (), t_ref.y (), 1e-6f);
+  EXPECT_NEAR (t_EIG_1.z (), t_ref.z (), 1e-6f);
+
+  // Check if the estimation with correspondences gives the same results
+  Eigen::Matrix4f T_EIG_2;
+  pcl::Correspondences corr; corr.reserve (source->size ());
+  for (std::size_t i=0; i<source->size (); ++i) corr.push_back (pcl::Correspondence (i, i, 0.f));
+  trans_est_eig.estimateRigidTransformation(*source, *target, corr, T_EIG_2);
+
+  const Eigen::Quaternionf   R_EIG_2 (T_EIG_2.topLeftCorner  <3, 3> ());
+  const Eigen::Translation3f t_EIG_2 (T_EIG_2.topRightCorner <3, 1> ());
+
+  EXPECT_FLOAT_EQ (R_EIG_1.x (), R_EIG_2.x ());
+  EXPECT_FLOAT_EQ (R_EIG_1.y (), R_EIG_2.y ());
+  EXPECT_FLOAT_EQ (R_EIG_1.z (), R_EIG_2.z ());
+  EXPECT_FLOAT_EQ (R_EIG_1.w (), R_EIG_2.w ());
+
+  EXPECT_FLOAT_EQ (t_EIG_1.x (), t_EIG_2.x ());
+  EXPECT_FLOAT_EQ (t_EIG_1.y (), t_EIG_2.y ());
+  EXPECT_FLOAT_EQ (t_EIG_1.z (), t_EIG_2.z ());
+
+  pcl::registration::use_fs3r = true;
+  // Check if the results from FS3R are the same with EIG
+  Eigen::Matrix4f T_EIG_3;
+  trans_est_eig.estimateRigidTransformation(*source, *target, T_EIG_3);
+
+  const Eigen::Quaternionf   R_FS3R (T_EIG_3.topLeftCorner  <3, 3> ());
+  const Eigen::Translation3f t_FS3R (T_EIG_3.topRightCorner <3, 1> ());
+
+  EXPECT_NEAR (R_FS3R.x (), R_ref.x (), 1e-6f);
+  EXPECT_NEAR (R_FS3R.y (), R_ref.y (), 1e-6f);
+  EXPECT_NEAR (R_FS3R.z (), R_ref.z (), 1e-6f);
+  EXPECT_NEAR (R_FS3R.w (), R_ref.w (), 1e-6f);
+
+  EXPECT_NEAR (t_FS3R.x (), t_ref.x (), 1e-6f);
+  EXPECT_NEAR (t_FS3R.y (), t_ref.y (), 1e-6f);
+  EXPECT_NEAR (t_FS3R.z (), t_ref.z (), 1e-6f);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
