@@ -39,6 +39,8 @@
 #include <pcl/gpu/containers/kernel_containers.h>
 #include <pcl/pcl_exports.h>
 
+#include <atomic>
+
 namespace pcl {
 namespace gpu {
 ///////////////////////////////////////////////////////////////////////////////
@@ -167,7 +169,7 @@ private:
   std::size_t sizeBytes_;
 
   /** \brief Pointer to reference counter in CPU memory. */
-  int* refcount_;
+  std::atomic<int>* refcount_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -308,7 +310,7 @@ private:
   int rows_;
 
   /** \brief Pointer to reference counter in CPU memory. */
-  int* refcount_;
+  std::atomic<int>* refcount_;
 };
 } // namespace gpu
 

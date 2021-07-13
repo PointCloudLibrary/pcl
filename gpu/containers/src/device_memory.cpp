@@ -161,34 +161,6 @@ pcl::gpu::DeviceMemory2D::empty() const
 
 #else
 
-//////////////////////////    XADD    ///////////////////////////////
-
-#ifdef __GNUC__
-#if !defined WIN32 && (defined __i486__ || defined __i586__ || defined __i686__ ||     \
-                       defined __MMX__ || defined __SSE__ || defined __ppc__)
-#define CV_XADD __sync_fetch_and_add
-#else
-#include <ext/atomicity.h>
-#define CV_XADD __gnu_cxx::__exchange_and_add
-#endif
-#elif defined WIN32 || defined _WIN32
-#include <intrin.h>
-#define CV_XADD(addr, delta) _InterlockedExchangeAdd((long volatile*)(addr), (delta))
-#else
-
-template <typename _Tp>
-static inline _Tp
-CV_XADD(_Tp* addr, _Tp delta)
-{
-  int tmp = *addr;
-  *addr += delta;
-  return tmp;
-}
-
-#endif
-
-////////////////////////    DeviceArray    /////////////////////////////
-
 pcl::gpu::DeviceMemory::DeviceMemory()
 : data_(nullptr), sizeBytes_(0), refcount_(nullptr)
 {}
@@ -211,7 +183,7 @@ pcl::gpu::DeviceMemory::DeviceMemory(const DeviceMemory& other_arg)
 , refcount_(other_arg.refcount_)
 {
   if (refcount_)
-    CV_XADD(refcount_, 1);
+    refcount_->fetch_add(1, std::memory_order_seq_cst);
 }
 
 pcl::gpu::DeviceMemory&
@@ -219,7 +191,7 @@ pcl::gpu::DeviceMemory::operator=(const pcl::gpu::DeviceMemory& other_arg)
 {
   if (this != &other_arg) {
     if (other_arg.refcount_)
-      CV_XADD(other_arg.refcount_, 1);
+      refcount_->fetch_add(1, std::memory_order_seq_cst);
     release();
 
     data_ = other_arg.data_;
@@ -243,9 +215,8 @@ pcl::gpu::DeviceMemory::create(std::size_t sizeBytes_arg)
 
     cudaSafeCall(cudaMalloc(&data_, sizeBytes_));
 
-    // refcount_ = (int*)cv::fastMalloc(sizeof(*refcount_));
-    refcount_ = new int;
-    *refcount_ = 1;
+    refcount_ = new std::atomic<int>;
+    refcount_->store(1);
   }
 }
 
@@ -264,8 +235,7 @@ pcl::gpu::DeviceMemory::copyTo(DeviceMemory& other) const
 void
 pcl::gpu::DeviceMemory::release()
 {
-  if (refcount_ && CV_XADD(refcount_, -1) == 1) {
-    // cv::fastFree(refcount);
+  if (refcount_ && refcount_->fetch_sub(1, std::memory_order_seq_cst) == 1) {
     delete refcount_;
     cudaSafeCall(cudaFree(data_));
   }
@@ -369,7 +339,7 @@ pcl::gpu::DeviceMemory2D::DeviceMemory2D(const DeviceMemory2D& other_arg)
 , refcount_(other_arg.refcount_)
 {
   if (refcount_)
-    CV_XADD(refcount_, 1);
+    refcount_->fetch_add(1, std::memory_order_seq_cst);
 }
 
 pcl::gpu::DeviceMemory2D&
@@ -377,7 +347,7 @@ pcl::gpu::DeviceMemory2D::operator=(const pcl::gpu::DeviceMemory2D& other_arg)
 {
   if (this != &other_arg) {
     if (other_arg.refcount_)
-      CV_XADD(other_arg.refcount_, 1);
+      refcount_->fetch_add(1, std::memory_order_seq_cst);
     release();
 
     colsBytes_ = other_arg.colsBytes_;
@@ -405,17 +375,15 @@ pcl::gpu::DeviceMemory2D::create(int rows_arg, int colsBytes_arg)
 
     cudaSafeCall(cudaMallocPitch((void**)&data_, &step_, colsBytes_, rows_));
 
-    // refcount = (int*)cv::fastMalloc(sizeof(*refcount));
-    refcount_ = new int;
-    *refcount_ = 1;
+    refcount_ = new std::atomic<int>;
+    refcount_->store(1);
   }
 }
 
 void
 pcl::gpu::DeviceMemory2D::release()
 {
-  if (refcount_ && CV_XADD(refcount_, -1) == 1) {
-    // cv::fastFree(refcount);
+  if (refcount_ && refcount_->fetch_sub(1, std::memory_order_seq_cst) == 1) {
     delete refcount_;
     cudaSafeCall(cudaFree(data_));
   }
