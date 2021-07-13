@@ -11,7 +11,7 @@
 
 #include <pcl/common/centroid.h>
 #include <pcl/common/common.h>
-#include <pcl/filters/experimental/grid_filter_base.h>
+#include <pcl/filters/experimental/cartesian_filter.h>
 
 #include <unordered_map>
 
@@ -26,7 +26,7 @@ template <typename PointT>
 class VoxelStructT {
 public:
   using PointCloud =
-      pcl::PointCloud<PointT>; // read by GridFilterBase to deduce point type
+      pcl::PointCloud<PointT>; // read by CartesianFilter to deduce point type
   using PointCloudPtr = typename PointCloud::Ptr;
   using PointCloudConstPtr = typename PointCloud::ConstPtr;
   using Grid = typename std::unordered_map<std::size_t, CentroidPoint<PointT>>;
@@ -65,7 +65,7 @@ public:
     num_voxels_ = 0;
     grid_.clear();
 
-    grid_filter_ = static_cast<GridFilterBase<VoxelStructT>*>(transform_filter);
+    grid_filter_ = static_cast<CartesianFilter<VoxelStructT>*>(transform_filter);
 
     const PointCloudConstPtr input = grid_filter_->getInputCloud();
     const IndicesConstPtr indices = grid_filter_->getIndices();
@@ -194,7 +194,7 @@ public:
   Grid grid_;
 
   /** \brief Pointer to the GridFilter object */
-  GridFilterBase<VoxelStructT>* grid_filter_;
+  CartesianFilter<VoxelStructT>* grid_filter_;
 
   /** \brief Total number of voxels in the output cloud */
   std::size_t num_voxels_;
@@ -213,8 +213,8 @@ public:
  * \ingroup filters
  */
 template <typename GridStruct, typename PointT = GET_POINT_TYPE(GridStruct)>
-class VoxelFilter : public GridFilterBase<GridStruct> {
-  using GridFilterBase<GridStruct>::getGridStruct;
+class VoxelFilter : public CartesianFilter<GridStruct> {
+  using CartesianFilter<GridStruct>::getGridStruct;
 
 public:
   /** \brief Set the voxel grid leaf size.
