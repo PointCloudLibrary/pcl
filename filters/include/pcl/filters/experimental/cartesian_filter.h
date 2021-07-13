@@ -17,11 +17,11 @@ namespace pcl {
 namespace experimental {
 
 /**
- * \brief GridFilterBase represents the base class for grid filters.
+ * \brief CartesianFilter represents the base class for grid filters.
  * \ingroup filters
  */
 template <typename GridStruct, typename PointT = GET_POINT_TYPE(GridStruct)>
-class GridFilterBase : public TransformFilter<GridStruct, PointT> {
+class CartesianFilter : public TransformFilter<GridStruct, PointT> {
 protected:
   using PointCloud = typename TransformFilter<GridStruct, PointT>::PointCloud;
   using PointCloudPtr = typename PointCloud::Ptr;
@@ -29,10 +29,10 @@ protected:
 
 public:
   /** \brief Empty constructor. */
-  GridFilterBase() {}
+  CartesianFilter() {}
 
   /** \brief Destructor. */
-  ~GridFilterBase() {}
+  ~CartesianFilter() {}
 
   /** \brief Set to true if all fields need to be downsampled, or false if just XYZ.
    * \param[in] downsample the new value (true/false)

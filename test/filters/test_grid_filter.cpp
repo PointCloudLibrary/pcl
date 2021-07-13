@@ -7,7 +7,7 @@
  * All rights reserved
  */
 
-#include <pcl/filters/experimental/grid_filter_base.h>
+#include <pcl/filters/experimental/cartesian_filter.h>
 #include <pcl/filters/experimental/transform_filter.h>
 #include <pcl/test/gtest.h>
 #include <pcl/pcl_tests.h>
@@ -20,7 +20,7 @@
 using namespace pcl;
 using namespace pcl::test;
 
-// Grid structure with necessary declarations for GridFilterBase
+// Grid structure with necessary declarations for CartesianFilter
 
 struct EmptyVoxel {
   bool voxel_info = false;
@@ -141,7 +141,7 @@ struct EmptyVecStruct {
 };
 
 template <typename GridStruct, typename PointT = GET_POINT_TYPE(GridStruct)>
-class MockFilter : public experimental::GridFilterBase<GridStruct> {
+class MockFilter : public experimental::CartesianFilter<GridStruct> {
 public:
   // test passed or failed setUp
   void
