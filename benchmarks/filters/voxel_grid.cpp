@@ -71,10 +71,29 @@ main(int argc, char** argv)
   if (argc < 3) {
     std::cerr
         << "No test files given. Please download `table_scene_mug_stereo_textured.pcd` "
-           "and `milk_cartoon_all_small_clorox.pcd`, and pass their paths to the test."
+           ", `milk_cartoon_all_small_clorox.pcd`, `office1.pcd` and "
+           "`five_people.pcd`, and pass their paths to the test."
         << std::endl;
     return (-1);
   }
+
+  benchmark::RegisterBenchmark("BM_VoxelGrid_5people", &BM_VoxelGrid, argv[4])
+      ->Unit(benchmark::kMillisecond);
+  benchmark::RegisterBenchmark(
+      "BM_ApproximateVoxelGrid_5people", &BM_ApproxVoxelGrid, argv[4])
+      ->Unit(benchmark::kMillisecond);
+  benchmark::RegisterBenchmark(
+      "BM_Experimental_VoxelGrid_5people", &BM_Experimental_VoxelGrid, argv[4])
+      ->Unit(benchmark::kMillisecond);
+
+  benchmark::RegisterBenchmark("BM_VoxelGrid_office", &BM_VoxelGrid, argv[3])
+      ->Unit(benchmark::kMillisecond);
+  benchmark::RegisterBenchmark(
+      "BM_ApproximateVoxelGrid_office", &BM_ApproxVoxelGrid, argv[3])
+      ->Unit(benchmark::kMillisecond);
+  benchmark::RegisterBenchmark(
+      "BM_Experimental_VoxelGrid_office", &BM_Experimental_VoxelGrid, argv[3])
+      ->Unit(benchmark::kMillisecond);
 
   benchmark::RegisterBenchmark("BM_VoxelGrid_milk", &BM_VoxelGrid, argv[2])
       ->Unit(benchmark::kMillisecond);
