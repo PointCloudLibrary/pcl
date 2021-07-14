@@ -150,7 +150,8 @@ TEST(HashingPoint, ExperimentalVoxelGridEquivalency)
 
   for (size_t i = 0; i < cloud->size(); ++i) {
     if (isXYZFinite(cloud->at(i))) {
-      EXPECT_EQ(new_grid.hashPoint(cloud->at(i), inverse_leaf_size, min_b, divb_mul),
+      EXPECT_EQ(new_grid.hashPoint(
+                    cloud->at(i), inverse_leaf_size, min_b, divb_mul[1], divb_mul[2]),
                 old_hash(cloud->at(i)));
     }
   }

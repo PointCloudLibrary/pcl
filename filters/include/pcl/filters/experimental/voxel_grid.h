@@ -135,8 +135,8 @@ public:
   inline void
   addPointToGrid(const PointT& pt)
   {
-    const std::size_t h =
-        grid_filter_->hashPoint(pt, inverse_leaf_size_, min_b_, divb_mul_);
+    const std::size_t h = grid_filter_->hashPoint(
+        pt, inverse_leaf_size_, min_b_, divb_mul_[1], divb_mul_[2]);
     grid_[h].add(pt);
   }
 
@@ -320,7 +320,8 @@ public:
     const Eigen::Vector4i& min_b_ = getGridStruct().min_b_;
     const Eigen::Vector4i& divb_mul_ = getGridStruct().divb_mul_;
 
-    return leaf_layout_.at(this->hashPoint(pt, inverse_leaf_size_, min_b_, divb_mul_));
+    return leaf_layout_.at(
+        this->hashPoint(pt, inverse_leaf_size_, min_b_, divb_mul_[1], divb_mul_[2]));
   }
 
   /** \brief Returns the indices in the resulting downsampled cloud of the points at the
