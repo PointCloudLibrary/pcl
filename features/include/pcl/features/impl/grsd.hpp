@@ -65,7 +65,7 @@ template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::GRSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
   // Check if search_radius_ was set
-  if (width_ < 0)
+  if (width_ <= 0.0)
   {
     PCL_ERROR ("[pcl::%s::computeFeature] A voxel cell width needs to be set!\n", getClassName ().c_str ());
     output.width = output.height = 0;
@@ -87,7 +87,11 @@ pcl::GRSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   rsd.setInputCloud (cloud_downsampled);
   rsd.setSearchSurface (input_);
   rsd.setInputNormals (normals_);
-  rsd.setRadiusSearch (std::max (search_radius_, std::sqrt (3.0) * width_ / 2));
+  rsd.setRadiusSearch (search_radius_);
+  if (rsd_nr_subdiv_ != 0) // if not set, use default from RSDEstimation
+    rsd.setNrSubdivisions (rsd_nr_subdiv_);
+  if (rsd_plane_radius_ != 0.0)
+    rsd.setPlaneRadius (rsd_plane_radius_);
   rsd.compute (*radii);
 
   // Save the type of each point
