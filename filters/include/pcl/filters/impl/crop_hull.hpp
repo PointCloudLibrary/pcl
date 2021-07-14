@@ -69,6 +69,8 @@ pcl::CropHull<PointT>::applyFilter (PointCloud &output)
 template<typename PointT> void
 pcl::CropHull<PointT>::applyFilter (Indices &indices)
 {
+  indices.clear();
+  indices.reserve(indices_->size());
   if (dim_ == 2)
   {
     // in this case we are assuming all the points lie in the same plane as the
