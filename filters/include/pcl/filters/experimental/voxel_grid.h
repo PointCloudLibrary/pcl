@@ -63,7 +63,7 @@ public:
   setUp(TransformFilter<VoxelStructT>* transform_filter)
   {
     num_voxels_ = 0;
-    grid_.clear();
+    grid_ = Grid();
 
     grid_filter_ = static_cast<CartesianFilter<VoxelStructT>*>(transform_filter);
 
