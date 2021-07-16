@@ -307,6 +307,27 @@ TYPED_TEST (PCLCropHullTestFixture, simple_test)
       crop_hull_filter.setInputCloud(test_data.input_cloud_);
       pcl::Indices filtered_indices;
       crop_hull_filter.filter(filtered_indices);
+      ASSERT_EQ(test_data.inside_indices_.size(), filtered_indices.size());
+      pcl::test::EXPECT_EQ_VECTORS(test_data.inside_indices_, filtered_indices);
+    }
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// checking that the result is independent of the original state of the output_indices
+TYPED_TEST (PCLCropHullTestFixture, non_empty_output_indices)
+{
+  for (auto & entry : this->data_)
+  {
+    auto & crop_hull_filter = entry.first;
+    for (TestData const & test_data : entry.second)
+    {
+      crop_hull_filter.setInputCloud(test_data.input_cloud_);
+      // the size of indices array does not matter. only that it is not empty
+      pcl::Indices filtered_indices(42);
+      crop_hull_filter.filter(filtered_indices);
+      ASSERT_EQ(test_data.inside_indices_.size(), filtered_indices.size());
       pcl::test::EXPECT_EQ_VECTORS(test_data.inside_indices_, filtered_indices);
     }
   }
