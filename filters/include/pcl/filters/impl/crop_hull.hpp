@@ -45,7 +45,9 @@ template<typename PointT> void
 pcl::CropHull<PointT>::applyFilter (Indices &indices)
 {
   indices.clear();
+  removed_indices_->clear();
   indices.reserve(indices_->size());
+  removed_indices_->reserve(indices_->size());
   if (dim_ == 2)
   {
     // in this case we are assuming all the points lie in the same plane as the
@@ -98,9 +100,10 @@ pcl::CropHull<PointT>::getHullCloudRange ()
 template<typename PointT> template<unsigned PlaneDim1, unsigned PlaneDim2> void 
 pcl::CropHull<PointT>::applyFilter2D (Indices &indices)
 {
-  // see comments in (PointCloud& output) overload
   for (std::size_t index = 0; index < indices_->size (); index++)
   {
+    // iterate over polygons faster than points because we expect this data
+    // to be, in general, more cache-local - the point cloud might be huge
     std::size_t poly;
     for (poly = 0; poly < hull_polygons_.size (); poly++)
     {
@@ -108,13 +111,16 @@ pcl::CropHull<PointT>::applyFilter2D (Indices &indices)
               (*input_)[(*indices_)[index]], hull_polygons_[poly], *hull_cloud_
          ))
       {
-        if (crop_outside_)      
+        if (crop_outside_)
           indices.push_back ((*indices_)[index]);
         break;
       }
     }
     if (poly == hull_polygons_.size () && !crop_outside_)
       indices.push_back ((*indices_)[index]);
+    if (indices.empty() || indices.back() != (*indices_)[index]) {
+      removed_indices_->push_back ((*indices_)[index]);
+    }
   }
 }
 
@@ -122,9 +128,18 @@ pcl::CropHull<PointT>::applyFilter2D (Indices &indices)
 template<typename PointT> void 
 pcl::CropHull<PointT>::applyFilter3D (Indices &indices)
 {
-  // see comments in applyFilter3D (PointCloud& output)
+  // This algorithm could definitely be sped up using kdtree/octree
+  // information, if that is available!
+
   for (std::size_t index = 0; index < indices_->size (); index++)
   {
+    // test ray-crossings for three random rays, and take vote of crossings
+    // counts to determine if each point is inside the hull: the vote avoids
+    // tricky edge and corner cases when rays might fluke through the edge
+    // between two polygons
+    // 'random' rays are arbitrary - basically anything that is less likely to
+    // hit the edge between polygons than coordinate-axis aligned rays would
+    // be.
     std::size_t crossings[3] = {0,0,0};
     Eigen::Vector3f rays[3] = 
     {
@@ -142,6 +157,8 @@ pcl::CropHull<PointT>::applyFilter3D (Indices &indices)
       indices.push_back ((*indices_)[index]);
     else if (!crop_outside_)
       indices.push_back ((*indices_)[index]);
+    else
+      removed_indices_->push_back ((*indices_)[index]);
   }
 }
 
