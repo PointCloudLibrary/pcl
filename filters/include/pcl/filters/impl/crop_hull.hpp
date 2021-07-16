@@ -42,31 +42,6 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
-pcl::CropHull<PointT>::applyFilter (PointCloud &output)
-{
-  if (dim_ == 2)
-  {
-    // in this case we are assuming all the points lie in the same plane as the
-    // 2D convex hull, so the choice of projection just changes the
-    // conditioning of the problem: choose to squash the XYZ component of the
-    // hull-points that has least variation - this will also give reasonable
-    // results if the points don't lie exactly in the same plane
-    const Eigen::Vector3f range = getHullCloudRange ();
-    if (range[0] <= range[1] && range[0] <= range[2])
-      applyFilter2D<1,2> (output);
-    else if (range[1] <= range[2] && range[1] <= range[0])
-      applyFilter2D<2,0> (output);
-    else
-      applyFilter2D<0,1> (output);
-  }
-  else
-  {
-    applyFilter3D (output);
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT> void
 pcl::CropHull<PointT>::applyFilter (Indices &indices)
 {
   indices.clear();
@@ -121,35 +96,6 @@ pcl::CropHull<PointT>::getHullCloudRange ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> template<unsigned PlaneDim1, unsigned PlaneDim2> void 
-pcl::CropHull<PointT>::applyFilter2D (PointCloud &output)
-{
-  for (std::size_t index = 0; index < indices_->size (); index++)
-  {
-    // iterate over polygons faster than points because we expect this data
-    // to be, in general, more cache-local - the point cloud might be huge
-    std::size_t poly;
-    for (poly = 0; poly < hull_polygons_.size (); poly++)
-    {
-      if (isPointIn2DPolyWithVertIndices<PlaneDim1,PlaneDim2> (
-              (*input_)[(*indices_)[index]], hull_polygons_[poly], *hull_cloud_
-         ))
-      {
-        if (crop_outside_)
-          output.push_back ((*input_)[(*indices_)[index]]);
-        // once a point has tested +ve for being inside one polygon, we can
-        // stop checking the others:
-        break;
-      }
-    }
-    // If we're removing points *inside* the hull, only remove points that
-    // haven't been found inside any polygons
-    if (poly == hull_polygons_.size () && !crop_outside_)
-      output.push_back ((*input_)[(*indices_)[index]]);
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT> template<unsigned PlaneDim1, unsigned PlaneDim2> void 
 pcl::CropHull<PointT>::applyFilter2D (Indices &indices)
 {
   // see comments in (PointCloud& output) overload
@@ -169,42 +115,6 @@ pcl::CropHull<PointT>::applyFilter2D (Indices &indices)
     }
     if (poly == hull_polygons_.size () && !crop_outside_)
       indices.push_back ((*indices_)[index]);
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT> void 
-pcl::CropHull<PointT>::applyFilter3D (PointCloud &output)
-{
-  // This algorithm could definitely be sped up using kdtree/octree
-  // information, if that is available!
-
-  for (std::size_t index = 0; index < indices_->size (); index++)
-  {
-    // test ray-crossings for three random rays, and take vote of crossings
-    // counts to determine if each point is inside the hull: the vote avoids
-    // tricky edge and corner cases when rays might fluke through the edge
-    // between two polygons
-    // 'random' rays are arbitrary - basically anything that is less likely to
-    // hit the edge between polygons than coordinate-axis aligned rays would
-    // be.
-    std::size_t crossings[3] = {0,0,0};
-    Eigen::Vector3f rays[3] = 
-    {
-      Eigen::Vector3f (0.264882f,  0.688399f, 0.675237f),
-      Eigen::Vector3f (0.0145419f, 0.732901f, 0.68018f),
-      Eigen::Vector3f (0.856514f,  0.508771f, 0.0868081f)
-    };
-
-    for (std::size_t poly = 0; poly < hull_polygons_.size (); poly++)
-      for (std::size_t ray = 0; ray < 3; ray++)
-        crossings[ray] += rayTriangleIntersect
-          ((*input_)[(*indices_)[index]], rays[ray], hull_polygons_[poly], *hull_cloud_);
-
-    if (crop_outside_ && (crossings[0]&1) + (crossings[1]&1) + (crossings[2]&1) > 1)
-      output.push_back ((*input_)[(*indices_)[index]]);
-    else if (!crop_outside_)
-      output.push_back ((*input_)[(*indices_)[index]]);
   }
 }
 
