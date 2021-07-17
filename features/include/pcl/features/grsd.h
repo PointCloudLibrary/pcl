@@ -86,7 +86,7 @@ namespace pcl
       using PointCloudInPtr = typename Feature<PointInT, PointOutT>::PointCloudInPtr;
 
       /** \brief Constructor. */
-      GRSDEstimation () : additive_ (true), width_ (0.0), rsd_nr_subdiv_ (0), rsd_plane_radius_ (0.0)
+      GRSDEstimation ()
       {
         feature_name_ = "GRSDEstimation";
         relative_coordinates_all_ = getAllNeighborCellIndices ();
@@ -145,16 +145,16 @@ namespace pcl
     private:
 
       /** \brief Defines if an additive feature is computed or ray-casting is used to get a more descriptive feature. */
-      bool additive_;
+      bool additive_ = true;
 
       /** \brief Defines the voxel size to be used. */
-      double width_;
+      double width_ = 0.0;
 
       /** \brief For the underlying RSDEstimation. The number of subdivisions for the considered distance interval. */
-      int rsd_nr_subdiv_;
+      int rsd_nr_subdiv_ = 0;
 
       /** \brief For the underlying RSDEstimation. The maximum radius, above which everything can be considered planar. */
-      double rsd_plane_radius_;
+      double rsd_plane_radius_ = 0.0;
 
       /** \brief Pre-computed the relative cell indices of all the 26 neighbors. */
       Eigen::MatrixXi relative_coordinates_all_;
