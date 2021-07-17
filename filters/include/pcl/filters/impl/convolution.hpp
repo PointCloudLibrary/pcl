@@ -557,6 +557,9 @@ Convolution<PointIn, PointOut>::convolve_cols_mirror (PointCloudOut& output)
   }
 }
 
+#define PCL_INSTANTIATE_Convolution(Tin, Tout)                                         \
+  template class PCL_EXPORTS Convolution<Tin, Tout>;
+
 } // namespace filters
 } // namespace pcl
 
