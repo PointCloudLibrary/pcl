@@ -18,6 +18,76 @@
 namespace pcl {
 namespace experimental {
 
+template <typename PointT>
+struct Voxel {
+
+  union Centroid {
+    Centroid() {}
+    ~Centroid() {}
+
+    CentroidPoint<PointT> all_fields;
+    Eigen::Array4f xyz;
+  };
+
+  Voxel(const bool downsample_all_data) : downsample_all_data_(downsample_all_data)
+  {
+    num_pt_ = 0;
+    if (downsample_all_data_)
+      centroid_.all_fields = CentroidPoint<PointT>();
+    else
+      centroid_.xyz = Eigen::Array4f::Zero();
+  }
+  ~Voxel()
+  {
+    if (downsample_all_data_)
+      centroid_.all_fields.~CentroidPoint<PointT>();
+    else
+      centroid_.xyz.~Array();
+  }
+
+  inline void
+  add(const PointT& pt)
+  {
+    num_pt_++;
+    if (downsample_all_data_)
+      centroid_.all_fields.add(pt);
+    else
+      centroid_.xyz += pt.getArray4fMap();
+  }
+
+  inline PointT
+  get() const
+  {
+    PointT pt;
+    if (downsample_all_data_)
+      centroid_.all_fields.get(pt);
+    else
+      pt.getArray4fMap() = centroid_.xyz / num_pt_;
+    return pt;
+  }
+
+  inline void
+  clear()
+  {
+    num_pt_ = 0;
+    if (downsample_all_data_)
+      centroid_.all_fields.clear();
+    else
+      centroid_.xyz.setZero();
+  }
+
+  inline std::size_t
+  size() const
+  {
+    return num_pt_;
+  }
+
+private:
+  const bool downsample_all_data_;
+  Centroid centroid_;
+  std::size_t num_pt_;
+};
+
 /**
  * \brief VoxelStructT defines the transformation operations and the voxel grid of
  * VoxelGrid filter \ingroup filters
@@ -29,7 +99,7 @@ public:
       pcl::PointCloud<PointT>; // read by CartesianFilter to deduce point type
   using PointCloudPtr = typename PointCloud::Ptr;
   using PointCloudConstPtr = typename PointCloud::ConstPtr;
-  using Grid = typename std::unordered_map<std::size_t, CentroidPoint<PointT>>;
+  using Grid = typename std::unordered_map<std::size_t, Voxel<PointT>>;
   using GridIterator = typename Grid::iterator;
 
   /** \brief Empty constructor. */
@@ -62,10 +132,14 @@ public:
   bool
   setUp(TransformFilter<VoxelStructT>* transform_filter)
   {
-    num_voxels_ = 0;
-    grid_ = Grid();
-
     grid_filter_ = static_cast<CartesianFilter<VoxelStructT>*>(transform_filter);
+
+    num_voxels_ = 0;
+    if (downsample_all_data_ != grid_filter_->getDownsampleAllData())
+      grid_ = Grid();
+    else
+      std::for_each(
+          grid_.begin(), grid_.end(), [](auto& cell) { cell.second.clear(); });
 
     const PointCloudConstPtr input = grid_filter_->getInputCloud();
     const IndicesConstPtr indices = grid_filter_->getIndices();
@@ -137,7 +211,12 @@ public:
   {
     const std::size_t h = grid_filter_->hashPoint(
         pt, inverse_leaf_size_, min_b_, divb_mul_[1], divb_mul_[2]);
-    grid_[h].add(pt);
+
+    // TODO: try_emplace for c++17
+    auto it = grid_.find(h);
+    if (it == grid_.end())
+      it = grid_.emplace(h, downsample_all_data_).first;
+    it->second.add(pt);
   }
 
   /** \brief Filter out or compute the centroid of a voxel
@@ -147,22 +226,12 @@ public:
   filterGrid(const GridIterator grid_it)
   {
     const auto& voxel = grid_it->second;
-    if (voxel.getSize() >= min_points_per_voxel_) {
-
-      PointT centroid;
-      if (!downsample_all_data_) {
-        PointT pt;
-        voxel.get(pt);
-        centroid.getVector4fMap() = pt.getVector4fMap();
-      }
-      else {
-        voxel.get(centroid);
-      }
+    if (voxel.size() >= min_points_per_voxel_) {
 
       if (save_leaf_layout_)
         leaf_layout_[grid_it->first] = num_voxels_++;
 
-      return centroid;
+      return voxel.get();
     }
 
     return boost::none;
