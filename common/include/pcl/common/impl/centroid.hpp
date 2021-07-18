@@ -876,6 +876,13 @@ CentroidPoint<PointT>::get (PointOutT& point) const
   }
 }
 
+template <typename PointT>
+inline void
+CentroidPoint<PointT>::clear()
+{
+  boost::fusion::for_each(accumulators_, detail::Clear());
+  num_points_ = 0;
+}
 
 template <typename PointInT, typename PointOutT> std::size_t
 computeCentroid (const pcl::PointCloud<PointInT>& cloud,

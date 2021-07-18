@@ -1052,6 +1052,10 @@ namespace pcl
         return (num_points_);
       }
 
+      /** Clear the added data */
+      inline void
+      clear();
+
       PCL_MAKE_ALIGNED_OPERATOR_NEW
 
     private:
