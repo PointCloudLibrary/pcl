@@ -40,6 +40,16 @@
 
 #include <pcl/filters/crop_hull.h>
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT> void
+pcl::CropHull<PointT>::applyFilter (PointCloud &output)
+{
+  //TODO: remove overriden function with trivial reimplementation
+  FilterIndices<PointT>::applyFilter(output);
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
 pcl::CropHull<PointT>::applyFilter (Indices &indices)
