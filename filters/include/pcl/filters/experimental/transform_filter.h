@@ -39,7 +39,7 @@ public:
   TransformFilter()
   {
     if (grid_struct_.filter_name_.empty())
-      PCL_WARN("[pcl::%s] Filter name is empty\n", getClassName().c_str());
+      PCL_WARN("[pcl::TransformFilter] Filter name is empty\n");
 
     filter_name_ = grid_struct_.filter_name_;
   }
@@ -59,8 +59,7 @@ protected:
   GridStruct&
   getGridStruct()
   {
-    return const_cast<GridStruct&>(
-        const_cast<const TransformFilter*>(this)->getGridStruct());
+    return grid_struct_;
   }
 
   /** \brief Filter a Point Cloud based on the templated grid structure
@@ -111,13 +110,17 @@ protected:
 
   /** \brief The object defines the filtering operations and grid cells
    * \note Require the following member functions:
-   *       1. bool setUp(TransformFilter<GridStruct>*)
-   *       2. void addPointToGrid(PointT&)
-   *       3. std::size size()
-   *       4. begin() and end(), it can return any type which can be incremented and
-   * compared. e.g. iterator for map containers or index for array containers
-   *       5. pcl::experimental::optional<PointT> filterGrid(...), which can accept the
-   * output of begin() and end()
+   *
+   *   Non-functional:
+   *     1. std::size_t size()
+   *     2. begin() and end(), it can return any type which can be incremented and
+   * compared, e.g. iterator of map containers or index of array containers
+   *
+   *   Functional:
+   *     3. bool setUp(TransformFilter<GridStruct>*)
+   *     4. void addPointToGrid(PointT&)
+   *     5. pcl::experimental::optional<PointT> filterGrid(...), which accepts output
+   * from begin() and end()
    */
   GridStruct grid_struct_;
 };
