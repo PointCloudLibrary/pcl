@@ -161,8 +161,11 @@ public:
     divb_mul_ = Eigen::Vector4i(1, div_b_[0], div_b_[0] * div_b_[1], 0);
 
     // Check that the leaf size is not too small, given the size of the data
-    const std::size_t hash_range =
-        grid_filter_->checkHashRange(min_p, max_p, inverse_leaf_size_);
+    const std::size_t hash_range = checkHashRange(min_p,
+                                                  max_p,
+                                                  inverse_leaf_size_[0],
+                                                  inverse_leaf_size_[1],
+                                                  inverse_leaf_size_[2]);
     if (hash_range != 0) {
       grid_.reserve(std::min(hash_range, input->size()));
     }
@@ -209,8 +212,8 @@ public:
   inline void
   addPointToGrid(const PointT& pt)
   {
-    const std::size_t h = grid_filter_->hashPoint(
-        pt, inverse_leaf_size_, min_b_, divb_mul_[1], divb_mul_[2]);
+    const std::size_t h =
+        hashPoint<PointT>(pt, inverse_leaf_size_, min_b_, divb_mul_[1], divb_mul_[2]);
 
     // TODO: try_emplace for c++17
     auto it = grid_.find(h);
@@ -390,7 +393,7 @@ public:
     const Eigen::Vector4i& divb_mul_ = getGridStruct().divb_mul_;
 
     return leaf_layout_.at(
-        this->hashPoint(pt, inverse_leaf_size_, min_b_, divb_mul_[1], divb_mul_[2]));
+        hashPoint(pt, inverse_leaf_size_, min_b_, divb_mul_[1], divb_mul_[2]));
   }
 
   /** \brief Returns the indices in the resulting downsampled cloud of the points at the
