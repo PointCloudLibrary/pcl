@@ -237,6 +237,65 @@ TEST(StructMethods, GridFilter)
   EXPECT_EQ(output.size(), input->size());
 }
 
+TEST(CheckHashinghRange, GridFilter)
+{
+  const float min_float = std::numeric_limits<float>::min();
+  const float max_float = std::numeric_limits<float>::max();
+
+  Eigen::Vector4f min_p;
+  Eigen::Vector4f max_p;
+  Eigen::Array4f inv_size;
+
+  min_p = Eigen::Array4f::Zero();
+  max_p = Eigen::Array4f::Zero();
+  inv_size = Eigen::Array4f::Constant(1);
+  EXPECT_EQ(experimental::checkHashRange(min_p, max_p, inv_size[0], inv_size[1]), 1);
+  EXPECT_EQ(
+      experimental::checkHashRange(min_p, max_p, inv_size[0], inv_size[1], inv_size[2]),
+      1);
+
+  min_p << min_float, 0, 0;
+  max_p << max_float, 0, 0;
+  inv_size = Eigen::Array4f::Constant(1);
+  EXPECT_EQ(experimental::checkHashRange(min_p, max_p, inv_size[0], inv_size[1]), 0);
+  EXPECT_EQ(
+      experimental::checkHashRange(min_p, max_p, inv_size[0], inv_size[1], inv_size[2]),
+      0);
+
+  min_p = Eigen::Array4f::Constant(min_float);
+  max_p = Eigen::Array4f::Constant(max_float);
+  inv_size = Eigen::Array4f::Constant(max_float);
+  EXPECT_EQ(experimental::checkHashRange(min_p, max_p, inv_size[0], inv_size[1]), 0);
+  EXPECT_EQ(
+      experimental::checkHashRange(min_p, max_p, inv_size[0], inv_size[1], inv_size[2]),
+      0);
+
+  min_p = Eigen::Array4f::Zero();
+  inv_size = Eigen::Array4f::Constant(1);
+  const std::size_t max_size = std::numeric_limits<std::size_t>::max();
+
+  // 2D
+  // next int before and after sqrt(max_size)
+  const float pass_2d_size = 4294967040.f; // maximum value that can pass the check
+  const float fail_2d_size = 4294967296.f;
+  max_p = Eigen::Array4f::Constant(pass_2d_size);
+  EXPECT_NE(experimental::checkHashRange(min_p, max_p, inv_size[0], inv_size[1]), 0);
+  max_p = Eigen::Array4f::Constant(fail_2d_size);
+  EXPECT_EQ(experimental::checkHashRange(min_p, max_p, inv_size[0], inv_size[1]), 0);
+
+  // 3D
+  const float pass_3d_size = std::floor(cbrt(max_size) - 1);
+  const float fail_3d_size = std::ceil(cbrt(max_size) - 1);
+  max_p = Eigen::Array4f::Constant(pass_3d_size);
+  EXPECT_NE(
+      experimental::checkHashRange(min_p, max_p, inv_size[0], inv_size[1], inv_size[2]),
+      0);
+  max_p = Eigen::Array4f::Constant(fail_3d_size);
+  EXPECT_EQ(
+      experimental::checkHashRange(min_p, max_p, inv_size[0], inv_size[1], inv_size[2]),
+      0);
+}
+
 int
 main(int argc, char** argv)
 {
