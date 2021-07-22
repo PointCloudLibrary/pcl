@@ -167,7 +167,8 @@ public:
                                                   inverse_leaf_size_[1],
                                                   inverse_leaf_size_[2]);
     if (hash_range != 0) {
-      grid_.reserve(std::min(hash_range, input->size()));
+      grid_.max_load_factor(grid_max_load_factor_);
+      grid_.reserve(std::min(hash_range, input->size()) / grid_max_load_factor_);
     }
     else {
       PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. "
@@ -264,6 +265,9 @@ public:
 
   /** \brief Iterable grid object storing the data of voxels. */
   Grid grid_;
+
+  /** \brief maximum load factor of the unordered_map type grid. */
+  float grid_max_load_factor_ = 0.5;
 
   /** \brief Pointer to the GridFilter object */
   CartesianFilter<VoxelStructT>* grid_filter_;
@@ -559,6 +563,19 @@ public:
       return -1;
 
     return leaf_layout_[idx];
+  }
+
+  /** \brief Return the maximum load factor of unordered_map type grid
+   */
+  inline float getMaxLoadFactor() { return getGridStruct().max_load_factor_; }
+
+  /** \brief Set the maximum load factor of unordered_map type grid
+   * \note The smaller is the factor, the faster is the overall runtime. It is a trade
+   * off of memory verus speed.
+   */
+  inline void setMaxLoadFactor(const float load_factor)
+  {
+    getGridStruct().max_load_factor_ = load_factor;
   }
 };
 
