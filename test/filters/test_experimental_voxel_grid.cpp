@@ -20,7 +20,8 @@ using namespace pcl;
 using namespace pcl::io;
 
 PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>);
-PointCloud<PointXYZRGB>::Ptr cloud_organized(new PointCloud<PointXYZRGB>);
+PointCloud<PointXYZRGB>::Ptr cloud_rgb(new PointCloud<PointXYZRGB>);
+PointCloud<PointXYZRGBA>::Ptr cloud_rgba(new PointCloud<PointXYZRGBA>);
 
 const float PRECISION = Eigen::NumTraits<float>::dummy_precision() * 2;
 
@@ -33,6 +34,35 @@ EXPECT_POINT_EQ(const PointT& pt1, const PointT& pt2)
   EXPECT_TRUE(pt1_vec.isApprox(pt_vec, PRECISION))
       << "Point1: " << pt1_vec.transpose() << "\nPoint2: " << pt_vec.transpose()
       << "\nnorm diff: " << (pt1_vec - pt_vec).norm() << std::endl;
+}
+
+template <typename>
+void
+EXPECT_POINT_EQ(const PointXYZRGB& pt1, const PointXYZRGB& pt2)
+{
+  const auto& pt1_vec = pt1.getVector4fMap();
+  const auto& pt_vec = pt2.getVector4fMap();
+  EXPECT_TRUE(pt1_vec.isApprox(pt_vec, PRECISION))
+      << "Point1: " << pt1_vec.transpose() << "\nPoint2: " << pt_vec.transpose()
+      << "\nnorm diff: " << (pt1_vec - pt_vec).norm() << std::endl;
+  EXPECT_EQ(pt1.r, pt2.r);
+  EXPECT_EQ(pt1.g, pt2.g);
+  EXPECT_EQ(pt1.b, pt2.b);
+}
+
+template <typename>
+void
+EXPECT_POINT_EQ(const PointXYZRGBA& pt1, const PointXYZRGBA& pt2)
+{
+  const auto& pt1_vec = pt1.getVector4fMap();
+  const auto& pt_vec = pt2.getVector4fMap();
+  EXPECT_TRUE(pt1_vec.isApprox(pt_vec, PRECISION))
+      << "Point1: " << pt1_vec.transpose() << "\nPoint2: " << pt_vec.transpose()
+      << "\nnorm diff: " << (pt1_vec - pt_vec).norm() << std::endl;
+  EXPECT_EQ(pt1.r, pt2.r);
+  EXPECT_EQ(pt1.g, pt2.g);
+  EXPECT_EQ(pt1.b, pt2.b);
+  EXPECT_EQ(pt1.a, pt2.a);
 }
 
 template <typename PointT>
@@ -93,8 +123,8 @@ TEST(SetUp, ExperimentalVoxelGridEquivalency)
     pcl::VoxelGrid<PointXYZRGB> old_grid;
     new_grid.setLeafSize(0.05f, 0.05f, 0.05f);
     old_grid.setLeafSize(0.05f, 0.05f, 0.05f);
-    new_grid.setInputCloud(cloud_organized);
-    old_grid.setInputCloud(cloud_organized);
+    new_grid.setInputCloud(cloud_rgb);
+    old_grid.setInputCloud(cloud_rgb);
     new_grid.filter(new_out_cloud);
     old_grid.filter(old_out_cloud);
 
@@ -256,8 +286,42 @@ TEST(PointXYZRGB, ExperimentalVoxelGridEquivalency)
   pcl::VoxelGrid<PointXYZRGB> old_grid;
   new_grid.setLeafSize(0.05f, 0.05f, 0.05f);
   old_grid.setLeafSize(0.05f, 0.05f, 0.05f);
-  new_grid.setInputCloud(cloud_organized);
-  old_grid.setInputCloud(cloud_organized);
+  new_grid.setInputCloud(cloud_rgb);
+  old_grid.setInputCloud(cloud_rgb);
+
+  new_grid.setDownsampleAllData(false);
+  old_grid.setDownsampleAllData(false);
+  new_grid.filter(new_out);
+  old_grid.filter(old_out);
+  EXPECT_POINTS_EQ(new_out, old_out);
+  new_out.clear();
+  old_out.clear();
+
+  new_grid.setDownsampleAllData(true);
+  old_grid.setDownsampleAllData(true);
+  new_grid.filter(new_out);
+  old_grid.filter(old_out);
+  EXPECT_POINTS_EQ(new_out, old_out);
+  new_out.clear();
+  old_out.clear();
+
+  new_grid.setMinimumPointsNumberPerVoxel(5);
+  old_grid.setMinimumPointsNumberPerVoxel(5);
+  new_grid.filter(new_out);
+  old_grid.filter(old_out);
+  EXPECT_POINTS_EQ(new_out, old_out);
+}
+
+TEST(PointXYZRGBA, ExperimentalVoxelGridEquivalency)
+{
+  PointCloud<PointXYZRGBA> new_out, old_out;
+
+  pcl::experimental::VoxelGrid<PointXYZRGBA> new_grid;
+  pcl::VoxelGrid<PointXYZRGBA> old_grid;
+  new_grid.setLeafSize(0.05f, 0.05f, 0.05f);
+  old_grid.setLeafSize(0.05f, 0.05f, 0.05f);
+  new_grid.setInputCloud(cloud_rgba);
+  old_grid.setInputCloud(cloud_rgba);
 
   new_grid.setDownsampleAllData(false);
   old_grid.setDownsampleAllData(false);
@@ -286,16 +350,33 @@ int
 main(int argc, char** argv)
 {
   // Load a standard PCD file from disk
-  if (argc < 3) {
-    std::cerr << "No test file given. Please download `bun0.pcd` and "
-                 "`milk_cartoon_all_small_clorox.pcd` and pass their paths to the test."
+  if (argc < 4) {
+    std::cerr << "No test file given. Please download `bun0.pcd`, "
+                 "`milk_cartoon_all_small_clorox.pcd` and `milk_color.pcd`, and pass "
+                 "their paths to the test."
               << std::endl;
     return (-1);
   }
 
-  // Load a standard PCD file from disk
-  pcl::io::loadPCDFile(argv[1], *cloud);
-  loadPCDFile(argv[2], *cloud_organized);
+  // Input
+  if (loadPCDFile(argv[1], *cloud) < 0) {
+    std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its "
+                 "path to the test."
+              << std::endl;
+    return (-1);
+  }
+  if (loadPCDFile(argv[2], *cloud_rgb) < 0) {
+    std::cerr << "Failed to read test file. Please download "
+                 "`milk_cartoon_all_small_clorox.pcd` and pass its path to the test."
+              << std::endl;
+    return (-1);
+  }
+  if (loadPCDFile(argv[3], *cloud_rgba) < 0) {
+    std::cerr << "Failed to read test file. Please download `milk_color.pcd` and pass "
+                 "its path to the test."
+              << std::endl;
+    return (-1);
+  }
 
   testing::InitGoogleTest(&argc, argv);
   return (RUN_ALL_TESTS());
