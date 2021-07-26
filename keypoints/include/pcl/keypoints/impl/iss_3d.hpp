@@ -102,6 +102,20 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setNormals (const PointCloudNC
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointInT, typename PointOutT, typename NormalT> void
+pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setNumberOfThreads (unsigned int nr_threads)
+{
+  if (nr_threads == 0)
+#ifdef _OPENMP
+    threads_ = omp_get_num_procs();
+#else
+    threads_ = 1;
+#endif
+  else
+    threads_ = nr_threads;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointOutT, typename NormalT> bool*
 pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getBoundaryPoints (PointCloudIn &input, double border_radius, float angle_threshold)
 {
