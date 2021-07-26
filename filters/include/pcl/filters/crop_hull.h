@@ -160,14 +160,14 @@ namespace pcl
       template<unsigned PlaneDim1, unsigned PlaneDim2> void
       applyFilter2D (Indices &indices);
 
-       /** \brief Apply the three-dimensional hull filter.
-         * Polygon-ray crossings are used for three rays cast from each point
-         * being tested, and a  majority vote of the resulting
-         * polygon-crossings is used to decide  whether the point lies inside
-         * or outside the hull.
-         * \param[out] output The set of points that pass the 3D polygon hull
-         *                    filter.
-         */
+      /** \brief Apply the three-dimensional hull filter.
+        *  Polygon-ray crossings are used for three rays cast from each point
+        *  being tested, and a  majority vote of the resulting
+        *  polygon-crossings is used to decide  whether the point lies inside
+        *  or outside the hull.
+        * \param[out] indices The indices of the set of points that pass the 3D
+        *                     polygon hull filter.
+        */
       void
       applyFilter3D (Indices &indices);
 
