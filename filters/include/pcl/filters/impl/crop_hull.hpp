@@ -123,9 +123,13 @@ pcl::CropHull<PointT>::applyFilter2D (Indices &indices)
       {
         if (crop_outside_)
           indices.push_back ((*indices_)[index]);
+        // once a point has tested +ve for being inside one polygon, we can
+        // stop checking the others:
         break;
       }
     }
+    // If we're removing points *inside* the hull, only remove points that
+    // haven't been found inside any polygons
     if (poly == hull_polygons_.size () && !crop_outside_)
       indices.push_back ((*indices_)[index]);
     if (indices.empty() || indices.back() != (*indices_)[index]) {
