@@ -243,7 +243,8 @@ TEST(CheckHashinghRange, GridFilter)
 
   Eigen::Vector4f min_p;
   Eigen::Vector4f max_p;
-  Eigen::Array4f inv_size;
+  Eigen::Array4f leaf_size =
+      Eigen::Array4f::Constant(1 - Eigen::NumTraits<float>::dummy_precision());
 
   min_p = Eigen::Array4f::Zero();
   max_p = Eigen::Array4f::Zero();
@@ -264,7 +265,6 @@ TEST(CheckHashinghRange, GridFilter)
   EXPECT_FALSE(experimental::checkHashRange3D(min_p, max_p, inv_size.head<3>()));
 
   min_p = Eigen::Array4f::Zero();
-  inv_size = Eigen::Array4f::Constant(1);
   const std::size_t max_size = std::numeric_limits<std::size_t>::max();
 
   // 2D
