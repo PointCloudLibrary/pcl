@@ -103,8 +103,15 @@ public:
   using Grid = typename std::unordered_map<std::size_t, VoxelT>;
   using GridIterator = typename Grid::iterator;
 
+  /** \brief Constructor. */
+  VoxelStruct(TransformFilter<VoxelStruct>* transform_filter)
+  {
+    filter_name_ = "VoxelGrid";
+    grid_filter_ = static_cast<CartesianFilter<VoxelStruct>*>(transform_filter);
+  }
+
   /** \brief Empty constructor. */
-  VoxelStruct() { filter_name_ = "VoxelGrid"; }
+  VoxelStruct() {}
 
   /** \brief Get the number of voxels in the grid. */
   std::size_t
@@ -131,10 +138,8 @@ public:
    * \param[in] transform_filter pointer to TransformFilter
    */
   bool
-  setUp(TransformFilter<VoxelStruct>* transform_filter)
+  setUp()
   {
-    grid_filter_ = static_cast<CartesianFilter<VoxelStruct>*>(transform_filter);
-
     num_voxels_ = 0;
     if (downsample_all_data_ != grid_filter_->getDownsampleAllData())
       grid_ = Grid();
@@ -274,7 +279,7 @@ public:
   std::size_t num_voxels_;
 
   /** \brief Set to true if all fields need to be downsampled, or false if just XYZ. */
-  bool downsample_all_data_;
+  bool downsample_all_data_ = true;
 
   /** \brief Minimum number of points per voxel for the centroid to be computed */
   std::size_t min_points_per_voxel_;
