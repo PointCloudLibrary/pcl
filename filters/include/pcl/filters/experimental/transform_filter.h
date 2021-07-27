@@ -100,10 +100,15 @@ protected:
     output.reserve(grid_struct_.size());
 
     // iterate over the grid cells and compute the output point
-    for (auto it = grid_struct_.begin(); it != grid_struct_.end(); ++it) {
-      const optional<PointT> res = grid_struct_.filterGrid(it);
-      if (res)
-        output.push_back(res.value());
+    {
+      using std::begin; // invoke ADL, just like ranged-for loop
+      using std::end;
+      auto it = begin(grid_struct_);
+      auto end_it = end(grid_struct_);
+      for (; it != end_it; ++it) {
+        const optional<PointT> res = grid_struct_.filterGrid(it);
+        if (res)
+          output.push_back(res.value());
       }
     }
   }
