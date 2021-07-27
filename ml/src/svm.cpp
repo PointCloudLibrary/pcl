@@ -293,6 +293,7 @@ Cache::swap_index(int i, int j)
 // the member function get_Q is for getting one column from the Q Matrix
 //
 
+namespace pcl {
 class QMatrix {
 
 public:
@@ -304,8 +305,9 @@ public:
   swap_index(int i, int j) const = 0;
   virtual ~QMatrix() {}
 };
+} // namespace pcl
 
-class Kernel : public QMatrix {
+class Kernel : public pcl::QMatrix {
 
 public:
   Kernel(int l, svm_node* const* x, const svm_parameter& param);
@@ -534,7 +536,7 @@ public:
 
   void
   Solve(int l,
-        const QMatrix& Q,
+        const pcl::QMatrix& Q,
         const double* p_,
         const schar* y_,
         double* alpha_,
@@ -551,7 +553,7 @@ protected:
   enum { LOWER_BOUND, UPPER_BOUND, FREE };
   char* alpha_status; // LOWER_BOUND, UPPER_BOUND, FREE
   double* alpha;
-  const QMatrix* Q;
+  const pcl::QMatrix* Q;
   const double* QD;
   double eps;
   double Cp, Cn;
@@ -668,7 +670,7 @@ Solver::reconstruct_gradient()
 
 void
 Solver::Solve(int l,
-              const QMatrix& Q,
+              const pcl::QMatrix& Q,
               const double* p_,
               const schar* y_,
               double* alpha_,
@@ -1177,7 +1179,7 @@ public:
 
   void
   Solve(int l,
-        const QMatrix& Q,
+        const pcl::QMatrix& Q,
         const double* p,
         const schar* y,
         double* alpha,
