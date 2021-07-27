@@ -564,13 +564,18 @@ public:
 
   /** \brief Return the maximum load factor of unordered_map type grid
    */
-  inline float getMaxLoadFactor() { return getGridStruct().max_load_factor_; }
+  inline float
+  getMaxLoadFactor()
+  {
+    return getGridStruct().max_load_factor_;
+  }
 
   /** \brief Set the maximum load factor of unordered_map type grid
    * \note The smaller is the factor, the faster is the overall runtime. It is a trade
    * off of memory verus speed.
    */
-  inline void setMaxLoadFactor(const float load_factor)
+  inline void
+  setMaxLoadFactor(const float load_factor)
   {
     getGridStruct().max_load_factor_ = load_factor;
   }
