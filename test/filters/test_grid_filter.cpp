@@ -33,7 +33,11 @@ struct EmptyMapStruct {
   using Grid = std::unordered_map<std::size_t, EmptyVoxel>;
   using GridIterator = Grid::iterator;
 
-  EmptyMapStruct() : filter_name_("empty_map") {}
+  EmptyMapStruct(const experimental::TransformFilter<EmptyMapStruct>* transform_filter)
+  : filter_name_("empty_map")
+  {
+    (void)transform_filter;
+  }
 
   std::size_t
   size() const
@@ -54,9 +58,8 @@ struct EmptyMapStruct {
   }
 
   bool
-  setUp(const experimental::TransformFilter<EmptyMapStruct>* transform_filter)
+  setUp()
   {
-    (void)transform_filter;
     return pass_set_up_;
   }
 
@@ -92,7 +95,11 @@ struct EmptyVecStruct {
   using Grid = std::vector<std::size_t>;
   using GridIterator = Grid::iterator;
 
-  EmptyVecStruct() : filter_name_("empty_vec") {}
+  EmptyVecStruct(const experimental::TransformFilter<EmptyVecStruct>* transform_filter)
+  : filter_name_("empty_vec")
+  {
+    (void)transform_filter;
+  }
 
   std::size_t
   size() const
@@ -113,9 +120,8 @@ struct EmptyVecStruct {
   }
 
   bool
-  setUp(const experimental::TransformFilter<EmptyVecStruct>* transform_filter)
+  setUp()
   {
-    (void)transform_filter;
     return true;
   }
 
