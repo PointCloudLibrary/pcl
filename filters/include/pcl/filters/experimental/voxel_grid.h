@@ -89,21 +89,22 @@ private:
 };
 
 /**
- * \brief VoxelStructT defines the transformation operations and the voxel grid of
- * VoxelGrid filter \ingroup filters
+ * \brief VoxelStruct defines the transformation operations and the voxel grid of
+ * VoxelGrid filter
+ * \ingroup filters
  */
-template <typename PointT>
-class VoxelStructT {
+template <typename VoxelT, typename PointT>
+class VoxelStruct {
 public:
-  using PointCloud =
-      pcl::PointCloud<PointT>; // read by CartesianFilter to deduce point type
+  // read by CartesianFilter to deduce point type
+  using PointCloud = pcl::PointCloud<PointT>;
   using PointCloudPtr = typename PointCloud::Ptr;
   using PointCloudConstPtr = typename PointCloud::ConstPtr;
-  using Grid = typename std::unordered_map<std::size_t, Voxel<PointT>>;
+  using Grid = typename std::unordered_map<std::size_t, VoxelT>;
   using GridIterator = typename Grid::iterator;
 
   /** \brief Empty constructor. */
-  VoxelStructT() { filter_name_ = "VoxelGrid"; }
+  VoxelStruct() { filter_name_ = "VoxelGrid"; }
 
   /** \brief Get the number of voxels in the grid. */
   std::size_t
@@ -130,9 +131,9 @@ public:
    * \param[in] transform_filter pointer to TransformFilter
    */
   bool
-  setUp(TransformFilter<VoxelStructT>* transform_filter)
+  setUp(TransformFilter<VoxelStruct>* transform_filter)
   {
-    grid_filter_ = static_cast<CartesianFilter<VoxelStructT>*>(transform_filter);
+    grid_filter_ = static_cast<CartesianFilter<VoxelStruct>*>(transform_filter);
 
     num_voxels_ = 0;
     if (downsample_all_data_ != grid_filter_->getDownsampleAllData())
@@ -267,7 +268,7 @@ public:
   float grid_max_load_factor_ = 0.5;
 
   /** \brief Pointer to the GridFilter object */
-  CartesianFilter<VoxelStructT>* grid_filter_;
+  CartesianFilter<VoxelStruct>* grid_filter_;
 
   /** \brief Total number of voxels in the output cloud */
   std::size_t num_voxels_;
@@ -594,7 +595,7 @@ public:
  * \ingroup filters
  */
 template <typename PointT>
-using VoxelGrid = VoxelFilter<VoxelStructT<PointT>>;
+using VoxelGrid = VoxelFilter<VoxelStruct<Voxel<PointT>, PointT>>;
 
 } // namespace experimental
 } // namespace pcl
