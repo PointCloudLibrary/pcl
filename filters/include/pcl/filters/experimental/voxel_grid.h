@@ -103,15 +103,20 @@ public:
   using Grid = typename std::unordered_map<std::size_t, VoxelT>;
   using GridIterator = typename Grid::iterator;
 
-  /** \brief Constructor. */
-  VoxelStruct(TransformFilter<VoxelStruct>* transform_filter)
+  /** \brief Constructor.
+   * \param[in] transform_filter pointer to the TransformFilter object
+   */
+  VoxelStruct(TransformFilter<VoxelStruct> const* transform_filter)
   {
     filter_name_ = "VoxelGrid";
-    grid_filter_ = static_cast<CartesianFilter<VoxelStruct>*>(transform_filter);
+    grid_filter_ = static_cast<CartesianFilter<VoxelStruct> const*>(transform_filter);
   }
 
   /** \brief Empty constructor. */
   VoxelStruct() {}
+
+  /** \brief Empty destructor. */
+  ~VoxelStruct() {}
 
   /** \brief Get the number of voxels in the grid. */
   std::size_t
@@ -135,79 +140,13 @@ public:
   }
 
   /** \brief Set up the voxel grid variables needed for filtering.
-   * \param[in] transform_filter pointer to TransformFilter
    */
   bool
   setUp()
   {
-    num_voxels_ = 0;
-    if (downsample_all_data_ != grid_filter_->getDownsampleAllData())
-      grid_ = Grid();
-    else
-      std::for_each(
-          grid_.begin(), grid_.end(), [](auto& cell) { cell.second.clear(); });
-
-    const PointCloudConstPtr input = grid_filter_->getInputCloud();
-    const IndicesConstPtr indices = grid_filter_->getIndices();
-    downsample_all_data_ = grid_filter_->getDownsampleAllData();
-    min_points_per_voxel_ = grid_filter_->getMinimumPointsNumberPerVoxel();
-
-    // Get the minimum and maximum dimensions
-    Eigen::Vector4f min_p, max_p;
-    getMinMax3D<PointT>(*input, *indices, min_p, max_p);
-
-    // Compute the minimum and maximum bounding box values
-    min_b_ = (min_p.array() * inverse_leaf_size_).floor().template cast<int>();
-    max_b_ = (max_p.array() * inverse_leaf_size_).floor().template cast<int>();
-
-    // Compute the number of divisions needed along all axis
-    div_b_ = (max_b_ - min_b_).array() + 1;
-
-    // Set up the division multiplier
-    divb_mul_ = Eigen::Vector4i(1, div_b_[0], div_b_[0] * div_b_[1], 0);
-
-    // Check that the leaf size is not too small, given the size of the data
-    const std::size_t hash_range =
-        checkHashRange(min_p, max_p, leaf_size_[0], leaf_size_[1], leaf_size_[2]);
-    if (hash_range != 0) {
-      grid_.max_load_factor(grid_max_load_factor_);
-      grid_.reserve(std::min(hash_range, input->size()) / grid_max_load_factor_);
-    }
-    else {
-      PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. "
-               "Integer indices would overflow.\n",
-               filter_name_.c_str());
-      return false;
-    }
-
-    if (save_leaf_layout_) {
-      // TODO: stop using std::vector<int> for leaf_layout_ because the range of int is
-      // smaller than size_t
-
-      // Resizing won't reset old elements to -1.  If leaf_layout_ has been used
-      // previously, it needs to be re-initialized to -1
-      const std::size_t new_layout_size = div_b_[0] * div_b_[1] * div_b_[2];
-
-      // This is the number of elements that need to be re-initialized to -1
-      const std::size_t reset_size = std::min(new_layout_size, leaf_layout_.size());
-      std::fill(leaf_layout_.begin(), leaf_layout_.begin() + reset_size, -1);
-
-      try {
-        leaf_layout_.resize(new_layout_size, -1);
-      } catch (std::bad_alloc&) {
-        throw PCLException(
-            "VoxelGrid bin size is too low; impossible to allocate memory for layout",
-            "voxel_grid.hpp",
-            "applyFilter");
-      } catch (std::length_error&) {
-        throw PCLException(
-            "VoxelGrid bin size is too low; impossible to allocate memory for layout",
-            "voxel_grid.hpp",
-            "applyFilter");
-      }
-    }
-
-    return true;
+    return setUp(grid_filter_->getInputCloud(),
+                 grid_filter_->getDownsampleAllData(),
+                 grid_filter_->getMinimumPointsNumberPerVoxel());
   }
 
   /** \brief Add a point to a voxel based on its value.
@@ -272,8 +211,86 @@ public:
   /** \brief maximum load factor of the unordered_map type grid. */
   float grid_max_load_factor_ = 0.5;
 
-  /** \brief Pointer to the GridFilter object */
-  CartesianFilter<VoxelStruct>* grid_filter_;
+protected:
+  /** \brief Set up the voxel grid variables needed for filtering.
+   * \param[in] input pointer to the input point cloud
+   * \param[in] downsample_all_data the state of the internal downsampling parameter
+   * \param[in] min_points_per_voxel minimum number of points required for a voxel to be
+   * used
+   */
+  bool
+  setUp(const PointCloudConstPtr input,
+        const bool downsample_all_data,
+        const std::size_t min_points_per_voxel)
+  {
+    num_voxels_ = 0;
+    if (downsample_all_data_ != downsample_all_data)
+      grid_ = Grid();
+    else
+      std::for_each(
+          grid_.begin(), grid_.end(), [](auto& cell) { cell.second.clear(); });
+
+    // const PointCloudConstPtr input = grid_filter_->getInputCloud();
+    downsample_all_data_ = downsample_all_data;
+    min_points_per_voxel_ = min_points_per_voxel;
+
+    // Get the minimum and maximum dimensions
+    Eigen::Vector4f min_p, max_p;
+    getMinMax3D<PointT>(*input, min_p, max_p);
+
+    // Compute the minimum and maximum bounding box values
+    min_b_ = (min_p.array() * inverse_leaf_size_).floor().template cast<int>();
+    max_b_ = (max_p.array() * inverse_leaf_size_).floor().template cast<int>();
+
+    // Compute the number of divisions needed along all axis
+    div_b_ = (max_b_ - min_b_).array() + 1;
+
+    // Set up the division multiplier
+    divb_mul_ = Eigen::Vector4i(1, div_b_[0], div_b_[0] * div_b_[1], 0);
+
+    // Check that the leaf size is not too small, given the size of the data
+    const std::size_t hash_range =
+        checkHashRange(min_p, max_p, leaf_size_[0], leaf_size_[1], leaf_size_[2]);
+    if (hash_range != 0) {
+      grid_.max_load_factor(grid_max_load_factor_);
+      grid_.reserve(std::min(hash_range, input->size()) / grid_max_load_factor_);
+    }
+    else {
+      PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. "
+               "Integer indices would overflow.\n",
+               filter_name_.c_str());
+      return false;
+    }
+
+    if (save_leaf_layout_) {
+      // TODO: stop using std::vector<int> for leaf_layout_ because the range of int is
+      // smaller than size_t
+
+      // Resizing won't reset old elements to -1.  If leaf_layout_ has been used
+      // previously, it needs to be re-initialized to -1
+      const std::size_t new_layout_size = div_b_[0] * div_b_[1] * div_b_[2];
+
+      // This is the number of elements that need to be re-initialized to -1
+      const std::size_t reset_size = std::min(new_layout_size, leaf_layout_.size());
+      std::fill(leaf_layout_.begin(), leaf_layout_.begin() + reset_size, -1);
+
+      try {
+        leaf_layout_.resize(new_layout_size, -1);
+      } catch (std::bad_alloc&) {
+        throw PCLException(
+            "VoxelGrid bin size is too low; impossible to allocate memory for layout",
+            "voxel_grid.hpp",
+            "applyFilter");
+      } catch (std::length_error&) {
+        throw PCLException(
+            "VoxelGrid bin size is too low; impossible to allocate memory for layout",
+            "voxel_grid.hpp",
+            "applyFilter");
+      }
+    }
+
+    return true;
+  }
 
   /** \brief Total number of voxels in the output cloud */
   std::size_t num_voxels_;
@@ -283,6 +300,10 @@ public:
 
   /** \brief Minimum number of points per voxel for the centroid to be computed */
   std::size_t min_points_per_voxel_;
+
+private:
+  /** \brief Pointer to the GridFilter object */
+  CartesianFilter<VoxelStruct> const* grid_filter_;
 };
 
 /**
