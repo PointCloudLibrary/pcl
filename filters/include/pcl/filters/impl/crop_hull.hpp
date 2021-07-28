@@ -42,10 +42,11 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT> void
+template<typename PointT>
+PCL_DEPRECATED(1, 13, "This is a trivial call to base class method")
+void
 pcl::CropHull<PointT>::applyFilter (PointCloud &output)
 {
-  //TODO: remove overriden function with trivial reimplementation
   FilterIndices<PointT>::applyFilter(output);
 }
 
