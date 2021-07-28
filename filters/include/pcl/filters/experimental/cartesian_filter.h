@@ -55,41 +55,38 @@ hashPoint(const PointT& pt,
   return ijk0 + ijk1 * divb_mul_y + ijk2 * divb_mul_z;
 }
 
-/** \brief Check if the leaf size is too small, given the range of the point cloud
+/** \brief Check if the 2D leaf size is too small, given the range of the point cloud
  * \param[in] min_b the minimum bin coordinate
  * \param[in] min_b the minimum bin coordinate
- * \param[in] inverse_leaf_size 1/leaf_size of dimension x
- * \param[in] inverse_leaf_size 1/leaf_size of dimension y
+ * \param[in] inverse_leaf_size 1 / leaf_size
  * \note Return false if hash range is larger than the range of size_t, as the
  * unsigned int "wrap around" effect will occur during hashing a point.
  */
 std::size_t
-checkHashRange(const Eigen::Vector4f& min_p,
-               const Eigen::Vector4f& max_p,
-               const float inverse_leaf_size_x,
-               const float inverse_leaf_size_y)
+checkHashRange2D(const Eigen::Vector4f& min_p,
+                 const Eigen::Vector4f& max_p,
+                 const Eigen::Array2f& inverse_leaf_size)
 {
   const float max_float = std::numeric_limits<float>::max();
+  const std::size_t max_size = std::numeric_limits<std::size_t>::max();
+
   // Overflow when
   // a > 0 && b < 0 && a - b > max
   // -> - b > max - a
-  if ((max_p[0] > 0. && min_p[0] < 0. && -min_p[0] > max_float - max_p[0]) ||
-      (max_p[1] > 0. && min_p[1] < 0. && -min_p[1] > max_float - max_p[1]))
+  const Eigen::Array2f min_p2 = min_p.array().head<2>();
+  const Eigen::Array2f max_p2 = max_p.array().head<2>();
+  if ((max_p2 > 0. && min_p2 < 0. && -min_p2 > max_float - max_p2).any())
     return 0;
 
-  const float range_x = max_p[0] - min_p[0];
-  const float range_y = max_p[1] - min_p[1];
-
-  const std::size_t max_size = std::numeric_limits<std::size_t>::max();
+  const Eigen::Array2f range = max_p2 - min_p2;
+  const Eigen::Array2f inverse_leaf_size2 = inverse_leaf_size.head<2>();
   // Check the number of bins of each dimension
-  if (range_x > (max_size - 1) / inverse_leaf_size_x ||
-      range_y > (max_size - 1) / inverse_leaf_size_y)
+  if ((range > (max_size - 1) / inverse_leaf_size2).any())
     return 0;
 
-  const std::size_t dx =
-      static_cast<std::size_t>(std::floor(range_x * inverse_leaf_size_x)) + 1;
-  const std::size_t dy =
-      static_cast<std::size_t>(std::floor(range_y * inverse_leaf_size_y)) + 1;
+  const Eigen::Array2f num_bins = (range * inverse_leaf_size2).floor();
+  const std::size_t dx = static_cast<std::size_t>(num_bins[0]) + 1;
+  const std::size_t dy = static_cast<std::size_t>(num_bins[1]) + 1;
 
   // Check hashing range
   if (dy > max_size / dx)
@@ -98,48 +95,39 @@ checkHashRange(const Eigen::Vector4f& min_p,
     return dx * dy;
 }
 
-/** \brief Check if the leaf size is too small, given the range of the point cloud
+/** \brief Check if the 3D leaf size is too small, given the range of the point cloud
  * \param[in] min_b the minimum bin coordinate
  * \param[in] min_b the minimum bin coordinate
- * \param[in] inverse_leaf_size 1/leaf_size of dimension x
- * \param[in] inverse_leaf_size 1/leaf_size of dimension y
- * \param[in] inverse_leaf_size 1/leaf_size of dimension z
+ * \param[in] inverse_leaf_size 1 / leaf_size
  * \note Return false if hash range is larger than the range of size_t, as the
  * unsigned int "wrap around" effect will occur during hashing a point.
  */
 std::size_t
-checkHashRange(const Eigen::Vector4f& min_p,
-               const Eigen::Vector4f& max_p,
-               const float inverse_leaf_size_x,
-               const float inverse_leaf_size_y,
-               const float inverse_leaf_size_z)
+checkHashRange3D(const Eigen::Vector4f& min_p,
+                 const Eigen::Vector4f& max_p,
+                 const Eigen::Array3f& inverse_leaf_size)
 {
   const float max_float = std::numeric_limits<float>::max();
+  const std::size_t max_size = std::numeric_limits<std::size_t>::max();
+
   // Overflow when
   // a > 0 && b < 0 && a - b > max
   // -> - b > max - a
-  if ((max_p[0] > 0. && min_p[0] < 0. && -min_p[0] > max_float - max_p[0]) ||
-      (max_p[1] > 0. && min_p[1] < 0. && -min_p[1] > max_float - max_p[1]) ||
-      (max_p[2] > 0. && min_p[2] < 0. && -min_p[2] > max_float - max_p[2]))
+  const Eigen::Array3f min_p3 = min_p.array().head<3>();
+  const Eigen::Array3f max_p3 = max_p.array().head<3>();
+  if ((max_p3 > 0. && min_p3 < 0. && -min_p3 > max_float - max_p3).any())
     return 0;
 
-  const float range_x = max_p[0] - min_p[0];
-  const float range_y = max_p[1] - min_p[1];
-  const float range_z = max_p[2] - min_p[2];
-
-  const std::size_t max_size = std::numeric_limits<std::size_t>::max();
+  const Eigen::Array3f range = max_p3 - min_p3;
+  const Eigen::Array3f inverse_leaf_size3 = inverse_leaf_size.head<3>();
   // Check the number of bins of each dimension
-  if (range_x > (max_size - 1) / inverse_leaf_size_x ||
-      range_y > (max_size - 1) / inverse_leaf_size_y ||
-      range_z > (max_size - 1) / inverse_leaf_size_z)
+  if ((range > (max_size - 1) / inverse_leaf_size3).any())
     return 0;
 
-  const std::size_t dx =
-      static_cast<std::size_t>(std::floor(range_x * inverse_leaf_size_x)) + 1;
-  const std::size_t dy =
-      static_cast<std::size_t>(std::floor(range_y * inverse_leaf_size_y)) + 1;
-  const std::size_t dz =
-      static_cast<std::size_t>(std::floor(range_z * inverse_leaf_size_y)) + 1;
+  const Eigen::Array3f num_bins = (range * inverse_leaf_size3).floor();
+  const std::size_t dx = static_cast<std::size_t>(num_bins[0]) + 1;
+  const std::size_t dy = static_cast<std::size_t>(num_bins[1]) + 1;
+  const std::size_t dz = static_cast<std::size_t>(num_bins[2]) + 1;
 
   // Check hashing range
   if (dy > max_size / dx || dx * dy > max_size / dz)
