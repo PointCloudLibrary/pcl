@@ -250,7 +250,7 @@ protected:
 
     // Check that the leaf size is not too small, given the size of the data
     const std::size_t hash_range =
-        checkHashRange(min_p, max_p, leaf_size_[0], leaf_size_[1], leaf_size_[2]);
+        checkHashRange3D(min_p, max_p, inverse_leaf_size_.head<3>());
     if (hash_range != 0) {
       grid_.max_load_factor(grid_max_load_factor_);
       grid_.reserve(std::min(hash_range, input->size()) / grid_max_load_factor_);
