@@ -215,14 +215,14 @@ function(PCL_CHECK_FOR_SSE)
     else()
       # Setting -ffloat-store to alleviate 32bit vs 64bit discrepancies on non-SSE
       # platforms.
-      list(APPEND SSE_FLAGS "-ffloat-store")
+      string(APPEND SSE_FLAGS " -ffloat-store")
     endif()
     
     if(PCL_ENABLE_MARCHNATIVE AND (NOT CMAKE_CROSSCOMPILING))
       if(HAVE_MARCH)
-          list(APPEND SSE_FLAGS "-march=native")
+          string(APPEND SSE_FLAGS " -march=native")
       else()
-          list(APPEND SSE_FLAGS "-mtune=native")
+          string(APPEND SSE_FLAGS " -mtune=native")
       endif()
       message(STATUS "Using CPU native flags for SSE optimization: ${SSE_FLAGS}")
     endif()
