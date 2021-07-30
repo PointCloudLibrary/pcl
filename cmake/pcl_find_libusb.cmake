@@ -3,7 +3,7 @@
 # and VCPKG findlibusb doesn't create the libusb targets.
 
 # Find and set libusb
-find_package(LIBUSB)
+find_package(libusb)
 
 if(TARGET libusb::libusb)
   #libusb target is found by the find_package script. 
