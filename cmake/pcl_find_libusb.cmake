@@ -3,7 +3,7 @@
 # and VCPKG findlibusb doesn't create the libusb targets.
 
 # Find and set libusb
-find_package(libusb)
+find_package(LIBUSB)
 
 if(TARGET libusb::libusb)
   #libusb target is found by the find_package script. 
@@ -13,19 +13,17 @@ endif()
 
 #Handle VCPKG definitions
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(libusb DEFAULT_MSG LIBUSB_LIBRARIES LIBUSB_INCLUDE_DIRS)
+find_package_handle_standard_args(LIBUSB DEFAULT_MSG LIBUSB_LIBRARIES LIBUSB_INCLUDE_DIRS)
 
 mark_as_advanced(LIBUSB_INCLUDE_DIRS LIBUSB_LIBRARIES)
 
-if(libusb_FOUND)
+if(LIBUSB_FOUND)
   add_library(libusb::libusb UNKNOWN IMPORTED)
   set_target_properties(libusb::libusb PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${LIBUSB_INCLUDE_DIRS}")
   
   if(LINUX)
-    set_target_properties(libusb::libusb PROPERTIES IMPORTED_LOCATION "${libusb_LIBRARIES}")
-  endif()
-  
-  if(WIN32)
+    set_target_properties(libusb::libusb PROPERTIES IMPORTED_LOCATION "${LIBUSB_LIBRARIES}")
+  elseif(WIN32)
     foreach(LIBRARY_CONFIG ${LIBUSB_LIBRARIES})
      if(LIBRARY_CONFIG MATCHES "^(debug|optimized)$")
        set(_CONF ${LIBRARY_CONFIG})
