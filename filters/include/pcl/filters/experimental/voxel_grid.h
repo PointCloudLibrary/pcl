@@ -12,6 +12,7 @@
 #include <pcl/common/centroid.h>
 #include <pcl/common/common.h>
 #include <pcl/filters/experimental/cartesian_filter.h>
+#include <pcl/filters/filter.h>
 
 #include <unordered_map>
 
@@ -82,7 +83,7 @@ struct Voxel {
     return num_pt_;
   }
 
-private:
+protected:
   const bool downsample_all_data_;
   Centroid centroid_;
   std::size_t num_pt_;
@@ -101,52 +102,45 @@ public:
   using PointCloudPtr = typename PointCloud::Ptr;
   using PointCloudConstPtr = typename PointCloud::ConstPtr;
   using Grid = typename std::unordered_map<std::size_t, VoxelT>;
-  using GridIterator = typename Grid::iterator;
+  using iterator = typename Grid::iterator;
 
   /** \brief Constructor.
-   * \param[in] transform_filter pointer to the TransformFilter object
    */
-  VoxelStruct(TransformFilter<VoxelStruct> const* transform_filter)
-  {
-    filter_name_ = "VoxelGrid";
-    grid_filter_ = static_cast<CartesianFilter<VoxelStruct> const*>(transform_filter);
-  }
-
-  /** \brief Empty constructor. */
-  VoxelStruct() {}
+  VoxelStruct() { filter_name_ = "VoxelGrid"; }
 
   /** \brief Empty destructor. */
   ~VoxelStruct() {}
 
   /** \brief Get the number of voxels in the grid. */
-  std::size_t
+  inline std::size_t
   size() const
   {
     return grid_.size();
   }
 
   /** \brief Get the begin iterator of the grid. */
-  GridIterator
+  inline iterator
   begin()
   {
     return grid_.begin();
   }
 
   /** \brief Get the end iterator of the grid. */
-  GridIterator
+  inline iterator
   end()
   {
     return grid_.end();
   }
 
   /** \brief Set up the voxel grid variables needed for filtering.
+   *  \param[in] transform_filter pointer to the TransformFilter object
    */
-  bool
-  setUp()
+  inline bool
+  setUp(CartesianFilter<Filter, VoxelStruct>& castesian_filter)
   {
-    return setUp(grid_filter_->getInputCloud(),
-                 grid_filter_->getDownsampleAllData(),
-                 grid_filter_->getMinimumPointsNumberPerVoxel());
+    return setUp(castesian_filter.getInputCloud(),
+                 castesian_filter.getDownsampleAllData(),
+                 castesian_filter.getMinimumPointsNumberPerVoxel());
   }
 
   /** \brief Add a point to a voxel based on its value.
@@ -169,7 +163,7 @@ public:
    * \param[in] grid_it the iterator of the voxel
    */
   inline experimental::optional<PointT>
-  filterGrid(const GridIterator grid_it)
+  filterGrid(const iterator grid_it)
   {
     const auto& voxel = grid_it->second;
     if (voxel.size() >= min_points_per_voxel_) {
@@ -230,7 +224,6 @@ protected:
       std::for_each(
           grid_.begin(), grid_.end(), [](auto& cell) { cell.second.clear(); });
 
-    // const PointCloudConstPtr input = grid_filter_->getInputCloud();
     downsample_all_data_ = downsample_all_data;
     min_points_per_voxel_ = min_points_per_voxel;
 
@@ -300,10 +293,6 @@ protected:
 
   /** \brief Minimum number of points per voxel for the centroid to be computed */
   std::size_t min_points_per_voxel_;
-
-private:
-  /** \brief Pointer to the GridFilter object */
-  CartesianFilter<VoxelStruct> const* grid_filter_;
 };
 
 /**
@@ -313,8 +302,8 @@ private:
  * \ingroup filters
  */
 template <typename GridStruct, typename PointT = GET_POINT_TYPE(GridStruct)>
-class VoxelFilter : public CartesianFilter<GridStruct> {
-  using CartesianFilter<GridStruct>::getGridStruct;
+class VoxelFilter : public CartesianFilter<pcl::Filter, GridStruct> {
+  using CartesianFilter<pcl::Filter, GridStruct>::getGridStruct;
 
 public:
   /** \brief Set the voxel grid leaf size.
