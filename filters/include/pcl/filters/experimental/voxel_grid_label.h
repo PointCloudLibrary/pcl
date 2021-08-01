@@ -10,6 +10,7 @@
 #pragma once
 
 #include <pcl/filters/experimental/voxel_grid.h>
+#include <pcl/filters/filter.h>
 #include <pcl/point_types.h>
 
 #include <map>
@@ -111,35 +112,26 @@ class LabeledVoxelStruct : public VoxelStruct<LabeledVoxel, PointXYZRGBL> {
 public:
   using VoxelStruct<LabeledVoxel, PointXYZRGBL>::filter_name_;
 
-  /** \brief Constructor.
-   * \param[in] transform_filter pointer to the TransformFilter object
-   */
-  LabeledVoxelStruct(TransformFilter<LabeledVoxelStruct> const* transform_filter)
-  {
-    filter_name_ = "VoxelGridLabel";
-    grid_filter_ =
-        static_cast<CartesianFilter<LabeledVoxelStruct> const*>(transform_filter);
-  }
-
-  /** \brief Empty constructor. */
-  LabeledVoxelStruct() {}
+  /** \brief Constructor. */
+  LabeledVoxelStruct() { filter_name_ = "VoxelGridLabel"; }
 
   /** \brief Empty destructor. */
   ~LabeledVoxelStruct() {}
 
   /** \brief Set up the voxel grid variables needed for filtering.
+   *  \param[in] transform_filter pointer to the TransformFilter object
    */
   bool
-  setUp()
+  setUp(TransformFilter<Filter, LabeledVoxelStruct> const* transform_filter)
   {
+    auto cartesian_filter =
+        static_cast<CartesianFilter<Filter, LabeledVoxelStruct> const*>(
+            transform_filter);
     return VoxelStruct<LabeledVoxel, PointXYZRGBL>::setUp(
-        grid_filter_->getInputCloud(),
-        grid_filter_->getDownsampleAllData(),
-        grid_filter_->getMinimumPointsNumberPerVoxel());
+        cartesian_filter->getInputCloud(),
+        cartesian_filter->getDownsampleAllData(),
+        cartesian_filter->getMinimumPointsNumberPerVoxel());
   }
-
-private:
-  CartesianFilter<LabeledVoxelStruct> const* grid_filter_;
 };
 
 /** \brief VoxelGridLabel assembles a local 3D grid over a PointXYZRGBL PointCloud, and
