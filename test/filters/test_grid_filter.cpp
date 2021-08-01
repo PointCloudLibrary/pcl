@@ -9,6 +9,7 @@
 
 #include <pcl/filters/experimental/cartesian_filter.h>
 #include <pcl/filters/experimental/transform_filter.h>
+#include <pcl/filters/filter.h>
 #include <pcl/test/gtest.h>
 #include <pcl/pcl_tests.h>
 #include <pcl/point_types.h>
@@ -33,11 +34,7 @@ struct EmptyMapStruct {
   using Grid = std::unordered_map<std::size_t, EmptyVoxel>;
   using GridIterator = Grid::iterator;
 
-  EmptyMapStruct(const experimental::TransformFilter<EmptyMapStruct>* transform_filter)
-  : filter_name_("empty_map")
-  {
-    (void)transform_filter;
-  }
+  EmptyMapStruct() { filter_name_ = "empty_map"; }
 
   std::size_t
   size() const
@@ -58,7 +55,7 @@ struct EmptyMapStruct {
   }
 
   bool
-  setUp()
+  setUp(experimental::TransformFilter<Filter, EmptyMapStruct> const* transform_filter)
   {
     return pass_set_up_;
   }
@@ -95,11 +92,7 @@ struct EmptyVecStruct {
   using Grid = std::vector<std::size_t>;
   using GridIterator = Grid::iterator;
 
-  EmptyVecStruct(const experimental::TransformFilter<EmptyVecStruct>* transform_filter)
-  : filter_name_("empty_vec")
-  {
-    (void)transform_filter;
-  }
+  EmptyVecStruct() { filter_name_ = "empty_vec"; }
 
   std::size_t
   size() const
@@ -120,7 +113,7 @@ struct EmptyVecStruct {
   }
 
   bool
-  setUp()
+  setUp(experimental::TransformFilter<Filter, EmptyVecStruct> const* transform_filter)
   {
     return true;
   }
@@ -147,7 +140,7 @@ struct EmptyVecStruct {
 };
 
 template <typename GridStruct, typename PointT = GET_POINT_TYPE(GridStruct)>
-class MockFilter : public experimental::CartesianFilter<GridStruct> {
+class MockFilter : public experimental::CartesianFilter<Filter, GridStruct> {
 public:
   // test passed or failed setUp
   void

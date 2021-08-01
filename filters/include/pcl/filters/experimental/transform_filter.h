@@ -10,7 +10,7 @@
 #pragma once
 
 #include <pcl/common/point_tests.h>
-#include <pcl/filters/filter.h>
+#include <pcl/console/print.h>
 
 namespace pcl {
 namespace experimental {
@@ -23,14 +23,16 @@ namespace experimental {
  * the class.
  * \ingroup filters
  */
-template <typename GridStruct, typename PointT = GET_POINT_TYPE(GridStruct)>
-class TransformFilter : public Filter<PointT> {
+template <template <typename> class FilterBase,
+          typename GridStruct,
+          typename PointT = GET_POINT_TYPE(GridStruct)>
+class TransformFilter : public FilterBase<PointT> {
 protected:
-  using Filter<PointT>::filter_name_;
-  using Filter<PointT>::getClassName;
-  using Filter<PointT>::input_;
+  using FilterBase<PointT>::filter_name_;
+  using FilterBase<PointT>::getClassName;
+  using FilterBase<PointT>::input_;
 
-  using PointCloud = typename Filter<PointT>::PointCloud;
+  using PointCloud = typename FilterBase<PointT>::PointCloud;
   using PointCloudPtr = typename PointCloud::Ptr;
   using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
@@ -122,7 +124,7 @@ protected:
    * compared, e.g. iterator of map containers or index of array containers
    *
    *   Functional:
-   *     3. bool setUp(TransformFilter<GridStruct>*)
+   *     3. bool setUp(TransformFilter<FilterBase, GridStruct>*)
    *     4. void addPointToGrid(PointT&)
    *     5. pcl::experimental::optional<PointT> filterGrid(...), which accepts output
    * from begin() and end()
