@@ -275,17 +275,16 @@ TEST(CheckHashinghRange, GridFilter)
   const std::size_t max_size = std::numeric_limits<std::size_t>::max();
 
   // 2D
-  // next int before and after sqrt(max_size)
-  const float pass_2d_size = 4294967040.f; // maximum value that can pass the check
-  const float fail_2d_size = 4294967296.f;
+  const float fail_2d_size = std::ceil(sqrt(max_size));
+  const float pass_2d_size = std::nexttoward(fail_2d_size, -1) - 1;
   max_p = Eigen::Array4f::Constant(pass_2d_size);
   EXPECT_NE(experimental::checkHashRange2D(min_p, max_p, inv_size.head<2>()), 0);
   max_p = Eigen::Array4f::Constant(fail_2d_size);
   EXPECT_EQ(experimental::checkHashRange2D(min_p, max_p, inv_size.head<2>()), 0);
 
   // 3D
-  const float pass_3d_size = std::floor(cbrt(max_size) - 1);
-  const float fail_3d_size = std::ceil(cbrt(max_size) - 1);
+  const float fail_3d_size = std::ceil(cbrt(max_size));
+  const float pass_3d_size = std::nexttoward(fail_3d_size, -1) - 1;
   max_p = Eigen::Array4f::Constant(pass_3d_size);
   EXPECT_NE(experimental::checkHashRange3D(min_p, max_p, inv_size.head<3>()), 0);
   max_p = Eigen::Array4f::Constant(fail_3d_size);
