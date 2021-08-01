@@ -36,7 +36,7 @@ protected:
 
 public:
   /** \brief Empty constructor. */
-  TransformFilter() : grid_struct_(this)
+  TransformFilter()
   {
     if (grid_struct_.filter_name_.empty())
       PCL_WARN("[pcl::TransformFilter] Filter name is empty\n");
@@ -78,7 +78,7 @@ protected:
     output.height = 1;      // downsampling breaks the organized structure
     output.is_dense = true; // we filter out invalid points
 
-    if (!grid_struct_.setUp()) {
+    if (!grid_struct_.setUp(this)) {
       output = *input_;
       return;
     }
