@@ -34,8 +34,9 @@ RUN wget $Env:CHANNEL_BASE_URL/vs_buildtools.exe -OutFile 'C:\TEMP\vs_buildtools
     -Wait -PassThru;                                                `
     del c:\temp\vs_buildtools.exe;                                  
 
-RUN iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'));        `
-    choco install cmake --version=3.20.5 git --installargs 'ADD_CMAKE_TO_PATH=System' -y --no-progress
+RUN iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'));   `
+    choco install cmake --version=3.20.5 --installargs 'ADD_CMAKE_TO_PATH=System' -y --no-progress; `
+    choco install git -y --no-progress
 
 RUN git clone https://github.com/microsoft/vcpkg.git; cd vcpkg; git checkout $Env:VCPKGCOMMIT;
 
