@@ -43,7 +43,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT>
-PCL_DEPRECATED(1, 16, "This is a trivial call to base class method")
+PCL_DEPRECATED(1, 13, "This is a trivial call to base class method")
 void
 pcl::CropHull<PointT>::applyFilter (PointCloud &output)
 {
