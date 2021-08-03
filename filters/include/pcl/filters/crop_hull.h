@@ -53,7 +53,8 @@ namespace pcl
     using Filter<PointT>::filter_name_;
     using Filter<PointT>::indices_;
     using Filter<PointT>::input_;
-    
+    using Filter<PointT>::removed_indices_;
+
     using PointCloud = typename Filter<PointT>::PointCloud;
     using PointCloudPtr = typename PointCloud::Ptr;
     using PointCloudConstPtr = typename PointCloud::ConstPtr;
@@ -148,15 +149,6 @@ namespace pcl
         */
       Eigen::Vector3f
       getHullCloudRange ();
-      
-      /** \brief Apply the two-dimensional hull filter.
-        * All points are assumed to lie in the same plane as the 2D hull, an
-        * axis-aligned 2D coordinate system using the two dimensions specified
-        * (PlaneDim1, PlaneDim2) is used for calculations.
-        * \param[out] output The set of points that pass the 2D polygon filter.
-        */
-      template<unsigned PlaneDim1, unsigned PlaneDim2> void
-      applyFilter2D (PointCloud &output); 
 
       /** \brief Apply the two-dimensional hull filter.
         * All points are assumed to lie in the same plane as the 2D hull, an
@@ -167,17 +159,6 @@ namespace pcl
         */
       template<unsigned PlaneDim1, unsigned PlaneDim2> void
       applyFilter2D (Indices &indices);
-
-       /** \brief Apply the three-dimensional hull filter.
-         * Polygon-ray crossings are used for three rays cast from each point
-         * being tested, and a  majority vote of the resulting
-         * polygon-crossings is used to decide  whether the point lies inside
-         * or outside the hull.
-         * \param[out] output The set of points that pass the 3D polygon hull
-         *                    filter.
-         */
-      void
-      applyFilter3D (PointCloud &output);
 
       /** \brief Apply the three-dimensional hull filter.
         *  Polygon-ray crossings are used for three rays cast from each point

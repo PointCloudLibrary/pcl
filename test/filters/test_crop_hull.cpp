@@ -357,6 +357,31 @@ TYPED_TEST (PCLCropHullTestFixture, test_cloud_filtering)
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TYPED_TEST (PCLCropHullTestFixture, test_keep_organized)
+{
+  for (auto & entry : this->data_)
+  {
+    auto & crop_hull_filter = entry.first;
+    crop_hull_filter.setKeepOrganized(true);
+    crop_hull_filter.setUserFilterValue(-10.);
+    const pcl::PointXYZ defaultPoint(-10., -10., -10.);
+    for (TestData const & test_data : entry.second)
+    {
+      crop_hull_filter.setInputCloud(test_data.input_cloud_);
+      pcl::PointCloud<pcl::PointXYZ> filteredCloud;
+      crop_hull_filter.filter(filteredCloud);
+      ASSERT_EQ (test_data.input_cloud_->size(), filteredCloud.size());
+      for (size_t i = 0; i < test_data.input_cloud_->size(); ++i)
+      {
+        pcl::PointXYZ expectedPoint = test_data.inside_mask_[i] ? test_data.input_cloud_->at(i) : defaultPoint;
+        ASSERT_XYZ_NEAR(expectedPoint, filteredCloud[i], 1e-5);
+      }
+    }
+  }
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // this test will pass only for 2d case //
 template <class T>
 struct PCLCropHullTestFixture2dCrutch : PCLCropHullTestFixture<T>
