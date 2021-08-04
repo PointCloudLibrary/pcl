@@ -249,7 +249,7 @@ namespace pcl
                                                 const Eigen::Vector3f& origin, 
                                                 Eigen::Affine3f& transformation);
 
-  /** \brief Extract the Euler angles (XYZ-convention) from the given transformation
+  /** \brief Extract the Euler angles (intrinsic rotations, ZYX-convention) from the given transformation
     * \param[in] t the input transformation matrix
     * \param[in] roll the resulting roll angle
     * \param[in] pitch the resulting pitch angle
@@ -259,7 +259,7 @@ namespace pcl
   template <typename Scalar> void
   getEulerAngles (const Eigen::Transform<Scalar, 3, Eigen::Affine> &t, Scalar &roll, Scalar &pitch, Scalar &yaw);
 
-  /** Extract x,y,z and the Euler angles (XYZ-convention) from the given transformation
+  /** Extract x,y,z and the Euler angles (intrinsic rotations, ZYX-convention) from the given transformation
     * \param[in] t the input transformation matrix
     * \param[out] x the resulting x translation
     * \param[out] y the resulting y translation
@@ -274,7 +274,7 @@ namespace pcl
                                 Scalar &x, Scalar &y, Scalar &z,
                                 Scalar &roll, Scalar &pitch, Scalar &yaw);
 
-  /** \brief Create a transformation from the given translation and Euler angles (XYZ-convention)
+  /** \brief Create a transformation from the given translation and Euler angles (intrinsic rotations, ZYX-convention)
     * \param[in] x the input x translation
     * \param[in] y the input y translation
     * \param[in] z the input z translation
@@ -302,7 +302,7 @@ namespace pcl
     return (getTransformation<double> (x, y, z, roll, pitch, yaw, t));
   }
 
-  /** \brief Create a transformation from the given translation and Euler angles (XYZ-convention)
+  /** \brief Create a transformation from the given translation and Euler angles (intrinsic rotations, ZYX-convention)
     * \param[in] x the input x translation
     * \param[in] y the input y translation
     * \param[in] z the input z translation
