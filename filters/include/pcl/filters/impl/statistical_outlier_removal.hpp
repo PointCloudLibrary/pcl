@@ -118,19 +118,25 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &in
     valid_distances++;
   }
 
-  // Estimate the mean and the standard deviation of the distance vector
-  double sum = 0, sq_sum = 0;
-  for (size_t i = 0; i < distances.size (); ++i)
-  {
-    sum += distances[i];
-    sq_sum += distances[i] * distances[i];
+  if (dist_mean_ <= 0 || dist_stddev_ <= 0) {
+    // Estimate the mean and the standard deviation of the distance vector
+    double sum = 0, sq_sum = 0;
+    for (size_t i = 0; i < distances.size (); ++i)
+    {
+      sum += distances[i];
+      sq_sum += distances[i] * distances[i];
+    }
+    if (dist_mean_ <= 0) {
+      dist_mean_ = sum / static_cast<double>(valid_distances);
+    }
+    if (dist_stddev_ <= 0) {
+      double variance = (sq_sum - sum * sum / static_cast<double>(valid_distances)) / (static_cast<double>(valid_distances) - 1);
+      dist_stddev_ = sqrt (variance);
+    }
+    //getMeanStd (distances, dist_mean_, dist_stddev_);
   }
-  double mean = sum / static_cast<double>(valid_distances);
-  double variance = (sq_sum - sum * sum / static_cast<double>(valid_distances)) / (static_cast<double>(valid_distances) - 1);
-  double stddev = sqrt (variance);
-  //getMeanStd (distances, mean, stddev);
 
-  double distance_threshold = mean + std_mul_ * stddev;
+  double distance_threshold = dist_mean_ + std_mul_ * dist_stddev_;
 
   // Second pass: Classify the points on the computed distance threshold
   for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)  // iii = input indices iterator
