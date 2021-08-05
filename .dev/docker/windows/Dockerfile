@@ -34,6 +34,7 @@ RUN wget $Env:CHANNEL_BASE_URL/vs_buildtools.exe -OutFile 'C:\TEMP\vs_buildtools
     -Wait -PassThru;                                                `
     del c:\temp\vs_buildtools.exe;                                  
 
+# VCPKG requires update if Cmake version is > 3.20.5 see: https://github.com/microsoft/vcpkg-tool/pull/107
 RUN iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'));   `
     choco install cmake --version=3.20.5 --installargs 'ADD_CMAKE_TO_PATH=System' -y --no-progress; `
     choco install git -y --no-progress
