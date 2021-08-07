@@ -37,6 +37,7 @@
  */
 
 #include <pcl/test/gtest.h>
+#include <pcl/pcl_tests.h> // for EXPECT_XYZ_NEAR
 
 #include <pcl/sample_consensus/ransac.h>
 #include <pcl/sample_consensus/sac_model_sphere.h>
