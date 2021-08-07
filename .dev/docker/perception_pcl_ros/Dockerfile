@@ -38,4 +38,4 @@ RUN cd ${workspace} \
  && catkin config --install --link-devel \
  && catkin build -j2 libpcl-all-dev --cmake-args -DWITH_OPENGL:BOOL=OFF \
  && rm -fr build/libpcl-all-dev \
- && catkin build --start-with --verbose --catkin-make-args run_tests pcl_msgs
+ && catkin build --start-with pcl_msgs --verbose --catkin-make-args run_tests
