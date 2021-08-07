@@ -404,10 +404,10 @@ pcl::SampleConsensusModelSphere<PointT>::projectPoints (
       // P : Sample Point
       Eigen::Vector3d P (input_->points[inliers[i]].x, input_->points[inliers[i]].y, input_->points[inliers[i]].z);
 
-      Eigen::Vector3d helper_vectorPC = P - C;
+      Eigen::Vector3d direction = (P - C).normalized();
 
       // K : Point on Sphere
-      Eigen::Vector3d K = C + r * helper_vectorPC.normalized ();
+      Eigen::Vector3d K = C + r * direction;
 
       projected_points.points[inliers[i]].x = static_cast<float> (K[0]);
       projected_points.points[inliers[i]].y = static_cast<float> (K[1]);
@@ -434,10 +434,10 @@ pcl::SampleConsensusModelSphere<PointT>::projectPoints (
       // P : Sample Point
       Eigen::Vector3d P (input_->points[inliers[i]].x, input_->points[inliers[i]].y, input_->points[inliers[i]].z);
 
-      Eigen::Vector3d helper_vectorPC = P - C;
+      Eigen::Vector3d direction = (P - C).normalized();
 
       // K : Point on Sphere
-      Eigen::Vector3d K = C + r * helper_vectorPC.normalized ();
+      Eigen::Vector3d K = C + r * direction;
 
       projected_points.points[i].x = static_cast<float> (K[0]);
       projected_points.points[i].y = static_cast<float> (K[1]);
