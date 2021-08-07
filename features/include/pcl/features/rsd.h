@@ -38,9 +38,10 @@
  *
  */
 
-#ifndef PCL_RSD_H_
-#define PCL_RSD_H_
+#pragma once
 
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/features/feature.h>
 
 namespace pcl
@@ -55,7 +56,7 @@ namespace pcl
   template <int N> void
   getFeaturePointCloud (const std::vector<Eigen::MatrixXf, Eigen::aligned_allocator<Eigen::MatrixXf> > &histograms2D, PointCloud<Histogram<N> > &histogramsPC)
   {
-    histogramsPC.points.resize (histograms2D.size ());
+    histogramsPC.resize (histograms2D.size ());
     histogramsPC.width    = histograms2D.size ();
     histogramsPC.height   = 1;
     histogramsPC.is_dense = true;
@@ -63,8 +64,8 @@ namespace pcl
     const int rows  = histograms2D.at(0).rows();
     const int cols = histograms2D.at(0).cols();
 
-    typename PointCloud<Histogram<N> >::VectorType::iterator it = histogramsPC.points.begin ();
-    BOOST_FOREACH (Eigen::MatrixXf h, histograms2D)
+    typename PointCloud<Histogram<N> >::VectorType::iterator it = histogramsPC.begin ();
+    for (const Eigen::MatrixXf& h : histograms2D)
     {
       Eigen::Map<Eigen::MatrixXf> histogram (&(it->histogram[0]), rows, cols);
       histogram = h;
@@ -84,9 +85,9 @@ namespace pcl
     * \ingroup features
     */
   template <typename PointInT, typename PointNT, typename PointOutT> Eigen::MatrixXf
-  computeRSD (boost::shared_ptr<const pcl::PointCloud<PointInT> > &surface, boost::shared_ptr<const pcl::PointCloud<PointNT> > &normals,
-             const std::vector<int> &indices, double max_dist,
-             int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram = false);
+  computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud<PointNT> &normals,
+              const pcl::Indices &indices, double max_dist,
+              int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram = false);
 
   /** \brief Estimate the Radius-based Surface Descriptor (RSD) for a given point based on its spatial neighborhood of 3D points with normals
     * \param[in] normals the dataset containing the surface normals at each point in the dataset
@@ -100,9 +101,9 @@ namespace pcl
     * \ingroup features
     */
   template <typename PointNT, typename PointOutT> Eigen::MatrixXf
-  computeRSD (boost::shared_ptr<const pcl::PointCloud<PointNT> > &normals,
-             const std::vector<int> &indices, const std::vector<float> &sqr_dists, double max_dist,
-             int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram = false);
+  computeRSD (const pcl::PointCloud<PointNT> &normals,
+              const pcl::Indices &indices, const std::vector<float> &sqr_dists, double max_dist,
+              int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram = false);
 
   /** \brief @b RSDEstimation estimates the Radius-based Surface Descriptor (minimal and maximal radius of the local surface's curves)
     * for a given point cloud dataset containing points and normals.
@@ -138,11 +139,11 @@ namespace pcl
       using Feature<PointInT, PointOutT>::surface_;
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
 
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudIn  PointCloudIn;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+      using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
 
-      typedef typename boost::shared_ptr<RSDEstimation<PointInT, PointNT, PointOutT> > Ptr;
-      typedef typename boost::shared_ptr<const RSDEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
+      using Ptr = shared_ptr<RSDEstimation<PointInT, PointNT, PointOutT> >;
+      using ConstPtr = shared_ptr<const RSDEstimation<PointInT, PointNT, PointOutT> >;
 
 
       /** \brief Empty constructor. */
@@ -200,7 +201,7 @@ namespace pcl
       /** \brief Returns a pointer to the list of full distance-angle histograms for all points.
         * \return the histogram being saved when computing RSD
 	*/
-      inline boost::shared_ptr<std::vector<Eigen::MatrixXf, Eigen::aligned_allocator<Eigen::MatrixXf> > >
+      inline shared_ptr<std::vector<Eigen::MatrixXf, Eigen::aligned_allocator<Eigen::MatrixXf> > >
       getHistograms () const { return (histograms_); }
 
     protected:
@@ -211,10 +212,10 @@ namespace pcl
         * \param output the resultant point cloud model dataset that contains the RSD feature estimates (r_min and r_max values)
         */
       void 
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief The list of full distance-angle histograms for all points. */
-      boost::shared_ptr<std::vector<Eigen::MatrixXf, Eigen::aligned_allocator<Eigen::MatrixXf> > > histograms_;
+      shared_ptr<std::vector<Eigen::MatrixXf, Eigen::aligned_allocator<Eigen::MatrixXf> > > histograms_;
 
     private:
       /** \brief The number of subdivisions for the considered distance interval. */
@@ -227,12 +228,10 @@ namespace pcl
       bool save_histograms_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/rsd.hpp>
 #endif
-
-#endif  //#ifndef PCL_RSD_H_

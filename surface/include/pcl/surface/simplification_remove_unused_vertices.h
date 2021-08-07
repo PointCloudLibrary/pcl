@@ -35,22 +35,24 @@
  *
  */
 
-#ifndef PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_
-#define PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_
+#pragma once
 
-#include <pcl/surface/boost.h>
-#include <pcl/PolygonMesh.h>
+#include <vector> // for vector
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
+#include <pcl/types.h> // for pcl::Indices
 
 namespace pcl
 {
+  struct PolygonMesh;
+
   namespace surface
   {
     class PCL_EXPORTS SimplificationRemoveUnusedVertices
     {
       public:
-        typedef boost::shared_ptr<SimplificationRemoveUnusedVertices> Ptr;
-        typedef boost::shared_ptr<const SimplificationRemoveUnusedVertices> ConstPtr;
+        using Ptr = shared_ptr<SimplificationRemoveUnusedVertices>;
+        using ConstPtr = shared_ptr<const SimplificationRemoveUnusedVertices>;
 
         /** \brief Constructor. */
         SimplificationRemoveUnusedVertices () {};
@@ -64,7 +66,7 @@ namespace pcl
         inline void
         simplify (const pcl::PolygonMesh& input, pcl::PolygonMesh& output)
         {
-          std::vector<int> indices;
+          pcl::Indices indices;
           simplify (input, output, indices);
         }
 
@@ -74,10 +76,8 @@ namespace pcl
           * \param[out] indices the resultant vector of indices
           */
         void
-        simplify (const pcl::PolygonMesh& input, pcl::PolygonMesh& output, std::vector<int>& indices);
+        simplify (const pcl::PolygonMesh& input, pcl::PolygonMesh& output, pcl::Indices& indices);
 
     };
   }
 }
-
-#endif /* PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_ */

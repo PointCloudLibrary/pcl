@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef VTK_MESH_SMOOTHING_WINDOWED_SINC_H_
-#define VTK_MESH_SMOOTHING_WINDOWED_SINC_H_
+#pragma once
 
 #include <pcl/surface/processing.h>
 #include <pcl/surface/vtk_smoothing/vtk.h>
@@ -54,8 +53,7 @@ namespace pcl
     public:
       /** \brief Empty constructor that sets the values of the algorithm parameters to the VTK defaults */
       MeshSmoothingWindowedSincVTK ()
-        : MeshProcessing (),
-          num_iter_ (20),
+        : num_iter_ (20),
           pass_band_ (0.1f),
           feature_edge_smoothing_ (false),
           feature_angle_ (45.f),
@@ -75,7 +73,7 @@ namespace pcl
 
       /** \brief Get the number of iterations. */
       inline int
-      getNumIter ()
+      getNumIter () const
       {
         return num_iter_;
       };
@@ -91,7 +89,7 @@ namespace pcl
 
       /** \brief Get the pass band value. */
       inline float
-      getPassBand ()
+      getPassBand () const
       {
         return pass_band_;
       };
@@ -110,7 +108,7 @@ namespace pcl
 
       /** \brief Get whether the coordinate normalization is active or not */
       inline bool
-      getNormalizeCoordinates ()
+      getNormalizeCoordinates () const
       {
         return normalize_coordinates_;
       }
@@ -126,7 +124,7 @@ namespace pcl
 
       /** \brief Get the status of the feature edge smoothing */
       inline bool
-      getFeatureEdgeSmoothing ()
+      getFeatureEdgeSmoothing () const
       {
         return feature_edge_smoothing_;
       };
@@ -142,7 +140,7 @@ namespace pcl
 
       /** \brief Get the angle threshold for considering an edge to be sharp */
       inline float
-      getFeatureAngle ()
+      getFeatureAngle () const
       {
         return feature_angle_;
       };
@@ -158,7 +156,7 @@ namespace pcl
 
       /** \brief Get the edge angle to control smoothing along edges */
       inline float
-      getEdgeAngle ()
+      getEdgeAngle () const
       {
         return edge_angle_;
       };
@@ -175,7 +173,7 @@ namespace pcl
 
       /** \brief Get the status of the boundary smoothing */
       inline bool
-      getBoundarySmoothing ()
+      getBoundarySmoothing () const
       {
         return boundary_smoothing_;
       }
@@ -183,7 +181,7 @@ namespace pcl
 
     protected:
       void
-      performProcessing (pcl::PolygonMesh &output);
+      performProcessing (pcl::PolygonMesh &output) override;
 
     private:
       vtkSmartPointer<vtkPolyData> vtk_polygons_;
@@ -196,4 +194,3 @@ namespace pcl
       bool normalize_coordinates_;
   };
 }
-#endif /* VTK_MESH_SMOOTHING_WINDOWED_SINC_H_ */

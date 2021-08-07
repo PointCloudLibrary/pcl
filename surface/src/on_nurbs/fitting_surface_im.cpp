@@ -36,6 +36,9 @@
  */
 
 #include <pcl/surface/on_nurbs/fitting_surface_im.h>
+#include <pcl/pcl_macros.h>
+
+#include <Eigen/Cholesky> // for ldlt
 #include <stdexcept>
 
 using namespace pcl;
@@ -52,13 +55,13 @@ FittingSurfaceIM::computeMean () const
   double ds = 1.0 / double (m_indices.size ());
 
   const pcl::PointCloud<pcl::PointXYZRGB> &cloud_ref = *m_cloud;
-  for (size_t idx = 0; idx < m_indices.size (); idx++)
+  for (const auto &index : m_indices)
   {
-    int i = m_indices[idx] % cloud_ref.width;
-    int j = m_indices[idx] / cloud_ref.width;
+    int i = index % cloud_ref.width;
+    int j = index / cloud_ref.width;
 
     const pcl::PointXYZRGB &point = cloud_ref (i, j);
-    if (pcl_isnan (point.x) || pcl_isnan (point.y) || pcl_isnan (point.z))
+    if (std::isnan (point.x) || std::isnan (point.y) || std::isnan (point.z))
       continue;
 
     u.x += point.x * float (ds);
@@ -76,13 +79,13 @@ FittingSurfaceIM::computeIndexBoundingBox (pcl::PointCloud<pcl::PointXYZRGB>::Pt
   Eigen::Vector4d bb = Eigen::Vector4d (DBL_MAX, 0, DBL_MAX, 0);
   const pcl::PointCloud<pcl::PointXYZRGB> &cloud_ref = *cloud;
 
-  for (size_t idx = 0; idx < indices.size (); idx++)
+  for (const auto &index : indices)
   {
-    int i = indices[idx] % cloud_ref.width;
-    int j = indices[idx] / cloud_ref.width;
+    int i = index % cloud_ref.width;
+    int j = index / cloud_ref.width;
 
     const pcl::PointXYZRGB &point = cloud_ref (i, j);
-    if (pcl_isnan (point.x) || pcl_isnan (point.y) || pcl_isnan (point.z))
+    if (std::isnan (point.x) || std::isnan (point.y) || std::isnan (point.z))
       continue;
 
     if (i < bb (0))
@@ -157,7 +160,7 @@ FittingSurfaceIM::refine ()
   {
     int dim = 0;
     std::vector<double> elements = getElementVector (m_nurbs, dim);
-    for (unsigned i = 0; i < elements.size () - 1; i++)
+    for (std::size_t i = 0; i < elements.size () - 1; i++)
     {
       double xi = elements[i] + 0.5 * (elements[i + 1] - elements[i]);
       m_nurbs.InsertKnot (dim, xi, 1);
@@ -166,7 +169,7 @@ FittingSurfaceIM::refine ()
   {
     int dim = 1;
     std::vector<double> elements = getElementVector (m_nurbs, dim);
-    for (unsigned i = 0; i < elements.size () - 1; i++)
+    for (std::size_t i = 0; i < elements.size () - 1; i++)
     {
       double xi = elements[i] + 0.5 * (elements[i + 1] - elements[i]);
       m_nurbs.InsertKnot (dim, xi, 1);
@@ -273,15 +276,15 @@ FittingSurfaceIM::assemble (bool inverse_mapping)
 
   // assemble data points
   const pcl::PointCloud<pcl::PointXYZRGB> &cloud_ref = *m_cloud;
-  for (size_t i = 0; i < m_indices.size (); i++)
+  for (const auto &index : m_indices)
   {
-    int px = m_indices[i] % cloud_ref.width;
-    int py = m_indices[i] / cloud_ref.width;
+    int px = index % cloud_ref.width;
+    int py = index / cloud_ref.width;
 
-    const pcl::PointXYZRGB &pt = cloud_ref.at (m_indices[i]);
+    const pcl::PointXYZRGB &pt = cloud_ref.at (index);
     Eigen::Vector2i params (px, py);
 
-    if (pcl_isnan (pt.z) || pt.z == 0.0)
+    if (std::isnan (pt.z) || pt.z == 0.0)
       throw std::runtime_error ("[FittingSurfaceIM::assemble] Error, not a number (pt.z)");
 
     if (inverse_mapping)
@@ -391,6 +394,7 @@ FittingSurfaceIM::addCageBoundaryRegularisation (double weight, int side, unsign
   {
     case SOUTH:
       j = m_nurbs.m_cv_count[1] - 1;
+      PCL_FALLTHROUGH
     case NORTH:
       for (i = 1; i < (m_nurbs.m_cv_count[0] - 1); i++)
       {
@@ -407,6 +411,7 @@ FittingSurfaceIM::addCageBoundaryRegularisation (double weight, int side, unsign
 
     case EAST:
       i = m_nurbs.m_cv_count[0] - 1;
+      PCL_FALLTHROUGH
     case WEST:
       for (j = 1; j < (m_nurbs.m_cv_count[1] - 1); j++)
       {
@@ -521,9 +526,9 @@ FittingSurfaceIM::findClosestElementMidPoint (const ON_NurbsSurface &nurbs, cons
   std::vector<double> elementsV = getElementVector (nurbs, 1);
 
   double d_shortest (DBL_MAX);
-  for (unsigned i = 0; i < elementsU.size () - 1; i++)
+  for (std::size_t i = 0; i < elementsU.size () - 1; i++)
   {
-    for (unsigned j = 0; j < elementsV.size () - 1; j++)
+    for (std::size_t j = 0; j < elementsV.size () - 1; j++)
     {
       double points[3];
       double d;
@@ -604,22 +609,17 @@ FittingSurfaceIM::inverseMapping (const ON_NurbsSurface &nurbs, const Eigen::Vec
       return current;
 
     }
-    else
-    {
-      current = current + delta;
+    current += delta;
 
-      if (current (0) < minU)
-        current (0) = minU;
-      else if (current (0) > maxU)
-        current (0) = maxU;
+    if (current (0) < minU)
+      current (0) = minU;
+    else if (current (0) > maxU)
+      current (0) = maxU;
 
-      if (current (1) < minV)
-        current (1) = minV;
-      else if (current (1) > maxV)
-        current (1) = maxV;
-
-    }
-
+    if (current (1) < minV)
+      current (1) = minV;
+    else if (current (1) > maxV)
+      current (1) = maxV;
   }
 
   error = r.norm ();

@@ -4,7 +4,7 @@
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
  *
- *  All rights reserved. 
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_COLOR_MODALITY
-#define PCL_RECOGNITION_COLOR_MODALITY
+#pragma once
 
 #include <pcl/recognition/quantizable_modality.h>
 #include <pcl/recognition/distance_map.h>
@@ -46,6 +45,10 @@
 #include <pcl/point_types.h>
 #include <pcl/recognition/point_types.h>
 
+#include <algorithm>
+#include <cstddef>
+#include <list>
+#include <vector>
 
 namespace pcl
 {
@@ -65,8 +68,8 @@ namespace pcl
 
         unsigned char bin_index;
     
-        size_t x;
-        size_t y;	
+        std::size_t x;
+        std::size_t y;	
 
         bool 
         operator< (const Candidate & rhs)
@@ -76,7 +79,7 @@ namespace pcl
       };
 
     public:
-      typedef typename pcl::PointCloud<PointInT> PointCloudIn;
+      using PointCloudIn = pcl::PointCloud<PointInT>;
 
       ColorModality ();
   
@@ -95,7 +98,7 @@ namespace pcl
       }
   
       void
-      extractFeatures (const MaskMap & mask, size_t nr_features, size_t modalityIndex,
+      extractFeatures (const MaskMap & mask, std::size_t nr_features, std::size_t modalityIndex,
                        std::vector<QuantizedMultiModFeature> & features) const;
   
       /** \brief Provide a pointer to the input dataset (overwrites the PCLBase::setInputCloud method)
@@ -171,15 +174,15 @@ pcl::ColorModality<PointInT>::processInputData ()
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 void pcl::ColorModality<PointInT>::extractFeatures (const MaskMap & mask, 
-                                                    const size_t nr_features, 
-                                                    const size_t modality_index,
+                                                    const std::size_t nr_features, 
+                                                    const std::size_t modality_index,
                                                     std::vector<QuantizedMultiModFeature> & features) const
 {
-  const size_t width = mask.getWidth ();
-  const size_t height = mask.getHeight ();
+  const std::size_t width = mask.getWidth ();
+  const std::size_t height = mask.getHeight ();
 
   MaskMap mask_maps[8];
-  for (size_t map_index = 0; map_index < 8; ++map_index)
+  for (std::size_t map_index = 0; map_index < 8; ++map_index)
     mask_maps[map_index].resize (width, height);
 
   unsigned char map[255];
@@ -197,9 +200,9 @@ void pcl::ColorModality<PointInT>::extractFeatures (const MaskMap & mask,
   QuantizedMap distance_map_indices (width, height);
   //memset (distance_map_indices.data, 0, sizeof (distance_map_indices.data[0])*width*height);
 
-  for (size_t row_index = 0; row_index < height; ++row_index)
+  for (std::size_t row_index = 0; row_index < height; ++row_index)
   {
-    for (size_t col_index = 0; col_index < width; ++col_index)
+    for (std::size_t col_index = 0; col_index < width; ++col_index)
     {
       if (mask (col_index, row_index) != 0)
       {
@@ -226,10 +229,10 @@ void pcl::ColorModality<PointInT>::extractFeatures (const MaskMap & mask,
 
   float weights[8] = {0,0,0,0,0,0,0,0};
 
-  const size_t off = 4;
-  for (size_t row_index = off; row_index < height-off; ++row_index)
+  const std::size_t off = 4;
+  for (std::size_t row_index = off; row_index < height-off; ++row_index)
   {
-    for (size_t col_index = off; col_index < width-off; ++col_index)
+    for (std::size_t col_index = off; col_index < width-off; ++col_index)
     {
       if (mask (col_index, row_index) != 0)
       {
@@ -335,14 +338,14 @@ template <typename PointInT>
 void
 pcl::ColorModality<PointInT>::quantizeColors ()
 {
-  const size_t width = input_->width;
-  const size_t height = input_->height;
+  const std::size_t width = input_->width;
+  const std::size_t height = input_->height;
 
   quantized_colors_.resize (width, height);
 
-  for (size_t row_index = 0; row_index < height; ++row_index)
+  for (std::size_t row_index = 0; row_index < height; ++row_index)
   {
-    for (size_t col_index = 0; col_index < width; ++col_index)
+    for (std::size_t col_index = 0; col_index < width; ++col_index)
     {
       const float r = static_cast<float> ((*input_) (col_index, row_index).r);
       const float g = static_cast<float> ((*input_) (col_index, row_index).g);
@@ -358,15 +361,15 @@ template <typename PointInT>
 void
 pcl::ColorModality<PointInT>::filterQuantizedColors ()
 {
-  const size_t width = input_->width;
-  const size_t height = input_->height;
+  const std::size_t width = input_->width;
+  const std::size_t height = input_->height;
 
   filtered_quantized_colors_.resize (width, height);
 
   // filter data
-  for (size_t row_index = 1; row_index < height-1; ++row_index)
+  for (std::size_t row_index = 1; row_index < height-1; ++row_index)
   {
-    for (size_t col_index = 1; col_index < width-1; ++col_index)
+    for (std::size_t col_index = 1; col_index < width-1; ++col_index)
     {
       unsigned char histogram[8] = {0,0,0,0,0,0,0,0};
 
@@ -486,16 +489,16 @@ template <typename PointInT> void
 pcl::ColorModality<PointInT>::computeDistanceMap (const MaskMap & input, 
                                                   DistanceMap & output) const
 {
-  const size_t width = input.getWidth ();
-  const size_t height = input.getHeight ();
+  const std::size_t width = input.getWidth ();
+  const std::size_t height = input.getHeight ();
 
   output.resize (width, height);
 
   // compute distance map
-  //float *distance_map = new float[input_->points.size ()];
+  //float *distance_map = new float[input_->size ()];
   const unsigned char * mask_map = input.getData ();
   float * distance_map = output.getData ();
-  for (size_t index = 0; index < width*height; ++index)
+  for (std::size_t index = 0; index < width*height; ++index)
   {
     if (mask_map[index] == 0)
       distance_map[index] = 0.0f;
@@ -506,9 +509,9 @@ pcl::ColorModality<PointInT>::computeDistanceMap (const MaskMap & input,
   // first pass
   float * previous_row = distance_map;
   float * current_row = previous_row + width;
-  for (size_t ri = 1; ri < height; ++ri)
+  for (std::size_t ri = 1; ri < height; ++ri)
   {
-    for (size_t ci = 1; ci < width; ++ci)
+    for (std::size_t ci = 1; ci < width; ++ci)
     {
       const float up_left  = previous_row [ci - 1] + 1.4f; //distance_map[(ri-1)*input_->width + ci-1] + 1.4f;
       const float up       = previous_row [ci]     + 1.0f; //distance_map[(ri-1)*input_->width + ci] + 1.0f;
@@ -547,6 +550,3 @@ pcl::ColorModality<PointInT>::computeDistanceMap (const MaskMap & input,
     current_row -= width;
   }
 }
-
-
-#endif 

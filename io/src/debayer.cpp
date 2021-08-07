@@ -34,6 +34,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include <cstdlib> // for abs
+
 #include <pcl/io/debayer.h>
 
 #define AVG(a,b) static_cast<unsigned char>((int(a) + int(b)) >> 1)
@@ -59,7 +61,6 @@ pcl::io::DeBayer::debayerBilinear (
 
   // padding skip for destination image
   unsigned rgb_line_skip = rgb_line_step - width * 3;
-  unsigned yIdx, xIdx;
   // first two pixel values for first two lines
   // Bayer         0 1 2
   //         0     G r g
@@ -98,7 +99,7 @@ pcl::io::DeBayer::debayerBilinear (
   rgb_buffer += 6;
   bayer_pixel += 2;
   // rest of the first two lines
-  for (xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
+  for (unsigned xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
   {
     // GRGR line
     // Bayer        -1 0 1 2
@@ -175,7 +176,7 @@ pcl::io::DeBayer::debayerBilinear (
 
   // main processing
 
-  for (yIdx = 2; yIdx < height - 2; yIdx += 2)
+  for (unsigned yIdx = 2; yIdx < height - 2; yIdx += 2)
   {
     // first two pixel values
     // Bayer         0 1 2
@@ -217,7 +218,7 @@ pcl::io::DeBayer::debayerBilinear (
     rgb_buffer += 6;
     bayer_pixel += 2;
     // continue with rest of the line
-    for (xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
+    for (unsigned xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
     {
       // GRGR line
       // Bayer        -1 0 1 2
@@ -336,7 +337,7 @@ pcl::io::DeBayer::debayerBilinear (
   rgb_buffer += 6;
   bayer_pixel += 2;
   // rest of the last two lines
-  for (xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
+  for (unsigned xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
   {
     // GRGR line
     // Bayer       -1 0 1 2
@@ -428,8 +429,6 @@ pcl::io::DeBayer::debayerEdgeAware (
 
   // padding skip for destination image
   unsigned rgb_line_skip = rgb_line_step - width * 3;
-  unsigned yIdx, xIdx;
-  int dh, dv;
 
   // first two pixel values for first two lines
   // Bayer         0 1 2
@@ -469,7 +468,7 @@ pcl::io::DeBayer::debayerEdgeAware (
   rgb_buffer += 6;
   bayer_pixel += 2;
   // rest of the first two lines
-  for (xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
+  for (unsigned xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
   {
     // GRGR line
     // Bayer        -1 0 1 2
@@ -544,7 +543,7 @@ pcl::io::DeBayer::debayerEdgeAware (
   bayer_pixel += bayer_line_step + 2;
   rgb_buffer += rgb_line_step + 6 + rgb_line_skip;
   // main processing
-  for (yIdx = 2; yIdx < height - 2; yIdx += 2)
+  for (unsigned yIdx = 2; yIdx < height - 2; yIdx += 2)
   {
     // first two pixel values
     // Bayer         0 1 2
@@ -586,7 +585,7 @@ pcl::io::DeBayer::debayerEdgeAware (
     rgb_buffer += 6;
     bayer_pixel += 2;
     // continue with rest of the line
-    for (xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
+    for (unsigned xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
     {
       // GRGR line
       // Bayer        -1 0 1 2
@@ -604,8 +603,8 @@ pcl::io::DeBayer::debayerEdgeAware (
       //  line_step    g b g b
       // line_step2    r g r g
 
-      dh = abs (bayer_pixel[0] - bayer_pixel[2]);
-      dv = abs (bayer_pixel[-bayer_line_step + 1] - bayer_pixel[bayer_line_step + 1]);
+      int dh = std::abs (bayer_pixel[0] - bayer_pixel[2]);
+      int dv = std::abs (bayer_pixel[-bayer_line_step + 1] - bayer_pixel[bayer_line_step + 1]);
 
       if (dh > dv)
         rgb_buffer[4] = AVG (bayer_pixel[-bayer_line_step + 1], bayer_pixel[bayer_line_step + 1]);
@@ -626,8 +625,8 @@ pcl::io::DeBayer::debayerEdgeAware (
       rgb_buffer[rgb_line_step ] = AVG4 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1], bayer_pixel[-1], bayer_pixel[bayer_line_step2 - 1]);
       rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
 
-      dv = abs (bayer_pixel[0] - bayer_pixel[bayer_line_step2]);
-      dh = abs (bayer_pixel[bayer_line_step - 1] - bayer_pixel[bayer_line_step + 1]);
+      dv = std::abs (bayer_pixel[0] - bayer_pixel[bayer_line_step2]);
+      dh = std::abs (bayer_pixel[bayer_line_step - 1] - bayer_pixel[bayer_line_step + 1]);
 
       if (dv > dh)
         rgb_buffer[rgb_line_step + 1] = AVG (bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
@@ -724,7 +723,7 @@ pcl::io::DeBayer::debayerEdgeAware (
   rgb_buffer += 6;
   bayer_pixel += 2;
   // rest of the last two lines
-  for (xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
+  for (unsigned xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
   {
     // GRGR line
     // Bayer       -1 0 1 2
@@ -816,8 +815,6 @@ pcl::io::DeBayer::debayerEdgeAwareWeighted (
 
   // padding skip for destination image
   unsigned rgb_line_skip = rgb_line_step - width * 3;
-  unsigned yIdx, xIdx;
-  int dh, dv;
 
   // first two pixel values for first two lines
   // Bayer         0 1 2
@@ -857,7 +854,7 @@ pcl::io::DeBayer::debayerEdgeAwareWeighted (
   rgb_buffer += 6;
   bayer_pixel += 2;
   // rest of the first two lines
-  for (xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
+  for (unsigned xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
   {
     // GRGR line
     // Bayer        -1 0 1 2
@@ -932,7 +929,7 @@ pcl::io::DeBayer::debayerEdgeAwareWeighted (
   bayer_pixel += bayer_line_step + 2;
   rgb_buffer += rgb_line_step + 6 + rgb_line_skip;
   // main processing
-  for (yIdx = 2; yIdx < height - 2; yIdx += 2)
+  for (unsigned yIdx = 2; yIdx < height - 2; yIdx += 2)
   {
     // first two pixel values
     // Bayer         0 1 2
@@ -974,7 +971,7 @@ pcl::io::DeBayer::debayerEdgeAwareWeighted (
     rgb_buffer += 6;
     bayer_pixel += 2;
     // continue with rest of the line
-    for (xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
+    for (unsigned xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
     {
       // GRGR line
       // Bayer        -1 0 1 2
@@ -992,8 +989,8 @@ pcl::io::DeBayer::debayerEdgeAwareWeighted (
       //  line_step    g b g b
       // line_step2    r g r g
 
-      dh = abs (bayer_pixel[0] - bayer_pixel[2]);
-      dv = abs (bayer_pixel[-bayer_line_step + 1] - bayer_pixel[bayer_line_step + 1]);
+      int dh = std::abs (bayer_pixel[0] - bayer_pixel[2]);
+      int dv = std::abs (bayer_pixel[-bayer_line_step + 1] - bayer_pixel[bayer_line_step + 1]);
 
       if (dv == 0 && dh == 0)
         rgb_buffer[4] = AVG4 (bayer_pixel[1 - bayer_line_step], bayer_pixel[1 + bayer_line_step], bayer_pixel[0], bayer_pixel[2]);
@@ -1011,8 +1008,8 @@ pcl::io::DeBayer::debayerEdgeAwareWeighted (
       rgb_buffer[rgb_line_step ] = AVG4 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1], bayer_pixel[-1], bayer_pixel[bayer_line_step2 - 1]);
       rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
 
-      dv = abs (bayer_pixel[0] - bayer_pixel[bayer_line_step2]);
-      dh = abs (bayer_pixel[bayer_line_step - 1] - bayer_pixel[bayer_line_step + 1]);
+      dv = std::abs (bayer_pixel[0] - bayer_pixel[bayer_line_step2]);
+      dh = std::abs (bayer_pixel[bayer_line_step - 1] - bayer_pixel[bayer_line_step + 1]);
 
       if (dv == 0 && dh == 0)
         rgb_buffer[rgb_line_step + 1] = AVG4 (bayer_pixel[0], bayer_pixel[bayer_line_step2], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
@@ -1107,7 +1104,7 @@ pcl::io::DeBayer::debayerEdgeAwareWeighted (
   rgb_buffer += 6;
   bayer_pixel += 2;
   // rest of the last two lines
-  for (xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
+  for (unsigned xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
   {
     // GRGR line
     // Bayer       -1 0 1 2

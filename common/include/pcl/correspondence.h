@@ -35,21 +35,23 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_COMMON_CORRESPONDENCE_H_
-#define PCL_COMMON_CORRESPONDENCE_H_
+
+#pragma once
 
 #ifdef __GNUC__
-#pragma GCC system_header 
+#pragma GCC system_header
 #endif
 
-#include <boost/shared_ptr.hpp>
+#include <pcl/pcl_base.h>
+#include <pcl/memory.h>
+#include <pcl/types.h>
 #include <Eigen/StdVector>
 #include <Eigen/Geometry>
 #include <pcl/pcl_exports.h>
 
 namespace pcl
 {
-  /** \brief Correspondence represents a match between two entities (e.g., points, descriptors, etc). This is 
+  /** \brief Correspondence represents a match between two entities (e.g., points, descriptors, etc). This is
     * represented via the indices of a \a source point and a \a target point, and the distance between them.
     *
     * \author Dirk Holz, Radu B. Rusu, Bastian Steder
@@ -58,40 +60,35 @@ namespace pcl
   struct Correspondence
   {
     /** \brief Index of the query (source) point. */
-    int index_query;
+    index_t index_query = 0;
     /** \brief Index of the matching (target) point. Set to -1 if no correspondence found. */
-    int index_match;
+    index_t index_match = UNAVAILABLE;
     /** \brief Distance between the corresponding points, or the weight denoting the confidence in correspondence estimation */
     union
     {
-      float distance;
+      float distance = std::numeric_limits<float>::max();
       float weight;
     };
-    
-    /** \brief Standard constructor. 
+
+    /** \brief Standard constructor.
       * Sets \ref index_query to 0, \ref index_match to -1, and \ref distance to FLT_MAX.
       */
-    inline Correspondence () : index_query (0), index_match (-1), 
-                               distance (std::numeric_limits<float>::max ())
-    {}
+    inline Correspondence () = default;
 
     /** \brief Constructor. */
-    inline Correspondence (int _index_query, int _index_match, float _distance) : 
+    inline Correspondence (index_t _index_query, index_t _index_match, float _distance) :
       index_query (_index_query), index_match (_index_match), distance (_distance)
     {}
 
-    /** \brief Empty destructor. */
-    virtual ~Correspondence () {}
-    
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
-  
+
   /** \brief overloaded << operator */
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const Correspondence& c);
 
-  typedef std::vector< pcl::Correspondence, Eigen::aligned_allocator<pcl::Correspondence> > Correspondences;
-  typedef boost::shared_ptr<Correspondences> CorrespondencesPtr;
-  typedef boost::shared_ptr<const Correspondences > CorrespondencesConstPtr;
+  using Correspondences = std::vector< pcl::Correspondence, Eigen::aligned_allocator<pcl::Correspondence> >;
+  using CorrespondencesPtr = shared_ptr<Correspondences>;
+  using CorrespondencesConstPtr = shared_ptr<const Correspondences >;
 
   /**
     * \brief Get the query points of correspondences that are present in
@@ -109,7 +106,7 @@ namespace pcl
   void
   getRejectedQueryIndices (const pcl::Correspondences &correspondences_before,
                            const pcl::Correspondences &correspondences_after,
-                           std::vector<int>& indices,
+                           Indices& indices,
                            bool presorting_required = true);
 
   /**
@@ -122,15 +119,9 @@ namespace pcl
     Eigen::Vector3f point1;  //!< The 3D position of the point in the first coordinate frame
     Eigen::Vector3f point2;  //!< The 3D position of the point in the second coordinate frame
 
-    /** \brief Empty constructor. */
-    PointCorrespondence3D () : point1 (), point2 () {}
-
-    /** \brief Empty destructor. */
-    virtual ~PointCorrespondence3D () {}
-    
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
-  typedef std::vector<PointCorrespondence3D, Eigen::aligned_allocator<PointCorrespondence3D> > PointCorrespondences3DVector;
+  using PointCorrespondences3DVector = std::vector<PointCorrespondence3D, Eigen::aligned_allocator<PointCorrespondence3D> >;
 
   /**
     * \brief Representation of a (possible) correspondence between two points (e.g. from feature matching),
@@ -141,12 +132,10 @@ namespace pcl
   {
     Eigen::Affine3f transformation;  //!< The transformation to go from the coordinate system
                                         //!< of point2 to the coordinate system of point1
-    /** \brief Empty destructor. */
-    virtual ~PointCorrespondence6D () {}
 
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
-  typedef std::vector<PointCorrespondence6D, Eigen::aligned_allocator<PointCorrespondence6D> > PointCorrespondences6DVector;
+  using PointCorrespondences6DVector = std::vector<PointCorrespondence6D, Eigen::aligned_allocator<PointCorrespondence6D> >;
 
   /**
     * \brief Comparator to enable us to sort a vector of PointCorrespondences according to their scores using
@@ -159,5 +148,3 @@ namespace pcl
     return (pc1.distance > pc2.distance);
   }
 }
-
-#endif /* PCL_COMMON_CORRESPONDENCE_H_ */

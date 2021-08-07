@@ -41,12 +41,13 @@
 #include <pcl/apps/cloud_composer/tools/supervoxels.h>
 #include <pcl/apps/cloud_composer/impl/cloud_item.hpp>
 #include <pcl/apps/cloud_composer/items/normals_item.h>
+#include <pcl/memory.h>
 #include <pcl/point_cloud.h>
 #include <pcl/segmentation/supervoxel_clustering.h>
 
 
 template <typename PointT> QList <pcl::cloud_composer::CloudComposerItem*>
-pcl::cloud_composer::SupervoxelsTool::performTemplatedAction (QList <const CloudComposerItem*> input_data)
+pcl::cloud_composer::SupervoxelsTool::performTemplatedAction (const QList <const CloudComposerItem*>& input_data)
 {
   QList <CloudComposerItem*> output;  
   
@@ -89,17 +90,18 @@ pcl::cloud_composer::SupervoxelsTool::performTemplatedAction (QList <const Cloud
     super.setColorImportance (rgb_weight);
     super.setSpatialImportance (spatial_weight);
     super.setNormalImportance (normal_weight);
-    std::map <uint32_t, typename pcl::Supervoxel<PointT>::Ptr > supervoxel_clusters;
+    std::map <std::uint32_t, typename pcl::Supervoxel<PointT>::Ptr > supervoxel_clusters;
     super.extract (supervoxel_clusters);
     
-    std::map <uint32_t, typename pcl::Supervoxel<PointT>::Ptr > refined_supervoxel_clusters;
+    std::map <std::uint32_t, typename pcl::Supervoxel<PointT>::Ptr > refined_supervoxel_clusters;
     super.refineSupervoxels (3, refined_supervoxel_clusters);
   
-    typename pcl::PointCloud<PointXYZRGBA>::Ptr color_segments;
-    color_segments= super.getColoredVoxelCloud ();
-    
-    CloudItem*  cloud_item_out = CloudItem::createCloudItemFromTemplate<PointXYZRGBA>(input_item->text(),color_segments);
- 
+    auto label_segments = super.getLabeledVoxelCloud();
+    auto color_segments = pcl::make_shared<pcl::PointCloud<PointXYZRGBA>>();
+    pcl::copyPointCloud(*label_segments, *color_segments);
+    for (size_t i = 0; i < label_segments->size(); ++i)
+      color_segments->at(i).rgba = GlasbeyLUT::at(label_segments->at(i).label % GlasbeyLUT::size()).rgba;
+    CloudItem*  cloud_item_out = CloudItem::createCloudItemFromTemplate<PointXYZRGBA>(input_item->text(), color_segments);
     
     output.append (cloud_item_out);
     
@@ -115,7 +117,7 @@ pcl::cloud_composer::SupervoxelsTool::performTemplatedAction (QList <const Cloud
 
 
 
-#define PCL_INSTANTIATE_performTemplatedAction(T) template PCL_EXPORTS void pcl::cloud_composer::SupervoxelsTool::performTemplatedAction<T> (QList <const CloudComposerItem*>);
+#define PCL_INSTANTIATE_performTemplatedAction(T) template void pcl::cloud_composer::SupervoxelsTool::performTemplatedAction<T> (QList <const CloudComposerItem*>);
 
 
 

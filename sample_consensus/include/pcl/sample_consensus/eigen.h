@@ -37,14 +37,11 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_EIGEN_H_
-#define PCL_SAMPLE_CONSENSUS_EIGEN_H_
-
+#pragma once
+PCL_DEPRECATED_HEADER(1, 15, "Please include the needed eigen headers directly.")
 #if defined __GNUC__
 #  pragma GCC system_header 
 #endif
 
 #include <Eigen/Core>
 #include <unsupported/Eigen/NonLinearOptimization>
-
-#endif    // PCL_SAMPLE_CONSENSUS_EIGEN_H_

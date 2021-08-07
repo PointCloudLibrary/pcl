@@ -42,7 +42,6 @@
 
 #include <pcl/features/board.h>
 #include <utility>
-#include <pcl/common/transforms.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT> void
@@ -88,7 +87,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::getAngleB
 {
   Eigen::Vector3f angle_orientation;
   angle_orientation = v1.cross (v2);
-  float angle_radians = acosf (std::max (-1.0f, std::min (1.0f, v1.dot (v2))));
+  float angle_radians = std::acos (std::max (-1.0f, std::min (1.0f, v1.dot (v2))));
 
   angle_radians = angle_orientation.dot (axis) < 0.f ? (2 * static_cast<float> (M_PI) - angle_radians) : angle_radians;
 
@@ -138,30 +137,17 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::planeFitt
   // Plane Fitting using Singular Value Decomposition (SVD)
   // -----------------------------------------------------
 
-  int n_points = static_cast<int> (points.rows ());
+  const auto n_points = points.rows ();
   if (n_points == 0)
   {
     return;
   }
 
   //find the center by averaging the points positions
-  center.setZero ();
-
-  for (int i = 0; i < n_points; ++i)
-  {
-    center += points.row (i);
-  }
-
-  center /= static_cast<float> (n_points);
+  center = points.colwise().mean().transpose();
 
   //copy points - average (center)
-  Eigen::Matrix<float, Eigen::Dynamic, 3> A (n_points, 3); //PointData
-  for (int i = 0; i < n_points; ++i)
-  {
-    A (i, 0) = points (i, 0) - center.x ();
-    A (i, 1) = points (i, 1) - center.y ();
-    A (i, 2) = points (i, 2) - center.z ();
-  }
+  const Eigen::Matrix<float, Eigen::Dynamic, 3> A = points.rowwise() - center.transpose();
 
   Eigen::JacobiSVD<Eigen::MatrixXf> svd (A, Eigen::ComputeFullV);
   norm = svd.matrixV ().col (2);
@@ -171,15 +157,15 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::planeFitt
 template<typename PointInT, typename PointNT, typename PointOutT> void
 pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::normalDisambiguation (
                                                                                              pcl::PointCloud<PointNT> const &normal_cloud,
-                                                                                             std::vector<int> const &normal_indices,
+                                                                                             pcl::Indices const &normal_indices,
                                                                                              Eigen::Vector3f &normal)
 {
   Eigen::Vector3f normal_mean;
   normal_mean.setZero ();
 
-  for (size_t i = 0; i < normal_indices.size (); ++i)
+  for (const auto &normal_index : normal_indices)
   {
-    const PointNT& curPt = normal_cloud[normal_indices[i]];
+    const PointNT& curPt = normal_cloud[normal_index];
 
     normal_mean += curPt.getNormalVector3fMap ();
   }
@@ -200,9 +186,9 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
   //find Z axis
 
   //extract support points for Rz radius
-  std::vector<int> neighbours_indices;
+  pcl::Indices neighbours_indices;
   std::vector<float> neighbours_distances;
-  int n_neighbours = this->searchForNeighbors (index, search_parameter_, neighbours_indices, neighbours_distances);
+  std::size_t n_neighbours = this->searchForNeighbors (index, search_parameter_, neighbours_indices, neighbours_distances);
 
   //check if there are enough neighbor points, otherwise compute a random X axis and use normal as Z axis
   if (n_neighbours < 6)
@@ -219,7 +205,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
 
   //copy neighbours coordinates into eigen matrix
   Eigen::Matrix<float, Eigen::Dynamic, 3> neigh_points_mat (n_neighbours, 3);
-  for (int i = 0; i < n_neighbours; ++i)
+  for (std::size_t i = 0; i < n_neighbours; ++i)
   {
     neigh_points_mat.row (i) = (*surface_)[neighbours_indices[i]].getVector3fMap ();
   }
@@ -254,9 +240,8 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
   Eigen::Vector3f best_margin_point;
   bool best_point_found_on_margins = false;
 
-  float radius2 = tangent_radius_ * tangent_radius_;
-
-  float margin_distance2 = margin_thresh_ * margin_thresh_ * radius2;
+  const float radius2 = tangent_radius_ * tangent_radius_;
+  const float margin_distance2 = margin_thresh_ * margin_thresh_ * radius2;
 
   float max_boundary_angle = 0;
 
@@ -266,18 +251,16 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
 
     lrf.row (0).matrix () = x_axis;
 
-    for (int i = 0; i < check_margin_array_size_; i++)
-    {
-      check_margin_array_[i] = false;
-      margin_array_min_angle_[i] = std::numeric_limits<float>::max ();
-      margin_array_max_angle_[i] = -std::numeric_limits<float>::max ();
-      margin_array_min_angle_normal_[i] = -1.0;
-      margin_array_max_angle_normal_[i] = -1.0;
-    }
+    check_margin_array_.assign(check_margin_array_size_, false);
+    margin_array_min_angle_.assign(check_margin_array_size_, std::numeric_limits<float>::max ());
+    margin_array_max_angle_.assign(check_margin_array_size_, -std::numeric_limits<float>::max ());
+    margin_array_min_angle_normal_.assign(check_margin_array_size_, -1.0);
+    margin_array_max_angle_normal_.assign(check_margin_array_size_, -1.0);
+
     max_boundary_angle = (2 * static_cast<float> (M_PI)) / static_cast<float> (check_margin_array_size_);
   }
 
-  for (int curr_neigh = 0; curr_neigh < n_neighbours; ++curr_neigh)
+  for (std::size_t curr_neigh = 0; curr_neigh < n_neighbours; ++curr_neigh)
   {
     const int& curr_neigh_idx = neighbours_indices[curr_neigh];
     const float& neigh_distance_sqr = neighbours_distances[curr_neigh];
@@ -307,7 +290,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
                               surface_->at (curr_neigh_idx).getVector3fMap (), indicating_normal_vect);
       float angle = getAngleBetweenUnitVectors (x_axis, indicating_normal_vect, fitted_normal);
 
-      int check_margin_array_idx = std::min (static_cast<int> (floor (angle / max_boundary_angle)), check_margin_array_size_ - 1);
+      int check_margin_array_idx = std::min (static_cast<int> (std::floor (angle / max_boundary_angle)), check_margin_array_size_ - 1);
       check_margin_array_[check_margin_array_idx] = true;
 
       if (angle < margin_array_min_angle_[check_margin_array_idx])
@@ -327,7 +310,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
   if (!margin_point_found)
   {
     //find among points with neighDistance <= marginThresh*radius
-    for (int curr_neigh = 0; curr_neigh < n_neighbours; curr_neigh++)
+    for (std::size_t curr_neigh = 0; curr_neigh < n_neighbours; curr_neigh++)
     {
       const int& curr_neigh_idx = neighbours_indices[curr_neigh];
       const float& neigh_distance_sqr = neighbours_distances[curr_neigh];
@@ -400,9 +383,9 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
 
   //check if there is at least a hole
   bool is_hole_present = false;
-  for (int i = 0; i < check_margin_array_size_; i++)
+  for (const auto check_margin: check_margin_array_)
   {
-    if (!check_margin_array_[i])
+    if (!check_margin)
     {
       is_hole_present = true;
       break;
@@ -449,29 +432,22 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
   int hole_end;
   int hole_first;
 
-  //find first no border pie
-  int first_no_border = -1;
-  if (check_margin_array_[check_margin_array_size_ - 1])
-  {
-    first_no_border = 0;
-  }
-  else
-  {
-    for (int i = 0; i < check_margin_array_size_; i++)
+  const auto find_first_no_border_pie = [](const auto& array) -> std::size_t {
+    if (array.back())
     {
-      if (check_margin_array_[i])
-      {
-        first_no_border = i;
-        break;
-      }
+        return 0;
     }
-  }
+    const auto result = std::find_if(array.cbegin (), array.cend (),
+                                     [](const auto& x) -> bool { return x;});
+    return std::distance(array.cbegin (), result);
+  };
+  const auto first_no_border = find_first_no_border_pie(check_margin_array_);
 
   //float steep_prob = 0.0;
   float max_hole_prob = -std::numeric_limits<float>::max ();
 
   //find holes
-  for (int ch = first_no_border; ch < check_margin_array_size_; ch++)
+  for (auto ch = first_no_border; ch < static_cast<std::size_t>(check_margin_array_size_); ch++)
   {
     if (!check_margin_array_[ch])
     {
@@ -545,10 +521,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
       {
         break;
       }
-      else
-      {
-        ch = hole_end - 1;
-      }
+      ch = hole_end - 1;
     }
   }
 
@@ -605,7 +578,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computeFe
   }
 
   this->resetData ();
-  for (size_t point_idx = 0; point_idx < indices_->size (); ++point_idx)
+  for (std::size_t point_idx = 0; point_idx < indices_->size (); ++point_idx)
   {
     Eigen::Matrix3f currentLrf;
     PointOutT &rf = output[point_idx];

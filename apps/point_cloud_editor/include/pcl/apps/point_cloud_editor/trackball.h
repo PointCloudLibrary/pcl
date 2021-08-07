@@ -38,8 +38,7 @@
 /// class has been based on 
 /// @author Matthew Hielsberg
 
-#ifndef TRACKBALL_H_
-#define TRACKBALL_H_
+#pragma once
 
 #include <boost/math/quaternion.hpp>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
@@ -63,7 +62,7 @@ class TrackBall
     
   private:
     
-    void getPointFromScreenPoint(int s_x, int s_y, float &x, float &y, float &z);
+    void getPointFromScreenPoint(int s_x, int s_y, float &x, float &y, float &z) const;
 
     /// the quaternion representing the current orientation of the trackball
     boost::math::quaternion<float> quat_;
@@ -75,5 +74,3 @@ class TrackBall
     float radius_sqr_;
         
 }; // class TrackBall
-
-#endif // TRACKBALL_H_

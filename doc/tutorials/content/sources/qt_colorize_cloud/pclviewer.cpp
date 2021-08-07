@@ -3,9 +3,9 @@
 
 PCLViewer::PCLViewer (QWidget *parent) :
     QMainWindow (parent),
-    ui (new Ui::PCLViewer),
     filtering_axis_ (1),  // = y
-    color_mode_ (4)  // = Rainbow
+    color_mode_ (4),  // = Rainbow
+    ui (new Ui::PCLViewer)
 {
   ui->setupUi (this);
   this->setWindowTitle ("PCL viewer");
@@ -16,11 +16,11 @@ PCLViewer::PCLViewer (QWidget *parent) :
   cloud_->resize (500);
 
   // Fill the cloud with random points
-  for (size_t i = 0; i < cloud_->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud_->size (); ++i)
   {
-    cloud_->points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
-    cloud_->points[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
-    cloud_->points[i].z = 1024 * rand () / (RAND_MAX + 1.0f);
+    (*cloud_)[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
+    (*cloud_)[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
+    (*cloud_)[i].z = 1024 * rand () / (RAND_MAX + 1.0f);
   }
 
   // Set up the QVTK window
@@ -195,16 +195,16 @@ PCLViewer::colorCloudDistances ()
   switch (filtering_axis_)
   {
     case 0:  // x
-      min = cloud_->points[0].x;
-      max = cloud_->points[0].x;
+      min = (*cloud_)[0].x;
+      max = (*cloud_)[0].x;
       break;
     case 1:  // y
-      min = cloud_->points[0].y;
-      max = cloud_->points[0].y;
+      min = (*cloud_)[0].y;
+      max = (*cloud_)[0].y;
       break;
     default:  // z
-      min = cloud_->points[0].z;
-      max = cloud_->points[0].z;
+      min = (*cloud_)[0].z;
+      max = (*cloud_)[0].z;
       break;
   }
 
@@ -249,13 +249,13 @@ PCLViewer::colorCloudDistances ()
     switch (filtering_axis_)
     {
       case 0:  // x
-        value = boost::math::iround ( (cloud_it->x - min) * lut_scale);  // Round the number to the closest integer
+        value = std::lround ( (cloud_it->x - min) * lut_scale);  // Round the number to the closest integer
         break;
       case 1:  // y
-        value = boost::math::iround ( (cloud_it->y - min) * lut_scale);
+        value = std::lround ( (cloud_it->y - min) * lut_scale);
         break;
       default:  // z
-        value = boost::math::iround ( (cloud_it->z - min) * lut_scale);
+        value = std::lround ( (cloud_it->z - min) * lut_scale);
         break;
     }
 

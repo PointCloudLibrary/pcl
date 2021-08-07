@@ -37,10 +37,11 @@
  *
  */
 
-#ifndef PCL_ROPS_ESIMATION_H_
-#define PCL_ROPS_ESIMATION_H_
+#pragma once
 
-#include <pcl/PolygonMesh.h>
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
+#include <pcl/Vertices.h> // for Vertices
 #include <pcl/features/feature.h>
 #include <set>
 
@@ -61,8 +62,8 @@ namespace pcl
       using Feature <PointInT, PointOutT>::surface_;
       using Feature <PointInT, PointOutT>::tree_;
 
-      typedef typename pcl::Feature <PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename pcl::Feature <PointInT, PointOutT>::PointCloudIn PointCloudIn;
+      using PointCloudOut = typename pcl::Feature <PointInT, PointOutT>::PointCloudOut;
+      using PointCloudIn = typename pcl::Feature <PointInT, PointOutT>::PointCloudIn;
 
     public:
 
@@ -70,7 +71,7 @@ namespace pcl
       ROPSEstimation ();
 
       /** \brief Virtual destructor. */
-      virtual
+      
       ~ROPSEstimation ();
 
       /** \brief Allows to set the number of partition bins that is used for distribution matrix calculation.
@@ -120,8 +121,8 @@ namespace pcl
       /** \brief Abstract feature estimation method.
         * \param[out] output the resultant features
         */
-      virtual void
-      computeFeature (PointCloudOut& output);
+      void
+      computeFeature (PointCloudOut& output) override;
 
       /** \brief This method simply builds the list of triangles for every point.
         * The list of triangles for each point consists of indices of triangles it belongs to.
@@ -136,7 +137,7 @@ namespace pcl
         * \param[out] local_points stores the indices of the points that belong to the local surface
         */
       void
-      getLocalSurface (const PointInT& point, std::set <unsigned int>& local_triangles, std::vector <int>& local_points) const;
+      getLocalSurface (const PointInT& point, std::set <unsigned int>& local_triangles, pcl::Indices& local_points) const;
 
       /** \brief This method computes LRF (Local Reference Frame) matrix for the given point.
         * \param[in] point point for which the LRF is computed
@@ -166,7 +167,7 @@ namespace pcl
         * \param[out] transformed_cloud stores the transformed cloud
         */
       void
-      transformCloud (const PointInT& point, const Eigen::Matrix3f& matrix, const std::vector <int>& local_points, PointCloudIn& transformed_cloud) const;
+      transformCloud (const PointInT& point, const Eigen::Matrix3f& matrix, const pcl::Indices& local_points, PointCloudIn& transformed_cloud) const;
 
       /** \brief This method rotates the cloud around the given axis and computes AABB of the rotated cloud.
         * \param[in] axis axis around which cloud must be rotated
@@ -222,8 +223,7 @@ namespace pcl
       std::vector <std::vector <unsigned int> > triangles_of_the_point_;
 
     public:
-
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 
@@ -231,6 +231,4 @@ namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/rops_estimation.hpp>
-#endif
-
 #endif

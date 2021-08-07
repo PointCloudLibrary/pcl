@@ -40,11 +40,13 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <pcl/filters/conditional_removal.h>
+#include <boost/filesystem.hpp> // for path, exists, ...
+#include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 
 
-typedef pcl::PointXYZ PointType;
-typedef pcl::PointCloud<PointType> Cloud;
-typedef Cloud::ConstPtr CloudConstPtr;
+using PointType = pcl::PointXYZ;
+using Cloud = pcl::PointCloud<PointType>;
+using CloudConstPtr = Cloud::ConstPtr;
 
 float default_radius = 1.0f;
 bool default_inside = true;
@@ -118,11 +120,11 @@ batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir
               float radius, bool inside, bool keep_organized)
 {
   std::vector<std::string> st;
-  for (size_t i = 0; i < pcd_files.size (); ++i)
+  for (const auto &pcd_file : pcd_files)
   {
     // Load the first file
     Cloud::Ptr cloud (new Cloud);
-    if (!loadCloud (pcd_files[i], cloud))
+    if (!loadCloud (pcd_file, cloud))
       return (-1);
 
     // Perform the feature estimation
@@ -130,14 +132,11 @@ batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir
     compute (cloud, output, radius, inside, keep_organized);
 
     // Prepare output file name
-    std::string filename = pcd_files[i];
-    boost::trim (filename);
-    boost::split (st, filename, boost::is_any_of ("/\\"), boost::token_compress_on);
-
+    std::string filename = boost::filesystem::path(pcd_file).filename().string();
+    
     // Save into the second file
-    std::stringstream ss;
-    ss << output_dir << "/" << st.at (st.size () - 1);
-    saveCloud (ss.str (), output);
+    const std::string filepath = output_dir + '/' + filename;
+    saveCloud (filepath, output);
   }
   return (0);
 }
@@ -203,7 +202,7 @@ main (int argc, char** argv)
   }
   else
   {
-    if (input_dir != "" && boost::filesystem::exists (input_dir))
+    if (!input_dir.empty() && boost::filesystem::exists (input_dir))
     {
       std::vector<std::string> pcd_files;
       boost::filesystem::directory_iterator end_itr;

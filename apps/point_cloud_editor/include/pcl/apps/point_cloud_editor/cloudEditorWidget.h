@@ -38,11 +38,8 @@
 /// which are used for viewing and editing point clouds
 /// @author  Yue Li and Matthew Hielsberg
 
-#ifndef CLOUD_EDITOR_WIDGET_H_
-#define CLOUD_EDITOR_WIDGET_H_
+#pragma once
 
-#include <QGLWidget>
-#include <boost/function.hpp>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 #include <pcl/apps/point_cloud_editor/common.h>
 #include <pcl/apps/point_cloud_editor/commandQueue.h>
@@ -50,15 +47,26 @@
 #include <pcl/apps/point_cloud_editor/statisticsDialog.h>
 #include <pcl/apps/point_cloud_editor/toolInterface.h>
 
+#include <pcl/memory.h>  // for pcl::shared_ptr
+
+#include <QGLWidget>
+
+#include <functional>
+
+class Selection;
+
 /// @brief class declaration for the widget for editing and viewing
 /// point clouds.
 class CloudEditorWidget : public QGLWidget
 {
   Q_OBJECT
   public:
+    /// The type for shared pointer pointing to a selection buffer
+    using SelectionPtr = pcl::shared_ptr<Selection>;
+
     /// @brief Constructor
     /// @param parent a pointer which points to the parent widget
-    CloudEditorWidget (QWidget *parent = 0);
+    CloudEditorWidget (QWidget *parent = nullptr);
 
     /// @brief Destructor
     ~CloudEditorWidget ();
@@ -190,31 +198,31 @@ class CloudEditorWidget : public QGLWidget
   protected:  
     /// initializes GL
     void
-    initializeGL ();
+    initializeGL () override;
 
     /// the rendering function.
     void
-    paintGL ();
+    paintGL () override;
 
     /// resizes widget
     void
-    resizeGL (int width, int height);
+    resizeGL (int width, int height) override;
 
     /// mouse press control
     void
-    mousePressEvent (QMouseEvent *event);
+    mousePressEvent (QMouseEvent *event) override;
 
     /// mouse move control
     void
-    mouseMoveEvent (QMouseEvent *event);
+    mouseMoveEvent (QMouseEvent *event) override;
 
     /// mouse release control
     void
-    mouseReleaseEvent (QMouseEvent *event);
+    mouseReleaseEvent (QMouseEvent *event) override;
 
     /// key press control
     void
-    keyPressEvent (QKeyEvent *event);
+    keyPressEvent (QKeyEvent *event) override;
 
   private:
     
@@ -252,9 +260,10 @@ class CloudEditorWidget : public QGLWidget
         return lhs.compare(rhs) < 0;
       }
     };
-    typedef boost::function<void (CloudEditorWidget*, const std::string&)>
-      FileLoadFunc;
-    typedef std::map<std::string, FileLoadFunc, ExtCompare> FileLoadMap;
+
+    using FileLoadFunc = std::function<void (CloudEditorWidget*, const std::string&)>;
+    using FileLoadMap = std::map<std::string, FileLoadFunc, ExtCompare>;
+
     /// a map of file type extensions to loader functions.
     FileLoadMap cloud_load_func_map_;
     
@@ -269,7 +278,7 @@ class CloudEditorWidget : public QGLWidget
 
     /// The transformation tool being used. Either a cloud transform tool or
     /// a selection transform tool is activated at a time.
-    boost::shared_ptr<ToolInterface> tool_ptr_;
+    std::shared_ptr<ToolInterface> tool_ptr_;
 
     /// a pointer to the selection object
     SelectionPtr selection_ptr_;
@@ -302,7 +311,8 @@ class CloudEditorWidget : public QGLWidget
     /// A flag indicates whether the cloud is initially colored or not.
     bool is_colored_;
 
-    typedef boost::function<void (CloudEditorWidget*)> KeyMapFunc;
+    using KeyMapFunc = std::function<void (CloudEditorWidget*)>;
+
     /// map between pressed key and the corresponding functor
     std::map<int, KeyMapFunc> key_map_;
 
@@ -311,4 +321,3 @@ class CloudEditorWidget : public QGLWidget
 
 
 };
-#endif // CLOUD_EDITOR_WIDGET_H_

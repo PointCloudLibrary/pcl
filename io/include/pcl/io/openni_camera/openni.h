@@ -34,22 +34,18 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+#pragma once
+
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
-
-#ifndef _PCL_OPENNI_OPENNI_H_
-#define _PCL_OPENNI_OPENNI_H_
 
 #if defined __GNUC__
 #  pragma GCC system_header 
 #endif
 
 #include <XnOS.h>
-//work around for qt 5 bug: https://bugreports.qt-project.org/browse/QTBUG-29331
-#ifndef Q_MOC_RUN
 #include <XnCppWrapper.h>
-#endif // Q_MOC_RUN
 #include <XnVersion.h>
 
 #endif
-#endif    // _PCL_OPENNI_OPENNI_H_

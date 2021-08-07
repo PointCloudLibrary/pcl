@@ -39,8 +39,7 @@
  * @brief This file contains the Blob2 structure and the inline <<-operator for it
  */
 
-#ifndef PCL_GPU_PEOPLE_LABEL_BLOB2_H_
-#define PCL_GPU_PEOPLE_LABEL_BLOB2_H_
+#pragma once
 
 #include <pcl/PointIndices.h>
 #include <pcl/gpu/people/label_common.h>
@@ -96,5 +95,3 @@ namespace pcl
     } // end namespace people
   } // end namespace gpu
 } // end namespace pcl
-
-#endif

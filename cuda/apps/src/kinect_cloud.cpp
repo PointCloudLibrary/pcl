@@ -48,6 +48,8 @@
 #include <pcl_ros/point_cloud.h>
 #include <pcl/point_types.h>
 
+#include <functional>
+
 using namespace message_filters;
 using namespace pcl;
 using namespace pcl_cuda;
@@ -62,7 +64,7 @@ struct EventHelper
             const pcl::PCLImage::ConstPtr &rgb,
             const pcl::CameraInfo::ConstPtr &info)
   {
-    //typedef pcl_cuda::SampleConsensusModel<pcl_cuda::Host>::Indices Indices;
+    //using Indices = pcl_cuda::SampleConsensusModel<pcl_cuda::Host>::Indices;
 
     //pcl_cuda::PointCloudAOS<pcl_cuda::Host>::Ptr data (new pcl_cuda::PointCloudAOS<pcl_cuda::Host>);
     PointCloudAOS<Device>::Ptr data;
@@ -111,13 +113,13 @@ main (int argc, char **argv)
     ROS_INFO ("[disparity_to_cloud] Using RGB to color the points.");
     sync_rgb.connectInput (sub_depth, sub_rgb, sub_info);
     //sync_rgb.registerCallback (bind (&pcl_cuda::DisparityToCloud::callback, k, _1, _2, _3));
-    sync_rgb.registerCallback (boost::bind (&EventHelper::callback, &h, _1, _2, _3));
+    sync_rgb.registerCallback (std::bind (&EventHelper::callback, &h, _1, _2, _3));
   }
   else
   {
     sync.connectInput (sub_depth, sub_info);
     //sync.registerCallback (bind (&pcl_cuda::DisparityToCloud::callback, k, _1, PCLImageConstPtr (), _2));
-    sync.registerCallback (boost::bind (&EventHelper::callback, &h, _1, PCLImageConstPtr (), _2));
+    sync.registerCallback (std::bind (&EventHelper::callback, &h, _1, PCLImageConstPtr (), _2));
   }
 
   // Do this indefinitely

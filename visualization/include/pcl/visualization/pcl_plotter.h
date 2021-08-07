@@ -35,13 +35,12 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_VISUALUALIZATION_PCL_PLOTTER_H_
-#define	PCL_VISUALUALIZATION_PCL_PLOTTER_H_
+
+#pragma once
 
 #include <iostream>
 #include <vector>
 #include <utility>
-#include <cfloat>
 
 #include <pcl/visualization/common/common.h>
 #include <pcl/point_types.h>
@@ -49,16 +48,15 @@
 #include <pcl/point_cloud.h>
 #include <pcl/common/io.h>
 
-class PCLVisualizerInteractor;
-class vtkRenderWindow;
-class vtkRenderWindowInteractor;
-class vtkContextView;
-class vtkChartXY;
-class vtkColorSeries;
-
+#include <vtkContextView.h>
+#include <vtkChartXY.h>
+#include <vtkColorSeries.h>
 #include <vtkSmartPointer.h>
 #include <vtkCommand.h>
 #include <vtkChart.h>
+
+class vtkRenderWindow;
+class vtkRenderWindowInteractor;
 
 namespace pcl
 {
@@ -77,14 +75,16 @@ namespace pcl
     class PCL_EXPORTS PCLPlotter
     {
       public:
-	
+        using Ptr = shared_ptr<PCLPlotter>;
+        using ConstPtr = shared_ptr<const PCLPlotter>;
+
         /**\brief A representation of polynomial function. i'th element of the vector denotes the coefficient of x^i of the polynomial in variable x. 
          */
-        typedef std::vector<double> PolynomialFunction;
+        using PolynomialFunction = std::vector<double>;
         
         /**\brief A representation of rational function, defined as the ratio of two polynomial functions. pair::first denotes the numerator and pair::second denotes the denominator of the Rational function. 
          */
-        typedef std::pair<PolynomialFunction, PolynomialFunction> RationalFunction;
+        using RationalFunction = std::pair<PolynomialFunction, PolynomialFunction>;
         
         /** \brief PCL Plotter constructor.  
           * \param[in] name Name of the window
@@ -108,7 +108,7 @@ namespace pcl
                      unsigned long size, 
                      char const * name = "Y Axis", 
                      int type  = vtkChart::LINE ,
-                     char const *color=NULL);
+                     char const *color=nullptr);
 	
         /** \brief Adds a plot with correspondences in vectors arrayX and arrayY. This is the vector version of the addPlotData function. 
           * \param[in] array_x X coordinates of point correspondence array
@@ -243,7 +243,7 @@ namespace pcl
         template <typename PointT> bool 
         addFeatureHistogram (const pcl::PointCloud<PointT> &cloud, 
                              const std::string &field_name, 
-                             const int index,
+                             const pcl::index_t index,
                              const std::string &id = "cloud", int win_width = 640, int win_height = 200);
         
         /** \brief Add a histogram feature to screen as a separate window.
@@ -257,7 +257,7 @@ namespace pcl
         bool 
         addFeatureHistogram (const pcl::PCLPointCloud2 &cloud,
                              const std::string &field_name, 
-                             const int index,
+                             const pcl::index_t index,
                              const std::string &id = "cloud", int win_width = 640, int win_height = 200);
         
         /** \brief Draws all the plots added by addPlotData() or addHistogramData() till now */
@@ -372,7 +372,7 @@ namespace pcl
           * \return[in] array containing the width and height of the window
           */
         int*
-        getWindowSize ();
+        getWindowSize () const;
 
         /** \brief Return a pointer to the underlying VTK RenderWindow used. */
         vtkSmartPointer<vtkRenderWindow>
@@ -416,15 +416,11 @@ namespace pcl
           {
             return (new ExitMainLoopTimerCallback);
           }
-          virtual void 
-          Execute (vtkObject*, unsigned long event_id, void* call_data);
+          void 
+          Execute (vtkObject*, unsigned long event_id, void* call_data) override;
 
           int right_timer_id;
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-          PCLVisualizerInteractor *interactor;
-#else
           vtkRenderWindowInteractor *interactor;
-#endif
         };
         
         struct ExitCallback : public vtkCommand
@@ -433,8 +429,8 @@ namespace pcl
           {
             return new ExitCallback;
           }
-          virtual void 
-          Execute (vtkObject*, unsigned long event_id, void*);
+          void 
+          Execute (vtkObject*, unsigned long event_id, void*) override;
 
           PCLPlotter *plotter;
         };
@@ -474,6 +470,3 @@ namespace pcl
 }
 
 #include <pcl/visualization/impl/pcl_plotter.hpp>
-
-#endif	/* PCL_VISUALUALIZATION_PCL_PLOTTER_H_ */
-

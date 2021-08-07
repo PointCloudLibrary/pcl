@@ -34,21 +34,19 @@
  *
  */
 
-#include <pcl/apps/modeler/thread_controller.h>
-
 #include <pcl/apps/modeler/abstract_worker.h>
 #include <pcl/apps/modeler/cloud_mesh_item.h>
 #include <pcl/apps/modeler/main_window.h>
+#include <pcl/apps/modeler/thread_controller.h>
 
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::ThreadController::ThreadController()
-{
-
-}
+#include <QDialog>
+#include <QThread>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::ThreadController::~ThreadController(void)
+pcl::modeler::ThreadController::ThreadController() {}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::ThreadController::~ThreadController()
 {
   MainWindow::getInstance().slotOnWorkerFinished();
 }
@@ -57,14 +55,13 @@ pcl::modeler::ThreadController::~ThreadController(void)
 bool
 pcl::modeler::ThreadController::runWorker(AbstractWorker* worker)
 {
-  if (worker->exec() != QDialog::Accepted)
-  {
+  if (worker->exec() != QDialog::Accepted) {
     delete worker;
     deleteLater();
 
-    return (false);
+    return false;
   }
-  
+
   QThread* thread = new QThread;
 
   connect(this, SIGNAL(prepared()), worker, SLOT(process()));
@@ -83,12 +80,13 @@ pcl::modeler::ThreadController::runWorker(AbstractWorker* worker)
 
   emit prepared();
 
-   return (true);
+  return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::ThreadController::slotOnCloudMeshItemUpdate(CloudMeshItem* cloud_mesh_item)
+pcl::modeler::ThreadController::slotOnCloudMeshItemUpdate(
+    CloudMeshItem* cloud_mesh_item)
 {
   cloud_mesh_item->updateChannels();
 }

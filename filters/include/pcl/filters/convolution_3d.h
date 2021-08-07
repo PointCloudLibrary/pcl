@@ -37,12 +37,9 @@
  *
  */
 
-#ifndef PCL_FILTERS_CONVOLUTION_3D_H
-#define PCL_FILTERS_CONVOLUTION_3D_H
+#pragma once
 
 #include <pcl/pcl_base.h>
-#include <pcl/filters/boost.h>
-#include <pcl/search/pcl_search.h>
 
 namespace pcl
 {
@@ -55,10 +52,10 @@ namespace pcl
     class ConvolvingKernel
     {
       public:
-        typedef boost::shared_ptr<ConvolvingKernel<PointInT, PointOutT> > Ptr;
-        typedef boost::shared_ptr<const ConvolvingKernel<PointInT, PointOutT> > ConstPtr;
+        using Ptr = shared_ptr<ConvolvingKernel<PointInT, PointOutT> >;
+        using ConstPtr = shared_ptr<const ConvolvingKernel<PointInT, PointOutT> >;
  
-        typedef typename PointCloud<PointInT>::ConstPtr PointCloudInConstPtr;
+        using PointCloudInConstPtr = typename PointCloud<PointInT>::ConstPtr;
 
         /// \brief empty constructor
         ConvolvingKernel () {}
@@ -78,7 +75,7 @@ namespace pcl
           * \return the convolved point
           */
         virtual PointOutT
-        operator() (const std::vector<int>& indices, const std::vector<float>& distances) = 0;
+        operator() (const Indices& indices, const std::vector<float>& distances) = 0;
 
         /** \brief Must call this method before doing any computation
           * \note make sure to override this with at least
@@ -119,8 +116,8 @@ namespace pcl
         using ConvolvingKernel<PointInT, PointOutT>::input_;
         using ConvolvingKernel<PointInT, PointOutT>::operator ();
         using ConvolvingKernel<PointInT, PointOutT>::makeInfinite;
-        typedef boost::shared_ptr<GaussianKernel<PointInT, PointOutT> > Ptr;
-        typedef boost::shared_ptr<GaussianKernel<PointInT, PointOutT> > ConstPtr;
+        using Ptr = shared_ptr<GaussianKernel<PointInT, PointOutT> >;
+        using ConstPtr = shared_ptr<GaussianKernel<PointInT, PointOutT> >;
 
         /** Default constructor */
         GaussianKernel ()
@@ -154,7 +151,7 @@ namespace pcl
         bool initCompute ();
 
         virtual PointOutT
-        operator() (const std::vector<int>& indices, const std::vector<float>& distances);
+        operator() (const Indices& indices, const std::vector<float>& distances);
 
       protected:
         float sigma_;
@@ -177,8 +174,8 @@ namespace pcl
         using GaussianKernel<PointInT, PointOutT>::makeInfinite;
         using GaussianKernel<PointInT, PointOutT>::sigma_sqr_;
         using GaussianKernel<PointInT, PointOutT>::threshold_;
-        typedef boost::shared_ptr<GaussianKernelRGB<PointInT, PointOutT> > Ptr;
-        typedef boost::shared_ptr<GaussianKernelRGB<PointInT, PointOutT> > ConstPtr;
+        using Ptr = shared_ptr<GaussianKernelRGB<PointInT, PointOutT> >;
+        using ConstPtr = shared_ptr<GaussianKernelRGB<PointInT, PointOutT> >;
 
         /** Default constructor */
         GaussianKernelRGB ()
@@ -188,7 +185,7 @@ namespace pcl
         ~GaussianKernelRGB () {}
 
         PointOutT
-        operator() (const std::vector<int>& indices, const std::vector<float>& distances);
+        operator() (const Indices& indices, const std::vector<float>& distances);
     };
 
     /** Convolution3D handles the non organized case where width and height are unknown or if you
@@ -200,13 +197,13 @@ namespace pcl
     class Convolution3D : public pcl::PCLBase <PointIn>
     {
       public:
-        typedef typename pcl::PointCloud<PointIn> PointCloudIn;
-        typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
-        typedef typename pcl::search::Search<PointIn> KdTree;
-        typedef typename pcl::search::Search<PointIn>::Ptr KdTreePtr;
-        typedef typename pcl::PointCloud<PointOut> PointCloudOut;
-        typedef boost::shared_ptr<Convolution3D<PointIn, PointOut, KernelT> > Ptr;
-        typedef boost::shared_ptr<Convolution3D<PointIn, PointOut, KernelT> > ConstPtr;
+        using PointCloudIn = pcl::PointCloud<PointIn>;
+        using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
+        using KdTree = pcl::search::Search<PointIn>;
+        using KdTreePtr = typename KdTree::Ptr;
+        using PointCloudOut = pcl::PointCloud<PointOut>;
+        using Ptr = shared_ptr<Convolution3D<PointIn, PointOut, KernelT> >;
+        using ConstPtr = shared_ptr<Convolution3D<PointIn, PointOut, KernelT> >;
 
         using pcl::PCLBase<PointIn>::indices_;
         using pcl::PCLBase<PointIn>::input_;
@@ -288,5 +285,3 @@ namespace pcl
 }
 
 #include <pcl/filters/impl/convolution_3d.hpp>
-
-#endif // PCL_FILTERS_CONVOLUTION_3D_H

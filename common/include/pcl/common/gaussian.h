@@ -37,13 +37,13 @@
  *
  */
 
-#ifndef PCL_GAUSSIAN_KERNEL
-#define PCL_GAUSSIAN_KERNEL
+#pragma once
 
-#include <sstream>
-#include <pcl/common/eigen.h>
 #include <pcl/point_cloud.h>
-#include <boost/function.hpp>
+
+#include <Eigen/Core> // for VectorXf
+
+#include <functional>
 
 namespace pcl
 {
@@ -57,8 +57,6 @@ namespace pcl
   class PCL_EXPORTS GaussianKernel
   {
     public:
-
-      GaussianKernel () {}
 
       static const unsigned MAX_KERNEL_WIDTH = 71;
       /** Computes the gaussian kernel and dervative assiociated to sigma.
@@ -109,7 +107,7 @@ namespace pcl
         */
      template <typename PointT> void
      convolveRows (const pcl::PointCloud<PointT> &input,
-                   boost::function <float (const PointT& p)> field_accessor,
+                   std::function <float (const PointT& p)> field_accessor,
                    const Eigen::VectorXf &kernel,
                    pcl::PointCloud<float> &output) const;
 
@@ -135,7 +133,7 @@ namespace pcl
         */
       template <typename PointT> void
       convolveCols (const pcl::PointCloud<PointT> &input,
-                    boost::function <float (const PointT& p)> field_accessor,
+                    std::function <float (const PointT& p)> field_accessor,
                     const Eigen::VectorXf &kernel,
                     pcl::PointCloud<float> &output) const;
 
@@ -171,7 +169,7 @@ namespace pcl
         */
       template <typename PointT> inline void
       convolve (const pcl::PointCloud<PointT> &input,
-                boost::function <float (const PointT& p)> field_accessor,
+                std::function <float (const PointT& p)> field_accessor,
                 const Eigen::VectorXf &horiz_kernel,
                 const Eigen::VectorXf &vert_kernel,
                 pcl::PointCloud<float> &output) const
@@ -217,7 +215,7 @@ namespace pcl
         */
       template <typename PointT> inline void
       computeGradients (const pcl::PointCloud<PointT> &input,
-                        boost::function <float (const PointT& p)> field_accessor,
+                        std::function <float (const PointT& p)> field_accessor,
                         const Eigen::VectorXf &gaussian_kernel,
                         const Eigen::VectorXf &gaussian_kernel_derivative,
                         pcl::PointCloud<float> &grad_x,
@@ -252,7 +250,7 @@ namespace pcl
         */
       template <typename PointT> inline void
       smooth (const pcl::PointCloud<PointT> &input,
-              boost::function <float (const PointT& p)> field_accessor,
+              std::function <float (const PointT& p)> field_accessor,
               const Eigen::VectorXf &gaussian_kernel,
               pcl::PointCloud<float> &output) const
       {
@@ -262,5 +260,3 @@ namespace pcl
 }
 
 #include <pcl/common/impl/gaussian.hpp>
-
-#endif // PCL_GAUSSIAN_KERNEL

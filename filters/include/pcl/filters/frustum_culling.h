@@ -35,14 +35,12 @@
  *
  */
 
+#pragma once
 
-#ifndef PCL_FILTERS_FRUSTUM_CULLING_H_
-#define PCL_FILTERS_FRUSTUM_CULLING_H_
-
+#include <pcl/memory.h>
+#include <pcl/pcl_config.h> // for PCL_NO_PRECOMPILE
 #include <pcl/point_types.h>
 #include <pcl/filters/filter_indices.h>
-#include <pcl/common/transforms.h>
-#include <pcl/common/eigen.h>
 
 namespace pcl
 {
@@ -77,20 +75,20 @@ namespace pcl
   template <typename PointT>
   class FrustumCulling : public FilterIndices<PointT>
   {
-    typedef typename Filter<PointT>::PointCloud PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+    using PointCloud = typename Filter<PointT>::PointCloud;
+    using PointCloudPtr = typename PointCloud::Ptr;
+    using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
     public:
 
-      typedef boost::shared_ptr< FrustumCulling<PointT> > Ptr;
-      typedef boost::shared_ptr< const FrustumCulling<PointT> > ConstPtr;
+      using Ptr = shared_ptr<FrustumCulling<PointT> >;
+      using ConstPtr = shared_ptr<const FrustumCulling<PointT> >;
 
 
       using Filter<PointT>::getClassName;
 
       FrustumCulling (bool extract_removed_indices = false) 
-        : FilterIndices<PointT>::FilterIndices (extract_removed_indices)
+        : FilterIndices<PointT> (extract_removed_indices)
         , camera_pose_ (Eigen::Matrix4f::Identity ())
         , hfov_ (60.0f)
         , vfov_ (60.0f)
@@ -205,17 +203,11 @@ namespace pcl
       using FilterIndices<PointT>::extract_removed_indices_;
       using FilterIndices<PointT>::removed_indices_;
 
-      /** \brief Sample of point indices into a separate PointCloud
-        * \param[out] output the resultant point cloud
-        */
-      void
-      applyFilter (PointCloud &output);
-
       /** \brief Sample of point indices
         * \param[out] indices the resultant point cloud indices
         */
       void
-      applyFilter (std::vector<int> &indices);
+      applyFilter (Indices &indices) override;
 
     private:
 
@@ -231,12 +223,10 @@ namespace pcl
       float fp_dist_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/frustum_culling.hpp>
-#endif
-
 #endif

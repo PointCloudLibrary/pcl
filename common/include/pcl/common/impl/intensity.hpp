@@ -38,10 +38,12 @@
  *
  */
 
-#ifndef PCL_COMMON_INTENSITY_FIELD_ACCESSOR_IMPL_HPP
-#define PCL_COMMON_INTENSITY_FIELD_ACCESSOR_IMPL_HPP
+#pragma once
 
+#include <pcl/common/intensity.h>
 #include <pcl/point_types.h>
+
+
 namespace pcl
 {
   namespace common
@@ -132,9 +134,9 @@ namespace pcl
       inline void
       set (pcl::PointXYZRGB &p, float intensity) const
       {
-        p.r = static_cast<uint8_t> (intensity * 3.34448160535f); // 1000 / 299
-        p.g = static_cast<uint8_t> (intensity * 1.70357751278f); // 1000 / 587
-        p.b = static_cast<uint8_t> (intensity * 8.77192982456f); // 1000 / 114
+        p.r = static_cast<std::uint8_t> (intensity * 3.34448160535f); // 1000 / 299
+        p.g = static_cast<std::uint8_t> (intensity * 1.70357751278f); // 1000 / 587
+        p.b = static_cast<std::uint8_t> (intensity * 8.77192982456f); // 1000 / 114
       }
       
       inline void
@@ -172,9 +174,9 @@ namespace pcl
       inline void
       set (pcl::PointXYZRGBA &p, float intensity) const
       {
-        p.r = static_cast<uint8_t> (intensity * 3.34448160535f); // 1000 / 299
-        p.g = static_cast<uint8_t> (intensity * 1.70357751278f); // 1000 / 587
-        p.b = static_cast<uint8_t> (intensity * 8.77192982456f); // 1000 / 114
+        p.r = static_cast<std::uint8_t> (intensity * 3.34448160535f); // 1000 / 299
+        p.g = static_cast<std::uint8_t> (intensity * 1.70357751278f); // 1000 / 587
+        p.b = static_cast<std::uint8_t> (intensity * 8.77192982456f); // 1000 / 114
       }
       
       inline void
@@ -212,9 +214,9 @@ namespace pcl
       inline void
       set (pcl::PointXYZRGBNormal &p, float intensity) const
       {
-        p.r = static_cast<uint8_t> (intensity * 3.34448160535f); // 1000 / 299
-        p.g = static_cast<uint8_t> (intensity * 1.70357751278f); // 1000 / 587
-        p.b = static_cast<uint8_t> (intensity * 8.77192982456f); // 1000 / 114
+        p.r = static_cast<std::uint8_t> (intensity * 3.34448160535f); // 1000 / 299
+        p.g = static_cast<std::uint8_t> (intensity * 1.70357751278f); // 1000 / 587
+        p.b = static_cast<std::uint8_t> (intensity * 8.77192982456f); // 1000 / 114
       }
       
       inline void
@@ -252,9 +254,9 @@ namespace pcl
       inline void
       set (pcl::PointXYZRGBL &p, float intensity) const
       {
-        p.r = static_cast<uint8_t> (intensity * 3.34448160535f); // 1000 / 299
-        p.g = static_cast<uint8_t> (intensity * 1.70357751278f); // 1000 / 587
-        p.b = static_cast<uint8_t> (intensity * 8.77192982456f); // 1000 / 114
+        p.r = static_cast<std::uint8_t> (intensity * 3.34448160535f); // 1000 / 299
+        p.g = static_cast<std::uint8_t> (intensity * 1.70357751278f); // 1000 / 587
+        p.b = static_cast<std::uint8_t> (intensity * 8.77192982456f); // 1000 / 114
       }
       
       inline void
@@ -271,6 +273,40 @@ namespace pcl
         float intensity = this->operator () (p);
         intensity += value;
         set (p, intensity);
+      }
+    };
+
+    template<>
+    struct IntensityFieldAccessor<pcl::PointXYZLAB>
+    {
+      inline float
+      operator () (const pcl::PointXYZLAB &p) const
+      {
+        return (p.L);
+      }
+
+      inline void
+      get (const pcl::PointXYZLAB &p, float &intensity) const
+      {
+        intensity = p.L;
+      }
+
+      inline void
+      set (pcl::PointXYZLAB &p, float intensity) const
+      {
+        p.L = intensity;
+      }
+
+      inline void
+      demean (pcl::PointXYZLAB& p, float value) const
+      {
+        p.L -= value;
+      }
+
+      inline void
+      add (pcl::PointXYZLAB& p, float value) const
+      {
+        p.L += value;
       }
     };
 
@@ -327,20 +363,20 @@ namespace pcl
       inline void
       set (pcl::PointXYZL &p, float intensity) const
       {
-        p.label = static_cast<uint32_t>(intensity);
+        p.label = static_cast<std::uint32_t>(intensity);
         
       }
 
       inline void
       demean (pcl::PointXYZL& p, float value) const
       {
-        p.label -= static_cast<uint32_t>(value);
+        p.label -= static_cast<std::uint32_t>(value);
       }
 
       inline void
       add (pcl::PointXYZL& p, float value) const
       {
-        p.label += static_cast<uint32_t>(value);
+        p.label += static_cast<std::uint32_t>(value);
       }
     };
 
@@ -362,20 +398,20 @@ namespace pcl
       inline void
       set (pcl::PointXYZLNormal &p, float intensity) const
       {
-        p.label = static_cast<uint32_t>(intensity);
+        p.label = static_cast<std::uint32_t>(intensity);
         
       }
 
       inline void
       demean (pcl::PointXYZLNormal& p, float value) const
       {
-        p.label -= static_cast<uint32_t>(value);
+        p.label -= static_cast<std::uint32_t>(value);
       }
 
       inline void
       add (pcl::PointXYZLNormal& p, float value) const
       {
-        p.label += static_cast<uint32_t>(value);
+        p.label += static_cast<std::uint32_t>(value);
       }
     };
 
@@ -551,4 +587,3 @@ namespace pcl
   }
 }
 
-#endif

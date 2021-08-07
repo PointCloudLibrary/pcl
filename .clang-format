@@ -1,0 +1,69 @@
+---
+AlwaysBreakAfterReturnType: All
+AlwaysBreakTemplateDeclarations: Yes
+BinPackArguments: false
+BinPackParameters: false
+BraceWrapping:
+  AfterFunction: true
+  AfterClass: false
+  AfterStruct: false
+  BeforeElse: true
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+BreakBeforeBraces: Custom
+BreakConstructorInitializers: BeforeComma
+ColumnLimit: 88
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+ConstructorInitializerIndentWidth: 0
+Language: Cpp
+NamespaceIndentation: None
+PointerAlignment: Left
+Standard: c++14
+TabWidth: 2
+UseTab: Never
+IncludeBlocks: Regroup
+IncludeCategories:
+# Main PCL includes of common module should be sorted at end of PCL includes
+  - Regex:           '^<pcl/[^/]+>$'
+    Priority:        100
+    SortPriority:    101
+# All other PCL includes, which are grouped into modules
+  - Regex:           '^<pcl/.*/.*>$'
+    Priority:        100
+    SortPriority:    100
+# Major 3rd-Party components of tests & modules
+  - Regex:           '^<gtest/'
+    Priority:        200
+  - Regex:           '^<boost/'
+    Priority:        210
+  - Regex:           '^<(unsupported/)?Eigen/'
+    Priority:        220
+  - Regex:           '^<flann/'
+    Priority:        230
+# Major 3rd-Party components of apps
+  - Regex:           '^<Q[^/]+>$'
+    Priority:        300
+  - Regex:           '^<ui_[^/]+\.h>$'
+    Priority:        300
+  - Regex:           '^<vtk[^/]+\.h>$'
+    Priority:        310
+# Minor 3rd-Party components
+  - Regex:           '^<librealsense2/'
+    Priority:        400
+  - Regex:           '^<(ros|message_filters)/'
+    Priority:        410
+  - Regex:           '^<opencv(2)?/'
+    Priority:        420
+  - Regex:           '^<tide/'
+    Priority:        430
+  - Regex:           '^<thrust/'
+    Priority:        440
+  - Regex:           '^<(OpenGL|(GL(UT)?/))'
+    Priority:        450
+# Matches all std includes. Match them before any unknown include, so we can order them behind.
+  - Regex:           '^<[a-z]+>$'
+    Priority:        900
+# Any unknown include
+  - Regex:           '.*'
+    Priority:        500

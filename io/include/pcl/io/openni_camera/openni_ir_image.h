@@ -37,9 +37,9 @@
 #define __OPENNI_IR_IMAGE__
 
 #include <pcl/pcl_macros.h>
+#include <pcl/memory.h>
 #include "openni.h"
 #include "openni_exception.h"
-#include <pcl/io/boost.h>
 
 namespace openni_wrapper
 {
@@ -51,11 +51,11 @@ namespace openni_wrapper
 class PCL_EXPORTS IRImage
 {
 public:
-  typedef boost::shared_ptr<IRImage> Ptr;
-  typedef boost::shared_ptr<const IRImage> ConstPtr;
+  using Ptr = pcl::shared_ptr<IRImage>;
+  using ConstPtr = pcl::shared_ptr<const IRImage>;
 
-  inline IRImage (boost::shared_ptr<xn::IRMetaData> ir_meta_data) throw ();
-  inline virtual ~IRImage () throw ();
+  inline IRImage (pcl::shared_ptr<xn::IRMetaData> ir_meta_data) noexcept;
+  inline virtual ~IRImage () noexcept;
 
   void fillRaw (unsigned width, unsigned height, unsigned short* ir_buffer, unsigned line_step = 0) const;
 
@@ -66,15 +66,15 @@ public:
   inline const xn::IRMetaData& getMetaData () const throw ();
 
 protected:
-  boost::shared_ptr<xn::IRMetaData> ir_md_;
+  pcl::shared_ptr<xn::IRMetaData> ir_md_;
 };
 
-IRImage::IRImage (boost::shared_ptr<xn::IRMetaData> ir_meta_data) throw ()
-: ir_md_ (ir_meta_data)
+IRImage::IRImage (pcl::shared_ptr<xn::IRMetaData> ir_meta_data) noexcept
+: ir_md_ (std::move(ir_meta_data))
 {
 }
 
-IRImage::~IRImage () throw ()
+IRImage::~IRImage () noexcept
 {
 }
 

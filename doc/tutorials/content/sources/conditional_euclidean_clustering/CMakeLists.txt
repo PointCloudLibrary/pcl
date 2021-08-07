@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(conditional_euclidean_clustering)
 
@@ -10,4 +10,3 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (conditional_euclidean_clustering conditional_euclidean_clustering.cpp)
 target_link_libraries (conditional_euclidean_clustering ${PCL_LIBRARIES})
-

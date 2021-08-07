@@ -37,15 +37,15 @@
  *
  */
 
-#ifndef PCL_MESH_PROCESSING_H_
-#define PCL_MESH_PROCESSING_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
-#include <pcl/point_cloud.h>
 #include <pcl/PolygonMesh.h>
 
 namespace pcl
 {
+  template <typename PointT> class PointCloud;
+
   /** \brief @b CloudSurfaceProcessing represents the base class for algorithms that takes a point cloud as input and
     * produces a new output cloud that has been modified towards a better surface representation. These types of
     * algorithms include surface smoothing, hole filling, cloud upsampling etc.
@@ -57,8 +57,8 @@ namespace pcl
   class CloudSurfaceProcessing : public PCLBase<PointInT>
   {
     public:
-      typedef boost::shared_ptr<CloudSurfaceProcessing<PointInT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const CloudSurfaceProcessing<PointInT, PointOutT> > ConstPtr;
+      typedef shared_ptr<CloudSurfaceProcessing<PointInT, PointOutT> > Ptr;
+      typedef shared_ptr<const CloudSurfaceProcessing<PointInT, PointOutT> > ConstPtr;
 
       using PCLBase<PointInT>::input_;
       using PCLBase<PointInT>::indices_;
@@ -71,7 +71,7 @@ namespace pcl
       {};
       
       /** \brief Empty destructor */
-      virtual ~CloudSurfaceProcessing () {}
+      ~CloudSurfaceProcessing () {}
 
       /** \brief Process the input cloud and store the results
         * \param[out] output the cloud where the results will be stored
@@ -94,13 +94,13 @@ namespace pcl
   class PCL_EXPORTS MeshProcessing
   {
     public:
-      typedef boost::shared_ptr<MeshProcessing> Ptr;
-      typedef boost::shared_ptr<const MeshProcessing> ConstPtr;
+      using Ptr = shared_ptr<MeshProcessing>;
+      using ConstPtr = shared_ptr<const MeshProcessing>;
 
-      typedef PolygonMesh::ConstPtr PolygonMeshConstPtr;
+      using PolygonMeshConstPtr = PolygonMesh::ConstPtr;
 
       /** \brief Constructor. */
-      MeshProcessing () : input_mesh_ () {}
+      MeshProcessing () {}
 
       /** \brief Destructor. */
       virtual ~MeshProcessing () {}
@@ -149,6 +149,3 @@ namespace pcl
 }
 
 #include "pcl/surface/impl/processing.hpp"
-
-#endif  /* PCL_MESH_PROCESSING_H_ */
-

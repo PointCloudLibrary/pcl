@@ -38,8 +38,7 @@
  * Author: Matteo Munaro
  */
  
-#ifndef PCL_PEOPLE_PERSON_CLASSIFIER_H_
-#define PCL_PEOPLE_PERSON_CLASSIFIER_H_
+#pragma once
 
 #include <pcl/people/person_cluster.h>
 #include <pcl/people/hog.h>
@@ -69,8 +68,8 @@ namespace pcl
 
     public:
 
-      typedef pcl::PointCloud<PointT> PointCloud;
-      typedef boost::shared_ptr<PointCloud> PointCloudPtr;
+      using PointCloud = pcl::PointCloud<PointT>;
+      using PointCloudPtr = typename PointCloud::Ptr;
 
       /** \brief Constructor. */
       PersonClassifier ();
@@ -164,4 +163,3 @@ namespace pcl
   } /* namespace people */
 } /* namespace pcl */
 #include <pcl/people/impl/person_classifier.hpp>
-#endif /* PCL_PEOPLE_PERSON_CLASSIFIER_H_ */

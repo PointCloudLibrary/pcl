@@ -35,10 +35,8 @@
  *
  */
 
-#ifndef NORMALS_ITEM_H_
-#define NORMALS_ITEM_H_
+#pragma once
 
-#include <pcl/pcl_exports.h>
 #include <pcl/point_types.h>
 #include <pcl/features/normal_3d.h>
 
@@ -49,28 +47,28 @@ namespace pcl
   namespace cloud_composer
   {
     
-    class PCL_EXPORTS NormalsItem : public CloudComposerItem
+    class NormalsItem : public CloudComposerItem
     {
       public:
 
         NormalsItem (QString name, 
-                     pcl::PointCloud<pcl::Normal>::Ptr normals_ptr,
+                     const pcl::PointCloud<pcl::Normal>::Ptr& normals_ptr,
                      double radius);
         NormalsItem (const NormalsItem& to_copy);
-        virtual ~NormalsItem ();
+        ~NormalsItem ();
         
-        inline virtual int 
-        type () const { return NORMALS_ITEM; }
+        inline int 
+        type () const override { return NORMALS_ITEM; }
 
-        virtual NormalsItem*
-        clone () const;
+        NormalsItem*
+        clone () const override;
         
-        virtual void 
-        paintView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const;
+        void 
+        paintView (pcl::visualization::PCLVisualizer::Ptr vis) const override;
         
         /** \brief Remove from View function - removes the normal cloud from a PCLVisualizer object*/
-        virtual void
-        removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const;
+        void
+        removeFromView (pcl::visualization::PCLVisualizer::Ptr vis) const override;
         
       private:
         pcl::PointCloud<pcl::Normal>::Ptr normals_ptr_;
@@ -84,5 +82,3 @@ namespace pcl
 
 Q_DECLARE_METATYPE (pcl::PointCloud<pcl::Normal>::Ptr);
 Q_DECLARE_METATYPE (pcl::PointCloud<pcl::Normal>::ConstPtr);
-
-#endif //NORMALS_ITEM_H_

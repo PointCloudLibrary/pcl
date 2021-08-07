@@ -38,8 +38,6 @@
 #ifndef PCL_GPU_KINFU_DEVICE_HPP_
 #define PCL_GPU_KINFU_DEVICE_HPP_
 
-//#include <pcl/gpu/utils/device/limits.hpp>
-//#include <pcl/gpu/utils/device/vector_math.hpp>
 #include "utils.hpp" //temporary reimplementing to release kinfu without pcl_gpu_utils
 
 #include "internal.h"

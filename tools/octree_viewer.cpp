@@ -35,22 +35,24 @@
  *  \author Raphael Favier
  * */
 
+#include <thread>
+
 #include <pcl/io/auto_io.h>
 #include <pcl/common/time.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/common/common.h>
 
 #include <pcl/octree/octree_pointcloud_voxelcentroid.h>
 #include <pcl/common/centroid.h>
 
 #include <pcl/filters/filter.h>
-#include "boost.h"
 
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkCubeSource.h>
 #include <vtkCleanPolyData.h>
+
+using namespace std::chrono_literals;
 
 class OctreeViewer
 {
@@ -73,7 +75,7 @@ public:
       return;
 
     //register keyboard callbacks
-    viz.registerKeyboardCallback(&OctreeViewer::keyboardEventOccurred, *this, 0);
+    viz.registerKeyboardCallback(&OctreeViewer::keyboardEventOccurred, *this, nullptr);
 
     //key legends
     viz.addText ("Keys:", 0, 170, 0.0, 1.0, 0.0, "keys_t");
@@ -84,7 +86,7 @@ public:
     viz.addText ("n -> Toggle original point cloud representation", 10, 95, 0.0, 1.0, 0.0, "key_n_t");
 
     //set current level to half the maximum one
-    displayedDepth = static_cast<int> (floor (octree.getTreeDepth() / 2.0));
+    displayedDepth = static_cast<int> (std::floor (octree.getTreeDepth() / 2.0));
     if (displayedDepth == 0)
       displayedDepth = 1;
 
@@ -191,7 +193,7 @@ private:
     {
       //main loop of the visualizer
       viz.spinOnce(100);
-      boost::this_thread::sleep(boost::posix_time::microseconds(100000));
+      std::this_thread::sleep_for(100ms);
     }
   }
 
@@ -209,9 +211,9 @@ private:
     }
 
     //remove NaN Points
-    std::vector<int> nanIndexes;
+    pcl::Indices nanIndexes;
     pcl::removeNaNFromPointCloud(*cloud, *cloud, nanIndexes);
-    std::cout << "Loaded " << cloud->points.size() << " points" << std::endl;
+    std::cout << "Loaded " << cloud->size() << " points" << std::endl;
 
     //create octree structure
     octree.setInputCloud(cloud);
@@ -241,13 +243,15 @@ private:
     viz.addText (dataDisplay, 0, 45, 1.0, 0.0, 0.0, "disp_original_points");
 
     char level[256];
-    sprintf (level, "Displayed depth is %d on %d", displayedDepth, octree.getTreeDepth());
+    sprintf (level, "Displayed depth is %d on %zu", displayedDepth, static_cast<std::size_t>(octree.getTreeDepth()));
     viz.removeShape ("level_t1");
     viz.addText (level, 0, 30, 1.0, 0.0, 0.0, "level_t1");
 
     viz.removeShape ("level_t2");
-    sprintf (level, "Voxel size: %.4fm [%lu voxels]", std::sqrt (octree.getVoxelSquaredSideLen (displayedDepth)),
-             cloudVoxel->points.size ());
+    sprintf(level,
+            "Voxel size: %.4fm [%zu voxels]",
+            std::sqrt(octree.getVoxelSquaredSideLen(displayedDepth)),
+            static_cast<std::size_t>(cloudVoxel->size()));
     viz.addText (level, 0, 15, 1.0, 0.0, 0.0, "level_t2");
   }
 
@@ -308,22 +312,18 @@ private:
 
     // Create every cubes to be displayed
     double s = voxelSideLen / 2.0;
-    for (size_t i = 0; i < cloudVoxel->points.size (); i++)
+    for (const auto &point : cloudVoxel->points)
     {
-      double x = cloudVoxel->points[i].x;
-      double y = cloudVoxel->points[i].y;
-      double z = cloudVoxel->points[i].z;
+      double x = point.x;
+      double y = point.y;
+      double z = point.z;
 
       vtkSmartPointer<vtkCubeSource> wk_cubeSource = vtkSmartPointer<vtkCubeSource>::New ();
 
       wk_cubeSource->SetBounds (x - s, x + s, y - s, y + s, z - s, z + s);
       wk_cubeSource->Update ();
 
-#if VTK_MAJOR_VERSION < 6
-      appendFilter->AddInput (wk_cubeSource->GetOutput ());
-#else
       appendFilter->AddInputData (wk_cubeSource->GetOutput ());
-#endif
     }
 
     // Remove any duplicate points
@@ -406,9 +406,9 @@ private:
 
         // Iterate over the leafs to compute the centroid of all of them
         pcl::CentroidPoint<pcl::PointXYZ> centroid;
-        for (size_t j = 0; j < voxelCentroids.size (); ++j)
+        for (const auto &voxelCentroid : voxelCentroids)
         {
-          centroid.add (voxelCentroids[j]);
+          centroid.add (voxelCentroid);
         }
         centroid.get (pt_centroid);
       }
@@ -417,8 +417,10 @@ private:
     }
 
     double end = pcl::getTime ();
-    printf("%lu pts, %.4gs. %.4gs./pt. =====\n", displayCloud->points.size (), end - start,
-           (end - start) / static_cast<double> (displayCloud->points.size ()));
+    printf("%zu pts, %.4gs. %.4gs./pt. =====\n",
+           static_cast<std::size_t>(displayCloud->size()),
+           end - start,
+           (end - start) / static_cast<double>(displayCloud->size()));
 
     update();
   }
@@ -434,8 +436,7 @@ private:
       extractPointsAtLevel(displayedDepth);
       return true;
     }
-    else
-      return false;
+    return false;
   }
 
   /* \brief Helper function to decrease the octree display level by one

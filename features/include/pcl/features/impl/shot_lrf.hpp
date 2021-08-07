@@ -40,6 +40,7 @@
 #ifndef PCL_FEATURES_IMPL_SHOT_LRF_H_
 #define PCL_FEATURES_IMPL_SHOT_LRF_H_
 
+#include <Eigen/Eigenvalues> // for SelfAdjointEigenSolver
 #include <utility>
 #include <pcl/features/shot_lrf.h>
 
@@ -49,7 +50,7 @@ template<typename PointInT, typename PointOutT> float
 pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::getLocalRF (const int& current_point_idx, Eigen::Matrix3f &rf)
 {
   const Eigen::Vector4f& central_point = (*input_)[current_point_idx].getVector4fMap ();
-  std::vector<int> n_indices;
+  pcl::Indices n_indices;
   std::vector<float> n_sqr_distances;
 
   this->searchForNeighbors (current_point_idx, search_parameter_, n_indices, n_sqr_distances);
@@ -63,9 +64,9 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::getLocalRF (const i
 
   int valid_nn_points = 0;
 
-  for (size_t i_idx = 0; i_idx < n_indices.size (); ++i_idx)
+  for (std::size_t i_idx = 0; i_idx < n_indices.size (); ++i_idx)
   {
-    Eigen::Vector4f pt = surface_->points[n_indices[i_idx]].getVector4fMap ();
+    Eigen::Vector4f pt = (*surface_)[n_indices[i_idx]].getVector4fMap ();
     if (pt.head<3> () == central_point.head<3> ())
 		  continue;
 
@@ -98,7 +99,7 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::getLocalRF (const i
   const double& e2c = solver.eigenvalues ()[1];
   const double& e3c = solver.eigenvalues ()[2];
 
-  if (!pcl_isfinite (e1c) || !pcl_isfinite (e2c) || !pcl_isfinite (e3c))
+  if (!std::isfinite (e1c) || !std::isfinite (e2c) || !std::isfinite (e3c))
   {
     //PCL_ERROR ("[pcl::%s::getLocalRF] Warning! Eigenvectors are NaN. Aborting Local RF computation of feature point (%lf, %lf, %lf)\n", "SHOTLocalReferenceFrameEstimation", central_point[0], central_point[1], central_point[2]);
     rf.setConstant (std::numeric_limits<float>::quiet_NaN ());
@@ -178,7 +179,7 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::computeFeature (Poi
   }
   tree_->setSortedResults (true);
 
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     // point result
     Eigen::Matrix3f rf;

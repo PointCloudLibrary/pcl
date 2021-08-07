@@ -38,6 +38,9 @@
 #include <stdexcept>
 #include <pcl/surface/on_nurbs/fitting_cylinder_pdm.h>
 #include <pcl/pcl_macros.h>
+#include <Eigen/Cholesky> // for ldlt
+#include <Eigen/Geometry> // for cross
+#include <Eigen/LU> // for inverse
 
 using namespace pcl;
 using namespace on_nurbs;
@@ -81,11 +84,11 @@ FittingCylinder::refine (int dim)
   std::vector<double> xi;
   std::vector<double> elements = getElementVector (m_nurbs, dim);
 
-  for (unsigned i = 0; i < elements.size () - 1; i++)
+  for (std::size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
-  for (unsigned i = 0; i < xi.size (); i++)
-    m_nurbs.InsertKnot (dim, xi[i], 1);
+  for (const double &i : xi)
+    m_nurbs.InsertKnot (dim, i, 1);
 }
 
 void
@@ -95,13 +98,13 @@ FittingCylinder::refine (int dim, double param)
 
   if (param == elements[elements.size () - 1])
   {
-    int i = int (elements.size ()) - 2;
+    std::size_t i = elements.size () - 2;
     double xi = elements[i] + 0.5 * (elements[i + 1] - elements[i]);
     m_nurbs.InsertKnot (dim, xi);
     return;
   }
 
-  for (unsigned i = 0; i < elements.size () - 1; i++)
+  for (std::size_t i = 0; i < elements.size () - 1; i++)
   {
     if (param >= elements[i] && param < elements[i + 1])
     {
@@ -116,7 +119,7 @@ FittingCylinder::refine (int dim, unsigned span_index)
 {
   std::vector<double> elements = getElementVector (m_nurbs, dim);
 
-  if (span_index > int (elements.size ()) - 2)
+  if (span_index + 2 > elements.size ())
   {
     printf ("[NurbsTools::refine(int, unsigned)] Warning span index out of bounds\n");
     return;
@@ -227,7 +230,7 @@ FittingCylinder::initNurbsPCACylinder (int order, NurbsDataSurface *data)
   data->mean = mean;
   data->eigenvectors = eigenvectors;
 
-  eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
+  eigenvalues /= s; // seems that the eigenvalues are dependent on the number of points (???)
 
   Eigen::Vector3d v_max (0.0, 0.0, 0.0);
   Eigen::Vector3d v_min (DBL_MAX, DBL_MAX, DBL_MAX);
@@ -269,7 +272,7 @@ FittingCylinder::initNurbsPCACylinder (int order, NurbsDataSurface *data)
     {
       cv (0) = v_min (0) + dcu * i;
       cv (1) = ry * sin (dcv * j);
-      cv (2) = rz * cos (dcv * j);
+      cv (2) = rz * std::cos (dcv * j);
       cv_t = eigenvectors * cv + mean;
       nurbs.SetCV (i, j, ON_3dPoint (cv_t (0), cv_t (1), cv_t (2)));
     }
@@ -328,7 +331,7 @@ FittingCylinder::initNurbsCylinderWithAxes (int order, NurbsDataSurface *data, E
     {
       cv (0) = v_min (0) + dcu * i;
       cv (1) = ry * sin (dcv * j);
-      cv (2) = rz * cos (dcv * j);
+      cv (2) = rz * std::cos (dcv * j);
       cv_t = axes * cv + mean;
       nurbs.SetCV (i, j, ON_3dPoint (cv_t (0), cv_t (1), cv_t (2)));
     }
@@ -507,6 +510,7 @@ FittingCylinder::addCageBoundaryRegularisation (double weight, int side, unsigne
   {
     case EAST:
       i = m_nurbs.m_cv_count[0] - 1;
+      PCL_FALLTHROUGH
     case WEST:
       for (j = 1; j < (m_nurbs.m_cv_count[1] - 2 * cp_red) + 1; j++)
       {
@@ -578,20 +582,16 @@ FittingCylinder::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &p
       return current;
 
     }
-    else
-    {
-      current = current + delta;
-      if (current (0) < minU)
-        current (0) = minU;
-      else if (current (0) > maxU)
-        current (0) = maxU;
+    current += delta;
+    if (current (0) < minU)
+      current (0) = minU;
+    else if (current (0) > maxU)
+      current (0) = maxU;
 
-      if (current (1) < minV)
-        current (1) = maxV - (minV - current (1));
-      else if (current (1) > maxV)
-        current (1) = minV + (current (1) - maxV);
-    }
-
+    if (current (1) < minV)
+      current (1) = maxV - (minV - current (1));
+    else if (current (1) > maxV)
+      current (1) = minV + (current (1) - maxV);
   }
 
   error = r.norm ();
@@ -614,9 +614,9 @@ FittingCylinder::findClosestElementMidPoint (const ON_NurbsSurface &nurbs, const
   std::vector<double> elementsV = getElementVector (nurbs, 1);
 
   double d_shortest = std::numeric_limits<double>::max ();
-  for (unsigned i = 0; i < elementsU.size () - 1; i++)
+  for (std::size_t i = 0; i < elementsU.size () - 1; i++)
   {
-    for (unsigned j = 0; j < elementsV.size () - 1; j++)
+    for (std::size_t j = 0; j < elementsV.size () - 1; j++)
     {
       double points[3];
 

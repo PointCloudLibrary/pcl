@@ -299,7 +299,7 @@ NCVStatus scanRowsWrapperDevice(T_in *d_src, Ncv32u srcStride,
                                 T_out *d_dst, Ncv32u dstStride, NcvSize32u roi)
 {
     cudaChannelFormatDesc cfdTex;
-    size_t alignmentOffset = 0;
+    std::size_t alignmentOffset = 0;
     if (sizeof(T_in) == 1)
     {
         cfdTex = cudaCreateChannelDesc<Ncv8u>();
@@ -749,7 +749,7 @@ static NCVStatus decimateWrapperDevice(T *d_src, Ncv32u srcStep,
         {
             cfdTexSrc = cudaCreateChannelDesc<Ncv32u>();
 
-            size_t alignmentOffset;
+            std::size_t alignmentOffset;
             ncvAssertCUDAReturn(cudaBindTexture(&alignmentOffset, tex32u, d_src, cfdTexSrc, srcRoi.height * srcStep * sizeof(T)), NPPST_TEXTURE_BIND_ERROR);
             ncvAssertReturn(alignmentOffset==0, NPPST_TEXTURE_BIND_ERROR);
         }
@@ -757,7 +757,7 @@ static NCVStatus decimateWrapperDevice(T *d_src, Ncv32u srcStep,
         {
             cfdTexSrc = cudaCreateChannelDesc<uint2>();
 
-            size_t alignmentOffset;
+            std::size_t alignmentOffset;
             ncvAssertCUDAReturn(cudaBindTexture(&alignmentOffset, tex64u, d_src, cfdTexSrc, srcRoi.height * srcStep * sizeof(T)), NPPST_TEXTURE_BIND_ERROR);
             ncvAssertReturn(alignmentOffset==0, NPPST_TEXTURE_BIND_ERROR);
         }
@@ -985,7 +985,7 @@ NCVStatus nppiStRectStdDev_32f_C1R(Ncv32u *d_sum, Ncv32u sumStep,
         cfdTexSrc = cudaCreateChannelDesc<Ncv32u>();
         cfdTexSqr = cudaCreateChannelDesc<uint2>();
 
-        size_t alignmentOffset;
+        std::size_t alignmentOffset;
         ncvAssertCUDAReturn(cudaBindTexture(&alignmentOffset, tex32u, d_sum, cfdTexSrc, (roi.height + rect.y + rect.height) * sumStep * sizeof(Ncv32u)), NPPST_TEXTURE_BIND_ERROR);
         ncvAssertReturn(alignmentOffset==0, NPPST_TEXTURE_BIND_ERROR);
         ncvAssertCUDAReturn(cudaBindTexture(&alignmentOffset, tex64u, d_sqsum, cfdTexSqr, (roi.height + rect.y + rect.height) * sqsumStep * sizeof(Ncv64u)), NPPST_TEXTURE_BIND_ERROR);
@@ -1427,7 +1427,7 @@ NCVStatus compactVector_32u_device(Ncv32u *d_src, Ncv32u srcLen,
                     (d_hierSums.ptr() + partSumOffsets[i],
                      partSumNums[i], NULL,
                      d_hierSums.ptr() + partSumOffsets[i+1],
-                     NULL);
+                     0);
             }
             else
             {
@@ -1437,7 +1437,7 @@ NCVStatus compactVector_32u_device(Ncv32u *d_src, Ncv32u srcLen,
                     (d_hierSums.ptr() + partSumOffsets[i],
                      partSumNums[i], NULL,
                      NULL,
-                     NULL);
+                     0);
             }
 
             ncvAssertCUDALastErrorReturn(NPPST_CUDA_KERNEL_EXECUTION_ERROR);
@@ -2069,28 +2069,6 @@ NCVStatus nppiStInterpolateFrames(const NppStInterpolationState *pState)
 //
 //==============================================================================
 
-
-#if ((defined __CUDA_ARCH__) && (__CUDA_ARCH__ < 200))
-
-// FP32 atomic add
-static __forceinline__ __device__ float _atomicAdd(float *addr, float val)
-{
-    float old = *addr, assumed;
-
-    do {
-        assumed = old;
-        old = int_as_float(__iAtomicCAS((int*)addr,
-              float_as_int(assumed),
-              float_as_int(val+assumed)));
-    } while( assumed!=old );
-
-    return old;
-}
-#else
-#define _atomicAdd atomicAdd
-#endif
-
-
 __global__ void ForwardWarpKernel_PSF2x2(const float *u,
                                          const float *v,
                                          const float *src,
@@ -2129,8 +2107,8 @@ __global__ void ForwardWarpKernel_PSF2x2(const float *u,
     if (!((tx >= w) || (tx < 0) || (ty >= h) || (ty < 0)))
     {
         weight = dx * dy;
-        _atomicAdd (dst + ty * image_stride + tx, value * weight);
-        _atomicAdd (normalization_factor + ty * image_stride + tx, weight);
+        atomicAdd (dst + ty * image_stride + tx, value * weight);
+        atomicAdd (normalization_factor + ty * image_stride + tx, weight);
     }
 
     // fill pixel containing bottom left corner
@@ -2138,8 +2116,8 @@ __global__ void ForwardWarpKernel_PSF2x2(const float *u,
     if (!((tx >= w) || (tx < 0) || (ty >= h) || (ty < 0)))
     {
         weight = (1.0f - dx) * dy;
-        _atomicAdd (dst + ty * image_stride + tx, value * weight);
-        _atomicAdd (normalization_factor + ty * image_stride + tx, weight);
+        atomicAdd (dst + ty * image_stride + tx, value * weight);
+        atomicAdd (normalization_factor + ty * image_stride + tx, weight);
     }
 
     // fill pixel containing upper left corner
@@ -2147,8 +2125,8 @@ __global__ void ForwardWarpKernel_PSF2x2(const float *u,
     if (!((tx >= w) || (tx < 0) || (ty >= h) || (ty < 0)))
     {
         weight = (1.0f - dx) * (1.0f - dy);
-        _atomicAdd (dst + ty * image_stride + tx, value * weight);
-        _atomicAdd (normalization_factor + ty * image_stride + tx, weight);
+        atomicAdd (dst + ty * image_stride + tx, value * weight);
+        atomicAdd (normalization_factor + ty * image_stride + tx, weight);
     }
 
     // fill pixel containing upper right corner
@@ -2156,8 +2134,8 @@ __global__ void ForwardWarpKernel_PSF2x2(const float *u,
     if (!((tx >= w) || (tx < 0) || (ty >= h) || (ty < 0)))
     {
         weight = dx * (1.0f - dy);
-        _atomicAdd (dst + ty * image_stride + tx, value * weight);
-        _atomicAdd (normalization_factor + ty * image_stride + tx, weight);
+        atomicAdd (dst + ty * image_stride + tx, value * weight);
+        atomicAdd (normalization_factor + ty * image_stride + tx, weight);
     }
 }
 
@@ -2194,7 +2172,7 @@ __global__ void ForwardWarpKernel_PSF1x1(const float *u,
     // fill pixel
     if (!((tx >= w) || (tx < 0) || (ty >= h) || (ty < 0)))
     {
-        _atomicAdd (dst + ty * image_stride + tx, value);
+        atomicAdd (dst + ty * image_stride + tx, value);
     }
 }
 
@@ -2387,13 +2365,13 @@ __global__ void resizeSuperSample_32f(NcvSize32u srcSize,
     float yBegin = fmax (y - scaleY, 0.0f);
     float yEnd   = fmin (y + scaleY, rh - 1.0f);
     // x range of source samples
-    float floorXBegin = floorf (xBegin);
-    float ceilXEnd    = ceilf (xEnd);
+    float floorXBegin = std::floor (xBegin);
+    float ceilXEnd    = std::ceil (xEnd);
     int iXBegin = srcROI.x + (int) floorXBegin;
     int iXEnd   = srcROI.x + (int) ceilXEnd;
     // y range of source samples
-    float floorYBegin = floorf (yBegin);
-    float ceilYEnd    = ceilf (yEnd);
+    float floorYBegin = std::floor (yBegin);
+    float ceilYEnd    = std::ceil (yEnd);
     int iYBegin = srcROI.y + (int) floorYBegin;
     int iYEnd   = srcROI.y + (int) ceilYEnd;
 
@@ -2426,7 +2404,7 @@ __global__ void resizeSuperSample_32f(NcvSize32u srcSize,
 __forceinline__
 __device__ float bicubicCoeff(float x_)
 {
-    float x = fabsf(x_);
+    float x = std::abs(x_);
     if (x <= 1.0f)
     {
         return x * x * (1.5f * x - 2.5f) + 1.0f;
@@ -2473,11 +2451,11 @@ __global__ void resizeBicubic(NcvSize32u srcSize,
 
     // sampling range
     // border mode is clamp
-    float xmin = fmax (ceilf (x - 2.0f), 0.0f);
-    float xmax = fmin (floorf (x + 2.0f), rw - 1.0f);
+    float xmin = fmax (std::ceil (x - 2.0f), 0.0f);
+    float xmax = fmin (std::floor (x + 2.0f), rw - 1.0f);
 
-    float ymin = fmax (ceilf (y - 2.0f), 0.0f);
-    float ymax = fmin (floorf (y + 2.0f), rh - 1.0f);
+    float ymin = fmax (std::ceil (y - 2.0f), 0.0f);
+    float ymax = fmin (std::floor (y + 2.0f), rh - 1.0f);
 
     // shift data window to match ROI
     rx += 0.5f;

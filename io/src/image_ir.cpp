@@ -38,23 +38,19 @@
 #include <pcl/pcl_config.h>
 #include <pcl/io/image_ir.h>
 
-#include <sstream>
-#include <limits>
-#include <iostream>
-
 #include <pcl/io/io_exception.h>
 
 using pcl::io::FrameWrapper;
 using pcl::io::IOException;
 
 pcl::io::IRImage::IRImage (FrameWrapper::Ptr ir_metadata)
-  : wrapper_(ir_metadata)
+  : wrapper_(std::move(ir_metadata))
   , timestamp_(Clock::now ())
 {}
 
 
 pcl::io::IRImage::IRImage (FrameWrapper::Ptr ir_metadata, Timestamp time)
-  : wrapper_(ir_metadata)
+  : wrapper_(std::move(ir_metadata))
   , timestamp_(time)
 {}
 
@@ -101,7 +97,7 @@ pcl::io::IRImage::getFrameID () const
 }
 
 
-pcl::uint64_t
+std::uint64_t
 pcl::io::IRImage::getTimestamp () const
 {
   return (wrapper_->getTimestamp ());

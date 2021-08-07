@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_LMEDS_H_
-#define PCL_SAMPLE_CONSENSUS_LMEDS_H_
+#pragma once
 
 #include <pcl/sample_consensus/sac.h>
 #include <pcl/sample_consensus/sac_model.h>
@@ -50,17 +49,20 @@ namespace pcl
     * is a RANSAC-like model-fitting algorithm that can tolerate up to 50% outliers without requiring thresholds to be 
     * set. See Andrea Fusiello's "Elements of Geometric Computer Vision"
     * (http://homepages.inf.ed.ac.uk/rbf/CVonline/LOCAL_COPIES/FUSIELLO4/tutorial.html#x1-520007) for more details.
+    * In contrast to RANSAC, LMedS does not divide the points into inliers and outliers when finding the model. Instead,
+    * it uses the median of all point-model distances as the measure of how good a model is. A threshold is only needed
+    * at the end, when it is determined which points belong to the found model.
     * \author Radu B. Rusu
     * \ingroup sample_consensus
     */
   template <typename PointT>
   class LeastMedianSquares : public SampleConsensus<PointT>
   {
-    typedef typename SampleConsensusModel<PointT>::Ptr SampleConsensusModelPtr;
+    using SampleConsensusModelPtr = typename SampleConsensusModel<PointT>::Ptr;
 
     public:
-      typedef boost::shared_ptr<LeastMedianSquares> Ptr;
-      typedef boost::shared_ptr<const LeastMedianSquares> ConstPtr;
+      using Ptr = shared_ptr<LeastMedianSquares<PointT> >;
+      using ConstPtr = shared_ptr<const LeastMedianSquares<PointT> >;
 
       using SampleConsensus<PointT>::max_iterations_;
       using SampleConsensus<PointT>::threshold_;
@@ -95,13 +97,10 @@ namespace pcl
         * \param[in] debug_verbosity_level enable/disable on-screen debug information and set the verbosity level
         */
       bool 
-      computeModel (int debug_verbosity_level = 0);
+      computeModel (int debug_verbosity_level = 0) override;
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/sample_consensus/impl/lmeds.hpp>
 #endif
-
-#endif  //#ifndef PCL_SAMPLE_CONSENSUS_LMEDS_H_
-

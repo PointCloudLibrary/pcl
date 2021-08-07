@@ -39,16 +39,29 @@
 #define PCL_LZF_IMAGE_IO_HPP_
 
 #include <pcl/console/print.h>
+#include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/io/debayer.h>
+
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <string>
+#include <vector>
 
 #define CLIP_CHAR(c) static_cast<unsigned char> ((c)>255?255:(c)<0?0:(c))
 
-//////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
+namespace io
+{
+
 template <typename PointT> bool
-pcl::io::LZFDepth16ImageReader::read (
+LZFDepth16ImageReader::read (
     const std::string &filename, pcl::PointCloud<PointT> &cloud)
 {
-  uint32_t uncompressed_size;
+  std::uint32_t uncompressed_size;
   std::vector<char> compressed_data;
   if (!loadImageBlob (filename, compressed_data, uncompressed_size))
   {
@@ -79,11 +92,11 @@ pcl::io::LZFDepth16ImageReader::read (
   int depth_idx = 0, point_idx = 0;
   double constant_x = 1.0 / parameters_.focal_length_x,
          constant_y = 1.0 / parameters_.focal_length_y;
-  for (uint32_t v = 0; v < cloud.height; ++v)
+  for (std::uint32_t v = 0; v < cloud.height; ++v)
   {
-    for (uint32_t u = 0; u < cloud.width; ++u, ++point_idx, depth_idx += 2)
+    for (std::uint32_t u = 0; u < cloud.width; ++u, ++point_idx, depth_idx += 2)
     {
-      PointT &pt = cloud.points[point_idx];
+      PointT &pt = cloud[point_idx];
       unsigned short val;
       memcpy (&val, &uncompressed_data[depth_idx], sizeof (unsigned short));
       if (val == 0)
@@ -94,9 +107,9 @@ pcl::io::LZFDepth16ImageReader::read (
       }
 
       pt.z = static_cast<float> (val * z_multiplication_factor_);
-      pt.x = (static_cast<float> (u) - static_cast<float> (parameters_.principal_point_x)) 
+      pt.x = (static_cast<float> (u) - static_cast<float> (parameters_.principal_point_x))
         * pt.z * static_cast<float> (constant_x);
-      pt.y = (static_cast<float> (v) - static_cast<float> (parameters_.principal_point_y)) 
+      pt.y = (static_cast<float> (v) - static_cast<float> (parameters_.principal_point_y))
         * pt.z * static_cast<float> (constant_y);
     }
   }
@@ -107,14 +120,14 @@ pcl::io::LZFDepth16ImageReader::read (
   cloud.sensor_orientation_.z () = 0.0f;
   return (true);
 }
-        
-///////////////////////////////////////////////////////////////////////////////
+
+
 template <typename PointT> bool
-pcl::io::LZFDepth16ImageReader::readOMP (const std::string &filename, 
-                                         pcl::PointCloud<PointT> &cloud, 
-                                         unsigned int num_threads)
+LZFDepth16ImageReader::readOMP (const std::string &filename,
+                                pcl::PointCloud<PointT> &cloud,
+                                unsigned int num_threads)
 {
-  uint32_t uncompressed_size;
+  std::uint32_t uncompressed_size;
   std::vector<char> compressed_data;
   if (!loadImageBlob (filename, compressed_data, uncompressed_size))
   {
@@ -145,15 +158,18 @@ pcl::io::LZFDepth16ImageReader::readOMP (const std::string &filename,
   double constant_x = 1.0 / parameters_.focal_length_x,
          constant_y = 1.0 / parameters_.focal_length_y;
 #ifdef _OPENMP
-#pragma omp parallel for num_threads (num_threads)
+#pragma omp parallel for                                   \
+  default(none)                                            \
+  shared(cloud, constant_x, constant_y, uncompressed_data) \
+  num_threads(num_threads)
 #else
-  (void) num_threads; // suppress warning if OMP is not present
+  pcl::utils::ignore(num_threads); // suppress warning if OMP is not present
 #endif
   for (int i = 0; i < static_cast< int> (cloud.size ()); ++i)
   {
     int u = i % cloud.width;
     int v = i / cloud.width;
-    PointT &pt = cloud.points[i];
+    PointT &pt = cloud[i];
     int depth_idx = 2*i;
     unsigned short val;
     memcpy (&val, &uncompressed_data[depth_idx], sizeof (unsigned short));
@@ -162,13 +178,11 @@ pcl::io::LZFDepth16ImageReader::readOMP (const std::string &filename,
       pt.x = pt.y = pt.z = std::numeric_limits<float>::quiet_NaN ();
       if (cloud.is_dense)
       {
-#ifdef _OPENMP
 #pragma omp critical
-#endif
-      {
-      if (cloud.is_dense)
-        cloud.is_dense = false;
-      }
+        {
+          if (cloud.is_dense)
+            cloud.is_dense = false;
+        }
       }
       continue;
     }
@@ -178,23 +192,22 @@ pcl::io::LZFDepth16ImageReader::readOMP (const std::string &filename,
       * pt.z * static_cast<float> (constant_x);
     pt.y = (static_cast<float> (v) - static_cast<float> (parameters_.principal_point_y)) 
       * pt.z * static_cast<float> (constant_y);
-    
   }
+
   cloud.sensor_origin_.setZero ();
   cloud.sensor_orientation_.w () = 1.0f;
   cloud.sensor_orientation_.x () = 0.0f;
   cloud.sensor_orientation_.y () = 0.0f;
   cloud.sensor_orientation_.z () = 0.0f;
   return (true);
-
 }
 
-//////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT> bool
-pcl::io::LZFRGB24ImageReader::read (
+LZFRGB24ImageReader::read (
     const std::string &filename, pcl::PointCloud<PointT> &cloud)
 {
-  uint32_t uncompressed_size;
+  std::uint32_t uncompressed_size;
   std::vector<char> compressed_data;
   if (!loadImageBlob (filename, compressed_data, uncompressed_size))
   {
@@ -227,9 +240,9 @@ pcl::io::LZFRGB24ImageReader::read (
   unsigned char *color_g = reinterpret_cast<unsigned char*> (&uncompressed_data[getWidth () * getHeight ()]);
   unsigned char *color_b = reinterpret_cast<unsigned char*> (&uncompressed_data[2 * getWidth () * getHeight ()]);
 
-  for (size_t i = 0; i < cloud.size (); ++i, ++rgb_idx)
+  for (std::size_t i = 0; i < cloud.size (); ++i, ++rgb_idx)
   {
-    PointT &pt = cloud.points[i];
+    PointT &pt = cloud[i];
 
     pt.b = color_b[rgb_idx];
     pt.g = color_g[rgb_idx];
@@ -238,12 +251,12 @@ pcl::io::LZFRGB24ImageReader::read (
   return (true);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT> bool
-pcl::io::LZFRGB24ImageReader::readOMP (
+LZFRGB24ImageReader::readOMP (
     const std::string &filename, pcl::PointCloud<PointT> &cloud, unsigned int num_threads)
 {
-  uint32_t uncompressed_size;
+  std::uint32_t uncompressed_size;
   std::vector<char> compressed_data;
   if (!loadImageBlob (filename, compressed_data, uncompressed_size))
   {
@@ -276,13 +289,16 @@ pcl::io::LZFRGB24ImageReader::readOMP (
   unsigned char *color_b = reinterpret_cast<unsigned char*> (&uncompressed_data[2 * getWidth () * getHeight ()]);
 
 #ifdef _OPENMP
-#pragma omp parallel for num_threads (num_threads)
+#pragma omp parallel for                   \
+  default(none)                            \
+  shared(cloud, color_b, color_g, color_r) \
+  num_threads(num_threads)
 #else
-  (void) num_threads; // suppress warning if OMP is not present
+  pcl::utils::ignore(num_threads); // suppress warning if OMP is not present
 #endif//_OPENMP
   for (long int i = 0; i < cloud.size (); ++i)
   {
-    PointT &pt = cloud.points[i];
+    PointT &pt = cloud[i];
 
     pt.b = color_b[i];
     pt.g = color_g[i];
@@ -291,12 +307,12 @@ pcl::io::LZFRGB24ImageReader::readOMP (
   return (true);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT> bool
-pcl::io::LZFYUV422ImageReader::read (
+LZFYUV422ImageReader::read (
     const std::string &filename, pcl::PointCloud<PointT> &cloud)
 {
-  uint32_t uncompressed_size;
+  std::uint32_t uncompressed_size;
   std::vector<char> compressed_data;
   if (!loadImageBlob (filename, compressed_data, uncompressed_size))
   {
@@ -328,19 +344,19 @@ pcl::io::LZFYUV422ImageReader::read (
   unsigned char *color_u = reinterpret_cast<unsigned char*> (&uncompressed_data[0]);
   unsigned char *color_y = reinterpret_cast<unsigned char*> (&uncompressed_data[wh2]);
   unsigned char *color_v = reinterpret_cast<unsigned char*> (&uncompressed_data[wh2 + getWidth () * getHeight ()]);
-  
+
   int y_idx = 0;
   for (int i = 0; i < wh2; ++i, y_idx += 2)
   {
     int v = color_v[i] - 128;
     int u = color_u[i] - 128;
 
-    PointT &pt1 = cloud.points[y_idx + 0];
+    PointT &pt1 = cloud[y_idx + 0];
     pt1.r =  CLIP_CHAR (color_y[y_idx + 0] + ((v * 18678 + 8192 ) >> 14));
     pt1.g =  CLIP_CHAR (color_y[y_idx + 0] + ((v * -9519 - u * 6472 + 8192) >> 14));
     pt1.b =  CLIP_CHAR (color_y[y_idx + 0] + ((u * 33292 + 8192 ) >> 14));
 
-    PointT &pt2 = cloud.points[y_idx + 1];
+    PointT &pt2 = cloud[y_idx + 1];
     pt2.r =  CLIP_CHAR (color_y[y_idx + 1] + ((v * 18678 + 8192 ) >> 14));
     pt2.g =  CLIP_CHAR (color_y[y_idx + 1] + ((v * -9519 - u * 6472 + 8192) >> 14));
     pt2.b =  CLIP_CHAR (color_y[y_idx + 1] + ((u * 33292 + 8192 ) >> 14));
@@ -349,12 +365,12 @@ pcl::io::LZFYUV422ImageReader::read (
   return (true);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT> bool
-pcl::io::LZFYUV422ImageReader::readOMP (
+LZFYUV422ImageReader::readOMP (
     const std::string &filename, pcl::PointCloud<PointT> &cloud, unsigned int num_threads)
 {
-  uint32_t uncompressed_size;
+  std::uint32_t uncompressed_size;
   std::vector<char> compressed_data;
   if (!loadImageBlob (filename, compressed_data, uncompressed_size))
   {
@@ -386,11 +402,14 @@ pcl::io::LZFYUV422ImageReader::readOMP (
   unsigned char *color_u = reinterpret_cast<unsigned char*> (&uncompressed_data[0]);
   unsigned char *color_y = reinterpret_cast<unsigned char*> (&uncompressed_data[wh2]);
   unsigned char *color_v = reinterpret_cast<unsigned char*> (&uncompressed_data[wh2 + getWidth () * getHeight ()]);
-  
+
 #ifdef _OPENMP
-#pragma omp parallel for num_threads (num_threads)
+#pragma omp parallel for                        \
+  default(none)                                 \
+  shared(cloud, color_u, color_v, color_y, wh2) \
+  num_threads(num_threads)
 #else
-  (void) num_threads; //suppress warning if OMP is not present
+  pcl::utils::ignore(num_threads); //suppress warning if OMP is not present
 #endif//_OPENMP
   for (int i = 0; i < wh2; ++i)
   {
@@ -398,12 +417,12 @@ pcl::io::LZFYUV422ImageReader::readOMP (
     int v = color_v[i] - 128;
     int u = color_u[i] - 128;
 
-    PointT &pt1 = cloud.points[y_idx + 0];
+    PointT &pt1 = cloud[y_idx + 0];
     pt1.r =  CLIP_CHAR (color_y[y_idx + 0] + ((v * 18678 + 8192 ) >> 14));
     pt1.g =  CLIP_CHAR (color_y[y_idx + 0] + ((v * -9519 - u * 6472 + 8192) >> 14));
     pt1.b =  CLIP_CHAR (color_y[y_idx + 0] + ((u * 33292 + 8192 ) >> 14));
 
-    PointT &pt2 = cloud.points[y_idx + 1];
+    PointT &pt2 = cloud[y_idx + 1];
     pt2.r =  CLIP_CHAR (color_y[y_idx + 1] + ((v * 18678 + 8192 ) >> 14));
     pt2.g =  CLIP_CHAR (color_y[y_idx + 1] + ((v * -9519 - u * 6472 + 8192) >> 14));
     pt2.b =  CLIP_CHAR (color_y[y_idx + 1] + ((u * 33292 + 8192 ) >> 14));
@@ -412,12 +431,12 @@ pcl::io::LZFYUV422ImageReader::readOMP (
   return (true);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT> bool
-pcl::io::LZFBayer8ImageReader::read (
+LZFBayer8ImageReader::read (
     const std::string &filename, pcl::PointCloud<PointT> &cloud)
 {
-  uint32_t uncompressed_size;
+  std::uint32_t uncompressed_size;
   std::vector<char> compressed_data;
   if (!loadImageBlob (filename, compressed_data, uncompressed_size))
   {
@@ -442,18 +461,18 @@ pcl::io::LZFBayer8ImageReader::read (
 
   // Convert Bayer8 to RGB24
   std::vector<unsigned char> rgb_buffer (getWidth () * getHeight () * 3);
-  pcl::io::DeBayer i;
-  i.debayerEdgeAware (reinterpret_cast<unsigned char*> (&uncompressed_data[0]), 
-                     static_cast<unsigned char*> (&rgb_buffer[0]), 
+  DeBayer i;
+  i.debayerEdgeAware (reinterpret_cast<unsigned char*> (&uncompressed_data[0]),
+                     static_cast<unsigned char*> (&rgb_buffer[0]),
                      getWidth (), getHeight ());
   // Copy to PointT
   cloud.width  = getWidth ();
   cloud.height = getHeight ();
   cloud.resize (getWidth () * getHeight ());
   int rgb_idx = 0;
-  for (size_t i = 0; i < cloud.size (); ++i, rgb_idx += 3)
+  for (std::size_t i = 0; i < cloud.size (); ++i, rgb_idx += 3)
   {
-    PointT &pt = cloud.points[i];
+    PointT &pt = cloud[i];
 
     pt.b = rgb_buffer[rgb_idx + 2];
     pt.g = rgb_buffer[rgb_idx + 1];
@@ -462,12 +481,12 @@ pcl::io::LZFBayer8ImageReader::read (
   return (true);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT> bool
-pcl::io::LZFBayer8ImageReader::readOMP (
+LZFBayer8ImageReader::readOMP (
     const std::string &filename, pcl::PointCloud<PointT> &cloud, unsigned int num_threads)
 {
-  uint32_t uncompressed_size;
+  std::uint32_t uncompressed_size;
   std::vector<char> compressed_data;
   if (!loadImageBlob (filename, compressed_data, uncompressed_size))
   {
@@ -492,22 +511,24 @@ pcl::io::LZFBayer8ImageReader::readOMP (
 
   // Convert Bayer8 to RGB24
   std::vector<unsigned char> rgb_buffer (getWidth () * getHeight () * 3);
-  pcl::io::DeBayer i;
-  i.debayerEdgeAware (reinterpret_cast<unsigned char*> (&uncompressed_data[0]), 
-                     static_cast<unsigned char*> (&rgb_buffer[0]), 
+  DeBayer i;
+  i.debayerEdgeAware (reinterpret_cast<unsigned char*> (&uncompressed_data[0]),
+                     static_cast<unsigned char*> (&rgb_buffer[0]),
                      getWidth (), getHeight ());
   // Copy to PointT
   cloud.width  = getWidth ();
   cloud.height = getHeight ();
   cloud.resize (getWidth () * getHeight ());
 #ifdef _OPENMP
-#pragma omp parallel for num_threads (num_threads)
+#pragma omp parallel for \
+  default(none)          \
+  num_threads(num_threads)
 #else
-  (void) num_threads; //suppress warning if OMP is not present
+  pcl::utils::ignore(num_threads); //suppress warning if OMP is not present
 #endif//_OPENMP
   for (long int i = 0; i < cloud.size (); ++i)
   {
-    PointT &pt = cloud.points[i];
+    PointT &pt = cloud[i];
     long int rgb_idx = 3*i;
     pt.b = rgb_buffer[rgb_idx + 2];
     pt.g = rgb_buffer[rgb_idx + 1];
@@ -515,6 +536,9 @@ pcl::io::LZFBayer8ImageReader::readOMP (
   }
   return (true);
 }
+
+} // namespace io
+} // namespace pcl
 
 #endif  //#ifndef PCL_LZF_IMAGE_IO_HPP_
 

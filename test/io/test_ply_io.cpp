@@ -34,13 +34,15 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include <pcl/common/io.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/conversions.h>
 #include <pcl/PolygonMesh.h>
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
+#include <fstream> // for ofstream
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PLYReaderWriter)
@@ -56,10 +58,10 @@ TEST (PCL, PLYReaderWriter)
   cloud.resize (cloud.width * cloud.height);
   cloud.is_dense = true;
 
-  srand (static_cast<unsigned int> (time (NULL)));
-  size_t nr_p = cloud.size ();
+  srand (static_cast<unsigned int> (time (nullptr)));
+  std::size_t nr_p = cloud.size ();
   // Randomly create a new point cloud
-  for (size_t i = 0; i < nr_p; ++i)
+  for (std::size_t i = 0; i < nr_p; ++i)
   {
     cloud[i].x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
     cloud[i].y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
@@ -85,7 +87,7 @@ TEST (PCL, PLYReaderWriter)
   //PLY DOES preserve organiziation
   EXPECT_EQ (cloud_blob.width * cloud_blob.height, cloud_blob2.width * cloud_blob2.height);
   EXPECT_EQ (cloud_blob.is_dense, cloud.is_dense);
-  EXPECT_EQ (size_t (cloud_blob2.data.size ()),         // PointXYZI is 16*2 (XYZ+1, Intensity+3)
+  EXPECT_EQ (std::size_t (cloud_blob2.data.size ()),         // PointXYZI is 16*2 (XYZ+1, Intensity+3)
              cloud_blob2.width * cloud_blob2.height * sizeof (PointXYZ));  // test for loadPLYFile ()
 
   // Convert from blob to data type
@@ -96,7 +98,7 @@ TEST (PCL, PLYReaderWriter)
   EXPECT_EQ (cloud.is_dense, cloud2.is_dense);   // test for fromPCLPointCloud2 ()
   EXPECT_EQ (cloud.size (), cloud2.size ());         // test for fromPCLPointCloud2 ()
 
-  for (uint32_t counter = 0; counter < cloud.size (); ++counter)
+  for (std::size_t counter = 0; counter < cloud.size (); ++counter)
   {
     EXPECT_FLOAT_EQ (cloud[counter].x, cloud2[counter].x);     // test for fromPCLPointCloud2 ()
     EXPECT_FLOAT_EQ (cloud[counter].y, cloud2[counter].y);     // test for fromPCLPointCloud2 ()
@@ -111,7 +113,7 @@ struct PLYTest : public ::testing::Test
   PLYTest () : mesh_file_ply_("ply_file.ply")
   {}
 
-  virtual
+  
   ~PLYTest () { remove (mesh_file_ply_.c_str ()); }
 
   std::string mesh_file_ply_;
@@ -119,7 +121,7 @@ struct PLYTest : public ::testing::Test
 
 struct PLYColorTest : public PLYTest
 {
-  void SetUp ()
+  void SetUp () override
   {
     // Test colors from ply_benchmark.ply
     clr_1_.r = 255;
@@ -192,11 +194,11 @@ struct PLYColorTest : public PLYTest
 TEST_F (PLYColorTest, LoadPLYFileColoredASCIIIntoBlob)
 {
   int res;
-  uint32_t rgba;
+  std::uint32_t rgba;
 
   pcl::PCLPointCloud2 cloud_blob;
-  uint32_t ps;
-  int32_t offset = -1;
+  std::uint32_t ps;
+  std::int32_t offset = -1;
 
   // check if loading is ok
   res = pcl::io::loadPLYFile (mesh_file_ply_, cloud_blob);
@@ -214,26 +216,26 @@ TEST_F (PLYColorTest, LoadPLYFileColoredASCIIIntoBlob)
 
   // scope blob data
   ps = cloud_blob.point_step;
-  for (size_t i = 0; i < cloud_blob.fields.size (); ++i)
-    if (cloud_blob.fields[i].name == std::string("rgba"))
-      offset = static_cast<int32_t> (cloud_blob.fields[i].offset);
+  for (const auto &field : cloud_blob.fields)
+    if (field.name == std::string("rgba"))
+      offset = static_cast<std::int32_t> (field.offset);
 
   ASSERT_GE (offset, 0);
 
   // 1st point
-  rgba = *reinterpret_cast<uint32_t *> (&cloud_blob.data[offset]);
+  rgba = *reinterpret_cast<std::uint32_t *> (&cloud_blob.data[offset]);
   ASSERT_EQ (rgba, clr_1_.rgba);
 
   // 2th point
-  rgba = *reinterpret_cast<uint32_t *> (&cloud_blob.data[ps + offset]);
+  rgba = *reinterpret_cast<std::uint32_t *> (&cloud_blob.data[ps + offset]);
   ASSERT_EQ (rgba, clr_2_.rgba);
 
   // 3th point
-  rgba = *reinterpret_cast<uint32_t *> (&cloud_blob.data[2 * ps + offset]);
+  rgba = *reinterpret_cast<std::uint32_t *> (&cloud_blob.data[2 * ps + offset]);
   ASSERT_EQ (rgba, clr_3_.rgba);
 
   // 4th point
-  rgba = *reinterpret_cast<uint32_t *> (&cloud_blob.data[3 * ps + offset]);
+  rgba = *reinterpret_cast<std::uint32_t *> (&cloud_blob.data[3 * ps + offset]);
   ASSERT_EQ (rgba, clr_4_.rgba);
 }
 
@@ -241,10 +243,10 @@ TEST_F (PLYColorTest, LoadPLYFileColoredASCIIIntoBlob)
 TEST_F (PLYColorTest, LoadPLYFileColoredASCIIIntoPolygonMesh)
 {
   int res;
-  uint32_t rgba;
+  std::uint32_t rgba;
   pcl::PolygonMesh mesh;
-  uint32_t ps;
-  int32_t offset = -1;
+  std::uint32_t ps;
+  std::int32_t offset = -1;
 
   // check if loading is ok
   res = pcl::io::loadPLYFile (mesh_file_ply_, mesh);
@@ -262,33 +264,33 @@ TEST_F (PLYColorTest, LoadPLYFileColoredASCIIIntoPolygonMesh)
 
   // scope blob data
   ps = mesh.cloud.point_step;
-  for (size_t i = 0; i < mesh.cloud.fields.size (); ++i)
-    if (mesh.cloud.fields[i].name == std::string("rgba"))
-      offset = static_cast<int32_t> (mesh.cloud.fields[i].offset);
+  for (const auto &field : mesh.cloud.fields)
+    if (field.name == std::string("rgba"))
+      offset = static_cast<std::int32_t> (field.offset);
 
   ASSERT_GE (offset, 0);
 
   // 1st point
-  rgba = *reinterpret_cast<uint32_t *> (&mesh.cloud.data[offset]);
+  rgba = *reinterpret_cast<std::uint32_t *> (&mesh.cloud.data[offset]);
   ASSERT_EQ (rgba, clr_1_.rgba);
 
   // 2th point
-  rgba = *reinterpret_cast<uint32_t *> (&mesh.cloud.data[ps + offset]);
+  rgba = *reinterpret_cast<std::uint32_t *> (&mesh.cloud.data[ps + offset]);
   ASSERT_EQ (rgba, clr_2_.rgba);
 
   // 3th point
-  rgba = *reinterpret_cast<uint32_t *> (&mesh.cloud.data[2 * ps + offset]);
+  rgba = *reinterpret_cast<std::uint32_t *> (&mesh.cloud.data[2 * ps + offset]);
   ASSERT_EQ (rgba, clr_3_.rgba);
 
   // 4th point
-  rgba = *reinterpret_cast<uint32_t *> (&mesh.cloud.data[3 * ps + offset]);
+  rgba = *reinterpret_cast<std::uint32_t *> (&mesh.cloud.data[3 * ps + offset]);
   ASSERT_EQ (rgba, clr_4_.rgba);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T> class PLYPointCloudTest : public PLYColorTest { };
-typedef ::testing::Types<BOOST_PP_SEQ_ENUM (PCL_RGB_POINT_TYPES)> RGBPointTypes;
-TYPED_TEST_CASE (PLYPointCloudTest, RGBPointTypes);
+using RGBPointTypes = ::testing::Types<BOOST_PP_SEQ_ENUM (PCL_RGB_POINT_TYPES)>;
+TYPED_TEST_SUITE (PLYPointCloudTest, RGBPointTypes);
 TYPED_TEST (PLYPointCloudTest, LoadPLYFileColoredASCIIIntoPointCloud)
 {
   int res;
@@ -301,7 +303,7 @@ TYPED_TEST (PLYPointCloudTest, LoadPLYFileColoredASCIIIntoPointCloud)
   // cloud has proper structure
   EXPECT_EQ (cloud_rgb.height, 1);
   EXPECT_EQ (cloud_rgb.width, 4);
-  EXPECT_EQ (cloud_rgb.points.size(), 4);
+  EXPECT_EQ (cloud_rgb.size(), 4);
   EXPECT_TRUE (cloud_rgb.is_dense);
 
   // scope cloud data
@@ -315,8 +317,8 @@ TYPED_TEST (PLYPointCloudTest, LoadPLYFileColoredASCIIIntoPointCloud)
 template<typename T>
 struct PLYCoordinatesIsDenseTest : public PLYTest {};
 
-typedef ::testing::Types<BOOST_PP_SEQ_ENUM (PCL_XYZ_POINT_TYPES)> XYZPointTypes;
-TYPED_TEST_CASE (PLYCoordinatesIsDenseTest, XYZPointTypes);
+using XYZPointTypes = ::testing::Types<BOOST_PP_SEQ_ENUM (PCL_XYZ_POINT_TYPES)>;
+TYPED_TEST_SUITE (PLYCoordinatesIsDenseTest, XYZPointTypes);
 
 TYPED_TEST (PLYCoordinatesIsDenseTest, NaNInCoordinates)
 {
@@ -409,8 +411,8 @@ TYPED_TEST (PLYCoordinatesIsDenseTest, InfInCoordinates)
 template<typename T>
 struct PLYNormalsIsDenseTest : public PLYTest {};
 
-typedef ::testing::Types<BOOST_PP_SEQ_ENUM (PCL_NORMAL_POINT_TYPES)> NormalPointTypes;
-TYPED_TEST_CASE (PLYNormalsIsDenseTest, NormalPointTypes);
+using NormalPointTypes = ::testing::Types<BOOST_PP_SEQ_ENUM (PCL_NORMAL_POINT_TYPES)>;
+TYPED_TEST_SUITE (PLYNormalsIsDenseTest, NormalPointTypes);
 
 TYPED_TEST (PLYNormalsIsDenseTest, NaNInNormals)
 {
@@ -470,6 +472,143 @@ TEST_F (PLYTest, NaNInIntensity)
 
   // cloud has proper structure
   EXPECT_FALSE (cloud.is_dense);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST_F (PLYTest, NoEndofLine)
+{
+  // create file
+  std::ofstream fs;
+  fs.open (mesh_file_ply_.c_str ());
+  fs << "ply\n"
+        "format ascii 1.0\n"
+        "element vertex 4\n"
+        "property float x\n"
+        "property float y\n"
+        "property float z\n"
+        "property float intensity\n"
+        "end_header\n"
+        "4.23607 0 1.61803 3.13223\n"
+        "2.61803 2.61803 0 3.13223\n"
+        "0 1.61803 4.23607 NaN\n"
+        "0 -1.61803 4.23607 3.13223";
+  fs.close ();
+
+  // Set up cloud
+  pcl::PointCloud<pcl::PointXYZI> cloud;
+
+  pcl::PLYReader Reader;
+  Reader.read(PLYTest::mesh_file_ply_, cloud);
+
+  ASSERT_FALSE (cloud.empty());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST_F (PLYTest, CommentAtTheEnd)
+{
+  // create file
+  std::ofstream fs;
+  fs.open (mesh_file_ply_.c_str ());
+  fs << "ply\n"
+        "format ascii 1.0\n"
+        "element vertex 4\n"
+        "property float x\n"
+        "property float y\n"
+        "property float z\n"
+        "property float intensity\n"
+        "end_header\n"
+        "4.23607 0 1.61803 3.13223\n"
+        "2.61803 2.61803 0 3.13223\n"
+        "0 1.61803 4.23607 NaN\n"
+        "0 -1.61803 4.23607 3.13223\n"
+        "comment hi\n";
+  fs.close ();
+
+  // Set up cloud
+  pcl::PointCloud<pcl::PointXYZI> cloud;
+
+  pcl::PLYReader Reader;
+  Reader.read(PLYTest::mesh_file_ply_, cloud);
+
+  ASSERT_FALSE (cloud.empty());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST_F (PLYTest, EmptyCloud)
+{
+  // create file
+  std::ofstream fs;
+  fs.open (mesh_file_ply_.c_str ());
+  fs << "ply\n"
+        "format ascii 1.0\n"
+        "element vertex 0\n"
+        "property float x\n"
+        "property float y\n"
+        "property float z\n"
+        "end_header\n";
+  fs.close ();
+
+  // Set up cloud
+  pcl::PointCloud<pcl::PointXYZ> cloud;
+
+  // check if loading is ok
+  const int res = pcl::io::loadPLYFile (PLYTest::mesh_file_ply_, cloud);
+  ASSERT_EQ (res, 0);
+
+  ASSERT_TRUE (cloud.empty());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST_F (PLYTest, Float64Cloud)
+{
+  pcl::PointCloud<pcl::PointXYZ> cloud;
+  cloud.push_back(pcl::PointXYZ(4.23, 0.42, 1.61));
+  cloud.push_back(pcl::PointXYZ(-1.61, 4.32, 3.13));
+
+  // create file
+  std::ofstream fs;
+  fs.open (mesh_file_ply_.c_str ());
+  fs << "ply\n"
+        "format ascii 1.0\n"
+        "element vertex 2\n"
+        "property float64 x\n"
+        "property float64 y\n"
+        "property float64 z\n"
+        "end_header\n"
+        << cloud[0].x << " " << cloud[0].y << " " << cloud[0].z << "\n"
+        << cloud[1].x << " " << cloud[1].y << " " << cloud[1].z << "\n"
+        ;
+  fs.close ();
+
+  pcl::PCLPointCloud2 cloud2;
+  const int res = pcl::io::loadPLYFile (PLYTest::mesh_file_ply_, cloud2);
+  ASSERT_EQ (res, 0);
+
+  ASSERT_EQ (cloud2.height*cloud2.width, cloud.size());
+  for (auto & field : cloud2.fields) {
+    ASSERT_EQ (field.datatype, pcl::PCLPointField::FLOAT64);
+  }
+  for (size_t pointIdx = 0; pointIdx < cloud.size(); ++pointIdx)
+  {
+    unsigned char const * ptr = &cloud2.data[0] + pointIdx*cloud2.point_step;
+    double xValue, yValue, zValue;
+    memcpy(
+        reinterpret_cast<char*>(&xValue),
+        ptr + cloud2.fields.at(getFieldIndex(cloud2, "x")).offset,
+        8);
+    memcpy(
+        reinterpret_cast<char*>(&yValue),
+        ptr + cloud2.fields.at(getFieldIndex(cloud2, "y")).offset,
+        8);
+    memcpy(
+        reinterpret_cast<char*>(&zValue),
+        ptr + cloud2.fields.at(getFieldIndex(cloud2, "z")).offset,
+        8);
+
+    EXPECT_FLOAT_EQ(cloud[pointIdx].x, xValue);
+    EXPECT_FLOAT_EQ(cloud[pointIdx].y, yValue);
+    EXPECT_FLOAT_EQ(cloud[pointIdx].z, zValue);
+  }
 }
 
 /* ---[ */

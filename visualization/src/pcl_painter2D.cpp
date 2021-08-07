@@ -349,7 +349,7 @@ pcl::visualization::PCLPainter2D::setWindowSize (int w, int h)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int*
-pcl::visualization::PCLPainter2D::getWindowSize ()
+pcl::visualization::PCLPainter2D::getWindowSize () const
 {
   int *sz = new int[2];
   sz[0] = win_width_;
@@ -360,14 +360,12 @@ pcl::visualization::PCLPainter2D::getWindowSize ()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool 
 pcl::visualization::PCLPainter2D::Paint (vtkContext2D *painter)
-{  
+{
   //draw every figures
-  for (size_t i = 0; i < figures_.size (); i++)
+  for (auto &figure : figures_)
   {
-    figures_[i]->draw (painter); 	//that's it ;-)
+    figure->draw (painter); //that's it ;-)
   }
-  
+
   return true;
 }
-
-

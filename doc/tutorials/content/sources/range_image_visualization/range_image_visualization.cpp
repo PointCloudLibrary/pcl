@@ -1,8 +1,6 @@
 #include <iostream>
 
-#include <boost/thread/thread.hpp>
 
-#include <pcl/common/common_headers.h>
 #include <pcl/range_image/range_image.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/range_image_visualizer.h>
@@ -108,10 +106,10 @@ main (int argc, char** argv)
       for (float y=-0.5f; y<=0.5f; y+=0.01f)
       {
         PointType point;  point.x = x;  point.y = y;  point.z = 2.0f - y;
-        point_cloud.points.push_back (point);
+        point_cloud.push_back (point);
       }
     }
-    point_cloud.width = (int) point_cloud.points.size ();  point_cloud.height = 1;
+    point_cloud.width = point_cloud.size ();  point_cloud.height = 1;
   }
   
   // -----------------------------------------------
@@ -120,7 +118,7 @@ main (int argc, char** argv)
   float noise_level = 0.0;
   float min_range = 0.0f;
   int border_size = 1;
-  boost::shared_ptr<pcl::RangeImage> range_image_ptr(new pcl::RangeImage);
+  pcl::RangeImage::Ptr range_image_ptr(new pcl::RangeImage);
   pcl::RangeImage& range_image = *range_image_ptr;   
   range_image.createFromPointCloud (point_cloud, angular_resolution_x, angular_resolution_y,
                                     pcl::deg2rad (360.0f), pcl::deg2rad (180.0f),

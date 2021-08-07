@@ -35,12 +35,11 @@
  *
  */
 
-#ifndef PCL_CUDA_POINT_CLOUD_H_
-#define PCL_CUDA_POINT_CLOUD_H_
+#pragma once
 
 #include <pcl/cuda/point_types.h>
 #include <pcl/cuda/thrust.h>
-#include <boost/shared_ptr.hpp>
+#include <pcl/memory.h>
 
 namespace pcl
 {
@@ -65,13 +64,13 @@ namespace pcl
     struct Host
     {
       // vector type
-      typedef typename thrust::host_vector<T> type;
+      using type = thrust::host_vector<T>;
 
 //      // iterator type
-//      typedef thrust::detail::normal_iterator<T*> type;
+//      using type = thrust::detail::normal_iterator<T*>;
 //      
 //      // pointer type
-//      typedef T* pointer_type;
+//      using pointer_type = T*;
 //      
 //      // allocator
 //      static T* alloc (int size)
@@ -94,13 +93,13 @@ namespace pcl
     struct Device
     {
       // vector type
-      typedef typename thrust::device_vector<T> type;
+      using type = thrust::device_vector<T>;
       
 //      // iterator type
-//      typedef thrust::detail::normal_iterator<thrust::device_ptr<T> > iterator_type;
+//      using iterator_type = thrust::detail::normal_iterator<thrust::device_ptr<T> >;
 //      
 //      // pointer type
-//      typedef thrust::device_ptr<T> pointer_type;
+//      using pointer_type = thrust::device_ptr<T>;
 //
 //      // allocator
 //      static thrust::device_ptr<T> alloc (int size)
@@ -152,8 +151,8 @@ namespace pcl
         {
           points   = rhs.points;
           // TODO: Test speed on operator () = vs resize+copy
-          //points.resize (rhs.points.size ());
-          //thrust::copy (rhs.points.begin (), rhs.points.end (), points.begin ());
+          //points.resize (rhs.size ());
+          //thrust::copy (rhs.begin (), rhs.end (), points.begin ());
           width    = rhs.width;
           height   = rhs.height;
           is_dense = rhs.is_dense;
@@ -166,12 +165,11 @@ namespace pcl
         {
           if (this->height > 1)
             return (points[v * this->width + u]);
-          else
-            return (PointXYZRGB (std::numeric_limits<float>::quiet_NaN (),
-                                 std::numeric_limits<float>::quiet_NaN (),
-                                 std::numeric_limits<float>::quiet_NaN (),
-                                 0));
-            // throw IsNotDenseException ("Can't use 2D indexing with a sparse point cloud");
+          return (PointXYZRGB (std::numeric_limits<float>::quiet_NaN (),
+                               std::numeric_limits<float>::quiet_NaN (),
+                               std::numeric_limits<float>::quiet_NaN (),
+                               0));
+          // throw IsNotDenseException ("Can't use 2D indexing with a sparse point cloud");
         }
   
         //////////////////////////////////////////////////////////////////////////////////////
@@ -188,7 +186,7 @@ namespace pcl
         //typename Storage<float3>::type points;
         typename Storage<PointXYZRGB>::type points;
   
-        typedef typename Storage<PointXYZRGB>::type::iterator iterator;
+        using iterator = typename Storage<PointXYZRGB>::type::iterator;
   
         /** \brief The point cloud width (if organized as an image-structure). */
         unsigned int width;
@@ -198,8 +196,8 @@ namespace pcl
         /** \brief True if no points are invalid (e.g., have NaN or Inf values). */
         bool is_dense;
   
-        typedef boost::shared_ptr<PointCloudAOS<Storage> > Ptr;
-        typedef boost::shared_ptr<const PointCloudAOS<Storage> > ConstPtr;
+        using Ptr = shared_ptr<PointCloudAOS<Storage> >;
+        using ConstPtr = shared_ptr<const PointCloudAOS<Storage> >;
     };
   
     /** @b PointCloudSOA represents a SOA (Struct of Arrays) PointCloud
@@ -241,7 +239,7 @@ namespace pcl
           * \param newsize the new size
           */
         void
-        resize (size_t newsize)
+        resize (std::size_t newsize)
         {
           assert (sane ());
           points_x.resize (newsize);
@@ -279,15 +277,15 @@ namespace pcl
         /** \brief True if no points are invalid (e.g., have NaN or Inf values). */
         bool is_dense;
   
-        typedef boost::shared_ptr<PointCloudSOA<Storage> > Ptr;
-        typedef boost::shared_ptr<const PointCloudSOA<Storage> > ConstPtr;
+        using Ptr = shared_ptr<PointCloudSOA<Storage> >;
+        using ConstPtr = shared_ptr<const PointCloudSOA<Storage> >;
   
         //////////////////////////////////////////////////////////////////////////////////////
         // Extras. Testing ZIP iterators
-        typedef thrust::tuple<float, float, float> tuple_type;
-        typedef typename Storage<float>::type::iterator float_iterator;
-        typedef thrust::tuple<float_iterator, float_iterator, float_iterator> iterator_tuple; 
-        typedef thrust::zip_iterator<iterator_tuple> zip_iterator;
+        using tuple_type = thrust::tuple<float, float, float>;
+        using float_iterator = typename Storage<float>::type::iterator;
+        using iterator_tuple = thrust::tuple<float_iterator, float_iterator, float_iterator>; 
+        using zip_iterator = thrust::zip_iterator<iterator_tuple>;
   
         zip_iterator 
         zip_begin ()
@@ -309,31 +307,31 @@ namespace pcl
     template <template <typename> class Storage, typename T>
     struct PointIterator
     {
-      typedef void type;
+      using type = void;
     };
   
     template <typename T>
     struct PointIterator<Device,T>
     {
-      typedef thrust::detail::normal_iterator<thrust::device_ptr<T> > type;
+      using type = thrust::detail::normal_iterator<thrust::device_ptr<T> >;
     };
   
     template <typename T>
     struct PointIterator<Host,T>
     {
-      typedef thrust::detail::normal_iterator<T*> type;
+      using type = thrust::detail::normal_iterator<T *>;
     };
   
     template <template <typename> class Storage, typename T>
     struct StoragePointer
     {
-      // typedef void* type;
+      // using type = void*;
     };
   
     template <typename T>
     struct StoragePointer<Device,T>
     {
-      typedef thrust::device_ptr<T> type;
+      using type = thrust::device_ptr<T>;
       template <typename U>
       static thrust::device_ptr<U> cast (type ptr)
       {
@@ -349,7 +347,7 @@ namespace pcl
     template <typename T>
     struct StoragePointer<Host,T>
     {
-      typedef T* type;
+      using type = T *;
       template <typename U>
       static U* cast (type ptr)
       {
@@ -382,5 +380,3 @@ namespace pcl
   
   } // namespace
 } // namespace
-
-#endif  //#ifndef PCL_CUDA_POINT_CLOUD_H_

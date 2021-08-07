@@ -35,10 +35,8 @@
  *
  */
 
-#ifndef PCL_FILTERS_APPROXIMATE_VOXEL_GRID_MAP_H_
-#define PCL_FILTERS_APPROXIMATE_VOXEL_GRID_MAP_H_
+#pragma once
 
-#include <pcl/filters/boost.h>
 #include <pcl/filters/filter.h>
 
 namespace pcl
@@ -47,7 +45,7 @@ namespace pcl
   template <typename PointT>
   struct xNdCopyEigenPointFunctor
   {
-    typedef typename traits::POD<PointT>::type Pod;
+    using Pod = typename traits::POD<PointT>::type;
     
     xNdCopyEigenPointFunctor (const Eigen::VectorXf &p1, PointT &p2)
       : p1_ (p1),
@@ -57,8 +55,8 @@ namespace pcl
     template<typename Key> inline void operator() ()
     {
       //boost::fusion::at_key<Key> (p2_) = p1_[f_idx_++];
-      typedef typename pcl::traits::datatype<PointT, Key>::type T;
-      uint8_t* data_ptr = reinterpret_cast<uint8_t*>(&p2_) + pcl::traits::offset<PointT, Key>::value;
+      using T = typename pcl::traits::datatype<PointT, Key>::type;
+      std::uint8_t* data_ptr = reinterpret_cast<std::uint8_t*>(&p2_) + pcl::traits::offset<PointT, Key>::value;
       *reinterpret_cast<T*>(data_ptr) = static_cast<T> (p1_[f_idx_++]);
     }
 
@@ -72,7 +70,7 @@ namespace pcl
   template <typename PointT>
   struct xNdCopyPointEigenFunctor
   {
-    typedef typename traits::POD<PointT>::type Pod;
+    using Pod = typename traits::POD<PointT>::type;
     
     xNdCopyPointEigenFunctor (const PointT &p1, Eigen::VectorXf &p2)
       : p1_ (reinterpret_cast<const Pod&>(p1)), p2_ (p2), f_idx_ (0) { }
@@ -80,8 +78,8 @@ namespace pcl
     template<typename Key> inline void operator() ()
     {
       //p2_[f_idx_++] = boost::fusion::at_key<Key> (p1_);
-      typedef typename pcl::traits::datatype<PointT, Key>::type T;
-      const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(&p1_) + pcl::traits::offset<PointT, Key>::value;
+      using T = typename pcl::traits::datatype<PointT, Key>::type;
+      const std::uint8_t* data_ptr = reinterpret_cast<const std::uint8_t*>(&p1_) + pcl::traits::offset<PointT, Key>::value;
       p2_[f_idx_++] = static_cast<float> (*reinterpret_cast<const T*>(data_ptr));
     }
 
@@ -104,14 +102,14 @@ namespace pcl
     using Filter<PointT>::input_;
     using Filter<PointT>::indices_;
 
-    typedef typename Filter<PointT>::PointCloud PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+    using PointCloud = typename Filter<PointT>::PointCloud;
+    using PointCloudPtr = typename PointCloud::Ptr;
+    using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
     private:
       struct he
       {
-        he () : ix (), iy (), iz (), count (0), centroid () {}
+        he () : ix (), iy (), iz (), count (0) {}
         int ix, iy, iz;
         int count;
         Eigen::VectorXf centroid;
@@ -119,8 +117,8 @@ namespace pcl
 
     public:
 
-      typedef boost::shared_ptr< ApproximateVoxelGrid<PointT> > Ptr;
-      typedef boost::shared_ptr< const ApproximateVoxelGrid<PointT> > ConstPtr;
+      using Ptr = shared_ptr<ApproximateVoxelGrid<PointT> >;
+      using ConstPtr = shared_ptr<const ApproximateVoxelGrid<PointT> >;
 
 
       /** \brief Empty constructor. */
@@ -146,7 +144,7 @@ namespace pcl
         history_ ()
       {
         history_ = new he[histsize_];
-        for (size_t i = 0; i < histsize_; i++)
+        for (std::size_t i = 0; i < histsize_; i++)
           history_[i] = src.history_[i];
       }
 
@@ -170,7 +168,7 @@ namespace pcl
         downsample_all_data_ = src.downsample_all_data_;
         histsize_ = src.histsize_;
         history_ = new he[histsize_];
-        for (size_t i = 0; i < histsize_; i++)
+        for (std::size_t i = 0; i < histsize_; i++)
           history_[i] = src.history_[i];
         return (*this);
       }
@@ -223,28 +221,26 @@ namespace pcl
       bool downsample_all_data_;
 
       /** \brief history buffer size, power of 2 */
-      size_t histsize_;
+      std::size_t histsize_;
 
       /** \brief history buffer */
       struct he* history_;
 
-      typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+      using FieldList = typename pcl::traits::fieldList<PointT>::type;
 
       /** \brief Downsample a Point Cloud using a voxelized grid approach
         * \param output the resultant point cloud message
         */
       void 
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
       /** \brief Write a single point from the hash to the output cloud
         */
       void 
-      flush (PointCloud &output, size_t op, he *hhe, int rgba_index, int centroid_size);
+      flush (PointCloud &output, std::size_t op, he *hhe, int rgba_index, int centroid_size);
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/approximate_voxel_grid.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_VOXEL_GRID_MAP_H_

@@ -35,14 +35,15 @@
  *
  */
 // Looking for PCL_BUILT_WITH_VTK
-#include <pcl/pcl_config.h>
+#include <pcl/for_each_type.h>
 #include <pcl/io/image_grabber.h>
+#include <pcl/io/lzf_image_io.h>
+#include <pcl/memory.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/for_each_type.h>
-#include <pcl/io/lzf_image_io.h>
-#include <pcl/console/time.h>
+#include <boost/filesystem.hpp> // for exists, basename, is_directory, ...
+#include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
+#include <boost/date_time/posix_time/posix_time.hpp> // for posix_time
 
 #ifdef PCL_BUILT_WITH_VTK
   #include <vtkImageReader2.h>
@@ -60,39 +61,39 @@
 struct pcl::ImageGrabberBase::ImageGrabberImpl
 {
   //! Implementation of ImageGrabber
-  ImageGrabberImpl (pcl::ImageGrabberBase& grabber, 
-                    const std::string& dir, 
-                    float frames_per_second, 
-                    bool repeat, 
+  ImageGrabberImpl (pcl::ImageGrabberBase& grabber,
+                    const std::string& dir,
+                    float frames_per_second,
+                    bool repeat,
                     bool pclzf_mode=false);
   //! For now, split rgb / depth folders only makes sense for VTK images
-  ImageGrabberImpl (pcl::ImageGrabberBase& grabber, 
-                    const std::string& rgb_dir, 
-                    const std::string& depth_dir, 
-                    float frames_per_second, 
+  ImageGrabberImpl (pcl::ImageGrabberBase& grabber,
+                    const std::string& rgb_dir,
+                    const std::string& depth_dir,
+                    float frames_per_second,
                     bool repeat);
-  ImageGrabberImpl (pcl::ImageGrabberBase& grabber, 
-                    const std::vector<std::string>& depth_image_files, 
-                    float frames_per_second, 
+  ImageGrabberImpl (pcl::ImageGrabberBase& grabber,
+                    const std::vector<std::string>& depth_image_files,
+                    float frames_per_second,
                     bool repeat);
-  
-  void 
+
+  void
   trigger ();
   //! Read ahead -- figure out whether we are in VTK image or PCLZF mode
-  void 
+  void
   loadNextCloud ();
-  
+
   //! Get cloud at a particular location
   bool
-  getCloudAt (size_t idx, pcl::PCLPointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
+  getCloudAt (std::size_t idx, pcl::PCLPointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
               double &fx, double &fy, double &cx, double &cy) const;
-  
+
   //! Get cloud at a particular location
   bool
-  getCloudVTK (size_t idx, pcl::PCLPointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation) const;
+  getCloudVTK (std::size_t idx, pcl::PCLPointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation) const;
   //! Get cloud at a particular location
   bool
-  getCloudPCLZF (size_t idx, pcl::PCLPointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
+  getCloudPCLZF (std::size_t idx, pcl::PCLPointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
                  double &fx, double &fy, double &cx, double &cy) const;
 
   //! Scrapes a directory for image files which contain "rgb" or "depth" and
@@ -110,7 +111,7 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
 
   //! True if it is an image we know how to read
   bool
-  isValidExtension (const std::string &extension);
+  isValidExtension (const std::string &extension) const;
 
   //! Convenience function to rewind to the last frame
   void
@@ -119,18 +120,18 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   //! Checks if a timestamp is given in the filename
   //! And returns if so
   bool
-  getTimestampFromFilepath (const std::string &filepath, pcl::uint64_t &timestamp) const;
+  getTimestampFromFilepath (const std::string &filepath, std::uint64_t &timestamp) const;
 
-  size_t
+  std::size_t
   numFrames () const;
 
-  
+
 #ifdef PCL_BUILT_WITH_VTK
   //! Load an image file, return the vtkImageReader2, return false if it couldn't be opened
   bool
   getVtkImage (const std::string &filename, vtkSmartPointer<vtkImageData> &image) const;
 #endif//PCL_BUILT_WITH_VTK
-  
+
   pcl::ImageGrabberBase& grabber_;
   float frames_per_second_;
   bool repeat_;
@@ -143,7 +144,7 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   std::vector<std::string> rgb_pclzf_files_;
   std::vector<std::string> xml_files_;
 
-  size_t cur_frame_;
+  std::size_t cur_frame_;
 
   TimeTrigger time_trigger_;
 
@@ -153,7 +154,7 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   pcl::PointCloud<pcl::PointXYZRGBA> next_cloud_color_;
   Eigen::Vector4f origin_;
   Eigen::Quaternionf orientation_;
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
   bool valid_;
   //! Flag to say if a user set the focal length by hand
   //  (so we don't attempt to adjust for QVGA, QQVGA, etc).
@@ -171,21 +172,16 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase& grabber, 
-                                                           const std::string& dir, 
-                                                           float frames_per_second, 
-                                                           bool repeat, 
+pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase& grabber,
+                                                           const std::string& dir,
+                                                           float frames_per_second,
+                                                           bool repeat,
                                                            bool pclzf_mode)
   : grabber_ (grabber)
   , frames_per_second_ (frames_per_second)
   , repeat_ (repeat)
   , running_ (false)
-  , depth_image_files_ ()
-  , rgb_image_files_ ()
-  , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), boost::bind (&ImageGrabberImpl::trigger, this))
-  , next_cloud_ ()
-  , origin_ ()
-  , orientation_ ()
+  , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), [this] { trigger (); })
   , valid_ (false)
   , pclzf_mode_(pclzf_mode)
   , depth_image_units_ (1E-3f)
@@ -208,21 +204,16 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase& grabber, 
-                                                           const std::string& depth_dir, 
-                                                           const std::string& rgb_dir, 
-                                                           float frames_per_second, 
+pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase& grabber,
+                                                           const std::string& depth_dir,
+                                                           const std::string& rgb_dir,
+                                                           float frames_per_second,
                                                            bool repeat)
   : grabber_ (grabber)
   , frames_per_second_ (frames_per_second)
   , repeat_ (repeat)
   , running_ (false)
-  , depth_image_files_ ()
-  , rgb_image_files_ ()
-  , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), boost::bind (&ImageGrabberImpl::trigger, this))
-  , next_cloud_ ()
-  , origin_ ()
-  , orientation_ ()
+  , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), [this] { trigger (); })
   , valid_ (false)
   , pclzf_mode_ (false)
   , depth_image_units_ (1E-3f)
@@ -238,20 +229,15 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase& grabber, 
-                                                           const std::vector<std::string>& depth_image_files, 
-                                                           float frames_per_second, 
+pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase& grabber,
+                                                           const std::vector<std::string>& depth_image_files,
+                                                           float frames_per_second,
                                                            bool repeat)
   : grabber_ (grabber)
   , frames_per_second_ (frames_per_second)
   , repeat_ (repeat)
   , running_ (false)
-  , depth_image_files_ ()
-  , rgb_image_files_ ()
-  , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), boost::bind (&ImageGrabberImpl::trigger, this))
-  , next_cloud_ ()
-  , origin_ ()
-  , orientation_ ()
+  , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), [this] { trigger (); })
   , valid_ (false)
   , pclzf_mode_ (false)
   , depth_image_units_ (1E-3f)
@@ -267,7 +253,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloud ()
 {
   if (cur_frame_ >= numFrames ())
@@ -280,13 +266,13 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloud ()
       return;
     }
   }
-  valid_ = getCloudAt (cur_frame_, next_cloud_, origin_, orientation_, 
+  valid_ = getCloudAt (cur_frame_, next_cloud_, origin_, orientation_,
       focal_length_x_, focal_length_y_, principal_point_x_, principal_point_y_);
   cur_frame_++;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::ImageGrabberBase::ImageGrabberImpl::trigger ()
 {
   if (valid_)
@@ -304,7 +290,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
   if (!boost::filesystem::exists (dir) || !boost::filesystem::is_directory (dir))
   {
     PCL_ERROR ("[pcl::ImageGrabber::loadDepthAndRGBFiles] Error: attempted to instantiate a pcl::ImageGrabber from a path which"
-               " is not a directory: %s", dir.c_str ());
+               " is not a directory: %s\n", dir.c_str ());
     return;
   }
   std::string pathname;
@@ -313,30 +299,24 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
   boost::filesystem::directory_iterator end_itr;
   for (boost::filesystem::directory_iterator itr (dir); itr != end_itr; ++itr)
   {
-#if BOOST_FILESYSTEM_VERSION == 3
     extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ()));
     pathname = itr->path ().string ();
     basename = boost::filesystem::basename (itr->path ());
-#else
-    extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->leaf ()));
-    pathname = itr->path ().filename ();
-    basename = boost::filesystem::basename (itr->leaf ());
-#endif
-    if (!boost::filesystem::is_directory (itr->status ()) 
+    if (!boost::filesystem::is_directory (itr->status ())
         && isValidExtension (extension))
     {
-      if (basename.find ("rgb") < basename.npos)
+      if (basename.find ("rgb") < std::string::npos)
       {
         rgb_image_files_.push_back (pathname);
       }
-      else if (basename.find ("depth") < basename.npos)
+      else if (basename.find ("depth") < std::string::npos)
       {
         depth_image_files_.push_back (pathname);
       }
     }
   }
   sort (depth_image_files_.begin (), depth_image_files_.end ());
-  if (rgb_image_files_.size () > 0)
+  if (!rgb_image_files_.empty ())
     sort (rgb_image_files_.begin (), rgb_image_files_.end ());
 }
 
@@ -346,13 +326,13 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
   if (!boost::filesystem::exists (depth_dir) || !boost::filesystem::is_directory (depth_dir))
   {
     PCL_ERROR ("[pcl::ImageGrabber::loadDepthAndRGBFiles] Error: attempted to instantiate a pcl::ImageGrabber from a path which"
-               " is not a directory: %s", depth_dir.c_str ());
+               " is not a directory: %s\n", depth_dir.c_str ());
     return;
   }
   if (!boost::filesystem::exists (rgb_dir) || !boost::filesystem::is_directory (rgb_dir))
   {
     PCL_ERROR ("[pcl::ImageGrabber::loadDepthAndRGBFiles] Error: attempted to instantiate a pcl::ImageGrabber from a path which"
-               " is not a directory: %s", rgb_dir.c_str ());
+               " is not a directory: %s\n", rgb_dir.c_str ());
     return;
   }
   std::string pathname;
@@ -362,19 +342,13 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
   // First iterate over depth images
   for (boost::filesystem::directory_iterator itr (depth_dir); itr != end_itr; ++itr)
   {
-#if BOOST_FILESYSTEM_VERSION == 3
     extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ()));
     pathname = itr->path ().string ();
     basename = boost::filesystem::basename (itr->path ());
-#else
-    extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->leaf ()));
-    pathname = itr->path ().filename ();
-    basename = boost::filesystem::basename (itr->leaf ());
-#endif
     if (!boost::filesystem::is_directory (itr->status ())
         && isValidExtension (extension))
     {
-      if (basename.find ("depth") < basename.npos)
+      if (basename.find ("depth") < std::string::npos)
       {
         depth_image_files_.push_back (pathname);
       }
@@ -383,34 +357,28 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
   // Then iterate over RGB images
   for (boost::filesystem::directory_iterator itr (rgb_dir); itr != end_itr; ++itr)
   {
-#if BOOST_FILESYSTEM_VERSION == 3
     extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ()));
     pathname = itr->path ().string ();
     basename = boost::filesystem::basename (itr->path ());
-#else
-    extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->leaf ()));
-    pathname = itr->path ().filename ();
-    basename = boost::filesystem::basename (itr->leaf ());
-#endif
     if (!boost::filesystem::is_directory (itr->status ())
         && isValidExtension (extension))
     {
-      if (basename.find ("rgb") < basename.npos)
+      if (basename.find ("rgb") < std::string::npos)
       {
         rgb_image_files_.push_back (pathname);
       }
     }
   }
   if (depth_image_files_.size () != rgb_image_files_.size () )
-    PCL_WARN ("[pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles] : Watch out not same amount of depth and rgb images");
-  if (depth_image_files_.size () > 0)
+    PCL_WARN ("[pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles] : Watch out not same amount of depth and rgb images\n");
+  if (!depth_image_files_.empty ())
     sort (depth_image_files_.begin (), depth_image_files_.end ());
   else
-    PCL_ERROR ("[pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles] : no depth images added");
-  if (rgb_image_files_.size () > 0)
+    PCL_ERROR ("[pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles] : no depth images added\n");
+  if (!rgb_image_files_.empty ())
     sort (rgb_image_files_.begin (), rgb_image_files_.end ());
   else
-    PCL_ERROR ("[pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles] : no rgb images added");
+    PCL_ERROR ("[pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles] : no rgb images added\n");
 }
 
 
@@ -421,7 +389,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadPCLZFFiles (const std::string &dir)
   if (!boost::filesystem::exists (dir) || !boost::filesystem::is_directory (dir))
   {
     PCL_ERROR ("[pcl::ImageGrabber::loadPCLZFFiles] Error: attempted to instantiate a pcl::ImageGrabber from a path which"
-               " is not a directory: %s", dir.c_str ());
+               " is not a directory: %s\n", dir.c_str ());
     return;
   }
   std::string pathname;
@@ -430,21 +398,15 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadPCLZFFiles (const std::string &dir)
   boost::filesystem::directory_iterator end_itr;
   for (boost::filesystem::directory_iterator itr (dir); itr != end_itr; ++itr)
   {
-#if BOOST_FILESYSTEM_VERSION == 3
     extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ()));
     pathname = itr->path ().string ();
     basename = boost::filesystem::basename (itr->path ());
-#else
-    extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->leaf ()));
-    pathname = itr->path ().filename ();
-    basename = boost::filesystem::basename (itr->leaf ());
-#endif
-    if (!boost::filesystem::is_directory (itr->status ()) 
+    if (!boost::filesystem::is_directory (itr->status ())
         && isValidExtension (extension))
     {
-      if (basename.find ("rgb") < basename.npos)
+      if (basename.find ("rgb") < std::string::npos)
         rgb_pclzf_files_.push_back (pathname);
-      else if (basename.find ("depth") < basename.npos)
+      else if (basename.find ("depth") < std::string::npos)
         depth_pclzf_files_.push_back (pathname);
       else
         xml_files_.push_back (pathname);
@@ -452,7 +414,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadPCLZFFiles (const std::string &dir)
     }
   }
   sort (depth_pclzf_files_.begin (), depth_pclzf_files_.end ());
-  if (rgb_pclzf_files_.size () > 0)
+  if (!rgb_pclzf_files_.empty ())
     sort (rgb_pclzf_files_.begin (), rgb_pclzf_files_.end ());
   sort (xml_files_.begin(), xml_files_.end());
   if (depth_pclzf_files_.size() != xml_files_.size())
@@ -460,7 +422,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadPCLZFFiles (const std::string &dir)
     PCL_ERROR("[pcl::ImageGrabber::loadPCLZFFiles] # depth clouds != # xml files\n");
     return;
   }
-  if (depth_pclzf_files_.size() != rgb_pclzf_files_.size() && rgb_pclzf_files_.size() > 0)
+  if (depth_pclzf_files_.size() != rgb_pclzf_files_.size() && !rgb_pclzf_files_.empty ())
   {
     PCL_ERROR("[pcl::ImageGrabber::loadPCLZFFiles] # depth clouds != # rgb clouds\n");
     return;
@@ -468,7 +430,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadPCLZFFiles (const std::string &dir)
 }
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::ImageGrabberBase::ImageGrabberImpl::isValidExtension (const std::string &extension)
+pcl::ImageGrabberBase::ImageGrabberImpl::isValidExtension (const std::string &extension) const
 {
   bool valid;
   if(pclzf_mode_)
@@ -477,34 +439,34 @@ pcl::ImageGrabberBase::ImageGrabberImpl::isValidExtension (const std::string &ex
   }
   else
   {
-    valid = extension == ".TIFF" || extension == ".PNG" 
+    valid = extension == ".TIFF" || extension == ".PNG"
          || extension == ".JPG" || extension == ".JPEG"
          || extension == ".PPM";
   }
   return (valid);
 }
-  
+
 void
 pcl::ImageGrabberBase::ImageGrabberImpl::rewindOnce ()
 {
   if (cur_frame_ > 0)
     cur_frame_--;
 }
-  
+
 //////////////////////////////////////////////////////////////////////////
 bool
 pcl::ImageGrabberBase::ImageGrabberImpl::getTimestampFromFilepath (
-    const std::string &filepath, 
-    pcl::uint64_t &timestamp) const
+    const std::string &filepath,
+    std::uint64_t &timestamp) const
 {
   // For now, we assume the file is of the form frame_[22-char POSIX timestamp]_*
   char timestamp_str[256];
-  int result = std::sscanf (boost::filesystem::basename (filepath).c_str (), 
+  int result = std::sscanf (boost::filesystem::basename (filepath).c_str (),
                             "frame_%22s_%*s",
                             timestamp_str);
   if (result > 0)
   {
-    // Convert to pcl::uint64_t, microseconds since 1970-01-01
+    // Convert to std::uint64_t, microseconds since 1970-01-01
     boost::posix_time::ptime cur_date = boost::posix_time::from_iso_string (timestamp_str);
     boost::posix_time::ptime zero_date (
         boost::gregorian::date (1970,boost::gregorian::Jan,1));
@@ -513,19 +475,19 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getTimestampFromFilepath (
   }
   return (false);
 }
-  
+
 /////////////////////////////////////////////////////////////////////////////
 bool
-pcl::ImageGrabberBase::ImageGrabberImpl::getCloudAt (size_t idx, 
+pcl::ImageGrabberBase::ImageGrabberImpl::getCloudAt (std::size_t idx,
                                                      pcl::PCLPointCloud2 &blob,
-                                                     Eigen::Vector4f &origin, 
-                                                     Eigen::Quaternionf &orientation, 
-                                                     double &fx, 
-                                                     double &fy, 
-                                                     double &cx, 
+                                                     Eigen::Vector4f &origin,
+                                                     Eigen::Quaternionf &orientation,
+                                                     double &fx,
+                                                     double &fy,
+                                                     double &cx,
                                                      double &cy) const
 {
-  if (depth_image_files_.size () > 0)
+  if (!depth_image_files_.empty ())
   {
     fx = focal_length_x_;
     fy = focal_length_y_;
@@ -533,19 +495,16 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudAt (size_t idx,
     cy = principal_point_y_;
     return (getCloudVTK (idx, blob, origin, orientation) );
   }
-  else if (depth_pclzf_files_.size () > 0)
+  if (!depth_pclzf_files_.empty ())
     return (getCloudPCLZF (idx, blob, origin, orientation, fx, fy, cx, cy) );
-  else
-  {
-    PCL_ERROR ("[pcl::ImageGrabber::getCloudAt] Could not find VTK or PCLZF files.\n");
-    return (false);
-  }
-}  
+  PCL_ERROR ("[pcl::ImageGrabber::getCloudAt] Could not find VTK or PCLZF files.\n");
+  return (false);
+}
 
 bool
-pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx, 
+pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (std::size_t idx,
                                                       pcl::PCLPointCloud2 &blob,
-                                                      Eigen::Vector4f &origin, 
+                                                      Eigen::Vector4f &origin,
                                                       Eigen::Quaternionf &orientation) const
 {
 #ifdef PCL_BUILT_WITH_VTK
@@ -559,7 +518,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx,
   vtkSmartPointer<vtkImageData> rgb_image;
   const std::string &depth_image_file = depth_image_files_[idx];
   // If there are RGB files, load an rgb image
-  if (rgb_image_files_.size () != 0)
+  if (!rgb_image_files_.empty ())
   {
     const std::string &rgb_image_file = rgb_image_files_[idx];
     // If we were unable to pull a Vtk image, throw an error
@@ -576,7 +535,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx,
 
   // Fill in image data
   depth_pixel = static_cast<unsigned short*>(depth_image->GetScalarPointer ());
-  
+
   // Set up intrinsics
   float scaleFactorX, scaleFactorY;
   float centerX, centerY;
@@ -595,13 +554,13 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx,
     centerY = ((float)dims[1] - 1.f)/2.f;
   }
 
-  if(rgb_image_files_.size() > 0)
+  if(!rgb_image_files_.empty ())
   {
     pcl::PointCloud<pcl::PointXYZRGBA> cloud_color;
     cloud_color.width = dims[0];
     cloud_color.height = dims[1];
     cloud_color.is_dense = false;
-    cloud_color.points.resize (depth_image->GetNumberOfPoints ());
+    cloud_color.resize (depth_image->GetNumberOfPoints ());
 
     for (int y = 0; y < dims[1]; ++y)
     {
@@ -609,12 +568,12 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx,
       {
         pcl::PointXYZRGBA &pt = cloud_color.at (x,y);
         float depth = static_cast<float> (*depth_pixel) * depth_image_units_;
-        if (depth == 0.0f) 
+        if (depth == 0.0f)
           pt.x = pt.y = pt.z = std::numeric_limits<float>::quiet_NaN ();
         else
         {
           pt.x = (static_cast<float> (x) - centerX) * scaleFactorX * depth;
-          pt.y = (static_cast<float> (y) - centerY) * scaleFactorY * depth; 
+          pt.y = (static_cast<float> (y) - centerY) * scaleFactorY * depth;
           pt.z = depth;
         }
 
@@ -625,7 +584,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx,
       }
     }
     // Handle timestamps
-    pcl::uint64_t timestamp;
+    std::uint64_t timestamp;
     if (getTimestampFromFilepath (depth_image_file, timestamp))
     {
       cloud_color.header.stamp = timestamp;
@@ -639,25 +598,25 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx,
     cloud.width = dims[0];
     cloud.height = dims[1];
     cloud.is_dense = false;
-    cloud.points.resize (depth_image->GetNumberOfPoints ());
+    cloud.resize (depth_image->GetNumberOfPoints ());
     for (int y = 0; y < dims[1]; ++y)
     {
       for (int x = 0; x < dims[0]; ++x, ++depth_pixel)
       {
         pcl::PointXYZ &pt = cloud.at (x,y);
         float depth = static_cast<float> (*depth_pixel) * depth_image_units_;
-        if (depth == 0.0f) 
+        if (depth == 0.0f)
           pt.x = pt.y = pt.z = std::numeric_limits<float>::quiet_NaN ();
         else
         {
           pt.x = ((float)x - centerX) * scaleFactorX * depth;
-          pt.y = ((float)y - centerY) * scaleFactorY * depth; 
+          pt.y = ((float)y - centerY) * scaleFactorY * depth;
           pt.z = depth;
         }
       }
     }
     // Handle timestamps
-    pcl::uint64_t timestamp;
+    std::uint64_t timestamp;
     if (getTimestampFromFilepath (depth_image_file, timestamp))
     {
       cloud.header.stamp = timestamp;
@@ -671,20 +630,20 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx,
 
   return (true);
 #else
-    PCL_ERROR ("[pcl::ImageGrabber::loadNextCloudVTK] Attempted to read image files, but PCL was not built with VTK [no -DPCL_BUILT_WITH_VTK]. \n");
-    return (false);
+  pcl::utils::ignore(idx, blob, origin, orientation);
+  PCL_ERROR ("[pcl::ImageGrabber::loadNextCloudVTK] Attempted to read image files, but PCL was not built with VTK [no -DPCL_BUILT_WITH_VTK]. \n");
+  return false;
 #endif //PCL_BUILT_WITH_VTK
-
 }
 
 bool
-pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx, 
+pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (std::size_t idx,
                                                         pcl::PCLPointCloud2 &blob,
-                                                        Eigen::Vector4f &origin, 
-                                                        Eigen::Quaternionf &orientation, 
-                                                        double &fx, 
-                                                        double &fy, 
-                                                        double &cx, 
+                                                        Eigen::Vector4f &origin,
+                                                        Eigen::Quaternionf &orientation,
+                                                        double &fx,
+                                                        double &fy,
+                                                        double &cx,
                                                         double &cy) const
 {
   if (idx > depth_pclzf_files_.size ())
@@ -694,7 +653,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx,
   // Get the proper files
   const std::string &depth_pclzf_file = depth_pclzf_files_[idx];
   const std::string &xml_file = xml_files_[idx];
-  if (rgb_pclzf_files_.size () > 0)
+  if (!rgb_pclzf_files_.empty ())
   {
     pcl::PointCloud<pcl::PointXYZRGBA> cloud_color;
     const std::string &rgb_pclzf_file = rgb_pclzf_files_[idx];
@@ -713,10 +672,10 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx,
       fy = focal_length_y_;
       cx = principal_point_x_;
       cy = principal_point_y_;
-      rgb.setParameters (manual_params); 
-      yuv.setParameters (manual_params); 
-      bayer.setParameters (manual_params); 
-      depth.setParameters (manual_params); 
+      rgb.setParameters (manual_params);
+      yuv.setParameters (manual_params);
+      bayer.setParameters (manual_params);
+      depth.setParameters (manual_params);
     }
     else
     {
@@ -748,7 +707,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx,
       depth.readOMP (depth_pclzf_file, cloud_color, num_threads_);
     }
     // handle timestamps
-    pcl::uint64_t timestamp;
+    std::uint64_t timestamp;
     if (getTimestampFromFilepath (depth_pclzf_file, timestamp))
     {
       cloud_color.header.stamp = timestamp;
@@ -771,7 +730,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx,
       fy = focal_length_y_;
       cx = principal_point_x_;
       cy = principal_point_y_;
-      depth.setParameters (manual_params); 
+      depth.setParameters (manual_params);
     }
     else
     {
@@ -789,7 +748,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx,
     else
       depth.readOMP (depth_pclzf_file, cloud, num_threads_);
     // handle timestamps
-    pcl::uint64_t timestamp;
+    std::uint64_t timestamp;
     if (getTimestampFromFilepath (depth_pclzf_file, timestamp))
     {
       cloud.header.stamp = timestamp;
@@ -801,14 +760,14 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx,
   origin = Eigen::Vector4f::Zero ();
   orientation = Eigen::Quaternionf::Identity ();
   return (true);
-}     
-   
+}
+
 ////////////////////////////////////////////////////////////////////////
 //
 #ifdef PCL_BUILT_WITH_VTK
 bool
 pcl::ImageGrabberBase::ImageGrabberImpl::getVtkImage (
-    const std::string &filename, 
+    const std::string &filename,
     vtkSmartPointer<vtkImageData> &image) const
 {
 
@@ -816,25 +775,25 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getVtkImage (
   // Check extension to generate the proper reader
   int retval;
   std::string upper = boost::algorithm::to_upper_copy (filename);
-  if (upper.find (".TIFF") < upper.npos)
+  if (upper.find (".TIFF") < std::string::npos)
   {
     vtkSmartPointer<vtkTIFFReader> tiff_reader = vtkSmartPointer<vtkTIFFReader>::New ();
     retval = tiff_reader->CanReadFile (filename.c_str ());
     reader = tiff_reader;
   }
-  else if (upper.find (".PNG") < upper.npos)
+  else if (upper.find (".PNG") < std::string::npos)
   {
     vtkSmartPointer<vtkPNGReader> png_reader = vtkSmartPointer<vtkPNGReader>::New ();
     retval = png_reader->CanReadFile (filename.c_str ());
     reader = png_reader;
   }
-  else if (upper.find (".JPG") < upper.npos || upper.find (".JPEG") < upper.npos)
+  else if (upper.find (".JPG") < std::string::npos || upper.find (".JPEG") < std::string::npos)
   {
     vtkSmartPointer<vtkJPEGReader> jpg_reader = vtkSmartPointer<vtkJPEGReader>::New ();
     retval = jpg_reader->CanReadFile (filename.c_str ());
     reader = jpg_reader;
   }
-  else if (upper.find (".PPM") < upper.npos)
+  else if (upper.find (".PPM") < std::string::npos)
   {
     vtkSmartPointer<vtkPNMReader> ppm_reader = vtkSmartPointer<vtkPNMReader>::New ();
     retval = ppm_reader->CanReadFile (filename.c_str ());
@@ -850,7 +809,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getVtkImage (
     PCL_ERROR ("[pcl::ImageGrabber::getVtkImage] Image file can't be read: %s\n", filename.c_str ());
     return (false);
   }
-  else if (retval == 1)
+  if (retval == 1)
   {
     PCL_ERROR ("[pcl::ImageGrabber::getVtkImage] Can't prove that I can read: %s\n", filename.c_str ());
     return (false);
@@ -868,8 +827,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::numFrames () const
 {
   if (pclzf_mode_)
     return (depth_pclzf_files_.size ());
-  else
-    return (depth_image_files_.size ());
+  return (depth_image_files_.size ());
 }
 
 //////////////////////// GrabberBase //////////////////////
@@ -891,14 +849,14 @@ pcl::ImageGrabberBase::ImageGrabberBase (const std::vector<std::string>& depth_i
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-pcl::ImageGrabberBase::~ImageGrabberBase () throw ()
+pcl::ImageGrabberBase::~ImageGrabberBase () noexcept
 {
   stop ();
   delete impl_;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::ImageGrabberBase::start ()
 {
   if (impl_->frames_per_second_ > 0)
@@ -911,7 +869,7 @@ pcl::ImageGrabberBase::start ()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::ImageGrabberBase::stop ()
 {
   if (impl_->frames_per_second_ > 0)
@@ -931,35 +889,35 @@ pcl::ImageGrabberBase::trigger ()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 pcl::ImageGrabberBase::isRunning () const
 {
   return (impl_->running_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-std::string 
+std::string
 pcl::ImageGrabberBase::getName () const
 {
   return ("ImageGrabber");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::ImageGrabberBase::rewind ()
 {
   impl_->cur_frame_ = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-float 
+float
 pcl::ImageGrabberBase::getFramesPerSecond () const
 {
   return (impl_->frames_per_second_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 pcl::ImageGrabberBase::isRepeatOn () const
 {
   return (impl_->repeat_);
@@ -967,7 +925,7 @@ pcl::ImageGrabberBase::isRepeatOn () const
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::ImageGrabberBase::setRGBImageFiles (const std::vector<std::string>& rgb_image_files) 
+pcl::ImageGrabberBase::setRGBImageFiles (const std::vector<std::string>& rgb_image_files)
 {
   impl_->rgb_image_files_ = rgb_image_files;
   impl_->cur_frame_ = 0;
@@ -976,9 +934,9 @@ pcl::ImageGrabberBase::setRGBImageFiles (const std::vector<std::string>& rgb_ima
 
 ///////////////////////////////////////////////////////
 void
-pcl::ImageGrabberBase::setCameraIntrinsics (const double focal_length_x, 
-                                            const double focal_length_y, 
-                                            const double principal_point_x, 
+pcl::ImageGrabberBase::setCameraIntrinsics (const double focal_length_x,
+                                            const double focal_length_y,
+                                            const double principal_point_x,
                                             const double principal_point_y)
 {
   impl_->focal_length_x_ = focal_length_x;
@@ -995,9 +953,9 @@ pcl::ImageGrabberBase::setCameraIntrinsics (const double focal_length_x,
 }
 
 void
-pcl::ImageGrabberBase::getCameraIntrinsics (double &focal_length_x, 
-                                            double &focal_length_y, 
-                                            double &principal_point_x, 
+pcl::ImageGrabberBase::getCameraIntrinsics (double &focal_length_x,
+                                            double &focal_length_y,
+                                            double &principal_point_x,
                                             double &principal_point_y) const
 {
   focal_length_x = impl_->focal_length_x_;
@@ -1023,9 +981,9 @@ pcl::ImageGrabberBase::numFrames () const
 
 //////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::ImageGrabberBase::getCloudAt (size_t idx,
+pcl::ImageGrabberBase::getCloudAt (std::size_t idx,
                                    pcl::PCLPointCloud2 &blob,
-                                   Eigen::Vector4f &origin, 
+                                   Eigen::Vector4f &origin,
                                    Eigen::Quaternionf &orientation) const
 {
   double fx, fy, cx, cy;
@@ -1036,10 +994,7 @@ pcl::ImageGrabberBase::getCloudAt (size_t idx,
 bool
 pcl::ImageGrabberBase::atLastFrame () const
 {
-  if (impl_->cur_frame_ == numFrames () - 1)
-    return (true);
-  else
-    return (false);
+  return (impl_->cur_frame_ == numFrames () - 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1066,10 +1021,10 @@ pcl::ImageGrabberBase::getPrevDepthFileName () const
   std::string basename = boost::filesystem::basename (pathname);
   return (basename);
 }
-    
+
 /////////////////////////////////////////////////////////////////////////////////////////
 std::string
-pcl::ImageGrabberBase::getDepthFileNameAtIndex (size_t idx) const
+pcl::ImageGrabberBase::getDepthFileNameAtIndex (std::size_t idx) const
 {
   std::string pathname;
   if (impl_->pclzf_mode_)
@@ -1082,7 +1037,7 @@ pcl::ImageGrabberBase::getDepthFileNameAtIndex (size_t idx) const
 
 ////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::ImageGrabberBase::getTimestampAtIndex (size_t idx, pcl::uint64_t &timestamp) const
+pcl::ImageGrabberBase::getTimestampAtIndex (std::size_t idx, std::uint64_t &timestamp) const
 {
   std::string filename;
   if (impl_->pclzf_mode_)

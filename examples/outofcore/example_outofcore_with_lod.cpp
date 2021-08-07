@@ -37,20 +37,14 @@
  */
 
 #include <pcl/io/pcd_io.h>
-#include <pcl/console/print.h>
 
 #include <pcl/outofcore/outofcore.h>
 #include <pcl/outofcore/outofcore_impl.h>
 
-#include <pcl/outofcore/boost.h>
-
-#include<pcl/point_types.h>
-#include <pcl/PCLPointCloud2.h>
-
 using namespace pcl::outofcore;
 
-typedef OutofcoreOctreeBase<OutofcoreOctreeDiskContainer<pcl::PointXYZ>, pcl::PointXYZ> OctreeDisk;
-typedef OutofcoreOctreeBaseNode<OutofcoreOctreeDiskContainer<pcl::PointXY>, pcl::PointXYZ> OctreeDiskNode;
+using OctreeDisk = OutofcoreOctreeBase<OutofcoreOctreeDiskContainer<pcl::PointXYZ>, pcl::PointXYZ>;
+using OctreeDiskNode = OutofcoreOctreeBaseNode<OutofcoreOctreeDiskContainer<pcl::PointXY>, pcl::PointXYZ>;
 
 int main (int, char** argv)
 {

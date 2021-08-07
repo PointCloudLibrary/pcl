@@ -37,7 +37,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_tests.h>
 #include <pcl/io/pcd_io.h>
@@ -46,12 +46,11 @@
 using namespace pcl;
 using namespace pcl::test;
 using namespace pcl::io;
-using namespace std;
 
-typedef search::KdTree<PointXYZ>::Ptr KdTreePtr;
+using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 
 PointCloud<PointXYZ> cloud;
-vector<int> indices;
+pcl::Indices indices;
 KdTreePtr tree;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -59,7 +58,7 @@ TEST (PCL, SHOTLocalReferenceFrameEstimation)
 {
   PointCloud<ReferenceFrame> bunny_LRF;
 
-  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
+  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
 
   // Compute SHOT LRF
   SHOTLocalReferenceFrameEstimation<PointXYZ, ReferenceFrame> lrf_estimator;
@@ -80,8 +79,8 @@ TEST (PCL, SHOTLocalReferenceFrameEstimation)
   EXPECT_FALSE (bunny_LRF.is_dense);
 
   // NaN result for point 24
-  //EXPECT_EQ (numeric_limits<float>::max (), bunny_LRF.at (24).confidence);
-  EXPECT_TRUE (pcl_isnan (bunny_LRF.at (24).x_axis[0]));
+  //EXPECT_EQ (std::numeric_limits<float>::max (), bunny_LRF.at (24).confidence);
+  EXPECT_TRUE (std::isnan (bunny_LRF.at (24).x_axis[0]));
 
   // Expected Results
   // point 15: tangent disambiguation
@@ -144,8 +143,8 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  indices.resize (cloud.points.size ());
-  for (size_t i = 0; i < indices.size (); ++i)
+  indices.resize (cloud.size ());
+  for (std::size_t i = 0; i < indices.size (); ++i)
     indices[i] = static_cast<int> (i);
 
   tree.reset (new search::KdTree<PointXYZ> (true));

@@ -32,8 +32,14 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *  Author: Nico Blodow (blodow@in.tum.de), Suat Gedikli (gedikli@willowgarage.com)
  */
-#ifndef __PCL_SYNCHRONIZER__
-#define __PCL_SYNCHRONIZER__
+
+#pragma once
+
+#include <deque>
+#include <functional>
+#include <map>
+#include <mutex>
+#include <utility>
 
 namespace pcl
 {
@@ -48,26 +54,24 @@ namespace pcl
   template <typename T1, typename T2>
   class Synchronizer
   {
-    typedef std::pair<unsigned long, T1> T1Stamped;
-    typedef std::pair<unsigned long, T2> T2Stamped;
-    boost::mutex mutex1_;
-    boost::mutex mutex2_;
-    boost::mutex publish_mutex_;
+    using T1Stamped = std::pair<unsigned long, T1>;
+    using T2Stamped = std::pair<unsigned long, T2>;
+    std::mutex mutex1_;
+    std::mutex mutex2_;
+    std::mutex publish_mutex_;
     std::deque<T1Stamped> queueT1;
     std::deque<T2Stamped> queueT2;
 
-    typedef boost::function<void(T1, T2, unsigned long, unsigned long) > CallbackFunction;
+    using CallbackFunction = std::function<void(T1, T2, unsigned long, unsigned long)>;
 
     std::map<int, CallbackFunction> cb_;
-    int callback_counter;
+    int callback_counter = 0;
   public:
-
-    Synchronizer () : mutex1_ (), mutex2_ (), publish_mutex_ (), queueT1 (), queueT2 (), cb_ (), callback_counter (0) { };
 
     int
     addCallback (const CallbackFunction& callback)
     {
-      boost::unique_lock<boost::mutex> publish_lock (publish_mutex_);
+      std::unique_lock<std::mutex> publish_lock (publish_mutex_);
       cb_[callback_counter] = callback;
       return callback_counter++;
     }
@@ -75,7 +79,7 @@ namespace pcl
     void
     removeCallback (int i)
     {
-      boost::unique_lock<boost::mutex> publish_lock (publish_mutex_);
+      std::unique_lock<std::mutex> publish_lock (publish_mutex_);
       cb_.erase (i);
     }
 
@@ -102,14 +106,14 @@ namespace pcl
     void
     publishData ()
     {
-      boost::unique_lock<boost::mutex> lock1 (mutex1_);
-      boost::unique_lock<boost::mutex> lock2 (mutex2_);
+      std::unique_lock<std::mutex> lock1 (mutex1_);
+      std::unique_lock<std::mutex> lock2 (mutex2_);
 
-      for (typename std::map<int, CallbackFunction>::iterator cb = cb_.begin (); cb != cb_.end (); ++cb)
+      for (const auto& cb: cb_)
       {
-        if (!cb->second.empty ())
+        if (cb.second)
         {
-          cb->second.operator()(queueT1.front ().second, queueT2.front ().second, queueT1.front ().first, queueT2.front ().first);
+          cb.second.operator()(queueT1.front ().second, queueT2.front ().second, queueT1.front ().first, queueT2.front ().first);
         }
       }
 
@@ -121,15 +125,15 @@ namespace pcl
     publish ()
     {
       // only one publish call at once allowed
-      boost::unique_lock<boost::mutex> publish_lock (publish_mutex_);
+      std::unique_lock<std::mutex> publish_lock (publish_mutex_);
 
-      boost::unique_lock<boost::mutex> lock1 (mutex1_);
+      std::unique_lock<std::mutex> lock1 (mutex1_);
       if (queueT1.empty ())
         return;
       T1Stamped t1 = queueT1.front ();
       lock1.unlock ();
 
-      boost::unique_lock<boost::mutex> lock2 (mutex2_);
+      std::unique_lock<std::mutex> lock2 (mutex2_);
       if (queueT2.empty ())
         return;
       T2Stamped t2 = queueT2.front ();
@@ -173,6 +177,3 @@ namespace pcl
     }
   } ;
 } // namespace
-
-#endif // __PCL_SYNCHRONIZER__
-

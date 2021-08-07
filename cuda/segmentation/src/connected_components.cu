@@ -82,12 +82,12 @@ namespace pcl
 
 
     template <template <typename> class Storage>
-    void markInliers (const typename PointCloudAOS<Storage>::ConstPtr &input, typename Storage<int>::type &region_mask, std::vector<boost::shared_ptr<typename Storage<int>::type> > inlier_stencils)
+    void markInliers (const typename PointCloudAOS<Storage>::ConstPtr &input, typename Storage<int>::type &region_mask, std::vector<shared_ptr<typename Storage<int>::type> > inlier_stencils)
     {
       region_mask.resize (input->points.size());
       //int** stencils = new int*[inlier_stencils.size()];
       thrust::host_vector<int*> stencils_host (inlier_stencils.size ());
-      for (int i = 0; i < inlier_stencils.size (); ++i)
+      for (std::size_t i = 0; i < inlier_stencils.size (); ++i)
         stencils_host[i] = thrust::raw_pointer_cast(&(*inlier_stencils[i])[0]);
         //stencils_host[i] = thrust::raw_pointer_cast<int> (&(*inlier_stencils[i])[0]);
 
@@ -175,8 +175,8 @@ namespace pcl
     }
 
 
-    template PCL_EXPORTS void markInliers<Device> (const typename PointCloudAOS<Device>::ConstPtr &input, Device<int>::type &region_mask, std::vector<boost::shared_ptr<Device<int>::type> > inlier_stencils);
-    template PCL_EXPORTS void markInliers<Host>   (const typename PointCloudAOS<Host>  ::ConstPtr &input, Host<int>::type &region_mask, std::vector<boost::shared_ptr<Host<int>::type> > inlier_stencils);
+    template PCL_EXPORTS void markInliers<Device> (const typename PointCloudAOS<Device>::ConstPtr &input, Device<int>::type &region_mask, std::vector<shared_ptr<Device<int>::type> > inlier_stencils);
+    template PCL_EXPORTS void markInliers<Host>   (const typename PointCloudAOS<Host>  ::ConstPtr &input, Host<int>::type &region_mask, std::vector<shared_ptr<Host<int>::type> > inlier_stencils);
 
 
     template PCL_EXPORTS void createIndicesImage<Device,

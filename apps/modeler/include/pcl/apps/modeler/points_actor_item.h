@@ -33,49 +33,48 @@
  *
  *
  */
-#ifndef PCL_MODELER_POINTS_ACTOR_ITEM_H_
-#define PCL_MODELER_POINTS_ACTOR_ITEM_H_
+
+#pragma once
 
 #include <pcl/apps/modeler/channel_actor_item.h>
 #include <pcl/visualization/point_cloud_handlers.h>
 
 class vtkIdTypeArray;
 
-namespace pcl
-{
-  namespace modeler
+namespace pcl {
+namespace modeler {
+
+class PointsActorItem : public ChannelActorItem {
+public:
+  PointsActorItem(QTreeWidgetItem* parent,
+                  const CloudMesh::Ptr& cloud_mesh,
+                  const vtkSmartPointer<vtkRenderWindow>& render_window);
+  ~PointsActorItem();
+
+  std::string
+  getItemName() const override
   {
-    class PointsActorItem : public ChannelActorItem
-    {
-      public:
-        PointsActorItem(QTreeWidgetItem* parent,
-                        const boost::shared_ptr<CloudMesh>& cloud_mesh,
-                        const vtkSmartPointer<vtkRenderWindow>& render_window);
-        ~PointsActorItem ();
-
-        virtual std::string
-        getItemName() const {return "Points Actor Item";}
-
-      protected:
-        virtual void
-        initImpl();
-
-        virtual void
-        updateImpl();
-
-        virtual void
-        prepareContextMenu(QMenu* menu) const;
-
-        virtual void
-        prepareProperties(ParameterDialog* parameter_dialog);
-
-        virtual void
-        setProperties();
-
-      private:
-
-    };
+    return "Points Actor Item";
   }
-}
 
-#endif // PCL_MODELER_POINTS_ACTOR_ITEM_H_
+protected:
+  void
+  initImpl() override;
+
+  void
+  updateImpl() override;
+
+  void
+  prepareContextMenu(QMenu* menu) const override;
+
+  void
+  prepareProperties(ParameterDialog* parameter_dialog) override;
+
+  void
+  setProperties() override;
+
+private:
+};
+
+} // namespace modeler
+} // namespace pcl

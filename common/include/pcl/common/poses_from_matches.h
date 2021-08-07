@@ -35,11 +35,12 @@
  *
  */
 
-#ifndef PCL_POSES_FROM_MATCHES_H_
-#define PCL_POSES_FROM_MATCHES_H_
+#pragma once
 
-#include <pcl/pcl_macros.h>
 #include <pcl/correspondence.h>
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
+#include <pcl/types.h>
 
 namespace pcl
 {
@@ -51,43 +52,30 @@ namespace pcl
   class PCL_EXPORTS PosesFromMatches
   {
     public:
-      // =====CONSTRUCTOR & DESTRUCTOR=====
-      //! Constructor
-      PosesFromMatches();
-      //! Destructor
-      ~PosesFromMatches();
-      
       // =====STRUCTS=====
       //! Parameters used in this class
       struct PCL_EXPORTS Parameters
       {
-        Parameters() : max_correspondence_distance_error(0.2f) {}
-        float max_correspondence_distance_error;  // As a fraction
+        float max_correspondence_distance_error = 0.2f;  // As a fraction
       };
 
       //! A result of the pose estimation process
       struct PoseEstimate
       {
-        PoseEstimate () : 
-          transformation (Eigen::Affine3f::Identity ()),
-          score (0),
-          correspondence_indices (0) 
-        {}
-
-        Eigen::Affine3f transformation;   //!< The estimated transformation between the two coordinate systems
-        float score;                         //!< An estimate in [0,1], how good the estimated pose is 
-        std::vector<int> correspondence_indices;  //!< The indices of the used correspondences
+        Eigen::Affine3f transformation = Eigen::Affine3f::Identity ();   //!< The estimated transformation between the two coordinate systems
+        float score = 0;                         //!< An estimate in [0,1], how good the estimated pose is 
+        Indices correspondence_indices;  //!< The indices of the used correspondences
 
         struct IsBetter 
         {
           bool operator()(const PoseEstimate& pe1, const PoseEstimate& pe2) const { return pe1.score>pe2.score;}
         };
         public:
-          EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+          PCL_MAKE_ALIGNED_OPERATOR_NEW
       };
       
       // =====TYPEDEFS=====
-      typedef std::vector<PoseEstimate, Eigen::aligned_allocator<PoseEstimate> > PoseEstimatesVector;
+      using PoseEstimatesVector = std::vector<PoseEstimate, Eigen::aligned_allocator<PoseEstimate> >;
 
       
       // =====STATIC METHODS=====
@@ -128,5 +116,3 @@ namespace pcl
   };
 
 }  // end namespace pcl
-
-#endif  //#ifndef PCL_POSES_FROM_MATCHES_H_

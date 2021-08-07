@@ -36,12 +36,7 @@
  *
  */
 
-#include <gtest/gtest.h>
-#include <pcl/common/common.h>
-#include <pcl/common/distances.h>
-#include <pcl/common/intersections.h>
-#include <pcl/common/io.h>
-#include <pcl/common/eigen.h>
+#include <pcl/test/gtest.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/io/pcd_io.h>
@@ -58,7 +53,7 @@ pcl::PCLPointCloud2 cloud_blob;
 TEST (PCL, compute3DCentroidFloat)
 {
   pcl::PointIndices pindices;
-  std::vector<int> indices;
+  Indices indices;
   PointXYZ point;
   PointCloud<PointXYZ> cloud;
   Eigen::Vector4f centroid;
@@ -164,7 +159,7 @@ TEST (PCL, compute3DCentroidFloat)
 TEST (PCL, compute3DCentroidDouble)
 {
   pcl::PointIndices pindices;
-  std::vector<int> indices;
+  Indices indices;
   PointXYZ point;
   PointCloud<PointXYZ> cloud;
   Eigen::Vector4d centroid;
@@ -269,7 +264,7 @@ TEST (PCL, compute3DCentroidDouble)
 TEST (PCL, compute3DCentroidCloudIterator)
 {
   pcl::PointIndices pindices;
-  std::vector<int> indices;
+  Indices indices;
   PointXYZ point;
   PointCloud<PointXYZ> cloud;
   Eigen::Vector4f centroid_f;
@@ -333,7 +328,7 @@ TEST (PCL, computeCovarianceMatrix)
 {
   PointCloud<PointXYZ> cloud;
   PointXYZ point;
-  std::vector <int> indices;
+  Indices indices;
   Eigen::Vector4f centroid;
   Eigen::Matrix3f covariance_matrix;
 
@@ -449,7 +444,7 @@ TEST (PCL, computeCovarianceMatrixNormalized)
 {
   PointCloud<PointXYZ> cloud;
   PointXYZ point;
-  std::vector <int> indices;
+  Indices indices;
   Eigen::Vector4f centroid;
   Eigen::Matrix3f covariance_matrix;
 
@@ -567,7 +562,7 @@ TEST (PCL, computeDemeanedCovariance)
 {
   PointCloud<PointXYZ> cloud;
   PointXYZ point;
-  std::vector <int> indices;
+  Indices indices;
   Eigen::Matrix3f covariance_matrix;
 
   // test empty cloud which is dense
@@ -673,7 +668,7 @@ TEST (PCL, computeMeanAndCovariance)
 {
   PointCloud<PointXYZ> cloud;
   PointXYZ point;
-  std::vector <int> indices;
+  Indices indices;
   Eigen::Matrix3f covariance_matrix;
   Eigen::Vector4f centroid;
 
@@ -813,6 +808,7 @@ TEST (PCL, CentroidPoint)
     centroid.get (c);
     EXPECT_XYZ_EQ (PointXYZ (100, 100, 100), c);
   }
+
   // Single point
   {
     CentroidPoint<PointXYZ> centroid;
@@ -821,6 +817,7 @@ TEST (PCL, CentroidPoint)
     centroid.get (c);
     EXPECT_XYZ_EQ (p1, c);
   }
+
   // Multiple points
   {
     CentroidPoint<PointXYZ> centroid;
@@ -834,12 +831,36 @@ TEST (PCL, CentroidPoint)
 
   // Retrieve centroid into a different point type
   {
-    CentroidPoint<PointXYZ> centroid;
+    PointNormal p1; p1.getVector3fMap () << 1, 2, 3; p1.getNormalVector3fMap() << 0, 1, 0;
+    CentroidPoint<PointNormal> centroid;
     centroid.add (p1);
-    PointXYZRGB c; c.rgba = 0x00FFFFFF;
-    centroid.get (c);
-    EXPECT_XYZ_EQ (p1, c);
-    EXPECT_EQ (0x00FFFFFF, c.rgba);
+    // Retrieve into a point type that is a "superset" of the original
+    {
+      PointXYZRGBNormal c; c.rgba = 0x00FFFFFF;
+      centroid.get (c);
+      EXPECT_XYZ_EQ (p1, c);
+      EXPECT_NORMAL_EQ (p1, c);
+      EXPECT_EQ (0x00FFFFFF, c.rgba); // unchanged
+    }
+    // Retrieve into a point type that is a "subset" of the original
+    {
+      Normal c;
+      centroid.get (c);
+      EXPECT_NORMAL_EQ (p1, c);
+    }
+    // Retrieve into a point type that partially "overlaps" with the original
+    {
+      PointXYZRGB c; c.rgba = 0x00FFFFFF;
+      centroid.get (c);
+      EXPECT_XYZ_EQ (p1, c);
+      EXPECT_EQ (0x00FFFFFF, c.rgba); // unchanged
+    }
+    // Retrieve into a point type that does not "overlap" with the original
+    {
+      RGB c; c.rgba = 0x00FFFFFF;
+      centroid.get (c);
+      EXPECT_EQ (0x00FFFFFF, c.rgba); // unchanged
+    }
   }
 
   // Centroid with XYZ and RGB
@@ -857,7 +878,7 @@ TEST (PCL, CentroidPoint)
     EXPECT_EQ (0xFF111111, c.rgba);
   }
 
-  // Centroid with normal and curavture
+  // Centroid with normal and curvature
   {
     Normal np1; np1.getNormalVector4fMap () << 1, 0, 0, 0; np1.curvature = 0.2;
     Normal np2; np2.getNormalVector4fMap () << -1, 0, 0, 0; np2.curvature = 0.1;
@@ -905,7 +926,7 @@ TEST (PCL, CentroidPoint)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, computeCentroid)
 {
-  std::vector<int> indices;
+  Indices indices;
   PointXYZI point;
   PointCloud<PointXYZI> cloud;
   PointXYZINormal centroid;
@@ -1031,7 +1052,7 @@ TEST (PCL, demeanPointCloud)
   EXPECT_XYZ_NEAR (cloud_demean[0], PointXYZ (0.034503, 0.010837, 0.013447), 1e-4);
   EXPECT_XYZ_NEAR (cloud_demean[cloud_demean.size () - 1], PointXYZ (-0.048849, 0.072507, -0.071702), 1e-4);
 
-  std::vector<int> indices (cloud.size ());
+  Indices indices (cloud.size ());
   for (int i = 0; i < static_cast<int> (indices.size ()); ++i) { indices[i] = i; }
 
   // Check standard demean w/ indices

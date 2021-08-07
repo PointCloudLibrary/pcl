@@ -37,7 +37,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/cvfh.h>
@@ -46,13 +46,12 @@
 
 using namespace pcl;
 using namespace pcl::io;
-using namespace std;
 
-typedef search::KdTree<PointXYZ>::Ptr KdTreePtr;
-typedef PointCloud<PointXYZ>::Ptr CloudPtr;
+using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
+using CloudPtr = PointCloud<PointXYZ>::Ptr;
 
 PointCloud<PointXYZ> cloud;
-vector<int> indices;
+pcl::Indices indices;
 KdTreePtr tree;
 
 CloudPtr cloud_milk;
@@ -67,7 +66,7 @@ TEST (PCL, CVFHEstimation)
   PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
   // set parameters
   n.setInputCloud (cloud.makeShared ());
-  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
+  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
   n.setIndices (indicesptr);
   n.setSearchMethod (tree);
   n.setKSearch (10); // Use 10 nearest neighbors to estimate the normals
@@ -86,7 +85,7 @@ TEST (PCL, CVFHEstimation)
 
   // estimate
   cvfh.compute (*vfhs);
-  EXPECT_EQ (static_cast<int>(vfhs->points.size ()), 1);
+  EXPECT_EQ (static_cast<int>(vfhs->size ()), 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -116,7 +115,7 @@ TEST (PCL, CVFHEstimationMilk)
 
   // estimate
   cvfh.compute (*vfhs);
-  EXPECT_EQ (static_cast<int>(vfhs->points.size ()), 2);
+  EXPECT_EQ (static_cast<int>(vfhs->size ()), 2);
 }
 
 /* ---[ */
@@ -142,8 +141,8 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  indices.resize (cloud.points.size ());
-  for (size_t i = 0; i < indices.size (); ++i)
+  indices.resize (cloud.size ());
+  for (std::size_t i = 0; i < indices.size (); ++i)
   {
     indices[i] = static_cast<int>(i);
   }

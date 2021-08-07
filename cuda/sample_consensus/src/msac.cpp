@@ -157,15 +157,15 @@ pcl_cuda::MultiRandomSampleConsensus<Storage>::computeModel (int debug_verbosity
         n_best_inliers_count = n_inliers_count;
         good_coeff = cur_iteration;
 
-        // Compute the k parameter (k=log(z)/log(1-w^n))
+        // Compute the k parameter (k=std::log(z)/std::log(1-w^n))
         float w = (float)((float)n_best_inliers_count / (float)nr_remaining_points);
-        float p_no_outliers = 1.0f - pow (w, 1.0f);
+        float p_no_outliers = 1.0f - w;
         p_no_outliers = (std::max) (std::numeric_limits<float>::epsilon (), p_no_outliers);       // Avoid division by -Inf
         p_no_outliers = (std::min) (1.0f - std::numeric_limits<float>::epsilon (), p_no_outliers);   // Avoid division by 0.
         if (p_no_outliers == 1.0f)
           k++;
         else
-          k = log (1.0f - probability_) / log (p_no_outliers);
+          k = std::log (1.0f - probability_) / std::log (p_no_outliers);
       }
 
       //fprintf (stderr, "[pcl_cuda::MultiRandomSampleConsensus::computeModel] Trial %d out of %f: %d inliers (best is: %d so far).\n",
@@ -184,18 +184,18 @@ pcl_cuda::MultiRandomSampleConsensus<Storage>::computeModel (int debug_verbosity
         //if (nr_remaining_points != nr_remaining_points_before_delete)
         {
 
-          // Compute the k parameter (k=log(z)/log(1-w^n))
+          // Compute the k parameter (k=std::log(z)/std::log(1-w^n))
           float w = (float)((float)min_nr_in_shape / (float)nr_remaining_points);
-          float p_no_outliers = 1.0f - pow (w, 1.0f);
+          float p_no_outliers = 1.0f - w;
           p_no_outliers = (std::max) (std::numeric_limits<float>::epsilon (), p_no_outliers);       // Avoid division by -Inf
           p_no_outliers = (std::min) (1.0f - std::numeric_limits<float>::epsilon (), p_no_outliers);   // Avoid division by 0.
           if (p_no_outliers != 1.0f)
           {
-            if (log (1.0f - probability_) / log (p_no_outliers) < valid_iterations) // we won't find a model with min_nr_in_shape points anymore...
+            if (std::log (1.0f - probability_) / std::log (p_no_outliers) < valid_iterations) // we won't find a model with min_nr_in_shape points anymore...
               find_no_better = true;
             else
               if (debug_verbosity_level > 1)
-                std::cerr << "------->" << log (1.0f - probability_) / log (p_no_outliers) << "  -vs-  " << valid_iterations << std::endl;
+                std::cerr << "------->" << std::log (1.0f - probability_) / std::log (p_no_outliers) << "  -vs-  " << valid_iterations << std::endl;
           }
         }
 
@@ -227,8 +227,6 @@ pcl_cuda::MultiRandomSampleConsensus<Storage>::computeModel (int debug_verbosity
         n_best_inliers_count = 0;
         k = max_batches_ * iterations_per_batch_;
         // go through all other models, invalidating those whose samples are inliers to the best one
-        int counter_invalid = 0;
-        int counter_inliers = 0;
 
         //for (unsigned int b = 0; b <= cur_batch; b++)
         unsigned int b = cur_batch;  
@@ -240,7 +238,6 @@ pcl_cuda::MultiRandomSampleConsensus<Storage>::computeModel (int debug_verbosity
           if (!hypothesis_valid[b * iterations_per_batch_ + j])
           {
             //std::cerr << "model " << j << " in batch " << b <<" is an invalid model" << std::endl;
-            counter_invalid ++;
             continue;
           }
           if ((b*iterations_per_batch_ + j) == extracted_model)
@@ -252,7 +249,6 @@ pcl_cuda::MultiRandomSampleConsensus<Storage>::computeModel (int debug_verbosity
           if (sac_model_->isSampleInlier (hypotheses_inliers_stencils[extracted_model], h_samples[b], j))
           {
             //std::cerr << "sample point for model " << j << " in batch " << b <<" is inlier to best model " << extracted_model << std::endl;
-            counter_inliers ++;
             hypothesis_valid[b * iterations_per_batch_ + j] = false;
             hypotheses_inlier_count[b*iterations_per_batch_ + j] = 0;
             if (j <= i)
@@ -278,20 +274,19 @@ pcl_cuda::MultiRandomSampleConsensus<Storage>::computeModel (int debug_verbosity
               n_best_inliers_count = n_inliers_count;
               good_coeff = b * iterations_per_batch_ + j;
 
-              // Compute the k parameter (k=log(z)/log(1-w^n))
+              // Compute the k parameter (k=std::log(z)/std::log(1-w^n))
               float w = (float)((float)n_best_inliers_count / (float)nr_remaining_points);
-              float p_no_outliers = 1.0f - pow (w, 1.0f);
+              float p_no_outliers = 1.0f - w;
               p_no_outliers = (std::max) (std::numeric_limits<float>::epsilon (), p_no_outliers);       // Avoid division by -Inf
               p_no_outliers = (std::min) (1.0f - std::numeric_limits<float>::epsilon (), p_no_outliers);   // Avoid division by 0.
               if (p_no_outliers == 1.0f)
                 k++;
               else
-                k = log (1.0f - probability_) / log (p_no_outliers);
+                k = std::log (1.0f - probability_) / std::log (p_no_outliers);
             }
             
           }
         }
-        //std::cerr << "invalid models: " << counter_invalid << " , inlier models: " << counter_inliers << std::endl;
       }
       }
     }

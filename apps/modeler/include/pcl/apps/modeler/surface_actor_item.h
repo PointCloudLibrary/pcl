@@ -33,56 +33,57 @@
  *
  *
  */
-#ifndef PCL_MODELER_SURFACE_ACTOR_ITEM_H_
-#define PCL_MODELER_SURFACE_ACTOR_ITEM_H_
+
+#pragma once
 
 #include <pcl/apps/modeler/channel_actor_item.h>
 #include <pcl/visualization/point_cloud_handlers.h>
 
 class vtkIdTypeArray;
 
-namespace pcl
-{
-  namespace modeler
+namespace pcl {
+namespace modeler {
+
+class SurfaceActorItem : public ChannelActorItem {
+public:
+  using GeometryHandler =
+      pcl::visualization::PointCloudGeometryHandler<pcl::PointSurfel>;
+  using GeometryHandlerPtr = GeometryHandler::Ptr;
+  using GeometryHandlerConstPtr = GeometryHandler::ConstPtr;
+
+  using ColorHandler = pcl::visualization::PointCloudColorHandler<pcl::PointSurfel>;
+  using ColorHandlerPtr = ColorHandler::Ptr;
+  using ColorHandlerConstPtr = ColorHandler::ConstPtr;
+
+  SurfaceActorItem(QTreeWidgetItem* parent,
+                   const CloudMesh::Ptr& cloud_mesh,
+                   const vtkSmartPointer<vtkRenderWindow>& render_window);
+  ~SurfaceActorItem();
+
+  std::string
+  getItemName() const override
   {
-    class SurfaceActorItem : public ChannelActorItem
-    {
-      public:
-        typedef pcl::visualization::PointCloudGeometryHandler<pcl::PointSurfel> GeometryHandler;
-        typedef GeometryHandler::Ptr GeometryHandlerPtr;
-        typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
-
-        typedef pcl::visualization::PointCloudColorHandler<pcl::PointSurfel> ColorHandler;
-        typedef ColorHandler::Ptr ColorHandlerPtr;
-        typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
-
-        SurfaceActorItem(QTreeWidgetItem* parent,
-                        const boost::shared_ptr<CloudMesh>& cloud_mesh,
-                        const vtkSmartPointer<vtkRenderWindow>& render_window);
-        ~SurfaceActorItem ();
-
-        virtual std::string
-        getItemName() const {return "Points Actor Item";}
-
-      protected:
-        virtual void
-        initImpl();
-
-        virtual void
-        updateImpl();
-
-        virtual void
-        prepareContextMenu(QMenu* menu) const;
-
-        virtual void
-        prepareProperties(ParameterDialog* parameter_dialog);
-
-        virtual void
-        setProperties();
-
-      private:
-    };
+    return "Points Actor Item";
   }
-}
 
-#endif // PCL_MODELER_SURFACE_ACTOR_ITEM_H_
+protected:
+  void
+  initImpl() override;
+
+  void
+  updateImpl() override;
+
+  void
+  prepareContextMenu(QMenu* menu) const override;
+
+  void
+  prepareProperties(ParameterDialog* parameter_dialog) override;
+
+  void
+  setProperties() override;
+
+private:
+};
+
+} // namespace modeler
+} // namespace pcl

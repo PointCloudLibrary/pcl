@@ -97,7 +97,7 @@ struct HaarFeature64
       *rectHeight = tmpRect.height;
     }
 
-    __device__ __host__ Ncv32f getWeight(void)
+    __device__ __host__ Ncv32f getWeight()
     {
       return *(Ncv32f*)(&this->_ui2.y);
     }
@@ -138,27 +138,27 @@ struct HaarFeatureDescriptor32
       return NCV_SUCCESS;
     }
 
-    __device__ __host__ NcvBool isTilted(void)
+    __device__ __host__ NcvBool isTilted() const
     {
       return (this->desc & HaarFeatureDescriptor32_Interpret_MaskFlagTilted) != 0;
     }
 
-    __device__ __host__ NcvBool isLeftNodeLeaf(void)
+    __device__ __host__ NcvBool isLeftNodeLeaf() const
     {
       return (this->desc & HaarFeatureDescriptor32_Interpret_MaskFlagLeftNodeLeaf) != 0;
     }
 
-    __device__ __host__ NcvBool isRightNodeLeaf(void)
+    __device__ __host__ NcvBool isRightNodeLeaf() const
     {
       return (this->desc & HaarFeatureDescriptor32_Interpret_MaskFlagRightNodeLeaf) != 0;
     }
 
-    __device__ __host__ Ncv32u getNumFeatures(void)
+    __device__ __host__ Ncv32u getNumFeatures() const
     {
       return (this->desc >> HaarFeatureDescriptor32_NumFeatures_Shift) & HaarFeatureDescriptor32_CreateCheck_MaxNumFeatures;
     }
 
-    __device__ __host__ Ncv32u getFeaturesOffset(void)
+    __device__ __host__ Ncv32u getFeaturesOffset() const
     {
       return this->desc & HaarFeatureDescriptor32_CreateCheck_MaxFeatureOffset;
     }
@@ -180,17 +180,14 @@ struct HaarClassifierNodeDescriptor32
       return (NCV_SUCCESS);
     }
 
-    __host__ Ncv32f getLeafValueHost(void)
+    __host__ Ncv32f getLeafValueHost()
     {
       return (*(Ncv32f *)&this->_ui1.x);
     }
 
-    __host__ bool isLeaf()                                  // TODO: check this hack don't know if is correct
+    __host__ bool isLeaf() const                                  // TODO: check this hack don't know if is correct
     {
-      if( _ui1.x == 0)
-        return (false);
-      else
-        return (true);
+      return ( _ui1.x != 0);
     }
 
 #ifdef __CUDACC__
@@ -200,7 +197,7 @@ struct HaarClassifierNodeDescriptor32
     }
 #endif
 
-    __device__ __host__ Ncv32u getNextNodeOffset(void)
+    __device__ __host__ Ncv32u getNextNodeOffset()
     {
       return (this->_ui1.x);
     }
@@ -234,22 +231,22 @@ struct HaarClassifierNode128
       return NCV_SUCCESS;
     }
 
-    __host__ __device__ HaarFeatureDescriptor32 getFeatureDesc(void)
+    __host__ __device__ HaarFeatureDescriptor32 getFeatureDesc()
     {
       return *(HaarFeatureDescriptor32 *)&this->_ui4.x;
     }
 
-    __host__ __device__ Ncv32f getThreshold(void)
+    __host__ __device__ Ncv32f getThreshold()
     {
       return *(Ncv32f*)&this->_ui4.y;
     }
 
-    __host__ __device__ HaarClassifierNodeDescriptor32 getLeftNodeDesc(void)
+    __host__ __device__ HaarClassifierNodeDescriptor32 getLeftNodeDesc()
     {
       return *(HaarClassifierNodeDescriptor32 *)&this->_ui4.z;
     }
 
-    __host__ __device__ HaarClassifierNodeDescriptor32 getRightNodeDesc(void)
+    __host__ __device__ HaarClassifierNodeDescriptor32 getRightNodeDesc()
     {
       return *(HaarClassifierNodeDescriptor32 *)&this->_ui4.w;
     }
@@ -289,17 +286,17 @@ struct HaarStage64
       return NCV_SUCCESS;
     }
 
-    __host__ __device__ Ncv32f getStageThreshold(void)
+    __host__ __device__ Ncv32f getStageThreshold()
     {
       return *(Ncv32f*)&this->_ui2.x;
     }
 
-    __host__ __device__ Ncv32u getStartClassifierRootNodeOffset(void)
+    __host__ __device__ Ncv32u getStartClassifierRootNodeOffset() const
     {
       return (this->_ui2.y >> HaarStage64_Interpret_ShiftRootNodeOffset);
     }
 
-    __host__ __device__ Ncv32u getNumClassifierRootNodes(void)
+    __host__ __device__ Ncv32u getNumClassifierRootNodes() const
     {
       return (this->_ui2.y & HaarStage64_Interpret_MaskRootNodes);
     }

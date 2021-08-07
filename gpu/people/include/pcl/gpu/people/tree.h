@@ -37,11 +37,10 @@
  * @authors: Cedric Cagniart, Koen Buys
  */
 
-#ifndef PCL_GPU_PEOPLE_TREE_H_
-#define PCL_GPU_PEOPLE_TREE_H_
+#pragma once
 
 #include "label_common.h"
-#include <boost/cstdint.hpp> 
+#include <cstdint>
 #include <iostream>
 #include <vector>
 
@@ -64,27 +63,27 @@ namespace pcl
         // ###############################################
         // base data types used in the structures
 
-        using boost::uint8_t;
-        using boost::int16_t;
-        using boost::uint16_t;
-        using boost::int32_t;
-        using boost::uint32_t;
+        using std::uint8_t;
+        using std::int16_t;
+        using std::uint16_t;
+        using std::int32_t;
+        using std::uint32_t;
 
-        typedef int16_t Attrib;
-        typedef uint8_t Label;
-        typedef uint32_t Label32;
-        typedef uint16_t Depth;
+        using Attrib = std::int16_t;
+        using Label = std::uint8_t;
+        using Label32 = std::uint32_t;
+        using Depth = std::uint16_t;
 
         struct AttribLocation
         {
           inline AttribLocation () {du1=dv1=du2=dv2=0;}
-          inline AttribLocation (int u1, int v1, int u2, int v2): du1 (static_cast<int16_t>(u1)),
-                                                                  dv1 (static_cast<int16_t>(v1)),
-                                                                  du2 (static_cast<int16_t>(u2)),
-                                                                  dv2 (static_cast<int16_t>(v2))
+          inline AttribLocation (int u1, int v1, int u2, int v2): du1 (static_cast<std::int16_t>(u1)),
+                                                                  dv1 (static_cast<std::int16_t>(v1)),
+                                                                  du2 (static_cast<std::int16_t>(u2)),
+                                                                  dv2 (static_cast<std::int16_t>(v2))
           {}
 
-          int16_t du1,dv1,du2,dv2;
+          std::int16_t du1,dv1,du2,dv2;
         };
 
         ////////////////////////////////////////////////
@@ -131,10 +130,9 @@ namespace pcl
           */
         int loadTree( std::istream& is, std::vector<Node>&  tree, std::vector<Label>& leaves );
         int loadTree( const std::string&  filename, std::vector<Node>&  tree, std::vector<Label>& leaves );
-        void runThroughTree( int maxDepth, const std::vector<Node>& tree, const std::vector<Label>& leaves, int W, int H, const uint16_t* dmap, Label* lmap );
+        void runThroughTree( int maxDepth, const std::vector<Node>& tree, const std::vector<Label>& leaves, int W, int H, const std::uint16_t* dmap, Label* lmap );
 
       } // end namespace Trees
     } // end namespace people
   } // end namespace gpu
 } // end namespace pcl
-#endif  // PCL_GPU_PEOPLE_TREES_TREE_H_

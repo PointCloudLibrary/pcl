@@ -136,13 +136,13 @@ Then we iterate through the multimap, creating a point cloud of the centroids of
 
 .. literalinclude:: sources/supervoxel_clustering/supervoxel_clustering.cpp
    :language: cpp
-   :lines: 110-125
+   :lines: 110-123
 
 Then we create a string label for the supervoxel graph we will draw and call ``addSupervoxelConnectionsToViewer``, a drawing helper function implemented later in the tutorial code. The details of ``addSupervoxelConnectionsToViewer`` are beyond the scope of this tutorial, but all it does is draw a star polygon mesh of the supervoxel centroid to all of its neighbors centroids. We need to do this like this because adding individual lines using the ``addLine`` functionality of ``pcl_visualizer`` is too slow for large numbers of lines.
 
 .. literalinclude:: sources/supervoxel_clustering/supervoxel_clustering.cpp
    :language: cpp
-   :lines: 126-132
+   :lines: 124-130
 
 This results in a supervoxel graph that looks like this for seed size of 0.1m (top) and 0.05m (middle). The bottom is the original cloud, given for reference.:
 

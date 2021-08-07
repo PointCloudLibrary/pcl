@@ -1,4 +1,3 @@
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/project_model.h>
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
 #include <pcl/apps/cloud_composer/commands.h>
@@ -7,7 +6,18 @@
 #include <pcl/apps/cloud_composer/cloud_view.h>
 #include <pcl/apps/cloud_composer/merge_selection.h>
 #include <pcl/apps/cloud_composer/transform_clouds.h>
+#include <pcl/memory.h>
 
+#include <QAction>
+#include <QFileDialog>
+#include <QItemSelectionModel>
+#include <QMessageBox>
+#include <QThread>
+
+#include <vtkSmartPointer.h>
+#include <vtkImageData.h>
+#include <vtkImageReader2Factory.h>
+#include <vtkImageReader2.h>
 
 pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
   : QStandardItemModel (parent)
@@ -49,7 +59,7 @@ pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
 }
 
 pcl::cloud_composer::ProjectModel::ProjectModel (const ProjectModel&)
-  : QStandardItemModel ()
+: QStandardItemModel ()
 {
 }
 
@@ -64,11 +74,11 @@ pcl::cloud_composer::ProjectModel::ProjectModel (QString project_name, QObject* 
 : QStandardItemModel (parent)
 {
   selection_model_ = new QItemSelectionModel(this);
-  setName (project_name);
+  setName (std::move(project_name));
 }
 
 void 
-pcl::cloud_composer::ProjectModel::setName (QString new_name)
+pcl::cloud_composer::ProjectModel::setName (const QString& new_name)
 { 
   //If it hasn't been set yet
   if (!horizontalHeaderItem (0))
@@ -90,7 +100,7 @@ pcl::cloud_composer::ProjectModel::setCloudView (CloudView* view)
 }
 
 void
-pcl::cloud_composer::ProjectModel::setPointSelection (boost::shared_ptr<SelectionEvent> selected_event)
+pcl::cloud_composer::ProjectModel::setPointSelection (const std::shared_ptr<SelectionEvent>& selected_event)
 {
   selection_event_ = selected_event;
   //Get all the items in this project that are clouds
@@ -106,9 +116,9 @@ pcl::cloud_composer::ProjectModel::setPointSelection (boost::shared_ptr<Selectio
   // Find all indices in the selected points which are present in the clouds
   foreach (CloudItem* cloud_item, project_clouds)
   {
-    pcl::PointIndices::Ptr found_indices = boost::make_shared<pcl::PointIndices>();
+    pcl::PointIndices::Ptr found_indices = pcl::make_shared<pcl::PointIndices>();
     selected_event->findIndicesInItem (cloud_item, found_indices);
-    if (found_indices->indices.size () > 0)
+    if (!found_indices->indices.empty ())
     {
       qDebug () << "Found "<<found_indices->indices.size ()<<" points in "<<cloud_item->text ();
       selected_item_index_map_. insert (cloud_item, found_indices);
@@ -120,7 +130,7 @@ pcl::cloud_composer::ProjectModel::setPointSelection (boost::shared_ptr<Selectio
 }
 
 void
-pcl::cloud_composer::ProjectModel::manipulateClouds (boost::shared_ptr<ManipulationEvent> manip_event)
+pcl::cloud_composer::ProjectModel::manipulateClouds (const std::shared_ptr<ManipulationEvent>& manip_event)
 {
   
   //Get all the items in this project that are clouds
@@ -158,18 +168,15 @@ void
 pcl::cloud_composer::ProjectModel::insertNewCloudFromFile ()
 {
   qDebug () << "Inserting cloud from file...";
-  QString filename = QFileDialog::getOpenFileName (0,tr ("Select cloud to open"), last_directory_.absolutePath (), tr ("PointCloud(*.pcd)"));
+  QString filename = QFileDialog::getOpenFileName (nullptr,tr ("Select cloud to open"), last_directory_.absolutePath (), tr ("PointCloud(*.pcd)"));
   if ( filename.isNull ())
   {
     qWarning () << "No file selected, no cloud loaded";
     return;
   }
-  else
-  {
-    QFileInfo file_info (filename);
-    last_directory_ = file_info.absoluteDir ();
-  }
-    
+  QFileInfo file_info (filename);
+  last_directory_ = file_info.absoluteDir ();
+
   pcl::PCLPointCloud2::Ptr cloud_blob (new pcl::PCLPointCloud2);
   Eigen::Vector4f origin;
   Eigen::Quaternionf orientation;
@@ -187,20 +194,19 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromFile ()
     return;
   }
   
-  QFileInfo file_info (filename);
   QString short_filename = file_info.baseName ();
   //Check if this name already exists in the project - if so, append digit
   QList <QStandardItem*> items = findItems (short_filename);
-  if (items.size () > 0)
+  if (!items.empty ())
   {
     int k = 2;
     items = findItems (short_filename+ tr ("-%1").arg (k));
-    while (items.size () > 0)
+    while (!items.empty ())
     {  
       ++k;
       items = findItems (short_filename+ tr ("-%1").arg (k));
     }
-    short_filename = short_filename+ tr ("-%1").arg (k);
+    short_filename += tr ("-%1").arg (k);
   }
   CloudItem* new_item = new CloudItem (short_filename, cloud_blob, origin, orientation, true);
    
@@ -212,34 +218,31 @@ void
 pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
 {
   qDebug () << "Inserting cloud from RGB and Depth files...";
-  QString rgb_filename = QFileDialog::getOpenFileName (0,tr ("Select rgb image file to open"), last_directory_.absolutePath (), tr ("Images(*.png *.bmp *.tif *.ppm)"));
+  QString rgb_filename = QFileDialog::getOpenFileName (nullptr,tr ("Select rgb image file to open"), last_directory_.absolutePath (), tr ("Images(*.png *.bmp *.tif *.ppm)"));
   QString depth_filename;
   if ( rgb_filename.isNull ())
   {
     qWarning () << "No file selected, no cloud loaded";
     return;
   }
-  else
+  QFileInfo file_info (rgb_filename);
+  last_directory_ = file_info.absoluteDir ();
+  QString base_name = file_info.baseName ();
+  QStringList depth_filter;
+  depth_filter << base_name.split("_").at(0) + "_depth.*";
+  last_directory_.setNameFilters (depth_filter);
+  QFileInfoList depth_info_list = last_directory_.entryInfoList ();
+  if (depth_info_list.empty ())
   {
-    QFileInfo file_info (rgb_filename);
-    last_directory_ = file_info.absoluteDir ();
-    QString base_name = file_info.baseName ();
-    QStringList depth_filter;
-    depth_filter << base_name.split("_").at(0) + "_depth.*";
-    last_directory_.setNameFilters (depth_filter);
-    QFileInfoList depth_info_list = last_directory_.entryInfoList ();
-    if (depth_info_list.size () == 0)
-    {
-      qCritical () << "Could not find depth file in format (rgb file base name)_depth.*";
-      return;
-    }
-    else if (depth_info_list.size () > 1)
-    {
-      qWarning () << "Found more than one file which matches depth naming format, using first one!";
-    }
-    depth_filename = depth_info_list.at (0).absoluteFilePath ();
+    qCritical () << "Could not find depth file in format (rgb file base name)_depth.*";
+    return;
   }
-  
+  if (depth_info_list.size () > 1)
+  {
+    qWarning () << "Found more than one file which matches depth naming format, using first one!";
+  }
+  depth_filename = depth_info_list.at (0).absoluteFilePath ();
+
   //Read the images
   vtkSmartPointer<vtkImageReader2Factory> reader_factory = vtkSmartPointer<vtkImageReader2Factory>::New ();
   vtkImageReader2* rgb_reader = reader_factory->CreateImageReader2 (rgb_filename.toStdString ().c_str ());
@@ -274,7 +277,7 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
     return;
   }
   qDebug () << "Images loaded, making cloud";
-  PointCloud<PointXYZRGB>::Ptr cloud = boost::shared_ptr<PointCloud<PointXYZRGB> > (new PointCloud<PointXYZRGB>);
+  PointCloud<PointXYZRGB>::Ptr cloud (new PointCloud<PointXYZRGB>);
   cloud->points.reserve (depth_dims[0] * depth_dims[1]);
   cloud->width = depth_dims[0];
   cloud->height = depth_dims[1];
@@ -292,12 +295,12 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
   depth_pixel = static_cast<unsigned short*>(depth_image->GetScalarPointer (depth_dims[0]-1,depth_dims[1]-1,0));
   color_pixel = static_cast<unsigned char*> (rgb_image->GetScalarPointer (depth_dims[0]-1,depth_dims[1]-1,0));
   
-  for (uint32_t y=0; y<cloud->height; ++y)
+  for (std::uint32_t y=0; y<cloud->height; ++y)
   {
-    for (uint32_t x=0; x<cloud->width; ++x, --depth_pixel, color_pixel-=3)
+    for (std::uint32_t x=0; x<cloud->width; ++x, --depth_pixel, color_pixel-=3)
     {
       PointXYZRGB new_point;
-      //  uint8_t* p_i = &(cloud_blob->data[y * cloud_blob->row_step + x * cloud_blob->point_step]);
+      //  std::uint8_t* p_i = &(cloud_blob->data[y * cloud_blob->row_step + x * cloud_blob->point_step]);
       float depth = (float)(*depth_pixel) * scale;
     //  qDebug () << "Depth = "<<depth;
       if (depth == 0.0f)
@@ -310,9 +313,10 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
         new_point.y = ((float)(centerY - y)) * depth * fl_const; // vtk seems to start at the bottom left image corner
         new_point.z = depth;
       }
-      
-      uint32_t rgb = (uint32_t)color_pixel[0] << 16 | (uint32_t)color_pixel[1] << 8 | (uint32_t)color_pixel[2];
-      new_point.rgb = *reinterpret_cast<float*> (&rgb);
+
+      new_point.r = color_pixel[0];
+      new_point.g = color_pixel[1];
+      new_point.b = color_pixel[2];
       cloud->points.push_back (new_point);
       //   qDebug () << "depth = "<<depth << "x,y,z="<<data[0]<<","<<data[1]<<","<<data[2];
       //qDebug() << "r ="<<color_pixel[0]<<" g="<<color_pixel[1]<<" b="<<color_pixel[2];
@@ -320,20 +324,20 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
     }
   }
   qDebug () << "Done making cloud!";
-  QFileInfo file_info (rgb_filename);
+
   QString short_filename = file_info.baseName ();
   //Check if this name already exists in the project - if so, append digit
   QList <QStandardItem*> items = findItems (short_filename);
-  if (items.size () > 0)
+  if (!items.empty ())
   {
     int k = 2;
     items = findItems (short_filename+ tr ("-%1").arg (k));
-    while (items.size () > 0)
+    while (!items.empty ())
     {  
       ++k;
       items = findItems (short_filename+ tr ("-%1").arg (k));
     }
-    short_filename = short_filename+ tr ("-%1").arg (k);
+    short_filename += tr ("-%1").arg (k);
   }
 
   CloudItem* new_item = CloudItem::createCloudItemFromTemplate<PointXYZRGB> (short_filename,cloud);
@@ -346,12 +350,12 @@ pcl::cloud_composer::ProjectModel::saveSelectedCloudToFile ()
 {
   qDebug () << "Saving cloud to file...";
   QModelIndexList selected_indexes = selection_model_->selectedIndexes ();
-  if (selected_indexes.size () == 0)
+  if (selected_indexes.empty ())
   {
     QMessageBox::warning (qobject_cast<QWidget *>(this->parent ()), "No Cloud Selected", "Cannot save, no cloud is selected in the browser or cloud view");
     return;
   }
-  else if (selected_indexes.size () > 1)
+  if (selected_indexes.size () > 1)
   {
     QMessageBox::warning (qobject_cast<QWidget *>(this->parent ()), "Too many clouds Selected", "Cannot save, currently only support saving one cloud at a time");
     return;
@@ -365,18 +369,15 @@ pcl::cloud_composer::ProjectModel::saveSelectedCloudToFile ()
     return;
   }
   
-  QString filename = QFileDialog::getSaveFileName (0,tr ("Save Cloud"), last_directory_.absolutePath (), tr ("PointCloud(*.pcd)"));
+  QString filename = QFileDialog::getSaveFileName (nullptr,tr ("Save Cloud"), last_directory_.absolutePath (), tr ("PointCloud(*.pcd)"));
   if ( filename.isNull ())
   {
     qWarning () << "No file selected, not saving";
     return;
   }
-  else
-  {
-    QFileInfo file_info (filename);
-    last_directory_ = file_info.absoluteDir ();
-  }
-  
+  QFileInfo file_info (filename);
+  last_directory_ = file_info.absoluteDir ();
+
   pcl::PCLPointCloud2::ConstPtr cloud = cloud_to_save->data (ItemDataRole::CLOUD_BLOB).value <pcl::PCLPointCloud2::ConstPtr> ();
   Eigen::Vector4f origin = cloud_to_save->data (ItemDataRole::ORIGIN).value <Eigen::Vector4f> ();
   Eigen::Quaternionf orientation = cloud_to_save->data (ItemDataRole::ORIENTATION).value <Eigen::Quaternionf> ();
@@ -391,7 +392,7 @@ pcl::cloud_composer::ProjectModel::enqueueToolAction (AbstractTool* tool)
   //Get the currently selected item(s), put them in a list, and create the command
   ConstItemList input_data;
   QModelIndexList selected_indexes = selection_model_->selectedIndexes ();
-  if (selected_indexes.size () == 0)
+  if (selected_indexes.empty ())
   {
     QMessageBox::warning (qobject_cast<QWidget *>(this->parent ()), "No Items Selected", "Cannot use tool, no item is selected in the browser or cloud view");
     return;
@@ -454,7 +455,7 @@ pcl::cloud_composer::ProjectModel::deleteSelectedItems ()
 {
   
   QModelIndexList selected_indexes = selection_model_->selectedIndexes ();
-  if (selected_indexes.size () == 0)
+  if (selected_indexes.empty ())
   {
     QMessageBox::warning (qobject_cast<QWidget *>(this->parent ()), "No Items Selected", "Cannot execute delete command, no item is selected in the browser or cloud view");
     return;
@@ -471,7 +472,7 @@ pcl::cloud_composer::ProjectModel::deleteSelectedItems ()
  // qDebug () << "Input for command is "<<input_data.size () << " element(s)";
   DeleteItemCommand* delete_command = new DeleteItemCommand (ConstItemList ());
   delete_command->setInputData (input_data);
-  if (delete_command->runCommand (0))
+  if (delete_command->runCommand (nullptr))
     commandCompleted(delete_command);
   else
     qCritical () << "Execution of delete command failed!";

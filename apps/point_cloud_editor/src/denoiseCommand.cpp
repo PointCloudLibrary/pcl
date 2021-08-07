@@ -37,7 +37,6 @@
 /// @details the implementation of the class DenoiseCommand
 /// @author Yue Li and Matthew Hielsberg
 
-#include <pcl/PointIndices.h>
 #include <pcl/point_types.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/apps/point_cloud_editor/denoiseCommand.h>
@@ -61,9 +60,8 @@ DenoiseCommand::execute ()
   filter.filter(temp_cloud);
   // back up the removed indices.
   pcl::IndicesConstPtr indices_ptr = filter.getRemovedIndices();
-  std::vector<int>::const_iterator it;
-  for(it = indices_ptr->begin(); it != indices_ptr->end(); ++it)
-    removed_indices_.addIndex(static_cast<unsigned int>(*it));
+  for(const auto &it : *indices_ptr)
+    removed_indices_.addIndex(static_cast<unsigned int>(it));
   // back up the removed points.
   removed_points_.set(cloud_ptr_, removed_indices_);
   // remove the noisy points.

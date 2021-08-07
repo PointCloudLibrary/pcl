@@ -15,7 +15,7 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
 
-typedef pcl::PointCloud<pcl::PointXYZRGBA> PointCloudXYZRGBA;
+using PointCloudXYZRGBA = pcl::PointCloud<pcl::PointXYZRGBA>;
 
 void
 printHelp (int, char **argv)
@@ -84,10 +84,10 @@ main (int argc, char** argv)
   line_rgbd.setDetectionThreshold (detect_thresh);
 
   // Load the template LMT and PCD files
-  for (size_t i = 0; i < lmt_file_indices.size (); ++i)
+  for (const int &lmt_file_index : lmt_file_indices)
   {
     // Load the LMT file
-    std::string lmt_filename = argv[lmt_file_indices[i]];
+    std::string lmt_filename = argv[lmt_file_index];
     line_rgbd.loadTemplates (lmt_filename);
   }
 
@@ -106,9 +106,8 @@ main (int argc, char** argv)
   std::vector<LineRGBD<PointXYZRGBA>::Detection> detections;
   line_rgbd.detect (detections);
 
-  for (size_t i = 0; i < detections.size (); ++i)
+  for (const auto &d : detections)
   {
-    const LineRGBD<PointXYZRGBA>::Detection & d = detections[i];
     const BoundingBoxXYZ & bb = d.bounding_box;
     print_info ("%lu %lu %f (%f %f %f) (%f %f %f)\n", 
                 d.detection_id, d.template_id, d.response,

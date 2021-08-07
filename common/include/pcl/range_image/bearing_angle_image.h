@@ -36,13 +36,11 @@
 
 /**
   * \file bearing_angle_image.h
-  * \Created on: July 07, 2012
+  * Created on: July 07, 2012
   */
 
-#ifndef PCL_BEARING_ANGLE_IMAGE_H_
-#define PCL_BEARING_ANGLE_IMAGE_H_
+#pragma once
 
-#include <cmath>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
@@ -55,13 +53,11 @@ namespace pcl
   {
     public:
       // ===== TYPEDEFS =====
-      typedef pcl::PointCloud<PointXYZRGBA> BaseClass;
+      using BaseClass = pcl::PointCloud<PointXYZRGBA>;
 
       // =====CONSTRUCTOR & DESTRUCTOR=====
       /** Constructor */
       BearingAngleImage ();
-      /** Destructor */
-      virtual ~BearingAngleImage ();
 
     public:
       /** \brief Reset all values to an empty Bearing Angle image */
@@ -85,5 +81,3 @@ namespace pcl
       PointXYZRGBA unobserved_point_;
   };
 }
-
-#endif // PCL_BEARING_ANGLE_IMAGE_H_

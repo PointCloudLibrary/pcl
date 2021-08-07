@@ -45,7 +45,6 @@
 #include <limits>
 
 #include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/apps/in_hand_scanner/boost.h>
 #include <pcl/apps/in_hand_scanner/visibility_confidence.h>
 #include <pcl/apps/in_hand_scanner/utils.h>
 
@@ -101,7 +100,7 @@ pcl::ihs::Integration::reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_d
     const PointXYZRGBNormal& pt_d = cloud_data->operator [] (c);
     const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-    if (!boost::math::isnan (pt_d.x) && weight > min_weight_)
+    if (!std::isnan (pt_d.x) && weight > min_weight_)
     {
       cloud_model->operator [] (c) = PointIHS (pt_d, weight);
     }
@@ -113,7 +112,7 @@ pcl::ihs::Integration::reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_d
       const PointXYZRGBNormal& pt_d = cloud_data->operator [] (r*width + c);
       const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-      if (!boost::math::isnan (pt_d.x) && weight > min_weight_)
+      if (!std::isnan (pt_d.x) && weight > min_weight_)
       {
         cloud_model->operator [] (r*width + c) = PointIHS (pt_d, weight);
       }
@@ -163,7 +162,7 @@ pcl::ihs::Integration::reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_d
 
       const float weight = -pt_d_0.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-      if (!boost::math::isnan (pt_d_0.x) && weight > min_weight_)
+      if (!std::isnan (pt_d_0.x) && weight > min_weight_)
       {
         pt_m_0 = PointIHS (pt_d_0, weight);
       }
@@ -213,13 +212,13 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
   // Nearest neighbor search
   CloudXYZPtr xyz_model (new CloudXYZ ());
   xyz_model->reserve (mesh_model->sizeVertices ());
-  for (unsigned int i=0; i<mesh_model->sizeVertices (); ++i)
+  for (std::size_t i=0; i<mesh_model->sizeVertices (); ++i)
   {
     const PointIHS& pt = mesh_model->getVertexDataCloud () [i];
     xyz_model->push_back (PointXYZ (pt.x, pt.y, pt.z));
   }
   kd_tree_->setInputCloud (xyz_model);
-  std::vector <int>   index (1);
+  pcl::Indices   index (1);
   std::vector <float> squared_distance (1);
 
   mesh_model->reserveVertices (mesh_model->sizeVertices () + cloud_data->size ());
@@ -242,7 +241,7 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
     const PointXYZRGBNormal& pt_d = cloud_data->operator [] (c);
     const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-    if (!boost::math::isnan (pt_d.x) && weight > min_weight_)
+    if (!std::isnan (pt_d.x) && weight > min_weight_)
     {
       PointIHS& pt_d_t = cloud_data_transformed->operator [] (c);
       pt_d_t = PointIHS (pt_d, weight);
@@ -257,7 +256,7 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
       const PointXYZRGBNormal& pt_d = cloud_data->operator [] (r*width + c);
       const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-      if (!boost::math::isnan (pt_d.x) && weight > min_weight_)
+      if (!std::isnan (pt_d.x) && weight > min_weight_)
       {
         PointIHS& pt_d_t = cloud_data_transformed->operator [] (r*width + c);
         pt_d_t = PointIHS (pt_d, weight);
@@ -305,14 +304,10 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
       const PointIHS&          pt_d_t_4 = cloud_data_transformed->operator [] (ind_4);
 
       VertexIndex& vi_0 = vertex_indices [ind_0];
-      VertexIndex& vi_1 = vertex_indices [ind_1];
-      VertexIndex& vi_2 = vertex_indices [ind_2];
-      VertexIndex& vi_3 = vertex_indices [ind_3];
-      VertexIndex& vi_4 = vertex_indices [ind_4];
 
       const float weight = -pt_d_0.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-      if (!boost::math::isnan (pt_d_0.x) && weight > min_weight_)
+      if (!std::isnan (pt_d_0.x) && weight > min_weight_)
       {
         pt_d_t_0 = PointIHS (pt_d_0, weight);
         pt_d_t_0.getVector4fMap ()       = T * pt_d_t_0.getVector4fMap ();
@@ -372,6 +367,12 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
       // 4 - 2   1  //
       //   \   \    //
       // *   3 - 0  //
+
+      VertexIndex& vi_1 = vertex_indices [ind_1];
+      VertexIndex& vi_2 = vertex_indices [ind_2];
+      VertexIndex& vi_3 = vertex_indices [ind_3];
+      VertexIndex& vi_4 = vertex_indices [ind_4];
+
       this->addToMesh (pt_d_t_0,pt_d_t_1,pt_d_t_2,pt_d_t_3, vi_0,vi_1,vi_2,vi_3, mesh_model);
       if (Mesh::IsManifold::value) // Only needed for the manifold mesh
       {
@@ -388,7 +389,7 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
 void
 pcl::ihs::Integration::age (const MeshPtr& mesh, const bool cleanup) const
 {
-  for (unsigned int i=0; i<mesh->sizeVertices (); ++i)
+  for (std::size_t i=0; i<mesh->sizeVertices (); ++i)
   {
     PointIHS& pt = mesh->getVertexDataCloud () [i];
     if (pt.age < max_age_)
@@ -422,7 +423,7 @@ pcl::ihs::Integration::age (const MeshPtr& mesh, const bool cleanup) const
 void
 pcl::ihs::Integration::removeUnfitVertices (const MeshPtr& mesh, const bool cleanup) const
 {
-  for (unsigned int i=0; i<mesh->sizeVertices (); ++i)
+  for (std::size_t i=0; i<mesh->sizeVertices (); ++i)
   {
     if (pcl::ihs::countDirections (mesh->getVertexDataCloud () [i].directions) < min_directions_)
     {
@@ -495,10 +496,10 @@ pcl::ihs::Integration::getMinDirections () const
 
 ////////////////////////////////////////////////////////////////////////////////
 
-uint8_t
+std::uint8_t
 pcl::ihs::Integration::trimRGB (const float val) const
 {
-  return (static_cast <uint8_t> (val > 255.f ? 255 : val));
+  return (static_cast <std::uint8_t> (val > 255.f ? 255 : val));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -519,10 +520,10 @@ pcl::ihs::Integration::addToMesh (const PointIHS& pt_0,
   // |   |
   // 3 - 0
   const unsigned char is_finite = static_cast <unsigned char> (
-                                    (1 * !boost::math::isnan (pt_0.x)) |
-                                    (2 * !boost::math::isnan (pt_1.x)) |
-                                    (4 * !boost::math::isnan (pt_2.x)) |
-                                    (8 * !boost::math::isnan (pt_3.x)));
+                                    (1 * !std::isnan (pt_0.x)) |
+                                    (2 * !std::isnan (pt_1.x)) |
+                                    (4 * !std::isnan (pt_2.x)) |
+                                    (8 * !std::isnan (pt_3.x)));
 
   switch (is_finite)
   {

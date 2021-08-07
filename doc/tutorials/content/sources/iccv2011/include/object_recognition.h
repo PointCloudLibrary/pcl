@@ -1,5 +1,4 @@
-#ifndef OBJECT_RECOGNITION_H_
-#define OBJECT_RECOGNITION_H_
+#pragma once
 
 #include "typedefs.h"
 #include "load_clouds.h"
@@ -63,10 +62,10 @@ class ObjectRecognition
     void 
     populateDatabase (const std::vector<std::string> & filenames)
     {
-      size_t n = filenames.size ();
+      std::size_t n = filenames.size ();
       models_.resize (n);
       descriptors_ = GlobalDescriptorsPtr (new GlobalDescriptors);
-      for (size_t i = 0; i < n; ++i)
+      for (std::size_t i = 0; i < n; ++i)
       {
         const std::string & filename = filenames[i];
         if (filename.compare (filename.size ()-4, 4, ".pcd") == 0)
@@ -96,7 +95,7 @@ class ObjectRecognition
     {
       ObjectModel query_object;
       constructObjectModel (query_cloud, query_object);
-      const GlobalDescriptorT & query_descriptor = query_object.global_descriptor->points[0];
+      const GlobalDescriptorT & query_descriptor = (*query_object.global_descriptor)[0];
       
       std::vector<int> nn_index (1);
       std::vector<float> nn_sqr_distance (1);
@@ -111,7 +110,7 @@ class ObjectRecognition
     {
       ObjectModel query_object;
       constructObjectModel (query_cloud, query_object);
-      const GlobalDescriptorT & query_descriptor = query_object.global_descriptor->points[0];
+      const GlobalDescriptorT & query_descriptor = (*query_object.global_descriptor)[0];
       
       std::vector<int> nn_index (1);
       std::vector<float> nn_sqr_distance (1);
@@ -198,5 +197,3 @@ class ObjectRecognition
     GlobalDescriptorsPtr descriptors_;
     pcl::KdTreeFLANN<GlobalDescriptorT>::Ptr kdtree_;
 };
-
-#endif

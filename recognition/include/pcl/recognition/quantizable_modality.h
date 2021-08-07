@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_QUANTIZABLE_MODALITY
-#define PCL_FEATURES_QUANTIZABLE_MODALITY
+#pragma once
 
 #include <vector>
 #include <pcl/pcl_macros.h>
@@ -74,7 +73,7 @@ namespace pcl
         * \param[out] features the destination for the extracted features.
         */
       virtual void 
-      extractFeatures (const MaskMap & mask, size_t nr_features, size_t modality_index, 
+      extractFeatures (const MaskMap & mask, std::size_t nr_features, std::size_t modality_index, 
                        std::vector<QuantizedMultiModFeature> & features) const = 0;
 
       /** \brief Extracts all possible features from the modality within the specified mask.
@@ -84,9 +83,7 @@ namespace pcl
         * \param[out] features the destination for the extracted features.
         */
       virtual void 
-      extractAllFeatures (const MaskMap & mask, size_t nr_features, size_t modality_index, 
+      extractAllFeatures (const MaskMap & mask, std::size_t nr_features, std::size_t modality_index, 
                        std::vector<QuantizedMultiModFeature> & features) const = 0;
   };
 }
-
-#endif

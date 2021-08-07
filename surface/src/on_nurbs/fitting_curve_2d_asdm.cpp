@@ -37,6 +37,7 @@
 
 #include <pcl/surface/on_nurbs/fitting_curve_2d_asdm.h>
 #include <stdexcept>
+#include <Eigen/Geometry> // for cross
 
 using namespace pcl;
 using namespace on_nurbs;
@@ -278,8 +279,8 @@ FittingCurve2dASDM::assembleInterior (double wInt, double sigma2, double rScale,
     updateTNR = true;
   }
 
-  unsigned i1 (0);
-  unsigned i2 (0);
+  //unsigned i1 (0);
+  //unsigned i2 (0);
 
   for (unsigned p = 0; p < nInt; p++)
   {
@@ -289,7 +290,7 @@ FittingCurve2dASDM::assembleInterior (double wInt, double sigma2, double rScale,
     double param;
     Eigen::Vector2d pt, t, n;
     double error;
-    if (p < int (m_data->interior_param.size ()))
+    if (p < static_cast<unsigned int>(m_data->interior_param.size ()))
     {
       param = findClosestElementMidPoint (m_nurbs, pcp, m_data->interior_param[p]);
       param = inverseMapping (m_nurbs, pcp, param, error, pt, t, rScale, in_max_steps, in_accuracy, m_quiet);
@@ -349,12 +350,12 @@ FittingCurve2dASDM::assembleInterior (double wInt, double sigma2, double rScale,
     if ((pcp - pt).dot (n) >= 0.0)
     {
       d = (pcp - pt).norm ();
-      i1++;
+      //i1++;
     }
     else
     {
       d = -(pcp - pt).norm ();
-      i2++;
+      //i2++;
     }
 
     // evaluate if point lies inside or outside the closed curve
@@ -373,7 +374,7 @@ FittingCurve2dASDM::assembleInterior (double wInt, double sigma2, double rScale,
 
     double w (wInt);
     if (z (2) > 0.0 && wFunction)
-      w = wInt * exp (-(error * error) * ds);
+      w = wInt * std::exp (-(error * error) * ds);
 
     if (w > 1e-6) // avoids ill-conditioned matrix
       addPointConstraint (m_data->interior_param[p], m_data->interior[p], n_prev, t_prev, rho_prev, d, w, row);
@@ -406,7 +407,7 @@ FittingCurve2dASDM::assembleClosestPoints (const std::vector<double> &elements, 
 
   double ds = 1.0 / (2.0 * sigma2);
 
-  for (unsigned i = 0; i < elements.size (); i++)
+  for (std::size_t i = 0; i < elements.size (); i++)
   {
 
     int j = (i + 1) % int (elements.size ());
@@ -479,7 +480,7 @@ FittingCurve2dASDM::assembleClosestPoints (const std::vector<double> &elements, 
     m_data->closest_points_error.push_back ((p3 - p1).squaredNorm ());
 
     double w (weight);
-    w = 0.5 * weight * exp (-(error2) * ds);
+    w = 0.5 * weight * std::exp (-(error2) * ds);
     //    w = weight * std::fabs(in.dot(p2-p1));
 
     double d;

@@ -87,8 +87,8 @@ namespace Loki
     template <class T, class U>
     struct Typelist
     {
-        typedef T Head;
-        typedef U Tail;
+        using Head = T;
+        using Tail = U;
     };
 
     //==============================================================================
@@ -121,13 +121,13 @@ namespace Loki
         template <class Head, class Tail>
         struct TypeAt<Typelist<Head, Tail>, 0>
         {
-            typedef Head Result;
+            using Result = Head;
         };
 
         template <class Head, class Tail, unsigned int i>
         struct TypeAt<Typelist<Head, Tail>, i>
         {
-            typedef typename TypeAt<Tail, i - 1>::Result Result;
+            using Result = typename TypeAt<Tail, i - 1>::Result;
         };
     }
 }

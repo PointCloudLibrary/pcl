@@ -1,24 +1,17 @@
 #include <pcl/apps/cloud_composer/tools/sanitize_cloud.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
 #include <pcl/filters/passthrough.h>
+#include <pcl/memory.h>  // for pcl::make_shared
 
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-  Q_EXPORT_PLUGIN2(cloud_composer_sanitize_cloud_tool, pcl::cloud_composer::SanitizeCloudToolFactory)
-#else
-  Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
-#endif
+Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
 
 pcl::cloud_composer::SanitizeCloudTool::SanitizeCloudTool (PropertiesModel* parameter_model, QObject* parent)
 : ModifyItemTool (parameter_model, parent)
 {
-  
-  
 }
 
 pcl::cloud_composer::SanitizeCloudTool::~SanitizeCloudTool ()
 {
-  
 }
 
 QList <pcl::cloud_composer::CloudComposerItem*>
@@ -27,7 +20,7 @@ pcl::cloud_composer::SanitizeCloudTool::performAction (ConstItemList input_data,
   QList <CloudComposerItem*> output;
   const CloudComposerItem* input_item;
   // Check input data length
-  if ( input_data.size () == 0)
+  if ( input_data.empty ())
   {
     qCritical () << "Empty input in SanitizeCloudTool!";
     return output;
@@ -47,7 +40,7 @@ pcl::cloud_composer::SanitizeCloudTool::performAction (ConstItemList input_data,
     pass_filter.setKeepOrganized (keep_organized);
         
     //Create output cloud
-    pcl::PCLPointCloud2::Ptr cloud_filtered = boost::make_shared<pcl::PCLPointCloud2> ();
+    pcl::PCLPointCloud2::Ptr cloud_filtered = pcl::make_shared<pcl::PCLPointCloud2> ();
     //Filter!  
     pass_filter.filter (*cloud_filtered);
     

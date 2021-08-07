@@ -34,14 +34,17 @@
  *
  */
 
+#pragma once
+ 
 #include <pcl/pcl_config.h>
+#include <pcl/memory.h>
 #ifdef HAVE_OPENNI
-
-#ifndef __OPENNI_DEVICE_PRIMESENSE__
-#define __OPENNI_DEVICE_PRIMESENSE__
 
 #include "openni_device.h"
 #include "openni_driver.h"
+
+#include <pcl/io/openni_camera/openni_image.h>
+
 
 namespace openni_wrapper
 {
@@ -56,18 +59,17 @@ class DevicePrimesense : public OpenNIDevice
   friend class OpenNIDriver;
 public:
   DevicePrimesense (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node);
-  virtual ~DevicePrimesense () throw ();
+  ~DevicePrimesense () noexcept;
   //virtual void setImageOutputMode (const XnMapOutputMode& output_mode);
 
 protected:
-  virtual boost::shared_ptr<Image> getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw ();
-  void enumAvailableModes () throw ();
-  virtual bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw ();
+  Image::Ptr getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) const throw () override;
+  void enumAvailableModes () noexcept;
+  bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw () override;
 
-  virtual void startImageStream ();
-  virtual void startDepthStream ();
+  void startImageStream () override;
+  void startDepthStream () override;
 };
 } // namespace
 
 #endif
-#endif // __OPENNI_DEVICE_PRIMESENSE__

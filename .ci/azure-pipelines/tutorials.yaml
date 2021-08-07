@@ -1,0 +1,53 @@
+jobs:
+  - job: tutorials
+    displayName: Building Tutorials
+    pool:
+      vmImage: 'Ubuntu 20.04'
+    container: env1804
+    timeoutInMinutes: 0
+    variables:
+      BUILD_DIR: '$(Agent.BuildDirectory)/build'
+      INSTALL_DIR: '$(Agent.BuildDirectory)/install'
+      CMAKE_CXX_FLAGS: '-Wall -Wextra -Wabi'
+      EXCLUDE_TUTORIALS: 'davidsdk,ensenso_cameras,gpu'
+    steps:
+      - checkout: self
+        # find the commit hash on a quick non-forced update too
+        fetchDepth: 10
+      - script: |
+          mkdir $BUILD_DIR && cd $BUILD_DIR
+          cmake $(Build.SourcesDirectory) \
+            -DCMAKE_BUILD_TYPE="Release" \
+            -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR \
+            -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
+            -DPCL_ONLY_CORE_POINT_TYPES=ON \
+            -DPCL_NO_PRECOMPILE=ON \
+            -DBUILD_surface_on_nurbs=ON \
+            -DBUILD_global_tests=OFF \
+            -DBUILD_tools=OFF \
+            -DBUILD_examples=OFF \
+            -DBUILD_outofcore=OFF \
+            -DBUILD_stereo=OFF \
+            -DBUILD_simulation=OFF
+        displayName: 'CMake Configuration'
+      - script: |
+          cd $BUILD_DIR
+          cmake --build . -- -j2
+        displayName: 'Build Library'
+      - script: |
+          cd $BUILD_DIR
+          cmake --build . -- install
+        displayName: 'Install PCL'
+      - script: |
+          cd $BUILD_DIR
+          major=$(find . -type f -exec sed -n -e \
+              's,#define PCL_MAJOR_VERSION \([0-9]\+\),\1,p' {} \;)
+          minor=$(find . -type f -exec sed -n -e \
+              's,#define PCL_MINOR_VERSION \([0-9]\+\),\1,p' {} \;)
+          $(Build.SourcesDirectory)/.ci/scripts/build_tutorials.sh \
+              -k -s \
+              -e $EXCLUDE_TUTORIALS \
+              $INSTALL_DIR/share/pcl-${major}.${minor} \
+              $(Build.SourcesDirectory) \
+              $BUILD_DIR/tutorials
+        displayName: 'Build Tutorials'

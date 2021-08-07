@@ -39,52 +39,58 @@
 #ifndef PCL_COMMON_FILE_IO_IMPL_HPP_
 #define PCL_COMMON_FILE_IO_IMPL_HPP_
 
+#include <boost/filesystem.hpp>
+#include <boost/range/iterator_range.hpp>
+
+#include <algorithm>
+#include <cstddef>
+#include <iostream>
+#include <string>
+#include <vector>
+
 namespace pcl
 {
 
-#ifndef _WIN32
-  void getAllPcdFilesInDirectory(const std::string& directory, std::vector<std::string>& file_names)
+void getAllPcdFilesInDirectory(const std::string& directory, std::vector<std::string>& file_names)
+{
+  boost::filesystem::path p(directory);
+  if(boost::filesystem::is_directory(p))
   {
-    DIR *dp;
-    struct dirent *dirp;
-    if((dp  = opendir(directory.c_str())) == NULL) {
-      std::cerr << "Could not open directory.\n";
-      return;
-    }
-    while ((dirp = readdir(dp)) != NULL) {
-      if (dirp->d_type == DT_REG)  // Only regular files
+    for(const auto& entry : boost::make_iterator_range(boost::filesystem::directory_iterator(p), {}))
+    {
+      if (boost::filesystem::is_regular_file(entry))
       {
-        std::string file_name = dirp->d_name;
-        if (file_name.substr(file_name.size()-4, 4)==".pcd")
-          file_names.push_back(dirp->d_name);
+        if (entry.path().extension() == ".pcd")
+          file_names.emplace_back(entry.path().filename().string());
       }
     }
-    closedir(dp);
-    std::sort(file_names.begin(), file_names.end());
-    //for (unsigned int i=0; i<file_names.size(); ++i)
-      //cout << file_names[i]<<"\n";
   }
-#endif
+  else
+  {
+    std::cerr << "Given path is not a directory\n";
+    return;
+  }
+  std::sort(file_names.begin(), file_names.end());
+}
 
 std::string getFilenameWithoutPath(const std::string& input)
 {
-  size_t filename_start = input.find_last_of('/', static_cast<size_t>(-1)) + 1;
+  std::size_t filename_start = input.find_last_of('/', static_cast<std::size_t>(-1)) + 1;
   return input.substr(filename_start, input.size()-filename_start);
 }
 
 std::string getFilenameWithoutExtension(const std::string& input)
 {
-  size_t dot_position = input.find_last_of('.', input.size());
+  std::size_t dot_position = input.find_last_of('.', input.size());
   return input.substr(0, dot_position);
 }
 
 std::string getFileExtension(const std::string& input)
 {
-  size_t dot_position = input.find_last_of('.', input.size());
+  std::size_t dot_position = input.find_last_of('.', input.size());
   return input.substr(dot_position+1, input.size());
 }
 
 }  // namespace end
 
 #endif
-

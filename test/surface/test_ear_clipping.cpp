@@ -37,7 +37,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
@@ -48,7 +48,6 @@
 
 using namespace pcl;
 using namespace pcl::io;
-using namespace std;
 
 PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
@@ -66,16 +65,16 @@ TEST (PCL, EarClipping)
 {
   PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>());
   cloud->height = 1;
-  cloud->points.push_back (PointXYZ ( 0.f, 0.f, 0.5f));
-  cloud->points.push_back (PointXYZ ( 5.f, 0.f, 0.6f));
-  cloud->points.push_back (PointXYZ ( 9.f, 4.f, 0.5f));
-  cloud->points.push_back (PointXYZ ( 4.f, 7.f, 0.5f));
-  cloud->points.push_back (PointXYZ ( 2.f, 5.f, 0.5f));
-  cloud->points.push_back (PointXYZ (-1.f, 8.f, 0.5f));
-  cloud->width = static_cast<uint32_t> (cloud->points.size ());
+  cloud->points.emplace_back( 0.f, 0.f, 0.5f);
+  cloud->points.emplace_back( 5.f, 0.f, 0.6f);
+  cloud->points.emplace_back( 9.f, 4.f, 0.5f);
+  cloud->points.emplace_back( 4.f, 7.f, 0.5f);
+  cloud->points.emplace_back( 2.f, 5.f, 0.5f);
+  cloud->points.emplace_back(-1.f, 8.f, 0.5f);
+  cloud->width = cloud->size ();
 
   Vertices vertices;
-  vertices.vertices.resize (cloud->points.size ());
+  vertices.vertices.resize (cloud->size ());
   for (int i = 0; i < static_cast<int> (vertices.vertices.size ()); ++i)
     vertices.vertices[i] = i;
 
@@ -91,8 +90,8 @@ TEST (PCL, EarClipping)
   clipper.process (triangulated_mesh);
 
   EXPECT_EQ (triangulated_mesh.polygons.size (), 4);
-  for (int i = 0; i < static_cast<int> (triangulated_mesh.polygons.size ()); ++i)
-    EXPECT_EQ (triangulated_mesh.polygons[i].vertices.size (), 3);
+  for (const auto &polygon : triangulated_mesh.polygons)
+    EXPECT_EQ (polygon.vertices.size (), 3);
 
   const int truth[][3] = { {5, 0, 1},
                            {2, 3, 4},
@@ -111,16 +110,16 @@ TEST (PCL, EarClippingCubeTest)
   PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>());
   cloud->height = 1;
   //bottom of cube (z=0)
-  cloud->points.push_back (PointXYZ ( 0.f, 0.f, 0.f));
-  cloud->points.push_back (PointXYZ ( 1.f, 0.f, 0.f));
-  cloud->points.push_back (PointXYZ ( 1.f, 1.f, 0.f));
-  cloud->points.push_back (PointXYZ ( 0.f, 1.f, 0.f));
+  cloud->points.emplace_back( 0.f, 0.f, 0.f);
+  cloud->points.emplace_back( 1.f, 0.f, 0.f);
+  cloud->points.emplace_back( 1.f, 1.f, 0.f);
+  cloud->points.emplace_back( 0.f, 1.f, 0.f);
   //top of cube (z=1.0)
-  cloud->points.push_back (PointXYZ ( 0.f, 0.f, 1.f));
-  cloud->points.push_back (PointXYZ ( 1.f, 0.f, 1.f));
-  cloud->points.push_back (PointXYZ ( 1.f, 1.f, 1.f));
-  cloud->points.push_back (PointXYZ ( 0.f, 1.f, 1.f));
-  cloud->width = static_cast<uint32_t> (cloud->points.size ());
+  cloud->points.emplace_back( 0.f, 0.f, 1.f);
+  cloud->points.emplace_back( 1.f, 0.f, 1.f);
+  cloud->points.emplace_back( 1.f, 1.f, 1.f);
+  cloud->points.emplace_back( 0.f, 1.f, 1.f);
+  cloud->width = cloud->size ();
 
   Vertices vertices;
   vertices.vertices.resize(4);
@@ -148,12 +147,12 @@ TEST (PCL, EarClippingCubeTest)
   PolygonMesh::Ptr mesh (new PolygonMesh);
   toPCLPointCloud2 (*cloud, mesh->cloud);
 
-  for (int i = 0; i < 6; ++i)
+  for (const auto &square : squares)
   {
-    vertices.vertices[0] = squares[i][0];
-    vertices.vertices[1] = squares[i][1];
-    vertices.vertices[2] = squares[i][2];
-    vertices.vertices[3] = squares[i][3];
+    vertices.vertices[0] = square[0];
+    vertices.vertices[1] = square[1];
+    vertices.vertices[2] = square[2];
+    vertices.vertices[3] = square[3];
     mesh->polygons.push_back (vertices);
   }
 
@@ -165,8 +164,8 @@ TEST (PCL, EarClippingCubeTest)
   clipper.process (triangulated_mesh);
 
   EXPECT_EQ (triangulated_mesh.polygons.size (), 12);
-  for (int i = 0; i < static_cast<int> (triangulated_mesh.polygons.size ()); ++i)
-    EXPECT_EQ (triangulated_mesh.polygons[i].vertices.size (), 3);
+  for (const auto &polygon : triangulated_mesh.polygons)
+    EXPECT_EQ (polygon.vertices.size (), 3);
 
   
 

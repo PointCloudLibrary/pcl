@@ -36,10 +36,10 @@
  *
  */
 
-#include "pcl/pcl_config.h"
+#pragma once
 
-#ifndef PCL_IO_HDL_GRABBER_H_
-#define PCL_IO_HDL_GRABBER_H_
+#include "pcl/pcl_config.h"
+#include <pcl/pcl_macros.h>
 
 #include <pcl/io/grabber.h>
 #include <pcl/io/impl/synchronized_queue.hpp>
@@ -47,6 +47,7 @@
 #include <pcl/point_cloud.h>
 #include <boost/asio.hpp>
 #include <string>
+#include <thread>
 
 #define HDL_Grabber_toRadians(x) ((x) * M_PI / 180.0)
 
@@ -63,53 +64,35 @@ namespace pcl
       /** \brief Signal used for a single sector
        *         Represents 1 corrected packet from the HDL Velodyne
        */
-      typedef void
-      (sig_cb_velodyne_hdl_scan_point_cloud_xyz) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ> >&,
-                                                  float,
-                                                  float);
+      using sig_cb_velodyne_hdl_scan_point_cloud_xyz = void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &, float, float);
 
       /** \brief Signal used for a single sector
        *         Represents 1 corrected packet from the HDL Velodyne.  Each laser has a different RGB
        */
-      typedef void
-      (sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA> >&,
-                                                      float,
-                                                      float);
-
-      typedef PCL_DEPRECATED ("Use 'sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba' instead")
-      sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba sig_cb_velodyne_hdl_scan_point_cloud_xyzrgb;
+      using sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba = void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &, float, float);
 
       /** \brief Signal used for a single sector
        *         Represents 1 corrected packet from the HDL Velodyne with the returned intensity.
        */
-      typedef void
-      (sig_cb_velodyne_hdl_scan_point_cloud_xyzi) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> >&,
-                                                   float startAngle,
-                                                   float);
+      using sig_cb_velodyne_hdl_scan_point_cloud_xyzi = void (const pcl::PointCloud<pcl::PointXYZI>::ConstPtr &, float, float);
 
       /** \brief Signal used for a 360 degree sweep
        *         Represents multiple corrected packets from the HDL Velodyne
        *         This signal is sent when the Velodyne passes angle "0"
        */
-      typedef void
-      (sig_cb_velodyne_hdl_sweep_point_cloud_xyz) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ> >&);
+      using sig_cb_velodyne_hdl_sweep_point_cloud_xyz = void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &);
 
       /** \brief Signal used for a 360 degree sweep
        *         Represents multiple corrected packets from the HDL Velodyne with the returned intensity
        *         This signal is sent when the Velodyne passes angle "0"
        */
-      typedef void
-      (sig_cb_velodyne_hdl_sweep_point_cloud_xyzi) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> >&);
+      using sig_cb_velodyne_hdl_sweep_point_cloud_xyzi = void (const pcl::PointCloud<pcl::PointXYZI>::ConstPtr &);
 
       /** \brief Signal used for a 360 degree sweep
        *         Represents multiple corrected packets from the HDL Velodyne
        *         This signal is sent when the Velodyne passes angle "0".  Each laser has a different RGB
        */
-      typedef void
-      (sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA> >&);
-
-      typedef PCL_DEPRECATED ("Use 'sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba' instead")
-      sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgb;
+      using sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba = void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &);
 
       /** \brief Constructor taking an optional path to an HDL corrections file.  The Grabber will listen on the default IP/port for data packets [192.168.3.255/2368]
        * \param[in] correctionsFile Path to a file which contains the correction parameters for the HDL.  This parameter is mandatory for the HDL-64, optional for the HDL-32
@@ -124,44 +107,44 @@ namespace pcl
        * \param[in] correctionsFile Path to a file which contains the correction parameters for the HDL.  This field is mandatory for the HDL-64, optional for the HDL-32
        */
       HDLGrabber (const boost::asio::ip::address& ipAddress,
-                  const uint16_t port,
+                  const std::uint16_t port,
                   const std::string& correctionsFile = "");
 
       /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
-      virtual
-      ~HDLGrabber () throw ();
+      
+      ~HDLGrabber () noexcept;
 
       /** \brief Starts processing the Velodyne packets, either from the network or PCAP file. */
-      virtual void
-      start ();
+      void
+      start () override;
 
       /** \brief Stops processing the Velodyne packets, either from the network or PCAP file */
-      virtual void
-      stop ();
+      void
+      stop () override;
 
       /** \brief Obtains the name of this I/O Grabber
        *  \return The name of the grabber
        */
-      virtual std::string
-      getName () const;
+      std::string
+      getName () const override;
 
       /** \brief Check if the grabber is still running.
        *  \return TRUE if the grabber is running, FALSE otherwise
        */
-      virtual bool
-      isRunning () const;
+      bool
+      isRunning () const override;
 
       /** \brief Returns the number of frames per second.
        */
-      virtual float
-      getFramesPerSecond () const;
+      float
+      getFramesPerSecond () const override;
 
       /** \brief Allows one to filter packets based on the SOURCE IP address and PORT
        *         This can be used, for instance, if multiple HDL LIDARs are on the same network
        */
       void
       filterPackets (const boost::asio::ip::address& ipAddress,
-                     const uint16_t port = 443);
+                     const std::uint16_t port = 443);
 
       /** \brief Allows one to customize the colors used by each laser.
        * \param[in] color RGB color to set
@@ -169,7 +152,7 @@ namespace pcl
        */
       void
       setLaserColorRGB (const pcl::RGB& color,
-                        const uint8_t laserNumber);
+                        const std::uint8_t laserNumber);
 
       /** \brief Allows one to customize the colors used for each of the lasers.
        * \param[in] begin begin iterator of RGB color array
@@ -208,15 +191,15 @@ namespace pcl
 
       /** \brief Returns the maximum number of lasers
       */
-      virtual uint8_t
+      virtual std::uint8_t
       getMaximumNumberOfLasers () const;
 
     protected:
-      static const uint16_t HDL_DATA_PORT = 2368;
-      static const uint16_t HDL_NUM_ROT_ANGLES = 36001;
-      static const uint8_t HDL_LASER_PER_FIRING = 32;
-      static const uint8_t HDL_MAX_NUM_LASERS = 64;
-      static const uint8_t HDL_FIRING_PER_PKT = 12;
+      static const std::uint16_t HDL_DATA_PORT = 2368;
+      static const std::uint16_t HDL_NUM_ROT_ANGLES = 36001;
+      static const std::uint8_t HDL_LASER_PER_FIRING = 32;
+      static const std::uint8_t HDL_MAX_NUM_LASERS = 64;
+      static const std::uint8_t HDL_FIRING_PER_PKT = 12;
 
       enum HDLBlock
       {
@@ -224,26 +207,26 @@ namespace pcl
       };
 
 #pragma pack(push, 1)
-      typedef struct HDLLaserReturn
+      struct HDLLaserReturn
       {
-          uint16_t distance;
-          uint8_t intensity;
-      } HDLLaserReturn;
+          std::uint16_t distance;
+          std::uint8_t intensity;
+      };
 #pragma pack(pop)
 
       struct HDLFiringData
       {
-          uint16_t blockIdentifier;
-          uint16_t rotationalPosition;
+          std::uint16_t blockIdentifier;
+          std::uint16_t rotationalPosition;
           HDLLaserReturn laserReturns[HDL_LASER_PER_FIRING];
       };
 
       struct HDLDataPacket
       {
           HDLFiringData firingData[HDL_FIRING_PER_PKT];
-          uint32_t gpsTimestamp;
-          uint8_t mode;
-          uint8_t sensorType;
+          std::uint32_t gpsTimestamp;
+          std::uint8_t mode;
+          std::uint8_t sensorType;
       };
 
       struct HDLLaserCorrection
@@ -260,10 +243,10 @@ namespace pcl
       };
 
       HDLLaserCorrection laser_corrections_[HDL_MAX_NUM_LASERS];
-      uint16_t last_azimuth_;
-      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> > current_scan_xyz_, current_sweep_xyz_;
-      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> > current_scan_xyzi_, current_sweep_xyzi_;
-      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGBA> > current_scan_xyzrgba_, current_sweep_xyzrgba_;
+      std::uint16_t last_azimuth_;
+      pcl::PointCloud<pcl::PointXYZ>::Ptr current_scan_xyz_, current_sweep_xyz_;
+      pcl::PointCloud<pcl::PointXYZI>::Ptr current_scan_xyzi_, current_sweep_xyzi_;
+      pcl::PointCloud<pcl::PointXYZRGBA>::Ptr current_scan_xyzrgba_, current_sweep_xyzrgba_;
       boost::signals2::signal<sig_cb_velodyne_hdl_sweep_point_cloud_xyz>* sweep_xyz_signal_;
       boost::signals2::signal<sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba>* sweep_xyzrgba_signal_;
       boost::signals2::signal<sig_cb_velodyne_hdl_sweep_point_cloud_xyzi>* sweep_xyzi_signal_;
@@ -275,27 +258,27 @@ namespace pcl
       fireCurrentSweep ();
 
       void
-      fireCurrentScan (const uint16_t startAngle,
-                       const uint16_t endAngle);
+      fireCurrentScan (const std::uint16_t startAngle,
+                       const std::uint16_t endAngle);
       void
       computeXYZI (pcl::PointXYZI& pointXYZI,
-                   uint16_t azimuth,
+                   std::uint16_t azimuth,
                    HDLLaserReturn laserReturn,
-                   HDLLaserCorrection correction);
+                   HDLLaserCorrection correction) const;
 
 
     private:
       static double *cos_lookup_table_;
       static double *sin_lookup_table_;
-      pcl::SynchronizedQueue<uint8_t *> hdl_data_;
+      pcl::SynchronizedQueue<std::uint8_t *> hdl_data_;
       boost::asio::ip::udp::endpoint udp_listener_endpoint_;
       boost::asio::ip::address source_address_filter_;
-      uint16_t source_port_filter_;
+      std::uint16_t source_port_filter_;
       boost::asio::io_service hdl_read_socket_service_;
       boost::asio::ip::udp::socket *hdl_read_socket_;
       std::string pcap_file_name_;
-      boost::thread *queue_consumer_thread_;
-      boost::thread *hdl_read_packet_thread_;
+      std::thread *queue_consumer_thread_;
+      std::thread *hdl_read_packet_thread_;
       bool terminate_read_packet_thread_;
       pcl::RGB laser_rgb_mapping_[HDL_MAX_NUM_LASERS];
       float min_distance_threshold_;
@@ -314,7 +297,7 @@ namespace pcl
       processVelodynePackets ();
 
       void
-      enqueueHDLPacket (const uint8_t *data,
+      enqueueHDLPacket (const std::uint8_t *data,
                         std::size_t bytesReceived);
 
       void
@@ -337,5 +320,3 @@ namespace pcl
 
   };
 }
-
-#endif /* PCL_IO_HDL_GRABBER_H_ */

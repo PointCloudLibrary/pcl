@@ -38,8 +38,7 @@
 /// copied from the cloud.
 /// @author Yue Li and Matthew Hielsberg
 
-#ifndef COPY_BUFFER_H_
-#define COPY_BUFFER_H_
+#pragma once
 
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 #include <pcl/apps/point_cloud_editor/cloud.h>
@@ -56,24 +55,6 @@ class CopyBuffer : public Statistics
       if (register_stats)
         registerStats();
     }
-    
-    /// @brief Copy Constructor
-    /// @details create a copy buffer by copying all the internal states of the
-    /// passed copy buffer.
-    /// @param copy the copy buffer object used to initialize this object
-    CopyBuffer (const CopyBuffer& copy);
-
-    /// @brief Destructor
-    ~CopyBuffer ()
-    {
-    }
-    
-    /// @brief Equal Operator
-    /// @details Copy all the internal states to the this copy buffer object.
-    /// @param copy_buffer the copy buffer object used to update the this object
-    /// @return A reference to this.
-    CopyBuffer&
-    operator= (const CopyBuffer& copy_buffer);
 
     /// @brief Sets the points in the copy buffer.
     /// @details The passed selection pointer is used to get specified points
@@ -85,7 +66,7 @@ class CopyBuffer : public Statistics
     /// copied
     /// @param selection a const reference to the selected points object
     void
-    set (ConstCloudPtr cloud_ptr, const Selection& selection);
+    set (const ConstCloudPtr& cloud_ptr, const Selection& selection);
 
     /// @brief Returns the points stored in the internal buffer as a const Cloud
     const Cloud&
@@ -101,7 +82,7 @@ class CopyBuffer : public Statistics
         
     /// @brief Get the statistics of the copied points in string.
     std::string
-    getStat () const;
+    getStat () const override;
 
     /// @brief Returns true if the buffer is empty, false otherwise
     bool
@@ -114,4 +95,3 @@ class CopyBuffer : public Statistics
     /// a cloud object holding all the copied points.
     Cloud buffer_; 
 };
-#endif // COPY_BUFFER_H_

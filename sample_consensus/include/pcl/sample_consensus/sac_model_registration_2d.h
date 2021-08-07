@@ -36,10 +36,11 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_MODEL_REGISTRATION_2D_H_
-#define PCL_SAMPLE_CONSENSUS_MODEL_REGISTRATION_2D_H_
+#pragma once
 
 #include <pcl/sample_consensus/sac_model_registration.h>
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
 
 namespace pcl
 {
@@ -62,12 +63,12 @@ namespace pcl
       using pcl::SampleConsensusModelRegistration<PointT>::computeOriginalIndexMapping;
       using pcl::SampleConsensusModel<PointT>::isModelValid;
 
-      typedef typename pcl::SampleConsensusModel<PointT>::PointCloud PointCloud;
-      typedef typename pcl::SampleConsensusModel<PointT>::PointCloudPtr PointCloudPtr;
-      typedef typename pcl::SampleConsensusModel<PointT>::PointCloudConstPtr PointCloudConstPtr;
+      using PointCloud = typename pcl::SampleConsensusModel<PointT>::PointCloud;
+      using PointCloudPtr = typename pcl::SampleConsensusModel<PointT>::PointCloudPtr;
+      using PointCloudConstPtr = typename pcl::SampleConsensusModel<PointT>::PointCloudConstPtr;
 
-      typedef boost::shared_ptr<SampleConsensusModelRegistration2D> Ptr;
-      typedef boost::shared_ptr<const SampleConsensusModelRegistration2D> ConstPtr;
+      using Ptr = shared_ptr<SampleConsensusModelRegistration2D<PointT> >;
+      using ConstPtr = shared_ptr<const SampleConsensusModelRegistration2D<PointT> >;
 
       /** \brief Constructor for base SampleConsensusModelRegistration2D.
         * \param[in] cloud the input point cloud dataset
@@ -91,7 +92,7 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelRegistration2D (const PointCloudConstPtr &cloud,
-                                          const std::vector<int> &indices,
+                                          const Indices &indices,
                                           bool random = false)
         : pcl::SampleConsensusModelRegistration<PointT> (cloud, indices, random)
         , projection_matrix_ (Eigen::Matrix3f::Identity ())
@@ -122,7 +123,7 @@ namespace pcl
       void
       selectWithinDistance (const Eigen::VectorXf &model_coefficients,
                             const double threshold,
-                            std::vector<int> &inliers);
+                            Indices &inliers);
 
       /** \brief Count all the points which respect the given model coefficients as inliers.
         *
@@ -130,7 +131,7 @@ namespace pcl
         * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
         * \return the resultant number of inliers
         */
-      virtual int
+      virtual std::size_t
       countWithinDistance (const Eigen::VectorXf &model_coefficients,
                            const double threshold) const;
 
@@ -155,7 +156,7 @@ namespace pcl
         * \param[in] samples the resultant index samples
         */
       bool
-      isSampleGood (const std::vector<int> &samples) const;
+      isSampleGood (const Indices &samples) const;
 
       /** \brief Computes an "optimal" sample distance threshold based on the
         * principal directions of the input cloud.
@@ -172,7 +173,7 @@ namespace pcl
         //// Check if the covariance matrix is finite or not.
         //for (int i = 0; i < 3; ++i)
         //  for (int j = 0; j < 3; ++j)
-        //    if (!pcl_isfinite (covariance_matrix.coeffRef (i, j)))
+        //    if (!std::isfinite (covariance_matrix.coeffRef (i, j)))
         //      PCL_ERROR ("[pcl::SampleConsensusModelRegistration::computeSampleDistanceThreshold] Covariance matrix has NaN values! Is the input cloud finite?\n");
 
         //Eigen::Vector3f eigen_values;
@@ -189,7 +190,7 @@ namespace pcl
         */
       inline void
       computeSampleDistanceThreshold (const PointCloudConstPtr&,
-                                      const std::vector<int>&)
+                                      const Indices&)
       {
         //// Compute the principal directions via PCA
         //Eigen::Vector4f xyz_centroid;
@@ -199,7 +200,7 @@ namespace pcl
         //// Check if the covariance matrix is finite or not.
         //for (int i = 0; i < 3; ++i)
         //  for (int j = 0; j < 3; ++j)
-        //    if (!pcl_isfinite (covariance_matrix.coeffRef (i, j)))
+        //    if (!std::isfinite (covariance_matrix.coeffRef (i, j)))
         //      PCL_ERROR ("[pcl::SampleConsensusModelRegistration::computeSampleDistanceThreshold] Covariance matrix has NaN values! Is the input cloud finite?\n");
 
         //Eigen::Vector3f eigen_values;
@@ -216,11 +217,8 @@ namespace pcl
       Eigen::Matrix3f projection_matrix_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 
 #include <pcl/sample_consensus/impl/sac_model_registration_2d.hpp>
-
-#endif    // PCL_SAMPLE_CONSENSUS_MODEL_REGISTRATION_2D_H_
-

@@ -35,11 +35,9 @@
  *
  */
 
-#ifndef PCL_IO_DEBAYER_H
-#define PCL_IO_DEBAYER_H
+#pragma once
 
 #include <pcl/pcl_exports.h>
-#include <stdlib.h>
 
 namespace pcl
 {
@@ -79,6 +77,3 @@ namespace pcl
     };
   }
 }
-
-#endif    // PCL_IO_DEBAYER_H
-

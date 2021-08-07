@@ -33,12 +33,11 @@
  *
  */
 
-#include <gtest/gtest.h>
-#include <pcl/common/common.h>
+#include <pcl/test/gtest.h>
 #include <pcl/geometry/line_iterator.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
-#include <math.h>
+#include <cmath>
 
 using namespace pcl;
 
@@ -73,7 +72,7 @@ void checkSimpleLine8 (unsigned x_start, unsigned y_start, unsigned x_end, unsig
   }
   int dx = x_end - x_start;
   int dy = y_end - y_start;
-  unsigned dmax = std::max (abs(dx), abs(dy));
+  unsigned dmax = std::max (std::abs(dx), std::abs(dy));
   
   EXPECT_EQ (dmax, idx);
   
@@ -91,7 +90,7 @@ void checkSimpleLine8 (unsigned x_start, unsigned y_start, unsigned x_end, unsig
     y_step = 0;
     x_step = (dx > 0) ? 1 : -1;
   }
-  else if (abs(dx) == abs(dy))
+  else if (std::abs(dx) == std::abs(dy))
   {
     y_step = (dy > 0) ? 1 : -1;
     x_step = (dx > 0) ? 1 : -1;
@@ -162,12 +161,12 @@ void checkGeneralLine (unsigned x_start, unsigned y_start, unsigned x_end, unsig
   
   int dx = x_end - x_start;
   int dy = y_end - y_start;
-  unsigned dmax = std::max (abs(dx), abs(dy));
+  unsigned dmax = std::max (std::abs(dx), std::abs(dy));
 
   if (neighorhood)
     EXPECT_EQ (dmax, idx);
   else
-    EXPECT_EQ (abs(dx) + abs(dy), idx);
+    EXPECT_EQ (std::abs(dx) + std::abs(dy), idx);
   
   float length = std::sqrt (float (dx * dx + dy * dy));
   float dir_x = float (dx) / length;
@@ -184,9 +183,9 @@ void checkGeneralLine (unsigned x_start, unsigned y_start, unsigned x_end, unsig
         // point need to be close to line
         float distance = dir_x * float(yIdx - int(y_start)) - dir_y * float(xIdx - int(x_start));
         if (neighorhood)        
-          EXPECT_LE (fabs(distance), 0.5f);
+          EXPECT_LE (std::fabs(distance), 0.5f);
         else
-          EXPECT_LE (fabs(distance), 0.70711f);
+          EXPECT_LE (std::fabs(distance), 0.70711f);
         
         // and within the endpoints
         float lambda = dir_y * float(yIdx - int(y_start)) + dir_x * float(xIdx - int(x_start));
@@ -250,8 +249,8 @@ TEST (PCL, LineIterator8NeighborsGeneral)
   float d_alpha = float(M_PI / angular_resolution);
   for (unsigned idx = 0; idx < angular_resolution; ++idx)
   {
-    unsigned x_end = unsigned (length * cos (float(idx) * d_alpha) + center_x + 0.5);
-    unsigned y_end = unsigned (length * sin (float(idx) * d_alpha) + center_y + 0.5);
+    unsigned x_end = unsigned (length * std::cos (float(idx) * d_alpha) + center_x + 0.5);
+    unsigned y_end = unsigned (length * std::sin (float(idx) * d_alpha) + center_y + 0.5);
     
     // right
     checkGeneralLine (center_x, center_y, x_end, y_end, cloud, true);
@@ -274,8 +273,8 @@ TEST (PCL, LineIterator4NeighborsGeneral)
   float d_alpha = float(2.0 * M_PI / angular_resolution);
   for (unsigned idx = 0; idx < angular_resolution; ++idx)
   {
-    unsigned x_end = unsigned (length * cos (float(idx) * d_alpha) + center_x + 0.5);
-    unsigned y_end = unsigned (length * sin (float(idx) * d_alpha) + center_y + 0.5);
+    unsigned x_end = unsigned (length * std::cos (float(idx) * d_alpha) + center_x + 0.5);
+    unsigned y_end = unsigned (length * std::sin (float(idx) * d_alpha) + center_y + 0.5);
     
     // right
     checkGeneralLine (center_x, center_y, x_end, y_end, cloud, false);

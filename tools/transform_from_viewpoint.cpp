@@ -39,7 +39,6 @@
 
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/features/fpfh.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
@@ -78,8 +77,8 @@ transform (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &outp
 {
   // Check for 'normals'
   bool has_normals = false;
-  for (size_t i = 0; i < input->fields.size (); ++i)
-    if (input->fields[i].name == "normals")
+  for (const auto &field : input->fields)
+    if (field.name == "normals")
       has_normals = true;
 
   // Estimate

@@ -7,7 +7,7 @@ pcl::cloud_composer::ManipulationEvent::~ManipulationEvent ()
 }
 
 void
-pcl::cloud_composer::ManipulationEvent::addManipulation (QString id, vtkSmartPointer<vtkMatrix4x4> start, vtkSmartPointer<vtkMatrix4x4> end)
+pcl::cloud_composer::ManipulationEvent::addManipulation (const QString& id, const vtkSmartPointer<vtkMatrix4x4>& start, const vtkSmartPointer<vtkMatrix4x4>& end)
 {
   id_start_map_.insert (id, start);
   id_end_map_.insert (id, end);

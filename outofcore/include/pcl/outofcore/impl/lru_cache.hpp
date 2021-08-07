@@ -2,15 +2,18 @@
 #ifndef __PCL_OUTOFCORE_LRU_CACHE__
 #define __PCL_OUTOFCORE_LRU_CACHE__
 
+#include <cstddef>
 #include <cassert>
 #include <list>
+#include <map>
+#include <utility>
 
 template<typename T>
 class LRUCacheItem
 {
 public:
 
-  virtual size_t
+  virtual std::size_t
   sizeOf () const
   {
     return sizeof (item);
@@ -20,7 +23,7 @@ public:
   ~LRUCacheItem () { }
 
   T item;
-  size_t timestamp;
+  std::size_t timestamp;
 };
 
 template<typename KeyT, typename CacheItemT>
@@ -28,13 +31,13 @@ class LRUCache
 {
 public:
 
-  typedef std::list<KeyT> KeyIndex;
-  typedef typename KeyIndex::iterator KeyIndexIterator;
+  using KeyIndex = std::list<KeyT>;
+  using KeyIndexIterator = typename KeyIndex::iterator;
 
-  typedef std::map<KeyT, std::pair<CacheItemT, typename KeyIndex::iterator> > Cache;
-  typedef typename Cache::iterator CacheIterator;
+  using Cache = std::map<KeyT, std::pair<CacheItemT, typename KeyIndex::iterator> >;
+  using CacheIterator = typename Cache::iterator;
 
-  LRUCache (size_t c) :
+  LRUCache (std::size_t c) :
       capacity_ (c), size_ (0)
   {
     assert(capacity_ != 0);
@@ -81,8 +84,8 @@ public:
       return true;
     }
 
-    size_t size = size_;
-    size_t item_size = value.sizeOf ();
+    std::size_t size = size_;
+    std::size_t item_size = value.sizeOf ();
     int evict_count = 0;
 
     // Get LRU key iterator
@@ -93,8 +96,8 @@ public:
       const CacheIterator cache_it = cache_.find (*key_it);
 
       // Get tail item (Least Recently Used)
-      size_t tail_timestamp = cache_it->second.first.timestamp;
-      size_t tail_size = cache_it->second.first.sizeOf ();
+      std::size_t tail_timestamp = cache_it->second.first.timestamp;
+      std::size_t tail_size = cache_it->second.first.sizeOf ();
 
       // Check timestamp to see if we've completely filled the cache in one go
       if (value.timestamp == tail_timestamp)
@@ -103,8 +106,8 @@ public:
       }
 
       size -= tail_size;
-      key_it++;
-      evict_count++;
+      ++key_it;
+      ++evict_count;
     }
 
     // Evict enough items to make room for the new item
@@ -122,7 +125,7 @@ public:
   }
 
   void
-  setCapacity (size_t capacity)
+  setCapacity (std::size_t capacity)
   {
     capacity_ = capacity;
   }
@@ -134,7 +137,7 @@ public:
     return it->second.first;
   }
 
-  size_t
+  std::size_t
   sizeOf (const CacheItemT& value)
   {
     return value.sizeOf ();
@@ -163,10 +166,10 @@ public:
   }
 
   // Cache capacity in kilobytes
-  size_t capacity_;
+  std::size_t capacity_;
 
   // Current cache size in kilobytes
-  size_t size_;
+  std::size_t size_;
 
   // LRU key index LRU[0] ... MRU[N]
   KeyIndex key_index_;

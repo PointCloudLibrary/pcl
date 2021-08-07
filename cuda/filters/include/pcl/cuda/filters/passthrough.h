@@ -33,8 +33,7 @@
  *
  */
 
-#ifndef PCL_CUDA_FILTERS_PASSTHROUGH_H_
-#define PCL_CUDA_FILTERS_PASSTHROUGH_H_
+#pragma once
 
 #include <pcl_cuda/filters/filter.h>
 #include <thrust/count.h>
@@ -88,9 +87,9 @@ namespace pcl_cuda
     public:
       using Filter<CloudT>::filter_name_;
 
-      typedef typename PCLCUDABase<CloudT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = typename PCLCUDABase<CloudT>::PointCloud;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
       /** \brief Empty constructor. */
       PassThrough ()
@@ -128,14 +127,14 @@ namespace pcl_cuda
       applyFilter (PointCloud &output)
       {
         // Allocate enough space
-        output.points.resize (input_->points.size ());
+        output.resize (input_->points.size ());
         // Copy data
-        Device<PointXYZRGB>::type::iterator nr_points = thrust::copy_if (input_->points.begin (), input_->points.end (), output.points.begin (), isFiniteAOS ());
-        //Device<float3>::type::iterator nr_points = thrust::copy_if (input_->points.begin (), input_->points.end (), output.points.begin (), isFiniteAOS ());
-        output.points.resize (nr_points - output.points.begin ());
+        Device<PointXYZRGB>::type::iterator nr_points = thrust::copy_if (input_->points.begin (), input_->points.end (), output.begin (), isFiniteAOS ());
+        //Device<float3>::type::iterator nr_points = thrust::copy_if (input_->points.begin (), input_->points.end (), output.begin (), isFiniteAOS ());
+        output.resize (nr_points - output.begin ());
 
         //std::cerr << "[applyFilterAOS]: ";
-        //std::cerr << input_->points.size () << " " << output.points.size () << std::endl;
+        //std::cerr << input_->points.size () << " " << output.size () << std::endl;
       }
   };
  
@@ -201,5 +200,3 @@ namespace pcl_cuda
       bool zip_;
   };
 }
-
-#endif  //#ifndef PCL_FILTERS_PASSTHROUGH_H_

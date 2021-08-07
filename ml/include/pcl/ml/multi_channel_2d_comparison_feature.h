@@ -34,60 +34,57 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-  
-#ifndef PCL_ML_MULTI_CHANNEL_2D_COMPARISON_FEATURE_H_
-#define PCL_ML_MULTI_CHANNEL_2D_COMPARISON_FEATURE_H_
+
+#pragma once
 
 #include <pcl/common/common.h>
 
 #include <istream>
 #include <ostream>
 
-namespace pcl
-{
+namespace pcl {
 
-  /** \brief Feature for comparing two sample points in 2D multi-channel data. */
-  template <class PointT>
-  class PCL_EXPORTS MultiChannel2DComparisonFeature
+/** Feature for comparing two sample points in 2D multi-channel data. */
+template <class PointT>
+class PCL_EXPORTS MultiChannel2DComparisonFeature {
+public:
+  /** Constructor. */
+  MultiChannel2DComparisonFeature() : p1(), p2(), channel(0) {}
+
+  /** Destructor. */
+  virtual ~MultiChannel2DComparisonFeature() {}
+
+  /** Serializes the feature to a stream.
+   *
+   * \param[out] stream the destination for the serialization
+   */
+  inline void
+  serialize(std::ostream& stream) const
   {
-  public:
-      /** \brief Constructor. */
-      MultiChannel2DComparisonFeature () : p1 (), p2 (), channel (0) {}
-      /** \brief Destructor. */
-      virtual ~MultiChannel2DComparisonFeature () {}
+    p1.serialize(stream);
+    p2.serialize(stream);
+    stream.write(reinterpret_cast<const char*>(&channel), sizeof(channel));
+  }
 
-      /** \brief Serializes the feature to a stream.
-        * \param[out] stream The destination for the serialization.
-        */
-      inline void 
-      serialize (std::ostream & stream) const
-      {
-        p1.serialize (stream);
-        p2.serialize (stream);
-        stream.write (reinterpret_cast<const char*> (&channel), sizeof (channel));
-      }
+  /** Deserializes the feature from a stream.
+   *
+   * \param[in] stream the source for the deserialization
+   */
+  inline void
+  deserialize(std::istream& stream)
+  {
+    p1.deserialize(stream);
+    p2.deserialize(stream);
+    stream.read(reinterpret_cast<char*>(&channel), sizeof(channel));
+  }
 
-      /** \brief Deserializes the feature from a stream. 
-        * \param[in] stream The source for the deserialization.
-        */
-      inline void 
-      deserialize (std::istream & stream)
-      {
-        p1.deserialize (stream);
-        p2.deserialize (stream);
-        stream.read (reinterpret_cast<char*> (&channel), sizeof (channel));
-      }
+public:
+  /** First sample point. */
+  PointT p1;
+  /** Second sample point. */
+  PointT p2;
+  /** Specifies which channel is used for comparison. */
+  unsigned char channel;
+};
 
-    public:
-      /** \brief First sample point. */
-      PointT p1;
-      /** \brief Second sample point. */
-      PointT p2;
-
-      /** \brief Specifies which channel is used for comparison. */
-      unsigned char channel;
-  };
-
-}
-
-#endif
+} // namespace pcl

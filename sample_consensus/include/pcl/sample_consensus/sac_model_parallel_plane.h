@@ -38,17 +38,16 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_MODEL_PARALLELPLANE_H_
-#define PCL_SAMPLE_CONSENSUS_MODEL_PARALLELPLANE_H_
+#pragma once
 
 #include <pcl/sample_consensus/sac_model_plane.h>
-#include <pcl/common/common.h>
 
 namespace pcl
 {
   /** \brief @b SampleConsensusModelParallelPlane defines a model for 3D plane segmentation using additional
     * angular constraints. The plane must be parallel to a user-specified axis
-    * (\ref setAxis) within an user-specified angle threshold (\ref setEpsAngle).
+    * (\ref setAxis) within a user-specified angle threshold (\ref setEpsAngle).
+    * In other words, the plane <b>normal</b> must be (nearly) <b>perpendicular</b> to the specified axis.
     *
     * Code example for a plane model, parallel (within a 15 degrees tolerance) with the Z axis:
     * \code
@@ -68,11 +67,12 @@ namespace pcl
     public:
       using SampleConsensusModel<PointT>::model_name_;
 
-      typedef typename SampleConsensusModelPlane<PointT>::PointCloud PointCloud;
-      typedef typename SampleConsensusModelPlane<PointT>::PointCloudPtr PointCloudPtr;
-      typedef typename SampleConsensusModelPlane<PointT>::PointCloudConstPtr PointCloudConstPtr;
+      using PointCloud = typename SampleConsensusModelPlane<PointT>::PointCloud;
+      using PointCloudPtr = typename SampleConsensusModelPlane<PointT>::PointCloudPtr;
+      using PointCloudConstPtr = typename SampleConsensusModelPlane<PointT>::PointCloudConstPtr;
 
-      typedef boost::shared_ptr<SampleConsensusModelParallelPlane> Ptr;
+      using Ptr = shared_ptr<SampleConsensusModelParallelPlane<PointT> >;
+      using ConstPtr = shared_ptr<const SampleConsensusModelParallelPlane<PointT>>;
 
       /** \brief Constructor for base SampleConsensusModelParallelPlane.
         * \param[in] cloud the input point cloud dataset
@@ -96,7 +96,7 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelParallelPlane (const PointCloudConstPtr &cloud, 
-                                         const std::vector<int> &indices,
+                                         const Indices &indices,
                                          bool random = false) 
         : SampleConsensusModelPlane<PointT> (cloud, indices, random)
         , axis_ (Eigen::Vector3f::Zero ())
@@ -109,7 +109,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      virtual ~SampleConsensusModelParallelPlane () {}
+      ~SampleConsensusModelParallelPlane () {}
 
       /** \brief Set the axis along which we need to search for a plane perpendicular to.
         * \param[in] ax the axis along which we need to search for a plane perpendicular to
@@ -119,18 +119,18 @@ namespace pcl
 
       /** \brief Get the axis along which we need to search for a plane perpendicular to. */
       inline Eigen::Vector3f
-      getAxis ()  { return (axis_); }
+      getAxis () const { return (axis_); }
 
       /** \brief Set the angle epsilon (delta) threshold.
         * \param[in] ea the maximum allowed difference between the plane normal and the given axis.
         * \note You need to specify an angle > 0 in order to activate the axis-angle constraint!
         */
       inline void
-      setEpsAngle (const double ea) { eps_angle_ = ea; sin_angle_ = fabs (sin (ea));}
+      setEpsAngle (const double ea) { eps_angle_ = ea; sin_angle_ = std::abs (sin (ea));}
 
       /** \brief Get the angle epsilon (delta) threshold. */
       inline double
-      getEpsAngle () { return (eps_angle_); }
+      getEpsAngle () const { return (eps_angle_); }
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
         * \param[in] model_coefficients the coefficients of a plane model that we need to compute distances to
@@ -140,7 +140,7 @@ namespace pcl
       void
       selectWithinDistance (const Eigen::VectorXf &model_coefficients,
                             const double threshold,
-                            std::vector<int> &inliers);
+                            Indices &inliers) override;
 
       /** \brief Count all the points which respect the given model coefficients as inliers.
         *
@@ -148,9 +148,9 @@ namespace pcl
         * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
         * \return the resultant number of inliers
         */
-      virtual int
+      std::size_t
       countWithinDistance (const Eigen::VectorXf &model_coefficients,
-                           const double threshold) const;
+                           const double threshold) const override;
 
       /** \brief Compute all distances from the cloud data to a given plane model.
         * \param[in] model_coefficients the coefficients of a plane model that we need to compute distances to
@@ -158,11 +158,11 @@ namespace pcl
         */
       void
       getDistancesToModel (const Eigen::VectorXf &model_coefficients,
-                           std::vector<double> &distances) const;
+                           std::vector<double> &distances) const override;
 
-      /** \brief Return an unique id for this model (SACMODEL_PARALLEL_PLANE). */
+      /** \brief Return a unique id for this model (SACMODEL_PARALLEL_PLANE). */
       inline pcl::SacModel
-      getModelType () const { return (SACMODEL_PARALLEL_PLANE); }
+      getModelType () const override { return (SACMODEL_PARALLEL_PLANE); }
 
     protected:
       using SampleConsensusModel<PointT>::sample_size_;
@@ -171,8 +171,8 @@ namespace pcl
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */
-      virtual bool
-      isModelValid (const Eigen::VectorXf &model_coefficients) const;
+      bool
+      isModelValid (const Eigen::VectorXf &model_coefficients) const override;
 
       /** \brief The axis along which we need to search for a plane perpendicular to. */
       Eigen::Vector3f axis_;
@@ -188,5 +188,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/sample_consensus/impl/sac_model_parallel_plane.hpp>
 #endif
-
-#endif  //#ifndef PCL_SAMPLE_CONSENSUS_MODEL_PARALLELPLANE_H_

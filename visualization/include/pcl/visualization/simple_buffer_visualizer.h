@@ -1,5 +1,4 @@
-#ifndef PCL_VISUALIZATION_SIMPLE_BUFF_H
-#define PCL_VISUALIZATION_SIMPLE_BUFF_H
+#pragma once
 
 #include <pcl/visualization/histogram_visualizer.h>
 
@@ -161,7 +160,7 @@ namespace pcl
         void
         initValuesAndVisualization ()
         {
-          cloud_.points.resize(1);
+          cloud_.resize(1);
           
           PCL_WARN("Setting buffer size to %d entries.\n", nb_values_);
           values_.resize(nb_values_);
@@ -179,7 +178,7 @@ namespace pcl
         {
           for(int i = 0 ; i < nb_values_ ; ++i)
           {
-            cloud_.points[0].histogram[i] = values_[i];
+            cloud_[0].histogram[i] = values_[i];
           }  
         }
     
@@ -192,8 +191,8 @@ namespace pcl
 
           handle_y_scale_ = false;      
 
-          min_ =  -1.0f; // numeric_limits<float>::max( );
-          max_ =  1.0f; // numeric_limits<float>::min( );  
+          min_ =  -1.0f; // std::numeric_limits<float>::max( );
+          max_ =  1.0f; // std::numeric_limits<float>::min( );  
         }
     
         /** \brief visualizer object */
@@ -224,5 +223,3 @@ namespace pcl
     };    
   }  
 }
-
-#endif // PCL_VISUALIZATION_SIMPLE_BUFF_H

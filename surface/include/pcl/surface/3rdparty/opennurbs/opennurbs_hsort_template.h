@@ -39,9 +39,9 @@ to define type specific heap sort functions.
 static
 #endif
 void
-ON_HSORT_FNAME( ON_SORT_TEMPLATE_TYPE* base, size_t nel )
+ON_HSORT_FNAME( ON_SORT_TEMPLATE_TYPE* base, std::size_t nel )
 {
-  size_t i_end,k,i,j;
+  std::size_t i_end,k,i,j;
   ON_SORT_TEMPLATE_TYPE* e_end;
   ON_SORT_TEMPLATE_TYPE* e_i;
   ON_SORT_TEMPLATE_TYPE* e_j;

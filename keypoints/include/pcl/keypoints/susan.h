@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_SUSAN_KEYPOINT_H_
-#define PCL_SUSAN_KEYPOINT_H_
+#pragma once
 
 #include <pcl/keypoints/keypoint.h>
 #include <pcl/common/intensity.h>
@@ -57,17 +56,17 @@ namespace pcl
   class SUSANKeypoint : public Keypoint<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT> > Ptr;
-      typedef boost::shared_ptr<const SUSANKeypoint<PointInT, PointOutT, NormalT, Intensity> > ConstPtr;
+      using Ptr = shared_ptr<SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT> >;
+      using ConstPtr = shared_ptr<const SUSANKeypoint<PointInT, PointOutT, NormalT, Intensity> >;
 
-      typedef typename Keypoint<PointInT, PointOutT>::PointCloudIn PointCloudIn;
-      typedef typename Keypoint<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename Keypoint<PointInT, PointOutT>::KdTree KdTree;
-      typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
+      using PointCloudIn = typename Keypoint<PointInT, PointOutT>::PointCloudIn;
+      using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;
+      using KdTree = typename Keypoint<PointInT, PointOutT>::KdTree;
+      using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
 
-      typedef typename pcl::PointCloud<NormalT> PointCloudN;
-      typedef typename PointCloudN::Ptr PointCloudNPtr;
-      typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
+      using PointCloudN = pcl::PointCloud<NormalT>;
+      using PointCloudNPtr = typename PointCloudN::Ptr;
+      using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
 
       using Keypoint<PointInT, PointOutT>::name_;
       using Keypoint<PointInT, PointOutT>::input_;
@@ -96,7 +95,6 @@ namespace pcl
         , normals_ (new pcl::PointCloud<NormalT>)
         , threads_ (0)
         , label_idx_ (-1)
-        , out_fields_ ()
       {
         name_ = "SUSANKeypoint";
         search_radius_ = radius;
@@ -105,7 +103,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      virtual ~SUSANKeypoint () {}
+      ~SUSANKeypoint () {}
 
       /** \brief set the radius for normal estimation and non maxima supression.
         * \param[in] radius
@@ -136,8 +134,8 @@ namespace pcl
       void 
       setNormals (const PointCloudNConstPtr &normals);
 
-      virtual void
-      setSearchSurface (const PointCloudInConstPtr &cloud);
+      void
+      setSearchSurface (const PointCloudInConstPtr &cloud) override;
 
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
@@ -161,10 +159,10 @@ namespace pcl
     
     protected:
       bool
-      initCompute ();
+      initCompute () override;
 
       void 
-      detectKeypoints (PointCloudOut &output);
+      detectKeypoints (PointCloudOut &output) override;
       /** \brief return true if a point lies within the line between the nucleus and the centroid
         * \param[in] nucleus coordinate of the nucleus
         * \param[in] centroid of the SUSAN
@@ -200,5 +198,3 @@ namespace pcl
 }
 
 #include <pcl/keypoints/impl/susan.hpp>
-
-#endif // #ifndef PCL_SUSAN_KEYPOINT_H_

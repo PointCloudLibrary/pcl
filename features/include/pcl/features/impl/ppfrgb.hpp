@@ -58,35 +58,35 @@ template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::PPFRGBEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
   // Initialize output container - overwrite the sizes done by Feature::initCompute ()
-  output.points.resize (indices_->size () * input_->points.size ());
+  output.resize (indices_->size () * input_->size ());
   output.height = 1;
-  output.width = static_cast<uint32_t> (output.points.size ());
+  output.width = output.size ();
 
   // Compute point pair features for every pair of points in the cloud
-  for (size_t index_i = 0; index_i < indices_->size (); ++index_i)
+  for (std::size_t index_i = 0; index_i < indices_->size (); ++index_i)
   {
-    size_t i = (*indices_)[index_i];
-    for (size_t j = 0 ; j < input_->points.size (); ++j)
+    std::size_t i = (*indices_)[index_i];
+    for (std::size_t j = 0 ; j < input_->size (); ++j)
     {
       PointOutT p;
       if (i != j)
       {
         if (pcl::computeRGBPairFeatures
-            (input_->points[i].getVector4fMap (), normals_->points[i].getNormalVector4fMap (), input_->points[i].getRGBVector4i (),
-             input_->points[j].getVector4fMap (), normals_->points[j].getNormalVector4fMap (), input_->points[j].getRGBVector4i (),
+            ((*input_)[i].getVector4fMap (), (*normals_)[i].getNormalVector4fMap (), (*input_)[i].getRGBVector4i (),
+             (*input_)[j].getVector4fMap (), (*normals_)[j].getNormalVector4fMap (), (*input_)[j].getRGBVector4i (),
              p.f1, p.f2, p.f3, p.f4, p.r_ratio, p.g_ratio, p.b_ratio))
         {
           // Calculate alpha_m angle
-          Eigen::Vector3f model_reference_point = input_->points[i].getVector3fMap (),
-              model_reference_normal = normals_->points[i].getNormalVector3fMap (),
-              model_point = input_->points[j].getVector3fMap ();
-          Eigen::AngleAxisf rotation_mg (acosf (model_reference_normal.dot (Eigen::Vector3f::UnitX ())),
+          Eigen::Vector3f model_reference_point = (*input_)[i].getVector3fMap (),
+              model_reference_normal = (*normals_)[i].getNormalVector3fMap (),
+              model_point = (*input_)[j].getVector3fMap ();
+          Eigen::AngleAxisf rotation_mg (std::acos (model_reference_normal.dot (Eigen::Vector3f::UnitX ())),
                                          model_reference_normal.cross (Eigen::Vector3f::UnitX ()).normalized ());
           Eigen::Affine3f transform_mg = Eigen::Translation3f ( rotation_mg * ((-1) * model_reference_point)) * rotation_mg;
 
           Eigen::Vector3f model_point_transformed = transform_mg * model_point;
-          float angle = atan2f ( -model_point_transformed(2), model_point_transformed(1));
-          if (sin (angle) * model_point_transformed(2) < 0.0f)
+          float angle = std::atan2 ( -model_point_transformed(2), model_point_transformed(1));
+          if (std::sin (angle) * model_point_transformed(2) < 0.0f)
             angle *= (-1);
           p.alpha_m = -angle;
         }
@@ -101,7 +101,7 @@ pcl::PPFRGBEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudO
       else
          p.f1 = p.f2 = p.f3 = p.f4 = p.alpha_m = p.r_ratio = p.g_ratio = p.b_ratio = 0.f;
 
-      output.points[index_i*input_->points.size () + j] = p;
+      output[index_i*input_->size () + j] = p;
     }
   }
 }
@@ -123,10 +123,10 @@ pcl::PPFRGBRegionEstimation<PointInT, PointNT, PointOutT>::computeFeature (Point
 {
   PCL_INFO ("before computing output size: %u\n", output.size ());
   output.resize (indices_->size ());
-  for (int index_i = 0; index_i < static_cast<int> (indices_->size ()); ++index_i)
+  for (std::size_t index_i = 0; index_i < indices_->size (); ++index_i)
   {
-    int i = (*indices_)[index_i];
-    std::vector<int> nn_indices;
+    auto i = (*indices_)[index_i];
+    pcl::Indices nn_indices;
     std::vector<float> nn_distances;
     tree_->radiusSearch (i, static_cast<float> (search_radius_), nn_indices, nn_distances);
 
@@ -135,15 +135,14 @@ pcl::PPFRGBRegionEstimation<PointInT, PointNT, PointOutT>::computeFeature (Point
     average_feature_nn.f1 = average_feature_nn.f2 = average_feature_nn.f3 = average_feature_nn.f4 =
         average_feature_nn.r_ratio = average_feature_nn.g_ratio = average_feature_nn.b_ratio = 0.0f;
 
-    for (std::vector<int>::iterator nn_it = nn_indices.begin (); nn_it != nn_indices.end (); ++nn_it)
+    for (const auto &j : nn_indices)
     {
-      int j = *nn_it;
       if (i != j)
       {
         float f1, f2, f3, f4, r_ratio, g_ratio, b_ratio;
         if (pcl::computeRGBPairFeatures
-            (input_->points[i].getVector4fMap (), normals_->points[i].getNormalVector4fMap (), input_->points[i].getRGBVector4i (),
-             input_->points[j].getVector4fMap (), normals_->points[j].getNormalVector4fMap (), input_->points[j].getRGBVector4i (),
+            ((*input_)[i].getVector4fMap (), (*normals_)[i].getNormalVector4fMap (), (*input_)[i].getRGBVector4i (),
+             (*input_)[j].getVector4fMap (), (*normals_)[j].getNormalVector4fMap (), (*input_)[j].getRGBVector4i (),
              f1, f2, f3, f4, r_ratio, g_ratio, b_ratio))
         {
           average_feature_nn.f1 += f1;
@@ -169,9 +168,9 @@ pcl::PPFRGBRegionEstimation<PointInT, PointNT, PointOutT>::computeFeature (Point
     average_feature_nn.r_ratio /= normalization_factor;
     average_feature_nn.g_ratio /= normalization_factor;
     average_feature_nn.b_ratio /= normalization_factor;
-    output.points[index_i] = average_feature_nn;
+    output[index_i] = average_feature_nn;
   }
-  PCL_INFO ("Output size: %u\n", output.points.size ());
+  PCL_INFO ("Output size: %zu\n", static_cast<std::size_t>(output.size ()));
 }
 
 

@@ -51,11 +51,8 @@
 #include <vtkTable.h>
 
 #include <fstream>
-#include <sstream>
 
-#include <pcl/visualization/interactor.h>
 #include <pcl/visualization/pcl_plotter.h>
-#include <pcl/common/common_headers.h>
 
 #define VTK_CREATE(type, name) \
   vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
@@ -124,14 +121,10 @@ pcl::visualization::PCLPlotter::addPlotData (
   //adding to chart
   //vtkPlot *line = chart_->AddPlot(vtkChart::LINE);
   vtkPlot *line = chart_->AddPlot (type);
-#if VTK_MAJOR_VERSION < 6
-  line->SetInput (table, 0, 1);
-#else
   line->SetInputData (table, 0, 1);
-#endif
   line->SetWidth (1);
 
-  if (color == NULL)    //color automatically based on the ColorScheme
+  if (!color)    //color automatically based on the ColorScheme
   {
     vtkColor3ub vcolor = color_series_->GetColorRepeating (current_plot_);
     line->SetColor (vcolor[0], vcolor[1], vcolor[2], 255);
@@ -149,7 +142,7 @@ pcl::visualization::PCLPlotter::addPlotData (
     int type /* = vtkChart::LINE */, 
     std::vector<char> const &color)
 {
-  this->addPlotData (&array_X[0], &array_Y[0], static_cast<unsigned long> (array_X.size ()), name, type, (color.size () == 0) ? NULL : &color[0]);
+  this->addPlotData (&array_X[0], &array_Y[0], static_cast<unsigned long> (array_X.size ()), name, type, (color.empty ()) ? nullptr : &color[0]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -163,12 +156,12 @@ pcl::visualization::PCLPlotter::addPlotData (
   double *array_x = new double[plot_data.size ()];
   double *array_y = new double[plot_data.size ()];
 
-  for (unsigned int i = 0; i < plot_data.size (); i++)
+  for (std::size_t i = 0; i < plot_data.size (); i++)
   {
     array_x[i] = plot_data[i].first;
     array_y[i] = plot_data[i].second;
   }
-  this->addPlotData (array_x, array_y, static_cast<unsigned long> (plot_data.size ()), name, type, (color.size () == 0) ? NULL : &color[0]);
+  this->addPlotData (array_x, array_y, static_cast<unsigned long> (plot_data.size ()), name, type, (color.empty ()) ? nullptr : &color[0]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -248,16 +241,15 @@ pcl::visualization::PCLPlotter::addPlotData (
     char const *filename,
     int type)
 {
-  using namespace std;
-  ifstream fin(filename);
+  std::ifstream fin(filename);
   
   //getting the no of column
-  string line;
+  std::string line;
   getline (fin, line);
-  stringstream ss(line);
+  std::stringstream ss(line);
   
-  vector<string> pnames;       //plot names
-  string xname, temp;         //plot name of X axis
+  std::vector<std::string> pnames;       //plot names
+  std::string xname, temp;         //plot name of X axis
   
   //checking X axis name
   ss >> xname;
@@ -267,8 +259,8 @@ pcl::visualization::PCLPlotter::addPlotData (
     
   int nop = int (pnames.size ());// number of plots (y coordinate vectors)  
   
-  vector<double> xarray;      //array of X coordinates
-  vector< vector<double> > yarrays (nop); //a set of array of Y coordinates
+  std::vector<double> xarray;      //array of X coordinates
+  std::vector< std::vector<double> > yarrays (nop); //a set of array of Y coordinates
   
   //reading the entire table
   double x, y;
@@ -311,7 +303,7 @@ pcl::visualization::PCLPlotter::addFeatureHistogram (
   int field_idx = pcl::getFieldIndex (cloud, field_name);
   if (field_idx == -1)
   {
-    PCL_ERROR ("[addFeatureHistogram] Invalid field (%s) given!", field_name.c_str ());
+    PCL_ERROR ("[addFeatureHistogram] Invalid field (%s) given!\n", field_name.c_str ());
     return (false);
   }
 
@@ -338,10 +330,10 @@ bool
 pcl::visualization::PCLPlotter::addFeatureHistogram (
     const pcl::PCLPointCloud2 &cloud,
     const std::string &field_name, 
-    const int index,
+    const pcl::index_t index,
     const std::string &id, int win_width, int win_height)
 {
-  if (index < 0 || index >= static_cast<int> (cloud.width * cloud.height))
+  if (index < 0 || index >= static_cast<pcl::index_t> (cloud.width * cloud.height))
   {
     PCL_ERROR ("[addFeatureHistogram] Invalid point index (%d) given!\n", index);
     return (false);
@@ -351,14 +343,14 @@ pcl::visualization::PCLPlotter::addFeatureHistogram (
   int field_idx = pcl::getFieldIndex (cloud, field_name);
   if (field_idx == -1)
   {
-    PCL_ERROR ("[addFeatureHistogram] Invalid field (%s) given!", field_name.c_str ());
+    PCL_ERROR ("[addFeatureHistogram] Invalid field (%s) given!\n", field_name.c_str ());
     return (false);
   }
 
   // Compute the total size of the fields
   unsigned int fsize = 0;
-  for (size_t i = 0; i < cloud.fields.size (); ++i)
-    fsize += cloud.fields[i].count * pcl::getFieldSize (cloud.fields[i].datatype);
+  for (const auto &field : cloud.fields)
+    fsize += field.count * pcl::getFieldSize (field.datatype);
   
   int hsize = cloud.fields[field_idx].count;
   std::vector<double> array_x (hsize), array_y (hsize);
@@ -547,7 +539,7 @@ pcl::visualization::PCLPlotter::setWindowSize (int w, int h)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int*
-pcl::visualization::PCLPlotter::getWindowSize ()
+pcl::visualization::PCLPlotter::getWindowSize () const
 {
   int *sz = new int[2];
   sz[0] = win_width_;
@@ -590,9 +582,9 @@ pcl::visualization::PCLPlotter::computeHistogram (
 
   //find min and max in the data
   double min = data[0], max = data[0];
-  for (size_t i = 1; i < data.size (); i++)
+  for (std::size_t i = 1; i < data.size (); i++)
   {
-    if (pcl_isfinite (data[i]))
+    if (std::isfinite (data[i]))
     {
       if (data[i] < min) min = data[i];
       if (data[i] > max) max = data[i];
@@ -611,11 +603,11 @@ pcl::visualization::PCLPlotter::computeHistogram (
   }
 
   //fill the freq for each data
-  for (size_t i = 0; i < data.size (); i++)
+  for (const double &value : data)
   {
-    if (pcl_isfinite (data[i]))
+    if (std::isfinite (value))
     {
-      unsigned int index = (unsigned int) (floor ((data[i] - min) / size));
+      unsigned int index = (unsigned int) (std::floor ((value - min) / size));
       if (index == (unsigned int) nbins) index = nbins - 1; //including right boundary
       histogram[index].second++;
     }
@@ -629,7 +621,7 @@ pcl::visualization::PCLPlotter::compute (
     double val)
 {
   double res = 0;
-  for (size_t i = 0; i < p_function.size (); i++)
+  for (std::size_t i = 0; i < p_function.size (); i++)
     res += (p_function[i] * pow (val, static_cast<double> (i)) );
   return (res);
 }
@@ -658,10 +650,9 @@ pcl::visualization::PCLPlotter::setViewInteractor (
 bool
 pcl::visualization::PCLPlotter::wasStopped () const
 {
-  if (view_->GetInteractor() != NULL) 
+  if (view_->GetInteractor()) 
     return (stopped_); 
-  else 
-    return (true);
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -693,11 +684,7 @@ pcl::visualization::PCLPlotter::ExitMainLoopTimerCallback::Execute (
     return;
 
   // Stop vtk loop and send notification to app to wake it up
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-  interactor->stopLoop ();
-#else
   interactor->TerminateApp ();
-#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

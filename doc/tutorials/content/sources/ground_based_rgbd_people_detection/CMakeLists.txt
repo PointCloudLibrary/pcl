@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 project(ground_based_rgbd_people_detector)
 find_package(PCL 1.7 REQUIRED)
 

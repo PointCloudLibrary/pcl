@@ -86,7 +86,7 @@ namespace pcl
         }
 
         int res = __float2int_rn (sum1 / sum2);
-        dst.ptr (y)[x] = max (0, min (res, numeric_limits<short>::max ()));
+        dst.ptr (y)[x] = max (0, min (res, std::numeric_limits<short>::max ()));
       }
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -114,7 +114,7 @@ namespace pcl
           for (int cx = max (0, 2 * x - D / 2); cx < tx; ++cx)
           {
             int val = src.ptr (cy)[cx];
-            if (abs (val - center) < 3 * sigma_color)
+            if (std::abs (val - center) < 3 * sigma_color)
             {
               sum += val;
               ++count;

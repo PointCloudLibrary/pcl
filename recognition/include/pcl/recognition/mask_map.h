@@ -4,7 +4,7 @@
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
  *
- *  All rights reserved. 
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -35,88 +35,95 @@
  *
  */
 
-#ifndef PCL_FEATURES_MASK_MAP
-#define PCL_FEATURES_MASK_MAP
+#pragma once
+
+#include <pcl/pcl_macros.h>
 
 #include <vector>
-#include <pcl/pcl_macros.h>
-#include <cstring>
 
-namespace pcl
-{
-  class PCL_EXPORTS MaskMap
+namespace pcl {
+class PCL_EXPORTS MaskMap {
+public:
+  MaskMap() = default;
+
+  MaskMap(std::size_t width, std::size_t height);
+
+  virtual ~MaskMap() = default;
+
+  void
+  resize(std::size_t width, std::size_t height);
+
+  inline std::size_t
+  getWidth() const
   {
-    public:
-      MaskMap ();
-      MaskMap (size_t width, size_t height);
-      virtual ~MaskMap ();
+    return (width_);
+  }
 
-      void
-      resize (size_t width, size_t height);
+  inline std::size_t
+  getHeight() const
+  {
+    return (height_);
+  }
 
-      inline size_t 
-      getWidth () const { return (width_); }
-      
-      inline size_t
-      getHeight () const { return (height_); }
-      
-      inline unsigned char* 
-      getData () { return (&data_[0]); }
+  inline unsigned char*
+  getData()
+  {
+    return (data_.data());
+  }
 
-      inline const unsigned char* 
-      getData () const { return (&data_[0]); }
+  inline const unsigned char*
+  getData() const
+  {
+    return (data_.data());
+  }
 
-      static void
-      getDifferenceMask (const MaskMap & mask0,
-                         const MaskMap & mask1,
-                         MaskMap & diff_mask);
+  PCL_NODISCARD
+  static MaskMap
+  getDifferenceMask(const MaskMap& mask0, const MaskMap& mask1);
 
-      inline void
-      set (const size_t x, const size_t y)
-      {
-        data_[y*width_+x] = 255;
-      }
+  inline void
+  set(const std::size_t x, const std::size_t y)
+  {
+    data_[y * width_ + x] = 255;
+  }
 
-      inline void
-      unset (const size_t x, const size_t y)
-      {
-        data_[y*width_+x] = 0;
-      }
+  inline void
+  unset(const std::size_t x, const std::size_t y)
+  {
+    data_[y * width_ + x] = 0;
+  }
 
-      inline bool
-      isSet (const size_t x, const size_t y) const
-      {
-        return (data_[y*width_+x] != 0);
-      }
+  inline bool
+  isSet(const std::size_t x, const std::size_t y) const
+  {
+    return (data_[y * width_ + x] != 0);
+  }
 
-      inline void
-      reset ()
-      {
-        memset (&data_[0], 0, width_*height_);
-      }
+  inline void
+  reset()
+  {
+    data_.assign(data_.size(), 0);
+  }
 
-      inline unsigned char & 
-      operator() (const size_t x, const size_t y) 
-      { 
-        return (data_[y*width_+x]); 
-      }
+  inline unsigned char&
+  operator()(const std::size_t x, const std::size_t y)
+  {
+    return (data_[y * width_ + x]);
+  }
 
-      inline const unsigned char & 
-      operator() (const size_t x, const size_t y) const
-      { 
-        return (data_[y*width_+x]); 
-      }
+  inline const unsigned char&
+  operator()(const std::size_t x, const std::size_t y) const
+  {
+    return (data_[y * width_ + x]);
+  }
 
-      void
-      erode (MaskMap & eroded_mask) const;
+  void
+  erode(MaskMap& eroded_mask) const;
 
-    private:
-      //unsigned char * data_;
-      std::vector<unsigned char> data_;
-      size_t width_;
-      size_t height_;  
-  };
+private:
+  std::vector<unsigned char> data_;
+  std::size_t width_ = 0;
+  std::size_t height_ = 0;
+};
 
-}
-
-#endif  
+} // namespace pcl

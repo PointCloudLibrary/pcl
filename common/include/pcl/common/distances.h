@@ -34,10 +34,14 @@
  * $Id$
  *
  */
-#ifndef PCL_DISTANCES_H_
-#define PCL_DISTANCES_H_
 
-#include <pcl/common/common.h>
+#pragma once
+
+#include <limits>
+
+#include <pcl/types.h>
+#include <pcl/point_types.h> // for PointXY
+#include <Eigen/Core> // for VectorXf
 
 /**
   * \file pcl/common/distances.h
@@ -48,6 +52,8 @@
 /*@{*/
 namespace pcl
 {
+  template <typename PointT> class PointCloud;
+
   /** \brief Get the shortest 3D segment between two 3D lines
     * \param line_a the coefficients of the first line (point, direction)
     * \param line_b the coefficients of the second line (point, direction)
@@ -101,15 +107,16 @@ namespace pcl
                  PointT &pmin, PointT &pmax)
   {
     double max_dist = std::numeric_limits<double>::min ();
-    int i_min = -1, i_max = -1;
+    const auto token = std::numeric_limits<std::size_t>::max();
+    std::size_t i_min = token, i_max = token;
 
-    for (size_t i = 0; i < cloud.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud.size (); ++i)
     {
-      for (size_t j = i; j < cloud.points.size (); ++j)
+      for (std::size_t j = i; j < cloud.size (); ++j)
       {
         // Compute the distance 
-        double dist = (cloud.points[i].getVector4fMap () - 
-                       cloud.points[j].getVector4fMap ()).squaredNorm ();
+        double dist = (cloud[i].getVector4fMap () - 
+                       cloud[j].getVector4fMap ()).squaredNorm ();
         if (dist <= max_dist)
           continue;
 
@@ -119,11 +126,11 @@ namespace pcl
       }
     }
 
-    if (i_min == -1 || i_max == -1)
+    if (i_min == token || i_max == token)
       return (max_dist = std::numeric_limits<double>::min ());
 
-    pmin = cloud.points[i_min];
-    pmax = cloud.points[i_max];
+    pmin = cloud[i_min];
+    pmax = cloud[i_max];
     return (std::sqrt (max_dist));
   }
  
@@ -136,19 +143,20 @@ namespace pcl
     * \ingroup common
     */
   template <typename PointT> double inline
-  getMaxSegment (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &indices,
+  getMaxSegment (const pcl::PointCloud<PointT> &cloud, const Indices &indices,
                  PointT &pmin, PointT &pmax)
   {
     double max_dist = std::numeric_limits<double>::min ();
-    int i_min = -1, i_max = -1;
+    const auto token = std::numeric_limits<std::size_t>::max();
+    std::size_t i_min = token, i_max = token;
 
-    for (size_t i = 0; i < indices.size (); ++i)
+    for (std::size_t i = 0; i < indices.size (); ++i)
     {
-      for (size_t j = i; j < indices.size (); ++j)
+      for (std::size_t j = i; j < indices.size (); ++j)
       {
         // Compute the distance 
-        double dist = (cloud.points[indices[i]].getVector4fMap () - 
-                       cloud.points[indices[j]].getVector4fMap ()).squaredNorm ();
+        double dist = (cloud[indices[i]].getVector4fMap () - 
+                       cloud[indices[j]].getVector4fMap ()).squaredNorm ();
         if (dist <= max_dist)
           continue;
 
@@ -158,11 +166,11 @@ namespace pcl
       }
     }
 
-    if (i_min == -1 || i_max == -1)
+    if (i_min == token || i_max == token)
       return (max_dist = std::numeric_limits<double>::min ());
 
-    pmin = cloud.points[indices[i_min]];
-    pmax = cloud.points[indices[i_max]];
+    pmin = cloud[indices[i_min]];
+    pmax = cloud[indices[i_max]];
     return (std::sqrt (max_dist));
   }
 
@@ -198,6 +206,3 @@ namespace pcl
     return (std::sqrt (squaredEuclideanDistance (p1, p2)));
   }
 }
-/*@*/
-#endif  //#ifndef PCL_DISTANCES_H_
-

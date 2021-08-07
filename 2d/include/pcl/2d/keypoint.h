@@ -39,37 +39,43 @@
  *      Author: somani
  */
 
-#ifndef PCL_2D_KEYPOINT_H_
-#define PCL_2D_KEYPOINT_H_
+#pragma once
 
 #include <pcl/2d/edge.h>
 
-namespace pcl
-{
-  class Keypoint
-  {
-    private:
-      Edge edge_detection;
-      Convolution conv_2d;
-    public:
-      Keypoint  ()
-      {
-      }
-      
-      void 
-      harrisCorner  (ImageType &output, ImageType &input, const float sigma_d, const float sigma_i, const float alpha, const float thresh);
-      
-      void 
-      hessianBlob  (ImageType &output, ImageType &input, const float sigma, bool SCALE);
-      
-      void 
-      hessianBlob  (ImageType &output, ImageType &input, const float start_scale, const float scaling_factor, const int num_scales);
+namespace pcl {
 
-      void 
-      imageElementMultiply  (ImageType &output, ImageType &input1, ImageType &input2);
-  };
-}
+template <typename ImageType>
+class Keypoint {
+private:
+  Edge<ImageType, ImageType> edge_detection;
+  Convolution<ImageType> conv_2d;
+
+public:
+  Keypoint() {}
+
+  void
+  harrisCorner(ImageType& output,
+               ImageType& input,
+               const float sigma_d,
+               const float sigma_i,
+               const float alpha,
+               const float thresh);
+
+  void
+  hessianBlob(ImageType& output, ImageType& input, const float sigma, bool SCALE);
+
+  void
+  hessianBlob(ImageType& output,
+              ImageType& input,
+              const float start_scale,
+              const float scaling_factor,
+              const int num_scales);
+
+  void
+  imageElementMultiply(ImageType& output, ImageType& input1, ImageType& input2);
+};
+
+} // namespace pcl
 
 #include <pcl/2d/impl/keypoint.hpp>
-
-#endif    // PCL_2D_KEYPOINT_H_

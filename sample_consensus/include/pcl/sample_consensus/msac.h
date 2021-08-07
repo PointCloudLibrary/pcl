@@ -38,10 +38,8 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_MSAC_H_
-#define PCL_SAMPLE_CONSENSUS_MSAC_H_
+#pragma once
 
-#include <algorithm>
 #include <pcl/sample_consensus/sac.h>
 #include <pcl/sample_consensus/sac_model.h>
 
@@ -50,17 +48,22 @@ namespace pcl
   /** \brief @b MEstimatorSampleConsensus represents an implementation of the MSAC (M-estimator SAmple Consensus) 
     * algorithm, as described in: "MLESAC: A new robust estimator with application to estimating image geometry", P.H.S. 
     * Torr and A. Zisserman, Computer Vision and Image Understanding, vol 78, 2000.
+    * The difference to RANSAC is how the quality of a model is computed: RANSAC counts the number of inliers, given a
+    * threshold. The more inliers, the better the model is - it does not matter how close the inliers actually are to
+    * the model, as long as they are within the threshold. MSAC changes this by using the sum of all point-model distances
+    * as the quality measure, however outliers only add the threshold instead of their true distance. This method can lead
+    * to better results compared to RANSAC.
     * \author Radu B. Rusu
     * \ingroup sample_consensus
     */
   template <typename PointT>
   class MEstimatorSampleConsensus : public SampleConsensus<PointT>
   {
-    typedef typename SampleConsensusModel<PointT>::Ptr SampleConsensusModelPtr;
+    using SampleConsensusModelPtr = typename SampleConsensusModel<PointT>::Ptr;
 
     public:
-      typedef boost::shared_ptr<MEstimatorSampleConsensus> Ptr;
-      typedef boost::shared_ptr<const MEstimatorSampleConsensus> ConstPtr;
+      using Ptr = shared_ptr<MEstimatorSampleConsensus<PointT> >;
+      using ConstPtr = shared_ptr<const MEstimatorSampleConsensus<PointT> >;
 
       using SampleConsensus<PointT>::max_iterations_;
       using SampleConsensus<PointT>::threshold_;
@@ -96,12 +99,10 @@ namespace pcl
         * \param[in] debug_verbosity_level enable/disable on-screen debug information and set the verbosity level
         */
       bool 
-      computeModel (int debug_verbosity_level = 0);
+      computeModel (int debug_verbosity_level = 0) override;
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/sample_consensus/impl/msac.hpp>
 #endif
-
-#endif  //#ifndef PCL_SAMPLE_CONSENSUS_MSAC_H_

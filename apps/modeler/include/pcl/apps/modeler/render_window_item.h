@@ -1,4 +1,4 @@
- /*
+/*
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
@@ -34,65 +34,64 @@
  *
  */
 
-#ifndef PCL_MODELER_RENDER_WINDOW_ITEM_H_
-#define PCL_MODELER_RENDER_WINDOW_ITEM_H_
+#pragma once
 
-#include <pcl/apps/modeler/qt.h>
 #include <pcl/apps/modeler/abstract_item.h>
 #include <pcl/apps/modeler/cloud_mesh.h>
 
+#include <QTreeWidgetItem>
 
-namespace pcl
-{
-  namespace modeler
+namespace pcl {
+namespace modeler {
+
+class RenderWindow;
+class CloudMeshItem;
+class ColorParameter;
+class BoolParameter;
+
+class RenderWindowItem : public QTreeWidgetItem, public AbstractItem {
+public:
+  RenderWindowItem(QTreeWidget* parent);
+  ~RenderWindowItem();
+
+  inline RenderWindow*
+  getRenderWindow()
   {
-    class RenderWindow;
-    class CloudMeshItem;
-    class ColorParameter;
-    class BoolParameter;
-
-    class RenderWindowItem : public QTreeWidgetItem, public AbstractItem
-    {
-      public:
-        RenderWindowItem(QTreeWidget * parent);
-        ~RenderWindowItem();
-
-        inline RenderWindow*
-        getRenderWindow()
-        {
-          return render_window_;
-        }
-        inline const RenderWindow*
-        getRenderWindow() const
-        {
-          return render_window_;
-        }
-
-        bool
-        openPointCloud(const QString& filename);
-
-        CloudMeshItem*
-        addPointCloud(CloudMesh::PointCloudPtr cloud);
-
-        virtual std::string
-        getItemName() const {return "Render Window Item";}
-
-      protected:
-        virtual void
-        prepareContextMenu(QMenu* menu) const;
-
-        virtual void
-        prepareProperties(ParameterDialog* parameter_dialog);
-
-        virtual void
-        setProperties();
-
-      private:
-        RenderWindow*     render_window_;
-        ColorParameter*   background_color_;
-        BoolParameter*    show_axes_;
-    };
+    return render_window_;
   }
-}
+  inline const RenderWindow*
+  getRenderWindow() const
+  {
+    return render_window_;
+  }
 
-#endif // PCL_MODELER_RENDER_WINDOW_ITEM_H_
+  bool
+  openPointCloud(const QString& filename);
+
+  CloudMeshItem*
+  addPointCloud(CloudMesh::PointCloudPtr cloud);
+
+  std::string
+  getItemName() const override
+  {
+    return "Render Window Item";
+  }
+
+protected:
+  void
+  prepareContextMenu(QMenu* menu) const override;
+
+  void
+  prepareProperties(ParameterDialog* parameter_dialog) override;
+
+  void
+  setProperties() override;
+
+private:
+  RenderWindow* render_window_;
+  ColorParameter* background_color_;
+  BoolParameter* show_axes_;
+};
+
+} // namespace modeler
+} // namespace pcl

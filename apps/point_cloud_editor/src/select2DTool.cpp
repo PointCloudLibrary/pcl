@@ -49,7 +49,7 @@ const float Select2DTool::DEFAULT_TOOL_DISPLAY_COLOR_BLUE_ = 1.0f;
 
 
 Select2DTool::Select2DTool (SelectionPtr selection_ptr, CloudPtr cloud_ptr)
-  : selection_ptr_(selection_ptr), cloud_ptr_(cloud_ptr), display_box_(false)
+  : selection_ptr_(std::move(selection_ptr)), cloud_ptr_(std::move(cloud_ptr)), display_box_(false)
 {
 }
 
@@ -96,7 +96,7 @@ Select2DTool::end (int x, int y, BitMask modifiers, BitMask)
 
   Point3DVector ptsvec;
   cloud_ptr_->getDisplaySpacePoints(ptsvec);
-  for(unsigned int i = 0; i < ptsvec.size(); ++i)
+  for(std::size_t i = 0; i < ptsvec.size(); ++i)
   {
     Point3D pt = ptsvec[i];
     if (isInSelectBox(pt, project, viewport))
@@ -196,8 +196,8 @@ Select2DTool::drawRubberBand (GLint* viewport) const
 void
 Select2DTool::highlightPoints (GLint* viewport) const
 {
-  double width = abs(origin_x_ - final_x_);
-  double height = abs(origin_y_ - final_y_);
+  double width = std::abs(origin_x_ - final_x_);
+  double height = std::abs(origin_y_ - final_y_);
   glPushAttrib(GL_SCISSOR_BIT);
   {
     glEnable(GL_SCISSOR_TEST);

@@ -35,16 +35,19 @@
  *
  */
 
-#include <pcl/cuda/io/cloud_to_pcl.h>
-#include <pcl/cuda/io/disparity_to_cloud.h>
-
-#include <pcl/io/openni_grabber.h>
+#include <pcl/memory.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/cuda/io/cloud_to_pcl.h>
+#include <pcl/cuda/io/disparity_to_cloud.h>
 #include <pcl/cuda/time_cpu.h>
-#include <boost/shared_ptr.hpp>
+#include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
+
+#include <functional>
 #include <iostream>
+#include <mutex>
+
 
 using pcl::cuda::PointCloudAOS;
 using pcl::cuda::Device;
@@ -55,7 +58,7 @@ class SimpleKinectTool
   public:
      SimpleKinectTool (bool downsample) : viewer ("KinectGrabber"), downsample_(downsample) {}
 
-    void cloud_cb_ (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float constant)
+    void cloud_cb_ (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float constant)
     {
       PointCloudAOS<Device>::Ptr data;
     	{
@@ -75,9 +78,9 @@ class SimpleKinectTool
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id);
 
-      boost::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&SimpleKinectTool::cloud_cb_, this, _1, _2, _3);
+      std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)> f = std::bind (&SimpleKinectTool::cloud_cb_, this, _1, _2, _3);
 
-      boost::signals2::connection c = interface->registerCallback (f);
+      interface->registerCallback (f);
 
       //viewer.runOnVisualizationThread (fn, "viz_cb");
       interface->start ();
@@ -92,7 +95,7 @@ class SimpleKinectTool
 
     pcl::cuda::DisparityToCloud d2c;
     pcl::visualization::CloudViewer viewer;
-    boost::mutex mutex_;
+    std::mutex mutex_;
     bool downsample_;
 };
 

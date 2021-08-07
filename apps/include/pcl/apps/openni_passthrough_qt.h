@@ -35,18 +35,14 @@
  *
  */
 
-#ifndef PCL_APPS_OPENNI_PASSTHROUGH_QT_
-#define PCL_APPS_OPENNI_PASSTHROUGH_QT_
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header
 #endif
 
-#include <ui_openni_passthrough.h>
-// QT4
 #include <QMainWindow>
 #include <QMutex>
-#include <QTimer>
 #include <QObject>
-
-#endif    // PCL_APPS_OPENNI_PASSTHROUGH_QT_
+#include <QTimer>
+#include <ui_openni_passthrough.h>

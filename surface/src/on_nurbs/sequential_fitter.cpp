@@ -37,6 +37,8 @@
 
 #include <pcl/surface/on_nurbs/sequential_fitter.h>
 
+#include <Eigen/Geometry> // for cross
+
 using namespace pcl;
 using namespace on_nurbs;
 using namespace Eigen;
@@ -122,7 +124,7 @@ SequentialFitter::compute_quadfit ()
 }
 
 void
-SequentialFitter::compute_refinement (FittingSurface* fitting)
+SequentialFitter::compute_refinement (FittingSurface* fitting) const
 {
   // Refinement
   FittingSurface::Parameter paramFP (0.0, 1.0, 0.0, m_params.forceBoundary, m_params.stiffnessBoundary, 0.0);
@@ -137,7 +139,7 @@ SequentialFitter::compute_refinement (FittingSurface* fitting)
 }
 
 void
-SequentialFitter::compute_boundary (FittingSurface* fitting)
+SequentialFitter::compute_boundary (FittingSurface* fitting) const
 {
   FittingSurface::Parameter paramFP (0.0, 1.0, 0.0, m_params.forceBoundary, m_params.stiffnessBoundary, 0.0);
 
@@ -149,7 +151,7 @@ SequentialFitter::compute_boundary (FittingSurface* fitting)
   }
 }
 void
-SequentialFitter::compute_interior (FittingSurface* fitting)
+SequentialFitter::compute_interior (FittingSurface* fitting) const
 {
   // iterate interior points
   //std::vector<double> wInt(m_data.interior.PointCount(), m_params.forceInterior);
@@ -187,10 +189,7 @@ SequentialFitter::is_back_facing (const Eigen::Vector3d &v0, const Eigen::Vector
   e2 = v2 - v0;
 
   Eigen::Vector3d z (m_extrinsic (0, 2), m_extrinsic (1, 2), m_extrinsic (2, 2));
-  if (z.dot (e1.cross (e2)) > 0.0)
-    return true;
-  else
-    return false;
+  return z.dot (e1.cross (e2)) > 0.0;
 }
 
 /********************************************************************************/
@@ -199,7 +198,7 @@ SequentialFitter::is_back_facing (const Eigen::Vector3d &v0, const Eigen::Vector
 void
 SequentialFitter::setInputCloud (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_cloud)
 {
-  if (pcl_cloud.get () == 0 || pcl_cloud->points.size () == 0)
+  if (pcl_cloud.get () == nullptr || pcl_cloud->points.empty ())
     throw std::runtime_error ("[SequentialFitter::setInputCloud] Error: Empty or invalid pcl-point-cloud.\n");
 
   m_cloud = pcl_cloud;
@@ -209,7 +208,7 @@ SequentialFitter::setInputCloud (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_clo
 void
 SequentialFitter::setBoundary (pcl::PointIndices::Ptr &pcl_cloud_indexes)
 {
-  if (m_cloud.get () == 0 || m_cloud->points.size () == 0)
+  if (m_cloud.get () == nullptr || m_cloud->points.empty ())
     throw std::runtime_error ("[SequentialFitter::setBoundary] Error: Empty or invalid pcl-point-cloud.\n");
 
   this->m_boundary_indices = pcl_cloud_indexes;
@@ -220,7 +219,7 @@ SequentialFitter::setBoundary (pcl::PointIndices::Ptr &pcl_cloud_indexes)
 void
 SequentialFitter::setInterior (pcl::PointIndices::Ptr &pcl_cloud_indexes)
 {
-  if (m_cloud.get () == 0 || m_cloud->points.size () == 0)
+  if (m_cloud.get () == nullptr || m_cloud->points.empty ())
     throw std::runtime_error ("[SequentialFitter::setIndices] Error: Empty or invalid pcl-point-cloud.\n");
 
   this->m_interior_indices = pcl_cloud_indexes;
@@ -231,7 +230,7 @@ SequentialFitter::setInterior (pcl::PointIndices::Ptr &pcl_cloud_indexes)
 void
 SequentialFitter::setCorners (pcl::PointIndices::Ptr &corners, bool flip_on_demand)
 {
-  if (m_cloud.get () == 0 || m_cloud->points.size () == 0)
+  if (m_cloud.get () == nullptr || m_cloud->points.empty ())
     throw std::runtime_error ("[SequentialFitter::setCorners] Error: Empty or invalid pcl-point-cloud.\n");
 
   if (corners->indices.size () < 4)
@@ -294,7 +293,7 @@ SequentialFitter::compute (bool assemble)
   //  TomGine::tgRenderModel nurbs;
   //  TomGine::tgRenderModel box;
 
-  if (m_data.boundary.size () > 0)
+  if (!m_data.boundary.empty ())
   {
     //    throw std::runtime_error("[SequentialFitter::compute] Error: empty boundary point-cloud.\n");
 
@@ -364,7 +363,7 @@ SequentialFitter::compute (bool assemble)
     }
   }
 
-  if (m_data.interior.size () > 0)
+  if (!m_data.interior.empty ())
     compute_interior (fitting);
 
   // update error
@@ -380,7 +379,7 @@ SequentialFitter::compute (bool assemble)
 ON_NurbsSurface
 SequentialFitter::compute_boundary (const ON_NurbsSurface &nurbs)
 {
-  if (m_data.boundary.size () <= 0)
+  if (m_data.boundary.empty ())
   {
     printf ("[SequentialFitter::compute_boundary] Warning, no boundary points given: setBoundary()\n");
     return nurbs;
@@ -403,7 +402,7 @@ SequentialFitter::compute_boundary (const ON_NurbsSurface &nurbs)
 ON_NurbsSurface
 SequentialFitter::compute_interior (const ON_NurbsSurface &nurbs)
 {
-  if (m_data.boundary.size () <= 0)
+  if (m_data.boundary.empty ())
   {
     printf ("[SequentialFitter::compute_interior] Warning, no interior points given: setInterior()\n");
     return nurbs;
@@ -423,37 +422,37 @@ SequentialFitter::compute_interior (const ON_NurbsSurface &nurbs)
 }
 
 void
-SequentialFitter::getInteriorError (std::vector<double> &error)
+SequentialFitter::getInteriorError (std::vector<double> &error) const
 {
   error = m_data.interior_error;
 }
 
 void
-SequentialFitter::getBoundaryError (std::vector<double> &error)
+SequentialFitter::getBoundaryError (std::vector<double> &error) const
 {
   error = m_data.boundary_error;
 }
 
 void
-SequentialFitter::getInteriorParams (std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params)
+SequentialFitter::getInteriorParams (std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params) const
 {
   params = m_data.interior_param;
 }
 
 void
-SequentialFitter::getBoundaryParams (std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params)
+SequentialFitter::getBoundaryParams (std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params) const
 {
   params = m_data.boundary_param;
 }
 
 void
-SequentialFitter::getInteriorNormals (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normals)
+SequentialFitter::getInteriorNormals (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normals) const
 {
   normals = m_data.interior_normals;
 }
 
 void
-SequentialFitter::getBoundaryNormals (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normals)
+SequentialFitter::getBoundaryNormals (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normals) const
 {
   normals = m_data.boundary_normals;
 }
@@ -493,7 +492,7 @@ SequentialFitter::grow (float max_dist, float max_angle, unsigned min_length, un
     throw std::runtime_error ("[SequentialFitter::grow] size of boundary indices and boundary parameters do not match.");
   }
 
-  float angle = cosf (max_angle);
+  float angle = std::cos (max_angle);
   unsigned bnd_moved (0);
 
   for (unsigned i = 0; i < num_bnd; i++)
@@ -551,19 +550,17 @@ SequentialFitter::grow (float max_dist, float max_angle, unsigned min_length, un
 
       if (row >= int (m_cloud->height) || row < 0)
       {
-        j = max_length;
         break;
       }
       if (col >= int (m_cloud->width) || col < 0)
       {
-        j = max_length;
         break;
       }
 
       unsigned idx = row * m_cloud->width + col;
 
       pcl::PointXYZRGB &pt = m_cloud->at (idx);
-      if (!pcl_isnan (pt.x) && !pcl_isnan (pt.y) && !pcl_isnan (pt.z))
+      if (!std::isnan (pt.x) && !std::isnan (pt.y) && !std::isnan (pt.z))
       {
 
         // distance requirement
@@ -596,9 +593,9 @@ SequentialFitter::grow (float max_dist, float max_angle, unsigned min_length, un
 
   double int_err (0.0);
   double div_err = 1.0 / double (m_data.interior_error.size ());
-  for (unsigned i = 0; i < m_data.interior_error.size (); i++)
+  for (const double &i : m_data.interior_error)
   {
-    int_err += (m_data.interior_error[i] * div_err);
+    int_err += (i * div_err);
   }
 
   printf ("[SequentialFitter::grow] average interior error: %e\n", int_err);
@@ -608,17 +605,17 @@ SequentialFitter::grow (float max_dist, float max_angle, unsigned min_length, un
 }
 
 unsigned
-SequentialFitter::PCL2ON (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_cloud, const std::vector<int> &indices,
+SequentialFitter::PCL2ON (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_cloud, const pcl::Indices &indices,
                           vector_vec3d &on_cloud)
 {
-  unsigned numPoints (0);
+  std::size_t numPoints = 0;
 
-  for (unsigned i = 0; i < indices.size (); i++)
+  for (const auto &index : indices)
   {
 
-    pcl::PointXYZRGB &pt = pcl_cloud->at (indices[i]);
+    pcl::PointXYZRGB &pt = pcl_cloud->at (index);
 
-    if (!pcl_isnan (pt.x) && !pcl_isnan (pt.y) && !pcl_isnan (pt.z))
+    if (!std::isnan (pt.x) && !std::isnan (pt.y) && !std::isnan (pt.z))
     {
       on_cloud.push_back (Eigen::Vector3d (pt.x, pt.y, pt.z));
       numPoints++;

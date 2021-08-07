@@ -34,10 +34,10 @@
  *  $Id: tsdf_volume.h 6459 2012-07-18 07:50:37Z dpb $
  */
 
+#pragma once
 
-#ifndef TSDF_VOLUME_H_
-#define TSDF_VOLUME_H_
-
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/console/print.h>
@@ -59,11 +59,11 @@ namespace pcl
   {
   public:
 
-    typedef boost::shared_ptr<TSDFVolume<VoxelT, WeightT> > Ptr;
-    typedef boost::shared_ptr<const TSDFVolume<VoxelT, WeightT> > ConstPtr;
+    using Ptr = shared_ptr<TSDFVolume<VoxelT, WeightT> >;
+    using ConstPtr = shared_ptr<const TSDFVolume<VoxelT, WeightT> >;
 
-    // typedef Eigen::Matrix<VoxelT, Eigen::Dynamic, 1> VoxelTVec;
-    typedef Eigen::VectorXf VoxelTVec;
+    // using VoxelTVec = Eigen::Matrix<VoxelT, Eigen::Dynamic, 1>;
+    using VoxelTVec = Eigen::VectorXf;
 
     /** \brief Structure storing voxel grid resolution, volume size (in mm) and element_size of stored data */
     struct Header
@@ -86,7 +86,7 @@ namespace pcl
           weights_element_size (sizeof(WeightT))
       {};
 
-      inline size_t
+      inline std::size_t
       getVolumeSize () const { return resolution[0] * resolution[1] * resolution[2]; };
 
       friend inline std::ostream&
@@ -97,7 +97,7 @@ namespace pcl
       }
 
 public:
-EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 
     };
 
@@ -184,7 +184,7 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     save (const std::string &filename = "tsdf_volume.dat", bool binary = true) const;
 
     /** \brief Returns overall number of voxels in grid */
-    inline size_t
+    inline std::size_t
     size () const { return header_.getVolumeSize(); };
 
     /** \brief Returns the volume size in mm */
@@ -226,7 +226,7 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     // Functionality
 
     /** \brief Converts volume to cloud of TSDF values
-      * \param[ou] cloud - the output point cloud
+      * \param[out] cloud - the output point cloud
       * \param[in] step - the decimation step to use
       */
     void
@@ -284,17 +284,15 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   //  void
   //  integrateVolume (const Eigen::MatrixXf &depth_scaled, float tranc_dist, const Eigen::Matrix3f &R_inv, const Eigen::Vector3f &t, const Intr &intr);
 
-    typedef boost::shared_ptr<std::vector<VoxelT> > VolumePtr;
-    typedef boost::shared_ptr<std::vector<WeightT> > WeightsPtr;
+    using VolumePtr = shared_ptr<std::vector<VoxelT> >;
+    using WeightsPtr = shared_ptr<std::vector<WeightT> >;
 
     Header header_;
     VolumePtr volume_;
     WeightsPtr weights_;
 public:
-EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 
   };
 
 }
-
-#endif /* TSDF_VOLUME_H_ */

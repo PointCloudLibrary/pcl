@@ -39,11 +39,10 @@
  *
  */
 
-#ifndef PCL_FILTERS_LOCAL_MAXIMUM_H_
-#define PCL_FILTERS_LOCAL_MAXIMUM_H_
+#pragma once
 
 #include <pcl/filters/filter_indices.h>
-#include <pcl/search/pcl_search.h>
+#include <pcl/search/search.h> // for Search
 
 namespace pcl
 {
@@ -61,8 +60,8 @@ namespace pcl
   class LocalMaximum: public FilterIndices<PointT>
   {
     protected:
-      typedef typename FilterIndices<PointT>::PointCloud PointCloud;
-      typedef typename pcl::search::Search<PointT>::Ptr SearcherPtr;
+      using PointCloud = typename FilterIndices<PointT>::PointCloud;
+      using SearcherPtr = typename pcl::search::Search<PointT>::Ptr;
 
     public:
       /** \brief Empty constructor. */
@@ -99,13 +98,13 @@ namespace pcl
         * \param[out] output the resultant point cloud message
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
       /** \brief Filtered results are indexed by an indices array.
         * \param[out] indices The resultant indices.
         */
       void
-      applyFilter (std::vector<int> &indices)
+      applyFilter (Indices &indices) override
       {
         applyFilterIndices (indices);
       }
@@ -114,7 +113,7 @@ namespace pcl
         * \param[out] indices The resultant indices.
         */
       void
-      applyFilterIndices (std::vector<int> &indices);
+      applyFilterIndices (Indices &indices);
 
     private:
       /** \brief A pointer to the spatial search object. */
@@ -128,6 +127,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/local_maximum.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_LOCAL_MAXIMUM_H_
-

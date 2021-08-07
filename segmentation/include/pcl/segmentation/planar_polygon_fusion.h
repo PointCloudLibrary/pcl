@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_PLANAR_POLYGON_FUSION_H_
-#define PCL_SEGMENTATION_PLANAR_POLYGON_FUSION_H_
+#pragma once
 
 #include <Eigen/Core>
 #include <vector>
@@ -73,7 +72,7 @@ namespace pcl
       {
         int start = static_cast<int> (regions_.size ());
         regions_.resize (regions_.size () + input.size ());
-        for(size_t i = 0; i < input.size (); i++)
+        for(std::size_t i = 0; i < input.size (); i++)
           regions_[start+i] = input[i];
       }
 
@@ -86,5 +85,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/planar_polygon_fusion.hpp>
 #endif
-
-#endif // PCL_SEGMENTATION_PLANAR_POLYGON_FUSION_H_

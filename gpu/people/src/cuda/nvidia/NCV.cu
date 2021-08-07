@@ -44,8 +44,6 @@
 #include <algorithm>
 #include "NCV.hpp"
 
-using namespace std;
-
 
 //==============================================================================
 //
@@ -54,16 +52,16 @@ using namespace std;
 //==============================================================================
 
 
-static void stdDebugOutput(const string &msg)
+static void stdDebugOutput(const std::string &msg)
 {
-    cout << msg;
+    std::cout << msg;
 }
 
 
 static NCVDebugOutputHandler *debugOutputHandler = stdDebugOutput;
 
 
-void ncvDebugOutput(const string &msg)
+void ncvDebugOutput(const std::string &msg)
 {
     debugOutputHandler(msg);
 }
@@ -105,7 +103,7 @@ void NCVMemSegment::clear()
 }
 
 
-NCVStatus memSegCopyHelper(void *dst, NCVMemoryType dstType, const void *src, NCVMemoryType srcType, size_t sz, cudaStream_t cuStream)
+NCVStatus memSegCopyHelper(void *dst, NCVMemoryType dstType, const void *src, NCVMemoryType srcType, std::size_t sz, cudaStream_t cuStream)
 {
     NCVStatus ncvStat;
     switch (dstType)
@@ -267,7 +265,7 @@ NCVMemStackAllocator::NCVMemStackAllocator(Ncv32u alignment)
 }
 
 
-NCVMemStackAllocator::NCVMemStackAllocator(NCVMemoryType memT, size_t capacity, Ncv32u alignment, void *reusePtr)
+NCVMemStackAllocator::NCVMemStackAllocator(NCVMemoryType memT, std::size_t capacity, Ncv32u alignment, void *reusePtr)
     :
     currentSize(0),
     _maxSize(0),
@@ -345,18 +343,18 @@ NCVMemStackAllocator::~NCVMemStackAllocator()
 }
 
 
-NCVStatus NCVMemStackAllocator::alloc(NCVMemSegment &seg, size_t size)
+NCVStatus NCVMemStackAllocator::alloc(NCVMemSegment &seg, std::size_t size)
 {
     seg.clear();
     ncvAssertReturn(isInitialized(), NCV_ALLOCATOR_BAD_ALLOC);
 
     size = alignUp(size, this->_alignment);
     this->currentSize += size;
-    this->_maxSize = std::max(this->_maxSize, this->currentSize);
+    this->_maxSize = max(this->_maxSize, this->currentSize);
 
     if (!isCounting())
     {
-        size_t availSize = end - begin;
+        std::size_t availSize = end - begin;
         ncvAssertReturn(size <= availSize, NCV_ALLOCATOR_INSUFFICIENT_CAPACITY);
     }
 
@@ -441,7 +439,7 @@ NCVMemNativeAllocator::~NCVMemNativeAllocator()
 }
 
 
-NCVStatus NCVMemNativeAllocator::alloc(NCVMemSegment &seg, size_t size)
+NCVStatus NCVMemNativeAllocator::alloc(NCVMemSegment &seg, std::size_t size)
 {
     seg.clear();
     ncvAssertReturn(isInitialized(), NCV_ALLOCATOR_BAD_ALLOC);
@@ -461,7 +459,7 @@ NCVStatus NCVMemNativeAllocator::alloc(NCVMemSegment &seg, size_t size)
     }
 
     this->currentSize += alignUp(size, this->_alignment);
-    this->_maxSize = std::max(this->_maxSize, this->currentSize);
+    this->_maxSize = max(this->_maxSize, this->currentSize);
 
     seg.begin.memtype = this->_memType;
     seg.size = size;
@@ -531,175 +529,10 @@ size_t NCVMemNativeAllocator::maxSize(void) const
 
 //===================================================================
 //
-// Time and timer routines
-//
-//===================================================================
-
-
-typedef struct _NcvTimeMoment NcvTimeMoment;
-
-#if defined(_WIN32) || defined(_WIN64)
-
-    #include <Windows.h>
-
-    typedef struct _NcvTimeMoment
-    {
-        LONGLONG moment, freq;
-    } NcvTimeMoment;
-
-
-    static void _ncvQueryMoment(NcvTimeMoment *t)
-    {
-        QueryPerformanceFrequency((LARGE_INTEGER *)&(t->freq));
-        QueryPerformanceCounter((LARGE_INTEGER *)&(t->moment));
-    }
-
-
-    double _ncvMomentToMicroseconds(NcvTimeMoment *t)
-    {
-        return 1000000.0 * t->moment / t->freq;
-    }
-
-
-    double _ncvMomentsDiffToMicroseconds(NcvTimeMoment *t1, NcvTimeMoment *t2)
-    {
-        return 1000000.0 * 2 * ((t2->moment) - (t1->moment)) / (t1->freq + t2->freq);
-    }
-
-
-    double _ncvMomentsDiffToMilliseconds(NcvTimeMoment *t1, NcvTimeMoment *t2)
-    {
-        return 1000.0 * 2 * ((t2->moment) - (t1->moment)) / (t1->freq + t2->freq);
-    }
-
-#elif defined(__GNUC__)
-
-    #include <sys/time.h>
-
-    typedef struct _NcvTimeMoment
-    {
-        struct timeval tv;
-        struct timezone tz;
-    } NcvTimeMoment;
-
-
-    void _ncvQueryMoment(NcvTimeMoment *t)
-    {
-        gettimeofday(& t->tv, & t->tz);
-    }
-
-
-    double _ncvMomentToMicroseconds(NcvTimeMoment *t)
-    {
-        return 1000000.0 * t->tv.tv_sec + (double)t->tv.tv_usec;
-    }
-
-
-    double _ncvMomentsDiffToMicroseconds(NcvTimeMoment *t1, NcvTimeMoment *t2)
-    {
-        return (((double)t2->tv.tv_sec - (double)t1->tv.tv_sec) * 1000000 + (double)t2->tv.tv_usec - (double)t1->tv.tv_usec);
-    }
-
-    double _ncvMomentsDiffToMilliseconds(NcvTimeMoment *t1, NcvTimeMoment *t2)
-    {
-        return ((double)t2->tv.tv_sec - (double)t1->tv.tv_sec) * 1000;
-    }
-
-#endif //#if defined(_WIN32) || defined(_WIN64)
-
-
-struct _NcvTimer
-{
-    NcvTimeMoment t1, t2;
-};
-
-
-NcvTimer ncvStartTimer(void)
-{
-    struct _NcvTimer *t;
-    t = (struct _NcvTimer *)malloc(sizeof(struct _NcvTimer));
-    _ncvQueryMoment(&t->t1);
-    return t;
-}
-
-
-double ncvEndQueryTimerUs(NcvTimer t)
-{
-    double res;
-    _ncvQueryMoment(&t->t2);
-    res = _ncvMomentsDiffToMicroseconds(&t->t1, &t->t2);
-    free(t);
-    return res;
-}
-
-
-double ncvEndQueryTimerMs(NcvTimer t)
-{
-    double res;
-    _ncvQueryMoment(&t->t2);
-    res = _ncvMomentsDiffToMilliseconds(&t->t1, &t->t2);
-    free(t);
-    return res;
-}
-
-
-//===================================================================
-//
 // Operations with rectangles
 //
 //===================================================================
 
-
-//from OpenCV
-//void groupRectangles(std::vector<NcvRect32u> &hypotheses, int groupThreshold, double eps, std::vector<Ncv32u> *weights);
-
-/*
-NCVStatus ncvGroupRectangles_host(NCVVector<NcvRect32u> &hypotheses,
-                                  Ncv32u &numHypotheses,
-                                  Ncv32u minNeighbors,
-                                  Ncv32f intersectEps,
-                                  NCVVector<Ncv32u> *hypothesesWeights)
-{
-    ncvAssertReturn(hypotheses.memType() == NCVMemoryTypeHostPageable ||
-                    hypotheses.memType() == NCVMemoryTypeHostPinned, NCV_MEM_RESIDENCE_ERROR);
-    if (hypothesesWeights != NULL)
-    {
-        ncvAssertReturn(hypothesesWeights->memType() == NCVMemoryTypeHostPageable ||
-                        hypothesesWeights->memType() == NCVMemoryTypeHostPinned, NCV_MEM_RESIDENCE_ERROR);
-    }
-
-    if (numHypotheses == 0)
-    {
-        return NCV_SUCCESS;
-    }
-
-    std::vector<NcvRect32u> rects(numHypotheses);
-    memcpy(&rects[0], hypotheses.ptr(), numHypotheses * sizeof(NcvRect32u));
-
-    std::vector<Ncv32u> weights;
-    if (hypothesesWeights != NULL)
-    {
-        groupRectangles(rects, minNeighbors, intersectEps, &weights);
-    }
-    else
-    {
-        groupRectangles(rects, minNeighbors, intersectEps, NULL);
-    }
-
-    numHypotheses = (Ncv32u)rects.size();
-    if (numHypotheses > 0)
-    {
-        memcpy(hypotheses.ptr(), &rects[0], numHypotheses * sizeof(NcvRect32u));
-    }
-
-    if (hypothesesWeights != NULL)
-    {
-        memcpy(hypothesesWeights->ptr(), &weights[0], numHypotheses * sizeof(Ncv32u));
-    }
-
-    return NCV_SUCCESS;
-}
-*/
 
 template <class T>
 static NCVStatus drawRectsWrapperHost(T *h_dst,

@@ -1,5 +1,4 @@
-#ifndef PCL_GPU_TRACKING_PARTICLE_FILTER_H_
-#define PCL_GPU_TRACKING_PARTICLE_FILTER_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/gpu/containers/device_array.h>
@@ -12,8 +11,6 @@
 #include <pcl/gpu/kinfu/pixel_rgb.h>
 #include <pcl/tracking/particle_filter.h>
 
-#include <Eigen/Dense>
-
 #include "internal.h"
 
 namespace pcl
@@ -24,14 +21,14 @@ namespace pcl
     {
     public:
     	/** \brief Point type supported */
-    	typedef pcl::PointXYZ PointType;
-			//typedef pcl::Normal		NormalType;
-			typedef pcl::RGB			PixelRGB;
+    	using PointType = pcl::PointXYZ;
+			//using NormalType = pcl::Normal;
+			using PixelRGB = pcl::RGB;
 			
-			typedef pcl::PointXYZ		StateXYZ;
-			typedef pcl::PointXYZ		StateRPY;
+			using StateXYZ = pcl::PointXYZ;
+			using StateRPY = pcl::PointXYZ;
 			
-			typedef pcl::tracking::ParticleXYZRPY StateType;
+			using StateType = pcl::tracking::ParticleXYZRPY;
 
 			/** \brief Empty constructor. */
 			ParticleFilterGPUTracker ()
@@ -148,5 +145,3 @@ namespace pcl
 		};
   }
 }
-
-#endif // PCL_GPU_TRACKING_PARTICLE_FILTER_H_

@@ -37,12 +37,10 @@
  *
  */
 
-#ifndef PCL_FILTERS_VOXEL_GRID_MAP_H_
-#define PCL_FILTERS_VOXEL_GRID_MAP_H_
+#pragma once
 
-#include <pcl/filters/boost.h>
 #include <pcl/filters/filter.h>
-#include <map>
+#include <cfloat> // for FLT_MAX
 
 namespace pcl
 {
@@ -158,7 +156,7 @@ namespace pcl
     */
   template <typename PointT> void
   getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
-               const std::vector<int> &indices,
+               const Indices &indices,
                const std::string &distance_field_name, float min_distance, float max_distance,
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false);
 
@@ -183,14 +181,14 @@ namespace pcl
       using Filter<PointT>::input_;
       using Filter<PointT>::indices_;
 
-      typedef typename Filter<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = typename Filter<PointT>::PointCloud;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
     public:
 
-      typedef boost::shared_ptr< VoxelGrid<PointT> > Ptr;
-      typedef boost::shared_ptr< const VoxelGrid<PointT> > ConstPtr;
+      using Ptr = shared_ptr<VoxelGrid<PointT> >;
+      using ConstPtr = shared_ptr<const VoxelGrid<PointT> >;
 
       /** \brief Empty constructor. */
       VoxelGrid () :
@@ -198,7 +196,6 @@ namespace pcl
         inverse_leaf_size_ (Eigen::Array4f::Zero ()),
         downsample_all_data_ (true),
         save_leaf_layout_ (false),
-        leaf_layout_ (),
         min_b_ (Eigen::Vector4i::Zero ()),
         max_b_ (Eigen::Vector4i::Zero ()),
         div_b_ (Eigen::Vector4i::Zero ()),
@@ -213,7 +210,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      virtual ~VoxelGrid ()
+      ~VoxelGrid ()
       {
       }
 
@@ -319,9 +316,9 @@ namespace pcl
       inline int
       getCentroidIndex (const PointT &p) const
       {
-        return (leaf_layout_.at ((Eigen::Vector4i (static_cast<int> (floor (p.x * inverse_leaf_size_[0])),
-                                                   static_cast<int> (floor (p.y * inverse_leaf_size_[1])),
-                                                   static_cast<int> (floor (p.z * inverse_leaf_size_[2])), 0) - min_b_).dot (divb_mul_)));
+        return (leaf_layout_.at ((Eigen::Vector4i (static_cast<int> (std::floor (p.x * inverse_leaf_size_[0])),
+                                                   static_cast<int> (std::floor (p.y * inverse_leaf_size_[1])),
+                                                   static_cast<int> (std::floor (p.z * inverse_leaf_size_[2])), 0) - min_b_).dot (divb_mul_)));
       }
 
       /** \brief Returns the indices in the resulting downsampled cloud of the points at the specified grid coordinates,
@@ -333,13 +330,13 @@ namespace pcl
       inline std::vector<int>
       getNeighborCentroidIndices (const PointT &reference_point, const Eigen::MatrixXi &relative_coordinates) const
       {
-        Eigen::Vector4i ijk (static_cast<int> (floor (reference_point.x * inverse_leaf_size_[0])),
-                             static_cast<int> (floor (reference_point.y * inverse_leaf_size_[1])),
-                             static_cast<int> (floor (reference_point.z * inverse_leaf_size_[2])), 0);
+        Eigen::Vector4i ijk (static_cast<int> (std::floor (reference_point.x * inverse_leaf_size_[0])),
+                             static_cast<int> (std::floor (reference_point.y * inverse_leaf_size_[1])),
+                             static_cast<int> (std::floor (reference_point.z * inverse_leaf_size_[2])), 0);
         Eigen::Array4i diff2min = min_b_ - ijk;
         Eigen::Array4i diff2max = max_b_ - ijk;
         std::vector<int> neighbors (relative_coordinates.cols());
-        for (int ni = 0; ni < relative_coordinates.cols (); ni++)
+        for (Eigen::Index ni = 0; ni < relative_coordinates.cols (); ni++)
         {
           Eigen::Vector4i displacement = (Eigen::Vector4i() << relative_coordinates.col(ni), 0).finished();
           // checking if the specified cell is in the grid
@@ -365,9 +362,9 @@ namespace pcl
       inline Eigen::Vector3i
       getGridCoordinates (float x, float y, float z) const
       {
-        return (Eigen::Vector3i (static_cast<int> (floor (x * inverse_leaf_size_[0])),
-                                 static_cast<int> (floor (y * inverse_leaf_size_[1])),
-                                 static_cast<int> (floor (z * inverse_leaf_size_[2]))));
+        return (Eigen::Vector3i (static_cast<int> (std::floor (x * inverse_leaf_size_[0])),
+                                 static_cast<int> (std::floor (y * inverse_leaf_size_[1])),
+                                 static_cast<int> (std::floor (z * inverse_leaf_size_[2]))));
       }
 
       /** \brief Returns the index in the downsampled cloud corresponding to a given set of coordinates.
@@ -438,6 +435,7 @@ namespace pcl
       /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
         * \param[out] limit_negative true if data \b outside the interval [min; max] is to be returned, false otherwise
         */
+      PCL_DEPRECATED(1, 16, "use bool getFilterLimitsNegative() instead")
       inline void
       getFilterLimitsNegative (bool &limit_negative) const
       {
@@ -487,13 +485,13 @@ namespace pcl
       /** \brief Minimum number of points per voxel for the centroid to be computed */
       unsigned int min_points_per_voxel_;
 
-      typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+      using FieldList = typename pcl::traits::fieldList<PointT>::type;
 
       /** \brief Downsample a Point Cloud using a voxelized grid approach
         * \param[out] output the resultant point cloud message
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
   };
 
   /** \brief VoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
@@ -514,9 +512,9 @@ namespace pcl
     using Filter<pcl::PCLPointCloud2>::filter_name_;
     using Filter<pcl::PCLPointCloud2>::getClassName;
 
-    typedef pcl::PCLPointCloud2 PCLPointCloud2;
-    typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
-    typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
+    using PCLPointCloud2 = pcl::PCLPointCloud2;
+    using PCLPointCloud2Ptr = PCLPointCloud2::Ptr;
+    using PCLPointCloud2ConstPtr = PCLPointCloud2::ConstPtr;
 
     public:
       /** \brief Empty constructor. */
@@ -525,7 +523,6 @@ namespace pcl
         inverse_leaf_size_ (Eigen::Array4f::Zero ()),
         downsample_all_data_ (true),
         save_leaf_layout_ (false),
-        leaf_layout_ (),
         min_b_ (Eigen::Vector4i::Zero ()),
         max_b_ (Eigen::Vector4i::Zero ()),
         div_b_ (Eigen::Vector4i::Zero ()),
@@ -540,7 +537,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      virtual ~VoxelGrid ()
+      ~VoxelGrid ()
       {
       }
 
@@ -645,9 +642,9 @@ namespace pcl
       inline int
       getCentroidIndex (float x, float y, float z) const
       {
-        return (leaf_layout_.at ((Eigen::Vector4i (static_cast<int> (floor (x * inverse_leaf_size_[0])),
-                                                   static_cast<int> (floor (y * inverse_leaf_size_[1])),
-                                                   static_cast<int> (floor (z * inverse_leaf_size_[2])),
+        return (leaf_layout_.at ((Eigen::Vector4i (static_cast<int> (std::floor (x * inverse_leaf_size_[0])),
+                                                   static_cast<int> (std::floor (y * inverse_leaf_size_[1])),
+                                                   static_cast<int> (std::floor (z * inverse_leaf_size_[2])),
                                                    0)
                 - min_b_).dot (divb_mul_)));
       }
@@ -663,13 +660,13 @@ namespace pcl
       inline std::vector<int>
       getNeighborCentroidIndices (float x, float y, float z, const Eigen::MatrixXi &relative_coordinates) const
       {
-        Eigen::Vector4i ijk (static_cast<int> (floor (x * inverse_leaf_size_[0])),
-                             static_cast<int> (floor (y * inverse_leaf_size_[1])),
-                             static_cast<int> (floor (z * inverse_leaf_size_[2])), 0);
+        Eigen::Vector4i ijk (static_cast<int> (std::floor (x * inverse_leaf_size_[0])),
+                             static_cast<int> (std::floor (y * inverse_leaf_size_[1])),
+                             static_cast<int> (std::floor (z * inverse_leaf_size_[2])), 0);
         Eigen::Array4i diff2min = min_b_ - ijk;
         Eigen::Array4i diff2max = max_b_ - ijk;
         std::vector<int> neighbors (relative_coordinates.cols());
-        for (int ni = 0; ni < relative_coordinates.cols (); ni++)
+        for (Eigen::Index ni = 0; ni < relative_coordinates.cols (); ni++)
         {
           Eigen::Vector4i displacement = (Eigen::Vector4i() << relative_coordinates.col(ni), 0).finished();
           // checking if the specified cell is in the grid
@@ -692,11 +689,11 @@ namespace pcl
       inline std::vector<int>
       getNeighborCentroidIndices (float x, float y, float z, const std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> > &relative_coordinates) const
       {
-        Eigen::Vector4i ijk (static_cast<int> (floorf (x * inverse_leaf_size_[0])), static_cast<int> (floorf (y * inverse_leaf_size_[1])), static_cast<int> (floorf (z * inverse_leaf_size_[2])), 0);
+        Eigen::Vector4i ijk (static_cast<int> (std::floor (x * inverse_leaf_size_[0])), static_cast<int> (std::floor (y * inverse_leaf_size_[1])), static_cast<int> (std::floor (z * inverse_leaf_size_[2])), 0);
         std::vector<int> neighbors;
         neighbors.reserve (relative_coordinates.size ());
-        for (std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> >::const_iterator it = relative_coordinates.begin (); it != relative_coordinates.end (); it++)
-          neighbors.push_back (leaf_layout_[(ijk + (Eigen::Vector4i() << *it, 0).finished() - min_b_).dot (divb_mul_)]);
+        for (const auto &relative_coordinate : relative_coordinates)
+          neighbors.push_back (leaf_layout_[(ijk + (Eigen::Vector4i() << relative_coordinate, 0).finished() - min_b_).dot (divb_mul_)]);
         return (neighbors);
       }
 
@@ -714,9 +711,9 @@ namespace pcl
       inline Eigen::Vector3i
       getGridCoordinates (float x, float y, float z) const
       {
-        return (Eigen::Vector3i (static_cast<int> (floor (x * inverse_leaf_size_[0])),
-                                 static_cast<int> (floor (y * inverse_leaf_size_[1])),
-                                 static_cast<int> (floor (z * inverse_leaf_size_[2]))));
+        return (Eigen::Vector3i (static_cast<int> (std::floor (x * inverse_leaf_size_[0])),
+                                 static_cast<int> (std::floor (y * inverse_leaf_size_[1])),
+                                 static_cast<int> (std::floor (z * inverse_leaf_size_[2]))));
       }
 
       /** \brief Returns the index in the downsampled cloud corresponding to a given set of coordinates.
@@ -787,6 +784,7 @@ namespace pcl
       /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
         * \param[out] limit_negative true if data \b outside the interval [min; max] is to be returned, false otherwise
         */
+      PCL_DEPRECATED(1, 16, "use bool getFilterLimitsNegative() instead")
       inline void
       getFilterLimitsNegative (bool &limit_negative) const
       {
@@ -846,12 +844,10 @@ namespace pcl
         * \param[out] output the resultant point cloud
         */
       void
-      applyFilter (PCLPointCloud2 &output);
+      applyFilter (PCLPointCloud2 &output) override;
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/voxel_grid.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_VOXEL_GRID_MAP_H_

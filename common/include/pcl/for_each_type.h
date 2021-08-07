@@ -37,14 +37,12 @@
  *
  */
 
-#ifndef PCL_FOR_EACH_TYPE_H_
-#define PCL_FOR_EACH_TYPE_H_
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header 
 #endif
 
-#ifndef Q_MOC_RUN
 #include <boost/mpl/is_sequence.hpp>
 #include <boost/mpl/begin_end.hpp>
 #include <boost/mpl/next_prior.hpp>
@@ -54,8 +52,8 @@
 #include <boost/mpl/contains.hpp>
 #include <boost/mpl/not.hpp>
 #include <boost/mpl/aux_/unwrap.hpp>
-#include <boost/type_traits/is_same.hpp>
-#endif
+
+#include <type_traits>
 
 namespace pcl 
 {
@@ -74,7 +72,7 @@ namespace pcl
     template<typename Iterator, typename LastIterator, typename F>
     static void execute (F f)
     {
-      typedef typename boost::mpl::deref<Iterator>::type arg;
+      using arg = typename boost::mpl::deref<Iterator>::type;
 
 #if (defined _WIN32 && defined _MSC_VER)
       boost::mpl::aux::unwrap (f, 0).operator()<arg> ();
@@ -82,8 +80,8 @@ namespace pcl
       boost::mpl::aux::unwrap (f, 0).template operator()<arg> ();
 #endif
 
-      typedef typename boost::mpl::next<Iterator>::type iter;
-      for_each_type_impl<boost::is_same<iter, LastIterator>::value>
+      using iter = typename boost::mpl::next<Iterator>::type;
+      for_each_type_impl<std::is_same<iter, LastIterator>::value>
         ::template execute<iter, LastIterator, F> (f);
     }
   };
@@ -93,17 +91,15 @@ namespace pcl
   for_each_type (F f)
   {
     BOOST_MPL_ASSERT (( boost::mpl::is_sequence<Sequence> ));
-    typedef typename boost::mpl::begin<Sequence>::type first;
-    typedef typename boost::mpl::end<Sequence>::type last;
-    for_each_type_impl<boost::is_same<first, last>::value>::template execute<first, last, F> (f);
+    using first = typename boost::mpl::begin<Sequence>::type;
+    using last = typename boost::mpl::end<Sequence>::type;
+    for_each_type_impl<std::is_same<first, last>::value>::template execute<first, last, F> (f);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   template <typename Sequence1, typename Sequence2>
   struct intersect 
   { 
-    typedef typename boost::mpl::remove_if<Sequence1, boost::mpl::not_<boost::mpl::contains<Sequence2, boost::mpl::_1> > >::type type; 
+    using type = typename boost::mpl::remove_if<Sequence1, boost::mpl::not_<boost::mpl::contains<Sequence2, boost::mpl::_1> > >::type; 
   }; 
 }
-
-#endif  //#ifndef PCL_FOR_EACH_TYPE_H_

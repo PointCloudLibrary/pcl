@@ -38,6 +38,8 @@
 #include <stdexcept>
 #include <pcl/surface/on_nurbs/fitting_sphere_pdm.h>
 #include <pcl/pcl_macros.h>
+#include <Eigen/Cholesky> // for ldlt
+#include <Eigen/Geometry> // for cross
 
 using namespace pcl;
 using namespace on_nurbs;
@@ -168,9 +170,9 @@ FittingSphere::initNurbsSphere (int order, NurbsDataSurface *data, Eigen::Vector
 
   Eigen::Vector3d _min (DBL_MAX, DBL_MAX, DBL_MAX);
   Eigen::Vector3d _max (-DBL_MAX, -DBL_MAX, -DBL_MAX);
-  for (int i = 0; i < data->interior.size (); i++)
+  for (const auto &i : data->interior)
   {
-    Eigen::Vector3d p = data->interior[i] - mean;
+    Eigen::Vector3d p = i - mean;
 
     if (p (0) < _min (0))
       _min (0) = p (0);
@@ -207,7 +209,7 @@ FittingSphere::initNurbsSphere (int order, NurbsDataSurface *data, Eigen::Vector
     {
 
       cv (0) = rx * sin (dcv * j);
-      cv (1) = ry * cos (dcv * j);
+      cv (1) = ry * std::cos (dcv * j);
       cv (2) = _min (2) + dcu * (i - 1);
       cv_t = cv + mean;
       nurbs.SetCV (i, j, ON_3dPoint (cv_t (0), cv_t (1), cv_t (2)));
@@ -219,7 +221,7 @@ FittingSphere::initNurbsSphere (int order, NurbsDataSurface *data, Eigen::Vector
     //    cv (0) = 0.0;
     //    cv (1) = 0.0;
     cv (0) = 0.01 * rx * sin (dcv * j);
-    cv (1) = 0.01 * ry * cos (dcv * j);
+    cv (1) = 0.01 * ry * std::cos (dcv * j);
     cv (2) = _min (2);
     cv_t = cv + mean;
     nurbs.SetCV (0, j, ON_3dPoint (cv_t (0), cv_t (1), cv_t (2)));
@@ -230,7 +232,7 @@ FittingSphere::initNurbsSphere (int order, NurbsDataSurface *data, Eigen::Vector
     //    cv (0) = 0.0;
     //    cv (1) = 0.0;
     cv (0) = 0.01 * rx * sin (dcv * j);
-    cv (1) = 0.01 * ry * cos (dcv * j);
+    cv (1) = 0.01 * ry * std::cos (dcv * j);
     cv (2) = _max (2);
     cv_t = cv + mean;
     nurbs.SetCV (ncpsU - 1, j, ON_3dPoint (cv_t (0), cv_t (1), cv_t (2)));
@@ -409,6 +411,7 @@ FittingSphere::addCageBoundaryRegularisation (double weight, int side, unsigned 
   {
     case EAST:
       i = m_nurbs.m_cv_count[0] - 1;
+      PCL_FALLTHROUGH
     case WEST:
       for (j = 1; j < (m_nurbs.m_cv_count[1] - 2 * cp_red) + 1; j++)
       {
@@ -479,20 +482,16 @@ FittingSphere::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &pt,
       return current;
 
     }
-    else
-    {
-      current = current + delta;
-      if (current (0) < minU)
-        current (0) = minU;
-      else if (current (0) > maxU)
-        current (0) = maxU;
+    current += delta;
+    if (current (0) < minU)
+      current (0) = minU;
+    else if (current (0) > maxU)
+      current (0) = maxU;
 
-      if (current (1) < minV)
-        current (1) = maxV - (minV - current (1));
-      else if (current (1) > maxV)
-        current (1) = minV + (current (1) - maxV);
-    }
-
+    if (current (1) < minV)
+      current (1) = maxV - (minV - current (1));
+    else if (current (1) > maxV)
+      current (1) = minV + (current (1) - maxV);
   }
 
   error = r.norm ();
@@ -515,9 +514,9 @@ FittingSphere::findClosestElementMidPoint (const ON_NurbsSurface &nurbs, const V
   std::vector<double> elementsV = getElementVector (nurbs, 1);
 
   double d_shortest = std::numeric_limits<double>::max ();
-  for (unsigned i = 0; i < elementsU.size () - 1; i++)
+  for (std::size_t i = 0; i < elementsU.size () - 1; i++)
   {
-    for (unsigned j = 0; j < elementsV.size () - 1; j++)
+    for (std::size_t j = 0; j < elementsV.size () - 1; j++)
     {
       double points[3];
 

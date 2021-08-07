@@ -35,11 +35,13 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+#pragma once
+ 
 #include <pcl/pcl_config.h>
+#include <pcl/memory.h>
 #ifdef HAVE_OPENNI
 
-#ifndef __OPENNI_IMAGE_BAYER_GRBG__
-#define __OPENNI_IMAGE_BAYER_GRBG__
 #include <pcl/pcl_macros.h>
 #include "openni_image.h"
 
@@ -52,26 +54,26 @@ namespace openni_wrapper
   class PCL_EXPORTS ImageBayerGRBG : public Image
   {
     public:
-      typedef enum
+      enum DebayeringMethod
       {
         Bilinear = 0,
         EdgeAware,
         EdgeAwareWeighted
-      } DebayeringMethod;
+      };
 
-      ImageBayerGRBG (boost::shared_ptr<xn::ImageMetaData> image_meta_data, DebayeringMethod method) throw ();
-      virtual ~ImageBayerGRBG () throw ();
+      ImageBayerGRBG (pcl::shared_ptr<xn::ImageMetaData> image_meta_data, DebayeringMethod method) noexcept;
+      ~ImageBayerGRBG () noexcept;
 
-      inline virtual Encoding
-      getEncoding () const
+      inline Encoding
+      getEncoding () const override
       {
         return (BAYER_GRBG);
       }
 
-      virtual void fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer, unsigned rgb_line_step = 0) const;
-      virtual void fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step = 0) const;
-      virtual bool isResizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const;
-      inline void setDebayeringMethod (const DebayeringMethod& method) throw ();
+      void fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer, unsigned rgb_line_step = 0) const override;
+      void fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step = 0) const override;
+      bool isResizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const override;
+      inline void setDebayeringMethod (const DebayeringMethod& method) noexcept;
       inline DebayeringMethod getDebayeringMethod () const throw ();
       inline static bool resizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height);
 
@@ -81,7 +83,7 @@ namespace openni_wrapper
   };
 
   void
-  ImageBayerGRBG::setDebayeringMethod (const ImageBayerGRBG::DebayeringMethod& method) throw ()
+  ImageBayerGRBG::setDebayeringMethod (const ImageBayerGRBG::DebayeringMethod& method) noexcept
   {
     debayering_method_ = method;
   }
@@ -100,4 +102,3 @@ namespace openni_wrapper
 } // namespace
 
 #endif
-#endif // __OPENNI_IMAGE__

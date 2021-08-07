@@ -1,8 +1,8 @@
-#ifndef PCL_OUTOFCORE_OBJECT_H_
-#define PCL_OUTOFCORE_OBJECT_H_
+#pragma once
 
 // C++
 #include <map>
+#include <mutex>
 #include <set>
 #include <string>
 
@@ -11,11 +11,6 @@
 #include <vtkActorCollection.h>
 #include <vtkRenderer.h>
 #include <vtkSmartPointer.h>
-
-// Boost
-//#include <boost/date_time.hpp>
-//#include <boost/filesystem.hpp>
-#include <boost/thread.hpp>
 
 //Forward Declaration
 class Scene;
@@ -57,7 +52,7 @@ public:
 
 protected:
   vtkSmartPointer<vtkActorCollection> actors_;
-  boost::mutex actors_mutex_;
+  std::mutex actors_mutex_;
 
 private:
 
@@ -67,5 +62,3 @@ private:
   std::map<vtkActor*, std::set<vtkRenderer*> > associated_renderers_;
 
 };
-
-#endif

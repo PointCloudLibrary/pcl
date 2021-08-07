@@ -36,8 +36,8 @@
  *
  */
 
-#ifndef PCL_SSE_H_
-#define PCL_SSE_H_
+#pragma once
+
 #if defined(__SSE2__)
 #include <emmintrin.h> // SSE2:<e*.h>, SSE3:<p*.h>, SSE4:<s*.h>
 
@@ -96,4 +96,3 @@ RETi sse_cvt( const __m128 x ) { return _mm_cvttps_epi32(x); }
 #undef RETf
 #undef RETi
 #endif /* defined(__SSE2__) */
-#endif /* PCL_SSE_H_ */

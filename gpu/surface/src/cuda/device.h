@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_GPU_SURFACE_DEVICE_H_
-#define PCL_GPU_SURFACE_DEVICE_H_
+#pragma once
 
 #include "internal.h"
 #include <pcl/gpu/utils/device/vector_math.hpp>
@@ -72,7 +71,7 @@ namespace pcl
     struct LessThanByFacet
     {
       __device__ __forceinline__
-      bool operator()(const uint64_type& e1, const int& e2) const
+      bool operator()(const std::uint64_t& e1, const int& e2) const
       {
         int i1 = (int)(e1 >> 32);
         return i1 < e2;
@@ -86,5 +85,3 @@ namespace pcl
 
   }
 };
-
-#endif /* PCL_GPU_SURFACE_DEVICE_H_ */

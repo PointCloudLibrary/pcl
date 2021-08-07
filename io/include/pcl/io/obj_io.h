@@ -34,15 +34,16 @@
  *
  */
 
-#ifndef OBJ_IO_H_
-#define OBJ_IO_H_
-#include <pcl/pcl_macros.h>
+#pragma once
+
+#include <pcl/memory.h>
 #include <pcl/TextureMesh.h>
-#include <pcl/PolygonMesh.h>
 #include <pcl/io/file_io.h>
 
 namespace pcl
 {
+  struct PolygonMesh;
+
   class PCL_EXPORTS MTLReader
   {
     public:
@@ -86,7 +87,7 @@ namespace pcl
       /// matrix to convert CIE to RGB
       Eigen::Matrix3f xyz_to_rgb_matrix_;
 
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   class PCL_EXPORTS OBJReader : public FileReader
@@ -95,7 +96,7 @@ namespace pcl
       /** \brief empty constructor */
       OBJReader() {}
       /** \brief empty destructor */
-      virtual ~OBJReader() {}
+      ~OBJReader() {}
       /** \brief Read a point cloud data header from a FILE file.
         *
         * Load only the meta information (number of points, their types, etc),
@@ -121,7 +122,7 @@ namespace pcl
       readHeader (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
                   Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
                   int &file_version, int &data_type, unsigned int &data_idx,
-                  const int offset);
+                  const int offset) override;
 
       /** \brief Read a point cloud data from a FILE file and store it into a
         * pcl/PCLPointCloud2.
@@ -141,7 +142,7 @@ namespace pcl
       int
       read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
             Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
-            int &file_version, const int offset = 0);
+            int &file_version, const int offset = 0) override;
 
 
       /** \brief Read a point cloud data from a FILE file and store it into a
@@ -343,5 +344,3 @@ namespace pcl
 
   }
 }
-
-#endif /* OBJ_IO_H_ */

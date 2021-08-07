@@ -48,7 +48,6 @@
 #include <pcl/gpu/people/people_detector.h>
 #include <pcl/gpu/people/colormap.h>
 #include <pcl/visualization/image_viewer.h>
-#include <pcl/search/pcl_search.h>
 #include <Eigen/Core>
 
 #include <pcl/io/png_io.h>
@@ -59,9 +58,8 @@
 using namespace pcl::visualization;
 using namespace pcl::console;
 using namespace pcl::gpu;
-using namespace std;
 
-typedef pcl::PointXYZRGBA PointT;
+using PointT = pcl::PointXYZRGBA;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -80,7 +78,7 @@ float estimateFocalLength(const pcl::PointCloud<PointT>::ConstPtr &cloud)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-string 
+std::string
 make_name(int counter, const char* suffix)
 {
   char buf[4096];
@@ -88,7 +86,7 @@ make_name(int counter, const char* suffix)
   return buf;
 }
 
-string
+std::string
 make_ext_name(int counter1, int counter2, const char* suffix)
 {
   char buf[4096];
@@ -115,7 +113,7 @@ savePNGFile (const std::string& filename, const pcl::PointCloud<T>& cloud)
 class PeoplePCDApp
 {
   public:
-    typedef pcl::gpu::people::PeopleDetector PeopleDetector;
+    using PeopleDetector = pcl::gpu::people::PeopleDetector;
 
     enum { COLS = 640, ROWS = 480 };
 
@@ -139,20 +137,20 @@ class PeoplePCDApp
     }
 
     void
-    writeXMLFile(std::string& filename)
+    writeXMLFile(std::string& filename) const
     {
-      filebuf fb;
-      fb.open (filename.c_str(), ios::out);
+      std::filebuf fb;
+      fb.open (filename.c_str(), std::ios::out);
       ostream os(&fb);
       people_detector_.person_attribs_->writePersonXMLConfig(os);
       fb.close();
     }
 
     void
-    readXMLFile(std::string& filename)
+    readXMLFile(std::string& filename) const
     {
-      filebuf fb;
-      fb.open (filename.c_str(), ios::in);
+      std::filebuf fb;
+      fb.open (filename.c_str(), std::ios::in);
       istream is(&fb);
       people_detector_.person_attribs_->readPersonXMLConfig(is);
       fb.close();
@@ -187,14 +185,14 @@ class PeoplePCDApp
     void
     convertProbToRGB (pcl::PointCloud<pcl::device::prob_histogram>& histograms, int label, pcl::PointCloud<pcl::RGB>& rgb)
     {
-      for(size_t t = 0; t < histograms.points.size(); t++)
+      for(const auto &point : histograms.points)
       {
-        float value = histograms.points[t].probs[label];
+        float value = point.probs[label];
         float value8 = value * 255;
         char val = static_cast<char> (value8);
         pcl::RGB p;
         p.r = val; p.b = val; p.g = val;
-        rgb.points.push_back(p);
+        rgb.push_back(p);
       }
       rgb.width = histograms.width;
       rgb.height = histograms.height;
@@ -286,11 +284,11 @@ int main(int argc, char** argv)
   if(find_switch (argc, argv, "--help") || find_switch (argc, argv, "-h"))
     return print_help(), 0;
 
-  bool saveProb = 1;
+  bool saveProb = true;
   parse_argument (argc, argv, "-prob", saveProb);
 
-  bool debugOutput = 0;
-  parse_argument (argc, argv, "-debug", saveProb);
+  bool debugOutput = false;
+  parse_argument (argc, argv, "-debug", debugOutput);
   if(debugOutput)
     setVerbosityLevel(L_DEBUG);
  
@@ -341,7 +339,7 @@ int main(int argc, char** argv)
   // loading trees
   using pcl::gpu::people::RDFBodyPartsDetector;
 
-  vector<string> names_vector(treeFilenames, treeFilenames + numTrees);
+  std::vector<std::string> names_vector(treeFilenames, treeFilenames + numTrees);
   PCL_DEBUG("[Main] : (D) : Trees collected\n");
   RDFBodyPartsDetector::Ptr rdf(new RDFBodyPartsDetector(names_vector));
   PCL_DEBUG("[Main] : (D) : Loaded files into rdf\n");

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_IO_DEPTH_SENSE_GRABBER_H
-#define PCL_IO_DEPTH_SENSE_GRABBER_H
+#pragma once
 
 #include <pcl/io/grabber.h>
 #include <pcl/point_cloud.h>
@@ -59,13 +58,11 @@ namespace pcl
 
     public:
 
-      typedef
-        void (sig_cb_depth_sense_point_cloud)
-          (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
+      using Ptr = shared_ptr<DepthSenseGrabber>;
+      using ConstPtr = shared_ptr<const DepthSenseGrabber>;
 
-      typedef
-        void (sig_cb_depth_sense_point_cloud_rgba)
-          (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
+      using sig_cb_depth_sense_point_cloud = void(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
+      using sig_cb_depth_sense_point_cloud_rgba = void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
 
       enum Mode
       {
@@ -95,7 +92,7 @@ namespace pcl
       DepthSenseGrabber (const std::string& device_id = "");
 
       virtual
-      ~DepthSenseGrabber () throw ();
+      ~DepthSenseGrabber () noexcept;
 
       virtual void
       start ();
@@ -132,7 +129,7 @@ namespace pcl
         * The window size parameter is not relevant for `DepthSense_None`
         * filtering type. */
       void
-      enableTemporalFiltering (TemporalFilteringType type, size_t window_size = 1);
+      enableTemporalFiltering (TemporalFilteringType type, std::size_t window_size = 1);
 
       /** Disable temporal filtering. */
       void
@@ -150,6 +147,3 @@ namespace pcl
   };
 
 }
-
-#endif /* PCL_IO_DEPTH_SENSE_GRABBER_H */
-

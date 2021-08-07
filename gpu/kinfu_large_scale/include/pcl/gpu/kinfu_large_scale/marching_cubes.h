@@ -35,9 +35,9 @@
  *
  */
 
-#ifndef PCL_KINFU_TSDF_MARCHING_CUBES_H_
-#define PCL_KINFU_TSDF_MARCHING_CUBES_H_
+#pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/gpu/containers/device_array.h>
 #include <Eigen/Core>
@@ -67,11 +67,12 @@ namespace pcl
         };
       
         /** \brief Point type. */
-        typedef pcl::PointXYZ PointType;
+        using PointType = pcl::PointXYZ;
         
         /** \brief Smart pointer. */
-        typedef boost::shared_ptr<MarchingCubes> Ptr;
-        
+        using Ptr = shared_ptr<MarchingCubes>;
+        using ConstPtr = shared_ptr<const MarchingCubes>;
+
         /** \brief Default constructor */
         MarchingCubes();
         
@@ -102,5 +103,3 @@ namespace pcl
     }
   }
 }
-
-#endif /* PCL_KINFU_MARCHING_CUBES_H_ */

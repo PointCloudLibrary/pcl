@@ -37,13 +37,12 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <limits>
 
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/registration/eigen.h>
 #include <pcl/registration/correspondence_estimation.h>
 #include <pcl/registration/correspondence_rejection_distance.h>
 #include <pcl/registration/correspondence_rejection_median_distance.h>
@@ -58,19 +57,20 @@
 #include <pcl/registration/transformation_estimation_dual_quaternion.h>
 #include <pcl/registration/transformation_estimation_point_to_plane_lls.h>
 #include <pcl/registration/transformation_estimation_point_to_plane.h>
+#include <pcl/registration/transformation_estimation_symmetric_point_to_plane_lls.h>
 #include <pcl/features/normal_3d.h>
 
 #include "test_registration_api_data.h"
 
-typedef pcl::PointXYZ              PointXYZ;
-typedef pcl::PointCloud <PointXYZ> CloudXYZ;
-typedef CloudXYZ::Ptr              CloudXYZPtr;
-typedef CloudXYZ::ConstPtr         CloudXYZConstPtr;
+using PointXYZ = pcl::PointXYZ;
+using CloudXYZ = pcl::PointCloud<PointXYZ>;
+using CloudXYZPtr = CloudXYZ::Ptr;
+using CloudXYZConstPtr = CloudXYZ::ConstPtr;
 
-typedef pcl::PointNormal              PointNormal;
-typedef pcl::PointCloud <PointNormal> CloudNormal;
-typedef CloudNormal::Ptr              CloudNormalPtr;
-typedef CloudNormal::ConstPtr         CloudNormalConstPtr;
+using PointNormal = pcl::PointNormal;
+using CloudNormal = pcl::PointCloud<PointNormal>;
+using CloudNormalPtr = CloudNormal::Ptr;
+using CloudNormalConstPtr = CloudNormal::ConstPtr;
 
 CloudXYZ cloud_source, cloud_target, cloud_reg;
 
@@ -80,7 +80,7 @@ TEST (PCL, CorrespondenceEstimation)
   CloudXYZConstPtr source (new CloudXYZ (cloud_source));
   CloudXYZConstPtr target (new CloudXYZ (cloud_target));
 
-  boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimation<PointXYZ, PointXYZ> corr_est;
   corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
@@ -104,7 +104,7 @@ TEST (PCL, CorrespondenceEstimationReciprocal)
   CloudXYZConstPtr source (new CloudXYZ (cloud_source));
   CloudXYZConstPtr target (new CloudXYZ (cloud_target));
 
-  boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimation<PointXYZ, PointXYZ> corr_est;
   corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
@@ -129,13 +129,13 @@ TEST (PCL, CorrespondenceRejectorDistance)
   CloudXYZConstPtr target (new CloudXYZ (cloud_target));
 
   // re-do correspondence estimation
-  boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimation<PointXYZ, PointXYZ> corr_est;
   corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
 
-  boost::shared_ptr<pcl::Correspondences>  correspondences_result_rej_dist (new pcl::Correspondences);
+  pcl::CorrespondencesPtr  correspondences_result_rej_dist (new pcl::Correspondences);
   pcl::registration::CorrespondenceRejectorDistance corr_rej_dist;
   corr_rej_dist.setInputCorrespondences (correspondences);
   corr_rej_dist.setMaximumDistance (rej_dist_max_dist);
@@ -160,13 +160,13 @@ TEST (PCL, CorrespondenceRejectorMedianDistance)
   CloudXYZConstPtr target (new CloudXYZ (cloud_target));
 
   // re-do correspondence estimation
-  boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimation<PointXYZ, PointXYZ> corr_est;
   corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
 
-  boost::shared_ptr<pcl::Correspondences>  correspondences_result_rej_median_dist (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences_result_rej_median_dist (new pcl::Correspondences);
   pcl::registration::CorrespondenceRejectorMedianDistance corr_rej_median_dist;
   corr_rej_median_dist.setInputCorrespondences(correspondences);
   corr_rej_median_dist.setMedianFactor (rej_median_factor);
@@ -193,13 +193,13 @@ TEST (PCL, CorrespondenceRejectorOneToOne)
   CloudXYZConstPtr target (new CloudXYZ (cloud_target));
 
   // re-do correspondence estimation
-  boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimation<PointXYZ, PointXYZ> corr_est;
   corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
 
-  boost::shared_ptr<pcl::Correspondences> correspondences_result_rej_one_to_one (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences_result_rej_one_to_one (new pcl::Correspondences);
   pcl::registration::CorrespondenceRejectorOneToOne corr_rej_one_to_one;
   corr_rej_one_to_one.setInputCorrespondences(correspondences);
   corr_rej_one_to_one.getCorrespondences(*correspondences_result_rej_one_to_one);
@@ -223,14 +223,14 @@ TEST (PCL, CorrespondenceRejectorSampleConsensus)
   CloudXYZConstPtr target (new CloudXYZ (cloud_target));
 
   // re-do correspondence estimation
-  boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimation<PointXYZ, PointXYZ> corr_est;
   corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
   EXPECT_EQ (int (correspondences->size ()), nr_original_correspondences);
 
-  boost::shared_ptr<pcl::Correspondences> correspondences_result_rej_sac (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences_result_rej_sac (new pcl::Correspondences);
   pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ> corr_rej_sac;
   corr_rej_sac.setInputSource (source);
   corr_rej_sac.setInputTarget (target);
@@ -264,7 +264,7 @@ TEST (PCL, CorrespondenceRejectorSurfaceNormal)
   CloudXYZConstPtr target (new CloudXYZ (cloud_target));
 
   // re-do correspondence estimation
-  boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimation<PointXYZ, PointXYZ> corr_est;
   corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
@@ -295,7 +295,7 @@ TEST (PCL, CorrespondenceRejectorSurfaceNormal)
   corr_rej_surf_norm.setInputNormals <PointXYZ, PointNormal> (source_normals);
   corr_rej_surf_norm.setTargetNormals <PointXYZ, PointNormal> (target_normals);
 
-  boost::shared_ptr<pcl::Correspondences>  correspondences_result_rej_surf_norm (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences_result_rej_surf_norm (new pcl::Correspondences);
   corr_rej_surf_norm.setInputCorrespondences (correspondences);
   corr_rej_surf_norm.setThreshold (0.5);
 
@@ -318,13 +318,13 @@ TEST (PCL, CorrespondenceRejectorTrimmed)
   CloudXYZConstPtr target (new CloudXYZ (cloud_target));
 
   // re-do correspondence estimation
-  boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimation<PointXYZ, PointXYZ> corr_est;
   corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
 
-  boost::shared_ptr<pcl::Correspondences> correspondences_result_rej_trimmed (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences_result_rej_trimmed (new pcl::Correspondences);
   pcl::registration::CorrespondenceRejectorTrimmed corr_rej_trimmed;
   corr_rej_trimmed.setOverlapRatio(rej_trimmed_overlap);
   corr_rej_trimmed.setInputCorrespondences(correspondences);
@@ -349,13 +349,13 @@ TEST (PCL, CorrespondenceRejectorVarTrimmed)
   CloudXYZConstPtr target (new CloudXYZ (cloud_target));
 
   // re-do correspondence estimation
-  boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimation<PointXYZ, PointXYZ> corr_est;
   corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
 
-  boost::shared_ptr<pcl::Correspondences>  correspondences_result_rej_var_trimmed_dist (new pcl::Correspondences);
+  pcl::CorrespondencesPtr correspondences_result_rej_var_trimmed_dist (new pcl::Correspondences);
   pcl::registration::CorrespondenceRejectorVarTrimmed corr_rej_var_trimmed_dist;
   corr_rej_var_trimmed_dist.setInputSource<PointXYZ> (source);
   corr_rej_var_trimmed_dist.setInputTarget<PointXYZ> (target);
@@ -401,7 +401,7 @@ TEST (PCL, TransformationEstimationSVD)
   // Check if the estimation with correspondences gives the same results
   Eigen::Matrix4f T_SVD_2;
   pcl::Correspondences corr; corr.reserve (source->size ());
-  for (size_t i=0; i<source->size (); ++i) corr.push_back (pcl::Correspondence (i, i, 0.f));
+  for (std::size_t i=0; i<source->size (); ++i) corr.push_back (pcl::Correspondence (i, i, 0.f));
   trans_est_svd.estimateRigidTransformation(*source, *target, corr, T_SVD_2);
 
   const Eigen::Quaternionf   R_SVD_2 (T_SVD_2.topLeftCorner  <3, 3> ());
@@ -444,7 +444,7 @@ TEST (PCL, TransformationEstimationDualQuaternion)
   // Check if the estimation with correspondences gives the same results
   Eigen::Matrix4f T_DQ_2;
   pcl::Correspondences corr; corr.reserve (source->size ());
-  for (size_t i=0; i<source->size (); ++i) corr.push_back (pcl::Correspondence (i, i, 0.f));
+  for (std::size_t i=0; i<source->size (); ++i) corr.push_back (pcl::Correspondence (i, i, 0.f));
   trans_est_dual_quaternion.estimateRigidTransformation(*source, *target, corr, T_DQ_2);
 
   const Eigen::Quaternionf   R_DQ_2 (T_DQ_2.topLeftCorner  <3, 3> ());
@@ -490,7 +490,7 @@ TEST (PCL, TransformationEstimationPointToPlaneLLS)
 
       src->points.push_back (p);
     }
-  src->width = static_cast<uint32_t> (src->points.size ());
+  src->width = src->size ();
 
   // Create a test matrix
   Eigen::Matrix4f ground_truth_tform = Eigen::Matrix4f::Identity ();
@@ -539,7 +539,7 @@ TEST (PCL, TransformationEstimationLM)
   Eigen::Matrix4f T_LM_2_float;
   pcl::Correspondences corr;
   corr.reserve (source->size ());
-  for (size_t i = 0; i < source->size (); ++i)
+  for (std::size_t i = 0; i < source->size (); ++i)
     corr.push_back (pcl::Correspondence (i, i, 0.f));
   trans_est_lm_float.estimateRigidTransformation (*source, *target, corr, T_LM_2_float);
 
@@ -577,7 +577,7 @@ TEST (PCL, TransformationEstimationLM)
   Eigen::Matrix4d T_LM_2_double;
   corr.clear ();
   corr.reserve (source->size ());
-  for (size_t i = 0; i < source->size (); ++i)
+  for (std::size_t i = 0; i < source->size (); ++i)
     corr.push_back (pcl::Correspondence (i, i, 0.f));
   trans_est_lm_double.estimateRigidTransformation (*source, *target, corr, T_LM_2_double);
 
@@ -624,7 +624,7 @@ TEST (PCL, TransformationEstimationPointToPlane)
 
       src->points.push_back (p);
     }
-  src->width = static_cast<uint32_t> (src->points.size ());
+  src->width = src->size ();
 
   // Create a test matrix
   Eigen::Matrix4f ground_truth_tform = Eigen::Matrix4f::Identity ();
@@ -655,6 +655,57 @@ TEST (PCL, TransformationEstimationPointToPlane)
       EXPECT_NEAR (estimated_transform_double (i, j), ground_truth_tform (i, j), 1e-3);
 }
 
+TEST (PCL, TransformationEstimationSymmetricPointToPlaneLLS)
+{
+  pcl::registration::TransformationEstimationSymmetricPointToPlaneLLS<pcl::PointNormal, pcl::PointNormal> transform_estimator;
+
+  // Create a test cloud
+  pcl::PointCloud<pcl::PointNormal>::Ptr src (new pcl::PointCloud<pcl::PointNormal>);
+  src->height = 1;
+  src->is_dense = true;
+  for (float x = -5.0f; x <= 5.0f; x += 0.5f)
+    for (float y = -5.0f; y <= 5.0f; y += 0.5f)
+    {
+      pcl::PointNormal p;
+      p.x = x;
+      p.y = y;
+      p.z = 0.1f * powf (x, 2.0f) + 0.2f * p.x * p.y - 0.3f * y + 1.0f;
+      float & nx = p.normal[0];
+      float & ny = p.normal[1];
+      float & nz = p.normal[2];
+      nx = -0.2f * p.x - 0.2f;
+      ny = 0.6f * p.y - 0.2f;
+      nz = 1.0f;
+
+      float magnitude = std::sqrt (nx * nx + ny * ny + nz * nz);
+      nx /= magnitude;
+      ny /= magnitude;
+      nz /= magnitude;
+
+      src->points.push_back (p);
+    }
+  src->width = src->size ();
+
+  // Create a test matrix
+  // (alpha, beta, gamma) = (-0.0180524, 0.0525268, -0.0999635)
+  // (tx, ty, tz) = (0.0911343, -0.207119, 0.294305)
+  Eigen::Matrix4f ground_truth_tform = Eigen::Matrix4f::Identity ();
+  ground_truth_tform.row (0) <<  0.9938f,  0.0988f,  0.0517f,  0.1000f;
+  ground_truth_tform.row (1) << -0.0997f,  0.9949f,  0.0149f, -0.2000f;
+  ground_truth_tform.row (2) << -0.0500f, -0.0200f,  0.9986f,  0.3000f;
+  ground_truth_tform.row (3) <<  0.0000f,  0.0000f,  0.0000f,  1.0000f;
+
+  pcl::PointCloud<pcl::PointNormal>::Ptr tgt (new pcl::PointCloud<pcl::PointNormal>);
+
+  pcl::transformPointCloudWithNormals (*src, *tgt, ground_truth_tform);
+
+  Eigen::Matrix4f estimated_transform;
+  transform_estimator.estimateRigidTransformation (*src, *tgt, estimated_transform);
+
+  for (int i = 0; i < 4; ++i)
+    for (int j = 0; j < 4; ++j)
+      EXPECT_NEAR (estimated_transform (i, j), ground_truth_tform (i, j), 1e-2);
+}
 
 
 /* ---[ */
@@ -683,9 +734,9 @@ main (int argc, char** argv)
   return (RUN_ALL_TESTS ());
 
   // Tranpose the cloud_model
-  /*for (size_t i = 0; i < cloud_model.points.size (); ++i)
+  /*for (std::size_t i = 0; i < cloud_model.size (); ++i)
   {
-  //  cloud_model.points[i].z += 1;
+  //  cloud_model[i].z += 1;
   }*/
 }
 /* ]--- */

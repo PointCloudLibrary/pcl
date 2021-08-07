@@ -37,6 +37,9 @@
 
 #include <pcl/surface/on_nurbs/global_optimization_tdm.h>
 #include <pcl/surface/on_nurbs/closing_boundary.h>
+#include <pcl/pcl_macros.h>
+
+#include <Eigen/Geometry> // for cross
 #include <stdexcept>
 
 using namespace pcl;
@@ -90,8 +93,8 @@ GlobalOptimizationTDM::assemble (Parameter params)
 
   m_solver.assign (m_nrows, m_ncols, 1);
 
-  for (unsigned i = 0; i < m_data.size (); i++)
-    m_data[i]->common_boundary_param.clear ();
+  for (const auto &i : m_data)
+    i->common_boundary_param.clear ();
 
   // assemble matrix
   unsigned row (0);
@@ -208,10 +211,8 @@ GlobalOptimizationTDM::updateSurf (double damp)
 {
   int ncps (0);
 
-  for (unsigned i = 0; i < m_nurbs.size (); i++)
+  for (const auto &nurbs : m_nurbs)
   {
-    ON_NurbsSurface* nurbs = m_nurbs[i];
-
     int ncp = nurbs->CVCount ();
 
     for (int A = 0; A < ncp; A++)
@@ -244,7 +245,7 @@ GlobalOptimizationTDM::assembleCommonParams (unsigned id1, double weight, unsign
   NurbsDataSurface *data = m_data[id1];
   //ON_NurbsSurface *nurbs = this->m_nurbs[id1];
 
-  for (size_t i = 0; i < data->common_idx.size (); i++)
+  for (std::size_t i = 0; i < data->common_idx.size (); i++)
   {
     //    Eigen::Vector3d n, tu, tv;
     //    Eigen::Vector2d &param1 = data->common_param1[i];
@@ -276,7 +277,7 @@ GlobalOptimizationTDM::assembleCommonBoundaries (unsigned id1, double weight, un
   if (nurbs1->m_order[0] != nurbs1->m_order[1])
     printf ("[GlobalOptimizationTDM::assembleCommonBoundaries] Warning, order in u and v direction differ (nurbs1).\n");
 
-  for (unsigned i = 0; i < data1->common_boundary_point.size (); i++)
+  for (std::size_t i = 0; i < data1->common_boundary_point.size (); i++)
   {
     Eigen::Vector3d p0 = data1->common_boundary_point[i];
     Eigen::Vector2i id (id1, data1->common_boundary_idx[i]);
@@ -345,7 +346,7 @@ GlobalOptimizationTDM::assembleCommonBoundaries (unsigned id1, double weight, un
     m_data[id (1)]->common_boundary_param.push_back (params2);
 
     //    double error = (p1-p2).norm();
-    //    double w = weight * exp(-(error * error) * ds);
+    //    double w = weight * std::exp(-(error * error) * ds);
     addParamConstraint (id, params1, params2, weight * w, row);
 
   }
@@ -368,12 +369,12 @@ GlobalOptimizationTDM::assembleClosingBoundaries (unsigned id, unsigned samples,
   ClosingBoundary::sampleFromBoundary (nurbs1, boundary1, params1, samples);
 
   // for each other nurbs
-  for (unsigned n2 = (id + 1); n2 < m_nurbs.size (); n2++)
+  for (std::size_t n2 = (id + 1); n2 < m_nurbs.size (); n2++)
   {
     ON_NurbsSurface *nurbs2 = m_nurbs[n2];
 
     // find closest point to boundary
-    for (unsigned i = 0; i < boundary1.size (); i++)
+    for (std::size_t i = 0; i < boundary1.size (); i++)
     {
       double error;
       Eigen::Vector3d p, tu, tv;
@@ -387,7 +388,7 @@ GlobalOptimizationTDM::assembleClosingBoundaries (unsigned id, unsigned samples,
 
       //      double dist = (p - p0).norm();
       //      if (error < max_error && dist < max_dist) {
-      double w = weight * exp (-(error * error) * ds);
+      double w = weight * std::exp (-(error * error) * ds);
       addParamConstraint (Eigen::Vector2i (id, n2), params1[i], params, w, row);
       //      }
     }
@@ -412,14 +413,14 @@ GlobalOptimizationTDM::assembleClosingBoundariesTD (unsigned id, unsigned sample
 
   // for each other nurbs
   //  for (unsigned n2 = (id + 1); n2 < m_nurbs.size(); n2++) {
-  for (unsigned n2 = 0; n2 < m_nurbs.size (); n2++)
+  for (std::size_t n2 = 0; n2 < m_nurbs.size (); n2++)
   {
     if (id == n2)
       continue;
     ON_NurbsSurface *nurbs2 = m_nurbs[n2];
 
     // find closest point to boundary
-    for (unsigned i = 0; i < boundary1.size (); i++)
+    for (std::size_t i = 0; i < boundary1.size (); i++)
     {
       double error;
       Eigen::Vector3d p, n, tu, tv;
@@ -437,7 +438,7 @@ GlobalOptimizationTDM::assembleClosingBoundariesTD (unsigned id, unsigned sample
 
       //      double dist = (p - p0).norm();
       //      if (error < max_error && dist < max_dist) {
-      double w = weight * exp (-(error * error) * ds);
+      double w = weight * std::exp (-(error * error) * ds);
       addParamConstraintTD (Eigen::Vector2i (id, n2), params1[i], params, n, tu, tv, wTangent, w, row);
       //      }
     }
@@ -890,6 +891,7 @@ GlobalOptimizationTDM::addCageBoundaryRegularisation (unsigned id, int ncps, dou
   {
     case SOUTH:
       j = nurbs->CVCount (1) - 1;
+      PCL_FALLTHROUGH
     case NORTH:
       for (i = 1; i < (nurbs->CVCount (0) - 1); i++)
       {
@@ -916,6 +918,7 @@ GlobalOptimizationTDM::addCageBoundaryRegularisation (unsigned id, int ncps, dou
 
     case EAST:
       i = nurbs->CVCount (0) - 1;
+      PCL_FALLTHROUGH
     case WEST:
       for (j = 1; j < (nurbs->CVCount (1) - 1); j++)
       {

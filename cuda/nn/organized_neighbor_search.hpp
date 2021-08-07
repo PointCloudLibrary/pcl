@@ -43,40 +43,34 @@ namespace pcl
     {
       if (input_->height == 1)
       {
-        PCL_ERROR ("[pcl::%s::radiusSearch] Input dataset is not organized!", getName ().c_str ());
+        PCL_ERROR ("[pcl::%s::radiusSearch] Input dataset is not organized!\n", getName ().c_str ());
         return 0;
       }
 
       // search window
       int leftX, rightX, leftY, rightY;
-      int x, y, idx;
-      double squared_distance, squared_radius;
-      int nnn;
 
       k_indices_arg.clear ();
       k_sqr_distances_arg.clear ();
 
-      squared_radius = radius_arg*radius_arg;
+      double squared_radius = radius_arg*radius_arg;
 
       this->getProjectedRadiusSearchBox(p_q_arg, squared_radius, leftX, rightX, leftY, rightY);
 
-
-
-
       // iterate over all children
-      nnn = 0;
-      for (x = leftX; (x <= rightX) && (nnn < max_nn_arg); x++)
-        for (y = leftY; (y <= rightY) && (nnn < max_nn_arg); y++)
+      int nnn = 0;
+      for (int x = leftX; (x <= rightX) && (nnn < max_nn_arg); x++)
+        for (int y = leftY; (y <= rightY) && (nnn < max_nn_arg); y++)
         {
-          idx = y * input_->width + x;
-          const PointT& point = input_->points[idx];
+          int idx = y * input_->width + x;
+          const PointT& point = (*input_)[idx];
 
           const double point_dist_x = point.x - p_q_arg.x;
           const double point_dist_y = point.y - p_q_arg.y;
           const double point_dist_z = point.z - p_q_arg.z;
 
           // calculate squared distance
-          squared_distance = (point_dist_x * point_dist_x + point_dist_y * point_dist_y + point_dist_z * point_dist_z);
+          double squared_distance = (point_dist_x * point_dist_x + point_dist_y * point_dist_y + point_dist_z * point_dist_z);
 
           // check distance and add to results
           if (squared_distance <= squared_radius)
@@ -121,11 +115,11 @@ namespace pcl
     x2 = (x_times_z + sqrt_term_x) * norm;
 
     // determine 2-D search window
-    minX_arg  = (int)floor((double)input_->width / 2 + (x1 / focalLength_));
-    maxX_arg = (int)ceil((double)input_->width / 2 + (x2 / focalLength_));
+    minX_arg  = (int)std::floor((double)input_->width / 2 + (x1 / focalLength_));
+    maxX_arg = (int)std::ceil((double)input_->width / 2 + (x2 / focalLength_));
 
-    minY_arg  = (int)floor((double)input_->height / 2 + (y1 / focalLength_));
-    maxY_arg = (int)ceil((double)input_->height / 2 + (y2 / focalLength_));
+    minY_arg  = (int)std::floor((double)input_->height / 2 + (y1 / focalLength_));
+    maxY_arg = (int)std::ceil((double)input_->height / 2 + (y2 / focalLength_));
 
     // make sure the coordinates fit to point cloud resolution
     minX_arg = std::max<int> (0, minX_arg);
@@ -168,20 +162,16 @@ namespace pcl
                                                      std::vector<float> &k_sqr_distances_arg)
     {
       int x_pos, y_pos, x, y, idx;
-      std::size_t i;
-
-      int leftX, rightX, leftY, rightY;
 
       int radiusSearchPointCount;
 
-      int maxSearchDistance;
       double squaredMaxSearchRadius;
 
       assert (k_arg>0);
 
       if (input_->height == 1)
       {
-        PCL_ERROR ("[pcl::%s::nearestKSearch] Input dataset is not organized!", getName ().c_str ());
+        PCL_ERROR ("[pcl::%s::nearestKSearch] Input dataset is not organized!\n", getName ().c_str ());
         return 0;
       }
 
@@ -213,13 +203,13 @@ namespace pcl
         // select point from organized pointcloud
         x = x_pos + (*radiusSearchLookup_Iterator).x_diff_;
         y = y_pos + (*radiusSearchLookup_Iterator).y_diff_;
-        radiusSearchLookup_Iterator++;
+        ++radiusSearchLookup_Iterator;
         radiusSearchPointCount++;
 
         if ((x >= 0) && (y >= 0) && (x < (int)input_->width) && (y < (int)input_->height))
         {
           idx = y * (int)input_->width + x;
-          const PointT& point = input_->points[idx];
+          const PointT& point = (*input_)[idx];
 
           if ((point.x == point.x) && // check for NaNs
               (point.y == point.y) &&
@@ -256,11 +246,10 @@ namespace pcl
       if ((int)nearestNeighbors.size () == k_arg)
       {
         double squared_radius;
-        unsigned int pointCountRadiusSearch;
-        unsigned int pointCountCircleSearch;
 
         squared_radius = std::min<double>(nearestNeighbors.back ().squared_distance_, squaredMaxSearchRadius);
 
+        int leftX, rightX, leftY, rightY;
         this->getProjectedRadiusSearchBox(p_q_arg, squared_radius, leftX, rightX, leftY, rightY);
 
         leftX *=leftX;
@@ -268,10 +257,8 @@ namespace pcl
         leftY *=leftY;
         rightY *= rightY;
 
-        pointCountRadiusSearch = (rightX-leftX)*(rightY-leftY);
-
         // search for maximum distance between search point to window borders in 2-D search window
-        maxSearchDistance = 0;
+        int maxSearchDistance = 0;
         maxSearchDistance = std::max<int> (maxSearchDistance, leftX + leftY);
         maxSearchDistance = std::max<int> (maxSearchDistance, leftX + rightY);
         maxSearchDistance = std::max<int> (maxSearchDistance, rightX + leftY);
@@ -280,78 +267,50 @@ namespace pcl
         maxSearchDistance +=1;
         maxSearchDistance *=maxSearchDistance;
 
-        pointCountCircleSearch= (int)(PI*(double)(maxSearchDistance*maxSearchDistance));
+        // check for nearest neighbors within window
+        while ((radiusSearchLookup_Iterator != radiusSearchLookup_.end ())
+            && ((*radiusSearchLookup_Iterator).squared_distance_ <= maxSearchDistance))
+        {
+          // select point from organized point cloud
+          x = x_pos + (*radiusSearchLookup_Iterator).x_diff_;
+          y = y_pos + (*radiusSearchLookup_Iterator).y_diff_;
+          ++radiusSearchLookup_Iterator;
 
-        if (1){//(pointCountCircleSearch<pointCountRadiusSearch) {
-
-          // check for nearest neighbors within window
-          while ((radiusSearchLookup_Iterator != radiusSearchLookup_.end ())
-              && ((*radiusSearchLookup_Iterator).squared_distance_ <= maxSearchDistance))
+          if ((x >= 0) && (y >= 0) && (x < (int)input_->width) && (y < (int)input_->height))
           {
-            // select point from organized point cloud
-            x = x_pos + (*radiusSearchLookup_Iterator).x_diff_;
-            y = y_pos + (*radiusSearchLookup_Iterator).y_diff_;
-            radiusSearchLookup_Iterator++;
+            idx = y * (int)input_->width + x;
+            const PointT& point = (*input_)[idx];
 
-            if ((x >= 0) && (y >= 0) && (x < (int)input_->width) && (y < (int)input_->height))
+            if ((point.x == point.x) && // check for NaNs
+                (point.y == point.y) && (point.z == point.z))
             {
-              idx = y * (int)input_->width + x;
-              const PointT& point = input_->points[idx];
+              double squared_distance;
 
-              if ((point.x == point.x) && // check for NaNs
-                  (point.y == point.y) && (point.z == point.z))
+              const double point_dist_x = point.x - p_q_arg.x;
+              const double point_dist_y = point.y - p_q_arg.y;
+              const double point_dist_z = point.z - p_q_arg.z;
+
+              // calculate squared distance
+              squared_distance = (point_dist_x * point_dist_x + point_dist_y * point_dist_y + point_dist_z
+                  * point_dist_z);
+
+              if ( squared_distance<=squared_radius )
               {
-                double squared_distance;
+                // add candidate
+                nearestNeighborCandidate newCandidate;
+                newCandidate.index_ = idx;
+                newCandidate.squared_distance_ = squared_distance;
 
-                const double point_dist_x = point.x - p_q_arg.x;
-                const double point_dist_y = point.y - p_q_arg.y;
-                const double point_dist_z = point.z - p_q_arg.z;
-
-                // calculate squared distance
-                squared_distance = (point_dist_x * point_dist_x + point_dist_y * point_dist_y + point_dist_z
-                    * point_dist_z);
-
-                if ( squared_distance<=squared_radius )
-                {
-                  // add candidate
-                  nearestNeighborCandidate newCandidate;
-                  newCandidate.index_ = idx;
-                  newCandidate.squared_distance_ = squared_distance;
-
-                  nearestNeighbors.push_back (newCandidate);
-                }
+                nearestNeighbors.push_back (newCandidate);
               }
             }
           }
-        } else {
-          std::vector<int> k_radius_indices;
-          std::vector<float> k_radius_distances;
-
-          nearestNeighbors.clear();
-
-          k_radius_indices.reserve (k_arg*2);
-          k_radius_distances.reserve (k_arg*2);
-
-          radiusSearch (p_q_arg, sqrt(squared_radius),k_radius_indices , k_radius_distances);
-
-          std::cout << k_radius_indices.size () <<std::endl;
-
-          for (i = 0; i < k_radius_indices.size (); i++)
-          {
-            nearestNeighborCandidate newCandidate;
-            newCandidate.index_ = k_radius_indices[i];
-            newCandidate.squared_distance_ = k_radius_distances[i];
-
-            nearestNeighbors.push_back (newCandidate);
-          }
-
-
         }
 
         std::sort (nearestNeighbors.begin (), nearestNeighbors.end ());
 
         // truncate sorted nearest neighbor vector if we found more than k_arg candidates
-        if (nearestNeighbors.size () > (size_t)k_arg)
+        if (nearestNeighbors.size () > (std::size_t)k_arg)
         {
           nearestNeighbors.resize (k_arg);
         }
@@ -362,7 +321,7 @@ namespace pcl
       k_indices_arg.resize (nearestNeighbors.size ());
       k_sqr_distances_arg.resize (nearestNeighbors.size ());
 
-      for (i = 0; i < nearestNeighbors.size (); i++)
+      for (std::size_t i = 0; i < nearestNeighbors.size (); i++)
       {
         k_indices_arg[i] = nearestNeighbors[i].index_;
         k_sqr_distances_arg[i] = nearestNeighbors[i].squared_distance_;
@@ -377,20 +336,17 @@ namespace pcl
     void
     OrganizedNeighborSearch<PointT>::estimateFocalLengthFromInputCloud ()
     {
-      size_t i, count;
-      int x, y;
-
       focalLength_ = 0;
 
-      count = 0;
-      for (y = 0; y < (int)input_->height; y++)
-        for (x = 0; x < (int)input_->width; x++)
+      std::size_t count = 0;
+      for (int y = 0; y < (int)input_->height; y++)
+        for (int x = 0; x < (int)input_->width; x++)
         {
-          i = y * input_->width + x;
-          if ((input_->points[i].x == input_->points[i].x) && // check for NaNs
-              (input_->points[i].y == input_->points[i].y) && (input_->points[i].z == input_->points[i].z))
+          std::size_t i = y * input_->width + x;
+          if (((*input_)[i].x == (*input_)[i].x) && // check for NaNs
+              ((*input_)[i].y == (*input_)[i].y) && ((*input_)[i].z == (*input_)[i].z))
           {
-            const PointT& point = input_->points[i];
+            const PointT& point = (*input_)[i];
             if ((double)(x - input_->width / 2) * (double)(y - input_->height / 2) * point.z != 0)
             {
               // estimate the focal length for point.x and point.y
@@ -402,7 +358,6 @@ namespace pcl
         }
       // calculate an average of the focalLength
       focalLength_ /= (double)count;
-
     }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
@@ -410,8 +365,6 @@ namespace pcl
     void
     OrganizedNeighborSearch<PointT>::generateRadiusLookupTable (unsigned int width, unsigned int height)
     {
-      int x, y, c;
-
       if ( (this->radiusLookupTableWidth_!=(int)width) || (this->radiusLookupTableHeight_!=(int)height) )
       {
 
@@ -421,9 +374,9 @@ namespace pcl
         radiusSearchLookup_.clear ();
         radiusSearchLookup_.resize ((2*width+1) * (2*height+1));
 
-        c = 0;
-        for (x = -(int)width; x < (int)width+1; x++)
-          for (y = -(int)height; y <(int)height+1; y++)
+        int c = 0;
+        for (int x = -(int)width; x < (int)width+1; x++)
+          for (int y = -(int)height; y <(int)height+1; y++)
           {
             radiusSearchLookup_[c++].defineShiftedSearchPoint(x, y);
           }

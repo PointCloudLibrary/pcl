@@ -38,16 +38,22 @@
 /// buffer with the current selection.  The
 /// @author Yue Li and Matthew Hielsberg
 
-#ifndef COPY_COMMAND_H_
-#define COPY_COMMAND_H_
+#pragma once
 
 #include <pcl/apps/point_cloud_editor/command.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 #include <pcl/apps/point_cloud_editor/copyBuffer.h>
 
+#include <pcl/memory.h>  // for pcl::shared_ptr
+
+class Selection;
+
 class CopyCommand : public Command
 {
   public:
+    /// The type for shared pointer pointing to a constant selection buffer
+    using ConstSelectionPtr = pcl::shared_ptr<const Selection>;
+
     /// @brief Constructor
     /// @param copy_buffer_ptr a shared pointer pointing to the copy buffer.
     /// @param selection_ptr a shared pointer pointing to the selection object.
@@ -55,23 +61,25 @@ class CopyCommand : public Command
     CopyCommand (CopyBufferPtr copy_buffer_ptr,
                  ConstSelectionPtr selection_ptr,
                  ConstCloudPtr cloud_ptr)
-      : copy_buffer_ptr_(copy_buffer_ptr), selection_ptr_(selection_ptr),
-        cloud_ptr_(cloud_ptr)
+      : copy_buffer_ptr_(std::move(copy_buffer_ptr)), selection_ptr_(std::move(selection_ptr)),
+        cloud_ptr_(std::move(cloud_ptr))
     {
       has_undo_ = false;
     }
 
-    /// @brief Destructor
-    ~CopyCommand ()
-    {
-    }
-  
+    /// @brief Copy constructor - commands are non-copyable
+    CopyCommand (const CopyCommand&) = delete;
+
+    /// @brief Equal operator - commands are non-copyable
+    CopyCommand&
+    operator= (const CopyCommand&) = delete;
+
   protected:
     /// @brief Copy the selected points into the copy buffer.
     /// @pre Assumes the constructor was given appropriate pointers to the
     /// required objects.
     void
-    execute ()
+    execute () override
     {
       if (!cloud_ptr_)
         return;
@@ -80,31 +88,12 @@ class CopyCommand : public Command
 
     /// @brief undo is not supported for this command.
     void
-    undo ()
+    undo () override
     {
       assert(false);
     }
 
   private:
-    /// @brief Default constructor - object is not default constructable
-    CopyCommand ()
-    {
-      assert(false);
-    }
-
-    /// @brief Copy constructor - commands are non-copyable
-    CopyCommand (const CopyCommand&)
-    {
-      assert(false);
-    }
-
-    /// @brief Equal operator - commands are non-copyable
-    CopyCommand&
-    operator= (const CopyCommand&)
-    {
-      assert(false); return (*this);
-    }
-
     /// a pointer to the copy buffer.
     CopyBufferPtr copy_buffer_ptr_;
 
@@ -114,4 +103,3 @@ class CopyCommand : public Command
     /// a shared pointer pointing to the cloud
     ConstCloudPtr cloud_ptr_;
 };
-#endif //COPY_COMMAND_H_

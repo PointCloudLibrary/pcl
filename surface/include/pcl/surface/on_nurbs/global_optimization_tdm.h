@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef NURBS_OPTIMIZATION_TDM_H
-#define NURBS_OPTIMIZATION_TDM_H
+#pragma once
 
 #include <pcl/surface/on_nurbs/global_optimization_pdm.h>
 
@@ -85,8 +84,8 @@ namespace pcl
       /** \brief Assemble the system of equations for fitting
        * - for large point-clouds this is time consuming.
        * - should be done once before refinement to initialize the starting points for point inversion. */
-      virtual void
-      assemble (Parameter params);
+      void
+      assemble (Parameter params) override;
 
       /** \brief Assemble the system of equations for fitting
        * - for large point-clouds this is time consuming.
@@ -96,13 +95,13 @@ namespace pcl
 
       /** \brief Solve system of equations using Eigen or UmfPack (can be defined in on_nurbs.cmake),
        *  and updates B-Spline surface if a solution can be obtained. */
-      virtual void
-      solve (double damp = 1.0);
+      void
+      solve (double damp = 1.0) override;
 
       /** \brief Update surface according to the current system of equations.
        *  \param[in] damp damping factor from one iteration to the other. */
-      virtual void
-      updateSurf (double damp);
+      void
+      updateSurf (double damp) override;
 
     private:
 
@@ -110,8 +109,8 @@ namespace pcl
       assembleCommonParams (unsigned id1, double weight, unsigned &row);
 
       /**\brief Assemble closing-constraint of boundaries using data.boundary for getting closest points */
-      virtual void
-      assembleCommonBoundaries (unsigned id1, double weight, unsigned &row);
+      void
+      assembleCommonBoundaries (unsigned id1, double weight, unsigned &row) override;
 
       /**\brief Assemble closing-constraint of boundaries using data.boundary for getting closest points
        * and using the tangent-distance (TD) */
@@ -120,8 +119,8 @@ namespace pcl
 
       /** \brief Assemble closing-constraint of boundaries by sampling from nurbs boundary
        *  and find closest point on closest nurbs */
-      virtual void
-      assembleClosingBoundaries (unsigned id, unsigned samples, double sigma, double weight, unsigned &row);
+      void
+      assembleClosingBoundaries (unsigned id, unsigned samples, double sigma, double weight, unsigned &row) override;
 
       /** \brief Assemble closing-constraint of boundaries by sampling from nurbs boundary
        *  and find closest point on closest nurbs using the tangent-distance (TD) */
@@ -130,25 +129,25 @@ namespace pcl
                                    unsigned &row);
 
       /** \brief Assemble point-to-surface constraints for interior points. */
-      virtual void
-      assembleInteriorPoints (unsigned id, int ncps, double weight, unsigned &row);
+      void
+      assembleInteriorPoints (unsigned id, int ncps, double weight, unsigned &row) override;
 
       /** \brief Assemble point-to-surface constraints for interior points using the tangent-distance (TD). */
       void
       assembleInteriorPointsTD (unsigned id, int ncps, double wTangent, double weight, unsigned &row);
 
       /** \brief Assemble point-to-surface constraints for boundary points. */
-      virtual void
-      assembleBoundaryPoints (unsigned id, int ncps, double weight, unsigned &row);
+      void
+      assembleBoundaryPoints (unsigned id, int ncps, double weight, unsigned &row) override;
 
       /** \brief Assemble smoothness constraints. */
-      virtual void
-      assembleRegularisation (unsigned id, int ncps, double wCageRegInt, double wCageRegBnd, unsigned &row);
+      void
+      assembleRegularisation (unsigned id, int ncps, double wCageRegInt, double wCageRegBnd, unsigned &row) override;
 
       /** \brief Add minimization constraint: two points in parametric domain of two surfaces should lie on each other. */
-      virtual void
+      void
       addParamConstraint (const Eigen::Vector2i &id, const Eigen::Vector2d &params1, const Eigen::Vector2d &params2,
-                          double weight, unsigned &row);
+                          double weight, unsigned &row) override;
 
       /** \brief Add minimization constraint: two points in parametric domain of two surfaces should lie on each other
        *  and using the tangent-distance (TD). */
@@ -158,9 +157,9 @@ namespace pcl
                             double tangent_weight, double weight, unsigned &row);
 
       /** \brief Add minimization constraint: point-to-surface distance (point-distance-minimization). */
-      virtual void
+      void
       addPointConstraint (unsigned id, int ncps, const Eigen::Vector2d &params, const Eigen::Vector3d &point,
-                          double weight, unsigned &row);
+                          double weight, unsigned &row) override;
 
       /** \brief Add minimization constraint: point-to-surface distance (tangent-distance-minimization). */
       void
@@ -169,20 +168,18 @@ namespace pcl
                             double tangent_weight, double weight, unsigned &row);
 
       /** \brief Add minimization constraint: interior smoothness by control point regularisation. */
-      virtual void
-      addCageInteriorRegularisation (unsigned id, int ncps, double weight, unsigned &row);
+      void
+      addCageInteriorRegularisation (unsigned id, int ncps, double weight, unsigned &row) override;
 
       /** \brief Add minimization constraint: boundary smoothness by control point regularisation. */
-      virtual void
-      addCageBoundaryRegularisation (unsigned id, int ncps, double weight, int side, unsigned &row);
+      void
+      addCageBoundaryRegularisation (unsigned id, int ncps, double weight, int side, unsigned &row) override;
 
       /** \brief Add minimization constraint: corner smoothness by control point regularisation. */
-      virtual void
-      addCageCornerRegularisation (unsigned id, int ncps, double weight, unsigned &row);
+      void
+      addCageCornerRegularisation (unsigned id, int ncps, double weight, unsigned &row) override;
 
     };
 
   }
 }
-#endif
-

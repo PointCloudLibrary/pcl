@@ -591,7 +591,7 @@ public:
   const unsigned char* Bits(int) const;
 
   void* m_buffer;
-  size_t m_sizeof_buffer;
+  std::size_t m_sizeof_buffer;
   int m_free_buffer; // 1 = ~ON_EmbeddedBitmap will onfree m_buffer.
   ON__UINT32 m_biffer_crc32; // 32 bit crc from ON_CRC32
 };

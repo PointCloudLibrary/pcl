@@ -38,8 +38,14 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_MODEL_SPHERE_H_
-#define PCL_SAMPLE_CONSENSUS_MODEL_SPHERE_H_
+#pragma once
+
+#ifdef __SSE__
+#include <xmmintrin.h> // for __m128
+#endif // ifdef __SSE__
+#ifdef __AVX__
+#include <immintrin.h> // for __m256
+#endif // ifdef __AVX__
 
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
@@ -67,11 +73,12 @@ namespace pcl
       using SampleConsensusModel<PointT>::radius_max_;
       using SampleConsensusModel<PointT>::error_sqr_dists_;
 
-      typedef typename SampleConsensusModel<PointT>::PointCloud PointCloud;
-      typedef typename SampleConsensusModel<PointT>::PointCloudPtr PointCloudPtr;
-      typedef typename SampleConsensusModel<PointT>::PointCloudConstPtr PointCloudConstPtr;
+      using PointCloud = typename SampleConsensusModel<PointT>::PointCloud;
+      using PointCloudPtr = typename SampleConsensusModel<PointT>::PointCloudPtr;
+      using PointCloudConstPtr = typename SampleConsensusModel<PointT>::PointCloudConstPtr;
 
-      typedef boost::shared_ptr<SampleConsensusModelSphere> Ptr;
+      using Ptr = shared_ptr<SampleConsensusModelSphere<PointT> >;
+      using ConstPtr = shared_ptr<const SampleConsensusModelSphere<PointT>>;
 
       /** \brief Constructor for base SampleConsensusModelSphere.
         * \param[in] cloud the input point cloud dataset
@@ -92,7 +99,7 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelSphere (const PointCloudConstPtr &cloud,
-                                  const std::vector<int> &indices,
+                                  const Indices &indices,
                                   bool random = false)
         : SampleConsensusModel<PointT> (cloud, indices, random)
       {
@@ -102,7 +109,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      virtual ~SampleConsensusModelSphere () {}
+      ~SampleConsensusModelSphere () {}
 
       /** \brief Copy constructor.
         * \param[in] source the model to copy into this
@@ -131,8 +138,8 @@ namespace pcl
         * \param[out] model_coefficients the resultant model coefficients
         */
       bool
-      computeModelCoefficients (const std::vector<int> &samples,
-                                Eigen::VectorXf &model_coefficients) const;
+      computeModelCoefficients (const Indices &samples,
+                                Eigen::VectorXf &model_coefficients) const override;
 
       /** \brief Compute all distances from the cloud data to a given sphere model.
         * \param[in] model_coefficients the coefficients of a sphere model that we need to compute distances to
@@ -140,7 +147,7 @@ namespace pcl
         */
       void
       getDistancesToModel (const Eigen::VectorXf &model_coefficients,
-                           std::vector<double> &distances) const;
+                           std::vector<double> &distances) const override;
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
         * \param[in] model_coefficients the coefficients of a sphere model that we need to compute distances to
@@ -150,7 +157,7 @@ namespace pcl
       void 
       selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
                             const double threshold, 
-                            std::vector<int> &inliers);
+                            Indices &inliers) override;
 
       /** \brief Count all the points which respect the given model coefficients as inliers. 
         * 
@@ -158,9 +165,9 @@ namespace pcl
         * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
         * \return the resultant number of inliers
         */
-      virtual int
+      std::size_t
       countWithinDistance (const Eigen::VectorXf &model_coefficients,
-                           const double threshold) const;
+                           const double threshold) const override;
 
       /** \brief Recompute the sphere coefficients using the given inlier set and return them to the user.
         * @note: these are the coefficients of the sphere model after refinement (e.g. after SVD)
@@ -169,9 +176,9 @@ namespace pcl
         * \param[out] optimized_coefficients the resultant recomputed coefficients after non-linear optimization
         */
       void
-      optimizeModelCoefficients (const std::vector<int> &inliers,
+      optimizeModelCoefficients (const Indices &inliers,
                                  const Eigen::VectorXf &model_coefficients,
-                                 Eigen::VectorXf &optimized_coefficients) const;
+                                 Eigen::VectorXf &optimized_coefficients) const override;
 
       /** \brief Create a new point cloud with inliers projected onto the sphere model.
         * \param[in] inliers the data inliers that we want to project on the sphere model
@@ -181,10 +188,10 @@ namespace pcl
         * \todo implement this.
         */
       void
-      projectPoints (const std::vector<int> &inliers,
+      projectPoints (const Indices &inliers,
                      const Eigen::VectorXf &model_coefficients,
                      PointCloud &projected_points,
-                     bool copy_data_fields = true) const;
+                     bool copy_data_fields = true) const override;
 
       /** \brief Verify whether a subset of indices verifies the given sphere model coefficients.
         * \param[in] indices the data indices that need to be tested against the sphere model
@@ -192,12 +199,12 @@ namespace pcl
         * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
         */
       bool
-      doSamplesVerifyModel (const std::set<int> &indices,
+      doSamplesVerifyModel (const std::set<index_t> &indices,
                             const Eigen::VectorXf &model_coefficients,
-                            const double threshold) const;
+                            const double threshold) const override;
 
-      /** \brief Return an unique id for this model (SACMODEL_SPHERE). */
-      inline pcl::SacModel getModelType () const { return (SACMODEL_SPHERE); }
+      /** \brief Return a unique id for this model (SACMODEL_SPHERE). */
+      inline pcl::SacModel getModelType () const override { return (SACMODEL_SPHERE); }
 
     protected:
       using SampleConsensusModel<PointT>::sample_size_;
@@ -206,8 +213,8 @@ namespace pcl
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */
-      virtual bool
-      isModelValid (const Eigen::VectorXf &model_coefficients) const
+      bool
+      isModelValid (const Eigen::VectorXf &model_coefficients) const override
       {
         if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
           return (false);
@@ -225,20 +232,44 @@ namespace pcl
         * \param[in] samples the resultant index samples
         */
       bool
-      isSampleGood(const std::vector<int> &samples) const;
+      isSampleGood(const Indices &samples) const override;
+
+      /** This implementation uses no SIMD instructions. It is not intended for normal use.
+        * See countWithinDistance which automatically uses the fastest implementation.
+        */
+      std::size_t
+      countWithinDistanceStandard (const Eigen::VectorXf &model_coefficients,
+                                   const double threshold,
+                                   std::size_t i = 0) const;
+
+#if defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
+      /** This implementation uses SSE, SSE2, and SSE4.1 instructions. It is not intended for normal use.
+        * See countWithinDistance which automatically uses the fastest implementation.
+        */
+      std::size_t
+      countWithinDistanceSSE (const Eigen::VectorXf &model_coefficients,
+                              const double threshold,
+                              std::size_t i = 0) const;
+#endif
+
+#if defined (__AVX__) && defined (__AVX2__)
+      /** This implementation uses AVX and AVX2 instructions. It is not intended for normal use.
+        * See countWithinDistance which automatically uses the fastest implementation.
+        */
+      std::size_t
+      countWithinDistanceAVX (const Eigen::VectorXf &model_coefficients,
+                              const double threshold,
+                              std::size_t i = 0) const;
+#endif
 
     private:
-
-#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#pragma GCC diagnostic ignored "-Weffc++"
-#endif
       struct OptimizationFunctor : pcl::Functor<float>
       {
         /** Functor constructor
           * \param[in] indices the indices of data points to evaluate
           * \param[in] estimator pointer to the estimator object
           */
-        OptimizationFunctor (const pcl::SampleConsensusModelSphere<PointT> *model, const std::vector<int>& indices) :
+        OptimizationFunctor (const pcl::SampleConsensusModelSphere<PointT> *model, const Indices& indices) :
           pcl::Functor<float> (indices.size ()), model_ (model), indices_ (indices) {}
 
         /** Cost function to be minimized
@@ -254,9 +285,7 @@ namespace pcl
           for (int i = 0; i < values (); ++i)
           {
             // Compute the difference between the center of the sphere and the datapoint X_i
-            cen_t[0] = model_->input_->points[indices_[i]].x - x[0];
-            cen_t[1] = model_->input_->points[indices_[i]].y - x[1];
-            cen_t[2] = model_->input_->points[indices_[i]].z - x[2];
+            cen_t.head<3>() = (*model_->input_)[indices_[i]].getVector3fMap() - x.head<3>();
 
             // g = sqrt ((x-a)^2 + (y-b)^2 + (z-c)^2) - R
             fvec[i] = std::sqrt (cen_t.dot (cen_t)) - x[3];
@@ -265,10 +294,15 @@ namespace pcl
         }
 
         const pcl::SampleConsensusModelSphere<PointT> *model_;
-        const std::vector<int> &indices_;
+        const Indices &indices_;
       };
-#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#pragma GCC diagnostic warning "-Weffc++"
+
+#ifdef __AVX__
+      inline __m256 sqr_dist8 (const std::size_t i, const __m256 a_vec, const __m256 b_vec, const __m256 c_vec) const;
+#endif
+
+#ifdef __SSE__
+      inline __m128 sqr_dist4 (const std::size_t i, const __m128 a_vec, const __m128 b_vec, const __m128 c_vec) const;
 #endif
    };
 }
@@ -276,5 +310,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/sample_consensus/impl/sac_model_sphere.hpp>
 #endif
-
-#endif  //#ifndef PCL_SAMPLE_CONSENSUS_MODEL_SPHERE_H_

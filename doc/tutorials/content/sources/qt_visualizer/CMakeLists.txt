@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.5)
 
 project(pcl_visualizer)
 
@@ -26,6 +26,4 @@ set(project_SOURCES main.cpp pclviewer.cpp)
 
 add_executable(${PROJECT_NAME} ${project_SOURCES})
 
-target_link_libraries(${PROJECT_NAME} ${PCL_LIBRARIES})
-
-qt5_use_modules(${PROJECT_NAME} Widgets)
+target_link_libraries(${PROJECT_NAME} ${PCL_LIBRARIES} Qt5::Widgets)

@@ -39,12 +39,18 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
-#include <vector>
-#include <string>
-
-#include <pcl/visualization/vtk.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include "boost.h"
+
+#include <vtkSmartPointer.h>
+#include <vtkImageImport.h>
+#include <vtkTIFFWriter.h>
+#include <vtkImageFlip.h>
+
+#include <mutex>
+#include <string>
+#include <vector>
+#include <boost/date_time/posix_time/posix_time.hpp> // for to_iso_string, local_time
+
 
 #define SHOW_FPS 1
 #if SHOW_FPS
@@ -75,9 +81,6 @@ class SimpleOpenNIViewer
   public:
     SimpleOpenNIViewer (pcl::OpenNIGrabber& grabber)
       : grabber_ (grabber)
-      , image_mutex_ ()
-      , image_ ()
-      , depth_image_ ()
       , importer_ (vtkSmartPointer<vtkImageImport>::New ())
       , depth_importer_ (vtkSmartPointer<vtkImageImport>::New ())
       , writer_ (vtkSmartPointer<vtkTIFFWriter>::New ())
@@ -92,11 +95,11 @@ class SimpleOpenNIViewer
     }
 
     void
-    image_callback (const boost::shared_ptr<openni_wrapper::Image> &image, 
-                    const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image, float)
+    image_callback (const openni_wrapper::Image::Ptr &image, 
+                    const openni_wrapper::DepthImage::Ptr &depth_image, float)
     {
       FPS_CALC ("image callback");
-      boost::mutex::scoped_lock lock (image_mutex_);
+      std::lock_guard<std::mutex> lock (image_mutex_);
       image_ = image;
       depth_image_ = depth_image;
     }
@@ -104,24 +107,29 @@ class SimpleOpenNIViewer
     void
     run ()
     {
-      boost::function<void (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float) > image_cb = boost::bind (&SimpleOpenNIViewer::image_callback, this, _1, _2, _3);
+      std::function<
+        void (const openni_wrapper::Image::Ptr&, const openni_wrapper::DepthImage::Ptr&, float)
+      > image_cb = [this] (const openni_wrapper::Image::Ptr& img, const openni_wrapper::DepthImage::Ptr& depth, float f)
+      {
+        image_callback (img, depth, f);
+      };
       boost::signals2::connection image_connection = grabber_.registerCallback (image_cb);
       
       grabber_.start ();
       
-      unsigned char* rgb_data = 0;
+      unsigned char* rgb_data = nullptr;
       unsigned rgb_data_size = 0;
       const void* data;
        
       while (true)
       {
-        boost::mutex::scoped_lock lock (image_mutex_);
+        std::lock_guard<std::mutex> lock (image_mutex_);
 
         std::string time = boost::posix_time::to_iso_string (boost::posix_time::microsec_clock::local_time ());
         if (image_)
         {
           FPS_CALC ("writer callback");
-          boost::shared_ptr<openni_wrapper::Image> image;
+          openni_wrapper::Image::Ptr image;
           image.swap (image_);
 
           if (image->getEncoding() == openni_wrapper::Image::RGB)
@@ -143,24 +151,22 @@ class SimpleOpenNIViewer
             data = reinterpret_cast<const void*> (rgb_data);
           }
 
-          std::stringstream ss;
-          ss << "frame_" + time + "_rgb.tiff";
+          const std::string filename = "frame_" + time + "_rgb.tiff";
           importer_->SetImportVoidPointer (const_cast<void*>(data), 1);
           importer_->Update ();
           flipper_->SetInputConnection (importer_->GetOutputPort ());
           flipper_->Update ();
-          writer_->SetFileName (ss.str ().c_str ());
+          writer_->SetFileName (filename.c_str ());
           writer_->SetInputConnection (flipper_->GetOutputPort ());
           writer_->Write ();
         }
 
         if (depth_image_)
         {
-          boost::shared_ptr<openni_wrapper::DepthImage> depth_image;
+          openni_wrapper::DepthImage::Ptr depth_image;
           depth_image.swap (depth_image_);
 
-          std::stringstream ss;
-          ss << "frame_" + time + "_depth.tiff";
+          const std::string filename = "frame_" + time + "_depth.tiff";
 
           depth_importer_->SetWholeExtent (0, depth_image->getWidth () - 1, 0, depth_image->getHeight () - 1, 0, 0);
           depth_importer_->SetDataExtentToWholeExtent ();
@@ -168,24 +174,21 @@ class SimpleOpenNIViewer
           depth_importer_->Update ();
           flipper_->SetInputConnection (depth_importer_->GetOutputPort ());
           flipper_->Update ();
-          writer_->SetFileName (ss.str ().c_str ());
+          writer_->SetFileName (filename.c_str ());
           writer_->SetInputConnection (flipper_->GetOutputPort ());
           writer_->Write ();
         }
       }
 
       grabber_.stop ();
-      
       image_connection.disconnect ();
-      
-      if (rgb_data)
-        delete[] rgb_data;
+      delete[] rgb_data;
     }
 
     pcl::OpenNIGrabber& grabber_;
-    boost::mutex image_mutex_;
-    boost::shared_ptr<openni_wrapper::Image> image_;
-    boost::shared_ptr<openni_wrapper::DepthImage> depth_image_;
+    std::mutex image_mutex_;
+    openni_wrapper::Image::Ptr image_;
+    openni_wrapper::DepthImage::Ptr depth_image_;
     vtkSmartPointer<vtkImageImport> importer_, depth_importer_;
     vtkSmartPointer<vtkTIFFWriter> writer_;
     vtkSmartPointer<vtkImageFlip> flipper_;
@@ -194,33 +197,33 @@ class SimpleOpenNIViewer
 void
 usage (char ** argv)
 {
-  cout << "usage: " << argv[0] << " [((<device_id> | <path-to-oni-file>) [-imagemode <mode>] | -l [<device_id>]| -h | --help)]" << endl;
-  cout << argv[0] << " -h | --help : shows this help" << endl;
-  cout << argv[0] << " -l : list all available devices" << endl;
-  cout << argv[0] << " -l <device-id> : list all available modes for specified device" << endl;
+  std::cout << "usage: " << argv[0] << " [((<device_id> | <path-to-oni-file>) [-imagemode <mode>] | -l [<device_id>]| -h | --help)]" << std::endl;
+  std::cout << argv[0] << " -h | --help : shows this help" << std::endl;
+  std::cout << argv[0] << " -l : list all available devices" << std::endl;
+  std::cout << argv[0] << " -l <device-id> : list all available modes for specified device" << std::endl;
 
-  cout << "                 device_id may be #1, #2, ... for the first, second etc device in the list"
+  std::cout << "                 device_id may be #1, #2, ... for the first, second etc device in the list"
 #ifndef _WIN32
-       << " or" << endl
-       << "                 bus@address for the device connected to a specific usb-bus / address combination or" << endl
+       << " or" << std::endl
+       << "                 bus@address for the device connected to a specific usb-bus / address combination or" << std::endl
        << "                 <serial-number>"
 #endif
-       << endl;
-  cout << endl;
-  cout << "examples:" << endl;
-  cout << argv[0] << " \"#1\"" << endl;
-  cout << "    uses the first device." << endl;
-  cout << argv[0] << " \"./temp/test.oni\"" << endl;
-  cout << "    uses the oni-player device to play back oni file given by path." << endl;
-  cout << argv[0] << " -l" << endl;
-  cout << "    lists all available devices." << endl;
-  cout << argv[0] << " -l \"#2\"" << endl;
-  cout << "    lists all available modes for the second device" << endl;
+       << std::endl;
+  std::cout << std::endl;
+  std::cout << "examples:" << std::endl;
+  std::cout << argv[0] << " \"#1\"" << std::endl;
+  std::cout << "    uses the first device." << std::endl;
+  std::cout << argv[0] << " \"./temp/test.oni\"" << std::endl;
+  std::cout << "    uses the oni-player device to play back oni file given by path." << std::endl;
+  std::cout << argv[0] << " -l" << std::endl;
+  std::cout << "    lists all available devices." << std::endl;
+  std::cout << argv[0] << " -l \"#2\"" << std::endl;
+  std::cout << "    lists all available modes for the second device" << std::endl;
 #ifndef _WIN32
-  cout << argv[0] << " A00361800903049A" << endl;
-  cout << "    uses the device with the serial number \'A00361800903049A\'." << endl;
-  cout << argv[0] << " 1@16" << endl;
-  cout << "    uses the device on address 16 at USB bus 1." << endl;
+  std::cout << argv[0] << " A00361800903049A" << std::endl;
+  std::cout << "    uses the device with the serial number \'A00361800903049A\'." << std::endl;
+  std::cout << argv[0] << " 1@16" << std::endl;
+  std::cout << "    uses the device on address 16 at USB bus 1." << std::endl;
 #endif
   return;
 }
@@ -228,7 +231,7 @@ usage (char ** argv)
 int
 main(int argc, char ** argv)
 {
-  std::string device_id ("");
+  std::string device_id;
   pcl::OpenNIGrabber::Mode image_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
   pcl::OpenNIGrabber::Mode depth_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
   
@@ -240,21 +243,21 @@ main(int argc, char ** argv)
       usage(argv);
       return 0;
     }
-    else if (device_id == "-l")
+    if (device_id == "-l")
     {
       if (argc >= 3)
       {
         pcl::OpenNIGrabber grabber (argv[2]);
-        boost::shared_ptr<openni_wrapper::OpenNIDevice> device = grabber.getDevice ();
+        openni_wrapper::OpenNIDevice::Ptr device = grabber.getDevice ();
         std::vector<std::pair<int, XnMapOutputMode> > modes;
 
         if (device->hasImageStream ())
         {
-          cout << endl << "Supported image modes for device: " << device->getVendorName () << " , " << device->getProductName () << endl;
+          std::cout << std::endl << "Supported image modes for device: " << device->getVendorName () << " , " << device->getProductName () << std::endl;
           modes = grabber.getAvailableImageModes ();
           for (std::vector<std::pair<int, XnMapOutputMode> >::const_iterator it = modes.begin (); it != modes.end (); ++it)
           {
-            cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << endl;
+            std::cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << std::endl;
           }
         }
       }
@@ -265,15 +268,15 @@ main(int argc, char ** argv)
         {
           for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices (); ++deviceIdx)
           {
-            cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx) << ", product: " << driver.getProductName (deviceIdx)
-              << ", connected: " << driver.getBus (deviceIdx) << " @ " << driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << endl;
+            std::cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx) << ", product: " << driver.getProductName (deviceIdx)
+              << ", connected: " << driver.getBus (deviceIdx) << " @ " << driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << std::endl;
           }
 
         }
         else
-          cout << "No devices connected." << endl;
+          std::cout << "No devices connected." << std::endl;
         
-        cout <<"Virtual Devices available: ONI player" << endl;
+        std::cout <<"Virtual Devices available: ONI player" << std::endl;
       }
       return (0);
     }
@@ -282,7 +285,7 @@ main(int argc, char ** argv)
   {
     openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
     if (driver.getNumberDevices () > 0)
-      cout << "Device Id not set, using first device." << endl;
+      std::cout << "Device Id not set, using first device." << std::endl;
   }
   
   unsigned imagemode;

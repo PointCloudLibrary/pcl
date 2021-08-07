@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(supervoxel_clustering)
 
@@ -9,4 +9,4 @@ link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
 add_executable (supervoxel_clustering supervoxel_clustering.cpp)
-target_link_libraries (supervoxel_clustering ${PCL_LIBRARIES}) 
+target_link_libraries (supervoxel_clustering ${PCL_LIBRARIES})

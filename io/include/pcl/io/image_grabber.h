@@ -39,16 +39,17 @@
  */
 
 #pragma once
-#ifndef __PCL_IO_IMAGE_GRABBER__
-#define __PCL_IO_IMAGE_GRABBER__
 
-#include "pcl/pcl_config.h"
+#include <pcl/conversions.h>
+#include <pcl/memory.h>
+#include <pcl/pcl_config.h>
+#include <pcl/common/time_trigger.h>
 #include <pcl/io/grabber.h>
 #include <pcl/io/file_grabber.h>
-#include <pcl/common/time_trigger.h>
+
 #include <string>
 #include <vector>
-#include <pcl/conversions.h>
+
 
 namespace pcl
 {
@@ -74,59 +75,41 @@ namespace pcl
      */
     ImageGrabberBase (const std::vector<std::string>& depth_image_files, float frames_per_second, bool repeat);
 
-    /** \brief Copy constructor.
-     * \param[in] src the Image Grabber base object to copy into this
-     */
-    ImageGrabberBase (const ImageGrabberBase &src) : Grabber (), impl_ ()
-    {
-      *this = src;
-    }
-
-    /** \brief Copy operator.
-     * \param[in] src the Image Grabber base object to copy into this
-     */
-    ImageGrabberBase&
-    operator = (const ImageGrabberBase &src)
-    {
-      impl_ = src.impl_;
-      return (*this);
-    }
-
     /** \brief Virtual destructor. */
-    virtual ~ImageGrabberBase () throw ();
+    ~ImageGrabberBase () noexcept;
 
     /** \brief Starts playing the list of PCD files if frames_per_second is > 0. Otherwise it works as a trigger: publishes only the next PCD file in the list. */
-    virtual void 
-    start ();
-      
+    void
+    start () override;
+
     /** \brief Stops playing the list of PCD files if frames_per_second is > 0. Otherwise the method has no effect. */
-    virtual void 
-    stop ();
-      
+    void
+    stop () override;
+
     /** \brief Triggers a callback with new data */
-    virtual void 
+    virtual void
     trigger ();
 
     /** \brief whether the grabber is started (publishing) or not.
      * \return true only if publishing.
      */
-    virtual bool 
-    isRunning () const;
-      
+    bool
+    isRunning () const override;
+
     /** \return The name of the grabber */
-    virtual std::string 
-    getName () const;
-      
+    std::string
+    getName () const override;
+
     /** \brief Rewinds to the first PCD file in the list.*/
-    virtual void 
+    virtual void
     rewind ();
 
     /** \brief Returns the frames_per_second. 0 if grabber is trigger-based */
-    virtual float 
-    getFramesPerSecond () const;
+    float
+    getFramesPerSecond () const override;
 
     /** \brief Returns whether the repeat flag is on */
-    bool 
+    bool
     isRepeatOn () const;
 
     /** \brief Returns if the last frame is reached */
@@ -137,18 +120,18 @@ namespace pcl
     std::string
     getCurrentDepthFileName () const;
 
-    /** \brief Returns the filename of the previous indexed file 
+    /** \brief Returns the filename of the previous indexed file
      *  SDM: adding this back in, but is this useful, or confusing? */
     std::string
     getPrevDepthFileName () const;
 
     /** \brief Get the depth filename at a particular index */
     std::string
-    getDepthFileNameAtIndex (size_t idx) const;
+    getDepthFileNameAtIndex (std::size_t idx) const;
 
     /** \brief Query only the timestamp of an index, if it exists */
     bool
-    getTimestampAtIndex (size_t idx, pcl::uint64_t &timestamp) const;
+    getTimestampAtIndex (std::size_t idx, std::uint64_t &timestamp) const;
 
     /** \brief Manually set RGB image files.
      * \param[in] rgb_image_files A vector of [tiff/png/jpg/ppm] files to use as input. There must be a 1-to-1 correspondence between these and the depth images you set
@@ -156,18 +139,18 @@ namespace pcl
     void
     setRGBImageFiles (const std::vector<std::string>& rgb_image_files);
 
-    /** \brief Define custom focal length and center pixel. This will override ANY other setting of parameters for the duration of the grabber's life, whether by factory defaults or explicitly read from a frame_[timestamp].xml file. 
+    /** \brief Define custom focal length and center pixel. This will override ANY other setting of parameters for the duration of the grabber's life, whether by factory defaults or explicitly read from a frame_[timestamp].xml file.
      *  \param[in] focal_length_x Horizontal focal length (fx)
      *  \param[in] focal_length_y Vertical focal length (fy)
      *  \param[in] principal_point_x Horizontal coordinates of the principal point (cx)
      *  \param[in] principal_point_y Vertical coordinates of the principal point (cy)
      */
     virtual void
-    setCameraIntrinsics (const double focal_length_x, 
-                         const double focal_length_y, 
-                         const double principal_point_x, 
+    setCameraIntrinsics (const double focal_length_x,
+                         const double focal_length_y,
+                         const double principal_point_x,
                          const double principal_point_y);
-    
+
     /** \brief Get the current focal length and center pixel. If the intrinsics have been manually set with setCameraIntrinsics, this will return those values. Else, if start () has been called and the grabber has found a frame_[timestamp].xml file, this will return the most recent values read. Else, returns factory defaults.
      *  \param[out] focal_length_x Horizontal focal length (fx)
      *  \param[out] focal_length_y Vertical focal length (fy)
@@ -175,16 +158,16 @@ namespace pcl
      *  \param[out] principal_point_y Vertical coordinates of the principal point (cy)
      */
     virtual void
-    getCameraIntrinsics (double &focal_length_x, 
-                         double &focal_length_y, 
-                         double &principal_point_x, 
+    getCameraIntrinsics (double &focal_length_x,
+                         double &focal_length_y,
+                         double &principal_point_x,
                          double &principal_point_y) const;
 
     /** \brief Define the units the depth data is stored in.
      *  Defaults to mm (0.001), meaning a brightness of 1000 corresponds to 1 m*/
     void
     setDepthImageUnits (float units);
-    
+
     /** \brief Set the number of threads, if we wish to use OpenMP for quicker cloud population.
      *  Note that for a standard (< 4 core) machine this is unlikely to yield a drastic speedup.*/
     void
@@ -193,16 +176,16 @@ namespace pcl
     protected:
     /** \brief Convenience function to see how many frames this consists of
       */
-    size_t
+    std::size_t
     numFrames () const;
-    
+
     /** \brief Gets the cloud in ROS form at location idx */
     bool
-    getCloudAt (size_t idx, pcl::PCLPointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation) const;
+    getCloudAt (std::size_t idx, pcl::PCLPointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation) const;
 
 
     private:
-    virtual void 
+    virtual void
     publish (const pcl::PCLPointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const = 0;
 
 
@@ -216,74 +199,77 @@ namespace pcl
   template <typename PointT> class ImageGrabber : public ImageGrabberBase, public FileGrabber<PointT>
   {
     public:
-    ImageGrabber (const std::string& dir, 
-                  float frames_per_second = 0, 
-                  bool repeat = false, 
+    using Ptr = shared_ptr<ImageGrabber>;
+    using ConstPtr = shared_ptr<const ImageGrabber>;
+
+    ImageGrabber (const std::string& dir,
+                  float frames_per_second = 0,
+                  bool repeat = false,
                   bool pclzf_mode = false);
 
-    ImageGrabber (const std::string& depth_dir, 
-                  const std::string& rgb_dir, 
-                  float frames_per_second = 0, 
+    ImageGrabber (const std::string& depth_dir,
+                  const std::string& rgb_dir,
+                  float frames_per_second = 0,
                   bool repeat = false);
 
-    ImageGrabber (const std::vector<std::string>& depth_image_files, 
-                  float frames_per_second = 0, 
+    ImageGrabber (const std::vector<std::string>& depth_image_files,
+                  float frames_per_second = 0,
                   bool repeat = false);
-      
+
     /** \brief Empty destructor */
-    virtual ~ImageGrabber () throw () {}
-    
-    // Inherited from FileGrabber
-    const boost::shared_ptr< const pcl::PointCloud<PointT> >
-    operator[] (size_t idx) const;
+    ~ImageGrabber () noexcept {}
 
     // Inherited from FileGrabber
-    size_t
-    size () const;
+    const typename pcl::PointCloud<PointT>::ConstPtr
+    operator[] (std::size_t idx) const override;
+
+    // Inherited from FileGrabber
+    std::size_t
+    size () const override;
 
     protected:
-    virtual void 
+    void
     publish (const pcl::PCLPointCloud2& blob,
-             const Eigen::Vector4f& origin, 
-             const Eigen::Quaternionf& orientation) const;
-    boost::signals2::signal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>* signal_;
+             const Eigen::Vector4f& origin,
+             const Eigen::Quaternionf& orientation) const override;
+    boost::signals2::signal<void (const typename pcl::PointCloud<PointT>::ConstPtr&)>* signal_;
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template<typename PointT>
-  ImageGrabber<PointT>::ImageGrabber (const std::string& dir, 
-                                      float frames_per_second, 
-                                      bool repeat, 
+  ImageGrabber<PointT>::ImageGrabber (const std::string& dir,
+                                      float frames_per_second,
+                                      bool repeat,
                                       bool pclzf_mode)
     : ImageGrabberBase (dir, frames_per_second, repeat, pclzf_mode)
   {
-    signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();
+    signal_ = createSignal<void (const typename pcl::PointCloud<PointT>::ConstPtr&)>();
   }
-  
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template<typename PointT>
-  ImageGrabber<PointT>::ImageGrabber (const std::string& depth_dir, 
-                                      const std::string& rgb_dir, 
-                                      float frames_per_second, 
+  ImageGrabber<PointT>::ImageGrabber (const std::string& depth_dir,
+                                      const std::string& rgb_dir,
+                                      float frames_per_second,
                                       bool repeat)
     : ImageGrabberBase (depth_dir, rgb_dir, frames_per_second, repeat)
   {
-    signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();
+    signal_ = createSignal<void (const typename pcl::PointCloud<PointT>::ConstPtr&)>();
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template<typename PointT>
-  ImageGrabber<PointT>::ImageGrabber (const std::vector<std::string>& depth_image_files, 
-                                      float frames_per_second, 
+  ImageGrabber<PointT>::ImageGrabber (const std::vector<std::string>& depth_image_files,
+                                      float frames_per_second,
                                       bool repeat)
     : ImageGrabberBase (depth_image_files, frames_per_second, repeat), signal_ ()
   {
-    signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();
+    signal_ = createSignal<void (const typename pcl::PointCloud<PointT>::ConstPtr&)>();
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  template<typename PointT> const boost::shared_ptr< const pcl::PointCloud<PointT> >
-  ImageGrabber<PointT>::operator[] (size_t idx) const
+  template<typename PointT> const typename pcl::PointCloud<PointT>::ConstPtr
+  ImageGrabber<PointT>::operator[] (std::size_t idx) const
   {
     pcl::PCLPointCloud2 blob;
     Eigen::Vector4f origin;
@@ -297,7 +283,7 @@ namespace pcl
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename PointT> size_t
+  template <typename PointT> std::size_t
   ImageGrabber<PointT>::size () const
   {
     return (numFrames ());
@@ -315,4 +301,3 @@ namespace pcl
     signal_->operator () (cloud);
   }
 }
-#endif

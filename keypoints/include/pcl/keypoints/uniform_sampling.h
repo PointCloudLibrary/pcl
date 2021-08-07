@@ -37,14 +37,8 @@
  *
  */
 
-#ifndef PCL_KEYPOINTS_UNIFORM_SAMPLING_H_
-#define PCL_KEYPOINTS_UNIFORM_SAMPLING_H_
+#pragma once
 
-#ifdef __DEPRECATED
-#warning UniformSampling is not a Keypoint anymore, use <pcl/filters/uniform_sampling.h> instead.
-#endif
+PCL_DEPRECATED_HEADER(1, 15, "UniformSampling is not a Keypoint anymore, use <pcl/filters/uniform_sampling.h> instead.")
 
 #include <pcl/filters/uniform_sampling.h>
-
-#endif  //#ifndef PCL_KEYPOINTS_UNIFORM_SAMPLING_H_
-

@@ -35,15 +35,13 @@
  *
  */
 
-#ifndef NURBS_TOOLS_H
-#define NURBS_TOOLS_H
+#pragma once
 
 #include <pcl/surface/on_nurbs/nurbs_data.h>
 
 #include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
 
 #undef Success
-#include <Eigen/Dense>
 
 namespace pcl
 {
@@ -147,5 +145,3 @@ namespace pcl
 
   }
 }
-
-#endif /* NTOOLS_H_ */

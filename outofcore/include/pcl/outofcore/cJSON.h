@@ -20,8 +20,7 @@
   THE SOFTWARE.
 */
 
-#ifndef cJSON__h
-#define cJSON__h
+#pragma once
 
 #include <pcl/pcl_macros.h>
 
@@ -59,7 +58,7 @@ typedef struct cJSON {
 } cJSON;
 
 typedef struct cJSON_Hooks {
-      void *(*malloc_fn)(size_t sz);
+      void *(*malloc_fn)(std::size_t sz);
       void (*free_fn)(void *ptr);
 } cJSON_Hooks;
 
@@ -131,6 +130,4 @@ PCLAPI(void) cJSON_ReplaceItemInObject(cJSON *object,const char *string,cJSON *n
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

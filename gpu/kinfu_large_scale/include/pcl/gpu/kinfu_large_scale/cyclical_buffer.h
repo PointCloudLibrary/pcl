@@ -35,9 +35,7 @@
  *
  */
 
-
-#ifndef PCL_CYCLICAL_BUFFER_IMPL_H_
-#define PCL_CYCLICAL_BUFFER_IMPL_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/gpu/kinfu_large_scale/tsdf_volume.h>
@@ -270,5 +268,3 @@ namespace pcl
     }
   }
 }
-
-#endif // PCL_CYCLICAL_BUFFER_IMPL_H_

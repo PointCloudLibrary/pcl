@@ -37,16 +37,15 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/common/eigen.h>
+#include <pcl/common/random.h> // NormalGenerator
 #include <pcl/common/transforms.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/registration/correspondence_rejection_median_distance.h>
 #include <pcl/registration/correspondence_rejection_poly.h>
-
-#include <boost/random.hpp>
 
 pcl::PointCloud<pcl::PointXYZ> cloud;
 
@@ -97,15 +96,12 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
   pcl::transformPointCloud (cloud, target, t, q);
   
   // Noisify the target with a known seed and N(0, 0.005) using deterministic sampling
-  boost::mt19937 rng;
-  rng.seed (1e6);
-  boost::normal_distribution<> nd (0, 0.005);
-  boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > var_nor (rng, nd);
-  for (pcl::PointCloud<pcl::PointXYZ>::iterator it = target.begin (); it != target.end (); ++it)
+  pcl::common::NormalGenerator<float> nd(0, 0.005, 1e6);
+  for (auto &point : target)
   {
-    it->x += static_cast<float> (var_nor ());
-    it->y += static_cast<float> (var_nor ());
-    it->z += static_cast<float> (var_nor ());
+    point.x += nd.run();
+    point.y += nd.run();
+    point.z += nd.run();
   }
   
   // Ensure deterministic sampling inside the rejector
@@ -132,17 +128,19 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
    * but not too many
    */
   EXPECT_GE(accepted_frac, ground_truth_frac);
-  EXPECT_LE(accepted_frac, 1.5f*ground_truth_frac);
-  
+  // Factor 1.5 raised to 1.6 as there is a variance in the noise added from the various standard implementations
+  // See #2995 for details
+  EXPECT_LE(accepted_frac, 1.6f*ground_truth_frac);
+
   /*
    * Test criterion 2: expect high precision/recall. The true positives are the unscrambled correspondences
    * where the query/match index are equal.
    */
-  unsigned int true_positives = 0;
-  for (unsigned int i = 0; i < result.size(); ++i)
-    if (result[i].index_query == result[i].index_match)
+  std::size_t true_positives = 0;
+  for (auto &i : result)
+    if (i.index_query == i.index_match)
       ++true_positives;
-  const unsigned int false_positives = static_cast<unsigned int> (result.size()) - true_positives;
+  const std::size_t false_positives = result.size() - true_positives;
 
   const double precision = double(true_positives) / double(true_positives+false_positives);
   const double recall = double(true_positives) / double(size-last);

@@ -44,9 +44,7 @@
 
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
-#include <pcl/console/time.h>
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
@@ -106,7 +104,7 @@ main (int argc, char** argv)
   if (parse_argument (argc, argv, "-alpha", alpha) != -1)
     convex_concave_hull = true;
 
-  vector<int> pcd_file_indices;
+  std::vector<int> pcd_file_indices;
   pcd_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
   if (pcd_file_indices.size () != 1)
   {
@@ -114,7 +112,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  vector<int> vtk_file_indices;
+  std::vector<int> vtk_file_indices;
   vtk_file_indices = parse_file_extension_argument (argc, argv, ".vtk");
   if (vtk_file_indices.size () != 1)
   {

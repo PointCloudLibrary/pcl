@@ -1,5 +1,4 @@
-#ifndef PCL_OUTOFCORE_SCENE_H_
-#define PCL_OUTOFCORE_SCENE_H_
+#pragma once
 
 // PCL
 #include "camera.h"
@@ -16,9 +15,9 @@ private:
   static Scene *instance_;
 
   Scene ();
-  Scene (const Scene& op);
+  Scene (const Scene& op) = delete;
   Scene&
-  operator= (const Scene& op);
+  operator= (const Scene& op) = delete;
 
 public:
 
@@ -83,8 +82,6 @@ private:
   std::vector<Viewport*> viewports_;
   std::vector<Object*> objects_;
 
-  boost::mutex render_mutex_;
+  std::mutex render_mutex_;
 
 };
-
-#endif

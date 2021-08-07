@@ -44,6 +44,7 @@
 
 #include <pcl/common/common.h>
 #include <pcl/common/io.h>
+#include <pcl/common/point_tests.h> // for isXYZFinite
 #include <pcl/filters/grid_minimum.h>
 
 struct point_index_idx
@@ -64,11 +65,11 @@ pcl::GridMinimum<PointT>::applyFilter (PointCloud &output)
   {
     PCL_WARN ("[pcl::%s::applyFilter] No input dataset given!\n", getClassName ().c_str ());
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
-  std::vector<int> indices;
+  Indices indices;
 
   output.is_dense = true;
   applyFilterIndices (indices);
@@ -77,7 +78,7 @@ pcl::GridMinimum<PointT>::applyFilter (PointCloud &output)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
+pcl::GridMinimum<PointT>::applyFilterIndices (Indices &indices)
 {
   indices.resize (indices_->size ());
   int oii = 0;
@@ -87,22 +88,22 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
   getMinMax3D<PointT> (*input_, *indices_, min_p, max_p);
 
   // Check that the resolution is not too small, given the size of the data
-  int64_t dx = static_cast<int64_t> ((max_p[0] - min_p[0]) * inverse_resolution_)+1;
-  int64_t dy = static_cast<int64_t> ((max_p[1] - min_p[1]) * inverse_resolution_)+1;
+  std::int64_t dx = static_cast<std::int64_t> ((max_p[0] - min_p[0]) * inverse_resolution_)+1;
+  std::int64_t dy = static_cast<std::int64_t> ((max_p[1] - min_p[1]) * inverse_resolution_)+1;
 
-  if ((dx*dy) > static_cast<int64_t> (std::numeric_limits<int32_t>::max ()))
+  if ((dx*dy) > static_cast<std::int64_t> (std::numeric_limits<std::int32_t>::max ()))
   {
-    PCL_WARN ("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.", getClassName ().c_str ());
+    PCL_WARN ("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.\n", getClassName ().c_str ());
     return;
   }
 
   Eigen::Vector4i min_b, max_b, div_b, divb_mul;
 
   // Compute the minimum and maximum bounding box values
-  min_b[0] = static_cast<int> (floor (min_p[0] * inverse_resolution_));
-  max_b[0] = static_cast<int> (floor (max_p[0] * inverse_resolution_));
-  min_b[1] = static_cast<int> (floor (min_p[1] * inverse_resolution_));
-  max_b[1] = static_cast<int> (floor (max_p[1] * inverse_resolution_));
+  min_b[0] = static_cast<int> (std::floor (min_p[0] * inverse_resolution_));
+  max_b[0] = static_cast<int> (std::floor (max_p[0] * inverse_resolution_));
+  min_b[1] = static_cast<int> (std::floor (min_p[1] * inverse_resolution_));
+  max_b[1] = static_cast<int> (std::floor (max_p[1] * inverse_resolution_));
 
   // Compute the number of divisions needed along all axis
   div_b = max_b - min_b + Eigen::Vector4i::Ones ();
@@ -117,21 +118,19 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
   // First pass: go over all points and insert them into the index_vector vector
   // with calculated idx. Points with the same idx value will contribute to the
   // same point of resulting CloudPoint
-  for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
+  for (const auto& index : (*indices_))
   {
     if (!input_->is_dense)
       // Check if the point is invalid
-      if (!pcl_isfinite (input_->points[*it].x) ||
-          !pcl_isfinite (input_->points[*it].y) ||
-          !pcl_isfinite (input_->points[*it].z))
+      if (!isXYZFinite ((*input_)[index]))
         continue;
 
-    int ijk0 = static_cast<int> (floor (input_->points[*it].x * inverse_resolution_) - static_cast<float> (min_b[0]));
-    int ijk1 = static_cast<int> (floor (input_->points[*it].y * inverse_resolution_) - static_cast<float> (min_b[1]));
+    int ijk0 = static_cast<int> (std::floor ((*input_)[index].x * inverse_resolution_) - static_cast<float> (min_b[0]));
+    int ijk1 = static_cast<int> (std::floor ((*input_)[index].y * inverse_resolution_) - static_cast<float> (min_b[1]));
 
     // Compute the grid cell index
     int idx = ijk0 * divb_mul[0] + ijk1 * divb_mul[1];
-    index_vector.push_back (point_index_idx (static_cast<unsigned int> (idx), *it));
+    index_vector.emplace_back(static_cast<unsigned int> (idx), index);
   }
   
   // Second pass: sort the index_vector vector using value representing target cell as index
@@ -156,7 +155,7 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
     while (i < index_vector.size () && index_vector[i].idx == index_vector[index].idx)
       ++i;
     ++total;
-    first_and_last_indices_vector.push_back (std::pair<unsigned int, unsigned int> (index, i));
+    first_and_last_indices_vector.emplace_back(index, i);
     index = i;
   }
 
@@ -165,18 +164,18 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
 
   index = 0;
 
-  for (unsigned int cp = 0; cp < first_and_last_indices_vector.size (); ++cp)
+  for (const auto &cp : first_and_last_indices_vector)
   {
-    unsigned int first_index = first_and_last_indices_vector[cp].first;
-    unsigned int last_index = first_and_last_indices_vector[cp].second;
+    unsigned int first_index = cp.first;
+    unsigned int last_index = cp.second;
     unsigned int min_index = index_vector[first_index].cloud_point_index;
-    float min_z = input_->points[index_vector[first_index].cloud_point_index].z;
+    float min_z = (*input_)[index_vector[first_index].cloud_point_index].z;
 
     for (unsigned int i = first_index + 1; i < last_index; ++i)
     {
-      if (input_->points[index_vector[i].cloud_point_index].z < min_z)
+      if ((*input_)[index_vector[i].cloud_point_index].z < min_z)
       {
-        min_z = input_->points[index_vector[i].cloud_point_index].z;
+        min_z = (*input_)[index_vector[i].cloud_point_index].z;
         min_index = index_vector[i].cloud_point_index;
       }
     }

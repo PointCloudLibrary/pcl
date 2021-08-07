@@ -37,17 +37,15 @@
  *
  */
 
-#ifndef PCL_UNARY_CLASSIFIER_H_
-#define PCL_UNARY_CLASSIFIER_H_
+#pragma once
 
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
 #include <pcl/features/fpfh.h>
 #include <pcl/features/normal_3d.h>
-
-#include <pcl/filters/filter_indices.h>
-#include <pcl/segmentation/extract_clusters.h>
 
 #include <pcl/ml/kmeans.h>
 
@@ -87,11 +85,11 @@ namespace pcl
       void
       queryFeatureDistances (std::vector<pcl::PointCloud<pcl::FPFHSignature33>::Ptr> &trained_features,
                              pcl::PointCloud<pcl::FPFHSignature33>::Ptr query_features,
-                             std::vector<int> &indi,
+                             pcl::Indices &indi,
                              std::vector<float> &dist);
 
       void
-      assignLabels (std::vector<int> &indi,
+      assignLabels (pcl::Indices &indi,
                     std::vector<float> &dist,
                     int n_feature_means,
                     float feature_threshold,
@@ -168,12 +166,10 @@ namespace pcl
       //typename pcl::PointCloud<PointT>::Ptr cloud_for_segmentation_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
  };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/unary_classifier.hpp>
-#endif
-
 #endif

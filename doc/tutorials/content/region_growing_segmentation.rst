@@ -6,27 +6,27 @@ Region growing segmentation
 In this tutorial we will learn how to use the region growing algorithm implemented in the ``pcl::RegionGrowing`` class.
 The purpose of the said algorithm is to merge the points that are close enough in terms of the smoothness constraint.
 Thereby, the output of this algorithm is the set of clusters,
-were each cluster is a set of points that are considered to be a part of the same smooth surface.
+where each cluster is a set of points that are considered to be a part of the same smooth surface.
 The work of this algorithm is based on the comparison of the angles between the points normals.
 
 Theoretical Primer
 ---------------------------
 
-Let's take a look on how the algorithm works.
+Let's take a look at how the algorithm works.
 
 First of all it sorts the points by their curvature value.
 It needs to be done because the region begins its growth from the point that has the minimum curvature value.
 The reason for this is that the point with the minimum curvature is located in the flat area (growth from the flattest area
 allows to reduce the total number of segments).
 
-So we have the sorted cloud. Until there are unlabeled points in the cloud, algorithm picks up the point with minimum curvature value and starts the growth of the region. This process occurs as follows:
+So we have the sorted cloud. Until there are no unlabeled points in the cloud, the algorithm picks up the point with minimum curvature value and starts the growth of the region. This process occurs as follows:
 
   * The picked point is added to the set called seeds.
-  * For every seed point algorithm finds neighbouring points.
+  * For every seed point, the algorithm finds its neighbouring points.
      
-     * Every neighbour is tested for the angle between its normal and normal of the current seed point. If the angle is less than threshold value
+     * Every neighbour is tested for the angle between its normal and normal of the current seed point. If the angle is less than the threshold value
        then current point is added to the current region.
-     * After that every neighbour is tested for the curvature value. If the curvature is less than threshold value then this point is added to the seeds.
+     * After that every neighbour is tested for the curvature value. If the curvature is less than the threshold value then this point is added to the seeds.
      * Current seed is removed from the seeds.
 
 If the seeds set becomes empty this means that the algorithm has grown the region and the process is repeated from the beginning.
@@ -116,59 +116,57 @@ To learn more about how it is done you should take a look at the :ref:`normal_es
 
 .. literalinclude:: sources/region_growing_segmentation/region_growing_segmentation.cpp
    :language: cpp
-   :lines: 30-35
+   :lines: 30-31
 
-These lines are given only for example. You can safely comment this part. Insofar as ``pcl::RegionGrowing`` is derived from ``pcl::PCLBase``,
-it can work with indices. It means you can point that you need to segment only
-those points that are listed in the indices array instead of the whole point cloud.
+Insofar as ``pcl::RegionGrowing`` is derived from ``pcl::PCLBase``, it can work with indices. It means you can instruct that you only segment those points that are listed in the indices array instead of the whole point cloud. Here, only the valid points are chosen for segmentation.
 
 .. literalinclude:: sources/region_growing_segmentation/region_growing_segmentation.cpp
    :language: cpp
-   :lines: 37-39
+   :lines: 33-35
 
-You have finally reached the part where ``pcl::RegionGrowing`` is instantiated. It is a template class that have two parameters:
+You have finally reached the part where ``pcl::RegionGrowing`` is instantiated. It is a template class that has two parameters:
 
 * PointT - type of points to use(in the given example it is ``pcl::PointXYZ``)
 * NormalT - type of normals to use(in the given example it is ``pcl::Normal``)
 
 After that minimum and maximum cluster sizes are set. It means that
-after the segmentation is done all clusters that have less points then was set as minimum(or have more than maximum) will be discarded.
+after the segmentation is done all clusters that have less points than minimum(or have more than maximum) will be discarded.
 The default values for minimum and maximum are 1 and 'as much as possible' respectively.
 
 .. literalinclude:: sources/region_growing_segmentation/region_growing_segmentation.cpp
    :language: cpp
-   :lines: 40-44
+   :lines: 36-40
 
 The algorithm needs K nearest search in its internal structure, so here is the place where a search method is provided
 and number of neighbours is set. After that it receives the cloud that must be segmented, point indices and normals.
 
 .. literalinclude:: sources/region_growing_segmentation/region_growing_segmentation.cpp
    :language: cpp
-   :lines: 45-46
+   :lines: 41-42
 
-This two lines are most important part in the algorithm initialization, because they are responsible for the mentioned smoothness constraint.
+These two lines are the most important part in the algorithm initialization, because they are responsible for the mentioned smoothness constraint.
 First method sets the angle in radians that will be used as the allowable range for the normals deviation.
-If the deviation between points normals is less than smoothness threshold then they are suggested to be in the same cluster
+If the deviation between points normals is less than the smoothness threshold then they are suggested to be in the same cluster
 (new point - the tested one - will be added to the cluster).
-The second one is responsible for curvature threshold. If two points have a small normals deviation then the disparity between their curvatures is tested.
-And if this value is less than curvature threshold then the algorithm will continue the growth of the cluster using new added point.
+The second one is responsible for the curvature threshold. If two points have a small normals deviation then the disparity between their curvatures is tested.
+And if this value is less than the curvature threshold then the algorithm will continue the growth of the cluster using the newly added point.
 
 .. literalinclude:: sources/region_growing_segmentation/region_growing_segmentation.cpp
    :language: cpp
-   :lines: 48-49
+   :lines: 44-45
 
 This method simply launches the segmentation algorithm. After its work it will return clusters array.
 
 .. literalinclude:: sources/region_growing_segmentation/region_growing_segmentation.cpp
    :language: cpp
-   :lines: 51-63
+   :lines: 47-59
 
 These lines are simple enough, so they won't be commented. They are intended for those who are not familiar with how to work with ``pcl::PointIndices``
 and how to access its elements.
 
 .. literalinclude:: sources/region_growing_segmentation/region_growing_segmentation.cpp
    :language: cpp
-   :lines: 65-73
+   :lines: 61-69
 
 The ``pcl::RegionGrowing`` class provides a method that returns the colored cloud where each cluster has its own color.
 So in this part of code the ``pcl::visualization::CloudViewer`` is instantiated for viewing the result of the segmentation - the same colored cloud.
@@ -195,7 +193,7 @@ After the segmentation the cloud viewer window will be opened and you will see s
 .. image:: images/region_growing_segmentation_2.jpg
    :height: 200px
 
-On the last image you can see that the colored cloud has many red points. This means that these points belong to the clusters
+In the last image you can see that the colored cloud has many red points. This means that these points belong to the clusters
 that were rejected, because they had too much/little points.
 
 .. image:: images/region_growing_segmentation_3.jpg

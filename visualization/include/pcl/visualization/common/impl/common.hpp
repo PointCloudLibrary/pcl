@@ -39,12 +39,6 @@ namespace pcl
 {
   namespace visualization
   {
-    /** \brief Converts point to window coordinates
-     * \param[in] pt xyz point to be converted
-     * \param[out] window_cord vector containing the pts' window X,Y, Z and 1
-     * \note This function computes the projection and view matrix every time.
-     * It is very inefficient to use this for every point in the point cloud!
-     */
     template<typename PointT> void
     Camera::cvtWindowCoordinates (const PointT& pt, Eigen::Vector4d& window_cord) const
     {
@@ -55,22 +49,12 @@ namespace pcl
       return;
     }
 
-
-    /** \brief converts point to window coordiantes
-     * \param[in] pt xyz point to be converted
-     * \param[out] window_cord vector containing the pts' window X,Y, Z and 1
-     * \param[in] composite_mat composite transformation matrix (proj*view)
-     *
-     * \note Use this function to compute window coordinates with a pre-computed transformation function.
-     * The typical composite matrix will be the projection matrix * the view matrix. However, additional matrices like
-     * a camera distortion matrix can also be added.
-     */
     template<typename PointT> void
     Camera::cvtWindowCoordinates (const PointT& pt, Eigen::Vector4d& window_cord, const Eigen::Matrix4d& composite_mat) const
     {
       Eigen::Vector4d pte (pt.x, pt.y, pt.z, 1);
       window_cord = composite_mat * pte;
-      window_cord = window_cord/window_cord (3);
+      window_cord /=window_cord (3);
       window_cord[0] = (window_cord[0]+1.0) / 2.0*window_size[0];
       window_cord[1] = (window_cord[1]+1.0) / 2.0*window_size[1];
       window_cord[2] = (window_cord[2]+1.0) / 2.0;

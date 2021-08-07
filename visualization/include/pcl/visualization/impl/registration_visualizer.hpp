@@ -36,29 +36,36 @@
  *
  */
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+#pragma once
+
+#include <thread>
+
+
+namespace pcl
+{
+
 template<typename PointSource, typename PointTarget> void
-pcl::RegistrationVisualizer<PointSource, PointTarget>::startDisplay ()
+RegistrationVisualizer<PointSource, PointTarget>::startDisplay ()
 {
   // Create and start the rendering thread. This will open the display window.
-  viewer_thread_ = boost::thread (&pcl::RegistrationVisualizer<PointSource, PointTarget>::runDisplay, this);
+  viewer_thread_ = std::thread (&pcl::RegistrationVisualizer<PointSource, PointTarget>::runDisplay, this);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template<typename PointSource, typename PointTarget> void
-pcl::RegistrationVisualizer<PointSource, PointTarget>::stopDisplay ()
+RegistrationVisualizer<PointSource, PointTarget>::stopDisplay ()
 {
   // Stop the rendering thread. This will kill the display window.
   viewer_thread_.~thread ();
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template<typename PointSource, typename PointTarget> void
-pcl::RegistrationVisualizer<PointSource, PointTarget>::runDisplay ()
+RegistrationVisualizer<PointSource, PointTarget>::runDisplay ()
 {
   // Open 3D viewer
   viewer_
-      = boost::shared_ptr<pcl::visualization::PCLVisualizer> (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+      = pcl::visualization::PCLVisualizer::Ptr (new pcl::visualization::PCLVisualizer ("3D Viewer"));
   viewer_->initCameraParameters ();
 
   // Create the handlers for the three point clouds buffers: cloud_source_, cloud_target_ and cloud_intermediate_
@@ -97,7 +104,7 @@ pcl::RegistrationVisualizer<PointSource, PointTarget>::runDisplay ()
                                        "cloud intermediate v2", v2);
 
   // Used to remove all old correspondences
-  size_t  correspondeces_old_size = 0;
+  std::size_t  correspondeces_old_size = 0;
 
   // Add coordinate system to both ports
   viewer_->addCoordinateSystem (1.0, "global");
@@ -123,7 +130,7 @@ pcl::RegistrationVisualizer<PointSource, PointTarget>::runDisplay ()
 
     std::string line_name_;
     // Remove the old correspondeces
-    for (size_t correspondence_id = 0; correspondence_id < correspondeces_old_size; ++correspondence_id)
+    for (std::size_t correspondence_id = 0; correspondence_id < correspondeces_old_size; ++correspondence_id)
     {
       // Generate the line name
       line_name_ = getIndexedName (line_root_, correspondence_id);
@@ -133,13 +140,12 @@ pcl::RegistrationVisualizer<PointSource, PointTarget>::runDisplay ()
     }
 
     // Display the new correspondences lines
-    size_t correspondences_new_size = cloud_intermediate_indices_.size ();
+    std::size_t correspondences_new_size = cloud_intermediate_indices_.size ();
 
 
-    std::stringstream stream_;
-    stream_ << "Random -> correspondences " << correspondences_new_size;
+    const std::string correspondences_text = "Random -> correspondences " + std::to_string(correspondences_new_size);
     viewer_->removeShape ("correspondences_size", 0);
-    viewer_->addText (stream_.str(), 10, 70, 0.0, 1.0, 0.0, "correspondences_size", v2);
+    viewer_->addText (correspondences_text, 10, 70, 0.0, 1.0, 0.0, "correspondences_size", v2);
 
     // Display entire set of correspondece lines if no maximum displayed correspondences is set
     if( ( 0 < maximum_displayed_correspondences_ ) &&
@@ -150,7 +156,7 @@ pcl::RegistrationVisualizer<PointSource, PointTarget>::runDisplay ()
     correspondeces_old_size = correspondences_new_size;
 
     // Update new correspondence lines
-    for (size_t correspondence_id = 0; correspondence_id < correspondences_new_size; ++correspondence_id)
+    for (std::size_t correspondence_id = 0; correspondence_id < correspondences_new_size; ++correspondence_id)
     {
       // Generate random color for current correspondence line
       double random_red   = 255 * rand () / (RAND_MAX + 1.0);
@@ -172,18 +178,18 @@ pcl::RegistrationVisualizer<PointSource, PointTarget>::runDisplay ()
 
     // Render visualizer updated buffers
     viewer_->spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
-
+    using namespace std::chrono_literals;
+    std::this_thread::sleep_for(100ms);
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template<typename PointSource, typename PointTarget> void
-pcl::RegistrationVisualizer<PointSource, PointTarget>::updateIntermediateCloud (
+RegistrationVisualizer<PointSource, PointTarget>::updateIntermediateCloud (
     const pcl::PointCloud<PointSource> &cloud_src,
-    const std::vector<int> &indices_src,
+    const pcl::Indices &indices_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
-    const std::vector<int> &indices_tgt)
+    const pcl::Indices &indices_tgt)
 {
   // Lock local buffers
   visualizer_updating_mutex_.lock ();
@@ -210,3 +216,6 @@ pcl::RegistrationVisualizer<PointSource, PointTarget>::updateIntermediateCloud (
   // Unlock local buffers
   visualizer_updating_mutex_.unlock ();
 }
+
+} // namespace pcl
+

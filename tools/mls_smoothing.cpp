@@ -42,7 +42,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <pcl/surface/mls.h>
-#include <pcl/filters/voxel_grid.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 using namespace pcl;
 using namespace pcl::io;
@@ -95,12 +95,12 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input,
   fromPCLPointCloud2 (*input, *xyz_cloud_pre);
 
   // Filter the NaNs from the cloud
-  for (size_t i = 0; i < xyz_cloud_pre->size (); ++i)
-    if (pcl_isfinite (xyz_cloud_pre->points[i].x))
-      xyz_cloud->push_back (xyz_cloud_pre->points[i]);
+  for (std::size_t i = 0; i < xyz_cloud_pre->size (); ++i)
+    if (std::isfinite ((*xyz_cloud_pre)[i].x))
+      xyz_cloud->push_back ((*xyz_cloud_pre)[i]);
   xyz_cloud->header = xyz_cloud_pre->header;
   xyz_cloud->height = 1;
-  xyz_cloud->width = static_cast<uint32_t> (xyz_cloud->size ());
+  xyz_cloud->width = xyz_cloud->size ();
   xyz_cloud->is_dense = false;
   
   

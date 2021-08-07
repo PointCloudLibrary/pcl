@@ -62,7 +62,6 @@ namespace pc = pcl::console;
 using namespace pcl::visualization;
 using namespace pcl::gpu;
 using namespace pcl;
-using namespace std;
 
 struct SampledScopeTime : public StopWatch
 {
@@ -74,7 +73,7 @@ struct SampledScopeTime : public StopWatch
     time_ms_ += getTime ();
     if (i_ % EACH == 0 && i_)
     {
-      cout << "Average frame time = " << time_ms_ / EACH << "ms ( " << 1000.f * EACH / time_ms_ << "fps )" << endl;
+      std::cout << "Average frame time = " << time_ms_ / EACH << "ms ( " << 1000.f * EACH / time_ms_ << "fps )" << std::endl;
       time_ms_ = 0;
     }
     ++i_;
@@ -85,7 +84,7 @@ struct SampledScopeTime : public StopWatch
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-string 
+std::string
 make_name(int counter, const char* suffix)
 {
   char buf[4096];
@@ -125,13 +124,13 @@ class PeoplePCDApp
       depth_view_.setPosition (650, 0);
 
       cmap_device_.create(ROWS, COLS);
-      cmap_host_.points.resize(COLS * ROWS);
+      cmap_host_.resize(COLS * ROWS);
       depth_device_.create(ROWS, COLS);
       image_device_.create(ROWS, COLS);
 
-      depth_host_.points.resize(COLS * ROWS);
+      depth_host_.resize(COLS * ROWS);
 
-      rgba_host_.points.resize(COLS * ROWS);
+      rgba_host_.resize(COLS * ROWS);
       rgb_host_.resize(COLS * ROWS * 3);
 
       people::uploadColorMap(color_map_);
@@ -147,7 +146,7 @@ class PeoplePCDApp
       int c;
       cmap_host_.width = cmap_device_.cols();
       cmap_host_.height = cmap_device_.rows();
-      cmap_host_.points.resize(cmap_host_.width * cmap_host_.height);
+      cmap_host_.resize(cmap_host_.width * cmap_host_.height);
       cmap_device_.download(cmap_host_.points, c);
 
       final_view_.showRGBImage<pcl::RGB>(cmap_host_);
@@ -157,11 +156,11 @@ class PeoplePCDApp
       {
         depth_host_.width = people_detector_.depth_device1_.cols();
         depth_host_.height = people_detector_.depth_device1_.rows();
-        depth_host_.points.resize(depth_host_.width * depth_host_.height);
+        depth_host_.resize(depth_host_.width * depth_host_.height);
         people_detector_.depth_device1_.download(depth_host_.points, c);
       }
 
-      depth_view_.showShortImage(&depth_host_.points[0], depth_host_.width, depth_host_.height, 0, 5000, true);
+      depth_view_.showShortImage(&depth_host_[0], depth_host_.width, depth_host_.height, 0, 5000, true);
       depth_view_.spinOnce(1, true);
 
       if (write)
@@ -177,10 +176,10 @@ class PeoplePCDApp
       }
     }
 
-    void source_cb1(const boost::shared_ptr<const PointCloud<PointXYZRGBA> >& cloud)
+    void source_cb1(const PointCloud<PointXYZRGBA>::ConstPtr& cloud)
     {
       {
-        boost::mutex::scoped_lock lock(data_ready_mutex_);
+        std::lock_guard<std::mutex> lock(data_ready_mutex_);
         if (exit_)
           return;
 
@@ -189,10 +188,10 @@ class PeoplePCDApp
       data_ready_cond_.notify_one();
     }
 
-    void source_cb2(const boost::shared_ptr<openni_wrapper::Image>& image_wrapper, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper, float)
+    void source_cb2(const openni_wrapper::Image::Ptr& image_wrapper, const openni_wrapper::DepthImage::Ptr& depth_wrapper, float)
     {
       {
-        boost::mutex::scoped_try_lock lock(data_ready_mutex_);
+        std::unique_lock<std::mutex> lock (data_ready_mutex_, std::try_to_lock);
 
         if (exit_ || !lock)
           return;
@@ -204,10 +203,10 @@ class PeoplePCDApp
         const unsigned short *data = depth_wrapper->getDepthMetaData().Data();
         depth_device_.upload(data, s, h, w);
 
-        depth_host_.points.resize(w *h);
+        depth_host_.resize(w *h);
         depth_host_.width = w;
         depth_host_.height = h;
-        std::copy(data, data + w * h, &depth_host_.points[0]);
+        std::copy(data, data + w * h, &depth_host_[0]);
 
         //getting image
         w = image_wrapper->getWidth();
@@ -219,18 +218,18 @@ class PeoplePCDApp
         image_wrapper->fillRGB(w, h, (unsigned char*)&rgb_host_[0]);
 
         // convert to rgba, TODO image_wrapper should be updated to support rgba directly
-        rgba_host_.points.resize(w * h);
+        rgba_host_.resize(w * h);
         rgba_host_.width = w;
         rgba_host_.height = h;
         for(int i = 0; i < rgba_host_.size(); ++i)
         {
           const unsigned char *pixel = &rgb_host_[i * 3];
-          RGB& rgba = rgba_host_.points[i];
+          RGB& rgba = rgba_host_[i];
           rgba.r = pixel[0];
           rgba.g = pixel[1];
           rgba.b = pixel[2];
         }
-        image_device_.upload(&rgba_host_.points[0], s, h, w);
+        image_device_.upload(&rgba_host_[0], s, h, w);
       }
       data_ready_cond_.notify_one();
     }
@@ -244,22 +243,25 @@ class PeoplePCDApp
       if (ispcd)
         cloud_cb_= true;
 
-      typedef boost::shared_ptr<openni_wrapper::DepthImage> DepthImagePtr;
-      typedef boost::shared_ptr<openni_wrapper::Image> ImagePtr;
+      typedef openni_wrapper::DepthImage::Ptr DepthImagePtr;
+      typedef openni_wrapper::Image::Ptr ImagePtr;
 
-      boost::function<void (const boost::shared_ptr<const PointCloud<PointXYZRGBA> >&)> func1 = boost::bind (&PeoplePCDApp::source_cb1, this, _1);
-      boost::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func2 = boost::bind (&PeoplePCDApp::source_cb2, this, _1, _2, _3);                  
+      std::function<void (const PointCloud<PointXYZRGBA>::ConstPtr&)> func1 = [this] (const PointCloud<PointXYZRGBA>::ConstPtr& cloud) { source_cb1 (cloud); };
+      std::function<void (const ImagePtr&, const DepthImagePtr&, float)> func2 = [this] (const ImagePtr& img, const DepthImagePtr& depth, float constant)
+      {
+        source_cb2 (img, depth, constant);
+      };
       boost::signals2::connection c = cloud_cb_ ? capture_.registerCallback (func1) : capture_.registerCallback (func2);
 
       {
-        boost::unique_lock<boost::mutex> lock(data_ready_mutex_);
+        std::unique_lock<std::mutex> lock(data_ready_mutex_);
 
         try
         {
           capture_.start ();
           while (!exit_ && !final_view_.wasStopped())
           {
-            bool has_data = data_ready_cond_.timed_wait(lock, boost::posix_time::millisec(100));
+            bool has_data = (data_ready_cond_.wait_for(lock, 100ms) == std::cv_status::no_timeout);
             if(has_data)
             {
               SampledScopeTime fps(time_ms_);
@@ -277,16 +279,16 @@ class PeoplePCDApp
           }
           final_view_.spinOnce (3);
         }
-        catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; }
-        catch (const std::exception& /*e*/) { cout << "Exception" << endl; }
+        catch (const std::bad_alloc& /*e*/) { std::cout << "Bad alloc" << std::endl; }
+        catch (const std::exception& /*e*/) { std::cout << "Exception" << std::endl; }
 
         capture_.stop ();
       }
       c.disconnect();
     }
 
-    boost::mutex data_ready_mutex_;
-    boost::condition_variable data_ready_cond_;
+    std::mutex data_ready_mutex_;
+    std::condition_variable data_ready_cond_;
 
     pcl::Grabber& capture_;
 
@@ -323,11 +325,10 @@ int main(int argc, char** argv)
   pcl::gpu::printShortCudaDeviceInfo (device);
 
   // selecting data source
-  boost::shared_ptr<pcl::Grabber> capture;
-  capture.reset( new pcl::OpenNIGrabber() );
+  pcl::Grabber::Ptr capture (new pcl::OpenNIGrabber());
 
   //selecting tree files
-  vector<string> tree_files;
+  std::vector<std::string> tree_files;
   tree_files.push_back("Data/forest1/tree_20.txt");
   tree_files.push_back("Data/forest2/tree_20.txt");
   tree_files.push_back("Data/forest3/tree_20.txt");
@@ -343,7 +344,7 @@ int main(int argc, char** argv)
 
   tree_files.resize(num_trees);
   if (num_trees == 0 || num_trees > 4)
-    return cout << "Invalid number of trees" << endl, -1;
+    return std::cout << "Invalid number of trees" << std::endl, -1;
 
   try
   {
@@ -359,10 +360,10 @@ int main(int argc, char** argv)
     // executing
     app.startMainLoop ();
   }
-  catch (const pcl::PCLException& e) { cout << "PCLException: " << e.detailedMessage() << endl; }  
-  catch (const std::runtime_error& e) { cout << e.what() << endl; }
-  catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; }
-  catch (const std::exception& /*e*/) { cout << "Exception" << endl; }
+  catch (const pcl::PCLException& e) { std::cout << "PCLException: " << e.detailedMessage() << std::endl; }  
+  catch (const std::runtime_error& e) { std::cout << e.what() << std::endl; }
+  catch (const std::bad_alloc& /*e*/) { std::cout << "Bad alloc" << std::endl; }
+  catch (const std::exception& /*e*/) { std::cout << "Exception" << std::endl; }
 
   return 0;
 }

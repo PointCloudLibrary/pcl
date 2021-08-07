@@ -34,65 +34,66 @@
  *
  */
 
-#ifndef PCL_MODELER_RENDER_WINDOW_H_
-#define PCL_MODELER_RENDER_WINDOW_H_
+#pragma once
+#include <pcl/visualization/qvtk_compatibility.h>
 
-#include <pcl/apps/modeler/qt.h>
 #include <vtkSmartPointer.h>
 
 class vtkCubeAxesActor;
 
-namespace pcl
-{
-  namespace modeler
+namespace pcl {
+namespace modeler {
+
+class RenderWindowItem;
+
+class RenderWindow : public PCLQVTKWidget {
+public:
+  RenderWindow(RenderWindowItem* render_window_item,
+               QWidget* parent = nullptr,
+               Qt::WindowFlags flags = nullptr);
+  ~RenderWindow();
+
+  QSize
+  sizeHint() const override
   {
-    class RenderWindowItem;
-
-    class RenderWindow : public QVTKWidget
-    {
-      public:
-        RenderWindow(RenderWindowItem* render_window_item, QWidget *parent = 0, Qt::WindowFlags flags = 0);
-        ~RenderWindow();
-
-        virtual QSize
-        sizeHint() const {return QSize(512, 512);}
-
-        void
-        setActive(bool flag);
-
-        void
-        setTitle(const QString& title);
-
-        void
-        render();
-
-        void
-        resetCamera();
-
-        void
-        updateAxes();
-
-        void
-        getBackground(double& r, double& g, double& b);
-
-        void
-        setBackground(double r, double g, double b);
-
-        void
-        setShowAxes(bool flag);
-
-      protected:
-        void
-        focusInEvent(QFocusEvent * event);
-
-      private:
-        void
-        initRenderer();
-
-        vtkSmartPointer<vtkCubeAxesActor>   axes_;
-        RenderWindowItem*     render_window_item_;
-    };
+    return {512, 512};
   }
-}
 
-#endif // PCL_MODELER_RENDER_WINDOW_H_
+  void
+  setActive(bool flag);
+
+  void
+  setTitle(const QString& title);
+
+  void
+  render();
+
+  void
+  resetCamera();
+
+  void
+  updateAxes();
+
+  void
+  getBackground(double& r, double& g, double& b);
+
+  void
+  setBackground(double r, double g, double b);
+
+  void
+  setShowAxes(bool flag);
+
+protected:
+  void
+  focusInEvent(QFocusEvent* event) override;
+
+private:
+  void
+  initRenderer();
+
+  vtkSmartPointer<vtkCubeAxesActor> axes_;
+  RenderWindowItem* render_window_item_;
+};
+
+} // namespace modeler
+} // namespace pcl

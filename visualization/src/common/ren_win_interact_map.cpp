@@ -41,7 +41,6 @@
 #include <vtkRenderWindowInteractor.h>
 #include <vtkInteractorStyleTrackballCamera.h>
 
-#include <pcl/visualization/interactor.h>
 #include <pcl/visualization/common/ren_win_interact_map.h>
 
 //////////////////////////////////////////////////////////////////////////////
@@ -49,8 +48,6 @@ pcl::visualization::RenWinInteract::RenWinInteract ()
   : xy_plot_ (vtkSmartPointer<vtkXYPlotActor>::New ())
   , ren_ (vtkSmartPointer<vtkRenderer>::New ())
   , win_ (vtkSmartPointer<vtkRenderWindow>::New ())
-  , interactor_ ()
-  , style_ ()
 {
 }
 

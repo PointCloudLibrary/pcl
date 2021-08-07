@@ -45,7 +45,7 @@
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 
 Select1DTool::Select1DTool (SelectionPtr selection_ptr, CloudPtr cloud_ptr)
-  : selection_ptr_(selection_ptr), cloud_ptr_(cloud_ptr)
+  : selection_ptr_(std::move(selection_ptr)), cloud_ptr_(std::move(cloud_ptr))
 {
 }
 

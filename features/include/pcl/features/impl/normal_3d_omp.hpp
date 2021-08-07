@@ -45,67 +45,85 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
+pcl::NormalEstimationOMP<PointInT, PointOutT>::setNumberOfThreads (unsigned int nr_threads)
+{
+  if (nr_threads == 0)
+#ifdef _OPENMP
+    threads_ = omp_get_num_procs();
+#else
+    threads_ = 1;
+#endif
+  else
+    threads_ = nr_threads;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> void
 pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
 {
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices (k_);
+  pcl::Indices nn_indices (k_);
   std::vector<float> nn_dists (k_);
 
   output.is_dense = true;
   // Save a few cycles by not checking every point for NaN/Inf values if the cloud is set to dense
   if (input_->is_dense)
   {
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(output) \
+  firstprivate(nn_indices, nn_dists) \
+  num_threads(threads_)
     // Iterating over the entire index vector
-    for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
+    for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
     {
       Eigen::Vector4f n;
       if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0 ||
-          !computePointNormal (*surface_, nn_indices, n, output.points[idx].curvature))
+          !pcl::computePointNormal (*surface_, nn_indices, n, output[idx].curvature))
       {
-        output.points[idx].normal[0] = output.points[idx].normal[1] = output.points[idx].normal[2] = output.points[idx].curvature = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].normal[0] = output[idx].normal[1] = output[idx].normal[2] = output[idx].curvature = std::numeric_limits<float>::quiet_NaN ();
 
         output.is_dense = false;
         continue;
       }
 
-      output.points[idx].normal_x = n[0];
-      output.points[idx].normal_y = n[1];
-      output.points[idx].normal_z = n[2];
+      output[idx].normal_x = n[0];
+      output[idx].normal_y = n[1];
+      output[idx].normal_z = n[2];
 
-      flipNormalTowardsViewpoint (input_->points[(*indices_)[idx]], vpx_, vpy_, vpz_,
-                                  output.points[idx].normal[0], output.points[idx].normal[1], output.points[idx].normal[2]);
+      flipNormalTowardsViewpoint ((*input_)[(*indices_)[idx]], vpx_, vpy_, vpz_,
+                                  output[idx].normal[0], output[idx].normal[1], output[idx].normal[2]);
 
     }
   }
   else
   {
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(output) \
+  firstprivate(nn_indices, nn_dists) \
+  num_threads(threads_)
     // Iterating over the entire index vector
-    for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
+    for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
     {
       Eigen::Vector4f n;
       if (!isFinite ((*input_)[(*indices_)[idx]]) ||
           this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0 ||
-          !computePointNormal (*surface_, nn_indices, n, output.points[idx].curvature))
+          !pcl::computePointNormal (*surface_, nn_indices, n, output[idx].curvature))
       {
-        output.points[idx].normal[0] = output.points[idx].normal[1] = output.points[idx].normal[2] = output.points[idx].curvature = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].normal[0] = output[idx].normal[1] = output[idx].normal[2] = output[idx].curvature = std::numeric_limits<float>::quiet_NaN ();
 
         output.is_dense = false;
         continue;
       }
 
-      output.points[idx].normal_x = n[0];
-      output.points[idx].normal_y = n[1];
-      output.points[idx].normal_z = n[2];
+      output[idx].normal_x = n[0];
+      output[idx].normal_y = n[1];
+      output[idx].normal_z = n[2];
 
-      flipNormalTowardsViewpoint (input_->points[(*indices_)[idx]], vpx_, vpy_, vpz_,
-                                  output.points[idx].normal[0], output.points[idx].normal[1], output.points[idx].normal[2]);
+      flipNormalTowardsViewpoint ((*input_)[(*indices_)[idx]], vpx_, vpy_, vpz_,
+                                  output[idx].normal[0], output[idx].normal[1], output[idx].normal[2]);
 
     }
   }

@@ -38,16 +38,12 @@
  * Author: Matteo Munaro
  */
 
-#ifndef PCL_PEOPLE_GROUND_BASED_PEOPLE_DETECTION_APP_H_
-#define PCL_PEOPLE_GROUND_BASED_PEOPLE_DETECTION_APP_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/sample_consensus/ransac.h>
-#include <pcl/filters/extract_indices.h>
-#include <pcl/segmentation/extract_clusters.h>
 #include <pcl/kdtree/kdtree.h>
-#include <pcl/filters/voxel_grid.h>
 #include <pcl/people/person_cluster.h>
 #include <pcl/people/head_based_subcluster.h>
 #include <pcl/people/person_classifier.h>
@@ -73,9 +69,9 @@ namespace pcl
     {
     public:
 
-      typedef pcl::PointCloud<PointT> PointCloud;
-      typedef boost::shared_ptr<PointCloud> PointCloudPtr;
-      typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
+      using PointCloud = pcl::PointCloud<PointT>;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
       /** \brief Constructor. */
       GroundBasedPeopleDetectionApp ();
@@ -372,4 +368,3 @@ namespace pcl
   } /* namespace people */
 } /* namespace pcl */
 #include <pcl/people/impl/ground_based_people_detection_app.hpp>
-#endif /* PCL_PEOPLE_GROUND_BASED_PEOPLE_DETECTION_APP_H_ */

@@ -41,14 +41,12 @@
 #include <pcl/filters/impl/statistical_outlier_removal.hpp>
 #include <pcl/conversions.h>
 
-using namespace std;
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 {
   // If fields x/y/z are not present, we cannot filter
-  if (x_idx_ == -1 || y_idx_ == -1 || z_idx_ == -1)
+  if (x_idx_ == UNAVAILABLE || y_idx_ == UNAVAILABLE || z_idx_ == UNAVAILABLE)
   {
     PCL_ERROR ("[pcl::%s::applyFilter] Input dataset doesn't have x-y-z coordinates!\n", getClassName ().c_str ());
     output.width = output.height = 0;
@@ -67,7 +65,7 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2
   double mean;
   double variance;
   double stddev;
-  vector<float> distances;
+  std::vector<float> distances;
   generateStatistics (mean, variance, stddev, distances);
   double const distance_threshold = mean + std_mul_ * stddev; // a distance that is bigger than this signals an outlier
 
@@ -137,10 +135,10 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (vector<int>& indices)
+pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (Indices& indices)
 {
   // If fields x/y/z are not present, we cannot filter
-  if (x_idx_ == -1 || y_idx_ == -1 || z_idx_ == -1)
+  if (x_idx_ == UNAVAILABLE || y_idx_ == UNAVAILABLE || z_idx_ == UNAVAILABLE)
   {
     PCL_ERROR ("[pcl::%s::applyFilter] Input dataset doesn't have x-y-z coordinates!\n", getClassName ().c_str ());
     indices.clear();
@@ -157,13 +155,13 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (vector<int>& i
   double mean;
   double variance;
   double stddev;
-  vector<float> distances;
+  std::vector<float> distances;
   generateStatistics(mean, variance, stddev, distances);
   double const distance_threshold = mean + std_mul_ * stddev; // a distance that is bigger than this signals an outlier
 
   // Second pass: Classify the points on the computed distance threshold
-  size_t nr_p = 0, nr_removed_p = 0;
-  for (size_t cp = 0; cp < indices_->size (); ++cp)
+  std::size_t nr_p = 0, nr_removed_p = 0;
+  for (std::size_t cp = 0; cp < indices_->size (); ++cp)
   {
     // Points having a too high average distance are outliers and are passed to removed indices
     // Unless negative was set, then it's the opposite condition
@@ -206,17 +204,17 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::generateStatistics (double&
   tree_->setInputCloud (cloud);
 
   // Allocate enough space to hold the results
-  std::vector<int> nn_indices (mean_k_);
+  Indices nn_indices (mean_k_);
   std::vector<float> nn_dists (mean_k_);
 
   distances.resize (indices_->size ());
   int valid_distances = 0;
   // Go over all the points and calculate the mean or smallest distance
-  for (size_t cp = 0; cp < indices_->size (); ++cp)
+  for (std::size_t cp = 0; cp < indices_->size (); ++cp)
   {
-    if (!pcl_isfinite (cloud->points[(*indices_)[cp]].x) || 
-        !pcl_isfinite (cloud->points[(*indices_)[cp]].y) ||
-        !pcl_isfinite (cloud->points[(*indices_)[cp]].z))
+    if (!std::isfinite ((*cloud)[(*indices_)[cp]].x) || 
+        !std::isfinite ((*cloud)[(*indices_)[cp]].y) ||
+        !std::isfinite ((*cloud)[(*indices_)[cp]].z))
     {
       distances[cp] = 0;
       continue;
@@ -239,10 +237,10 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::generateStatistics (double&
 
   // Estimate the mean and the standard deviation of the distance vector
   double sum = 0, sq_sum = 0;
-  for (size_t i = 0; i < distances.size (); ++i)
+  for (const float &distance : distances)
   {
-    sum += distances[i];
-    sq_sum += distances[i] * distances[i];
+    sum += distance;
+    sq_sum += distance * distance;
   }
 
   mean = sum / static_cast<double>(valid_distances);

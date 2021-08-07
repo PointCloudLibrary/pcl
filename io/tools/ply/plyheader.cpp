@@ -39,9 +39,9 @@
 
 #include <fstream>
 #include <iostream>
-#include <string.h>
+#include <cstring>
 #include <string>
-#include <stdlib.h>
+#include <cstdlib>
 
 /** \file plheader extracts and prints out the header of a PLY file
   * 
@@ -60,10 +60,9 @@ int main (int argc, char* argv[])
       ++argi;
       break;
     }
-    char short_opt, *long_opt, *opt_arg;
+    char short_opt, *long_opt;
     if (argv[argi][1] != '-') {
       short_opt = argv[argi][1];
-      opt_arg = &argv[argi][2];
       long_opt = &argv[argi][2];
       while (*long_opt != '\0') {
         ++long_opt;
@@ -72,7 +71,7 @@ int main (int argc, char* argv[])
     else {
       short_opt = 0;
       long_opt = &argv[argi][2];
-      opt_arg = long_opt;
+      char *opt_arg = long_opt;
       while ((*opt_arg != '=') && (*opt_arg != '\0')) {
         ++opt_arg;
       }
@@ -94,7 +93,7 @@ int main (int argc, char* argv[])
       return EXIT_SUCCESS;
     }
 
-    else if ((short_opt == 'v') || (strcmp (long_opt, "version") == 0)) {
+    if ((short_opt == 'v') || (strcmp (long_opt, "version") == 0)) {
       std::cout << "plyheader \n";
       std::cout << " Point Cloud Library (PCL) - www.pointclouds.org\n";
       std::cout << " Copyright (c) 2007-2012, Ares Lagae\n";
@@ -127,11 +126,9 @@ int main (int argc, char* argv[])
       return EXIT_SUCCESS;
     }
 
-    else {
-      std::cerr << "plyheader: " << "invalid option `" << argv[argi] << "'" << "\n";
-      std::cerr << "Try `" << argv[0] << " --help' for more information.\n";
-      return EXIT_FAILURE;
-    }
+    std::cerr << "plyheader: " << "invalid option `" << argv[argi] << "'" << "\n";
+    std::cerr << "Try `" << argv[0] << " --help' for more information.\n";
+    return EXIT_FAILURE;
   }
 
   int parc = argc - argi;
@@ -143,9 +140,8 @@ int main (int argc, char* argv[])
   }
 
   std::ifstream ifstream;
-  const char* ifilename = "";
   if (parc > 0) {
-    ifilename = parv[0];
+    const char* ifilename = parv[0];
     if (strcmp (ifilename, "-") != 0) {
       ifstream.open (ifilename);
       if (!ifstream.is_open ()) {
@@ -156,9 +152,8 @@ int main (int argc, char* argv[])
   }
 
   std::ofstream ofstream;
-  const char* ofilename = "";
   if (parc > 1) {
-    ofilename = parv[1];
+    const char* ofilename = parv[1];
     if (strcmp (ofilename, "-") != 0) {
       ofstream.open (ofilename);
       if (!ofstream.is_open ()) {

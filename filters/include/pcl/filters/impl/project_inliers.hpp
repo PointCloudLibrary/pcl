@@ -39,6 +39,18 @@
 #define PCL_FILTERS_IMPL_PROJECT_INLIERS_H_
 
 #include <pcl/filters/project_inliers.h>
+#include <pcl/sample_consensus/sac_model_circle.h>
+#include <pcl/sample_consensus/sac_model_cylinder.h>
+#include <pcl/sample_consensus/sac_model_cone.h>
+#include <pcl/sample_consensus/sac_model_line.h>
+#include <pcl/sample_consensus/sac_model_normal_plane.h>
+#include <pcl/sample_consensus/sac_model_normal_sphere.h>
+#include <pcl/sample_consensus/sac_model_parallel_plane.h>
+#include <pcl/sample_consensus/sac_model_normal_parallel_plane.h>
+#include <pcl/sample_consensus/sac_model_parallel_line.h>
+#include <pcl/sample_consensus/sac_model_perpendicular_plane.h>
+#include <pcl/sample_consensus/sac_model_plane.h>
+#include <pcl/sample_consensus/sac_model_sphere.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -48,14 +60,14 @@ pcl::ProjectInliers<PointT>::applyFilter (PointCloud &output)
   {
     PCL_WARN ("[pcl::%s::applyFilter] No indices given or empty indices!\n", getClassName ().c_str ());
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
   //Eigen::Map<Eigen::VectorXf, Eigen::Aligned> model_coefficients (&model_->values[0], model_->values.size ());
   // More expensive than a map but safer (32bit architectures seem to complain)
   Eigen::VectorXf model_coefficients (model_->values.size ());
-  for (size_t i = 0; i < model_->values.size (); ++i)
+  for (std::size_t i = 0; i < model_->values.size (); ++i)
     model_coefficients[i] = model_->values[i];
 
   // Initialize the Sample Consensus model and set its parameters
@@ -63,7 +75,7 @@ pcl::ProjectInliers<PointT>::applyFilter (PointCloud &output)
   {
     PCL_ERROR ("[pcl::%s::applyFilter] Error initializing the SAC model!\n", getClassName ().c_str ());
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   if (copy_all_data_)

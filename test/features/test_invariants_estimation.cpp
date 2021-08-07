@@ -37,19 +37,18 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/moment_invariants.h>
 
 using namespace pcl;
 using namespace pcl::io;
-using namespace std;
 
-typedef search::KdTree<PointXYZ>::Ptr KdTreePtr;
+using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 
 PointCloud<PointXYZ> cloud;
-vector<int> indices;
+pcl::Indices indices;
 KdTreePtr tree;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,20 +75,20 @@ TEST (PCL, MomentInvariantsEstimation)
 
   // set parameters
   mi.setInputCloud (cloud.makeShared ());
-  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
+  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
   mi.setIndices (indicesptr);
   mi.setSearchMethod (tree);
   mi.setKSearch (static_cast<int> (indices.size ()));
 
   // estimate
   mi.compute (*moments);
-  EXPECT_EQ (moments->points.size (), indices.size ());
+  EXPECT_EQ (moments->size (), indices.size ());
 
-  for (size_t i = 0; i < moments->points.size (); ++i)
+  for (const auto &point : moments->points)
   {
-    EXPECT_NEAR (moments->points[i].j1, 1.59244, 1e-4);
-    EXPECT_NEAR (moments->points[i].j2, 0.652063, 1e-4);
-    EXPECT_NEAR (moments->points[i].j3, 0.053917, 1e-4);
+    EXPECT_NEAR (point.j1, 1.59244, 1e-4);
+    EXPECT_NEAR (point.j2, 0.652063, 1e-4);
+    EXPECT_NEAR (point.j3, 0.053917, 1e-4);
   }
 }
 
@@ -109,7 +108,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  indices.resize (cloud.points.size ());
+  indices.resize (cloud.size ());
   for (int i = 0; i < static_cast<int> (indices.size ()); ++i)
     indices[i] = i;
 

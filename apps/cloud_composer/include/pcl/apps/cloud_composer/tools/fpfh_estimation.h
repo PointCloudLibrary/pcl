@@ -35,13 +35,10 @@
  *
  */
 
-#ifndef FPFH_ESTIMATION_H_
-#define FPFH_ESTIMATION_H_
+#pragma once
 
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
 #include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
-
-
 
 namespace pcl
 {
@@ -53,13 +50,13 @@ namespace pcl
       Q_OBJECT
       public:
         FPFHEstimationTool (PropertiesModel* parameter_model, QObject* parent);
-        virtual ~FPFHEstimationTool ();
+        ~FPFHEstimationTool ();
         
-        virtual QList <CloudComposerItem*>
-        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE);
+        QList <CloudComposerItem*>
+        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) override;
       
-        inline virtual QString
-        getToolName () const { return "FPFH Estimation Tool";}
+        inline QString
+        getToolName () const override { return "FPFH Estimation Tool";}
     };
 
     
@@ -67,36 +64,34 @@ namespace pcl
     {
       Q_OBJECT
       Q_INTERFACES (pcl::cloud_composer::ToolFactory)
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
       Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
-#endif
       public:
         NewItemTool*
-        createTool (PropertiesModel* parameter_model, QObject* parent = 0) 
+        createTool (PropertiesModel* parameter_model, QObject* parent = nullptr) override 
         {
             return new FPFHEstimationTool(parameter_model, parent);
         }
         
         PropertiesModel*
-        createToolParameterModel (QObject* parent);
+        createToolParameterModel (QObject* parent) override;
         
-        inline virtual QString 
-        getPluginName () const { return "FPFH Estimation";}
+        inline QString 
+        getPluginName () const override { return "FPFH Estimation";}
         
-        virtual QString 
-        getToolGroupName () const { return "Feature Estimation";}
+        QString 
+        getToolGroupName () const override { return "Feature Estimation";}
         
-        virtual QString
-        getIconName () const { return ":/fpfh_estimation.png"; }
+        QString
+        getIconName () const override { return ":/fpfh_estimation.png"; }
         
-        inline virtual CloudComposerItem::ItemType
-        getInputItemType () const
+        inline CloudComposerItem::ItemType
+        getInputItemType () const override
         {
           return CloudComposerItem::CLOUD_ITEM;
         }
         
-        inline virtual QList <CloudComposerItem::ItemType>
-        getRequiredInputChildrenTypes () const 
+        inline QList <CloudComposerItem::ItemType>
+        getRequiredInputChildrenTypes () const override 
         {
           QList <CloudComposerItem::ItemType> input_types;
           return (input_types << CloudComposerItem::NORMALS_ITEM);
@@ -107,10 +102,3 @@ namespace pcl
 
   }
 }
-
-
-
-
-
-
-#endif //FPFH_ESTIMATION_H_

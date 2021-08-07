@@ -72,23 +72,23 @@ operator << (std::ostream& os, const MyVertexData& vd)
 ////////////////////////////////////////////////////////////////////////////////
 
 // Declare the mesh.
-typedef pcl::geometry::PolygonMesh <pcl::geometry::DefaultMeshTraits <MyVertexData> > Mesh;
+using Mesh = pcl::geometry::PolygonMesh<pcl::geometry::DefaultMeshTraits<MyVertexData> >;
 
-typedef Mesh::VertexIndex   VertexIndex;
-typedef Mesh::HalfEdgeIndex HalfEdgeIndex;
-typedef Mesh::FaceIndex     FaceIndex;
+using VertexIndex = Mesh::VertexIndex;
+using HalfEdgeIndex = Mesh::HalfEdgeIndex;
+using FaceIndex = Mesh::FaceIndex;
 
-typedef Mesh::VertexIndices   VertexIndices;
-typedef Mesh::HalfEdgeIndices HalfEdgeIndices;
-typedef Mesh::FaceIndices     FaceIndices;
+using VertexIndices = Mesh::VertexIndices;
+using HalfEdgeIndices = Mesh::HalfEdgeIndices;
+using FaceIndices = Mesh::FaceIndices;
 
-typedef Mesh::VertexAroundVertexCirculator           VAVC;
-typedef Mesh::OutgoingHalfEdgeAroundVertexCirculator OHEAVC;
-typedef Mesh::IncomingHalfEdgeAroundVertexCirculator IHEAVC;
-typedef Mesh::FaceAroundVertexCirculator             FAVC;
-typedef Mesh::VertexAroundFaceCirculator             VAFC;
-typedef Mesh::InnerHalfEdgeAroundFaceCirculator      IHEAFC;
-typedef Mesh::OuterHalfEdgeAroundFaceCirculator      OHEAFC;
+using VAVC = Mesh::VertexAroundVertexCirculator;
+using OHEAVC = Mesh::OutgoingHalfEdgeAroundVertexCirculator;
+using IHEAVC = Mesh::IncomingHalfEdgeAroundVertexCirculator;
+using FAVC = Mesh::FaceAroundVertexCirculator;
+using VAFC = Mesh::VertexAroundFaceCirculator;
+using IHEAFC = Mesh::InnerHalfEdgeAroundFaceCirculator;
+using OHEAFC = Mesh::OuterHalfEdgeAroundFaceCirculator;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -97,7 +97,7 @@ void
 printVertices (const Mesh& mesh)
 {
   std::cout << "Vertices:\n   ";
-  for (unsigned int i=0; i<mesh.sizeVertices (); ++i)
+  for (std::size_t i=0; i<mesh.sizeVertices (); ++i)
   {
     std::cout << mesh.getVertexDataCloud () [i] << " ";
   }
@@ -132,7 +132,7 @@ void
 printFaces (const Mesh& mesh)
 {
   std::cout << "Faces:\n";
-  for (unsigned int i=0; i<mesh.sizeFaces (); ++i)
+  for (std::size_t i=0; i<mesh.sizeFaces (); ++i)
   {
     printFace (mesh, FaceIndex (i));
   }

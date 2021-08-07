@@ -35,17 +35,11 @@
  *
  */
 
-#ifndef CLOUD_COMPOSER_ITEM_H_
-#define CLOUD_COMPOSER_ITEM_H_
-
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/properties_model.h>
-
-
-
 
 static QStringList ITEM_TYPES_STRINGS(QStringList() 
       << "Cloud Composer Item"
@@ -74,7 +68,7 @@ namespace pcl
         KD_TREE_SEARCH
       };
     };
-    class PCL_EXPORTS CloudComposerItem : public QStandardItem
+    class CloudComposerItem : public QStandardItem
     {
       public:  
         
@@ -87,12 +81,12 @@ namespace pcl
           FPFH_ITEM
         };
 
-        CloudComposerItem (const QString name = "default item");
+        CloudComposerItem (const QString& name = "default item");
         CloudComposerItem (const CloudComposerItem& to_copy);
-        virtual ~CloudComposerItem ();
+        ~CloudComposerItem ();
         
-        inline virtual int 
-        type () const { return CLOUD_COMPOSER_ITEM; }
+        inline int 
+        type () const override { return CLOUD_COMPOSER_ITEM; }
       
         /** \brief Convenience function to get Item's ID String */
         inline QString
@@ -109,8 +103,8 @@ namespace pcl
         void 
         addChild (CloudComposerItem* item_arg);
         
-        virtual CloudComposerItem*
-        clone () const;
+        CloudComposerItem*
+        clone () const override;
 
      //   /** \brief Convenience function which pulls out a cloud Ptr of type CloudPtrT */
     //    template <typename CloudPtrT>
@@ -119,11 +113,11 @@ namespace pcl
         
         /** \brief Paint View function - reimpliment in item subclass if it can be displayed in PCLVisualizer*/
         virtual void
-        paintView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const;
+        paintView (pcl::visualization::PCLVisualizer::Ptr vis) const;
         
         /** \brief Remove from View function - reimpliment in item subclass if it can be displayed in PCLVisualizer*/
         virtual void
-        removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const;
+        removeFromView (pcl::visualization::PCLVisualizer::Ptr vis) const;
         
         /** \brief Inspector additional tabs paint function - reimpliment in item subclass if item has additional tabs to show in Inspector*/
         virtual QMap <QString, QWidget*>
@@ -151,31 +145,20 @@ namespace pcl
     template <class T> class VPtr
     {
       public:
-        static T* asPtr (QVariant v)
+        static T* asPtr (const QVariant& v)
         {
           return (static_cast<T *> (v.value<void *> ()));
         }
 
         static QVariant asQVariant (T* ptr)
         {
-          return (qVariantFromValue (static_cast<void*>(ptr)));
+          return (QVariant::fromValue (static_cast<void*>(ptr)));
         }
     };
     
   }
 }
 
-typedef QList<const pcl::cloud_composer::CloudComposerItem*> ConstItemList;
+using ConstItemList = QList<const pcl::cloud_composer::CloudComposerItem *>;
 
 Q_DECLARE_METATYPE (pcl::cloud_composer::CloudComposerItem);
-
-
-
-
-
-
-
-
-
-
-#endif //CLOUD_COMPOSER_ITEM_H_

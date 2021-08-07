@@ -105,7 +105,7 @@ namespace pcl
                 {
                   ///If we went outside of the memory, make sure we go back to the beginning of it
                   if(pos > buffer.tsdf_memory_end)
-                    pos = pos - size;
+                    pos -= size;
                   
                   if (pos >= buffer.tsdf_memory_start && pos <= buffer.tsdf_memory_end) // quickfix for http://dev.pointclouds.org/issues/894
                     pack_tsdf (0.f, 0, *pos);
@@ -134,16 +134,16 @@ namespace pcl
                   
                 ///We make sure that we are not already before the start of the memory
                 if(pos < buffer.tsdf_memory_start)
-                    pos = pos + size;
+                    pos += size;
 
-                int nbSteps = abs(maxBounds.z);
+                int nbSteps = std::abs(maxBounds.z);
                 
             #pragma unroll				
                 for(int z = 0; z < nbSteps; ++z, pos+=z_step)
                 {
                   ///If we went outside of the memory, make sure we go back to the beginning of it
                   if(pos > buffer.tsdf_memory_end)
-                    pos = pos - size;
+                    pos -= size;
                   
                   if (pos >= buffer.tsdf_memory_start && pos <= buffer.tsdf_memory_end) // quickfix for http://dev.pointclouds.org/issues/894
                     pack_tsdf (0.f, 0, *pos);
@@ -555,7 +555,7 @@ namespace pcl
                       bool integrate = true;
                       if ((x > 0 &&  x < VOLUME_X-2) && (y > 0 && y < VOLUME_Y-2) && (z > 0 && z < VOLUME_Z-2))
                       {
-                          const float qnan = numeric_limits<float>::quiet_NaN();
+                          constexpr float qnan = std::numeric_limits<float>::quiet_NaN();
                           float3 normal = make_float3(qnan, qnan, qnan);
 
                           float Fn, Fp;

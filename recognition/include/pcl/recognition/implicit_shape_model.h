@@ -33,29 +33,23 @@
  *
  */
 
-#ifndef	PCL_IMPLICIT_SHAPE_MODEL_H_
-#define	PCL_IMPLICIT_SHAPE_MODEL_H_
+#pragma once
 
 #include <vector>
 #include <fstream>
-#include <limits>
 #include <Eigen/src/Core/Matrix.h>
-#include <pcl/pcl_base.h>
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/point_representation.h>
 #include <pcl/features/feature.h>
 #include <pcl/features/spin_image.h>
-#include <pcl/filters/voxel_grid.h>
-#include <pcl/filters/extract_indices.h>
-#include <pcl/search/search.h>
-#include <pcl/kdtree/kdtree.h>
-#include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/kdtree/impl/kdtree_flann.hpp>
+#include <pcl/kdtree/kdtree_flann.h> // for KdTreeFLANN
 
 namespace pcl
 {
   /** \brief This struct is used for storing peak. */
-  struct ISMPeak
+  struct EIGEN_ALIGN16 ISMPeak
   {
     /** \brief Point were this peak is located. */
     PCL_ADD_POINT4D;
@@ -66,8 +60,8 @@ namespace pcl
     /** \brief Determines which class this peak belongs. */
     int class_id;
 
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  } EIGEN_ALIGN16;
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
+  };
 
   namespace features
   {
@@ -77,6 +71,9 @@ namespace pcl
     class PCL_EXPORTS ISMVoteList
     {
       public:
+
+        using Ptr = shared_ptr<ISMVoteList<PointT> >;
+        using ConstPtr = shared_ptr<const ISMVoteList<PointT>>;
 
         /** \brief Empty constructor with member variables initialization. */
         ISMVoteList ();
@@ -147,17 +144,20 @@ namespace pcl
         pcl::KdTreeFLANN<pcl::InterestPoint>::Ptr tree_;
 
         /** \brief Stores neighbours indices. */
-        std::vector<int> k_ind_;
+        pcl::Indices k_ind_;
 
         /** \brief Stores square distances to the corresponding neighbours. */
         std::vector<float> k_sqr_dist_;
     };
- 
+
     /** \brief The assignment of this structure is to store the statistical/learned weights and other information
       * of the trained Implict Shape Model algorithm.
       */
     struct PCL_EXPORTS ISMModel
     {
+      using Ptr = shared_ptr<ISMModel>;
+      using ConstPtr = shared_ptr<const ISMModel>;
+
       /** \brief Simple constructor that initializes the structure. */
       ISMModel ();
 
@@ -220,7 +220,7 @@ namespace pcl
       /** \brief Stores descriptors dimension. */
       unsigned int descriptors_dimension_;
 
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   }
 
@@ -242,7 +242,9 @@ namespace pcl
     {
       public:
 
-        typedef boost::shared_ptr<pcl::features::ISMModel> ISMModelPtr;
+        using ISMModelPtr = pcl::features::ISMModel::Ptr;
+        using Feature = pcl::Feature<PointT, pcl::Histogram<FeatureSize>>;
+        using FeaturePtr = typename Feature::Ptr;
 
       protected:
 
@@ -276,7 +278,7 @@ namespace pcl
 
         /** \brief This structure is used for determining the end of the
           * k-means clustering process. */
-        typedef struct PCL_EXPORTS TC
+        struct PCL_EXPORTS TermCriteria
         {
           enum
           {
@@ -289,7 +291,7 @@ namespace pcl
             * \param[in] max_count defines the max number of iterations
             * \param[in] epsilon defines the desired accuracy
             */
-          TC(int type, int max_count, float epsilon) :
+          TermCriteria(int type, int max_count, float epsilon) :
             type_ (type),
             max_count_ (max_count),
             epsilon_ (epsilon) {};
@@ -307,7 +309,7 @@ namespace pcl
 
           /** \brief Defines the accuracy for k-means clustering. */
           float epsilon_;
-        } TermCriteria;
+        };
 
         /** \brief Structure for storing the visual word. */
         struct PCL_EXPORTS VisualWordStat
@@ -378,7 +380,7 @@ namespace pcl
         setSamplingSize (float sampling_size);
 
         /** \brief Returns the current feature estimator used for extraction of the descriptors. */
-        boost::shared_ptr<pcl::Feature<PointT, pcl::Histogram<FeatureSize> > >
+        FeaturePtr
         getFeatureEstimator ();
 
         /** \brief Changes the feature estimator.
@@ -386,7 +388,7 @@ namespace pcl
           * Note that it must be fully initialized and configured.
           */
         void
-        setFeatureEstimator (boost::shared_ptr<pcl::Feature<PointT, pcl::Histogram<FeatureSize> > > feature);
+        setFeatureEstimator (FeaturePtr feature);
 
         /** \brief Returns the number of clusters used for descriptor clustering. */
         unsigned int
@@ -438,7 +440,7 @@ namespace pcl
           * \param[in] in_normals cloud of normals corresponding to the input cloud
           * \param[in] in_class_of_interest class which we are looking for
           */
-        boost::shared_ptr<pcl::features::ISMVoteList<PointT> >
+        typename pcl::features::ISMVoteList<PointT>::Ptr
         findObjects (ISMModelPtr model, typename pcl::PointCloud<PointT>::Ptr in_cloud, typename pcl::PointCloud<Normal>::Ptr in_normals, int in_class_of_interest);
 
       protected:
@@ -547,7 +549,7 @@ namespace pcl
                                  int flags,
                                  Eigen::MatrixXf& cluster_centers);
 
-        /** \brief Generates centers for clusters as described in 
+        /** \brief Generates centers for clusters as described in
           * Arthur, David and Sergei Vassilvitski (2007) k-means++: The Advantages of Careful Seeding.
           * \param[in] data points to cluster
           * \param[out] out_centers it will contain generated centers
@@ -598,7 +600,7 @@ namespace pcl
         float sampling_size_;
 
         /** \brief Stores the feature estimator. */
-        boost::shared_ptr<pcl::Feature<PointT, pcl::Histogram<FeatureSize> > > feature_estimator_;
+        typename Feature::Ptr feature_estimator_;
 
         /** \brief Number of clusters, is used for clustering descriptors during the training. */
         unsigned int number_of_clusters_;
@@ -625,5 +627,3 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ISMPeak,
   (float, density, ism_density)
   (float, class_id, ism_class_id)
 )
-
-#endif  //#ifndef PCL_IMPLICIT_SHAPE_MODEL_H_

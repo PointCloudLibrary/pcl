@@ -37,12 +37,15 @@
 /// @details This tool provides the ability to transform the current selection.
 /// @author Yue Li and Matthew Hielsberg
 
-#ifndef SELECTION_TRANSFORM_TOOL_H_
-#define SELECTION_TRANSFORM_TOOL_H_
+#pragma once
 
 #include <pcl/apps/point_cloud_editor/toolInterface.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 #include <pcl/apps/point_cloud_editor/trackball.h>
+
+#include <pcl/memory.h>  // for pcl::shared_ptr
+
+class Selection;
 
 /// @brief The selection transform tool computes the transform matrix from
 /// mouse input.  It then updates the cloud's transform matrix for the
@@ -54,6 +57,9 @@
 class SelectionTransformTool : public ToolInterface
 {
   public:
+    /// The type for shared pointer pointing to a constant selection buffer
+    using ConstSelectionPtr = pcl::shared_ptr<const Selection>;
+
     /// @brief Constructor
     /// @param selection_ptr a shared pointer pointing to the selection object.
     /// @param cloud_ptr a shared pointer pointing to the cloud object.
@@ -73,7 +79,7 @@ class SelectionTransformTool : public ToolInterface
     /// @param y the y value of the mouse screen coordinates.
     /// @param modifiers the key modifier.
     void
-    start (int x, int y, BitMask modifiers, BitMask buttons);
+    start (int x, int y, BitMask modifiers, BitMask buttons) override;
 
     /// @brief Updates the transform matrix of this object with mouse screen
     /// coordinates and key modifiers. Then the selection_matrix_ in the cloud
@@ -92,7 +98,7 @@ class SelectionTransformTool : public ToolInterface
     /// (perpendicular to the view plane).  If no modifier is pressed then the
     /// selection is rotated.
     void
-    update (int x, int y, BitMask modifiers, BitMask buttons);
+    update (int x, int y, BitMask modifiers, BitMask buttons) override;
 
     /// @brief Update the transform matrix for the selected points using the
     /// final position of the mouse. To finalize the transformation, we then
@@ -102,11 +108,11 @@ class SelectionTransformTool : public ToolInterface
     /// @param y the y value of the mouse screen coordinates.
     /// @param modifiers the key modifier.
     void
-    end (int x, int y, BitMask modifiers, BitMask buttons);
+    end (int x, int y, BitMask modifiers, BitMask buttons) override;
 
     /// @brief This does not do anything.
     void
-    draw () const
+    draw () const override
     {
     }
     
@@ -162,4 +168,3 @@ class SelectionTransformTool : public ToolInterface
     BitMask modifiers_;
 
 };
-#endif // SELECTION_TRANSFORMER_H_

@@ -38,23 +38,13 @@
  *
  */
 
-#ifndef PCL_APPS_IN_HAND_SCANNER_INTEGRATION_H
-#define PCL_APPS_IN_HAND_SCANNER_INTEGRATION_H
+#pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
-#include <pcl/pcl_exports.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
-
-////////////////////////////////////////////////////////////////////////////////
-// Forward declarations
-////////////////////////////////////////////////////////////////////////////////
-
-namespace pcl
-{
-  template <typename PointT>
-  class KdTree;
-} // End namespace pcl
+#include <pcl/pcl_exports.h>
+#include <pcl/kdtree/kdtree.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Integration
@@ -72,16 +62,16 @@ namespace pcl
     {
       public:
 
-        typedef pcl::PointXYZRGBNormal              PointXYZRGBNormal;
-        typedef pcl::PointCloud <PointXYZRGBNormal> CloudXYZRGBNormal;
-        typedef CloudXYZRGBNormal::Ptr              CloudXYZRGBNormalPtr;
-        typedef CloudXYZRGBNormal::ConstPtr         CloudXYZRGBNormalConstPtr;
+        using PointXYZRGBNormal = pcl::PointXYZRGBNormal;
+        using CloudXYZRGBNormal = pcl::PointCloud<PointXYZRGBNormal>;
+        using CloudXYZRGBNormalPtr = CloudXYZRGBNormal::Ptr;
+        using CloudXYZRGBNormalConstPtr = CloudXYZRGBNormal::ConstPtr;
 
-        typedef pcl::ihs::Mesh            Mesh;
-        typedef pcl::ihs::MeshPtr         MeshPtr;
-        typedef pcl::ihs::MeshConstPtr    MeshConstPtr;
-        typedef Mesh::VertexIndex         VertexIndex;
-        typedef Mesh::VertexIndices       VertexIndices;
+        using Mesh = pcl::ihs::Mesh;
+        using MeshPtr = pcl::ihs::MeshPtr;
+        using MeshConstPtr = pcl::ihs::MeshConstPtr;
+        using VertexIndex = Mesh::VertexIndex;
+        using VertexIndices = Mesh::VertexIndices;
 
         /** \brief Constructor. */
         Integration ();
@@ -154,21 +144,21 @@ namespace pcl
 
       private:
 
-        typedef pcl::PointXYZ              PointXYZ;
-        typedef pcl::PointCloud <PointXYZ> CloudXYZ;
-        typedef CloudXYZ::Ptr              CloudXYZPtr;
-        typedef CloudXYZ::ConstPtr         CloudXYZConstPtr;
+        using PointXYZ = pcl::PointXYZ;
+        using CloudXYZ = pcl::PointCloud<PointXYZ>;
+        using CloudXYZPtr = CloudXYZ::Ptr;
+        using CloudXYZConstPtr = CloudXYZ::ConstPtr;
 
-        typedef pcl::ihs::PointIHS         PointIHS;
-        typedef pcl::ihs::CloudIHS         CloudIHS;
-        typedef pcl::ihs::CloudIHSPtr      CloudIHSPtr;
-        typedef pcl::ihs::CloudIHSConstPtr CloudIHSConstPtr;
+        using PointIHS = pcl::ihs::PointIHS;
+        using CloudIHS = pcl::ihs::CloudIHS;
+        using CloudIHSPtr = pcl::ihs::CloudIHSPtr;
+        using CloudIHSConstPtr = pcl::ihs::CloudIHSConstPtr;
 
-        typedef pcl::KdTree <PointXYZ>           KdTree;
-        typedef boost::shared_ptr <KdTree>       KdTreePtr;
-        typedef boost::shared_ptr <const KdTree> KdTreeConstPtr;
+        using KdTree = pcl::KdTree<PointXYZ>;
+        using KdTreePtr = KdTree::Ptr;
+        using KdTreeConstPtr = KdTree::ConstPtr;
 
-        uint8_t
+        std::uint8_t
         trimRGB (const float val) const;
 
         /** \brief Adds two triangles between points 0-1-3 and 1-2-3 to the mesh. */
@@ -230,5 +220,3 @@ namespace pcl
     };
   } // End namespace ihs
 } // End namespace pcl
-
-#endif // PCL_APPS_IN_HAND_SCANNER_INTEGRATION_H

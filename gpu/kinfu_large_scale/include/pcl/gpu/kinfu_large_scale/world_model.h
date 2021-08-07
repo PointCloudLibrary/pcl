@@ -36,13 +36,11 @@
  *  Author: Raphael Favier, Technical University Eindhoven, (r.mysurname <aT> tue.nl)
  */
 
-#ifndef PCL_WORLD_MODEL_H_
-#define PCL_WORLD_MODEL_H_
+#pragma once
 
 #include <pcl/common/impl/common.hpp>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/filters/filter_indices.h>
-#include <pcl/filters/crop_box.h>
 #include <pcl/filters/conditional_removal.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
@@ -65,18 +63,18 @@ namespace pcl
     {
       public:
 
-        typedef boost::shared_ptr<WorldModel<PointT> > Ptr;
-        typedef boost::shared_ptr<const WorldModel<PointT> > ConstPtr;
+        using Ptr = shared_ptr<WorldModel<PointT> >;
+        using ConstPtr = shared_ptr<const WorldModel<PointT> >;
 
-        typedef pcl::PointCloud<PointT> PointCloud;
-        typedef typename PointCloud::Ptr PointCloudPtr;
-        typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+        using PointCloud = pcl::PointCloud<PointT>;
+        using PointCloudPtr = typename PointCloud::Ptr;
+        using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-        typedef typename pcl::ConditionAnd<PointT>::Ptr ConditionAndPtr;
-        typedef typename pcl::ConditionOr<PointT>::Ptr ConditionOrPtr;
-        typedef typename pcl::FieldComparison<PointT>::ConstPtr FieldComparisonConstPtr;
+        using ConditionAndPtr = typename pcl::ConditionAnd<PointT>::Ptr;
+        using ConditionOrPtr = typename pcl::ConditionOr<PointT>::Ptr;
+        using FieldComparisonConstPtr = typename pcl::FieldComparison<PointT>::ConstPtr;
         
-        typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+        using FieldList = typename pcl::traits::fieldList<PointT>::type;
 
         /** \brief Default constructor for the WorldModel.
           */
@@ -90,7 +88,7 @@ namespace pcl
           */
         void reset()
         {
-          if(world_->points.size () != 0)
+          if(!world_->points.empty ())
           {
             PCL_WARN("Clearing world model\n");
             world_->points.clear ();
@@ -139,7 +137,7 @@ namespace pcl
         void cleanWorldFromNans () 
         { 
           world_->is_dense = false;
-          std::vector<int> indices; 
+          pcl::Indices indices;
           pcl::removeNaNFromPointCloud (*world_, *world_, indices);
         }
 
@@ -152,9 +150,9 @@ namespace pcl
         
         /** \brief Returns the number of points contained in the world.
           */      
-        size_t getWorldSize () 
+        std::size_t getWorldSize () 
         { 
-          return (world_->points.size () );
+          return (world_->size () );
         }
 
         /** \brief Returns the world as two vectors of cubes of size "size" (pointclouds) and transforms
@@ -180,5 +178,3 @@ namespace pcl
     };
   }
 }
-
-#endif // PCL_WORLD_MODEL_H_

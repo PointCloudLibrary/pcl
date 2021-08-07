@@ -93,7 +93,6 @@ So let's look at the code. The following represents a simplified version of *vis
    #include <pcl/visualization/cloud_viewer.h>
    #include <pcl/console/parse.h>
 
-   using namespace std;
    using namespace pcl::console;
    using namespace pcl::visualization;
 
@@ -101,7 +100,7 @@ So let's look at the code. The following represents a simplified version of *vis
    {
      public:
        typedef pcl::PointCloud<pcl::PointXYZI> Cloud;
-       typedef typename Cloud::ConstPtr CloudConstPtr;
+       typedef Cloud::ConstPtr CloudConstPtr;
 
        SimpleHDLViewer (Grabber& grabber,
            pcl::visualization::PointCloudColorHandler<pcl::PointXYZI> &handler) :
@@ -113,7 +112,7 @@ So let's look at the code. The following represents a simplified version of *vis
 
        void cloud_callback (const CloudConstPtr& cloud)
        {
-         boost::mutex::scoped_lock lock (cloud_mutex_);
+         std::lock_guard<std::mutex> lock (cloud_mutex_);
          cloud_ = cloud;
        }
 
@@ -125,8 +124,8 @@ So let's look at the code. The following represents a simplified version of *vis
          cloud_viewer_->setCameraPosition (0.0, 0.0, 30.0, 0.0, 1.0, 0.0, 0);
          cloud_viewer_->setCameraClipDistances (0.0, 50.0);
 
-         boost::function<void (const CloudConstPtr&)> cloud_cb = boost::bind (
-             &SimpleHDLViewer::cloud_callback, this, _1);
+         std::function<void (const CloudConstPtr&)> cloud_cb =
+             [this] (const CloudConstPtr& cloud) { cloud_callback (cloud); };
          boost::signals2::connection cloud_connection = grabber_.registerCallback (
              cloud_cb);
 
@@ -163,10 +162,10 @@ So let's look at the code. The following represents a simplified version of *vis
          cloud_connection.disconnect ();
        }
 
-       boost::shared_ptr<pcl::visualization::PCLVisualizer> cloud_viewer_;
+       pcl::visualization::PCLVisualizer::Ptr cloud_viewer_;
 
        pcl::Grabber& grabber_;
-       boost::mutex cloud_mutex_;
+       std::mutex cloud_mutex_;
 
        CloudConstPtr cloud_;
        pcl::visualization::PointCloudColorHandler<pcl::PointXYZI> &handler_;
@@ -194,10 +193,10 @@ Additional Details
 
 The *HDL Grabber* offers more than one datatype, which is the reason we made
 the *Grabber* interface so generic, leading to the relatively complicated
-*boost::bind* line. In fact, we can register the following callback types as of
+lambda line. In fact, we can register the following callback types as of
 this writing:
 
-* `void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB> >&)`
+* `void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)`
 
 Compiling and running the program
 ---------------------------------

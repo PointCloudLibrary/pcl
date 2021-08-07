@@ -1,42 +1,39 @@
-#ifndef OPENNI_CAPTURE_H
-#define OPENNI_CAPTURE_H
+#pragma once
 
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
-namespace OpenNIFrameSource
-{
+#include <mutex>
 
-  typedef pcl::PointXYZRGBA PointT;
-  typedef pcl::PointCloud<PointT> PointCloud;
-  typedef pcl::PointCloud<PointT>::Ptr PointCloudPtr;
-  typedef pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
+namespace OpenNIFrameSource {
 
-  /* A simple class for capturing data from an OpenNI camera */
-  class PCL_EXPORTS OpenNIFrameSource
-  {
-  public:
-    OpenNIFrameSource (const std::string& device_id = "");
-    ~OpenNIFrameSource ();
+using PointT = pcl::PointXYZRGBA;
+using PointCloud = pcl::PointCloud<PointT>;
+using PointCloudPtr = pcl::PointCloud<PointT>::Ptr;
+using PointCloudConstPtr = pcl::PointCloud<PointT>::ConstPtr;
 
-    const PointCloudPtr
-    snap ();
-    bool
-    isActive ();
-    void
-    onKeyboardEvent (const pcl::visualization::KeyboardEvent & event);
+/* A simple class for capturing data from an OpenNI camera */
+class PCL_EXPORTS OpenNIFrameSource {
+public:
+  OpenNIFrameSource(const std::string& device_id = "");
+  ~OpenNIFrameSource();
 
-  protected:
-    void
-    onNewFrame (const PointCloudConstPtr &cloud);
+  const PointCloudPtr
+  snap();
+  bool
+  isActive() const;
+  void
+  onKeyboardEvent(const pcl::visualization::KeyboardEvent& event);
 
-    pcl::OpenNIGrabber grabber_;
-    PointCloudPtr most_recent_frame_;
-    int frame_counter_;
-    boost::mutex mutex_;
-    bool active_;
-  };
+protected:
+  void
+  onNewFrame(const PointCloudConstPtr& cloud);
 
-}
+  pcl::OpenNIGrabber grabber_;
+  PointCloudPtr most_recent_frame_;
+  int frame_counter_;
+  std::mutex mutex_;
+  bool active_;
+};
 
-#endif
+} // namespace OpenNIFrameSource

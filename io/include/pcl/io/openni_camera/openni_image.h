@@ -33,16 +33,16 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <pcl/pcl_config.h>
-#ifdef HAVE_OPENNI
 
-#ifndef __OPENNI_IMAGE__
-#define __OPENNI_IMAGE__
+#pragma once
+ 
+#include <pcl/pcl_config.h>
+#include <pcl/memory.h>
+#ifdef HAVE_OPENNI
 
 #include <pcl/pcl_exports.h>
 #include "openni.h"
 #include "openni_exception.h"
-#include <pcl/io/boost.h>
 
 namespace openni_wrapper
 {
@@ -58,28 +58,28 @@ namespace openni_wrapper
   class PCL_EXPORTS Image
   {
   public:
-    typedef boost::shared_ptr<Image> Ptr;
-    typedef boost::shared_ptr<const Image> ConstPtr;
+    using Ptr = pcl::shared_ptr<Image>;
+    using ConstPtr = pcl::shared_ptr<const Image>;
 
-    typedef enum
+    enum Encoding
     {
       BAYER_GRBG,
       YUV422,
       RGB
-    } Encoding;
+    };
 
     /**
      * @author Suat Gedikli
      * @brief Constructor
      * @param[in] image_meta_data the actual image data from the OpenNI driver
      */
-    inline Image (boost::shared_ptr<xn::ImageMetaData> image_meta_data) throw ();
+    inline Image (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noexcept;
 
     /**
      * @author Suat Gedikli
      * @brief virtual Destructor that never throws an exception.
      */
-    inline virtual ~Image () throw ();
+    inline virtual ~Image () noexcept;
 
     /**
      * @author Suat Gedikli
@@ -165,15 +165,15 @@ namespace openni_wrapper
     inline const xn::ImageMetaData& getMetaData () const throw ();
 
   protected:
-    boost::shared_ptr<xn::ImageMetaData> image_md_;
+    pcl::shared_ptr<xn::ImageMetaData> image_md_;
   } ;
 
-  Image::Image (boost::shared_ptr<xn::ImageMetaData> image_meta_data) throw ()
-  : image_md_ (image_meta_data)
+  Image::Image (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noexcept
+  : image_md_ (std::move(image_meta_data))
   {
   }
 
-  Image::~Image () throw () { }
+  Image::~Image () noexcept { }
 
   unsigned
   Image::getWidth () const throw ()
@@ -206,4 +206,3 @@ namespace openni_wrapper
   }
 } // namespace
 #endif
-#endif //__OPENNI_IMAGE__

@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_POINT_CLOUD_ITERATOR_H_
-#define PCL_POINT_CLOUD_ITERATOR_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/PointIndices.h>
@@ -54,7 +53,7 @@ namespace pcl
     public:
       CloudIterator (PointCloud<PointT>& cloud);
 
-      CloudIterator (PointCloud<PointT>& cloud, const std::vector<int>& indices);
+      CloudIterator (PointCloud<PointT>& cloud, const Indices& indices);
 
       CloudIterator (PointCloud<PointT>& cloud, const PointIndices& indices);
 
@@ -75,7 +74,7 @@ namespace pcl
       unsigned getCurrentIndex () const;
 
       /** \brief Size of the range the iterator is going through. Depending on how the CloudIterator was constructed this is the size of the cloud or indices/correspondences. */
-      size_t size () const;
+      std::size_t size () const;
 
       void reset ();
 
@@ -105,7 +104,7 @@ namespace pcl
           virtual unsigned getCurrentIndex () const = 0;
 
           /** \brief Size of the range the iterator is going through. Depending on how the CloudIterator was constructed this is the size of the cloud or indices/correspondences. */
-          virtual size_t size () const = 0;
+          virtual std::size_t size () const = 0;
 
           virtual void reset () = 0;
 
@@ -123,7 +122,7 @@ namespace pcl
     public:
       ConstCloudIterator (const PointCloud<PointT>& cloud);
 
-      ConstCloudIterator (const PointCloud<PointT>& cloud, const std::vector<int>& indices);
+      ConstCloudIterator (const PointCloud<PointT>& cloud, const Indices& indices);
 
       ConstCloudIterator (const PointCloud<PointT>& cloud, const PointIndices& indices);
 
@@ -144,7 +143,7 @@ namespace pcl
       unsigned getCurrentIndex () const;
 
       /** \brief Size of the range the iterator is going through. Depending on how the ConstCloudIterator was constructed this is the size of the cloud or indices/correspondences. */
-      size_t size () const;
+      std::size_t size () const;
 
       void reset ();
 
@@ -174,7 +173,7 @@ namespace pcl
           virtual unsigned getCurrentIndex () const = 0;
 
           /** \brief Size of the range the iterator is going through. Depending on how the ConstCloudIterator was constructed this is the size of the cloud or indices/correspondences. */
-          virtual size_t size () const = 0;
+          virtual std::size_t size () const = 0;
 
           virtual void reset () = 0;
 
@@ -189,5 +188,3 @@ namespace pcl
 } // namespace pcl
 
 #include <pcl/impl/cloud_iterator.hpp>
-
-#endif    // PCL_POINT_CLOUD_ITERATOR_H_

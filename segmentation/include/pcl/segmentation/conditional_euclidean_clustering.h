@@ -35,18 +35,20 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_CONDITIONAL_EUCLIDEAN_CLUSTERING_H_
-#define PCL_SEGMENTATION_CONDITIONAL_EUCLIDEAN_CLUSTERING_H_
+#pragma once
 
-#include <boost/function.hpp>
-
+#include <pcl/memory.h>
 #include <pcl/pcl_base.h>
-#include <pcl/search/pcl_search.h>
+#include <pcl/pcl_macros.h>
+#include <pcl/console/print.h> // for PCL_WARN
+#include <pcl/search/search.h> // for Search
+
+#include <functional>
 
 namespace pcl
 {
-  typedef std::vector<pcl::PointIndices> IndicesClusters;
-  typedef boost::shared_ptr<std::vector<pcl::PointIndices> > IndicesClustersPtr;
+  using IndicesClusters = std::vector<pcl::PointIndices>;
+  using IndicesClustersPtr = shared_ptr<std::vector<pcl::PointIndices> >;
 
   /** \brief @b ConditionalEuclideanClustering performs segmentation based on Euclidean distance and a user-defined clustering condition.
     * \details The condition that need to hold is currently passed using a function pointer.
@@ -55,7 +57,7 @@ namespace pcl
     * bool
     * enforceIntensitySimilarity (const pcl::PointXYZI& point_a, const pcl::PointXYZI& point_b, float squared_distance)
     * {
-    *   if (fabs (point_a.intensity - point_b.intensity) < 0.1f)
+    *   if (std::abs (point_a.intensity - point_b.intensity) < 0.1f)
     *     return (true);
     *   else
     *     return (false);
@@ -83,7 +85,7 @@ namespace pcl
   class ConditionalEuclideanClustering : public PCLBase<PointT>
   {
     protected:
-      typedef typename pcl::search::Search<PointT>::Ptr SearcherPtr;
+      using SearcherPtr = typename pcl::search::Search<PointT>::Ptr;
 
       using PCLBase<PointT>::input_;
       using PCLBase<PointT>::indices_;
@@ -109,18 +111,18 @@ namespace pcl
       /** \brief Provide a pointer to the search object.
         * \param[in] tree a pointer to the spatial search object.
         */
-      inline void 
-      setSearchMethod (const SearcherPtr &tree) 
-      { 
-        searcher_ = tree; 
+      inline void
+      setSearchMethod (const SearcherPtr &tree)
+      {
+        searcher_ = tree;
       }
 
-      /** \brief Get a pointer to the search method used. 
+      /** \brief Get a pointer to the search method used.
        */
-      inline const SearcherPtr& 
-      getSearchMethod () const 
-      { 
-        return searcher_; 
+      inline const SearcherPtr&
+      getSearchMethod () const
+      {
+        return searcher_;
       }
 
       /** \brief Set the condition that needs to hold for neighboring points to be considered part of the same cluster.
@@ -141,7 +143,7 @@ namespace pcl
         * \param[in] condition_function The condition function that needs to hold for clustering
         */
       inline void
-      setConditionFunction (bool (*condition_function) (const PointT&, const PointT&, float)) 
+      setConditionFunction (bool (*condition_function) (const PointT&, const PointT&, float))
       {
         condition_function_ = condition_function;
       }
@@ -149,7 +151,7 @@ namespace pcl
       /** \brief Set the condition that needs to hold for neighboring points to be considered part of the same cluster.
         * This is an overloaded function provided for convenience. See the documentation for setConditionFunction(). */
       inline void
-      setConditionFunction (boost::function<bool (const PointT&, const PointT&, float)> condition_function)
+      setConditionFunction (std::function<bool (const PointT&, const PointT&, float)> condition_function)
       {
         condition_function_ = condition_function;
       }
@@ -238,7 +240,7 @@ namespace pcl
       SearcherPtr searcher_;
 
       /** \brief The condition function that needs to hold for clustering */
-      boost::function<bool (const PointT&, const PointT&, float)> condition_function_;
+      std::function<bool (const PointT&, const PointT&, float)> condition_function_;
 
       /** \brief The distance to scan for cluster candidates (default = 0.0) */
       float cluster_tolerance_;
@@ -259,13 +261,10 @@ namespace pcl
       pcl::IndicesClustersPtr large_clusters_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/conditional_euclidean_clustering.hpp>
 #endif
-
-#endif  // PCL_SEGMENTATION_CONDITIONAL_EUCLIDEAN_CLUSTERING_H_
-

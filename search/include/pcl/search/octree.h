@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_SEARCH_OCTREE_H
-#define PCL_SEARCH_OCTREE_H
+#pragma once
 
 #include <pcl/search/search.h>
 #include <pcl/octree/octree_search.h>
@@ -70,19 +69,16 @@ namespace pcl
     {
       public:
         // public typedefs
-        typedef boost::shared_ptr<pcl::search::Octree<PointT,LeafTWrap,BranchTWrap,OctreeT> > Ptr;
-        typedef boost::shared_ptr<const pcl::search::Octree<PointT,LeafTWrap,BranchTWrap,OctreeT> > ConstPtr;
+        using Ptr = shared_ptr<pcl::search::Octree<PointT,LeafTWrap,BranchTWrap,OctreeT> >;
+        using ConstPtr = shared_ptr<const pcl::search::Octree<PointT,LeafTWrap,BranchTWrap,OctreeT> >;
 
-        typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
-        typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
-
-        typedef pcl::PointCloud<PointT> PointCloud;
-        typedef boost::shared_ptr<PointCloud> PointCloudPtr;
-        typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
+        using PointCloud = pcl::PointCloud<PointT>;
+        using PointCloudPtr = typename PointCloud::Ptr;
+        using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
         // Boost shared pointers
-        typedef boost::shared_ptr<pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, BranchTWrap> > OctreePointCloudSearchPtr;
-        typedef boost::shared_ptr<const pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, BranchTWrap> > OctreePointCloudSearchConstPtr;
+        using OctreePointCloudSearchPtr = typename pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, BranchTWrap>::Ptr;
+        using OctreePointCloudSearchConstPtr = typename pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, BranchTWrap>::ConstPtr;
         OctreePointCloudSearchPtr tree_;
 
         using pcl::search::Search<PointT>::input_;
@@ -99,7 +95,7 @@ namespace pcl
         }
 
         /** \brief Empty Destructor. */
-        virtual
+        
         ~Octree ()
         {
         }
@@ -121,7 +117,7 @@ namespace pcl
           * \param[in] indices the point indices subset that is to be used from \a cloud 
           */
         inline void
-        setInputCloud (const PointCloudConstPtr &cloud, const IndicesConstPtr& indices)
+        setInputCloud (const PointCloudConstPtr &cloud, const IndicesConstPtr& indices) override
         {
           tree_->deleteTree ();
           tree_->setInputCloud (cloud, indices);
@@ -140,8 +136,8 @@ namespace pcl
           * \return number of neighbors found
           */
         inline int
-        nearestKSearch (const PointCloud &cloud, int index, int k, std::vector<int> &k_indices,
-                        std::vector<float> &k_sqr_distances) const
+        nearestKSearch (const PointCloud &cloud, index_t index, int k, Indices &k_indices,
+                        std::vector<float> &k_sqr_distances) const override
         {
           return (tree_->nearestKSearch (cloud, index, k, k_indices, k_sqr_distances));
         }
@@ -155,8 +151,8 @@ namespace pcl
           * \return number of neighbors found
           */
         inline int
-        nearestKSearch (const PointT &point, int k, std::vector<int> &k_indices,
-                        std::vector<float> &k_sqr_distances) const
+        nearestKSearch (const PointT &point, int k, Indices &k_indices,
+                        std::vector<float> &k_sqr_distances) const override
         {
           return (tree_->nearestKSearch (point, k, k_indices, k_sqr_distances));
         }
@@ -173,7 +169,7 @@ namespace pcl
           * \return number of neighbors found
           */
         inline int
-        nearestKSearch (int index, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
+        nearestKSearch (index_t index, int k, Indices &k_indices, std::vector<float> &k_sqr_distances) const override
         {
           return (tree_->nearestKSearch (index, k, k_indices, k_sqr_distances));
         }
@@ -189,11 +185,11 @@ namespace pcl
          */
         inline int
         radiusSearch (const PointCloud &cloud, 
-                      int index, 
+                      index_t index,
                       double radius,
-                      std::vector<int> &k_indices, 
+                      Indices &k_indices,
                       std::vector<float> &k_sqr_distances, 
-                      unsigned int max_nn = 0) const
+                      unsigned int max_nn = 0) const override
         {
           tree_->radiusSearch (cloud, index, radius, k_indices, k_sqr_distances, max_nn);
           if (sorted_results_)
@@ -212,9 +208,9 @@ namespace pcl
         inline int
         radiusSearch (const PointT &p_q, 
                       double radius, 
-                      std::vector<int> &k_indices,
+                      Indices &k_indices,
                       std::vector<float> &k_sqr_distances, 
-                      unsigned int max_nn = 0) const
+                      unsigned int max_nn = 0) const override
         {
           tree_->radiusSearch (p_q, radius, k_indices, k_sqr_distances, max_nn);
           if (sorted_results_)
@@ -232,8 +228,8 @@ namespace pcl
          * \return number of neighbors found in radius
          */
         inline int
-        radiusSearch (int index, double radius, std::vector<int> &k_indices,
-                      std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const
+        radiusSearch (index_t index, double radius, Indices &k_indices,
+                      std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const override
         {
           tree_->radiusSearch (index, radius, k_indices, k_sqr_distances, max_nn);
           if (sorted_results_)
@@ -250,10 +246,10 @@ namespace pcl
           * \return number of neighbors found
           */
         inline void
-        approxNearestSearch (const PointCloudConstPtr &cloud, int query_index, int &result_index,
+        approxNearestSearch (const PointCloudConstPtr &cloud, index_t query_index, index_t &result_index,
                              float &sqr_distance)
         {
-          return (tree_->approxNearestSearch (cloud->points[query_index], result_index, sqr_distance));
+          return (tree_->approxNearestSearch ((*cloud)[query_index], result_index, sqr_distance));
         }
 
         /** \brief Search for approximate nearest neighbor at the query point.
@@ -262,7 +258,7 @@ namespace pcl
           * \param[out] sqr_distance the resultant squared distance to the neighboring point
           */
         inline void
-        approxNearestSearch (const PointT &p_q, int &result_index, float &sqr_distance)
+        approxNearestSearch (const PointT &p_q, index_t &result_index, float &sqr_distance)
         {
           return (tree_->approxNearestSearch (p_q, result_index, sqr_distance));
         }
@@ -275,11 +271,21 @@ namespace pcl
           * \return number of neighbors found
           */
         inline void
-        approxNearestSearch (int query_index, int &result_index, float &sqr_distance)
+        approxNearestSearch (index_t query_index, index_t &result_index, float &sqr_distance)
         {
           return (tree_->approxNearestSearch (query_index, result_index, sqr_distance));
         }
-
+        /** \brief Search for points within rectangular search area
+	        * \param[in] min_pt lower corner of search area
+	        * \param[in] max_pt upper corner of search area
+	        * \param[out] k_indices the resultant point indices
+	        * \return number of points found within search area
+	        */
+        inline uindex_t
+        boxSearch(const Eigen::Vector3f &min_pt, const Eigen::Vector3f &max_pt, Indices &k_indices) const
+        {
+          return (tree_->boxSearch(min_pt, max_pt, k_indices));
+        }
     };
   }
 }
@@ -289,5 +295,3 @@ namespace pcl
 #else
 #define PCL_INSTANTIATE_Octree(T) template class PCL_EXPORTS pcl::search::Octree<T>;
 #endif
-
-#endif    // PCL_SEARCH_OCTREE_H

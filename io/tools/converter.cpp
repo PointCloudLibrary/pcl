@@ -50,8 +50,10 @@
 #include <pcl/io/auto_io.h>
 #include <pcl/io/obj_io.h>
 #include <pcl/io/vtk_lib_io.h>
+#include <pcl/memory.h>  // for pcl::make_shared
 
-#include <boost/make_shared.hpp>
+#include <boost/filesystem.hpp>  // for boost::filesystem::path
+#include <boost/algorithm/string.hpp>  // for boost::algorithm::ends_with
 
 #define ASCII 0
 #define BINARY 1
@@ -97,7 +99,7 @@ saveMesh (pcl::PolygonMesh& input,
  * @return True on success, false otherwise.
  */
 bool
-savePointCloud (pcl::PCLPointCloud2::Ptr input,
+savePointCloud (const pcl::PCLPointCloud2::Ptr& input,
                 std::string output_file,
                 int output_type)
 {
@@ -169,7 +171,7 @@ saveMesh (pcl::PolygonMesh& input,
   {
     if (!input.polygons.empty ())
       PCL_WARN ("PCD file format does not support meshes! Only points be saved.\n");
-    pcl::PCLPointCloud2::Ptr cloud = boost::make_shared<pcl::PCLPointCloud2> (input.cloud);
+    pcl::PCLPointCloud2::Ptr cloud = pcl::make_shared<pcl::PCLPointCloud2> (input.cloud);
     if (!savePointCloud (cloud, output_file, output_type))
       return (false);
   }
@@ -185,7 +187,7 @@ saveMesh (pcl::PolygonMesh& input,
     }
 
     PCL_INFO ("Saving file %s as %s.\n", output_file.c_str (), (output_type == ASCII) ? "ASCII" : "binary");
-    if (!pcl::io::savePolygonFile (output_file, input, (output_type == ASCII) ? false : true))
+    if (!pcl::io::savePolygonFile (output_file, input, output_type != ASCII))
       return (false);
   }
 
@@ -211,15 +213,15 @@ main (int argc,
 
   // Parse all files and options
   std::vector<std::string> supported_extensions;
-  supported_extensions.push_back("obj");
-  supported_extensions.push_back("pcd");
-  supported_extensions.push_back("ply");
-  supported_extensions.push_back("stl");
-  supported_extensions.push_back("vtk");
+  supported_extensions.emplace_back("obj");
+  supported_extensions.emplace_back("pcd");
+  supported_extensions.emplace_back("ply");
+  supported_extensions.emplace_back("stl");
+  supported_extensions.emplace_back("vtk");
   std::vector<int> file_args;
   for (int i = 1; i < argc; ++i)
-    for (size_t j = 0; j < supported_extensions.size(); ++j)
-      if (boost::algorithm::ends_with(argv[i], supported_extensions[j]))
+    for (const auto &supported_extension : supported_extensions)
+      if (boost::algorithm::ends_with(argv[i], supported_extension))
       {
         file_args.push_back(i);
         break;

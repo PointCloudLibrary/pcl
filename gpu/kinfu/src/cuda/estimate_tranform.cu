@@ -190,8 +190,8 @@ pcl::device::estimateTransform (const MapArr& v_dst, const MapArr& n_dst,
                                 DeviceArray2D<float>& gbuf, DeviceArray<float>& mbuf, 
                                 float* matrixA_host, float* vectorB_host)
 {
-  typedef TransformEstimator<float> TEst;
-  typedef TranformReduction<float> TRed;
+  using TEst = TransformEstimator<float>;
+  using TRed = TranformReduction<float>;
 
   dim3 block (TEst::CTA_SIZE_X, TEst::CTA_SIZE_Y);
   dim3 grid (1, 1, 1);

@@ -1,41 +1,33 @@
-#ifndef PCL_MESSAGE_IMAGE_H
-#define PCL_MESSAGE_IMAGE_H
-#include <string>
-#include <vector>
-#include <ostream>
+#pragma once
 
-#ifdef USE_ROS
-   #error USE_ROS setup requires PCL to compile against ROS message headers, which is now deprecated
-#endif   
+#include <string>   // for string
+#include <vector>   // for vector
+#include <ostream>  // for ostream
 
-// Include the correct Header path here
-#include <pcl/PCLHeader.h>
+#include <pcl/PCLHeader.h>   // for PCLHeader
+#include <pcl/types.h> //for index_t
 
 namespace pcl
 {
   struct PCLImage
   {
-    PCLImage () : header (), height (0), width (0), encoding (),
-               is_bigendian (0), step (0), data ()
-    {}
-
      ::pcl::PCLHeader  header;
 
-    pcl::uint32_t height;
-    pcl::uint32_t width;
+    uindex_t height = 0;
+    uindex_t width = 0;
     std::string encoding;
 
-    pcl::uint8_t is_bigendian;
-    pcl::uint32_t step;
+    std::uint8_t is_bigendian = 0;
+    uindex_t step = 0;
 
-    std::vector<pcl::uint8_t> data;
+    std::vector<std::uint8_t> data;
 
-    typedef boost::shared_ptr< ::pcl::PCLImage> Ptr;
-    typedef boost::shared_ptr< ::pcl::PCLImage  const> ConstPtr;
+    using Ptr = shared_ptr< ::pcl::PCLImage>;
+    using ConstPtr = shared_ptr<const ::pcl::PCLImage>;
   }; // struct PCLImage
 
-  typedef boost::shared_ptr< ::pcl::PCLImage> PCLImagePtr;
-  typedef boost::shared_ptr< ::pcl::PCLImage const> PCLImageConstPtr;
+  using PCLImagePtr = PCLImage::Ptr;
+  using PCLImageConstPtr = PCLImage::ConstPtr;
 
   inline std::ostream& operator<<(std::ostream& s, const  ::pcl::PCLImage & v)
   {
@@ -52,7 +44,7 @@ namespace pcl
     s << "step: ";
     s << "  " << v.step << std::endl;
     s << "data[]" << std::endl;
-    for (size_t i = 0; i < v.data.size (); ++i)
+    for (std::size_t i = 0; i < v.data.size (); ++i)
     {
       s << "  data[" << i << "]: ";
       s << "  " << v.data[i] << std::endl;
@@ -60,6 +52,3 @@ namespace pcl
     return (s);
   }
 } // namespace pcl
-
-#endif // PCL_MESSAGE_IMAGE_H
-

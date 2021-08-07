@@ -31,11 +31,12 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * 
+ *
  *
  */
 
 #include <pcl/surface/on_nurbs/sparse_mat.h>
+#include <cstdio> // for printf
 
 using namespace pcl;
 using namespace on_nurbs;
@@ -207,9 +208,6 @@ SparseMat::nonzeros ()
 void
 SparseMat::printLong ()
 {
-  std::map<int, std::map<int, double> >::iterator it_row;
-  std::map<int, double>::iterator it_col;
-
   int si, sj;
   size (si, sj);
 

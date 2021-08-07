@@ -9,7 +9,7 @@
 #include <pcl/filters/extract_indices.h>
 
 int
-main (int argc, char** argv)
+main ()
 {
   pcl::PCLPointCloud2::Ptr cloud_blob (new pcl::PCLPointCloud2), cloud_filtered_blob (new pcl::PCLPointCloud2);
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>), cloud_p (new pcl::PointCloud<pcl::PointXYZ>), cloud_f (new pcl::PointCloud<pcl::PointXYZ>);
@@ -50,9 +50,9 @@ main (int argc, char** argv)
   // Create the filtering object
   pcl::ExtractIndices<pcl::PointXYZ> extract;
 
-  int i = 0, nr_points = (int) cloud_filtered->points.size ();
+  int i = 0, nr_points = (int) cloud_filtered->size ();
   // While 30% of the original cloud is still there
-  while (cloud_filtered->points.size () > 0.3 * nr_points)
+  while (cloud_filtered->size () > 0.3 * nr_points)
   {
     // Segment the largest planar component from the remaining cloud
     seg.setInputCloud (cloud_filtered);

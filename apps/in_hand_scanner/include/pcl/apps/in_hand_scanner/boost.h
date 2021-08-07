@@ -38,22 +38,11 @@
  *
  */
 
-#ifndef PCL_APPS_IN_HAND_SCANNER_BOOST_H
-#define PCL_APPS_IN_HAND_SCANNER_BOOST_H
+#pragma once
 
 #ifdef __GNUC__
 #  pragma GCC system_header
 #endif
-
-#include <boost/static_assert.hpp>
-#include <boost/unordered_map.hpp>
-#include <boost/bind/bind.hpp>
+PCL_DEPRECATED_HEADER(1, 15, "Please include the needed boost headers directly.")
 #include <boost/math/special_functions/fpclassify.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/signals2/connection.hpp>
-//#include <boost/signals2/signal.hpp>
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/thread.hpp>
-#include <boost/type_traits/is_same.hpp>
-
-#endif // PCL_APPS_IN_HAND_SCANNER_BOOST_H

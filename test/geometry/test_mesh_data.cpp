@@ -38,40 +38,40 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include "test_mesh_common_functions.h"
 #include <pcl/geometry/polygon_mesh.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef pcl::geometry::NoData NoData;
-typedef pcl::geometry::DefaultMeshTraits <int   , NoData , NoData, NoData> TraitsV;
-typedef pcl::geometry::DefaultMeshTraits <NoData, int    , NoData, NoData> TraitsHE;
-typedef pcl::geometry::DefaultMeshTraits <NoData, NoData , int   , NoData> TraitsE;
-typedef pcl::geometry::DefaultMeshTraits <NoData, NoData , NoData, int   > TraitsF;
-typedef pcl::geometry::DefaultMeshTraits <int   , int    , int   , int   > TraitsAD;
+using NoData = pcl::geometry::NoData;
+using TraitsV = pcl::geometry::DefaultMeshTraits <int   , NoData , NoData, NoData>;
+using TraitsHE = pcl::geometry::DefaultMeshTraits <NoData, int    , NoData, NoData>;
+using TraitsE = pcl::geometry::DefaultMeshTraits <NoData, NoData , int   , NoData>;
+using TraitsF = pcl::geometry::DefaultMeshTraits <NoData, NoData , NoData, int   >;
+using TraitsAD = pcl::geometry::DefaultMeshTraits <int   , int    , int   , int   >;
 
-typedef pcl::geometry::PolygonMesh <TraitsV>  MeshV;
-typedef pcl::geometry::PolygonMesh <TraitsHE> MeshHE;
-typedef pcl::geometry::PolygonMesh <TraitsE>  MeshE;
-typedef pcl::geometry::PolygonMesh <TraitsF>  MeshF;
-typedef pcl::geometry::PolygonMesh <TraitsAD> MeshAD;
+using MeshV = pcl::geometry::PolygonMesh<TraitsV>;
+using MeshHE = pcl::geometry::PolygonMesh<TraitsHE>;
+using MeshE = pcl::geometry::PolygonMesh<TraitsE>;
+using MeshF = pcl::geometry::PolygonMesh<TraitsF>;
+using MeshAD = pcl::geometry::PolygonMesh<TraitsAD>;
 
-typedef pcl::geometry::VertexIndex   VertexIndex;
-typedef pcl::geometry::HalfEdgeIndex HalfEdgeIndex;
-typedef pcl::geometry::EdgeIndex     EdgeIndex;
-typedef pcl::geometry::FaceIndex     FaceIndex;
+using VertexIndex = pcl::geometry::VertexIndex;
+using HalfEdgeIndex = pcl::geometry::HalfEdgeIndex;
+using EdgeIndex = pcl::geometry::EdgeIndex;
+using FaceIndex = pcl::geometry::FaceIndex;
 
-typedef std::vector <VertexIndex>   VertexIndices;
-typedef std::vector <HalfEdgeIndex> HalfEdgeIndices;
-typedef std::vector <FaceIndex>     FaceIndices;
+using VertexIndices = std::vector<VertexIndex>;
+using HalfEdgeIndices = std::vector<HalfEdgeIndex>;
+using FaceIndices = std::vector<FaceIndex>;
 
 ////////////////////////////////////////////////////////////////////////////////
 
 /** \brief Check if the size of the mesh elements is correct. */
 template <class MeshT> void
-checkSizeElements (const MeshT& mesh, const size_t n_v, const size_t n_e, const size_t n_f)
+checkSizeElements (const MeshT& mesh, const std::size_t n_v, const std::size_t n_e, const std::size_t n_f)
 {
   ASSERT_EQ (n_v, mesh.sizeVertices ());
   ASSERT_EQ (n_e, mesh.sizeEdges ());
@@ -82,7 +82,7 @@ checkSizeElements (const MeshT& mesh, const size_t n_v, const size_t n_e, const 
 
 /** \brief Check if the size of the mesh data is correct. */
 template <class MeshT> void
-checkSizeData (const MeshT& mesh, const size_t n_v, const size_t n_he, const size_t n_e, const size_t n_f)
+checkSizeData (const MeshT& mesh, const std::size_t n_v, const std::size_t n_he, const std::size_t n_e, const std::size_t n_f)
 {
   ASSERT_EQ (n_v , mesh.getVertexDataCloud   ().size ());
   ASSERT_EQ (n_he, mesh.getHalfEdgeDataCloud ().size ());
@@ -406,10 +406,10 @@ TEST (TestMesh, MeshData)
     EXPECT_EQ (edc.size () , edc_new.size ());
     EXPECT_EQ (fdc.size () , fdc_new.size ());
 
-    for (unsigned int i=0; i<vdc_new.size  (); ++i) EXPECT_EQ (vdc  [i], vdc_new  [i]) << "Index " << i;
-    for (unsigned int i=0; i<hedc_new.size (); ++i) EXPECT_EQ (hedc [i], hedc_new [i]) << "Index " << i;
-    for (unsigned int i=0; i<edc_new.size  (); ++i) EXPECT_EQ (edc  [i], edc_new  [i]) << "Index " << i;
-    for (unsigned int i=0; i<fdc_new.size  (); ++i) EXPECT_EQ (fdc  [i], fdc_new  [i]) << "Index " << i;
+    for (std::size_t i = 0; i < vdc_new.size  (); ++i) EXPECT_EQ (vdc  [i], vdc_new  [i]) << "Index " << i;
+    for (std::size_t i = 0; i < hedc_new.size (); ++i) EXPECT_EQ (hedc [i], hedc_new [i]) << "Index " << i;
+    for (std::size_t i = 0; i < edc_new.size  (); ++i) EXPECT_EQ (edc  [i], edc_new  [i]) << "Index " << i;
+    for (std::size_t i = 0; i < fdc_new.size  (); ++i) EXPECT_EQ (fdc  [i], fdc_new  [i]) << "Index " << i;
 
     vdc_new  [0] = 0;
     hedc_new [0] = 1;

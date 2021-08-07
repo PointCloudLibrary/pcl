@@ -35,13 +35,12 @@
  *
  */
 
-#ifndef PCL_FILTERS_NORMAL_SUBSAMPLE_H_
-#define PCL_FILTERS_NORMAL_SUBSAMPLE_H_
+#pragma once
 
-#include <pcl/filters/boost.h>
 #include <pcl/filters/filter_indices.h>
-#include <time.h>
-#include <limits.h>
+#include <boost/dynamic_bitset.hpp> // for dynamic_bitset
+#include <ctime>
+#include <random> // std::mt19937
 
 namespace pcl
 {
@@ -60,34 +59,32 @@ namespace pcl
     using FilterIndices<PointT>::removed_indices_;
     using FilterIndices<PointT>::user_filter_value_;
 
-    typedef typename FilterIndices<PointT>::PointCloud PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-    typedef typename pcl::PointCloud<NormalT>::ConstPtr NormalsConstPtr;
+    using PointCloud = typename FilterIndices<PointT>::PointCloud;
+    using PointCloudPtr = typename PointCloud::Ptr;
+    using PointCloudConstPtr = typename PointCloud::ConstPtr;
+    using NormalsConstPtr = typename pcl::PointCloud<NormalT>::ConstPtr;
 
     public:
       
-      typedef boost::shared_ptr<NormalSpaceSampling<PointT, NormalT> > Ptr;
-      typedef boost::shared_ptr<const NormalSpaceSampling<PointT, NormalT> > ConstPtr;
+      using Ptr = shared_ptr<NormalSpaceSampling<PointT, NormalT> >;
+      using ConstPtr = shared_ptr<const NormalSpaceSampling<PointT, NormalT> >;
 
       /** \brief Empty constructor. */
-      NormalSpaceSampling ()
-        : sample_ (std::numeric_limits<unsigned int>::max ())
-        , seed_ (static_cast<unsigned int> (time (NULL)))
+      NormalSpaceSampling () : NormalSpaceSampling (false) {}
+
+      /** \brief Constructor.
+        * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed.
+        */
+      explicit NormalSpaceSampling (bool extract_removed_indices)
+        : FilterIndices<PointT> (extract_removed_indices)
+        , sample_ (std::numeric_limits<unsigned int>::max ())
+        , seed_ (static_cast<unsigned int> (time (nullptr)))
         , binsx_ ()
         , binsy_ ()
         , binsz_ ()
         , input_normals_ ()
-        , rng_uniform_distribution_ (NULL)
       {
         filter_name_ = "NormalSpaceSampling";
-      }
-
-      /** \brief Destructor. */
-      ~NormalSpaceSampling ()
-      {
-        if (rng_uniform_distribution_ != NULL)
-          delete rng_uniform_distribution_;
       }
 
       /** \brief Set number of indices to be sampled.
@@ -166,17 +163,11 @@ namespace pcl
       /** \brief The normals computed at each point in the input cloud */
       NormalsConstPtr input_normals_;
 
-      /** \brief Sample of point indices into a separate PointCloud
-        * \param[out] output the resultant point cloud
-        */
-      void
-      applyFilter (PointCloud &output);
-
       /** \brief Sample of point indices
         * \param[out] indices the resultant point cloud indices
         */
       void
-      applyFilter (std::vector<int> &indices);
+      applyFilter (Indices &indices) override;
 
       bool
       initCompute ();
@@ -184,10 +175,9 @@ namespace pcl
     private:
       /** \brief Finds the bin number of the input normal, returns the bin number
         * \param[in] normal the input normal 
-        * \param[in] nbins total number of bins
         */
       unsigned int 
-      findBin (const float *normal, unsigned int nbins);
+      findBin (const float *normal);
 
       /** \brief Checks of the entire bin is sampled, returns true or false
         * \param[out] array flag which says whether a point is sampled or not
@@ -197,13 +187,11 @@ namespace pcl
       bool
       isEntireBinSampled (boost::dynamic_bitset<> &array, unsigned int start_index, unsigned int length);
 
-      /** \brief Uniform random distribution. */
-      boost::variate_generator<boost::mt19937, boost::uniform_int<uint32_t> > *rng_uniform_distribution_;
+      /** \brief Random engine */
+      std::mt19937 rng_;
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/normal_space.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_NORMAL_SPACE_SUBSAMPLE_H_

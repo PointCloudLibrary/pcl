@@ -31,5 +31,5 @@ mark_as_advanced(DAVIDSDK_INCLUDE_DIR DAVIDSDK_LIBRARY)
 
 if(DAVIDSDK_FOUND)
   message(STATUS "davidSDK found")
-endif(DAVIDSDK_FOUND)
+endif()
 

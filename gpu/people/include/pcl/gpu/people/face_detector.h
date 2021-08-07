@@ -34,14 +34,14 @@
  * @author: Koen Buys
  */
 
-#ifndef PCL_GPU_PEOPLE_FACE_DETECTOR_H_
-#define PCL_GPU_PEOPLE_FACE_DETECTOR_H_
+#pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
-#include <boost/shared_ptr.hpp>
+
 #include <string>
 #include <vector>
 
@@ -58,10 +58,11 @@ namespace pcl
       class FaceDetector
       {
         public:
-          typedef boost::shared_ptr<FaceDetector> Ptr;
-          //typedef DeviceArray2D<unsigned char> Labels;
-          //typedef DeviceArray2D<unsigned short> Depth;
-          //typedef DeviceArray2D<pcl::RGB> Image;
+          using Ptr = shared_ptr<FaceDetector>;
+          using ConstPtr = shared_ptr<const FaceDetector>;
+          //using Labels = DeviceArray2D<unsigned char>;
+          //using Depth = DeviceArray2D<unsigned short>;
+          //using Image = DeviceArray2D<pcl::RGB>;
 
           /** \brief This is the constructor **/
           FaceDetector ( int cols, int rows);
@@ -162,7 +163,7 @@ namespace pcl
 
           /** \brief Get the cuda GPU device id in use **/
           int
-          getDeviceId() {return cuda_dev_id_;}
+          getDeviceId() const {return cuda_dev_id_;}
 
         private:
           bool                largest_object_;      /** \brief only give back largest object **/
@@ -197,6 +198,3 @@ namespace pcl
     }
   }
 }
-
-
-#endif /* PCL_GPU_PEOPLE_FACE_DETECTOR_H_ */

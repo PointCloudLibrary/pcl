@@ -97,7 +97,7 @@ static
 void 
 ON_QSORT_FNAME (
     ON_SORT_TEMPLATE_TYPE *base,
-    size_t num
+    std::size_t num
     )
 {
   ON_SORT_TEMPLATE_TYPE *lo;                   /* start of sub-array currently sorting */
@@ -107,7 +107,7 @@ ON_QSORT_FNAME (
   ON_SORT_TEMPLATE_TYPE *higuy;                /* traveling pointers for partition step */
   ON_SORT_TEMPLATE_TYPE *lostk[ON_QSORT_STKSIZ];
   ON_SORT_TEMPLATE_TYPE *histk[ON_QSORT_STKSIZ];
-  size_t size;                /* size of the sub-array */
+  std::size_t size;                /* size of the sub-array */
   int stkptr;                 /* stack for saving sub-array to be processed */
   ON_SORT_TEMPLATE_TYPE tmp;
 

@@ -37,18 +37,11 @@
  *
  */
 
-#ifndef PCL_SURFACE_BOOST_H_
-#define PCL_SURFACE_BOOST_H_
+#pragma once
 
 #if defined __GNUC__
-#  pragma GCC system_header 
+#  pragma GCC system_header
 #endif
+PCL_DEPRECATED_HEADER(1, 15, "Please include the needed boost headers directly.")
 
-#include <boost/bind.hpp>
-#include <boost/function.hpp>
-#include <boost/random.hpp>
-#include <boost/unordered_map.hpp>
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
-#include <boost/shared_ptr.hpp>
-
-#endif    // PCL_SURFACE_BOOST_H_

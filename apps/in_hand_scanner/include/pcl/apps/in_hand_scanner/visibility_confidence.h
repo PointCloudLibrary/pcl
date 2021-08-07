@@ -38,13 +38,13 @@
  *
  */
 
-#ifndef PCL_APPS_IN_HAND_SCANNER_VISIBILITY_CONFIDENCE_H
-#define PCL_APPS_IN_HAND_SCANNER_VISIBILITY_CONFIDENCE_H
+#pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
+#include <pcl/memory.h>
 #include <pcl/pcl_exports.h>
-#include <pcl/apps/in_hand_scanner/eigen.h>
+#include <pcl/pcl_macros.h>
 
 namespace pcl
 {
@@ -60,7 +60,7 @@ namespace pcl
       public:
 
         static const int num_directions = 31;
-        typedef Eigen::Matrix <float, 4, num_directions> Vertices;
+        using Vertices = Eigen::Matrix <float, 4, num_directions>;
 
         Dome ();
 
@@ -72,19 +72,16 @@ namespace pcl
         Vertices vertices_;
 
       public:
-
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
 
     PCL_EXPORTS void
     addDirection (const Eigen::Vector4f& normal,
                   const Eigen::Vector4f& direction,
-                  uint32_t&              directions);
+                  std::uint32_t&         directions);
 
     PCL_EXPORTS unsigned int
-    countDirections (const uint32_t directions);
+    countDirections (const std::uint32_t directions);
 
   } // End namespace ihs
 } // End namespace pcl
-
-#endif // PCL_APPS_IN_HAND_SCANNER_VISIBILITY_CONFIDENCE_H

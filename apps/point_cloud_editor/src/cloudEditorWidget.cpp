@@ -37,10 +37,11 @@
 /// @details the implementation of class CloudEditorWidget.
 /// @author  Yue Li and Matthew Hielsberg
 
-#include <ctype.h>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QMouseEvent>
+#include <QApplication>
+#include <QDesktopWidget>
 #include <qgl.h>
 
 #include <pcl/pcl_config.h>
@@ -90,7 +91,7 @@ CloudEditorWidget::~CloudEditorWidget ()
 void
 CloudEditorWidget::loadFile(const std::string &filename)
 {
-  std::string ext = filename.substr(filename.find_last_of(".")+1);
+  std::string ext = filename.substr(filename.find_last_of('.')+1);
   FileLoadMap::iterator it = cloud_load_func_map_.find(ext);
   if (it != cloud_load_func_map_.end())
     (it->second)(this, filename);
@@ -102,7 +103,7 @@ void
 CloudEditorWidget::load ()
 {
   QString file_path = QFileDialog::getOpenFileName(this, tr("Open File"));
-    
+
   if (file_path.isEmpty())
     return;
 
@@ -130,9 +131,9 @@ CloudEditorWidget::save ()
   }
 
   QString file_path = QFileDialog::getSaveFileName(this,tr("Save point cloud"));
-  
+
   std::string file_path_std = file_path.toStdString();
-  if ( (file_path_std == "") || (!cloud_ptr_) )
+  if ( (file_path_std.empty()) || (!cloud_ptr_) )
     return;
 
   if (is_colored_)
@@ -185,7 +186,7 @@ CloudEditorWidget::view ()
 {
   if (!cloud_ptr_)
     return;
-  tool_ptr_ = boost::shared_ptr<CloudTransformTool>(
+  tool_ptr_ = std::shared_ptr<CloudTransformTool>(
               new CloudTransformTool(cloud_ptr_));
 }
 
@@ -194,7 +195,7 @@ CloudEditorWidget::select1D ()
 {
   if (!cloud_ptr_)
     return;
-  tool_ptr_ = boost::shared_ptr<Select1DTool>(new Select1DTool(selection_ptr_,
+  tool_ptr_ = std::shared_ptr<Select1DTool>(new Select1DTool(selection_ptr_,
                                                                cloud_ptr_));
   update();
 }
@@ -204,7 +205,7 @@ CloudEditorWidget::select2D ()
 {
   if (!cloud_ptr_)
     return;
-  tool_ptr_ = boost::shared_ptr<Select2DTool>(new Select2DTool(selection_ptr_,
+  tool_ptr_ = std::shared_ptr<Select2DTool>(new Select2DTool(selection_ptr_,
                                                                cloud_ptr_));
   update();
 }
@@ -214,7 +215,7 @@ CloudEditorWidget::select3D ()
 {
   if (!cloud_ptr_)
     return;
-  //tool_ptr_ = boost::shared_ptr<Select3DTool>(new Select3DTool(selection_ptr_,
+  //tool_ptr_ = std::shared_ptr<Select3DTool>(new Select3DTool(selection_ptr_,
   //                                                             cloud_ptr_));
   update();
 }
@@ -245,7 +246,7 @@ CloudEditorWidget::copy ()
     return;
   if (!selection_ptr_ || selection_ptr_->empty())
     return;
-  boost::shared_ptr<CopyCommand> c(new CopyCommand(copy_buffer_ptr_,
+  std::shared_ptr<CopyCommand> c(new CopyCommand(copy_buffer_ptr_,
     selection_ptr_, cloud_ptr_));
   command_queue_ptr_->execute(c);
 }
@@ -257,7 +258,7 @@ CloudEditorWidget::paste ()
     return;
   if (!copy_buffer_ptr_ || copy_buffer_ptr_->empty())
     return;
-  boost::shared_ptr<PasteCommand> c(new PasteCommand(copy_buffer_ptr_,
+  std::shared_ptr<PasteCommand> c(new PasteCommand(copy_buffer_ptr_,
     selection_ptr_, cloud_ptr_));
   command_queue_ptr_->execute(c);
   update();
@@ -270,7 +271,7 @@ CloudEditorWidget::remove ()
     return;
   if (!selection_ptr_ || selection_ptr_->empty())
     return;
-  boost::shared_ptr<DeleteCommand> c(new DeleteCommand(selection_ptr_,
+  std::shared_ptr<DeleteCommand> c(new DeleteCommand(selection_ptr_,
                                                        cloud_ptr_));
   command_queue_ptr_->execute(c);
   update();
@@ -283,7 +284,7 @@ CloudEditorWidget::cut ()
     return;
   if (!selection_ptr_ || selection_ptr_->empty())
     return;
-  boost::shared_ptr<CutCommand> c(new CutCommand(copy_buffer_ptr_,
+  std::shared_ptr<CutCommand> c(new CutCommand(copy_buffer_ptr_,
     selection_ptr_, cloud_ptr_));
   command_queue_ptr_->execute(c);
   update();
@@ -294,7 +295,7 @@ CloudEditorWidget::transform ()
 {
   if (!cloud_ptr_ || !selection_ptr_ || selection_ptr_->empty())
     return;
-  tool_ptr_ = boost::shared_ptr<SelectionTransformTool>(
+  tool_ptr_ = std::shared_ptr<SelectionTransformTool>(
     new SelectionTransformTool(selection_ptr_, cloud_ptr_, command_queue_ptr_));
   update();
 }
@@ -311,7 +312,7 @@ CloudEditorWidget::denoise ()
   {
 	  return;
   }
-  boost::shared_ptr<DenoiseCommand> c(new DenoiseCommand(selection_ptr_,
+  std::shared_ptr<DenoiseCommand> c(new DenoiseCommand(selection_ptr_,
     cloud_ptr_, form.getMeanK(), form.getStdDevThresh()));
   command_queue_ptr_->execute(c);
   update();
@@ -488,9 +489,10 @@ CloudEditorWidget::resizeGL (int width, int height)
 void
 CloudEditorWidget::mousePressEvent (QMouseEvent *event)
 {
+  auto ratio = this->devicePixelRatio();
   if (!tool_ptr_)
     return;
-  tool_ptr_ -> start(event -> x(), event -> y(),
+  tool_ptr_ -> start(event -> x()*ratio, event -> y()*ratio,
                      event -> modifiers(), event -> buttons());
   update();
 }
@@ -498,9 +500,10 @@ CloudEditorWidget::mousePressEvent (QMouseEvent *event)
 void
 CloudEditorWidget::mouseMoveEvent (QMouseEvent *event)
 {
+  auto ratio = this->devicePixelRatio();
   if (!tool_ptr_)
     return;
-  tool_ptr_ -> update(event -> x(), event -> y(),
+  tool_ptr_ -> update(event -> x()*ratio, event -> y()*ratio,
                       event -> modifiers(), event -> buttons());
   update();
 }
@@ -508,9 +511,10 @@ CloudEditorWidget::mouseMoveEvent (QMouseEvent *event)
 void
 CloudEditorWidget::mouseReleaseEvent (QMouseEvent *event)
 {
+  auto ratio = this->devicePixelRatio();
   if (!tool_ptr_)
     return;
-  tool_ptr_ -> end(event -> x(), event -> y(),
+  tool_ptr_ -> end(event -> x()*ratio, event -> y()*ratio,
                    event -> modifiers(), event -> button());
   update();
 }
@@ -529,13 +533,13 @@ CloudEditorWidget::keyPressEvent (QKeyEvent *event)
 
 void
 CloudEditorWidget::loadFilePCD(const std::string &filename)
-{   
+{
   PclCloudPtr pcl_cloud_ptr;
   Cloud3D tmp;
   if (pcl::io::loadPCDFile<Point3D>(filename, tmp) == -1)
     throw;
   pcl_cloud_ptr = PclCloudPtr(new Cloud3D(tmp));
-  std::vector<int> index;
+  pcl::Indices index;
   pcl::removeNaNFromPointCloud(*pcl_cloud_ptr, *pcl_cloud_ptr, index);
   Statistics::clear();
   cloud_ptr_ = CloudPtr(new Cloud(*pcl_cloud_ptr, true));
@@ -544,7 +548,7 @@ CloudEditorWidget::loadFilePCD(const std::string &filename)
   cloud_ptr_->setPointSize(point_size_);
   cloud_ptr_->setHighlightPointSize(selected_point_size_);
   tool_ptr_ =
-    boost::shared_ptr<CloudTransformTool>(new CloudTransformTool(cloud_ptr_));
+    std::shared_ptr<CloudTransformTool>(new CloudTransformTool(cloud_ptr_));
 
   if (isColored(filename))
   {
@@ -572,12 +576,12 @@ CloudEditorWidget::isColored (const std::string &fileName) const
   pcl::PCLPointCloud2 cloud2;
   pcl::PCDReader reader;
   reader.readHeader(fileName, cloud2);
-  std::vector< pcl::PCLPointField > fs = cloud2.fields;
-  for(unsigned int i = 0; i < fs.size(); ++i)
+  std::vector< pcl::PCLPointField > cloud_fields = cloud2.fields;
+  for(const auto &field : cloud_fields)
   {
-    std::string name(fs[i].name);
+    std::string name(field.name);
     stringToLower(name);
-    if ((name.compare("rgb") == 0) || (name.compare("rgba") == 0))
+    if ((name == "rgb") || (name == "rgba"))
       return true;
   }
   return false;
@@ -590,7 +594,7 @@ CloudEditorWidget::swapRBValues ()
     return;
   for (unsigned int i = 0; i < cloud_ptr_ -> size(); i++)
   {
-    uint8_t cc = (*cloud_ptr_)[i].r;
+    std::uint8_t cc = (*cloud_ptr_)[i].r;
     (*cloud_ptr_)[i].r = (*cloud_ptr_)[i].b;
     (*cloud_ptr_)[i].b = cc;
   }
@@ -598,7 +602,7 @@ CloudEditorWidget::swapRBValues ()
 
 void
 CloudEditorWidget::initKeyMap ()
-{   
+{
   key_map_[Qt::Key_1] = &CloudEditorWidget::colorByPure;
   key_map_[Qt::Key_2] = &CloudEditorWidget::colorByX;
   key_map_[Qt::Key_3] = &CloudEditorWidget::colorByY;

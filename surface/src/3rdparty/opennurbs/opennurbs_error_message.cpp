@@ -18,7 +18,7 @@
 
 
 void ON_ErrorMessage(
-        int message_type, // 0=warning - serious problem that code is designed to handle
+        int,              // 0=warning - serious problem that code is designed to handle
                           // 1=error - serious problem code will attempt to handle
                           //           The thing causing the error is a bug that must
                           //           be fixed.

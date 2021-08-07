@@ -37,12 +37,13 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_ORGANIZED_MULTI_PLANE_SEGMENTATION_H_
-#define PCL_SEGMENTATION_ORGANIZED_MULTI_PLANE_SEGMENTATION_H_
+#pragma once
 
 #include <pcl/segmentation/planar_region.h>
 #include <pcl/pcl_base.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/common/angles.h>
+#include <pcl/common/utils.h>
 #include <pcl/PointIndices.h>
 #include <pcl/ModelCoefficients.h>
 #include <pcl/segmentation/plane_coefficient_comparator.h>
@@ -67,25 +68,25 @@ namespace pcl
     using PCLBase<PointT>::deinitCompute;
 
     public:
-      typedef pcl::PointCloud<PointT> PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = pcl::PointCloud<PointT>;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-      typedef typename pcl::PointCloud<PointNT> PointCloudN;
-      typedef typename PointCloudN::Ptr PointCloudNPtr;
-      typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
+      using PointCloudN = pcl::PointCloud<PointNT>;
+      using PointCloudNPtr = typename PointCloudN::Ptr;
+      using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
 
-      typedef typename pcl::PointCloud<PointLT> PointCloudL;
-      typedef typename PointCloudL::Ptr PointCloudLPtr;
-      typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
+      using PointCloudL = pcl::PointCloud<PointLT>;
+      using PointCloudLPtr = typename PointCloudL::Ptr;
+      using PointCloudLConstPtr = typename PointCloudL::ConstPtr;
 
-      typedef typename pcl::PlaneCoefficientComparator<PointT, PointNT> PlaneComparator;
-      typedef typename PlaneComparator::Ptr PlaneComparatorPtr;
-      typedef typename PlaneComparator::ConstPtr PlaneComparatorConstPtr;
+      using PlaneComparator = pcl::PlaneCoefficientComparator<PointT, PointNT>;
+      using PlaneComparatorPtr = typename PlaneComparator::Ptr;
+      using PlaneComparatorConstPtr = typename PlaneComparator::ConstPtr;
 
-      typedef typename pcl::PlaneRefinementComparator<PointT, PointNT, PointLT> PlaneRefinementComparator;
-      typedef typename PlaneRefinementComparator::Ptr PlaneRefinementComparatorPtr;
-      typedef typename PlaneRefinementComparator::ConstPtr PlaneRefinementComparatorConstPtr;
+      using PlaneRefinementComparator = pcl::PlaneRefinementComparator<PointT, PointNT, PointLT>;
+      using PlaneRefinementComparatorPtr = typename PlaneRefinementComparator::Ptr;
+      using PlaneRefinementComparatorConstPtr = typename PlaneRefinementComparator::ConstPtr;
 
       /** \brief Constructor for OrganizedMultiPlaneSegmentation. */
       OrganizedMultiPlaneSegmentation () :
@@ -100,7 +101,7 @@ namespace pcl
       }
 
       /** \brief Destructor for OrganizedMultiPlaneSegmentation. */
-      virtual
+      
       ~OrganizedMultiPlaneSegmentation ()
       {
       }
@@ -264,20 +265,16 @@ namespace pcl
                         PointCloudLPtr& labels,
                         std::vector<pcl::PointIndices>& label_indices,
                         std::vector<pcl::PointIndices>& boundary_indices);
-      
+
       /** \brief Perform a refinement of an initial segmentation, by comparing points to adjacent regions detected by the initial segmentation.
         * \param [in] model_coefficients The list of segmented model coefficients
         * \param [in] inlier_indices The list of segmented inlier indices, corresponding to each model
-        * \param [in] centroids The list of centroids corresponding to each segmented plane
-        * \param [in] covariances The list of covariances corresponding to each segemented plane
         * \param [in] labels The labels produced by the initial segmentation
         * \param [in] label_indices The list of indices corresponding to each label
         */
       void
-      refine (std::vector<ModelCoefficients>& model_coefficients, 
+      refine (std::vector<ModelCoefficients>& model_coefficients,
               std::vector<PointIndices>& inlier_indices,
-              std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> >& centroids,
-              std::vector <Eigen::Matrix3f, Eigen::aligned_allocator<Eigen::Matrix3f> >& covariances,
               PointCloudLPtr& labels,
               std::vector<pcl::PointIndices>& label_indices);
 
@@ -320,5 +317,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/organized_multi_plane_segmentation.hpp>
 #endif
-
-#endif //#ifndef PCL_SEGMENTATION_ORGANIZED_MULTI_PLANE_SEGMENTATION_H_

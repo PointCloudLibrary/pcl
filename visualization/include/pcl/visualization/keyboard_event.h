@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_VISUALIZATION_KEYBOARD_EVENT_H_
-#define	PCL_VISUALIZATION_KEYBOARD_EVENT_H_
+#pragma once
 
 #include <string>
 
@@ -177,6 +176,3 @@ namespace pcl
     }  
   } // namespace visualization
 } // namespace pcl
-
-#endif	/* PCL_VISUALIZATION_KEYBOARD_EVENT_H_ */
-

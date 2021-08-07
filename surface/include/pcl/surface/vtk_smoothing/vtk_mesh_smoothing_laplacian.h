@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef VTK_MESH_SMOOTHING_LAPLACIAN_H_
-#define VTK_MESH_SMOOTHING_LAPLACIAN_H_
+#pragma once
 
 #include <pcl/surface/processing.h>
 #include <pcl/surface/vtk_smoothing/vtk.h>
@@ -54,9 +53,7 @@ namespace pcl
     public:
       /** \brief Empty constructor that sets the values of the algorithm parameters to the VTK defaults */
       MeshSmoothingLaplacianVTK ()
-        : MeshProcessing ()
-        , vtk_polygons_ ()
-        , num_iter_ (20)
+        : num_iter_ (20)
         , convergence_ (0.0f)
         , relaxation_factor_ (0.01f)
         , feature_edge_smoothing_ (false)
@@ -76,7 +73,7 @@ namespace pcl
 
       /** \brief Get the number of iterations. */
       inline int
-      getNumIter ()
+      getNumIter () const
       {
         return num_iter_;
       };
@@ -92,7 +89,7 @@ namespace pcl
 
       /** \brief Get the convergence criterion. */
       inline float
-      getConvergence ()
+      getConvergence () const
       {
         return convergence_;
       };
@@ -111,7 +108,7 @@ namespace pcl
 
       /** \brief Get the relaxation factor of the Laplacian smoothing */
       inline float
-      getRelaxationFactor ()
+      getRelaxationFactor () const
       {
         return relaxation_factor_;
       };
@@ -127,7 +124,7 @@ namespace pcl
 
       /** \brief Get the status of the feature edge smoothing */
       inline bool
-      getFeatureEdgeSmoothing ()
+      getFeatureEdgeSmoothing () const
       {
         return feature_edge_smoothing_;
       };
@@ -143,7 +140,7 @@ namespace pcl
 
       /** \brief Get the angle threshold for considering an edge to be sharp */
       inline float
-      getFeatureAngle ()
+      getFeatureAngle () const
       {
         return feature_angle_;
       };
@@ -159,7 +156,7 @@ namespace pcl
 
       /** \brief Get the edge angle to control smoothing along edges */
       inline float
-      getEdgeAngle ()
+      getEdgeAngle () const
       {
         return edge_angle_;
       };
@@ -175,14 +172,14 @@ namespace pcl
 
       /** \brief Get the status of the boundary smoothing */
       inline bool
-      getBoundarySmoothing ()
+      getBoundarySmoothing () const
       {
         return boundary_smoothing_;
       }
 
     protected:
       void
-      performProcessing (pcl::PolygonMesh &output);
+      performProcessing (pcl::PolygonMesh &output) override;
 
     private:
       vtkSmartPointer<vtkPolyData> vtk_polygons_;
@@ -197,4 +194,3 @@ namespace pcl
       bool boundary_smoothing_;
   };
 }
-#endif /* VTK_MESH_SMOOTHING_LAPLACIAN_H_ */

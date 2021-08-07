@@ -24,10 +24,7 @@
 // float and then uploaded.
 // DON'T PLAY WITH IT YET.
 
-#ifndef __vtkVertexBufferObject_h
-#define __vtkVertexBufferObject_h
-
-#include <vector>
+#pragma once
 
 #include "vtkObject.h"
 #include "vtkWeakPointer.h"
@@ -43,13 +40,14 @@ class vtkUnsignedCharArray;
 class vtkOpenGLExtensionManager;
 class vtkRenderWindow;
 
-class PCL_EXPORTS vtkVertexBufferObject : public vtkObject
+class PCL_DEPRECATED(1, 13, "The OpenGL backend of VTK is deprecated. Please switch to the OpenGL2 backend.")
+PCL_EXPORTS vtkVertexBufferObject : public vtkObject
 {
 public:
   
   static vtkVertexBufferObject* New();
   vtkTypeMacro(vtkVertexBufferObject, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Get/Set the context. Context must be a vtkOpenGLRenderWindow.
@@ -213,7 +211,3 @@ private:
   int GetDataTypeSize(int type);
   //ETX
 };
-
-#endif
-
-

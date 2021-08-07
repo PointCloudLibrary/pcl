@@ -38,57 +38,43 @@
 /// from the cloud as well as the ability to undo the removal.
 /// @author  Yue Li and Matthew Hielsberg
 
-#ifndef DELETE_COMMAND_H_
-#define DELETE_COMMAND_H_
+#pragma once
 
 #include <pcl/apps/point_cloud_editor/command.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 #include <pcl/apps/point_cloud_editor/copyBuffer.h>
 #include <pcl/apps/point_cloud_editor/selection.h>
 
+#include <pcl/memory.h>  // for pcl::shared_ptr
+
 class DeleteCommand : public Command
 {
   public:
+    /// The type for shared pointer pointing to a selection buffer
+    using SelectionPtr = pcl::shared_ptr<Selection>;
+
     /// @brief Constructor
     /// @param selection_ptr A shared pointer pointing to the selection object.
     /// @param cloud_ptr A shared pointer pointing to the cloud object.
-    DeleteCommand (SelectionPtr selection_ptr, CloudPtr cloud_ptr);
-   
-    /// @brief Destructor
-    ~DeleteCommand ()
-    {
-    }
-    
-  protected:
-    /// @brief Removes the selected points and maintains a backup for undo.
-    void 
-    execute ();
-    
-    /// @brief Returns the deleted points to the cloud, Order is not preserved.
-    void 
-    undo ();
+    DeleteCommand (SelectionPtr selection_ptr, const CloudPtr& cloud_ptr);
 
-  private:
-    /// @brief Default constructor - object is not default constructable
-    DeleteCommand ():  deleted_selection_(CloudPtr())
-    {
-      assert(false);
-    }
-    
     /// @brief Copy constructor - commands are non-copyable
-    DeleteCommand (const DeleteCommand& c)
-      : deleted_selection_(c.deleted_selection_)
-    {
-      assert(false);
-    }
+    DeleteCommand (const DeleteCommand& c) = delete;
 
     /// @brief Equal operator - commands are non-copyable
     DeleteCommand&
-    operator= (const DeleteCommand&)
-    {
-      assert(false); return (*this);
-    }
+    operator= (const DeleteCommand&) = delete;
 
+  protected:
+    /// @brief Removes the selected points and maintains a backup for undo.
+    void 
+    execute () override;
+    
+    /// @brief Returns the deleted points to the cloud, Order is not preserved.
+    void 
+    undo () override;
+
+  private:
     /// a pointer pointing to the cloud
     CloudPtr cloud_ptr_;
 
@@ -102,5 +88,3 @@ class DeleteCommand : public Command
     /// a copy buffer which backs up the points deleted from the cloud.
     CopyBuffer deleted_cloud_buffer_;
 };
-
-#endif // DELETE_COMMAND_H_

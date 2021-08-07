@@ -35,13 +35,13 @@
  *
  */
 
-#ifndef ABSTRACT_TOOL_H_
-#define ABSTRACT_TOOL_H_
+#pragma once
 
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/commands.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
 #include <pcl/apps/cloud_composer/properties_model.h>
+
+#include <QDebug>
 
 namespace pcl
 {
@@ -56,7 +56,7 @@ namespace pcl
 
         AbstractTool (PropertiesModel* parameter_model, QObject* parent); 
 
-        virtual ~AbstractTool () { qDebug() << "Tool Destructed"; }
+        ~AbstractTool () { qDebug() << "Tool Destructed"; }
         
         /**  \brief Function called which does work in plugin 
          *  \param data input_data from the model - const for good reason
@@ -73,7 +73,7 @@ namespace pcl
         getActionText () const {return action_text_;}
         
         void
-        setActionText (const QString text) { action_text_ = text; }
+        setActionText (const QString& text) { action_text_ = text; }
               
         virtual QString
         getToolName () const = 0;
@@ -95,19 +95,19 @@ namespace pcl
                       : AbstractTool (parameter_model, parent) 
                       {}
         
-        virtual ~ModifyItemTool () { }
+        ~ModifyItemTool () { }
         
-        virtual QList <CloudComposerItem*>
-        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) = 0;
+        QList <CloudComposerItem*>
+        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) override = 0;
         
-        inline virtual CloudCommand* 
-        createCommand (QList <const CloudComposerItem*> input_data) 
+        inline CloudCommand* 
+        createCommand (QList <const CloudComposerItem*> input_data) override 
         {
           return new ModifyItemCommand (input_data);
         }
         
-        inline virtual QString
-        getToolName () const { return "ModifyItemTool";}
+        inline QString
+        getToolName () const override { return "ModifyItemTool";}
         
     };
     
@@ -119,19 +119,19 @@ namespace pcl
                       : AbstractTool (parameter_model, parent)
                       {}
         
-        virtual ~NewItemTool () { }
+        ~NewItemTool () { }
         
-        virtual QList <CloudComposerItem*>
-        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) = 0;
+        QList <CloudComposerItem*>
+        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) override = 0;
         
-        inline virtual CloudCommand*
-        createCommand (QList <const CloudComposerItem*> input_data) 
+        inline CloudCommand*
+        createCommand (QList <const CloudComposerItem*> input_data) override 
         {
           return new NewItemCloudCommand (input_data);
         }
         
-        inline virtual QString
-        getToolName () const { return "NewItemTool";}
+        inline QString
+        getToolName () const override { return "NewItemTool";}
       
     };
     
@@ -143,19 +143,19 @@ namespace pcl
                       : AbstractTool (parameter_model, parent) 
                       {}
         
-        virtual ~SplitItemTool () { }
+        ~SplitItemTool () { }
         
-        virtual QList <CloudComposerItem*>
-        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) = 0;
+        QList <CloudComposerItem*>
+        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) override = 0;
         
-        inline virtual CloudCommand* 
-        createCommand (QList <const CloudComposerItem*> input_data) 
+        inline CloudCommand* 
+        createCommand (QList <const CloudComposerItem*> input_data) override 
         {
           return new SplitCloudCommand (input_data);
         }
         
-        inline virtual QString
-        getToolName () const { return "SplitItemTool";}
+        inline QString
+        getToolName () const override { return "SplitItemTool";}
         
     };
     
@@ -167,24 +167,21 @@ namespace pcl
                       : AbstractTool (parameter_model, parent) 
                       {}
         
-        virtual ~MergeCloudTool () { }
+        ~MergeCloudTool () { }
         
-        virtual QList <CloudComposerItem*>
-        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) = 0;
+        QList <CloudComposerItem*>
+        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) override = 0;
         
-        inline virtual CloudCommand* 
-        createCommand (QList <const CloudComposerItem*> input_data) 
+        inline CloudCommand* 
+        createCommand (QList <const CloudComposerItem*> input_data) override 
         {
           return new MergeCloudCommand (input_data);
         }
         
-        inline virtual QString
-        getToolName () const { return "MergeCloudTool";}
+        inline QString
+        getToolName () const override { return "MergeCloudTool";}
         
     };
 
   }
 }
-
-
-#endif //ABSTRACT_TOOL_H_

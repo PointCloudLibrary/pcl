@@ -1,7 +1,11 @@
+#include <thread>
+
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/common/time.h>
+
+using namespace std::chrono_literals;
 
 class SimpleOpenNIProcessor
 {
@@ -25,8 +29,8 @@ public:
     pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
     // make callback function from member function
-    boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
-      boost::bind (&SimpleOpenNIProcessor::cloud_cb_, this, _1);
+    std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
+      [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) { cloud_cb_ (cloud); };
 
     // connect callback function for desired signal. In this case its a point cloud with color values
     boost::signals2::connection c = interface->registerCallback (f);
@@ -36,7 +40,7 @@ public:
 
     // wait until user quits program with Ctrl-C, but no busy-waiting -> sleep (1);
     while (true)
-      boost::this_thread::sleep (boost::posix_time::seconds (1));
+      std::this_thread::sleep_for(1s);
 
     // stop the grabber
     interface->stop ();

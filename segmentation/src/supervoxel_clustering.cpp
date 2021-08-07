@@ -140,9 +140,9 @@ namespace pcl
   template<> void
   pcl::SupervoxelClustering<pcl::PointXYZRGB>::VoxelData::getPoint (pcl::PointXYZRGB &point_arg) const
   {
-    point_arg.rgba = static_cast<uint32_t>(rgb_[0]) << 16 | 
-    static_cast<uint32_t>(rgb_[1]) << 8 | 
-    static_cast<uint32_t>(rgb_[2]);  
+    point_arg.rgba = static_cast<std::uint32_t>(rgb_[0]) << 16 | 
+    static_cast<std::uint32_t>(rgb_[1]) << 8 | 
+    static_cast<std::uint32_t>(rgb_[2]);  
     point_arg.x = xyz_[0];
     point_arg.y = xyz_[1];
     point_arg.z = xyz_[2];
@@ -151,22 +151,22 @@ namespace pcl
   template<> void
   pcl::SupervoxelClustering<pcl::PointXYZRGBA>::VoxelData::getPoint (pcl::PointXYZRGBA &point_arg ) const
   {
-    point_arg.rgba = static_cast<uint32_t>(rgb_[0]) << 16 | 
-    static_cast<uint32_t>(rgb_[1]) << 8 | 
-    static_cast<uint32_t>(rgb_[2]);  
+    point_arg.rgba = static_cast<std::uint32_t>(rgb_[0]) << 16 | 
+    static_cast<std::uint32_t>(rgb_[1]) << 8 | 
+    static_cast<std::uint32_t>(rgb_[2]);  
     point_arg.x = xyz_[0];
     point_arg.y = xyz_[1];
     point_arg.z = xyz_[2];
   }
 }
 
-typedef pcl::SupervoxelClustering<pcl::PointXYZ>::VoxelData VoxelDataT;
-typedef pcl::SupervoxelClustering<pcl::PointXYZRGB>::VoxelData VoxelDataRGBT;
-typedef pcl::SupervoxelClustering<pcl::PointXYZRGBA>::VoxelData VoxelDataRGBAT;
+using VoxelDataT = pcl::SupervoxelClustering<pcl::PointXYZ>::VoxelData;
+using VoxelDataRGBT = pcl::SupervoxelClustering<pcl::PointXYZRGB>::VoxelData;
+using VoxelDataRGBAT = pcl::SupervoxelClustering<pcl::PointXYZRGBA>::VoxelData;
 
-typedef pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZ, VoxelDataT> AdjacencyContainerT;
-typedef pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGB, VoxelDataRGBT> AdjacencyContainerRGBT;
-typedef pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGBA, VoxelDataRGBAT> AdjacencyContainerRGBAT;
+using AdjacencyContainerT = pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZ, VoxelDataT>;
+using AdjacencyContainerRGBT = pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGB, VoxelDataRGBT>;
+using AdjacencyContainerRGBAT = pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGBA, VoxelDataRGBAT>;
 
 template class pcl::SupervoxelClustering<pcl::PointXYZ>;
 template class pcl::SupervoxelClustering<pcl::PointXYZRGB>;

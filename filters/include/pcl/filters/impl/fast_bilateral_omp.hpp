@@ -42,8 +42,20 @@
 
 #include <pcl/filters/fast_bilateral_omp.h>
 #include <pcl/common/io.h>
-#include <pcl/console/time.h>
-#include <assert.h>
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::FastBilateralFilterOMP<PointT>::setNumberOfThreads (unsigned int nr_threads)
+{
+  if (nr_threads == 0)
+#ifdef _OPENMP
+    threads_ = omp_get_num_procs();
+#else
+    threads_ = 1;
+#endif
+  else
+    threads_ = nr_threads;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -59,18 +71,13 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
   float base_max = -std::numeric_limits<float>::max (),
         base_min = std::numeric_limits<float>::max ();
   bool found_finite = false;
-  for (size_t x = 0; x < output.width; ++x)
+  for (const auto& pt: output)
   {
-    for (size_t y = 0; y < output.height; ++y)
+    if (std::isfinite(pt.z))
     {
-      if (pcl_isfinite (output (x, y).z))
-      {
-        if (base_max < output (x, y).z)
-          base_max = output (x, y).z;
-        if (base_min > output (x, y).z)
-          base_min = output (x, y).z;
-        found_finite = true;
-      }
+      base_max = std::max<float>(pt.z, base_max);
+      base_min = std::min<float>(pt.z, base_min);
+      found_finite = true;
     }
   }
   if (!found_finite)
@@ -78,44 +85,53 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
     PCL_WARN ("[pcl::FastBilateralFilterOMP] Given an empty cloud. Doing nothing.\n");
     return;
   }
-#ifdef _OPENMP
-#pragma omp parallel for num_threads (threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(base_min, base_max, output) \
+  num_threads(threads_)
   for (long int i = 0; i < static_cast<long int> (output.size ()); ++i)
-    if (!pcl_isfinite (output.at(i).z))
+    if (!std::isfinite (output.at(i).z))
       output.at(i).z = base_max;
 
   const float base_delta = base_max - base_min;
 
-  const size_t padding_xy = 2;
-  const size_t padding_z  = 2;
+  const std::size_t padding_xy = 2;
+  const std::size_t padding_z  = 2;
 
-  const size_t small_width  = static_cast<size_t> (static_cast<float> (input_->width  - 1) / sigma_s_) + 1 + 2 * padding_xy;
-  const size_t small_height = static_cast<size_t> (static_cast<float> (input_->height - 1) / sigma_s_) + 1 + 2 * padding_xy;
-  const size_t small_depth  = static_cast<size_t> (base_delta / sigma_r_)   + 1 + 2 * padding_z;
+  const std::size_t small_width  = static_cast<std::size_t> (static_cast<float> (input_->width  - 1) / sigma_s_) + 1 + 2 * padding_xy;
+  const std::size_t small_height = static_cast<std::size_t> (static_cast<float> (input_->height - 1) / sigma_s_) + 1 + 2 * padding_xy;
+  const std::size_t small_depth  = static_cast<std::size_t> (base_delta / sigma_r_)   + 1 + 2 * padding_z;
 
   Array3D data (small_width, small_height, small_depth);
-#ifdef _OPENMP
-#pragma omp parallel for num_threads (threads_)
+#if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
+#pragma omp parallel for \
+  default(none) \
+  shared(base_min, data, output) \
+  num_threads(threads_)
+#else
+#pragma omp parallel for \
+  default(none) \
+  shared(base_min, data, output, small_height, small_width) \
+  num_threads(threads_)	
 #endif
   for (long int i = 0; i < static_cast<long int> (small_width * small_height); ++i)
   {
-    size_t small_x = static_cast<size_t> (i % small_width);
-    size_t small_y = static_cast<size_t> (i / small_width);
-    size_t start_x = static_cast<size_t>( 
+    std::size_t small_x = static_cast<std::size_t> (i % small_width);
+    std::size_t small_y = static_cast<std::size_t> (i / small_width);
+    std::size_t start_x = static_cast<std::size_t>( 
         std::max ((static_cast<float> (small_x) - static_cast<float> (padding_xy) - 0.5f) * sigma_s_ + 1, 0.f));
-    size_t end_x = static_cast<size_t>( 
+    std::size_t end_x = static_cast<std::size_t>( 
       std::max ((static_cast<float> (small_x) - static_cast<float> (padding_xy) + 0.5f) * sigma_s_ + 1, 0.f));
-    size_t start_y = static_cast<size_t>( 
+    std::size_t start_y = static_cast<std::size_t>( 
       std::max ((static_cast<float> (small_y) - static_cast<float> (padding_xy) - 0.5f) * sigma_s_ + 1, 0.f));
-    size_t end_y = static_cast<size_t>( 
+    std::size_t end_y = static_cast<std::size_t>( 
       std::max ((static_cast<float> (small_y) - static_cast<float> (padding_xy) + 0.5f) * sigma_s_ + 1, 0.f));
-    for (size_t x = start_x; x < end_x && x < input_->width; ++x)
+    for (std::size_t x = start_x; x < end_x && x < input_->width; ++x)
     {
-      for (size_t y = start_y; y < end_y && y < input_->height; ++y)
+      for (std::size_t y = start_y; y < end_y && y < input_->height; ++y)
       {
         const float z = output (x,y).z - base_min;
-        const size_t small_z = static_cast<size_t> (static_cast<float> (z) / sigma_r_ + 0.5f) + padding_z;
+        const std::size_t small_z = static_cast<std::size_t> (static_cast<float> (z) / sigma_r_ + 0.5f) + padding_z;
         Eigen::Vector2f& d = data (small_x, small_y, small_z);
         d[0] += output (x,y).z;
         d[1] += 1.0f;
@@ -130,24 +146,32 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
 
   Array3D buffer (small_width, small_height, small_depth);
   
-  for (size_t dim = 0; dim < 3; ++dim)
+  for (std::size_t dim = 0; dim < 3; ++dim)
   {
-    for (size_t n_iter = 0; n_iter < 2; ++n_iter)
+    for (std::size_t n_iter = 0; n_iter < 2; ++n_iter)
     {
       Array3D* current_buffer = (n_iter % 2 == 1 ? &buffer : &data);
       Array3D* current_data =(n_iter % 2 == 1 ? &data : &buffer);
-#ifdef _OPENMP
-#pragma omp parallel for num_threads (threads_)
+#if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
+#pragma omp parallel for \
+  default(none) \
+  shared(current_buffer, current_data, dim, offset) \
+  num_threads(threads_)
+#else
+#pragma omp parallel for \
+  default(none) \
+  shared(current_buffer, current_data, dim, offset, small_depth, small_height, small_width) \
+  num_threads(threads_)
 #endif
       for(long int i = 0; i < static_cast<long int> ((small_width - 2)*(small_height - 2)); ++i)
       {
-        size_t x = static_cast<size_t> (i % (small_width - 2) + 1);
-        size_t y = static_cast<size_t> (i / (small_width - 2) + 1);
+        std::size_t x = static_cast<std::size_t> (i % (small_width - 2) + 1);
+        std::size_t y = static_cast<std::size_t> (i / (small_width - 2) + 1);
         const long int off = offset[dim];
         Eigen::Vector2f* d_ptr = &(current_data->operator() (x,y,1));
         Eigen::Vector2f* b_ptr = &(current_buffer->operator() (x,y,1));
 
-        for(size_t z = 1; z < small_depth - 1; ++z, ++d_ptr, ++b_ptr)
+        for(std::size_t z = 1; z < small_depth - 1; ++z, ++d_ptr, ++b_ptr)
           *d_ptr = (*(b_ptr - off) + *(b_ptr + off) + 2.0 * (*b_ptr)) / 4.0;
       }
     }
@@ -161,13 +185,14 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
     for (std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> >::iterator d = data.begin (); d != data.end (); ++d)
       *d /= ((*d)[0] != 0) ? (*d)[1] : 1;
 
-#ifdef _OPENMP
-#pragma omp parallel for num_threads (threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(base_min, data, output) \
+  num_threads(threads_)
     for (long int i = 0; i < static_cast<long int> (input_->size ()); ++i)
     {
-      size_t x = static_cast<size_t> (i % input_->width);
-      size_t y = static_cast<size_t> (i / input_->width);
+      std::size_t x = static_cast<std::size_t> (i % input_->width);
+      std::size_t y = static_cast<std::size_t> (i / input_->width);
       const float z = output (x,y).z - base_min;
       const Eigen::Vector2f D = data.trilinear_interpolation (static_cast<float> (x) / sigma_s_ + padding_xy,
                                                               static_cast<float> (y) / sigma_s_ + padding_xy,
@@ -177,13 +202,14 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
   }
   else
   {
-#ifdef _OPENMP
-#pragma omp parallel for num_threads (threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(base_min, data, output) \
+  num_threads(threads_)
     for (long i = 0; i < static_cast<long int> (input_->size ()); ++i)
     {
-      size_t x = static_cast<size_t> (i % input_->width);
-      size_t y = static_cast<size_t> (i / input_->width);
+      std::size_t x = static_cast<std::size_t> (i % input_->width);
+      std::size_t y = static_cast<std::size_t> (i / input_->width);
       const float z = output (x,y).z - base_min;
       const Eigen::Vector2f D = data.trilinear_interpolation (static_cast<float> (x) / sigma_s_ + padding_xy,
                                                               static_cast<float> (y) / sigma_s_ + padding_xy,

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef NURBS_FITTING_PATCH_H
-#define NURBS_FITTING_PATCH_H
+#pragma once
 
 #include <pcl/pcl_exports.h>
 #include <pcl/surface/on_nurbs/nurbs_tools.h>
@@ -106,6 +105,9 @@ namespace pcl
        * \param[in] z vector defining front face of surface.
        */
       FittingSurface (int order, NurbsDataSurface *data, Eigen::Vector3d z = Eigen::Vector3d (0.0, 0.0, 1.0));
+
+      /** \brief Default virtual destructor */
+      virtual ~FittingSurface() = default;
 
       /** \brief Refines surface by inserting a knot in the middle of each element.
        * \param[in] dim dimension of refinement (0,1)
@@ -289,7 +291,7 @@ namespace pcl
 
       // index routines
       int
-      grc2gl (int I, int J)
+      grc2gl (int I, int J) const
       {
         return m_nurbs.CVCount (1) * I + J;
       } // global row/col index to global lexicographic index
@@ -299,12 +301,12 @@ namespace pcl
         return grc2gl (E + i, F + j);
       } // local row/col index to global lexicographic index
       int
-      gl2gr (int A)
+      gl2gr (int A) const
       {
         return (static_cast<int> (A / m_nurbs.CVCount (1)));
       } // global lexicographic in global row index
       int
-      gl2gc (int A)
+      gl2gc (int A) const
       {
         return (static_cast<int> (A % m_nurbs.CVCount (1)));
       } // global lexicographic in global col index
@@ -312,5 +314,3 @@ namespace pcl
 
   } // namespace on_nurbs
 } // namespace pcl
-
-#endif    // PATCHFITTING_H_

@@ -37,22 +37,33 @@
 
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/boost.h>
+#include <pcl/memory.h>
+
+#include <vtkOrientationMarkerWidget.h>
+#include <vtkRenderWindowInteractor.h>
+
+#include <mutex>
+#include <thread>
 
 namespace pcl
 {
   struct cloud_show_base
   {
+    virtual ~cloud_show_base() = default;
     virtual void pop () = 0;
     virtual bool popped () const = 0;
-    typedef boost::shared_ptr<cloud_show_base> Ptr;
+    using Ptr = shared_ptr<cloud_show_base>;
+    using ConstPtr = shared_ptr<const cloud_show_base>;
   };
 
   template <typename CloudT> 
   struct cloud_show : cloud_show_base
   {
+    using Ptr = shared_ptr<cloud_show>;
+    using ConstPtr = shared_ptr<const cloud_show>;
+
     cloud_show (const std::string &cloud_name, typename CloudT::ConstPtr cloud,
-      boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer) :
+      pcl::visualization::PCLVisualizer::Ptr viewer) :
       cloud_name (cloud_name), cloud (cloud), viewer (viewer),popped_ (false)
     {}
 
@@ -77,24 +88,24 @@ namespace pcl
       popped_ = true;
     }
 
-    virtual void pop ();
+    void pop () override;
     
-    virtual bool
-    popped () const
+    bool
+    popped () const override
     {
       return popped_;
     }
     
     std::string cloud_name;
     typename CloudT::ConstPtr cloud;
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
+    pcl::visualization::PCLVisualizer::Ptr viewer;
     bool popped_;
   };
   
-  typedef pcl::PointCloud<pcl::PointXYZRGBA> cca;
-  typedef pcl::PointCloud<pcl::PointXYZRGB> cc;
-  typedef pcl::PointCloud<pcl::PointXYZI> gc;
-  typedef pcl::PointCloud<pcl::PointXYZ> mc;
+  using cca = pcl::PointCloud<pcl::PointXYZRGBA>;
+  using cc = pcl::PointCloud<pcl::PointXYZRGB>;
+  using gc = pcl::PointCloud<pcl::PointXYZI>;
+  using mc = pcl::PointCloud<pcl::PointXYZ>;
 
   template <> void
   cloud_show<cca>::pop ()
@@ -131,10 +142,10 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   CloudViewer_impl (const std::string& window_name) :
     window_name_ (window_name), has_cloud_ (false), quit_ (false)
   {
-    viewer_thread_ = boost::thread (boost::ref (*this));
+    viewer_thread_ = std::thread (&CloudViewer_impl::operator(), this);
     while (!viewer_)
     {
-      boost::thread::yield ();
+      std::this_thread::yield ();
     }
   }
 
@@ -148,12 +159,12 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   {
     cloud_show_base::Ptr cs (new cloud_show<T>(name,cloud,viewer_));
     {
-      boost::mutex::scoped_lock lock (mtx_);
+      std::lock_guard<std::mutex> lock (mtx_);
       cloud_shows_.push_back (cs);
     }
     while (!cs->popped ())
     {
-      boost::thread::yield ();
+      std::this_thread::yield ();
     }
   }
 
@@ -162,7 +173,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   {
     cloud_show_base::Ptr cs (new cloud_show<T>(name,cloud,viewer_));
     {
-      boost::mutex::scoped_lock lock (mtx_);
+      std::lock_guard<std::mutex> lock (mtx_);
 
       cloud_shows_.push_back (cs);
     }
@@ -174,18 +185,14 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   {
     using namespace pcl::visualization;
 
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-    viewer_ = boost::shared_ptr<PCLVisualizer>(new PCLVisualizer (window_name_));
-#else
-    viewer_ = boost::shared_ptr<PCLVisualizer>(new PCLVisualizer (window_name_, true));
-#endif
+    viewer_ = pcl::make_shared<PCLVisualizer> (window_name_, true);
     viewer_->setBackgroundColor (0.1, 0.1, 0.1);
     viewer_->addCoordinateSystem (0.1, "global");
 
     while (!quit_)
     {
       {
-        boost::mutex::scoped_lock lock (mtx_);
+        std::lock_guard<std::mutex> lock (mtx_);
         while (!cloud_shows_.empty ())
         {
           cloud_shows_.back ()->pop ();
@@ -193,16 +200,16 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
         }
       }
       {
-        boost::mutex::scoped_lock lock (once_mtx);
-        BOOST_FOREACH (CallableList::value_type& x, callables_once)
+        std::lock_guard<std::mutex> lock (once_mtx);
+        for (CallableList::value_type& x : callables_once)
         {
           (x)(*viewer_);
         }
         callables_once.clear ();
       }
       {
-        boost::mutex::scoped_lock lock (c_mtx);
-        BOOST_FOREACH (CallableMap::value_type& x, callables)
+        std::lock_guard<std::mutex> lock (c_mtx);
+        for (CallableMap::value_type& x : callables)
         {
           (x.second)(*viewer_);
         }
@@ -212,7 +219,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
           quit_ = true;
       }else
       {
-        boost::mutex::scoped_lock lock (spin_mtx_);
+        std::lock_guard<std::mutex> lock (spin_mtx_);
         //TODO some smart waitkey like stuff here, so that wasStoped() can hold for a long time
         //maybe a counter
         viewer_->spinOnce (10); // Give the GUI millis to handle events, then return
@@ -226,14 +233,14 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   void
   post (VizCallable x, const std::string &key)
   {
-    boost::mutex::scoped_lock lock (c_mtx);
+    std::lock_guard<std::mutex> lock (c_mtx);
     callables[key] = x;
   }
 
   void
   post (VizCallable x)
   {
-    boost::mutex::scoped_lock lock (once_mtx);
+    std::lock_guard<std::mutex> lock (once_mtx);
     callables_once.push_back (x);
   }
 
@@ -241,21 +248,20 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   void
   remove (const std::string &key)
   {
-    boost::mutex::scoped_lock lock (c_mtx);
-    if (callables.find (key) != callables.end ())
-      callables.erase (key);
+    std::lock_guard<std::mutex> lock (c_mtx);
+    callables.erase (key);
   }
 
   std::string window_name_;
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_;
-  boost::mutex mtx_, spin_mtx_, c_mtx, once_mtx;
-  boost::thread viewer_thread_;
+  pcl::visualization::PCLVisualizer::Ptr viewer_;
+  std::mutex mtx_, spin_mtx_, c_mtx, once_mtx;
+  std::thread viewer_thread_;
   bool has_cloud_;
   bool quit_;
-  std::list<boost::shared_ptr<cloud_show_base> > cloud_shows_;
-  typedef std::map<std::string, VizCallable> CallableMap;
+  std::list<cloud_show_base::Ptr> cloud_shows_;
+  using CallableMap = std::map<std::string, VizCallable>;
   CallableMap callables;
-  typedef std::list<VizCallable> CallableList;
+  using CallableList = std::list<VizCallable>;
   CallableList callables_once;
 };
 
@@ -335,27 +341,27 @@ pcl::visualization::CloudViewer::removeVisualizationCallable (const std::string 
 bool
 pcl::visualization::CloudViewer::wasStopped (int)
 {
-  boost::thread::yield (); //allow this to be called in a loop
+  std::this_thread::yield (); //allow this to be called in a loop
   return !impl_->viewer_;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
-pcl::visualization::CloudViewer::registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
+pcl::visualization::CloudViewer::registerKeyboardCallback (std::function<void (const pcl::visualization::KeyboardEvent&)> callback)
 {
   return impl_->viewer_->registerKeyboardCallback (callback);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
-pcl::visualization::CloudViewer::registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> callback)
+pcl::visualization::CloudViewer::registerMouseCallback (std::function<void (const pcl::visualization::MouseEvent&)> callback)
 {
   return impl_->viewer_->registerMouseCallback (callback);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
-pcl::visualization::CloudViewer::registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)> callback)
+pcl::visualization::CloudViewer::registerPointPickingCallback (std::function<void (const pcl::visualization::PointPickingEvent&)> callback)
 {
   return (impl_->viewer_->registerPointPickingCallback (callback));
 }

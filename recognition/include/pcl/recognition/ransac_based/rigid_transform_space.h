@@ -43,8 +43,7 @@
  *      Author: papazov
  */
 
-#ifndef PCL_RECOGNITION_RIGID_TRANSFORM_SPACE_H_
-#define PCL_RECOGNITION_RIGID_TRANSFORM_SPACE_H_
+#pragma once
 
 #include "simple_octree.h"
 #include "model_library.h"
@@ -96,7 +95,7 @@ namespace pcl
             }
 
             inline void
-            computeAverageRigidTransform (float *rigid_transform = NULL)
+            computeAverageRigidTransform (float *rigid_transform = nullptr)
             {
               if ( num_transforms_ >= 2 )
               {
@@ -159,7 +158,7 @@ namespace pcl
           if ( res != model_to_entry_.end () )
             return (&res->second);
 
-          return (NULL);
+          return (nullptr);
         }
 
         inline const RotationSpaceCell::Entry&
@@ -184,7 +183,7 @@ namespace pcl
         }
     };
 
-    typedef SimpleOctree<RotationSpaceCell, RotationSpaceCellCreator, float> CellOctree;
+    using CellOctree = SimpleOctree<RotationSpaceCell, RotationSpaceCellCreator, float>;
 
     /** \brief This is a class for a discrete representation of the rotation space based on the axis-angle representation.
       * This class is not supposed to be very general. That's why it is dependent on the class ModelLibrary.
@@ -230,20 +229,20 @@ namespace pcl
           int max_num_transforms = 0;
 
           // For each full leaf
-          for ( std::vector<CellOctree::Node*>::const_iterator leaf = full_leaves.begin () ; leaf != full_leaves.end () ; ++leaf )
+          for (const auto &full_leaf : full_leaves)
           {
             // Is there an entry for 'model' in the current cell
-            const RotationSpaceCell::Entry *entry = (*leaf)->getData ().getEntry (model);
+            const RotationSpaceCell::Entry *entry = full_leaf->getData ().getEntry (model);
             if ( !entry )
               continue;
 
             int num_transforms = entry->getNumberOfTransforms ();
-            const std::set<CellOctree::Node*>& neighs = (*leaf)->getNeighbors ();
+            const std::set<CellOctree::Node*>& neighs = full_leaf->getNeighbors ();
 
             // For each neighbor
-            for ( std::set<CellOctree::Node*>::const_iterator neigh = neighs.begin () ; neigh != neighs.end () ; ++neigh )
+            for (const auto &neigh : neighs)
             {
-              const RotationSpaceCell::Entry *neigh_entry = (*neigh)->getData ().getEntry (model);
+              const RotationSpaceCell::Entry *neigh_entry = neigh->getData ().getEntry (model);
               if ( !neigh_entry )
                 continue;
 
@@ -336,7 +335,7 @@ namespace pcl
         std::list<RotationSpace*> rotation_spaces_;
     };
 
-    typedef SimpleOctree<RotationSpace, RotationSpaceCreator, float> RotationSpaceOctree;
+    using RotationSpaceOctree = SimpleOctree<RotationSpace, RotationSpaceCreator, float>;
 
     class PCL_EXPORTS RigidTransformSpace
     {
@@ -410,5 +409,3 @@ namespace pcl
     }; // class RigidTransformSpace
   } // namespace recognition
 } // namespace pcl
-
-#endif /* PCL_RECOGNITION_RIGID_TRANSFORM_SPACE_H_ */

@@ -36,20 +36,21 @@
  * $Id$
  */
 
-#ifndef PCL_TYPE_CONVERSIONS_H
-#define PCL_TYPE_CONVERSIONS_H
+#pragma once
 
 #include <limits>
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
+#include <pcl/common/colors.h> // for RGB2sRGB_LUT
+
 namespace pcl
 {
-  // r,g,b, i values are from 0 to 1
+  // r,g,b, i values are from 0 to 255
   // h = [0,360]
   // s, v values are from 0 to 1
-  // if s = 0 > h = -1 (undefined)
+  // if s = 0 => h = 0
 
   /** \brief Convert a XYZRGB point type to a XYZI
     * \param[in] in the input XYZRGB point 
@@ -82,7 +83,7 @@ namespace pcl
   PointRGBtoI (const RGB&    in,
                Intensity8u&  out)
   {
-    out.intensity = static_cast<uint8_t>(0.299f * static_cast <float> (in.r)
+    out.intensity = static_cast<std::uint8_t>(0.299f * static_cast <float> (in.r)
                       + 0.587f * static_cast <float> (in.g) + 0.114f * static_cast <float> (in.b));
   }
 
@@ -94,7 +95,7 @@ namespace pcl
   PointRGBtoI (const RGB&    in,
                Intensity32u& out)
   {
-    out.intensity = static_cast<uint32_t>(0.299f * static_cast <float> (in.r)
+    out.intensity = static_cast<std::uint32_t>(0.299f * static_cast <float> (in.r)
                       + 0.587f * static_cast <float> (in.g) + 0.114f * static_cast <float> (in.b));
   }
 
@@ -135,6 +136,57 @@ namespace pcl
     if (out.h < 0.f) out.h += 360.f;
   }
 
+  /** \brief Convert a XYZRGB-based point type to a XYZLAB
+    * \param[in] in the input XYZRGB(XYZRGBA, XYZRGBL, etc.) point
+    * \param[out] out the output XYZLAB point
+    */
+  template <typename PointT, traits::HasColor<PointT> = true>
+  inline void
+  PointXYZRGBtoXYZLAB (const PointT& in,
+                       PointXYZLAB&  out)
+  {
+    out.x = in.x;
+    out.y = in.y;
+    out.z = in.z;
+    out.data[3] = 1.0; // important for homogeneous coordinates
+
+    // convert sRGB to CIELAB
+    // for sRGB   -> CIEXYZ see http://www.easyrgb.com/index.php?X=MATH&H=02#text2
+    // for CIEXYZ -> CIELAB see http://www.easyrgb.com/index.php?X=MATH&H=07#text7
+    // an overview at: https://www.comp.nus.edu.sg/~leowwk/papers/colordiff.pdf
+
+    const auto& sRGB_LUT = RGB2sRGB_LUT<double, 8>();
+
+    const double R = sRGB_LUT[in.r];
+    const double G = sRGB_LUT[in.g];
+    const double B = sRGB_LUT[in.b];
+
+    // linear sRGB -> CIEXYZ, D65 illuminant, observer at 2 degrees
+    const double X = R * 0.4124 + G * 0.3576 + B * 0.1805;
+    const double Y = R * 0.2126 + G * 0.7152 + B * 0.0722;
+    const double Z = R * 0.0193 + G * 0.1192 + B * 0.9505;
+
+    // normalize X, Y, Z with tristimulus values for Xn, Yn, Zn
+    float f[3] = {static_cast<float>(X), static_cast<float>(Y), static_cast<float>(Z)};
+    f[0] /= 0.95047;
+    f[1] /= 1;
+    f[2] /= 1.08883;
+
+    // CIEXYZ -> CIELAB
+    for (int i = 0; i < 3; ++i) {
+      if (f[i] > 0.008856) {
+        f[i] = std::pow(f[i], 1.0 / 3.0);
+      }
+      else {
+        f[i] = 7.787 * f[i] + 16.0 / 116.0;
+      }
+    }
+
+    out.L = 116.0f * f[1] - 16.0f;
+    out.a = 500.0f * (f[0] - f[1]);
+    out.b = 200.0f * (f[1] - f[2]);
+  }
+
   /** \brief Convert a XYZRGBA point type to a XYZHSV
     * \param[in] in the input XYZRGBA point
     * \param[out] out the output XYZHSV point
@@ -153,7 +205,7 @@ namespace pcl
     if (max == 0) // division by zero
     {
       out.s = 0.f;
-      out.h = 0.f; // h = -1.f;
+      out.h = 0.f;
       return;
     }
 
@@ -184,11 +236,11 @@ namespace pcl
     out.x = in.x; out.y = in.y; out.z = in.z;
     if (in.s == 0)
     {
-      out.r = out.g = out.b = static_cast<uint8_t> (255 * in.v);
+      out.r = out.g = out.b = static_cast<std::uint8_t> (255 * in.v);
       return;
     } 
     float a = in.h / 60;
-    int   i = static_cast<int> (floorf (a));
+    int   i = static_cast<int> (std::floor (a));
     float f = a - static_cast<float> (i);
     float p = in.v * (1 - in.s);
     float q = in.v * (1 - in.s * f);
@@ -198,44 +250,44 @@ namespace pcl
     {
       case 0:
       {
-        out.r = static_cast<uint8_t> (255 * in.v);
-        out.g = static_cast<uint8_t> (255 * t);
-        out.b = static_cast<uint8_t> (255 * p);
+        out.r = static_cast<std::uint8_t> (255 * in.v);
+        out.g = static_cast<std::uint8_t> (255 * t);
+        out.b = static_cast<std::uint8_t> (255 * p);
         break;
       }
       case 1:
       {
-        out.r = static_cast<uint8_t> (255 * q); 
-        out.g = static_cast<uint8_t> (255 * in.v); 
-        out.b = static_cast<uint8_t> (255 * p); 
+        out.r = static_cast<std::uint8_t> (255 * q); 
+        out.g = static_cast<std::uint8_t> (255 * in.v); 
+        out.b = static_cast<std::uint8_t> (255 * p); 
         break;
       }
       case 2:
       {
-        out.r = static_cast<uint8_t> (255 * p);
-        out.g = static_cast<uint8_t> (255 * in.v);
-        out.b = static_cast<uint8_t> (255 * t);
+        out.r = static_cast<std::uint8_t> (255 * p);
+        out.g = static_cast<std::uint8_t> (255 * in.v);
+        out.b = static_cast<std::uint8_t> (255 * t);
         break;
       }
       case 3:
       {
-        out.r = static_cast<uint8_t> (255 * p);
-        out.g = static_cast<uint8_t> (255 * q);
-        out.b = static_cast<uint8_t> (255 * in.v);
+        out.r = static_cast<std::uint8_t> (255 * p);
+        out.g = static_cast<std::uint8_t> (255 * q);
+        out.b = static_cast<std::uint8_t> (255 * in.v);
         break;
       }
       case 4:
       {
-        out.r = static_cast<uint8_t> (255 * t);
-        out.g = static_cast<uint8_t> (255 * p); 
-        out.b = static_cast<uint8_t> (255 * in.v); 
+        out.r = static_cast<std::uint8_t> (255 * t);
+        out.g = static_cast<std::uint8_t> (255 * p); 
+        out.b = static_cast<std::uint8_t> (255 * in.v); 
         break;
       }
       default:
       {
-        out.r = static_cast<uint8_t> (255 * in.v); 
-        out.g = static_cast<uint8_t> (255 * p); 
-        out.b = static_cast<uint8_t> (255 * q);
+        out.r = static_cast<std::uint8_t> (255 * in.v); 
+        out.g = static_cast<std::uint8_t> (255 * p); 
+        out.b = static_cast<std::uint8_t> (255 * q);
         break;
       }      
     }
@@ -251,11 +303,11 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (const auto &point : in.points)
     {
       Intensity p;
-      PointRGBtoI (in.points[i], p);
-      out.points.push_back (p);
+      PointRGBtoI (point, p);
+      out.push_back (p);
     }
   }
 
@@ -269,11 +321,11 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (const auto &point : in.points)
     {
       Intensity8u p;
-      PointRGBtoI (in.points[i], p);
-      out.points.push_back (p);
+      PointRGBtoI (point, p);
+      out.push_back (p);
     }
   }
 
@@ -287,11 +339,11 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (const auto &point : in.points)
     {
       Intensity32u p;
-      PointRGBtoI (in.points[i], p);
-      out.points.push_back (p);
+      PointRGBtoI (point, p);
+      out.push_back (p);
     }
   }
 
@@ -305,11 +357,11 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (const auto &point : in.points)
     {
       PointXYZHSV p;
-      PointXYZRGBtoXYZHSV (in.points[i], p);
-      out.points.push_back (p);
+      PointXYZRGBtoXYZHSV (point, p);
+      out.push_back (p);
     }
   }
 
@@ -323,11 +375,11 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (const auto &point : in.points)
     {
       PointXYZHSV p;
-      PointXYZRGBAtoXYZHSV (in.points[i], p);
-      out.points.push_back (p);
+      PointXYZRGBAtoXYZHSV (point, p);
+      out.push_back (p);
     }
   }
 
@@ -341,11 +393,11 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (const auto &point : in.points)
     {
       PointXYZI p;
-      PointXYZRGBtoXYZI (in.points[i], p);
-      out.points.push_back (p);
+      PointXYZRGBtoXYZI (point, p);
+      out.push_back (p);
     }
   }
 
@@ -362,13 +414,13 @@ namespace pcl
                                   PointCloud<PointXYZRGBA>&     out)
   {
     float bad_point = std::numeric_limits<float>::quiet_NaN();
-    size_t width_ = depth.width;
-    size_t height_ = depth.height;
+    std::size_t width_ = depth.width;
+    std::size_t height_ = depth.height;
     float constant_ = 1.0f / focal;
 
-    for (size_t v = 0; v < height_; v++)
+    for (std::size_t v = 0; v < height_; v++)
     {
-      for (size_t u = 0; u < width_; u++)
+      for (std::size_t u = 0; u < width_; u++)
       {
         PointXYZRGBA pt;
         float depth_ = depth.at (u, v).intensity;
@@ -387,13 +439,10 @@ namespace pcl
         pt.g = image.at (u, v).g;
         pt.b = image.at (u, v).b;
 
-        out.points.push_back (pt);
+        out.push_back (pt);
       }
     }
     out.width = width_;
     out.height = height_;
   }
 }
-
-#endif //#ifndef PCL_TYPE_CONVERSIONS_H
-

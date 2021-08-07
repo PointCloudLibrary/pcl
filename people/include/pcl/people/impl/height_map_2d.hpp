@@ -59,12 +59,12 @@ template <typename PointT> void
 pcl::people::HeightMap2D<PointT>::compute (pcl::people::PersonCluster<PointT>& cluster)
 {
   // Check if all mandatory variables have been set:
-  if (sqrt_ground_coeffs_ != sqrt_ground_coeffs_)
+  if (std::isnan(sqrt_ground_coeffs_))
   {
     PCL_ERROR ("[pcl::people::HeightMap2D::compute] Floor parameters have not been set or they are not valid!\n");
     return;
   }
-  if (cloud_ == NULL)
+  if (cloud_ == nullptr)
   {
     PCL_ERROR ("[pcl::people::HeightMap2D::compute] Input cloud has not been set!\n");
     return;
@@ -80,14 +80,14 @@ pcl::people::HeightMap2D<PointT>::compute (pcl::people::PersonCluster<PointT>& c
 
   // Create a height map with the projection of cluster points onto the ground plane:
   if (!vertical_)    // camera horizontal
-    buckets_.resize(size_t((cluster.getMax()(0) - cluster.getMin()(0)) / bin_size_) + 1, 0);
+    buckets_.resize(std::size_t((cluster.getMax()(0) - cluster.getMin()(0)) / bin_size_) + 1, 0);
   else        // camera vertical
-    buckets_.resize(size_t((cluster.getMax()(1) - cluster.getMin()(1)) / bin_size_) + 1, 0);
+    buckets_.resize(std::size_t((cluster.getMax()(1) - cluster.getMin()(1)) / bin_size_) + 1, 0);
   buckets_cloud_indices_.resize(buckets_.size(), 0);
 
-  for(std::vector<int>::const_iterator pit = cluster.getIndices().indices.begin(); pit != cluster.getIndices().indices.end(); pit++)
+  for(const auto& cluster_idx : cluster.getIndices().indices)
   {
-    PointT* p = &cloud_->points[*pit];
+    PointT* p = &(*cloud_)[cluster_idx];
     int index;
     if (!vertical_)    // camera horizontal
       index = int((p->x - cluster.getMin()(0)) / bin_size_);
@@ -103,7 +103,7 @@ pcl::people::HeightMap2D<PointT>::compute (pcl::people::PersonCluster<PointT>& c
       if ((heightp * 60) > buckets_[index])   // compare the height of the new point with the existing one
       {
         buckets_[index] = heightp * 60;   // maximum height
-        buckets_cloud_indices_[index] = *pit;     // point cloud index of the point with maximum height
+        buckets_cloud_indices_[index] = cluster_idx;     // point cloud index of the point with maximum height
       }
     }
   }
@@ -121,10 +121,9 @@ pcl::people::HeightMap2D<PointT>::searchLocalMaxima ()
   // Search for local maxima:
   maxima_number_ = 0;
   int left = buckets_[0];         // current left element
-  int right = 0;              // current right element
   float offset = 0;           // used to center the maximum to the right place
-  maxima_indices_.resize(size_t(buckets_.size()), 0);
-  maxima_cloud_indices_.resize(size_t(buckets_.size()), 0);
+  maxima_indices_.resize(std::size_t(buckets_.size()), 0);
+  maxima_cloud_indices_.resize(std::size_t(buckets_.size()), 0);
 
   // Handle first element:
   if (buckets_[0] > buckets_[1])
@@ -138,7 +137,7 @@ pcl::people::HeightMap2D<PointT>::searchLocalMaxima ()
   int i = 1;
   while (i < (static_cast<int> (buckets_.size()) - 1))
   {
-    right = buckets_[i+1];
+    int right = buckets_[i+1]; // current right element
     if ((buckets_[i] > left) && (buckets_[i] > right))
     {
       // Search where to insert the new element (in an ordered array):
@@ -157,7 +156,7 @@ pcl::people::HeightMap2D<PointT>::searchLocalMaxima ()
       maxima_indices_[t] = i - int(offset/2 + 0.5);
       maxima_cloud_indices_[t] = buckets_cloud_indices_[maxima_indices_[t]];
       left = buckets_[i+1];
-      i = i+2;
+      i +=2;
       offset = 0;
       maxima_number_++;
     }
@@ -211,23 +210,22 @@ pcl::people::HeightMap2D<PointT>::filterMaxima ()
     for (int i = 0; i < maxima_number_; i++)
     {
       bool good_maximum = true;
-      float distance = 0;
 
-      PointT* p_current = &cloud_->points[maxima_cloud_indices_[i]];  // pointcloud point referring to the current maximum
+      PointT* p_current = &(*cloud_)[maxima_cloud_indices_[i]];  // pointcloud point referring to the current maximum
       Eigen::Vector3f p_current_eigen(p_current->x, p_current->y, p_current->z);  // conversion to eigen
       float t = p_current_eigen.dot(ground_coeffs_.head(3)) / std::pow(sqrt_ground_coeffs_, 2); // height from the ground
-      p_current_eigen = p_current_eigen - ground_coeffs_.head(3) * t;       // projection of the point on the groundplane
+      p_current_eigen -= ground_coeffs_.head(3) * t;       // projection of the point on the groundplane
 
       int j = i-1;
       while ((j >= 0) && (good_maximum))
       {
-        PointT* p_previous = &cloud_->points[maxima_cloud_indices_[j]];         // pointcloud point referring to an already validated maximum
+        PointT* p_previous = &(*cloud_)[maxima_cloud_indices_[j]];         // pointcloud point referring to an already validated maximum
         Eigen::Vector3f p_previous_eigen(p_previous->x, p_previous->y, p_previous->z);  // conversion to eigen
         float t = p_previous_eigen.dot(ground_coeffs_.head(3)) / std::pow(sqrt_ground_coeffs_, 2); // height from the ground
-        p_previous_eigen = p_previous_eigen - ground_coeffs_.head(3) * t;         // projection of the point on the groundplane
+        p_previous_eigen -= ground_coeffs_.head(3) * t;         // projection of the point on the groundplane
 
         // distance of the projection of the points on the groundplane:
-        distance = (p_current_eigen-p_previous_eigen).norm();
+        float distance = (p_current_eigen-p_previous_eigen).norm();
         if (distance < min_dist_between_maxima_)
         {
           good_maximum = false;

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_CUDA_PREDICATE_H_
-#define PCL_CUDA_PREDICATE_H_
+#pragma once
 
 //#if THRUST_DEVICE_COMPILER == THRUST_DEVICE_COMPILER_NVCC
 //#undef __MMX__
@@ -91,7 +90,3 @@ namespace cuda
 
 } // namespace
 } // namespace
-
-#endif  //#ifndef PCL_CUDA_PREDICATE_H_
-
-

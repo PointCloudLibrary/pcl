@@ -38,13 +38,12 @@
  *
  */
 
-#ifndef PCL_PFH_H_
-#define PCL_PFH_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
-#include <pcl/features/pfh_tools.h>
 #include <map>
+#include <queue> // for std::queue
 
 namespace pcl
 {
@@ -82,8 +81,8 @@ namespace pcl
   class PFHEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<PFHEstimation<PointInT, PointNT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const PFHEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
+      using Ptr = shared_ptr<PFHEstimation<PointInT, PointNT, PointOutT> >;
+      using ConstPtr = shared_ptr<const PFHEstimation<PointInT, PointNT, PointOutT> >;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::indices_;
@@ -93,18 +92,15 @@ namespace pcl
       using Feature<PointInT, PointOutT>::input_;
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
 
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudIn  PointCloudIn;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+      using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
 
       /** \brief Empty constructor. 
         * Sets \a use_cache_ to false, \a nr_subdiv_ to 5, and the internal maximum cache size to 1GB.
         */
       PFHEstimation () : 
         nr_subdiv_ (5), 
-        pfh_histogram_ (),
-        pfh_tuple_ (),
         d_pi_ (1.0f / (2.0f * static_cast<float> (M_PI))), 
-        feature_map_ (),
         key_list_ (),
         // Default 1GB memory size. Need to set it to something more conservative.
         max_cache_size_ ((1ul*1024ul*1024ul*1024ul) / sizeof (std::pair<std::pair<int, int>, Eigen::Vector4f>)),
@@ -181,7 +177,7 @@ namespace pcl
         */
       void 
       computePointPFHSignature (const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals, 
-                                const std::vector<int> &indices, int nr_split, Eigen::VectorXf &pfh_histogram);
+                                const pcl::Indices &indices, int nr_split, Eigen::VectorXf &pfh_histogram);
 
     protected:
       /** \brief Estimate the Point Feature Histograms (PFH) descriptors at a set of points given by
@@ -190,7 +186,7 @@ namespace pcl
         * \param[out] output the resultant point cloud model dataset that contains the PFH feature estimates
         */
       void 
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief The number of subdivisions for each angular feature interval. */
       int nr_subdiv_;
@@ -208,7 +204,7 @@ namespace pcl
       float d_pi_; 
 
       /** \brief Internal hashmap, used to optimize efficiency of redundant computations. */
-      std::map<std::pair<int, int>, Eigen::Vector4f, std::less<std::pair<int, int> >, Eigen::aligned_allocator<std::pair<const std::pair<int, int>, Eigen::Vector4f> > > feature_map_;
+      std::map<std::pair<int, int>, Eigen::Vector4f, std::less<>, Eigen::aligned_allocator<std::pair<const std::pair<int, int>, Eigen::Vector4f> > > feature_map_;
 
       /** \brief Queue of pairs saved, used to constrain memory usage. */
       std::queue<std::pair<int, int> > key_list_;
@@ -224,6 +220,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/pfh.hpp>
 #endif
-
-#endif  //#ifndef PCL_PFH_H_
-

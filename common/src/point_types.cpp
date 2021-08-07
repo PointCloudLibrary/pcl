@@ -131,6 +131,13 @@ namespace pcl
   }
 
   std::ostream& 
+  operator << (std::ostream& os, const PointXYZLAB& p)
+  {
+    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.L << " , " <<  p.a << " , " << p.b << ")";
+    return (os);
+  }
+
+  std::ostream& 
   operator << (std::ostream& os, const PointXYZHSV& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.h << " , " <<  p.s << " , " << p.v << ")";
@@ -190,8 +197,8 @@ namespace pcl
   operator << (std::ostream& os, const PointXYZRGBNormal& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << " - "<< p.rgb << " - " << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << " - "
-      << static_cast<int>(p.r) << ", "
-      << static_cast<int>(p.g) << ", "
+      << static_cast<int>(p.r) << ","
+      << static_cast<int>(p.g) << ","
       << static_cast<int>(p.b) << " - "
       << p.curvature << ")";
     return (os);
@@ -304,7 +311,7 @@ namespace pcl
   {
     for (int i = 0; i < 9; ++i)
     os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
-    for (size_t i = 0; i < 1980; ++i)
+    for (std::size_t i = 0; i < 1980; ++i)
       os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 1979 ? ", " : ")");
     return (os);
   }
@@ -314,7 +321,7 @@ namespace pcl
   {
     for (int i = 0; i < 9; ++i)
     os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
-    for (size_t i = 0; i < 1960; ++i)
+    for (std::size_t i = 0; i < 1960; ++i)
       os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 1959 ? ", " : ")");
     return (os);
   }
@@ -324,7 +331,7 @@ namespace pcl
   {
     for (int i = 0; i < 9; ++i)
     os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
-    for (size_t i = 0; i < 352; ++i)
+    for (std::size_t i = 0; i < 352; ++i)
     os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 351 ? ", " : ")");
     return (os);
   }
@@ -334,7 +341,7 @@ namespace pcl
   {
     for (int i = 0; i < 9; ++i)
     os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
-    for (size_t i = 0; i < 1344; ++i)
+    for (std::size_t i = 0; i < 1344; ++i)
     os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 1343 ? ", " : ")");
     return (os);
   }
@@ -409,8 +416,8 @@ namespace pcl
   std::ostream& 
   operator << (std::ostream& os, const GFPFHSignature16& p)
   {
-    for (int i = 0; i < p.descriptorSize (); ++i)
-    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < (p.descriptorSize () - 1) ? ", " : ")");
+    for (int i = 0; i < pcl::GFPFHSignature16::descriptorSize (); ++i)
+    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < (pcl::GFPFHSignature16::descriptorSize () - 1) ? ", " : ")");
     return (os);
   }
 

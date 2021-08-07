@@ -34,44 +34,42 @@
  *
  */
 
-#ifndef PCL_MODELER_STATISTICAL_OUTLIER_REMOVAL_WORKER_H_
-#define PCL_MODELER_STATISTICAL_OUTLIER_REMOVAL_WORKER_H_
+#pragma once
 
 #include <pcl/apps/modeler/abstract_worker.h>
 
-namespace pcl
-{
-  namespace modeler
+namespace pcl {
+namespace modeler {
+
+class IntParameter;
+class DoubleParameter;
+
+class StatisticalOutlierRemovalWorker : public AbstractWorker {
+public:
+  StatisticalOutlierRemovalWorker(const QList<CloudMeshItem*>& cloud_mesh_items,
+                                  QWidget* parent = nullptr);
+  ~StatisticalOutlierRemovalWorker();
+
+protected:
+  std::string
+  getName() const override
   {
-    class IntParameter;
-    class DoubleParameter;
-
-    class StatisticalOutlierRemovalWorker : public AbstractWorker 
-    {
-      public:
-        StatisticalOutlierRemovalWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=0);
-        ~StatisticalOutlierRemovalWorker(void);
-
-      protected:
-        virtual std::string
-        getName () const {return ("Statistical Outlier Removal");}
-
-        virtual void
-        initParameters(CloudMeshItem* cloud_mesh_item);
-
-        virtual void
-        setupParameters();
-
-        virtual void
-        processImpl(CloudMeshItem* cloud_mesh_item);
-
-      private:
-        IntParameter* mean_k_;
-        DoubleParameter* stddev_mul_thresh_;
-
-    };
-
+    return "Statistical Outlier Removal";
   }
-}
 
-#endif // PCL_MODELER_STATISTICAL_OUTLIER_REMOVAL_WORKER_H_
+  void
+  initParameters(CloudMeshItem* cloud_mesh_item) override;
+
+  void
+  setupParameters() override;
+
+  void
+  processImpl(CloudMeshItem* cloud_mesh_item) override;
+
+private:
+  IntParameter* mean_k_;
+  DoubleParameter* stddev_mul_thresh_;
+};
+
+} // namespace modeler
+} // namespace pcl

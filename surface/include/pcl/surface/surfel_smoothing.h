@@ -35,11 +35,10 @@
  * $Id$
  */
 
-#ifndef PCL_SURFEL_SMOOTHING_H_
-#define PCL_SURFEL_SMOOTHING_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
-#include <pcl/search/pcl_search.h>
+#include <pcl/search/search.h> // for Search
 
 namespace pcl
 {
@@ -50,15 +49,15 @@ namespace pcl
     using PCLBase<PointT>::initCompute;
 
     public:
-      typedef boost::shared_ptr<SurfelSmoothing<PointT, PointNT> > Ptr;
-      typedef boost::shared_ptr<const SurfelSmoothing<PointT, PointNT> > ConstPtr;
+      typedef shared_ptr<SurfelSmoothing<PointT, PointNT> > Ptr;
+      typedef shared_ptr<const SurfelSmoothing<PointT, PointNT> > ConstPtr;
 
-      typedef pcl::PointCloud<PointT> PointCloudIn;
-      typedef typename pcl::PointCloud<PointT>::Ptr PointCloudInPtr;
-      typedef pcl::PointCloud<PointNT> NormalCloud;
-      typedef typename pcl::PointCloud<PointNT>::Ptr NormalCloudPtr;
-      typedef pcl::search::Search<PointT> CloudKdTree;
-      typedef typename pcl::search::Search<PointT>::Ptr CloudKdTreePtr;
+      using PointCloudIn = pcl::PointCloud<PointT>;
+      using PointCloudInPtr = typename pcl::PointCloud<PointT>::Ptr;
+      using NormalCloud = pcl::PointCloud<PointNT>;
+      using NormalCloudPtr = typename pcl::PointCloud<PointNT>::Ptr;
+      using CloudKdTree = pcl::search::Search<PointT>;
+      using CloudKdTreePtr = typename pcl::search::Search<PointT>::Ptr;
 
       SurfelSmoothing (float a_scale = 0.01)
         : PCLBase<PointT> ()
@@ -90,14 +89,14 @@ namespace pcl
 
 
       void
-      smoothPoint (size_t &point_index,
+      smoothPoint (std::size_t &point_index,
                    PointT &output_point,
                    PointNT &output_normal);
 
       void
       extractSalientFeaturesBetweenScales (PointCloudInPtr &cloud2,
                                            NormalCloudPtr &cloud2_normals,
-                                           boost::shared_ptr<std::vector<int> > &output_features);
+                                           pcl::IndicesPtr &output_features);
 
     private:
       float scale_, scale_squared_;
@@ -114,5 +113,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/surface/impl/surfel_smoothing.hpp>
 #endif
-
-#endif    // PCL_SURFEL_SMOOTHING_H_

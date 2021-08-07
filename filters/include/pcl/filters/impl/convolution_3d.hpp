@@ -42,7 +42,11 @@
 
 #include <pcl/pcl_config.h>
 #include <pcl/point_types.h>
-#include <pcl/common/point_operators.h>
+
+#include <cmath>
+#include <cstdint>
+#include <limits>
+#include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 namespace pcl
@@ -98,7 +102,7 @@ pcl::filters::GaussianKernel<PointInT, PointOutT>::initCompute ()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointOutT> PointOutT
-pcl::filters::GaussianKernel<PointInT, PointOutT>::operator() (const std::vector<int>& indices,
+pcl::filters::GaussianKernel<PointInT, PointOutT>::operator() (const Indices& indices,
                                                                const std::vector<float>& distances)
 {
   using namespace pcl::common;
@@ -106,13 +110,13 @@ pcl::filters::GaussianKernel<PointInT, PointOutT>::operator() (const std::vector
   float total_weight = 0;
   std::vector<float>::const_iterator dist_it = distances.begin ();
 
-  for (std::vector<int>::const_iterator idx_it = indices.begin ();
+  for (Indices::const_iterator idx_it = indices.begin ();
        idx_it != indices.end ();
        ++idx_it, ++dist_it)
   {
     if (*dist_it <= threshold_ && isFinite ((*input_) [*idx_it]))
     {
-      float weight = expf (-0.5f * (*dist_it) / sigma_sqr_);
+      float weight = std::exp (-0.5f * (*dist_it) / sigma_sqr_);
       result += weight * (*input_) [*idx_it];
       total_weight += weight;
     }
@@ -127,7 +131,7 @@ pcl::filters::GaussianKernel<PointInT, PointOutT>::operator() (const std::vector
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointOutT> PointOutT
-pcl::filters::GaussianKernelRGB<PointInT, PointOutT>::operator() (const std::vector<int>& indices, const std::vector<float>& distances)
+pcl::filters::GaussianKernelRGB<PointInT, PointOutT>::operator() (const Indices& indices, const std::vector<float>& distances)
 {
   using namespace pcl::common;
   PointOutT result;
@@ -135,13 +139,13 @@ pcl::filters::GaussianKernelRGB<PointInT, PointOutT>::operator() (const std::vec
   float r = 0, g = 0, b = 0;
   std::vector<float>::const_iterator dist_it = distances.begin ();
 
-  for (std::vector<int>::const_iterator idx_it = indices.begin ();
+  for (Indices::const_iterator idx_it = indices.begin ();
        idx_it != indices.end ();
        ++idx_it, ++dist_it)
   {
     if (*dist_it <= threshold_ && isFinite ((*input_) [*idx_it]))
     {
-      float weight = expf (-0.5f * (*dist_it) / sigma_sqr_);
+      float weight = std::exp (-0.5f * (*dist_it) / sigma_sqr_);
       result.x += weight * (*input_) [*idx_it].x;
       result.y += weight * (*input_) [*idx_it].y;
       result.z += weight * (*input_) [*idx_it].z;
@@ -156,9 +160,9 @@ pcl::filters::GaussianKernelRGB<PointInT, PointOutT>::operator() (const std::vec
     total_weight = 1.f/total_weight;
     r*= total_weight; g*= total_weight; b*= total_weight;
     result.x*= total_weight; result.y*= total_weight; result.z*= total_weight;
-    result.r = static_cast<pcl::uint8_t> (r);
-    result.g = static_cast<pcl::uint8_t> (g);
-    result.b = static_cast<pcl::uint8_t> (b);
+    result.r = static_cast<std::uint8_t> (r);
+    result.g = static_cast<std::uint8_t> (g);
+    result.b = static_cast<std::uint8_t> (b);
   }
   else
     makeInfinite (result);
@@ -200,14 +204,14 @@ pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::initCompute ()
   // Do a fast check to see if the search parameters are well defined
   if (search_radius_ <= 0.0)
   {
-    PCL_ERROR ("[pcl::filters::Convlution3D::initCompute] search radius (%f) must be > 0",
+    PCL_ERROR ("[pcl::filters::Convlution3D::initCompute] search radius (%f) must be > 0\n",
                search_radius_);
     return (false);
   }
   // Make sure the provided kernel implements the required interface
   if (dynamic_cast<ConvolvingKernel<PointInT, PointOutT>* > (&kernel_) == 0)
   {
-    PCL_ERROR ("[pcl::filters::Convlution3D::initCompute] init failed");
+    PCL_ERROR ("[pcl::filters::Convlution3D::initCompute] init failed : ");
     PCL_ERROR ("kernel_ must implement ConvolvingKernel interface\n!");
     return (false);
   }
@@ -234,13 +238,15 @@ pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::convolve (PointCloudO
   output.width = surface_->width;
   output.height = surface_->height;
   output.is_dense = surface_->is_dense;
-  std::vector<int> nn_indices;
+  Indices nn_indices;
   std::vector<float> nn_distances;
 
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) private (nn_indices, nn_distances) num_threads (threads_)
-#endif
-  for (int64_t point_idx = 0; point_idx < static_cast<int64_t> (surface_->size ()); ++point_idx)
+#pragma omp parallel for \
+  default(none) \
+  shared(output) \
+  firstprivate(nn_indices, nn_distances) \
+  num_threads(threads_)
+  for (std::int64_t point_idx = 0; point_idx < static_cast<std::int64_t> (surface_->size ()); ++point_idx)
   {
     const PointInT& point_in = surface_->points [point_idx];
     PointOutT& point_out = output [point_idx];

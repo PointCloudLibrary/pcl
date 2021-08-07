@@ -36,15 +36,15 @@
  *
  */
 
-#ifndef VTK_UTILS_H_
-#define VTK_UTILS_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
-#include <pcl/PolygonMesh.h>
 #include <pcl/surface/vtk_smoothing/vtk.h>
 
 namespace pcl
 {
+  struct PolygonMesh;
+
   class PCL_EXPORTS VTKUtils
   {
     public:
@@ -79,5 +79,3 @@ namespace pcl
       mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyData> &poly_data);
   };
 }
-
-#endif /* VTK_UTILS_H_ */

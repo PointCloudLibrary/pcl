@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_ORGANIZED_CONNECTED_COMPONENT_SEGMENTATION_H_
-#define PCL_SEGMENTATION_ORGANIZED_CONNECTED_COMPONENT_SEGMENTATION_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/PointIndices.h>
@@ -64,17 +63,17 @@ namespace pcl
     using PCLBase<PointT>::deinitCompute;
 
     public:
-      typedef typename pcl::PointCloud<PointT> PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = pcl::PointCloud<PointT>;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
       
-      typedef typename pcl::PointCloud<PointLT> PointCloudL;
-      typedef typename PointCloudL::Ptr PointCloudLPtr;
-      typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
+      using PointCloudL = pcl::PointCloud<PointLT>;
+      using PointCloudLPtr = typename PointCloudL::Ptr;
+      using PointCloudLConstPtr = typename PointCloudL::ConstPtr;
 
-      typedef typename pcl::Comparator<PointT> Comparator;
-      typedef typename Comparator::Ptr ComparatorPtr;
-      typedef typename Comparator::ConstPtr ComparatorConstPtr;
+      using Comparator = pcl::Comparator<PointT>;
+      using ComparatorPtr = typename Comparator::Ptr;
+      using ComparatorConstPtr = typename Comparator::ConstPtr;
       
       /** \brief Constructor for OrganizedConnectedComponentSegmentation
         * \param[in] compare A pointer to the comparator to be used for segmentation.  Must be an instance of pcl::Comparator.
@@ -85,7 +84,7 @@ namespace pcl
       }
 
       /** \brief Destructor for OrganizedConnectedComponentSegmentation. */
-      virtual
+      
       ~OrganizedConnectedComponentSegmentation ()
       {
       }
@@ -151,5 +150,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/organized_connected_component_segmentation.hpp>
 #endif
-
-#endif //#ifndef PCL_ORGANIZED_CONNECTED_COMPONENT_SEGMENTATION_H_

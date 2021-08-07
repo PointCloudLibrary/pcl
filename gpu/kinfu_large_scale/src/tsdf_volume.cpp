@@ -160,10 +160,10 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchCloudHost (PointCloud<PointType>& cloud, boo
   std::vector<int> volume_host;
   volume_.download (volume_host, cols);
 
-  cloud.points.clear ();
-  cloud.points.reserve (10000);
+  cloud.clear ();
+  cloud.reserve (10000);
 
-  const int DIVISOR = pcl::device::kinfuLS::DIVISOR; // SHRT_MAX;
+  constexpr int DIVISOR = pcl::device::kinfuLS::DIVISOR; // SHRT_MAX;
 
 #define FETCH(x, y, z) volume_host[(x) + (y) * volume_x + (z) * volume_y * volume_x]
 
@@ -200,14 +200,14 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchCloudHost (PointCloud<PointType>& cloud, boo
               if ((F > 0 && Fn < 0) || (F < 0 && Fn > 0))
               {
                 Vector3f Vn = ((Array3f (x+dx, y+dy, z+dz) + 0.5f) * cell_size).matrix ();
-                Vector3f point = (V * abs (Fn) + Vn * abs (F)) / (abs (F) + abs (Fn));
+                Vector3f point = (V * std::abs (Fn) + Vn * std::abs (F)) / (std::abs (F) + std::abs (Fn));
 
                 pcl::PointXYZ xyz;
                 xyz.x = point (0);
                 xyz.y = point (1);
                 xyz.z = point (2);
 
-                cloud.points.push_back (xyz);
+                cloud.push_back (xyz);
               }
             }
           dz = 0;
@@ -224,14 +224,14 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchCloudHost (PointCloud<PointType>& cloud, boo
               if ((F > 0 && Fn < 0) || (F < 0 && Fn > 0))
               {
                 Vector3f Vn = ((Array3f (x+dx, y+dy, z+dz) + 0.5f) * cell_size).matrix ();
-                Vector3f point = (V * abs(Fn) + Vn * abs(F))/(abs(F) + abs (Fn));
+                Vector3f point = (V * std::abs(Fn) + Vn * std::abs(F))/(std::abs(F) + std::abs (Fn));
 
                 pcl::PointXYZ xyz;
                 xyz.x = point (0);
                 xyz.y = point (1);
                 xyz.z = point (2);
 
-                cloud.points.push_back (xyz);
+                cloud.push_back (xyz);
               }
             }
         }
@@ -256,14 +256,14 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchCloudHost (PointCloud<PointType>& cloud, boo
             if ((F > 0 && Fn < 0) || (F < 0 && Fn > 0))
             {
               Vector3f Vn = ((Array3f (x+dx, y+dy, z+dz) + 0.5f) * cell_size).matrix ();
-              Vector3f point = (V * abs (Fn) + Vn * abs (F)) / (abs (F) + abs (Fn));
+              Vector3f point = (V * std::abs (Fn) + Vn * std::abs (F)) / (std::abs (F) + std::abs (Fn));
 
               pcl::PointXYZ xyz;
               xyz.x = point (0);
               xyz.y = point (1);
               xyz.z = point (2);
 
-              cloud.points.push_back (xyz);
+              cloud.push_back (xyz);
             }
           }
         } /* if (connected26) */
@@ -271,7 +271,7 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchCloudHost (PointCloud<PointType>& cloud, boo
     }
   }
 #undef FETCH
-  cloud.width  = (int)cloud.points.size ();
+  cloud.width  = cloud.size ();
   cloud.height = 1;
 }
 
@@ -283,7 +283,7 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchCloud (DeviceArray<PointType>& cloud_buffer)
     cloud_buffer.create (DEFAULT_CLOUD_BUFFER_SIZE);
 
   float3 device_volume_size = device_cast<const float3> (size_);
-  size_t size = pcl::device::kinfuLS::extractCloud (volume_, device_volume_size, cloud_buffer);
+  std::size_t size = pcl::device::kinfuLS::extractCloud (volume_, device_volume_size, cloud_buffer);
   return (DeviceArray<PointType> (cloud_buffer.ptr (), size));
 }
 
@@ -302,7 +302,7 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchNormals (const DeviceArray<PointType>& cloud
 void 
 pcl::gpu::kinfuLS::TsdfVolume::pushSlice (PointCloud<PointXYZI>::Ptr existing_data_cloud, const pcl::gpu::kinfuLS::tsdf_buffer* buffer) const
 {
-  size_t gpu_array_size = existing_data_cloud->points.size ();
+  const auto gpu_array_size = existing_data_cloud->size ();
 
   if(gpu_array_size == 0)
   {
@@ -310,7 +310,7 @@ pcl::gpu::kinfuLS::TsdfVolume::pushSlice (PointCloud<PointXYZI>::Ptr existing_da
     return;
   }
 
-  const pcl::PointXYZI *first_point_ptr = &(existing_data_cloud->points[0]);
+  const pcl::PointXYZI *first_point_ptr = &((*existing_data_cloud)[0]);
 
   pcl::gpu::DeviceArray<pcl::PointXYZI> cloud_gpu;
   cloud_gpu.upload (first_point_ptr, gpu_array_size);
@@ -334,7 +334,7 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchSliceAsCloud (DeviceArray<PointType>& cloud_
 
   float3 device_volume_size = device_cast<const float3> (size_);
   
-  size_t size = pcl::device::kinfuLS::extractSliceAsCloud (volume_, device_volume_size, buffer, shiftX, shiftY, shiftZ, cloud_buffer_xyz, cloud_buffer_intensity);
+  std::size_t size = pcl::device::kinfuLS::extractSliceAsCloud (volume_, device_volume_size, buffer, shiftX, shiftY, shiftZ, cloud_buffer_xyz, cloud_buffer_intensity);
   
   std::cout << " SIZE IS " << size << std::endl;
   
@@ -367,13 +367,12 @@ pcl::gpu::kinfuLS::TsdfVolume::convertToTsdfCloud ( pcl::PointCloud<pcl::PointXY
   cloud->reserve (std::min (cloud_size/10, 500000));
 
   int volume_idx = 0, cloud_idx = 0;
-  // #pragma omp parallel for // if used, increment over idx not possible! use index calculation
   for (int z = 0; z < sz; z+=step)
     for (int y = 0; y < sy; y+=step)
       for (int x = 0; x < sx; x+=step, ++cloud_idx)
       {
         volume_idx = sx*sy*z + sx*y + x;
-        // pcl::PointXYZI &point = cloud->points[cloud_idx];
+        // pcl::PointXYZI &point = (*cloud)[cloud_idx];
 
         if (weights_host_->at(volume_idx) == 0 || volume_host_->at(volume_idx) > 0.98 )
           continue;
@@ -393,7 +392,9 @@ pcl::gpu::kinfuLS::TsdfVolume::downloadTsdf (std::vector<float>& tsdf) const
   tsdf.resize (volume_.cols() * volume_.rows());
   volume_.download(&tsdf[0], volume_.cols() * sizeof(int));
 
-#pragma omp parallel for
+#pragma omp parallel for \
+  default(none) \
+  shared(tsdf)
   for(int i = 0; i < (int) tsdf.size(); ++i)
   {
     float tmp = reinterpret_cast<short2*>(&tsdf[i])->x;
@@ -418,7 +419,9 @@ pcl::gpu::kinfuLS::TsdfVolume::downloadTsdfAndWeights (std::vector<float>& tsdf,
   weights.resize (volumeSize);
   volume_.download(&tsdf[0], volume_.cols() * sizeof(int));
   
-  #pragma omp parallel for
+  #pragma omp parallel for \
+    default(none) \
+    shared(tsdf, weights)
   for(int i = 0; i < (int) tsdf.size(); ++i)
   {
     short2 elem = *reinterpret_cast<short2*>(&tsdf[i]);

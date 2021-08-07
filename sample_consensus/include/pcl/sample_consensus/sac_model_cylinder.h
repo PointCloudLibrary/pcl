@@ -38,12 +38,10 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_MODEL_CYLINDER_H_
-#define PCL_SAMPLE_CONSENSUS_MODEL_CYLINDER_H_
+#pragma once
 
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
-#include <pcl/common/common.h>
 #include <pcl/common/distances.h>
 
 namespace pcl
@@ -74,11 +72,12 @@ namespace pcl
       using SampleConsensusModelFromNormals<PointT, PointNT>::normal_distance_weight_;
       using SampleConsensusModel<PointT>::error_sqr_dists_;
 
-      typedef typename SampleConsensusModel<PointT>::PointCloud PointCloud;
-      typedef typename SampleConsensusModel<PointT>::PointCloudPtr PointCloudPtr;
-      typedef typename SampleConsensusModel<PointT>::PointCloudConstPtr PointCloudConstPtr;
+      using PointCloud = typename SampleConsensusModel<PointT>::PointCloud;
+      using PointCloudPtr = typename SampleConsensusModel<PointT>::PointCloudPtr;
+      using PointCloudConstPtr = typename SampleConsensusModel<PointT>::PointCloudConstPtr;
 
-      typedef boost::shared_ptr<SampleConsensusModelCylinder> Ptr;
+      using Ptr = shared_ptr<SampleConsensusModelCylinder<PointT, PointNT> >;
+      using ConstPtr = shared_ptr<const SampleConsensusModelCylinder<PointT, PointNT>>;
 
       /** \brief Constructor for base SampleConsensusModelCylinder.
         * \param[in] cloud the input point cloud dataset
@@ -101,7 +100,7 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelCylinder (const PointCloudConstPtr &cloud, 
-                                    const std::vector<int> &indices,
+                                    const Indices &indices,
                                     bool random = false) 
         : SampleConsensusModel<PointT> (cloud, indices, random)
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
@@ -127,7 +126,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      virtual ~SampleConsensusModelCylinder () {}
+      ~SampleConsensusModelCylinder () {}
 
       /** \brief Copy constructor.
         * \param[in] source the model to copy into this
@@ -150,7 +149,7 @@ namespace pcl
 
       /** \brief Get the angle epsilon (delta) threshold. */
       inline double 
-      getEpsAngle () { return (eps_angle_); }
+      getEpsAngle () const { return (eps_angle_); }
 
       /** \brief Set the axis along which we need to search for a cylinder direction.
         * \param[in] ax the axis along which we need to search for a cylinder direction
@@ -160,7 +159,7 @@ namespace pcl
 
       /** \brief Get the axis along which we need to search for a cylinder direction. */
       inline Eigen::Vector3f 
-      getAxis ()  { return (axis_); }
+      getAxis () const { return (axis_); }
 
       /** \brief Check whether the given index samples can form a valid cylinder model, compute the model coefficients
         * from these samples and store them in model_coefficients. The cylinder coefficients are: point_on_axis,
@@ -169,8 +168,8 @@ namespace pcl
         * \param[out] model_coefficients the resultant model coefficients
         */
       bool
-      computeModelCoefficients (const std::vector<int> &samples,
-                                Eigen::VectorXf &model_coefficients) const;
+      computeModelCoefficients (const Indices &samples,
+                                Eigen::VectorXf &model_coefficients) const override;
 
       /** \brief Compute all distances from the cloud data to a given cylinder model.
         * \param[in] model_coefficients the coefficients of a cylinder model that we need to compute distances to
@@ -178,7 +177,7 @@ namespace pcl
         */
       void
       getDistancesToModel (const Eigen::VectorXf &model_coefficients,
-                           std::vector<double> &distances) const;
+                           std::vector<double> &distances) const override;
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
         * \param[in] model_coefficients the coefficients of a cylinder model that we need to compute distances to
@@ -188,7 +187,7 @@ namespace pcl
       void 
       selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
                             const double threshold, 
-                            std::vector<int> &inliers);
+                            Indices &inliers) override;
 
       /** \brief Count all the points which respect the given model coefficients as inliers. 
         * 
@@ -196,9 +195,9 @@ namespace pcl
         * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
         * \return the resultant number of inliers
         */
-      virtual int
+      std::size_t
       countWithinDistance (const Eigen::VectorXf &model_coefficients,
-                           const double threshold) const;
+                           const double threshold) const override;
 
       /** \brief Recompute the cylinder coefficients using the given inlier set and return them to the user.
         * @note: these are the coefficients of the cylinder model after refinement (e.g. after SVD)
@@ -207,9 +206,9 @@ namespace pcl
         * \param[out] optimized_coefficients the resultant recomputed coefficients after non-linear optimization
         */
       void
-      optimizeModelCoefficients (const std::vector<int> &inliers,
+      optimizeModelCoefficients (const Indices &inliers,
                                  const Eigen::VectorXf &model_coefficients,
-                                 Eigen::VectorXf &optimized_coefficients) const;
+                                 Eigen::VectorXf &optimized_coefficients) const override;
 
 
       /** \brief Create a new point cloud with inliers projected onto the cylinder model.
@@ -219,10 +218,10 @@ namespace pcl
         * \param[in] copy_data_fields set to true if we need to copy the other data fields
         */
       void
-      projectPoints (const std::vector<int> &inliers,
+      projectPoints (const Indices &inliers,
                      const Eigen::VectorXf &model_coefficients,
                      PointCloud &projected_points,
-                     bool copy_data_fields = true) const;
+                     bool copy_data_fields = true) const override;
 
       /** \brief Verify whether a subset of indices verifies the given cylinder model coefficients.
         * \param[in] indices the data indices that need to be tested against the cylinder model
@@ -230,13 +229,13 @@ namespace pcl
         * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
         */
       bool
-      doSamplesVerifyModel (const std::set<int> &indices,
+      doSamplesVerifyModel (const std::set<index_t> &indices,
                             const Eigen::VectorXf &model_coefficients,
-                            const double threshold) const;
+                            const double threshold) const override;
 
-      /** \brief Return an unique id for this model (SACMODEL_CYLINDER). */
+      /** \brief Return a unique id for this model (SACMODEL_CYLINDER). */
       inline pcl::SacModel 
-      getModelType () const { return (SACMODEL_CYLINDER); }
+      getModelType () const override { return (SACMODEL_CYLINDER); }
 
     protected:
       using SampleConsensusModel<PointT>::sample_size_;
@@ -280,26 +279,23 @@ namespace pcl
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */
-      virtual bool
-      isModelValid (const Eigen::VectorXf &model_coefficients) const;
+      bool
+      isModelValid (const Eigen::VectorXf &model_coefficients) const override;
 
       /** \brief Check if a sample of indices results in a good sample of points
         * indices. Pure virtual.
         * \param[in] samples the resultant index samples
         */
       bool
-      isSampleGood (const std::vector<int> &samples) const;
+      isSampleGood (const Indices &samples) const override;
 
     private:
-      /** \brief The axis along which we need to search for a plane perpendicular to. */
+      /** \brief The axis along which we need to search for a cylinder direction. */
       Eigen::Vector3f axis_;
     
-      /** \brief The maximum allowed difference between the plane normal and the given axis. */
+      /** \brief The maximum allowed difference between the cylinder direction and the given axis. */
       double eps_angle_;
 
-#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#pragma GCC diagnostic ignored "-Weffc++"
-#endif
       /** \brief Functor for the optimization function */
       struct OptimizationFunctor : pcl::Functor<float>
       {
@@ -307,7 +303,7 @@ namespace pcl
           * \param[in] indices the indices of data points to evaluate
           * \param[in] estimator pointer to the estimator object
           */
-        OptimizationFunctor (const pcl::SampleConsensusModelCylinder<PointT, PointNT> *model, const std::vector<int>& indices) :
+        OptimizationFunctor (const pcl::SampleConsensusModelCylinder<PointT, PointNT> *model, const Indices& indices) :
           pcl::Functor<float> (indices.size ()), model_ (model), indices_ (indices) {}
 
         /** Cost function to be minimized
@@ -324,9 +320,8 @@ namespace pcl
           for (int i = 0; i < values (); ++i)
           {
             // dist = f - r
-            Eigen::Vector4f pt (model_->input_->points[indices_[i]].x,
-                                model_->input_->points[indices_[i]].y,
-                                model_->input_->points[indices_[i]].z, 0);
+            Eigen::Vector4f pt = (*model_->input_)[indices_[i]].getVector4fMap();
+            pt[3] = 0;
 
             fvec[i] = static_cast<float> (pcl::sqrPointToLineDistance (pt, line_pt, line_dir) - x[6]*x[6]);
           }
@@ -334,16 +329,11 @@ namespace pcl
         }
 
         const pcl::SampleConsensusModelCylinder<PointT, PointNT> *model_;
-        const std::vector<int> &indices_;
+        const Indices &indices_;
       };
-#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#pragma GCC diagnostic warning "-Weffc++"
-#endif
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/sample_consensus/impl/sac_model_cylinder.hpp>
 #endif
-
-#endif  //#ifndef PCL_SAMPLE_CONSENSUS_MODEL_CYLINDER_H_

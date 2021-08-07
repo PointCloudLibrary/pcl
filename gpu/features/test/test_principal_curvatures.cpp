@@ -34,14 +34,6 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#if (defined(__GNUC__) && !defined(__CUDACC__) && (GTEST_GCC_VER_ >= 40000)) 
-    #define GTEST_USE_OWN_TR1_TUPLE 0
-#endif
-
-#if defined(_MSC_VER) && (_MSC_VER >= 1500)
-    #define GTEST_USE_OWN_TR1_TUPLE 0
-#endif
-
 #include "gtest/gtest.h"
 
 #include <pcl/point_types.h>
@@ -50,7 +42,6 @@
 
 #include "data_source.hpp"
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::gpu;
 
@@ -61,7 +52,7 @@ TEST(PCL_FeaturesGPU, PrincipalCurvatures)
     
     source.estimateNormals();
                    
-    vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
     std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
     //uploading data to GPU
@@ -82,7 +73,7 @@ TEST(PCL_FeaturesGPU, PrincipalCurvatures)
     pc_gpu.setRadiusSearch(source.radius, source.max_elements);
     pc_gpu.compute(pc_features);
 
-    vector<PrincipalCurvatures> downloaded;
+    std::vector<PrincipalCurvatures> downloaded;
     pc_features.download(downloaded);
 
     pcl::PrincipalCurvaturesEstimation<PointXYZ, Normal, PrincipalCurvatures> fe;
@@ -93,10 +84,10 @@ TEST(PCL_FeaturesGPU, PrincipalCurvatures)
     PointCloud<PrincipalCurvatures> pc;
     fe.compute (pc);
 
-    for(size_t i = 0; i < downloaded.size(); ++i)
+    for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
         PrincipalCurvatures& gpu = downloaded[i];
-        PrincipalCurvatures& cpu = pc.points[i];        
+        PrincipalCurvatures& cpu = pc[i];        
 
         ASSERT_NEAR(gpu.principal_curvature_x, cpu.principal_curvature_x, 0.01f);
         ASSERT_NEAR(gpu.principal_curvature_y, cpu.principal_curvature_y, 0.01f);

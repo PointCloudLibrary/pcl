@@ -33,33 +33,30 @@
  *
  *
  */
-#ifndef PCL_MODELER_CLOUD_MESH_ITEM_UPDATER_H_
-#define PCL_MODELER_CLOUD_MESH_ITEM_UPDATER_H_
 
-#include <pcl/apps/modeler/qt.h>
+#pragma once
 
-namespace pcl
-{
-  namespace modeler
-  {
-    class CloudMeshItem;
+#include <QObject>
 
-    class CloudMeshItemUpdater : public QObject
-    {
-      Q_OBJECT
+namespace pcl {
+namespace modeler {
 
-      public:
-        CloudMeshItemUpdater (CloudMeshItem* cloud_mesh_item);
-        ~CloudMeshItemUpdater ();
+class CloudMeshItem;
 
-      public Q_SLOTS:
-        void
-        updateCloudMeshItem();
+class CloudMeshItemUpdater : public QObject {
+  Q_OBJECT
 
-      private:
-        CloudMeshItem*      cloud_mesh_item_;
-    };
-  }
-}
+public:
+  CloudMeshItemUpdater(CloudMeshItem* cloud_mesh_item);
+  ~CloudMeshItemUpdater();
 
-#endif // PCL_MODELER_CLOUD_MESH_ITEM_UPDATER_H_
+public Q_SLOTS:
+  void
+  updateCloudMeshItem();
+
+private:
+  CloudMeshItem* cloud_mesh_item_;
+};
+
+} // namespace modeler
+} // namespace pcl

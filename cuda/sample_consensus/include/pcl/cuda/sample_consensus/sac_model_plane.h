@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_CUDA_SAMPLE_CONSENSUS_MODEL_PLANE_H_
-#define PCL_CUDA_SAMPLE_CONSENSUS_MODEL_PLANE_H_
+#pragma once
 
 #include <pcl/cuda/sample_consensus/sac_model.h>
 
@@ -85,19 +84,20 @@ namespace pcl
         using SampleConsensusModel<Storage>::indices_;
         using SampleConsensusModel<Storage>::rngl_;
 
-        typedef typename SampleConsensusModel<Storage>::PointCloud PointCloud;
-        typedef typename PointCloud::Ptr PointCloudPtr;
-        typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+        using PointCloud = typename SampleConsensusModel<Storage>::PointCloud;
+        using PointCloudPtr = typename PointCloud::Ptr;
+        using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-        typedef typename SampleConsensusModel<Storage>::Indices Indices;
-        typedef typename SampleConsensusModel<Storage>::IndicesPtr IndicesPtr;
-        typedef typename SampleConsensusModel<Storage>::IndicesConstPtr IndicesConstPtr;
+        using Indices = typename SampleConsensusModel<Storage>::Indices;
+        using IndicesPtr = typename SampleConsensusModel<Storage>::IndicesPtr;
+        using IndicesConstPtr = typename SampleConsensusModel<Storage>::IndicesConstPtr;
 
-        typedef typename SampleConsensusModel<Storage>::Coefficients Coefficients;
-        typedef typename SampleConsensusModel<Storage>::Hypotheses Hypotheses;
-        typedef typename SampleConsensusModel<Storage>::Samples Samples;
+        using Coefficients = typename SampleConsensusModel<Storage>::Coefficients;
+        using Hypotheses = typename SampleConsensusModel<Storage>::Hypotheses;
+        using Samples = typename SampleConsensusModel<Storage>::Samples;
 
-        typedef boost::shared_ptr<SampleConsensusModelPlane> Ptr;
+        using Ptr = shared_ptr<SampleConsensusModelPlane>;
+        using ConstPtr = shared_ptr<const SampleConsensusModelPlane>;
 
         /** \brief Constructor for base SampleConsensusModelPlane.
           * \param cloud the input point cloud dataset
@@ -133,7 +133,7 @@ namespace pcl
         virtual bool 
         generateModelHypotheses (Hypotheses &h, Samples &s, int max_iterations)
         {
-          // TODO: hack.. Samples should be vector<int>, not int..
+          // TODO: hack.. Samples should be std::vector<int>, not int..
           return generateModelHypotheses (h, max_iterations);
         };
 
@@ -225,12 +225,12 @@ namespace pcl
     template <template <typename> class Storage>
     struct CreatePlaneHypothesis
     {
-      typedef typename SampleConsensusModel<Storage>::PointCloud PointCloud;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = typename SampleConsensusModel<Storage>::PointCloud;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-      typedef typename SampleConsensusModel<Storage>::Indices Indices;
-      typedef typename SampleConsensusModel<Storage>::IndicesPtr IndicesPtr;
-      typedef typename SampleConsensusModel<Storage>::IndicesConstPtr IndicesConstPtr;
+      using Indices = typename SampleConsensusModel<Storage>::Indices;
+      using IndicesPtr = typename SampleConsensusModel<Storage>::IndicesPtr;
+      using IndicesConstPtr = typename SampleConsensusModel<Storage>::IndicesConstPtr;
 
       const PointXYZRGB *input;
       const int *indices;
@@ -271,5 +271,3 @@ namespace pcl
 
   } // namespace
 } // namespace
-
-#endif  //#ifndef PCL_CUDA_SAMPLE_CONSENSUS_MODEL_PLANE_H_

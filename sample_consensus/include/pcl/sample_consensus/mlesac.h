@@ -38,11 +38,11 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_MLESAC_H_
-#define PCL_SAMPLE_CONSENSUS_MLESAC_H_
+#pragma once
 
 #include <pcl/sample_consensus/sac.h>
 #include <pcl/sample_consensus/sac_model.h>
+#include <pcl/pcl_base.h>
 
 namespace pcl
 {
@@ -56,12 +56,12 @@ namespace pcl
   template <typename PointT>
   class MaximumLikelihoodSampleConsensus : public SampleConsensus<PointT>
   {
-    typedef typename SampleConsensusModel<PointT>::Ptr SampleConsensusModelPtr;
-    typedef typename SampleConsensusModel<PointT>::PointCloudConstPtr PointCloudConstPtr; 
+    using SampleConsensusModelPtr = typename SampleConsensusModel<PointT>::Ptr;
+    using PointCloudConstPtr = typename SampleConsensusModel<PointT>::PointCloudConstPtr; 
 
     public:
-      typedef boost::shared_ptr<MaximumLikelihoodSampleConsensus> Ptr;
-      typedef boost::shared_ptr<const MaximumLikelihoodSampleConsensus> ConstPtr;
+      using Ptr = shared_ptr<MaximumLikelihoodSampleConsensus<PointT> >;
+      using ConstPtr = shared_ptr<const MaximumLikelihoodSampleConsensus<PointT> >;
 
       using SampleConsensus<PointT>::max_iterations_;
       using SampleConsensus<PointT>::threshold_;
@@ -99,7 +99,7 @@ namespace pcl
         * \param[in] debug_verbosity_level enable/disable on-screen debug information and set the verbosity level
         */
       bool 
-      computeModel (int debug_verbosity_level = 0);
+      computeModel (int debug_verbosity_level = 0) override;
 
       /** \brief Set the number of EM iterations.
         * \param[in] iterations the number of EM iterations
@@ -124,8 +124,8 @@ namespace pcl
         */
       double 
       computeMedianAbsoluteDeviation (const PointCloudConstPtr &cloud, 
-                                      const boost::shared_ptr <std::vector<int> > &indices, 
-                                      double sigma);
+                                      const IndicesPtr &indices,
+                                      double sigma) const;
 
       /** \brief Determine the minimum and maximum 3D bounding box coordinates for a given set of points
         * \param[in] cloud the point cloud message
@@ -135,9 +135,9 @@ namespace pcl
         */
       void 
       getMinMax (const PointCloudConstPtr &cloud, 
-                 const boost::shared_ptr <std::vector<int> > &indices, 
+                 const IndicesPtr &indices,
                  Eigen::Vector4f &min_p, 
-                 Eigen::Vector4f &max_p);
+                 Eigen::Vector4f &max_p) const;
 
       /** \brief Compute the median value of a 3D point cloud using a given set point indices and return it as a Point32.
         * \param[in] cloud the point cloud data message
@@ -146,8 +146,8 @@ namespace pcl
         */
       void 
       computeMedian (const PointCloudConstPtr &cloud, 
-                     const boost::shared_ptr <std::vector<int> > &indices, 
-                     Eigen::Vector4f &median);
+                     const IndicesPtr &indices,
+                     Eigen::Vector4f &median) const;
 
     private:
       /** \brief Maximum number of EM (Expectation Maximization) iterations. */
@@ -160,5 +160,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/sample_consensus/impl/mlesac.hpp>
 #endif
-
-#endif  //#ifndef PCL_SAMPLE_CONSENSUS_MLESAC_H_

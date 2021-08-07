@@ -4,7 +4,7 @@
 #include <pcl/surface/mls.h>
 
 int
-main (int argc, char** argv)
+main ()
 {
   // Load input file into a PointCloud<T> with an appropriate type
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ> ());
@@ -24,7 +24,7 @@ main (int argc, char** argv)
 
   // Set parameters
   mls.setInputCloud (cloud);
-  mls.setPolynomialFit (true);
+  mls.setPolynomialOrder (2);
   mls.setSearchMethod (tree);
   mls.setSearchRadius (0.03);
 

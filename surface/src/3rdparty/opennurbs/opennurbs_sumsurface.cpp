@@ -73,7 +73,7 @@ void ON_SumSurface::EmergencyDestroy()
   m_curve[1] = 0;
 }
 
-ON_SumSurface::ON_SumSurface( const ON_SumSurface& src )
+ON_SumSurface::ON_SumSurface( const ON_SumSurface& src ) : ON_Surface(src)
 {
   ON__SET__THIS__PTR(m_s_ON_SumSurface_ptr);
   m_curve[0] = 0;
@@ -621,7 +621,7 @@ ON_BOOL32 ON_SumSurface::IsPeriodic( int dir ) const
   return rc;
 }
 
-ON_BOOL32 ON_SumSurface::IsSingular( int side ) const
+ON_BOOL32 ON_SumSurface::IsSingular( int ) const
 {
   return false;
 }

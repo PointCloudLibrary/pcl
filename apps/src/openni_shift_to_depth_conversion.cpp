@@ -34,202 +34,180 @@
  * Author: Julius Kammerl (julius@kammerl.de)
  */
 
-
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
+#include <pcl/common/time.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
-#include <pcl/console/parse.h>
-#include <pcl/common/time.h>
-
-#include <iostream>
-#include <vector>
-#include <stdio.h>
-#include <sstream>
-#include <stdlib.h>
-#include <iostream>
-#include <string>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 
 #include <boost/asio.hpp>
+
+#include <iostream>
+#include <thread>
+#include <vector>
 
 using boost::asio::ip::tcp;
 
 using namespace pcl;
 using namespace pcl::io;
 
-using namespace std;
+using namespace std::chrono_literals;
 
+class SimpleOpenNIViewer {
+public:
+  SimpleOpenNIViewer()
+  : viewer_("Input Point Cloud - Shift-to-depth conversion viewer")
+  , grabber_("",
+             pcl::OpenNIGrabber::OpenNI_Default_Mode,
+             pcl::OpenNIGrabber::OpenNI_Default_Mode)
+  {}
 
-class SimpleOpenNIViewer
-{
-  public:
-    SimpleOpenNIViewer () :
-      viewer_ ("Input Point Cloud - Shift-to-depth conversion viewer"),
-      grabber_(0)
-    {
+  void
+  image_callback(const openni_wrapper::Image::Ptr& image,
+                 const openni_wrapper::DepthImage::Ptr& depth_image,
+                 float)
+  {
+
+    std::vector<std::uint16_t> raw_shift_data;
+    std::vector<std::uint16_t> raw_depth_data;
+
+    std::vector<std::uint8_t> rgb_data;
+
+    std::uint32_t width = depth_image->getWidth();
+    std::uint32_t height = depth_image->getHeight();
+
+    // copy raw shift data from depth_image
+    raw_shift_data.resize(width * height);
+    depth_image->fillDepthImageRaw(
+        width,
+        height,
+        &raw_shift_data[0],
+        static_cast<unsigned int>(width * sizeof(std::uint16_t)));
+
+    // convert raw shift data to raw depth data
+    raw_depth_data.resize(width * height);
+    grabber_.convertShiftToDepth(
+        &raw_shift_data[0], &raw_depth_data[0], raw_shift_data.size());
+
+    // check for color data
+    if (image->getEncoding() != openni_wrapper::Image::RGB) {
+      // copy raw rgb data from image
+      rgb_data.resize(width * height * 3);
+      image->fillRGB(width,
+                     height,
+                     &rgb_data[0],
+                     static_cast<unsigned int>(width * sizeof(std::uint8_t) * 3));
     }
 
-    ~SimpleOpenNIViewer ()
-    {
-      if (grabber_)
-        delete grabber_;
+    // empty pointcloud
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud =
+        pcl::PointCloud<pcl::PointXYZRGB>::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>());
+
+    // convert raw depth and rgb data to pointcloud
+    convert(
+        raw_depth_data, rgb_data, width, height, depth_image->getFocalLength(), *cloud);
+
+    // display pointcloud
+    viewer_.showCloud(cloud);
+  }
+
+  void
+  run()
+  {
+    // initialize OpenNIDevice to shift-value mode
+    int depthformat = openni_wrapper::OpenNIDevice::OpenNI_shift_values;
+
+    // Set the depth output format
+    grabber_.getDevice()->setDepthOutputFormat(
+        static_cast<openni_wrapper::OpenNIDevice::DepthMode>(depthformat));
+
+    // define image callback
+    std::function<void(const openni_wrapper::Image::Ptr&,
+                       const openni_wrapper::DepthImage::Ptr&,
+                       float)>
+        image_cb = [this](const openni_wrapper::Image::Ptr& img,
+                          const openni_wrapper::DepthImage::Ptr& depth,
+                          float f) { image_callback(img, depth, f); };
+    grabber_.registerCallback(image_cb);
+
+    // start grabber thread
+    grabber_.start();
+    while (true) {
+      std::this_thread::sleep_for(1s);
     }
-
-    void
-    image_callback (const boost::shared_ptr<openni_wrapper::Image> &image,
-                    const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image, float)
-    {
-
-      vector<uint16_t> raw_shift_data;
-      vector<uint16_t> raw_depth_data;
-
-      vector<uint8_t> rgb_data;
-
-      uint32_t width=depth_image->getWidth ();
-      uint32_t height=depth_image->getHeight ();
-
-      // copy raw shift data from depth_image
-      raw_shift_data.resize(width*height);
-      depth_image->fillDepthImageRaw (width, height, &raw_shift_data[0], static_cast<unsigned int> (width * sizeof (uint16_t)));
-
-      // convert raw shift data to raw depth data
-      raw_depth_data.resize(width*height);
-      grabber_->convertShiftToDepth(&raw_shift_data[0], &raw_depth_data[0], raw_shift_data.size());
-
-      // check for color data
-      if (image->getEncoding() != openni_wrapper::Image::RGB)
-      {
-        // copy raw rgb data from image
-        rgb_data.resize(width*height*3);
-        image->fillRGB(width, height, &rgb_data[0], static_cast<unsigned int> (width * sizeof (uint8_t) * 3));
-      }
-
-      // empty pointcloud
-      pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = pcl::PointCloud<pcl::PointXYZRGB>::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>());
-
-      // convert raw depth and rgb data to pointcloud
-      convert (raw_depth_data,
-               rgb_data,
-               width,
-               height,
-               depth_image->getFocalLength(),
-               *cloud);
-
-      // display pointcloud
-      viewer_.showCloud (cloud);
-    }
-
-    void
-    run ()
-    {
-      // initialize OpenNIDevice to shift-value mode
-      pcl::OpenNIGrabber::Mode image_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
-      int depthformat = openni_wrapper::OpenNIDevice::OpenNI_shift_values;
-
-      grabber_ = new pcl::OpenNIGrabber("", pcl::OpenNIGrabber::OpenNI_Default_Mode, image_mode);
-
-      // Set the depth output format
-      grabber_->getDevice ()->setDepthOutputFormat (static_cast<openni_wrapper::OpenNIDevice::DepthMode> (depthformat));
-
-      // define image callback
-      boost::function<void
-      (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float)> image_cb =
-          boost::bind (&SimpleOpenNIViewer::image_callback, this, _1, _2, _3);
-      boost::signals2::connection image_connection = grabber_->registerCallback (image_cb);
-
-      // start grabber thread
-      grabber_->start ();
-      while (true)
-      {
-        boost::this_thread::sleep (boost::posix_time::seconds (1));
-      }
-      grabber_->stop ();
-
+    grabber_.stop();
   }
 
 protected:
-
   /* helper method to convert depth&rgb data to pointcloud*/
   void
-  convert (std::vector<uint16_t>& depthData_arg,
-           std::vector<uint8_t>& rgbData_arg,
-           size_t width_arg,
-           size_t height_arg,
-           float focalLength_arg,
-           pcl::PointCloud<PointXYZRGB>& cloud_arg) const
+  convert(std::vector<std::uint16_t>& depthData_arg,
+          std::vector<std::uint8_t>& rgbData_arg,
+          std::size_t width_arg,
+          std::size_t height_arg,
+          float focalLength_arg,
+          pcl::PointCloud<PointXYZRGB>& cloud_arg) const
   {
-    size_t i;
-    size_t cloud_size = width_arg * height_arg;
-
-    int x, y, centerX, centerY;
+    std::size_t cloud_size = width_arg * height_arg;
 
     // Reset point cloud
-    cloud_arg.points.clear ();
-    cloud_arg.points.reserve (cloud_size);
+    cloud_arg.clear();
+    cloud_arg.reserve(cloud_size);
 
     // Define point cloud parameters
-    cloud_arg.width = static_cast<uint32_t> (width_arg);
-    cloud_arg.height = static_cast<uint32_t> (height_arg);
+    cloud_arg.width = static_cast<std::uint32_t>(width_arg);
+    cloud_arg.height = static_cast<std::uint32_t>(height_arg);
     cloud_arg.is_dense = false;
 
     // Calculate center of disparity image
-    centerX = static_cast<int> (width_arg / 2);
-    centerY = static_cast<int> (height_arg / 2);
+    int centerX = static_cast<int>(width_arg / 2);
+    int centerY = static_cast<int>(height_arg / 2);
 
     const float fl_const = 1.0f / focalLength_arg;
-    static const float bad_point = std::numeric_limits<float>::quiet_NaN ();
+    static const float bad_point = std::numeric_limits<float>::quiet_NaN();
 
-    i = 0;
-    for (y = -centerY; y < +centerY; ++y)
-      for (x = -centerX; x < +centerX; ++x)
-      {
+    std::size_t i = 0;
+    for (int y = -centerY; y < +centerY; ++y)
+      for (int x = -centerX; x < +centerX; ++x) {
         PointXYZRGB newPoint;
 
-        const uint16_t& pixel_depth = depthData_arg[i];
+        const std::uint16_t& pixel_depth = depthData_arg[i];
 
-        if (pixel_depth)
-        {
-          float depth = pixel_depth/1000.0f; // raw mm -> m
+        if (pixel_depth) {
+          float depth = pixel_depth / 1000.0f; // raw mm -> m
 
           // Define point location
           newPoint.z = depth;
-          newPoint.x = static_cast<float> (x) * depth * fl_const;
-          newPoint.y = static_cast<float> (y) * depth * fl_const;
-
-          const uint8_t& pixel_r = rgbData_arg[i * 3 + 0];
-          const uint8_t& pixel_g = rgbData_arg[i * 3 + 1];
-          const uint8_t& pixel_b = rgbData_arg[i * 3 + 2];
+          newPoint.x = static_cast<float>(x) * depth * fl_const;
+          newPoint.y = static_cast<float>(y) * depth * fl_const;
 
           // Define point color
-          uint32_t rgb = (static_cast<uint32_t> (pixel_r) << 16 | static_cast<uint32_t> (pixel_g) << 8
-              | static_cast<uint32_t> (pixel_b));
-          newPoint.rgb = *reinterpret_cast<float*> (&rgb);
+          newPoint.r = rgbData_arg[i * 3 + 0];
+          newPoint.g = rgbData_arg[i * 3 + 1];
+          newPoint.b = rgbData_arg[i * 3 + 2];
         }
-        else
-        {
+        else {
           // Define bad point
           newPoint.x = newPoint.y = newPoint.z = bad_point;
-          newPoint.rgb = 0.0f;
+          newPoint.rgba = 0;
         }
 
         // Add point to cloud
-        cloud_arg.points.push_back (newPoint);
+        cloud_arg.push_back(newPoint);
         // Increment point iterator
         ++i;
       }
   }
 
   pcl::visualization::CloudViewer viewer_;
-  pcl::OpenNIGrabber* grabber_;
-
+  pcl::OpenNIGrabber grabber_;
 };
 
 int
-main (int, char **)
+main(int, char**)
 {
   SimpleOpenNIViewer v;
-  v.run ();
+  v.run();
 
-  return (0);
+  return 0;
 }
-

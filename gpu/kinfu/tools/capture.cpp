@@ -39,7 +39,6 @@
 #include "openni_capture.h"
 #include <pcl/gpu/containers/initialization.h>
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::gpu;
 using namespace xn;
@@ -92,7 +91,7 @@ struct pcl::gpu::CaptureOpenNI::Impl
 
 pcl::gpu::CaptureOpenNI::CaptureOpenNI() : depth_focal_length_VGA (0.f), baseline (0.f), shadow_value (0), no_sample_value (0), pixelSize (0.0), max_depth (0) {}
 pcl::gpu::CaptureOpenNI::CaptureOpenNI(int device) {open (device); }
-pcl::gpu::CaptureOpenNI::CaptureOpenNI(const string& filename) {open (filename); }
+pcl::gpu::CaptureOpenNI::CaptureOpenNI(const std::string& filename) {open (filename); }
 pcl::gpu::CaptureOpenNI::~CaptureOpenNI() { release (); }
 
 void
@@ -114,7 +113,7 @@ pcl::gpu::CaptureOpenNI::open (int device)
   }
 
   xn::NodeInfoList devicesList;
-  rc = impl_->context.EnumerateProductionTrees ( XN_NODE_TYPE_DEVICE, NULL, devicesList, 0 );
+  rc = impl_->context.EnumerateProductionTrees ( XN_NODE_TYPE_DEVICE, nullptr, devicesList, nullptr );
   if (rc != XN_STATUS_OK)
   {
     sprintf (impl_->strError, "Init failed: %s\n", xnGetStatusString (rc));
@@ -136,8 +135,8 @@ pcl::gpu::CaptureOpenNI::open (int device)
   XnLicense license;
   const char* vendor = "PrimeSense";
   const char* key = "0KOIk2JeIBYClPWVnMoRKn5cdY4=";
-  sprintf (license.strKey, key);
-  sprintf (license.strVendor, vendor);
+  strncpy (license.strKey, key, sizeof (license.strKey));
+  strncpy (license.strVendor, vendor, sizeof (license.strVendor));
 
   rc = impl_->context.AddLicense (license);
   if (rc != XN_STATUS_OK)
@@ -153,7 +152,7 @@ pcl::gpu::CaptureOpenNI::open (int device)
     REPORT_ERROR (impl_->strError);
   }
   //rc = impl_->depth.SetIntProperty("HoleFilter", 1);
-  rc = impl_->depth.SetMapOutputMode (mode);
+  impl_->depth.SetMapOutputMode (mode);
   impl_->has_depth = true;
 
   rc = impl_->image.Create (impl_->context);
@@ -165,7 +164,7 @@ pcl::gpu::CaptureOpenNI::open (int device)
   else
   {
     impl_->has_image = true;
-    rc = impl_->image.SetMapOutputMode (mode);
+    impl_->image.SetMapOutputMode (mode);
   }
 
   getParams ();
@@ -276,7 +275,7 @@ pcl::gpu::CaptureOpenNI::grab (PtrStepSz<const unsigned short>& depth, PtrStepSz
   else
   {
     printf ("no image\n");
-    rgb24.data = 0;
+    rgb24.data = nullptr;
     rgb24.cols = rgb24.rows = rgb24.step = 0;
   }
 

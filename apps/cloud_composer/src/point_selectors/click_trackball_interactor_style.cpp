@@ -2,6 +2,11 @@
 #include <pcl/apps/cloud_composer/point_selectors/manipulation_event.h>
 #include <pcl/apps/cloud_composer/project_model.h>
 
+#include <QDebug>
+
+
+#include <vtkObjectFactory.h> // For vtkStandardNewMacro
+#include <vtkTransform.h>
 
 namespace pcl
 {
@@ -12,7 +17,6 @@ namespace pcl
 }
 
 pcl::cloud_composer::ClickTrackballStyleInteractor::ClickTrackballStyleInteractor ()
-  : vtkInteractorStyleTrackballActor ()
 {
   manipulation_complete_event_ = interactor_events::MANIPULATION_COMPLETE_EVENT;
   start_matrix_= vtkSmartPointer<vtkMatrix4x4>::New ();

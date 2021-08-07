@@ -42,9 +42,11 @@
 
 #include <pcl/pcl_macros.h>
 #include <pcl/exceptions.h>
+#include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/console/print.h>
 
 #include <fstream>
+#include <memory>
 
 #define __PCL_OUTOFCORE_VERSION__ 3
 
@@ -53,13 +55,9 @@ namespace pcl
   namespace outofcore
   {
     OutofcoreOctreeBaseMetadata::OutofcoreOctreeBaseMetadata () 
-      : metadata_filename_ ()
-      , outofcore_version_ ()
-      , coordinate_system_ ()
-      , tree_name_ ()
+      : outofcore_version_ ()
       , point_type_ ("urp")
       , levels_of_depth_ ()
-      , LOD_num_points_ ()
     {
     }
       
@@ -68,11 +66,8 @@ namespace pcl
     OutofcoreOctreeBaseMetadata::OutofcoreOctreeBaseMetadata (const boost::filesystem::path& metadata_filename) 
       : metadata_filename_ (metadata_filename)
       , outofcore_version_ ()
-      , coordinate_system_ ()
-      , tree_name_ ()
       , point_type_ ("urp")
       , levels_of_depth_ ()
-      , LOD_num_points_ ()
     {
       //read metadata from file and store in fields
       loadMetadataFromDisk ();
@@ -88,8 +83,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     OutofcoreOctreeBaseMetadata::OutofcoreOctreeBaseMetadata (const OutofcoreOctreeBaseMetadata& orig) 
-      : OutofcoreAbstractMetadata ()
-      , metadata_filename_ (orig.metadata_filename_)
+      : metadata_filename_ (orig.metadata_filename_)
       , outofcore_version_ (orig.outofcore_version_)
       , coordinate_system_ (orig.coordinate_system_)
       , tree_name_ (orig.tree_name_)
@@ -137,8 +131,11 @@ namespace pcl
     void
     OutofcoreOctreeBaseMetadata::serializeMetadataToDisk ()
     {
+      if (LOD_num_points_.empty ())
+        return;
+
       // Create JSON object
-      boost::shared_ptr<cJSON> idx (cJSON_CreateObject (), cJSON_Delete);
+      std::shared_ptr<cJSON> idx (cJSON_CreateObject (), cJSON_Delete);
   
       cJSON* name = cJSON_CreateString (tree_name_.c_str ());
       cJSON* version = cJSON_CreateNumber ( __PCL_OUTOFCORE_VERSION__ );
@@ -176,7 +173,7 @@ namespace pcl
     {
       // Open JSON
       std::vector<char> idx_input;
-      boost::uintmax_t len = boost::filesystem::file_size (metadata_filename_);
+      std::uintmax_t len = boost::filesystem::file_size (metadata_filename_);
       idx_input.resize (len + 1);
 
       std::ifstream f (metadata_filename_.string ().c_str (), std::ios::in);
@@ -184,7 +181,7 @@ namespace pcl
       idx_input.back () = '\0';
 
       // Parse JSON
-      boost::shared_ptr<cJSON> idx (cJSON_Parse (&(idx_input.front ())), cJSON_Delete);
+      std::shared_ptr<cJSON> idx (cJSON_Parse (&(idx_input.front ())), cJSON_Delete);
       cJSON* name = cJSON_GetObjectItem (idx.get (), "name");
       cJSON* version = cJSON_GetObjectItem (idx.get (), "version");
       cJSON* pointtype = cJSON_GetObjectItem (idx.get (), "pointtype");
@@ -228,7 +225,7 @@ namespace pcl
       for (int i = 0; i < (lod->valueint + 1); i++)
       {
         //cJSON doesn't have explicit 64bit int, have to use double, get up to 2^52
-        LOD_num_points_[i] = static_cast<boost::uint64_t> (cJSON_GetArrayItem (numpts, i)->valuedouble );
+        LOD_num_points_[i] = static_cast<std::uint64_t> (cJSON_GetArrayItem (numpts, i)->valuedouble );
       }
       levels_of_depth_ = lod->valueint;
       coordinate_system_ = coord->valuestring;
@@ -280,7 +277,7 @@ namespace pcl
   
     ////////////////////////////////////////////////////////////////////////////////
 
-    std::vector<boost::uint64_t>&
+    std::vector<std::uint64_t>&
     OutofcoreOctreeBaseMetadata::getLODPoints ()
     {
       return (LOD_num_points_);
@@ -288,7 +285,7 @@ namespace pcl
     
     ////////////////////////////////////////////////////////////////////////////////
 
-    std::vector<boost::uint64_t>
+    std::vector<std::uint64_t>
     OutofcoreOctreeBaseMetadata::getLODPoints () const
     {
       return (LOD_num_points_);
@@ -296,8 +293,8 @@ namespace pcl
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    boost::uint64_t
-    OutofcoreOctreeBaseMetadata::getLODPoints (const boost::uint64_t& depth_index) const
+    std::uint64_t
+    OutofcoreOctreeBaseMetadata::getLODPoints (const std::uint64_t& depth_index) const
     {
       return (LOD_num_points_[depth_index]);
     }
@@ -305,7 +302,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     void
-    OutofcoreOctreeBaseMetadata::setLODPoints (const boost::uint64_t& depth)
+    OutofcoreOctreeBaseMetadata::setLODPoints (const std::uint64_t& depth)
     {
       LOD_num_points_.clear ();
       LOD_num_points_.resize (depth);
@@ -315,7 +312,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     void
-    OutofcoreOctreeBaseMetadata::setLODPoints (std::vector<boost::uint64_t>& lod_points_arg)
+    OutofcoreOctreeBaseMetadata::setLODPoints (std::vector<std::uint64_t>& lod_points_arg)
     {
       assert (this->LOD_num_points_.size () == lod_points_arg.size ());
       
@@ -325,7 +322,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     void
-    OutofcoreOctreeBaseMetadata::setLODPoints (const boost::uint64_t& lod_index_arg, const boost::uint64_t& num_points_arg, const bool increment)
+    OutofcoreOctreeBaseMetadata::setLODPoints (const std::uint64_t& lod_index_arg, const std::uint64_t& num_points_arg, const bool increment)
     {
       assert (lod_index_arg < LOD_num_points_.size ());
 
@@ -354,12 +351,12 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     void
-    OutofcoreOctreeBaseMetadata::setDepth (const boost::uint64_t& depth_arg)
+    OutofcoreOctreeBaseMetadata::setDepth (const std::uint64_t& depth_arg)
     {
       this->levels_of_depth_ = depth_arg;
     }
     
-    boost::uint64_t
+    std::uint64_t
     OutofcoreOctreeBaseMetadata::getDepth () const
     {
       return (levels_of_depth_);
@@ -371,7 +368,7 @@ namespace pcl
     void
     OutofcoreOctreeBaseMetadata::writeMetadataString (std::vector<char>& buf)
     {
-      (void)buf;
+      pcl::utils::ignore(buf);
       PCL_THROW_EXCEPTION (PCLException, "Not implemented\n");
     }
 
@@ -380,7 +377,7 @@ namespace pcl
     std::ostream& 
     operator<<(std::ostream& os, const OutofcoreOctreeBaseMetadata& metadata_arg)
     {
-      (void) metadata_arg;
+      pcl::utils::ignore(metadata_arg);
       return (os);
     }
 

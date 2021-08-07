@@ -38,23 +38,12 @@
  *
  */
 
-#ifndef PCL_APPS_IN_HAND_SCANNER_INPUT_DATA_PROCESSING_H
-#define PCL_APPS_IN_HAND_SCANNER_INPUT_DATA_PROCESSING_H
+#pragma once
 
 #include <pcl/pcl_exports.h>
-#include <pcl/apps/in_hand_scanner/eigen.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
 #include <pcl/apps/in_hand_scanner/utils.h>
-
-////////////////////////////////////////////////////////////////////////////////
-// Forward declarations
-////////////////////////////////////////////////////////////////////////////////
-
-namespace pcl
-{
-  template <class PointInT, class PointOutT>
-  class IntegralImageNormalEstimation;
-} // End namespace pcl
+#include <pcl/features/integral_image_normal.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // InputDataProcessing
@@ -72,15 +61,15 @@ namespace pcl
     {
       public:
 
-        typedef pcl::PointXYZRGBA              PointXYZRGBA;
-        typedef pcl::PointCloud <PointXYZRGBA> CloudXYZRGBA;
-        typedef CloudXYZRGBA::Ptr              CloudXYZRGBAPtr;
-        typedef CloudXYZRGBA::ConstPtr         CloudXYZRGBAConstPtr;
+        using PointXYZRGBA = pcl::PointXYZRGBA;
+        using CloudXYZRGBA = pcl::PointCloud<PointXYZRGBA>;
+        using CloudXYZRGBAPtr = CloudXYZRGBA::Ptr;
+        using CloudXYZRGBAConstPtr = CloudXYZRGBA::ConstPtr;
 
-        typedef pcl::PointXYZRGBNormal              PointXYZRGBNormal;
-        typedef pcl::PointCloud <PointXYZRGBNormal> CloudXYZRGBNormal;
-        typedef CloudXYZRGBNormal::Ptr              CloudXYZRGBNormalPtr;
-        typedef CloudXYZRGBNormal::ConstPtr         CloudXYZRGBNormalConstPtr;
+        using PointXYZRGBNormal = pcl::PointXYZRGBNormal;
+        using CloudXYZRGBNormal = pcl::PointCloud<PointXYZRGBNormal>;
+        using CloudXYZRGBNormalPtr = CloudXYZRGBNormal::Ptr;
+        using CloudXYZRGBNormalConstPtr = CloudXYZRGBNormal::ConstPtr;
 
         /** \brief Constructor */
         InputDataProcessing ();
@@ -169,17 +158,17 @@ namespace pcl
 
       private:
 
-        typedef pcl::Normal                            Normal;
-        typedef pcl::PointCloud <Normal>               CloudNormals;
-        typedef boost::shared_ptr <CloudNormals>       CloudNormalsPtr;
-        typedef boost::shared_ptr <const CloudNormals> CloudNormalsConstPtr;
+        using Normal = pcl::Normal;
+        using CloudNormals = pcl::PointCloud<Normal>;
+        using CloudNormalsPtr = CloudNormals::Ptr;
+        using CloudNormalsConstPtr = CloudNormals::ConstPtr;
 
-        typedef pcl::IntegralImageNormalEstimation <PointXYZRGBA, Normal> NormalEstimation;
-        typedef boost::shared_ptr <NormalEstimation>                      NormalEstimationPtr;
-        typedef boost::shared_ptr <const NormalEstimation>                NormalEstimationConstPtr;
+        using NormalEstimation = pcl::IntegralImageNormalEstimation <PointXYZRGBA, Normal>;
+        using NormalEstimationPtr = NormalEstimation::Ptr;
+        using NormalEstimationConstPtr = NormalEstimation::ConstPtr;
 
-        typedef Eigen::Matrix <bool, Eigen::Dynamic, Eigen::Dynamic> MatrixXb;
-        typedef Eigen::MatrixXi                                      MatrixXi;
+        using MatrixXb = Eigen::Matrix <bool, Eigen::Dynamic, Eigen::Dynamic>;
+        using MatrixXi = Eigen::MatrixXi;
 
         /** \brief Erodes the input mask k times with a diamond shaped structuring element.
           * \see http://ostermiller.org/dilate_and_erode.html
@@ -239,5 +228,3 @@ namespace pcl
     };
   } // End namespace ihs
 } // End namespace pcl
-
-#endif // PCL_APPS_IN_HAND_SCANNER_INPUT_DATA_PROCESSING_H

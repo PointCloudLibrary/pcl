@@ -1,5 +1,4 @@
-#ifndef FILTERS_H
-#define FILTERS_H
+#pragma once
 
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/voxel_grid.h>
@@ -60,5 +59,3 @@ applyFilters (const PointCloudPtr & input, float min_depth, float max_depth, flo
 
   return (filtered);
 }
-
-#endif

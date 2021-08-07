@@ -35,16 +35,14 @@
  *
  */
 
-#ifndef CLOUD_COMPOSER_H_
-#define CLOUD_COMPOSER_H_
-
-#include <pcl/apps/cloud_composer/qt.h>
+#pragma once
 
 //PCL
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
 #include <ui_cloud_composer_main_window.h>
+
 class QTreeView;
 
 namespace pcl
@@ -73,7 +71,7 @@ namespace pcl
     {
       Q_OBJECT
       public:
-        explicit ComposerMainWindow (QWidget *parent = 0);
+        explicit ComposerMainWindow (QWidget *parent = nullptr);
         ~ComposerMainWindow ();
   
       Q_SIGNALS:
@@ -169,8 +167,3 @@ namespace pcl
     
   }
 }
-
-
-
-
-#endif // CLOUD_COMPOSER_H

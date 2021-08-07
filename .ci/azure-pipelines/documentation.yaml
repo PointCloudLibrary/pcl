@@ -1,0 +1,55 @@
+jobs:
+  - job: documentation
+    displayName: Generate Documentation
+    pool:
+      vmImage: 'Ubuntu 20.04'
+    container: doc
+    variables:
+      BUILD_DIR: '$(Agent.BuildDirectory)/build'
+      DOC_DIR: '$(Agent.BuildDirectory)/documentation'
+      CHANGELOG: '$(Agent.TempDirectory)/changelog'
+    steps:
+      - checkout: self
+        # find the commit hash on a quick non-forced update too
+        fetchDepth: 10
+      - task: InstallSSHKey@0
+        inputs:
+          hostName: github.com
+          sshPublicKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBh5Yrau/gguTfoNALxhVX77Pgz6y6UWoJRERMKR68ee documentation@pointclouds.org
+          sshKeySecureFile: id_ed25519
+          condition: eq(variables['Build.Repository.Name'], 'PointCloudLibrary/pcl')
+      - script: |
+          $(Build.SourcesDirectory)/.dev/scripts/generate_changelog.py --with-misc > $CHANGELOG.md
+          grip --export $CHANGELOG.md $CHANGELOG.html
+          pandoc -f markdown -t plain --wrap=none $CHANGELOG.md
+        displayName: 'Generate Changelog'
+      - script: |
+          mkdir $BUILD_DIR && cd $BUILD_DIR
+          cmake $(Build.SourcesDirectory) \
+            -DDOXYGEN_USE_SHORT_NAMES=OFF \
+            -DWITH_DOCS=ON \
+            -DWITH_TUTORIALS=ON
+        displayName: 'CMake Configuration'
+      - script: |
+          cd $BUILD_DIR
+          cmake --build . -- doc tutorials advanced
+        displayName: 'Build Documentation'
+      - script: |
+          cd $BUILD_DIR
+          sed -i -r -e 's/([0-9]+)\s\.\s([0-9]+)\s/\1.\2/' doc/doxygen/html/deprecated.html
+        displayName: 'Remove extra spaces in Doxygen''s Deprecated List'
+      - script: |
+          git config --global user.email "documentation@pointclouds.org"
+          git config --global user.name "PointCloudLibrary (via Azure Pipelines)"
+          echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+          git clone git@github.com:PointCloudLibrary/documentation.git $DOC_DIR
+          cd $DOC_DIR
+          cp -r $BUILD_DIR/doc/tutorials/html/* tutorials
+          cp -r $BUILD_DIR/doc/advanced/html/* advanced
+          cp -r $BUILD_DIR/doc/doxygen/html/* .
+          cp $CHANGELOG.html .
+          git add --all
+          git commit --amend --reset-author -m 'Documentation for commit $(Build.SourceVersion)' -q
+          git push --force
+        displayName: 'Push Generated Documentation To GitHub'
+        condition: and(eq(variables['Build.Repository.Name'], 'PointCloudLibrary/pcl'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))

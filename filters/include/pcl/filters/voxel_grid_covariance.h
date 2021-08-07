@@ -35,10 +35,8 @@
  *
  */
 
-#ifndef PCL_VOXEL_GRID_COVARIANCE_H_
-#define PCL_VOXEL_GRID_COVARIANCE_H_
+#pragma once
 
-#include <pcl/filters/boost.h>
 #include <pcl/filters/voxel_grid.h>
 #include <map>
 #include <pcl/point_types.h>
@@ -77,15 +75,15 @@ namespace pcl
       using VoxelGrid<PointT>::divb_mul_;
 
 
-      typedef typename pcl::traits::fieldList<PointT>::type FieldList;
-      typedef typename Filter<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using FieldList = typename pcl::traits::fieldList<PointT>::type;
+      using PointCloud = typename Filter<PointT>::PointCloud;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
     public:
 
-      typedef boost::shared_ptr< VoxelGrid<PointT> > Ptr;
-      typedef boost::shared_ptr< const VoxelGrid<PointT> > ConstPtr;
+      using Ptr = shared_ptr<VoxelGrid<PointT> >;
+      using ConstPtr = shared_ptr<const VoxelGrid<PointT> >;
 
 
       /** \brief Simple structure to hold a centroid, covarince and the number of points in a leaf.
@@ -93,13 +91,12 @@ namespace pcl
       struct Leaf
       {
         /** \brief Constructor.
-         * Sets \ref nr_points, \ref icov_, \ref mean_ and \ref evals_ to 0 and \ref cov_ and \ref evecs_ to the identity matrix
+         * Sets \ref nr_points, \ref cov_, \ref icov_, \ref mean_ and \ref evals_ to 0 and \ref evecs_ to the identity matrix
          */
         Leaf () :
           nr_points (0),
           mean_ (Eigen::Vector3d::Zero ()),
-          centroid (),
-          cov_ (Eigen::Matrix3d::Identity ()),
+          cov_ (Eigen::Matrix3d::Zero ()),
           icov_ (Eigen::Matrix3d::Zero ()),
           evecs_ (Eigen::Matrix3d::Identity ()),
           evals_ (Eigen::Vector3d::Zero ())
@@ -188,10 +185,10 @@ namespace pcl
       };
 
       /** \brief Pointer to VoxelGridCovariance leaf structure */
-      typedef Leaf* LeafPtr;
+      using LeafPtr = Leaf *;
 
       /** \brief Const pointer to VoxelGridCovariance leaf structure */
-      typedef const Leaf* LeafConstPtr;
+      using LeafConstPtr = const Leaf *;
 
     public:
 
@@ -204,7 +201,6 @@ namespace pcl
         min_covar_eigvalue_mult_ (0.01),
         leaves_ (),
         voxel_centroids_ (),
-        voxel_centroids_leaf_indices_ (),
         kdtree_ ()
       {
         downsample_all_data_ = false;
@@ -271,7 +267,7 @@ namespace pcl
 
         voxel_centroids_ = PointCloudPtr (new PointCloud (output));
 
-        if (searchable_ && voxel_centroids_->size() > 0)
+        if (searchable_ && !voxel_centroids_->empty ())
         {
           // Initiates kdtree of the centroids of voxels containing a sufficient number of points
           kdtree_.setInputCloud (voxel_centroids_);
@@ -288,7 +284,7 @@ namespace pcl
         voxel_centroids_ = PointCloudPtr (new PointCloud);
         applyFilter (*voxel_centroids_);
 
-        if (searchable_ && voxel_centroids_->size() > 0)
+        if (searchable_ && !voxel_centroids_->empty ())
         {
           // Initiates kdtree of the centroids of voxels containing a sufficient number of points
           kdtree_.setInputCloud (voxel_centroids_);
@@ -302,14 +298,13 @@ namespace pcl
       inline LeafConstPtr
       getLeaf (int index)
       {
-        typename std::map<size_t, Leaf>::iterator leaf_iter = leaves_.find (index);
+        typename std::map<std::size_t, Leaf>::iterator leaf_iter = leaves_.find (index);
         if (leaf_iter != leaves_.end ())
         {
           LeafConstPtr ret (&(leaf_iter->second));
           return ret;
         }
-        else
-          return NULL;
+        return nullptr;
       }
 
       /** \brief Get the voxel containing point p.
@@ -320,23 +315,22 @@ namespace pcl
       getLeaf (PointT &p)
       {
         // Generate index associated with p
-        int ijk0 = static_cast<int> (floor (p.x * inverse_leaf_size_[0]) - min_b_[0]);
-        int ijk1 = static_cast<int> (floor (p.y * inverse_leaf_size_[1]) - min_b_[1]);
-        int ijk2 = static_cast<int> (floor (p.z * inverse_leaf_size_[2]) - min_b_[2]);
+        int ijk0 = static_cast<int> (std::floor (p.x * inverse_leaf_size_[0]) - min_b_[0]);
+        int ijk1 = static_cast<int> (std::floor (p.y * inverse_leaf_size_[1]) - min_b_[1]);
+        int ijk2 = static_cast<int> (std::floor (p.z * inverse_leaf_size_[2]) - min_b_[2]);
 
         // Compute the centroid leaf index
         int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
 
         // Find leaf associated with index
-        typename std::map<size_t, Leaf>::iterator leaf_iter = leaves_.find (idx);
+        typename std::map<std::size_t, Leaf>::iterator leaf_iter = leaves_.find (idx);
         if (leaf_iter != leaves_.end ())
         {
           // If such a leaf exists return the pointer to the leaf structure
           LeafConstPtr ret (&(leaf_iter->second));
           return ret;
         }
-        else
-          return NULL;
+        return nullptr;
       }
 
       /** \brief Get the voxel containing point p.
@@ -347,39 +341,75 @@ namespace pcl
       getLeaf (Eigen::Vector3f &p)
       {
         // Generate index associated with p
-        int ijk0 = static_cast<int> (floor (p[0] * inverse_leaf_size_[0]) - min_b_[0]);
-        int ijk1 = static_cast<int> (floor (p[1] * inverse_leaf_size_[1]) - min_b_[1]);
-        int ijk2 = static_cast<int> (floor (p[2] * inverse_leaf_size_[2]) - min_b_[2]);
+        int ijk0 = static_cast<int> (std::floor (p[0] * inverse_leaf_size_[0]) - min_b_[0]);
+        int ijk1 = static_cast<int> (std::floor (p[1] * inverse_leaf_size_[1]) - min_b_[1]);
+        int ijk2 = static_cast<int> (std::floor (p[2] * inverse_leaf_size_[2]) - min_b_[2]);
 
         // Compute the centroid leaf index
         int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
 
         // Find leaf associated with index
-        typename std::map<size_t, Leaf>::iterator leaf_iter = leaves_.find (idx);
+        typename std::map<std::size_t, Leaf>::iterator leaf_iter = leaves_.find (idx);
         if (leaf_iter != leaves_.end ())
         {
           // If such a leaf exists return the pointer to the leaf structure
           LeafConstPtr ret (&(leaf_iter->second));
           return ret;
         }
-        else
-          return NULL;
+        return nullptr;
 
       }
 
-      /** \brief Get the voxels surrounding point p, not including the voxel containing point p.
-       * \note Only voxels containing a sufficient number of points are used (slower than radius search in practice).
+      /** \brief Get the voxels surrounding point p designated by #relative_coordinates.
+       * \note Only voxels containing a sufficient number of points are used.
+       * \param[in] relative_coordinates 3xN matrix that represents relative coordinates of N neighboring voxels with respect to the center voxel
        * \param[in] reference_point the point to get the leaf structure at
        * \param[out] neighbors
        * \return number of neighbors found
        */
       int
-      getNeighborhoodAtPoint (const PointT& reference_point, std::vector<LeafConstPtr> &neighbors);
+      getNeighborhoodAtPoint (const Eigen::Matrix<int, 3, Eigen::Dynamic>& relative_coordinates, const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const;
+
+      /** \brief Get the voxels surrounding point p, not including the voxel containing point p.
+       * \note Only voxels containing a sufficient number of points are used.
+       * \param[in] reference_point the point to get the leaf structure at
+       * \param[out] neighbors
+       * \return number of neighbors found (up to 26)
+       */
+      int
+      getNeighborhoodAtPoint (const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const;
+
+      /** \brief Get the voxel at p.
+       * \note Only voxels containing a sufficient number of points are used.
+       * \param[in] reference_point the point to get the leaf structure at
+       * \param[out] neighbors
+       * \return number of neighbors found (up to 1)
+       */
+      int
+      getVoxelAtPoint (const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const;
+
+      /** \brief Get the voxel at p and its facing voxels (up to 7 voxels).
+       * \note Only voxels containing a sufficient number of points are used.
+       * \param[in] reference_point the point to get the leaf structure at
+       * \param[out] neighbors
+       * \return number of neighbors found (up to 7)
+       */
+      int
+      getFaceNeighborsAtPoint (const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const;
+
+      /** \brief Get all 3x3x3 neighbor voxels of p (up to 27 voxels).
+       * \note Only voxels containing a sufficient number of points are used.
+       * \param[in] reference_point the point to get the leaf structure at
+       * \param[out] neighbors
+       * \return number of neighbors found (up to 27)
+       */
+      int
+      getAllNeighborsAtPoint (const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const;
 
       /** \brief Get the leaf structure map
        * \return a map contataining all leaves
        */
-      inline const std::map<size_t, Leaf>&
+      inline const std::map<std::size_t, Leaf>&
       getLeaves ()
       {
         return leaves_;
@@ -412,7 +442,7 @@ namespace pcl
        */
       int
       nearestKSearch (const PointT &point, int k,
-                      std::vector<LeafConstPtr> &k_leaves, std::vector<float> &k_sqr_distances)
+                      std::vector<LeafConstPtr> &k_leaves, std::vector<float> &k_sqr_distances) const
       {
         k_leaves.clear ();
 
@@ -424,16 +454,21 @@ namespace pcl
         }
 
         // Find k-nearest neighbors in the occupied voxel centroid cloud
-        std::vector<int> k_indices;
+        Indices k_indices;
         k = kdtree_.nearestKSearch (point, k, k_indices, k_sqr_distances);
 
         // Find leaves corresponding to neighbors
         k_leaves.reserve (k);
-        for (std::vector<int>::iterator iter = k_indices.begin (); iter != k_indices.end (); iter++)
+        for (const auto &k_index : k_indices)
         {
-          k_leaves.push_back (&leaves_[voxel_centroids_leaf_indices_[*iter]]);
+          auto voxel = leaves_.find(voxel_centroids_leaf_indices_[k_index]);
+          if (voxel == leaves_.end()) {
+            continue;
+          }
+
+          k_leaves.push_back(&voxel->second);
         }
-        return k;
+        return k_leaves.size();
       }
 
       /** \brief Search for the k-nearest occupied voxels for the given query point.
@@ -447,11 +482,11 @@ namespace pcl
        */
       inline int
       nearestKSearch (const PointCloud &cloud, int index, int k,
-                      std::vector<LeafConstPtr> &k_leaves, std::vector<float> &k_sqr_distances)
+                      std::vector<LeafConstPtr> &k_leaves, std::vector<float> &k_sqr_distances) const
       {
-        if (index >= static_cast<int> (cloud.points.size ()) || index < 0)
+        if (index >= static_cast<int> (cloud.size ()) || index < 0)
           return (0);
-        return (nearestKSearch (cloud.points[index], k, k_leaves, k_sqr_distances));
+        return (nearestKSearch (cloud[index], k, k_leaves, k_sqr_distances));
       }
 
 
@@ -466,7 +501,7 @@ namespace pcl
        */
       int
       radiusSearch (const PointT &point, double radius, std::vector<LeafConstPtr> &k_leaves,
-                    std::vector<float> &k_sqr_distances, unsigned int max_nn = 0)
+                    std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const
       {
         k_leaves.clear ();
 
@@ -478,16 +513,21 @@ namespace pcl
         }
 
         // Find neighbors within radius in the occupied voxel centroid cloud
-        std::vector<int> k_indices;
-        int k = kdtree_.radiusSearch (point, radius, k_indices, k_sqr_distances, max_nn);
+        Indices k_indices;
+        const int k = kdtree_.radiusSearch (point, radius, k_indices, k_sqr_distances, max_nn);
 
         // Find leaves corresponding to neighbors
         k_leaves.reserve (k);
-        for (std::vector<int>::iterator iter = k_indices.begin (); iter != k_indices.end (); iter++)
+        for (const auto &k_index : k_indices)
         {
-          k_leaves.push_back (&leaves_[voxel_centroids_leaf_indices_[*iter]]);
+          const auto voxel = leaves_.find(voxel_centroids_leaf_indices_[k_index]);
+          if(voxel == leaves_.end()) {
+            continue;
+          }
+
+          k_leaves.push_back(&voxel->second);
         }
-        return k;
+        return k_leaves.size();
       }
 
       /** \brief Search for all the nearest occupied voxels of the query point in a given radius.
@@ -503,11 +543,11 @@ namespace pcl
       inline int
       radiusSearch (const PointCloud &cloud, int index, double radius,
                     std::vector<LeafConstPtr> &k_leaves, std::vector<float> &k_sqr_distances,
-                    unsigned int max_nn = 0)
+                    unsigned int max_nn = 0) const
       {
-        if (index >= static_cast<int> (cloud.points.size ()) || index < 0)
+        if (index >= static_cast<int> (cloud.size ()) || index < 0)
           return (0);
-        return (radiusSearch (cloud.points[index], radius, k_leaves, k_sqr_distances, max_nn));
+        return (radiusSearch (cloud[index], radius, k_leaves, k_sqr_distances, max_nn));
       }
 
     protected:
@@ -515,7 +555,7 @@ namespace pcl
       /** \brief Filter cloud and initializes voxel structure.
        * \param[out] output cloud containing centroids of voxels containing a sufficient number of points
        */
-      void applyFilter (PointCloud &output);
+      void applyFilter (PointCloud &output) override;
 
       /** \brief Flag to determine if voxel structure is searchable. */
       bool searchable_;
@@ -527,7 +567,7 @@ namespace pcl
       double min_covar_eigvalue_mult_;
 
       /** \brief Voxel structure containing all leaf nodes (includes voxels with less than a sufficient number of points). */
-      std::map<size_t, Leaf> leaves_;
+      std::map<std::size_t, Leaf> leaves_;
 
       /** \brief Point cloud containing centroids of voxels containing atleast minimum number of points. */
       PointCloudPtr voxel_centroids_;
@@ -543,5 +583,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/voxel_grid_covariance.hpp>
 #endif
-
-#endif  //#ifndef PCL_VOXEL_GRID_COVARIANCE_H_

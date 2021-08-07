@@ -39,7 +39,6 @@
 
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
-#include <pcl/segmentation/unary_classifier.h>
 #include <pcl/segmentation/impl/unary_classifier.hpp>
 
 // Instantiations of specific point types

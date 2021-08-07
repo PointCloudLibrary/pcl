@@ -7,11 +7,7 @@
 
 #include <pcl/apps/cloud_composer/tools/impl/supervoxels.hpp>
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-  Q_EXPORT_PLUGIN2(cloud_composer_voxel_superpixels_tool, pcl::cloud_composer::SupervoxelsToolFactory)
-#else
-  Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
-#endif
+Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
 
 pcl::cloud_composer::SupervoxelsTool::SupervoxelsTool (PropertiesModel* parameter_model, QObject* parent)
 : SplitItemTool (parameter_model, parent)
@@ -29,7 +25,7 @@ pcl::cloud_composer::SupervoxelsTool::performAction (ConstItemList input_data, P
 {
   if (type != PointTypeFlags::NONE)
   {
-    switch ((uint8_t) type)
+    switch ((std::uint8_t) type)
     {
       case (PointTypeFlags::XYZ | PointTypeFlags::RGB):
         return this->performTemplatedAction<pcl::PointXYZRGB> (input_data);
@@ -45,8 +41,8 @@ pcl::cloud_composer::SupervoxelsTool::performAction (ConstItemList input_data, P
   return output;
 } 
 
-template QList <pcl::cloud_composer::CloudComposerItem*> pcl::cloud_composer::SupervoxelsTool::performTemplatedAction <pcl::PointXYZRGB> (QList <const CloudComposerItem*>);
-//template QList <pcl::cloud_composer::CloudComposerItem*> pcl::cloud_composer::SupervoxelsTool::performTemplatedAction <pcl::PointXYZRGBA> (QList <const CloudComposerItem*>);
+template QList <pcl::cloud_composer::CloudComposerItem*> pcl::cloud_composer::SupervoxelsTool::performTemplatedAction <pcl::PointXYZRGB> (const QList <const CloudComposerItem*>&);
+//template QList <pcl::cloud_composer::CloudComposerItem*> pcl::cloud_composer::SupervoxelsTool::performTemplatedAction <pcl::PointXYZRGBA> (const QList <const CloudComposerItem*>&);
 
 
 /////////////////// PARAMETER MODEL /////////////////////////////////

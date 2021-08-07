@@ -35,12 +35,11 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_LINEMOD
-#define PCL_RECOGNITION_LINEMOD
+#pragma once
 
 #include <vector>
 #include <cstddef>
-#include <string.h>
+#include <cstring>
 #include <pcl/pcl_macros.h>
 #include <pcl/recognition/quantizable_modality.h>
 #include <pcl/recognition/region_xy.h>
@@ -56,7 +55,7 @@ namespace pcl
   {
     public:
       /** \brief Constructor. */
-      EnergyMaps () : width_ (0), height_ (0), nr_bins_ (0), maps_ () 
+      EnergyMaps () : width_ (0), height_ (0), nr_bins_ (0)
       {
       }
 
@@ -66,21 +65,21 @@ namespace pcl
       }
 
       /** \brief Returns the width of the energy maps. */
-      inline size_t 
+      inline std::size_t 
       getWidth () const 
       { 
         return (width_); 
       }
       
       /** \brief Returns the height of the energy maps. */
-      inline size_t 
+      inline std::size_t 
       getHeight () const 
       { 
         return (height_); 
       }
       
       /** \brief Returns the number of bins used for quantization (which is equal to the number of energy maps). */
-      inline size_t 
+      inline std::size_t 
       getNumOfBins () const
       { 
         return (nr_bins_);
@@ -92,20 +91,20 @@ namespace pcl
         * \param[in] nr_bins the number of bins used for quantization.
         */
       void 
-      initialize (const size_t width, const size_t height, const size_t nr_bins)
+      initialize (const std::size_t width, const std::size_t height, const std::size_t nr_bins)
       {
-        maps_.resize(nr_bins, NULL);
+        maps_.resize(nr_bins, nullptr);
         width_ = width;
         height_ = height;
         nr_bins_ = nr_bins;
 
-        const size_t mapsSize = width*height;
+        const std::size_t mapsSize = width*height;
 
-        for (size_t map_index = 0; map_index < maps_.size (); ++map_index)
+        for (auto &map : maps_)
         {
           //maps_[map_index] = new unsigned char[mapsSize];
-          maps_[map_index] = reinterpret_cast<unsigned char*> (aligned_malloc (mapsSize));
-          memset (maps_[map_index], 0, mapsSize);
+          map = reinterpret_cast<unsigned char*> (aligned_malloc (mapsSize));
+          memset (map, 0, mapsSize);
         }
       }
 
@@ -113,9 +112,9 @@ namespace pcl
       void 
       releaseAll ()
       {
-        for (size_t map_index = 0; map_index < maps_.size (); ++map_index)
+        for (auto &map : maps_)
           //if (maps_[map_index] != NULL) delete[] maps_[map_index];
-          if (maps_[map_index] != NULL) aligned_free (maps_[map_index]);
+          if (map != nullptr) aligned_free (map);
 
         maps_.clear ();
         width_ = 0;
@@ -129,7 +128,7 @@ namespace pcl
         * \param[in] row_index the row index within the specified energy map.
         */
       inline unsigned char & 
-      operator() (const size_t bin_index, const size_t col_index, const size_t row_index)
+      operator() (const std::size_t bin_index, const std::size_t col_index, const std::size_t row_index)
       {
         return (maps_[bin_index][row_index*width_ + col_index]);
       }
@@ -139,7 +138,7 @@ namespace pcl
         * \param[in] index the element index within the specified energy map.
         */
       inline unsigned char & 
-      operator() (const size_t bin_index, const size_t index)
+      operator() (const std::size_t bin_index, const std::size_t index)
       {
         return (maps_[bin_index][index]);
       }
@@ -148,7 +147,7 @@ namespace pcl
         * \param[in] bin_index the index of the energy map to return (== the quantization bin).
         */
       inline unsigned char * 
-      operator() (const size_t bin_index)
+      operator() (const std::size_t bin_index)
       {
         return (maps_[bin_index]);
       }
@@ -159,7 +158,7 @@ namespace pcl
         * \param[in] row_index the row index within the specified energy map.
         */
       inline const unsigned char & 
-      operator() (const size_t bin_index, const size_t col_index, const size_t row_index) const
+      operator() (const std::size_t bin_index, const std::size_t col_index, const std::size_t row_index) const
       {
         return (maps_[bin_index][row_index*width_ + col_index]);
       }
@@ -169,7 +168,7 @@ namespace pcl
         * \param[in] index the element index within the specified energy map.
         */
       inline const unsigned char & 
-      operator() (const size_t bin_index, const size_t index) const
+      operator() (const std::size_t bin_index, const std::size_t index) const
       {
         return (maps_[bin_index][index]);
       }
@@ -178,18 +177,18 @@ namespace pcl
         * \param[in] bin_index the index of the energy map to return (== the quantization bin).
         */
       inline const unsigned char * 
-      operator() (const size_t bin_index) const
+      operator() (const std::size_t bin_index) const
       {
         return (maps_[bin_index]);
       }
 
     private:
       /** \brief The width of the energy maps. */
-      size_t width_;
+      std::size_t width_;
       /** \brief The height of the energy maps. */
-      size_t height_;
+      std::size_t height_;
       /** \brief The number of quantization bins (== the number of internally stored energy maps). */
-      size_t nr_bins_;
+      std::size_t nr_bins_;
       /** \brief Storage for the energy maps. */
       std::vector<unsigned char*> maps_;
   };
@@ -201,7 +200,7 @@ namespace pcl
   {
     public:
       /** \brief Constructor. */
-      LinearizedMaps () : width_ (0), height_ (0), mem_width_ (0), mem_height_ (0), step_size_ (0), maps_ ()
+      LinearizedMaps () : width_ (0), height_ (0), mem_width_ (0), mem_height_ (0), step_size_ (0)
       {
       }
       
@@ -211,19 +210,19 @@ namespace pcl
       }
 
       /** \brief Returns the width of the linearized map. */
-      inline size_t 
+      inline std::size_t 
       getWidth () const { return (width_); }
       
       /** \brief Returns the height of the linearized map. */
-      inline size_t 
+      inline std::size_t 
       getHeight () const { return (height_); }
       
       /** \brief Returns the step-size used to construct the linearized map. */
-      inline size_t 
+      inline std::size_t 
       getStepSize () const { return (step_size_); }
       
       /** \brief Returns the size of the memory map. */
-      inline size_t 
+      inline std::size_t 
       getMapMemorySize () const { return (mem_width_ * mem_height_); }
 
       /** \brief Initializes the linearized map.
@@ -232,22 +231,22 @@ namespace pcl
         * \param[in] step_size the step-size used to sample the source map.
         */
       void 
-      initialize (const size_t width, const size_t height, const size_t step_size)
+      initialize (const std::size_t width, const std::size_t height, const std::size_t step_size)
       {
-        maps_.resize(step_size*step_size, NULL);
+        maps_.resize(step_size*step_size, nullptr);
         width_ = width;
         height_ = height;
         mem_width_ = width / step_size;
         mem_height_ = height / step_size;
         step_size_ = step_size;
 
-        const size_t mapsSize = mem_width_ * mem_height_;
+        const std::size_t mapsSize = mem_width_ * mem_height_;
 
-        for (size_t map_index = 0; map_index < maps_.size (); ++map_index)
+        for (auto &map : maps_)
         {
           //maps_[map_index] = new unsigned char[2*mapsSize];
-          maps_[map_index] = reinterpret_cast<unsigned char*> (aligned_malloc (2*mapsSize));
-          memset (maps_[map_index], 0, 2*mapsSize);
+          map = reinterpret_cast<unsigned char*> (aligned_malloc (2*mapsSize));
+          memset (map, 0, 2*mapsSize);
         }
       }
 
@@ -255,9 +254,9 @@ namespace pcl
       void 
       releaseAll ()
       {
-        for (size_t map_index = 0; map_index < maps_.size (); ++map_index)
+        for (auto &map : maps_)
           //if (maps_[map_index] != NULL) delete[] maps_[map_index];
-          if (maps_[map_index] != NULL) aligned_free (maps_[map_index]);
+          if (map != nullptr) aligned_free (map);
 
         maps_.clear ();
         width_ = 0;
@@ -272,7 +271,7 @@ namespace pcl
         * \param[in] row_index the row index.
         */
       inline unsigned char * 
-      operator() (const size_t col_index, const size_t row_index)
+      operator() (const std::size_t col_index, const std::size_t row_index)
       {
         return (maps_[row_index*step_size_ + col_index]);
       }
@@ -282,28 +281,28 @@ namespace pcl
         * \param[in] row_index the row index at which the returned map starts.
         */
       inline unsigned char * 
-      getOffsetMap (const size_t col_index, const size_t row_index)
+      getOffsetMap (const std::size_t col_index, const std::size_t row_index)
       {
-        const size_t map_col = col_index % step_size_;
-        const size_t map_row = row_index % step_size_;
+        const std::size_t map_col = col_index % step_size_;
+        const std::size_t map_row = row_index % step_size_;
 
-        const size_t map_mem_col_index = col_index / step_size_;
-        const size_t map_mem_row_index = row_index / step_size_;
+        const std::size_t map_mem_col_index = col_index / step_size_;
+        const std::size_t map_mem_row_index = row_index / step_size_;
 
         return (maps_[map_row*step_size_ + map_col] + map_mem_row_index*mem_width_ + map_mem_col_index);
       }
 
     private:
       /** \brief the original width of the data represented by the map. */
-      size_t width_;
+      std::size_t width_;
       /** \brief the original height of the data represented by the map. */
-      size_t height_;
+      std::size_t height_;
       /** \brief the actual width of the linearized map. */
-      size_t mem_width_;
+      std::size_t mem_width_;
       /** \brief the actual height of the linearized map. */
-      size_t mem_height_;
+      std::size_t mem_height_;
       /** \brief the step-size used for sampling the original data. */
-      size_t step_size_;
+      std::size_t step_size_;
       /** \brief a vector containing all the linearized maps. */
       std::vector<unsigned char*> maps_;
   };
@@ -425,7 +424,7 @@ namespace pcl
       }
 
       /** \brief Returns the number of stored/trained templates. */
-      inline size_t
+      inline std::size_t
       getNumOfTemplates () const
       {
         return (templates_.size ());
@@ -475,5 +474,3 @@ namespace pcl
   };
 
 }
-
-#endif 

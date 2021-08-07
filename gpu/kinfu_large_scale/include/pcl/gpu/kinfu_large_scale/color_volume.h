@@ -35,9 +35,9 @@
  *
  */
 
-#ifndef PCL_KINFU_COLOR_VOLUME_H_
-#define PCL_KINFU_COLOR_VOLUME_H_
+#pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/point_types.h>
@@ -53,19 +53,22 @@ namespace pcl
     {
       class TsdfVolume;
 
-      /** \brief ColorVolume class
-        * \author Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
-        */
+      /**
+       * \brief ColorVolume class
+       * \author Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
+       */
       class PCL_EXPORTS ColorVolume
       {
       public:
-        typedef PointXYZ PointType;
-        typedef boost::shared_ptr<ColorVolume> Ptr;
+        using PointType = PointXYZ;
+        using Ptr = shared_ptr<ColorVolume>;
+        using ConstPtr = shared_ptr<const ColorVolume>;
 
-        /** \brief Constructor
-          * \param[in] tsdf tsdf volume to get parameters from
-          * \param[in] max_weight max weight for running average. Can be less than 255. Negative means default.
-          */
+        /**
+         * \brief Constructor
+         * \param[in] tsdf tsdf volume to get parameters from
+         * \param[in] max_weight max weight for running average. Can be less than 255. Negative means default.
+         */
         ColorVolume(const TsdfVolume& tsdf, int max_weight = -1);
 
         /** \brief Destructor */
@@ -83,10 +86,11 @@ namespace pcl
         DeviceArray2D<int>
         data() const;
 
-        /** \brief Computes colors from color volume
-          * \param[in] cloud Points for which colors are to be computed.
-          * \param[out] colors output array for colors
-          */
+        /**
+         * \brief Computes colors from color volume
+         * \param[in] cloud Points for which colors are to be computed.
+         * \param[out] colors output array for colors
+         */
         void
         fetchColors (const DeviceArray<PointType>& cloud, DeviceArray<RGB>& colors) const; 
 
@@ -98,16 +102,14 @@ namespace pcl
         Eigen::Vector3f volume_size_;
 
         /** \brief Length of running average */
-        int max_weight_;     
+        int max_weight_;
 
         /** \brief color volume data */
         DeviceArray2D<int> color_volume_;
 
-		public:
-			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      public:
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
       };
     }
   }
 }
-
-#endif /* PCL_KINFU_COLOR_VOLUME_H_ */

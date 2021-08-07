@@ -33,20 +33,20 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <pcl/pcl_config.h>
-#ifndef PCL_IO_IMAGE_H_
-#define PCL_IO_IMAGE_H_
 
-#include <pcl/pcl_exports.h>
-#include <pcl/io/boost.h>
-#include <boost/chrono.hpp>
+#pragma once
 
 #include <pcl/io/image_metadata_wrapper.h>
+#include <pcl/memory.h>
+#include <pcl/pcl_config.h>
+#include <pcl/pcl_macros.h>
+
+#include <chrono>
 
 namespace pcl
 {
   namespace io
-  { 
+  {
 
     /**
     * @brief Image interface class providing an interface to fill a RGB or Grayscale image buffer.
@@ -56,26 +56,26 @@ namespace pcl
     class PCL_EXPORTS Image
     {
       public:
-        typedef boost::shared_ptr<Image> Ptr;
-        typedef boost::shared_ptr<const Image> ConstPtr;
+        using Ptr = shared_ptr<Image>;
+        using ConstPtr = shared_ptr<const Image>;
 
-        typedef boost::chrono::high_resolution_clock Clock;
-        typedef boost::chrono::high_resolution_clock::time_point Timestamp;
+        using Clock = std::chrono::high_resolution_clock;
+        using Timestamp = std::chrono::high_resolution_clock::time_point;
 
-        typedef enum
+        enum Encoding
         {
           BAYER_GRBG,
           YUV422,
           RGB
-        } Encoding;
+        };
 
         Image (FrameWrapper::Ptr image_metadata)
-          : wrapper_ (image_metadata)
+          : wrapper_ (std::move(image_metadata))
           , timestamp_ (Clock::now ())
         {}
 
         Image (FrameWrapper::Ptr image_metadata, Timestamp time)
-          : wrapper_ (image_metadata)
+          : wrapper_ (std::move(image_metadata))
           , timestamp_ (time)
         {}
 
@@ -166,7 +166,7 @@ namespace pcl
         * @return the timestamp of the image
         * @note the time value is not synchronized with the system time
         */
-        pcl::uint64_t
+        std::uint64_t
         getTimestamp () const
         {
           return (wrapper_->getTimestamp ());
@@ -212,4 +212,3 @@ namespace pcl
   } // namespace
 }
 
-#endif //PCL_IO_IMAGE_H_

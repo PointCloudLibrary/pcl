@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_CUDA_HOST_DEVICE_H_
-#define PCL_CUDA_HOST_DEVICE_H_
+#pragma once
 
 #include <pcl/cuda/point_cloud.h>
 
@@ -61,5 +60,3 @@ namespace pcl
 
   } // namespace
 } // namespace
-
-#endif  //#ifndef PCL_CUDA_HOST_DEVICE_H_

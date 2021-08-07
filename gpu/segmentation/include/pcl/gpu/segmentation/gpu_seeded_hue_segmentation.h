@@ -37,48 +37,44 @@
  *
  */
 
-#ifndef PCL_GPU_SEEDED_HUE_SEGMENTATION_H_
-#define PCL_GPU_SEEDED_HUE_SEGMENTATION_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/PointIndices.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/gpu/octree/octree.hpp>
-#include <pcl/gpu/containers/device_array.hpp>
 
 namespace pcl
 {
   namespace gpu
   {
     void
-    seededHueSegmentation (const boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> >  &host_cloud_,
-                           const pcl::gpu::Octree::Ptr                                  &tree,
-                           float                                                        tolerance,
-                           PointIndices                                                 &clusters_in,
-                           PointIndices                                                 &clusters_out,
-                           float                                                        delta_hue = 0.0);
+    seededHueSegmentation (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr  &host_cloud_,
+                           const pcl::gpu::Octree::Ptr                   &tree,
+                           float                                         tolerance,
+                           PointIndices                                  &clusters_in,
+                           PointIndices                                  &clusters_out,
+                           float                                         delta_hue = 0.0);
 
     class SeededHueSegmentation
     {
       public:
-        typedef pcl::PointXYZ PointType;
-        typedef pcl::PointCloud<pcl::PointXYZ> PointCloudHost;
-        typedef PointCloudHost::Ptr PointCloudHostPtr;
-        typedef PointCloudHost::ConstPtr PointCloudHostConstPtr;
+        using PointType = pcl::PointXYZ;
+        using PointCloudHost = pcl::PointCloud<pcl::PointXYZ>;
+        using PointCloudHostPtr = PointCloudHost::Ptr;
+        using PointCloudHostConstPtr = PointCloudHost::ConstPtr;
 
-        typedef PointIndices::Ptr PointIndicesPtr;
-        typedef PointIndices::ConstPtr PointIndicesConstPtr;
+        using PointIndicesPtr = PointIndices::Ptr;
+        using PointIndicesConstPtr = PointIndices::ConstPtr;
 
-        typedef pcl::gpu::Octree GPUTree;
-        typedef pcl::gpu::Octree::Ptr GPUTreePtr;
+        using GPUTree = pcl::gpu::Octree;
+        using GPUTreePtr = pcl::gpu::Octree::Ptr;
 
-        typedef pcl::gpu::Octree::PointCloud CloudDevice;
+        using CloudDevice = pcl::gpu::Octree::PointCloud;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /** \brief Empty constructor. */
-        SeededHueSegmentation () : delta_hue_ (0.0) 
-        {};
+        SeededHueSegmentation () = default;
 
         /** \brief Provide a pointer to the search object.
           * \param tree a pointer to the spatial search object.
@@ -129,10 +125,10 @@ namespace pcl
         GPUTreePtr tree_;
 
         /** \brief The spatial cluster tolerance as a measure in the L2 Euclidean space. */
-        double cluster_tolerance_;
+        double cluster_tolerance_ {0};
 
         /** \brief The allowed difference on the hue*/
-        float delta_hue_;
+        float delta_hue_ {0.0};
 
         /** \brief Class getName method. */
         virtual std::string getClassName () const { return ("gpu::SeededHueSegmentation"); }
@@ -147,9 +143,3 @@ namespace pcl
     }
   }
 }
-
-#endif //PCL_GPU_SEEDED_HUE_SEGMENTATION_H_
-
-
-
-

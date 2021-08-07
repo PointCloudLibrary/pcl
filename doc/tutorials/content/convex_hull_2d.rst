@@ -12,7 +12,7 @@ dataset `table_scene_mug_stereo_textured.pcd
 
 .. raw:: html
   
-  <iframe title="Acquiring the convex hull of a planar surface" width="480" height="390" src="http://www.youtube.com/embed/J9CjWDgPDTM?rel=0" frameborder="0" allowfullscreen></iframe>
+  <iframe title="Acquiring the convex hull of a planar surface" width="480" height="390" src="https://www.youtube.com/embed/J9CjWDgPDTM?rel=0" frameborder="0" allowfullscreen></iframe>
 
 The code
 --------
@@ -37,7 +37,7 @@ gets created and the reconstruction is performed:
 
 .. literalinclude:: sources/convex_hull_2d/convex_hull_2d.cpp
    :language: cpp
-   :lines: 48-51
+   :lines: 49-52
 
 
 Compiling and running the program

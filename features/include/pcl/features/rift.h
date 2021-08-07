@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_RIFT_H_
-#define PCL_RIFT_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 
@@ -69,15 +68,15 @@ namespace pcl
       using Feature<PointInT, PointOutT>::tree_;
       using Feature<PointInT, PointOutT>::search_radius_;
       
-      typedef typename pcl::PointCloud<PointInT> PointCloudIn;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+      using PointCloudIn = pcl::PointCloud<PointInT>;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
 
-      typedef typename pcl::PointCloud<GradientT> PointCloudGradient;
-      typedef typename PointCloudGradient::Ptr PointCloudGradientPtr;
-      typedef typename PointCloudGradient::ConstPtr PointCloudGradientConstPtr;
+      using PointCloudGradient = pcl::PointCloud<GradientT>;
+      using PointCloudGradientPtr = typename PointCloudGradient::Ptr;
+      using PointCloudGradientConstPtr = typename PointCloudGradient::ConstPtr;
 
-      typedef typename boost::shared_ptr<RIFTEstimation<PointInT, GradientT, PointOutT> > Ptr;
-      typedef typename boost::shared_ptr<const RIFTEstimation<PointInT, GradientT, PointOutT> > ConstPtr;
+      using Ptr = shared_ptr<RIFTEstimation<PointInT, GradientT, PointOutT> >;
+      using ConstPtr = shared_ptr<const RIFTEstimation<PointInT, GradientT, PointOutT> >;
 
 
       /** \brief Empty constructor. */
@@ -128,7 +127,7 @@ namespace pcl
         */
       void 
       computeRIFT (const PointCloudIn &cloud, const PointCloudGradient &gradient, int p_idx, float radius,
-                   const std::vector<int> &indices, const std::vector<float> &squared_distances, 
+                   const pcl::Indices &indices, const std::vector<float> &squared_distances, 
                    Eigen::MatrixXf &rift_descriptor);
 
     protected:
@@ -139,7 +138,7 @@ namespace pcl
         * \param[out] output the resultant point cloud model dataset that contains the RIFT feature estimates
         */
       void 
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief The intensity gradient of the input point cloud data*/
       PointCloudGradientConstPtr gradient_;
@@ -155,5 +154,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/rift.hpp>
 #endif
-
-#endif // #ifndef PCL_RIFT_H_

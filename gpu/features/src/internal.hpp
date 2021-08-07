@@ -55,25 +55,25 @@ namespace pcl
         using pcl::gpu::DeviceArray2D;
         using pcl::gpu::NeighborIndices;
 
-        typedef float4 PointType;
-        typedef float4 NormalType;
-        typedef float4 PointXYZRGB;
+        using PointType = float4;
+        using NormalType = float4;
+        using PointXYZRGB = float4;
 
-        typedef DeviceArray< PointType> PointCloud;        
-        typedef DeviceArray<NormalType> Normals;
-        typedef DeviceArray<int> Indices;
+        using PointCloud = DeviceArray<PointType>;        
+        using Normals = DeviceArray<NormalType>;
+        using Indices = DeviceArray<int>;
 
-        typedef DeviceArray< PointType> PointXYZRGBCloud;
+        using PointXYZRGBCloud = DeviceArray<PointType>;
 
 		template <int N> struct Histogram
 		{
 			float histogram[N];
 		};
 
-		typedef Histogram<125> PFHSignature125;
-		typedef Histogram<250> PFHRGBSignature250;
-		typedef Histogram<33>  FPFHSignature33;
-		typedef Histogram<308> VFHSignature308;
+		using PFHSignature125 = Histogram<125>;
+		using PFHRGBSignature250 = Histogram<250>;
+		using FPFHSignature33 = Histogram<33>;
+		using VFHSignature308 = Histogram<308>;
 
         struct PPFSignature
         {
@@ -124,7 +124,7 @@ namespace pcl
         void computeFPFH(const PointCloud& cloud, const Indices& indices, const PointCloud& surface, 
             const NeighborIndices& neighbours, DeviceArray<int>& lookup, const DeviceArray2D<FPFHSignature33>& spfh, DeviceArray2D<FPFHSignature33>& features);
 
-        int computeUniqueIndices(size_t surface_size, const NeighborIndices& neighbours, DeviceArray<int>& unique_indices, DeviceArray<int>& lookup);
+        int computeUniqueIndices(std::size_t surface_size, const NeighborIndices& neighbours, DeviceArray<int>& unique_indices, DeviceArray<int>& lookup);
 
         // ppf estimation         
         void computePPF(const PointCloud& input, const Normals& normals, const Indices& indices, DeviceArray<PPFSignature>& output);

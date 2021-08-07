@@ -2,15 +2,16 @@
 
 /* ---[ */
 #include <iostream>
-using namespace std;
 #include <pcl/io/openni_grabber.h>
 #include <pcl/range_image/range_image_planar.h>
-#include <pcl/common/common_headers.h>
+#include <pcl/common/time.h> // for pcl::getTime
 #include <pcl/visualization/range_image_visualizer.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/features/range_image_border_extractor.h>
 #include <pcl/keypoints/narf_keypoint.h>
 #include <pcl/console/parse.h>
+
+#include <mutex>
 
 std::string device_id = "#1";
 
@@ -20,13 +21,13 @@ bool set_unseen_to_max_range = true;
 int max_no_of_threads = 1;
 float min_interest_value = 0.5;
 
-boost::mutex depth_image_mutex,
+std::mutex depth_image_mutex,
              ir_image_mutex,
              image_mutex;
 pcl::PointCloud<pcl::PointXYZ>::ConstPtr point_cloud_ptr;
-boost::shared_ptr<openni_wrapper::DepthImage> depth_image_ptr;
-boost::shared_ptr<openni_wrapper::IRImage> ir_image_ptr;
-boost::shared_ptr<openni_wrapper::Image> image_ptr;
+openni_wrapper::DepthImage::Ptr depth_image_ptr;
+openni_wrapper::IRImage::Ptr ir_image_ptr;
+openni_wrapper::Image::Ptr image_ptr;
 
 bool received_new_depth_data = false,
      received_new_ir_image   = false,
@@ -34,7 +35,7 @@ bool received_new_depth_data = false,
 struct EventHelper
 {
   void
-  depth_image_cb (const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image)
+  depth_image_cb (const openni_wrapper::DepthImage::Ptr& depth_image)
   {
     if (depth_image_mutex.try_lock ())
     {
@@ -49,7 +50,7 @@ struct EventHelper
 void
 printUsage (const char* progName)
 {
-  cout << "\n\nUsage: "<<progName<<" [options] [scene.pcd] <model.pcl> [model_2.pcl] ... [model_n.pcl]\n\n"
+  std::cout << "\n\nUsage: "<<progName<<" [options] [scene.pcd] <model.pcl> [model_2.pcl] ... [model_n.pcl]\n\n"
        << "Options:\n"
        << "-------------------------------------------\n"
        << "-d <device_id>  set the device id (default \""<<device_id<<"\")\n"
@@ -73,16 +74,16 @@ int main (int argc, char** argv)
     return 0;
   }
   if (pcl::console::parse (argc, argv, "-d", device_id) >= 0)
-    cout << "Using device id \""<<device_id<<"\".\n";
+    std::cout << "Using device id \""<<device_id<<"\".\n";
   if (pcl::console::parse (argc, argv, "-r", angular_resolution) >= 0)
-    cout << "Setting angular resolution to "<<angular_resolution<<"deg.\n";
+    std::cout << "Setting angular resolution to "<<angular_resolution<<"deg.\n";
   angular_resolution = pcl::deg2rad (angular_resolution);
   if (pcl::console::parse (argc, argv, "-s", support_size) >= 0)
-    cout << "Setting support size to "<<support_size<<"m.\n";
+    std::cout << "Setting support size to "<<support_size<<"m.\n";
   if (pcl::console::parse (argc, argv, "-i", min_interest_value) >= 0)
-    cout << "Setting minimum interest value to "<<min_interest_value<<".\n";
+    std::cout << "Setting minimum interest value to "<<min_interest_value<<".\n";
   if (pcl::console::parse (argc, argv, "-t", max_no_of_threads) >= 0)
-    cout << "Setting maximum number of threads to "<<max_no_of_threads<<".\n";
+    std::cout << "Setting maximum number of threads to "<<max_no_of_threads<<".\n";
   
   pcl::visualization::RangeImageVisualizer range_image_widget ("Range Image");
   
@@ -100,7 +101,7 @@ int main (int argc, char** argv)
   {
     for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices (); ++deviceIdx)
     {
-      cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx)
+      std::cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx)
            << ", product: " << driver.getProductName (deviceIdx) << ", connected: "
            << (int) driver.getBus (deviceIdx) << " @ " << (int) driver.getAddress (deviceIdx)
            << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'\n";
@@ -108,22 +109,22 @@ int main (int argc, char** argv)
   }
   else
   {
-    cout << "\nNo devices connected.\n\n";
+    std::cout << "\nNo devices connected.\n\n";
     return 1;
   }
   
   pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id);
   EventHelper event_helper;
   
-  boost::function<void (const boost::shared_ptr<openni_wrapper::DepthImage>&) > f_depth_image =
-    boost::bind (&EventHelper::depth_image_cb, &event_helper, _1);
+  std::function<void (const openni_wrapper::DepthImage::Ptr&) > f_depth_image =
+    [&] (const openni_wrapper::DepthImage::Ptr& depth) { event_helper.depth_image_cb (depth); };
   boost::signals2::connection c_depth_image = interface->registerCallback (f_depth_image);
   
-  cout << "Starting grabber\n";
+  std::cout << "Starting grabber\n";
   interface->start ();
-  cout << "Done\n";
+  std::cout << "Done\n";
   
-  boost::shared_ptr<pcl::RangeImagePlanar> range_image_planar_ptr (new pcl::RangeImagePlanar);
+  pcl::RangeImagePlanar::Ptr range_image_planar_ptr (new pcl::RangeImagePlanar);
   pcl::RangeImagePlanar& range_image_planar = *range_image_planar_ptr;
   
   pcl::RangeImageBorderExtractor range_image_border_extractor;
@@ -155,12 +156,12 @@ int main (int argc, char** argv)
       int width = depth_image_ptr->getWidth (), height = depth_image_ptr->getHeight ();
       float center_x = width/2, center_y = height/2;
       float focal_length_x = depth_image_ptr->getFocalLength (), focal_length_y = focal_length_x;
-      float original_angular_resolution = asinf (0.5f*float (width)/float (focal_length_x)) / (0.5f*float (width));
+      // float original_angular_resolution = asinf (0.5f*float (width)/float (focal_length_x)) / (0.5f*float (width));
       float desired_angular_resolution = angular_resolution;
       range_image_planar.setDepthImage (depth_map, width, height, center_x, center_y,
                                         focal_length_x, focal_length_y, desired_angular_resolution);
       depth_image_mutex.unlock ();
-      got_new_range_image = !range_image_planar.points.empty ();
+      got_new_range_image = !range_image_planar.empty ();
     }
     
     if (!got_new_range_image)
@@ -176,16 +177,16 @@ int main (int argc, char** argv)
     double keypoint_extraction_start_time = pcl::getTime();
     narf_keypoint_detector.compute (keypoint_indices);
     double keypoint_extraction_time = pcl::getTime()-keypoint_extraction_start_time;
-    std::cout << "Found "<<keypoint_indices.points.size ()<<" key points. "
+    std::cout << "Found "<<keypoint_indices.size ()<<" key points. "
               << "This took "<<1000.0*keypoint_extraction_time<<"ms.\n";
     
     // ----------------------------------------------
     // -----Show keypoints in range image widget-----
     // ----------------------------------------------
     range_image_widget.showRangeImage (range_image_planar, 0.5f, 10.0f);
-    //for (size_t i=0; i<keypoint_indices.points.size (); ++i)
-      //range_image_widget.markPoint (keypoint_indices.points[i]%range_image_planar.width,
-                                    //keypoint_indices.points[i]/range_image_planar.width,
+    //for (std::size_t i=0; i<keypoint_indices.size (); ++i)
+      //range_image_widget.markPoint (keypoint_indices[i]%range_image_planar.width,
+                                    //keypoint_indices[i]/range_image_planar.width,
                                     //pcl::visualization::Vector3ub (0,255,0));
     
     // -------------------------------------
@@ -196,10 +197,10 @@ int main (int argc, char** argv)
     if (!viewer.updatePointCloud<pcl::PointWithRange> (range_image_planar_ptr, color_handler_cloud, "range image"))
       viewer.addPointCloud<pcl::PointWithRange> (range_image_planar_ptr, color_handler_cloud, "range image");
     
-    keypoints_cloud.points.resize (keypoint_indices.points.size ());
-    for (size_t i=0; i<keypoint_indices.points.size (); ++i)
-      keypoints_cloud.points[i].getVector3fMap () =
-        range_image_planar.points[keypoint_indices.points[i]].getVector3fMap ();
+    keypoints_cloud.resize (keypoint_indices.size ());
+    for (std::size_t i=0; i<keypoint_indices.size (); ++i)
+      keypoints_cloud[i].getVector3fMap () =
+        range_image_planar[keypoint_indices[i]].getVector3fMap ();
     pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_handler_keypoints
       (keypoints_cloud_ptr, 0, 255, 0);
     if (!viewer.updatePointCloud (keypoints_cloud_ptr, color_handler_keypoints, "keypoints"))

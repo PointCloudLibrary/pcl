@@ -14,8 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#ifndef OPENNURBS_HATCH_H_INCLUDED
-#define OPENNURBS_HATCH_H_INCLUDED
+#pragma once
 
 /*
   class ON_HatchLoop
@@ -32,15 +31,15 @@ public:
   // delete in another DLL.
 
   // new/delete
-  void* operator new(size_t);
+  void* operator new(std::size_t);
   void  operator delete(void*);
 
   // array new/delete
-  void* operator new[] (size_t);
+  void* operator new[] (std::size_t);
   void  operator delete[] (void*);
 
   // in place new/delete
-  void* operator new(size_t,void*);
+  void* operator new(std::size_t,void*);
   void  operator delete(void*,void*);
 #endif
 
@@ -829,5 +828,3 @@ protected:
   class ON_HatchExtra* HatchExtension();
 
 };
-
-#endif

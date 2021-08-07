@@ -90,7 +90,8 @@
 #ifndef PCL_GPU_FEATURES_EIGEN_HPP_
 #define PCL_GPU_FEATURES_EIGEN_HPP_
 
-#include <pcl/gpu/utils/device/limits.hpp>
+#include <limits>
+
 #include <pcl/gpu/utils/device/algorithm.hpp>
 #include <pcl/gpu/utils/device/vector_math.hpp>
 
@@ -113,7 +114,7 @@ namespace pcl
 
         __device__ __forceinline__ void computeRoots3(float c0, float c1, float c2, float3& roots)
         {
-            if ( fabsf(c0) < numeric_limits<float>::epsilon())// one root is 0 -> quadratic equation
+            if ( std::abs(c0) < std::numeric_limits<float>::epsilon())// one root is 0 -> quadratic equation
             {
                 computeRoots2 (c2, c1, roots);
             }
@@ -136,7 +137,7 @@ namespace pcl
 
                 // Compute the eigenvalues by solving for the roots of the polynomial.
                 float rho = sqrtf(-a_over_3);
-                float theta = atan2f (sqrtf (-q), half_b)*s_inv3;
+                float theta = std::atan2 (sqrtf (-q), half_b)*s_inv3;
                 float cos_theta = __cosf (theta);
                 float sin_theta = __sinf (theta);
                 roots.x = c2_over_3 + 2.f * rho * cos_theta;
@@ -169,8 +170,8 @@ namespace pcl
                 __device__ __host__ __forceinline__ float3& operator[](int i) { return data[i]; }
                 __device__ __host__ __forceinline__ const float3& operator[](int i) const { return data[i]; }
             };
-            typedef MiniMat<3> Mat33;
-            typedef MiniMat<4> Mat43;
+            using Mat33 = MiniMat<3>;
+            using Mat43 = MiniMat<4>;
             
             
             static __forceinline__ __device__ float3 unitOrthogonal (const float3& src)
@@ -211,13 +212,13 @@ namespace pcl
                 // Scale the matrix so its entries are in [-1,1].  The scaling is applied
                 // only when at least one matrix entry has magnitude larger than 1.
 
-                float max01 = fmaxf( fabsf(mat_pkg[0]), fabsf(mat_pkg[1]) );
-                float max23 = fmaxf( fabsf(mat_pkg[2]), fabsf(mat_pkg[3]) );
-                float max45 = fmaxf( fabsf(mat_pkg[4]), fabsf(mat_pkg[5]) );
+                float max01 = fmaxf( std::abs(mat_pkg[0]), std::abs(mat_pkg[1]) );
+                float max23 = fmaxf( std::abs(mat_pkg[2]), std::abs(mat_pkg[3]) );
+                float max45 = fmaxf( std::abs(mat_pkg[4]), std::abs(mat_pkg[5]) );
                 float m0123 = fmaxf( max01, max23);
                 float scale = fmaxf( max45, m0123);
 
-                if (scale <= numeric_limits<float>::min())
+                if (scale <= std::numeric_limits<float>::min())
                     scale = 1.f;
 
                 mat_pkg[0] /= scale;
@@ -245,13 +246,13 @@ namespace pcl
 
                 computeRoots3(c0, c1, c2, evals);
 
-                if(evals.z - evals.x <= numeric_limits<float>::epsilon())
+                if(evals.z - evals.x <= std::numeric_limits<float>::epsilon())
                 {                                   
                     evecs[0] = make_float3(1.f, 0.f, 0.f);
                     evecs[1] = make_float3(0.f, 1.f, 0.f);
                     evecs[2] = make_float3(0.f, 0.f, 1.f);
                 }
-                else if (evals.y - evals.x <= numeric_limits<float>::epsilon() )
+                else if (evals.y - evals.x <= std::numeric_limits<float>::epsilon() )
                 {
                     // first and second equal                
                     tmp[0] = row0();  tmp[1] = row1();  tmp[2] = row2();
@@ -281,7 +282,7 @@ namespace pcl
                     evecs[1] = unitOrthogonal(evecs[2]);
                     evecs[0] = cross(evecs[1], evecs[2]);
                 }
-                else if (evals.z - evals.y <= numeric_limits<float>::epsilon() )
+                else if (evals.z - evals.y <= std::numeric_limits<float>::epsilon() )
                 {
                     // second and third equal                                    
                     tmp[0] = row0();  tmp[1] = row1();  tmp[2] = row2();
@@ -439,7 +440,7 @@ namespace pcl
             __device__  __forceinline__ static bool isMuchSmallerThan (float x, float y)
             {
                 // copied from <eigen>/include/Eigen/src/Core/NumTraits.h
-                const float prec_sqr = numeric_limits<float>::epsilon() * numeric_limits<float>::epsilon(); 
+                constexpr float prec_sqr = std::numeric_limits<float>::epsilon() * std::numeric_limits<float>::epsilon(); 
                 return x * x <= prec_sqr * y * y;
             }
 

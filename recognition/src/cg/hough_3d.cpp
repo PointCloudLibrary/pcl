@@ -54,7 +54,7 @@ pcl::recognition::HoughSpace3D::HoughSpace3D (const Eigen::Vector3d &min_coord, 
 
   for (int i = 0; i < 3; ++i)
   {
-    bin_count_[i] = static_cast<int> (ceil ((max_coord[i] - min_coord_[i]) / bin_size_[i]));
+    bin_count_[i] = static_cast<int> (std::ceil ((max_coord[i] - min_coord_[i]) / bin_size_[i]));
   }
 
   partial_bin_products_[0] = 1;
@@ -85,7 +85,7 @@ pcl::recognition::HoughSpace3D::vote (const Eigen::Vector3d &single_vote_coord, 
 
   for (int i=0; i<3; ++i)
   {
-    int currentBin = static_cast<int> (floor ((single_vote_coord[i] - min_coord_[i])/bin_size_[i]));
+    int currentBin = static_cast<int> (std::floor ((single_vote_coord[i] - min_coord_[i])/bin_size_[i]));
     if (currentBin < 0 || currentBin >= bin_count_[i])
     {
       //PCL_ERROR("Current Vote goes out of bounds in the Hough Table!\nDimension: %d, Value inserted: %f, Min value: %f, Max value: %f\n", i, 
@@ -122,7 +122,7 @@ pcl::recognition::HoughSpace3D::voteInt (const Eigen::Vector3d &single_vote_coor
   for (int d = 0; d < 3; ++d)
   {
     // Compute coordinates of central bin
-    central_bin_coord[d] = static_cast<int> (floor ((single_vote_coord[d] - min_coord_[d]) / bin_size_[d]));
+    central_bin_coord[d] = static_cast<int> (std::floor ((single_vote_coord[d] - min_coord_[d]) / bin_size_[d]));
     if (central_bin_coord[d] < 0 || central_bin_coord[d] >= bin_count_[d])
     {
       //PCL_ERROR("Current Vote goes out of bounds in the Hough Table!\nDimension: %d, Value inserted: %f, Min value: %f, Max value: %f\n", d,
@@ -136,7 +136,7 @@ pcl::recognition::HoughSpace3D::voteInt (const Eigen::Vector3d &single_vote_coor
     bin_centroid[d] = static_cast<float> ((2 * static_cast<double> (central_bin_coord[d]) * bin_size_[d] + bin_size_[d]) / 2.0 );
 
     // Compute interpolated weight for each coordinate of the central bin
-    central_bin_weight[d] = static_cast<float> (1 - (fabs (single_vote_coord[d] - min_coord_[d] - bin_centroid[d]) / bin_size_[d] ) );
+    central_bin_weight[d] = static_cast<float> (1 - (std::abs (single_vote_coord[d] - min_coord_[d] - bin_centroid[d]) / bin_size_[d] ) );
 
     // Compute the neighbor bins where the weight has to be interpolated
     if ((single_vote_coord[d] - min_coord_[d]) < bin_centroid[d])
@@ -159,12 +159,11 @@ pcl::recognition::HoughSpace3D::voteInt (const Eigen::Vector3d &single_vote_coor
   {
     int final_bin_index = 0;
     int exp = 1;
-    int curr_neigh_index = 0;
     bool invalid = false;
 
     for (int d = 0; d < 3; ++d)
     {
-      curr_neigh_index = central_bin_coord[d] + ( n % (exp*3) ) / exp - 1; // (n % 3^(d+1) / 3^d) - 1
+      int curr_neigh_index = central_bin_coord[d] + ( n % (exp*3) ) / exp - 1; // (n % 3^(d+1) / 3^d) - 1
       if (curr_neigh_index >= 0 && curr_neigh_index <= bin_count_[d]-1)
       {
         // Each coordinate of the neighbor has to be equal either to one of the central bin or to one of the interpolated bins
@@ -243,7 +242,7 @@ pcl::recognition::HoughSpace3D::findMaxima (double min_threshold, std::vector<do
 
     for (int k = 2; k >= 0; --k){
 
-      moduled_index = moduled_index % partial_bin_products_[k+1];
+      moduled_index %= partial_bin_products_[k+1];
       indexes[k] = moduled_index / partial_bin_products_[k];
 
       if (indexes[k] > 0 && hough_space_[i] < hough_space_[i-partial_bin_products_[k]])

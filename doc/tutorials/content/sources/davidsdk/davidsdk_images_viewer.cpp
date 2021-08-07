@@ -15,7 +15,7 @@ pcl::DavidSDKGrabber::Ptr davidsdk_ptr;
  * @returns the OpenCV type
  */
 int
-getOpenCVType (std::string type)
+getOpenCVType (const std::string &type)
 {
   if (type == "CV_32FC1")
     return CV_32FC1;
@@ -64,7 +64,7 @@ getOpenCVType (std::string type)
 /** @brief Process and/or display DavidSDKGrabber image
  * @param[in] image davidSDK image */
 void
-grabberCallback (const boost::shared_ptr<pcl::PCLImage>& image)
+grabberCallback (const pcl::PCLImage::Ptr& image)
 {
   unsigned char *image_array = reinterpret_cast<unsigned char *> (&image->data[0]);
 
@@ -106,8 +106,7 @@ main (int argc,
     return (-1);
   PCL_WARN ("davidSDK connected\n");
 
-  boost::function<void
-  (const boost::shared_ptr<pcl::PCLImage> &)> f = boost::bind (&grabberCallback, _1);
+  std::function<void (const pcl::PCLImage::Ptr&)> f = grabberCallback;
   davidsdk_ptr->registerCallback (f);
   davidsdk_ptr->start ();
   waitForUser ("Press enter to quit");

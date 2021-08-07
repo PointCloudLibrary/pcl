@@ -49,12 +49,10 @@
 #include "internal.h"
 #include "cuda_async_copy.h"
 
-using namespace std;
-
 const int MAX_CLUST_SIZE = 25000;
 const float CLUST_TOL = 0.05f;
 
-pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector( const vector<string>& tree_files, int rows, int cols)    
+pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector( const std::vector<std::string>& tree_files, int rows, int cols)
 : max_cluster_size_(MAX_CLUST_SIZE), cluster_tolerance_(CLUST_TOL)
 {
   PCL_DEBUG("[pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector] : (D) : Constructor called\n");
@@ -63,15 +61,15 @@ pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector( const vector<strin
 
   impl_.reset ( new device::MultiTreeLiveProc(rows, cols) );
 
-  for(size_t i = 0; i < tree_files.size(); ++i)
+  for(const auto &tree_file : tree_files)
   {
     // load the tree file
-    vector<trees::Node>  nodes;
-    vector<trees::Label> leaves;
+    std::vector<trees::Node>  nodes;
+    std::vector<trees::Label> leaves;
 
     // this might throw but we haven't done any malloc yet
-    int height = loadTree (tree_files[i], nodes, leaves );
-    impl_->trees.push_back(device::CUDATree(height, nodes, leaves));
+    int height = loadTree (tree_file, nodes, leaves );
+    impl_->trees.emplace_back(height, nodes, leaves);
   }
 
   allocate_buffers(rows, cols);
@@ -159,10 +157,10 @@ pcl::gpu::people::RDFBodyPartsDetector::allocate_buffers(int rows, int cols)
   means_storage_.resize((cols * rows + 1) * 3); // float3 * cols * rows and float3 for cc == -1.
 
   blob_matrix_.resize(NUM_PARTS);
-  for(size_t i = 0; i < blob_matrix_.size(); ++i)
+  for(auto &matrix : blob_matrix_)
   {
-    blob_matrix_[i].clear();
-    blob_matrix_[i].reserve(5000);
+    matrix.clear();
+    matrix.reserve(5000);
   }
 }
 
@@ -209,12 +207,12 @@ pcl::gpu::people::RDFBodyPartsDetector::process (const pcl::device::Depth& depth
     float3* means = (float3*) &means_storage_[3];
     int *rsizes = &region_sizes_[1];
 
-    for(size_t i = 0; i < blob_matrix_.size(); ++i)
-      blob_matrix_[i].clear();
+    for(auto &matrix : blob_matrix_)
+      matrix.clear();
 
-    for(size_t k = 0; k < dst_labels_.size(); ++k)
+    for(std::size_t k = 0; k < dst_labels_.size(); ++k)
     {
-      const PointXYZ& p = cloud.points[k];
+      const PointXYZ& p = cloud[k];
       int cc = dst_labels_[k];
       means[cc].x += p.x;
       means[cc].y += p.y;
@@ -224,7 +222,7 @@ pcl::gpu::people::RDFBodyPartsDetector::process (const pcl::device::Depth& depth
 
     means[-1].z = 0; // cc == -1 means invalid
 
-    for(size_t k = 0; k < dst_labels_.size(); ++k)
+    for(std::size_t k = 0; k < dst_labels_.size(); ++k)
     {
       int label = lmap_host_[k];
       int cc    = dst_labels_[k];
@@ -249,11 +247,11 @@ pcl::gpu::people::RDFBodyPartsDetector::process (const pcl::device::Depth& depth
     }
 
     int id = 0;
-    for(size_t label = 0; label < blob_matrix_.size(); ++label)
-      for(size_t b = 0; b < blob_matrix_[label].size(); ++b)
+    for(auto &matrix : blob_matrix_)
+      for(std::size_t b = 0; b < matrix.size(); ++b)
       {
-        blob_matrix_[label][b].id = id++;
-        blob_matrix_[label][b].lid = static_cast<int> (b);
+        matrix[b].id = id++;
+        matrix[b].lid = static_cast<int> (b);
       }
 
     buildRelations ( blob_matrix_ );
@@ -270,7 +268,7 @@ pcl::gpu::people::RDFBodyPartsDetector::processProb (const pcl::device::Depth& d
 
   // Process the depthimage into probabilities (CUDA)
   //impl_->process(depth, labels_);
-  //impl_->processProb(depth, labels_, P_l_, (int) std::numeric_limits<int16_t>::max());
+  //impl_->processProb(depth, labels_, P_l_, (int) std::numeric_limits<std::int16_t>::max());
   impl_->processProb(depth, labels_, P_l_, std::numeric_limits<int>::max());
 }
 
@@ -303,12 +301,12 @@ pcl::gpu::people::RDFBodyPartsDetector::processSmooth (const pcl::device::Depth&
     float3* means = (float3*) &means_storage_[3];
     int *rsizes = &region_sizes_[1];
 
-    for(size_t i = 0; i < blob_matrix_.size(); ++i)
-      blob_matrix_[i].clear();
+    for(auto &matrix : blob_matrix_)
+      matrix.clear();
 
-    for(size_t k = 0; k < dst_labels_.size(); ++k)
+    for(std::size_t k = 0; k < dst_labels_.size(); ++k)
     {
-      const PointXYZ& p = cloud.points[k];
+      const PointXYZ& p = cloud[k];
       int cc = dst_labels_[k];
       means[cc].x += p.x;
       means[cc].y += p.y;
@@ -318,7 +316,7 @@ pcl::gpu::people::RDFBodyPartsDetector::processSmooth (const pcl::device::Depth&
 
     means[-1].z = 0; // cc == -1 means invalid
 
-    for(size_t k = 0; k < dst_labels_.size(); ++k)
+    for(std::size_t k = 0; k < dst_labels_.size(); ++k)
     {
       int label = lmap_host_[k];
       int cc    = dst_labels_[k];
@@ -343,11 +341,11 @@ pcl::gpu::people::RDFBodyPartsDetector::processSmooth (const pcl::device::Depth&
     }
 
     int id = 0;
-    for(size_t label = 0; label < blob_matrix_.size(); ++label)
-      for(size_t b = 0; b < blob_matrix_[label].size(); ++b)
+    for(auto &matrix : blob_matrix_)
+      for(std::size_t b = 0; b < matrix.size(); ++b)
       {
-        blob_matrix_[label][b].id = id++;
-        blob_matrix_[label][b].lid = static_cast<int> (b);
+        matrix[b].id = id++;
+        matrix[b].lid = static_cast<int> (b);
       }
   }
 }

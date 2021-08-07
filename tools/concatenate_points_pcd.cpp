@@ -47,7 +47,6 @@
 #include <iostream>
 #include <pcl/console/time.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
 
 Eigen::Vector4f    translation;
 Eigen::Quaternionf orientation;
@@ -134,15 +133,15 @@ main (int argc, char** argv)
 
   //pcl::PointCloud<pcl::PointXYZ> cloud_all;
   pcl::PCLPointCloud2 cloud_all;
-  for (size_t i = 0; i < file_indices.size (); ++i)
+  for (const int &file_index : file_indices)
   {
     // Load the Point Cloud
     pcl::PCLPointCloud2 cloud;
-    loadCloud (argv[file_indices[i]], cloud);
+    loadCloud (argv[file_index], cloud);
     //pcl::PointCloud<pcl::PointXYZ> cloud;
     //pcl::io::loadPCDFile (argv[file_indices[i]], cloud);
     //cloud_all += cloud;
-    pcl::concatenatePointCloud (cloud_all, cloud, cloud_all);
+    pcl::concatenate (cloud_all, cloud, cloud_all);
     PCL_INFO ("Total number of points so far: %u. Total data size: %lu bytes.\n", cloud_all.width * cloud_all.height, cloud_all.data.size ());
   }
 

@@ -50,9 +50,7 @@
 #include <QFileDialog>
 #include <QtCore>
 #include <QKeyEvent>
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-#include <QtConcurrent/QtConcurrent>
-#endif
+#include <QtConcurrent>
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/transforms.h>
@@ -63,11 +61,6 @@
 
 pcl::ihs::OfflineIntegration::OfflineIntegration (Base* parent)
   : Base               (parent),
-    mutex_             (),
-    mutex_quit_        (),
-    computation_fps_   (),
-    visualization_fps_ (),
-    path_dir_          (),
     mesh_model_        (new Mesh ()),
     normal_estimation_ (new NormalEstimation ()),
     integration_       (new Integration ()),
@@ -88,8 +81,8 @@ pcl::ihs::OfflineIntegration::OfflineIntegration (Base* parent)
 
 pcl::ihs::OfflineIntegration::~OfflineIntegration ()
 {
-  boost::mutex::scoped_lock lock (mutex_);
-  boost::mutex::scoped_lock lock_quit (mutex_quit_);
+  std::lock_guard<std::mutex> lock (mutex_);
+  std::lock_guard<std::mutex> lock_quit (mutex_quit_);
   destructor_called_ = true;
 }
 
@@ -98,7 +91,7 @@ pcl::ihs::OfflineIntegration::~OfflineIntegration ()
 void
 pcl::ihs::OfflineIntegration::start ()
 {
-  QString dir = QFileDialog::getExistingDirectory (0, "Please select a directory containing .pcd and .transform files.");
+  QString dir = QFileDialog::getExistingDirectory (nullptr, "Please select a directory containing .pcd and .transform files.");
 
   if (dir.isEmpty ())
   {
@@ -106,7 +99,7 @@ pcl::ihs::OfflineIntegration::start ()
   }
 
   path_dir_ = dir.toStdString ();
-  QtConcurrent::run (boost::bind (&pcl::ihs::OfflineIntegration::computationThread, this));
+  QtConcurrent::run ([this]{ computationThread (); });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -143,20 +136,20 @@ pcl::ihs::OfflineIntegration::computationThread ()
   Base::setPivot ("model");
   Base::addMesh (mesh_model_, "model");
 
-  if (filenames.size () < 1)
+  if (filenames.empty ())
   {
     return;
   }
 
-  for (unsigned int i=1; i<filenames.size (); ++i)
+  for (std::size_t i=1; i<filenames.size (); ++i)
   {
     std::cerr << "Processing file " << std::setw (5) << i+1 << " / " << filenames.size () << std::endl;
 
     {
-      boost::mutex::scoped_lock lock (mutex_);
+      std::lock_guard<std::mutex> lock (mutex_);
       if (destructor_called_) return;
     }
-    boost::mutex::scoped_lock lock_quit (mutex_quit_);
+    std::unique_lock<std::mutex> lock_quit (mutex_quit_);
 
     CloudXYZRGBNormalPtr cloud_data (new CloudXYZRGBNormal ());
     if (!this->load (filenames [i], cloud_data, T))
@@ -175,7 +168,7 @@ pcl::ihs::OfflineIntegration::computationThread ()
 
     {
       lock_quit.unlock ();
-      boost::mutex::scoped_lock lock (mutex_);
+      std::lock_guard<std::mutex> lock (mutex_);
       if (destructor_called_) return;
 
       Base::addMesh (mesh_model_, "model", Eigen::Isometry3d (T.inverse ().cast <double> ()));
@@ -188,11 +181,11 @@ pcl::ihs::OfflineIntegration::computationThread ()
 ////////////////////////////////////////////////////////////////////////////////
 
 bool
-pcl::ihs::OfflineIntegration::getFilesFromDirectory (const std::string          path_dir,
-                                                     const std::string          extension,
+pcl::ihs::OfflineIntegration::getFilesFromDirectory (const std::string&          path_dir,
+                                                     const std::string&          extension,
                                                      std::vector <std::string>& files) const
 {
-  if (path_dir == "" || !boost::filesystem::exists (path_dir))
+  if (path_dir.empty() || !boost::filesystem::exists (path_dir))
   {
     std::cerr << "ERROR in offline_integration.cpp: Invalid path\n  '" << path_dir << "'\n";
     return (false);
@@ -286,7 +279,7 @@ pcl::ihs::OfflineIntegration::load (const std::string&    filename,
   // Load the transformation.
   std::string fn_transform = filename;
 
-  size_t pos = fn_transform.find_last_of (".");
+  std::size_t pos = fn_transform.find_last_of ('.');
   if (pos == std::string::npos || pos == (fn_transform.size () - 1))
   {
     std::cerr << "ERROR in offline_integration.cpp: No file extension\n";
@@ -319,7 +312,7 @@ pcl::ihs::OfflineIntegration::paintEvent (QPaintEvent* event)
 
   std::string vis_fps ("Visualization: "), comp_fps ("Computation: ");
   {
-    boost::mutex::scoped_lock lock (mutex_);
+    std::lock_guard<std::mutex> lock (mutex_);
     this->calcFPS (visualization_fps_);
 
     vis_fps.append  (visualization_fps_.str ()).append (" fps");
@@ -338,7 +331,7 @@ pcl::ihs::OfflineIntegration::keyPressEvent (QKeyEvent* event)
 {
   if (event->key () == Qt::Key_Escape)
   {
-    boost::mutex::scoped_lock lock (mutex_);
+    std::lock_guard<std::mutex> lock (mutex_);
     QApplication::quit ();
   }
 

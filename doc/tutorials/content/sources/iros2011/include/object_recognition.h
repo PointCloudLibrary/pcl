@@ -1,5 +1,4 @@
-#ifndef OBJECT_RECOGNITION_H_
-#define OBJECT_RECOGNITION_H_
+#pragma once
 
 #include "typedefs.h"
 
@@ -10,7 +9,6 @@
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/kdtree/kdtree_flann.h>
-
 
 struct ObjectRecognitionParameters
 {
@@ -61,19 +59,19 @@ public:
   {}
 
   void 
-  populateDatabase (const std::vector<std::string> & filenames)
+  populateDatabase (const std::vector<std::string> & /*filenames*/)
   {
   } 
 
   const ObjectModel & 
-  recognizeObject (const PointCloudPtr & query_cloud)
+  recognizeObject (const PointCloudPtr & /*query_cloud*/)
   {
     int best_match = 0;
     return (models_[best_match]);
   }
 
   PointCloudPtr
-  recognizeAndAlignPoints (const PointCloudPtr & query_cloud)
+  recognizeAndAlignPoints (const PointCloudPtr & /*query_cloud*/)
   {
     PointCloudPtr output;
     return (output);
@@ -155,5 +153,3 @@ protected:
   GlobalDescriptorsPtr descriptors_;
   pcl::KdTreeFLANN<GlobalDescriptorT>::Ptr kdtree_;
 };
-
-#endif

@@ -37,11 +37,10 @@
  *
  */
 
-#ifndef PCL_FILTERS_IMPL_MEDIAN_FILTER_HPP_
-#define PCL_FILTERS_IMPL_MEDIAN_FILTER_HPP_
+#pragma once
 
 #include <pcl/filters/median_filter.h>
-#include <pcl/common/io.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 
 template <typename PointT> void
 pcl::MedianFilter<PointT>::applyFilter (PointCloud &output)
@@ -73,20 +72,19 @@ pcl::MedianFilter<PointT>::applyFilter (PointCloud &output)
               vals.push_back ((*input_)(x+x_dev, y+y_dev).z);
           }
 
-        if (vals.size () == 0)
+        if (vals.empty ())
           continue;
 
         // The output depth will be the median of all the depths in the window
-        partial_sort (vals.begin (), vals.begin () + vals.size () / 2 + 1, vals.end ());
-        float new_depth = vals[vals.size () / 2];
+        auto middle_it = vals.begin () + vals.size () / 2;
+        std::nth_element (vals.begin (), middle_it, vals.end ());
+        float new_depth = *middle_it;
         // Do not allow points to move more than the set max_allowed_movement_
-        if (fabs (new_depth - (*input_)(x, y).z) < max_allowed_movement_)
+        if (std::abs (new_depth - (*input_)(x, y).z) < max_allowed_movement_)
           output (x, y).z = new_depth;
         else
           output (x, y).z = (*input_)(x, y).z +
-                            max_allowed_movement_ * (new_depth - (*input_)(x, y).z) / fabsf (new_depth - (*input_)(x, y).z);
+                            max_allowed_movement_ * (new_depth - (*input_)(x, y).z) / std::abs (new_depth - (*input_)(x, y).z);
       }
 }
 
-
-#endif /* PCL_FILTERS_IMPL_MEDIAN_FILTER_HPP_ */

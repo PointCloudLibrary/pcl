@@ -37,7 +37,6 @@
 #include "internal.hpp"
 #include "pcl/gpu/utils/device/warp.hpp"
 #include "pcl/gpu/utils/device/block.hpp"
-#include "pcl/gpu/utils/device/limits.hpp"
 #include "pcl/gpu/utils/device/vector_math.hpp"
 #include "pcl/gpu/utils/device/functional.hpp"
 
@@ -75,7 +74,7 @@ namespace pcl
 
 		struct Div12eps
 		{
-            __device__ __forceinline__ float operator()(float v1, float v2) const { return (float)(v1 / ( v2 + numeric_limits<double>::epsilon() )); }
+            __device__ __forceinline__ float operator()(float v1, float v2) const { return (float)(v1 / ( v2 + std::numeric_limits<double>::epsilon() )); }
 		};
 
 		struct DivValIfNonZero
@@ -146,7 +145,7 @@ namespace pcl
                 float3 rotation_axis = AxesStrategy::getRotationAxes(index, origin_normal);
 				rotation_axis = normalized_safe(rotation_axis); //normalize if non-zero
 
-				const float eps = numeric_limits<float>::epsilon ();
+				constexpr float eps = std::numeric_limits<float>::epsilon ();
 
 				for(int i_neighb = threadIdx.x; i_neighb < neighb_count; i_neighb += CTA_SIZE)
 				{
@@ -160,10 +159,10 @@ namespace pcl
 						cos_between_normals = dot(origin_normal, normal);						
 						cos_between_normals = fmax (-1.f, fmin (1.f, cos_between_normals));
 
-						if (fabs(cos_between_normals) < support_angle_cos)    // allow counter-directed normals
+						if (std::abs(cos_between_normals) < support_angle_cos)    // allow counter-directed normals
 							continue;
 
-						cos_between_normals = fabs(cos_between_normals); // the normal is not used explicitly from now						
+						cos_between_normals = std::abs(cos_between_normals); // the normal is not used explicitly from now						
 					}
 
 					// now compute the coordinate in cylindric coordinate system associated with the origin point
@@ -179,8 +178,8 @@ namespace pcl
 					cos_dir_axis = fmax(-1.f, fmin(1.f, cos_dir_axis));
 
 					// compute coordinates w.r.t. the reference frame
-					float beta  = numeric_limits<float>::quiet_NaN();
-					float alpha = numeric_limits<float>::quiet_NaN();
+					float beta;
+					float alpha;
 					
 					if (radial) // radial spin image structure
 					{
@@ -192,12 +191,14 @@ namespace pcl
 						beta  = direction_norm * cos_dir_axis;
 						alpha = direction_norm * sqrt (1.0 - cos_dir_axis*cos_dir_axis);
 
-						if (fabs (beta) >= bin_size * image_width || alpha >= bin_size * image_width)
+						if (std::abs (beta) >= bin_size * image_width || alpha >= bin_size * image_width)
 							continue;  // outside the cylinder
 					}
 
 					// bilinear interpolation
 					float beta_bin_size = radial ? (PI*0.5f/image_width) : bin_size;
+					//Using floorf due to changes to MSVC 16.9. See details here: https://devtalk.blender.org/t/cuda-compile-error-windows-10/17886/4
+					//floorf is without std:: see why here: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79700
 					int beta_bin  = floorf(beta  / beta_bin_size) + image_width;
 					int alpha_bin = floorf(alpha / bin_size);
 
@@ -227,7 +228,7 @@ namespace pcl
 
 					if (angular)
 					{
-						float anlge_betwwn_normals = acos(cos_between_normals);						
+						float anlge_betwwn_normals = std::acos(cos_between_normals);						
 						incAngle(alpha_bin,   beta_bin,   anlge_betwwn_normals * (1-a) * (1-b)); 
 						incAngle(alpha_bin+1, beta_bin,   anlge_betwwn_normals *    a  * (1-b));
 						incAngle(alpha_bin,   beta_bin+1, anlge_betwwn_normals * (1-a) *    b );
@@ -340,7 +341,7 @@ namespace pcl
 void pcl::device::computeSpinImagesOrigigNormal(bool radial, bool angular, float support_angle_cos, const Indices& indices, const PointCloud& input_cloud, const Normals& input_normals,
 		const PointCloud& surface, const Normals& normals, const NeighborIndices& neighbours, int min_neighb, int image_width, float bin_size, PtrStep<float> output)
 {	
-	typedef void (*originNormal)(float, const Indices&, const PointCloud&, const Normals&, const PointCloud&, const Normals&, const NeighborIndices&, int , int , float, PtrStep<float>);
+	using originNormal = void (*)(float, const Indices&, const PointCloud&, const Normals&, const PointCloud&, const Normals&, const NeighborIndices&, int , int , float, PtrStep<float>);
 
 	const originNormal table[2][2] = 
 	{
@@ -354,7 +355,7 @@ void pcl::device::computeSpinImagesOrigigNormal(bool radial, bool angular, float
 void pcl::device::computeSpinImagesCustomAxes(bool radial, bool angular, float support_angle_cos, const Indices& indices, const PointCloud& input_cloud, const Normals& input_normals,
 		const PointCloud& surface, const Normals& normals, const NeighborIndices& neighbours, int min_neighb, int image_width, float bin_size, const float3& rotation_axis, PtrStep<float> output)
 {
-	typedef void (*customAxes)(float, const Indices&, const PointCloud&, const Normals&, const PointCloud&, const Normals&, const NeighborIndices&, int, int, float, const float3&, PtrStep<float>);
+	using customAxes = void (*)(float, const Indices&, const PointCloud&, const Normals&, const PointCloud&, const Normals&, const NeighborIndices&, int, int, float, const float3&, PtrStep<float>);
 
 	const customAxes table[2][2] = 
 	{
@@ -369,7 +370,7 @@ void pcl::device::computeSpinImagesCustomAxes(bool radial, bool angular, float s
 void pcl::device::computeSpinImagesCustomAxesCloud(bool radial, bool angular, float support_angle_cos, const Indices& indices, const PointCloud& input_cloud, const Normals& input_normals,
 		const PointCloud& surface, const Normals& normals, const NeighborIndices& neighbours, int min_neighb, int image_width, float bin_size, const Normals& rotation_axes_cloud, PtrStep<float> output)
 {
-	typedef void (*customAxesCloud)(float, const Indices&, const PointCloud&, const Normals&, const PointCloud&, const Normals&, const NeighborIndices&, int, int, float, const Normals&, PtrStep<float>);
+	using customAxesCloud = void (*)(float, const Indices&, const PointCloud&, const Normals&, const PointCloud&, const Normals&, const NeighborIndices&, int, int, float, const Normals&, PtrStep<float>);
 
 	const customAxesCloud table[2][2] = 
 	{

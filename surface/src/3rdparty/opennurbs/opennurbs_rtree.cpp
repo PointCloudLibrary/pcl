@@ -43,7 +43,7 @@ struct ON_RTreePartitionVars
   double m_coverSplitArea;
 }; 
 
-typedef bool (*ON_RTreeSearchCallback)(void* a_context, ON__INT_PTR a_id );
+using ON_RTreeSearchCallback = bool (*)(void *, ON__INT_PTR);
 
 struct ON_RTreeSearchResultCallback
 {
@@ -78,10 +78,10 @@ static bool SearchHelper(const ON_RTreeNode* a_node, struct ON_RTreeCapsule* a_c
 // ON_RTreeMemPool
 //
 
-size_t ON_MemoryPageSize()
+std::size_t ON_MemoryPageSize()
 {
 #if defined(ON_COMPILER_MSC)
-  static size_t pagesize = 0;
+  static std::size_t pagesize = 0;
   if ( 0 == pagesize )
   {
     SYSTEM_INFO system_info;
@@ -98,7 +98,7 @@ size_t ON_MemoryPageSize()
 }
 
 
-static size_t SizeofBlkLink()
+static std::size_t SizeofBlkLink()
 {
   // Room to reserve for struct ON_RTreeMemPool::Blk.
   // This number should be >= sizeof(struct ON_RTreeMemPool::Blk)
@@ -106,22 +106,22 @@ static size_t SizeofBlkLink()
   return 16;
 }
 
-static size_t MemPoolBlkSize( size_t leaf_count )
+static std::size_t MemPoolBlkSize( std::size_t leaf_count )
 {
   // sizeof_blklink = number of bytes to reserve for the
   // struct ON_RTreeMemPool::Blk header used to keep track
   // of our allocations.
-  const size_t sizeof_blklink = SizeofBlkLink();
+  const std::size_t sizeof_blklink = SizeofBlkLink();
 
   // pagesize = OS memory manager page size.  We want the
   // allocated blocks to be some smallish mulitples of pagesize
   // to the active sections of the tree will end up in CPU cache 
   // when the tree is being repeatedly searched.
-  size_t pagesize = ON_MemoryPageSize();
+  std::size_t pagesize = ON_MemoryPageSize();
   if ( pagesize <= sizeof_blklink )
     pagesize = 4096;
 
-  size_t node_count = 32;
+  std::size_t node_count = 32;
   if ( leaf_count > 0 )
   {
     // When the user can estimate the number of leaves,
@@ -141,9 +141,9 @@ static size_t MemPoolBlkSize( size_t leaf_count )
   
   // Set "sz" to an multiple of pagesize that is big enough
   // to hold node_count nodes.
-  const size_t sizeof_node = sizeof(ON_RTreeNode);
-  size_t sz = pagesize;
-  size_t nodes_per_blk = ( node_count < 32 )
+  const std::size_t sizeof_node = sizeof(ON_RTreeNode);
+  std::size_t sz = pagesize;
+  std::size_t nodes_per_blk = ( node_count < 32 )
                        ? node_count
                        : (sz-sizeof_blklink)/sizeof_node;
   while ( nodes_per_blk < node_count )
@@ -165,7 +165,7 @@ static size_t MemPoolBlkSize( size_t leaf_count )
   return (sizeof_blklink + nodes_per_blk*sizeof_node);
 }
 
-ON_RTreeMemPool::ON_RTreeMemPool( ON_MEMORY_POOL* heap, size_t leaf_count  )
+ON_RTreeMemPool::ON_RTreeMemPool( ON_MEMORY_POOL* heap, std::size_t leaf_count  )
 : m_nodes(0)
 , m_list_nodes(0)
 , m_buffer(0)
@@ -204,7 +204,7 @@ void ON_RTreeMemPool::GrowBuffer()
     m_sizeof_heap += m_sizeof_blk;
     blk->m_next = m_blk_list;
     m_blk_list = blk;
-    const size_t sizeof_blklink = SizeofBlkLink();
+    const std::size_t sizeof_blklink = SizeofBlkLink();
     m_buffer = ((unsigned char*)m_blk_list) + sizeof_blklink;
     m_buffer_capacity = m_sizeof_blk - sizeof_blklink;
   }
@@ -225,7 +225,7 @@ ON_RTreeNode* ON_RTreeMemPool::AllocNode()
   }
   else
   {
-    const size_t node_sz = sizeof(*node);
+    const std::size_t node_sz = sizeof(*node);
     if ( m_buffer_capacity < node_sz )
       GrowBuffer();
 
@@ -265,7 +265,7 @@ struct ON_RTreeListNode* ON_RTreeMemPool::AllocListNode()
   }
   else
   {
-    size_t list_node_sz = sizeof(*list_node);
+    std::size_t list_node_sz = sizeof(*list_node);
     if ( m_buffer_capacity < list_node_sz )
     {
       GrowBuffer();
@@ -290,15 +290,15 @@ void ON_RTreeMemPool::FreeListNode(struct ON_RTreeListNode* list_node)
   }
 }
 
-size_t ON_RTreeMemPool::SizeOf() const
+std::size_t ON_RTreeMemPool::SizeOf() const
 {
   return m_sizeof_heap;
 }
 
-size_t ON_RTreeMemPool::SizeOfUnusedBuffer() const
+std::size_t ON_RTreeMemPool::SizeOfUnusedBuffer() const
 {
   const struct Blk* blk;
-  size_t sz = m_buffer_capacity;
+  std::size_t sz = m_buffer_capacity;
   for ( blk = m_nodes; blk; blk = blk->m_next )
   {
     sz += sizeof(struct ON_RTreeNode);
@@ -480,7 +480,7 @@ bool ON_RTreeIterator::Prev()
 //
 
 
-ON_RTree::ON_RTree( ON_MEMORY_POOL* heap, size_t leaf_count )
+ON_RTree::ON_RTree( ON_MEMORY_POOL* heap, std::size_t leaf_count )
 : m_root(0)
 , m_reserved(0)
 , m_mem_pool(heap,leaf_count)
@@ -1158,7 +1158,7 @@ bool ON_RTree::Search(
   return true;
 }
 
-typedef void (*ON_RTreePairSearchCallback)(void*, ON__INT_PTR, ON__INT_PTR);
+using ON_RTreePairSearchCallback = void (*)(void *, ON__INT_PTR, ON__INT_PTR);
 
 struct ON_RTreePairSearchCallbackResult
 {
@@ -1167,7 +1167,7 @@ struct ON_RTreePairSearchCallbackResult
   ON_RTreePairSearchCallback m_resultCallback;
 };
 
-typedef bool (*ON_RTreePairSearchCallbackBool)(void*, ON__INT_PTR, ON__INT_PTR);
+using ON_RTreePairSearchCallbackBool = bool (*)(void *, ON__INT_PTR, ON__INT_PTR);
 
 struct ON_RTreePairSearchCallbackResultBool
 {
@@ -1466,13 +1466,13 @@ static void CountRec(ON_RTreeNode* a_node, int& a_count)
   }
 }
 
-size_t ON_RTree::SizeOf() const
+std::size_t ON_RTree::SizeOf() const
 {
   return m_mem_pool.SizeOf();
 }
 
 
-static void NodeCountHelper( const ON_RTreeNode* node, size_t& node_count, size_t& wasted_branch_count, size_t& leaf_count )
+static void NodeCountHelper( const ON_RTreeNode* node, std::size_t& node_count, std::size_t& wasted_branch_count, std::size_t& leaf_count )
 {
   if ( 0 == node )
     return;

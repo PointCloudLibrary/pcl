@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_IO_VTK_LIB_IO_H_
-#define PCL_IO_VTK_LIB_IO_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -47,14 +46,12 @@
 #include <pcl/TextureMesh.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/conversions.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/range_image/range_image_planar.h>
 
 // Ignore warnings in the above headers
 #ifdef __GNUC__
 #pragma GCC system_header 
 #endif
-#include <vtkVersion.h>
 #include <vtkSmartPointer.h>
 #include <vtkStructuredGrid.h>
 #include <vtkPoints.h>
@@ -270,5 +267,3 @@ namespace pcl
 }
 
 #include <pcl/io/impl/vtk_lib_io.hpp>
-
-#endif /* PLC_IO_VTK_LIB_IO_H_ */

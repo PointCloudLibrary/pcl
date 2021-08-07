@@ -43,14 +43,13 @@
  *
  */
 
-#include <boost/lexical_cast.hpp>
-
 #include <pcl/console/time.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/png_io.h>
 #include <pcl/conversions.h>
+#include <boost/lexical_cast.hpp> // for lexical_cast
 
 using namespace pcl;
 using namespace pcl::io;

@@ -40,6 +40,7 @@
 
 #include <pcl/point_types.h>
 #include <pcl/common/common.h>
+#include <cfloat> // for FLT_MAX
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 inline double
@@ -51,7 +52,7 @@ pcl::getAngle3D (const Eigen::Vector4f &v1, const Eigen::Vector4f &v2, const boo
     rad = -1.0;
   else if (rad >  1.0)
     rad = 1.0;
-  return (in_degree ? acos (rad) * 180.0 / M_PI : acos (rad));
+  return (in_degree ? std::acos (rad) * 180.0 / M_PI : std::acos (rad));
 }
 
 inline double
@@ -63,8 +64,60 @@ pcl::getAngle3D (const Eigen::Vector3f &v1, const Eigen::Vector3f &v2, const boo
     rad = -1.0;
   else if (rad >  1.0)
     rad = 1.0;
-  return (in_degree ? acos (rad) * 180.0 / M_PI : acos (rad));
+  return (in_degree ? std::acos (rad) * 180.0 / M_PI : std::acos (rad));
 }
+
+#ifdef __SSE__
+inline __m128
+pcl::acos_SSE (const __m128 &x)
+{
+  /*
+  This python code generates the coefficients:
+  import math, numpy, scipy.optimize
+  def get_error(S):
+      err_sum=0.0
+      for x in numpy.arange(0.0, 1.0, 0.0025):
+          if (S[3]+S[4]*x)<0.0:
+              err_sum+=10.0
+          else:
+              err_sum+=((S[0]+x*(S[1]+x*S[2]))*numpy.sqrt(S[3]+S[4]*x)+S[5]+x*(S[6]+x*S[7])-math.acos(x))**2.0
+      return err_sum/400.0
+
+  print(scipy.optimize.minimize(fun=get_error, x0=[1.57, 0.0, 0.0, 1.0, -1.0, 0.0, 0.0, 0.0], method='Nelder-Mead', options={'maxiter':42000, 'maxfev':42000, 'disp':True, 'xatol':1e-6, 'fatol':1e-6}))
+  */
+  const __m128 mul_term = _mm_add_ps (_mm_set1_ps (1.59121552f), _mm_mul_ps (x, _mm_add_ps (_mm_set1_ps (-0.15461442f), _mm_mul_ps (x, _mm_set1_ps (0.05354897f)))));
+  const __m128 add_term = _mm_add_ps (_mm_set1_ps (0.06681017f), _mm_mul_ps (x, _mm_add_ps (_mm_set1_ps (-0.09402311f), _mm_mul_ps (x, _mm_set1_ps (0.02708663f)))));
+  return _mm_add_ps (_mm_mul_ps (mul_term, _mm_sqrt_ps (_mm_add_ps (_mm_set1_ps (0.89286965f), _mm_mul_ps (_mm_set1_ps (-0.89282669f), x)))), add_term);
+}
+
+inline __m128
+pcl::getAcuteAngle3DSSE (const __m128 &x1, const __m128 &y1, const __m128 &z1, const __m128 &x2, const __m128 &y2, const __m128 &z2)
+{
+  const __m128 dot_product = _mm_add_ps (_mm_add_ps (_mm_mul_ps (x1, x2), _mm_mul_ps (y1, y2)), _mm_mul_ps (z1, z2));
+  // The andnot-function realizes an abs-operation: the sign bit is removed
+  // -0.0f (negative zero) means that all bits are 0, only the sign bit is 1
+  return acos_SSE (_mm_min_ps (_mm_set1_ps (1.0f), _mm_andnot_ps (_mm_set1_ps (-0.0f), dot_product)));
+}
+#endif // ifdef __SSE__
+
+#ifdef __AVX__
+inline __m256
+pcl::acos_AVX (const __m256 &x)
+{
+  const __m256 mul_term = _mm256_add_ps (_mm256_set1_ps (1.59121552f), _mm256_mul_ps (x, _mm256_add_ps (_mm256_set1_ps (-0.15461442f), _mm256_mul_ps (x, _mm256_set1_ps (0.05354897f)))));
+  const __m256 add_term = _mm256_add_ps (_mm256_set1_ps (0.06681017f), _mm256_mul_ps (x, _mm256_add_ps (_mm256_set1_ps (-0.09402311f), _mm256_mul_ps (x, _mm256_set1_ps (0.02708663f)))));
+  return _mm256_add_ps (_mm256_mul_ps (mul_term, _mm256_sqrt_ps (_mm256_add_ps (_mm256_set1_ps (0.89286965f), _mm256_mul_ps (_mm256_set1_ps (-0.89282669f), x)))), add_term);
+}
+
+inline __m256
+pcl::getAcuteAngle3DAVX (const __m256 &x1, const __m256 &y1, const __m256 &z1, const __m256 &x2, const __m256 &y2, const __m256 &z2)
+{
+  const __m256 dot_product = _mm256_add_ps (_mm256_add_ps (_mm256_mul_ps (x1, x2), _mm256_mul_ps (y1, y2)), _mm256_mul_ps (z1, z2));
+  // The andnot-function realizes an abs-operation: the sign bit is removed
+  // -0.0f (negative zero) means that all bits are 0, only the sign bit is 1
+  return acos_AVX (_mm256_min_ps (_mm256_set1_ps (1.0f), _mm256_andnot_ps (_mm256_set1_ps (-0.0f), dot_product)));
+}
+#endif // ifdef __AVX__
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 inline void
@@ -86,10 +139,10 @@ pcl::getMeanStd (const std::vector<float> &values, double &mean, double &stddev)
   
   double sum = 0, sq_sum = 0;
 
-  for (size_t i = 0; i < values.size (); ++i)
+  for (const float &value : values)
   {
-    sum += values[i];
-    sq_sum += values[i] * values[i];
+    sum += value;
+    sq_sum += value * value;
   }
   mean = sum / static_cast<double>(values.size ());
   double variance = (sq_sum - sum * sum / static_cast<double>(values.size ())) / (static_cast<double>(values.size ()) - 1);
@@ -100,20 +153,20 @@ pcl::getMeanStd (const std::vector<float> &values, double &mean, double &stddev)
 template <typename PointT> inline void
 pcl::getPointsInBox (const pcl::PointCloud<PointT> &cloud, 
                      Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt,
-                     std::vector<int> &indices)
+                     Indices &indices)
 {
-  indices.resize (cloud.points.size ());
+  indices.resize (cloud.size ());
   int l = 0;
 
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
-    for (size_t i = 0; i < cloud.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud.size (); ++i)
     {
       // Check if the point is inside bounds
-      if (cloud.points[i].x < min_pt[0] || cloud.points[i].y < min_pt[1] || cloud.points[i].z < min_pt[2])
+      if (cloud[i].x < min_pt[0] || cloud[i].y < min_pt[1] || cloud[i].z < min_pt[2])
         continue;
-      if (cloud.points[i].x > max_pt[0] || cloud.points[i].y > max_pt[1] || cloud.points[i].z > max_pt[2])
+      if (cloud[i].x > max_pt[0] || cloud[i].y > max_pt[1] || cloud[i].z > max_pt[2])
         continue;
       indices[l++] = int (i);
     }
@@ -121,17 +174,17 @@ pcl::getPointsInBox (const pcl::PointCloud<PointT> &cloud,
   // NaN or Inf values could exist => check for them
   else
   {
-    for (size_t i = 0; i < cloud.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud.size (); ++i)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud.points[i].x) || 
-          !pcl_isfinite (cloud.points[i].y) || 
-          !pcl_isfinite (cloud.points[i].z))
+      if (!std::isfinite (cloud[i].x) || 
+          !std::isfinite (cloud[i].y) || 
+          !std::isfinite (cloud[i].z))
         continue;
       // Check if the point is inside bounds
-      if (cloud.points[i].x < min_pt[0] || cloud.points[i].y < min_pt[1] || cloud.points[i].z < min_pt[2])
+      if (cloud[i].x < min_pt[0] || cloud[i].y < min_pt[1] || cloud[i].z < min_pt[2])
         continue;
-      if (cloud.points[i].x > max_pt[0] || cloud.points[i].y > max_pt[1] || cloud.points[i].z > max_pt[2])
+      if (cloud[i].x > max_pt[0] || cloud[i].y > max_pt[1] || cloud[i].z > max_pt[2])
         continue;
       indices[l++] = int (i);
     }
@@ -151,9 +204,9 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Eigen::Vector4f
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
-    for (size_t i = 0; i < cloud.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud.size (); ++i)
     {
-      pcl::Vector3fMapConst pt = cloud.points[i].getVector3fMap ();
+      pcl::Vector3fMapConst pt = cloud[i].getVector3fMap ();
       dist = (pivot_pt3 - pt).norm ();
       if (dist > max_dist)
       {
@@ -165,12 +218,12 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Eigen::Vector4f
   // NaN or Inf values could exist => check for them
   else
   {
-    for (size_t i = 0; i < cloud.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud.size (); ++i)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud.points[i].x) || !pcl_isfinite (cloud.points[i].y) || !pcl_isfinite (cloud.points[i].z))
+      if (!std::isfinite (cloud[i].x) || !std::isfinite (cloud[i].y) || !std::isfinite (cloud[i].z))
         continue;
-      pcl::Vector3fMapConst pt = cloud.points[i].getVector3fMap ();
+      pcl::Vector3fMapConst pt = cloud[i].getVector3fMap ();
       dist = (pivot_pt3 - pt).norm ();
       if (dist > max_dist)
       {
@@ -181,14 +234,14 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Eigen::Vector4f
   }
 
   if(max_idx != -1)
-    max_pt = cloud.points[max_idx].getVector4fMap ();
+    max_pt = cloud[max_idx].getVector4fMap ();
   else
     max_pt = Eigen::Vector4f(std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::quiet_NaN());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> inline void
-pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &indices,
+pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Indices &indices,
                      const Eigen::Vector4f &pivot_pt, Eigen::Vector4f &max_pt)
 {
   float max_dist = -FLT_MAX;
@@ -199,9 +252,9 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const std::vector<int
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
-    for (size_t i = 0; i < indices.size (); ++i)
+    for (std::size_t i = 0; i < indices.size (); ++i)
     {
-      pcl::Vector3fMapConst pt = cloud.points[indices[i]].getVector3fMap ();
+      pcl::Vector3fMapConst pt = cloud[indices[i]].getVector3fMap ();
       dist = (pivot_pt3 - pt).norm ();
       if (dist > max_dist)
       {
@@ -213,15 +266,15 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const std::vector<int
   // NaN or Inf values could exist => check for them
   else
   {
-    for (size_t i = 0; i < indices.size (); ++i)
+    for (std::size_t i = 0; i < indices.size (); ++i)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud.points[indices[i]].x) || !pcl_isfinite (cloud.points[indices[i]].y)
+      if (!std::isfinite (cloud[indices[i]].x) || !std::isfinite (cloud[indices[i]].y)
           ||
-          !pcl_isfinite (cloud.points[indices[i]].z))
+          !std::isfinite (cloud[indices[i]].z))
         continue;
 
-      pcl::Vector3fMapConst pt = cloud.points[indices[i]].getVector3fMap ();
+      pcl::Vector3fMapConst pt = cloud[indices[i]].getVector3fMap ();
       dist = (pivot_pt3 - pt).norm ();
       if (dist > max_dist)
       {
@@ -232,7 +285,7 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const std::vector<int
   }
 
   if(max_idx != -1)
-    max_pt = cloud.points[indices[max_idx]].getVector4fMap ();
+    max_pt = cloud[indices[max_idx]].getVector4fMap ();
   else
     max_pt = Eigen::Vector4f(std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::quiet_NaN());
 }
@@ -241,35 +294,8 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const std::vector<int
 template <typename PointT> inline void
 pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, PointT &min_pt, PointT &max_pt)
 {
-  Eigen::Array4f min_p, max_p;
-  min_p.setConstant (FLT_MAX);
-  max_p.setConstant (-FLT_MAX);
-
-  // If the data is dense, we don't need to check for NaN
-  if (cloud.is_dense)
-  {
-    for (size_t i = 0; i < cloud.points.size (); ++i)
-    {
-      pcl::Array4fMapConst pt = cloud.points[i].getArray4fMap ();
-      min_p = min_p.min (pt);
-      max_p = max_p.max (pt);
-    }
-  }
-  // NaN or Inf values could exist => check for them
-  else
-  {
-    for (size_t i = 0; i < cloud.points.size (); ++i)
-    {
-      // Check if the point is invalid
-      if (!pcl_isfinite (cloud.points[i].x) || 
-          !pcl_isfinite (cloud.points[i].y) || 
-          !pcl_isfinite (cloud.points[i].z))
-        continue;
-      pcl::Array4fMapConst pt = cloud.points[i].getArray4fMap ();
-      min_p = min_p.min (pt);
-      max_p = max_p.max (pt);
-    }
-  }
+  Eigen::Vector4f min_p, max_p;
+  pcl::getMinMax3D (cloud, min_p, max_p);
   min_pt.x = min_p[0]; min_pt.y = min_p[1]; min_pt.z = min_p[2];
   max_pt.x = max_p[0]; max_pt.y = max_p[1]; max_pt.z = max_p[2];
 }
@@ -278,37 +304,34 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, PointT &min_pt, PointT &
 template <typename PointT> inline void
 pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt)
 {
-  Eigen::Array4f min_p, max_p;
-  min_p.setConstant (FLT_MAX);
-  max_p.setConstant (-FLT_MAX);
+  min_pt.setConstant (FLT_MAX);
+  max_pt.setConstant (-FLT_MAX);
 
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
-    for (size_t i = 0; i < cloud.points.size (); ++i)
+    for (const auto& point: cloud.points)
     {
-      pcl::Array4fMapConst pt = cloud.points[i].getArray4fMap ();
-      min_p = min_p.min (pt);
-      max_p = max_p.max (pt);
+      const pcl::Vector4fMapConst pt = point.getVector4fMap ();
+      min_pt = min_pt.cwiseMin (pt);
+      max_pt = max_pt.cwiseMax (pt);
     }
   }
   // NaN or Inf values could exist => check for them
   else
   {
-    for (size_t i = 0; i < cloud.points.size (); ++i)
+    for (const auto& point: cloud.points)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud.points[i].x) || 
-          !pcl_isfinite (cloud.points[i].y) || 
-          !pcl_isfinite (cloud.points[i].z))
+      if (!std::isfinite (point.x) ||
+          !std::isfinite (point.y) ||
+          !std::isfinite (point.z))
         continue;
-      pcl::Array4fMapConst pt = cloud.points[i].getArray4fMap ();
-      min_p = min_p.min (pt);
-      max_p = max_p.max (pt);
+      const pcl::Vector4fMapConst pt = point.getVector4fMap ();
+      min_pt = min_pt.cwiseMin (pt);
+      max_pt = max_pt.cwiseMax (pt);
     }
   }
-  min_pt = min_p;
-  max_pt = max_p;
 }
 
 
@@ -317,42 +340,12 @@ template <typename PointT> inline void
 pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const pcl::PointIndices &indices,
                   Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt)
 {
-  Eigen::Array4f min_p, max_p;
-  min_p.setConstant (FLT_MAX);
-  max_p.setConstant (-FLT_MAX);
-
-  // If the data is dense, we don't need to check for NaN
-  if (cloud.is_dense)
-  {
-    for (size_t i = 0; i < indices.indices.size (); ++i)
-    {
-      pcl::Array4fMapConst pt = cloud.points[indices.indices[i]].getArray4fMap ();
-      min_p = min_p.min (pt);
-      max_p = max_p.max (pt);
-    }
-  }
-  // NaN or Inf values could exist => check for them
-  else
-  {
-    for (size_t i = 0; i < indices.indices.size (); ++i)
-    {
-      // Check if the point is invalid
-      if (!pcl_isfinite (cloud.points[indices.indices[i]].x) || 
-          !pcl_isfinite (cloud.points[indices.indices[i]].y) || 
-          !pcl_isfinite (cloud.points[indices.indices[i]].z))
-        continue;
-      pcl::Array4fMapConst pt = cloud.points[indices.indices[i]].getArray4fMap ();
-      min_p = min_p.min (pt);
-      max_p = max_p.max (pt);
-    }
-  }
-  min_pt = min_p;
-  max_pt = max_p;
+  pcl::getMinMax3D (cloud, indices.indices, min_pt, max_pt);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> inline void
-pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &indices,
+pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const Indices &indices,
                   Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt)
 {
   min_pt.setConstant (FLT_MAX);
@@ -361,26 +354,26 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
-    for (size_t i = 0; i < indices.size (); ++i)
+    for (const auto &index : indices)
     {
-      pcl::Array4fMapConst pt = cloud.points[indices[i]].getArray4fMap ();
-      min_pt = min_pt.array ().min (pt);
-      max_pt = max_pt.array ().max (pt);
+      const pcl::Vector4fMapConst pt = cloud[index].getVector4fMap ();
+      min_pt = min_pt.cwiseMin (pt);
+      max_pt = max_pt.cwiseMax (pt);
     }
   }
   // NaN or Inf values could exist => check for them
   else
   {
-    for (size_t i = 0; i < indices.size (); ++i)
+    for (const auto &index : indices)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud.points[indices[i]].x) || 
-          !pcl_isfinite (cloud.points[indices[i]].y) || 
-          !pcl_isfinite (cloud.points[indices[i]].z))
+      if (!std::isfinite (cloud[index].x) || 
+          !std::isfinite (cloud[index].y) || 
+          !std::isfinite (cloud[index].z))
         continue;
-      pcl::Array4fMapConst pt = cloud.points[indices[i]].getArray4fMap ();
-      min_pt = min_pt.array ().min (pt);
-      max_pt = max_pt.array ().max (pt);
+      const pcl::Vector4fMapConst pt = cloud[index].getVector4fMap ();
+      min_pt = min_pt.cwiseMin (pt);
+      max_pt = max_pt.cwiseMax (pt);
     }
   }
 }
@@ -422,13 +415,12 @@ pcl::calculatePolygonArea (const pcl::PointCloud<PointT> &polygon)
 {
   float area = 0.0f;
   int num_points = polygon.size ();
-  int j = 0;
   Eigen::Vector3f va,vb,res;
 
   res(0) = res(1) = res(2) = 0.0f;
   for (int i = 0; i < num_points; ++i) 
   {
-    j = (i + 1) % num_points;
+    int j = (i + 1) % num_points;
     va = polygon[i].getVector3fMap ();
     vb = polygon[j].getVector3fMap ();
     res += va.cross (vb);

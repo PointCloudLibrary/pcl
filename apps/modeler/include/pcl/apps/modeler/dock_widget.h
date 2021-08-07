@@ -34,31 +34,31 @@
  *
  */
 
-#ifndef PCL_MODELER_DOCK_WIDGET_H_
-#define PCL_MODELER_DOCK_WIDGET_H_
+#pragma once
 
-#include <pcl/apps/modeler/qt.h>
+#include <QDockWidget>
 
-namespace pcl
-{
-  namespace modeler
-  {
-    class DockWidget : public QDockWidget
-    {
-      public:
-        explicit DockWidget(const QString &title, QWidget *parent = 0, Qt::WindowFlags flags = 0); 
-        explicit DockWidget(QWidget *parent = 0, Qt::WindowFlags flags = 0); 
-        ~DockWidget();
+namespace pcl {
+namespace modeler {
 
-        void
-        setFocusBasedStyle(bool focused);
-      protected:
-        virtual void
-        focusInEvent ( QFocusEvent * event );
+class DockWidget : public QDockWidget {
+public:
+  explicit DockWidget(const QString& title,
+                      QWidget* parent = nullptr,
+                      Qt::WindowFlags flags = Qt::WindowFlags());
+  explicit DockWidget(QWidget* parent = nullptr,
+                      Qt::WindowFlags flags = Qt::WindowFlags());
+  ~DockWidget();
 
-      private:
-    };
-  }
-}
+  void
+  setFocusBasedStyle(bool focused);
 
-#endif // PCL_MODELER_DOCK_WIDGET_H_
+protected:
+  void
+  focusInEvent(QFocusEvent* event) override;
+
+private:
+};
+
+} // namespace modeler
+} // namespace pcl

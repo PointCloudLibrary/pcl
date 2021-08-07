@@ -36,7 +36,7 @@
 
 /** \author Nizar Sallem */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/common/pca.h>
 #include <pcl/point_types.h>
 #include <pcl/pcl_tests.h>
@@ -49,11 +49,11 @@ pcl::PCA<pcl::PointXYZ> pca;
 TEST(PCA, projection)
 {
   pcl::PointXYZ projected, reconstructed;
-  for(size_t i = 0; i < cloud.size(); i++)
+  for(const auto &point : cloud)
   {
-    pca.project (cloud[i], projected);
+    pca.project (point, projected);
     pca.reconstruct (projected, reconstructed);
-    EXPECT_NEAR_VECTORS (reconstructed.getVector3fMap (), cloud[i].getVector3fMap (), 2.5e-4);
+    EXPECT_NEAR_VECTORS (reconstructed.getVector3fMap (), point.getVector3fMap (), 2.5e-4);
   }
 }
 
@@ -65,8 +65,8 @@ TEST(PCA, copy_constructor)
   {
     Eigen::Matrix3f eigen_vectors_copy = pca_copy.getEigenVectors ();
     Eigen::Matrix3f eigen_vectors = pca.getEigenVectors ();
-    for(size_t i = 0; i < 3; ++i)
-      for(size_t j = 0; j < 3; ++j)
+    for(std::size_t i = 0; i < 3; ++i)
+      for(std::size_t j = 0; j < 3; ++j)
         EXPECT_EQ (eigen_vectors (i,j), eigen_vectors_copy (i,j));
   }
   catch (pcl::InitFailedException &/*e*/)
@@ -84,7 +84,7 @@ TEST(PCA, cloud_projection)
     EXPECT_EQ (cloud.size (), cloud_projected.size ());
     pca.reconstruct (cloud_projected, cloud_reconstructed);
     EXPECT_EQ (cloud_reconstructed.size (), cloud_projected.size ());
-    for(size_t i = 0; i < cloud.size(); i++)
+    for(std::size_t i = 0; i < cloud.size(); i++)
       EXPECT_NEAR_VECTORS (cloud[i].getVector3fMap (),
                            cloud_reconstructed[i].getVector3fMap (),
                            2.5e-4);

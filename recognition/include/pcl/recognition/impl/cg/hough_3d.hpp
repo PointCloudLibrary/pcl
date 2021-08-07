@@ -40,6 +40,7 @@
 #ifndef PCL_RECOGNITION_HOUGH_3D_IMPL_H_
 #define PCL_RECOGNITION_HOUGH_3D_IMPL_H_
 
+#include <pcl/common/io.h> // for copyPointCloud
 #include <pcl/recognition/cg/hough_3d.h>
 #include <pcl/registration/correspondence_types.h>
 #include <pcl/registration/correspondence_rejection_sample_consensus.h>
@@ -51,7 +52,7 @@
 
 template<typename PointModelT, typename PointSceneT, typename PointModelRfT, typename PointSceneRfT>
 template<typename PointType, typename PointRfType> void
-pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::computeRf (const boost::shared_ptr<const pcl::PointCloud<PointType> > &input, pcl::PointCloud<PointRfType> &rf)
+pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::computeRf (const typename pcl::PointCloud<PointType>::ConstPtr &input, pcl::PointCloud<PointRfType> &rf)
 {
   if (local_rf_search_radius_ == 0)
   {
@@ -92,7 +93,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::tr
   if (!input_rf_)
   {
     ModelRfCloudPtr new_input_rf (new ModelRfCloud ());
-    computeRf (input_, *new_input_rf);
+    computeRf<PointModelT, PointModelRfT> (input_, *new_input_rf);
     input_rf_ = new_input_rf;
     //PCL_ERROR(
     //  "[pcl::Hough3DGrouping::train()] Error! Input reference frame not set.\n");
@@ -110,14 +111,14 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::tr
 
   // compute model centroid
   Eigen::Vector3f centroid (0, 0, 0);
-  for (size_t i = 0; i < input_->size (); ++i)
+  for (std::size_t i = 0; i < input_->size (); ++i)
   {
     centroid += input_->at (i).getVector3fMap ();
   }
   centroid /= static_cast<float> (input_->size ());
 
   // compute model votes
-  for (size_t i = 0; i < input_->size (); ++i)
+  for (std::size_t i = 0; i < input_->size (); ++i)
   {
     Eigen::Vector3f x_ax ((*input_rf_)[i].x_axis[0], (*input_rf_)[i].x_axis[1], (*input_rf_)[i].x_axis[2]);
     Eigen::Vector3f y_ax ((*input_rf_)[i].y_axis[0], (*input_rf_)[i].y_axis[1], (*input_rf_)[i].y_axis[2]);
@@ -152,7 +153,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::ho
   if (!scene_rf_)
   {
     ModelRfCloudPtr new_scene_rf (new ModelRfCloud ());
-    computeRf (scene_, *new_scene_rf);
+    computeRf<PointSceneT, PointSceneRfT> (scene_, *new_scene_rf);
     scene_rf_ = new_scene_rf;
     //PCL_ERROR(
     //  "[pcl::Hough3DGrouping::recognizeModelInstances()] Error! Scene reference frame not set.\n");
@@ -274,7 +275,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::cl
   // Insert maximas into result vector, after Ransac correspondence rejection
   // Temp copy of scene cloud with the type cast to ModelT in order to use Ransac
   PointCloudPtr temp_scene_cloud_ptr (new PointCloud);
-  pcl::copyPointCloud<PointSceneT, PointModelT> (*scene_, *temp_scene_cloud_ptr);
+  pcl::copyPointCloud (*scene_, *temp_scene_cloud_ptr);
 
   pcl::registration::CorrespondenceRejectorSampleConsensus<PointModelT> corr_rejector;
   corr_rejector.setMaximumIterations (10000);
@@ -282,12 +283,12 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::cl
   corr_rejector.setInputSource (input_);
   corr_rejector.setInputTarget (temp_scene_cloud_ptr);
 
-  for (size_t j = 0; j < max_values.size (); ++j)
+  for (std::size_t j = 0; j < max_values.size (); ++j)
   {
     Correspondences temp_corrs, filtered_corrs;
-    for (size_t i = 0; i < max_ids[j].size (); ++i)
+    for (const int &i : max_ids[j])
     {
-      temp_corrs.push_back (model_scene_corrs_->at (max_ids[j][i]));
+      temp_corrs.push_back (model_scene_corrs_->at (i));
     }
     // RANSAC filtering
     corr_rejector.getRemainingCorrespondences (temp_corrs, filtered_corrs);
@@ -355,9 +356,9 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::re
 
   //// Temp copy of scene cloud with the type cast to ModelT in order to use Ransac
   //PointCloudPtr temp_scene_cloud_ptr (new PointCloud);
-  //pcl::copyPointCloud<PointSceneT, PointModelT> (*scene_, *temp_scene_cloud_ptr);
+  //pcl::copyPointCloud (*scene_, *temp_scene_cloud_ptr);
 
-  //for (size_t i = 0; i < model_instances.size (); ++i)
+  //for (std::size_t i = 0; i < model_instances.size (); ++i)
   //{
   //  Eigen::Matrix4f curr_transf;
   //  if (getTransformMatrix (temp_scene_cloud_ptr, model_instances[i], curr_transf))

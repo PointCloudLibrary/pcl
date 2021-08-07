@@ -1,4 +1,4 @@
-SET(OPENNURBS_INCLUDES
+set(OPENNURBS_INCLUDES
     include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/opennurbs_3dm_attributes.h
     include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/opennurbs_3dm.h
     include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/opennurbs_3dm_properties.h
@@ -113,7 +113,7 @@ SET(OPENNURBS_INCLUDES
     include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/zlib.h
     include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/zutil.h)
 
-SET(OPENNURBS_SOURCES
+set(OPENNURBS_SOURCES
     src/3rdparty/opennurbs/opennurbs_3dm_attributes.cpp
     src/3rdparty/opennurbs/opennurbs_3dm_properties.cpp
     src/3rdparty/opennurbs/opennurbs_3dm_settings.cpp

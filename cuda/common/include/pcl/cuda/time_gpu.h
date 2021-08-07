@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_CUDA_TIME_GPU_H_
-#define PCL_CUDA_TIME_GPU_H_
+#pragma once
 
 #include <cuda.h>
 #include <pcl/cuda/cutil_inline.h>
@@ -84,7 +83,7 @@ namespace pcl
         {
           CUT_CHECK_ERROR ("dude");
           // Measure time needed to copy data
-          cutilSafeCall (cudaThreadSynchronize ());
+          cutilSafeCall (cudaDeviceSynchronize ());
           cutilSafeCall (cudaEventRecord (end_, 0));
           cutilSafeCall (cudaEventSynchronize (end_));
           cutilSafeCall (cudaEventElapsedTime (&elapsed_time_, start_, end_));
@@ -111,5 +110,3 @@ namespace pcl
     };
   } // namespace
 } // namespace
-
-#endif  //#ifndef PCL_CUDA_TIMER_H_

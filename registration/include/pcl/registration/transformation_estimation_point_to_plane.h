@@ -37,65 +37,62 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_H_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_H_
+
+#pragma once
 
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/registration/transformation_estimation_lm.h>
 #include <pcl/registration/warp_point_rigid.h>
 
-namespace pcl
-{
-  namespace registration
+namespace pcl {
+namespace registration {
+/** @b TransformationEstimationPointToPlane uses Levenberg Marquardt optimization to
+ * find the transformation that minimizes the point-to-plane distance between the given
+ * correspondences.
+ *
+ * \author Michael Dixon
+ * \ingroup registration
+ */
+template <typename PointSource, typename PointTarget, typename Scalar = float>
+class TransformationEstimationPointToPlane
+: public TransformationEstimationLM<PointSource, PointTarget, Scalar> {
+public:
+  using Ptr = shared_ptr<
+      TransformationEstimationPointToPlane<PointSource, PointTarget, Scalar>>;
+  using ConstPtr = shared_ptr<
+      const TransformationEstimationPointToPlane<PointSource, PointTarget, Scalar>>;
+
+  using PointCloudSource = pcl::PointCloud<PointSource>;
+  using PointCloudSourcePtr = typename PointCloudSource::Ptr;
+  using PointCloudSourceConstPtr = typename PointCloudSource::ConstPtr;
+  using PointCloudTarget = pcl::PointCloud<PointTarget>;
+  using PointIndicesPtr = PointIndices::Ptr;
+  using PointIndicesConstPtr = PointIndices::ConstPtr;
+
+  using Vector4 = Eigen::Matrix<Scalar, 4, 1>;
+
+  TransformationEstimationPointToPlane(){};
+  ~TransformationEstimationPointToPlane(){};
+
+protected:
+  Scalar
+  computeDistance(const PointSource& p_src, const PointTarget& p_tgt) const override
   {
-    /** @b TransformationEstimationPointToPlane uses Levenberg Marquardt optimization to find the
-      * transformation that minimizes the point-to-plane distance between the given correspondences.
-      *
-      * \author Michael Dixon
-      * \ingroup registration
-      */
-    template <typename PointSource, typename PointTarget, typename Scalar = float>
-    class TransformationEstimationPointToPlane : public TransformationEstimationLM<PointSource, PointTarget, Scalar>
-    {
-      public:
-        typedef boost::shared_ptr<TransformationEstimationPointToPlane<PointSource, PointTarget, Scalar> > Ptr;
-        typedef boost::shared_ptr<const TransformationEstimationPointToPlane<PointSource, PointTarget, Scalar> > ConstPtr;
-
-        typedef pcl::PointCloud<PointSource> PointCloudSource;
-        typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
-        typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
-        typedef pcl::PointCloud<PointTarget> PointCloudTarget;
-        typedef PointIndices::Ptr PointIndicesPtr;
-        typedef PointIndices::ConstPtr PointIndicesConstPtr;
-
-        typedef Eigen::Matrix<Scalar, 4, 1> Vector4;
-
-        TransformationEstimationPointToPlane () {};
-        virtual ~TransformationEstimationPointToPlane () {};
-
-      protected:
-        virtual Scalar
-        computeDistance (const PointSource &p_src, const PointTarget &p_tgt) const
-        {
-          // Compute the point-to-plane distance
-          Vector4 s (p_src.x, p_src.y, p_src.z, 0);
-          Vector4 t (p_tgt.x, p_tgt.y, p_tgt.z, 0);
-          Vector4 n (p_tgt.normal_x, p_tgt.normal_y, p_tgt.normal_z, 0);
-          return ((s - t).dot (n));
-        }
-
-        virtual Scalar
-        computeDistance (const Vector4 &p_src, const PointTarget &p_tgt) const
-        {
-          // Compute the point-to-plane distance
-          Vector4 t (p_tgt.x, p_tgt.y, p_tgt.z, 0);
-          Vector4 n (p_tgt.normal_x, p_tgt.normal_y, p_tgt.normal_z, 0);
-          return ((p_src - t).dot (n));
-        }
-
-    };
+    // Compute the point-to-plane distance
+    Vector4 s(p_src.x, p_src.y, p_src.z, 0);
+    Vector4 t(p_tgt.x, p_tgt.y, p_tgt.z, 0);
+    Vector4 n(p_tgt.normal_x, p_tgt.normal_y, p_tgt.normal_z, 0);
+    return ((s - t).dot(n));
   }
-}
 
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_H_ */
-
+  Scalar
+  computeDistance(const Vector4& p_src, const PointTarget& p_tgt) const override
+  {
+    // Compute the point-to-plane distance
+    Vector4 t(p_tgt.x, p_tgt.y, p_tgt.z, 0);
+    Vector4 n(p_tgt.normal_x, p_tgt.normal_y, p_tgt.normal_z, 0);
+    return ((p_src - t).dot(n));
+  }
+};
+} // namespace registration
+} // namespace pcl

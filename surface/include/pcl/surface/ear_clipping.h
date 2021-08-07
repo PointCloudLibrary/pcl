@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SURFACE_EAR_CLIPPING_H_
-#define PCL_SURFACE_EAR_CLIPPING_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/surface/processing.h>
@@ -53,13 +52,13 @@ namespace pcl
   class PCL_EXPORTS EarClipping : public MeshProcessing
   {
     public:
-      typedef boost::shared_ptr<EarClipping> Ptr;
-      typedef boost::shared_ptr<const EarClipping> ConstPtr;
+      using Ptr = shared_ptr<EarClipping>;
+      using ConstPtr = shared_ptr<const EarClipping>;
 
       using MeshProcessing::input_mesh_;
       using MeshProcessing::initCompute;
       /** \brief Empty constructor */
-      EarClipping () : MeshProcessing (), points_ ()
+      EarClipping ()
       { 
       };
 
@@ -69,13 +68,13 @@ namespace pcl
 
       /** \brief This method should get called before starting the actual computation. */
       bool
-      initCompute ();
+      initCompute () override;
 
       /** \brief The actual surface reconstruction method. 
         * \param[out] output the output polygonal mesh 
         */
       void
-      performProcessing (pcl::PolygonMesh &output);
+      performProcessing (pcl::PolygonMesh &output) override;
 
       /** \brief Triangulate one polygon. 
         * \param[in] vertices the set of vertices
@@ -88,7 +87,18 @@ namespace pcl
         * \param[in] vertices the vertices representing the polygon 
         */
       float
-      area (const std::vector<uint32_t>& vertices);
+      area (const Indices& vertices);
+
+      /** \brief Compute the signed area of a polygon.
+        * \param[in] vertices the vertices representing the polygon
+        */
+      template <typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::uint32_t>::value, pcl::index_t> = 0>
+      PCL_DEPRECATED(1, 14, "This method creates a useless copy of the vertices vector. Use  area method which accepts Indices instead")
+      float
+      area (const std::vector<std::uint32_t>& vertices)
+      {
+        return area(Indices (vertices.cbegin(), vertices.cend()));
+      }
 
       /** \brief Check if the triangle (u,v,w) is an ear. 
         * \param[in] u the first triangle vertex 
@@ -97,7 +107,21 @@ namespace pcl
         * \param[in] vertices a set of input vertices
         */
       bool
-      isEar (int u, int v, int w, const std::vector<uint32_t>& vertices);
+      isEar (int u, int v, int w, const Indices& vertices);
+
+      /** \brief Check if the triangle (u,v,w) is an ear. 
+        * \param[in] u the first triangle vertex 
+        * \param[in] v the second triangle vertex 
+        * \param[in] w the third triangle vertex 
+        * \param[in] vertices a set of input vertices
+        */
+      template <typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::uint32_t>::value, pcl::index_t> = 0>
+      PCL_DEPRECATED(1, 14, "This method creates a useless copy of the vertices vector. Use  isEar method which accepts Indices instead")
+      bool
+      isEar (int u, int v, int w, const std::vector<std::uint32_t>& vertices)
+      {
+        return isEar(u, v, w, Indices (vertices.cbegin(), vertices.cend()));
+      }
 
       /** \brief Check if p is inside the triangle (u,v,w). 
         * \param[in] u the first triangle vertex 
@@ -124,5 +148,3 @@ namespace pcl
   };
 
 }
-
-#endif  // #ifndef PCL_SURFACE_EAR_CLIPPING_H_

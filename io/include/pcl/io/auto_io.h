@@ -35,14 +35,10 @@
  *
  */
 
-#ifndef PCL_IO_AUTO_IO_H_
-#define PCL_IO_AUTO_IO_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
-#include <pcl/common/io.h>
-#include <pcl/io/boost.h>
-#include <cmath>
-#include <sstream>
+#include <pcl/point_cloud.h> // for PointCloud
 #include <pcl/PolygonMesh.h>
 #include <pcl/TextureMesh.h>
 
@@ -121,5 +117,3 @@ namespace pcl
 }
 
 #include <pcl/io/impl/auto_io.hpp>
-
-#endif  //#ifndef PCL_IO_AUTO_IO_H_

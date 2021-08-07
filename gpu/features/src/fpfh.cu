@@ -71,7 +71,7 @@ namespace pcl
             };
 
             const PointType* point_cloud;                           
-            size_t work_size;
+            std::size_t work_size;
 
             PtrStep<int> gindices;            
             const int* sizes;            
@@ -140,6 +140,8 @@ namespace pcl
                         if (computePairFeatures (current_point[warp_idx], current_nomal[warp_idx], p, n, f1, f2, f3, f4))
                         {                                                          
                             // Normalize the f1, f2, f3 features and push them in the histogram
+                            //Using floorf due to changes to MSVC 16.9. See details here: https://devtalk.blender.org/t/cuda-compile-error-windows-10/17886/4
+                            //floorf is without std:: see why here: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79700
                             h_index = floorf (bins1 * ((f1 + M_PI) * (1.0f / (2.0f * M_PI))));
                             h_index = min(bins1 - 1, max(0, h_index));                                                       
                             atomicAdd(shist_b1 + h_index, hist_incr);                            
@@ -231,12 +233,12 @@ namespace pcl
                 int *sinds = sindices + Warp::WARP_SIZE * warp_idx;
                 int size = sizes[idx];
 
-                for(int i = lane; __any(i < size); i += Warp::STRIDE)                
+                for(int i = lane; __any_sync(0xFFFFFFFF, i < size); i += Warp::STRIDE)                
                 {
                     if (i < size)
                         sinds[lane] = ginds[i];
 
-                    int inds_num = __popc(__ballot(i < size));
+                    int inds_num = __popc(__ballot_sync(0xFFFFFFFF, i < size));
 
                     for(int j = 0; j < inds_num; ++j)
                     {

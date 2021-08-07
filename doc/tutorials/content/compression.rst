@@ -210,13 +210,13 @@ Command line tool for PCL point cloud stream compression
 --------------------------------------------------------
 
 The pcl apps component contains a command line tool for point cloud compression
-and streaming: Simply execute "./openni_stream_compression -?" to see a full
+and streaming: Simply execute "./pcl_openni_octree_compression -?" to see a full
 list of options (note: the output on screen may differ)::
 
 
   PCL point cloud stream compression
 
-  usage: ./openni_stream_compression [mode] [profile] [parameters]
+  usage: ./pcl_openni_octree_compression [mode] [profile] [parameters]
 
   I/O: 
       -f file  : file name 
@@ -249,15 +249,15 @@ list of options (note: the output on screen may differ)::
       -e       : show input cloud during encoding
 
   example:
-      ./openni_stream_compression -x -p highC -t -f pc_compressed.pcc 
+      ./pcl_openni_octree_compression -x -p highC -t -f pc_compressed.pcc
 
 In order to stream compressed point cloud via TCP/IP, you can start the server with::
 
-  $ ./openni_stream_compression -s
+  $ ./pcl_openni_octree_compression -s
      
 It will listen on port 6666 for incoming connections. Now start the client with::     
 
-  $ ./openni_stream_compression -c SERVER_NAME
+  $ ./pcl_openni_octree_compression -c SERVER_NAME
   
 and remotely captured point clouds will be locally shown in the point cloud viewer.  
      

@@ -230,8 +230,6 @@ __device__ Ncv32u d_outMaskPosition;
 
 __device__ void compactBlockWriteOutAnchorParallel(Ncv32u threadPassFlag, Ncv32u threadElem, Ncv32u *vectorOut)
 {
-#if __CUDA_ARCH__ >= 110
-    
     __shared__ Ncv32u shmem[NUM_THREADS_ANCHORSPARALLEL * 2];
     __shared__ Ncv32u numPassed;
     __shared__ Ncv32u outMaskOffset;
@@ -257,7 +255,6 @@ __device__ void compactBlockWriteOutAnchorParallel(Ncv32u threadPassFlag, Ncv32u
     {
         vectorOut[outMaskOffset + threadIdx.x] = shmem[threadIdx.x];
     }
-#endif
 }
 
 
@@ -586,13 +583,11 @@ __global__ void applyHaarClassifierClassifierParallel(Ncv32u *d_IImg, Ncv32u IIm
     }
     else
     {
-#if __CUDA_ARCH__ >= 110
         if (bPass && !threadIdx.x)
         {
             Ncv32u outMaskOffset = atomicAdd(&d_outMaskPosition, 1);
             d_outMask[outMaskOffset] = outMaskVal;
         }
-#endif
     }
 }
 
@@ -911,15 +906,14 @@ void initializeMaskVectorDynTemplate(NcvBool tbMaskByInmask,
 Ncv32u getStageNumWithNotLessThanNclassifiers(Ncv32u N, HaarClassifierCascadeDescriptor &haar,
                                               NCVVector<HaarStage64> &h_HaarStages)
 {
-    Ncv32u i = 0;
-    for (; i<haar.NumStages; i++)
+    for (Ncv32u i = 0; i<haar.NumStages; i++)
     {
         if (h_HaarStages.ptr()[i].getNumClassifierRootNodes() >= N)
         {
-            break;
+            return i;
         }
     }
-    return i;
+    return haar.NumStages;
 }
 
 
@@ -1066,7 +1060,7 @@ NCVStatus ncvApplyHaarClassifierCascade_device(NCVMatrix<Ncv32u> &d_integralImag
         cudaChannelFormatDesc cfdTexIImage;
         cfdTexIImage = cudaCreateChannelDesc<Ncv32u>();
 
-        size_t alignmentOffset;
+        std::size_t alignmentOffset;
         ncvAssertCUDAReturn(cudaBindTexture(&alignmentOffset, texIImage, d_integralImage.ptr(), cfdTexIImage,
             (anchorsRoi.height + haar.ClassifierSize.height) * d_integralImage.pitch()), NCV_CUDA_ERROR);
         ncvAssertReturn(alignmentOffset==0, NCV_TEXTURE_BIND_ERROR);
@@ -1079,7 +1073,7 @@ NCVStatus ncvApplyHaarClassifierCascade_device(NCVMatrix<Ncv32u> &d_integralImag
         cfdTexHaarFeatures = cudaCreateChannelDesc<uint2>();
         cfdTexHaarClassifierNodes = cudaCreateChannelDesc<uint4>();
 
-        size_t alignmentOffset;
+        std::size_t alignmentOffset;
         ncvAssertCUDAReturn(cudaBindTexture(&alignmentOffset, texHaarFeatures,
             d_HaarFeatures.ptr(), cfdTexHaarFeatures,sizeof(HaarFeature64) * haar.NumFeatures), NCV_CUDA_ERROR);
         ncvAssertReturn(alignmentOffset==0, NCV_TEXTURE_BIND_ERROR);
@@ -1386,7 +1380,7 @@ NCVStatus ncvApplyHaarClassifierCascade_device(NCVMatrix<Ncv32u> &d_integralImag
     }
     else
     {
-        for (Ncv32u i=0; i<std::max(numDetGold, numDetections) && bPass; i++)
+        for (Ncv32u i=0; i<max(numDetGold, numDetections) && bPass; i++)
         {
             if (h_pixelMask.ptr[i] != h_pixelMask_d.ptr[i])
             {
@@ -1456,8 +1450,7 @@ NCVStatus ncvGrowDetectionsVector_device(NCVVector<Ncv32u> &pixelMask,
     ncvAssertReturn(rectWidth > 0 && rectHeight > 0 && curScale > 0, NCV_INVALID_ROI);
     ncvAssertReturn(curScale > 0, NCV_INVALID_SCALE);
     ncvAssertReturn(totalMaxDetections <= hypotheses.length() &&
-                    numPixelMaskDetections <= pixelMask.length() &&
-                    totalMaxDetections <= totalMaxDetections, NCV_INCONSISTENT_INPUT);
+                    numPixelMaskDetections <= pixelMask.length(), NCV_INCONSISTENT_INPUT);
 
     NCVStatus ncvStat = NCV_SUCCESS;
     Ncv32u numDetsToCopy = numPixelMaskDetections;
@@ -1579,7 +1572,7 @@ NCVStatus ncvDetectObjectsMultiScale_device(NCVMatrix<Ncv8u> &d_srcImg,
     ncvAssertReturnNcvStat(nppStat);
     nppStat = nppiStSqrIntegralGetSize_8u64u(NcvSize32u(d_srcImg.width(), d_srcImg.height()), &szTmpBufSqIntegral, devProp);
     ncvAssertReturnNcvStat(nppStat);
-    NCVVectorAlloc<Ncv8u> d_tmpIIbuf(gpuAllocator, std::max(szTmpBufIntegral, szTmpBufSqIntegral));
+    NCVVectorAlloc<Ncv8u> d_tmpIIbuf(gpuAllocator, max(szTmpBufIntegral, szTmpBufSqIntegral));
     ncvAssertReturn(d_tmpIIbuf.isMemAllocated(), NCV_ALLOCATOR_BAD_ALLOC);
 
     NCV_SKIP_COND_BEGIN
@@ -2032,8 +2025,7 @@ NCVStatus ncvGrowDetectionsVector_host(NCVVector<Ncv32u> &pixelMask,
     ncvAssertReturn(rectWidth > 0 && rectHeight > 0 && curScale > 0, NCV_INVALID_ROI);
     ncvAssertReturn(curScale > 0, NCV_INVALID_SCALE);
     ncvAssertReturn(totalMaxDetections <= hypotheses.length() &&
-                    numPixelMaskDetections <= pixelMask.length() &&
-                    totalMaxDetections <= totalMaxDetections, NCV_INCONSISTENT_INPUT);
+                    numPixelMaskDetections <= pixelMask.length(), NCV_INCONSISTENT_INPUT);
 
     NCVStatus ncvStat = NCV_SUCCESS;
     Ncv32u numDetsToCopy = numPixelMaskDetections;

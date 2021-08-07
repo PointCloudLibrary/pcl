@@ -39,14 +39,10 @@
  *
  */
 
-#ifndef PCL_FILTERS_MORPHOLOGICAL_FILTER_H_
-#define PCL_FILTERS_MORPHOLOGICAL_FILTER_H_
+#pragma once
 
-#include <string>
-#include <pcl/pcl_base.h>
-#include <pcl/PointIndices.h>
-#include <pcl/conversions.h>
-#include <locale>
+#include <pcl/point_cloud.h> // for PointCloud
+#include <pcl/pcl_exports.h> // for PCL_EXPORTS
 
 namespace pcl
 {
@@ -77,6 +73,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/morphological_filter.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_MORPHOLOGICAL_FILTER_H_
-

@@ -1,5 +1,4 @@
-#ifndef PCLVIEWER_H
-#define PCLVIEWER_H
+#pragma once
 
 // Qt
 #include <QMainWindow>
@@ -58,7 +57,7 @@ class PCLViewer : public QMainWindow
 
   protected:
     /** @brief The PCL visualizer object */
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_;
+    pcl::visualization::PCLVisualizer::Ptr viewer_;
 
     /** @brief The point cloud displayed */
     PointCloudT::Ptr cloud_;
@@ -89,5 +88,3 @@ class PCLViewer : public QMainWindow
     /** @brief ui pointer */
     Ui::PCLViewer *ui;
 };
-
-#endif // PCLVIEWER_H

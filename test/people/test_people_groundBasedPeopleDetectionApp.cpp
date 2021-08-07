@@ -45,15 +45,15 @@
  * In Proceedings of the International Conference on Intelligent Robots and Systems (IROS) 2012, Vilamoura (Portugal), 2012.
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/people/ground_based_people_detection_app.h>
 
-typedef pcl::PointXYZRGB PointT;
-typedef pcl::PointCloud<PointT> PointCloudT;
+using PointT = pcl::PointXYZRGB;
+using PointCloudT = pcl::PointCloud<PointT>;
 
 enum { COLS = 640, ROWS = 480 };
 PointCloudT::Ptr cloud;
@@ -90,9 +90,9 @@ TEST (PCL, GroundBasedPeopleDetectionApp)
   EXPECT_TRUE (people_detector.compute(clusters));             // perform people detection
 
   unsigned int k = 0;
-  for(std::vector<pcl::people::PersonCluster<PointT> >::iterator it = clusters.begin(); it != clusters.end(); ++it)
+  for(const auto &cluster : clusters)
   {
-    if(it->getPersonConfidence() > min_confidence)             // draw only people with confidence above a threshold
+    if(cluster.getPersonConfidence() > min_confidence)             // draw only people with confidence above a threshold
       k++;
   }
   EXPECT_EQ (k, 5);		// verify number of people found (should be five)
@@ -102,20 +102,20 @@ int main (int argc, char** argv)
 {
   if (argc < 2)
   {
-    cerr << "No svm filename provided. Please download `trainedLinearSVMForPeopleDetectionWithHOG.yaml` and pass its path to the test." << endl;
+    std::cerr << "No svm filename provided. Please download `trainedLinearSVMForPeopleDetectionWithHOG.yaml` and pass its path to the test." << std::endl;
     return (-1);
   }
   	
   if (argc < 3)
   {
-    cerr << "No test file given. Please download 'five_people.pcd` and pass its path to the test." << endl;
+    std::cerr << "No test file given. Please download 'five_people.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
 
   cloud = PointCloudT::Ptr (new PointCloudT);
   if (pcl::io::loadPCDFile (argv[2], *cloud) < 0)
   {
-    cerr << "Failed to read test file. Please download `five_people.pcd` and pass its path to the test." << endl;
+    std::cerr << "Failed to read test file. Please download `five_people.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }	
 	

@@ -39,8 +39,7 @@
  * @brief This file contains the function prototypes for the tree building functions.
  */
  
-#ifndef PCL_GPU_PEOPLE_LABEL_TREE_H_
-#define PCL_GPU_PEOPLE_LABEL_TREE_H_
+#pragma once
  
 // our headers
 #include "pcl/gpu/people/label_blob2.h"   //this one defines the blob structure
@@ -77,8 +76,8 @@ namespace pcl
         //Inline constructor
         Tree2() : id(NO_CHILD), lid(NO_CHILD), nr_parts(0)
         {
-          for(int i=0;i<NUM_PARTS;i++)
-            parts_lid[i] = NO_CHILD;
+          for(int &part : parts_lid)
+            part = NO_CHILD;
         }
        
         int     id;                     // specific identification number of this tree
@@ -123,12 +122,12 @@ namespace pcl
       leafBlobVector(   std::vector<std::vector<Blob2, Eigen::aligned_allocator<Blob2> > >& sorted,
                             int                               label )
       {
-        if(sorted[label].size() == 0)
+        if(sorted[label].empty ())
           return 0;
-        for(size_t i = 0; i < sorted[label].size(); i++)
+        for(auto &blob : sorted[label])
         {
           for(int j = 0; j < MAX_CHILD; j++)
-            sorted[label][i].child_id[j] = LEAF;
+            blob.child_id[j] = LEAF;
         }
         return 0;
       }
@@ -145,10 +144,10 @@ namespace pcl
                               int                               label,
                               int                               child_number)
       {
-        if(sorted[label].size() == 0)
+        if(sorted[label].empty ())
           return 0;
-        for(size_t i = 0; i < sorted[label].size(); i++){
-          sorted[label][i].child_id[child_number] = NO_CHILD;
+        for(auto &blob : sorted[label]){
+          blob.child_id[child_number] = NO_CHILD;
         }
         return 0;
       }
@@ -162,12 +161,12 @@ namespace pcl
                                   part_t                            label,
                                   int                               child_number)
       {
-        if(sorted[label].size() == 0)
-          return 0;
-        for(size_t i = 0; i < sorted[label].size(); i++)
-          if((sorted[label][i].child_id[child_number] != NO_CHILD) && (sorted[label][i].child_id[child_number] != LEAF))
-            return 1;
-        return 0;
+        if(sorted[label].empty ())
+          return false;
+        for(const auto &blob : sorted[label])
+          if((blob.child_id[child_number] != NO_CHILD) && (blob.child_id[child_number] != LEAF))
+            return true;
+        return false;
       }
 
       /**
@@ -184,11 +183,10 @@ namespace pcl
         float root = sqrt(pow(parent.mean(0) - child.mean(0), 2) +
                           pow(parent.mean(1) - child.mean(1), 2) +
                           pow(parent.mean(2) - child.mean(2), 2));
-        float offset = fabs(LUT_ideal_length[(int)parent.label][child_nr] - root);
+        float offset = std::fabs(LUT_ideal_length[(int)parent.label][child_nr] - root);
         if(offset > LUT_max_length_offset[(int)parent.label][child_nr])
           return -1.0;
-        else
-          return offset;
+        return offset;
       }
 
       /**
@@ -209,11 +207,10 @@ namespace pcl
         float root = sqrt(pow(parent.mean(0) - child.mean(0), 2) +
                           pow(parent.mean(1) - child.mean(1), 2) +
                           pow(parent.mean(2) - child.mean(2), 2));
-        float offset = fabs(person_attribs->part_ideal_length_[(int)parent.label][child_nr] - root);
+        float offset = std::fabs(person_attribs->part_ideal_length_[(int)parent.label][child_nr] - root);
         if(offset > person_attribs->max_length_offset_[(int)parent.label][child_nr])
           return -1.0;
-        else
-          return offset;
+        return offset;
       }
 
       /**
@@ -237,22 +234,22 @@ namespace pcl
         assert(child_number >= 0);
         assert(child_number < MAX_CHILD);
 
-        if(sorted[parent_label].size() == 0){
+        if(sorted[parent_label].empty ()){
           return 0;   //if my size is 0, this is solved by my parent in his iteration	
         }
-        if(sorted[child_label].size() == 0){
+        if(sorted[child_label].empty ()){
           noChildBlobVector(sorted, parent_label, child_number);
           return 0;
         }
         // go over all parents in this vector
-        for(size_t p = 0; p < sorted[parent_label].size(); p++){
+        for(std::size_t p = 0; p < sorted[parent_label].size(); p++){
           float best_value = std::numeric_limits<float>::max(); 
           int best_child_id = NO_CHILD;
           int best_child_lid = 0;                               // this must be as low as possible, still overruled by id
           float value = 0.0;
 
           // go over all children in this vector
-          for(size_t c = 0; c < sorted[child_label].size(); c++){
+          for(std::size_t c = 0; c < sorted[child_label].size(); c++){
             value = evaluateBlobs(sorted[parent_label][p], sorted[child_label][c], child_number);
             // Value should contain offset from the ideal position
             // Is -1 if it goes above threshold
@@ -297,22 +294,22 @@ namespace pcl
         assert(child_number >= 0);
         assert(child_number < MAX_CHILD);
 
-        if(sorted[parent_label].size() == 0){
+        if(sorted[parent_label].empty ()){
           return 0;   //if my size is 0, this is solved by my parent in his iteration
         }
-        if(sorted[child_label].size() == 0){
+        if(sorted[child_label].empty ()){
           noChildBlobVector(sorted, parent_label, child_number);
           return 0;
         }
         // go over all parents in this vector
-        for(size_t p = 0; p < sorted[parent_label].size(); p++){
+        for(std::size_t p = 0; p < sorted[parent_label].size(); p++){
           float best_value = std::numeric_limits<float>::max();
           int best_child_id = NO_CHILD;
           int best_child_lid = 0;                               // this must be as low as possible, still overruled by id
           float value = 0.0;
 
           // go over all children in this vector
-          for(size_t c = 0; c < sorted[child_label].size(); c++){
+          for(std::size_t c = 0; c < sorted[child_label].size(); c++){
             value = evaluateBlobs(sorted[parent_label][p], sorted[child_label][c], child_number, person_attribs);
             // Value should contain offset from the ideal position
             // Is -1 if it goes above threshold
@@ -345,12 +342,12 @@ namespace pcl
       buildRelations( std::vector<std::vector<Blob2, Eigen::aligned_allocator<pcl::gpu::people::Blob2> > >& sorted)
       {
         PCL_VERBOSE("[pcl::gpu::people::buildRelations] : (I) : buildRelations : regular version\n");
-        if(sorted.size() == 0){
+        if(sorted.empty ()){
           std::cout << "(E) : Damn you, you gave me an empty matrix!" << std::endl;
           return (-1);
         }
         // Iterate over all parts
-        for(size_t p = 0; p < sorted.size(); p ++)
+        for(std::size_t p = 0; p < sorted.size(); p ++)
         {
           switch(p){
             // These are multinodes and end nodes ///
@@ -449,12 +446,12 @@ namespace pcl
                       PersonAttribs::Ptr person_attribs)
       {
         PCL_DEBUG("[pcl::gpu::people::buildRelations] : (D) : person specific version\n");
-        if(sorted.size() == 0){
+        if(sorted.empty ()){
           PCL_ERROR("[pcl::gpu::people::buildRelations] : (E) : Damn you, you gave me an empty matrix!\n");
           return (-1);
         }
         // Iterate over all parts
-        for(size_t p = 0; p < sorted.size(); p ++)
+        for(std::size_t p = 0; p < sorted.size(); p ++)
         {
           switch(p){
             // These are multinodes and end nodes ///
@@ -554,7 +551,7 @@ namespace pcl
         const Blob2& blob = sorted[part_label][part_lid];
 
         // iterate over the number of pixels that are part of this label
-        const std::vector<int>& indices = blob.indices.indices;
+        const auto& indices = blob.indices.indices;
         tree.indices.indices.insert(tree.indices.indices.end(), indices.begin(), indices.end());
 
         if(nr_children == 0)
@@ -586,7 +583,7 @@ namespace pcl
         const Blob2& blob = sorted[part_label][part_lid];
 
         // iterate over the number of pixels that are part of this label
-        const std::vector<int>& indices = blob.indices.indices;
+        const auto& indices = blob.indices.indices;
         tree.indices.indices.insert(tree.indices.indices.end(), indices.begin(), indices.end());
         
         if(nr_children == 0)
@@ -611,7 +608,7 @@ namespace pcl
                              int                                    part_lid,
                              Tree2&                                 tree)
       {
-        if(sorted.size() <= 0)
+        if(sorted.empty ())
         {
           std::cout << "(E) : buildTree(): hey man, don't fool me, you gave me an empty blob matrix" << std::endl;
           return -1;
@@ -641,7 +638,7 @@ namespace pcl
                              Tree2&                                 tree,
                              PersonAttribs::Ptr                     person_attribs)
       {
-        if(sorted.size() <= 0)
+        if(sorted.empty ())
         {
           std::cout << "(E) : buildTree(): hey man, don't fool me, you gave me an empty blob matrix" << std::endl;
           return -1;
@@ -667,4 +664,3 @@ namespace pcl
     } //end namespace people
   } // end namespace gpu
 } // end namespace pcl
-#endif

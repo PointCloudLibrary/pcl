@@ -36,9 +36,7 @@
  * @authors: Anatoly Baksheev
  */
 
-
-#ifndef PCL_GPU_PEOPLE_CUDA_ASYNC_COPY_H_
-#define PCL_GPU_PEOPLE_CUDA_ASYNC_COPY_H_
+#pragma once
 
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/utils/safe_call.hpp>
@@ -51,7 +49,7 @@ namespace pcl
     class AsyncCopy
     {
     public:
-      AsyncCopy(T* ptr, size_t size) : ptr_(ptr)
+      AsyncCopy(T* ptr, std::size_t size) : ptr_(ptr)
       {
         cudaSafeCall( cudaHostRegister(ptr_, size, 0) );        
         cudaSafeCall( cudaStreamCreate(&stream_) );
@@ -104,6 +102,3 @@ namespace pcl
     using pcl::gpu::AsyncCopy;
   }
 }
-
-#endif /* PCL_GPU_PEOPLE_CUDA_ASYNC_COPY_H_ */
-

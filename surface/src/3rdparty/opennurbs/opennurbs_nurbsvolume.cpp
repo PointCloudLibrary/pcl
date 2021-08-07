@@ -15,6 +15,8 @@
 */
 
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
+#include <pcl/pcl_macros.h>
+
 
 ON_OBJECT_IMPLEMENT(ON_NurbsCage,ON_Geometry,"06936AFB-3D3C-41ac-BF70-C9319FA480A1");
 
@@ -523,7 +525,7 @@ ON__UINT32 ON_NurbsCage::DataCRC(ON__UINT32 current_remainder) const
       && m_cv_stride[0] > 0 && m_cv_stride[1] > 0 && m_cv_stride[2] > 0
       && m_cv )
   {
-    size_t sizeof_cv = CVSize()*sizeof(m_cv[0]);
+    std::size_t sizeof_cv = CVSize()*sizeof(m_cv[0]);
     const double* cv = m_cv;
     int i, j, k;
     for ( i = 0; i < m_cv_count[0]; i++ )
@@ -1682,7 +1684,7 @@ bool ON_NurbsCage::GetCV( int i, int j, int k, ON::point_style style, double* Po
   switch(style) {
   case ON::euclidean_rational:
     Point[dim] = w;
-    // no break here
+    PCL_FALLTHROUGH
   case ON::not_rational:
     if ( w == 0.0 )
       return false;
@@ -2231,7 +2233,7 @@ ON_BOOL32 ON_MorphControl::GetBBox(
 bool ON_MorphControl::GetTightBoundingBox( 
 		ON_BoundingBox& tight_bbox, 
     int bGrowBox,
-		const ON_Xform* xform
+		const ON_Xform*
     ) const
 {
   bool rc = false;

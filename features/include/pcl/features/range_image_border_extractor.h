@@ -35,15 +35,11 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_RANGE_IMAGE_BORDER_EXTRACTOR_H_
-#define PCL_RANGE_IMAGE_BORDER_EXTRACTOR_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
 
-#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#pragma GCC diagnostic ignored "-Weffc++"
-#endif
 namespace pcl
 {
   // FORWARD DECLARATIONS:
@@ -59,18 +55,17 @@ namespace pcl
   class PCL_EXPORTS RangeImageBorderExtractor : public Feature<PointWithRange,BorderDescription>
   {
     public:
-      typedef boost::shared_ptr<RangeImageBorderExtractor> Ptr;
-      typedef boost::shared_ptr<const RangeImageBorderExtractor> ConstPtr;
+      using Ptr = shared_ptr<RangeImageBorderExtractor>;
+      using ConstPtr = shared_ptr<const RangeImageBorderExtractor>;
       // =====TYPEDEFS=====
-      typedef Feature<PointWithRange,BorderDescription> BaseClass;
+      using BaseClass = Feature<PointWithRange,BorderDescription>;
       
       // =====PUBLIC STRUCTS=====
       //! Stores some information extracted from the neighborhood of a point
       struct LocalSurface
       {
         LocalSurface () : 
-          normal (), neighborhood_mean (), eigen_values (), normal_no_jumps (), 
-          neighborhood_mean_no_jumps (), eigen_values_no_jumps (), max_neighbor_distance_squared () {}
+           max_neighbor_distance_squared () {}
 
         Eigen::Vector3f normal;
         Eigen::Vector3f neighborhood_mean;
@@ -110,9 +105,9 @@ namespace pcl
       
       // =====CONSTRUCTOR & DESTRUCTOR=====
       /** Constructor */
-      RangeImageBorderExtractor (const RangeImage* range_image=NULL);
+      RangeImageBorderExtractor (const RangeImage* range_image=nullptr);
       /** Destructor */
-      virtual ~RangeImageBorderExtractor ();
+      ~RangeImageBorderExtractor ();
       
       // =====METHODS=====
       /** \brief Provide a pointer to the range image
@@ -146,22 +141,22 @@ namespace pcl
       getParameters () { return (parameters_); }
 
       bool
-      hasRangeImage () const { return range_image_ != NULL; }
+      hasRangeImage () const { return range_image_ != nullptr; }
 
       const RangeImage&
       getRangeImage () const { return *range_image_; }
 
       float*
-      getBorderScoresLeft ()   { extractBorderScoreImages (); return border_scores_left_; }
+      getBorderScoresLeft ()   { extractBorderScoreImages (); return border_scores_left_.data (); }
 
       float*
-      getBorderScoresRight ()  { extractBorderScoreImages (); return border_scores_right_; }
+      getBorderScoresRight ()  { extractBorderScoreImages (); return border_scores_right_.data (); }
 
       float*
-      getBorderScoresTop ()    { extractBorderScoreImages (); return border_scores_top_; }
+      getBorderScoresTop ()    { extractBorderScoreImages (); return border_scores_top_.data (); }
 
       float*
-      getBorderScoresBottom () { extractBorderScoreImages (); return border_scores_bottom_; }
+      getBorderScoresBottom () { extractBorderScoreImages (); return border_scores_bottom_.data (); }
 
       LocalSurface**
       getSurfaceStructure () { extractLocalSurfaceStructure (); return surface_structure_; }
@@ -187,7 +182,8 @@ namespace pcl
       Parameters parameters_;
       const RangeImage* range_image_;
       int range_image_size_during_extraction_;
-      float* border_scores_left_, * border_scores_right_, * border_scores_top_, * border_scores_bottom_;
+      std::vector<float> border_scores_left_, border_scores_right_;
+      std::vector<float> border_scores_top_, border_scores_bottom_;
       LocalSurface** surface_structure_;
       PointCloudOut* border_descriptions_;
       ShadowBorderIndices** shadow_border_informations_;
@@ -326,7 +322,7 @@ namespace pcl
         */
       inline bool
       get3dDirection (const BorderDescription& border_description, Eigen::Vector3f& direction,
-                      const LocalSurface* local_surface=NULL);
+                      const LocalSurface* local_surface=nullptr);
       
       /** \brief Calculate the main principal curvature (the largest eigenvalue and corresponding eigenvector for the 
         * normals in the area) in the given point
@@ -350,14 +346,13 @@ namespace pcl
       blurSurfaceChanges ();
       
       /** \brief Implementation of abstract derived function */
-      virtual void
-      computeFeature (PointCloudOut &output);
+      void
+      computeFeature (PointCloudOut &output) override;
+
+    private:
+      std::vector<float>
+      updatedScoresAccordingToNeighborValues (const std::vector<float>& border_scores) const;
   };
 }  // namespace end
-#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#pragma GCC diagnostic warning "-Weffc++"
-#endif
 
 #include <pcl/features/impl/range_image_border_extractor.hpp>  // Definitions of templated and inline functions
-
-#endif  //#ifndef PCL_RANGE_IMAGE_BORDER_EXTRACTOR_H_

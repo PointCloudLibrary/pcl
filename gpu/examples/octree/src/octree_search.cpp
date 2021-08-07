@@ -3,10 +3,11 @@
 
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/memory.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <boost/shared_ptr.hpp>
 #include <pcl/visualization/cloud_viewer.h>
+
 #include <iostream>
 
 int main (int argc, char** argv)
@@ -16,18 +17,18 @@ int main (int argc, char** argv)
   cloud.height   = 200;
   cloud.is_dense = false;
 
-  for (size_t w = 0; w < cloud.width; ++w)
+  for (std::size_t w = 0; w < cloud.width; ++w)
   {
-    for (size_t h = 0; h < cloud.height; ++h)
+    for (std::size_t h = 0; h < cloud.height; ++h)
     {
       pcl::PointXYZ p;
       p.x = w; p.y = h; p.z = 1;
-      cloud.points.push_back(p);
+      cloud.push_back(p);
     }
   }
 
   pcl::io::savePCDFileASCII ("input.pcd", cloud);
-  std::cout << "INFO: Saved " << cloud.points.size () << " data points to test_pcd.pcd." << std::endl;
+  std::cout << "INFO: Saved " << cloud.size () << " data points to test_pcd.pcd." << std::endl;
   
   pcl::gpu::Octree::PointCloud cloud_device;
   cloud_device.upload(cloud.points);
@@ -77,7 +78,7 @@ int main (int argc, char** argv)
   std::cout<< "INFO: found : " << data.size() << " data.size" << std::endl;
   std::cout<< "INFO: found : " << sizes.size() << " sizes.size" << std::endl;
 
-  for (size_t i = 0; i < sizes.size (); ++i)
+  for (std::size_t i = 0; i < sizes.size (); ++i)
   {
     std::cout << "INFO: sizes : " << i << " size " << sizes[i] << std::endl;
     if(sizes[i] != 0)
@@ -87,16 +88,16 @@ int main (int argc, char** argv)
       cloud_result.height   = 1;
       cloud_result.is_dense = false;
 
-      for (size_t j = 0; j < sizes[i] ; ++j)
+      for (std::size_t j = 0; j < sizes[i] ; ++j)
       {
-        cloud_result.points.push_back(cloud.points[data[j + i * max_answers]]);
+        cloud_result.push_back(cloud[data[j + i * max_answers]]);
         std::cout << "INFO: data : " << j << " " << j + i * max_answers << " data " << data[j+ i * max_answers] << std::endl;
       }
       std::stringstream ss;
       ss << "cloud_cluster_" << i << ".pcd";
-      cloud_result.width    = cloud_result.points.size();
+      cloud_result.width    = cloud_result.size();
       pcl::io::savePCDFileASCII (ss.str(), cloud_result);
-      std::cout << "INFO: Saved " << cloud_result.points.size () << " data points to " << ss.str() << std::endl;
+      std::cout << "INFO: Saved " << cloud_result.size () << " data points to " << ss.str() << std::endl;
     }
   }
   return 0;

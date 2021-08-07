@@ -40,7 +40,6 @@
 #include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
-#include <pcl/common/transforms.h>
 #include <pcl/registration/lum.h>
 #include <pcl/registration/correspondence_estimation.h>
 
@@ -49,12 +48,12 @@
 
 #include <vector>
 
-typedef pcl::PointXYZ PointType;
-typedef pcl::PointCloud<PointType> Cloud;
-typedef Cloud::ConstPtr CloudConstPtr;
-typedef Cloud::Ptr CloudPtr;
-typedef std::pair<std::string, CloudPtr> CloudPair;
-typedef std::vector<CloudPair> CloudVector;
+using PointType = pcl::PointXYZ;
+using Cloud = pcl::PointCloud<PointType>;
+using CloudConstPtr = Cloud::ConstPtr;
+using CloudPtr = Cloud::Ptr;
+using CloudPair = std::pair<std::string, CloudPtr>;
+using CloudVector = std::vector<CloudPair>;
 
 int
 main (int argc, char **argv)
@@ -82,7 +81,7 @@ main (int argc, char **argv)
   pcd_indices = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
 
   CloudVector clouds;
-  for (size_t i = 0; i < pcd_indices.size (); i++)
+  for (std::size_t i = 0; i < pcd_indices.size (); i++)
   {
     CloudPtr pc (new Cloud);
     pcl::io::loadPCDFile (argv[pcd_indices[i]], *pc);
@@ -93,8 +92,8 @@ main (int argc, char **argv)
 
   for (int i = 0; i < iter; i++)
   {
-    for (size_t i = 1; i < clouds.size (); i++)
-      for (size_t j = 0; j < i; j++)
+    for (std::size_t i = 1; i < clouds.size (); i++)
+      for (std::size_t j = 0; j < i; j++)
       {
         Eigen::Vector4f ci, cj;
         pcl::compute3DCentroid (*(clouds[i].second), ci);
@@ -119,18 +118,18 @@ main (int argc, char **argv)
 
     lum.compute ();
 
-    for(size_t i = 0; i < lum.getNumVertices (); i++)
+    for(std::size_t i = 0; i < lum.getNumVertices (); i++)
     {
       //std::cout << i << ": " << lum.getTransformation (i) (0, 3) << " " << lum.getTransformation (i) (1, 3) << " " << lum.getTransformation (i) (2, 3) << std::endl;
       clouds[i].second = lum.getTransformedCloud (i);
     }
   }
 
-  for(size_t i = 0; i < lum.getNumVertices (); i++)
+  for(std::size_t i = 0; i < lum.getNumVertices (); i++)
   {
     std::string result_filename (clouds[i].first);
-    result_filename = result_filename.substr (result_filename.rfind ("/") + 1);
-    pcl::io::savePCDFileBinary (result_filename.c_str (), *(clouds[i].second));
+    result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
+    pcl::io::savePCDFileBinary (result_filename, *(clouds[i].second));
     //std::cout << "saving result to " << result_filename << std::endl;
   }
 

@@ -3,10 +3,10 @@ prefix=@CMAKE_INSTALL_PREFIX@
 exec_prefix=${prefix}
 libdir=${prefix}/@LIB_INSTALL_DIR@
 #includedir=${prefix}/@INCLUDE_INSTALL_DIR@
-includedir=${prefix}/include/@PROJECT_NAME_LOWER@-@PCL_MAJOR_VERSION@.@PCL_MINOR_VERSION@
+includedir=${prefix}/include/@PROJECT_NAME_LOWER@-@PCL_VERSION_MAJOR@.@PCL_VERSION_MINOR@
 Name: @PKG_NAME@
 Description: @PKG_DESC@
-Version: @PCL_VERSION_PLAIN@
+Version: @PCL_VERSION@
 Requires: @PKG_EXTERNAL_DEPS@
 Libs: -L${libdir} -l@PKG_NAME@ @PKG_LIBFLAGS@ @PKG_INTERNAL_DEPS@
 Cflags: -I${includedir} @PKG_CFLAGS@

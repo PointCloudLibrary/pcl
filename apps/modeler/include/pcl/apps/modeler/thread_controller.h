@@ -34,39 +34,34 @@
  *
  */
 
-#ifndef PCL_MODELER_THREAD_CONTROLLER_H_
-#define PCL_MODELER_THREAD_CONTROLLER_H_
+#pragma once
 
-#include <pcl/apps/modeler/qt.h>
+#include <QObject>
 
-namespace pcl
-{
-  namespace modeler
-  {
-    class CloudMeshItem;
-    class AbstractWorker;
+namespace pcl {
+namespace modeler {
 
-    class ThreadController : public QObject
-    {
-      Q_OBJECT
+class CloudMeshItem;
+class AbstractWorker;
 
-      public:
-        ThreadController();
-        ~ThreadController(void);
+class ThreadController : public QObject {
+  Q_OBJECT
 
-        bool
-        runWorker(AbstractWorker* worker);
+public:
+  ThreadController();
+  ~ThreadController();
 
-      Q_SIGNALS:
-        void
-        prepared();
+  bool
+  runWorker(AbstractWorker* worker);
 
-      private Q_SLOTS:
-        void
-        slotOnCloudMeshItemUpdate(CloudMeshItem* cloud_mesh_item);
-    };
+Q_SIGNALS:
+  void
+  prepared();
 
-  }
-}
+private Q_SLOTS:
+  void
+  slotOnCloudMeshItemUpdate(CloudMeshItem* cloud_mesh_item);
+};
 
-#endif // PCL_MODELER_THREAD_CONTROLLER_H_
+} // namespace modeler
+} // namespace pcl

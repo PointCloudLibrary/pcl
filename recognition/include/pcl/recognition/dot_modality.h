@@ -35,10 +35,8 @@
  *
  */
 
-#ifndef PCL_FEATURES_DOT_MODALITY
-#define PCL_FEATURES_DOT_MODALITY
+#pragma once
 
-#include <vector>
 #include <pcl/pcl_macros.h>
 #include <pcl/recognition/quantized_map.h>
 #include <pcl/recognition/mask_map.h>
@@ -64,5 +62,3 @@ namespace pcl
 
   };
 }
-
-#endif    // PCL_FEATURES_DOT_MODALITY

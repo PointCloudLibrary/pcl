@@ -37,47 +37,51 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_TYPES_H_
-#define PCL_REGISTRATION_IMPL_CORRESPONDENCE_TYPES_H_
 
-#include <limits>
-#include <pcl/registration/eigen.h>
+#pragma once
 
-//////////////////////////////////////////////////////////////////////////////////////////
+#include <cstddef>
+#include <vector>
+
+namespace pcl {
+
+namespace registration {
+
 inline void
-pcl::registration::getCorDistMeanStd (const pcl::Correspondences &correspondences, double &mean, double &stddev)
+getCorDistMeanStd(const pcl::Correspondences& correspondences,
+                  double& mean,
+                  double& stddev)
 {
-  if (correspondences.empty ())
+  if (correspondences.empty())
     return;
 
   double sum = 0, sq_sum = 0;
 
-  for (size_t i = 0; i < correspondences.size (); ++i)
-  {
-    sum += correspondences[i].distance;
-    sq_sum += correspondences[i].distance * correspondences[i].distance;
+  for (const auto& correspondence : correspondences) {
+    sum += correspondence.distance;
+    sq_sum += correspondence.distance * correspondence.distance;
   }
-  mean = sum / static_cast<double> (correspondences.size ());
-  double variance = (sq_sum - sum * sum / static_cast<double> (correspondences.size ())) / static_cast<double> (correspondences.size () - 1);
-  stddev = sqrt (variance);
+  mean = sum / static_cast<double>(correspondences.size());
+  double variance = (sq_sum - sum * sum / static_cast<double>(correspondences.size())) /
+                    static_cast<double>(correspondences.size() - 1);
+  stddev = sqrt(variance);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
 inline void
-pcl::registration::getQueryIndices (const pcl::Correspondences& correspondences, std::vector<int>& indices)
+getQueryIndices(const pcl::Correspondences& correspondences, pcl::Indices& indices)
 {
-  indices.resize (correspondences.size ());
-  for (size_t i = 0; i < correspondences.size (); ++i)
+  indices.resize(correspondences.size());
+  for (std::size_t i = 0; i < correspondences.size(); ++i)
     indices[i] = correspondences[i].index_query;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
 inline void
-pcl::registration::getMatchIndices (const pcl::Correspondences& correspondences, std::vector<int>& indices)
+getMatchIndices(const pcl::Correspondences& correspondences, pcl::Indices& indices)
 {
-  indices.resize (correspondences.size ());
-  for (size_t i = 0; i < correspondences.size (); ++i)
+  indices.resize(correspondences.size());
+  for (std::size_t i = 0; i < correspondences.size(); ++i)
     indices[i] = correspondences[i].index_match;
 }
 
-#endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_TYPES_H_ */
+} // namespace registration
+} // namespace pcl

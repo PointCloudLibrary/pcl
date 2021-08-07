@@ -55,7 +55,7 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   //Eigen::Map<Eigen::VectorXf, Eigen::Aligned> model_coefficients (&model_->values[0], model_->values.size ());
   // More expensive than a map but safer (32bit architectures seem to complain)
   Eigen::VectorXf model_coefficients (model_->values.size ());
-  for (size_t i = 0; i < model_->values.size (); ++i)
+  for (std::size_t i = 0; i < model_->values.size (); ++i)
     model_coefficients[i] = model_->values[i];
 
   // Construct the model and project
@@ -100,11 +100,11 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     }
 
     // Copy the projected points
-    for (size_t i = 0; i < indices_->size (); ++i)
+    for (std::size_t i = 0; i < indices_->size (); ++i)
     {
-      memcpy (&output.data[(*indices_)[i] * output.point_step + output.fields[x_idx].offset], &cloud_out.points[(*indices_)[i]].x, sizeof (float));
-      memcpy (&output.data[(*indices_)[i] * output.point_step + output.fields[y_idx].offset], &cloud_out.points[(*indices_)[i]].y, sizeof (float));
-      memcpy (&output.data[(*indices_)[i] * output.point_step + output.fields[z_idx].offset], &cloud_out.points[(*indices_)[i]].z, sizeof (float));
+      memcpy (&output.data[(*indices_)[i] * output.point_step + output.fields[x_idx].offset], &cloud_out[(*indices_)[i]].x, sizeof (float));
+      memcpy (&output.data[(*indices_)[i] * output.point_step + output.fields[y_idx].offset], &cloud_out[(*indices_)[i]].y, sizeof (float));
+      memcpy (&output.data[(*indices_)[i] * output.point_step + output.fields[z_idx].offset], &cloud_out[(*indices_)[i]].z, sizeof (float));
     }
   }
   else
@@ -117,7 +117,7 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     {
       // Copy everything
       output.height       = 1;
-      output.width        = static_cast<uint32_t> (indices_->size ());
+      output.width        = indices_->size ();
       output.point_step   = input_->point_step;
       output.data.resize (output.width * output.point_step);
       output.is_bigendian = input_->is_bigendian;
@@ -143,12 +143,12 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       }
 
       // Copy the projected points
-      for (size_t i = 0; i < indices_->size (); ++i)
+      for (std::size_t i = 0; i < indices_->size (); ++i)
       {
         memcpy (&output.data[i * output.point_step], &input_->data[(*indices_)[i] * input_->point_step], output.point_step);
-        memcpy (&output.data[i * output.point_step + output.fields[x_idx].offset], &cloud_out.points[(*indices_)[i]].x, sizeof (float));
-        memcpy (&output.data[i * output.point_step + output.fields[y_idx].offset], &cloud_out.points[(*indices_)[i]].y, sizeof (float));
-        memcpy (&output.data[i * output.point_step + output.fields[z_idx].offset], &cloud_out.points[(*indices_)[i]].z, sizeof (float));
+        memcpy (&output.data[i * output.point_step + output.fields[x_idx].offset], &cloud_out[(*indices_)[i]].x, sizeof (float));
+        memcpy (&output.data[i * output.point_step + output.fields[y_idx].offset], &cloud_out[(*indices_)[i]].y, sizeof (float));
+        memcpy (&output.data[i * output.point_step + output.fields[z_idx].offset], &cloud_out[(*indices_)[i]].z, sizeof (float));
       }
     }
   }

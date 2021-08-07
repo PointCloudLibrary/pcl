@@ -71,17 +71,17 @@ namespace pcl
                 max_elems = max_elements;
             }
 
-            bool validate(size_t cloud_size) const
+            bool validate(std::size_t cloud_size) const
             {
                 return (sizes.size() == cloud_size) && (cloud_size * max_elems == data.size());
             }
 
             operator PtrStep<int>() const
             {
-                return PtrStep<int>((int*)data.ptr(), max_elems * sizeof(int));
+                return {(int*)data.ptr(), max_elems * sizeof(int)};
             }            
 
-            size_t neighboors_size() const { return data.size()/max_elems; }
+            std::size_t neighboors_size() const { return data.size()/max_elems; }
         };
     }
 }

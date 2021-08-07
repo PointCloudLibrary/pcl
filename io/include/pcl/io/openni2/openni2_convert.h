@@ -30,8 +30,7 @@
  */
 
 
-#ifndef PCL_IO_OPENNI2_CONVERT_H_
-#define PCL_IO_OPENNI2_CONVERT_H_
+#pragma once
 
 #include "pcl/io/openni2/openni2_device_info.h"
 #include "pcl/io/openni2/openni2_video_mode.h"
@@ -61,5 +60,3 @@ namespace pcl
     } // namespace
   }
 }
-
-#endif // PCL_IO_OPENNI2_CONVERT_H_

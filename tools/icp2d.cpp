@@ -50,10 +50,10 @@
 #include <fstream>
 #include <vector>
 
-typedef pcl::PointXYZ PointType;
-typedef pcl::PointCloud<PointType> Cloud;
-typedef Cloud::ConstPtr CloudConstPtr;
-typedef Cloud::Ptr CloudPtr;
+using PointType = pcl::PointXYZ;
+using Cloud = pcl::PointCloud<PointType>;
+using CloudConstPtr = Cloud::ConstPtr;
+using CloudPtr = Cloud::Ptr;
 
 int
 main (int argc, char **argv)
@@ -79,13 +79,13 @@ main (int argc, char **argv)
   std::cout << argv[pcd_indices[0]] << " width: " << model->width << " height: " << model->height << std::endl;
 
   std::string result_filename (argv[pcd_indices[0]]);
-  result_filename = result_filename.substr (result_filename.rfind ("/") + 1);
-  pcl::io::savePCDFile (result_filename.c_str (), *model);
+  result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
+  pcl::io::savePCDFile (result_filename, *model);
   std::cout << "saving first model to " << result_filename << std::endl;
 
   Eigen::Matrix4f t (Eigen::Matrix4f::Identity ());
 
-  for (size_t i = 1; i < pcd_indices.size (); i++)
+  for (std::size_t i = 1; i < pcd_indices.size (); i++)
   {
     CloudPtr data (new Cloud);
     if (pcl::io::loadPCDFile (argv[pcd_indices[i]], *data) == -1)
@@ -97,11 +97,11 @@ main (int argc, char **argv)
 
     pcl::IterativeClosestPointNonLinear<PointType, PointType> icp;
 
-    boost::shared_ptr<pcl::registration::WarpPointRigid3D<PointType, PointType> > warp_fcn 
+    pcl::registration::WarpPointRigid3D<PointType, PointType>::Ptr warp_fcn 
       (new pcl::registration::WarpPointRigid3D<PointType, PointType>);
 
     // Create a TransformationEstimationLM object, and set the warp to it
-    boost::shared_ptr<pcl::registration::TransformationEstimationLM<PointType, PointType> > te (new pcl::registration::TransformationEstimationLM<PointType, PointType>);
+    pcl::registration::TransformationEstimationLM<PointType, PointType>::Ptr te (new pcl::registration::TransformationEstimationLM<PointType, PointType>);
     te->setWarpFunction (warp_fcn);
 
     // Pass the TransformationEstimation objec to the ICP algorithm
@@ -118,7 +118,7 @@ main (int argc, char **argv)
     CloudPtr tmp (new Cloud);
     icp.align (*tmp);
 
-    t = t * icp.getFinalTransformation ();
+    t *= icp.getFinalTransformation ();
 
     pcl::transformPointCloud (*data, *tmp, t);
 
@@ -127,8 +127,8 @@ main (int argc, char **argv)
     *model = *data;
 
     std::string result_filename (argv[pcd_indices[i]]);
-    result_filename = result_filename.substr (result_filename.rfind ("/") + 1);
-    pcl::io::savePCDFileBinary (result_filename.c_str (), *tmp);
+    result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
+    pcl::io::savePCDFileBinary (result_filename, *tmp);
     std::cout << "saving result to " << result_filename << std::endl;
   }
 

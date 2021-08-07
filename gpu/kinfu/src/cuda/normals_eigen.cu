@@ -58,7 +58,7 @@ namespace pcl
       if (u >= cols || v >= rows)
         return;
 
-      nmap.ptr (v)[u] = numeric_limits<float>::quiet_NaN ();
+      nmap.ptr (v)[u] = std::numeric_limits<float>::quiet_NaN ();
 
       if (isnan (vmap.ptr (v)[u]))
         return;
@@ -109,7 +109,7 @@ namespace pcl
           cov[5] += d.z * d.z;               //cov (2, 2)
         }
 
-      typedef Eigen33::Mat33 Mat33;
+      using Mat33 = Eigen33::Mat33;
       Eigen33 eigen33 (cov);
 
       Mat33 tmp;

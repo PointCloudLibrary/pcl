@@ -38,7 +38,6 @@
  *
  */
 
-#include <pcl/point_types.h>
 #include <pcl/common/io.h>
 
 //////////////////////////////////////////////////////////////////////////
@@ -48,7 +47,7 @@ getFieldsSizes (const std::vector<pcl::PCLPointField> &fields,
 {
   int valid = 0;
   fields_sizes.resize (fields.size ());
-  for (size_t i = 0; i < fields.size (); ++i)
+  for (std::size_t i = 0; i < fields.size (); ++i)
   {
     if (fields[i].name == "_")
       continue;
@@ -95,7 +94,7 @@ pcl::concatenateFields (const pcl::PCLPointCloud2 &cloud1,
   cloud_out.is_bigendian = cloud2.is_bigendian;
 
   //We need to find how many fields overlap between the two clouds
-  size_t total_fields = cloud2.fields.size ();
+  std::size_t total_fields = cloud2.fields.size ();
 
   //for the non-matching fields in cloud1, we need to store the offset
   //from the beginning of the point
@@ -106,17 +105,17 @@ pcl::concatenateFields (const pcl::PCLPointCloud2 &cloud1,
   //by offset so that we can compute sizes correctly. There is no
   //guarantee that the fields are in the correct order when they come in
   std::vector<const pcl::PCLPointField*> cloud1_fields_sorted;
-  for (size_t i = 0; i < cloud1.fields.size (); ++i)
-    cloud1_fields_sorted.push_back (&(cloud1.fields[i]));
+  for (const auto &field : cloud1.fields)
+    cloud1_fields_sorted.push_back (&field);
 
   std::sort (cloud1_fields_sorted.begin (), cloud1_fields_sorted.end (), fieldComp);
 
-  for (size_t i = 0; i < cloud1_fields_sorted.size (); ++i)
+  for (std::size_t i = 0; i < cloud1_fields_sorted.size (); ++i)
   {
     bool match = false;
-    for (size_t j = 0; j < cloud2.fields.size (); ++j)
+    for (const auto &field : cloud2.fields)
     {
-      if (cloud1_fields_sorted[i]->name == cloud2.fields[j].name)
+      if (cloud1_fields_sorted[i]->name == field.name)
         match = true;
     }
 
@@ -126,7 +125,7 @@ pcl::concatenateFields (const pcl::PCLPointCloud2 &cloud1,
       cloud1_unique_fields.push_back (cloud1_fields_sorted[i]);
 
       int size = 0;
-      size_t next_valid_field = i + 1;
+      std::size_t next_valid_field = i + 1;
 
       while (next_valid_field < cloud1_fields_sorted.size())
       {
@@ -149,13 +148,13 @@ pcl::concatenateFields (const pcl::PCLPointCloud2 &cloud1,
   }
 
   //we need to compute the size of the additional data added from cloud 1
-  uint32_t cloud1_unique_point_step = 0;
-  for (size_t i = 0; i < cloud1_unique_fields.size (); ++i)
+  std::uint32_t cloud1_unique_point_step = 0;
+  for (std::size_t i = 0; i < cloud1_unique_fields.size (); ++i)
     cloud1_unique_point_step += field_sizes[i];
 
   //the total size of extra data should be the size of data per point
   //multiplied by the total number of points in the cloud
-  uint32_t cloud1_unique_data_size = cloud1_unique_point_step * cloud1.width * cloud1.height; 
+  std::uint32_t cloud1_unique_data_size = cloud1_unique_point_step * cloud1.width * cloud1.height; 
 
   // Point step must increase with the length of each matching field
   cloud_out.point_step = cloud2.point_step + cloud1_unique_point_step;
@@ -169,7 +168,7 @@ pcl::concatenateFields (const pcl::PCLPointCloud2 &cloud1,
   cloud_out.fields.resize (cloud2.fields.size () + cloud1_unique_fields.size ());
   int offset = cloud2.point_step;
 
-  for (size_t d = 0; d < cloud1_unique_fields.size (); ++d)
+  for (std::size_t d = 0; d < cloud1_unique_fields.size (); ++d)
   {
     const pcl::PCLPointField& f = *cloud1_unique_fields[d];
     cloud_out.fields[cloud2.fields.size () + d].name = f.name;
@@ -182,14 +181,14 @@ pcl::concatenateFields (const pcl::PCLPointCloud2 &cloud1,
  
   // Iterate over each point and perform the appropriate memcpys
   int point_offset = 0;
-  for (size_t cp = 0; cp < cloud_out.width * cloud_out.height; ++cp)
+  for (uindex_t cp = 0; cp < cloud_out.width * cloud_out.height; ++cp)
   {
     memcpy (&cloud_out.data[point_offset], &cloud2.data[cp * cloud2.point_step], cloud2.point_step);
     int field_offset = cloud2.point_step;
 
     // Copy each individual point, we have to do this on a per-field basis
     // since some fields are not unique
-    for (size_t i = 0; i < cloud1_unique_fields.size (); ++i)
+    for (std::size_t i = 0; i < cloud1_unique_fields.size (); ++i)
     {
       const pcl::PCLPointField& f = *cloud1_unique_fields[i];
       int local_data_size = f.count * pcl::getFieldSize (f.datatype);
@@ -216,115 +215,6 @@ pcl::concatenateFields (const pcl::PCLPointCloud2 &cloud1,
 
 //////////////////////////////////////////////////////////////////////////
 bool
-pcl::concatenatePointCloud (const pcl::PCLPointCloud2 &cloud1,
-                            const pcl::PCLPointCloud2 &cloud2,
-                            pcl::PCLPointCloud2 &cloud_out)
-{
-  //if one input cloud has no points, but the other input does, just return the cloud with points
-  if (cloud1.width*cloud1.height == 0 && cloud2.width*cloud2.height > 0)
-  {
-    cloud_out = cloud2;
-    return (true);
-  }
-  else if (cloud1.width*cloud1.height > 0 && cloud2.width*cloud2.height == 0)
-  {
-    cloud_out = cloud1;
-    return (true);
-  }
-
-  bool strip = false;
-  for (size_t i = 0; i < cloud1.fields.size (); ++i)
-    if (cloud1.fields[i].name == "_")
-      strip = true;
-
-  for (size_t i = 0; i < cloud2.fields.size (); ++i)
-    if (cloud2.fields[i].name == "_")
-      strip = true;
-
-  if (!strip && cloud1.fields.size () != cloud2.fields.size ())
-  {
-    PCL_ERROR ("[pcl::concatenatePointCloud] Number of fields in cloud1 (%u) != Number of fields in cloud2 (%u)\n", cloud1.fields.size (), cloud2.fields.size ());
-    return (false);
-  }
-  
-  // Copy cloud1 into cloud_out
-  cloud_out = cloud1;
-  size_t nrpts = cloud_out.data.size ();
-  // Height = 1 => no more organized
-  cloud_out.width    = cloud1.width * cloud1.height + cloud2.width * cloud2.height;
-  cloud_out.height   = 1;
-  if (!cloud1.is_dense || !cloud2.is_dense)
-    cloud_out.is_dense = false;
-  else
-    cloud_out.is_dense = true;
-
-  // We need to strip the extra padding fields
-  if (strip)
-  {
-    // Get the field sizes for the second cloud
-    std::vector<pcl::PCLPointField> fields2;
-    std::vector<int> fields2_sizes;
-    for (size_t j = 0; j < cloud2.fields.size (); ++j)
-    {
-      if (cloud2.fields[j].name == "_")
-        continue;
-
-      fields2_sizes.push_back (cloud2.fields[j].count * 
-                               pcl::getFieldSize (cloud2.fields[j].datatype));
-      fields2.push_back (cloud2.fields[j]);
-    }
-
-    cloud_out.data.resize (nrpts + (cloud2.width * cloud2.height) * cloud_out.point_step);
-
-    // Copy the second cloud
-    for (size_t cp = 0; cp < cloud2.width * cloud2.height; ++cp)
-    {
-      int i = 0;
-      for (size_t j = 0; j < fields2.size (); ++j)
-      {
-        if (cloud1.fields[i].name == "_")
-        {
-          ++i;
-          continue;
-        }
-
-        // We're fine with the special RGB vs RGBA use case
-        if ((cloud1.fields[i].name == "rgb" && fields2[j].name == "rgba") ||
-            (cloud1.fields[i].name == "rgba" && fields2[j].name == "rgb") ||
-            (cloud1.fields[i].name == fields2[j].name))
-        {
-          memcpy (reinterpret_cast<char*> (&cloud_out.data[nrpts + cp * cloud1.point_step + cloud1.fields[i].offset]), 
-                  reinterpret_cast<const char*> (&cloud2.data[cp * cloud2.point_step + cloud2.fields[j].offset]), 
-                  fields2_sizes[j]);
-          ++i;  // increment the field size i
-        }
-      }
-    }
-  }
-  else
-  {
-    for (size_t i = 0; i < cloud1.fields.size (); ++i)
-    {
-      // We're fine with the special RGB vs RGBA use case
-      if ((cloud1.fields[i].name == "rgb" && cloud2.fields[i].name == "rgba") ||
-          (cloud1.fields[i].name == "rgba" && cloud2.fields[i].name == "rgb"))
-        continue;
-      // Otherwise we need to make sure the names are the same
-      if (cloud1.fields[i].name != cloud2.fields[i].name)
-      {
-        PCL_ERROR ("[pcl::concatenatePointCloud] Name of field %d in cloud1, %s, does not match name in cloud2, %s\n", i, cloud1.fields[i].name.c_str (), cloud2.fields[i].name.c_str ());      
-        return (false);
-      }
-    }
-    
-    cloud_out.data.resize (nrpts + cloud2.data.size ());
-    memcpy (&cloud_out.data[nrpts], &cloud2.data[0], cloud2.data.size ());
-  }
-  return (true);
-}
-
-//////////////////////////////////////////////////////////////////////////
-bool
 pcl::getPointCloudAsEigen (const pcl::PCLPointCloud2 &in, Eigen::MatrixXf &out)
 {
   // Get X-Y-Z indices
@@ -346,13 +236,13 @@ pcl::getPointCloudAsEigen (const pcl::PCLPointCloud2 &in, Eigen::MatrixXf &out)
     return (false);
   }
 
-  size_t npts = in.width * in.height;
+  std::size_t npts = in.width * in.height;
   out = Eigen::MatrixXf::Ones (4, npts);
 
   Eigen::Array4i xyz_offset (in.fields[x_idx].offset, in.fields[y_idx].offset, in.fields[z_idx].offset, 0);
 
   // Copy the input dataset into Eigen format
-  for (size_t i = 0; i < npts; ++i)
+  for (std::size_t i = 0; i < npts; ++i)
   {
      // Unoptimized memcpys: assume fields x, y, z are in random order
      memcpy (&out (0, i), &in.data[xyz_offset[0]], sizeof (float));
@@ -394,12 +284,12 @@ pcl::getEigenAsPointCloud (Eigen::MatrixXf &in, pcl::PCLPointCloud2 &out)
     return (false);
   }
 
-  size_t npts = in.cols ();
+  std::size_t npts = in.cols ();
 
   Eigen::Array4i xyz_offset (out.fields[x_idx].offset, out.fields[y_idx].offset, out.fields[z_idx].offset, 0);
 
   // Copy the input dataset into Eigen format
-  for (size_t i = 0; i < npts; ++i)
+  for (std::size_t i = 0; i < npts; ++i)
   {
      // Unoptimized memcpys: assume fields x, y, z are in random order
      memcpy (&out.data[xyz_offset[0]], &in (0, i), sizeof (float));
@@ -416,22 +306,22 @@ pcl::getEigenAsPointCloud (Eigen::MatrixXf &in, pcl::PCLPointCloud2 &out)
 void 
 pcl::copyPointCloud (
     const pcl::PCLPointCloud2 &cloud_in,
-    const std::vector<int> &indices, 
+    const Indices &indices,
     pcl::PCLPointCloud2 &cloud_out)
 {
   cloud_out.header       = cloud_in.header;
   cloud_out.height       = 1;
-  cloud_out.width        = static_cast<uint32_t> (indices.size ()); 
+  cloud_out.width        = indices.size (); 
   cloud_out.fields       = cloud_in.fields;
   cloud_out.is_bigendian = cloud_in.is_bigendian;
   cloud_out.point_step   = cloud_in.point_step;
-  cloud_out.row_step     = cloud_in.point_step * static_cast<uint32_t> (indices.size ());
+  cloud_out.row_step     = cloud_in.point_step * static_cast<std::uint32_t> (indices.size ());
   cloud_out.is_dense     = cloud_in.is_dense;
 
   cloud_out.data.resize (cloud_out.width * cloud_out.height * cloud_out.point_step);
 
   // Iterate over each point
-  for (size_t i = 0; i < indices.size (); ++i)
+  for (std::size_t i = 0; i < indices.size (); ++i)
     memcpy (&cloud_out.data[i * cloud_out.point_step], &cloud_in.data[indices[i] * cloud_in.point_step], cloud_in.point_step);
 }
 
@@ -439,22 +329,22 @@ pcl::copyPointCloud (
 void 
 pcl::copyPointCloud (
     const pcl::PCLPointCloud2 &cloud_in,
-    const std::vector<int, Eigen::aligned_allocator<int> > &indices, 
+    const IndicesAllocator< Eigen::aligned_allocator<index_t> > &indices,
     pcl::PCLPointCloud2 &cloud_out)
 {
   cloud_out.header       = cloud_in.header;
   cloud_out.height       = 1;
-  cloud_out.width        = static_cast<uint32_t> (indices.size ()); 
+  cloud_out.width        = indices.size (); 
   cloud_out.fields       = cloud_in.fields;
   cloud_out.is_bigendian = cloud_in.is_bigendian;
   cloud_out.point_step   = cloud_in.point_step;
-  cloud_out.row_step     = cloud_in.point_step * static_cast<uint32_t> (indices.size ());
+  cloud_out.row_step     = cloud_in.point_step * static_cast<std::uint32_t> (indices.size ());
   cloud_out.is_dense     = cloud_in.is_dense;
 
   cloud_out.data.resize (cloud_out.width * cloud_out.height * cloud_out.point_step);
 
   // Iterate over each point
-  for (size_t i = 0; i < indices.size (); ++i)
+  for (std::size_t i = 0; i < indices.size (); ++i)
     memcpy (&cloud_out.data[i * cloud_out.point_step], &cloud_in.data[indices[i] * cloud_in.point_step], cloud_in.point_step);
 }
 

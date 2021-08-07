@@ -38,12 +38,10 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_MODEL_LINE_H_
-#define PCL_SAMPLE_CONSENSUS_MODEL_LINE_H_
+#pragma once
 
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
-#include <pcl/common/eigen.h>
 
 namespace pcl
 {
@@ -69,11 +67,12 @@ namespace pcl
       using SampleConsensusModel<PointT>::error_sqr_dists_;
       using SampleConsensusModel<PointT>::isModelValid;
 
-      typedef typename SampleConsensusModel<PointT>::PointCloud PointCloud;
-      typedef typename SampleConsensusModel<PointT>::PointCloudPtr PointCloudPtr;
-      typedef typename SampleConsensusModel<PointT>::PointCloudConstPtr PointCloudConstPtr;
+      using PointCloud = typename SampleConsensusModel<PointT>::PointCloud;
+      using PointCloudPtr = typename SampleConsensusModel<PointT>::PointCloudPtr;
+      using PointCloudConstPtr = typename SampleConsensusModel<PointT>::PointCloudConstPtr;
 
-      typedef boost::shared_ptr<SampleConsensusModelLine> Ptr;
+      using Ptr = shared_ptr<SampleConsensusModelLine<PointT> >;
+      using ConstPtr = shared_ptr<const SampleConsensusModelLine<PointT>>;
 
       /** \brief Constructor for base SampleConsensusModelLine.
         * \param[in] cloud the input point cloud dataset
@@ -93,7 +92,7 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelLine (const PointCloudConstPtr &cloud, 
-                                const std::vector<int> &indices,
+                                const Indices &indices,
                                 bool random = false) 
         : SampleConsensusModel<PointT> (cloud, indices, random)
       {
@@ -103,7 +102,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      virtual ~SampleConsensusModelLine () {}
+      ~SampleConsensusModelLine () {}
 
       /** \brief Check whether the given index samples can form a valid line model, compute the model coefficients from
         * these samples and store them internally in model_coefficients_. The line coefficients are represented by a
@@ -112,8 +111,8 @@ namespace pcl
         * \param[out] model_coefficients the resultant model coefficients
         */
       bool
-      computeModelCoefficients (const std::vector<int> &samples,
-                                Eigen::VectorXf &model_coefficients) const;
+      computeModelCoefficients (const Indices &samples,
+                                Eigen::VectorXf &model_coefficients) const override;
 
       /** \brief Compute all squared distances from the cloud data to a given line model.
         * \param[in] model_coefficients the coefficients of a line model that we need to compute distances to
@@ -121,7 +120,7 @@ namespace pcl
         */
       void
       getDistancesToModel (const Eigen::VectorXf &model_coefficients,
-                           std::vector<double> &distances) const;
+                           std::vector<double> &distances) const override;
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
         * \param[in] model_coefficients the coefficients of a line model that we need to compute distances to
@@ -131,7 +130,7 @@ namespace pcl
       void 
       selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
                             const double threshold, 
-                            std::vector<int> &inliers);
+                            Indices &inliers) override;
 
       /** \brief Count all the points which respect the given model coefficients as inliers. 
         * 
@@ -139,9 +138,9 @@ namespace pcl
         * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
         * \return the resultant number of inliers
         */
-      virtual int
+      std::size_t
       countWithinDistance (const Eigen::VectorXf &model_coefficients,
-                           const double threshold) const;
+                           const double threshold) const override;
 
       /** \brief Recompute the line coefficients using the given inlier set and return them to the user.
         * @note: these are the coefficients of the line model after refinement (e.g. after SVD)
@@ -150,9 +149,9 @@ namespace pcl
         * \param[out] optimized_coefficients the resultant recomputed coefficients after optimization
         */
       void
-      optimizeModelCoefficients (const std::vector<int> &inliers,
+      optimizeModelCoefficients (const Indices &inliers,
                                  const Eigen::VectorXf &model_coefficients,
-                                 Eigen::VectorXf &optimized_coefficients) const;
+                                 Eigen::VectorXf &optimized_coefficients) const override;
 
       /** \brief Create a new point cloud with inliers projected onto the line model.
         * \param[in] inliers the data inliers that we want to project on the line model
@@ -161,10 +160,10 @@ namespace pcl
         * \param[in] copy_data_fields set to true if we need to copy the other data fields
         */
       void
-      projectPoints (const std::vector<int> &inliers,
+      projectPoints (const Indices &inliers,
                      const Eigen::VectorXf &model_coefficients,
                      PointCloud &projected_points,
-                     bool copy_data_fields = true) const;
+                     bool copy_data_fields = true) const override;
 
       /** \brief Verify whether a subset of indices verifies the given line model coefficients.
         * \param[in] indices the data indices that need to be tested against the line model
@@ -172,13 +171,13 @@ namespace pcl
         * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
         */
       bool
-      doSamplesVerifyModel (const std::set<int> &indices,
+      doSamplesVerifyModel (const std::set<index_t> &indices,
                             const Eigen::VectorXf &model_coefficients,
-                            const double threshold) const;
+                            const double threshold) const override;
 
-      /** \brief Return an unique id for this model (SACMODEL_LINE). */
+      /** \brief Return a unique id for this model (SACMODEL_LINE). */
       inline pcl::SacModel 
-      getModelType () const { return (SACMODEL_LINE); }
+      getModelType () const override { return (SACMODEL_LINE); }
 
     protected:
       using SampleConsensusModel<PointT>::sample_size_;
@@ -189,12 +188,10 @@ namespace pcl
         * \param[in] samples the resultant index samples
         */
       bool
-      isSampleGood (const std::vector<int> &samples) const;
+      isSampleGood (const Indices &samples) const override;
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/sample_consensus/impl/sac_model_line.hpp>
 #endif
-
-#endif  //#ifndef PCL_SAMPLE_CONSENSUS_MODEL_LINE_H_

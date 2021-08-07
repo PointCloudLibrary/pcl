@@ -37,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef PCL_INTENSITY_SPIN_H_
-#define PCL_INTENSITY_SPIN_H_
+
+#pragma once
 
 #include <pcl/features/feature.h>
 
@@ -58,8 +58,8 @@ namespace pcl
   class IntensitySpinEstimation: public Feature<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<IntensitySpinEstimation<PointInT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const IntensitySpinEstimation<PointInT, PointOutT> > ConstPtr;
+      using Ptr = shared_ptr<IntensitySpinEstimation<PointInT, PointOutT> >;
+      using ConstPtr = shared_ptr<const IntensitySpinEstimation<PointInT, PointOutT> >;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
 
@@ -70,8 +70,8 @@ namespace pcl
       using Feature<PointInT, PointOutT>::tree_;
       using Feature<PointInT, PointOutT>::search_radius_;
       
-      typedef typename pcl::PointCloud<PointInT> PointCloudIn;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+      using PointCloudIn = pcl::PointCloud<PointInT>;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
 
       /** \brief Empty constructor. */
       IntensitySpinEstimation () : nr_distance_bins_ (4), nr_intensity_bins_ (5), sigma_ (1.0)
@@ -92,7 +92,7 @@ namespace pcl
       void 
       computeIntensitySpinImage (const PointCloudIn &cloud, 
                                  float radius, float sigma, int k, 
-                                 const std::vector<int> &indices, 
+                                 const pcl::Indices &indices, 
                                  const std::vector<float> &squared_distances, 
                                  Eigen::MatrixXf &intensity_spin_image);
 
@@ -100,7 +100,7 @@ namespace pcl
         * \param[in] nr_distance_bins the number of bins to use in the distance dimension of the spin image
         */
       inline void 
-      setNrDistanceBins (size_t nr_distance_bins) { nr_distance_bins_ = static_cast<int> (nr_distance_bins); };
+      setNrDistanceBins (std::size_t nr_distance_bins) { nr_distance_bins_ = static_cast<int> (nr_distance_bins); };
 
       /** \brief Returns the number of bins in the distance dimension of the spin image. */
       inline int 
@@ -110,7 +110,7 @@ namespace pcl
         * \param[in] nr_intensity_bins the number of bins to use in the intensity dimension of the spin image
         */
       inline void 
-      setNrIntensityBins (size_t nr_intensity_bins) { nr_intensity_bins_ = static_cast<int> (nr_intensity_bins); };
+      setNrIntensityBins (std::size_t nr_intensity_bins) { nr_intensity_bins_ = static_cast<int> (nr_intensity_bins); };
 
       /** \brief Returns the number of bins in the intensity dimension of the spin image. */
       inline int 
@@ -132,7 +132,7 @@ namespace pcl
         * \param[out] output the resultant point cloud model dataset that contains the intensity-domain spin image features
         */
       void 
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
     
       /** \brief The number of distance bins in the descriptor. */
       int nr_distance_bins_;
@@ -149,4 +149,6 @@ namespace pcl
 #include <pcl/features/impl/intensity_spin.hpp>
 #endif
 
-#endif // #ifndef PCL_INTENSITY_SPIN_H_
+
+
+

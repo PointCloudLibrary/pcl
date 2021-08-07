@@ -35,16 +35,26 @@
  *
  */
 
-#ifndef CLOUD_ITEM_H_
-#define CLOUD_ITEM_H_
+#pragma once
+
+#include <QDebug>
 
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
-#include <pcl/visualization/pcl_visualizer.h>
+
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+#include <pcl/PCLPointCloud2.h>
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/search/kdtree.h>
+#include <pcl/visualization/point_cloud_geometry_handlers.h>
+#include <pcl/visualization/point_cloud_color_handlers.h>
+#include <pcl/visualization/pcl_visualizer.h>
+
 
 //Typedefs to make things sane
-typedef pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2> GeometryHandler;
-typedef pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2> ColorHandler;
+using GeometryHandler = pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2>;
+using ColorHandler = pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2>;
 
 namespace pcl
 {
@@ -63,52 +73,52 @@ namespace pcl
         AXIS = (1 << 5), 
       };
     }
-    class PCL_EXPORTS CloudItem : public CloudComposerItem
+    class CloudItem : public CloudComposerItem
     {
       public:
         
         //This is needed because we have members which are Vector4f and Quaternionf
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
         
         CloudItem (const QString name,
-                   const pcl::PCLPointCloud2::Ptr cloud_ptr,
+                   const pcl::PCLPointCloud2::Ptr& cloud_ptr,
                    const Eigen::Vector4f& origin = Eigen::Vector4f (),
                    const Eigen::Quaternionf& orientation = Eigen::Quaternionf (),
                    bool make_templated_cloud = true);
         
         CloudItem (const CloudItem& to_copy);
-        virtual ~CloudItem ();
+        ~CloudItem ();
         
         /** \brief This creates a CloudItem from a templated cloud type */
         template <typename PointT>
         static CloudItem*
-        createCloudItemFromTemplate (const QString name, typename PointCloud<PointT>::Ptr cloud_ptr);
+        createCloudItemFromTemplate (const QString& name, typename PointCloud<PointT>::Ptr cloud_ptr);
         
         /** \brief virtual data getter which calls QStandardItem::data; used to create template cloud if not created yet
          *    WARNING : This function modifies "this" - it sets up the templated type if you request one when it doesn't exist yet!
          *      It had to remain const because it is virtual, and we need to keep run-time polymorphism
          */        
-        virtual QVariant
-        data (int role = Qt::UserRole +1) const;
+        QVariant
+        data (int role = Qt::UserRole +1) const override;
         
         /** \brief Virtual data setter which calls QStandardItem::data; used to ensure that template_cloud_set_ is set 
          *         when a templated cloud is added */
-        virtual void
-        setData ( const QVariant & value, int role = Qt::UserRole + 1 );
+        void
+        setData ( const QVariant & value, int role = Qt::UserRole + 1 ) override;
         
-        inline virtual int 
-        type () const { return CLOUD_ITEM; }
+        inline int 
+        type () const override { return CLOUD_ITEM; }
 
-        virtual CloudItem*
-        clone () const;
+        CloudItem*
+        clone () const override;
         
         /** \brief Paint View function - puts this cloud item into a PCLVisualizer object*/
-        virtual void
-        paintView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const;
+        void
+        paintView (pcl::visualization::PCLVisualizer::Ptr vis) const override;
         
         /** \brief Remove from View function - removes this cloud from a PCLVisualizer object*/
-        virtual void
-        removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const;
+        void
+        removeFromView (pcl::visualization::PCLVisualizer::Ptr vis) const override;
         
         /** \brief Initializes and stores a templated PointCloud object with point type matching the blob */
         void
@@ -120,8 +130,8 @@ namespace pcl
         template <typename PointT> void
         printNumPoints () const;        
         
-        virtual bool
-        isSanitized () const { return is_sanitized_; }
+        bool
+        isSanitized () const override { return is_sanitized_; }
       private:
         
         //These are just stored for convenience 
@@ -187,5 +197,3 @@ Q_DECLARE_METATYPE (pcl::search::KdTree<pcl::PointXYZRGBA>::Ptr);
 Q_DECLARE_METATYPE (pcl::PointCloud <pcl::PointXYZ>::Ptr);
 Q_DECLARE_METATYPE (pcl::PointCloud <pcl::PointXYZRGB>::Ptr);
 Q_DECLARE_METATYPE (pcl::PointCloud <pcl::PointXYZRGBA>::Ptr);
-
-#endif //CLOUD_ITEM_H_

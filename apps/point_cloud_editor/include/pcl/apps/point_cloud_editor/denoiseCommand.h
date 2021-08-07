@@ -40,63 +40,50 @@
 /// http://pointclouds.org/documentation/tutorials/statistical_outlier.php
 /// @author Yue Li and Matthew Hielsberg
 
-#ifndef DENOISE_COMMAND_H_
-#define DENOISE_COMMAND_H_
+#pragma once
 
 #include <pcl/apps/point_cloud_editor/command.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 #include <pcl/apps/point_cloud_editor/selection.h>
 #include <pcl/apps/point_cloud_editor/copyBuffer.h>
 
+#include <pcl/memory.h>  // for pcl::shared_ptr
+
 class DenoiseCommand : public Command
 {
 public:
+  /// The type for shared pointer pointing to a selection buffer
+  using SelectionPtr = pcl::shared_ptr<Selection>;
+
   /// @brief Constructor
   /// @param selection_ptr a shared pointer pointing to the selection object.
   /// @param cloud_ptr a shared pointer pointing to the cloud object.
   /// @param mean the number of points to use for mean distance estimation.
   /// @param threshold the standard deviation multiplier threshold
-  DenoiseCommand (SelectionPtr selection_ptr, CloudPtr cloud_ptr,
+  DenoiseCommand (SelectionPtr selection_ptr, const CloudPtr& cloud_ptr,
                   float mean, float threshold)
-    : selection_ptr_(selection_ptr), cloud_ptr_(cloud_ptr), mean_(mean),
+    : selection_ptr_(std::move(selection_ptr)), cloud_ptr_(cloud_ptr), mean_(mean),
       threshold_(threshold), removed_indices_(cloud_ptr)
   {
   }
 
-  /// @brief Destructor
-  ~DenoiseCommand ()
-  {
-  }
+  /// @brief Copy constructor - commands are non-copyable
+  DenoiseCommand (const DenoiseCommand&) = delete;
+
+  /// @brief Equal operator - commands are non-copyable
+  DenoiseCommand&
+  operator= (const DenoiseCommand&) = delete;
 
 protected:
   /// @brief Runs the denois algorithm to remove all the outliers.
   void
-  execute ();
+  execute () override;
 
   /// @brief Adds the removed noisy points back to the cloud
   void
-  undo ();
+  undo () override;
 
 private:
-  /// @brief Default Constructor
-  DenoiseCommand () : removed_indices_(CloudPtr())
-  {
-  }
-
-  /// @brief Copy constructor - commands are non-copyable
-  DenoiseCommand (const DenoiseCommand&)
-    : removed_indices_(CloudPtr())
-  {
-    assert(false);
-  }
-
-  /// @brief Equal operator - commands are non-copyable
-  DenoiseCommand&
-  operator= (const DenoiseCommand&)
-  {
-    assert(false); return (*this);
-  }
-
   /// A shared pointer pointing to the selection object of the widget
   SelectionPtr selection_ptr_;
 
@@ -115,5 +102,3 @@ private:
   /// A selection object which backs up the indices of the noisy points removed.
   Selection removed_indices_;
 };
-
-#endif // DENOISE_COMMAND_H_

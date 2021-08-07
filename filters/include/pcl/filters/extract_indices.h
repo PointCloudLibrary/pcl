@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_EXTRACT_INDICES_H_
-#define PCL_FILTERS_EXTRACT_INDICES_H_
+#pragma once
 
 #include <pcl/filters/filter_indices.h>
 
@@ -70,15 +69,15 @@ namespace pcl
   class ExtractIndices : public FilterIndices<PointT>
   {
     protected:
-      typedef typename FilterIndices<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-      typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+      using PointCloud = typename FilterIndices<PointT>::PointCloud;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
+      using FieldList = typename pcl::traits::fieldList<PointT>::type;
 
     public:
 
-      typedef boost::shared_ptr< ExtractIndices<PointT> > Ptr;
-      typedef boost::shared_ptr< const ExtractIndices<PointT> > ConstPtr;
+      using Ptr = shared_ptr<ExtractIndices<PointT> >;
+      using ConstPtr = shared_ptr<const ExtractIndices<PointT> >;
 
       /** \brief Constructor.
         * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
@@ -117,13 +116,13 @@ namespace pcl
         * \param[out] output The resultant point cloud.
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
       /** \brief Filtered results are indexed by an indices array.
         * \param[out] indices The resultant indices.
         */
       void
-      applyFilter (std::vector<int> &indices)
+      applyFilter (Indices &indices) override
       {
         applyFilterIndices (indices);
       }
@@ -132,7 +131,7 @@ namespace pcl
         * \param[out] indices The resultant indices.
         */
       void
-      applyFilterIndices (std::vector<int> &indices);
+      applyFilterIndices (Indices &indices);
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -161,9 +160,9 @@ namespace pcl
   class PCL_EXPORTS ExtractIndices<pcl::PCLPointCloud2> : public FilterIndices<pcl::PCLPointCloud2>
   {
     public:
-      typedef pcl::PCLPointCloud2 PCLPointCloud2;
-      typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
-      typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
+      using PCLPointCloud2 = pcl::PCLPointCloud2;
+      using PCLPointCloud2Ptr = PCLPointCloud2::Ptr;
+      using PCLPointCloud2ConstPtr = PCLPointCloud2::ConstPtr;
 
       /** \brief Empty constructor. */
       ExtractIndices ()
@@ -186,19 +185,16 @@ namespace pcl
         * \param[out] output the resultant point cloud
         */
       void
-      applyFilter (PCLPointCloud2 &output);
+      applyFilter (PCLPointCloud2 &output) override;
 
       /** \brief Extract point indices
         * \param indices the resultant indices
         */
       void
-      applyFilter (std::vector<int> &indices);
+      applyFilter (Indices &indices) override;
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/extract_indices.hpp>
 #endif
-
-#endif  // PCL_FILTERS_EXTRACT_INDICES_H_
-

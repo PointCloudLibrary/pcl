@@ -5,8 +5,7 @@
  *      Author: aitor
  */
 
-#ifndef CRH_ALIGNMENT_H_
-#define CRH_ALIGNMENT_H_
+#pragma once
 
 #include <pcl/common/common.h>
 #include <pcl/features/crh.h>
@@ -33,16 +32,16 @@ namespace pcl
     private:
 
       /** \brief Sorts peaks */
-      typedef struct
+      struct peaks_ordering
       {
         bool
         operator() (std::pair<float, int> const& a, std::pair<float, int> const& b)
         {
           return a.first > b.first;
         }
-      } peaks_ordering;
+      };
 
-      typedef typename pcl::PointCloud<PointT>::Ptr PointTPtr;
+      using PointTPtr = typename pcl::PointCloud<PointT>::Ptr;
 
       /** \brief View of the model to be aligned to input_view_ */
       PointTPtr target_view_;
@@ -154,10 +153,10 @@ namespace pcl
 
         //if the number of peaks is too big, we should try to reduce using siluette matching
 
-        for (size_t i = 0; i < peaks.size(); i++)
+        for (const float &peak : peaks)
         {
           Eigen::Affine3f rollToRot;
-          computeRollTransform (centroid_input_, centroid_target_, peaks[i], rollToRot);
+          computeRollTransform (centroid_input_, centroid_target_, peak, rollToRot);
 
           Eigen::Matrix4f rollHomMatrix = Eigen::Matrix4f ();
           rollHomMatrix.setIdentity (4, 4);
@@ -189,7 +188,7 @@ namespace pcl
         pcl::PointCloud<pcl::Histogram<nbins_> > input_ftt_negate (input_ftt);
 
         for (int i = 2; i < (nbins_); i += 2)
-          input_ftt_negate.points[0].histogram[i] = -input_ftt_negate.points[0].histogram[i];
+          input_ftt_negate[0].histogram[i] = -input_ftt_negate[0].histogram[i];
 
         int nr_bins_after_padding = 180;
         int peak_distance = 5;
@@ -200,16 +199,16 @@ namespace pcl
           multAB[i].r = multAB[i].i = 0.f;
 
         int k = 0;
-        multAB[k].r = input_ftt_negate.points[0].histogram[0] * target_ftt.points[0].histogram[0];
+        multAB[k].r = input_ftt_negate[0].histogram[0] * target_ftt[0].histogram[0];
         k++;
 
         float a, b, c, d;
         for (int i = 1; i < cutoff; i += 2, k++)
         {
-          a = input_ftt_negate.points[0].histogram[i];
-          b = input_ftt_negate.points[0].histogram[i + 1];
-          c = target_ftt.points[0].histogram[i];
-          d = target_ftt.points[0].histogram[i + 1];
+          a = input_ftt_negate[0].histogram[i];
+          b = input_ftt_negate[0].histogram[i + 1];
+          c = target_ftt[0].histogram[i];
+          d = target_ftt[0].histogram[i + 1];
           multAB[k].r = a * c - b * d;
           multAB[k].i = b * c + a * d;
 
@@ -219,9 +218,9 @@ namespace pcl
           multAB[k].i /= tmp;
         }
 
-        multAB[nbins_ - 1].r = input_ftt_negate.points[0].histogram[nbins_ - 1] * target_ftt.points[0].histogram[nbins_ - 1];
+        multAB[nbins_ - 1].r = input_ftt_negate[0].histogram[nbins_ - 1] * target_ftt[0].histogram[nbins_ - 1];
 
-        kiss_fft_cfg mycfg = kiss_fft_alloc (nr_bins_after_padding, 1, NULL, NULL);
+        kiss_fft_cfg mycfg = kiss_fft_alloc (nr_bins_after_padding, 1, nullptr, nullptr);
         kiss_fft_cpx * invAB = new kiss_fft_cpx[nr_bins_after_padding];
         kiss_fft (mycfg, multAB, invAB);
 
@@ -246,11 +245,10 @@ namespace pcl
           {
             bool insert = true;
 
-            for (size_t j = 0; j < peaks_indices.size (); j++)
+            for (const int &peaks_index : peaks_indices)
             { //check inserted peaks, first pick always inserted
-              if (std::abs (peaks_indices[j] - scored_peaks[i].second) <= peak_distance || std::abs (
-                                                                                             peaks_indices[j] - (scored_peaks[i].second
-                                                                                                 - nr_bins_after_padding)) <= peak_distance)
+              if ((std::abs (peaks_index - scored_peaks[i].second) <= peak_distance) ||
+                  (std::abs (peaks_index - (scored_peaks[i].second - nr_bins_after_padding)) <= peak_distance))
               {
                 insert = false;
                 break;
@@ -271,5 +269,3 @@ namespace pcl
       }
     };
 }
-
-#endif /* CRH_ALIGNMENT_H_ */

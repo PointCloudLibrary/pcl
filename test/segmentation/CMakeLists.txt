@@ -8,22 +8,21 @@ set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
 PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
 
-if (build)
-  # Random walker requires Eigen::Sparse module that is available since 3.1.0
-  if(NOT ("${EIGEN_VERSION}" VERSION_LESS 3.1.0))
-    PCL_ADD_TEST(random_walker test_random_walker
-                 FILES test_random_walker.cpp
-                 LINK_WITH pcl_gtest
-                 ARGUMENTS "${PCL_SOURCE_DIR}/test/segmentation/data")
-  endif()
+if(NOT build)
+  return()
+endif()
 
-  PCL_ADD_TEST(a_segmentation_test test_segmentation
-                 FILES test_segmentation.cpp
-                 LINK_WITH pcl_gtest pcl_io pcl_segmentation pcl_features pcl_kdtree pcl_search pcl_common
-                 ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd" "${PCL_SOURCE_DIR}/test/car6.pcd" "${PCL_SOURCE_DIR}/test/colored_cloud.pcd")
+PCL_ADD_TEST(random_walker test_random_walker
+             FILES test_random_walker.cpp
+             LINK_WITH pcl_gtest
+             ARGUMENTS "${PCL_SOURCE_DIR}/test/segmentation/data")
 
-  PCL_ADD_TEST(test_non_linear test_non_linear
+PCL_ADD_TEST(a_segmentation_test test_segmentation
+             FILES test_segmentation.cpp
+             LINK_WITH pcl_gtest pcl_io pcl_segmentation pcl_features pcl_kdtree pcl_search pcl_common
+             ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd" "${PCL_SOURCE_DIR}/test/car6.pcd" "${PCL_SOURCE_DIR}/test/colored_cloud.pcd")
+
+PCL_ADD_TEST(test_non_linear test_non_linear
              FILES test_non_linear.cpp
-             LINK_WITH pcl_gtest pcl_common pcl_io pcl_sample_consensus pcl_segmentation pcl_kdtree pcl_search 
+             LINK_WITH pcl_gtest pcl_common pcl_io pcl_sample_consensus pcl_segmentation pcl_kdtree pcl_search
              ARGUMENTS "${PCL_SOURCE_DIR}/test/noisy_slice_displaced.pcd")
-endif (build)

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_TRAJKOVIC_KEYPOINT_3D_H_
-#define PCL_TRAJKOVIC_KEYPOINT_3D_H_
+#pragma once
 
 #include <pcl/keypoints/keypoint.h>
 #include <pcl/common/intensity.h>
@@ -55,14 +54,14 @@ namespace pcl
   class TrajkovicKeypoint3D : public Keypoint<PointInT, PointOutT>
   {
     public:
-    typedef boost::shared_ptr<TrajkovicKeypoint3D<PointInT, PointOutT, NormalT> > Ptr;
-    typedef boost::shared_ptr<const TrajkovicKeypoint3D<PointInT, PointOutT, NormalT> > ConstPtr;
-      typedef typename Keypoint<PointInT, PointOutT>::PointCloudIn PointCloudIn;
-      typedef typename Keypoint<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
-      typedef typename pcl::PointCloud<NormalT> Normals;
-      typedef typename Normals::Ptr NormalsPtr;
-      typedef typename Normals::ConstPtr NormalsConstPtr;
+    using Ptr = shared_ptr<TrajkovicKeypoint3D<PointInT, PointOutT, NormalT> >;
+    using ConstPtr = shared_ptr<const TrajkovicKeypoint3D<PointInT, PointOutT, NormalT> >;
+      using PointCloudIn = typename Keypoint<PointInT, PointOutT>::PointCloudIn;
+      using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;
+      using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
+      using Normals = pcl::PointCloud<NormalT>;
+      using NormalsPtr = typename Normals::Ptr;
+      using NormalsConstPtr = typename Normals::ConstPtr;
 
       using Keypoint<PointInT, PointOutT>::name_;
       using Keypoint<PointInT, PointOutT>::input_;
@@ -70,7 +69,7 @@ namespace pcl
       using Keypoint<PointInT, PointOutT>::keypoints_indices_;
       using Keypoint<PointInT, PointOutT>::initCompute;
 
-      typedef enum { FOUR_CORNERS, EIGHT_CORNERS } ComputationMethod;
+      enum ComputationMethod { FOUR_CORNERS, EIGHT_CORNERS };
 
       /** \brief Constructor
         * \param[in] method the method to be used to determine the corner responses
@@ -153,10 +152,10 @@ namespace pcl
 
     protected:
       bool
-      initCompute ();
+      initCompute () override;
 
       void
-      detectKeypoints (PointCloudOut &output);
+      detectKeypoints (PointCloudOut &output) override;
 
     private:
       /** Return a const reference to the normal at (i,j) if it is finite else return
@@ -214,5 +213,3 @@ namespace pcl
 }
 
 #include <pcl/keypoints/impl/trajkovic_3d.hpp>
-
-#endif // #ifndef PCL_TRAJKOVIC_KEYPOINT_3D_H_

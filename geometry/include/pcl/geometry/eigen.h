@@ -38,14 +38,12 @@
  *
  */
 
-#ifndef PCL_GEOMETRY_EIGEN_H
-#define PCL_GEOMETRY_EIGEN_H
+#pragma once
 
 #ifdef __GNUC__
-#  pragma GCC system_header
+#pragma GCC system_header
 #endif
+PCL_DEPRECATED_HEADER(1, 15, "Please include the needed eigen headers directly.")
 
 #include <Eigen/Core>
 #include <Eigen/StdVector>
-
-#endif // PCL_GEOMETRY_EIGEN_H

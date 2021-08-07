@@ -35,8 +35,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_CONSOLE_PARSE_H_
-#define PCL_CONSOLE_PARSE_H_
+
+#pragma once
 
 #include <vector>
 #include <sstream>
@@ -149,6 +149,16 @@ namespace pcl
       */
     PCL_EXPORTS int
     parse_argument (int argc, const char * const * argv, const char * str, unsigned int &val);
+
+    /** \brief Parse for a specific given command line argument.
+      * \param[in] argc the number of command line arguments
+      * \param[in] argv the command line arguments
+      * \param[in] str the string value to search for
+      * \param[out] val the resultant value
+      * \return index of found argument or -1 if arguments do not appear in list
+      */
+    PCL_EXPORTS int
+    parse_argument (int argc, const char * const * argv, const char * str, long int &val) noexcept;
 
     /** \brief Parse for a specific given command line argument.
       * \param[in] argc the number of command line arguments
@@ -368,6 +378,3 @@ namespace pcl
     parse_file_extension_argument (int argc, const char * const * argv, const std::string &ext);
   }
 }
-
-#endif      // PCL_CONSOLE_PARSE_H_
-

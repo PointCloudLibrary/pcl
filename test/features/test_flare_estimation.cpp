@@ -37,15 +37,15 @@
 *
 */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_tests.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/flare.h>
 
-typedef pcl::search::KdTree<pcl::PointXYZ>::Ptr KdTreePtr;
-typedef pcl::PointCloud<pcl::PointXYZ>::Ptr PointCloudPtr;
+using KdTreePtr = pcl::search::KdTree<pcl::PointXYZ>::Ptr;
+using PointCloudPtr = pcl::PointCloud<pcl::PointXYZ>::Ptr;
 
 PointCloudPtr cloud;
 KdTreePtr tree;
@@ -164,8 +164,8 @@ main (int argc, char** argv)
 
   sampled_cloud.reset (new pcl::PointCloud<pcl::PointXYZ> ());
 
-  std::vector<int> sampled_indices;
-  for (float sa = 0.0f; sa < (float)cloud->points.size (); sa += sampling_incr)
+  pcl::Indices sampled_indices;
+  for (float sa = 0.0f; sa < (float)cloud->size (); sa += sampling_incr)
     sampled_indices.push_back (static_cast<int> (sa));
   copyPointCloud (*cloud, sampled_indices, *sampled_cloud);
 

@@ -35,11 +35,10 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_FILTERS_IMPL_MODEL_OUTLIER_REMOVAL_HPP_
-#define PCL_FILTERS_IMPL_MODEL_OUTLIER_REMOVAL_HPP_
+#pragma once
 
 #include <pcl/filters/model_outlier_removal.h>
-#include <pcl/common/io.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/sample_consensus/sac_model_circle.h>
 #include <pcl/sample_consensus/sac_model_cylinder.h>
 #include <pcl/sample_consensus/sac_model_cone.h>
@@ -143,32 +142,7 @@ pcl::ModelOutlierRemoval<PointT>::initSACModel (pcl::SacModel model_type)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::ModelOutlierRemoval<PointT>::applyFilter (PointCloud &output)
-{
-  std::vector<int> indices;
-  if (keep_organized_)
-  {
-    bool temp = extract_removed_indices_;
-    extract_removed_indices_ = true;
-    applyFilterIndices (indices);
-    extract_removed_indices_ = temp;
-
-    output = *input_;
-    for (int rii = 0; rii < static_cast<int> (removed_indices_->size ()); ++rii)  // rii = removed indices iterator
-      output.points[ (*removed_indices_)[rii]].x = output.points[ (*removed_indices_)[rii]].y = output.points[ (*removed_indices_)[rii]].z = user_filter_value_;
-    if (!pcl_isfinite (user_filter_value_))
-      output.is_dense = false;
-  }
-  else
-  {
-    applyFilterIndices (indices);
-    copyPointCloud (*input_, indices, output);
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::ModelOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
+pcl::ModelOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
 {
   //The arrays to be used
   indices.resize (indices_->size ());
@@ -179,7 +153,7 @@ pcl::ModelOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
 
   valid_setup &= initSACModel (model_type_);
 
-  typedef SampleConsensusModelFromNormals<PointT, pcl::Normal> SACModelFromNormals;
+  using SACModelFromNormals = SampleConsensusModelFromNormals<PointT, pcl::Normal>;
   // Returns NULL if cast isn't possible
   SACModelFromNormals *model_from_normals = dynamic_cast<SACModelFromNormals *> (& (*model_));
 
@@ -200,16 +174,16 @@ pcl::ModelOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
   //if the filter setup is invalid filter for nan and return;
   if (!valid_setup)
   {
-    for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)  // iii = input indices iterator
+    for (const auto& iii : (*indices_)) // iii = input indices iterator
     {
       // Non-finite entries are always passed to removed indices
-      if (!isFinite (input_->points[ (*indices_)[iii]]))
+      if (!isFinite ((*input_)[iii]))
       {
         if (extract_removed_indices_)
-          (*removed_indices_)[rii++] = (*indices_)[iii];
+          (*removed_indices_)[rii++] = iii;
         continue;
       }
-      indices[oii++] = (*indices_)[iii];
+      indices[oii++] = iii;
     }
     return;
   }
@@ -225,7 +199,7 @@ pcl::ModelOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
   for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)  // iii = input indices iterator
   {
     // Non-finite entries are always passed to removed indices
-    if (!isFinite (input_->points[ (*indices_)[iii]]))
+    if (!isFinite ((*input_)[ (*indices_)[iii]]))
     {
       if (extract_removed_indices_)
         (*removed_indices_)[rii++] = (*indices_)[iii];
@@ -264,4 +238,3 @@ pcl::ModelOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
 
 #define PCL_INSTANTIATE_ModelOutlierRemoval(T) template class PCL_EXPORTS pcl::ModelOutlierRemoval<T>;
 
-#endif  // PCL_FILTERS_IMPL_MODEL_OUTLIER_REMOVAL_HPP_

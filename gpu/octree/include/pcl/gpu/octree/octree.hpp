@@ -39,6 +39,7 @@
 
 #include <vector>
 
+#include <pcl/memory.h>
 #include <pcl/point_types.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/gpu/containers/device_array.h>
@@ -64,25 +65,26 @@ namespace pcl
             virtual ~Octree();
 
             /** \brief Types */
-            typedef boost::shared_ptr<Octree> Ptr;
+            using Ptr = shared_ptr<Octree>;
+            using ConstPtr = shared_ptr<const Octree>;
 
             /** \brief Point typwe supported */
-            typedef pcl::PointXYZ PointType;
+            using PointType = pcl::PointXYZ;
 
             /** \brief Point cloud supported */
-            typedef DeviceArray<PointType> PointCloud;
+            using PointCloud = DeviceArray<PointType>;
             
             /** \brief Point Batch query cloud type */
-            typedef DeviceArray<PointType> Queries;
+            using Queries = DeviceArray<PointType>;
 
             /** \brief Point Radiuses for batch query  */
-            typedef DeviceArray<float> Radiuses;            
+            using Radiuses = DeviceArray<float>;            
 
             /** \brief Point Indices for batch query  */
-            typedef DeviceArray<int> Indices;    
+            using Indices = DeviceArray<int>;    
             
             /** \brief Point Sqrt distances array type */
-            typedef DeviceArray<float> ResultSqrDists;
+            using ResultSqrDists = DeviceArray<float>;
             
             const PointCloud*   cloud_;
             
@@ -93,7 +95,7 @@ namespace pcl
 			void build();
 
             /** \brief Returns true if tree has been built */
-            bool isBuilt();
+            bool isBuilt() const;
 
             /** \brief Downloads Octree from GPU to search using CPU function. It use useful for single (not-batch) search */
             void internalDownload();
@@ -142,7 +144,15 @@ namespace pcl
               * \param[in] queries array of centers
               * \param[out] result array of results ( one index for each query ) 
               */
+            PCL_DEPRECATED(1, 14, "use approxNearestSearch() which returns square distances instead")
             void approxNearestSearch(const Queries& queries, NeighborIndices& result) const;
+
+            /** \brief Batch approximate nearest search on GPU
+              * \param[in] queries array of centers
+              * \param[out] result array of results ( one index for each query )
+              * \param[out] sqr_distance corresponding square distances to results from query point
+              */
+            void approxNearestSearch(const Queries& queries, NeighborIndices& result, ResultSqrDists& sqr_distance) const;
 
             /** \brief Batch exact k-nearest search on GPU for k == 1 only!
               * \param[in] queries array of centers
@@ -150,6 +160,14 @@ namespace pcl
               * \param[out] results array of results
               */
             void nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results) const;
+
+            /** \brief Batch exact k-nearest search on GPU for k == 1 only!
+              * \param[in] queries array of centers
+              * \param[in] k number of neighbors (only k == 1 is supported)
+              * \param[out] results array of results
+              * \param[out] sqr_distances square distances to results
+              */
+            void nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results, ResultSqrDists& sqr_distances) const;
 
             /** \brief Desroys octree and release all resources */
             void clear();            

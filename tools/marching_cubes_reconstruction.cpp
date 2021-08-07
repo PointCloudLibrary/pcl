@@ -63,8 +63,8 @@ printHelp (int, char **argv)
   print_value ("%d", default_grid_res); print_info (")\n");
   print_info ("                     -iso_level X    = the iso level of the surface to be extracted (default: ");
   print_value ("%f", default_iso_level); print_info (")\n");
-  print_info ("                     -hoppe X        = use the Hoppe signed distance function (MarchingCubesHoppe\n");
-  print_info ("                     -rbf X          = use the RBF signed distance function (MarchingCubesRBF\n");
+  print_info ("                     -hoppe X        = use the Hoppe signed distance function (MarchingCubesHoppe)\n");
+  print_info ("                     -rbf X          = use the RBF signed distance function (MarchingCubesRBF)\n");
   print_info ("                     -extend X       = the percentage of the bounding box to extend the grid by (default: ");
   print_value ("%f", default_extend_percentage); print_info (")\n");
   print_info ("                     -displacement X = the displacement value for the off-surface points (only for RBF) (default: ");

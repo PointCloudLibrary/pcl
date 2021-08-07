@@ -875,7 +875,7 @@ void ON__LayerPerViewSettings::SetDefaultValues()
   m_plot_weight_mm = ON_UNSET_VALUE;
 }
 
-bool ON__LayerPerViewSettings::Write(const ON_Layer& layer, ON_BinaryArchive& binary_archive) const
+bool ON__LayerPerViewSettings::Write(const ON_Layer&, ON_BinaryArchive& binary_archive) const
 {
   if ( !binary_archive.BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK,1,2) )
     return false;
@@ -1147,7 +1147,7 @@ ON__LayerExtensions::~ON__LayerExtensions()
 }
 
 // virtual ON_Object override
-ON_BOOL32 ON__LayerExtensions::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON__LayerExtensions::IsValid( ON_TextLog* ) const
 {
   return true;
 }
@@ -1155,13 +1155,13 @@ ON_BOOL32 ON__LayerExtensions::IsValid( ON_TextLog* text_log ) const
 // virtual ON_Object override
 unsigned int ON__LayerExtensions::SizeOf() const
 {
-  size_t sz = sizeof(*this) - sizeof(ON_UserData);
+  std::size_t sz = sizeof(*this) - sizeof(ON_UserData);
   sz += m_vp_settings.SizeOfArray();
   return (unsigned int)sz;
 }
 
 // virtual ON_Object override
-ON__UINT32 ON__LayerExtensions::DataCRC(ON__UINT32 current_remainder) const
+ON__UINT32 ON__LayerExtensions::DataCRC(ON__UINT32) const
 {
   ON__UINT32 crc = 0;
   crc = m_vp_settings.DataCRC(crc);
@@ -1325,7 +1325,7 @@ void ON__LayerExtensions::DeleteViewportSettings(
     }
     else
     {
-      const size_t vp_settings_count = ud->m_vp_settings.Count();
+      const std::size_t vp_settings_count = ud->m_vp_settings.Count();
       if ( vp_settings_count > 0 )
       {
         const ON__LayerPerViewSettings* vp_settings0 = ud->m_vp_settings.Array();
@@ -2201,7 +2201,7 @@ ON__LayerSettingsUserData::~ON__LayerSettingsUserData()
 }
 
 // virtual ON_Object override
-ON_BOOL32 ON__LayerSettingsUserData::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON__LayerSettingsUserData::IsValid( ON_TextLog* ) const
 {
   return true;
 }
@@ -2361,41 +2361,35 @@ unsigned int ON_Layer::SavedSettings() const
   return ( 0 != ud ? ud->m_settings : 0 );
 }
 
-bool ON_Layer::GetSavedSettings( ON_Layer& layer, unsigned int& settings ) const
+bool ON_Layer::GetSavedSettings( ON_Layer& layer, unsigned int& ) const
 {
   const ON__LayerSettingsUserData* ud = ON__LayerSettingsUserData::LayerSettings(*this,false);
   if ( 0 == ud )
     return false;
-  bool rc = false;
 
   if ( ud->HaveColor() )
   {
     layer.m_color = ud->m_color;
-    rc = true;
   }
 
   if ( ud->HavePlotColor() )
   {
     layer.m_plot_color = ud->m_plot_color;
-    rc = true;
   }
 
   if ( ud->HaveVisible() )
   {
     layer.m_bVisible = ud->m_bVisible;
-    rc = true;
   }
 
   if ( ud->HaveLocked() )
   {
     layer.m_bLocked = ud->m_bLocked;
-    rc = true;
   }
 
   if ( ud->HavePlotWeight() )
   {
     layer.m_plot_weight_mm = ud->m_plot_weight_mm;
-    rc = true;
   }
 
   return true;

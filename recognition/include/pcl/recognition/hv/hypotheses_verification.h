@@ -34,13 +34,11 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_RECOGNITION_HYPOTHESIS_VERIFICATION_H_
-#define PCL_RECOGNITION_HYPOTHESIS_VERIFICATION_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include "pcl/recognition/hv/occlusion_reasoning.h"
 #include "pcl/recognition/impl/hv/occlusion_reasoning.hpp"
-#include <pcl/common/common.h>
 #include <pcl/search/kdtree.h>
 #include <pcl/filters/voxel_grid.h>
 
@@ -143,6 +141,9 @@ namespace pcl
       requires_normals_ = false;
     }
 
+    virtual
+    ~HypothesisVerification() = default;
+
     bool getRequiresNormals() {
       return requires_normals_;
     }
@@ -228,9 +229,9 @@ namespace pcl
       else
       {
         //we need to reason about occlusions before setting the model
-        if (scene_cloud_ == 0)
+        if (scene_cloud_ == nullptr)
         {
-          PCL_ERROR("setSceneCloud should be called before adding the model if reasoning about occlusions...");
+          PCL_ERROR("setSceneCloud should be called before adding the model if reasoning about occlusions...\n");
         }
 
         if (!occlusion_cloud_->isOrganized ())
@@ -244,14 +245,14 @@ namespace pcl
           zbuffer_scene.computeDepthMap (occlusion_cloud_, true);
         }
 
-        for (size_t i = 0; i < models.size (); i++)
+        for (std::size_t i = 0; i < models.size (); i++)
         {
 
           //self-occlusions
           typename pcl::PointCloud<ModelT>::Ptr filtered (new pcl::PointCloud<ModelT> ());
           typename pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT> zbuffer_self_occlusion (75, 75, 1.f);
           zbuffer_self_occlusion.computeDepthMap (models[i], true);
-          std::vector<int> indices;
+          pcl::Indices indices;
           zbuffer_self_occlusion.filter (models[i], indices, 0.005f);
           pcl::copyPointCloud (*models[i], indices, *filtered);
 
@@ -326,5 +327,3 @@ namespace pcl
   };
 
 }
-
-#endif /* PCL_RECOGNITION_HYPOTHESIS_VERIFICATION_H_ */

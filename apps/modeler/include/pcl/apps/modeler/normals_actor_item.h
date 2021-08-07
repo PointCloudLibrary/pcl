@@ -33,53 +33,53 @@
  *
  *
  */
-#ifndef PCL_MODELER_NORMALS_ACTOR_ITEM_H_
-#define PCL_MODELER_NORMALS_ACTOR_ITEM_H_
+
+#pragma once
 
 #include <pcl/apps/modeler/channel_actor_item.h>
 #include <pcl/visualization/point_cloud_handlers.h>
 
 class vtkIdTypeArray;
 
-namespace pcl
-{
-  namespace modeler
+namespace pcl {
+namespace modeler {
+
+class NormalsActorItem : public ChannelActorItem {
+public:
+  NormalsActorItem(QTreeWidgetItem* parent,
+                   const CloudMesh::Ptr& cloud_mesh,
+                   const vtkSmartPointer<vtkRenderWindow>& render_window);
+  ~NormalsActorItem();
+
+  std::string
+  getItemName() const override
   {
-    class NormalsActorItem : public ChannelActorItem
-    {
-      public:
-        NormalsActorItem(QTreeWidgetItem* parent,
-                        const boost::shared_ptr<CloudMesh>& cloud_mesh,
-                        const vtkSmartPointer<vtkRenderWindow>& render_window);
-        ~NormalsActorItem ();
-
-        virtual std::string
-        getItemName() const {return "Points Actor Item";}
-
-      protected:
-        void
-        createNormalLines();
-
-        virtual void
-        initImpl();
-
-        virtual void
-        updateImpl();
-
-        virtual void
-        prepareContextMenu(QMenu* menu) const;
-
-        virtual void
-        prepareProperties(ParameterDialog* parameter_dialog);
-
-        virtual void
-        setProperties();
-
-      private:
-        double    level_;
-        double    scale_;
-    };
+    return "Points Actor Item";
   }
-}
 
-#endif // PCL_MODELER_NORMALS_ACTOR_ITEM_H_
+protected:
+  void
+  createNormalLines();
+
+  void
+  initImpl() override;
+
+  void
+  updateImpl() override;
+
+  void
+  prepareContextMenu(QMenu* menu) const override;
+
+  void
+  prepareProperties(ParameterDialog* parameter_dialog) override;
+
+  void
+  setProperties() override;
+
+private:
+  double level_;
+  double scale_;
+};
+
+} // namespace modeler
+} // namespace pcl

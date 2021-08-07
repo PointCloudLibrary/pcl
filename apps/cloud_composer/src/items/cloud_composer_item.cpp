@@ -1,10 +1,8 @@
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
 
+#include <QDebug>
 
-
-
-pcl::cloud_composer::CloudComposerItem::CloudComposerItem (QString name)
+pcl::cloud_composer::CloudComposerItem::CloudComposerItem (const QString& name)
   : QStandardItem(name)
 {
   //Set up the properties, store pointer locally for convenience
@@ -16,10 +14,8 @@ pcl::cloud_composer::CloudComposerItem::CloudComposerItem (QString name)
   this->setData (QVariant::fromValue (properties_), ItemDataRole::PROPERTIES); 
   this->setData (QVariant (item_id), ItemDataRole::ITEM_ID);
   
-  this->setForeground (QBrush (Qt::black));
-  
+  this->setForeground (QBrush (Qt::black));  
 }
-
 
 pcl::cloud_composer::CloudComposerItem::~CloudComposerItem ()
 {
@@ -60,13 +56,13 @@ pcl::cloud_composer::CloudComposerItem::addChild (CloudComposerItem *item_arg)
 }
 
 void
-pcl::cloud_composer::CloudComposerItem::paintView (boost::shared_ptr<pcl::visualization::PCLVisualizer>) const
+pcl::cloud_composer::CloudComposerItem::paintView (pcl::visualization::PCLVisualizer::Ptr) const
 {
   qDebug () << "Paint View in Cloud Composer Item - doing nothing";
 }
 
 void
-pcl::cloud_composer::CloudComposerItem::removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer>) const
+pcl::cloud_composer::CloudComposerItem::removeFromView (pcl::visualization::PCLVisualizer::Ptr) const
 {
   qDebug () << "Remove from View in Cloud Composer Item - doing nothing";
 }

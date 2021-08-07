@@ -47,8 +47,6 @@
 #include <pcl/recognition/ransac_based/obj_rec_ransac.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/console/print.h>
-#include <pcl/console/parse.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/point_cloud.h>
 #include <vtkPolyDataReader.h>
 #include <vtkDoubleArray.h>
@@ -56,9 +54,9 @@
 #include <vtkPointData.h>
 #include <vtkGlyph3D.h>
 #include <cstdio>
-#include <vector>
+#include <thread>
 
-using namespace std;
+using namespace std::chrono_literals;
 using namespace pcl;
 using namespace io;
 using namespace console;
@@ -109,7 +107,7 @@ main (int argc, char** argv)
 
 bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& points_in, PointCloud<Normal>& normals_in, double b[6])
 {
-  size_t len = strlen (file_name);
+  std::size_t len = strlen (file_name);
   if ( file_name[len-3] != 'v' || file_name[len-2] != 't' || file_name[len-1] != 'k' )
   {
     fprintf (stderr, "ERROR: we need a .vtk object!\n");
@@ -167,17 +165,17 @@ visualize (const ModelLibrary::HashTable& hash_table)
   vis.setBackgroundColor (0.1, 0.1, 0.1);
 
   const ModelLibrary::HashTableCell* cells = hash_table.getVoxels ();
-  size_t max_num_entries = 0;
-  int i, id3[3], num_cells = hash_table.getNumberOfVoxels ();
+  std::size_t max_num_entries = 0;
+  int id3[3], num_cells = hash_table.getNumberOfVoxels ();
   float half_side, b[6], cell_center[3], spacing = hash_table.getVoxelSpacing ()[0];
   char cube_id[128];
 
   // Just get the maximal number of entries in the cells
-  for ( i = 0 ; i < num_cells ; ++i, ++cells )
+  for ( int i = 0 ; i < num_cells ; ++i, ++cells )
   {
-    if (cells->size ()) // That's the number of models in the cell (it's maximum one, since we loaded only one model)
+    if (!cells->empty ()) // That's the number of models in the cell (it's maximum one, since we loaded only one model)
     {
-      size_t num_entries = (*cells->begin ()).second.size(); // That's the number of entries in the current cell for the model we loaded
+      std::size_t num_entries = (*cells->begin ()).second.size(); // That's the number of entries in the current cell for the model we loaded
       // Get the max number of entries
       if ( num_entries > max_num_entries )
         max_num_entries = num_entries;
@@ -188,13 +186,14 @@ visualize (const ModelLibrary::HashTable& hash_table)
   // right scale factor for the spheres
   float s = (0.5f*spacing)/static_cast<float> (max_num_entries);
 
-  cout << "s = " << s << ", max_num_entries = " << max_num_entries << endl;
+  std::cout << "s = " << s << ", max_num_entries = " << max_num_entries << std::endl;
 
   // Now, render a sphere with the right radius at the right place
-  for ( i = 0, cells = hash_table.getVoxels () ; i < num_cells ; ++i, ++cells )
+  cells = hash_table.getVoxels ();
+  for ( int i = 0; i < num_cells ; ++i, ++cells )
   {
     // Does the cell have any entries?
-    if (cells->size ())
+    if (!cells->empty ())
     {
       hash_table.compute3dId (i, id3);
       hash_table.computeVoxelCenter (id3, cell_center);
@@ -222,7 +221,7 @@ visualize (const ModelLibrary::HashTable& hash_table)
   while (!vis.wasStopped ())
   {
     vis.spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    std::this_thread::sleep_for(100ms);
   }
 }
 

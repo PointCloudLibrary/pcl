@@ -38,49 +38,36 @@
  *
  */
 
-#ifndef PCL_GEOMETRY_MESH_TRAITS_H
-#define PCL_GEOMETRY_MESH_TRAITS_H
+#pragma once
 
-#include <pcl/geometry/boost.h>
+#include <type_traits>
 
-namespace pcl
-{ 
-  namespace geometry
-  {
-    /** \brief No data is associated with the vertices / half-edges / edges / faces. */
-    struct NoData
-    {
-#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION <= 1101
-      operator unsigned char() const
-      {
-        return 0;
-      }
-#endif
-    };
+namespace pcl {
+namespace geometry {
+/** \brief No data is associated with the vertices / half-edges / edges / faces. */
+struct NoData {};
 
-    /** \brief The mesh traits are used to set up compile time settings for the mesh.
-      * \tparam VertexDataT   Data stored for each vertex. Defaults to pcl::NoData.
-      * \tparam HalfEdgeDataT Data stored for each half-edge. Defaults to pcl::NoData.
-      * \tparam EdgeDataT     Data stored for each edge. Defaults to pcl::NoData.
-      * \tparam FaceDataT     Data stored for each face. Defaults to pcl::NoData.
-      * \author Martin Saelzle
-      * \ingroup geometry
-      */
-    template <class VertexDataT   = pcl::geometry::NoData,
-              class HalfEdgeDataT = pcl::geometry::NoData,
-              class EdgeDataT     = pcl::geometry::NoData,
-              class FaceDataT     = pcl::geometry::NoData>
-    struct DefaultMeshTraits
-    {
-      typedef VertexDataT   VertexData;
-      typedef HalfEdgeDataT HalfEdgeData;
-      typedef EdgeDataT     EdgeData;
-      typedef FaceDataT     FaceData;
+/** \brief The mesh traits are used to set up compile time settings for the mesh.
+ * \tparam VertexDataT   Data stored for each vertex. Defaults to pcl::NoData.
+ * \tparam HalfEdgeDataT Data stored for each half-edge. Defaults to pcl::NoData.
+ * \tparam EdgeDataT     Data stored for each edge. Defaults to pcl::NoData.
+ * \tparam FaceDataT     Data stored for each face. Defaults to pcl::NoData.
+ * \author Martin Saelzle
+ * \ingroup geometry
+ */
+template <class VertexDataT = pcl::geometry::NoData,
+          class HalfEdgeDataT = pcl::geometry::NoData,
+          class EdgeDataT = pcl::geometry::NoData,
+          class FaceDataT = pcl::geometry::NoData>
+struct DefaultMeshTraits {
+  using VertexData = VertexDataT;
+  using HalfEdgeData = HalfEdgeDataT;
+  using EdgeData = EdgeDataT;
+  using FaceData = FaceDataT;
 
-      /** \brief Specifies whether the mesh is manifold or not (only non-manifold vertices can be represented). */
-      typedef boost::false_type IsManifold;
-    };
-  } // End namespace geometry
+  /** \brief Specifies whether the mesh is manifold or not (only non-manifold vertices
+   * can be represented). */
+  using IsManifold = std::false_type;
+};
+} // End namespace geometry
 } // End namespace pcl
-
-#endif // PCL_GEOMETRY_MESH_TRAITS_H

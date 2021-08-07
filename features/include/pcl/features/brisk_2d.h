@@ -37,12 +37,10 @@
  *
  */
 
-#ifndef PCL_FEATURES_BRISK_2D_H_
-#define PCL_FEATURES_BRISK_2D_H_
+#pragma once
 
 // PCL includes
 #include <pcl/features/feature.h>
-#include <pcl/common/eigen.h>
 #include <pcl/common/centroid.h>
 #include <pcl/common/intensity.h>
 
@@ -68,17 +66,17 @@ namespace pcl
   class BRISK2DEstimation// : public Feature<PointT, KeyPointT>
   {
     public:
-      typedef boost::shared_ptr<BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT> > Ptr;
-      typedef boost::shared_ptr<const BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT> > ConstPtr;
+      using Ptr = shared_ptr<BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT> >;
+      using ConstPtr = shared_ptr<const BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT> >;
 
-      typedef typename pcl::PointCloud<PointInT> PointCloudInT;
-      typedef typename pcl::PointCloud<PointInT>::ConstPtr PointCloudInTConstPtr;
+      using PointCloudInT = pcl::PointCloud<PointInT>;
+      using PointCloudInTConstPtr = typename PointCloudInT::ConstPtr;
 
-      typedef typename pcl::PointCloud<KeypointT> KeypointPointCloudT;
-      typedef typename pcl::PointCloud<KeypointT>::Ptr KeypointPointCloudTPtr;
-      typedef typename pcl::PointCloud<KeypointT>::ConstPtr KeypointPointCloudTConstPtr;
+      using KeypointPointCloudT = pcl::PointCloud<KeypointT>;
+      using KeypointPointCloudTPtr = typename KeypointPointCloudT::Ptr;
+      using KeypointPointCloudTConstPtr = typename KeypointPointCloudT::ConstPtr;
 
-      typedef typename pcl::PointCloud<PointOutT> PointCloudOutT;
+      using PointCloudOutT = pcl::PointCloud<PointOutT>;
 
       /** \brief Constructor. */
       BRISK2DEstimation ();
@@ -262,5 +260,3 @@ namespace pcl
 }
 
 #include <pcl/features/impl/brisk_2d.hpp>
-
-#endif  //#ifndef PCL_FEATURES_BRISK_2D_H_

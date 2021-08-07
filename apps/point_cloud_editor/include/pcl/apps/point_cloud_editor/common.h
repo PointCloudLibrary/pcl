@@ -37,10 +37,9 @@
 /// @details The set of simple common operations used throughout the project.
 /// @author Yue Li and Matthew Hielsberg
 
-#ifndef COMMON_H_
-#define COMMON_H_
+#pragma once
 
-#include <sstream>
+#include <string>
 
 /// @brief Sets an array representing a 4x4 matrix to the identity
 /// @param matrix A pointer to memory representing at least MATRIX_SIZE
@@ -66,22 +65,7 @@ multMatrix(const float* left, const float* right, float* result);
 bool
 invertMatrix(const float* matrix, float* inverse);
 
-/// @brief Helper function for converting objects to strings (using operator<<)
-/// @param input The object to be converted
-/// @param result A reference to the string where the resulting string will be
-/// stored.
-template<typename T>
-void
-toString(T input, std::string &result)
-{
-  std::stringstream ss;
-  ss << input;
-  result = ss.str();
-}
-
 /// @brief Converts the passed string to lowercase in place
 /// @param s The string to be made lower.
 void
 stringToLower(std::string &s);
-
-#endif // COMMON_H_

@@ -47,60 +47,60 @@ template<typename PointT, typename NormalT> void
 pcl::ShadowPoints<PointT, NormalT>::applyFilter (PointCloud &output)
 {
   assert (input_normals_ != NULL);
-  output.points.resize (input_->points.size ());
+  output.resize (input_->size ());
   if (extract_removed_indices_)
-    removed_indices_->resize (input_->points.size ());
+    removed_indices_->resize (input_->size ());
 
-  unsigned int cp = 0;
-  unsigned int ri = 0;
-  for (unsigned int i = 0; i < input_->points.size (); i++)
+  std::size_t cp = 0;
+  std::size_t ri = 0;
+  for (std::size_t i = 0; i < input_->size (); i++)
   {
-    const NormalT &normal = input_normals_->points[i];
-    const PointT &pt = input_->points[i];
-    float val = fabsf (normal.normal_x * pt.x + normal.normal_y * pt.y + normal.normal_z * pt.z);
+    const NormalT &normal = (*input_normals_)[i];
+    const PointT &pt = (*input_)[i];
+    const float val = std::abs (normal.normal_x * pt.x + normal.normal_y * pt.y + normal.normal_z * pt.z);
 
     if ( (val >= threshold_) ^ negative_)
-      output.points[cp++] = pt;
+      output[cp++] = pt;
     else 
     {
       if (extract_removed_indices_)
         (*removed_indices_)[ri++] = i;
       if (keep_organized_)
       {
-        PointT &pt_new = output.points[cp++] = pt;
+        PointT &pt_new = output[cp++] = pt;
         pt_new.x = pt_new.y = pt_new.z = user_filter_value_;
       }
 
     }  
   }
-  output.points.resize (cp);
+  output.resize (cp);
   removed_indices_->resize (ri);
-  output.width = 1;
-  output.height = static_cast<uint32_t> (output.points.size ());
+  output.height = 1;
+  output.width = output.size ();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename NormalT> void
-pcl::ShadowPoints<PointT, NormalT>::applyFilter (std::vector<int> &indices)
+pcl::ShadowPoints<PointT, NormalT>::applyFilter (Indices &indices)
 {
   assert (input_normals_ != NULL);
-  indices.resize (input_->points.size ());
+  indices.resize (input_->size ());
   if (extract_removed_indices_)
     removed_indices_->resize (indices_->size ());
 
   unsigned int k = 0;
   unsigned int z = 0;
-  for (std::vector<int>::const_iterator idx = indices_->begin (); idx != indices_->end (); ++idx)
+  for (const auto& idx : (*indices_))
   {
-    const NormalT &normal = input_normals_->points[*idx];
-    const PointT &pt = input_->points[*idx];
+    const NormalT &normal = (*input_normals_)[idx];
+    const PointT &pt = (*input_)[idx];
     
-    float val = fabsf (normal.normal_x * pt.x + normal.normal_y * pt.y + normal.normal_z * pt.z);
+    float val = std::abs (normal.normal_x * pt.x + normal.normal_y * pt.y + normal.normal_z * pt.z);
 
     if ( (val >= threshold_) ^ negative_)
-      indices[k++] = *idx;
+      indices[k++] = idx;
     else if (extract_removed_indices_)
-      (*removed_indices_)[z++] = *idx;
+      (*removed_indices_)[z++] = idx;
   }
   indices.resize (k);
   removed_indices_->resize (z);

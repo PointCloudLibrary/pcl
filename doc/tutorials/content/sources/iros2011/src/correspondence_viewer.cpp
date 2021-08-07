@@ -58,7 +58,7 @@ find_feature_correspondences (const LocalDescriptorsPtr & source_descriptors,
   const int k = 1;
   std::vector<int> k_indices (k);
   std::vector<float> k_squared_distances (k);
-  for (size_t i = 0; i < source_descriptors->size (); ++i)
+  for (std::size_t i = 0; i < source_descriptors->size (); ++i)
   {
     descriptor_kdtree.nearestKSearch (*source_descriptors, i, k, k_indices, k_squared_distances);
     correspondences_out[i] = k_indices[0];
@@ -71,7 +71,7 @@ void
 visualize_correspondences (const PointCloudPtr points1, const PointCloudPtr keypoints1,
                            const PointCloudPtr points2, const PointCloudPtr keypoints2,
                            const std::vector<int> &correspondences,
-                           const std::vector<float> &correspondence_scores, int max_to_display)
+                           const std::vector<float> &correspondence_scores, std::size_t max_to_display)
 { 
   // We want to visualize two clouds side-by-side, so do to this, we'll make copies of the clouds and transform them
   // by shifting one to the left and the other to the right.  Then we'll draw lines between the corresponding points
@@ -108,7 +108,7 @@ visualize_correspondences (const PointCloudPtr points1, const PointCloudPtr keyp
   std::cout << max_to_display << std::endl;
 
   // Draw lines between the best corresponding points
-  for (size_t i = 0; i < keypoints_left->size (); ++i)
+  for (std::size_t i = 0; i < keypoints_left->size (); ++i)
   {
     if (correspondence_scores[i] > threshold)
     {
@@ -116,8 +116,8 @@ visualize_correspondences (const PointCloudPtr points1, const PointCloudPtr keyp
     }
 
     // Get the pair of points
-    const PointT & p_left = keypoints_left->points[i];
-    const PointT & p_right = keypoints_right->points[correspondences[i]];
+    const PointT & p_left = (*keypoints_left)[i];
+    const PointT & p_right = (*keypoints_right)[correspondences[i]];
 
     // Generate a random (bright) color
     double r = (rand() % 100);

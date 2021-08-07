@@ -39,11 +39,6 @@
 #ifdef HAVE_OPENNI
 
 #include <pcl/io/openni_camera/openni_ir_image.h>
-#include <sstream>
-#include <limits>
-#include <iostream>
-
-using namespace std;
 
 namespace openni_wrapper
 {

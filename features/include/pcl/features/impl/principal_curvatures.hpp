@@ -38,30 +38,32 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_PRINCIPAL_CURVATURES_H_
-#define PCL_FEATURES_IMPL_PRINCIPAL_CURVATURES_H_
+#pragma once
 
 #include <pcl/features/principal_curvatures.h>
+
+#include <pcl/common/point_tests.h> // for pcl::isFinite
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computePointPrincipalCurvatures (
-      const pcl::PointCloud<PointNT> &normals, int p_idx, const std::vector<int> &indices,
+      const pcl::PointCloud<PointNT> &normals, int p_idx, const pcl::Indices &indices,
       float &pcx, float &pcy, float &pcz, float &pc1, float &pc2)
 {
   EIGEN_ALIGN16 Eigen::Matrix3f I = Eigen::Matrix3f::Identity ();
-  Eigen::Vector3f n_idx (normals.points[p_idx].normal[0], normals.points[p_idx].normal[1], normals.points[p_idx].normal[2]);
+  Eigen::Vector3f n_idx (normals[p_idx].normal[0], normals[p_idx].normal[1], normals[p_idx].normal[2]);
   EIGEN_ALIGN16 Eigen::Matrix3f M = I - n_idx * n_idx.transpose ();    // projection matrix (into tangent plane)
 
   // Project normals into the tangent plane
   Eigen::Vector3f normal;
   projected_normals_.resize (indices.size ());
   xyz_centroid_.setZero ();
-  for (size_t idx = 0; idx < indices.size(); ++idx)
+  for (std::size_t idx = 0; idx < indices.size(); ++idx)
   {
-    normal[0] = normals.points[indices[idx]].normal[0];
-    normal[1] = normals.points[indices[idx]].normal[1];
-    normal[2] = normals.points[indices[idx]].normal[2];
+    normal[0] = normals[indices[idx]].normal[0];
+    normal[1] = normals[indices[idx]].normal[1];
+    normal[2] = normals[indices[idx]].normal[2];
 
     projected_normals_[idx] = M * normal;
     xyz_centroid_ += projected_normals_[idx];
@@ -73,15 +75,14 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computePointPr
   // Initialize to 0
   covariance_matrix_.setZero ();
 
-  double demean_xy, demean_xz, demean_yz;
   // For each point in the cloud
-  for (size_t idx = 0; idx < indices.size (); ++idx)
+  for (std::size_t idx = 0; idx < indices.size (); ++idx)
   {
     demean_ = projected_normals_[idx] - xyz_centroid_;
 
-    demean_xy = demean_[0] * demean_[1];
-    demean_xz = demean_[0] * demean_[2];
-    demean_yz = demean_[1] * demean_[2];
+    double demean_xy = demean_[0] * demean_[1];
+    double demean_xz = demean_[0] * demean_[2];
+    double demean_yz = demean_[1] * demean_[2];
 
     covariance_matrix_(0, 0) += demean_[0] * demean_[0];
     covariance_matrix_(0, 1) += static_cast<float> (demean_xy);
@@ -115,7 +116,7 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computeFeature
 {
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices (k_);
+  pcl::Indices nn_indices (k_);
   std::vector<float> nn_dists (k_);
 
   output.is_dense = true;
@@ -123,44 +124,43 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computeFeature
   if (input_->is_dense)
   {
     // Iterating over the entire index vector
-    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
     {
       if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
-        output.points[idx].principal_curvature[0] = output.points[idx].principal_curvature[1] = output.points[idx].principal_curvature[2] =
-          output.points[idx].pc1 = output.points[idx].pc2 = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].principal_curvature[0] = output[idx].principal_curvature[1] = output[idx].principal_curvature[2] =
+          output[idx].pc1 = output[idx].pc2 = std::numeric_limits<float>::quiet_NaN ();
         output.is_dense = false;
         continue;
       }
 
       // Estimate the principal curvatures at each patch
       computePointPrincipalCurvatures (*normals_, (*indices_)[idx], nn_indices,
-                                       output.points[idx].principal_curvature[0], output.points[idx].principal_curvature[1], output.points[idx].principal_curvature[2],
-                                       output.points[idx].pc1, output.points[idx].pc2);
+                                       output[idx].principal_curvature[0], output[idx].principal_curvature[1], output[idx].principal_curvature[2],
+                                       output[idx].pc1, output[idx].pc2);
     }
   }
   else
   {
     // Iterating over the entire index vector
-    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
     {
       if (!isFinite ((*input_)[(*indices_)[idx]]) ||
           this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
-        output.points[idx].principal_curvature[0] = output.points[idx].principal_curvature[1] = output.points[idx].principal_curvature[2] =
-          output.points[idx].pc1 = output.points[idx].pc2 = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].principal_curvature[0] = output[idx].principal_curvature[1] = output[idx].principal_curvature[2] =
+          output[idx].pc1 = output[idx].pc2 = std::numeric_limits<float>::quiet_NaN ();
         output.is_dense = false;
         continue;
       }
 
       // Estimate the principal curvatures at each patch
       computePointPrincipalCurvatures (*normals_, (*indices_)[idx], nn_indices,
-                                       output.points[idx].principal_curvature[0], output.points[idx].principal_curvature[1], output.points[idx].principal_curvature[2],
-                                       output.points[idx].pc1, output.points[idx].pc2);
+                                       output[idx].principal_curvature[0], output[idx].principal_curvature[1], output[idx].principal_curvature[2],
+                                       output[idx].pc1, output[idx].pc2);
     }
   }
 }
 
 #define PCL_INSTANTIATE_PrincipalCurvaturesEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::PrincipalCurvaturesEstimation<T,NT,OutT>;
 
-#endif    // PCL_FEATURES_IMPL_PRINCIPAL_CURVATURES_H_

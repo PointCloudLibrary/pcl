@@ -36,13 +36,12 @@
  *
  */
 
-#ifndef PCL_VISUALIZATION_IMAGE_VISUALIZER_H__
-#define	PCL_VISUALIZATION_IMAGE_VISUALIZER_H__
+#pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/console/print.h>
-#include <pcl/visualization/interactor.h>
 #include <pcl/visualization/interactor_style.h>
 #include <pcl/visualization/vtk/pcl_image_canvas_source_2d.h>
 #include <pcl/visualization/vtk/pcl_context_item.h>
@@ -53,6 +52,7 @@
 
 #include <vtkVersion.h>
 #include <vtkInteractorStyleImage.h>
+#include <vtkRenderWindowInteractor.h>
 
 class vtkImageSlice;
 class vtkContextActor;
@@ -63,7 +63,7 @@ namespace pcl
 {
   namespace visualization
   {
-    typedef Eigen::Array<unsigned char, 3, 1> Vector3ub;
+    using Vector3ub = Eigen::Array<unsigned char, 3, 1>;
     static const Vector3ub green_color (0, 255, 0);
     static const Vector3ub red_color (255, 0, 0);
     static const Vector3ub blue_color (0, 0, 255);
@@ -78,14 +78,14 @@ namespace pcl
         static ImageViewerInteractorStyle *New ();
         ImageViewerInteractorStyle ();
 
-        virtual void OnMouseWheelForward () {}
-        virtual void OnMouseWheelBackward () {}
-        virtual void OnMiddleButtonDown () {}
-        virtual void OnRightButtonDown () {}
-        virtual void OnLeftButtonDown ();
+        void OnMouseWheelForward () override {}
+        void OnMouseWheelBackward () override {}
+        void OnMiddleButtonDown () override {}
+        void OnRightButtonDown () override {}
+        void OnLeftButtonDown () override;
 
-        virtual void
-        OnChar ();
+        void
+        OnChar () override;
 
         void
         adjustCamera (vtkImageData *image, vtkRenderer *ren);
@@ -118,7 +118,8 @@ namespace pcl
     class PCL_EXPORTS ImageViewer
     {
       public:
-        typedef boost::shared_ptr<ImageViewer> Ptr;
+        using Ptr = shared_ptr<ImageViewer>;
+        using ConstPtr = shared_ptr<const ImageViewer>;
 
         /** \brief Constructor.
           * \param[in] window_title the title of the window
@@ -128,7 +129,6 @@ namespace pcl
         /** \brief Destructor. */
         virtual ~ImageViewer ();
        
-#if ((VTK_MAJOR_VERSION > 5) || ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 4)))
         /** \brief Set up the interactor style. By default the interactor style is set to
           * vtkInteractorStyleImage you can use this to set it to another type.
           * \param[in] style user set interactor style.
@@ -138,7 +138,7 @@ namespace pcl
         {
           interactor_->SetInteractorStyle (style);
         }
-#endif
+
         /** \brief Show a monochrome 2D image on screen.
           * \param[in] data the input data representing the image
           * \param[in] width the width of the image
@@ -262,10 +262,12 @@ namespace pcl
           * \param[in] height the height of the image
           * \param[in] layer_id the name of the layer (default: "image")
           * \param[in] opacity the opacity of the layer (default: 1.0)
+          * \param[in] autoresize flag to enable window to adapt to image size (default true)
           */
         void 
         addRGBImage (const unsigned char* data, unsigned width, unsigned height, 
-                     const std::string &layer_id = "rgb_image", double opacity = 1.0);
+                     const std::string &layer_id = "rgb_image", double opacity = 1.0,
+                     bool autoresize = true);
 
         /** \brief Show a 2D image on screen, obtained from the RGB channel of a point cloud.
           * \param[in] cloud the input data representing the RGB point cloud 
@@ -427,7 +429,7 @@ namespace pcl
           * \param[in] opacity the opacity of the layer (default: 1.0)
           */
         void
-        markPoint (size_t u, size_t v, Vector3ub fg_color, Vector3ub bg_color = red_color, double radius = 3.0,
+        markPoint (std::size_t u, std::size_t v, Vector3ub fg_color, Vector3ub bg_color = red_color, double radius = 3.0,
                    const std::string &layer_id = "points", double opacity = 1.0);
 
         /** \brief Sets the pixel at coordinates(u,v) to color while setting the neighborhood to another
@@ -479,9 +481,9 @@ namespace pcl
           */
         boost::signals2::connection 
         registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*), 
-                                  void* cookie = NULL)
+                                  void* cookie = nullptr)
         {
-          return (registerKeyboardCallback (boost::bind (callback, _1, cookie)));
+          return (registerKeyboardCallback ([=] (const pcl::visualization::KeyboardEvent& e) { (*callback) (e, cookie); }));
         }
         
         /** \brief Register a callback function for keyboard events
@@ -492,28 +494,28 @@ namespace pcl
           */
         template<typename T> boost::signals2::connection 
         registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*), 
-                                  T& instance, void* cookie = NULL)
+                                  T& instance, void* cookie = nullptr)
         {
-          return (registerKeyboardCallback (boost::bind (callback,  boost::ref (instance), _1, cookie)));
+          return (registerKeyboardCallback ([=, &instance] (const pcl::visualization::KeyboardEvent& e) { (instance.*callback) (e, cookie); }));
         }
         
-        /** \brief Register a callback boost::function for keyboard events
+        /** \brief Register a callback std::function for keyboard events
           * \param[in] cb the boost function that will be registered as a callback for a keyboard event
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection 
-        registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> cb);
+        registerKeyboardCallback (std::function<void (const pcl::visualization::KeyboardEvent&)> cb);
 
-        /** \brief Register a callback boost::function for mouse events
+        /** \brief Register a callback std::function for mouse events
           * \param[in] callback  the function that will be registered as a callback for a mouse event
           * \param[in] cookie    user data that is passed to the callback
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection 
         registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*), 
-                               void* cookie = NULL)
+                               void* cookie = nullptr)
         {
-          return (registerMouseCallback (boost::bind (callback, _1, cookie)));
+          return (registerMouseCallback ([=] (const pcl::visualization::MouseEvent& e) { (*callback) (e, cookie); }));
         }
         
         /** \brief Register a callback function for mouse events
@@ -524,9 +526,9 @@ namespace pcl
           */
         template<typename T> boost::signals2::connection 
         registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*), 
-                               T& instance, void* cookie = NULL)
+                               T& instance, void* cookie = nullptr)
         {
-          return (registerMouseCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
+          return (registerMouseCallback ([=, &instance] (const pcl::visualization::MouseEvent& e) { (instance.*callback) (e, cookie); }));
         }
 
         /** \brief Register a callback function for mouse events
@@ -534,7 +536,7 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */        
         boost::signals2::connection 
-        registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> cb);
+        registerMouseCallback (std::function<void (const pcl::visualization::MouseEvent&)> cb);
         
         /** \brief Set the position in screen coordinates.
           * \param[in] x where to move the window to (X)
@@ -564,11 +566,7 @@ namespace pcl
         {
           stopped_ = true;
           // This tends to close the window...
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-          interactor_->stopLoop ();
-#else
           interactor_->TerminateApp ();
-#endif
         }
 
         /** \brief Add a circle shape from a point and a radius
@@ -928,19 +926,15 @@ namespace pcl
           {
             return (new ExitMainLoopTimerCallback);
           }
-          virtual void 
-          Execute (vtkObject* vtkNotUsed (caller), unsigned long event_id, void* call_data)
+          void 
+          Execute (vtkObject* vtkNotUsed (caller), unsigned long event_id, void* call_data) override
           {
             if (event_id != vtkCommand::TimerEvent)
               return;
             int timer_id = *static_cast<int*> (call_data);
             if (timer_id != right_timer_id)
               return;
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-            window->interactor_->stopLoop ();
-#else
             window->interactor_->TerminateApp ();
-#endif
           }
           int right_timer_id;
           ImageViewer* window;
@@ -953,17 +947,13 @@ namespace pcl
           {
             return (new ExitCallback);
           }
-          virtual void 
-          Execute (vtkObject*, unsigned long event_id, void*)
+          void 
+          Execute (vtkObject*, unsigned long event_id, void*) override
           {
             if (event_id != vtkCommand::ExitEvent)
               return;
             window->stopped_ = true;
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-            window->interactor_->stopLoop ();
-#else
             window->interactor_->TerminateApp ();
-#endif
           }
           ImageViewer* window;
         };
@@ -972,12 +962,12 @@ namespace pcl
         /** \brief Internal structure describing a layer. */
         struct Layer
         {
-          Layer () : actor (), layer_name () {}
+          Layer () {}
           vtkSmartPointer<vtkContextActor> actor;
           std::string layer_name;
         };
 
-        typedef std::vector<Layer> LayerMap;
+        using LayerMap = std::vector<Layer>;
 
         /** \brief Add a new 2D rendering layer to the viewer. 
           * \param[in] layer_id the name of the layer
@@ -992,11 +982,7 @@ namespace pcl
         boost::signals2::signal<void (const pcl::visualization::MouseEvent&)> mouse_signal_;
         boost::signals2::signal<void (const pcl::visualization::KeyboardEvent&)> keyboard_signal_;
         
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-        vtkSmartPointer<PCLVisualizerInteractor> interactor_;
-#else
         vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
-#endif
         vtkSmartPointer<vtkCallbackCommand> mouse_command_;
         vtkSmartPointer<vtkCallbackCommand> keyboard_command_;
 
@@ -1013,10 +999,9 @@ namespace pcl
         /** \brief The renderer. */
         vtkSmartPointer<vtkRenderer> ren_;
 
-#if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
         /** \brief Global prop. This is the actual "actor". */
         vtkSmartPointer<vtkImageSlice> slice_;
-#endif
+
         /** \brief The interactor style. */
         vtkSmartPointer<ImageViewerInteractorStyle> interactor_style_;
 
@@ -1024,7 +1009,7 @@ namespace pcl
         boost::shared_array<unsigned char> data_;
   
         /** \brief The data array (representing the image) size. Used internally. */
-        size_t data_size_;
+        std::size_t data_size_;
 
         /** \brief Set to false if the interaction loop is running. */
         bool stopped_;
@@ -1056,15 +1041,12 @@ namespace pcl
           {
             return (layer.layer_name == str_);
           }
-        };        
-        
+        };
+
       public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   }
 }
 
 #include <pcl/visualization/impl/image_viewer.hpp>
-
-#endif	/* __IMAGE_VISUALIZER_H__ */
-

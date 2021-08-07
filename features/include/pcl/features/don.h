@@ -35,8 +35,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_FILTERS_DON_H_
-#define PCL_FILTERS_DON_H_
+
+#pragma once
 
 #include <pcl/features/feature.h>
 
@@ -70,13 +70,13 @@ namespace pcl
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::feature_name_;
       using PCLBase<PointInT>::input_;
-      typedef typename pcl::PointCloud<PointNT> PointCloudN;
-      typedef typename PointCloudN::Ptr PointCloudNPtr;
-      typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+      using PointCloudN = pcl::PointCloud<PointNT>;
+      using PointCloudNPtr = typename PointCloudN::Ptr;
+      using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
     public:
-      typedef boost::shared_ptr<DifferenceOfNormalsEstimation<PointInT, PointNT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const DifferenceOfNormalsEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
+      using Ptr = shared_ptr<DifferenceOfNormalsEstimation<PointInT, PointNT, PointOutT> >;
+      using ConstPtr = shared_ptr<const DifferenceOfNormalsEstimation<PointInT, PointNT, PointOutT> >;
 
       /**
         * Creates a new Difference of Normals filter.
@@ -86,7 +86,7 @@ namespace pcl
         feature_name_ = "DifferenceOfNormalsEstimation";
       }
 
-      virtual ~DifferenceOfNormalsEstimation ()
+      ~DifferenceOfNormalsEstimation ()
       {
         //
       }
@@ -115,15 +115,15 @@ namespace pcl
        * Computes the DoN vector for each point in the input point cloud and outputs the vector cloud to the given output.
        * @param output the cloud to output the DoN vector cloud to.
        */
-      virtual void
-      computeFeature (PointCloudOut &output);
+      void
+      computeFeature (PointCloudOut &output) override;
 
       /**
        * Initialize for computation of features.
        * @return true if parameters (input normals, input) are sufficient to perform computation.
        */
-      virtual bool
-      initCompute ();
+      bool
+      initCompute () override;
     private:
       /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
         * \param[out] output the output point cloud
@@ -141,5 +141,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/don.hpp>
 #endif
-
-#endif // PCL_FILTERS_DON_H_

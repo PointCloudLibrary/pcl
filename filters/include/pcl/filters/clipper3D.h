@@ -35,8 +35,10 @@
  *
  */
 
-#ifndef PCL_CLIPPER3D_H_
-#define PCL_CLIPPER3D_H_
+#pragma once
+
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <vector>
 #include <Eigen/StdVector>
@@ -52,13 +54,13 @@ namespace pcl
   class Clipper3D
   {
     public:
-      typedef boost::shared_ptr< Clipper3D<PointT> > Ptr;
-      typedef boost::shared_ptr< const Clipper3D<PointT> > ConstPtr;
+      using Ptr = shared_ptr<Clipper3D<PointT> >;
+      using ConstPtr = shared_ptr<const Clipper3D<PointT> >;
  
       /**
         * \brief virtual destructor. Never throws an exception.
         */
-      virtual ~Clipper3D () throw () {}
+      virtual ~Clipper3D () noexcept {}
 
       /**
         * \brief interface to clip a single point
@@ -101,7 +103,7 @@ namespace pcl
         * \return list of indices of remaining points after clipping.
         */
       virtual void
-      clipPointCloud3D (const pcl::PointCloud<PointT> &cloud_in, std::vector<int>& clipped, const std::vector<int>& indices = std::vector<int> ()) const = 0;
+      clipPointCloud3D (const pcl::PointCloud<PointT> &cloud_in, Indices& clipped, const Indices& indices = Indices ()) const = 0;
 
       /**
         * \brief polymorphic method to clone the underlying clipper with its parameters.
@@ -109,8 +111,6 @@ namespace pcl
         */
       virtual Clipper3D<PointT>*
       clone () const = 0;
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
-
-#endif // PCL_CLIPPER3D_H_

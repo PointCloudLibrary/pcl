@@ -35,11 +35,11 @@
  *
  */
 
-#ifndef PCL_SEGMENT_DIFFERENCES_H_
-#define PCL_SEGMENT_DIFFERENCES_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
-#include <pcl/search/pcl_search.h>
+#include <pcl/pcl_macros.h>
+#include <pcl/search/search.h> // for Search
 
 namespace pcl
 {
@@ -56,20 +56,8 @@ namespace pcl
   void getPointCloudDifference (
       const pcl::PointCloud<PointT> &src,
       double threshold,
-      const boost::shared_ptr<pcl::search::Search<PointT> > &tree,
+      const typename pcl::search::Search<PointT>::Ptr &tree,
       pcl::PointCloud<PointT> &output);
-
-  template <typename PointT>
-  PCL_DEPRECATED("getPointCloudDifference() does not use the tgt parameter, thus it is deprecated and will be removed in future releases.")
-  inline void getPointCloudDifference (
-      const pcl::PointCloud<PointT> &src,
-      const pcl::PointCloud<PointT> & /* tgt */,
-      double threshold,
-      const boost::shared_ptr<pcl::search::Search<PointT> > &tree,
-      pcl::PointCloud<PointT> &output)
-  {
-    getPointCloudDifference<PointT> (src, threshold, tree, output);
-  }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,18 +71,18 @@ namespace pcl
   template <typename PointT>
   class SegmentDifferences: public PCLBase<PointT>
   {
-    typedef PCLBase<PointT> BasePCLBase;
+    using BasePCLBase = PCLBase<PointT>;
 
     public:
-      typedef pcl::PointCloud<PointT> PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = pcl::PointCloud<PointT>;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-      typedef typename pcl::search::Search<PointT> KdTree;
-      typedef typename pcl::search::Search<PointT>::Ptr KdTreePtr;
+      using KdTree = pcl::search::Search<PointT>;
+      using KdTreePtr = typename KdTree::Ptr;
 
-      typedef PointIndices::Ptr PointIndicesPtr;
-      typedef PointIndices::ConstPtr PointIndicesConstPtr;
+      using PointIndicesPtr = PointIndices::Ptr;
+      using PointIndicesConstPtr = PointIndices::ConstPtr;
 
       /** \brief Empty constructor. */
       SegmentDifferences () : 
@@ -170,5 +158,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/segment_differences.hpp>
 #endif
-
-#endif  //#ifndef PCL_SEGMENT_DIFFERENCES_H_

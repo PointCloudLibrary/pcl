@@ -41,7 +41,7 @@
 #define EIGEN_II_METHOD 1
 
 #include <pcl/features/linear_least_squares_normal.h>
-#include <pcl/common/time.h>
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
 pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::~LinearLeastSquaresNormalEstimation ()
@@ -63,11 +63,11 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computePointNormal
 
   const int index = y * width + x;
 
-  const float px = input_->points[index].x;
-  const float py = input_->points[index].y;
-  const float pz = input_->points[index].z;
+  const float px = (*input_)[index].x;
+  const float py = (*input_)[index].y;
+  const float pz = (*input_)[index].z;
 
-  if (pcl_isnan (px)) 
+  if (std::isnan (px)) 
   {
     normal.normal_x = bad_point;
     normal.normal_y = bad_point;
@@ -97,11 +97,11 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computePointNormal
 
       const int index2 = v * width + u;
 
-      const float qx = input_->points[index2].x;
-      const float qy = input_->points[index2].y;
-      const float qz = input_->points[index2].z;
+      const float qx = (*input_)[index2].x;
+      const float qy = (*input_)[index2].y;
+      const float qz = (*input_)[index2].z;
 
-      if (pcl_isnan (qx)) continue;
+      if (std::isnan (qx)) continue;
 
       const float delta = qz - pz;
       const float i = qx - px;
@@ -110,7 +110,7 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computePointNormal
       float depthChangeThreshold = pz*pz * 0.05f * max_depth_change_factor_;
       if (use_depth_dependent_smoothing_) depthChangeThreshold *= pz;
 
-      const float f = fabs (delta) > depthChangeThreshold ? 0 : 1;
+      const float f = std::fabs (delta) > depthChangeThreshold ? 0 : 1;
 
       matA0 += f * i * i;
       matA1 += f * i * j;
@@ -178,11 +178,11 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computeFeature (Po
     {
       const int index = y * width + x;
 
-      const float px = input_->points[index].x;
-      const float py = input_->points[index].y;
-      const float pz = input_->points[index].z;
+      const float px = (*input_)[index].x;
+      const float py = (*input_)[index].y;
+      const float pz = (*input_)[index].z;
 
-      if (pcl_isnan(px)) continue;
+      if (std::isnan(px)) continue;
 
       //float depthDependentSmoothingSize = smoothingSize + pz / 10.0f;
 
@@ -208,21 +208,21 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computeFeature (Po
 
           const int index2 = v * width + u;
 
-          const float qx = input_->points[index2].x;
-          const float qy = input_->points[index2].y;
-          const float qz = input_->points[index2].z;
+          const float qx = (*input_)[index2].x;
+          const float qy = (*input_)[index2].y;
+          const float qz = (*input_)[index2].z;
 
-          if (pcl_isnan(qx)) continue;
+          if (std::isnan(qx)) continue;
 
           const float delta = qz - pz;
           const float i = qx - px;
           const float j = qy - py;
 
-          const float depthDependendDepthChange = (max_depth_change_factor_ * (fabsf (pz) + 1.0f) * 2.0f);
-          const float f = fabs(delta) > depthDependendDepthChange ? 0 : 1;
+          const float depthDependendDepthChange = (max_depth_change_factor_ * (std::abs (pz) + 1.0f) * 2.0f);
+          const float f = std::fabs(delta) > depthDependendDepthChange ? 0 : 1;
 
-          //float f = fabs(delta) > (pz * 0.05f - 0.3f) ? 0 : 1;
-          //const float f = fabs(delta) > (pz*pz * 0.05f * max_depth_change_factor_) ? 0 : 1;
+          //float f = std::abs(delta) > (pz * 0.05f - 0.3f) ? 0 : 1;
+          //const float f = std::abs(delta) > (pz*pz * 0.05f * max_depth_change_factor_) ? 0 : 1;
           //float f = Math.Abs(delta) > (depth * Math.Log(depth + 1.0) * 0.02f - 0.2f) ? 0 : 1;
 
           matA0 += f * i * i;
@@ -245,19 +245,19 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computeFeature (Po
 
       if (length <= 0.0f)
       {
-        output.points[index].normal_x = bad_point;
-        output.points[index].normal_y = bad_point;
-        output.points[index].normal_z = bad_point;
-        output.points[index].curvature = bad_point;
+        output[index].normal_x = bad_point;
+        output[index].normal_y = bad_point;
+        output[index].normal_z = bad_point;
+        output[index].curvature = bad_point;
       }
       else
       {
         const float normInv = 1.0f / std::sqrt (length);
 
-        output.points[index].normal_x = nx * normInv;
-        output.points[index].normal_y = ny * normInv;
-        output.points[index].normal_z = nz * normInv;
-        output.points[index].curvature = bad_point;
+        output[index].normal_x = nx * normInv;
+        output[index].normal_y = ny * normInv;
+        output[index].normal_z = nz * normInv;
+        output[index].curvature = bad_point;
       }
     }
   }

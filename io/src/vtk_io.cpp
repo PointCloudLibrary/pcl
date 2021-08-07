@@ -40,7 +40,6 @@
 #include <pcl/point_types.h>
 #include <pcl/io/vtk_io.h>
 #include <fstream>
-#include <iostream>
 #include <pcl/common/io.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,19 +68,15 @@ pcl::io::saveVTKFile (const std::string &file_name,
   for (unsigned int i = 0; i < nr_points; ++i)
   {
     int xyz = 0;
-    for (size_t d = 0; d < triangles.cloud.fields.size (); ++d)
+    for (std::size_t d = 0; d < triangles.cloud.fields.size (); ++d)
     {
-      int count = triangles.cloud.fields[d].count;
-      if (count == 0)
-        count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
-      int c = 0;
       if ((triangles.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
            triangles.cloud.fields[d].name == "x" || 
            triangles.cloud.fields[d].name == "y" || 
            triangles.cloud.fields[d].name == "z"))
       {
         float value;
-        memcpy (&value, &triangles.cloud.data[i * point_size + triangles.cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+        memcpy (&value, &triangles.cloud.data[i * point_size + triangles.cloud.fields[d].offset], sizeof (float));
         fs << value;
         if (++xyz == 3)
           break;
@@ -103,18 +98,17 @@ pcl::io::saveVTKFile (const std::string &file_name,
 
   // Write polygons
   // compute the correct number of values:
-  size_t triangle_size = triangles.polygons.size ();
-  size_t correct_number = triangle_size;
-  for (size_t i = 0; i < triangle_size; ++i)
+  std::size_t triangle_size = triangles.polygons.size ();
+  std::size_t correct_number = triangle_size;
+  for (std::size_t i = 0; i < triangle_size; ++i)
     correct_number += triangles.polygons[i].vertices.size ();
   fs << "\nPOLYGONS " << triangle_size << " " << correct_number << '\n';
-  for (size_t i = 0; i < triangle_size; ++i)
+  for (std::size_t i = 0; i < triangle_size; ++i)
   {
     fs << triangles.polygons[i].vertices.size () << " ";
-    size_t j = 0;
-    for (j = 0; j < triangles.polygons[i].vertices.size () - 1; ++j)
+    for (std::size_t j = 0; j < triangles.polygons[i].vertices.size () - 1; ++j)
       fs << triangles.polygons[i].vertices[j] << " ";
-    fs << triangles.polygons[i].vertices[j] << '\n';
+    fs << triangles.polygons[i].vertices.back() << '\n';
   }
 
   // Write RGB values
@@ -124,14 +118,10 @@ pcl::io::saveVTKFile (const std::string &file_name,
     fs << "\nPOINT_DATA " << nr_points << "\nCOLOR_SCALARS scalars 3\n";
     for (unsigned int i = 0; i < nr_points; ++i)
     {
-      int count = triangles.cloud.fields[field_index].count;
-      if (count == 0)
-        count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
-      int c = 0;
       if (triangles.cloud.fields[field_index].datatype == pcl::PCLPointField::FLOAT32)
       {
         pcl::RGB color;
-        memcpy (&color, &triangles.cloud.data[i * point_size + triangles.cloud.fields[field_index].offset + c * sizeof (float)], sizeof (RGB));
+        memcpy (&color, &triangles.cloud.data[i * point_size + triangles.cloud.fields[field_index].offset], sizeof (RGB));
         int r = color.r;
         int g = color.g;
         int b = color.b;
@@ -172,19 +162,15 @@ pcl::io::saveVTKFile (const std::string &file_name,
   for (unsigned int i = 0; i < nr_points; ++i)
   {
     int xyz = 0;
-    for (size_t d = 0; d < cloud.fields.size (); ++d)
+    for (std::size_t d = 0; d < cloud.fields.size (); ++d)
     {
-      int count = cloud.fields[d].count;
-      if (count == 0)
-        count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
-      int c = 0;
       if ((cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
            cloud.fields[d].name == "x" || 
            cloud.fields[d].name == "y" || 
            cloud.fields[d].name == "z"))
       {
         float value;
-        memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+        memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset], sizeof (float));
         fs << value;
         if (++xyz == 3)
           break;
@@ -211,14 +197,10 @@ pcl::io::saveVTKFile (const std::string &file_name,
     fs << "\nPOINT_DATA " << nr_points << "\nCOLOR_SCALARS scalars 3\n";
     for (unsigned int i = 0; i < nr_points; ++i)
     {
-      int count = cloud.fields[field_index].count;
-      if (count == 0)
-        count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
-      int c = 0;
       if (cloud.fields[field_index].datatype == pcl::PCLPointField::FLOAT32)
       {
         pcl::RGB color;
-        memcpy (&color, &cloud.data[i * point_size + cloud.fields[field_index].offset + c * sizeof (float)], sizeof (RGB));
+        memcpy (&color, &cloud.data[i * point_size + cloud.fields[field_index].offset], sizeof (RGB));
         int r = color.r;
         int g = color.g;
         int b = color.b;

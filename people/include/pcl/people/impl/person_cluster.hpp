@@ -85,9 +85,9 @@ pcl::people::PersonCluster<PointT>::init (
 
   points_indices_.indices = indices.indices;
 
-  for (std::vector<int>::const_iterator pit = points_indices_.indices.begin(); pit != points_indices_.indices.end(); pit++)
+  for (const auto& index : (points_indices_.indices))
   {
-    PointT* p = &input_cloud->points[*pit];
+    PointT* p = &(*input_cloud)[index];
 
     min_x_ = std::min(p->x, min_x_);
     max_x_ = std::max(p->x, max_x_);
@@ -136,9 +136,9 @@ pcl::people::PersonCluster<PointT>::init (
     if (!vertical_)
     {
       head_threshold_value = min_y_ + height_ / 8.0f;    // head is suppose to be 1/8 of the human height
-      for (std::vector<int>::const_iterator pit = points_indices_.indices.begin(); pit != points_indices_.indices.end(); pit++)
+      for (const auto& index : (points_indices_.indices))
       {
-        PointT* p = &input_cloud->points[*pit];
+        PointT* p = &(*input_cloud)[index];
 
         if(p->y < head_threshold_value)
         {
@@ -152,9 +152,9 @@ pcl::people::PersonCluster<PointT>::init (
     else
     {
       head_threshold_value = max_x_ - height_ / 8.0f;    // head is suppose to be 1/8 of the human height
-      for (std::vector<int>::const_iterator pit = points_indices_.indices.begin(); pit != points_indices_.indices.end(); pit++)
+      for (const auto& index : (points_indices_.indices))
       {
-        PointT* p = &input_cloud->points[*pit];
+        PointT* p = &(*input_cloud)[index];
 
         if(p->x > head_threshold_value)
         {
@@ -177,9 +177,9 @@ pcl::people::PersonCluster<PointT>::init (
     float min_z = c_z_;
     float max_x = c_x_;
     float max_z = c_z_;
-    for (std::vector<int>::const_iterator pit = points_indices_.indices.begin(); pit != points_indices_.indices.end(); pit++)
+    for (const auto& index : (points_indices_.indices))
     {
-      PointT* p = &input_cloud->points[*pit];
+      PointT* p = &(*input_cloud)[index];
 
       min_x = std::min(p->x, min_x);
       max_x = std::max(p->x, max_x);
@@ -216,9 +216,9 @@ pcl::people::PersonCluster<PointT>::init (
     float min_z = c_z_;
     float max_y = c_y_;
     float max_z = c_z_;
-    for (std::vector<int>::const_iterator pit = points_indices_.indices.begin(); pit != points_indices_.indices.end(); pit++)
+    for (const auto& index : (points_indices_.indices))
     {
-      PointT* p = &input_cloud->points[*pit];
+      PointT* p = &(*input_cloud)[index];
 
       min_y = std::min(p->y, min_y);
       max_y = std::max(p->y, max_y);
@@ -258,7 +258,7 @@ pcl::people::PersonCluster<PointT>::getIndices ()
 }
 
 template <typename PointT> float
-pcl::people::PersonCluster<PointT>::getHeight ()
+pcl::people::PersonCluster<PointT>::getHeight () const
 {
   return (height_);
 }
@@ -286,7 +286,7 @@ pcl::people::PersonCluster<PointT>::updateHeight (const Eigen::VectorXf& ground_
 }
 
 template <typename PointT> float
-pcl::people::PersonCluster<PointT>::getDistance ()
+pcl::people::PersonCluster<PointT>::getDistance () const
 {
   return (distance_);
 }
@@ -340,31 +340,31 @@ pcl::people::PersonCluster<PointT>::getMax ()
 }
 
 template <typename PointT> float
-pcl::people::PersonCluster<PointT>::getAngle ()
+pcl::people::PersonCluster<PointT>::getAngle () const
 {
   return (angle_);
 }
 
 template <typename PointT>
-float pcl::people::PersonCluster<PointT>::getAngleMax ()
+float pcl::people::PersonCluster<PointT>::getAngleMax () const
 {
   return (angle_max_);
 }
 
 template <typename PointT>
-float pcl::people::PersonCluster<PointT>::getAngleMin ()
+float pcl::people::PersonCluster<PointT>::getAngleMin () const
 {
   return (angle_min_);
 }
 
 template <typename PointT>
-int pcl::people::PersonCluster<PointT>::getNumberPoints ()
+int pcl::people::PersonCluster<PointT>::getNumberPoints () const
 {
   return (n_);
 }
 
 template <typename PointT>
-float pcl::people::PersonCluster<PointT>::getPersonConfidence ()
+float pcl::people::PersonCluster<PointT>::getPersonConfidence () const
 {
   return (person_confidence_);
 }
@@ -409,20 +409,11 @@ void pcl::people::PersonCluster<PointT>::drawTBoundingBox (pcl::visualization::P
     coeffs.values.push_back (0.5);
   }
 
-  std::stringstream bbox_name;
-  bbox_name << "bbox_person_" << person_number;
-  viewer.removeShape (bbox_name.str());
-  viewer.addCube (coeffs, bbox_name.str());
-  viewer.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 1.0, 0.0, bbox_name.str());
-  viewer.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 2, bbox_name.str());
-
-  //      std::stringstream confid;
-  //      confid << person_confidence_;
-  //      PointT position;
-  //      position.x = tcenter_[0]- 0.2;
-  //      position.y = ttop_[1];
-  //      position.z = tcenter_[2];
-  //      viewer.addText3D(confid.str().substr(0, 4), position, 0.1);
+  const std::string bbox_name = "bbox_person_" + std::to_string(person_number);
+  viewer.removeShape (bbox_name);
+  viewer.addCube (coeffs, bbox_name);
+  viewer.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 1.0, 0.0, bbox_name);
+  viewer.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 2, bbox_name);
 }
 
 template <typename PointT>

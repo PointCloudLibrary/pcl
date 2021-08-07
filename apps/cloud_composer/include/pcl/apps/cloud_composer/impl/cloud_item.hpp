@@ -39,13 +39,13 @@
 #define IMPL_CLOUD_ITEM_H_
 
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
+#include <pcl/memory.h>  // for pcl::make_shared
 #include <pcl/point_cloud.h>
 #include <pcl/impl/instantiate.hpp>
 
 template <typename PointT> void
 pcl::cloud_composer::CloudItem::printNumPoints () const
 {
-  //boost::shared_ptr <PointCloud<PointT> > cloud = this->data (ItemDataRole::CLOUD_TEMPLATED).value <boost::shared_ptr <PointCloud<PointT> > > ();
   QVariant variant = this->data (ItemDataRole::CLOUD_TEMPLATED);
   typename PointCloud<PointT>::Ptr cloud;
   if ( variant.canConvert <typename PointCloud<PointT>::Ptr> () )
@@ -65,9 +65,9 @@ pcl::cloud_composer::CloudItem::printNumPoints () const
 
 
 template <typename PointT> pcl::cloud_composer::CloudItem* 
-pcl::cloud_composer::CloudItem::createCloudItemFromTemplate (const QString name, typename PointCloud<PointT>::Ptr cloud_ptr)
+pcl::cloud_composer::CloudItem::createCloudItemFromTemplate (const QString& name, typename PointCloud<PointT>::Ptr cloud_ptr)
 {
-  pcl::PCLPointCloud2::Ptr cloud_blob = boost::make_shared <pcl::PCLPointCloud2> ();
+  pcl::PCLPointCloud2::Ptr cloud_blob = pcl::make_shared <pcl::PCLPointCloud2> ();
   toPCLPointCloud2 (*cloud_ptr, *cloud_blob);
   CloudItem* cloud_item = new CloudItem ( name, cloud_blob,  Eigen::Vector4f (), Eigen::Quaternionf (), false);
   cloud_item->setData (QVariant::fromValue(cloud_ptr), ItemDataRole::CLOUD_TEMPLATED);
@@ -76,8 +76,8 @@ pcl::cloud_composer::CloudItem::createCloudItemFromTemplate (const QString name,
 }
 
 
-#define PCL_INSTANTIATE_createCloudItemFromTemplate(T) template PCL_EXPORTS pcl::cloud_composer::CloudItem* pcl::cloud_composer::CloudItem::createCloudItemFromTemplate<T>(const QString, typename PointCloud<PointT>::Ptr);
+#define PCL_INSTANTIATE_createCloudItemFromTemplate(T) template pcl::cloud_composer::CloudItem* pcl::cloud_composer::CloudItem::createCloudItemFromTemplate<T>(const QString, typename PointCloud<PointT>::Ptr);
 
-#define PCL_INSTANTIATE_printNumPoints(T) template PCL_EXPORTS void pcl::cloud_composer::CloudItem::getNumPoints<T>();
+#define PCL_INSTANTIATE_printNumPoints(T) template void pcl::cloud_composer::CloudItem::getNumPoints<T>();
 
 #endif

@@ -34,296 +34,298 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-  
-#ifndef PCL_ML_REGRESSION_VARIANCE_STATS_ESTIMATOR_H_
-#define PCL_ML_REGRESSION_VARIANCE_STATS_ESTIMATOR_H_
+
+#pragma once
 
 #include <pcl/common/common.h>
-#include <pcl/ml/stats_estimator.h>
 #include <pcl/ml/branch_estimator.h>
+#include <pcl/ml/stats_estimator.h>
 
 #include <istream>
 #include <ostream>
 
-namespace pcl
-{
+namespace pcl {
 
-  /** \brief Node for a regression trees which optimizes variance. */
-  template <class FeatureType, class LabelType>
-  class PCL_EXPORTS RegressionVarianceNode 
+/** Node for a regression trees which optimizes variance. */
+template <class FeatureType, class LabelType>
+class PCL_EXPORTS RegressionVarianceNode {
+public:
+  /** Constructor. */
+  RegressionVarianceNode() : value(0), variance(0), threshold(0), sub_nodes() {}
+
+  /** Destructor. */
+  virtual ~RegressionVarianceNode() {}
+
+  /** Serializes the node to the specified stream.
+   *
+   * \param[out] stream the destination for the serialization
+   */
+  inline void
+  serialize(std::ostream& stream) const
   {
-    public:
-      /** \brief Constructor. */
-      RegressionVarianceNode () : value(0), variance(0), threshold(0), sub_nodes() {}
-      /** \brief Destructor. */
-      virtual ~RegressionVarianceNode () {}
+    feature.serialize(stream);
 
-      /** \brief Serializes the node to the specified stream.
-        * \param[out] stream The destination for the serialization.
-        */
-      inline void 
-      serialize (std::ostream & stream) const
-      {
-        feature.serialize (stream);
+    stream.write(reinterpret_cast<const char*>(&threshold), sizeof(threshold));
 
-        stream.write (reinterpret_cast<const char*> (&threshold), sizeof (threshold));
+    stream.write(reinterpret_cast<const char*>(&value), sizeof(value));
+    stream.write(reinterpret_cast<const char*>(&variance), sizeof(variance));
 
-        stream.write (reinterpret_cast<const char*> (&value), sizeof (value));
-        stream.write (reinterpret_cast<const char*> (&variance), sizeof (variance));
+    const int num_of_sub_nodes = static_cast<int>(sub_nodes.size());
+    stream.write(reinterpret_cast<const char*>(&num_of_sub_nodes),
+                 sizeof(num_of_sub_nodes));
+    for (int sub_node_index = 0; sub_node_index < num_of_sub_nodes; ++sub_node_index) {
+      sub_nodes[sub_node_index].serialize(stream);
+    }
+  }
 
-        const int num_of_sub_nodes = static_cast<int> (sub_nodes.size ());
-        stream.write (reinterpret_cast<const char*> (&num_of_sub_nodes), sizeof (num_of_sub_nodes));
-        for (int sub_node_index = 0; sub_node_index < num_of_sub_nodes; ++sub_node_index)
-        {
-          sub_nodes[sub_node_index].serialize (stream);        
-        }
-      }
-
-      /** \brief Deserializes a node from the specified stream.
-        * \param[in] stream The source for the deserialization.
-        */
-      inline void 
-      deserialize (std::istream & stream)
-      {
-        feature.deserialize (stream);
-
-        stream.read (reinterpret_cast<char*> (&threshold), sizeof (threshold));
-
-        stream.read (reinterpret_cast<char*> (&value), sizeof (value));
-        stream.read (reinterpret_cast<char*> (&variance), sizeof (variance));
-
-        int num_of_sub_nodes;
-        stream.read (reinterpret_cast<char*> (&num_of_sub_nodes), sizeof (num_of_sub_nodes));
-        sub_nodes.resize (num_of_sub_nodes);
-
-        if (num_of_sub_nodes > 0)
-        {
-          for (int sub_node_index = 0; sub_node_index < num_of_sub_nodes; ++sub_node_index)
-          {
-            sub_nodes[sub_node_index].deserialize (stream);
-          }
-        }
-      }
-
-    public:
-      /** \brief The feature associated with the node. */
-      FeatureType feature;
-      /** \brief The threshold applied on the feature response. */
-      float threshold;
-
-      /** \brief The label value of this node. */
-      LabelType value;
-      /** \brief The variance of the labels that ended up at this node during training. */
-      LabelType variance;
-
-      /** \brief The child nodes. */
-      std::vector<RegressionVarianceNode> sub_nodes;
-  };
-
-  /** \brief Statistics estimator for regression trees which optimizes variance. */
-  template <class LabelDataType, class NodeType, class DataSet, class ExampleIndex>
-  class PCL_EXPORTS RegressionVarianceStatsEstimator
-    : public pcl::StatsEstimator<LabelDataType, NodeType, DataSet, ExampleIndex>
+  /** Deserializes a node from the specified stream.
+   *
+   * \param[in] stream the source for the deserialization
+   */
+  inline void
+  deserialize(std::istream& stream)
   {
-  
-    public:
-      /** \brief Constructor. */
-      RegressionVarianceStatsEstimator (BranchEstimator * branch_estimator) 
-        : branch_estimator_ (branch_estimator)
-      {}
-      /** \brief Destructor. */
-      virtual ~RegressionVarianceStatsEstimator () {}
-  
-      /** \brief Returns the number of branches the corresponding tree has. */
-      inline size_t 
-      getNumOfBranches () const 
-      { 
-        //return 2; 
-        return branch_estimator_->getNumOfBranches ();
+    feature.deserialize(stream);
+
+    stream.read(reinterpret_cast<char*>(&threshold), sizeof(threshold));
+
+    stream.read(reinterpret_cast<char*>(&value), sizeof(value));
+    stream.read(reinterpret_cast<char*>(&variance), sizeof(variance));
+
+    int num_of_sub_nodes;
+    stream.read(reinterpret_cast<char*>(&num_of_sub_nodes), sizeof(num_of_sub_nodes));
+    sub_nodes.resize(num_of_sub_nodes);
+
+    if (num_of_sub_nodes > 0) {
+      for (int sub_node_index = 0; sub_node_index < num_of_sub_nodes;
+           ++sub_node_index) {
+        sub_nodes[sub_node_index].deserialize(stream);
       }
+    }
+  }
 
-      /** \brief Returns the label of the specified node. 
-        * \param[in] node The node which label is returned.
-        */
-      inline LabelDataType 
-      getLabelOfNode (
-        NodeType & node) const
-      {
-        return node.value;
-      }
+public:
+  /** The feature associated with the node. */
+  FeatureType feature;
 
-      /** \brief Computes the information gain obtained by the specified threshold.
-        * \param[in] data_set The data set corresponding to the supplied result data.
-        * \param[in] examples The examples used for extracting the supplied result data.
-        * \param[in] label_data The label data corresponding to the specified examples.
-        * \param[in] results The results computed using the specified examples.
-        * \param[in] flags The flags corresponding to the results.
-        * \param[in] threshold The threshold for which the information gain is computed.
-        */
-      float 
-      computeInformationGain (
-        DataSet & data_set,
-        std::vector<ExampleIndex> & examples,
-        std::vector<LabelDataType> & label_data,
-        std::vector<float> & results,
-        std::vector<unsigned char> & flags,
-        const float threshold) const
-      {
-        const size_t num_of_examples = examples.size ();
-        const size_t num_of_branches = getNumOfBranches();
+  /** The threshold applied on the feature response. */
+  float threshold;
 
-        // compute variance
-        std::vector<LabelDataType> sums (num_of_branches+1, 0);
-        std::vector<LabelDataType> sqr_sums (num_of_branches+1, 0);
-        std::vector<size_t> branch_element_count (num_of_branches+1, 0);
+  /** The label value of this node. */
+  LabelType value;
 
-        for (size_t branch_index = 0; branch_index < num_of_branches; ++branch_index)
-        {
-          branch_element_count[branch_index] = 1;
-          ++branch_element_count[num_of_branches];
-        }
+  /** The variance of the labels that ended up at this node during training. */
+  LabelType variance;
 
-        for (size_t example_index = 0; example_index < num_of_examples; ++example_index)
-        {
-          unsigned char branch_index;
-          computeBranchIndex (results[example_index], flags[example_index], threshold, branch_index);
+  /** The child nodes. */
+  std::vector<RegressionVarianceNode> sub_nodes;
+};
 
-          LabelDataType label = label_data[example_index];
+/** Statistics estimator for regression trees which optimizes variance. */
+template <class LabelDataType, class NodeType, class DataSet, class ExampleIndex>
+class PCL_EXPORTS RegressionVarianceStatsEstimator
+: public pcl::StatsEstimator<LabelDataType, NodeType, DataSet, ExampleIndex> {
+public:
+  /** Constructor. */
+  RegressionVarianceStatsEstimator(BranchEstimator* branch_estimator)
+  : branch_estimator_(branch_estimator)
+  {}
 
-          sums[branch_index] += label;
-          sums[num_of_branches] += label;
+  /** Destructor. */
+  virtual ~RegressionVarianceStatsEstimator() {}
 
-          sqr_sums[branch_index] += label*label;
-          sqr_sums[num_of_branches] += label*label;
+  /** Returns the number of branches the corresponding tree has. */
+  inline std::size_t
+  getNumOfBranches() const
+  {
+    // return 2;
+    return branch_estimator_->getNumOfBranches();
+  }
 
-          ++branch_element_count[branch_index];
-          ++branch_element_count[num_of_branches];
-        }
+  /** Returns the label of the specified node.
+   *
+   * \param[in] node the node which label is returned
+   */
+  inline LabelDataType
+  getLabelOfNode(NodeType& node) const
+  {
+    return node.value;
+  }
 
-        std::vector<float> variances (num_of_branches+1, 0);
-        for (size_t branch_index = 0; branch_index < num_of_branches+1; ++branch_index)
-        {
-          const float mean_sum = static_cast<float>(sums[branch_index]) / branch_element_count[branch_index];
-          const float mean_sqr_sum = static_cast<float>(sqr_sums[branch_index]) / branch_element_count[branch_index];
-          variances[branch_index] = mean_sqr_sum - mean_sum*mean_sum;
-        }
+  /** Computes the information gain obtained by the specified threshold.
+   *
+   * \param[in] data_set the data set corresponding to the supplied result data
+   * \param[in] examples the examples used for extracting the supplied result data
+   * \param[in] label_data the label data corresponding to the specified examples
+   * \param[in] results the results computed using the specified examples
+   * \param[in] flags the flags corresponding to the results
+   * \param[in] threshold the threshold for which the information gain is computed
+   */
+  float
+  computeInformationGain(DataSet& data_set,
+                         std::vector<ExampleIndex>& examples,
+                         std::vector<LabelDataType>& label_data,
+                         std::vector<float>& results,
+                         std::vector<unsigned char>& flags,
+                         const float threshold) const
+  {
+    const std::size_t num_of_examples = examples.size();
+    const std::size_t num_of_branches = getNumOfBranches();
 
-        float information_gain = variances[num_of_branches];
-        for (size_t branch_index = 0; branch_index < num_of_branches; ++branch_index)
-        {
-          //const float weight = static_cast<float>(sums[branchIndex]) / sums[numOfBranches];
-          const float weight = static_cast<float>(branch_element_count[branch_index]) / static_cast<float>(branch_element_count[num_of_branches]);
-          information_gain -= weight*variances[branch_index];
-        }
+    // compute variance
+    std::vector<LabelDataType> sums(num_of_branches + 1, 0);
+    std::vector<LabelDataType> sqr_sums(num_of_branches + 1, 0);
+    std::vector<std::size_t> branch_element_count(num_of_branches + 1, 0);
 
-        return information_gain;
-      }
+    for (std::size_t branch_index = 0; branch_index < num_of_branches; ++branch_index) {
+      branch_element_count[branch_index] = 1;
+      ++branch_element_count[num_of_branches];
+    }
 
-      /** \brief Computes the branch indices for all supplied results.
-        * \param[in] results The results the branch indices will be computed for.
-        * \param[in] flags The flags corresponding to the specified results.
-        * \param[in] threshold The threshold used to compute the branch indices.
-        * \param[out] branch_indices The destination for the computed branch indices.
-        */
-      void 
-      computeBranchIndices (
-        std::vector<float> & results,
-        std::vector<unsigned char> & flags,
-        const float threshold,
-        std::vector<unsigned char> & branch_indices) const
-      {
-        const size_t num_of_results = results.size ();
-        const size_t num_of_branches = getNumOfBranches();
-
-        branch_indices.resize (num_of_results);
-        for (size_t result_index = 0; result_index < num_of_results; ++result_index)
-        {
-          unsigned char branch_index;
-          computeBranchIndex (results[result_index], flags[result_index], threshold, branch_index);
-          branch_indices[result_index] = branch_index;
-        }
-      }
-
-      /** \brief Computes the branch index for the specified result.
-        * \param[in] result The result the branch index will be computed for.
-        * \param[in] flag The flag corresponding to the specified result.
-        * \param[in] threshold The threshold used to compute the branch index.
-        * \param[out] branch_index The destination for the computed branch index.
-        */
-      inline void 
+    for (std::size_t example_index = 0; example_index < num_of_examples;
+         ++example_index) {
+      unsigned char branch_index;
       computeBranchIndex(
-        const float result,
-        const unsigned char flag,
-        const float threshold,
-        unsigned char & branch_index) const
-      {
-        branch_estimator_->computeBranchIndex (result, flag, threshold, branch_index);
-        //branch_index = (result > threshold) ? 1 : 0;
-      }
+          results[example_index], flags[example_index], threshold, branch_index);
 
-      /** \brief Computes and sets the statistics for a node.
-        * \param[in] data_set The data set which is evaluated.
-        * \param[in] examples The examples which define which parts of the data set are used for evaluation.
-        * \param[in] label_data The label_data corresponding to the examples.
-        * \param[out] node The destination node for the statistics.
-        */
-      void 
-      computeAndSetNodeStats (
-        DataSet & data_set,
-        std::vector<ExampleIndex> & examples,
-        std::vector<LabelDataType> & label_data,
-        NodeType & node) const
-      {
-        const size_t num_of_examples = examples.size ();
+      LabelDataType label = label_data[example_index];
 
-        LabelDataType sum = 0.0f;
-        LabelDataType sqr_sum = 0.0f;
-        for (size_t example_index = 0; example_index < num_of_examples; ++example_index)
-        {
-          const LabelDataType label = label_data[example_index];
+      sums[branch_index] += label;
+      sums[num_of_branches] += label;
 
-          sum += label;
-          sqr_sum += label*label;
-        }
+      sqr_sums[branch_index] += label * label;
+      sqr_sums[num_of_branches] += label * label;
 
-        sum /= num_of_examples;
-        sqr_sum /= num_of_examples;
+      ++branch_element_count[branch_index];
+      ++branch_element_count[num_of_branches];
+    }
 
-        const float variance = sqr_sum - sum*sum;
+    std::vector<float> variances(num_of_branches + 1, 0);
+    for (std::size_t branch_index = 0; branch_index < num_of_branches + 1;
+         ++branch_index) {
+      const float mean_sum =
+          static_cast<float>(sums[branch_index]) / branch_element_count[branch_index];
+      const float mean_sqr_sum = static_cast<float>(sqr_sums[branch_index]) /
+                                 branch_element_count[branch_index];
+      variances[branch_index] = mean_sqr_sum - mean_sum * mean_sum;
+    }
 
-        node.value = sum;
-        node.variance = variance;
-      }
+    float information_gain = variances[num_of_branches];
+    for (std::size_t branch_index = 0; branch_index < num_of_branches; ++branch_index) {
+      // const float weight = static_cast<float>(sums[branchIndex]) /
+      // sums[numOfBranches];
+      const float weight = static_cast<float>(branch_element_count[branch_index]) /
+                           static_cast<float>(branch_element_count[num_of_branches]);
+      information_gain -= weight * variances[branch_index];
+    }
 
-      /** \brief Generates code for branch index computation.
-        * \param[in] node The node for which code is generated.
-        * \param[out] stream The destination for the generated code.
-        */
-      void 
-      generateCodeForBranchIndexComputation (
-        NodeType & node,
-        std::ostream & stream) const
-      {
-        stream << "ERROR: RegressionVarianceStatsEstimator does not implement generateCodeForBranchIndex(...)";
-      }
+    return information_gain;
+  }
 
-      /** \brief Generates code for label output.
-        * \param[in] node The node for which code is generated.
-        * \param[out] stream The destination for the generated code.
-        */
-      void 
-      generateCodeForOutput (
-        NodeType & node,
-        std::ostream & stream) const
-      {
-        stream << "ERROR: RegressionVarianceStatsEstimator does not implement generateCodeForBranchIndex(...)";
-      }
+  /** Computes the branch indices for all supplied results.
+   *
+   * \param[in] results the results the branch indices will be computed for
+   * \param[in] flags the flags corresponding to the specified results
+   * \param[in] threshold the threshold used to compute the branch indices
+   * \param[out] branch_indices the destination for the computed branch indices
+   */
+  void
+  computeBranchIndices(std::vector<float>& results,
+                       std::vector<unsigned char>& flags,
+                       const float threshold,
+                       std::vector<unsigned char>& branch_indices) const
+  {
+    const std::size_t num_of_results = results.size();
+    const std::size_t num_of_branches = getNumOfBranches();
 
-    private:
-      /** \brief The branch estimator. */
-      pcl::BranchEstimator * branch_estimator_;
-  };
+    branch_indices.resize(num_of_results);
+    for (std::size_t result_index = 0; result_index < num_of_results; ++result_index) {
+      unsigned char branch_index;
+      computeBranchIndex(
+          results[result_index], flags[result_index], threshold, branch_index);
+      branch_indices[result_index] = branch_index;
+    }
+  }
 
-}
+  /** Computes the branch index for the specified result.
+   *
+   * \param[in] result the result the branch index will be computed for
+   * \param[in] flag the flag corresponding to the specified result
+   * \param[in] threshold the threshold used to compute the branch index
+   * \param[out] branch_index the destination for the computed branch index
+   */
+  inline void
+  computeBranchIndex(const float result,
+                     const unsigned char flag,
+                     const float threshold,
+                     unsigned char& branch_index) const
+  {
+    branch_estimator_->computeBranchIndex(result, flag, threshold, branch_index);
+    // branch_index = (result > threshold) ? 1 : 0;
+  }
 
-#endif
+  /** Computes and sets the statistics for a node.
+   *
+   * \param[in] data_set the data set which is evaluated
+   * \param[in] examples the examples which define which parts of the data set are use
+   *            for evaluation
+   * \param[in] label_data the label_data corresponding to the examples
+   * \param[out] node the destination node for the statistics
+   */
+  void
+  computeAndSetNodeStats(DataSet& data_set,
+                         std::vector<ExampleIndex>& examples,
+                         std::vector<LabelDataType>& label_data,
+                         NodeType& node) const
+  {
+    const std::size_t num_of_examples = examples.size();
+
+    LabelDataType sum = 0.0f;
+    LabelDataType sqr_sum = 0.0f;
+    for (std::size_t example_index = 0; example_index < num_of_examples;
+         ++example_index) {
+      const LabelDataType label = label_data[example_index];
+
+      sum += label;
+      sqr_sum += label * label;
+    }
+
+    sum /= num_of_examples;
+    sqr_sum /= num_of_examples;
+
+    const float variance = sqr_sum - sum * sum;
+
+    node.value = sum;
+    node.variance = variance;
+  }
+
+  /** Generates code for branch index computation.
+   *
+   * \param[in] node the node for which code is generated
+   * \param[out] stream the destination for the generated code
+   */
+  void
+  generateCodeForBranchIndexComputation(NodeType& node, std::ostream& stream) const
+  {
+    stream << "ERROR: RegressionVarianceStatsEstimator does not implement "
+              "generateCodeForBranchIndex(...)";
+  }
+
+  /** Generates code for label output.
+   *
+   * \param[in] node the node for which code is generated
+   * \param[out] stream the destination for the generated code
+   */
+  void
+  generateCodeForOutput(NodeType& node, std::ostream& stream) const
+  {
+    stream << "ERROR: RegressionVarianceStatsEstimator does not implement "
+              "generateCodeForBranchIndex(...)";
+  }
+
+private:
+  /// The branch estimator
+  pcl::BranchEstimator* branch_estimator_;
+};
+
+} // namespace pcl

@@ -43,18 +43,11 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 
-#include <pcl/common/boost.h>
-#include <pcl/common/eigen.h>
-#include <pcl/common/common.h>
-#include <pcl/common/io.h>
-
 #include <pcl/compression/libpng_wrapper.h>
 #include <pcl/compression/organized_pointcloud_conversion.h>
 
-#include <string>
 #include <vector>
-#include <limits>
-#include <assert.h>
+#include <cassert>
 
 namespace pcl
 {
@@ -69,8 +62,8 @@ namespace pcl
                                                               bool bShowStatistics_arg,
                                                               int pngLevel_arg)
     {
-      uint32_t cloud_width = cloud_arg->width;
-      uint32_t cloud_height = cloud_arg->height;
+      std::uint32_t cloud_width = cloud_arg->width;
+      std::uint32_t cloud_height = cloud_arg->height;
 
       float maxDepth, focalLength, disparityShift, disparityScale;
 
@@ -96,15 +89,15 @@ namespace pcl
       compressedDataOut_arg.write (reinterpret_cast<const char*> (&disparityShift), sizeof (disparityShift));
 
       // disparity and rgb image data
-      std::vector<uint16_t> disparityData;
-      std::vector<uint8_t> colorData;
+      std::vector<std::uint16_t> disparityData;
+      std::vector<std::uint8_t> colorData;
 
       // compressed disparity and rgb image data
-      std::vector<uint8_t> compressedDisparity;
-      std::vector<uint8_t> compressedColor;
+      std::vector<std::uint8_t> compressedDisparity;
+      std::vector<std::uint8_t> compressedColor;
 
-      uint32_t compressedDisparitySize = 0;
-      uint32_t compressedColorSize = 0;
+      std::uint32_t compressedDisparitySize = 0;
+      std::uint32_t compressedColorSize = 0;
 
       // Convert point cloud to disparity and rgb image
       OrganizedConversion<PointT>::convert (*cloud_arg, focalLength, disparityShift, disparityScale, convertToMono,  disparityData, colorData);
@@ -112,11 +105,11 @@ namespace pcl
       // Compress disparity information
       encodeMonoImageToPNG (disparityData, cloud_width, cloud_height, compressedDisparity, pngLevel_arg);
 
-      compressedDisparitySize = static_cast<uint32_t>(compressedDisparity.size());
+      compressedDisparitySize = static_cast<std::uint32_t>(compressedDisparity.size());
       // Encode size of compressed disparity image data
       compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedDisparitySize), sizeof (compressedDisparitySize));
       // Output compressed disparity to ostream
-      compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedDisparity[0]), compressedDisparity.size () * sizeof(uint8_t));
+      compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedDisparity[0]), compressedDisparity.size () * sizeof(std::uint8_t));
 
       // Compress color information
       if (CompressionPointTraits<PointT>::hasColor && doColorEncoding)
@@ -130,15 +123,15 @@ namespace pcl
         }
       }
 
-      compressedColorSize = static_cast<uint32_t>(compressedColor.size ());
+      compressedColorSize = static_cast<std::uint32_t>(compressedColor.size ());
       // Encode size of compressed Color image data
       compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedColorSize), sizeof (compressedColorSize));
       // Output compressed disparity to ostream
-      compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedColor[0]), compressedColor.size () * sizeof(uint8_t));
+      compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedColor[0]), compressedColor.size () * sizeof(std::uint8_t));
 
       if (bShowStatistics_arg)
       {
-        uint64_t pointCount = cloud_width * cloud_height;
+        std::uint64_t pointCount = cloud_width * cloud_height;
         float bytesPerPoint = static_cast<float> (compressedDisparitySize+compressedColorSize) / static_cast<float> (pointCount);
 
         PCL_INFO("*** POINTCLOUD ENCODING ***\n");
@@ -156,10 +149,10 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT> void
-    OrganizedPointCloudCompression<PointT>::encodeRawDisparityMapWithColorImage ( std::vector<uint16_t>& disparityMap_arg,
-                                                                                  std::vector<uint8_t>& colorImage_arg,
-                                                                                  uint32_t width_arg,
-                                                                                  uint32_t height_arg,
+    OrganizedPointCloudCompression<PointT>::encodeRawDisparityMapWithColorImage ( std::vector<std::uint16_t>& disparityMap_arg,
+                                                                                  std::vector<std::uint8_t>& colorImage_arg,
+                                                                                  std::uint32_t width_arg,
+                                                                                  std::uint32_t height_arg,
                                                                                   std::ostream& compressedDataOut_arg,
                                                                                   bool doColorEncoding,
                                                                                   bool convertToMono,
@@ -171,9 +164,9 @@ namespace pcl
     {
        float maxDepth = -1;
 
-       size_t cloud_size = width_arg*height_arg;
+       std::size_t cloud_size = width_arg*height_arg;
        assert (disparityMap_arg.size()==cloud_size);
-       if (colorImage_arg.size())
+       if (!colorImage_arg.empty ())
        {
          assert (colorImage_arg.size()==cloud_size*3);
        }
@@ -194,47 +187,45 @@ namespace pcl
        compressedDataOut_arg.write (reinterpret_cast<const char*> (&disparityShift_arg), sizeof (disparityShift_arg));
 
        // compressed disparity and rgb image data
-       std::vector<uint8_t> compressedDisparity;
-       std::vector<uint8_t> compressedColor;
+       std::vector<std::uint8_t> compressedDisparity;
+       std::vector<std::uint8_t> compressedColor;
 
-       uint32_t compressedDisparitySize = 0;
-       uint32_t compressedColorSize = 0;
+       std::uint32_t compressedDisparitySize = 0;
+       std::uint32_t compressedColorSize = 0;
 
        // Remove color information of invalid points
-       uint16_t* depth_ptr = &disparityMap_arg[0];
-       uint8_t* color_ptr = &colorImage_arg[0];
+       std::uint16_t* depth_ptr = &disparityMap_arg[0];
+       std::uint8_t* color_ptr = &colorImage_arg[0];
 
-       size_t i;
-       for (i=0; i<cloud_size; ++i, ++depth_ptr, color_ptr+=sizeof(uint8_t)*3)
+       for (std::size_t i = 0; i < cloud_size; ++i, ++depth_ptr, color_ptr += sizeof(std::uint8_t) * 3)
        {
          if (!(*depth_ptr) || (*depth_ptr==0x7FF))
-           memset(color_ptr, 0, sizeof(uint8_t)*3);
+           memset(color_ptr, 0, sizeof(std::uint8_t)*3);
        }
 
        // Compress disparity information
        encodeMonoImageToPNG (disparityMap_arg, width_arg, height_arg, compressedDisparity, pngLevel_arg);
 
-       compressedDisparitySize = static_cast<uint32_t>(compressedDisparity.size());
+       compressedDisparitySize = static_cast<std::uint32_t>(compressedDisparity.size());
        // Encode size of compressed disparity image data
        compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedDisparitySize), sizeof (compressedDisparitySize));
        // Output compressed disparity to ostream
-       compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedDisparity[0]), compressedDisparity.size () * sizeof(uint8_t));
+       compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedDisparity[0]), compressedDisparity.size () * sizeof(std::uint8_t));
 
        // Compress color information
-       if (colorImage_arg.size() && doColorEncoding)
+       if (!colorImage_arg.empty () && doColorEncoding)
        {
          if (convertToMono)
          {
-           size_t i, size;
-           vector<uint8_t> monoImage;
-           size = width_arg*height_arg;
+           std::vector<std::uint8_t> monoImage;
+           std::size_t size = width_arg*height_arg;
 
            monoImage.reserve(size);
 
            // grayscale conversion
-           for (i=0; i<size; ++i)
+           for (std::size_t i = 0; i < size; ++i)
            {
-             uint8_t grayvalue = static_cast<uint8_t>(0.2989 * static_cast<float>(colorImage_arg[i*3+0]) +
+             std::uint8_t grayvalue = static_cast<std::uint8_t>(0.2989 * static_cast<float>(colorImage_arg[i*3+0]) +
                                                       0.5870 * static_cast<float>(colorImage_arg[i*3+1]) +
                                                       0.1140 * static_cast<float>(colorImage_arg[i*3+2]));
              monoImage.push_back(grayvalue);
@@ -248,23 +239,23 @@ namespace pcl
 
        }
 
-       compressedColorSize = static_cast<uint32_t>(compressedColor.size ());
+       compressedColorSize = static_cast<std::uint32_t>(compressedColor.size ());
        // Encode size of compressed Color image data
        compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedColorSize), sizeof (compressedColorSize));
        // Output compressed disparity to ostream
-       compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedColor[0]), compressedColor.size () * sizeof(uint8_t));
+       compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedColor[0]), compressedColor.size () * sizeof(std::uint8_t));
 
        if (bShowStatistics_arg)
        {
-         uint64_t pointCount = width_arg * height_arg;
+         std::uint64_t pointCount = width_arg * height_arg;
          float bytesPerPoint = static_cast<float> (compressedDisparitySize+compressedColorSize) / static_cast<float> (pointCount);
 
          PCL_INFO("*** POINTCLOUD ENCODING ***\n");
          PCL_INFO("Number of encoded points: %ld\n", pointCount);
-         PCL_INFO("Size of uncompressed disparity map+color image: %.2f kBytes\n", (static_cast<float> (pointCount) * (sizeof(uint8_t)*3+sizeof(uint16_t))) / 1024.0f);
+         PCL_INFO("Size of uncompressed disparity map+color image: %.2f kBytes\n", (static_cast<float> (pointCount) * (sizeof(std::uint8_t)*3+sizeof(std::uint16_t))) / 1024.0f);
          PCL_INFO("Size of compressed point cloud: %.2f kBytes\n", static_cast<float> (compressedDisparitySize+compressedColorSize) / 1024.0f);
          PCL_INFO("Total bytes per point: %.4f bytes\n", static_cast<float> (bytesPerPoint));
-         PCL_INFO("Total compression percentage: %.4f%%\n", (bytesPerPoint) / (sizeof(uint8_t)*3+sizeof(uint16_t)) * 100.0f);
+         PCL_INFO("Total compression percentage: %.4f%%\n", (bytesPerPoint) / (sizeof(std::uint8_t)*3+sizeof(std::uint16_t)) * 100.0f);
          PCL_INFO("Compression ratio: %.2f\n\n", static_cast<float> (CompressionPointTraits<PointT>::bytesPerPoint) / bytesPerPoint);
        }
 
@@ -278,27 +269,27 @@ namespace pcl
                                                               PointCloudPtr &cloud_arg,
                                                               bool bShowStatistics_arg)
     {
-      uint32_t cloud_width;
-      uint32_t cloud_height;
+      std::uint32_t cloud_width;
+      std::uint32_t cloud_height;
       float maxDepth;
       float focalLength;
       float disparityShift = 0.0f;
       float disparityScale;
 
       // disparity and rgb image data
-      std::vector<uint16_t> disparityData;
-      std::vector<uint8_t> colorData;
+      std::vector<std::uint16_t> disparityData;
+      std::vector<std::uint8_t> colorData;
 
       // compressed disparity and rgb image data
-      std::vector<uint8_t> compressedDisparity;
-      std::vector<uint8_t> compressedColor;
+      std::vector<std::uint8_t> compressedDisparity;
+      std::vector<std::uint8_t> compressedColor;
 
-      uint32_t compressedDisparitySize;
-      uint32_t compressedColorSize;
+      std::uint32_t compressedDisparitySize;
+      std::uint32_t compressedColorSize;
 
       // PNG decoded parameters
-      size_t png_width = 0;
-      size_t png_height = 0;
+      std::size_t png_width = 0;
+      std::size_t png_height = 0;
       unsigned int png_channels = 1;
 
       // sync to frame header
@@ -330,12 +321,12 @@ namespace pcl
         // reading compressed disparity data
         compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedDisparitySize), sizeof (compressedDisparitySize));
         compressedDisparity.resize (compressedDisparitySize);
-        compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedDisparity[0]), compressedDisparitySize * sizeof(uint8_t));
+        compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedDisparity[0]), compressedDisparitySize * sizeof(std::uint8_t));
 
         // reading compressed rgb data
         compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedColorSize), sizeof (compressedColorSize));
         compressedColor.resize (compressedColorSize);
-        compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedColor[0]), compressedColorSize * sizeof(uint8_t));
+        compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedColor[0]), compressedColorSize * sizeof(std::uint8_t));
 
         // decode PNG compressed disparity data
         decodePNGToImage (compressedDisparity, disparityData, png_width, png_height, png_channels);
@@ -349,7 +340,7 @@ namespace pcl
         // reconstruct point cloud
         OrganizedConversion<PointT>::convert (disparityData,
                                               colorData,
-                                              static_cast<bool>(png_channels==1),
+                                              (png_channels == 1),
                                               cloud_width,
                                               cloud_height,
                                               focalLength,
@@ -384,7 +375,7 @@ namespace pcl
 
       if (bShowStatistics_arg)
       {
-        uint64_t pointCount = cloud_width * cloud_height;
+        std::uint64_t pointCount = cloud_width * cloud_height;
         float bytesPerPoint = static_cast<float> (compressedDisparitySize+compressedColorSize) / static_cast<float> (pointCount);
 
         PCL_INFO("*** POINTCLOUD DECODING ***\n");
@@ -405,31 +396,25 @@ namespace pcl
                                                                    float& maxDepth_arg,
                                                                    float& focalLength_arg) const
     {
-      size_t width, height, it;
-      int centerX, centerY;
-      int x, y;
-      float maxDepth;
-      float focalLength;
-
-      width = cloud_arg->width;
-      height = cloud_arg->height;
+      std::size_t width = cloud_arg->width;
+      std::size_t height = cloud_arg->height;
 
       // Center of organized point cloud
-      centerX = static_cast<int> (width / 2);
-      centerY = static_cast<int> (height / 2);
+      int centerX = static_cast<int> (width / 2);
+      int centerY = static_cast<int> (height / 2);
 
       // Ensure we have an organized point cloud
       assert((width>1) && (height>1));
-      assert(width*height == cloud_arg->points.size());
+      assert(width*height == cloud_arg->size());
 
-      maxDepth = 0;
-      focalLength = 0;
+      float maxDepth = 0;
+      float focalLength = 0;
 
-      it = 0;
-      for (y = -centerY; y < +centerY; ++y)
-        for (x = -centerX; x < +centerX; ++x)
+      std::size_t it = 0;
+      for (int y = -centerY; y < centerY; ++y )
+        for (int x = -centerX; x < centerX; ++x )
         {
-          const PointT& point = cloud_arg->points[it++];
+          const PointT& point = (*cloud_arg)[it++];
 
           if (pcl::isFinite (point))
           {

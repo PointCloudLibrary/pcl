@@ -1,5 +1,4 @@
-#ifndef FEATURE_ESTIMATION_H
-#define FEATURE_ESTIMATION_H
+#pragma once
 
 #include "typedefs.h"
 
@@ -47,7 +46,7 @@ estimateSurfaceNormals (const PointCloudPtr & input, float radius)
  * Return: A pointer to a point cloud of keypoints
  */
 PointCloudPtr
-detectKeypoints (const PointCloudPtr & points, const SurfaceNormalsPtr & normals,
+detectKeypoints (const PointCloudPtr & points, const SurfaceNormalsPtr & /*normals*/,
                  float min_scale, int nr_octaves, int nr_scales_per_octave, float min_contrast)
 {
   pcl::SIFTKeypoint<PointT, pcl::PointWithScale> sift_detect;
@@ -137,5 +136,3 @@ computeFeatures (const PointCloudPtr & input)
 
   return (features);
 }
-
-#endif

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_COMMON_COPY_POINT_H_
-#define PCL_COMMON_COPY_POINT_H_
+#pragma once
 
 namespace pcl
 {
@@ -57,6 +56,3 @@ namespace pcl
 }
 
 #include <pcl/common/impl/copy_point.hpp>
-
-#endif // PCL_COMMON_COPY_POINT_H_
-

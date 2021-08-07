@@ -31,15 +31,15 @@ public:
   // See comments at the top of opennurbs_extensions.cpp for details.
 
   // new/delete
-  void* operator new(size_t);
+  void* operator new(std::size_t);
   void  operator delete(void*);
 
   // array new/delete
-  void* operator new[] (size_t);
+  void* operator new[] (std::size_t);
   void  operator delete[] (void*);
 
   // in place new/delete
-  void* operator new(size_t,void*);
+  void* operator new(std::size_t,void*);
   void  operator delete(void*,void*);
 #endif
 
@@ -73,15 +73,15 @@ public:
   // See comments at the top of opennurbs_extensions.cpp for details.
 
   // new/delete
-  void* operator new(size_t);
+  void* operator new(std::size_t);
   void  operator delete(void*);
 
   // array new/delete
-  void* operator new[] (size_t);
+  void* operator new[] (std::size_t);
   void  operator delete[] (void*);
 
   // in place new/delete
-  void* operator new(size_t,void*);
+  void* operator new(std::size_t,void*);
   void  operator delete(void*,void*);
 #endif
 
@@ -115,15 +115,15 @@ public:
   // See comments at the top of opennurbs_extensions.cpp for details.
 
   // new/delete
-  void* operator new(size_t);
+  void* operator new(std::size_t);
   void  operator delete(void*);
 
   // array new/delete
-  void* operator new[] (size_t);
+  void* operator new[] (std::size_t);
   void  operator delete[] (void*);
 
   // in place new/delete
-  void* operator new(size_t,void*);
+  void* operator new(std::size_t,void*);
   void  operator delete(void*,void*);
 #endif
 
@@ -181,15 +181,15 @@ public:
   // See comments at the top of opennurbs_extensions.cpp for details.
 
   // new/delete
-  void* operator new(size_t);
+  void* operator new(std::size_t);
   void  operator delete(void*);
 
   // array new/delete
-  void* operator new[] (size_t);
+  void* operator new[] (std::size_t);
   void  operator delete[] (void*);
 
   // in place new/delete
-  void* operator new(size_t,void*);
+  void* operator new(std::size_t,void*);
   void  operator delete(void*,void*);
 #endif
 
@@ -471,7 +471,7 @@ public:
   ON_UuidIndexList m_idef_id_index;
 
   // length of archive returned by ON_BinaryArchive::Read3dmEndMark()
-  size_t m_file_length;
+  std::size_t m_file_length;
 
   // Number of crc errors found during archive reading.
   // If > 0, then the archive is corrupt.

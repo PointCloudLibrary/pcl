@@ -1,20 +1,72 @@
 # Point Cloud Library
 
-<img src="pcl.png" align="center" height="100">
+<p align="center"><img src="pcl.png" height="100"></p>
 
-Continuous integration
-----------------------
 [![Release][release-image]][releases]
 [![License][license-image]][license]
 
-[release-image]: https://img.shields.io/badge/release-1.8.1-green.svg?style=flat
+[release-image]: https://img.shields.io/badge/release-1.12.0-green.svg?style=flat
 [releases]: https://github.com/PointCloudLibrary/pcl/releases
 
 [license-image]: https://img.shields.io/badge/license-BSD-green.svg?style=flat
 [license]: https://github.com/PointCloudLibrary/pcl/blob/master/LICENSE.txt
 
-[![Build Status](https://travis-ci.com/PointCloudLibrary/pcl.svg?branch=master)](https://travis-ci.com/PointCloudLibrary/pcl)
-[![Build Status](https://ci.appveyor.com/api/projects/status/oiep6oktpmuap7qr/branch/master?svg=true)](https://ci.appveyor.com/project/PointCloudLibrary/pcl/branch/master)
+Website
+-------
+
+The new website is now online at https://pointclouds.org and is open to [contributions](https://github.com/PointCloudLibrary/PointCloudLibrary.github.io) :hammer_and_wrench:.
+
+If you really need access to the old website, please use [the copy made by the internet archive](https://web.archive.org/web/20191017164724/http://www.pointclouds.org/). Please be aware that the website was hacked before and could still be hosting some malicious code.
+
+Continuous integration
+----------------------
+[ci-latest-build]: https://dev.azure.com/PointCloudLibrary/pcl/_build/latest?definitionId=9&branchName=master
+[ci-ubuntu-18.04]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20GCC&jobName=Ubuntu&configuration=Ubuntu%2018.04%20GCC&label=Ubuntu%2018.04%20GCC
+[ci-ubuntu-20.04]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Clang&jobName=Ubuntu&configuration=Ubuntu%2020.04%20Clang&label=Ubuntu%2020.04%20Clang
+[ci-ubuntu-20.10]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20GCC&jobName=Ubuntu&configuration=Ubuntu%2020.10%20GCC&label=Ubuntu%2020.10%20GCC
+[ci-windows-x86]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20MSVC&jobName=Windows%20Build&configuration=Windows%20Build%20x86&label=Windows%20VS2019%20x86
+[ci-windows-x64]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20MSVC&jobName=Windows%20Build&configuration=Windows%20Build%20x64&label=Windows%20VS2019%20x64
+[ci-macos-10.14]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Clang&jobName=macOS&configuration=macOS%20Mojave%2010.14&label=macOS%20Mojave%2010.14
+[ci-macos-10.15]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Clang&jobName=macOS&configuration=macOS%20Catalina%2010.15&label=macOS%20Catalina%2010.15
+[ci-docs]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/Documentation?branchName=master
+[ci-latest-docs]: https://dev.azure.com/PointCloudLibrary/pcl/_build/latest?definitionId=14&branchName=master
+
+Build Platform           | Status
+------------------------ | ------------------------------------------------------------------------------------------------- |
+Ubuntu                   | [![Status][ci-ubuntu-18.04]][ci-latest-build] <br> [![Status][ci-ubuntu-20.04]][ci-latest-build]                              <br> [![Status][ci-ubuntu-20.10]][ci-latest-build]                                                |
+Windows                  | [![Status][ci-windows-x86]][ci-latest-build]  <br> [![Status][ci-windows-x64]][ci-latest-build]   |
+macOS                    | [![Status][ci-macos-10.14]][ci-latest-build]  <br> [![Status][ci-macos-10.15]][ci-latest-build]   |
+Documentation            | [![Status][ci-docs]][ci-latest-docs] |
+
+Community
+---------
+[![Discord][discord-image]][discord-server]
+[![StackOverflow][so-question-count]][stackoverflow]
+[![Website][website-status]][website]
+
+
+[discord-image]: https://img.shields.io/discord/694824801977630762?color=7289da&label=community%20chat&logo=discord&style=plastic
+[discord-server]: https://discord.gg/JFFMAXS
+[website-status]: https://img.shields.io/website/https/pointcloudlibrary.github.io.svg?down_color=red&down_message=is%20down&up_color=green&up_message=is%20new
+[website]: https://pointclouds.org/
+
+[so-question-count]: https://img.shields.io/stackexchange/stackoverflow/t/point-cloud-library.svg?logo=stackoverflow
+[stackoverflow]: https://stackoverflow.com/questions/tagged/point-cloud-library
+
+Distribution
+---------
+[![Packaging status](https://repology.org/badge/tiny-repos/pcl-pointclouds.svg)](https://repology.org/project/pcl-pointclouds/badges)
+[![latest packaged version(s)](https://repology.org/badge/latest-versions/pcl-pointclouds.svg)](https://repology.org/project/pcl-pointclouds/versions)
+
+<details>
+<summary>Click to see all</summary>
+<p>
+<a href="https://repology.org/project/pcl-pointclouds/packages">
+    <img src="https://repology.org/badge/vertical-allrepos/pcl-pointclouds.svg?columns=3"
+         alt="Packaging status">
+</a>
+</p>
+</details>
 
 Description
 -----------
@@ -25,14 +77,14 @@ PCL is released under the terms of the BSD license, and thus free for commercial
 Compiling
 ---------
 Please refer to the platform specific tutorials:
- - [Linux](http://www.pointclouds.org/documentation/tutorials/compiling_pcl_posix.php)
- - [Mac OS X](http://www.pointclouds.org/documentation/tutorials/compiling_pcl_macosx.php)
- - [Microsoft Windows](http://www.pointclouds.org/documentation/tutorials/compiling_pcl_windows.php)
+ - [Linux](https://pcl-tutorials.readthedocs.io/en/latest/compiling_pcl_posix.html)
+ - [Mac OS X](https://pcl-tutorials.readthedocs.io/en/latest/compiling_pcl_macosx.html)
+ - [Microsoft Windows](https://pcl-tutorials.readthedocs.io/en/latest/compiling_pcl_windows.html)
 
 Documentation
 -------------
-- [Tutorials](http://www.pointclouds.org/documentation/tutorials/)
-- [PCL trunk documentation](http://docs.pointclouds.org/trunk/) (updated daily)
+- [Tutorials](https://pcl-tutorials.readthedocs.io/)
+- [PCL trunk documentation](https://pointclouds.org/documentation/)
 
 Contributing
 ------------
@@ -40,9 +92,26 @@ Please read [CONTRIBUTING.md](https://github.com/PointCloudLibrary/pcl/blob/mast
 
 Issues
 ------
-For general questions on how to use the PCL, please use the [pcl-users](http://www.pcl-users.org/) mailing list (do not forget to subscribe before posting).
 To report issues, please read [CONTRIBUTING.md#bug-reports](https://github.com/PointCloudLibrary/pcl/blob/master/CONTRIBUTING.md#bug-reports).
 
-API/ABI Compatibility Report
-------
-For details about API/ABI changes over the timeline please check PCL's page at [ABI Laboratory](https://abi-laboratory.pro/tracker/timeline/pcl/).
+For general questions on how to use the PCL, please consider one of the following alternatives instead:
+* [Stack Overflow](https://stackoverflow.com/questions/tagged/point-cloud-library)
+for Q&A as well as support for troubleshooting, installation and debugging. Do
+remember to tag your questions with the tag `point-cloud-library`.
+* [Discord Server](https://discord.gg/JFFMAXS) for live chat with
+other members of the PCL community and casual discussions
+
+Citation
+--------
+We encourage other researchers to cite PCL if they use PCL or its components for their work or baselines. The bibtex entry for the same is
+```
+@InProceedings{Rusu_ICRA2011_PCL,
+  author    = {Radu Bogdan Rusu and Steve Cousins},
+  title     = {{3D is here: Point Cloud Library (PCL)}},
+  booktitle = {{IEEE International Conference on Robotics and Automation (ICRA)}},
+  month     = {May 9-13},
+  year      = {2011},
+  address   = {Shanghai, China},
+  publisher = {IEEE}
+}
+```

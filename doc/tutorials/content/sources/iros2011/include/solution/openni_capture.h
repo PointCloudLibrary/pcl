@@ -1,5 +1,4 @@
-#ifndef OPENNI_CAPTURE_H
-#define OPENNI_CAPTURE_H
+#pragma once
 
 #include "typedefs.h"
 
@@ -24,11 +23,9 @@ class OpenNICapture
     void waitForTrigger ();
 
     pcl::OpenNIGrabber grabber_;
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> preview_;
+    pcl::visualization::PCLVisualizer::Ptr preview_;
     int frame_counter_;
     PointCloudPtr most_recent_frame_;
     bool use_trigger_, trigger_;
-    boost::mutex mutex_;
+    std::mutex mutex_;
 };
-
-#endif

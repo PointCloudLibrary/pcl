@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_GFPFH_H_
-#define PCL_GFPFH_H_
+#pragma once
 
 #include <pcl/features/feature.h>
 
@@ -65,8 +64,8 @@ namespace pcl
   class GFPFHEstimation : public FeatureFromLabels<PointInT, PointLT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<GFPFHEstimation<PointInT, PointLT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const GFPFHEstimation<PointInT, PointLT, PointOutT> > ConstPtr;
+      using Ptr = shared_ptr<GFPFHEstimation<PointInT, PointLT, PointOutT> >;
+      using ConstPtr = shared_ptr<const GFPFHEstimation<PointInT, PointLT, PointOutT> >;
       using FeatureFromLabels<PointInT, PointLT, PointOutT>::feature_name_;
       using FeatureFromLabels<PointInT, PointLT, PointOutT>::getClassName;
       using FeatureFromLabels<PointInT, PointLT, PointOutT>::indices_;
@@ -77,8 +76,8 @@ namespace pcl
       using FeatureFromLabels<PointInT, PointLT, PointOutT>::input_;
       using FeatureFromLabels<PointInT, PointLT, PointOutT>::labels_;
 
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudIn  PointCloudIn;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+      using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
 
       /** \brief Empty constructor. */
       GFPFHEstimation () : 
@@ -99,18 +98,18 @@ namespace pcl
       getOctreeLeafSize () { return (octree_leaf_size_); }
 
       /** \brief Return the empty label value. */
-      inline uint32_t
+      inline std::uint32_t
       emptyLabel () const { return 0; }
 
       /** \brief Return the number of different classes. */
-      inline uint32_t
+      inline std::uint32_t
       getNumberOfClasses () const { return number_of_classes_; }
 
       /** \brief Set the number of different classes.
        * \param n number of different classes.
        */
       inline void
-      setNumberOfClasses (uint32_t n) { number_of_classes_ = n; }
+      setNumberOfClasses (std::uint32_t n) { number_of_classes_ = n; }
 
       /** \brief Return the size of the descriptor. */
       inline int
@@ -130,11 +129,11 @@ namespace pcl
         * \param output the resultant point cloud model dataset that contains the PFH feature estimates
         */
       void 
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief Return the dominant label of a set of points. */
-      uint32_t
-      getDominantLabel (const std::vector<int>& indices);
+      std::uint32_t
+      getDominantLabel (const pcl::Indices& indices);
 
       /** \brief Compute the fixed-length histograms of transitions. */
       void computeTransitionHistograms (const std::vector< std::vector<int> >& label_histograms,
@@ -165,7 +164,7 @@ namespace pcl
       double octree_leaf_size_;
 
       /** \brief Number of possible classes/labels. */
-      uint32_t number_of_classes_;
+      std::uint32_t number_of_classes_;
 
       /** \brief Dimension of the descriptors. */
       int descriptor_size_;
@@ -175,5 +174,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/gfpfh.hpp>
 #endif
-
-#endif  //#ifndef PCL_GFPFH_H_

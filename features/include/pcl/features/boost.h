@@ -37,19 +37,10 @@
  *
  */
 
-#ifndef PCL_FEATURES_BOOST_H_
-#define PCL_FEATURES_BOOST_H_
+#pragma once
 
 #if defined __GNUC__
 #  pragma GCC system_header 
 #endif
-
-#include <boost/unordered_map.hpp>
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
-#include <boost/random.hpp>
+PCL_DEPRECATED_HEADER(1, 15, "Please include the needed boost headers directly.")
 #include <boost/property_map/property_map.hpp>
-//#include <boost/graph/adjacency_list.hpp>
-//#include <boost/graph/johnson_all_pairs_shortest.hpp>
-
-#endif    // PCL_FEATURES_BOOST_H_

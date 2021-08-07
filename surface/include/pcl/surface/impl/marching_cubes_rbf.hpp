@@ -40,10 +40,6 @@
 #define PCL_SURFACE_IMPL_MARCHING_CUBES_RBF_H_
 
 #include <pcl/surface/marching_cubes_rbf.h>
-#include <pcl/common/common.h>
-#include <pcl/common/vector_average.h>
-#include <pcl/Vertices.h>
-#include <pcl/kdtree/kdtree_flann.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
@@ -63,13 +59,13 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
   for (unsigned int row_i = 0; row_i < 2*N; ++row_i)
   {
     // boolean variable to determine whether we are in the off_surface domain for the rows
-    bool row_off = (row_i >= N) ? 1 : 0;
+    bool row_off = (row_i >= N);
     for (unsigned int col_i = 0; col_i < 2*N; ++col_i)
     {
       // boolean variable to determine whether we are in the off_surface domain for the columns
-      bool col_off = (col_i >= N) ? 1 : 0;
-      M (row_i, col_i) = kernel (Eigen::Vector3f (input_->points[col_i%N].getVector3fMap ()).cast<double> () + Eigen::Vector3f (input_->points[col_i%N].getNormalVector3fMap ()).cast<double> () * col_off * off_surface_epsilon_,
-                                 Eigen::Vector3f (input_->points[row_i%N].getVector3fMap ()).cast<double> () + Eigen::Vector3f (input_->points[row_i%N].getNormalVector3fMap ()).cast<double> () * row_off * off_surface_epsilon_);
+      bool col_off = (col_i >= N);
+      M (row_i, col_i) = kernel (Eigen::Vector3f ((*input_)[col_i%N].getVector3fMap ()).cast<double> () + Eigen::Vector3f ((*input_)[col_i%N].getNormalVector3fMap ()).cast<double> () * col_off * off_surface_epsilon_,
+                                 Eigen::Vector3f ((*input_)[row_i%N].getVector3fMap ()).cast<double> () + Eigen::Vector3f ((*input_)[row_i%N].getNormalVector3fMap ()).cast<double> () * row_off * off_surface_epsilon_);
     }
 
     d (row_i, 0) = row_off * off_surface_epsilon_;
@@ -85,8 +81,8 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
   std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > centers (2*N);
   for (unsigned int i = 0; i < N; ++i)
   {
-    centers[i] = Eigen::Vector3f (input_->points[i].getVector3fMap ()).cast<double> ();
-    centers[i + N] = Eigen::Vector3f (input_->points[i].getVector3fMap ()).cast<double> () + Eigen::Vector3f (input_->points[i].getNormalVector3fMap ()).cast<double> () * off_surface_epsilon_;
+    centers[i] = Eigen::Vector3f ((*input_)[i].getVector3fMap ()).cast<double> ();
+    centers[i + N] = Eigen::Vector3f ((*input_)[i].getVector3fMap ()).cast<double> () + Eigen::Vector3f ((*input_)[i].getNormalVector3fMap ()).cast<double> () * off_surface_epsilon_;
     weights[i] = w (i, 0);
     weights[i + N] = w (i + N, 0);
   }

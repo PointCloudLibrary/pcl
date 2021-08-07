@@ -34,11 +34,12 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <pcl/pcl_config.h>
+ 
+#pragma once
+ 
 #ifdef HAVE_OPENNI2
-
-#ifndef PCL_IO_OPENNI2_OPENNI_H_
-#define PCL_IO_OPENNI2_OPENNI_H_
+ 
+#include <pcl/pcl_config.h>
 
 #if defined __GNUC__
 #  pragma GCC system_header
@@ -83,5 +84,4 @@
 #define 	XN_DV_X_RES   960
 #define 	XN_DV_Y_RES   720
 
-#endif // PCL_IO_OPENNI2_OPENNI_H_
 #endif // HAVE_OPENNI2

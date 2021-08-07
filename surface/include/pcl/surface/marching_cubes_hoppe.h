@@ -33,10 +33,10 @@
  *
  */
 
-#ifndef PCL_SURFACE_MARCHING_CUBES_HOPPE_H_
-#define PCL_SURFACE_MARCHING_CUBES_HOPPE_H_
+#pragma once
 
-#include <pcl/surface/boost.h>
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/surface/marching_cubes.h>
 
 namespace pcl
@@ -52,8 +52,8 @@ namespace pcl
   class MarchingCubesHoppe : public MarchingCubes<PointNT>
   {
     public:
-      typedef boost::shared_ptr<MarchingCubesHoppe<PointNT> > Ptr;
-      typedef boost::shared_ptr<const MarchingCubesHoppe<PointNT> > ConstPtr;
+      using Ptr = shared_ptr<MarchingCubesHoppe<PointNT> >;
+      using ConstPtr = shared_ptr<const MarchingCubesHoppe<PointNT> >;
 
       using SurfaceReconstruction<PointNT>::input_;
       using SurfaceReconstruction<PointNT>::tree_;
@@ -65,10 +65,10 @@ namespace pcl
       using MarchingCubes<PointNT>::upper_boundary_;
       using MarchingCubes<PointNT>::lower_boundary_;
 
-      typedef typename pcl::PointCloud<PointNT>::Ptr PointCloudPtr;
+      using PointCloudPtr = typename pcl::PointCloud<PointNT>::Ptr;
 
-      typedef typename pcl::KdTree<PointNT> KdTree;
-      typedef typename pcl::KdTree<PointNT>::Ptr KdTreePtr;
+      using KdTree = pcl::KdTree<PointNT>;
+      using KdTreePtr = typename KdTree::Ptr;
 
 
       /** \brief Constructor. */
@@ -86,12 +86,12 @@ namespace pcl
       /** \brief Convert the point cloud into voxel data.
         */
       void
-      voxelizeData ();
+      voxelizeData () override;
 
       /** \brief Method that sets the distance for ignoring voxels which are far from point cloud.
         * If the distance is negative, then the distance functions would be calculated in all voxels;
         * otherwise, only voxels with distance lower than dist_ignore would be involved in marching cube.
-        * \param[in] threshold of distance. Default value is -1.0. Set to negative if all voxels are
+        * \param[in] dist_ignore threshold of distance. Default value is -1.0. Set to negative if all voxels are
         * to be involved.
         */
       inline void
@@ -111,13 +111,10 @@ namespace pcl
       float dist_ignore_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/surface/impl/marching_cubes_hoppe.hpp>
 #endif
-
-#endif  // PCL_SURFACE_MARCHING_CUBES_HOPPE_H_
-

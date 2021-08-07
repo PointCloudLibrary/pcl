@@ -1,17 +1,17 @@
 /*
  * Software License Agreement (BSD License)
- * 
+ *
  * Point Cloud Library (PCL) - www.pointclouds.org
  * Copyright (c) 2009-2012, Willow Garage, Inc.
  * Copyright (c) 2012-, Open Perception, Inc.
  * Copyright (c) 2014, respective authors.
- * 
+ *
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  *  * Redistributions in binary form must reproduce the above
@@ -21,7 +21,7 @@
  *  * Neither the name of the copyright holder(s) nor the names of its
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -38,11 +38,9 @@
  */
 
 #pragma once
-#ifndef PCL_IO_IMAGE_METADATA_WRAPPER_H_
-#define PCL_IO_IMAGE_METADATA_WRAPPER_H_
 
+#include <pcl/memory.h>
 #include <pcl/pcl_config.h>
-#include <pcl/pcl_macros.h>
 
 namespace pcl
 {
@@ -55,7 +53,11 @@ namespace pcl
     class FrameWrapper
     {
       public:
-        typedef boost::shared_ptr<FrameWrapper> Ptr;
+        using Ptr = shared_ptr<FrameWrapper>;
+        using ConstPtr = shared_ptr<const FrameWrapper>;
+
+        virtual
+        ~FrameWrapper() = default;
 
         virtual const void*
         getData () const = 0;
@@ -73,11 +75,10 @@ namespace pcl
         getFrameID () const = 0;
 
         // Microseconds from some arbitrary start point
-        virtual pcl::uint64_t
+        virtual std::uint64_t
         getTimestamp () const = 0;
     };
 
   } // namespace
 }
 
-#endif // PCL_IO_IMAGE_METADATA_WRAPPER_H_

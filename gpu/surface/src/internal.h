@@ -35,23 +35,22 @@
  *
  */
 
-#ifndef PCL_GPU_SURFACE_INTERNAL_H_
-#define PCL_GPU_SURFACE_INTERNAL_H_
+#pragma once
+
+#include <cstdint>
+#include <cuda_runtime.h>
 
 #include <pcl/gpu/containers/device_array.h>
-#include <cuda_runtime.h>
 
 namespace pcl
 {
   namespace device
   {
-	  typedef unsigned long long uint64_type;
+	  using PointType = float4;
+	  using Cloud = pcl::gpu::DeviceArray<PointType>;
 
-	  typedef float4 PointType;
-	  typedef pcl::gpu::DeviceArray<PointType> Cloud;
-
-	  typedef DeviceArray<uint64_type> FacetsDists;
-	  typedef DeviceArray<int> Perm;
+	  using FacetsDists = DeviceArray<std::uint64_t>;
+	  using Perm = DeviceArray<int>;
 
 	  struct InitalSimplex
 	  {
@@ -64,13 +63,13 @@ namespace pcl
 	  struct FacetStream
 	  {	
 	  public:
-		  FacetStream(size_t buffer_size);
+		  FacetStream(std::size_t buffer_size);
 
           // indeces: in each col indeces of vertexes for single facet
 		  DeviceArray2D<int>  verts_inds;		  
 
 		  DeviceArray<int> head_points;		  
-		  size_t facet_count;
+		  std::size_t facet_count;
 
 		  DeviceArray2D<int>  empty_facets;
 		  DeviceArray<int> empty_count;
@@ -81,7 +80,7 @@ namespace pcl
 
 		  void compactFacets();
 
-		  bool canSplit();
+		  bool canSplit() const;
 		  void splitFacets();
 	  private:
 		  
@@ -100,7 +99,7 @@ namespace pcl
 		  FacetsDists facets_dists;
 		  Perm perm;
 
-		  size_t cloud_size;
+		  std::size_t cloud_size;
 
 		  InitalSimplex simplex;
 		  float cloud_diag;
@@ -110,15 +109,13 @@ namespace pcl
 		  void initalClassify();
 		  
 
-		  int searchFacetHeads(size_t facet_count, DeviceArray<int>& head_points);
+		  int searchFacetHeads(std::size_t facet_count, DeviceArray<int>& head_points);
 
 		  void classify(FacetStream& fs);	  		  
 	  };	 	  	
 
 
-	  size_t remove_duplicates(DeviceArray<int>& indeces);
+	  std::size_t remove_duplicates(DeviceArray<int>& indeces);
 	  void pack_hull(const DeviceArray<PointType>& points, const DeviceArray<int>& indeces, DeviceArray<PointType>& output);
   }
 }
-
-#endif /* PCL_GPU_SURFACE_INTERNAL_H_ */ 

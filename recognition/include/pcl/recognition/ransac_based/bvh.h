@@ -43,8 +43,7 @@
  *      Author: papazov
  */
 
-#ifndef PCL_RECOGNITION_BVH_H_
-#define PCL_RECOGNITION_BVH_H_
+#pragma once
 
 #include <pcl/pcl_exports.h>
 #include <cstring>
@@ -82,7 +81,7 @@ namespace pcl
             inline static bool
             compareCentroidsXCoordinates (const BoundedObject* a, const BoundedObject* b)
             {
-              return static_cast<bool> (a->getCentroid ()[0] < b->getCentroid ()[0]);
+              return a->getCentroid ()[0] < b->getCentroid ()[0];
             }
 
             float*
@@ -146,18 +145,15 @@ namespace pcl
               {
                 // We reached a leaf
                 object_ = sorted_objects[first_id];
-                children_[0] = children_[1] = 0;
+                children_[0] = children_[1] = nullptr;
               }
             }
 
             virtual ~Node ()
-            {
-              if ( children_[0] )
               {
                 delete children_[0];
                 delete children_[1];
               }
-            }
 
             bool
             hasChildren () const
@@ -193,11 +189,8 @@ namespace pcl
             inline bool
             intersect(const float box[6]) const
             {
-              if ( box[1] < bounds_[0] || box[3] < bounds_[2] || box[5] < bounds_[4] ||
-                   box[0] > bounds_[1] || box[2] > bounds_[3] || box[4] > bounds_[5] )
-                return false;
-
-              return true;
+              return !(box[1] < bounds_[0] || box[3] < bounds_[2] || box[5] < bounds_[4] ||
+                   box[0] > bounds_[1] || box[2] > bounds_[3] || box[4] > bounds_[5]);
             }
 
             /** \brief Computes and returns the volume of the bounding box of this node. */
@@ -217,8 +210,8 @@ namespace pcl
 
       public:
         BVH()
-        : root_ (0),
-          sorted_objects_ (0)
+        : root_ (nullptr),
+          sorted_objects_ (nullptr)
         {
         }
 
@@ -238,7 +231,7 @@ namespace pcl
         {
           this->clear();
 
-          if ( objects.size () == 0 )
+          if ( objects.empty () )
             return;
 
           sorted_objects_ = &objects;
@@ -253,13 +246,10 @@ namespace pcl
         /** \brief Frees the memory allocated by this object. After that, you have to call build to use the tree again. */
         void
         clear()
-        {
-          if ( root_ )
           {
             delete root_;
-            root_ = 0;
+            root_ = nullptr;
           }
-        }
 
         inline const std::vector<BoundedObject*>*
         getInputObjects () const
@@ -312,5 +302,3 @@ namespace pcl
     };
   } // namespace recognition
 } // namespace pcl
-
-#endif /* PCL_RECOGNITION_BVH_H_ */

@@ -36,7 +36,7 @@
 
 #include <pcl/visualization/range_image_visualizer.h>
 
-pcl::visualization::RangeImageVisualizer::RangeImageVisualizer (const std::string& name) : ImageViewer (name), name_ ()
+pcl::visualization::RangeImageVisualizer::RangeImageVisualizer (const std::string& name) : ImageViewer (name)
 {
 }
 
@@ -77,11 +77,11 @@ pcl::visualization::RangeImageVisualizer::visualizeBorders (
     const pcl::PointCloud<pcl::BorderDescription>& border_descriptions)
 {  
   showRangeImage(range_image, min_value, max_value, grayscale);
-  for (size_t y=0; y<range_image.height; ++y)
+  for (std::size_t y=0; y<range_image.height; ++y)
   {
-    for (size_t x=0; x<range_image.width; ++x)
+    for (std::size_t x=0; x<range_image.width; ++x)
     {
-      const pcl::BorderDescription& border_description = border_descriptions.points[y*range_image.width + x];
+      const pcl::BorderDescription& border_description = border_descriptions[y*range_image.width + x];
       const pcl::BorderTraits& border_traits = border_description.traits;
       if (border_traits[pcl::BORDER_TRAIT__OBSTACLE_BORDER])
       {
@@ -139,13 +139,12 @@ pcl::visualization::RangeImageVisualizer::getInterestPointsWidget (
   RangeImageVisualizer* widget = new RangeImageVisualizer;
   widget->showFloatImage (interest_image, range_image.width, range_image.height, min_value, max_value);
   widget->setWindowTitle (name);
-  for (unsigned int i=0; i<interest_points.points.size(); ++i)
+  for (const auto &interest_point : interest_points.points)
   {
-    const pcl::InterestPoint& interest_point = interest_points.points[i];
     float image_x, image_y;
     range_image.getImagePoint (interest_point.x, interest_point.y, interest_point.z, image_x, image_y);
-    widget->markPoint (static_cast<size_t> (image_x), static_cast<size_t> (image_y), green_color, red_color);
-    //cout << "Marking point "<<image_x<<","<<image_y<<"\n";
+    widget->markPoint (static_cast<std::size_t> (image_x), static_cast<std::size_t> (image_y), green_color, red_color);
+    //std::cout << "Marking point "<<image_x<<","<<image_y<<"\n";
   }
   return widget;
 }

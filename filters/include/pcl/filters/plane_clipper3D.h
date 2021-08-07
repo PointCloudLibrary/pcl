@@ -35,8 +35,8 @@
  *
  */
 
-#ifndef PCL_PLANE_CLIPPER3D_H_
-#define PCL_PLANE_CLIPPER3D_H_
+#pragma once
+
 #include "clipper3D.h"
 
 namespace pcl
@@ -51,8 +51,8 @@ namespace pcl
   {
     public:
 
-      typedef boost::shared_ptr< PlaneClipper3D<PointT> > Ptr;
-      typedef boost::shared_ptr< const PlaneClipper3D<PointT> > ConstPtr;
+      using Ptr = shared_ptr< PlaneClipper3D<PointT> >;
+      using ConstPtr = shared_ptr< const PlaneClipper3D<PointT> >;
 
       /**
        * @author Suat Gedikli <gedikli@willowgarage.com>
@@ -61,7 +61,7 @@ namespace pcl
        */
       PlaneClipper3D (const Eigen::Vector4f& plane_params);
 
-      virtual ~PlaneClipper3D () throw ();
+      virtual ~PlaneClipper3D () noexcept;
 
       /**
         * \brief Set new plane parameters
@@ -88,7 +88,7 @@ namespace pcl
       clipPlanarPolygon3D (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& polygon, std::vector<PointT, Eigen::aligned_allocator<PointT> >& clipped_polygon) const;
 
       virtual void
-      clipPointCloud3D (const pcl::PointCloud<PointT> &cloud_in, std::vector<int>& clipped, const std::vector<int>& indices = std::vector<int> ()) const;
+      clipPointCloud3D (const pcl::PointCloud<PointT> &cloud_in, Indices& clipped, const Indices& indices = Indices ()) const;
 
       virtual Clipper3D<PointT>*
       clone () const;
@@ -103,5 +103,3 @@ namespace pcl
 }
 
 #include <pcl/filters/impl/plane_clipper3D.hpp>
-
-#endif // PCL_PLANE_CLIPPER3D_H_

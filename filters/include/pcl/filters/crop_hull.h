@@ -35,10 +35,8 @@
   *
   */
 
-#ifndef PCL_FILTERS_CROP_HULL_H_
-#define PCL_FILTERS_CROP_HULL_H_
+#pragma once
 
-#include <pcl/point_types.h>
 #include <pcl/Vertices.h>
 #include <pcl/filters/filter_indices.h>
 
@@ -55,19 +53,19 @@ namespace pcl
     using Filter<PointT>::filter_name_;
     using Filter<PointT>::indices_;
     using Filter<PointT>::input_;
-    
-    typedef typename Filter<PointT>::PointCloud PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+    using Filter<PointT>::removed_indices_;
+
+    using PointCloud = typename Filter<PointT>::PointCloud;
+    using PointCloudPtr = typename PointCloud::Ptr;
+    using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
     public:
 
-      typedef boost::shared_ptr< CropHull<PointT> > Ptr;
-      typedef boost::shared_ptr< const CropHull<PointT> > ConstPtr;
+      using Ptr = shared_ptr<CropHull<PointT> >;
+      using ConstPtr = shared_ptr<const CropHull<PointT> >;
 
       /** \brief Empty Constructor. */
       CropHull () :
-        hull_polygons_(),
         hull_cloud_(),
         dim_(3),
         crop_outside_(true)
@@ -136,13 +134,13 @@ namespace pcl
         * \param[out] output The set of points that passed the filter
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
       /** \brief Filter the input points using the 2D or 3D polygon hull.
         * \param[out] indices the indices of the set of points that passed the filter.
         */
       void        
-      applyFilter (std::vector<int> &indices);
+      applyFilter (Indices &indices) override;
 
     private:  
       /** \brief Return the size of the hull point cloud in line with coordinate axes.
@@ -151,15 +149,6 @@ namespace pcl
         */
       Eigen::Vector3f
       getHullCloudRange ();
-      
-      /** \brief Apply the two-dimensional hull filter.
-        * All points are assumed to lie in the same plane as the 2D hull, an
-        * axis-aligned 2D coordinate system using the two dimensions specified
-        * (PlaneDim1, PlaneDim2) is used for calculations.
-        * \param[out] output The set of points that pass the 2D polygon filter.
-        */
-      template<unsigned PlaneDim1, unsigned PlaneDim2> void
-      applyFilter2D (PointCloud &output); 
 
       /** \brief Apply the two-dimensional hull filter.
         * All points are assumed to lie in the same plane as the 2D hull, an
@@ -169,18 +158,7 @@ namespace pcl
         *                     2D polygon filter.
         */
       template<unsigned PlaneDim1, unsigned PlaneDim2> void
-      applyFilter2D (std::vector<int> &indices);
-
-       /** \brief Apply the three-dimensional hull filter.
-         * Polygon-ray crossings are used for three rays cast from each point
-         * being tested, and a  majority vote of the resulting
-         * polygon-crossings is used to decide  whether the point lies inside
-         * or outside the hull.
-         * \param[out] output The set of points that pass the 3D polygon hull
-         *                    filter.
-         */
-      void
-      applyFilter3D (PointCloud &output);
+      applyFilter2D (Indices &indices);
 
       /** \brief Apply the three-dimensional hull filter.
         *  Polygon-ray crossings are used for three rays cast from each point
@@ -191,7 +169,7 @@ namespace pcl
         *                     polygon hull filter.
         */
       void
-      applyFilter3D (std::vector<int> &indices);
+      applyFilter3D (Indices &indices);
 
       /** \brief Test an individual point against a 2D polygon.
         * PlaneDim1 and PlaneDim2 specify the x/y/z coordinate axes to use.
@@ -239,5 +217,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/crop_hull.hpp>
 #endif
-
-#endif // ifndef PCL_FILTERS_CROP_HULL_H_

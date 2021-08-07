@@ -40,20 +40,23 @@
 #define PCL_WORLD_MODEL_IMPL_HPP_
 
 #include <pcl/gpu/kinfu_large_scale/world_model.h>
+#include <pcl/common/transforms.h> // for transformPointCloud
 
 template <typename PointT>
 void 
 pcl::kinfuLS::WorldModel<PointT>::addSlice ( PointCloudPtr new_cloud)
 {
-  PCL_DEBUG ("Adding new cloud. Current world contains %d points.\n", world_->points.size ());
+  PCL_DEBUG("Adding new cloud. Current world contains %zu points.\n",
+            static_cast<std::size_t>(world_->size()));
 
-  PCL_DEBUG ("New slice contains %d points.\n", new_cloud->points.size ());
+  PCL_DEBUG("New slice contains %zu points.\n",
+            static_cast<std::size_t>(new_cloud->size()));
 
   *world_ += *new_cloud;
 
-  PCL_DEBUG ("World now contains  %d points.\n", world_->points.size ());
+  PCL_DEBUG("World now contains  %zu points.\n",
+            static_cast<std::size_t>(world_->size()));
 }
-
 
 template <typename PointT>
 void 
@@ -112,7 +115,7 @@ pcl::kinfuLS::WorldModel<PointT>::getExistingData(const double previous_origin_x
   // apply filter
   condrem.filter (existing_slice);  
  
-  if(existing_slice.points.size () != 0)
+  if(!existing_slice.empty ())
   {
 	//transform the slice in new cube coordinates
 	Eigen::Affine3f transformation; 
@@ -133,21 +136,22 @@ void
 pcl::kinfuLS::WorldModel<PointT>::getWorldAsCubes (const double size, std::vector<typename WorldModel<PointT>::PointCloudPtr> &cubes, std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > &transforms, double overlap)
 {
   
-  if(world_->points.size () == 0)
+  if(world_->points.empty ())
   {
 	PCL_INFO("The world is empty, returning nothing\n");
 	return;
   }
 
-  PCL_INFO ("Getting world as cubes. World contains %d points.\n", world_->points.size ());
+  PCL_INFO("Getting world as cubes. World contains %zu points.\n",
+           static_cast<std::size_t>(world_->size()));
 
   // remove nans from world cloud
   world_->is_dense = false;
-  std::vector<int> indices;
+  pcl::Indices indices;
   pcl::removeNaNFromPointCloud ( *world_, *world_, indices);
-	
-  PCL_INFO ("World contains %d points after nan removal.\n", world_->points.size ());
-  
+
+  PCL_INFO("World contains %zu points after nan removal.\n",
+           static_cast<std::size_t>(world_->size()));
 
   // check cube size value
   double cubeSide = size;
@@ -219,7 +223,7 @@ pcl::kinfuLS::WorldModel<PointT>::getWorldAsCubes (const double size, std::vecto
 		condrem.filter (*box);
 
 		// also push transform along with points.
-		if(box->points.size() > 0)
+		if(!box->points.empty ())
 		{
 		  Eigen::Vector3f transform;
 		  transform[0] = origin.x, transform[1] = origin.y, transform[2] = origin.z;
@@ -247,7 +251,6 @@ pcl::kinfuLS::WorldModel<PointT>::getWorldAsCubes (const double size, std::vecto
   }*/
 
   std::cout << "returning " << cubes.size() << " cubes" << std::endl;
-
 }
 
 template <typename PointT>
@@ -260,9 +263,9 @@ pcl::kinfuLS::WorldModel<PointT>::setIndicesAsNans (PointCloudPtr cloud, Indices
   
   for (int rii = 0; rii < static_cast<int> (indices->size ()); ++rii)  // rii = removed indices iterator
   {
-	uint8_t* pt_data = reinterpret_cast<uint8_t*> (&cloud->points[(*indices)[rii]]);
-	for (int fi = 0; fi < static_cast<int> (fields.size ()); ++fi)  // fi = field iterator
-	  memcpy (pt_data + fields[fi].offset, &my_nan, sizeof (float));
+    std::uint8_t* pt_data = reinterpret_cast<std::uint8_t*> (&(*cloud)[(*indices)[rii]]);
+    for (const auto &field : fields)
+      memcpy (pt_data + field.offset, &my_nan, sizeof (float));
   }
 }
 

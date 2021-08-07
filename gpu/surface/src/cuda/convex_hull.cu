@@ -39,7 +39,6 @@
 #include "device.h"
 #include <limits>
 
-#include <pcl/gpu/utils/device/limits.hpp>
 #include <pcl/gpu/utils/device/algorithm.hpp>
 #include <pcl/gpu/utils/device/warp.hpp>
 #include <pcl/gpu/utils/device/static_check.hpp>
@@ -61,14 +60,11 @@
 #include <thrust/gather.h>
 
 using namespace thrust;
-using namespace std;
 
 namespace pcl
 {
   namespace device
   { 	  
-	  __global__ void size_check() { Static<sizeof(uint64_type) == 8>::check(); };
-	  
 	  template<bool use_max>
 	  struct IndOp
 	  {
@@ -134,7 +130,7 @@ namespace pcl
 		  thrust::tuple<float, int> operator()(const thrust::tuple<PointType, int>& in) const
 		  {
 			  float3 x0 = tr(in.get<0>());
-              float dist = fabs(dot(n, x0 - x1));
+              float dist = std::abs(dot(n, x0 - x1));
 			  return thrust::tuple<float, int>(dist, in.get<1>());
 		  }
 	  };
@@ -263,7 +259,7 @@ namespace pcl
 	  }
 	  	  
 	  __device__ __forceinline__
-	  uint64_type 
+	  std::uint64_t 
 	  operator()(const PointType& p) const
 	  {                   
 		  float4 x = p;
@@ -278,7 +274,7 @@ namespace pcl
           int negs_inds[4];
           int neg_count = 0;
           
-          int idx = numeric_limits<int>::max();
+          int idx = std::numeric_limits<int>::max();
           float dist = 0;
 
           #pragma unroll
@@ -291,7 +287,7 @@ namespace pcl
              int i1 = negs_inds[1];
              int i2 = negs_inds[2];
              
-             int ir = fabs(dists[i1]) < fabs(dists[i2]) ? i2 : i1;
+             int ir = std::abs(dists[i1]) < std::abs(dists[i2]) ? i2 : i1;
              negs_inds[1] = ir;
              --neg_count;
           }
@@ -301,7 +297,7 @@ namespace pcl
              int i1 = negs_inds[0];
              int i2 = negs_inds[1];
              
-             int ir = fabs(dists[i1]) < fabs(dists[i2]) ? i2 : i1;
+             int ir = std::abs(dists[i1]) < std::abs(dists[i2]) ? i2 : i1;
              negs_inds[0] = ir;
              --neg_count;              
           }
@@ -309,19 +305,19 @@ namespace pcl
           if (neg_count == 1)
           {
             idx = negs_inds[0];
-            dist = diag - fabs(dists[idx]); // to ensure that sorting order is inverse, i.e. distant points go first
+            dist = diag - std::abs(dists[idx]); // to ensure that sorting order is inverse, i.e. distant points go first
           }
 
           //if (neg_count == 0)
           //  then internal point ==>> idx = INT_MAX
 
-		  uint64_type res = idx;
+		  std::uint64_t res = idx;
 		  res <<= 32;
 		  return res + *reinterpret_cast<unsigned int*>(&dist);
 	  }		
 	};		
 
-    __global__ void initalClassifyKernel(const InitalClassify ic, const PointType* points, int cloud_size, uint64_type* output) 
+    __global__ void initalClassifyKernel(const InitalClassify ic, const PointType* points, int cloud_size, std::uint64_t* output) 
     { 
         int index = threadIdx.x + blockIdx.x * blockDim.x;
 
@@ -335,7 +331,7 @@ void pcl::device::PointStream::initalClassify()
 {        
   //thrust::device_ptr<const PointType> beg(cloud.ptr());
   //thrust::device_ptr<const PointType> end = beg + cloud_size;
-  thrust::device_ptr<uint64_type> out(facets_dists.ptr());
+  thrust::device_ptr<std::uint64_t> out(facets_dists.ptr());
   
   InitalClassify ic(simplex.p1, simplex.p2, simplex.p3, simplex.p4, cloud_diag);
   //thrust::transform(beg, end, out, ic);
@@ -360,7 +356,7 @@ namespace pcl
     __device__ int new_cloud_size;    
 	struct SearchFacetHeads
 	{		
-	  uint64_type *facets_dists;
+	  std::uint64_t *facets_dists;
 	  int cloud_size;
 	  int facet_count;
 	  int *perm;
@@ -372,12 +368,12 @@ namespace pcl
 	  __device__ __forceinline__
 	  void operator()(int facet) const
 	  {			
-		const uint64_type* b = facets_dists;
-		const uint64_type* e = b + cloud_size;
+		const std::uint64_t* b = facets_dists;
+		const std::uint64_t* e = b + cloud_size;
 
         bool last_thread = facet == facet_count;
 
-        int search_value = !last_thread ? facet : numeric_limits<int>::max();		
+        int search_value = !last_thread ? facet : std::numeric_limits<int>::max();		
 		int index = lower_bound(b, e, search_value, LessThanByFacet()) - b;			
         
         if (last_thread)
@@ -401,7 +397,7 @@ namespace pcl
   }
 }
 
-int pcl::device::PointStream::searchFacetHeads(size_t facet_count, DeviceArray<int>& head_points)
+int pcl::device::PointStream::searchFacetHeads(std::size_t facet_count, DeviceArray<int>& head_points)
 {
 	SearchFacetHeads sfh;
 
@@ -467,7 +463,7 @@ namespace pcl
 		{
 			int idx = threadIdx.x + blockIdx.x * blockDim.x;
 
-#if CUDA_VERSION >= 9000
+#if CUDART_VERSION >= 9000
       if (__all_sync (__activemask (), idx >= facet_count))
         return;
 #else
@@ -497,14 +493,14 @@ namespace pcl
 				  empty = 1;                
 			}
 
-#if CUDA_VERSION >= 9000
+#if CUDART_VERSION >= 9000
       int total = __popc (__ballot_sync (__activemask (), empty));
 #else
 			int total = __popc (__ballot (empty));
 #endif
 			if (total > 0)
 			{
-#if CUDA_VERSION >= 9000
+#if CUDART_VERSION >= 9000
         int offset = Warp::binaryExclScan (__ballot_sync (__activemask (), empty));
 #else
 				int offset = Warp::binaryExclScan (__ballot (empty));
@@ -589,7 +585,7 @@ namespace pcl
   {
 	  struct Classify
 	  {
-		uint64_type* facets_dists;
+		std::uint64_t* facets_dists;
 		int* scan_buffer;
 
 		int* head_points;
@@ -614,7 +610,7 @@ namespace pcl
 
           if (hi == perm_index)
           {
-            uint64_type res = numeric_limits<int>::max();
+            std::uint64_t res = std::numeric_limits<int>::max();
 		    res <<= 32;		                      
             facets_dists[point_idx] = res;
           }
@@ -650,7 +646,7 @@ namespace pcl
             int negs_inds[3];
             int neg_count = 0;
 
-            int new_idx = numeric_limits<int>::max();
+            int new_idx = std::numeric_limits<int>::max();
             float dist = 0;
 
             int indeces[] = { facet, facet + facet_count, facet + facet_count * 2 };
@@ -665,7 +661,7 @@ namespace pcl
               int i1 = negs_inds[1];
               int i2 = negs_inds[2];
            
-              int ir = fabs(dists[i1]) < fabs(dists[i2]) ? i2 : i1;
+              int ir = std::abs(dists[i1]) < std::abs(dists[i2]) ? i2 : i1;
               negs_inds[1] = ir;
               --neg_count;
             }
@@ -675,7 +671,7 @@ namespace pcl
               int i1 = negs_inds[0];
               int i2 = negs_inds[1];
            
-              int ir = fabs(dists[i1]) < fabs(dists[i2]) ? i2 : i1;
+              int ir = std::abs(dists[i1]) < std::abs(dists[i2]) ? i2 : i1;
               negs_inds[0] = ir;
               --neg_count;              
             }
@@ -683,14 +679,14 @@ namespace pcl
             if (neg_count == 1)
             {
               new_idx = negs_inds[0];
-              dist = diag - fabs(dists[new_idx]); // to ensure that sorting order is inverse, i.e. distant points go first
+              dist = diag - std::abs(dists[new_idx]); // to ensure that sorting order is inverse, i.e. distant points go first
               new_idx = indeces[new_idx];
             }
 
             // if (neg_count == 0)
             // new_idx = INT_MAX ==>> internal point
                       	       	 	   
-            uint64_type res = new_idx;
+            std::uint64_t res = new_idx;
 		    res <<= 32;
 		    res += *reinterpret_cast<unsigned int*>(&dist);
 
@@ -732,8 +728,8 @@ void pcl::device::PointStream::classify(FacetStream& fs)
   cudaSafeCall( cudaGetLastError() );
   cudaSafeCall( cudaDeviceSynchronize() );
   
-  thrust::device_ptr<uint64_type> beg(facets_dists.ptr());
-  thrust::device_ptr<uint64_type> end = beg + cloud_size;
+  thrust::device_ptr<std::uint64_t> beg(facets_dists.ptr());
+  thrust::device_ptr<std::uint64_t> end = beg + cloud_size;
   
   thrust::device_ptr<int> pbeg(perm.ptr());
   thrust::sort_by_key(beg, end, pbeg);
@@ -806,7 +802,7 @@ size_t pcl::device::remove_duplicates(DeviceArray<int>& indeces)
   thrust::device_ptr<int> end = beg + indeces.size();
 
   thrust::sort(beg, end);  
-  return (size_t)(thrust::unique(beg, end) - beg);  
+  return (std::size_t)(thrust::unique(beg, end) - beg);  
 }
 
 

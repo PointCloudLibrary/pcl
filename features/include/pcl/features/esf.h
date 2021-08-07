@@ -37,8 +37,8 @@
  * $Id: pfh.hpp 5027 2012-03-12 03:10:45Z rusu $
  *
  */
-#ifndef PCL_ESF_H_
-#define PCL_ESF_H_
+
+#pragma once
 
 #include <pcl/features/feature.h>
 #define GRIDSIZE 64
@@ -59,8 +59,8 @@ namespace pcl
   class ESFEstimation: public Feature<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<ESFEstimation<PointInT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const ESFEstimation<PointInT, PointOutT> > ConstPtr;
+      using Ptr = shared_ptr<ESFEstimation<PointInT, PointOutT> >;
+      using ConstPtr = shared_ptr<const ESFEstimation<PointInT, PointOutT> >;
 
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
@@ -70,11 +70,11 @@ namespace pcl
       using Feature<PointInT, PointOutT>::input_;
       using Feature<PointInT, PointOutT>::surface_;
 
-      typedef typename pcl::PointCloud<PointInT> PointCloudIn;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+      using PointCloudIn = pcl::PointCloud<PointInT>;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
 
       /** \brief Empty constructor. */
-      ESFEstimation () : lut_ (), local_cloud_ ()
+      ESFEstimation () : local_cloud_ ()
       {
         feature_name_ = "ESFEstimation";
         lut_.resize (GRIDSIZE);
@@ -102,7 +102,7 @@ namespace pcl
         * \param output the resultant point cloud model histogram that contains the ESF feature estimates
         */
       void 
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief ... */
       int
@@ -139,5 +139,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/esf.hpp>
 #endif
-
-#endif // #

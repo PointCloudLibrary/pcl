@@ -35,17 +35,16 @@
  *
  */
 
-#ifndef PCL_FEATURES_ORGANIZED_EDGE_DETECTION_H_
-#define PCL_FEATURES_ORGANIZED_EDGE_DETECTION_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/PointIndices.h>
 
 namespace pcl
 {
-  /** \brief OrganizedEdgeBase, OrganizedEdgeFromRGB, OrganizedEdgeFromNormals, 
-    * and OrganizedEdgeFromRGBNormals find 3D edges from an organized point 
-    * cloud data. Given an organized point cloud, they will output a PointCloud 
+  /** \brief OrganizedEdgeBase, OrganizedEdgeFromRGB, OrganizedEdgeFromNormals,
+    * and OrganizedEdgeFromRGBNormals find 3D edges from an organized point
+    * cloud data. Given an organized point cloud, they will output a PointCloud
     * of edge labels and a vector of PointIndices.
     * OrganizedEdgeBase accepts PCL_XYZ_POINT_TYPES and returns EDGELABEL_NAN_BOUNDARY, EDGELABEL_OCCLUDING, and EDGELABEL_OCCLUDED.
     * OrganizedEdgeFromRGB accepts PCL_RGB_POINT_TYPES and returns EDGELABEL_NAN_BOUNDARY, EDGELABEL_OCCLUDING, EDGELABEL_OCCLUDED, and EDGELABEL_RGB_CANNY.
@@ -57,17 +56,17 @@ namespace pcl
   template <typename PointT, typename PointLT>
   class OrganizedEdgeBase : public PCLBase<PointT>
   {
-    typedef typename pcl::PointCloud<PointT> PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-      
-    typedef typename pcl::PointCloud<PointLT> PointCloudL;
-    typedef typename PointCloudL::Ptr PointCloudLPtr;
-    typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
+    using PointCloud = pcl::PointCloud<PointT>;
+    using PointCloudPtr = typename PointCloud::Ptr;
+    using PointCloudConstPtr = typename PointCloud::ConstPtr;
+
+    using PointCloudL = pcl::PointCloud<PointLT>;
+    using PointCloudLPtr = typename PointCloudL::Ptr;
+    using PointCloudLConstPtr = typename PointCloudL::ConstPtr;
 
     public:
-      typedef boost::shared_ptr<OrganizedEdgeBase<PointT, PointLT> > Ptr;
-      typedef boost::shared_ptr<const OrganizedEdgeBase<PointT, PointLT> > ConstPtr;
+      using Ptr = shared_ptr<OrganizedEdgeBase<PointT, PointLT> >;
+      using ConstPtr = shared_ptr<const OrganizedEdgeBase<PointT, PointLT> >;
       using PCLBase<PointT>::input_;
       using PCLBase<PointT>::indices_;
       using PCLBase<PointT>::initCompute;
@@ -82,7 +81,7 @@ namespace pcl
       }
 
       /** \brief Destructor for OrganizedEdgeBase */
-      virtual
+
       ~OrganizedEdgeBase ()
       {
       }
@@ -93,15 +92,17 @@ namespace pcl
         */
       void
       compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const;
-      
-      /** \brief Set the tolerance in meters for difference in depth values between neighboring points. */
+
+      /** \brief Set the tolerance in meters for the relative difference in depth values between neighboring points.
+        * e.g. If a point has a depth (z) value of 2.0 meters, a neighboring point is discontinuous if its depth differs by > 2.0 * th. */
       inline void
       setDepthDisconThreshold (const float th)
       {
         th_depth_discon_ = th;
       }
 
-      /** \brief Get the tolerance in meters for difference in depth values between neighboring points. */
+      /** \brief Get the tolerance in meters for the relative difference in depth values between neighboring points.
+        * e.g. If a point has a depth (z) value of 2.0 meters, a neighboring point is discontinuous if its depth differs by > 2.0 * th. */
       inline float
       getDepthDisconThreshold () const
       {
@@ -135,7 +136,7 @@ namespace pcl
       {
         return detecting_edge_types_;
       }
-      
+
       enum {EDGELABEL_NAN_BOUNDARY=1, EDGELABEL_OCCLUDING=2, EDGELABEL_OCCLUDED=4, EDGELABEL_HIGH_CURVATURE=8, EDGELABEL_RGB_CANNY=16};
       static const int num_of_edgetype_ = 5;
 
@@ -145,14 +146,14 @@ namespace pcl
         */
       void
       extractEdges (pcl::PointCloud<PointLT>& labels) const;
-      
+
       /** \brief Assign point indices for each edge label
         * \param[out] labels a PointCloud of edge labels
         * \param[out] label_indices a vector of PointIndices corresponding to each edge label
         */
       void
       assignLabelIndices (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const;
-      
+
       struct Neighbor
       {
         Neighbor (int dx, int dy, int didx)
@@ -160,16 +161,15 @@ namespace pcl
         , d_y (dy)
         , d_index (didx)
         {}
-        
+
         int d_x;
         int d_y;
         int d_index; // = dy * width + dx: pre-calculated
       };
 
-      /** \brief The tolerance in meters for difference in depth values between neighboring points 
-        * (The value is set for 1 meter and is adapted with respect to depth value linearly. 
-        * (e.g. 2.0*th_depth_discon_ in 2 meter depth)) 
-        */
+      /** \brief The tolerance in meters for the relative difference in depth values between neighboring points
+        * (The default value is set for .02 meters and is adapted with respect to depth value linearly.
+        * e.g. If a point has a depth (z) value of 2.0 meters, a neighboring point is discontinuous if its depth differs by > 2.0 * th. */
       float th_depth_discon_;
 
       /** \brief The max search distance for deciding occluding and occluded edges */
@@ -182,13 +182,13 @@ namespace pcl
   template <typename PointT, typename PointLT>
   class OrganizedEdgeFromRGB : virtual public OrganizedEdgeBase<PointT, PointLT>
   {
-    typedef typename pcl::PointCloud<PointT> PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-      
-    typedef typename pcl::PointCloud<PointLT> PointCloudL;
-    typedef typename PointCloudL::Ptr PointCloudLPtr;
-    typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
+    using PointCloud = pcl::PointCloud<PointT>;
+    using PointCloudPtr = typename PointCloud::Ptr;
+    using PointCloudConstPtr = typename PointCloud::ConstPtr;
+
+    using PointCloudL = pcl::PointCloud<PointLT>;
+    using PointCloudLPtr = typename PointCloudL::Ptr;
+    using PointCloudLConstPtr = typename PointCloudL::ConstPtr;
 
     public:
       using OrganizedEdgeBase<PointT, PointLT>::input_;
@@ -211,7 +211,7 @@ namespace pcl
       }
 
       /** \brief Destructor for OrganizedEdgeFromRGB */
-      virtual
+
       ~OrganizedEdgeFromRGB ()
       {
       }
@@ -222,7 +222,7 @@ namespace pcl
         */
       void
       compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const;
-      
+
       /** \brief Set the low threshold value for RGB Canny edge detection */
       inline void
       setRGBCannyLowThreshold (const float th)
@@ -268,17 +268,17 @@ namespace pcl
   template <typename PointT, typename PointNT, typename PointLT>
   class OrganizedEdgeFromNormals : virtual public OrganizedEdgeBase<PointT, PointLT>
   {
-    typedef typename pcl::PointCloud<PointT> PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-      
-    typedef typename pcl::PointCloud<PointNT> PointCloudN;
-    typedef typename PointCloudN::Ptr PointCloudNPtr;
-    typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
+    using PointCloud = pcl::PointCloud<PointT>;
+    using PointCloudPtr = typename PointCloud::Ptr;
+    using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-    typedef typename pcl::PointCloud<PointLT> PointCloudL;
-    typedef typename PointCloudL::Ptr PointCloudLPtr;
-    typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
+    using PointCloudN = pcl::PointCloud<PointNT>;
+    using PointCloudNPtr = typename PointCloudN::Ptr;
+    using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
+
+    using PointCloudL = pcl::PointCloud<PointLT>;
+    using PointCloudLPtr = typename PointCloudL::Ptr;
+    using PointCloudLConstPtr = typename PointCloudL::ConstPtr;
 
     public:
       using OrganizedEdgeBase<PointT, PointLT>::input_;
@@ -292,7 +292,7 @@ namespace pcl
       using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_HIGH_CURVATURE;
 
       /** \brief Constructor for OrganizedEdgeFromNormals */
-      OrganizedEdgeFromNormals () 
+      OrganizedEdgeFromNormals ()
         : OrganizedEdgeBase<PointT, PointLT> ()
         , normals_ ()
         , th_hc_canny_low_ (0.4f)
@@ -302,7 +302,7 @@ namespace pcl
       }
 
       /** \brief Destructor for OrganizedEdgeFromNormals */
-      virtual
+
       ~OrganizedEdgeFromNormals ()
       {
       }
@@ -318,7 +318,7 @@ namespace pcl
         * \param[in] normals the input normal cloud
         */
       inline void
-      setInputNormals (const PointCloudNConstPtr &normals) 
+      setInputNormals (const PointCloudNConstPtr &normals)
       {
         normals_ = normals;
       }
@@ -357,7 +357,7 @@ namespace pcl
       {
         return (th_hc_canny_high_);
       }
-      
+
     protected:
       /** \brief Perform the 3D edge detection (edges from depth discontinuities and high curvature regions)
         * \param[out] labels a PointCloud of edge labels
@@ -378,17 +378,17 @@ namespace pcl
   template <typename PointT, typename PointNT, typename PointLT>
   class OrganizedEdgeFromRGBNormals : public OrganizedEdgeFromRGB<PointT, PointLT>, public OrganizedEdgeFromNormals<PointT, PointNT, PointLT>
   {
-    typedef typename pcl::PointCloud<PointT> PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-      
-    typedef typename pcl::PointCloud<PointNT> PointCloudN;
-    typedef typename PointCloudN::Ptr PointCloudNPtr;
-    typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
+    using PointCloud = pcl::PointCloud<PointT>;
+    using PointCloudPtr = typename PointCloud::Ptr;
+    using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-    typedef typename pcl::PointCloud<PointLT> PointCloudL;
-    typedef typename PointCloudL::Ptr PointCloudLPtr;
-    typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
+    using PointCloudN = pcl::PointCloud<PointNT>;
+    using PointCloudNPtr = typename PointCloudN::Ptr;
+    using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
+
+    using PointCloudL = pcl::PointCloud<PointLT>;
+    using PointCloudLPtr = typename PointCloudL::Ptr;
+    using PointCloudLConstPtr = typename PointCloudL::ConstPtr;
 
     public:
       using OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::input_;
@@ -401,9 +401,9 @@ namespace pcl
       using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_OCCLUDED;
       using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_HIGH_CURVATURE;
       using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_RGB_CANNY;
-      
+
       /** \brief Constructor for OrganizedEdgeFromRGBNormals */
-      OrganizedEdgeFromRGBNormals () 
+      OrganizedEdgeFromRGBNormals ()
         : OrganizedEdgeFromRGB<PointT, PointLT> ()
         , OrganizedEdgeFromNormals<PointT, PointNT, PointLT> ()
       {
@@ -411,7 +411,7 @@ namespace pcl
       }
 
       /** \brief Destructor for OrganizedEdgeFromRGBNormals */
-      virtual
+
       ~OrganizedEdgeFromRGBNormals ()
       {
       }
@@ -428,5 +428,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/organized_edge_detection.hpp>
 #endif
-
-#endif //#ifndef PCL_FEATURES_ORGANIZED_EDGE_DETECTION_H_

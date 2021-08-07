@@ -38,6 +38,7 @@
 
 #include <pcl/gpu/kinfu_large_scale/cyclical_buffer.h>
 #include <pcl/common/distances.h>
+#include <pcl/common/transforms.h> // for transformPoint, transformPointCloud
 #include "internal.h"
 
 
@@ -102,7 +103,7 @@ pcl::gpu::kinfuLS::CyclicalBuffer::performShift (const TsdfVolume::Ptr volume, c
 
   // Retrieving XYZ
   points.download (current_slice_xyz->points);
-  current_slice_xyz->width = (int) current_slice_xyz->points.size ();
+  current_slice_xyz->width = current_slice_xyz->size ();
   current_slice_xyz->height = 1;
 
   // Retrieving intensities
@@ -110,16 +111,16 @@ pcl::gpu::kinfuLS::CyclicalBuffer::performShift (const TsdfVolume::Ptr volume, c
   // when tried, this lead to wrong intenisty values being extracted by fetchSliceAsCloud () (padding pbls?)
   std::vector<float , Eigen::aligned_allocator<float> > intensities_vector;
   intensities.download (intensities_vector);
-  current_slice_intensities->points.resize (current_slice_xyz->points.size ());
-  for(int i = 0 ; i < current_slice_intensities->points.size () ; ++i)
-    current_slice_intensities->points[i].intensity = intensities_vector[i];
+  current_slice_intensities->resize (current_slice_xyz->size ());
+  for(std::size_t i = 0 ; i < current_slice_intensities->size () ; ++i)
+    (*current_slice_intensities)[i].intensity = intensities_vector[i];
 
-  current_slice_intensities->width = (int) current_slice_intensities->points.size ();
+  current_slice_intensities->width = current_slice_intensities->size ();
   current_slice_intensities->height = 1;
 
   // Concatenating XYZ and Intensities
   pcl::concatenateFields (*current_slice_xyz, *current_slice_intensities, *current_slice);
-  current_slice->width = (int) current_slice->points.size ();
+  current_slice->width = current_slice->size ();
   current_slice->height = 1;
 
   // transform the slice from local to global coordinates
@@ -132,11 +133,6 @@ pcl::gpu::kinfuLS::CyclicalBuffer::performShift (const TsdfVolume::Ptr volume, c
 
   // retrieve existing data from the world model
   PointCloud<PointXYZI>::Ptr previously_existing_slice (new  PointCloud<PointXYZI>);
-  double min_bound_x  = buffer_.origin_GRID_global.x + buffer_.voxels_size.x - 1;
-  double new_origin_x = buffer_.origin_GRID_global.x + offset_x;
-  double new_origin_y = buffer_.origin_GRID_global.y + offset_y;
-  double new_origin_z = buffer_.origin_GRID_global.z + offset_z;
-
   world_model_.getExistingData (buffer_.origin_GRID_global.x, buffer_.origin_GRID_global.y, buffer_.origin_GRID_global.z,
                                 offset_x, offset_y, offset_z,
                                 buffer_.voxels_size.x - 1, buffer_.voxels_size.y - 1, buffer_.voxels_size.z - 1,
@@ -156,7 +152,7 @@ pcl::gpu::kinfuLS::CyclicalBuffer::performShift (const TsdfVolume::Ptr volume, c
   pcl::device::kinfuLS::clearTSDFSlice (volume->data (), &buffer_, offset_x, offset_y, offset_z);
 
   // insert current slice in the world if it contains any points
-  if (current_slice->points.size () != 0) {
+  if (!current_slice->points.empty ()) {
     world_model_.addSlice(current_slice);
   }
 
@@ -164,7 +160,7 @@ pcl::gpu::kinfuLS::CyclicalBuffer::performShift (const TsdfVolume::Ptr volume, c
   shiftOrigin (volume, offset_x, offset_y, offset_z);
 
   // push existing data in the TSDF buffer
-  if (previously_existing_slice->points.size () != 0 ) {
+  if (!previously_existing_slice->points.empty () ) {
     volume->pushSlice(previously_existing_slice, getBuffer () );
   }
 }

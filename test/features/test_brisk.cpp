@@ -36,19 +36,17 @@
  */
 
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/brisk_2d.h>
 #include <pcl/features/brisk_2d.h>
-#include <set>
 
 using namespace pcl;
 using namespace pcl::io;
-using namespace std;
 
-typedef PointXYZRGBA PointT;
-typedef PointWithScale KeyPointT;
+using PointT = PointXYZRGBA;
+using KeyPointT = PointWithScale;
 
 
 PointCloud<PointT>::Ptr cloud_image (new PointCloud<PointT>);
@@ -77,7 +75,7 @@ TEST (PCL, BRISK_2D)
   EXPECT_EQ (num_of_keypoints_gt, num_of_keypoints);
 
 
-  for (size_t point_index = 0; point_index < cloud_keypoints->size (); ++point_index)
+  for (std::size_t point_index = 0; point_index < cloud_keypoints->size (); ++point_index)
   {
     PointWithScale & point = (*cloud_keypoints) [point_index];
 
@@ -104,14 +102,14 @@ TEST (PCL, BRISK_2D)
 
 
   //io::savePCDFileBinary ("brisk_descriptors.pcd", *cloud_descriptors);
-  //for (size_t point_index = 0; point_index < cloud_keypoints->size (); ++point_index)
-  for (size_t point_index = 0; point_index < cloud_descriptors->size (); ++point_index)
+  //for (std::size_t point_index = 0; point_index < cloud_keypoints->size (); ++point_index)
+  for (std::size_t point_index = 0; point_index < cloud_descriptors->size (); ++point_index)
   {
     BRISKSignature512 & descriptor = (*cloud_descriptors) [point_index];
     BRISKSignature512 & descriptor_gt = (*cloud_descriptors_gt) [point_index];
 
     float sqr_dist = 0.0f;
-    for (size_t index = 0; index < 33; ++index)
+    for (std::size_t index = 0; index < 33; ++index)
     {
       const float dist = float (descriptor.descriptor[index] - descriptor_gt.descriptor[index]);
       sqr_dist += dist * dist;

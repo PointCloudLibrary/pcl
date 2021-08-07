@@ -35,8 +35,11 @@
  *
  */
 
-#include <stdexcept>
 #include <pcl/surface/on_nurbs/fitting_surface_tdm.h>
+#include <pcl/pcl_macros.h>
+
+#include <Eigen/Geometry> // for cross
+#include <stdexcept>
 
 using namespace pcl;
 using namespace on_nurbs;
@@ -308,6 +311,7 @@ FittingSurfaceTDM::addCageBoundaryRegularisation (double weight, int side, unsig
   {
     case SOUTH:
       j = m_nurbs.CVCount (1) - 1;
+      PCL_FALLTHROUGH
     case NORTH:
       for (i = 1; i < (m_nurbs.CVCount (0) - 1); i++)
       {
@@ -334,6 +338,7 @@ FittingSurfaceTDM::addCageBoundaryRegularisation (double weight, int side, unsig
 
     case EAST:
       i = m_nurbs.CVCount (0) - 1;
+      PCL_FALLTHROUGH
     case WEST:
       for (j = 1; j < (m_nurbs.CVCount (1) - 1); j++)
       {

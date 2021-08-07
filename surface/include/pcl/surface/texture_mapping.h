@@ -37,12 +37,14 @@
  *
  */
 
-#ifndef PCL_SURFACE_TEXTURE_MAPPING_H_
-#define PCL_SURFACE_TEXTURE_MAPPING_H_
+#pragma once
 
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/surface/reconstruction.h>
 #include <pcl/common/transforms.h>
 #include <pcl/TextureMesh.h>
+#include <pcl/octree/octree_search.h> // for OctreePointCloudSearch
 
 
 namespace pcl
@@ -62,8 +64,8 @@ namespace pcl
       */
     struct Camera
     {
-      Camera () : pose (), focal_length (), focal_length_w (-1), focal_length_h (-1),
-        center_w (-1), center_h (-1), height (), width (), texture_file () {}
+      Camera () : focal_length (), focal_length_w (-1), focal_length_h (-1),
+        center_w (-1), center_h (-1), height (), width () {}
       Eigen::Affine3f pose;
       double focal_length;
       double focal_length_w;  // optional
@@ -74,7 +76,7 @@ namespace pcl
       double width;
       std::string texture_file;
 
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
 
     /** \brief Structure that links a uv coordinate to its 3D point and face.
@@ -86,7 +88,7 @@ namespace pcl
       int idx_face; // Face corresponding to that projection
     };
     
-    typedef std::vector<Camera, Eigen::aligned_allocator<Camera> > CameraVector;
+    using CameraVector = std::vector<Camera, Eigen::aligned_allocator<Camera> >;
     
   }
   
@@ -99,23 +101,23 @@ namespace pcl
   {
     public:
      
-      typedef boost::shared_ptr< TextureMapping < PointInT > > Ptr;
-      typedef boost::shared_ptr< const TextureMapping < PointInT > > ConstPtr;
+      using Ptr = shared_ptr<TextureMapping<PointInT> >;
+      using ConstPtr = shared_ptr<const TextureMapping<PointInT> >;
 
-      typedef pcl::PointCloud<PointInT> PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = pcl::PointCloud<PointInT>;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-      typedef pcl::octree::OctreePointCloudSearch<PointInT> Octree;
-      typedef typename Octree::Ptr OctreePtr;
-      typedef typename Octree::ConstPtr OctreeConstPtr;
+      using Octree = pcl::octree::OctreePointCloudSearch<PointInT>;
+      using OctreePtr = typename Octree::Ptr;
+      using OctreeConstPtr = typename Octree::ConstPtr;
       
-      typedef pcl::texture_mapping::Camera Camera;
-      typedef pcl::texture_mapping::UvIndex UvIndex;
+      using Camera = pcl::texture_mapping::Camera;
+      using UvIndex = pcl::texture_mapping::UvIndex;
 
       /** \brief Constructor. */
       TextureMapping () :
-        f_ (), vector_field_ (), tex_files_ (), tex_material_ ()
+        f_ ()
       {
       }
 
@@ -143,7 +145,7 @@ namespace pcl
       {
         vector_field_ = Eigen::Vector3f (x, y, z);
         // normalize vector field
-        vector_field_ = vector_field_ / std::sqrt (vector_field_.dot (vector_field_));
+        vector_field_ /= std::sqrt (vector_field_.dot (vector_field_));
       }
 
       /** \brief Set texture files
@@ -255,7 +257,7 @@ namespace pcl
       void
       removeOccludedPoints (const PointCloudPtr &input_cloud,
                             PointCloudPtr &filtered_cloud, const double octree_voxel_size,
-                            std::vector<int> &visible_indices, std::vector<int> &occluded_indices);
+                            pcl::Indices &visible_indices, pcl::Indices &occluded_indices);
 
       /** \brief Remove occluded points from a textureMesh
         * \param[in] tex_mesh input mesh, on witch to perform occlusion detection
@@ -419,9 +421,6 @@ namespace pcl
       }
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
-
-#endif /* TEXTURE_MAPPING_H_ */
-

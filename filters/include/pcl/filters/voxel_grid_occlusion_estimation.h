@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_VOXEL_GRID_OCCLUSION_ESTIMATION_H_
-#define PCL_FILTERS_VOXEL_GRID_OCCLUSION_ESTIMATION_H_
+#pragma once
 
 #include <pcl/filters/voxel_grid.h>
 
@@ -62,9 +61,9 @@ namespace pcl
       using VoxelGrid<PointT>::leaf_size_;
       using VoxelGrid<PointT>::inverse_leaf_size_;
 
-      typedef typename Filter<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = typename Filter<PointT>::PointCloud;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
     public:
       /** \brief Empty constructor. */
@@ -75,7 +74,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      virtual ~VoxelGridOcclusionEstimation ()
+      ~VoxelGridOcclusionEstimation ()
       {
       }
 
@@ -148,9 +147,9 @@ namespace pcl
       getCentroidCoordinate (const Eigen::Vector3i& ijk)
       {
         int i,j,k;
-        i = ((b_min_[0] < 0) ? (abs (min_b_[0]) + ijk[0]) : (ijk[0] - min_b_[0]));
-        j = ((b_min_[1] < 0) ? (abs (min_b_[1]) + ijk[1]) : (ijk[1] - min_b_[1]));
-        k = ((b_min_[2] < 0) ? (abs (min_b_[2]) + ijk[2]) : (ijk[2] - min_b_[2]));
+        i = ((b_min_[0] < 0) ? (std::abs (min_b_[0]) + ijk[0]) : (ijk[0] - min_b_[0]));
+        j = ((b_min_[1] < 0) ? (std::abs (min_b_[1]) + ijk[1]) : (ijk[1] - min_b_[1]));
+        k = ((b_min_[2] < 0) ? (std::abs (min_b_[2]) + ijk[2]) : (ijk[2] - min_b_[2]));
 
         Eigen::Vector4f xyz;
         xyz[0] = b_min_[0] + (leaf_size_[0] * 0.5f) + (static_cast<float> (i) * leaf_size_[0]);
@@ -215,10 +214,10 @@ namespace pcl
       inline float
       round (float d)
       {
-        return static_cast<float> (floor (d + 0.5f));
+        return static_cast<float> (std::floor (d + 0.5f));
       }
 
-      // We use round here instead of floor due to some numerical issues.
+      // We use round here instead of std::floor due to some numerical issues.
       /** \brief Returns the corresponding (i,j,k) coordinates in the grid of point (x,y,z). 
         * \param[in] x the X point coordinate to get the (i, j, k) index at
         * \param[in] y the Y point coordinate to get the (i, j, k) index at
@@ -249,5 +248,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/voxel_grid_occlusion_estimation.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_VOXEL_GRID_OCCLUSION_ESTIMATION_H_

@@ -34,13 +34,10 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cstddef>
-#include <iostream>
 #include <cmath>
-#include <set>
-#include <pcl/common/eigen.h>
+#include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
+#include <pcl/common/time.h> // for MEASURE_FUNCTION_TIME
 #include <pcl/range_image/range_image.h>
-#include <pcl/common/transformation_from_correspondences.h>
 
 namespace pcl 
 {
@@ -69,7 +66,7 @@ RangeImage::createLookupTables ()
   for (int i=0; i<lookup_table_size; ++i) 
   {
     float value = static_cast<float> (i-(lookup_table_size-1)/2)/static_cast<float> ((lookup_table_size-1)/2);
-    atan_lookup_table[i] = atanf (value);
+    atan_lookup_table[i] = std::atan (value);
   }
   
   cos_lookup_table.resize (lookup_table_size);
@@ -77,7 +74,7 @@ RangeImage::createLookupTables ()
   for (int i = 0; i < lookup_table_size; ++i) 
   {
     float value = static_cast<float> (i) * 2.0f * static_cast<float> (M_PI) / static_cast<float> (lookup_table_size-1);
-    cos_lookup_table[i] = cosf (value);
+    cos_lookup_table[i] = std::cos (value);
   }
 }
 
@@ -105,23 +102,16 @@ RangeImage::getCoordinateFrameTransformation (RangeImage::CoordinateFrame coordi
 
 /////////////////////////////////////////////////////////////////////////
 RangeImage::RangeImage () : 
-  RangeImage::BaseClass (), 
   to_range_image_system_ (Eigen::Affine3f::Identity ()),
   to_world_system_ (Eigen::Affine3f::Identity ()),
   angular_resolution_x_ (0), angular_resolution_y_ (0),
   angular_resolution_x_reciprocal_ (0), angular_resolution_y_reciprocal_ (0),
-  image_offset_x_ (0), image_offset_y_ (0),
-  unobserved_point ()
+  image_offset_x_ (0), image_offset_y_ (0)
 {
   createLookupTables ();
   reset ();
   unobserved_point.x = unobserved_point.y = unobserved_point.z = std::numeric_limits<float>::quiet_NaN ();
   unobserved_point.range = -std::numeric_limits<float>::infinity ();
-}
-
-/////////////////////////////////////////////////////////////////////////
-RangeImage::~RangeImage ()
-{
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -151,11 +141,11 @@ RangeImage::createEmpty (float angular_resolution_x, float angular_resolution_y,
                          RangeImage::CoordinateFrame coordinate_frame, float angle_width, float angle_height)
 {
   setAngularResolution(angular_resolution_x, angular_resolution_y);
-  width  = static_cast<uint32_t> (pcl_lrint (floor (angle_width * angular_resolution_x_reciprocal_)));
-  height = static_cast<uint32_t> (pcl_lrint (floor (angle_height * angular_resolution_y_reciprocal_)));
+  width  = static_cast<std::uint32_t> (pcl_lrint (std::floor (angle_width * angular_resolution_x_reciprocal_)));
+  height = static_cast<std::uint32_t> (pcl_lrint (std::floor (angle_height * angular_resolution_y_reciprocal_)));
 
-  int full_width  = static_cast<int> (pcl_lrint (floor (pcl::deg2rad (360.0f)*angular_resolution_x_reciprocal_))),
-      full_height = static_cast<int> (pcl_lrint (floor (pcl::deg2rad (180.0f)*angular_resolution_y_reciprocal_)));
+  int full_width  = static_cast<int> (pcl_lrint (std::floor (pcl::deg2rad (360.0f)*angular_resolution_x_reciprocal_))),
+      full_height = static_cast<int> (pcl_lrint (std::floor (pcl::deg2rad (180.0f)*angular_resolution_y_reciprocal_)));
   image_offset_x_ = (full_width-width)/2;
   image_offset_y_ = (full_height-height)/2;
   is_dense = false;
@@ -200,7 +190,7 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
     int lineStart = top*width;
     int min_x=std::max(0, left), max_x=std::min(static_cast<int> (width)-1, right);
     for (int x=min_x; x<=max_x && !topIsDone; ++x)
-      if (pcl_isfinite (points[lineStart + x].range))
+      if (std::isfinite (points[lineStart + x].range))
         topIsDone = true;
   }
   // Check if range image is empty
@@ -216,7 +206,7 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
     --right;
     int min_y=std::max(0, top), max_y=std::min(static_cast<int> (height)-1, bottom);
     for (int y=min_y; y<=max_y && !rightIsDone; ++y)
-      if (pcl_isfinite (points[y*width + right].range))
+      if (std::isfinite (points[y*width + right].range))
         rightIsDone = true;
   }
   // Find bottom border
@@ -226,7 +216,7 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
     int lineStart = bottom*width;
     int min_x=std::max(0, left), max_x=std::min(static_cast<int> (width)-1, right);
     for (int x=min_x; x<=max_x && !bottomIsDone; ++x)
-      if (pcl_isfinite (points[lineStart + x].range))
+      if (std::isfinite (points[lineStart + x].range))
         bottomIsDone = true;
   } 
   // Find left border
@@ -235,7 +225,7 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
     ++left;
     int min_y=std::max(0, top), max_y=std::min(static_cast<int> (height)-1, bottom);
     for (int y=min_y; y<=max_y && !leftIsDone; ++y)
-      if (pcl_isfinite (points[y*width + left].range))
+      if (std::isfinite (points[y*width + left].range))
         leftIsDone = true;
   } 
   left-=borderSize; top-=borderSize; right+=borderSize; bottom+=borderSize;
@@ -254,17 +244,17 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
   //std::cout << oldRangeImage.width<<"x"<<oldRangeImage.height<<" -> "<<width<<"x"<<height<<"\n";
   
   // Copy points
-  for (int y=0, oldY=top; y< static_cast<int> (height); ++y,++oldY) 
+  for (int y=0, oldY=top; y< static_cast<int> (height); ++y,++oldY)
   {
-    for (int x=0, oldX=left; x< static_cast<int> (width); ++x,++oldX) 
+    for (int x=0, oldX=left; x< static_cast<int> (width); ++x,++oldX)
     {
       PointWithRange& currentPoint = points[y*width + x];
-      if (oldX<0 || oldX>= static_cast<int> (oldRangeImage.width) || oldY<0 || oldY>= static_cast<int> (oldRangeImage.height)) 
+      if (oldX<0 || oldX>= static_cast<int> (oldRangeImage.width) || oldY<0 || oldY>= static_cast<int> (oldRangeImage.height))
       {
         currentPoint = unobserved_point;
         continue;
       }
-      currentPoint = oldRangeImage.points[oldY*oldRangeImage.width + oldX];
+      currentPoint = oldRangeImage[oldY*oldRangeImage.width + oldX];
     }
   }
 }
@@ -273,12 +263,12 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
 void 
 RangeImage::recalculate3DPointPositions () 
 {
-  for (int y = 0; y < static_cast<int> (height); ++y) 
+  for (int y = 0; y < static_cast<int> (height); ++y)
   {
-    for (int x = 0; x < static_cast<int> (width); ++x) 
+    for (int x = 0; x < static_cast<int> (width); ++x)
     {
       PointWithRange& point = points[y*width + x];
-      if (!pcl_isinf (point.range)) 
+      if (!std::isinf (point.range)) 
         calculate3DPoint (static_cast<float> (x), static_cast<float> (y), point.range, point);
     }
   }
@@ -312,7 +302,7 @@ RangeImage::getIntegralImage (float*& integral_image, int*& valid_points_num_ima
       integral_pixel = getPoint (x, y).range;
       int& valid_points_num = * (valid_points_num_image_ptr++);
       valid_points_num = 1;
-      if (pcl_isinf (integral_pixel))
+      if (std::isinf (integral_pixel))
       {
         integral_pixel = 0.0f;
         valid_points_num = 0;
@@ -345,9 +335,9 @@ RangeImage::getIntegralImage (float*& integral_image, int*& valid_points_num_ima
 void 
 RangeImage::setUnseenToMaxRange ()
 {
-  for (unsigned int i=0; i<points.size (); ++i)
-    if (pcl_isinf (points[i].range))
-      points[i].range = std::numeric_limits<float>::infinity ();
+  for (auto &point : points)
+    if (std::isinf (point.range))
+      point.range = std::numeric_limits<float>::infinity ();
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -360,8 +350,8 @@ RangeImage::getHalfImage (RangeImage& half_image) const
   half_image.width  = width/2;
   half_image.height = height/2;
   half_image.is_dense = is_dense;
-  half_image.points.clear ();
-  half_image.points.resize (half_image.width*half_image.height);
+  half_image.clear ();
+  half_image.resize (half_image.width*half_image.height);
   
   int src_start_x = 2*half_image.image_offset_x_ - image_offset_x_,
       src_start_y = 2*half_image.image_offset_y_ - image_offset_y_;
@@ -383,7 +373,7 @@ RangeImage::getHalfImage (RangeImage& half_image) const
           if (!isObserved (src_x, src_y))
             continue;
           const PointWithRange& src_point = getPoint (src_x, src_y);
-          if (pcl_isfinite (dst_point.range) && src_point.range > dst_point.range)
+          if (std::isfinite (dst_point.range) && src_point.range > dst_point.range)
             continue;
           dst_point = src_point;
         }
@@ -404,8 +394,8 @@ RangeImage::getSubImage (int sub_image_image_offset_x, int sub_image_image_offse
   sub_image.width = sub_image_width;
   sub_image.height = sub_image_height;
   sub_image.is_dense = is_dense;
-  sub_image.points.clear ();
-  sub_image.points.resize (sub_image.width*sub_image.height);
+  sub_image.clear ();
+  sub_image.resize (sub_image.width*sub_image.height);
   
   int src_start_x = combine_pixels*sub_image.image_offset_x_ - image_offset_x_,
       src_start_y = combine_pixels*sub_image.image_offset_y_ - image_offset_y_;
@@ -427,7 +417,7 @@ RangeImage::getSubImage (int sub_image_image_offset_x, int sub_image_image_offse
           if (!isInImage (src_x, src_y))
             continue;
           const PointWithRange& src_point = getPoint (src_x, src_y);
-          if (pcl_isfinite (dst_point.range) && src_point.range > dst_point.range)
+          if (std::isfinite (dst_point.range) && src_point.range > dst_point.range)
             continue;
           dst_point = src_point;
         }
@@ -443,10 +433,10 @@ RangeImage::getMinMaxRanges (float& min_range, float& max_range) const
 {
   min_range = std::numeric_limits<float>::infinity ();
   max_range = -std::numeric_limits<float>::infinity ();
-  for (unsigned int i=0; i<points.size (); ++i)
+  for (const auto &point : points)
   {
-    float range = points[i].range;
-    if (!pcl_isfinite (range))
+    float range = point.range;
+    if (!std::isfinite (range))
       continue;
     min_range = (std::min) (min_range, range);
     max_range = (std::max) (max_range, range);
@@ -497,12 +487,12 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
         continue;
       getPoint (x, y, point1);
       point1 = pose*point1;
-      if (fabs (point1[2]) > max_dist)
+      if (std::abs (point1[2]) > max_dist)
         continue;
       
       getPoint (x+1, y+1, point2);
       point2 = pose*point2;
-      if (fabs (point2[2]) > max_dist)
+      if (std::abs (point2[2]) > max_dist)
         continue;
       
       for (int triangle_idx=0; triangle_idx<=1; ++triangle_idx)
@@ -520,7 +510,7 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
           getPoint (x+1, y, point3);
         }
         point3 = pose*point3;
-        if (fabs (point3[2]) > max_dist)
+        if (std::abs (point3[2]) > max_dist)
           continue;
         
         // Are all the points either left, right, on top or below the bottom of the surface patch?
@@ -545,11 +535,11 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
               cell3_y = world2cell_factor*point3[1] + world2cell_offset,
               cell3_z = point3[2];
         
-        int min_cell_x = (std::max) (0, int (pcl_lrint (ceil ( (std::min) (cell1_x, (std::min) (cell2_x, cell3_x)))))),
-            max_cell_x = (std::min) (pixel_size-1, int (pcl_lrint (floor ( (std::max) (cell1_x,
+        int min_cell_x = (std::max) (0, int (pcl_lrint (std::ceil ( (std::min) (cell1_x, (std::min) (cell2_x, cell3_x)))))),
+            max_cell_x = (std::min) (pixel_size-1, int (pcl_lrint (std::floor ( (std::max) (cell1_x,
                                                                        (std::max) (cell2_x, cell3_x)))))),
-            min_cell_y = (std::max) (0, int (pcl_lrint (ceil ( (std::min) (cell1_y, (std::min) (cell2_y, cell3_y)))))),
-            max_cell_y = (std::min) (pixel_size-1, int (pcl_lrint (floor ( (std::max) (cell1_y,
+            min_cell_y = (std::max) (0, int (pcl_lrint (std::ceil ( (std::min) (cell1_y, (std::min) (cell2_y, cell3_y)))))),
+            max_cell_y = (std::min) (pixel_size-1, int (pcl_lrint (std::floor ( (std::max) (cell1_y,
                                                                        (std::max) (cell2_y, cell3_y))))));
         if (max_cell_x<min_cell_x || max_cell_y<min_cell_y)
           continue;
@@ -587,7 +577,7 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
             float new_value = cell1_z + u* (cell3_z-cell1_z) + v* (cell2_z-cell1_z);
             
             float& value = surface_patch[cell_y*pixel_size + cell_x];
-            if (pcl_isinf (value))
+            if (std::isinf (value))
               value = new_value;
             else
               value = (std::min) (value, new_value);
@@ -604,7 +594,7 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
     {
       int index= cell_y*pixel_size + cell_x;
       float& value = surface_patch[index];
-      if (!pcl_isinf (value))
+      if (!std::isinf (value))
         continue;
       
       // Go through immediate neighbors
@@ -616,7 +606,7 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
           if (cell2_x<0||cell2_x>=pixel_size||cell2_y<0||cell2_y>=pixel_size || (cell2_x==cell_x && cell2_y==cell_y))
             continue;
           float neighbor_value = surface_patch[cell2_y*pixel_size + cell2_x];
-          if (pcl_isfinite (neighbor_value))
+          if (std::isfinite (neighbor_value))
           {
             float cell_pos_x = static_cast<float> (cell_x) + 0.6f * static_cast<float> (cell_x - cell2_x),
                   cell_pos_y = static_cast<float> (cell_y) + 0.6f * static_cast<float> (cell_y - cell2_y);
@@ -644,7 +634,7 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
               continue;
             int index2 = cell2_y*pixel_size + cell2_x;
             float& neighbor_value = surface_patch[index2];
-            if (pcl_isinf (neighbor_value) && neighbor_value<0)
+            if (std::isinf (neighbor_value) && neighbor_value<0)
               neighbor_value = std::numeric_limits<float>::infinity ();
           }
         }
@@ -789,7 +779,7 @@ RangeImage::getRangeImageWithSmoothedSurface (int radius, RangeImage& smoothed_r
     for (int x=0; x<int (width); ++x)
     {
       PointWithRange& point = smoothed_range_image.getPoint (x, y);
-      if (pcl_isinf (point.range))
+      if (std::isinf (point.range))
         continue;
       Eigen::Vector3f normal, mean, eigen_values;
       float used_squared_max_distance;
@@ -843,7 +833,7 @@ RangeImage::extractFarRanges (const pcl::PCLPointCloud2& point_cloud_data,
       vp_z_offset = point_cloud_data.fields[vp_z_idx].offset,
       distance_offset = point_cloud_data.fields[distance_idx].offset;
   
-  for (size_t point_idx = 0; point_idx < point_cloud_data.width*point_cloud_data.height; ++point_idx)
+  for (uindex_t point_idx = 0; point_idx < point_cloud_data.width*point_cloud_data.height; ++point_idx)
   {
     float x = *reinterpret_cast<const float*> (data+x_offset), 
           y = *reinterpret_cast<const float*> (data+y_offset), 
@@ -854,15 +844,15 @@ RangeImage::extractFarRanges (const pcl::PCLPointCloud2& point_cloud_data,
           distance = *reinterpret_cast<const float*> (data+distance_offset);
     data+=point_step;
     
-    if (!pcl_isfinite (x) && pcl_isfinite (distance))
+    if (!std::isfinite (x) && std::isfinite (distance))
     {
       PointWithViewpoint point;
       point.x=distance; point.y=y; point.z=z;
       point.vp_x=vp_x; point.vp_y=vp_y; point.vp_z=vp_z;
-      far_ranges.points.push_back (point);
+      far_ranges.push_back (point);
     }
   }
-  far_ranges.width= static_cast<uint32_t> (far_ranges.points.size ());  far_ranges.height = 1;
+  far_ranges.width= far_ranges.size ();  far_ranges.height = 1;
   far_ranges.is_dense = false;
 }
 
@@ -875,14 +865,19 @@ RangeImage::getOverlap (const RangeImage& other_range_image, const Eigen::Affine
   
   float max_distance_squared = max_distance*max_distance;
   
-  # pragma omp parallel for num_threads (max_no_of_threads) default (shared) schedule (dynamic, 1) \
-                        reduction (+ : valid_points_counter) reduction (+ : hits_counter)
+#pragma omp parallel for \
+  default(none) \
+  shared(max_distance_squared, other_range_image, pixel_step, relative_transformation, search_radius) \
+  schedule(dynamic, 1) \
+  reduction(+ : valid_points_counter) \
+  reduction(+ : hits_counter) \
+  num_threads(max_no_of_threads)
   for (int other_y=0; other_y<int (other_range_image.height); other_y+=pixel_step)
   {
     for (int other_x=0; other_x<int (other_range_image.width); other_x+=pixel_step)
     {
       const PointWithRange& point = other_range_image.getPoint (other_x, other_y);
-      if (!pcl_isfinite (point.range))
+      if (!std::isfinite (point.range))
         continue;
       ++valid_points_counter;
       Eigen::Vector3f transformed_point = relative_transformation * point.getVector3fMap ();
@@ -896,7 +891,7 @@ RangeImage::getOverlap (const RangeImage& other_range_image, const Eigen::Affine
         for (int x2=x-pixel_step*search_radius; x2<=x+pixel_step*search_radius; x2+=pixel_step)
         {
           const PointWithRange& neighbor = getPoint (x2, y2);
-          if (!pcl_isfinite (neighbor.range))
+          if (!std::isfinite (neighbor.range))
             continue;
           float distance = (transformed_point-neighbor.getVector3fMap ()).squaredNorm ();
           if (distance < closest_distance)
@@ -929,7 +924,7 @@ RangeImage::getBlurredImageUsingIntegralImage (int blur_radius, float* integral_
     {
       const PointWithRange& old_point = getPoint (x, y);
       PointWithRange& new_point = blurred_image.getPoint (x, y);
-      if (!pcl_isfinite (old_point.range))
+      if (!std::isfinite (old_point.range))
         continue;
       
       int top= (std::max) (-1, y-blur_radius-1), right = (std::min) (static_cast<int> (width)-1, x+blur_radius), bottom =
@@ -991,7 +986,7 @@ RangeImage::getBlurredImage (int blur_radius, RangeImage& blurred_image) const
     {
       PointWithRange& new_point = blurred_image.getPoint (x, y);
       const PointWithRange& original_point = getPoint (x, y);
-      if (!pcl_isfinite (original_point.range))
+      if (!std::isfinite (original_point.range))
         continue;
       
       new_point.range = 0.0f;

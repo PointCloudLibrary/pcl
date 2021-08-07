@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(people_detect)
 
@@ -9,10 +9,10 @@ link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
 #Searching CUDA
-FIND_PACKAGE(CUDA)
+find_package(CUDA)
 
 #Include the FindCUDA script
-INCLUDE(FindCUDA)
+include(FindCUDA)
 
 cuda_add_executable (people_detect src/people_detect.cpp)
 target_link_libraries (people_detect ${PCL_LIBRARIES})

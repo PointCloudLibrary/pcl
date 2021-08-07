@@ -44,7 +44,7 @@
 #include <pcl/common/transforms.h>
 
 template <typename PointT> QList <pcl::cloud_composer::CloudComposerItem*>
-pcl::cloud_composer::TransformClouds::performTemplatedAction (QList <const CloudComposerItem*> input_data)
+pcl::cloud_composer::TransformClouds::performTemplatedAction (const QList <const CloudComposerItem*>& input_data)
 {
   QList <CloudComposerItem*> output;  
   
@@ -75,7 +75,7 @@ pcl::cloud_composer::TransformClouds::performTemplatedAction (QList <const Cloud
     else
       pcl::visualization::PCLVisualizer::convertToEigenMatrix (transform_map_.value (input_item->getId ()), transform);
     
-    typename PointCloud<PointT>::Ptr transformed_cloud = boost::shared_ptr<PointCloud<PointT> > (new PointCloud<PointT>);
+    typename PointCloud<PointT>::Ptr transformed_cloud (new PointCloud<PointT>);
     
     transformPointCloud<PointT> (*input_cloud, *transformed_cloud, transform);
     CloudItem*  new_cloud_item = CloudItem::createCloudItemFromTemplate<PointT>(input_item->text (),transformed_cloud);
@@ -91,7 +91,7 @@ pcl::cloud_composer::TransformClouds::performTemplatedAction (QList <const Cloud
 }
 
 
-#define PCL_INSTANTIATE_performTemplatedAction(T) template PCL_EXPORTS void pcl::cloud_composer::TransformClouds::performTemplatedAction<T> (QList <const CloudComposerItem*>);
+#define PCL_INSTANTIATE_performTemplatedAction(T) template void pcl::cloud_composer::TransformClouds::performTemplatedAction<T> (QList <const CloudComposerItem*>);
 
 
 

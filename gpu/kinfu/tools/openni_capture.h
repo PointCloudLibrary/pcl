@@ -39,8 +39,8 @@
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/containers/kernel_containers.h>
 
-#include <boost/shared_ptr.hpp>
 #include <string>
+#include <memory>
 
 #include <pcl/gpu/kinfu/kinfu.h>
 
@@ -51,7 +51,7 @@ namespace pcl
     class CaptureOpenNI
     {
 public:
-    typedef KinfuTracker::PixelRGB RGB;
+    using RGB = KinfuTracker::PixelRGB;
 
     enum { PROP_OPENNI_REGISTRATION_ON  = 104 };
 
@@ -80,7 +80,7 @@ public:
     bool setRegistration (bool value = false);
 private:
     struct Impl;
-    boost::shared_ptr<Impl> impl_;
+    std::shared_ptr<Impl> impl_;
     void getParams ();
 
     };

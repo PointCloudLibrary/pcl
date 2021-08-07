@@ -35,10 +35,9 @@
  *
  */
 
-#ifndef WORK_QUEUE_H_
-#define WORK_QUEUE_H_
+#pragma once
 
-#include "qt.h"
+#include <QQueue>
 
 #include <pcl/apps/cloud_composer/commands.h>
 
@@ -59,8 +58,8 @@ namespace pcl
     {
       Q_OBJECT
       public:
-        WorkQueue (QObject* parent = 0);  
-        virtual ~WorkQueue();  
+        WorkQueue (QObject* parent = nullptr);  
+        ~WorkQueue();  
       public Q_SLOTS:
         void
         enqueueNewAction (AbstractTool* new_tool, ConstItemList input_data);
@@ -83,5 +82,3 @@ namespace pcl
     };
   }
 }
-
-#endif //WORK_QUEUE_H_

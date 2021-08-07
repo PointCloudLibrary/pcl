@@ -35,21 +35,9 @@
  *
  */
 
-#include <cstddef>
 #include <iostream>
-#include <pcl/common/eigen.h>
 #include <pcl/common/poses_from_matches.h>
 #include <pcl/common/transformation_from_correspondences.h>
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::PosesFromMatches::PosesFromMatches () : parameters_ () 
-{
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::PosesFromMatches::~PosesFromMatches ()
-{
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
@@ -84,7 +72,7 @@ pcl::PosesFromMatches::estimatePosesUsing2Correspondences (const pcl::PointCorre
                         y_direction (0.0f, 1.0f, 0.0f),
                         z_direction (0.0f, 0.0f, 1.0f);
   
-  int max_correspondence_idx = static_cast<int> (correspondences.size ());
+  const auto max_correspondence_idx = correspondences.size ();
   int counter_for_tested_combinations = 0,
       counter_for_added_pose_estimates = 0;
   float max_distance_quotient = 1.0f+parameters_.max_correspondence_distance_error,
@@ -98,10 +86,10 @@ pcl::PosesFromMatches::estimatePosesUsing2Correspondences (const pcl::PointCorre
   // testing the best correspondences pairs first, without being stuck too long with one specific
   // (possibly wrong) correspondence.
   bool done = false;
-  for (int correspondence2_idx = 0; correspondence2_idx < max_correspondence_idx && !done; ++correspondence2_idx)
+  for (std::size_t correspondence2_idx = 0; correspondence2_idx < max_correspondence_idx && !done; ++correspondence2_idx)
   {
     const pcl::PointCorrespondence6D& correspondence2 = correspondences[correspondence2_idx];
-    for (int correspondence1_idx = 0; correspondence1_idx < correspondence2_idx; ++correspondence1_idx)
+    for (std::size_t correspondence1_idx = 0; correspondence1_idx < correspondence2_idx; ++correspondence1_idx)
     {
       if (counter_for_tested_combinations >= max_no_of_tested_combinations)
       {
@@ -198,7 +186,7 @@ pcl::PosesFromMatches::estimatePosesUsing3Correspondences (const PointCorrespond
                         y_direction (0.0f, 1.0f, 0.0f),
                         z_direction (0.0f, 0.0f, 1.0f);
   
-  int max_correspondence_idx = static_cast<int> (correspondences.size ());
+  const auto max_correspondence_idx = correspondences.size ();
   int counter_for_tested_combinations = 0,
       counter_for_added_pose_estimates = 0;
   float max_distance_quotient = 1.0f+parameters_.max_correspondence_distance_error,
@@ -212,12 +200,12 @@ pcl::PosesFromMatches::estimatePosesUsing3Correspondences (const PointCorrespond
   // testing the best correspondences triples first, without being stuck too long with one specific
   // (possibly wrong) correspondence.
   bool done = false;
-  for (int correspondence3_idx = 0; correspondence3_idx < max_correspondence_idx && !done; ++correspondence3_idx)
+  for (std::size_t correspondence3_idx = 0; correspondence3_idx < max_correspondence_idx && !done; ++correspondence3_idx)
   {
     const pcl::PointCorrespondence6D& correspondence3 = correspondences[correspondence3_idx];
     const Eigen::Vector3f& point3 = correspondence3.point1,
                   & corr3  = correspondence3.point2;
-    for (int correspondence2_idx = 0; correspondence2_idx < correspondence3_idx && !done; ++correspondence2_idx)
+    for (std::size_t correspondence2_idx = 0; correspondence2_idx < correspondence3_idx && !done; ++correspondence2_idx)
     {
       const pcl::PointCorrespondence6D& correspondence2 = correspondences[correspondence2_idx];
       const Eigen::Vector3f& point2 = correspondence2.point1,
@@ -230,7 +218,7 @@ pcl::PosesFromMatches::estimatePosesUsing3Correspondences (const PointCorrespond
           || distance23_quotient_squared > max_distance_quotient_squared)
         continue;
       
-      for (int correspondence1_idx = 0; correspondence1_idx < correspondence2_idx; ++correspondence1_idx)
+      for (std::size_t correspondence1_idx = 0; correspondence1_idx < correspondence2_idx; ++correspondence1_idx)
       {
         if (counter_for_tested_combinations >= max_no_of_tested_combinations)
         {

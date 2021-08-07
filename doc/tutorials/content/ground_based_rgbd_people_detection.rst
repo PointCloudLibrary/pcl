@@ -20,7 +20,7 @@ Here it is the code:
 
 .. literalinclude:: sources/ground_based_rgbd_people_detection/src/main_ground_based_people_detection.cpp
    :language: cpp
-   :lines: 48-242
+   :lines: 48-247
 
 
 The explanation
@@ -35,13 +35,13 @@ maximum (``max_h``) height of people can be set. If no parameter is set, the def
 
 .. literalinclude:: sources/ground_based_rgbd_people_detection/src/main_ground_based_people_detection.cpp
    :language: cpp
-   :lines: 66-77
+   :lines: 71-82
    
 Here, the callback used for grabbing pointclouds with OpenNI is defined.
    
 .. literalinclude:: sources/ground_based_rgbd_people_detection/src/main_ground_based_people_detection.cpp
    :language: cpp
-   :lines: 79-86
+   :lines: 84-91
 
 The people detection algorithm used makes the assumption that people stand/walk on a planar ground plane. 
 Thus, it requires to know the equation of the ground plane in order to perform people detection.
@@ -52,7 +52,7 @@ the structure used to pass arguments to this callback.
 
 .. literalinclude:: sources/ground_based_rgbd_people_detection/src/main_ground_based_people_detection.cpp
    :language: cpp
-   :lines: 88-109     
+   :lines: 93-114
 
 Main:
 *****
@@ -61,9 +61,9 @@ The main program starts by initializing the main parameters and reading the comm
 
 .. literalinclude:: sources/ground_based_rgbd_people_detection/src/main_ground_based_people_detection.cpp
    :language: cpp
-   :lines: 111-129
+   :lines: 116-134
  
-Ground initialization:   
+Ground initialization:
 **********************
 
 Then, the :pcl:`pcl::Grabber <pcl::Grabber>` object is initialized in order to acquire RGB-D pointclouds and the program waits for
@@ -74,7 +74,7 @@ After this, ``Q`` must be pressed in order to close the visualizer and let the p
 
 .. literalinclude:: sources/ground_based_rgbd_people_detection/src/main_ground_based_people_detection.cpp
    :language: cpp
-   :lines: 131-164
+   :lines: 136-169
    
 .. image:: images/ground_based_rgbd_people_detection/Screen_floor.jpg
   :align: center
@@ -89,7 +89,7 @@ written to the command window.
 
 .. literalinclude:: sources/ground_based_rgbd_people_detection/src/main_ground_based_people_detection.cpp
    :language: cpp
-   :lines: 166-174
+   :lines: 171-179
         
 In the following lines, we can see the initialization of the SVM classifier by loading the pre-trained parameters
 from file.
@@ -101,7 +101,7 @@ setSensorPortraitOrientation should be used to enable the vertical mode in :pcl:
  
 .. literalinclude:: sources/ground_based_rgbd_people_detection/src/main_ground_based_people_detection.cpp
    :language: cpp
-   :lines: 180-190 
+   :lines: 185-195
 
 Main loop:
 **********   
@@ -113,7 +113,7 @@ This procedure allows to adapt to small changes which can occur to the ground pl
    
 .. literalinclude:: sources/ground_based_rgbd_people_detection/src/main_ground_based_people_detection.cpp
    :language: cpp
-   :lines: 196-209
+   :lines: 201-214
  
 The last part of the code is devoted to visualization. In particular, a green 3D bounding box is drawn for every
 person with HOG confidence above the ``min_confidence`` threshold. The width of the bounding box is fixed, while 
@@ -123,7 +123,7 @@ Please note that this framerate includes the time necessary for grabbing the poi
    
 .. literalinclude:: sources/ground_based_rgbd_people_detection/src/main_ground_based_people_detection.cpp
    :language: cpp
-   :lines: 211-237  
+   :lines: 216-242
 
 Compiling and running the program
 ---------------------------------

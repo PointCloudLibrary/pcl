@@ -37,7 +37,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_tests.h>
@@ -46,36 +46,36 @@ using namespace pcl;
 using namespace pcl::test;
 
 PointCloud<PointXYZ> cloud;
-const size_t size = 10 * 480;
+const std::size_t size = 10 * 480;
 
 TEST (PointCloud, size)
 {
-  EXPECT_EQ(cloud.points.size (), cloud.size ());
+  EXPECT_EQ(cloud.size (), cloud.size ());
 }
 
 TEST (PointCloud, sq_brackets_wrapper)
 {
-  for (uint32_t i = 0; i < size; ++i)
-    EXPECT_EQ_VECTORS (cloud.points[i].getVector3fMap (),
+  for (std::uint32_t i = 0; i < size; ++i)
+    EXPECT_EQ_VECTORS (cloud[i].getVector3fMap (),
                        cloud[i].getVector3fMap ());
 }
 
 TEST (PointCloud, at)
 {
-  for (uint32_t i = 0; i < size; ++i)
-    EXPECT_EQ_VECTORS (cloud.points.at (i).getVector3fMap (),
+  for (std::uint32_t i = 0; i < size; ++i)
+    EXPECT_EQ_VECTORS (cloud.at (i).getVector3fMap (),
                        cloud.at (i).getVector3fMap ());
 }
 
 TEST (PointCloud, front)
 {
-  EXPECT_EQ_VECTORS (cloud.points.front ().getVector3fMap (),
+  EXPECT_EQ_VECTORS (cloud.front ().getVector3fMap (),
                      cloud.front ().getVector3fMap ());
 }
 
 TEST (PointCloud, back)
 {
-  EXPECT_EQ_VECTORS (cloud.points.back ().getVector3fMap (),
+  EXPECT_EQ_VECTORS (cloud.back ().getVector3fMap (),
                      cloud.back ().getVector3fMap ());
 }
 
@@ -89,30 +89,27 @@ TEST (PointCloud, constructor_with_allocation)
 
 TEST (PointCloud, constructor_with_allocation_valued)
 {
-  PointXYZ nan_point (0.1f, 0.2f, 0.3f);  
+  PointXYZ nan_point (0.1f, 0.2f, 0.3f);
   PointCloud<PointXYZ> cloud2 (5, 80, nan_point);
   EXPECT_EQ (cloud2.width, 5);
   EXPECT_EQ (cloud2.height, 80);
   EXPECT_EQ (cloud2.size (), 5*80);
-  for (PointCloud<PointXYZ>::const_iterator pit = cloud2.begin ();
-       pit != cloud2.end ();
-       ++pit)
+  for (PointCloud<PointXYZ>::const_iterator pit = cloud2.begin (); pit != cloud2.end (); ++pit)
   {
     EXPECT_NEAR (pit->x, 0.1, 1e-3);
     EXPECT_NEAR (pit->y, 0.2, 1e-3);
     EXPECT_NEAR (pit->z, 0.3, 1e-3);
   }
-  
 }
 
 TEST (PointCloud, iterators)
 {
-  EXPECT_EQ_VECTORS (cloud.begin ()->getVector3fMap (), 
-                     cloud.points.begin ()->getVector3fMap ());
-  EXPECT_EQ_VECTORS (cloud.end ()->getVector3fMap (), 
-                     cloud.points.end ()->getVector3fMap ());
+  EXPECT_EQ_VECTORS (cloud.begin ()->getVector3fMap (),
+                     cloud.begin ()->getVector3fMap ());
+  EXPECT_EQ_VECTORS ((--cloud.end ())->getVector3fMap (),
+                     (--cloud.end ())->getVector3fMap ());
   PointCloud<PointXYZ>::const_iterator pit = cloud.begin ();
-  PointCloud<PointXYZ>::VectorType::const_iterator pit2 = cloud.points.begin ();
+  PointCloud<PointXYZ>::VectorType::const_iterator pit2 = cloud.begin ();
   for (; pit < cloud.end (); ++pit2, ++pit)
     EXPECT_EQ_VECTORS (pit->getVector3fMap (), pit2->getVector3fMap ());
 }
@@ -120,10 +117,10 @@ TEST (PointCloud, iterators)
 TEST (PointCloud, insert_range)
 {
   PointCloud<PointXYZ> cloud2 (10, 1);
-  for (uint32_t i = 0; i < 10; ++i)
+  for (std::uint32_t i = 0; i < 10; ++i)
     cloud2[i] = PointXYZ (5.0f * static_cast<float>(i) + 0, 5.0f * static_cast<float> (i) + 1, 5.0f * static_cast<float> (i) + 2);
 
-  uint32_t old_size = static_cast<uint32_t> (cloud.size ());
+  std::uint32_t old_size = static_cast<std::uint32_t> (cloud.size ());
   cloud.insert (cloud.begin (), cloud2.begin (), cloud2.end ());
   EXPECT_EQ (cloud.width, cloud.size ());
   EXPECT_EQ (cloud.height, 1);
@@ -139,8 +136,8 @@ main (int argc, char** argv)
 {
   cloud.width = 10;
   cloud.height = 480;
-  for (uint32_t i = 0; i < size; ++i)
-    cloud.points.push_back (PointXYZ (3.0f * static_cast<float>(i) + 0, 3.0f * static_cast<float> (i) + 1, 3.0f * static_cast<float> (i) + 2));
+  for (std::uint32_t i = 0; i < size; ++i)
+    cloud.emplace_back(3.0f * static_cast<float>(i) + 0, 3.0f * static_cast<float> (i) + 1, 3.0f * static_cast<float> (i) + 2);
 
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());

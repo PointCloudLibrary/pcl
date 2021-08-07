@@ -35,40 +35,49 @@
  *
  */
 
-#ifndef DECISION_TREE_DATA_PROVIDER_H_
-#define DECISION_TREE_DATA_PROVIDER_H_
+#pragma once
 
 #include <pcl/common/common.h>
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h> // for PCL_EXPORTS
 
-namespace pcl
-{
-  template<class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
-  class PCL_EXPORTS DecisionTreeTrainerDataProvider
-  {
+namespace pcl {
+template <class FeatureType,
+          class DataSet,
+          class LabelType,
+          class ExampleIndex,
+          class NodeType>
+class PCL_EXPORTS DecisionTreeTrainerDataProvider {
 
-      /** \brief The training data set. */
-      DataSet data_set_;
-      /** \brief The label data. */
-      std::vector<LabelType> label_data_;
+  /** The training data set. */
+  DataSet data_set_;
+  /** The label data. */
+  std::vector<LabelType> label_data_;
 
-    public:
+public:
+  using Ptr = shared_ptr<DecisionTreeTrainerDataProvider<FeatureType,
+                                                         DataSet,
+                                                         LabelType,
+                                                         ExampleIndex,
+                                                         NodeType>>;
+  using ConstPtr = shared_ptr<const DecisionTreeTrainerDataProvider<FeatureType,
+                                                                    DataSet,
+                                                                    LabelType,
+                                                                    ExampleIndex,
+                                                                    NodeType>>;
 
-      /** \brief Constructor. */
-      DecisionTreeTrainerDataProvider()
-      {
+  /** Constructor. */
+  DecisionTreeTrainerDataProvider() {}
 
-      }
+  /** Destructor. */
+  ~DecisionTreeTrainerDataProvider() {}
 
-      /** \brief Destructor. */
-      ~DecisionTreeTrainerDataProvider()
-      {
+  /** Virtual function called to obtain training examples and labels before
+   *  training a specific tree */
+  virtual void
+  getDatasetAndLabels(DataSet& data_set,
+                      std::vector<LabelType>& label_data,
+                      std::vector<ExampleIndex>& examples) = 0;
+};
 
-      }
-
-      /** \brief Virtual function called to obtain training examples and labels before training a specific tree */
-      virtual void
-      getDatasetAndLabels(DataSet & data_set, std::vector<LabelType> & label_data, std::vector<ExampleIndex> & examples) = 0;
-  };
-}
-
-#endif /* DECISION_TREE_DATA_PROVIDER_H_ */
+} // namespace pcl

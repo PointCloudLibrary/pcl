@@ -39,7 +39,6 @@
 #define PCL_SURFACE_IMPL_GP3_H_
 
 #include <pcl/surface/gp3.h>
-#include <pcl/kdtree/impl/kdtree_flann.hpp>
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
@@ -84,7 +83,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
     nnn_ = static_cast<int> (indices_->size ());
 
   // Variables to hold the results of nearest neighbor searches
-  std::vector<int> nnIdx (nnn_);
+  pcl::Indices nnIdx (nnn_);
   std::vector<float> sqrDists (nnn_);
 
   // current number of connected components
@@ -117,26 +116,25 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
   if (!input_->is_dense)
   {
     // Skip invalid points from the indices list
-    for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
-      if (!pcl_isfinite (input_->points[*it].x) ||
-          !pcl_isfinite (input_->points[*it].y) ||
-          !pcl_isfinite (input_->points[*it].z))
-        state_[*it] = NONE;
+    for (const auto& idx : (*indices_))
+      if (!std::isfinite ((*input_)[idx].x) ||
+          !std::isfinite ((*input_)[idx].y) ||
+          !std::isfinite ((*input_)[idx].z))
+        state_[idx] = NONE;
   }
 
   // Saving coordinates and point to index mapping
   coords_.clear ();
   coords_.reserve (indices_->size ());
-  std::vector<int> point2index (input_->points.size (), -1);
+  std::vector<int> point2index (input_->size (), -1);
   for (int cp = 0; cp < static_cast<int> (indices_->size ()); ++cp)
   {
-    coords_.push_back(input_->points[(*indices_)[cp]].getVector3fMap());
+    coords_.push_back((*input_)[(*indices_)[cp]].getVector3fMap());
     point2index[(*indices_)[cp]] = cp;
   }
 
   // Initializing
   int is_free=0, nr_parts=0, increase_nnn4fn=0, increase_nnn4s=0, increase_dist=0, nr_touched = 0;
-  bool is_fringe;
   angles_.resize(nnn_);
   std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > uvn_nn (nnn_);
   Eigen::Vector2f uvn_s;
@@ -152,7 +150,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
 
       // creating starting triangle
       //searchForNeighbors ((*indices_)[R_], nnIdx, sqrDists);
-      //tree_->nearestKSearch (input_->points[(*indices_)[R_]], nnn_, nnIdx, sqrDists);
+      //tree_->nearestKSearch ((*input_)[(*indices_)[R_]], nnn_, nnIdx, sqrDists);
       tree_->nearestKSearch (indices_->at (R_), nnn_, nnIdx, sqrDists);
       double sqr_dist_threshold = (std::min)(sqr_max_edge, sqr_mu * sqrDists[1]);
 
@@ -165,7 +163,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
       }
 
       // Get the normal estimate at the current point 
-      const Eigen::Vector3f nc = input_->points[(*indices_)[R_]].getNormalVector3fMap ();
+      const Eigen::Vector3f nc = (*input_)[(*indices_)[R_]].getNormalVector3fMap ();
 
       // Get a coordinate system that lies on a plane defined by its normal
       v_ = nc.unitOrthogonal ();
@@ -185,12 +183,12 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         uvn_nn[i][0] = tmp_.dot(u_);
         uvn_nn[i][1] = tmp_.dot(v_);
         // Computing the angle between each neighboring point and the query point itself
-        angles_[i].angle = atan2(uvn_nn[i][1], uvn_nn[i][0]);
+        angles_[i].angle = std::atan2(uvn_nn[i][1], uvn_nn[i][0]);
         // initializing angle descriptors
         angles_[i].index = nnIdx[i];
         if (
             (state_[nnIdx[i]] == COMPLETED) || (state_[nnIdx[i]] == BOUNDARY)
-            || (state_[nnIdx[i]] == NONE) || (nnIdx[i] == -1) /// NOTE: discarding NaN points and those that are not in indices_
+            || (state_[nnIdx[i]] == NONE) || (nnIdx[i] == UNAVAILABLE) /// NOTE: discarding NaN points and those that are not in indices_
             || (sqrDists[i] > sqr_dist_threshold)
            )
           angles_[i].visible = false;
@@ -240,43 +238,40 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         while ((left < nnn_) && ((!angles_[left].visible) || (state_[nnIdx[left]] > FREE))) left++;
         if (left >= nnn_)
           break;
-        else
+        int right = left+1;
+        do
         {
-          int right = left+1;
-          do
+          while ((right < nnn_) && ((!angles_[right].visible) || (state_[nnIdx[right]] > FREE))) right++;
+          if (right >= nnn_)
+            break;
+          if ((coords_[nnIdx[left]] - coords_[nnIdx[right]]).squaredNorm () > sqr_max_edge)
+            right++;
+          else
           {
-            while ((right < nnn_) && ((!angles_[right].visible) || (state_[nnIdx[right]] > FREE))) right++;
-            if (right >= nnn_)
-              break;
-            else if ((coords_[nnIdx[left]] - coords_[nnIdx[right]]).squaredNorm () > sqr_max_edge)
-              right++;
-            else
-            {
-              addFringePoint (nnIdx[right], R_);
-              addFringePoint (nnIdx[left], nnIdx[right]);
-              addFringePoint (R_, nnIdx[left]);
-              state_[R_] = state_[nnIdx[left]] = state_[nnIdx[right]] = FRINGE;
-              ffn_[R_] = nnIdx[left];
-              sfn_[R_] = nnIdx[right];
-              ffn_[nnIdx[left]] = nnIdx[right];
-              sfn_[nnIdx[left]] = R_;
-              ffn_[nnIdx[right]] = R_;
-              sfn_[nnIdx[right]] = nnIdx[left];
-              addTriangle (R_, nnIdx[left], nnIdx[right], polygons);
-              nr_parts++;
-              not_found = false;
-              break;
-            }
+            addFringePoint (nnIdx[right], R_);
+            addFringePoint (nnIdx[left], nnIdx[right]);
+            addFringePoint (R_, nnIdx[left]);
+            state_[R_] = state_[nnIdx[left]] = state_[nnIdx[right]] = FRINGE;
+            ffn_[R_] = nnIdx[left];
+            sfn_[R_] = nnIdx[right];
+            ffn_[nnIdx[left]] = nnIdx[right];
+            sfn_[nnIdx[left]] = R_;
+            ffn_[nnIdx[right]] = R_;
+            sfn_[nnIdx[right]] = nnIdx[left];
+            addTriangle (R_, nnIdx[left], nnIdx[right], polygons);
+            nr_parts++;
+            not_found = false;
+            break;
           }
-          while (true);
-          left++;
         }
+        while (true);
+        left++;
       }
       while (not_found);
     }
 
     is_free = NONE;
-    for (unsigned temp = 0; temp < indices_->size (); temp++)
+    for (std::size_t temp = 0; temp < indices_->size (); temp++)
     {
       if (state_[temp] == FREE)
       {
@@ -285,7 +280,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
       }
     }
 
-    is_fringe = true;
+    bool is_fringe = true;
     while (is_fringe)
     {
       is_fringe = false;
@@ -309,7 +304,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         continue;
       }
       //searchForNeighbors ((*indices_)[R_], nnIdx, sqrDists);
-      //tree_->nearestKSearch (input_->points[(*indices_)[R_]], nnn_, nnIdx, sqrDists);
+      //tree_->nearestKSearch ((*input_)[(*indices_)[R_]], nnn_, nnIdx, sqrDists);
       tree_->nearestKSearch (indices_->at (R_), nnn_, nnIdx, sqrDists);
 
       // Search tree returns indices into the original cloud, but we are working with indices TODO: make that optional!
@@ -343,7 +338,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
       }
 
       // Get the normal estimate at the current point 
-      const Eigen::Vector3f nc = input_->points[(*indices_)[R_]].getNormalVector3fMap ();
+      const Eigen::Vector3f nc = (*input_)[(*indices_)[R_]].getNormalVector3fMap ();
 
       // Get a coordinate system that lies on a plane defined by its normal
       v_ = nc.unitOrthogonal ();
@@ -363,13 +358,13 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         uvn_nn[i][1] = tmp_.dot(v_);
   
         // Computing the angle between each neighboring point and the query point itself 
-        angles_[i].angle = atan2(uvn_nn[i][1], uvn_nn[i][0]);
+        angles_[i].angle = std::atan2(uvn_nn[i][1], uvn_nn[i][0]);
         // initializing angle descriptors
         angles_[i].index = nnIdx[i];
         angles_[i].nnIndex = i;
         if (
             (state_[nnIdx[i]] == COMPLETED) || (state_[nnIdx[i]] == BOUNDARY)
-            || (state_[nnIdx[i]] == NONE) || (nnIdx[i] == -1) /// NOTE: discarding NaN points and those that are not in indices_
+            || (state_[nnIdx[i]] == NONE) || (nnIdx[i] == UNAVAILABLE) /// NOTE: discarding NaN points and those that are not in indices_
             || (sqrDists[i] > sqr_dist_threshold)
            )
           angles_[i].visible = false;
@@ -378,11 +373,11 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         if ((ffn_[R_] == nnIdx[i]) || (sfn_[R_] == nnIdx[i]))
           angles_[i].visible = true;
         bool same_side = true;
-        const Eigen::Vector3f neighbor_normal = input_->points[(*indices_)[nnIdx[i]]].getNormalVector3fMap (); /// NOTE: nnIdx was reset
+        const Eigen::Vector3f neighbor_normal = (*input_)[(*indices_)[nnIdx[i]]].getNormalVector3fMap (); /// NOTE: nnIdx was reset
         double cosine = nc.dot (neighbor_normal);
         if (cosine > 1) cosine = 1;
         if (cosine < -1) cosine = -1;
-        double angle = acos (cosine);
+        double angle = std::acos (cosine);
         if ((!consistent_) && (angle > M_PI/2))
           angle = M_PI - angle;
         if (angle > eps_angle_)
@@ -406,8 +401,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
           // Pruning by visibility criterion 
           if ((state_[nnIdx[i]] == FRINGE) && (ffn_[R_] != nnIdx[i]) && (sfn_[R_] != nnIdx[i]))
           {
-            double angle1 = atan2(e.first[1] - uvn_nn[i][1], e.first[0] - uvn_nn[i][0]);
-            double angle2 = atan2(e.second[1] - uvn_nn[i][1], e.second[0] - uvn_nn[i][0]);
+            double angle1 = std::atan2(e.first[1] - uvn_nn[i][1], e.first[0] - uvn_nn[i][0]);
+            double angle2 = std::atan2(e.second[1] - uvn_nn[i][1], e.second[0] - uvn_nn[i][0]);
             double angleMin, angleMax;
             if (angle1 < angle2)
             {
@@ -440,7 +435,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
               tmp_ = coords_[source_[nnIdx[i]]] - proj_qp_;
               uvn_s[0] = tmp_.dot(u_);
               uvn_s[1] = tmp_.dot(v_);
-              double angleS = atan2(uvn_s[1] - uvn_nn[i][1], uvn_s[0] - uvn_nn[i][0]);
+              double angleS = std::atan2(uvn_s[1] - uvn_nn[i][1], uvn_s[0] - uvn_nn[i][0]);
               if ((angleMin < angleS) && (angleS < angleMax))
               {
                 if ((angleMin < angleR) && (angleR < angleMax))
@@ -466,16 +461,16 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
           {
             if (doubleEdges[j].index != i)
             {
-              int f = ffn_[nnIdx[doubleEdges[j].index]];
+              const auto& f = ffn_[nnIdx[doubleEdges[j].index]];
               if ((f != nnIdx[i]) && (f != R_))
                 visibility = isVisible(uvn_nn[i], uvn_nn[doubleEdges[j].index], doubleEdges[j].first, Eigen::Vector2f::Zero());
-              if (visibility == false)
+              if (!visibility)
                 break;
 
-              int s = sfn_[nnIdx[doubleEdges[j].index]];
+              const auto& s = sfn_[nnIdx[doubleEdges[j].index]];
               if ((s != nnIdx[i]) && (s != R_))
                 visibility = isVisible(uvn_nn[i], uvn_nn[doubleEdges[j].index], doubleEdges[j].second, Eigen::Vector2f::Zero());
-              if (visibility == false)
+              if (!visibility)
                 break;
             }
           }
@@ -507,7 +502,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
               tmp_ = coords_[source_[R_]] - proj_qp_;
               uvn_s[0] = tmp_.dot(u_);
               uvn_s[1] = tmp_.dot(v_);
-              double angleS = atan2(uvn_s[1], uvn_s[0]);
+              double angleS = std::atan2(uvn_s[1], uvn_s[0]);
               double dif = angles_[1].angle - angles_[0].angle;
               if ((angles_[0].angle < angleS) && (angleS < angles_[1].angle))
               {
@@ -592,7 +587,6 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
 
       // Finding visibility region of R
       bool need_invert = false;
-      int sourceIdx = nnn_;
       if ((source_[R_] == ffn_[R_]) || (source_[R_] == sfn_[R_]))
       {
         if ((angles_[end].angle - angles_[start].angle) < M_PI)
@@ -600,6 +594,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
       }
       else
       {
+        int sourceIdx;
         for (sourceIdx=0; sourceIdx<nnn_; sourceIdx++)
           if (angles_[sourceIdx].index == source_[R_])
             break;
@@ -793,7 +788,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
       std::vector<int>::iterator first_gap_after = angleIdx.end ();
       std::vector<int>::iterator last_gap_before = angleIdx.begin ();
       int nr_gaps = 0;
-      for (std::vector<int>::iterator it = angleIdx.begin (); it != angleIdx.end () - 1; it++)
+      for (std::vector<int>::iterator it = angleIdx.begin (); it != angleIdx.end () - 1; ++it)
       {
         if (gaps[*it])
         {
@@ -817,7 +812,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         Eigen::Vector2f S1;
         Eigen::Vector2f S2;
         std::vector<int> to_erase;
-        for (std::vector<int>::iterator it = angleIdx.begin()+1; it != angleIdx.end()-1; it++)
+        for (std::vector<int>::iterator it = angleIdx.begin()+1; it != angleIdx.end()-1; ++it)
         {
           if (gaps[*(it-1)])
             angle_so_far = 0;
@@ -849,13 +844,13 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
             {
               std::vector<int>::iterator prev_it;
               int erased_idx = static_cast<int> (to_erase.size ()) -1;
-              for (prev_it = it-1; (erased_idx != -1) && (it != angleIdx.begin()); it--)
+              for (prev_it = it-1; (erased_idx != -1) && (it != angleIdx.begin()); --it)
                 if (*it == to_erase[erased_idx])
                   erased_idx--;
                 else
                   break;
               bool can_delete = true;
-              for (std::vector<int>::iterator curr_it = prev_it+1; curr_it != it+1; curr_it++)
+              for (std::vector<int>::iterator curr_it = prev_it+1; curr_it != it+1; ++curr_it)
               {
                 tmp_ = coords_[angles_[*curr_it].index] - proj_qp_;
                 X[0] = tmp_.dot(u_);
@@ -883,10 +878,10 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
           else
             angle_so_far = 0;
         }
-        for (std::vector<int>::iterator it = to_erase.begin(); it != to_erase.end(); it++)
+        for (const auto &idx : to_erase)
         {
-          for (std::vector<int>::iterator iter = angleIdx.begin(); iter != angleIdx.end(); iter++)
-            if (*it == *iter)
+          for (std::vector<int>::iterator iter = angleIdx.begin(); iter != angleIdx.end(); ++iter)
+            if (idx == *iter)
             {
               angleIdx.erase(iter);
               break;
@@ -898,7 +893,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
       changed_1st_fn_ = false;
       changed_2nd_fn_ = false;
       new2boundary_ = NONE;
-      for (std::vector<int>::iterator it = angleIdx.begin()+1; it != angleIdx.end()-1; it++)
+      for (std::vector<int>::iterator it = angleIdx.begin()+1; it != angleIdx.end()-1; ++it)
       {
         current_index_ = angles_[*it].index;
 
@@ -1092,7 +1087,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::closeTriangle (std::vector<pcl::Ve
 template <typename PointInT> void
 pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
     std::vector<pcl::Vertices> &polygons, 
-    const int prev_index, const int next_index, const int next_next_index, 
+    const pcl::index_t prev_index, const pcl::index_t next_index, const pcl::index_t next_next_index, 
     const Eigen::Vector2f &uvn_current, 
     const Eigen::Vector2f &uvn_prev, 
     const Eigen::Vector2f &uvn_next)
@@ -1388,7 +1383,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
           case 2://next2f:
           {
             addTriangle (current_index_, ffn_[current_index_], next_index, polygons);
-            int neighbor_update = next_index;
+            auto neighbor_update = next_index;
 
             /* updating next_index */
             if (state_[next_index] <= FREE)
@@ -1523,7 +1518,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
           case 3://next2s:
           {
             addTriangle (current_index_, sfn_[current_index_], next_index, polygons);
-            int neighbor_update = next_index;
+            auto neighbor_update = next_index;
 
             /* updating next_index */
             if (state_[next_index] <= FREE)
@@ -1662,13 +1657,13 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT> std::vector<std::vector<size_t> >
+template <typename PointInT> std::vector<std::vector<std::size_t> >
 pcl::GreedyProjectionTriangulation<PointInT>::getTriangleList (const pcl::PolygonMesh &input)
 {
-  std::vector<std::vector<size_t> > triangleList (input.cloud.width * input.cloud.height);
+  std::vector<std::vector<std::size_t> > triangleList (input.cloud.width * input.cloud.height);
 
-  for (size_t i=0; i < input.polygons.size (); ++i)
-    for (size_t j=0; j < input.polygons[i].vertices.size (); ++j)
+  for (std::size_t i=0; i < input.polygons.size (); ++i)
+    for (std::size_t j=0; j < input.polygons[i].vertices.size (); ++j)
       triangleList[input.polygons[i].vertices[j]].push_back (i);
   return (triangleList);
 }

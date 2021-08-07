@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_CUDA_SAMPLE_CONSENSUS_MSAC_H_
-#define PCL_CUDA_SAMPLE_CONSENSUS_MSAC_H_
+#pragma once
 
 #include <pcl_cuda/sample_consensus/sac.h>
 #include <pcl_cuda/sample_consensus/sac_model.h>
@@ -57,10 +56,10 @@ namespace pcl_cuda
     using SampleConsensus<Storage>::inliers_stencil_;
     using SampleConsensus<Storage>::probability_;
 
-    typedef typename SampleConsensusModel<Storage>::Ptr SampleConsensusModelPtr;
-    typedef typename SampleConsensusModel<Storage>::Coefficients Coefficients;
-    typedef typename SampleConsensusModel<Storage>::Indices Indices;
-    typedef typename SampleConsensusModel<Storage>::Hypotheses Hypotheses;
+    using SampleConsensusModelPtr = typename SampleConsensusModel<Storage>::Ptr;
+    using Coefficients = typename SampleConsensusModel<Storage>::Coefficients;
+    using Indices = typename SampleConsensusModel<Storage>::Indices;
+    using Hypotheses = typename SampleConsensusModel<Storage>::Hypotheses;
 
     public:
       /** \brief MEstimatorSampleConsensus main constructor
@@ -92,6 +91,3 @@ namespace pcl_cuda
       computeModel (int debug_verbosity_level = 0);
   };
 }
-
-#endif  //#ifndef PCL_CUDA_SAMPLE_CONSENSUS_MSAC_H_
-

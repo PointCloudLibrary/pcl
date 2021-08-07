@@ -38,23 +38,11 @@
  *
  */
 
-#ifndef PCL_APPS_IN_HAND_SCANNER_ICP_H
-#define PCL_APPS_IN_HAND_SCANNER_ICP_H
+#pragma once
 
 #include <pcl/pcl_exports.h>
-#include <pcl/apps/in_hand_scanner/boost.h>
-#include <pcl/apps/in_hand_scanner/eigen.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
-
-////////////////////////////////////////////////////////////////////////////////
-// Forward declarations
-////////////////////////////////////////////////////////////////////////////////
-
-namespace pcl
-{
-  template <typename PointT>
-  class KdTree;
-} // End namespace pcl
+#include <pcl/kdtree/kdtree.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // ICP
@@ -72,14 +60,14 @@ namespace pcl
     {
       public:
 
-        typedef pcl::PointXYZRGBNormal              PointXYZRGBNormal;
-        typedef pcl::PointCloud <PointXYZRGBNormal> CloudXYZRGBNormal;
-        typedef CloudXYZRGBNormal::Ptr              CloudXYZRGBNormalPtr;
-        typedef CloudXYZRGBNormal::ConstPtr         CloudXYZRGBNormalConstPtr;
+        using PointXYZRGBNormal = pcl::PointXYZRGBNormal;
+        using CloudXYZRGBNormal = pcl::PointCloud<PointXYZRGBNormal>;
+        using CloudXYZRGBNormalPtr = CloudXYZRGBNormal::Ptr;
+        using CloudXYZRGBNormalConstPtr = CloudXYZRGBNormal::ConstPtr;
 
-        typedef pcl::ihs::Mesh         Mesh;
-        typedef pcl::ihs::MeshPtr      MeshPtr;
-        typedef pcl::ihs::MeshConstPtr MeshConstPtr;
+        using Mesh = pcl::ihs::Mesh;
+        using MeshPtr = pcl::ihs::MeshPtr;
+        using MeshConstPtr = pcl::ihs::MeshConstPtr;
 
         /** \brief Constructor */
         ICP ();
@@ -165,14 +153,14 @@ namespace pcl
 
       private:
 
-        typedef pcl::PointNormal              PointNormal;
-        typedef pcl::PointCloud <PointNormal> CloudNormal;
-        typedef CloudNormal::Ptr              CloudNormalPtr;
-        typedef CloudNormal::ConstPtr         CloudNormalConstPtr;
+        using PointNormal = pcl::PointNormal;
+        using CloudNormal = pcl::PointCloud<PointNormal>;
+        using CloudNormalPtr = CloudNormal::Ptr;
+        using CloudNormalConstPtr = CloudNormal::ConstPtr;
 
-        typedef pcl::KdTree <PointNormal>        KdTree;
-        typedef boost::shared_ptr <KdTree>       KdTreePtr;
-        typedef boost::shared_ptr <const KdTree> KdTreeConstPtr;
+        using KdTree = pcl::KdTree<PointNormal>;
+        using KdTreePtr = KdTree::Ptr;
+        using KdTreeConstPtr = KdTree::ConstPtr;
 
         /** \brief Selects the model points that are pointing towards to the camera (data coordinate system = camera coordinate system).
           * \param[in] mesh_model Input mesh.
@@ -221,5 +209,3 @@ namespace pcl
     };
   } // End namespace ihs
 } // End namespace pcl
-
-#endif // PCL_APPS_IN_HAND_SCANNER_ICP_H

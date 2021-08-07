@@ -37,13 +37,9 @@
  *
  */
 
-#ifndef PCL_FILTERS_CROP_BOX_H_
-#define PCL_FILTERS_CROP_BOX_H_
+#pragma once
 
-#include <pcl/point_types.h>
 #include <pcl/filters/filter_indices.h>
-#include <pcl/common/transforms.h>
-#include <pcl/common/eigen.h>
 
 namespace pcl
 {
@@ -58,20 +54,20 @@ namespace pcl
   {
     using Filter<PointT>::getClassName;
 
-    typedef typename Filter<PointT>::PointCloud PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+    using PointCloud = typename Filter<PointT>::PointCloud;
+    using PointCloudPtr = typename PointCloud::Ptr;
+    using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
     public:
 
-      typedef boost::shared_ptr< CropBox<PointT> > Ptr;
-      typedef boost::shared_ptr< const CropBox<PointT> > ConstPtr;
+      using Ptr = shared_ptr<CropBox<PointT> >;
+      using ConstPtr = shared_ptr<const CropBox<PointT> >;
 
       /** \brief Constructor.
         * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
         */
       CropBox (bool extract_removed_indices = false) :
-        FilterIndices<PointT>::FilterIndices (extract_removed_indices),
+        FilterIndices<PointT> (extract_removed_indices),
         min_pt_ (Eigen::Vector4f (-1, -1, -1, 1)),
         max_pt_ (Eigen::Vector4f (1, 1, 1, 1)),
         rotation_ (Eigen::Vector3f::Zero ()),
@@ -108,7 +104,7 @@ namespace pcl
         max_pt_ = max_pt;
       }
 
-      /** \brief Get the value of the maxiomum point of the box, as set by the user
+      /** \brief Get the value of the maximum point of the box, as set by the user
         * \return the value of the internal \a max_pt parameter.
         */
       inline Eigen::Vector4f
@@ -175,17 +171,11 @@ namespace pcl
       using FilterIndices<PointT>::extract_removed_indices_;
       using FilterIndices<PointT>::removed_indices_;
 
-      /** \brief Sample of point indices into a separate PointCloud
-        * \param[out] output the resultant point cloud
-        */
-      void
-      applyFilter (PointCloud &output);
-
       /** \brief Sample of point indices
         * \param[out] indices the resultant point cloud indices
         */
       void
-      applyFilter (std::vector<int> &indices);
+      applyFilter (Indices &indices) override;
     private:
       /** \brief The minimum point of the box. */
       Eigen::Vector4f min_pt_;
@@ -212,9 +202,9 @@ namespace pcl
     using Filter<pcl::PCLPointCloud2>::filter_name_;
     using Filter<pcl::PCLPointCloud2>::getClassName;
 
-    typedef pcl::PCLPointCloud2 PCLPointCloud2;
-    typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
-    typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
+    using PCLPointCloud2 = pcl::PCLPointCloud2;
+    using PCLPointCloud2Ptr = PCLPointCloud2::Ptr;
+    using PCLPointCloud2ConstPtr = PCLPointCloud2::ConstPtr;
 
     public:
       /** \brief Constructor.
@@ -320,13 +310,13 @@ namespace pcl
         * \param output the resultant point cloud
         */
       void
-      applyFilter (PCLPointCloud2 &output);
+      applyFilter (PCLPointCloud2 &output) override;
 
       /** \brief Sample of point indices
         * \param indices the resultant point cloud indices
         */
       void
-      applyFilter (std::vector<int> &indices);
+      applyFilter (Indices &indices) override;
 
       /** \brief The minimum point of the box. */
       Eigen::Vector4f min_pt_;
@@ -344,5 +334,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/crop_box.hpp>
 #endif
-
-#endif  // PCL_FILTERS_CROP_BOX_H_

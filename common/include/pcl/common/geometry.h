@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_GEOMETRY_H_
-#define PCL_GEOMETRY_H_
+#pragma once
 
 #if defined __GNUC__
 #  pragma GCC system_header
@@ -150,7 +149,7 @@ namespace pcl
       }
       else
       {
-        PCL_WARN ("[pcl::randomOrthogonalAxis] provided axis has norm < 1E-8f");
+        PCL_WARN ("[pcl::randomOrthogonalAxis] provided axis has norm < 1E-8f\n");
       }
 
       rand_ortho_axis.normalize ();
@@ -160,6 +159,3 @@ namespace pcl
 
   }
 }
-
-/*@}*/
-#endif  //#ifndef PCL_GEOMETRY_H_

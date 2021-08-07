@@ -36,6 +36,7 @@
  *
  */
 
+#include <pcl/types.h>
 #include <pcl/correspondence.h>
 #include <algorithm>
 #include <iterator>
@@ -44,30 +45,30 @@
 void
 pcl::getRejectedQueryIndices (const pcl::Correspondences &correspondences_before,
                               const pcl::Correspondences &correspondences_after,
-                              std::vector<int>& indices,
+                              Indices& indices,
                               bool presorting_required)
 {
   indices.clear();
 
-  const int nr_correspondences_before = static_cast<int> (correspondences_before.size ());
-  const int nr_correspondences_after = static_cast<int> (correspondences_after.size ());
+  const auto nr_correspondences_before = correspondences_before.size ();
+  const auto nr_correspondences_after = correspondences_after.size ();
 
   if (nr_correspondences_before == 0)
     return;
-  else if (nr_correspondences_after == 0)
+  if (nr_correspondences_after == 0)
   {
     indices.resize(nr_correspondences_before);
-    for (int i = 0; i < nr_correspondences_before; ++i)
+    for (std::size_t i = 0; i < nr_correspondences_before; ++i)
       indices[i] = correspondences_before[i].index_query;
     return;
   }
 
-  std::vector<int> indices_before (nr_correspondences_before);
-  for (int i = 0; i < nr_correspondences_before; ++i)
+  Indices indices_before (nr_correspondences_before);
+  for (std::size_t i = 0; i < nr_correspondences_before; ++i)
     indices_before[i] = correspondences_before[i].index_query;
 
-  std::vector<int> indices_after (nr_correspondences_after);
-  for (int i = 0; i < nr_correspondences_after; ++i)
+  Indices indices_after (nr_correspondences_after);
+  for (std::size_t i = 0; i < nr_correspondences_after; ++i)
     indices_after[i] = correspondences_after[i].index_query;
 
   if (presorting_required)

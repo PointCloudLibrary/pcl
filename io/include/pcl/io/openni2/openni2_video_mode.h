@@ -29,10 +29,8 @@
  *      Author: Julius Kammerl (jkammerl@willowgarage.com)
  */
 
-#ifndef PCL_IO_OPENNI2_VIDEO_MODE_H_
-#define PCL_IO_OPENNI2_VIDEO_MODE_H_
+#pragma once
 
-#include <cstddef>
 #include <ostream>
 
 #include <OpenNI.h>
@@ -44,7 +42,7 @@ namespace pcl
     namespace openni2
     {
       // copied from OniEnums.h
-      typedef enum
+      enum PixelFormat
       {
 	      // Depth
         PIXEL_FORMAT_DEPTH_1_MM = 100,
@@ -59,7 +57,7 @@ namespace pcl
         PIXEL_FORMAT_GRAY16 = 203,
         PIXEL_FORMAT_JPEG = 204,
         PIXEL_FORMAT_YUYV = 205,
-      } PixelFormat;
+      };
 
       struct OpenNI2VideoMode
       {
@@ -89,5 +87,3 @@ namespace pcl
     } // namespace
   }
 }
-
-#endif

@@ -16,6 +16,9 @@
 
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
+#include <pcl/common/utils.h> // pcl::utils::ignore
+
+
 ON_OBJECT_IMPLEMENT( ON_Font, ON_Object, "4F0F51FB-35D0-4865-9998-6D2C6A99721D" );
 
 ON_Font::ON_Font()
@@ -82,7 +85,7 @@ void ON_Font::Defaults()
 //
 // ON_Object overrides
 
-ON_BOOL32 ON_Font::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON_Font::IsValid( ON_TextLog* ) const
 {
   return ( m_font_name.Length() > 0 
            && m_font_index >= 0 
@@ -277,7 +280,7 @@ int CALLBACK ON__IsSymbolFontFaceNameHelper( ENUMLOGFONTEX*, NEWTEXTMETRICEX*, D
 bool ON_Font::IsSymbolFontFaceName( const wchar_t* s)
 {
   bool rc = false;
-
+  pcl::utils::ignore(s);
 #if defined(ON_OS_WINDOWS_GDI)
   if( s && s[0])
   {
@@ -440,7 +443,7 @@ void ON_Font::UpdateImplementationSettings()
 #if defined(ON_OS_WINDOWS_GDI) 
   BYTE b;
   LONG w;
-  size_t cap0, cap1, cap, i;
+  std::size_t cap0, cap1, cap, i;
 
   w = m_font_weight;
   if ( w < 0 )

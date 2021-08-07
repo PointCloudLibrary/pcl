@@ -34,12 +34,11 @@
  * Author: Julius Kammerl (julius@kammerl.de)
  */
 
-#ifndef __PCL_IO_LIBPNG_WRAPPER__
-#define __PCL_IO_LIBPNG_WRAPPER__
+#pragma once
 
+#include <cstdint> // uint8_t, uint16_t
 #include <vector>
-#include <pcl/common/common.h>
-#include <pcl/common/io.h>
+#include <pcl/pcl_exports.h> // for PCL_EXPORTS
 
 namespace pcl
 {
@@ -54,10 +53,10 @@ namespace pcl
       * \ingroup io
       */
     PCL_EXPORTS void
-    encodeMonoImageToPNG (std::vector<uint8_t>& image_arg,
-                          size_t width_arg,
-                          size_t height_arg,
-                          std::vector<uint8_t>& pngData_arg,
+    encodeMonoImageToPNG (std::vector<std::uint8_t>& image_arg,
+                          std::size_t width_arg,
+                          std::size_t height_arg,
+                          std::vector<std::uint8_t>& pngData_arg,
                           int png_level_arg = -1);
 
     /** \brief Encodes 16-bit mono image to PNG format.
@@ -69,10 +68,10 @@ namespace pcl
       * \ingroup io
       */
     PCL_EXPORTS void
-    encodeMonoImageToPNG (std::vector<uint16_t>& image_arg,
-                          size_t width_arg,
-                          size_t height_arg,
-                          std::vector<uint8_t>& pngData_arg,
+    encodeMonoImageToPNG (std::vector<std::uint16_t>& image_arg,
+                          std::size_t width_arg,
+                          std::size_t height_arg,
+                          std::vector<std::uint8_t>& pngData_arg,
                           int png_level_arg = -1);
 
     /** \brief Encodes 8-bit RGB image to PNG format.
@@ -84,10 +83,10 @@ namespace pcl
       * \ingroup io
       */
     PCL_EXPORTS void
-    encodeRGBImageToPNG (std::vector<uint8_t>& image_arg,
-                         size_t width_arg,
-                         size_t height_arg,
-                         std::vector<uint8_t>& pngData_arg,
+    encodeRGBImageToPNG (std::vector<std::uint8_t>& image_arg,
+                         std::size_t width_arg,
+                         std::size_t height_arg,
+                         std::vector<std::uint8_t>& pngData_arg,
                          int png_level_arg = -1);
 
     /** \brief Encodes 16-bit RGB image to PNG format.
@@ -99,10 +98,10 @@ namespace pcl
       * \ingroup io
       */
     PCL_EXPORTS void
-    encodeRGBImageToPNG (std::vector<uint16_t>& image_arg,
-                         size_t width_arg,
-                         size_t height_arg,
-                         std::vector<uint8_t>& pngData_arg,
+    encodeRGBImageToPNG (std::vector<std::uint16_t>& image_arg,
+                         std::size_t width_arg,
+                         std::size_t height_arg,
+                         std::vector<std::uint8_t>& pngData_arg,
                          int png_level_arg = -1);
 
     /** \brief Decode compressed PNG to 8-bit image
@@ -114,10 +113,10 @@ namespace pcl
       * \ingroup io
       */
     PCL_EXPORTS void
-    decodePNGToImage (std::vector<uint8_t>& pngData_arg,
-                      std::vector<uint8_t>& imageData_arg,
-                      size_t& width_arg,
-                      size_t& heigh_argt,
+    decodePNGToImage (std::vector<std::uint8_t>& pngData_arg,
+                      std::vector<std::uint8_t>& imageData_arg,
+                      std::size_t& width_arg,
+                      std::size_t& heigh_argt,
                       unsigned int& channels_arg);
 
     /** \brief Decode compressed PNG to 16-bit image
@@ -129,14 +128,10 @@ namespace pcl
       * \ingroup io
       */
     PCL_EXPORTS void
-    decodePNGToImage (std::vector<uint8_t>& pngData_arg,
-                      std::vector<uint16_t>& imageData_arg,
-                      size_t& width_arg,
-                      size_t& height_arg,
+    decodePNGToImage (std::vector<std::uint8_t>& pngData_arg,
+                      std::vector<std::uint16_t>& imageData_arg,
+                      std::size_t& width_arg,
+                      std::size_t& height_arg,
                       unsigned int& channels_arg);
   }
 }
-
-
-#endif
-

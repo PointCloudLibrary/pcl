@@ -1,8 +1,6 @@
 #include <pcl/surface/on_nurbs/fitting_curve_2d.h>
 #include <pcl/surface/on_nurbs/triangulation.h>
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 
 #include <pcl/visualization/pcl_visualizer.h>
@@ -12,11 +10,10 @@ pcl::visualization::PCLVisualizer viewer ("Curve Fitting 2D");
 void
 PointCloud2Vector2d (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, pcl::on_nurbs::vector_vec2d &data)
 {
-  for (unsigned i = 0; i < cloud->size (); i++)
+  for (const auto &p : *cloud)
   {
-    pcl::PointXYZ &p = cloud->at (i);
-    if (!pcl_isnan (p.x) && !pcl_isnan (p.y))
-      data.push_back (Eigen::Vector2d (p.x, p.y));
+    if (!std::isnan (p.x) && !std::isnan (p.y))
+      data.emplace_back (p.x, p.y);
   }
 }
 

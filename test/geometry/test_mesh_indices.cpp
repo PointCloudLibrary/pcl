@@ -38,19 +38,18 @@
  *
  */
 
-#include <string>
 #include <sstream>
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <pcl/geometry/mesh_indices.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef pcl::geometry::VertexIndex   VertexIndex;
-typedef pcl::geometry::HalfEdgeIndex HalfEdgeIndex;
-typedef pcl::geometry::EdgeIndex     EdgeIndex;
-typedef pcl::geometry::FaceIndex     FaceIndex;
+using VertexIndex = pcl::geometry::VertexIndex;
+using HalfEdgeIndex = pcl::geometry::HalfEdgeIndex;
+using EdgeIndex = pcl::geometry::EdgeIndex;
+using FaceIndex = pcl::geometry::FaceIndex;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -58,18 +57,18 @@ template <class MeshIndexT>
 class TestMeshIndicesTyped : public testing::Test
 {
   protected:
-    typedef MeshIndexT MeshIndex;
+    using MeshIndex = MeshIndexT;
 };
 
-typedef testing::Types <VertexIndex, HalfEdgeIndex, EdgeIndex, FaceIndex> MeshIndexTypes;
+using MeshIndexTypes = testing::Types <VertexIndex, HalfEdgeIndex, EdgeIndex, FaceIndex>;
 
-TYPED_TEST_CASE (TestMeshIndicesTyped, MeshIndexTypes);
+TYPED_TEST_SUITE (TestMeshIndicesTyped, MeshIndexTypes);
 
 ////////////////////////////////////////////////////////////////////////////////
 
 TYPED_TEST (TestMeshIndicesTyped, General)
 {
-  typedef typename TestFixture::MeshIndex MeshIndex;
+  using MeshIndex = typename TestFixture::MeshIndex;
   MeshIndex vi0, vi1 (-5), vi2 (0), vi3 (5), vi4 (5), vi5 (6);
 
   EXPECT_FALSE (vi0.isValid ());

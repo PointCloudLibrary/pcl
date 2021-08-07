@@ -44,7 +44,7 @@
  * Tracking people within groups with RGB-D data,
  * In Proceedings of the International Conference on Intelligent Robots and Systems (IROS) 2012, Vilamoura (Portugal), 2012.
  */
-  
+
 #include <pcl/console/parse.h>
 #include <pcl/point_types.h>
 #include <pcl/visualization/pcl_visualizer.h>    
@@ -53,28 +53,33 @@
 #include <pcl/people/ground_based_people_detection_app.h>
 #include <pcl/common/time.h>
 
-typedef pcl::PointXYZRGBA PointT;
-typedef pcl::PointCloud<PointT> PointCloudT;
+#include <mutex>
+#include <thread>
+
+using namespace std::chrono_literals;
+
+using PointT = pcl::PointXYZRGBA;
+using PointCloudT = pcl::PointCloud<PointT>;
 
 // PCL viewer //
 pcl::visualization::PCLVisualizer viewer("PCL Viewer");
 
 // Mutex: //
-boost::mutex cloud_mutex;
+std::mutex cloud_mutex;
 
 enum { COLS = 640, ROWS = 480 };
 
 int print_help()
 {
-  cout << "*******************************************************" << std::endl;
-  cout << "Ground based people detection app options:" << std::endl;
-  cout << "   --help    <show_this_help>" << std::endl;
-  cout << "   --svm     <path_to_svm_file>" << std::endl;
-  cout << "   --conf    <minimum_HOG_confidence (default = -1.5)>" << std::endl;
-  cout << "   --min_h   <minimum_person_height (default = 1.3)>" << std::endl;
-  cout << "   --max_h   <maximum_person_height (default = 2.3)>" << std::endl;
-  cout << "   --sample  <sampling_factor (default = 1)>" << std::endl;
-  cout << "*******************************************************" << std::endl;
+  std::cout << "*******************************************************" << std::endl;
+  std::cout << "Ground based people detection app options:" << std::endl;
+  std::cout << "   --help    <show_this_help>" << std::endl;
+  std::cout << "   --svm     <path_to_svm_file>" << std::endl;
+  std::cout << "   --conf    <minimum_HOG_confidence (default = -1.5)>" << std::endl;
+  std::cout << "   --min_h   <minimum_person_height (default = 1.3)>" << std::endl;
+  std::cout << "   --max_h   <maximum_person_height (default = 2.3)>" << std::endl;
+  std::cout << "   --sample  <sampling_factor (default = 1)>" << std::endl;
+  std::cout << "*******************************************************" << std::endl;
   return 0;
 }
 
@@ -138,14 +143,16 @@ int main (int argc, char** argv)
   PointCloudT::Ptr cloud (new PointCloudT);
   bool new_cloud_available_flag = false;
   pcl::Grabber* interface = new pcl::OpenNIGrabber();
-  boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
-      boost::bind (&cloud_cb_, _1, cloud, &new_cloud_available_flag);
+  std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f = [&] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& p1)
+  {
+    cloud_cb_ (p1, cloud, &new_cloud_available_flag);
+  };
   interface->registerCallback (f);
   interface->start ();
 
   // Wait for the first frame:
   while(!new_cloud_available_flag) 
-    boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+    std::this_thread::sleep_for(1ms);
   new_cloud_available_flag = false;
 
   cloud_mutex.lock ();    // for not overwriting the point cloud
@@ -172,8 +179,8 @@ int main (int argc, char** argv)
   // Ground plane estimation:
   Eigen::VectorXf ground_coeffs;
   ground_coeffs.resize(4);
-  std::vector<int> clicked_points_indices;
-  for (unsigned int i = 0; i < clicked_points_3d->points.size(); i++)
+  pcl::Indices clicked_points_indices;
+  for (std::size_t i = 0; i < clicked_points_3d->size(); i++)
     clicked_points_indices.push_back(i);
   pcl::SampleConsensusModelPlane<PointT> model_plane(clicked_points_3d);
   model_plane.computeModelCoefficients(clicked_points_indices,ground_coeffs);
@@ -221,12 +228,12 @@ int main (int argc, char** argv)
       pcl::visualization::PointCloudColorHandlerRGBField<PointT> rgb(cloud);
       viewer.addPointCloud<PointT> (cloud, rgb, "input_cloud");
       unsigned int k = 0;
-      for(std::vector<pcl::people::PersonCluster<PointT> >::iterator it = clusters.begin(); it != clusters.end(); ++it)
+      for(auto &cluster : clusters)
       {
-        if(it->getPersonConfidence() > min_confidence)             // draw only people with confidence above a threshold
+        if(cluster.getPersonConfidence() > min_confidence)             // draw only people with confidence above a threshold
         {
           // draw theoretical person bounding box in the PCL viewer:
-          it->drawTBoundingBox(viewer, k);
+          cluster.drawTBoundingBox(viewer, k);
           k++;
         }
       }

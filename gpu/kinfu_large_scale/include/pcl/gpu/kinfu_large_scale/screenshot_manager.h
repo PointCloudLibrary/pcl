@@ -36,12 +36,11 @@
  *  Author: Francisco, Technical University Eindhoven, (f.j.mysurname.soriano <At > tue.nl)
  */
 
-#ifndef PCL_SCREENSHOT_MANAGER_H_
-#define PCL_SCREENSHOT_MANAGER_H_
+#pragma once
 
 #include <iostream>
 #include <fstream>
-#include <stdio.h>
+#include <cstdio>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
@@ -49,7 +48,6 @@
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/containers/kernel_containers.h>
 #include <pcl/gpu/kinfu_large_scale/pixel_rgb.h> 
-#include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp> 
 //#include <boost/graph/buffer_concepts.hpp>
 
@@ -69,7 +67,7 @@ namespace pcl
       {
         public:
 
-          typedef pcl::gpu::kinfuLS::PixelRGB PixelRGB;
+          using PixelRGB = pcl::gpu::kinfuLS::PixelRGB;
 
           /** Constructor */
           ScreenshotManager();
@@ -93,7 +91,7 @@ namespace pcl
 
           /**Write camera pose to file*/
           void 
-          writePose(const std::string &filename_pose, const Eigen::Vector3f &teVecs, const Eigen::Matrix<float, 3, 3, Eigen::RowMajor> &erreMats);
+          writePose(const std::string &filename_pose, const Eigen::Vector3f &teVecs, const Eigen::Matrix<float, 3, 3, Eigen::RowMajor> &erreMats) const;
 
           /**Counter of the number of screenshots taken*/
           int screenshot_counter;
@@ -103,5 +101,3 @@ namespace pcl
     };
   }
 }
-
-#endif // PCL_SCREENSHOT_MANAGER_H_

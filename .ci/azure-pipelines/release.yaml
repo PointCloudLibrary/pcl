@@ -1,0 +1,229 @@
+# Release PCL steps:
+# 1. Check tests:
+#   * debian:latest
+#   * perception_pcl
+# 2. Package for
+#   * MacOS
+#   * tar source release
+#   * Windows Installers
+
+trigger: none
+
+resources:
+- repo: self
+
+variables:
+  dockerHub: "PointCloudLibrary@hub.docker.com"
+  dockerHubID: "pointcloudlibrary"
+  # VERSION and RC need to be provided via the UI
+  # UI priority is the lowest and can't override the file data
+  # RC: 0  # number of pre-release
+  # VERSION: 1.99
+
+stages:
+- stage: Info
+  displayName: "Version"
+  jobs:
+  - job: additional_info
+    displayName: "More Info"
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
+      # find the commit hash on a quick non-forced update too
+      fetchDepth: 10
+    - script: |
+        echo "Prev release: $(git tag | sort -rV | head -1 | cut -d- -f 2)"
+        echo "Current release: "$(VERSION)-rc$(RC)
+        if [ -z $VERSION ] || [ -z $RC ]; then
+          echo "Bad version and release candidate number"
+          exit 3
+        fi
+      displayName: "Test for and display version info"
+- stage: Debian
+  dependsOn: ["Info"]
+  jobs:
+  - job: BuildDebian
+    displayName: "Build Debian Latest"
+    timeoutInMinutes: 360
+    pool:
+      vmImage: 'ubuntu-latest'
+    strategy:
+      matrix:
+        INT32:
+          PCL_INDEX_SIGNED: true
+          PCL_INDEX_SIZE: 32
+        UINT32:
+          PCL_INDEX_SIGNED: false
+          PCL_INDEX_SIZE: 32
+        INT64:
+          PCL_INDEX_SIGNED: true
+          PCL_INDEX_SIZE: 64
+        UINT64:
+          PCL_INDEX_SIGNED: false
+          PCL_INDEX_SIZE: 64
+    variables:
+      tag: "release"
+    steps:
+    - checkout: self
+      # find the commit hash on a quick non-forced update too
+      fetchDepth: 10
+    - task: Docker@2
+      displayName: "Build docker image"
+      inputs:
+        command: build
+        arguments: |
+          --no-cache
+          -t $(dockerHubID)/release:$(tag)
+          --build-arg PCL_INDEX_SIGNED=$(PCL_INDEX_SIGNED)
+          --build-arg PCL_INDEX_SIZE=$(PCL_INDEX_SIZE)
+        dockerfile: '$(Build.SourcesDirectory)/.dev/docker/release/Dockerfile'
+        tags: "$(tag)"
+- stage: ROS
+  dependsOn: ["Info"]
+  jobs:
+  - job: PerceptionPCL
+    displayName: "perception_pcl compile"
+    timeoutInMinutes: 360
+    pool:
+      vmImage: 'ubuntu-latest'
+    strategy:
+      matrix:
+        # Only ROS Melodic works with current releases of PCL
+        # Kinetic has stopped supporting any version later than PCL 1.7.2
+        ROS Melodic:
+          flavor: "melodic"
+    variables:
+      tag: "ros"
+    steps:
+    - checkout: self
+      # find the commit hash on a quick non-forced update too
+      fetchDepth: 10
+    - task: Docker@2
+      displayName: "Build docker image"
+      inputs:
+        command: build
+        arguments: |
+          --no-cache
+          --build-arg flavor=$(flavor)
+          -t $(dockerHubID)/release:$(tag)
+        dockerfile: '$(Build.SourcesDirectory)/.dev/docker/perception_pcl_ros/Dockerfile'
+        buildContext: '$(Build.SourcesDirectory)/.dev/docker/perception_pcl_ros'
+        tags: "$(tag)"
+- stage: Prepare
+  dependsOn: ["Debian", "ROS"]
+  jobs:
+  - job: src_code
+    displayName: "Package Source Code"
+    timeoutInMinutes: 360
+    pool:
+      vmImage: 'ubuntu-latest'
+    variables:
+      PUBLISH_LOCATION: '$(Build.ArtifactStagingDirectory)'
+      SOURCE_LOCATION: '$(Build.SourcesDirectory)'
+    steps:
+    - checkout: self
+      # find the commit hash on a quick non-forced update too
+      fetchDepth: 10
+      path: 'pcl'
+    - task: Bash@3
+      displayName: "Remove git files"
+      inputs:
+        targetType: 'inline'
+        script: 'rm -fr ./.git'
+        workingDirectory: '$(SOURCE_LOCATION)'
+        failOnStderr: true
+    - task: ArchiveFiles@2
+      displayName: "Create release archive (.tar.gz)"
+      inputs:
+        rootFolderOrFile: '$(SOURCE_LOCATION)'
+        includeRootFolder: true
+        archiveType: 'tar'
+        archiveFile: '$(PUBLISH_LOCATION)/source.tar.gz'
+        replaceExistingArchive: true
+        verbose: true
+    - task: ArchiveFiles@2
+      displayName: "Create release archive (.zip)"
+      inputs:
+        rootFolderOrFile: '$(SOURCE_LOCATION)'
+        includeRootFolder: true
+        archiveType: 'zip'
+        archiveFile: '$(PUBLISH_LOCATION)/source.zip'
+        replaceExistingArchive: true
+        verbose: true
+    - script: |
+        for file in $(ls "$(PUBLISH_LOCATION)/"); do
+          sha256sum "$(PUBLISH_LOCATION)"/"${file}" >> $(PUBLISH_LOCATION)/sha256_checksums.txt
+          sha512sum "$(PUBLISH_LOCATION)"/"${file}" >> $(PUBLISH_LOCATION)/sha512_checksums.txt
+        done
+        echo "SHA 256 Checksums:"
+        cat $(PUBLISH_LOCATION)/sha256_checksums.txt
+        echo "SHA 512 Checksums:"
+        cat $(PUBLISH_LOCATION)/sha512_checksums.txt
+      displayName: "Generate checksum"
+    - task: PublishBuildArtifacts@1
+      displayName: "Publish archive"
+      inputs:
+        PathtoPublish: '$(PUBLISH_LOCATION)/'
+        ArtifactName: 'source'
+        publishLocation: 'Container'
+  - job: changelog
+    displayName: Generate Change Log
+    pool:
+      vmImage: 'ubuntu-latest'
+    variables:
+      CHANGELOG: '$(Build.ArtifactStagingDirectory)/changelog.md'
+    steps:
+    - checkout: none
+    - script: |
+        cat > $(CHANGELOG) <<EOF
+        ## Insert Summary Here
+
+        For an exhaustive list of newly added features, deprecations and other changes
+        in PCL $(VERSION), please see [CHANGES.md](https://github.com/PointCloudLibrary/pcl/blob/master/CHANGES.md). **Remember to edit the URL**
+        EOF
+      displayName: 'Generate Changelog'
+    - task: PublishBuildArtifacts@1
+      displayName: "Publish Changelog"
+      inputs:
+        PathtoPublish: '$(CHANGELOG)'
+        ArtifactName: 'changelog'
+        publishLocation: 'Container'
+- stage: Release
+  dependsOn: ["Prepare"]
+  jobs:
+  - job: release
+    displayName: "Release the kraken"
+    timeoutInMinutes: 360
+    variables:
+      DOWNLOAD_LOCATION: '$(Build.ArtifactStagingDirectory)'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
+      # find the commit hash on a quick non-forced update too
+      fetchDepth: 10
+    - bash: |
+        if [ -z $RC ] || [ $RC -eq 0 ]; then isPreRelease=false; else isPreRelease=true; fi
+        echo "##vso[task.setvariable variable=isPreRelease]${isPreRelease}"
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        downloadType: 'all'  # can be anything except single
+        downloadPath: '$(DOWNLOAD_LOCATION)'
+    - task: GitHubRelease@1
+      inputs:
+        action: 'create'
+        addChangeLog: false
+        # assets, one pattern per line
+        assets: |
+          $(DOWNLOAD_LOCATION)/source/*
+        isDraft: true
+        isPreRelease: $(isPreRelease)
+        gitHubConnection: 'Release to GitHub'
+        releaseNotesFilePath: '$(DOWNLOAD_LOCATION)/changelog/changelog.md'
+        repositoryName: $(Build.Repository.Name)
+        tagSource: 'userSpecifiedTag'
+        tag: "pcl-$(VERSION)-rc$(RC)"
+        tagPattern: 'pcl-*'
+        target: '$(Build.SourceVersion)'
+        title: 'PCL $(VERSION)'

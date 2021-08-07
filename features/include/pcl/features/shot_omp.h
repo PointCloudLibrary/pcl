@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SHOT_OMP_H_
-#define PCL_SHOT_OMP_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
@@ -70,8 +69,8 @@ namespace pcl
   class SHOTEstimationOMP : public SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>
   {
     public:
-      typedef boost::shared_ptr<SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> > Ptr;
-      typedef boost::shared_ptr<const SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> > ConstPtr;
+      using Ptr = shared_ptr<SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> >;
+      using ConstPtr = shared_ptr<const SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> >;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::input_;
@@ -92,17 +91,20 @@ namespace pcl
       using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::radius1_4_;
       using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::radius1_2_;
 
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+      using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
 
       /** \brief Empty constructor. */
-      SHOTEstimationOMP (unsigned int nr_threads = 0) : SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> (), threads_ (nr_threads)
-      { };
+      SHOTEstimationOMP (unsigned int nr_threads = 0) : SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> ()
+      {
+        setNumberOfThreads(nr_threads);
+      };
+
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
-      inline void
-      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
+      void
+      setNumberOfThreads (unsigned int nr_threads = 0);
 
     protected:
 
@@ -112,11 +114,11 @@ namespace pcl
         * \param output the resultant point cloud model dataset that contains the SHOT feature estimates
         */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief This method should get called before starting the actual computation. */
       bool
-      initCompute ();
+      initCompute () override;
 
       /** \brief The number of threads the scheduler should use. */
       unsigned int threads_;
@@ -146,8 +148,8 @@ namespace pcl
   class SHOTColorEstimationOMP : public SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>
   {
     public:
-      typedef boost::shared_ptr<SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> > Ptr;
-      typedef boost::shared_ptr<const SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> > ConstPtr;
+      using Ptr = shared_ptr<SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> >;
+      using ConstPtr = shared_ptr<const SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> >;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::input_;
@@ -171,22 +173,23 @@ namespace pcl
       using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::b_describe_color_;
       using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::nr_color_bins_;
 
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
+      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+      using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
 
       /** \brief Empty constructor. */
       SHOTColorEstimationOMP (bool describe_shape = true,
                               bool describe_color = true,
                               unsigned int nr_threads = 0)
-        : SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT> (describe_shape, describe_color), threads_ (nr_threads)
+        : SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT> (describe_shape, describe_color)
       {
+        setNumberOfThreads(nr_threads);
       }
 
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
-      inline void
-      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
+      void
+      setNumberOfThreads (unsigned int nr_threads = 0);
 
     protected:
 
@@ -196,11 +199,11 @@ namespace pcl
         * \param output the resultant point cloud model dataset that contains the SHOT feature estimates
         */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
 
       /** \brief This method should get called before starting the actual computation. */
       bool
-      initCompute ();
+      initCompute () override;
 
       /** \brief The number of threads the scheduler should use. */
       unsigned int threads_;
@@ -211,5 +214,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/shot_omp.hpp>
 #endif
-
-#endif  //#ifndef PCL_SHOT_OMP_H_

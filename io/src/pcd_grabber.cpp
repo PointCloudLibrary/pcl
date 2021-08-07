@@ -35,13 +35,11 @@
  *
  */
 
-#include <pcl/pcl_config.h>
 #include <pcl/io/low_level_io.h>
 #include <pcl/io/pcd_grabber.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/tar.h>
+#include <pcl/memory.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////// GrabberImplementation //////////////////////
@@ -51,25 +49,25 @@ struct pcl::PCDGrabberBase::PCDGrabberImpl
   PCDGrabberImpl (pcl::PCDGrabberBase& grabber, const std::vector<std::string>& pcd_files, float frames_per_second, bool repeat);
   void trigger ();
   void readAhead ();
-  
+
   // TAR reading I/O
   int openTARFile (const std::string &file_name);
   void closeTARFile ();
   bool readTARHeader ();
-  
+
   //! Initialize (find the locations of all clouds, if we haven't yet)
   void
   scrapeForClouds (bool force=false);
 
   //! Get cloud at a particular location
   bool
-  getCloudAt (size_t idx, 
+  getCloudAt (std::size_t idx,
               pcl::PCLPointCloud2 &blob,
-              Eigen::Vector4f &origin, 
+              Eigen::Vector4f &origin,
               Eigen::Quaternionf &orientation);
 
   //! Returns the size
-  size_t
+  std::size_t
   numFrames ();
 
   pcl::PCDGrabberBase& grabber_;
@@ -95,13 +93,13 @@ struct pcl::PCDGrabberBase::PCDGrabberImpl
   // True if we have already found the location of all clouds (for tar only)
   bool scraped_;
   std::vector<int> tar_offsets_;
-  std::vector<size_t> cloud_idx_to_file_idx_;
+  std::vector<std::size_t> cloud_idx_to_file_idx_;
 
   // Mutex to ensure that two quick consecutive triggers do not cause
   // simultaneous asynchronous read-aheads
-  boost::mutex read_ahead_mutex_;
+  std::mutex read_ahead_mutex_;
 
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW 
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -110,17 +108,10 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
   , frames_per_second_ (frames_per_second)
   , repeat_ (repeat)
   , running_ (false)
-  , pcd_files_ ()
-  , pcd_iterator_ ()
-  , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), boost::bind (&PCDGrabberImpl::trigger, this))
-  , next_cloud_ ()
-  , origin_ ()
-  , orientation_ ()
-  , next_file_name_ ()
+  , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), [this] { trigger (); })
   , valid_ (false)
   , tar_fd_ (-1)
   , tar_offset_ (0)
-  , tar_file_ ()
   , tar_header_ ()
   , scraped_ (false)
 {
@@ -136,17 +127,10 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
   , frames_per_second_ (frames_per_second)
   , repeat_ (repeat)
   , running_ (false)
-  , pcd_files_ ()
-  , pcd_iterator_ ()
-  , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), boost::bind (&PCDGrabberImpl::trigger, this))
-  , next_cloud_ ()
-  , origin_ ()
-  , orientation_ ()
-  , next_file_name_ ()
+  , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), [this] { trigger (); })
   , valid_ (false)
   , tar_fd_ (-1)
   , tar_offset_ (0)
-  , tar_file_ ()
   , tar_header_ ()
   , scraped_ (false)
 {
@@ -157,7 +141,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::PCDGrabberBase::PCDGrabberImpl::readAhead ()
 {
   PCDReader reader;
@@ -217,7 +201,7 @@ bool
 pcl::PCDGrabberBase::PCDGrabberImpl::readTARHeader ()
 {
   // Read in the header
-#if WIN32
+#ifdef _WIN32
   int result = static_cast<int> (_read (tar_fd_, reinterpret_cast<char*> (&tar_header_), 512));
 #else
   int result = static_cast<int> (::read (tar_fd_, reinterpret_cast<char*> (&tar_header_), 512));
@@ -228,8 +212,8 @@ pcl::PCDGrabberBase::PCDGrabberImpl::readTARHeader ()
     return (false);
   }
 
-  // We only support regular files for now. 
-  // Additional file types in TAR include: hard links, symbolic links, device/special files, block devices, 
+  // We only support regular files for now.
+  // Additional file types in TAR include: hard links, symbolic links, device/special files, block devices,
   // directories, and named pipes.
   if (tar_header_.file_type[0] != '0' && tar_header_.file_type[0] != '\0')
   {
@@ -277,10 +261,10 @@ pcl::PCDGrabberBase::PCDGrabberImpl::openTARFile (const std::string &file_name)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::PCDGrabberBase::PCDGrabberImpl::trigger ()
 {
-  boost::mutex::scoped_lock read_ahead_lock(read_ahead_mutex_);
+  std::lock_guard<std::mutex> read_ahead_lock(read_ahead_mutex_);
   if (valid_)
     grabber_.publish (next_cloud_,origin_,orientation_, next_file_name_);
 
@@ -289,7 +273,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::trigger ()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::PCDGrabberBase::PCDGrabberImpl::scrapeForClouds (bool force)
 {
   // Do nothing if we've already scraped (unless force is set)
@@ -305,7 +289,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::scrapeForClouds (bool force)
   // Go through and index the clouds
   PCDReader reader;
   pcl::PCLPointCloud2 blob;
-  for (size_t i = 0; i < pcd_files_.size (); ++i)
+  for (std::size_t i = 0; i < pcd_files_.size (); ++i)
   {
     std::string pcd_file = pcd_files_[i];
     // Try to read the file header (TODO this is a huge waste just to make sure it's PCD...is extension enough?)
@@ -341,16 +325,16 @@ pcl::PCDGrabberBase::PCDGrabberImpl::scrapeForClouds (bool force)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-bool 
-pcl::PCDGrabberBase::PCDGrabberImpl::getCloudAt (size_t idx, 
+bool
+pcl::PCDGrabberBase::PCDGrabberImpl::getCloudAt (std::size_t idx,
                                                  pcl::PCLPointCloud2 &blob,
-                                                 Eigen::Vector4f &origin, 
+                                                 Eigen::Vector4f &origin,
                                                  Eigen::Quaternionf &orientation)
 {
   scrapeForClouds (); // Make sure we've scraped
   if (idx >= numFrames ())
     return false;
-  
+
   PCDReader reader;
   int pcd_version;
   std::string filename = pcd_files_[cloud_idx_to_file_idx_[idx]];
@@ -379,13 +363,13 @@ pcl::PCDGrabberBase::PCDGrabberBase (const std::vector<std::string>& pcd_files, 
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-pcl::PCDGrabberBase::~PCDGrabberBase () throw ()
+pcl::PCDGrabberBase::~PCDGrabberBase () noexcept
 {
   delete impl_;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::PCDGrabberBase::start ()
 {
   if (impl_->frames_per_second_ > 0)
@@ -395,12 +379,12 @@ pcl::PCDGrabberBase::start ()
   }
   else // manual trigger
   {
-    boost::thread non_blocking_call (boost::bind (&PCDGrabberBase::PCDGrabberImpl::trigger, impl_));
+    std::thread non_blocking_call (&PCDGrabberBase::PCDGrabberImpl::trigger, impl_);
   }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::PCDGrabberBase::stop ()
 {
   if (impl_->frames_per_second_ > 0)
@@ -416,41 +400,41 @@ pcl::PCDGrabberBase::trigger ()
 {
   if (impl_->frames_per_second_ > 0)
     return;
-  boost::thread non_blocking_call (boost::bind (&PCDGrabberBase::PCDGrabberImpl::trigger, impl_));
+  std::thread non_blocking_call (&PCDGrabberBase::PCDGrabberImpl::trigger, impl_);
 
 //  impl_->trigger ();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 pcl::PCDGrabberBase::isRunning () const
 {
   return (impl_->running_ && (impl_->pcd_iterator_ != impl_->pcd_files_.end()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-std::string 
+std::string
 pcl::PCDGrabberBase::getName () const
 {
   return ("PCDGrabber");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::PCDGrabberBase::rewind ()
 {
   impl_->pcd_iterator_ = impl_->pcd_files_.begin ();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-float 
+float
 pcl::PCDGrabberBase::getFramesPerSecond () const
 {
   return (impl_->frames_per_second_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 pcl::PCDGrabberBase::isRepeatOn () const
 {
   return (impl_->repeat_);
@@ -458,9 +442,9 @@ pcl::PCDGrabberBase::isRepeatOn () const
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::PCDGrabberBase::getCloudAt (size_t idx, 
+pcl::PCDGrabberBase::getCloudAt (std::size_t idx,
                                  pcl::PCLPointCloud2 &blob,
-                                 Eigen::Vector4f &origin, 
+                                 Eigen::Vector4f &origin,
                                  Eigen::Quaternionf &orientation) const
 {
   return (impl_->getCloudAt (idx, blob, origin, orientation));
@@ -472,5 +456,3 @@ pcl::PCDGrabberBase::numFrames () const
 {
   return (impl_->numFrames ());
 }
-
-

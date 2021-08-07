@@ -43,7 +43,7 @@
 #include <pcl/apps/cloud_composer/impl/cloud_item.hpp>
 
 template <typename PointT> QList <pcl::cloud_composer::CloudComposerItem*>
-pcl::cloud_composer::MergeSelection::performTemplatedAction (QList <const CloudComposerItem*> input_data)
+pcl::cloud_composer::MergeSelection::performTemplatedAction (const QList <const CloudComposerItem*>& input_data)
 {
   QList <CloudComposerItem*> output;  
   
@@ -67,7 +67,7 @@ pcl::cloud_composer::MergeSelection::performTemplatedAction (QList <const CloudC
   }  
 
   pcl::ExtractIndices<PointT> filter;
-  typename PointCloud<PointT>::Ptr merged_cloud = boost::shared_ptr<PointCloud<PointT> > (new PointCloud<PointT>);
+  typename PointCloud<PointT>::Ptr merged_cloud (new PointCloud<PointT>);
 
   foreach (const CloudItem* input_cloud_item, selected_item_index_map_.keys ())
   {
@@ -79,11 +79,11 @@ pcl::cloud_composer::MergeSelection::performTemplatedAction (QList <const CloudC
       qDebug () << "Extracting "<<selected_item_index_map_.value(input_cloud_item)->indices.size() << " points out of "<<input_cloud->width;
       filter.setInputCloud (input_cloud);
       filter.setIndices (selected_item_index_map_.value (input_cloud_item));
-      typename PointCloud<PointT>::Ptr original_minus_indices = boost::shared_ptr<PointCloud<PointT> > (new PointCloud<PointT>);
+      typename PointCloud<PointT>::Ptr original_minus_indices (new PointCloud<PointT>);
       filter.setNegative (true);
       filter.filter (*original_minus_indices);
       filter.setNegative (false);
-      typename PointCloud<PointT>::Ptr selected_points = boost::shared_ptr<PointCloud<PointT> > (new PointCloud<PointT>);
+      typename PointCloud<PointT>::Ptr selected_points (new PointCloud<PointT>);
       filter.filter (*selected_points);
       
       qDebug () << "Original minus indices is "<<original_minus_indices->width;
@@ -111,7 +111,7 @@ pcl::cloud_composer::MergeSelection::performTemplatedAction (QList <const CloudC
 }
 
 
-#define PCL_INSTANTIATE_performTemplatedAction(T) template PCL_EXPORTS void pcl::cloud_composer::MergeSelection::performTemplatedAction<T> (QList <const CloudComposerItem*>);
+#define PCL_INSTANTIATE_performTemplatedAction(T) template void pcl::cloud_composer::MergeSelection::performTemplatedAction<T> (QList <const CloudComposerItem*>);
 
 
 

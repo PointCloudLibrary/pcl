@@ -414,8 +414,9 @@ ON_Mesh::ON_Mesh(
   m_hidden_count = 0;
 }
 
-ON_Mesh::ON_Mesh( const ON_Mesh& src ) 
-: m_packed_tex_rotate(0)
+ON_Mesh::ON_Mesh( const ON_Mesh& src )
+: ON_Geometry(src)
+, m_packed_tex_rotate(0)
 , m_parent(0) 
 , m_mesh_parameters(0) 
 , m_invalid_count(0) 
@@ -1011,7 +1012,7 @@ bool ON_Mesh::WriteFaceArray( int vcount, int fcount, ON_BinaryArchive& file ) c
   return rc;
 }
 
-bool ON_Mesh::ReadFaceArray( int vcount, int fcount, ON_BinaryArchive& file )
+bool ON_Mesh::ReadFaceArray( int, int fcount, ON_BinaryArchive& file )
 {
   unsigned char  cvi[4];
   unsigned short svi[4];
@@ -1148,7 +1149,7 @@ bool ON_Mesh::Read_2( int vcount, ON_BinaryArchive& file )
 
   if ( vcount > 0 ) 
   {
-    size_t sz = 0;
+    std::size_t sz = 0;
     int bFailedCRC;
 
     sz = 0;
@@ -1642,7 +1643,7 @@ ON_BOOL32 ON_Mesh::Read( ON_BinaryArchive& file )
         // compressed m_S[]
         if ( rc && vcount > 0 ) 
         {
-          size_t sz = 0;
+          std::size_t sz = 0;
           ON_BOOL32 bFailedCRC=false;
           if (rc) rc = file.ReadCompressedBufferSize( &sz );
           if (rc && sz) 
@@ -2608,10 +2609,10 @@ bool ON_Mesh::IsManifold(
   return bIsManifold;
 }
 
-static void ON_hsort_3dex(ON_3dex *e, size_t nel)
+static void ON_hsort_3dex(ON_3dex *e, std::size_t nel)
 {
   // dictionary sort e[]
-  size_t i_end,k,i,j;
+  std::size_t i_end,k,i,j;
   ON_3dex e_tmp;
 
   if (nel < 2) return;
@@ -3302,7 +3303,7 @@ bool ON_Mesh::GetCurvatureStats( // returns true if successful
   return rc;
 }
 
-int ON_MeshTopology::WaitUntilReady(int sleep_value) const
+int ON_MeshTopology::WaitUntilReady(int) const
 {
   return m_b32IsValid;
 }
@@ -3556,8 +3557,8 @@ ON_Mesh::ComputeFaceNormals()
 //}
 
 bool ON_Mesh::CombineCoincidentVertices( 
-        const ON_3fVector tolerance,
-        double cos_normal_angle // = -1.0  // cosine(break angle) -1.0 will merge all coincident vertices
+        const ON_3fVector /*tolerance*/,
+        double //cos_normal_angle // = -1.0  // cosine(break angle) -1.0 will merge all coincident vertices
         )
 {
   // TODO - If you need this function, please ask Dale Lear to finish it.
@@ -3601,7 +3602,7 @@ static int CompareMeshPoint(const void* a,const void* b,void* ptr)
   const struct tagMESHPOINTS * mp = (const struct tagMESHPOINTS *)ptr;
 
   // use bogus pointer to convert a,b into vertex indices
-  int i = (int)(((const char*)a) - mp->p0); // the (int) is for 64 bit size_t conversion
+  int i = (int)(((const char*)a) - mp->p0); // the (int) is for 64 bit std::size_t conversion
   int j = (int)(((const char*)b) - mp->p0);
 
   d = mp->V[j].x - mp->V[i].x;
@@ -4905,7 +4906,7 @@ bool ON_MeshCurvatureStats::Read( ON_BinaryArchive& file )
 bool ON_MeshCurvatureStats::Set( ON::curvature_style kappa_style,
                                  int Kcount,
                                  const ON_SurfaceCurvature* K,
-                                 const ON_3fVector* N, // needed for normal sectional curvatures
+                                 const ON_3fVector* /*N*/, // needed for normal sectional curvatures
                                  double infinity
                                  )
 {
@@ -5898,7 +5899,7 @@ static int compare3dPoint( const ON_3dPoint* a, const ON_3dPoint* b )
   return 0;
 }
 
-typedef int (*ON_COMPAR_LPVOID_LPVOID)(const void*,const void*);
+using ON_COMPAR_LPVOID_LPVOID = int (*)(const void *, const void *);
 
 static 
 int GetPointMap( int pt_count, const ON_3fPoint* fV, const ON_3dPoint* dV, ON_SimpleArray<int>& pt_map )
@@ -6474,11 +6475,11 @@ bool ON_MeshTopology::SortVertexEdges() const
 static
 void ON_ReverseIntArray(
         int* e,    // array of ints
-        size_t  nel   // length of array
+        std::size_t  nel   // length of array
         )
 {
   int ei;
-  size_t i;
+  std::size_t i;
   nel--;
   for ( i = 0; i<nel; i++, nel--)
   {
@@ -7136,7 +7137,6 @@ bool ON_MeshTopology::Create()
     const int topv_count = m_topv.Count();
     if ( topv_count >= 2 ) 
     {
-      bool rc = false;
       int ei, ecnt, fi, vi0, vi1, efi, topfvi[4];
       ON_MeshFace f;
 
@@ -7149,7 +7149,6 @@ bool ON_MeshTopology::Create()
         
         if ( ecnt > 0 ) 
         {
-          rc = true;
           ON_SortMeshFaceSidesByVertexIndex( ecnt, e );
 
           // count number of topological edges and allocate storage
@@ -7522,10 +7521,8 @@ const ON_MeshPartition* ON_Mesh::CreatePartition(
               )
 {
   ON_Workspace ws;
-  bool bNeedFaceSort = true;
   if ( m_partition ) 
   {
-    bNeedFaceSort = false;
     if (   m_partition->m_partition_max_triangle_count > partition_max_triangle_count
         || m_partition->m_partition_max_vertex_count > partition_max_vertex_count )
         DestroyPartition();
@@ -7692,13 +7689,12 @@ const ON_MeshPartition* ON_Mesh::CreatePartition(
 
       // fill in m_part.vi[]
       int m, pi, partition_count = m_partition->m_part.Count();
-      int vi0, vi1, vi2, vi3;
+      int vi0, vi2, vi3;
       for (vi2 = 0; vi2 < vertex_count && pmark[vi2]<2; vi2++)
       {/*empty for body*/}
       vi3=vi2;
       for ( pi = 0; pi < partition_count; pi++ ) {
         vi0 = vi2;
-        vi1 = vi3;
         m = 2*pi + 4;
         for ( vi2 = vi3; vi2 < vertex_count && pmark[vi2] <  m; vi2++) 
         {/*empty for body*/}
@@ -8135,7 +8131,7 @@ ON_BOOL32 ON_MeshVertexRef::GetBBox(
 }
 
 ON_BOOL32 ON_MeshVertexRef::Transform( 
-       const ON_Xform& xform
+       const ON_Xform&
        )
 {
   return false;
@@ -8271,7 +8267,7 @@ ON_BOOL32 ON_MeshEdgeRef::GetBBox(
 }
 
 ON_BOOL32 ON_MeshEdgeRef::Transform( 
-       const ON_Xform& xform
+       const ON_Xform&
        )
 {
   return false;
@@ -8417,7 +8413,7 @@ ON_BOOL32 ON_MeshFaceRef::GetBBox(
 }
 
 ON_BOOL32 ON_MeshFaceRef::Transform( 
-       const ON_Xform& xform
+       const ON_Xform&
        )
 {
   return false;
@@ -9698,7 +9694,7 @@ ON_PerObjectMeshParameters::~ON_PerObjectMeshParameters()
 }
 
 // virtual ON_Object override
-ON_BOOL32 ON_PerObjectMeshParameters::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON_PerObjectMeshParameters::IsValid( ON_TextLog* ) const
 {
   return true;
 }
@@ -9706,7 +9702,7 @@ ON_BOOL32 ON_PerObjectMeshParameters::IsValid( ON_TextLog* text_log ) const
 // virtual ON_Object override
 unsigned int ON_PerObjectMeshParameters::SizeOf() const
 {
-  size_t sz = sizeof(*this) - sizeof(ON_UserData);
+  std::size_t sz = sizeof(*this) - sizeof(ON_UserData);
   return (unsigned int)sz;
 }
 
@@ -9846,7 +9842,7 @@ bool ON_3dmObjectAttributes::EnableCustomRenderMeshParameters(bool bEnable)
   return (!bEnable || 0 != ud);
 }
 
-void ON_Mesh::DestroyTree( bool bDeleteTree )
+void ON_Mesh::DestroyTree( bool )
 {
 }
 

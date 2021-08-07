@@ -7,42 +7,30 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp> // for split, is_any_of
 namespace bf = boost::filesystem;
 
 inline void
 getModelsInDirectory (bf::path & dir, std::string & rel_path_so_far, std::vector<std::string> & relative_paths)
 {
-  bf::directory_iterator end_itr;
-  for (bf::directory_iterator itr (dir); itr != end_itr; ++itr)
+  for (const auto& dir_entry : bf::directory_iterator(dir))
   {
     //check if its a directory, then get models in it
-    if (bf::is_directory (*itr))
+    if (bf::is_directory (dir_entry))
     {
-#if BOOST_FILESYSTEM_VERSION == 3
-      std::string so_far = rel_path_so_far + itr->path ().filename ().string () + "/";
-#else
-      std::string so_far = rel_path_so_far + itr->path ().filename () + "/";
-#endif
-      bf::path curr_path = itr->path ();
+      std::string so_far = rel_path_so_far + dir_entry.path ().filename ().string () + "/";
+      bf::path curr_path = dir_entry.path ();
       getModelsInDirectory (curr_path, so_far, relative_paths);
     }
     else
     {
       std::vector<std::string> strs;
-#if BOOST_FILESYSTEM_VERSION == 3
-      std::string file = itr->path ().filename ().string ();
-#else
-      std::string file = itr->path ().filename ();
-#endif
+      std::string file = dir_entry.path ().filename ().string ();
       boost::split (strs, file, boost::is_any_of ("."));
       std::string extension = strs[strs.size () - 1];
 
       if((file.compare (0, 3, "raw") == 0) && extension == "pcd") {
-#if BOOST_FILESYSTEM_VERSION == 3
-        std::string path = rel_path_so_far + itr->path ().filename ().string ();
-#else
-        std::string path = rel_path_so_far + itr->path ().filename ();
-#endif
+        std::string path = rel_path_so_far + dir_entry.path ().filename ().string ();
         relative_paths.push_back (path);
       }
     }
@@ -103,7 +91,11 @@ main (int argc, char ** argv)
 
   //Parse filter parameters
   std::string filter_parameters_file;
-  pcl::console::parse_argument (argc, argv, "--filter", filter_parameters_file) > 0;
+  if (pcl::console::parse_argument (argc, argv, "--filter", filter_parameters_file) < 0)
+  {
+    pcl::console::print_error ("Missing option --filter\n");
+    return (1);
+  }
   params_stream.open (filter_parameters_file.c_str ());
   if (params_stream.is_open())
   {
@@ -122,7 +114,11 @@ main (int argc, char ** argv)
 
   // Parse segmentation parameters
   std::string segmentation_parameters_file;
-  pcl::console::parse_argument (argc, argv, "--segment", segmentation_parameters_file) > 0;
+  if (pcl::console::parse_argument (argc, argv, "--segment", segmentation_parameters_file) < 0)
+  {
+    pcl::console::print_error ("Missing option --segment\n");
+    return (1);
+  }
   params_stream.open (segmentation_parameters_file.c_str ());
   if (params_stream.is_open())
   {
@@ -142,7 +138,11 @@ main (int argc, char ** argv)
 
   // Parse feature estimation parameters
   std::string feature_estimation_parameters_file;
-  pcl::console::parse_argument (argc, argv, "--feature", feature_estimation_parameters_file) > 0;
+  if (pcl::console::parse_argument (argc, argv, "--feature", feature_estimation_parameters_file) < 0)
+  {
+    pcl::console::print_error ("Missing option --feature\n");
+    return (1);
+  }
   params_stream.open (feature_estimation_parameters_file.c_str ());
   if (params_stream.is_open())
   {
@@ -163,7 +163,11 @@ main (int argc, char ** argv)
 
   // Parse the registration parameters
   std::string registration_parameters_file;
-  pcl::console::parse_argument (argc, argv, "--registration", registration_parameters_file) > 0;
+  if (pcl::console::parse_argument (argc, argv, "--registration", registration_parameters_file) < 0)
+  {
+    pcl::console::print_error ("Missing option --registration\n");
+    return (1);
+  }
   params_stream.open (registration_parameters_file.c_str ());
   if (params_stream.is_open())
   {
@@ -190,7 +194,7 @@ main (int argc, char ** argv)
   std::string start = "";
   getModelsInDirectory (dir_path, start, files);
 
-  for(size_t i=0; i < files.size(); i++) {
+  for(std::size_t i=0; i < files.size(); i++) {
     // Load input file
 
     std::string filename = directory;

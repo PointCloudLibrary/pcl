@@ -37,15 +37,14 @@
  */
 
 #include <pcl/PCLPointCloud2.h>
-#include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <pcl/filters/passthrough.h>
+#include <boost/filesystem.hpp> // for path, exists, ...
+#include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 
-
-using namespace std;
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
@@ -102,7 +101,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   passthrough_filter.setInputCloud (input);
   passthrough_filter.setFilterFieldName (field_name);
   passthrough_filter.setFilterLimits (min, max);
-  passthrough_filter.setFilterLimitsNegative (!inside);
+  passthrough_filter.setNegative (!inside);
   passthrough_filter.setKeepOrganized (keep_organized);
   passthrough_filter.filter (output);
 
@@ -124,15 +123,15 @@ saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 }
 
 int
-batchProcess (const vector<string> &pcd_files, string &output_dir,
-              std::string field_name, float min, float max, bool inside, bool keep_organized)
+batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir,
+              const std::string &field_name, float min, float max, bool inside, bool keep_organized)
 {
-  vector<string> st;
-  for (size_t i = 0; i < pcd_files.size (); ++i)
+  std::vector<std::string> st;
+  for (const auto &pcd_file : pcd_files)
   {
     // Load the first file
     pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
-    if (!loadCloud (pcd_files[i], *cloud)) 
+    if (!loadCloud (pcd_file, *cloud)) 
       return (-1);
 
     // Perform the feature estimation
@@ -140,14 +139,11 @@ batchProcess (const vector<string> &pcd_files, string &output_dir,
     compute (cloud, output, field_name, min, max, inside, keep_organized);
 
     // Prepare output file name
-    string filename = pcd_files[i];
-    boost::trim (filename);
-    boost::split (st, filename, boost::is_any_of ("/\\"), boost::token_compress_on);
+    std::string filename = boost::filesystem::path(pcd_file).filename().string();
     
     // Save into the second file
-    stringstream ss;
-    ss << output_dir << "/" << st.at (st.size () - 1);
-    saveCloud (ss.str (), output);
+    const std::string filepath = output_dir + '/' + filename;
+    saveCloud (filepath, output);
   }
   return (0);
 }
@@ -177,7 +173,7 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-inside", inside);
   parse_argument (argc, argv, "-field", field_name);
   parse_argument (argc, argv, "-keep", keep_organized);
-  string input_dir, output_dir;
+  std::string input_dir, output_dir;
   if (parse_argument (argc, argv, "-input_dir", input_dir) != -1)
   {
     PCL_INFO ("Input directory given as %s. Batch process mode on.\n", input_dir.c_str ());
@@ -216,9 +212,9 @@ main (int argc, char** argv)
   }
   else
   {
-    if (input_dir != "" && boost::filesystem::exists (input_dir))
+    if (!input_dir.empty() && boost::filesystem::exists (input_dir))
     {
-      vector<string> pcd_files;
+      std::vector<std::string> pcd_files;
       boost::filesystem::directory_iterator end_itr;
       for (boost::filesystem::directory_iterator itr (input_dir); itr != end_itr; ++itr)
       {

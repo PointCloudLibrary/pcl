@@ -34,12 +34,12 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_RECOGNITION_HV_GREEDY_H_
-#define PCL_RECOGNITION_HV_GREEDY_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/recognition/hv/hypotheses_verification.h>
-#include <pcl/common/common.h>
+
+#include <memory>
 
 namespace pcl
 {
@@ -73,13 +73,15 @@ namespace pcl
         float regularizer_;
       };
 
+      using RecognitionModelPtr = std::shared_ptr<RecognitionModel>;
+
       /*
        * \brief Sorts recognition models based on the number of explained scene points and visible outliers
        */
       struct sortModelsClass
       {
         bool
-        operator() (const boost::shared_ptr<RecognitionModel> & n1, const boost::shared_ptr<RecognitionModel> & n2)
+        operator() (const RecognitionModelPtr & n1, const RecognitionModelPtr & n2)
         {
           float val1 = static_cast<float>(n1->good_information_) - static_cast<float>(n1->bad_information_) * n1->regularizer_;
           float val2 = static_cast<float>(n2->good_information_) - static_cast<float>(n2->bad_information_) * n2->regularizer_;
@@ -94,7 +96,7 @@ namespace pcl
       struct modelIndices
       {
         int index_;
-        boost::shared_ptr<RecognitionModel> model_;
+        RecognitionModelPtr model_;
       };
 
       /*
@@ -115,10 +117,10 @@ namespace pcl
       std::vector<modelIndices> indices_models_;
 
       /** \brief Recognition models (hypotheses to be verified) */
-      std::vector<boost::shared_ptr<RecognitionModel> > recognition_models_;
+      std::vector<RecognitionModelPtr> recognition_models_;
 
       /** \brief Recognition models that explain a scene points. */
-      std::vector<std::vector<boost::shared_ptr<RecognitionModel> > > points_explained_by_rm_;
+      std::vector<std::vector<RecognitionModelPtr>> points_explained_by_rm_;
 
       /** \brief Weighting for outliers */
       float regularizer_;
@@ -132,7 +134,7 @@ namespace pcl
       sortModels ()
       {
         indices_models_.clear ();
-        for (size_t i = 0; i < recognition_models_.size (); i++)
+        for (std::size_t i = 0; i < recognition_models_.size (); i++)
         {
           modelIndices mi;
           mi.index_ = static_cast<int> (i);
@@ -149,10 +151,10 @@ namespace pcl
       void
       updateGoodInformation (int i)
       {
-        for (size_t k = 0; k < recognition_models_[i]->explained_.size (); k++)
+        for (std::size_t k = 0; k < recognition_models_[i]->explained_.size (); k++)
         {
           //update good_information_ for all hypotheses that were explaining the same points as hypothesis i
-          for (size_t kk = 0; kk < points_explained_by_rm_[recognition_models_[i]->explained_[k]].size (); kk++)
+          for (std::size_t kk = 0; kk < points_explained_by_rm_[recognition_models_[i]->explained_[k]].size (); kk++)
           {
             (points_explained_by_rm_[recognition_models_[i]->explained_[k]])[kk]->good_information_--;
             (points_explained_by_rm_[recognition_models_[i]->explained_[k]])[kk]->bad_information_++;
@@ -173,12 +175,10 @@ namespace pcl
 
       /** \brief Starts verification */
       void
-      verify ();
+      verify () override;
     };
 }
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/recognition/impl/hv/greedy_verification.hpp>
 #endif
-
-#endif /* PCL_RECOGNITION_HV_GREEDY_H_ */

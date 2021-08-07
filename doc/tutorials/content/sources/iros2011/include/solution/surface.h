@@ -1,5 +1,4 @@
-#ifndef SURFACE_H_
-#define SURFACE_H_
+#pragma once
 
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/surface/mls.h>
@@ -19,7 +18,7 @@ class Mesh
     std::vector<pcl::Vertices> faces;
 };
 
-typedef boost::shared_ptr<Mesh> MeshPtr;
+using MeshPtr = std::shared_ptr<Mesh>;
 
 PointCloudPtr
 smoothPointCloud (const PointCloudPtr & input, float radius, int polynomial_order)
@@ -126,5 +125,3 @@ marchingCubesTriangulation (const SurfaceElementsPtr & surfels, float leaf_size,
   
   return (output);
 }
-
-#endif

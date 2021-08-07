@@ -91,10 +91,10 @@ namespace pcl
                 float y1 = (b - sqrt (det)) / a;
                 float y2 = (b + sqrt (det)) / a;
 
-                min = std::min (static_cast<int> (floor (y1)), static_cast<int> (floor (y2)));
-                max = std::max (static_cast<int> (ceil (y1)), static_cast<int> (ceil (y2)));
-                minY = std::min (rows - 1, std::max (0, min));
-                maxY = std::max (std::min (rows - 1, max), 0);
+                min = min (static_cast<int> (std::floor (y1)), static_cast<int> (std::floor (y2)));
+                max = max (static_cast<int> (std::ceil (y1)), static_cast<int> (std::ceil (y2)));
+                minY = min (rows - 1, max (0, min));
+                maxY = max (min (rows - 1, max), 0);
             }
 
             b = squared_radius * coeff6 - q.x * q.z;
@@ -111,10 +111,10 @@ namespace pcl
                 float x1 = (b - sqrt (det)) / a;
                 float x2 = (b + sqrt (det)) / a;
 
-                min = std::min (static_cast<int> (floor (x1)), static_cast<int> (floor (x2)));
-                max = std::max (static_cast<int> (ceil (x1)), static_cast<int> (ceil (x2)));
-                minX = std::min (cols- 1, std::max (0, min));
-                maxX = std::max (std::min (cols - 1, max), 0);
+                min = min (static_cast<int> (std::floor (x1)), static_cast<int> (std::floor (x2)));
+                max = max (static_cast<int> (std::ceil (x1)), static_cast<int> (std::ceil (x2)));
+                minX = min (cols- 1, max (0, min));
+                maxX = max (min (cols - 1, max), 0);
             }
         }
 
@@ -161,10 +161,10 @@ void optimized_shs5(const PointCloud<PointXYZRGB> &cloud, float tolerance, const
     cv::Mat huebuf(cloud.height, cloud.width, CV_32F);
     float *hue = huebuf.ptr<float>();    
 
-    for(size_t i = 0; i < cloud.points.size(); ++i)
+    for(std::size_t i = 0; i < cloud.size(); ++i)
     {
         PointXYZHSV h;
-        PointXYZRGB p = cloud.points[i];
+        PointXYZRGB p = cloud[i];
         PointXYZRGBtoXYZHSV(p, h);
         hue[i] = h.h;
     }    
@@ -174,11 +174,10 @@ void optimized_shs5(const PointCloud<PointXYZRGB> &cloud, float tolerance, const
     SearchD search;    
     search.setInputCloud(cloud.makeShared());
 
-    vector< vector<int> > storage(100);
+    std::vector< std::vector<int> > storage(100);
 
     //  omp_set_num_threads(1);
     // Process all points in the indices vector
-    //#pragma omp parallel for
     for (int k = 0; k < static_cast<int> (indices_in.indices.size ()); ++k)
     {
         int i = indices_in.indices[k];
@@ -195,13 +194,13 @@ void optimized_shs5(const PointCloud<PointXYZRGB> &cloud, float tolerance, const
         int sq_idx = 0;
         seed_queue.push_back (i);
 
-        PointXYZRGB p = cloud.points[i];
+        PointXYZRGB p = cloud[i];
         float h = hue[i];
 
         while (sq_idx < (int)seed_queue.size ())
         {
             int index = seed_queue[sq_idx];
-            const PointXYZRGB& q = cloud.points[index];
+            const PointXYZRGB& q = cloud[index];
 
             if(!isFinite (q))
                 continue;
@@ -229,11 +228,11 @@ void optimized_shs5(const PointCloud<PointXYZRGB> &cloud, float tolerance, const
                     if (mask[idx])
                         continue;
 
-                    if (sqnorm(cloud.points[idx], q) <= squared_radius)
+                    if (sqnorm(cloud[idx], q) <= squared_radius)
                     {
                         float h_l = hue[idx];
 
-                        if (fabs(h_l - h) < delta_hue)
+                        if (std::abs(h_l - h) < delta_hue)
                         {
                             if(idx & 1)
                                 seed_queue.push_back (idx);

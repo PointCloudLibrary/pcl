@@ -38,11 +38,12 @@
  *
  */
 
-#ifndef PCL_SURFACE_ORGANIZED_FAST_MESH_H_
-#define PCL_SURFACE_ORGANIZED_FAST_MESH_H_
+#pragma once
 
 #include <pcl/common/angles.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/surface/reconstruction.h>
+
 
 namespace pcl
 {
@@ -65,15 +66,15 @@ namespace pcl
   class OrganizedFastMesh : public MeshConstruction<PointInT>
   {
     public:
-      typedef boost::shared_ptr<OrganizedFastMesh<PointInT> > Ptr;
-      typedef boost::shared_ptr<const OrganizedFastMesh<PointInT> > ConstPtr;
+      using Ptr = shared_ptr<OrganizedFastMesh<PointInT> >;
+      using ConstPtr = shared_ptr<const OrganizedFastMesh<PointInT> >;
 
       using MeshConstruction<PointInT>::input_;
       using MeshConstruction<PointInT>::check_tree_;
 
-      typedef typename pcl::PointCloud<PointInT>::Ptr PointCloudPtr;
+      using PointCloudPtr = typename pcl::PointCloud<PointInT>::Ptr;
 
-      typedef std::vector<pcl::Vertices> Polygons;
+      using Polygons = std::vector<pcl::Vertices>;
 
       enum TriangulationType
       {
@@ -95,7 +96,7 @@ namespace pcl
       , triangulation_type_ (QUAD_MESH)
       , viewpoint_ (Eigen::Vector3f::Zero ())
       , store_shadowed_faces_ (false)
-      , cos_angle_tolerance_ (fabsf (cosf (pcl::deg2rad (12.5f))))
+      , cos_angle_tolerance_ (std::abs (std::cos (pcl::deg2rad (12.5f))))
       , distance_tolerance_ (-1.0f)
       , distance_dependent_ (false)
       , use_depth_as_distance_(false)
@@ -104,7 +105,7 @@ namespace pcl
       };
 
       /** \brief Destructor. */
-      virtual ~OrganizedFastMesh () {};
+      ~OrganizedFastMesh () {};
 
       /** \brief Set a maximum edge length. 
         * Using not only the scalar \a a, but also \a b and \a c, allows for using a distance threshold in the form of:
@@ -204,7 +205,7 @@ namespace pcl
       setAngleTolerance(float angle_tolerance)
       {
         if (angle_tolerance > 0)
-          cos_angle_tolerance_ = fabsf (cosf (angle_tolerance));
+          cos_angle_tolerance_ = std::abs (std::cos (angle_tolerance));
         else
           cos_angle_tolerance_ = -1.0f;
       }
@@ -279,8 +280,8 @@ namespace pcl
       /** \brief Create the surface.
         * \param[out] polygons the resultant polygons, as a set of vertices. The Vertices structure contains an array of point indices.
         */
-      virtual void
-      performReconstruction (std::vector<pcl::Vertices> &polygons);
+      void
+      performReconstruction (std::vector<pcl::Vertices> &polygons) override;
 
       /** \brief Create the surface.
         *
@@ -290,7 +291,7 @@ namespace pcl
         * \param[out] output the resultant polygonal mesh
         */
       void
-      performReconstruction (pcl::PolygonMesh &output);
+      performReconstruction (pcl::PolygonMesh &output) override;
 
       /** \brief Add a new triangle to the current polygon mesh
         * \param[in] a index of the first vertex
@@ -363,9 +364,9 @@ namespace pcl
         if (cos_angle_tolerance_ > 0)
         {
           float cos_angle = dir_a.dot (dir_b) / (distance_to_points*distance_between_points);
-          if (cos_angle != cos_angle)
+          if (std::isnan(cos_angle))
             cos_angle = 1.0f;
-          bool check_angle = fabs (cos_angle) >= cos_angle_tolerance_;
+          bool check_angle = std::fabs (cos_angle) >= cos_angle_tolerance_;
 
           bool check_distance = true;
           if (check_angle && (distance_tolerance_ > 0))
@@ -389,9 +390,9 @@ namespace pcl
         {
           float dist = (use_depth_as_distance_ ? std::max(point_a.z, point_b.z) : distance_to_points);
           float dist_thresh = max_edge_length_a_;
-          if (fabs(max_edge_length_b_) > std::numeric_limits<float>::min())
+          if (std::fabs(max_edge_length_b_) > std::numeric_limits<float>::min())
             dist_thresh += max_edge_length_b_ * dist;
-          if (fabs(max_edge_length_c_) > std::numeric_limits<float>::min())
+          if (std::fabs(max_edge_length_c_) > std::numeric_limits<float>::min())
             dist_thresh += max_edge_length_c_ * dist * dist;
           valid = (distance_between_points <= dist_thresh);
         }
@@ -407,9 +408,9 @@ namespace pcl
       inline bool
       isValidTriangle (const int& a, const int& b, const int& c)
       {
-        if (!pcl::isFinite (input_->points[a])) return (false);
-        if (!pcl::isFinite (input_->points[b])) return (false);
-        if (!pcl::isFinite (input_->points[c])) return (false);
+        if (!pcl::isFinite ((*input_)[a])) return (false);
+        if (!pcl::isFinite ((*input_)[b])) return (false);
+        if (!pcl::isFinite ((*input_)[c])) return (false);
         return (true);
       }
 
@@ -421,9 +422,9 @@ namespace pcl
       inline bool
       isShadowedTriangle (const int& a, const int& b, const int& c)
       {
-        if (isShadowed (input_->points[a], input_->points[b])) return (true);
-        if (isShadowed (input_->points[b], input_->points[c])) return (true);
-        if (isShadowed (input_->points[c], input_->points[a])) return (true);
+        if (isShadowed ((*input_)[a], (*input_)[b])) return (true);
+        if (isShadowed ((*input_)[b], (*input_)[c])) return (true);
+        if (isShadowed ((*input_)[c], (*input_)[a])) return (true);
         return (false);
       }
 
@@ -436,10 +437,10 @@ namespace pcl
       inline bool
       isValidQuad (const int& a, const int& b, const int& c, const int& d)
       {
-        if (!pcl::isFinite (input_->points[a])) return (false);
-        if (!pcl::isFinite (input_->points[b])) return (false);
-        if (!pcl::isFinite (input_->points[c])) return (false);
-        if (!pcl::isFinite (input_->points[d])) return (false);
+        if (!pcl::isFinite ((*input_)[a])) return (false);
+        if (!pcl::isFinite ((*input_)[b])) return (false);
+        if (!pcl::isFinite ((*input_)[c])) return (false);
+        if (!pcl::isFinite ((*input_)[d])) return (false);
         return (true);
       }
 
@@ -452,10 +453,10 @@ namespace pcl
       inline bool
       isShadowedQuad (const int& a, const int& b, const int& c, const int& d)
       {
-        if (isShadowed (input_->points[a], input_->points[b])) return (true);
-        if (isShadowed (input_->points[b], input_->points[c])) return (true);
-        if (isShadowed (input_->points[c], input_->points[d])) return (true);
-        if (isShadowed (input_->points[d], input_->points[a])) return (true);
+        if (isShadowed ((*input_)[a], (*input_)[b])) return (true);
+        if (isShadowed ((*input_)[b], (*input_)[c])) return (true);
+        if (isShadowed ((*input_)[c], (*input_)[d])) return (true);
+        if (isShadowed ((*input_)[d], (*input_)[a])) return (true);
         return (false);
       }
 
@@ -488,5 +489,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/surface/impl/organized_fast_mesh.hpp>
 #endif
-
-#endif  // PCL_SURFACE_ORGANIZED_FAST_MESH_H_

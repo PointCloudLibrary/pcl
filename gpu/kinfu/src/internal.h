@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_KINFU_INTERNAL_HPP_
-#define PCL_KINFU_INTERNAL_HPP_
+#pragma once
 
 #include <pcl/gpu/containers/device_array.h>
 //#include <pcl/gpu/utils/safe_call.hpp>
@@ -48,19 +47,21 @@ namespace pcl
   {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Types
-    typedef unsigned short ushort;
-    typedef DeviceArray2D<float> MapArr;
-    typedef DeviceArray2D<ushort> DepthMap;
-    typedef float4 PointType;
+    using ushort = unsigned short;
+    using MapArr = DeviceArray2D<float>;
+    using DepthMap = DeviceArray2D<ushort>;
+    using PointType = float4;
 
     //TSDF fixed point divisor (if old format is enabled)
-    const int DIVISOR = 32767;     // SHRT_MAX;
+    constexpr int DIVISOR = std::numeric_limits<short>::max();
 
 	//Should be multiple of 32
-    enum { VOLUME_X = 512, VOLUME_Y = 512, VOLUME_Z = 512 };
+    constexpr int VOLUME_X = 512;
+    constexpr int VOLUME_Y = 512;
+    constexpr int VOLUME_Z = 512;
 
 	
-    const float VOLUME_SIZE = 3.0f; // in meters
+    constexpr float VOLUME_SIZE = 3.0f; // in meters
 
     /** \brief Camera intrinsics structure
       */ 
@@ -338,7 +339,7 @@ namespace pcl
       * \param[out] output buffer large enough to store point cloud
       * \return number of point stored to passed buffer
       */ 
-    PCL_EXPORTS size_t 
+    PCL_EXPORTS std::size_t 
     extractCloud (const PtrStep<short2>& volume, const float3& volume_size, PtrSz<PointType> output);
 
     /** \brief Performs normals computation for given points using tsdf volume
@@ -438,5 +439,3 @@ namespace pcl
     generateTriangles(const PtrStep<short2>& volume, const DeviceArray2D<int>& occupied_voxels, const float3& volume_size, DeviceArray<PointType>& output);
   }
 }
-
-#endif /* PCL_KINFU_INTERNAL_HPP_ */

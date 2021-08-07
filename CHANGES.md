@@ -1,5 +1,1536 @@
 # ChangeList
 
+## = 1.12.0 (2021.07.07) =
+
+PCL 1.12.0 enables custom index size and type, from `int16_t` to `uint64_t`, allowing
+users to have as small or large clouds as they wish. 1.12 also comes with improved
+support for VTK and CUDA, along with making existing functionality more user friendly.
+
+This is all on top of the usual bug-fixes and performance improvements across the board
+
+### Notable changes
+
+**New features** *added to PCL*
+
+* **[sample_consensus]** Add SIMD implementations to some countWithinDistance functions [[#3519](https://github.com/PointCloudLibrary/pcl/pull/3519)]
+* **[io]** Enable Real Sense 2 grabber for all platforms [[#4471](https://github.com/PointCloudLibrary/pcl/pull/4471)]
+* **[visualization]** add ellipsoid shape to pcl_visualizer [[#4531](https://github.com/PointCloudLibrary/pcl/pull/4531)]
+* **[common]** Add `constexpr` to static member functions for point types, add macro for `if constexpr` [[#4735](https://github.com/PointCloudLibrary/pcl/pull/4735)]
+* **[ci]** Use windows docker image in CI. [[#4426](https://github.com/PointCloudLibrary/pcl/pull/4426)]
+* **[common]** Add pcl log stream macros [[#4595](https://github.com/PointCloudLibrary/pcl/pull/4595)]
+
+**Deprecation** *of public APIs, scheduled to be removed after two minor releases*
+
+* **[common]** Modify index type for vertices [[#4256](https://github.com/PointCloudLibrary/pcl/pull/4256)]
+* **[gpu]** Add square distances to GPU knnSearch API [[#4322](https://github.com/PointCloudLibrary/pcl/pull/4322)]
+* **[gpu]** Add square distances to ApproxNearestSearch [[#4340](https://github.com/PointCloudLibrary/pcl/pull/4340)]
+* Deprecate unused ease-of-internal-use headers [[#4367](https://github.com/PointCloudLibrary/pcl/pull/4367)]
+* **[registration]** Deprecate `TransformationEstimationDQ` in favor of `TransformationEstimationDualQuaternion` [[#4425](https://github.com/PointCloudLibrary/pcl/pull/4425)]
+* **[segmentation]** Deprecate unused `max_label` in `extractLabeledEuclideanClusters` [[#4105](https://github.com/PointCloudLibrary/pcl/pull/4105)]
+* **[surface]** MLS: correct typo in `principle` by using `principal` instead [[#4505](https://github.com/PointCloudLibrary/pcl/pull/4505)]
+* Deprecate unneeded meta-headers [[#4628](https://github.com/PointCloudLibrary/pcl/pull/4628)]
+* **[apps][tracking]** pyramidal klt: switch keypoints_status_ to int vector [[#4681](https://github.com/PointCloudLibrary/pcl/pull/4681)]
+* Properly remove remaining items deprecated for version 1.12, deprecate `uniform_sampling.h` [[#4688](https://github.com/PointCloudLibrary/pcl/pull/4688)]
+* **[recognition]** Add deprecation for incorrectly installed headers [[#4650](https://github.com/PointCloudLibrary/pcl/pull/4650)]
+
+**Removal** *of the public APIs deprecated in previous releases*
+
+* Remove deprecated items as scheduled in preparation of v1.12 (except `concatenatePointCloud`) [[#4341](https://github.com/PointCloudLibrary/pcl/pull/4341)]
+* **[apps]** Remove unused code in persistence_utils.h [[#4500](https://github.com/PointCloudLibrary/pcl/pull/4500)]
+* Properly remove remaining items deprecated for version 1.12, deprecate `uniform_sampling.h` [[#4688](https://github.com/PointCloudLibrary/pcl/pull/4688)]
+
+**Behavior changes** *in classes, apps, or tools*
+
+* **[registration]** Don't move, or copy ICP [[#4167](https://github.com/PointCloudLibrary/pcl/pull/4167)]
+* **[common]** Fix PointXYZRGBA ctor, set A as 255 by default [[#4799](https://github.com/PointCloudLibrary/pcl/pull/4799)]
+
+**API changes** *that did not go through the proper deprecation and removal cycle*
+
+* **[common]** modify index type for PCLImage [[#4257](https://github.com/PointCloudLibrary/pcl/pull/4257)]
+* **[registration]** Don't move, or copy ICP [[#4167](https://github.com/PointCloudLibrary/pcl/pull/4167)]
+* **[kdtree]** KdTree: handle 0 or negative k for nearestKSearch [[#4430](https://github.com/PointCloudLibrary/pcl/pull/4430)]
+* **[common]** Use `std::array` instead of C-array for ColorLUT [[#4489](https://github.com/PointCloudLibrary/pcl/pull/4489)]
+* **[tracking]** Use SFINAE instead of relying on macro `PCL_TRACKING_NORMAL_SUPPORTED` [[#4643](https://github.com/PointCloudLibrary/pcl/pull/4643)]
+* **[gpu]** Export and template extract clusters [[#4196](https://github.com/PointCloudLibrary/pcl/pull/4196)]
+* **[common]** Added `namespace pcl` to free functions: `aligned_{malloc/free}` [[#4742](https://github.com/PointCloudLibrary/pcl/pull/4742)]
+
+**ABI changes** *that are still API compatible*
+
+* **[registration]** Refactoring and Bugfix of NDT [[#4180](https://github.com/PointCloudLibrary/pcl/pull/4180)]
+* **[common]** modify index types for PCLPointCloud2 [[#4199](https://github.com/PointCloudLibrary/pcl/pull/4199)]
+* **[common]** Modify index type for vertices [[#4256](https://github.com/PointCloudLibrary/pcl/pull/4256)]
+* **[common]** Modify index type for PCLPointField [[#4228](https://github.com/PointCloudLibrary/pcl/pull/4228)]
+* **[surface]** Enabled multithreading in Poisson surface reconstruction [[#4332](https://github.com/PointCloudLibrary/pcl/pull/4332)]
+* **[io]** Allow file_io to read large point clouds depending on PCL config [[#4331](https://github.com/PointCloudLibrary/pcl/pull/4331)]
+* **[sample_consensus]** Allow user to apply arbitrary constraint on models in sample consensus [[#4260](https://github.com/PointCloudLibrary/pcl/pull/4260)]
+* **[tracking]** Use SFINAE instead of relying on macro `PCL_TRACKING_NORMAL_SUPPORTED` [[#4643](https://github.com/PointCloudLibrary/pcl/pull/4643)]
+* **[features]** Move the init of static variables to library load time [[#4640](https://github.com/PointCloudLibrary/pcl/pull/4640)]
+* **[octree]** Octree2BufBase: Fix bug that contents from previous buffer appear in current buffer [[#4642](https://github.com/PointCloudLibrary/pcl/pull/4642)]
+
+### Changes grouped by module
+
+#### CMake:
+
+* Update `pcl_find_boost` to allow compilation with Boost 1.74 [[#4330](https://github.com/PointCloudLibrary/pcl/pull/4330)]
+* Variable needs to be expanded when checking for `EXT_DEPS` [[#4353](https://github.com/PointCloudLibrary/pcl/pull/4353)]
+* Update pcl_find_cuda.cmake to contain all supported architectures [[#4400](https://github.com/PointCloudLibrary/pcl/pull/4400)]
+* Add support for VTK 9 [[#4262](https://github.com/PointCloudLibrary/pcl/pull/4262)]
+* Refactor cmake find script of libusb [[#4483](https://github.com/PointCloudLibrary/pcl/pull/4483)]
+* Add AVX for windows [[#4598](https://github.com/PointCloudLibrary/pcl/pull/4598)]
+* Add SSE definitions for SSE 4.1 and 4.2 [[#4596](https://github.com/PointCloudLibrary/pcl/pull/4596)]
+
+#### libpcl_common:
+
+* **[ABI break]** modify index types for PCLPointCloud2 [[#4199](https://github.com/PointCloudLibrary/pcl/pull/4199)]
+* **[API break]** modify index type for PCLImage [[#4257](https://github.com/PointCloudLibrary/pcl/pull/4257)]
+* **[ABI break][deprecation]** Modify index type for vertices [[#4256](https://github.com/PointCloudLibrary/pcl/pull/4256)]
+* **[ABI break]** Modify index type for PCLPointField [[#4228](https://github.com/PointCloudLibrary/pcl/pull/4228)]
+* Allow PCL_DEPRECATED to detect and help remove deprecations before release [[#4336](https://github.com/PointCloudLibrary/pcl/pull/4336)]
+* Allow conversion of PointCloud with more than 32-bit size rows/columns [[#4343](https://github.com/PointCloudLibrary/pcl/pull/4343)]
+* Improve routing for `transformPointCloud` [[#4398](https://github.com/PointCloudLibrary/pcl/pull/4398)]
+* Correct typo in `transformPlane` [[#4396](https://github.com/PointCloudLibrary/pcl/pull/4396)]
+* **[API break]** Use `std::array` instead of C-array for ColorLUT [[#4489](https://github.com/PointCloudLibrary/pcl/pull/4489)]
+* Set header in two toPCLPointCloud2 functions [[#4538](https://github.com/PointCloudLibrary/pcl/pull/4538)]
+* Add more operators to `PointCloud` to prevent perf regression in refactoring [[#4397](https://github.com/PointCloudLibrary/pcl/pull/4397)]
+* Make sure that organized point clouds are still organized after transformPointCloud [[#4488](https://github.com/PointCloudLibrary/pcl/pull/4488)]
+* **[API break]** Added `namespace pcl` to free functions: `aligned_{malloc/free}` [[#4742](https://github.com/PointCloudLibrary/pcl/pull/4742)]
+* **[new feature]** Add `constexpr` to static member functions for point types, add macro for `if constexpr` [[#4735](https://github.com/PointCloudLibrary/pcl/pull/4735)]
+* Fix `PolygonMesh::concatenate` and its unit test [[#4745](https://github.com/PointCloudLibrary/pcl/pull/4745)]
+* **[behavior change]** Fix PointXYZRGBA ctor, set A as 255 by default [[#4799](https://github.com/PointCloudLibrary/pcl/pull/4799)]
+* Remove pseudo-template-instantiations in eigen.h to reduce compilation time [[#4788](https://github.com/PointCloudLibrary/pcl/pull/4788)]
+* **[new feature]** Add pcl log stream macros [[#4595](https://github.com/PointCloudLibrary/pcl/pull/4595)]
+
+#### libpcl_features:
+
+* **[ABI break]** Move the init of static variables to library load time [[#4640](https://github.com/PointCloudLibrary/pcl/pull/4640)]
+* Use correct cloud for checking finite-ness in fpfh [[#4720](https://github.com/PointCloudLibrary/pcl/pull/4720)]
+
+#### libpcl_filters:
+
+* Improve performance of median filter by using `nth_element` [[#4360](https://github.com/PointCloudLibrary/pcl/pull/4360)]
+* Fix the covariance calculation as suggested by @zxd123 [[#4466](https://github.com/PointCloudLibrary/pcl/pull/4466)]
+* Filters: fix wrong initialization of covariance in VoxelGridCovariance [[#4556](https://github.com/PointCloudLibrary/pcl/pull/4556)]
+* Fix application of setMinimumPointsNumberPerVoxel for PCLPointCloud2 implementation of VoxelGrid [[#4389](https://github.com/PointCloudLibrary/pcl/pull/4389)]
+* Adding tests for CropHull and using hull_cloud instead of input in getHullCloudRange [[#3976](https://github.com/PointCloudLibrary/pcl/pull/3976)]
+
+#### libpcl_gpu:
+
+* **[deprecation]** Add square distances to GPU knnSearch API [[#4322](https://github.com/PointCloudLibrary/pcl/pull/4322)]
+* **[deprecation]** Add square distances to ApproxNearestSearch [[#4340](https://github.com/PointCloudLibrary/pcl/pull/4340)]
+* **[API break]** Export and template extract clusters [[#4196](https://github.com/PointCloudLibrary/pcl/pull/4196)]
+* Update support for CUDA arch in CMake and `convertSMVer2Cores` [[#4748](https://github.com/PointCloudLibrary/pcl/pull/4748)]
+* Add ability to download contiguous chunk of memory to host using `Device{Array,Memory}` [[#4741](https://github.com/PointCloudLibrary/pcl/pull/4741)]
+* Speeding up GPU clustering using smarter download strategy and memory allocations [[#4677](https://github.com/PointCloudLibrary/pcl/pull/4677)]
+
+#### libpcl_io:
+
+* **[ABI break]** Allow file_io to read large point clouds depending on PCL config [[#4331](https://github.com/PointCloudLibrary/pcl/pull/4331)]
+* Improve PCD read performance (more than 50%) by reusing `istringstream` [[#4339](https://github.com/PointCloudLibrary/pcl/pull/4339)]
+* **[new feature]** Enable Real Sense 2 grabber for all platforms [[#4471](https://github.com/PointCloudLibrary/pcl/pull/4471)]
+* Throw error if the device bluffs about its capability [[#4141](https://github.com/PointCloudLibrary/pcl/pull/4141)]
+* Fix crash in Dinast Grabber due to bad initialization of device handle [[#4484](https://github.com/PointCloudLibrary/pcl/pull/4484)]
+* PLY face definition accepts uint fields as well [[#4492](https://github.com/PointCloudLibrary/pcl/pull/4492)]
+* Prevent segfault in vtk2mesh [[#4581](https://github.com/PointCloudLibrary/pcl/pull/4581)]
+* Prevent exception in PCDReader for misformed PCD files [[#4566](https://github.com/PointCloudLibrary/pcl/pull/4566)]
+* Enable arbitary size Indices for Octree module [[#4350](https://github.com/PointCloudLibrary/pcl/pull/4350)]
+* Fix addition of Carriage Return to PCD files. [[#4727](https://github.com/PointCloudLibrary/pcl/pull/4727)]
+* Support Ensenso SDK 3.0 for ensenso_grabber [[#4751](https://github.com/PointCloudLibrary/pcl/pull/4751)]
+* Specify no face elements in PLY files (from point cloud) to make them interoperable with VTK [[#4774](https://github.com/PointCloudLibrary/pcl/pull/4774)]
+
+#### libpcl_kdtree:
+
+* **[API break]** KdTree: handle 0 or negative k for nearestKSearch [[#4430](https://github.com/PointCloudLibrary/pcl/pull/4430)]
+
+#### libpcl_ml:
+
+* Fix un-initialized centroids bug (k-means) [[#4570](https://github.com/PointCloudLibrary/pcl/pull/4570)]
+
+#### libpcl_octree:
+
+* Enable arbitary size Indices for Octree module [[#4350](https://github.com/PointCloudLibrary/pcl/pull/4350)]
+* Fix problems in octree search functions when using dynamic depth [[#4657](https://github.com/PointCloudLibrary/pcl/pull/4657)]
+* **[ABI break]** Octree2BufBase: Fix bug that contents from previous buffer appear in current buffer [[#4642](https://github.com/PointCloudLibrary/pcl/pull/4642)]
+
+#### libpcl_outofcore:
+
+* Fix compile issue due to missing include under MSVC 2019 [[#4755](https://github.com/PointCloudLibrary/pcl/pull/4755)]
+
+#### libpcl_recognition:
+
+* **[deprecation]** Add deprecation for incorrectly installed headers [[#4650](https://github.com/PointCloudLibrary/pcl/pull/4650)]
+
+#### libpcl_registration:
+
+* **[ABI break]** Refactoring and Bugfix of NDT [[#4180](https://github.com/PointCloudLibrary/pcl/pull/4180)]
+* **[API break][behavior change]** Don't move, or copy ICP [[#4167](https://github.com/PointCloudLibrary/pcl/pull/4167)]
+* **[deprecation]** Deprecate `TransformationEstimationDQ` in favor of `TransformationEstimationDualQuaternion` [[#4425](https://github.com/PointCloudLibrary/pcl/pull/4425)]
+* Fix force no recompute [[#4535](https://github.com/PointCloudLibrary/pcl/pull/4535)]
+* Skip non-finite points for Pyramid Feature Matching [[#4711](https://github.com/PointCloudLibrary/pcl/pull/4711)]
+
+#### libpcl_sample_consensus:
+
+* **[ABI break]** Allow user to apply arbitrary constraint on models in sample consensus [[#4260](https://github.com/PointCloudLibrary/pcl/pull/4260)]
+* Improve logging errors during sample consensus model registration [[#4381](https://github.com/PointCloudLibrary/pcl/pull/4381)]
+* **[new feature]** Add SIMD implementations to some countWithinDistance functions [[#3519](https://github.com/PointCloudLibrary/pcl/pull/3519)]
+* Faster sample consensus functions [[#4424](https://github.com/PointCloudLibrary/pcl/pull/4424)]
+* Fix and improve MLESAC [[#4575](https://github.com/PointCloudLibrary/pcl/pull/4575)]
+* Improve logging in module `sample_consensus` [[#4261](https://github.com/PointCloudLibrary/pcl/pull/4261)]
+
+#### libpcl_search:
+
+* Faster organized search [[#4496](https://github.com/PointCloudLibrary/pcl/pull/4496)]
+* Add access to boxSearch [[#4282](https://github.com/PointCloudLibrary/pcl/pull/4282)]
+
+#### libpcl_segmentation:
+
+* **[deprecation]** Deprecate unused `max_label` in `extractLabeledEuclideanClusters` [[#4105](https://github.com/PointCloudLibrary/pcl/pull/4105)]
+* Fix the dotproduct calculation in `extractEuclideanClusters` for smooth surfaces [[#4162](https://github.com/PointCloudLibrary/pcl/pull/4162)]
+* Make euclidean clustering with normals faster [[#4551](https://github.com/PointCloudLibrary/pcl/pull/4551)]
+
+#### libpcl_surface:
+
+* **[ABI break]** Enabled multithreading in Poisson surface reconstruction [[#4332](https://github.com/PointCloudLibrary/pcl/pull/4332)]
+* Add stdlib header for malloc in poisson (bugfix for gcc-5) [[#4376](https://github.com/PointCloudLibrary/pcl/pull/4376)]
+* Always update counter and prevent overflow access in poisson4 octree [[#4316](https://github.com/PointCloudLibrary/pcl/pull/4316)]
+* Add missing include to nurbs_solve_umfpack.cpp [[#4571](https://github.com/PointCloudLibrary/pcl/pull/4571)]
+* **[deprecation]** MLS: correct typo in `principle` by using `principal` instead [[#4505](https://github.com/PointCloudLibrary/pcl/pull/4505)]
+
+#### libpcl_visualization:
+
+* Add support for VTK 9 [[#4262](https://github.com/PointCloudLibrary/pcl/pull/4262)]
+* **[new feature]** add ellipsoid shape to pcl_visualizer [[#4531](https://github.com/PointCloudLibrary/pcl/pull/4531)]
+
+#### PCL Apps:
+
+* **[removal]** Remove unused code in persistence_utils.h [[#4500](https://github.com/PointCloudLibrary/pcl/pull/4500)]
+* **[deprecation]** pyramidal klt: switch keypoints_status_ to int vector [[#4681](https://github.com/PointCloudLibrary/pcl/pull/4681)]
+
+#### PCL Docs:
+
+* Update documentation to be coherent with the style guide [[#4771](https://github.com/PointCloudLibrary/pcl/pull/4771)]
+
+#### PCL Tutorials:
+
+* Replace PassThrough with removeNaNFromPointCloud in 3 tutorials  [[#4760](https://github.com/PointCloudLibrary/pcl/pull/4760)]
+
+#### PCL Tools:
+
+* Fix virtual scanner [[#4730](https://github.com/PointCloudLibrary/pcl/pull/4730)]
+
+#### CI:
+
+* Make windows build on c:\ drive to fix out-of-disk-space errors [[#4382](https://github.com/PointCloudLibrary/pcl/pull/4382)]
+* **[new feature]** Use windows docker image in CI. [[#4426](https://github.com/PointCloudLibrary/pcl/pull/4426)]
+
+## = 1.11.1 (13.08.2020) =
+
+Apart from the usual serving of bug-fixes and speed improvements, PCL 1.11.1 brings in
+better support for CUDA, more uniform behavior in code as well as cmake, and an
+experimental feature: `functor_filter`.
+
+### Notable changes
+
+**New features** *added to PCL*
+
+* **[ci]** Add support for CUDA in CI [[#4101](https://github.com/PointCloudLibrary/pcl/pull/4101)]
+* **[common]** Add always-unsigned index type `uindex_t` dependent on `index_t` [[#4205](https://github.com/PointCloudLibrary/pcl/pull/4205)]
+* **[filters]** Add a filter accepting a functor to reduce boiler plate code for simple filters [[#3890](https://github.com/PointCloudLibrary/pcl/pull/3890)]
+
+### Changes grouped by module
+
+#### CMake:
+
+* Update `pcl_find_boost` to allow compilation with Boost 1.73 and 1.72 [[#4080](https://github.com/PointCloudLibrary/pcl/pull/4080)]
+* Fix NSIS Template for NSIS3 [[#4093](https://github.com/PointCloudLibrary/pcl/pull/4093)]
+* Add option to choose `pcl::index_t` while compiling [[#4166](https://github.com/PointCloudLibrary/pcl/pull/4166)]
+* Fix name warnings for PCAP, libusb and Ensenso. [[#4182](https://github.com/PointCloudLibrary/pcl/pull/4182)]
+* Fixes compile error on MSVC by disabling Whole Program Optimization [[#4197](https://github.com/PointCloudLibrary/pcl/pull/4197)]
+
+#### libpcl_common:
+
+* Remove use of dynamic allocation in `GaussianKernel::convolve{Rows,Cols}` [[#4092](https://github.com/PointCloudLibrary/pcl/pull/4092)]
+* Replace usage of `std::vector<int>` with `Indices` [[#3989](https://github.com/PointCloudLibrary/pcl/pull/3989)]
+* Update `PointCloud` to conform to requirements of `ReversibleContainer` [[#3980](https://github.com/PointCloudLibrary/pcl/pull/3980)]
+* **[new feature]** Add always-unsigned index type `uindex_t` dependent on `index_t` [[#4205](https://github.com/PointCloudLibrary/pcl/pull/4205)]
+* Adding `data` member function to `PointCloud` [[#4216](https://github.com/PointCloudLibrary/pcl/pull/4216)]
+* Switch `int` to `index_t` for field index variables in `pclBase`, add `pcl::UNAVAILABLE` for same [[#4211](https://github.com/PointCloudLibrary/pcl/pull/4211)]
+* Added `resize` with 2 arguments to `PointCloud` [[#4225](https://github.com/PointCloudLibrary/pcl/pull/4225)]
+* Adding `max_size` to PointCloud [[#4254](https://github.com/PointCloudLibrary/pcl/pull/4254)]
+* Support multiple arguments in `pcl::utils::ignore()` [[#4269](https://github.com/PointCloudLibrary/pcl/pull/4269)]
+
+#### libpcl_features:
+
+* Fix feature histogram constructor bug [[#4234](https://github.com/PointCloudLibrary/pcl/pull/4234)]
+* Fix regression in Organized Edge Detection (introduced in PCL 1.10.1) [[#4311](https://github.com/PointCloudLibrary/pcl/pull/4311)]
+
+#### libpcl_filters:
+
+* reduce computations involved in iterating over the pointcloud for `FastBilateral{OMP}` [[#4134](https://github.com/PointCloudLibrary/pcl/pull/4134)]
+* **[new feature]** Add a filter accepting a functor to reduce boiler plate code for simple filters [[#3890](https://github.com/PointCloudLibrary/pcl/pull/3890)]
+* Refatoring VoxelGridCovariance to make it multi-thread safe (and more) [[#4251](https://github.com/PointCloudLibrary/pcl/pull/4251)]
+
+#### libpcl_gpu:
+
+* Replace volatile shared memory with shfl_sync in KNNSearch [[#4306](https://github.com/PointCloudLibrary/pcl/pull/4306)]
+* Fix octree radiusSearch [[#4146](https://github.com/PointCloudLibrary/pcl/pull/4146)]
+
+#### libpcl_io:
+
+* Better conversion of depth data + focal length into X,Y,Z point data [[#4128](https://github.com/PointCloudLibrary/pcl/pull/4128)]
+* Add iterator include for  back_iterator to support VS2019 [[#4319](https://github.com/PointCloudLibrary/pcl/pull/4319)]
+
+#### libpcl_outofcore:
+
+* Fix compile issue in OutofcoreOctreeBase::setLODFilter after switching from boost::shared_ptr to std::shared_ptr [[#4081](https://github.com/PointCloudLibrary/pcl/pull/4081)]
+
+#### libpcl_registration:
+
+* Fix bug in NDT step interval convergence criteria [[#4181](https://github.com/PointCloudLibrary/pcl/pull/4181)]
+
+#### libpcl_segmentation:
+
+* Clean FLANN includes [[#4025](https://github.com/PointCloudLibrary/pcl/pull/4025)]
+* Update angle between 2 planes to be the smallest angle between them [[#4161](https://github.com/PointCloudLibrary/pcl/pull/4161)]
+
+#### libpcl_simulation:
+
+* Don't prefix in shaders. [[#4209](https://github.com/PointCloudLibrary/pcl/pull/4209)]
+
+#### libpcl_visualization:
+
+* Fix error: misplaced deprecation attributes in `vtkVertexBufferObject{,Mapper}` [[#4079](https://github.com/PointCloudLibrary/pcl/pull/4079)]
+
+#### PCL Docs:
+
+* Fix typo in FPFH documentation, $$p_k$$ was used instead of $$p_i$$ [[#4112](https://github.com/PointCloudLibrary/pcl/pull/4112)]
+* Fix typos in PFH estimation tutorial [[#4111](https://github.com/PointCloudLibrary/pcl/pull/4111)]
+
+#### CI:
+
+* **[new feature]** Add support for CUDA in CI [[#4101](https://github.com/PointCloudLibrary/pcl/pull/4101)]
+
+## = 1.11.0 (11.05.2020) =
+
+Starting with PCL 1.11, PCL uses `std::shared_ptr` and `std::weak_ptr` instead of the
+boost smart pointers. The change leverages type aliases included with the 1.10.0
+release. PCL 1.11 also introduces `pcl::index_t` which should be used for the size
+of point types instead of `int`, `std::size_t`, etc. EOL for deprecated features
+is also explicitly mentioned in the deprecation compile time warnings
+
+### Notable changes
+
+**New features** *added to PCL*
+
+* **[common]** Provide dynamic and static pointer casts in namespace pcl to allow easy migration in future [[#3770](https://github.com/PointCloudLibrary/pcl/pull/3770)]
+* **[common]** Add `ignore` function to remove Doxygen warnings for unused arguments [[#3942](https://github.com/PointCloudLibrary/pcl/pull/3942)]
+* **[docs]** Generate TODO list [[#3937](https://github.com/PointCloudLibrary/pcl/pull/3937)]
+* Force include order via clang-format [[#3909](https://github.com/PointCloudLibrary/pcl/pull/3909)]
+* Change PCL smart pointers from `boost` to `std` [[#3750](https://github.com/PointCloudLibrary/pcl/pull/3750)]
+* **[ci]** Add pipeline for building PCL's environment docker image [[#3843](https://github.com/PointCloudLibrary/pcl/pull/3843)]
+
+**Deprecation** *of public APIs, scheduled to be removed after two minor releases*
+
+* **[common]** Remove `#undef Success` in pcl_macros.h by extracting `PCL_MAKE_ALIGNED_OPERATOR_NEW` into memory.h [[#3654](https://github.com/PointCloudLibrary/pcl/pull/3654)]
+* **[common]** Rename `point_traits.h` into `type_traits.h` [[#3698](https://github.com/PointCloudLibrary/pcl/pull/3698)]
+* **[filters]** Deprecating functions in non-speclialized Passthrough filter [[#3888](https://github.com/PointCloudLibrary/pcl/pull/3888)]
+* **[outofcore][registration]** Homogenize deprecation with PCL_DEPRECATED [[#3925](https://github.com/PointCloudLibrary/pcl/pull/3925)]
+* **[cmake][visualization]** Deprecate legacy OpenGL backend of VTK [[#4065](https://github.com/PointCloudLibrary/pcl/pull/4065)]
+
+**Removal** *of the public APIs deprecated in previous releases*
+
+* **[io][recognition][tools]** Remove very old deprecated headers [[#3906](https://github.com/PointCloudLibrary/pcl/pull/3906)]
+* **[docs]** Remove backup (and defunct) `CMakeLists.txt` [[#3915](https://github.com/PointCloudLibrary/pcl/pull/3915)]
+* Remove use of VTK_EXCLUDE_STRSTREAM_HEADERS (unavailable since VTK 6.0.0) [[#3939](https://github.com/PointCloudLibrary/pcl/pull/3939)]
+
+**Behavior changes** *in classes, apps, or tools*
+
+* **[io]** Make grabbers move-only using `unique_ptr` [[#3626](https://github.com/PointCloudLibrary/pcl/pull/3626)]
+
+**API changes** *that did not go through the proper deprecation and removal cycle*
+
+* **[io]** Make grabbers move-only using `unique_ptr` [[#3626](https://github.com/PointCloudLibrary/pcl/pull/3626)]
+* **[common]** Add `pcl::index_t`; move some type declarations from `pcl/pcl_macros.h` to `pcl/types.h` [[#3651](https://github.com/PointCloudLibrary/pcl/pull/3651)]
+* **[filters]** Clean up `Filter` and `FilterIndices`, move `indices_`/`input_` from public to protected section [[#3726](https://github.com/PointCloudLibrary/pcl/pull/3726)]
+* **[registration]** Better Generalized ICP optimizer gradient check management [[#3854](https://github.com/PointCloudLibrary/pcl/pull/3854)]
+* Change PCL smart pointers from `boost` to `std` [[#3750](https://github.com/PointCloudLibrary/pcl/pull/3750)]
+* **[registration]** Removing deprecated method `setInputCloud`  from public API [[#4026](https://github.com/PointCloudLibrary/pcl/pull/4026)]
+
+**ABI changes** *that are still API compatible*
+
+* **[filters]** NormalSpaceSampling - fix bucket assignment, remove use of raw distribution pointer, unit-test rewriting [[#3862](https://github.com/PointCloudLibrary/pcl/pull/3862)]
+* **[io]** Add pcl::weak_ptr to have a single-switch move from boost:: to std:: weak pointers [[#3753](https://github.com/PointCloudLibrary/pcl/pull/3753)]
+
+### Changes grouped by module
+
+#### CMake:
+
+* Add a stamp file to build documentation once [[#3819](https://github.com/PointCloudLibrary/pcl/pull/3819)]
+* Fix compilation in OSX Catalina with OMP enabled [[#3721](https://github.com/PointCloudLibrary/pcl/pull/3721)]
+* Show proper message in CMake config for default-off modules [[#3927](https://github.com/PointCloudLibrary/pcl/pull/3927)]
+* **[deprecation]** Deprecate legacy OpenGL backend of VTK [[#4065](https://github.com/PointCloudLibrary/pcl/pull/4065)]
+
+#### libpcl_2d:
+
+* variable assigned a value which is never used [[#3857](https://github.com/PointCloudLibrary/pcl/pull/3857)]
+* Fix issue with missing templating of `Keypoint`. Fixes coming from clang-doxy [[#3898](https://github.com/PointCloudLibrary/pcl/pull/3898)]
+
+#### libpcl_common:
+
+* **[deprecation]** Remove `#undef Success` in pcl_macros.h by extracting `PCL_MAKE_ALIGNED_OPERATOR_NEW` into memory.h [[#3654](https://github.com/PointCloudLibrary/pcl/pull/3654)]
+* Fix issues with math defines on mingw-w64. [[#3756](https://github.com/PointCloudLibrary/pcl/pull/3756)]
+* **[API break]** Add `pcl::index_t`; move some type declarations from `pcl/pcl_macros.h` to `pcl/types.h` [[#3651](https://github.com/PointCloudLibrary/pcl/pull/3651)]
+* **[deprecation]** Rename `point_traits.h` into `type_traits.h` [[#3698](https://github.com/PointCloudLibrary/pcl/pull/3698)]
+* Improve `PCL_DEPRECATED` macro to include scheduled removal version [[#3808](https://github.com/PointCloudLibrary/pcl/pull/3808)]
+* Fix erroneous PCL version in deprecated message [[#3824](https://github.com/PointCloudLibrary/pcl/pull/3824)]
+* Select OpenMP data sharing mode based on specific GCC versions [[#3823](https://github.com/PointCloudLibrary/pcl/pull/3823)]
+* Define `PointIndices` based on the global `Indices` type alias [[#3822](https://github.com/PointCloudLibrary/pcl/pull/3822)]
+* Fix warning C4067: unexpected tokens following preprocessor directive- expected a newline [[#3871](https://github.com/PointCloudLibrary/pcl/pull/3871)]
+* **[new feature]** Provide dynamic and static pointer casts in namespace pcl to allow easy migration in future [[#3770](https://github.com/PointCloudLibrary/pcl/pull/3770)]
+* **[new feature]** Add `ignore` function to remove Doxygen warnings for unused arguments [[#3942](https://github.com/PointCloudLibrary/pcl/pull/3942)]
+* Fix excessive warnings on MSVC [[#3964](https://github.com/PointCloudLibrary/pcl/pull/3964)]
+* Refactoring `PCL_DEPRECATED` macro [[#3945](https://github.com/PointCloudLibrary/pcl/pull/3945)]
+* Correcting type mismatch [[#3967](https://github.com/PointCloudLibrary/pcl/pull/3967)]
+* Removed empty file [[#4019](https://github.com/PointCloudLibrary/pcl/pull/4019)]
+
+#### libpcl_filters:
+
+* Clean up code duplication in `FilterIndices` derived classes [[#3807](https://github.com/PointCloudLibrary/pcl/pull/3807)]
+* **[API break]** Clean up `Filter` and `FilterIndices`, move `indices_`/`input_` from public to protected section [[#3726](https://github.com/PointCloudLibrary/pcl/pull/3726)]
+* **[deprecation]** Deprecating functions in non-speclialized Passthrough filter [[#3888](https://github.com/PointCloudLibrary/pcl/pull/3888)]
+* **[ABI break]** NormalSpaceSampling - fix bucket assignment, remove use of raw distribution pointer, unit-test rewriting [[#3862](https://github.com/PointCloudLibrary/pcl/pull/3862)]
+* Optimize VoxelGrid Filter [[#3853](https://github.com/PointCloudLibrary/pcl/pull/3853)]
+* Fix error due to multiple declarations of template member function specializations in convolution [[#3971](https://github.com/PointCloudLibrary/pcl/pull/3971)]
+
+#### libpcl_io:
+
+* **[ABI break][API break][behavior change]** Make grabbers move-only using `unique_ptr` [[#3626](https://github.com/PointCloudLibrary/pcl/pull/3626)]
+* **[removal]** Remove very old deprecated headers [[#3906](https://github.com/PointCloudLibrary/pcl/pull/3906)]
+* **[ABI break]** Add pcl::weak_ptr to have a single-switch move from boost:: to std:: weak pointers [[#3753](https://github.com/PointCloudLibrary/pcl/pull/3753)]
+* Use pcl::io::raw_read instead of direct call to POSIX function read [[#4062](https://github.com/PointCloudLibrary/pcl/pull/4062)]
+
+#### libpcl_octree:
+
+* Fix a memory leak in `OctreeBase::operator=` [[#3787](https://github.com/PointCloudLibrary/pcl/pull/3787)]
+
+#### libpcl_outofcore:
+
+* **[deprecation]** Homogenize deprecation with PCL_DEPRECATED [[#3925](https://github.com/PointCloudLibrary/pcl/pull/3925)]
+
+#### libpcl_people:
+
+* Missing include on windows [[#3791](https://github.com/PointCloudLibrary/pcl/pull/3791)]
+
+#### libpcl_recognition:
+
+* **[removal]** Remove very old deprecated headers [[#3906](https://github.com/PointCloudLibrary/pcl/pull/3906)]
+
+#### libpcl_registration:
+
+* **[API break]** Better Generalized ICP optimizer gradient check management [[#3854](https://github.com/PointCloudLibrary/pcl/pull/3854)]
+* **[deprecation]** Homogenize deprecation with PCL_DEPRECATED [[#3925](https://github.com/PointCloudLibrary/pcl/pull/3925)]
+* **[API break]** Removing deprecated method `setInputCloud`  from public API [[#4026](https://github.com/PointCloudLibrary/pcl/pull/4026)]
+
+#### libpcl_sample_consensus:
+
+* Better performance, error handling and other improvements in SAC classes [[#3642](https://github.com/PointCloudLibrary/pcl/pull/3642)]
+* Use better types for indices: `int` -> `index_t`, `std::vector<int>` ->`Indices` [[#3835](https://github.com/PointCloudLibrary/pcl/pull/3835)]
+
+#### libpcl_search:
+
+* Use better types for indices: `int` -> `index_t`, `std::vector<int>` ->`Indices` [[#3840](https://github.com/PointCloudLibrary/pcl/pull/3840)]
+* Add include for `pcl::isFinite` for compilation on VS2019 [[#4056](https://github.com/PointCloudLibrary/pcl/pull/4056)]
+
+#### libpcl_segmentation:
+
+* Check and warn user about missing normals in `OrganizedMultiPlaneSegmentation` [[#3861](https://github.com/PointCloudLibrary/pcl/pull/3861)]
+
+#### libpcl_surface:
+
+* Fix error due to multiple declarations of template member function specializations in Poisson4 [[#3972](https://github.com/PointCloudLibrary/pcl/pull/3972)]
+* Reduce time taken in `TextureMapping::sortFacesByCamera` from `O(faces*points)` to `O(faces)` [[#3981](https://github.com/PointCloudLibrary/pcl/pull/3981)]
+
+#### libpcl_visualization:
+
+* Minor fix for converting unorganized PointClouds to VTK data [[#3988](https://github.com/PointCloudLibrary/pcl/pull/3988)]
+* Fixes #4001 and #3452. [[#4017](https://github.com/PointCloudLibrary/pcl/pull/4017)]
+* **[deprecation]** Deprecate legacy OpenGL backend of VTK [[#4065](https://github.com/PointCloudLibrary/pcl/pull/4065)]
+* Fix rendering of points. [[#4067](https://github.com/PointCloudLibrary/pcl/pull/4067)]
+
+#### PCL Docs:
+
+* Fix Doxygen warnings unrelated to documentation -- Part 1 [[#3701](https://github.com/PointCloudLibrary/pcl/pull/3701)]
+* update automatic code formatting info to clang-format [[#3845](https://github.com/PointCloudLibrary/pcl/pull/3845)]
+* replace formula with math [[#3846](https://github.com/PointCloudLibrary/pcl/pull/3846)]
+* Fix PCL_DEPRECATED usage in doxygen for a proper Deprecation List in documentation [[#3905](https://github.com/PointCloudLibrary/pcl/pull/3905)]
+* **[removal]** Remove backup (and defunct) `CMakeLists.txt` [[#3915](https://github.com/PointCloudLibrary/pcl/pull/3915)]
+* **[new feature]** Generate TODO list [[#3937](https://github.com/PointCloudLibrary/pcl/pull/3937)]
+* Improve output to match the text in tutorial by adding a newline [[#4029](https://github.com/PointCloudLibrary/pcl/pull/4029)]
+* Fix typo in region growing tutorial [[#4052](https://github.com/PointCloudLibrary/pcl/pull/4052)]
+* Add information regarding header include order [[#4020](https://github.com/PointCloudLibrary/pcl/pull/4020)]
+
+#### PCL Tutorials:
+
+* Add a unit test for ICP and modernize tutorial code [[#3628](https://github.com/PointCloudLibrary/pcl/pull/3628)]
+
+#### PCL Examples:
+
+* Remove unnecessary includes in examples [[#4071](https://github.com/PointCloudLibrary/pcl/pull/4071)]
+
+#### PCL Tools:
+
+* **[removal]** Remove very old deprecated headers [[#3906](https://github.com/PointCloudLibrary/pcl/pull/3906)]
+
+#### CI:
+
+* Temporary fix for skipping of certain tests [[#3789](https://github.com/PointCloudLibrary/pcl/pull/3789)]
+* Simplify Ubuntu CI using matrix strategy [[#3783](https://github.com/PointCloudLibrary/pcl/pull/3783)]
+* Strip leading tag in commit message from changelog [[#3847](https://github.com/PointCloudLibrary/pcl/pull/3847)]
+* Shift to clang-format-10 to resolve bug in clang-format-{7-9} [[#3895](https://github.com/PointCloudLibrary/pcl/pull/3895)]
+* **[new feature]** Add pipeline for building PCL's environment docker image [[#3843](https://github.com/PointCloudLibrary/pcl/pull/3843)]
+* Improve docker ci for other PRs [[#4051](https://github.com/PointCloudLibrary/pcl/pull/4051)]
+* Remove unused variables from exceptions [[#4064](https://github.com/PointCloudLibrary/pcl/pull/4064)]
+* Removing hardcoded version number from tutorial CI [[#4058](https://github.com/PointCloudLibrary/pcl/pull/4058)]
+
+## *= 1.10.1 (18.03.2020) =*
+
+### Notable changes
+
+**Deprecation** *of public APIs, scheduled to be removed after two minor releases*
+
+* **[common]** Deprecate several `PointWithViewpoint` ctors; make ctors more uniform in PCL point types [[#3597](https://github.com/PointCloudLibrary/pcl/pull/3597)]
+
+**Removal** *of the public APIs deprecated in previous releases*
+
+* **[common]** Remove deprecated checks for `USE_ROS` macro [[#3690](https://github.com/PointCloudLibrary/pcl/pull/3690)]
+
+**Behavior changes** *in classes, apps, or tools*
+
+* **[tools]** Continue on PCD load failure in `pcl_train_linemod_template` [[#3652](https://github.com/PointCloudLibrary/pcl/pull/3652)]
+
+### Changes grouped by module
+
+#### CMake:
+
+* Fix CMake grouping of tools targets [[#3709](https://github.com/PointCloudLibrary/pcl/pull/3709)]
+* Enable `PCL_ONLY_CORE_POINT_TYPES` in mingw builds [[#3694](https://github.com/PointCloudLibrary/pcl/pull/3694)]
+* Downgrade RSSDK2 warning message to status [[#3683](https://github.com/PointCloudLibrary/pcl/pull/3683)]
+* Fix test targets arguments for MSVC [[#3636](https://github.com/PointCloudLibrary/pcl/pull/3636)]
+* Remove duplicate `/bigobj` for MSVC [[#3604](https://github.com/PointCloudLibrary/pcl/pull/3604)]
+
+#### libpcl_common:
+
+* Better PointType ctor and reduced warnings in `register_point_struct.h` [[#3732](https://github.com/PointCloudLibrary/pcl/pull/3732)]
+* **[removal]** Remove deprecated checks for `USE_ROS` macro [[#3690](https://github.com/PointCloudLibrary/pcl/pull/3690)]
+* Replace `dirent` with `boost::filesystem` [[#3676](https://github.com/PointCloudLibrary/pcl/pull/3676)]
+* Fix code accidentally casting away const-ness [[#3648](https://github.com/PointCloudLibrary/pcl/pull/3648)]
+* Fix compilation of CUDA code on Windows [[#3634](https://github.com/PointCloudLibrary/pcl/pull/3634)]
+* Remove undefined behavior and add stricter checks in console arg parsing [[#3613](https://github.com/PointCloudLibrary/pcl/pull/3613)]
+* **[deprecation]** Deprecate several `PointWithViewpoint` ctors; make ctors more uniform in PCL point types [[#3597](https://github.com/PointCloudLibrary/pcl/pull/3597)]
+
+#### libpcl_cuda:
+
+* Fix memory leaks in CUDA apps [[#3587](https://github.com/PointCloudLibrary/pcl/pull/3587)]
+* Fix compilation of CUDA/GPU modules [[#3576](https://github.com/PointCloudLibrary/pcl/pull/3576)]
+
+#### libpcl_features:
+
+* Add precompiled `computeApproximateCovariances`; fix compilation error for the same [[#3711](https://github.com/PointCloudLibrary/pcl/pull/3711)]
+* Fix vector initialization in `NormalEstimationOMP` [[#3614](https://github.com/PointCloudLibrary/pcl/pull/3614)]
+* Fix indexing bug in `IntegralImageNormalEstimation` [[#3574](https://github.com/PointCloudLibrary/pcl/pull/3574)]
+
+#### libpcl_filters:
+
+* Set `is_dense` based on actual cloud contents in `removeNaNNormalsFromPointCloud()` [[#3685](https://github.com/PointCloudLibrary/pcl/pull/3685)]
+
+#### libpcl_gpu:
+
+* Fix compile error in KinFuLS `initRegistration` [[#3737](https://github.com/PointCloudLibrary/pcl/pull/3737)]
+* Fix illegal memory acces in CUDA Octree builder [[#3627](https://github.com/PointCloudLibrary/pcl/pull/3627)]
+* Fix compile issue in `people_app` [[#3618](https://github.com/PointCloudLibrary/pcl/pull/3618)]
+* Fix compilation of CUDA/GPU modules [[#3576](https://github.com/PointCloudLibrary/pcl/pull/3576)]
+
+#### libpcl_io:
+
+* Fix `if/ifdef` WIN32 issues [[#3668](https://github.com/PointCloudLibrary/pcl/pull/3668)]
+* Add `Grabber::toggle()` method [[#3615](https://github.com/PointCloudLibrary/pcl/pull/3615)]
+* Close the correct file in `pcl::io::savePLYFileBinary` [[#3601](https://github.com/PointCloudLibrary/pcl/pull/3601)]
+* Fix entropy range encoding in octree-based pointcloud compression [[#3579](https://github.com/PointCloudLibrary/pcl/pull/3579)]
+
+#### libpcl_surface:
+
+* Add default initialization of grid resolution in `MarchingCubes` [[#3718](https://github.com/PointCloudLibrary/pcl/pull/3718)]
+
+#### PCL Apps:
+
+* Fix `if/ifdef` WIN32 issues [[#3668](https://github.com/PointCloudLibrary/pcl/pull/3668)]
+
+#### PCL Docs:
+
+* Fix missing standard includes, reduce warnings in doxygen-enabled builds [[#3755](https://github.com/PointCloudLibrary/pcl/pull/3755)]
+
+#### PCL Tutorials:
+
+* Fix documentation for point cloud stream compression executable name [[#3693](https://github.com/PointCloudLibrary/pcl/pull/3693)]
+* Fix segfault in NARF keypoint extraction tutorial [[#3623](https://github.com/PointCloudLibrary/pcl/pull/3623)]
+
+#### PCL Tools:
+
+* Use linemod member method to save templates [[#3691](https://github.com/PointCloudLibrary/pcl/pull/3691)]
+* **[behavior change]** Continue on PCD load failure in `pcl_train_linemod_template` [[#3652](https://github.com/PointCloudLibrary/pcl/pull/3652)]
+* Warn user about unorganized PCDs in `pcl_train_linemod_template` [[#3644](https://github.com/PointCloudLibrary/pcl/pull/3644)]
+
+
+## *= 1.10.0 (19.01.2020) =*
+
+Starting with PCL 1.10, to ensure compatibility with future PCL releases, please
+use `pcl::make_shared` and the `Class::Ptr` + `Class::ConstPtr` type-alias
+instead of using direct names like `{boost, std}::shared_ptr` or `{boost,
+std}::make_shared`.  There is also `pcl::shared_ptr` which offers the same
+abstraction for non-PCL types.
+
+### `New Features:`
+
+*Newly added functionalities.*
+
+* **[sample_consensus]** Add parallel RANSAC implementation with OpenMP [[#3514](https://github.com/PointCloudLibrary/pcl/pull/3514)]
+* **[registration]** Add linear least squares version of symmetric objective function for ICP [[#3390](https://github.com/PointCloudLibrary/pcl/pull/3390)]
+* **[common]** Add concatenate operation for `PolygonMesh` [[#3316](https://github.com/PointCloudLibrary/pcl/pull/3316)]
+* **[common]** Add `emplace[_back]` to `pcl::PointCloud` [[#3207](https://github.com/PointCloudLibrary/pcl/pull/3207)]
+* **[cmake]** Add `format` compilation target that applies `clang-format` to whitelisted modules [[#3188](https://github.com/PointCloudLibrary/pcl/pull/3188)]
+* **[common]** Add `pcl::make_shared` that automatically handles aligned allocations [[#3163](https://github.com/PointCloudLibrary/pcl/pull/3163)]
+* **[modernization][cmake]** Enable C++ 14 flags [[#2690](https://github.com/PointCloudLibrary/pcl/pull/2690)]
+* **[io]** Add RSSDK 2.0 (librealsense2) grabber [[#2214](https://github.com/PointCloudLibrary/pcl/pull/2214)]
+
+### `Deprecated:`
+
+*Deprecated code scheduled to be removed after two minor releases.*
+
+* **[common]** Revert smart pointer type change in `PointCloud` and deprecate `getMapping()` [[#3563](https://github.com/PointCloudLibrary/pcl/pull/3563)]
+* **[common]** Deprecate `getFields()` with output parameter in favor of overload with return value [[#3401](https://github.com/PointCloudLibrary/pcl/pull/3401)]
+* **[recognition]** Refactor `MaskMap` and deprecate several of its methods [[#3399](https://github.com/PointCloudLibrary/pcl/pull/3399)]
+* **[common]** Deprecate `getFieldIndex()`/`getFields()` with first argument as cloud [[#3365](https://github.com/PointCloudLibrary/pcl/pull/3365)]
+* **[common]** Add `PCLPointCloud2::operator+=()` and update concatenation operation [[#3320](https://github.com/PointCloudLibrary/pcl/pull/3320)]
+* **[segmentation]** Delete unused params in `OrganizedMultiPlaneSegmentation::refine()` [[#3302](https://github.com/PointCloudLibrary/pcl/pull/3302)]
+* **[visualization]** Add new overload of `PointCloudColorHandler::getColor()` [[#3187](https://github.com/PointCloudLibrary/pcl/pull/3187)]
+* **[modernization][io]** Add `registerCallback()` overload to grabbers to support assignment of `boost::function`s with templated signatures [[#3128](https://github.com/PointCloudLibrary/pcl/pull/3128)]
+* **[surface]** Convert `MovingLeastSquaresOMP` into an alias template and deprecate [[#3119](https://github.com/PointCloudLibrary/pcl/pull/3119)]
+* **[kdtree]** Remove unnecessary FLANN includes, deprecate "kdtree/flann.h" header [[#2993](https://github.com/PointCloudLibrary/pcl/pull/2993)]
+* **[features]** Deprecate `computeRSD()` functions that take pointclouds by pointer [[#2827](https://github.com/PointCloudLibrary/pcl/pull/2827)]
+* **[modernization]** Deprecate `pcl_isnan`, `pcl_isfinite`, and `pcl_isinf` in favor of `std` methods [[#2798](https://github.com/PointCloudLibrary/pcl/pull/2798), [#3457](https://github.com/PointCloudLibrary/pcl/pull/3457)]
+* **[filters]** Restructure and add functionality to filters templated on `PCLPointCloud2` [[#3483](https://github.com/PointCloudLibrary/pcl/pull/3483), [#3500](https://github.com/PointCloudLibrary/pcl/pull/3500)]
+
+### `Removed:`
+
+*Removal of deprecated code.*
+
+* **[segmentation]** Remove `SupervoxelClustering::getColoredVoxelCloud()` [[#3469](https://github.com/PointCloudLibrary/pcl/pull/3469)]
+* **[io]** Remove FZ-API [[#2747](https://github.com/PointCloudLibrary/pcl/pull/2747)]
+
+### `Behavioral changes:`
+
+*Changes in the expected default behavior.*
+
+* **[sample_consensus]** Set default min and max angle for SAC cone models [[#3466](https://github.com/PointCloudLibrary/pcl/pull/3466)]
+* **[tools]** Do not discard data fields in `pcl_uniform_sampling` tool [[#3461](https://github.com/PointCloudLibrary/pcl/pull/3461)]
+* **[common]** Disable colored output for non-interactive terminals [[#3310](https://github.com/PointCloudLibrary/pcl/pull/3310)]
+* **[io]** Add support for device URI in `OpenNI2Grabber` constructor [[#3238](https://github.com/PointCloudLibrary/pcl/pull/3238)]
+* **[common]** Enforce right-hand-rule on PCA eigenvectors [[#2946](https://github.com/PointCloudLibrary/pcl/pull/2946)]
+* **[visualization]** Improve c/C command in `PCLVisualizer` [[#2926](https://github.com/PointCloudLibrary/pcl/pull/2926)]
+* **[registration]** Fix ICP misbehavior in the "failure after maximum iterations" mode [[#2892](https://github.com/PointCloudLibrary/pcl/pull/2892)]
+* **[common]** Initialize curvature in `PointNormal` default constructor [[#2674](https://github.com/PointCloudLibrary/pcl/pull/2674)]
+
+### `API changes:`
+
+*Changes to the API which didn't go through the proper deprecation and removal cycle.*
+
+* **[gpu]** Replace `uint64_type` by `std::uint64_t` [[#3435](https://github.com/PointCloudLibrary/pcl/pull/3435)]
+* **[modernization]** Migrate from `boost::tuple` to `std::tuple` [[#3250](https://github.com/PointCloudLibrary/pcl/pull/3250)]
+* **[modernization]** Migrate `boost::function` to `std::function` [[#3079](https://github.com/PointCloudLibrary/pcl/pull/3079)]
+
+### `ABI changes:`
+
+*Changes that cause ABI incompatibility but are still API compatible.*
+
+* **[modernization]** Migrate from `boost::unordered_map` to `std::unordered_map` [[#3107](https://github.com/PointCloudLibrary/pcl/pull/3107)]
+* **[modernization]** Migrate to standard library type traits [[#3105](https://github.com/PointCloudLibrary/pcl/pull/3105)]
+* **[visualization]** Minor refactoring of `pcl::visualization::Camera` and related functions [[#2901](https://github.com/PointCloudLibrary/pcl/pull/2901)]
+* **[modernization]** Migrate from `boost::thread` to `std::thread` [[#3060](https://github.com/PointCloudLibrary/pcl/pull/3060), [#3094](https://github.com/PointCloudLibrary/pcl/pull/3094)]
+* **[modernization]** Prefer using `Ptr` typedefs and migrate to `std` smart pointers in non-API code [[#2804](https://github.com/PointCloudLibrary/pcl/pull/2804), [#2821](https://github.com/PointCloudLibrary/pcl/pull/2821), [#2823](https://github.com/PointCloudLibrary/pcl/pull/2823), [#2929](https://github.com/PointCloudLibrary/pcl/pull/2929), [#3061](https://github.com/PointCloudLibrary/pcl/pull/3061), [#3141](https://github.com/PointCloudLibrary/pcl/pull/3141), [#3142](https://github.com/PointCloudLibrary/pcl/pull/3142), [#3217](https://github.com/PointCloudLibrary/pcl/pull/3217), [#3474](https://github.com/PointCloudLibrary/pcl/pull/3474), [#3482](https://github.com/PointCloudLibrary/pcl/pull/3482), [#3486](https://github.com/PointCloudLibrary/pcl/pull/3486), [#3489](https://github.com/PointCloudLibrary/pcl/pull/3489), [#3497](https://github.com/PointCloudLibrary/pcl/pull/3497)]
+* **[modernization]** Migrate to `std` random number generators [[#2956](https://github.com/PointCloudLibrary/pcl/pull/2956), [#2962](https://github.com/PointCloudLibrary/pcl/pull/2962), [#3069](https://github.com/PointCloudLibrary/pcl/pull/3069)]
+* **[filters]** Restructure and add functionality to filters templated on `PCLPointCloud2` [[#3483](https://github.com/PointCloudLibrary/pcl/pull/3483), [#3500](https://github.com/PointCloudLibrary/pcl/pull/3500)]
+
+### `Migration to C++14 and code modernization:`
+
+* Convert `boost::shared_ptr` to `pcl::shared_ptr` [[#3546](https://github.com/PointCloudLibrary/pcl/pull/3546)]
+* Better indices in loops [[#3543](https://github.com/PointCloudLibrary/pcl/pull/3543)]
+* Replace raw arrays with `std::vector`s in `RangeImageBorderExtractor` [[#3533](https://github.com/PointCloudLibrary/pcl/pull/3533)]
+* Remove redundant calls to `std::string::c_str()` [[#3517](https://github.com/PointCloudLibrary/pcl/pull/3517)]
+* Convert `pcl::int_t` to `std::int_t` [[#3422](https://github.com/PointCloudLibrary/pcl/pull/3422)]
+* Remove deprecated `throw` specifier [[#3384](https://github.com/PointCloudLibrary/pcl/pull/3384)]
+* Prefer `numeric_limits` from standard library [[#3360](https://github.com/PointCloudLibrary/pcl/pull/3360)]
+* Add missing `std::move` or `const` reference for parameters [[#3253](https://github.com/PointCloudLibrary/pcl/pull/3253)]
+* **[api]** Migrate from `boost::tuple` to `std::tuple` [[#3250](https://github.com/PointCloudLibrary/pcl/pull/3250)]
+* Migrate from `boost::bind` to `std::bind` [[#3249](https://github.com/PointCloudLibrary/pcl/pull/3249)]
+* Use transparent functors [[#3224](https://github.com/PointCloudLibrary/pcl/pull/3224)]
+* Add `cloexec` option to `fopen` [[#3223](https://github.com/PointCloudLibrary/pcl/pull/3223)]
+* **[deprecation]** Add `registerCallback()` overload to grabbers to support assignment of `boost::function`s with templated signatures [[#3128](https://github.com/PointCloudLibrary/pcl/pull/3128)]
+* **[abi]** Migrate from `boost::unordered_map` to `std::unordered_map` [[#3107](https://github.com/PointCloudLibrary/pcl/pull/3107)]
+* **[abi]** Migrate to standard library type traits [[#3105](https://github.com/PointCloudLibrary/pcl/pull/3105)]
+* Remove dead stores [[#3095](https://github.com/PointCloudLibrary/pcl/pull/3095)]
+* **[api]** Migrate `boost::function` to `std::function` [[#3079](https://github.com/PointCloudLibrary/pcl/pull/3079)]
+* Remove redundant member field initialization [[#3070](https://github.com/PointCloudLibrary/pcl/pull/3070)]
+* Prefer returning braced init list [[#3039](https://github.com/PointCloudLibrary/pcl/pull/3039)]
+* Prefer `empty()` over `size()` when checking container state [[#3033](https://github.com/PointCloudLibrary/pcl/pull/3033)]
+* Prefer combined assignment operators [[#3030](https://github.com/PointCloudLibrary/pcl/pull/3030)]
+* Remove unnecessary `nullptr` checks before `delete` [[#2990](https://github.com/PointCloudLibrary/pcl/pull/2990)]
+* Improve readability of string comparisons [[#2986](https://github.com/PointCloudLibrary/pcl/pull/2986)]
+* Prefer `std::isnan` over `!=` comparison trick [[#2977](https://github.com/PointCloudLibrary/pcl/pull/2977)]
+* Remove deprecated Boost Filesystem code [[#2966](https://github.com/PointCloudLibrary/pcl/pull/2966)]
+* Migrate from `BOOST_STATIC_ASSERT` and `EIGEN_ASSERT` to `static_assert` [[#2951](https://github.com/PointCloudLibrary/pcl/pull/2951)]
+* Prefer `std::log2` over custom implementation [[#2950](https://github.com/PointCloudLibrary/pcl/pull/2950)]
+* Migrate from `boost::this_thread::sleep` to `std::this_thread::sleep_for` [[#2921](https://github.com/PointCloudLibrary/pcl/pull/2921)]
+* Fix bug prone loop variables that are too small [[#2829](https://github.com/PointCloudLibrary/pcl/pull/2829)]
+* Migrate from `boost::math::isnan` to `std::isnan` [[#2819](https://github.com/PointCloudLibrary/pcl/pull/2819)]
+* Fix "variableScope" hints from CppCheck [[#2807](https://github.com/PointCloudLibrary/pcl/pull/2807)]
+* Improve performance of finding single character in strings [[#2794](https://github.com/PointCloudLibrary/pcl/pull/2794)]
+* Prefer using `bool` literals [[#2793](https://github.com/PointCloudLibrary/pcl/pull/2793)]
+* Simplify boolean expressions [[#2790](https://github.com/PointCloudLibrary/pcl/pull/2790)]
+* Prefer raw strings over escaped strings [[#2789](https://github.com/PointCloudLibrary/pcl/pull/2789)]
+* Prefer `std::to_string` over `boost::lexical_cast` for integer conversions [[#2785](https://github.com/PointCloudLibrary/pcl/pull/2785)]
+* Prefer `emplace_back` over `push_back` [[#2784](https://github.com/PointCloudLibrary/pcl/pull/2784)]
+* Remove unnecessary void parameter [[#2780](https://github.com/PointCloudLibrary/pcl/pull/2780)]
+* Use `=delete` to disable special members [[#2779](https://github.com/PointCloudLibrary/pcl/pull/2779)]
+* Fix access to static members through instances [[#2776](https://github.com/PointCloudLibrary/pcl/pull/2776)]
+* Remove usage of deprecated `register`storage class specifier [[#2761](https://github.com/PointCloudLibrary/pcl/pull/2761)]
+* Remove redundant string initialization with `""` [[#2758](https://github.com/PointCloudLibrary/pcl/pull/2758)]
+* Add `cloexec` option to `fopen` [[#2755](https://github.com/PointCloudLibrary/pcl/pull/2755)]
+* Replace deprecated C library headers [[#2737](https://github.com/PointCloudLibrary/pcl/pull/2737)]
+* Modernize code to use `override` [[#2728](https://github.com/PointCloudLibrary/pcl/pull/2728)]
+* Prefer standard `[[deprecated]]` attribute [[#2699](https://github.com/PointCloudLibrary/pcl/pull/2699)]
+* **[new-feature]** Enable C++ 14 flags [[#2690](https://github.com/PointCloudLibrary/pcl/pull/2690)]
+* Revise arguments which were being passed by  value instead of as a reference [[#2668](https://github.com/PointCloudLibrary/pcl/pull/2668)]
+* Fix "knownConditionTrueFalse" hints from CppCheck [[#2648](https://github.com/PointCloudLibrary/pcl/pull/2648)]
+* Fix "unreadVariable" hints from CppCheck [[#2645](https://github.com/PointCloudLibrary/pcl/pull/2645)]
+* Replace `hash_map` with `unordered_map` in 3rdparty/poisson4 [[#2640](https://github.com/PointCloudLibrary/pcl/pull/2640)]
+* Prefer lambdas over binds [[#3136](https://github.com/PointCloudLibrary/pcl/pull/3136), [#3171](https://github.com/PointCloudLibrary/pcl/pull/3171), [#3173](https://github.com/PointCloudLibrary/pcl/pull/3173), [#3178](https://github.com/PointCloudLibrary/pcl/pull/3178), [#3189](https://github.com/PointCloudLibrary/pcl/pull/3189), [#3192](https://github.com/PointCloudLibrary/pcl/pull/3192), [#3199](https://github.com/PointCloudLibrary/pcl/pull/3199), [#3209](https://github.com/PointCloudLibrary/pcl/pull/3209), [#3231](https://github.com/PointCloudLibrary/pcl/pull/3231), [#3243](https://github.com/PointCloudLibrary/pcl/pull/3243), [#3254](https://github.com/PointCloudLibrary/pcl/pull/3254)]
+* Prefer range-based for loops [[#2812](https://github.com/PointCloudLibrary/pcl/pull/2812), [#2834](https://github.com/PointCloudLibrary/pcl/pull/2834), [#2835](https://github.com/PointCloudLibrary/pcl/pull/2835), [#2836](https://github.com/PointCloudLibrary/pcl/pull/2836), [#2837](https://github.com/PointCloudLibrary/pcl/pull/2837), [#2838](https://github.com/PointCloudLibrary/pcl/pull/2838), [#2839](https://github.com/PointCloudLibrary/pcl/pull/2839), [#2840](https://github.com/PointCloudLibrary/pcl/pull/2840), [#2841](https://github.com/PointCloudLibrary/pcl/pull/2841), [#2842](https://github.com/PointCloudLibrary/pcl/pull/2842), [#2843](https://github.com/PointCloudLibrary/pcl/pull/2843), [#2844](https://github.com/PointCloudLibrary/pcl/pull/2844), [#2845](https://github.com/PointCloudLibrary/pcl/pull/2845), [#2846](https://github.com/PointCloudLibrary/pcl/pull/2846), [#2847](https://github.com/PointCloudLibrary/pcl/pull/2847), [#2848](https://github.com/PointCloudLibrary/pcl/pull/2848), [#2849](https://github.com/PointCloudLibrary/pcl/pull/2849), [#2850](https://github.com/PointCloudLibrary/pcl/pull/2850), [#2851](https://github.com/PointCloudLibrary/pcl/pull/2851), [#2853](https://github.com/PointCloudLibrary/pcl/pull/2853), [#2854](https://github.com/PointCloudLibrary/pcl/pull/2854), [#2855](https://github.com/PointCloudLibrary/pcl/pull/2855), [#2856](https://github.com/PointCloudLibrary/pcl/pull/2856), [#2857](https://github.com/PointCloudLibrary/pcl/pull/2857), [#2858](https://github.com/PointCloudLibrary/pcl/pull/2858), [#2859](https://github.com/PointCloudLibrary/pcl/pull/2859), [#2860](https://github.com/PointCloudLibrary/pcl/pull/2860), [#2887](https://github.com/PointCloudLibrary/pcl/pull/2887), [#3396](https://github.com/PointCloudLibrary/pcl/pull/3396), [#3557](https://github.com/PointCloudLibrary/pcl/pull/3557)]
+* Prefer `nullptr` over 0 and `NULL` [[#3004](https://github.com/PointCloudLibrary/pcl/pull/3004), [#3005](https://github.com/PointCloudLibrary/pcl/pull/3005), [#3006](https://github.com/PointCloudLibrary/pcl/pull/3006), [#3007](https://github.com/PointCloudLibrary/pcl/pull/3007), [#3008](https://github.com/PointCloudLibrary/pcl/pull/3008), [#3009](https://github.com/PointCloudLibrary/pcl/pull/3009), [#3010](https://github.com/PointCloudLibrary/pcl/pull/3010), [#3011](https://github.com/PointCloudLibrary/pcl/pull/3011), [#3012](https://github.com/PointCloudLibrary/pcl/pull/3012), [#3013](https://github.com/PointCloudLibrary/pcl/pull/3013), [#3014](https://github.com/PointCloudLibrary/pcl/pull/3014), [#3015](https://github.com/PointCloudLibrary/pcl/pull/3015), [#3016](https://github.com/PointCloudLibrary/pcl/pull/3016), [#3017](https://github.com/PointCloudLibrary/pcl/pull/3017), [#3018](https://github.com/PointCloudLibrary/pcl/pull/3018), [#3019](https://github.com/PointCloudLibrary/pcl/pull/3019), [#3020](https://github.com/PointCloudLibrary/pcl/pull/3020), [#3021](https://github.com/PointCloudLibrary/pcl/pull/3021), [#3022](https://github.com/PointCloudLibrary/pcl/pull/3022), [#3023](https://github.com/PointCloudLibrary/pcl/pull/3023), [#3024](https://github.com/PointCloudLibrary/pcl/pull/3024), [#3025](https://github.com/PointCloudLibrary/pcl/pull/3025), [#3026](https://github.com/PointCloudLibrary/pcl/pull/3026), [#3027](https://github.com/PointCloudLibrary/pcl/pull/3027), [#3028](https://github.com/PointCloudLibrary/pcl/pull/3028), [#3029](https://github.com/PointCloudLibrary/pcl/pull/3029)]
+* Migrate to `std::chrono` [[#2913](https://github.com/PointCloudLibrary/pcl/pull/2913), [#2919](https://github.com/PointCloudLibrary/pcl/pull/2919), [#3318](https://github.com/PointCloudLibrary/pcl/pull/3318)]
+* **[abi]** Migrate from `boost::thread` to `std::thread` [[#3060](https://github.com/PointCloudLibrary/pcl/pull/3060), [#3094](https://github.com/PointCloudLibrary/pcl/pull/3094)]
+* Migrate `mutex`, `lock` and `csv` to modernization [[#3063](https://github.com/PointCloudLibrary/pcl/pull/3063), [#3068](https://github.com/PointCloudLibrary/pcl/pull/3068), [#3074](https://github.com/PointCloudLibrary/pcl/pull/3074), [#3078](https://github.com/PointCloudLibrary/pcl/pull/3078), [#3084](https://github.com/PointCloudLibrary/pcl/pull/3084), [#3086](https://github.com/PointCloudLibrary/pcl/pull/3086), [#3088](https://github.com/PointCloudLibrary/pcl/pull/3088), [#3091](https://github.com/PointCloudLibrary/pcl/pull/3091), [#3093](https://github.com/PointCloudLibrary/pcl/pull/3093), [#3100](https://github.com/PointCloudLibrary/pcl/pull/3100)]
+* Prefer `using` over `typedef` [[#3112](https://github.com/PointCloudLibrary/pcl/pull/3112), [#3113](https://github.com/PointCloudLibrary/pcl/pull/3113), [#3115](https://github.com/PointCloudLibrary/pcl/pull/3115), [#3117](https://github.com/PointCloudLibrary/pcl/pull/3117), [#3118](https://github.com/PointCloudLibrary/pcl/pull/3118), [#3121](https://github.com/PointCloudLibrary/pcl/pull/3121), [#3122](https://github.com/PointCloudLibrary/pcl/pull/3122), [#3123](https://github.com/PointCloudLibrary/pcl/pull/3123), [#3124](https://github.com/PointCloudLibrary/pcl/pull/3124), [#3125](https://github.com/PointCloudLibrary/pcl/pull/3125), [#3129](https://github.com/PointCloudLibrary/pcl/pull/3129), [#3130](https://github.com/PointCloudLibrary/pcl/pull/3130), [#3132](https://github.com/PointCloudLibrary/pcl/pull/3132), [#3134](https://github.com/PointCloudLibrary/pcl/pull/3134), [#3137](https://github.com/PointCloudLibrary/pcl/pull/3137), [#3138](https://github.com/PointCloudLibrary/pcl/pull/3138), [#3139](https://github.com/PointCloudLibrary/pcl/pull/3139), [#3144](https://github.com/PointCloudLibrary/pcl/pull/3144)]
+* Prefer `std` math functions over C functions [[#3087](https://github.com/PointCloudLibrary/pcl/pull/3087), [#3236](https://github.com/PointCloudLibrary/pcl/pull/3236), [#3255](https://github.com/PointCloudLibrary/pcl/pull/3255), [#3256](https://github.com/PointCloudLibrary/pcl/pull/3256), [#3257](https://github.com/PointCloudLibrary/pcl/pull/3257), [#3258](https://github.com/PointCloudLibrary/pcl/pull/3258), [#3270](https://github.com/PointCloudLibrary/pcl/pull/3270), [#3271](https://github.com/PointCloudLibrary/pcl/pull/3271), [#3272](https://github.com/PointCloudLibrary/pcl/pull/3272), [#3280](https://github.com/PointCloudLibrary/pcl/pull/3280), [#3282](https://github.com/PointCloudLibrary/pcl/pull/3282), [#3287](https://github.com/PointCloudLibrary/pcl/pull/3287)]
+* **[abi]** Prefer using `Ptr` typedefs and migrate to `std` smart pointers in non-API code [[#2804](https://github.com/PointCloudLibrary/pcl/pull/2804), [#2821](https://github.com/PointCloudLibrary/pcl/pull/2821), [#2823](https://github.com/PointCloudLibrary/pcl/pull/2823), [#2929](https://github.com/PointCloudLibrary/pcl/pull/2929), [#3061](https://github.com/PointCloudLibrary/pcl/pull/3061), [#3141](https://github.com/PointCloudLibrary/pcl/pull/3141), [#3142](https://github.com/PointCloudLibrary/pcl/pull/3142), [#3217](https://github.com/PointCloudLibrary/pcl/pull/3217), [#3474](https://github.com/PointCloudLibrary/pcl/pull/3474), [#3482](https://github.com/PointCloudLibrary/pcl/pull/3482), [#3486](https://github.com/PointCloudLibrary/pcl/pull/3486), [#3489](https://github.com/PointCloudLibrary/pcl/pull/3489), [#3497](https://github.com/PointCloudLibrary/pcl/pull/3497)]
+* **[abi]** Migrate to `std` random number generators [[#2956](https://github.com/PointCloudLibrary/pcl/pull/2956), [#2962](https://github.com/PointCloudLibrary/pcl/pull/2962), [#3069](https://github.com/PointCloudLibrary/pcl/pull/3069)]
+* **[deprecation]** Deprecate `pcl_isnan`, `pcl_isfinite`, and `pcl_isinf` in favor of `std` methods [[#2798](https://github.com/PointCloudLibrary/pcl/pull/2798), [#3457](https://github.com/PointCloudLibrary/pcl/pull/3457)]
+* Add explicit `std::` prefix to standard types/functions [[#3265](https://github.com/PointCloudLibrary/pcl/pull/3265), [#3326](https://github.com/PointCloudLibrary/pcl/pull/3326), [#3327](https://github.com/PointCloudLibrary/pcl/pull/3327), [#3328](https://github.com/PointCloudLibrary/pcl/pull/3328), [#3354](https://github.com/PointCloudLibrary/pcl/pull/3354), [#3426](https://github.com/PointCloudLibrary/pcl/pull/3426), [#3434](https://github.com/PointCloudLibrary/pcl/pull/3434)]
+* Remove `else` after `return` statement [[#3180](https://github.com/PointCloudLibrary/pcl/pull/3180), [#3181](https://github.com/PointCloudLibrary/pcl/pull/3181), [#3182](https://github.com/PointCloudLibrary/pcl/pull/3182), [#3183](https://github.com/PointCloudLibrary/pcl/pull/3183), [#3184](https://github.com/PointCloudLibrary/pcl/pull/3184), [#3185](https://github.com/PointCloudLibrary/pcl/pull/3185), [#3186](https://github.com/PointCloudLibrary/pcl/pull/3186)]
+* Remove redundant `typename` keyword [[#2896](https://github.com/PointCloudLibrary/pcl/pull/2896), [#2897](https://github.com/PointCloudLibrary/pcl/pull/2897), [#2927](https://github.com/PointCloudLibrary/pcl/pull/2927)]
+* Prefer `#pragma once` over `#ifndef` include guards [[#2617](https://github.com/PointCloudLibrary/pcl/pull/2617), [#2707](https://github.com/PointCloudLibrary/pcl/pull/2707)]
+* Apply clang-format to white-listed modules [[#3343](https://github.com/PointCloudLibrary/pcl/pull/3343), [#3344](https://github.com/PointCloudLibrary/pcl/pull/3344), [#3356](https://github.com/PointCloudLibrary/pcl/pull/3356), [#3363](https://github.com/PointCloudLibrary/pcl/pull/3363), [#3393](https://github.com/PointCloudLibrary/pcl/pull/3393), [#3416](https://github.com/PointCloudLibrary/pcl/pull/3416)]
+* Remove default constructors/destructors [[#3440](https://github.com/PointCloudLibrary/pcl/pull/3440), [#3454](https://github.com/PointCloudLibrary/pcl/pull/3454)]
+* Fix various compiler warnings [[#2665](https://github.com/PointCloudLibrary/pcl/pull/2665), [#2775](https://github.com/PointCloudLibrary/pcl/pull/2775), [#2778](https://github.com/PointCloudLibrary/pcl/pull/2778), [#2781](https://github.com/PointCloudLibrary/pcl/pull/2781), [#2782](https://github.com/PointCloudLibrary/pcl/pull/2782), [#2822](https://github.com/PointCloudLibrary/pcl/pull/2822), [#2898](https://github.com/PointCloudLibrary/pcl/pull/2898), [#2907](https://github.com/PointCloudLibrary/pcl/pull/2907), [#3001](https://github.com/PointCloudLibrary/pcl/pull/3001), [#3075](https://github.com/PointCloudLibrary/pcl/pull/3075), [#3076](https://github.com/PointCloudLibrary/pcl/pull/3076), [#3153](https://github.com/PointCloudLibrary/pcl/pull/3153), [#3155](https://github.com/PointCloudLibrary/pcl/pull/3155), [#3208](https://github.com/PointCloudLibrary/pcl/pull/3208), [#3212](https://github.com/PointCloudLibrary/pcl/pull/3212), [#3214](https://github.com/PointCloudLibrary/pcl/pull/3214), [#3342](https://github.com/PointCloudLibrary/pcl/pull/3342), [#3345](https://github.com/PointCloudLibrary/pcl/pull/3345), [#3348](https://github.com/PointCloudLibrary/pcl/pull/3348), [#3366](https://github.com/PointCloudLibrary/pcl/pull/3366), [#3372](https://github.com/PointCloudLibrary/pcl/pull/3372), [#3375](https://github.com/PointCloudLibrary/pcl/pull/3375), [#3377](https://github.com/PointCloudLibrary/pcl/pull/3377), [#3385](https://github.com/PointCloudLibrary/pcl/pull/3385), [#3388](https://github.com/PointCloudLibrary/pcl/pull/3388), [#3409](https://github.com/PointCloudLibrary/pcl/pull/3409), [#3425](https://github.com/PointCloudLibrary/pcl/pull/3425), [#3427](https://github.com/PointCloudLibrary/pcl/pull/3427), [#3507](https://github.com/PointCloudLibrary/pcl/pull/3507), [#3509](https://github.com/PointCloudLibrary/pcl/pull/3509), [#3554](https://github.com/PointCloudLibrary/pcl/pull/3554), [#3555](https://github.com/PointCloudLibrary/pcl/pull/3555)]
+* Prefer `std::size_t` in loops [[#3550](https://github.com/PointCloudLibrary/pcl/pull/3550), [#3556](https://github.com/PointCloudLibrary/pcl/pull/3556)]
+
+### `Modules:`
+
+#### `CMake:`
+
+* Set compile features on imported PCL targets [[#3567](https://github.com/PointCloudLibrary/pcl/pull/3567)]
+* Create CMake imported targets for header-only modules [[#3495](https://github.com/PointCloudLibrary/pcl/pull/3495)]
+* Add `PCL_WARNINGS_ARE_ERRORS` CMake option and enable it in Ubuntu 16.04 CI job [[#3478](https://github.com/PointCloudLibrary/pcl/pull/3478)]
+* Avoid using `VERSION_GREATER_EQUAL` to preserve compatibility with CMake 3.5 [[#3460](https://github.com/PointCloudLibrary/pcl/pull/3460)]
+* Remove policy push/pop from "PCLConfig.cmake" file [[#3431](https://github.com/PointCloudLibrary/pcl/pull/3431)]
+* Fix link-type keywords in linked libraries in "PCLConfig.cmake" with CMake >= 3.11 [[#3341](https://github.com/PointCloudLibrary/pcl/pull/3341)]
+* Update prefix hints in GTest finder script [[#3331](https://github.com/PointCloudLibrary/pcl/pull/3331)]
+* PCL All-in-one Installer: add process to add/remove VTK path [[#3322](https://github.com/PointCloudLibrary/pcl/pull/3322)]
+* Add `surface` module to the list of dependencies of `examples` [[#3295](https://github.com/PointCloudLibrary/pcl/pull/3295)]
+* Add missing install rule for "2d/kernel.hpp" header [[#3278](https://github.com/PointCloudLibrary/pcl/pull/3278)]
+* **[new-feature]** Add `format` compilation target that applies `clang-format` to whitelisted modules [[#3188](https://github.com/PointCloudLibrary/pcl/pull/3188)]
+* Use `COMPONENTS` when finding VTK to avoid linking agains unnecessary modules [[#3140](https://github.com/PointCloudLibrary/pcl/pull/3140)]
+* Add thread library of the system by `Threads::Threads` instead of via `-pthread` flag [[#3102](https://github.com/PointCloudLibrary/pcl/pull/3102)]
+* Fix `find_package_handle_standard_args` incorrect argument in GTest finder script [[#3098](https://github.com/PointCloudLibrary/pcl/pull/3098)]
+* Fix compound target's target registration [[#3090](https://github.com/PointCloudLibrary/pcl/pull/3090)]
+* Set `CMP0072` to `NEW` to prefer `GLVND` over legacy OpenGL modules [[#3066](https://github.com/PointCloudLibrary/pcl/pull/3066)]
+* Improve parsing of `BUNDLE` option in `PCL_ADD_EXECUTABLE` [[#3064](https://github.com/PointCloudLibrary/pcl/pull/3064)]
+* Change debug/release targets postfix on Windows [[#3055](https://github.com/PointCloudLibrary/pcl/pull/3055)]
+* Add version info on Windows for DLLs/Exe [[#3054](https://github.com/PointCloudLibrary/pcl/pull/3054)]
+* Modernize some CMake macros (Increases minimum required CMake version to 3.5) [[#3044](https://github.com/PointCloudLibrary/pcl/pull/3044)]
+* Add newer Boost versions to `Boost_ADDITIONAL_VERSIONS` [[#3003](https://github.com/PointCloudLibrary/pcl/pull/3003)]
+* Refactor `PCL_MAKE_PKGCONFIG` [[#2894](https://github.com/PointCloudLibrary/pcl/pull/2894)]
+* Bump Eigen minimum version to 3.1 [[#2893](https://github.com/PointCloudLibrary/pcl/pull/2893)]
+* Improve compatibility with latest VTK [[#2885](https://github.com/PointCloudLibrary/pcl/pull/2885)]
+* PCL All-in-one Installer: add quiet flag to msiexec installs [[#2873](https://github.com/PointCloudLibrary/pcl/pull/2873)]
+* Use `-mtune` instead of `-march` on non-x86 CPUs [[#2868](https://github.com/PointCloudLibrary/pcl/pull/2868)]
+* Prevent adding `/MP` flag for MSVC in case any other language than C/CXX will be used (e.g. CUDA) [[#2862](https://github.com/PointCloudLibrary/pcl/pull/2862)]
+* Add support for Visual Studio 2019 [[#2826](https://github.com/PointCloudLibrary/pcl/pull/2826)]
+* Drop MSVC 2013 (and below) support [[#2817](https://github.com/PointCloudLibrary/pcl/pull/2817)]
+* Drop GCC 4 support [[#2760](https://github.com/PointCloudLibrary/pcl/pull/2760)]
+* Mark include directories of 3rd-party libraries as system includes [[#2733](https://github.com/PointCloudLibrary/pcl/pull/2733)]
+* Fix Qt5 CMake issue [[#2719](https://github.com/PointCloudLibrary/pcl/pull/2719)]
+* Reduce unnecessary nesting in "CMakeLists.txt" [[#2718](https://github.com/PointCloudLibrary/pcl/pull/2718)]
+* Drop Qt4 support [[#2716](https://github.com/PointCloudLibrary/pcl/pull/2716)]
+* Remove unnecessary `VTK_INCLUDE_DIRECTORIES` [[#2713](https://github.com/PointCloudLibrary/pcl/pull/2713)]
+* Add `MSVC_MP` CMake option to adjust number of parallel build jobs [[#2705](https://github.com/PointCloudLibrary/pcl/pull/2705)]
+* Set interface compile features to `cxx_std_14` on PCL targets [[#2697](https://github.com/PointCloudLibrary/pcl/pull/2697)]
+*  Reorganize and beautify project generation for IDEs  [[#2691](https://github.com/PointCloudLibrary/pcl/pull/2691)]
+* **[new-feature]** Enable C++ 14 flags [[#2690](https://github.com/PointCloudLibrary/pcl/pull/2690)]
+* Remove vendored "FindGLEW.cmake" and adopt imported targets; rename "FindGTest.cmake" to prevent name clash [[#2679](https://github.com/PointCloudLibrary/pcl/pull/2679)]
+* Add compound CMake targets for examples, tools, and apps [[#2673](https://github.com/PointCloudLibrary/pcl/pull/2673)]
+* Set CMake policy `CMP0074` to `NEW` [[#2671](https://github.com/PointCloudLibrary/pcl/pull/2671)]
+* Remove conditional code for no longer supported versions of CMake [[#2667](https://github.com/PointCloudLibrary/pcl/pull/2667)]
+* Raise minimum required Boost version to 1.55; fix deprecated Boost endians [[#2801](https://github.com/PointCloudLibrary/pcl/pull/2801)]
+* Modernize FLANN finder script [[#2740](https://github.com/PointCloudLibrary/pcl/pull/2740), [#2861](https://github.com/PointCloudLibrary/pcl/pull/2861), [#2905](https://github.com/PointCloudLibrary/pcl/pull/2905), [#2910](https://github.com/PointCloudLibrary/pcl/pull/2910), [#3157](https://github.com/PointCloudLibrary/pcl/pull/3157), [#3202](https://github.com/PointCloudLibrary/pcl/pull/3202), [#3220](https://github.com/PointCloudLibrary/pcl/pull/3220), [#3317](https://github.com/PointCloudLibrary/pcl/pull/3317)]
+
+#### `libpcl_2d:`
+
+* Fix `EIGEN_ALIGN16` positionining for point type `XYZHSV` [[#3237](https://github.com/PointCloudLibrary/pcl/pull/3237)]
+
+#### `libpcl_common:`
+
+* **[deprecation]** Revert smart pointer type change in `PointCloud` and deprecate `getMapping()` [[#3563](https://github.com/PointCloudLibrary/pcl/pull/3563)]
+* Define `RangeImage` destructor as virtual [[#3477](https://github.com/PointCloudLibrary/pcl/pull/3477)]
+* Refactor `pcl::eigen33()` to reduce potential errors (and remove bug) [[#3441](https://github.com/PointCloudLibrary/pcl/pull/3441)]
+* Use generic detection idiom in `isFinite()` [[#3402](https://github.com/PointCloudLibrary/pcl/pull/3402)]
+* **[deprecation]** Deprecate `getFields()` with output parameter in favor of overload with return value [[#3401](https://github.com/PointCloudLibrary/pcl/pull/3401)]
+* Refactor polynomial calculations and remove memory leak [[#3392](https://github.com/PointCloudLibrary/pcl/pull/3392)]
+* Removes deprecated usage of `getFields(cloud, fields)` [[#3374](https://github.com/PointCloudLibrary/pcl/pull/3374)]
+* **[deprecation]** Deprecate `getFieldIndex()`/`getFields()` with first argument as cloud [[#3365](https://github.com/PointCloudLibrary/pcl/pull/3365)]
+* Remove `vector.reserve()` from hot path in cloud concatenation [[#3361](https://github.com/PointCloudLibrary/pcl/pull/3361)]
+* **[deprecation]** Add `PCLPointCloud2::operator+=()` and update concatenation operation [[#3320](https://github.com/PointCloudLibrary/pcl/pull/3320)]
+* **[new-feature]** Add concatenate operation for `PolygonMesh` [[#3316](https://github.com/PointCloudLibrary/pcl/pull/3316)]
+* Simplify the resize logic in `PCLBase` [[#3315](https://github.com/PointCloudLibrary/pcl/pull/3315)]
+* **[behavior]** Disable colored output for non-interactive terminals [[#3310](https://github.com/PointCloudLibrary/pcl/pull/3310)]
+* **[new-feature]** Add `emplace[_back]` to `pcl::PointCloud` [[#3207](https://github.com/PointCloudLibrary/pcl/pull/3207)]
+* **[new-feature]** Add `pcl::make_shared` that automatically handles aligned allocations [[#3163](https://github.com/PointCloudLibrary/pcl/pull/3163)]
+* **[behavior]** Enforce right-hand-rule on PCA eigenvectors [[#2946](https://github.com/PointCloudLibrary/pcl/pull/2946)]
+* Fix a bug in `CentroidPoint` [[#2875](https://github.com/PointCloudLibrary/pcl/pull/2875)]
+* **[behavior]** Initialize curvature in `PointNormal` default constructor [[#2674](https://github.com/PointCloudLibrary/pcl/pull/2674)]
+
+#### `libpcl_cuda:`
+
+* Remove code for CUDA below 7.5, update version checks [[#3152](https://github.com/PointCloudLibrary/pcl/pull/3152)]
+* Add missing include to support CUDA 10.1 [[#2883](https://github.com/PointCloudLibrary/pcl/pull/2883)]
+* Drop CUDA 7.0 (and below) support [[#2736](https://github.com/PointCloudLibrary/pcl/pull/2736)]
+
+#### `libpcl_features:`
+
+* Fix numerical issue in GASD estimation [[#3498](https://github.com/PointCloudLibrary/pcl/pull/3498)]
+* **[deprecation]** Deprecate `computeRSD()` functions that take pointclouds by pointer [[#2827](https://github.com/PointCloudLibrary/pcl/pull/2827)]
+* Fix data race in `NormalEstimationOMP` on Windows [[#2770](https://github.com/PointCloudLibrary/pcl/pull/2770)]
+
+#### `libpcl_filters:`
+
+* Merge pull request #3540 from facontidavide/fix_filter [[#3540](https://github.com/PointCloudLibrary/pcl/pull/3540)]
+* Fix incorrect switch fallthrough in convolution operator [[#3429](https://github.com/PointCloudLibrary/pcl/pull/3429)]
+* Use `size_t` for address computation in `CropBox` filter [[#3418](https://github.com/PointCloudLibrary/pcl/pull/3418)]
+*  Fix a bug in removed index extraction in `UniformSampling` [[#3323](https://github.com/PointCloudLibrary/pcl/pull/3323)]
+* Fix `CropBox` with indices; add new assertions for unit tests [[#3306](https://github.com/PointCloudLibrary/pcl/pull/3306)]
+* Use fixed-size Eigen block expressions in `FrustumCulling` [[#2786](https://github.com/PointCloudLibrary/pcl/pull/2786)]
+* **[abi][deprecation]** Restructure and add functionality to filters templated on `PCLPointCloud2` [[#3483](https://github.com/PointCloudLibrary/pcl/pull/3483), [#3500](https://github.com/PointCloudLibrary/pcl/pull/3500)]
+
+#### `libpcl_gpu:`
+
+* Fix building of KinFu Large Scale app with Visual Studio [[#3504](https://github.com/PointCloudLibrary/pcl/pull/3504)]
+* **[api]** Replace `uint64_type` by `std::uint64_t` [[#3435](https://github.com/PointCloudLibrary/pcl/pull/3435)]
+* Add OpenNI2 support to `kinfu_largescale` tool [[#3391](https://github.com/PointCloudLibrary/pcl/pull/3391)]
+* Use `constexpr` in KinFu and KinFu large scale apps [[#3386](https://github.com/PointCloudLibrary/pcl/pull/3386)]
+* Remove duplicated and unused "cutil_math.h" [[#3264](https://github.com/PointCloudLibrary/pcl/pull/3264)]
+* Drop unnecessary __CUDA_ARCH__ checks [[#3154](https://github.com/PointCloudLibrary/pcl/pull/3154)]
+* Remove code for CUDA below 7.5, update version checks [[#3152](https://github.com/PointCloudLibrary/pcl/pull/3152)]
+* Remove unused timer routines in "NCV.cu" [[#3135](https://github.com/PointCloudLibrary/pcl/pull/3135)]
+* Add sync variants to CUDA vote functions to support PTX/ARCH >= 7.0 [[#2981](https://github.com/PointCloudLibrary/pcl/pull/2981)]
+* Fix `-debug` option parsing in `people_pcd_prob` tool [[#2656](https://github.com/PointCloudLibrary/pcl/pull/2656)]
+
+#### `libpcl_io:`
+
+* Make PLY parser more tolerant towards files not adhering to standard [[#3542](https://github.com/PointCloudLibrary/pcl/pull/3542)]
+* Fix a bug in binary header generation for PCD files [[#3522](https://github.com/PointCloudLibrary/pcl/pull/3522)]
+* **[behavior]** Add support for device URI in `OpenNI2Grabber` constructor [[#3238](https://github.com/PointCloudLibrary/pcl/pull/3238)]
+* Include "pcl_config.h" before checking `HAVE_OPENNI2` [[#3191](https://github.com/PointCloudLibrary/pcl/pull/3191)]
+* Print descriptive error if PLY file not found [[#3143](https://github.com/PointCloudLibrary/pcl/pull/3143)]
+* **[deprecation]** Add `registerCallback()` overload to grabbers to support assignment of `boost::function`s with templated signatures [[#3128](https://github.com/PointCloudLibrary/pcl/pull/3128)]
+* Fix preallocation of memory in PLY reader [[#2800](https://github.com/PointCloudLibrary/pcl/pull/2800)]
+* Fix possible integer overflow while iterating `PointCloud` fields [[#2754](https://github.com/PointCloudLibrary/pcl/pull/2754)]
+* **[removal]** Remove FZ-API [[#2747](https://github.com/PointCloudLibrary/pcl/pull/2747)]
+* Improve loading of massive PLY files [[#2715](https://github.com/PointCloudLibrary/pcl/pull/2715)]
+* **[new-feature]** Add RSSDK 2.0 (librealsense2) grabber [[#2214](https://github.com/PointCloudLibrary/pcl/pull/2214)]
+* Fix callback signatures in some grabbers [[#3216](https://github.com/PointCloudLibrary/pcl/pull/3216), [#3225](https://github.com/PointCloudLibrary/pcl/pull/3225)]
+
+#### `libpcl_kdtree:`
+
+* **[deprecation]** Remove unnecessary FLANN includes, deprecate "kdtree/flann.h" header [[#2993](https://github.com/PointCloudLibrary/pcl/pull/2993)]
+
+#### `libpcl_keypoints:`
+
+* Removed all duplicated branches in `AgastKeypoint2D` [[#2657](https://github.com/PointCloudLibrary/pcl/pull/2657)]
+
+#### `libpcl_recognition:`
+
+* Use range-based for loops with `boost::filesystem::directory_iterator` [[#3432](https://github.com/PointCloudLibrary/pcl/pull/3432)]
+* **[deprecation]** Refactor `MaskMap` and deprecate several of its methods [[#3399](https://github.com/PointCloudLibrary/pcl/pull/3399)]
+* Add missing include in  "trimmed_icp.h" [[#3286](https://github.com/PointCloudLibrary/pcl/pull/3286)]
+* Use I/O helper method in `pcl::LineRGBD` [[#2796](https://github.com/PointCloudLibrary/pcl/pull/2796)]
+
+#### `libpcl_registration:`
+
+* Make `Registration::hasConverged()` const-qualified [[#3456](https://github.com/PointCloudLibrary/pcl/pull/3456)]
+* Fix debug message by reordering statements in GICP [[#3398](https://github.com/PointCloudLibrary/pcl/pull/3398)]
+* **[new-feature]** Add linear least squares version of symmetric objective function for ICP [[#3390](https://github.com/PointCloudLibrary/pcl/pull/3390)]
+* Fix the OpenMP errors/warnings in "ia_fpcs.hpp" [[#3389](https://github.com/PointCloudLibrary/pcl/pull/3389)]
+* Fix `pcl::Registration::getFitnessScore()` documentation [[#3082](https://github.com/PointCloudLibrary/pcl/pull/3082)]
+* **[behavior]** Fix ICP misbehavior in the "failure after maximum iterations" mode [[#2892](https://github.com/PointCloudLibrary/pcl/pull/2892)]
+
+#### `libpcl_sample_consensus:`
+
+* **[new-feature]** Add parallel RANSAC implementation with OpenMP [[#3514](https://github.com/PointCloudLibrary/pcl/pull/3514)]
+* **[behavior]** Set default min and max angle for SAC cone models [[#3466](https://github.com/PointCloudLibrary/pcl/pull/3466)]
+* Add `const` qualifier to multiple methods in SAC module [[#2970](https://github.com/PointCloudLibrary/pcl/pull/2970)]
+* Fix regression in `pcl::SACSegmentation` line fitting [[#2767](https://github.com/PointCloudLibrary/pcl/pull/2767)]
+
+#### `libpcl_segmentation:`
+
+* **[removal]** Remove `SupervoxelClustering::getColoredVoxelCloud()` [[#3469](https://github.com/PointCloudLibrary/pcl/pull/3469)]
+* **[deprecation]** Delete unused params in `OrganizedMultiPlaneSegmentation::refine()` [[#3302](https://github.com/PointCloudLibrary/pcl/pull/3302)]
+* Add `noexcept` for `boost::checked_delete<>` friend [[#2942](https://github.com/PointCloudLibrary/pcl/pull/2942)]
+* Fix `SupervoxelClustering` compilation problem in MSVC 2015.3 [[#2867](https://github.com/PointCloudLibrary/pcl/pull/2867)]
+
+#### `libpcl_simulation:`
+
+* Fix bug in `SimExample::write_depth_image_uint` trigerring `-Wtype-limits` warning [[#3430](https://github.com/PointCloudLibrary/pcl/pull/3430)]
+
+#### `libpcl_stereo:`
+
+* Merge pull request #3566 from kunaltyagi/stereo [[#3566](https://github.com/PointCloudLibrary/pcl/pull/3566)]
+
+#### `libpcl_surface:`
+
+* Fix undefined behaviour in `OctNode` [[#3561](https://github.com/PointCloudLibrary/pcl/pull/3561)]
+* Fix memory leak in `TextureMapping` [[#3549](https://github.com/PointCloudLibrary/pcl/pull/3549)]
+* Prevent `memset` for empty vector in 3rdparty/poisson4 [[#3537](https://github.com/PointCloudLibrary/pcl/pull/3537)]
+* Remove incorrect tree update in `MarchingCubes` [[#3240](https://github.com/PointCloudLibrary/pcl/pull/3240)]
+* **[deprecation]** Convert `MovingLeastSquaresOMP` into an alias template and deprecate [[#3119](https://github.com/PointCloudLibrary/pcl/pull/3119)]
+* Fix a bug in `ConvexHull` when indices are used [[#2999](https://github.com/PointCloudLibrary/pcl/pull/2999)]
+* Include "pcl_config.h" before testing `HAVE_QHULL` [[#2979](https://github.com/PointCloudLibrary/pcl/pull/2979)]
+* Throw exceptions instead of `exit(0)` in Poisson surface reconstruction [[#2891](https://github.com/PointCloudLibrary/pcl/pull/2891)]
+*  Add check for invalid plane coefficients in `MovingLeastSquares` [[#2805](https://github.com/PointCloudLibrary/pcl/pull/2805)]
+* Fix the size of the lookup table in `BilateralUpsampling` [[#2749](https://github.com/PointCloudLibrary/pcl/pull/2749)]
+* Replace `hash_map` with `unordered_map` in 3rdparty/poisson4 [[#2640](https://github.com/PointCloudLibrary/pcl/pull/2640)]
+
+#### `libpcl_visualization:`
+
+* Add a flag to disable window autoresizing in `ImageViewer` [[#3394](https://github.com/PointCloudLibrary/pcl/pull/3394)]
+* **[deprecation]** Add new overload of `PointCloudColorHandler::getColor()` [[#3187](https://github.com/PointCloudLibrary/pcl/pull/3187)]
+* **[behavior]** Improve c/C command in `PCLVisualizer` [[#2926](https://github.com/PointCloudLibrary/pcl/pull/2926)]
+* Disable VTK warning display with OpenGL rendering backend [[#2912](https://github.com/PointCloudLibrary/pcl/pull/2912)]
+* **[abi]** Minor refactoring of `pcl::visualization::Camera` and related functions [[#2901](https://github.com/PointCloudLibrary/pcl/pull/2901)]
+* Fix a bug in `PCLVisualizer::setShapeRenderingProperties()` [[#2900](https://github.com/PointCloudLibrary/pcl/pull/2900)]
+* Fix possible integer overflow while iterating `PointCloud` fields [[#2754](https://github.com/PointCloudLibrary/pcl/pull/2754)]
+* Raise minimum VTK version to 6.2 [[#2685](https://github.com/PointCloudLibrary/pcl/pull/2685)]
+
+#### `PCL Apps:`
+
+* Fix memory leaks in OpenNI apps [[#3553](https://github.com/PointCloudLibrary/pcl/pull/3553)]
+* Use range-based for loops with `boost::filesystem::directory_iterator` [[#3432](https://github.com/PointCloudLibrary/pcl/pull/3432)]
+* Do not use deprecated function in `stereo_ground_segmentation` [[#3406](https://github.com/PointCloudLibrary/pcl/pull/3406)]
+* Add missing `std::move` or `const` reference for parameters [[#3232](https://github.com/PointCloudLibrary/pcl/pull/3232)]
+* Remove magic numbers from `organized_segmentation_demo` app [[#3108](https://github.com/PointCloudLibrary/pcl/pull/3108)]
+* Add missing include `render_views_tesselated_sphere` app [[#2909](https://github.com/PointCloudLibrary/pcl/pull/2909)]
+* Remove Qt version checks [[#2762](https://github.com/PointCloudLibrary/pcl/pull/2762)]
+* Cleanup Qt includes in Modeler app [[#2756](https://github.com/PointCloudLibrary/pcl/pull/2756)]
+* Cleanup Qt includes in CloudComposer app [[#2744](https://github.com/PointCloudLibrary/pcl/pull/2744)]
+* Fix MSVC compile issues in CloudComposer app [[#2712](https://github.com/PointCloudLibrary/pcl/pull/2712)]
+* Fix Modeler app with OpenGL2 rendering backend [[#2653](https://github.com/PointCloudLibrary/pcl/pull/2653)]
+
+#### `PCL Docs:`
+
+* Fix and improve documentation in `sample_consensus` module [[#3301](https://github.com/PointCloudLibrary/pcl/pull/3301)]
+* Fix `pcl::Registration::getFitnessScore()` documentation [[#3082](https://github.com/PointCloudLibrary/pcl/pull/3082)]
+* Fix source file name path stripping in Doxygen [[#2714](https://github.com/PointCloudLibrary/pcl/pull/2714)]
+
+#### `PCL Tutorials:`
+
+* Fix "CMakeLists.txt" in VFH tutorial [[#3449](https://github.com/PointCloudLibrary/pcl/pull/3449)]
+* Update information about types with RGBA data in tutorial [[#3294](https://github.com/PointCloudLibrary/pcl/pull/3294)]
+* Add a note about adjusting passthrough limits in template alignment tutorial [[#3193](https://github.com/PointCloudLibrary/pcl/pull/3193)]
+* Add missing shell command in "Building PCL" tutorial [[#2996](https://github.com/PointCloudLibrary/pcl/pull/2996)]
+* Fix cube rendering properties in "Moment of Inertia" tutorial [[#2880](https://github.com/PointCloudLibrary/pcl/pull/2880)]
+* Migrate from `boost::math::iround` to `std::lround` [[#2818](https://github.com/PointCloudLibrary/pcl/pull/2818)]
+* Link with `PCL_LIBRARIES`, not `PCL_***_LIBRARIES` [[#2799](https://github.com/PointCloudLibrary/pcl/pull/2799)]
+
+#### `PCL Tests:`
+
+* Move OMP version of `MovingLeastSquares` into a separate test case [[#3382](https://github.com/PointCloudLibrary/pcl/pull/3382)]
+* Fix `CropBox` with indices; add new assertions for unit tests [[#3306](https://github.com/PointCloudLibrary/pcl/pull/3306)]
+* Fix `find_package_handle_standard_args` incorrect argument in GTest finder script [[#3098](https://github.com/PointCloudLibrary/pcl/pull/3098)]
+* Do not test buffers instantiated with `char` template argument [[#2980](https://github.com/PointCloudLibrary/pcl/pull/2980)]
+* Remove `GTEST_USE_OWN_TR1_TUPLE` defines [[#2828](https://github.com/PointCloudLibrary/pcl/pull/2828)]
+* Add a new test for `SampleConsensusModelLine` [[#2768](https://github.com/PointCloudLibrary/pcl/pull/2768)]
+* Split `test_registration` into three binaries [[#2727](https://github.com/PointCloudLibrary/pcl/pull/2727)]
+
+#### `PCL Tools:`
+
+* **[behavior]** Do not discard data fields in `pcl_uniform_sampling` tool [[#3461](https://github.com/PointCloudLibrary/pcl/pull/3461)]
+* Add missing includes in `ensenso_viewer.cpp` [[#3035](https://github.com/PointCloudLibrary/pcl/pull/3035)]
+* Do not terminate `openni_viewer`/`openni2_viewer` if image viewer was not instantiated [[#2698](https://github.com/PointCloudLibrary/pcl/pull/2698)]
+
+#### `CI:`
+
+* Add `PCL_WARNINGS_ARE_ERRORS` CMake option and enable it in Ubuntu 16.04 CI job [[#3478](https://github.com/PointCloudLibrary/pcl/pull/3478)]
+* Add a new Azure pipeline for Ubuntu 19.10 [[#3446](https://github.com/PointCloudLibrary/pcl/pull/3446)]
+* Add formatting job on CI [[#3420](https://github.com/PointCloudLibrary/pcl/pull/3420)]
+* Add Dockerfiles for images used on CI [[#3350](https://github.com/PointCloudLibrary/pcl/pull/3350)]
+* Publish test results on Azure pipelines [[#2948](https://github.com/PointCloudLibrary/pcl/pull/2948)]
+* Build tutorials on Azure Pipelines [[#2696](https://github.com/PointCloudLibrary/pcl/pull/2696)]
+
+## *= 1.9.1 (26.11.2018) =*
+
+### `Modules:`
+
+#### `Uncategorized:`
+
+* Add missing visualization section from the changelog generation. [[#2634]](https://github.com/PointCloudLibrary/pcl/pull/2634)
+
+#### `CMake:`
+
+* Fix development version check on DISSECT_VERSION. [[#2633]](https://github.com/PointCloudLibrary/pcl/pull/2633)
+* Remove CMake policy CMP0054 setting. [[#2627]](https://github.com/PointCloudLibrary/pcl/pull/2627)
+* PCLConfig.cmake - POP policy-stack before return() [[#2626]](https://github.com/PointCloudLibrary/pcl/pull/2626)
+* Remove CMake config installation folder only when empty [[#2622]](https://github.com/PointCloudLibrary/pcl/pull/2622)
+* Downgrade grabber dependency message level to STATUS. [[#2620]](https://github.com/PointCloudLibrary/pcl/pull/2620)
+* Migrate CMake policy 0048 [[#2608]](https://github.com/PointCloudLibrary/pcl/pull/2608)
+* Bump CMake minimum version to 3.1. [[#2605]](https://github.com/PointCloudLibrary/pcl/pull/2605)
+* Bump version to 1.9.0-dev [[#2602]](https://github.com/PointCloudLibrary/pcl/pull/2602)
+* Search in $EIGEN_ROOT first while looking for Eigen [[#2592]](https://github.com/PointCloudLibrary/pcl/pull/2592)
+
+#### `libpcl_visualization:`
+
+* address conflict between visualization and VTK head [[#2612]](https://github.com/PointCloudLibrary/pcl/pull/2612)
+
+#### `PCL Tutorials:`
+
+* Bump CMake minimum version to 3.1. [[#2605]](https://github.com/PointCloudLibrary/pcl/pull/2605)
+
+#### `PCL Tests:`
+
+* Refactor `SHOTEstimation` and `SHOTColorEstimation` tests [[#2636]](https://github.com/PointCloudLibrary/pcl/pull/2636)
+
+#### `CI:`
+
+* Set up azure pipelines for macOS High Sierra [[#2635]](https://github.com/PointCloudLibrary/pcl/pull/2635)
+* Enable Windows builds on Azure Pipelines [[#2632]](https://github.com/PointCloudLibrary/pcl/pull/2632)
+* Add Ubuntu16.04 based build on Azure Pipelines [[#2611]](https://github.com/PointCloudLibrary/pcl/pull/2611)
+* Remove documentation job from Travis [[#2604]](https://github.com/PointCloudLibrary/pcl/pull/2604)
+
+
+## *= 1.9.0 (06.11.2018) =*
+
+### `New Features:`
+
+*Newly added functionalities.*
+
+* **[common][visualization]** Add Viridis color LUT [[#2420]](https://github.com/PointCloudLibrary/pcl/pull/2420)
+* **[octree]** Implementation of the iterator 'OctreeLeafNodeBreadthIterator'. [[#2204]](https://github.com/PointCloudLibrary/pcl/pull/2204)
+* **[octree]** Implementation of the iterator 'OctreeFixedDepthIterator'. [[#1983]](https://github.com/PointCloudLibrary/pcl/pull/1983)
+* **[ci]** Enable Global Tests on Windows CI [[#2137]](https://github.com/PointCloudLibrary/pcl/pull/2137)
+* **[features]** Add GASD global point cloud descriptor [[#1652]](https://github.com/PointCloudLibrary/pcl/pull/1652)
+* **[visualization]** Add overload to `PCLVisualizer::addText3D()` that allows specifying text orientation [[#2038]](https://github.com/PointCloudLibrary/pcl/pull/2038)
+* **[features]** FLARELocalReferenceFrameEstimation class added [[#1571]](https://github.com/PointCloudLibrary/pcl/pull/1571)
+* **[surface][tools]** Add new mls projection method. Deprecated `MovingLeastSquares::setPolynomialFit()`. [[#1960]](https://github.com/PointCloudLibrary/pcl/pull/1960)
+
+### `Deprecated:`
+
+*Deprecated code scheduled to be removed after two minor releases.*
+
+* **[octree]** Implementation of the iterator 'OctreeLeafNodeBreadthIterator'. [[#2204]](https://github.com/PointCloudLibrary/pcl/pull/2204)
+* **[common][segmentation]** Provide proper EuclideanClusterComparator method depreciation. New Pragma macro. New Deprecated type. [[#2096]](https://github.com/PointCloudLibrary/pcl/pull/2096)
+* **[io]** Add support pcl::PointXYZRGBA to pcl::VLPGrabber. Deprecate rgb signatures. [[#2102]](https://github.com/PointCloudLibrary/pcl/pull/2102)
+* **[surface][tools]** Add new mls projection method. Deprecated `MovingLeastSquares::setPolynomialFit()`. [[#1960]](https://github.com/PointCloudLibrary/pcl/pull/1960)
+
+### `Removed:`
+
+*Removal of deprecated code.*
+
+* **[filters][io][surface][visualization]** Removal of deprecated code in filters, io, surface and visualization modules [[#2077]](https://github.com/PointCloudLibrary/pcl/pull/2077)
+* **[common]** Remove deprecated ros headers [[#2075]](https://github.com/PointCloudLibrary/pcl/pull/2075)
+* **[registration]** Remove registration module deprecated methods [[#2076]](https://github.com/PointCloudLibrary/pcl/pull/2076)
+* **[sample_consensus]** Remove deprecated functions and variables from SAC module [[#2071]](https://github.com/PointCloudLibrary/pcl/pull/2071)
+* **[common]** Removal of PCA deprecated constructor [[#2070]](https://github.com/PointCloudLibrary/pcl/pull/2070)
+
+### `Behavioral changes:`
+
+*Changes in the expected default behavior.*
+
+* **[common]** PointCloudDepthAndRGBtoXYZRGBA: initialize with the default alpha value (fix #2476) [[#2533]](https://github.com/PointCloudLibrary/pcl/pull/2533)
+* **[octree]** Reverse octree's depth first iterator order [[#2332]](https://github.com/PointCloudLibrary/pcl/pull/2332)
+* **[common]** `PointXYZRGBL` `label` field is now default constructed to 0 [[#2462]](https://github.com/PointCloudLibrary/pcl/pull/2462)
+* **[io]** Fix PLYReader is_dense behavior [[#2133]](https://github.com/PointCloudLibrary/pcl/pull/2133)
+
+### `API changes:`
+
+*Changes to the API which didn't went through the proper deprecation and removal cycle.*
+
+* **[octree]** Implementation of the iterator 'OctreeLeafNodeBreadthIterator'. [[#2204]](https://github.com/PointCloudLibrary/pcl/pull/2204)
+* **[sample_consensus]** Const-qualify most of the methods in SAC model classes [[#2270]](https://github.com/PointCloudLibrary/pcl/pull/2270)
+* **[simulation]** Use GLuint rather than size_t to represent OpenGL indices. [[#2238]](https://github.com/PointCloudLibrary/pcl/pull/2238)
+* **[visualization]** Fix access specifier in `PointCloudColorHandlerRGBAField` [[#2226]](https://github.com/PointCloudLibrary/pcl/pull/2226)
+* **[docs]** Misc. typos (cont.) [[#2215]](https://github.com/PointCloudLibrary/pcl/pull/2215)
+* **[octree]** OctreeIterators special member revision [[#2108]](https://github.com/PointCloudLibrary/pcl/pull/2108)
+* **[io]** Add support pcl::PointXYZRGBA to pcl::VLPGrabber. Deprecate rgb signatures. [[#2102]](https://github.com/PointCloudLibrary/pcl/pull/2102)
+* **[surface][tools]** Add new mls projection method. Deprecated `MovingLeastSquares::setPolynomialFit()`. [[#1960]](https://github.com/PointCloudLibrary/pcl/pull/1960)
+* **[surface]** Add ability to cache mls results [[#1952]](https://github.com/PointCloudLibrary/pcl/pull/1952)
+
+### `ABI changes:`
+
+*Changes that cause ABI incompatibility but are still API compatible.*
+
+* **[surface]** Missing pcl::MovingLeastSquaresOMP declaration without /openmp [[#2324]](https://github.com/PointCloudLibrary/pcl/pull/2324)
+* **[common][filters][surface]** Improved docstrings and error messages [[#2300]](https://github.com/PointCloudLibrary/pcl/pull/2300)
+* **[common]** Modified `GlasbeyLUT` indexing type to `size_t` [[#2297]](https://github.com/PointCloudLibrary/pcl/pull/2297)
+* **[octree]** Implementation of the iterator 'OctreeFixedDepthIterator'. [[#1983]](https://github.com/PointCloudLibrary/pcl/pull/1983)
+* **[common][segmentation]** Provide proper EuclideanClusterComparator method depreciation. New Pragma macro. New Deprecated type. [[#2096]](https://github.com/PointCloudLibrary/pcl/pull/2096)
+* **[gpu]** Allow specifying decimation step in convertToTsdfCloud [[#2099]](https://github.com/PointCloudLibrary/pcl/pull/2099)
+* **[apps]** More warning suppression in pcl apps [[#2080]](https://github.com/PointCloudLibrary/pcl/pull/2080)
+* **[io]** Removed unused member from ply_parser [[#2066]](https://github.com/PointCloudLibrary/pcl/pull/2066)
+* **[filters]** Fixes remove_indices in UniformSampling [[#1902]](https://github.com/PointCloudLibrary/pcl/pull/1902)
+* **[visualization]** Add accessor for current rendering framerate in PCLVisualizer [[#1974]](https://github.com/PointCloudLibrary/pcl/pull/1974)
+* **[simulation]** Redo: Simulation: enable returning of organized point clouds [[#1687]](https://github.com/PointCloudLibrary/pcl/pull/1687)
+* **[registration]** Added option to specify translation and rotation convergence deltas in ICP and NDT algorithms. [[#1724]](https://github.com/PointCloudLibrary/pcl/pull/1724)
+
+### `Modules:`
+
+#### `Uncategorized:`
+
+* Change Log generation tool. Automates change log generation. [[#2396]](https://github.com/PointCloudLibrary/pcl/pull/2396)
+* Compatibility reports generation script [[#2410]](https://github.com/PointCloudLibrary/pcl/pull/2410)
+* Update logo [[#2547]](https://github.com/PointCloudLibrary/pcl/pull/2547)
+* Never close stale issues/prs [[#2400]](https://github.com/PointCloudLibrary/pcl/pull/2400)
+* Fix typos in the whole codebase [[#2217]](https://github.com/PointCloudLibrary/pcl/pull/2217)
+* Fixed typo and rearragend items in the issue template [[#2197]](https://github.com/PointCloudLibrary/pcl/pull/2197)
+* Change Stale daysTillClose to 100 years [[#2166]](https://github.com/PointCloudLibrary/pcl/pull/2166)
+* set stale daysUntilClose to a really big number [[#2162]](https://github.com/PointCloudLibrary/pcl/pull/2162)
+* Stale set up [[#2101]](https://github.com/PointCloudLibrary/pcl/pull/2101)
+
+#### `CMake:`
+
+* Fix checks for user-provided CXX flags [[#2579]](https://github.com/PointCloudLibrary/pcl/pull/2579)
+* Fix FLANN path to lower case [[#2576]](https://github.com/PointCloudLibrary/pcl/pull/2576)
+* Use pkg-config to find Flann [[#2563]](https://github.com/PointCloudLibrary/pcl/pull/2563)
+* Update FindBoost versions [[#2558]](https://github.com/PointCloudLibrary/pcl/pull/2558)
+* Add PCL_BUILD_WITH_QHULL_DYNAMIC_LINKING_WIN32 option [[#2552]](https://github.com/PointCloudLibrary/pcl/pull/2552)
+* Fix app/CMakeLists to enable Apps under Windows [[#2550]](https://github.com/PointCloudLibrary/pcl/pull/2550)
+* When configuring with WITH_DOCS, but Doxygen is not available, prevent generation. [[#2516]](https://github.com/PointCloudLibrary/pcl/pull/2516)
+* CMake: Do not include test targets in PCLConfig.cmake [[#2458]](https://github.com/PointCloudLibrary/pcl/pull/2458)
+* CMake Set temporarily the policy CMP0074 to OLD [[#2454]](https://github.com/PointCloudLibrary/pcl/pull/2454)
+* prevent GCC flags propagating to NVCC [[#2430]](https://github.com/PointCloudLibrary/pcl/pull/2430)
+* Mark visualization as an optional dependency of tools [[#2439]](https://github.com/PointCloudLibrary/pcl/pull/2439)
+* Do not mark imported libraries as GLOBAL in PCLConfig [[#2435]](https://github.com/PointCloudLibrary/pcl/pull/2435)
+* Intel fixes [[#2432]](https://github.com/PointCloudLibrary/pcl/pull/2432)
+* Export `-march=native` for Clang and prevent it from being included during cross compilation. [[#2416]](https://github.com/PointCloudLibrary/pcl/pull/2416)
+* Do not search for PCL components that have been found already [[#2428]](https://github.com/PointCloudLibrary/pcl/pull/2428)
+* Move SSE compiler options to `PCL_COMPILE_OPTIONS`. Expose PCL as a CMake imported target. [[#2100]](https://github.com/PointCloudLibrary/pcl/pull/2100)
+* Add Visual Studio compiler option /FS for Ninja build [[#2414]](https://github.com/PointCloudLibrary/pcl/pull/2414)
+* Use rpath in the target's install name [[#2241]](https://github.com/PointCloudLibrary/pcl/pull/2241)
+* Improve QHull finder script [[#2344]](https://github.com/PointCloudLibrary/pcl/pull/2344)
+* Fix link order issue with boost [[#2236]](https://github.com/PointCloudLibrary/pcl/pull/2236)
+* Mark found PCL component libraries and include dirs as advanced [[#2235]](https://github.com/PointCloudLibrary/pcl/pull/2235)
+* Prevent search for disabled optional dependencies in targets. [[#2229]](https://github.com/PointCloudLibrary/pcl/pull/2229)
+* Fix installation rules for ml module [[#2192]](https://github.com/PointCloudLibrary/pcl/pull/2192)
+* Fix conditional branch of Visual C++ 2017 [[#2121]](https://github.com/PointCloudLibrary/pcl/pull/2121)
+* Add *_USE_STATIC options to PCLConfig [[#2086]](https://github.com/PointCloudLibrary/pcl/pull/2086)
+* Add search path suffixes for Vcpkg [[#2085]](https://github.com/PointCloudLibrary/pcl/pull/2085)
+* Update finder scripts for Ensenso, OpenNI, and OpenNI2 [[#2061]](https://github.com/PointCloudLibrary/pcl/pull/2061)
+* Fix PACKAGE to include cmake/Modules directory [[#2053]](https://github.com/PointCloudLibrary/pcl/pull/2053)
+* Unifies Find scripts in PCLConfig [[#1421]](https://github.com/PointCloudLibrary/pcl/pull/1421)
+* CUDA 9 Arch Flags [[#2047]](https://github.com/PointCloudLibrary/pcl/pull/2047)
+* Suppress log when PCL_FIND_QUIETLY is turned on. [[#2032]](https://github.com/PointCloudLibrary/pcl/pull/2032)
+* fix /MP option not generated for Visual Studio. [[#2031]](https://github.com/PointCloudLibrary/pcl/pull/2031)
+* Generate pkgconfig for 2d module [[#1979]](https://github.com/PointCloudLibrary/pcl/pull/1979)
+* Update Find Boost [[#1972]](https://github.com/PointCloudLibrary/pcl/pull/1972)
+* Added CUDA compute capability 5.3 [[#1929]](https://github.com/PointCloudLibrary/pcl/pull/1929)
+* Fix issue with finding pcl deployed out of path [[#1923]](https://github.com/PointCloudLibrary/pcl/pull/1923)
+* Add new gtest path [[#1920]](https://github.com/PointCloudLibrary/pcl/pull/1920)
+
+#### `libpcl_2d:`
+
+* Avoid huge index jumps in `RandomSample`. Remove `io` dependency from `2d`. [[#2141]](https://github.com/PointCloudLibrary/pcl/pull/2141)
+* Fix header names [[#2079]](https://github.com/PointCloudLibrary/pcl/pull/2079)
+* Generate pkgconfig for 2d module [[#1979]](https://github.com/PointCloudLibrary/pcl/pull/1979)
+
+#### `libpcl_common:`
+
+* Fix docstrings [[#2591]](https://github.com/PointCloudLibrary/pcl/pull/2591)
+* Throw an early exception to prevent divide by zero error (#2481) [[#2530]](https://github.com/PointCloudLibrary/pcl/pull/2530)
+* Relax requirements in eigen22d test. Always provide a normalized result in `pcl::transformPlane`. [[#2503]](https://github.com/PointCloudLibrary/pcl/pull/2503)
+* **[behavior]** PointCloudDepthAndRGBtoXYZRGBA: initialize with the default alpha value (fix #2476) [[#2533]](https://github.com/PointCloudLibrary/pcl/pull/2533)
+* Throw `UnorganizedPointCloudException` in `PointCloud::at` [[#2521]](https://github.com/PointCloudLibrary/pcl/pull/2521)
+* Add missing const specifier for getters in `PCLBase`. [[#2502]](https://github.com/PointCloudLibrary/pcl/pull/2502)
+* swap the header in pcl::PointCloud::swap [[#2499]](https://github.com/PointCloudLibrary/pcl/pull/2499)
+* Add header guard and copyright info to polynomial_calculations.hpp [[#2500]](https://github.com/PointCloudLibrary/pcl/pull/2500)
+* Add `header` to the print output of `PointCloud` [[#2498]](https://github.com/PointCloudLibrary/pcl/pull/2498)
+* Fix force recalculation option in `BivariatePolynomialT::calculateGradient` [[#2479]](https://github.com/PointCloudLibrary/pcl/pull/2479)
+* Fix various errors and typos in the docstrings and tutorials [[#2486]](https://github.com/PointCloudLibrary/pcl/pull/2486)
+* Fix a bug in `PointRGBtoI` color conversion [[#2475]](https://github.com/PointCloudLibrary/pcl/pull/2475)
+* Provide `operator<<` for `Intensity32u` point type [[#2467]](https://github.com/PointCloudLibrary/pcl/pull/2467)
+* **[behavior]** `PointXYZRGBL` `label` field is now default constructed to 0 [[#2462]](https://github.com/PointCloudLibrary/pcl/pull/2462)
+* Add some missing eigen alignment operators [[#2433]](https://github.com/PointCloudLibrary/pcl/pull/2433)
+* Intel fixes [[#2432]](https://github.com/PointCloudLibrary/pcl/pull/2432)
+* **[new-feature]** Add Viridis color LUT [[#2420]](https://github.com/PointCloudLibrary/pcl/pull/2420)
+* Remove malloc header to restore builds on BSDs [[#2374]](https://github.com/PointCloudLibrary/pcl/pull/2374)
+* Add support for multiple extensions in `parse_file_extension_argument ()`. [[#2347]](https://github.com/PointCloudLibrary/pcl/pull/2347)
+* Improve speed of `transformPointCloud/WithNormals()` functions [[#2247]](https://github.com/PointCloudLibrary/pcl/pull/2247)
+* Add RGB constructor that takes R, G, and B components [[#2329]](https://github.com/PointCloudLibrary/pcl/pull/2329)
+* **[abi]** Improved docstrings and error messages [[#2300]](https://github.com/PointCloudLibrary/pcl/pull/2300)
+* **[abi]** Modified `GlasbeyLUT` indexing type to `size_t` [[#2297]](https://github.com/PointCloudLibrary/pcl/pull/2297)
+* Add GASDSignatures to `PCL_POINT_TYPES` and `PCL_FEATURE_POINTTYPES` macros. [[#2295]](https://github.com/PointCloudLibrary/pcl/pull/2295)
+* [PARSE] Constness of the API [[#2224]](https://github.com/PointCloudLibrary/pcl/pull/2224)
+* Fix two "unreachable code" warnings in `pca.hpp` [[#2219]](https://github.com/PointCloudLibrary/pcl/pull/2219)
+* Fix covariance calculation in PCA [[#2130]](https://github.com/PointCloudLibrary/pcl/pull/2130)
+* **[abi][deprecation]** Provide proper EuclideanClusterComparator method depreciation. New Pragma macro. New Deprecated type. [[#2096]](https://github.com/PointCloudLibrary/pcl/pull/2096)
+* **[removal]** Remove deprecated ros headers [[#2075]](https://github.com/PointCloudLibrary/pcl/pull/2075)
+* Suppress (maybe) uninitialized warning [[#2073]](https://github.com/PointCloudLibrary/pcl/pull/2073)
+* **[removal]** Removal of PCA deprecated constructor [[#2070]](https://github.com/PointCloudLibrary/pcl/pull/2070)
+* [gcc] fixes -Wimplicit-fallthrough: common/io.h [[#2041]](https://github.com/PointCloudLibrary/pcl/pull/2041)
+* Include pcl/point_cloud.h and pcl/point_types.h headers. [[#1962]](https://github.com/PointCloudLibrary/pcl/pull/1962)
+* Add test for macro _USE_MATH_DEFINES. [[#1956]](https://github.com/PointCloudLibrary/pcl/pull/1956)
+* instantiate: remove duplicate macro definition. Fixes #1924. [[#1925]](https://github.com/PointCloudLibrary/pcl/pull/1925)
+
+#### `libpcl_cuda:`
+
+* add support for latest Turing gpu and cuda 10 [[#2560]](https://github.com/PointCloudLibrary/pcl/pull/2560)
+* Fix compilation issues with CUDA 9.1 [[#2212]](https://github.com/PointCloudLibrary/pcl/pull/2212)
+* Fix some CUDA 9 related errors [[#2181]](https://github.com/PointCloudLibrary/pcl/pull/2181)
+* Added CUDA compute capability 5.3 [[#1929]](https://github.com/PointCloudLibrary/pcl/pull/1929)
+
+#### `libpcl_features:`
+
+*  Solve issues with failing features tests [[#2544]](https://github.com/PointCloudLibrary/pcl/pull/2544)
+* Update the OpenMP implementations of normal and FPFH estimation [[#2278]](https://github.com/PointCloudLibrary/pcl/pull/2278)
+* Make `MomentOfInertia` instantiations consistent with the rest of the library [[#2266]](https://github.com/PointCloudLibrary/pcl/pull/2266)
+* Docstring corrections [[#2143]](https://github.com/PointCloudLibrary/pcl/pull/2143)
+* Improve Doxygen comments for HistogramInterpolationMethod [[#2111]](https://github.com/PointCloudLibrary/pcl/pull/2111)
+* **[new-feature]** Add GASD global point cloud descriptor [[#1652]](https://github.com/PointCloudLibrary/pcl/pull/1652)
+* Suppress (maybe) uninitialized warning [[#2073]](https://github.com/PointCloudLibrary/pcl/pull/2073)
+* **[new-feature]** FLARELocalReferenceFrameEstimation class added [[#1571]](https://github.com/PointCloudLibrary/pcl/pull/1571)
+* fix missing include file: from_meshes.h is using pcl::Vertices in it [[#2009]](https://github.com/PointCloudLibrary/pcl/pull/2009)
+* Typo [[#1968]](https://github.com/PointCloudLibrary/pcl/pull/1968)
+
+#### `libpcl_filters:`
+
+* Corrections to CovarianceSampling class and corresponding test [[#2512]](https://github.com/PointCloudLibrary/pcl/pull/2512)
+* Add the missing const modifier in `Filter::getRemovedIndices`. [[#2523]](https://github.com/PointCloudLibrary/pcl/pull/2523)
+* Add const modifiers to getters of pcl::PassThrough [[#2524]](https://github.com/PointCloudLibrary/pcl/pull/2524)
+* Add const specifiers for getters in VoxelGrid. [[#2526]](https://github.com/PointCloudLibrary/pcl/pull/2526)
+* Copy the pose info from the input cloud to the output cloud in NaN removal functions [[#2522]](https://github.com/PointCloudLibrary/pcl/pull/2522)
+* Fix misc. typos in tutorials and docstrings [[#2529]](https://github.com/PointCloudLibrary/pcl/pull/2529)
+* Fix various errors and typos in the docstrings and tutorials [[#2486]](https://github.com/PointCloudLibrary/pcl/pull/2486)
+* Add some missing eigen alignment operators [[#2433]](https://github.com/PointCloudLibrary/pcl/pull/2433)
+* Add PointNormal to ExtractIndices Instantiate Types [[#2389]](https://github.com/PointCloudLibrary/pcl/pull/2389)
+* **[abi]** Improved docstrings and error messages [[#2300]](https://github.com/PointCloudLibrary/pcl/pull/2300)
+* Public access to `VoxelGrid` boost pointer. [[#2205]](https://github.com/PointCloudLibrary/pcl/pull/2205)
+* Add const qualifiers to getters in `filter_indices.h` [[#2193]](https://github.com/PointCloudLibrary/pcl/pull/2193)
+* Avoid huge index jumps in `RandomSample`. Remove `io` dependency from `2d`. [[#2141]](https://github.com/PointCloudLibrary/pcl/pull/2141)
+* **[removal]** Removal of deprecated code in filters, io, surface and visualization modules [[#2077]](https://github.com/PointCloudLibrary/pcl/pull/2077)
+* Suppress unused parameter warning [[#2074]](https://github.com/PointCloudLibrary/pcl/pull/2074)
+* Suppress sign compare warnings [[#2068]](https://github.com/PointCloudLibrary/pcl/pull/2068)
+* Transformation Fix for BoxClipper3D [[#1961]](https://github.com/PointCloudLibrary/pcl/pull/1961)
+* **[abi]** Fixes remove_indices in UniformSampling [[#1902]](https://github.com/PointCloudLibrary/pcl/pull/1902)
+* Inherit StatisticalOutlierRemoval<PCLPointCloud2> from FilterIndices [[#1663]](https://github.com/PointCloudLibrary/pcl/pull/1663)
+
+#### `libpcl_gpu:`
+
+* Remove sm_72 from CUDA 9.0 [[#2567]](https://github.com/PointCloudLibrary/pcl/pull/2567)
+* Fix compilation issues with CUDA 9.1 [[#2212]](https://github.com/PointCloudLibrary/pcl/pull/2212)
+* Fix compilation error in `gpu_people` code [[#2199]](https://github.com/PointCloudLibrary/pcl/pull/2199)
+* Fix some CUDA 9 related errors [[#2181]](https://github.com/PointCloudLibrary/pcl/pull/2181)
+* **[abi]** Allow specifying decimation step in convertToTsdfCloud [[#2099]](https://github.com/PointCloudLibrary/pcl/pull/2099)
+* Fix the incorrect include directory. [[#2024]](https://github.com/PointCloudLibrary/pcl/pull/2024)
+* need to include instantiate.hpp to use PCL_INSTANTIATE [[#1943]](https://github.com/PointCloudLibrary/pcl/pull/1943)
+* Added CUDA compute capability 5.3 [[#1929]](https://github.com/PointCloudLibrary/pcl/pull/1929)
+* Fix issue #1674 [[#1926]](https://github.com/PointCloudLibrary/pcl/pull/1926)
+
+#### `libpcl_io:`
+
+* Suppress miscelanious warnings [[#2556]](https://github.com/PointCloudLibrary/pcl/pull/2556)
+* vtk2mesh: Add parsing support to the new RGBA scalar field added in vtk8 [[#2492]](https://github.com/PointCloudLibrary/pcl/pull/2492)
+* Fix various errors and typos in the docstrings and tutorials [[#2486]](https://github.com/PointCloudLibrary/pcl/pull/2486)
+* Improved obj file parsing efficiency. Make parsing robust against situations where there are more normals than points. Added unit tests. [[#2450]](https://github.com/PointCloudLibrary/pcl/pull/2450)
+* `pcl::PCDReader::readHeader()` change `nr_points` type to `size_t` to avoid possible `int32` overflow [[#2408]](https://github.com/PointCloudLibrary/pcl/pull/2408)
+* Fix raw_fallocate for Android and deal with unsupported filesystems. [[#2363]](https://github.com/PointCloudLibrary/pcl/pull/2363)
+* Add low_level_io.h to the header list of the io module [[#2356]](https://github.com/PointCloudLibrary/pcl/pull/2356)
+* Created header for low level I/O helpers. Fix for `::posix_fallocate` on Mac OSX [[#2354]](https://github.com/PointCloudLibrary/pcl/pull/2354)
+* Added warnings when the input data is too large for compressed pcds [[#2323]](https://github.com/PointCloudLibrary/pcl/pull/2323)
+* Allocate disk space with posix_fallocate before mmapping. [[#2325]](https://github.com/PointCloudLibrary/pcl/pull/2325)
+* Fix cmake warning: Logical block closes with mis-matching arguments [[#2320]](https://github.com/PointCloudLibrary/pcl/pull/2320)
+* Added PCL_IO_ENABLE_MAND_LOCKING cmake flag. [[#2315]](https://github.com/PointCloudLibrary/pcl/pull/2315)
+* Added missing 8 bytes to compressed binary pcd length. [[#2281]](https://github.com/PointCloudLibrary/pcl/pull/2281)
+* Remove useless size check in PLYReader::endHeaderCallback() [[#2246]](https://github.com/PointCloudLibrary/pcl/pull/2246)
+* **[behavior]** Fix PLYReader is_dense behavior [[#2133]](https://github.com/PointCloudLibrary/pcl/pull/2133)
+* `EnsensoGrabber` `uint` is undefined in Visual studio. [[#2223]](https://github.com/PointCloudLibrary/pcl/pull/2223)
+* Add protection from invalid WIDTH values in PCD reader [[#2195]](https://github.com/PointCloudLibrary/pcl/pull/2195)
+* `PLYReader` Cast cloud point step as 64-bit integer [[#2161]](https://github.com/PointCloudLibrary/pcl/pull/2161)
+* `OpenNI2Device` Add device sensor check for IR and depth modesetting [[#2150]](https://github.com/PointCloudLibrary/pcl/pull/2150)
+* Adds a check for when CreateFileMappingA fails [[#2146]](https://github.com/PointCloudLibrary/pcl/pull/2146)
+* `PCDWriter`changed `toff` to `size_t` in `writeBinaryCompressed` [[#2144]](https://github.com/PointCloudLibrary/pcl/pull/2144)
+* Prevent POINTS field parsing before point_step is specified [[#2131]](https://github.com/PointCloudLibrary/pcl/pull/2131)
+* Check COUNT value specified in PCD files [[#2126]](https://github.com/PointCloudLibrary/pcl/pull/2126)
+* Prevent mmapping more than the original PCD file size [[#2125]](https://github.com/PointCloudLibrary/pcl/pull/2125)
+* **[api][deprecation]** Add support pcl::PointXYZRGBA to pcl::VLPGrabber. Deprecate rgb signatures. [[#2102]](https://github.com/PointCloudLibrary/pcl/pull/2102)
+* **[removal]** Removal of deprecated code in filters, io, surface and visualization modules [[#2077]](https://github.com/PointCloudLibrary/pcl/pull/2077)
+* Suppress strict alias warning [[#2072]](https://github.com/PointCloudLibrary/pcl/pull/2072)
+* Suppress unused parameter warnings [[#2067]](https://github.com/PointCloudLibrary/pcl/pull/2067)
+* **[abi]** Removed unused member from ply_parser [[#2066]](https://github.com/PointCloudLibrary/pcl/pull/2066)
+* Suppress control reaches end of non-void function in io.h [[#2057]](https://github.com/PointCloudLibrary/pcl/pull/2057)
+* Modify STRICT_ALIGN because macro expansion w/defined is undefined [[#2043]](https://github.com/PointCloudLibrary/pcl/pull/2043)
+* Add necessary boost headers to pcl/io to build in CUDA mode [[#2025]](https://github.com/PointCloudLibrary/pcl/pull/2025)
+* Fix MSVC compile issue related with ssize_t [[#2027]](https://github.com/PointCloudLibrary/pcl/pull/2027)
+* Adds in-memory PCD serialization/deserialization; de-duplicates PCDReader::readHeader(). (take #2) [[#1986]](https://github.com/PointCloudLibrary/pcl/pull/1986)
+
+#### `libpcl_kdtree:`
+
+* Consistent ptr typedefs for kd tree flann [[#1607]](https://github.com/PointCloudLibrary/pcl/pull/1607)
+
+#### `libpcl_keypoints:`
+
+* Add `TrajkovicKeypoint2D/3D` to CMake build [[#2179]](https://github.com/PointCloudLibrary/pcl/pull/2179)
+
+#### `libpcl_ml:`
+
+* Fix installation rules for ml module [[#2192]](https://github.com/PointCloudLibrary/pcl/pull/2192)
+
+#### `libpcl_octree:`
+
+* **[behavior]** Reverse octree's depth first iterator order [[#2332]](https://github.com/PointCloudLibrary/pcl/pull/2332)
+* Fix various errors and typos in the docstrings and tutorials [[#2486]](https://github.com/PointCloudLibrary/pcl/pull/2486)
+* Make test conditions consistent with `OctreePointCloudSearch::boxSearch()` implementation. [[#2457]](https://github.com/PointCloudLibrary/pcl/pull/2457)
+* `octree_key.h` suppress GCC 8 ignored-qualifier warning [[#2405]](https://github.com/PointCloudLibrary/pcl/pull/2405)
+* **[api][deprecation][new-feature]** Implementation of the iterator 'OctreeLeafNodeBreadthIterator'. [[#2204]](https://github.com/PointCloudLibrary/pcl/pull/2204)
+* **[abi][new-feature]** Implementation of the iterator 'OctreeFixedDepthIterator'. [[#1983]](https://github.com/PointCloudLibrary/pcl/pull/1983)
+* Octree Iterator begin/end method and added tests [[#2174]](https://github.com/PointCloudLibrary/pcl/pull/2174)
+* Remove parametrization of end iterators [[#2168]](https://github.com/PointCloudLibrary/pcl/pull/2168)
+* Fix docstrings in octree test [[#2173]](https://github.com/PointCloudLibrary/pcl/pull/2173)
+* **[api]** OctreeIterators special member revision [[#2108]](https://github.com/PointCloudLibrary/pcl/pull/2108)
+* Remove unused variable from octree_viewer [[#2069]](https://github.com/PointCloudLibrary/pcl/pull/2069)
+* Silence compile warning by removing superfluous call to std::max() [[#2014]](https://github.com/PointCloudLibrary/pcl/pull/2014)
+* [OCTREE] Add bounding box checks in isVoxelOccupiedAtPoint() and deleteVoxelAtPoint() [[#1976]](https://github.com/PointCloudLibrary/pcl/pull/1976)
+
+#### `libpcl_outofcore:`
+
+* Explictly use mt19937 random generator for boost 1.67. [[#2338]](https://github.com/PointCloudLibrary/pcl/pull/2338)
+* Fixed queryBBIncludes_subsample [[#1988]](https://github.com/PointCloudLibrary/pcl/pull/1988)
+
+#### `libpcl_people:`
+
+* Misleading indentation [[#2034]](https://github.com/PointCloudLibrary/pcl/pull/2034)
+
+#### `libpcl_recognition:`
+
+* Relax threshold in Hough3DGrouping test [[#2507]](https://github.com/PointCloudLibrary/pcl/pull/2507)
+* Add some missing eigen alignment operators [[#2433]](https://github.com/PointCloudLibrary/pcl/pull/2433)
+* Setting the resolution of the occupancy grid [[#2273]](https://github.com/PointCloudLibrary/pcl/pull/2273)
+* Inline helper function gcCorrespSorter() [[#2248]](https://github.com/PointCloudLibrary/pcl/pull/2248)
+* Misleading indentation [[#2034]](https://github.com/PointCloudLibrary/pcl/pull/2034)
+
+#### `libpcl_registration:`
+
+* Remove std::binary_function from Registration [[#2599]](https://github.com/PointCloudLibrary/pcl/pull/2599)
+* Suppress miscelanious warnings [[#2556]](https://github.com/PointCloudLibrary/pcl/pull/2556)
+* Relax precision requirements on TransformationEstimationLM test. [[#2497]](https://github.com/PointCloudLibrary/pcl/pull/2497)
+* Relax rejector threshold in JointIterativeClosestPoint test. [[#2496]](https://github.com/PointCloudLibrary/pcl/pull/2496)
+* Add some missing eigen alignment operators [[#2433]](https://github.com/PointCloudLibrary/pcl/pull/2433)
+* Remove explicit initialization of `update_visualizer_` in `Registration`  [[#2423]](https://github.com/PointCloudLibrary/pcl/pull/2423)
+* **[removal]** Remove registration module deprecated methods [[#2076]](https://github.com/PointCloudLibrary/pcl/pull/2076)
+* Suppress (maybe) uninitialized warning [[#2073]](https://github.com/PointCloudLibrary/pcl/pull/2073)
+* Remove unreachable code in DefaultConvergenceCriteria [[#1967]](https://github.com/PointCloudLibrary/pcl/pull/1967)
+* **[abi]** Added option to specify translation and rotation convergence deltas in ICP and NDT algorithms. [[#1724]](https://github.com/PointCloudLibrary/pcl/pull/1724)
+
+#### `libpcl_sample_consensus:`
+
+* Revise direction test in SampleConsensusModelParallelLine/RANSAC to be consistent with set tolerance. [[#2491]](https://github.com/PointCloudLibrary/pcl/pull/2491)
+* Fix error in SampleConsensusModelLine::isSampleGood [[#2488]](https://github.com/PointCloudLibrary/pcl/pull/2488)
+* **[api]** Const-qualify most of the methods in SAC model classes [[#2270]](https://github.com/PointCloudLibrary/pcl/pull/2270)
+* **[removal]** Remove deprecated functions and variables from SAC module [[#2071]](https://github.com/PointCloudLibrary/pcl/pull/2071)
+
+#### `libpcl_search:`
+
+* Correct testPoint for organized nearest neighbor search [[#2198]](https://github.com/PointCloudLibrary/pcl/pull/2198)
+
+#### `libpcl_segmentation:`
+
+* Add some missing eigen alignment operators [[#2433]](https://github.com/PointCloudLibrary/pcl/pull/2433)
+* Add setter/getter for search method in ConditionalEuclideanClustering [[#2437]](https://github.com/PointCloudLibrary/pcl/pull/2437)
+* Increase threshold for expected value in test_non_linear [[#2424]](https://github.com/PointCloudLibrary/pcl/pull/2424)
+* Avoid infinite recursion in getPointCloudDifference [[#2402]](https://github.com/PointCloudLibrary/pcl/pull/2402)
+* Correct setting of is_dense flag in SegmentDifferences. Deprecate unused parameter in method. [[#2380]](https://github.com/PointCloudLibrary/pcl/pull/2380)
+* Dereference shared_ptr, fix for GCC8 [[#2299]](https://github.com/PointCloudLibrary/pcl/pull/2299)
+* **[abi][deprecation]** Provide proper EuclideanClusterComparator method depreciation. New Pragma macro. New Deprecated type. [[#2096]](https://github.com/PointCloudLibrary/pcl/pull/2096)
+* Removed normal related accessors and types from EuclideanClusterComparator [[#1542]](https://github.com/PointCloudLibrary/pcl/pull/1542)
+
+#### `libpcl_simulation:`
+
+* Add `const` qualifiers to `RangeLikelihood` getters. [[#2411]](https://github.com/PointCloudLibrary/pcl/pull/2411)
+* **[api]** Use GLuint rather than size_t to represent OpenGL indices. [[#2238]](https://github.com/PointCloudLibrary/pcl/pull/2238)
+* Support both RGB and RGBA colors in mesh loading [[#2036]](https://github.com/PointCloudLibrary/pcl/pull/2036)
+* **[abi]** Redo: Simulation: enable returning of organized point clouds [[#1687]](https://github.com/PointCloudLibrary/pcl/pull/1687)
+* Simulation: more access to camera parameters [[#1650]](https://github.com/PointCloudLibrary/pcl/pull/1650)
+
+#### `libpcl_surface:`
+
+* Fixed memory leak in Poisson's BSplineData [[#2572]](https://github.com/PointCloudLibrary/pcl/pull/2572)
+* Suppress miscelanious warnings [[#2556]](https://github.com/PointCloudLibrary/pcl/pull/2556)
+* Add some missing eigen alignment operators [[#2433]](https://github.com/PointCloudLibrary/pcl/pull/2433)
+* Make pcl::MovingLeastSquares thread-safe [[#2418]](https://github.com/PointCloudLibrary/pcl/pull/2418)
+* **[abi]** Missing pcl::MovingLeastSquaresOMP declaration without /openmp [[#2324]](https://github.com/PointCloudLibrary/pcl/pull/2324)
+* **[abi]** Improved docstrings and error messages [[#2300]](https://github.com/PointCloudLibrary/pcl/pull/2300)
+* opennurbs: fix `ON_Curve::EvaluatePoint` calculation [[#2185]](https://github.com/PointCloudLibrary/pcl/pull/2185)
+* **[removal]** Removal of deprecated code in filters, io, surface and visualization modules [[#2077]](https://github.com/PointCloudLibrary/pcl/pull/2077)
+* Suppress (maybe) uninitialized warning [[#2073]](https://github.com/PointCloudLibrary/pcl/pull/2073)
+* Suppress sign compare warnings [[#2068]](https://github.com/PointCloudLibrary/pcl/pull/2068)
+* Fix incorrect Ptr/ConstPtr typedefs in MovingLeastSquaresOMP [[#2055]](https://github.com/PointCloudLibrary/pcl/pull/2055)
+* Replace float indices with Eigen Index [[#2017]](https://github.com/PointCloudLibrary/pcl/pull/2017)
+* **[api][deprecation][new-feature]** Add new mls projection method. Deprecated `MovingLeastSquares::setPolynomialFit()`. [[#1960]](https://github.com/PointCloudLibrary/pcl/pull/1960)
+* Avoid phantom surfces in marching cubes hoppe [[#1874]](https://github.com/PointCloudLibrary/pcl/pull/1874)
+* **[api]** Add ability to cache mls results [[#1952]](https://github.com/PointCloudLibrary/pcl/pull/1952)
+
+#### `libpcl_visualization:`
+
+* Made PCLVisualizerInteractorStyle::CloudActorMapPtr public. [[#2542]](https://github.com/PointCloudLibrary/pcl/pull/2542)
+* **[new-feature]** Add Viridis color LUT [[#2420]](https://github.com/PointCloudLibrary/pcl/pull/2420)
+* Update sha1 header inclusion for Boost 1.68+ [[#2373]](https://github.com/PointCloudLibrary/pcl/pull/2373)
+* Second change VTK version check in addTextureMesh [[#2322]](https://github.com/PointCloudLibrary/pcl/pull/2322)
+* Include missing `vtkTexture.h`. Follow up on #2291 [[#2316]](https://github.com/PointCloudLibrary/pcl/pull/2316)
+* Change VTK version check in `addTextureMesh` [[#2311]](https://github.com/PointCloudLibrary/pcl/pull/2311)
+* Remove depreciated VTK function MapDataArrayToMultiTextureAttribute [[#2291]](https://github.com/PointCloudLibrary/pcl/pull/2291)
+* Warn and skip adding normal cloud if it is empty [[#2265]](https://github.com/PointCloudLibrary/pcl/pull/2265)
+* **[api]** Fix access specifier in `PointCloudColorHandlerRGBAField` [[#2226]](https://github.com/PointCloudLibrary/pcl/pull/2226)
+* Check if color handler returns false [[#2209]](https://github.com/PointCloudLibrary/pcl/pull/2209)
+* Handle VTK legacy function (follow up to #2112) [[#2165]](https://github.com/PointCloudLibrary/pcl/pull/2165)
+* Travis merge test jobs. Expose VTK include directory for the visualization module. [[#2163]](https://github.com/PointCloudLibrary/pcl/pull/2163)
+* Small optimizations and fixes in PCLVisualizer [[#2112]](https://github.com/PointCloudLibrary/pcl/pull/2112)
+* Add another variant to `getPointCloudRenderingProperties()`  [[#2142]](https://github.com/PointCloudLibrary/pcl/pull/2142)
+* Restrict accepted types in `PCLVisualizer::addLine` signature [[#2134]](https://github.com/PointCloudLibrary/pcl/pull/2134)
+* Typo fix in error message. [[#2132]](https://github.com/PointCloudLibrary/pcl/pull/2132)
+* Fix add/remove of 3D text without custom viewport [[#2110]](https://github.com/PointCloudLibrary/pcl/pull/2110)
+* Add `octree` dependency to `visualization` [[#2115]](https://github.com/PointCloudLibrary/pcl/pull/2115)
+* Fix pcd_viewer color handling when invalid fields are present in pcd [[#2105]](https://github.com/PointCloudLibrary/pcl/pull/2105)
+* Add pcl visualizer interactor null guards [[#2104]](https://github.com/PointCloudLibrary/pcl/pull/2104)
+* Add remove text3d [[#2088]](https://github.com/PointCloudLibrary/pcl/pull/2088)
+* Replace auto_ptr with scoped_ptr [[#2037]](https://github.com/PointCloudLibrary/pcl/pull/2037)
+* **[removal]** Removal of deprecated code in filters, io, surface and visualization modules [[#2077]](https://github.com/PointCloudLibrary/pcl/pull/2077)
+* Suppress sign compare warnings [[#2068]](https://github.com/PointCloudLibrary/pcl/pull/2068)
+* **[new-feature]** Add overload to `PCLVisualizer::addText3D()` that allows specifying text orientation [[#2038]](https://github.com/PointCloudLibrary/pcl/pull/2038)
+* Add new constructors to PCLVisualizer [[#2004]](https://github.com/PointCloudLibrary/pcl/pull/2004)
+* Fix bug in PointCloudGeometryHandlerCustom [[#2001]](https://github.com/PointCloudLibrary/pcl/pull/2001)
+* Add missing PCL_EXPORTS in pcl_visualizer.h [[#1995]](https://github.com/PointCloudLibrary/pcl/pull/1995)
+* **[abi]** Add accessor for current rendering framerate in PCLVisualizer [[#1974]](https://github.com/PointCloudLibrary/pcl/pull/1974)
+* Allow changing LUT properties of a shape actor [[#1668]](https://github.com/PointCloudLibrary/pcl/pull/1668)
+* Fixed spelling and grammar errors [[#1959]](https://github.com/PointCloudLibrary/pcl/pull/1959)
+* Fixed error in documentation. [[#1957]](https://github.com/PointCloudLibrary/pcl/pull/1957)
+
+#### `PCL Apps:`
+
+* Suppress miscelanious warnings [[#2556]](https://github.com/PointCloudLibrary/pcl/pull/2556)
+* Fix 3d_rec_framework compilation error [[#2495]](https://github.com/PointCloudLibrary/pcl/pull/2495)
+* Fix compilation issue in point cloud editor. [[#2490]](https://github.com/PointCloudLibrary/pcl/pull/2490)
+* `demean_cloud` correct usage message. [[#2443]](https://github.com/PointCloudLibrary/pcl/pull/2443)
+* Do not use deprecated method in openni_mls_smoothing app [[#2421]](https://github.com/PointCloudLibrary/pcl/pull/2421)
+* add windows.h for includes GL/gl.h; handle cancel for denoiseWidget. [[#2267]](https://github.com/PointCloudLibrary/pcl/pull/2267)
+* Add missing dependecy to apps [[#2251]](https://github.com/PointCloudLibrary/pcl/pull/2251)
+* Suppress the final set of warnings in pcl apps [[#2082]](https://github.com/PointCloudLibrary/pcl/pull/2082)
+* **[abi]** More warning suppression in pcl apps [[#2080]](https://github.com/PointCloudLibrary/pcl/pull/2080)
+
+#### `PCL Docs:`
+
+* Fix misc. typos in tutorials and docstrings [[#2529]](https://github.com/PointCloudLibrary/pcl/pull/2529)
+* Fix various errors and typos in the docstrings and tutorials [[#2486]](https://github.com/PointCloudLibrary/pcl/pull/2486)
+* Docstring typos' corrections. [[#2449]](https://github.com/PointCloudLibrary/pcl/pull/2449)
+* `demean_cloud` correct usage message. [[#2443]](https://github.com/PointCloudLibrary/pcl/pull/2443)
+* Set IMAGE_PATH explicitly in Doxygen config [[#2442]](https://github.com/PointCloudLibrary/pcl/pull/2442)
+* Switch to using client-based search in Doxygen [[#2391]](https://github.com/PointCloudLibrary/pcl/pull/2391)
+* **[api]** Misc. typos (cont.) [[#2215]](https://github.com/PointCloudLibrary/pcl/pull/2215)
+* doc: misc. typos [[#2213]](https://github.com/PointCloudLibrary/pcl/pull/2213)
+* Add url to API/ABI compatibity report [[#2116]](https://github.com/PointCloudLibrary/pcl/pull/2116)
+* Improve Doxygen comments for HistogramInterpolationMethod [[#2111]](https://github.com/PointCloudLibrary/pcl/pull/2111)
+* Update organized.h [[#1965]](https://github.com/PointCloudLibrary/pcl/pull/1965)
+* Typo [[#1968]](https://github.com/PointCloudLibrary/pcl/pull/1968)
+* Fixed spelling and grammar errors [[#1959]](https://github.com/PointCloudLibrary/pcl/pull/1959)
+* Fixed error in documentation. [[#1957]](https://github.com/PointCloudLibrary/pcl/pull/1957)
+
+#### `PCL Tutorials:`
+
+* Fix dataset link in conditional euclidean clustering tutorial [[#2546]](https://github.com/PointCloudLibrary/pcl/pull/2546)
+* Fix dead links in Walkthrough tutorial [[#2532]](https://github.com/PointCloudLibrary/pcl/pull/2532)
+* Simplify explanation of PointXYZ structure in "Writing PCD" tutorial [[#2534]](https://github.com/PointCloudLibrary/pcl/pull/2534)
+* Fix misc. typos in tutorials and docstrings [[#2529]](https://github.com/PointCloudLibrary/pcl/pull/2529)
+* Fix a dead link to Radu Rusu's dissertation in the tutorial. [[#2508]](https://github.com/PointCloudLibrary/pcl/pull/2508)
+* Fix various errors and typos in the docstrings and tutorials [[#2486]](https://github.com/PointCloudLibrary/pcl/pull/2486)
+* Fix link to Institut Maupertuis's ensenso_extrinsic_calibration repo [[#2447]](https://github.com/PointCloudLibrary/pcl/pull/2447)
+* Add settings for hypothesis verification [[#2274]](https://github.com/PointCloudLibrary/pcl/pull/2274)
+* Fix ICP tutorial [[#2244]](https://github.com/PointCloudLibrary/pcl/pull/2244)
+* Fix error in example code for estimate set of surface for a subset of points in the input dataset [[#2203]](https://github.com/PointCloudLibrary/pcl/pull/2203)
+* Update message about legacy point cloud types in tutorial [[#2175]](https://github.com/PointCloudLibrary/pcl/pull/2175)
+* Add descriptor unpacking to GASD tutorial [[#2167]](https://github.com/PointCloudLibrary/pcl/pull/2167)
+* Fix convert to `Eigen::Map<const Eigen::Vector3f>` from Normal of `pcl::PointXYZINormal` [[#2128]](https://github.com/PointCloudLibrary/pcl/pull/2128)
+* Fix the tutorial qt_visualizer compilation issue: qt4 -> qt5. [[#2051]](https://github.com/PointCloudLibrary/pcl/pull/2051)
+* Fix several documentation typos [[#2020]](https://github.com/PointCloudLibrary/pcl/pull/2020)
+* Replace literal include of wrong CMakeLists file with correct script [[#1971]](https://github.com/PointCloudLibrary/pcl/pull/1971)
+* Update Ensenso tutorial for Ensenso X devices [[#1933]](https://github.com/PointCloudLibrary/pcl/pull/1933)
+
+#### `PCL Examples:`
+
+* Suppress strict alias warning [[#2072]](https://github.com/PointCloudLibrary/pcl/pull/2072)
+* Suppress (maybe) uninitialized warning [[#2073]](https://github.com/PointCloudLibrary/pcl/pull/2073)
+* Fix CPC/LCCP segmentation examples for VTK 7.1 [[#2063]](https://github.com/PointCloudLibrary/pcl/pull/2063)
+
+#### `PCL Tests:`
+
+* Corrections to Windows unit tests. [[#2596]](https://github.com/PointCloudLibrary/pcl/pull/2596)
+* Relax eigen22f test criteria [[#2553]](https://github.com/PointCloudLibrary/pcl/pull/2553)
+*  Solve issues with failing features tests [[#2544]](https://github.com/PointCloudLibrary/pcl/pull/2544)
+* Relax requirements in eigen22d test. Always provide a normalized result in `pcl::transformPlane`. [[#2503]](https://github.com/PointCloudLibrary/pcl/pull/2503)
+* Enable tests_2d and tests_io in AppVeyor. [[#2505]](https://github.com/PointCloudLibrary/pcl/pull/2505)
+* Relax threshold in Hough3DGrouping test [[#2507]](https://github.com/PointCloudLibrary/pcl/pull/2507)
+* Relax precision requirements on TransformationEstimationLM test. [[#2497]](https://github.com/PointCloudLibrary/pcl/pull/2497)
+* Relax rejector threshold in JointIterativeClosestPoint test. [[#2496]](https://github.com/PointCloudLibrary/pcl/pull/2496)
+* vtk2mesh: Add parsing support to the new RGBA scalar field added in vtk8 [[#2492]](https://github.com/PointCloudLibrary/pcl/pull/2492)
+* Revise direction test in SampleConsensusModelParallelLine/RANSAC to be consistent with set tolerance. [[#2491]](https://github.com/PointCloudLibrary/pcl/pull/2491)
+* Make test conditions consistent with `OctreePointCloudSearch::boxSearch()` implementation. [[#2457]](https://github.com/PointCloudLibrary/pcl/pull/2457)
+* Increase threshold for expected value in test_non_linear [[#2424]](https://github.com/PointCloudLibrary/pcl/pull/2424)
+* Replace floating point numerals when using `boost::posix_time`. Fix compatibility with Boost 1.67. [[#2422]](https://github.com/PointCloudLibrary/pcl/pull/2422)
+* Cleanup and improve unit test coverage for transformPointCloud functions [[#2245]](https://github.com/PointCloudLibrary/pcl/pull/2245)
+* Fixes and new assertion macro in "pcl_tests.h" [[#2237]](https://github.com/PointCloudLibrary/pcl/pull/2237)
+* Add new gtest path [[#1920]](https://github.com/PointCloudLibrary/pcl/pull/1920)
+
+#### `PCL Tools:`
+
+* Allow the `pcl_uniform_sampling` tool to deal with several formats (PCD, PLY and VTK) as input or output point cloud [[#2348]](https://github.com/PointCloudLibrary/pcl/pull/2348)
+* mesh_sampling tool: Add support for colors [[#2257]](https://github.com/PointCloudLibrary/pcl/pull/2257)
+* Error message on non-recognized feature names [[#2178]](https://github.com/PointCloudLibrary/pcl/pull/2178)
+* Suppress sign compare warnings [[#2068]](https://github.com/PointCloudLibrary/pcl/pull/2068)
+* [OCTREE] Compute accurately the centroids of octree in 'pcl_octree_viewer' [[#1981]](https://github.com/PointCloudLibrary/pcl/pull/1981)
+* **[api][deprecation][new-feature]** Add new mls projection method. Deprecated `MovingLeastSquares::setPolynomialFit()`. [[#1960]](https://github.com/PointCloudLibrary/pcl/pull/1960)
+* [OCTREE] Fix pcl_octree_viewer [[#1973]](https://github.com/PointCloudLibrary/pcl/pull/1973)
+* [OCTREE] Remove a useless field in octree_viewer. [[#1980]](https://github.com/PointCloudLibrary/pcl/pull/1980)
+
+#### `CI:`
+
+* Disable Travis email notifications. Update PCL logo endpoint. [[#2535]](https://github.com/PointCloudLibrary/pcl/pull/2535)
+* Migrate Travis to the new travis-ci.com platform [[#2538]](https://github.com/PointCloudLibrary/pcl/pull/2538)
+* Enable tests_2d and tests_io in AppVeyor. [[#2505]](https://github.com/PointCloudLibrary/pcl/pull/2505)
+* Fix docs on Travis CI. [[#2441]](https://github.com/PointCloudLibrary/pcl/pull/2441)
+* Disable SSE flags in AppVeyor. [[#2438]](https://github.com/PointCloudLibrary/pcl/pull/2438)
+* Split (yet again) Travis test job into two and tweak timings in building apps [[#2182]](https://github.com/PointCloudLibrary/pcl/pull/2182)
+* **[new-feature]** Enable Global Tests on Windows CI [[#2137]](https://github.com/PointCloudLibrary/pcl/pull/2137)
+* Travis merge test jobs. Expose VTK include directory for the visualization module. [[#2163]](https://github.com/PointCloudLibrary/pcl/pull/2163)
+* Remove unnecessary PPAs and packages from Travis [[#2153]](https://github.com/PointCloudLibrary/pcl/pull/2153)
+* AppVeyor - Change to simple style of specify triplet [[#2135]](https://github.com/PointCloudLibrary/pcl/pull/2135)
+* Initial Appveyor CI integration [[#2083]](https://github.com/PointCloudLibrary/pcl/pull/2083)
+* Change Travis to use pip3 for installing sphinx [[#2124]](https://github.com/PointCloudLibrary/pcl/pull/2124)
+* [TRAVIS] Enable the build of apps. [[#2012]](https://github.com/PointCloudLibrary/pcl/pull/2012)
+* [TRAVIS] Enable the build of tools. [[#2007]](https://github.com/PointCloudLibrary/pcl/pull/2007)
+* Disable tools build in CI. [[#2003]](https://github.com/PointCloudLibrary/pcl/pull/2003)
+
+
 ## *= 1.8.1 (08.08.2017) =*
 
 * Replaced `make_shared` invocations on aligned allocated vars
@@ -1840,7 +3371,7 @@ pcl::OrganizedDataIndex -> pcl::search::OrganizedNeighbor
 * added new templated methods for `nearestKSearch` and `radiusSearch` for situations when PointT is different than the one the KdTree object was created with (e.g., KdTree<PointT1> vs nearestKSearch (PointT2 &p...)
 * added two new methods for `getApproximateIndices` where given a reference cloud of point type T1 we're trying to find the corresponding indices in a different cloud of point type T2
 * refactorized a lot of code in search and octree to make it look more consistent with the rest of the API
-* fixed a bug in octree_search which was semantically doing something bad: for each `radiusSearch`/`nearestKSearch`/`approxNearestSearch` call with a PointCloudConstPtr, the octree was getting recreated. Changed the API to be consistent with the rest of PCL (including pcl_search and pcl_kdtree) where we pass in a PointCloud instead of a PointCloudConstPtr which simply calls searchMethod (cloud.points[i], ...)
+* fixed a bug in octree_search which was semantically doing something bad: for each `radiusSearch`/`nearestKSearch`/`approxNearestSearch` call with a PointCloudConstPtr, the octree was getting recreated. Changed the API to be consistent with the rest of PCL (including pcl_search and pcl_kdtree) where we pass in a PointCloud instead of a PointCloudConstPtr which simply calls searchMethod (cloud[i], ...)
 * minor code optimizations
 * renamed organized_neighbor.h header in pcl_search (unreleased, therefore API changes OK!) to organized.h
 * disabled the auto-search tuning as it wasn't really working. must clean this up further
@@ -1895,7 +3426,7 @@ pcl::OrganizedDataIndex -> pcl::search::OrganizedNeighbor
 * added unit test for `getIntersectedVoxelCentersRecursive`
 * added method `getIntersectedVoxelIndices` for getting indices of intersected voxels and updated unit test
 * refactorized a lot of code in search and octree to make it look more consistent with the rest of the API
-* fixed a bug in octree_search which was semantically doing something bad: for each `radiusSearch`/`nearestKSearch`/`approxNearestSearch` call with a PointCloudConstPtr, the octree was getting recreated. Changed the API to be consistent with the rest of PCL (including pcl_search and pcl_kdtree) where we pass in a PointCloud instead of a PointCloudConstPtr which simply calls searchMethod (cloud.points[i], ...)
+* fixed a bug in octree_search which was semantically doing something bad: for each `radiusSearch`/`nearestKSearch`/`approxNearestSearch` call with a PointCloudConstPtr, the octree was getting recreated. Changed the API to be consistent with the rest of PCL (including pcl_search and pcl_kdtree) where we pass in a PointCloud instead of a PointCloudConstPtr which simply calls searchMethod (cloud[i], ...)
 * minor code optimizations
 * renamed organized_neighbor.h header in pcl_search (unreleased, therefore API changes OK!) to organized.h
 * disabled the auto-search tuning as it wasn't really working. must clean this up further

@@ -54,7 +54,6 @@
   //~ #include <opencv2/gpu/gpu.hpp>
 #endif
 
-using namespace std;
 using namespace pcl::device::kinfuLS;
 
 using pcl::device::kinfuLS::device_cast;
@@ -190,27 +189,22 @@ pcl::gpu::kinfuLS::KinfuTracker::extractAndSaveWorld ()
   
   int cloud_size = 0;
   
-  cloud_size = cyclical_.getWorldModel ()->getWorld ()->points.size();
+  cloud_size = cyclical_.getWorldModel ()->getWorld ()->size();
   
   if (cloud_size <= 0)
   {
     PCL_WARN ("World model currently has no points. Skipping save procedure.\n");
     return;
   }
-  else
-  {
-    PCL_INFO ("Saving current world to world.pcd with %d points.\n", cloud_size);
-    pcl::io::savePCDFile<pcl::PointXYZI> ("world.pcd", *(cyclical_.getWorldModel ()->getWorld ()), true);
-    return;
-  }
-  
+  PCL_INFO ("Saving current world to world.pcd with %d points.\n", cloud_size);
+  pcl::io::savePCDFile<pcl::PointXYZI> ("world.pcd", *(cyclical_.getWorldModel ()->getWorld ()), true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::gpu::kinfuLS::KinfuTracker::reset ()
 {
-  cout << "in reset function!" << std::endl;
+  std::cout << "in reset function!" << std::endl;
   
   if (global_time_)
     PCL_WARN ("Reset\n");
@@ -296,8 +290,8 @@ pcl::gpu::kinfuLS::KinfuTracker::allocateBufffers (int rows, int cols)
   }  
   depthRawScaled_.create (rows, cols);
   // see estimate transform for the magic numbers
-  int r = (int)ceil ( ((float)rows) / ESTIMATE_COMBINED_CUDA_GRID_Y );
-  int c = (int)ceil ( ((float)cols) / ESTIMATE_COMBINED_CUDA_GRID_X );
+  int r = (int)std::ceil ( ((float)rows) / ESTIMATE_COMBINED_CUDA_GRID_Y );
+  int c = (int)std::ceil ( ((float)cols) / ESTIMATE_COMBINED_CUDA_GRID_X );
   gbuf_.create (27, r * c);
   sumbuf_.create (27);
 }
@@ -434,10 +428,10 @@ pcl::gpu::kinfuLS::KinfuTracker::performICP(const Intr& cam_intrinsics, Matrix3f
         // checking nullspace 
         double det = A.determinant ();
     
-        if ( fabs (det) < 100000 /*1e-15*/ || pcl_isnan (det) ) //TODO find a threshold that makes ICP track well, but prevents it from generating wrong transforms
+        if ( std::abs (det) < 100000 /*1e-15*/ || std::isnan (det) ) //TODO find a threshold that makes ICP track well, but prevents it from generating wrong transforms
         {
-          if (pcl_isnan (det)) cout << "qnan" << endl;
-          if(lost_ == false)
+          if (std::isnan (det)) std::cout << "qnan" << std::endl;
+          if(!lost_)
             PCL_ERROR ("ICP LOST... PLEASE COME BACK TO THE LAST VALID POSE (green)\n");
           //reset (); //GUI will now show the user that ICP is lost. User needs to press "R" to reset the volume
           lost_ = true;
@@ -519,9 +513,9 @@ pcl::gpu::kinfuLS::KinfuTracker::performPairWiseICP(const Intr cam_intrinsics, M
         // checking nullspace 
         double det = A.determinant ();
         
-        if ( fabs (det) < 1e-15 || pcl_isnan (det) )
+        if ( std::abs (det) < 1e-15 || std::isnan (det) )
         {
-          if (pcl_isnan (det)) cout << "qnan" << endl;
+          if (std::isnan (det)) std::cout << "qnan" << std::endl;
                     
           PCL_WARN ("ICP PairWise LOST...\n");
           //reset ();
@@ -641,16 +635,14 @@ pcl::gpu::kinfuLS::KinfuTracker::operator() (const DepthMap& depth_raw)
     saveCurrentMaps ();
     return (true);
   }
-  else
-  {
-    // ICP based on synthetic maps succeeded
-    // Save newly-computed pose
-    rmats_.push_back (current_global_rotation); 
-    tvecs_.push_back (current_global_translation);
-    // Update last estimated pose to current pairwise ICP result
-    last_estimated_translation_ = current_global_translation;
-    last_estimated_rotation_ = current_global_rotation;
-  }  
+
+  // ICP based on synthetic maps succeeded
+  // Save newly-computed pose
+  rmats_.push_back (current_global_rotation); 
+  tvecs_.push_back (current_global_translation);
+  // Update last estimated pose to current pairwise ICP result
+  last_estimated_translation_ = current_global_translation;
+  last_estimated_rotation_ = current_global_rotation;
 
   ///////////////////////////////////////////////////////////////////////////////////////////  
   // check if we need to shift
@@ -855,7 +847,7 @@ namespace pcl
       PCL_EXPORTS void
       mergePointNormal(const DeviceArray<PointXYZ>& cloud, const DeviceArray<Normal>& normals, DeviceArray<PointNormal>& output)
       {
-        const size_t size = min(cloud.size(), normals.size());
+        const std::size_t size = std::min(cloud.size(), normals.size());
         output.create(size);
 
         const DeviceArray<float4>& c = (const DeviceArray<float4>&)cloud;
@@ -877,16 +869,15 @@ namespace pcl
         double c = (R.trace() - 1) * 0.5;
         c = c > 1. ? 1. : c < -1. ? -1. : c;
 
-        double theta = acos(c);
+        double theta = std::acos(c);
 
         if( s < 1e-5 )
         {
-          double t;
-
           if( c > 0 )
             rx = ry = rz = 0;
           else
           {
+            double t;
             t = (R(0, 0) + 1)*0.5;
             rx = sqrt( std::max(t, 0.0) );
             t = (R(1, 1) + 1)*0.5;
@@ -894,7 +885,7 @@ namespace pcl
             t = (R(2, 2) + 1)*0.5;
             rz = sqrt( std::max(t, 0.0) ) * (R(0, 2) < 0 ? -1.0 : 1.0);
 
-            if( fabs(rx) < fabs(ry) && fabs(rx) < fabs(rz) && (R(1, 2) > 0) != (ry*rz > 0) )
+            if( std::abs(rx) < std::abs(ry) && std::abs(rx) < std::abs(rz) && (R(1, 2) > 0) != (ry*rz > 0) )
               rz = -rz;
             theta /= sqrt(rx*rx + ry*ry + rz*rz);
             rx *= theta;

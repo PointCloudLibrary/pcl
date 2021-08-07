@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_COMMON_INTENSITY_FIELD_SELECTOR_H
-#define PCL_COMMON_INTENSITY_FIELD_SELECTOR_H
+#pragma once
 
 namespace pcl
 {
@@ -100,5 +99,3 @@ namespace pcl
 }
 
 #include <pcl/common/impl/intensity.hpp>
-
-#endif

@@ -39,7 +39,6 @@
 #define PCL_SEARCH_KDTREE_IMPL_HPP_
 
 #include <pcl/search/kdtree.h>
-#include <pcl/search/impl/search.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, class Tree>
@@ -86,7 +85,7 @@ pcl::search::KdTree<PointT,Tree>::setInputCloud (
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, class Tree> int
 pcl::search::KdTree<PointT,Tree>::nearestKSearch (
-    const PointT &point, int k, std::vector<int> &k_indices, 
+    const PointT &point, int k, Indices &k_indices,
     std::vector<float> &k_sqr_distances) const
 {
   return (tree_->nearestKSearch (point, k, k_indices, k_sqr_distances));
@@ -96,7 +95,7 @@ pcl::search::KdTree<PointT,Tree>::nearestKSearch (
 template <typename PointT, class Tree> int
 pcl::search::KdTree<PointT,Tree>::radiusSearch (
     const PointT& point, double radius, 
-    std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
+    Indices &k_indices, std::vector<float> &k_sqr_distances,
     unsigned int max_nn) const
 {
   return (tree_->radiusSearch (point, radius, k_indices, k_sqr_distances, max_nn));

@@ -36,14 +36,15 @@
  *
  */
 
+#pragma once
+
+#include <pcl/memory.h>
 #include <pcl/pcl_config.h>
+#include <pcl/pcl_macros.h>
+
 #ifdef HAVE_OPENNI
 
-#ifndef __PCL_IO_OPENNI_GRABBER__
-#define __PCL_IO_OPENNI_GRABBER__
-
-#include <pcl/io/eigen.h>
-#include <pcl/io/boost.h>
+#include <pcl/point_cloud.h>
 #include <pcl/io/grabber.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_camera/openni_device_kinect.h>
@@ -51,8 +52,8 @@
 #include <pcl/io/openni_camera/openni_depth_image.h>
 #include <pcl/io/openni_camera/openni_ir_image.h>
 #include <string>
-#include <deque>
 #include <pcl/common/synchronizer.h>
+#include <boost/shared_array.hpp> // for shared_array
 
 namespace pcl
 {
@@ -60,7 +61,6 @@ namespace pcl
   struct PointXYZRGB;
   struct PointXYZRGBA;
   struct PointXYZI;
-  template <typename T> class PointCloud;
 
   /** \brief Grabber for OpenNI devices (i.e., Primesense PSDK, Microsoft Kinect, Asus XTion Pro/Live)
     * \author Nico Blodow <blodow@cs.tum.edu>, Suat Gedikli <gedikli@willowgarage.com>
@@ -69,10 +69,10 @@ namespace pcl
   class PCL_EXPORTS OpenNIGrabber : public Grabber
   {
     public:
-      typedef boost::shared_ptr<OpenNIGrabber> Ptr;
-      typedef boost::shared_ptr<const OpenNIGrabber> ConstPtr;
+      using Ptr = shared_ptr<OpenNIGrabber>;
+      using ConstPtr = shared_ptr<const OpenNIGrabber>;
 
-      typedef enum
+      enum Mode
       {
         OpenNI_Default_Mode = 0, // This can depend on the device. For now all devices (PSDK, Xtion, Kinect) its VGA@30Hz
         OpenNI_SXGA_15Hz = 1,    // Only supported by the Kinect
@@ -84,18 +84,18 @@ namespace pcl
         OpenNI_QQVGA_25Hz = 7,   // Not supported -> using software downsampling (only for integer scale factor and only NN)
         OpenNI_QQVGA_30Hz = 8,   // Not supported -> using software downsampling (only for integer scale factor and only NN)
         OpenNI_QQVGA_60Hz = 9    // Not supported -> using software downsampling (only for integer scale factor and only NN)
-      } Mode;
+      };
 
       //define callback signature typedefs
-      typedef void (sig_cb_openni_image) (const boost::shared_ptr<openni_wrapper::Image>&);
-      typedef void (sig_cb_openni_depth_image) (const boost::shared_ptr<openni_wrapper::DepthImage>&);
-      typedef void (sig_cb_openni_ir_image) (const boost::shared_ptr<openni_wrapper::IRImage>&);
-      typedef void (sig_cb_openni_image_depth_image) (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float constant) ;
-      typedef void (sig_cb_openni_ir_depth_image) (const boost::shared_ptr<openni_wrapper::IRImage>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float constant) ;
-      typedef void (sig_cb_openni_point_cloud) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ> >&);
-      typedef void (sig_cb_openni_point_cloud_rgb) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB> >&);
-      typedef void (sig_cb_openni_point_cloud_rgba) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA> >&);
-      typedef void (sig_cb_openni_point_cloud_i) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> >&);
+      using sig_cb_openni_image = void (const openni_wrapper::Image::Ptr &);
+      using sig_cb_openni_depth_image = void (const openni_wrapper::DepthImage::Ptr &);
+      using sig_cb_openni_ir_image = void (const openni_wrapper::IRImage::Ptr &);
+      using sig_cb_openni_image_depth_image = void (const openni_wrapper::Image::Ptr &, const openni_wrapper::DepthImage::Ptr &, float) ;
+      using sig_cb_openni_ir_depth_image = void (const openni_wrapper::IRImage::Ptr &, const openni_wrapper::DepthImage::Ptr &, float) ;
+      using sig_cb_openni_point_cloud = void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &);
+      using sig_cb_openni_point_cloud_rgb = void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &);
+      using sig_cb_openni_point_cloud_rgba = void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &);
+      using sig_cb_openni_point_cloud_i = void (const pcl::PointCloud<pcl::PointXYZI>::ConstPtr &);
 
     public:
       /** \brief Constructor
@@ -108,29 +108,29 @@ namespace pcl
                      const Mode& image_mode = OpenNI_Default_Mode);
 
       /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
-      virtual ~OpenNIGrabber () throw ();
+      ~OpenNIGrabber () noexcept;
 
       /** \brief Start the data acquisition. */
-      virtual void
-      start ();
+      void
+      start () override;
 
       /** \brief Stop the data acquisition. */
-      virtual void
-      stop ();
+      void
+      stop () override;
 
       /** \brief Check if the data acquisition is still running. */
-      virtual bool
-      isRunning () const;
+      bool
+      isRunning () const override;
 
-      virtual std::string
-      getName () const;
+      std::string
+      getName () const override;
 
       /** \brief Obtain the number of frames per second (FPS). */
-      virtual float 
-      getFramesPerSecond () const;
+      float
+      getFramesPerSecond () const override;
 
-      /** \brief Get a boost shared pointer to the \ref pcl::openni_wrapper::OpenNIDevice object. */
-      inline boost::shared_ptr<openni_wrapper::OpenNIDevice>
+      /** \brief Get a pcl::shared pointer to the openni_wrapper::OpenNIDevice object. */
+      inline openni_wrapper::OpenNIDevice::Ptr
       getDevice () const;
 
       /** \brief Obtain a list of the available depth modes that this device supports. */
@@ -150,8 +150,8 @@ namespace pcl
         * and the grabber will use the default values from the camera instead.
         */
       inline void
-      setRGBCameraIntrinsics (const double rgb_focal_length_x, 
-                              const double rgb_focal_length_y, 
+      setRGBCameraIntrinsics (const double rgb_focal_length_x,
+                              const double rgb_focal_length_y,
                               const double rgb_principal_point_x,
                               const double rgb_principal_point_y)
       {
@@ -160,7 +160,7 @@ namespace pcl
         rgb_principal_point_x_ = rgb_principal_point_x;
         rgb_principal_point_y_ = rgb_principal_point_y;
       }
-      
+
       /** \brief Get the RGB camera parameters (fx, fy, cx, cy)
         * \param[out] rgb_focal_length_x the RGB focal length (fx)
         * \param[out] rgb_focal_length_y the RGB focal length (fy)
@@ -168,8 +168,8 @@ namespace pcl
         * \param[out] rgb_principal_point_y the RGB principal point (cy)
         */
       inline void
-      getRGBCameraIntrinsics (double &rgb_focal_length_x, 
-                              double &rgb_focal_length_y, 
+      getRGBCameraIntrinsics (double &rgb_focal_length_x,
+                              double &rgb_focal_length_y,
                               double &rgb_principal_point_x,
                               double &rgb_principal_point_y) const
       {
@@ -216,7 +216,7 @@ namespace pcl
         rgb_focal_length_x = rgb_focal_length_x_;
         rgb_focal_length_y = rgb_focal_length_y_;
       }
-      
+
       /** \brief Set the Depth camera parameters (fx, fy, cx, cy)
         * \param[in] depth_focal_length_x the Depth focal length (fx)
         * \param[in] depth_focal_length_y the Depth focal length (fy)
@@ -226,8 +226,8 @@ namespace pcl
         * and the grabber will use the default values from the camera instead.
         */
       inline void
-      setDepthCameraIntrinsics (const double depth_focal_length_x, 
-                                const double depth_focal_length_y, 
+      setDepthCameraIntrinsics (const double depth_focal_length_x,
+                                const double depth_focal_length_y,
                                 const double depth_principal_point_x,
                                 const double depth_principal_point_y)
       {
@@ -236,7 +236,7 @@ namespace pcl
         depth_principal_point_x_ = depth_principal_point_x;
         depth_principal_point_y_ = depth_principal_point_y;
       }
-      
+
       /** \brief Get the Depth camera parameters (fx, fy, cx, cy)
         * \param[out] depth_focal_length_x the Depth focal length (fx)
         * \param[out] depth_focal_length_y the Depth focal length (fy)
@@ -244,8 +244,8 @@ namespace pcl
         * \param[out] depth_principal_point_y the Depth principal point (cy)
         */
       inline void
-      getDepthCameraIntrinsics (double &depth_focal_length_x, 
-                                double &depth_focal_length_y, 
+      getDepthCameraIntrinsics (double &depth_focal_length_x,
+                                double &depth_focal_length_y,
                                 double &depth_principal_point_x,
                                 double &depth_principal_point_y) const
       {
@@ -265,7 +265,7 @@ namespace pcl
       {
         depth_focal_length_x_ = depth_focal_length_y_ = depth_focal_length;
       }
-      
+
 
       /** \brief Set the Depth image focal length
         * \param[in] depth_focal_length_x the Depth focal length (fx)
@@ -298,16 +298,15 @@ namespace pcl
         */
       inline void
       convertShiftToDepth (
-          const uint16_t* shift_data_ptr,
-          uint16_t* depth_data_ptr,
+          const std::uint16_t* shift_data_ptr,
+          std::uint16_t* depth_data_ptr,
           std::size_t size) const
       {
         // get openni device instance
-        boost::shared_ptr<openni_wrapper::OpenNIDevice> openni_device =
-              this->getDevice ();
+        auto openni_device = this->getDevice ();
 
-        const uint16_t* shift_data_it = shift_data_ptr;
-        uint16_t* depth_data_it = depth_data_ptr;
+        const std::uint16_t* shift_data_it = shift_data_ptr;
+        std::uint16_t* depth_data_it = depth_data_ptr;
 
         // shift-to-depth lookup
         for (std::size_t i=0; i<size; ++i)
@@ -349,29 +348,29 @@ namespace pcl
       // callback methods
       /** \brief RGB image callback. */
       virtual void
-      imageCallback (boost::shared_ptr<openni_wrapper::Image> image, void* cookie);
+      imageCallback (openni_wrapper::Image::Ptr image, void* cookie);
 
       /** \brief Depth image callback. */
       virtual void
-      depthCallback (boost::shared_ptr<openni_wrapper::DepthImage> depth_image, void* cookie);
+      depthCallback (openni_wrapper::DepthImage::Ptr depth_image, void* cookie);
 
       /** \brief IR image callback. */
       virtual void
-      irCallback (boost::shared_ptr<openni_wrapper::IRImage> ir_image, void* cookie);
+      irCallback (openni_wrapper::IRImage::Ptr ir_image, void* cookie);
 
       /** \brief RGB + Depth image callback. */
       virtual void
-      imageDepthImageCallback (const boost::shared_ptr<openni_wrapper::Image> &image,
-                               const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image);
+      imageDepthImageCallback (const openni_wrapper::Image::Ptr &image,
+                               const openni_wrapper::DepthImage::Ptr &depth_image);
 
       /** \brief IR + Depth image callback. */
       virtual void
-      irDepthImageCallback (const boost::shared_ptr<openni_wrapper::IRImage> &image,
-                            const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image);
+      irDepthImageCallback (const openni_wrapper::IRImage::Ptr &image,
+                            const openni_wrapper::DepthImage::Ptr &depth_image);
 
       /** \brief Process changed signals. */
-      virtual void
-      signalsChanged ();
+      void
+      signalsChanged () override;
 
       // helper methods
 
@@ -395,31 +394,31 @@ namespace pcl
       /** \brief Convert a Depth image to a pcl::PointCloud<pcl::PointXYZ>
         * \param[in] depth the depth image to convert
         */
-      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> >
-      convertToXYZPointCloud (const boost::shared_ptr<openni_wrapper::DepthImage> &depth) const;
+      pcl::PointCloud<pcl::PointXYZ>::Ptr
+      convertToXYZPointCloud (const openni_wrapper::DepthImage::Ptr &depth) const;
 
       /** \brief Convert a Depth + RGB image pair to a pcl::PointCloud<PointT>
         * \param[in] image the RGB image to convert
         * \param[in] depth_image the depth image to convert
         */
       template <typename PointT> typename pcl::PointCloud<PointT>::Ptr
-      convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image,
-                                 const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const;
+      convertToXYZRGBPointCloud (const openni_wrapper::Image::Ptr &image,
+                                 const openni_wrapper::DepthImage::Ptr &depth_image) const;
 
       /** \brief Convert a Depth + Intensity image pair to a pcl::PointCloud<pcl::PointXYZI>
         * \param[in] image the IR image to convert
         * \param[in] depth_image the depth image to convert
         */
-      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> >
-      convertToXYZIPointCloud (const boost::shared_ptr<openni_wrapper::IRImage> &image,
-                               const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const;
+      pcl::PointCloud<pcl::PointXYZI>::Ptr
+      convertToXYZIPointCloud (const openni_wrapper::IRImage::Ptr &image,
+                               const openni_wrapper::DepthImage::Ptr &depth_image) const;
 
 
-      Synchronizer<boost::shared_ptr<openni_wrapper::Image>, boost::shared_ptr<openni_wrapper::DepthImage> > rgb_sync_;
-      Synchronizer<boost::shared_ptr<openni_wrapper::IRImage>, boost::shared_ptr<openni_wrapper::DepthImage> > ir_sync_;
+      Synchronizer<openni_wrapper::Image::Ptr, openni_wrapper::DepthImage::Ptr > rgb_sync_;
+      Synchronizer<openni_wrapper::IRImage::Ptr, openni_wrapper::DepthImage::Ptr > ir_sync_;
 
       /** \brief The actual openni device. */
-      boost::shared_ptr<openni_wrapper::OpenNIDevice> device_;
+      openni_wrapper::OpenNIDevice::Ptr device_;
 
       std::string rgb_frame_id_;
       std::string depth_frame_id_;
@@ -427,7 +426,7 @@ namespace pcl
       unsigned image_height_;
       unsigned depth_width_;
       unsigned depth_height_;
-      
+
       bool image_required_;
       bool depth_required_;
       bool ir_required_;
@@ -450,16 +449,13 @@ namespace pcl
         {
           if (mode1.nXRes < mode2.nXRes)
             return true;
-          else if (mode1.nXRes > mode2.nXRes)
+          if (mode1.nXRes > mode2.nXRes)
             return false;
-          else if (mode1.nYRes < mode2.nYRes)
+          if (mode1.nYRes < mode2.nYRes)
             return true;
-          else if (mode1.nYRes > mode2.nYRes)
+          if (mode1.nYRes > mode2.nYRes)
             return false;
-          else if (mode1.nFPS < mode2.nFPS)
-            return true;
-          else
-            return false;
+          return (mode1.nFPS < mode2.nFPS);
         }
       } ;
       std::map<int, XnMapOutputMode> config2xn_map_;
@@ -493,15 +489,14 @@ namespace pcl
       double depth_principal_point_y_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
-  boost::shared_ptr<openni_wrapper::OpenNIDevice>
+  openni_wrapper::OpenNIDevice::Ptr
   OpenNIGrabber::getDevice () const
   {
     return device_;
   }
 
 } // namespace pcl
-#endif // __PCL_IO_OPENNI_GRABBER__
 #endif // HAVE_OPENNI

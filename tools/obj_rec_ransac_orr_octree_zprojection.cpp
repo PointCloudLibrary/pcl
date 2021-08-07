@@ -66,17 +66,19 @@
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
+#include <thread>
 
 using namespace pcl;
 using namespace pcl::visualization;
 using namespace pcl::recognition;
 using namespace pcl::io;
+using namespace std::chrono_literals;
 
 void run (const char *file_name, float voxel_size);
 bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& points);
 void show_octree (ORROctree* octree, PCLVisualizer& viz);
 void show_octree_zproj (ORROctreeZProjection* zproj, PCLVisualizer& viz);
-void node_to_cube (ORROctree::Node* node, vtkAppendPolyData* additive_octree);
+void node_to_cube (const ORROctree::Node* node, vtkAppendPolyData* additive_octree);
 void rectangle_to_vtk (float x1, float x2, float y1, float y2, float z, vtkAppendPolyData* additive_rectangle);
 
 //#define _SHOW_POINTS_
@@ -145,7 +147,7 @@ void run (const char* file_name, float voxel_size)
   {
     //main loop of the visualizer
     viz.spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    std::this_thread::sleep_for(100ms);
   }
 }
 
@@ -153,7 +155,7 @@ void run (const char* file_name, float voxel_size)
 
 bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points)
 {
-  size_t len = strlen (file_name);
+  std::size_t len = strlen (file_name);
   if ( file_name[len-3] != 'v' || file_name[len-2] != 't' || file_name[len-1] != 'k' )
   {
     fprintf (stderr, "ERROR: we need a .vtk object!\n");
@@ -192,12 +194,12 @@ void show_octree (ORROctree* octree, PCLVisualizer& viz)
   vtkSmartPointer<vtkPolyData> vtk_octree = vtkSmartPointer<vtkPolyData>::New ();
   vtkSmartPointer<vtkAppendPolyData> append = vtkSmartPointer<vtkAppendPolyData>::New ();
 
-  cout << "There are " << octree->getFullLeaves ().size () << " full leaves.\n";
+  std::cout << "There are " << octree->getFullLeaves ().size () << " full leaves.\n";
 
   std::vector<ORROctree::Node*>& full_leaves = octree->getFullLeaves ();
-  for ( std::vector<ORROctree::Node*>::iterator it = full_leaves.begin () ; it != full_leaves.end () ; ++it )
+  for (const auto &full_leaf : full_leaves)
     // Add it to the other cubes
-    node_to_cube (*it, append);
+    node_to_cube (full_leaf, append);
 
   // Save the result
   append->Update();
@@ -207,11 +209,7 @@ void show_octree (ORROctree* octree, PCLVisualizer& viz)
   vtkRenderer *renderer = viz.getRenderWindow ()->GetRenderers ()->GetFirstRenderer ();
   vtkSmartPointer<vtkActor> octree_actor = vtkSmartPointer<vtkActor>::New();
   vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
-#if VTK_MAJOR_VERSION < 6
-  mapper->SetInput(vtk_octree);
-#else
   mapper->SetInputData (vtk_octree);
-#endif
   octree_actor->SetMapper(mapper);
 
   // Set the appearance & add to the renderer
@@ -223,7 +221,7 @@ void show_octree (ORROctree* octree, PCLVisualizer& viz)
 
 void show_octree_zproj (ORROctreeZProjection* zproj, PCLVisualizer& viz)
 {
-  cout << "There is (are) " << zproj->getFullPixels ().size () << " full pixel(s).\n";
+  std::cout << "There is (are) " << zproj->getFullPixels ().size () << " full pixel(s).\n";
 
   vtkSmartPointer<vtkAppendPolyData> upper_bound = vtkSmartPointer<vtkAppendPolyData>::New (), lower_bound = vtkSmartPointer<vtkAppendPolyData>::New ();
   const ORROctreeZProjection::Pixel *pixel;
@@ -255,17 +253,9 @@ void show_octree_zproj (ORROctreeZProjection* zproj, PCLVisualizer& viz)
   vtkRenderer *renderer = viz.getRenderWindow ()->GetRenderers ()->GetFirstRenderer ();
   vtkSmartPointer<vtkActor> upper_actor = vtkSmartPointer<vtkActor>::New(), lower_actor = vtkSmartPointer<vtkActor>::New();
   vtkSmartPointer<vtkDataSetMapper> upper_mapper = vtkSmartPointer<vtkDataSetMapper>::New (), lower_mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
-#if VTK_MAJOR_VERSION < 6
-  upper_mapper->SetInput(upper_bound->GetOutput ());
-#else
   upper_mapper->SetInputData (upper_bound->GetOutput ());
-#endif
   upper_actor->SetMapper(upper_mapper);
-#if VTK_MAJOR_VERSION < 6
-  lower_mapper->SetInput(lower_bound->GetOutput ());
-#else
   lower_mapper->SetInputData (lower_bound->GetOutput ());
-#endif
   lower_actor->SetMapper(lower_mapper);
 
   // Set the appearance & add to the renderer
@@ -277,7 +267,7 @@ void show_octree_zproj (ORROctreeZProjection* zproj, PCLVisualizer& viz)
 
 //===============================================================================================================================
 
-void node_to_cube (ORROctree::Node* node, vtkAppendPolyData* additive_octree)
+void node_to_cube (const ORROctree::Node* node, vtkAppendPolyData* additive_octree)
 {
   // Define the cube representing the leaf
   const float *b = node->getBounds ();
@@ -285,11 +275,7 @@ void node_to_cube (ORROctree::Node* node, vtkAppendPolyData* additive_octree)
   cube->SetBounds (b[0], b[1], b[2], b[3], b[4], b[5]);
   cube->Update ();
 
-#if VTK_MAJOR_VERSION < 6
-  additive_octree->AddInput (cube->GetOutput ());
-#else
   additive_octree->AddInputData (cube->GetOutput ());
-#endif
 }
 
 //===============================================================================================================================
@@ -301,11 +287,7 @@ void rectangle_to_vtk (float x1, float x2, float y1, float y2, float z, vtkAppen
   cube->SetBounds (x1, x2, y1, y2, z, z);
   cube->Update ();
 
-#if VTK_MAJOR_VERSION < 6
-  additive_rectangle->AddInput (cube->GetOutput ());
-#else
   additive_rectangle->AddInputData (cube->GetOutput ());
-#endif
 }
 
 //===============================================================================================================================

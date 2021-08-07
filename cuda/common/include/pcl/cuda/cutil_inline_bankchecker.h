@@ -9,8 +9,7 @@
  *
  */
  
- #ifndef _CUTIL_INLINE_BANKCHECKER_H_
-#define _CUTIL_INLINE_BANKCHECKER_H_
+#pragma once
 
 #ifdef _DEBUG
    #if __DEVICE_EMULATION__
@@ -33,5 +32,3 @@ inline void __cutilBankChecker(unsigned int tidx, unsigned int tidy, unsigned in
 {
     cutCheckBankAccess( tidx, tidy, tidz, bdimx, bdimy, bdimz, file, line, aname, index);
 }
-
-#endif // _CUTIL_INLINE_BANKCHECKER_H_

@@ -35,12 +35,10 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_RANSAC_BASED_AUX_H_
-#define PCL_RECOGNITION_RANSAC_BASED_AUX_H_
+#pragma once
 
-#include <cmath>
-#include <cstdlib>
-#include <pcl/common/eigen.h>
+#include <Eigen/Core> // for Matrix
+#include <Eigen/Geometry> // for AngleAxis
 #include <pcl/point_types.h>
 
 #define AUX_PI_FLOAT            3.14159265358979323846f
@@ -57,9 +55,9 @@ namespace pcl
       compareOrderedPairs (const std::pair<T,T>& a, const std::pair<T,T>& b)
       {
         if ( a.first == b.first )
-          return static_cast<bool> (a.second < b.second);
+          return a.second < b.second;
 
-        return static_cast<bool> (a.first < b.first);
+        return a.first < b.first;
       }
 
       template<typename T> T
@@ -73,7 +71,7 @@ namespace pcl
       {
         if ( value < min )
           return min;
-        else if ( value > max )
+        if ( value > max )
           return max;
 
         return value;
@@ -463,5 +461,3 @@ namespace pcl
     } // namespace aux
   } // namespace recognition
 } // namespace pcl
-
-#endif // AUX_H_

@@ -3657,7 +3657,7 @@ ON_BOOL32 ON_Extrusion::Evaluate( // returns false if unable to evaluate
   if ( m_bTransposed && num_der > 0)
   {
     // reverse order of derivatives
-    const size_t sz = ((3 <= array_stride)?3:array_stride)*sizeof(double);
+    const std::size_t sz = ((3 <= array_stride)?3:array_stride)*sizeof(double);
     void* tmp = ( sz <= sizeof(xform0) )
               ? ((void*)&xform0.m_xform[0][0])
               : onmalloc(sz);

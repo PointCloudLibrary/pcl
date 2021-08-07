@@ -37,7 +37,6 @@
  */
 
 #include <pcl/sample_consensus/impl/sac_model_registration.hpp>
-#include <pcl/sample_consensus/impl/sac_model_registration_2d.hpp>
 
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>

@@ -35,18 +35,19 @@
  *
  */
 
+#pragma once
+
 #include <iostream>
+
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
-
-
-#ifndef PCL_KINFU_POINT_INTENSITY_
-#define PCL_KINFU_POINT_INTENSITY_
 
 struct EIGEN_ALIGN16 PointIntensity
 {
 
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+  PCL_MAKE_ALIGNED_OPERATOR_NEW;
   union
   {
     struct
@@ -60,5 +61,3 @@ struct EIGEN_ALIGN16 PointIntensity
 POINT_CLOUD_REGISTER_POINT_STRUCT(
     PointIntensity,
     (float, intensity, intensity) )
-
-#endif

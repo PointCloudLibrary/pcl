@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_KDTREE_IO_H_
-#define PCL_KDTREE_IO_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 
@@ -56,7 +55,7 @@ namespace pcl
   template <typename PointT> void
   getApproximateIndices (const typename pcl::PointCloud<PointT>::ConstPtr &cloud_in,
                          const typename pcl::PointCloud<PointT>::ConstPtr &cloud_ref,
-                         std::vector<int> &indices);
+                         Indices &indices);
 
   /** \brief Get a set of approximate indices for a given point cloud into a reference point cloud. 
     * The coordinates of the two point clouds can differ. The method uses an internal KdTree for 
@@ -70,10 +69,7 @@ namespace pcl
   template <typename Point1T, typename Point2T> void
   getApproximateIndices (const typename pcl::PointCloud<Point1T>::ConstPtr &cloud_in,
                          const typename pcl::PointCloud<Point2T>::ConstPtr &cloud_ref,
-                         std::vector<int> &indices);
+                         Indices &indices);
 }
 
 #include <pcl/kdtree/impl/io.hpp>
-
-#endif  //#ifndef PCL_KDTREE_IO_H_
-

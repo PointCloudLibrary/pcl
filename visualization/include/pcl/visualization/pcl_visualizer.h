@@ -35,8 +35,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_PCL_VISUALIZER_H_
-#define PCL_PCL_VISUALIZER_H_
+
+#pragma once
 
 // PCL includes
 #include <pcl/correspondence.h>
@@ -53,14 +53,15 @@
 #include <pcl/visualization/area_picking_event.h>
 #include <pcl/visualization/interactor_style.h>
 
+#include <vtkOrientationMarkerWidget.h>
+#include <vtkRenderWindowInteractor.h>
+
 // VTK includes
 class vtkPolyData;
 class vtkTextActor;
 class vtkRenderWindow;
-class vtkOrientationMarkerWidget;
 class vtkAppendPolyData;
 class vtkRenderWindow;
-class vtkRenderWindowInteractor;
 class vtkTransform;
 class vtkInteractorStyle;
 class vtkLODActor;
@@ -68,6 +69,7 @@ class vtkProp;
 class vtkActor;
 class vtkDataSet;
 class vtkUnstructuredGrid;
+class vtkCellArray;
 
 namespace pcl
 {
@@ -76,6 +78,11 @@ namespace pcl
 
   namespace visualization
   {
+    namespace details
+    {
+      PCL_EXPORTS vtkIdType fillCells(std::vector<int>& lookup, const std::vector<pcl::Vertices>& vertices, vtkSmartPointer<vtkCellArray> cell_array, int max_size_of_polygon);
+    }
+
     /** \brief PCL Visualizer main class.
       * \author Radu B. Rusu
       * \ingroup visualization
@@ -86,16 +93,16 @@ namespace pcl
     class PCL_EXPORTS PCLVisualizer
     {
       public:
-        typedef boost::shared_ptr<PCLVisualizer> Ptr;
-        typedef boost::shared_ptr<const PCLVisualizer> ConstPtr;
+        using Ptr = shared_ptr<PCLVisualizer>;
+        using ConstPtr = shared_ptr<const PCLVisualizer>;
 
-        typedef PointCloudGeometryHandler<pcl::PCLPointCloud2> GeometryHandler;
-        typedef GeometryHandler::Ptr GeometryHandlerPtr;
-        typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
+        using GeometryHandler = PointCloudGeometryHandler<pcl::PCLPointCloud2>;
+        using GeometryHandlerPtr = GeometryHandler::Ptr;
+        using GeometryHandlerConstPtr = GeometryHandler::ConstPtr;
 
-        typedef PointCloudColorHandler<pcl::PCLPointCloud2> ColorHandler;
-        typedef ColorHandler::Ptr ColorHandlerPtr;
-        typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
+        using ColorHandler = PointCloudColorHandler<pcl::PCLPointCloud2>;
+        using ColorHandlerPtr = ColorHandler::Ptr;
+        using ColorHandlerConstPtr = ColorHandler::ConstPtr;
 
         /** \brief PCL Visualizer constructor.
           * \param[in] name the window name (empty by default)
@@ -103,7 +110,7 @@ namespace pcl
           */
         PCLVisualizer (const std::string &name = "", const bool create_interactor = true);
 
-        /** \brief PCL Visualizer constructor. It looks through the passed argv arguments to find the "-cam *.cam" argument. 
+        /** \brief PCL Visualizer constructor. It looks through the passed argv arguments to find the "-cam *.cam" argument.
           *        If the search failed, the name for cam file is calculated with boost uuid. If there is no such file, camera is not initilalized.
           * \param[in] argc
           * \param[in] argv
@@ -113,10 +120,10 @@ namespace pcl
           */
         PCLVisualizer (int &argc, char **argv, const std::string &name = "",
             PCLVisualizerInteractorStyle* style = PCLVisualizerInteractorStyle::New (), const bool create_interactor = true);
-            
+
         /** \brief PCL Visualizer constructor.
-          * \param[in] custom vtk renderer
-          * \param[in] custom vtk render window
+          * \param[in] ren custom vtk renderer
+          * \param[in] wind custom vtk render window
           * \param[in] create_interactor if true (default), create an interactor, false otherwise
           */
         PCLVisualizer (vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind, const std::string &name = "", const bool create_interactor = true);
@@ -124,8 +131,8 @@ namespace pcl
         /** \brief PCL Visualizer constructor.
           * \param[in] argc
           * \param[in] argv
-          * \param[in] custom vtk renderer
-          * \param[in] custom vtk render window
+          * \param[in] ren custom vtk renderer
+          * \param[in] wind custom vtk render window
           * \param[in] style interactor style (defaults to PCLVisualizerInteractorStyle)
           * \param[in] create_interactor if true (default), create an interactor, false otherwise
           */
@@ -159,12 +166,12 @@ namespace pcl
         void
         setWindowBorders (bool mode);
 
-        /** \brief Register a callback boost::function for keyboard events
-          * \param[in] cb a boost function that will be registered as a callback for a keyboard event
+        /** \brief Register a callback std::function for keyboard events
+          * \param[in] cb a std function that will be registered as a callback for a keyboard event
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection
-        registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> cb);
+        registerKeyboardCallback (std::function<void (const pcl::visualization::KeyboardEvent&)> cb);
 
         /** \brief Register a callback function for keyboard events
           * \param[in] callback  the function that will be registered as a callback for a keyboard event
@@ -172,9 +179,9 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         inline boost::signals2::connection
-        registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*), void* cookie = NULL)
+        registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*), void* cookie = nullptr)
         {
-          return (registerKeyboardCallback (boost::bind (callback, _1, cookie)));
+          return (registerKeyboardCallback ([=] (const pcl::visualization::KeyboardEvent& e) { (*callback) (e, cookie); }));
         }
 
         /** \brief Register a callback function for keyboard events
@@ -184,17 +191,17 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         template<typename T> inline boost::signals2::connection
-        registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*), T& instance, void* cookie = NULL)
+        registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*), T& instance, void* cookie = nullptr)
         {
-          return (registerKeyboardCallback (boost::bind (callback,  boost::ref (instance), _1, cookie)));
+          return (registerKeyboardCallback ([=, &instance] (const pcl::visualization::KeyboardEvent& e) { (instance.*callback) (e, cookie); }));
         }
 
         /** \brief Register a callback function for mouse events
-          * \param[in] cb a boost function that will be registered as a callback for a mouse event
+          * \param[in] cb a std function that will be registered as a callback for a mouse event
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection
-        registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> cb);
+        registerMouseCallback (std::function<void (const pcl::visualization::MouseEvent&)> cb);
 
         /** \brief Register a callback function for mouse events
           * \param[in] callback  the function that will be registered as a callback for a mouse event
@@ -202,9 +209,9 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         inline boost::signals2::connection
-        registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*), void* cookie = NULL)
+        registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*), void* cookie = nullptr)
         {
-          return (registerMouseCallback (boost::bind (callback, _1, cookie)));
+          return (registerMouseCallback ([=] (const pcl::visualization::MouseEvent& e) { (*callback) (e, cookie); }));
         }
 
         /** \brief Register a callback function for mouse events
@@ -214,17 +221,17 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         template<typename T> inline boost::signals2::connection
-        registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*), T& instance, void* cookie = NULL)
+        registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*), T& instance, void* cookie = nullptr)
         {
-          return (registerMouseCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
+          return (registerMouseCallback ([=, &instance] (const pcl::visualization::MouseEvent& e) { (instance.*callback) (e, cookie); }));
         }
 
         /** \brief Register a callback function for point picking events
-          * \param[in] cb a boost function that will be registered as a callback for a point picking event
+          * \param[in] cb a std function that will be registered as a callback for a point picking event
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection
-        registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)> cb);
+        registerPointPickingCallback (std::function<void (const pcl::visualization::PointPickingEvent&)> cb);
 
         /** \brief Register a callback function for point picking events
           * \param[in] callback  the function that will be registered as a callback for a point picking event
@@ -232,7 +239,7 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection
-        registerPointPickingCallback (void (*callback) (const pcl::visualization::PointPickingEvent&, void*), void* cookie = NULL);
+        registerPointPickingCallback (void (*callback) (const pcl::visualization::PointPickingEvent&, void*), void* cookie = nullptr);
 
         /** \brief Register a callback function for point picking events
           * \param[in] callback  the member function that will be registered as a callback for a point picking event
@@ -241,17 +248,17 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         template<typename T> inline boost::signals2::connection
-        registerPointPickingCallback (void (T::*callback) (const pcl::visualization::PointPickingEvent&, void*), T& instance, void* cookie = NULL)
+        registerPointPickingCallback (void (T::*callback) (const pcl::visualization::PointPickingEvent&, void*), T& instance, void* cookie = nullptr)
         {
-          return (registerPointPickingCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
+          return (registerPointPickingCallback ([=, &instance] (const pcl::visualization::PointPickingEvent& e) { (instance.*callback) (e, cookie); }));
         }
 
         /** \brief Register a callback function for area picking events
-          * \param[in] cb a boost function that will be registered as a callback for an area picking event
+          * \param[in] cb a std function that will be registered as a callback for an area picking event
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection
-        registerAreaPickingCallback (boost::function<void (const pcl::visualization::AreaPickingEvent&)> cb);
+        registerAreaPickingCallback (std::function<void (const pcl::visualization::AreaPickingEvent&)> cb);
 
         /** \brief Register a callback function for area picking events
           * \param[in] callback  the function that will be registered as a callback for an area picking event
@@ -259,7 +266,7 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection
-        registerAreaPickingCallback (void (*callback) (const pcl::visualization::AreaPickingEvent&, void*), void* cookie = NULL);
+        registerAreaPickingCallback (void (*callback) (const pcl::visualization::AreaPickingEvent&, void*), void* cookie = nullptr);
 
         /** \brief Register a callback function for area picking events
           * \param[in] callback  the member function that will be registered as a callback for an area picking event
@@ -268,9 +275,9 @@ namespace pcl
           * \return a connection object that allows to disconnect the callback function.
           */
         template<typename T> inline boost::signals2::connection
-        registerAreaPickingCallback (void (T::*callback) (const pcl::visualization::AreaPickingEvent&, void*), T& instance, void* cookie = NULL)
+        registerAreaPickingCallback (void (T::*callback) (const pcl::visualization::AreaPickingEvent&, void*), T& instance, void* cookie = nullptr)
         {
-          return (registerAreaPickingCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
+          return (registerAreaPickingCallback ([=, &instance] (const pcl::visualization::AreaPickingEvent& e) { (instance.*callback) (e, cookie); }));
         }
 
         /** \brief Spin method. Calls the interactor and runs an internal loop. */
@@ -286,11 +293,11 @@ namespace pcl
         spinOnce (int time = 1, bool force_redraw = false);
 
         /** \brief Adds a widget which shows an interactive axes display for orientation
-         *  \param[in] interactor - Pointer to the vtk interactor object used by the PCLVisualizer window 
+         *  \param[in] interactor - Pointer to the vtk interactor object used by the PCLVisualizer window
          */
         void
         addOrientationMarkerWidgetAxes (vtkRenderWindowInteractor* interactor);
-        
+
         /** \brief Disables the Orientatation Marker Widget so it is removed from the renderer */
         void
         removeOrientationMarkerWidgetAxes ();
@@ -466,7 +473,7 @@ namespace pcl
         /** \brief Update a text to screen
           * \param[in] text the text to update
           * \param[in] xpos the new X position on screen
-          * \param[in] ypos the new Y position on screen 
+          * \param[in] ypos the new Y position on screen
           * \param[in] id the text object id (default: equal to the "text" parameter)
           */
         bool
@@ -477,21 +484,21 @@ namespace pcl
         /** \brief Update a text to screen
           * \param[in] text the text to update
           * \param[in] xpos the new X position on screen
-          * \param[in] ypos the new Y position on screen 
+          * \param[in] ypos the new Y position on screen
           * \param[in] r the red color value
           * \param[in] g the green color value
           * \param[in] b the blue color value
           * \param[in] id the text object id (default: equal to the "text" parameter)
           */
         bool
-        updateText (const std::string &text, 
+        updateText (const std::string &text,
                     int xpos, int ypos, double r, double g, double b,
                     const std::string &id = "");
 
         /** \brief Update a text to screen
           * \param[in] text the text to update
           * \param[in] xpos the new X position on screen
-          * \param[in] ypos the new Y position on screen 
+          * \param[in] ypos the new Y position on screen
           * \param[in] fontsize the fontsize of the text
           * \param[in] r the red color value
           * \param[in] g the green color value
@@ -499,13 +506,13 @@ namespace pcl
           * \param[in] id the text object id (default: equal to the "text" parameter)
           */
         bool
-        updateText (const std::string &text, 
+        updateText (const std::string &text,
                     int xpos, int ypos, int fontsize, double r, double g, double b,
                     const std::string &id = "");
 
-        /** \brief Set the pose of an existing shape. 
-          * 
-          * Returns false if the shape doesn't exist, true if the pose was successfully 
+        /** \brief Set the pose of an existing shape.
+          *
+          * Returns false if the shape doesn't exist, true if the pose was successfully
           * updated.
           *
           * \param[in] id the shape or cloud object id (i.e., given on \a addLine etc.)
@@ -630,7 +637,7 @@ namespace pcl
             const typename pcl::PointCloud<pcl::PrincipalCurvatures>::ConstPtr &pcs,
             int level = 100, float scale = 1.0f,
             const std::string &id = "cloud", int viewport = 0);
-        
+
         /** \brief Add the estimated principal curvatures of a Point Cloud to screen.
           * \param[in] cloud the input point cloud dataset containing the XYZ data
           * \param[in] normals the input point cloud dataset containing the normal data
@@ -1067,7 +1074,7 @@ namespace pcl
                             int viewport = 0)
         {
           // If Nth not given, display all correspondences
-          return (addCorrespondences<PointT> (source_points, target_points, 
+          return (addCorrespondences<PointT> (source_points, target_points,
                                               correspondences, 1, id, viewport));
         }
 
@@ -1158,7 +1165,7 @@ namespace pcl
         bool
         setPointCloudRenderingProperties (int property, double val1, double val2,
                                           const std::string &id = "cloud", int viewport = 0);
-        
+
        /** \brief Set the rendering properties of a PointCloud
          * \param[in] property the property type
          * \param[in] value the value to be set
@@ -1179,7 +1186,7 @@ namespace pcl
         bool
         getPointCloudRenderingProperties (int property, double &value,
                                           const std::string &id = "cloud");
-        
+
        /** \brief Get the rendering properties of a PointCloud
          * \param[in] property the property type
          * \param[out] val1 the resultant property value
@@ -1193,13 +1200,13 @@ namespace pcl
         getPointCloudRenderingProperties (RenderingProperties property, double &val1, double &val2, double &val3,
                                           const std::string &id = "cloud");
 
-        /** \brief Set whether the point cloud is selected or not 
+        /** \brief Set whether the point cloud is selected or not
          *  \param[in] selected whether the cloud is selected or not (true = selected)
          *  \param[in] id the point cloud object id (default: cloud)
          */
         bool
         setPointCloudSelected (const bool selected, const std::string &id = "cloud" );
-        
+
        /** \brief Set the rendering properties of a shape
          * \param[in] property the property type
          * \param[in] value the value to be set
@@ -1256,8 +1263,8 @@ namespace pcl
           * \param[in] ymax the maximum Y coordinate for the viewport (0.0 <= 1.0)
           * \param[in] viewport the id of the new viewport
           *
-          * \note If no renderer for the current window exists, one will be created, and 
-          * the viewport will be set to 0 ('all'). In case one or multiple renderers do 
+          * \note If no renderer for the current window exists, one will be created, and
+          * the viewport will be set to 0 ('all'). In case one or multiple renderers do
           * exist, the viewport ID will be set to the total number of renderers - 1.
           */
         void
@@ -1687,6 +1694,20 @@ namespace pcl
         addCube (float x_min, float x_max, float y_min, float y_max, float z_min, float z_max,
                  double r = 1.0, double g = 1.0, double b = 1.0, const std::string &id = "cube", int viewport = 0);
 
+        /** \brief Add an ellipsoid from the given parameters
+          * \param[in] transform a transformation to apply to the ellipsoid from 0,0,0
+          * \param[in] radius_x the ellipsoid's radius along its local x-axis
+          * \param[in] radius_y the ellipsoid's radius along its local y-axis
+          * \param[in] radius_z the ellipsoid's radius along its local z-axis
+          * \param[in] id the ellipsoid id/name (default: "ellipsoid")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
+          */
+        bool
+        addEllipsoid (const Eigen::Isometry3d &transform,
+                      double radius_x, double radius_y, double radius_z,
+                      const std::string &id = "ellipsoid",
+                      int viewport = 0);
+
         /** \brief Changes the visual representation for all actors to surface representation. */
         void
         setRepresentationToSurfaceForAllActors ();
@@ -1780,7 +1801,7 @@ namespace pcl
 
         /** \brief Get camera file for camera parameter saving/restoring.
           * \note This will be valid only when valid "-cam" option were available in command line
-          * or a saved camera file were automatically loaded. 
+          * or a saved camera file were automatically loaded.
           * \sa cameraParamsSet (), cameraFileLoaded ()
           */
         std::string
@@ -1809,7 +1830,7 @@ namespace pcl
           * \param[in] view_z the z component of the view point of the camera
           * \param[in] up_x the x component of the view up direction of the camera
           * \param[in] up_y the y component of the view up direction of the camera
-          * \param[in] up_z the y component of the view up direction of the camera
+          * \param[in] up_z the z component of the view up direction of the camera
           * \param[in] viewport the viewport to modify camera of (0 modifies all cameras)
           */
         void
@@ -1882,11 +1903,9 @@ namespace pcl
         void
         saveCameraParameters (const std::string &file);
 
-        /** \brief Get camera parameters and save them to a pcl::visualization::Camera.
-          * \param[out] camera the name of the pcl::visualization::Camera
-          */
+        /** \brief Get camera parameters of a given viewport (0 means default viewport). */
         void
-        getCameraParameters (Camera &camera);
+        getCameraParameters (Camera &camera, int viewport = 0) const;
 
         /** \brief Return a pointer to the underlying VTK Render Window used. */
         vtkSmartPointer<vtkRenderWindow>
@@ -1894,21 +1913,21 @@ namespace pcl
         {
           return (win_);
         }
-        
+
         /** \brief Return a pointer to the underlying VTK Renderer Collection. */
         vtkSmartPointer<vtkRendererCollection>
         getRendererCollection ()
         {
           return (rens_);
         }
-        
+
         /** \brief Return a pointer to the CloudActorMap this visualizer uses. */
         CloudActorMapPtr
         getCloudActorMap ()
         {
           return (cloud_actor_map_);
         }
-        
+
         /** \brief Return a pointer to the ShapeActorMap this visualizer uses. */
         ShapeActorMapPtr
         getShapeActorMap ()
@@ -1933,7 +1952,7 @@ namespace pcl
         /** \brief Use Vertex Buffer Objects renderers.
           * This is an optimization for the obsolete OpenGL backend. Modern OpenGL2 backend (VTK ≥ 6.3) uses vertex
           * buffer objects by default, transparently for the user.
-          * \param[in] use_vbos set to true to use VBOs 
+          * \param[in] use_vbos set to true to use VBOs
           */
         void
         setUseVbos (bool use_vbos);
@@ -1961,13 +1980,13 @@ namespace pcl
           * attached to a given vtkRenderWindow
           * \param[in,out] iren the vtkRenderWindowInteractor object to set up
           * \param[in,out] win a vtkRenderWindow object that the interactor is attached to
-          * \param[in,out] style a vtkInteractorStyle object 
+          * \param[in,out] style a vtkInteractorStyle object
           */
         void
         setupInteractor (vtkRenderWindowInteractor *iren,
                          vtkRenderWindow *win,
                          vtkInteractorStyle *style);
-        
+
         /** \brief Get a pointer to the current interactor style used. */
         inline vtkSmartPointer<PCLVisualizerInteractorStyle>
         getInteractorStyle ()
@@ -1976,11 +1995,7 @@ namespace pcl
         }
       protected:
         /** \brief The render window interactor. */
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-        vtkSmartPointer<PCLVisualizerInteractor> interactor_;
-#else
         vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
-#endif
       private:
         /** \brief Internal function for renderer setup
          * \param[in] vtk renderer
@@ -2005,11 +2020,13 @@ namespace pcl
          */
         void setDefaultWindowSizeAndPos ();
 
-        /** \brief Internal function for setting up camera parameters
-         * \param[in] argc
-         * \param[in] argv
+        /** \brief Set up camera parameters.
+         *
+         * Parses command line arguments to find camera parameters (either explicit numbers or a path to a .cam file).
+         * If not found, will generate a unique .cam file path (based on the rest of command line arguments) and try
+         * to load that. If it is also not found, just set the defaults.
          */
-        void setupCamera (int &argc, char **argv);
+        void setupCamera (int argc, char **argv);
 
         struct PCL_EXPORTS ExitMainLoopTimerCallback : public vtkCommand
         {
@@ -2017,8 +2034,8 @@ namespace pcl
           {
             return (new ExitMainLoopTimerCallback);
           }
-          virtual void 
-          Execute (vtkObject*, unsigned long event_id, void*);
+          void
+          Execute (vtkObject*, unsigned long event_id, void*) override;
 
           int right_timer_id;
           PCLVisualizer* pcl_visualizer;
@@ -2030,8 +2047,8 @@ namespace pcl
           {
             return (new ExitCallback);
           }
-          virtual void 
-          Execute (vtkObject*, unsigned long event_id, void*);
+          void
+          Execute (vtkObject*, unsigned long event_id, void*) override;
 
           PCLVisualizer* pcl_visualizer;
         };
@@ -2042,11 +2059,11 @@ namespace pcl
           static FPSCallback *New () { return (new FPSCallback); }
 
           FPSCallback () : actor (), pcl_visualizer (), decimated (), last_fps(0.0f) {}
-          FPSCallback (const FPSCallback& src) : vtkCommand (), actor (src.actor), pcl_visualizer (src.pcl_visualizer), decimated (src.decimated), last_fps (src.last_fps) {}
+          FPSCallback (const FPSCallback& src) : vtkCommand (src), actor (src.actor), pcl_visualizer (src.pcl_visualizer), decimated (src.decimated), last_fps (src.last_fps) {}
           FPSCallback& operator = (const FPSCallback& src) { actor = src.actor; pcl_visualizer = src.pcl_visualizer; decimated = src.decimated; last_fps = src.last_fps; return (*this); }
 
-          virtual void 
-          Execute (vtkObject*, unsigned long event_id, void*);
+          void
+          Execute (vtkObject*, unsigned long event_id, void*) override;
 
           vtkTextActor *actor;
           PCLVisualizer* pcl_visualizer;
@@ -2057,13 +2074,12 @@ namespace pcl
         /** \brief The FPSCallback object for the current visualizer. */
         vtkSmartPointer<FPSCallback> update_fps_;
 
-#if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
         /** \brief Set to false if the interaction loop is running. */
         bool stopped_;
 
         /** \brief Global timer ID. Used in destructor only. */
         int timer_id_;
-#endif
+
         /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
         vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
         vtkSmartPointer<ExitCallback> exit_callback_;
@@ -2088,7 +2104,7 @@ namespace pcl
 
         /** \brief Internal pointer to widget which contains a set of axes */
         vtkSmartPointer<vtkOrientationMarkerWidget> axes_widget_;
-        
+
         /** \brief Boolean that holds whether or not the camera parameters were manually initialized */
         bool camera_set_;
 
@@ -2118,7 +2134,7 @@ namespace pcl
           * \param[in] actor a pointer to the vtk actor object
           * \param[in] viewport port where the actor should be added to (default: 0/all)
           *
-          * \note If viewport is set to 0, the actor will be added to all existing 
+          * \note If viewport is set to 0, the actor will be added to all existing
           * renders. To select a specific viewport use an integer between 1 and N.
           */
         void
@@ -2141,7 +2157,7 @@ namespace pcl
         void
         createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data,
                                    vtkSmartPointer<vtkActor> &actor,
-                                   bool use_scalars = true);
+                                   bool use_scalars = true) const;
 
         /** \brief Internal method. Creates a vtk actor from a vtk polydata object.
           * \param[in] data the vtk polydata object to create an actor for
@@ -2151,7 +2167,7 @@ namespace pcl
         void
         createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data,
                                    vtkSmartPointer<vtkLODActor> &actor,
-                                   bool use_scalars = true);
+                                   bool use_scalars = true) const;
 
         /** \brief Converts a PCL templated PointCloud object to a vtk polydata object.
           * \param[in] cloud the input PCL PointCloud dataset
@@ -2175,7 +2191,7 @@ namespace pcl
                                         vtkSmartPointer<vtkPolyData> &polydata,
                                         vtkSmartPointer<vtkIdTypeArray> &initcells);
 
-        /** \brief Converts a PCL templated PointCloud object to a vtk polydata object.
+        /** \brief Converts a PCL object to a vtk polydata object.
           * \param[in] geometry_handler the geometry handler object used to extract the XYZ data
           * \param[out] polydata the resultant polydata containing the cloud
           * \param[out] initcells a list of cell indices used for the conversion. This can be set once and then passed
@@ -2303,7 +2319,7 @@ namespace pcl
           * \param[in] tex_mat texture material in PCL format
           * \param[out] vtk_tex texture material in VTK format
           * \return 0 on success and -1 else.
-          * \note for now only image based textures are supported, image file must be in 
+          * \note for now only image based textures are supported, image file must be in
           * tex_file attribute of \a tex_mat.
           */
         int
@@ -2316,7 +2332,7 @@ namespace pcl
           */
         std::string
         getUniqueCameraFile (int argc, char **argv);
-        
+
         //There's no reason these conversion functions shouldn't be public and static so others can use them.
       public:
         /** \brief Convert Eigen::Matrix4f to vtkMatrix4x4
@@ -2336,7 +2352,7 @@ namespace pcl
         convertToVtkMatrix (const Eigen::Vector4f &origin,
                             const Eigen::Quaternion<float> &orientation,
                             vtkSmartPointer<vtkMatrix4x4> &vtk_matrix);
-        
+
         /** \brief Convert vtkMatrix4x4 to an Eigen4f
           * \param[in] vtk_matrix the original VTK 4x4 matrix
           * \param[out] m the resultant Eigen 4x4 matrix
@@ -2350,6 +2366,3 @@ namespace pcl
 }
 
 #include <pcl/visualization/impl/pcl_visualizer.hpp>
-
-#endif
-

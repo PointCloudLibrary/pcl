@@ -4,7 +4,7 @@
 Compiling PCL from source on POSIX compliant systems
 ====================================================
 
-Though not a dependency per se, don’t forget that you also need the `CMake build system <http://www.cmake.org/download/>`_, at least version 2.8.3.
+Though not a dependency per se, don’t forget that you also need the `CMake build system <http://www.cmake.org/download/>`_, at least version 3.5.0.
 Additional help on how to use the CMake build system is available `here <http://www.pointclouds.org/documentation/tutorials/building_pcl.php#building-pcl>`_.
 
 Please note that the following installation instructions are only valid for POSIX systems (e.g., Linux, MacOS) with an already installed make/gnu toolchain.
@@ -18,9 +18,9 @@ Stable
 
 For systems for which we do not offer precompiled binaries, you need to compile Point Cloud Library (PCL) from source. Here are the steps that you need to take:
 Go to `Github <https://github.com/PointCloudLibrary/pcl/releases>`_ and download the version number of your choice.
-Uncompress the tar-bzip archive, e.g. (replace 1.7.2 with the correct version number)::
+Uncompress the tar-gzip archive, e.g. (replace 1.7.2 with the correct version number)::
 
-  tar xvfj pcl-pcl-1.7.2.tar.gz
+  tar xvf pcl-pcl-1.7.2.tar.gz
 
 Change the directory to the pcl-pcl-1.7.2 (replace 1.7.2 with the correct version number) directory, and create a build directory in there::
 
@@ -84,7 +84,7 @@ Mandatory
 The following code libraries are **required** for the compilation and usage of the PCL libraries shown below:
 
 .. note::
-pcl_* denotes all PCL libraries, meaning that the particular dependency is a strict requirement for the usage of anything in PCL.
+   pcl_* denotes all PCL libraries, meaning that the particular dependency is a strict requirement for the usage of anything in PCL.
 
 +---------------------------------------------------------------+-----------------+-------------------------+-------------------+
 | Logo                                                          | Library         | Minimum version         | Mandatory         |
@@ -110,7 +110,7 @@ The following code libraries enable certain additional features for the PCL libr
 +---------------------------------------------------------------+-----------------+-------------------+-------------------+
 | .. image:: images/posix_building_pcl/openni_logo.png          | OpenNI          | 1.3               | pcl_io            |
 +---------------------------------------------------------------+-----------------+-------------------+-------------------+
-| .. image:: images/posix_building_pcl/cuda_logo.png            | CUDA            | 4.0               | pcl_*             |
+| .. image:: images/posix_building_pcl/cuda_logo.png            | CUDA            | 9.2               | pcl_*             |
 +---------------------------------------------------------------+-----------------+-------------------+-------------------+
 
 Troubleshooting

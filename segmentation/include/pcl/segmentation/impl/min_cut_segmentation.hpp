@@ -39,11 +39,10 @@
 #ifndef PCL_SEGMENTATION_MIN_CUT_SEGMENTATION_HPP_
 #define PCL_SEGMENTATION_MIN_CUT_SEGMENTATION_HPP_
 
-#include <pcl/segmentation/boost.h>
+#include <boost/graph/boykov_kolmogorov_max_flow.hpp> // for boykov_kolmogorov_max_flow
 #include <pcl/segmentation/min_cut_segmentation.h>
 #include <pcl/search/search.h>
 #include <pcl/search/kdtree.h>
-#include <stdlib.h>
 #include <cmath>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,9 +60,6 @@ pcl::MinCutSegmentation<PointT>::MinCutSegmentation () :
   foreground_points_ (0),
   background_points_ (0),
   clusters_ (0),
-  graph_ (),
-  capacity_ (),
-  reverse_edges_ (),
   vertices_ (0),
   edge_marker_ (0),
   source_ (),/////////////////////////////////
@@ -76,15 +72,6 @@ pcl::MinCutSegmentation<PointT>::MinCutSegmentation () :
 template <typename PointT>
 pcl::MinCutSegmentation<PointT>::~MinCutSegmentation ()
 {
-  if (search_ != 0)
-    search_.reset ();
-  if (graph_ != 0)
-    graph_.reset ();
-  if (capacity_ != 0)
-    capacity_.reset ();
-  if (reverse_edges_ != 0)
-    reverse_edges_.reset ();
-
   foreground_points_.clear ();
   background_points_.clear ();
   clusters_.clear ();
@@ -167,9 +154,6 @@ pcl::MinCutSegmentation<PointT>::getSearchMethod () const
 template <typename PointT> void
 pcl::MinCutSegmentation<PointT>::setSearchMethod (const KdTreePtr& tree)
 {
-  if (search_ != 0)
-    search_.reset ();
-
   search_ = tree;
 }
 
@@ -205,9 +189,8 @@ template <typename PointT> void
 pcl::MinCutSegmentation<PointT>::setForegroundPoints (typename pcl::PointCloud<PointT>::Ptr foreground_points)
 {
   foreground_points_.clear ();
-  foreground_points_.reserve (foreground_points->points.size ());
-  for (size_t i_point = 0; i_point < foreground_points->points.size (); i_point++)
-    foreground_points_.push_back (foreground_points->points[i_point]);
+  foreground_points_.insert(
+      foreground_points_.end(), foreground_points->cbegin(), foreground_points->cend());
 
   unary_potentials_are_valid_ = false;
 }
@@ -224,9 +207,8 @@ template <typename PointT> void
 pcl::MinCutSegmentation<PointT>::setBackgroundPoints (typename pcl::PointCloud<PointT>::Ptr background_points)
 {
   background_points_.clear ();
-  background_points_.reserve (background_points->points.size ());
-  for (size_t i_point = 0; i_point < background_points->points.size (); i_point++)
-    background_points_.push_back (background_points->points[i_point]);
+  background_points_.insert(
+      background_points_.end(), background_points->cbegin(), background_points->cend());
 
   unary_potentials_are_valid_ = false;
 }
@@ -253,12 +235,11 @@ pcl::MinCutSegmentation<PointT>::extract (std::vector <pcl::PointIndices>& clust
   }
 
   clusters_.clear ();
-  bool success = true;
 
   if ( !graph_is_valid_ )
   {
-    success = buildGraph ();
-    if (success == false)
+    bool success = buildGraph ();
+    if (!success)
     {
       deinitCompute ();
       return;
@@ -270,8 +251,8 @@ pcl::MinCutSegmentation<PointT>::extract (std::vector <pcl::PointIndices>& clust
 
   if ( !unary_potentials_are_valid_ )
   {
-    success = recalculateUnaryPotentials ();
-    if (success == false)
+    bool success = recalculateUnaryPotentials ();
+    if (!success)
     {
       deinitCompute ();
       return;
@@ -281,8 +262,8 @@ pcl::MinCutSegmentation<PointT>::extract (std::vector <pcl::PointIndices>& clust
 
   if ( !binary_potentials_are_valid_ )
   {
-    success = recalculateBinaryPotentials ();
-    if (success == false)
+    bool success = recalculateBinaryPotentials ();
+    if (!success)
     {
       deinitCompute ();
       return;
@@ -311,7 +292,7 @@ pcl::MinCutSegmentation<PointT>::getMaxFlow () const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> typename boost::shared_ptr<typename pcl::MinCutSegmentation<PointT>::mGraph>
+template <typename PointT> typename pcl::MinCutSegmentation<PointT>::mGraphPtr
 pcl::MinCutSegmentation<PointT>::getGraph () const
 {
   return (graph_);
@@ -321,24 +302,21 @@ pcl::MinCutSegmentation<PointT>::getGraph () const
 template <typename PointT> bool
 pcl::MinCutSegmentation<PointT>::buildGraph ()
 {
-  int number_of_points = static_cast<int> (input_->points.size ());
-  int number_of_indices = static_cast<int> (indices_->size ());
+  const auto number_of_points = input_->size ();
+  const auto number_of_indices = indices_->size ();
 
-  if (input_->points.size () == 0 || number_of_points == 0 || foreground_points_.empty () == true )
+  if (input_->points.empty () || number_of_points == 0 || foreground_points_.empty () == true )
     return (false);
 
-  if (search_ == 0)
-    search_ = boost::shared_ptr<pcl::search::Search<PointT> > (new pcl::search::KdTree<PointT>);
+  if (!search_)
+    search_.reset (new pcl::search::KdTree<PointT>);
 
-  graph_.reset ();
-  graph_ = boost::shared_ptr< mGraph > (new mGraph ());
+  graph_.reset (new mGraph);
 
-  capacity_.reset ();
-  capacity_ = boost::shared_ptr<CapacityMap> (new CapacityMap ());
+  capacity_.reset (new CapacityMap);
   *capacity_ = boost::get (boost::edge_capacity, *graph_);
 
-  reverse_edges_.reset ();
-  reverse_edges_ = boost::shared_ptr<ReverseEdgeMap> (new ReverseEdgeMap ());
+  reverse_edges_.reset (new ReverseEdgeMap);
   *reverse_edges_ = boost::get (boost::edge_reverse, *graph_);
 
   VertexDescriptor vertex_descriptor(0);
@@ -349,15 +327,14 @@ pcl::MinCutSegmentation<PointT>::buildGraph ()
   edge_marker_.clear ();
   edge_marker_.resize (number_of_points + 2, out_edges_marker);
 
-  for (int i_point = 0; i_point < number_of_points + 2; i_point++)
+  for (std::size_t i_point = 0; i_point < number_of_points + 2; i_point++)
     vertices_[i_point] = boost::add_vertex (*graph_);
 
   source_ = vertices_[number_of_points];
   sink_ = vertices_[number_of_points + 1];
 
-  for (int i_point = 0; i_point < number_of_indices; i_point++)
+  for (const auto& point_index : (*indices_))
   {
-    int point_index = (*indices_)[i_point];
     double source_weight = 0.0;
     double sink_weight = 0.0;
     calculateUnaryPotential (point_index, source_weight, sink_weight);
@@ -365,14 +342,14 @@ pcl::MinCutSegmentation<PointT>::buildGraph ()
     addEdge (point_index, static_cast<int> (sink_), sink_weight);
   }
 
-  std::vector<int> neighbours;
+  pcl::Indices neighbours;
   std::vector<float> distances;
   search_->setInputCloud (input_, indices_);
-  for (int i_point = 0; i_point < number_of_indices; i_point++)
+  for (std::size_t i_point = 0; i_point < number_of_indices; i_point++)
   {
-    int point_index = (*indices_)[i_point];
+    index_t point_index = (*indices_)[i_point];
     search_->nearestKSearch (i_point, number_of_neighbours_, neighbours, distances);
-    for (size_t i_nghbr = 1; i_nghbr < neighbours.size (); i_nghbr++)
+    for (std::size_t i_nghbr = 1; i_nghbr < neighbours.size (); i_nghbr++)
     {
       double weight = calculateBinaryPotential (point_index, neighbours[i_nghbr]);
       addEdge (point_index, neighbours[i_nghbr], weight);
@@ -391,24 +368,20 @@ pcl::MinCutSegmentation<PointT>::calculateUnaryPotential (int point, double& sou
 {
   double min_dist_to_foreground = std::numeric_limits<double>::max ();
   //double min_dist_to_background = std::numeric_limits<double>::max ();
-  double closest_foreground_point[2];
-  closest_foreground_point[0] = closest_foreground_point[1] = 0;
   //double closest_background_point[] = {0.0, 0.0};
   double initial_point[] = {0.0, 0.0};
 
-  initial_point[0] = input_->points[point].x;
-  initial_point[1] = input_->points[point].y;
+  initial_point[0] = (*input_)[point].x;
+  initial_point[1] = (*input_)[point].y;
 
-  for (size_t i_point = 0; i_point < foreground_points_.size (); i_point++)
+  for (const auto& fg_point : foreground_points_)
   {
     double dist = 0.0;
-    dist += (foreground_points_[i_point].x - initial_point[0]) * (foreground_points_[i_point].x - initial_point[0]);
-    dist += (foreground_points_[i_point].y - initial_point[1]) * (foreground_points_[i_point].y - initial_point[1]);
+    dist += (fg_point.x - initial_point[0]) * (fg_point.x - initial_point[0]);
+    dist += (fg_point.y - initial_point[1]) * (fg_point.y - initial_point[1]);
     if (min_dist_to_foreground > dist)
     {
       min_dist_to_foreground = dist;
-      closest_foreground_point[0] = foreground_points_[i_point].x;
-      closest_foreground_point[1] = foreground_points_[i_point].y;
     }
   }
 
@@ -420,16 +393,16 @@ pcl::MinCutSegmentation<PointT>::calculateUnaryPotential (int point, double& sou
   if (background_points_.size () == 0)
     return;
 
-  for (int i_point = 0; i_point < background_points_.size (); i_point++)
+  for (const auto& bg_point : background_points_)
   {
     double dist = 0.0;
-    dist += (background_points_[i_point].x - initial_point[0]) * (background_points_[i_point].x - initial_point[0]);
-    dist += (background_points_[i_point].y - initial_point[1]) * (background_points_[i_point].y - initial_point[1]);
+    dist += (bg_point.x - initial_point[0]) * (bg_point.x - initial_point[0]);
+    dist += (bg_point.y - initial_point[1]) * (bg_point.y - initial_point[1]);
     if (min_dist_to_background > dist)
     {
       min_dist_to_background = dist;
-      closest_background_point[0] = background_points_[i_point].x;
-      closest_background_point[1] = background_points_[i_point].y;
+      closest_background_point[0] = bg_point.x;
+      closest_background_point[1] = bg_point.y;
     }
   }
 
@@ -477,11 +450,11 @@ pcl::MinCutSegmentation<PointT>::calculateBinaryPotential (int source, int targe
 {
   double weight = 0.0;
   double distance = 0.0;
-  distance += (input_->points[source].x - input_->points[target].x) * (input_->points[source].x - input_->points[target].x);
-  distance += (input_->points[source].y - input_->points[target].y) * (input_->points[source].y - input_->points[target].y);
-  distance += (input_->points[source].z - input_->points[target].z) * (input_->points[source].z - input_->points[target].z);
+  distance += ((*input_)[source].x - (*input_)[target].x) * ((*input_)[source].x - (*input_)[target].x);
+  distance += ((*input_)[source].y - (*input_)[target].y) * ((*input_)[source].y - (*input_)[target].y);
+  distance += ((*input_)[source].z - (*input_)[target].z) * ((*input_)[source].z - (*input_)[target].z);
   distance *= inverse_sigma_;
-  weight = exp (-distance);
+  weight = std::exp (-distance);
 
   return (weight);
 }
@@ -515,8 +488,6 @@ pcl::MinCutSegmentation<PointT>::recalculateUnaryPotentials ()
 template <typename PointT> bool
 pcl::MinCutSegmentation<PointT>::recalculateBinaryPotentials ()
 {
-  int number_of_points = static_cast<int> (indices_->size ());
-
   VertexIterator vertex_iter;
   VertexIterator vertex_end;
   OutEdgeIterator edge_iter;
@@ -525,7 +496,7 @@ pcl::MinCutSegmentation<PointT>::recalculateBinaryPotentials ()
   std::vector< std::set<VertexDescriptor> > edge_marker;
   std::set<VertexDescriptor> out_edges_marker;
   edge_marker.clear ();
-  edge_marker.resize (number_of_points + 2, out_edges_marker);
+  edge_marker.resize (indices_->size () + 2, out_edges_marker);
 
   for (boost::tie (vertex_iter, vertex_end) = boost::vertices (*graph_); vertex_iter != vertex_end; vertex_iter++)
   {
@@ -563,10 +534,9 @@ template <typename PointT> void
 pcl::MinCutSegmentation<PointT>::assembleLabels (ResidualCapacityMap& residual_capacity)
 {
   std::vector<int> labels;
-  labels.resize (input_->points.size (), 0);
-  int number_of_indices = static_cast<int> (indices_->size ());
-  for (int i_point = 0; i_point < number_of_indices; i_point++)
-    labels[(*indices_)[i_point]] = 1;
+  labels.resize (input_->size (), 0);
+  for (const auto& i_point : (*indices_))
+    labels[i_point] = 1;
 
   clusters_.clear ();
 
@@ -594,36 +564,30 @@ pcl::MinCutSegmentation<PointT>::getColoredCloud ()
 
   if (!clusters_.empty ())
   {
-    int num_of_pts_in_first_cluster = static_cast<int> (clusters_[0].indices.size ());
-    int num_of_pts_in_second_cluster = static_cast<int> (clusters_[1].indices.size ());
-    int number_of_points = num_of_pts_in_first_cluster + num_of_pts_in_second_cluster;
     colored_cloud = (new pcl::PointCloud<pcl::PointXYZRGB>)->makeShared ();
     unsigned char foreground_color[3] = {255, 255, 255};
     unsigned char background_color[3] = {255, 0, 0};
-    colored_cloud->width = number_of_points;
+    colored_cloud->width = (clusters_[0].indices.size () + clusters_[1].indices.size ());
     colored_cloud->height = 1;
     colored_cloud->is_dense = input_->is_dense;
 
     pcl::PointXYZRGB point;
-    int point_index = 0;
-    for (int i_point = 0; i_point < num_of_pts_in_first_cluster; i_point++)
+    for (const auto& point_index : (clusters_[0].indices))
     {
-      point_index = clusters_[0].indices[i_point];
-      point.x = *(input_->points[point_index].data);
-      point.y = *(input_->points[point_index].data + 1);
-      point.z = *(input_->points[point_index].data + 2);
+      point.x = *((*input_)[point_index].data);
+      point.y = *((*input_)[point_index].data + 1);
+      point.z = *((*input_)[point_index].data + 2);
       point.r = background_color[0];
       point.g = background_color[1];
       point.b = background_color[2];
       colored_cloud->points.push_back (point);
     }
 
-    for (int i_point = 0; i_point < num_of_pts_in_second_cluster; i_point++)
+    for (const auto& point_index : (clusters_[1].indices))
     {
-      point_index = clusters_[1].indices[i_point];
-      point.x = *(input_->points[point_index].data);
-      point.y = *(input_->points[point_index].data + 1);
-      point.z = *(input_->points[point_index].data + 2);
+      point.x = *((*input_)[point_index].data);
+      point.y = *((*input_)[point_index].data + 1);
+      point.z = *((*input_)[point_index].data + 2);
       point.r = foreground_color[0];
       point.g = foreground_color[1];
       point.b = foreground_color[2];

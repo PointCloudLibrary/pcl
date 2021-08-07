@@ -35,8 +35,13 @@
  *
  */
 
-#include <stdexcept>
 #include <pcl/surface/on_nurbs/fitting_surface_pdm.h>
+#include <pcl/pcl_macros.h>
+
+#include <Eigen/Cholesky> // for ldlt
+#include <Eigen/Geometry> // for cross
+#include <Eigen/LU> // for inverse
+#include <stdexcept>
 
 using namespace pcl;
 using namespace on_nurbs;
@@ -86,11 +91,11 @@ FittingSurface::refine (int dim)
   std::vector<double> xi;
   std::vector<double> elements = getElementVector (m_nurbs, dim);
 
-  for (unsigned i = 0; i < elements.size () - 1; i++)
+  for (std::size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
-  for (unsigned i = 0; i < xi.size (); i++)
-    m_nurbs.InsertKnot (dim, xi[i], 1);
+  for (const double &i : xi)
+    m_nurbs.InsertKnot (dim, i, 1);
 
   m_elementsU = getElementVector (m_nurbs, 0);
   m_elementsV = getElementVector (m_nurbs, 1);
@@ -106,11 +111,11 @@ FittingSurface::refine (ON_NurbsSurface &nurbs, int dim)
   std::vector<double> xi;
   std::vector<double> elements = getElementVector (nurbs, dim);
 
-  for (unsigned i = 0; i < elements.size () - 1; i++)
+  for (std::size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
-  for (unsigned i = 0; i < xi.size (); i++)
-    nurbs.InsertKnot (dim, xi[i], 1);
+  for (const double &i : xi)
+    nurbs.InsertKnot (dim, i, 1);
 }
 
 void
@@ -412,7 +417,7 @@ FittingSurface::initNurbsPCA (int order, NurbsDataSurface *m_data, Eigen::Vector
   if (eigenvectors.col (2).dot (z) < 0.0)
     flip = true;
 
-  eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
+  eigenvalues /= s; // seems that the eigenvalues are dependent on the number of points (???)
 
   Eigen::Vector3d sigma (sqrt (eigenvalues (0)), sqrt (eigenvalues (1)), sqrt (eigenvalues (2)));
 
@@ -461,7 +466,7 @@ FittingSurface::initNurbsPCABoundingBox (int order, NurbsDataSurface *m_data, Ei
   if (eigenvectors.col (2).dot (z) < 0.0)
     flip = true;
 
-  eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
+  eigenvalues /= s; // seems that the eigenvalues are dependent on the number of points (???)
   Eigen::Matrix3d eigenvectors_inv = eigenvectors.inverse ();
 
   Eigen::Vector3d v_max (-DBL_MAX, -DBL_MAX, -DBL_MAX);
@@ -488,9 +493,9 @@ FittingSurface::initNurbsPCABoundingBox (int order, NurbsDataSurface *m_data, Ei
 
   for (unsigned i = 0; i < s; i++)
   {
-    Eigen::Vector2d &p = m_data->interior_param[i];
     if (v_max (0) > v_min (0) && v_max (0) > v_min (0))
     {
+      Eigen::Vector2d &p = m_data->interior_param[i];
       p (0) = (p (0) - v_min (0)) / (v_max (0) - v_min (0));
       p (1) = (p (1) - v_min (1)) / (v_max (1) - v_min (1));
     }
@@ -638,6 +643,7 @@ FittingSurface::addCageBoundaryRegularisation (double weight, int side, unsigned
   {
     case SOUTH:
       j = m_nurbs.m_cv_count[1] - 1;
+      PCL_FALLTHROUGH
     case NORTH:
       for (i = 1; i < (m_nurbs.m_cv_count[0] - 1); i++)
       {
@@ -656,6 +662,7 @@ FittingSurface::addCageBoundaryRegularisation (double weight, int side, unsigned
 
     case EAST:
       i = m_nurbs.m_cv_count[0] - 1;
+      PCL_FALLTHROUGH
     case WEST:
       for (j = 1; j < (m_nurbs.m_cv_count[1] - 1); j++)
       {
@@ -1003,22 +1010,17 @@ FittingSurface::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &pt
       return current;
 
     }
-    else
-    {
-      current = current + delta;
+    current += delta;
 
-      if (current (0) < minU)
-        current (0) = minU;
-      else if (current (0) > maxU)
-        current (0) = maxU;
+    if (current (0) < minU)
+      current (0) = minU;
+    else if (current (0) > maxU)
+      current (0) = maxU;
 
-      if (current (1) < minV)
-        current (1) = minV;
-      else if (current (1) > maxV)
-        current (1) = maxV;
-
-    }
-
+    if (current (1) < minV)
+      current (1) = minV;
+    else if (current (1) > maxV)
+      current (1) = maxV;
   }
 
   error = r.norm ();
@@ -1083,22 +1085,17 @@ FittingSurface::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &pt
     {
       return current;
     }
-    else
-    {
-      current = current + delta;
+    current += delta;
 
-      if (current (0) < minU)
-        current (0) = minU;
-      else if (current (0) > maxU)
-        current (0) = maxU;
+    if (current (0) < minU)
+      current (0) = minU;
+    else if (current (0) > maxU)
+      current (0) = maxU;
 
-      if (current (1) < minV)
-        current (1) = minV;
-      else if (current (1) > maxV)
-        current (1) = maxV;
-
-    }
-
+    if (current (1) < minV)
+      current (1) = minV;
+    else if (current (1) > maxV)
+      current (1) = maxV;
   }
 
   if (!quiet)
@@ -1120,9 +1117,9 @@ FittingSurface::findClosestElementMidPoint (const ON_NurbsSurface &nurbs, const 
   std::vector<double> elementsV = getElementVector (nurbs, 1);
 
   double d_shortest (DBL_MAX);
-  for (unsigned i = 0; i < elementsU.size () - 1; i++)
+  for (std::size_t i = 0; i < elementsU.size () - 1; i++)
   {
-    for (unsigned j = 0; j < elementsV.size () - 1; j++)
+    for (std::size_t j = 0; j < elementsV.size () - 1; j++)
     {
       double points[3];
       double d;
@@ -1164,20 +1161,20 @@ FittingSurface::inverseMappingBoundary (const ON_NurbsSurface &nurbs, const Vect
   std::vector<double> elementsV = getElementVector (nurbs, 1);
 
   // NORTH - SOUTH
-  for (unsigned i = 0; i < (elementsV.size () - 1); i++)
+  for (std::size_t i = 0; i < (elementsV.size () - 1); i++)
   {
-    ini_points.push_back (myvec (WEST, elementsV[i] + 0.5 * (elementsV[i + 1] - elementsV[i])));
-    ini_points.push_back (myvec (EAST, elementsV[i] + 0.5 * (elementsV[i + 1] - elementsV[i])));
+    ini_points.emplace_back(WEST, elementsV[i] + 0.5 * (elementsV[i + 1] - elementsV[i]));
+    ini_points.emplace_back(EAST, elementsV[i] + 0.5 * (elementsV[i + 1] - elementsV[i]));
   }
 
   // WEST - EAST
-  for (unsigned i = 0; i < (elementsU.size () - 1); i++)
+  for (std::size_t i = 0; i < (elementsU.size () - 1); i++)
   {
-    ini_points.push_back (myvec (NORTH, elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i])));
-    ini_points.push_back (myvec (SOUTH, elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i])));
+    ini_points.emplace_back(NORTH, elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i]));
+    ini_points.emplace_back(SOUTH, elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i]));
   }
 
-  for (unsigned i = 0; i < ini_points.size (); i++)
+  for (std::size_t i = 0; i < ini_points.size (); i++)
   {
 
     Vector2d params = inverseMappingBoundary (nurbs, pt, ini_points[i].side, ini_points[i].hint, err_tmp, p_tmp,
@@ -1307,62 +1304,54 @@ FittingSurface::inverseMappingBoundary (const ON_NurbsSurface &nurbs, const Vect
 
     delta = -0.5 * r.dot (t) / t.dot (t);
 
-    if (fabs (delta) < accuracy)
+    if (std::abs (delta) < accuracy)
     {
 
       error = r.norm ();
       return params;
 
     }
-    else
+
+    current += delta;
+
+    bool stop = false;
+
+    switch (side)
     {
+      case WEST:
+       case EAST:
+        if (current < minV)
+        {
+          params (1) = minV;
+          stop = true;
+        }
+        else if (current > maxV)
+        {
+          params (1) = maxV;
+          stop = true;
+        }
+        break;
 
-      current = current + delta;
-
-      bool stop = false;
-
-      switch (side)
-      {
-
-        case WEST:
-        case EAST:
-          if (current < minV)
-          {
-            params (1) = minV;
-            stop = true;
-          }
-          else if (current > maxV)
-          {
-            params (1) = maxV;
-            stop = true;
-          }
-
-          break;
-
-        case NORTH:
-        case SOUTH:
-          if (current < minU)
-          {
-            params (0) = minU;
-            stop = true;
-          }
-          else if (current > maxU)
-          {
-            params (0) = maxU;
-            stop = true;
-          }
-
-          break;
-      }
-
-      if (stop)
-      {
-        error = r.norm ();
-        return params;
-      }
-
+      case NORTH:
+      case SOUTH:
+        if (current < minU)
+        {
+          params (0) = minU;
+          stop = true;
+        }
+        else if (current > maxU)
+        {
+          params (0) = maxU;
+          stop = true;
+        }
+        break;
     }
 
+    if (stop)
+    {
+      error = r.norm ();
+      return params;
+    }
   }
 
   error = r.norm ();

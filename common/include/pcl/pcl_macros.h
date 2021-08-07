@@ -34,25 +34,14 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_MACROS_H_
-#define PCL_MACROS_H_
+#pragma once
 
-#include <pcl/pcl_config.h>
-#include <boost/cstdint.hpp>
-#include <cstdlib>
-
-namespace pcl
-{
-  using boost::uint8_t;
-  using boost::int8_t;
-  using boost::int16_t;
-  using boost::uint16_t;
-  using boost::int32_t;
-  using boost::uint32_t;
-  using boost::int64_t;
-  using boost::uint64_t;
-  using boost::int_fast16_t;
-}
+/**
+ * \file pcl/pcl_macros.h
+ *
+ * \brief Defines all the PCL and non-PCL macros used
+ * \ingroup common
+ */
 
 #if defined __INTEL_COMPILER
   #pragma warning disable 2196 2536 279
@@ -66,74 +55,169 @@ namespace pcl
   #pragma warning (disable: 4018 4244 4267 4521 4251 4661 4305 4503 4146)
 #endif
 
-#include <iostream>
-#include <stdarg.h>
-#include <stdio.h>
 #ifndef _USE_MATH_DEFINES
-#define _USE_MATH_DEFINES
+  #define _USE_MATH_DEFINES
 #endif
-#include <math.h>
+#include <cmath>
+#include <cstdlib>
+#include <iostream>
 
-// MSCV doesn't have std::{isnan,isfinite}
-#if defined _WIN32 && defined _MSC_VER
-
-// If M_PI is not defined, then probably all of them are undefined
-#ifndef M_PI
-// Copied from math.h
-# define M_PI   3.14159265358979323846     // pi
-# define M_PI_2    1.57079632679489661923  // pi/2
-# define M_PI_4    0.78539816339744830962  // pi/4
-# define M_PIl   3.1415926535897932384626433832795029L  // pi
-# define M_PI_2l 1.5707963267948966192313216916397514L  // pi/2
-# define M_PI_4l 0.7853981633974483096156608458198757L  // pi/4
-#endif
-
-// Stupid. This should be removed when all the PCL dependencies have min/max fixed.
-#ifndef NOMINMAX
-# define NOMINMAX
-#endif
-
-# define pcl_isnan(x)    _isnan(x)
-# define pcl_isfinite(x) (_finite(x) != 0)
-# define pcl_isinf(x)    (_finite(x) == 0)
-
-# define __PRETTY_FUNCTION__ __FUNCTION__
-# define __func__ __FUNCTION__
-
-#elif ANDROID
-// Use the math.h macros
-# include <math.h>
-# define pcl_isnan(x)    std::isnan(x)
-# define pcl_isfinite(x) std::isfinite(x)
-# define pcl_isinf(x)    std::isinf(x)
-
-#elif _GLIBCXX_USE_C99_MATH
-// Are the C++ cmath functions enabled?
-# include <cmath>
-# define pcl_isnan(x)    std::isnan(x)
-# define pcl_isfinite(x) std::isfinite(x)
-# define pcl_isinf(x)    std::isinf(x)
-
-#elif __PATHCC__
-# include <cmath>
-# include <stdio.h>
-template <typename T> int
-pcl_isnan (T &val)
-{
-  return (val != val);
-}
-//# define pcl_isnan(x)    std::isnan(x)
-# define pcl_isfinite(x) std::isfinite(x)
-# define pcl_isinf(x)    std::isinf(x)
-
+// We need to check for GCC version, because GCC releases before 9 were implementing an
+// OpenMP 3.1 data sharing rule, even OpenMP 4 is supported, so a plain OpenMP version 4 check
+// isn't enough (see https://www.gnu.org/software/gcc/gcc-9/porting_to.html#ompdatasharing)
+#if (defined _OPENMP && (_OPENMP <= 201307)) || (defined __GNUC__ && (__GNUC__ >= 6 && __GNUC__ < 9))
+  #define OPENMP_LEGACY_CONST_DATA_SHARING_RULE 1
 #else
-// Use the math.h macros
-# include <math.h>
-# define pcl_isnan(x)    isnan(x)
-# define pcl_isfinite(x) isfinite(x)
-# define pcl_isinf(x)    isinf(x)
-
+  #define OPENMP_LEGACY_CONST_DATA_SHARING_RULE 0
 #endif
+
+#include <pcl/pcl_config.h>
+
+#include <boost/preprocessor/arithmetic/add.hpp>
+#include <boost/preprocessor/comparison/equal.hpp>
+#include <boost/preprocessor/comparison/less.hpp>
+#include <boost/preprocessor/control/if.hpp>
+#include <boost/preprocessor/stringize.hpp>
+
+// MSVC < 2019 have issues:
+// * can't short-circuiting logic in macros
+// * don't define standard macros
+// => this leads to annyoing C4067 warnings (see https://developercommunity.visualstudio.com/content/problem/327796/-has-cpp-attribute-emits-warning-is-wrong-highligh.html)
+#if defined(_MSC_VER)
+  // nvcc on msvc can't work with [[deprecated]]
+  #if !defined(__CUDACC__)
+    #define _PCL_DEPRECATED_IMPL(Message) [[deprecated(Message)]]
+  #else
+    #define _PCL_DEPRECATED_IMPL(Message)
+  #endif
+#elif __has_cpp_attribute(deprecated)
+  #define _PCL_DEPRECATED_IMPL(Message) [[deprecated(Message)]]
+#else
+  #warning "You need to implement _PCL_DEPRECATED_IMPL for this compiler"
+  #define _PCL_DEPRECATED_IMPL(Message)
+#endif
+
+// Macro for pragma operator
+#if (defined (__GNUC__) || defined(__clang__))
+  #define PCL_PRAGMA(x) _Pragma (#x)
+#elif _MSC_VER
+  #define PCL_PRAGMA(x) __pragma (#x)
+#else
+  #define PCL_PRAGMA
+#endif
+
+// Macro for emitting pragma warning for deprecated headers
+#if (defined (__GNUC__) || defined(__clang__))
+  #define _PCL_DEPRECATED_HEADER_IMPL(Message) PCL_PRAGMA (GCC warning Message)
+#elif _MSC_VER
+  #define _PCL_DEPRECATED_HEADER_IMPL(Message) PCL_PRAGMA (warning (Message))
+#else
+  #warning "You need to implement _PCL_DEPRECATED_HEADER_IMPL for this compiler"
+  #define _PCL_DEPRECATED_HEADER_IMPL(Message)
+#endif
+
+/**
+ * \brief A handy way to inform the user of the removal deadline
+ */
+#define _PCL_PREPARE_REMOVAL_MESSAGE(Major, Minor, Msg)                                 \
+  Msg " (It will be removed in PCL " BOOST_PP_STRINGIZE(Major.Minor) ")"
+
+/**
+ * \brief Tests for Minor < PCL_MINOR_VERSION
+ * \details When PCL VERSION is of format `34.12.99`, this macro behaves as if it is
+ * already `34.13.0`, and allows for smoother transition for maintainers
+ */
+#define _PCL_COMPAT_MINOR_VERSION(Minor, IfPass, IfFail)                                \
+  BOOST_PP_IF(BOOST_PP_EQUAL(PCL_REVISION_VERSION, 99),                                 \
+    BOOST_PP_IF(BOOST_PP_LESS(BOOST_PP_ADD(PCL_MINOR_VERSION, 1), Minor), IfPass, IfFail),           \
+    BOOST_PP_IF(BOOST_PP_LESS(PCL_MINOR_VERSION, Minor), IfPass, IfFail))
+
+/**
+ * \brief Tests for Major == PCL_MAJOR_VERSION
+ * \details When PCL VERSION is of format `34.99.12`, this macro behaves as if it is
+ * already `35.0.0`, and allows for smoother transition for maintainers
+ */
+#define _PCL_COMPAT_MAJOR_VERSION(Major, IfPass, IfFail)                                \
+  BOOST_PP_IF(BOOST_PP_EQUAL(PCL_MINOR_VERSION, 99),                                    \
+    BOOST_PP_IF(BOOST_PP_EQUAL(BOOST_PP_ADD(PCL_MAJOR_VERSION, 1), Major), IfPass, IfFail),          \
+    BOOST_PP_IF(BOOST_PP_EQUAL(PCL_MAJOR_VERSION, Major), IfPass, IfFail))
+
+/**
+ * \brief macro for compatibility across compilers and help remove old deprecated
+ *        items for the Major.Minor release
+ *
+ * \details compiler errors of `unneeded_deprecation` and `major_version_mismatch`
+ * are hints to the developer that those items can be safely removed.
+ * Behavior of PCL_DEPRECATED(1, 99, "Not needed anymore")
+ *   * till PCL 1.98: "Not needed anymore (It will be removed in PCL 1.99)"
+ *   * PCL 1.99 onwards: compiler error with "unneeded_deprecation"
+ *   * PCL 2.0 onwards: compiler error with "major_version_mismatch"
+ */
+#define PCL_DEPRECATED(Major, Minor, Message)                                          \
+  _PCL_COMPAT_MAJOR_VERSION(                                                           \
+      Major,                                                                           \
+      _PCL_COMPAT_MINOR_VERSION(                                                       \
+          Minor,                                                                       \
+          _PCL_DEPRECATED_IMPL(_PCL_PREPARE_REMOVAL_MESSAGE(Major, Minor, Message)),   \
+          unneeded_deprecation),                                                       \
+      major_version_mismatch)
+
+/**
+ * \brief macro for compatibility across compilers and help remove old deprecated
+ *        headers for the Major.Minor release
+ *
+ * \details compiler errors of `unneeded_header` and `major_version_mismatch`
+ * are hints to the developer that those items can be safely removed.
+ * Behavior of PCL_DEPRECATED_HEADER(1, 99, "Use file <newfile.h> instead.")
+ *   * till PCL 1.98: "This header is deprecated. Use file <newfile.h> instead. (It will be removed in PCL 1.99)"
+ *   * PCL 1.99 onwards: compiler error with "unneeded_header"
+ *   * PCL 2.0 onwards: compiler error with "major_version_mismatch"
+ */
+#define PCL_DEPRECATED_HEADER(Major, Minor, Message)                                   \
+  _PCL_COMPAT_MAJOR_VERSION(                                                           \
+      Major,                                                                           \
+      _PCL_COMPAT_MINOR_VERSION(                                                       \
+          Minor,                                                                       \
+          _PCL_DEPRECATED_HEADER_IMPL(_PCL_PREPARE_REMOVAL_MESSAGE(                    \
+              Major,                                                                   \
+              Minor,                                                                   \
+              "This header is deprecated. " Message)),                                 \
+          unneeded_header),                                                            \
+      major_version_mismatch)
+
+#if defined _WIN32
+// Define math constants, without including math.h, to prevent polluting global namespace with old math methods
+// Copied from math.h
+// Check for M_2_SQRTPI since the cmath header on mingw-w64 doesn't seem to define
+// _MATH_DEFINES_DEFINED when included with _USE_MATH_DEFINES
+#if !defined _MATH_DEFINES_DEFINED && !defined M_2_SQRTPI
+  #define _MATH_DEFINES_DEFINED
+
+  #define M_E        2.71828182845904523536   // e
+  #define M_LOG2E    1.44269504088896340736   // log2(e)
+  #define M_LOG10E   0.434294481903251827651  // log10(e)
+  #define M_LN2      0.693147180559945309417  // ln(2)
+  #define M_LN10     2.30258509299404568402   // ln(10)
+  #define M_PI       3.14159265358979323846   // pi
+  #define M_PI_2     1.57079632679489661923   // pi/2
+  #define M_PI_4     0.785398163397448309616  // pi/4
+  #define M_1_PI     0.318309886183790671538  // 1/pi
+  #define M_2_PI     0.636619772367581343076  // 2/pi
+  #define M_2_SQRTPI 1.12837916709551257390   // 2/sqrt(pi)
+  #define M_SQRT2    1.41421356237309504880   // sqrt(2)
+  #define M_SQRT1_2  0.707106781186547524401  // 1/sqrt(2)
+#endif
+
+#if defined _MSC_VER
+  // Stupid. This should be removed when all the PCL dependencies have min/max fixed.
+  #ifndef NOMINMAX
+    #define NOMINMAX
+  #endif
+
+  #define __PRETTY_FUNCTION__ __FUNCTION__
+  #define __func__ __FUNCTION__
+#endif
+#endif // defined _WIN32
 
 #ifndef DEG2RAD
 #define DEG2RAD(x) ((x)*0.017453293)
@@ -154,12 +238,12 @@ pcl_isnan (T &val)
 __inline double
 pcl_round (double number)
 {
-  return (number < 0.0 ? ceil (number - 0.5) : floor (number + 0.5));
+  return (number < 0.0 ? std::ceil (number - 0.5) : std::floor (number + 0.5));
 }
 __inline float
 pcl_round (float number)
 {
-  return (number < 0.0f ? ceilf (number - 0.5f) : floorf (number + 0.5f));
+  return (number < 0.0f ? std::ceil (number - 0.5f) : std::floor (number + 0.5f));
 }
 
 #ifdef __GNUC__
@@ -168,15 +252,6 @@ pcl_round (float number)
 #else
 #define pcl_lrint(x) (static_cast<long int>(pcl_round(x)))
 #define pcl_lrintf(x) (static_cast<long int>(pcl_round(x)))
-#endif
-
-
-#ifdef _WIN32
-__inline float
-log2f (float x)
-{
-  return (static_cast<float> (logf (x) * M_LOG2E));
-}
 #endif
 
 #ifdef WIN32
@@ -230,34 +305,8 @@ log2f (float x)
 #endif
 
 #ifndef SET_ARRAY
-#define SET_ARRAY(var, value, size) { for (int i = 0; i < static_cast<int> (size); ++i) var[i]=value; }
+#define SET_ARRAY(var, value, size) { for (decltype(size) i = 0; i < size; ++i) var[i]=value; }
 #endif
-
-/* //This is copy/paste from http://gcc.gnu.org/wiki/Visibility */
-/* #if defined _WIN32 || defined __CYGWIN__ */
-/*   #ifdef BUILDING_DLL */
-/*     #ifdef __GNUC__ */
-/* #define DLL_PUBLIC __attribute__((dllexport)) */
-/*     #else */
-/* #define DLL_PUBLIC __declspec(dllexport) // Note: actually gcc seems to also supports this syntax. */
-/*     #endif */
-/*   #else */
-/*     #ifdef __GNUC__ */
-/* #define DLL_PUBLIC __attribute__((dllimport)) */
-/*     #else */
-/* #define DLL_PUBLIC __declspec(dllimport) // Note: actually gcc seems to also supports this syntax. */
-/*     #endif */
-/*   #endif */
-/*   #define DLL_LOCAL */
-/* #else */
-/*   #if __GNUC__ >= 4 */
-/* #define DLL_PUBLIC __attribute__ ((visibility("default"))) */
-/* #define DLL_LOCAL  __attribute__ ((visibility("hidden"))) */
-/*   #else */
-/*     #define DLL_PUBLIC */
-/*     #define DLL_LOCAL */
-/*   #endif */
-/* #endif */
 
 #ifndef PCL_EXTERN_C
     #ifdef __cplusplus
@@ -289,83 +338,9 @@ log2f (float x)
     #define PCLAPI(rettype) PCL_EXTERN_C PCL_EXPORTS rettype PCL_CDECL
 #endif
 
-// Macro for pragma operator
-#if (defined (__GNUC__) || defined(__clang__))
-  #define PCL_PRAGMA(x) _Pragma (#x)
-#elif _MSC_VER
-  #define PCL_PRAGMA(x) __pragma (#x)
-#else
-  #define PCL_PRAGMA
-#endif
-
-// Macro for emitting pragma warning
-#if (defined (__GNUC__) || defined(__clang__))
-  #define PCL_PRAGMA_WARNING(x) PCL_PRAGMA (GCC warning x)
-#elif _MSC_VER
-  #define PCL_PRAGMA_WARNING(x) PCL_PRAGMA (warning (x))
-#else
-  #define PCL_PRAGMA_WARNING
-#endif
-
-
-// Macro to deprecate old functions
-//
-// Usage:
-// don't use me any more
-// PCL_DEPRECATED(void OldFunc(int a, float b), "Use newFunc instead, this functions will be gone in the next major release");
-// use me instead
-// void NewFunc(int a, double b);
-
 //for clang cf. http://clang.llvm.org/docs/LanguageExtensions.html
 #ifndef __has_extension
   #define __has_extension(x) 0 // Compatibility with pre-3.0 compilers.
-#endif
-
-// check Intel compiler first since it usually also defines __GNUC__, __clang__, etc.
-#if defined(__INTEL_COMPILER)
-  #define PCL_DEPRECATED(message) __attribute((deprecated))
-#elif (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) < PCL_LINEAR_VERSION(4,5,0) && ! defined(__clang__)) || defined(__INTEL_COMPILER)
-  #define PCL_DEPRECATED(message) __attribute__ ((deprecated))
-// gcc supports this starting from 4.5 : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43666
-#elif (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) >= PCL_LINEAR_VERSION(4,5,0)) || (defined(__clang__) && __has_extension(attribute_deprecated_with_message))
-  #define PCL_DEPRECATED(message) __attribute__ ((deprecated(message)))
-#elif defined(_MSC_VER)
-  #define PCL_DEPRECATED(message) __declspec(deprecated(message))
-#else
-  #pragma message("WARNING: You need to implement PCL_DEPRECATED for this compiler")
-  #define PCL_DEPRECATED(message)
-#endif
-
-
-// Macro to deprecate old classes/structs
-//
-// Usage:
-// don't use me any more
-// class PCL_DEPRECATED_CLASS(OldClass, "Use newClass instead, this class will be gone in the next major release")
-// {
-//   public:
-//     OldClass() {}
-// };
-// use me instead
-// class NewFunc
-// {
-//   public:
-//     NewClass() {}
-// };
-
-// check Intel compiler first since it usually also defines __GNUC__, __clang__, etc.
-#if defined(__INTEL_COMPILER)
-  #define PCL_DEPRECATED_CLASS(func, message) __attribute((deprecated)) func
-#elif (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) < PCL_LINEAR_VERSION(4,5,0) && ! defined(__clang__)) || defined(__INTEL_COMPILER)
-  #define PCL_DEPRECATED_CLASS(func, message) __attribute__ ((deprecated)) func
-// gcc supports this starting from 4.5 : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43666
-#elif (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) >= PCL_LINEAR_VERSION(4,5,0)) || (defined(__clang__) && __has_extension(attribute_deprecated_with_message))
-  #define PCL_DEPRECATED_CLASS(func, message) __attribute__ ((deprecated(message))) func
-#elif defined(_MSC_VER)
-  #define PCL_DEPRECATED_CLASS(func, message) __declspec(deprecated(message)) func
-#else
-  #pragma message("WARNING: You need to implement PCL_DEPRECATED_CLASS for this compiler")
-  #define PCL_DEPRECATED_CLASS(func) func
 #endif
 
 #if defined (__GNUC__) || defined (__PGI) || defined (__IBMCPP__) || defined (__SUNPRO_CC)
@@ -401,42 +376,75 @@ log2f (float x)
   #endif
 #endif
 
+namespace pcl {
+
 inline void*
-aligned_malloc (size_t size)
+aligned_malloc(std::size_t size)
 {
-  void *ptr;
-#if   defined (MALLOC_ALIGNED)
-  ptr = std::malloc (size);
-#elif defined (HAVE_POSIX_MEMALIGN)
-  if (posix_memalign (&ptr, 16, size))
+  void* ptr;
+#if defined(MALLOC_ALIGNED)
+  ptr = std::malloc(size);
+#elif defined(HAVE_POSIX_MEMALIGN)
+  if (posix_memalign(&ptr, 16, size))
     ptr = 0;
-#elif defined (HAVE_MM_MALLOC)
-  ptr = _mm_malloc (size, 16);
-#elif defined (_MSC_VER)
-  ptr = _aligned_malloc (size, 16);
-#elif defined (ANDROID)
-  ptr = memalign (16, size);
+#elif defined(HAVE_MM_MALLOC)
+  ptr = _mm_malloc(size, 16);
+#elif defined(_MSC_VER)
+  ptr = _aligned_malloc(size, 16);
+#elif defined(ANDROID)
+  ptr = memalign(16, size);
 #else
-  #error aligned_malloc not supported on your platform
+#error aligned_malloc not supported on your platform
   ptr = 0;
 #endif
   return (ptr);
 }
 
 inline void
-aligned_free (void* ptr)
+aligned_free(void* ptr)
 {
-#if   defined (MALLOC_ALIGNED) || defined (HAVE_POSIX_MEMALIGN)
-  std::free (ptr);
-#elif defined (HAVE_MM_MALLOC)
-  _mm_free (ptr);
-#elif defined (_MSC_VER)
-  _aligned_free (ptr);
-#elif defined (ANDROID)
-  free (ptr);
+#if defined(MALLOC_ALIGNED) || defined(HAVE_POSIX_MEMALIGN)
+  std::free(ptr);
+#elif defined(HAVE_MM_MALLOC)
+  _mm_free(ptr);
+#elif defined(_MSC_VER)
+  _aligned_free(ptr);
+#elif defined(ANDROID)
+  free(ptr);
 #else
-  #error aligned_free not supported on your platform
+#error aligned_free not supported on your platform
 #endif
 }
 
-#endif  //#ifndef PCL_MACROS_H_
+} // namespace pcl
+
+/**
+ * \brief Macro to add a no-op or a fallthrough attribute based on compiler feature
+ *
+ * \ingroup common
+ */
+#if (__cplusplus >= 201703L) || (defined(_MSC_VER) && (_MSC_VER >= 1910) && (_MSVC_LANG >= 201703L))
+  #define PCL_FALLTHROUGH [[fallthrough]];
+#elif defined(__clang__)
+  #define PCL_FALLTHROUGH [[clang::fallthrough]];
+#elif defined(__GNUC__) && (__GNUC__ >= 7)
+  #define PCL_FALLTHROUGH [[gnu::fallthrough]];
+#else
+  #define PCL_FALLTHROUGH
+#endif
+
+#if (__cplusplus >= 201703L) || (defined(_MSC_VER) && (_MSC_VER >= 1911) && (_MSVC_LANG >= 201703L))
+  #define PCL_NODISCARD [[nodiscard]]
+#elif defined(__clang__) && (PCL_LINEAR_VERSION(__clang_major__, __clang_minor__, 0) >= PCL_LINEAR_VERSION(3, 9, 0))
+  #define PCL_NODISCARD [[clang::warn_unused_result]]
+#elif defined(__GNUC__)
+  #define PCL_NODISCARD [[gnu::warn_unused_result]]
+#else
+  #define PCL_NODISCARD
+#endif
+
+#ifdef __cpp_if_constexpr
+  #define PCL_IF_CONSTEXPR(x) if constexpr(x)
+#else
+  #define PCL_IF_CONSTEXPR(x) if (x)
+#endif

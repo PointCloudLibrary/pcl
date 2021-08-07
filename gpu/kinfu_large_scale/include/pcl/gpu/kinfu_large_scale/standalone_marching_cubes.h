@@ -35,8 +35,7 @@
  *
  */
  
- #ifndef PCL_STANDALONE_MARCHING_CUBES_H_
- #define PCL_STANDALONE_MARCHING_CUBES_H_
+#pragma once
 
 //General includes and I/O
 
@@ -45,8 +44,8 @@
 #include <pcl/io/ply_io.h>
 #include <pcl/io/vtk_io.h>
 #include <pcl/point_types.h>
-#include <stdio.h>
-#include <stdarg.h>
+#include <cstdio>
+#include <cstdarg>
 #include <pcl/pcl_macros.h>
 
 //Marching cubes includes
@@ -78,9 +77,9 @@ namespace pcl
       class StandaloneMarchingCubes
       {
       public:
-          typedef typename pcl::PointCloud<PointT> PointCloud;
-          typedef typename pcl::PointCloud<PointT>::Ptr PointCloudPtr;
-          typedef boost::shared_ptr<pcl::PolygonMesh> MeshPtr;
+          using PointCloud = pcl::PointCloud<PointT>;
+          using PointCloudPtr = typename PointCloud::Ptr;
+          using MeshPtr = pcl::PolygonMesh::Ptr;
 
       /** \brief Constructor        
         */
@@ -169,6 +168,3 @@ namespace pcl
 }
 
 #define PCL_INSTANTIATE_StandaloneMarchingCubes(PointT) template class PCL_EXPORTS pcl::gpu::kinfuLS::StandaloneMarchingCubes<PointT>;
-
-#endif // PCL_STANDALONE_MARCHING_CUBES_H_
- 

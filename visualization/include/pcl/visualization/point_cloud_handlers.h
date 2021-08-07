@@ -35,10 +35,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_POINT_CLOUD_HANDLERS_H_
-#define PCL_POINT_CLOUD_HANDLERS_H_
+
+#pragma once
 
 #include <pcl/visualization/point_cloud_geometry_handlers.h>
 #include <pcl/visualization/point_cloud_color_handlers.h>
-
-#endif

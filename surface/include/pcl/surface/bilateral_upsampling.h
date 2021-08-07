@@ -37,10 +37,10 @@
  *
  */
 
+#pragma once
 
-#ifndef PCL_SURFACE_BILATERAL_UPSAMPLING_H_
-#define PCL_SURFACE_BILATERAL_UPSAMPLING_H_
-
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/surface/processing.h>
 
 namespace pcl
@@ -63,8 +63,8 @@ namespace pcl
   class BilateralUpsampling: public CloudSurfaceProcessing<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<BilateralUpsampling<PointInT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const BilateralUpsampling<PointInT, PointOutT> > ConstPtr;
+      typedef shared_ptr<BilateralUpsampling<PointInT, PointOutT> > Ptr;
+      typedef shared_ptr<const BilateralUpsampling<PointInT, PointOutT> > ConstPtr;
 
       using PCLBase<PointInT>::input_;
       using PCLBase<PointInT>::indices_;
@@ -72,19 +72,15 @@ namespace pcl
       using PCLBase<PointInT>::deinitCompute;
       using CloudSurfaceProcessing<PointInT, PointOutT>::process;
 
-      typedef pcl::PointCloud<PointOutT> PointCloudOut;
+      using PointCloudOut = pcl::PointCloud<PointOutT>;
 
       Eigen::Matrix3f KinectVGAProjectionMatrix, KinectSXGAProjectionMatrix;
 
       /** \brief Constructor. */
       BilateralUpsampling () 
-        : KinectVGAProjectionMatrix ()
-        , KinectSXGAProjectionMatrix ()
-        , window_size_ (5)
+        : window_size_ (5)
         , sigma_color_ (15.0f)
         , sigma_depth_ (0.5f)
-        , projection_matrix_ ()
-        , unprojection_matrix_ ()
       {
         KinectVGAProjectionMatrix << 525.0f, 0.0f, 320.0f,
                                      0.0f, 525.0f, 240.0f,
@@ -139,11 +135,11 @@ namespace pcl
       /** \brief Method that does the actual processing on the input cloud.
         * \param[out] output the container of the resulting upsampled cloud */
       void
-      process (pcl::PointCloud<PointOutT> &output);
+      process (pcl::PointCloud<PointOutT> &output) override;
 
     protected:
       void
-      performProcessing (pcl::PointCloud<PointOutT> &output);
+      performProcessing (pcl::PointCloud<PointOutT> &output) override;
 
       /** \brief Computes the distance for depth and RGB.
         * \param[out] val_exp_depth distance values for depth
@@ -157,8 +153,6 @@ namespace pcl
       Eigen::Matrix3f projection_matrix_, unprojection_matrix_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
-
-#endif /* PCL_SURFACE_BILATERAL_UPSAMPLING_H_ */

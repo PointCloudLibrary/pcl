@@ -198,7 +198,7 @@ namespace mets {
   class tabu_search : public abstract_search<move_manager_type>
   {
   public:
-    typedef tabu_search<move_manager_type> search_type;
+    using search_type = tabu_search<move_manager_type>;
     /// @brief Creates a tabu Search instance.
     ///
     /// @param starting_solution  The working solution (this
@@ -241,8 +241,7 @@ namespace mets {
     /// An exception mets::no_moves_error is risen when no move
     /// is possible.
     void 
-    search() 
-      throw(no_moves_error);
+    search();
     
     enum {
       ASPIRATION_CRITERIA_MET = abstract_search<move_manager_type>::LAST,
@@ -325,7 +324,7 @@ namespace mets {
     is_tabu(feasible_solution& sol, move& mov) const;
 
   protected:
-    typedef std::deque<move*> move_list_type;
+    using move_list_type = std::deque<move *>;
 #if defined (METSLIB_TR1_BOOST)
     typedef boost::unordered_map<
           mana_move*, // Key type
@@ -401,9 +400,8 @@ tabu_search (feasible_solution& starting_solution,
 
 template<typename move_manager_t>
 void mets::tabu_search<move_manager_t>::search()
-  throw(no_moves_error)
 {
-  typedef abstract_search<move_manager_t> base_t;
+  using base_t = abstract_search<move_manager_t>;
   while(!termination_criteria_m(base_t::working_solution_m))
     {
       // call listeners

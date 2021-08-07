@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef NURBS_FITTING_CYLINDER_H
-#define NURBS_FITTING_CYLINDER_H
+#pragma once
 
 #include <pcl/pcl_exports.h>
 #include <pcl/surface/on_nurbs/nurbs_tools.h>
@@ -198,12 +197,12 @@ namespace pcl
         return grc2gl (E + i, F + j);
       } // local row/col index to global lexicographic index
       int
-      gl2gr (int A)
+      gl2gr (int A) const
       {
         return (A / m_nurbs.CVCount (1));
       } // global lexicographic in global row index
       int
-      gl2gc (int A)
+      gl2gc (int A) const
       {
         return (A % m_nurbs.CVCount (1));
       } // global lexicographic in global col index
@@ -212,5 +211,3 @@ namespace pcl
 
   }
 }
-
-#endif /* NURBS_FITTING_CYLINDER_H */

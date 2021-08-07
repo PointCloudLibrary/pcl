@@ -36,9 +36,9 @@
  * $Id$
  */
 
-#ifndef PCL_UTILS
-#define PCL_UTILS
+#pragma once
 
+#include <cmath>
 #include <limits>
 
 namespace pcl
@@ -51,12 +51,16 @@ namespace pcl
       * \param[in] eps epsilon
       * \return true if val1 is equal to val2, false otherwise.
       */
-    template<typename T> bool 
+    template<typename T> bool
     equal (T val1, T val2, T eps = std::numeric_limits<T>::min ())
     {
-      return (fabs (val1 - val2) < eps);
+      return (std::fabs (val1 - val2) < eps);
     }
-  }
-}
 
-#endif
+   /** \brief Utility function to eliminate unused variable warnings. */
+    template<typename ...T> void
+    ignore(const T&...)
+    {
+    }
+  } // namespace utils
+} // namespace pcl

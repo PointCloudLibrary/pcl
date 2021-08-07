@@ -39,6 +39,7 @@
  */
 
 #include <pcl/apps/in_hand_scanner/visibility_confidence.h>
+#include <Eigen/Geometry> // for Isometry3f
 
 pcl::ihs::Dome::Dome ()
 {
@@ -74,7 +75,7 @@ pcl::ihs::Dome::Dome ()
   vertices_.col (29) = Eigen::Vector4f (-0.187592626f, -0.577350378f, 0.794654489f, 0.f);
   vertices_.col (30) = Eigen::Vector4f ( 0.491123348f, -0.356822133f, 0.794654548f, 0.f);
 
-  for (unsigned int i=0; i<vertices_.cols (); ++i)
+  for (Eigen::Index i=0; i < vertices_.cols (); ++i)
   {
     vertices_.col (i).head <3> ().normalize ();
   }
@@ -103,7 +104,7 @@ namespace pcl
 void
 pcl::ihs::addDirection (const Eigen::Vector4f& normal,
                         const Eigen::Vector4f& direction,
-                        uint32_t&              directions)
+                        std::uint32_t&         directions)
 {
   // Find the rotation that aligns the normal with [0; 0; 1]
   const float dot = normal.z ();
@@ -114,7 +115,7 @@ pcl::ihs::addDirection (const Eigen::Vector4f& normal,
   // TODO: The threshold is hard coded for a frequency=3.
   //       It can be calculated with
   //       - max_z = maximum z value of the dome vertices (excluding [0; 0; 1])
-  //       - thresh = cos (acos (max_z) / 2)
+  //       - thresh = std::cos (std::acos (max_z) / 2)
   //       - always round up!
   //       - with max_z = 0.939 -> thresh = 0.9847 ~ 0.985
   if (dot <= .985f)
@@ -133,8 +134,8 @@ pcl::ihs::addDirection (const Eigen::Vector4f& normal,
   }
 
   // Find the closest viewing direction
-  // NOTE: cos (0deg) = 1 = max
-  //       acos (angle) = dot (a, b) / (norm (a) * norm (b)
+  // NOTE: std::cos (0deg) = 1 = max
+  //       std::acos (angle) = dot (a, b) / (norm (a) * norm (b)
   //       m_sphere_vertices are already normalized
   unsigned int index = 0;
   aligned_direction.transpose ().lazyProduct (pcl::ihs::dome.getVertices ()).maxCoeff (&index);
@@ -147,7 +148,7 @@ pcl::ihs::addDirection (const Eigen::Vector4f& normal,
 ////////////////////////////////////////////////////////////////////////////////
 
 unsigned int
-pcl::ihs::countDirections (const uint32_t directions)
+pcl::ihs::countDirections (const std::uint32_t directions)
 {
   // http://stackoverflow.com/questions/109023/best-algorithm-to-count-the-number-of-set-bits-in-a-32-bit-integer/109025#109025
   unsigned int i = directions - ((directions >> 1) & 0x55555555);

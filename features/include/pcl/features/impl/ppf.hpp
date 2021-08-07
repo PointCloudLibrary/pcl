@@ -42,6 +42,7 @@
 
 #include <pcl/features/ppf.h>
 #include <pcl/features/pfh.h>
+#include <pcl/features/pfh_tools.h> // for computePairFeatures
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT>
@@ -60,40 +61,40 @@ template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
   // Initialize output container - overwrite the sizes done by Feature::initCompute ()
-  output.points.resize (indices_->size () * input_->points.size ());
+  output.resize (indices_->size () * input_->size ());
   output.height = 1;
-  output.width = static_cast<uint32_t> (output.points.size ());
+  output.width = output.size ();
   output.is_dense = true;
 
   // Compute point pair features for every pair of points in the cloud
-  for (size_t index_i = 0; index_i < indices_->size (); ++index_i)
+  for (std::size_t index_i = 0; index_i < indices_->size (); ++index_i)
   {
-    size_t i = (*indices_)[index_i];
-    for (size_t j = 0 ; j < input_->points.size (); ++j)
+    std::size_t i = (*indices_)[index_i];
+    for (std::size_t j = 0 ; j < input_->size (); ++j)
     {
       PointOutT p;
       if (i != j)
       {
         if (//pcl::computePPFPairFeature
-            pcl::computePairFeatures (input_->points[i].getVector4fMap (),
-                                      normals_->points[i].getNormalVector4fMap (),
-                                      input_->points[j].getVector4fMap (),
-                                      normals_->points[j].getNormalVector4fMap (),
+            pcl::computePairFeatures ((*input_)[i].getVector4fMap (),
+                                      (*normals_)[i].getNormalVector4fMap (),
+                                      (*input_)[j].getVector4fMap (),
+                                      (*normals_)[j].getNormalVector4fMap (),
                                       p.f1, p.f2, p.f3, p.f4))
         {
           // Calculate alpha_m angle
-          Eigen::Vector3f model_reference_point = input_->points[i].getVector3fMap (),
-                          model_reference_normal = normals_->points[i].getNormalVector3fMap (),
-                          model_point = input_->points[j].getVector3fMap ();
-          float rotation_angle = acosf (model_reference_normal.dot (Eigen::Vector3f::UnitX ()));
+          Eigen::Vector3f model_reference_point = (*input_)[i].getVector3fMap (),
+                          model_reference_normal = (*normals_)[i].getNormalVector3fMap (),
+                          model_point = (*input_)[j].getVector3fMap ();
+          float rotation_angle = std::acos (model_reference_normal.dot (Eigen::Vector3f::UnitX ()));
           bool parallel_to_x = (model_reference_normal.y() == 0.0f && model_reference_normal.z() == 0.0f);
           Eigen::Vector3f rotation_axis = (parallel_to_x)?(Eigen::Vector3f::UnitY ()):(model_reference_normal.cross (Eigen::Vector3f::UnitX ()). normalized());
           Eigen::AngleAxisf rotation_mg (rotation_angle, rotation_axis);
           Eigen::Affine3f transform_mg (Eigen::Translation3f ( rotation_mg * ((-1) * model_reference_point)) * rotation_mg);
 
           Eigen::Vector3f model_point_transformed = transform_mg * model_point;
-          float angle = atan2f ( -model_point_transformed(2), model_point_transformed(1));
-          if (sin (angle) * model_point_transformed(2) < 0.0f)
+          float angle = std::atan2 ( -model_point_transformed(2), model_point_transformed(1));
+          if (std::sin (angle) * model_point_transformed(2) < 0.0f)
             angle *= (-1);
           p.alpha_m = -angle;
         }
@@ -112,7 +113,7 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
         output.is_dense = false;
       }
 
-      output.points[index_i*input_->points.size () + j] = p;
+      output[index_i*input_->size () + j] = p;
     }
   }
 }

@@ -37,8 +37,7 @@
  *  $Id$
  */
 
-#ifndef STATISTICAL_MULTISCALE_INTEREST_REGION_EXTRACTION_H_
-#define STATISTICAL_MULTISCALE_INTEREST_REGION_EXTRACTION_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <list>
@@ -65,14 +64,13 @@ namespace pcl
   class StatisticalMultiscaleInterestRegionExtraction : public PCLBase<PointT>
   {
     public:
-      typedef boost::shared_ptr <std::vector<int> > IndicesPtr;
-      typedef typename boost::shared_ptr<StatisticalMultiscaleInterestRegionExtraction<PointT> > Ptr;
-      typedef typename boost::shared_ptr<const StatisticalMultiscaleInterestRegionExtraction<PointT> > ConstPtr;
+      using IndicesPtr = shared_ptr<pcl::Indices >;
+      using Ptr = shared_ptr<StatisticalMultiscaleInterestRegionExtraction<PointT> >;
+      using ConstPtr = shared_ptr<const StatisticalMultiscaleInterestRegionExtraction<PointT> >;
 
 
       /** \brief Empty constructor */
-      StatisticalMultiscaleInterestRegionExtraction () :
-        scale_values_ (), geodesic_distances_ (), F_scales_ ()
+      StatisticalMultiscaleInterestRegionExtraction ()
       {};
 
       /** \brief Method that generates the underlying nearest neighbor graph based on the
@@ -104,7 +102,7 @@ namespace pcl
       initCompute ();
 
       void
-      geodesicFixedRadiusSearch (size_t &query_index,
+      geodesicFixedRadiusSearch (std::size_t &query_index,
                                  float &radius,
                                  std::vector<int> &result_indices);
 
@@ -126,5 +124,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/statistical_multiscale_interest_region_extraction.hpp>
 #endif
-
-#endif /* STATISTICAL_MULTISCALE_INTEREST_REGION_EXTRACTION_H_ */

@@ -1,115 +1,69 @@
-# Copyright (c) 2009 Boudewijn Rempt <boud@valdyas.org>                                                                                          
-#                                                                                                                                                
-# Redistribution and use is allowed according to the terms of the BSD license.                                                                   
-# For details see the accompanying COPYING-CMAKE-SCRIPTS file. 
-# 
-# - try to find glew library and include files
-#  GLEW_INCLUDE_DIR, where to find GL/glew.h, etc.
-#  GLEW_LIBRARIES, the libraries to link against
-#  GLEW_FOUND, If false, do not try to use GLEW.
-# Also defined, but not for general use are:
-#  GLEW_GLEW_LIBRARY = the full path to the glew library.
+# Distributed under the OSI-approved BSD 3-Clause License.  See accompanying
+# file Copyright.txt or https://cmake.org/licensing for details.
 
-IF (WIN32)
+#.rst:
+# FindGLEW
+# --------
+#
+# Find the OpenGL Extension Wrangler Library (GLEW)
+#
+# IMPORTED Targets
+# ^^^^^^^^^^^^^^^^
+#
+# This module defines the :prop_tgt:`IMPORTED` target ``GLEW::GLEW``,
+# if GLEW has been found.
+#
+# Result Variables
+# ^^^^^^^^^^^^^^^^
+#
+# This module defines the following variables:
+#
+# ::
+#
+#   GLEW_INCLUDE_DIRS - include directories for GLEW
+#   GLEW_LIBRARIES - libraries to link against GLEW
+#   GLEW_FOUND - true if GLEW has been found and can be used
 
-  IF(CYGWIN)
+find_path(GLEW_INCLUDE_DIR GL/glew.h)
 
-    FIND_PATH( GLEW_INCLUDE_DIR GL/glew.h)
+if(NOT GLEW_LIBRARY)
+  find_library(GLEW_LIBRARY_RELEASE NAMES GLEW glew32 glew glew32s PATH_SUFFIXES lib64 libx32)
+  find_library(GLEW_LIBRARY_DEBUG NAMES GLEWd glew32d glewd PATH_SUFFIXES lib64)
 
-    FIND_LIBRARY( GLEW_GLEW_LIBRARY glew32
-      ${OPENGL_LIBRARY_DIR}
-      /usr/lib/w32api
-      /usr/X11R6/lib
-    )
+  include(SelectLibraryConfigurations)
+  select_library_configurations(GLEW)
+endif ()
 
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(GLEW
+                                  REQUIRED_VARS GLEW_INCLUDE_DIR GLEW_LIBRARY)
 
-  ELSE(CYGWIN)
-  
-    FIND_PATH( GLEW_INCLUDE_DIR GL/glew.h
-      $ENV{GLEW_ROOT}/include
-    )
+if(GLEW_FOUND)
+  set(GLEW_INCLUDE_DIRS ${GLEW_INCLUDE_DIR})
 
-    FIND_LIBRARY( GLEW_GLEW_LIBRARY
-      NAMES glew glew32 glew32s
-      PATHS
-      $ENV{GLEW_ROOT}/lib
-      ${OPENGL_LIBRARY_DIR}
-    )
+  if(NOT GLEW_LIBRARIES)
+    set(GLEW_LIBRARIES ${GLEW_LIBRARY})
+  endif()
 
-  ENDIF(CYGWIN)
+  if (NOT TARGET GLEW::GLEW)
+    add_library(GLEW::GLEW UNKNOWN IMPORTED)
+    set_target_properties(GLEW::GLEW PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES "${GLEW_INCLUDE_DIRS}")
 
-ELSE (WIN32)
+    if(GLEW_LIBRARY_RELEASE)
+      set_property(TARGET GLEW::GLEW APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+      set_target_properties(GLEW::GLEW PROPERTIES IMPORTED_LOCATION_RELEASE "${GLEW_LIBRARY_RELEASE}")
+    endif()
 
-  IF (APPLE)
-# These values for Apple could probably do with improvement.
-  if (${CMAKE_SYSTEM_VERSION} VERSION_LESS "13.0.0")
-    FIND_PATH( GLEW_INCLUDE_DIR glew.h
-      /System/Library/Frameworks/GLEW.framework/Versions/A/Headers
-      ${OPENGL_LIBRARY_DIR}
-      )
-    SET(GLEW_GLEW_LIBRARY "-framework GLEW" CACHE STRING "GLEW library for OSX")
-  else (${CMAKE_SYSTEM_VERSION} VERSION_LESS "13.0.0")
-    find_package(PkgConfig)
-    pkg_check_modules(GLEW glew)
-    SET(GLEW_GLEW_LIBRARY ${GLEW_LIBRARIES} CACHE STRING "GLEW library for OSX")
-    SET(GLEW_INCLUDE_DIR ${GLEW_INCLUDEDIR} CACHE STRING "GLEW include dir for OSX")
-  endif (${CMAKE_SYSTEM_VERSION} VERSION_LESS "13.0.0")
-    SET(GLEW_cocoa_LIBRARY "-framework Cocoa" CACHE STRING "Cocoa framework for OSX")
-  ELSE (APPLE)
+    if(GLEW_LIBRARY_DEBUG)
+      set_property(TARGET GLEW::GLEW APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
+      set_target_properties(GLEW::GLEW PROPERTIES IMPORTED_LOCATION_DEBUG "${GLEW_LIBRARY_DEBUG}")
+    endif()
 
-    FIND_PATH( GLEW_INCLUDE_DIR GL/glew.h
-      /usr/include/GL
-      /usr/openwin/share/include
-      /usr/openwin/include
-      /usr/X11R6/include
-      /usr/include/X11
-      /opt/graphics/OpenGL/include
-      /opt/graphics/OpenGL/contrib/libglew
-    )
+    if(NOT GLEW_LIBRARY_RELEASE AND NOT GLEW_LIBRARY_DEBUG)
+      set_property(TARGET GLEW::GLEW APPEND PROPERTY IMPORTED_LOCATION "${GLEW_LIBRARY}")
+    endif()
+  endif()
+endif()
 
-    FIND_LIBRARY( GLEW_GLEW_LIBRARY GLEW
-      /usr/openwin/lib
-      /usr/X11R6/lib
-    )
-
-  ENDIF (APPLE)
-
-ENDIF (WIN32)
-
-SET( GLEW_FOUND FALSE )
-IF(GLEW_INCLUDE_DIR)
-  IF(GLEW_GLEW_LIBRARY)
-    # Is -lXi and -lXmu required on all platforms that have it?
-    # If not, we need some way to figure out what platform we are on.
-    SET( GLEW_LIBRARIES
-      ${GLEW_GLEW_LIBRARY}
-      ${GLEW_cocoa_LIBRARY}
-    )
-    SET( GLEW_FOUND TRUE )
-
-#The following deprecated settings are for backwards compatibility with CMake1.4
-    SET (GLEW_LIBRARY ${GLEW_LIBRARIES})
-    SET (GLEW_INCLUDE_PATH ${GLEW_INCLUDE_DIR})
-
-  ENDIF(GLEW_GLEW_LIBRARY)
-ENDIF(GLEW_INCLUDE_DIR)
-
-IF(GLEW_FOUND)
-  IF(NOT GLEW_FIND_QUIETLY)
-    MESSAGE(STATUS "Found Glew: ${GLEW_LIBRARIES}")
-  ENDIF(NOT GLEW_FIND_QUIETLY)
-  IF(GLEW_GLEW_LIBRARY MATCHES glew32s)
-    ADD_DEFINITIONS(-DGLEW_STATIC)
-  ENDIF(GLEW_GLEW_LIBRARY MATCHES glew32s)
-ELSE(GLEW_FOUND)
-  IF(GLEW_FIND_REQUIRED)
-    MESSAGE(FATAL_ERROR "Could not find Glew")
-  ENDIF(GLEW_FIND_REQUIRED)
-ENDIF(GLEW_FOUND)
-
-MARK_AS_ADVANCED(
-  GLEW_INCLUDE_DIR
-  GLEW_GLEW_LIBRARY
-  GLEW_Xmu_LIBRARY
-  GLEW_Xi_LIBRARY
-)
+mark_as_advanced(GLEW_INCLUDE_DIR)

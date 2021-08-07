@@ -50,22 +50,21 @@ namespace pcl
 {
   namespace outofcore
   {
-
     template<typename PointT>
-    boost::mutex OutofcoreOctreeRamContainer<PointT>::rng_mutex_;
+    std::mutex OutofcoreOctreeRamContainer<PointT>::rng_mutex_;
 
     template<typename PointT> 
-    boost::mt19937 OutofcoreOctreeRamContainer<PointT>::rand_gen_ (static_cast<unsigned int>(std::time( NULL)));
+    std::mt19937 OutofcoreOctreeRamContainer<PointT>::rng_ ([] {std::random_device rd; return rd(); } ());
 
     template<typename PointT> void
     OutofcoreOctreeRamContainer<PointT>::convertToXYZ (const boost::filesystem::path& path)
     {
       if (!container_.empty ())
       {
-        FILE* fxyz = fopen (path.string ().c_str (), "w");
+        FILE* fxyz = fopen (path.string ().c_str (), "we");
 
-        boost::uint64_t num = size ();
-        for (boost::uint64_t i = 0; i < num; i++)
+        std::uint64_t num = size ();
+        for (std::uint64_t i = 0; i < num; i++)
         {
           const PointT& p = container_[i];
 
@@ -84,7 +83,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
-    OutofcoreOctreeRamContainer<PointT>::insertRange (const PointT* start, const boost::uint64_t count)
+    OutofcoreOctreeRamContainer<PointT>::insertRange (const PointT* start, const std::uint64_t count)
     {
       container_.insert (container_.end (), start, start + count);
     }
@@ -92,11 +91,11 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
-    OutofcoreOctreeRamContainer<PointT>::insertRange (const PointT* const * start, const boost::uint64_t count)
+    OutofcoreOctreeRamContainer<PointT>::insertRange (const PointT* const * start, const std::uint64_t count)
     {
       AlignedPointTVector temp;
       temp.resize (count);
-      for (boost::uint64_t i = 0; i < count; i++)
+      for (std::uint64_t i = 0; i < count; i++)
       {
         temp[i] = *start[i];
       }
@@ -106,7 +105,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
-    OutofcoreOctreeRamContainer<PointT>::readRange (const boost::uint64_t start, const boost::uint64_t count,
+    OutofcoreOctreeRamContainer<PointT>::readRange (const std::uint64_t start, const std::uint64_t count,
                                              AlignedPointTVector& v)
     {
       v.resize (count);
@@ -116,21 +115,20 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
-    OutofcoreOctreeRamContainer<PointT>::readRangeSubSample (const boost::uint64_t start, 
-                                                      const boost::uint64_t count,
+    OutofcoreOctreeRamContainer<PointT>::readRangeSubSample (const std::uint64_t start, 
+                                                      const std::uint64_t count,
                                                       const double percent, 
                                                       AlignedPointTVector& v)
     {
-      boost::uint64_t samplesize = static_cast<boost::uint64_t> (percent * static_cast<double> (count));
+      std::uint64_t samplesize = static_cast<std::uint64_t> (percent * static_cast<double> (count));
 
-      boost::mutex::scoped_lock lock (rng_mutex_);
+      std::lock_guard<std::mutex> lock (rng_mutex_);
 
-      boost::uniform_int < boost::uint64_t > buffdist (start, start + count);
-      boost::variate_generator<boost::mt19937&, boost::uniform_int<boost::uint64_t> > buffdie (rand_gen_, buffdist);
+      std::uniform_int_distribution < std::uint64_t > buffdist (start, start + count);
 
-      for (boost::uint64_t i = 0; i < samplesize; i++)
+      for (std::uint64_t i = 0; i < samplesize; i++)
       {
-        boost::uint64_t buffstart = buffdie ();
+        std::uint64_t buffstart = buffdist (rng_);
         v.push_back (container_[buffstart]);
       }
     }

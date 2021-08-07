@@ -54,7 +54,7 @@
 
 // todo: Read clouds as PCLPointCloud2 so we don't need to define PointT explicitly.
 //       This also requires our octree to take PCLPointCloud2 as an input.
-typedef pcl::PointXYZ PointT;
+using PointT = pcl::PointXYZ;
 
 using namespace pcl;
 using namespace pcl::outofcore;
@@ -68,7 +68,7 @@ using pcl::console::print_info;
 
 #include <boost/foreach.hpp>
 
-typedef OutofcoreOctreeBase<> octree_disk;
+using octree_disk = OutofcoreOctreeBase<>;
 
 const int OCTREE_DEPTH (0);
 const int OCTREE_RESOLUTION (1);
@@ -101,7 +101,7 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
   PointT min_pt, max_pt;
 
   // Iterate over all pcd files resizing min/max
-  for (size_t i = 0; i < pcd_paths.size (); i++)
+  for (std::size_t i = 0; i < pcd_paths.size (); i++)
   {
 
     // Get cloud
@@ -176,15 +176,15 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
     outofcore_octree = new octree_disk (bounding_box_min, bounding_box_max, resolution, octree_path_on_disk, "ECEF");
   }
 
-  uint64_t total_pts = 0;
+  std::uint64_t total_pts = 0;
 
   // Iterate over all pcd files adding points to the octree
-  for (size_t i = 0; i < pcd_paths.size (); i++)
+  for (const auto &pcd_path : pcd_paths)
   {
 
-    PCLPointCloud2::Ptr cloud = getCloudFromFile (pcd_paths[i]);
+    PCLPointCloud2::Ptr cloud = getCloudFromFile (pcd_path);
 
-    boost::uint64_t pts = 0;
+    std::uint64_t pts = 0;
     
     if (gen_lod && !multiresolution)
     {
@@ -303,12 +303,12 @@ main (int argc, char* argv[])
   std::vector<int> file_arg_indices = parse_file_extension_argument (argc, argv, ".pcd");
 
   std::vector<boost::filesystem::path> pcd_paths;
-  for (size_t i = 0; i < file_arg_indices.size (); i++)
+  for (const int &file_arg_index : file_arg_indices)
   {
-    boost::filesystem::path pcd_path (argv[file_arg_indices[i]]);
+    boost::filesystem::path pcd_path (argv[file_arg_index]);
     if (!boost::filesystem::exists (pcd_path))
     {
-      PCL_WARN ("File %s doesn't exist", pcd_path.string ().c_str ());
+      PCL_WARN ("File %s doesn't exist\n", pcd_path.string ().c_str ());
       continue;
     }
     pcd_paths.push_back (pcd_path);
@@ -316,7 +316,7 @@ main (int argc, char* argv[])
   }
 
   // Check if we should process any files
-  if (pcd_paths.size () < 1)
+  if (pcd_paths.empty ())
   {
     PCL_ERROR ("No .pcd files specified\n");
     return -1;

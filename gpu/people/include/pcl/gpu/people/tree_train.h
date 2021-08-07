@@ -5,8 +5,7 @@
  * Author : Cedric Cagniart 
  * ************************************************* */
 
-#ifndef PCL_GPU_PEOPLE_TREE_TRAIN_H_
-#define PCL_GPU_PEOPLE_TREE_TRAIN_H_
+#pragma once
 
 #include "tree.h"
 #include <boost/array.hpp>
@@ -22,7 +21,7 @@ namespace pcl
         // ################################################
         // ################################################
         // histogram stuff
-        class Histogram : public boost::array<uint32_t,NUMLABELS> {
+        class Histogram : public boost::array<std::uint32_t,NUMLABELS> {
           public :
           inline Histogram() { std::fill(begin(), end(), 0); }
         };
@@ -82,9 +81,9 @@ namespace pcl
 
 
          // compute the number of elements
-        static inline uint64_t numElements( const Histogram& h ) {
-          uint64_t Ntotal = 0;
-          for(int li=0;li<NUMLABELS;++li) Ntotal += uint64_t(h[li]);
+        static inline std::uint64_t numElements( const Histogram& h ) {
+          std::uint64_t Ntotal = 0;
+          for(int li=0;li<NUMLABELS;++li) Ntotal += std::uint64_t(h[li]);
           return Ntotal;
         }
 
@@ -97,7 +96,7 @@ namespace pcl
           for(int li=0;li<NUMLABELS;++li) {
             if( h[li] != 0 ) {
               double p = double(h[li]) / Ntotal;
-              entropy -= p*log(p);
+              entropy -= p*std::log(p);
             }
           }
           return entropy;
@@ -113,10 +112,10 @@ namespace pcl
           double Ntotal = numElements(htrue) + numElements(hfalse);
           double entropy = 0.;
           for(int li=0;li<NUMLABELS;++li) {
-            uint64_t Ni = uint64_t(htrue[li]) + uint64_t(hfalse[li]);
+            std::uint64_t Ni = std::uint64_t(htrue[li]) + std::uint64_t(hfalse[li]);
             if( Ni != 0) {
               double p = double(Ni) / Ntotal;
-              entropy -= p*log(p);
+              entropy -= p*std::log(p);
             }
           }
           return entropy;
@@ -227,4 +226,3 @@ namespace pcl
     } // end namespace people
   } // end namespace gpu
 } // end namespace pcl
-#endif

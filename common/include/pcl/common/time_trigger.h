@@ -36,15 +36,16 @@
  *
  */
 
-#ifndef PCL_COMMON_TIME_TRIGGER_H_
-#define PCL_COMMON_TIME_TRIGGER_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
-#ifndef Q_MOC_RUN
-#include <boost/function.hpp>
-#include <boost/thread.hpp>
+
 #include <boost/signals2.hpp>
-#endif
+
+#include <condition_variable>
+#include <functional>
+#include <mutex>
+#include <thread>
 
 namespace pcl
 {
@@ -54,7 +55,7 @@ namespace pcl
   class PCL_EXPORTS TimeTrigger
   {
     public:
-      typedef boost::function<void() > callback_type;
+      using callback_type = std::function<void ()>;
 
       /** \brief Timer class that calls a callback method periodically. Due to possible blocking calls, only one callback method can be registered per instance.
         * \param[in] interval_seconds interval in seconds
@@ -71,7 +72,7 @@ namespace pcl
       ~TimeTrigger ();
 
       /** \brief registers a callback
-        * \param[in] callback callback function to the list of callbacks. signature has to be boost::function<void()>
+        * \param[in] callback callback function to the list of callbacks. signature has to be std::function<void()>
         * \return connection the connection, which can be used to disable/enable and remove callback from list
         */
       boost::signals2::connection registerCallback (const callback_type& callback);
@@ -99,10 +100,8 @@ namespace pcl
       bool quit_;
       bool running_;
 
-      boost::thread timer_thread_;
-      boost::condition_variable condition_;
-      boost::mutex condition_mutex_;
+      std::thread timer_thread_;
+      std::condition_variable condition_;
+      std::mutex condition_mutex_;
   };
 }
-
-#endif

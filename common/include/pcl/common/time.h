@@ -36,19 +36,12 @@
  *
  */
 
-#ifndef PCL_TIME_H_
-#define PCL_TIME_H_
+#pragma once
 
-#ifdef __GNUC__
-#pragma GCC system_header 
-#endif
-
-#include <cmath>
+#include <chrono>
+#include <iostream>
 #include <queue>
 #include <string>
-#ifndef Q_MOC_RUN
-#include <boost/date_time/posix_time/posix_time.hpp>
-#endif
 
 /**
   * \file pcl/common/time.h
@@ -66,37 +59,34 @@ namespace pcl
   {
     public:
       /** \brief Constructor. */
-      StopWatch () : start_time_ (boost::posix_time::microsec_clock::local_time ())
+      StopWatch () : start_time_ (std::chrono::steady_clock::now())
       {
       }
 
-      /** \brief Destructor. */
-      virtual ~StopWatch () {}
-
       /** \brief Retrieve the time in milliseconds spent since the last call to \a reset(). */
       inline double
-      getTime ()
+      getTime () const
       {
-        boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time ();
-        return (static_cast<double> (((end_time - start_time_).total_milliseconds ())));
+        auto end_time = std::chrono::steady_clock::now();
+        return std::chrono::duration<double, std::ratio<1, 1000>>(end_time - start_time_).count();
       }
 
       /** \brief Retrieve the time in seconds spent since the last call to \a reset(). */
       inline double
-      getTimeSeconds ()
+      getTimeSeconds () const
       {
-        return (getTime () * 0.001f);
+        return (getTime () * 0.001);
       }
 
       /** \brief Reset the stopwatch to 0. */
       inline void
       reset ()
       {
-        start_time_ = boost::posix_time::microsec_clock::local_time ();
+        start_time_ = std::chrono::steady_clock::now();
       }
 
     protected:
-      boost::posix_time::ptime start_time_;
+      std::chrono::time_point<std::chrono::steady_clock> start_time_;
   };
 
   /** \brief Class to measure the time spent in a scope
@@ -117,16 +107,9 @@ namespace pcl
   class ScopeTime : public StopWatch
   {
     public:
-      inline ScopeTime (const char* title) : 
-        title_ (std::string (title))
+      inline ScopeTime (const std::string &title = "") : 
+        title_ (title)
       {
-        start_time_ = boost::posix_time::microsec_clock::local_time ();
-      }
-
-      inline ScopeTime () :
-        title_ (std::string (""))
-      {
-        start_time_ = boost::posix_time::microsec_clock::local_time ();
       }
 
       inline ~ScopeTime ()
@@ -157,7 +140,7 @@ namespace pcl
         *
         * \param[in] window_size number of most recent events that are
         * considered in frequency estimation (default: 30) */
-      EventFrequency (size_t window_size = 30)
+      EventFrequency (std::size_t window_size = 30)
       : window_size_ (window_size)
       {
         stop_watch_.reset ();
@@ -192,7 +175,7 @@ namespace pcl
 
       pcl::StopWatch stop_watch_;
       std::queue<double> event_time_queue_;
-      const size_t window_size_;
+      const std::size_t window_size_;
 
   };
 
@@ -204,9 +187,7 @@ namespace pcl
 inline double 
 getTime ()
 {
-  boost::posix_time::ptime epoch_time (boost::gregorian::date (1970, 1, 1));
-  boost::posix_time::ptime current_time = boost::posix_time::microsec_clock::local_time ();
-  return (static_cast<double>((current_time - epoch_time).total_nanoseconds ()) * 1.0e-9);
+  return std::chrono::duration<double>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
 /// Executes code, only if secs are gone since last exec.
@@ -233,5 +214,3 @@ if (1) {\
 
 }  // end namespace
 /*@}*/
-
-#endif  //#ifndef PCL_NORMS_H_

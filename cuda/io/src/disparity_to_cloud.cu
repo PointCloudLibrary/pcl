@@ -184,7 +184,7 @@ ComputeXYZRGB::operator () (const Tuple &t)
 
 //////////////////////////////////////////////////////////////////////////
 template <template <typename> class Storage> void
-DisparityToCloud::compute (const boost::uint16_t* depth_image,
+DisparityToCloud::compute (const std::uint16_t* depth_image,
                            const OpenNIRGB* rgb_image,
                            int width, int height,
                            float constant,
@@ -252,8 +252,8 @@ DisparityToCloud::compute (const boost::uint16_t* depth_image,
 
 //////////////////////////////////////////////////////////////////////////
 template <template <typename> class Storage> void
-DisparityToCloud::compute (const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image,
-                                     const boost::shared_ptr<openni_wrapper::Image>& rgb_image,
+DisparityToCloud::compute (const openni_wrapper::DepthImage::Ptr& depth_image,
+                                     const openni_wrapper::Image::Ptr& rgb_image,
                                      float constant,
                                      typename PointCloudAOS<Storage>::Ptr &output,
                                      bool downsample, int stride, int smoothing_nr_iterations, int smoothing_filter_size) 
@@ -433,8 +433,8 @@ DisparityToCloud::compute (const boost::shared_ptr<openni_wrapper::DepthImage>& 
 
 //////////////////////////////////////////////////////////////////////////
 /*void
-DisparityToCloud::compute (const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image,
-                                     const boost::shared_ptr<openni_wrapper::Image>& rgb_image,
+DisparityToCloud::compute (const openni_wrapper::DepthImage::Ptr& depth_image,
+                                     const openni_wrapper::Image::Ptr& rgb_image,
                                      float constant,
                                      PointCloudAOS<Host>::Ptr &output) 
 {
@@ -474,52 +474,52 @@ DisparityToCloud::compute (const boost::shared_ptr<openni_wrapper::DepthImage>& 
 
 //////////////////////////////////////////////////////////////////////////
 void
-DisparityToCloud::compute (const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image,
+DisparityToCloud::compute (const openni_wrapper::DepthImage::Ptr& depth_image,
                                      float constant,
                                      PointCloudAOS<Device>::Ptr &output)
 {
   if (!output)
     output.reset (new PointCloudAOS<Device>);
 
-  compute<Device> (depth_image, boost::shared_ptr<openni_wrapper::Image>(), constant, output, false);
+  compute<Device> (depth_image, openni_wrapper::Image::Ptr(), constant, output, false);
 }
 
 //////////////////////////////////////////////////////////////////////////
 void
-DisparityToCloud::compute (const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image,
+DisparityToCloud::compute (const openni_wrapper::DepthImage::Ptr& depth_image,
                                      float constant,
                                      PointCloudAOS<Host>::Ptr &output)
 {
   if (!output)
     output.reset (new PointCloudAOS<Host>);
 
-  compute<Host> (depth_image, boost::shared_ptr<openni_wrapper::Image>(), constant, output, false);
+  compute<Host> (depth_image, openni_wrapper::Image::Ptr(), constant, output, false);
   //PointCloudAOS<Device>::Ptr data;
   //compute (depth_image, constant, data);
   //*output << *data;
 }
 
 template PCL_EXPORTS void
-DisparityToCloud::compute<Host> (const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image,
-                                     const boost::shared_ptr<openni_wrapper::Image>& rgb_image,
+DisparityToCloud::compute<Host> (const openni_wrapper::DepthImage::Ptr& depth_image,
+                                     const openni_wrapper::Image::Ptr& rgb_image,
                                      float constant,
                                      PointCloudAOS<Host>::Ptr &output,
                                      bool downsample, int stride, int, int);
 template PCL_EXPORTS void
-DisparityToCloud::compute<Device> (const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image,
-                                     const boost::shared_ptr<openni_wrapper::Image>& rgb_image,
+DisparityToCloud::compute<Device> (const openni_wrapper::DepthImage::Ptr& depth_image,
+                                     const openni_wrapper::Image::Ptr& rgb_image,
                                      float constant,
                                      PointCloudAOS<Device>::Ptr &output,
                                      bool downsample, int stridem, int, int);
 template PCL_EXPORTS void
-DisparityToCloud::compute<Host> (const boost::uint16_t* depth_image,
+DisparityToCloud::compute<Host> (const std::uint16_t* depth_image,
                                  const OpenNIRGB* rgb_image,
                                  int width, int height,
                                  float constant,
                                  typename PointCloudAOS<Host>::Ptr &output,
                                  int smoothing_nr_iterations, int smoothing_filter_size);
 template PCL_EXPORTS void
-DisparityToCloud::compute<Device> (const boost::uint16_t* depth_image,
+DisparityToCloud::compute<Device> (const std::uint16_t* depth_image,
                                    const OpenNIRGB* rgb_image,
                                    int width, int height,
                                    float constant,

@@ -35,12 +35,9 @@
  *
  */
 
-#ifndef PCL_FILTERS_SHADOW_POINTS_FILTER_H_
-#define PCL_FILTERS_SHADOW_POINTS_FILTER_H_
+#pragma once
 
 #include <pcl/filters/filter_indices.h>
-#include <time.h>
-#include <limits.h>
 
 namespace pcl
 {
@@ -62,15 +59,15 @@ namespace pcl
     using FilterIndices<PointT>::user_filter_value_;
     using FilterIndices<PointT>::keep_organized_;
 
-    typedef typename FilterIndices<PointT>::PointCloud PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-    typedef typename pcl::PointCloud<NormalT>::Ptr NormalsPtr;
+    using PointCloud = typename FilterIndices<PointT>::PointCloud;
+    using PointCloudPtr = typename PointCloud::Ptr;
+    using PointCloudConstPtr = typename PointCloud::ConstPtr;
+    using NormalsPtr = typename pcl::PointCloud<NormalT>::Ptr;
 
     public:
 
-      typedef boost::shared_ptr< ShadowPoints<PointT, NormalT> > Ptr;
-      typedef boost::shared_ptr< const ShadowPoints<PointT, NormalT> > ConstPtr;
+      using Ptr = shared_ptr< ShadowPoints<PointT, NormalT> >;
+      using ConstPtr = shared_ptr< const ShadowPoints<PointT, NormalT> >;
 
       /** \brief Empty constructor. */
       ShadowPoints (bool extract_removed_indices = false) : 
@@ -110,13 +107,13 @@ namespace pcl
         * \param[out] output the resultant point cloud
         */
       void
-      applyFilter (PointCloud &output);
+      applyFilter (PointCloud &output) override;
 
       /** \brief Sample of point indices
         * \param[out] indices the resultant point cloud indices
         */
       void
-      applyFilter (std::vector<int> &indices);
+      applyFilter (Indices &indices) override;
 
     private:
 
@@ -129,5 +126,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/shadowpoints.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTERS_SHADOW_POINTS_FILTER_H_

@@ -39,15 +39,16 @@
 
 #include <pcl/surface/vtk_smoothing/vtk_utils.h>
 
+#include <pcl/PolygonMesh.h>
 #include <pcl/conversions.h>
-#include <pcl/common/common.h>
-#include <vtkVersion.h>
+#include <pcl/point_types.h> // for PointXYZ, PointXYZRGB, RGB
 #include <vtkCellArray.h>
 #include <vtkTriangleFilter.h>
 #include <vtkPoints.h>
 #include <vtkPolyData.h>
 #include <vtkPointData.h>
 #include <vtkFloatArray.h>
+#include <vtkUnsignedCharArray.h>
 
 // Support for VTK 7.1 upwards
 #ifdef vtkGenericDataArray_h
@@ -70,11 +71,7 @@ pcl::VTKUtils::convertToVTK (const pcl::PolygonMesh &triangles, vtkSmartPointer<
   mesh2vtk (triangles, vtk_polygons);
 
   vtkSmartPointer<vtkTriangleFilter> vtk_triangles = vtkSmartPointer<vtkTriangleFilter>::New ();
-#if VTK_MAJOR_VERSION < 6
-  vtk_triangles->SetInput (vtk_polygons);
-#else
   vtk_triangles->SetInputData (vtk_polygons);
-#endif
   vtk_triangles->Update();
 
   triangles_out_vtk = vtk_triangles->GetOutput ();
@@ -105,8 +102,8 @@ pcl::VTKUtils::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::Pol
   if (nr_points == 0)
     return 0;
 
-  vtkUnsignedCharArray* poly_colors = NULL;
-  if (poly_data->GetPointData() != NULL)
+  vtkUnsignedCharArray* poly_colors = nullptr;
+  if (poly_data->GetPointData() != nullptr)
     poly_colors = vtkUnsignedCharArray::SafeDownCast (poly_data->GetPointData ()->GetScalars ("Colors"));
 
   // Some applications do not save the name of scalars (including PCL's native vtk_io)
@@ -123,16 +120,16 @@ pcl::VTKUtils::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::Pol
     for (vtkIdType i = 0; i < mesh_points->GetNumberOfPoints (); ++i)
     {
       mesh_points->GetPoint (i, &point_xyz[0]);
-      cloud_temp->points[i].x = static_cast<float> (point_xyz[0]);
-      cloud_temp->points[i].y = static_cast<float> (point_xyz[1]);
-      cloud_temp->points[i].z = static_cast<float> (point_xyz[2]);
+      (*cloud_temp)[i].x = static_cast<float> (point_xyz[0]);
+      (*cloud_temp)[i].y = static_cast<float> (point_xyz[1]);
+      (*cloud_temp)[i].z = static_cast<float> (point_xyz[2]);
 
       poly_colors->GetTupleValue (i, &point_color[0]);
-      cloud_temp->points[i].r = point_color[0];
-      cloud_temp->points[i].g = point_color[1];
-      cloud_temp->points[i].b = point_color[2];
+      (*cloud_temp)[i].r = point_color[0];
+      (*cloud_temp)[i].g = point_color[1];
+      (*cloud_temp)[i].b = point_color[2];
     }
-    cloud_temp->width = static_cast<uint32_t> (cloud_temp->points.size ());
+    cloud_temp->width = cloud_temp->size ();
     cloud_temp->height = 1;
     cloud_temp->is_dense = true;
 
@@ -146,11 +143,11 @@ pcl::VTKUtils::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::Pol
     for (vtkIdType i = 0; i < mesh_points->GetNumberOfPoints (); ++i)
     {
       mesh_points->GetPoint (i, &point_xyz[0]);
-      cloud_temp->points[i].x = static_cast<float> (point_xyz[0]);
-      cloud_temp->points[i].y = static_cast<float> (point_xyz[1]);
-      cloud_temp->points[i].z = static_cast<float> (point_xyz[2]);
+      (*cloud_temp)[i].x = static_cast<float> (point_xyz[0]);
+      (*cloud_temp)[i].y = static_cast<float> (point_xyz[1]);
+      (*cloud_temp)[i].z = static_cast<float> (point_xyz[2]);
     }
-    cloud_temp->width = static_cast<uint32_t> (cloud_temp->points.size ());
+    cloud_temp->width = cloud_temp->size ();
     cloud_temp->height = 1;
     cloud_temp->is_dense = true;
 
@@ -158,7 +155,11 @@ pcl::VTKUtils::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::Pol
   }
 
   mesh.polygons.resize (nr_polygons);
+#ifdef VTK_CELL_ARRAY_V2
+  vtkIdType const *cell_points;
+#else
   vtkIdType* cell_points;
+#endif
   vtkIdType nr_cell_points;
   vtkCellArray * mesh_polygons = poly_data->GetPolys ();
   mesh_polygons->InitTraversal ();
@@ -166,7 +167,7 @@ pcl::VTKUtils::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::Pol
   while (mesh_polygons->GetNextCell (nr_cell_points, cell_points))
   {
     mesh.polygons[id_poly].vertices.resize (nr_cell_points);
-    for (int i = 0; i < nr_cell_points; ++i)
+    for (vtkIdType i = 0; i < nr_cell_points; ++i)
       mesh.polygons[id_poly].vertices[i] = static_cast<unsigned int> (cell_points[i]);
     ++id_poly;
   }
@@ -265,7 +266,7 @@ pcl::VTKUtils::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyDa
     poly_data->GetPointData()->SetNormals (normals);
   }
 
-  if (poly_data->GetPoints() == NULL)
+  if (poly_data->GetPoints() == nullptr)
     return (0);
   return (static_cast<int> (poly_data->GetPoints()->GetNumberOfPoints ()));
 }

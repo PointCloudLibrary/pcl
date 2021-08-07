@@ -34,8 +34,7 @@
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
 
-#ifndef COLOR_HANDLER_H_
-#define COLOR_HANDLER_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -51,12 +50,12 @@ namespace pcl
       using PointCloudColorHandler<PointT>::capable_;
       using PointCloudColorHandler<PointT>::cloud_;
 
-      typedef typename PointCloudColorHandler<PointT>::PointCloud::ConstPtr PointCloudConstPtr;                            
-      typedef typename pcl::PointCloud<RGB>::ConstPtr RgbCloudConstPtr;
+      using PointCloudConstPtr = typename PointCloudColorHandler<PointT>::PointCloud::ConstPtr;
+      using RgbCloudConstPtr = pcl::PointCloud<RGB>::ConstPtr;
 
     public:
-      typedef boost::shared_ptr<PointCloudColorHandlerRGBHack<PointT> > Ptr;
-      typedef boost::shared_ptr<const PointCloudColorHandlerRGBHack<PointT> > ConstPtr;
+      using Ptr = shared_ptr<PointCloudColorHandlerRGBHack<PointT> >;
+      using ConstPtr = shared_ptr<const PointCloudColorHandlerRGBHack<PointT> >;
       
       PointCloudColorHandlerRGBHack (const PointCloudConstPtr& cloud, const RgbCloudConstPtr& colors) : 
           PointCloudColorHandler<PointT> (cloud), rgb_ (colors)
@@ -64,41 +63,37 @@ namespace pcl
         capable_ = true;
       }
             
-      virtual bool 
-      getColor (vtkSmartPointer<vtkDataArray> &scalars) const
+      vtkSmartPointer<vtkDataArray>
+      getColor () const override
       {
         if (!capable_)
-          return (false);
+          return nullptr;
       
-        if (!scalars)
-          scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
+        auto scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
         scalars->SetNumberOfComponents (3);
         
-        vtkIdType nr_points = (int)cloud_->points.size ();
+        vtkIdType nr_points = static_cast<vtkIdType>(cloud_->size ());
         reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples (nr_points);
         unsigned char* colors = reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->GetPointer (0);
         
         // Color every point
-        if (nr_points != (int)rgb_->points.size ())
+        if (nr_points != static_cast<vtkIdType>(rgb_->size ()))
           std::fill(colors, colors + nr_points * 3, (unsigned char)0xFF);
         else
           for (vtkIdType cp = 0; cp < nr_points; ++cp)
           {
             int idx = cp * 3;
-            colors[idx + 0] = rgb_->points[cp].r;
-            colors[idx + 1] = rgb_->points[cp].g;
-            colors[idx + 2] = rgb_->points[cp].b;
+            colors[idx + 0] = (*rgb_)[cp].r;
+            colors[idx + 1] = (*rgb_)[cp].g;
+            colors[idx + 2] = (*rgb_)[cp].b;
           }
-        return (true);
+        return scalars;
       }
     
     private:
-      virtual std::string getFieldName () const { return ("rgb"); }    
-      virtual inline std::string getName () const { return ("PointCloudColorHandlerRGBHack"); }
+      std::string getFieldName () const override { return ("rgb"); }    
+      inline std::string getName () const override { return ("PointCloudColorHandlerRGBHack"); }
       RgbCloudConstPtr rgb_;    
     };
   }
 }
-
-
-#endif /* COLOR_HANDLER_H_ */

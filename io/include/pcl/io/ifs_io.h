@@ -35,13 +35,11 @@
  *
  */
 
-#ifndef PCL_IO_IFS_IO_H_
-#define PCL_IO_IFS_IO_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/conversions.h>
-#include <pcl/io/boost.h>
 #include <pcl/PolygonMesh.h>
 
 namespace pcl
@@ -254,5 +252,3 @@ namespace pcl
     }
   }
 }
-
-#endif  //#ifndef PCL_IO_IFS_IO_H_

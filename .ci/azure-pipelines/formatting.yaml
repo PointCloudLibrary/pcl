@@ -1,0 +1,29 @@
+jobs:
+  - job: formatting
+    displayName: Check code formatting
+    pool:
+      vmImage: 'Ubuntu 20.04'
+    container: fmt
+    steps:
+      - checkout: self
+        # find the commit hash on a quick non-forced update too
+        fetchDepth: 10
+      - script: ./.dev/format.sh $(which clang-format) .
+        displayName: 'Run clang-format'
+      - script: git diff > formatting.patch
+        displayName: 'Compute diff'
+      - script: cat formatting.patch
+        displayName: 'Show diff'
+      - task: CopyFiles@2
+        inputs:
+          sourceFolder: '$(Build.SourcesDirectory)'
+          contents: 'formatting.patch'
+          targetFolder: '$(Build.ArtifactStagingDirectory)'
+        displayName: 'Copy diff to staging directory'
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          artifactName: formatting
+        displayName: 'Publish diff'
+      - script: "[ ! -s formatting.patch ]"
+        displayName: 'Set job exit status'

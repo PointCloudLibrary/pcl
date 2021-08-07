@@ -109,7 +109,7 @@ void ON_HatchExtra::SetDefaults()
   m_basepoint.Set(0.0,0.0);
 }
 
-void ON_HatchExtra::Dump(ON_TextLog& text_log) const
+void ON_HatchExtra::Dump(ON_TextLog&) const
 {
 }
 
@@ -672,7 +672,7 @@ int ON_HatchPattern::SetHatchLines( const ON_ClassArray<ON_HatchLine> lines)
 // allocated with new in one DLL and deallocated with
 // delete in another DLL.
 
-void* ON_HatchLoop::operator new(size_t sz)
+void* ON_HatchLoop::operator new(std::size_t sz)
 {
   // ON_HatchLoop new
   return onmalloc(sz);
@@ -684,7 +684,7 @@ void ON_HatchLoop::operator delete(void* p)
   onfree(p);
 }
 
-void* ON_HatchLoop::operator new[] (size_t sz)
+void* ON_HatchLoop::operator new[] (std::size_t sz)
 {
   // ON_HatchLoop array new
   return onmalloc(sz);
@@ -696,7 +696,7 @@ void ON_HatchLoop::operator delete[] (void* p)
   onfree(p);
 }
 
-void* ON_HatchLoop::operator new(size_t, void* p)
+void* ON_HatchLoop::operator new(std::size_t, void* p)
 {
   // ON_HatchLoop placement new
   return p;

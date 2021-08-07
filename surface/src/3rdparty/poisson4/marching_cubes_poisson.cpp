@@ -25,7 +25,6 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING 
 ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.
 */
-#include <math.h>
 #include <pcl/surface/3rdparty/poisson4/marching_cubes_poisson.h>
 
 ////////////
@@ -243,6 +242,7 @@ namespace pcl
         case 0:	return EdgeIndex(o,(i+1)%2,j);
         case 2:	return EdgeIndex(o,i,(j+1)%2);
         };
+        break;
       case 2:	return EdgeIndex(o,i,(j+1)%2);
       };
       return -1;

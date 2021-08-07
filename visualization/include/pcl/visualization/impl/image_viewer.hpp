@@ -57,11 +57,11 @@ pcl::visualization::ImageViewer::convertRGBCloudToUChar (
     boost::shared_array<unsigned char> &data)
 {
   int j = 0;
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (const auto& point: cloud)
   {
-    data[j++] = cloud.points[i].r;
-    data[j++] = cloud.points[i].g;
-    data[j++] = cloud.points[i].b;
+    data[j++] = point.r;
+    data[j++] = point.g;
+    data[j++] = point.b;
   }
 }
 
@@ -117,17 +117,13 @@ pcl::visualization::ImageViewer::addMask (
   search.setInputCloud (image);
   std::vector<float> xy;
   xy.reserve (mask.size () * 2);
-  for (size_t i = 0; i < mask.size (); ++i)
+  for (std::size_t i = 0; i < mask.size (); ++i)
   {
     pcl::PointXY p_projected;
     search.projectPoint (mask[i], p_projected);
 
     xy.push_back (p_projected.x);
-    #if ((VTK_MAJOR_VERSION >= 6) || ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 7)))
     xy.push_back (static_cast<float> (image->height) - p_projected.y);
-    #else
-    xy.push_back (p_projected.y);
-    #endif
   }
 
   vtkSmartPointer<context_items::Points> points = vtkSmartPointer<context_items::Points>::New ();
@@ -175,16 +171,12 @@ pcl::visualization::ImageViewer::addPlanarPolygon (
   search.setInputCloud (image);
   std::vector<float> xy;
   xy.reserve ((polygon.getContour ().size () + 1) * 2);
-  for (size_t i = 0; i < polygon.getContour ().size (); ++i)
+  for (std::size_t i = 0; i < polygon.getContour ().size (); ++i)
   {
     pcl::PointXY p;
     search.projectPoint (polygon.getContour ()[i], p);
     xy.push_back (p.x);
-    #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 7))
-    xy.push_back (static_cast<float> (image->height) - p.y);
-    #else
     xy.push_back (p.y);
-    #endif
   }
 
   // Close the polygon
@@ -261,17 +253,15 @@ pcl::visualization::ImageViewer::addRectangle (
   min_pt_2d.x = min_pt_2d.y = std::numeric_limits<float>::max ();
   max_pt_2d.x = max_pt_2d.y = -std::numeric_limits<float>::max ();
   // Search for the two extrema
-  for (size_t i = 0; i < pp_2d.size (); ++i)
+  for (const auto &point : pp_2d)
   {
-    if (pp_2d[i].x < min_pt_2d.x) min_pt_2d.x = pp_2d[i].x;
-    if (pp_2d[i].y < min_pt_2d.y) min_pt_2d.y = pp_2d[i].y;
-    if (pp_2d[i].x > max_pt_2d.x) max_pt_2d.x = pp_2d[i].x;
-    if (pp_2d[i].y > max_pt_2d.y) max_pt_2d.y = pp_2d[i].y;
+    if (point.x < min_pt_2d.x) min_pt_2d.x = point.x;
+    if (point.y < min_pt_2d.y) min_pt_2d.y = point.y;
+    if (point.x > max_pt_2d.x) max_pt_2d.x = point.x;
+    if (point.y > max_pt_2d.y) max_pt_2d.y = point.y;
   }
-#if ((VTK_MAJOR_VERSION >= 6) || ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 7)))
   min_pt_2d.y = float (image->height) - min_pt_2d.y;
   max_pt_2d.y = float (image->height) - max_pt_2d.y;
-#endif
 
   vtkSmartPointer<context_items::Rectangle> rect = vtkSmartPointer<context_items::Rectangle>::New ();
   rect->setColors (static_cast<unsigned char> (255.0 * r), 
@@ -318,25 +308,23 @@ pcl::visualization::ImageViewer::addRectangle (
   // Construct a search object to get the camera parameters
   pcl::search::OrganizedNeighbor<T> search;
   search.setInputCloud (image);
-  std::vector<pcl::PointXY> pp_2d (mask.points.size ());
-  for (size_t i = 0; i < mask.points.size (); ++i)
-    search.projectPoint (mask.points[i], pp_2d[i]);
+  std::vector<pcl::PointXY> pp_2d (mask.size ());
+  for (std::size_t i = 0; i < mask.size (); ++i)
+    search.projectPoint (mask[i], pp_2d[i]);
 
   pcl::PointXY min_pt_2d, max_pt_2d;
   min_pt_2d.x = min_pt_2d.y = std::numeric_limits<float>::max ();
   max_pt_2d.x = max_pt_2d.y = -std::numeric_limits<float>::max ();
   // Search for the two extrema
-  for (size_t i = 0; i < pp_2d.size (); ++i)
+  for (const auto &point : pp_2d)
   {
-    if (pp_2d[i].x < min_pt_2d.x) min_pt_2d.x = pp_2d[i].x;
-    if (pp_2d[i].y < min_pt_2d.y) min_pt_2d.y = pp_2d[i].y;
-    if (pp_2d[i].x > max_pt_2d.x) max_pt_2d.x = pp_2d[i].x;
-    if (pp_2d[i].y > max_pt_2d.y) max_pt_2d.y = pp_2d[i].y;
+    if (point.x < min_pt_2d.x) min_pt_2d.x = point.x;
+    if (point.y < min_pt_2d.y) min_pt_2d.y = point.y;
+    if (point.x > max_pt_2d.x) max_pt_2d.x = point.x;
+    if (point.y > max_pt_2d.y) max_pt_2d.y = point.y;
   }
-#if ((VTK_MAJOR_VERSION >= 6) ||((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 7)))
   min_pt_2d.y = float (image->height) - min_pt_2d.y;
   max_pt_2d.y = float (image->height) - max_pt_2d.y;
-#endif
 
   vtkSmartPointer<context_items::Rectangle> rect = vtkSmartPointer<context_items::Rectangle>::New ();
   rect->setColors (static_cast<unsigned char> (255.0 * r), 
@@ -389,7 +377,7 @@ pcl::visualization::ImageViewer::showCorrespondences (
   setSize (source_img.width + target_img.width , std::max (source_img.height, target_img.height));
 
   // Set data size
-  if (data_size_ < static_cast<size_t> (src_size + tgt_size))
+  if (data_size_ < static_cast<std::size_t> (src_size + tgt_size))
   {
     data_size_ = src_size + tgt_size;
     data_.reset (new unsigned char[data_size_]);
@@ -397,12 +385,12 @@ pcl::visualization::ImageViewer::showCorrespondences (
 
   // Copy data in VTK format
   int j = 0;
-  for (size_t i = 0; i < std::max (source_img.height, target_img.height); ++i)
+  for (std::size_t i = 0; i < std::max (source_img.height, target_img.height); ++i)
   {
     // Still need to copy the source?
     if (i < source_img.height)
     {
-      for (size_t k = 0; k < source_img.width; ++k)
+      for (std::size_t k = 0; k < source_img.width; ++k)
       {
         data_[j++] = source_img[i * source_img.width + k].r;
         data_[j++] = source_img[i * source_img.width + k].g;
@@ -418,7 +406,7 @@ pcl::visualization::ImageViewer::showCorrespondences (
     // Still need to copy the target?
     if (i < source_img.height)
     {
-      for (size_t k = 0; k < target_img.width; ++k)
+      for (std::size_t k = 0; k < target_img.width; ++k)
       {
         data_[j++] = target_img[i * source_img.width + k].r;
         data_[j++] = target_img[i * source_img.width + k].g;
@@ -436,29 +424,16 @@ pcl::visualization::ImageViewer::showCorrespondences (
   
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New ();
   image->SetDimensions (source_img.width + target_img.width, std::max (source_img.height, target_img.height), 1);
-#if VTK_MAJOR_VERSION < 6
-  image->SetScalarTypeToUnsignedChar ();
-  image->SetNumberOfScalarComponents (3);
-  image->AllocateScalars ();
-#else
   image->AllocateScalars (VTK_UNSIGNED_CHAR, 3);
-#endif
   image->GetPointData ()->GetScalars ()->SetVoidArray (data, data_size_, 1);
   vtkSmartPointer<PCLContextImageItem> image_item = vtkSmartPointer<PCLContextImageItem>::New ();
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
-  // Now create filter and set previously created transformation
-  algo_->SetInput (image);
-  algo_->Update ();
-  image_item->set (0, 0, algo_->GetOutput ());
-#else
   image_item->set (0, 0, image);
   interactor_style_->adjustCamera (image, ren_);
-#endif
   am_it->actor->GetScene ()->AddItem (image_item);
   image_viewer_->SetSize (image->GetDimensions ()[0], image->GetDimensions ()[1]);
 
   // Draw lines between the best corresponding points
-  for (size_t i = 0; i < correspondences.size (); i += nth)
+  for (std::size_t i = 0; i < correspondences.size (); i += nth)
   {
     double r, g, b;
     getRandomColors (r, g, b);
@@ -474,13 +449,8 @@ pcl::visualization::ImageViewer::showCorrespondences (
 
     float query_x = correspondences[i].index_query % source_img.width;
     float match_x = correspondences[i].index_match % target_img.width + source_img.width;
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 10))
-    float query_y = correspondences[i].index_query / source_img.width;
-    float match_y = correspondences[i].index_match / target_img.width;
-#else
     float query_y = getSize ()[1] - correspondences[i].index_query / source_img.width;
     float match_y = getSize ()[1] - correspondences[i].index_match / target_img.width;
-#endif
 
     query_circle->set (query_x, query_y, 3.0);
     match_circle->set (match_x, match_y, 3.0);

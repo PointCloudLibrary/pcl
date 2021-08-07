@@ -43,7 +43,7 @@ using std::cerr;
 namespace pcl 
 {
   /////////////////////////////////////////////////////////////////////////
-  RangeImagePlanar::RangeImagePlanar () : RangeImage (), focal_length_x_ (0.0f), focal_length_y_ (0.0f),
+  RangeImagePlanar::RangeImagePlanar () : focal_length_x_ (0.0f), focal_length_y_ (0.0f),
                                           focal_length_x_reciprocal_ (0.0f), focal_length_y_reciprocal_ (0.0f),
                                           center_x_ (0.0f), center_y_ (0.0f)
   {
@@ -62,10 +62,10 @@ namespace pcl
     //MEASURE_FUNCTION_TIME;
     reset ();
     
-    float original_angular_resolution = atanf (0.5f * static_cast<float> (di_width) / static_cast<float> (focal_length)) / (0.5f * static_cast<float> (di_width));
+    float original_angular_resolution = std::atan (0.5f * static_cast<float> (di_width) / static_cast<float> (focal_length)) / (0.5f * static_cast<float> (di_width));
     int skip = 1;
     if (desired_angular_resolution >= 2.0f*original_angular_resolution)
-      skip = static_cast<int> (pcl_lrint (floor (desired_angular_resolution / original_angular_resolution)));
+      skip = static_cast<int> (pcl_lrint (std::floor (desired_angular_resolution / original_angular_resolution)));
 
     setAngularResolution (original_angular_resolution * static_cast<float> (skip));
     width  = di_width / skip;
@@ -76,7 +76,7 @@ namespace pcl
     center_y_ = static_cast<float> (di_height) / static_cast<float> (2 * skip);
     points.resize (width*height);
     
-    //cout << PVARN (*this);
+    //std::cout << PVARN (*this);
     
     float normalization_factor = static_cast<float> (skip) * focal_length_x_ * base_line;
     for (int y=0; y < static_cast<int> (height); ++y)
@@ -95,18 +95,18 @@ namespace pcl
         point.x = (static_cast<float> (x) - center_x_) * point.z * focal_length_x_reciprocal_;
         point.y = (static_cast<float> (y) - center_y_) * point.z * focal_length_y_reciprocal_;
         point.range = point.getVector3fMap ().norm ();
-        //cout << point<<std::flush;
+        //std::cout << point<<std::flush;
         
         //// Just a test:
         //PointWithRange test_point1;
         //calculate3DPoint (float (x), float (y), point.range, test_point1);
         //if ( (point.getVector3fMap ()-test_point1.getVector3fMap ()).norm () > 1e-5)
-          //cerr << "Something's wrong here...\n";
+          //std::cerr << "Something's wrong here...\n";
         
         //float image_x, image_y;
         //getImagePoint (point.getVector3fMap (), image_x, image_y);
-        //if (fabsf (image_x-x)+fabsf (image_y-y)>1e-4)
-          //cerr << PVARC (x)<<PVARC (y)<<PVARC (image_x)<<PVARN (image_y);
+        //if (std::abs (image_x-x)+std::abs (image_y-y)>1e-4)
+          //std::cerr << PVARC (x)<<PVARC (y)<<PVARC (image_x)<<PVARN (image_y);
       }
     }
   }
@@ -124,7 +124,7 @@ namespace pcl
     float original_angular_resolution = asinf (0.5f*static_cast<float> (di_width)/static_cast<float> (di_focal_length_x)) / (0.5f*static_cast<float> (di_width));
     int skip = 1;
     if (desired_angular_resolution >= 2.0f*original_angular_resolution)
-      skip = static_cast<int> (pcl_lrint (floor (desired_angular_resolution / original_angular_resolution)));
+      skip = static_cast<int> (pcl_lrint (std::floor (desired_angular_resolution / original_angular_resolution)));
 
     setAngularResolution (original_angular_resolution * static_cast<float> (skip));
     width  = di_width / skip;
@@ -143,7 +143,7 @@ namespace pcl
       {
         PointWithRange& point = getPointNoCheck (x, y);
         float depth = depth_image[ (y*skip)*di_width + x*skip];
-        if (depth <= 0.0f || !pcl_isfinite (depth))
+        if (depth <= 0.0f || !std::isfinite (depth))
         {
           point = unobserved_point;
           continue;
@@ -170,7 +170,7 @@ namespace pcl
     float original_angular_resolution = asinf (0.5f*static_cast<float> (di_width)/static_cast<float> (di_focal_length_x)) / (0.5f*static_cast<float> (di_width));
     int skip = 1;
     if (desired_angular_resolution >= 2.0f*original_angular_resolution)
-      skip = static_cast<int> (pcl_lrint (floor (desired_angular_resolution/original_angular_resolution)));
+      skip = static_cast<int> (pcl_lrint (std::floor (desired_angular_resolution/original_angular_resolution)));
 
     setAngularResolution (original_angular_resolution * static_cast<float> (skip));
     width  = di_width / skip;
@@ -182,14 +182,14 @@ namespace pcl
     center_x_ = static_cast<float> (di_center_x) / static_cast<float> (skip);
     center_y_ = static_cast<float> (di_center_y) / static_cast<float> (skip);
     points.resize (width * height);
-    
+
     for (int y = 0; y < static_cast<int> (height); ++y)
     {
       for (int x = 0; x < static_cast<int> (width); ++x)
       {
         PointWithRange& point = getPointNoCheck (x, y);
         float depth = depth_image[ (y*skip)*di_width + x*skip] * 0.001f;
-        if (depth <= 0.0f || !pcl_isfinite (depth))
+        if (depth <= 0.0f || !std::isfinite (depth))
         {
           point = unobserved_point;
           continue;

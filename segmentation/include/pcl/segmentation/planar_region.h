@@ -35,9 +35,10 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_PLANAR_REGION_H_
-#define PCL_SEGMENTATION_PLANAR_REGION_H_
+#pragma once
 
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/segmentation/region_3d.h>
 #include <pcl/geometry/planar_polygon.h>
 
@@ -58,15 +59,14 @@ namespace pcl
 
     public:
       /** \brief Empty constructor for PlanarRegion. */
-      PlanarRegion () : contour_labels_ ()
+      PlanarRegion ()
       {}
 
       /** \brief Constructor for Planar region from a Region3D and a PlanarPolygon. 
         * \param[in] region a Region3D for the input data
         * \param[in] polygon a PlanarPolygon for the input region
         */
-      PlanarRegion (const pcl::Region3D<PointT>& region, const pcl::PlanarPolygon<PointT>& polygon) :
-        contour_labels_ ()
+      PlanarRegion (const pcl::Region3D<PointT>& region, const pcl::PlanarPolygon<PointT>& polygon) 
       {
         centroid_ = region.centroid;
         covariance_ = region.covariance;
@@ -76,7 +76,7 @@ namespace pcl
       }
       
       /** \brief Destructor. */
-      virtual ~PlanarRegion () {}
+      ~PlanarRegion () {}
 
       /** \brief Constructor for PlanarRegion.
         * \param[in] centroid the centroid of the region.
@@ -87,8 +87,7 @@ namespace pcl
         */
       PlanarRegion (const Eigen::Vector3f& centroid, const Eigen::Matrix3f& covariance, unsigned count,
                     const typename pcl::PointCloud<PointT>::VectorType& contour,
-                    const Eigen::Vector4f& coefficients) :
-        contour_labels_ ()
+                    const Eigen::Vector4f& coefficients) 
       {
         centroid_ = centroid;
         covariance_ = covariance;
@@ -104,8 +103,6 @@ namespace pcl
       std::vector<bool> contour_labels_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
-
-#endif //PCL_SEGMENTATION_PLANAR_REGION_H_

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_IO_TAR_H_
-#define PCL_IO_TAR_H_
+#pragma once
 
 #include <pcl/point_cloud.h>
 
@@ -98,5 +97,3 @@ namespace pcl
     }
   }
 }
-#endif        // PCL_IO_TAR_H_
-

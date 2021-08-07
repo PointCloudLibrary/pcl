@@ -37,8 +37,7 @@
  *  $Id$
  */
 
-#ifndef OUTOFCORE_H_
-#define OUTOFCORE_H_
+#pragma once
 
 #include <pcl/outofcore/octree_base.h>
 #include <pcl/outofcore/outofcore_base_data.h>
@@ -54,5 +53,3 @@
 #include <pcl/outofcore/outofcore_iterator_base.h>
 #include <pcl/outofcore/outofcore_breadth_first_iterator.h>
 #include <pcl/outofcore/outofcore_depth_first_iterator.h>
-
-#endif // OUTOFCORE_H_

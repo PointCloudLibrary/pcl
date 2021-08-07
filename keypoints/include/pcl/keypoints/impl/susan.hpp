@@ -38,6 +38,7 @@
 #ifndef PCL_SUSAN_IMPL_HPP_
 #define PCL_SUSAN_IMPL_HPP_
 
+#include <pcl/common/io.h> // for getFieldIndex
 #include <pcl/keypoints/susan.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/integral_image_normal.h>
@@ -111,7 +112,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setNumberOfThreads
 // template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> void
 // pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::USAN (const PointInT& nucleus,
 //                                                                     const NormalT& nucleus_normal,
-//                                                                     const std::vector<int>& neighbors, 
+//                                                                     const pcl::Indices& neighbors, 
 //                                                                     const float& t,
 //                                                                     float& response,
 //                                                                     Eigen::Vector3f& centroid) const
@@ -124,15 +125,15 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setNumberOfThreads
 //   //xx xy xz yy yz zz
 //   std::vector<float> coefficients(6);
 //   memset (&coefficients[0], 0, sizeof (float) * 6);
-//   for (std::vector<int>::const_iterator index = neighbors.begin(); index != neighbors.end(); ++index)
+//   for (const auto& index : neighbors)
 //   {
-//     if (pcl_isfinite (normals_->points[*index].normal_x))
+//     if (std::isfinite ((*normals_)[index].normal_x))
 //     {
-//       Eigen::Vector3f diff = normals_->points[*index].getNormal3fMap () - nucleus_normal.getNormal3fMap ();
+//       Eigen::Vector3f diff = (*normals_)[index].getNormal3fMap () - nucleus_normal.getNormal3fMap ();
 //       float c = diff.norm () / t;
 //       c = -1 * pow (c, 6.0);
-//       c = exp (c);
-//       Eigen::Vector3f xyz = surface_->points[*index].getVector3fMap ();
+//       c = std::exp (c);
+//       Eigen::Vector3f xyz = (*surface_)[index].getVector3fMap ();
 //       centroid += c * xyz;
 //       area += c;
 //       coefficients[0] += c * (x0 - xyz.x) * (x0 - xyz.x);
@@ -279,189 +280,172 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::isWithinNucleusCen
 // template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> bool
 // pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::isWithinSusan2D (int nucleus, int neighbor) const
 // {
-//   return (fabs (intensity_ (surface_->points[nucleus]) - 
-//                 intensity_ (surface_->points[neighbor])) <= intensity_threshold_);
+//   return (std::abs (intensity_ ((*surface_)[nucleus]) - 
+//                 intensity_ ((*surface_)[neighbor])) <= intensity_threshold_);
 // }
 
 // template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> bool
 // pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::isWithinSusan3D (int nucleus, int neighbor) const
 // {
 //   Eigen::Vector3f nucleus_normal = normals_->point[nucleus].getVector3fMap ();
-//   return (1 - nucleus_normal.dot (normals_->points[*index].getNormalVector3fMap ()) <= angular_threshold_);
+//   return (1 - nucleus_normal.dot ((*normals_)[*index].getNormalVector3fMap ()) <= angular_threshold_);
 // }
 
 // template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> bool
 // pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::isWithinSusanH (int nucleus, int neighbor) const
 // {
 //   Eigen::Vector3f nucleus_normal = normals_->point[nucleus].getVector3fMap ();
-//   return ((1 - nucleus_normal.dot (normals_->points[*index].getNormalVector3fMap ()) <= angular_threshold_) || 
-//           (fabs (intensity_ (surface_->points[nucleus]) - intensity_ (surface_->points[neighbor])) <= intensity_threshold_));
+//   return ((1 - nucleus_normal.dot ((*normals_)[*index].getNormalVector3fMap ()) <= angular_threshold_) || 
+//           (std::abs (intensity_ ((*surface_)[nucleus]) - intensity_ ((*surface_)[neighbor])) <= intensity_threshold_));
 // }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> void
 pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (PointCloudOut &output)
 {
-  boost::shared_ptr<pcl::PointCloud<PointOutT> > response (new pcl::PointCloud<PointOutT> ());
+  typename pcl::PointCloud<PointOutT>::Ptr response (new pcl::PointCloud<PointOutT>);
   response->reserve (surface_->size ());
 
   // Check if the output has a "label" field
-  label_idx_ = pcl::getFieldIndex<PointOutT> (output, "label", out_fields_);
+  label_idx_ = pcl::getFieldIndex<PointOutT> ("label", out_fields_);
 
-  const int input_size = static_cast<int> (input_->size ());
-//#ifdef _OPENMP
-//#pragma omp parallel for shared (response) num_threads(threads_)
-//#endif
-  for (int point_index = 0; point_index < input_size; ++point_index)
+  const auto input_size = static_cast<pcl::index_t> (input_->size ());
+  for (pcl::index_t point_index = 0; point_index < input_size; ++point_index)
   {
     const PointInT& point_in = input_->points [point_index];
     const NormalT& normal_in = normals_->points [point_index];
     if (!isFinite (point_in) || !isFinite (normal_in))
       continue;
-    else
-    {
-      Eigen::Vector3f nucleus = point_in.getVector3fMap ();
-      Eigen::Vector3f nucleus_normal = normals_->points [point_index].getNormalVector3fMap ();
-      float nucleus_intensity = intensity_ (point_in);
-      std::vector<int> nn_indices;
-      std::vector<float> nn_dists;
-      tree_->radiusSearch (point_in, search_radius_, nn_indices, nn_dists);
-      float area = 0;
-      Eigen::Vector3f centroid = Eigen::Vector3f::Zero ();
-      // Exclude nucleus from the usan
-      std::vector<int> usan; usan.reserve (nn_indices.size () - 1);
-      for (std::vector<int>::const_iterator index = nn_indices.begin(); index != nn_indices.end(); ++index)
-      {
-        if ((*index != point_index) && pcl_isfinite (normals_->points[*index].normal_x))
-        {
-          // if the point fulfill condition
-          if ((fabs (nucleus_intensity - intensity_ (input_->points[*index])) <= intensity_threshold_) ||
-              (1 - nucleus_normal.dot (normals_->points[*index].getNormalVector3fMap ()) <= angular_threshold_))
-          {
-            ++area;
-            centroid += input_->points[*index].getVector3fMap ();
-            usan.push_back (*index);
-          }
-        }
-      }
 
-      float geometric_threshold = 0.5f * (static_cast<float> (nn_indices.size () - 1));
-      if ((area > 0) && (area < geometric_threshold))
+    Eigen::Vector3f nucleus = point_in.getVector3fMap ();
+    Eigen::Vector3f nucleus_normal = normals_->points [point_index].getNormalVector3fMap ();
+    float nucleus_intensity = intensity_ (point_in);
+    pcl::Indices nn_indices;
+    std::vector<float> nn_dists;
+    tree_->radiusSearch (point_in, search_radius_, nn_indices, nn_dists);
+    float area = 0;
+    Eigen::Vector3f centroid = Eigen::Vector3f::Zero ();
+    // Exclude nucleus from the usan
+    std::vector<int> usan; usan.reserve (nn_indices.size () - 1);
+    for (const auto& index : nn_indices)
+    {
+      if ((index != point_index) && std::isfinite ((*normals_)[index].normal_x))
       {
-        // if no geometric validation required add the point to the response
-        if (!geometric_validation_)
+        // if the point fulfill condition
+        if ((std::abs (nucleus_intensity - intensity_ ((*input_)[index])) <= intensity_threshold_) ||
+            (1 - nucleus_normal.dot ((*normals_)[index].getNormalVector3fMap ()) <= angular_threshold_))
         {
-          PointOutT point_out;
-          point_out.getVector3fMap () = point_in.getVector3fMap ();
-          //point_out.intensity = geometric_threshold - area; 
-          intensity_out_.set (point_out, geometric_threshold - area);
-          // if a label field is found use it to save the index
-          if (label_idx_ != -1)
-          {
-            // save the index in the cloud
-            uint32_t label = static_cast<uint32_t> (point_index);
-            memcpy (reinterpret_cast<char*> (&point_out) + out_fields_[label_idx_].offset,
-                    &label, sizeof (uint32_t));
-          }
-//#ifdef _OPENMP
-//#pragma omp critical
-//#endif
-          response->push_back (point_out);
+          ++area;
+          centroid += (*input_)[index].getVector3fMap ();
+          usan.push_back (index);
         }
-        else
+      }
+    }
+
+    float geometric_threshold = 0.5f * (static_cast<float> (nn_indices.size () - 1));
+    if ((area > 0) && (area < geometric_threshold))
+    {
+      // if no geometric validation required add the point to the response
+      if (!geometric_validation_)
+      {
+        PointOutT point_out;
+        point_out.getVector3fMap () = point_in.getVector3fMap ();
+        //point_out.intensity = geometric_threshold - area; 
+        intensity_out_.set (point_out, geometric_threshold - area);
+        // if a label field is found use it to save the index
+        if (label_idx_ != -1)
         {
-          centroid /= area;
-          Eigen::Vector3f dist = nucleus - centroid;
-          // Check the distance <= distance_threshold_
-          if (dist.norm () >= distance_threshold_)
+          // save the index in the cloud
+          std::uint32_t label = static_cast<std::uint32_t> (point_index);
+          memcpy (reinterpret_cast<char*> (&point_out) + out_fields_[label_idx_].offset,
+                  &label, sizeof (std::uint32_t));
+        }
+        response->push_back (point_out);
+      }
+      else
+      {
+        centroid /= area;
+        Eigen::Vector3f dist = nucleus - centroid;
+        // Check the distance <= distance_threshold_
+        if (dist.norm () >= distance_threshold_)
+        {
+          // point is valid from distance point of view 
+          Eigen::Vector3f nc = centroid - nucleus;
+          // Check the contiguity
+          auto usan_it = usan.cbegin ();
+          for (; usan_it != usan.cend (); ++usan_it)
           {
-            // point is valid from distance point of view 
-            Eigen::Vector3f nc = centroid - nucleus;
-            // Check the contiguity
-            std::vector<int>::const_iterator usan_it = usan.begin ();
-            for (; usan_it != usan.end (); ++usan_it)
+            if (!isWithinNucleusCentroid (nucleus, centroid, nc, (*input_)[*usan_it]))
+              break;
+          }
+          // All points within usan lies on the segment [nucleus centroid]
+          if (usan_it == usan.end ())
+          {
+            PointOutT point_out;
+            point_out.getVector3fMap () = point_in.getVector3fMap ();
+            // point_out.intensity = geometric_threshold - area; 
+            intensity_out_.set (point_out, geometric_threshold - area);
+            // if a label field is found use it to save the index
+            if (label_idx_ != -1)
             {
-              if (!isWithinNucleusCentroid (nucleus, centroid, nc, input_->points[*usan_it]))
-                break;
+              // save the index in the cloud
+              std::uint32_t label = static_cast<std::uint32_t> (point_index);
+              memcpy (reinterpret_cast<char*> (&point_out) + out_fields_[label_idx_].offset,
+                      &label, sizeof (std::uint32_t));
             }
-            // All points within usan lies on the segment [nucleus centroid]
-            if (usan_it == usan.end ())
-            {
-              PointOutT point_out;
-              point_out.getVector3fMap () = point_in.getVector3fMap ();
-              // point_out.intensity = geometric_threshold - area; 
-              intensity_out_.set (point_out, geometric_threshold - area);
-              // if a label field is found use it to save the index
-              if (label_idx_ != -1)
-              {
-                // save the index in the cloud
-                uint32_t label = static_cast<uint32_t> (point_index);
-                memcpy (reinterpret_cast<char*> (&point_out) + out_fields_[label_idx_].offset,
-                        &label, sizeof (uint32_t));
-              }
-//#ifdef _OPENMP
-//#pragma omp critical
-//#endif
-              response->push_back (point_out);              
-            }
+            response->push_back (point_out);
           }
         }
       }
-    }  
+    }
   }
   
   response->height = 1;
-  response->width = static_cast<uint32_t> (response->size ());
+  response->width = response->size ();
   
   if (!nonmax_)
   {
     output = *response;
-    for (size_t i = 0; i < response->size (); ++i)
+    for (std::size_t i = 0; i < response->size (); ++i)
       keypoints_indices_->indices.push_back (i);
     // we don not change the denseness
     output.is_dense = input_->is_dense;
   }
   else
   {
-    output.points.clear ();
-    output.points.reserve (response->points.size());
+    output.clear ();
+    output.reserve (response->size());
     
-//#ifdef _OPENMP
-//#pragma omp parallel for shared (output) num_threads(threads_)   
-//#endif
-    for (int idx = 0; idx < static_cast<int> (response->points.size ()); ++idx)
+    for (pcl::index_t idx = 0; idx < static_cast<pcl::index_t> (response->size ()); ++idx)
     {
       const PointOutT& point_in = response->points [idx];
       const NormalT& normal_in = normals_->points [idx];
-      //const float intensity = response->points[idx].intensity;
-      const float intensity = intensity_out_ (response->points[idx]);
+      //const float intensity = (*response)[idx].intensity;
+      const float intensity = intensity_out_ ((*response)[idx]);
       if (!isFinite (point_in) || !isFinite (normal_in) || (intensity == 0))
         continue;
-      std::vector<int> nn_indices;
+      pcl::Indices nn_indices;
       std::vector<float> nn_dists;
       tree_->radiusSearch (idx, search_radius_, nn_indices, nn_dists);
       bool is_minima = true;
-      for (std::vector<int>::const_iterator nn_it = nn_indices.begin(); nn_it != nn_indices.end(); ++nn_it)
+      for (const auto& nn_index : nn_indices)
       {
-//        if (intensity > response->points[*nn_it].intensity)
-        if (intensity > intensity_out_ (response->points[*nn_it]))
+//        if (intensity > (*response)[nn_index].intensity)
+        if (intensity > intensity_out_ ((*response)[nn_index]))
         {
           is_minima = false;
           break;
         }
       }
       if (is_minima)
-//#ifdef _OPENMP
-//#pragma omp critical
-//#endif
       {
-        output.points.push_back (response->points[idx]);
+        output.push_back ((*response)[idx]);
         keypoints_indices_->indices.push_back (idx);
       }
     }
     
     output.height = 1;
-    output.width = static_cast<uint32_t> (output.points.size());
+    output.width = output.size();
     output.is_dense = true;
   }
 }

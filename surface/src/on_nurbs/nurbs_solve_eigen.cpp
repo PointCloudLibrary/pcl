@@ -38,9 +38,10 @@
 #include <iostream>
 #include <stdexcept>
 
+#include <Eigen/SVD> // for jacobiSvd
+
 #include <pcl/surface/on_nurbs/nurbs_solve.h>
 
-using namespace std;
 using namespace pcl;
 using namespace on_nurbs;
 
@@ -94,9 +95,9 @@ NurbsSolve::resize (unsigned rows)
 void
 NurbsSolve::printK ()
 {
-  for (unsigned r = 0; r < m_Keig.rows (); r++)
+  for (Eigen::Index r = 0; r < m_Keig.rows (); r++)
   {
-    for (unsigned c = 0; c < m_Keig.cols (); c++)
+    for (Eigen::Index c = 0; c < m_Keig.cols (); c++)
     {
       printf (" %f", m_Keig (r, c));
     }
@@ -107,9 +108,9 @@ NurbsSolve::printK ()
 void
 NurbsSolve::printX ()
 {
-  for (unsigned r = 0; r < m_xeig.rows (); r++)
+  for (Eigen::Index r = 0; r < m_xeig.rows (); r++)
   {
-    for (unsigned c = 0; c < m_xeig.cols (); c++)
+    for (Eigen::Index c = 0; c < m_xeig.cols (); c++)
     {
       printf (" %f", m_xeig (r, c));
     }
@@ -120,9 +121,9 @@ NurbsSolve::printX ()
 void
 NurbsSolve::printF ()
 {
-  for (unsigned r = 0; r < m_feig.rows (); r++)
+  for (Eigen::Index r = 0; r < m_feig.rows (); r++)
   {
-    for (unsigned c = 0; c < m_feig.cols (); c++)
+    for (Eigen::Index c = 0; c < m_feig.cols (); c++)
     {
       printf (" %f", m_feig (r, c));
     }

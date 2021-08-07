@@ -37,16 +37,14 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_EIGEN_H_
-#define PCL_REGISTRATION_EIGEN_H_
+#pragma once
 
 #if defined __GNUC__
-#  pragma GCC system_header 
+#pragma GCC system_header
 #endif
+PCL_DEPRECATED_HEADER(1, 15, "Please include the needed eigen headers directly.")
 
 #include <Eigen/Core>
+#include <Eigen/Dense>
 #include <Eigen/Geometry>
 #include <unsupported/Eigen/Polynomials>
-#include <Eigen/Dense>
-
-#endif    // PCL_REGISTRATION_EIGEN_H_

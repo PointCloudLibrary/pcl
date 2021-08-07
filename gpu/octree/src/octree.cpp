@@ -43,15 +43,14 @@
 #include <pcl/gpu/utils/device/static_check.hpp>
 #include <pcl/exceptions.h>
 
-#include<assert.h>
+#include<cassert>
 
 using namespace pcl::device;
-using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////// Octree Host Interface implementation ////////////////////////////////
 
-pcl::gpu::Octree::Octree() : cloud_(0), impl(0)
+pcl::gpu::Octree::Octree() : cloud_(nullptr), impl(nullptr)
 {
     Static<sizeof(PointType) == sizeof(OctreeImpl::PointType)>::check();
 
@@ -67,6 +66,14 @@ pcl::gpu::Octree::Octree() : cloud_(0), impl(0)
     int bin, ptx;
     OctreeImpl::get_gpu_arch_compiled_for(bin, ptx);
 
+    if (bin < 0 || ptx < 0)
+    {
+        pcl::gpu::error(R"(cudaFuncGetAttributes() returned a value < 0.
+This is likely a build configuration error.
+Ensure that the proper compute capability is specified in the CUDA_ARCH_BIN cmake variable when building for your GPU.)",
+            __FILE__, __LINE__);
+    }
+
     if (bin < 20 && ptx < 20)
         pcl::gpu::error("This must be compiled for compute capability >= 2.0", __FILE__, __LINE__);    
 
@@ -78,7 +85,6 @@ pcl::gpu::Octree::~Octree() { clear(); }
 
 void pcl::gpu::Octree::clear()
 {
-    if (impl)
         delete static_cast<OctreeImpl*>(impl);
 }
 
@@ -95,7 +101,7 @@ void pcl::gpu::Octree::build()
     built_ = true;
 }
 
-bool pcl::gpu::Octree::isBuilt()
+bool pcl::gpu::Octree::isBuilt() const
 {
     return built_;
 }
@@ -165,24 +171,38 @@ void pcl::gpu::Octree::radiusSearch(const Queries& queries, const Indices& indic
 
 void pcl::gpu::Octree::approxNearestSearch(const Queries& queries, NeighborIndices& results) const
 {
+    ResultSqrDists sqr_distance;
+    approxNearestSearch(queries, results, sqr_distance);
+}
+
+void pcl::gpu::Octree::approxNearestSearch(const Queries& queries, NeighborIndices& results, ResultSqrDists& sqr_distance) const
+{
     assert(queries.size() > 0);    
     results.create(static_cast<int> (queries.size()), 1);
+    sqr_distance.create(queries.size());
     
     const OctreeImpl::Queries& q = (const OctreeImpl::Queries&)queries;
-    static_cast<OctreeImpl*>(impl)->approxNearestSearch(q, results);
+    static_cast<OctreeImpl*>(impl)->approxNearestSearch(q, results, sqr_distance);
 }
 
 void pcl::gpu::Octree::nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results) const
+{
+    ResultSqrDists sqr_distances;
+    nearestKSearchBatch(queries, k, results, sqr_distances);
+}
+
+void pcl::gpu::Octree::nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results, ResultSqrDists& sqr_distances) const
 {    
     if (k != 1)
         throw pcl::PCLException("OctreeGPU::knnSearch is supported only for k == 1", __FILE__, "", __LINE__);
     
     assert(queries.size() > 0);
     results.create(static_cast<int> (queries.size()), k);	    
+    sqr_distances.create(queries.size() * k);
 
 	const OctreeImpl::Queries& q = (const OctreeImpl::Queries&)queries;
 
-    static_cast<OctreeImpl*>(impl)->nearestKSearchBatch(q, k, results);
+    static_cast<OctreeImpl*>(impl)->nearestKSearchBatch(q, k, results, sqr_distances);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -190,8 +210,8 @@ void pcl::gpu::Octree::nearestKSearchBatch(const Queries& queries, int k, Neighb
 
 void pcl::gpu::bruteForceRadiusSearchGPU(const Octree::PointCloud& cloud, const PointXYZ& query,  float radius,  DeviceArray<int>& result,  DeviceArray<int>& buffer)
 {
-    typedef OctreeImpl::PointType PointType;
-    typedef OctreeImpl::PointCloud PointCloud;    
+    using PointType = OctreeImpl::PointType;
+    using PointCloud = OctreeImpl::PointCloud;    
     
     PointType query_local;
     query_local.x = query.x;

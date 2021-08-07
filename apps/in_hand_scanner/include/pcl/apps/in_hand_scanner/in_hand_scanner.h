@@ -38,17 +38,18 @@
  *
  */
 
-#ifndef PCL_APPS_IN_HAND_SCANNER_IN_HAND_SCANNER_H
-#define PCL_APPS_IN_HAND_SCANNER_IN_HAND_SCANNER_H
+#pragma once
 
+#include <pcl/memory.h>
+#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
+#include <pcl/apps/in_hand_scanner/common_types.h>
+#include <pcl/apps/in_hand_scanner/opengl_viewer.h>
+#include <boost/signals2/connection.hpp> // for connection
+#include <mutex>
 #include <string>
 #include <sstream>
 #include <iomanip>
-
-#include <pcl/pcl_exports.h>
-#include <pcl/apps/in_hand_scanner/boost.h>
-#include <pcl/apps/in_hand_scanner/common_types.h>
-#include <pcl/apps/in_hand_scanner/opengl_viewer.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Forward declarations
@@ -84,44 +85,44 @@ namespace pcl
 
       public:
 
-        typedef pcl::ihs::OpenGLViewer  Base;
-        typedef pcl::ihs::InHandScanner Self;
+        using Base = pcl::ihs::OpenGLViewer;
+        using Self = pcl::ihs::InHandScanner;
 
-        typedef pcl::ihs::InputDataProcessing                 InputDataProcessing;
-        typedef boost::shared_ptr <InputDataProcessing>       InputDataProcessingPtr;
-        typedef boost::shared_ptr <const InputDataProcessing> InputDataProcessingConstPtr;
+        using InputDataProcessing = pcl::ihs::InputDataProcessing;
+        using InputDataProcessingPtr = std::shared_ptr<InputDataProcessing>;
+        using InputDataProcessingConstPtr = std::shared_ptr<const InputDataProcessing>;
 
-        typedef pcl::ihs::ICP                 ICP;
-        typedef boost::shared_ptr <ICP>       ICPPtr;
-        typedef boost::shared_ptr <const ICP> ICPConstPtr;
+        using ICP = pcl::ihs::ICP;
+        using ICPPtr = std::shared_ptr<ICP>;
+        using ICPConstPtr = std::shared_ptr<const ICP>;
 
-        typedef pcl::ihs::Integration                 Integration;
-        typedef boost::shared_ptr <Integration>       IntegrationPtr;
-        typedef boost::shared_ptr <const Integration> IntegrationConstPtr;
+        using Integration = pcl::ihs::Integration;
+        using IntegrationPtr = std::shared_ptr<Integration>;
+        using IntegrationConstPtr = std::shared_ptr<const Integration>;
 
-        typedef pcl::ihs::MeshProcessing                 MeshProcessing;
-        typedef boost::shared_ptr <MeshProcessing>       MeshProcessingPtr;
-        typedef boost::shared_ptr <const MeshProcessing> MeshProcessingConstPtr;
+        using MeshProcessing = pcl::ihs::MeshProcessing;
+        using MeshProcessingPtr = std::shared_ptr<MeshProcessing>;
+        using MeshProcessingConstPtr = std::shared_ptr<const MeshProcessing>;
 
         /** \brief Switch between different branches of the scanning pipeline. */
-        typedef enum RunningMode
+        enum RunningMode
         {
           RM_SHOW_MODEL          = 0, /**< Shows the model shape (if it is available). */
           RM_UNPROCESSED         = 1, /**< Shows the unprocessed input data. */
           RM_PROCESSED           = 2, /**< Shows the processed input data. */
           RM_REGISTRATION_CONT   = 3, /**< Registers new data to the first acquired data continuously. */
           RM_REGISTRATION_SINGLE = 4  /**< Registers new data once and returns to showing the processed data. */
-        } RunningMode;
+        };
 
         /** \brief File type for saving and loading files. */
-        typedef enum FileType
+        enum FileType
         {
           FT_PLY = 0, /**< Polygon File Format. */
           FT_VTK = 1  /**< VTK File Format. */
-        } FileType;
+        };
 
         /** \brief Constructor. */
-        explicit InHandScanner (Base* parent=0);
+        explicit InHandScanner (Base* parent=nullptr);
 
         /** \brief Destructor. */
         ~InHandScanner ();
@@ -186,38 +187,38 @@ namespace pcl
 
         /** \see http://doc.qt.digia.com/qt/qwidget.html#keyPressEvent */
         void
-        keyPressEvent (QKeyEvent* event);
+        keyPressEvent (QKeyEvent* event) override;
 
       private:
 
-        typedef pcl::PointXYZRGBA              PointXYZRGBA;
-        typedef pcl::PointCloud <PointXYZRGBA> CloudXYZRGBA;
-        typedef CloudXYZRGBA::Ptr              CloudXYZRGBAPtr;
-        typedef CloudXYZRGBA::ConstPtr         CloudXYZRGBAConstPtr;
+        using PointXYZRGBA = pcl::PointXYZRGBA;
+        using CloudXYZRGBA = pcl::PointCloud<PointXYZRGBA>;
+        using CloudXYZRGBAPtr = CloudXYZRGBA::Ptr;
+        using CloudXYZRGBAConstPtr = CloudXYZRGBA::ConstPtr;
 
-        typedef pcl::PointXYZRGBNormal              PointXYZRGBNormal;
-        typedef pcl::PointCloud <PointXYZRGBNormal> CloudXYZRGBNormal;
-        typedef CloudXYZRGBNormal::Ptr              CloudXYZRGBNormalPtr;
-        typedef CloudXYZRGBNormal::ConstPtr         CloudXYZRGBNormalConstPtr;
+        using PointXYZRGBNormal = pcl::PointXYZRGBNormal;
+        using CloudXYZRGBNormal = pcl::PointCloud<PointXYZRGBNormal>;
+        using CloudXYZRGBNormalPtr = CloudXYZRGBNormal::Ptr;
+        using CloudXYZRGBNormalConstPtr = CloudXYZRGBNormal::ConstPtr;
 
-        typedef pcl::ihs::PointIHS         PointIHS;
-        typedef pcl::ihs::CloudIHS         CloudIHS;
-        typedef pcl::ihs::CloudIHSPtr      CloudIHSPtr;
-        typedef pcl::ihs::CloudIHSConstPtr CloudIHSConstPtr;
+        using PointIHS = pcl::ihs::PointIHS;
+        using CloudIHS = pcl::ihs::CloudIHS;
+        using CloudIHSPtr = pcl::ihs::CloudIHSPtr;
+        using CloudIHSConstPtr = pcl::ihs::CloudIHSConstPtr;
 
-        typedef pcl::ihs::Mesh         Mesh;
-        typedef pcl::ihs::MeshPtr      MeshPtr;
-        typedef pcl::ihs::MeshConstPtr MeshConstPtr;
+        using Mesh = pcl::ihs::Mesh;
+        using MeshPtr = pcl::ihs::MeshPtr;
+        using MeshConstPtr = pcl::ihs::MeshConstPtr;
 
-        typedef pcl::OpenNIGrabber                Grabber;
-        typedef boost::shared_ptr <Grabber>       GrabberPtr;
-        typedef boost::shared_ptr <const Grabber> GrabberConstPtr;
+        using Grabber = pcl::OpenNIGrabber;
+        using GrabberPtr = std::shared_ptr<Grabber>;
+        using GrabberConstPtr = std::shared_ptr<const Grabber>;
 
         /** \brief Helper object for the computation thread. Please have a look at the documentation of calcFPS. */
         class ComputationFPS : public Base::FPS
         {
           public:
-            ComputationFPS () : Base::FPS () {}
+            ComputationFPS () {}
             ~ComputationFPS () {}
         };
 
@@ -225,7 +226,7 @@ namespace pcl
         class VisualizationFPS : public Base::FPS
         {
           public:
-            VisualizationFPS () : Base::FPS () {}
+            VisualizationFPS () {}
             ~VisualizationFPS () {}
         };
 
@@ -237,7 +238,7 @@ namespace pcl
           * \see http://doc.qt.digia.com/qt/opengl-overpainting.html
           */
         void
-        paintEvent (QPaintEvent* event);
+        paintEvent (QPaintEvent* event) override;
 
         /** \brief Draw text over the opengl scene.
           * \see http://doc.qt.digia.com/qt/opengl-overpainting.html
@@ -254,7 +255,7 @@ namespace pcl
         ////////////////////////////////////////////////////////////////////////
 
         /** \brief Synchronization. */
-        boost::mutex mutex_;
+        std::mutex mutex_;
 
         /** \brief Please have a look at the documentation of ComputationFPS. */
         ComputationFPS computation_fps_;
@@ -299,13 +300,10 @@ namespace pcl
         bool destructor_called_;
 
       public:
-
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
   } // End namespace ihs
 } // End namespace pcl
 
 // http://doc.qt.digia.com/qt/qmetatype.html#Q_DECLARE_METATYPE
 Q_DECLARE_METATYPE (pcl::ihs::InHandScanner::RunningMode)
-
-#endif // PCL_APPS_IN_HAND_SCANNER_IN_HAND_SCANNER_H

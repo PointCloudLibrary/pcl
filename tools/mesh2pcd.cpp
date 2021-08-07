@@ -125,8 +125,6 @@ main (int argc, char **argv)
     polydata1 = readerQuery->GetOutput ();
   }
 
-  bool INTER_VIS = false;
-
   visualization::PCLVisualizer vis;
   vis.addModelFromPolyData (polydata1, "mesh1", 0);
   vis.setRepresentationToSurfaceForAllActors ();
@@ -139,7 +137,7 @@ main (int argc, char **argv)
   //take views and fuse them together
   std::vector<PointCloud<PointXYZ>::Ptr> aligned_clouds;
 
-  for (size_t i = 0; i < views_xyz.size (); i++)
+  for (std::size_t i = 0; i < views_xyz.size (); i++)
   {
     PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ> ());
     Eigen::Matrix4f pose_inverse;
@@ -148,23 +146,10 @@ main (int argc, char **argv)
     aligned_clouds.push_back (cloud);
   }
 
-  if (INTER_VIS)
-  {
-    visualization::PCLVisualizer vis2 ("visualize");
-
-    for (size_t i = 0; i < aligned_clouds.size (); i++)
-    {
-      std::stringstream name;
-      name << "cloud_" << i;
-      vis2.addPointCloud (aligned_clouds[i], name.str ());
-      vis2.spin ();
-    }
-  }
-
   // Fuse clouds
   PointCloud<PointXYZ>::Ptr big_boy (new PointCloud<PointXYZ> ());
-  for (size_t i = 0; i < aligned_clouds.size (); i++)
-    *big_boy += *aligned_clouds[i];
+  for (const auto &aligned_cloud : aligned_clouds)
+    *big_boy += *aligned_cloud;
 
   if (vis_result)
   {

@@ -10,7 +10,7 @@ Theoretical Primer
 
 The abbreviation of "RANdom SAmple Consensus" is RANSAC, and it is an iterative method that is used to estimate parameters of a mathematical model from a set of data containing outliers.  This algorithm was published by Fischler and Bolles in 1981.  The RANSAC algorithm assumes that all of the data we are looking at is comprised of both inliers and outliers.  Inliers can be explained by a model with a particular set of parameter values, while outliers do not fit that model in any circumstance.  Another necessary assumption is that a procedure which can optimally estimate the parameters of the chosen model from the data is available.
 
-From [Wikipedia]_:
+From [WikipediaRANSAC]_:
 
   *The input to the RANSAC algorithm is a set of observed data values, a parameterized model which can explain or be fitted to the observations, and some confidence parameters.*
 
@@ -38,7 +38,7 @@ From [Wikipedia]_:
    :align: right
    :height: 200px
 
-The pictures to the left and right (From [Wikipedia]_) show a simple application of the RANSAC algorithm on a 2-dimensional set of data. The image on our left is a visual representation of a data set containing both inliers and outliers.  The image on our right shows all of the outliers in red, and shows inliers in blue.  The blue line is the result of the work done by RANSAC.  In this case the model that we are trying to fit to the data is a line, and it looks like it's a fairly good fit to our data.
+The pictures to the left and right (From [WikipediaRANSAC]_) show a simple application of the RANSAC algorithm on a 2-dimensional set of data. The image on our left is a visual representation of a data set containing both inliers and outliers.  The image on our right shows all of the outliers in red, and shows inliers in blue.  The blue line is the result of the work done by RANSAC.  In this case the model that we are trying to fit to the data is a line, and it looks like it's a fairly good fit to our data.
 
 The code
 --------
@@ -56,19 +56,19 @@ The following source code initializes two PointClouds and fills one of them with
 
 .. literalinclude:: sources/random_sample_consensus/random_sample_consensus.cpp
    :language: cpp
-   :lines: 30-63
+   :lines: 33-66
 
 Next we create a vector of ints that can store the locations of our inlier points from our PointCloud and now we can build our RandomSampleConsensus object using either a plane or a sphere model from our input cloud.
 
 .. literalinclude:: sources/random_sample_consensus/random_sample_consensus.cpp
    :language: cpp
-   :lines: 65-85
+   :lines: 68-88
 
 This last bit of code copies all of the points that fit our model to another cloud and then display either that or our original cloud in the viewer.
 
 .. literalinclude:: sources/random_sample_consensus/random_sample_consensus.cpp
    :language: cpp
-   :lines: 87-96
+   :lines: 90-99
 
 There is some extra code that relates to the display of the PointClouds in the 3D Viewer, but I'm not going to explain that here.
 
@@ -101,13 +101,13 @@ the program will display only the indices of the original PointCloud which satis
    :align: center
    :height: 400px
 
-Again hit 'r' to scale and center the view and then click and drag with the mouse to rotate around the cloud.  You can see there are no longer any points that do not lie with in the plane model in this PointCloud. Hit 'q' to exit the viewer and program.
+Again hit 'r' to scale and center the view and then click and drag with the mouse to rotate around the cloud.  You can see there are no longer any points that do not lie within the plane model in this PointCloud. Hit 'q' to exit the viewer and program.
 
 There is also an example using a sphere in this program.  If you run it with::
 
   $ ./random_sample_consensus -s
 
-It will generate and display a sphereical cloud and some outliers as well.
+It will generate and display a spherical cloud and some outliers as well.
 
 .. image:: images/ransac_outliers_sphere.png
    :align: center
@@ -123,4 +123,4 @@ It will show you the result of applying RandomSampleConsensus to this data set w
    :align: center
    :height: 400px
 
-.. [Wikipedia] http://en.wikipedia.org/wiki/RANSAC
+.. [WikipediaRANSAC] http://en.wikipedia.org/wiki/RANSAC

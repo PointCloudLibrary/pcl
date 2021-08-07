@@ -35,9 +35,9 @@
  *
  */
 
-#ifndef PCL_KINFU_KINFUTRACKER_HPP_
-#define PCL_KINFU_KINFUTRACKER_HPP_
+#pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/kinfu/pixel_rgb.h>
@@ -68,13 +68,13 @@ namespace pcl
     {
       public:
         /** \brief Pixel type for rendered image. */
-        typedef pcl::gpu::PixelRGB PixelRGB;
+        using PixelRGB = pcl::gpu::PixelRGB;
 
-        typedef DeviceArray2D<PixelRGB> View;
-        typedef DeviceArray2D<unsigned short> DepthMap;
+        using View = DeviceArray2D<PixelRGB>;
+        using DepthMap = DeviceArray2D<unsigned short>;
 
-        typedef pcl::PointXYZ PointType;
-        typedef pcl::Normal NormalType;
+        using PointType = pcl::PointXYZ;
+        using NormalType = pcl::Normal;
 
         /** \brief Constructor
           * \param[in] rows height of depth image
@@ -98,7 +98,7 @@ namespace pcl
           * \param[out] cy principal point y
           */
         void
-        getDepthIntrinsics (float& fx, float& fy, float& cx, float& cy);
+        getDepthIntrinsics (float& fx, float& fy, float& cx, float& cy) const;
         
 
         /** \brief Sets initial camera pose relative to volume coordinate space
@@ -147,7 +147,7 @@ namespace pcl
           * \param hint
           * \return true if can render 3D view.
           */
-        bool operator() (const DepthMap& depth, Eigen::Affine3f* hint=NULL);
+        bool operator() (const DepthMap& depth, Eigen::Affine3f* hint=nullptr);
 
         /** \brief Processes next frame (both depth and color integration). Please call initColorIntegration before invpoking this.
           * \param[in] depth next depth frame with values in millimeters
@@ -164,7 +164,7 @@ namespace pcl
         getCameraPose (int time = -1) const;
 
         /** \brief Returns number of poses including initial */
-        size_t
+        std::size_t
         getNumberOfPoses () const;
 
         /** \brief Returns TSDF volume storage */
@@ -206,13 +206,13 @@ namespace pcl
         enum { LEVELS = 3 };
 
         /** \brief ICP Correspondences  map type */
-        typedef DeviceArray2D<int> CorespMap;
+        using CorespMap = DeviceArray2D<int>;
 
         /** \brief Vertex or Normal Map type */
-        typedef DeviceArray2D<float> MapArr;
+        using MapArr = DeviceArray2D<float>;
         
-        typedef Eigen::Matrix<float, 3, 3, Eigen::RowMajor> Matrix3frm;
-        typedef Eigen::Vector3f Vector3f;
+        using Matrix3frm = Eigen::Matrix<float, 3, 3, Eigen::RowMajor>;
+        using Vector3f = Eigen::Vector3f;
 
         /** \brief Height of input depth image. */
         int rows_;
@@ -297,10 +297,8 @@ namespace pcl
         reset ();
 
 public:
-EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 
     };
   }
 };
-
-#endif /* PCL_KINFU_KINFUTRACKER_HPP_ */

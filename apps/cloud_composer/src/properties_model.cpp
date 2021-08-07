@@ -1,14 +1,13 @@
 #include <pcl/apps/cloud_composer/properties_model.h>
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
 
+#include <QDebug>
 
 pcl::cloud_composer::PropertiesModel::PropertiesModel (QObject* parent)
   : QStandardItemModel (parent)
 {
   setHorizontalHeaderItem (0, new QStandardItem ("Name"));
-  setHorizontalHeaderItem (1, new QStandardItem ("Value"));
-
-  
+  setHorizontalHeaderItem (1, new QStandardItem ("Value"));  
 }
 
 pcl::cloud_composer::PropertiesModel::PropertiesModel (CloudComposerItem* parent_item, QObject* parent)
@@ -19,12 +18,11 @@ pcl::cloud_composer::PropertiesModel::PropertiesModel (CloudComposerItem* parent
   setHorizontalHeaderItem (1, new QStandardItem ("Value"));
   
   connect (this, SIGNAL (itemChanged (QStandardItem*)),
-           this, SLOT (propertyChanged (QStandardItem*)));
-  
+           this, SLOT (propertyChanged (QStandardItem*)));  
 }
 
 pcl::cloud_composer::PropertiesModel::PropertiesModel (const PropertiesModel& to_copy)
-  : QStandardItemModel ()
+: QStandardItemModel ()
 {
   for (int i=0; i < to_copy.rowCount (); ++i){
     QList <QStandardItem*> new_row;
@@ -41,18 +39,17 @@ pcl::cloud_composer::PropertiesModel::PropertiesModel (const PropertiesModel& to
 }
 
 pcl::cloud_composer::PropertiesModel::~PropertiesModel ()
-{
-  
+{  
 }
 
 void
-pcl::cloud_composer::PropertiesModel::addProperty (const QString prop_name, QVariant value,  Qt::ItemFlags flags, QString category)
+pcl::cloud_composer::PropertiesModel::addProperty (const QString& prop_name, const QVariant& value,  Qt::ItemFlags flags, const QString& category)
 {
   QStandardItem* parent_item = invisibleRootItem ();
   if (category.size () > 0)
   {
     QList<QStandardItem*> items = findItems (category);
-    if (items.size () == 0)
+    if (items.empty ())
       qWarning () << "No category named "<<prop_name<<" found in "<<parent_item_->text ()<<" adding to root";
     else if (items.size () > 1)
       qCritical () << "Multiple categories with same name found!! This is not good...";
@@ -74,23 +71,23 @@ pcl::cloud_composer::PropertiesModel::addProperty (const QString prop_name, QVar
 }
 
 void
-pcl::cloud_composer::PropertiesModel::addCategory (const QString category_name)
+pcl::cloud_composer::PropertiesModel::addCategory (const QString& category_name)
 {
   QStandardItem* new_category = new QStandardItem (category_name);
   appendRow (new_category);
 }
 
 QVariant 
-pcl::cloud_composer::PropertiesModel::getProperty (const QString prop_name) const
+pcl::cloud_composer::PropertiesModel::getProperty (const QString& prop_name) const
 {
   //qDebug () << "Searching for property " << prop_name;
   QList<QStandardItem*> items = findItems (prop_name, Qt::MatchExactly | Qt::MatchRecursive, 0);
-  if (items.size () == 0)
+  if (items.empty ())
   {
     qWarning () << "No property named "<<prop_name<<" found in "<<parent_item_->text ();
     return QVariant ();
   }
-  else if (items.size () > 1)
+  if (items.size () > 1)
   {
     qWarning () << "Multiple properties found with name "<<prop_name<<" in "<<parent_item_->text ();
   }
@@ -100,7 +97,7 @@ pcl::cloud_composer::PropertiesModel::getProperty (const QString prop_name) cons
  // qDebug () << "Prop name="<<prop_name<<" row="<<property->row ()<<" col="<<property->column();
   int row = property->row ();
   QStandardItem* parent_item = property->parent ();
-  if (parent_item == 0)
+  if (parent_item == nullptr)
     parent_item = invisibleRootItem ();
   return parent_item->child (row,1)->data (Qt::EditRole);
 }
@@ -120,8 +117,7 @@ pcl::cloud_composer::PropertiesModel::copyProperties (const PropertiesModel* to_
         new_row.append (to_copy->item(i,j)->clone ());
       }
     }
-    appendRow (new_row);
-    
+    appendRow (new_row);    
   }
 }
 
@@ -130,7 +126,5 @@ void
 pcl::cloud_composer::PropertiesModel::propertyChanged (QStandardItem*)
 {
   //qDebug () << "Property Changed in properties model";
-  parent_item_->propertyChanged ();
-  
+  parent_item_->propertyChanged ();  
 }
-

@@ -52,17 +52,10 @@
 pcl::visualization::Window::Window (const std::string& window_name)
   : stopped_ ()
   , timer_id_ ()
-  , mouse_signal_ ()
-  , keyboard_signal_ ()
-  , win_ ()
-  , interactor_ ()
   , mouse_command_ (vtkCallbackCommand::New ())
   , keyboard_command_ (vtkCallbackCommand::New ())
   , style_ (vtkSmartPointer<pcl::visualization::PCLVisualizerInteractorStyle>::New ())
   , rens_ (vtkSmartPointer<vtkRendererCollection>::New ())
-  , exit_main_loop_timer_callback_ ()
-  , exit_callback_ ()
-
 {
   mouse_command_->SetClientData (this);
   mouse_command_->SetCallback (Window::MouseCallback);
@@ -197,7 +190,7 @@ pcl::visualization::Window::spinOnce (int time, bool force_redraw)
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection 
-pcl::visualization::Window::registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> callback)
+pcl::visualization::Window::registerMouseCallback (std::function<void (const pcl::visualization::MouseEvent&)> callback)
 {
   // just add observer at first time when a callback is registered
   if (mouse_signal_.empty ())
@@ -217,7 +210,7 @@ pcl::visualization::Window::registerMouseCallback (boost::function<void (const p
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection 
-pcl::visualization::Window::registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
+pcl::visualization::Window::registerKeyboardCallback (std::function<void (const pcl::visualization::KeyboardEvent&)> callback)
 {
   // just add observer at first time when a callback is registered
   if (keyboard_signal_.empty ())
@@ -330,25 +323,8 @@ pcl::visualization::Window::KeyboardCallback (vtkObject*, unsigned long eid, voi
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::Window::ExitMainLoopTimerCallback::ExitMainLoopTimerCallback () 
-  : right_timer_id (), window () 
+  : right_timer_id (-1), window (nullptr) 
 {
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-pcl::visualization::Window::ExitMainLoopTimerCallback::ExitMainLoopTimerCallback (
-    const pcl::visualization::Window::ExitMainLoopTimerCallback& src) 
-  : vtkCommand (), right_timer_id (src.right_timer_id), window (src.window) 
-{
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-pcl::visualization::Window::ExitMainLoopTimerCallback&
-pcl::visualization::Window::ExitMainLoopTimerCallback::operator = (
-    const pcl::visualization::Window::ExitMainLoopTimerCallback& src) 
-{ 
-  right_timer_id = src.right_timer_id; 
-  window = src.window; 
-  return (*this); 
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -367,24 +343,8 @@ pcl::visualization::Window::ExitMainLoopTimerCallback::Execute (
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::Window::ExitCallback::ExitCallback () 
-  : window () 
+  : window (nullptr)
 {
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-pcl::visualization::Window::ExitCallback::ExitCallback (
-    const pcl::visualization::Window::ExitCallback &src) 
-  : vtkCommand (), window (src.window)
-{
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-pcl::visualization::Window::ExitCallback&
-pcl::visualization::Window::ExitCallback::operator = (
-    const pcl::visualization::Window::ExitCallback &src) 
-{
-  window = src.window; 
-  return (*this);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

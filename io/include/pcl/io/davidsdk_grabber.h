@@ -36,18 +36,18 @@
  *  Author: Victor Lamoine (victor.lamoine@gmail.com)
  */
 
-#include <pcl/pcl_config.h>
+#pragma once
 
-#ifndef __PCL_IO_DAVIDSDK_GRABBER__
-#define __PCL_IO_DAVIDSDK_GRABBER__
+#include <pcl/pcl_config.h>
 
 #include <pcl/common/time.h>
 #include <pcl/common/io.h>
-#include <boost/thread.hpp>
 #include <pcl/PolygonMesh.h>
 #include <pcl/io/grabber.h>
 
 #include <david.h>
+
+#include <thread>
 
 namespace pcl
 {
@@ -67,26 +67,20 @@ namespace pcl
   {
     public:
       /** @cond */
-      typedef boost::shared_ptr<DavidSDKGrabber> Ptr;
-      typedef boost::shared_ptr<const DavidSDKGrabber> ConstPtr;
+      using Ptr = shared_ptr<DavidSDKGrabber>;
+      using ConstPtr = shared_ptr<const DavidSDKGrabber>;
 
       // Define callback signature typedefs
-      typedef void
-      (sig_cb_davidsdk_point_cloud) (const pcl::PointCloud<pcl::PointXYZ>::Ptr &);
+      using sig_cb_davidsdk_point_cloud = void(const pcl::PointCloud<pcl::PointXYZ>::Ptr &);
 
-      typedef void
-      (sig_cb_davidsdk_mesh) (const pcl::PolygonMesh::Ptr &);
+      using sig_cb_davidsdk_mesh = void(const pcl::PolygonMesh::Ptr &);
 
-      typedef void
-      (sig_cb_davidsdk_image) (const boost::shared_ptr<pcl::PCLImage> &);
+      using sig_cb_davidsdk_image = void(const pcl::PCLImage::Ptr &);
 
-      typedef void
-      (sig_cb_davidsdk_point_cloud_image) (const pcl::PointCloud<pcl::PointXYZ>::Ptr &,
-                                           const boost::shared_ptr<pcl::PCLImage> &);
+      using sig_cb_davidsdk_point_cloud_image = void(const pcl::PointCloud<pcl::PointXYZ>::Ptr &, const pcl::PCLImage::Ptr &);
 
-      typedef void
-      (sig_cb_davidsdk_mesh_image) (const pcl::PolygonMesh::Ptr &,
-                                    const boost::shared_ptr<pcl::PCLImage> &);
+      using sig_cb_davidsdk_mesh_image = void(const pcl::PolygonMesh::Ptr &, const pcl::PCLImage::Ptr &);
+
       /** @endcond */
 
       /** @brief Constructor */
@@ -94,7 +88,7 @@ namespace pcl
 
       /** @brief Destructor inherited from the Grabber interface. It never throws. */
       virtual
-      ~DavidSDKGrabber () throw ();
+      ~DavidSDKGrabber () noexcept;
 
       /** @brief [Connect](http://docs.david-3d.com/sdk/en/classdavid_1_1_client_json_rpc.html#a4b948e57a2e5e7f9cdcf1171c500aa24) client
        * @param[in] address
@@ -102,7 +96,7 @@ namespace pcl
        * @return Server info*/
       david::ServerInfo
       connect (const std::string & address = "127.0.0.1",
-               uint16_t port = david::DAVID_SDK_DefaultPort);
+               std::uint16_t port = david::DAVID_SDK_DefaultPort);
 
       /** @brief [Disconnect](http://docs.david-3d.com/sdk/en/classdavid_1_1_client_json_rpc.html#a2770728a6de2c708df767bedf8be0814) client
        * @param[in] stop_server */
@@ -219,7 +213,7 @@ namespace pcl
 
     protected:
       /** @brief Grabber thread */
-      boost::thread grabber_thread_;
+      std::thread grabber_thread_;
 
       /** @brief Boost point cloud signal */
       boost::signals2::signal<sig_cb_davidsdk_point_cloud>* point_cloud_signal_;
@@ -258,12 +252,10 @@ namespace pcl
       pcl::EventFrequency frequency_;
 
       /** @brief Mutual exclusion for FPS computation */
-      mutable boost::mutex fps_mutex_;
+      mutable std::mutex fps_mutex_;
 
       /** @brief Continuously asks for images and or point clouds/meshes data from the device and publishes them if available. */
       void
       processGrabbing ();
   };
 }  // namespace pcl
-
-#endif // __PCL_IO_DAVIDSDK_GRABBER__

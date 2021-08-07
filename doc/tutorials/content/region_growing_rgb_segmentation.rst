@@ -33,7 +33,7 @@ Let's take a look at first lines that are of interest:
 
 .. literalinclude:: sources/region_growing_rgb_segmentation/region_growing_rgb_segmentation.cpp
    :language: cpp
-   :lines: 16-21
+   :lines: 20-25
 
 They are simply loading the cloud from the .pcd file. Note that points must have the color.
 

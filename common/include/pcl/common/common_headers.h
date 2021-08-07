@@ -33,8 +33,7 @@
  *
  */
 
-#ifndef PCL_COMMON_HEADERS_
-#define PCL_COMMON_HEADERS_
+#pragma once
 
 #include <pcl/common/common.h>
 #include <pcl/common/norms.h>
@@ -42,5 +41,3 @@
 #include <pcl/common/time.h>
 #include <pcl/common/file_io.h>
 #include <pcl/common/eigen.h>
-
-#endif  //#ifndef PCL_COMMON_HEADERS_

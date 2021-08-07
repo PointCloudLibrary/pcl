@@ -230,7 +230,7 @@ ON_BOOL32 ON_Geometry::HasBrepForm() const
   return false;
 }
 
-ON_Brep* ON_Geometry::BrepForm( ON_Brep* brep ) const
+ON_Brep* ON_Geometry::BrepForm( ON_Brep* ) const
 {
   // override if specific geoemtry has brep form
   return NULL;
@@ -245,7 +245,7 @@ ON_COMPONENT_INDEX ON_Geometry::ComponentIndex() const
   return ci;  
 }
 
-bool ON_Geometry::EvaluatePoint( const class ON_ObjRef& objref, ON_3dPoint& P ) const
+bool ON_Geometry::EvaluatePoint( const class ON_ObjRef&, ON_3dPoint& P ) const
 {
   // virtual function default
   P = ON_UNSET_POINT;

@@ -37,14 +37,10 @@
  *
  */
 
-#ifndef PCL_FILTER_H_
-#define PCL_FILTER_H_
+#pragma once
 
 #include <pcl/pcl_base.h>
-#include <pcl/common/io.h>
-#include <pcl/conversions.h>
-#include <pcl/filters/boost.h>
-#include <cfloat>
+#include <pcl/common/io.h> // for copyPointCloud
 #include <pcl/PointIndices.h>
 
 namespace pcl
@@ -52,7 +48,7 @@ namespace pcl
   /** \brief Removes points with x, y, or z equal to NaN
     * \param[in] cloud_in the input point cloud
     * \param[out] cloud_out the output point cloud
-    * \param[out] index the mapping (ordered): cloud_out.points[i] = cloud_in.points[index[i]]
+    * \param[out] index the mapping (ordered): cloud_out[i] = cloud_in[index[i]]
     * \note The density of the point cloud is lost.
     * \note Can be called with cloud_in == cloud_out
     * \ingroup filters
@@ -60,12 +56,12 @@ namespace pcl
   template<typename PointT> void
   removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                            pcl::PointCloud<PointT> &cloud_out,
-                           std::vector<int> &index);
+                           Indices &index);
 
   /** \brief Removes points that have their normals invalid (i.e., equal to NaN)
     * \param[in] cloud_in the input point cloud
     * \param[out] cloud_out the output point cloud
-    * \param[out] index the mapping (ordered): cloud_out.points[i] = cloud_in.points[index[i]]
+    * \param[out] index the mapping (ordered): cloud_out[i] = cloud_in[index[i]]
     * \note The density of the point cloud is lost.
     * \note Can be called with cloud_in == cloud_out
     * \ingroup filters
@@ -73,7 +69,7 @@ namespace pcl
   template<typename PointT> void
   removeNaNNormalsFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                                   pcl::PointCloud<PointT> &cloud_out,
-                                  std::vector<int> &index);
+                                  Indices &index);
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Filter represents the base filter class. All filters must inherit from this interface.
@@ -84,30 +80,23 @@ namespace pcl
   class Filter : public PCLBase<PointT>
   {
     public:
-      using PCLBase<PointT>::indices_;
-      using PCLBase<PointT>::input_;
-
-      typedef boost::shared_ptr< Filter<PointT> > Ptr;
-      typedef boost::shared_ptr< const Filter<PointT> > ConstPtr;
+      using Ptr = shared_ptr<Filter<PointT> >;
+      using ConstPtr = shared_ptr<const Filter<PointT> >;
 
 
-      typedef pcl::PointCloud<PointT> PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using PointCloud = pcl::PointCloud<PointT>;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
       /** \brief Empty constructor.
         * \param[in] extract_removed_indices set to true if the filtered data indices should be saved in a
         * separate list. Default: false.
         */
       Filter (bool extract_removed_indices = false) :
-        removed_indices_ (new std::vector<int>),
-        filter_name_ (),
+        removed_indices_ (new Indices),
         extract_removed_indices_ (extract_removed_indices)
       {
       }
-
-      /** \brief Empty destructor */
-      virtual ~Filter () {}
 
       /** \brief Get the point indices being removed */
       inline IndicesConstPtr const
@@ -156,6 +145,9 @@ namespace pcl
 
     protected:
 
+      using PCLBase<PointT>::indices_;
+      using PCLBase<PointT>::input_;
+
       using PCLBase<PointT>::initCompute;
       using PCLBase<PointT>::deinitCompute;
 
@@ -194,26 +186,22 @@ namespace pcl
   class PCL_EXPORTS Filter<pcl::PCLPointCloud2> : public PCLBase<pcl::PCLPointCloud2>
   {
     public:
-      typedef boost::shared_ptr< Filter<pcl::PCLPointCloud2> > Ptr;
-      typedef boost::shared_ptr< const Filter<pcl::PCLPointCloud2> > ConstPtr;
+      using Ptr = shared_ptr<Filter<pcl::PCLPointCloud2> >;
+      using ConstPtr = shared_ptr<const Filter<pcl::PCLPointCloud2> >;
 
-      typedef pcl::PCLPointCloud2 PCLPointCloud2;
-      typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
-      typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
+      using PCLPointCloud2 = pcl::PCLPointCloud2;
+      using PCLPointCloud2Ptr = PCLPointCloud2::Ptr;
+      using PCLPointCloud2ConstPtr = PCLPointCloud2::ConstPtr;
 
       /** \brief Empty constructor.
         * \param[in] extract_removed_indices set to true if the filtered data indices should be saved in a
         * separate list. Default: false.
         */
       Filter (bool extract_removed_indices = false) :
-        removed_indices_ (new std::vector<int>),
-        extract_removed_indices_ (extract_removed_indices),
-        filter_name_ ()
+        removed_indices_ (new Indices),
+        extract_removed_indices_ (extract_removed_indices)
       {
       }
-
-      /** \brief Empty destructor */
-      virtual ~Filter () {}
 
       /** \brief Get the point indices being removed */
       inline IndicesConstPtr const
@@ -269,5 +257,3 @@ namespace pcl
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/filter.hpp>
 #endif
-
-#endif  //#ifndef PCL_FILTER_H_

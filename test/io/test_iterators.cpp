@@ -34,17 +34,13 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
-#include <iostream>  
-
-#include <pcl/PCLPointCloud2.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
-typedef pcl::PointXYZ Point;
-typedef pcl::PointCloud<Point> PointCloud;
+using Point = pcl::PointXYZ;
+using PointCloud = pcl::PointCloud<Point>;
 
 PointCloud cloud;
 

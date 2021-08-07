@@ -36,9 +36,7 @@
  * $Id$
  */
 
-
-#ifndef PCL_TEST_MACROS
-#define PCL_TEST_MACROS
+#pragma once
 
 #include <Eigen/Core>
 
@@ -66,8 +64,8 @@ namespace pcl
     {
       SCOPED_TRACE("EXPECT_EQ_VECTORS failed");
       EXPECT_EQ (v1.size (), v2.size ());
-      size_t length = v1.size ();
-      for (size_t i = 0; i < length; ++i)
+      std::size_t length = v1.size ();
+      for (std::size_t i = 0; i < length; ++i)
         EXPECT_EQ (v1[i], v2[i]);
     }
 
@@ -76,8 +74,8 @@ namespace pcl
     {
       SCOPED_TRACE("EXPECT_NEAR_VECTORS failed");
       EXPECT_EQ (v1.size (), v2.size ());
-      size_t length = v1.size ();
-      for (size_t i = 0; i < length; ++i)
+      std::size_t length = v1.size ();
+      for (std::size_t i = 0; i < length; ++i)
         EXPECT_NEAR (v1[i], v2[i], epsilon);
     }
 
@@ -221,6 +219,52 @@ namespace pcl
         return ::testing::AssertionSuccess ();
       }
 
+
+        template<typename V>
+        ::testing::AssertionResult VectorContainsAll(const char*  expr1, const char* expr2, const std::vector<V>& elements, const std::vector<V>& v) {
+            for(const V& item : elements) {
+                if(std::find(v.cbegin(), v.cend(), item)==v.cend()) {
+
+                    std::ostringstream vec_rep;
+                    std::copy(v.cbegin(), v.cend()-1, std::ostream_iterator<V>(vec_rep, ", "));
+                    vec_rep<<v.back();
+
+                    std::ostringstream elements_rep;
+                    std::copy(elements.cbegin(), elements.cend()-1, std::ostream_iterator<V>(elements_rep, ", "));
+                    elements_rep << elements.back();
+
+                    return ::testing::AssertionFailure ()
+                            << "Actual       : " << expr2 << std::endl
+                            << "contains     : " << vec_rep.str() << std::endl
+                            << "Target set   : " << expr1 << std::endl
+                            << "contains     : " << elements_rep.str() << std::endl;
+                }
+            }
+            return ::testing::AssertionSuccess ();
+        }
+
+        template<typename V>
+        ::testing::AssertionResult VectorDoesNotContain(const char*  expr1, const char*  expr2, const std::vector<V>& elements, const std::vector<V>& v) {
+            for(const V& item : elements) {
+                if(std::find(v.cbegin(), v.cend(), item)!=v.cend()) {
+                    std::ostringstream vec_rep;
+                    std::copy(v.cbegin(), v.cend()-1, std::ostream_iterator<V>(vec_rep, ", "));
+                    vec_rep<<v.back();
+
+                    std::ostringstream elements_rep;
+                    std::copy(elements.cbegin(), elements.cend()-1, std::ostream_iterator<V>(elements_rep, ", "));
+                    elements_rep << elements.back();
+
+                    return ::testing::AssertionFailure ()
+                            << "Actual       : " << expr2 << std::endl
+                            << "contains     : " << vec_rep.str() << std::endl
+                            << "Forbidden set: " << expr1 << std::endl
+                            << "contains     : " << elements_rep.str() << std::endl;
+                }
+            }
+            return ::testing::AssertionSuccess ();
+        }
+
     }
 
   }
@@ -315,4 +359,34 @@ namespace pcl
   EXPECT_PRED_FORMAT2(::pcl::test::internal::MetaDataEQ, \
                       expected, actual)
 
-#endif
+
+/// Expect that the vector contains all elements
+/// from the expected vector.
+#define EXPECT_VECTOR_CONTAINS_ALL(expected, actual)            \
+    EXPECT_PRED_FORMAT2(::pcl::test::internal::VectorContainsAll, \
+                        expected, actual)
+
+
+/// Expect that the vector does not contain any element
+/// from the expected vector.
+#define EXPECT_VECTOR_DOES_NOT_CONTAIN(expected, actual)           \
+    EXPECT_PRED_FORMAT2(::pcl::test::internal::VectorDoesNotContain, \
+                        expected, actual)
+
+
+
+/// Assert that the vector contains all elements
+/// from the expected vector.
+#define ASSERT_VECTOR_CONTAINS_ALL(expected, actual)            \
+    ASSERT_PRED_FORMAT2(::pcl::test::internal::VectorContainsAll, \
+                        expected, actual)
+
+
+/// Assert that the vector does not contain any element
+/// from the expected vector.
+#define ASSERT_VECTOR_DOES_NOT_CONTAIN(expected, actual)           \
+    ASSERT_PRED_FORMAT2(::pcl::test::internal::VectorDoesNotContain, \
+                        expected, actual)
+
+
+

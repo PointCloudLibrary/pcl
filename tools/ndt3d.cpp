@@ -45,10 +45,10 @@
 #include <vector>
 
 
-typedef pcl::PointXYZ PointType;
-typedef pcl::PointCloud<PointType> Cloud;
-typedef Cloud::ConstPtr CloudConstPtr;
-typedef Cloud::Ptr CloudPtr;
+using PointType = pcl::PointXYZ;
+using Cloud = pcl::PointCloud<PointType>;
+using CloudConstPtr = Cloud::ConstPtr;
+using CloudPtr = Cloud::Ptr;
 
 
 int
@@ -99,8 +99,8 @@ main (int argc, char **argv)
   std::cout << argv[pcd_indices[0]] << " width: " << model->width << " height: " << model->height << std::endl;
 
   std::string result_filename (argv[pcd_indices[0]]);
-  result_filename = result_filename.substr (result_filename.rfind ("/") + 1);
-  pcl::io::savePCDFile (result_filename.c_str (), *model);
+  result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
+  pcl::io::savePCDFile (result_filename, *model);
   std::cout << "saving first model to " << result_filename << std::endl;
 
   Eigen::Matrix4f t (Eigen::Matrix4f::Identity ());
@@ -108,7 +108,7 @@ main (int argc, char **argv)
   pcl::ApproximateVoxelGrid<PointType> voxel_filter;
   voxel_filter.setLeafSize (filter_res, filter_res, filter_res);
 
-  for (size_t i = 1; i < pcd_indices.size (); i++)
+  for (std::size_t i = 1; i < pcd_indices.size (); i++)
   {
     CloudPtr data (new Cloud);
     if (pcl::io::loadPCDFile (argv[pcd_indices[i]], *data) == -1)
@@ -136,7 +136,7 @@ main (int argc, char **argv)
     CloudPtr tmp (new Cloud);
     ndt->align (*tmp);
 
-    t = t * ndt->getFinalTransformation ();
+    t *= ndt->getFinalTransformation ();
 
     pcl::transformPointCloud (*data, *tmp, t);
 
@@ -145,8 +145,8 @@ main (int argc, char **argv)
     *model = *data;
 
     std::string result_filename (argv[pcd_indices[i]]);
-    result_filename = result_filename.substr (result_filename.rfind ("/") + 1);
-    pcl::io::savePCDFileBinary (result_filename.c_str (), *tmp);
+    result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
+    pcl::io::savePCDFileBinary (result_filename, *tmp);
     std::cout << "saving result to " << result_filename << std::endl;
   }
 

@@ -1157,7 +1157,7 @@ bool ON_ReversePointList(
     dim++;
   if ( count <= 1 )
     return true;
-  const size_t ele_size = dim*sizeof(*p);
+  const std::size_t ele_size = dim*sizeof(*p);
   void* t = onmalloc(ele_size);
   int i, j;
   for ( i = 0, j = (count-1)*stride; i < j; i += stride, j -= stride ) {
@@ -1729,7 +1729,7 @@ ON_ComparePointList( // returns
   const double wBtol = wB*ON_ZERO_TOLERANCE;
   double A[3] = {0.0,0.0,0.0};
   double B[3] = {0.0,0.0,0.0};
-  const size_t AB_size = dim*sizeof(A[0]);
+  const std::size_t AB_size = dim*sizeof(A[0]);
 
   for ( i = 0; i < point_count && !rc; i++ ) 
   {
@@ -2903,8 +2903,8 @@ void
 ON_Sort( ON::sort_algorithm method, 
          int* index, 
          const void* data, 
-         size_t count, 
-         size_t sizeof_element, 
+         std::size_t count, 
+         std::size_t sizeof_element, 
          int (*compar)(const void*,const void*)
          )
 /*****************************************************************************
@@ -2949,7 +2949,7 @@ REFERENCE:
     return;
   }
 
-  isizeof_element = (unsigned int)sizeof_element; // (int) converts 64 bit size_t
+  isizeof_element = (unsigned int)sizeof_element; // (int) converts 64 bit std::size_t
   icount = (unsigned int)count;
   idx = (unsigned int*)index; // convert to unsigned int
   
@@ -3024,8 +3024,8 @@ void
 ON_Sort( ON::sort_algorithm method, 
          int* index, 
          const void* data, 
-         size_t count, 
-         size_t sizeof_element, 
+         std::size_t count, 
+         std::size_t sizeof_element, 
          int (*compar)(const void*,const void*,void*),
          void* p
          )
@@ -3045,7 +3045,7 @@ ON_Sort( ON::sort_algorithm method,
     return;
   }
 
-  isizeof_element = (unsigned int)sizeof_element; // (int) converts 64 bit size_t
+  isizeof_element = (unsigned int)sizeof_element; // (int) converts 64 bit std::size_t
   icount = (unsigned int)count;
   idx = (unsigned int*)index; // convert to unsigned int
   
@@ -3117,9 +3117,9 @@ ON_Sort( ON::sort_algorithm method,
   }
 }
 
-static void ON_hsort_str(char **e, size_t nel)
+static void ON_hsort_str(char **e, std::size_t nel)
 {
-  size_t
+  std::size_t
     i_end,k;
   char
     *e_tmp;
@@ -3139,7 +3139,7 @@ static void ON_hsort_str(char **e, size_t nel)
         break;
       }
     }
-    { size_t i, j;
+    { std::size_t i, j;
       i = k;
       j = (k<<1) + 1;
       while (j <= i_end) {
@@ -3155,11 +3155,11 @@ static void ON_hsort_str(char **e, size_t nel)
   }
 }
 
-const int* ON_BinarySearchIntArray( int key, const int* base, size_t nel )
+const int* ON_BinarySearchIntArray( int key, const int* base, std::size_t nel )
 {
   if (nel > 0 && base )
   {
-    size_t i;
+    std::size_t i;
     int d;
 
     // The end tests are not necessary, but they
@@ -3201,11 +3201,11 @@ const int* ON_BinarySearchIntArray( int key, const int* base, size_t nel )
   return 0;
 }
 
-const unsigned int* ON_BinarySearchUnsignedIntArray( unsigned int key, const unsigned int* base, size_t nel )
+const unsigned int* ON_BinarySearchUnsignedIntArray( unsigned int key, const unsigned int* base, std::size_t nel )
 {
   if (nel > 0 && base )
   {
-    size_t i;
+    std::size_t i;
     unsigned int d;
 
     // The end tests are not necessary, but they
@@ -3247,11 +3247,11 @@ const unsigned int* ON_BinarySearchUnsignedIntArray( unsigned int key, const uns
   return 0;
 }
 
-const double* ON_BinarySearchDoubleArray( double key, const double* base, size_t nel )
+const double* ON_BinarySearchDoubleArray( double key, const double* base, std::size_t nel )
 {
   if (nel > 0 && base )
   {
-    size_t i;
+    std::size_t i;
     double d;
 
     // The end tests are not necessary, but they
@@ -3348,7 +3348,7 @@ void
 ON_SortStringArray(
         ON::sort_algorithm method,
         char** e,   // array of strings
-        size_t nel    // length of array
+        std::size_t nel    // length of array
         )
 {
   if ( nel > 1 )

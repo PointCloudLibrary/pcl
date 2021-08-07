@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_QUANTIZED_MAP
-#define PCL_FEATURES_QUANTIZED_MAP
+#pragma once
 
 #include <vector>
 #include <pcl/pcl_macros.h>
@@ -48,15 +47,15 @@ namespace pcl
     public:
 
       QuantizedMap ();
-      QuantizedMap (size_t width, size_t height);
+      QuantizedMap (std::size_t width, std::size_t height);
       QuantizedMap (const QuantizedMap & copy_me);
 
       virtual ~QuantizedMap ();
 
-      inline size_t
+      inline std::size_t
       getWidth () const { return (width_); }
       
-      inline size_t
+      inline std::size_t
       getHeight () const { return (height_); }
       
       inline unsigned char*
@@ -66,18 +65,18 @@ namespace pcl
       getData () const { return (&data_[0]); }
 
       inline QuantizedMap
-      getSubMap (size_t x,
-                 size_t y,
-                 size_t width,
-                 size_t height)
+      getSubMap (std::size_t x,
+                 std::size_t y,
+                 std::size_t width,
+                 std::size_t height)
       {
         QuantizedMap subMap(width, height);
 
-        for (size_t row_index = 0; row_index < height; ++row_index)
+        for (std::size_t row_index = 0; row_index < height; ++row_index)
         {
-          for (size_t col_index = 0; col_index < width; ++col_index)
+          for (std::size_t col_index = 0; col_index < width; ++col_index)
           {
-            //const size_t index = (row_index+y)*width_ + (col_index+x);
+            //const std::size_t index = (row_index+y)*width_ + (col_index+x);
             //const unsigned char value = data_[index];
             //subMap.data_[row_index*width + col_index] = value;//data_[(row_index+y)*width_ + (col_index+x)];
             subMap (col_index, row_index) = (*this) (col_index + x, row_index + y);
@@ -88,22 +87,22 @@ namespace pcl
       }
 
       void 
-      resize (size_t width, size_t height);
+      resize (std::size_t width, std::size_t height);
 
       inline unsigned char & 
-      operator() (const size_t x, const size_t y) 
+      operator() (const std::size_t x, const std::size_t y) 
       { 
         return (data_[y*width_+x]); 
       }
 
       inline const unsigned char & 
-      operator() (const size_t x, const size_t y) const
+      operator() (const std::size_t x, const std::size_t y) const
       { 
         return (data_[y*width_+x]); 
       }
 
       static void
-      spreadQuantizedMap (const QuantizedMap & input_map, QuantizedMap & output_map, size_t spreading_size);
+      spreadQuantizedMap (const QuantizedMap & input_map, QuantizedMap & output_map, std::size_t spreading_size);
 
       void 
       serialize (std::ostream & stream) const
@@ -131,8 +130,8 @@ namespace pcl
         stream.read (reinterpret_cast<char*> (&width), sizeof (width));
         stream.read (reinterpret_cast<char*> (&height), sizeof (height));
 
-        width_ = static_cast<size_t> (width);
-        height_ = static_cast<size_t> (height);
+        width_ = static_cast<std::size_t> (width);
+        height_ = static_cast<std::size_t> (height);
 
         int num_of_elements;
         stream.read (reinterpret_cast<char*> (&num_of_elements), sizeof (num_of_elements));
@@ -146,10 +145,8 @@ namespace pcl
 
     //private:
       std::vector<unsigned char> data_;
-      size_t width_;
-      size_t height_;  
+      std::size_t width_;
+      std::size_t height_;  
     
   };
 }
-
-#endif   
