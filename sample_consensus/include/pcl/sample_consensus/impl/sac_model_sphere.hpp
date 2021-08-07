@@ -378,7 +378,10 @@ pcl::SampleConsensusModelSphere<PointT>::projectPoints (
   projected_points.header   = input_->header;
   projected_points.is_dense = input_->is_dense;
 
-  Eigen::Vector3f center (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
+  // C : sphere center
+  const Eigen::Vector3d C (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
+  // r : radius
+  const double r = model_coefficients[3];
 
   // Copy all the data fields from the input cloud to the projected one?
   if (copy_data_fields)
@@ -388,31 +391,27 @@ pcl::SampleConsensusModelSphere<PointT>::projectPoints (
     projected_points.width    = input_->width;
     projected_points.height   = input_->height;
 
-    typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+    using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
-    for (size_t i = 0; i < projected_points.points.size (); ++i)
+    for (std::size_t i = 0; i < projected_points.points.size (); ++i)
       // Iterate over each dimension
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the sphere
-    for (size_t i = 0; i < inliers.size (); ++i)
+    for (std::size_t i = 0; i < inliers.size (); ++i)
     {
       // what i have:
       // P : Sample Point
       Eigen::Vector3d P (input_->points[inliers[i]].x, input_->points[inliers[i]].y, input_->points[inliers[i]].z);
-      // C : sphere Center
-      Eigen::Vector3d C (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
-      // r : Radius
-      double r = model_coefficients[3];
 
       Eigen::Vector3d helper_vectorPC = P - C;
 
       // K : Point on Sphere
       Eigen::Vector3d K = C + r * helper_vectorPC.normalized ();
 
-      projected_points.points[i].x = static_cast<float> (K[0]);
-      projected_points.points[i].y = static_cast<float> (K[1]);
-      projected_points.points[i].z = static_cast<float> (K[2]);
+      projected_points.points[inliers[i]].x = static_cast<float> (K[0]);
+      projected_points.points[inliers[i]].y = static_cast<float> (K[1]);
+      projected_points.points[inliers[i]].z = static_cast<float> (K[2]);
     }
   }
   else
@@ -422,22 +421,18 @@ pcl::SampleConsensusModelSphere<PointT>::projectPoints (
     projected_points.width    = static_cast<uint32_t> (inliers.size ());
     projected_points.height   = 1;
 
-    typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+    using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
-    for (size_t i = 0; i < inliers.size (); ++i)
+    for (std::size_t i = 0; i < inliers.size (); ++i)
       // Iterate over each dimension
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points.points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the plane
-    for (size_t i = 0; i < inliers.size (); ++i)
+    for (std::size_t i = 0; i < inliers.size (); ++i)
     {
       // what i have:
       // P : Sample Point
       Eigen::Vector3d P (input_->points[inliers[i]].x, input_->points[inliers[i]].y, input_->points[inliers[i]].z);
-      // C : sphere Center
-      Eigen::Vector3d C (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
-      // r : Radius
-      double r = model_coefficients[3];
 
       Eigen::Vector3d helper_vectorPC = P - C;
 
