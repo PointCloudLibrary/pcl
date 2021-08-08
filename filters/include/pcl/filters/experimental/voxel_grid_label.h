@@ -91,15 +91,12 @@ public:
    *  \param[in] transform_filter pointer to the TransformFilter object
    */
   bool
-  setUp(TransformFilter<Filter, LabeledVoxelStruct> const* transform_filter)
+  setUp(CartesianFilter<pcl::Filter, LabeledVoxelStruct>& castesian_filter)
   {
-    auto cartesian_filter =
-        static_cast<CartesianFilter<Filter, LabeledVoxelStruct> const*>(
-            transform_filter);
     return VoxelStruct<Voxel<PointXYZRGBL>, PointXYZRGBL>::setUp(
-        cartesian_filter->getInputCloud(),
-        cartesian_filter->getDownsampleAllData(),
-        cartesian_filter->getMinimumPointsNumberPerVoxel());
+        castesian_filter.getInputCloud(),
+        castesian_filter.getDownsampleAllData(),
+        castesian_filter.getMinimumPointsNumberPerVoxel());
   }
 };
 
