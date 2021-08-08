@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  *
  * Point CLoud Library (PCL) - www.pointclouds.org
- * Copyright (c) 2020-, Open Perception
+ * Copyright (c) 2021, Open Perception
  *
  * All rights reserved
  */
