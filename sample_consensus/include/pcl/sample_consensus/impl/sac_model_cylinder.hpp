@@ -358,6 +358,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
       pp.matrix () = line_pt + k * line_dir;
 
       Eigen::Vector4f dir = p - pp;
+      dir[3] = 0.0f;
       dir.normalize ();
 
       // Calculate the projection of the point onto the cylinder
@@ -388,6 +389,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
       pp.matrix () = line_pt + k * line_dir;
 
       Eigen::Vector4f dir = p - pp;
+      dir[3] = 0.0f;
       dir.normalize ();
 
       // Calculate the projection of the point onto the cylinder
