@@ -52,7 +52,7 @@ public:
   /** \brief Constructor.
    * \param[in] filter_name filter name
    */
-  TransformFilter(const std::string& filter_name) : filter_name_(filter_name) {}
+  TransformFilter(const std::string& filter_name) { filter_name_ = filter_name; }
 
   /** \brief Destructor. */
   ~TransformFilter() {}
