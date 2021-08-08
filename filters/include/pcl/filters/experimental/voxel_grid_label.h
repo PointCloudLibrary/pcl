@@ -18,31 +18,14 @@
 namespace pcl {
 namespace experimental {
 
-struct LabeledVoxel {
-  union Centroid {
-    Centroid() {}
-    ~Centroid() {}
-
-    CentroidPoint<PointXYZRGBL> all_fields;
-    Eigen::Array4f xyz;
-  };
+struct LabeledVoxel : public Voxel<PointXYZRGBL> {
+  using Voxel<PointXYZRGBL>::centroid_;
+  using Voxel<PointXYZRGBL>::downsample_all_data_;
+  using Voxel<PointXYZRGBL>::num_pt_;
 
   LabeledVoxel(const bool downsample_all_data)
-  : downsample_all_data_(downsample_all_data)
-  {
-    num_pt_ = 0;
-    if (downsample_all_data_)
-      centroid_.all_fields = CentroidPoint<PointXYZRGBL>();
-    else
-      centroid_.xyz = Eigen::Array4f::Zero();
-  }
-  ~LabeledVoxel()
-  {
-    if (downsample_all_data_)
-      centroid_.all_fields.~CentroidPoint<PointXYZRGBL>();
-    else
-      centroid_.xyz.~Array();
-  }
+  : Voxel<PointXYZRGBL>(downsample_all_data)
+  {}
 
   inline void
   add(const PointXYZRGBL& pt)
@@ -53,7 +36,7 @@ struct LabeledVoxel {
     }
     else {
       centroid_.xyz += pt.getArray4fMap();
-      labels[pt.label]++;
+      labels_[pt.label]++;
     }
   }
 
@@ -66,7 +49,7 @@ struct LabeledVoxel {
     else {
       pt.getArray4fMap() = centroid_.xyz / num_pt_;
       std::size_t max = 0;
-      for (const auto& label : labels) {
+      for (const auto& label : labels_) {
         if (label.second > max) {
           max = label.second;
           pt.label = label.first;
@@ -80,27 +63,13 @@ struct LabeledVoxel {
   inline void
   clear()
   {
-    num_pt_ = 0;
-    if (downsample_all_data_) {
-      centroid_.all_fields.clear();
-    }
-    else {
-      centroid_.xyz.setZero();
-      labels.clear();
-    }
+    Voxel<PointXYZRGBL>::clear();
+    if (!downsample_all_data_)
+      labels_.clear();
   }
 
-  inline std::size_t
-  size() const
-  {
-    return num_pt_;
-  }
-
-private:
-  const bool downsample_all_data_;
-  Centroid centroid_;
-  std::size_t num_pt_;
-  std::map<std::uint32_t, std::size_t> labels;
+protected:
+  std::map<std::uint32_t, std::size_t> labels_;
 };
 
 /**
@@ -108,9 +77,9 @@ private:
  * VoxelGridLabel filter
  * \ingroup filters
  */
-class LabeledVoxelStruct : public VoxelStruct<LabeledVoxel, PointXYZRGBL> {
+class LabeledVoxelStruct : public VoxelStruct<Voxel<PointXYZRGBL>, PointXYZRGBL> {
 public:
-  using VoxelStruct<LabeledVoxel, PointXYZRGBL>::filter_name_;
+  using VoxelStruct<Voxel<PointXYZRGBL>, PointXYZRGBL>::filter_name_;
 
   /** \brief Constructor. */
   LabeledVoxelStruct() { filter_name_ = "VoxelGridLabel"; }
@@ -127,7 +96,7 @@ public:
     auto cartesian_filter =
         static_cast<CartesianFilter<Filter, LabeledVoxelStruct> const*>(
             transform_filter);
-    return VoxelStruct<LabeledVoxel, PointXYZRGBL>::setUp(
+    return VoxelStruct<Voxel<PointXYZRGBL>, PointXYZRGBL>::setUp(
         cartesian_filter->getInputCloud(),
         cartesian_filter->getDownsampleAllData(),
         cartesian_filter->getMinimumPointsNumberPerVoxel());
