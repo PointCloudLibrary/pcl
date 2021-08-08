@@ -248,20 +248,20 @@ TEST(CheckHashinghRange, GridFilter)
   min_p = Eigen::Array4f::Zero();
   max_p = Eigen::Array4f::Zero();
   inv_size = Eigen::Array4f::Constant(1);
-  EXPECT_EQ(experimental::checkHashRange2D(min_p, max_p, inv_size.head<2>()), 1);
-  EXPECT_EQ(experimental::checkHashRange3D(min_p, max_p, inv_size.head<3>()), 1);
+  EXPECT_TRUE(experimental::checkHashRange2D(min_p, max_p, inv_size.head<2>()));
+  EXPECT_TRUE(experimental::checkHashRange3D(min_p, max_p, inv_size.head<3>()));
 
   min_p << min_float, 0, 0, 0;
   max_p << max_float, 0, 0, 0;
   inv_size = Eigen::Array4f::Constant(1);
-  EXPECT_EQ(experimental::checkHashRange2D(min_p, max_p, inv_size.head<2>()), 0);
-  EXPECT_EQ(experimental::checkHashRange3D(min_p, max_p, inv_size.head<3>()), 0);
+  EXPECT_FALSE(experimental::checkHashRange2D(min_p, max_p, inv_size.head<2>()));
+  EXPECT_FALSE(experimental::checkHashRange3D(min_p, max_p, inv_size.head<3>()));
 
   min_p = Eigen::Array4f::Constant(min_float);
   max_p = Eigen::Array4f::Constant(max_float);
   inv_size = Eigen::Array4f::Constant(max_float);
-  EXPECT_EQ(experimental::checkHashRange2D(min_p, max_p, inv_size.head<2>()), 0);
-  EXPECT_EQ(experimental::checkHashRange3D(min_p, max_p, inv_size.head<3>()), 0);
+  EXPECT_FALSE(experimental::checkHashRange2D(min_p, max_p, inv_size.head<2>()));
+  EXPECT_FALSE(experimental::checkHashRange3D(min_p, max_p, inv_size.head<3>()));
 
   min_p = Eigen::Array4f::Zero();
   inv_size = Eigen::Array4f::Constant(1);
@@ -271,17 +271,17 @@ TEST(CheckHashinghRange, GridFilter)
   const float fail_2d_size = std::ceil(sqrt(max_size));
   const float pass_2d_size = std::nexttoward(fail_2d_size, -1) - 1;
   max_p = Eigen::Array4f::Constant(pass_2d_size);
-  EXPECT_NE(experimental::checkHashRange2D(min_p, max_p, inv_size.head<2>()), 0);
+  EXPECT_TRUE(experimental::checkHashRange2D(min_p, max_p, inv_size.head<2>()));
   max_p = Eigen::Array4f::Constant(fail_2d_size);
-  EXPECT_EQ(experimental::checkHashRange2D(min_p, max_p, inv_size.head<2>()), 0);
+  EXPECT_FALSE(experimental::checkHashRange2D(min_p, max_p, inv_size.head<2>()));
 
   // 3D
   const float fail_3d_size = std::ceil(cbrt(max_size));
   const float pass_3d_size = std::nexttoward(fail_3d_size, -1) - 1;
   max_p = Eigen::Array4f::Constant(pass_3d_size);
-  EXPECT_NE(experimental::checkHashRange3D(min_p, max_p, inv_size.head<3>()), 0);
+  EXPECT_TRUE(experimental::checkHashRange3D(min_p, max_p, inv_size.head<3>()));
   max_p = Eigen::Array4f::Constant(fail_3d_size);
-  EXPECT_EQ(experimental::checkHashRange3D(min_p, max_p, inv_size.head<3>()), 0);
+  EXPECT_FALSE(experimental::checkHashRange3D(min_p, max_p, inv_size.head<3>()));
 }
 
 int
