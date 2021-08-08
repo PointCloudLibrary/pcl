@@ -17,6 +17,9 @@ namespace experimental {
 
 #define GET_POINT_TYPE(GridStructT) typename GridStructT::PointCloud::PointType
 
+template <template <typename> class FilterBase, typename GridStruct, typename PointT>
+class CartesianFilter;
+
 /** \brief @b TransformFilter represents the base class for filters that performs some
  * grid based tranformation on a point cloud, contrast to FilterIndices that performs
  * binary point removel. The tranformation can defined by a GridStruct object passed to
@@ -85,7 +88,8 @@ protected:
     output.height = 1;      // downsampling breaks the organized structure
     output.is_dense = true; // we filter out invalid points
 
-    if (!grid_struct_.setUp(this)) {
+    if (!grid_struct_.setUp(
+            static_cast<CartesianFilter<FilterBase, GridStruct, PointT>&>(*this))) {
       output = *input_;
       return;
     }
@@ -129,7 +133,7 @@ protected:
    * compared, e.g. iterator of map containers or index of array containers
    *
    *   Functional:
-   *     3. bool setUp(TransformFilter<FilterBase, GridStruct>*)
+   *     3. bool setUp(CartesianFilter<FilterBase, GridStruct>&)
    *     4. void addPointToGrid(PointT&)
    *     5. pcl::experimental::optional<PointT> filterGrid(...), which accepts output
    * from begin() and end()

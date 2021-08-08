@@ -55,7 +55,7 @@ struct EmptyMapStruct {
   }
 
   bool
-  setUp(experimental::TransformFilter<Filter, EmptyMapStruct> const* transform_filter)
+  setUp(experimental::CartesianFilter<Filter, EmptyMapStruct>&)
   {
     return pass_set_up_;
   }
@@ -66,7 +66,7 @@ struct EmptyMapStruct {
     grid_[pt.x].voxel_info = true;
   }
 
-  boost::optional<PointT>
+  experimental::optional<PointT>
   filterGrid(Grid::iterator grid_it)
   {
 
@@ -113,7 +113,7 @@ struct EmptyVecStruct {
   }
 
   bool
-  setUp(experimental::TransformFilter<Filter, EmptyVecStruct> const* transform_filter)
+  setUp(experimental::CartesianFilter<Filter, EmptyVecStruct>&)
   {
     return true;
   }
@@ -124,7 +124,7 @@ struct EmptyVecStruct {
     grid_.push_back(pt.x);
   }
 
-  boost::optional<PointT>
+  experimental::optional<PointT>
   filterGrid(Grid::iterator grid_it)
   {
     // element, index of the iterating element
