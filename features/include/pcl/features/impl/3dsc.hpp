@@ -156,13 +156,13 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
   Vector3fMapConst origin = (*input_)[(*indices_)[index]].getVector3fMap ();
   // Get origin normal
   // Use pre-computed normals
-  normal = normals[minIndex].getNormalVector3fMap ();
-  if (!std::isfinite(normal[0]) || !std::isfinite(normal[1]) || !std::isfinite(normal[2]))
+  if (!pcl::isNormalFinite(normals[minIndex]))
   {
     std::fill (desc.begin (), desc.end (), std::numeric_limits<float>::quiet_NaN ());
     std::fill (rf, rf + 9, 0.f);
     return (false);
   }
+  normal = normals[minIndex].getNormalVector3fMap ();
 
   // Compute and store the RF direction
   x_axis[0] = rnd ();
