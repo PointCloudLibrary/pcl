@@ -135,8 +135,9 @@ public:
   /** \brief Set up the voxel grid variables needed for filtering.
    *  \param[in] transform_filter pointer to the TransformFilter object
    */
+  template <template <typename> class FilterBase>
   inline bool
-  setUp(CartesianFilter<Filter, VoxelStruct>& castesian_filter)
+  setUp(CartesianFilter<FilterBase, VoxelStruct>& castesian_filter)
   {
     return setUp(castesian_filter.getInputCloud(),
                  castesian_filter.getDownsampleAllData(),
