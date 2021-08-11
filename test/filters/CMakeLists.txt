@@ -25,7 +25,7 @@ PCL_ADD_TEST(filters_functor test_filters_functor
              FILES test_functor_filter.cpp
              LINK_WITH pcl_gtest pcl_common pcl_filters)
 
-PCL_ADD_TEST(filters_grid_filter test_grid_filter
+PCL_ADD_TEST(filters_grid_filter test_filters_grid_filter
              FILES test_grid_filter.cpp
              LINK_WITH pcl_gtest pcl_common pcl_filters)
 
