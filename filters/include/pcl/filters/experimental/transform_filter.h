@@ -12,13 +12,96 @@
 #include <pcl/common/point_tests.h>
 #include <pcl/console/print.h>
 
+#include <boost/optional.hpp> // std::optional for C++17
+
+#include <type_traits>
+
 namespace pcl {
 namespace experimental {
 
-#define GET_POINT_TYPE(GridStructT) typename GridStructT::PointCloud::PointType
+template <typename PointT>
+using optional = boost::optional<PointT>;
 
 template <template <typename> class FilterBase, typename GridStruct, typename PointT>
 class CartesianFilter;
+namespace detail {
+template <template <typename> class FilterBase, typename GridStruct, typename PointT>
+struct IsGridStruct {
+private:
+  template <typename T>
+  static constexpr auto
+  hasSetUp(T*) -> typename std::is_same<
+      decltype(std::declval<T>().setUp(
+          std::declval<CartesianFilter<FilterBase, T, PointT>&>())),
+      bool>::type;
+  template <typename>
+  static constexpr std::false_type
+  hasSetUp(...);
+
+  template <typename T>
+  static constexpr auto
+  hasAddPoint(T*) -> typename std::is_same<
+      decltype(std::declval<T>().addPointToGrid(std::declval<PointT&>())),
+      void>::type;
+  template <typename>
+  static constexpr std::false_type
+  hasAddPoint(...);
+
+  template <typename T>
+  static constexpr auto
+  hasFilterBegin(T*) -> typename std::is_same<
+      decltype(std::declval<T>().filterGrid(begin(std::declval<T>()))),
+      optional<PointT>>::type;
+  template <typename T>
+  static constexpr auto
+  hasFilterBegin(T*) -> typename std::is_same<
+      decltype(std::declval<T>().filterGrid(std::declval<T>().begin())),
+      optional<PointT>>::type;
+  template <typename>
+  static constexpr std::false_type
+  hasFilterBegin(...);
+
+  template <typename T>
+  static constexpr auto
+  hasFilterEnd(T*) -> typename std::is_same<
+      decltype(std::declval<T>().filterGrid(end(std::declval<T>()))),
+      optional<PointT>>::type;
+  template <typename T>
+  static constexpr auto
+  hasFilterEnd(T*) -> typename std::is_same<
+      decltype(std::declval<T>().filterGrid(std::declval<T>().end())),
+      optional<PointT>>::type;
+  template <typename>
+  static constexpr std::false_type
+  hasFilterEnd(...);
+
+  template <typename T>
+  static constexpr auto
+  hasSize(T*) ->
+      typename std::is_same<decltype(std::declval<T>().size()), std::size_t>::type;
+  template <typename>
+  static constexpr std::false_type
+  hasSize(...);
+
+  using has_set_up = decltype(hasSetUp<GridStruct>(0));
+  using has_add_point = decltype(hasAddPoint<GridStruct>(0));
+  using has_filter_begin = decltype(hasFilterBegin<GridStruct>(0));
+  using has_filter_end = decltype(hasFilterEnd<GridStruct>(0));
+  using has_size = decltype(hasSize<GridStruct>(0));
+
+  static constexpr bool is_set_up_valid = has_set_up::value;
+  static constexpr bool is_add_point_valid = has_add_point::value;
+  static constexpr bool is_filter_valid =
+      has_filter_begin::value && has_filter_end::value;
+  static constexpr bool is_size_valid = has_size::value;
+
+public:
+  static constexpr bool is_valid =
+      is_set_up_valid && is_add_point_valid && is_filter_valid && is_size_valid;
+};
+} // namespace detail
+
+#define GET_POINT_TYPE(GridStructT) typename GridStructT::PointCloud::PointType
 
 /** \brief @b TransformFilter represents the base class for filters that performs some
  * grid based tranformation on a point cloud, contrast to FilterIndices that performs
@@ -30,6 +113,9 @@ template <template <typename> class FilterBase,
           typename GridStruct,
           typename PointT = GET_POINT_TYPE(GridStruct)>
 class TransformFilter : public FilterBase<PointT> {
+  static_assert(detail::IsGridStruct<FilterBase, GridStruct, PointT>::is_valid,
+                "GridStruct requirement is not satisfied");
+
 protected:
   using FilterBase<PointT>::filter_name_;
   using FilterBase<PointT>::getClassName;
