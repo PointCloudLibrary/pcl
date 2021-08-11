@@ -29,7 +29,7 @@ PCL_ADD_TEST(filters_grid_filter test_filters_grid_filter
              FILES test_grid_filter.cpp
              LINK_WITH pcl_gtest pcl_common pcl_filters)
 
-PCL_ADD_TEST(filters_voxel_grid_label test_experimental_voxel_grid_label
+PCL_ADD_TEST(filters_experimental_voxel_grid_label test_filters_experimental_voxel_grid_label
              FILES test_experimental_voxel_grid_label.cpp
              LINK_WITH pcl_gtest pcl_common pcl_filters)
 
