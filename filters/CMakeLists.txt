@@ -88,6 +88,7 @@ set(incs
 )
 set(experimental_incs
   "include/pcl/${SUBSYS_NAME}/experimental/functor_filter.h"
+  "include/pcl/${SUBSYS_NAME}/experimental/crop_box.h"
 )
 
 set(impl_incs
