@@ -52,6 +52,7 @@ set(NON_PREFIX_PCL_VTK_COMPONENTS
   FiltersSources
   ImagingCore
   ImagingSources
+  InteractionImage
   InteractionStyle
   InteractionWidgets
   IOCore
