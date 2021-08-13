@@ -115,20 +115,20 @@ CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initComputeRecip
 namespace detail
 {
 
-template <typename PointSource, typename PointTarget,
+template <typename PointSource, typename PointTarget, typename Index
   , typename std::enable_if_t<isSamePointType<PointSource, PointTarget>()>* = nullptr
 >
-auto 
-selectPoint(typename pcl::PointCloud<PointSource>::ConstPtr &input, const pcl::Index &idx)
+PointTarget
+selectPoint(typename pcl::PointCloud<PointSource>::ConstPtr& input, const Index& idx)
 {
   return (*input)[idx]; 
 }
 
-template <typename PointSource, typename PointTarget,
+template <typename PointSource, typename PointTarget, typename Index
   , typename std::enable_if_t<!isSamePointType<PointSource, PointTarget>()>* = nullptr
 >
-auto 
-determineCorrespondencesHelper(typename pcl::PointCloud<PointSource>::ConstPtr &input, const pcl::Index &idx)
+PointTarget
+selectPoint(typename pcl::PointCloud<PointSource>::ConstPtr& input, const Index& idx)
 {
   // Copy the source data to a target PointTarget format so we can search in the tree
   PointTarget pt;
@@ -155,12 +155,12 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
   double max_dist_sqr = max_distance * max_distance;
 
   // Iterate over the input set of source indices
-  for (const auto& idx : (*indices)) {
+  for (const auto& idx : (*indices_)) {
     // Check if the template types are the same. If true, avoid a copy.
     // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
     // macro!
-    const auto pt{selectPoint(input_, idx)};
-    tree->nearestKSearch(pt, 1, index, distance);
+    const auto pt{detail::selectPoint<PointSource, PointTarget, decltype(idx)>(input_, idx)};
+    tree_->nearestKSearch(pt, 1, index, distance);
     if (distance[0] > max_dist_sqr)
       continue;
 
@@ -168,9 +168,8 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
     corr.index_match = index[0];
     corr.distance = distance[0];
     correspondences[nr_valid_correspondences++] = corr;
+  }
 
-
-    const auto nr_valid_correspondences{detail::determineCorrespondencesHelper(correspondences, max_distance, indices_, tree_)};
   correspondences.resize(nr_valid_correspondences);
   deinitCompute();
 }
