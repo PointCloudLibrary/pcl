@@ -112,6 +112,32 @@ CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initComputeRecip
   return (true);
 }
 
+namespace detail
+{
+
+template <typename PointSource, typename PointTarget,
+  , typename std::enable_if_t<isSamePointType<PointSource, PointTarget>()>* = nullptr
+>
+auto 
+selectPoint(typename pcl::PointCloud<PointSource>::ConstPtr &input, const pcl::Index &idx)
+{
+  return (*input)[idx]; 
+}
+
+template <typename PointSource, typename PointTarget,
+  , typename std::enable_if_t<!isSamePointType<PointSource, PointTarget>()>* = nullptr
+>
+auto 
+determineCorrespondencesHelper(typename pcl::PointCloud<PointSource>::ConstPtr &input, const pcl::Index &idx)
+{
+  // Copy the source data to a target PointTarget format so we can search in the tree
+  PointTarget pt;
+  copyPoint((*input)[idx], pt);
+  return pt;   
+}
+
+}
+
 template <typename PointSource, typename PointTarget, typename Scalar>
 void
 CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorrespondences(
@@ -120,50 +146,31 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
   if (!initCompute())
     return;
 
-  double max_dist_sqr = max_distance * max_distance;
-
   correspondences.resize(indices_->size());
 
+  pcl::Correspondence corr;
   pcl::Indices index(1);
   std::vector<float> distance(1);
-  pcl::Correspondence corr;
   unsigned int nr_valid_correspondences = 0;
+  double max_dist_sqr = max_distance * max_distance;
 
-  // Check if the template types are the same. If true, avoid a copy.
-  // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
-  // macro!
-  if (isSamePointType<PointSource, PointTarget>()) {
-    // Iterate over the input set of source indices
-    for (const auto& idx : (*indices_)) {
-      tree_->nearestKSearch((*input_)[idx], 1, index, distance);
-      if (distance[0] > max_dist_sqr)
-        continue;
+  // Iterate over the input set of source indices
+  for (const auto& idx : (*indices)) {
+    // Check if the template types are the same. If true, avoid a copy.
+    // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
+    // macro!
+    const auto pt{selectPoint(input_, idx)};
+    tree->nearestKSearch(pt, 1, index, distance);
+    if (distance[0] > max_dist_sqr)
+      continue;
 
-      corr.index_query = idx;
-      corr.index_match = index[0];
-      corr.distance = distance[0];
-      correspondences[nr_valid_correspondences++] = corr;
-    }
-  }
-  else {
-    PointTarget pt;
+    corr.index_query = idx;
+    corr.index_match = index[0];
+    corr.distance = distance[0];
+    correspondences[nr_valid_correspondences++] = corr;
 
-    // Iterate over the input set of source indices
-    for (const auto& idx : (*indices_)) {
-      // Copy the source data to a target PointTarget format so we can search in the
-      // tree
-      copyPoint((*input_)[idx], pt);
 
-      tree_->nearestKSearch(pt, 1, index, distance);
-      if (distance[0] > max_dist_sqr)
-        continue;
-
-      corr.index_query = idx;
-      corr.index_match = index[0];
-      corr.distance = distance[0];
-      correspondences[nr_valid_correspondences++] = corr;
-    }
-  }
+    const auto nr_valid_correspondences{detail::determineCorrespondencesHelper(correspondences, max_distance, indices_, tree_)};
   correspondences.resize(nr_valid_correspondences);
   deinitCompute();
 }

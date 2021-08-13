@@ -52,29 +52,6 @@ PointXYZRGB pt_xyz_rgb;
 PointXYZ pt_xyz;
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, concatenateFields)
-{
-  constexpr const bool status0 = isSamePointType<PointXYZ, PointXYZ> ();
-  EXPECT_TRUE (status0);
-  constexpr const bool status1 = isSamePointType<PointXYZ, PointXY> ();
-  EXPECT_FALSE (status1);
-  constexpr const bool status2 = isSamePointType<PointXY, PointXYZ> ();
-  EXPECT_FALSE (status2);
-  constexpr const bool status3 = isSamePointType<PointNormal, PointNormal> ();
-  EXPECT_TRUE (status3);
-  constexpr const bool status4 = isSamePointType<PointNormal, PointXYZRGBNormal> ();
-  EXPECT_FALSE (status4);
-  constexpr const bool status5 = isSamePointType<PointXYZRGB, PointXYZRGB> ();
-  EXPECT_TRUE (status5);
-  
-  // Even though it's the "same" type, rgb != rgba
-  constexpr const bool status6 = isSamePointType<PointXYZRGB, PointXYZRGBA> ();
-  EXPECT_FALSE (status6);
-  constexpr const bool status7 = isSamePointType<PointXYZRGBA, PointXYZRGB> ();
-  EXPECT_FALSE (status7);
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, copyPointCloud)
 {
   CloudXYZRGBA cloud_xyz_rgba;

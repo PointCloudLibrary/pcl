@@ -180,9 +180,6 @@ public:
    * cloud
    */
   void
-  determineCorrespondencesHelper(pcl::Correspondences& correspondences,
-                           double max_distance = std::numeric_limits<double>::max());
-  void
   determineCorrespondences(pcl::Correspondences& correspondences,
                            double max_distance = std::numeric_limits<double>::max());
 
