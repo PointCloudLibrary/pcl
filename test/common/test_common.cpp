@@ -361,7 +361,7 @@ TEST (PCL, SetIfFieldExists)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, IsSamePointType)
+/*TEST (PCL, IsSamePointType)
 {
   bool status = isSamePointType<PointXYZ, PointXYZ> ();
   EXPECT_TRUE (status);
@@ -381,7 +381,7 @@ TEST (PCL, IsSamePointType)
   EXPECT_FALSE (status);
   status = isSamePointType<PointXYZRGBA, PointXYZRGB> ();
   EXPECT_FALSE (status);
-}
+}*/
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, HasField)
