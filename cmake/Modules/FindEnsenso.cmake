@@ -38,7 +38,7 @@ if(ENSENSO_INCLUDE_DIR AND ENSENSO_LIBRARY)
 endif()
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(ENSENSO
+find_package_handle_standard_args(Ensenso
   FOUND_VAR ENSENSO_FOUND
   REQUIRED_VARS ENSENSO_LIBRARIES ENSENSO_INCLUDE_DIRS
 )

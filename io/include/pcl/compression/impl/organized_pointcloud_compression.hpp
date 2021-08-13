@@ -43,17 +43,10 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 
-#include <pcl/common/boost.h>
-#include <pcl/common/eigen.h>
-#include <pcl/common/common.h>
-#include <pcl/common/io.h>
-
 #include <pcl/compression/libpng_wrapper.h>
 #include <pcl/compression/organized_pointcloud_conversion.h>
 
-#include <string>
 #include <vector>
-#include <limits>
 #include <cassert>
 
 namespace pcl
@@ -413,7 +406,7 @@ namespace pcl
 
       // Ensure we have an organized point cloud
       assert((width>1) && (height>1));
-      assert(width*height == cloud_arg->points.size());
+      assert(width*height == cloud_arg->size());
 
       float maxDepth = 0;
       float focalLength = 0;
@@ -422,7 +415,7 @@ namespace pcl
       for (int y = -centerY; y < centerY; ++y )
         for (int x = -centerX; x < centerX; ++x )
         {
-          const PointT& point = cloud_arg->points[it++];
+          const PointT& point = (*cloud_arg)[it++];
 
           if (pcl::isFinite (point))
           {

@@ -51,8 +51,12 @@
 # endif
 # include <io.h>
 # include <windows.h>
-# include <BaseTsd.h>
+# ifdef _MSC_VER
+// ssize_t is already defined in MinGW and its definition conflicts with that of
+// SSIZE_T on a 32-bit target, so do this only for MSVC.
+#  include <basetsd.h>
 using ssize_t = SSIZE_T;
+# endif /* _MSC_VER */
 #else
 # include <unistd.h>
 # include <sys/mman.h>

@@ -40,56 +40,54 @@
 
 #pragma once
 
-#include <pcl/registration/eigen.h>
 #include <pcl/registration/warp_point_rigid.h>
 
-namespace pcl
-{
-  namespace registration
+namespace pcl {
+namespace registration {
+/** \brief @b WarpPointRigid3D enables 3D (1D rotation + 2D translation)
+ * transformations for points.
+ *
+ * \note The class is templated on the source and target point types as well as on the
+ * output scalar of the transformation matrix (i.e., float or double). Default: float.
+ * \author Radu B. Rusu
+ * \ingroup registration
+ */
+template <typename PointSourceT, typename PointTargetT, typename Scalar = float>
+class WarpPointRigid3D : public WarpPointRigid<PointSourceT, PointTargetT, Scalar> {
+public:
+  using Matrix4 = typename WarpPointRigid<PointSourceT, PointTargetT, Scalar>::Matrix4;
+  using VectorX = typename WarpPointRigid<PointSourceT, PointTargetT, Scalar>::VectorX;
+
+  using Ptr = shared_ptr<WarpPointRigid3D<PointSourceT, PointTargetT, Scalar>>;
+  using ConstPtr =
+      shared_ptr<const WarpPointRigid3D<PointSourceT, PointTargetT, Scalar>>;
+
+  /** \brief Constructor. */
+  WarpPointRigid3D() : WarpPointRigid<PointSourceT, PointTargetT, Scalar>(3) {}
+
+  /** \brief Empty destructor */
+  ~WarpPointRigid3D() {}
+
+  /** \brief Set warp parameters.
+   * \param[in] p warp parameters (tx ty rz)
+   */
+  void
+  setParam(const VectorX& p) override
   {
-    /** \brief @b WarpPointRigid3D enables 3D (1D rotation + 2D translation) 
-      * transformations for points.
-      * 
-      * \note The class is templated on the source and target point types as well as on the output scalar of the transformation matrix (i.e., float or double). Default: float.
-      * \author Radu B. Rusu
-      * \ingroup registration
-      */
-    template <typename PointSourceT, typename PointTargetT, typename Scalar = float>
-    class WarpPointRigid3D : public WarpPointRigid<PointSourceT, PointTargetT, Scalar>
-    {
-      public:
-        using Matrix4 = typename WarpPointRigid<PointSourceT, PointTargetT, Scalar>::Matrix4;
-        using VectorX = typename WarpPointRigid<PointSourceT, PointTargetT, Scalar>::VectorX;
+    assert(p.rows() == this->getDimension());
+    Matrix4& trans = this->transform_matrix_;
 
-        using Ptr = shared_ptr<WarpPointRigid3D<PointSourceT, PointTargetT, Scalar> >;
-        using ConstPtr = shared_ptr<const WarpPointRigid3D<PointSourceT, PointTargetT, Scalar> >;
+    trans = Matrix4::Zero();
+    trans(3, 3) = 1;
+    trans(2, 2) = 1; // Rotation around the Z-axis
 
-        /** \brief Constructor. */
-        WarpPointRigid3D () : WarpPointRigid<PointSourceT, PointTargetT, Scalar> (3) {}
-      
-        /** \brief Empty destructor */
-        ~WarpPointRigid3D () {}
+    // Copy the rotation and translation components
+    trans.block(0, 3, 4, 1) = Eigen::Matrix<Scalar, 4, 1>(p[0], p[1], 0, 1.0);
 
-        /** \brief Set warp parameters. 
-          * \param[in] p warp parameters (tx ty rz)
-          */
-        void 
-        setParam (const VectorX & p) override
-        {
-          assert (p.rows () == this->getDimension ());
-          Matrix4 &trans = this->transform_matrix_;
-
-          trans = Matrix4::Zero ();
-          trans (3, 3) = 1;
-          trans (2, 2) = 1; // Rotation around the Z-axis
-
-          // Copy the rotation and translation components
-          trans.block (0, 3, 4, 1) = Eigen::Matrix<Scalar, 4, 1> (p[0], p[1], 0, 1.0);
-
-          // Compute w from the unit quaternion
-          Eigen::Rotation2D<Scalar> r (p[2]);
-          trans.topLeftCorner (2, 2) = r.toRotationMatrix ();
-        }
-    };
+    // Compute w from the unit quaternion
+    Eigen::Rotation2D<Scalar> r(p[2]);
+    trans.topLeftCorner(2, 2) = r.toRotationMatrix();
   }
-}
+};
+} // namespace registration
+} // namespace pcl

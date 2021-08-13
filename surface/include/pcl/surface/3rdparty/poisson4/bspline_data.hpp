@@ -56,20 +56,19 @@ namespace pcl
     // <=>		i > r - 1 - 0.5 * Degree
     //			i - 0.5 * Degree < r
     // <=>		i < r + 0.5 * Degree
-    template< int Degree > inline bool LeftOverlap( unsigned int depth , int offset )
+    template< int Degree > inline bool LeftOverlap( unsigned int, int offset )
     {
       offset <<= 1;
       if( Degree & 1 ) return (offset < 1+Degree) && (offset > -1-Degree );
       else             return (offset <   Degree) && (offset > -2-Degree );
     }
-    template< int Degree > inline bool RightOverlap( unsigned int depth , int offset )
+    template< int Degree > inline bool RightOverlap( unsigned int, int offset )
     {
       offset <<= 1;
-      int r = 1<<(depth+1);
       if( Degree & 1 ) return (offset > 2-1-Degree) && (offset < 2+1+Degree );
       else             return (offset > 2-2-Degree) && (offset < 2+  Degree );
     }
-    template< int Degree > inline int ReflectLeft( unsigned int depth , int offset )
+    template< int Degree > inline int ReflectLeft( unsigned int, int offset )
     {
       if( Degree&1 ) return   -offset;
       else           return -1-offset;
@@ -445,15 +444,15 @@ namespace pcl
       if( set ) _addRight( offset+2*res , boundary );
     }
     template< int Degree >
-    void BSplineElements< Degree >::upSample( BSplineElements< Degree >& high ) const
+    void BSplineElements< Degree >::upSample( BSplineElements< Degree >&) const
     {
       POISSON_THROW_EXCEPTION (pcl::poisson::PoissonBadArgumentException, "B-spline up-sampling not supported for degree " << Degree);
     }
     template<>
-    void BSplineElements< 1 >::upSample( BSplineElements< 1 >& high ) const;
+    void PCL_EXPORTS BSplineElements< 1 >::upSample( BSplineElements< 1 >& high ) const;
 
     template<>
-    void BSplineElements< 2 >::upSample( BSplineElements< 2 >& high ) const;
+    void PCL_EXPORTS BSplineElements< 2 >::upSample( BSplineElements< 2 >& high ) const;
 
     template< int Degree >
     void BSplineElements< Degree >::differentiate( BSplineElements< Degree-1 >& d ) const

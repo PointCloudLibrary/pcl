@@ -37,6 +37,8 @@
  *
  */
 
+#include <Eigen/Eigenvalues> // for SelfAdjointEigenSolver
+
 #include <pcl/test/gtest.h>
 #include <pcl/pcl_tests.h>
 #include <pcl/common/common.h>
@@ -46,8 +48,7 @@
 #include <pcl/common/eigen.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
-
-#include <pcl/common/centroid.h>
+#include <pcl/common/point_tests.h> // for isFinite
 
 using namespace pcl;
 
@@ -121,10 +122,10 @@ TEST(PCL, isFinite)
 {
   PointXYZ p;
   p.x = std::numeric_limits<float>::quiet_NaN ();
-  EXPECT_EQ (isFinite (p), false);
+  EXPECT_FALSE (isFinite (p));
   Normal n;
   n.normal_x = std::numeric_limits<float>::quiet_NaN ();
-  EXPECT_EQ (isFinite (n), false);
+  EXPECT_FALSE (isFinite (n));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -169,120 +170,6 @@ TEST (PCL, Eigen)
 
   EXPECT_NEAR (eivals (0), 2.86806e-06, 1e-4); EXPECT_NEAR (eivals (1), 0.00037165, 1e-4); EXPECT_NEAR (eivals (2), 0.000556858, 1e-4);
 
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, PointCloud)
-{
-  PointCloud<PointXYZ> cloud;
-  cloud.width = 640;
-  cloud.height = 480;
-
-  EXPECT_EQ (cloud.isOrganized (), true);
-
-  cloud.height = 1;
-  EXPECT_EQ (cloud.isOrganized (), false);
-
-  cloud.width = 10;
-  for (std::uint32_t i = 0; i < cloud.width*cloud.height; ++i)
-  {
-    float j = static_cast<float> (i);
-    cloud.points.emplace_back(3.0f * j + 0.0f, 3.0f * j + 1.0f, 3.0f * j + 2.0f);
-  }
-
-  Eigen::MatrixXf mat_xyz1 = cloud.getMatrixXfMap ();
-  Eigen::MatrixXf mat_xyz = cloud.getMatrixXfMap (3, 4, 0);
-
-  if (Eigen::MatrixXf::Flags & Eigen::RowMajorBit)
-  {
-    EXPECT_EQ (mat_xyz1.cols (), 4);
-    EXPECT_EQ (mat_xyz1.rows (), cloud.width);
-    EXPECT_EQ (mat_xyz1 (0, 0), 0);
-    EXPECT_EQ (mat_xyz1 (cloud.width - 1, 2), 3 * cloud.width - 1);   // = 29
-
-    EXPECT_EQ (mat_xyz.cols (), 3);
-    EXPECT_EQ (mat_xyz.rows (), cloud.width);
-    EXPECT_EQ (mat_xyz (0, 0), 0);
-    EXPECT_EQ (mat_xyz (cloud.width - 1, 2), 3 * cloud.width - 1);    // = 29
-  }
-  else
-  {
-    EXPECT_EQ (mat_xyz1.cols (), cloud.width);
-    EXPECT_EQ (mat_xyz1.rows (), 4);
-    EXPECT_EQ (mat_xyz1 (0, 0), 0);
-    EXPECT_EQ (mat_xyz1 (2, cloud.width - 1), 3 * cloud.width - 1);   // = 29
-
-    EXPECT_EQ (mat_xyz.cols (), cloud.width);
-    EXPECT_EQ (mat_xyz.rows (), 3);
-    EXPECT_EQ (mat_xyz (0, 0), 0);
-    EXPECT_EQ (mat_xyz (2, cloud.width - 1), 3 * cloud.width - 1);    // = 29
-  }
-
-#ifdef NDEBUG
-  if (Eigen::MatrixXf::Flags & Eigen::RowMajorBit)
-  {
-    Eigen::MatrixXf mat_yz = cloud.getMatrixXfMap (2, 4, 1);
-    EXPECT_EQ (mat_yz.cols (), 2);
-    EXPECT_EQ (mat_yz.rows (), cloud.width);
-    EXPECT_EQ (mat_yz (0, 0), 1);
-    EXPECT_EQ (mat_yz (cloud.width - 1, 1), 3 * cloud.width - 1);
-    std::uint32_t j = 1;
-    for (std::uint32_t i = 1; i < cloud.width*cloud.height; i+=4, j+=3)
-    {
-      Eigen::MatrixXf mat_yz = cloud.getMatrixXfMap (2, 4, i);
-      EXPECT_EQ (mat_yz.cols (), 2);
-      EXPECT_EQ (mat_yz.rows (), cloud.width);
-      EXPECT_EQ (mat_yz (0, 0), j);
-    }
-  }
-  else
-  {
-    Eigen::MatrixXf mat_yz = cloud.getMatrixXfMap (2, 4, 1);
-    EXPECT_EQ (mat_yz.cols (), cloud.width);
-    EXPECT_EQ (mat_yz.rows (), 2);
-    EXPECT_EQ (mat_yz (0, 0), 1);
-    EXPECT_EQ (mat_yz (1, cloud.width - 1), 3 * cloud.width - 1);
-    std::uint32_t j = 1;
-    for (std::uint32_t i = 1; i < cloud.width*cloud.height; i+=4, j+=3)
-    {
-      Eigen::MatrixXf mat_yz = cloud.getMatrixXfMap (2, 4, i);
-      EXPECT_EQ (mat_yz.cols (), cloud.width);
-      EXPECT_EQ (mat_yz.rows (), 2);
-      EXPECT_EQ (mat_yz (0, 0), j);
-    }
-  }
-#endif
-  cloud.clear ();
-  EXPECT_EQ (cloud.width, 0);
-  EXPECT_EQ (cloud.height, 0);
-
-  cloud.width = 640;
-  cloud.height = 480;
-
-  cloud.insert (cloud.end (), PointXYZ (1, 1, 1));
-  EXPECT_EQ (cloud.isOrganized (), false);
-  EXPECT_EQ (cloud.width, 1);
-
-  cloud.insert (cloud.end (), 5, PointXYZ (1, 1, 1));
-  EXPECT_EQ (cloud.isOrganized (), false);
-  EXPECT_EQ (cloud.width, 6);
-
-  cloud.erase (cloud.end () - 1);
-  EXPECT_EQ (cloud.isOrganized (), false);
-  EXPECT_EQ (cloud.width, 5);
-
-  cloud.erase (cloud.begin (), cloud.end ());
-  EXPECT_EQ (cloud.isOrganized (), false);
-  EXPECT_EQ (cloud.width, 0);
-
-  cloud.emplace (cloud.end (), 1, 1, 1);
-  EXPECT_EQ (cloud.isOrganized (), false);
-  EXPECT_EQ (cloud.width, 1);
-
-  auto& new_point = cloud.emplace_back (1, 1, 1);
-  EXPECT_EQ (cloud.isOrganized (), false);
-  EXPECT_EQ (cloud.width, 2);
-  EXPECT_EQ (&new_point, &cloud.back ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -378,7 +265,7 @@ TEST (PCL, Intersections)
   yline[0] = 0.493479f; yline[1] = 0.169246f;  yline[2] = 1.22677f; yline[3] = 0.5992f;    yline[4] = 0.0505085f; yline[5] = 0.405749f;
 
   Eigen::Vector4f pt;
-  EXPECT_EQ ((pcl::lineWithLineIntersection (zline, yline, pt)), true);
+  EXPECT_TRUE (pcl::lineWithLineIntersection (zline, yline, pt));
   EXPECT_NEAR (pt[0], 0.574544, 1e-3);
   EXPECT_NEAR (pt[1], 0.175526, 1e-3);
   EXPECT_NEAR (pt[2], 1.27636,  1e-3);
@@ -386,7 +273,7 @@ TEST (PCL, Intersections)
 
   zline << 0.545203f, -0.514419f, 1.31967f, 0.0243372f, 0.597946f, -0.0413579f;
   yline << 0.492706f,  0.164196f, 1.23192f, 0.598704f,  0.0442014f, 0.411328f;
-  EXPECT_EQ ((pcl::lineWithLineIntersection (zline, yline, pt)), false);
+  EXPECT_FALSE (pcl::lineWithLineIntersection (zline, yline, pt));
   //intersection: [ 3.06416e+08    15.2237     3.06416e+08       4.04468e-34 ]
 }
 
@@ -409,27 +296,27 @@ TEST (PCL, CopyIfFieldExists)
   rgb_val = std::numeric_limits<float>::quiet_NaN ();
 
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "x", is_x, x_val));
-  EXPECT_EQ (is_x, true);
+  EXPECT_TRUE (is_x);
   EXPECT_EQ (x_val, 1.0);
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "y", is_y, y_val));
-  EXPECT_EQ (is_y, true);
+  EXPECT_TRUE (is_y);
   EXPECT_EQ (y_val, 2.0);
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "z", is_z, z_val));
-  EXPECT_EQ (is_z, true);
+  EXPECT_TRUE (is_z);
   EXPECT_EQ (z_val, 3.0);
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "rgb", is_rgb, rgb_val));
-  EXPECT_EQ (is_rgb, true);
+  EXPECT_TRUE (is_rgb);
   std::uint32_t rgb;
   std::memcpy (&rgb, &rgb_val, sizeof(rgb_val));
   EXPECT_EQ (rgb, 0xff7f40fe);      // alpha is 255
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "normal_x", is_normal_x, normal_x_val));
-  EXPECT_EQ (is_normal_x, true);
+  EXPECT_TRUE (is_normal_x);
   EXPECT_EQ (normal_x_val, 1.0);
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "normal_y", is_normal_y, normal_y_val));
-  EXPECT_EQ (is_normal_y, true);
+  EXPECT_TRUE (is_normal_y);
   EXPECT_EQ (normal_y_val, 0.0);
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "normal_z", is_normal_z, normal_z_val));
-  EXPECT_EQ (is_normal_z, true);
+  EXPECT_TRUE (is_normal_z);
   EXPECT_EQ (normal_z_val, 0.0);
 
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "x", x_val));
@@ -440,7 +327,7 @@ TEST (PCL, CopyIfFieldExists)
   EXPECT_EQ (xx_val, -1.0);
   bool is_xx = true;
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "xx", is_xx, xx_val));
-  EXPECT_EQ (is_xx, false);
+  EXPECT_FALSE (is_xx);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -530,6 +417,56 @@ TEST (PCL, HasField)
   EXPECT_FALSE ((pcl::traits::has_label<pcl::Normal>::value));
 }
 
+TEST (PCL, GetMinMax3D)
+{
+  pcl::PointCloud<pcl::PointXYZ> cloud;
+  cloud.emplace_back ( 0.0f,      0.0f,  0.0f);
+  cloud.emplace_back (10.0f, -10000.0f,  1.0f);
+  cloud.emplace_back ( 5.0f,      5.0f,  0.0f);
+  cloud.emplace_back (-5.0f,      0.0f, -0.5f);
+
+  pcl::PointXYZ min_pt, max_pt;
+  Eigen::Vector4f min_vec, max_vec;
+
+  pcl::getMinMax3D (cloud, min_pt, max_pt);
+  EXPECT_EQ (min_pt.x, -5.0f);
+  EXPECT_EQ (min_pt.y, -10000.0f);
+  EXPECT_EQ (min_pt.z, -0.5f);
+  EXPECT_EQ (max_pt.x, 10.0f);
+  EXPECT_EQ (max_pt.y, 5.0f);
+  EXPECT_EQ (max_pt.z, 1.0f);
+
+  pcl::getMinMax3D (cloud, min_vec, max_vec);
+  EXPECT_EQ (min_vec.x (), -5.0f);
+  EXPECT_EQ (min_vec.y (), -10000.0f);
+  EXPECT_EQ (min_vec.z (), -0.5f);
+  EXPECT_EQ (max_vec.x (), 10.0f);
+  EXPECT_EQ (max_vec.y (), 5.0f);
+  EXPECT_EQ (max_vec.z (), 1.0f);
+
+  pcl::PointIndices pindices;
+  pindices.indices.push_back (0);
+  pindices.indices.push_back (2);
+  pcl::getMinMax3D (cloud, pindices, min_vec, max_vec);
+  EXPECT_EQ (min_vec.x (), 0.0f);
+  EXPECT_EQ (min_vec.y (), 0.0f);
+  EXPECT_EQ (min_vec.z (), 0.0f);
+  EXPECT_EQ (max_vec.x (), 5.0f);
+  EXPECT_EQ (max_vec.y (), 5.0f);
+  EXPECT_EQ (max_vec.z (), 0.0f);
+
+  pcl::Indices indices;
+  indices.push_back (1);
+  indices.push_back (3);
+  pcl::getMinMax3D (cloud, indices, min_vec, max_vec);
+  EXPECT_EQ (min_vec.x (), -5.0f);
+  EXPECT_EQ (min_vec.y (), -10000.0f);
+  EXPECT_EQ (min_vec.z (), -0.5f);
+  EXPECT_EQ (max_vec.x (), 10.0f);
+  EXPECT_EQ (max_vec.y (), 0.0f);
+  EXPECT_EQ (max_vec.z (), 1.0f);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, GetMaxDistance)
 {
@@ -538,7 +475,7 @@ TEST (PCL, GetMaxDistance)
   const Eigen::Vector4f pivot_pt (Eigen::Vector4f::Zero ());
 
   // populate cloud
-  cloud.points.resize (3);
+  cloud.resize (3);
   cloud[0].data[0] = 4.f; cloud[0].data[1] = 3.f;
   cloud[0].data[2] = 0.f; cloud[0].data[3] = 0.f;
   cloud[1].data[0] = 0.f; cloud[1].data[1] = 0.f;
@@ -552,11 +489,34 @@ TEST (PCL, GetMaxDistance)
   test::EXPECT_EQ_VECTORS (max_exp_pt, max_pt);
 
   // Specifying indices
-  std::vector<int> idx (2);
+  Indices idx (2);
   idx[0] = 1; idx[1] = 2;
   max_exp_pt = cloud[2].getVector4fMap ();
   getMaxDistance (cloud, idx, pivot_pt, max_pt);
   test::EXPECT_EQ_VECTORS (max_exp_pt, max_pt);
+}
+
+TEST (PCL, computeMedian)
+{
+  std::vector<float> vector1{4.0f, 2.0f, 1.0f, 5.0f, 3.0f, 6.0f};
+  const auto median1 = computeMedian (vector1.begin (), vector1.end ());
+  EXPECT_EQ(median1, 3.5f);
+
+  std::vector<double> vector2{1.0, 25.0, 9.0, 4.0, 16.0};
+  const auto median2 = computeMedian (vector2.begin (), vector2.end (), [](const double& x){ return std::sqrt(x); });
+  EXPECT_EQ(median2, 3.0);
+
+  std::vector<double> vector3{1.0, 2.0, 6.0, 5.0, 4.0, 3.0};
+  const auto median3 = computeMedian (vector3.begin (), vector3.end (), [](const double& x){ return x+1.0; });
+  EXPECT_EQ(median3, 4.5);
+
+  std::vector<int> vector4{-1, 1, 2, 9, 15, 16};
+  const auto median4 = computeMedian (vector4.begin (), vector4.end ());
+  EXPECT_EQ(median4, 5);
+
+  std::vector<int> vector5{-1, 1, 2, 9, 15, 16};
+  const auto median5 = computeMedian (vector5.begin (), vector5.end (), [](const int& x){ return static_cast<double>(x); });
+  EXPECT_EQ(median5, 5.5);
 }
 
 /* ---[ */

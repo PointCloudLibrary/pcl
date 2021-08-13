@@ -36,7 +36,6 @@
 #include <pcl/common/time.h>
 #include <pcl/console/parse.h>
 #include <pcl/filters/voxel_grid.h>
-#include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/point_cloud.h>
@@ -71,7 +70,7 @@ CopyPointCloudToBuffers(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& clou
   std::size_t j = 0;
   for (std::size_t i = 0; i < nr_points; ++i) {
 
-    const pcl::PointXYZRGBA& point = cloud->points[i];
+    const pcl::PointXYZRGBA& point = (*cloud)[i];
 
     if (!std::isfinite(point.x) || !std::isfinite(point.y) || !std::isfinite(point.z))
       continue;

@@ -85,9 +85,9 @@ main(int argc, char** argv)
   PointCloud<Normal>::Ptr cloud_subsampled_normals;
   subsampleAndCalculateNormals(cloud_scene, cloud_subsampled, cloud_subsampled_normals);
 
-  PCL_INFO("STATS:\ninitial point cloud size: %u\nsubsampled point cloud size: %u\n",
-           cloud_scene->points.size(),
-           cloud_subsampled->points.size());
+  PCL_INFO("STATS:\ninitial point cloud size: %zu\nsubsampled point cloud size: %zu\n",
+           static_cast<std::size_t>(cloud_scene->size()),
+           static_cast<std::size_t>(cloud_subsampled->size()));
   visualization::CloudViewer viewer(
       "Multiscale Feature Persistence Example Visualization");
   viewer.showCloud(cloud_scene, "scene");
@@ -108,10 +108,11 @@ main(int argc, char** argv)
   feature_persistence.setDistanceMetric(pcl::CS);
 
   PointCloud<FPFHSignature33>::Ptr output_features(new PointCloud<FPFHSignature33>());
-  auto output_indices = pcl::make_shared<std::vector<int>>();
+  auto output_indices = pcl::make_shared<pcl::Indices>();
   feature_persistence.determinePersistentFeatures(*output_features, output_indices);
 
-  PCL_INFO("persistent features cloud size: %u\n", output_features->points.size());
+  PCL_INFO("persistent features cloud size: %zu\n",
+           static_cast<std::size_t>(output_features->size()));
 
   ExtractIndices<PointXYZ> extract_indices_filter;
   extract_indices_filter.setInputCloud(cloud_subsampled);

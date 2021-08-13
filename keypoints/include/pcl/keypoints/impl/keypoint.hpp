@@ -39,6 +39,10 @@
 #ifndef PCL_KEYPOINT_IMPL_H_
 #define PCL_KEYPOINT_IMPL_H_
 
+#include <pcl/console/print.h> // for PCL_ERROR
+
+#include <pcl/search/organized.h> // for OrganizedNeighbor
+#include <pcl/search/kdtree.h> // for KdTree
 
 namespace pcl
 {
@@ -79,7 +83,7 @@ Keypoint<PointInT, PointOutT>::initCompute ()
     if (surface_ == input_)       // if the two surfaces are the same
     {
       // Declare the search locator definition
-      search_method_ = [this] (int index, double radius, std::vector<int> &k_indices, std::vector<float> &k_distances)
+      search_method_ = [this] (pcl::index_t index, double radius, pcl::Indices &k_indices, std::vector<float> &k_distances)
       {
         return tree_->radiusSearch (index, radius, k_indices, k_distances, 0);
       };
@@ -87,7 +91,7 @@ Keypoint<PointInT, PointOutT>::initCompute ()
     else
     {
       // Declare the search locator definition
-      search_method_surface_ = [this] (const PointCloudIn &cloud, int index, double radius, std::vector<int> &k_indices, std::vector<float> &k_distances)
+      search_method_surface_ = [this] (const PointCloudIn &cloud, pcl::index_t index, double radius, pcl::Indices &k_indices, std::vector<float> &k_distances)
       {
         return tree_->radiusSearch (cloud, index, radius, k_indices, k_distances, 0);
       };
@@ -101,7 +105,7 @@ Keypoint<PointInT, PointOutT>::initCompute ()
       if (surface_ == input_)       // if the two surfaces are the same
       {
         // Declare the search locator definition
-        search_method_ = [this] (int index, int k, std::vector<int> &k_indices, std::vector<float> &k_distances)
+        search_method_ = [this] (pcl::index_t index, int k, pcl::Indices &k_indices, std::vector<float> &k_distances)
         {
           return tree_->nearestKSearch (index, k, k_indices, k_distances);
         };
@@ -109,7 +113,7 @@ Keypoint<PointInT, PointOutT>::initCompute ()
       else
       {
         // Declare the search locator definition
-        search_method_surface_ = [this] (const PointCloudIn &cloud, int index, int k, std::vector<int> &k_indices, std::vector<float> &k_distances)
+        search_method_surface_ = [this] (const PointCloudIn &cloud, pcl::index_t index, int k, pcl::Indices &k_indices, std::vector<float> &k_distances)
         {
           return tree_->nearestKSearch (cloud, index, k, k_indices, k_distances);
         };

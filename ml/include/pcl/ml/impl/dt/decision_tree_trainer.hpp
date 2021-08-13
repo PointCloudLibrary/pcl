@@ -119,7 +119,7 @@ DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
   const std::size_t num_of_examples = examples.size();
   if (num_of_examples == 0) {
     PCL_ERROR(
-        "Reached invalid point in decision tree training: Number of examples is 0!");
+        "Reached invalid point in decision tree training: Number of examples is 0!\n");
     return;
   };
 

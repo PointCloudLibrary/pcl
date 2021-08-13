@@ -40,53 +40,48 @@
 
 #pragma once
 
-#include <pcl/registration/eigen.h>
-
 #include <cstddef>
 #include <vector>
 
+namespace pcl {
 
-namespace pcl
-{
-
-namespace registration
-{
+namespace registration {
 
 inline void
-getCorDistMeanStd (const pcl::Correspondences &correspondences, double &mean, double &stddev)
+getCorDistMeanStd(const pcl::Correspondences& correspondences,
+                  double& mean,
+                  double& stddev)
 {
-  if (correspondences.empty ())
+  if (correspondences.empty())
     return;
 
   double sum = 0, sq_sum = 0;
 
-  for (const auto &correspondence : correspondences)
-  {
+  for (const auto& correspondence : correspondences) {
     sum += correspondence.distance;
     sq_sum += correspondence.distance * correspondence.distance;
   }
-  mean = sum / static_cast<double> (correspondences.size ());
-  double variance = (sq_sum - sum * sum / static_cast<double> (correspondences.size ())) / static_cast<double> (correspondences.size () - 1);
-  stddev = sqrt (variance);
+  mean = sum / static_cast<double>(correspondences.size());
+  double variance = (sq_sum - sum * sum / static_cast<double>(correspondences.size())) /
+                    static_cast<double>(correspondences.size() - 1);
+  stddev = sqrt(variance);
 }
 
 inline void
-getQueryIndices (const pcl::Correspondences& correspondences, std::vector<int>& indices)
+getQueryIndices(const pcl::Correspondences& correspondences, pcl::Indices& indices)
 {
-  indices.resize (correspondences.size ());
-  for (std::size_t i = 0; i < correspondences.size (); ++i)
+  indices.resize(correspondences.size());
+  for (std::size_t i = 0; i < correspondences.size(); ++i)
     indices[i] = correspondences[i].index_query;
 }
 
-
 inline void
-getMatchIndices (const pcl::Correspondences& correspondences, std::vector<int>& indices)
+getMatchIndices(const pcl::Correspondences& correspondences, pcl::Indices& indices)
 {
-  indices.resize (correspondences.size ());
-  for (std::size_t i = 0; i < correspondences.size (); ++i)
+  indices.resize(correspondences.size());
+  for (std::size_t i = 0; i < correspondences.size(); ++i)
     indices[i] = correspondences[i].index_match;
 }
 
 } // namespace registration
 } // namespace pcl
-

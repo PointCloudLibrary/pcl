@@ -41,7 +41,6 @@
 #include <pcl/common/time.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/PCLPointCloud2.h>
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/pcl_macros.h>
@@ -57,6 +56,7 @@
 #include <boost/accumulators/statistics/max.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
 #include <boost/accumulators/statistics/variance.hpp>
+#include <boost/algorithm/string/replace.hpp> // for replace_first
 
 namespace ba = boost::accumulators;
 

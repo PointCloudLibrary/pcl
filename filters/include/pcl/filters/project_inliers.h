@@ -41,20 +41,7 @@
 #include <pcl/filters/filter.h>
 #include <pcl/ModelCoefficients.h>
 // Sample Consensus models
-#include <pcl/sample_consensus/model_types.h>
 #include <pcl/sample_consensus/sac_model.h>
-#include <pcl/sample_consensus/sac_model_circle.h>
-#include <pcl/sample_consensus/sac_model_cylinder.h>
-#include <pcl/sample_consensus/sac_model_cone.h>
-#include <pcl/sample_consensus/sac_model_line.h>
-#include <pcl/sample_consensus/sac_model_normal_plane.h>
-#include <pcl/sample_consensus/sac_model_normal_sphere.h>
-#include <pcl/sample_consensus/sac_model_parallel_plane.h>
-#include <pcl/sample_consensus/sac_model_normal_parallel_plane.h>
-#include <pcl/sample_consensus/sac_model_parallel_line.h>
-#include <pcl/sample_consensus/sac_model_perpendicular_plane.h>
-#include <pcl/sample_consensus/sac_model_plane.h>
-#include <pcl/sample_consensus/sac_model_sphere.h>
 
 namespace pcl
 {
@@ -170,7 +157,6 @@ namespace pcl
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b ProjectInliers uses a model and a set of inlier indices from a PointCloud to project them into a
     * separate PointCloud.
-    * \note setFilterFieldName (), setFilterLimits (), and setFilterLimitNegative () are ignored.
     * \author Radu Bogdan Rusu
     * \ingroup filters
     */

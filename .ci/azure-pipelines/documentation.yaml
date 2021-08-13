@@ -2,7 +2,7 @@ jobs:
   - job: documentation
     displayName: Generate Documentation
     pool:
-      vmImage: 'Ubuntu 16.04'
+      vmImage: 'Ubuntu 20.04'
     container: doc
     variables:
       BUILD_DIR: '$(Agent.BuildDirectory)/build'
@@ -27,7 +27,6 @@ jobs:
           mkdir $BUILD_DIR && cd $BUILD_DIR
           cmake $(Build.SourcesDirectory) \
             -DDOXYGEN_USE_SHORT_NAMES=OFF \
-            -DSPHINX_HTML_FILE_SUFFIX=php \
             -DWITH_DOCS=ON \
             -DWITH_TUTORIALS=ON
         displayName: 'CMake Configuration'

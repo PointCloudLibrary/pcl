@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <cfloat> // for FLT_MIN, FLT_MAX
 #include <pcl/pcl_macros.h>
 #include <pcl/filters/filter_indices.h>
 
@@ -193,7 +194,7 @@ namespace pcl
         * \param[out] indices The resultant indices.
         */
       void
-      applyFilter (std::vector<int> &indices) override
+      applyFilter (Indices &indices) override
       {
         applyFilterIndices (indices);
       }
@@ -202,7 +203,7 @@ namespace pcl
         * \param[out] indices The resultant indices.
         */
       void
-      applyFilterIndices (std::vector<int> &indices);
+      applyFilterIndices (Indices &indices);
 
     private:
       /** \brief The name of the field that will be used for filtering. */
@@ -279,43 +280,12 @@ namespace pcl
         limit_max = filter_limit_max_;
       }
 
-      /** \brief Set to true if we want to return the data outside the interval specified by setFilterLimits (min, max).
-        * Default: false.
-        * \param[in] limit_negative return data inside the interval (false) or outside (true)
-        */
-      PCL_DEPRECATED(1, 12, "use inherited FilterIndices::setNegative() instead")
-      inline void
-      setFilterLimitsNegative (const bool limit_negative)
-      {
-        negative_ = limit_negative;
-      }
-
-      /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
-        * \param[out] limit_negative true if data \b outside the interval [min; max] is to be returned, false otherwise
-        */
-      PCL_DEPRECATED(1, 12, "use inherited FilterIndices::getNegative() instead")
-      inline void
-      getFilterLimitsNegative (bool &limit_negative) const
-      {
-        limit_negative = negative_;
-      }
-
-      /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
-        * \return true if data \b outside the interval [min; max] is to be returned, false otherwise
-        */
-      PCL_DEPRECATED(1, 12, "use inherited FilterIndices::getNegative() instead")
-      inline bool
-      getFilterLimitsNegative () const
-      {
-        return (negative_);
-      }
-
     protected:
       void
       applyFilter (PCLPointCloud2 &output) override;
 
       void
-      applyFilter (std::vector<int> &indices) override;
+      applyFilter (Indices &indices) override;
 
     private:
       /** \brief The desired user filter field name. */

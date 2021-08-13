@@ -60,7 +60,6 @@
 #include <thrust/gather.h>
 
 using namespace thrust;
-using namespace std;
 
 namespace pcl
 {

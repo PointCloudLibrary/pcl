@@ -38,7 +38,6 @@
  *
  */
 
-#include <string>
 #include <sstream>
 
 #include <pcl/test/gtest.h>

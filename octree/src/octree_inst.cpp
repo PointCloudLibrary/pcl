@@ -39,8 +39,8 @@
 
 // Instantiations of specific point types
 
-template class PCL_EXPORTS pcl::octree::OctreeBase<int>;
-template class PCL_EXPORTS pcl::octree::Octree2BufBase<int>;
+template class PCL_EXPORTS pcl::octree::OctreeBase<pcl::index_t>;
+template class PCL_EXPORTS pcl::octree::Octree2BufBase<pcl::index_t>;
 
 template class PCL_EXPORTS
     pcl::octree::OctreeBase<pcl::octree::OctreeContainerPointIndices,
@@ -55,7 +55,6 @@ template class PCL_EXPORTS pcl::octree::OctreeBase<pcl::octree::OctreeContainerE
 
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
-#include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
 PCL_INSTANTIATE(OctreePointCloudSingleBufferWithLeafDataTVector, PCL_XYZ_POINT_TYPES)

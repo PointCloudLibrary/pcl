@@ -39,7 +39,6 @@
 
 #include <pcl/filters/filter.h>
 #include <ctime>
-#include <climits>
 
 namespace pcl
 {
@@ -162,11 +161,11 @@ namespace pcl
         operator () (const int& p0, const int& p1)
         {
           if (dim == 0)
-            return (cloud.points[p0].x < cloud.points[p1].x);
+            return (cloud[p0].x < cloud[p1].x);
           if (dim == 1)
-            return (cloud.points[p0].y < cloud.points[p1].y);
+            return (cloud[p0].y < cloud[p1].y);
           if (dim == 2)
-            return (cloud.points[p0].z < cloud.points[p1].z);
+            return (cloud[p0].z < cloud[p1].z);
           return (false);
         }
       };
@@ -192,7 +191,7 @@ namespace pcl
       void 
       partition (const PointCloud& cloud, const int first, const int last, 
                  const Vector min_values, const Vector max_values, 
-                 std::vector<int>& indices, PointCloud& outcloud);
+                 Indices& indices, PointCloud& outcloud);
 
       /** \brief Randomly sample the points in each grid.
         * \param[in] data 
@@ -203,7 +202,7 @@ namespace pcl
         */
       void 
       samplePartition (const PointCloud& data, const int first, const int last, 
-                       std::vector<int>& indices, PointCloud& outcloud);
+                       Indices& indices, PointCloud& outcloud);
 
       /** \brief Returns the threshold for splitting in a given dimension.
         * \param[in] cloud the input cloud

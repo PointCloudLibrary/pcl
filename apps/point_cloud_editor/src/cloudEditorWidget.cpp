@@ -37,10 +37,11 @@
 /// @details the implementation of class CloudEditorWidget.
 /// @author  Yue Li and Matthew Hielsberg
 
-#include <cctype>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QMouseEvent>
+#include <QApplication>
+#include <QDesktopWidget>
 #include <qgl.h>
 
 #include <pcl/pcl_config.h>
@@ -102,7 +103,7 @@ void
 CloudEditorWidget::load ()
 {
   QString file_path = QFileDialog::getOpenFileName(this, tr("Open File"));
-    
+
   if (file_path.isEmpty())
     return;
 
@@ -130,7 +131,7 @@ CloudEditorWidget::save ()
   }
 
   QString file_path = QFileDialog::getSaveFileName(this,tr("Save point cloud"));
-  
+
   std::string file_path_std = file_path.toStdString();
   if ( (file_path_std.empty()) || (!cloud_ptr_) )
     return;
@@ -488,9 +489,10 @@ CloudEditorWidget::resizeGL (int width, int height)
 void
 CloudEditorWidget::mousePressEvent (QMouseEvent *event)
 {
+  auto ratio = this->devicePixelRatio();
   if (!tool_ptr_)
     return;
-  tool_ptr_ -> start(event -> x(), event -> y(),
+  tool_ptr_ -> start(event -> x()*ratio, event -> y()*ratio,
                      event -> modifiers(), event -> buttons());
   update();
 }
@@ -498,9 +500,10 @@ CloudEditorWidget::mousePressEvent (QMouseEvent *event)
 void
 CloudEditorWidget::mouseMoveEvent (QMouseEvent *event)
 {
+  auto ratio = this->devicePixelRatio();
   if (!tool_ptr_)
     return;
-  tool_ptr_ -> update(event -> x(), event -> y(),
+  tool_ptr_ -> update(event -> x()*ratio, event -> y()*ratio,
                       event -> modifiers(), event -> buttons());
   update();
 }
@@ -508,9 +511,10 @@ CloudEditorWidget::mouseMoveEvent (QMouseEvent *event)
 void
 CloudEditorWidget::mouseReleaseEvent (QMouseEvent *event)
 {
+  auto ratio = this->devicePixelRatio();
   if (!tool_ptr_)
     return;
-  tool_ptr_ -> end(event -> x(), event -> y(),
+  tool_ptr_ -> end(event -> x()*ratio, event -> y()*ratio,
                    event -> modifiers(), event -> button());
   update();
 }
@@ -529,13 +533,13 @@ CloudEditorWidget::keyPressEvent (QKeyEvent *event)
 
 void
 CloudEditorWidget::loadFilePCD(const std::string &filename)
-{   
+{
   PclCloudPtr pcl_cloud_ptr;
   Cloud3D tmp;
   if (pcl::io::loadPCDFile<Point3D>(filename, tmp) == -1)
     throw;
   pcl_cloud_ptr = PclCloudPtr(new Cloud3D(tmp));
-  std::vector<int> index;
+  pcl::Indices index;
   pcl::removeNaNFromPointCloud(*pcl_cloud_ptr, *pcl_cloud_ptr, index);
   Statistics::clear();
   cloud_ptr_ = CloudPtr(new Cloud(*pcl_cloud_ptr, true));
@@ -598,7 +602,7 @@ CloudEditorWidget::swapRBValues ()
 
 void
 CloudEditorWidget::initKeyMap ()
-{   
+{
   key_map_[Qt::Key_1] = &CloudEditorWidget::colorByPure;
   key_map_[Qt::Key_2] = &CloudEditorWidget::colorByX;
   key_map_[Qt::Key_3] = &CloudEditorWidget::colorByY;

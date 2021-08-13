@@ -217,19 +217,19 @@ namespace pcl
         float threshold = distance_threshold_;
         if (depth_dependent_)
         {
-          Eigen::Vector3f vec = input_->points[idx1].getVector3fMap ();
+          Eigen::Vector3f vec = (*input_)[idx1].getVector3fMap ();
           
           float z = vec.dot (z_axis_);
           threshold *= z * z;
         }
 
-        return ( (normals_->points[idx1].getNormalVector3fMap ().dot (desired_road_axis_) > road_angular_threshold_) &&
-                 (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) > angular_threshold_ ));
+        return ( ((*normals_)[idx1].getNormalVector3fMap ().dot (desired_road_axis_) > road_angular_threshold_) &&
+                 ((*normals_)[idx1].getNormalVector3fMap ().dot ((*normals_)[idx2].getNormalVector3fMap () ) > angular_threshold_ ));
         
         // Euclidean proximity of neighbors does not seem to be required -- pixel adjacency handles this well enough 
-        //return ( (normals_->points[idx1].getNormalVector3fMap ().dot (desired_road_axis_) > road_angular_threshold_) &&
-        //          (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) > angular_threshold_ ) &&
-        //         (pcl::euclideanDistance (input_->points[idx1], input_->points[idx2]) < distance_threshold_ ));
+        //return ( ((*normals_)[idx1].getNormalVector3fMap ().dot (desired_road_axis_) > road_angular_threshold_) &&
+        //          ((*normals_)[idx1].getNormalVector3fMap ().dot ((*normals_)[idx2].getNormalVector3fMap () ) > angular_threshold_ ) &&
+        //         (pcl::euclideanDistance ((*input_)[idx1], (*input_)[idx2]) < distance_threshold_ ));
       }
       
     protected:

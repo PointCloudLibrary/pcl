@@ -242,22 +242,22 @@ Convolution<PointIn, PointOut>::convolveOneColNonDense (int i, int j)
 }
 
 template<> pcl::PointXYZRGB
-Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneRowDense (int i, int j);
+PCL_EXPORTS Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneRowDense (int i, int j);
 
 template<> pcl::PointXYZRGB
-Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneColDense (int i, int j);
+PCL_EXPORTS Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneColDense (int i, int j);
 
 template<> pcl::PointXYZRGB
-Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneRowNonDense (int i, int j);
+PCL_EXPORTS Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneRowNonDense (int i, int j);
 
 template<> pcl::PointXYZRGB
-Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneColNonDense (int i, int j);
+PCL_EXPORTS Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneColNonDense (int i, int j);
 
 template<> pcl::RGB
-Convolution<pcl::RGB, pcl::RGB>::convolveOneRowDense (int i, int j);
+PCL_EXPORTS Convolution<pcl::RGB, pcl::RGB>::convolveOneRowDense (int i, int j);
 
 template<> pcl::RGB
-Convolution<pcl::RGB, pcl::RGB>::convolveOneColDense (int i, int j);
+PCL_EXPORTS Convolution<pcl::RGB, pcl::RGB>::convolveOneColDense (int i, int j);
 
 template<> inline pcl::RGB
 Convolution<pcl::RGB, pcl::RGB>::convolveOneRowNonDense (int i, int j)
@@ -556,6 +556,9 @@ Convolution<PointIn, PointOut>::convolve_cols_mirror (PointCloudOut& output)
     }
   }
 }
+
+#define PCL_INSTANTIATE_Convolution(Tin, Tout)                                         \
+  template class PCL_EXPORTS Convolution<Tin, Tout>;
 
 } // namespace filters
 } // namespace pcl

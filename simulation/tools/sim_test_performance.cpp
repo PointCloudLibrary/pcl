@@ -5,24 +5,16 @@
  *
  */
 
-#include <pcl/common/common.h>
-#include <pcl/common/transforms.h>
-#include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/console/time.h>
-#include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/simulation/camera.h>
 #include <pcl/simulation/model.h>
 #include <pcl/simulation/range_likelihood.h>
 #include <pcl/simulation/scene.h>
-#include <pcl/surface/gp3.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_config.h>
-#include <pcl/point_types.h>
-
-#include <Eigen/Dense>
 
 #include <GL/glew.h>
 
@@ -51,7 +43,6 @@ using namespace pcl;
 using namespace pcl::console;
 using namespace pcl::io;
 using namespace pcl::simulation;
-using namespace std;
 
 std::uint16_t t_gamma[2048];
 

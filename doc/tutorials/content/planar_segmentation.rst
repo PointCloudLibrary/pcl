@@ -10,7 +10,7 @@ the **filtering** section.
 
 .. raw:: html
 
-   <iframe title="Planar model segmentation" width="480" height="390" src="http://www.youtube.com/embed/ZTK7NR1Xx4c?rel=0" frameborder="0" allowfullscreen></iframe>
+   <iframe title="Planar model segmentation" width="480" height="390" src="https://www.youtube.com/embed/ZTK7NR1Xx4c?rel=0" frameborder="0" allowfullscreen></iframe>
 
 The code
 --------
@@ -36,7 +36,7 @@ Lines:
 
 .. important::
 
-  Please visit http://docs.pointclouds.org/trunk/a02954.html
+  Please visit https://pointclouds.org/documentation/group__sample__consensus.html
   for more information on various other implemented Sample Consensus models and
   robust estimators.
 

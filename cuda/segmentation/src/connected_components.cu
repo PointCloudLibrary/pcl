@@ -87,7 +87,7 @@ namespace pcl
       region_mask.resize (input->points.size());
       //int** stencils = new int*[inlier_stencils.size()];
       thrust::host_vector<int*> stencils_host (inlier_stencils.size ());
-      for (int i = 0; i < inlier_stencils.size (); ++i)
+      for (std::size_t i = 0; i < inlier_stencils.size (); ++i)
         stencils_host[i] = thrust::raw_pointer_cast(&(*inlier_stencils[i])[0]);
         //stencils_host[i] = thrust::raw_pointer_cast<int> (&(*inlier_stencils[i])[0]);
 

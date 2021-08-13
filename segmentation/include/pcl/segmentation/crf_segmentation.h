@@ -46,7 +46,6 @@
 
 #include <pcl/ml/densecrf.h>
 #include <pcl/filters/voxel_grid.h>
-#include <pcl/filters/voxel_grid_label.h>
 
 //#include <pcl/ml/densecrfORI.h>
 

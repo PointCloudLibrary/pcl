@@ -69,62 +69,62 @@ These lines are simply loading the cloud from the .pcd file.
 
 .. literalinclude:: sources/min_cut_segmentation/min_cut_segmentation.cpp
    :language: cpp
-   :lines: 18-23
+   :lines: 18-19
 
-This few lines are not necessary. Their only purpose is to show that ``pcl::MinCutSegmentation`` class can work with indices.
+The purpose of these lines is to show that ``pcl::MinCutSegmentation`` class can work with indices. Here, only the valid points are chosen for segmentation.
 
 .. literalinclude:: sources/min_cut_segmentation/min_cut_segmentation.cpp
    :language: cpp
-   :lines: 25-25
+   :lines: 21-21
 
 Here is the line where the instantiation of the ``pcl::MinCutSegmentation`` class takes place.
 It is the tamplate class that has only one parameter - PointT - which says what type of points will be used.
 
 .. literalinclude:: sources/min_cut_segmentation/min_cut_segmentation.cpp
    :language: cpp
-   :lines: 26-27
+   :lines: 22-23
 
 These lines provide the algorithm with the cloud that must be segmented and the indices.
 
 .. literalinclude:: sources/min_cut_segmentation/min_cut_segmentation.cpp
    :language: cpp
-   :lines: 29-35
+   :lines: 25-31
 
 As mentioned before, algorithm requires point that is known to be the objects center. These lines provide it.
 
 .. literalinclude:: sources/min_cut_segmentation/min_cut_segmentation.cpp
    :language: cpp
-   :lines: 37-38
+   :lines: 33-34
 
 These lines set :math:`\sigma` and objects radius required for smooth cost calculation.
 
 .. literalinclude:: sources/min_cut_segmentation/min_cut_segmentation.cpp
    :language: cpp
-   :lines: 39-39
+   :lines: 35-35
 
 This line tells how much neighbours to find when constructing the graph. The more neighbours is set, the more number of edges it will contain.
 
 .. literalinclude:: sources/min_cut_segmentation/min_cut_segmentation.cpp
    :language: cpp
-   :lines: 40-40
+   :lines: 36-36
 
 Here is the line where foreground penalty is set.
 
 .. literalinclude:: sources/min_cut_segmentation/min_cut_segmentation.cpp
    :language: cpp
-   :lines: 42-43
+   :lines: 38-39
 
 These lines are responsible for launching the algorithm. After the segmentation clusters will contain the result.
 
 .. literalinclude:: sources/min_cut_segmentation/min_cut_segmentation.cpp
    :language: cpp
-   :lines: 45-45
+   :lines: 41-41
 
 You can easily access the flow value that was computed during the graph cut. This is exactly what happening here.
 
 .. literalinclude:: sources/min_cut_segmentation/min_cut_segmentation.cpp
    :language: cpp
-   :lines: 47-52
+   :lines: 43-48
 
 These lines simply create the instance of ``CloudViewer`` class for result visualization.
 

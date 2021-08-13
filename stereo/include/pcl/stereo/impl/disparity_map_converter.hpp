@@ -273,9 +273,9 @@ pcl::DisparityMapConverter<PointT>::compute(PointCloud& out_cloud)
       if (is_color_) {
         pcl::common::IntensityFieldAccessor<PointT> intensity_accessor;
         intensity_accessor.set(new_point,
-                               static_cast<float>(image_->points[disparity_point].r +
-                                                  image_->points[disparity_point].g +
-                                                  image_->points[disparity_point].b) /
+                               static_cast<float>((*image_)[disparity_point].r +
+                                                  (*image_)[disparity_point].g +
+                                                  (*image_)[disparity_point].b) /
                                    3.0f);
       }
 

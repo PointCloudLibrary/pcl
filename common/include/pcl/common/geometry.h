@@ -149,7 +149,7 @@ namespace pcl
       }
       else
       {
-        PCL_WARN ("[pcl::randomOrthogonalAxis] provided axis has norm < 1E-8f");
+        PCL_WARN ("[pcl::randomOrthogonalAxis] provided axis has norm < 1E-8f\n");
       }
 
       rand_ortho_axis.normalize ();

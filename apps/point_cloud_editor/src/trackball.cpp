@@ -38,7 +38,6 @@
 /// class has been based on
 /// @author Matthew Hielsberg
 
-#include <algorithm>
 #include <limits>
 #include <pcl/apps/point_cloud_editor/common.h>
 #include <pcl/apps/point_cloud_editor/trackball.h>

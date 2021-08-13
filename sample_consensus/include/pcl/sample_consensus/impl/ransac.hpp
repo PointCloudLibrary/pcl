@@ -68,7 +68,7 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
   double k = std::numeric_limits<double>::max();
 
   Indices selection;
-  Eigen::VectorXf model_coefficients;
+  Eigen::VectorXf model_coefficients (sac_model_->getModelSize ());
 
   const double log_probability  = std::log (1.0 - probability_);
   const double one_over_indices = 1.0 / static_cast<double> (sac_model_->getIndices ()->size ());
@@ -93,7 +93,7 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
   }
 
 #if OPENMP_AVAILABLE_RANSAC
-#pragma omp parallel if(threads > 0) num_threads(threads) shared(k, n_best_inliers_count) private(selection, model_coefficients) // would be nice to have a default(none)-clause here, but then some compilers complain about the shared const variables
+#pragma omp parallel if(threads > 0) num_threads(threads) shared(k, n_best_inliers_count) firstprivate(selection, model_coefficients) // would be nice to have a default(none)-clause here, but then some compilers complain about the shared const variables
 #endif
   {
 #if OPENMP_AVAILABLE_RANSAC

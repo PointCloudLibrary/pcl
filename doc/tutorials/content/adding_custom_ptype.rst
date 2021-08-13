@@ -849,14 +849,14 @@ data (SSE padded), together with a test float.
    main (int argc, char** argv)
    {
      pcl::PointCloud<MyPointType> cloud;
-     cloud.points.resize (2);
+     cloud.resize (2);
      cloud.width = 2;
      cloud.height = 1;
 
-     cloud.points[0].test = 1;
-     cloud.points[1].test = 2;
-     cloud.points[0].x = cloud.points[0].y = cloud.points[0].z = 0;
-     cloud.points[1].x = cloud.points[1].y = cloud.points[1].z = 3;
+     cloud[0].test = 1;
+     cloud[1].test = 2;
+     cloud[0].x = cloud[0].y = cloud[0].z = 0;
+     cloud[1].x = cloud[1].y = cloud[1].z = 3;
 
      pcl::io::savePCDFile ("test.pcd", cloud);
    }

@@ -39,7 +39,7 @@
 
 // PCL includes
 #include <pcl/pcl_base.h>
-#include <pcl/search/pcl_search.h>
+#include <pcl/search/search.h> // for Search
 #include <pcl/pcl_config.h>
 
 #include <functional>
@@ -67,8 +67,8 @@ namespace pcl
       using PointCloudInPtr = typename PointCloudIn::Ptr;
       using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
       using PointCloudOut = pcl::PointCloud<PointOutT>;
-      using SearchMethod = std::function<int (int, double, std::vector<int> &, std::vector<float> &)>;
-      using SearchMethodSurface = std::function<int (const PointCloudIn &cloud, int index, double, std::vector<int> &, std::vector<float> &)>;
+      using SearchMethod = std::function<int (pcl::index_t, double, pcl::Indices &, std::vector<float> &)>;
+      using SearchMethodSurface = std::function<int (const PointCloudIn &cloud, pcl::index_t index, double, pcl::Indices &, std::vector<float> &)>;
 
     public:
       /** \brief Empty constructor. */
@@ -152,7 +152,7 @@ namespace pcl
         * k-nearest neighbors
         */
       inline int
-      searchForNeighbors (int index, double parameter, std::vector<int> &indices, std::vector<float> &distances) const
+      searchForNeighbors (pcl::index_t index, double parameter, pcl::Indices &indices, std::vector<float> &distances) const
       {
         if (surface_ == input_)       // if the two surfaces are the same
           return (search_method_ (index, parameter, indices, distances));

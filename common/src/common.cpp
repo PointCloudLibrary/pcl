@@ -39,6 +39,7 @@
 
 #include <limits>
 
+#include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
 #include <pcl/common/common.h>
 #include <pcl/console/print.h>
 
@@ -59,7 +60,7 @@ pcl::getMinMax (const pcl::PCLPointCloud2 &cloud, int,
   }
   const auto field_idx = std::distance(cloud.fields.begin (), result);
 
-  for (unsigned int i = 0; i < cloud.fields[field_idx].count; ++i)
+  for (uindex_t i = 0; i < cloud.fields[field_idx].count; ++i)
   {
     float data;
     // TODO: replace float with the real data type

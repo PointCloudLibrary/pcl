@@ -37,7 +37,6 @@
 /// @details the implementation of class CloudTransformTool
 /// @author Yue Li and Matthew Hielsberg
 
-#include <cmath>
 #include <pcl/apps/point_cloud_editor/selectionTransformTool.h>
 #include <pcl/apps/point_cloud_editor/cloud.h>
 #include <pcl/apps/point_cloud_editor/selection.h>

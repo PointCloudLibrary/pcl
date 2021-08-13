@@ -40,15 +40,12 @@
 #ifdef HAVE_OPENNI
 
 #include <pcl/io/openni_camera/openni_image_bayer_grbg.h>
-#include <sstream>
-#include <iostream>
 #include <pcl/io/debayer.h>
 
 #define AVG(a,b) static_cast<unsigned char>((int(a) + int(b)) >> 1)
 #define AVG3(a,b,c) static_cast<unsigned char>((int(a) + int(b) + int(c)) / 3)
 #define AVG4(a,b,c,d) static_cast<unsigned char>((int(a) + int(b) + int(c) + int(d)) >> 2)
 #define WAVG4(a,b,c,d,x,y) static_cast<unsigned char>( ( (int(a) + int(b)) * int(x) + (int(c) + int(d)) * int(y) ) / ( (int(x) + (int(y))) << 1 ) )
-using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////
 openni_wrapper::ImageBayerGRBG::ImageBayerGRBG (pcl::shared_ptr<xn::ImageMetaData> image_meta_data, DebayeringMethod method) noexcept

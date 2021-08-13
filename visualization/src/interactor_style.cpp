@@ -36,6 +36,7 @@
  *
  */
 
+#include <fstream>
 #include <list>
 #include <pcl/common/angles.h>
 #include <pcl/visualization/common/io.h>
@@ -64,6 +65,10 @@
 #include <vtkAbstractPicker.h>
 #include <vtkPointPicker.h>
 #include <vtkAreaPicker.h>
+
+#include <boost/algorithm/string/classification.hpp> // for is_any_of
+#include <boost/algorithm/string/split.hpp> // for split
+#include <boost/filesystem.hpp> // for exists
 
 #if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
 #include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
@@ -137,7 +142,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::saveCameraParameters (const st
 {
   FindPokedRenderer (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
 
-  ofstream ofs_cam (file.c_str ());
+  std::ofstream ofs_cam (file.c_str ());
   if (!ofs_cam.is_open ())
   {
     return (false);
@@ -1063,7 +1068,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         if(CurrentRenderer)
           CurrentRenderer->ResetCamera ();
         else
-          PCL_WARN ("no current renderer on the interactor style.");
+          PCL_WARN ("no current renderer on the interactor style.\n");
 
         CurrentRenderer->Render ();
         break;

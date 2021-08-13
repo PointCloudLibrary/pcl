@@ -116,14 +116,13 @@ To learn more about how it is done you should take a look at the :ref:`normal_es
 
 .. literalinclude:: sources/region_growing_segmentation/region_growing_segmentation.cpp
    :language: cpp
-   :lines: 30-35
+   :lines: 30-31
 
-These lines are given only for example. You can safely comment this part. Insofar as ``pcl::RegionGrowing`` is derived from ``pcl::PCLBase``,
-it can work with indices. It means you can instruct that you only segment those points that are listed in the indices array instead of the whole point cloud.
+Insofar as ``pcl::RegionGrowing`` is derived from ``pcl::PCLBase``, it can work with indices. It means you can instruct that you only segment those points that are listed in the indices array instead of the whole point cloud. Here, only the valid points are chosen for segmentation.
 
 .. literalinclude:: sources/region_growing_segmentation/region_growing_segmentation.cpp
    :language: cpp
-   :lines: 37-39
+   :lines: 33-35
 
 You have finally reached the part where ``pcl::RegionGrowing`` is instantiated. It is a template class that has two parameters:
 
@@ -136,14 +135,14 @@ The default values for minimum and maximum are 1 and 'as much as possible' respe
 
 .. literalinclude:: sources/region_growing_segmentation/region_growing_segmentation.cpp
    :language: cpp
-   :lines: 40-44
+   :lines: 36-40
 
 The algorithm needs K nearest search in its internal structure, so here is the place where a search method is provided
 and number of neighbours is set. After that it receives the cloud that must be segmented, point indices and normals.
 
 .. literalinclude:: sources/region_growing_segmentation/region_growing_segmentation.cpp
    :language: cpp
-   :lines: 45-46
+   :lines: 41-42
 
 These two lines are the most important part in the algorithm initialization, because they are responsible for the mentioned smoothness constraint.
 First method sets the angle in radians that will be used as the allowable range for the normals deviation.
@@ -154,20 +153,20 @@ And if this value is less than the curvature threshold then the algorithm will c
 
 .. literalinclude:: sources/region_growing_segmentation/region_growing_segmentation.cpp
    :language: cpp
-   :lines: 48-49
+   :lines: 44-45
 
 This method simply launches the segmentation algorithm. After its work it will return clusters array.
 
 .. literalinclude:: sources/region_growing_segmentation/region_growing_segmentation.cpp
    :language: cpp
-   :lines: 51-63
+   :lines: 47-59
 
 These lines are simple enough, so they won't be commented. They are intended for those who are not familiar with how to work with ``pcl::PointIndices``
 and how to access its elements.
 
 .. literalinclude:: sources/region_growing_segmentation/region_growing_segmentation.cpp
    :language: cpp
-   :lines: 65-73
+   :lines: 61-69
 
 The ``pcl::RegionGrowing`` class provides a method that returns the colored cloud where each cluster has its own color.
 So in this part of code the ``pcl::visualization::CloudViewer`` is instantiated for viewing the result of the segmentation - the same colored cloud.

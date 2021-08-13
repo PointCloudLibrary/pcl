@@ -39,6 +39,7 @@
 #include <pcl/surface/on_nurbs/closing_boundary.h>
 #include <pcl/pcl_macros.h>
 
+#include <Eigen/Geometry> // for cross
 #include <stdexcept>
 
 using namespace pcl;

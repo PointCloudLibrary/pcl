@@ -8,6 +8,7 @@
 #include <pcl/range_image/range_image.h>
 #include <pcl/features/narf.h>
 #include <pcl/console/parse.h>
+#include <pcl/common/file_io.h> // for getFilenameWithoutExtension
 
 float angular_resolution = 0.5f;
 int rotation_invariant = 0;
@@ -118,14 +119,14 @@ main (int argc, char** argv)
   // Extract NARF features:
   std::cout << "Now extracting NARFs in every image point.\n";
   std::vector<std::vector<pcl::Narf*> > narfs;
-  narfs.resize (range_image.points.size ());
-  int last_percentage=-1;
+  narfs.resize (range_image.size ());
+  unsigned int last_percentage=0;
   for (unsigned int y=0; y<range_image.height; ++y)
   {
     for (unsigned int x=0; x<range_image.width; ++x)
     {
-      int index = y*range_image.width+x;
-      int percentage = (int) ((100*index) / range_image.points.size ());
+      const auto index = y*range_image.width+x;
+      const auto percentage = ((100*index) / range_image.size ());
       if (percentage > last_percentage)
       {
         std::cout << percentage<<"% "<<std::flush;
@@ -187,7 +188,7 @@ main (int argc, char** argv)
     float surface_patch_world_size = narf.getSurfacePatchWorldSize ();
     surface_patch_widget.showFloatImage (narf.getSurfacePatch (), surface_patch_pixel_size, surface_patch_pixel_size,
                                          -0.5f*surface_patch_world_size, 0.5f*surface_patch_world_size, true);
-    float surface_patch_rotation = narf.getSurfacePatchRotation ();
+    /*float surface_patch_rotation = narf.getSurfacePatchRotation ();
     float patch_middle = 0.5f* (float (surface_patch_pixel_size-1));
     float angle_step_size = pcl::deg2rad (360.0f)/narf.getDescriptorSize ();
     float cell_size = surface_patch_world_size/float (surface_patch_pixel_size),
@@ -207,7 +208,7 @@ main (int argc, char** argv)
     {
       //surface_patch_widget.markLine (radius-0.5, radius-0.5, radius-0.5f + 2.0f*radius*sinf (rotations[i]),
                                                 //radius-0.5f - 2.0f*radius*std::cos (rotations[i]), pcl::visualization::Vector3ub (255,0,0));
-    }
+    }*/
     
     descriptor_widget.showFloatImage (narf.getDescriptor (), narf.getDescriptorSize (), 1, -0.1f, 0.3f, true);
 
@@ -219,8 +220,8 @@ main (int argc, char** argv)
       continue;
     
     //descriptor_distances_widget.show (false);
-    float* descriptor_distance_image = new float[range_image.points.size ()];
-    for (unsigned int point_index=0; point_index<range_image.points.size (); ++point_index)
+    float* descriptor_distance_image = new float[range_image.size ()];
+    for (unsigned int point_index=0; point_index<range_image.size (); ++point_index)
     {
       float& descriptor_distance = descriptor_distance_image[point_index];
       descriptor_distance = std::numeric_limits<float>::infinity ();

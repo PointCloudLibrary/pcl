@@ -38,7 +38,6 @@
  */
 
 #include <pcl/common/angles.h>
-#include <pcl/common/common.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/console/time.h>
@@ -48,6 +47,7 @@
 #include <pcl/filters/project_inliers.h>
 #include <pcl/geometry/polygon_operations.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/sample_consensus/sac_model_plane.h> // for pointToPlaneDistance
 #include <pcl/segmentation/edge_aware_plane_comparator.h>
 #include <pcl/segmentation/euclidean_cluster_comparator.h>
 #include <pcl/segmentation/extract_clusters.h>
@@ -64,7 +64,6 @@
 
 using namespace pcl;
 using namespace pcl::console;
-using namespace std;
 using namespace std::chrono_literals;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -150,7 +149,7 @@ public:
    * \param[out] object the segmented resultant object
    */
   void
-  segmentObject(int picked_idx,
+  segmentObject(pcl::index_t picked_idx,
                 const typename PointCloud<PointT>::ConstPtr& cloud,
                 const PointIndices::Ptr& plane_indices,
                 PointCloud<PointT>& object)
@@ -180,9 +179,8 @@ public:
     exppd.setInputCloud(cloud);
     exppd.setIndices(indices_but_the_plane);
     exppd.setInputPlanarHull(plane_hull);
-    exppd.setViewPoint(cloud->points[picked_idx].x,
-                       cloud->points[picked_idx].y,
-                       cloud->points[picked_idx].z);
+    exppd.setViewPoint(
+        (*cloud)[picked_idx].x, (*cloud)[picked_idx].y, (*cloud)[picked_idx].z);
     exppd.setHeightLimits(0.001, 0.5); // up to half a meter
     exppd.segment(*points_above_plane);
 
@@ -201,8 +199,8 @@ public:
       PointCloud<Label>::Ptr scene(
           new PointCloud<Label>(cloud->width, cloud->height, l));
       // Mask the objects that we want to split into clusters
-      for (const int& index : points_above_plane->indices)
-        scene->points[index].label = 1;
+      for (const auto& index : points_above_plane->indices)
+        (*scene)[index].label = 1;
       euclidean_cluster_comparator->setLabels(scene);
 
       typename EuclideanClusterComparator<PointT, Label>::ExcludeLabelSetPtr
@@ -259,7 +257,7 @@ public:
   /////////////////////////////////////////////////////////////////////////
   void
   segment(const PointT& picked_point,
-          int picked_idx,
+          pcl::index_t picked_idx,
           PlanarRegion<PointT>& region,
           typename PointCloud<PointT>::Ptr& object)
   {
@@ -442,7 +440,7 @@ public:
     if (idx == -1)
       return;
 
-    std::vector<int> indices(1);
+    pcl::Indices indices(1);
     std::vector<float> distances(1);
 
     // Get the point that was picked
@@ -457,9 +455,8 @@ public:
                picked_pt.z);
 
     // Add a sphere to it in the PCLVisualizer window
-    stringstream ss;
-    ss << "sphere_" << idx;
-    cloud_viewer_->addSphere(picked_pt, 0.01, 1.0, 0.0, 0.0, ss.str());
+    const std::string sphere_name = "sphere_" + std::to_string(idx);
+    cloud_viewer_->addSphere(picked_pt, 0.01, 1.0, 0.0, 0.0, sphere_name);
 
     // Because VTK/OpenGL stores data without NaN, we lose the 1-1 correspondence, so we
     // must search for the real point
@@ -577,7 +574,7 @@ public:
         for (std::uint32_t i = 0; i < cloud_->width * cloud_->height; ++i) {
           RGB rgb;
           memcpy(&rgb,
-                 reinterpret_cast<unsigned char*>(&cloud_->points[i]) + poff,
+                 reinterpret_cast<unsigned char*>(&(*cloud_)[i]) + poff,
                  sizeof(rgb));
 
           rgb_data_[i * 3 + 0] = rgb.r;

@@ -108,15 +108,15 @@ TEST (PCL, SampleConsensusInitialAlignment)
 
   // Register
   reg.align (cloud_reg);
-  EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_EQ (cloud_reg.size (), cloud_source.size ());
   EXPECT_LT (reg.getFitnessScore (), 0.0005);
 
   // Check again, for all possible caching schemes
   using PointT = pcl::PointXYZ;
   for (int iter = 0; iter < 4; iter++)
   {
-    bool force_cache = (bool) iter/2;
-    bool force_cache_reciprocal = (bool) iter%2;
+    bool force_cache = static_cast<bool> (iter/2);
+    bool force_cache_reciprocal = static_cast<bool> (iter%2);
     pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
     // Ensure that, when force_cache is not set, we are robust to the wrong input
     if (force_cache)
@@ -130,7 +130,7 @@ TEST (PCL, SampleConsensusInitialAlignment)
 
     // Register
     reg.align (cloud_reg);
-    EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
+    EXPECT_EQ (cloud_reg.size (), cloud_source.size ());
     EXPECT_LT (reg.getFitnessScore (), 0.0005);
   }
 }
@@ -204,16 +204,16 @@ TEST (PCL, SampleConsensusPrerejective)
   reg.align (cloud_reg);
 
   // Check output consistency and quality of alignment
-  EXPECT_EQ (static_cast<int> (cloud_reg.points.size ()), static_cast<int> (cloud_source.points.size ()));
-  float inlier_fraction = static_cast<float> (reg.getInliers ().size ()) / static_cast<float> (cloud_source.points.size ());
+  EXPECT_EQ (cloud_reg.size (), cloud_source.size ());
+  float inlier_fraction = static_cast<float> (reg.getInliers ().size ()) / static_cast<float> (cloud_source.size ());
   EXPECT_GT (inlier_fraction, 0.95f);
 
   // Check again, for all possible caching schemes
   using PointT = pcl::PointXYZ;
   for (int iter = 0; iter < 4; iter++)
   {
-    bool force_cache = (bool) iter/2;
-    bool force_cache_reciprocal = (bool) iter%2;
+    bool force_cache = static_cast<bool> (iter/2);
+    bool force_cache_reciprocal = static_cast<bool> (iter%2);
     pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
     // Ensure that, when force_cache is not set, we are robust to the wrong input
     if (force_cache)
@@ -229,8 +229,8 @@ TEST (PCL, SampleConsensusPrerejective)
     reg.align (cloud_reg);
 
     // Check output consistency and quality of alignment
-    EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
-    inlier_fraction = static_cast<float> (reg.getInliers ().size ()) / static_cast<float> (cloud_source.points.size ());
+    EXPECT_EQ (cloud_reg.size (), cloud_source.size ());
+    inlier_fraction = static_cast<float> (reg.getInliers ().size ()) / static_cast<float> (cloud_source.size ());
     EXPECT_GT (inlier_fraction, 0.95f);
   }
 }

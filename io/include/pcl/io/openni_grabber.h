@@ -45,8 +45,6 @@
 #ifdef HAVE_OPENNI
 
 #include <pcl/point_cloud.h>
-#include <pcl/io/eigen.h>
-#include <pcl/io/boost.h>
 #include <pcl/io/grabber.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_camera/openni_device_kinect.h>
@@ -54,8 +52,8 @@
 #include <pcl/io/openni_camera/openni_depth_image.h>
 #include <pcl/io/openni_camera/openni_ir_image.h>
 #include <string>
-#include <deque>
 #include <pcl/common/synchronizer.h>
+#include <boost/shared_array.hpp> // for shared_array
 
 namespace pcl
 {

@@ -196,7 +196,7 @@ pcl::BoxClipper3D<PointT>::clipPlanarPolygon3D (std::vector<PointT, Eigen::align
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // /ToDo: write fast version using eigen map and single matrix vector multiplication, that uses advantages of eigens SSE operations.
 template<typename PointT> void
-pcl::BoxClipper3D<PointT>::clipPointCloud3D (const pcl::PointCloud<PointT>& cloud_in, std::vector<int>& clipped, const std::vector<int>& indices) const
+pcl::BoxClipper3D<PointT>::clipPointCloud3D (const pcl::PointCloud<PointT>& cloud_in, Indices& clipped, const Indices& indices) const
 {
   clipped.clear ();
   if (indices.empty ())
@@ -208,7 +208,7 @@ pcl::BoxClipper3D<PointT>::clipPointCloud3D (const pcl::PointCloud<PointT>& clou
   }
   else
   {
-    for (const int &index : indices)
+    for (const auto &index : indices)
       if (clipPoint3D (cloud_in[index]))
         clipped.push_back (index);
   }

@@ -64,7 +64,7 @@ namespace pcl
   class StatisticalMultiscaleInterestRegionExtraction : public PCLBase<PointT>
   {
     public:
-      using IndicesPtr = shared_ptr<std::vector<int> >;
+      using IndicesPtr = shared_ptr<pcl::Indices >;
       using Ptr = shared_ptr<StatisticalMultiscaleInterestRegionExtraction<PointT> >;
       using ConstPtr = shared_ptr<const StatisticalMultiscaleInterestRegionExtraction<PointT> >;
 

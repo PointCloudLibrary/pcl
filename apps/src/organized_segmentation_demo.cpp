@@ -1,7 +1,7 @@
 #include <pcl/apps/organized_segmentation_demo.h>
 #include <pcl/common/angles.h>
+#include <pcl/io/openni_grabber.h> // for OpenNIGrabber
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
-#include <pcl/surface/convex_hull.h>
 #include <pcl/memory.h> // for pcl::dynamic_pointer_cast
 
 #include <boost/signals2/connection.hpp> // for boost::signals2::connection
@@ -11,7 +11,9 @@
 #include <QMutexLocker>
 #include <QObject>
 
+#include <vtkGenericOpenGLRenderWindow.h>
 #include <vtkRenderWindow.h>
+#include <vtkRendererCollection.h>
 
 // #include <boost/filesystem.hpp>  // for boost::filesystem::directory_iterator
 #include <boost/signals2/connection.hpp> // for boost::signals2::connection
@@ -80,16 +82,16 @@ displayCurvature(pcl::PointCloud<PointT>& cloud,
                  const pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
   pcl::PointCloud<pcl::PointXYZRGBA> curvature_cloud = cloud;
-  for (std::size_t i = 0; i < cloud.points.size(); i++) {
-    if (normals.points[i].curvature < 0.04) {
-      curvature_cloud.points[i].r = 0;
-      curvature_cloud.points[i].g = 255;
-      curvature_cloud.points[i].b = 0;
+  for (std::size_t i = 0; i < cloud.size(); i++) {
+    if (normals[i].curvature < 0.04) {
+      curvature_cloud[i].r = 0;
+      curvature_cloud[i].g = 255;
+      curvature_cloud[i].b = 0;
     }
     else {
-      curvature_cloud.points[i].r = 255;
-      curvature_cloud.points[i].g = 0;
-      curvature_cloud.points[i].b = 0;
+      curvature_cloud[i].r = 255;
+      curvature_cloud[i].g = 0;
+      curvature_cloud[i].b = 0;
     }
   }
 
@@ -103,16 +105,16 @@ displayDistanceMap(pcl::PointCloud<PointT>& cloud,
                    const pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
   pcl::PointCloud<pcl::PointXYZRGBA> distance_map_cloud = cloud;
-  for (std::size_t i = 0; i < cloud.points.size(); i++) {
+  for (std::size_t i = 0; i < cloud.size(); i++) {
     if (distance_map[i] < 5.0) {
-      distance_map_cloud.points[i].r = 255;
-      distance_map_cloud.points[i].g = 0;
-      distance_map_cloud.points[i].b = 0;
+      distance_map_cloud[i].r = 255;
+      distance_map_cloud[i].g = 0;
+      distance_map_cloud[i].b = 0;
     }
     else {
-      distance_map_cloud.points[i].r = 0;
-      distance_map_cloud.points[i].g = 255;
-      distance_map_cloud.points[i].b = 0;
+      distance_map_cloud[i].r = 0;
+      distance_map_cloud[i].g = 255;
+      distance_map_cloud[i].b = 0;
     }
   }
 
@@ -204,13 +206,23 @@ OrganizedSegmentationDemo::OrganizedSegmentationDemo(pcl::Grabber& grabber)
   ui_->setupUi(this);
 
   this->setWindowTitle("PCL Organized Connected Component Segmentation Demo");
+
+#if VTK_MAJOR_VERSION > 8
+  auto renderer = vtkSmartPointer<vtkRenderer>::New();
+  auto renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
+  renderWindow->AddRenderer(renderer);
+  vis_.reset(new pcl::visualization::PCLVisualizer(renderer, renderWindow, "", false));
+#else
   vis_.reset(new pcl::visualization::PCLVisualizer("", false));
-  ui_->qvtk_widget->SetRenderWindow(vis_->getRenderWindow());
-  vis_->setupInteractor(ui_->qvtk_widget->GetInteractor(),
-                        ui_->qvtk_widget->GetRenderWindow());
+#endif // VTK_MAJOR_VERSION > 8
+  setRenderWindowCompat(*(ui_->qvtk_widget), *(vis_->getRenderWindow()));
+  vis_->setupInteractor(getInteractorCompat(*(ui_->qvtk_widget)),
+                        getRenderWindowCompat(*(ui_->qvtk_widget)));
+
+  refreshView();
+
   vis_->getInteractorStyle()->setKeyboardModifier(
       pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
-  ui_->qvtk_widget->update();
 
   std::function<void(const CloudConstPtr&)> f = [this](const CloudConstPtr& cloud) {
     cloud_cb(cloud);
@@ -306,6 +318,16 @@ OrganizedSegmentationDemo::OrganizedSegmentationDemo(pcl::Grabber& grabber)
 
   PCL_INFO("starting grabber\n");
   grabber_.start();
+}
+
+void
+OrganizedSegmentationDemo::refreshView()
+{
+#if VTK_MAJOR_VERSION > 8
+  ui_->qvtk_widget->renderWindow()->Render();
+#else
+  ui_->qvtk_widget->update();
+#endif // VTK_MAJOR_VERSION > 8
 }
 
 void
@@ -440,8 +462,7 @@ OrganizedSegmentationDemo::timeoutSlot()
       data_modified_ = false;
     }
   }
-
-  ui_->qvtk_widget->update();
+  refreshView();
 }
 
 void

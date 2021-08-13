@@ -41,7 +41,8 @@
 #ifndef PCL_FEATURES_IMPL_FEATURE_H_
 #define PCL_FEATURES_IMPL_FEATURE_H_
 
-#include <pcl/search/pcl_search.h>
+#include <pcl/search/kdtree.h> // for KdTree
+#include <pcl/search/organized.h> // for OrganizedNeighbor
 
 
 namespace pcl
@@ -68,7 +69,7 @@ solvePlaneParameters (const Eigen::Matrix3f &covariance_matrix,
 //  for (int i = 0; i < 9; ++i)
 //    if (!std::isfinite (covariance_matrix.coeff (i)))
 //    {
-//      //PCL_WARN ("[pcl::solvePlaneParameteres] Covariance matrix has NaN/Inf values!\n");
+//      //PCL_WARN ("[pcl::solvePlaneParameters] Covariance matrix has NaN/Inf values!\n");
 //      nx = ny = nz = curvature = std::numeric_limits<float>::quiet_NaN ();
 //      return;
 //    }
@@ -145,7 +146,7 @@ Feature<PointInT, PointOutT>::initCompute ()
       search_parameter_ = search_radius_;
       // Declare the search locator definition
       search_method_surface_ = [this] (const PointCloudIn &cloud, int index, double radius,
-                                       std::vector<int> &k_indices, std::vector<float> &k_distances)
+                                       pcl::Indices &k_indices, std::vector<float> &k_distances)
       {
         return tree_->radiusSearch (cloud, index, radius, k_indices, k_distances, 0);
       };
@@ -157,7 +158,7 @@ Feature<PointInT, PointOutT>::initCompute ()
     {
       search_parameter_ = k_;
       // Declare the search locator definition
-      search_method_surface_ = [this] (const PointCloudIn &cloud, int index, int k, std::vector<int> &k_indices,
+      search_method_surface_ = [this] (const PointCloudIn &cloud, int index, int k, pcl::Indices &k_indices,
                                        std::vector<float> &k_distances)
       {
         return tree_->nearestKSearch (cloud, index, k, k_indices, k_distances);
@@ -195,7 +196,7 @@ Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
   if (!initCompute ())
   {
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
@@ -203,14 +204,14 @@ Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
   output.header = input_->header;
 
   // Resize the output dataset
-  if (output.points.size () != indices_->size ())
-    output.points.resize (indices_->size ());
+  if (output.size () != indices_->size ())
+    output.resize (indices_->size ());
 
   // Check if the output will be computed for all points or only a subset
   // If the input width or height are not set, set output width as size
   if (indices_->size () != input_->points.size () || input_->width * input_->height == 0)
   {
-    output.width = static_cast<std::uint32_t> (indices_->size ());
+    output.width = indices_->size ();
     output.height = 1;
   }
   else
@@ -248,8 +249,10 @@ FeatureFromNormals<PointInT, PointNT, PointOutT>::initCompute ()
   if (normals_->points.size () != surface_->points.size ())
   {
     PCL_ERROR ("[pcl::%s::initCompute] ", getClassName ().c_str ());
-    PCL_ERROR ("The number of points in the input dataset (%u) differs from ", surface_->points.size ());
-    PCL_ERROR ("the number of points in the dataset containing the normals (%u)!\n", normals_->points.size ());
+    PCL_ERROR("The number of points in the surface dataset (%zu) differs from ",
+              static_cast<std::size_t>(surface_->points.size()));
+    PCL_ERROR("the number of points in the dataset containing the normals (%zu)!\n",
+              static_cast<std::size_t>(normals_->points.size()));
     Feature<PointInT, PointOutT>::deinitCompute ();
     return (false);
   }

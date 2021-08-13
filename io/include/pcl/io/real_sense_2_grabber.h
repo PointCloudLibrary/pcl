@@ -40,7 +40,6 @@
 #include <thread>
 #include <mutex>
 
-#include <pcl/io/boost.h>
 #include <pcl/io/grabber.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -66,7 +65,7 @@ namespace pcl
     RealSense2Grabber ( const std::string& file_name_or_serial_number = "", const bool repeat_playback = true );
 
     /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
-    virtual ~RealSense2Grabber () noexcept;
+    ~RealSense2Grabber ();
 
     /** \brief Set the device options
     * \param[in] width resolution

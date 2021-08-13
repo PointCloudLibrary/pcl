@@ -48,7 +48,6 @@
 
 #include <chrono>
 #include <condition_variable>
-#include <memory>
 #include <mutex>
 #include <thread>
 
@@ -100,16 +99,26 @@ TYPED_TEST(SacTest, InfiniteLoop)
 
   const unsigned point_count = 100;
   PointCloud<PointXYZ> cloud;
-  cloud.points.resize (point_count);
+  cloud.resize (point_count);
   for (unsigned idx = 0; idx < point_count; ++idx)
   {
-    cloud.points[idx].x = static_cast<float> (idx);
-    cloud.points[idx].y = 0.0;
-    cloud.points[idx].z = 0.0;
+    cloud[idx].x = static_cast<float> (idx);
+    cloud[idx].y = 0.0;
+    cloud[idx].z = 0.0;
   }
 
   SampleConsensusModelSpherePtr model (new SampleConsensusModelSphere<PointXYZ> (cloud.makeShared ()));
   TypeParam sac (model, 0.03);
+
+  // This test sometimes fails for LMedS on azure, but always passes when run locally.
+  // Enable all output for LMedS, so that when it fails next time, we hopefully see why.
+  // This can be removed again when the failure reason is found and fixed.
+  int debug_verbosity_level = 0;
+  const auto previous_verbosity_level = pcl::console::getVerbosityLevel();
+  if (std::is_same<TypeParam, LeastMedianSquares<PointXYZ>>::value) {
+    debug_verbosity_level = 2;
+    pcl::console::setVerbosityLevel(pcl::console::L_VERBOSE);
+  }
 
   // Set up timed conditions
   std::condition_variable cv;
@@ -118,7 +127,7 @@ TYPED_TEST(SacTest, InfiniteLoop)
   // Create the RANSAC object
   std::thread thread ([&] ()
   {
-    sac.computeModel (0);
+    sac.computeModel (debug_verbosity_level);
 
     // Notify things are done
     std::lock_guard<std::mutex> lock (mtx);
@@ -131,9 +140,13 @@ TYPED_TEST(SacTest, InfiniteLoop)
   #if defined(DEBUG) || defined(_DEBUG)
     EXPECT_EQ (std::cv_status::no_timeout, cv.wait_for (lock, 15s));
   #else
-    EXPECT_EQ (std::cv_status::no_timeout, cv.wait_for (lock, 1s));
+    EXPECT_EQ (std::cv_status::no_timeout, cv.wait_for (lock, 2s));
   #endif
+  // release lock to avoid deadlock
+  lock.unlock();
   thread.join ();
+
+  pcl::console::setVerbosityLevel(previous_verbosity_level); // reset verbosity level
 }
 
 int

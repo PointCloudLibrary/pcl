@@ -6,28 +6,10 @@
 set(SUBSUBSYS_NAME cloud_composer)
 set(SUBSUBSYS_DESC "Cloud Composer - Application for Manipulating Point Clouds")
 set(SUBSUBSYS_DEPS common io visualization filters apps)
-
-# Find VTK
-if(NOT VTK_FOUND)
-  set(DEFAULT AUTO_OFF)
-  set(REASON "VTK was not found.")
-else()
-  set(DEFAULT TRUE)
-  set(REASON)
-  include("${VTK_USE_FILE}")
-endif()
-
-# QT5 Found?
-if(NOT Qt5_FOUND)
-  set(DEFAULT AUTO_OFF)
-  set(REASON "Qt5 was not found.")
-elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
-  set(DEFAULT TRUE)
-  set(REASON)
-endif()
+set(SUBSUBSYS_EXT_DEPS vtk Qt5)
 
 # QVTK?
-if(NOT QVTK_FOUND)
+if(NOT HAVE_QVTK)
   set(DEFAULT AUTO_OFF)
   set(REASON "Cloud composer requires QVTK")
 elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
@@ -41,7 +23,7 @@ if("${DEFAULT}" STREQUAL "TRUE")
 endif()
 
 PCL_SUBSUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" ${DEFAULT} "${REASON}")
-PCL_SUBSUBSYS_DEPEND(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" DEPS ${SUBSUBSYS_DEPS})
+PCL_SUBSUBSYS_DEPEND(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" DEPS ${SUBSUBSYS_DEPS} EXT_DEPS ${SUBSUBSYS_EXT_DEPS})
 
 PCL_ADD_DOC(${SUBSUBSYS_NAME})
 
@@ -90,9 +72,16 @@ set(INTERFACE_SOURCES
 # Build pcl_cc_tool_interface as static library, to fix issue mentioned in #2708
 set(PCL_LIB_TYPE_ORIGIN ${PCL_LIB_TYPE})
 set(PCL_LIB_TYPE STATIC)
-QT5_WRAP_CPP(INTERFACE_HEADERS_MOC ${INTERFACE_HEADERS} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
-PCL_ADD_LIBRARY(pcl_cc_tool_interface COMPONENT ${SUBSUBSYS_NAME} SOURCES ${INTERFACE_HEADERS} ${INTERFACE_SOURCES} ${INTERFACE_HEADERS_MOC})
-target_link_libraries(pcl_cc_tool_interface pcl_common pcl_filters pcl_search pcl_visualization ${VTK_LIBRARIES} Qt5::Widgets)
+
+PCL_ADD_LIBRARY(pcl_cc_tool_interface COMPONENT ${SUBSUBSYS_NAME} SOURCES ${INTERFACE_HEADERS} ${INTERFACE_SOURCES})
+
+set(vtk_libs ${VTK_LIBRARIES})
+#TODO: Update when CMAKE 3.10 is available
+if (NOT (${VTK_VERSION} VERSION_LESS 9.0))
+  set(vtk_libs VTK::GUISupportQt)
+endif()
+target_link_libraries(pcl_cc_tool_interface pcl_common pcl_filters pcl_search pcl_visualization Qt5::Widgets ${vtk_libs})
+
 set(PCL_LIB_TYPE ${PCL_LIB_TYPE_ORIGIN})
 
 if(APPLE)
@@ -108,7 +97,6 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/item_inspector.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/merge_selection.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/project_model.h"
-  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/properties_model.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/signal_multiplexer.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/toolbox_model.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/transform_clouds.h"
@@ -141,13 +129,13 @@ set(impl_incs
 set(uis src/cloud_composer_main_window.ui)
 set(resources resources/resources.qrc)
 
-QT5_WRAP_UI(cloud_composer_ui ${uis})
-QT5_WRAP_CPP(cloud_composer_moc ${incs} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
-QT5_ADD_RESOURCES(resource_srcs ${resources})
+list(APPEND CMAKE_AUTOUIC_SEARCH_PATHS "src")
 
 set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
-PCL_ADD_EXECUTABLE(${EXE_NAME} COMPONENT ${SUBSUBSYS_NAME} SOURCES ${cloud_composer_ui} ${cloud_composer_moc} ${srcs} ${resource_srcs} ${impl_incs})
+PCL_ADD_EXECUTABLE(${EXE_NAME} COMPONENT ${SUBSUBSYS_NAME} SOURCES ${uis} ${incs} ${srcs} ${resources} ${impl_incs})
 target_link_libraries("${EXE_NAME}" pcl_cc_tool_interface pcl_common pcl_io pcl_visualization pcl_filters Qt5::Widgets)
+
+
 
 # Install include files
 PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${incs} ${item_incs} ${selector_incs})

@@ -37,8 +37,9 @@
 
 #pragma once
 
+#include <cfloat> // for FLT_MAX
+
 #include <pcl/pcl_base.h>
-#include <pcl/sample_consensus/sac_model_plane.h>
 
 namespace pcl
 {

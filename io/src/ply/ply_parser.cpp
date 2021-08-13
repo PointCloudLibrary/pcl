@@ -40,6 +40,9 @@
 
 #include <pcl/io/ply/ply_parser.h>
 
+#include <fstream> // for ifstream
+#include <sstream> // for istringstream
+
 bool pcl::io::ply::ply_parser::parse (const std::string& filename)
 {
   std::ifstream istream (filename.c_str (), std::ios::in | std::ios::binary);
@@ -443,7 +446,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
   // ascii
   if (format == ascii_format)
   {
-    for (const auto element_ptr: elements)
+    for (const auto &element_ptr: elements)
     {
       auto& element = *(element_ptr.get ());
       for (std::size_t element_index = 0; element_index < element.count; ++element_index)
@@ -461,7 +464,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
         stringstream.unsetf (std::ios_base::skipws);
         stringstream >> std::ws;
 
-        for (const auto property_ptr: element.properties)
+        for (const auto &property_ptr: element.properties)
         {
           auto& property = *(property_ptr.get ());
           if (!property.parse (*this, format, stringstream))
@@ -497,14 +500,14 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
   istream.open (filename.c_str (), std::ios::in | std::ios::binary);
   istream.seekg (data_start);
 
-  for (const auto element_ptr: elements)
+  for (const auto &element_ptr: elements)
   {
     auto& element = *(element_ptr.get ());
     for (std::size_t element_index = 0; element_index < element.count; ++element_index)
     {
       if (element.begin_element_callback)
         element.begin_element_callback ();
-      for (const auto property_ptr: element.properties)
+      for (const auto &property_ptr: element.properties)
       {
         auto& property = *(property_ptr.get ());
         if (!property.parse (*this, format, istream))

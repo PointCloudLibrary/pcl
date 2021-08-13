@@ -176,15 +176,15 @@ namespace pcl
       bool
       compare (int idx1, int idx2) const override
       {
-        int current_label = labels_->points[idx1].label;
-        int next_label = labels_->points[idx2].label;
+        int current_label = (*labels_)[idx1].label;
+        int next_label = (*labels_)[idx2].label;
 
         if (!((*refine_labels_)[current_label] && !(*refine_labels_)[next_label]))
           return (false);
 
         const pcl::ModelCoefficients& model_coeff = (*models_)[(*label_to_model_)[current_label]];
 
-        PointT pt = input_->points[idx2];
+        PointT pt = (*input_)[idx2];
         double ptp_dist = std::fabs (model_coeff.values[0] * pt.x +
                                 model_coeff.values[1] * pt.y +
                                 model_coeff.values[2] * pt.z +
@@ -195,7 +195,7 @@ namespace pcl
         if (depth_dependent_)
         {
           //Eigen::Vector4f origin = input_->sensor_origin_;
-          Eigen::Vector3f vec = input_->points[idx1].getVector3fMap ();// - origin.head<3> ();
+          Eigen::Vector3f vec = (*input_)[idx1].getVector3fMap ();// - origin.head<3> ();
 
           float z = vec.dot (z_axis_);
           threshold *= z * z;

@@ -11,7 +11,7 @@ the :ref:`planar_segmentation` tutorial for more information.
 
 .. raw:: html
 
-   <iframe title="Extracting indices from a PointCloud" width="480" height="390" src="http://www.youtube.com/embed/ZTK7NR1Xx4c?rel=0" frameborder="0" allowfullscreen></iframe>
+   <iframe title="Extracting indices from a PointCloud" width="480" height="390" src="https://www.youtube.com/embed/ZTK7NR1Xx4c?rel=0" frameborder="0" allowfullscreen></iframe>
 
 The code
 --------

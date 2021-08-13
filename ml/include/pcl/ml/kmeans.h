@@ -39,16 +39,11 @@
 
 #pragma once
 
-#include <pcl/common/io.h>
-#include <pcl/console/parse.h>
-#include <pcl/console/print.h>
 #include <pcl/memory.h>
-#include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 
 #include <set>
+#include <vector> // for vector
 
 namespace pcl {
 

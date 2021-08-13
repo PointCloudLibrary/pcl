@@ -108,13 +108,13 @@ pcl::SACSegmentation<PointT>::segment (PointIndices &inliers, ModelCoefficients 
   sac_->getInliers (inliers.indices);
 
   // Get the model coefficients
-  Eigen::VectorXf coeff;
+  Eigen::VectorXf coeff (model_->getModelSize ());
   sac_->getModelCoefficients (coeff);
 
   // If the user needs optimized coefficients
   if (optimize_coefficients_)
   {
-    Eigen::VectorXf coeff_refined;
+    Eigen::VectorXf coeff_refined (model_->getModelSize ());
     model_->optimizeModelCoefficients (inliers.indices, coeff, coeff_refined);
     model_coefficients.values.resize (coeff_refined.size ());
     memcpy (&model_coefficients.values[0], &coeff_refined[0], coeff_refined.size () * sizeof (float));
@@ -354,7 +354,7 @@ pcl::SACSegmentationFromNormals<PointT, PointNT>::initSACModel (const int model_
     return (false);
   }
   // Check if input is synced with the normals
-  if (input_->points.size () != normals_->points.size ())
+  if (input_->size () != normals_->size ())
   {
     PCL_ERROR ("[pcl::%s::initSACModel] The number of points in the input point cloud differs than the number of points in the normals!\n", getClassName ().c_str ());
     return (false);

@@ -103,7 +103,7 @@ class Transforms : public ::testing::Test
   pcl::PointCloud<pcl::PointXYZRGBNormal> p_xyz_normal, p_xyz_normal_trans;
 
   // Indices, every second point
-  std::vector<int> indices;
+  Indices indices;
 
   PCL_MAKE_ALIGNED_OPERATOR_NEW;
 };
@@ -266,7 +266,7 @@ TEST (PCL, Matrix4Affine3Transform)
 
   affine = transformation;
 
-  std::vector<int> indices (1); indices[0] = 0;
+  Indices indices (1); indices[0] = 0;
 
   pcl::transformPointCloud (c, indices, ct, affine);
   EXPECT_NEAR (pt.x, ct[0].x, 1e-4);
@@ -277,6 +277,34 @@ TEST (PCL, Matrix4Affine3Transform)
   EXPECT_NEAR (pt.x, ct[0].x, 1e-4);
   EXPECT_NEAR (pt.y, ct[0].y, 1e-4);
   EXPECT_NEAR (pt.z, ct[0].z, 1e-4);
+}
+
+TEST (PCL, OrganizedTransform)
+{
+  const Eigen::Matrix4f transform=Eigen::Matrix4f::Identity();
+  // test if organized point cloud is still organized after transformPointCloud
+  pcl::PointCloud<PointXYZ> cloud_a, cloud_b, cloud_c;
+  cloud_a.resize (12);
+  cloud_a.width=4;
+  cloud_a.height=3;
+  pcl::transformPointCloud (cloud_a, cloud_b, transform, true);
+  EXPECT_EQ (cloud_a.width , cloud_b.width );
+  EXPECT_EQ (cloud_a.height, cloud_b.height);
+  pcl::transformPointCloud (cloud_a, cloud_c, transform, false);
+  EXPECT_EQ (cloud_a.width , cloud_c.width );
+  EXPECT_EQ (cloud_a.height, cloud_c.height);
+
+  // test if organized point cloud is still organized after transformPointCloudWithNormals
+  pcl::PointCloud<PointNormal> cloud_d, cloud_e, cloud_f;
+  cloud_d.resize (10);
+  cloud_d.width=2;
+  cloud_d.height=5;
+  pcl::transformPointCloudWithNormals (cloud_d, cloud_e, transform, true);
+  EXPECT_EQ (cloud_d.width , cloud_e.width );
+  EXPECT_EQ (cloud_d.height, cloud_e.height);
+  pcl::transformPointCloudWithNormals (cloud_d, cloud_f, transform, false);
+  EXPECT_EQ (cloud_d.width , cloud_f.width );
+  EXPECT_EQ (cloud_d.height, cloud_f.height);
 }
 
 /* ---[ */

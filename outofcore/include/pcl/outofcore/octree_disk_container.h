@@ -41,7 +41,6 @@
 
 // C++
 #include <mutex>
-#include <vector>
 #include <string>
 
 // Boost

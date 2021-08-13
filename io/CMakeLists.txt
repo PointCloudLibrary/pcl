@@ -7,7 +7,7 @@ PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 if(WIN32)
   PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk rssdk2 pcap png vtk)
 else()
-  PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk pcap png vtk libusb-1.0)
+  PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk pcap png vtk libusb)
 endif()
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
@@ -160,8 +160,7 @@ if(WITH_RSSDK)
   )
 endif()
 
-# RSSDK2 is restricted to Windows until it is functional under other OSs
-if(WIN32 AND WITH_RSSDK2)
+if(WITH_RSSDK2)
   set(RSSDK2_GRABBER_INCLUDES
       include/pcl/io/real_sense_2_grabber.h
   )
@@ -170,7 +169,7 @@ if(WIN32 AND WITH_RSSDK2)
   )
 endif()
 
-if(LIBUSB_1_FOUND)
+if(LIBUSB_FOUND)
   set(DINAST_GRABBER_INCLUDES
     include/pcl/io/dinast_grabber.h
   )
@@ -205,6 +204,10 @@ set(PLY_INCLUDES
 )
 
 PCL_ADD_LIBRARY(pcl_io_ply COMPONENT ${SUBSYS_NAME} SOURCES ${PLY_SOURCES} ${PLY_INCLUDES})
+if(MINGW)
+  # libws2_32 isn't added by default for MinGW
+  target_link_libraries(pcl_io_ply ws2_32)
+endif()
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/ply" ${PLY_INCLUDES})
 target_include_directories(pcl_io_ply PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
@@ -224,7 +227,6 @@ set(srcs
   src/hdl_grabber.cpp
   src/vlp_grabber.cpp
   src/robot_eye_grabber.cpp
-  src/file_io.cpp
   src/auto_io.cpp
   src/io_exception.cpp
   ${VTK_IO_SOURCE}
@@ -331,16 +333,30 @@ endif()
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 
 add_definitions(${VTK_DEFINES})
+
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES} ${OPENNI2_INCLUDES})
+
 target_include_directories(${LIB_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
-link_directories(${VTK_LINK_DIRECTORIES})
-target_link_libraries("${LIB_NAME}" pcl_common pcl_io_ply ${VTK_LIBRARIES})
+
+target_link_libraries("${LIB_NAME}" pcl_common pcl_io_ply)
+if(VTK_FOUND)
+  if(${VTK_VERSION} VERSION_LESS 9.0)
+    link_directories(${VTK_LINK_DIRECTORIES})
+    target_link_libraries("${LIB_NAME}" ${VTK_LIBRARIES})
+  else()
+    target_link_libraries("${LIB_NAME}" 
+                          VTK::IOImage
+                          VTK::IOGeometry
+                          VTK::IOPLY)
+  endif()
+endif()
+
 if(PNG_FOUND)
   target_link_libraries("${LIB_NAME}" ${PNG_LIBRARIES})
 endif()
 
-if(LIBUSB_1_FOUND)
-  target_link_libraries("${LIB_NAME}" ${LIBUSB_1_LIBRARIES})
+if(LIBUSB_FOUND)
+  target_link_libraries("${LIB_NAME}" libusb::libusb)
 endif()
 
 if(WITH_OPENNI2)
@@ -349,6 +365,9 @@ endif()
 
 if(WITH_OPENNI)
   target_link_libraries("${LIB_NAME}" ${OPENNI_LIBRARIES})
+  if(VTK_FOUND AND (NOT ${VTK_VERSION} VERSION_LESS 9.0))
+    target_link_libraries("${LIB_NAME}" VTK::FiltersCore VTK::FiltersGeneral)
+  endif()
 endif()
 
 if(WITH_FZAPI)
@@ -374,8 +393,7 @@ if(WITH_RSSDK)
   target_link_libraries(${LIB_NAME} ${RSSDK_LIBRARIES})
 endif()
 
-# RSSDK2 is restricted to Windows until it is functional under other OSs
-if(WIN32 AND WITH_RSSDK2)
+if(WITH_RSSDK2)
   target_link_libraries(${LIB_NAME} ${RSSDK2_LIBRARIES})
 endif()
 

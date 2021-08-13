@@ -91,7 +91,7 @@ namespace pcl
     * \ingroup features
     */
   template <typename PointT> inline bool
-  computePointNormal (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &indices,
+  computePointNormal (const pcl::PointCloud<PointT> &cloud, const pcl::Indices &indices,
                       Eigen::Vector4f &plane_parameters, float &curvature)
   {
     // Placeholder for the 3x3 covariance matrix at each surface patch
@@ -202,12 +202,12 @@ namespace pcl
     */
   template<typename PointNT> inline bool
   flipNormalTowardsNormalsMean ( pcl::PointCloud<PointNT> const &normal_cloud,
-                                 std::vector<int> const &normal_indices,
+                                 pcl::Indices const &normal_indices,
                                  Eigen::Vector3f &normal)
   {
     Eigen::Vector3f normal_mean = Eigen::Vector3f::Zero ();
 
-    for (const int &normal_index : normal_indices)
+    for (const auto &normal_index : normal_indices)
     {
       const PointNT& cur_pt = normal_cloud[normal_index];
 
@@ -281,7 +281,7 @@ namespace pcl
         * \f]
         */
       inline bool
-      computePointNormal (const pcl::PointCloud<PointInT> &cloud, const std::vector<int> &indices,
+      computePointNormal (const pcl::PointCloud<PointInT> &cloud, const pcl::Indices &indices,
                           Eigen::Vector4f &plane_parameters, float &curvature)
       {
         if (indices.size () < 3 ||
@@ -310,7 +310,7 @@ namespace pcl
         * \f]
         */
       inline bool
-      computePointNormal (const pcl::PointCloud<PointInT> &cloud, const std::vector<int> &indices,
+      computePointNormal (const pcl::PointCloud<PointInT> &cloud, const pcl::Indices &indices,
                           float &nx, float &ny, float &nz, float &curvature)
       {
         if (indices.size () < 3 ||

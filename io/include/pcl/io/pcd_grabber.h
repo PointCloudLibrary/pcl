@@ -275,7 +275,7 @@ namespace pcl
         {
           // Fill r/g/b data, assuming that the order is BGRA
           pcl::RGB rgb;
-          memcpy (&rgb, reinterpret_cast<const char*> (&cloud->points[k]) + rgba_index, sizeof (RGB));
+          memcpy (&rgb, reinterpret_cast<const char*> (&(*cloud)[k]) + rgba_index, sizeof (RGB));
           image_map[k].nRed = static_cast<XnUInt8> (rgb.r);
           image_map[k].nGreen = static_cast<XnUInt8> (rgb.g);
           image_map[k].nBlue = static_cast<XnUInt8> (rgb.b);

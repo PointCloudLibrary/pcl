@@ -48,7 +48,6 @@
 
 
 #include <pcl/common/transforms.h>
-#include <pcl/common/eigen.h>
 
 using namespace pcl;
 
@@ -70,7 +69,7 @@ TEST (CovarianceSampling, Filters)
   // Conditioning number should be loosely close to the expected number. Adopting 10% of the reference value
   EXPECT_NEAR (113.29773, cond_num_walls, 10.);
 
-  IndicesPtr walls_indices (new std::vector<int> ());
+  IndicesPtr walls_indices (new pcl::Indices ());
   covariance_sampling.filter (*walls_indices);
   covariance_sampling.setIndices (walls_indices);
   double cond_num_walls_sampled = covariance_sampling.computeConditionNumber ();
@@ -90,7 +89,7 @@ TEST (CovarianceSampling, Filters)
   // Conditioning number should be loosely close to the expected number. Adopting 10% of the reference value
   EXPECT_NEAR (cond_num_turtle, 20661.7663, 2e4);
 
-  IndicesPtr turtle_indices (new std::vector<int> ());
+  IndicesPtr turtle_indices (new pcl::Indices ());
   covariance_sampling.filter (*turtle_indices);
   covariance_sampling.setIndices (turtle_indices);
   double cond_num_turtle_sampled = covariance_sampling.computeConditionNumber ();
@@ -155,7 +154,7 @@ TEST (RandomSample, Filters)
   sample.setSample (10);
 
   // Indices
-  std::vector<int> indices;
+  pcl::Indices indices;
   sample.filter (indices);
 
   EXPECT_EQ (int (indices.size ()), 10);
@@ -172,9 +171,9 @@ TEST (RandomSample, Filters)
     // Check that indices are sorted
     EXPECT_LT (indices[i], indices[i+1]);
     // Compare original points with sampled indices against sampled points
-    EXPECT_NEAR (cloud_walls->points[indices[i]].x, cloud_out.points[i].x, 1e-4);
-    EXPECT_NEAR (cloud_walls->points[indices[i]].y, cloud_out.points[i].y, 1e-4);
-    EXPECT_NEAR (cloud_walls->points[indices[i]].z, cloud_out.points[i].z, 1e-4);
+    EXPECT_NEAR ((*cloud_walls)[indices[i]].x, cloud_out[i].x, 1e-4);
+    EXPECT_NEAR ((*cloud_walls)[indices[i]].y, cloud_out[i].y, 1e-4);
+    EXPECT_NEAR ((*cloud_walls)[indices[i]].z, cloud_out[i].z, 1e-4);
   }
 
   IndicesConstPtr removed = sample.getRemovedIndices ();
@@ -219,7 +218,7 @@ TEST (RandomSample, Filters)
   sample2.setSample (10);
 
   // Indices
-  std::vector<int> indices2;
+  pcl::Indices indices2;
   sample2.filter (indices2);
 
   EXPECT_EQ (int (indices2.size ()), 10);
@@ -238,9 +237,9 @@ TEST (RandomSample, Filters)
     // Check that indices are sorted
     EXPECT_LT (indices2[i], indices2[i+1]);
     // Compare original points with sampled indices against sampled points
-    EXPECT_NEAR (cloud_walls->points[indices2[i]].x, cloud_out.points[i].x, 1e-4);
-    EXPECT_NEAR (cloud_walls->points[indices2[i]].y, cloud_out.points[i].y, 1e-4);
-    EXPECT_NEAR (cloud_walls->points[indices2[i]].z, cloud_out.points[i].z, 1e-4);
+    EXPECT_NEAR ((*cloud_walls)[indices2[i]].x, cloud_out[i].x, 1e-4);
+    EXPECT_NEAR ((*cloud_walls)[indices2[i]].y, cloud_out[i].y, 1e-4);
+    EXPECT_NEAR ((*cloud_walls)[indices2[i]].z, cloud_out[i].z, 1e-4);
   }
 }
 
@@ -269,7 +268,7 @@ main (int argc, char** argv)
   ne.compute (*cloud_walls_normals);
   copyPointCloud (*cloud_walls, *cloud_walls_normals);
 
-  std::vector<int> aux_indices;
+  pcl::Indices aux_indices;
   removeNaNFromPointCloud (*cloud_walls_normals, *cloud_walls_normals, aux_indices);
   removeNaNNormalsFromPointCloud (*cloud_walls_normals, *cloud_walls_normals, aux_indices);
 

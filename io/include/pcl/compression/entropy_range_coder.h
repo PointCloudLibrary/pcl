@@ -40,13 +40,9 @@
 
 #pragma once
 
-#include <map>
 #include <iostream>
 #include <vector>
-#include <string>
 #include <cmath>
-#include <algorithm>
-#include <cstdio>
 #include <cstdint>
 
 #include <pcl/pcl_macros.h>
@@ -165,17 +161,6 @@ namespace pcl
 
     protected:
       using DWord = std::uint32_t; // 4 bytes
-
-      /** \brief Helper function to calculate the binary logarithm
-       * \param n_arg: some value
-       * \return binary logarithm (log2) of argument n_arg
-       */
-      PCL_DEPRECATED(1, 12, "use std::log2 instead")
-      inline double
-      Log2 (double n_arg)
-      {
-        return std::log2 (n_arg);
-      }
 
     private:
       /** \brief Vector containing cumulative symbol frequency table. */

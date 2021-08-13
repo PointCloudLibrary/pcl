@@ -47,11 +47,9 @@
 #include <pcl/filters/crop_box.h>
 #include <pcl/filters/extract_indices.h>
 
-#include <pcl/common/transforms.h>
 #include <pcl/common/eigen.h>
 
 using namespace pcl;
-using namespace std;
 using namespace Eigen;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -161,7 +159,7 @@ TEST (CropBox, Filters)
   cropBoxFilter.setMax (max_pt);
 
   // Indices
-  std::vector<int> indices;
+  pcl::Indices indices;
   cropBoxFilter.filter (indices);
 
   // Cloud
@@ -324,7 +322,7 @@ TEST (CropBox, Filters)
 
   // Should contain all
   EXPECT_EQ (int (indices.size ()), 7);
-  EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({1, 2, 3, 5, 6, 7, 8}), indices);
+  EXPECT_VECTOR_CONTAINS_ALL (pcl::Indices({1, 2, 3, 5, 6, 7, 8}), indices);
   EXPECT_EQ (int (cloud_out.size ()), 7);
   EXPECT_EQ (int (cloud_out.width), 7);
   EXPECT_EQ (int (cloud_out.height), 1);
@@ -348,12 +346,12 @@ TEST (CropBox, Filters)
   cropBoxFilter.filter (cloud_out);
 
   EXPECT_EQ (int (indices.size ()), 3);
-  EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({1, 2, 7}), indices);
+  EXPECT_VECTOR_CONTAINS_ALL (pcl::Indices({1, 2, 7}), indices);
   EXPECT_EQ (int (cloud_out.size ()), 3);
 
   removed_indices = cropBoxFilter.getRemovedIndices ();
   EXPECT_EQ (int (removed_indices->size ()), 4);
-  EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({3, 5, 6, 8}), *removed_indices);
+  EXPECT_VECTOR_CONTAINS_ALL (pcl::Indices({3, 5, 6, 8}), *removed_indices);
 
   // Test setNegative
   cropBoxFilter.setNegative (true);
@@ -362,7 +360,7 @@ TEST (CropBox, Filters)
 
   cropBoxFilter.filter (indices);
   EXPECT_EQ (int (indices.size ()), 4);
-  EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({3, 5, 6, 8}), indices);
+  EXPECT_VECTOR_CONTAINS_ALL (pcl::Indices({3, 5, 6, 8}), indices);
 
   cropBoxFilter.setNegative (false);
   cropBoxFilter.filter (cloud_out);
@@ -379,7 +377,7 @@ TEST (CropBox, Filters)
 
   removed_indices = cropBoxFilter.getRemovedIndices ();
   EXPECT_EQ (int (removed_indices->size ()), 7);
-  EXPECT_VECTOR_DOES_NOT_CONTAIN (std::vector<int>({0, 4}), *removed_indices);
+  EXPECT_VECTOR_DOES_NOT_CONTAIN (pcl::Indices({0, 4}), *removed_indices);
   // Test setNegative
   cropBoxFilter.setNegative (true);
   cropBoxFilter.filter (cloud_out_negative);
@@ -387,7 +385,7 @@ TEST (CropBox, Filters)
 
   cropBoxFilter.filter (indices);
   EXPECT_EQ (int (indices.size ()), 7);
-  EXPECT_VECTOR_DOES_NOT_CONTAIN(std::vector<int>({0, 4}), indices);
+  EXPECT_VECTOR_DOES_NOT_CONTAIN(pcl::Indices({0, 4}), indices);
 
   cropBoxFilter.setNegative (false);
   cropBoxFilter.filter (cloud_out);
@@ -398,14 +396,14 @@ TEST (CropBox, Filters)
   cropBoxFilter.filter (cloud_out);
 
   EXPECT_EQ (int (indices.size ()), 1);
-  EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({7}), indices);
+  EXPECT_VECTOR_CONTAINS_ALL (pcl::Indices({7}), indices);
   EXPECT_EQ (int (cloud_out.size ()), 1);
   EXPECT_EQ (int (cloud_out.width), 1);
   EXPECT_EQ (int (cloud_out.height), 1);
 
   removed_indices = cropBoxFilter.getRemovedIndices ();
   EXPECT_EQ (int (removed_indices->size ()), 6);
-  EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({1, 2, 3, 5, 6, 8}), *removed_indices);
+  EXPECT_VECTOR_CONTAINS_ALL (pcl::Indices({1, 2, 3, 5, 6, 8}), *removed_indices);
 
   // Test setNegative
   cropBoxFilter.setNegative (true);
@@ -414,7 +412,7 @@ TEST (CropBox, Filters)
 
   cropBoxFilter.filter (indices);
   EXPECT_EQ (int (indices.size ()), 6);
-  EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({1, 2, 3, 5, 6, 8}), indices);
+  EXPECT_VECTOR_CONTAINS_ALL (pcl::Indices({1, 2, 3, 5, 6, 8}), indices);
 
   cropBoxFilter.setNegative (false);
   cropBoxFilter.filter (cloud_out);
@@ -425,14 +423,14 @@ TEST (CropBox, Filters)
   cropBoxFilter.filter (cloud_out);
 
   EXPECT_EQ (int (indices.size ()), 1);
-  EXPECT_VECTOR_CONTAINS_ALL (indices, std::vector<int>({7}));
+  EXPECT_VECTOR_CONTAINS_ALL (indices, pcl::Indices({7}));
   EXPECT_EQ (int (cloud_out.size ()), 1);
   EXPECT_EQ (int (cloud_out.width), 1);
   EXPECT_EQ (int (cloud_out.height), 1);
 
   removed_indices = cropBoxFilter.getRemovedIndices ();
   EXPECT_EQ (int (removed_indices->size ()), 6);
-  EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>( {1, 2, 3, 5, 6, 8}), *removed_indices);
+  EXPECT_VECTOR_CONTAINS_ALL (pcl::Indices( {1, 2, 3, 5, 6, 8}), *removed_indices);
 
   // Test setNegative
   cropBoxFilter.setNegative (true);
@@ -441,7 +439,7 @@ TEST (CropBox, Filters)
 
   cropBoxFilter.filter (indices);
   EXPECT_EQ (int (indices.size ()), 6);
-  EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({1, 2, 3, 5, 6, 8}), indices);
+  EXPECT_VECTOR_CONTAINS_ALL (pcl::Indices({1, 2, 3, 5, 6, 8}), indices);
 
   cropBoxFilter.setNegative (false);
   cropBoxFilter.filter (cloud_out);
@@ -458,7 +456,7 @@ TEST (CropBox, Filters)
 
   removed_indices = cropBoxFilter.getRemovedIndices ();
   EXPECT_EQ (int (removed_indices->size ()), 7);
-  EXPECT_VECTOR_DOES_NOT_CONTAIN (std::vector<int>({0, 4}), *removed_indices);
+  EXPECT_VECTOR_DOES_NOT_CONTAIN (pcl::Indices({0, 4}), *removed_indices);
 
   // Test setNegative
   cropBoxFilter.setNegative (true);
@@ -467,7 +465,7 @@ TEST (CropBox, Filters)
 
   cropBoxFilter.filter (indices);
   EXPECT_EQ (int (indices.size ()), 7);
-  EXPECT_VECTOR_DOES_NOT_CONTAIN (std::vector<int>({0, 4}), indices);
+  EXPECT_VECTOR_DOES_NOT_CONTAIN (pcl::Indices({0, 4}), indices);
 
   // PCLPointCloud2 without indices
   // -------------------------------------------------------------------------
@@ -485,7 +483,7 @@ TEST (CropBox, Filters)
   cropBoxFilter2.setMax (max_pt);
 
   // Indices
-  std::vector<int> indices2;
+  pcl::Indices indices2;
   cropBoxFilter2.filter (indices2);
 
   // Cloud
@@ -628,7 +626,7 @@ TEST (CropBox, Filters)
 
     // Should contain all
     EXPECT_EQ (int (indices2.size ()), 7);
-    EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({1, 2, 3, 5, 6, 7, 8}), indices2);
+    EXPECT_VECTOR_CONTAINS_ALL (pcl::Indices({1, 2, 3, 5, 6, 7, 8}), indices2);
     EXPECT_EQ (int (cloud_out2.width), 7);
     EXPECT_EQ (int (cloud_out2.height), 1);
 
@@ -651,12 +649,12 @@ TEST (CropBox, Filters)
     cropBoxFilter2.filter (cloud_out2);
 
     EXPECT_EQ (int (indices2.size ()), 3);
-    EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({1, 2, 7}), indices2);
+    EXPECT_VECTOR_CONTAINS_ALL (pcl::Indices({1, 2, 7}), indices2);
     EXPECT_EQ (int (cloud_out2.width*cloud_out2.height), 3);
 
     removed_indices2 = cropBoxFilter2.getRemovedIndices ();
     EXPECT_EQ (int (removed_indices2->size ()), 4);
-    EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({3, 5, 6, 8}), *removed_indices2);
+    EXPECT_VECTOR_CONTAINS_ALL (pcl::Indices({3, 5, 6, 8}), *removed_indices2);
 
     // Test setNegative
     cropBoxFilter2.setNegative (true);
@@ -665,7 +663,7 @@ TEST (CropBox, Filters)
 
     cropBoxFilter2.filter (indices2);
     EXPECT_EQ (int (indices2.size ()), 4);
-    EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({3, 5, 6, 8}), indices2);
+    EXPECT_VECTOR_CONTAINS_ALL (pcl::Indices({3, 5, 6, 8}), indices2);
 
     cropBoxFilter2.setNegative (false);
     cropBoxFilter2.filter (cloud_out2);
@@ -682,7 +680,7 @@ TEST (CropBox, Filters)
     removed_indices2 = cropBoxFilter2.getRemovedIndices ();
     EXPECT_EQ (int (removed_indices2->size ()), 7);
 
-    EXPECT_VECTOR_DOES_NOT_CONTAIN (std::vector<int>({0, 4}), *removed_indices2);
+    EXPECT_VECTOR_DOES_NOT_CONTAIN (pcl::Indices({0, 4}), *removed_indices2);
     // Test setNegative
     cropBoxFilter2.setNegative (true);
     cropBoxFilter2.filter (cloud_out2_negative);
@@ -690,7 +688,7 @@ TEST (CropBox, Filters)
 
     cropBoxFilter2.filter (indices2);
     EXPECT_EQ (int (indices2.size ()), 7);
-    EXPECT_VECTOR_DOES_NOT_CONTAIN (std::vector<int>({0, 4}), indices2);
+    EXPECT_VECTOR_DOES_NOT_CONTAIN (pcl::Indices({0, 4}), indices2);
 
     cropBoxFilter2.setNegative (false);
     cropBoxFilter2.filter (cloud_out2);
@@ -701,13 +699,13 @@ TEST (CropBox, Filters)
     cropBoxFilter2.filter (cloud_out2);
 
     EXPECT_EQ (int (indices2.size ()), 1);
-    EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({7}), indices2);
+    EXPECT_VECTOR_CONTAINS_ALL (pcl::Indices({7}), indices2);
     EXPECT_EQ (int (cloud_out2.width), 1);
     EXPECT_EQ (int (cloud_out2.height), 1);
 
     removed_indices2 = cropBoxFilter2.getRemovedIndices ();
     EXPECT_EQ (int (removed_indices2->size ()), 6);
-    EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({1, 2, 3, 5, 6, 8}), *removed_indices2);
+    EXPECT_VECTOR_CONTAINS_ALL (pcl::Indices({1, 2, 3, 5, 6, 8}), *removed_indices2);
 
     // Test setNegative
     cropBoxFilter2.setNegative (true);
@@ -716,7 +714,7 @@ TEST (CropBox, Filters)
 
     cropBoxFilter2.filter (indices2);
     EXPECT_EQ (int (indices2.size ()), 6);
-    EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({1, 2, 3, 5, 6, 8}), indices2);
+    EXPECT_VECTOR_CONTAINS_ALL (pcl::Indices({1, 2, 3, 5, 6, 8}), indices2);
 
     cropBoxFilter2.setNegative (false);
     cropBoxFilter2.filter (cloud_out2);
@@ -727,13 +725,13 @@ TEST (CropBox, Filters)
     cropBoxFilter2.filter (cloud_out2);
 
     EXPECT_EQ (int (indices2.size ()), 1);
-    EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({7}), indices2);
+    EXPECT_VECTOR_CONTAINS_ALL (pcl::Indices({7}), indices2);
     EXPECT_EQ (int (cloud_out2.width), 1);
     EXPECT_EQ (int (cloud_out2.height), 1);
 
     removed_indices = cropBoxFilter.getRemovedIndices ();
     EXPECT_EQ (int (removed_indices2->size ()), 6);
-    EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>( {1, 2, 3, 5, 6, 8}), *removed_indices2);
+    EXPECT_VECTOR_CONTAINS_ALL (pcl::Indices({1, 2, 3, 5, 6, 8}), *removed_indices2);
 
     // Test setNegative
     cropBoxFilter2.setNegative (true);
@@ -742,7 +740,7 @@ TEST (CropBox, Filters)
 
     cropBoxFilter2.filter (indices2);
     EXPECT_EQ (int (indices2.size ()), 6);
-    EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>({1, 2, 3, 5, 6, 8}), indices2);
+    EXPECT_VECTOR_CONTAINS_ALL (pcl::Indices({1, 2, 3, 5, 6, 8}), indices2);
 
     cropBoxFilter2.setNegative (false);
     cropBoxFilter2.filter (cloud_out2);
@@ -758,7 +756,7 @@ TEST (CropBox, Filters)
 
     removed_indices2 = cropBoxFilter2.getRemovedIndices ();
     EXPECT_EQ (int (removed_indices2->size ()), 7);
-    EXPECT_VECTOR_DOES_NOT_CONTAIN (std::vector<int>({0, 4}), *removed_indices2);
+    EXPECT_VECTOR_DOES_NOT_CONTAIN (pcl::Indices({0, 4}), *removed_indices2);
 
     // Test setNegative
     cropBoxFilter2.setNegative (true);
@@ -767,7 +765,7 @@ TEST (CropBox, Filters)
 
     cropBoxFilter2.filter (indices2);
     EXPECT_EQ (int (indices2.size ()), 7);
-    EXPECT_VECTOR_DOES_NOT_CONTAIN (std::vector<int>({0, 4}), indices2);
+    EXPECT_VECTOR_DOES_NOT_CONTAIN (pcl::Indices({0, 4}), indices2);
 
 }
 

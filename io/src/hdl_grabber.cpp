@@ -39,7 +39,6 @@
 #include <thread>
 
 #include <pcl/console/print.h>
-#include <pcl/io/boost.h>
 #include <pcl/io/hdl_grabber.h>
 #include <boost/version.hpp>
 #include <boost/foreach.hpp>

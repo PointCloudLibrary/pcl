@@ -59,13 +59,20 @@ pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::isModelValid (con
     coeff.normalize ();
 
     if (std::abs (axis_.dot (coeff)) < cos_angle_)
+    {
+      PCL_DEBUG ("[pcl::SampleConsensusModelNormalParallelPlane::isModelValid] Angle between plane normal and given axis is too large.\n");
       return  (false);
+    }
   }
 
   if (eps_dist_ > 0.0)
   {
     if (std::abs (-model_coefficients[3] - distance_from_origin_) > eps_dist_)
+    {
+      PCL_DEBUG ("[pcl::SampleConsensusModelNormalParallelPlane::isModelValid] Distance of plane to origin is wrong: expected %g, but is %g, difference is larger than %g.\n",
+                 distance_from_origin_, -model_coefficients[3], eps_dist_);
       return (false);
+    }
   }
 
   return (true);

@@ -42,91 +42,104 @@
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/registration/eigen.h>
 
-namespace pcl
-{
-  namespace registration
+namespace pcl {
+namespace registration {
+/** \brief Base warp point class.
+ *
+ * \note The class is templated on the source and target point types as well as on the
+ * output scalar of the transformation matrix (i.e., float or double). Default: float.
+ * \author Radu B. Rusu
+ * \ingroup registration
+ */
+template <typename PointSourceT, typename PointTargetT, typename Scalar = float>
+class WarpPointRigid {
+public:
+  using Matrix4 = Eigen::Matrix<Scalar, 4, 4>;
+  using VectorX = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
+  using Vector4 = Eigen::Matrix<Scalar, 4, 1>;
+
+  using Ptr = shared_ptr<WarpPointRigid<PointSourceT, PointTargetT, Scalar>>;
+  using ConstPtr = shared_ptr<const WarpPointRigid<PointSourceT, PointTargetT, Scalar>>;
+
+  /** \brief Constructor
+   * \param[in] nr_dim the number of dimensions
+   */
+  WarpPointRigid(int nr_dim) : nr_dim_(nr_dim), transform_matrix_(Matrix4::Zero())
   {
-    /** \brief Base warp point class. 
-      * 
-      * \note The class is templated on the source and target point types as well as on the output scalar of the transformation matrix (i.e., float or double). Default: float.
-      * \author Radu B. Rusu
-      * \ingroup registration
-      */
-    template <typename PointSourceT, typename PointTargetT, typename Scalar = float>
-    class WarpPointRigid
-    {
-      public:
-        using Matrix4 = Eigen::Matrix<Scalar, 4, 4>;
-        using VectorX = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
-        using Vector4 = Eigen::Matrix<Scalar, 4, 1>;
+    transform_matrix_(3, 3) = 1.0;
+  };
 
-        using Ptr = shared_ptr<WarpPointRigid<PointSourceT, PointTargetT, Scalar> >;
-        using ConstPtr = shared_ptr<const WarpPointRigid<PointSourceT, PointTargetT, Scalar> >;
+  /** \brief Destructor. */
+  virtual ~WarpPointRigid(){};
 
-        /** \brief Constructor
-          * \param[in] nr_dim the number of dimensions
-          */
-        WarpPointRigid (int nr_dim)
-          : nr_dim_ (nr_dim)
-          , transform_matrix_ (Matrix4::Zero ())
-        {
-          transform_matrix_ (3, 3) = 1.0;
-        };
+  /** \brief Set warp parameters. Pure virtual.
+   * \param[in] p warp parameters
+   */
+  virtual void
+  setParam(const VectorX& p) = 0;
 
-        /** \brief Destructor. */
-        virtual ~WarpPointRigid () {};
+  /** \brief Warp a point given a transformation matrix
+   * \param[in] pnt_in the point to warp (transform)
+   * \param[out] pnt_out the warped (transformed) point
+   */
+  inline void
+  warpPoint(const PointSourceT& pnt_in, PointSourceT& pnt_out) const
+  {
+    pnt_out.x = static_cast<float>(
+        transform_matrix_(0, 0) * pnt_in.x + transform_matrix_(0, 1) * pnt_in.y +
+        transform_matrix_(0, 2) * pnt_in.z + transform_matrix_(0, 3));
+    pnt_out.y = static_cast<float>(
+        transform_matrix_(1, 0) * pnt_in.x + transform_matrix_(1, 1) * pnt_in.y +
+        transform_matrix_(1, 2) * pnt_in.z + transform_matrix_(1, 3));
+    pnt_out.z = static_cast<float>(
+        transform_matrix_(2, 0) * pnt_in.x + transform_matrix_(2, 1) * pnt_in.y +
+        transform_matrix_(2, 2) * pnt_in.z + transform_matrix_(2, 3));
+    // pnt_out.getVector3fMap () = transform_matrix_.topLeftCorner (3, 3) *
+    //                            pnt_in.getVector3fMap () +
+    //                            transform_matrix_.block (0, 3, 3, 1);
+    // pnt_out.data[3] = pnt_in.data[3];
+  }
 
-        /** \brief Set warp parameters. Pure virtual.
-          * \param[in] p warp parameters 
-          */
-        virtual void 
-        setParam (const VectorX& p) = 0;
+  /** \brief Warp a point given a transformation matrix
+   * \param[in] pnt_in the point to warp (transform)
+   * \param[out] pnt_out the warped (transformed) point
+   */
+  inline void
+  warpPoint(const PointSourceT& pnt_in, Vector4& pnt_out) const
+  {
+    pnt_out[0] = static_cast<Scalar>(
+        transform_matrix_(0, 0) * pnt_in.x + transform_matrix_(0, 1) * pnt_in.y +
+        transform_matrix_(0, 2) * pnt_in.z + transform_matrix_(0, 3));
+    pnt_out[1] = static_cast<Scalar>(
+        transform_matrix_(1, 0) * pnt_in.x + transform_matrix_(1, 1) * pnt_in.y +
+        transform_matrix_(1, 2) * pnt_in.z + transform_matrix_(1, 3));
+    pnt_out[2] = static_cast<Scalar>(
+        transform_matrix_(2, 0) * pnt_in.x + transform_matrix_(2, 1) * pnt_in.y +
+        transform_matrix_(2, 2) * pnt_in.z + transform_matrix_(2, 3));
+    pnt_out[3] = 0.0;
+  }
 
-        /** \brief Warp a point given a transformation matrix
-          * \param[in] pnt_in the point to warp (transform)
-          * \param[out] pnt_out the warped (transformed) point
-          */
-        inline void 
-        warpPoint (const PointSourceT& pnt_in, PointSourceT& pnt_out) const
-        {
-          pnt_out.x = static_cast<float> (transform_matrix_ (0, 0) * pnt_in.x + transform_matrix_ (0, 1) * pnt_in.y + transform_matrix_ (0, 2) * pnt_in.z + transform_matrix_ (0, 3));
-          pnt_out.y = static_cast<float> (transform_matrix_ (1, 0) * pnt_in.x + transform_matrix_ (1, 1) * pnt_in.y + transform_matrix_ (1, 2) * pnt_in.z + transform_matrix_ (1, 3));
-          pnt_out.z = static_cast<float> (transform_matrix_ (2, 0) * pnt_in.x + transform_matrix_ (2, 1) * pnt_in.y + transform_matrix_ (2, 2) * pnt_in.z + transform_matrix_ (2, 3));
-          //pnt_out.getVector3fMap () = transform_matrix_.topLeftCorner (3, 3) * 
-          //                            pnt_in.getVector3fMap () + 
-          //                            transform_matrix_.block (0, 3, 3, 1);
-          //pnt_out.data[3] = pnt_in.data[3];
-        }
+  /** \brief Get the number of dimensions. */
+  inline int
+  getDimension() const
+  {
+    return (nr_dim_);
+  }
 
-        /** \brief Warp a point given a transformation matrix
-          * \param[in] pnt_in the point to warp (transform)
-          * \param[out] pnt_out the warped (transformed) point
-          */
-        inline void 
-        warpPoint (const PointSourceT& pnt_in, Vector4& pnt_out) const
-        {
-          pnt_out[0] = static_cast<Scalar> (transform_matrix_ (0, 0) * pnt_in.x + transform_matrix_ (0, 1) * pnt_in.y + transform_matrix_ (0, 2) * pnt_in.z + transform_matrix_ (0, 3));
-          pnt_out[1] = static_cast<Scalar> (transform_matrix_ (1, 0) * pnt_in.x + transform_matrix_ (1, 1) * pnt_in.y + transform_matrix_ (1, 2) * pnt_in.z + transform_matrix_ (1, 3));
-          pnt_out[2] = static_cast<Scalar> (transform_matrix_ (2, 0) * pnt_in.x + transform_matrix_ (2, 1) * pnt_in.y + transform_matrix_ (2, 2) * pnt_in.z + transform_matrix_ (2, 3));
-          pnt_out[3] = 0.0;
-        }
+  /** \brief Get the Transform used. */
+  inline const Matrix4&
+  getTransform() const
+  {
+    return (transform_matrix_);
+  }
 
-        /** \brief Get the number of dimensions. */
-        inline int 
-        getDimension () const { return (nr_dim_); }
+public:
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 
-        /** \brief Get the Transform used. */
-        inline const Matrix4& 
-        getTransform () const { return (transform_matrix_); }
-        
-      public:
-        PCL_MAKE_ALIGNED_OPERATOR_NEW
-
-      protected:
-        int nr_dim_;
-        Matrix4 transform_matrix_;
-    };
-  } // namespace registration
+protected:
+  int nr_dim_;
+  Matrix4 transform_matrix_;
+};
+} // namespace registration
 } // namespace pcl

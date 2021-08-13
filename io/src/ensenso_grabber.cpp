@@ -123,9 +123,17 @@ pcl::EnsensoGrabber::enumDevices () const
 
     for (int n = 0; n < cams.count (); ++n)
     {
+#if NXLIB_VERSION_MAJOR > 2 
       PCL_INFO ("%s   %s   %s\n", cams[n][itmSerialNumber].asString ().c_str (),
                                   cams[n][itmModelName].asString ().c_str (),
-                                  cams[n][itmStatus].asString ().c_str ());
+                                  cams[n][itmStatus][itmOpen].asBool()
+                                  ? "Open"
+                                  : (cams[n][itmStatus][itmAvailable].asBool() ? "Available" : "In Use"));
+#else
+      PCL_INFO ("%s   %s   %s\n", cams[n][itmSerialNumber].asString().c_str(),
+                                  cams[n][itmModelName].asString().c_str(),
+                                  cams[n][itmStatus].asString().c_str());
+#endif
     }
     PCL_INFO ("\n");
   }
@@ -326,9 +334,9 @@ pcl::EnsensoGrabber::grabSingleCloud (pcl::PointCloud<pcl::PointXYZ> &cloud) con
     // Copy data in point cloud (and convert millimeters in meters)
     for (std::size_t i = 0; i < pointMap.size (); i += 3)
     {
-      cloud.points[i / 3].x = pointMap[i] / 1000.0;
-      cloud.points[i / 3].y = pointMap[i + 1] / 1000.0;
-      cloud.points[i / 3].z = pointMap[i + 2] / 1000.0;
+      cloud[i / 3].x = pointMap[i] / 1000.0;
+      cloud[i / 3].y = pointMap[i + 1] / 1000.0;
+      cloud[i / 3].z = pointMap[i + 2] / 1000.0;
     }
 
     return (true);
@@ -1046,9 +1054,9 @@ pcl::EnsensoGrabber::processGrabbing ()
           // Copy data in point cloud (and convert millimeters in meters)
           for (std::size_t i = 0; i < pointMap.size (); i += 3)
           {
-            cloud->points[i / 3].x = pointMap[i] / 1000.0;
-            cloud->points[i / 3].y = pointMap[i + 1] / 1000.0;
-            cloud->points[i / 3].z = pointMap[i + 2] / 1000.0;
+            (*cloud)[i / 3].x = pointMap[i] / 1000.0;
+            (*cloud)[i / 3].y = pointMap[i + 1] / 1000.0;
+            (*cloud)[i / 3].z = pointMap[i + 2] / 1000.0;
           }
         }
 

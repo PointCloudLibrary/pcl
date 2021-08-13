@@ -40,10 +40,7 @@
 #pragma once
 
 #include <pcl/pcl_base.h>
-#include <pcl/common/io.h>
-#include <pcl/conversions.h>
-#include <pcl/filters/boost.h>
-#include <cfloat>
+#include <pcl/common/io.h> // for copyPointCloud
 #include <pcl/PointIndices.h>
 
 namespace pcl
@@ -51,7 +48,7 @@ namespace pcl
   /** \brief Removes points with x, y, or z equal to NaN
     * \param[in] cloud_in the input point cloud
     * \param[out] cloud_out the output point cloud
-    * \param[out] index the mapping (ordered): cloud_out.points[i] = cloud_in.points[index[i]]
+    * \param[out] index the mapping (ordered): cloud_out[i] = cloud_in[index[i]]
     * \note The density of the point cloud is lost.
     * \note Can be called with cloud_in == cloud_out
     * \ingroup filters
@@ -59,12 +56,12 @@ namespace pcl
   template<typename PointT> void
   removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                            pcl::PointCloud<PointT> &cloud_out,
-                           std::vector<int> &index);
+                           Indices &index);
 
   /** \brief Removes points that have their normals invalid (i.e., equal to NaN)
     * \param[in] cloud_in the input point cloud
     * \param[out] cloud_out the output point cloud
-    * \param[out] index the mapping (ordered): cloud_out.points[i] = cloud_in.points[index[i]]
+    * \param[out] index the mapping (ordered): cloud_out[i] = cloud_in[index[i]]
     * \note The density of the point cloud is lost.
     * \note Can be called with cloud_in == cloud_out
     * \ingroup filters
@@ -72,7 +69,7 @@ namespace pcl
   template<typename PointT> void
   removeNaNNormalsFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                                   pcl::PointCloud<PointT> &cloud_out,
-                                  std::vector<int> &index);
+                                  Indices &index);
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Filter represents the base filter class. All filters must inherit from this interface.
@@ -96,7 +93,7 @@ namespace pcl
         * separate list. Default: false.
         */
       Filter (bool extract_removed_indices = false) :
-        removed_indices_ (new std::vector<int>),
+        removed_indices_ (new Indices),
         extract_removed_indices_ (extract_removed_indices)
       {
       }
@@ -201,7 +198,7 @@ namespace pcl
         * separate list. Default: false.
         */
       Filter (bool extract_removed_indices = false) :
-        removed_indices_ (new std::vector<int>),
+        removed_indices_ (new Indices),
         extract_removed_indices_ (extract_removed_indices)
       {
       }

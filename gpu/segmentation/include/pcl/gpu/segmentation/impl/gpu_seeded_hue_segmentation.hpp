@@ -53,9 +53,9 @@ seededHueSegmentation (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr  &host_cloud
 
   // Create a bool vector of processed point indices, and initialize it to false
   // cloud is a DeviceArray<PointType>
-  std::vector<bool> processed (host_cloud_->points.size (), false);
+  std::vector<bool> processed (host_cloud_->size (), false);
 
-  int max_answers = host_cloud_->points.size();
+  const auto max_answers = host_cloud_->size();
 
   // Process all points in the indices vector
   for (std::size_t k = 0; k < indices_in.indices.size (); ++k)
@@ -68,7 +68,7 @@ seededHueSegmentation (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr  &host_cloud
     processed[i] = true;
 
     PointXYZRGB  p;
-    p = host_cloud_->points[i];
+    p = (*host_cloud_)[i];
     PointXYZHSV h;
     PointXYZRGBtoXYZHSV(p, h);
 
@@ -77,7 +77,7 @@ seededHueSegmentation (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr  &host_cloud
     // Create the query queue on the host
     pcl::PointCloud<pcl::PointXYZ>::VectorType queries_host;
     // Push the starting point in the vector
-    queries_host.push_back (host_cloud_->points[i]);
+    queries_host.push_back ((*host_cloud_)[i]);
 
     unsigned int found_points = queries_host.size ();
     unsigned int previous_found_points = 0;
@@ -113,14 +113,14 @@ seededHueSegmentation (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr  &host_cloud
             continue;
 
           PointXYZRGB  p_l;
-          p_l = host_cloud_->points[data[qp_r + qp * max_answers]];
+          p_l = (*host_cloud_)[data[qp_r + qp * max_answers]];
           PointXYZHSV h_l;
           PointXYZRGBtoXYZHSV(p_l, h_l);
 
           if (std::abs(h_l.h - h.h) < delta_hue)
           {
             processed[data[qp_r + qp * max_answers]] = true;
-            queries_host.push_back (host_cloud_->points[data[qp_r + qp * max_answers]]);
+            queries_host.push_back ((*host_cloud_)[data[qp_r + qp * max_answers]]);
             found_points++;
           }
         }
@@ -152,7 +152,7 @@ pcl::gpu::SeededHueSegmentation::segment (PointIndices &indices_in, PointIndices
     tree_->build();
   }
 /*
-  if(tree_->cloud_.size() != host_cloud.points.size ())
+  if(tree_->cloud_.size() != host_cloud.size ())
   {
     PCL_ERROR("[pcl::gpu::SeededHueSegmentation] size of host cloud and device cloud don't match!\n");
     return;

@@ -41,8 +41,6 @@
 #pragma once
 
 #include <pcl/pcl_exports.h>
-#include <pcl/apps/in_hand_scanner/boost.h>
-#include <pcl/apps/in_hand_scanner/eigen.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
 #include <pcl/kdtree/kdtree.h>
 

@@ -286,7 +286,7 @@ namespace pcl
 
       const PointT& operator* () const override
       {
-        return (cloud_.points[*iterator_]);
+        return (cloud_[*iterator_]);
       }
 
       const PointT* operator-> () const override

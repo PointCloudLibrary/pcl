@@ -39,7 +39,6 @@
 #define PCL_FILTERS_IMPL_NORMAL_SPACE_SAMPLE_H_
 
 #include <pcl/filters/normal_space.h>
-#include <pcl/common/io.h>
 
 #include <vector>
 #include <list>
@@ -89,7 +88,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::findBin (const float *normal)
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename NormalT> void
-pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indices)
+pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (Indices &indices)
 {
   if (!initCompute ())
   {
@@ -140,7 +139,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
   }
 
   // Maintaining flags to check if a point is sampled
-  boost::dynamic_bitset<> is_sampled_flag (input_normals_->points.size ());
+  boost::dynamic_bitset<> is_sampled_flag (input_normals_->size ());
   // Maintaining flags to check if all points in the bin are sampled
   boost::dynamic_bitset<> bin_empty_flag (normals_hg.size ());
   unsigned int i = 0;
@@ -181,10 +180,10 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
   // If we need to return the indices that we haven't sampled
   if (extract_removed_indices_)
   {
-    std::vector<int> indices_temp = indices;
+    Indices indices_temp = indices;
     std::sort (indices_temp.begin (), indices_temp.end ());
 
-    std::vector<int> all_indices_temp = *indices_;
+    Indices all_indices_temp = *indices_;
     std::sort (all_indices_temp.begin (), all_indices_temp.end ());
     set_difference (all_indices_temp.begin (), all_indices_temp.end (), 
                     indices_temp.begin (), indices_temp.end (), 

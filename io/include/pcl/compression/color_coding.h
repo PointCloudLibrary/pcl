@@ -37,10 +37,7 @@
 
 #pragma once
 
-#include <cstdio>
-#include <cstring>
 #include <iostream>
-#include <iterator>
 #include <vector>
 
 namespace pcl
@@ -48,8 +45,6 @@ namespace pcl
 
 namespace octree
 {
-
-using namespace std;
 
 /** \brief @b ColorCoding class
  *  \note This class encodes 8-bit color information for octree-based point cloud compression.
@@ -160,19 +155,17 @@ public:
    * \param inputCloud_arg input point cloud
    * */
   void
-  encodeAverageOfPoints (const typename std::vector<int>& indexVector_arg, unsigned char rgba_offset_arg, PointCloudConstPtr inputCloud_arg)
+  encodeAverageOfPoints (const Indices& indexVector_arg, unsigned char rgba_offset_arg, PointCloudConstPtr inputCloud_arg)
   {
-    unsigned int avgRed = 0;
-    unsigned int avgGreen = 0;
-    unsigned int avgBlue = 0;
+    uindex_t avgRed = 0;
+    uindex_t avgGreen = 0;
+    uindex_t avgBlue = 0;
 
     // iterate over points
-    std::size_t len = indexVector_arg.size ();
-    for (std::size_t i = 0; i < len; i++)
+    for (const auto& idx: indexVector_arg)
     {
       // get color information from points
-      const int& idx = indexVector_arg[i];
-      const char* idxPointPtr = reinterpret_cast<const char*> (&inputCloud_arg->points[idx]);
+      const char* idxPointPtr = reinterpret_cast<const char*> (&(*inputCloud_arg)[idx]);
       const int& colorInt = *reinterpret_cast<const int*> (idxPointPtr+rgba_offset_arg);
 
       // add color information
@@ -182,12 +175,13 @@ public:
 
     }
 
+    const uindex_t len = static_cast<uindex_t> (indexVector_arg.size());
     // calculated average color information
     if (len > 1)
     {
-      avgRed   /= static_cast<unsigned int> (len);
-      avgGreen /= static_cast<unsigned int> (len);
-      avgBlue  /= static_cast<unsigned int> (len);
+      avgRed   /= len;
+      avgGreen /= len;
+      avgBlue  /= len;
     }
 
     // remove least significant bits
@@ -207,22 +201,20 @@ public:
    * \param inputCloud_arg input point cloud
    * */
   void
-  encodePoints (const typename std::vector<int>& indexVector_arg, unsigned char rgba_offset_arg, PointCloudConstPtr inputCloud_arg)
+  encodePoints (const Indices& indexVector_arg, unsigned char rgba_offset_arg, PointCloudConstPtr inputCloud_arg)
   {
-    unsigned int avgRed;
-    unsigned int avgGreen;
-    unsigned int avgBlue;
+    uindex_t avgRed;
+    uindex_t avgGreen;
+    uindex_t avgBlue;
 
     // initialize
     avgRed = avgGreen = avgBlue = 0;
 
     // iterate over points
-    std::size_t len = indexVector_arg.size ();
-    for (std::size_t i = 0; i < len; i++)
+    for (const auto& idx: indexVector_arg)
     {
       // get color information from point
-      const int& idx = indexVector_arg[i];
-      const char* idxPointPtr = reinterpret_cast<const char*> (&inputCloud_arg->points[idx]);
+      const char* idxPointPtr = reinterpret_cast<const char*> (&(*inputCloud_arg)[idx]);
       const int& colorInt = *reinterpret_cast<const int*> (idxPointPtr+rgba_offset_arg);
 
       // add color information
@@ -232,6 +224,7 @@ public:
 
     }
 
+    const uindex_t len = static_cast<uindex_t> (indexVector_arg.size());
     if (len > 1)
     {
       unsigned char diffRed;
@@ -239,15 +232,14 @@ public:
       unsigned char diffBlue;
 
       // calculated average color information
-      avgRed   /= static_cast<unsigned int> (len);
-      avgGreen /= static_cast<unsigned int> (len);
-      avgBlue  /= static_cast<unsigned int> (len);
+      avgRed   /= len;
+      avgGreen /= len;
+      avgBlue  /= len;
 
       // iterate over points for differential encoding
-      for (std::size_t i = 0; i < len; i++)
+      for (const auto& idx: indexVector_arg)
       {
-        const int& idx = indexVector_arg[i];
-        const char* idxPointPtr = reinterpret_cast<const char*> (&inputCloud_arg->points[idx]);
+        const char* idxPointPtr = reinterpret_cast<const char*> (&(*inputCloud_arg)[idx]);
         const int& colorInt = *reinterpret_cast<const int*> (idxPointPtr+rgba_offset_arg);
 
         // extract color components and do XOR encoding with predicted average color
@@ -286,12 +278,12 @@ public:
     * \param rgba_offset_arg offset to color information
     */
   void
-  decodePoints (PointCloudPtr outputCloud_arg, std::size_t beginIdx_arg, std::size_t endIdx_arg, unsigned char rgba_offset_arg)
+  decodePoints (PointCloudPtr outputCloud_arg, uindex_t beginIdx_arg, uindex_t endIdx_arg, unsigned char rgba_offset_arg)
   {
     assert (beginIdx_arg <= endIdx_arg);
 
     // amount of points to be decoded
-    unsigned int pointCount = static_cast<unsigned int> (endIdx_arg - beginIdx_arg);
+    const index_t pointCount = endIdx_arg - beginIdx_arg;
 
     // get averaged color information for current voxel
     unsigned char avgRed = *(pointAvgColorDataVector_Iterator_++);
@@ -304,7 +296,7 @@ public:
     avgBlue = static_cast<unsigned char> (avgBlue << colorBitReduction_);
 
     // iterate over points
-    for (std::size_t i = 0; i < pointCount; i++)
+    for (index_t i = 0; i < pointCount; i++)
     {
       unsigned int colorInt;
       if (pointCount > 1)
@@ -330,7 +322,7 @@ public:
         colorInt = (avgRed << 0) | (avgGreen << 8) | (avgBlue << 16);
       }
 
-      char* idxPointPtr = reinterpret_cast<char*> (&outputCloud_arg->points[beginIdx_arg + i]);
+      char* idxPointPtr = reinterpret_cast<char*> (&(*outputCloud_arg)[beginIdx_arg + i]);
       int& pointColor = *reinterpret_cast<int*> (idxPointPtr+rgba_offset_arg);
       // assign color to point from point cloud
       pointColor=colorInt;
@@ -354,7 +346,7 @@ public:
     // iterate over points
     for (std::size_t i = 0; i < pointCount; i++)
     {
-      char* idxPointPtr = reinterpret_cast<char*> (&outputCloud_arg->points[beginIdx_arg + i]);
+      char* idxPointPtr = reinterpret_cast<char*> (&(*outputCloud_arg)[beginIdx_arg + i]);
       int& pointColor = *reinterpret_cast<int*> (idxPointPtr+rgba_offset_arg);
       // assign color to point from point cloud
       pointColor = defaultColor_;

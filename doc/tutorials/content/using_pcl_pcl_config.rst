@@ -39,7 +39,7 @@ Now, let's see what we did.
    
    cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
    
-This is mandatory for cmake, and since we are making very basic
+This is mandatory for cmake, and since we are making a very basic
 project we don't need features from cmake 2.8 or higher.
 
 .. code-block:: cmake
@@ -56,7 +56,7 @@ invoking cmake (MY_GRAND_PROJECT_BINARY_DIR).
    find_package(PCL 1.3 REQUIRED COMPONENTS common io)
 
 We are requesting to find the PCL package at minimum version 1.3. We
-also says that it is ``REQUIRED`` meaning that cmake will fail
+also say that it is ``REQUIRED`` meaning that cmake will fail
 gracefully if it can't be found. As PCL is modular one can request:
 
 * only one component: find_package(PCL 1.3 REQUIRED COMPONENTS io)
@@ -99,17 +99,17 @@ Windows platform and blank on UNIX) and the permissions.
 
    target_link_libraries(pcd_write_test ${PCL_LIBRARIES})
 
-The executable we are building makes call to PCL functions. So far, we
-have only included the PCL headers so the compilers knows about the
-methods we are calling. We need also to make the linker knows about
-the libraries we are linking against. As said before the, PCL
+The executable we are building makes calls to PCL functions. So far, we
+have only included the PCL headers so the compiler knows about the
+methods we are calling. We need also to make the linker know about
+the libraries we are linking against. As said before, the PCL
 found libraries are referred to using ``PCL_LIBRARIES`` variable, all
 that remains is to trigger the link operation which we do calling
 ``target_link_libraries()`` macro.
 PCLConfig.cmake uses a CMake special feature named `EXPORT` which
 allows for using others' projects targets as if you built them
 yourself. When you are using such targets they are called `imported
-targets` and acts just like any other target.
+targets` and act just like any other target.
 
 Compiling and running the project
 ---------------------------------
@@ -184,7 +184,7 @@ Run CMake GUI, and fill these fields :
   - ``Where to build the binaries`` : this is where the Visual Studio project files will be generated
   
 Then, click ``Configure``. You will be prompted for a generator/compiler. Then click the ``Generate``
-button. If there is no errors, the project files will be generated into the ``Where to build the binaries``
+button. If there are no errors, the project files will be generated into the ``Where to build the binaries``
 folder.
 
 Open the sln file, and build your project!
@@ -192,8 +192,8 @@ Open the sln file, and build your project!
 Weird installations
 -------------------
 CMake has a list of default searchable paths where it seeks for
-FindXXX.cmake or XXXConfig.cmake. If you happen to install in some non
-obvious repository (let us say in `Documents` for evils) then you can
+FindXXX.cmake or XXXConfig.cmake. If you happen to install in some 
+non-obvious repository (let us say in `Documents` for evils) then you can
 help cmake find PCLConfig.cmake adding this line:
 
 .. code-block:: cmake

@@ -26,6 +26,7 @@
 #include <pcl/features/pfhrgb.h>
 #include <pcl/features/3dsc.h>
 #include <pcl/features/shot_omp.h>
+#include <pcl/filters/extract_indices.h> // for ExtractIndices
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
 #include <pcl/registration/transformation_estimation_svd.h>
@@ -246,14 +247,14 @@ void ICCVTutorial<FeatureType>::detectKeypoints (typename pcl::PointCloud<pcl::P
   keypoint_detector_->setInputCloud(input);
   keypoint_detector_->setSearchSurface(input);
   keypoint_detector_->compute(*keypoints);
-  std::cout << "OK. keypoints found: " << keypoints->points.size() << std::endl;
+  std::cout << "OK. keypoints found: " << keypoints->size() << std::endl;
 }
 
 template<typename FeatureType>
 void ICCVTutorial<FeatureType>::extractDescriptors (typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr input, typename pcl::PointCloud<pcl::PointXYZI>::Ptr keypoints, typename pcl::PointCloud<FeatureType>::Ptr features)
 {
   typename pcl::PointCloud<pcl::PointXYZRGB>::Ptr kpts(new pcl::PointCloud<pcl::PointXYZRGB>);
-  kpts->points.resize(keypoints->points.size());
+  kpts->points.resize(keypoints->size());
 
   pcl::copyPointCloud(*keypoints, *kpts);
 
@@ -309,7 +310,7 @@ void ICCVTutorial<FeatureType>::filterCorrespondences ()
   std::cout << "correspondence rejection..." << std::flush;
   std::vector<std::pair<unsigned, unsigned> > correspondences;
   for (unsigned cIdx = 0; cIdx < source2target_.size (); ++cIdx)
-    if (target2source_[source2target_[cIdx]] == cIdx)
+    if (static_cast<unsigned int>(target2source_[source2target_[cIdx]]) == cIdx)
       correspondences.push_back(std::make_pair(cIdx, source2target_[cIdx]));
 
   correspondences_->resize (correspondences.size());
@@ -397,7 +398,7 @@ void ICCVTutorial<FeatureType>::run()
 }
 
 template<typename FeatureType>
-void ICCVTutorial<FeatureType>::keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* cookie)
+void ICCVTutorial<FeatureType>::keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* /*cookie*/)
 {
   if (event.keyUp())
   {

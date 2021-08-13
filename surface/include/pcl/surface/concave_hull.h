@@ -42,7 +42,7 @@
 #include <pcl/pcl_config.h>
 #ifdef HAVE_QHULL
 
-#include <pcl/surface/convex_hull.h>
+#include <pcl/surface/reconstruction.h> // for MeshConstruction
 
 namespace pcl
 {

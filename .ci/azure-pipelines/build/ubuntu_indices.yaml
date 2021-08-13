@@ -1,0 +1,29 @@
+steps:
+  - checkout: self
+    # find the commit hash on a quick non-forced update too
+    fetchDepth: 10
+  - script: |
+      mkdir $BUILD_DIR && cd $BUILD_DIR
+      cmake $(Build.SourcesDirectory) $(CMAKE_ARGS) \
+      -DCMAKE_BUILD_TYPE="MinSizeRel" \
+      -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
+      -DPCL_ONLY_CORE_POINT_TYPES=ON \
+      -DPCL_INDEX_SIGNED=$INDEX_SIGNED \
+      -DPCL_INDEX_SIZE=$INDEX_SIZE \
+      -DBUILD_global_tests=ON 
+      # Temporary fix to ensure no tests are skipped
+      cmake $(Build.SourcesDirectory)
+    displayName: 'CMake Configuration'
+  - script: |
+      cd $BUILD_DIR
+      cmake --build . -- -j2
+    displayName: 'Build Library'
+  - script: |
+      cd $BUILD_DIR && cmake --build . -- tests
+    displayName: 'Run Unit Tests'
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'CTest'
+      testResultsFiles: '**/Test*.xml'
+      searchFolder: '$(Agent.BuildDirectory)/build'
+    condition: succeededOrFailed()

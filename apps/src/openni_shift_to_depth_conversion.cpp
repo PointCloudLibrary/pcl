@@ -35,7 +35,6 @@
  */
 
 #include <pcl/common/time.h>
-#include <pcl/console/parse.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/point_cloud.h>
@@ -43,11 +42,7 @@
 
 #include <boost/asio.hpp>
 
-#include <cstdio>
-#include <cstdlib>
 #include <iostream>
-#include <sstream>
-#include <string>
 #include <thread>
 #include <vector>
 
@@ -56,7 +51,6 @@ using boost::asio::ip::tcp;
 using namespace pcl;
 using namespace pcl::io;
 
-using namespace std;
 using namespace std::chrono_literals;
 
 class SimpleOpenNIViewer {
@@ -157,8 +151,8 @@ protected:
     std::size_t cloud_size = width_arg * height_arg;
 
     // Reset point cloud
-    cloud_arg.points.clear();
-    cloud_arg.points.reserve(cloud_size);
+    cloud_arg.clear();
+    cloud_arg.reserve(cloud_size);
 
     // Define point cloud parameters
     cloud_arg.width = static_cast<std::uint32_t>(width_arg);
@@ -199,7 +193,7 @@ protected:
         }
 
         // Add point to cloud
-        cloud_arg.points.push_back(newPoint);
+        cloud_arg.push_back(newPoint);
         // Increment point iterator
         ++i;
       }

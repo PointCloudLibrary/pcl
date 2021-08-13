@@ -43,7 +43,7 @@
 
 #include <pcl/features/gfpfh.h>
 #include <pcl/octree/octree_search.h>
-#include <pcl/common/eigen.h>
+#include <Eigen/Core> // for Vector3f
 
 #include <algorithm>
 #include <fstream>
@@ -55,7 +55,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::compute (PointCloudOut &outp
   if (!Feature<PointInT, PointOutT>::initCompute ())
   {
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   // Copy the header
@@ -67,7 +67,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::compute (PointCloudOut &outp
   // (see http://dev.pointclouds.org/issues/657)
   output.width = output.height = 1;
   output.is_dense = input_->is_dense;
-  output.points.resize (1);
+  output.resize (1);
 
   // Perform the actual feature computation
   computeFeature (output);
@@ -103,7 +103,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOu
       std::vector<int> histogram;
       for (std::size_t k = 0; k < intersected_cells.size (); ++k)
       {
-        std::vector<int> indices;
+        pcl::Indices indices;
         octree.voxelSearch (intersected_cells[k], indices);
         int label = emptyLabel ();
         if (!indices.empty ())
@@ -129,8 +129,8 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOu
   output.clear ();
   output.width = 1;
   output.height = 1;
-  output.points.resize (1);
-  std::copy (gfpfh_histogram.cbegin (), gfpfh_histogram.cend (), output.points[0].histogram);
+  output.resize (1);
+  std::copy (gfpfh_histogram.cbegin (), gfpfh_histogram.cend (), output[0].histogram);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -251,12 +251,12 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeHIKDistance (const st
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> std::uint32_t
-pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::getDominantLabel (const std::vector<int>& indices)
+pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::getDominantLabel (const pcl::Indices& indices)
 {
   std::vector<std::uint32_t> counts (getNumberOfClasses () + 1, 0);
-  for (const int &nn_index : indices)
+  for (const auto &nn_index : indices)
   {
-    std::uint32_t label = labels_->points[nn_index].label;
+    std::uint32_t label = (*labels_)[nn_index].label;
     counts[label] += 1;
   }
 

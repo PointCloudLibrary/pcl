@@ -41,18 +41,10 @@
 #pragma GCC system_header
 #endif
 
-#include <pcl/common/eigen.h>
 #include <pcl/memory.h>
-#include <pcl/pcl_macros.h>
 
-#include <boost/intrusive/hashtable.hpp>
-
-#include <cassert>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
 #include <cstring>
-#include <map>
+#include <iostream> // for size_t, operator<<, endl, cout
 #include <vector>
 
 namespace pcl {

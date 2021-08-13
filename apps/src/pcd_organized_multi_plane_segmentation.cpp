@@ -35,16 +35,14 @@
 #include <pcl/common/time.h>
 #include <pcl/console/parse.h>
 #include <pcl/features/integral_image_normal.h>
-#include <pcl/features/normal_3d.h>
-#include <pcl/filters/extract_indices.h>
 #include <pcl/geometry/polygon_operations.h>
-#include <pcl/io/io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/segmentation/organized_connected_component_segmentation.h>
 #include <pcl/segmentation/organized_multi_plane_segmentation.h>
 #include <pcl/segmentation/planar_region.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/ModelCoefficients.h>
+
+#include <cstdio>
 
 template <typename PointT>
 class PCDOrganizedMultiPlaneSegmentation {
@@ -178,11 +176,11 @@ public:
       pcl::PointXYZ pt2 = pcl::PointXYZ(centroid[0] + (0.5f * model[0]),
                                         centroid[1] + (0.5f * model[1]),
                                         centroid[2] + (0.5f * model[2]));
-      sprintf(name, "normal_%d", unsigned(i));
+      std::snprintf(name, sizeof(name), "normal_%zu", i);
       viewer.addArrow(pt2, pt1, 1.0, 0, 0, std::string(name));
 
       contour->points = regions[i].getContour();
-      sprintf(name, "plane_%02d", int(i));
+      std::snprintf(name, sizeof(name), "plane_%02zu", i);
       pcl::visualization::PointCloudColorHandlerCustom<PointT> color(
           contour, red[i], grn[i], blu[i]);
       viewer.addPointCloud(contour, color, name);
@@ -194,15 +192,18 @@ public:
                 << std::endl;
       typename pcl::PointCloud<PointT>::ConstPtr approx_contour_const = approx_contour;
 
-      for (std::size_t idx = 0; idx < approx_contour->points.size(); ++idx) {
-        sprintf(name, "approx_plane_%02d_%03d", int(i), int(idx));
-        viewer.addLine(
-            approx_contour->points[idx],
-            approx_contour->points[(idx + 1) % approx_contour->points.size()],
-            0.5 * red[i],
-            0.5 * grn[i],
-            0.5 * blu[i],
-            name);
+      for (std::size_t idx = 0; idx < approx_contour->size(); ++idx) {
+        std::snprintf(name,
+                      sizeof(name),
+                      "approx_plane_%02zu_%03zu",
+                      static_cast<std::size_t>(i),
+                      static_cast<std::size_t>(idx));
+        viewer.addLine((*approx_contour)[idx],
+                       (*approx_contour)[(idx + 1) % approx_contour->size()],
+                       0.5 * red[i],
+                       0.5 * grn[i],
+                       0.5 * blu[i],
+                       name);
       }
     }
   }

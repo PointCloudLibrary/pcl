@@ -116,7 +116,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   //find Z axis
 
   //extract support points for the computation of Z axis
-  std::vector<int> neighbours_indices;
+  pcl::Indices neighbours_indices;
   std::vector<float> neighbours_distances;
 
   const std::size_t n_normal_neighbours =

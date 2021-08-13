@@ -40,17 +40,16 @@
 
 #pragma once
 
-#include <pcl/console/print.h>
 #include <pcl/visualization/common/actor_map.h>
 #include <pcl/visualization/common/ren_win_interact_map.h>
 #include <pcl/visualization/keyboard_event.h>
 #include <pcl/visualization/mouse_event.h>
 #include <pcl/visualization/point_picking_event.h>
 #include <pcl/visualization/area_picking_event.h>
-#ifndef Q_MOC_RUN
 #include <boost/signals2/signal.hpp>
-#endif
 #include <vtkInteractorStyleRubberBandPick.h>
+#include <vtkRendererCollection.h>
+#include <vtkRenderWindow.h>
 
 class vtkRendererCollection;
 class vtkLegendScaleActor;

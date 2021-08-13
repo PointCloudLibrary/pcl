@@ -41,11 +41,8 @@
 
 #pragma once
 
-#include <string>
-#include <pcl/pcl_base.h>
-#include <pcl/PointIndices.h>
-#include <pcl/conversions.h>
-#include <locale>
+#include <pcl/point_cloud.h> // for PointCloud
+#include <pcl/pcl_exports.h> // for PCL_EXPORTS
 
 namespace pcl
 {

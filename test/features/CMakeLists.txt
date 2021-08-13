@@ -108,6 +108,9 @@ if(BUILD_io)
                FILES test_gasd_estimation.cpp
                LINK_WITH pcl_gtest pcl_io pcl_features
                ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd")
+  PCL_ADD_TEST(feature_organized_edge_detection test_organized_edge_detection
+               FILES test_organized_edge_detection.cpp
+               LINK_WITH pcl_gtest pcl_features pcl_io)
   if(BUILD_keypoints)
     PCL_ADD_TEST(feature_brisk test_brisk
                  FILES test_brisk.cpp

@@ -51,10 +51,8 @@
 #include <vtkTable.h>
 
 #include <fstream>
-#include <sstream>
 
 #include <pcl/visualization/pcl_plotter.h>
-#include <pcl/common/common_headers.h>
 
 #define VTK_CREATE(type, name) \
   vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
@@ -243,16 +241,15 @@ pcl::visualization::PCLPlotter::addPlotData (
     char const *filename,
     int type)
 {
-  using namespace std;
-  ifstream fin(filename);
+  std::ifstream fin(filename);
   
   //getting the no of column
-  string line;
+  std::string line;
   getline (fin, line);
-  stringstream ss(line);
+  std::stringstream ss(line);
   
-  std::vector<string> pnames;       //plot names
-  string xname, temp;         //plot name of X axis
+  std::vector<std::string> pnames;       //plot names
+  std::string xname, temp;         //plot name of X axis
   
   //checking X axis name
   ss >> xname;
@@ -306,7 +303,7 @@ pcl::visualization::PCLPlotter::addFeatureHistogram (
   int field_idx = pcl::getFieldIndex (cloud, field_name);
   if (field_idx == -1)
   {
-    PCL_ERROR ("[addFeatureHistogram] Invalid field (%s) given!", field_name.c_str ());
+    PCL_ERROR ("[addFeatureHistogram] Invalid field (%s) given!\n", field_name.c_str ());
     return (false);
   }
 
@@ -333,10 +330,10 @@ bool
 pcl::visualization::PCLPlotter::addFeatureHistogram (
     const pcl::PCLPointCloud2 &cloud,
     const std::string &field_name, 
-    const int index,
+    const pcl::index_t index,
     const std::string &id, int win_width, int win_height)
 {
-  if (index < 0 || index >= static_cast<int> (cloud.width * cloud.height))
+  if (index < 0 || index >= static_cast<pcl::index_t> (cloud.width * cloud.height))
   {
     PCL_ERROR ("[addFeatureHistogram] Invalid point index (%d) given!\n", index);
     return (false);
@@ -346,7 +343,7 @@ pcl::visualization::PCLPlotter::addFeatureHistogram (
   int field_idx = pcl::getFieldIndex (cloud, field_name);
   if (field_idx == -1)
   {
-    PCL_ERROR ("[addFeatureHistogram] Invalid field (%s) given!", field_name.c_str ());
+    PCL_ERROR ("[addFeatureHistogram] Invalid field (%s) given!\n", field_name.c_str ());
     return (false);
   }
 

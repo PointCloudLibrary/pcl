@@ -44,6 +44,7 @@
 #include <pcl/surface/reconstruction.h>
 #include <pcl/common/transforms.h>
 #include <pcl/TextureMesh.h>
+#include <pcl/octree/octree_search.h> // for OctreePointCloudSearch
 
 
 namespace pcl
@@ -256,7 +257,7 @@ namespace pcl
       void
       removeOccludedPoints (const PointCloudPtr &input_cloud,
                             PointCloudPtr &filtered_cloud, const double octree_voxel_size,
-                            std::vector<int> &visible_indices, std::vector<int> &occluded_indices);
+                            pcl::Indices &visible_indices, pcl::Indices &occluded_indices);
 
       /** \brief Remove occluded points from a textureMesh
         * \param[in] tex_mesh input mesh, on witch to perform occlusion detection

@@ -131,7 +131,7 @@ points in the input dataset.
      // Compute the features
      fpfh.compute (*fpfhs);
 
-     // fpfhs->points.size () should have the same size as the input cloud->points.size ()*
+     // fpfhs->size () should have the same size as the input cloud->size ()*
    }
 
 The actual **compute** call from the **FPFHEstimation** class does nothing internally but::
@@ -161,9 +161,9 @@ The actual **compute** call from the **FPFHEstimation** class does nothing inter
 
   .. code-block:: cpp
 
-     for (int i = 0; i < normals->points.size(); i++)
+     for (int i = 0; i < normals->size(); i++)
      {
-       if (!pcl::isFinite<pcl::Normal>(normals->points[i]))
+       if (!pcl::isFinite<pcl::Normal>((*normals)[i]))
        {
          PCL_WARN("normals[%d] is not finite\n", i);
        }

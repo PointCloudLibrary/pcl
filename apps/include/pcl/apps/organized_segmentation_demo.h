@@ -38,13 +38,8 @@
 
 #include <pcl/apps/organized_segmentation_demo_qt.h>
 #include <pcl/common/time.h>
-#include <pcl/common/transforms.h>
 #include <pcl/features/integral_image_normal.h>
-#include <pcl/filters/voxel_grid.h>
-#include <pcl/io/oni_grabber.h>
-#include <pcl/io/openni_grabber.h>
-#include <pcl/io/pcd_grabber.h>
-#include <pcl/io/pcd_io.h>
+#include <pcl/io/grabber.h> // for Grabber
 #include <pcl/segmentation/edge_aware_plane_comparator.h>
 #include <pcl/segmentation/euclidean_cluster_comparator.h>
 #include <pcl/segmentation/euclidean_plane_coefficient_comparator.h>
@@ -189,4 +184,8 @@ public Q_SLOTS:
 private Q_SLOTS:
   void
   timeoutSlot();
+
+private:
+  void
+  refreshView();
 };
