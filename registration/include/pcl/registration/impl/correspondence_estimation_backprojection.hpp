@@ -63,6 +63,96 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar
+  , typename std::enable_if_t<isSamePointType<PointSource, PointTarget>()>* = nullptr
+>
+void
+CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar>::
+    determineCorrespondencesHelper(pcl::Correspondences& correspondences, double max_distance)
+{
+  PointTarget pt;
+  // Iterate over the input set of source indices
+  for (const auto& idx_i : (*indices_)) {
+    tree_->nearestKSearch((*input_)[idx_i], k_, nn_indices, nn_dists);
+
+    // Among the K nearest neighbours find the one with minimum perpendicular distance
+    // to the normal
+    float min_dist = std::numeric_limits<float>::max();
+
+    // Find the best correspondence
+    for (std::size_t j = 0; j < nn_indices.size(); j++) {
+      float cos_angle = (*source_normals_)[idx_i].normal_x *
+                            (*target_normals_)[nn_indices[j]].normal_x +
+                        (*source_normals_)[idx_i].normal_y *
+                            (*target_normals_)[nn_indices[j]].normal_y +
+                        (*source_normals_)[idx_i].normal_z *
+                            (*target_normals_)[nn_indices[j]].normal_z;
+      float dist = nn_dists[j] * (2.0f - cos_angle * cos_angle);
+
+      if (dist < min_dist) {
+        min_dist = dist;
+        min_index = static_cast<int>(j);
+      }
+    }
+    if (min_dist > max_distance)
+      continue;
+
+    corr.index_query = idx_i;
+    corr.index_match = nn_indices[min_index];
+    corr.distance = nn_dists[min_index]; // min_dist;
+    correspondences[nr_valid_correspondences++] = corr;
+  }
+}
+
+template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar
+  , typename std::enable_if_t<!isSamePointType<PointSource, PointTarget>()>* = nullptr
+>
+void
+CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar>::
+    determineCorrespondencesHelper(pcl::Correspondences& correspondences, double max_distance)
+{
+  PointTarget pt;
+
+  // Iterate over the input set of source indices
+  for (const auto& idx_i : (*indices_)) {
+    tree_->nearestKSearch((*input_)[idx_i], k_, nn_indices, nn_dists);
+
+    // Among the K nearest neighbours find the one with minimum perpendicular distance
+    // to the normal
+    float min_dist = std::numeric_limits<float>::max();
+
+    // Find the best correspondence
+    for (std::size_t j = 0; j < nn_indices.size(); j++) {
+      PointSource pt_src;
+      // Copy the source data to a target PointTarget format so we can search in the
+      // tree
+      copyPoint((*input_)[idx_i], pt_src);
+
+      float cos_angle = (*source_normals_)[idx_i].normal_x *
+                            (*target_normals_)[nn_indices[j]].normal_x +
+                        (*source_normals_)[idx_i].normal_y *
+                            (*target_normals_)[nn_indices[j]].normal_y +
+                        (*source_normals_)[idx_i].normal_z *
+                            (*target_normals_)[nn_indices[j]].normal_z;
+      float dist = nn_dists[j] * (2.0f - cos_angle * cos_angle);
+
+      if (dist < min_dist) {
+        min_dist = dist;
+        min_index = static_cast<int>(j);
+      }
+    }
+    if (min_dist > max_distance)
+      continue;
+
+    corr.index_query = idx_i;
+    corr.index_match = nn_indices[min_index];
+    corr.distance = nn_dists[min_index]; // min_dist;
+    correspondences[nr_valid_correspondences++] = corr;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 void
 CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar>::
@@ -84,80 +174,7 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
   // Check if the template types are the same. If true, avoid a copy.
   // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
   // macro!
-  if (isSamePointType<PointSource, PointTarget>()) {
-    PointTarget pt;
-    // Iterate over the input set of source indices
-    for (const auto& idx_i : (*indices_)) {
-      tree_->nearestKSearch((*input_)[idx_i], k_, nn_indices, nn_dists);
-
-      // Among the K nearest neighbours find the one with minimum perpendicular distance
-      // to the normal
-      float min_dist = std::numeric_limits<float>::max();
-
-      // Find the best correspondence
-      for (std::size_t j = 0; j < nn_indices.size(); j++) {
-        float cos_angle = (*source_normals_)[idx_i].normal_x *
-                              (*target_normals_)[nn_indices[j]].normal_x +
-                          (*source_normals_)[idx_i].normal_y *
-                              (*target_normals_)[nn_indices[j]].normal_y +
-                          (*source_normals_)[idx_i].normal_z *
-                              (*target_normals_)[nn_indices[j]].normal_z;
-        float dist = nn_dists[j] * (2.0f - cos_angle * cos_angle);
-
-        if (dist < min_dist) {
-          min_dist = dist;
-          min_index = static_cast<int>(j);
-        }
-      }
-      if (min_dist > max_distance)
-        continue;
-
-      corr.index_query = idx_i;
-      corr.index_match = nn_indices[min_index];
-      corr.distance = nn_dists[min_index]; // min_dist;
-      correspondences[nr_valid_correspondences++] = corr;
-    }
-  }
-  else {
-    PointTarget pt;
-
-    // Iterate over the input set of source indices
-    for (const auto& idx_i : (*indices_)) {
-      tree_->nearestKSearch((*input_)[idx_i], k_, nn_indices, nn_dists);
-
-      // Among the K nearest neighbours find the one with minimum perpendicular distance
-      // to the normal
-      float min_dist = std::numeric_limits<float>::max();
-
-      // Find the best correspondence
-      for (std::size_t j = 0; j < nn_indices.size(); j++) {
-        PointSource pt_src;
-        // Copy the source data to a target PointTarget format so we can search in the
-        // tree
-        copyPoint((*input_)[idx_i], pt_src);
-
-        float cos_angle = (*source_normals_)[idx_i].normal_x *
-                              (*target_normals_)[nn_indices[j]].normal_x +
-                          (*source_normals_)[idx_i].normal_y *
-                              (*target_normals_)[nn_indices[j]].normal_y +
-                          (*source_normals_)[idx_i].normal_z *
-                              (*target_normals_)[nn_indices[j]].normal_z;
-        float dist = nn_dists[j] * (2.0f - cos_angle * cos_angle);
-
-        if (dist < min_dist) {
-          min_dist = dist;
-          min_index = static_cast<int>(j);
-        }
-      }
-      if (min_dist > max_distance)
-        continue;
-
-      corr.index_query = idx_i;
-      corr.index_match = nn_indices[min_index];
-      corr.distance = nn_dists[min_index]; // min_dist;
-      correspondences[nr_valid_correspondences++] = corr;
-    }
-  }
+  determineCorrespondencesHelper<PointSource, PointTarget, NormalT, Scalar>(correspondences, max_distance);
   correspondences.resize(nr_valid_correspondences);
   deinitCompute();
 }
