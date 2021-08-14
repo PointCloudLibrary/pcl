@@ -12,37 +12,10 @@
 #include <pcl/common/eigen.h>       // for getTransformation
 #include <pcl/common/point_tests.h> // for isFinite
 #include <pcl/filters/experimental/functor_filter.h>
+#include <pcl/filters/filter_indices.h>
 
 namespace pcl {
 namespace experimental {
-
-template <typename PointT>
-struct CropBoxFunctor {
-  CropBoxFunctor() = default;
-  CropBoxFunctor(const Eigen::Vector4f* min_pt,
-                 const Eigen::Vector4f* max_pt,
-                 const Eigen::Affine3f* pt_transform)
-  : min_pt_(min_pt), max_pt_(max_pt), pt_transform_(pt_transform)
-  {}
-
-  bool
-  operator()(const PointCloud<PointT>& cloud, index_t idx) const
-  {
-    // Not all fields are NaN checked
-    // only checked with isXYZFinite in FunctorFilter
-    const Eigen::Vector4f pt = (*pt_transform_) * cloud.at(idx).getVector4fMap();
-    return (pt.array() >= min_pt_->array()).template head<3>().all() &&
-           (pt.array() <= max_pt_->array()).template head<3>().all();
-  }
-
-private:
-  const Eigen::Vector4f* min_pt_ = nullptr;
-  const Eigen::Vector4f* max_pt_ = nullptr;
-  const Eigen::Affine3f* pt_transform_ = nullptr;
-};
-
-template <typename PointT>
-using CropBoxFilter = advanced::FunctorFilter<PointT, CropBoxFunctor<PointT>>;
 
 /** \brief CropBox is a filter that allows the user to filter all the data
  * inside of a given box.
@@ -51,7 +24,7 @@ using CropBoxFilter = advanced::FunctorFilter<PointT, CropBoxFunctor<PointT>>;
  * \ingroup filters
  */
 template <typename PointT>
-class CropBox : public CropBoxFilter<PointT> {
+class CropBox : public FilterIndices<PointT> {
   using PointCloud = typename FilterIndices<PointT>::PointCloud;
   using PointCloudPtr = typename PointCloud::Ptr;
   using PointCloudConstPtr = typename PointCloud::ConstPtr;
@@ -65,11 +38,9 @@ public:
    * the indices of points being removed (default = false).
    */
   CropBox(bool extract_removed_indices = false)
-  : CropBoxFilter<PointT>(extract_removed_indices)
+  : FilterIndices<PointT>(extract_removed_indices)
   {
     filter_name_ = "CropBox";
-    CropBoxFilter<PointT>::setFunctionObject(
-        CropBoxFunctor<PointT>(&min_pt_, &max_pt_, &pt_transform_));
   }
 
   /** \brief Set the minimum point of the box
@@ -171,9 +142,23 @@ public:
                            rotation_(1),
                            rotation_(2),
                            box_transform);
-    pt_transform_ = box_transform.inverse() * transform_;
+    Eigen::Affine3f pt_transform = box_transform.inverse() * transform_;
 
-    CropBoxFilter<PointT>::applyFilter(indices);
+    const auto lambda = [&](const PointCloud& cloud, index_t idx) {
+      const Eigen::Vector4f pt = pt_transform * cloud.at(idx).getVector4fMap();
+      return (pt.array() >= min_pt_.array()).template head<3>().all() &&
+             (pt.array() <= max_pt_.array()).template head<3>().all();
+    };
+
+    auto filter = advanced::FunctorFilter<PointT, decltype(lambda)>(
+        lambda, this->extract_removed_indices_);
+    filter.setNegative(this->getNegative());
+    filter.setKeepOrganized(this->getKeepOrganized());
+    filter.setIndices(this->getIndices());
+    filter.setInputCloud(this->getInputCloud());
+    filter.applyFilter(indices);
+    if (this->extract_removed_indices_)
+      *removed_indices_ = *filter.getRemovedIndices(); // copy
   }
 
 protected:
@@ -201,11 +186,6 @@ private:
 
   /** \brief The affine transform applied to the cloud. */
   Eigen::Affine3f transform_ = Eigen::Affine3f::Identity();
-
-  /** \brief The final transform applied to the points. */
-  Eigen::Affine3f pt_transform_;
-
-  using CropBoxFilter<PointT>::getFunctionObject; // hide method
 };
 } // namespace experimental
 } // namespace pcl
