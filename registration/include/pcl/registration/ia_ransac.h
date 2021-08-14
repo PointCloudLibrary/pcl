@@ -103,8 +103,8 @@ public:
 
   public:
     HuberPenalty(float threshold) : threshold_(threshold) {}
-    virtual float
-    operator()(float e) const
+    float
+    operator()(float e) const override
     {
       if (e <= threshold_)
         return (0.5 * e * e);
