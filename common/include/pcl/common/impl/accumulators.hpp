@@ -72,13 +72,13 @@ namespace pcl
       using IsCompatible = pcl::traits::has_xyz<boost::mpl::_1>;
 
       // Storage
-      Eigen::Vector3f xyz = Eigen::Vector3f::Zero ();
+      Eigen::Vector4f xyz = Eigen::Vector4f::Zero ();
 
       template <typename PointT> void
-      add (const PointT& t) { xyz += t.getVector3fMap (); }
+      add (const PointT& t) { xyz += t.getVector4fMap (); }
 
       template <typename PointT> void
-      get (PointT& t, std::size_t n) const { t.getVector3fMap () = xyz / n; }
+      get (PointT& t, std::size_t n) const { t.getVector3fMap () = xyz.head<3>() / n; }
 
       void
       clear()
