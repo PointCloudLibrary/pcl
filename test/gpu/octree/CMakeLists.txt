@@ -19,4 +19,4 @@ PCL_ADD_TEST(gpu_octree_host_radius test_gpu_host_radius_search FILES test_host_
 PCL_ADD_TEST(gpu_octree_knn_search test_gpu_knn_search FILES test_knn_search.cpp LINK_WITH pcl_gtest pcl_common pcl_octree pcl_gpu_octree)
 PCL_ADD_TEST(gpu_octree_radius_search test_gpu_radius_search FILES test_radius_search.cpp LINK_WITH pcl_gtest pcl_common pcl_octree pcl_gpu_octree)
 PCL_ADD_TEST(gpu_octree_template test_gpu_template FILES test_template_octree.cpp LINK_WITH pcl_gtest pcl_common pcl_octree pcl_gpu_octree)
-PCL_ADD_TEST(gpu_bfrs_template test_bfrs_template FILES test_template_bfrs.cpp LINK_WITH pcl_gtest pcl_common pcl_octree pcl_gpu_octree)
+PCL_ADD_TEST(gpu_bfrs_template test_bfrs_template FILES test_template_bfrs.cpp LINK_WITH pcl_gtest pcl_common pcl_octree pcl_gpu_octree pcl_gpu_utils)
