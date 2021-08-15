@@ -5,64 +5,65 @@
 
 #include <benchmark/benchmark.h>
 
+#include <array>
+#include <string>
+#include <vector>
+
+using namespace pcl;
+
+template <typename PointT, template <typename> class GridFilter>
 static void
-BM_VoxelGrid(benchmark::State& state, const std::string& file)
+BM_grid_filter(benchmark::State& state, const typename PointCloud<PointT>::Ptr cloud)
 {
   // Perform setup here
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::PCDReader reader;
-  reader.read(file, *cloud);
+  GridFilter<PointT> f;
+  f.setLeafSize(0.01, 0.01, 0.01);
+  f.setInputCloud(cloud);
 
-  pcl::VoxelGrid<pcl::PointXYZ> vg;
-  vg.setLeafSize(0.01, 0.01, 0.01);
-  vg.setInputCloud(cloud);
-
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_voxelized(
-      new pcl::PointCloud<pcl::PointXYZ>);
+  PointCloud<PointT> cloud_voxelized;
   for (auto _ : state) {
     // This code gets timed
-    vg.filter(*cloud_voxelized);
+    f.filter(cloud_voxelized);
   }
 }
 
-static void
-BM_ApproxVoxelGrid(benchmark::State& state, const std::string& file)
+template <typename PointT, template <typename> class T>
+void
+BM_register(const std::string& class_name,
+            const typename PointCloud<PointT>::Ptr dataset,
+            const std::string& dataset_name,
+            const benchmark::TimeUnit unit)
 {
-  // Perform setup here
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::PCDReader reader;
-  reader.read(file, *cloud);
+  const std::string bm_name = dataset_name + "_" + class_name;
+  benchmark::RegisterBenchmark(bm_name.c_str(), &BM_grid_filter<PointT, T>, dataset)
+      ->Unit(unit);
+};
 
-  pcl::ApproximateVoxelGrid<pcl::PointXYZ> avg;
-  avg.setLeafSize(0.01, 0.01, 0.01);
-  avg.setInputCloud(cloud);
-
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_voxelized(
-      new pcl::PointCloud<pcl::PointXYZ>);
-  for (auto _ : state) {
-    // This code gets timed
-    avg.filter(*cloud_voxelized);
-  }
-}
-
-static void
-BM_Experimental_VoxelGrid(benchmark::State& state, const std::string& file)
+template <typename PointT, template <typename> class... Ts, std::size_t ArraySize>
+bool
+BM_registration(const std::array<std::string, ArraySize>& classes_name,
+                const std::vector<typename PointCloud<PointT>::Ptr>& datasets,
+                const std::vector<std::string>& datasets_name,
+                const benchmark::TimeUnit unit = benchmark::kMillisecond)
 {
-  // Perform setup here
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::PCDReader reader;
-  reader.read(file, *cloud);
+  static_assert(sizeof...(Ts) == ArraySize,
+                "Number of template classes and classes name are different.\n");
 
-  pcl::experimental::VoxelGrid<pcl::PointXYZ> vg;
-  vg.setLeafSize(0.01, 0.01, 0.01);
-  vg.setInputCloud(cloud);
-
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_voxelized(
-      new pcl::PointCloud<pcl::PointXYZ>);
-  for (auto _ : state) {
-    // This code gets timed
-    vg.filter(*cloud_voxelized);
+  if (datasets.size() != datasets_name.size()) {
+    PCL_ERROR("[Benchmark] Number of datasets and datasets name are different.\n");
+    return false;
   }
+
+  for (std::size_t i = 0; i < datasets.size(); ++i) {
+    typename std::array<std::string, ArraySize>::const_iterator name_it =
+        classes_name.begin();
+    const int res[] = {(BM_register<PointT, Ts>(
+                            *(name_it++), datasets.at(i), datasets_name.at(i), unit),
+                        0)...};
+    (void)res; // suppress warning
+  }
+
+  return true;
 }
 
 int
@@ -77,42 +78,29 @@ main(int argc, char** argv)
     return (-1);
   }
 
-  benchmark::RegisterBenchmark("BM_VoxelGrid_5people", &BM_VoxelGrid, argv[4])
-      ->Unit(benchmark::kMillisecond);
-  benchmark::RegisterBenchmark(
-      "BM_ApproximateVoxelGrid_5people", &BM_ApproxVoxelGrid, argv[4])
-      ->Unit(benchmark::kMillisecond);
-  benchmark::RegisterBenchmark(
-      "BM_Experimental_VoxelGrid_5people", &BM_Experimental_VoxelGrid, argv[4])
-      ->Unit(benchmark::kMillisecond);
+  const std::vector<std::string> datasets_path(argv + 1, argv + argc);
+  const std::vector<std::string> datasets_name{
+      "table", "milk_cartoon", "office", "five_people"};
 
-  benchmark::RegisterBenchmark("BM_VoxelGrid_office", &BM_VoxelGrid, argv[3])
-      ->Unit(benchmark::kMillisecond);
-  benchmark::RegisterBenchmark(
-      "BM_ApproximateVoxelGrid_office", &BM_ApproxVoxelGrid, argv[3])
-      ->Unit(benchmark::kMillisecond);
-  benchmark::RegisterBenchmark(
-      "BM_Experimental_VoxelGrid_office", &BM_Experimental_VoxelGrid, argv[3])
-      ->Unit(benchmark::kMillisecond);
+  std::vector<PointCloud<PointXYZ>::Ptr> datasets;
+  datasets.reserve(datasets_path.size());
 
-  benchmark::RegisterBenchmark("BM_VoxelGrid_milk", &BM_VoxelGrid, argv[2])
-      ->Unit(benchmark::kMillisecond);
-  benchmark::RegisterBenchmark(
-      "BM_ApproximateVoxelGrid_milk", &BM_ApproxVoxelGrid, argv[2])
-      ->Unit(benchmark::kMillisecond);
-  benchmark::RegisterBenchmark(
-      "BM_Experimental_VoxelGrid_milk", &BM_Experimental_VoxelGrid, argv[2])
-      ->Unit(benchmark::kMillisecond);
+  PCDReader reader;
+  for (const auto& path : datasets_path) {
+    PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>);
+    reader.read(path, *cloud);
+    datasets.push_back(std::move(cloud));
+  }
 
-  benchmark::RegisterBenchmark("BM_VoxelGrid_mug", &BM_VoxelGrid, argv[1])
-      ->Unit(benchmark::kMillisecond);
-  benchmark::RegisterBenchmark(
-      "BM_ApproximateVoxelGrid_mug", &BM_ApproxVoxelGrid, argv[1])
-      ->Unit(benchmark::kMillisecond);
-  benchmark::RegisterBenchmark(
-      "BM_Experimental_VoxelGrid_mug", &BM_Experimental_VoxelGrid, argv[1])
-      ->Unit(benchmark::kMillisecond);
+  const std::array<std::string, 3> filters_name{
+      "VoxelGrid", "ApproximateVoxelGrid", "FunctorVoxelGrid"};
+  if (BM_registration<PointXYZ,
+                      VoxelGrid,
+                      ApproximateVoxelGrid,
+                      experimental::VoxelGrid>(filters_name, datasets, datasets_name)) {
+    benchmark::Initialize(&argc, argv);
+    benchmark::RunSpecifiedBenchmarks();
+  }
 
-  benchmark::Initialize(&argc, argv);
-  benchmark::RunSpecifiedBenchmarks();
+  return 0;
 }
