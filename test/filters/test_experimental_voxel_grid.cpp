@@ -11,6 +11,7 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/test/gtest.h>
+#include <pcl/pcl_tests.h>
 #include <pcl/point_types.h>
 
 #include <cmath>
@@ -29,40 +30,23 @@ template <typename PointT>
 void
 EXPECT_POINT_EQ(const PointT& pt1, const PointT& pt2)
 {
-  const auto& pt1_vec = pt1.getVector4fMap();
-  const auto& pt_vec = pt2.getVector4fMap();
-  EXPECT_TRUE(pt1_vec.isApprox(pt_vec, PRECISION))
-      << "Point1: " << pt1_vec.transpose() << "\nPoint2: " << pt_vec.transpose()
-      << "\nnorm diff: " << (pt1_vec - pt_vec).norm() << std::endl;
+  EXPECT_XYZ_NEAR(pt1, pt2, PRECISION);
 }
 
 template <typename>
 void
 EXPECT_POINT_EQ(const PointXYZRGB& pt1, const PointXYZRGB& pt2)
 {
-  const auto& pt1_vec = pt1.getVector4fMap();
-  const auto& pt_vec = pt2.getVector4fMap();
-  EXPECT_TRUE(pt1_vec.isApprox(pt_vec, PRECISION))
-      << "Point1: " << pt1_vec.transpose() << "\nPoint2: " << pt_vec.transpose()
-      << "\nnorm diff: " << (pt1_vec - pt_vec).norm() << std::endl;
-  EXPECT_EQ(pt1.r, pt2.r);
-  EXPECT_EQ(pt1.g, pt2.g);
-  EXPECT_EQ(pt1.b, pt2.b);
+  EXPECT_XYZ_NEAR(pt1, pt2, PRECISION);
+  EXPECT_RGB_EQ(pt1, pt2);
 }
 
 template <typename>
 void
 EXPECT_POINT_EQ(const PointXYZRGBA& pt1, const PointXYZRGBA& pt2)
 {
-  const auto& pt1_vec = pt1.getVector4fMap();
-  const auto& pt_vec = pt2.getVector4fMap();
-  EXPECT_TRUE(pt1_vec.isApprox(pt_vec, PRECISION))
-      << "Point1: " << pt1_vec.transpose() << "\nPoint2: " << pt_vec.transpose()
-      << "\nnorm diff: " << (pt1_vec - pt_vec).norm() << std::endl;
-  EXPECT_EQ(pt1.r, pt2.r);
-  EXPECT_EQ(pt1.g, pt2.g);
-  EXPECT_EQ(pt1.b, pt2.b);
-  EXPECT_EQ(pt1.a, pt2.a);
+  EXPECT_XYZ_NEAR(pt1, pt2, PRECISION);
+  EXPECT_RGBA_EQ(pt1, pt2);
 }
 
 template <typename PointT>
@@ -79,84 +63,43 @@ EXPECT_POINTS_EQ(PointCloud<PointT> pc1, PointCloud<PointT> pc2)
   std::sort(pc2.begin(), pc2.end(), pt_cmp);
 
   for (size_t i = 0; i < pc1.size(); ++i)
-    EXPECT_POINT_EQ<PointT>(pc1.at(i), pc2.at(i));
+    EXPECT_POINT_EQ(pc1.at(i), pc2.at(i));
 }
 
 TEST(SetUp, ExperimentalVoxelGridEquivalency)
 {
-  // PointXYZ
-  {
-    PointCloud<PointXYZ> new_out_cloud, old_out_cloud;
+  PointCloud<PointXYZ> new_out_cloud, old_out_cloud;
 
-    experimental::VoxelGrid<PointXYZ> new_grid;
-    pcl::VoxelGrid<PointXYZ> old_grid;
-    new_grid.setLeafSize(0.02f, 0.02f, 0.02f);
-    old_grid.setLeafSize(0.02f, 0.02f, 0.02f);
-    new_grid.setInputCloud(cloud);
-    old_grid.setInputCloud(cloud);
-    new_grid.filter(new_out_cloud);
-    old_grid.filter(old_out_cloud);
+  experimental::VoxelGrid<PointXYZ> new_grid;
+  pcl::VoxelGrid<PointXYZ> old_grid;
+  new_grid.setLeafSize(0.02f, 0.02f, 0.02f);
+  old_grid.setLeafSize(0.02f, 0.02f, 0.02f);
+  new_grid.setInputCloud(cloud);
+  old_grid.setInputCloud(cloud);
+  new_grid.filter(new_out_cloud);
+  old_grid.filter(old_out_cloud);
 
-    const Eigen::Vector3i new_min_b = new_grid.getMinBoxCoordinates();
-    const Eigen::Vector3i old_min_b = old_grid.getMinBoxCoordinates();
-    EXPECT_TRUE(new_min_b.isApprox(old_min_b, PRECISION));
+  const Eigen::Vector3i new_min_b = new_grid.getMinBoxCoordinates();
+  const Eigen::Vector3i old_min_b = old_grid.getMinBoxCoordinates();
+  EXPECT_TRUE(new_min_b.isApprox(old_min_b, PRECISION));
 
-    const Eigen::Vector3i new_max_b = new_grid.getMaxBoxCoordinates();
-    const Eigen::Vector3i old_max_b = old_grid.getMaxBoxCoordinates();
-    EXPECT_TRUE(new_max_b.isApprox(old_max_b, PRECISION));
+  const Eigen::Vector3i new_max_b = new_grid.getMaxBoxCoordinates();
+  const Eigen::Vector3i old_max_b = old_grid.getMaxBoxCoordinates();
+  EXPECT_TRUE(new_max_b.isApprox(old_max_b, PRECISION));
 
-    const Eigen::Vector3i new_div_b = new_grid.getNrDivisions();
-    const Eigen::Vector3i old_div_b = old_grid.getNrDivisions();
-    EXPECT_TRUE(new_div_b.isApprox(old_div_b, PRECISION));
+  const Eigen::Vector3i new_div_b = new_grid.getNrDivisions();
+  const Eigen::Vector3i old_div_b = old_grid.getNrDivisions();
+  EXPECT_TRUE(new_div_b.isApprox(old_div_b, PRECISION));
 
-    const Eigen::Vector3i new_divb_mul = new_grid.getDivisionMultiplier();
-    const Eigen::Vector3i old_divb_mul = old_grid.getDivisionMultiplier();
-    EXPECT_TRUE(new_divb_mul.isApprox(old_divb_mul, PRECISION));
-  }
-
-  // PointXYZRGB
-  {
-    PointCloud<PointXYZRGB> new_out_cloud, old_out_cloud;
-
-    // the original hashing range will overflow with leaf size of 0.02
-    experimental::VoxelGrid<PointXYZRGB> new_grid;
-    pcl::VoxelGrid<PointXYZRGB> old_grid;
-    new_grid.setLeafSize(0.05f, 0.05f, 0.05f);
-    old_grid.setLeafSize(0.05f, 0.05f, 0.05f);
-    new_grid.setInputCloud(cloud_rgb);
-    old_grid.setInputCloud(cloud_rgb);
-    new_grid.filter(new_out_cloud);
-    old_grid.filter(old_out_cloud);
-
-    const Eigen::Vector3i new_min_b = new_grid.getMinBoxCoordinates();
-    const Eigen::Vector3i old_min_b = old_grid.getMinBoxCoordinates();
-    EXPECT_TRUE(new_min_b.isApprox(old_min_b, PRECISION));
-
-    const Eigen::Vector3i new_max_b = new_grid.getMaxBoxCoordinates();
-    const Eigen::Vector3i old_max_b = old_grid.getMaxBoxCoordinates();
-    EXPECT_TRUE(new_max_b.isApprox(old_max_b, PRECISION));
-
-    const Eigen::Vector3i new_div_b = new_grid.getNrDivisions();
-    const Eigen::Vector3i old_div_b = old_grid.getNrDivisions();
-    EXPECT_TRUE(new_div_b.isApprox(old_div_b, PRECISION));
-
-    const Eigen::Vector3i new_divb_mul = new_grid.getDivisionMultiplier();
-    const Eigen::Vector3i old_divb_mul = old_grid.getDivisionMultiplier();
-    EXPECT_TRUE(new_divb_mul.isApprox(old_divb_mul, PRECISION));
-  }
+  const Eigen::Vector3i new_divb_mul = new_grid.getDivisionMultiplier();
+  const Eigen::Vector3i old_divb_mul = old_grid.getDivisionMultiplier();
+  EXPECT_TRUE(new_divb_mul.isApprox(old_divb_mul, PRECISION));
 }
 
 TEST(HashingPoint, ExperimentalVoxelGridEquivalency)
 {
-  // For extracting indices
-  PointCloud<PointXYZ> new_out_cloud;
-  experimental::VoxelGrid<PointXYZ> new_grid;
-  new_grid.setLeafSize(0.02f, 0.02f, 0.02f);
-  new_grid.setInputCloud(cloud);
-  new_grid.filter(new_out_cloud);
-
   Eigen::Vector4f min_p, max_p;
-  getMinMax3D<PointXYZ>(*cloud, *(new_grid.getIndices()), min_p, max_p);
+  getMinMax3D<PointXYZ>(*cloud, min_p, max_p);
 
   Eigen::Vector4i min_b, max_b, div_b, divb_mul;
   Eigen::Array4f inverse_leaf_size = 1 / Eigen::Array4f::Constant(0.02);
@@ -180,9 +123,9 @@ TEST(HashingPoint, ExperimentalVoxelGridEquivalency)
 
   for (size_t i = 0; i < cloud->size(); ++i) {
     if (isXYZFinite(cloud->at(i))) {
-      EXPECT_EQ(experimental::hashPoint(
-                    cloud->at(i), inverse_leaf_size, min_b, divb_mul[1], divb_mul[2]),
-                old_hash(cloud->at(i)));
+      const size_t new_hash = experimental::hashPoint(
+          cloud->at(i), inverse_leaf_size, min_b, divb_mul[1], divb_mul[2]);
+      EXPECT_EQ(new_hash, old_hash(cloud->at(i)));
     }
   }
 }
@@ -244,84 +187,48 @@ TEST(LeafLayout, ExperimentalVoxelGridEquivalency)
   }
 }
 
-TEST(PointXYZ, ExperimentalVoxelGridEquivalency)
+// Update to std::tuple which can get by type in C++17
+template <typename PointT>
+typename PointCloud<PointT>::Ptr
+getCloud();
+template <>
+PointCloud<PointXYZ>::Ptr
+getCloud<PointXYZ>()
 {
-  PointCloud<PointXYZ> new_out, old_out;
-
-  pcl::experimental::VoxelGrid<PointXYZ> new_grid;
-  pcl::VoxelGrid<PointXYZ> old_grid;
-  new_grid.setLeafSize(0.02f, 0.02f, 0.02f);
-  old_grid.setLeafSize(0.02f, 0.02f, 0.02f);
-  new_grid.setInputCloud(cloud);
-  old_grid.setInputCloud(cloud);
-
-  new_grid.setDownsampleAllData(false);
-  old_grid.setDownsampleAllData(false);
-  new_grid.filter(new_out);
-  old_grid.filter(old_out);
-  EXPECT_POINTS_EQ(new_out, old_out);
-  new_out.clear();
-  old_out.clear();
-
-  new_grid.setDownsampleAllData(true);
-  old_grid.setDownsampleAllData(true);
-  new_grid.filter(new_out);
-  old_grid.filter(old_out);
-  EXPECT_POINTS_EQ(new_out, old_out);
-  new_out.clear();
-  old_out.clear();
-
-  new_grid.setMinimumPointsNumberPerVoxel(5);
-  old_grid.setMinimumPointsNumberPerVoxel(5);
-  new_grid.filter(new_out);
-  old_grid.filter(old_out);
-  EXPECT_POINTS_EQ(new_out, old_out);
+  return cloud;
+}
+template <>
+PointCloud<PointXYZRGB>::Ptr
+getCloud<PointXYZRGB>()
+{
+  return cloud_rgb;
+}
+template <>
+PointCloud<PointXYZRGBA>::Ptr
+getCloud<PointXYZRGBA>()
+{
+  return cloud_rgba;
 }
 
-TEST(PointXYZRGB, ExperimentalVoxelGridEquivalency)
-{
-  PointCloud<PointXYZRGB> new_out, old_out;
+template <typename T>
+class PointTypesTest : public ::testing::Test {};
+using PointTypes = ::testing::Types<PointXYZ, PointXYZRGB, PointXYZRGBA>;
+TYPED_TEST_SUITE(PointTypesTest, PointTypes);
 
-  pcl::experimental::VoxelGrid<PointXYZRGB> new_grid;
-  pcl::VoxelGrid<PointXYZRGB> old_grid;
+TYPED_TEST(PointTypesTest, ExperimentalVoxelGridEquivalency)
+{
+  using PointT = TypeParam;
+  using PointCloudPtr = typename PointCloud<PointT>::Ptr;
+
+  PointCloud<PointT> new_out, old_out;
+  PointCloudPtr cloudT = getCloud<PointT>();
+
+  pcl::experimental::VoxelGrid<PointT> new_grid;
+  pcl::VoxelGrid<PointT> old_grid;
   new_grid.setLeafSize(0.05f, 0.05f, 0.05f);
   old_grid.setLeafSize(0.05f, 0.05f, 0.05f);
-  new_grid.setInputCloud(cloud_rgb);
-  old_grid.setInputCloud(cloud_rgb);
-
-  new_grid.setDownsampleAllData(false);
-  old_grid.setDownsampleAllData(false);
-  new_grid.filter(new_out);
-  old_grid.filter(old_out);
-  EXPECT_POINTS_EQ(new_out, old_out);
-  new_out.clear();
-  old_out.clear();
-
-  new_grid.setDownsampleAllData(true);
-  old_grid.setDownsampleAllData(true);
-  new_grid.filter(new_out);
-  old_grid.filter(old_out);
-  EXPECT_POINTS_EQ(new_out, old_out);
-  new_out.clear();
-  old_out.clear();
-
-  new_grid.setMinimumPointsNumberPerVoxel(5);
-  old_grid.setMinimumPointsNumberPerVoxel(5);
-  new_grid.filter(new_out);
-  old_grid.filter(old_out);
-  EXPECT_POINTS_EQ(new_out, old_out);
-}
-
-TEST(PointXYZRGBA, ExperimentalVoxelGridEquivalency)
-{
-  PointCloud<PointXYZRGBA> new_out, old_out;
-
-  pcl::experimental::VoxelGrid<PointXYZRGBA> new_grid;
-  pcl::VoxelGrid<PointXYZRGBA> old_grid;
-  new_grid.setLeafSize(0.05f, 0.05f, 0.05f);
-  old_grid.setLeafSize(0.05f, 0.05f, 0.05f);
-  new_grid.setInputCloud(cloud_rgba);
-  old_grid.setInputCloud(cloud_rgba);
+  new_grid.setInputCloud(cloudT);
+  old_grid.setInputCloud(cloudT);
 
   new_grid.setDownsampleAllData(false);
   old_grid.setDownsampleAllData(false);
