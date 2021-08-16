@@ -50,7 +50,7 @@ private:
   template <typename T>
   static constexpr auto
   hasFilterBegin(T*) -> typename std::is_same<
-      decltype(std::declval<T>().filterGrid(begin(std::declval<T>()))),
+      decltype(std::declval<T>().filterGrid(begin(std::declval<T&>()))),
       optional<PointT>>::type;
   template <typename T>
   static constexpr auto
