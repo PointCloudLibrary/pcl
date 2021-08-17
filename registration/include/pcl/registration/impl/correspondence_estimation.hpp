@@ -115,11 +115,10 @@ CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initComputeRecip
 namespace detail {
 
 template <
-    typename PointSource, 
-    typename PointTarget, 
+    typename PointSource,
+    typename PointTarget,
     typename Index,
-    typename std::enable_if_t<isSamePointType<PointSource, PointTarget>()>* = nullptr
->
+    typename std::enable_if_t<isSamePointType<PointSource, PointTarget>()>* = nullptr>
 const PointSource&
 pointCopyOrRef(typename pcl::PointCloud<PointSource>::ConstPtr& input, const Index& idx)
 {
@@ -127,11 +126,10 @@ pointCopyOrRef(typename pcl::PointCloud<PointSource>::ConstPtr& input, const Ind
 }
 
 template <
-    typename PointSource, 
-    typename PointTarget, 
+    typename PointSource,
+    typename PointTarget,
     typename Index,
-    typename std::enable_if_t<!isSamePointType<PointSource, PointTarget>()>* = nullptr
->
+    typename std::enable_if_t<!isSamePointType<PointSource, PointTarget>()>* = nullptr>
 PointTarget
 pointCopyOrRef(typename pcl::PointCloud<PointSource>::ConstPtr& input, const Index& idx)
 {
