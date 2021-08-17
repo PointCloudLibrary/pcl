@@ -44,7 +44,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename T> class CorrespondenceEstimation : public ::testing::Test { };
-using PointTypesForCorresponceEstimation = ::testing::Types<pcl::PointXYZ, pcl::PointNormal>;
+using PointTypesForCorresponceEstimation = ::testing::Types<pcl::PointXYZ, pcl::PointNormal, pcl::PointXYZRGBA>;
 TYPED_TEST_SUITE (CorrespondenceEstimation, PointTypesForCorresponceEstimation);
 
 TYPED_TEST (CorrespondenceEstimation, CorrespondenceEstimationNormalShooting)
@@ -121,7 +121,6 @@ TEST (CorrespondenceEstimation, CorrespondenceEstimationSetSearchMethod)
     EXPECT_EQ(corr_orig[i].index_query, corr_cached[i].index_query);
     EXPECT_EQ(corr_orig[i].index_match, corr_cached[i].index_match);
   }
-  
 }
 
 /* ---[ */

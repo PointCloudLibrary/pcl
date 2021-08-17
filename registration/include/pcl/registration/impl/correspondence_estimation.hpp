@@ -98,8 +98,8 @@ CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initComputeRecip
 {
   // Only update source kd-tree if a new target cloud was set
   if (source_cloud_updated_ && !force_no_recompute_reciprocal_) {
-    if (point_representation_)
-      tree_reciprocal_->setPointRepresentation(point_representation_);
+    //if (point_representation_)
+    //  tree_reciprocal_->setPointRepresentation(point_representation_);
     // If the target indices have been given via setIndicesTarget
     if (indices_)
       tree_reciprocal_->setInputCloud(getInputSource(), getIndicesSource());
@@ -204,14 +204,14 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
     // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
     // macro!
 
-    PointTarget pt_src{detail::selectPoint<PointSource, PointTarget, decltype(idx)>(input_, idx)};
+    const auto& pt_src{detail::selectPoint<PointSource, PointTarget, decltype(idx)>(input_, idx)};
     
     tree_->nearestKSearch(pt_src, 1, index, distance);
     if (distance[0] > max_dist_sqr)
       continue;
 
     target_idx = index[0];
-    PointSource pt_tgt{detail::selectPoint<PointTarget, PointSource, decltype(target_idx)>(target_, target_idx)};
+    const auto& pt_tgt{detail::selectPoint<PointTarget, PointSource, decltype(target_idx)>(target_, target_idx)};
     
     tree_reciprocal_->nearestKSearch(
         pt_tgt, 1, index_reciprocal, distance_reciprocal);

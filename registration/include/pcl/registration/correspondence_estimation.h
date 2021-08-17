@@ -74,7 +74,7 @@ public:
   using KdTreePtr = typename KdTree::Ptr;
 
   using KdTreeReciprocal = pcl::search::KdTree<PointSource>;
-  using KdTreeReciprocalPtr = typename KdTree::Ptr;
+  using KdTreeReciprocalPtr = typename KdTreeReciprocal::Ptr;
 
   using PointCloudSource = pcl::PointCloud<PointSource>;
   using PointCloudSourcePtr = typename PointCloudSource::Ptr;
