@@ -88,10 +88,10 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
     // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
     // macro!
     tree_->nearestKSearch(
-      detail::pointCopyOrRef<PointSource, PointTarget, decltype(idx_i)>(input_, idx_i), 
-      k_, 
-      nn_indices, 
-      nn_dists);
+        detail::pointCopyOrRef<PointSource, PointTarget, decltype(idx_i)>(input_, idx_i), 
+        k_, 
+        nn_indices, 
+        nn_dists);
 
     // Among the K nearest neighbours find the one with minimum perpendicular distance
     // to the normal
@@ -163,10 +163,10 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
     // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
     // macro!
     tree_->nearestKSearch(
-      detail::pointCopyOrRef<PointSource, PointTarget, decltype(idx_i)>(input_, idx_i), 
-      k_, 
-      nn_indices, 
-      nn_dists);
+        detail::pointCopyOrRef<PointSource, PointTarget, decltype(idx_i)>(input_, idx_i), 
+        k_, 
+        nn_indices, 
+        nn_dists);
 
     // Among the K nearest neighbours find the one with minimum perpendicular distance
     // to the normal
