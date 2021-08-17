@@ -112,20 +112,25 @@ CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initComputeRecip
   return (true);
 }
 
-namespace detail
-{
+namespace detail {
 
-template <typename PointSource, typename PointTarget, typename Index
-  , typename std::enable_if_t<isSamePointType<PointSource, PointTarget>()>* = nullptr
+template <
+  typename PointSource, 
+  typename PointTarget, 
+  typename Index,
+  typename std::enable_if_t<isSamePointType<PointSource, PointTarget>()>* = nullptr
 >
 const PointSource&
 pointCopyOrRef(typename pcl::PointCloud<PointSource>::ConstPtr& input, const Index& idx)
 {
-  return (*input)[idx]; 
+  return (*input)[idx];
 }
 
-template <typename PointSource, typename PointTarget, typename Index
-  , typename std::enable_if_t<!isSamePointType<PointSource, PointTarget>()>* = nullptr
+template <
+  typename PointSource, 
+  typename PointTarget, 
+  typename Index,
+  typename std::enable_if_t<!isSamePointType<PointSource, PointTarget>()>* = nullptr
 >
 PointTarget
 pointCopyOrRef(typename pcl::PointCloud<PointSource>::ConstPtr& input, const Index& idx)
@@ -133,10 +138,10 @@ pointCopyOrRef(typename pcl::PointCloud<PointSource>::ConstPtr& input, const Ind
   // Copy the source data to a target PointTarget format so we can search in the tree
   PointTarget pt;
   copyPoint((*input)[idx], pt);
-  return pt;   
+  return pt;
 }
 
-}
+} // namespace detail
 
 template <typename PointSource, typename PointTarget, typename Scalar>
 void
@@ -159,7 +164,7 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
     // Check if the template types are the same. If true, avoid a copy.
     // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
     // macro!
-    const auto& pt{detail::pointCopyOrRef<PointSource, PointTarget, decltype(idx)>(input_, idx)};
+    const auto& pt(detail::pointCopyOrRef<PointSource, PointTarget, decltype(idx)>(input_, idx));
     tree_->nearestKSearch(pt, 1, index, distance);
     if (distance[0] > max_dist_sqr)
       continue;
@@ -213,8 +218,7 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
     target_idx = index[0];
     const auto& pt_tgt{detail::pointCopyOrRef<PointTarget, PointSource, decltype(target_idx)>(target_, target_idx)};
     
-    tree_reciprocal_->nearestKSearch(
-        pt_tgt, 1, index_reciprocal, distance_reciprocal);
+    tree_reciprocal_->nearestKSearch(pt_tgt, 1, index_reciprocal, distance_reciprocal);
     if (distance_reciprocal[0] > max_dist_sqr || idx != index_reciprocal[0])
       continue;
 

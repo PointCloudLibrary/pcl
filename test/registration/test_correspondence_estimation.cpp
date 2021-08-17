@@ -42,7 +42,6 @@
 #include <pcl/kdtree/kdtree.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 template <typename T> class CorrespondenceEstimation : public ::testing::Test { };
 using PointTypesForCorresponceEstimation = ::testing::Types<pcl::PointXYZ, pcl::PointNormal, pcl::PointXYZRGBA>;
 TYPED_TEST_SUITE (CorrespondenceEstimation, PointTypesForCorresponceEstimation);
@@ -50,7 +49,7 @@ TYPED_TEST_SUITE (CorrespondenceEstimation, PointTypesForCorresponceEstimation);
 TYPED_TEST (CorrespondenceEstimation, CorrespondenceEstimationNormalShooting)
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud1 (new pcl::PointCloud<pcl::PointXYZ> ());
-  typename pcl::PointCloud<TypeParam>::Ptr cloud2 (new pcl::PointCloud<TypeParam> ());
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud2 (new pcl::PointCloud<pcl::PointXYZ> ());
 
   // Defining two parallel planes differing only by the y co-ordinate
   for (float i = 0.0f; i < 10.0f; i += 0.2f)
@@ -73,7 +72,7 @@ TYPED_TEST (CorrespondenceEstimation, CorrespondenceEstimationNormalShooting)
   ne.compute (*cloud1_normals); // All normals are perpendicular to the plane defined
 
   pcl::CorrespondencesPtr corr (new pcl::Correspondences);
-  pcl::registration::CorrespondenceEstimationNormalShooting <pcl::PointXYZ, TypeParam, pcl::Normal> ce;
+  pcl::registration::CorrespondenceEstimationNormalShooting <pcl::PointXYZ, pcl::PointXYZ, pcl::Normal> ce;
   ce.setInputSource (cloud1);
   ce.setKSearch (10);
   ce.setSourceNormals (cloud1_normals);

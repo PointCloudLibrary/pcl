@@ -83,7 +83,7 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
 
   // Iterate over the input set of source indices
   for (const auto& idx_i : (*indices_)) {
-    const auto& pt{detail::selectPoint<PointSource, PointTarget, decltype(idx_i)>(input_, idx_i)};
+    const auto& pt(detail::pointCopyOrRef<PointSource, PointTarget, decltype(idx_i)>(input_, idx_i));
     tree_->nearestKSearch(pt, k_, nn_indices, nn_dists);
 
     // Among the K nearest neighbours find the one with minimum perpendicular distance
@@ -148,7 +148,7 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
     // Check if the template types are the same. If true, avoid a copy.
     // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
     // macro!
-    const auto& pt{detail::selectPoint<PointSource, PointTarget, decltype(idx_i)>(input_, idx_i)};
+    const auto& pt(detail::pointCopyOrRef<PointSource, PointTarget, decltype(idx_i)>(input_, idx_i));
     tree_->nearestKSearch(pt, k_, nn_indices, nn_dists);
 
     // Among the K nearest neighbours find the one with minimum perpendicular distance

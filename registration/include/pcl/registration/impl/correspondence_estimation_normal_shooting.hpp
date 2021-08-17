@@ -87,14 +87,18 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
     // Check if the template types are the same. If true, avoid a copy.
     // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
     // macro!
-    tree_->nearestKSearch(detail::selectPoint<PointSource, PointTarget, decltype(idx_i)>(input_, idx_i), k_, nn_indices, nn_dists);
+    tree_->nearestKSearch(
+      detail::pointCopyOrRef<PointSource, PointTarget, decltype(idx_i)>(input_, idx_i), 
+      k_, 
+      nn_indices, 
+      nn_dists);
 
     // Among the K nearest neighbours find the one with minimum perpendicular distance
     // to the normal
     double min_dist = std::numeric_limits<double>::max();
 
     // Find the best correspondence
-    for (std::size_t j = 0; j < nn_indices.size(); j++) {     
+    for (std::size_t j = 0; j < nn_indices.size(); j++) {
       // computing the distance between a point and a line in 3d.
       // Reference - http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
       pt.x = (*target_)[nn_indices[j]].x - (*input_)[idx_i].x;
@@ -158,14 +162,18 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
     // Check if the template types are the same. If true, avoid a copy.
     // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
     // macro!
-    tree_->nearestKSearch(detail::selectPoint<PointSource, PointTarget, decltype(idx_i)>(input_, idx_i), k_, nn_indices, nn_dists);
+    tree_->nearestKSearch(
+      detail::pointCopyOrRef<PointSource, PointTarget, decltype(idx_i)>(input_, idx_i), 
+      k_, 
+      nn_indices, 
+      nn_dists);
 
     // Among the K nearest neighbours find the one with minimum perpendicular distance
     // to the normal
     double min_dist = std::numeric_limits<double>::max();
 
     // Find the best correspondence
-    for (std::size_t j = 0; j < nn_indices.size(); j++) {     
+    for (std::size_t j = 0; j < nn_indices.size(); j++) {
       // computing the distance between a point and a line in 3d.
       // Reference - http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
       pt.x = (*target_)[nn_indices[j]].x - (*input_)[idx_i].x;
