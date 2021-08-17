@@ -377,6 +377,12 @@ if(WITH_VTK)
   endif()
 endif()
 
+if ((BUILD_visualization OR WITH_VTK) AND NOT VTK_FOUND)
+  message(WARNING "Cannot build visualization module if VTK library was not found")
+  set(BUILD_visualization OFF)
+  set(WITH_VTK OFF)
+endif()
+
 #VTK can depend on Qt and search for its required version, so search after so we can overwrite Qt5_FOUND if the version we require is not found.
 option(WITH_QT "Build QT Front-End" TRUE)
 if(WITH_QT)
