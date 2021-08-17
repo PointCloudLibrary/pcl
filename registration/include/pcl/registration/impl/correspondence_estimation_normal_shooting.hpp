@@ -89,7 +89,7 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
     // macro!
     tree_->nearestKSearch(
         detail::pointCopyOrRef<PointSource, PointTarget, decltype(idx_i)>(input_,
-                                                                          idx_i), 
+                                                                          idx_i),
         k_, 
         nn_indices, 
         nn_dists);
@@ -165,7 +165,7 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
     // macro!
     tree_->nearestKSearch(
         detail::pointCopyOrRef<PointSource, PointTarget, decltype(idx_i)>(input_,
-                                                                          idx_i), 
+                                                                          idx_i),
         k_, 
         nn_indices, 
         nn_dists);
