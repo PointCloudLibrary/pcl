@@ -98,7 +98,7 @@ CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initComputeRecip
 {
   // Only update source kd-tree if a new target cloud was set
   if (source_cloud_updated_ && !force_no_recompute_reciprocal_) {
-    //if (point_representation_)
+    // if (point_representation_)
     //  tree_reciprocal_->setPointRepresentation(point_representation_);
     // If the target indices have been given via setIndicesTarget
     if (indices_)
@@ -209,28 +209,29 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
     // macro!
 
     const auto& pt_src(
-        detail::pointCopyOrRef<PointSource, PointTarget, decltype(idx)>(input_, idx)};
-    
-    tree_->nearestKSearch(pt_src, 1, index, distance);
-    if (distance[0] > max_dist_sqr)
-      continue;
+        detail::pointCopyOrRef<PointSource, PointTarget, decltype(idx)>(input_, idx)
+  };
 
-    target_idx = index[0];
-    const auto& pt_tgt(
-        detail::pointCopyOrRef<PointTarget, PointSource, decltype(target_idx)>(
-            target_, target_idx));
-    
-    tree_reciprocal_->nearestKSearch(pt_tgt, 1, index_reciprocal, distance_reciprocal);
-    if (distance_reciprocal[0] > max_dist_sqr || idx != index_reciprocal[0])
-      continue;
+  tree_->nearestKSearch(pt_src, 1, index, distance);
+  if (distance[0] > max_dist_sqr)
+    continue;
 
-    corr.index_query = idx;
-    corr.index_match = index[0];
-    corr.distance = distance[0];
-    correspondences[nr_valid_correspondences++] = corr;
-  }
-  correspondences.resize(nr_valid_correspondences);
-  deinitCompute();
+  target_idx = index[0];
+  const auto& pt_tgt(
+      detail::pointCopyOrRef<PointTarget, PointSource, decltype(target_idx)>(
+          target_, target_idx));
+
+  tree_reciprocal_->nearestKSearch(pt_tgt, 1, index_reciprocal, distance_reciprocal);
+  if (distance_reciprocal[0] > max_dist_sqr || idx != index_reciprocal[0])
+    continue;
+
+  corr.index_query = idx;
+  corr.index_match = index[0];
+  corr.distance = distance[0];
+  correspondences[nr_valid_correspondences++] = corr;
+}
+correspondences.resize(nr_valid_correspondences);
+deinitCompute();
 }
 
 } // namespace registration
