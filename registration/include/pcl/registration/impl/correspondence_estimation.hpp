@@ -121,7 +121,7 @@ template <typename PointSource, typename PointTarget, typename Index
 const PointSource&
 pointCopyOrRef(typename pcl::PointCloud<PointSource>::ConstPtr& input, const Index& idx)
 {
-  return (*input)[idx]; 
+  return (*input)[idx];
 }
 
 template <typename PointSource, typename PointTarget, typename Index
@@ -133,7 +133,7 @@ pointCopyOrRef(typename pcl::PointCloud<PointSource>::ConstPtr& input, const Ind
   // Copy the source data to a target PointTarget format so we can search in the tree
   PointTarget pt;
   copyPoint((*input)[idx], pt);
-  return pt;   
+  return pt;
 }
 
 }
@@ -205,14 +205,14 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
     // macro!
 
     PointTarget pt_src{detail::pointCopyOrRef<PointSource, PointTarget, decltype(idx)>(input_, idx)};
-    
+
     tree_->nearestKSearch(pt_src, 1, index, distance);
     if (distance[0] > max_dist_sqr)
       continue;
 
     target_idx = index[0];
     PointSource pt_tgt{detail::pointCopyOrRef<PointTarget, PointSource, decltype(target_idx)>(target_, target_idx)};
-    
+
     tree_reciprocal_->nearestKSearch(
         pt_tgt, 1, index_reciprocal, distance_reciprocal);
     if (distance_reciprocal[0] > max_dist_sqr || idx != index_reciprocal[0])
