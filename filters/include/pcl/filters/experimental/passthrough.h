@@ -34,14 +34,17 @@ struct PassThroughFunctor {
   bool
   operator()(const PointCloud<PointT>& cloud, index_t idx) const
   {
+    // only filter out points with NaN at the XYZ fields (done in FunctorFilter),
+    // regardless if the filter behavior is inverted or not
     if (!*has_filter_field_)
-      return !*negative_;
+      return !*negative_; // always keep the point in FunctorFilter
 
     float field_value;
     const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*>(&cloud.at(idx));
     memcpy(&field_value, pt_data + *field_offset_, sizeof(float));
+
     if (!std::isfinite(field_value))
-      return *negative_;
+      return *negative_; // always discard the point in FunctorFilter
     else
       return field_value >= *filter_limit_min_ && field_value <= *filter_limit_max_;
   }
@@ -58,12 +61,18 @@ template <typename PointT>
 using PassThroughFilter = advanced::FunctorFilter<PointT, PassThroughFunctor<PointT>>;
 
 /** \brief @b PassThrough passes points in a cloud based on constraints for one
- * particular field of the point type. \details Iterates through the entire input once,
- * automatically filtering non-finite points and the points outside the interval
- * specified by setFilterLimits(), which applies only to the field specified by
- * setFilterFieldName(). <br><br> Usage example: \code pcl::PassThrough<PointType>
- * ptfilter (true); // Initializing with true will allow us to extract the removed
- * indices ptfilter.setInputCloud (cloud_in); ptfilter.setFilterFieldName ("x");
+ * particular field of the point type.
+ * \details Iterates through the entire input once, automatically filtering non-finite
+ * points and the points outside the interval specified by setFilterLimits(), which
+ * applies only to the field specified by setFilterFieldName(). The specified field
+ * should have float type.
+ * <br><br>
+ * Usage example:
+ * \code
+ * pcl::PassThrough<PointType> ptfilter (true); // Initializing with true will allow us
+ * to extract the removed indices
+ * ptfilter.setInputCloud (cloud_in);
+ * ptfilter.setFilterFieldName ("x");
  * ptfilter.setFilterLimits (0.0, 1000.0);
  * ptfilter.filter (*indices_x);
  * // The indices_x array indexes all points of cloud_in that have x between 0.0 and
@@ -84,7 +93,10 @@ using PassThroughFilter = advanced::FunctorFilter<PointT, PassThroughFunctor<Poi
  * ptfilter.filter (*cloud_out);
  * // The resulting cloud_out contains all points of cloud_in that are finite and have:
  * // x between 0.0 and 1000.0, z larger than 10.0 or smaller than -10.0 and intensity
- * smaller than 0.5. \endcode \author Radu Bogdan Rusu \ingroup filters
+ * smaller than 0.5.
+ * \endcode
+ * \author Radu Bogdan Rusu
+ * \ingroup filters
  */
 template <typename PointT>
 class PassThrough : public PassThroughFilter<PointT> {
@@ -116,8 +128,8 @@ public:
 
   /** \brief Provide the name of the field to be used for filtering data.
    * \details In conjunction with setFilterLimits(), points having values outside this
-   * interval for this field will be discarded. \param[in] field_name The name of the
-   * field that will be used for filtering.
+   * interval for this field will be discarded.
+   * \param[in] field_name The name of the field that will be used for filtering.
    */
   inline void
   setFilterFieldName(const std::string& field_name)
@@ -136,9 +148,9 @@ public:
 
   /** \brief Set the numerical limits for the field for filtering data.
    * \details In conjunction with setFilterFieldName(), points having values outside
-   * this interval for this field will be discarded. \param[in] limit_min The minimum
-   * allowed field value (default = FLT_MIN). \param[in] limit_max The maximum allowed
-   * field value (default = FLT_MAX).
+   * this interval for this field will be discarded.
+   * \param[in] limit_min The minimum allowed field value (default = FLT_MIN).
+   * \param[in] limit_max The maximum allowed field value (default = FLT_MAX).
    */
   inline void
   setFilterLimits(const float& limit_min, const float& limit_max)
