@@ -200,8 +200,8 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
     // Check if the correspondence is reciprocal
     target_idx = nn_indices[min_index];
     tree_reciprocal_->nearestKSearch(
-        detail::selectPoint<PointTarget, PointSource, decltype(idx_i)>(target_,
-                                                                       target_idx),
+        detail::pointCopyOrRef<PointTarget, PointSource, decltype(idx_i)>(target_,
+                                                                          target_idx),
         1,
         index_reciprocal,
         distance_reciprocal);
