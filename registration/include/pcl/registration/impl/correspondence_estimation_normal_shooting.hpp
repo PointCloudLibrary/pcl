@@ -90,8 +90,8 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
     tree_->nearestKSearch(
         detail::pointCopyOrRef<PointSource, PointTarget, decltype(idx_i)>(input_,
                                                                           idx_i),
-        k_, 
-        nn_indices, 
+        k_,
+        nn_indices,
         nn_dists);
 
     // Among the K nearest neighbours find the one with minimum perpendicular distance
@@ -166,8 +166,8 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
     tree_->nearestKSearch(
         detail::pointCopyOrRef<PointSource, PointTarget, decltype(idx_i)>(input_,
                                                                           idx_i),
-        k_, 
-        nn_indices, 
+        k_,
+        nn_indices,
         nn_dists);
 
     // Among the K nearest neighbours find the one with minimum perpendicular distance
