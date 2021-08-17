@@ -118,7 +118,7 @@ namespace detail
 template <typename PointSource, typename PointTarget, typename Index
   , typename std::enable_if_t<isSamePointType<PointSource, PointTarget>()>* = nullptr
 >
-PointTarget
+const PointSource&
 selectPoint(typename pcl::PointCloud<PointSource>::ConstPtr& input, const Index& idx)
 {
   return (*input)[idx]; 
@@ -159,7 +159,7 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
     // Check if the template types are the same. If true, avoid a copy.
     // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
     // macro!
-    const auto pt{detail::selectPoint<PointSource, PointTarget, decltype(idx)>(input_, idx)};
+    const auto& pt{detail::selectPoint<PointSource, PointTarget, decltype(idx)>(input_, idx)};
     tree_->nearestKSearch(pt, 1, index, distance);
     if (distance[0] > max_dist_sqr)
       continue;
@@ -198,59 +198,30 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
   unsigned int nr_valid_correspondences = 0;
   int target_idx = 0;
 
-  // Check if the template types are the same. If true, avoid a copy.
-  // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
-  // macro!
-  if (isSamePointType<PointSource, PointTarget>()) {
-    // Iterate over the input set of source indices
-    for (const auto& idx : (*indices_)) {
-      tree_->nearestKSearch((*input_)[idx], 1, index, distance);
-      if (distance[0] > max_dist_sqr)
-        continue;
+  // Iterate over the input set of source indices
+  for (const auto& idx : (*indices_)) {
+    // Check if the template types are the same. If true, avoid a copy.
+    // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
+    // macro!
 
-      target_idx = index[0];
+    PointTarget pt_src{detail::selectPoint<PointSource, PointTarget, decltype(idx)>(input_, idx)};
+    
+    tree_->nearestKSearch(pt_src, 1, index, distance);
+    if (distance[0] > max_dist_sqr)
+      continue;
 
-      tree_reciprocal_->nearestKSearch(
-          (*target_)[target_idx], 1, index_reciprocal, distance_reciprocal);
-      if (distance_reciprocal[0] > max_dist_sqr || idx != index_reciprocal[0])
-        continue;
+    target_idx = index[0];
+    PointSource pt_tgt{detail::selectPoint<PointTarget, PointSource, decltype(target_idx)>(target_, target_idx)};
+    
+    tree_reciprocal_->nearestKSearch(
+        pt_tgt, 1, index_reciprocal, distance_reciprocal);
+    if (distance_reciprocal[0] > max_dist_sqr || idx != index_reciprocal[0])
+      continue;
 
-      corr.index_query = idx;
-      corr.index_match = index[0];
-      corr.distance = distance[0];
-      correspondences[nr_valid_correspondences++] = corr;
-    }
-  }
-  else {
-    PointTarget pt_src;
-    PointSource pt_tgt;
-
-    // Iterate over the input set of source indices
-    for (const auto& idx : (*indices_)) {
-      // Copy the source data to a target PointTarget format so we can search in the
-      // tree
-      copyPoint((*input_)[idx], pt_src);
-
-      tree_->nearestKSearch(pt_src, 1, index, distance);
-      if (distance[0] > max_dist_sqr)
-        continue;
-
-      target_idx = index[0];
-
-      // Copy the target data to a target PointSource format so we can search in the
-      // tree_reciprocal
-      copyPoint((*target_)[target_idx], pt_tgt);
-
-      tree_reciprocal_->nearestKSearch(
-          pt_tgt, 1, index_reciprocal, distance_reciprocal);
-      if (distance_reciprocal[0] > max_dist_sqr || idx != index_reciprocal[0])
-        continue;
-
-      corr.index_query = idx;
-      corr.index_match = index[0];
-      corr.distance = distance[0];
-      correspondences[nr_valid_correspondences++] = corr;
-    }
+    corr.index_query = idx;
+    corr.index_match = index[0];
+    corr.distance = distance[0];
+    correspondences[nr_valid_correspondences++] = corr;
   }
   correspondences.resize(nr_valid_correspondences);
   deinitCompute();

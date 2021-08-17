@@ -63,13 +63,13 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
       CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initCompute());
 }
 
-namespace detail {
+/*namespace detail {
 
 template <typename PointSource, typename PointTarget, typename Index
   , typename std::enable_if_t<isSamePointType<PointSource, PointTarget>()>* = nullptr
 >
-decltype(auto)
-selectPoint(typename pcl::PointCloud<PointSource>::ConstPtr &input, const Index &idx)
+const PointSource&
+selectPoint(typename pcl::PointCloud<PointSource>::ConstPtr& input, const Index& idx)
 {
   return (*input)[idx];
 }
@@ -77,17 +77,17 @@ selectPoint(typename pcl::PointCloud<PointSource>::ConstPtr &input, const Index 
 template <typename PointSource, typename PointTarget, typename Index
   , typename std::enable_if_t<!isSamePointType<PointSource, PointTarget>()>* = nullptr
 >
-decltype(auto)
-selectPoint(typename pcl::PointCloud<PointSource>::ConstPtr &input, const Index &idx)
+PointTarget
+selectPoint(typename pcl::PointCloud<PointSource>::ConstPtr& input, const Index& idx)
 {
-  PointSource pt_src;
+  PointTarget pt_src;
   // Copy the source data to a target PointTarget format so we can search in the
   // tree
   copyPoint((*input)[idx], pt_src);
   return pt_src;
 }
 
-}
+}*/
 
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 void
@@ -110,24 +110,22 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
   PointTarget pt;
   // Iterate over the input set of source indices
   for (const auto& idx_i : (*indices_)) {
-    tree_->nearestKSearch((*input_)[idx_i], k_, nn_indices, nn_dists);
+    // Check if the template types are the same. If true, avoid a copy.
+    // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
+    // macro!
+    tree_->nearestKSearch(detail::selectPoint<PointSource, PointTarget, decltype(idx_i)>(input_, idx_i), k_, nn_indices, nn_dists);
 
     // Among the K nearest neighbours find the one with minimum perpendicular distance
     // to the normal
     double min_dist = std::numeric_limits<double>::max();
 
     // Find the best correspondence
-    for (std::size_t j = 0; j < nn_indices.size(); j++) {
-      // Check if the template types are the same. If true, avoid a copy.
-      // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
-      // macro!
-      auto pt_src{detail::selectPoint<PointSource, PointTarget, decltype(idx_i)>(input_, idx_i)};
-
+    for (std::size_t j = 0; j < nn_indices.size(); j++) {     
       // computing the distance between a point and a line in 3d.
       // Reference - http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
-      pt.x = (*target_)[nn_indices[j]].x - pt_src.x;
-      pt.y = (*target_)[nn_indices[j]].y - pt_src.y;
-      pt.z = (*target_)[nn_indices[j]].z - pt_src.z;
+      pt.x = (*target_)[nn_indices[j]].x - (*input_)[idx_i].x;
+      pt.y = (*target_)[nn_indices[j]].y - (*input_)[idx_i].y;
+      pt.z = (*target_)[nn_indices[j]].z - (*input_)[idx_i].z;
 
       const NormalT& normal = (*source_normals_)[idx_i];
       Eigen::Vector3d N(normal.normal_x, normal.normal_y, normal.normal_z);
@@ -183,24 +181,22 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
   PointTarget pt;
   // Iterate over the input set of source indices
   for (const auto& idx_i : (*indices_)) {
-    tree_->nearestKSearch((*input_)[idx_i], k_, nn_indices, nn_dists);
+    // Check if the template types are the same. If true, avoid a copy.
+    // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
+    // macro!
+    tree_->nearestKSearch(detail::selectPoint<PointSource, PointTarget, decltype(idx_i)>(input_, idx_i), k_, nn_indices, nn_dists);
 
     // Among the K nearest neighbours find the one with minimum perpendicular distance
     // to the normal
     double min_dist = std::numeric_limits<double>::max();
 
     // Find the best correspondence
-    for (std::size_t j = 0; j < nn_indices.size(); j++) {
-      // Check if the template types are the same. If true, avoid a copy.
-      // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
-      // macro!
-      auto pt_src{detail::selectPoint<PointSource, PointTarget, decltype(idx_i)>(input_, idx_i)};
-
+    for (std::size_t j = 0; j < nn_indices.size(); j++) {     
       // computing the distance between a point and a line in 3d.
       // Reference - http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
-      pt.x = (*target_)[nn_indices[j]].x - pt_src.x;
-      pt.y = (*target_)[nn_indices[j]].y - pt_src.y;
-      pt.z = (*target_)[nn_indices[j]].z - pt_src.z;
+      pt.x = (*target_)[nn_indices[j]].x - (*input_)[idx_i].x;
+      pt.y = (*target_)[nn_indices[j]].y - (*input_)[idx_i].y;
+      pt.z = (*target_)[nn_indices[j]].z - (*input_)[idx_i].z;
 
       const NormalT& normal = (*source_normals_)[idx_i];
       Eigen::Vector3d N(normal.normal_x, normal.normal_y, normal.normal_z);
