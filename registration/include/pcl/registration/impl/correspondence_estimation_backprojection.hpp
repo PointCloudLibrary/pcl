@@ -62,32 +62,6 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
       CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initCompute());
 }
 
-/*namespace detail {
-
-template <typename PointSource, typename PointTarget, typename Index
-  , typename std::enable_if_t<isSamePointType<PointSource, PointTarget>()>* = nullptr
->
-const PointSource&
-selectPoint(typename pcl::PointCloud<PointSource>::ConstPtr &input, const Index &idx)
-{
-  return (*input)[idx];
-}
-
-template <typename PointSource, typename PointTarget, typename Index
-  , typename std::enable_if_t<!isSamePointType<PointSource, PointTarget>()>* = nullptr
->
-PointTarget
-selectPoint(typename pcl::PointCloud<PointSource>::ConstPtr &input, const Index &idx)
-{
-  PointTarget pt_src;
-  // Copy the source data to a target PointTarget format so we can search in the
-  // tree
-  copyPoint((*input)[idx], pt_src);
-  return pt_src;
-}
-
-}*/
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 void
@@ -109,7 +83,7 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
 
   // Iterate over the input set of source indices
   for (const auto& idx_i : (*indices_)) {
-    const auto& pt{detail::selectPoint<PointSource, PointTarget, decltype(idx_i)>(input_, idx_i)};
+    const auto& pt{detail::pointCopyOrRef<PointSource, PointTarget, decltype(idx_i)>(input_, idx_i)};
     tree_->nearestKSearch(pt, k_, nn_indices, nn_dists);
 
     // Among the K nearest neighbours find the one with minimum perpendicular distance
@@ -174,7 +148,7 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
     // Check if the template types are the same. If true, avoid a copy.
     // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
     // macro!
-    const auto& pt{detail::selectPoint<PointSource, PointTarget, decltype(idx_i)>(input_, idx_i)};
+    const auto& pt{detail::pointCopyOrRef<PointSource, PointTarget, decltype(idx_i)>(input_, idx_i)};
     tree_->nearestKSearch(pt, k_, nn_indices, nn_dists);
 
     // Among the K nearest neighbours find the one with minimum perpendicular distance
