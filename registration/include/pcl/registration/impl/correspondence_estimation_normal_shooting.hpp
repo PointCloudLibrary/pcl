@@ -63,32 +63,6 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
       CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initCompute());
 }
 
-/*namespace detail {
-
-template <typename PointSource, typename PointTarget, typename Index
-  , typename std::enable_if_t<isSamePointType<PointSource, PointTarget>()>* = nullptr
->
-const PointSource&
-selectPoint(typename pcl::PointCloud<PointSource>::ConstPtr& input, const Index& idx)
-{
-  return (*input)[idx];
-}
-
-template <typename PointSource, typename PointTarget, typename Index
-  , typename std::enable_if_t<!isSamePointType<PointSource, PointTarget>()>* = nullptr
->
-PointTarget
-selectPoint(typename pcl::PointCloud<PointSource>::ConstPtr& input, const Index& idx)
-{
-  PointTarget pt_src;
-  // Copy the source data to a target PointTarget format so we can search in the
-  // tree
-  copyPoint((*input)[idx], pt_src);
-  return pt_src;
-}
-
-}*/
-
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 void
 CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar>::
