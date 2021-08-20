@@ -11,7 +11,7 @@
 #include <pcl/segmentation/extract_clusters.h>
 
 // The GPU specific stuff here
-#include <pcl/gpu/octree/octree.hpp>
+#include <pcl/gpu/octree/octree.h>
 #include <pcl/gpu/containers/device_array.hpp>
 #include <pcl/gpu/segmentation/gpu_extract_clusters.h>
 #include <pcl/gpu/segmentation/impl/gpu_extract_clusters.hpp>
@@ -73,10 +73,11 @@ main (int argc, char** argv)
 
   tStart = clock();
 
-  pcl::gpu::Octree::PointCloud cloud_device;
+  using PointType = pcl::PointXYZ;
+  pcl::gpu::Octree<PointType>::PointCloud cloud_device;
   cloud_device.upload(cloud_filtered->points);
   
-  pcl::gpu::Octree::Ptr octree_device (new pcl::gpu::Octree);
+  typename pcl::gpu::Octree<PointType>::Ptr octree_device (new pcl::gpu::Octree<PointType>);
   octree_device->setCloud(cloud_device);
   octree_device->build();
 

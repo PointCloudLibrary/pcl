@@ -57,7 +57,6 @@
 using namespace pcl::gpu;
 
 
-//TEST (PCL_GPU, DISABLED_bruteForceRadiusSeachGPU)
 TEST (PCL_GPU, bruteForceRadiusSeachGPU)
 {   
     DataGenerator data;

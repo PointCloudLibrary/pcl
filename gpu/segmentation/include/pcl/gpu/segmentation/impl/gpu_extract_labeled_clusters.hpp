@@ -173,5 +173,5 @@ pcl::gpu::EuclideanLabeledClusterExtraction<PointT>::extract (std::vector<PointI
   std::sort (clusters.rbegin (), clusters.rend (), compareLabeledPointClusters);
 }
 
-#define PCL_INSTANTIATE_extractLabeledEuclideanClusters(T) template void PCL_EXPORTS pcl::gpu::extractLabeledEuclideanClusters<T> (const typename pcl::PointCloud<T>::Ptr  &, const pcl::gpu::Octree::Ptr &,float, std::vector<PointIndices> &, unsigned int, unsigned int);
+#define PCL_INSTANTIATE_extractLabeledEuclideanClusters(T) template void PCL_EXPORTS pcl::gpu::extractLabeledEuclideanClusters<T> (const typename pcl::PointCloud<T>::Ptr  &, const typename pcl::gpu::Octree::Ptr &,float, std::vector<PointIndices> &, unsigned int, unsigned int);
 #define PCL_INSTANTIATE_EuclideanLabeledClusterExtraction(T) template class PCL_EXPORTS pcl::gpu::EuclideanLabeledClusterExtraction<T>;

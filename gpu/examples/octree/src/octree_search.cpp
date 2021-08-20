@@ -1,4 +1,4 @@
-#include <pcl/gpu/octree/octree.hpp>
+#include <pcl/gpu/octree/octree.h>
 #include <pcl/gpu/containers/device_array.hpp>
 
 #include <pcl/io/openni_grabber.h>
@@ -12,7 +12,8 @@
 
 int main (int argc, char** argv)
 {
-  pcl::PointCloud<pcl::PointXYZ> cloud;
+  using PointType = pcl::PointXYZ;
+  pcl::PointCloud<PointType> cloud;
   cloud.width    = 500;
   cloud.height   = 200;
   cloud.is_dense = false;
@@ -30,10 +31,10 @@ int main (int argc, char** argv)
   pcl::io::savePCDFileASCII ("input.pcd", cloud);
   std::cout << "INFO: Saved " << cloud.size () << " data points to test_pcd.pcd." << std::endl;
   
-  pcl::gpu::Octree::PointCloud cloud_device;
+  pcl::gpu::Octree<PointType>::PointCloud cloud_device;
   cloud_device.upload(cloud.points);
   
-  pcl::gpu::Octree octree_device;
+  pcl::gpu::Octree<PointType> octree_device;
   octree_device.setCloud(cloud_device);
   octree_device.build();
  
@@ -49,7 +50,7 @@ int main (int argc, char** argv)
   query_host[2].x = 500;
   query_host[2].y = 200;
   
-  pcl::gpu::Octree::Queries queries_device;
+  pcl::gpu::Octree<PointType>::Queries queries_device;
   queries_device.upload(query_host);
 
   // Take two identical radiuses
@@ -58,7 +59,7 @@ int main (int argc, char** argv)
   radius.push_back(10.0);
   radius.push_back(10.0);
 
-  pcl::gpu::Octree::Radiuses radiuses_device;
+  pcl::gpu::Octree<PointType>::Radiuses radiuses_device;
   radiuses_device.upload(radius);
 
   const int max_answers = 500*200;
