@@ -17,7 +17,7 @@ TEST(Label, ExperimentalVoxelGridLabelEquivalency)
 {
   PointCloud<PointXYZRGBL>::Ptr cloud(new PointCloud<PointXYZRGBL>);
 
-  std::vector<std::uint32_t> labels = {0, 0, 0, 0, 1, 2, 3, 4, 5, 5};
+  const std::vector<std::uint32_t> labels = {0, 0, 0, 0, 1, 2, 3, 4, 5, 5};
   // 0.00, 0.01, ...
   for (size_t i = 0; i < 10; ++i) {
     PointXYZRGBL pt(i / 100., i / 100., i / 100., i, i, i, labels.at(i));

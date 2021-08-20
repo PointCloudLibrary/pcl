@@ -32,7 +32,7 @@ struct LabeledVoxel : public Voxel<PointXYZRGBL> {
   {
     num_pt_++;
     if (downsample_all_data_) {
-      centroid_.all_fields.add(pt);
+      centroid_.all_fields->add(pt);
     }
     else {
       centroid_.xyz += pt.getArray4fMap();
@@ -45,7 +45,7 @@ struct LabeledVoxel : public Voxel<PointXYZRGBL> {
   {
     PointXYZRGBL pt;
     if (downsample_all_data_)
-      centroid_.all_fields.get(pt);
+      centroid_.all_fields->get(pt);
     else {
       pt.getArray4fMap() = centroid_.xyz / num_pt_;
       std::size_t max = 0;
@@ -77,9 +77,9 @@ protected:
  * VoxelGridLabel filter
  * \ingroup filters
  */
-class LabeledVoxelStruct : public VoxelStruct<Voxel<PointXYZRGBL>, PointXYZRGBL> {
+class LabeledVoxelStruct : public VoxelStruct<LabeledVoxel, PointXYZRGBL> {
 public:
-  using VoxelStruct<Voxel<PointXYZRGBL>, PointXYZRGBL>::filter_name_;
+  using VoxelStruct<LabeledVoxel, PointXYZRGBL>::filter_name_;
 
   /** \brief Constructor. */
   LabeledVoxelStruct() { filter_name_ = "VoxelGridLabel"; }
@@ -91,9 +91,10 @@ public:
    *  \param[in] transform_filter pointer to the TransformFilter object
    */
   bool
-  setUp(CartesianFilter<pcl::Filter, LabeledVoxelStruct>& castesian_filter)
+  setUp(
+      CartesianFilter<pcl::Filter, LabeledVoxelStruct, PointXYZRGBL>& castesian_filter)
   {
-    return VoxelStruct<Voxel<PointXYZRGBL>, PointXYZRGBL>::setUp(
+    return VoxelStruct<LabeledVoxel, PointXYZRGBL>::setUp(
         castesian_filter.getInputCloud(),
         castesian_filter.getDownsampleAllData(),
         castesian_filter.getMinimumPointsNumberPerVoxel());
