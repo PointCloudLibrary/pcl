@@ -26,7 +26,7 @@ struct Voxel {
     Centroid() {}
     ~Centroid() {}
 
-    CentroidPoint<PointT> all_fields;
+    CentroidPoint<PointT>* all_fields;
     Eigen::Array4f xyz;
   };
 
@@ -34,14 +34,14 @@ struct Voxel {
   {
     num_pt_ = 0;
     if (downsample_all_data_)
-      centroid_.all_fields = CentroidPoint<PointT>();
+      centroid_.all_fields = new CentroidPoint<PointT>();
     else
       centroid_.xyz = Eigen::Array4f::Zero();
   }
   ~Voxel()
   {
     if (downsample_all_data_)
-      centroid_.all_fields.~CentroidPoint<PointT>();
+      delete centroid_.all_fields;
     else
       centroid_.xyz.~Array();
   }
@@ -51,7 +51,7 @@ struct Voxel {
   {
     num_pt_++;
     if (downsample_all_data_)
-      centroid_.all_fields.add(pt);
+      centroid_.all_fields->add(pt);
     else
       centroid_.xyz += pt.getArray4fMap();
   }
@@ -61,7 +61,7 @@ struct Voxel {
   {
     PointT pt;
     if (downsample_all_data_)
-      centroid_.all_fields.get(pt);
+      centroid_.all_fields->get(pt);
     else
       pt.getArray4fMap() = centroid_.xyz / num_pt_;
     return pt;
@@ -72,7 +72,7 @@ struct Voxel {
   {
     num_pt_ = 0;
     if (downsample_all_data_)
-      centroid_.all_fields.clear();
+      centroid_.all_fields->clear();
     else
       centroid_.xyz.setZero();
   }
