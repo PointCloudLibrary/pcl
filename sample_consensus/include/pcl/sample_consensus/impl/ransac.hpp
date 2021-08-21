@@ -73,6 +73,8 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
   const double log_probability  = std::log (1.0 - probability_);
   const double one_over_indices = 1.0 / static_cast<double> (sac_model_->getIndices ()->size ());
 
+  unsigned skipped_count = 0;
+
   // suppress infinite loops by just allowing 10 x maximum allowed iterations for invalid model parameters!
   const unsigned max_skip = max_iterations_ * 10;
 
@@ -93,7 +95,7 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
   }
 
 #if OPENMP_AVAILABLE_RANSAC
-#pragma omp parallel if(threads > 0) num_threads(threads) shared(k, n_best_inliers_count) firstprivate(selection, model_coefficients) // would be nice to have a default(none)-clause here, but then some compilers complain about the shared const variables
+#pragma omp parallel if(threads > 0) num_threads(threads) shared(k, skipped_count, n_best_inliers_count) firstprivate(selection, model_coefficients) // would be nice to have a default(none)-clause here, but then some compilers complain about the shared const variables
 #endif
   {
 #if OPENMP_AVAILABLE_RANSAC
@@ -103,8 +105,6 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
     else
 #endif
       PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] Computing not parallel.\n");
-
-    unsigned skipped_count = 0;
 
     // Iterate
     while (true) // infinite loop with four possible breaks
