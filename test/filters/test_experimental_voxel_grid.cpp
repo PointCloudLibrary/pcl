@@ -51,7 +51,7 @@ EXPECT_POINT_EQ(const PointXYZRGBA& pt1, const PointXYZRGBA& pt2)
 
 template <typename PointT>
 void
-EXPECT_POINTS_EQ(PointCloud<PointT> pc1, PointCloud<PointT> pc2)
+EXPECT_POINTS_EQ(PointCloud<PointT>& pc1, PointCloud<PointT>& pc2)
 {
   ASSERT_EQ(pc1.size(), pc2.size());
 
@@ -187,31 +187,14 @@ TEST(LeafLayout, ExperimentalVoxelGridEquivalency)
   }
 }
 
-// Update to std::tuple which can get by type in C++17
-template <typename PointT>
-typename PointCloud<PointT>::Ptr
-getCloud();
-template <>
-PointCloud<PointXYZ>::Ptr
-getCloud<PointXYZ>()
-{
-  return cloud;
-}
-template <>
-PointCloud<PointXYZRGB>::Ptr
-getCloud<PointXYZRGB>()
-{
-  return cloud_rgb;
-}
-template <>
-PointCloud<PointXYZRGBA>::Ptr
-getCloud<PointXYZRGBA>()
-{
-  return cloud_rgba;
-}
-
 template <typename T>
-class PointTypesTest : public ::testing::Test {};
+class PointTypesTest : public ::testing::Test {
+protected:
+  const std::tuple<PointCloud<PointXYZ>::Ptr,
+                   PointCloud<PointXYZRGB>::Ptr,
+                   PointCloud<PointXYZRGBA>::Ptr>
+      clouds{cloud, cloud_rgb, cloud_rgba};
+};
 using PointTypes = ::testing::Types<PointXYZ, PointXYZRGB, PointXYZRGBA>;
 TYPED_TEST_SUITE(PointTypesTest, PointTypes);
 
@@ -221,14 +204,14 @@ TYPED_TEST(PointTypesTest, ExperimentalVoxelGridEquivalency)
   using PointCloudPtr = typename PointCloud<PointT>::Ptr;
 
   PointCloud<PointT> new_out, old_out;
-  PointCloudPtr cloudT = getCloud<PointT>();
+  const PointCloudPtr input_cloud = std::get<PointCloudPtr>(TestFixture::clouds);
 
   pcl::experimental::VoxelGrid<PointT> new_grid;
   pcl::VoxelGrid<PointT> old_grid;
   new_grid.setLeafSize(0.05f, 0.05f, 0.05f);
   old_grid.setLeafSize(0.05f, 0.05f, 0.05f);
-  new_grid.setInputCloud(cloudT);
-  old_grid.setInputCloud(cloudT);
+  new_grid.setInputCloud(input_cloud);
+  old_grid.setInputCloud(input_cloud);
 
   new_grid.setDownsampleAllData(false);
   old_grid.setDownsampleAllData(false);
