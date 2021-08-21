@@ -26,3 +26,6 @@ PCL_ADD_BENCHMARK(filters_voxel_grid FILES filters/voxel_grid.cpp
 PCL_ADD_BENCHMARK(filters_passthrough FILES filters/passthrough.cpp
                   LINK_WITH pcl_filters)
 
+PCL_ADD_BENCHMARK(filters_crop_box FILES filters/crop_box.cpp
+                  LINK_WITH pcl_filters)
+
