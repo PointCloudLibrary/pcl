@@ -309,6 +309,8 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast(
   // connected components on the binary image
 
   std::map<float, float> connected_labels;
+  float c_intensity = 0.1f;
+  const float intensity_incr = 0.1f;
 
   {
 
@@ -318,9 +320,6 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast(
         if (binary_cloud->at(i, j).intensity != 0) {
           // check neighboring pixels, first left and then top
           // be aware of margins
-
-          float c_intensity = 0.1f;
-          float intensity_incr = 0.1f;
 
           if ((i - 1) < 0 && (j - 1) < 0) {
             // top-left pixel
