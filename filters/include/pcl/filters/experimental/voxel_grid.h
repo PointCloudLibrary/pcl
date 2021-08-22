@@ -111,11 +111,11 @@ public:
   /** \brief Empty destructor. */
   ~VoxelStruct() {}
 
-  /** \brief Get the number of voxels in the grid. */
+  /** \brief Get the number of non-empty voxels in the grid. */
   inline std::size_t
   size() const
   {
-    return grid_.size();
+    return num_voxels_;
   }
 
   /** \brief Get the begin iterator of the grid. */
