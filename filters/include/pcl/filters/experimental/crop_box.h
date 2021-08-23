@@ -142,7 +142,7 @@ public:
                            rotation_(1),
                            rotation_(2),
                            box_transform);
-    Eigen::Affine3f pt_transform = box_transform.inverse() * transform_;
+    const Eigen::Affine3f pt_transform = box_transform.inverse() * transform_;
 
     const auto lambda = [&](const PointCloud& cloud, index_t idx) {
       const Eigen::Vector4f pt = pt_transform * cloud.at(idx).getVector4fMap();
@@ -150,7 +150,7 @@ public:
              (pt.array() <= max_pt_.array()).template head<3>().all();
     };
 
-    auto filter = advanced::FunctorFilter<PointT, decltype(lambda)>(
+    static auto filter = advanced::FunctorFilter<PointT, decltype(lambda)>(
         lambda, this->extract_removed_indices_);
     filter.setNegative(this->getNegative());
     filter.setKeepOrganized(this->getKeepOrganized());
