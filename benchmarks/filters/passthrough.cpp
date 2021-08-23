@@ -68,22 +68,24 @@ BM_registration(const std::array<std::string, ArraySize>& classes_name,
 int
 main(int argc, char** argv)
 {
+  const std::vector<std::string> datasets_name = {
+      "320p", "480p", "720p", "1080p", "1440p"};
+  const std::vector<std::size_t> datasets_size = {
+      480 * 320, 640 * 480, 1280 * 720, 1920 * 1080, 2560 * 1440};
+
   std::vector<PointCloud<PointXYZ>::Ptr> datasets;
-  std::vector<std::string> datasets_name;
-  for (std::size_t i = 2; i <= 5; ++i) {
+  for (const std::size_t dataset_size : datasets_size) {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-    const std::size_t num_pt = std::pow(8, i);
-    cloud->resize(num_pt);
+    cloud->resize(dataset_size);
     for (auto& pt : *cloud)
       pt = pcl::PointXYZ{0., 0., 0.};
-
     datasets.push_back(std::move(cloud));
-    datasets_name.push_back(std::to_string(num_pt));
   }
+
   const std::array<std::string, 2> filters_name{"PassThrough", "FunctorPassThrough"};
 
   if (BM_registration<PointXYZ, PassThrough, experimental::PassThrough>(
-          filters_name, datasets, datasets_name, benchmark::kMicrosecond)) {
+          filters_name, datasets, datasets_name)) {
     benchmark::Initialize(&argc, argv);
     benchmark::RunSpecifiedBenchmarks();
   }
