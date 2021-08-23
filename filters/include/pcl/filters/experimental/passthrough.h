@@ -34,8 +34,8 @@ struct PassThroughFunctor {
   bool
   operator()(const PointCloud<PointT>& cloud, index_t idx) const
   {
-    // only filter out points with NaN at the XYZ fields (done in FunctorFilter),
-    // regardless if the filter behavior is inverted or not
+    // always filter out points with NaN in XYZ fields, regardless of the user's choice
+    // of what points should be filtered (normal/inverted)
     if (!*has_filter_field_)
       return !*negative_; // always keep the point in FunctorFilter
 
