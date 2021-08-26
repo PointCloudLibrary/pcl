@@ -690,32 +690,7 @@ pcl::MLSResult::projectPoint (const Eigen::Vector3d &pt, ProjectionMethod method
 pcl::MLSResult::MLSProjectionResults
 pcl::MLSResult::projectQueryPoint (ProjectionMethod method, int required_neighbors) const
 {
-  MLSResult::MLSProjectionResults proj;
-  if (order > 1 && num_neighbors >= required_neighbors && std::isfinite (c_vec[0]) && method != NONE)
-  {
-    if (method == ORTHOGONAL)
-    {
-      double u, v, w;
-      getMLSCoordinates (query_point, u, v, w);
-      proj = projectPointOrthogonalToPolynomialSurface (u, v, w);
-    }
-    else // SIMPLE
-    {
-      // Projection onto MLS surface along Darboux normal to the height at (0,0)
-      proj.point = mean + (c_vec[0] * plane_normal);
-
-      // Compute tangent vectors using the partial derivates evaluated at (0,0) which is c_vec[order_+1] and c_vec[1]
-      proj.normal = plane_normal - c_vec[order + 1] * u_axis - c_vec[1] * v_axis;
-      proj.normal.normalize ();
-    }
-  }
-  else
-  {
-    proj.normal = plane_normal;
-    proj.point = mean;
-  }
-
-  return (proj);
+  return projectPoint(query_point, method, required_neighbors);
 }
 
 template <typename PointT> void
