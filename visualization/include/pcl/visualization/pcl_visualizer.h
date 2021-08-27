@@ -1807,10 +1807,6 @@ namespace pcl
         std::string
         getCameraFile () const;
 
-        /** \brief Update camera parameters and render. */
-        void
-        updateCamera ();
-
         /** \brief Reset camera parameters and render. */
         void
         resetCamera ();
