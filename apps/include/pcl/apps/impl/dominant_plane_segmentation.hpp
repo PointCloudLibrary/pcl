@@ -310,7 +310,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast(
 
   std::map<float, float> connected_labels;
   float c_intensity = 0.1f;
-  float intensity_incr = 0.1f;
+  const float intensity_incr = 0.1f;
 
   {
 

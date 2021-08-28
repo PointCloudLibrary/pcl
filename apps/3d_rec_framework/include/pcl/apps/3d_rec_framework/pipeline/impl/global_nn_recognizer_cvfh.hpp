@@ -270,14 +270,12 @@ pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::rec
                            indices,
                            distances);
             // gather NN-search results
-            double score = 0;
             for (std::size_t i = 0; i < (std::size_t)NN_; ++i) {
-              score = distances[0][i];
               index_score is;
               is.idx_models_ =
                   single_categories_pointers_to_models_[it->second]->at(indices[0][i]);
               is.idx_input_ = static_cast<int>(idx);
-              is.score_ = score;
+              is.score_ = distances[0][i];
               indices_scores.push_back(is);
             }
           }
