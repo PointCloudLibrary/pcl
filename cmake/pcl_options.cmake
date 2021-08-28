@@ -23,14 +23,14 @@ option(PCL_BUILD_WITH_BOOST_DYNAMIC_LINKING_WIN32 "Build against a dynamically l
 mark_as_advanced(PCL_BUILD_WITH_BOOST_DYNAMIC_LINKING_WIN32)
 
 # Build with shared/static linking for FLANN (advanced users)
-set(PCL_FLANN_REQUIRED_TYPE "DONTCARE" CACHE STRING "Select build type to use (STATIC/SHARED).")
+set(PCL_FLANN_REQUIRED_TYPE "DONTCARE" CACHE STRING "Select build type to use STATIC or SHARED.")
 set_property(CACHE PCL_FLANN_REQUIRED_TYPE PROPERTY STRINGS DONTCARE SHARED STATIC)
-
-mark_as_advanced(PCL_BUILD_WITH_FLANN_DYNAMIC_LINKING_WIN32)
+mark_as_advanced(PCL_FLANN_REQUIRED_TYPE)
 
 # Build with dynamic linking for QHull (advanced users)
-option(PCL_BUILD_WITH_QHULL_DYNAMIC_LINKING_WIN32 "Build against a dynamically linked QHull on Win32 platforms." OFF)
-mark_as_advanced(PCL_BUILD_WITH_QHULL_DYNAMIC_LINKING_WIN32)
+set(PCL_QHULL_REQUIRED_TYPE "DONTCARE" CACHE STRING "Select build type to use STATIC or SHARED.")
+set_property(CACHE PCL_QHULL_REQUIRED_TYPE PROPERTY STRINGS DONTCARE SHARED STATIC)
+mark_as_advanced(PCL_QHULL_REQUIRED_TYPE)
 
 # Precompile for a minimal set of point types instead of all.
 option(PCL_ONLY_CORE_POINT_TYPES "Compile explicitly only for a small subset of point types (e.g., pcl::PointXYZ instead of PCL_XYZ_POINT_TYPES)." OFF)
