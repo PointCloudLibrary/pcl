@@ -96,7 +96,6 @@ public:
   /** \brief Constructor.
    * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its
    * root node.
-   * \param[in] max_depth_arg Depth limitation during traversal
    */
   OctreeIteratorBase(OctreeT* octree_arg) : OctreeIteratorBase(octree_arg, 0u) {}
 

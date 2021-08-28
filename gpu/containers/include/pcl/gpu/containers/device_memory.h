@@ -111,7 +111,7 @@ public:
    * \param num_bytes number of bytes to upload
    * */
   bool
-  upload(const void* host_ptr,
+  upload(const void* host_ptr_arg,
          std::size_t device_begin_byte_offset,
          std::size_t num_bytes);
 
@@ -128,7 +128,7 @@ public:
    * \param num_bytes number of bytes to download
    * */
   bool
-  download(void* host_ptr,
+  download(void* host_ptr_arg,
            std::size_t device_begin_byte_offset,
            std::size_t num_bytes) const;
 

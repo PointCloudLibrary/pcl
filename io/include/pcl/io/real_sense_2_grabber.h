@@ -61,6 +61,7 @@ namespace pcl
   public:
     /** \brief Constructor
     * \param[in] file_name_or_serial_number used for either loading bag file or specific device by serial number
+    * \param[in] repeat_playback whether to repeat playback when reading from file
     */
     RealSense2Grabber ( const std::string& file_name_or_serial_number = "", const bool repeat_playback = true );
 

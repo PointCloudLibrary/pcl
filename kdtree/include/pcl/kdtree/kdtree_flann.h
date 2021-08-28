@@ -73,7 +73,7 @@ using NotCompatWithFlann = std::enable_if_t<!compat_with_flann<IndexT>::value, b
  * @brief Comaptibility template function to allow use of various types of indices with
  * FLANN
  * @details Template is used for all params to not constrain any FLANN side capability
- * @param[in|out] index A index searcher, of type ::flann::Index<Dist> or similar, where
+ * @param[in,out] index A index searcher, of type ::flann::Index<Dist> or similar, where
  * Dist is a template for computing distance between 2 points
  * @param[in] query A ::flann::Matrix<float> or compatible matrix representation of the
  * query point
@@ -99,14 +99,14 @@ radius_search(const FlannIndex& index,
  * @brief Comaptibility template function to allow use of various types of indices with
  * FLANN
  * @details Template is used for all params to not constrain any FLANN side capability
- * @param[in|out] index A index searcher, of type ::flann::Index<Dist> or similar, where
+ * @param[in,out] index A index searcher, of type ::flann::Index<Dist> or similar, where
  * Dist is a template for computing distance between 2 points
  * @param[in] query A ::flann::Matrix<float> or compatible matrix representation of the
  * query point
  * @param[out] indices Neighboring k indices found
  * @param[out] dists Computed distance matrix
- * @param[in] radius Threshold for consideration
- * @param[in] params Any parameters to pass to the radius_search call
+ * @param[in] k Number of neighbors to search for
+ * @param[in] params Any parameters to pass to the knn_search call
  */
 template <class FlannIndex,
           class Query,
