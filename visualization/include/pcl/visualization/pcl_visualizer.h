@@ -1807,6 +1807,11 @@ namespace pcl
         std::string
         getCameraFile () const;
 
+        /** \brief Update camera parameters and render. */
+        PCL_DEPRECATED(1,15,"updateCamera will be removed, as it does nothing.")
+        inline void
+        updateCamera () {};
+
         /** \brief Reset camera parameters and render. */
         void
         resetCamera ();
