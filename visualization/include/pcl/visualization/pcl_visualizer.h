@@ -1808,8 +1808,9 @@ namespace pcl
         getCameraFile () const;
 
         /** \brief Update camera parameters and render. */
-        void
-        updateCamera ();
+        PCL_DEPRECATED(1,15,"updateCamera will be removed, as it does nothing.")
+        inline void
+        updateCamera () {};
 
         /** \brief Reset camera parameters and render. */
         void
