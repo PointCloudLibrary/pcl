@@ -593,10 +593,10 @@ namespace pcl
       inline void
       setMinimumPointsNumberPerVoxel (unsigned int min_points_per_voxel) { min_points_per_voxel_ = min_points_per_voxel; }
 
-	  /** \brief Return the minimum number of points required for a voxel to be used.
-       */
-	  inline unsigned int
-	  getMinimumPointsNumberPerVoxel () const { return min_points_per_voxel_; }
+      /** \brief Return the minimum number of points required for a voxel to be used.
+        */
+      inline unsigned int
+      getMinimumPointsNumberPerVoxel () const { return min_points_per_voxel_; }
 
       /** \brief Set to true if leaf layout information needs to be saved for later access.
         * \param[in] save_leaf_layout the new value (true/false)
