@@ -79,6 +79,8 @@ namespace pcl
       /** \brief Filter the input data and store the results into output
         * \param[out] output the resultant point cloud message
         */
+    protected:
+
       void
       applyFilter (PointCloud &output) override;
 
@@ -88,6 +90,9 @@ namespace pcl
         * \param[in] distances the set of nearest neighbor distances
         * \return the intensity average at a given point index
         */
+
+    public:
+    
       double 
       computePointWeight (const int pid, const Indices &indices, const std::vector<float> &distances);
 
