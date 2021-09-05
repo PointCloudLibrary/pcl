@@ -75,11 +75,6 @@ namespace pcl
       {
       }
 
-
-      /** \brief Filter the input data and store the results into output
-        * \param[out] output the resultant point cloud message
-        */
-    
       double 
       computePointWeight (const int pid, const Indices &indices, const std::vector<float> &distances);
 
@@ -112,10 +107,15 @@ namespace pcl
         */
       inline void
       setSearchMethod (const KdTreePtr &tree)
-      { tree_ = tree; }
+      { tree_ = tree; }  
     
+    
+  
     protected:
 
+      /** \brief Filter the input data and store the results into output
+        * \param[out] output the resultant point cloud message
+        */
       void
       applyFilter (PointCloud &output) override;
 
