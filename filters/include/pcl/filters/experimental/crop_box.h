@@ -159,7 +159,7 @@ public:
                (pt.array() <= max_pt_.array()).template head<3>().all();
       };
 
-    static auto filter = advanced::FunctorFilter<PointT, decltype(lambda)>(
+    auto filter = advanced::FunctorFilter<PointT, decltype(lambda)>(
         lambda, this->extract_removed_indices_);
     filter.setNegative(this->getNegative());
     filter.setKeepOrganized(this->getKeepOrganized());
