@@ -74,7 +74,12 @@ namespace pcl
                            tree_ ()
       {
       }
-
+      /** \brief Compute the intensity average for a single point
+        * \param[in] pid the point index to compute the weight for
+        * \param[in] indices the set of nearest neighor indices 
+        * \param[in] distances the set of nearest neighbor distances
+        * \return the intensity average at a given point index
+        */
       double 
       computePointWeight (const int pid, const Indices &indices, const std::vector<float> &distances);
 
@@ -119,12 +124,7 @@ namespace pcl
       void
       applyFilter (PointCloud &output) override;
 
-      /** \brief Compute the intensity average for a single point
-        * \param[in] pid the point index to compute the weight for
-        * \param[in] indices the set of nearest neighor indices 
-        * \param[in] distances the set of nearest neighbor distances
-        * \return the intensity average at a given point index
-        */
+      
     
     private:
 
