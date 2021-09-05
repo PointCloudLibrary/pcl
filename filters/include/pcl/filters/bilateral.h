@@ -64,7 +64,6 @@ namespace pcl
 
       using Ptr = shared_ptr<BilateralFilter<PointT> >;
       using ConstPtr = shared_ptr<const BilateralFilter<PointT> >;
- 
 
       /** \brief Constructor. 
         * Sets sigma_s_ to 0 and sigma_r_ to MAXDBL
@@ -112,22 +111,16 @@ namespace pcl
         */
       inline void
       setSearchMethod (const KdTreePtr &tree)
-      { tree_ = tree; }  
-    
-    
-  
-    protected:
+      { tree_ = tree; }
 
+    protected:
       /** \brief Filter the input data and store the results into output
         * \param[out] output the resultant point cloud message
         */
       void
       applyFilter (PointCloud &output) override;
 
-      
-    
     private:
-
       /** \brief The bilateral filter Gaussian distance kernel.
         * \param[in] x the spatial distance (distance or intensity)
         * \param[in] sigma standard deviation
