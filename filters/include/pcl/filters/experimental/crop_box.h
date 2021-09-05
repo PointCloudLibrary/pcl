@@ -14,6 +14,7 @@
 #include <pcl/filters/experimental/functor_filter.h>
 #include <pcl/filters/filter_indices.h>
 
+#include <functional>
 namespace pcl {
 namespace experimental {
 
@@ -144,11 +145,19 @@ public:
                            box_transform);
     const Eigen::Affine3f pt_transform = box_transform.inverse() * transform_;
 
-    const auto lambda = [&](const PointCloud& cloud, index_t idx) {
-      const Eigen::Vector4f pt = pt_transform * cloud.at(idx).getVector4fMap();
-      return (pt.array() >= min_pt_.array()).template head<3>().all() &&
-             (pt.array() <= max_pt_.array()).template head<3>().all();
-    };
+    std::function<bool(const PointCloud&, index_t)> lambda;
+    if (pt_transform.matrix().isIdentity())
+      lambda = [&](const PointCloud& cloud, index_t idx) {
+        const Eigen::Vector4f& pt = cloud.at(idx).getVector4fMap();
+        return (pt.array() >= min_pt_.array()).template head<3>().all() &&
+               (pt.array() <= max_pt_.array()).template head<3>().all();
+      };
+    else
+      lambda = [&](const PointCloud& cloud, index_t idx) {
+        const Eigen::Vector4f pt = pt_transform * cloud.at(idx).getVector4fMap();
+        return (pt.array() >= min_pt_.array()).template head<3>().all() &&
+               (pt.array() <= max_pt_.array()).template head<3>().all();
+      };
 
     static auto filter = advanced::FunctorFilter<PointT, decltype(lambda)>(
         lambda, this->extract_removed_indices_);
