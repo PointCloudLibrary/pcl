@@ -508,6 +508,12 @@ TEST(ExperimentalPassThrough, Filters)
 int
 main(int argc, char** argv)
 {
+  if (argc < 2)
+  {
+    std::cerr << "No test file given. Please download `bun0.pcd` and pass the path to the test." << std::endl;
+    return (-1);
+  }
+
   io::loadPCDFile(argv[1], *cloud);
 
   testing::InitGoogleTest(&argc, argv);
