@@ -143,18 +143,20 @@ public:
                            rotation_(1),
                            rotation_(2),
                            box_transform);
-    const Eigen::Affine3f pt_transform = box_transform.inverse() * transform_;
+    const Eigen::Matrix4f pt_transform =
+        (box_transform.inverse() * transform_).matrix();
 
     std::function<bool(const PointCloud&, index_t)> lambda;
-    if (pt_transform.matrix().isIdentity())
+    if (pt_transform.isIdentity())
       lambda = [&](const PointCloud& cloud, index_t idx) {
-        const Eigen::Vector4f& pt = cloud.at(idx).getVector4fMap();
+        const auto& pt = cloud.at(idx).getVector4fMap();
         return (pt.array() >= min_pt_.array()).template head<3>().all() &&
                (pt.array() <= max_pt_.array()).template head<3>().all();
       };
     else
       lambda = [&](const PointCloud& cloud, index_t idx) {
-        const Eigen::Vector4f pt = pt_transform * cloud.at(idx).getVector4fMap();
+        const Eigen::Vector4f pt =
+            pt_transform * cloud.at(idx).getVector3fMap().homogeneous();
         return (pt.array() >= min_pt_.array()).template head<3>().all() &&
                (pt.array() <= max_pt_.array()).template head<3>().all();
       };
