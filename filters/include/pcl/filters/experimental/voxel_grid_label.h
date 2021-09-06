@@ -32,10 +32,10 @@ struct LabeledVoxel : public Voxel<PointXYZRGBL> {
   {
     num_pt_++;
     if (downsample_all_data_) {
-      centroid_.all_fields->add(pt);
+      boost::get<CentroidPoint<PointXYZRGBL>>(centroid_).add(pt);
     }
     else {
-      centroid_.xyz += pt.getArray4fMap();
+      boost::get<Eigen::Array4f>(centroid_) += pt.getArray4fMap();
       labels_[pt.label]++;
     }
   }
@@ -45,9 +45,9 @@ struct LabeledVoxel : public Voxel<PointXYZRGBL> {
   {
     PointXYZRGBL pt;
     if (downsample_all_data_)
-      centroid_.all_fields->get(pt);
+      boost::get<CentroidPoint<PointXYZRGBL>>(centroid_).get(pt);
     else {
-      pt.getArray4fMap() = centroid_.xyz / num_pt_;
+      pt.getArray4fMap() = boost::get<Eigen::Array4f>(centroid_) / num_pt_;
       std::size_t max = 0;
       for (const auto& label : labels_) {
         if (label.second > max) {
