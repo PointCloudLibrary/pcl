@@ -14,6 +14,8 @@
 #include <pcl/filters/experimental/cartesian_filter.h>
 #include <pcl/filters/filter.h>
 
+#include <boost/variant.hpp>
+
 #include <unordered_map>
 
 namespace pcl {
@@ -22,28 +24,13 @@ namespace experimental {
 template <typename PointT>
 struct Voxel {
 
-  union Centroid {
-    Centroid() {}
-    ~Centroid() {}
-
-    CentroidPoint<PointT>* all_fields;
-    Eigen::Array4f xyz;
-  };
-
   Voxel(const bool downsample_all_data) : downsample_all_data_(downsample_all_data)
   {
     num_pt_ = 0;
     if (downsample_all_data_)
-      centroid_.all_fields = new CentroidPoint<PointT>();
+      centroid_ = CentroidPoint<PointT>();
     else
-      centroid_.xyz = Eigen::Array4f::Zero();
-  }
-  ~Voxel()
-  {
-    if (downsample_all_data_)
-      delete centroid_.all_fields;
-    else
-      centroid_.xyz.~Array();
+      centroid_ = Eigen::Array4f::Zero();
   }
 
   inline void
@@ -51,9 +38,9 @@ struct Voxel {
   {
     num_pt_++;
     if (downsample_all_data_)
-      centroid_.all_fields->add(pt);
+      boost::get<CentroidPoint<PointT>>(centroid_).add(pt);
     else
-      centroid_.xyz += pt.getArray4fMap();
+      boost::get<Eigen::Array4f>(centroid_) += pt.getArray4fMap();
   }
 
   inline PointT
@@ -61,9 +48,9 @@ struct Voxel {
   {
     PointT pt;
     if (downsample_all_data_)
-      centroid_.all_fields->get(pt);
+      boost::get<CentroidPoint<PointT>>(centroid_).get(pt);
     else
-      pt.getArray4fMap() = centroid_.xyz / num_pt_;
+      pt.getArray4fMap() = boost::get<Eigen::Array4f>(centroid_) / num_pt_;
     return pt;
   }
 
@@ -72,9 +59,9 @@ struct Voxel {
   {
     num_pt_ = 0;
     if (downsample_all_data_)
-      centroid_.all_fields->clear();
+      boost::get<CentroidPoint<PointT>>(centroid_).clear();
     else
-      centroid_.xyz.setZero();
+      boost::get<Eigen::Array4f>(centroid_).setZero();
   }
 
   inline std::size_t
@@ -85,7 +72,7 @@ struct Voxel {
 
 protected:
   const bool downsample_all_data_;
-  Centroid centroid_;
+  boost::variant<CentroidPoint<PointT>, Eigen::Array4f> centroid_; // std::variant for C++17
   std::size_t num_pt_;
 };
 
