@@ -275,6 +275,11 @@ main (int argc, char** argv)
   if (use_vbos) 
     print_highlight ("Vertex Buffer Object (VBO) visualization enabled.\n");
 
+  bool useEDLRendering = false;
+  pcl::console::parse_argument(argc, argv, "-edl", useEDLRendering);
+  if (useEDLRendering)
+    print_highlight("EDL visualization enabled.\n");
+
   bool use_pp   = pcl::console::find_switch (argc, argv, "-use_point_picking");
   if (use_pp) 
     print_highlight ("Point picking enabled.\n");
@@ -361,6 +366,9 @@ main (int argc, char** argv)
     // Create the PCLVisualizer object here on the first encountered XYZ file
     if (!p)
       p.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCD viewer"));
+
+    if (useEDLRendering)
+      p->enableEDLRendering();
 
     // Multiview enabled?
     if (mview)
@@ -480,6 +488,9 @@ main (int argc, char** argv)
       p.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCD viewer"));
       if (use_pp)   // Only enable the point picking callback if the command line parameter is enabled
         p->registerPointPickingCallback (&pp_callback, static_cast<void*> (&cloud));
+
+      if (useEDLRendering)
+        p->enableEDLRendering();
 
       // Set whether or not we should be using the vtkVertexBufferObjectMapper
       p->setUseVbos (use_vbos);

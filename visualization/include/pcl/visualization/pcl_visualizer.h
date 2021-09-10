@@ -1708,6 +1708,9 @@ namespace pcl
                       const std::string &id = "ellipsoid",
                       int viewport = 0);
 
+        void
+        enableEDLRendering(int viewport = 0);
+
         /** \brief Changes the visual representation for all actors to surface representation. */
         void
         setRepresentationToSurfaceForAllActors ();
