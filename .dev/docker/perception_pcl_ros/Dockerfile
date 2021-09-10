@@ -32,9 +32,10 @@ RUN sed -i "s/^# deb-src/deb-src/" /etc/apt/sources.list \
 
 COPY package.xml ${workspace}/src/pcl/
 
+# not using run_tests alias because of --start-with
 RUN cd ${workspace} \
  && . "/opt/ros/${flavor}/setup.sh" \
  && catkin config --install --link-devel \
  && catkin build -j2 libpcl-all-dev --cmake-args -DWITH_OPENGL:BOOL=OFF \
  && rm -fr build/libpcl-all-dev \
- && catkin build --start-with pcl_msgs
+ && catkin build --start-with pcl_msgs --verbose --catkin-make-args run_tests
