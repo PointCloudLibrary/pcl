@@ -437,6 +437,15 @@ namespace pcl
     return (transformPointCloudWithNormals<PointT, float> (cloud_in, cloud_out, offset, rotation, copy_all_fields));
   }
 
+  void
+  transformPointCloud(const pcl::PointCloud<pcl::PointXY>& cloud_in, 
+                      pcl::PointCloud<pcl::PointXY>& cloud_out, 
+                      const Eigen::Affine2f& transform, 
+                      bool copy_all_fields = true)
+  {
+    return (transformPointCloud<PointXY, float> (cloud_in, cloud_out, transform.matrix (), copy_all_fields));
+  }
+
   /** \brief Transform a point with members x,y,z
     * \param[in] point the point to transform
     * \param[out] transform the transformation to apply
