@@ -443,7 +443,7 @@ namespace pcl
                       const Eigen::Affine2f& transform, 
                       bool copy_all_fields = true)
   {
-    return (transformPointCloud<PointXY, float> (cloud_in, cloud_out, transform.matrix (), copy_all_fields));
+    return (transformPointCloud<pcl::PointXY, float> (cloud_in, cloud_out, transform.matrix (), copy_all_fields));
   }
 
   /** \brief Transform a point with members x,y,z
