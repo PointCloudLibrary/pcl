@@ -835,7 +835,12 @@ namespace pcl
 
     inline PointXY() = default;
 
-    inline PointXY(float _x, float _y): x(_x), y(_y) {}
+    inline PointXY(float _x, float _y): x(_x), y(_y) {};
+
+    inline Eigen::Vector2f getVector2fMap()
+    {
+      return Eigen::Vector2f(x,y); 
+    }
 
     friend std::ostream& operator << (std::ostream& os, const PointXY& p);
   };
