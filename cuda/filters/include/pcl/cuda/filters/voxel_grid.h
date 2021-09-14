@@ -35,6 +35,8 @@
 
 #pragma once
 
+PCL_DEPRECATED_HEADER(1, 16, "The CUDA VoxelGrid filter does not work. Use the CPU VoxelGrid filter instead.")
+
 #include <pcl_cuda/filters/filter.h>
 #include <pcl_cuda/filters/passthrough.h>
 #include <thrust/count.h>
