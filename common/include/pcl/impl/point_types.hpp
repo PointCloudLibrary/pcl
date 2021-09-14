@@ -218,7 +218,9 @@ namespace pcl
       static constexpr int descriptorSize_v = descriptorSize<FeaturePointT>::value;
     }
   }
-
+  
+  using Vector2fMap = Eigen::Map<Eigen::Vector2f>;
+  using Vector2fMapConst = const Eigen::Map<Eigen::Vector2f>;
   using Array3fMap = Eigen::Map<Eigen::Array3f>;
   using Array3fMapConst = const Eigen::Map<const Eigen::Array3f>;
   using Array4fMap = Eigen::Map<Eigen::Array4f, Eigen::Aligned>;
@@ -245,6 +247,19 @@ namespace pcl
     }; \
   };
 
+#define PCL_ADD_UNION_POINT3D \
+  union EIGEN_ALIGN16 { \
+    float data[3]; \
+    struct { \
+      float x; \
+      float y; \
+    }; \
+  };
+
+#define PCL_ADD_EIGEN_MAPS_POINT3D \
+  inline pcl::Vector2fMap getVector2fMap () { return (pcl::Vector2fMap (data)); } \
+  inline pcl::Vector2fMapConst getVector2fMap () { return (pcl::Vector2fMapConst (data)); } \
+
 #define PCL_ADD_EIGEN_MAPS_POINT4D \
   inline pcl::Vector3fMap getVector3fMap () { return (pcl::Vector3fMap (data)); } \
   inline pcl::Vector3fMapConst getVector3fMap () const { return (pcl::Vector3fMapConst (data)); } \
@@ -258,6 +273,10 @@ namespace pcl
 #define PCL_ADD_POINT4D \
   PCL_ADD_UNION_POINT4D \
   PCL_ADD_EIGEN_MAPS_POINT4D
+
+#define PCL_ADD_POINT3D \
+  PCL_ADD_UNION_POINT3D \
+  PCL_ADD_EIGEN_MAPS_POINT3D
 
 #define PCL_ADD_UNION_NORMAL4D \
   union EIGEN_ALIGN16 { \
@@ -822,27 +841,28 @@ namespace pcl
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
-
+  struct _PointXY
+  {
+    PCL_ADD_POINT3D;
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
+  };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointXY& p);
   /** \brief A 2D point structure representing Euclidean xy coordinates.
     * \ingroup common
     */
-  struct PointXY
+  struct EIGEN_ALIGN16 PointXY : _PointXY
   {
-    float x = 0.f;
-    float y = 0.f;
+    inline PointXY( const _PointXY &p): PointXY(p.x,p.y) {};
+    inline PointXY(): PointXY(0.f, 0.f) {}
 
-    inline PointXY() = default;
-
-    inline PointXY(float _x, float _y): x(_x), y(_y) {};
-
-    inline Eigen::Vector2f getVector2fMap()
+    inline PointXY(float _x, float _y)
     {
-      return Eigen::Vector2f(x,y); 
+      x = _x; y = _y;
+      data[2] = 1.0f;
     }
-
     friend std::ostream& operator << (std::ostream& os, const PointXY& p);
+    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointUV& p);
