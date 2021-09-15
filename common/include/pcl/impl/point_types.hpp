@@ -848,7 +848,7 @@ namespace pcl
     inline PointXY(float _x, float _y): x(_x), y(_y) {}
     
     inline pcl::Vector2fMap getVector2fMap () { return (pcl::Vector2fMap (data)); }
-    inline pcl::Vector2fMapConst getVector2fMap () { return (pcl::Vector2fMapConst (data)); }
+    inline pcl::Vector2fMapConst getVector2fMapConst () { return (pcl::Vector2fMapConst (data)); }
     
     friend std::ostream& operator << (std::ostream& os, const PointXY& p);
     PCL_MAKE_ALIGNED_OPERATOR_NEW
