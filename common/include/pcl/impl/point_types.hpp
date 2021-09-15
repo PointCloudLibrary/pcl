@@ -843,16 +843,13 @@ namespace pcl
         float y; 
       };
     };
+    inline PointXY() = default;
+
+    inline PointXY(float _x, float _y): x(_x), y(_y) {}
+    
     inline pcl::Vector2fMap getVector2fMap () { return (pcl::Vector2fMap (data)); }
     inline pcl::Vector2fMapConst getVector2fMap () { return (pcl::Vector2fMapConst (data)); }
     
-    inline PointXY( const _PointXY &p): PointXY(p.x,p.y) {};
-    inline PointXY(): PointXY(0.f, 0.f) {}
-
-    inline PointXY(float _x, float _y)
-    {
-      x = _x; y = _y;
-    }
     friend std::ostream& operator << (std::ostream& os, const PointXY& p);
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
