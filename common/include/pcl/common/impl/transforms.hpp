@@ -305,6 +305,28 @@ transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   }
 }
 
+void
+transformPointCloud(const pcl::PointCloud<pcl::PointXY>& cloud_in, 
+                      pcl::PointCloud<pcl::PointXY>& cloud_out, 
+                      const Eigen::Affine2f& transform, 
+                      bool copy_all_fields)
+  {
+    if (&cloud_in != &cloud_out)
+    {
+      cloud_out.header   = cloud_in.header;
+      cloud_out.is_dense = cloud_in.is_dense;
+      cloud_out.reserve (cloud_in.size ());
+      if (copy_all_fields)
+        cloud_out.assign (cloud_in.begin (), cloud_in.end (), cloud_in.width);
+      else
+        cloud_out.resize (cloud_in.width, cloud_in.height);
+      cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
+      cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
+    }
+    
+    
+  }
+
 
 template <typename PointT, typename Scalar> void
 transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
