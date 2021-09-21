@@ -54,7 +54,6 @@
 #include <cstddef>
 #include <vector>
 
-
 namespace pcl
 {
 
@@ -306,10 +305,10 @@ transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 }
 
 void
-transformPointCloud(const pcl::PointCloud<pcl::PointXY>& cloud_in, 
-                      pcl::PointCloud<pcl::PointXY>& cloud_out, 
-                      const Eigen::Affine2f& transform, 
-                      bool copy_all_fields)
+transformPointCloud(pcl::PointCloud<pcl::PointXY>& cloud_in, 
+                    pcl::PointCloud<pcl::PointXY>& cloud_out, 
+                    const Eigen::Affine2f& transform, 
+                    bool copy_all_fields)
   {
     if (&cloud_in != &cloud_out)
     {
@@ -323,8 +322,31 @@ transformPointCloud(const pcl::PointCloud<pcl::PointXY>& cloud_in,
       cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
       cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
     }
-    
-    
+    if(cloud_in.is_dense)
+    {
+      for (std::size_t i = 0; i < cloud_out.size (); ++i)
+      {
+        pcl::Vector2fMap pf = cloud_in[i].getVector2fMap();
+        pf = transform * pf.transpose();
+        cloud_out[i].data[0] = pf(0,0);
+        cloud_out[i].data[1] = pf(0,1);
+      }
+    }
+    else
+    {
+      for (std::size_t i = 0; i < cloud_out.size (); ++i)
+      {
+        if (!std::isfinite(cloud_in[i].x) ||
+            !std::isfinite(cloud_in[i].y))
+          {
+            continue;
+          }
+        pcl::Vector2fMap pf = cloud_in[i].getVector2fMap();
+        pf = transform * pf.transpose();
+        cloud_out[i].data[0] = pf(0,0);
+        cloud_out[i].data[1] = pf(0,1);    
+      }
+    }
   }
 
 

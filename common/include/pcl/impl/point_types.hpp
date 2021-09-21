@@ -261,10 +261,6 @@ namespace pcl
   PCL_ADD_UNION_POINT4D \
   PCL_ADD_EIGEN_MAPS_POINT4D
 
-#define PCL_ADD_POINT3D \
-  PCL_ADD_UNION_POINT3D \
-  PCL_ADD_EIGEN_MAPS_POINT3D
-
 #define PCL_ADD_UNION_NORMAL4D \
   union EIGEN_ALIGN16 { \
     float data_n[4]; \
@@ -828,8 +824,9 @@ namespace pcl
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointXY& p);
-  /** \brief A 2D point structure representing Euclidean xy coordinates.
+  /* \brief A 2D point structure representing Euclidean xy coordinates.
     * \ingroup common
     */
   struct EIGEN_ALIGN16 PointXY
@@ -839,8 +836,8 @@ namespace pcl
       float data[2]; 
       struct 
       { 
-        float x; 
-        float y; 
+        float x=0.0f; 
+        float y=0.0f; 
       };
     };
     inline PointXY() = default;
