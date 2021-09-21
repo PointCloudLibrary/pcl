@@ -85,7 +85,7 @@ public:
   /** \brief Provide a pointer to the input target
    * (e.g., the point cloud that we want to align the input source to)
    *
-   * \param[in] cloud the input point cloud target
+   * \param[in] target the input point cloud target
    */
   void
   setInputTarget(const PointCloudTargetConstPtr& target) override;

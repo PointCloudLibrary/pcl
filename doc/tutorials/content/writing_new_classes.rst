@@ -252,7 +252,7 @@ enable the build.
     set (srcs
          src/conditional_removal.cpp
          # ...
-         src/bilateral.cpp)
+         src/bilateral.cpp
          )
 
     # Find "set (incs", and add a new entry there, e.g.,
@@ -664,7 +664,7 @@ execution of the code, its value is still 0, we will print an error using the
 In the case of the search method, we can either do the same, or be clever and
 provide a default option for the user. The best default options are:
 
- * use an organized search method via :pcl:`pcl::OrganizedNeighbor<pcl::OrganizedNeighbor>` if the point cloud is organized;
+ * use an organized search method via :pcl:`pcl::search::OrganizedNeighbor<pcl::search::OrganizedNeighbor>` if the point cloud is organized;
  * use a general purpose kdtree via :pcl:`pcl::KdTreeFLANN<pcl::KdTreeFLANN>` if the point cloud is unorganized.
 
 .. code-block:: cpp
