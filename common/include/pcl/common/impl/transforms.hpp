@@ -304,6 +304,7 @@ transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   }
 }
 
+
 void
 transformPointCloud(pcl::PointCloud<pcl::PointXY>& cloud_in, 
                     pcl::PointCloud<pcl::PointXY>& cloud_out, 
@@ -326,10 +327,10 @@ transformPointCloud(pcl::PointCloud<pcl::PointXY>& cloud_in,
     {
       for (std::size_t i = 0; i < cloud_out.size (); ++i)
       {
-        pcl::Vector2fMap pf = cloud_in[i].getVector2fMap();
-        pf = transform * pf.transpose();
-        cloud_out[i].data[0] = pf(0,0);
-        cloud_out[i].data[1] = pf(0,1);
+        Eigen::Vector2f pf = cloud_in[i].getVector2fMap();
+        pf = transform.matrix() * pf;
+        cloud_out[i].data[0] = pf[0];
+        cloud_out[i].data[1] = pf[1];
       }
     }
     else
@@ -341,10 +342,10 @@ transformPointCloud(pcl::PointCloud<pcl::PointXY>& cloud_in,
           {
             continue;
           }
-        pcl::Vector2fMap pf = cloud_in[i].getVector2fMap();
-        pf = transform * pf.transpose();
-        cloud_out[i].data[0] = pf(0,0);
-        cloud_out[i].data[1] = pf(0,1);    
+        Eigen::Vector2f pf = cloud_in[i].getVector2fMap();
+        pf = transform.matrix() * pf;
+        cloud_out[i].data[0] = pf[0];
+        cloud_out[i].data[1] = pf[1];    
       }
     }
   }
