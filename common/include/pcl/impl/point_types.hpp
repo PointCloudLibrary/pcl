@@ -829,9 +829,9 @@ namespace pcl
   /* \brief A 2D point structure representing Euclidean xy coordinates.
     * \ingroup common
     */
-  struct EIGEN_ALIGN16 PointXY
+  struct PointXY
   {
-    union EIGEN_ALIGN16 
+    union 
     { 
       float data[2]; 
       struct 
@@ -848,7 +848,6 @@ namespace pcl
     inline pcl::Vector2fMapConst getVector2fMapConst () { return (pcl::Vector2fMapConst (data)); }
     
     friend std::ostream& operator << (std::ostream& os, const PointXY& p);
-    PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointUV& p);
