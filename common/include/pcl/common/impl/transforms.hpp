@@ -305,7 +305,7 @@ transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 }
 
 
-void
+inline void
 transformPointCloud(pcl::PointCloud<pcl::PointXY>& cloud_in, 
                     pcl::PointCloud<pcl::PointXY>& cloud_out, 
                     const Eigen::Affine2f& transform, 
