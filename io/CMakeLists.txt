@@ -1,13 +1,14 @@
 set(SUBSYS_NAME io)
 set(SUBSYS_DESC "Point cloud IO library")
 set(SUBSYS_DEPS common octree)
+set(SUBSYS_EXT_DEPS boost eigen)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 if(WIN32)
-  PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk rssdk2 pcap png vtk)
+  PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk rssdk2 pcap png vtk EXT_DEPS ${SUBSYS_EXT_DEPS})
 else()
-  PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk pcap png vtk libusb)
+  PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk pcap png vtk libusb EXT_DEPS ${SUBSYS_EXT_DEPS})
 endif()
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
@@ -338,7 +339,8 @@ PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${c
 
 target_include_directories(${LIB_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-target_link_libraries("${LIB_NAME}" pcl_common pcl_io_ply)
+target_link_libraries("${LIB_NAME}" Boost::boost Boost::filesystem Boost::iostreams pcl_common pcl_io_ply)
+
 if(VTK_FOUND)
   if(${VTK_VERSION} VERSION_LESS 9.0)
     link_directories(${VTK_LINK_DIRECTORIES})
@@ -401,7 +403,7 @@ if(PCAP_FOUND)
   target_link_libraries("${LIB_NAME}" ${PCAP_LIBRARIES})
 endif()
 
-set(EXT_DEPS eigen3)
+set(EXT_DEPS boost eigen3)
 
 if(WITH_OPENNI)
   list(APPEND EXT_DEPS libopenni)
