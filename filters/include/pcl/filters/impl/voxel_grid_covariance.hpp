@@ -457,6 +457,9 @@ pcl::VoxelGridCovariance<PointT>::getDisplayCloud (pcl::PointCloud<PointXYZ>& ce
   Eigen::Vector3d rand_point;
   Eigen::Vector3d dist_point;
 
+  cell_cloud.reserve (pnt_per_cell * std::count_if (leaves_.begin (), leaves_.end (),
+      [this] (auto& l) { return (l.second.nr_points >= min_points_per_voxel_); }));
+
   // Generate points for each occupied voxel with sufficient points.
   for (typename std::map<std::size_t, Leaf>::iterator it = leaves_.begin (); it != leaves_.end (); ++it)
   {
