@@ -518,7 +518,7 @@ endmacro()
 ###############################################################################
 # Make a pkg-config file for a library. Do not include general PCL stuff in the
 # arguments; they will be added automatically.
-# _name The library name. "pcl_" will be preprended to this.
+# _name The library name. Please prepend "pcl_" to ensure no conflicts in user systems
 # COMPONENT The part of PCL that this pkg-config file belongs to.
 # DESC Description of the library.
 # PCL_DEPS External dependencies to pcl libs, as a list. (will get mangled to external pkg-config name)
