@@ -46,8 +46,6 @@ if(CUDA_FOUND)
     set(CMAKE_CUDA_ARCHITECTURES ${CUDA_ARCH_BIN})
     message(STATUS "CMAKE_CUDA_ARCHITECTURES: ${CMAKE_CUDA_ARCHITECTURES}")
     
-    #Add empty project as its not required with newer CMake
-    add_library(pcl_cuda INTERFACE)
   else()
     # Generate SASS
     set(CMAKE_CUDA_ARCHITECTURES ${CUDA_ARCH_BIN})
@@ -56,8 +54,8 @@ if(CUDA_FOUND)
     set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -gencode arch=compute_${ver},code=compute_${ver}")
     message(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
     
-    add_library(pcl_cuda INTERFACE)
-    target_include_directories(pcl_cuda INTERFACE ${CUDA_TOOLKIT_INCLUDE})
-    
   endif ()
+
+  add_library(pcl_cuda INTERFACE)
+  target_include_directories(pcl_cuda INTERFACE ${CUDA_TOOLKIT_INCLUDE})
 endif()
