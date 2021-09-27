@@ -840,9 +840,9 @@ namespace pcl
         float y = 0.0f; 
       };
     };
-    inline PointXY() = default;
 
     inline PointXY(float _x, float _y): x(_x), y(_y) {}
+    inline PointXY():x(0.0f),y(0.0f) {}
     
     inline pcl::Vector2fMap getVector2fMap () { return (pcl::Vector2fMap (data)); }
     inline const pcl::Vector2fMapConst getVector2fMapConst () const { return (pcl::Vector2fMapConst (data)); }
