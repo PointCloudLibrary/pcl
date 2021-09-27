@@ -306,9 +306,9 @@ transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 
 
 inline void
-transformPointCloud(pcl::PointCloud<pcl::PointXY> &cloud_in, 
-                    pcl::PointCloud<pcl::PointXY>& cloud_out, 
-                    const Eigen::Affine2f& transform, 
+transformPointCloud(const pcl::PointCloud<pcl::PointXY> &cloud_in, 
+                    pcl::PointCloud<pcl::PointXY> &cloud_out, 
+                    const Eigen::Affine2f &transform, 
                     bool copy_all_fields)
   {
     if (&cloud_in != &cloud_out)
@@ -326,8 +326,8 @@ transformPointCloud(pcl::PointCloud<pcl::PointXY> &cloud_in,
     if(cloud_in.is_dense)
     {
       for (std::size_t i = 0; i < cloud_out.size (); ++i)
-      {
-        Eigen::Vector2f pf = cloud_in[i].getVector2fMap();
+      { 
+        Eigen::Vector2f pf = cloud_in[i].getVector2fMapConst();
         pf = transform.linear() * pf;
         cloud_out[i].data[0] = pf[0];
         cloud_out[i].data[1] = pf[1];
@@ -342,7 +342,7 @@ transformPointCloud(pcl::PointCloud<pcl::PointXY> &cloud_in,
           {
             continue;
           }
-        Eigen::Vector2f pf = cloud_in[i].getVector2fMap();
+        Eigen::Vector2f pf = cloud_in[i].getVector2fMapConst();
         pf = transform.linear() * pf;
         cloud_out[i].data[0] = pf[0];
         cloud_out[i].data[1] = pf[1];    

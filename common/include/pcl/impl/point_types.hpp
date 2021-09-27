@@ -220,7 +220,7 @@ namespace pcl
   }
   
   using Vector2fMap = Eigen::Map<Eigen::Vector2f>;
-  using Vector2fMapConst = const Eigen::Map<Eigen::Vector2f>;
+  using Vector2fMapConst = const Eigen::Map<const Eigen::Vector2f>;
   using Array3fMap = Eigen::Map<Eigen::Array3f>;
   using Array3fMapConst = const Eigen::Map<const Eigen::Array3f>;
   using Array4fMap = Eigen::Map<Eigen::Array4f, Eigen::Aligned>;
@@ -836,8 +836,8 @@ namespace pcl
       float data[2]; 
       struct 
       { 
-        float x=0.0f; 
-        float y=0.0f; 
+        float x = 0.0f; 
+        float y = 0.0f; 
       };
     };
     inline PointXY() = default;
@@ -845,7 +845,7 @@ namespace pcl
     inline PointXY(float _x, float _y): x(_x), y(_y) {}
     
     inline pcl::Vector2fMap getVector2fMap () { return (pcl::Vector2fMap (data)); }
-    inline pcl::Vector2fMapConst getVector2fMapConst () { return (pcl::Vector2fMapConst (data)); }
+    inline const pcl::Vector2fMapConst getVector2fMapConst () const { return (pcl::Vector2fMapConst (data)); }
     
     friend std::ostream& operator << (std::ostream& os, const PointXY& p);
   };
