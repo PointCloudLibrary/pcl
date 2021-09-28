@@ -836,8 +836,8 @@ namespace pcl
       float data[2]; 
       struct 
       { 
-        float x = 0.0f; 
-        float y = 0.0f; 
+        float x; 
+        float y; 
       };
     };
 
