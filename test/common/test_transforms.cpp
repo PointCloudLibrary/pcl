@@ -131,6 +131,14 @@ TYPED_TEST (Transforms, PointCloudXYZDenseIndexed)
     ASSERT_XYZ_NEAR (p[i], this->p_xyz_trans[i * 2], this->ABS_ERROR);
 }
 
+TYPED_TEST()
+{
+  pcl::PointCloud<pcl::PointXY> p_in;
+  pcl::PointCloud<pcl::PointXY> p_out;
+  Eigen::Affine2f transform;
+  pcl::transformPointCloud(p_in,p_out,transform);
+}
+
 TYPED_TEST (Transforms, PointCloudXYZSparse)
 {
   // Make first point infinite and point cloud not dense
