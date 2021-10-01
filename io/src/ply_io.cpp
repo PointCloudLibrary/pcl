@@ -345,7 +345,7 @@ namespace pcl
         [this] { vertexListPropertyEndCallback (); }
       );
     }
-    PCL_DEBUG("[pcl::PLYReader::listPropertyDefinitionCallback] no fitting callbacks. element_name=%s, property_name=%s\n", element_name.c_str(), property_name.c_str());
+    PCL_WARN("[pcl::PLYReader::listPropertyDefinitionCallback] no fitting callbacks. element_name=%s, property_name=%s\n", element_name.c_str(), property_name.c_str());
     return {};
   }
 }
