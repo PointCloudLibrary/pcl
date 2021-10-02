@@ -68,6 +68,7 @@ class Transforms : public ::testing::Test
   {
     Eigen::Matrix<Scalar, 6, 1> r = Eigen::Matrix<Scalar, 6, 1>::Random ();
     Eigen::Transform<Scalar, 3, Eigen::Affine> transform;
+    Eigen::Transform<Scalar, 2, Eigen::Affine> transform2d; 
     pcl::getTransformation (r[0], r[1], r[2], r[3], r[4], r[5], transform);
     tf = transform.matrix ();
 
@@ -131,7 +132,7 @@ TYPED_TEST (Transforms, PointCloudXYZDenseIndexed)
     ASSERT_XYZ_NEAR (p[i], this->p_xyz_trans[i * 2], this->ABS_ERROR);
 }
 
-TYPED_TEST()
+TYPED_TEST(Transforms, PointCLoudXY)
 {
   pcl::PointCloud<pcl::PointXY> p_in;
   pcl::PointCloud<pcl::PointXY> p_out;
