@@ -70,8 +70,12 @@ class Transforms : public ::testing::Test
     Eigen::Transform<Scalar, 3, Eigen::Affine> transform;
     Eigen::Transform<Scalar, 2, Eigen::Affine> transform2d; 
     pcl::getTransformation (r[0], r[1], r[2], r[3], r[4], r[5], transform);
-    tf = transform.matrix ();
 
+    transform2d(0,0) = 1; transform2d(0,1) = 0; transform2d(1,0) = 0; transform2d(1,1) = -1;
+
+    tf = transform.matrix ();
+    tf2d = transform2d.matrix ();
+    
     p_xyz_normal.resize (CLOUD_SIZE);
     p_xyz_normal_trans.resize (CLOUD_SIZE);
     for (std::size_t i = 0; i < CLOUD_SIZE; ++i)
@@ -98,11 +102,12 @@ class Transforms : public ::testing::Test
   const std::size_t CLOUD_SIZE;
 
   Transform tf;
+  Transform tf2d;
 
   // Random point clouds and their expected transformed versions
   pcl::PointCloud<pcl::PointXYZ> p_xyz, p_xyz_trans;
   pcl::PointCloud<pcl::PointXYZRGBNormal> p_xyz_normal, p_xyz_normal_trans;
-
+  pcl::PointCloud<pcl::PointXY> p_xy, pxy_trans;
   // Indices, every second point
   Indices indices;
 
@@ -132,12 +137,11 @@ TYPED_TEST (Transforms, PointCloudXYZDenseIndexed)
     ASSERT_XYZ_NEAR (p[i], this->p_xyz_trans[i * 2], this->ABS_ERROR);
 }
 
-TYPED_TEST(Transforms, PointCLoudXY)
+TEST (Transforms, PointCloudXY)
 {
-  pcl::PointCloud<pcl::PointXY> p_in;
-  pcl::PointCloud<pcl::PointXY> p_out;
-  Eigen::Affine2f transform;
-  pcl::transformPointCloud(p_in,p_out,transform);
+  pcl::PointCloud<pcl::PointXY> p;
+  pcl::transformPointCloud(this->p_xy,p,this->tf2d);
+  ASSERT_EQ(p.size (), this->p_xy.size ());
 }
 
 TYPED_TEST (Transforms, PointCloudXYZSparse)

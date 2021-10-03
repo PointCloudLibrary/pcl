@@ -845,7 +845,7 @@ namespace pcl
     inline PointXY():x(0.0f),y(0.0f) {}
     
     inline pcl::Vector2fMap getVector2fMap () { return (pcl::Vector2fMap (data)); }
-    inline const pcl::Vector2fMapConst getVector2fMapConst () const { return (pcl::Vector2fMapConst (data)); }
+    inline pcl::Vector2fMapConst getVector2fMap () const { return (pcl::Vector2fMapConst (data)); }
     
     friend std::ostream& operator << (std::ostream& os, const PointXY& p);
   };
