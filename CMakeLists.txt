@@ -383,13 +383,16 @@ if(WITH_QT)
   find_package(Qt6 COMPONENTS Concurrent OpenGL Widgets)
   if (NOT Qt6_FOUND)
     find_package(Qt5 5.9.5 COMPONENTS Concurrent OpenGL Widgets)
+    set(Qt_FOUND ${Qt5_FOUND})
+  else()
+    set(Qt_FOUND TRUE)
   endif()
 
   set(QT_DISABLE_PRECATED_BEFORE_VAL "0x050900")
-  
-  if(Qt${QT_VERSION_MAJOR}_FOUND)
+
+  if(Qt_FOUND)
     message(STATUS "Qt${QT_VERSION_MAJOR} version: ${Qt${QT_VERSION_MAJOR}_VERSION}")
-    set(QT${QT_VERSION_MAJOR}_FOUND ${Qt${QT_VERSION_MAJOR}_FOUND})
+    set(QT${QT_VERSION_MAJOR}_FOUND ${Qt_FOUND})
     #Set Cmake Auto features to skip .hh files
     if(POLICY CMP0100)
       cmake_policy(SET CMP0100 OLD)
@@ -411,10 +414,10 @@ if(WITH_QT)
     set_property(TARGET Qt${QT_VERSION_MAJOR}::Core PROPERTY INTERFACE_COMPILE_DEFINITIONS ${core_def})
 
   else()
-    message(STATUS "Qt${QT_VERSION_MAJOR} is not found.")
+    message(STATUS "Qt6/Qt5 is not found.")
   endif()
 else()
-  set(Qt${QT_VERSION_MAJOR}_FOUND FALSE)
+  set(Qt_FOUND FALSE)
 endif()
 
 #Find PCAP
