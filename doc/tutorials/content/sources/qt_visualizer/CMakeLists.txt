@@ -11,9 +11,12 @@ set(CMAKE_AUTOUIC ON) # UI files
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Find the QtWidgets library
-find_package(Qt6 COMPONENTS Concurrent OpenGL Widgets)
+find_package(Qt6 QUIET COMPONENTS Concurrent OpenGL Widgets)
 if (NOT Qt6_FOUND)
   find_package(Qt5 COMPONENTS Concurrent OpenGL Widgets REQUIRED)
+  set(QT_VERSION_MAJOR 5)
+else()
+  set(QT_VERSION_MAJOR 6)
 endif()
 
 find_package(VTK REQUIRED)

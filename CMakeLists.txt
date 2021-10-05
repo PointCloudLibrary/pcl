@@ -380,18 +380,23 @@ endif()
 #VTK can depend on Qt and search for its required version, so search after so we can overwrite Qt5_FOUND/Qt6_FOUND if the version we require is not found.
 option(WITH_QT "Build QT Front-End" TRUE)
 if(WITH_QT)
-  find_package(Qt6 COMPONENTS Concurrent OpenGL Widgets)
+  find_package(Qt6 QUIET COMPONENTS Concurrent OpenGL Widgets)
   if (NOT Qt6_FOUND)
-    find_package(Qt5 5.9.5 COMPONENTS Concurrent OpenGL Widgets)
+    find_package(Qt5 5.9.5 QUIET COMPONENTS Concurrent OpenGL Widgets)
     set(Qt_FOUND ${Qt5_FOUND})
+    if(Qt5_FOUND)
+      set(QT_VERSION_MAJOR 5)
+    endif()
   else()
     set(Qt_FOUND TRUE)
+    set(QT_VERSION_MAJOR 6)
   endif()
 
   set(QT_DISABLE_PRECATED_BEFORE_VAL "0x050900")
 
   if(Qt_FOUND)
     message(STATUS "Qt${QT_VERSION_MAJOR} version: ${Qt${QT_VERSION_MAJOR}_VERSION}")
+
     set(QT${QT_VERSION_MAJOR}_FOUND ${Qt_FOUND})
     #Set Cmake Auto features to skip .hh files
     if(POLICY CMP0100)
@@ -417,6 +422,7 @@ if(WITH_QT)
     message(STATUS "Qt6/Qt5 is not found.")
   endif()
 else()
+  message(STATUS "WITHOUT_QT")
   set(Qt_FOUND FALSE)
 endif()
 
