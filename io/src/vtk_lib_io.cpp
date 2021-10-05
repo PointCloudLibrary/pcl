@@ -381,6 +381,7 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::TextureMe
   mesh.header = polygon_mesh.header;
   /// TODO check for sub-meshes
   mesh.tex_polygons.push_back (polygon_mesh.polygons);
+  mesh.tex_coord_indices.push_back (polygon_mesh.polygons);
 
   // Add dummy material
   mesh.tex_materials.emplace_back();
