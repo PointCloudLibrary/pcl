@@ -309,8 +309,8 @@ TEST (PCL, OrganizedTransform)
 
 TEST (PCL, PointXY)
 {
-    Eigen::Transform<Scalar, 2, Eigen::Affine> transform2d; 
-    transform2d(0,0) = 1; transform2d(0,1) = 0; transform2d(1,0) = 0; transform2d(1,1) = -1;
+    Eigen::Affine2f tf; 
+    tf(0,0) = 1; tf(0,1) = 0; tf(1,0) = 0; tf(1,1) = -1;
     tf = transform2d.matrix();
     pcl::PointCloud<pcl::PointXY> p,q;
     pcl::transformPointCloud(p,q,tf,true);
