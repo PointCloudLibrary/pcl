@@ -309,9 +309,18 @@ TEST (PCL, OrganizedTransform)
 
 TEST (PCL, PointXY)
 {
-    Eigen::Affine2f tf;
-    pcl::PointCloud<pcl::PointXY> p,q;
-    pcl::transformPointCloud(p,q,tf,true);
+  Eigen::Affine2f tf;
+  pcl::PointCloud<pcl::PointXY> p,q;
+
+  p.push_back (pcl::PointXY (rand (), rand ())); 
+  p.push_back (pcl::PointXY (rand (), rand ())); 
+  p.push_back (pcl::PointXY (rand (), rand ())); 
+  p.push_back (pcl::PointXY (rand (), rand ())); 
+  
+  tf(0,0) = 1; tf(0,1) = 0; tf(1,0) = 0; tf(1,1) = -1;
+  
+  pcl::transformPointCloud(p,q,tf,true);
+  ASSERT_EQ(p.size(),q.size());
 }
 
 /* ---[ */
