@@ -419,7 +419,7 @@ if(WITH_QT)
     set_property(TARGET Qt${QT_VERSION_MAJOR}::Core PROPERTY INTERFACE_COMPILE_DEFINITIONS ${core_def})
 
   else()
-    message(STATUS "Qt6/Qt5 is not found.")
+    message(STATUS "Qt is not found.")
   endif()
 else()
   set(Qt_FOUND FALSE)
