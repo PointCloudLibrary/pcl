@@ -413,13 +413,11 @@ if(WITH_QT_STR MATCHES "^(YES|QT6|QT5|NO)$")
     endif()
   endif()
 
-  if(WITH_QT_STR MATCHES "^(NO)$" AND NOT QT6_FOUND)
-    set(QT_DISABLE_PRECATED_BEFORE_VAL "0x050900")
-  endif()
-
   if(QT_FOUND)
     set(QT_VERSION ${${QTX}_VERSION})
     message(STATUS "Qt version: ${QT_VERSION}")
+
+    set(QT_DISABLE_PRECATED_BEFORE_VAL "0x050900")
 
     #Set Cmake Auto features to skip .hh files
     if(POLICY CMP0100)
