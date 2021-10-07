@@ -422,7 +422,6 @@ if(WITH_QT)
     message(STATUS "Qt6/Qt5 is not found.")
   endif()
 else()
-  message(STATUS "WITHOUT_QT")
   set(Qt_FOUND FALSE)
 endif()
 
