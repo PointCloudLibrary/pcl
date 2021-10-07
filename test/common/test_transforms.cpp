@@ -315,12 +315,36 @@ TEST (PCL, PointXY)
   p.push_back (pcl::PointXY (rand (), rand ())); 
   p.push_back (pcl::PointXY (rand (), rand ())); 
   p.push_back (pcl::PointXY (rand (), rand ())); 
-  p.push_back (pcl::PointXY (rand (), rand ())); 
-  
+  p.push_back (pcl::PointXY (rand (), rand ()));
+
   tf(0,0) = 1; tf(0,1) = 0; tf(1,0) = 0; tf(1,1) = -1;
   
   pcl::transformPointCloud(p,q,tf,true);
   ASSERT_EQ(p.size(),q.size());
+  for (int i = 0;i<q.size();i++)
+  {
+    ASSERT_EQ(q[i].x, p[i].x);
+    ASSERT_EQ(q[i].y, -p[i].y);
+  }
+
+  Eigen::Affine2f tf2;
+  pcl::PointCloud<pcl::PointXY> cloud_in,cloud_out;
+
+  cloud_in.push_back (pcl::PointXY (rand (), rand ())); 
+  cloud_in.push_back (pcl::PointXY (rand (), rand ())); 
+  cloud_in.push_back (pcl::PointXY (rand (), rand ())); 
+  cloud_in.push_back (pcl::PointXY (rand (), rand ()));
+
+  float theta = 30.0;
+  tf2(0,0) = cosf(theta); tf2(0,1) = -sinf(theta); tf2(1,0) = sinf(theta); tf2(1,1) = cos(theta);
+  
+  pcl::transformPointCloud(p,q,tf2,true);
+  ASSERT_EQ(cloud_in.size(),cloud_out.size());
+  for (int i = 0;i<cloud_out.size();i++)
+  {
+    ASSERT_EQ(cloud_out[i].x, ((cloud_in[i].x * cosf(theta)) - ((cloud_in[i].y) * sinf(theta)) ));
+    ASSERT_EQ(cloud_out[i].y, ((cloud_in[i].x * sinf(theta)) + ((cloud_in[i].y) * cosf(theta)) ));
+  }
 }
 
 /* ---[ */
@@ -328,5 +352,5 @@ int
 main (int argc, char** argv)
 {
   testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  return (RUN_ALL_TESTS (p[i]));
 }
