@@ -191,7 +191,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getScatterMatrix (const int& c
 
   for (const auto& n_idx : nn_indices)
   {
-    const PointInT& n_point = (*input_)[n_idx];
+    const PointInT& n_point = (*surface_)[n_idx];
 
     double neigh_point[3];
     memset(neigh_point, 0, sizeof(double) * 3);
