@@ -378,23 +378,44 @@ if(WITH_VTK)
 endif()
 
 #VTK can depend on Qt and search for its required version, so search after so we can overwrite Qt5_FOUND/Qt6_FOUND if the version we require is not found.
-option(WITH_QT "Build QT Front-End" TRUE)
+option(WITH_QT "Build QT Front-End (YES/QT6/QT5/NO)" TRUE)
+
+# Set all true constants to string YES, false constants to string NO, other to upper case string
 if(WITH_QT)
-  find_package(Qt6 QUIET COMPONENTS Concurrent OpenGL Widgets)
-  set(QT6_FOUND ${Qt6_FOUND})
-  if (NOT QT6_FOUND)
+  # matches all true constants except numbers other than 1
+  # so we prevent things like -DWITH_QT=5 to be handelt as YES instead of QT5
+  # -DWITH_QT=5 will error and inform you to use -DWITH_QT=QT5
+  if(NOT (WITH_QT LESS 1 OR WITH_QT GREATER 1) AND ${WITH_QT})
+    set(WITH_QT_STR "YES")
+  else()
+    string(TOUPPER ${WITH_QT} WITH_QT_STR)
+  endif()
+else()
+  set(WITH_QT_STR "NO")
+endif()
+
+if(WITH_QT_STR MATCHES "^(YES|QT6|QT5|NO)$")
+  if(WITH_QT_STR MATCHES "^(YES|QT6)$")
+    find_package(Qt6 QUIET COMPONENTS Concurrent OpenGL Widgets)
+    set(QT6_FOUND ${Qt6_FOUND})
+    if (QT6_FOUND)
+      set(QT_FOUND TRUE)
+      set(QTX Qt6)
+    endif()
+  endif()
+
+  if(WITH_QT_STR MATCHES "^(YES|QT5)$" AND NOT QT6_FOUND)
     find_package(Qt5 5.9.5 QUIET COMPONENTS Concurrent OpenGL Widgets)
     set(QT5_FOUND ${Qt5_FOUND})
     set(QT_FOUND ${QT5_FOUND})
     if(QT5_FOUND)
       set(QTX Qt5)
     endif()
-  else()
-    set(QT_FOUND TRUE)
-    set(QTX Qt6)
   endif()
 
-  set(QT_DISABLE_PRECATED_BEFORE_VAL "0x050900")
+  if(WITH_QT_STR MATCHES "^(NO)$" AND NOT QT6_FOUND)
+    set(QT_DISABLE_PRECATED_BEFORE_VAL "0x050900")
+  endif()
 
   if(QT_FOUND)
     set(QT_VERSION ${${QTX}_VERSION})
@@ -421,9 +442,10 @@ if(WITH_QT)
     set_property(TARGET ${QTX}::Core PROPERTY INTERFACE_COMPILE_DEFINITIONS ${core_def})
   else()
     message(STATUS "Qt is not found.")
+    set(QT_FOUND FALSE)
   endif()
 else()
-  set(QT_FOUND FALSE)
+  message(FATAL_ERROR "Option WITH_QT must be one of YES/QT6/QT5/NO but is '${WITH_QT}'")
 endif()
 
 #Find PCAP
