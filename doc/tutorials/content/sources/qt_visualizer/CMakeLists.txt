@@ -14,9 +14,9 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 find_package(Qt6 QUIET COMPONENTS Concurrent OpenGL Widgets)
 if (NOT Qt6_FOUND)
   find_package(Qt5 COMPONENTS Concurrent OpenGL Widgets REQUIRED)
-  set(QT_VERSION_MAJOR 5)
+  set(QTX Qt5)
 else()
-  set(QT_VERSION_MAJOR 6)
+  set(QTX Qt6)
 endif()
 
 find_package(VTK REQUIRED)
@@ -32,4 +32,4 @@ set(project_SOURCES main.cpp pclviewer.cpp)
 
 add_executable(${PROJECT_NAME} ${project_SOURCES})
 
-target_link_libraries(${PROJECT_NAME} ${PCL_LIBRARIES} Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(${PROJECT_NAME} ${PCL_LIBRARIES} ${QTX}::Widgets)

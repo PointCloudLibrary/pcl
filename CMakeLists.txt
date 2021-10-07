@@ -381,48 +381,49 @@ endif()
 option(WITH_QT "Build QT Front-End" TRUE)
 if(WITH_QT)
   find_package(Qt6 QUIET COMPONENTS Concurrent OpenGL Widgets)
-  if (NOT Qt6_FOUND)
+  set(QT6_FOUND ${Qt6_FOUND})
+  if (NOT QT6_FOUND)
     find_package(Qt5 5.9.5 QUIET COMPONENTS Concurrent OpenGL Widgets)
-    set(Qt_FOUND ${Qt5_FOUND})
-    if(Qt5_FOUND)
-      set(QT_VERSION_MAJOR 5)
+    set(QT5_FOUND ${Qt5_FOUND})
+    set(QT_FOUND ${QT5_FOUND})
+    if(QT5_FOUND)
+      set(QTX Qt5)
     endif()
   else()
-    set(Qt_FOUND TRUE)
-    set(QT_VERSION_MAJOR 6)
+    set(QT_FOUND TRUE)
+    set(QTX Qt6)
   endif()
 
   set(QT_DISABLE_PRECATED_BEFORE_VAL "0x050900")
 
-  if(Qt_FOUND)
-    message(STATUS "Qt${QT_VERSION_MAJOR} version: ${Qt${QT_VERSION_MAJOR}_VERSION}")
+  if(QT_FOUND)
+    set(QT_VERSION ${${QTX}_VERSION})
+    message(STATUS "Qt version: ${QT_VERSION}")
 
-    set(QT${QT_VERSION_MAJOR}_FOUND ${Qt_FOUND})
     #Set Cmake Auto features to skip .hh files
     if(POLICY CMP0100)
       cmake_policy(SET CMP0100 OLD)
     endif()
     
     #If building CUDA required libraries
-    #Change Qt${QT_VERSION_MAJOR}::Core fixed -fPIC flags to conditionally only CXX
+    #Change ${QTX}::Core fixed -fPIC flags to conditionally only CXX
     #TODO: To be removed when QT is >5.14.1
     if(BUILD_CUDA OR BUILD_GPU)
-      if(Qt${QT_VERSION_MAJOR}Widgets_VERSION VERSION_LESS 5.14.1)
-        get_property(core_options TARGET Qt${QT_VERSION_MAJOR}::Core PROPERTY INTERFACE_COMPILE_OPTIONS)
+      if(${QTX}Widgets_VERSION VERSION_LESS 5.14.1)
+        get_property(core_options TARGET ${QTX}::Core PROPERTY INTERFACE_COMPILE_OPTIONS)
         string(REPLACE "-fPIC" "$<IF:$<COMPILE_LANGUAGE:CXX>,-fPIC,>"  new_core_options ${core_options})
-        set_property(TARGET Qt${QT_VERSION_MAJOR}::Core PROPERTY INTERFACE_COMPILE_OPTIONS ${new_core_options})
+        set_property(TARGET ${QTX}::Core PROPERTY INTERFACE_COMPILE_OPTIONS ${new_core_options})
       endif()
     endif()
     
-    get_property(core_def TARGET Qt${QT_VERSION_MAJOR}::Core PROPERTY INTERFACE_COMPILE_DEFINITIONS)
+    get_property(core_def TARGET ${QTX}::Core PROPERTY INTERFACE_COMPILE_DEFINITIONS)
     list(APPEND core_def "QT_DISABLE_DEPRECATED_BEFORE=${QT_DISABLE_PRECATED_BEFORE_VAL}")
-    set_property(TARGET Qt${QT_VERSION_MAJOR}::Core PROPERTY INTERFACE_COMPILE_DEFINITIONS ${core_def})
-
+    set_property(TARGET ${QTX}::Core PROPERTY INTERFACE_COMPILE_DEFINITIONS ${core_def})
   else()
     message(STATUS "Qt is not found.")
   endif()
 else()
-  set(Qt_FOUND FALSE)
+  set(QT_FOUND FALSE)
 endif()
 
 #Find PCAP
