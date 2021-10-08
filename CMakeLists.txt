@@ -377,14 +377,23 @@ if(WITH_VTK)
   endif()
 endif()
 
-#VTK can depend on Qt and search for its required version, so search after so we can overwrite Qt5_FOUND/Qt6_FOUND if the version we require is not found.
-option(WITH_QT "Build QT Front-End (YES/QT6/QT5/NO)" TRUE)
+# VTK can depend on Qt and search for its required version, so search after so we can overwrite Qt5_FOUND/Qt6_FOUND if the version we require is not found.
+set(WITH_QT "AUTO" CACHE STRING "Build QT Front-End (AUTO|YES|QT6|QT5|NO)")
 
-# Set all true constants to string YES, false constants to string NO, other to upper case string
+# Convert WITH_QT to WITH_QT_STR with
+# - CMake true constants to string YES (except numbers unequal 1)
+# - CMake false constants to string NO
+# - Other values to upper case string
+#
+# Background: WITH_QT was previously boolean and we want to be backwards compatible.
 if(WITH_QT)
-  # matches all true constants except numbers other than 1
-  # so we prevent things like -DWITH_QT=5 to be handelt as YES instead of QT5
-  # -DWITH_QT=5 will error and inform you to use -DWITH_QT=QT5
+  # Matches all CMake true constants except numbers other than 1.
+  # This way we prevent things like -DWITH_QT=5 to be handelt as YES instead of QT5.
+  # Setting -DWITH_QT=5 will error and inform you to use -DWITH_QT=QT5 instead.
+  # (This breaks backward compatibility, but hopefully no one will use values not equal to 1 if they want to express true.)
+  #
+  # Note: "NOT (WITH_QT LESS 1 OR WITH_QT GREATER 1)" is not the same as
+  #       "WITH_QT EQUAL 1" because "LESS/GREATER/EQUAL" all pre-check if WITH_QT is a valid number.
   if(NOT (WITH_QT LESS 1 OR WITH_QT GREATER 1) AND ${WITH_QT})
     set(WITH_QT_STR "YES")
   else()
@@ -394,23 +403,31 @@ else()
   set(WITH_QT_STR "NO")
 endif()
 
-if(WITH_QT_STR MATCHES "^(YES|QT6|QT5|NO)$")
-  if(WITH_QT_STR MATCHES "^(YES|QT6)$")
+if(NOT WITH_QT_STR MATCHES "^(AUTO|YES|QT6|QT5|NO)$")
+  message(FATAL_ERROR "Option WITH_QT must be one of AUTO|YES|QT6|QT5|NO but is '${WITH_QT}'")
+endif()
+
+if(NOT WITH_QT_STR MATCHES "^(NO)$")
+  if(WITH_QT_STR MATCHES "^(AUTO|YES|QT6)$")
     find_package(Qt6 QUIET COMPONENTS Concurrent OpenGL Widgets)
     set(QT6_FOUND ${Qt6_FOUND})
+    set(QT_FOUND ${QT6_FOUND})
     if (QT6_FOUND)
-      set(QT_FOUND TRUE)
       set(QTX Qt6)
     endif()
   endif()
 
-  if(WITH_QT_STR MATCHES "^(YES|QT5)$" AND NOT QT6_FOUND)
+  if(WITH_QT_STR MATCHES "^(AUTO|YES|QT5)$" AND NOT QT6_FOUND)
     find_package(Qt5 5.9.5 QUIET COMPONENTS Concurrent OpenGL Widgets)
     set(QT5_FOUND ${Qt5_FOUND})
     set(QT_FOUND ${QT5_FOUND})
     if(QT5_FOUND)
       set(QTX Qt5)
     endif()
+  endif()
+
+  if(NOT WITH_QT_STR MATCHES "^(AUTO)$" AND NOT QT_FOUND)
+    message(FATAL_ERROR "Can not find Qt required by WITH_QT=${WITH_QT}.")
   endif()
 
   if(QT_FOUND)
@@ -423,7 +440,7 @@ if(WITH_QT_STR MATCHES "^(YES|QT6|QT5|NO)$")
     if(POLICY CMP0100)
       cmake_policy(SET CMP0100 OLD)
     endif()
-    
+
     #If building CUDA required libraries
     #Change ${QTX}::Core fixed -fPIC flags to conditionally only CXX
     #TODO: To be removed when QT is >5.14.1
@@ -434,7 +451,7 @@ if(WITH_QT_STR MATCHES "^(YES|QT6|QT5|NO)$")
         set_property(TARGET ${QTX}::Core PROPERTY INTERFACE_COMPILE_OPTIONS ${new_core_options})
       endif()
     endif()
-    
+
     get_property(core_def TARGET ${QTX}::Core PROPERTY INTERFACE_COMPILE_DEFINITIONS)
     list(APPEND core_def "QT_DISABLE_DEPRECATED_BEFORE=${QT_DISABLE_PRECATED_BEFORE_VAL}")
     set_property(TARGET ${QTX}::Core PROPERTY INTERFACE_COMPILE_DEFINITIONS ${core_def})
@@ -442,8 +459,6 @@ if(WITH_QT_STR MATCHES "^(YES|QT6|QT5|NO)$")
     message(STATUS "Qt is not found.")
     set(QT_FOUND FALSE)
   endif()
-else()
-  message(FATAL_ERROR "Option WITH_QT must be one of YES/QT6/QT5/NO but is '${WITH_QT}'")
 endif()
 
 #Find PCAP
