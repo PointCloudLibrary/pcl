@@ -321,7 +321,7 @@ TEST (PCL, PointXY)
   
   pcl::transformPointCloud(p,q,tf,true);
   ASSERT_EQ(p.size(),q.size());
-  for (std::size_t i = 0;i<q.size();i++)
+  for (std::size_t i = 0; i < q.size () ;i++)
   {
     ASSERT_EQ(q[i].x, p[i].x);
     ASSERT_EQ(q[i].y, -p[i].y);
@@ -340,7 +340,7 @@ TEST (PCL, PointXY)
   
   pcl::transformPointCloud(p,q,tf2,true);
   ASSERT_EQ(cloud_in.size(),cloud_out.size());
-  for (std::size_t i = 0;i<cloud_out.size();i++)
+  for (std::size_t i = 0;i < cloud_out.size () ;i++)
   {
     ASSERT_EQ(cloud_out[i].x, ((cloud_in[i].x * cosf(theta)) - ((cloud_in[i].y) * sinf(theta)) ));
     ASSERT_EQ(cloud_out[i].y, ((cloud_in[i].x * sinf(theta)) + ((cloud_in[i].y) * cosf(theta)) ));
@@ -352,5 +352,5 @@ int
 main (int argc, char** argv)
 {
   testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS (p[i]));
+  return (RUN_ALL_TESTS ());
 }
