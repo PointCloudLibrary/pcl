@@ -338,7 +338,7 @@ TEST (PCL, PointXY)
   float theta = 30.0;
   tf2(0,0) = cosf(theta); tf2(0,1) = -sinf(theta); tf2(1,0) = sinf(theta); tf2(1,1) = cos(theta);
   
-  pcl::transformPointCloud(p,q,tf2,true);
+  pcl::transformPointCloud(cloud_in,cloud_out,tf2,true);
   ASSERT_EQ(cloud_in.size(),cloud_out.size());
   for (std::size_t i = 0;i < cloud_out.size () ;i++)
   {
