@@ -457,7 +457,6 @@ if(NOT WITH_QT_STR MATCHES "^(NO)$")
     set_property(TARGET ${QTX}::Core PROPERTY INTERFACE_COMPILE_DEFINITIONS ${core_def})
   else()
     message(STATUS "Qt is not found.")
-    set(QT_FOUND FALSE)
   endif()
 endif()
 
