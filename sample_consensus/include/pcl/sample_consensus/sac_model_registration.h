@@ -78,8 +78,9 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelRegistration (const PointCloudConstPtr &cloud, 
-                                        bool random = false) 
-        : SampleConsensusModel<PointT> (cloud, random)
+                                        bool random = false,
+                                        std::shared_ptr<pcl::common::BoostUniformGenerator<int>> rng_gen = nullptr) 
+        : SampleConsensusModel<PointT> (cloud, random, rng_gen)
         , target_ ()
         , sample_dist_thresh_ (0)
       {
@@ -97,8 +98,9 @@ namespace pcl
         */
       SampleConsensusModelRegistration (const PointCloudConstPtr &cloud,
                                         const Indices &indices,
-                                        bool random = false) 
-        : SampleConsensusModel<PointT> (cloud, indices, random)
+                                        bool random = false,
+                                        std::shared_ptr<pcl::common::BoostUniformGenerator<int>> rng_gen = nullptr) 
+        : SampleConsensusModel<PointT> (cloud, indices, random, rng_gen)
         , target_ ()
         , sample_dist_thresh_ (0)
       {

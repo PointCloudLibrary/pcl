@@ -42,6 +42,7 @@
 #include <pcl/pcl_base.h>
 #include <pcl/PointIndices.h>
 #include <pcl/ModelCoefficients.h>
+#include <pcl/common/random.h>
 
 // Sample Consensus methods
 #include <pcl/sample_consensus/method_types.h>
@@ -81,7 +82,7 @@ namespace pcl
       /** \brief Empty constructor. 
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SACSegmentation (bool random = false) 
+      SACSegmentation (bool random = false, std::shared_ptr<pcl::common::BoostUniformGenerator<int> > rng_gen = nullptr)
         : model_ ()
         , sac_ ()
         , model_type_ (-1)
@@ -98,6 +99,7 @@ namespace pcl
         , threads_ (-1)
         , probability_ (0.99)
         , random_ (random)
+        , rng_gen_ (rng_gen)
       {
       }
 
@@ -308,6 +310,9 @@ namespace pcl
       /** \brief Set to true if we need a random seed. */
       bool random_;
 
+      /** \brief RNG generator to use. */
+      std::shared_ptr<pcl::common::BoostUniformGenerator<int> > rng_gen_;
+
       /** \brief Class get name method. */
       virtual std::string 
       getClassName () const { return ("SACSegmentation"); }
@@ -327,6 +332,7 @@ namespace pcl
     using SACSegmentation<PointT>::eps_angle_;
     using SACSegmentation<PointT>::axis_;
     using SACSegmentation<PointT>::random_;
+    using SACSegmentation<PointT>::rng_gen_;
 
     public:
       using PCLBase<PointT>::input_;

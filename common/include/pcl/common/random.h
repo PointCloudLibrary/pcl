@@ -41,6 +41,10 @@
 
 #include <random>
 
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_int_distribution.hpp>
+#include <boost/random/uniform_real_distribution.hpp>
+
 #include <pcl/pcl_macros.h>
 
 namespace pcl 
@@ -74,7 +78,7 @@ namespace pcl
       *
       * \author Nizar Sallem
       */
-    template<typename T>
+    template<typename T, typename Generator = std::mt19937, typename Distribution = uniform_distribution<T>>
     class UniformGenerator 
     {
       public:
@@ -132,14 +136,32 @@ namespace pcl
         run () { return (distribution_ (rng_)); }
 
       private:
-        using DistributionType = typename uniform_distribution<T>::type;
+        using DistributionType = typename Distribution::type;
         /// parameters
         Parameters parameters_;
         /// random number generator
-        std::mt19937 rng_;
+        Generator rng_;
         /// uniform distribution
         DistributionType distribution_;
     };
+
+    /// uniform distribution dummy struct
+    template <typename T, typename T2=void> struct boost_uniform_distribution;
+    /// uniform distribution int specialized
+    template <typename T>
+    struct boost_uniform_distribution<T, std::enable_if_t<std::is_integral<T>::value>>
+    {
+      using type = boost::random::uniform_int_distribution<T>;
+    };
+    /// uniform distribution float specialized
+    template <typename T>
+    struct boost_uniform_distribution<T, std::enable_if_t<std::is_floating_point<T>::value>>
+    {
+      using type = boost::random::uniform_real_distribution<T>;
+    };
+
+    template <typename T>
+    using BoostUniformGenerator = UniformGenerator<T, boost::mt19937, boost_uniform_distribution<T>>;
 
     /** \brief NormalGenerator class generates a random number from a normal distribution specified
       * by (mean, sigma).

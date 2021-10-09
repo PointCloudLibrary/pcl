@@ -108,8 +108,9 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelNormalParallelPlane (const PointCloudConstPtr &cloud,
-                                               bool random = false) 
-        : SampleConsensusModelNormalPlane<PointT, PointNT> (cloud, random)
+                                               bool random = false,
+                                               std::shared_ptr<pcl::common::BoostUniformGenerator<int>> rng_gen = nullptr) 
+        : SampleConsensusModelNormalPlane<PointT, PointNT> (cloud, random, rng_gen)
         , axis_ (Eigen::Vector4f::Zero ())
         , distance_from_origin_ (0)
         , eps_angle_ (-1.0)
@@ -128,8 +129,9 @@ namespace pcl
         */
       SampleConsensusModelNormalParallelPlane (const PointCloudConstPtr &cloud, 
                                                const Indices &indices,
-                                               bool random = false) 
-        : SampleConsensusModelNormalPlane<PointT, PointNT> (cloud, indices, random)
+                                               bool random = false,
+                                               std::shared_ptr<pcl::common::BoostUniformGenerator<int>> rng_gen = nullptr) 
+        : SampleConsensusModelNormalPlane<PointT, PointNT> (cloud, indices, random, rng_gen)
         , axis_ (Eigen::Vector4f::Zero ())
         , distance_from_origin_ (0)
         , eps_angle_ (-1.0)

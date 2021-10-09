@@ -49,8 +49,8 @@ namespace common
 {
 
 
-template <typename T>
-UniformGenerator<T>::UniformGenerator(T min, T max, std::uint32_t seed)
+template <typename T, typename Generator, typename Distribution>
+UniformGenerator<T, Generator, Distribution>::UniformGenerator(T min, T max, std::uint32_t seed)
   : distribution_ (min, max)
 {
   parameters_ = Parameters (min, max, seed);
@@ -59,8 +59,8 @@ UniformGenerator<T>::UniformGenerator(T min, T max, std::uint32_t seed)
 }
 
 
-template <typename T>
-UniformGenerator<T>::UniformGenerator(const Parameters& parameters)
+template <typename T, typename Generator, typename Distribution>
+UniformGenerator<T, Generator, Distribution>::UniformGenerator(const Parameters& parameters)
   : parameters_ (parameters)
   , distribution_ (parameters_.min, parameters_.max)
 {
@@ -69,8 +69,8 @@ UniformGenerator<T>::UniformGenerator(const Parameters& parameters)
 }
 
 
-template <typename T> void
-UniformGenerator<T>::setSeed (std::uint32_t seed)
+template <typename T, typename Generator, typename Distribution> void
+UniformGenerator<T, Generator, Distribution>::setSeed (std::uint32_t seed)
 {
   if (seed != static_cast<std::uint32_t> (-1))
   {
@@ -80,8 +80,8 @@ UniformGenerator<T>::setSeed (std::uint32_t seed)
 }
 
 
-template <typename T> void
-UniformGenerator<T>::setParameters (T min, T max, std::uint32_t seed)
+template <typename T, typename Generator, typename Distribution> void
+UniformGenerator<T, Generator, Distribution>::setParameters (T min, T max, std::uint32_t seed)
 {
   parameters_.min = min;
   parameters_.max = max;
@@ -97,8 +97,8 @@ UniformGenerator<T>::setParameters (T min, T max, std::uint32_t seed)
 }
 
 
-template <typename T> void
-UniformGenerator<T>::setParameters (const Parameters& parameters)
+template <typename T, typename Generator, typename Distribution> void
+UniformGenerator<T, Generator, Distribution>::setParameters (const Parameters& parameters)
 {
   parameters_ = parameters;
   typename DistributionType::param_type params (parameters_.min, parameters_.max);

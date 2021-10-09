@@ -82,8 +82,10 @@ namespace pcl
         * \param[in] cloud the input point cloud dataset
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModelCone (const PointCloudConstPtr &cloud, bool random = false) 
-        : SampleConsensusModel<PointT> (cloud, random)
+      SampleConsensusModelCone (const PointCloudConstPtr &cloud,
+                                bool random = false,
+                                std::shared_ptr<pcl::common::BoostUniformGenerator<int>> rng_gen = nullptr) 
+        : SampleConsensusModel<PointT> (cloud, random, rng_gen)
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
         , axis_ (Eigen::Vector3f::Zero ())
         , eps_angle_ (0)
@@ -102,8 +104,9 @@ namespace pcl
         */
       SampleConsensusModelCone (const PointCloudConstPtr &cloud, 
                                 const Indices &indices,
-                                bool random = false) 
-        : SampleConsensusModel<PointT> (cloud, indices, random)
+                                bool random = false,
+                                std::shared_ptr<pcl::common::BoostUniformGenerator<int>> rng_gen = nullptr) 
+        : SampleConsensusModel<PointT> (cloud, indices, random, rng_gen)
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
         , axis_ (Eigen::Vector3f::Zero ())
         , eps_angle_ (0)

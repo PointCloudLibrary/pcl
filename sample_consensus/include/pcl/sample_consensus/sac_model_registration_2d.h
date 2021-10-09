@@ -75,8 +75,9 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelRegistration2D (const PointCloudConstPtr &cloud,
-                                          bool random = false) 
-        : pcl::SampleConsensusModelRegistration<PointT> (cloud, random)
+                                          bool random = false,
+                                          std::shared_ptr<pcl::common::BoostUniformGenerator<int>> rng_gen = nullptr) 
+        : pcl::SampleConsensusModelRegistration<PointT> (cloud, random, rng_gen)
         , projection_matrix_ (Eigen::Matrix3f::Identity ())
       {
         // Call our own setInputCloud
@@ -93,8 +94,9 @@ namespace pcl
         */
       SampleConsensusModelRegistration2D (const PointCloudConstPtr &cloud,
                                           const Indices &indices,
-                                          bool random = false)
-        : pcl::SampleConsensusModelRegistration<PointT> (cloud, indices, random)
+                                          bool random = false,
+                                          std::shared_ptr<pcl::common::BoostUniformGenerator<int>> rng_gen = nullptr)
+        : pcl::SampleConsensusModelRegistration<PointT> (cloud, indices, random, rng_gen)
         , projection_matrix_ (Eigen::Matrix3f::Identity ())
       {
         computeOriginalIndexMapping ();
