@@ -6,14 +6,15 @@
 #
 # Background: WITH_QT was previously boolean and we want to be backwards compatible.
 #
-# This if condition matches all CMake true constants except numbers other than 1.
-# This way we prevent things like -DWITH_QT=5 to be handelt as YES instead of QT5.
+# This if condition matches all CMake true constants (`${WITH_QT}`) except numbers other than 1 (`NOT (WITH_QT LESS 1 OR WITH_QT GREATER 1)`).
+#
+# This way we prevent things like -DWITH_QT=5 to be handled as YES instead of QT5.
 # Setting -DWITH_QT=5 will error and inform you to use -DWITH_QT=QT5 instead.
 # (This breaks backward compatibility, but hopefully no one will use values not equal to 1 if they want to express true.)
 #
 # Note: "NOT (WITH_QT LESS 1 OR WITH_QT GREATER 1)" is not the same as
 #       "WITH_QT EQUAL 1" because "LESS/GREATER/EQUAL" all pre-check if WITH_QT is a valid number.
-if(NOT (WITH_QT LESS 1 OR WITH_QT GREATER 1) AND ${WITH_QT})
+if(${WITH_QT} AND NOT (WITH_QT LESS 1 OR WITH_QT GREATER 1))
   set(WITH_QT_STR "YES")
 else()
   string(TOUPPER ${WITH_QT} WITH_QT_STR)
