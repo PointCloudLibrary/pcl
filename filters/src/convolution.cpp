@@ -189,5 +189,17 @@ Convolution<pcl::RGB, pcl::RGB>::convolveOneColDense(int i, int j)
   result.b = static_cast<std::uint8_t>(b);
   return (result);
 }
+
+#ifndef PCL_NO_PRECOMPILE
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
+
+PCL_INSTANTIATE_PRODUCT(
+    Convolution, ((pcl::RGB))((pcl::RGB)))
+
+PCL_INSTANTIATE_PRODUCT(
+    Convolution, ((pcl::PointXYZRGB))((pcl::PointXYZRGB)))
+#endif // PCL_NO_PRECOMPILE
+
 } // namespace filters
 } // namespace pcl

@@ -34,6 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include <pcl/common/io.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/conversions.h>
 #include <pcl/PolygonMesh.h>
@@ -499,7 +500,7 @@ TEST_F (PLYTest, NoEndofLine)
   pcl::PLYReader Reader;
   Reader.read(PLYTest::mesh_file_ply_, cloud);
 
-  ASSERT_EQ (cloud.empty(), false);
+  ASSERT_FALSE (cloud.empty());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -529,7 +530,85 @@ TEST_F (PLYTest, CommentAtTheEnd)
   pcl::PLYReader Reader;
   Reader.read(PLYTest::mesh_file_ply_, cloud);
 
-  ASSERT_EQ (cloud.empty(), false);
+  ASSERT_FALSE (cloud.empty());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST_F (PLYTest, EmptyCloud)
+{
+  // create file
+  std::ofstream fs;
+  fs.open (mesh_file_ply_.c_str ());
+  fs << "ply\n"
+        "format ascii 1.0\n"
+        "element vertex 0\n"
+        "property float x\n"
+        "property float y\n"
+        "property float z\n"
+        "end_header\n";
+  fs.close ();
+
+  // Set up cloud
+  pcl::PointCloud<pcl::PointXYZ> cloud;
+
+  // check if loading is ok
+  const int res = pcl::io::loadPLYFile (PLYTest::mesh_file_ply_, cloud);
+  ASSERT_EQ (res, 0);
+
+  ASSERT_TRUE (cloud.empty());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST_F (PLYTest, Float64Cloud)
+{
+  pcl::PointCloud<pcl::PointXYZ> cloud;
+  cloud.push_back(pcl::PointXYZ(4.23, 0.42, 1.61));
+  cloud.push_back(pcl::PointXYZ(-1.61, 4.32, 3.13));
+
+  // create file
+  std::ofstream fs;
+  fs.open (mesh_file_ply_.c_str ());
+  fs << "ply\n"
+        "format ascii 1.0\n"
+        "element vertex 2\n"
+        "property float64 x\n"
+        "property float64 y\n"
+        "property float64 z\n"
+        "end_header\n"
+        << cloud[0].x << " " << cloud[0].y << " " << cloud[0].z << "\n"
+        << cloud[1].x << " " << cloud[1].y << " " << cloud[1].z << "\n"
+        ;
+  fs.close ();
+
+  pcl::PCLPointCloud2 cloud2;
+  const int res = pcl::io::loadPLYFile (PLYTest::mesh_file_ply_, cloud2);
+  ASSERT_EQ (res, 0);
+
+  ASSERT_EQ (cloud2.height*cloud2.width, cloud.size());
+  for (auto & field : cloud2.fields) {
+    ASSERT_EQ (field.datatype, pcl::PCLPointField::FLOAT64);
+  }
+  for (size_t pointIdx = 0; pointIdx < cloud.size(); ++pointIdx)
+  {
+    unsigned char const * ptr = &cloud2.data[0] + pointIdx*cloud2.point_step;
+    double xValue, yValue, zValue;
+    memcpy(
+        reinterpret_cast<char*>(&xValue),
+        ptr + cloud2.fields.at(getFieldIndex(cloud2, "x")).offset,
+        8);
+    memcpy(
+        reinterpret_cast<char*>(&yValue),
+        ptr + cloud2.fields.at(getFieldIndex(cloud2, "y")).offset,
+        8);
+    memcpy(
+        reinterpret_cast<char*>(&zValue),
+        ptr + cloud2.fields.at(getFieldIndex(cloud2, "z")).offset,
+        8);
+
+    EXPECT_FLOAT_EQ(cloud[pointIdx].x, xValue);
+    EXPECT_FLOAT_EQ(cloud[pointIdx].y, yValue);
+    EXPECT_FLOAT_EQ(cloud[pointIdx].z, zValue);
+  }
 }
 
 /* ---[ */

@@ -691,7 +691,7 @@ pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2>::getGeometry 
   
   if (!data->Resize(nr_points))
   {
-    PCL_ERROR("[point_cloud_handlers::getGeometry] Failed to allocate space for points in VTK array.");
+    PCL_ERROR("[point_cloud_handlers::getGeometry] Failed to allocate space for points in VTK array.\n");
     throw std::bad_alloc();
   }
     

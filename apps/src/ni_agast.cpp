@@ -43,7 +43,6 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/io/openni_grabber.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/agast_2d.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -203,9 +202,7 @@ public:
   std::string
   getStrBool(bool state)
   {
-    std::stringstream ss;
-    ss << state;
-    return ss.str();
+    return state ? "1" : "0";
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -224,9 +221,8 @@ public:
 
     std::size_t j = 0;
     for (std::size_t i = 0; i < keypoints->size(); ++i) {
-      const PointT& pt =
-          (*cloud)(static_cast<long unsigned int>((*keypoints)[i].u),
-                   static_cast<long unsigned int>((*keypoints)[i].v));
+      const PointT& pt = (*cloud)(static_cast<long unsigned int>((*keypoints)[i].u),
+                                  static_cast<long unsigned int>((*keypoints)[i].v));
       if (!std::isfinite(pt.x) || !std::isfinite(pt.y) || !std::isfinite(pt.z))
         continue;
 

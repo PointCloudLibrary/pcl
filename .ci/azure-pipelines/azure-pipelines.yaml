@@ -1,15 +1,33 @@
+trigger:
+  paths:
+    exclude:
+    - doc
+    - README.md
+    - CHANGES.md
+    - CONTRIBUTING.md
+
+pr:
+  paths:
+    exclude:
+    - doc
+    - README.md
+    - CHANGES.md
+    - CONTRIBUTING.md
+
 resources:
   containers:
+    - container: winx86
+      image: pointcloudlibrary/env:winx86
+    - container: winx64
+      image: pointcloudlibrary/env:winx64
     - container: fmt
       image: pointcloudlibrary/fmt
-    - container: env1604
-      image: pointcloudlibrary/env:16.04
     - container: env1804
       image: pointcloudlibrary/env:18.04
     - container: env2004
       image: pointcloudlibrary/env:20.04
-    - container: doc
-      image: pointcloudlibrary/doc
+    - container: env2010
+      image: pointcloudlibrary/env:20.10
 
 stages:
   - stage: formatting
@@ -24,26 +42,26 @@ stages:
       - job: ubuntu
         displayName: Ubuntu
         pool:
-          vmImage: 'Ubuntu 16.04'
+          vmImage: 'Ubuntu 20.04'
         strategy:
           matrix:
-            16.04 GCC:
-              CONTAINER: env1604
+            18.04 GCC:  # oldest LTS
+              CONTAINER: env1804
               CC: gcc
               CXX: g++
-              BUILD_GPU: OFF
+              BUILD_GPU: ON
               CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON'
-            20.04 GCC:
-              CONTAINER: env2004
+            20.10 GCC:  # latest Ubuntu
+              CONTAINER: env2010
               CC: gcc
               CXX: g++
               BUILD_GPU: OFF
-              CMAKE_ARGS: ''
         container: $[ variables['CONTAINER'] ]
         timeoutInMinutes: 0
         variables:
           BUILD_DIR: '$(Agent.BuildDirectory)/build'
-          CMAKE_CXX_FLAGS: '-Wall -Wextra'
+          CMAKE_CXX_FLAGS: '-Wall -Wextra -Wnoexcept-type'
+          DISPLAY: :99.0 # Checked for in CMake
         steps:
           - template: build/ubuntu.yaml
 
@@ -75,14 +93,15 @@ stages:
         # Placement of Ubuntu Clang job after macOS ensures an extra parallel job doesn't need to be created.
         # Total time per run remains same since macOS is quicker so it finishes earlier, and remaining time is used by this job
         # Therefore, number of parallel jobs and total run time of entire pipeline remains unchanged even after addition of this job
+        # The version of Ubuntu is chosen to cover more versions than covered by GCC based CI
         dependsOn: osx
         condition: succeededOrFailed()
         pool:
-          vmImage: 'Ubuntu 16.04'
+          vmImage: 'Ubuntu 20.04'
         strategy:
           matrix:
-            18.04 Clang:
-              CONTAINER: env1804
+            20.04 Clang:
+              CONTAINER: env2004
               CC: clang
               CXX: clang++
               BUILD_GPU: ON
@@ -92,6 +111,7 @@ stages:
         variables:
           BUILD_DIR: '$(Agent.BuildDirectory)/build'
           CMAKE_CXX_FLAGS: '-Wall -Wextra'
+          DISPLAY: :99.0 # Checked for in CMake
         steps:
           - template: build/ubuntu.yaml
       - job: ubuntu_indices
@@ -100,11 +120,11 @@ stages:
         dependsOn: osx
         condition: succeededOrFailed()
         pool:
-          vmImage: 'Ubuntu 16.04'
+          vmImage: 'Ubuntu 20.04'
         strategy:
           matrix:
-            18.04 Clang:
-              CONTAINER: env1804
+            20.04 Clang:
+              CONTAINER: env2004
               CC: clang
               CXX: clang++
               INDEX_SIGNED: OFF
@@ -122,37 +142,27 @@ stages:
     displayName: Build MSVC
     dependsOn: formatting
     jobs:
-      - job: vs2017
-        displayName: Windows VS2017 Build
+      - job: Windows
+        displayName: Windows Build
         pool:
-          vmImage: 'vs2017-win2016'
+          vmImage: 'windows-2019'
         strategy:
           matrix:
             x86:
+              CONTAINER: winx86
               PLATFORM: 'x86'
               ARCHITECTURE: 'x86'
-              GENERATOR: 'Visual Studio 15 2017'
+              GENERATOR: '"Visual Studio 16 2019" -A Win32'
             x64:
+              CONTAINER: winx64
               PLATFORM: 'x64'
               ARCHITECTURE: 'x86_amd64'
-              GENERATOR: 'Visual Studio 15 2017 Win64'
+              GENERATOR: '"Visual Studio 16 2019" -A x64'
+        container: $[ variables['CONTAINER'] ]
         timeoutInMinutes: 0
         variables:
           BUILD_DIR: 'c:\build'
           CONFIGURATION: 'Release'
-          VCPKG_ROOT: 'C:\vcpkg'
+          VCPKG_ROOT: 'c:\vcpkg'
         steps:
           - template: build/windows.yaml
-
-  - stage: documentation
-    displayName: Documentation
-    dependsOn: []
-    jobs:
-      - template: documentation.yaml
-
-  - stage: tutorials
-    displayName: Tutorials
-    dependsOn: build_gcc
-    jobs:
-      - template: tutorials.yaml
-      

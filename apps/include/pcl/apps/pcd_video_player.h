@@ -34,14 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <pcl/common/angles.h>
 #include <pcl/common/common.h>
 #include <pcl/common/time.h>
-#include <pcl/common/transforms.h>
-#include <pcl/console/parse.h>
-#include <pcl/console/print.h>
-#include <pcl/io/pcd_grabber.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/registration/transformation_estimation_svd.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/point_cloud_handlers.h>
@@ -53,7 +47,6 @@
 #include <QMainWindow>
 #include <QMutex>
 #include <QTimer>
-#include <ui_pcd_video_player.h>
 
 #include <ctime>
 #include <iostream>
@@ -93,6 +86,9 @@ public:
   ~PCDVideoPlayer() {}
 
 protected:
+  void
+  refreshView();
+
   pcl::visualization::PCLVisualizer::Ptr vis_;
   pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_;
 

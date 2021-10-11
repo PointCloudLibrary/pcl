@@ -40,14 +40,9 @@
 #define SHOW_FPS 1
 
 #include <pcl/apps/timer.h>
-#include <pcl/common/angles.h>
 #include <pcl/common/common.h>
 #include <pcl/common/time.h>
-#include <pcl/console/parse.h>
-#include <pcl/console/print.h>
-#include <pcl/filters/extract_indices.h>
 #include <pcl/io/openni_grabber.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/brisk_2d.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -105,9 +100,7 @@ public:
   std::string
   getStrBool(bool state)
   {
-    std::stringstream ss;
-    ss << state;
-    return ss.str();
+    return state ? "1" : "0";
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -181,8 +174,7 @@ public:
 
     std::size_t j = 0;
     for (std::size_t i = 0; i < keypoints->size(); ++i) {
-      PointT pt =
-          bilinearInterpolation(cloud, (*keypoints)[i].x, (*keypoints)[i].y);
+      PointT pt = bilinearInterpolation(cloud, (*keypoints)[i].x, (*keypoints)[i].y);
 
       keypoints3d[j].x = pt.x;
       keypoints3d[j].y = pt.y;

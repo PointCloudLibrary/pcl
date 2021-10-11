@@ -23,9 +23,21 @@ if(MSVC)
   set(PCL_CTEST_ARGUMENTS ${PCL_CTEST_ARGUMENTS} -C $<$<CONFIG:Debug>:Debug>$<$<CONFIG:Release>:Release>)
 endif()
 
+# Enables you to disable visualization tests. Used on CI.
+if(PCL_DISABLE_VISUALIZATION_TESTS)
+  list(APPEND EXCLUDE_TESTS visualization)
+endif()
+
 # Enables you to disable GPU tests. Used on CI as it has no access to GPU hardware
 if(PCL_DISABLE_GPU_TESTS)
-  set(PCL_CTEST_ARGUMENTS ${PCL_CTEST_ARGUMENTS} -E gpu)
+  list(APPEND EXCLUDE_TESTS gpu)
+endif()
+
+#Check if there are any tests to exclude
+if(EXCLUDE_TESTS)
+  message(STATUS "Tests excluded: ${EXCLUDE_TESTS}")
+  string(REPLACE ";" "|" EXCLUDE_TESTS_REGEX "${EXCLUDE_TESTS}")
+  set(PCL_CTEST_ARGUMENTS ${PCL_CTEST_ARGUMENTS} -E "(${EXCLUDE_TESTS_REGEX})")
 endif()
 
 add_custom_target(tests "${CMAKE_CTEST_COMMAND}" ${PCL_CTEST_ARGUMENTS} -V -T Test VERBATIM)
@@ -43,6 +55,7 @@ add_subdirectory(gpu)
 add_subdirectory(io)
 add_subdirectory(kdtree)
 add_subdirectory(keypoints)
+add_subdirectory(ml)
 add_subdirectory(people)
 add_subdirectory(octree)
 add_subdirectory(outofcore)

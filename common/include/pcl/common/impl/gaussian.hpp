@@ -40,7 +40,6 @@
 #pragma once
 
 #include <pcl/common/gaussian.h>
-#include <pcl/exceptions.h>
 
 namespace pcl
 {

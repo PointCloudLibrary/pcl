@@ -42,55 +42,51 @@
 
 #include <pcl/registration/correspondence_rejection.h>
 
-namespace pcl
-{
-  namespace registration
+namespace pcl {
+namespace registration {
+/** \brief CorrespondenceRejectorOneToOne implements a correspondence
+ * rejection method based on eliminating duplicate match indices in
+ * the correspondences. Correspondences with the same match index are
+ * removed and only the one with smallest distance between query and
+ * match are kept. That is, considering match->query 1-m correspondences
+ * are removed leaving only 1-1 correspondences.
+ * \author Dirk Holz
+ * \ingroup registration
+ */
+class PCL_EXPORTS CorrespondenceRejectorOneToOne : public CorrespondenceRejector {
+  using CorrespondenceRejector::getClassName;
+  using CorrespondenceRejector::input_correspondences_;
+  using CorrespondenceRejector::rejection_name_;
+
+public:
+  using Ptr = shared_ptr<CorrespondenceRejectorOneToOne>;
+  using ConstPtr = shared_ptr<const CorrespondenceRejectorOneToOne>;
+
+  /** \brief Empty constructor. */
+  CorrespondenceRejectorOneToOne()
   {
-    /** \brief CorrespondenceRejectorOneToOne implements a correspondence
-      * rejection method based on eliminating duplicate match indices in
-      * the correspondences. Correspondences with the same match index are
-      * removed and only the one with smallest distance between query and
-      * match are kept. That is, considering match->query 1-m correspondences
-      * are removed leaving only 1-1 correspondences.
-      * \author Dirk Holz
-      * \ingroup registration
-      */
-    class PCL_EXPORTS CorrespondenceRejectorOneToOne: public CorrespondenceRejector
-    {
-      using CorrespondenceRejector::input_correspondences_;
-      using CorrespondenceRejector::rejection_name_;
-      using CorrespondenceRejector::getClassName;
-
-      public:
-        using Ptr = shared_ptr<CorrespondenceRejectorOneToOne>;
-        using ConstPtr = shared_ptr<const CorrespondenceRejectorOneToOne>;
-
-        /** \brief Empty constructor. */
-        CorrespondenceRejectorOneToOne ()
-        {
-          rejection_name_ = "CorrespondenceRejectorOneToOne";
-        }
-
-        /** \brief Get a list of valid correspondences after rejection from the original set of correspondences.
-          * \param[in] original_correspondences the set of initial correspondences given
-          * \param[out] remaining_correspondences the resultant filtered set of remaining correspondences
-          */
-        void 
-        getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
-                                     pcl::Correspondences& remaining_correspondences) override;
-
-      protected:
-        /** \brief Apply the rejection algorithm.
-          * \param[out] correspondences the set of resultant correspondences.
-          */
-        inline void 
-        applyRejection (pcl::Correspondences &correspondences) override
-        {
-          getRemainingCorrespondences (*input_correspondences_, correspondences);
-        }
-    };
-
+    rejection_name_ = "CorrespondenceRejectorOneToOne";
   }
-}
 
-#include <pcl/registration/impl/correspondence_rejection_one_to_one.hpp>
+  /** \brief Get a list of valid correspondences after rejection from the original set
+   * of correspondences. \param[in] original_correspondences the set of initial
+   * correspondences given \param[out] remaining_correspondences the resultant filtered
+   * set of remaining correspondences
+   */
+  void
+  getRemainingCorrespondences(const pcl::Correspondences& original_correspondences,
+                              pcl::Correspondences& remaining_correspondences) override;
+
+protected:
+  /** \brief Apply the rejection algorithm.
+   * \param[out] correspondences the set of resultant correspondences.
+   */
+  inline void
+  applyRejection(pcl::Correspondences& correspondences) override
+  {
+    getRemainingCorrespondences(*input_correspondences_, correspondences);
+  }
+};
+
+} // namespace registration
+} // namespace pcl

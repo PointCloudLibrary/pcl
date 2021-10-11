@@ -46,6 +46,8 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/segmentation/approximate_progressive_morphological_filter.h>
 #include <pcl/segmentation/progressive_morphological_filter.h>
+#include <boost/filesystem.hpp> // for path, exists, ...
+#include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 
 using namespace pcl;
 using namespace pcl::io;
@@ -114,7 +116,7 @@ compute (ConstCloudPtr &input, Cloud &output, int max_window_size, float slope, 
 
   print_highlight (stderr, "Computing ");
 
-  std::vector<int> ground;
+  pcl::Indices ground;
 
   if (approximate)
   {
@@ -187,14 +189,11 @@ batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir
     compute (cloud, output, max_window_size, slope, max_distance, initial_distance, cell_size, base, exponential, approximate);
 
     // Prepare output file name
-    std::string filename = pcd_file;
-    boost::trim (filename);
-    boost::split (st, filename, boost::is_any_of ("/\\"), boost::token_compress_on);
-
+    std::string filename = boost::filesystem::path(pcd_file).filename().string();
+    
     // Save into the second file
-    std::stringstream ss;
-    ss << output_dir << "/" << st.at (st.size () - 1);
-    saveCloud (ss.str (), output);
+    const std::string filepath = output_dir + '/' + filename;
+    saveCloud (filepath, output);
   }
   return (0);
 }

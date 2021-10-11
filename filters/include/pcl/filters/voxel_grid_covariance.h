@@ -91,12 +91,12 @@ namespace pcl
       struct Leaf
       {
         /** \brief Constructor.
-         * Sets \ref nr_points, \ref icov_, \ref mean_ and \ref evals_ to 0 and \ref cov_ and \ref evecs_ to the identity matrix
+         * Sets \ref nr_points, \ref cov_, \ref icov_, \ref mean_ and \ref evals_ to 0 and \ref evecs_ to the identity matrix
          */
         Leaf () :
           nr_points (0),
           mean_ (Eigen::Vector3d::Zero ()),
-          cov_ (Eigen::Matrix3d::Identity ()),
+          cov_ (Eigen::Matrix3d::Zero ()),
           icov_ (Eigen::Matrix3d::Zero ()),
           evecs_ (Eigen::Matrix3d::Identity ()),
           evals_ (Eigen::Vector3d::Zero ())
@@ -454,7 +454,7 @@ namespace pcl
         }
 
         // Find k-nearest neighbors in the occupied voxel centroid cloud
-        std::vector<int> k_indices;
+        Indices k_indices;
         k = kdtree_.nearestKSearch (point, k, k_indices, k_sqr_distances);
 
         // Find leaves corresponding to neighbors
@@ -513,7 +513,7 @@ namespace pcl
         }
 
         // Find neighbors within radius in the occupied voxel centroid cloud
-        std::vector<int> k_indices;
+        Indices k_indices;
         const int k = kdtree_.radiusSearch (point, radius, k_indices, k_sqr_distances, max_nn);
 
         // Find leaves corresponding to neighbors

@@ -49,18 +49,10 @@
 
 #include <cstdint>
 
+#include <Eigen/Core>
+
 namespace pcl
 {
-  using uint8_t PCL_DEPRECATED(1, 12, "use std::uint8_t instead of pcl::uint8_t") = std::uint8_t;
-  using int8_t PCL_DEPRECATED(1, 12, "use std::int8_t instead of pcl::int8_t") = std::int8_t;
-  using uint16_t PCL_DEPRECATED(1, 12, "use std::uint16_t instead of pcl::uint16_t") = std::uint16_t;
-  using int16_t PCL_DEPRECATED(1, 12, "use std::uint16_t instead of pcl::int16_t") = std::int16_t;
-  using uint32_t PCL_DEPRECATED(1, 12, "use std::uint32_t instead of pcl::uint32_t") = std::uint32_t;
-  using int32_t PCL_DEPRECATED(1, 12, "use std::int32_t instead of pcl::int32_t") = std::int32_t;
-  using uint64_t PCL_DEPRECATED(1, 12, "use std::uint64_t instead of pcl::uint64_t") = std::uint64_t;
-  using int64_t PCL_DEPRECATED(1, 12, "use std::int64_t instead of pcl::int64_t") = std::int64_t;
-  using int_fast16_t PCL_DEPRECATED(1, 12, "use std::int_fast16_t instead of pcl::int_fast16_t") = std::int_fast16_t;
-
   namespace detail {
     /**
      * \brief int_type::type refers to an integral type that satisfies template parameters
@@ -139,5 +131,11 @@ namespace pcl
    * \brief Type used for indices in PCL
    */
   using Indices = IndicesAllocator<>;
+
+  /**
+   * \brief Type used for aligned vector of Eigen objects in PCL
+   */
+  template <typename T>
+  using AlignedVector = std::vector<T, Eigen::aligned_allocator<T>>;
 }  // namespace pcl
 

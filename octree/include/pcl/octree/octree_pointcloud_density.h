@@ -76,16 +76,12 @@ public:
 
   /** \brief Read input data. Only an internal counter is increased.
    */
-  void
-  addPointIndex(int)
-  {
-    point_counter_++;
-  }
+  void addPointIndex(uindex_t) { point_counter_++; }
 
   /** \brief Return point counter.
    * \return Amount of points
    */
-  unsigned int
+  uindex_t
   getPointCounter()
   {
     return (point_counter_);
@@ -99,7 +95,7 @@ public:
   }
 
 private:
-  unsigned int point_counter_;
+  uindex_t point_counter_;
 };
 
 /** \brief @b Octree pointcloud density class
@@ -133,10 +129,10 @@ public:
    * \param[in] point_arg: a point addressing a voxel \return amount of points
    * that fall within leaf node voxel
    */
-  unsigned int
+  uindex_t
   getVoxelDensityAtPoint(const PointT& point_arg) const
   {
-    unsigned int point_count = 0;
+    uindex_t point_count = 0;
 
     OctreePointCloudDensityContainer* leaf = this->findLeafAtPoint(point_arg);
 
@@ -148,6 +144,9 @@ public:
 };
 } // namespace octree
 } // namespace pcl
+
+// needed since OctreePointCloud is not instantiated with template parameters used above
+#include <pcl/octree/impl/octree_pointcloud.hpp>
 
 #define PCL_INSTANTIATE_OctreePointCloudDensity(T)                                     \
   template class PCL_EXPORTS pcl::octree::OctreePointCloudDensity<T>;

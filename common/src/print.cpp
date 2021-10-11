@@ -36,6 +36,7 @@
  */
 #include <pcl/console/print.h>
 #include <algorithm>
+#include <cstdarg> // for va_list, va_start, va_end
 #include <cstdlib>
 #include <cctype> // for toupper
 #include <map>

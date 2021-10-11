@@ -39,8 +39,8 @@
 
 // Instantiations of specific point types
 
-template class PCL_EXPORTS pcl::octree::OctreeBase<int>;
-template class PCL_EXPORTS pcl::octree::Octree2BufBase<int>;
+template class PCL_EXPORTS pcl::octree::OctreeBase<pcl::index_t>;
+template class PCL_EXPORTS pcl::octree::Octree2BufBase<pcl::index_t>;
 
 template class PCL_EXPORTS
     pcl::octree::OctreeBase<pcl::octree::OctreeContainerPointIndices,

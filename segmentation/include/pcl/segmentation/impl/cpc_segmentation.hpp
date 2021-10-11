@@ -38,6 +38,7 @@
 #ifndef PCL_SEGMENTATION_IMPL_CPC_SEGMENTATION_HPP_
 #define PCL_SEGMENTATION_IMPL_CPC_SEGMENTATION_HPP_
 
+#include <pcl/sample_consensus/sac_model_plane.h> // for SampleConsensusModelPlane
 #include <pcl/segmentation/cpc_segmentation.h>
 
 template <typename PointT>
@@ -203,7 +204,7 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (std::uint32_t depth_levels_left
         int cluster_concave_pts = 0;
         float cluster_score = 0;
 //         std::cout << "Cluster has " << cluster_indices[cc].indices.size () << " points" << std::endl;
-        for (const int &current_index : cluster_index.indices)
+        for (const auto &current_index : cluster_index.indices)
         {
           double index_score = weights[current_index];
           if (use_directed_weights_)
@@ -239,7 +240,7 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (std::uint32_t depth_levels_left
     }
 
     int number_connections_cut = 0;
-    for (const int &point_index : cut_support_indices)
+    for (const auto &point_index : cut_support_indices)
     {
       if (use_clean_cutting_)
       {
@@ -294,7 +295,7 @@ pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::computeModel (int)
   iterations_ = 0;
   best_score_ = -std::numeric_limits<double>::max ();
 
-  std::vector<int> selection;
+  pcl::Indices selection;
   Eigen::VectorXf model_coefficients;
 
   unsigned skipped_count = 0;
@@ -328,7 +329,7 @@ pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::computeModel (int)
     sac_model_->selectWithinDistance (model_coefficients, threshold_, *current_inliers);
     double current_score = 0;
     Eigen::Vector3f plane_normal (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
-    for (const int &current_index : *current_inliers)
+    for (const auto &current_index : *current_inliers)
     {
       double index_score = weights_[current_index];
       if (use_directed_weights_)

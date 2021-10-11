@@ -38,10 +38,6 @@
 
 #include <pcl/console/print.h>
 
-#include <pcl/filters/voxel_grid.h>
-
-#include <pcl/features/integral_image_normal.h>
-
 #include <pcl/common/transforms.h>
 
 #include <pcl/segmentation/organized_multi_plane_segmentation.h>
@@ -110,7 +106,7 @@ pcl::gpu::people::OrganizedPlaneDetector::process(const PointCloud<PointTC>::Con
   // Fill in the probabilities
   for(const auto &inlier_index : inlier_indices)                           // iterate over all found planes
   {
-    for(const int &index : inlier_index.indices)                           // iterate over all the indices in that plane
+    for(const auto &index : inlier_index.indices)                           // iterate over all the indices in that plane
     {
       P_l_host_[index].probs[pcl::gpu::people::Background] = 1.f;   // set background at max
     }

@@ -164,12 +164,10 @@ pcl::TextureMapping<PointInT>::mapTexture2Mesh (pcl::TextureMesh &tex_mesh)
     // processing for each face
     for (std::size_t i = 0; i < tex_mesh.tex_polygons[m].size (); ++i)
     {
-      std::size_t idx;
-
       // get facet information
       for (std::size_t j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size (); ++j)
       {
-        idx = tex_mesh.tex_polygons[m][i].vertices[j];
+        std::size_t idx = tex_mesh.tex_polygons[m][i].vertices[j];
         memcpy (&x, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[0].offset], sizeof(float));
         memcpy (&y, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[1].offset], sizeof(float));
         memcpy (&z, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[2].offset], sizeof(float));
@@ -185,9 +183,7 @@ pcl::TextureMapping<PointInT>::mapTexture2Mesh (pcl::TextureMesh &tex_mesh)
     }// end faces
 
     // texture materials
-    std::stringstream tex_name;
-    tex_name << "material_" << m;
-    tex_name >> tex_material_.tex_name;
+    tex_material_.tex_name = "material_" + std::to_string(m);
     tex_material_.tex_file = tex_files_[m];
     tex_mesh.tex_materials.push_back (tex_material_);
 
@@ -271,9 +267,7 @@ pcl::TextureMapping<PointInT>::mapTexture2MeshUV (pcl::TextureMesh &tex_mesh)
     }// end faces
 
     // texture materials
-    std::stringstream tex_name;
-    tex_name << "material_" << m;
-    tex_name >> tex_material_.tex_name;
+    tex_material_.tex_name = "material_" + std::to_string(m);
     tex_material_.tex_file = tex_files_[m];
     tex_mesh.tex_materials.push_back (tex_material_);
 
@@ -321,7 +315,7 @@ pcl::TextureMapping<PointInT>::mapMultipleTexturesToMeshUV (pcl::TextureMesh &te
     {
       Eigen::Vector2f tmp_VT;
       // for each point of this face
-      for (const unsigned int &vertex : tex_polygon.vertices)
+      for (const auto &vertex : tex_polygon.vertices)
       {
         // get point
         PointInT pt = (*camera_transformed_cloud)[vertex];
@@ -333,9 +327,7 @@ pcl::TextureMapping<PointInT>::mapMultipleTexturesToMeshUV (pcl::TextureMesh &te
     }// end faces
 
     // texture materials
-    std::stringstream tex_name;
-    tex_name << "material_" << m;
-    tex_name >> tex_material_.tex_name;
+    tex_material_.tex_name = "material_" + std::to_string(m);
     tex_material_.tex_file = current_cam.texture_file;
     tex_mesh.tex_materials.push_back (tex_material_);
 
@@ -371,7 +363,7 @@ pcl::TextureMapping<PointInT>::isPointOccluded (const PointInT &pt, OctreePtr oc
   direction (1) = pt.y;
   direction (2) = pt.z;
 
-  std::vector<int> indices;
+  pcl::Indices indices;
 
   PointCloudConstPtr cloud (new PointCloud());
   cloud = octree->getInputCloud();
@@ -382,7 +374,7 @@ pcl::TextureMapping<PointInT>::isPointOccluded (const PointInT &pt, OctreePtr oc
   octree->getIntersectedVoxelIndices(direction, -direction, indices);
 
   int nbocc = static_cast<int> (indices.size ());
-  for (const int &index : indices)
+  for (const auto &index : indices)
   {
    // if intersected point is on the over side of the camera
    if (pt.z * (*cloud)[index].z < 0)
@@ -405,8 +397,8 @@ pcl::TextureMapping<PointInT>::isPointOccluded (const PointInT &pt, OctreePtr oc
 template<typename PointInT> void
 pcl::TextureMapping<PointInT>::removeOccludedPoints (const PointCloudPtr &input_cloud,
                                                      PointCloudPtr &filtered_cloud,
-                                                     const double octree_voxel_size, std::vector<int> &visible_indices,
-                                                     std::vector<int> &occluded_indices)
+                                                     const double octree_voxel_size, pcl::Indices &visible_indices,
+                                                     pcl::Indices &occluded_indices)
 {
   // variable used to filter occluded points by depth
   double maxDeltaZ = octree_voxel_size;
@@ -424,7 +416,7 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const PointCloudPtr &input_
 
   // for each point of the cloud, raycast toward camera and check intersected voxels.
   Eigen::Vector3f direction;
-  std::vector<int> indices;
+  pcl::Indices indices;
   for (std::size_t i = 0; i < input_cloud->size (); ++i)
   {
     direction (0) = (*input_cloud)[i].x;
@@ -435,7 +427,7 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const PointCloudPtr &input_
     octree.getIntersectedVoxelIndices (direction, -direction, indices);
 
     int nbocc = static_cast<int> (indices.size ());
-    for (const int &index : indices)
+    for (const auto &index : indices)
     {
       // if intersected point is on the over side of the camera
       if ((*input_cloud)[i].z * (*input_cloud)[index].z < 0)
@@ -455,11 +447,11 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const PointCloudPtr &input_
     {
       // point is added in the filtered mesh
       filtered_cloud->points.push_back ((*input_cloud)[i]);
-      visible_indices.push_back (static_cast<int> (i));
+      visible_indices.push_back (static_cast<pcl::index_t> (i));
     }
     else
     {
-      occluded_indices.push_back (static_cast<int> (i));
+      occluded_indices.push_back (static_cast<pcl::index_t> (i));
     }
   }
 
@@ -478,7 +470,7 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const pcl::TextureMesh &tex
   // load points into a PCL format
   pcl::fromPCLPointCloud2 (tex_mesh.cloud, *cloud);
 
-  std::vector<int> visible, occluded;
+  pcl::Indices visible, occluded;
   removeOccludedPoints (cloud, filtered_cloud, octree_voxel_size, visible, occluded);
 
   // Now that we know which points are visible, let's iterate over each face.
@@ -492,14 +484,11 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const pcl::TextureMesh &tex
     {
       // check if all the face's points are visible
       bool faceIsVisible = true;
-      std::vector<int>::iterator it;
 
       // iterate over face's vertex
-      for (const unsigned int &vertex : tex_mesh.tex_polygons[polygons][faces].vertices)
+      for (const auto &vertex : tex_mesh.tex_polygons[polygons][faces].vertices)
       {
-        it = find (occluded.begin (), occluded.end (), vertex);
-
-        if (it == occluded.end ())
+        if (find (occluded.begin (), occluded.end (), vertex) == occluded.end ())
         {
           // point is not in the occluded vector
           // PCL_INFO ("  VISIBLE!\n");
@@ -531,7 +520,7 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const pcl::TextureMesh &tex
   // load points into a PCL format
   pcl::fromPCLPointCloud2 (tex_mesh.cloud, *cloud);
 
-  std::vector<int> visible, occluded;
+  pcl::Indices visible, occluded;
   removeOccludedPoints (cloud, filtered_cloud, octree_voxel_size, visible, occluded);
 
 }
@@ -576,7 +565,7 @@ pcl::TextureMapping<PointInT>::sortFacesByCamera (pcl::TextureMesh &tex_mesh, pc
     pcl::transformPointCloud (*original_cloud, *transformed_cloud, cam_trans.inverse ());
 
     // find occlusions on transformed cloud
-    std::vector<int> visible, occluded;
+    pcl::Indices visible, occluded;
     removeOccludedPoints (transformed_cloud, filtered_cloud, octree_voxel_size, visible, occluded);
     visible_pts = *filtered_cloud;
 
@@ -644,7 +633,7 @@ pcl::TextureMapping<PointInT>::showOcclusions (const PointCloudPtr &input_cloud,
   // ray direction
   Eigen::Vector3f direction;
 
-  std::vector<int> indices;
+  pcl::Indices indices;
   // point from where we ray-trace
   pcl::PointXYZI pt;
 
@@ -662,7 +651,7 @@ pcl::TextureMapping<PointInT>::showOcclusions (const PointCloudPtr &input_cloud,
     nbocc = static_cast<int> (indices.size ());
 
     // TODO need to clean this up and find tricks to get remove aliasaing effect on planes
-    for (const int &index : indices)
+    for (const auto &index : indices)
     {
       // if intersected point is on the over side of the camera
       if (pt.z * (*input_cloud)[index].z < 0)
@@ -806,7 +795,7 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
         pcl::KdTreeFLANN<pcl::PointXY> kdtree;
         kdtree.setInputCloud (projections);
 
-        std::vector<int> idxNeighbors;
+        pcl::Indices idxNeighbors;
         std::vector<float> neighborsSquaredDistance;
         // af first (idx_pcan < current_cam), check if some of the faces attached to previous cameras occlude the current faces
         // then (idx_pcam == current_cam), check for self occlusions. At this stage, we skip faces that were already marked as occluded
@@ -849,7 +838,7 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
               if (kdtree.radiusSearch (center, radius, idxNeighbors, neighborsSquaredDistance) > 0 )
               {
                 // for each neighbor
-                for (const int &idxNeighbor : idxNeighbors)
+                for (const auto &idxNeighbor : idxNeighbors)
                 {
                   if (std::max ((*camera_cloud)[mesh.tex_polygons[idx_pcam][idx_face].vertices[0]].z,
                                 std::max ((*camera_cloud)[mesh.tex_polygons[idx_pcam][idx_face].vertices[1]].z, 

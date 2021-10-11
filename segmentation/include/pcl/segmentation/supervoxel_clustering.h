@@ -51,7 +51,7 @@
 #include <pcl/octree/octree_search.h>
 #include <pcl/octree/octree_pointcloud_adjacency.h>
 #include <pcl/search/search.h>
-#include <pcl/segmentation/boost.h>
+#include <boost/ptr_container/ptr_list.hpp> // for ptr_list
 
 
 
@@ -195,9 +195,6 @@ namespace pcl
        */
       SupervoxelClustering (float voxel_resolution, float seed_resolution);
 
-      PCL_DEPRECATED(1, 12, "constructor with flag for using the single camera transform is deprecated. Default behavior is now to use the transform for organized clouds, and not use it for unorganized. Use setUseSingleCameraTransform() to override the defaults.")
-      SupervoxelClustering (float voxel_resolution, float seed_resolution, bool) : SupervoxelClustering (voxel_resolution, seed_resolution) { }
-
       /** \brief This destructor destroys the cloud, normals and search method used for
         * finding neighbors. In other words it frees memory.
         */
@@ -272,20 +269,6 @@ namespace pcl
       refineSupervoxels (int num_itr, std::map<std::uint32_t,typename Supervoxel<PointT>::Ptr > &supervoxel_clusters);
 
       ////////////////////////////////////////////////////////////
-      /** \brief Returns an RGB colorized cloud showing superpixels
-        * Otherwise it returns an empty pointer.
-        * Points that belong to the same supervoxel have the same color.
-        * But this function doesn't guarantee that different segments will have different
-        * color(it's random). Points that are unlabeled will be black
-        * \note This will expand the label_colors_ vector so that it can accommodate all labels
-        */
-      PCL_DEPRECATED(1, 12, "use getLabeledCloud() instead. An example of how to display and save with colorized labels can be found in examples/segmentation/example_supervoxels.cpp")
-      typename pcl::PointCloud<PointXYZRGBA>::Ptr
-      getColoredCloud () const
-      {
-        return pcl::PointCloud<PointXYZRGBA>::Ptr (new pcl::PointCloud<PointXYZRGBA>);
-      }
-
       /** \brief Returns a deep copy of the voxel centroid cloud */
       typename pcl::PointCloud<PointT>::Ptr
       getVoxelCentroidCloud () const;
@@ -339,13 +322,13 @@ namespace pcl
        *  \param[out] seed_indices The selected leaf indices
        */
       void
-      selectInitialSupervoxelSeeds (std::vector<int> &seed_indices);
+      selectInitialSupervoxelSeeds (Indices &seed_indices);
 
       /** \brief This method creates the internal supervoxel helpers based on the provided seed points
        *  \param[in] seed_indices Indices of the leaves to use as seeds
        */
       void
-      createSupervoxelHelpers (std::vector<int> &seed_indices);
+      createSupervoxelHelpers (Indices &seed_indices);
 
       /** \brief This performs the superpixel evolution */
       void

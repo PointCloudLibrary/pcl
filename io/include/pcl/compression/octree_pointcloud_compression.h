@@ -158,7 +158,7 @@ namespace pcl
          * \param[in] pointIdx_arg the index representing the point in the dataset given by \a setInputCloud to be added
          */
         void
-        addPointIdx (const int pointIdx_arg) override
+        addPointIdx (const uindex_t pointIdx_arg) override
         {
           ++object_count_;
           OctreePointCloud<PointT, LeafT, BranchT, OctreeT>::addPointIdx(pointIdx_arg);
@@ -251,9 +251,6 @@ namespace pcl
 
         /** \brief Vector for storing binary tree structure */
         std::vector<char> binary_tree_data_vector_;
-
-        /** \brief Iterator on binary tree structure vector */
-        std::vector<char> binary_color_tree_vector_;
 
         /** \brief Vector for storing points per voxel information  */
         std::vector<unsigned int> point_count_data_vector_;

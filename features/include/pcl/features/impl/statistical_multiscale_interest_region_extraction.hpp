@@ -44,7 +44,6 @@
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/common/distances.h>
 #include <pcl/console/print.h> // for PCL_INFO, PCL_ERROR
-#include <pcl/features/boost.h>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/johnson_all_pairs_shortest.hpp>
 
@@ -64,7 +63,7 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::generateCloudGraph (
 
   for (std::size_t point_i = 0; point_i < input_->size (); ++point_i)
   {
-    std::vector<int> k_indices (16);
+    pcl::Indices k_indices (16);
     std::vector<float> k_distances (16);
     kdtree.nearestKSearch (static_cast<int> (point_i), 16, k_indices, k_distances);
 
@@ -213,7 +212,7 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::extractExtrema (std:
       std::vector<int> nn_indices;
       geodesicFixedRadiusSearch (point_i, scale_values_[scale_i], nn_indices);
       bool is_max_point = true, is_min_point = true;
-      for (const int &nn_index : nn_indices)
+      for (const auto &nn_index : nn_indices)
         if (F_scales_[scale_i][point_i] < F_scales_[scale_i][nn_index])
           is_max_point = false;
         else
@@ -235,7 +234,7 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::extractExtrema (std:
           (is_max[scale_i - 1][point_i] && is_max[scale_i][point_i] && is_max[scale_i + 1][point_i]))
         {
         // add the point to the result vector
-        IndicesPtr region (new std::vector<int>);
+        IndicesPtr region (new pcl::Indices);
         region->push_back (static_cast<int> (point_i));
 
         // and also add its scale-sized geodesic neighborhood

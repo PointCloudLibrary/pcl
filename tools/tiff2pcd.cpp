@@ -48,7 +48,7 @@
 #include <pcl/console/print.h>
 #include <pcl/io/pcd_io.h>
 
-#include <pcl/io/vtk_lib_io.h>
+#include <vtkImageData.h> // for vtkImageData
 #include <vtkSmartPointer.h>
 #include <vtkImageViewer2.h>
 #include <vtkTIFFReader.h>
@@ -148,33 +148,25 @@ void processAndSave( vtkSmartPointer<vtkImageData>  depth_data,
     } // for u
   } // for v
 
-  std::stringstream ss;
-
   if(depth)
   {
+    std::string depth_filename = "frame_" + time + "_depth.pcd";
     if(use_output_path)
-      ss << output_path << "/frame_" << time << "_depth.pcd";
-    else
-      ss << "frame_" << time << "_depth.pcd";
-    pcl::io::savePCDFile (ss.str(), pc_depth, format);
-    ss.str(""); //empty
+      depth_filename = output_path + '/' + depth_filename;
+    pcl::io::savePCDFile (depth_filename, pc_depth, format);
   }
 
   if(color)
   {
+    std::string color_filename = "frame_" + time + "_color.pcd";
     if(use_output_path)
-      ss << output_path << "/frame_" << time << "_color.pcd";
-    else
-      ss << "frame_" << time << "_color.pcd";
-    pcl::io::savePCDFile (ss.str(), pc_image, format);
-    ss.str(""); //empty
+      color_filename = output_path + '/' + color_filename;
+    pcl::io::savePCDFile (color_filename, pc_image, format);
   }
-
+  std::string xyzrgba_filename = "frame_" + time + "_xyzrgba.pcd";
   if(use_output_path)
-    ss << output_path << "/frame_" << time << "_xyzrgba.pcd";
-  else
-    ss << "frame_" << time << "_xyzrgba.pcd";
-  pcl::io::savePCDFile (ss.str(), pc_xyzrgba, format);
+    xyzrgba_filename = output_path + '/' + xyzrgba_filename;
+  pcl::io::savePCDFile (xyzrgba_filename, pc_xyzrgba, format);
 
   std::cout << "Saved " << time << " to pcd" << std::endl;
   return;

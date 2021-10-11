@@ -9,7 +9,7 @@ has been presented on ICRA2012 and IROS2012 and an official reference for a jour
 
   .. raw:: html
 
-     <iframe width="560" height="315" src="http://www.youtube.com/embed/Wd4OM8wOO1E?rel=0" frameborder="0" allowfullscreen></iframe>
+     <iframe width="560" height="315" src="https://www.youtube.com/embed/Wd4OM8wOO1E?rel=0" frameborder="0" allowfullscreen></iframe>
 
 This shows how to detect people with an Primesense device, the full version 
 working on oni and pcd files can be found in the git master.
@@ -39,7 +39,7 @@ Now, let's break down the code piece by piece. Starting from the main routine.
 
 .. literalinclude:: sources/gpu/people_detect/src/people_detect.cpp
    :language: cpp
-   :lines: 317-367
+   :lines: 319-369
 
 First the GPU device is set, by default this is the first GPU found in the bus, but if you have multiple GPU's in
 your system, this allows you to select a specific one.
@@ -47,7 +47,7 @@ Then a OpenNI Capture is made, see the OpenNI Grabber tutorial for more info on 
 
 .. literalinclude:: sources/gpu/people_detect/src/people_detect.cpp
    :language: cpp
-   :lines: 329-338
+   :lines: 331-340
 
 The implementation is based on a similar approach as Shotton et al. and thus needs off-line learned random
 decision forests for labeling. The current implementation allows up to 4 decision trees to be loaded into
@@ -55,19 +55,19 @@ the forest. This is done by giving it the names of the text files to load.
 
 .. literalinclude:: sources/gpu/people_detect/src/people_detect.cpp
    :language: cpp
-   :lines: 340-341
+   :lines: 342-343
 
 An additional parameter allows you to configure the number of trees to be loaded. 
 
 .. literalinclude:: sources/gpu/people_detect/src/people_detect.cpp
    :language: cpp
-   :lines: 350-352
+   :lines: 352-354
 
 Then the RDF object is created, loading the trees upon creation.
 
 .. literalinclude:: sources/gpu/people_detect/src/people_detect.cpp
    :language: cpp
-   :lines: 354-359
+   :lines: 356-361
 
 Now we create the application object, give it the pointer to the RDF object and start the loop.
 Now we'll have a look at the main loop.
@@ -75,7 +75,7 @@ Now we'll have a look at the main loop.
 
 .. literalinclude:: sources/gpu/people_detect/src/people_detect.cpp
    :language: cpp
-   :lines: 238-286
+   :lines: 237-288
 
 This routine first connects a callback routine to the grabber and waits for valid data to arrive.
 Each time the data arrives it will call the process function of the people detector, this is a
@@ -87,13 +87,13 @@ The visualizeAndWrite method will illustrate one of the available methods of the
 
 .. literalinclude:: sources/gpu/people_detect/src/people_detect.cpp
    :language: cpp
-   :lines: 141-178
+   :lines: 140-177
 
-Line 144 calls the RDF getLabels method which returns the labels on the device, these however
+Line 143 calls the RDF getLabels method which returns the labels on the device, these however
 are a discrete enum of the labels and are visually hard to recognize, so these are converted to
-colors that illustrate each body part in line 145. 
+colors that illustrate each body part in line 144. 
 At this point the results are still stored in the device memory and need to be copied to the CPU
-host memory, this is done in line 151. Afterwards the images are shown and stored to disk.
+host memory, this is done in line 150. Afterwards the images are shown and stored to disk.
 
 Compiling and running the program
 ---------------------------------

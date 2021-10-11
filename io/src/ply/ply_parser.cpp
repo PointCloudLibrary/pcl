@@ -359,7 +359,10 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
             return false;
           }
         }
-        else if ((size_type_string == type_traits<uint32>::name ()) || (size_type_string == type_traits<uint32>::old_name ()))
+        // It is safe to use size_type = uint32 here even if it is actually int32, because the size/number of list entries is never negative,
+        // uint32 and int32 have the same width, and all allowed (non-negative) values have the same binary encoding in int32 and uint32.
+        else if ((size_type_string == type_traits<uint32>::name ()) || (size_type_string == type_traits<uint32>::old_name ()) ||
+                 (size_type_string == type_traits< int32>::name ()) || (size_type_string == type_traits< int32>::old_name ()))
         {
           using size_type = uint32;
           if ((scalar_type_string == type_traits<int8>::name ()) || (scalar_type_string == type_traits<int8>::old_name ()))

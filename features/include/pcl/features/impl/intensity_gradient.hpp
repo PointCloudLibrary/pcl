@@ -48,7 +48,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT, typename IntensitySelectorT> void
 pcl::IntensityGradientEstimation <PointInT, PointNT, PointOutT, IntensitySelectorT>::computePointIntensityGradient (
-  const pcl::PointCloud <PointInT> &cloud, const std::vector <int> &indices,
+  const pcl::PointCloud <PointInT> &cloud, const pcl::Indices &indices,
   const Eigen::Vector3f &point, float mean_intensity, const Eigen::Vector3f &normal, Eigen::Vector3f &gradient)
 {
   if (indices.size () < 3)
@@ -60,7 +60,7 @@ pcl::IntensityGradientEstimation <PointInT, PointNT, PointOutT, IntensitySelecto
   Eigen::Matrix3f A = Eigen::Matrix3f::Zero ();
   Eigen::Vector3f b = Eigen::Vector3f::Zero ();
 
-  for (const int &nn_index : indices)
+  for (const auto &nn_index : indices)
   {
     PointInT p = cloud[nn_index];
     if (!std::isfinite (p.x) ||
@@ -144,7 +144,7 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
 {
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices (k_);
+  pcl::Indices nn_indices (k_);
   std::vector<float> nn_dists (k_);
   output.is_dense = true;
 
@@ -172,7 +172,7 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
       float mean_intensity = 0;
       // Initialize to 0
       centroid.setZero ();
-      for (const int &nn_index : nn_indices)
+      for (const auto &nn_index : nn_indices)
       {
         centroid += (*surface_)[nn_index].getVector3fMap ();
         mean_intensity += intensity_ ((*surface_)[nn_index]);
@@ -212,7 +212,7 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
       // Initialize to 0
       centroid.setZero ();
       unsigned cp = 0;
-      for (const int &nn_index : nn_indices)
+      for (const auto &nn_index : nn_indices)
       {
         // Check if the point is invalid
         if (!isFinite ((*surface_) [nn_index]))

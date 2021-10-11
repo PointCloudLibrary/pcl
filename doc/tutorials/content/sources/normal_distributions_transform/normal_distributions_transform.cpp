@@ -12,7 +12,7 @@
 using namespace std::chrono_literals;
 
 int
-main (int argc, char** argv)
+main ()
 {
   // Loading first scan of room.
   pcl::PointCloud<pcl::PointXYZ>::Ptr target_cloud (new pcl::PointCloud<pcl::PointXYZ>);

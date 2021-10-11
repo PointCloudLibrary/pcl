@@ -50,7 +50,7 @@
 void
 pcl::visualization::getCorrespondingPointCloud (vtkPolyData *src, 
                                                 const pcl::PointCloud<pcl::PointXYZ> &tgt, 
-                                                std::vector<int> &indices)
+                                                pcl::Indices &indices)
 {
   // Iterate through the points and copy the data in a pcl::PointCloud
   pcl::PointCloud<pcl::PointXYZ> cloud;
@@ -70,7 +70,7 @@ pcl::visualization::getCorrespondingPointCloud (vtkPolyData *src,
   pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
   kdtree.setInputCloud (make_shared<PointCloud<PointXYZ>> (tgt));
 
-  std::vector<int> nn_indices (1);
+  pcl::Indices nn_indices (1);
   std::vector<float> nn_dists (1);
   // For each point on screen, find its correspondent in the target
   for (const auto &point : cloud.points)
@@ -131,16 +131,15 @@ pcl::visualization::savePointData (vtkPolyData* data, const std::string &out_fil
     pcl::PointCloud<pcl::PointXYZ> cloud_xyz;
     pcl::fromPCLPointCloud2 (cloud, cloud_xyz);
     // Get the corresponding indices that we need to save from this point cloud
-    std::vector<int> indices;
+    pcl::Indices indices;
     getCorrespondingPointCloud (cleaner->GetOutput (), cloud_xyz, indices);
 
     // Copy the indices and save the file
     pcl::PCLPointCloud2 cloud_out;
     pcl::copyPointCloud (cloud, indices, cloud_out);
-    std::stringstream ss;
-    ss << out_file << i++ << ".pcd";
-    pcl::console::print_debug ("  Save: %s ... ", ss.str ().c_str ());
-    if (pcl::io::savePCDFile (ss.str (), cloud_out, Eigen::Vector4f::Zero (),
+    const std::string out_filename = out_file + std::to_string(i++) + ".pcd";
+    pcl::console::print_debug ("  Save: %s ... ", out_filename.c_str ());
+    if (pcl::io::savePCDFile (out_filename, cloud_out, Eigen::Vector4f::Zero (),
                               Eigen::Quaternionf::Identity (), true) == -1)
     {
       pcl::console::print_error (stdout, "[failed]\n");

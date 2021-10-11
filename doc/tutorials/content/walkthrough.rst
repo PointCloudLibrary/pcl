@@ -376,7 +376,7 @@ Sample Consensus
 
 **Background**
 
-	The *sample_consensus* library holds SAmple Consensus (SAC) methods like RANSAC and models like planes and cylinders. These can combined freely in order to detect specific models and their parameters in point clouds.
+	The *sample_consensus* library holds SAmple Consensus (SAC) methods like RANSAC and models like planes and cylinders. These can be combined freely in order to detect specific models and their parameters in point clouds.
 	
 	A theoretical primer explaining how sample consensus algorithms work can be found in the `Random Sample Consensus tutorial <http://pointclouds.org/documentation/tutorials/random_sample_consensus.php#random-sample-consensus>`_
 
@@ -724,42 +724,42 @@ This section provides a quick reference for some of the common tools in PCL.
 
 |
 		
-	* ``pcd_convert_NaN_nan``: converts "NaN" values to "nan" values. *(Note: Starting with PCL version 1.0.1 the string representation for NaN is “nan”.)*
+	* ``pcl_pcd_convert_NaN_nan``: converts "NaN" values to "nan" values. *(Note: Starting with PCL version 1.0.1 the string representation for NaN is “nan”.)*
 		
 		**Usage example:**
 		
-		``pcd_convert_NaN_nan input.pcd output.pcd``
+		``pcl_pcd_convert_NaN_nan input.pcd output.pcd``
 	
-	* ``convert_pcd_ascii_binary``: converts PCD (Point Cloud Data) files from ASCII to binary and viceversa. 
+	* ``pcl_convert_pcd_ascii_binary``: converts PCD (Point Cloud Data) files from ASCII to binary and viceversa. 
 	
 	 	**Usage example:**
 		
-		``convert_pcd_ascii_binary <file_in.pcd> <file_out.pcd> 0/1/2 (ascii/binary/binary_compressed) [precision (ASCII)]``
+		``pcl_convert_pcd_ascii_binary <file_in.pcd> <file_out.pcd> 0/1/2 (ascii/binary/binary_compressed) [precision (ASCII)]``
 		
-	* ``concatenate_points_pcd``: concatenates the points of two or more PCD (Point Cloud Data) files into a single PCD file.
+	* ``pcl_concatenate_points_pcd``: concatenates the points of two or more PCD (Point Cloud Data) files into a single PCD file.
 	 	
 	 	**Usage example:**
 	 	
-	 	``concatenate_points_pcd <filename 1..N.pcd>``
+	 	``pcl_concatenate_points_pcd <filename 1..N.pcd>``
 	 	
 	 	*(Note: the resulting PCD file will be ``output.pcd``)*
 		
 	
-	* ``pcd2vtk``: converts PCD (Point Cloud Data) files to the `VTK format <http://www.vtk.org/VTK/img/file-formats.pdf>`_. 
+	* ``pcl_pcd2vtk``: converts PCD (Point Cloud Data) files to the `VTK format <http://www.vtk.org/VTK/img/file-formats.pdf>`_. 
 	
 		**Usage example:**
 		
-		``pcd2vtk input.pcd output.vtk`` 	
+		``pcl_pcd2vtk input.pcd output.vtk`` 	
 
-	* ``pcd2ply``: converts PCD (Point Cloud Data) files to the `PLY format <http://en.wikipedia.org/wiki/PLY_%28file_format%29>`_. 
+	* ``pcl_pcd2ply``: converts PCD (Point Cloud Data) files to the `PLY format <http://en.wikipedia.org/wiki/PLY_%28file_format%29>`_. 
 
 		**Usage example:**
 
-		``pcd2ply input.pcd output.ply``
+		``pcl_pcd2ply input.pcd output.ply``
 
-	* ``mesh2pcd``: convert a CAD model to a PCD (Point Cloud Data) file, using ray tracing operations.
+	* ``pcl_mesh2pcd``: convert a CAD model to a PCD (Point Cloud Data) file, using ray tracing operations.
 	
-	 	**Syntax is: mesh2pcd input.{ply,obj} output.pcd <options>**, where options are:
+	 	**Syntax is: pcl_mesh2pcd input.{ply,obj} output.pcd <options>**, where options are:
 	 	
 		                     -level X      = tessellated sphere level (default: 2)
 		
@@ -770,13 +770,13 @@ This section provides a quick reference for some of the common tools in PCL.
 
 	.. _`octree_viewer`: 
 	
-	* ``octree_viewer``: allows the visualization of `octrees`__
+	* ``pcl_octree_viewer``: allows the visualization of `octrees`__
 	
 		**Syntax is: octree_viewer <file_name.pcd> <octree resolution>**
 		
 		**Usage example:**
 		
-		``Example: ./octree_viewer ../../test/bunny.pcd 0.02``
+		``Example: ./pcl_octree_viewer ../../test/bunny.pcd 0.02``
 		
 		.. image:: images/octree_bunny2.png
 		

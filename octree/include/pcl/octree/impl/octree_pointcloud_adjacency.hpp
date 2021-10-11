@@ -37,7 +37,6 @@
 
 #pragma once
 
-#include <pcl/common/geometry.h>
 #include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/console/print.h>
 
@@ -128,12 +127,9 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
     if (pcl::isFinite(temp)) // Make sure transformed point is finite - if it is not, it
                              // gets default key
     {
-      key_arg.x =
-          static_cast<unsigned int>((temp.x - this->min_x_) / this->resolution_);
-      key_arg.y =
-          static_cast<unsigned int>((temp.y - this->min_y_) / this->resolution_);
-      key_arg.z =
-          static_cast<unsigned int>((temp.z - this->min_z_) / this->resolution_);
+      key_arg.x = static_cast<uindex_t>((temp.x - this->min_x_) / this->resolution_);
+      key_arg.y = static_cast<uindex_t>((temp.y - this->min_y_) / this->resolution_);
+      key_arg.z = static_cast<uindex_t>((temp.z - this->min_z_) / this->resolution_);
     }
     else {
       key_arg = OctreeKey();
@@ -141,12 +137,9 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   }
   else {
     // calculate integer key for point coordinates
-    key_arg.x =
-        static_cast<unsigned int>((point_arg.x - this->min_x_) / this->resolution_);
-    key_arg.y =
-        static_cast<unsigned int>((point_arg.y - this->min_y_) / this->resolution_);
-    key_arg.z =
-        static_cast<unsigned int>((point_arg.z - this->min_z_) / this->resolution_);
+    key_arg.x = static_cast<uindex_t>((point_arg.x - this->min_x_) / this->resolution_);
+    key_arg.y = static_cast<uindex_t>((point_arg.y - this->min_y_) / this->resolution_);
+    key_arg.z = static_cast<uindex_t>((point_arg.z - this->min_z_) / this->resolution_);
   }
 }
 
@@ -154,11 +147,11 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
 template <typename PointT, typename LeafContainerT, typename BranchContainerT>
 void
 pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>::
-    addPointIdx(const int pointIdx_arg)
+    addPointIdx(const uindex_t pointIdx_arg)
 {
   OctreeKey key;
 
-  assert(pointIdx_arg < static_cast<int>(this->input_->size()));
+  assert(pointIdx_arg < this->input_->size());
 
   const PointT& point = (*this->input_)[pointIdx_arg];
   if (!pcl::isFinite(point))
@@ -295,13 +288,13 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   direction.normalize();
   float precision = 1.0f;
   const float step_size = static_cast<const float>(resolution_) * precision;
-  const int nsteps = std::max(1, static_cast<int>(norm / step_size));
+  const auto nsteps = std::max<std::size_t>(1, norm / step_size);
 
   OctreeKey prev_key = key;
   // Walk along the line segment with small steps.
   Eigen::Vector3f p = leaf_centroid;
   PointT octree_p;
-  for (int i = 0; i < nsteps; ++i) {
+  for (std::size_t i = 0; i < nsteps; ++i) {
     // Start at the leaf voxel, and move back towards sensor.
     p += (direction * step_size);
 

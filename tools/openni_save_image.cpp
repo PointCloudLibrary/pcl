@@ -39,14 +39,17 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
-#include <pcl/visualization/vtk.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
-#include "boost.h"
+#include <vtkSmartPointer.h>
+#include <vtkImageImport.h>
+#include <vtkTIFFWriter.h>
+#include <vtkImageFlip.h>
 
 #include <mutex>
 #include <string>
 #include <vector>
+#include <boost/date_time/posix_time/posix_time.hpp> // for to_iso_string, local_time
 
 
 #define SHOW_FPS 1
@@ -148,13 +151,12 @@ class SimpleOpenNIViewer
             data = reinterpret_cast<const void*> (rgb_data);
           }
 
-          std::stringstream ss;
-          ss << "frame_" + time + "_rgb.tiff";
+          const std::string filename = "frame_" + time + "_rgb.tiff";
           importer_->SetImportVoidPointer (const_cast<void*>(data), 1);
           importer_->Update ();
           flipper_->SetInputConnection (importer_->GetOutputPort ());
           flipper_->Update ();
-          writer_->SetFileName (ss.str ().c_str ());
+          writer_->SetFileName (filename.c_str ());
           writer_->SetInputConnection (flipper_->GetOutputPort ());
           writer_->Write ();
         }
@@ -164,8 +166,7 @@ class SimpleOpenNIViewer
           openni_wrapper::DepthImage::Ptr depth_image;
           depth_image.swap (depth_image_);
 
-          std::stringstream ss;
-          ss << "frame_" + time + "_depth.tiff";
+          const std::string filename = "frame_" + time + "_depth.tiff";
 
           depth_importer_->SetWholeExtent (0, depth_image->getWidth () - 1, 0, depth_image->getHeight () - 1, 0, 0);
           depth_importer_->SetDataExtentToWholeExtent ();
@@ -173,7 +174,7 @@ class SimpleOpenNIViewer
           depth_importer_->Update ();
           flipper_->SetInputConnection (depth_importer_->GetOutputPort ());
           flipper_->Update ();
-          writer_->SetFileName (ss.str ().c_str ());
+          writer_->SetFileName (filename.c_str ());
           writer_->SetInputConnection (flipper_->GetOutputPort ());
           writer_->Write ();
         }

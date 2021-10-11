@@ -38,100 +38,97 @@
  *
  */
 
-
 #ifndef PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_ORGANIZED_PROJECTION_IMPL_HPP_
 #define PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_ORGANIZED_PROJECTION_IMPL_HPP_
 
+namespace pcl {
 
-namespace pcl
-{
+namespace registration {
 
-namespace registration
+template <typename PointSource, typename PointTarget, typename Scalar>
+bool
+CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar>::
+    initCompute()
 {
-
-template <typename PointSource, typename PointTarget, typename Scalar> bool
-CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar>::initCompute ()
-{
-  // Set the target_cloud_updated_ variable to true, so that the kd-tree is not built - it is not needed for this class
+  // Set the target_cloud_updated_ variable to true, so that the kd-tree is not built -
+  // it is not needed for this class
   target_cloud_updated_ = false;
-  if (!CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initCompute ())
+  if (!CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initCompute())
     return (false);
 
   /// Check if the target cloud is organized
-  if (!target_->isOrganized ())
-  {
-    PCL_WARN ("[pcl::registration::%s::initCompute] Target cloud is not organized.\n", getClassName ().c_str ());
+  if (!target_->isOrganized()) {
+    PCL_WARN("[pcl::registration::%s::initCompute] Target cloud is not organized.\n",
+             getClassName().c_str());
     return (false);
   }
 
   /// Put the projection matrix together
-  projection_matrix_ (0, 0) = fx_;
-  projection_matrix_ (1, 1) = fy_;
-  projection_matrix_ (0, 2) = cx_;
-  projection_matrix_ (1, 2) = cy_;
+  projection_matrix_(0, 0) = fx_;
+  projection_matrix_(1, 1) = fy_;
+  projection_matrix_(0, 2) = cx_;
+  projection_matrix_(1, 2) = cy_;
 
   return (true);
 }
 
-
-template <typename PointSource, typename PointTarget, typename Scalar> void
-CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar>::determineCorrespondences (
-    pcl::Correspondences &correspondences,
-    double max_distance)
+template <typename PointSource, typename PointTarget, typename Scalar>
+void
+CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar>::
+    determineCorrespondences(pcl::Correspondences& correspondences, double max_distance)
 {
-  if (!initCompute ())
+  if (!initCompute())
     return;
 
-  correspondences.resize (indices_->size ());
+  correspondences.resize(indices_->size());
   std::size_t c_index = 0;
 
-  for (std::vector<int>::const_iterator src_it = indices_->begin (); src_it != indices_->end (); ++src_it)
-  {
-    if (isFinite ((*input_)[*src_it]))
-    {
-      Eigen::Vector4f p_src (src_to_tgt_transformation_ * (*input_)[*src_it].getVector4fMap ());
-      Eigen::Vector3f p_src3 (p_src[0], p_src[1], p_src[2]);
-      Eigen::Vector3f uv (projection_matrix_ * p_src3);
+  for (const auto& src_idx : (*indices_)) {
+    if (isFinite((*input_)[src_idx])) {
+      Eigen::Vector4f p_src(src_to_tgt_transformation_ *
+                            (*input_)[src_idx].getVector4fMap());
+      Eigen::Vector3f p_src3(p_src[0], p_src[1], p_src[2]);
+      Eigen::Vector3f uv(projection_matrix_ * p_src3);
 
       /// Check if the point was behind the camera
       if (uv[2] <= 0)
         continue;
 
-      int u = static_cast<int> (uv[0] / uv[2]);
-      int v = static_cast<int> (uv[1] / uv[2]);
+      int u = static_cast<int>(uv[0] / uv[2]);
+      int v = static_cast<int>(uv[1] / uv[2]);
 
-      if (u >= 0 && u < static_cast<int> (target_->width) &&
-          v >= 0 && v < static_cast<int> (target_->height))
-      {
-        const PointTarget &pt_tgt = target_->at (u, v);
-        if (!isFinite (pt_tgt))
+      if (u >= 0 && u < static_cast<int>(target_->width) && v >= 0 &&
+          v < static_cast<int>(target_->height)) {
+        const PointTarget& pt_tgt = target_->at(u, v);
+        if (!isFinite(pt_tgt))
           continue;
         /// Check if the depth difference is larger than the threshold
-        if (std::abs (uv[2] - pt_tgt.z) > depth_threshold_)
+        if (std::abs(uv[2] - pt_tgt.z) > depth_threshold_)
           continue;
 
-        double dist = (p_src3 - pt_tgt.getVector3fMap ()).norm ();
+        double dist = (p_src3 - pt_tgt.getVector3fMap()).norm();
         if (dist < max_distance)
-          correspondences[c_index++] =  pcl::Correspondence (*src_it, v * target_->width + u, static_cast<float> (dist));
+          correspondences[c_index++] = pcl::Correspondence(
+              src_idx, v * target_->width + u, static_cast<float>(dist));
       }
     }
   }
 
-  correspondences.resize (c_index);
+  correspondences.resize(c_index);
 }
 
-
-template <typename PointSource, typename PointTarget, typename Scalar> void
-CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar>::determineReciprocalCorrespondences (
-    pcl::Correspondences &correspondences,
-    double max_distance)
+template <typename PointSource, typename PointTarget, typename Scalar>
+void
+CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar>::
+    determineReciprocalCorrespondences(pcl::Correspondences& correspondences,
+                                       double max_distance)
 {
-  // Call the normal determineCorrespondences (...), as doing it both ways will not improve the results
-  determineCorrespondences (correspondences, max_distance);
+  // Call the normal determineCorrespondences (...), as doing it both ways will not
+  // improve the results
+  determineCorrespondences(correspondences, max_distance);
 }
 
 } // namespace registration
 } // namespace pcl
 
-#endif    // PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_ORGANIZED_PROJECTION_IMPL_HPP_
-
+#endif // PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_ORGANIZED_PROJECTION_IMPL_HPP_

@@ -43,12 +43,12 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/pcl_base.h>
-#include <pcl/sample_consensus/eigen.h>
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/common/eigen.h>
 #include <pcl/common/centroid.h>
 #include <map>
+#include <numeric> // for std::iota
 
 namespace pcl
 {
@@ -130,13 +130,10 @@ namespace pcl
       setInputTarget (const PointCloudConstPtr &target)
       {
         target_ = target;
-        indices_tgt_.reset (new Indices);
         // Cache the size and fill the target indices
-        int target_size = static_cast<int> (target->size ());
-        indices_tgt_->resize (target_size);
-
-        for (int i = 0; i < target_size; ++i)
-          (*indices_tgt_)[i] = i;
+        const index_t target_size = static_cast<index_t> (target->size ());
+        indices_tgt_.reset (new Indices (target_size));
+        std::iota (indices_tgt_->begin (), indices_tgt_->end (), 0);
         computeOriginalIndexMapping ();
       }
 
@@ -307,10 +304,30 @@ namespace pcl
       void
       computeOriginalIndexMapping ()
       {
-        if (!indices_tgt_ || !indices_ || indices_->empty () || indices_->size () != indices_tgt_->size ())
+        if (!indices_tgt_)
+        {
+          PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::computeOriginalIndexMapping] Cannot compute mapping: indices_tgt_ is null.\n");
           return;
+        }
+        if (!indices_)
+        {
+          PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::computeOriginalIndexMapping] Cannot compute mapping: indices_ is null.\n");
+          return;
+        }
+        if (indices_->empty ())
+        {
+          PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::computeOriginalIndexMapping] Cannot compute mapping: indices_ is empty.\n");
+          return;
+        }
+        if (indices_->size () != indices_tgt_->size ())
+        {
+          PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::computeOriginalIndexMapping] Cannot compute mapping: indices_ and indices_tgt_ are not the same size (%zu vs %zu).\n",
+                     indices_->size (), indices_tgt_->size ());
+          return;
+        }
         for (std::size_t i = 0; i < indices_->size (); ++i)
           correspondences_[(*indices_)[i]] = (*indices_tgt_)[i];
+        PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::computeOriginalIndexMapping] Successfully computed mapping.\n");
       }
 
       /** \brief A boost shared pointer to the target point cloud data array. */
@@ -320,7 +337,7 @@ namespace pcl
       IndicesPtr indices_tgt_;
 
       /** \brief Given the index in the original point cloud, give the matching original index in the target cloud */
-      std::map<int, int> correspondences_;
+      std::map<index_t, index_t> correspondences_;
 
       /** \brief Internal distance threshold used for the sample selection step. */
       double sample_dist_thresh_;

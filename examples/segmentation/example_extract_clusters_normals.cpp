@@ -87,7 +87,7 @@ main (int, char **argv)
   for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
   {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
-    for (const int &index : it->indices)
+    for (const auto &index : it->indices)
       cloud_cluster->push_back ((*cloud_ptr)[index]); 
     cloud_cluster->width = cloud_cluster->size ();
     cloud_cluster->height = 1;

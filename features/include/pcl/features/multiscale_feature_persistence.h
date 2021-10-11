@@ -89,7 +89,7 @@ namespace pcl
        */
       void
       determinePersistentFeatures (FeatureCloud &output_features,
-                                   shared_ptr<std::vector<int> > &output_indices);
+                                   pcl::IndicesPtr &output_indices);
 
       /** \brief Method for setting the scale parameters for the algorithm
        * \param scale_values vector of scales to determine the characteristic of each scaling step

@@ -26,6 +26,9 @@ set(LIB_NAME "pcl_${SUBSYS_NAME}")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" ${UTILS_INC})
 PCL_CUDA_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs})
 
+#Ensures that CUDA is added and the project can compile as it uses cuda calls.
+set_source_files_properties(src/device_memory.cpp PROPERTIES LANGUAGE CUDA)
+
 set(EXT_DEPS "")
 #set(EXT_DEPS CUDA)
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS} EXT_DEPS ${EXT_DEPS})

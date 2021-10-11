@@ -123,8 +123,14 @@ namespace pcl_cuda
         * returned (true) or inside (false). 
         * \param limit_negative the limit_negative flag
         */
+      PCL_DEPRECATED(1, 16, "use bool getFilterLimitsNegative() instead")
       inline void 
       getFilterLimitsNegative (bool &limit_negative) { limit_negative = filter_limit_negative_; }
+
+      /** \brief Get whether the data outside the interval (min/max) is to be
+        * returned (true) or inside (false). 
+        * \return true if data \b outside the interval [min; max] is to be returned, false otherwise
+        */
       inline bool 
       getFilterLimitsNegative () { return (filter_limit_negative_); }
 

@@ -51,7 +51,7 @@ main(int, char** argv)
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
   if(pcl::io::loadPCDFile<pcl::PointXYZRGB> (filename, *cloud) == -1) // load the file
   {
-  PCL_ERROR ("Couldn't read file");
+  PCL_ERROR ("Couldn't read file\n");
   return -1;
   }
   std::cout << "points: " << cloud->size () <<std::endl;

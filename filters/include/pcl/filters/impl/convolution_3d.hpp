@@ -102,7 +102,7 @@ pcl::filters::GaussianKernel<PointInT, PointOutT>::initCompute ()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointOutT> PointOutT
-pcl::filters::GaussianKernel<PointInT, PointOutT>::operator() (const std::vector<int>& indices,
+pcl::filters::GaussianKernel<PointInT, PointOutT>::operator() (const Indices& indices,
                                                                const std::vector<float>& distances)
 {
   using namespace pcl::common;
@@ -110,7 +110,7 @@ pcl::filters::GaussianKernel<PointInT, PointOutT>::operator() (const std::vector
   float total_weight = 0;
   std::vector<float>::const_iterator dist_it = distances.begin ();
 
-  for (std::vector<int>::const_iterator idx_it = indices.begin ();
+  for (Indices::const_iterator idx_it = indices.begin ();
        idx_it != indices.end ();
        ++idx_it, ++dist_it)
   {
@@ -131,7 +131,7 @@ pcl::filters::GaussianKernel<PointInT, PointOutT>::operator() (const std::vector
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointOutT> PointOutT
-pcl::filters::GaussianKernelRGB<PointInT, PointOutT>::operator() (const std::vector<int>& indices, const std::vector<float>& distances)
+pcl::filters::GaussianKernelRGB<PointInT, PointOutT>::operator() (const Indices& indices, const std::vector<float>& distances)
 {
   using namespace pcl::common;
   PointOutT result;
@@ -139,7 +139,7 @@ pcl::filters::GaussianKernelRGB<PointInT, PointOutT>::operator() (const std::vec
   float r = 0, g = 0, b = 0;
   std::vector<float>::const_iterator dist_it = distances.begin ();
 
-  for (std::vector<int>::const_iterator idx_it = indices.begin ();
+  for (Indices::const_iterator idx_it = indices.begin ();
        idx_it != indices.end ();
        ++idx_it, ++dist_it)
   {
@@ -204,14 +204,14 @@ pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::initCompute ()
   // Do a fast check to see if the search parameters are well defined
   if (search_radius_ <= 0.0)
   {
-    PCL_ERROR ("[pcl::filters::Convlution3D::initCompute] search radius (%f) must be > 0",
+    PCL_ERROR ("[pcl::filters::Convlution3D::initCompute] search radius (%f) must be > 0\n",
                search_radius_);
     return (false);
   }
   // Make sure the provided kernel implements the required interface
   if (dynamic_cast<ConvolvingKernel<PointInT, PointOutT>* > (&kernel_) == 0)
   {
-    PCL_ERROR ("[pcl::filters::Convlution3D::initCompute] init failed");
+    PCL_ERROR ("[pcl::filters::Convlution3D::initCompute] init failed : ");
     PCL_ERROR ("kernel_ must implement ConvolvingKernel interface\n!");
     return (false);
   }
@@ -238,7 +238,7 @@ pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::convolve (PointCloudO
   output.width = surface_->width;
   output.height = surface_->height;
   output.is_dense = surface_->is_dense;
-  std::vector<int> nn_indices;
+  Indices nn_indices;
   std::vector<float> nn_distances;
 
 #pragma omp parallel for \

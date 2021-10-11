@@ -14,6 +14,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
  && apt-get install -y \
+      xvfb \
       cmake \
       g++ \
       clang \
@@ -26,6 +27,7 @@ RUN apt-get update \
       libflann-dev \
       libglew-dev \
       libgtest-dev \
+      libbenchmark-dev \
       libopenni-dev \
       libopenni2-dev \
       libproj-dev \

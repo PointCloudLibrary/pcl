@@ -2,8 +2,8 @@
 #include <thread>
 
 #include <pcl/console/parse.h>
-#include <pcl/filters/extract_indices.h>
-#include <pcl/io/pcd_io.h>
+#include <pcl/point_cloud.h> // for PointCloud
+#include <pcl/common/io.h> // for copyPointCloud
 #include <pcl/point_types.h>
 #include <pcl/sample_consensus/ransac.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
@@ -39,7 +39,7 @@ main(int argc, char** argv)
   cloud->height   = 1;
   cloud->is_dense = false;
   cloud->points.resize (cloud->width * cloud->height);
-  for (pcl::index_t i = 0; i < cloud->size (); ++i)
+  for (pcl::index_t i = 0; i < static_cast<pcl::index_t>(cloud->size ()); ++i)
   {
     if (pcl::console::find_argument (argc, argv, "-s") >= 0 || pcl::console::find_argument (argc, argv, "-sf") >= 0)
     {

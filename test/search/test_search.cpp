@@ -103,10 +103,10 @@ std::uniform_int_distribution<unsigned> rand_uint(0, 10);
 std::uniform_real_distribution<float> rand_float (0.0f, 1.0f);
 
 /** \brief used by the *_VIEW_* tests to use only a subset of points from the point cloud*/
-std::vector<int> unorganized_input_indices;
+pcl::Indices unorganized_input_indices;
 
 /** \brief used by the *_VIEW_* tests to use only a subset of points from the point cloud*/
-std::vector<int> organized_input_indices;
+pcl::Indices organized_input_indices;
 
 /** \brief instance of brute force search method to be tested*/
 pcl::search::BruteForce<pcl::PointXYZ> brute_force;
@@ -127,16 +127,16 @@ std::vector<search::Search<PointXYZ>* > unorganized_search_methods;
 std::vector<search::Search<PointXYZ>* > organized_search_methods;
 
 /** \brief lists of indices to be used as query points for various search methods and different cloud types*/
-std::vector<int> unorganized_dense_cloud_query_indices;
-std::vector<int> unorganized_sparse_cloud_query_indices;
-std::vector<int> organized_sparse_query_indices;
+pcl::Indices unorganized_dense_cloud_query_indices;
+pcl::Indices unorganized_sparse_cloud_query_indices;
+pcl::Indices organized_sparse_query_indices;
 
 /** \briet test whether the result of a search contains unique point ids or not
   * @param indices resulting indices from a search
   * @param name name of the search method that returned these distances
   * @return true if indices are unique, false otherwise
   */
-bool testUniqueness (const std::vector<int>& indices, const std::string& name)
+bool testUniqueness (const pcl::Indices& indices, const std::string& name)
 {
   bool uniqueness = true;
   for (unsigned idx1 = 1; idx1 < indices.size () && uniqueness; ++idx1)
@@ -191,10 +191,10 @@ bool testOrder (const std::vector<float>& distances, const std::string& name)
  * @return true if result is valid, false otherwise
  */
 template<typename PointT> bool
-testResultValidity (const typename PointCloud<PointT>::ConstPtr point_cloud, const std::vector<bool>& indices_mask, const std::vector<bool>& nan_mask, const std::vector<int>& indices, const std::vector<int>& /*input_indices*/, const std::string& name)
+testResultValidity (const typename PointCloud<PointT>::ConstPtr point_cloud, const std::vector<bool>& indices_mask, const std::vector<bool>& nan_mask, const pcl::Indices& indices, const pcl::Indices& /*input_indices*/, const std::string& name)
 {
   bool validness = true;
-  for (const int &index : indices)
+  for (const auto &index : indices)
   {
     if (!indices_mask [index])
     {
@@ -233,8 +233,8 @@ testResultValidity (const typename PointCloud<PointT>::ConstPtr point_cloud, con
   * \param eps threshold for comparing the distances
   * \return true if both sets are the same, false otherwise
   */
-bool compareResults (const std::vector<int>& indices1, const std::vector<float>& distances1, const std::string& name1,
-                     const std::vector<int>& indices2, const std::vector<float>& distances2, const std::string& name2, float eps)
+bool compareResults (const pcl::Indices& indices1, const std::vector<float>& distances1, const std::string& name1,
+                     const pcl::Indices& indices2, const std::vector<float>& distances2, const std::string& name2, float eps)
 {
   bool equal = true;
   if (indices1.size () != indices2.size ())
@@ -282,9 +282,9 @@ bool compareResults (const std::vector<int>& indices1, const std::vector<float>&
   */
 template<typename PointT> void
 testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector<search::Search<PointT>*> search_methods,
-                const std::vector<int>& query_indices, const std::vector<int>& input_indices = std::vector<int> () )
+                const pcl::Indices& query_indices, const pcl::Indices& input_indices = pcl::Indices () )
 {
-  std::vector< std::vector<int> >indices (search_methods.size ());
+  std::vector< pcl::Indices >indices (search_methods.size ());
   std::vector< std::vector<float> >distances (search_methods.size ());
   std::vector<bool> passed (search_methods.size (), true);
   
@@ -294,7 +294,7 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector<se
   if (!input_indices.empty ())
   {
     indices_mask.assign (point_cloud->size (), false);
-    for (const int &input_index : input_indices)
+    for (const auto &input_index : input_indices)
       indices_mask [input_index] = true;
   }
   
@@ -322,7 +322,7 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector<se
   for (unsigned knn = 1; knn <= 512; knn <<= 3)
   {
     // find nn for each point in the cloud
-    for (const int &query_index : query_indices)
+    for (const auto &query_index : query_indices)
     {
       #pragma omp parallel for \
         shared(indices, input_indices, indices_mask, distances, knn, nan_mask, passed, point_cloud, query_index, search_methods) \
@@ -361,9 +361,9 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector<se
   */
 template<typename PointT> void
 testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector<search::Search<PointT>*> search_methods, 
-                   const std::vector<int>& query_indices, const std::vector<int>& input_indices = std::vector<int> ())
+                   const pcl::Indices& query_indices, const pcl::Indices& input_indices = pcl::Indices   ())
 {
-  std::vector< std::vector<int> >indices (search_methods.size ());
+  std::vector< pcl::Indices >indices (search_methods.size ());
   std::vector< std::vector<float> >distances (search_methods.size ());
   std::vector<bool> passed (search_methods.size (), true);
   std::vector<bool> indices_mask (point_cloud->size (), true);
@@ -372,7 +372,7 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector
   if (!input_indices.empty ())
   {
     indices_mask.assign (point_cloud->size (), false);
-    for (const int &input_index : input_indices)
+    for (const auto &input_index : input_indices)
       indices_mask [input_index] = true;
   }
   
@@ -401,7 +401,7 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector
   {
     //std::cout << radius << std::endl;
     // find nn for each point in the cloud
-    for (const int &query_index : query_indices)
+    for (const auto &query_index : query_indices)
     {
       #pragma omp parallel for \
         default(none) \
@@ -475,7 +475,7 @@ TEST (PCL, unorganized_dense_cloud_Complete_Radius)
 // Test search on unorganized point clouds in a grid
 TEST (PCL, unorganized_grid_cloud_Complete_Radius)
 {
-  std::vector<int> query_indices;
+  pcl::Indices query_indices;
   query_indices.reserve (query_count);
   
   unsigned skip = static_cast<unsigned> (unorganized_grid_cloud->size ()) / query_count;
@@ -543,7 +543,7 @@ TEST (PCL, Organized_Sparse_View_Radius)
   * \param cloud input cloud required to check for nans and to get number of points
   * \param[in] query_count maximum number of query points
   */
-void createQueryIndices (std::vector<int>& query_indices, PointCloud<PointXYZ>::ConstPtr point_cloud, unsigned query_count)
+void createQueryIndices (pcl::Indices& query_indices, PointCloud<PointXYZ>::ConstPtr point_cloud, unsigned query_count)
 {
   query_indices.clear ();
   query_indices.reserve (query_count);
@@ -558,7 +558,7 @@ void createQueryIndices (std::vector<int>& query_indices, PointCloud<PointXYZ>::
   * \param indices 
   * \param max_index highest accented index usually given by cloud->size () - 1
   */
-void createIndices (std::vector<int>& indices, unsigned max_index)
+void createIndices (pcl::Indices& indices, unsigned max_index)
 {
   // ~10% of the input cloud
   for (unsigned idx = 0; idx <= max_index; ++idx)

@@ -40,7 +40,6 @@
 
 #pragma once
 
-#include <pcl/features/eigen.h>
 #include <pcl/features/feature.h>
 
 namespace pcl
@@ -99,7 +98,7 @@ namespace pcl
        */
       void
       computePointPrincipalCurvatures (const pcl::PointCloud<PointNT> &normals,
-                                       int p_idx, const std::vector<int> &indices,
+                                       int p_idx, const pcl::Indices &indices,
                                        float &pcx, float &pcy, float &pcz, float &pc1, float &pc2);
 
     protected:

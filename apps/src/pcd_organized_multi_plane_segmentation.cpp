@@ -36,7 +36,6 @@
 #include <pcl/console/parse.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/geometry/polygon_operations.h>
-#include <pcl/io/io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/segmentation/organized_connected_component_segmentation.h>
 #include <pcl/segmentation/organized_multi_plane_segmentation.h>
@@ -199,13 +198,12 @@ public:
                       "approx_plane_%02zu_%03zu",
                       static_cast<std::size_t>(i),
                       static_cast<std::size_t>(idx));
-        viewer.addLine(
-            (*approx_contour)[idx],
-            (*approx_contour)[(idx + 1) % approx_contour->size()],
-            0.5 * red[i],
-            0.5 * grn[i],
-            0.5 * blu[i],
-            name);
+        viewer.addLine((*approx_contour)[idx],
+                       (*approx_contour)[(idx + 1) % approx_contour->size()],
+                       0.5 * red[i],
+                       0.5 * grn[i],
+                       0.5 * blu[i],
+                       name);
       }
     }
   }

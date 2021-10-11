@@ -59,7 +59,7 @@ namespace octree {
 struct IteratorState {
   OctreeNode* node_;
   OctreeKey key_;
-  unsigned int depth_;
+  uindex_t depth_;
 };
 
 /** \brief @b Abstract octree iterator class
@@ -82,8 +82,13 @@ public:
 
   /** \brief Empty constructor.
    */
-  explicit OctreeIteratorBase(unsigned int max_depth_arg = 0)
-  : octree_(0), current_state_(0), max_octree_depth_(max_depth_arg)
+  OctreeIteratorBase() : OctreeIteratorBase(nullptr, 0u) {}
+
+  /** \brief Constructor.
+   * \param[in] max_depth_arg Depth limitation during traversal
+   */
+  explicit OctreeIteratorBase(uindex_t max_depth_arg)
+  : octree_(nullptr), current_state_(nullptr), max_octree_depth_(max_depth_arg)
   {
     this->reset();
   }
@@ -91,9 +96,15 @@ public:
   /** \brief Constructor.
    * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its
    * root node.
+   */
+  OctreeIteratorBase(OctreeT* octree_arg) : OctreeIteratorBase(octree_arg, 0u) {}
+
+  /** \brief Constructor.
+   * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its
+   * root node.
    * \param[in] max_depth_arg Depth limitation during traversal
    */
-  explicit OctreeIteratorBase(OctreeT* octree_arg, unsigned int max_depth_arg = 0)
+  explicit OctreeIteratorBase(OctreeT* octree_arg, uindex_t max_depth_arg)
   : octree_(octree_arg), current_state_(0), max_octree_depth_(max_depth_arg)
   {
     this->reset();
@@ -108,7 +119,7 @@ public:
    *  \warning For advanced users only.
    */
   explicit OctreeIteratorBase(OctreeT* octree_arg,
-                              unsigned int max_depth_arg,
+                              uindex_t max_depth_arg,
                               IteratorState* current_state)
   : octree_(octree_arg), current_state_(current_state), max_octree_depth_(max_depth_arg)
   {}
@@ -169,7 +180,7 @@ public:
   /** \brief Get the current depth level of octree
    * \return depth level
    */
-  inline unsigned int
+  inline uindex_t
   getCurrentOctreeDepth() const
   {
     assert(octree_ != 0);
@@ -327,7 +338,7 @@ public:
     if (current_state_) {
       const OctreeKey& key = getCurrentOctreeKey();
       // calculate integer id with respect to octree key
-      unsigned int depth = octree_->getTreeDepth();
+      uindex_t depth = octree_->getTreeDepth();
       id = static_cast<unsigned long>(key.x) << (depth * 2) |
            static_cast<unsigned long>(key.y) << (depth * 1) |
            static_cast<unsigned long>(key.z) << (depth * 0);
@@ -344,7 +355,7 @@ protected:
   IteratorState* current_state_;
 
   /** \brief Maximum octree depth */
-  unsigned int max_octree_depth_;
+  uindex_t max_octree_depth_;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -364,15 +375,14 @@ public:
   /** \brief Empty constructor.
    * \param[in] max_depth_arg Depth limitation during traversal
    */
-  explicit OctreeDepthFirstIterator(unsigned int max_depth_arg = 0);
+  explicit OctreeDepthFirstIterator(uindex_t max_depth_arg = 0);
 
   /** \brief Constructor.
    * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its
    * root node.
    * \param[in] max_depth_arg Depth limitation during traversal
    */
-  explicit OctreeDepthFirstIterator(OctreeT* octree_arg,
-                                    unsigned int max_depth_arg = 0);
+  explicit OctreeDepthFirstIterator(OctreeT* octree_arg, uindex_t max_depth_arg = 0);
 
   /** \brief Constructor.
    * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its
@@ -384,7 +394,7 @@ public:
    */
   explicit OctreeDepthFirstIterator(
       OctreeT* octree_arg,
-      unsigned int max_depth_arg,
+      uindex_t max_depth_arg,
       IteratorState* current_state,
       const std::vector<IteratorState>& stack = std::vector<IteratorState>())
   : OctreeIteratorBase<OctreeT>(octree_arg, max_depth_arg, current_state), stack_(stack)
@@ -469,15 +479,14 @@ public:
   /** \brief Empty constructor.
    * \param[in] max_depth_arg Depth limitation during traversal
    */
-  explicit OctreeBreadthFirstIterator(unsigned int max_depth_arg = 0);
+  explicit OctreeBreadthFirstIterator(uindex_t max_depth_arg = 0);
 
   /** \brief Constructor.
    * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its
    * root node.
    * \param[in] max_depth_arg Depth limitation during traversal
    */
-  explicit OctreeBreadthFirstIterator(OctreeT* octree_arg,
-                                      unsigned int max_depth_arg = 0);
+  explicit OctreeBreadthFirstIterator(OctreeT* octree_arg, uindex_t max_depth_arg = 0);
 
   /** \brief Constructor.
    * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its
@@ -489,7 +498,7 @@ public:
    */
   explicit OctreeBreadthFirstIterator(
       OctreeT* octree_arg,
-      unsigned int max_depth_arg,
+      uindex_t max_depth_arg,
       IteratorState* current_state,
       const std::deque<IteratorState>& fifo = std::deque<IteratorState>())
   : OctreeIteratorBase<OctreeT>(octree_arg, max_depth_arg, current_state), FIFO_(fifo)
@@ -575,8 +584,7 @@ public:
    * root node.
    * \param[in] fixed_depth_arg Depth level during traversal
    */
-  explicit OctreeFixedDepthIterator(OctreeT* octree_arg,
-                                    unsigned int fixed_depth_arg = 0);
+  explicit OctreeFixedDepthIterator(OctreeT* octree_arg, uindex_t fixed_depth_arg = 0);
 
   /** \brief Constructor.
    * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its
@@ -589,7 +597,7 @@ public:
    */
   OctreeFixedDepthIterator(
       OctreeT* octree_arg,
-      unsigned int fixed_depth_arg,
+      uindex_t fixed_depth_arg,
       IteratorState* current_state,
       const std::deque<IteratorState>& fifo = std::deque<IteratorState>())
   : OctreeBreadthFirstIterator<OctreeT>(
@@ -623,7 +631,7 @@ public:
    * \param[in] fixed_depth_arg Depth level during traversal
    */
   void
-  reset(unsigned int fixed_depth_arg);
+  reset(uindex_t fixed_depth_arg);
 
   /** \brief Reset the iterator to the first node at the current depth
    */
@@ -637,7 +645,7 @@ protected:
   using OctreeBreadthFirstIterator<OctreeT>::FIFO_;
 
   /** \brief Given level of the node to be iterated */
-  unsigned int fixed_depth_;
+  uindex_t fixed_depth_;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -657,7 +665,7 @@ public:
   /** \brief Empty constructor.
    * \param[in] max_depth_arg Depth limitation during traversal
    */
-  explicit OctreeLeafNodeDepthFirstIterator(unsigned int max_depth_arg = 0)
+  explicit OctreeLeafNodeDepthFirstIterator(uindex_t max_depth_arg = 0)
   : OctreeDepthFirstIterator<OctreeT>(max_depth_arg)
   {
     reset();
@@ -669,7 +677,7 @@ public:
    * \param[in] max_depth_arg Depth limitation during traversal
    */
   explicit OctreeLeafNodeDepthFirstIterator(OctreeT* octree_arg,
-                                            unsigned int max_depth_arg = 0)
+                                            uindex_t max_depth_arg = 0)
   : OctreeDepthFirstIterator<OctreeT>(octree_arg, max_depth_arg)
   {
     reset();
@@ -685,7 +693,7 @@ public:
    */
   explicit OctreeLeafNodeDepthFirstIterator(
       OctreeT* octree_arg,
-      unsigned int max_depth_arg,
+      uindex_t max_depth_arg,
       IteratorState* current_state,
       const std::vector<IteratorState>& stack = std::vector<IteratorState>())
   : OctreeDepthFirstIterator<OctreeT>(octree_arg, max_depth_arg, current_state, stack)
@@ -759,7 +767,7 @@ public:
   /** \brief Empty constructor.
    * \param[in] max_depth_arg Depth limitation during traversal
    */
-  explicit OctreeLeafNodeBreadthFirstIterator(unsigned int max_depth_arg = 0);
+  explicit OctreeLeafNodeBreadthFirstIterator(uindex_t max_depth_arg = 0);
 
   /** \brief Constructor.
    * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its
@@ -767,7 +775,7 @@ public:
    * \param[in] max_depth_arg Depth limitation during traversal
    */
   explicit OctreeLeafNodeBreadthFirstIterator(OctreeT* octree_arg,
-                                              unsigned int max_depth_arg = 0);
+                                              uindex_t max_depth_arg = 0);
 
   /** \brief Copy constructor.
    * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its
@@ -780,7 +788,7 @@ public:
    */
   explicit OctreeLeafNodeBreadthFirstIterator(
       OctreeT* octree_arg,
-      unsigned int max_depth_arg,
+      uindex_t max_depth_arg,
       IteratorState* current_state,
       const std::deque<IteratorState>& fifo = std::deque<IteratorState>());
 

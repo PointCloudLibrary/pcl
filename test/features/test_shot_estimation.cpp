@@ -53,12 +53,12 @@ using namespace pcl::io;
 using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 
 PointCloud<PointXYZ> cloud;
-std::vector<int> indices;
+pcl::Indices indices;
 KdTreePtr tree;
 
 ///////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
-shotCopyPointCloud (const PointCloud<PointT> &cloud_in, const std::vector<int> &indices,
+shotCopyPointCloud (const PointCloud<PointT> &cloud_in, const pcl::Indices &indices,
                     PointCloud<PointT> &cloud_out)
 {
   pcl::copyPointCloud<PointT>(cloud_in, indices, cloud_out);

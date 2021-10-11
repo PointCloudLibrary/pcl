@@ -44,7 +44,6 @@
 #include <boost/filesystem.hpp>
 #include <algorithm>
 #include <string>
-#include <pcl/io/vtk_io.h>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -108,7 +107,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   us.getRemovedIndices(removed_indices);
   std::sort(removed_indices.indices.begin(), removed_indices.indices.end());
   // Compute retained indices as a set difference between all and removed
-  std::vector<int> retained;
+  pcl::Indices retained;
   std::set_difference(input_indices->begin(),
                       input_indices->end(),
                       removed_indices.indices.begin(),

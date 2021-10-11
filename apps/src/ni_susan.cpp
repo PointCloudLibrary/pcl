@@ -40,10 +40,8 @@
 #define SHOW_FPS 1
 
 #include <pcl/apps/timer.h>
-#include <pcl/common/angles.h>
 #include <pcl/common/common.h>
 #include <pcl/io/openni_grabber.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/susan.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -100,9 +98,7 @@ public:
   std::string
   getStrBool(bool state)
   {
-    std::stringstream ss;
-    ss << state;
-    return ss.str();
+    return state ? "1" : "0";
   }
 
   /////////////////////////////////////////////////////////////////////////

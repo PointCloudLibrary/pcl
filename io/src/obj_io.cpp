@@ -38,8 +38,10 @@
 #include <pcl/io/obj_io.h>
 #include <fstream>
 #include <pcl/common/io.h>
-#include <pcl/io/boost.h>
 #include <pcl/console/time.h>
+#include <boost/lexical_cast.hpp> // for lexical_cast
+#include <boost/filesystem.hpp> // for exists
+#include <boost/algorithm/string.hpp> // for split
 
 pcl::MTLReader::MTLReader ()
 {
@@ -230,7 +232,7 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
         {
           if (fillRGBfromXYZ (st, *rgb))
           {
-            PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to RGB values",
+            PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to RGB values\n",
                        line.c_str ());
             mtl_file.close ();
             materials_.clear ();
@@ -241,7 +243,7 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
         {
           if (fillRGBfromRGB (st, *rgb))
           {
-            PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to RGB values",
+            PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to RGB values\n",
                        line.c_str ());
             mtl_file.close ();
             materials_.clear ();
@@ -259,7 +261,7 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
         }
         catch (boost::bad_lexical_cast &)
         {
-          PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to illumination model",
+          PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to illumination model\n",
                      line.c_str ());
           mtl_file.close ();
           materials_.clear ();
@@ -279,7 +281,7 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
         }
         catch (boost::bad_lexical_cast &)
         {
-          PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to transparency value",
+          PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to transparency value\n",
                      line.c_str ());
           mtl_file.close ();
           materials_.clear ();
@@ -296,7 +298,7 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
         }
         catch (boost::bad_lexical_cast &)
         {
-          PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to shininess value",
+          PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to shininess value\n",
                      line.c_str ());
           mtl_file.close ();
           materials_.clear ();
@@ -536,8 +538,8 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
   std::vector<std::string> st;
   try
   {
-    index_t point_idx = 0;
-    index_t normal_idx = 0;
+    uindex_t point_idx = 0;
+    uindex_t normal_idx = 0;
 
     while (!fs.eof ())
     {
@@ -574,7 +576,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
         }
         catch (const boost::bad_lexical_cast&)
         {
-          PCL_ERROR ("Unable to convert %s to vertex coordinates!", line.c_str ());
+          PCL_ERROR ("Unable to convert %s to vertex coordinates!\n", line.c_str ());
           return (-1);
         }
         continue;
@@ -603,7 +605,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
         }
         catch (const boost::bad_lexical_cast&)
         {
-          PCL_ERROR ("Unable to convert line %s to vertex normal!", line.c_str ());
+          PCL_ERROR ("Unable to convert line %s to vertex normal!\n", line.c_str ());
           return (-1);
         }
         continue;
@@ -716,7 +718,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
         }
         catch (const boost::bad_lexical_cast&)
         {
-          PCL_ERROR ("Unable to convert %s to vertex coordinates!", line.c_str ());
+          PCL_ERROR ("Unable to convert %s to vertex coordinates!\n", line.c_str ());
           return (-1);
         }
         continue;
@@ -737,7 +739,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
         }
         catch (const boost::bad_lexical_cast&)
         {
-          PCL_ERROR ("Unable to convert line %s to vertex normal!", line.c_str ());
+          PCL_ERROR ("Unable to convert line %s to vertex normal!\n", line.c_str ());
           return (-1);
         }
         continue;
@@ -758,7 +760,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
         }
         catch (const boost::bad_lexical_cast&)
         {
-          PCL_ERROR ("Unable to convert line %s to texture coordinates!", line.c_str ());
+          PCL_ERROR ("Unable to convert line %s to texture coordinates!\n", line.c_str ());
           return (-1);
         }
         continue;
@@ -906,7 +908,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
         }
         catch (const boost::bad_lexical_cast&)
         {
-          PCL_ERROR ("Unable to convert %s to vertex coordinates!", line.c_str ());
+          PCL_ERROR ("Unable to convert %s to vertex coordinates!\n", line.c_str ());
           return (-1);
         }
         continue;
@@ -928,7 +930,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
         }
         catch (const boost::bad_lexical_cast&)
         {
-          PCL_ERROR ("Unable to convert line %s to vertex normal!", line.c_str ());
+          PCL_ERROR ("Unable to convert line %s to vertex normal!\n", line.c_str ());
           return (-1);
         }
         continue;

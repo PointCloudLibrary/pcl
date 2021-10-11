@@ -36,73 +36,108 @@
 
 #pragma once
 
-#if defined(__CUDACC__) 
-    #define __PCL_GPU_HOST_DEVICE__ __host__ __device__ __forceinline__ 
+#if defined(__CUDACC__)
+#define __PCL_GPU_HOST_DEVICE__ __host__ __device__ __forceinline__
 #else
-    #define __PCL_GPU_HOST_DEVICE__
-#endif  
+#define __PCL_GPU_HOST_DEVICE__
+#endif
 
 #include <cstddef>
 
-namespace pcl
-{
-    namespace gpu
-    {
-        template<typename T> struct DevPtr
-        {
-            using elem_type = T;
-            const static std::size_t elem_size = sizeof(elem_type);
+namespace pcl {
+namespace gpu {
+template <typename T>
+struct DevPtr {
+  using elem_type = T;
+  const static std::size_t elem_size = sizeof(elem_type);
 
-            T* data;
+  T* data;
 
-            __PCL_GPU_HOST_DEVICE__ DevPtr() : data(nullptr) {}
-            __PCL_GPU_HOST_DEVICE__ DevPtr(T* data_arg) : data(data_arg) {}
+  __PCL_GPU_HOST_DEVICE__
+  DevPtr() : data(nullptr) {}
 
-            __PCL_GPU_HOST_DEVICE__ std::size_t elemSize() const { return elem_size; }
-            __PCL_GPU_HOST_DEVICE__ operator       T*()       { return data; }
-            __PCL_GPU_HOST_DEVICE__ operator const T*() const { return data; }
-        };
+  __PCL_GPU_HOST_DEVICE__
+  DevPtr(T* data_arg) : data(data_arg) {}
 
-        template<typename T> struct PtrSz : public DevPtr<T>
-        {                     
-            __PCL_GPU_HOST_DEVICE__ PtrSz() : size(0) {}
-            __PCL_GPU_HOST_DEVICE__ PtrSz(T* data_arg, std::size_t size_arg) : DevPtr<T>(data_arg), size(size_arg) {}
+  __PCL_GPU_HOST_DEVICE__ std::size_t
+  elemSize() const
+  {
+    return elem_size;
+  }
 
-            std::size_t size;
-        };
+  __PCL_GPU_HOST_DEVICE__
+  operator T*() { return data; }
+  __PCL_GPU_HOST_DEVICE__ operator const T*() const { return data; }
+};
 
-        template<typename T>  struct PtrStep : public DevPtr<T>
-        {   
-            __PCL_GPU_HOST_DEVICE__ PtrStep() : step(0) {}
-            __PCL_GPU_HOST_DEVICE__ PtrStep(T* data_arg, std::size_t step_arg) : DevPtr<T>(data_arg), step(step_arg) {}
+template <typename T>
+struct PtrSz : public DevPtr<T> {
+  __PCL_GPU_HOST_DEVICE__
+  PtrSz() : size(0) {}
 
-            /** \brief stride between two consecutive rows in bytes. Step is stored always and everywhere in bytes!!! */
-            std::size_t step;            
+  __PCL_GPU_HOST_DEVICE__
+  PtrSz(T* data_arg, std::size_t size_arg) : DevPtr<T>(data_arg), size(size_arg) {}
 
-            __PCL_GPU_HOST_DEVICE__       T* ptr(int y = 0)       { return (      T*)( (      char*)DevPtr<T>::data + y * step); }
-            __PCL_GPU_HOST_DEVICE__ const T* ptr(int y = 0) const { return (const T*)( (const char*)DevPtr<T>::data + y * step); }
+  std::size_t size;
+};
 
-            __PCL_GPU_HOST_DEVICE__       T& operator()(int y, int x)       { return ptr(y)[x]; }
-            __PCL_GPU_HOST_DEVICE__ const T& operator()(int y, int x) const { return ptr(y)[x]; }
-        };
+template <typename T>
+struct PtrStep : public DevPtr<T> {
+  __PCL_GPU_HOST_DEVICE__
+  PtrStep() : step(0) {}
 
-        template <typename T> struct PtrStepSz : public PtrStep<T>
-        {   
-            __PCL_GPU_HOST_DEVICE__ PtrStepSz() : cols(0), rows(0) {}
-            __PCL_GPU_HOST_DEVICE__ PtrStepSz(int rows_arg, int cols_arg, T* data_arg, std::size_t step_arg) 
-                : PtrStep<T>(data_arg, step_arg), cols(cols_arg), rows(rows_arg) {}
+  __PCL_GPU_HOST_DEVICE__
+  PtrStep(T* data_arg, std::size_t step_arg) : DevPtr<T>(data_arg), step(step_arg) {}
 
-            int cols;
-            int rows;                                                                              
-        };
-    }
+  /** \brief stride between two consecutive rows in bytes. Step is stored always and
+   * everywhere in bytes!!! */
+  std::size_t step;
 
-    namespace device
-    {
-        using pcl::gpu::PtrSz;
-        using pcl::gpu::PtrStep;
-        using pcl::gpu::PtrStepSz;
-    }
-}
+  __PCL_GPU_HOST_DEVICE__ T*
+  ptr(int y = 0)
+  {
+    return (T*)((char*)DevPtr<T>::data + y * step);
+  }
+
+  __PCL_GPU_HOST_DEVICE__ const T*
+  ptr(int y = 0) const
+  {
+    return (const T*)((const char*)DevPtr<T>::data + y * step);
+  }
+
+  __PCL_GPU_HOST_DEVICE__ T&
+  operator()(int y, int x)
+  {
+    return ptr(y)[x];
+  }
+
+  __PCL_GPU_HOST_DEVICE__ const T&
+  operator()(int y, int x) const
+  {
+    return ptr(y)[x];
+  }
+};
+
+template <typename T>
+struct PtrStepSz : public PtrStep<T> {
+  __PCL_GPU_HOST_DEVICE__
+  PtrStepSz() : cols(0), rows(0) {}
+
+  __PCL_GPU_HOST_DEVICE__
+  PtrStepSz(int rows_arg, int cols_arg, T* data_arg, std::size_t step_arg)
+  : PtrStep<T>(data_arg, step_arg), cols(cols_arg), rows(rows_arg)
+  {}
+
+  int cols;
+  int rows;
+};
+} // namespace gpu
+
+namespace device {
+using pcl::gpu::PtrStep;
+using pcl::gpu::PtrStepSz;
+using pcl::gpu::PtrSz;
+} // namespace device
+} // namespace pcl
 
 #undef __PCL_GPU_HOST_DEVICE__

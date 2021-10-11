@@ -149,7 +149,7 @@ pcl::PCLPointCloud2::concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPoi
   }
   const auto data1_size = cloud1.data.size ();
   cloud1.data.resize(data1_size + cloud2.data.size ());
-  for (index_t cp = 0; cp < size2; ++cp)
+  for (uindex_t cp = 0; cp < size2; ++cp)
   {
     for (const auto& field_data: valid_fields)
     {

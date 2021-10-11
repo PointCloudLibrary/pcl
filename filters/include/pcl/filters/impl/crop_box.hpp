@@ -48,7 +48,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
-pcl::CropBox<PointT>::applyFilter (std::vector<int> &indices)
+pcl::CropBox<PointT>::applyFilter (Indices &indices)
 {
   indices.resize (input_->size ());
   removed_indices_->resize (input_->size ());
@@ -102,13 +102,13 @@ pcl::CropBox<PointT>::applyFilter (std::vector<int> &indices)
       if (negative_)
         indices[indices_count++] = index;
       else if (extract_removed_indices_)
-        (*removed_indices_)[removed_indices_count++] = static_cast<int> (index);
+        (*removed_indices_)[removed_indices_count++] = index;
     }
     // If inside the cropbox
     else
     {
       if (negative_ && extract_removed_indices_)
-        (*removed_indices_)[removed_indices_count++] = static_cast<int> (index);
+        (*removed_indices_)[removed_indices_count++] = index;
       else if (!negative_) 
         indices[indices_count++] = index;
     }

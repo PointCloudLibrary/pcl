@@ -184,7 +184,7 @@ TEST(PCL, ICP_translated)
   icp.align(Final);
 
   // Check that we have sucessfully converged
-  ASSERT_EQ(icp.hasConverged(), true);
+  ASSERT_TRUE(icp.hasConverged());
 
   // Test that the fitness score is below acceptable threshold
   EXPECT_LT(icp.getFitnessScore(), 1e-6);
@@ -475,8 +475,8 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
   // Check again, for all possible caching schemes
   for (int iter = 0; iter < 4; iter++)
   {
-    bool force_cache = (bool) iter/2;
-    bool force_cache_reciprocal = (bool) iter%2;
+    bool force_cache = static_cast<bool> (iter/2);
+    bool force_cache_reciprocal = static_cast<bool> (iter%2);
     pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
     // Ensure that, when force_cache is not set, we are robust to the wrong input
     if (force_cache)
@@ -548,8 +548,8 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
   // Check again, for all possible caching schemes
   for (int iter = 0; iter < 4; iter++)
   {
-    bool force_cache = (bool) iter/2;
-    bool force_cache_reciprocal = (bool) iter%2;
+    bool force_cache = static_cast<bool> (iter/2);
+    bool force_cache_reciprocal = static_cast<bool> (iter%2);
     pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
     // Ensure that, when force_cache is not set, we are robust to the wrong input
     if (force_cache)
@@ -621,8 +621,8 @@ TEST (PCL, GeneralizedIterativeClosestPoint6D)
   // Check again, for all possible caching schemes
   for (int iter = 0; iter < 4; iter++)
   {
-    bool force_cache = (bool) iter/2;
-    bool force_cache_reciprocal = (bool) iter%2;
+    bool force_cache = static_cast<bool> (iter/2);
+    bool force_cache_reciprocal = static_cast<bool> (iter%2);
     pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
     // Ensure that, when force_cache is not set, we are robust to the wrong input
     if (force_cache)
@@ -694,7 +694,7 @@ TEST (PCL, PyramidFeatureHistogram)
   pyramid_target->compute ();
 
   float similarity_value = PyramidFeatureHistogram<PPFSignature>::comparePyramidFeatureHistograms (pyramid_source, pyramid_target);
-  EXPECT_NEAR (similarity_value, 0.74101555347442627, 1e-4);
+  EXPECT_NEAR (similarity_value, 0.738492727, 1e-4);
 
   std::vector<std::pair<float, float> > dim_range_target2;
   for (std::size_t i = 0; i < 3; ++i) dim_range_target2.emplace_back(static_cast<float> (-M_PI) * 5.0f, static_cast<float> (M_PI) * 5.0f);
@@ -707,7 +707,7 @@ TEST (PCL, PyramidFeatureHistogram)
   pyramid_target->compute ();
 
   float similarity_value2 = PyramidFeatureHistogram<PPFSignature>::comparePyramidFeatureHistograms (pyramid_source, pyramid_target);
-  EXPECT_NEAR (similarity_value2, 0.80097091197967529, 1e-4);
+  EXPECT_NEAR (similarity_value2, 0.798465133, 1e-4);
 
 
   std::vector<std::pair<float, float> > dim_range_target3;
@@ -721,7 +721,7 @@ TEST (PCL, PyramidFeatureHistogram)
   pyramid_target->compute ();
 
   float similarity_value3 = PyramidFeatureHistogram<PPFSignature>::comparePyramidFeatureHistograms (pyramid_source, pyramid_target);
-  EXPECT_NEAR (similarity_value3, 0.87623238563537598, 1e-3);
+  EXPECT_NEAR (similarity_value3, 0.873699546, 1e-3);
 }
 
 // Suat G: disabled, since the transformation does not look correct.

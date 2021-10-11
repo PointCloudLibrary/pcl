@@ -38,7 +38,6 @@
  *
  */
 
-#include <pcl/point_types.h>
 #include <pcl/common/io.h>
 
 //////////////////////////////////////////////////////////////////////////
@@ -182,7 +181,7 @@ pcl::concatenateFields (const pcl::PCLPointCloud2 &cloud1,
  
   // Iterate over each point and perform the appropriate memcpys
   int point_offset = 0;
-  for (index_t cp = 0; cp < cloud_out.width * cloud_out.height; ++cp)
+  for (uindex_t cp = 0; cp < cloud_out.width * cloud_out.height; ++cp)
   {
     memcpy (&cloud_out.data[point_offset], &cloud2.data[cp * cloud2.point_step], cloud2.point_step);
     int field_offset = cloud2.point_step;
@@ -211,115 +210,6 @@ pcl::concatenateFields (const pcl::PCLPointCloud2 &cloud1,
   else
     cloud_out.is_dense = true;
 
-  return (true);
-}
-
-//////////////////////////////////////////////////////////////////////////
-bool
-pcl::concatenatePointCloud (const pcl::PCLPointCloud2 &cloud1,
-                            const pcl::PCLPointCloud2 &cloud2,
-                            pcl::PCLPointCloud2 &cloud_out)
-{
-  //if one input cloud has no points, but the other input does, just return the cloud with points
-  if (cloud1.width*cloud1.height == 0 && cloud2.width*cloud2.height > 0)
-  {
-    cloud_out = cloud2;
-    return (true);
-  }
-  if (cloud1.width*cloud1.height > 0 && cloud2.width*cloud2.height == 0)
-  {
-    cloud_out = cloud1;
-    return (true);
-  }
-
-  bool strip = false;
-  for (const auto &field : cloud1.fields)
-    if (field.name == "_")
-      strip = true;
-
-  for (const auto &field : cloud2.fields)
-    if (field.name == "_")
-      strip = true;
-
-  if (!strip && cloud1.fields.size () != cloud2.fields.size ())
-  {
-    PCL_ERROR ("[pcl::concatenatePointCloud] Number of fields in cloud1 (%u) != Number of fields in cloud2 (%u)\n", cloud1.fields.size (), cloud2.fields.size ());
-    return (false);
-  }
-  
-  // Copy cloud1 into cloud_out
-  cloud_out = cloud1;
-  std::size_t nrpts = cloud_out.data.size ();
-  // Height = 1 => no more organized
-  cloud_out.width    = cloud1.width * cloud1.height + cloud2.width * cloud2.height;
-  cloud_out.height   = 1;
-  if (!cloud1.is_dense || !cloud2.is_dense)
-    cloud_out.is_dense = false;
-  else
-    cloud_out.is_dense = true;
-
-  // We need to strip the extra padding fields
-  if (strip)
-  {
-    // Get the field sizes for the second cloud
-    std::vector<pcl::PCLPointField> fields2;
-    std::vector<int> fields2_sizes;
-    for (const auto &field : cloud2.fields)
-    {
-      if (field.name == "_")
-        continue;
-
-      fields2_sizes.push_back (field.count * 
-                               pcl::getFieldSize (field.datatype));
-      fields2.push_back (field);
-    }
-
-    cloud_out.data.resize (nrpts + (cloud2.width * cloud2.height) * cloud_out.point_step);
-
-    // Copy the second cloud
-    for (index_t cp = 0; cp < cloud2.width * cloud2.height; ++cp)
-    {
-      int i = 0;
-      for (std::size_t j = 0; j < fields2.size (); ++j)
-      {
-        if (cloud1.fields[i].name == "_")
-        {
-          ++i;
-          continue;
-        }
-
-        // We're fine with the special RGB vs RGBA use case
-        if ((cloud1.fields[i].name == "rgb" && fields2[j].name == "rgba") ||
-            (cloud1.fields[i].name == "rgba" && fields2[j].name == "rgb") ||
-            (cloud1.fields[i].name == fields2[j].name))
-        {
-          memcpy (reinterpret_cast<char*> (&cloud_out.data[nrpts + cp * cloud1.point_step + cloud1.fields[i].offset]), 
-                  reinterpret_cast<const char*> (&cloud2.data[cp * cloud2.point_step + cloud2.fields[j].offset]), 
-                  fields2_sizes[j]);
-          ++i;  // increment the field size i
-        }
-      }
-    }
-  }
-  else
-  {
-    for (std::size_t i = 0; i < cloud1.fields.size (); ++i)
-    {
-      // We're fine with the special RGB vs RGBA use case
-      if ((cloud1.fields[i].name == "rgb" && cloud2.fields[i].name == "rgba") ||
-          (cloud1.fields[i].name == "rgba" && cloud2.fields[i].name == "rgb"))
-        continue;
-      // Otherwise we need to make sure the names are the same
-      if (cloud1.fields[i].name != cloud2.fields[i].name)
-      {
-        PCL_ERROR ("[pcl::concatenatePointCloud] Name of field %d in cloud1, %s, does not match name in cloud2, %s\n", i, cloud1.fields[i].name.c_str (), cloud2.fields[i].name.c_str ());      
-        return (false);
-      }
-    }
-    
-    cloud_out.data.resize (nrpts + cloud2.data.size ());
-    memcpy (&cloud_out.data[nrpts], &cloud2.data[0], cloud2.data.size ());
-  }
   return (true);
 }
 
@@ -439,7 +329,7 @@ pcl::copyPointCloud (
 void 
 pcl::copyPointCloud (
     const pcl::PCLPointCloud2 &cloud_in,
-    const IndicesAllocator< Eigen::aligned_allocator<int> > &indices,
+    const IndicesAllocator< Eigen::aligned_allocator<index_t> > &indices,
     pcl::PCLPointCloud2 &cloud_out)
 {
   cloud_out.header       = cloud_in.header;

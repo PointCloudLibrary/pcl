@@ -308,7 +308,7 @@ main (int argc, char* argv[])
     boost::filesystem::path pcd_path (argv[file_arg_index]);
     if (!boost::filesystem::exists (pcd_path))
     {
-      PCL_WARN ("File %s doesn't exist", pcd_path.string ().c_str ());
+      PCL_WARN ("File %s doesn't exist\n", pcd_path.string ().c_str ());
       continue;
     }
     pcd_paths.push_back (pcd_path);

@@ -38,7 +38,6 @@
 #include <pcl/point_types.h>
 #include <pcl/common/io.h>
 #include <pcl/io/ply_io.h>
-#include <pcl/io/boost.h>
 
 #include <cstdlib>
 #include <fstream>
@@ -49,6 +48,7 @@
 // https://www.boost.org/doc/libs/1_70_0/libs/filesystem/doc/index.htm#Coding-guidelines
 #define BOOST_FILESYSTEM_NO_DEPRECATED
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp> // for split
 
 namespace fs = boost::filesystem;
 
@@ -306,52 +306,26 @@ namespace pcl
     vertex_offset_before_ += static_cast<int> (sizeof (ContentType));
   }
 
-  template <>
-  std::tuple<std::function<void (pcl::io::ply::uint8)>, std::function<void (pcl::io::ply::int32)>, std::function<void ()> >
+  template <typename SizeType, typename ContentType>
+  std::tuple<std::function<void (SizeType)>, std::function<void (ContentType)>, std::function<void ()> >
   pcl::PLYReader::listPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
   {
     if ((element_name == "range_grid") && (property_name == "vertex_indices" || property_name == "vertex_index"))
     {
-      return std::tuple<std::function<void (pcl::io::ply::uint8)>, std::function<void (pcl::io::ply::int32)>, std::function<void ()> > (
-        [this] (pcl::io::ply::uint8 size) { rangeGridVertexIndicesBeginCallback (size); },
-        [this] (pcl::io::ply::int32 vertex_index) { rangeGridVertexIndicesElementCallback (vertex_index); },
+      return std::tuple<std::function<void (SizeType)>, std::function<void (ContentType)>, std::function<void ()> > (
+        [this] (SizeType size) { rangeGridVertexIndicesBeginCallback (size); },
+        [this] (ContentType vertex_index) { rangeGridVertexIndicesElementCallback (vertex_index); },
         [this] { rangeGridVertexIndicesEndCallback (); }
       );
     }
     if ((element_name == "face") && (property_name == "vertex_indices" || property_name == "vertex_index") && polygons_)
     {
-      return std::tuple<std::function<void (pcl::io::ply::uint8)>, std::function<void (pcl::io::ply::int32)>, std::function<void ()> > (
-        [this] (pcl::io::ply::uint8 size) { faceVertexIndicesBeginCallback (size); },
-        [this] (pcl::io::ply::int32 vertex_index) { faceVertexIndicesElementCallback (vertex_index); },
+      return std::tuple<std::function<void (SizeType)>, std::function<void (ContentType)>, std::function<void ()> > (
+        [this] (SizeType size) { faceVertexIndicesBeginCallback (size); },
+        [this] (ContentType vertex_index) { faceVertexIndicesElementCallback (vertex_index); },
         [this] { faceVertexIndicesEndCallback (); }
       );
     }
-    if (element_name == "vertex")
-    {
-      cloud_->fields.emplace_back();
-      pcl::PCLPointField &current_field = cloud_->fields.back ();
-      current_field.name = property_name;
-      current_field.offset = cloud_->point_step;
-      current_field.datatype = pcl::traits::asEnum<pcl::io::ply::int32>::value;
-      current_field.count = 1u; // value will be updated once first vertex is read
-      if (sizeof (pcl::io::ply::int32) + cloud_->point_step < std::numeric_limits<std::uint32_t>::max ())
-          cloud_->point_step += static_cast<std::uint32_t> (sizeof (pcl::io::ply::int32));
-      else
-        cloud_->point_step = static_cast<std::uint32_t> (std::numeric_limits<std::uint32_t>::max ());
-      do_resize_ = true;
-      return std::tuple<std::function<void (pcl::io::ply::uint8)>, std::function<void (pcl::io::ply::int32)>, std::function<void ()> > (
-        std::bind (&pcl::PLYReader::vertexListPropertyBeginCallback<pcl::io::ply::uint8>, this, property_name, std::placeholders::_1),
-        [this] (pcl::io::ply::int32 value) { vertexListPropertyContentCallback<pcl::io::ply::int32> (value); },
-        [this] { vertexListPropertyEndCallback (); }
-      );
-    }
-    return {};
-  }
-
-  template <typename SizeType, typename ContentType>
-  std::tuple<std::function<void (SizeType)>, std::function<void (ContentType)>, std::function<void ()> >
-  pcl::PLYReader::listPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
-  {
     if (element_name == "vertex")
     {
       cloud_->fields.emplace_back();
@@ -371,6 +345,7 @@ namespace pcl
         [this] { vertexListPropertyEndCallback (); }
       );
     }
+    PCL_WARN("[pcl::PLYReader::listPropertyDefinitionCallback] no fitting callbacks. element_name=%s, property_name=%s\n", element_name.c_str(), property_name.c_str());
     return {};
   }
 }
@@ -543,6 +518,7 @@ pcl::PLYReader::parse (const std::string& istream_filename)
 
   pcl::io::ply::ply_parser::list_property_definition_callbacks_type list_property_definition_callbacks;
   pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::int32> (list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return listPropertyDefinitionCallback<pcl::io::ply::uint8, pcl::io::ply::int32> (element_name, property_name); };
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::uint32> (list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return listPropertyDefinitionCallback<pcl::io::ply::uint8, pcl::io::ply::int32> (element_name, property_name); };
   pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::float64> (list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::float64> (element_name, property_name); };
   pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::float32> (list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::float32> (element_name, property_name); };
   pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::uint32> (list_property_definition_callbacks) = [this] (const std::string& element_name, const std::string& property_name) { return listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::uint32> (element_name, property_name); };
@@ -807,13 +783,16 @@ pcl::PLYWriter::generateHeader (const pcl::PCLPointCloud2 &cloud,
         case pcl::PCLPointField::FLOAT64 : oss << " double "; break;
         default :
         {
-          PCL_ERROR ("[pcl::PLYWriter::generateHeader] unknown data field type!");
+          PCL_ERROR ("[pcl::PLYWriter::generateHeader] unknown data field type!\n");
           return ("");
         }
       }
       oss << field.name;
     }
   }
+
+  // vtk requires face entry to load PLY
+  oss << "\nelement face 0";
 
   if (use_camera)
   {

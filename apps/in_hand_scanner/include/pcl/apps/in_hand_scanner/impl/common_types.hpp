@@ -99,6 +99,8 @@ namespace pcl
         this->directions = other.directions;
       }
 
+      inline PointIHS& operator=(const PointIHS& other) = default;
+
       inline PointIHS (const pcl::PointXYZRGBNormal& other, const float weight)
       {
         this->x       = other.x;

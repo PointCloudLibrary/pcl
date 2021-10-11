@@ -47,8 +47,10 @@
 #include <QMutexLocker>
 #include <QObject>
 #include <QRadioButton>
+#include <ui_pcd_video_player.h>
 
 #include <vtkCamera.h>
+#include <vtkGenericOpenGLRenderWindow.h>
 #include <vtkRenderWindow.h>
 #include <vtkRendererCollection.h>
 
@@ -80,14 +82,23 @@ PCDVideoPlayer::PCDVideoPlayer()
   // Setup the cloud pointer
   cloud_.reset(new pcl::PointCloud<pcl::PointXYZRGBA>);
 
-  // Set up the qvtk window
+  // Create the QVTKWidget
+#if VTK_MAJOR_VERSION > 8
+  auto renderer = vtkSmartPointer<vtkRenderer>::New();
+  auto renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
+  renderWindow->AddRenderer(renderer);
+  vis_.reset(new pcl::visualization::PCLVisualizer(renderer, renderWindow, "", false));
+#else
   vis_.reset(new pcl::visualization::PCLVisualizer("", false));
-  ui_->qvtkWidget->SetRenderWindow(vis_->getRenderWindow());
-  vis_->setupInteractor(ui_->qvtkWidget->GetInteractor(),
-                        ui_->qvtkWidget->GetRenderWindow());
+#endif // VTK_MAJOR_VERSION > 8
+  setRenderWindowCompat(*(ui_->qvtk_widget), *(vis_->getRenderWindow()));
+  vis_->setupInteractor(getInteractorCompat(*(ui_->qvtk_widget)),
+                        getRenderWindowCompat(*(ui_->qvtk_widget)));
+
   vis_->getInteractorStyle()->setKeyboardModifier(
       pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
-  ui_->qvtkWidget->update();
+
+  refreshView();
 
   // Connect all buttons
   connect(ui_->playButton, SIGNAL(clicked()), this, SLOT(playButtonPressed()));
@@ -258,7 +269,8 @@ PCDVideoPlayer::timeoutSlot()
     }
     cloud_modified_ = false;
   }
-  ui_->qvtkWidget->update();
+
+  refreshView();
 }
 
 void
@@ -267,6 +279,16 @@ PCDVideoPlayer::indexSliderValueChanged(int value)
   PCL_DEBUG("[PCDVideoPlayer::indexSliderValueChanged] : (I) : value %d\n", value);
   current_frame_ = value;
   cloud_modified_ = true;
+}
+
+void
+PCDVideoPlayer::refreshView()
+{
+#if VTK_MAJOR_VERSION > 8
+  ui_->qvtk_widget->renderWindow()->Render();
+#else
+  ui_->qvtk_widget->update();
+#endif // VTK_MAJOR_VERSION > 8
 }
 
 void

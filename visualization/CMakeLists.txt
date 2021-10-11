@@ -61,6 +61,20 @@ if(VTK_RENDERING_BACKEND_OPENGL_VERSION VERSION_LESS 2)
     "src/vtk/vtkVertexBufferObject.cxx"
     "src/vtk/vtkVertexBufferObjectMapper.cxx"
   )
+
+  # Code in this module may use deprecated declarations when using OpenGLv1
+  # Add the GCC exclusive rules for -Werror only for OpenGLv1 compile to avoid build interruption
+  if(CMAKE_COMPILER_IS_GNUCXX)
+    add_compile_options("-Wno-error=deprecated-declarations")
+  endif()
+endif()
+
+if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
+  if(NOT (";${VTK_AVAILABLE_COMPONENTS};" MATCHES ";RenderingContextOpenGL2;"))
+    list(REMOVE_ITEM srcs
+      src/pcl_painter2D.cpp
+    )
+  endif()  
 endif()
 
 set(incs
@@ -85,6 +99,7 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/vtk.h"
   "include/pcl/${SUBSYS_NAME}/simple_buffer_visualizer.h"
   "include/pcl/${SUBSYS_NAME}/pcl_plotter.h"
+  "include/pcl/${SUBSYS_NAME}/qvtk_compatibility.h"
 )
 
 set(common_incs
@@ -116,6 +131,7 @@ set(vtk_incs
   "include/pcl/${SUBSYS_NAME}/vtk/pcl_image_canvas_source_2d.h"
   "include/pcl/${SUBSYS_NAME}/vtk/pcl_context_item.h"
   "include/pcl/${SUBSYS_NAME}/vtk/vtkRenderWindowInteractorFix.h"
+  "include/pcl/${SUBSYS_NAME}/vtk/pcl_vtk_compatibility.h"
 )
 
 if(VTK_RENDERING_BACKEND_OPENGL_VERSION VERSION_LESS 2)
@@ -123,6 +139,15 @@ if(VTK_RENDERING_BACKEND_OPENGL_VERSION VERSION_LESS 2)
     "include/pcl/${SUBSYS_NAME}/vtk/vtkVertexBufferObject.h"
     "include/pcl/${SUBSYS_NAME}/vtk/vtkVertexBufferObjectMapper.h"
   )
+endif()
+
+if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
+  if(NOT (";${VTK_AVAILABLE_COMPONENTS};" MATCHES ";RenderingContextOpenGL2;"))
+    
+    list(REMOVE_ITEM incs
+      "include/pcl/${SUBSYS_NAME}/pcl_painter2D.h"
+    )
+  endif()
 endif()
 
 # on apple, a workaround is used for the cocoa render window interactor
@@ -134,14 +159,44 @@ endif()
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${common_incs} ${impl_incs} ${common_impl_incs} ${vtk_incs})
 
-target_include_directories("${LIB_NAME}" SYSTEM PUBLIC ${VTK_INCLUDE_DIRS})
-
 # apple workaround (continued)
 if(APPLE)
   target_link_libraries("${LIB_NAME}" "-framework Cocoa")
 endif()
 
-target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_kdtree ${VTK_LIBRARIES} ${OPENGL_LIBRARIES})
+target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_kdtree ${OPENGL_LIBRARIES})
+
+if(${VTK_VERSION} VERSION_LESS 9.0)
+  target_include_directories("${LIB_NAME}" SYSTEM PUBLIC ${VTK_INCLUDE_DIRS})
+  target_link_libraries("${LIB_NAME}" ${VTK_LIBRARIES})
+else()
+  #Some libs are referenced through depending on IO
+  target_link_libraries("${LIB_NAME}"
+                        VTK::ChartsCore
+                        VTK::CommonColor
+                        VTK::CommonComputationalGeometry
+                        VTK::CommonDataModel
+                        VTK::FiltersExtraction
+                        VTK::FiltersGeometry
+                        VTK::FiltersGeneral
+                        VTK::FiltersModeling
+                        VTK::FiltersSources
+                        VTK::IOImage
+                        VTK::IOPLY
+                        VTK::ImagingSources
+                        VTK::InteractionImage
+                        VTK::InteractionStyle
+                        VTK::RenderingAnnotation
+                        VTK::RenderingContext2D
+                        VTK::RenderingFreeType
+                        VTK::RenderingLOD
+                        VTK::RenderingOpenGL2
+                        VTK::ViewsContext2D)
+                        
+  if(";${VTK_AVAILABLE_COMPONENTS};" MATCHES ";RenderingContextOpenGL2;")
+    target_link_libraries("${LIB_NAME}" VTK::RenderingContextOpenGL2)
+  endif()
+endif()
 
 set(EXT_DEPS "")
 if(WITH_OPENNI)
@@ -162,6 +217,7 @@ endif()
 if(WITH_RSSDK)
   list(APPEND EXT_DEPS rssdk)
 endif()
+
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS} EXT_DEPS ${EXT_DEPS})
 
 # Install include files
@@ -170,6 +226,13 @@ PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/common" ${common_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/common/impl" ${common_impl_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/vtk" ${vtk_incs})
+
+#TODO: Update when CMAKE 3.10 is available
+if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
+  vtk_module_autoinit(TARGETS "${LIB_NAME}" 
+                      MODULES VTK::RenderingOpenGL2
+                              VTK::RenderingFreeType)
+endif()
 
 if(BUILD_TESTS)
   add_subdirectory(test)

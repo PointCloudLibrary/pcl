@@ -127,7 +127,7 @@ pcl::CovarianceSampling<PointT, PointNT>::computeCovarianceMatrix (Eigen::Matrix
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename PointNT> void
-pcl::CovarianceSampling<PointT, PointNT>::applyFilter (std::vector<int> &sampled_indices)
+pcl::CovarianceSampling<PointT, PointNT>::applyFilter (Indices &sampled_indices)
 {
   Eigen::Matrix<double, 6, 6> c_mat;
   // Invokes initCompute()
@@ -211,7 +211,7 @@ pcl::CovarianceSampling<PointT, PointNT>::applyFilter (std::vector<int> &sampled
 template<typename PointT, typename PointNT> void
 pcl::CovarianceSampling<PointT, PointNT>::applyFilter (Cloud &output)
 {
-  std::vector<int> sampled_indices;
+  Indices sampled_indices;
   applyFilter (sampled_indices);
 
   output.resize (sampled_indices.size ());

@@ -70,29 +70,26 @@ segmentAndClassify(
     vis.addPointCloud<OpenNIFrameSource::PointT>(frame, "frame");
 
     for (std::size_t i = 0; i < previous_cluster_size; i++) {
-      std::stringstream cluster_name;
-      cluster_name << "cluster_" << i;
-      vis.removePointCloud(cluster_name.str());
+      std::string cluster_name = "cluster_" + std::to_string(i);
+      vis.removePointCloud(cluster_name);
 
-      cluster_name << "_ply_model_";
-      vis.removeShape(cluster_name.str());
+      cluster_name += "_ply_model_";
+      vis.removeShape(cluster_name);
     }
 
     for (std::size_t i = 0; i < previous_categories_size; i++) {
-      std::stringstream cluster_text;
-      cluster_text << "cluster_" << i << "_text";
-      vis.removeText3D(cluster_text.str());
+      const std::string cluster_text = "cluster_" + std::to_string(i) + "_text";
+      vis.removeText3D(cluster_text);
     }
 
     previous_categories_size = 0;
     float dist_ = 0.03f;
 
     for (std::size_t i = 0; i < clusters.size(); i++) {
-      std::stringstream cluster_name;
-      cluster_name << "cluster_" << i;
+      const std::string cluster_name = "cluster_" + std::to_string(i);
       pcl::visualization::PointCloudColorHandlerRandom<pcl::PointXYZ> random_handler(
           clusters[i]);
-      vis.addPointCloud<pcl::PointXYZ>(clusters[i], random_handler, cluster_name.str());
+      vis.addPointCloud<pcl::PointXYZ>(clusters[i], random_handler, cluster_name);
 
       global.setInputCloud(xyz_points);
       global.setIndices(indices[i].indices);
@@ -117,9 +114,9 @@ segmentAndClassify(
         prob_str.precision(1);
         prob_str << categories[kk] << " [" << conf[kk] << "]";
 
-        std::stringstream cluster_text;
-        cluster_text << "cluster_" << previous_categories_size << "_text";
-        vis.addText3D(prob_str.str(), pos, text_scale, 1, 0, 1, cluster_text.str(), 0);
+        const std::string cluster_text =
+            "cluster_" + std::to_string(previous_categories_size) + "_text";
+        vis.addText3D(prob_str.str(), pos, text_scale, 1, 0, 1, cluster_text, 0);
         previous_categories_size++;
       }
     }

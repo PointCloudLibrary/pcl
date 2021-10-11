@@ -9,8 +9,8 @@ main ()
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_sphere_filtered (new pcl::PointCloud<pcl::PointXYZ>);
 
   // 1. Generate cloud data
-  int noise_size = 5;
-  int sphere_data_size = 10;
+  std::size_t noise_size = 5;
+  std::size_t sphere_data_size = 10;
   cloud->width = noise_size + sphere_data_size;
   cloud->height = 1;
   cloud->points.resize (cloud->width * cloud->height);
@@ -24,7 +24,7 @@ main ()
   // 1.2 Add sphere:
   double rand_x1 = 1;
   double rand_x2 = 1;
-  for (std::size_t i = noise_size; i < noise_size + sphere_data_size; ++i)
+  for (std::size_t i = noise_size; i < (noise_size + sphere_data_size); ++i)
   {
     // See: http://mathworld.wolfram.com/SpherePointPicking.html
     while (pow (rand_x1, 2) + pow (rand_x2, 2) >= 1)

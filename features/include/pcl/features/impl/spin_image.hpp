@@ -97,7 +97,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
   else
     bin_size = search_radius_ / image_width_ / sqrt(2.0);
 
-  std::vector<int> nn_indices;
+  pcl::Indices nn_indices;
   std::vector<float> nn_sqr_dists;
   const int neighb_cnt = this->searchForNeighbors (index, search_radius_, nn_indices, nn_sqr_dists);
   if (neighb_cnt < static_cast<int> (min_pts_neighb_))

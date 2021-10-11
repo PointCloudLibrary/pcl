@@ -36,7 +36,6 @@
 #include <pcl/common/time.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_grabber.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/surface/organized_fast_mesh.h>
 #include <pcl/visualization/pcl_visualizer.h> // for PCLVisualizer
 #include <pcl/point_cloud.h>

@@ -7,7 +7,7 @@ This tutorial gives an example of how some of the tools covered in the other tut
 
 .. raw:: html
 
-  <iframe width="560" height="349" style="margin-left:50px" src="http://www.youtube.com/embed/1T5HxTTgE4I" frameborder="0" allowfullscreen></iframe>
+  <iframe width="560" height="349" style="margin-left:50px" src="https://www.youtube.com/embed/1T5HxTTgE4I" frameborder="0" allowfullscreen></iframe>
 
 We can use the code below to fit a template of a person's face (the blue points) to a new point cloud (the green points).
 

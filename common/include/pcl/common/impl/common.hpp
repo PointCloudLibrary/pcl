@@ -67,6 +67,58 @@ pcl::getAngle3D (const Eigen::Vector3f &v1, const Eigen::Vector3f &v2, const boo
   return (in_degree ? std::acos (rad) * 180.0 / M_PI : std::acos (rad));
 }
 
+#ifdef __SSE__
+inline __m128
+pcl::acos_SSE (const __m128 &x)
+{
+  /*
+  This python code generates the coefficients:
+  import math, numpy, scipy.optimize
+  def get_error(S):
+      err_sum=0.0
+      for x in numpy.arange(0.0, 1.0, 0.0025):
+          if (S[3]+S[4]*x)<0.0:
+              err_sum+=10.0
+          else:
+              err_sum+=((S[0]+x*(S[1]+x*S[2]))*numpy.sqrt(S[3]+S[4]*x)+S[5]+x*(S[6]+x*S[7])-math.acos(x))**2.0
+      return err_sum/400.0
+
+  print(scipy.optimize.minimize(fun=get_error, x0=[1.57, 0.0, 0.0, 1.0, -1.0, 0.0, 0.0, 0.0], method='Nelder-Mead', options={'maxiter':42000, 'maxfev':42000, 'disp':True, 'xatol':1e-6, 'fatol':1e-6}))
+  */
+  const __m128 mul_term = _mm_add_ps (_mm_set1_ps (1.59121552f), _mm_mul_ps (x, _mm_add_ps (_mm_set1_ps (-0.15461442f), _mm_mul_ps (x, _mm_set1_ps (0.05354897f)))));
+  const __m128 add_term = _mm_add_ps (_mm_set1_ps (0.06681017f), _mm_mul_ps (x, _mm_add_ps (_mm_set1_ps (-0.09402311f), _mm_mul_ps (x, _mm_set1_ps (0.02708663f)))));
+  return _mm_add_ps (_mm_mul_ps (mul_term, _mm_sqrt_ps (_mm_add_ps (_mm_set1_ps (0.89286965f), _mm_mul_ps (_mm_set1_ps (-0.89282669f), x)))), add_term);
+}
+
+inline __m128
+pcl::getAcuteAngle3DSSE (const __m128 &x1, const __m128 &y1, const __m128 &z1, const __m128 &x2, const __m128 &y2, const __m128 &z2)
+{
+  const __m128 dot_product = _mm_add_ps (_mm_add_ps (_mm_mul_ps (x1, x2), _mm_mul_ps (y1, y2)), _mm_mul_ps (z1, z2));
+  // The andnot-function realizes an abs-operation: the sign bit is removed
+  // -0.0f (negative zero) means that all bits are 0, only the sign bit is 1
+  return acos_SSE (_mm_min_ps (_mm_set1_ps (1.0f), _mm_andnot_ps (_mm_set1_ps (-0.0f), dot_product)));
+}
+#endif // ifdef __SSE__
+
+#ifdef __AVX__
+inline __m256
+pcl::acos_AVX (const __m256 &x)
+{
+  const __m256 mul_term = _mm256_add_ps (_mm256_set1_ps (1.59121552f), _mm256_mul_ps (x, _mm256_add_ps (_mm256_set1_ps (-0.15461442f), _mm256_mul_ps (x, _mm256_set1_ps (0.05354897f)))));
+  const __m256 add_term = _mm256_add_ps (_mm256_set1_ps (0.06681017f), _mm256_mul_ps (x, _mm256_add_ps (_mm256_set1_ps (-0.09402311f), _mm256_mul_ps (x, _mm256_set1_ps (0.02708663f)))));
+  return _mm256_add_ps (_mm256_mul_ps (mul_term, _mm256_sqrt_ps (_mm256_add_ps (_mm256_set1_ps (0.89286965f), _mm256_mul_ps (_mm256_set1_ps (-0.89282669f), x)))), add_term);
+}
+
+inline __m256
+pcl::getAcuteAngle3DAVX (const __m256 &x1, const __m256 &y1, const __m256 &z1, const __m256 &x2, const __m256 &y2, const __m256 &z2)
+{
+  const __m256 dot_product = _mm256_add_ps (_mm256_add_ps (_mm256_mul_ps (x1, x2), _mm256_mul_ps (y1, y2)), _mm256_mul_ps (z1, z2));
+  // The andnot-function realizes an abs-operation: the sign bit is removed
+  // -0.0f (negative zero) means that all bits are 0, only the sign bit is 1
+  return acos_AVX (_mm256_min_ps (_mm256_set1_ps (1.0f), _mm256_andnot_ps (_mm256_set1_ps (-0.0f), dot_product)));
+}
+#endif // ifdef __AVX__
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 inline void
 pcl::getMeanStd (const std::vector<float> &values, double &mean, double &stddev)
@@ -242,35 +294,8 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Indices &indice
 template <typename PointT> inline void
 pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, PointT &min_pt, PointT &max_pt)
 {
-  Eigen::Array4f min_p, max_p;
-  min_p.setConstant (FLT_MAX);
-  max_p.setConstant (-FLT_MAX);
-
-  // If the data is dense, we don't need to check for NaN
-  if (cloud.is_dense)
-  {
-    for (const auto& point: cloud.points)
-    {
-      const auto pt = point.getArray4fMap ();
-      min_p = min_p.min (pt);
-      max_p = max_p.max (pt);
-    }
-  }
-  // NaN or Inf values could exist => check for them
-  else
-  {
-    for (const auto& point: cloud.points)
-    {
-      // Check if the point is invalid
-      if (!std::isfinite (point.x) ||
-          !std::isfinite (point.y) ||
-          !std::isfinite (point.z))
-        continue;
-      const auto pt = point.getArray4fMap ();
-      min_p = min_p.min (pt);
-      max_p = max_p.max (pt);
-    }
-  }
+  Eigen::Vector4f min_p, max_p;
+  pcl::getMinMax3D (cloud, min_p, max_p);
   min_pt.x = min_p[0]; min_pt.y = min_p[1]; min_pt.z = min_p[2];
   max_pt.x = max_p[0]; max_pt.y = max_p[1]; max_pt.z = max_p[2];
 }
@@ -279,18 +304,17 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, PointT &min_pt, PointT &
 template <typename PointT> inline void
 pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt)
 {
-  Eigen::Array4f min_p, max_p;
-  min_p.setConstant (FLT_MAX);
-  max_p.setConstant (-FLT_MAX);
+  min_pt.setConstant (FLT_MAX);
+  max_pt.setConstant (-FLT_MAX);
 
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
     for (const auto& point: cloud.points)
     {
-      const auto pt = point.getArray4fMap ();
-      min_p = min_p.min (pt);
-      max_p = max_p.max (pt);
+      const pcl::Vector4fMapConst pt = point.getVector4fMap ();
+      min_pt = min_pt.cwiseMin (pt);
+      max_pt = max_pt.cwiseMax (pt);
     }
   }
   // NaN or Inf values could exist => check for them
@@ -303,13 +327,11 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, Eigen::Vector4f &min_pt,
           !std::isfinite (point.y) ||
           !std::isfinite (point.z))
         continue;
-      const auto pt = point.getArray4fMap ();
-      min_p = min_p.min (pt);
-      max_p = max_p.max (pt);
+      const pcl::Vector4fMapConst pt = point.getVector4fMap ();
+      min_pt = min_pt.cwiseMin (pt);
+      max_pt = max_pt.cwiseMax (pt);
     }
   }
-  min_pt = min_p;
-  max_pt = max_p;
 }
 
 
@@ -318,37 +340,7 @@ template <typename PointT> inline void
 pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const pcl::PointIndices &indices,
                   Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt)
 {
-  Eigen::Array4f min_p, max_p;
-  min_p.setConstant (FLT_MAX);
-  max_p.setConstant (-FLT_MAX);
-
-  // If the data is dense, we don't need to check for NaN
-  if (cloud.is_dense)
-  {
-    for (const auto &index : indices.indices)
-    {
-      pcl::Array4fMapConst pt = cloud[index].getArray4fMap ();
-      min_p = min_p.min (pt);
-      max_p = max_p.max (pt);
-    }
-  }
-  // NaN or Inf values could exist => check for them
-  else
-  {
-    for (const auto &index : indices.indices)
-    {
-      // Check if the point is invalid
-      if (!std::isfinite (cloud[index].x) || 
-          !std::isfinite (cloud[index].y) || 
-          !std::isfinite (cloud[index].z))
-        continue;
-      pcl::Array4fMapConst pt = cloud[index].getArray4fMap ();
-      min_p = min_p.min (pt);
-      max_p = max_p.max (pt);
-    }
-  }
-  min_pt = min_p;
-  max_pt = max_p;
+  pcl::getMinMax3D (cloud, indices.indices, min_pt, max_pt);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -364,9 +356,9 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const Indices &indices,
   {
     for (const auto &index : indices)
     {
-      pcl::Array4fMapConst pt = cloud[index].getArray4fMap ();
-      min_pt = min_pt.array ().min (pt);
-      max_pt = max_pt.array ().max (pt);
+      const pcl::Vector4fMapConst pt = cloud[index].getVector4fMap ();
+      min_pt = min_pt.cwiseMin (pt);
+      max_pt = max_pt.cwiseMax (pt);
     }
   }
   // NaN or Inf values could exist => check for them
@@ -379,9 +371,9 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const Indices &indices,
           !std::isfinite (cloud[index].y) || 
           !std::isfinite (cloud[index].z))
         continue;
-      pcl::Array4fMapConst pt = cloud[index].getArray4fMap ();
-      min_pt = min_pt.array ().min (pt);
-      max_pt = max_pt.array ().max (pt);
+      const pcl::Vector4fMapConst pt = cloud[index].getVector4fMap ();
+      min_pt = min_pt.cwiseMin (pt);
+      max_pt = max_pt.cwiseMax (pt);
     }
   }
 }

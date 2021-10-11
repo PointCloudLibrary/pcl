@@ -112,7 +112,7 @@ pcl::modeler::NormalEstimationWorker::processImpl(CloudMeshItem* cloud_mesh_item
   pcl::NormalEstimation<pcl::PointSurfel, pcl::PointNormal> normal_estimator;
   normal_estimator.setInputCloud(cloud);
 
-  pcl::IndicesPtr indices(new std::vector<int>());
+  pcl::IndicesPtr indices(new pcl::Indices());
   pcl::removeNaNFromPointCloud(*cloud, *indices);
   normal_estimator.setIndices(indices);
 

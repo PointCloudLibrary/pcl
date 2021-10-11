@@ -58,15 +58,15 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     else
     {
       // Prepare a vector holding all indices
-      std::vector<int> all_indices (input_->width * input_->height);
-      for (int i = 0; i < static_cast<int>(all_indices.size ()); ++i)
+      Indices all_indices (input_->width * input_->height);
+      for (index_t i = 0; i < static_cast<index_t>(all_indices.size ()); ++i)
         all_indices[i] = i;
 
-      std::vector<int> indices = *indices_;
+      Indices indices = *indices_;
       std::sort (indices.begin (), indices.end ());
 
       // Get the diference
-      std::vector<int> remaining_indices;
+      Indices remaining_indices;
       set_difference (all_indices.begin (), all_indices.end (), indices.begin (), indices.end (),
                       inserter (remaining_indices, remaining_indices.begin ()));
 
@@ -89,7 +89,7 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       output = *input_;
     return;
   }
-  if (indices_->size () == static_cast<uindex_t>(input_->width * input_->height))
+  if (indices_->size () == (input_->width * input_->height))
   {
     // If negative, then return an empty cloud
     if (negative_)
@@ -113,15 +113,15 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   if (negative_)
   {
     // Prepare a vector holding all indices
-    std::vector<int> all_indices (input_->width * input_->height);
-    for (int i = 0; i < static_cast<int>(all_indices.size ()); ++i)
+    Indices all_indices (input_->width * input_->height);
+    for (index_t i = 0; i < static_cast<index_t>(all_indices.size ()); ++i)
       all_indices[i] = i;
 
-    std::vector<int> indices = *indices_;
+    Indices indices = *indices_;
     std::sort (indices.begin (), indices.end ());
 
     // Get the diference
-    std::vector<int> remaining_indices;
+    Indices remaining_indices;
     set_difference (all_indices.begin (), all_indices.end (), indices.begin (), indices.end (),
                     inserter (remaining_indices, remaining_indices.begin ()));
 
@@ -144,9 +144,9 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
+pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (Indices &indices)
 {
-  if (indices_->size () > static_cast<uindex_t>(input_->width * input_->height))
+  if (indices_->size () > (input_->width * input_->height))
   {
     PCL_ERROR ("[pcl::%s::applyFilter] The indices size exceeds the size of the input.\n", getClassName ().c_str ());
     indices.clear ();
@@ -161,12 +161,12 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices
     if (extract_removed_indices_)
     {
       // Set up the full indices set
-      std::vector<int> full_indices (input_->width * input_->height);
-      for (int fii = 0; fii < static_cast<int> (full_indices.size ()); ++fii)  // fii = full indices iterator
+      Indices full_indices (input_->width * input_->height);
+      for (index_t fii = 0; fii < static_cast<index_t> (full_indices.size ()); ++fii)  // fii = full indices iterator
         full_indices[fii] = fii;
 
       // Set up the sorted input indices
-      std::vector<int> sorted_input_indices = *indices_;
+      Indices sorted_input_indices = *indices_;
       std::sort (sorted_input_indices.begin (), sorted_input_indices.end ());
 
       // Store the difference in removed_indices
@@ -177,12 +177,12 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices
   else  // Inverted functionality
   {
     // Set up the full indices set
-    std::vector<int> full_indices (input_->width * input_->height);
-    for (int fii = 0; fii < static_cast<int> (full_indices.size ()); ++fii)  // fii = full indices iterator
+    Indices full_indices (input_->width * input_->height);
+    for (index_t fii = 0; fii < static_cast<index_t> (full_indices.size ()); ++fii)  // fii = full indices iterator
       full_indices[fii] = fii;
 
     // Set up the sorted input indices
-    std::vector<int> sorted_input_indices = *indices_;
+    Indices sorted_input_indices = *indices_;
     std::sort (sorted_input_indices.begin (), sorted_input_indices.end ());
 
     // Store the difference in indices

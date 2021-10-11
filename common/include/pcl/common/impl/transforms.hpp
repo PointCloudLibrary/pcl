@@ -220,25 +220,23 @@ struct Transformer<double>
 template <typename PointT, typename Scalar> void
 transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                      pcl::PointCloud<PointT> &cloud_out,
-                     const Eigen::Transform<Scalar, 3, Eigen::Affine> &transform,
+                     const Eigen::Matrix<Scalar, 4, 4> &transform,
                      bool copy_all_fields)
 {
   if (&cloud_in != &cloud_out)
   {
     cloud_out.header   = cloud_in.header;
     cloud_out.is_dense = cloud_in.is_dense;
-    cloud_out.width    = cloud_in.width;
-    cloud_out.height   = cloud_in.height;
     cloud_out.reserve (cloud_in.size ());
     if (copy_all_fields)
-      cloud_out.assign (cloud_in.begin (), cloud_in.end ());
+      cloud_out.assign (cloud_in.begin (), cloud_in.end (), cloud_in.width);
     else
-      cloud_out.resize (cloud_in.size ());
+      cloud_out.resize (cloud_in.width, cloud_in.height);
     cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
     cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
   }
 
-  pcl::detail::Transformer<Scalar> tf (transform.matrix ());
+  pcl::detail::Transformer<Scalar> tf (transform);
   if (cloud_in.is_dense)
   {
     // If the dataset is dense, simply transform it!
@@ -265,7 +263,7 @@ template <typename PointT, typename Scalar> void
 transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                      const Indices &indices,
                      pcl::PointCloud<PointT> &cloud_out,
-                     const Eigen::Transform<Scalar, 3, Eigen::Affine> &transform,
+                     const Eigen::Matrix<Scalar, 4, 4> &transform,
                      bool copy_all_fields)
 {
   std::size_t npts = indices.size ();
@@ -278,7 +276,7 @@ transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
   cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
 
-  pcl::detail::Transformer<Scalar> tf (transform.matrix ());
+  pcl::detail::Transformer<Scalar> tf (transform);
   if (cloud_in.is_dense)
   {
     // If the dataset is dense, simply transform it!
@@ -311,26 +309,24 @@ transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 template <typename PointT, typename Scalar> void
 transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
                                 pcl::PointCloud<PointT> &cloud_out,
-                                const Eigen::Transform<Scalar, 3, Eigen::Affine> &transform,
+                                const Eigen::Matrix<Scalar, 4, 4> &transform,
                                 bool copy_all_fields)
 {
   if (&cloud_in != &cloud_out)
   {
     // Note: could be replaced by cloud_out = cloud_in
     cloud_out.header   = cloud_in.header;
-    cloud_out.width    = cloud_in.width;
-    cloud_out.height   = cloud_in.height;
     cloud_out.is_dense = cloud_in.is_dense;
-    cloud_out.reserve (cloud_out.size ());
+    cloud_out.reserve (cloud_in.size ());
     if (copy_all_fields)
-      cloud_out.assign (cloud_in.begin (), cloud_in.end ());
+      cloud_out.assign (cloud_in.begin (), cloud_in.end (), cloud_in.width);
     else
-      cloud_out.resize (cloud_in.size ());
+      cloud_out.resize (cloud_in.width, cloud_in.height);
     cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
     cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
   }
 
-  pcl::detail::Transformer<Scalar> tf (transform.matrix ());
+  pcl::detail::Transformer<Scalar> tf (transform);
   // If the data is dense, we don't need to check for NaN
   if (cloud_in.is_dense)
   {
@@ -360,7 +356,7 @@ template <typename PointT, typename Scalar> void
 transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
                                 const Indices &indices,
                                 pcl::PointCloud<PointT> &cloud_out,
-                                const Eigen::Transform<Scalar, 3, Eigen::Affine> &transform,
+                                const Eigen::Matrix<Scalar, 4, 4> &transform,
                                 bool copy_all_fields)
 {
   std::size_t npts = indices.size ();
@@ -373,7 +369,7 @@ transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
   cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
   cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
 
-  pcl::detail::Transformer<Scalar> tf (transform.matrix ());
+  pcl::detail::Transformer<Scalar> tf (transform);
   // If the data is dense, we don't need to check for NaN
   if (cloud_in.is_dense)
   {
@@ -479,4 +475,3 @@ getPrincipalTransformation (const pcl::PointCloud<PointT> &cloud,
 }
 
 } // namespace pcl
-

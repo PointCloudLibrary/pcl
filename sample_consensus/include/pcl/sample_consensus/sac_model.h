@@ -88,6 +88,7 @@ namespace pcl
         , samples_radius_ (0.)
         , samples_radius_search_ ()
         , rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()))
+        , custom_model_constraints_ ([](auto){return true;})
       {
         // Create a random number generator object
         if (random)
@@ -110,6 +111,7 @@ namespace pcl
         , samples_radius_ (0.)
         , samples_radius_search_ ()
         , rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()))
+        , custom_model_constraints_ ([](auto){return true;})
       {
         if (random)
           rng_alg_.seed (static_cast<unsigned> (std::time (nullptr)));
@@ -138,6 +140,7 @@ namespace pcl
         , samples_radius_ (0.)
         , samples_radius_search_ ()
         , rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()))
+        , custom_model_constraints_ ([](auto){return true;})
       {
         if (random)
           rng_alg_.seed (static_cast<unsigned> (std::time(nullptr)));
@@ -388,6 +391,21 @@ namespace pcl
         max_radius = radius_max_;
       }
 
+      /** \brief This can be used to impose any kind of constraint on the model,
+        * e.g. that it has a specific direction, size, or anything else.
+        * \param[in] function A function that gets model coefficients and returns whether the model is acceptable or not.
+        */
+      inline void
+      setModelConstraints (std::function<bool(const Eigen::VectorXf &)> function)
+      {
+        if (!function)
+        {
+          PCL_ERROR ("[pcl::SampleConsensusModel::setModelConstraints] The given function is empty (i.e. does not contain a callable target)!\n");
+          return;
+        }
+        custom_model_constraints_ = std::move (function);
+      }
+
       /** \brief Set the maximum distance allowed when drawing random samples
         * \param[in] radius the maximum distance (L2 norm)
         * \param search
@@ -513,6 +531,11 @@ namespace pcl
           PCL_ERROR ("[pcl::%s::isModelValid] Invalid number of model coefficients given (is %lu, should be %lu)!\n", getClassName ().c_str (), model_coefficients.size (), model_size_);
           return (false);
         }
+        if (!custom_model_constraints_(model_coefficients))
+        {
+          PCL_DEBUG ("[pcl::%s::isModelValid] The user defined isModelValid function returned false.\n", getClassName ().c_str ());
+          return (false);
+        }
         return (true);
       }
 
@@ -573,12 +596,16 @@ namespace pcl
       {
         return ((*rng_gen_) ());
       }
+
+      /** \brief A user defined function that takes model coefficients and returns whether the model is acceptable or not. */
+      std::function<bool(const Eigen::VectorXf &)> custom_model_constraints_;
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW
  };
 
   /** \brief @b SampleConsensusModelFromNormals represents the base model class
     * for models that require the use of surface normals for estimation.
+    * \ingroup sample_consensus
     */
   template <typename PointT, typename PointNT>
   class SampleConsensusModelFromNormals //: public SampleConsensusModel<PointT>
@@ -604,6 +631,11 @@ namespace pcl
       inline void 
       setNormalDistanceWeight (const double w) 
       { 
+        if (w < 0.0 || w > 1.0)
+        {
+          PCL_ERROR ("[pcl::SampleConsensusModel::setNormalDistanceWeight] w is %g, but should be in [0; 1]. Weight will not be set.", w);
+          return;
+        }
         normal_distance_weight_ = w; 
       }
 

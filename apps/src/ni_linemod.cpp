@@ -41,13 +41,10 @@
 #include <pcl/common/angles.h>
 #include <pcl/common/common.h>
 #include <pcl/common/time.h>
-#include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/features/integral_image_normal.h>
-#include <pcl/filters/extract_indices.h>
 #include <pcl/geometry/polygon_operations.h>
 #include <pcl/io/openni_grabber.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/search/organized.h>
 #include <pcl/segmentation/edge_aware_plane_comparator.h>
@@ -211,7 +208,7 @@ public:
    * \param[out] object the segmented resultant object
    */
   void
-  segmentObject(int picked_idx,
+  segmentObject(pcl::index_t picked_idx,
                 const CloudConstPtr& cloud,
                 const PointIndices::Ptr& plane_indices,
                 const PointIndices::Ptr& plane_boundary_indices,
@@ -233,7 +230,7 @@ public:
       for (int p_it = 0; p_it < static_cast<int>(indices_fullset_.size()); ++p_it)
         indices_fullset_[p_it] = p_it;
     }
-    std::vector<int> indices_subset = plane_indices->indices;
+    pcl::Indices indices_subset = plane_indices->indices;
     std::sort(indices_subset.begin(), indices_subset.end());
     set_difference(indices_fullset_.begin(),
                    indices_fullset_.end(),
@@ -262,7 +259,7 @@ public:
     l.label = 0;
     PointCloud<Label>::Ptr scene(new PointCloud<Label>(cloud->width, cloud->height, l));
     // Mask the objects that we want to split into clusters
-    for (const int& index : points_above_plane->indices)
+    for (const auto& index : points_above_plane->indices)
       (*scene)[index].label = 1;
     euclidean_cluster_comparator->setLabels(scene);
 
@@ -296,7 +293,7 @@ public:
   /////////////////////////////////////////////////////////////////////////
   void
   segment(const PointT& picked_point,
-          int picked_idx,
+          pcl::index_t picked_idx,
           PlanarRegion<PointT>& region,
           PointIndices&,
           CloudPtr& object)
@@ -388,7 +385,7 @@ public:
     if (idx == -1)
       return;
 
-    std::vector<int> indices(1);
+    pcl::Indices indices(1);
     std::vector<float> distances(1);
 
     // Use mutices to make sure we get the right cloud
@@ -399,9 +396,8 @@ public:
     event.getPoint(picked_pt.x, picked_pt.y, picked_pt.z);
 
     // Add a sphere to it in the PCLVisualizer window
-    std::stringstream ss;
-    ss << "sphere_" << idx;
-    cloud_viewer_.addSphere(picked_pt, 0.01, 1.0, 0.0, 0.0, ss.str());
+    const std::string sphere_name = "sphere_" + std::to_string(idx);
+    cloud_viewer_.addSphere(picked_pt, 0.01, 1.0, 0.0, 0.0, sphere_name);
 
     // Check to see if we have access to the actual cloud data. Use the previously built
     // search object.
@@ -476,8 +472,7 @@ public:
     // Compute the min/max of the object
     PointT min_pt, max_pt;
     getMinMax3D(*object, min_pt, max_pt);
-    std::stringstream ss2;
-    ss2 << "cube_" << idx;
+    const std::string cube_name = "cube_" + std::to_string(idx);
     // Visualize the bounding box in 3D...
     cloud_viewer_.addCube(min_pt.x,
                           max_pt.x,
@@ -488,9 +483,9 @@ public:
                           0.0,
                           1.0,
                           0.0,
-                          ss2.str());
+                          cube_name);
     cloud_viewer_.setShapeRenderingProperties(
-        visualization::PCL_VISUALIZER_LINE_WIDTH, 10, ss2.str());
+        visualization::PCL_VISUALIZER_LINE_WIDTH, 10, cube_name);
 
     // ...and 2D
     image_viewer_.addRectangle(search_.getInputCloud(), *object);
@@ -574,7 +569,7 @@ private:
   bool first_frame_;
 
   // Segmentation
-  std::vector<int> indices_fullset_;
+  pcl::Indices indices_fullset_;
   PointIndices::Ptr plane_indices_;
   CloudPtr plane_;
   IntegralImageNormalEstimation<PointT, Normal> ne_;

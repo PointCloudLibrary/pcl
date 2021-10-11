@@ -38,6 +38,7 @@
 #define PCL_RECOGNITION_IMPL_HV_GO_HPP_
 
 #include <pcl/recognition/hv/hv_go.h>
+#include <pcl/common/common.h> // for getMinMax3D
 #include <pcl/common/time.h>
 #include <pcl/point_types.h>
 
@@ -64,7 +65,7 @@ inline void extractEuclideanClustersSmooth(const typename pcl::PointCloud<PointT
   // Create a bool vector of processed point indices, and initialize it to false
   std::vector<bool> processed (cloud.size (), false);
 
-  std::vector<int> nn_indices;
+  pcl::Indices nn_indices;
   std::vector<float> nn_distances;
   // Process all points in the indices vector
   int size = static_cast<int> (cloud.size ());
@@ -173,7 +174,7 @@ mets::gol_type pcl::GlobalHypothesesVerification<ModelT, SceneT>::evaluateSoluti
   setPreviousBadInfo (bad_info);
 
   int n_active_hyp = 0;
-  for(const bool &i : active) {
+  for(const bool i : active) {
     if(i)
       n_active_hyp++;
   }
@@ -565,7 +566,7 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
   std::vector<float> outliers_weight;
   std::vector<float> explained_indices_distances;
 
-  std::vector<int> nn_indices;
+  pcl::Indices nn_indices;
   std::vector<float> nn_distances;
 
   std::map<int, std::shared_ptr<std::vector<std::pair<int, float>>>> model_explains_scene_points; //which point i from the scene is explained by a points j_k with dist d_k from the model
@@ -608,7 +609,7 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
   if (outliers_weight.empty ())
     recog_model->outliers_weight_ = 1.f;
 
-  pcl::IndicesPtr indices_scene (new std::vector<int>);
+  pcl::IndicesPtr indices_scene (new pcl::Indices);
   //go through the map and keep the closest model point in case that several model points explain a scene point
 
   int p = 0;
@@ -658,11 +659,11 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::computeClutterCue(Recogn
   {
 
     float rn_sqr = radius_neighborhood_GO_ * radius_neighborhood_GO_;
-    std::vector<int> nn_indices;
+    pcl::Indices nn_indices;
     std::vector<float> nn_distances;
 
     std::vector < std::pair<int, int> > neighborhood_indices; //first is indices to scene point and second is indices to explained_ scene points
-    for (int i = 0; i < static_cast<int> (recog_model->explained_.size ()); i++)
+    for (pcl::index_t i = 0; i < static_cast<pcl::index_t> (recog_model->explained_.size ()); i++)
     {
       if (scene_downsampled_tree_->radiusSearch ((*scene_cloud_downsampled_)[recog_model->explained_[i]], radius_neighborhood_GO_, nn_indices,
           nn_distances, std::numeric_limits<int>::max ()))

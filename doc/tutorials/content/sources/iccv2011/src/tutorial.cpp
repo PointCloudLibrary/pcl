@@ -26,6 +26,7 @@
 #include <pcl/features/pfhrgb.h>
 #include <pcl/features/3dsc.h>
 #include <pcl/features/shot_omp.h>
+#include <pcl/filters/extract_indices.h> // for ExtractIndices
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
 #include <pcl/registration/transformation_estimation_svd.h>
@@ -309,7 +310,7 @@ void ICCVTutorial<FeatureType>::filterCorrespondences ()
   std::cout << "correspondence rejection..." << std::flush;
   std::vector<std::pair<unsigned, unsigned> > correspondences;
   for (unsigned cIdx = 0; cIdx < source2target_.size (); ++cIdx)
-    if (target2source_[source2target_[cIdx]] == cIdx)
+    if (static_cast<unsigned int>(target2source_[source2target_[cIdx]]) == cIdx)
       correspondences.push_back(std::make_pair(cIdx, source2target_[cIdx]));
 
   correspondences_->resize (correspondences.size());
@@ -397,7 +398,7 @@ void ICCVTutorial<FeatureType>::run()
 }
 
 template<typename FeatureType>
-void ICCVTutorial<FeatureType>::keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* cookie)
+void ICCVTutorial<FeatureType>::keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* /*cookie*/)
 {
   if (event.keyUp())
   {

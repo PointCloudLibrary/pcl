@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pcl/common/common.h>
+#include <pcl/visualization/vtk/pcl_vtk_compatibility.h>
 
 #include <vtkCellArray.h>
 #include <vtkPLYReader.h>
@@ -74,7 +74,7 @@ randPSurface(vtkPolyData* polydata,
 
   double A[3], B[3], C[3];
   vtkIdType npts = 0;
-  vtkIdType* ptIds = nullptr;
+  vtkCellPtsPtr ptIds = nullptr;
   polydata->GetCellPoints(el, npts, ptIds);
 
   if (ptIds == nullptr)
@@ -98,7 +98,9 @@ uniform_sampling(const vtkSmartPointer<vtkPolyData>& polydata,
   double p1[3], p2[3], p3[3], totalArea = 0;
   std::vector<double> cumulativeAreas(cells->GetNumberOfCells(), 0);
   std::size_t i = 0;
-  vtkIdType npts = 0, *ptIds = nullptr;
+  vtkIdType npts = 0;
+  vtkCellPtsPtr ptIds = nullptr;
+
   for (cells->InitTraversal(); cells->GetNextCell(npts, ptIds); i++) {
     polydata->GetPoint(ptIds[0], p1);
     polydata->GetPoint(ptIds[1], p2);

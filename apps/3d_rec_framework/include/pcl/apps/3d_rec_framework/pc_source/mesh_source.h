@@ -10,7 +10,6 @@
 #include <pcl/apps/3d_rec_framework/pc_source/source.h>
 #include <pcl/apps/3d_rec_framework/utils/vtk_model_sampling.h>
 #include <pcl/apps/render_views_tesselated_sphere.h>
-#include <pcl/io/io.h>
 #include <pcl/io/pcd_io.h>
 
 #include <vtkTransformPolyDataFilter.h>
@@ -81,9 +80,8 @@ public:
   void
   loadOrGenerate(std::string& dir, std::string& model_path, ModelT& model)
   {
-    std::stringstream pathmodel;
-    pathmodel << dir << "/" << model.class_ << "/" << model.id_;
-    bf::path trained_dir = pathmodel.str();
+    const std::string pathmodel = dir + '/' + model.class_ + '/' + model.id_;
+    bf::path trained_dir = pathmodel;
 
     model.views_.reset(new std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr>);
     model.poses_.reset(
@@ -95,7 +93,6 @@ public:
     if (bf::exists(trained_dir)) {
       // load views, poses and self-occlusions
       std::vector<std::string> view_filenames;
-      int number_of_views = 0;
       for (const auto& dir_entry : bf::directory_iterator(trained_dir)) {
         // check if its a directory, then get models in it
         if (!(bf::is_directory(dir_entry))) {
@@ -112,17 +109,14 @@ public:
 
           if (extension == "pcd" && strs_[0] == "view") {
             view_filenames.push_back((dir_entry.path().filename()).string());
-
-            number_of_views++;
           }
         }
       }
 
       for (const auto& view_filename : view_filenames) {
-        std::stringstream view_file;
-        view_file << pathmodel.str() << "/" << view_filename;
+        const std::string view_file = pathmodel + '/' + view_filename;
         typename pcl::PointCloud<PointInT>::Ptr cloud(new pcl::PointCloud<PointInT>());
-        pcl::io::loadPCDFile(view_file.str(), *cloud);
+        pcl::io::loadPCDFile(view_file, *cloud);
 
         model.views_->push_back(cloud);
 
@@ -135,19 +129,17 @@ public:
         boost::replace_all(file_replaced2, ".pcd", ".txt");
 
         // read pose as well
-        std::stringstream pose_file;
-        pose_file << pathmodel.str() << "/" << file_replaced1;
+        const std::string pose_file = pathmodel + '/' + file_replaced1;
 
         Eigen::Matrix4f pose;
-        PersistenceUtils::readMatrixFromFile(pose_file.str(), pose);
+        PersistenceUtils::readMatrixFromFile(pose_file, pose);
 
         model.poses_->push_back(pose);
 
         // read entropy as well
-        std::stringstream entropy_file;
-        entropy_file << pathmodel.str() << "/" << file_replaced2;
+        const std::string entropy_file = pathmodel + '/' + file_replaced2;
         float entropy = 0;
-        PersistenceUtils::readFloatFromFile(entropy_file.str(), entropy);
+        PersistenceUtils::readFloatFromFile(entropy_file, entropy);
         model.self_occlusions_->push_back(entropy);
       }
     }
@@ -201,26 +193,23 @@ public:
         model.self_occlusions_->push_back(entropies[i]);
       }
 
-      std::stringstream direc;
-      direc << dir << "/" << model.class_ << "/" << model.id_;
+      const std::string direc = dir + '/' + model.class_ + '/' + model.id_;
       this->createClassAndModelDirectories(dir, model.class_, model.id_);
 
       for (std::size_t i = 0; i < model.views_->size(); i++) {
         // save generated model for future use
-        std::stringstream path_view;
-        path_view << direc.str() << "/view_" << i << ".pcd";
-        pcl::io::savePCDFileBinary(path_view.str(), *(model.views_->at(i)));
+        const std::string path_view = direc + "/view_" + std::to_string(i) + ".pcd";
+        pcl::io::savePCDFileBinary(path_view, *(model.views_->at(i)));
 
-        std::stringstream path_pose;
-        path_pose << direc.str() << "/pose_" << i << ".txt";
+        const std::string path_pose = direc + "/pose_" + std::to_string(i) + ".txt";
 
-        pcl::rec_3d_framework::PersistenceUtils::writeMatrixToFile(path_pose.str(),
+        pcl::rec_3d_framework::PersistenceUtils::writeMatrixToFile(path_pose,
                                                                    model.poses_->at(i));
 
-        std::stringstream path_entropy;
-        path_entropy << direc.str() << "/entropy_" << i << ".txt";
+        const std::string path_entropy =
+            direc + "/entropy_" + std::to_string(i) + ".txt";
         pcl::rec_3d_framework::PersistenceUtils::writeFloatToFile(
-            path_entropy.str(), model.self_occlusions_->at(i));
+            path_entropy, model.self_occlusions_->at(i));
       }
 
       loadOrGenerate(dir, model_path, model);

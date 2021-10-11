@@ -48,8 +48,6 @@
 #include <pcl/recognition/ransac_based/orr_graph.h>
 #include <pcl/recognition/ransac_based/auxiliary.h>
 #include <pcl/recognition/ransac_based/bvh.h>
-#include <pcl/registration/transformation_estimation_svd.h>
-#include <pcl/correspondence.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/point_cloud.h>
 #include <cmath>

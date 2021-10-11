@@ -9,7 +9,6 @@
 
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/local_estimator.h>
 #include <pcl/apps/3d_rec_framework/pc_source/source.h>
-#include <pcl/common/common.h>
 #include <pcl/recognition/cg/correspondence_grouping.h>
 #include <pcl/recognition/hv/hypotheses_verification.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -81,7 +80,7 @@ class PCL_EXPORTS LocalRecognitionPipeline {
   flann::Index<DistT>* flann_index_;
   std::vector<flann_model> flann_models_;
 
-  std::vector<int> indices_;
+  pcl::Indices indices_;
 
   bool use_cache_;
   std::map<std::pair<std::string, int>,
@@ -185,10 +184,8 @@ class PCL_EXPORTS LocalRecognitionPipeline {
       p_scene.getVector4fMap() =
           (*keypoints_pointcloud)[correspondences[kk].index_match].getVector4fMap();
 
-      std::stringstream line_name;
-      line_name << "line_" << kk;
-
-      vis_corresp_.addLine<pcl::PointXYZ, pcl::PointXYZ>(p_scene, p, line_name.str());
+      const std::string line_name = "line_" + std::to_string(kk);
+      vis_corresp_.addLine<pcl::PointXYZ, pcl::PointXYZ>(p_scene, p, line_name);
     }
 
     vis_corresp_.spin();
@@ -245,7 +242,7 @@ public:
   }
 
   void
-  setIndices(std::vector<int>& indices)
+  setIndices(pcl::Indices& indices)
   {
     indices_ = indices;
   }

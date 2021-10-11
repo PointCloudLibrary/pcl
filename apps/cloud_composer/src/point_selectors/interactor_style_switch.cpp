@@ -6,6 +6,9 @@
 
 #include <QDebug>
 
+#include <vtkCallbackCommand.h>
+#include <vtkObjectFactory.h>
+
 namespace pcl
 {
   namespace cloud_composer

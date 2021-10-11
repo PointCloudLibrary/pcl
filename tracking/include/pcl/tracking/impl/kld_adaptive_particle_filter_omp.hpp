@@ -78,7 +78,7 @@ KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::weight()
   else {
     std::vector<IndicesPtr> indices_list(particle_num_);
     for (int i = 0; i < particle_num_; i++) {
-      indices_list[i] = IndicesPtr(new std::vector<int>);
+      indices_list[i] = IndicesPtr(new pcl::Indices);
     }
     // clang-format off
 #pragma omp parallel for \

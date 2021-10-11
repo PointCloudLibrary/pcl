@@ -593,7 +593,7 @@ TEST (PCL, IO)
   EXPECT_FLOAT_EQ (cloud[nr_p - 1].z, last.z);    // test for fromPCLPointCloud2 ()
   EXPECT_FLOAT_EQ (float (cloud[nr_p - 1].intensity), float (last.intensity)); // test for fromPCLPointCloud2 ()
 
-  std::vector<int> indices (cloud.width * cloud.height / 2);
+  pcl::Indices indices (cloud.width * cloud.height / 2);
   for (int i = 0; i < static_cast<int> (indices.size ()); ++i) indices[i] = i;
   // Save as ASCII
   try

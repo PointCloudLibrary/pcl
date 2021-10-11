@@ -2,7 +2,7 @@ jobs:
   - job: formatting
     displayName: Check code formatting
     pool:
-      vmImage: 'Ubuntu 16.04'
+      vmImage: 'Ubuntu 20.04'
     container: fmt
     steps:
       - checkout: self

@@ -44,7 +44,6 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_grabber.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -132,7 +131,7 @@ public:
     cloud_subsampled_.reset(new typename pcl::PointCloud<PointType>());
     normals_.reset(new pcl::PointCloud<pcl::Normal>());
     features_.reset(new pcl::PointCloud<pcl::FPFHSignature33>());
-    feature_indices_.reset(new std::vector<int>());
+    feature_indices_.reset(new pcl::Indices());
     feature_locations_.reset(new typename pcl::PointCloud<PointType>());
 
     // Subsample input cloud
@@ -153,7 +152,8 @@ public:
     extract_indices_filter_.setIndices(feature_indices_);
     extract_indices_filter_.filter(*feature_locations_);
 
-    PCL_INFO("Persistent feature locations %zu\n", static_cast<std::size_t>(feature_locations_->size()));
+    PCL_INFO("Persistent feature locations %zu\n",
+             static_cast<std::size_t>(feature_locations_->size()));
 
     cloud_ = cloud;
 

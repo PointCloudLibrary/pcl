@@ -71,7 +71,7 @@ class TransformCommand : public Command
     operator= (const TransformCommand&) = delete;
 
   protected:
-    // Transforms the coorindates of the selected points according to the transform
+    // Transforms the coordinates of the selected points according to the transform
     // matrix.
     void
     execute () override;
@@ -90,7 +90,7 @@ class TransformCommand : public Command
     /// pointers to constructor params
     ConstSelectionPtr selection_ptr_;
 
-    /// a pointer poiting to the cloud
+    /// a pointer pointing to the cloud
     CloudPtr cloud_ptr_;
 
     float translate_x_, translate_y_, translate_z_;

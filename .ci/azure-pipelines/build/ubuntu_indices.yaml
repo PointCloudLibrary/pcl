@@ -10,11 +10,6 @@ steps:
       -DPCL_ONLY_CORE_POINT_TYPES=ON \
       -DPCL_INDEX_SIGNED=$INDEX_SIGNED \
       -DPCL_INDEX_SIZE=$INDEX_SIZE \
-      -DBUILD_geometry=OFF \
-      -DBUILD_tools=OFF \
-      -DBUILD_kdtree=OFF \
-      -DBUILD_ml=OFF \
-      -DBUILD_octree=OFF \
       -DBUILD_global_tests=ON 
       # Temporary fix to ensure no tests are skipped
       cmake $(Build.SourcesDirectory)

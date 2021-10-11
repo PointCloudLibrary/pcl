@@ -56,6 +56,7 @@ Work in progress: patch by Marco (AUG,19th 2012)
 #include <pcl/console/parse.h>
 
 #include <boost/filesystem.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp> // for microsec_clock::local_time
 
 #include <pcl/gpu/kinfu_large_scale/kinfu.h>
 #include <pcl/gpu/kinfu_large_scale/raycaster.h>
@@ -1034,7 +1035,7 @@ struct KinFuLSApp
         c = capture_.registerCallback (func2);
       }
       #else
-      PCL_ERROR ("OpenNI2 is disabled in this PCL. Please build PCL with OpenNI2 feature.");
+      PCL_ERROR ("OpenNI2 is disabled in this PCL. Please build PCL with OpenNI2 feature.\n");
       #endif
     }
     else
@@ -1065,7 +1066,7 @@ struct KinFuLSApp
         c = capture_.registerCallback (func2);
       }
       #else
-      PCL_ERROR ("OpenNI is disabled in this PCL. Please build PCL with OpenNI feature.");
+      PCL_ERROR ("OpenNI is disabled in this PCL. Please build PCL with OpenNI feature.\n");
       #endif
     }
 

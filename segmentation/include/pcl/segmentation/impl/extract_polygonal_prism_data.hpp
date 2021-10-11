@@ -39,6 +39,7 @@
 #define PCL_SEGMENTATION_IMPL_EXTRACT_POLYGONAL_PRISM_DATA_H_
 
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
+#include <pcl/sample_consensus/sac_model_plane.h> // for SampleConsensusModelPlane
 #include <pcl/common/centroid.h>
 #include <pcl/common/eigen.h>
 

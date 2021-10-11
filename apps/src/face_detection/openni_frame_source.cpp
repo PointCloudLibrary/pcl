@@ -1,5 +1,4 @@
 #include <pcl/apps/face_detection/openni_frame_source.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/memory.h>
 
 namespace OpenNIFrameSource {

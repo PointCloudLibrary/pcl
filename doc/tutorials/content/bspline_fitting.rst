@@ -23,7 +23,7 @@ In this video, the algorithm is applied to the frontal scan of the stanford bunn
 
 .. raw:: html
 
-  <iframe title="Trimmed B-spline surface fitting" width="480" height="390" src="http://www.youtube.com/embed/trH2kWELvyw?rel=0" frameborder="0" allowfullscreen></iframe>
+  <iframe title="Trimmed B-spline surface fitting" width="480" height="390" src="https://www.youtube.com/embed/trH2kWELvyw?rel=0" frameborder="0" allowfullscreen></iframe>
 
 
 Theoretical background
@@ -59,7 +59,7 @@ You can find the input file at *pcl/test/bunny.pcd*.
 .. literalinclude:: sources/bspline_fitting/bspline_fitting.cpp
    :language: cpp
    :linenos:
-   :lines: 1-220
+   :lines: 1-219
 
 
 The explanation

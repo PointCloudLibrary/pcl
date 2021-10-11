@@ -8,7 +8,7 @@ from a point cloud dataset using statistical analysis techniques.
 
 .. raw:: html
   
-  <iframe title="Removing outliers using a StatisticalOutlierRemoval filter" width="480" height="390" src="http://www.youtube.com/embed/RjQPp2_GRnI?rel=0" frameborder="0" allowfullscreen></iframe>
+  <iframe title="Removing outliers using a StatisticalOutlierRemoval filter" width="480" height="390" src="https://www.youtube.com/embed/RjQPp2_GRnI?rel=0" frameborder="0" allowfullscreen></iframe>
 
 Background
 ----------

@@ -50,7 +50,7 @@ template<typename PointInT, typename PointOutT> float
 pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::getLocalRF (const int& current_point_idx, Eigen::Matrix3f &rf)
 {
   const Eigen::Vector4f& central_point = (*input_)[current_point_idx].getVector4fMap ();
-  std::vector<int> n_indices;
+  pcl::Indices n_indices;
   std::vector<float> n_sqr_distances;
 
   this->searchForNeighbors (current_point_idx, search_parameter_, n_indices, n_sqr_distances);

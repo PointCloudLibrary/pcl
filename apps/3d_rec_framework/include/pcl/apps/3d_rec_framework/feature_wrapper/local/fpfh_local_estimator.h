@@ -8,7 +8,6 @@
 #pragma once
 
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/local_estimator.h>
-#include <pcl/apps/3d_rec_framework/feature_wrapper/normal_estimator.h>
 #include <pcl/features/fpfh.h>
 
 namespace pcl {

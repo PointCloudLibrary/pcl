@@ -36,8 +36,6 @@
 
 #pragma once
 
-#include <pcl/common/common.h>
-#include <pcl/common/transforms.h>
 #include <pcl/common/io.h>
 
 namespace pcl
@@ -67,7 +65,7 @@ namespace pcl
         computeDepthMap (typename pcl::PointCloud<SceneT>::ConstPtr & scene, bool compute_focal = false, bool smooth = false, int wsize = 3);
         void
         filter (typename pcl::PointCloud<ModelT>::ConstPtr & model, typename pcl::PointCloud<ModelT>::Ptr & filtered, float thres = 0.01);
-        void filter (typename pcl::PointCloud<ModelT>::ConstPtr & model, std::vector<int> & indices, float thres = 0.01);
+        void filter (typename pcl::PointCloud<ModelT>::ConstPtr & model, pcl::Indices & indices, float thres = 0.01);
       };
 
     template<typename ModelT, typename SceneT> typename pcl::PointCloud<ModelT>::Ptr
@@ -78,7 +76,7 @@ namespace pcl
       float cy = (static_cast<float> (organized_cloud->height) / 2.f - 0.5f);
       typename pcl::PointCloud<ModelT>::Ptr filtered (new pcl::PointCloud<ModelT> ());
 
-      std::vector<int> indices_to_keep;
+      pcl::Indices indices_to_keep;
       indices_to_keep.resize (to_be_filtered->size ());
 
       int keep = 0;

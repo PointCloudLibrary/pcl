@@ -47,7 +47,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
 pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computePointMomentInvariants (
-      const pcl::PointCloud<PointInT> &cloud, const std::vector<int> &indices,
+      const pcl::PointCloud<PointInT> &cloud, const pcl::Indices &indices,
       float &j1, float &j2, float &j3)
 {
   // Estimate the XYZ centroid
@@ -57,7 +57,7 @@ pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computePointMomentInvarian
   float mu200 = 0, mu020 = 0, mu002 = 0, mu110 = 0, mu101 = 0, mu011  = 0;
 
   // Iterate over the nearest neighbors set
-  for (const int &index : indices)
+  for (const auto &index : indices)
   {
     // Demean the points
     temp_pt_[0] = cloud[index].x - xyz_centroid_[0];
@@ -117,7 +117,7 @@ pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computeFeature (PointCloud
 {
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices (k_);
+  pcl::Indices nn_indices (k_);
   std::vector<float> nn_dists (k_);
 
   output.is_dense = true;
