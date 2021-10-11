@@ -379,6 +379,7 @@ endif()
 
 # VTK can depend on Qt and search for its required version, so search after so we can overwrite Qt5_FOUND/Qt6_FOUND if the version we require is not found.
 set(WITH_QT "AUTO" CACHE STRING "Build QT Front-End (AUTO|YES|QT6|QT5|NO)")
+set_property(CACHE WITH_QT PROPERTY STRINGS "AUTO" "YES" "QT6" "QT5" "NO")
 if(WITH_QT)
   include("${PCL_SOURCE_DIR}/cmake/pcl_find_qt.cmake")
 endif()
