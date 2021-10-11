@@ -45,31 +45,32 @@ if(NOT WITH_QT_STR MATCHES "^(AUTO)$" AND NOT QT_FOUND)
   message(FATAL_ERROR "Can not find Qt required by WITH_QT=${WITH_QT}.")
 endif()
 
-if(QT_FOUND)
-  set(QT_VERSION ${${QTX}_VERSION})
-  message(STATUS "Qt version: ${QT_VERSION}")
-
-  set(QT_DISABLE_PRECATED_BEFORE_VAL "0x050900")
-
-  #Set Cmake Auto features to skip .hh files
-  if(POLICY CMP0100)
-    cmake_policy(SET CMP0100 OLD)
-  endif()
-
-  #If building CUDA required libraries
-  #Change ${QTX}::Core fixed -fPIC flags to conditionally only CXX
-  #TODO: To be removed when QT is >5.14.1
-  if(BUILD_CUDA OR BUILD_GPU)
-    if(${QTX}Widgets_VERSION VERSION_LESS 5.14.1)
-      get_property(core_options TARGET ${QTX}::Core PROPERTY INTERFACE_COMPILE_OPTIONS)
-      string(REPLACE "-fPIC" "$<IF:$<COMPILE_LANGUAGE:CXX>,-fPIC,>"  new_core_options ${core_options})
-      set_property(TARGET ${QTX}::Core PROPERTY INTERFACE_COMPILE_OPTIONS ${new_core_options})
-    endif()
-  endif()
-
-  get_property(core_def TARGET ${QTX}::Core PROPERTY INTERFACE_COMPILE_DEFINITIONS)
-  list(APPEND core_def "QT_DISABLE_DEPRECATED_BEFORE=${QT_DISABLE_PRECATED_BEFORE_VAL}")
-  set_property(TARGET ${QTX}::Core PROPERTY INTERFACE_COMPILE_DEFINITIONS ${core_def})
-else()
+if(NOT QT_FOUND)
   message(STATUS "Qt is not found.")
+  return()
 endif()
+
+set(QT_VERSION ${${QTX}_VERSION})
+message(STATUS "Qt version: ${QT_VERSION}")
+
+set(QT_DISABLE_PRECATED_BEFORE_VAL "0x050900")
+
+#Set Cmake Auto features to skip .hh files
+if(POLICY CMP0100)
+  cmake_policy(SET CMP0100 OLD)
+endif()
+
+#If building CUDA required libraries
+#Change ${QTX}::Core fixed -fPIC flags to conditionally only CXX
+#TODO: To be removed when QT is >5.14.1
+if(BUILD_CUDA OR BUILD_GPU)
+  if(${QTX}Widgets_VERSION VERSION_LESS 5.14.1)
+    get_property(core_options TARGET ${QTX}::Core PROPERTY INTERFACE_COMPILE_OPTIONS)
+    string(REPLACE "-fPIC" "$<IF:$<COMPILE_LANGUAGE:CXX>,-fPIC,>"  new_core_options ${core_options})
+    set_property(TARGET ${QTX}::Core PROPERTY INTERFACE_COMPILE_OPTIONS ${new_core_options})
+  endif()
+endif()
+
+get_property(core_def TARGET ${QTX}::Core PROPERTY INTERFACE_COMPILE_DEFINITIONS)
+list(APPEND core_def "QT_DISABLE_DEPRECATED_BEFORE=${QT_DISABLE_PRECATED_BEFORE_VAL}")
+set_property(TARGET ${QTX}::Core PROPERTY INTERFACE_COMPILE_DEFINITIONS ${core_def})
