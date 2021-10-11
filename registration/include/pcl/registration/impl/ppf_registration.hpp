@@ -154,10 +154,10 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation(
             float alpha =
                 search_method_->alpha_m_[model_reference_index][model_point_index] -
                 alpha_s;
-            if(alpha < -M_PI){
+            if(alpha < -M_PI) {
               alpha += (2 * M_PI);
             }
-            else if(alpha > M_PI){
+            else if(alpha > M_PI) {
               alpha -= (2 * M_PI);
             }
             unsigned int alpha_discretized = static_cast<unsigned int>(
