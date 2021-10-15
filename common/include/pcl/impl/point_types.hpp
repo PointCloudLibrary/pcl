@@ -248,6 +248,8 @@ namespace pcl
   };
 
 #define PCL_ADD_EIGEN_MAPS_POINT4D \
+  inline pcl::Vector2fMap getVector2fMap () { return (pcl::Vector2fMap (data)); } \
+  inline pcl::Vector2fMapConst getVector2fMap () const { return (pcl::Vector2fMapConst (data)); } \
   inline pcl::Vector3fMap getVector3fMap () { return (pcl::Vector3fMap (data)); } \
   inline pcl::Vector3fMapConst getVector3fMap () const { return (pcl::Vector3fMapConst (data)); } \
   inline pcl::Vector4fMap getVector4fMap () { return (pcl::Vector4fMap (data)); } \
@@ -826,7 +828,7 @@ namespace pcl
 
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointXY& p);
-  /* \brief A 2D point structure representing Euclidean xy coordinates.
+  /** \brief A 2D point structure representing Euclidean xy coordinates.
     * \ingroup common
     */
   struct PointXY

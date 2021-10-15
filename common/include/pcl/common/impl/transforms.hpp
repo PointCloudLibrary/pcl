@@ -327,7 +327,7 @@ transformPointCloud(const pcl::PointCloud<pcl::PointXY> &cloud_in,
     {
       for (std::size_t i = 0; i < cloud_out.size (); ++i)
       { 
-        cloud_out[i].getVector2fMap () = transform.linear() * cloud_in[i].getVector2fMap();
+        cloud_out[i].getVector2fMap () = transform * cloud_in[i].getVector2fMap();
       }
     }
     else
@@ -339,7 +339,7 @@ transformPointCloud(const pcl::PointCloud<pcl::PointXY> &cloud_in,
           {
             continue;
           }
-          cloud_out[i].getVector2fMap () = transform.linear() * cloud_in[i].getVector2fMap();
+          cloud_out[i].getVector2fMap () = transform * cloud_in[i].getVector2fMap();
       }
     }
   }

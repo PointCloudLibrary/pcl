@@ -443,7 +443,7 @@ namespace pcl
                       const Eigen::Affine2f& transform, 
                       bool copy_all_fields = true);
 
-  /* \brief Transform a point with members x,y,z
+  /** \brief Transform a point with members x,y,z
     * \param[in] point the point to transform
     * \param[out] transform the transformation to apply
     * \return the transformed point
