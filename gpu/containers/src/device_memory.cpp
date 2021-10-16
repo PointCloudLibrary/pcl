@@ -227,7 +227,6 @@ pcl::gpu::DeviceMemory::create(std::size_t sizeBytes_arg)
     cudaSafeCall(cudaMalloc(&data_, sizeBytes_));
 
     refcount_ = new std::atomic<int>(1);
-    //refcount_->store(1);
   }
 }
 
@@ -386,8 +385,7 @@ pcl::gpu::DeviceMemory2D::create(int rows_arg, int colsBytes_arg)
 
     cudaSafeCall(cudaMallocPitch((void**)&data_, &step_, colsBytes_, rows_));
 
-    refcount_ = new std::atomic<int>;
-    refcount_->store(1);
+    refcount_ = new std::atomic<int>(1);
   }
 }
 
