@@ -246,7 +246,7 @@ pcl::gpu::DeviceMemory::copyTo(DeviceMemory& other) const
 void
 pcl::gpu::DeviceMemory::release()
 {
-  if (refcount_ && refcount_->fetch_sub(1, std::memory_order_seq_cst) == 1) {
+  if (refcount_ && refcount_->fetch_sub(1) == 1) {
     delete refcount_;
     cudaSafeCall(cudaFree(data_));
   }
@@ -394,7 +394,7 @@ pcl::gpu::DeviceMemory2D::create(int rows_arg, int colsBytes_arg)
 void
 pcl::gpu::DeviceMemory2D::release()
 {
-  if (refcount_ && refcount_->fetch_sub(1, std::memory_order_seq_cst) == 1) {
+  if (refcount_ && refcount_->fetch_sub(1) == 1) {
     delete refcount_;
     cudaSafeCall(cudaFree(data_));
   }
