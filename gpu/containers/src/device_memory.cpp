@@ -36,13 +36,11 @@
 
 #include <pcl/gpu/containers/device_memory.h>
 #include <pcl/gpu/utils/safe_call.hpp>
+#include <pcl/pcl_macros.h>
 
 #include <cuda_runtime_api.h>
 
 #include <cassert>
-
-#define HAVE_CUDA
-//#include <pcl_config.h>
 
 #if !defined(HAVE_CUDA)
 
@@ -163,8 +161,8 @@ pcl::gpu::DeviceMemory2D::empty() const
 
 //////////////////////////    XADD    ///////////////////////////////
 
-PCL_DEPRECATED(1, 15, "Removed in favour of c++11 atomics")
 template <typename _Tp>
+PCL_DEPRECATED(1, 15, "Removed in favour of c++11 atomics")
 static inline _Tp
 CV_XADD(std::atomic<_Tp>* addr,std::atomic< _Tp> delta)
 {
