@@ -161,6 +161,19 @@ pcl::gpu::DeviceMemory2D::empty() const
 
 #else
 
+//////////////////////////    XADD    ///////////////////////////////
+
+PCL_DEPRECATED(1, 15, "Removed in favour of c++11 atomics")
+template <typename _Tp>
+static inline _Tp
+CV_XADD(std::atomic<_Tp>* addr,std::atomic< _Tp> delta)
+{
+  _Tp tmp = addr->fetch_add(delta);
+  return tmp;
+}
+
+////////////////////////    DeviceArray    /////////////////////////////
+
 pcl::gpu::DeviceMemory::DeviceMemory()
 : data_(nullptr), sizeBytes_(0), refcount_(nullptr)
 {}
@@ -183,7 +196,7 @@ pcl::gpu::DeviceMemory::DeviceMemory(const DeviceMemory& other_arg)
 , refcount_(other_arg.refcount_)
 {
   if (refcount_)
-    refcount_->fetch_add(1, std::memory_order_seq_cst);
+    refcount_->fetch_add(1);
 }
 
 pcl::gpu::DeviceMemory&
@@ -191,7 +204,7 @@ pcl::gpu::DeviceMemory::operator=(const pcl::gpu::DeviceMemory& other_arg)
 {
   if (this != &other_arg) {
     if (other_arg.refcount_)
-      refcount_->fetch_add(1, std::memory_order_seq_cst);
+      refcount_->fetch_add(1);
     release();
 
     data_ = other_arg.data_;
@@ -215,8 +228,8 @@ pcl::gpu::DeviceMemory::create(std::size_t sizeBytes_arg)
 
     cudaSafeCall(cudaMalloc(&data_, sizeBytes_));
 
-    refcount_ = new std::atomic<int>;
-    refcount_->store(1);
+    refcount_ = new std::atomic<int>(1);
+    //refcount_->store(1);
   }
 }
 
@@ -339,7 +352,7 @@ pcl::gpu::DeviceMemory2D::DeviceMemory2D(const DeviceMemory2D& other_arg)
 , refcount_(other_arg.refcount_)
 {
   if (refcount_)
-    refcount_->fetch_add(1, std::memory_order_seq_cst);
+    refcount_->fetch_add(1);
 }
 
 pcl::gpu::DeviceMemory2D&
@@ -347,7 +360,7 @@ pcl::gpu::DeviceMemory2D::operator=(const pcl::gpu::DeviceMemory2D& other_arg)
 {
   if (this != &other_arg) {
     if (other_arg.refcount_)
-      refcount_->fetch_add(1, std::memory_order_seq_cst);
+      refcount_->fetch_add(1);
     release();
 
     colsBytes_ = other_arg.colsBytes_;
