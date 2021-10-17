@@ -447,6 +447,30 @@ TEST (SampleConsensusModelNormalPlane, SIMD_countWithinDistance) // Test if all 
   }
 }
 
+TEST (SampleConsensusModelPlane, OptimizeFarFromOrigin)
+{ // Test if the model can successfully optimize a plane that is far from the origin
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  Eigen::Vector3d x(-0.435197968, 0.598251061, -0.672828654);
+  Eigen::Vector3d y(-0.547340139, 0.417556627,  0.725303548);
+  Eigen::Vector3d z( 0.714857680, 0.683916759,  0.145727023); // This is the normal of the plane
+  Eigen::Vector3d center(7380.86467, -8350.60056617, 4324.22814107);
+  for(double i=-0.5; i<0.5; i+=0.01)
+    for(double j=-0.5; j<0.5; j+=0.01) {
+      Eigen::Vector3d p = center + i*x + j*y;
+      cloud->emplace_back(p[0], p[1], p[2]);
+    }
+  pcl::SampleConsensusModelPlane<pcl::PointXYZ> model(cloud, true);
+  pcl::Indices inliers;
+  for(std::size_t i=0; i<cloud->size(); ++i) inliers.push_back(i);
+  Eigen::VectorXf coeffs(4); // Doesn't have to be initialized, the function doesn't use them
+  Eigen::VectorXf optimized_coeffs(4);
+  model.optimizeModelCoefficients(inliers, coeffs, optimized_coeffs);
+  EXPECT_NEAR(optimized_coeffs[0], z[0], 5e-6);
+  EXPECT_NEAR(optimized_coeffs[1], z[1], 5e-6);
+  EXPECT_NEAR(optimized_coeffs[2], z[2], 5e-6);
+  EXPECT_NEAR(optimized_coeffs[3], -z.dot(center), 5e-2);
+}
+
 int
 main (int argc, char** argv)
 {
