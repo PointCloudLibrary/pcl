@@ -339,7 +339,7 @@ TEST (PCL, PointXY)
   for (std::size_t i = 0;i < cloud_out.size () ;i++)
   {
     EXPECT_FLOAT_EQ(cloud_out[i].x, ((cloud_in[i].x * cosf(theta)) - (cloud_in[i].y * sinf(theta))));
-    EXPECT_FLOAT_EQ(cloud_out[i].y, ((cloud_in[i].x * sinf(theta)) + (cloud_in[i].y * cosf(theta))));
+    EXPECT_FLOAT_EQ(cloud_out[i].y, ((cloud_in[i].x * cosf(theta)) + (cloud_in[i].y * sinf(theta))));
   }
 
   Eigen::Matrix<float, 2, 3> C {{1, 0, 1},
@@ -354,7 +354,7 @@ TEST (PCL, PointXY)
   for (std::size_t i = 0; i < c_out.size ();i++)
   {
     EXPECT_FLOAT_EQ(c_out[i].x, (c_in[i].x + 1));
-    EXPECT_FLOAT_EQ(c_out[i].x, (c_in[i].x + 2));
+    EXPECT_FLOAT_EQ(c_out[i].y, (c_in[i].y + 2));
   }
 }
 
