@@ -309,8 +309,8 @@ TEST (PCL, OrganizedTransform)
 
 TEST (PCL, PointXY)
 {
-  Eigen::Matrix<float, 2, 2> A {{1.0, 0.0},
-                                 {0.0, -1.0}};
+  Eigen::Matrix<float, 2, 2> A; 
+  A << 1.0, 0.0, 0.0, -1.0;
   Eigen::Affine2f tf{A};
   pcl::PointCloud<pcl::PointXY> p,q;
 
@@ -326,8 +326,8 @@ TEST (PCL, PointXY)
   }
 
   float theta = 30.0;
-  Eigen::Matrix<float, 2, 2> B {{cosf(theta),-sinf(theta)},
-                                 {cosf(theta), sinf(theta)}};
+  Eigen::Matrix<float, 2, 2> B;
+  B << cosf(theta),-sinf(theta), cosf(theta), sinf(theta);
   Eigen::Affine2f tf2{B};
   pcl::PointCloud<pcl::PointXY> cloud_in,cloud_out;
 
@@ -342,8 +342,8 @@ TEST (PCL, PointXY)
     EXPECT_FLOAT_EQ(cloud_out[i].y, ((cloud_in[i].x * cosf(theta)) + (cloud_in[i].y * sinf(theta))));
   }
 
-  Eigen::Matrix<float, 2, 3> C {{1, 0, 1},
-                               {0, 1, 2}};
+  Eigen::Matrix<float, 2, 3> C; 
+  C << 1, 0, 1, 0, 1, 2;
   Eigen::Affine2f t{C};
   pcl::PointCloud<pcl::PointXY> c_in,c_out;
 
