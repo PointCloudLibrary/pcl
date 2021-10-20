@@ -437,6 +437,14 @@ namespace pcl
     return (transformPointCloudWithNormals<PointT, float> (cloud_in, cloud_out, offset, rotation, copy_all_fields));
   }
 
+  /** \brief Apply an affine transform on a pointcloud having points of type PointXY
+    * \param[in] cloud_in the input point cloud
+    * \param[out] cloud_out the resultant output point cloud
+    * \param[in] transform an affine transformation 
+    * \param[in] copy_all_fields flag that controls whether the contents of the fields
+    * (other than x, y, z) should be copied into the new transformed cloud
+    * \ingroup common
+    */
   void
   transformPointCloud(const pcl::PointCloud<pcl::PointXY>& cloud_in, 
                       pcl::PointCloud<pcl::PointXY>& cloud_out, 
