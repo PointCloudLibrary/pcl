@@ -2245,16 +2245,20 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::IntensityGradient,
     (float, gradient_y, gradient_y)
     (float, gradient_z, gradient_z)
 )
-{
 
-  /** \brief Metafunction to check if a given point type has a given field.
-   *
-   *  Example usage at run-time:
-   *
-   *  \code
-   *  bool curvature_available = pcl::traits::has_field<PointT, pcl::fields::curvature>::value;
-   *  \endcode
-   *
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointWithScale,
+    (float, x, x)
+    (float, y, y)
+    (float, z, z)
+    (float, scale, scale)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::PointSurfel,
+    (float, x, x)
+    (float, y, y)
+    (float, z, z)
+    (float, normal_x, normal_x)
+    (float, normal_y, normal_y)
     (float, normal_z, normal_z)
     (std::uint32_t, rgba, rgba)
     (float, radius, radius)
