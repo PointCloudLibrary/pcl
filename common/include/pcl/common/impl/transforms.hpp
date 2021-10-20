@@ -54,6 +54,7 @@
 #include <cstddef>
 #include <vector>
 
+
 namespace pcl
 {
 
@@ -334,12 +335,11 @@ transformPointCloud(const pcl::PointCloud<pcl::PointXY> &cloud_in,
     {
       for (std::size_t i = 0; i < cloud_out.size (); ++i)
       {
-        if (!std::isfinite(cloud_in[i].x) ||
-            !std::isfinite(cloud_in[i].y))
-          {
-            continue;
-          }
-          cloud_out[i].getVector2fMap () = transform * cloud_in[i].getVector2fMap();
+        if (!std::isfinite(cloud_in[i].x) || !std::isfinite(cloud_in[i].y))
+        {
+          continue;
+        }
+        cloud_out[i].getVector2fMap () = transform * cloud_in[i].getVector2fMap();
       }
     }
   }
