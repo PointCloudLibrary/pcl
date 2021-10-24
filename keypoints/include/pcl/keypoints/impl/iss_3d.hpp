@@ -413,6 +413,16 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 
   bool* feat_max = new bool [input_->size()];
 
+  // configure input_ search tree for max check
+  auto input_search_tree = this->getSearchMethod();
+
+  if (input_->size() != surface_->size())
+  {
+    typename pcl::search::KdTree<PointInT>::Ptr temp_kdtree(new pcl::search::KdTree<PointInT>);
+    temp_kdtree->setInputCloud(input_);
+    input_search_tree = temp_kdtree;
+  }
+
 #pragma omp parallel for \
   default(none) \
   shared(feat_max) \
@@ -428,7 +438,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
       std::vector<float> nn_distances;
       int n_neighbors;
 
-      this->searchForNeighbors (index, non_max_radius_, nn_indices, nn_distances);
+      input_search_tree->radiusSearch(index, non_max_radius_, nn_indices, nn_distances);
 
       n_neighbors = static_cast<int> (nn_indices.size ());
 
