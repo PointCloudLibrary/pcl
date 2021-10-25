@@ -162,9 +162,8 @@ pcl::gpu::DeviceMemory2D::empty() const
 //////////////////////////    XADD    ///////////////////////////////
 
 template <typename _Tp>
-PCL_DEPRECATED(1, 15, "Removed in favour of c++11 atomics")
-static inline _Tp
-CV_XADD(std::atomic<_Tp>* addr,std::atomic< _Tp> delta)
+PCL_DEPRECATED(1, 16, "Removed in favour of c++11 atomics")
+static inline _Tp CV_XADD(std::atomic<_Tp>* addr,std::atomic< _Tp> delta)
 {
   _Tp tmp = addr->fetch_add(delta);
   return tmp;
