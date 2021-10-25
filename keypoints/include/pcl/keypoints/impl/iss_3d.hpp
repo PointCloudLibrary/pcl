@@ -425,7 +425,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 
 #pragma omp parallel for \
   default(none) \
-  shared(feat_max) \
+  shared(feat_max, input_search_tree) \
   num_threads(threads_)
   for (int index = 0; index < int (input_->size ()); index++)
   {
