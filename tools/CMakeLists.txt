@@ -272,7 +272,7 @@ else()
 
     if(WITH_OPENNI)
       PCL_ADD_EXECUTABLE(pcl_openni_save_image COMPONENT ${SUBSYS_NAME} SOURCES openni_save_image.cpp)
-      target_link_libraries(pcl_openni_save_image pcl_common pcl_io pcl_visualization)
+      target_link_libraries(pcl_openni_save_image pcl_common pcl_io pcl_visualization Boost::date_time)
 
       PCL_ADD_EXECUTABLE(pcl_pcd_grabber_viewer COMPONENT ${SUBSYS_NAME} SOURCES pcd_grabber_viewer.cpp BUNDLE)
       target_link_libraries(pcl_pcd_grabber_viewer pcl_common pcl_io pcl_kdtree pcl_visualization)
@@ -293,7 +293,7 @@ else()
       target_link_libraries(pcl_openni_viewer pcl_common pcl_io pcl_kdtree pcl_visualization)
 
       PCL_ADD_EXECUTABLE(pcl_openni_image COMPONENT ${SUBSYS_NAME} SOURCES openni_image.cpp BUNDLE)
-      target_link_libraries(pcl_openni_image pcl_common pcl_io pcl_kdtree pcl_visualization)
+      target_link_libraries(pcl_openni_image pcl_common pcl_io pcl_kdtree pcl_visualization Boost::date_time)
     endif()
 
     if(WITH_OPENNI2)
