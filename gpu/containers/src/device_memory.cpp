@@ -36,7 +36,7 @@
 
 #include <pcl/gpu/containers/device_memory.h>
 #include <pcl/gpu/utils/safe_call.hpp>
-#include <pcl/pcl_macros.h>
+#include <pcl/pcl_macros.h> // used for PCL_DEPRECATED
 
 #include <cuda_runtime_api.h>
 
@@ -201,7 +201,7 @@ pcl::gpu::DeviceMemory::operator=(const pcl::gpu::DeviceMemory& other_arg)
 {
   if (this != &other_arg) {
     if (other_arg.refcount_)
-      refcount_->fetch_add(1);
+      other_arg.refcount_->fetch_add(1);
     release();
 
     data_ = other_arg.data_;
@@ -356,7 +356,7 @@ pcl::gpu::DeviceMemory2D::operator=(const pcl::gpu::DeviceMemory2D& other_arg)
 {
   if (this != &other_arg) {
     if (other_arg.refcount_)
-      refcount_->fetch_add(1);
+      other_arg.refcount_->fetch_add(1);
     release();
 
     colsBytes_ = other_arg.colsBytes_;
