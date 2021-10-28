@@ -827,6 +827,7 @@ namespace pcl
   };
 
 
+
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointXY& p);
   /** \brief A 2D point structure representing Euclidean xy coordinates.
     * \ingroup common
