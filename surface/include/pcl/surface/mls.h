@@ -152,7 +152,7 @@ namespace pcl
       */
     PCL_DEPRECATED(1, 15, "use calculatePrincipalCurvatures() instead")
     inline Eigen::Vector2f
-    calculatePrincipleCurvatures (const double u, const double v) const { return calculatePrincipalCurvatures(u, v); };
+    calculatePrincipleCurvatures (const double u, const double v) const; // When removing this, also remove the implementation in mls.hpp!
 
     /** \brief Project a point orthogonal to the polynomial surface.
       * \param[in] u The u-coordinate of the point in local MLS frame.
