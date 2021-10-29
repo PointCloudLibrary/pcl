@@ -293,7 +293,7 @@
   <customwidget>
    <class>PCLQVTKWidget</class>
    <extends>QOpenGLWidget</extends>
-   <header location="global">pcl/visualization/qvtk_compatability.h</header>
+   <header location="global">pcl/visualization/qvtk_compatibility.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
