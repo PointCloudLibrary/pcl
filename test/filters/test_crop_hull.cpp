@@ -101,6 +101,7 @@ class PCLCropHullTestFixture : public ::testing::Test
       baseOffsetList_.emplace_back(10, 1, 5);
       baseOffsetList_.emplace_back(10, 5, 1);
     }
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
   protected:
 
     void

@@ -16,6 +16,7 @@ using namespace pcl;
 
 //////////////////////////////////////////////
 struct pointCloudTest : public testing::Test {
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
   protected:
     PointCloud<PointXYZ> cloud;
 };
