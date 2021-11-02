@@ -230,6 +230,7 @@ set(srcs
   src/robot_eye_grabber.cpp
   src/auto_io.cpp
   src/io_exception.cpp
+  src/tim_grabber.cpp
   ${VTK_IO_SOURCE}
   ${OPENNI_GRABBER_SOURCES}
   ${OPENNI2_GRABBER_SOURCES}
@@ -281,6 +282,7 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/robot_eye_grabber.h"
   "include/pcl/${SUBSYS_NAME}/point_cloud_image_extractors.h"
   "include/pcl/${SUBSYS_NAME}/io_exception.h"
+  "include/pcl/${SUBSYS_NAME}/tim_grabber.h"
   ${VTK_IO_INCLUDES}
   ${OPENNI_GRABBER_INCLUDES}
   ${OPENNI2_GRABBER_INCLUDES}
