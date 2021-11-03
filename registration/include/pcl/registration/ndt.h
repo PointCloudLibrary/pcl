@@ -168,13 +168,13 @@ public:
     outlier_ratio_ = outlier_ratio;
   }
 
-  /** \brief Get the registration alignment probability.
-   * \return transformation probability
+  /** \brief Get the registration alignment likelihood.
+   * \return transformation likelihood
    */
   inline double
-  getTransformationProbability() const
+  getTransformationLikelihood() const
   {
-    return trans_probability_;
+    return trans_likelihood_;
   }
 
   /** \brief Get the number of iterations required to calculate alignment.
@@ -257,10 +257,10 @@ protected:
     target_cells_.filter(true);
   }
 
-  /** \brief Compute derivatives of probability function w.r.t. the transformation
+  /** \brief Compute derivatives of likelihood function w.r.t. the transformation
    * vector. \note Equation 6.10, 6.12 and 6.13 [Magnusson 2009]. \param[out]
-   * score_gradient the gradient vector of the probability function w.r.t. the
-   * transformation vector \param[out] hessian the hessian matrix of the probability
+   * score_gradient the gradient vector of the likelihood function w.r.t. the
+   * transformation vector \param[out] hessian the hessian matrix of the likelihood
    * function w.r.t. the transformation vector \param[in] trans_cloud transformed point
    * cloud \param[in] transform the current transform vector \param[in] compute_hessian
    * flag to calculate hessian, unnessissary for step calculation.
@@ -272,11 +272,11 @@ protected:
                      const Eigen::Matrix<double, 6, 1>& transform,
                      bool compute_hessian = true);
 
-  /** \brief Compute individual point contirbutions to derivatives of probability
+  /** \brief Compute individual point contirbutions to derivatives of likelihood
    * function w.r.t. the transformation vector. \note Equation 6.10, 6.12 and 6.13
    * [Magnusson 2009]. \param[in,out] score_gradient the gradient vector of the
-   * probability function w.r.t. the transformation vector \param[in,out] hessian the
-   * hessian matrix of the probability function w.r.t. the transformation vector
+   * likelihood function w.r.t. the transformation vector \param[in,out] hessian the
+   * hessian matrix of the likelihood function w.r.t. the transformation vector
    * \param[in] x_trans transformed point minus mean of occupied covariance voxel
    * \param[in] c_inv covariance of occupied covariance voxel
    * \param[in] compute_hessian flag to calculate hessian, unnessissary for step
@@ -308,18 +308,18 @@ protected:
   void
   computePointDerivatives(const Eigen::Vector3d& x, bool compute_hessian = true);
 
-  /** \brief Compute hessian of probability function w.r.t. the transformation vector.
+  /** \brief Compute hessian of likelihood function w.r.t. the transformation vector.
    * \note Equation 6.13 [Magnusson 2009].
-   * \param[out] hessian the hessian matrix of the probability function w.r.t. the
+   * \param[out] hessian the hessian matrix of the likelihood function w.r.t. the
    * transformation vector \param[in] trans_cloud transformed point cloud
    */
   void
   computeHessian(Eigen::Matrix<double, 6, 6>& hessian,
                  const PointCloudSource& trans_cloud);
 
-  /** \brief Compute hessian of probability function w.r.t. the transformation vector.
+  /** \brief Compute hessian of likelihood function w.r.t. the transformation vector.
    * \note Equation 6.13 [Magnusson 2009].
-   * \param[out] hessian the hessian matrix of the probability function w.r.t. the
+   * \param[out] hessian the hessian matrix of the likelihood function w.r.t. the
    * transformation vector \param[in] trans_cloud transformed point cloud \param[in]
    * transform the current transform vector
    */
@@ -333,9 +333,9 @@ protected:
     computeHessian(hessian, trans_cloud);
   }
 
-  /** \brief Compute individual point contirbutions to hessian of probability function
+  /** \brief Compute individual point contirbutions to hessian of likelihood function
    * w.r.t. the transformation vector. \note Equation 6.13 [Magnusson 2009].
-   * \param[in,out] hessian the hessian matrix of the probability function w.r.t. the
+   * \param[in,out] hessian the hessian matrix of the likelihood function w.r.t. the
    * transformation vector \param[in] x_trans transformed point minus mean of occupied
    * covariance voxel \param[in] c_inv covariance of occupied covariance voxel
    */
@@ -344,7 +344,7 @@ protected:
                 const Eigen::Vector3d& x_trans,
                 const Eigen::Matrix3d& c_inv) const;
 
-  /** \brief Compute line search step length and update transform and probability
+  /** \brief Compute line search step length and update transform and likelihood
    * derivatives using More-Thuente method. \note Search Algorithm [More, Thuente 1994]
    * \param[in] transform initial transformation vector, \f$ x \f$ in Equation 1.3
    * (Moore, Thuente 1994) and \f$ \vec{p} \f$ in Algorithm 2 [Magnusson 2009]
@@ -483,9 +483,9 @@ protected:
    * distribution, Equation 6.8 [Magnusson 2009]. */
   double gauss_d1_, gauss_d2_;
 
-  /** \brief The probability score of the transform applied to the input cloud,
+  /** \brief The likelihood score of the transform applied to the input cloud,
    * Equation 6.9 and 6.10 [Magnusson 2009]. */
-  double trans_probability_;
+  double trans_likelihood_;
 
   /** \brief Precomputed Angular Gradient
    *
