@@ -119,6 +119,15 @@ else()
   unset(HAVE_QVTK)
 endif()
 
+# Overwrite VTK_LIBRARIES with only the set we actually want for VTK >= 9.0.
+# Otherwise, it will contain ALL available components.
+if(NOT (VTK_VERSION VERSION_LESS 9.0))
+  set(VTK_LIBRARIES)
+  foreach(vtkComponent ${PCL_VTK_COMPONENTS})
+    list(APPEND VTK_LIBRARIES VTK::${vtkComponent})
+  endforeach()
+endif()
+
 if(PCL_SHARED_LIBS OR (NOT (PCL_SHARED_LIBS) AND NOT (VTK_BUILD_SHARED_LIBS)))
   if(VTK_VERSION VERSION_LESS 9.0)
     if(VTK_USE_FILE)
