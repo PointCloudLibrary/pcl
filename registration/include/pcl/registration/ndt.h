@@ -177,6 +177,19 @@ public:
     return trans_likelihood_;
   }
 
+  /** \brief Get the registration alignment probability.
+   * \return transformation probability
+   */
+  PCL_DEPRECATED(1,
+                 15,
+                 "The method `getTransformationProbability` is deprecated. Please use "
+                 "`getTransformationLikelihood` instead.")
+  inline double
+  getTransformationProbability() const
+  {
+    return trans_likelihood_;
+  }
+
   /** \brief Get the number of iterations required to calculate alignment.
    * \return final number of iterations
    */
@@ -486,6 +499,10 @@ protected:
   /** \brief The likelihood score of the transform applied to the input cloud,
    * Equation 6.9 and 6.10 [Magnusson 2009]. */
   double trans_likelihood_;
+
+  /** \brief The likelihood score of the transform applied to the input cloud,
+   * Equation 6.9 and 6.10 [Magnusson 2009]. */
+  double& trans_probability_ = trans_likelihood_;
 
   /** \brief Precomputed Angular Gradient
    *
