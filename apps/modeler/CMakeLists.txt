@@ -119,10 +119,6 @@ PCL_ADD_EXECUTABLE(
     ${impl_incs})
 
 target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_kdtree pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search ${QTX}::Widgets)
-#TODO: Update when CMAKE 3.10 is available
-if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
-  target_link_libraries("${EXE_NAME}" VTK::GUISupportQt)
-endif()
 
 # Install include files
 PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${incs})
