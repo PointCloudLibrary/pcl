@@ -51,7 +51,6 @@ NormalDistributionsTransform<PointSource, PointTarget>::NormalDistributionsTrans
 , outlier_ratio_(0.55)
 , gauss_d1_()
 , gauss_d2_()
-, trans_likelihood_()
 {
   reg_name_ = "NormalDistributionsTransform";
 
