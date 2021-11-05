@@ -43,6 +43,8 @@
 
 namespace pcl {
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 template <typename PointSource, typename PointTarget>
 NormalDistributionsTransform<PointSource, PointTarget>::NormalDistributionsTransform()
 : target_cells_()
@@ -51,7 +53,9 @@ NormalDistributionsTransform<PointSource, PointTarget>::NormalDistributionsTrans
 , outlier_ratio_(0.55)
 , gauss_d1_()
 , gauss_d2_()
+, trans_likelihood_()
 {
+#pragma GCC diagnostic pop
   reg_name_ = "NormalDistributionsTransform";
 
   // Initializes the gaussian fitting parameters (eq. 6.8) [Magnusson 2009]
