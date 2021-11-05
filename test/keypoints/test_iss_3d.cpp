@@ -193,7 +193,6 @@ TEST(PCL, ISSKeypoint3D_HigherResolutionSearchSurface_WBE)
   iss_detector.setSearchSurface(cloud);
 
   iss_detector.compute(keypoints);
-  io::savePCDFileASCII("_PMDcorrect_keypoints.txt", keypoints);
 
   //
   // Compare to previously validated output
