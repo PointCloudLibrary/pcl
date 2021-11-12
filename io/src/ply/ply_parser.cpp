@@ -157,7 +157,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
       std::string name;
       std::size_t count;
       char space_element_name, space_name_count;
-      stringstream >> space_element_name >> std::ws >> name >> space_name_count >> std::ws >> count;
+      stringstream >> space_element_name >> std::ws >> name >> space_name_count >> std::ws >> count >> std::ws;
       if (!stringstream ||
           !stringstream.eof () ||
           !isspace (space_element_name) ||
