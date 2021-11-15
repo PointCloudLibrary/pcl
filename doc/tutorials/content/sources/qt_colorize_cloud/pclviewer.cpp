@@ -1,7 +1,9 @@
 #include "pclviewer.h"
 #include "ui_pclviewer.h"
 
+#if VTK_MAJOR_VERSION > 8
 #include <vtkGenericOpenGLRenderWindow.h>
+#endif
 
 PCLViewer::PCLViewer (QWidget *parent) :
     QMainWindow (parent),
