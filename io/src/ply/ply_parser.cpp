@@ -113,8 +113,12 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
       std::string format_string, version;
       char space_format_format_string, space_format_string_version;
       stringstream >> space_format_format_string >> std::ws >> format_string >> space_format_string_version >> std::ws >> version;
+      if (!stringstream.eof ())
+      {
+        stringstream >> std::ws;
+	warning_callback_ (line_number_, "parse warning: trailing whitespaces in the header");
+      }
       if (!stringstream ||
-          !stringstream.eof () ||
           !isspace (space_format_format_string) ||
           !isspace (space_format_string_version))
       {
@@ -157,9 +161,13 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
       std::string name;
       std::size_t count;
       char space_element_name, space_name_count;
-      stringstream >> space_element_name >> std::ws >> name >> space_name_count >> std::ws >> count >> std::ws;
+      stringstream >> space_element_name >> std::ws >> name >> space_name_count >> std::ws >> count;
+      if (!stringstream.eof ())
+      {
+        stringstream >> std::ws;
+	warning_callback_ (line_number_, "parse warning: trailing whitespaces in the header");
+      }
       if (!stringstream ||
-          !stringstream.eof () ||
           !isspace (space_element_name) ||
           !isspace (space_name_count))
       {
