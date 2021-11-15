@@ -1,7 +1,9 @@
 #include "pclviewer.h"
 #include "ui_pclviewer.h"
 
+#if VTK_MAJOR_VERSION > 8
 #include <vtkGenericOpenGLRenderWindow.h>
+#endif
 
 PCLViewer::PCLViewer (QWidget *parent) :
   QMainWindow (parent),
@@ -13,7 +15,7 @@ PCLViewer::PCLViewer (QWidget *parent) :
   // Setup the cloud pointer
   cloud.reset (new PointCloudT);
   // The number of points in the cloud
-  cloud->points.resize (200);
+  cloud->resize (200);
 
   // The default color
   red   = 128;
