@@ -43,14 +43,6 @@
 
 namespace pcl {
 
-// these pragmas for GCC suppress a deprecation warning caused by initialization of
-// trans_probability_
-#ifdef __GNUC__
-#ifndef __clang__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-#endif
 template <typename PointSource, typename PointTarget>
 NormalDistributionsTransform<PointSource, PointTarget>::NormalDistributionsTransform()
 : target_cells_()
@@ -61,11 +53,6 @@ NormalDistributionsTransform<PointSource, PointTarget>::NormalDistributionsTrans
 , gauss_d2_()
 , trans_likelihood_()
 {
-#ifdef __GNUC__
-#ifndef __clang__
-#pragma GCC diagnostic pop
-#endif
-#endif
   reg_name_ = "NormalDistributionsTransform";
 
   // Initializes the gaussian fitting parameters (eq. 6.8) [Magnusson 2009]

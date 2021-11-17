@@ -498,15 +498,14 @@ protected:
 
   /** \brief The likelihood score of the transform applied to the input cloud,
    * Equation 6.9 and 6.10 [Magnusson 2009]. */
-  double trans_likelihood_;
-
-  /** \brief The likelihood score of the transform applied to the input cloud,
-   * Equation 6.9 and 6.10 [Magnusson 2009]. */
-  PCL_DEPRECATED(1,
-                 15,
-                 "The member `trans_probability_` is deprecated. Please use "
-                 "`trans_likelihood_` instead.")
-  double& trans_probability_ = trans_likelihood_;
+  union {
+    PCL_DEPRECATED(1,
+                   16,
+                   "The member `trans_probability_` is deprecated. Please use "
+                   "`trans_likelihood_` instead.")
+    double trans_probability_;
+    double trans_likelihood_;
+  };
 
   /** \brief Precomputed Angular Gradient
    *
