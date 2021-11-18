@@ -1,6 +1,10 @@
 #include "pclviewer.h"
 #include "ui_pclviewer.h"
 
+#if VTK_MAJOR_VERSION > 8
+#include <vtkGenericOpenGLRenderWindow.h>
+#endif
+
 PCLViewer::PCLViewer (QWidget *parent) :
   QMainWindow (parent),
   ui (new Ui::PCLViewer)
@@ -11,7 +15,7 @@ PCLViewer::PCLViewer (QWidget *parent) :
   // Setup the cloud pointer
   cloud.reset (new PointCloudT);
   // The number of points in the cloud
-  cloud->points.resize (200);
+  cloud->resize (200);
 
   // The default color
   red   = 128;
@@ -30,11 +34,19 @@ PCLViewer::PCLViewer (QWidget *parent) :
     point.b = blue;
   }
 
-  // Set up the QVTK window
-  viewer.reset (new pcl::visualization::PCLVisualizer ("viewer", false));
-  ui->qvtkWidget->SetRenderWindow (viewer->getRenderWindow ());
-  viewer->setupInteractor (ui->qvtkWidget->GetInteractor (), ui->qvtkWidget->GetRenderWindow ());
-  ui->qvtkWidget->update ();
+  // Set up the QVTK window  
+#if VTK_MAJOR_VERSION > 8
+  auto renderer = vtkSmartPointer<vtkRenderer>::New();
+  auto renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
+  renderWindow->AddRenderer(renderer);
+  viewer.reset(new pcl::visualization::PCLVisualizer(renderer, renderWindow, "viewer", false));
+  ui->qvtkWidget->setRenderWindow(viewer->getRenderWindow());
+  viewer->setupInteractor(ui->qvtkWidget->interactor(), ui->qvtkWidget->renderWindow());
+#else
+  viewer.reset(new pcl::visualization::PCLVisualizer("viewer", false));
+  ui->qvtkWidget->SetRenderWindow(viewer->getRenderWindow());
+  viewer->setupInteractor(ui->qvtkWidget->GetInteractor(), ui->qvtkWidget->GetRenderWindow());
+#endif
 
   // Connect "random" button and the function
   connect (ui->pushButton_random,  SIGNAL (clicked ()), this, SLOT (randomButtonPressed ()));
@@ -53,7 +65,8 @@ PCLViewer::PCLViewer (QWidget *parent) :
   viewer->addPointCloud (cloud, "cloud");
   pSliderValueChanged (2);
   viewer->resetCamera ();
-  ui->qvtkWidget->update ();
+  
+  refreshView();
 }
 
 void
@@ -70,7 +83,7 @@ PCLViewer::randomButtonPressed ()
   }
 
   viewer->updatePointCloud (cloud, "cloud");
-  ui->qvtkWidget->update ();
+  refreshView();
 }
 
 void
@@ -84,14 +97,24 @@ PCLViewer::RGBsliderReleased ()
     point.b = blue;
   }
   viewer->updatePointCloud (cloud, "cloud");
-  ui->qvtkWidget->update ();
+  refreshView();
 }
 
 void
 PCLViewer::pSliderValueChanged (int value)
 {
   viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, value, "cloud");
-  ui->qvtkWidget->update ();
+  refreshView();
+}
+
+void
+PCLViewer::refreshView()
+{
+#if VTK_MAJOR_VERSION > 8
+  ui->qvtkWidget->renderWindow()->Render();
+#else
+  ui->qvtkWidget->update();
+#endif
 }
 
 void
