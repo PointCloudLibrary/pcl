@@ -37,6 +37,10 @@
  */
 
 #include <vtkVersion.h>
+#if VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION == 0
+#include <limits> // This must be included before vtkDoubleArray.h
+#endif
+#include <vtkDoubleArray.h>
 #include <vtkSmartPointer.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRenderWindow.h>
@@ -47,7 +51,6 @@
 #include <vtkContextScene.h>
 #include <vtkAxis.h>
 #include <vtkPlot.h>
-#include <vtkDoubleArray.h>
 #include <vtkTable.h>
 
 #include <fstream>
