@@ -181,9 +181,9 @@ public:
    * \return transformation probability
    */
   PCL_DEPRECATED(1,
-                 15,
-                 "The method `getTransformationProbability` is deprecated. Please use "
-                 "`getTransformationLikelihood` instead.")
+                 16,
+                 "The method `getTransformationProbability` was renamed to "
+                 "`getTransformationLikelihood`.")
   inline double
   getTransformationProbability() const
   {
