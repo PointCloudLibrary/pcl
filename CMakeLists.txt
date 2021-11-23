@@ -379,40 +379,11 @@ if(WITH_VTK)
   endif()
 endif()
 
-#VTK can depend on Qt and search for its required version, so search after so we can overwrite Qt5_FOUND if the version we require is not found.
-option(WITH_QT "Build QT Front-End" TRUE)
+# VTK can depend on Qt and search for its required version, so search after so we can overwrite Qt5_FOUND/Qt6_FOUND if the version we require is not found.
+set(WITH_QT "AUTO" CACHE STRING "Build QT Front-End (AUTO|YES|QT6|QT5|NO)")
+set_property(CACHE WITH_QT PROPERTY STRINGS "AUTO" "YES" "QT6" "QT5" "NO")
 if(WITH_QT)
-  find_package(Qt5 5.9.5 COMPONENTS Concurrent OpenGL Widgets)
-  set(QT_DISABLE_PRECATED_BEFORE_VAL "0x050900")
-  
-  if(Qt5_FOUND)
-    message(STATUS "Qt5 version: ${Qt5_VERSION}")
-    set(QT5_FOUND ${Qt5_FOUND})
-    #Set Cmake Auto features to skip .hh files
-    if(POLICY CMP0100)
-      cmake_policy(SET CMP0100 OLD)
-    endif()
-    
-    #If building CUDA required libraries
-    #Change Qt5::Core fixed -fPIC flags to conditionally only CXX
-    #TODO: To be removed when QT is >5.14.1
-    if(BUILD_CUDA OR BUILD_GPU)
-      if(Qt5Widgets_VERSION VERSION_LESS 5.14.1)
-        get_property(core_options TARGET Qt5::Core PROPERTY INTERFACE_COMPILE_OPTIONS)
-        string(REPLACE "-fPIC" "$<IF:$<COMPILE_LANGUAGE:CXX>,-fPIC,>"  new_core_options ${core_options})
-        set_property(TARGET Qt5::Core PROPERTY INTERFACE_COMPILE_OPTIONS ${new_core_options})
-      endif()
-    endif()
-    
-    get_property(core_def TARGET Qt5::Core PROPERTY INTERFACE_COMPILE_DEFINITIONS)
-    list(APPEND core_def "QT_DISABLE_DEPRECATED_BEFORE=${QT_DISABLE_PRECATED_BEFORE_VAL}")
-    set_property(TARGET Qt5::Core PROPERTY INTERFACE_COMPILE_DEFINITIONS ${core_def})
-
-  else()
-    message(STATUS "Qt5 is not found.")
-  endif()
-else()
-  set(Qt5_FOUND FALSE)
+  include("${PCL_SOURCE_DIR}/cmake/pcl_find_qt.cmake")
 endif()
 
 #Find PCAP

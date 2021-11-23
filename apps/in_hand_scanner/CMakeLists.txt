@@ -2,7 +2,7 @@ set(SUBSUBSYS_NAME in_hand_scanner)
 set(SUBSUBSYS_DESC "In-hand scanner for small objects")
 set(SUBSUBSYS_DEPS     common     features     io     kdtree apps)
 set(SUBSUBSYS_LIBS pcl_common pcl_features pcl_io pcl_kdtree)
-set(SUBSUBSYS_EXT_DEPS Qt5 OpenGL OpenGL_GLU openni)
+set(SUBSUBSYS_EXT_DEPS ${QTX} OpenGL OpenGL_GLU openni)
 
 ################################################################################
 
@@ -91,7 +91,7 @@ PCL_ADD_EXECUTABLE(
     ${IMPL_INCS}
     ${UI}
   BUNDLE)
-target_link_libraries("${EXE_NAME}" ${SUBSUBSYS_LIBS} ${OPENGL_LIBRARIES} Qt5::Concurrent Qt5::Widgets Qt5::OpenGL)
+target_link_libraries("${EXE_NAME}" ${SUBSUBSYS_LIBS} ${OPENGL_LIBRARIES} ${QTX}::Concurrent ${QTX}::Widgets ${QTX}::OpenGL)
 
 pcl_add_includes("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${INCS})
 pcl_add_includes("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}/impl" ${IMPL_INCS})
@@ -107,7 +107,7 @@ PCL_ADD_EXECUTABLE(
     ${OI_INCS}
   BUNDLE)
 
-target_link_libraries(pcl_offline_integration ${SUBSUBSYS_LIBS} ${OPENGL_LIBRARIES} Qt5::Concurrent Qt5::Widgets Qt5::OpenGL)
+target_link_libraries(pcl_offline_integration ${SUBSUBSYS_LIBS} ${OPENGL_LIBRARIES} ${QTX}::Concurrent ${QTX}::Widgets ${QTX}::OpenGL)
 
 # Add to the compound apps target
 list(APPEND PCL_APPS_ALL_TARGETS ${PCL_IN_HAND_SCANNER_ALL_TARGETS})
