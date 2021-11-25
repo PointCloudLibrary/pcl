@@ -37,6 +37,7 @@
 #include <pcl/gpu/containers/device_memory.h>
 #include <pcl/gpu/utils/safe_call.hpp>
 #include <pcl/pcl_macros.h> // used for PCL_DEPRECATED
+#include <pcl/pcl_config.h> // used for HAVE_CUDA
 
 #include <cuda_runtime_api.h>
 
