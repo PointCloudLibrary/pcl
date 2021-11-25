@@ -321,7 +321,7 @@ GrabCut<PointT>::initGraph ()
       std::vector<float>::const_iterator weights_it  = n_link.weights.begin ();
       for (auto indices_it = n_link.indices.cbegin (); indices_it != n_link.indices.cend (); ++indices_it, ++weights_it)
       {
-        if ((*indices_it != point_index) && (*indices_it > -1))
+        if ((*indices_it != point_index) && (*indices_it != UNAVAILABLE))
         {
           addEdge (graph_nodes_[i_point], graph_nodes_[*indices_it], *weights_it, *weights_it);
         }

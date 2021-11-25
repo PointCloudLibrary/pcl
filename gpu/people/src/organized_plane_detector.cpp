@@ -38,10 +38,6 @@
 
 #include <pcl/console/print.h>
 
-#include <pcl/filters/voxel_grid.h>
-
-#include <pcl/features/integral_image_normal.h>
-
 #include <pcl/common/transforms.h>
 
 #include <pcl/segmentation/organized_multi_plane_segmentation.h>

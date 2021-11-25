@@ -1,25 +1,7 @@
 set(SUBSUBSYS_NAME point_cloud_editor)
 set(SUBSUBSYS_DESC "Point Cloud Editor - Simple editor for 3D point clouds")
 set(SUBSUBSYS_DEPS common filters io apps)
-
-# QT5 Found?
-if(NOT Qt5_FOUND)
-  set(DEFAULT AUTO_OFF)
-  set(REASON "Qt5 was not found.")
-elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
-  set(DEFAULT TRUE)
-  set(REASON)
-endif()
-
-# Find OpenGL
-if(NOT OPENGL_FOUND)
-  set(DEFAULT AUTO_OFF)
-  set(REASON "OpenGL was not found.")
-elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
-  set(DEFAULT TRUE)
-  set(REASON)
-endif()
-
+set(SUBSUBSYS_EXT_DEPS vtk ${QTX} OpenGL)
 
 # Default to not building for now
 if(${DEFAULT} STREQUAL "TRUE")
@@ -27,25 +9,22 @@ if(${DEFAULT} STREQUAL "TRUE")
 endif()
 
 PCL_SUBSUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
-PCL_SUBSUBSYS_DEPEND(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${SUBSYS_DEPS})
+PCL_SUBSUBSYS_DEPEND(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${SUBSUBSYS_DEPS} EXT_DEPS ${SUBSUBSYS_EXT_DEPS})
 PCL_ADD_DOC(${SUBSUBSYS_NAME})
 
 if(NOT build)
   return()
 endif()
 
-set(MOC_INCS
-  "include/pcl/apps/${SUBSUBSYS_NAME}/cloudEditorWidget.h"
-  "include/pcl/apps/${SUBSUBSYS_NAME}/mainWindow.h"
-  "include/pcl/apps/${SUBSUBSYS_NAME}/denoiseParameterForm.h"
-  "include/pcl/apps/${SUBSUBSYS_NAME}/statisticsDialog.h"
-)
-
 set(RSRC
   resources/pceditor_resources.qrc
 )
 
-set(INCS ${MOC_INCS}
+set(INCS
+  "include/pcl/apps/${SUBSUBSYS_NAME}/cloudEditorWidget.h"
+  "include/pcl/apps/${SUBSUBSYS_NAME}/mainWindow.h"
+  "include/pcl/apps/${SUBSUBSYS_NAME}/denoiseParameterForm.h"
+  "include/pcl/apps/${SUBSUBSYS_NAME}/statisticsDialog.h"
   "include/pcl/apps/${SUBSUBSYS_NAME}/cloud.h"
   "include/pcl/apps/${SUBSUBSYS_NAME}/cloudTransformTool.h"
   "include/pcl/apps/${SUBSUBSYS_NAME}/command.h"
@@ -92,18 +71,22 @@ set(SRCS
   src/denoiseParameterForm.cpp
 )
 
-qt5_wrap_cpp(MOC_SRCS ${MOC_INCS} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
-qt5_add_resources(RESOURCES_SRCS ${RSRC})
-
 include_directories(
   "${CMAKE_CURRENT_BINARY_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
 set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
-PCL_ADD_EXECUTABLE(${EXE_NAME} COMPONENT ${SUBSUBSYS_NAME} SOURCES ${SRCS} ${RESOURCES_SRCS} ${MOC_SRCS} ${INCS})
+PCL_ADD_EXECUTABLE(
+  ${EXE_NAME}
+  COMPONENT
+    ${SUBSUBSYS_NAME}
+  SOURCES
+    ${SRCS}
+    ${RSRC}
+    ${INCS})
 
-target_link_libraries("${EXE_NAME}" Qt5::Widgets Qt5::OpenGL ${OPENGL_LIBRARIES} ${BOOST_LIBRARIES} pcl_common pcl_io pcl_filters)
+target_link_libraries("${EXE_NAME}" ${QTX}::Widgets ${QTX}::OpenGL ${OPENGL_LIBRARIES} ${BOOST_LIBRARIES} pcl_common pcl_io pcl_filters)
 
 PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSYS_NAME}/${SUBSUBSYS_NAME}" ${INCS})
 PCL_MAKE_PKGCONFIG(${EXE_NAME} COMPONENT ${SUBSUBSYS_NAME} DESC ${SUBSUBSYS_DESC})

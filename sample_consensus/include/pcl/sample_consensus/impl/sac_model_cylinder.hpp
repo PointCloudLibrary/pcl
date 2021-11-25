@@ -41,7 +41,7 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CYLINDER_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CYLINDER_H_
 
-#include <pcl/sample_consensus/eigen.h>
+#include <unsupported/Eigen/NonLinearOptimization> // for LevenbergMarquardt
 #include <pcl/sample_consensus/sac_model_cylinder.h>
 #include <pcl/common/common.h> // for getAngle3D
 #include <pcl/common/concatenate.h>
@@ -129,6 +129,9 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::computeModelCoefficients (
   if (model_coefficients[6] > radius_max_ || model_coefficients[6] < radius_min_)
     return (false);
 
+  PCL_DEBUG ("[pcl::SampleConsensusModelCylinder::computeModelCoefficients] Model is (%g,%g,%g,%g,%g,%g,%g).\n",
+             model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3],
+             model_coefficients[4], model_coefficients[5], model_coefficients[6]);
   return (true);
 }
 
@@ -355,6 +358,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
       pp.matrix () = line_pt + k * line_dir;
 
       Eigen::Vector4f dir = p - pp;
+      dir[3] = 0.0f;
       dir.normalize ();
 
       // Calculate the projection of the point onto the cylinder
@@ -385,6 +389,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
       pp.matrix () = line_pt + k * line_dir;
 
       Eigen::Vector4f dir = p - pp;
+      dir[3] = 0.0f;
       dir.normalize ();
 
       // Calculate the projection of the point onto the cylinder
@@ -463,13 +468,24 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::isModelValid (const Eigen::V
     angle_diff = (std::min) (angle_diff, M_PI - angle_diff);
     // Check whether the current cylinder model satisfies our angle threshold criterion with respect to the given axis
     if (angle_diff > eps_angle_)
+    {
+      PCL_DEBUG ("[pcl::SampleConsensusModelCylinder::isModelValid] Angle between cylinder direction and given axis is too large.\n");
       return (false);
+    }
   }
 
   if (radius_min_ != -std::numeric_limits<double>::max() && model_coefficients[6] < radius_min_)
+  {
+    PCL_DEBUG ("[pcl::SampleConsensusModelCylinder::isModelValid] Radius is too small: should be larger than %g, but is %g.\n",
+               radius_min_, model_coefficients[6]);
     return (false);
+  }
   if (radius_max_ != std::numeric_limits<double>::max() && model_coefficients[6] > radius_max_)
+  {
+    PCL_DEBUG ("[pcl::SampleConsensusModelCylinder::isModelValid] Radius is too big: should be smaller than %g, but is %g.\n",
+               radius_max_, model_coefficients[6]);
     return (false);
+  }
 
   return (true);
 }

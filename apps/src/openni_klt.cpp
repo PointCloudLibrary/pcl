@@ -41,8 +41,9 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/harris_2d.h>
 #include <pcl/tracking/pyramidal_klt.h>
-#include <pcl/visualization/boost.h>
 #include <pcl/visualization/image_viewer.h>
+
+#include <boost/date_time/posix_time/posix_time.hpp> // for to_iso_string, local_time
 
 #include <mutex>
 
@@ -251,14 +252,14 @@ public:
       if (tracker_->getInitialized() && cloud_) {
         if (points_mutex_.try_lock()) {
           keypoints_ = tracker_->getTrackedPoints();
-          points_status_ = tracker_->getPointsToTrackStatus();
+          points_status_ = tracker_->getStatusOfPointsToTrack();
           points_mutex_.unlock();
         }
 
         std::vector<float> markers;
         markers.reserve(keypoints_->size() * 2);
         for (std::size_t i = 0; i < keypoints_->size(); ++i) {
-          if (points_status_->indices[i] < 0)
+          if ((*points_status_)[i] < 0)
             continue;
           const pcl::PointUV& uv = (*keypoints_)[i];
           markers.push_back(uv.u);
@@ -295,7 +296,7 @@ public:
   typename pcl::tracking::PyramidalKLTTracker<PointType>::Ptr tracker_;
   pcl::PointCloud<pcl::PointUV>::ConstPtr keypoints_;
   pcl::PointIndicesConstPtr points_;
-  pcl::PointIndicesConstPtr points_status_;
+  pcl::shared_ptr<const std::vector<int>> points_status_;
   int counter_;
 };
 

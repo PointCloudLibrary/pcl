@@ -70,7 +70,7 @@ Basic Usage
   * :ref:`compiling_pcl_posix`
 
      =======  ======
-     |mi_11|  Title: **Compiling PCL from source on POSIX compliant systems**
+     |mi_12|  Title: **Compiling PCL from source on POSIX compliant systems**
 
               Author: *Victor Lamoine*
 
@@ -79,7 +79,7 @@ Basic Usage
               In this tutorial, we will explain how to compile PCL from sources on POSIX/Unix systems.
      =======  ======
 
-     .. |mi_11| image:: images/pcl_logo.png
+     .. |mi_12| image:: images/pcl_logo.png
                :height: 120px
 
   * :ref:`building_pcl`

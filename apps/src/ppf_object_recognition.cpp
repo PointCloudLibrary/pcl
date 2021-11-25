@@ -86,8 +86,7 @@ main(int argc, char** argv)
   while (cloud_scene->size() > 0.3 * nr_points) {
     seg.setInputCloud(cloud_scene);
     seg.segment(*inliers, *coefficients);
-    PCL_INFO("Plane inliers: %zu\n",
-             static_cast<std::size_t>(inliers->indices.size()));
+    PCL_INFO("Plane inliers: %zu\n", static_cast<std::size_t>(inliers->indices.size()));
     if (inliers->indices.size() < 50000)
       break;
 

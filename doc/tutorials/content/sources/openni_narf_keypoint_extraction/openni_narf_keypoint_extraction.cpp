@@ -4,7 +4,7 @@
 #include <iostream>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/range_image/range_image_planar.h>
-#include <pcl/common/common_headers.h>
+#include <pcl/common/time.h> // for pcl::getTime
 #include <pcl/visualization/range_image_visualizer.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/features/range_image_border_extractor.h>
@@ -156,7 +156,7 @@ int main (int argc, char** argv)
       int width = depth_image_ptr->getWidth (), height = depth_image_ptr->getHeight ();
       float center_x = width/2, center_y = height/2;
       float focal_length_x = depth_image_ptr->getFocalLength (), focal_length_y = focal_length_x;
-      float original_angular_resolution = asinf (0.5f*float (width)/float (focal_length_x)) / (0.5f*float (width));
+      // float original_angular_resolution = asinf (0.5f*float (width)/float (focal_length_x)) / (0.5f*float (width));
       float desired_angular_resolution = angular_resolution;
       range_image_planar.setDepthImage (depth_map, width, height, center_x, center_y,
                                         focal_length_x, focal_length_y, desired_angular_resolution);

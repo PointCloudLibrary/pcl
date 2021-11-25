@@ -80,7 +80,7 @@ namespace pcl
   {
     namespace details
     {
-      vtkIdType fillCells(std::vector<int>& lookup, const std::vector<pcl::Vertices>& vertices, vtkSmartPointer<vtkCellArray> cell_array, int max_size_of_polygon);
+      PCL_EXPORTS vtkIdType fillCells(std::vector<int>& lookup, const std::vector<pcl::Vertices>& vertices, vtkSmartPointer<vtkCellArray> cell_array, int max_size_of_polygon);
     }
 
     /** \brief PCL Visualizer main class.
@@ -1694,6 +1694,20 @@ namespace pcl
         addCube (float x_min, float x_max, float y_min, float y_max, float z_min, float z_max,
                  double r = 1.0, double g = 1.0, double b = 1.0, const std::string &id = "cube", int viewport = 0);
 
+        /** \brief Add an ellipsoid from the given parameters
+          * \param[in] transform a transformation to apply to the ellipsoid from 0,0,0
+          * \param[in] radius_x the ellipsoid's radius along its local x-axis
+          * \param[in] radius_y the ellipsoid's radius along its local y-axis
+          * \param[in] radius_z the ellipsoid's radius along its local z-axis
+          * \param[in] id the ellipsoid id/name (default: "ellipsoid")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
+          */
+        bool
+        addEllipsoid (const Eigen::Isometry3d &transform,
+                      double radius_x, double radius_y, double radius_z,
+                      const std::string &id = "ellipsoid",
+                      int viewport = 0);
+
         /** \brief Changes the visual representation for all actors to surface representation. */
         void
         setRepresentationToSurfaceForAllActors ();
@@ -1794,8 +1808,9 @@ namespace pcl
         getCameraFile () const;
 
         /** \brief Update camera parameters and render. */
-        void
-        updateCamera ();
+        PCL_DEPRECATED(1,15,"updateCamera will be removed, as it does nothing.")
+        inline void
+        updateCamera () {};
 
         /** \brief Reset camera parameters and render. */
         void

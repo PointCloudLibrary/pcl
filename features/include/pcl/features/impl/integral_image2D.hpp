@@ -158,7 +158,7 @@ IntegralImage2D<DataType, Dimension>::computeIntegralImages (
 {
   ElementType* previous_row = &first_order_integral_image_[0];
   ElementType* current_row  = previous_row + (width_ + 1);
-  memset (previous_row, 0, sizeof (ElementType) * (width_ + 1));
+  *previous_row = ElementType::Zero(width_ + 1);
 
   unsigned* count_previous_row = &finite_values_integral_image_[0];
   unsigned* count_current_row  = count_previous_row + (width_ + 1);
@@ -189,7 +189,7 @@ IntegralImage2D<DataType, Dimension>::computeIntegralImages (
   {
     SecondOrderType* so_previous_row = &second_order_integral_image_[0];
     SecondOrderType* so_current_row  = so_previous_row + (width_ + 1);
-    memset (so_previous_row, 0, sizeof (SecondOrderType) * (width_ + 1));
+    *so_previous_row = SecondOrderType::Zero(width_ + 1);
 
     SecondOrderType so_element;
     for (unsigned rowIdx = 0; rowIdx < height_; ++rowIdx, data += row_stride,

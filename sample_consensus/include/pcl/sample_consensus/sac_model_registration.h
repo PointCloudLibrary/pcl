@@ -43,7 +43,6 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/pcl_base.h>
-#include <pcl/sample_consensus/eigen.h>
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/common/eigen.h>
@@ -235,9 +234,12 @@ namespace pcl
       {
         // Compute the principal directions via PCA
         Eigen::Vector4f xyz_centroid;
-        Eigen::Matrix3f covariance_matrix = Eigen::Matrix3f::Zero ();
+        Eigen::Matrix3f covariance_matrix;
 
-        computeMeanAndCovarianceMatrix (*cloud, covariance_matrix, xyz_centroid);
+        if (computeMeanAndCovarianceMatrix (*cloud, covariance_matrix, xyz_centroid) == 0) {
+          PCL_ERROR ("[pcl::SampleConsensusModelRegistration::computeSampleDistanceThreshold] No valid points in cloud!\n");
+          return;
+        }
 
         // Check if the covariance matrix is finite or not.
         for (int i = 0; i < 3; ++i)
@@ -266,7 +268,10 @@ namespace pcl
         // Compute the principal directions via PCA
         Eigen::Vector4f xyz_centroid;
         Eigen::Matrix3f covariance_matrix;
-        computeMeanAndCovarianceMatrix (*cloud, indices, covariance_matrix, xyz_centroid);
+        if (computeMeanAndCovarianceMatrix (*cloud, indices, covariance_matrix, xyz_centroid) == 0) {
+          PCL_ERROR ("[pcl::SampleConsensusModelRegistration::computeSampleDistanceThreshold] No valid points given by cloud and indices!\n");
+          return;
+        }
 
         // Check if the covariance matrix is finite or not.
         for (int i = 0; i < 3; ++i)

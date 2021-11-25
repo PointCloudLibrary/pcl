@@ -278,11 +278,11 @@ namespace pcl
 
 
       /** \brief Get the sfn list. */
-      inline std::vector<int>
+      inline pcl::Indices
       getSFN () const { return (sfn_); }
 
       /** \brief Get the ffn list. */
-      inline std::vector<int>
+      inline pcl::Indices
       getFFN () const { return (ffn_); }
 
     protected:
@@ -315,8 +315,8 @@ namespace pcl
       struct nnAngle
       {
         double angle;
-        int index;
-        int nnIndex;
+        pcl::index_t index;
+        pcl::index_t nnIndex;
         bool visible;
       };
 
@@ -339,15 +339,15 @@ namespace pcl
       /** \brief A list of angles to neighbors **/
       std::vector<nnAngle> angles_;
       /** \brief Index of the current query point **/
-      int R_;
+      pcl::index_t R_;
       /** \brief List of point states **/
       std::vector<int> state_;
       /** \brief List of sources **/
-      std::vector<int> source_;
+      pcl::Indices source_;
       /** \brief List of fringe neighbors in one direction **/
-      std::vector<int> ffn_;
+      pcl::Indices ffn_;
       /** \brief List of fringe neighbors in other direction **/
-      std::vector<int> sfn_;
+      pcl::Indices sfn_;
       /** \brief Connected component labels for each point **/
       std::vector<int> part_;
       /** \brief Points on the outer edge from which the mesh has to be grown **/
@@ -356,7 +356,7 @@ namespace pcl
       /** \brief Flag to set if the current point is free **/
       bool is_current_free_;
       /** \brief Current point's index **/
-      int current_index_;
+      pcl::index_t current_index_;
       /** \brief Flag to set if the previous point is the first fringe neighbor **/
       bool prev_is_ffn_;
       /** \brief Flag to set if the next point is the second fringe neighbor **/
@@ -370,7 +370,7 @@ namespace pcl
       /** \brief Flag to set if the second fringe neighbor was changed **/
       bool changed_2nd_fn_;
       /** \brief New boundary point **/
-      int new2boundary_;
+      pcl::index_t new2boundary_;
       
       /** \brief Flag to set if the next neighbor was already connected in the previous step.
         * To avoid inconsistency it should not be connected again.
@@ -429,9 +429,9 @@ namespace pcl
         */
       void 
       connectPoint (std::vector<pcl::Vertices> &polygons, 
-                    const int prev_index, 
-                    const int next_index, 
-                    const int next_next_index, 
+                    const pcl::index_t prev_index, 
+                    const pcl::index_t next_index, 
+                    const pcl::index_t next_next_index, 
                     const Eigen::Vector2f &uvn_current, 
                     const Eigen::Vector2f &uvn_prev, 
                     const Eigen::Vector2f &uvn_next);
@@ -456,7 +456,7 @@ namespace pcl
         * \param[out] polygons the polygon mesh to be updated
         */
       inline void
-      addTriangle (int a, int b, int c, std::vector<pcl::Vertices> &polygons)
+      addTriangle (pcl::index_t a, pcl::index_t b, pcl::index_t c, std::vector<pcl::Vertices> &polygons)
       {
         triangle_.vertices.resize (3);
         if (consistent_ordering_)

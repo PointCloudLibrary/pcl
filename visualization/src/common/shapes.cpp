@@ -47,6 +47,8 @@
 #include <vtkDiskSource.h>
 #include <vtkPlaneSource.h>
 #include <vtkCubeSource.h>
+#include <vtkParametricEllipsoid.h>
+#include <vtkParametricFunctionSource.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 vtkSmartPointer<vtkDataSet> 
@@ -304,6 +306,31 @@ pcl::visualization::createLine (const Eigen::Vector4f &pt1, const Eigen::Vector4
 
   return (line->GetOutput ());
 }
+//////////////////////////////////////////////////////////////////////////////////////////////
+vtkSmartPointer<vtkDataSet>
+pcl::visualization::createEllipsoid (const Eigen::Isometry3d &transform,
+                                     double radius_x, double radius_y, double radius_z)
+{
+  const vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New ();
+  const Eigen::Matrix4d trMatrix = transform.matrix ().transpose (); // Eigen is col-major while vtk is row-major, so transpose it.
+  t->SetMatrix (trMatrix.data ());
+
+  vtkSmartPointer<vtkParametricEllipsoid> ellipsoid = vtkSmartPointer<vtkParametricEllipsoid>::New ();
+  ellipsoid->SetXRadius (radius_x);
+  ellipsoid->SetYRadius (radius_y);
+  ellipsoid->SetZRadius (radius_z);
+
+  vtkSmartPointer<vtkParametricFunctionSource> s_ellipsoid = vtkSmartPointer<vtkParametricFunctionSource>::New ();
+  s_ellipsoid->SetParametricFunction (ellipsoid);
+
+  vtkSmartPointer<vtkTransformPolyDataFilter> tf = vtkSmartPointer<vtkTransformPolyDataFilter>::New ();
+  tf->SetTransform (t);
+  tf->SetInputConnection (s_ellipsoid->GetOutputPort ());
+  tf->Update ();
+
+  return (tf->GetOutput ());
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::allocVtkUnstructuredGrid (vtkSmartPointer<vtkUnstructuredGrid> &polydata)

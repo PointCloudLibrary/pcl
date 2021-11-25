@@ -154,7 +154,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeTransformation(
       update_visualizer_(output, pcl::Indices(), *target_, pcl::Indices());
 
     const double cos_angle =
-        0.5 * transformation_.template block<3, 3>(0, 0).trace() - 1;
+        0.5 * (transformation_.template block<3, 3>(0, 0).trace() - 1);
     const double translation_sqr =
         transformation_.template block<3, 1>(0, 3).squaredNorm();
 
@@ -286,13 +286,14 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeAngleDerivatives(
     angular_hessian_.row(3).noalias() =
         Eigen::Vector4d((sx * cy * cz), (-sx * cy * sz), (sx * sy), 0.0f); // b3
 
+    // The sign of 'sx * sz' in c2 is incorrect in the thesis, and is fixed here.
     angular_hessian_.row(4).noalias() = Eigen::Vector4d(
         (-sx * cz - cx * sy * sz), (sx * sz - cx * sy * cz), 0, 0.0f); // c2
     angular_hessian_.row(5).noalias() = Eigen::Vector4d(
         (cx * cz - sx * sy * sz), (-sx * sy * cz - cx * sz), 0, 0.0f); // c3
 
     angular_hessian_.row(6).noalias() =
-        Eigen::Vector4d((-cy * cz), (cy * sz), (sy), 0.0f); // d1
+        Eigen::Vector4d((-cy * cz), (cy * sz), (-sy), 0.0f); // d1
     angular_hessian_.row(7).noalias() =
         Eigen::Vector4d((-sx * sy * cz), (sx * sy * sz), (sx * cy), 0.0f); // d2
     angular_hessian_.row(8).noalias() =

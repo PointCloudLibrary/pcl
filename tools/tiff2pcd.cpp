@@ -48,7 +48,7 @@
 #include <pcl/console/print.h>
 #include <pcl/io/pcd_io.h>
 
-#include <pcl/io/vtk_lib_io.h>
+#include <vtkImageData.h> // for vtkImageData
 #include <vtkSmartPointer.h>
 #include <vtkImageViewer2.h>
 #include <vtkTIFFReader.h>

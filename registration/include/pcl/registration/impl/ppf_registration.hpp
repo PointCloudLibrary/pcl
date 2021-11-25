@@ -154,9 +154,14 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation(
             float alpha =
                 search_method_->alpha_m_[model_reference_index][model_point_index] -
                 alpha_s;
-            unsigned int alpha_discretized = static_cast<unsigned int>(
-                std::floor(alpha) +
-                std::floor(M_PI / search_method_->getAngleDiscretizationStep()));
+            if (alpha < -M_PI) {
+              alpha += (2 * M_PI);
+            }
+            else if (alpha > M_PI) {
+              alpha -= (2 * M_PI);
+            }
+            unsigned int alpha_discretized = static_cast<unsigned int>(std::floor(
+                (alpha + M_PI) / search_method_->getAngleDiscretizationStep()));
             accumulator_array[model_reference_index][alpha_discretized]++;
           }
         }
@@ -200,10 +205,9 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation(
         rotation_mg);
     Eigen::Affine3f max_transform =
         transform_sg.inverse() *
-        Eigen::AngleAxisf((static_cast<float>(max_votes_j) -
-                           std::floor(static_cast<float>(M_PI) /
-                                      search_method_->getAngleDiscretizationStep())) *
-                              search_method_->getAngleDiscretizationStep(),
+        Eigen::AngleAxisf((static_cast<float>(max_votes_j + 0.5) *
+                               search_method_->getAngleDiscretizationStep() -
+                           M_PI),
                           Eigen::Vector3f::UnitX()) *
         transform_mg;
 

@@ -41,8 +41,8 @@
 #include <pcl/common/io.h> // for copyPointCloud
 #include <pcl/common/distances.h>
 #include <pcl/common/time.h>
-#include <pcl/search/pcl_search.h>
-#include <pcl/search/impl/flann_search.hpp>
+#include <pcl/search/kdtree.h> // for pcl::search::KdTree
+#include <pcl/search/flann_search.h> // for pcl::search::FlannSearch
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 

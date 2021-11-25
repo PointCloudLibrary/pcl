@@ -9,7 +9,7 @@ if(WITH_OPENNI)
 
 
   PCL_ADD_EXECUTABLE(pcl_openni_pcd_recorder COMPONENT ${SUBSYS_NAME} SOURCES openni_pcd_recorder.cpp)
-  target_link_libraries(pcl_openni_pcd_recorder pcl_common pcl_io)
+  target_link_libraries(pcl_openni_pcd_recorder pcl_common pcl_io Boost::date_time)
 endif()
 
 PCL_ADD_EXECUTABLE(pcl_pcd_convert_NaN_nan COMPONENT ${SUBSYS_NAME} SOURCES pcd_convert_NaN_nan.cpp)

@@ -37,6 +37,9 @@
  */
 
 #include <vtkVersion.h>
+#if VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION == 0
+#include <limits> // This must be included before vtkPolyData.h
+#endif
 #include <vtkPolyData.h>
 #include <vtkCleanPolyData.h>
 #include <vtkSmartPointer.h>

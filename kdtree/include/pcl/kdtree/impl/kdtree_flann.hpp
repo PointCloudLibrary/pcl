@@ -54,6 +54,16 @@ pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (bool sorted)
   , param_k_ (::flann::SearchParams (-1 , epsilon_))
   , param_radius_ (::flann::SearchParams (-1, epsilon_, sorted))
 {
+  if (!std::is_same<std::size_t, pcl::index_t>::value) {
+    const auto message = "FLANN is not optimized for current index type. Will incur "
+                         "extra allocations and copy\n";
+    if (std::is_same<int, pcl::index_t>::value) {
+      PCL_DEBUG(message); // since this has been the default behavior till PCL 1.12
+    }
+    else {
+      PCL_WARN(message);
+    }
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -128,6 +138,97 @@ pcl::KdTreeFLANN<PointT, Dist>::setInputCloud (const PointCloudConstPtr &cloud, 
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
+namespace pcl {
+namespace detail {
+// Replace using constexpr in C++17
+template <class IndexT,
+          class A,
+          class B,
+          class C,
+          class D,
+          class F,
+          CompatWithFlann<IndexT> = true>
+int
+knn_search(A& index, B& query, C& k_indices, D& dists, unsigned int k, F& params)
+{
+  // Wrap k_indices vector (no data allocation)
+  ::flann::Matrix<index_t> k_indices_mat(&k_indices[0], 1, k);
+  return index.knnSearch(query, k_indices_mat, dists, k, params);
+}
+
+template <class IndexT,
+          class A,
+          class B,
+          class C,
+          class D,
+          class F,
+          NotCompatWithFlann<IndexT> = true>
+int
+knn_search(A& index, B& query, C& k_indices, D& dists, unsigned int k, F& params)
+{
+  std::vector<std::size_t> indices(k);
+  k_indices.resize(k);
+  // Wrap indices vector (no data allocation)
+  ::flann::Matrix<std::size_t> indices_mat(&indices[0], 1, k);
+  auto ret = index.knnSearch(query, indices_mat, dists, k, params);
+  std::copy(indices.cbegin(), indices.cend(), k_indices.begin());
+  return ret;
+}
+
+template <class IndexT, class A, class B, class F, CompatWithFlann<IndexT> = true>
+int
+knn_search(A& index,
+           B& query,
+           std::vector<Indices>& k_indices,
+           std::vector<std::vector<float>>& dists,
+           unsigned int k,
+           F& params)
+{
+  return index.knnSearch(query, k_indices, dists, k, params);
+}
+
+template <class IndexT, class A, class B, class F, NotCompatWithFlann<IndexT> = true>
+int
+knn_search(A& index,
+           B& query,
+           std::vector<Indices>& k_indices,
+           std::vector<std::vector<float>>& dists,
+           unsigned int k,
+           F& params)
+{
+  std::vector<std::vector<std::size_t>> indices;
+  // flann will resize accordingly
+  auto ret = index.knnSearch(query, indices, dists, k, params);
+
+  k_indices.resize(indices.size());
+  {
+    auto it = indices.cbegin();
+    auto jt = k_indices.begin();
+    for (; it != indices.cend(); ++it, ++jt) {
+      jt->resize(it->size());
+      std::copy(it->cbegin(), it->cend(), jt->begin());
+    }
+  }
+  return ret;
+}
+} // namespace detail
+template <class FlannIndex,
+          class Query,
+          class Indices,
+          class Distances,
+          class SearchParams>
+int
+knn_search(const FlannIndex& index,
+           const Query& query,
+           Indices& indices,
+           Distances& dists,
+           unsigned int k,
+           const SearchParams& params)
+{
+  return detail::knn_search<pcl::index_t>(index, query, indices, dists, k, params);
+}
+} // namespace pcl
+
 template <typename PointT, typename Dist> int 
 pcl::KdTreeFLANN<PointT, Dist>::nearestKSearch (const PointT &point, unsigned int k,
                                                 Indices &k_indices,
@@ -147,12 +248,15 @@ pcl::KdTreeFLANN<PointT, Dist>::nearestKSearch (const PointT &point, unsigned in
   std::vector<float> query (dim_);
   point_representation_->vectorize (static_cast<PointT> (point), query);
 
-  ::flann::Matrix<index_t> k_indices_mat (&k_indices[0], 1, k);
+  // Wrap the k_distances vector (no data copy)
   ::flann::Matrix<float> k_distances_mat (&k_distances[0], 1, k);
-  // Wrap the k_indices and k_distances vectors (no data copy)
-  flann_index_->knnSearch (::flann::Matrix<float> (&query[0], 1, dim_),
-                           k_indices_mat, k_distances_mat,
-                           k, param_k_);
+
+  knn_search(*flann_index_,
+             ::flann::Matrix<float>(&query[0], 1, dim_),
+             k_indices,
+             k_distances_mat,
+             k,
+             param_k_);
 
   // Do mapping to original point cloud
   if (!identity_mapping_)
@@ -168,6 +272,97 @@ pcl::KdTreeFLANN<PointT, Dist>::nearestKSearch (const PointT &point, unsigned in
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
+namespace pcl {
+namespace detail {
+// Replace using constexpr in C++17
+template <class IndexT,
+          class A,
+          class B,
+          class C,
+          class D,
+          class F,
+          CompatWithFlann<IndexT> = true>
+int
+radius_search(A& index, B& query, C& k_indices, D& dists, float radius, F& params)
+{
+  std::vector<pcl::Indices> indices(1);
+  int neighbors_in_radius = index.radiusSearch(query, indices, dists, radius, params);
+  k_indices = std::move(indices[0]);
+  return neighbors_in_radius;
+}
+
+template <class IndexT,
+          class A,
+          class B,
+          class C,
+          class D,
+          class F,
+          NotCompatWithFlann<IndexT> = true>
+int
+radius_search(A& index, B& query, C& k_indices, D& dists, float radius, F& params)
+{
+  std::vector<std::vector<std::size_t>> indices(1);
+  int neighbors_in_radius = index.radiusSearch(query, indices, dists, radius, params);
+  k_indices.resize(indices[0].size());
+  std::copy(indices[0].cbegin(), indices[0].cend(), k_indices.begin());
+  return neighbors_in_radius;
+}
+
+template <class IndexT, class A, class B, class F, CompatWithFlann<IndexT> = true>
+int
+radius_search(A& index,
+              B& query,
+              std::vector<Indices>& k_indices,
+              std::vector<std::vector<float>>& dists,
+              float radius,
+              F& params)
+{
+  return index.radiusSearch(query, k_indices, dists, radius, params);
+}
+
+template <class IndexT, class A, class B, class F, NotCompatWithFlann<IndexT> = true>
+int
+radius_search(A& index,
+              B& query,
+              std::vector<Indices>& k_indices,
+              std::vector<std::vector<float>>& dists,
+              float radius,
+              F& params)
+{
+  std::vector<std::vector<std::size_t>> indices;
+  // flann will resize accordingly
+  auto ret = index.radiusSearch(query, indices, dists, radius, params);
+
+  k_indices.resize(indices.size());
+  {
+    auto it = indices.cbegin();
+    auto jt = k_indices.begin();
+    for (; it != indices.cend(); ++it, ++jt) {
+      jt->resize(it->size());
+      std::copy(it->cbegin(), it->cend(), jt->begin());
+    }
+  }
+  return ret;
+}
+} // namespace detail
+template <class FlannIndex,
+          class Query,
+          class Indices,
+          class Distances,
+          class SearchParams>
+int
+radius_search(const FlannIndex& index,
+              const Query& query,
+              Indices& indices,
+              Distances& dists,
+              float radius,
+              const SearchParams& params)
+{
+  return detail::radius_search<pcl::index_t>(
+      index, query, indices, dists, radius, params);
+}
+} // namespace pcl
+
 template <typename PointT, typename Dist> int
 pcl::KdTreeFLANN<PointT, Dist>::radiusSearch (const PointT &point, double radius, Indices &k_indices,
                                               std::vector<float> &k_sqr_dists, unsigned int max_nn) const
@@ -181,7 +376,6 @@ pcl::KdTreeFLANN<PointT, Dist>::radiusSearch (const PointT &point, double radius
   if (max_nn == 0 || max_nn > total_nr_points_)
     max_nn = total_nr_points_;
 
-  std::vector<Indices > indices(1);
   std::vector<std::vector<float> > dists(1);
 
   ::flann::SearchParams params (param_radius_);
@@ -190,13 +384,14 @@ pcl::KdTreeFLANN<PointT, Dist>::radiusSearch (const PointT &point, double radius
   else
     params.max_neighbors = max_nn;
 
-  int neighbors_in_radius = flann_index_->radiusSearch (::flann::Matrix<float> (&query[0], 1, dim_),
-      indices,
-      dists,
-      static_cast<float> (radius * radius),
-      params);
+  auto query_mat = ::flann::Matrix<float>(&query[0], 1, dim_);
+  int neighbors_in_radius = radius_search(*flann_index_,
+                                          query_mat,
+                                          k_indices,
+                                          dists,
+                                          static_cast<float>(radius * radius),
+                                          params);
 
-  k_indices = indices[0];
   k_sqr_dists = dists[0];
 
   // Do mapping to original point cloud

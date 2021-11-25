@@ -293,7 +293,14 @@ public:
   inline void
   setUseNormal(bool use_normal)
   {
-    use_normal_ = use_normal;
+    if (traits::has_normal_v<PointInT> || !use_normal) {
+      use_normal_ = use_normal;
+      return;
+    }
+    PCL_WARN("[pcl::%s::setUseNormal] "
+             "use_normal_ == true is not supported in this Point Type.\n",
+             getClassName().c_str());
+    use_normal_ = false;
   }
 
   /** \brief Get the value of use_normal_. */
@@ -461,7 +468,7 @@ protected:
   void
   computeTransformedPointCloudWithNormal(const StateT&, pcl::Indices&, PointCloudIn&)
   {
-    PCL_WARN("[pcl::%s::computeTransformedPointCloudWithoutNormal] "
+    PCL_WARN("[pcl::%s::computeTransformedPointCloudWithNormal] "
              "use_normal_ == true is not supported in this Point Type.\n",
              getClassName().c_str());
   }

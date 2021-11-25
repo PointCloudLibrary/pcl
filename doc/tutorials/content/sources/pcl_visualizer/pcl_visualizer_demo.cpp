@@ -3,7 +3,7 @@
 #include <iostream>
 #include <thread>
 
-#include <pcl/common/common_headers.h>
+#include <pcl/common/angles.h> // for pcl::deg2rad
 #include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>

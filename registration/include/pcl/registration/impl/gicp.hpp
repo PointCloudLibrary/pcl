@@ -41,7 +41,6 @@
 #ifndef PCL_REGISTRATION_IMPL_GICP_HPP_
 #define PCL_REGISTRATION_IMPL_GICP_HPP_
 
-#include <pcl/registration/boost.h>
 #include <pcl/registration/exceptions.h>
 
 namespace pcl {
@@ -187,9 +186,9 @@ template <typename PointSource, typename PointTarget>
 void
 GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
     estimateRigidTransformationBFGS(const PointCloudSource& cloud_src,
-                                    const std::vector<int>& indices_src,
+                                    const pcl::Indices& indices_src,
                                     const PointCloudTarget& cloud_tgt,
-                                    const std::vector<int>& indices_tgt,
+                                    const pcl::Indices& indices_tgt,
                                     Eigen::Matrix4f& transformation_matrix)
 {
   if (indices_src.size() < 4) // need at least 4 samples
@@ -420,8 +419,8 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformatio
 
   while (!converged_) {
     std::size_t cnt = 0;
-    std::vector<int> source_indices(indices_->size());
-    std::vector<int> target_indices(indices_->size());
+    pcl::Indices source_indices(indices_->size());
+    pcl::Indices target_indices(indices_->size());
 
     // guess corresponds to base_t and transformation_ to t
     Eigen::Matrix4d transform_R = Eigen::Matrix4d::Zero();

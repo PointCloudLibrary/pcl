@@ -52,6 +52,7 @@ struct FunctorFilterRandom : public testing::TestWithParam<std::uint32_t> {
 
   shared_ptr<PointCloud<PointXYZ>> cloud;
   PointCloud<PointXYZ> out_cloud, negative_cloud, positive_cloud;
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 TEST_P(FunctorFilterRandom, functioning)
@@ -172,6 +173,7 @@ struct FunctorFilterFunctionObject : public ::testing::Test {
     cloud.resize(2);
   }
   PointCloud<PointXYZ> cloud;
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 };
 TYPED_TEST_SUITE_P(FunctorFilterFunctionObject);
 

@@ -147,7 +147,7 @@ namespace pcl
     /** \brief Calculate the principal curvatures using the polynomial surface.
       * \param[in] u The u-coordinate of the point in local MLS frame.
       * \param[in] v The v-coordinate of the point in local MLS frame.
-      * \return The principal curvature [k1, k2] at the provided ub coordinates.
+      * \return The principal curvature [k1, k2] at the provided uv coordinates.
       * \note If an error occurs then 1e-5 is returned.
       */
     PCL_DEPRECATED(1, 15, "use calculatePrincipalCurvatures() instead")
@@ -206,7 +206,8 @@ namespace pcl
     inline MLSProjectionResults
     projectQueryPoint (ProjectionMethod method, int required_neighbors = 0) const;
 
-    /** \brief Smooth a given point and its neighborghood using Moving Least Squares.
+    /** \brief Smooth a given point and its neighborhood using Moving Least Squares.
+      * \param[in] cloud the input cloud, used together with index and nn_indices
       * \param[in] index the index of the query point in the input cloud
       * \param[in] nn_indices the set of nearest neighbors indices for pt
       * \param[in] search_radius the search radius used to find nearest neighbors for pt

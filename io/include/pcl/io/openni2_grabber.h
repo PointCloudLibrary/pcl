@@ -46,7 +46,6 @@
 #ifdef HAVE_OPENNI2
 
 #include <pcl/point_cloud.h>
-#include <pcl/io/boost.h>
 #include <pcl/io/grabber.h>
 #include <pcl/io/openni2/openni2_device.h>
 #include <string>

@@ -45,6 +45,9 @@
 #include <flann/algorithms/kmeans_index.h>
 
 #include <pcl/search/flann_search.h>
+#include <pcl/kdtree/kdtree_flann.h> // for radius_search, knn_search
+// @TODO: remove once constexpr makes it easy to have the function in the header only
+#include <pcl/kdtree/impl/kdtree_flann.hpp>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename FlannDistance>
@@ -123,9 +126,8 @@ pcl::search::FlannSearch<PointT, FlannDistance>::nearestKSearch (const PointT &p
     indices.resize (k,-1);
   if (dists.size() != static_cast<unsigned int> (k))
     dists.resize (k);
-  flann::Matrix<index_t> i (&indices[0],1,k);
   flann::Matrix<float> d (&dists[0],1,k);
-  int result = index_->knnSearch (m,i,d,k, p);
+  int result = knn_search(*index_, m, indices, d, k, p);
 
   delete [] data;
 
@@ -182,7 +184,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::nearestKSearch (
     p.sorted = sorted_results_;
     p.eps = eps_;
     p.checks = checks_;
-    index_->knnSearch (m,k_indices,k_sqr_distances,k, p);
+    knn_search(*index_, m, k_indices, k_sqr_distances, k, p);
 
     delete [] data;
   }
@@ -211,7 +213,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::nearestKSearch (
     p.sorted = sorted_results_;
     p.eps = eps_;
     p.checks = checks_;
-    index_->knnSearch (m,k_indices,k_sqr_distances,k, p);
+    knn_search(*index_, m, k_indices, k_sqr_distances, k, p);
 
     delete[] data;
   }
@@ -253,7 +255,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::radiusSearch (const PointT& poi
   p.checks = checks_;
   std::vector<Indices> i (1);
   std::vector<std::vector<float> > d (1);
-  int result = index_->radiusSearch (m,i,d,static_cast<float> (radius * radius), p);
+  int result = radius_search(*index_, m, i, d, static_cast<float>(radius * radius), p);
 
   delete [] data;
   indices = i [0];
@@ -310,7 +312,8 @@ pcl::search::FlannSearch<PointT, FlannDistance>::radiusSearch (
     p.checks = checks_;
     // here: max_nn==0: take all neighbors. flann: max_nn==0: return no neighbors, only count them. max_nn==-1: return all neighbors
     p.max_neighbors = max_nn != 0 ? max_nn : -1;
-    index_->radiusSearch (m,k_indices,k_sqr_distances,static_cast<float> (radius * radius), p);
+    radius_search(
+        *index_, m, k_indices, k_sqr_distances, static_cast<float>(radius * radius), p);
 
     delete [] data;
   }
@@ -341,7 +344,8 @@ pcl::search::FlannSearch<PointT, FlannDistance>::radiusSearch (
     p.checks = checks_;
     // here: max_nn==0: take all neighbors. flann: max_nn==0: return no neighbors, only count them. max_nn==-1: return all neighbors
     p.max_neighbors = max_nn != 0 ? max_nn : -1;
-    index_->radiusSearch (m, k_indices, k_sqr_distances, static_cast<float> (radius * radius), p);
+    radius_search(
+        *index_, m, k_indices, k_sqr_distances, static_cast<float>(radius * radius), p);
 
     delete[] data;
   }
