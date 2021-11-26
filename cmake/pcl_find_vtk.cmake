@@ -1,23 +1,3 @@
-function(checkVTKComponents)
-  cmake_parse_arguments(PARAM "" "MISSING_COMPONENTS" "COMPONENTS" ${ARGN})
-
-  set(vtkMissingComponents)
-  
-  foreach(vtkComponent ${PARAM_COMPONENTS})
-    if (VTK_VERSION VERSION_LESS 9.0)
-      if (NOT TARGET ${vtkComponent})
-        list(APPEND vtkMissingComponents ${vtkComponent})
-      endif()
-    else()
-      if (NOT TARGET VTK::${vtkComponent})
-        list(APPEND vtkMissingComponents ${vtkComponent})
-      endif()
-    endif()
-  endforeach()
-  
-  set(${PARAM_MISSING_COMPONENTS} ${vtkMissingComponents} PARENT_SCOPE)
-endfunction()
-
 # Start with a generic call to find any VTK version we are supporting, so we retrieve
 # the version of VTK. As the module names were changed from VTK 8.2 to 9.0, we don't
 # search explicitly for modules. Furthermore we don't pass required minimum version 6.2
@@ -95,13 +75,9 @@ else()
   set(PCL_VTK_COMPONENTS ${NON_PREFIX_PCL_VTK_COMPONENTS})
 endif()
 
-# Check if requested modules are available
-checkVTKComponents(COMPONENTS ${PCL_VTK_COMPONENTS} MISSING_COMPONENTS vtkMissingComponents)
 
-if (vtkMissingComponents)
-  set(VTK_FOUND FALSE)
-  message(WARNING "Missing vtk modules: ${vtkMissingComponents}")
-endif()
+# Configure VTK with required components
+find_package(VTK COMPONENTS ${PCL_VTK_COMPONENTS})
 
 if("vtkGUISupportQt" IN_LIST VTK_MODULES_ENABLED AND "vtkRenderingQt" IN_LIST VTK_MODULES_ENABLED)
   set(HAVE_QVTK TRUE)
