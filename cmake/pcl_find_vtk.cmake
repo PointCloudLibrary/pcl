@@ -103,18 +103,18 @@ if (vtkMissingComponents)
   message(WARNING "Missing vtk modules: ${vtkMissingComponents}")
 endif()
 
-if("vtkGUISupportQt" IN_LIST VTK_MODULES_ENABLED AND "vtkRenderingQt" IN_LIST VTK_MODULES_ENABLED)
+if("vtkGUISupportQt" IN_LIST VTK_MODULES_ENABLED)
   set(HAVE_QVTK TRUE)
   #PCL_VTK_COMPONENTS is used in the PCLConfig.cmake to refind the required modules.
   #Pre vtk 9.0, all vtk libraries are linked into pcl_visualizer.
   #Subprojects can link against pcl_visualizer and directly use VTK-QT libraries.
-  list(APPEND PCL_VTK_COMPONENTS vtkRenderingQt vtkGUISupportQt)
+  list(APPEND PCL_VTK_COMPONENTS vtkGUISupportQt)
 elseif("GUISupportQt" IN_LIST VTK_AVAILABLE_COMPONENTS AND "RenderingQt" IN_LIST VTK_AVAILABLE_COMPONENTS)
   set(HAVE_QVTK TRUE)
   #PCL_VTK_COMPONENTS is used in the PCLConfig.cmake to refind the required modules.
   #Post vtk 9.0, only required libraries are linked against pcl_visualizer.
   #Subprojects need to manually link to VTK-QT libraries.
-  list(APPEND PCL_VTK_COMPONENTS RenderingQt GUISupportQt)
+  list(APPEND PCL_VTK_COMPONENTS GUISupportQt)
 else()
   unset(HAVE_QVTK)
 endif()

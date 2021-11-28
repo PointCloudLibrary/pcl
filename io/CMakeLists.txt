@@ -191,7 +191,7 @@ if(VTK_FOUND AND NOT ANDROID)
     src/vtk_lib_io.cpp
     src/png_io.cpp
   )
-  set(VTK_IO_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets vtkIO vtkImaging vtkHybrid vtkGraphics vtkRendering vtkFiltering vtkVolumeRendering)
+
   # Indicates that we can rely on VTK to be present
   set(VTK_DEFINES -DPCL_BUILT_WITH_VTK)
 endif()
@@ -344,14 +344,23 @@ target_include_directories(${LIB_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/inclu
 target_link_libraries("${LIB_NAME}" Boost::boost Boost::filesystem Boost::iostreams pcl_common pcl_io_ply)
 
 if(VTK_FOUND)
-  if(${VTK_VERSION} VERSION_LESS 9.0)
-    link_directories(${VTK_LINK_DIRECTORIES})
-    target_link_libraries("${LIB_NAME}" ${VTK_LIBRARIES})
-  else()
+  if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
     target_link_libraries("${LIB_NAME}" 
                           VTK::IOImage
                           VTK::IOGeometry
                           VTK::IOPLY)
+  else()
+    link_directories(${VTK_LINK_DIRECTORIES})
+    target_link_libraries("${LIB_NAME}"
+                          vtkIOImage
+                          vtkIOGeometry
+                          vtkIOMPIImage
+                          vtkIOMPIParallel
+                          vtkIOPLY
+                          )
+    if(${VTK_VERSION} VERSION_GREATER_EQUAL 7.0 AND ${VTK_VERSION} VERSION_LESS 8.0)
+      target_link_libraries("${LIB_NAME}" vtkFiltersParallelDIY2)
+    endif()
   endif()
 endif()
 

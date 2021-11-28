@@ -26,11 +26,7 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURC
 PCL_CUDA_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${cuda})
 target_link_libraries(${LIB_NAME} pcl_cuda pcl_gpu_containers)
 
-target_compile_options(${LIB_NAME} INTERFACE $<$<COMPILE_LANGUAGE:CUDA>:"--ftz=true;--prec-div=false;--prec-sqrt=false">)
-
-if(UNIX OR APPLE)
-  target_compile_options(${LIB_NAME} INTERFACE $<$<COMPILE_LANGUAGE:CUDA>:"-Xcompiler=-fPIC">)
-endif()
+target_compile_options(${LIB_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--ftz=true;--prec-div=false;--prec-sqrt=false>)
 
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS} EXT_DEPS ${EXT_DEPS})
 

@@ -75,12 +75,8 @@ set(PCL_LIB_TYPE STATIC)
 
 PCL_ADD_LIBRARY(pcl_cc_tool_interface COMPONENT ${SUBSUBSYS_NAME} SOURCES ${INTERFACE_HEADERS} ${INTERFACE_SOURCES})
 
-set(vtk_libs ${VTK_LIBRARIES})
-#TODO: Update when CMAKE 3.10 is available
-if (NOT (${VTK_VERSION} VERSION_LESS 9.0))
-  set(vtk_libs VTK::GUISupportQt)
-endif()
-target_link_libraries(pcl_cc_tool_interface pcl_common pcl_filters pcl_search pcl_visualization ${QTX}::Widgets ${vtk_libs})
+
+target_link_libraries(pcl_cc_tool_interface pcl_common pcl_filters pcl_search pcl_visualization ${QTX}::Widgets)
 
 set(PCL_LIB_TYPE ${PCL_LIB_TYPE_ORIGIN})
 
