@@ -3,9 +3,10 @@
 # --------
 #
 # Try to find QHULL library and headers. This module supports both old released versions
-# of QHULL ≤ 7.3.2 and newer development versions that ship with a modern config file.
+# of QHULL ≤ 7.3.2 and newer development versions that ship with a modern config file,
+# but its limited to only the reentrant version of Qhull.
 #
-# If QHULL_USE_STATIC is specified then look for static libraries ONLY else look for shared one.
+# PCL_QHULL_REQUIRED_TYPE can be used to select if you want static or shared libraries, but it defaults to "don't care".
 #
 # IMPORTED Targets
 # ^^^^^^^^^^^^^^^^
@@ -101,18 +102,18 @@ if(Qhull_FOUND)
 endif()
 
 find_file(QHULL_HEADER
-          NAMES libqhull/libqhull.h
+          NAMES libqhull_r.h
           HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}" "${QHULL_INCLUDE_DIR}"
           PATHS "$ENV{PROGRAMFILES}/QHull" "$ENV{PROGRAMW6432}/QHull"
-          PATH_SUFFIXES qhull src/libqhull libqhull include)
+          PATH_SUFFIXES qhull_r src/libqhull_r libqhull_r include)
 
 set(QHULL_HEADER "${QHULL_HEADER}" CACHE INTERNAL "QHull header" FORCE )
 
 if(QHULL_HEADER)
   get_filename_component(qhull_header ${QHULL_HEADER} NAME_WE)
-  if("${qhull_header}" STREQUAL "qhull")
+  if("${qhull_header}" STREQUAL "qhull_r")
     get_filename_component(QHULL_INCLUDE_DIR ${QHULL_HEADER} PATH)
-  elseif("${qhull_header}" STREQUAL "libqhull")
+  elseif("${qhull_header}" STREQUAL "libqhull_r")
     get_filename_component(QHULL_INCLUDE_DIR ${QHULL_HEADER} PATH)
     get_filename_component(QHULL_INCLUDE_DIR ${QHULL_INCLUDE_DIR} PATH)
   endif()
@@ -144,7 +145,6 @@ find_library(QHULL_LIBRARY_DEBUG_STATIC
              PATHS "$ENV{PROGRAMFILES}/QHull" "$ENV{PROGRAMW6432}/QHull"
              PATH_SUFFIXES project build bin lib debug/lib)
 
-
 if(QHULL_LIBRARY_SHARED AND QHULL_LIBRARY_STATIC)
   if(PCL_QHULL_REQUIRED_TYPE MATCHES "DONTCARE")
     if(PCL_SHARED_LIBS)
@@ -168,6 +168,8 @@ elseif(QHULL_LIBRARY_SHARED)
   set(QHULL_LIBRARY_TYPE SHARED)
   set(QHULL_LIBRARY ${QHULL_LIBRARY_SHARED})
 endif()
+
+message("QHULL_INCLUDE_DIR is ${QHULL_INCLUDE_DIR}")
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Qhull
