@@ -73,6 +73,35 @@ TEST (Filters, LocalMaximum)
   EXPECT_EQ (3, cloud_out.size ());
 }
 
+TEST (Filters, LocalMaximum)
+{
+  PointCloud<PointXYZ> cloud_in, cloud_out;
+
+  cloud_in.height = 4;
+  cloud_in.width = 3;
+  cloud_in.is_dense = true;
+  cloud_in.resize (6);
+
+  cloud_in[0].x = 0;    cloud_in[0].y = 0;    cloud_in[0].z = 0.25;
+  cloud_in[1].x = 0.25; cloud_in[1].y = 0.25; cloud_in[1].z = 0.5;
+  cloud_in[2].x = 0.5;  cloud_in[2].y = 0.5;  cloud_in[2].z = 1;
+  cloud_in[3].x = 5.5;  cloud_in[3].y = 4;    cloud_in[3].z = 1.25;
+  cloud_in[4].x = 5.5;  cloud_in[4].y = 4.5;  cloud_in[4].z = 1.5;
+  cloud_in[5].x = 5.5;  cloud_in[5].y = 5.5;  cloud_in[5].z = 2.5;
+  cloud_in[6].x = 5;    cloud_in[6].y = 5;    cloud_in[6].z = 2;
+
+  LocalMaximum<PointXYZ> lm;
+  lm.setInputCloud (cloud_in.makeShared ());
+  lm.setRadius (1.0f);
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (0.25f, cloud_out[0].z);
+  EXPECT_EQ (0.50f, cloud_out[1].z);
+  EXPECT_EQ (2.00f, cloud_out[2].z);
+  EXPECT_EQ ()
+  EXPECT_EQ (3, cloud_out.size ());
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)
