@@ -755,7 +755,7 @@ pcl::visualization::PCLVisualizer::addText3D (
       textActor->SetCamera (renderer->GetActiveCamera ());
 
       renderer->AddActor (textActor);
-      renderer->Render ();
+      //renderer->Render ();
 
       // Save the pointer/ID pair to the global actor map. If we are saving multiple vtkFollowers
       // for multiple viewport
