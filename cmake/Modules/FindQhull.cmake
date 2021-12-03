@@ -183,8 +183,6 @@ elseif(QHULL_LIBRARY_SHARED)
   set(QHULL_LIBRARY ${QHULL_LIBRARY_SHARED})
 endif()
 
-message("QHULL_INCLUDE_DIR is ${QHULL_INCLUDE_DIR}")
-
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Qhull
   FOUND_VAR QHULL_FOUND
