@@ -756,10 +756,7 @@ pcl::visualization::PCLVisualizer::addText3D (
 
       renderer->AddActor (textActor);
       
-      #if VTK_MAJOR_VERSION < 8
-      renderer->Render ();
-      #endif
-
+     
       // Save the pointer/ID pair to the global actor map. If we are saving multiple vtkFollowers
       // for multiple viewport
       const std::string uid = tid + std::string (i, '*');
