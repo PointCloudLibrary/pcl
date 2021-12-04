@@ -36,18 +36,6 @@
 #     target_link_libraries(foo QHULL::QHULL)
 #
 
-
-macro(ExtractProperties target)
-  get_target_property(QHULL_INTERFACE_INCLUDE_DIRECTORIES ${target} INTERFACE_INCLUDE_DIRECTORIES)
-  get_target_property(QHULL_INTERFACE_COMPILE_DEFINITIONS ${target} INTERFACE_COMPILE_DEFINITIONS)
-  get_target_property(QHULL_IMPORTED_CONFIGURATIONS ${target} IMPORTED_CONFIGURATIONS)
-  
-  foreach(config ${QHULL_IMPORTED_CONFIGURATIONS})
-    get_target_property(QHULL_IMPORTED_LOCATION_${config} ${target} IMPORTED_LOCATION_${config})
-    get_target_property(QHULL_IMPORTED_IMPLIB_${config} ${target} IMPORTED_IMPLIB_${config})
-  endforeach()
-endmacro()
-
 # Skip if QHULL::QHULL is already defined
 if(TARGET QHULL::QHULL)
   return()
