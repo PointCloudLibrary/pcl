@@ -73,14 +73,14 @@ TEST (Filters, LocalMaximum)
   EXPECT_EQ (3, cloud_out.size ());
 }
 
-TEST (Filters, LocalMaximum)
+TEST (Filters, LocalMaximum_2)
 {
   PointCloud<PointXYZ> cloud_in, cloud_out;
 
   cloud_in.height = 4;
   cloud_in.width = 3;
   cloud_in.is_dense = true;
-  cloud_in.resize (6);
+  cloud_in.resize (7);
 
   cloud_in[0].x = 0;    cloud_in[0].y = 0;    cloud_in[0].z = 0.25;
   cloud_in[1].x = 0.25; cloud_in[1].y = 0.25; cloud_in[1].z = 0.5;
@@ -97,9 +97,8 @@ TEST (Filters, LocalMaximum)
 
   EXPECT_EQ (0.25f, cloud_out[0].z);
   EXPECT_EQ (0.50f, cloud_out[1].z);
-  EXPECT_EQ (2.00f, cloud_out[2].z);
-  EXPECT_EQ ()
-  EXPECT_EQ (3, cloud_out.size ());
+  EXPECT_EQ (1.25f, cloud_out[2].z);
+  EXPECT_EQ (4, cloud_out.size ());
 }
 
 /* ---[ */
