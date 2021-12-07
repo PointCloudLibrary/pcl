@@ -68,19 +68,18 @@ inline void extractEuclideanClustersSmooth(const typename pcl::PointCloud<PointT
   pcl::Indices nn_indices;
   std::vector<float> nn_distances;
   // Process all points in the indices vector
-  int size = static_cast<int> (cloud.size ());
-  for (int i = 0; i < size; ++i)
+  for (std::size_t i = 0; i < cloud.size(); ++i)
   {
     if (processed[i])
       continue;
 
-    std::vector<unsigned int> seed_queue;
-    int sq_idx = 0;
+    pcl::Indices seed_queue;
+    pcl::index_t sq_idx = 0;
     seed_queue.push_back (i);
 
     processed[i] = true;
 
-    while (sq_idx < static_cast<int> (seed_queue.size ()))
+    while (sq_idx < seed_queue.size ())
     {
 
       if (normals[seed_queue[sq_idx]].curvature > curvature_threshold)
