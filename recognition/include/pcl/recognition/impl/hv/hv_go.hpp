@@ -79,7 +79,7 @@ inline void extractEuclideanClustersSmooth(const typename pcl::PointCloud<PointT
 
     processed[i] = true;
 
-    while (sq_idx < seed_queue.size ())
+    while (static_cast<std::size_t>(sq_idx) < seed_queue.size ())
     {
 
       if (normals[seed_queue[sq_idx]].curvature > curvature_threshold)
