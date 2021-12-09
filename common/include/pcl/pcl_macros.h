@@ -453,15 +453,19 @@ aligned_free(void* ptr)
 // This makes it quite difficult to create a single macro for switch and while/if
 /**
  * @def PCL_CONDITION_UNLIKELY
- * @brief marks a conditional branch as more likely than the other
- * \code{.cpp}
+ * @brief Tries to inform the compiler to optimize codegen assuming that the condition will probably evaluate to false
+ * @note Prefer using `PCL_{IF,WHILE}_UNLIKELY`
+ * @warning This can't be used with switch statements
+ * @details This tries to help the compiler optimize for the unlikely case.
+ * Most compilers assume that the condition would evaluate to true in if and while loops (reference needed)
+ * As such the opposite of this macro (PCL_CONDITION_LIKELY) will not result in significant performance improvement
+ * 
+ * Some sample usage:
+ * @code{.cpp}
  * if PCL_CONDITION_UNLIKELY(x == 0) { return; } else { throw std::runtime_error("some error"); }
  * //
- * while PCL_CONDITION_UNLIKELY(is_complete) { continue; }  // busy wait, with minimal chances of waiting
- * \endcode
- * @note This can't be used with switch statements. Also, prefer using PCL_{IF,WHILE}_UNLIKELY
- * @details Most compilers assume that the condition would evaluate to true in if and while loops.
- * As such the opposite of this macro (PCL_CONDITION_LIKELY) will not result in significant performance improvement
+ * while PCL_CONDITION_UNLIKELY(wait_for_result) { sleep(1); }  // busy wait, with minimal chances of waiting
+ * @endcode
  */
 #if __has_cpp_attribute(unlikely)
   #define PCL_CONDITION_UNLIKELY(x) (static_cast<bool>(x)) [[unlikely]]
@@ -469,7 +473,7 @@ aligned_free(void* ptr)
   #define PCL_CONDITION_UNLIKELY(x) (__builtin_expect(static_cast<bool>(x), 0))
 #elif defined(__clang__) && (PCL_LINEAR_VERSION(__clang_major__, __clang_minor__, 0) >= PCL_LINEAR_VERSION(3, 9, 0))
   #define PCL_CONDITION_UNLIKELY(x) (__builtin_expect(static_cast<bool>(x), 0))
-#else
+#else  // MSVC has no such alternative
   #define PCL_CONDITION_UNLIKELY(x) (x)
 #endif
 
