@@ -313,7 +313,7 @@ endif()
 # libusb
 option(WITH_LIBUSB "Build USB RGBD-Camera drivers" TRUE)
 if(WITH_LIBUSB)
-  find_package(libusb)
+  include("${PCL_SOURCE_DIR}/cmake/pcl_find_libusb.cmake")
 endif()
 
 # Dependencies for different grabbers
