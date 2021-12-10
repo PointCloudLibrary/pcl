@@ -282,7 +282,7 @@ namespace pcl
         * \param[in,out] normal the normal to disambiguate, the calculation is performed in place
         */
       void
-      normalDisambiguation (pcl::PointCloud<PointNT> const &normals_cloud, std::vector<int> const &normal_indices,
+      normalDisambiguation (pcl::PointCloud<PointNT> const &normals_cloud, pcl::Indices const &normal_indices,
                             Eigen::Vector3f &normal);
 
       /** \brief Compute Least Square Plane Fitting in a set of 3D points

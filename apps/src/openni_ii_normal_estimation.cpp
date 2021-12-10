@@ -34,11 +34,9 @@
  */
 
 #include <pcl/common/time.h>
-#include <pcl/console/parse.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_grabber.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>

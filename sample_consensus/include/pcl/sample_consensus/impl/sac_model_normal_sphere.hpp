@@ -42,6 +42,7 @@
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_NORMAL_SPHERE_H_
 
 #include <pcl/sample_consensus/sac_model_normal_sphere.h>
+#include <pcl/common/common.h> // for getAngle3D
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
@@ -76,24 +77,25 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::selectWithinDistance (
   {
     // Calculate the distance from the point to the sphere center as the difference between
     // dist(point,sphere_origin) and sphere_radius
-    Eigen::Vector4f p (input_->points[(*indices_)[i]].x, 
-                       input_->points[(*indices_)[i]].y,
-                       input_->points[(*indices_)[i]].z, 
-                       0.0f);
-
-    Eigen::Vector4f n (normals_->points[(*indices_)[i]].normal[0], 
-                       normals_->points[(*indices_)[i]].normal[1], 
-                       normals_->points[(*indices_)[i]].normal[2], 
+    Eigen::Vector4f p ((*input_)[(*indices_)[i]].x, 
+                       (*input_)[(*indices_)[i]].y,
+                       (*input_)[(*indices_)[i]].z, 
                        0.0f);
 
     Eigen::Vector4f n_dir = p - center;
-    double d_euclid = std::abs (n_dir.norm () - model_coefficients[3]);
+    const double weighted_euclid_dist = (1.0 - normal_distance_weight_) * std::abs (n_dir.norm () - model_coefficients[3]);
+    if (weighted_euclid_dist > threshold) // Early termination: cannot be an inlier
+      continue;
 
     // Calculate the angular distance between the point normal and the sphere normal
+    Eigen::Vector4f n ((*normals_)[(*indices_)[i]].normal[0], 
+                       (*normals_)[(*indices_)[i]].normal[1], 
+                       (*normals_)[(*indices_)[i]].normal[2], 
+                       0.0f);
     double d_normal = std::abs (getAngle3D (n, n_dir));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
-    double distance = std::abs (normal_distance_weight_ * d_normal + (1.0 - normal_distance_weight_) * d_euclid);
+    double distance = std::abs (normal_distance_weight_ * d_normal + weighted_euclid_dist);
     if (distance < threshold)
     {
       // Returns the indices of the points whose distances are smaller than the threshold
@@ -130,24 +132,25 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::countWithinDistance (
   {
     // Calculate the distance from the point to the sphere centroid as the difference between
     // dist(point,sphere_origin) and sphere_radius
-    Eigen::Vector4f p (input_->points[(*indices_)[i]].x, 
-                       input_->points[(*indices_)[i]].y, 
-                       input_->points[(*indices_)[i]].z, 
-                       0.0f);
-
-    Eigen::Vector4f n (normals_->points[(*indices_)[i]].normal[0], 
-                       normals_->points[(*indices_)[i]].normal[1], 
-                       normals_->points[(*indices_)[i]].normal[2], 
+    Eigen::Vector4f p ((*input_)[(*indices_)[i]].x, 
+                       (*input_)[(*indices_)[i]].y, 
+                       (*input_)[(*indices_)[i]].z, 
                        0.0f);
 
     Eigen::Vector4f n_dir = (p-center);
-    double d_euclid = std::abs (n_dir.norm () - model_coefficients[3]);
-    //
+    const double weighted_euclid_dist = (1.0 - normal_distance_weight_) * std::abs (n_dir.norm () - model_coefficients[3]);
+    if (weighted_euclid_dist > threshold) // Early termination: cannot be an inlier
+      continue;
+
     // Calculate the angular distance between the point normal and the sphere normal
+    Eigen::Vector4f n ((*normals_)[(*indices_)[i]].normal[0], 
+                       (*normals_)[(*indices_)[i]].normal[1], 
+                       (*normals_)[(*indices_)[i]].normal[2], 
+                       0.0f);
     double d_normal = std::abs (getAngle3D (n, n_dir));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
-    if (std::abs (normal_distance_weight_ * d_normal + (1.0 - normal_distance_weight_) * d_euclid) < threshold)
+    if (std::abs (normal_distance_weight_ * d_normal + weighted_euclid_dist) < threshold)
       nr_p++;
   }
   return (nr_p);
@@ -182,24 +185,23 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::getDistancesToModel (
   {
     // Calculate the distance from the point to the sphere as the difference between
     // dist(point,sphere_origin) and sphere_radius
-    Eigen::Vector4f p (input_->points[(*indices_)[i]].x, 
-                       input_->points[(*indices_)[i]].y, 
-                       input_->points[(*indices_)[i]].z, 
-                       0.0f);
-
-    Eigen::Vector4f n (normals_->points[(*indices_)[i]].normal[0], 
-                       normals_->points[(*indices_)[i]].normal[1], 
-                       normals_->points[(*indices_)[i]].normal[2], 
+    Eigen::Vector4f p ((*input_)[(*indices_)[i]].x, 
+                       (*input_)[(*indices_)[i]].y, 
+                       (*input_)[(*indices_)[i]].z, 
                        0.0f);
 
     Eigen::Vector4f n_dir = (p-center);
-    double d_euclid = std::abs (n_dir.norm () - model_coefficients[3]);
-    //
+    const double weighted_euclid_dist = (1.0 - normal_distance_weight_) * std::abs (n_dir.norm () - model_coefficients[3]);
+
     // Calculate the angular distance between the point normal and the sphere normal
+    Eigen::Vector4f n ((*normals_)[(*indices_)[i]].normal[0], 
+                       (*normals_)[(*indices_)[i]].normal[1], 
+                       (*normals_)[(*indices_)[i]].normal[2], 
+                       0.0f);
     double d_normal = std::abs (getAngle3D (n, n_dir));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
-    distances[i] = std::abs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid);
+    distances[i] = std::abs (normal_distance_weight_ * d_normal + weighted_euclid_dist);
   }
 }
 

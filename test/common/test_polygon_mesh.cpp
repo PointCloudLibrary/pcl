@@ -72,7 +72,7 @@ TEST(PolygonMesh, concatenate_cloud)
     cloud_template.height = 480;
     for (std::uint32_t i = 0; i < size; ++i)
     {
-        cloud_template.points.emplace_back(3.0f * static_cast<float>(i) + 0, 
+        cloud_template.emplace_back(3.0f * static_cast<float>(i) + 0, 
                                            3.0f * static_cast<float> (i) + 1,
                                            3.0f * static_cast<float> (i) + 2);
     }
@@ -91,11 +91,13 @@ TEST(PolygonMesh, concatenate_cloud)
 
 TEST(PolygonMesh, concatenate_vertices)
 {
-    PolygonMesh test, dummy;
-    test.cloud.width = 10;
-    test.cloud.height = 5;
-
     const std::size_t size = 15;
+
+    PolygonMesh test, dummy;
+    // The algorithm works regardless of the organization.
+    test.cloud.width = dummy.cloud.width = size;
+    test.cloud.height = dummy.cloud.height = 1;
+
     for (std::size_t i = 0; i < size; ++i)
     {
         dummy.polygons.emplace_back();
@@ -111,18 +113,16 @@ TEST(PolygonMesh, concatenate_vertices)
     EXPECT_EQ(2 * dummy.polygons.size(), test.polygons.size());
 
     const auto cloud_size = test.cloud.width * test.cloud.height;
-    for (std::size_t i = 0; i < dummy.polygons.size(); ++i)
-    {
-        EXPECT_EQ(dummy.polygons[i].vertices.size(), test.polygons[i].vertices.size());
-        EXPECT_EQ(dummy.polygons[i].vertices.size(),
-                  test.polygons[i + dummy.polygons.size()].vertices.size());
-        for (std::size_t j = 0; j < size; ++j)
-        {
-            EXPECT_EQ(dummy.polygons[i].vertices[j],
-                      test.polygons[i].vertices[j]);
-            EXPECT_EQ(dummy.polygons[i].vertices[j] + cloud_size,
-                      test.polygons[i + dummy.polygons.size()].vertices[j]);
-        }
+    for (const auto& polygon : test.polygons)
+      for (const auto& vertex : polygon.vertices)
+        EXPECT_LT(vertex, cloud_size);
+
+    pcl::Indices vertices(size);
+    for (std::size_t i = 0; i < size; ++i) {
+        vertices = dummy.polygons[i].vertices;
+        EXPECT_EQ_VECTORS(vertices, test.polygons[i].vertices);
+        for (auto& vertex : vertices) { vertex += size; }
+        EXPECT_EQ_VECTORS(vertices, test.polygons[i + size].vertices);
     }
 }
 

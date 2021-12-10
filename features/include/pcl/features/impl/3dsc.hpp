@@ -46,7 +46,7 @@
 #include <pcl/common/utils.h>
 
 #include <cmath>
-
+#include <numeric> // for partial_sum
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> bool
@@ -139,7 +139,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
   Eigen::Map<Eigen::Vector3f> normal (rf + 6);
 
   // Find every point within specified search_radius_
-  std::vector<int> nn_indices;
+  pcl::Indices nn_indices;
   std::vector<float> nn_dists;
   const std::size_t neighb_cnt = searchForNeighbors ((*indices_)[index], search_radius_, nn_indices, nn_dists);
   if (neighb_cnt == 0)
@@ -153,9 +153,15 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
   const auto minIndex = nn_indices[std::distance (nn_dists.begin (), minDistanceIt)];
 
   // Get origin point
-  Vector3fMapConst origin = input_->points[(*indices_)[index]].getVector3fMap ();
+  Vector3fMapConst origin = (*input_)[(*indices_)[index]].getVector3fMap ();
   // Get origin normal
   // Use pre-computed normals
+  if (!pcl::isNormalFinite(normals[minIndex]))
+  {
+    std::fill (desc.begin (), desc.end (), std::numeric_limits<float>::quiet_NaN ());
+    std::fill (rf, rf + 9, 0.f);
+    return (false);
+  }
   normal = normals[minIndex].getNormalVector3fMap ();
 
   // Compute and store the RF direction
@@ -183,7 +189,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
     if (pcl::utils::equal (nn_dists[ne], 0.0f))
 		  continue;
     // Get neighbours coordinates
-    Eigen::Vector3f neighbour = surface_->points[nn_indices[ne]].getVector3fMap ();
+    Eigen::Vector3f neighbour = (*surface_)[nn_indices[ne]].getVector3fMap ();
 
     /// ----- Compute current neighbour polar coordinates -----
     /// Get distance between the neighbour and the origin
@@ -218,7 +224,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
     const auto l = std::distance(phi_divisions_.cbegin (), std::prev(phi_min));
 
     // Local point density = number of points in a sphere of radius "point_density_radius_" around the current neighbour
-    std::vector<int> neighbour_indices;
+    pcl::Indices neighbour_indices;
     std::vector<float> neighbour_distances;
     int point_density = searchForNeighbors (*surface_, nn_indices[ne], point_density_radius_, neighbour_indices, neighbour_distances);
     // point_density is NOT always bigger than 0 (on error, searchForNeighbors returns 0), so we must check for that

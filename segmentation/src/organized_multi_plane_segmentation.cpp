@@ -39,7 +39,6 @@
 
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
-#include <pcl/segmentation/organized_multi_plane_segmentation.h>
 #include <pcl/segmentation/impl/organized_multi_plane_segmentation.hpp>
 
 PCL_INSTANTIATE_PRODUCT(OrganizedMultiPlaneSegmentation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::Label)))

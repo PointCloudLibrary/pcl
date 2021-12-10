@@ -11,30 +11,6 @@
 #  OPENNI_DEFINITIONS          Compiler flags for OpenNI
 
 find_package(PkgConfig QUIET)
-
-# Find LibUSB
-if(NOT WIN32)
-  pkg_check_modules(PC_USB_10 libusb-1.0)
-  find_path(USB_10_INCLUDE_DIR libusb-1.0/libusb.h
-            HINTS ${PC_USB_10_INCLUDEDIR} ${PC_USB_10_INCLUDE_DIRS} "${USB_10_ROOT}" "$ENV{USB_10_ROOT}"
-            PATH_SUFFIXES libusb-1.0)
-
-  find_library(USB_10_LIBRARY
-               NAMES usb-1.0
-               HINTS ${PC_USB_10_LIBDIR} ${PC_USB_10_LIBRARY_DIRS} "${USB_10_ROOT}" "$ENV{USB_10_ROOT}"
-               PATH_SUFFIXES lib)
-
-  include(FindPackageHandleStandardArgs)
-  find_package_handle_standard_args(USB_10 DEFAULT_MSG USB_10_LIBRARY USB_10_INCLUDE_DIR)
-
-  if(NOT USB_10_FOUND)
-    message(STATUS "OpenNI disabled because libusb-1.0 not found.")
-    return()
-  else()
-    include_directories(SYSTEM ${USB_10_INCLUDE_DIR})
-  endif()
-endif()
-
 pkg_check_modules(PC_OPENNI QUIET libopenni)
 
 set(OPENNI_DEFINITIONS ${PC_OPENNI_CFLAGS_OTHER})
@@ -75,8 +51,9 @@ if(OPENNI_INCLUDE_DIR AND OPENNI_LIBRARY)
   mark_as_advanced(OPENNI_INCLUDE_DIRS)
 
   # Libraries
-  if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    set(OPENNI_LIBRARIES ${OPENNI_LIBRARY} ${LIBUSB_1_LIBRARIES})
+  if(NOT WIN32)
+    find_package(libusb REQUIRED)
+    set(OPENNI_LIBRARIES ${OPENNI_LIBRARY} libusb::libusb)
   else()
     set(OPENNI_LIBRARIES ${OPENNI_LIBRARY})
   endif()
@@ -85,12 +62,24 @@ if(OPENNI_INCLUDE_DIR AND OPENNI_LIBRARY)
 
 endif()
 
+if(EXISTS "${OPENNI_INCLUDE_DIR}/XnVersion.h")
+  file(STRINGS "${OPENNI_INCLUDE_DIR}/XnVersion.h" _contents REGEX "^#define[ \t]+XN_[A-Z]+_VERSION[ \t]+[0-9]+")
+  if(_contents)
+    string(REGEX REPLACE ".*#define[ \t]+XN_MAJOR_VERSION[ \t]+([0-9]+).*" "\\1" OPENNI_VERSION_MAJOR "${_contents}")
+    string(REGEX REPLACE ".*#define[ \t]+XN_MINOR_VERSION[ \t]+([0-9]+).*" "\\1" OPENNI_VERSION_MINOR "${_contents}")
+    string(REGEX REPLACE ".*#define[ \t]+XN_MAINTENANCE_VERSION[ \t]+([0-9]+).*" "\\1" OPENNI_VERSION_PATCH "${_contents}")
+    string(REGEX REPLACE ".*#define[ \t]+XN_BUILD_VERSION[ \t]+([0-9]+).*" "\\1" OPENNI_VERSION_BUILD "${_contents}")
+    set(OPENNI_VERSION "${OPENNI_VERSION_MAJOR}.${OPENNI_VERSION_MINOR}.${OPENNI_VERSION_PATCH}.${OPENNI_VERSION_BUILD}")
+  endif()
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(OpenNI
   FOUND_VAR OPENNI_FOUND
   REQUIRED_VARS OPENNI_LIBRARIES OPENNI_INCLUDE_DIRS
+  VERSION_VAR OPENNI_VERSION
 )
 
 if(OPENNI_FOUND)
-  message(STATUS "OpenNI found (include: ${OPENNI_INCLUDE_DIRS}, lib: ${OPENNI_LIBRARIES})")
+  message(STATUS "OpenNI found (version: ${OPENNI_VERSION}, include: ${OPENNI_INCLUDE_DIRS}, lib: ${OPENNI_LIBRARIES})")
 endif()

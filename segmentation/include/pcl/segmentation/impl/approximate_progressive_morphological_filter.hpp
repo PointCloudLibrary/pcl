@@ -69,7 +69,7 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::~ApproximateProgressiveM
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (std::vector<int>& ground)
+pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (Indices& ground)
 {
   bool segmentation_is_possible = initCompute ();
   if (!segmentation_is_possible)
@@ -129,10 +129,10 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (std::vector<int
   default(none) \
   shared(A, global_min) \
   num_threads(threads_)
-  for (int i = 0; i < (int)input_->points.size (); ++i)
+  for (int i = 0; i < (int)input_->size (); ++i)
   {
     // ...then test for lower points within the cell
-    PointT p = input_->points[i];
+    PointT p = (*input_)[i];
     int row = std::floor((p.y - global_min.y ()) / cell_size_);
     int col = std::floor((p.x - global_min.x ()) / cell_size_);
 
@@ -229,10 +229,10 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (std::vector<int
 
     // Find indices of the points whose difference between the source and
     // filtered point clouds is less than the current height threshold.
-    std::vector<int> pt_indices;
+    Indices pt_indices;
     for (std::size_t p_idx = 0; p_idx < ground.size (); ++p_idx)
     {
-      PointT p = cloud->points[p_idx];
+      PointT p = (*cloud)[p_idx];
       int erow = static_cast<int> (std::floor ((p.y - global_min.y ()) / cell_size_));
       int ecol = static_cast<int> (std::floor ((p.x - global_min.x ()) / cell_size_));
 

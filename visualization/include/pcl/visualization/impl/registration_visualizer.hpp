@@ -143,10 +143,9 @@ RegistrationVisualizer<PointSource, PointTarget>::runDisplay ()
     std::size_t correspondences_new_size = cloud_intermediate_indices_.size ();
 
 
-    std::stringstream stream_;
-    stream_ << "Random -> correspondences " << correspondences_new_size;
+    const std::string correspondences_text = "Random -> correspondences " + std::to_string(correspondences_new_size);
     viewer_->removeShape ("correspondences_size", 0);
-    viewer_->addText (stream_.str(), 10, 70, 0.0, 1.0, 0.0, "correspondences_size", v2);
+    viewer_->addText (correspondences_text, 10, 70, 0.0, 1.0, 0.0, "correspondences_size", v2);
 
     // Display entire set of correspondece lines if no maximum displayed correspondences is set
     if( ( 0 < maximum_displayed_correspondences_ ) &&
@@ -188,9 +187,9 @@ RegistrationVisualizer<PointSource, PointTarget>::runDisplay ()
 template<typename PointSource, typename PointTarget> void
 RegistrationVisualizer<PointSource, PointTarget>::updateIntermediateCloud (
     const pcl::PointCloud<PointSource> &cloud_src,
-    const std::vector<int> &indices_src,
+    const pcl::Indices &indices_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
-    const std::vector<int> &indices_tgt)
+    const pcl::Indices &indices_tgt)
 {
   // Lock local buffers
   visualizer_updating_mutex_.lock ();

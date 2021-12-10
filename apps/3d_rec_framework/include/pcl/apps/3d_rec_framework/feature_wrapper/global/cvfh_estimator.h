@@ -8,7 +8,6 @@
 #pragma once
 
 #include <pcl/apps/3d_rec_framework/feature_wrapper/global/global_estimator.h>
-#include <pcl/apps/3d_rec_framework/feature_wrapper/normal_estimator.h>
 #include <pcl/features/cvfh.h>
 #include <pcl/surface/mls.h>
 
@@ -131,12 +130,12 @@ public:
 
     cvfh.compute(cvfh_signatures);
 
-    for (std::size_t i = 0; i < cvfh_signatures.points.size(); i++) {
+    for (std::size_t i = 0; i < cvfh_signatures.size(); i++) {
       pcl::PointCloud<FeatureT> vfh_signature;
-      vfh_signature.points.resize(1);
+      vfh_signature.resize(1);
       vfh_signature.width = vfh_signature.height = 1;
       for (int d = 0; d < 308; ++d)
-        vfh_signature.points[0].histogram[d] = cvfh_signatures.points[i].histogram[d];
+        vfh_signature[0].histogram[d] = cvfh_signatures[i].histogram[d];
 
       signatures.push_back(vfh_signature);
     }
@@ -155,7 +154,7 @@ public:
   {
     normalize_bins_ = b;
   }
-};
+}; // namespace rec_3d_framework
 
 } // namespace rec_3d_framework
 } // namespace pcl

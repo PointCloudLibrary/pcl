@@ -10,7 +10,6 @@
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/local_estimator.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/normal_estimator.h>
 #include <pcl/features/shot_omp.h>
-#include <pcl/io/pcd_io.h>
 
 namespace pcl {
 namespace rec_3d_framework {
@@ -85,8 +84,7 @@ public:
     }
 
     this->computeKeypoints(processed, keypoints, normals);
-    std::cout << " " << normals->points.size() << " " << processed->points.size()
-              << std::endl;
+    std::cout << " " << normals->size() << " " << processed->size() << std::endl;
 
     if (keypoints->points.empty()) {
       PCL_WARN("SHOTLocalEstimationOMP :: No keypoints were found\n");
@@ -112,11 +110,11 @@ public:
       shot_estimate.compute(*shots);
     }
 
-    signatures->resize(shots->points.size());
-    signatures->width = static_cast<int>(shots->points.size());
+    signatures->resize(shots->size());
+    signatures->width = shots->size();
     signatures->height = 1;
 
-    int size_feat = sizeof(signatures->points[0].histogram) / sizeof(float);
+    int size_feat = sizeof((*signatures)[0].histogram) / sizeof(float);
 
     int good = 0;
     for (const auto& point : shots->points) {
@@ -129,13 +127,12 @@ public:
 
       if (NaNs == 0) {
         for (int i = 0; i < size_feat; i++) {
-          signatures->points[good].histogram[i] = point.descriptor[i];
+          (*signatures)[good].histogram[i] = point.descriptor[i];
         }
 
         good++;
       }
     }
-
     signatures->resize(good);
     signatures->width = good;
 

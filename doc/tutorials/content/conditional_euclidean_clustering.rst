@@ -44,7 +44,7 @@ Since the Conditional Euclidean Clustering class is for more advanced users, I w
  - ``pcl::console::TicToc`` is used for easy output of timing results.
  - :ref:`voxelgrid` is being used (lines 66-73) to downsample the cloud and give a more equalized point density.
  - :ref:`normal_estimation` is being used (lines 75-83)  to estimate normals which will be appended to the point information;
-   The Conditional Euclidean Clustering class will be templated with ``pcl::PoitnXYZINormal``, containing x, y, z, intensity, normal and curvature information to use in the condition function.
+   The Conditional Euclidean Clustering class will be templated with ``pcl::PointXYZINormal``, containing x, y, z, intensity, normal and curvature information to use in the condition function.
 
 Lines 85-95 set up the Conditional Euclidean Clustering class for use:
 
@@ -64,7 +64,7 @@ A more elaborate description of the different lines of code:
  - Clusters that make up less than 0.1% of the cloud's total points are considered too small.
  - Clusters that make up more than 20% of the cloud's total points are considered too large.
  - The resulting clusters are stored in the ``pcl::IndicesClusters`` format, which is an array of indices-arrays, indexing points of the input point cloud.
- - Too small clusters or too large clusters are not passed to the main output but can instead be retrieved in separate ``pcl::IndicesClusters`` data containers, but only is the class was initialized with TRUE.
+ - Too small clusters or too large clusters are not passed to the main output but can instead be retrieved in separate ``pcl::IndicesClusters`` data containers, but only if the class was initialized with TRUE.
 
 Lines 12-49 show some examples of condition functions:
 

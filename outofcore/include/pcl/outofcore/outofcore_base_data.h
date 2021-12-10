@@ -43,8 +43,6 @@
 #include <pcl/outofcore/boost.h>
 #include <pcl/outofcore/cJSON.h>
 
-#include <pcl/common/eigen.h>
-
 #include <pcl/outofcore/metadata.h>
 
 //standard library

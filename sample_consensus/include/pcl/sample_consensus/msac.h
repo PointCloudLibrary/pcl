@@ -40,7 +40,6 @@
 
 #pragma once
 
-#include <algorithm>
 #include <pcl/sample_consensus/sac.h>
 #include <pcl/sample_consensus/sac_model.h>
 
@@ -49,6 +48,11 @@ namespace pcl
   /** \brief @b MEstimatorSampleConsensus represents an implementation of the MSAC (M-estimator SAmple Consensus) 
     * algorithm, as described in: "MLESAC: A new robust estimator with application to estimating image geometry", P.H.S. 
     * Torr and A. Zisserman, Computer Vision and Image Understanding, vol 78, 2000.
+    * The difference to RANSAC is how the quality of a model is computed: RANSAC counts the number of inliers, given a
+    * threshold. The more inliers, the better the model is - it does not matter how close the inliers actually are to
+    * the model, as long as they are within the threshold. MSAC changes this by using the sum of all point-model distances
+    * as the quality measure, however outliers only add the threshold instead of their true distance. This method can lead
+    * to better results compared to RANSAC.
     * \author Radu B. Rusu
     * \ingroup sample_consensus
     */

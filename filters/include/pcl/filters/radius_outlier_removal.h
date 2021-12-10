@@ -40,7 +40,7 @@
 #pragma once
 
 #include <pcl/filters/filter_indices.h>
-#include <pcl/search/pcl_search.h>
+#include <pcl/search/search.h> // for Search, Search<>::Ptr
 
 namespace pcl
 {
@@ -153,7 +153,7 @@ namespace pcl
         * \param[out] indices The resultant indices.
         */
       void
-      applyFilter (std::vector<int> &indices) override
+      applyFilter (Indices &indices) override
       {
         applyFilterIndices (indices);
       }
@@ -162,7 +162,7 @@ namespace pcl
         * \param[out] indices The resultant indices.
         */
       void
-      applyFilterIndices (std::vector<int> &indices);
+      applyFilterIndices (Indices &indices);
 
     private:
       /** \brief A pointer to the spatial search object. */
@@ -178,7 +178,6 @@ namespace pcl
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b RadiusOutlierRemoval is a simple filter that removes outliers if the number of neighbors in a certain
     * search radius is smaller than a given K.
-    * \note setFilterFieldName (), setFilterLimits (), and setFilterLimitNegative () are ignored.
     * \author Radu Bogdan Rusu
     * \ingroup filters
     */
@@ -258,7 +257,7 @@ namespace pcl
       applyFilter (PCLPointCloud2 &output) override;
 
       void
-      applyFilter (std::vector<int> &indices) override;
+      applyFilter (Indices &indices) override;
   };
 }
 

@@ -1,2 +1,2 @@
-sphinx
+sphinx>=3
 sphinxcontrib-doxylink

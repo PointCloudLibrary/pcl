@@ -40,6 +40,9 @@
 
 #include <pcl/io/ply/ply_parser.h>
 
+#include <fstream> // for ifstream
+#include <sstream> // for istringstream
+
 bool pcl::io::ply::ply_parser::parse (const std::string& filename)
 {
   std::ifstream istream (filename.c_str (), std::ios::in | std::ios::binary);
@@ -110,6 +113,11 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
       std::string format_string, version;
       char space_format_format_string, space_format_string_version;
       stringstream >> space_format_format_string >> std::ws >> format_string >> space_format_string_version >> std::ws >> version;
+      if (!stringstream.eof ())
+      {
+        stringstream >> std::ws;
+        warning_callback_ (line_number_, "parse warning: trailing whitespaces in the header");
+      }
       if (!stringstream ||
           !stringstream.eof () ||
           !isspace (space_format_format_string) ||
@@ -155,6 +163,11 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
       std::size_t count;
       char space_element_name, space_name_count;
       stringstream >> space_element_name >> std::ws >> name >> space_name_count >> std::ws >> count;
+      if (!stringstream.eof ())
+      {
+        stringstream >> std::ws;
+        warning_callback_ (line_number_, "parse warning: trailing whitespaces in the header");
+      }
       if (!stringstream ||
           !stringstream.eof () ||
           !isspace (space_element_name) ||
@@ -356,7 +369,10 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
             return false;
           }
         }
-        else if ((size_type_string == type_traits<uint32>::name ()) || (size_type_string == type_traits<uint32>::old_name ()))
+        // It is safe to use size_type = uint32 here even if it is actually int32, because the size/number of list entries is never negative,
+        // uint32 and int32 have the same width, and all allowed (non-negative) values have the same binary encoding in int32 and uint32.
+        else if ((size_type_string == type_traits<uint32>::name ()) || (size_type_string == type_traits<uint32>::old_name ()) ||
+                 (size_type_string == type_traits< int32>::name ()) || (size_type_string == type_traits< int32>::old_name ()))
         {
           using size_type = uint32;
           if ((scalar_type_string == type_traits<int8>::name ()) || (scalar_type_string == type_traits<int8>::old_name ()))
@@ -443,7 +459,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
   // ascii
   if (format == ascii_format)
   {
-    for (const auto element_ptr: elements)
+    for (const auto &element_ptr: elements)
     {
       auto& element = *(element_ptr.get ());
       for (std::size_t element_index = 0; element_index < element.count; ++element_index)
@@ -461,7 +477,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
         stringstream.unsetf (std::ios_base::skipws);
         stringstream >> std::ws;
 
-        for (const auto property_ptr: element.properties)
+        for (const auto &property_ptr: element.properties)
         {
           auto& property = *(property_ptr.get ());
           if (!property.parse (*this, format, stringstream))
@@ -497,14 +513,14 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
   istream.open (filename.c_str (), std::ios::in | std::ios::binary);
   istream.seekg (data_start);
 
-  for (const auto element_ptr: elements)
+  for (const auto &element_ptr: elements)
   {
     auto& element = *(element_ptr.get ());
     for (std::size_t element_index = 0; element_index < element.count; ++element_index)
     {
       if (element.begin_element_callback)
         element.begin_element_callback ();
-      for (const auto property_ptr: element.properties)
+      for (const auto &property_ptr: element.properties)
       {
         auto& property = *(property_ptr.get ());
         if (!property.parse (*this, format, istream))

@@ -37,11 +37,6 @@
  */
 
 #include <pcl/test/gtest.h>
-#include <pcl/common/common.h>
-#include <pcl/common/distances.h>
-#include <pcl/common/intersections.h>
-#include <pcl/common/io.h>
-#include <pcl/common/eigen.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/io/pcd_io.h>

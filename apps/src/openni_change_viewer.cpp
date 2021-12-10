@@ -35,7 +35,6 @@
  */
 
 #include <pcl/console/parse.h>
-#include <pcl/filters/extract_indices.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/octree/octree_pointcloud_changedetector.h>
 #include <pcl/visualization/cloud_viewer.h>
@@ -62,7 +61,7 @@ public:
   void
   cloud_cb_(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
   {
-    std::cerr << cloud->points.size() << " -- ";
+    std::cerr << cloud->size() << " -- ";
 
     // assign point cloud to octree
     octree->setInputCloud(cloud);
@@ -71,7 +70,7 @@ public:
     octree->addPointsFromInputCloud();
 
     std::cerr << octree->getLeafCount() << " -- ";
-    std::vector<int> newPointIdxVector;
+    pcl::Indices newPointIdxVector;
 
     // get a vector of new points, which did not exist in previous buffer
     octree->getPointIndicesFromNewVoxels(newPointIdxVector, noise_filter_);
@@ -85,8 +84,8 @@ public:
       filtered_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGBA>(*cloud));
       filtered_cloud->points.reserve(newPointIdxVector.size());
 
-      for (const int& idx : newPointIdxVector)
-        filtered_cloud->points[idx].rgba = 255 << 16;
+      for (const auto& idx : newPointIdxVector)
+        (*filtered_cloud)[idx].rgba = 255 << 16;
 
       if (!viewer.wasStopped())
         viewer.showCloud(filtered_cloud);
@@ -97,8 +96,8 @@ public:
 
       filtered_cloud->points.reserve(newPointIdxVector.size());
 
-      for (const int& idx : newPointIdxVector)
-        filtered_cloud->points.push_back(cloud->points[idx]);
+      for (const auto& idx : newPointIdxVector)
+        filtered_cloud->points.push_back((*cloud)[idx]);
 
       if (!viewer.wasStopped())
         viewer.showCloud(filtered_cloud);

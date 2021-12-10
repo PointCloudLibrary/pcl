@@ -42,6 +42,9 @@
 #define PCL_PEOPLE_GROUND_BASED_PEOPLE_DETECTION_APP_HPP_
 
 #include <pcl/people/ground_based_people_detection_app.h>
+#include <pcl/filters/extract_indices.h> // for ExtractIndices
+#include <pcl/segmentation/extract_clusters.h> // for EuclideanClusterExtraction
+#include <pcl/filters/voxel_grid.h> // for VoxelGrid
 
 template <typename PointT>
 pcl::people::GroundBasedPeopleDetectionApp<PointT>::GroundBasedPeopleDetectionApp ()
@@ -356,7 +359,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
   filter();
 
   // Ground removal and update:
-  pcl::IndicesPtr inliers(new std::vector<int>);
+  pcl::IndicesPtr inliers(new pcl::Indices);
   typename pcl::SampleConsensusModelPlane<PointT>::Ptr ground_model (new pcl::SampleConsensusModelPlane<PointT> (cloud_filtered_));
   ground_model->selectWithinDistance(ground_coeffs_transformed_, 2 * voxel_size_, *inliers);
   no_ground_cloud_ = PointCloudPtr (new PointCloud);

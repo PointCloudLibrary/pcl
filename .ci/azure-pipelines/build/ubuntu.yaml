@@ -1,4 +1,6 @@
 steps:
+  - script: (nohup Xvfb :99 -screen 0 1280x1024x24 -nolisten tcp -nolisten unix &)
+    displayName: "Start Xvfb for DISPLAY=$(DISPLAY)"
   - checkout: self
     # find the commit hash on a quick non-forced update too
     fetchDepth: 10
@@ -8,9 +10,11 @@ steps:
       -DCMAKE_BUILD_TYPE="MinSizeRel" \
       -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
       -DPCL_ONLY_CORE_POINT_TYPES=ON \
+      -DPCL_DISABLE_GPU_TESTS=ON \
       -DBUILD_simulation=ON \
       -DBUILD_surface_on_nurbs=ON \
       -DBUILD_global_tests=ON \
+      -DBUILD_benchmarks=ON \
       -DBUILD_examples=ON \
       -DBUILD_tools=ON \
       -DBUILD_apps=ON \

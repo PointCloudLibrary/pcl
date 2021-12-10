@@ -59,7 +59,7 @@ pcl::DifferenceOfNormalsEstimation<PointInT, PointNT, PointOutT>::initCompute ()
   }
 
   // Check if the size of normals is the same as the size of the surface
-  if (input_normals_small_->points.size () != input_->points.size ())
+  if (input_normals_small_->size () != input_->size ())
   {
     PCL_ERROR ("[pcl::%s::initCompute] ", getClassName().c_str ());
     PCL_ERROR ("The number of points in the input dataset differs from ");
@@ -68,7 +68,7 @@ pcl::DifferenceOfNormalsEstimation<PointInT, PointNT, PointOutT>::initCompute ()
     return (false);
   }
 
-  if (input_normals_large_->points.size () != input_->points.size ())
+  if (input_normals_large_->size () != input_->size ())
   {
     PCL_ERROR ("[pcl::%s::initCompute] ", getClassName().c_str ());
     PCL_ERROR ("The number of points in the input dataset differs from ");
@@ -85,16 +85,16 @@ template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::DifferenceOfNormalsEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
   //perform DoN subtraction and return results
-  for (std::size_t point_id = 0; point_id < input_->points.size (); ++point_id)
+  for (std::size_t point_id = 0; point_id < input_->size (); ++point_id)
   {
-    output.points[point_id].getNormalVector3fMap () =  (input_normals_small_->points[point_id].getNormalVector3fMap ()
-    		- input_normals_large_->points[point_id].getNormalVector3fMap ()) / 2.0;
-    if(!std::isfinite (output.points[point_id].normal_x) ||
-        !std::isfinite (output.points[point_id].normal_y) ||
-        !std::isfinite (output.points[point_id].normal_z)){
-      output.points[point_id].getNormalVector3fMap () = Eigen::Vector3f(0,0,0);
+    output[point_id].getNormalVector3fMap () =  ((*input_normals_small_)[point_id].getNormalVector3fMap ()
+    		- (*input_normals_large_)[point_id].getNormalVector3fMap ()) / 2.0;
+    if(!std::isfinite (output[point_id].normal_x) ||
+        !std::isfinite (output[point_id].normal_y) ||
+        !std::isfinite (output[point_id].normal_z)){
+      output[point_id].getNormalVector3fMap () = Eigen::Vector3f(0,0,0);
     }
-    output.points[point_id].curvature = output.points[point_id].getNormalVector3fMap ().norm();
+    output[point_id].curvature = output[point_id].getNormalVector3fMap ().norm();
   }
 }
 

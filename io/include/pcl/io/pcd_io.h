@@ -43,6 +43,7 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/io/file_io.h>
+#include <boost/interprocess/sync/file_lock.hpp> // for file_lock
 
 namespace pcl
 {
@@ -511,7 +512,7 @@ namespace pcl
       template <typename PointT> int
       writeBinary (const std::string &file_name,
                    const pcl::PointCloud<PointT> &cloud,
-                   const std::vector<int> &indices);
+                   const pcl::Indices &indices);
 
       /** \brief Save point cloud data to a PCD file containing n-D points, in ASCII format
         * \param[in] file_name the output file name
@@ -532,7 +533,7 @@ namespace pcl
       template <typename PointT> int
       writeASCII (const std::string &file_name,
                   const pcl::PointCloud<PointT> &cloud,
-                  const std::vector<int> &indices,
+                  const pcl::Indices &indices,
                   const int precision = 8);
 
       /** \brief Save point cloud data to a PCD file containing n-D points
@@ -575,7 +576,7 @@ namespace pcl
       template<typename PointT> inline int
       write (const std::string &file_name,
              const pcl::PointCloud<PointT> &cloud,
-             const std::vector<int> &indices,
+             const pcl::Indices &indices,
              bool binary = false)
       {
         if (binary)
@@ -757,7 +758,7 @@ namespace pcl
     template<typename PointT> int
     savePCDFile (const std::string &file_name,
                  const pcl::PointCloud<PointT> &cloud,
-                 const std::vector<int> &indices,
+                 const pcl::Indices &indices,
                  const bool binary_mode = false)
     {
       // Save the data

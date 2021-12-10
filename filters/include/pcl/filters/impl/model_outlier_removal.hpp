@@ -38,7 +38,6 @@
 #pragma once
 
 #include <pcl/filters/model_outlier_removal.h>
-#include <pcl/common/io.h>
 #include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/sample_consensus/sac_model_circle.h>
 #include <pcl/sample_consensus/sac_model_cylinder.h>
@@ -143,7 +142,7 @@ pcl::ModelOutlierRemoval<PointT>::initSACModel (pcl::SacModel model_type)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::ModelOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
+pcl::ModelOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
 {
   //The arrays to be used
   indices.resize (indices_->size ());
@@ -175,16 +174,16 @@ pcl::ModelOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
   //if the filter setup is invalid filter for nan and return;
   if (!valid_setup)
   {
-    for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)  // iii = input indices iterator
+    for (const auto& iii : (*indices_)) // iii = input indices iterator
     {
       // Non-finite entries are always passed to removed indices
-      if (!isFinite (input_->points[ (*indices_)[iii]]))
+      if (!isFinite ((*input_)[iii]))
       {
         if (extract_removed_indices_)
-          (*removed_indices_)[rii++] = (*indices_)[iii];
+          (*removed_indices_)[rii++] = iii;
         continue;
       }
-      indices[oii++] = (*indices_)[iii];
+      indices[oii++] = iii;
     }
     return;
   }
@@ -200,7 +199,7 @@ pcl::ModelOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
   for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)  // iii = input indices iterator
   {
     // Non-finite entries are always passed to removed indices
-    if (!isFinite (input_->points[ (*indices_)[iii]]))
+    if (!isFinite ((*input_)[ (*indices_)[iii]]))
     {
       if (extract_removed_indices_)
         (*removed_indices_)[rii++] = (*indices_)[iii];

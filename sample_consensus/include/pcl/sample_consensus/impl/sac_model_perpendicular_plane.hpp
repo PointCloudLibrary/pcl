@@ -42,6 +42,7 @@
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PERPENDICULAR_PLANE_H_
 
 #include <pcl/sample_consensus/sac_model_perpendicular_plane.h>
+#include <pcl/common/common.h> // for getAngle3D
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -109,6 +110,8 @@ pcl::SampleConsensusModelPerpendicularPlane<PointT>::isModelValid (const Eigen::
     // Check whether the current plane model satisfies our angle threshold criterion with respect to the given axis
     if (angle_diff > eps_angle_)
     {
+      PCL_DEBUG ("[pcl::SampleConsensusModelPerpendicularPlane::isModelValid] Angle between plane normal and given axis should be smaller than %g, but is %g.\n",
+                 eps_angle_, angle_diff);
       return (false);
     }
   }

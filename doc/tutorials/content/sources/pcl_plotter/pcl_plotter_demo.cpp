@@ -7,7 +7,6 @@
 #include<utility>
 #include<cmath>  //for std::abs()
 
-using namespace std;
 using namespace pcl::visualization;
 
 void
@@ -40,7 +39,7 @@ identity (double val)
 //............................................................................
 
 int
-main (int argc, char * argv [])
+main ()
 {
   //defining a plotter
   PCLPlotter *plotter = new PCLPlotter ("My Plotter");

@@ -40,7 +40,6 @@
 #pragma once
 
 #include <pcl/common/gaussian.h>
-#include <pcl/exceptions.h>
 
 namespace pcl
 {
@@ -58,7 +57,7 @@ GaussianKernel::convolveRows(const pcl::PointCloud<PointT> &input,
   {
     output.width = input.width;
     output.height = input.height;
-    output.points.resize (input.height * input.width);
+    output.resize (input.height * input.width);
   }
 
   int i;
@@ -91,7 +90,7 @@ GaussianKernel::convolveCols(const pcl::PointCloud<PointT> &input,
   {
     output.width = input.width;
     output.height = input.height;
-    output.points.resize (input.height * input.width);
+    output.resize (input.height * input.width);
   }
 
   int j;

@@ -39,7 +39,9 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CIRCLE_3D_HPP_
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CIRCLE_3D_HPP_
 
-#include <pcl/sample_consensus/eigen.h>
+#include <cfloat> // for DBL_MAX
+
+#include <unsupported/Eigen/NonLinearOptimization> // for LevenbergMarquardt
 #include <pcl/sample_consensus/sac_model_circle3d.h>
 #include <pcl/common/concatenate.h>
 
@@ -54,9 +56,9 @@ pcl::SampleConsensusModelCircle3D<PointT>::isSampleGood (
     return (false);
   }
   // Get the values at the three points
-  Eigen::Vector3d p0 (input_->points[samples[0]].x, input_->points[samples[0]].y, input_->points[samples[0]].z);
-  Eigen::Vector3d p1 (input_->points[samples[1]].x, input_->points[samples[1]].y, input_->points[samples[1]].z);
-  Eigen::Vector3d p2 (input_->points[samples[2]].x, input_->points[samples[2]].y, input_->points[samples[2]].z);
+  Eigen::Vector3d p0 ((*input_)[samples[0]].x, (*input_)[samples[0]].y, (*input_)[samples[0]].z);
+  Eigen::Vector3d p1 ((*input_)[samples[1]].x, (*input_)[samples[1]].y, (*input_)[samples[1]].z);
+  Eigen::Vector3d p2 ((*input_)[samples[2]].x, (*input_)[samples[2]].y, (*input_)[samples[2]].z);
 
   // calculate vectors between points
   p1 -= p0;
@@ -78,9 +80,9 @@ pcl::SampleConsensusModelCircle3D<PointT>::computeModelCoefficients (const Indic
 
   model_coefficients.resize (model_size_);   //needing 7 coefficients: centerX, centerY, centerZ, radius, normalX, normalY, normalZ
 
-  Eigen::Vector3d p0 (input_->points[samples[0]].x, input_->points[samples[0]].y, input_->points[samples[0]].z);
-  Eigen::Vector3d p1 (input_->points[samples[1]].x, input_->points[samples[1]].y, input_->points[samples[1]].z);
-  Eigen::Vector3d p2 (input_->points[samples[2]].x, input_->points[samples[2]].y, input_->points[samples[2]].z);
+  Eigen::Vector3d p0 ((*input_)[samples[0]].x, (*input_)[samples[0]].y, (*input_)[samples[0]].z);
+  Eigen::Vector3d p1 ((*input_)[samples[1]].x, (*input_)[samples[1]].y, (*input_)[samples[1]].z);
+  Eigen::Vector3d p2 ((*input_)[samples[2]].x, (*input_)[samples[2]].y, (*input_)[samples[2]].z);
 
 
   Eigen::Vector3d helper_vec01 = p0 - p1;
@@ -111,8 +113,11 @@ pcl::SampleConsensusModelCircle3D<PointT>::computeModelCoefficients (const Indic
   model_coefficients[4] = static_cast<float> (circle_normal[0]);
   model_coefficients[5] = static_cast<float> (circle_normal[1]);
   model_coefficients[6] = static_cast<float> (circle_normal[2]);
-   
- return (true);
+
+  PCL_DEBUG ("[pcl::SampleConsensusModelCircle3D::computeModelCoefficients] Model is (%g,%g,%g,%g,%g,%g,%g).\n",
+             model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3],
+             model_coefficients[4], model_coefficients[5], model_coefficients[6]);
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -138,7 +143,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::getDistancesToModel (const Eigen::Vec
   {
     // what i have:
     // P : Sample Point
-    Eigen::Vector3d P (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z);
+    Eigen::Vector3d P ((*input_)[(*indices_)[i]].x, (*input_)[(*indices_)[i]].y, (*input_)[(*indices_)[i]].z);
     // C : Circle Center
     Eigen::Vector3d C (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
     // N : Circle (Plane) Normal
@@ -177,12 +182,13 @@ pcl::SampleConsensusModelCircle3D<PointT>::selectWithinDistance (
   inliers.clear ();
   inliers.reserve (indices_->size ());
 
+  const auto squared_threshold = threshold * threshold;
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     // what i have:
     // P : Sample Point
-    Eigen::Vector3d P (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z);
+    Eigen::Vector3d P ((*input_)[(*indices_)[i]].x, (*input_)[(*indices_)[i]].y, (*input_)[(*indices_)[i]].z);
     // C : Circle Center
     Eigen::Vector3d C (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
     // N : Circle (Plane) Normal
@@ -201,7 +207,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::selectWithinDistance (
     Eigen::Vector3d K = C + r * helper_vectorP_projC.normalized ();
     Eigen::Vector3d distanceVector =  P - K;
 
-    if (distanceVector.norm () < threshold)
+    if (distanceVector.squaredNorm () < squared_threshold)
     {
       // Returns the indices of the points whose distances are smaller than the threshold
       inliers.push_back ((*indices_)[i]);
@@ -219,12 +225,13 @@ pcl::SampleConsensusModelCircle3D<PointT>::countWithinDistance (
     return (0);
   std::size_t nr_p = 0;
 
+  const auto squared_threshold = threshold * threshold;
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     // what i have:
     // P : Sample Point
-    Eigen::Vector3d P (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z);
+    Eigen::Vector3d P ((*input_)[(*indices_)[i]].x, (*input_)[(*indices_)[i]].y, (*input_)[(*indices_)[i]].z);
     // C : Circle Center
     Eigen::Vector3d C (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
     // N : Circle (Plane) Normal
@@ -244,7 +251,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::countWithinDistance (
     Eigen::Vector3d K = C + r * helper_vectorP_projC.normalized ();
     Eigen::Vector3d distanceVector =  P - K;
 
-    if (distanceVector.norm () < threshold)
+    if (distanceVector.squaredNorm () < squared_threshold)
       nr_p++;
   }
   return (nr_p);
@@ -306,22 +313,22 @@ pcl::SampleConsensusModelCircle3D<PointT>::projectPoints (
   if (copy_data_fields)
   {
     // Allocate enough space and copy the basics
-    projected_points.points.resize (input_->points.size ());
+    projected_points.resize (input_->size ());
     projected_points.width    = input_->width;
     projected_points.height   = input_->height;
 
     using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
-    for (std::size_t i = 0; i < projected_points.points.size (); ++i)
+    for (std::size_t i = 0; i < projected_points.size (); ++i)
       // Iterate over each dimension
-      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> ((*input_)[i], projected_points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the plane
     for (std::size_t i = 0; i < inliers.size (); ++i)
     {
       // what i have:
       // P : Sample Point
-      Eigen::Vector3d P (input_->points[inliers[i]].x, input_->points[inliers[i]].y, input_->points[inliers[i]].z);
+      Eigen::Vector3d P ((*input_)[inliers[i]].x, (*input_)[inliers[i]].y, (*input_)[inliers[i]].z);
       // C : Circle Center
       Eigen::Vector3d C (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
       // N : Circle (Plane) Normal
@@ -340,30 +347,30 @@ pcl::SampleConsensusModelCircle3D<PointT>::projectPoints (
       // K : Point on Circle
       Eigen::Vector3d K = C + r * helper_vectorP_projC.normalized ();
 
-      projected_points.points[i].x = static_cast<float> (K[0]);
-      projected_points.points[i].y = static_cast<float> (K[1]);
-      projected_points.points[i].z = static_cast<float> (K[2]);
+      projected_points[i].x = static_cast<float> (K[0]);
+      projected_points[i].y = static_cast<float> (K[1]);
+      projected_points[i].z = static_cast<float> (K[2]);
     }
   }
   else
   {
     // Allocate enough space and copy the basics
-    projected_points.points.resize (inliers.size ());
-    projected_points.width    = std::uint32_t (inliers.size ());
+    projected_points.resize (inliers.size ());
+    projected_points.width    = inliers.size ();
     projected_points.height   = 1;
 
     using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
     for (std::size_t i = 0; i < inliers.size (); ++i)
       // Iterate over each dimension
-      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points.points[i]));
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> ((*input_)[inliers[i]], projected_points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the plane
     for (std::size_t i = 0; i < inliers.size (); ++i)
     {
       // what i have:
       // P : Sample Point
-      Eigen::Vector3d P (input_->points[inliers[i]].x, input_->points[inliers[i]].y, input_->points[inliers[i]].z);
+      Eigen::Vector3d P ((*input_)[inliers[i]].x, (*input_)[inliers[i]].y, (*input_)[inliers[i]].z);
       // C : Circle Center
       Eigen::Vector3d C (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
       // N : Circle (Plane) Normal
@@ -381,9 +388,9 @@ pcl::SampleConsensusModelCircle3D<PointT>::projectPoints (
       // K : Point on Circle
       Eigen::Vector3d K = C + r * helper_vectorP_projC.normalized ();
 
-      projected_points.points[i].x = static_cast<float> (K[0]);
-      projected_points.points[i].y = static_cast<float> (K[1]);
-      projected_points.points[i].z = static_cast<float> (K[2]);
+      projected_points[i].x = static_cast<float> (K[0]);
+      projected_points[i].y = static_cast<float> (K[1]);
+      projected_points[i].z = static_cast<float> (K[2]);
     }
   }
 }
@@ -402,6 +409,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::doSamplesVerifyModel (
     return (false);
   }
 
+  const auto squared_threshold = threshold * threshold;
   for (const auto &index : indices)
   {
     // Calculate the distance from the point to the sphere as the difference between
@@ -409,7 +417,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::doSamplesVerifyModel (
 
     // what i have:
     // P : Sample Point
-    Eigen::Vector3d P (input_->points[index].x, input_->points[index].y, input_->points[index].z);
+    Eigen::Vector3d P ((*input_)[index].x, (*input_)[index].y, (*input_)[index].z);
     // C : Circle Center
     Eigen::Vector3d C (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
     // N : Circle (Plane) Normal
@@ -427,7 +435,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::doSamplesVerifyModel (
     Eigen::Vector3d K = C + r * helper_vectorP_projC.normalized ();
     Eigen::Vector3d distanceVector =  P - K;
 
-    if (distanceVector.norm () > threshold)
+    if (distanceVector.squaredNorm () > squared_threshold)
       return (false);
   }
   return (true);
@@ -441,9 +449,17 @@ pcl::SampleConsensusModelCircle3D<PointT>::isModelValid (const Eigen::VectorXf &
     return (false);
 
   if (radius_min_ != -DBL_MAX && model_coefficients[3] < radius_min_)
+  {
+    PCL_DEBUG ("[pcl::SampleConsensusModelCircle3D::isModelValid] Radius of circle is too small: should be larger than %g, but is %g.\n",
+               radius_min_, model_coefficients[3]);
     return (false);
+  }
   if (radius_max_ != DBL_MAX && model_coefficients[3] > radius_max_)
+  {
+    PCL_DEBUG ("[pcl::SampleConsensusModelCircle3D::isModelValid] Radius of circle is too big: should be smaller than %g, but is %g.\n",
+               radius_max_, model_coefficients[3]);
     return (false);
+  }
 
   return (true);
 }

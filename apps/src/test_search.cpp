@@ -4,11 +4,8 @@
 #include <pcl/search/brute_force.h>
 #include <pcl/search/kdtree.h>
 
-#include <sstream>
 #include <string>
 #include <vector>
-
-using namespace std;
 
 int
 main(int argc, char** argv)
@@ -20,7 +17,7 @@ main(int argc, char** argv)
     return 1;
   }
 
-  string pcd_path;
+  std::string pcd_path;
   bool use_pcd_file = pcl::console::find_switch(argc, argv, "-pcd");
   if (use_pcd_file)
     pcl::console::parse(argc, argv, "-pcd", pcd_path);
@@ -58,9 +55,9 @@ main(int argc, char** argv)
   query.y = 0.5;
   query.z = 0.5;
 
-  std::vector<int> kd_indices;
+  pcl::Indices kd_indices;
   std::vector<float> kd_distances;
-  std::vector<int> bf_indices;
+  pcl::Indices bf_indices;
   std::vector<float> bf_distances;
 
   double start, stop;

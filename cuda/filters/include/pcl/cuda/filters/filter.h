@@ -43,7 +43,7 @@ namespace pcl_cuda
   /** \brief Removes points with x, y, or z equal to NaN
     * \param cloud_in the input point cloud
     * \param cloud_out the input point cloud
-    * \param index the mapping (ordered): cloud_out.points[i] = cloud_in.points[index[i]]
+    * \param index the mapping (ordered): cloud_out[i] = cloud_in[index[i]]
     * \note The density of the point cloud is lost.
     * \note Can be called with cloud_in == cloud_out
     */
@@ -123,8 +123,14 @@ namespace pcl_cuda
         * returned (true) or inside (false). 
         * \param limit_negative the limit_negative flag
         */
+      PCL_DEPRECATED(1, 16, "use bool getFilterLimitsNegative() instead")
       inline void 
       getFilterLimitsNegative (bool &limit_negative) { limit_negative = filter_limit_negative_; }
+
+      /** \brief Get whether the data outside the interval (min/max) is to be
+        * returned (true) or inside (false). 
+        * \return true if data \b outside the interval [min; max] is to be returned, false otherwise
+        */
       inline bool 
       getFilterLimitsNegative () { return (filter_limit_negative_); }
 

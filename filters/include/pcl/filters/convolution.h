@@ -39,10 +39,7 @@
 
 #pragma once
 
-#include <pcl/common/eigen.h>
 #include <pcl/point_cloud.h>
-#include <pcl/exceptions.h>
-#include <pcl/pcl_base.h>
 
 namespace pcl
 {

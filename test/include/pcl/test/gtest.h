@@ -55,6 +55,15 @@
 #endif
 
 /**
+ * \brief Macro choose between TYPED_TEST_CASE_P and TYPED_TEST_SUITE_P depending on the GTest version
+ *
+ * \ingroup test
+ */
+#if !defined(TYPED_TEST_SUITE_P)
+  #define TYPED_TEST_SUITE_P TYPED_TEST_CASE_P
+#endif
+
+/**
  * \brief Macro choose between INSTANTIATE_TEST_CASE_P and INSTANTIATE_TEST_SUITE_P depending on the GTest version
  *
  * \ingroup test
@@ -63,3 +72,20 @@
   #define INSTANTIATE_TEST_SUITE_P INSTANTIATE_TEST_CASE_P
 #endif
 
+/**
+ * \brief Macro choose between INSTANTIATE_TYPED_TEST_CASE_P and INSTANTIATE_TYPED_TEST_SUITE_P depending on the GTest version
+ *
+ * \ingroup test
+ */
+#if !defined(INSTANTIATE_TYPED_TEST_SUITE_P)
+  #define INSTANTIATE_TYPED_TEST_SUITE_P INSTANTIATE_TYPED_TEST_CASE_P
+#endif
+
+/**
+ * \brief Macro choose between REGISTER_TYPED_TEST_CASE_P and REGISTER_TYPED_TEST_SUITE_P depending on the GTest version
+ *
+ * \ingroup test
+ */
+#if !defined(REGISTER_TYPED_TEST_SUITE_P)
+  #define REGISTER_TYPED_TEST_SUITE_P REGISTER_TYPED_TEST_CASE_P
+#endif

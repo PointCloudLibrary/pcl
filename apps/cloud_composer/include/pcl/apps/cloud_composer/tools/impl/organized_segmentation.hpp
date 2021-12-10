@@ -122,7 +122,7 @@ pcl::cloud_composer::OrganizedSegmentationTool::performTemplatedAction (const QL
     euclidean_segmentation.setInputCloud (input_cloud);
     euclidean_segmentation.segment (euclidean_labels, euclidean_label_indices);
 
-    pcl::IndicesPtr extracted_indices (new std::vector<int> ());
+    pcl::IndicesPtr extracted_indices (new pcl::Indices ());
     for (std::size_t i = 0; i < euclidean_label_indices.size (); i++)
     {
       if (euclidean_label_indices[i].indices.size () >= (std::size_t) min_cluster_size)

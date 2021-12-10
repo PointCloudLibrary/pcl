@@ -40,104 +40,105 @@
 
 #pragma once
 
-#include <pcl/registration/eigen.h>
+#include <Eigen/Core>
+
+#include <string.h>
+
+#include <algorithm>
 #include <vector>
 
-namespace pcl
+namespace pcl {
+namespace distances {
+
+/** \brief Compute the median value from a set of doubles
+ * \param[in] fvec the set of doubles
+ * \param[in] m the number of doubles in the set
+ */
+inline double
+computeMedian(double* fvec, int m)
 {
-  namespace distances
-  {
+  // Copy the values to vectors for faster sorting
+  std::vector<double> data(m);
+  memcpy(&data[0], fvec, sizeof(double) * m);
 
-    /** \brief Compute the median value from a set of doubles
-      * \param[in] fvec the set of doubles
-      * \param[in] m the number of doubles in the set
-      */
-    inline double 
-    computeMedian (double *fvec, int m)
-    {
-      // Copy the values to vectors for faster sorting
-      std::vector<double> data (m);
-      memcpy (&data[0], fvec, sizeof (double) * m);
-      
-      std::nth_element(data.begin(), data.begin() + (data.size () >> 1), data.end());
-      return (data[data.size () >> 1]);
-    }
-
-    /** \brief Use a Huber kernel to estimate the distance between two vectors
-      * \param[in] p_src the first eigen vector
-      * \param[in] p_tgt the second eigen vector
-      * \param[in] sigma the sigma value
-      */
-    inline double
-    huber (const Eigen::Vector4f &p_src, const Eigen::Vector4f &p_tgt, double sigma) 
-    {
-      Eigen::Array4f diff = (p_tgt.array () - p_src.array ()).abs ();
-      double norm = 0.0;
-      for (int i = 0; i < 3; ++i)
-      {
-        if (diff[i] < sigma)
-          norm += diff[i] * diff[i];
-        else
-          norm += 2.0 * sigma * diff[i] - sigma * sigma;
-      }
-      return (norm);
-    }
-
-    /** \brief Use a Huber kernel to estimate the distance between two vectors
-      * \param[in] diff the norm difference between two vectors
-      * \param[in] sigma the sigma value
-      */
-    inline double
-    huber (double diff, double sigma) 
-    {
-      double norm = 0.0;
-      if (diff < sigma)
-        norm += diff * diff;
-      else
-        norm += 2.0 * sigma * diff - sigma * sigma;
-      return (norm);
-    }
-
-    /** \brief Use a Gedikli kernel to estimate the distance between two vectors
-      * (for more information, see 
-      * \param[in] val the norm difference between two vectors
-      * \param[in] clipping the clipping value
-      * \param[in] slope the slope. Default: 4
-      */
-    inline double
-    gedikli (double val, double clipping, double slope = 4) 
-    {
-      return (1.0 / (1.0 + pow (std::abs(val) / clipping, slope)));
-    }
-
-    /** \brief Compute the Manhattan distance between two eigen vectors.
-      * \param[in] p_src the first eigen vector
-      * \param[in] p_tgt the second eigen vector
-      */
-    inline double
-    l1 (const Eigen::Vector4f &p_src, const Eigen::Vector4f &p_tgt) 
-    {
-      return ((p_src.array () - p_tgt.array ()).abs ().sum ());
-    }
-
-    /** \brief Compute the Euclidean distance between two eigen vectors.
-      * \param[in] p_src the first eigen vector
-      * \param[in] p_tgt the second eigen vector
-      */
-    inline double
-    l2 (const Eigen::Vector4f &p_src, const Eigen::Vector4f &p_tgt) 
-    {
-      return ((p_src - p_tgt).norm ());
-    }
-
-    /** \brief Compute the squared Euclidean distance between two eigen vectors.
-      * \param[in] p_src the first eigen vector
-      * \param[in] p_tgt the second eigen vector
-      */
-    inline double
-    l2Sqr (const Eigen::Vector4f &p_src, const Eigen::Vector4f &p_tgt) 
-    {
-      return ((p_src - p_tgt).squaredNorm ());
-    }
-  }
+  std::nth_element(data.begin(), data.begin() + (data.size() >> 1), data.end());
+  return (data[data.size() >> 1]);
 }
+
+/** \brief Use a Huber kernel to estimate the distance between two vectors
+ * \param[in] p_src the first eigen vector
+ * \param[in] p_tgt the second eigen vector
+ * \param[in] sigma the sigma value
+ */
+inline double
+huber(const Eigen::Vector4f& p_src, const Eigen::Vector4f& p_tgt, double sigma)
+{
+  Eigen::Array4f diff = (p_tgt.array() - p_src.array()).abs();
+  double norm = 0.0;
+  for (int i = 0; i < 3; ++i) {
+    if (diff[i] < sigma)
+      norm += diff[i] * diff[i];
+    else
+      norm += 2.0 * sigma * diff[i] - sigma * sigma;
+  }
+  return (norm);
+}
+
+/** \brief Use a Huber kernel to estimate the distance between two vectors
+ * \param[in] diff the norm difference between two vectors
+ * \param[in] sigma the sigma value
+ */
+inline double
+huber(double diff, double sigma)
+{
+  double norm = 0.0;
+  if (diff < sigma)
+    norm += diff * diff;
+  else
+    norm += 2.0 * sigma * diff - sigma * sigma;
+  return (norm);
+}
+
+/** \brief Use a Gedikli kernel to estimate the distance between two vectors
+ * (for more information, see
+ * \param[in] val the norm difference between two vectors
+ * \param[in] clipping the clipping value
+ * \param[in] slope the slope. Default: 4
+ */
+inline double
+gedikli(double val, double clipping, double slope = 4)
+{
+  return (1.0 / (1.0 + pow(std::abs(val) / clipping, slope)));
+}
+
+/** \brief Compute the Manhattan distance between two eigen vectors.
+ * \param[in] p_src the first eigen vector
+ * \param[in] p_tgt the second eigen vector
+ */
+inline double
+l1(const Eigen::Vector4f& p_src, const Eigen::Vector4f& p_tgt)
+{
+  return ((p_src.array() - p_tgt.array()).abs().sum());
+}
+
+/** \brief Compute the Euclidean distance between two eigen vectors.
+ * \param[in] p_src the first eigen vector
+ * \param[in] p_tgt the second eigen vector
+ */
+inline double
+l2(const Eigen::Vector4f& p_src, const Eigen::Vector4f& p_tgt)
+{
+  return ((p_src - p_tgt).norm());
+}
+
+/** \brief Compute the squared Euclidean distance between two eigen vectors.
+ * \param[in] p_src the first eigen vector
+ * \param[in] p_tgt the second eigen vector
+ */
+inline double
+l2Sqr(const Eigen::Vector4f& p_src, const Eigen::Vector4f& p_tgt)
+{
+  return ((p_src - p_tgt).squaredNorm());
+}
+} // namespace distances
+} // namespace pcl

@@ -44,8 +44,9 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <pcl/filters/morphological_filter.h>
+#include <boost/filesystem.hpp> // for path, exists, ...
+#include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
@@ -135,10 +136,10 @@ saveCloud (const std::string &filename, const Cloud &output)
 }
 
 int
-batchProcess (const std::vector<string> &pcd_files, string &output_dir,
+batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir,
               float resolution, const std::string &method)
 {
-  std::vector<string> st;
+  std::vector<std::string> st;
   for (const auto &pcd_file : pcd_files)
   {
     // Load the first file
@@ -151,14 +152,11 @@ batchProcess (const std::vector<string> &pcd_files, string &output_dir,
     compute (cloud, output, resolution, method);
 
     // Prepare output file name
-    string filename = pcd_file;
-    boost::trim (filename);
-    boost::split (st, filename, boost::is_any_of ("/\\"), boost::token_compress_on);
-
+    std::string filename = boost::filesystem::path(pcd_file).filename().string();
+    
     // Save into the second file
-    stringstream ss;
-    ss << output_dir << "/" << st.at (st.size () - 1);
-    saveCloud (ss.str (), output);
+    const std::string filepath = output_dir + '/' + filename;
+    saveCloud (filepath, output);
   }
   return (0);
 }
@@ -183,7 +181,7 @@ main (int argc, char** argv)
   float resolution = default_resolution;
   parse_argument (argc, argv, "-method", method);
   parse_argument (argc, argv, "-resolution", resolution);
-  string input_dir, output_dir;
+  std::string input_dir, output_dir;
   if (parse_argument (argc, argv, "-input_dir", input_dir) != -1)
   {
     PCL_INFO ("Input directory given as %s. Batch process mode on.\n", input_dir.c_str ());
@@ -224,7 +222,7 @@ main (int argc, char** argv)
   {
     if (!input_dir.empty() && boost::filesystem::exists (input_dir))
     {
-      std::vector<string> pcd_files;
+      std::vector<std::string> pcd_files;
       boost::filesystem::directory_iterator end_itr;
       for (boost::filesystem::directory_iterator itr (input_dir); itr != end_itr; ++itr)
       {

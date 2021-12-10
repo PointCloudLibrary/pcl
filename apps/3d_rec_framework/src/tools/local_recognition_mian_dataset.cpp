@@ -10,10 +10,10 @@
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/shot_local_estimator_omp.h>
 #include <pcl/apps/3d_rec_framework/pc_source/mesh_source.h>
 #include <pcl/apps/3d_rec_framework/pipeline/local_recognizer.h>
+#include <pcl/common/transforms.h> // for transformPointCloud
 #include <pcl/console/parse.h>
 #include <pcl/recognition/cg/correspondence_grouping.h>
 #include <pcl/recognition/cg/geometric_consistency.h>
-#include <pcl/recognition/cg/hough_3d.h>
 #include <pcl/recognition/hv/greedy_verification.h>
 #include <pcl/recognition/hv/hv_go.h>
 #include <pcl/recognition/hv/hv_papazov.h>
@@ -105,11 +105,10 @@ recognizeAndVisualize(
         if ((std::size_t)scene != i)
           continue;
 
-      std::stringstream file;
-      file << ply_files_dir.string() << files[i];
+      const std::string file = ply_files_dir.string() + files[i];
 
       typename pcl::PointCloud<PointT>::Ptr scene(new pcl::PointCloud<PointT>());
-      pcl::io::loadPCDFile(file.str(), *scene);
+      pcl::io::loadPCDFile(file, *scene);
 
       local.setVoxelSizeICP(0.005f);
       local.setInputCloud(scene);
@@ -118,18 +117,16 @@ recognizeAndVisualize(
         local.recognize();
       }
 
-      std::stringstream scene_name;
-      scene_name << "Scene " << (i + 1);
+      const std::string scene_name = "Scene " + std::to_string(i + 1);
       vis.addPointCloud<PointT>(scene, "scene_cloud");
-      vis.addText(scene_name.str(), 1, 30, 24, 1, 0, 0, "scene_text");
+      vis.addText(scene_name, 1, 30, 24, 1, 0, 0, "scene_text");
 
       // visualize results
       auto models = local.getModels();
       auto transforms = local.getTransforms();
 
       for (std::size_t j = 0; j < models->size(); j++) {
-        std::stringstream name;
-        name << "cloud_" << j;
+        const std::string name = "cloud_" + std::to_string(j);
 
         ConstPointInTPtr model_cloud = models->at(j).getAssembled(0.0025f);
         typename pcl::PointCloud<PointT>::Ptr model_aligned(
@@ -162,7 +159,7 @@ recognizeAndVisualize(
 
         pcl::visualization::PointCloudColorHandlerCustom<PointT> random_handler(
             model_aligned, r, g, b);
-        vis.addPointCloud<PointT>(model_aligned, random_handler, name.str());
+        vis.addPointCloud<PointT>(model_aligned, random_handler, name);
       }
 
       vis.spin();
@@ -170,9 +167,8 @@ recognizeAndVisualize(
       vis.removePointCloud("scene_cloud");
       vis.removeShape("scene_text");
       for (std::size_t j = 0; j < models->size(); j++) {
-        std::stringstream name;
-        name << "cloud_" << j;
-        vis.removePointCloud(name.str());
+        const std::string name = "cloud_" + std::to_string(j);
+        vis.removePointCloud(name);
       }
     }
   }
@@ -185,27 +181,24 @@ recognizeAndVisualize(
     local.initialize();
 
     for (std::size_t i = 0; i < files.size(); i++) {
-      std::stringstream file;
-      file << ply_files_dir.string() << files[i];
+      const std::string file = ply_files_dir.string() + files[i];
 
       typename pcl::PointCloud<PointT>::Ptr scene(new pcl::PointCloud<PointT>());
-      pcl::io::loadPCDFile(file.str(), *scene);
+      pcl::io::loadPCDFile(file, *scene);
 
       local.setInputCloud(scene);
       local.recognize();
 
-      std::stringstream scene_name;
-      scene_name << "Scene " << (i + 1);
+      const std::string scene_name = "Scene " + std::to_string(i + 1);
       vis.addPointCloud<PointT>(scene, "scene_cloud");
-      vis.addText(scene_name.str(), 1, 30, 24, 1, 0, 0, "scene_text");
+      vis.addText(scene_name, 1, 30, 24, 1, 0, 0, "scene_text");
 
       // visualize results
       auto models = local.getModels();
       auto transforms = local.getTransforms();
 
       for (std::size_t j = 0; j < models->size(); j++) {
-        std::stringstream name;
-        name << "cloud_" << j;
+        const std::string name = "cloud_" + std::to_string(j);
 
         ConstPointInTPtr model_cloud = models->at(j).getAssembled(0.0025f);
         typename pcl::PointCloud<PointT>::Ptr model_aligned(
@@ -214,7 +207,7 @@ recognizeAndVisualize(
 
         pcl::visualization::PointCloudColorHandlerRandom<PointT> random_handler(
             model_aligned);
-        vis.addPointCloud<PointT>(model_aligned, random_handler, name.str());
+        vis.addPointCloud<PointT>(model_aligned, random_handler, name);
       }
 
       vis.spin();
@@ -222,9 +215,8 @@ recognizeAndVisualize(
       vis.removePointCloud("scene_cloud");
       vis.removeShape("scene_text");
       for (std::size_t j = 0; j < models->size(); j++) {
-        std::stringstream name;
-        name << "cloud_" << j;
-        vis.removePointCloud(name.str());
+        const std::string name = "cloud_" + std::to_string(j);
+        vis.removePointCloud(name);
       }
     }
   }
@@ -291,7 +283,7 @@ main(int argc, char** argv)
   int detect_clutter = 1;
   int hv_method = 0;
   int use_hv = 1;
-  float thres_hyp_ = 0.2f;
+  float thres_hyp = 0.2f;
   float desc_radius = 0.04f;
 
   pcl::console::parse_argument(argc, argv, "-models_dir", path);
@@ -308,7 +300,8 @@ main(int argc, char** argv)
   pcl::console::parse_argument(argc, argv, "-detect_clutter", detect_clutter);
   pcl::console::parse_argument(argc, argv, "-hv_method", hv_method);
   pcl::console::parse_argument(argc, argv, "-use_hv", use_hv);
-  pcl::console::parse_argument(argc, argv, "-thres_hyp", thres_hyp_);
+  pcl::console::parse_argument(argc, argv, "-thres_hyp", thres_hyp);
+  pcl::console::parse_argument(argc, argv, "-desc_radius", desc_radius);
 
   if (mians_scenes.empty()) {
     PCL_ERROR("Set the directory containing mians scenes using the -mians_scenes_dir "
@@ -501,7 +494,7 @@ main(int argc, char** argv)
 
     local.setUseCache(static_cast<bool>(use_cache));
     local.initialize(static_cast<bool>(force_retrain));
-    local.setThresholdAcceptHyp(thres_hyp_);
+    local.setThresholdAcceptHyp(thres_hyp);
 
     uniform_keypoint_extractor->setSamplingDensity(0.005f);
     local.setICPIterations(icp_iterations);

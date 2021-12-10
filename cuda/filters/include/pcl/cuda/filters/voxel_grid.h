@@ -35,6 +35,8 @@
 
 #pragma once
 
+PCL_DEPRECATED_HEADER(1, 16, "The CUDA VoxelGrid filter does not work. Use the CPU VoxelGrid filter instead.")
+
 #include <pcl_cuda/filters/filter.h>
 #include <pcl_cuda/filters/passthrough.h>
 #include <thrust/count.h>
@@ -92,13 +94,13 @@ namespace pcl_cuda
       applyFilter (PointCloud &output)
       {
         // Allocate enough space
-        output.points.resize (input_->points.size ());
+        output.resize (input_->points.size ());
         // Copy data
-        Device<PointXYZRGB>::type::iterator nr_points = thrust::copy_if (input_->points.begin (), input_->points.end (), output.points.begin (), isFiniteAOS ());
-        output.points.resize (nr_points - output.points.begin ());
+        Device<PointXYZRGB>::type::iterator nr_points = thrust::copy_if (input_->points.begin (), input_->points.end (), output.begin (), isFiniteAOS ());
+        output.resize (nr_points - output.begin ());
 
         //std::cerr << "[applyFilterAOS]: ";
-        //std::cerr << input_->points.size () << " " << output.points.size () << std::endl;
+        //std::cerr << input_->points.size () << " " << output.size () << std::endl;
       }
   };
  

@@ -39,6 +39,8 @@
 
 #include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
 
+#include <vtkInteractorStyleTrackballActor.h>
+
 namespace pcl
 {
   namespace cloud_composer

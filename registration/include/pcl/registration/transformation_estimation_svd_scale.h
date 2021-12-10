@@ -42,49 +42,54 @@
 
 #include <pcl/registration/transformation_estimation_svd.h>
 
-namespace pcl
-{
-  namespace registration
-  {
-    /** @b TransformationEstimationSVD implements SVD-based estimation of
-      * the transformation aligning the given correspondences.
-      * Optionally the scale is estimated. Note that the similarity transform might not be optimal for the underlying Frobenius Norm.
-      *
-      * \note The class is templated on the source and target point types as well as on the output scalar of the transformation matrix (i.e., float or double). Default: float.
-      * \author Suat Gedikli
-      * \ingroup registration
-      */
-    template <typename PointSource, typename PointTarget, typename Scalar = float>
-    class TransformationEstimationSVDScale : public TransformationEstimationSVD<PointSource, PointTarget, Scalar>
-    {
-      public:
-        using Ptr = shared_ptr<TransformationEstimationSVDScale<PointSource, PointTarget, Scalar> >;
-        using ConstPtr = shared_ptr<const TransformationEstimationSVDScale<PointSource, PointTarget, Scalar> >;
+namespace pcl {
+namespace registration {
+/** @b TransformationEstimationSVD implements SVD-based estimation of
+ * the transformation aligning the given correspondences.
+ * Optionally the scale is estimated. Note that the similarity transform might not be
+ * optimal for the underlying Frobenius Norm.
+ *
+ * \note The class is templated on the source and target point types as well as on the
+ * output scalar of the transformation matrix (i.e., float or double). Default: float.
+ * \author Suat Gedikli
+ * \ingroup registration
+ */
+template <typename PointSource, typename PointTarget, typename Scalar = float>
+class TransformationEstimationSVDScale
+: public TransformationEstimationSVD<PointSource, PointTarget, Scalar> {
+public:
+  using Ptr =
+      shared_ptr<TransformationEstimationSVDScale<PointSource, PointTarget, Scalar>>;
+  using ConstPtr = shared_ptr<
+      const TransformationEstimationSVDScale<PointSource, PointTarget, Scalar>>;
 
-        using Matrix4 = typename TransformationEstimationSVD<PointSource, PointTarget, Scalar>::Matrix4;
+  using Matrix4 =
+      typename TransformationEstimationSVD<PointSource, PointTarget, Scalar>::Matrix4;
 
-        /** \brief Inherits from TransformationEstimationSVD, but forces it to not use the Umeyama method */
-        TransformationEstimationSVDScale ():
-          TransformationEstimationSVD<PointSource, PointTarget, Scalar> (false)
-      {}
+  /** \brief Inherits from TransformationEstimationSVD, but forces it to not use the
+   * Umeyama method */
+  TransformationEstimationSVDScale()
+  : TransformationEstimationSVD<PointSource, PointTarget, Scalar>(false)
+  {}
 
-      protected:
-        /** \brief Obtain a 4x4 rigid transformation matrix from a correlation matrix H = src * tgt'
-          * \param[in] cloud_src_demean the input source cloud, demeaned, in Eigen format
-          * \param[in] centroid_src the input source centroid, in Eigen format
-          * \param[in] cloud_tgt_demean the input target cloud, demeaned, in Eigen format
-          * \param[in] centroid_tgt the input target cloud, in Eigen format
-          * \param[out] transformation_matrix the resultant 4x4 rigid transformation matrix
-          */ 
-        void
-        getTransformationFromCorrelation (const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_src_demean,
-                                          const Eigen::Matrix<Scalar, 4, 1> &centroid_src,
-                                          const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_tgt_demean,
-                                          const Eigen::Matrix<Scalar, 4, 1> &centroid_tgt,
-                                          Matrix4 &transformation_matrix) const;
-    };
+protected:
+  /** \brief Obtain a 4x4 rigid transformation matrix from a correlation matrix H = src
+   * * tgt' \param[in] cloud_src_demean the input source cloud, demeaned, in Eigen
+   * format \param[in] centroid_src the input source centroid, in Eigen format
+   * \param[in] cloud_tgt_demean the input target cloud, demeaned, in Eigen format
+   * \param[in] centroid_tgt the input target cloud, in Eigen format
+   * \param[out] transformation_matrix the resultant 4x4 rigid transformation matrix
+   */
+  void
+  getTransformationFromCorrelation(
+      const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>& cloud_src_demean,
+      const Eigen::Matrix<Scalar, 4, 1>& centroid_src,
+      const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>& cloud_tgt_demean,
+      const Eigen::Matrix<Scalar, 4, 1>& centroid_tgt,
+      Matrix4& transformation_matrix) const;
+};
 
-  }
-}
+} // namespace registration
+} // namespace pcl
 
 #include <pcl/registration/impl/transformation_estimation_svd_scale.hpp>

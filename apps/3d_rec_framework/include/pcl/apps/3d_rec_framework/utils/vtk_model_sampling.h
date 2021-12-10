@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pcl/common/common.h>
+#include <pcl/visualization/vtk/pcl_vtk_compatibility.h>
 
 #include <vtkCellArray.h>
 #include <vtkPLYReader.h>
@@ -74,7 +74,7 @@ randPSurface(vtkPolyData* polydata,
 
   double A[3], B[3], C[3];
   vtkIdType npts = 0;
-  vtkIdType* ptIds = nullptr;
+  vtkCellPtsPtr ptIds = nullptr;
   polydata->GetCellPoints(el, npts, ptIds);
 
   if (ptIds == nullptr)
@@ -98,7 +98,9 @@ uniform_sampling(const vtkSmartPointer<vtkPolyData>& polydata,
   double p1[3], p2[3], p3[3], totalArea = 0;
   std::vector<double> cumulativeAreas(cells->GetNumberOfCells(), 0);
   std::size_t i = 0;
-  vtkIdType npts = 0, *ptIds = nullptr;
+  vtkIdType npts = 0;
+  vtkCellPtsPtr ptIds = nullptr;
+
   for (cells->InitTraversal(); cells->GetNextCell(npts, ptIds); i++) {
     polydata->GetPoint(ptIds[0], p1);
     polydata->GetPoint(ptIds[1], p2);
@@ -107,16 +109,14 @@ uniform_sampling(const vtkSmartPointer<vtkPolyData>& polydata,
     cumulativeAreas[i] = totalArea;
   }
 
-  cloud_out.points.resize(n_samples);
-  cloud_out.width = static_cast<int>(n_samples);
+  cloud_out.resize(n_samples);
+  cloud_out.width = n_samples;
   cloud_out.height = 1;
 
-  for (i = 0; i < n_samples; i++) {
+  for (auto& point : cloud_out) {
     Eigen::Vector4f p(0.f, 0.f, 0.f, 0.f);
     randPSurface(polydata, &cumulativeAreas, totalArea, p);
-    cloud_out.points[i].x = static_cast<float>(p[0]);
-    cloud_out.points[i].y = static_cast<float>(p[1]);
-    cloud_out.points[i].z = static_cast<float>(p[2]);
+    point.getVector3fMap() = p.head<3>();
   }
 }
 
@@ -159,17 +159,17 @@ getVerticesAsPointCloud(const vtkSmartPointer<vtkPolyData>& polydata,
                         pcl::PointCloud<pcl::PointXYZ>& cloud_out)
 {
   vtkPoints* points = polydata->GetPoints();
-  cloud_out.points.resize(points->GetNumberOfPoints());
-  cloud_out.width = static_cast<int>(cloud_out.points.size());
+  cloud_out.resize(points->GetNumberOfPoints());
+  cloud_out.width = cloud_out.size();
   cloud_out.height = 1;
   cloud_out.is_dense = false;
 
   for (vtkIdType i = 0; i < points->GetNumberOfPoints(); i++) {
     double p[3];
     points->GetPoint(i, p);
-    cloud_out.points[i].x = static_cast<float>(p[0]);
-    cloud_out.points[i].y = static_cast<float>(p[1]);
-    cloud_out.points[i].z = static_cast<float>(p[2]);
+    cloud_out[i].x = static_cast<float>(p[0]);
+    cloud_out[i].y = static_cast<float>(p[1]);
+    cloud_out[i].z = static_cast<float>(p[2]);
   }
 }
 

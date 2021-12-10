@@ -8,9 +8,7 @@
 #pragma once
 
 #include <pcl/apps/3d_rec_framework/utils/persistence_utils.h>
-#include <pcl/common/transforms.h>
 #include <pcl/filters/voxel_grid.h>
-#include <pcl/io/pcd_io.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
@@ -93,20 +91,9 @@ protected:
                             std::string& id,
                             std::string& classname)
   {
-
-    std::vector<std::string> strs;
-    boost::split(strs, filename, boost::is_any_of("/\\"));
-    std::string name = strs[strs.size() - 1];
-
-    std::stringstream ss;
-    for (int i = 0; i < (static_cast<int>(strs.size()) - 1); i++) {
-      ss << strs[i];
-      if (i != (static_cast<int>(strs.size()) - 1))
-        ss << "/";
-    }
-
-    classname = ss.str();
-    id = name.substr(0, name.length() - 4);
+    const bf::path path = filename;
+    classname = path.parent_path().string() + '/';
+    id = path.stem().string();
   }
 
   void
@@ -122,22 +109,7 @@ protected:
                                  std::string& class_str,
                                  std::string& id_str)
   {
-    std::vector<std::string> strs;
-    boost::split(strs, class_str, boost::is_any_of("/\\"));
-
-    std::stringstream ss;
-    ss << training_dir << "/";
-    for (const auto& str : strs) {
-      ss << str << "/";
-      bf::path trained_dir = ss.str();
-      if (!bf::exists(trained_dir))
-        bf::create_directory(trained_dir);
-    }
-
-    ss << id_str;
-    bf::path trained_dir = ss.str();
-    if (!bf::exists(trained_dir))
-      bf::create_directory(trained_dir);
+    bf::create_directories(training_dir + '/' + class_str + '/' + id_str);
   }
 
 public:
@@ -174,7 +146,7 @@ public:
       // check if its a directory, then get models in it
       if (bf::is_directory(dir_entry)) {
         std::string so_far =
-            rel_path_so_far + (dir_entry.path().filename()).string() + "/";
+            rel_path_so_far + (dir_entry.path().filename()).string() + '/';
 
         bf::path curr_path = dir_entry.path();
         getModelsInDirectory(curr_path, so_far, relative_paths, ext);
@@ -239,19 +211,13 @@ public:
   bool
   modelAlreadyTrained(ModelT m, std::string& base_dir, std::string& descr_name)
   {
-    std::stringstream dir;
-    dir << base_dir << "/" << m.class_ << "/" << m.id_ << "/" << descr_name;
-    bf::path desc_dir = dir.str();
-    std::cout << dir.str() << std::endl;
-    return bf::exists(desc_dir);
+    return bf::exists(getModelDescriptorDir(m, base_dir, descr_name));
   }
 
   std::string
   getModelDescriptorDir(ModelT m, std::string& base_dir, std::string& descr_name)
   {
-    std::stringstream dir;
-    dir << base_dir << "/" << m.class_ << "/" << m.id_ << "/" << descr_name;
-    return dir.str();
+    return base_dir + '/' + m.class_ + '/' + m.id_ + '/' + descr_name;
   }
 
   void

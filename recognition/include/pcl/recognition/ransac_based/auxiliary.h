@@ -37,9 +37,8 @@
 
 #pragma once
 
-#include <cmath>
-#include <cstdlib>
-#include <pcl/common/eigen.h>
+#include <Eigen/Core> // for Matrix
+#include <Eigen/Geometry> // for AngleAxis
 #include <pcl/point_types.h>
 
 #define AUX_PI_FLOAT            3.14159265358979323846f

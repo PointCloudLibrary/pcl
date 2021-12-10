@@ -40,7 +40,6 @@
 #define SHOW_FPS 1
 
 #include <pcl/apps/timer.h>
-#include <pcl/common/common.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/io/openni_grabber.h>
@@ -170,7 +169,7 @@ public:
           image_viewer_.removeLayer(getStrBool(keypts));
           std::vector<int> uv;
           uv.reserve(keypoints_indices_->indices.size() * 2);
-          for (const int& index : keypoints_indices_->indices) {
+          for (const auto& index : keypoints_indices_->indices) {
             int u(index % cloud->width);
             int v(index / cloud->width);
             image_viewer_.markPoint(u,

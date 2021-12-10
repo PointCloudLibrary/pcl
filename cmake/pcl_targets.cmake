@@ -114,7 +114,8 @@ macro(PCL_SUBSYS_DEPEND _var _name)
     if(SUBSYS_EXT_DEPS)
       foreach(_dep ${SUBSYS_EXT_DEPS})
         string(TOUPPER "${_dep}_found" EXT_DEP_FOUND)
-        if(NOT EXT_DEP_FOUND)
+        #Variable EXT_DEP_FOUND expands to ie. QHULL_FOUND which in turn is then used to see if the EXT_DEPS is found.
+        if(NOT ${EXT_DEP_FOUND})
           set(${_var} FALSE)
           PCL_SET_SUBSYS_STATUS(${_name} FALSE "Requires external library ${_dep}.")
         endif()
@@ -169,7 +170,7 @@ macro(PCL_SUBSUBSYS_DEPEND _var _parent _name)
     if(SUBSUBSYS_EXT_DEPS)
       foreach(_dep ${SUBSUBSYS_EXT_DEPS})
         string(TOUPPER "${_dep}_found" EXT_DEP_FOUND)
-        if(NOT EXT_DEP_FOUND)
+        if(NOT ${EXT_DEP_FOUND})
           set(${_var} FALSE)
           PCL_SET_SUBSYS_STATUS(${_parent}_${_name} FALSE "Requires external library ${_dep}.")
         endif()
@@ -222,8 +223,8 @@ function(PCL_ADD_LIBRARY _name)
   add_library(${_name} ${PCL_LIB_TYPE} ${ADD_LIBRARY_OPTION_SOURCES})
   PCL_ADD_VERSION_INFO(${_name})
   target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
-  # must link explicitly against boost.
-  target_link_libraries(${_name} ${Boost_LIBRARIES} Threads::Threads)
+
+  target_link_libraries(${_name} Threads::Threads)
   if(TARGET OpenMP::OpenMP_CXX)
     target_link_libraries(${_name} OpenMP::OpenMP_CXX)
   endif()
@@ -250,6 +251,11 @@ function(PCL_ADD_LIBRARY _name)
           RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ADD_LIBRARY_OPTION_COMPONENT}
           LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ADD_LIBRARY_OPTION_COMPONENT}
           ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ADD_LIBRARY_OPTION_COMPONENT})
+
+  # Copy PDB if available
+  if(MSVC AND PCL_SHARED_LIBS)
+    install(FILES $<TARGET_PDB_FILE:${_name}> DESTINATION ${BIN_INSTALL_DIR} OPTIONAL)
+  endif()
 endfunction()
 
 ###############################################################################
@@ -264,16 +270,14 @@ function(PCL_CUDA_ADD_LIBRARY _name)
   cmake_parse_arguments(ADD_LIBRARY_OPTION "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
   REMOVE_VTK_DEFINITIONS()
-  if(PCL_SHARED_LIBS)
-    # to overcome a limitation in cuda_add_library, we add manually PCLAPI_EXPORTS macro
-    cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ADD_LIBRARY_OPTION_SOURCES} OPTIONS -DPCLAPI_EXPORTS)
-  else()
-    cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ADD_LIBRARY_OPTION_SOURCES})
-  endif()
+
+  add_library(${_name} ${PCL_LIB_TYPE} ${ADD_LIBRARY_OPTION_SOURCES})
+
   PCL_ADD_VERSION_INFO(${_name})
 
-  # must link explicitly against boost.
-  target_link_libraries(${_name} ${Boost_LIBRARIES})
+  target_compile_options(${_name} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>: ${GEN_CODE} --expt-relaxed-constexpr>)
+
+  target_include_directories(${_name} PRIVATE ${CUDA_TOOLKIT_INCLUDE})
 
   set_target_properties(${_name} PROPERTIES
     VERSION ${PCL_VERSION}
@@ -305,8 +309,8 @@ function(PCL_ADD_EXECUTABLE _name)
     add_executable(${_name} ${ADD_LIBRARY_OPTION_SOURCES})
   endif()
   PCL_ADD_VERSION_INFO(${_name})
-  # must link explicitly against boost.
-  target_link_libraries(${_name} ${Boost_LIBRARIES} Threads::Threads)
+  
+  target_link_libraries(${_name} Threads::Threads)
 
   if(WIN32 AND MSVC)
     set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
@@ -345,11 +349,14 @@ function(PCL_CUDA_ADD_EXECUTABLE _name)
   cmake_parse_arguments(ADD_LIBRARY_OPTION "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
   REMOVE_VTK_DEFINITIONS()
-  cuda_add_executable(${_name} ${ADD_LIBRARY_OPTION_SOURCES})
+  
+  add_executable(${_name} ${ADD_LIBRARY_OPTION_SOURCES})
+  
   PCL_ADD_VERSION_INFO(${_name})
 
-  # must link explicitly against boost.
-  target_link_libraries(${_name} ${Boost_LIBRARIES})
+  target_compile_options(${_name} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>: ${GEN_CODE} --expt-relaxed-constexpr>)
+  
+  target_include_directories(${_name} PRIVATE ${CUDA_TOOLKIT_INCLUDE})
 
   if(WIN32 AND MSVC)
     set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
@@ -386,9 +393,6 @@ macro(PCL_ADD_TEST _name _exename)
 
   target_link_libraries(${_exename} Threads::Threads)
 
-  # must link explicitly against boost only on Windows
-  target_link_libraries(${_exename} ${Boost_LIBRARIES})
-
   #Only applies to MSVC
   if(MSVC)
     #Requires CMAKE version 3.13.0
@@ -409,6 +413,46 @@ macro(PCL_ADD_TEST _name _exename)
 
   add_dependencies(tests ${_exename})
 endmacro()
+
+###############################################################################
+# Add a benchmark target.
+# _name The benchmark name.
+# ARGN :
+#    FILES the source files for the benchmark
+#    ARGUMENTS Arguments for benchmark executable
+#    LINK_WITH link benchmark executable with libraries
+function(PCL_ADD_BENCHMARK _name)
+  set(options)
+  set(oneValueArgs)
+  set(multiValueArgs FILES ARGUMENTS LINK_WITH)
+  cmake_parse_arguments(PCL_ADD_BENCHMARK "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+  add_executable(benchmark_${_name} ${PCL_ADD_BENCHMARK_FILES})
+  set_target_properties(benchmark_${_name} PROPERTIES FOLDER "Benchmarks")
+  target_link_libraries(benchmark_${_name} benchmark::benchmark ${PCL_ADD_BENCHMARK_LINK_WITH})
+  set_target_properties(benchmark_${_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+  
+  #Only applies to MSVC
+  if(MSVC)
+    #Requires CMAKE version 3.13.0
+    get_target_property(BenchmarkArgumentWarningShown run_benchmarks PCL_BENCHMARK_ARGUMENTS_WARNING_SHOWN)
+    if(CMAKE_VERSION VERSION_LESS "3.13.0" AND (NOT BenchmarkArgumentWarningShown))
+      message(WARNING "Arguments for benchmark projects are not added - this requires at least CMake 3.13. Can be added manually in \"Project settings -> Debugging -> Command arguments\"")
+      set_target_properties(run_benchmarks PROPERTIES PCL_BENCHMARK_ARGUMENTS_WARNING_SHOWN TRUE)
+    else()
+      #Only add if there are arguments to test
+      if(PCL_ADD_BENCHMARK_ARGUMENTS)
+        string (REPLACE ";" " " PCL_ADD_BENCHMARK_ARGUMENTS_STR "${PCL_ADD_BENCHMARK_ARGUMENTS}")
+        set_target_properties(benchmark_${_name} PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS ${PCL_ADD_BENCHMARK_ARGUMENTS_STR})
+      endif()
+    endif()
+  endif()
+  
+  add_custom_target(run_benchmark_${_name} benchmark_${_name} ${PCL_ADD_BENCHMARK_ARGUMENTS})
+  set_target_properties(run_benchmark_${_name} PROPERTIES FOLDER "Benchmarks")
+  
+  add_dependencies(run_benchmarks run_benchmark_${_name})
+endfunction()
 
 ###############################################################################
 # Add an example target.
@@ -465,7 +509,7 @@ endmacro()
 ###############################################################################
 # Make a pkg-config file for a library. Do not include general PCL stuff in the
 # arguments; they will be added automatically.
-# _name The library name. "pcl_" will be preprended to this.
+# _name The library name. Please prepend "pcl_" to ensure no conflicts in user systems
 # COMPONENT The part of PCL that this pkg-config file belongs to.
 # DESC Description of the library.
 # PCL_DEPS External dependencies to pcl libs, as a list. (will get mangled to external pkg-config name)
@@ -486,11 +530,11 @@ function(PCL_MAKE_PKGCONFIG _name)
   set(PKG_LIBFLAGS ${PKGCONFIG_LIB_FLAGS})
   LIST_TO_STRING(PKG_EXTERNAL_DEPS "${PKGCONFIG_EXT_DEPS}")
   foreach(_dep ${PKGCONFIG_PCL_DEPS})
-    set(PKG_EXTERNAL_DEPS "${PKG_EXTERNAL_DEPS} pcl_${_dep}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
+    string(APPEND PKG_EXTERNAL_DEPS " pcl_${_dep}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
   endforeach()
   set(PKG_INTERNAL_DEPS "")
   foreach(_dep ${PKGCONFIG_INT_DEPS})
-    set(PKG_INTERNAL_DEPS "${PKG_INTERNAL_DEPS} -l${_dep}")
+    string(APPEND PKG_INTERNAL_DEPS " -l${_dep}")
   endforeach()
 
   set(_pc_file ${CMAKE_CURRENT_BINARY_DIR}/${_name}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}.pc)
@@ -661,6 +705,8 @@ endmacro()
 ###############################################################################
 # Write a report on the build/not-build status of the subsystems
 macro(PCL_WRITE_STATUS_REPORT)
+  message(STATUS "PCL build with following flags:")
+  message(STATUS "${CMAKE_CXX_FLAGS}")
   message(STATUS "The following subsystems will be built:")
   foreach(_ss ${PCL_SUBSYSTEMS})
     PCL_GET_SUBSYS_STATUS(_status ${_ss})
@@ -672,11 +718,11 @@ macro(PCL_WRITE_STATUS_REPORT)
         foreach(_sub ${${PCL_SUBSYS_SUBSYS}})
           PCL_GET_SUBSYS_STATUS(_sub_status ${_ss}_${_sub})
           if(_sub_status)
-            set(will_build "${will_build}\n       |_ ${_sub}")
+            string(APPEND will_build "\n       |_ ${_sub}")
           endif()
         endforeach()
         if(NOT ("${will_build}" STREQUAL ""))
-          set(message_text  "${message_text}\n       building: ${will_build}")
+          string(APPEND message_text "\n       building: ${will_build}")
         endif()
         set(wont_build)
         foreach(_sub ${${PCL_SUBSYS_SUBSYS}})
@@ -684,11 +730,11 @@ macro(PCL_WRITE_STATUS_REPORT)
           PCL_GET_SUBSYS_HYPERSTATUS(_sub_hyper_status ${_ss}_${sub})
           if(NOT _sub_status OR ("${_sub_hyper_status}" STREQUAL "AUTO_OFF"))
             GET_IN_MAP(_reason PCL_SUBSYS_REASONS ${_ss}_${_sub})
-            set(wont_build "${wont_build}\n       |_ ${_sub}: ${_reason}")
+            string(APPEND wont_build "\n       |_ ${_sub}: ${_reason}")
           endif()
         endforeach()
         if(NOT ("${wont_build}" STREQUAL ""))
-          set(message_text  "${message_text}\n       not building: ${wont_build}")
+          string(APPEND message_text "\n       not building: ${wont_build}")
         endif()
       endif()
       message(STATUS "${message_text}")
@@ -809,8 +855,7 @@ macro (PCL_ADD_DOC _subsys)
     endif()
     set(DOC_SOURCE_DIR "\"${CMAKE_CURRENT_SOURCE_DIR}\"\\")
     foreach(dep ${dependencies})
-      set(DOC_SOURCE_DIR
-          "${DOC_SOURCE_DIR}\n\t\t\t\t\t\t\t\t\t\t\t\t \"${PCL_SOURCE_DIR}/${dep}\"\\")
+      string(APPEND DOC_SOURCE_DIR "\n\t\t\t\t\t\t\t\t\t\t\t\t \"${PCL_SOURCE_DIR}/${dep}\"\\")
     endforeach()
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html")
     set(doxyfile "${CMAKE_CURRENT_BINARY_DIR}/doxyfile")

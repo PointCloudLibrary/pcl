@@ -37,7 +37,7 @@
 #ifndef __PCL_CUDA_SAFE_CALL_HPP__
 #define __PCL_CUDA_SAFE_CALL_HPP__
 
-#include "cuda_runtime_api.h"
+#include <cuda_runtime_api.h>
 #include <pcl/gpu/containers/initialization.h>
 
 #if defined(__GNUC__)

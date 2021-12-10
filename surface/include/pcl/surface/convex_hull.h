@@ -46,7 +46,6 @@
 
 // PCL includes
 #include <pcl/surface/reconstruction.h>
-#include <pcl/ModelCoefficients.h>
 #include <pcl/PolygonMesh.h>
 
 namespace pcl
@@ -89,11 +88,11 @@ namespace pcl
       using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
       /** \brief Empty constructor. */
-      ConvexHull () : compute_area_ (false), total_area_ (0), total_volume_ (0), dimension_ (0), 
+      ConvexHull () : compute_area_ (false), total_area_ (0), total_volume_ (0), dimension_ (0),
                       projection_angle_thresh_ (std::cos (0.174532925) ), qhull_flags ("qhull "),
                       x_axis_ (1.0, 0.0, 0.0), y_axis_ (0.0, 1.0, 0.0), z_axis_ (0.0, 0.0, 1.0)
       {
-      };
+      }
       
       /** \brief Empty destructor */
       ~ConvexHull () {}

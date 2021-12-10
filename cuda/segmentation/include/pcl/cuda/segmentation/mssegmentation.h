@@ -52,8 +52,6 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/gpu/gpu.hpp>
 
-using namespace std;
-
 namespace pcl
 {
 namespace cuda

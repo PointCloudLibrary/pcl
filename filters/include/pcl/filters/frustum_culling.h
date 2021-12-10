@@ -38,11 +38,9 @@
 #pragma once
 
 #include <pcl/memory.h>
-#include <pcl/pcl_macros.h>
+#include <pcl/pcl_config.h> // for PCL_NO_PRECOMPILE
 #include <pcl/point_types.h>
 #include <pcl/filters/filter_indices.h>
-#include <pcl/common/transforms.h>
-#include <pcl/common/eigen.h>
 
 namespace pcl
 {
@@ -209,7 +207,7 @@ namespace pcl
         * \param[out] indices the resultant point cloud indices
         */
       void
-      applyFilter (std::vector<int> &indices) override;
+      applyFilter (Indices &indices) override;
 
     private:
 

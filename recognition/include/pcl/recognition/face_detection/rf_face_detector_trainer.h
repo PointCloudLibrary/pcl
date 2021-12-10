@@ -10,7 +10,6 @@
 #include "pcl/recognition/face_detection/face_detector_data_provider.h"
 #include "pcl/recognition/face_detection/rf_face_utils.h"
 #include "pcl/ml/dt/decision_forest.h"
-#include <pcl/features/integral_image2D.h>
 
 namespace pcl
 {
@@ -178,19 +177,19 @@ namespace pcl
       void getVotes(pcl::PointCloud<pcl::PointXYZ>::Ptr & votes_cloud)
       {
         votes_cloud->points.resize (head_center_votes_.size ());
-        votes_cloud->width = static_cast<int>(head_center_votes_.size ());
+        votes_cloud->width = head_center_votes_.size ();
         votes_cloud->height = 1;
 
         for (std::size_t i = 0; i < head_center_votes_.size (); i++)
         {
-          votes_cloud->points[i].getVector3fMap () = head_center_votes_[i];
+          (*votes_cloud)[i].getVector3fMap () = head_center_votes_[i];
         }
       }
 
       void getVotes(pcl::PointCloud<pcl::PointXYZI>::Ptr & votes_cloud)
       {
         votes_cloud->points.resize (head_center_votes_.size ());
-        votes_cloud->width = static_cast<int>(head_center_votes_.size ());
+        votes_cloud->width = head_center_votes_.size ();
         votes_cloud->height = 1;
 
         int p = 0;
@@ -198,8 +197,8 @@ namespace pcl
         {
           for (std::size_t j = 0; j < head_center_votes_clustered_[i].size (); j++, p++)
           {
-            votes_cloud->points[p].getVector3fMap () = head_center_votes_clustered_[i][j];
-            votes_cloud->points[p].intensity = 0.1f * static_cast<float> (i);
+            (*votes_cloud)[p].getVector3fMap () = head_center_votes_clustered_[i][j];
+            (*votes_cloud)[p].intensity = 0.1f * static_cast<float> (i);
           }
         }
 
@@ -209,7 +208,7 @@ namespace pcl
       void getVotes2(pcl::PointCloud<pcl::PointXYZI>::Ptr & votes_cloud)
       {
         votes_cloud->points.resize (head_center_votes_.size ());
-        votes_cloud->width = static_cast<int>(head_center_votes_.size ());
+        votes_cloud->width = head_center_votes_.size ();
         votes_cloud->height = 1;
 
         int p = 0;
@@ -217,8 +216,8 @@ namespace pcl
         {
           for (std::size_t j = 0; j < head_center_original_votes_clustered_[i].size (); j++, p++)
           {
-            votes_cloud->points[p].getVector3fMap () = head_center_original_votes_clustered_[i][j];
-            votes_cloud->points[p].intensity = 0.1f * static_cast<float> (i);
+            (*votes_cloud)[p].getVector3fMap () = head_center_original_votes_clustered_[i][j];
+            (*votes_cloud)[p].intensity = 0.1f * static_cast<float> (i);
           }
         }
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/simulation/camera.h>
 #include <pcl/simulation/range_likelihood.h>

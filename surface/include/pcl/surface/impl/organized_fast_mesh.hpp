@@ -42,6 +42,7 @@
 #define PCL_SURFACE_ORGANIZED_FAST_MESH_HPP_
 
 #include <pcl/surface/organized_fast_mesh.h>
+#include <pcl/common/io.h> // for getFieldIndex
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
@@ -59,8 +60,8 @@ pcl::OrganizedFastMesh<PointInT>::performReconstruction (pcl::PolygonMesh &outpu
   // (running over complete image since some rows and columns are left out
   // depending on triangle_pixel_size)
   // avoid to do that here (only needed for ASCII mesh file output, e.g., in vtk files
-  for (std::size_t i = 0; i < input_->points.size (); ++i)
-    if (!isFinite (input_->points[i]))
+  for (std::size_t i = 0; i < input_->size (); ++i)
+    if (!isFinite ((*input_)[i]))
       resetPointData (i, output, 0.0f, x_idx, y_idx, z_idx);
 }
 
@@ -211,7 +212,7 @@ pcl::OrganizedFastMesh<PointInT>::makeAdaptiveCutMesh (std::vector<pcl::Vertices
   int last_column = input_->width - triangle_pixel_size_columns_;
   int last_row = input_->height - triangle_pixel_size_rows_;
 
-  int i = 0, index_down = 0, index_right = 0, index_down_right = 0, idx = 0;
+  int idx = 0;
   int y_big_incr = triangle_pixel_size_rows_ * input_->width,
       x_big_incr = y_big_incr + triangle_pixel_size_columns_;
   // Reserve enough space
@@ -221,10 +222,10 @@ pcl::OrganizedFastMesh<PointInT>::makeAdaptiveCutMesh (std::vector<pcl::Vertices
   for (int y = 0; y < last_row; y += triangle_pixel_size_rows_)
   {
     // Initialize a new row
-    i = y * input_->width;
-    index_right = i + triangle_pixel_size_columns_;
-    index_down = i + y_big_incr;
-    index_down_right = i + x_big_incr;
+    int i = y * input_->width;
+    int index_right = i + triangle_pixel_size_columns_;
+    int index_down = i + y_big_incr;
+    int index_down_right = i + x_big_incr;
 
     // Go over the columns
     for (int x = 0; x < last_column; x += triangle_pixel_size_columns_,
@@ -240,8 +241,8 @@ pcl::OrganizedFastMesh<PointInT>::makeAdaptiveCutMesh (std::vector<pcl::Vertices
 
       if (right_cut_upper && right_cut_lower && left_cut_upper && left_cut_lower)
       {
-        float dist_right_cut = std::abs (input_->points[index_down].z - input_->points[index_right].z);
-        float dist_left_cut = std::abs (input_->points[i].z - input_->points[index_down_right].z);
+        float dist_right_cut = std::abs ((*input_)[index_down].z - (*input_)[index_right].z);
+        float dist_left_cut = std::abs ((*input_)[i].z - (*input_)[index_down_right].z);
         if (dist_right_cut >= dist_left_cut)
         {
           if (store_shadowed_faces_ || !isShadowedTriangle (i, index_down_right, index_right))

@@ -37,7 +37,6 @@
 /// @details the implementation of class CloudEditorWidget.
 /// @author  Yue Li and Matthew Hielsberg
 
-#include <cctype>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QMouseEvent>
@@ -540,7 +539,7 @@ CloudEditorWidget::loadFilePCD(const std::string &filename)
   if (pcl::io::loadPCDFile<Point3D>(filename, tmp) == -1)
     throw;
   pcl_cloud_ptr = PclCloudPtr(new Cloud3D(tmp));
-  std::vector<int> index;
+  pcl::Indices index;
   pcl::removeNaNFromPointCloud(*pcl_cloud_ptr, *pcl_cloud_ptr, index);
   Statistics::clear();
   cloud_ptr_ = CloudPtr(new Cloud(*pcl_cloud_ptr, true));

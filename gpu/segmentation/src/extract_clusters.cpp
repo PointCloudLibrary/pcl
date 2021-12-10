@@ -35,11 +35,28 @@
  *
  */
 
+#include <pcl/gpu/segmentation/impl/gpu_extract_clusters.hpp>
+#include <pcl/gpu/segmentation/impl/gpu_extract_labeled_clusters.hpp>
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
-//#include <pcl/gpu/segmentation/gpu_extract_labeled_clusters.h>
-#include <pcl/gpu/segmentation/impl/gpu_extract_labeled_clusters.hpp>
 
 // Instantiations of specific point types
+PCL_INSTANTIATE(extractEuclideanClusters, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(EuclideanClusterExtraction, PCL_XYZ_POINT_TYPES);
 PCL_INSTANTIATE(extractLabeledEuclideanClusters, PCL_XYZL_POINT_TYPES);
 PCL_INSTANTIATE(EuclideanLabeledClusterExtraction, PCL_XYZL_POINT_TYPES);
+
+void
+pcl::detail::economical_download(const pcl::gpu::NeighborIndices& source_indices,
+                                 const pcl::Indices& buffer_indices,
+                                 std::size_t buffer_size,
+                                 pcl::Indices& downloaded_indices)
+{
+  std::vector<int> tmp;
+  for (std::size_t qp = 0; qp < buffer_indices.size(); qp++) {
+    std::size_t begin = qp * buffer_size;
+    tmp.resize(buffer_indices[qp]);
+    source_indices.data.download(&tmp[0], begin, buffer_indices[qp]);
+    downloaded_indices.insert(downloaded_indices.end(), tmp.begin(), tmp.end());
+  }
+}

@@ -34,14 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <pcl/common/angles.h>
 #include <pcl/common/common.h>
 #include <pcl/common/time.h>
-#include <pcl/common/transforms.h>
-#include <pcl/console/parse.h>
-#include <pcl/console/print.h>
-#include <pcl/io/pcd_grabber.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/registration/transformation_estimation_svd.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/point_cloud_handlers.h>
@@ -51,7 +45,6 @@
 #include <QMainWindow>
 #include <QMutex>
 #include <QTimer>
-#include <ui_manual_registration.h>
 
 using PointT = pcl::PointXYZRGBA;
 
@@ -106,6 +99,9 @@ public:
   DstPointPickCallback(const pcl::visualization::PointPickingEvent& event, void*);
 
 protected:
+  void
+  refreshView();
+
   pcl::visualization::PCLVisualizer::Ptr vis_src_;
   pcl::visualization::PCLVisualizer::Ptr vis_dst_;
 

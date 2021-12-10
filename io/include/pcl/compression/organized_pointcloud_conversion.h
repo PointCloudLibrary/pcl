@@ -98,7 +98,7 @@ struct OrganizedConversion<PointT, false>
                       typename std::vector<std::uint16_t>& disparityData_arg,
                       typename std::vector<std::uint8_t>&)
   {
-    std::size_t cloud_size = cloud_arg.points.size ();
+    const auto cloud_size = cloud_arg.size ();
 
     // Clear image data
     disparityData_arg.clear ();
@@ -108,7 +108,7 @@ struct OrganizedConversion<PointT, false>
     for (std::size_t i = 0; i < cloud_size; ++i)
     {
       // Get point from cloud
-      const PointT& point = cloud_arg.points[i];
+      const PointT& point = cloud_arg[i];
 
       if (pcl::isFinite (point))
       {
@@ -149,8 +149,8 @@ struct OrganizedConversion<PointT, false>
     assert(disparityData_arg.size()==cloud_size);
 
     // Reset point cloud
-    cloud_arg.points.clear ();
-    cloud_arg.points.reserve (cloud_size);
+    cloud_arg.clear ();
+    cloud_arg.reserve (cloud_size);
 
     // Define point cloud parameters
     cloud_arg.width = static_cast<std::uint32_t> (width_arg);
@@ -189,7 +189,7 @@ struct OrganizedConversion<PointT, false>
           newPoint.x = newPoint.y = newPoint.z = bad_point;
         }
 
-        cloud_arg.points.push_back (newPoint);
+        cloud_arg.push_back (newPoint);
       }
   }
 
@@ -214,8 +214,8 @@ struct OrganizedConversion<PointT, false>
     assert(depthData_arg.size()==cloud_size);
 
     // Reset point cloud
-    cloud_arg.points.clear ();
-    cloud_arg.points.reserve (cloud_size);
+    cloud_arg.clear ();
+    cloud_arg.reserve (cloud_size);
 
     // Define point cloud parameters
     cloud_arg.width = static_cast<std::uint32_t> (width_arg);
@@ -251,7 +251,7 @@ struct OrganizedConversion<PointT, false>
           newPoint.x = newPoint.y = newPoint.z = bad_point;
         }
 
-        cloud_arg.points.push_back (newPoint);
+        cloud_arg.push_back (newPoint);
       }
   }
 };
@@ -278,7 +278,7 @@ struct OrganizedConversion<PointT, true>
                       typename std::vector<std::uint16_t>& disparityData_arg,
                       typename std::vector<std::uint8_t>& rgbData_arg)
   {
-    std::size_t cloud_size = cloud_arg.points.size ();
+    const auto cloud_size = cloud_arg.size ();
 
     // Reset output vectors
     disparityData_arg.clear ();
@@ -296,7 +296,7 @@ struct OrganizedConversion<PointT, true>
 
     for (std::size_t i = 0; i < cloud_size; ++i)
     {
-      const PointT& point = cloud_arg.points[i];
+      const PointT& point = cloud_arg[i];
 
       if (pcl::isFinite (point))
       {
@@ -380,8 +380,8 @@ struct OrganizedConversion<PointT, true>
     }
 
     // Reset point cloud
-    cloud_arg.points.clear();
-    cloud_arg.points.reserve(cloud_size);
+    cloud_arg.clear();
+    cloud_arg.reserve(cloud_size);
 
     // Define point cloud parameters
     cloud_arg.width = static_cast<std::uint32_t>(width_arg);
@@ -441,7 +441,7 @@ struct OrganizedConversion<PointT, true>
         }
 
         // Add point to cloud
-        cloud_arg.points.push_back(newPoint);
+        cloud_arg.push_back(newPoint);
         // Increment point iterator
         ++i;
     }
@@ -482,8 +482,8 @@ struct OrganizedConversion<PointT, true>
     }
 
     // Reset point cloud
-    cloud_arg.points.clear();
-    cloud_arg.points.reserve(cloud_size);
+    cloud_arg.clear();
+    cloud_arg.reserve(cloud_size);
 
     // Define point cloud parameters
     cloud_arg.width = static_cast<std::uint32_t>(width_arg);
@@ -541,7 +541,7 @@ struct OrganizedConversion<PointT, true>
         }
 
         // Add point to cloud
-        cloud_arg.points.push_back(newPoint);
+        cloud_arg.push_back(newPoint);
         // Increment point iterator
         ++i;
     }

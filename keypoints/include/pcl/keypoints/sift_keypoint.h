@@ -174,7 +174,7 @@ namespace pcl
       void 
       findScaleSpaceExtrema (const PointCloudIn &input, KdTree &tree, 
                              const Eigen::MatrixXf &diff_of_gauss,
-                             std::vector<int> &extrema_indices, std::vector<int> &extrema_scales);
+                             pcl::Indices &extrema_indices, std::vector<int> &extrema_scales);
 
 
       /** \brief The standard deviation of the smallest scale in the scale space.*/

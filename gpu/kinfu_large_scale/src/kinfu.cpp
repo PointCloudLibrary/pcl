@@ -54,7 +54,6 @@
   //~ #include <opencv2/gpu/gpu.hpp>
 #endif
 
-using namespace std;
 using namespace pcl::device::kinfuLS;
 
 using pcl::device::kinfuLS::device_cast;
@@ -190,7 +189,7 @@ pcl::gpu::kinfuLS::KinfuTracker::extractAndSaveWorld ()
   
   int cloud_size = 0;
   
-  cloud_size = cyclical_.getWorldModel ()->getWorld ()->points.size();
+  cloud_size = cyclical_.getWorldModel ()->getWorld ()->size();
   
   if (cloud_size <= 0)
   {
@@ -848,7 +847,7 @@ namespace pcl
       PCL_EXPORTS void
       mergePointNormal(const DeviceArray<PointXYZ>& cloud, const DeviceArray<Normal>& normals, DeviceArray<PointNormal>& output)
       {
-        const std::size_t size = min(cloud.size(), normals.size());
+        const std::size_t size = std::min(cloud.size(), normals.size());
         output.create(size);
 
         const DeviceArray<float4>& c = (const DeviceArray<float4>&)cloud;

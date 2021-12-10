@@ -180,8 +180,8 @@ namespace pcl
 
         using PointCloud = pcl::PointCloud<PointT>;
 
-        using IndicesPtr = shared_ptr<std::vector<int> >;
-        using IndicesConstPtr = shared_ptr<const std::vector<int> >;
+        using IndicesPtr = shared_ptr<pcl::Indices>;
+        using IndicesConstPtr = shared_ptr<const pcl::Indices>;
 
         using PointCloudPtr = typename PointCloud::Ptr;
         using PointCloudConstPtr = typename PointCloud::ConstPtr;
@@ -257,7 +257,7 @@ namespace pcl
          *
          * \param[in] input_cloud The cloud of points to be inserted into the out-of-core octree. Note if multiple PCLPointCloud2 objects are added to the tree, this assumes that they all have exactly the same fields.
          * \param[in] skip_bb_check (default=false) whether to skip the bounding box check on insertion. Note the bounding box check is never skipped in the current implementation.
-         * \return Number of poitns successfully copied from the point cloud to the octree
+         * \return Number of points successfully copied from the point cloud to the octree
          */
         std::uint64_t
         addPointCloud (pcl::PCLPointCloud2::Ptr &input_cloud, const bool skip_bb_check = false);

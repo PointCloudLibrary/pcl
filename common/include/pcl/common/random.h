@@ -69,7 +69,7 @@ namespace pcl
     };
 
     /** \brief UniformGenerator class generates a random number from range [min, max] at each run picked
-      * according to a uniform distribution i.e eaach number within [min, max] has almost the same 
+      * according to a uniform distribution i.e each number within [min, max] has almost the same 
       * probability of being drawn.
       *
       * \author Nizar Sallem

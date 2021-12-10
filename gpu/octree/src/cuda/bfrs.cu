@@ -43,7 +43,6 @@
 
 #include "cuda.h"
 
-using namespace std;
 using namespace thrust;
 
 namespace pcl

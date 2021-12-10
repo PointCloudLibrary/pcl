@@ -39,9 +39,8 @@
 
 #pragma once
 
-#include <pcl/filters/boost.h>
 #include <pcl/filters/filter.h>
-#include <map>
+#include <cfloat> // for FLT_MAX
 
 namespace pcl
 {
@@ -157,7 +156,7 @@ namespace pcl
     */
   template <typename PointT> void
   getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
-               const std::vector<int> &indices,
+               const Indices &indices,
                const std::string &distance_field_name, float min_distance, float max_distance,
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false);
 
@@ -436,6 +435,7 @@ namespace pcl
       /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
         * \param[out] limit_negative true if data \b outside the interval [min; max] is to be returned, false otherwise
         */
+      PCL_DEPRECATED(1, 16, "use bool getFilterLimitsNegative() instead")
       inline void
       getFilterLimitsNegative (bool &limit_negative) const
       {
@@ -593,10 +593,10 @@ namespace pcl
       inline void
       setMinimumPointsNumberPerVoxel (unsigned int min_points_per_voxel) { min_points_per_voxel_ = min_points_per_voxel; }
 
-	  /** \brief Return the minimum number of points required for a voxel to be used.
-       */
-	  inline unsigned int
-	  getMinimumPointsNumberPerVoxel () const { return min_points_per_voxel_; }
+      /** \brief Return the minimum number of points required for a voxel to be used.
+        */
+      inline unsigned int
+      getMinimumPointsNumberPerVoxel () const { return min_points_per_voxel_; }
 
       /** \brief Set to true if leaf layout information needs to be saved for later access.
         * \param[in] save_leaf_layout the new value (true/false)
@@ -784,6 +784,7 @@ namespace pcl
       /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
         * \param[out] limit_negative true if data \b outside the interval [min; max] is to be returned, false otherwise
         */
+      PCL_DEPRECATED(1, 16, "use bool getFilterLimitsNegative() instead")
       inline void
       getFilterLimitsNegative (bool &limit_negative) const
       {

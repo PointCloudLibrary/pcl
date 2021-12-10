@@ -38,7 +38,8 @@
  *
  */
 
-// NOTE: This file has been created with 'pcl_src/geometry/include/pcl/geometry/mesh_circulators.py'
+// NOTE: This file has been created with
+// 'pcl_src/geometry/include/pcl/geometry/mesh_circulators.py'
 
 #pragma once
 
@@ -49,864 +50,823 @@
 // VertexAroundVertexCirculator
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace pcl
-{
-  namespace geometry
+namespace pcl {
+namespace geometry {
+/** \brief Circulates counter-clockwise around a vertex and returns an index to the
+ * terminating vertex of the outgoing half-edge (the target). The best way to declare
+ * the circulator is to use the method
+ * pcl::geometry::MeshBase::getVertexAroundVertexCirculator ().
+ * \tparam MeshT Mesh to which this circulator belongs to.
+ * \note The circulator can't be used to change the connectivity in the mesh (only
+ * const circulators are valid).
+ * \author Martin Saelzle
+ * \ingroup geometry
+ */
+template <class MeshT>
+class VertexAroundVertexCirculator
+: boost::equality_comparable<
+      pcl::geometry::VertexAroundVertexCirculator<MeshT>,
+      boost::unit_steppable<pcl::geometry::VertexAroundVertexCirculator<MeshT>>> {
+public:
+  using Base = boost::equality_comparable<
+      pcl::geometry::VertexAroundVertexCirculator<MeshT>,
+      boost::unit_steppable<pcl::geometry::VertexAroundVertexCirculator<MeshT>>>;
+  using Self = pcl::geometry::VertexAroundVertexCirculator<MeshT>;
+
+  using Mesh = MeshT;
+  using VertexIndex = typename Mesh::VertexIndex;
+  using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
+
+  /** \brief Constructor resulting in an invalid circulator. */
+  VertexAroundVertexCirculator() : mesh_(nullptr), idx_outgoing_half_edge_() {}
+
+  /** \brief Construct from the vertex around which we want to circulate. */
+  VertexAroundVertexCirculator(const VertexIndex& idx_vertex, Mesh* const mesh)
+  : mesh_(mesh), idx_outgoing_half_edge_(mesh->getOutgoingHalfEdgeIndex(idx_vertex))
+  {}
+
+  /** \brief Construct directly from the outgoing half-edge. */
+  VertexAroundVertexCirculator(const HalfEdgeIndex& idx_outgoing_half_edge,
+                               Mesh* const mesh)
+  : mesh_(mesh), idx_outgoing_half_edge_(idx_outgoing_half_edge)
+  {}
+
+  /** \brief Check if the circulator is valid.
+   * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure
+   * this yourself when constructing the circulator. */
+  inline bool
+  isValid() const
   {
-    /** \brief Circulates counter-clockwise around a vertex and returns an index to the terminating vertex of the outgoing half-edge (the target). The best way to declare the circulator is to use the method pcl::geometry::MeshBase::getVertexAroundVertexCirculator ().
-      * \tparam MeshT Mesh to which this circulator belongs to.
-      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid).
-      * \author Martin Saelzle
-      * \ingroup geometry
-      */
-    template <class MeshT>
-    class VertexAroundVertexCirculator
-        : boost::equality_comparable <pcl::geometry::VertexAroundVertexCirculator <MeshT>
-        , boost::unit_steppable      <pcl::geometry::VertexAroundVertexCirculator <MeshT>
-        > >
-    {
-      public:
+    return (idx_outgoing_half_edge_.isValid());
+  }
 
-        using Base = boost::equality_comparable <pcl::geometry::VertexAroundVertexCirculator <MeshT>,
-                     boost::unit_steppable      <pcl::geometry::VertexAroundVertexCirculator <MeshT> > >;
-        using Self = pcl::geometry::VertexAroundVertexCirculator<MeshT>;
+  /** \brief Comparison operators (with boost::operators): == !=
+   * \warning Does NOT check if the circulators belong to the same mesh. Please check
+   * this yourself. */
+  inline bool
+  operator==(const Self& other) const
+  {
+    return (idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
+  }
 
-        using Mesh = MeshT;
-        using VertexIndex = typename Mesh::VertexIndex;
-        using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
+  /** \brief Increment operators (with boost::operators): ++ (pre and post) */
+  inline Self&
+  operator++()
+  {
+    idx_outgoing_half_edge_ = mesh_->getNextHalfEdgeIndex(
+        mesh_->getOppositeHalfEdgeIndex(idx_outgoing_half_edge_));
+    return (*this);
+  }
 
-        /** \brief Constructor resulting in an invalid circulator. */
-        VertexAroundVertexCirculator ()
-          : mesh_                   (nullptr),
-            idx_outgoing_half_edge_ ()
-        {
-        }
+  /** \brief Decrement operators (with boost::operators): -- (pre and post) */
+  inline Self&
+  operator--()
+  {
+    idx_outgoing_half_edge_ = mesh_->getOppositeHalfEdgeIndex(
+        mesh_->getPrevHalfEdgeIndex(idx_outgoing_half_edge_));
+    return (*this);
+  }
 
-        /** \brief Construct from the vertex around which we want to circulate. */
-        VertexAroundVertexCirculator (const VertexIndex& idx_vertex,
-                                      Mesh*const         mesh)
-          : mesh_                   (mesh),
-            idx_outgoing_half_edge_ (mesh->getOutgoingHalfEdgeIndex (idx_vertex))
-        {
-        }
+  /** \brief Get the index to the target vertex. */
+  inline VertexIndex
+  getTargetIndex() const
+  {
+    return (mesh_->getTerminatingVertexIndex(idx_outgoing_half_edge_));
+  }
 
-        /** \brief Construct directly from the outgoing half-edge. */
-        VertexAroundVertexCirculator (const HalfEdgeIndex& idx_outgoing_half_edge,
-                                      Mesh*const           mesh)
-          : mesh_                   (mesh),
-            idx_outgoing_half_edge_ (idx_outgoing_half_edge)
-        {
-        }
+  /** \brief Get the half-edge that is currently stored in the circulator. */
+  inline HalfEdgeIndex
+  getCurrentHalfEdgeIndex() const
+  {
+    return (idx_outgoing_half_edge_);
+  }
 
-        /** \brief Check if the circulator is valid.
-          * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure this yourself when constructing the circulator. */
-        inline bool
-        isValid () const
-        {
-          return (idx_outgoing_half_edge_.isValid ());
-        }
+  /** \brief The mesh to which this circulator belongs to. */
+  Mesh* mesh_;
 
-        /** \brief Comparison operators (with boost::operators): == !=
-          * \warning Does NOT check if the circulators belong to the same mesh. Please check this yourself. */
-        inline bool
-        operator == (const Self& other) const
-        {
-          return (idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
-        }
-
-        /** \brief Increment operators (with boost::operators): ++ (pre and post) */
-        inline Self&
-        operator ++ ()
-        {
-          idx_outgoing_half_edge_ = mesh_->getNextHalfEdgeIndex (mesh_->getOppositeHalfEdgeIndex (idx_outgoing_half_edge_));
-          return (*this);
-        }
-
-        /** \brief Decrement operators (with boost::operators): -- (pre and post) */
-        inline Self&
-        operator -- ()
-        {
-          idx_outgoing_half_edge_ = mesh_->getOppositeHalfEdgeIndex (mesh_->getPrevHalfEdgeIndex (idx_outgoing_half_edge_));
-          return (*this);
-        }
-
-        /** \brief Get the index to the target vertex. */
-        inline VertexIndex
-        getTargetIndex () const
-        {
-          return (mesh_->getTerminatingVertexIndex (idx_outgoing_half_edge_));
-        }
-
-        /** \brief Get the half-edge that is currently stored in the circulator. */
-        inline HalfEdgeIndex
-        getCurrentHalfEdgeIndex () const
-        {
-          return (idx_outgoing_half_edge_);
-        }
-
-        /** \brief The mesh to which this circulator belongs to. */
-        Mesh* mesh_;
-
-        /** \brief The outgoing half-edge of the vertex around which we want to circulate. */
-        HalfEdgeIndex idx_outgoing_half_edge_;
-    };
-  } // End namespace geometry
+  /** \brief The outgoing half-edge of the vertex around which we want to circulate. */
+  HalfEdgeIndex idx_outgoing_half_edge_;
+};
+} // End namespace geometry
 } // End namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 // OutgoingHalfEdgeAroundVertexCirculator
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace pcl
-{
-  namespace geometry
+namespace pcl {
+namespace geometry {
+/** \brief Circulates counter-clockwise around a vertex and returns an index to the
+ * outgoing half-edge (the target). The best way to declare the circulator is to use the
+ * method pcl::geometry::MeshBase::getOutgoingHalfEdgeAroundVertexCirculator ().
+ * \tparam MeshT Mesh to which this circulator belongs to.
+ * \note The circulator can't be used to
+ * change the connectivity in the mesh (only const circulators are valid).
+ * \author Martin Saelzle
+ * \ingroup geometry
+ */
+template <class MeshT>
+class OutgoingHalfEdgeAroundVertexCirculator
+: boost::equality_comparable<
+      pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator<MeshT>,
+      boost::unit_steppable<
+          pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator<MeshT>>> {
+public:
+  using Base = boost::equality_comparable<
+      pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator<MeshT>,
+      boost::unit_steppable<
+          pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator<MeshT>>>;
+  using Self = pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator<MeshT>;
+
+  using Mesh = MeshT;
+  using VertexIndex = typename Mesh::VertexIndex;
+  using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
+
+  /** \brief Constructor resulting in an invalid circulator. */
+  OutgoingHalfEdgeAroundVertexCirculator() : mesh_(nullptr), idx_outgoing_half_edge_()
+  {}
+
+  /** \brief Construct from the vertex around which we want to circulate. */
+  OutgoingHalfEdgeAroundVertexCirculator(const VertexIndex& idx_vertex,
+                                         Mesh* const mesh)
+  : mesh_(mesh), idx_outgoing_half_edge_(mesh->getOutgoingHalfEdgeIndex(idx_vertex))
+  {}
+
+  /** \brief Construct directly from the outgoing half-edge. */
+  OutgoingHalfEdgeAroundVertexCirculator(const HalfEdgeIndex& idx_outgoing_half_edge,
+                                         Mesh* const mesh)
+  : mesh_(mesh), idx_outgoing_half_edge_(idx_outgoing_half_edge)
+  {}
+
+  /** \brief Check if the circulator is valid.
+   * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure
+   * this yourself when constructing the circulator. */
+  inline bool
+  isValid() const
   {
-    /** \brief Circulates counter-clockwise around a vertex and returns an index to the outgoing half-edge (the target). The best way to declare the circulator is to use the method pcl::geometry::MeshBase::getOutgoingHalfEdgeAroundVertexCirculator ().
-      * \tparam MeshT Mesh to which this circulator belongs to.
-      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid).
-      * \author Martin Saelzle
-      * \ingroup geometry
-      */
-    template <class MeshT>
-    class OutgoingHalfEdgeAroundVertexCirculator
-        : boost::equality_comparable <pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator <MeshT>
-        , boost::unit_steppable      <pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator <MeshT>
-        > >
-    {
-      public:
+    return (idx_outgoing_half_edge_.isValid());
+  }
 
-        using Base = boost::equality_comparable <pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator <MeshT>,
-                     boost::unit_steppable      <pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator <MeshT> > >;
-        using Self = pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator<MeshT>;
+  /** \brief Comparison operators (with boost::operators): == !=
+   * \warning Does NOT check if the circulators belong to the same mesh. Please check
+   * this yourself. */
+  inline bool
+  operator==(const Self& other) const
+  {
+    return (idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
+  }
 
-        using Mesh = MeshT;
-        using VertexIndex = typename Mesh::VertexIndex;
-        using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
+  /** \brief Increment operators (with boost::operators): ++ (pre and post) */
+  inline Self&
+  operator++()
+  {
+    idx_outgoing_half_edge_ = mesh_->getNextHalfEdgeIndex(
+        mesh_->getOppositeHalfEdgeIndex(idx_outgoing_half_edge_));
+    return (*this);
+  }
 
-        /** \brief Constructor resulting in an invalid circulator. */
-        OutgoingHalfEdgeAroundVertexCirculator ()
-          : mesh_                   (nullptr),
-            idx_outgoing_half_edge_ ()
-        {
-        }
+  /** \brief Decrement operators (with boost::operators): -- (pre and post) */
+  inline Self&
+  operator--()
+  {
+    idx_outgoing_half_edge_ = mesh_->getOppositeHalfEdgeIndex(
+        mesh_->getPrevHalfEdgeIndex(idx_outgoing_half_edge_));
+    return (*this);
+  }
 
-        /** \brief Construct from the vertex around which we want to circulate. */
-        OutgoingHalfEdgeAroundVertexCirculator (const VertexIndex& idx_vertex,
-                                                Mesh*const         mesh)
-          : mesh_                   (mesh),
-            idx_outgoing_half_edge_ (mesh->getOutgoingHalfEdgeIndex (idx_vertex))
-        {
-        }
+  /** \brief Get the index to the outgoing half-edge. */
+  inline HalfEdgeIndex
+  getTargetIndex() const
+  {
+    return (idx_outgoing_half_edge_);
+  }
 
-        /** \brief Construct directly from the outgoing half-edge. */
-        OutgoingHalfEdgeAroundVertexCirculator (const HalfEdgeIndex& idx_outgoing_half_edge,
-                                                Mesh*const           mesh)
-          : mesh_                   (mesh),
-            idx_outgoing_half_edge_ (idx_outgoing_half_edge)
-        {
-        }
+  /** \brief Get the half-edge that is currently stored in the circulator. */
+  inline HalfEdgeIndex
+  getCurrentHalfEdgeIndex() const
+  {
+    return (idx_outgoing_half_edge_);
+  }
 
-        /** \brief Check if the circulator is valid.
-          * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure this yourself when constructing the circulator. */
-        inline bool
-        isValid () const
-        {
-          return (idx_outgoing_half_edge_.isValid ());
-        }
+  /** \brief The mesh to which this circulator belongs to. */
+  Mesh* mesh_;
 
-        /** \brief Comparison operators (with boost::operators): == !=
-          * \warning Does NOT check if the circulators belong to the same mesh. Please check this yourself. */
-        inline bool
-        operator == (const Self& other) const
-        {
-          return (idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
-        }
-
-        /** \brief Increment operators (with boost::operators): ++ (pre and post) */
-        inline Self&
-        operator ++ ()
-        {
-          idx_outgoing_half_edge_ = mesh_->getNextHalfEdgeIndex (mesh_->getOppositeHalfEdgeIndex (idx_outgoing_half_edge_));
-          return (*this);
-        }
-
-        /** \brief Decrement operators (with boost::operators): -- (pre and post) */
-        inline Self&
-        operator -- ()
-        {
-          idx_outgoing_half_edge_ = mesh_->getOppositeHalfEdgeIndex (mesh_->getPrevHalfEdgeIndex (idx_outgoing_half_edge_));
-          return (*this);
-        }
-
-        /** \brief Get the index to the outgoing half-edge. */
-        inline HalfEdgeIndex
-        getTargetIndex () const
-        {
-          return (idx_outgoing_half_edge_);
-        }
-
-        /** \brief Get the half-edge that is currently stored in the circulator. */
-        inline HalfEdgeIndex
-        getCurrentHalfEdgeIndex () const
-        {
-          return (idx_outgoing_half_edge_);
-        }
-
-        /** \brief The mesh to which this circulator belongs to. */
-        Mesh* mesh_;
-
-        /** \brief The outgoing half-edge of the vertex around which we want to circulate. */
-        HalfEdgeIndex idx_outgoing_half_edge_;
-    };
-  } // End namespace geometry
+  /** \brief The outgoing half-edge of the vertex around which we want to circulate. */
+  HalfEdgeIndex idx_outgoing_half_edge_;
+};
+} // End namespace geometry
 } // End namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 // IncomingHalfEdgeAroundVertexCirculator
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace pcl
-{
-  namespace geometry
+namespace pcl {
+namespace geometry {
+/** \brief Circulates counter-clockwise around a vertex and returns an index to the
+ * incoming half-edge (the target). The best way to declare the circulator is to use the
+ * method pcl::geometry::MeshBase::getIncomingHalfEdgeAroundVertexCirculator ().
+ * \tparam MeshT Mesh to which this circulator belongs to.
+ * \note The circulator can't be used to change the connectivity in the mesh (only
+ * const circulators are valid).
+ * \author Martin Saelzle
+ * \ingroup geometry
+ */
+template <class MeshT>
+class IncomingHalfEdgeAroundVertexCirculator
+: boost::equality_comparable<
+      pcl::geometry::IncomingHalfEdgeAroundVertexCirculator<MeshT>,
+      boost::unit_steppable<
+          pcl::geometry::IncomingHalfEdgeAroundVertexCirculator<MeshT>>> {
+public:
+  using Base = boost::equality_comparable<
+      pcl::geometry::IncomingHalfEdgeAroundVertexCirculator<MeshT>,
+      boost::unit_steppable<
+          pcl::geometry::IncomingHalfEdgeAroundVertexCirculator<MeshT>>>;
+  using Self = pcl::geometry::IncomingHalfEdgeAroundVertexCirculator<MeshT>;
+
+  using Mesh = MeshT;
+  using VertexIndex = typename Mesh::VertexIndex;
+  using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
+
+  /** \brief Constructor resulting in an invalid circulator. */
+  IncomingHalfEdgeAroundVertexCirculator() : mesh_(nullptr), idx_incoming_half_edge_()
+  {}
+
+  /** \brief Construct from the vertex around which we want to circulate. */
+  IncomingHalfEdgeAroundVertexCirculator(const VertexIndex& idx_vertex,
+                                         Mesh* const mesh)
+  : mesh_(mesh), idx_incoming_half_edge_(mesh->getIncomingHalfEdgeIndex(idx_vertex))
+  {}
+
+  /** \brief Construct directly from the incoming half-edge. */
+  IncomingHalfEdgeAroundVertexCirculator(const HalfEdgeIndex& idx_incoming_half_edge,
+                                         Mesh* const mesh)
+  : mesh_(mesh), idx_incoming_half_edge_(idx_incoming_half_edge)
+  {}
+
+  /** \brief Check if the circulator is valid.
+   * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure
+   * this yourself when constructing the circulator. */
+  inline bool
+  isValid() const
   {
-    /** \brief Circulates counter-clockwise around a vertex and returns an index to the incoming half-edge (the target). The best way to declare the circulator is to use the method pcl::geometry::MeshBase::getIncomingHalfEdgeAroundVertexCirculator ().
-      * \tparam MeshT Mesh to which this circulator belongs to.
-      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid).
-      * \author Martin Saelzle
-      * \ingroup geometry
-      */
-    template <class MeshT>
-    class IncomingHalfEdgeAroundVertexCirculator
-        : boost::equality_comparable <pcl::geometry::IncomingHalfEdgeAroundVertexCirculator <MeshT>
-        , boost::unit_steppable      <pcl::geometry::IncomingHalfEdgeAroundVertexCirculator <MeshT>
-        > >
-    {
-      public:
+    return (idx_incoming_half_edge_.isValid());
+  }
 
-        using Base = boost::equality_comparable <pcl::geometry::IncomingHalfEdgeAroundVertexCirculator <MeshT>,
-                     boost::unit_steppable      <pcl::geometry::IncomingHalfEdgeAroundVertexCirculator <MeshT> > >;
-        using Self = pcl::geometry::IncomingHalfEdgeAroundVertexCirculator<MeshT>;
+  /** \brief Comparison operators (with boost::operators): == !=
+   * \warning Does NOT check if the circulators belong to the same mesh. Please check
+   * this yourself. */
+  inline bool
+  operator==(const Self& other) const
+  {
+    return (idx_incoming_half_edge_ == other.idx_incoming_half_edge_);
+  }
 
-        using Mesh = MeshT;
-        using VertexIndex = typename Mesh::VertexIndex;
-        using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
+  /** \brief Increment operators (with boost::operators): ++ (pre and post) */
+  inline Self&
+  operator++()
+  {
+    idx_incoming_half_edge_ = mesh_->getOppositeHalfEdgeIndex(
+        mesh_->getNextHalfEdgeIndex(idx_incoming_half_edge_));
+    return (*this);
+  }
 
-        /** \brief Constructor resulting in an invalid circulator. */
-        IncomingHalfEdgeAroundVertexCirculator ()
-          : mesh_                   (nullptr),
-            idx_incoming_half_edge_ ()
-        {
-        }
+  /** \brief Decrement operators (with boost::operators): -- (pre and post) */
+  inline Self&
+  operator--()
+  {
+    idx_incoming_half_edge_ = mesh_->getPrevHalfEdgeIndex(
+        mesh_->getOppositeHalfEdgeIndex(idx_incoming_half_edge_));
+    return (*this);
+  }
 
-        /** \brief Construct from the vertex around which we want to circulate. */
-        IncomingHalfEdgeAroundVertexCirculator (const VertexIndex& idx_vertex,
-                                                Mesh*const         mesh)
-          : mesh_                   (mesh),
-            idx_incoming_half_edge_ (mesh->getIncomingHalfEdgeIndex (idx_vertex))
-        {
-        }
+  /** \brief Get the index to the incoming half-edge. */
+  inline HalfEdgeIndex
+  getTargetIndex() const
+  {
+    return (idx_incoming_half_edge_);
+  }
 
-        /** \brief Construct directly from the incoming half-edge. */
-        IncomingHalfEdgeAroundVertexCirculator (const HalfEdgeIndex& idx_incoming_half_edge,
-                                                Mesh*const           mesh)
-          : mesh_                   (mesh),
-            idx_incoming_half_edge_ (idx_incoming_half_edge)
-        {
-        }
+  /** \brief Get the half-edge that is currently stored in the circulator. */
+  inline HalfEdgeIndex
+  getCurrentHalfEdgeIndex() const
+  {
+    return (idx_incoming_half_edge_);
+  }
 
-        /** \brief Check if the circulator is valid.
-          * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure this yourself when constructing the circulator. */
-        inline bool
-        isValid () const
-        {
-          return (idx_incoming_half_edge_.isValid ());
-        }
+  /** \brief The mesh to which this circulator belongs to. */
+  Mesh* mesh_;
 
-        /** \brief Comparison operators (with boost::operators): == !=
-          * \warning Does NOT check if the circulators belong to the same mesh. Please check this yourself. */
-        inline bool
-        operator == (const Self& other) const
-        {
-          return (idx_incoming_half_edge_ == other.idx_incoming_half_edge_);
-        }
-
-        /** \brief Increment operators (with boost::operators): ++ (pre and post) */
-        inline Self&
-        operator ++ ()
-        {
-          idx_incoming_half_edge_ = mesh_->getOppositeHalfEdgeIndex (mesh_->getNextHalfEdgeIndex (idx_incoming_half_edge_));
-          return (*this);
-        }
-
-        /** \brief Decrement operators (with boost::operators): -- (pre and post) */
-        inline Self&
-        operator -- ()
-        {
-          idx_incoming_half_edge_ = mesh_->getPrevHalfEdgeIndex (mesh_->getOppositeHalfEdgeIndex (idx_incoming_half_edge_));
-          return (*this);
-        }
-
-        /** \brief Get the index to the incoming half-edge. */
-        inline HalfEdgeIndex
-        getTargetIndex () const
-        {
-          return (idx_incoming_half_edge_);
-        }
-
-        /** \brief Get the half-edge that is currently stored in the circulator. */
-        inline HalfEdgeIndex
-        getCurrentHalfEdgeIndex () const
-        {
-          return (idx_incoming_half_edge_);
-        }
-
-        /** \brief The mesh to which this circulator belongs to. */
-        Mesh* mesh_;
-
-        /** \brief The incoming half-edge of the vertex around which we want to circulate. */
-        HalfEdgeIndex idx_incoming_half_edge_;
-    };
-  } // End namespace geometry
+  /** \brief The incoming half-edge of the vertex around which we want to circulate. */
+  HalfEdgeIndex idx_incoming_half_edge_;
+};
+} // End namespace geometry
 } // End namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 // FaceAroundVertexCirculator
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace pcl
-{
-  namespace geometry
+namespace pcl {
+namespace geometry {
+/** \brief Circulates counter-clockwise around a vertex and returns an index to the face
+ * of the outgoing half-edge (the target). The best way to declare the circulator is to
+ * use the method pcl::geometry::MeshBase::getFaceAroundVertexCirculator ().
+ * \tparam MeshT Mesh to which this circulator belongs to.
+ * \note The circulator can't be used to change the connectivity in the mesh (only
+ * const circulators are valid).
+ * \author Martin Saelzle
+ * \ingroup geometry
+ */
+template <class MeshT>
+class FaceAroundVertexCirculator
+: boost::equality_comparable<
+      pcl::geometry::FaceAroundVertexCirculator<MeshT>,
+      boost::unit_steppable<pcl::geometry::FaceAroundVertexCirculator<MeshT>>> {
+public:
+  using Base = boost::equality_comparable<
+      pcl::geometry::FaceAroundVertexCirculator<MeshT>,
+      boost::unit_steppable<pcl::geometry::FaceAroundVertexCirculator<MeshT>>>;
+  using Self = pcl::geometry::FaceAroundVertexCirculator<MeshT>;
+
+  using Mesh = MeshT;
+  using FaceIndex = typename Mesh::FaceIndex;
+  using VertexIndex = typename Mesh::VertexIndex;
+  using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
+
+  /** \brief Constructor resulting in an invalid circulator. */
+  FaceAroundVertexCirculator() : mesh_(nullptr), idx_outgoing_half_edge_() {}
+
+  /** \brief Construct from the vertex around which we want to circulate. */
+  FaceAroundVertexCirculator(const VertexIndex& idx_vertex, Mesh* const mesh)
+  : mesh_(mesh), idx_outgoing_half_edge_(mesh->getOutgoingHalfEdgeIndex(idx_vertex))
+  {}
+
+  /** \brief Construct directly from the outgoing half-edge. */
+  FaceAroundVertexCirculator(const HalfEdgeIndex& idx_outgoing_half_edge,
+                             Mesh* const mesh)
+  : mesh_(mesh), idx_outgoing_half_edge_(idx_outgoing_half_edge)
+  {}
+
+  /** \brief Check if the circulator is valid.
+   * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure
+   * this yourself when constructing the circulator. */
+  inline bool
+  isValid() const
   {
-    /** \brief Circulates counter-clockwise around a vertex and returns an index to the face of the outgoing half-edge (the target). The best way to declare the circulator is to use the method pcl::geometry::MeshBase::getFaceAroundVertexCirculator ().
-      * \tparam MeshT Mesh to which this circulator belongs to.
-      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid).
-      * \author Martin Saelzle
-      * \ingroup geometry
-      */
-    template <class MeshT>
-    class FaceAroundVertexCirculator
-        : boost::equality_comparable <pcl::geometry::FaceAroundVertexCirculator <MeshT>
-        , boost::unit_steppable      <pcl::geometry::FaceAroundVertexCirculator <MeshT>
-        > >
-    {
-      public:
+    return (idx_outgoing_half_edge_.isValid());
+  }
 
-        using Base = boost::equality_comparable <pcl::geometry::FaceAroundVertexCirculator <MeshT>,
-                     boost::unit_steppable      <pcl::geometry::FaceAroundVertexCirculator <MeshT> > >;
-        using Self = pcl::geometry::FaceAroundVertexCirculator<MeshT>;
+  /** \brief Comparison operators (with boost::operators): == !=
+   * \warning Does NOT check if the circulators belong to the same mesh. Please check
+   * this yourself. */
+  inline bool
+  operator==(const Self& other) const
+  {
+    return (idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
+  }
 
-        using Mesh = MeshT;
-        using FaceIndex = typename Mesh::FaceIndex;
-        using VertexIndex = typename Mesh::VertexIndex;
-        using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
+  /** \brief Increment operators (with boost::operators): ++ (pre and post) */
+  inline Self&
+  operator++()
+  {
+    idx_outgoing_half_edge_ = mesh_->getNextHalfEdgeIndex(
+        mesh_->getOppositeHalfEdgeIndex(idx_outgoing_half_edge_));
+    return (*this);
+  }
 
-        /** \brief Constructor resulting in an invalid circulator. */
-        FaceAroundVertexCirculator ()
-          : mesh_                   (nullptr),
-            idx_outgoing_half_edge_ ()
-        {
-        }
+  /** \brief Decrement operators (with boost::operators): -- (pre and post) */
+  inline Self&
+  operator--()
+  {
+    idx_outgoing_half_edge_ = mesh_->getOppositeHalfEdgeIndex(
+        mesh_->getPrevHalfEdgeIndex(idx_outgoing_half_edge_));
+    return (*this);
+  }
 
-        /** \brief Construct from the vertex around which we want to circulate. */
-        FaceAroundVertexCirculator (const VertexIndex& idx_vertex,
-                                    Mesh*const         mesh)
-          : mesh_                   (mesh),
-            idx_outgoing_half_edge_ (mesh->getOutgoingHalfEdgeIndex (idx_vertex))
-        {
-        }
+  /** \brief Get the index to the target face. */
+  inline FaceIndex
+  getTargetIndex() const
+  {
+    return (mesh_->getFaceIndex(idx_outgoing_half_edge_));
+  }
 
-        /** \brief Construct directly from the outgoing half-edge. */
-        FaceAroundVertexCirculator (const HalfEdgeIndex& idx_outgoing_half_edge,
-                                    Mesh*const           mesh)
-          : mesh_                   (mesh),
-            idx_outgoing_half_edge_ (idx_outgoing_half_edge)
-        {
-        }
+  /** \brief Get the half-edge that is currently stored in the circulator. */
+  inline HalfEdgeIndex
+  getCurrentHalfEdgeIndex() const
+  {
+    return (idx_outgoing_half_edge_);
+  }
 
-        /** \brief Check if the circulator is valid.
-          * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure this yourself when constructing the circulator. */
-        inline bool
-        isValid () const
-        {
-          return (idx_outgoing_half_edge_.isValid ());
-        }
+  /** \brief The mesh to which this circulator belongs to. */
+  Mesh* mesh_;
 
-        /** \brief Comparison operators (with boost::operators): == !=
-          * \warning Does NOT check if the circulators belong to the same mesh. Please check this yourself. */
-        inline bool
-        operator == (const Self& other) const
-        {
-          return (idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
-        }
-
-        /** \brief Increment operators (with boost::operators): ++ (pre and post) */
-        inline Self&
-        operator ++ ()
-        {
-          idx_outgoing_half_edge_ = mesh_->getNextHalfEdgeIndex (mesh_->getOppositeHalfEdgeIndex (idx_outgoing_half_edge_));
-          return (*this);
-        }
-
-        /** \brief Decrement operators (with boost::operators): -- (pre and post) */
-        inline Self&
-        operator -- ()
-        {
-          idx_outgoing_half_edge_ = mesh_->getOppositeHalfEdgeIndex (mesh_->getPrevHalfEdgeIndex (idx_outgoing_half_edge_));
-          return (*this);
-        }
-
-        /** \brief Get the index to the target face. */
-        inline FaceIndex
-        getTargetIndex () const
-        {
-          return (mesh_->getFaceIndex (idx_outgoing_half_edge_));
-        }
-
-        /** \brief Get the half-edge that is currently stored in the circulator. */
-        inline HalfEdgeIndex
-        getCurrentHalfEdgeIndex () const
-        {
-          return (idx_outgoing_half_edge_);
-        }
-
-        /** \brief The mesh to which this circulator belongs to. */
-        Mesh* mesh_;
-
-        /** \brief The outgoing half-edge of the vertex around which we want to circulate. */
-        HalfEdgeIndex idx_outgoing_half_edge_;
-    };
-  } // End namespace geometry
+  /** \brief The outgoing half-edge of the vertex around which we want to circulate. */
+  HalfEdgeIndex idx_outgoing_half_edge_;
+};
+} // End namespace geometry
 } // End namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 // VertexAroundFaceCirculator
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace pcl
-{
-  namespace geometry
+namespace pcl {
+namespace geometry {
+/** \brief Circulates clockwise around a face and returns an index to the terminating
+ * vertex of the inner half-edge (the target). The best way to declare the circulator is
+ * to use the method pcl::geometry::MeshBase::getVertexAroundFaceCirculator ().
+ * \tparam MeshT Mesh to which this circulator belongs to.
+ * \note The circulator can't be used to change the connectivity in the mesh (only
+ * const circulators are valid).
+ * \author Martin Saelzle
+ * \ingroup geometry
+ */
+template <class MeshT>
+class VertexAroundFaceCirculator
+: boost::equality_comparable<
+      pcl::geometry::VertexAroundFaceCirculator<MeshT>,
+      boost::unit_steppable<pcl::geometry::VertexAroundFaceCirculator<MeshT>>> {
+public:
+  using Base = boost::equality_comparable<
+      pcl::geometry::VertexAroundFaceCirculator<MeshT>,
+      boost::unit_steppable<pcl::geometry::VertexAroundFaceCirculator<MeshT>>>;
+  using Self = pcl::geometry::VertexAroundFaceCirculator<MeshT>;
+
+  using Mesh = MeshT;
+  using VertexIndex = typename Mesh::VertexIndex;
+  using FaceIndex = typename Mesh::FaceIndex;
+  using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
+
+  /** \brief Constructor resulting in an invalid circulator. */
+  VertexAroundFaceCirculator() : mesh_(nullptr), idx_inner_half_edge_() {}
+
+  /** \brief Construct from the face around which we want to circulate. */
+  VertexAroundFaceCirculator(const FaceIndex& idx_face, Mesh* const mesh)
+  : mesh_(mesh), idx_inner_half_edge_(mesh->getInnerHalfEdgeIndex(idx_face))
+  {}
+
+  /** \brief Construct directly from the inner half-edge. */
+  VertexAroundFaceCirculator(const HalfEdgeIndex& idx_inner_half_edge, Mesh* const mesh)
+  : mesh_(mesh), idx_inner_half_edge_(idx_inner_half_edge)
+  {}
+
+  /** \brief Check if the circulator is valid.
+   * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure
+   * this yourself when constructing the circulator. */
+  inline bool
+  isValid() const
   {
-    /** \brief Circulates clockwise around a face and returns an index to the terminating vertex of the inner half-edge (the target). The best way to declare the circulator is to use the method pcl::geometry::MeshBase::getVertexAroundFaceCirculator ().
-      * \tparam MeshT Mesh to which this circulator belongs to.
-      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid).
-      * \author Martin Saelzle
-      * \ingroup geometry
-      */
-    template <class MeshT>
-    class VertexAroundFaceCirculator
-        : boost::equality_comparable <pcl::geometry::VertexAroundFaceCirculator <MeshT>
-        , boost::unit_steppable      <pcl::geometry::VertexAroundFaceCirculator <MeshT>
-        > >
-    {
-      public:
+    return (idx_inner_half_edge_.isValid());
+  }
 
-        using Base = boost::equality_comparable <pcl::geometry::VertexAroundFaceCirculator <MeshT>,
-                     boost::unit_steppable      <pcl::geometry::VertexAroundFaceCirculator <MeshT> > >;
-        using Self = pcl::geometry::VertexAroundFaceCirculator<MeshT>;
+  /** \brief Comparison operators (with boost::operators): == !=
+   * \warning Does NOT check if the circulators belong to the same mesh. Please check
+   * this yourself. */
+  inline bool
+  operator==(const Self& other) const
+  {
+    return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
+  }
 
-        using Mesh = MeshT;
-        using VertexIndex = typename Mesh::VertexIndex;
-        using FaceIndex = typename Mesh::FaceIndex;
-        using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
+  /** \brief Increment operators (with boost::operators): ++ (pre and post) */
+  inline Self&
+  operator++()
+  {
+    idx_inner_half_edge_ = mesh_->getNextHalfEdgeIndex(idx_inner_half_edge_);
+    return (*this);
+  }
 
-        /** \brief Constructor resulting in an invalid circulator. */
-        VertexAroundFaceCirculator ()
-          : mesh_                (nullptr),
-            idx_inner_half_edge_ ()
-        {
-        }
+  /** \brief Decrement operators (with boost::operators): -- (pre and post) */
+  inline Self&
+  operator--()
+  {
+    idx_inner_half_edge_ = mesh_->getPrevHalfEdgeIndex(idx_inner_half_edge_);
+    return (*this);
+  }
 
-        /** \brief Construct from the face around which we want to circulate. */
-        VertexAroundFaceCirculator (const FaceIndex& idx_face,
-                                    Mesh*const       mesh)
-          : mesh_                (mesh),
-            idx_inner_half_edge_ (mesh->getInnerHalfEdgeIndex (idx_face))
-        {
-        }
+  /** \brief Get the index to the target vertex. */
+  inline VertexIndex
+  getTargetIndex() const
+  {
+    return (mesh_->getTerminatingVertexIndex(idx_inner_half_edge_));
+  }
 
-        /** \brief Construct directly from the inner half-edge. */
-        VertexAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge,
-                                    Mesh*const           mesh)
-          : mesh_                (mesh),
-            idx_inner_half_edge_ (idx_inner_half_edge)
-        {
-        }
+  /** \brief Get the half-edge that is currently stored in the circulator. */
+  inline HalfEdgeIndex
+  getCurrentHalfEdgeIndex() const
+  {
+    return (idx_inner_half_edge_);
+  }
 
-        /** \brief Check if the circulator is valid.
-          * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure this yourself when constructing the circulator. */
-        inline bool
-        isValid () const
-        {
-          return (idx_inner_half_edge_.isValid ());
-        }
+  /** \brief The mesh to which this circulator belongs to. */
+  Mesh* mesh_;
 
-        /** \brief Comparison operators (with boost::operators): == !=
-          * \warning Does NOT check if the circulators belong to the same mesh. Please check this yourself. */
-        inline bool
-        operator == (const Self& other) const
-        {
-          return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
-        }
-
-        /** \brief Increment operators (with boost::operators): ++ (pre and post) */
-        inline Self&
-        operator ++ ()
-        {
-          idx_inner_half_edge_ = mesh_->getNextHalfEdgeIndex (idx_inner_half_edge_);
-          return (*this);
-        }
-
-        /** \brief Decrement operators (with boost::operators): -- (pre and post) */
-        inline Self&
-        operator -- ()
-        {
-          idx_inner_half_edge_ = mesh_->getPrevHalfEdgeIndex (idx_inner_half_edge_);
-          return (*this);
-        }
-
-        /** \brief Get the index to the target vertex. */
-        inline VertexIndex
-        getTargetIndex () const
-        {
-          return (mesh_->getTerminatingVertexIndex (idx_inner_half_edge_));
-        }
-
-        /** \brief Get the half-edge that is currently stored in the circulator. */
-        inline HalfEdgeIndex
-        getCurrentHalfEdgeIndex () const
-        {
-          return (idx_inner_half_edge_);
-        }
-
-        /** \brief The mesh to which this circulator belongs to. */
-        Mesh* mesh_;
-
-        /** \brief The inner half-edge of the face around which we want to circulate. */
-        HalfEdgeIndex idx_inner_half_edge_;
-    };
-  } // End namespace geometry
+  /** \brief The inner half-edge of the face around which we want to circulate. */
+  HalfEdgeIndex idx_inner_half_edge_;
+};
+} // End namespace geometry
 } // End namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 // InnerHalfEdgeAroundFaceCirculator
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace pcl
-{
-  namespace geometry
+namespace pcl {
+namespace geometry {
+/** \brief Circulates clockwise around a face and returns an index to the inner
+ * half-edge (the target). The best way to declare the circulator is to use the method
+ * pcl::geometry::MeshBase::getInnerHalfEdgeAroundFaceCirculator ().
+ * \tparam MeshT Mesh to which this circulator belongs to.
+ * \note The circulator can't be used to change the connectivity in the mesh (only
+ * const circulators are valid).
+ * \author Martin Saelzle
+ * \ingroup geometry
+ */
+template <class MeshT>
+class InnerHalfEdgeAroundFaceCirculator
+: boost::equality_comparable<
+      pcl::geometry::InnerHalfEdgeAroundFaceCirculator<MeshT>,
+      boost::unit_steppable<pcl::geometry::InnerHalfEdgeAroundFaceCirculator<MeshT>>> {
+public:
+  using Base = boost::equality_comparable<
+      pcl::geometry::InnerHalfEdgeAroundFaceCirculator<MeshT>,
+      boost::unit_steppable<pcl::geometry::InnerHalfEdgeAroundFaceCirculator<MeshT>>>;
+  using Self = pcl::geometry::InnerHalfEdgeAroundFaceCirculator<MeshT>;
+
+  using Mesh = MeshT;
+  using FaceIndex = typename Mesh::FaceIndex;
+  using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
+
+  /** \brief Constructor resulting in an invalid circulator. */
+  InnerHalfEdgeAroundFaceCirculator() : mesh_(nullptr), idx_inner_half_edge_() {}
+
+  /** \brief Construct from the face around which we want to circulate. */
+  InnerHalfEdgeAroundFaceCirculator(const FaceIndex& idx_face, Mesh* const mesh)
+  : mesh_(mesh), idx_inner_half_edge_(mesh->getInnerHalfEdgeIndex(idx_face))
+  {}
+
+  /** \brief Construct directly from the inner half-edge. */
+  InnerHalfEdgeAroundFaceCirculator(const HalfEdgeIndex& idx_inner_half_edge,
+                                    Mesh* const mesh)
+  : mesh_(mesh), idx_inner_half_edge_(idx_inner_half_edge)
+  {}
+
+  /** \brief Check if the circulator is valid.
+   * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure
+   * this yourself when constructing the circulator. */
+  inline bool
+  isValid() const
   {
-    /** \brief Circulates clockwise around a face and returns an index to the inner half-edge (the target). The best way to declare the circulator is to use the method pcl::geometry::MeshBase::getInnerHalfEdgeAroundFaceCirculator ().
-      * \tparam MeshT Mesh to which this circulator belongs to.
-      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid).
-      * \author Martin Saelzle
-      * \ingroup geometry
-      */
-    template <class MeshT>
-    class InnerHalfEdgeAroundFaceCirculator
-        : boost::equality_comparable <pcl::geometry::InnerHalfEdgeAroundFaceCirculator <MeshT>
-        , boost::unit_steppable      <pcl::geometry::InnerHalfEdgeAroundFaceCirculator <MeshT>
-        > >
-    {
-      public:
+    return (idx_inner_half_edge_.isValid());
+  }
 
-        using Base = boost::equality_comparable <pcl::geometry::InnerHalfEdgeAroundFaceCirculator <MeshT>,
-                     boost::unit_steppable      <pcl::geometry::InnerHalfEdgeAroundFaceCirculator <MeshT> > >;
-        using Self = pcl::geometry::InnerHalfEdgeAroundFaceCirculator<MeshT>;
+  /** \brief Comparison operators (with boost::operators): == !=
+   * \warning Does NOT check if the circulators belong to the same mesh. Please check
+   * this yourself. */
+  inline bool
+  operator==(const Self& other) const
+  {
+    return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
+  }
 
-        using Mesh = MeshT;
-        using FaceIndex = typename Mesh::FaceIndex;
-        using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
+  /** \brief Increment operators (with boost::operators): ++ (pre and post) */
+  inline Self&
+  operator++()
+  {
+    idx_inner_half_edge_ = mesh_->getNextHalfEdgeIndex(idx_inner_half_edge_);
+    return (*this);
+  }
 
-        /** \brief Constructor resulting in an invalid circulator. */
-        InnerHalfEdgeAroundFaceCirculator ()
-          : mesh_                (nullptr),
-            idx_inner_half_edge_ ()
-        {
-        }
+  /** \brief Decrement operators (with boost::operators): -- (pre and post) */
+  inline Self&
+  operator--()
+  {
+    idx_inner_half_edge_ = mesh_->getPrevHalfEdgeIndex(idx_inner_half_edge_);
+    return (*this);
+  }
 
-        /** \brief Construct from the face around which we want to circulate. */
-        InnerHalfEdgeAroundFaceCirculator (const FaceIndex& idx_face,
-                                           Mesh*const       mesh)
-          : mesh_                (mesh),
-            idx_inner_half_edge_ (mesh->getInnerHalfEdgeIndex (idx_face))
-        {
-        }
+  /** \brief Get the index to the inner half-edge. */
+  inline HalfEdgeIndex
+  getTargetIndex() const
+  {
+    return (idx_inner_half_edge_);
+  }
 
-        /** \brief Construct directly from the inner half-edge. */
-        InnerHalfEdgeAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge,
-                                           Mesh*const           mesh)
-          : mesh_                (mesh),
-            idx_inner_half_edge_ (idx_inner_half_edge)
-        {
-        }
+  /** \brief Get the half-edge that is currently stored in the circulator. */
+  inline HalfEdgeIndex
+  getCurrentHalfEdgeIndex() const
+  {
+    return (idx_inner_half_edge_);
+  }
 
-        /** \brief Check if the circulator is valid.
-          * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure this yourself when constructing the circulator. */
-        inline bool
-        isValid () const
-        {
-          return (idx_inner_half_edge_.isValid ());
-        }
+  /** \brief The mesh to which this circulator belongs to. */
+  Mesh* mesh_;
 
-        /** \brief Comparison operators (with boost::operators): == !=
-          * \warning Does NOT check if the circulators belong to the same mesh. Please check this yourself. */
-        inline bool
-        operator == (const Self& other) const
-        {
-          return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
-        }
-
-        /** \brief Increment operators (with boost::operators): ++ (pre and post) */
-        inline Self&
-        operator ++ ()
-        {
-          idx_inner_half_edge_ = mesh_->getNextHalfEdgeIndex (idx_inner_half_edge_);
-          return (*this);
-        }
-
-        /** \brief Decrement operators (with boost::operators): -- (pre and post) */
-        inline Self&
-        operator -- ()
-        {
-          idx_inner_half_edge_ = mesh_->getPrevHalfEdgeIndex (idx_inner_half_edge_);
-          return (*this);
-        }
-
-        /** \brief Get the index to the inner half-edge. */
-        inline HalfEdgeIndex
-        getTargetIndex () const
-        {
-          return (idx_inner_half_edge_);
-        }
-
-        /** \brief Get the half-edge that is currently stored in the circulator. */
-        inline HalfEdgeIndex
-        getCurrentHalfEdgeIndex () const
-        {
-          return (idx_inner_half_edge_);
-        }
-
-        /** \brief The mesh to which this circulator belongs to. */
-        Mesh* mesh_;
-
-        /** \brief The inner half-edge of the face around which we want to circulate. */
-        HalfEdgeIndex idx_inner_half_edge_;
-    };
-  } // End namespace geometry
+  /** \brief The inner half-edge of the face around which we want to circulate. */
+  HalfEdgeIndex idx_inner_half_edge_;
+};
+} // End namespace geometry
 } // End namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 // OuterHalfEdgeAroundFaceCirculator
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace pcl
-{
-  namespace geometry
+namespace pcl {
+namespace geometry {
+/** \brief Circulates clockwise around a face and returns an index to the outer
+ * half-edge (the target). The best way to declare the circulator is to use the method
+ * pcl::geometry::MeshBase::getOuterHalfEdgeAroundFaceCirculator ().
+ * \tparam MeshT Mesh to which this circulator belongs to.
+ * \note The circulator can't be used to change the connectivity in the mesh (only
+ * const circulators are valid).
+ * \author Martin Saelzle
+ * \ingroup geometry
+ */
+template <class MeshT>
+class OuterHalfEdgeAroundFaceCirculator
+: boost::equality_comparable<
+      pcl::geometry::OuterHalfEdgeAroundFaceCirculator<MeshT>,
+      boost::unit_steppable<pcl::geometry::OuterHalfEdgeAroundFaceCirculator<MeshT>>> {
+public:
+  using Base = boost::equality_comparable<
+      pcl::geometry::OuterHalfEdgeAroundFaceCirculator<MeshT>,
+      boost::unit_steppable<pcl::geometry::OuterHalfEdgeAroundFaceCirculator<MeshT>>>;
+  using Self = pcl::geometry::OuterHalfEdgeAroundFaceCirculator<MeshT>;
+
+  using Mesh = MeshT;
+  using FaceIndex = typename Mesh::FaceIndex;
+  using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
+
+  /** \brief Constructor resulting in an invalid circulator. */
+  OuterHalfEdgeAroundFaceCirculator() : mesh_(nullptr), idx_inner_half_edge_() {}
+
+  /** \brief Construct from the face around which we want to circulate. */
+  OuterHalfEdgeAroundFaceCirculator(const FaceIndex& idx_face, Mesh* const mesh)
+  : mesh_(mesh), idx_inner_half_edge_(mesh->getInnerHalfEdgeIndex(idx_face))
+  {}
+
+  /** \brief Construct directly from the inner half-edge. */
+  OuterHalfEdgeAroundFaceCirculator(const HalfEdgeIndex& idx_inner_half_edge,
+                                    Mesh* const mesh)
+  : mesh_(mesh), idx_inner_half_edge_(idx_inner_half_edge)
+  {}
+
+  /** \brief Check if the circulator is valid.
+   * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure
+   * this yourself when constructing the circulator. */
+  inline bool
+  isValid() const
   {
-    /** \brief Circulates clockwise around a face and returns an index to the outer half-edge (the target). The best way to declare the circulator is to use the method pcl::geometry::MeshBase::getOuterHalfEdgeAroundFaceCirculator ().
-      * \tparam MeshT Mesh to which this circulator belongs to.
-      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid).
-      * \author Martin Saelzle
-      * \ingroup geometry
-      */
-    template <class MeshT>
-    class OuterHalfEdgeAroundFaceCirculator
-        : boost::equality_comparable <pcl::geometry::OuterHalfEdgeAroundFaceCirculator <MeshT>
-        , boost::unit_steppable      <pcl::geometry::OuterHalfEdgeAroundFaceCirculator <MeshT>
-        > >
-    {
-      public:
+    return (idx_inner_half_edge_.isValid());
+  }
 
-        using Base = boost::equality_comparable <pcl::geometry::OuterHalfEdgeAroundFaceCirculator <MeshT>,
-                     boost::unit_steppable      <pcl::geometry::OuterHalfEdgeAroundFaceCirculator <MeshT> > >;
-        using Self = pcl::geometry::OuterHalfEdgeAroundFaceCirculator<MeshT>;
+  /** \brief Comparison operators (with boost::operators): == !=
+   * \warning Does NOT check if the circulators belong to the same mesh. Please check
+   * this yourself. */
+  inline bool
+  operator==(const Self& other) const
+  {
+    return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
+  }
 
-        using Mesh = MeshT;
-        using FaceIndex = typename Mesh::FaceIndex;
-        using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
+  /** \brief Increment operators (with boost::operators): ++ (pre and post) */
+  inline Self&
+  operator++()
+  {
+    idx_inner_half_edge_ = mesh_->getNextHalfEdgeIndex(idx_inner_half_edge_);
+    return (*this);
+  }
 
-        /** \brief Constructor resulting in an invalid circulator. */
-        OuterHalfEdgeAroundFaceCirculator ()
-          : mesh_                (nullptr),
-            idx_inner_half_edge_ ()
-        {
-        }
+  /** \brief Decrement operators (with boost::operators): -- (pre and post) */
+  inline Self&
+  operator--()
+  {
+    idx_inner_half_edge_ = mesh_->getPrevHalfEdgeIndex(idx_inner_half_edge_);
+    return (*this);
+  }
 
-        /** \brief Construct from the face around which we want to circulate. */
-        OuterHalfEdgeAroundFaceCirculator (const FaceIndex& idx_face,
-                                           Mesh*const       mesh)
-          : mesh_                (mesh),
-            idx_inner_half_edge_ (mesh->getInnerHalfEdgeIndex (idx_face))
-        {
-        }
+  /** \brief Get the index to the outer half-edge. */
+  inline HalfEdgeIndex
+  getTargetIndex() const
+  {
+    return (mesh_->getOppositeHalfEdgeIndex(idx_inner_half_edge_));
+  }
 
-        /** \brief Construct directly from the inner half-edge. */
-        OuterHalfEdgeAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge,
-                                           Mesh*const           mesh)
-          : mesh_                (mesh),
-            idx_inner_half_edge_ (idx_inner_half_edge)
-        {
-        }
+  /** \brief Get the half-edge that is currently stored in the circulator. */
+  inline HalfEdgeIndex
+  getCurrentHalfEdgeIndex() const
+  {
+    return (idx_inner_half_edge_);
+  }
 
-        /** \brief Check if the circulator is valid.
-          * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure this yourself when constructing the circulator. */
-        inline bool
-        isValid () const
-        {
-          return (idx_inner_half_edge_.isValid ());
-        }
+  /** \brief The mesh to which this circulator belongs to. */
+  Mesh* mesh_;
 
-        /** \brief Comparison operators (with boost::operators): == !=
-          * \warning Does NOT check if the circulators belong to the same mesh. Please check this yourself. */
-        inline bool
-        operator == (const Self& other) const
-        {
-          return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
-        }
-
-        /** \brief Increment operators (with boost::operators): ++ (pre and post) */
-        inline Self&
-        operator ++ ()
-        {
-          idx_inner_half_edge_ = mesh_->getNextHalfEdgeIndex (idx_inner_half_edge_);
-          return (*this);
-        }
-
-        /** \brief Decrement operators (with boost::operators): -- (pre and post) */
-        inline Self&
-        operator -- ()
-        {
-          idx_inner_half_edge_ = mesh_->getPrevHalfEdgeIndex (idx_inner_half_edge_);
-          return (*this);
-        }
-
-        /** \brief Get the index to the outer half-edge. */
-        inline HalfEdgeIndex
-        getTargetIndex () const
-        {
-          return (mesh_->getOppositeHalfEdgeIndex (idx_inner_half_edge_));
-        }
-
-        /** \brief Get the half-edge that is currently stored in the circulator. */
-        inline HalfEdgeIndex
-        getCurrentHalfEdgeIndex () const
-        {
-          return (idx_inner_half_edge_);
-        }
-
-        /** \brief The mesh to which this circulator belongs to. */
-        Mesh* mesh_;
-
-        /** \brief The inner half-edge of the face around which we want to circulate. */
-        HalfEdgeIndex idx_inner_half_edge_;
-    };
-  } // End namespace geometry
+  /** \brief The inner half-edge of the face around which we want to circulate. */
+  HalfEdgeIndex idx_inner_half_edge_;
+};
+} // End namespace geometry
 } // End namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 // FaceAroundFaceCirculator
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace pcl
-{
-  namespace geometry
+namespace pcl {
+namespace geometry {
+/** \brief Circulates clockwise around a face and returns an index to the face of the
+ * outer half-edge (the target). The best way to declare the circulator is to use the
+ * method pcl::geometry::MeshBase::getFaceAroundFaceCirculator ().
+ * \tparam MeshT Mesh to which this circulator belongs to.
+ * \note The circulator can't be used to change the connectivity in the mesh (only
+ * const circulators are valid).
+ * \author Martin Saelzle
+ * \ingroup geometry
+ */
+template <class MeshT>
+class FaceAroundFaceCirculator
+: boost::equality_comparable<
+      pcl::geometry::FaceAroundFaceCirculator<MeshT>,
+      boost::unit_steppable<pcl::geometry::FaceAroundFaceCirculator<MeshT>>> {
+public:
+  using Base = boost::equality_comparable<
+      pcl::geometry::FaceAroundFaceCirculator<MeshT>,
+      boost::unit_steppable<pcl::geometry::FaceAroundFaceCirculator<MeshT>>>;
+  using Self = pcl::geometry::FaceAroundFaceCirculator<MeshT>;
+
+  using Mesh = MeshT;
+  using FaceIndex = typename Mesh::FaceIndex;
+  using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
+
+  /** \brief Constructor resulting in an invalid circulator. */
+  FaceAroundFaceCirculator() : mesh_(nullptr), idx_inner_half_edge_() {}
+
+  /** \brief Construct from the face around which we want to circulate. */
+  FaceAroundFaceCirculator(const FaceIndex& idx_face, Mesh* const mesh)
+  : mesh_(mesh), idx_inner_half_edge_(mesh->getInnerHalfEdgeIndex(idx_face))
+  {}
+
+  /** \brief Construct directly from the inner half-edge. */
+  FaceAroundFaceCirculator(const HalfEdgeIndex& idx_inner_half_edge, Mesh* const mesh)
+  : mesh_(mesh), idx_inner_half_edge_(idx_inner_half_edge)
+  {}
+
+  /** \brief Check if the circulator is valid.
+   * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure
+   * this yourself when constructing the circulator. */
+  inline bool
+  isValid() const
   {
-    /** \brief Circulates clockwise around a face and returns an index to the face of the outer half-edge (the target). The best way to declare the circulator is to use the method pcl::geometry::MeshBase::getFaceAroundFaceCirculator ().
-      * \tparam MeshT Mesh to which this circulator belongs to.
-      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid).
-      * \author Martin Saelzle
-      * \ingroup geometry
-      */
-    template <class MeshT>
-    class FaceAroundFaceCirculator
-        : boost::equality_comparable <pcl::geometry::FaceAroundFaceCirculator <MeshT>
-        , boost::unit_steppable      <pcl::geometry::FaceAroundFaceCirculator <MeshT>
-        > >
-    {
-      public:
+    return (idx_inner_half_edge_.isValid());
+  }
 
-        using Base = boost::equality_comparable <pcl::geometry::FaceAroundFaceCirculator <MeshT>,
-                     boost::unit_steppable      <pcl::geometry::FaceAroundFaceCirculator <MeshT> > >;
-        using Self = pcl::geometry::FaceAroundFaceCirculator<MeshT>;
+  /** \brief Comparison operators (with boost::operators): == !=
+   * \warning Does NOT check if the circulators belong to the same mesh. Please check
+   * this yourself. */
+  inline bool
+  operator==(const Self& other) const
+  {
+    return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
+  }
 
-        using Mesh = MeshT;
-        using FaceIndex = typename Mesh::FaceIndex;
-        using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
+  /** \brief Increment operators (with boost::operators): ++ (pre and post) */
+  inline Self&
+  operator++()
+  {
+    idx_inner_half_edge_ = mesh_->getNextHalfEdgeIndex(idx_inner_half_edge_);
+    return (*this);
+  }
 
-        /** \brief Constructor resulting in an invalid circulator. */
-        FaceAroundFaceCirculator ()
-          : mesh_                (nullptr),
-            idx_inner_half_edge_ ()
-        {
-        }
+  /** \brief Decrement operators (with boost::operators): -- (pre and post) */
+  inline Self&
+  operator--()
+  {
+    idx_inner_half_edge_ = mesh_->getPrevHalfEdgeIndex(idx_inner_half_edge_);
+    return (*this);
+  }
 
-        /** \brief Construct from the face around which we want to circulate. */
-        FaceAroundFaceCirculator (const FaceIndex& idx_face,
-                                  Mesh*const       mesh)
-          : mesh_                (mesh),
-            idx_inner_half_edge_ (mesh->getInnerHalfEdgeIndex (idx_face))
-        {
-        }
+  /** \brief Get the index to the target face. */
+  inline FaceIndex
+  getTargetIndex() const
+  {
+    return (mesh_->getOppositeFaceIndex(idx_inner_half_edge_));
+  }
 
-        /** \brief Construct directly from the inner half-edge. */
-        FaceAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge,
-                                  Mesh*const           mesh)
-          : mesh_                (mesh),
-            idx_inner_half_edge_ (idx_inner_half_edge)
-        {
-        }
+  /** \brief Get the half-edge that is currently stored in the circulator. */
+  inline HalfEdgeIndex
+  getCurrentHalfEdgeIndex() const
+  {
+    return (idx_inner_half_edge_);
+  }
 
-        /** \brief Check if the circulator is valid.
-          * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure this yourself when constructing the circulator. */
-        inline bool
-        isValid () const
-        {
-          return (idx_inner_half_edge_.isValid ());
-        }
+  /** \brief The mesh to which this circulator belongs to. */
+  Mesh* mesh_;
 
-        /** \brief Comparison operators (with boost::operators): == !=
-          * \warning Does NOT check if the circulators belong to the same mesh. Please check this yourself. */
-        inline bool
-        operator == (const Self& other) const
-        {
-          return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
-        }
-
-        /** \brief Increment operators (with boost::operators): ++ (pre and post) */
-        inline Self&
-        operator ++ ()
-        {
-          idx_inner_half_edge_ = mesh_->getNextHalfEdgeIndex (idx_inner_half_edge_);
-          return (*this);
-        }
-
-        /** \brief Decrement operators (with boost::operators): -- (pre and post) */
-        inline Self&
-        operator -- ()
-        {
-          idx_inner_half_edge_ = mesh_->getPrevHalfEdgeIndex (idx_inner_half_edge_);
-          return (*this);
-        }
-
-        /** \brief Get the index to the target face. */
-        inline FaceIndex
-        getTargetIndex () const
-        {
-          return (mesh_->getOppositeFaceIndex (idx_inner_half_edge_));
-        }
-
-        /** \brief Get the half-edge that is currently stored in the circulator. */
-        inline HalfEdgeIndex
-        getCurrentHalfEdgeIndex () const
-        {
-          return (idx_inner_half_edge_);
-        }
-
-        /** \brief The mesh to which this circulator belongs to. */
-        Mesh* mesh_;
-
-        /** \brief The inner half-edge of the face around which we want to circulate. */
-        HalfEdgeIndex idx_inner_half_edge_;
-    };
-  } // End namespace geometry
+  /** \brief The inner half-edge of the face around which we want to circulate. */
+  HalfEdgeIndex idx_inner_half_edge_;
+};
+} // End namespace geometry
 } // End namespace pcl

@@ -42,6 +42,7 @@
 #include <pcl/point_types.h>
 
 #include <ui_cloud_composer_main_window.h>
+
 class QTreeView;
 
 namespace pcl

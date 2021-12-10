@@ -1,7 +1,6 @@
 #pragma once
 
 #include <algorithm>
-#include <string>
 #include <vector>
 #include <ostream>
 
@@ -31,6 +30,8 @@ namespace pcl
     static bool
     concatenate (pcl::PolygonMesh &mesh1, const pcl::PolygonMesh &mesh2)
     {
+      const auto point_offset = mesh1.cloud.width * mesh1.cloud.height;
+      
       bool success = pcl::PCLPointCloud2::concatenate(mesh1.cloud, mesh2.cloud);
       if (success == false) {
         return false;
@@ -38,7 +39,6 @@ namespace pcl
       // Make the resultant polygon mesh take the newest stamp
       mesh1.header.stamp = std::max(mesh1.header.stamp, mesh2.header.stamp);
 
-      const auto point_offset = mesh1.cloud.width * mesh1.cloud.height;
       std::transform(mesh2.polygons.begin (),
                      mesh2.polygons.end (),
                      std::back_inserter (mesh1.polygons),

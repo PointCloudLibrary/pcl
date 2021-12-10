@@ -38,6 +38,7 @@
 #include <pcl/surface/on_nurbs/fitting_surface_im.h>
 #include <pcl/pcl_macros.h>
 
+#include <Eigen/Cholesky> // for ldlt
 #include <stdexcept>
 
 using namespace pcl;
@@ -54,7 +55,7 @@ FittingSurfaceIM::computeMean () const
   double ds = 1.0 / double (m_indices.size ());
 
   const pcl::PointCloud<pcl::PointXYZRGB> &cloud_ref = *m_cloud;
-  for (const int &index : m_indices)
+  for (const auto &index : m_indices)
   {
     int i = index % cloud_ref.width;
     int j = index / cloud_ref.width;
@@ -78,7 +79,7 @@ FittingSurfaceIM::computeIndexBoundingBox (pcl::PointCloud<pcl::PointXYZRGB>::Pt
   Eigen::Vector4d bb = Eigen::Vector4d (DBL_MAX, 0, DBL_MAX, 0);
   const pcl::PointCloud<pcl::PointXYZRGB> &cloud_ref = *cloud;
 
-  for (const int &index : indices)
+  for (const auto &index : indices)
   {
     int i = index % cloud_ref.width;
     int j = index / cloud_ref.width;
@@ -275,7 +276,7 @@ FittingSurfaceIM::assemble (bool inverse_mapping)
 
   // assemble data points
   const pcl::PointCloud<pcl::PointXYZRGB> &cloud_ref = *m_cloud;
-  for (const int &index : m_indices)
+  for (const auto &index : m_indices)
   {
     int px = index % cloud_ref.width;
     int py = index / cloud_ref.width;

@@ -225,7 +225,7 @@ TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClou
   }
 
   // Non maximas suppression
-  std::vector<int> indices = *indices_;
+  pcl::Indices indices = *indices_;
   std::sort (indices.begin (), indices.end (), [this] (int p1, int p2) { return greaterCornernessAtIndices (p1, p2); });
 
   output.clear ();
@@ -249,11 +249,11 @@ TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClou
   for (std::size_t i = 0; i < indices.size (); ++i)
   {
     int idx = indices[i];
-    if ((response_->points[idx] < second_threshold_) || occupency_map[idx])
+    if (((*response_)[idx] < second_threshold_) || occupency_map[idx])
       continue;
 
     PointOutT p;
-    p.getVector3fMap () = input_->points[idx].getVector3fMap ();
+    p.getVector3fMap () = (*input_)[idx].getVector3fMap ();
     p.intensity = response_->points [idx];
 
 #pragma omp critical
@@ -272,7 +272,7 @@ TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClou
   }
 
   output.height = 1;
-  output.width = static_cast<std::uint32_t> (output.size());
+  output.width = output.size();
   // we don not change the denseness
   output.is_dense = input_->is_dense;
 }

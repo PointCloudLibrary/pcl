@@ -2,10 +2,9 @@
 
 /* ---[ */
 #include <iostream>
-using namespace std;
 #include <pcl/io/openni_grabber.h>
 #include <pcl/range_image/range_image_planar.h>
-#include <pcl/common/common_headers.h>
+#include <pcl/common/time.h> // for pcl::getTime
 #include <pcl/visualization/range_image_visualizer.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/features/range_image_border_extractor.h>
@@ -157,12 +156,12 @@ int main (int argc, char** argv)
       int width = depth_image_ptr->getWidth (), height = depth_image_ptr->getHeight ();
       float center_x = width/2, center_y = height/2;
       float focal_length_x = depth_image_ptr->getFocalLength (), focal_length_y = focal_length_x;
-      float original_angular_resolution = asinf (0.5f*float (width)/float (focal_length_x)) / (0.5f*float (width));
+      // float original_angular_resolution = asinf (0.5f*float (width)/float (focal_length_x)) / (0.5f*float (width));
       float desired_angular_resolution = angular_resolution;
       range_image_planar.setDepthImage (depth_map, width, height, center_x, center_y,
                                         focal_length_x, focal_length_y, desired_angular_resolution);
       depth_image_mutex.unlock ();
-      got_new_range_image = !range_image_planar.points.empty ();
+      got_new_range_image = !range_image_planar.empty ();
     }
     
     if (!got_new_range_image)
@@ -178,16 +177,16 @@ int main (int argc, char** argv)
     double keypoint_extraction_start_time = pcl::getTime();
     narf_keypoint_detector.compute (keypoint_indices);
     double keypoint_extraction_time = pcl::getTime()-keypoint_extraction_start_time;
-    std::cout << "Found "<<keypoint_indices.points.size ()<<" key points. "
+    std::cout << "Found "<<keypoint_indices.size ()<<" key points. "
               << "This took "<<1000.0*keypoint_extraction_time<<"ms.\n";
     
     // ----------------------------------------------
     // -----Show keypoints in range image widget-----
     // ----------------------------------------------
     range_image_widget.showRangeImage (range_image_planar, 0.5f, 10.0f);
-    //for (std::size_t i=0; i<keypoint_indices.points.size (); ++i)
-      //range_image_widget.markPoint (keypoint_indices.points[i]%range_image_planar.width,
-                                    //keypoint_indices.points[i]/range_image_planar.width,
+    //for (std::size_t i=0; i<keypoint_indices.size (); ++i)
+      //range_image_widget.markPoint (keypoint_indices[i]%range_image_planar.width,
+                                    //keypoint_indices[i]/range_image_planar.width,
                                     //pcl::visualization::Vector3ub (0,255,0));
     
     // -------------------------------------
@@ -198,10 +197,10 @@ int main (int argc, char** argv)
     if (!viewer.updatePointCloud<pcl::PointWithRange> (range_image_planar_ptr, color_handler_cloud, "range image"))
       viewer.addPointCloud<pcl::PointWithRange> (range_image_planar_ptr, color_handler_cloud, "range image");
     
-    keypoints_cloud.points.resize (keypoint_indices.points.size ());
-    for (std::size_t i=0; i<keypoint_indices.points.size (); ++i)
-      keypoints_cloud.points[i].getVector3fMap () =
-        range_image_planar.points[keypoint_indices.points[i]].getVector3fMap ();
+    keypoints_cloud.resize (keypoint_indices.size ());
+    for (std::size_t i=0; i<keypoint_indices.size (); ++i)
+      keypoints_cloud[i].getVector3fMap () =
+        range_image_planar[keypoint_indices[i]].getVector3fMap ();
     pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_handler_keypoints
       (keypoints_cloud_ptr, 0, 255, 0);
     if (!viewer.updatePointCloud (keypoints_cloud_ptr, color_handler_keypoints, "keypoints"))

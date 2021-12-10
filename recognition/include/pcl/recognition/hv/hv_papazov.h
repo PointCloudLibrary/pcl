@@ -36,9 +36,7 @@
 
 #pragma once
 
-#include <pcl/recognition/boost.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/common/common.h>
 #include <pcl/recognition/hv/hypotheses_verification.h>
 #include <boost/graph/adjacency_list.hpp>
 

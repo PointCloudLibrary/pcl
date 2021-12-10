@@ -39,11 +39,18 @@
 
 #include <QMap>
 
-#include <pcl/visualization/vtk.h>
 #include <pcl/visualization/interactor_style.h>
 #include <pcl/visualization/common/actor_map.h>
 #include <pcl/visualization/common/ren_win_interact_map.h>
 #include <pcl/visualization/pcl_visualizer.h>
+
+#include <vtkSmartPointer.h>
+#include <vtkAreaPicker.h>
+#include <vtkPointPicker.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkCommand.h>
+#include <vtkRendererCollection.h>
+#include <vtkInteractorStyle.h>
 
 class QVTKWidget;
 

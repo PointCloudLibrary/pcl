@@ -1,6 +1,5 @@
 #pragma once
 
-#include <pcl/common/transforms.h>
 #include <pcl/range_image/range_image_planar.h>
 #include <pcl/simulation/camera.h>
 #include <pcl/simulation/glsl_shader.h>

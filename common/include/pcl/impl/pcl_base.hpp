@@ -100,27 +100,27 @@ pcl::PCLBase<PointT>::setIndices (std::size_t row_start, std::size_t col_start, 
 {
   if ((nb_rows > input_->height) || (row_start > input_->height))
   {
-    PCL_ERROR ("[PCLBase::setIndices] cloud is only %d height", input_->height);
+    PCL_ERROR ("[PCLBase::setIndices] cloud is only %d height\n", input_->height);
     return;
   }
 
   if ((nb_cols > input_->width) || (col_start > input_->width))
   {
-    PCL_ERROR ("[PCLBase::setIndices] cloud is only %d width", input_->width);
+    PCL_ERROR ("[PCLBase::setIndices] cloud is only %d width\n", input_->width);
     return;
   }
 
   std::size_t row_end = row_start + nb_rows;
   if (row_end > input_->height)
   {
-    PCL_ERROR ("[PCLBase::setIndices] %d is out of rows range %d", row_end, input_->height);
+    PCL_ERROR ("[PCLBase::setIndices] %d is out of rows range %d\n", row_end, input_->height);
     return;
   }
 
   std::size_t col_end = col_start + nb_cols;
   if (col_end > input_->width)
   {
-    PCL_ERROR ("[PCLBase::setIndices] %d is out of columns range %d", col_end, input_->width);
+    PCL_ERROR ("[PCLBase::setIndices] %d is out of columns range %d\n", col_end, input_->width);
     return;
   }
 
@@ -139,7 +139,10 @@ pcl::PCLBase<PointT>::initCompute ()
 {
   // Check if input was set
   if (!input_)
+  {
+    PCL_ERROR ("[initCompute] No input set.\n");
     return (false);
+  }
 
   // If no point indices have been given, construct a set of indices for the entire input point cloud
   if (!indices_)
@@ -149,16 +152,16 @@ pcl::PCLBase<PointT>::initCompute ()
   }
 
   // If we have a set of fake indices, but they do not match the number of points in the cloud, update them
-  if (fake_indices_ && indices_->size () != input_->points.size ())
+  if (fake_indices_ && indices_->size () != input_->size ())
   {
     const auto indices_size = indices_->size ();
     try
     {
-      indices_->resize (input_->points.size ());
+      indices_->resize (input_->size ());
     }
     catch (const std::bad_alloc&)
     {
-      PCL_ERROR ("[initCompute] Failed to allocate %lu indices.\n", input_->points.size ());
+      PCL_ERROR ("[initCompute] Failed to allocate %lu indices.\n", input_->size ());
     }
     for (auto i = indices_size; i < indices_->size (); ++i) { (*indices_)[i] = static_cast<int>(i); }
   }

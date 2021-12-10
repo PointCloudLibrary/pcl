@@ -40,9 +40,8 @@
 #pragma once
 
 #include <pcl/search/organized.h>
-#include <pcl/common/eigen.h>
 #include <pcl/common/point_tests.h> // for pcl::isFinite
-#include <pcl/common/time.h>
+#include <pcl/common/projection_matrix.h> // for getCameraMatrixFromProjectionMatrix, ...
 #include <Eigen/Eigenvalues>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -60,18 +59,16 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
   unsigned left, right, top, bottom;
   //unsigned x, y, idx;
   float squared_distance;
-  double squared_radius;
+  const float squared_radius = radius * radius;
 
   k_indices.clear ();
   k_sqr_distances.clear ();
 
-  squared_radius = radius * radius;
-
-  this->getProjectedRadiusSearchBox (query, static_cast<float> (squared_radius), left, right, top, bottom);
+  this->getProjectedRadiusSearchBox (query, squared_radius, left, right, top, bottom);
 
   // iterate over search box
-  if (max_nn == 0 || max_nn >= static_cast<unsigned int> (input_->points.size ()))
-    max_nn = static_cast<unsigned int> (input_->points.size ());
+  if (max_nn == 0 || max_nn >= static_cast<unsigned int> (input_->size ()))
+    max_nn = static_cast<unsigned int> (input_->size ());
 
   k_indices.reserve (max_nn);
   k_sqr_distances.reserve (max_nn);
@@ -85,14 +82,14 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
   {
     for (; idx < xEnd; ++idx)
     {
-      if (!mask_[idx] || !isFinite (input_->points[idx]))
+      if (!mask_[idx] || !isFinite ((*input_)[idx]))
         continue;
 
-      float dist_x = input_->points[idx].x - query.x;
-      float dist_y = input_->points[idx].y - query.y;
-      float dist_z = input_->points[idx].z - query.z;
+      float dist_x = (*input_)[idx].x - query.x;
+      float dist_y = (*input_)[idx].y - query.y;
+      float dist_z = (*input_)[idx].z - query.z;
       squared_distance = dist_x * dist_x + dist_y * dist_y + dist_z * dist_z;
-      //squared_distance = (input_->points[idx].getVector3fMap () - query.getVector3fMap ()).squaredNorm ();
+      //squared_distance = ((*input_)[idx].getVector3fMap () - query.getVector3fMap ()).squaredNorm ();
       if (squared_distance <= squared_radius)
       {
         k_indices.push_back (idx);
@@ -142,9 +139,8 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
   unsigned top = 0;
   unsigned bottom = input_->height - 1;
 
-  std::priority_queue <Entry> results;
-  //std::vector<Entry> k_results;
-  //k_results.reserve (k);
+  std::vector <Entry> results; // sorted from smallest to largest distance
+  results.reserve (k);
   // add point laying on the projection of the query point.
   if (xBegin >= 0 && 
       xBegin < static_cast<int> (input_->width) && 
@@ -242,7 +238,7 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
       }
       // stop here means that the k-nearest neighbor changed -> recalculate bounding box of ellipse.
       if (stop)
-        getProjectedRadiusSearchBox (query, results.top ().distance, left, right, top, bottom);
+        getProjectedRadiusSearchBox (query, results.back ().distance, left, right, top, bottom);
       
     }
     // now we use it as stop flag -> if bounding box is completely within the already examined search box were done!
@@ -254,18 +250,18 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
   } while (!stop);
 
   
-  k_indices.resize (results.size ());
-  k_sqr_distances.resize (results.size ());
-  std::size_t idx = results.size () - 1;
-  while (!results.empty ())
+  const auto results_size = results.size ();
+  k_indices.resize (results_size);
+  k_sqr_distances.resize (results_size);
+  std::size_t idx = 0;
+  for(const auto& result : results)
   {
-    k_indices [idx] = results.top ().index;
-    k_sqr_distances [idx] = results.top ().distance;
-    results.pop ();
-    --idx;
+    k_indices [idx] = result.index;
+    k_sqr_distances [idx] = result.distance;
+    ++idx;
   }
   
-  return (static_cast<int> (k_indices.size ()));
+  return (static_cast<int> (results_size));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

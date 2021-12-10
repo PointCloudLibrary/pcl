@@ -37,6 +37,7 @@
 
 #include <pcl/surface/on_nurbs/fitting_curve_2d.h>
 #include <stdexcept>
+#include <Eigen/LU> // for inverse
 
 using namespace pcl;
 using namespace on_nurbs;

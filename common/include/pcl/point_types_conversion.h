@@ -43,6 +43,8 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
+#include <pcl/common/colors.h> // for RGB2sRGB_LUT
+
 namespace pcl
 {
   // r,g,b, i values are from 0 to 255
@@ -132,6 +134,57 @@ namespace pcl
     else                  out.h = 60.f * (4.f + static_cast <float> (in.r - in.g) / diff); // max == b
 
     if (out.h < 0.f) out.h += 360.f;
+  }
+
+  /** \brief Convert a XYZRGB-based point type to a XYZLAB
+    * \param[in] in the input XYZRGB(XYZRGBA, XYZRGBL, etc.) point
+    * \param[out] out the output XYZLAB point
+    */
+  template <typename PointT, traits::HasColor<PointT> = true>
+  inline void
+  PointXYZRGBtoXYZLAB (const PointT& in,
+                       PointXYZLAB&  out)
+  {
+    out.x = in.x;
+    out.y = in.y;
+    out.z = in.z;
+    out.data[3] = 1.0; // important for homogeneous coordinates
+
+    // convert sRGB to CIELAB
+    // for sRGB   -> CIEXYZ see http://www.easyrgb.com/index.php?X=MATH&H=02#text2
+    // for CIEXYZ -> CIELAB see http://www.easyrgb.com/index.php?X=MATH&H=07#text7
+    // an overview at: https://www.comp.nus.edu.sg/~leowwk/papers/colordiff.pdf
+
+    const auto& sRGB_LUT = RGB2sRGB_LUT<double, 8>();
+
+    const double R = sRGB_LUT[in.r];
+    const double G = sRGB_LUT[in.g];
+    const double B = sRGB_LUT[in.b];
+
+    // linear sRGB -> CIEXYZ, D65 illuminant, observer at 2 degrees
+    const double X = R * 0.4124 + G * 0.3576 + B * 0.1805;
+    const double Y = R * 0.2126 + G * 0.7152 + B * 0.0722;
+    const double Z = R * 0.0193 + G * 0.1192 + B * 0.9505;
+
+    // normalize X, Y, Z with tristimulus values for Xn, Yn, Zn
+    float f[3] = {static_cast<float>(X), static_cast<float>(Y), static_cast<float>(Z)};
+    f[0] /= 0.95047;
+    f[1] /= 1;
+    f[2] /= 1.08883;
+
+    // CIEXYZ -> CIELAB
+    for (int i = 0; i < 3; ++i) {
+      if (f[i] > 0.008856) {
+        f[i] = std::pow(f[i], 1.0 / 3.0);
+      }
+      else {
+        f[i] = 7.787 * f[i] + 16.0 / 116.0;
+      }
+    }
+
+    out.L = 116.0f * f[1] - 16.0f;
+    out.a = 500.0f * (f[0] - f[1]);
+    out.b = 200.0f * (f[1] - f[2]);
   }
 
   /** \brief Convert a XYZRGBA point type to a XYZHSV
@@ -254,7 +307,7 @@ namespace pcl
     {
       Intensity p;
       PointRGBtoI (point, p);
-      out.points.push_back (p);
+      out.push_back (p);
     }
   }
 
@@ -272,7 +325,7 @@ namespace pcl
     {
       Intensity8u p;
       PointRGBtoI (point, p);
-      out.points.push_back (p);
+      out.push_back (p);
     }
   }
 
@@ -290,7 +343,7 @@ namespace pcl
     {
       Intensity32u p;
       PointRGBtoI (point, p);
-      out.points.push_back (p);
+      out.push_back (p);
     }
   }
 
@@ -308,7 +361,7 @@ namespace pcl
     {
       PointXYZHSV p;
       PointXYZRGBtoXYZHSV (point, p);
-      out.points.push_back (p);
+      out.push_back (p);
     }
   }
 
@@ -326,7 +379,7 @@ namespace pcl
     {
       PointXYZHSV p;
       PointXYZRGBAtoXYZHSV (point, p);
-      out.points.push_back (p);
+      out.push_back (p);
     }
   }
 
@@ -344,7 +397,7 @@ namespace pcl
     {
       PointXYZI p;
       PointXYZRGBtoXYZI (point, p);
-      out.points.push_back (p);
+      out.push_back (p);
     }
   }
 
@@ -386,7 +439,7 @@ namespace pcl
         pt.g = image.at (u, v).g;
         pt.b = image.at (u, v).b;
 
-        out.points.push_back (pt);
+        out.push_back (pt);
       }
     }
     out.width = width_;

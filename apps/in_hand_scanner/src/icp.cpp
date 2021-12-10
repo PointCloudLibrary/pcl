@@ -203,7 +203,7 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
   kd_tree_->setInputCloud (cloud_model_selected);
   t_build = sw.getTime ();
 
-  std::vector <int>   index (1);
+  pcl::Indices   index (1);
   std::vector <float> squared_distance (1);
 
   // Clouds with one to one correspondences

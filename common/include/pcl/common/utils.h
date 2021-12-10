@@ -58,8 +58,8 @@ namespace pcl
     }
 
    /** \brief Utility function to eliminate unused variable warnings. */
-    template<typename T> void
-    ignore(const T&)
+    template<typename ...T> void
+    ignore(const T&...)
     {
     }
   } // namespace utils

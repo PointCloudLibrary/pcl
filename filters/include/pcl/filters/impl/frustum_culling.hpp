@@ -39,12 +39,11 @@
 #define PCL_FILTERS_IMPL_FRUSTUM_CULLING_HPP_
 
 #include <pcl/filters/frustum_culling.h>
-#include <pcl/common/io.h>
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::FrustumCulling<PointT>::applyFilter (std::vector<int> &indices)
+pcl::FrustumCulling<PointT>::applyFilter (Indices &indices)
 {
   Eigen::Vector4f pl_n; // near plane 
   Eigen::Vector4f pl_f; // far plane
@@ -124,9 +123,9 @@ pcl::FrustumCulling<PointT>::applyFilter (std::vector<int> &indices)
   for (std::size_t i = 0; i < indices_->size (); i++) 
   {
     int idx = indices_->at (i);
-    Eigen::Vector4f pt (input_->points[idx].x,
-                        input_->points[idx].y,
-                        input_->points[idx].z,
+    Eigen::Vector4f pt ((*input_)[idx].x,
+                        (*input_)[idx].y,
+                        (*input_)[idx].z,
                         1.0f);
     bool is_in_fov = (pt.dot (pl_l) <= 0) && 
                      (pt.dot (pl_r) <= 0) &&

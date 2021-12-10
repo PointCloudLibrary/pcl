@@ -39,7 +39,6 @@
 #include <fstream>
 #include <sstream>
 
-#include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/info_parser.hpp>

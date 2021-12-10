@@ -86,6 +86,9 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/local_maximum.h"
   "include/pcl/${SUBSYS_NAME}/model_outlier_removal.h"
 )
+set(experimental_incs
+  "include/pcl/${SUBSYS_NAME}/experimental/functor_filter.h"
+)
 
 set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/conditional_removal.hpp"
@@ -132,4 +135,5 @@ PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_
 
 # Install include files
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})
+PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/experimental" ${experimental_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})

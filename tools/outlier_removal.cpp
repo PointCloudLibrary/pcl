@@ -107,7 +107,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
 
   pcl::PointIndices::Ptr removed_indices (new PointIndices),
                          indices (new PointIndices);
-  std::vector<int> valid_indices;
+  pcl::Indices valid_indices;
   if (keep_organized)
   {
     xyz_cloud = xyz_cloud_pre;
@@ -163,8 +163,8 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   else 
   {
     // Make sure we are addressing values in the original index vector
-    for (std::size_t i = 0; i < removed_indices->indices.size (); ++i)
-      indices->indices.push_back (valid_indices[removed_indices->indices[i]]);
+    for (const auto& i : (removed_indices->indices))
+      indices->indices.push_back (valid_indices[i]);
 
     // Extract the indices of the remaining points
     pcl::ExtractIndices<pcl::PCLPointCloud2> ei;

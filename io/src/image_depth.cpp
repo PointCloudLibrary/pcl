@@ -38,9 +38,7 @@
 #include <pcl/pcl_config.h>
 #include <pcl/io/image_depth.h>
 
-#include <sstream>
 #include <limits>
-#include <iostream>
 
 #include <pcl/io/io_exception.h>
 

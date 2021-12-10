@@ -37,12 +37,8 @@
 
 #pragma once
 
-#include <cassert>
-#include <limits>
 #include <mutex>
 #include <vector>
-
-#include <cstdint>
 
 namespace pcl
 {

@@ -43,7 +43,6 @@
 #include <pcl/io/hdl_grabber.h>
 #include <pcl/io/grabber.h>
 #include <pcl/point_types.h>
-#include <pcl/point_cloud.h>
 #include <boost/asio.hpp>
 #include <string>
 

@@ -9,9 +9,6 @@
 
 #include <pcl/common/utils.h> // pcl::utils::ignore
 
-#include <cmath>
-#include <cstdlib>
-
 namespace Metrics {
 
 using ::std::abs;

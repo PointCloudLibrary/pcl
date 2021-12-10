@@ -39,7 +39,6 @@
 #include <pcl/surface/vtk_smoothing/vtk_mesh_quadric_decimation.h>
 #include <pcl/surface/vtk_smoothing/vtk_utils.h>
 
-#include <vtkVersion.h>
 #include <vtkQuadricDecimation.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////

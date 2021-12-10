@@ -37,18 +37,17 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
         descr_model.view_id = atoi(strs[1].c_str());
 
         if (use_cache_) {
-
-          std::stringstream dir_keypoints;
           std::string path =
               source_->getModelDescriptorDir(models->at(i), training_dir_, descr_name_);
-          dir_keypoints << path << "/keypoint_indices_" << descr_model.view_id
-                        << ".pcd";
+          const std::string dir_keypoints = path + "/keypoint_indices_" +
+                                            std::to_string(descr_model.view_id) +
+                                            ".pcd";
 
-          std::stringstream dir_pose;
-          dir_pose << path << "/pose_" << descr_model.view_id << ".txt";
+          const std::string dir_pose =
+              path + "/pose_" + std::to_string(descr_model.view_id) + ".txt";
 
           Eigen::Matrix4f pose_matrix;
-          PersistenceUtils::readMatrixFromFile(dir_pose.str(), pose_matrix);
+          PersistenceUtils::readMatrixFromFile(dir_pose, pose_matrix);
 
           std::pair<std::string, int> pair_model_view =
               std::make_pair(models->at(i).id_, descr_model.view_id);
@@ -57,7 +56,7 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
           // load keypoints and save them to cache
           typename pcl::PointCloud<PointInT>::Ptr keypoints(
               new pcl::PointCloud<PointInT>());
-          pcl::io::loadPCDFile(dir_keypoints.str(), *keypoints);
+          pcl::io::loadPCDFile(dir_keypoints, *keypoints);
           keypoints_cache_[pair_model_view] = keypoints;
         }
 
@@ -65,14 +64,14 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
             new pcl::PointCloud<FeatureT>());
         pcl::io::loadPCDFile(full_file_name, *signature);
 
-        int size_feat = sizeof(signature->points[0].histogram) / sizeof(float);
+        int size_feat = sizeof((*signature)[0].histogram) / sizeof(float);
 
-        for (std::size_t dd = 0; dd < signature->points.size(); dd++) {
+        for (std::size_t dd = 0; dd < signature->size(); dd++) {
           descr_model.keypoint_id = static_cast<int>(dd);
           descr_model.descr.resize(size_feat);
 
           memcpy(&descr_model.descr[0],
-                 &signature->points[dd].histogram[0],
+                 &(*signature)[dd].histogram[0],
                  size_feat * sizeof(float));
 
           flann_models_.push_back(descr_model);
@@ -155,31 +154,27 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
           if (!bf::exists(desc_dir))
             bf::create_directory(desc_dir);
 
-          std::stringstream path_view;
-          path_view << path << "/view_" << v << ".pcd";
-          pcl::io::savePCDFileBinary(path_view.str(), *processed);
+          const std::string path_view = path = "/view_" + std::to_string(v) + ".pcd";
+          pcl::io::savePCDFileBinary(path_view, *processed);
 
-          std::stringstream path_pose;
-          path_pose << path << "/pose_" << v << ".txt";
-          PersistenceUtils::writeMatrixToFile(path_pose.str(),
-                                              models->at(i).poses_->at(v));
+          const std::string path_pose = path + "/pose_" + std::to_string(v) + ".txt";
+          PersistenceUtils::writeMatrixToFile(path_pose, models->at(i).poses_->at(v));
 
           if (v < models->at(i).self_occlusions_->size()) {
-            std::stringstream path_entropy;
-            path_entropy << path << "/entropy_" << v << ".txt";
-            PersistenceUtils::writeFloatToFile(path_entropy.str(),
+            const std::string path_entropy =
+                path + "/entropy_" + std::to_string(v) + ".txt";
+            PersistenceUtils::writeFloatToFile(path_entropy,
                                                models->at(i).self_occlusions_->at(v));
           }
 
           // save keypoints and signatures to disk
-          std::stringstream keypoints_sstr;
-          keypoints_sstr << path << "/keypoint_indices_" << v << ".pcd";
+          const std::string keypoints_sstr =
+              path + "/keypoint_indices_" + std::to_string(v) + ".pcd";
+          pcl::io::savePCDFileBinary(keypoints_sstr, *keypoints_pointcloud);
 
-          pcl::io::savePCDFileBinary(keypoints_sstr.str(), *keypoints_pointcloud);
-
-          std::stringstream path_descriptor;
-          path_descriptor << path << "/descriptor_" << v << ".pcd";
-          pcl::io::savePCDFileBinary(path_descriptor.str(), *signatures);
+          const std::string path_descriptor =
+              path + "/descriptor_" + std::to_string(v) + ".pcd";
+          pcl::io::savePCDFileBinary(path_descriptor, *signatures);
         }
       }
     }
@@ -208,7 +203,7 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
   PointInTPtr keypoints_pointcloud;
 
   if (signatures_ != nullptr && processed_ != nullptr &&
-      (signatures_->size() == keypoints_pointcloud->points.size())) {
+      (signatures_->size() == keypoints_pointcloud->size())) {
     keypoints_pointcloud = keypoints_input_;
     signatures = signatures_;
     processed = processed_;
@@ -228,16 +223,15 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
     processed_ = processed;
   }
 
-  std::cout << "Number of keypoints:" << keypoints_pointcloud->points.size()
-            << std::endl;
+  std::cout << "Number of keypoints:" << keypoints_pointcloud->size() << std::endl;
 
-  int size_feat = sizeof(signatures->points[0].histogram) / sizeof(float);
+  int size_feat = sizeof((*signatures)[0].histogram) / sizeof(float);
 
   // feature matching and object hypotheses
   std::map<std::string, ObjectHypothesis> object_hypotheses;
   {
-    for (std::size_t idx = 0; idx < signatures->points.size(); idx++) {
-      float* hist = signatures->points[idx].histogram;
+    for (std::size_t idx = 0; idx < signatures->size(); idx++) {
+      float* hist = (*signatures)[idx].histogram;
       std::vector<float> std_hist(hist, hist + size_feat);
       flann_model histogram;
       histogram.descr = std_hist;
@@ -259,7 +253,7 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
                    keypoints);
 
       PointInT view_keypoint =
-          keypoints->points[flann_models_.at(indices[0][0]).keypoint_id];
+          (*keypoints)[flann_models_.at(indices[0][0]).keypoint_id];
       PointInT model_keypoint;
       model_keypoint.getVector4fMap() =
           homMatrixPose.inverse() * view_keypoint.getVector4fMap();
@@ -271,7 +265,7 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
         ObjectHypothesis oh = (*it_map).second;
         oh.correspondences_pointcloud->points.push_back(model_keypoint);
         oh.correspondences_to_inputcloud->push_back(pcl::Correspondence(
-            static_cast<int>(oh.correspondences_pointcloud->points.size() - 1),
+            static_cast<int>(oh.correspondences_pointcloud->size() - 1),
             static_cast<int>(idx),
             distances[0][0]));
         oh.feature_distances_->push_back(distances[0][0]);
@@ -477,11 +471,11 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::g
     }
   }
 
-  std::stringstream dir;
-  std::string path = source_->getModelDescriptorDir(model, training_dir_, descr_name_);
-  dir << path << "/pose_" << view_id << ".txt";
+  const std::string path =
+      source_->getModelDescriptorDir(model, training_dir_, descr_name_);
+  const std::string dir = path + "/pose_" + std::to_string(view_id) + ".txt";
 
-  PersistenceUtils::readMatrixFromFile(dir.str(), pose_matrix);
+  PersistenceUtils::readMatrixFromFile(dir, pose_matrix);
 }
 
 template <template <class> class Distance, typename PointInT, typename FeatureT>
@@ -503,9 +497,10 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
     }
   }
 
-  std::stringstream dir;
-  std::string path = source_->getModelDescriptorDir(model, training_dir_, descr_name_);
-  dir << path << "/keypoint_indices_" << view_id << ".pcd";
+  const std::string path =
+      source_->getModelDescriptorDir(model, training_dir_, descr_name_);
+  const std::string dir =
+      path + "/keypoint_indices_" + std::to_string(view_id) + ".pcd";
 
-  pcl::io::loadPCDFile(dir.str(), *keypoints_cloud);
+  pcl::io::loadPCDFile(dir, *keypoints_cloud);
 }

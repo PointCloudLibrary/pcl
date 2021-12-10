@@ -37,11 +37,9 @@
 
 #pragma once
 
-#include <pcl/filters/boost.h>
 #include <pcl/filters/filter_indices.h>
-
+#include <boost/dynamic_bitset.hpp> // for dynamic_bitset
 #include <ctime>
-#include <climits>
 #include <random> // std::mt19937
 
 namespace pcl
@@ -72,8 +70,14 @@ namespace pcl
       using ConstPtr = shared_ptr<const NormalSpaceSampling<PointT, NormalT> >;
 
       /** \brief Empty constructor. */
-      NormalSpaceSampling ()
-        : sample_ (std::numeric_limits<unsigned int>::max ())
+      NormalSpaceSampling () : NormalSpaceSampling (false) {}
+
+      /** \brief Constructor.
+        * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed.
+        */
+      explicit NormalSpaceSampling (bool extract_removed_indices)
+        : FilterIndices<PointT> (extract_removed_indices)
+        , sample_ (std::numeric_limits<unsigned int>::max ())
         , seed_ (static_cast<unsigned int> (time (nullptr)))
         , binsx_ ()
         , binsy_ ()
@@ -163,7 +167,7 @@ namespace pcl
         * \param[out] indices the resultant point cloud indices
         */
       void
-      applyFilter (std::vector<int> &indices) override;
+      applyFilter (Indices &indices) override;
 
       bool
       initCompute ();

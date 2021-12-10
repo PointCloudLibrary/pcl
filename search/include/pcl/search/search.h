@@ -167,7 +167,7 @@ namespace pcl
         /** \brief Search for k-nearest neighbors for the given query point.
           *
           * \attention This method does not do any bounds checking for the input index
-          * (i.e., index >= cloud.points.size () || index < 0), and assumes valid (i.e., finite) data.
+          * (i.e., index >= cloud.size () || index < 0), and assumes valid (i.e., finite) data.
           *
           * \param[in] cloud the point cloud data
           * \param[in] index a \a valid index in \a cloud representing a \a valid (i.e., finite) query point
@@ -188,7 +188,7 @@ namespace pcl
         /** \brief Search for k-nearest neighbors for the given query point (zero-copy).
           *
           * \attention This method does not do any bounds checking for the input index
-          * (i.e., index >= cloud.points.size () || index < 0), and assumes valid (i.e., finite) data.
+          * (i.e., index >= cloud.size () || index < 0), and assumes valid (i.e., finite) data.
           *
           * \param[in] index a \a valid index representing a \a valid query point in the dataset given
           * by \a setInputCloud. If indices were given in setInputCloud, index will be the position in
@@ -295,7 +295,7 @@ namespace pcl
         /** \brief Search for all the nearest neighbors of the query point in a given radius.
           *
           * \attention This method does not do any bounds checking for the input index
-          * (i.e., index >= cloud.points.size () || index < 0), and assumes valid (i.e., finite) data.
+          * (i.e., index >= cloud.size () || index < 0), and assumes valid (i.e., finite) data.
           *
           * \param[in] cloud the point cloud data
           * \param[in] index a \a valid index in \a cloud representing a \a valid (i.e., finite) query point
@@ -317,7 +317,7 @@ namespace pcl
         /** \brief Search for all the nearest neighbors of the query point in a given radius (zero-copy).
           *
           * \attention This method does not do any bounds checking for the input index
-          * (i.e., index >= cloud.points.size () || index < 0), and assumes valid (i.e., finite) data.
+          * (i.e., index >= cloud.size () || index < 0), and assumes valid (i.e., finite) data.
           *
           * \param[in] index a \a valid index representing a \a valid query point in the dataset given
           * by \a setInputCloud. If indices were given in setInputCloud, index will be the position in

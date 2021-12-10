@@ -55,7 +55,7 @@ public:
     // compute keypoints
     computeKeypoints(processed, keypoints, normals);
 
-    if (keypoints->points.size() == 0) {
+    if (keypoints->size() == 0) {
       PCL_WARN("ColorSHOTLocalEstimation :: No keypoints were found\n");
       return false;
     }
@@ -73,15 +73,15 @@ public:
     shot_estimate.setSearchSurface(processed);
     shot_estimate.setRadiusSearch(support_radius_);
     shot_estimate.compute(*shots);
-    signatures->resize(shots->points.size());
-    signatures->width = static_cast<int>(shots->points.size());
+    signatures->resize(shots->size());
+    signatures->width = shots->size();
     signatures->height = 1;
 
-    int size_feat = sizeof(signatures->points[0].histogram) / sizeof(float);
+    int size_feat = sizeof((*signatures)[0].histogram) / sizeof(float);
 
-    for (std::size_t k = 0; k < shots->points.size(); k++)
+    for (std::size_t k = 0; k < shots->size(); k++)
       for (int i = 0; i < size_feat; i++)
-        signatures->points[k].histogram[i] = shots->points[k].descriptor[i];
+        (*signatures)[k].histogram[i] = (*shots)[k].descriptor[i];
 
     return true;
   }

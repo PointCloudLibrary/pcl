@@ -106,10 +106,10 @@ maskForegroundPoints (const PointCloudXYZRGBA::ConstPtr & input,
   std::vector<bool> foreground_mask (input->size (), false);
 
   // Mask off points outside the specified near and far depth thresholds
-  pcl::IndicesPtr indices (new std::vector<int>);
+  pcl::IndicesPtr indices (new pcl::Indices);
   for (std::size_t i = 0; i < input->size (); ++i)
   {
-    const float z = input->points[i].z;
+    const float z = (*input)[i].z;
     if (min_depth < z && z < max_depth)
     {
       foreground_mask[i] = true;
@@ -133,7 +133,7 @@ maskForegroundPoints (const PointCloudXYZRGBA::ConstPtr & input,
   seg.segment (*inliers, *coefficients);
 
   // Mask off the plane inliers
-  for (const int &index : inliers->indices)
+  for (const auto &index : inliers->indices)
     foreground_mask[index] = false;
 
   // Mask off any foreground points that are too high above the detected plane
@@ -142,7 +142,7 @@ maskForegroundPoints (const PointCloudXYZRGBA::ConstPtr & input,
   {
     if (foreground_mask[i])
     {
-      const pcl::PointXYZRGBA & p = input->points[i];
+      const pcl::PointXYZRGBA & p = (*input)[i];
       float d = std::abs (c[0]*p.x + c[1]*p.y + c[2]*p.z + c[3]);
       foreground_mask[i] = (d < max_height);
     }
@@ -212,7 +212,7 @@ compute (const PointCloudXYZRGBA::ConstPtr & input, float min_depth, float max_d
   {
     if (!foreground_mask[i])
     {
-      pcl::PointXYZRGBA & p = template_cloud.points[i];
+      pcl::PointXYZRGBA & p = template_cloud[i];
       p.x = p.y = p.z = std::numeric_limits<float>::quiet_NaN ();
     }
   }

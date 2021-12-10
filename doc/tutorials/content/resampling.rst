@@ -9,7 +9,7 @@ the video below:
 
 .. raw:: html
 
-   <iframe title="Smoothing and normal estimation based on polynomial reconstruction" width="480" height="390" src="http://www.youtube.com/embed/FqHroDuo_I8?rel=0" frameborder="0" allowfullscreen></iframe>
+   <iframe title="Smoothing and normal estimation based on polynomial reconstruction" width="480" height="390" src="https://www.youtube.com/embed/FqHroDuo_I8?rel=0" frameborder="0" allowfullscreen></iframe>
 
 
 Some of the data irregularities (caused by small distance measurement errors)
@@ -24,7 +24,7 @@ be smoothed.
 
 .. image:: images/resampling_1.jpg
 
-On the left side of the figure above, we see the effect or estimating surface
+On the left side of the figure above, we see the effect of estimating surface
 normals in a dataset comprised of two registered point clouds together. Due to
 alignment errors, the resultant normals are noisy. On the right side we see the
 effects of surface normal estimation in the same dataset after it has been
@@ -40,7 +40,7 @@ defined on a robustly computed reference plane.
 
 .. raw:: html
 
-   <iframe title="Removing noisy data through resampling" width="480" height="390" src="http://www.youtube.com/embed/N5AgC0KEcw0?rel=0" frameborder="0" allowfullscreen></iframe>
+   <iframe title="Removing noisy data through resampling" width="480" height="390" src="https://www.youtube.com/embed/N5AgC0KEcw0?rel=0" frameborder="0" allowfullscreen></iframe>
 
 The code
 --------

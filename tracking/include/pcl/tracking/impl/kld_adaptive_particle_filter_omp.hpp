@@ -33,7 +33,7 @@ KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::weight()
   num_threads(threads_)
     // clang-format on
     for (int i = 0; i < particle_num_; i++)
-      this->computeTransformedPointCloudWithoutNormal(particles_->points[i],
+      this->computeTransformedPointCloudWithoutNormal((*particles_)[i],
                                                       *transed_reference_vector_[i]);
 
     PointCloudInPtr coherence_input(new PointCloudIn);
@@ -53,7 +53,7 @@ KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::weight()
         for (int i = 0; i < particle_num_; i++) {
           IndicesPtr indices;
           coherence_->compute(
-              transed_reference_vector_[i], indices, particles_->points[i].weight);
+              transed_reference_vector_[i], indices, (*particles_)[i].weight);
         }
       }
       else
@@ -71,14 +71,14 @@ KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::weight()
       for (int i = 0; i < particle_num_; i++) {
         IndicesPtr indices;
         coherence_->compute(
-            transed_reference_vector_[i], indices, particles_->points[i].weight);
+            transed_reference_vector_[i], indices, (*particles_)[i].weight);
       }
     }
   }
   else {
     std::vector<IndicesPtr> indices_list(particle_num_);
     for (int i = 0; i < particle_num_; i++) {
-      indices_list[i] = IndicesPtr(new std::vector<int>);
+      indices_list[i] = IndicesPtr(new pcl::Indices);
     }
     // clang-format off
 #pragma omp parallel for \
@@ -88,7 +88,7 @@ KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::weight()
     // clang-format on
     for (int i = 0; i < particle_num_; i++) {
       this->computeTransformedPointCloudWithNormal(
-          particles_->points[i], *indices_list[i], *transed_reference_vector_[i]);
+          (*particles_)[i], *indices_list[i], *transed_reference_vector_[i]);
     }
 
     PointCloudInPtr coherence_input(new PointCloudIn);
@@ -104,7 +104,7 @@ KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::weight()
     // clang-format on
     for (int i = 0; i < particle_num_; i++) {
       coherence_->compute(
-          transed_reference_vector_[i], indices_list[i], particles_->points[i].weight);
+          transed_reference_vector_[i], indices_list[i], (*particles_)[i].weight);
     }
   }
 

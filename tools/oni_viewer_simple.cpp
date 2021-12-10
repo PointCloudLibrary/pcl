@@ -42,12 +42,10 @@
 #include <pcl/common/time.h> //fps calculations
 #include <pcl/console/parse.h>
 #include <pcl/io/oni_grabber.h>
-#include <pcl/visualization/boost.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/common/time_trigger.h>
 
 #include <mutex>
-#include <vector>
 
 #define SHOW_FPS 1
 #if SHOW_FPS

@@ -13,6 +13,7 @@
 #include <pcl/filters/radius_outlier_removal.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/memory.h> // for pcl::make_shared
+#include <pcl/types.h>  // for pcl::index_t
 
 namespace pcl {
 namespace rec_3d_framework {
@@ -29,15 +30,14 @@ class PreProcessorAndNormalEstimator {
     KdTreeInPtr tree = pcl::make_shared<pcl::KdTreeFLANN<PointInT>>(false);
     tree->setInputCloud(input);
 
-    std::vector<int> nn_indices(9);
+    pcl::Indices nn_indices(9);
     std::vector<float> nn_distances(9);
-    std::vector<int> src_indices;
 
     float sum_distances = 0.0;
-    std::vector<float> avg_distances(input->points.size());
+    std::vector<float> avg_distances(input->size());
     // Iterate through the source data set
-    for (std::size_t i = 0; i < input->points.size(); ++i) {
-      tree->nearestKSearch(input->points[i], 9, nn_indices, nn_distances);
+    for (std::size_t i = 0; i < input->size(); ++i) {
+      tree->nearestKSearch((*input)[i], 9, nn_indices, nn_distances);
 
       float avg_dist_neighbours = 0.0;
       for (std::size_t j = 1; j < nn_indices.size(); j++)
@@ -187,18 +187,17 @@ public:
       // check nans before computing normals
       {
         pcl::ScopeTime t("check nans...");
-        int j = 0;
-        for (std::size_t i = 0; i < out->points.size(); ++i) {
-          if (!std::isfinite(out->points[i].x) || !std::isfinite(out->points[i].y) ||
-              !std::isfinite(out->points[i].z))
+        pcl::index_t j = 0;
+        for (const auto& point : *out) {
+          if (!isXYZFinite(point))
             continue;
 
-          out->points[j] = out->points[i];
+          (*out)[j] = point;
           j++;
         }
 
-        if (j != static_cast<int>(out->points.size())) {
-          PCL_ERROR("Contain nans...");
+        if (j != static_cast<pcl::index_t>(out->size())) {
+          PCL_ERROR("Contain nans...\n");
         }
 
         out->points.resize(j);
@@ -223,14 +222,12 @@ public:
     if (!out->isOrganized()) {
       pcl::ScopeTime t("check nans...");
       int j = 0;
-      for (std::size_t i = 0; i < normals->points.size(); ++i) {
-        if (!std::isfinite(normals->points[i].normal_x) ||
-            !std::isfinite(normals->points[i].normal_y) ||
-            !std::isfinite(normals->points[i].normal_z))
+      for (std::size_t i = 0; i < normals->size(); ++i) {
+        if (!isNormalFinite((*normals)[i]))
           continue;
 
-        normals->points[j] = normals->points[i];
-        out->points[j] = out->points[i];
+        (*normals)[j] = (*normals)[i];
+        (*out)[j] = (*out)[i];
         j++;
       }
 
@@ -246,15 +243,13 @@ public:
       // is is organized, we set the xyz points to NaN
       pcl::ScopeTime t("check nans organized...");
       bool NaNs = false;
-      for (std::size_t i = 0; i < normals->points.size(); ++i) {
-        if (std::isfinite(normals->points[i].normal_x) &&
-            std::isfinite(normals->points[i].normal_y) &&
-            std::isfinite(normals->points[i].normal_z))
+      for (std::size_t i = 0; i < normals->size(); ++i) {
+        if (!isNormalFinite((*normals)[i]))
           continue;
 
         NaNs = true;
 
-        out->points[i].x = out->points[i].y = out->points[i].z =
+        (*out)[i].x = (*out)[i].y = (*out)[i].z =
             std::numeric_limits<float>::quiet_NaN();
       }
 

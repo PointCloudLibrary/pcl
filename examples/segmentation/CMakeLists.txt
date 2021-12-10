@@ -11,7 +11,6 @@ PCL_ADD_EXAMPLE(pcl_example_region_growing FILES example_region_growing.cpp
 
 ## Find VTK
 if(VTK_FOUND)
-  include(${VTK_USE_FILE})
   PCL_ADD_EXAMPLE(pcl_example_supervoxels FILES example_supervoxels.cpp
                   LINK_WITH pcl_common pcl_features pcl_segmentation pcl_octree pcl_kdtree pcl_visualization)
   PCL_ADD_EXAMPLE(pcl_example_lccp_segmentation FILES example_lccp_segmentation.cpp

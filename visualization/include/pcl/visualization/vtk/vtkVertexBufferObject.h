@@ -26,8 +26,6 @@
 
 #pragma once
 
-#include <vector>
-
 #include "vtkObject.h"
 #include "vtkWeakPointer.h"
 

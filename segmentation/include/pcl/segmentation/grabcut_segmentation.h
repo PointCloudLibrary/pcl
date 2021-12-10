@@ -39,12 +39,13 @@
 
 #pragma once
 
+#include <deque> // for deque
+#include <map> // for map
 #include <pcl/memory.h>
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
-#include <pcl/segmentation/boost.h>
 #include <pcl/search/search.h>
 
 namespace pcl
@@ -293,14 +294,14 @@ namespace pcl
       /** Build the initial GMMs using the Orchard and Bouman color clustering algorithm */
       PCL_EXPORTS void
       buildGMMs (const Image &image,
-                 const std::vector<int>& indices,
+                 const Indices& indices,
                  const std::vector<SegmentationValue> &hardSegmentation,
                  std::vector<std::size_t> &components,
                  GMM &background_GMM, GMM &foreground_GMM);
       /** Iteratively learn GMMs using GrabCut updating algorithm */
       PCL_EXPORTS void
       learnGMMs (const Image& image,
-                 const std::vector<int>& indices,
+                 const Indices& indices,
                  const std::vector<SegmentationValue>& hard_segmentation,
                  std::vector<std::size_t>& components,
                  GMM& background_GMM, GMM& foreground_GMM);
@@ -401,7 +402,7 @@ namespace pcl
         NLinks () : nb_links (0), indices (0), dists (0), weights (0) {}
 
         int nb_links;
-        std::vector<int> indices;
+        Indices indices;
         std::vector<float> dists;
         std::vector<float> weights;
       };

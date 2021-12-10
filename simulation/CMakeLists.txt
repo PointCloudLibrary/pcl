@@ -4,6 +4,7 @@ set(SUBSYS_DEPS common io surface kdtree features search octree visualization fi
 
 set(build FALSE)
 find_package(OpenGL)
+
 find_package(GLEW)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" OFF)

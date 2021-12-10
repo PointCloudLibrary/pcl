@@ -39,81 +39,86 @@
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_2D_HPP_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_2D_HPP_
 
-#include <pcl/sample_consensus/sac_model_registration_2d.h>
 #include <pcl/sample_consensus/ransac.h>
+#include <pcl/sample_consensus/sac_model_registration_2d.h>
 
 #include <unordered_map>
 
+namespace pcl {
 
-namespace pcl
-{
+namespace registration {
 
-namespace registration
-{
-
-template <typename PointT> void
-CorrespondenceRejectorSampleConsensus2D<PointT>::getRemainingCorrespondences (
+template <typename PointT>
+void
+CorrespondenceRejectorSampleConsensus2D<PointT>::getRemainingCorrespondences(
     const pcl::Correspondences& original_correspondences,
     pcl::Correspondences& remaining_correspondences)
 {
-  if (!input_)
-  {
-    PCL_ERROR ("[pcl::registration::%s::getRemainingCorrespondences] No input cloud dataset was given!\n", getClassName ().c_str ());
+  if (!input_) {
+    PCL_ERROR("[pcl::registration::%s::getRemainingCorrespondences] No input cloud "
+              "dataset was given!\n",
+              getClassName().c_str());
     return;
   }
 
-  if (!target_)
-  {
-    PCL_ERROR ("[pcl::registration::%s::getRemainingCorrespondences] No input target dataset was given!\n", getClassName ().c_str ());
+  if (!target_) {
+    PCL_ERROR("[pcl::registration::%s::getRemainingCorrespondences] No input target "
+              "dataset was given!\n",
+              getClassName().c_str());
     return;
   }
 
-  if (projection_matrix_ == Eigen::Matrix3f::Identity ())
-  {
-    PCL_ERROR ("[pcl::registration::%s::getRemainingCorrespondences] Intrinsic camera parameters not given!\n", getClassName ().c_str ());
+  if (projection_matrix_ == Eigen::Matrix3f::Identity()) {
+    PCL_ERROR("[pcl::registration::%s::getRemainingCorrespondences] Intrinsic camera "
+              "parameters not given!\n",
+              getClassName().c_str());
     return;
   }
 
-  int nr_correspondences = static_cast<int> (original_correspondences.size ());
-  std::vector<int> source_indices (nr_correspondences);
-  std::vector<int> target_indices (nr_correspondences);
+  int nr_correspondences = static_cast<int>(original_correspondences.size());
+  pcl::Indices source_indices(nr_correspondences);
+  pcl::Indices target_indices(nr_correspondences);
 
   // Copy the query-match indices
-  for (std::size_t i = 0; i < original_correspondences.size (); ++i)
-  {
+  for (std::size_t i = 0; i < original_correspondences.size(); ++i) {
     source_indices[i] = original_correspondences[i].index_query;
     target_indices[i] = original_correspondences[i].index_match;
   }
 
   // From the set of correspondences found, attempt to remove outliers
-  typename pcl::SampleConsensusModelRegistration2D<PointT>::Ptr model (new pcl::SampleConsensusModelRegistration2D<PointT> (input_, source_indices));
+  typename pcl::SampleConsensusModelRegistration2D<PointT>::Ptr model(
+      new pcl::SampleConsensusModelRegistration2D<PointT>(input_, source_indices));
   // Pass the target_indices
-  model->setInputTarget (target_, target_indices);
-  model->setProjectionMatrix (projection_matrix_);
+  model->setInputTarget(target_, target_indices);
+  model->setProjectionMatrix(projection_matrix_);
 
   // Create a RANSAC model
-  pcl::RandomSampleConsensus<PointT> sac (model, inlier_threshold_);
-  sac.setMaxIterations (max_iterations_);
+  pcl::RandomSampleConsensus<PointT> sac(model, inlier_threshold_);
+  sac.setMaxIterations(max_iterations_);
 
   // Compute the set of inliers
-  if (!sac.computeModel ())
-  {
-    PCL_ERROR ("[pcl::registration::%s::getRemainingCorrespondences] Error computing model! Returning the original correspondences...\n", getClassName ().c_str ());
+  if (!sac.computeModel()) {
+    PCL_ERROR("[pcl::registration::%s::getRemainingCorrespondences] Error computing "
+              "model! Returning the original correspondences...\n",
+              getClassName().c_str());
     remaining_correspondences = original_correspondences;
-    best_transformation_.setIdentity ();
+    best_transformation_.setIdentity();
     return;
   }
-  if (refine_ && !sac.refineModel (2.0))
-    PCL_WARN ("[pcl::registration::%s::getRemainingCorrespondences] Error refining model!\n", getClassName ().c_str ());
+  if (refine_ && !sac.refineModel(2.0))
+    PCL_WARN(
+        "[pcl::registration::%s::getRemainingCorrespondences] Error refining model!\n",
+        getClassName().c_str());
 
-  std::vector<int> inliers;
-  sac.getInliers (inliers);
+  pcl::Indices inliers;
+  sac.getInliers(inliers);
 
-  if (inliers.size () < 3)
-  {
-    PCL_ERROR ("[pcl::registration::%s::getRemainingCorrespondences] Less than 3 correspondences found!\n", getClassName ().c_str ());
+  if (inliers.size() < 3) {
+    PCL_ERROR("[pcl::registration::%s::getRemainingCorrespondences] Less than 3 "
+              "correspondences found!\n",
+              getClassName().c_str());
     remaining_correspondences = original_correspondences;
-    best_transformation_.setIdentity ();
+    best_transformation_.setIdentity();
     return;
   }
 
@@ -121,21 +126,21 @@ CorrespondenceRejectorSampleConsensus2D<PointT>::getRemainingCorrespondences (
   for (int i = 0; i < nr_correspondences; ++i)
     index_to_correspondence[original_correspondences[i].index_query] = i;
 
-  remaining_correspondences.resize (inliers.size ());
-  for (std::size_t i = 0; i < inliers.size (); ++i)
-    remaining_correspondences[i] = original_correspondences[index_to_correspondence[inliers[i]]];
+  remaining_correspondences.resize(inliers.size());
+  for (std::size_t i = 0; i < inliers.size(); ++i)
+    remaining_correspondences[i] =
+        original_correspondences[index_to_correspondence[inliers[i]]];
 
   // get best transformation
   Eigen::VectorXf model_coefficients;
-  sac.getModelCoefficients (model_coefficients);
-  best_transformation_.row (0) = model_coefficients.segment<4>(0);
-  best_transformation_.row (1) = model_coefficients.segment<4>(4);
-  best_transformation_.row (2) = model_coefficients.segment<4>(8);
-  best_transformation_.row (3) = model_coefficients.segment<4>(12);
+  sac.getModelCoefficients(model_coefficients);
+  best_transformation_.row(0) = model_coefficients.segment<4>(0);
+  best_transformation_.row(1) = model_coefficients.segment<4>(4);
+  best_transformation_.row(2) = model_coefficients.segment<4>(8);
+  best_transformation_.row(3) = model_coefficients.segment<4>(12);
 }
 
 } // namespace registration
 } // namespace pcl
 
-#endif    // PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_2D_HPP_
-
+#endif // PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_2D_HPP_

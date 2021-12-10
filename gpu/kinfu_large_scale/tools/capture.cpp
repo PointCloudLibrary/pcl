@@ -41,7 +41,6 @@
 #include "openni_capture.h"
 #include <pcl/gpu/containers/initialization.h>
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::gpu;
 using namespace xn;
@@ -94,7 +93,7 @@ struct pcl::gpu::kinfuLS::CaptureOpenNI::Impl
 
 pcl::gpu::kinfuLS::CaptureOpenNI::CaptureOpenNI() : depth_focal_length_VGA (0.f), baseline (0.f), shadow_value (0), no_sample_value (0), pixelSize (0.0), max_depth (0) {}
 pcl::gpu::kinfuLS::CaptureOpenNI::CaptureOpenNI(int device) {open (device); }
-pcl::gpu::kinfuLS::CaptureOpenNI::CaptureOpenNI(const string& filename) {open (filename); }
+pcl::gpu::kinfuLS::CaptureOpenNI::CaptureOpenNI(const std::string& filename) {open (filename); }
 pcl::gpu::kinfuLS::CaptureOpenNI::~CaptureOpenNI() { release (); }
 
 void

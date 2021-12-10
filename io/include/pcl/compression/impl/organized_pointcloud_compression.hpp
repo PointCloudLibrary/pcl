@@ -43,17 +43,10 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 
-#include <pcl/common/boost.h>
-#include <pcl/common/eigen.h>
-#include <pcl/common/common.h>
-#include <pcl/common/io.h>
-
 #include <pcl/compression/libpng_wrapper.h>
 #include <pcl/compression/organized_pointcloud_conversion.h>
 
-#include <string>
 #include <vector>
-#include <limits>
 #include <cassert>
 
 namespace pcl
@@ -295,8 +288,6 @@ namespace pcl
       std::uint32_t compressedColorSize;
 
       // PNG decoded parameters
-      std::size_t png_width = 0;
-      std::size_t png_height = 0;
       unsigned int png_channels = 1;
 
       // sync to frame header
@@ -334,6 +325,9 @@ namespace pcl
         compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedColorSize), sizeof (compressedColorSize));
         compressedColor.resize (compressedColorSize);
         compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedColor[0]), compressedColorSize * sizeof(std::uint8_t));
+
+        std::size_t png_width = 0;
+        std::size_t png_height = 0;
 
         // decode PNG compressed disparity data
         decodePNGToImage (compressedDisparity, disparityData, png_width, png_height, png_channels);
@@ -412,7 +406,7 @@ namespace pcl
 
       // Ensure we have an organized point cloud
       assert((width>1) && (height>1));
-      assert(width*height == cloud_arg->points.size());
+      assert(width*height == cloud_arg->size());
 
       float maxDepth = 0;
       float focalLength = 0;
@@ -421,7 +415,7 @@ namespace pcl
       for (int y = -centerY; y < centerY; ++y )
         for (int x = -centerX; x < centerX; ++x )
         {
-          const PointT& point = cloud_arg->points[it++];
+          const PointT& point = (*cloud_arg)[it++];
 
           if (pcl::isFinite (point))
           {

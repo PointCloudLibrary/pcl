@@ -112,12 +112,12 @@ compute (const CloudT::Ptr &cloud,
   pcl::PointCloud<pcl::PointNormal>::Ptr cloud_normals (new pcl::PointCloud<pcl::PointNormal>);
   cloud_normals->width = cloud->width;
   cloud_normals->height = cloud->height;
-  cloud_normals->points.resize (cloud->points.size ());
-  for (std::size_t i = 0; i < cloud->points.size (); i++)
+  cloud_normals->points.resize (cloud->size ());
+  for (std::size_t i = 0; i < cloud->size (); i++)
   {
-    cloud_normals->points[i].x = cloud->points[i].x;
-    cloud_normals->points[i].y = cloud->points[i].y;
-    cloud_normals->points[i].z = cloud->points[i].z;
+    (*cloud_normals)[i].x = (*cloud)[i].x;
+    (*cloud_normals)[i].y = (*cloud)[i].y;
+    (*cloud_normals)[i].z = (*cloud)[i].z;
   }
 
   // estimate surface normals
@@ -195,7 +195,7 @@ main (int argc, char** argv)
 
 
   // TODO:: make this as an optional argument ??
-  std::vector<int> tmp_indices;
+  pcl::Indices tmp_indices;
   pcl::removeNaNFromPointCloud (*cloud, *cloud, tmp_indices);
   
   // parse optional input arguments from the command line
