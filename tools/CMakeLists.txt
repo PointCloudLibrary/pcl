@@ -203,6 +203,8 @@ else()
 
   if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
     target_link_libraries(pcl_obj2pcd VTK::FiltersCore)
+  else()
+    target_link_libraries(pcl_obj2pcd vtkFiltersCore)
   endif()
 
   PCL_ADD_EXECUTABLE(pcl_obj2ply COMPONENT ${SUBSYS_NAME} SOURCES obj2ply.cpp)
@@ -213,6 +215,8 @@ else()
 
   if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
     target_link_libraries(pcl_vtk2pcd VTK::FiltersCore)
+  else()
+    target_link_libraries(pcl_vtk2pcd vtkFiltersCore)
   endif()
 
   if(BUILD_visualization)
@@ -345,4 +349,3 @@ else()
 endif()
 add_custom_target(${SUBSYS_TARGET_NAME} DEPENDS ${PCL_TOOLS_ALL_TARGETS})
 set_target_properties(${SUBSYS_TARGET_NAME} PROPERTIES FOLDER "Tools")
-

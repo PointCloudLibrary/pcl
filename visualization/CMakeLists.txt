@@ -74,7 +74,7 @@ if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
     list(REMOVE_ITEM srcs
       src/pcl_painter2D.cpp
     )
-  endif()  
+  endif()
 endif()
 
 set(incs
@@ -143,7 +143,7 @@ endif()
 
 if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
   if(NOT (";${VTK_AVAILABLE_COMPONENTS};" MATCHES ";RenderingContextOpenGL2;"))
-    
+
     list(REMOVE_ITEM incs
       "include/pcl/${SUBSYS_NAME}/pcl_painter2D.h"
     )
@@ -189,13 +189,15 @@ if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
                         VTK::RenderingLOD
                         VTK::RenderingOpenGL2
                         VTK::ViewsContext2D)
-                        
+
   if("RenderingContextOpenGL2" IN_LIST VTK_AVAILABLE_COMPONENTS)
     target_link_libraries("${LIB_NAME}" VTK::RenderingContextOpenGL2)
   endif()
 else()
   target_include_directories("${LIB_NAME}" SYSTEM PUBLIC ${VTK_INCLUDE_DIRS})
   target_link_libraries("${LIB_NAME}"
+                        vtkCommonColor
+                        vtkCommonComputationalGeometry
                         vtkChartsCore
                         vtkFiltersExtraction
                         vtkFiltersGeometry
@@ -211,12 +213,12 @@ else()
                         vtkRendering${VTK_RENDERING_BACKEND}
                         vtkViewsContext2D)
   if(${VTK_VERSION} VERSION_LESS 7.0)
-    target_link_libraries("${LIB_NAME}" vtkRenderingVolume${VTK_RENDERING_BACKEND})  	
+    target_link_libraries("${LIB_NAME}" vtkRenderingVolume${VTK_RENDERING_BACKEND})
   endif()
   if(${VTK_VERSION} VERSION_GREATER_EQUAL 7.0 AND ${VTK_VERSION} VERSION_LESS 9.0)
     target_link_libraries("${LIB_NAME}" vtkRenderingGL2PS${VTK_RENDERING_BACKEND})
   endif()
-  
+
   # These two libraries are present and required in ubuntu 18.04 VTK 6, but not present in later versions of ubuntu using VTK 6.
   # They are also present on later versions of VTK on later versions of ubuntu.
   if("vtkRenderingFreeTypeFontConfig" IN_LIST VTK_MODULES_ENABLED)
@@ -266,7 +268,7 @@ PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/vtk" ${vtk_incs})
 
 #TODO: Update when CMAKE 3.10 is available
 if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
-  vtk_module_autoinit(TARGETS "${LIB_NAME}" 
+  vtk_module_autoinit(TARGETS "${LIB_NAME}"
                       MODULES VTK::RenderingOpenGL2
                               VTK::RenderingFreeType)
 endif()
