@@ -345,7 +345,7 @@ target_link_libraries("${LIB_NAME}" Boost::boost Boost::filesystem Boost::iostre
 
 if(VTK_FOUND)
   if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
-    target_link_libraries("${LIB_NAME}" 
+    target_link_libraries("${LIB_NAME}"
                           VTK::IOImage
                           VTK::IOGeometry
                           VTK::IOPLY)
@@ -353,9 +353,10 @@ if(VTK_FOUND)
     link_directories(${VTK_LINK_DIRECTORIES})
     target_link_libraries("${LIB_NAME}"
                           vtkIOImage
+                          vtkImagingCore
                           vtkIOGeometry
-                          vtkIOMPIImage
-                          vtkIOMPIParallel
+                          # vtkIOMPIImage
+                          # vtkIOMPIParallel
                           vtkIOPLY
                           )
     if(${VTK_VERSION} VERSION_GREATER_EQUAL 7.0 AND ${VTK_VERSION} VERSION_LESS 8.0)
