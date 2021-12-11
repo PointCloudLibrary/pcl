@@ -98,6 +98,7 @@ TEST (Filters, LocalMaximum_2)
   EXPECT_EQ (0.25f, cloud_out[0].z);
   EXPECT_EQ (0.50f, cloud_out[1].z);
   EXPECT_EQ (1.25f, cloud_out[2].z);
+  EXPECT_EQ (1.50f, cloud_out[3].z);
   EXPECT_EQ (4, cloud_out.size ());
 }
 
