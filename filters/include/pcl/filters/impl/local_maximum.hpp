@@ -148,7 +148,7 @@ pcl::LocalMaximum<PointT>::applyFilterIndices (Indices &indices)
     float query_z = (*input_)[iii].z;
     for (const auto& idx: radius_indices)  // k = 0 is the first neighbor
     {
-      if ((*input_)[idx].z > query.z)
+      if ((*input_)[idx].z > query_z)
       {
         // Query point is not the local max, no need to check others
         point_is_max[iii] = false;
