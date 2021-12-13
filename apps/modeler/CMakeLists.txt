@@ -1,7 +1,7 @@
 set(SUBSUBSYS_NAME modeler)
 set(SUBSUBSYS_DESC "PCLModeler: PCL based reconstruction platform")
 set(SUBSUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search apps)
-set(SUBSUBSYS_EXT_DEPS vtk Qt5)
+set(SUBSUBSYS_EXT_DEPS vtk ${QTX})
 set(REASON "")
 
 # QVTK?
@@ -118,11 +118,7 @@ PCL_ADD_EXECUTABLE(
     ${incs}
     ${impl_incs})
 
-target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_kdtree pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search Qt5::Widgets)
-#TODO: Update when CMAKE 3.10 is available
-if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
-  target_link_libraries("${EXE_NAME}" VTK::GUISupportQt)
-endif()
+target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_kdtree pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search ${QTX}::Widgets)
 
 # Install include files
 PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${incs})

@@ -11,7 +11,13 @@ set(CMAKE_AUTOUIC ON) # UI files
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Find the QtWidgets library
-find_package(Qt5 REQUIRED Widgets)
+find_package(Qt6 QUIET COMPONENTS Widgets)
+if (NOT Qt6_FOUND)
+  find_package(Qt5 COMPONENTS Widgets REQUIRED)
+  set(QTX Qt5)
+else()
+  set(QTX Qt6)
+endif()
 
 find_package(VTK REQUIRED)
 find_package(PCL 1.7.1 REQUIRED)
@@ -26,4 +32,4 @@ set(project_SOURCES main.cpp pclviewer.cpp)
 
 add_executable(${PROJECT_NAME} ${project_SOURCES})
 
-target_link_libraries(${PROJECT_NAME} ${PCL_LIBRARIES} Qt5::Widgets)
+target_link_libraries(${PROJECT_NAME} ${PCL_LIBRARIES} ${QTX}::Widgets)

@@ -1,7 +1,7 @@
 set(SUBSUBSYS_NAME point_cloud_editor)
 set(SUBSUBSYS_DESC "Point Cloud Editor - Simple editor for 3D point clouds")
 set(SUBSUBSYS_DEPS common filters io apps)
-set(SUBSUBSYS_EXT_DEPS vtk Qt5 OpenGL)
+set(SUBSUBSYS_EXT_DEPS vtk ${QTX} OpenGL)
 
 # Default to not building for now
 if(${DEFAULT} STREQUAL "TRUE")
@@ -86,7 +86,7 @@ PCL_ADD_EXECUTABLE(
     ${RSRC}
     ${INCS})
 
-target_link_libraries("${EXE_NAME}" Qt5::Widgets Qt5::OpenGL ${OPENGL_LIBRARIES} ${BOOST_LIBRARIES} pcl_common pcl_io pcl_filters)
+target_link_libraries("${EXE_NAME}" ${QTX}::Widgets ${QTX}::OpenGL ${OPENGL_LIBRARIES} ${BOOST_LIBRARIES} pcl_common pcl_io pcl_filters)
 
 PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSYS_NAME}/${SUBSUBSYS_NAME}" ${INCS})
 PCL_MAKE_PKGCONFIG(${EXE_NAME} COMPONENT ${SUBSUBSYS_NAME} DESC ${SUBSUBSYS_DESC})

@@ -1,7 +1,7 @@
 set(SUBSYS_NAME apps)
 set(SUBSYS_DESC "Application examples/samples that show how PCL works")
 set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search recognition ml stereo 2d)
-set(SUBSYS_OPT_DEPS openni vtk Qt5)
+set(SUBSYS_OPT_DEPS openni vtk ${QTX})
 
 set(DEFAULT FALSE)
 set(REASON "Disabled by default")
@@ -64,25 +64,21 @@ if(VTK_FOUND)
   if(QHULL_FOUND)
     PCL_ADD_EXECUTABLE(pcl_pcd_select_object_plane COMPONENT ${SUBSYS_NAME} SOURCES src/pcd_select_object_plane.cpp)
     target_link_libraries(pcl_pcd_select_object_plane pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_features pcl_surface)
-    #TODO: Update when CMAKE 3.10 is available
-    if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
-      target_link_libraries(pcl_pcd_select_object_plane VTK::FiltersGeometry)
-    endif()
   endif()
 
   PCL_ADD_EXECUTABLE(pcl_pcd_organized_edge_detection COMPONENT ${SUBSYS_NAME} SOURCES src/pcd_organized_edge_detection.cpp)
   target_link_libraries(pcl_pcd_organized_edge_detection pcl_common pcl_io pcl_features pcl_visualization)
 
   PCL_ADD_EXECUTABLE(pcl_face_trainer COMPONENT ${SUBSYS_NAME} SOURCES src/face_detection/face_trainer.cpp)
-  target_link_libraries(pcl_face_trainer pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree ${VTK_LIBRARIES})
+  target_link_libraries(pcl_face_trainer pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree)
 
   PCL_ADD_EXECUTABLE(pcl_fs_face_detector COMPONENT ${SUBSYS_NAME} SOURCES src/face_detection//filesystem_face_detection.cpp BUNDLE)
-  target_link_libraries(pcl_fs_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree ${VTK_LIBRARIES})
+  target_link_libraries(pcl_fs_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree)
 
   PCL_ADD_EXECUTABLE(pcl_stereo_ground_segmentation COMPONENT ${SUBSYS_NAME} SOURCES src/stereo_ground_segmentation.cpp)
   target_link_libraries(pcl_stereo_ground_segmentation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_features pcl_stereo)
 
-  if(Qt5_FOUND AND HAVE_QVTK)
+  if(QT_FOUND AND HAVE_QVTK)
     # Manual registration demo
     PCL_ADD_EXECUTABLE(pcl_manual_registration
       COMPONENT
@@ -93,11 +89,7 @@ if(VTK_FOUND)
       src/manual_registration/manual_registration.ui
       BUNDLE)
       
-    target_link_libraries(pcl_manual_registration pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface Qt5::Widgets)
-    #TODO: Update when CMAKE 3.10 is available
-    if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
-      target_link_libraries(pcl_manual_registration VTK::GUISupportQt)
-    endif()
+    target_link_libraries(pcl_manual_registration pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface ${QTX}::Widgets)
 
     PCL_ADD_EXECUTABLE(pcl_pcd_video_player
       COMPONENT
@@ -108,11 +100,7 @@ if(VTK_FOUND)
       src/pcd_video_player/pcd_video_player.ui
       BUNDLE)
     
-    target_link_libraries(pcl_pcd_video_player pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface Qt5::Widgets)
-    #TODO: Update when CMAKE 3.10 is available
-    if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
-      target_link_libraries(pcl_pcd_video_player VTK::GUISupportQt)
-    endif()
+    target_link_libraries(pcl_pcd_video_player pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface ${QTX}::Widgets)
   endif()
 
   if(WITH_OPENNI)
@@ -164,9 +152,9 @@ if(VTK_FOUND)
     target_link_libraries(pcl_openni_organized_edge_detection pcl_common pcl_io pcl_features pcl_visualization)
 
     PCL_ADD_EXECUTABLE(pcl_openni_face_detector COMPONENT ${SUBSYS_NAME} SOURCES src/face_detection//openni_face_detection.cpp src/face_detection//openni_frame_source.cpp BUNDLE)
-    target_link_libraries(pcl_openni_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree ${VTK_LIBRARIES})
+    target_link_libraries(pcl_openni_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree)
 
-    if(Qt5_FOUND AND HAVE_QVTK)
+    if(QT_FOUND AND HAVE_QVTK)
       # OpenNI Passthrough application demo
       PCL_ADD_EXECUTABLE(pcl_openni_passthrough
         COMPONENT
@@ -176,11 +164,7 @@ if(VTK_FOUND)
           src/openni_passthrough.cpp
           src/openni_passthrough.ui)
           
-      target_link_libraries(pcl_openni_passthrough pcl_common pcl_io pcl_filters pcl_visualization Qt5::Widgets)
-      #TODO: Update when CMAKE 3.10 is available
-      if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
-        target_link_libraries(pcl_openni_passthrough VTK::GUISupportQt)
-      endif()
+      target_link_libraries(pcl_openni_passthrough pcl_common pcl_io pcl_filters pcl_visualization ${QTX}::Widgets)
 
       list(APPEND CMAKE_AUTOUIC_SEARCH_PATHS "src")
 
@@ -194,11 +178,8 @@ if(VTK_FOUND)
           src/organized_segmentation_demo.cpp
           src/organized_segmentation_demo.ui
         BUNDLE)
-      target_link_libraries(pcl_organized_segmentation_demo pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface Qt5::Widgets)
-      #TODO: Update when CMAKE 3.10 is available
-      if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
-        target_link_libraries(pcl_organized_segmentation_demo VTK::GUISupportQt)
-      endif()      
+      target_link_libraries(pcl_organized_segmentation_demo pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface ${QTX}::Widgets)
+
     endif()
 
     if(QHULL_FOUND)

@@ -533,38 +533,6 @@ pcl::MLSResult::getPolynomialPartialDerivative (const double u, const double v) 
   return (d);
 }
 
-Eigen::Vector2f
-pcl::MLSResult::calculatePrincipalCurvatures (const double u, const double v) const
-{
-  Eigen::Vector2f k (1e-5, 1e-5);
-
-  // Note: this use the Monge Patch to derive the Gaussian curvature and Mean Curvature found here http://mathworld.wolfram.com/MongePatch.html
-  // Then:
-  //      k1 = H + sqrt(H^2 - K)
-  //      k2 = H - sqrt(H^2 - K)
-  if (order > 1 && c_vec.size () >= (order + 1) * (order + 2) / 2 && std::isfinite (c_vec[0]))
-  {
-    const PolynomialPartialDerivative d = getPolynomialPartialDerivative (u, v);
-    const double Z = 1 + d.z_u * d.z_u + d.z_v * d.z_v;
-    const double Zlen = std::sqrt (Z);
-    const double K = (d.z_uu * d.z_vv - d.z_uv * d.z_uv) / (Z * Z);
-    const double H = ((1.0 + d.z_v * d.z_v) * d.z_uu - 2.0 * d.z_u * d.z_v * d.z_uv + (1.0 + d.z_u * d.z_u) * d.z_vv) / (2.0 * Zlen * Zlen * Zlen);
-    const double disc2 = H * H - K;
-    assert (disc2 >= 0.0);
-    const double disc = std::sqrt (disc2);
-    k[0] = H + disc;
-    k[1] = H - disc;
-
-    if (std::abs (k[0]) > std::abs (k[1])) std::swap (k[0], k[1]);
-  }
-  else
-  {
-    PCL_ERROR ("No Polynomial fit data, unable to calculate the principal curvatures!\n");
-  }
-
-  return (k);
-}
-
 pcl::MLSResult::MLSProjectionResults
 pcl::MLSResult::projectPointOrthogonalToPolynomialSurface (const double u, const double v, const double w) const
 {

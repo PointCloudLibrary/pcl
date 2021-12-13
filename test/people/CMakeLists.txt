@@ -15,5 +15,5 @@ endif()
 include_directories(SYSTEM ${VTK_INCLUDE_DIRS})
 PCL_ADD_TEST(a_people_detection_test test_people_detection
              FILES test_people_groundBasedPeopleDetectionApp.cpp
-             LINK_WITH pcl_gtest pcl_common pcl_io pcl_kdtree pcl_search pcl_features pcl_sample_consensus pcl_filters pcl_io pcl_segmentation pcl_people
+             LINK_WITH pcl_gtest pcl_common pcl_io pcl_kdtree pcl_search pcl_features pcl_sample_consensus pcl_filters pcl_segmentation pcl_people
              ARGUMENTS "${PCL_SOURCE_DIR}/people/data/trainedLinearSVMForPeopleDetectionWithHOG.yaml" "${PCL_SOURCE_DIR}/test/five_people.pcd")
