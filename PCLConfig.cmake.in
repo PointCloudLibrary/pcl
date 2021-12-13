@@ -129,7 +129,7 @@ macro(find_qhull)
     get_filename_component(QHULL_ROOT "@QHULL_INCLUDE_DIRS@" PATH)
   endif()
 
-  set(QHULL_USE_STATIC @QHULL_USE_STATIC@)
+  set(PCL_QHULL_REQUIRED_TYPE @PCL_QHULL_REQUIRED_TYPE@)
   find_package(Qhull)
 endmacro()
 
@@ -227,7 +227,7 @@ macro(find_flann)
     set(FLANN_ROOT "@FLANN_ROOT@")
   endif()
 
-  set(FLANN_USE_STATIC @FLANN_USE_STATIC@)
+  set(PCL_FLANN_REQUIRED_TYPE @PCL_FLANN_REQUIRED_TYPE@)
   find_package(FLANN)
 endmacro()
 
@@ -419,6 +419,8 @@ set(PCL_INCLUDE_DIRS "${PCL_CONF_INCLUDE_DIR}")
 #set a suffix for debug libraries
 set(PCL_DEBUG_SUFFIX "@CMAKE_DEBUG_POSTFIX@")
 set(PCL_RELEASE_SUFFIX "@CMAKE_RELEASE_POSTFIX@")
+
+set(PCL_SHARED_LIBS "@PCL_SHARED_LIBS@")
 
 #set SSE flags used compiling PCL
 list(APPEND PCL_DEFINITIONS @PCLCONFIG_SSE_DEFINITIONS@)
