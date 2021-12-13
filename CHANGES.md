@@ -1,5 +1,106 @@
 # ChangeList
 
+## = 1.12.1 (2021.12.21) =
+
+This minor release brings in a lot of enhancements in CMake thanks to @larshg and @SunBlack.
+Enjoy a lot of bug-fixes and improvements in IO and Filters.
+
+### Notable changes
+
+**New features** *added to PCL*
+
+* **[io]** Add a grabber for SICK 2D LiDAR: TiM [[#4429](https://github.com/PointCloudLibrary/pcl/pull/4429)]
+
+**Deprecation** *of public APIs, scheduled to be removed after two minor releases*
+
+* **[cuda][filters]** Add deprecation for filter getters with bool reference [[#4861](https://github.com/PointCloudLibrary/pcl/pull/4861)]
+* **[filters]** Fix keep_organized behavior in CropHull filter [[#4855](https://github.com/PointCloudLibrary/pcl/pull/4855)]
+
+**Behavior changes** *in classes, apps, or tools*
+
+* **[registration]** Fix typo in the hessian representation of NDT [[#4889](https://github.com/PointCloudLibrary/pcl/pull/4889)]
+* **[cmake]** Update PCLConfig.cmake.in to 3.10 for default policy.  [[#4996](https://github.com/PointCloudLibrary/pcl/pull/4996)]
+
+**ABI changes** *that are still API compatible*
+
+* **[ml]** Wrap QMatrix in namespace pcl to resolve linker conflict with Qt6 [[#4858](https://github.com/PointCloudLibrary/pcl/pull/4858)]
+
+### Changes grouped by module
+
+#### CMake:
+
+* Add AVX for Linux & macos [[#4698](https://github.com/PointCloudLibrary/pcl/pull/4698)]
+* Update cmake to 3.10 and add CUDA language support [[#4619](https://github.com/PointCloudLibrary/pcl/pull/4619)]
+* Fix CUDA Compute Capability version detection [[#4900](https://github.com/PointCloudLibrary/pcl/pull/4900)]
+* Update pcl_find_boost to allow compilation with Boost 1.77 and 1.78 [[#4972](https://github.com/PointCloudLibrary/pcl/pull/4972)] [[#5067](https://github.com/PointCloudLibrary/pcl/pull/5067)]
+* Allow boost to be found by config files. [[#4952](https://github.com/PointCloudLibrary/pcl/pull/4952)]
+* **[behavior change]** Update PCLConfig.cmake.in to 3.10 for default policy.  [[#4996](https://github.com/PointCloudLibrary/pcl/pull/4996)]
+* Allow PCL to have non-static dependencies for static builds and vice-versa [[#4390](https://github.com/PointCloudLibrary/pcl/pull/4390)]
+* Enhance finding of qhull [[#4923](https://github.com/PointCloudLibrary/pcl/pull/4923)]
+
+#### libpcl_common:
+
+* Fix: max_id size should be equal to histogram.size() - 1 [[#4934](https://github.com/PointCloudLibrary/pcl/pull/4934)]
+* Remove casts, use more auto and uindex_t in conversions.h [[#4935](https://github.com/PointCloudLibrary/pcl/pull/4935)]
+* Fix inaccurate covariance matrix computation [[#4983](https://github.com/PointCloudLibrary/pcl/pull/4983)]
+
+#### libpcl_cuda:
+
+* **[deprecation]** Add deprecation for filter getters with bool reference [[#4861](https://github.com/PointCloudLibrary/pcl/pull/4861)]
+
+#### libpcl_features:
+
+* Add `isNormalFinite` check in `ShapeContext3DEstimation` [[#4883](https://github.com/PointCloudLibrary/pcl/pull/4883)]
+
+#### libpcl_filters:
+
+* Clear the output indices in function `CropHull::applyFilters` [[#4851](https://github.com/PointCloudLibrary/pcl/pull/4851)]
+* Fix unresolved linking to Convolution [[#4845](https://github.com/PointCloudLibrary/pcl/pull/4845)]
+* **[deprecation]** Add deprecation for filter getters with bool reference [[#4861](https://github.com/PointCloudLibrary/pcl/pull/4861)]
+* NormalSpaceSampling filter: add constructor to specify `extract_removed_indices`  [[#4846](https://github.com/PointCloudLibrary/pcl/pull/4846)]
+* **[deprecation]** Fix keep_organized behavior in CropHull filter [[#4855](https://github.com/PointCloudLibrary/pcl/pull/4855)]
+* Added reserve function before storing points in PointCloud in VoxelGr… [[#4938](https://github.com/PointCloudLibrary/pcl/pull/4938)]
+
+#### libpcl_io:
+
+* Higher flexibility regarding which PLY files can be read [[#4963](https://github.com/PointCloudLibrary/pcl/pull/4963)]
+* **[new feature]** Add a grabber for SICK 2D LiDAR: TiM [[#4429](https://github.com/PointCloudLibrary/pcl/pull/4429)]
+
+#### libpcl_keypoints:
+
+* Bugfix: Number of OpenMP threads was not validated, ... [[#4863](https://github.com/PointCloudLibrary/pcl/pull/4863)]
+
+#### libpcl_ml:
+
+* **[ABI break]** Wrap QMatrix in namespace pcl to resolve linker conflict with Qt6 [[#4858](https://github.com/PointCloudLibrary/pcl/pull/4858)]
+
+#### libpcl_registration:
+
+* **[behavior change]** Fix typo in the hessian representation of NDT [[#4889](https://github.com/PointCloudLibrary/pcl/pull/4889)]
+* Fix discretization bug in PPFRegistration [[#4975](https://github.com/PointCloudLibrary/pcl/pull/4975)]
+
+#### libpcl_sample_consensus:
+
+* Fix SampleConsensusModelCylinder.projectPoints and verify with test [[#4881](https://github.com/PointCloudLibrary/pcl/pull/4881)]
+
+#### libpcl_search:
+
+* Add missing include of hpp file in flann_search.h [[#4848](https://github.com/PointCloudLibrary/pcl/pull/4848)]
+
+#### libpcl_surface:
+
+* Improve logging in `multi_grid_octree_data.hpp` [[#4844](https://github.com/PointCloudLibrary/pcl/pull/4844)]
+* Fix duplicate definition error in mls [[#5049](https://github.com/PointCloudLibrary/pcl/pull/5049)]
+
+#### libpcl_visualization:
+
+* Use pixel ratio to scale mouse events on HiDpi monitors [[#4411](https://github.com/PointCloudLibrary/pcl/pull/4411)]
+* Remove declaration of updateCamera [[#4921](https://github.com/PointCloudLibrary/pcl/pull/4921)]
+
+#### PCL Docs:
+
+* Require sphinx>=3 to fix errors on readthedocs [[#5037](https://github.com/PointCloudLibrary/pcl/pull/5037)]
+
 ## = 1.12.0 (2021.07.07) =
 
 PCL 1.12.0 enables custom index size and type, from `int16_t` to `uint64_t`, allowing
