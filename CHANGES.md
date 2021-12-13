@@ -9,7 +9,7 @@ Enjoy a lot of bug-fixes and improvements in IO and Filters.
 
 **New features** *added to PCL*
 
-* **[io]** Add a grabber for SICK 2D LiDAR: tim [[#4429](https://github.com/PointCloudLibrary/pcl/pull/4429)]
+* **[io]** Add a grabber for SICK 2D LiDAR: TiM [[#4429](https://github.com/PointCloudLibrary/pcl/pull/4429)]
 
 **Deprecation** *of public APIs, scheduled to be removed after two minor releases*
 
@@ -21,6 +21,10 @@ Enjoy a lot of bug-fixes and improvements in IO and Filters.
 * **[registration]** Fix typo in the hessian representation of NDT [[#4889](https://github.com/PointCloudLibrary/pcl/pull/4889)]
 * **[cmake]** Update PCLConfig.cmake.in to 3.10 for default policy.  [[#4996](https://github.com/PointCloudLibrary/pcl/pull/4996)]
 
+**ABI changes** *that are still API compatible*
+
+* **[ml]** Wrap QMatrix in namespace pcl to resolve linker conflict with Qt6 [[#4858](https://github.com/PointCloudLibrary/pcl/pull/4858)]
+
 ### Changes grouped by module
 
 #### CMake:
@@ -28,7 +32,7 @@ Enjoy a lot of bug-fixes and improvements in IO and Filters.
 * Add AVX for Linux & macos [[#4698](https://github.com/PointCloudLibrary/pcl/pull/4698)]
 * Update cmake to 3.10 and add CUDA language support [[#4619](https://github.com/PointCloudLibrary/pcl/pull/4619)]
 * Fix CUDA Compute Capability version detection [[#4900](https://github.com/PointCloudLibrary/pcl/pull/4900)]
-* Update pcl_find_boost to allow compilation with Boost 1.77 [[#4972](https://github.com/PointCloudLibrary/pcl/pull/4972)]
+* Update pcl_find_boost to allow compilation with Boost 1.77 and 1.78 [[#4972](https://github.com/PointCloudLibrary/pcl/pull/4972)] [[#5067](https://github.com/PointCloudLibrary/pcl/pull/5067)]
 * Allow boost to be found by config files. [[#4952](https://github.com/PointCloudLibrary/pcl/pull/4952)]
 * **[behavior change]** Update PCLConfig.cmake.in to 3.10 for default policy.  [[#4996](https://github.com/PointCloudLibrary/pcl/pull/4996)]
 * Allow PCL to have non-static dependencies for static builds and vice-versa [[#4390](https://github.com/PointCloudLibrary/pcl/pull/4390)]
@@ -36,7 +40,7 @@ Enjoy a lot of bug-fixes and improvements in IO and Filters.
 
 #### libpcl_common:
 
-* fix: max_id size should be equal to histogram.size() - 1 [[#4934](https://github.com/PointCloudLibrary/pcl/pull/4934)]
+* Fix: max_id size should be equal to histogram.size() - 1 [[#4934](https://github.com/PointCloudLibrary/pcl/pull/4934)]
 * Remove casts, use more auto and uindex_t in conversions.h [[#4935](https://github.com/PointCloudLibrary/pcl/pull/4935)]
 * Fix inaccurate covariance matrix computation [[#4983](https://github.com/PointCloudLibrary/pcl/pull/4983)]
 
@@ -60,7 +64,7 @@ Enjoy a lot of bug-fixes and improvements in IO and Filters.
 #### libpcl_io:
 
 * Higher flexibility regarding which PLY files can be read [[#4963](https://github.com/PointCloudLibrary/pcl/pull/4963)]
-* **[new feature]** Add a grabber for SICK 2D LiDAR: tim [[#4429](https://github.com/PointCloudLibrary/pcl/pull/4429)]
+* **[new feature]** Add a grabber for SICK 2D LiDAR: TiM [[#4429](https://github.com/PointCloudLibrary/pcl/pull/4429)]
 
 #### libpcl_keypoints:
 
@@ -68,7 +72,7 @@ Enjoy a lot of bug-fixes and improvements in IO and Filters.
 
 #### libpcl_ml:
 
-* wrap QMatrix in namespace pcl to resolve linker conflict [[#4858](https://github.com/PointCloudLibrary/pcl/pull/4858)]
+* **[ABI break]** Wrap QMatrix in namespace pcl to resolve linker conflict with Qt6 [[#4858](https://github.com/PointCloudLibrary/pcl/pull/4858)]
 
 #### libpcl_registration:
 
