@@ -257,6 +257,12 @@ protected:
     target_cells_.filter(true);
   }
 
+  /** \brief Set parameters for the approximation of the log likelihood by a Gaussian
+   * \param[in] c_det the determinant of the cell covariance
+   */
+  void
+  setGaussianFittingParameters(double c_det);
+
   /** \brief Compute derivatives of probability function w.r.t. the transformation
    * vector. \note Equation 6.10, 6.12 and 6.13 [Magnusson 2009]. \param[out]
    * score_gradient the gradient vector of the probability function w.r.t. the

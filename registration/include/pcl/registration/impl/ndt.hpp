@@ -48,24 +48,33 @@ NormalDistributionsTransform<PointSource, PointTarget>::NormalDistributionsTrans
 : target_cells_()
 , resolution_(1.0f)
 , step_size_(0.1)
-, outlier_ratio_(0.55)
+, outlier_ratio_(0.1)
 , gauss_d1_()
 , gauss_d2_()
 , trans_probability_()
 {
   reg_name_ = "NormalDistributionsTransform";
 
+  transformation_epsilon_ = 0.1;
+  max_iterations_ = 35;
+}
+
+template <typename PointSource, typename PointTarget>
+void
+NormalDistributionsTransform<PointSource, PointTarget>::setGaussianFittingParameters(
+    double c_det)
+{
+  assert(c_det > 0); // VoxelGridCovariance::applyFilter ensures that the covariance
+                     // matrix is non-singular
+
   // Initializes the gaussian fitting parameters (eq. 6.8) [Magnusson 2009]
-  const double gauss_c1 = 10.0 * (1 - outlier_ratio_);
+  const double gauss_c1 = (1.0 - outlier_ratio_) / sqrt(pow(2 * M_PI, 3) * c_det);
   const double gauss_c2 = outlier_ratio_ / pow(resolution_, 3);
   const double gauss_d3 = -std::log(gauss_c2);
   gauss_d1_ = -std::log(gauss_c1 + gauss_c2) - gauss_d3;
   gauss_d2_ =
       -2 * std::log((-std::log(gauss_c1 * std::exp(-0.5) + gauss_c2) - gauss_d3) /
                     gauss_d1_);
-
-  transformation_epsilon_ = 0.1;
-  max_iterations_ = 35;
 }
 
 template <typename PointSource, typename PointTarget>
@@ -75,15 +84,6 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeTransformation(
 {
   nr_iterations_ = 0;
   converged_ = false;
-
-  // Initializes the gaussian fitting parameters (eq. 6.8) [Magnusson 2009]
-  const double gauss_c1 = 10 * (1 - outlier_ratio_);
-  const double gauss_c2 = outlier_ratio_ / pow(resolution_, 3);
-  const double gauss_d3 = -std::log(gauss_c2);
-  gauss_d1_ = -std::log(gauss_c1 + gauss_c2) - gauss_d3;
-  gauss_d2_ =
-      -2 * std::log((-std::log(gauss_c1 * std::exp(-0.5) + gauss_c2) - gauss_d3) /
-                    gauss_d1_);
 
   if (guess != Eigen::Matrix4f::Identity()) {
     // Initialise final transformation to the guessed one
@@ -217,6 +217,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeDerivatives(
       // Inverse Covariance of Occupied Voxel
       // Uses precomputed covariance for speed.
       const Eigen::Matrix3d c_inv = cell->getInverseCov();
+      setGaussianFittingParameters(cell->getCovDeterminant());
 
       // Compute derivative of transform function w.r.t. transform vector, J_E and H_E
       // in Equations 6.18 and 6.20 [Magnusson 2009]
@@ -440,6 +441,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeHessian(
       // Inverse Covariance of Occupied Voxel
       // Uses precomputed covariance for speed.
       const Eigen::Matrix3d c_inv = cell->getInverseCov();
+      setGaussianFittingParameters(cell->getCovDeterminant());
 
       // Compute derivative of transform function w.r.t. transform vector, J_E and H_E
       // in Equations 6.18 and 6.20 [Magnusson 2009]
