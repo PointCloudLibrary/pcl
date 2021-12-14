@@ -182,7 +182,7 @@ public:
    */
   PCL_DEPRECATED(1,
                  16,
-                 "The method `getTransformationProbability` was renamed to "
+                 "The method `getTransformationProbability` has been renamed to "
                  "`getTransformationLikelihood`.")
   inline double
   getTransformationProbability() const
@@ -501,8 +501,7 @@ protected:
   union {
     PCL_DEPRECATED(1,
                    16,
-                   "The member `trans_probability_` is deprecated. Please use "
-                   "`trans_likelihood_` instead.")
+                   "`trans_probability_` has been renamed to `trans_likelihood_`.")
     double trans_probability_;
     double trans_likelihood_;
   };
