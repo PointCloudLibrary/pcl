@@ -211,6 +211,7 @@ if(MINGW)
 endif()
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/ply" ${PLY_INCLUDES})
 target_include_directories(pcl_io_ply PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_link_libraries(pcl_io_ply Boost::boost)
 
 set(srcs
   src/debayer.cpp
