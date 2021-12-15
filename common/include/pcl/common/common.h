@@ -284,7 +284,7 @@ namespace pcl
   template<typename IteratorT, typename Functor> inline auto
   computeMedian (IteratorT begin, IteratorT end, Functor f) noexcept ->
   #if __cpp_lib_is_invocable
-  std::invoke_result_t<Functor(decltype(*begin))>
+  std::invoke_result_t<Functor, decltype(*begin)>
   #else
   typename std::result_of<Functor(decltype(*begin))>::type
   #endif
