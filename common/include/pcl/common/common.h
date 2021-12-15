@@ -282,7 +282,12 @@ namespace pcl
     * \ingroup common
     */
   template<typename IteratorT, typename Functor> inline auto
-  computeMedian (IteratorT begin, IteratorT end, Functor f) noexcept -> typename std::result_of<Functor(decltype(*begin))>::type
+  computeMedian (IteratorT begin, IteratorT end, Functor f) noexcept ->
+  #if __cpp_lib_is_invocable
+  std::invoke_result_t<Functor(decltype(*begin))>
+  #else
+  typename std::result_of<Functor(decltype(*begin))>::type
+  #endif
   {
     const std::size_t size = std::distance(begin, end);
     const std::size_t mid = size/2;
