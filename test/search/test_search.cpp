@@ -538,6 +538,68 @@ TEST (PCL, Organized_Sparse_View_Radius)
 }
 #endif
 
+TEST(PCL, Search_nonTrivialDistance)
+{
+  Indices test_indices = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+  // 0 added on the end to showcase this case with sorted vs unsorted
+  std::vector<float> test_distances = {0, 0, 0.0001, 2, 5, 0, 0, 0, 10};
+
+  // on sorted
+  {
+    pcl::search::BruteForce<pcl::PointXYZ> sorted{true};
+    auto indices = test_indices;
+    auto distances = test_distances;
+    sorted.makeNonTrivial(indices, distances);
+
+    EXPECT_EQ(distances.size(), 7);
+    EXPECT_EQ_VECTOR(indices, Indices{3, 4, 5, 6, 7, 8, 9});
+  }
+
+  // on unsorted
+  {
+    pcl::search::BruteForce<pcl::PointXYZ> unsorted{false};
+    auto indices = test_indices;
+    auto distances = test_distances;
+    unsorted.makeNonTrivial(indices, distances);
+
+    EXPECT_EQ(distances.size(), 4);
+    EXPECT_EQ_VECTOR(indices, Indices{3, 4, 5, 9});
+  }
+}
+// @TODO
+TEST(PCL, Search_nonTrivialDistances) {}
+TEST(PCL, Search_nonTrivialIdx)
+{
+  index_t test_idx = 1;
+  Indices test_indices = {1, 1, 2, 3, 1, 1, 1, 4, 5};
+  // 0 added on the end to showcase this case with sorted vs unsorted
+  std::vector<float> test_distances = {0, 0, 0.0001, 2, 5, 0, 0, 0, 10};
+
+  // on sorted
+  {
+    pcl::search::BruteForce<pcl::PointXYZ> sorted{true};
+    auto indices = test_indices;
+    auto distances = test_distances;
+    sorted.makeNonTrivial(test_idx, indices, distances);
+
+    EXPECT_EQ(distances.size(), 7);
+    EXPECT_EQ_VECTOR(indices, Indices{2, 3, 1, 1, 1, 4, 5});
+  }
+
+  // on unsorted
+  {
+    pcl::search::BruteForce<pcl::PointXYZ> unsorted{false};
+    auto indices = test_indices;
+    auto distances = test_distances;
+    unsorted.makeNonTrivial(test_idx, indices, distances);
+
+    EXPECT_EQ(distances.size(), 4);
+    EXPECT_EQ_VECTOR(indices, Indices{2, 3, 4, 5});
+  }
+}
+// @TODO
+TEST (PCL, Search_nonTrivialIdices) {}
+
 /** \brief create subset of point in cloud to use as query points
   * \param[out] query_indices resulting query indices - not guaranteed to have size of query_count but guaranteed not to exceed that value
   * \param cloud input cloud required to check for nans and to get number of points
