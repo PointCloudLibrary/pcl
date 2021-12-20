@@ -270,7 +270,7 @@ Search<PointT>::makeNonTrivial(index_t index,
     std::size_t same_idx_elements = 0;
     // distances are sorted, so if we encounter a non-zero, we can bail early
     for (const auto& idx : k_indices) {
-      if (idx == index) {
+      if (idx != index) {
         break;
       }
       ++same_idx_elements;
