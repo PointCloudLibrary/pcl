@@ -45,6 +45,7 @@
 #include <pcl/search/octree.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/point_tests.h> // for pcl::isFinite
+#include <pcl/pcl_tests.h> // for EXPECT_EQ_VECTOR
 
 
 using namespace pcl;
