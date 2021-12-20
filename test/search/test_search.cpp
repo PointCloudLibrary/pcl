@@ -546,6 +546,7 @@ class MakeNonTrivialTests : public ::testing::TestWithParam<bool> {
     search = pcl::make_shared<pcl::search::BruteForce<pcl::PointXYZ>>(GetParam());
   }
 
+protected:
   std::vector<Indices> test_indices = {{1, 2, 3, 4, 5, 6, 7, 8, 9},
                                        {1, 1, 2, 3, 1, 1, 1, 4, 5}};
   std::vector<std::vector<float>> test_distances = {{0, 0, 0.0001, 2, 5, 0, 0, 0, 10},
