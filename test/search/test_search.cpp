@@ -565,7 +565,7 @@ TEST_P(MakeNonTrivialTests, distance)
   auto* expected_sizes =
       search->getSortedResults() ? &expected_sorted_sizes : &expected_unsorted_sizes;
 
-  for (int i = 0; i < test_distances.size(); i++) {
+  for (unsigned int i = 0; i < test_distances.size(); i++) {
     auto indices = test_indices[i];
     auto distances = test_distances[i];
     auto size = search->makeNonTrivial(indices, distances);
@@ -600,8 +600,8 @@ TEST_P(MakeNonTrivialTests, index)
   auto* expected_sizes =
       search->getSortedResults() ? &expected_sorted_sizes : &expected_unsorted_sizes;
 
-  for (int seed_idx = 0; seed_idx < test_seeds; seed_idx++) {
-    for (int i = 0; i < test_distances.size(); i++) {
+  for (unsigned int seed_idx = 0; seed_idx < test_seeds.size(); seed_idx++) {
+    for (unsigned int i = 0; i < test_distances.size(); i++) {
       auto indices = test_indices[i];
       auto distances = test_distances[i];
       auto size = search->makeNonTrivial(test_seeds[seed_idx], indices, distances);
