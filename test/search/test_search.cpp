@@ -553,7 +553,7 @@ TEST(PCL, Search_nonTrivialDistance)
     sorted.makeNonTrivial(indices, distances);
 
     EXPECT_EQ(distances.size(), 7);
-    EXPECT_EQ_VECTOR(indices, Indices{3, 4, 5, 6, 7, 8, 9});
+    test::EXPECT_EQ_VECTORS(indices, Indices{3, 4, 5, 6, 7, 8, 9});
   }
 
   // on unsorted
@@ -564,7 +564,7 @@ TEST(PCL, Search_nonTrivialDistance)
     unsorted.makeNonTrivial(indices, distances);
 
     EXPECT_EQ(distances.size(), 4);
-    EXPECT_EQ_VECTOR(indices, Indices{3, 4, 5, 9});
+    test::EXPECT_EQ_VECTORS(indices, Indices{3, 4, 5, 9});
   }
 }
 // @TODO
@@ -584,7 +584,7 @@ TEST(PCL, Search_nonTrivialIdx)
     sorted.makeNonTrivial(test_idx, indices, distances);
 
     EXPECT_EQ(distances.size(), 7);
-    EXPECT_EQ_VECTOR(indices, Indices{2, 3, 1, 1, 1, 4, 5});
+    test::EXPECT_EQ_VECTORS(indices, Indices{2, 3, 1, 1, 1, 4, 5});
   }
 
   // on unsorted
@@ -595,7 +595,7 @@ TEST(PCL, Search_nonTrivialIdx)
     unsorted.makeNonTrivial(test_idx, indices, distances);
 
     EXPECT_EQ(distances.size(), 4);
-    EXPECT_EQ_VECTOR(indices, Indices{2, 3, 4, 5});
+    test::EXPECT_EQ_VECTORS(indices, Indices{2, 3, 4, 5});
   }
 }
 // @TODO
