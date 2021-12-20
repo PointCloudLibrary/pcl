@@ -574,7 +574,7 @@ TEST_P(MakeNonTrivialTests, distance)
     EXPECT_EQ(distances.size(), size);
 
     EXPECT_LE(distances.size(), test_distances[i].size());
-    EXPECT_EQ(size, expected_sizes[i]);
+    EXPECT_EQ(size, *(expected_sizes)[i]);
 
     if (distances.empty()) {
       continue;
@@ -610,7 +610,7 @@ TEST_P(MakeNonTrivialTests, index)
       EXPECT_EQ(distances.size(), size);
 
       EXPECT_LE(indices.size(), test_indices[i].size());
-      EXPECT_EQ(size, expected_sizes[seed_idx][i]);
+      EXPECT_EQ(size, *(expected_sizes)[seed_idx][i]);
 
       if (distances.empty()) {
         continue;
