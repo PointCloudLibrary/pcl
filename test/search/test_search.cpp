@@ -627,6 +627,8 @@ TEST_P(MakeNonTrivialTests, index)
   }
 }
 
+INSTANTIATE_TEST_SUITE_P(PCL, MakeNonTrivialTests, testing::Values(false, true));
+
 /** \brief create subset of point in cloud to use as query points
   * \param[out] query_indices resulting query indices - not guaranteed to have size of query_count but guaranteed not to exceed that value
   * \param cloud input cloud required to check for nans and to get number of points
