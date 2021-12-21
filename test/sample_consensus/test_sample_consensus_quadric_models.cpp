@@ -651,6 +651,50 @@ TEST (SampleConsensusModelCircle3D, RANSAC)
   EXPECT_NEAR ( 0.0, coeff_refined[6], 1e-3);
 }
 
+TEST (SampleConsensusModelSphere, projectPoints)
+{
+  Eigen::VectorXf model_coefficients(4);
+  model_coefficients << -0.32, -0.89, 0.37, 0.12; // center and radius
+
+  pcl::PointCloud<pcl::PointXYZ>::Ptr input(new pcl::PointCloud<pcl::PointXYZ>);
+  input->emplace_back(-0.259754, -0.950873,  0.318377); // inlier, dist from center=0.10
+  input->emplace_back( 0.595892,  0.455094,  0.025545); // outlier, not projected
+  input->emplace_back(-0.221871, -0.973718,  0.353817); // inlier, dist from center=0.13
+  input->emplace_back(-0.332269, -0.848851,  0.437499); // inlier, dist from center=0.08
+  input->emplace_back(-0.242308, -0.561036, -0.365535); // outlier, not projected
+  input->emplace_back(-0.327668, -0.800009,  0.290988); // inlier, dist from center=0.12
+  input->emplace_back(-0.173948, -0.883831,  0.403625); // inlier, dist from center=0.15
+  input->emplace_back(-0.033891,  0.624537, -0.606994); // outlier, not projected
+
+  pcl::SampleConsensusModelSphere<pcl::PointXYZ> model(input);
+  pcl::Indices inliers = {0, 2, 3, 5, 6};
+
+  pcl::PointCloud<pcl::PointXYZ> projected_truth;
+  projected_truth.emplace_back(-0.247705, -0.963048, 0.308053);
+  projected_truth.emplace_back(-0.229419, -0.967278, 0.355062);
+  projected_truth.emplace_back(-0.338404, -0.828276, 0.471249);
+  projected_truth.emplace_back(-0.327668, -0.800009, 0.290988);
+  projected_truth.emplace_back(-0.203158, -0.885065, 0.396900);
+
+  pcl::PointCloud<pcl::PointXYZ> projected_points;
+  model.projectPoints(inliers, model_coefficients, projected_points, false);
+  EXPECT_EQ(projected_points.size(), 5);
+  for(int i=0; i<5; ++i)
+    EXPECT_XYZ_NEAR(projected_points[i], projected_truth[i], 1e-5);
+
+  pcl::PointCloud<pcl::PointXYZ> projected_points_all;
+  model.projectPoints(inliers, model_coefficients, projected_points_all, true);
+  EXPECT_EQ(projected_points_all.size(), 8);
+  EXPECT_XYZ_NEAR(projected_points_all[0], projected_truth[0], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[1],        (*input)[1], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[2], projected_truth[1], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[3], projected_truth[2], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[4],        (*input)[4], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[5], projected_truth[3], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[6], projected_truth[4], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[7],        (*input)[7], 1e-5);
+}
+
 TEST (SampleConsensusModelCylinder, projectPoints)
 {
   Eigen::VectorXf model_coefficients(7);
