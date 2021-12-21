@@ -562,8 +562,8 @@ TEST_P(MakeNonTrivialTests, distance)
   std::vector<std::size_t> expected_sorted_sizes = {7, 9},
                            expected_unsorted_sizes = {4, 5};
 
-  auto* expected_sizes =
-      search->getSortedResults() ? &expected_sorted_sizes : &expected_unsorted_sizes;
+  auto& expected_sizes =
+      search->getSortedResults() ? expected_sorted_sizes : expected_unsorted_sizes;
 
   for (unsigned int i = 0; i < test_distances.size(); i++) {
     auto indices = test_indices[i];
@@ -574,7 +574,7 @@ TEST_P(MakeNonTrivialTests, distance)
     EXPECT_EQ(distances.size(), size);
 
     EXPECT_LE(distances.size(), test_distances[i].size());
-    EXPECT_EQ(size, *(expected_sizes)[i]);
+    EXPECT_EQ(size, expected_sizes[i]);
 
     if (distances.empty()) {
       continue;
@@ -597,8 +597,8 @@ TEST_P(MakeNonTrivialTests, index)
   std::vector<std::vector<std::size_t>> expected_sorted_sizes = {{8, 7}, {9, 9}},
                                         expected_unsorted_sizes = {{8, 4}, {8, 9}};
 
-  auto* expected_sizes =
-      search->getSortedResults() ? &expected_sorted_sizes : &expected_unsorted_sizes;
+  auto& expected_sizes =
+      search->getSortedResults() ? expected_sorted_sizes : expected_unsorted_sizes;
 
   for (unsigned int seed_idx = 0; seed_idx < test_seeds.size(); seed_idx++) {
     for (unsigned int i = 0; i < test_distances.size(); i++) {
@@ -610,7 +610,7 @@ TEST_P(MakeNonTrivialTests, index)
       EXPECT_EQ(distances.size(), size);
 
       EXPECT_LE(indices.size(), test_indices[i].size());
-      EXPECT_EQ(size, *(expected_sizes)[seed_idx][i]);
+      EXPECT_EQ(size, expected_sizes[seed_idx][i]);
 
       if (distances.empty()) {
         continue;
