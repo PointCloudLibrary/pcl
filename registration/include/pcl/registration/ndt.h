@@ -49,14 +49,16 @@
 #include <unsupported/Eigen/NonLinearOptimization>
 
 namespace pcl {
-/** \brief A 3D Normal Distribution Transform registration implementation for point
- * cloud data. \note For more information please see <b>Magnusson, M. (2009). The
- * Three-Dimensional Normal-Distributions Transform — an Efﬁcient Representation for
- * Registration, Surface Analysis, and Loop Detection. PhD thesis, Orebro University.
- * Orebro Studies in Technology 36.</b>, <b>More, J., and Thuente, D. (1994). Line
- * Search Algorithm with Guaranteed Sufficient Decrease In ACM Transactions on
- * Mathematical Software.</b> and Sun, W. and Yuan, Y, (2006) Optimization Theory and
- * Methods: Nonlinear Programming. 89-100 \note Math refactored by Todor Stoyanov.
+/** \brief A 3D Normal Distribution Transform registration implementation for
+ * point cloud data.
+ * \note For more information please see <b>Magnusson, M. (2009). The
+ * Three-Dimensional Normal-Distributions Transform — an Efﬁcient Representation
+ * for Registration, Surface Analysis, and Loop Detection. PhD thesis, Orebro
+ * University.  Orebro Studies in Technology 36.</b>, <b>More, J., and Thuente,
+ * D. (1994). Line Search Algorithm with Guaranteed Sufficient Decrease In ACM
+ * Transactions on Mathematical Software.</b> and Sun, W. and Yuan, Y, (2006)
+ * Optimization Theory and Methods: Nonlinear Programming. 89-100
+ * \note Math refactored by Todor Stoyanov.
  * \author Brian Okorn (Space and Naval Warfare Systems Center Pacific)
  */
 template <typename PointSource, typename PointTarget>
@@ -75,7 +77,8 @@ protected:
   using PointIndicesPtr = PointIndices::Ptr;
   using PointIndicesConstPtr = PointIndices::ConstPtr;
 
-  /** \brief Typename of searchable voxel grid containing mean and covariance. */
+  /** \brief Typename of searchable voxel grid containing mean and
+   * covariance. */
   using TargetGrid = VoxelGridCovariance<PointTarget>;
   /** \brief Typename of pointer to searchable voxel grid. */
   using TargetGridPtr = TargetGrid*;
@@ -89,17 +92,17 @@ public:
   using ConstPtr =
       shared_ptr<const NormalDistributionsTransform<PointSource, PointTarget>>;
 
-  /** \brief Constructor.
-   * Sets \ref outlier_ratio_ to 0.35, \ref step_size_ to 0.05 and \ref resolution_
-   * to 1.0
+  /** \brief Constructor.  Sets \ref outlier_ratio_ to 0.35, \ref step_size_ to
+   * 0.05 and \ref resolution_ to 1.0
    */
   NormalDistributionsTransform();
 
   /** \brief Empty destructor */
   ~NormalDistributionsTransform() {}
 
-  /** \brief Provide a pointer to the input target (e.g., the point cloud that we want
-   * to align the input source to). \param[in] cloud the input point cloud target
+  /** \brief Provide a pointer to the input target (e.g., the point cloud that
+   * we want to align the input source to).
+   * \param[in] cloud the input point cloud target
    */
   inline void
   setInputTarget(const PointCloudTargetConstPtr& cloud) override
@@ -188,7 +191,8 @@ public:
 
   /** \brief Convert 6 element transformation vector to affine transformation.
    * \param[in] x transformation vector of the form [x, y, z, roll, pitch, yaw]
-   * \param[out] trans affine transform corresponding to given transfomation vector
+   * \param[out] trans affine transform corresponding to given transfomation
+   * vector
    */
   static void
   convertTransform(const Eigen::Matrix<double, 6, 1>& x, Eigen::Affine3f& trans)
@@ -201,8 +205,8 @@ public:
 
   /** \brief Convert 6 element transformation vector to transformation matrix.
    * \param[in] x transformation vector of the form [x, y, z, roll, pitch, yaw]
-   * \param[out] trans 4x4 transformation matrix corresponding to given transfomation
-   * vector
+   * \param[out] trans 4x4 transformation matrix corresponding to given
+   * transfomation vector
    */
   static void
   convertTransform(const Eigen::Matrix<double, 6, 1>& x, Eigen::Matrix4f& trans)
@@ -231,8 +235,9 @@ protected:
 
   using Registration<PointSource, PointTarget>::update_visualizer_;
 
-  /** \brief Estimate the transformation and returns the transformed source (input) as
-   * output. \param[out] output the resultant input transformed point cloud dataset
+  /** \brief Estimate the transformation and returns the transformed source
+   * (input) as output.
+   * \param[out] output the resultant input transformed point cloud dataset
    */
   virtual void
   computeTransformation(PointCloudSource& output)
@@ -240,8 +245,9 @@ protected:
     computeTransformation(output, Eigen::Matrix4f::Identity());
   }
 
-  /** \brief Estimate the transformation and returns the transformed source (input) as
-   * output. \param[out] output the resultant input transformed point cloud dataset
+  /** \brief Estimate the transformation and returns the transformed source
+   * (input) as output.
+   * \param[out] output the resultant input transformed point cloud dataset
    * \param[in] guess the initial gross estimation of the transformation
    */
   void
@@ -257,13 +263,17 @@ protected:
     target_cells_.filter(true);
   }
 
-  /** \brief Compute derivatives of probability function w.r.t. the transformation
-   * vector. \note Equation 6.10, 6.12 and 6.13 [Magnusson 2009]. \param[out]
-   * score_gradient the gradient vector of the probability function w.r.t. the
-   * transformation vector \param[out] hessian the hessian matrix of the probability
-   * function w.r.t. the transformation vector \param[in] trans_cloud transformed point
-   * cloud \param[in] transform the current transform vector \param[in] compute_hessian
-   * flag to calculate hessian, unnessissary for step calculation.
+  /** \brief Compute derivatives of probability function w.r.t. the
+   * transformation vector.
+   * \note Equation 6.10, 6.12 and 6.13 [Magnusson 2009].
+   * \param[out] score_gradient the gradient vector of the probability function
+   * w.r.t.  the transformation vector
+   * \param[out] hessian the hessian matrix of the probability function
+   * w.r.t. the transformation vector
+   * \param[in] trans_cloud transformed point cloud
+   * \param[in] transform the current transform vector
+   * \param[in] compute_hessian flag to calculate hessian, unnessissary for step
+   * calculation.
    */
   double
   computeDerivatives(Eigen::Matrix<double, 6, 1>& score_gradient,
@@ -272,12 +282,15 @@ protected:
                      const Eigen::Matrix<double, 6, 1>& transform,
                      bool compute_hessian = true);
 
-  /** \brief Compute individual point contirbutions to derivatives of probability
-   * function w.r.t. the transformation vector. \note Equation 6.10, 6.12 and 6.13
-   * [Magnusson 2009]. \param[in,out] score_gradient the gradient vector of the
-   * probability function w.r.t. the transformation vector \param[in,out] hessian the
-   * hessian matrix of the probability function w.r.t. the transformation vector
-   * \param[in] x_trans transformed point minus mean of occupied covariance voxel
+  /** \brief Compute individual point contirbutions to derivatives of
+   * probability function w.r.t. the transformation vector.
+   * \note Equation 6.10, 6.12 and 6.13 [Magnusson 2009].
+   * \param[in,out] score_gradient the gradient vector of the probability
+   * function w.r.t. the transformation vector
+   * \param[in,out] hessian the hessian matrix of the probability function
+   * w.r.t. the transformation vector
+   * \param[in] x_trans transformed point minus mean of occupied covariance
+   * voxel
    * \param[in] c_inv covariance of occupied covariance voxel
    * \param[in] compute_hessian flag to calculate hessian, unnessissary for step
    * calculation.
@@ -308,20 +321,24 @@ protected:
   void
   computePointDerivatives(const Eigen::Vector3d& x, bool compute_hessian = true);
 
-  /** \brief Compute hessian of probability function w.r.t. the transformation vector.
+  /** \brief Compute hessian of probability function w.r.t. the transformation
+   * vector.
    * \note Equation 6.13 [Magnusson 2009].
-   * \param[out] hessian the hessian matrix of the probability function w.r.t. the
-   * transformation vector \param[in] trans_cloud transformed point cloud
+   * \param[out] hessian the hessian matrix of the probability function
+   * w.r.t. the transformation vector
+   * \param[in] trans_cloud transformed point cloud
    */
   void
   computeHessian(Eigen::Matrix<double, 6, 6>& hessian,
                  const PointCloudSource& trans_cloud);
 
-  /** \brief Compute hessian of probability function w.r.t. the transformation vector.
+  /** \brief Compute hessian of probability function w.r.t. the transformation
+   * vector.
    * \note Equation 6.13 [Magnusson 2009].
-   * \param[out] hessian the hessian matrix of the probability function w.r.t. the
-   * transformation vector \param[in] trans_cloud transformed point cloud \param[in]
-   * transform the current transform vector
+   * \param[out] hessian the hessian matrix of the probability function
+   * w.r.t. the transformation vector
+   * \param[in] trans_cloud transformed point cloud
+   * \param[in] transform the current transform vector
    */
   PCL_DEPRECATED(1, 15, "Parameter `transform` is not required")
   void
@@ -333,36 +350,48 @@ protected:
     computeHessian(hessian, trans_cloud);
   }
 
-  /** \brief Compute individual point contirbutions to hessian of probability function
-   * w.r.t. the transformation vector. \note Equation 6.13 [Magnusson 2009].
-   * \param[in,out] hessian the hessian matrix of the probability function w.r.t. the
-   * transformation vector \param[in] x_trans transformed point minus mean of occupied
-   * covariance voxel \param[in] c_inv covariance of occupied covariance voxel
+  /** \brief Compute individual point contirbutions to hessian of probability
+   * function w.r.t. the transformation vector.
+   * \note Equation 6.13 [Magnusson 2009].
+   * \param[in,out] hessian the hessian matrix of the probability function
+   * w.r.t. the transformation vector
+   * \param[in] x_trans transformed point minus mean of occupied covariance
+   * voxel
+   * \param[in] c_inv covariance of occupied covariance voxel
    */
   void
   updateHessian(Eigen::Matrix<double, 6, 6>& hessian,
                 const Eigen::Vector3d& x_trans,
                 const Eigen::Matrix3d& c_inv) const;
 
-  /** \brief Compute line search step length and update transform and probability
-   * derivatives using More-Thuente method. \note Search Algorithm [More, Thuente 1994]
-   * \param[in] transform initial transformation vector, \f$ x \f$ in Equation 1.3
-   * (Moore, Thuente 1994) and \f$ \vec{p} \f$ in Algorithm 2 [Magnusson 2009]
-   * \param[in] step_dir descent direction, \f$ p \f$ in Equation 1.3 (Moore, Thuente
-   * 1994) and \f$ \delta \vec{p} \f$ normalized in Algorithm 2 [Magnusson 2009]
+  /** \brief Compute line search step length and update transform and
+   * probability derivatives using More-Thuente method.
+   * \note Search Algorithm [More, Thuente 1994]
+   * \param[in] transform initial transformation vector, \f$ x \f$ in Equation
+   * 1.3 (Moore, Thuente 1994) and \f$ \vec{p} \f$ in Algorithm 2 [Magnusson
+   * 2009]
+   * \param[in] step_dir descent direction, \f$ p \f$ in Equation 1.3 (Moore,
+   * Thuente 1994) and \f$ \delta \vec{p} \f$ normalized in Algorithm 2
+   * [Magnusson 2009]
    * \param[in] step_init initial step length estimate, \f$ \alpha_0 \f$ in
-   * Moore-Thuente (1994) and the noramal of \f$ \delta \vec{p} \f$ in Algorithm 2
-   * [Magnusson 2009] \param[in] step_max maximum step length, \f$ \alpha_max \f$ in
-   * Moore-Thuente (1994) \param[in] step_min minimum step length, \f$ \alpha_min \f$ in
-   * Moore-Thuente (1994) \param[out] score final score function value, \f$ f(x + \alpha
-   * p) \f$ in Equation 1.3 (Moore, Thuente 1994) and \f$ score \f$ in Algorithm 2
-   * [Magnusson 2009] \param[in,out] score_gradient gradient of score function w.r.t.
-   * transformation vector, \f$ f'(x + \alpha p) \f$ in Moore-Thuente (1994) and \f$
-   * \vec{g} \f$ in Algorithm 2 [Magnusson 2009] \param[out] hessian hessian of score
-   * function w.r.t. transformation vector, \f$ f''(x + \alpha p) \f$ in Moore-Thuente
-   * (1994) and \f$ H \f$ in Algorithm 2 [Magnusson 2009] \param[in,out] trans_cloud
-   * transformed point cloud, \f$ X \f$ transformed by \f$ T(\vec{p},\vec{x}) \f$ in
-   * Algorithm 2 [Magnusson 2009] \return final step length
+   * Moore-Thuente (1994) and the noramal of \f$ \delta \vec{p} \f$ in Algorithm
+   * 2 [Magnusson 2009]
+   * \param[in] step_max maximum step length, \f$ \alpha_max \f$ in
+   * Moore-Thuente (1994)
+   * \param[in] step_min minimum step length, \f$ \alpha_min \f$ in
+   * Moore-Thuente (1994)
+   * \param[out] score final score function value, \f$ f(x + \alpha p) \f$ in
+   * Equation 1.3 (Moore, Thuente 1994) and \f$ score \f$ in Algorithm 2
+   * [Magnusson 2009]
+   * \param[in,out] score_gradient gradient of score function w.r.t.
+   * transformation vector, \f$ f'(x + \alpha p) \f$ in Moore-Thuente (1994) and
+   * \f$ \vec{g} \f$ in Algorithm 2 [Magnusson 2009]
+   * \param[out] hessian hessian of score function w.r.t. transformation vector,
+   * \f$ f''(x + \alpha p) \f$ in Moore-Thuente (1994) and \f$ H \f$ in
+   * Algorithm 2 [Magnusson 2009]
+   * \param[in,out] trans_cloud transformed point cloud, \f$ X \f$ transformed
+   * by \f$ T(\vec{p},\vec{x}) \f$ in Algorithm 2 [Magnusson 2009]
+   * \return final step length
    */
   double
   computeStepLengthMT(const Eigen::Matrix<double, 6, 1>& transform,
@@ -375,27 +404,35 @@ protected:
                       Eigen::Matrix<double, 6, 6>& hessian,
                       PointCloudSource& trans_cloud);
 
-  /** \brief Update interval of possible step lengths for More-Thuente method, \f$ I \f$
-   * in More-Thuente (1994) \note Updating Algorithm until some value satisfies \f$
-   * \psi(\alpha_k) \leq 0 \f$ and \f$ \phi'(\alpha_k) \geq 0 \f$ and Modified Updating
-   * Algorithm from then on [More, Thuente 1994]. \param[in,out] a_l first endpoint of
-   * interval \f$ I \f$, \f$ \alpha_l \f$ in Moore-Thuente (1994) \param[in,out] f_l
-   * value at first endpoint, \f$ f_l \f$ in Moore-Thuente (1994), \f$ \psi(\alpha_l)
-   * \f$ for Update Algorithm and \f$ \phi(\alpha_l) \f$ for Modified Update Algorithm
-   * \param[in,out] g_l derivative at first endpoint, \f$ g_l \f$ in Moore-Thuente
-   * (1994), \f$ \psi'(\alpha_l) \f$ for Update Algorithm and \f$ \phi'(\alpha_l) \f$
-   * for Modified Update Algorithm \param[in,out] a_u second endpoint of interval \f$ I
-   * \f$, \f$ \alpha_u \f$ in Moore-Thuente (1994) \param[in,out] f_u value at second
-   * endpoint, \f$ f_u \f$ in Moore-Thuente (1994), \f$ \psi(\alpha_u) \f$ for Update
-   * Algorithm and \f$ \phi(\alpha_u) \f$ for Modified Update Algorithm \param[in,out]
-   * g_u derivative at second endpoint, \f$ g_u \f$ in Moore-Thuente (1994), \f$
-   * \psi'(\alpha_u) \f$ for Update Algorithm and \f$ \phi'(\alpha_u) \f$ for Modified
-   * Update Algorithm \param[in] a_t trial value, \f$ \alpha_t \f$ in Moore-Thuente
-   * (1994) \param[in] f_t value at trial value, \f$ f_t \f$ in Moore-Thuente (1994),
-   * \f$ \psi(\alpha_t) \f$ for Update Algorithm and \f$ \phi(\alpha_t) \f$ for Modified
-   * Update Algorithm \param[in] g_t derivative at trial value, \f$ g_t \f$ in
-   * Moore-Thuente (1994), \f$ \psi'(\alpha_t) \f$ for Update Algorithm and \f$
-   * \phi'(\alpha_t) \f$ for Modified Update Algorithm \return if interval converges
+  /** \brief Update interval of possible step lengths for More-Thuente method,
+   * \f$ I \f$ in More-Thuente (1994)
+   * \note Updating Algorithm until some value satisfies \f$ \psi(\alpha_k) \leq
+   * 0 \f$ and \f$ \phi'(\alpha_k) \geq 0 \f$ and Modified Updating Algorithm
+   * from then on [More, Thuente 1994].
+   * \param[in,out] a_l first endpoint of interval \f$ I \f$, \f$ \alpha_l \f$
+   * in Moore-Thuente (1994)
+   * \param[in,out] f_l value at first endpoint, \f$ f_l \f$ in Moore-Thuente
+   * (1994), \f$ \psi(\alpha_l) \f$ for Update Algorithm and \f$ \phi(\alpha_l)
+   * \f$ for Modified Update Algorithm
+   * \param[in,out] g_l derivative at first endpoint, \f$ g_l \f$ in
+   * Moore-Thuente (1994), \f$ \psi'(\alpha_l) \f$ for Update Algorithm and \f$
+   * \phi'(\alpha_l) \f$ for Modified Update Algorithm
+   * \param[in,out] a_u second endpoint of interval \f$ I \f$, \f$ \alpha_u \f$
+   * in Moore-Thuente (1994)
+   * \param[in,out] f_u value at second endpoint, \f$ f_u \f$ in Moore-Thuente
+   * (1994), \f$ \psi(\alpha_u) \f$ for Update Algorithm and \f$ \phi(\alpha_u)
+   * \f$ for Modified Update Algorithm
+   * \param[in,out] g_u derivative at second endpoint, \f$ g_u \f$ in
+   * Moore-Thuente (1994), \f$ \psi'(\alpha_u) \f$ for Update Algorithm and \f$
+   * \phi'(\alpha_u) \f$ for Modified Update Algorithm
+   * \param[in] a_t trial value, \f$ \alpha_t \f$ in Moore-Thuente (1994)
+   * \param[in] f_t value at trial value, \f$ f_t \f$ in Moore-Thuente (1994),
+   * \f$ \psi(\alpha_t) \f$ for Update Algorithm and \f$ \phi(\alpha_t) \f$ for
+   * Modified Update Algorithm
+   * \param[in] g_t derivative at trial value, \f$ g_t \f$ in Moore-Thuente
+   * (1994), \f$ \psi'(\alpha_t) \f$ for Update Algorithm and \f$
+   * \phi'(\alpha_t) \f$ for Modified Update Algorithm
+   * \return if interval converges
    */
   bool
   updateIntervalMT(double& a_l,
@@ -409,21 +446,30 @@ protected:
                    double g_t) const;
 
   /** \brief Select new trial value for More-Thuente method.
-   * \note Trial Value Selection [More, Thuente 1994], \f$ \psi(\alpha_k) \f$ is used
-   * for \f$ f_k \f$ and \f$ g_k \f$ until some value satisfies the test \f$
-   * \psi(\alpha_k) \leq 0 \f$ and \f$ \phi'(\alpha_k) \geq 0 \f$ then \f$
-   * \phi(\alpha_k) \f$ is used from then on. \note Interpolation Minimizer equations
-   * from Optimization Theory and Methods: Nonlinear Programming By Wenyu Sun, Ya-xiang
-   * Yuan (89-100). \param[in] a_l first endpoint of interval \f$ I \f$, \f$ \alpha_l
-   * \f$ in Moore-Thuente (1994) \param[in] f_l value at first endpoint, \f$ f_l \f$ in
-   * Moore-Thuente (1994) \param[in] g_l derivative at first endpoint, \f$ g_l \f$ in
-   * Moore-Thuente (1994) \param[in] a_u second endpoint of interval \f$ I \f$, \f$
-   * \alpha_u \f$ in Moore-Thuente (1994) \param[in] f_u value at second endpoint, \f$
-   * f_u \f$ in Moore-Thuente (1994) \param[in] g_u derivative at second endpoint, \f$
-   * g_u \f$ in Moore-Thuente (1994) \param[in] a_t previous trial value, \f$ \alpha_t
-   * \f$ in Moore-Thuente (1994) \param[in] f_t value at previous trial value, \f$ f_t
-   * \f$ in Moore-Thuente (1994) \param[in] g_t derivative at previous trial value, \f$
-   * g_t \f$ in Moore-Thuente (1994) \return new trial value
+   * \note Trial Value Selection [More, Thuente 1994], \f$ \psi(\alpha_k) \f$ is
+   * used for \f$ f_k \f$ and \f$ g_k \f$ until some value satisfies the test
+   * \f$ \psi(\alpha_k) \leq 0 \f$ and \f$ \phi'(\alpha_k) \geq 0 \f$ then \f$
+   * \phi(\alpha_k) \f$ is used from then on.
+   * \note Interpolation Minimizer equations from Optimization Theory and
+   * Methods: Nonlinear Programming By Wenyu Sun, Ya-xiang Yuan (89-100).
+   * \param[in] a_l first endpoint of interval \f$ I \f$, \f$ \alpha_l \f$ in
+   * Moore-Thuente (1994)
+   * \param[in] f_l value at first endpoint, \f$ f_l \f$ in Moore-Thuente (1994)
+   * \param[in] g_l derivative at first endpoint, \f$ g_l \f$ in Moore-Thuente
+   * (1994)
+   * \param[in] a_u second endpoint of interval \f$ I \f$, \f$ \alpha_u \f$ in
+   * Moore-Thuente (1994)
+   * \param[in] f_u value at second endpoint, \f$ f_u \f$ in Moore-Thuente
+   * (1994)
+   * \param[in] g_u derivative at second endpoint, \f$ g_u \f$ in Moore-Thuente
+   * (1994)
+   * \param[in] a_t previous trial value, \f$ \alpha_t \f$ in Moore-Thuente
+   * (1994)
+   * \param[in] f_t value at previous trial value, \f$ f_t \f$ in Moore-Thuente
+   * (1994)
+   * \param[in] g_t derivative at previous trial value, \f$ g_t \f$ in
+   * Moore-Thuente (1994)
+   * \return new trial value
    */
   double
   trialValueSelectionMT(double a_l,
@@ -436,14 +482,19 @@ protected:
                         double f_t,
                         double g_t) const;
 
-  /** \brief Auxiliary function used to determine endpoints of More-Thuente interval.
+  /** \brief Auxiliary function used to determine endpoints of More-Thuente
+   * interval.
    * \note \f$ \psi(\alpha) \f$ in Equation 1.6 (Moore, Thuente 1994)
    * \param[in] a the step length, \f$ \alpha \f$ in More-Thuente (1994)
    * \param[in] f_a function value at step length a, \f$ \phi(\alpha) \f$ in
-   * More-Thuente (1994) \param[in] f_0 initial function value, \f$ \phi(0) \f$ in
-   * Moore-Thuente (1994) \param[in] g_0 initial function gradient, \f$ \phi'(0) \f$ in
-   * More-Thuente (1994) \param[in] mu the step length, constant \f$ \mu \f$ in
-   * Equation 1.1 [More, Thuente 1994] \return sufficient decrease value
+   * More-Thuente (1994)
+   * \param[in] f_0 initial function value, \f$ \phi(0) \f$ in Moore-Thuente
+   * (1994)
+   * \param[in] g_0 initial function gradient, \f$ \phi'(0) \f$ in More-Thuente
+   * (1994)
+   * \param[in] mu the step length, constant \f$ \mu \f$ in Equation 1.1 [More,
+   * Thuente 1994]
+   * \return sufficient decrease value
    */
   inline double
   auxilaryFunction_PsiMT(
@@ -452,12 +503,17 @@ protected:
     return f_a - f_0 - mu * g_0 * a;
   }
 
-  /** \brief Auxiliary function derivative used to determine endpoints of More-Thuente
-   * interval. \note \f$ \psi'(\alpha) \f$, derivative of Equation 1.6 (Moore, Thuente
-   * 1994) \param[in] g_a function gradient at step length a, \f$ \phi'(\alpha) \f$ in
-   * More-Thuente (1994) \param[in] g_0 initial function gradient, \f$ \phi'(0) \f$ in
-   * More-Thuente (1994) \param[in] mu the step length, constant \f$ \mu \f$ in
-   * Equation 1.1 [More, Thuente 1994] \return sufficient decrease derivative
+  /** \brief Auxiliary function derivative used to determine endpoints of
+   * More-Thuente interval.
+   * \note \f$ \psi'(\alpha) \f$, derivative of Equation 1.6 (Moore, Thuente
+   * 1994)
+   * \param[in] g_a function gradient at step length a, \f$ \phi'(\alpha) \f$ in
+   * More-Thuente (1994)
+   * \param[in] g_0 initial function gradient, \f$ \phi'(0) \f$ in More-Thuente
+   * (1994)
+   * \param[in] mu the step length, constant \f$ \mu \f$ in Equation 1.1 [More,
+   * Thuente 1994]
+   * \return sufficient decrease derivative
    */
   inline double
   auxilaryFunction_dPsiMT(double g_a, double g_0, double mu = 1.e-4) const
@@ -465,8 +521,8 @@ protected:
     return g_a - mu * g_0;
   }
 
-  /** \brief The voxel grid generated from target cloud containing point means and
-   * covariances. */
+  /** \brief The voxel grid generated from target cloud containing point means
+   * and covariances. */
   TargetGrid target_cells_;
 
   /** \brief The side length of voxels. */
@@ -475,12 +531,12 @@ protected:
   /** \brief The maximum step length. */
   double step_size_;
 
-  /** \brief The ratio of outliers of points w.r.t. a normal distribution, Equation 6.7
-   * [Magnusson 2009]. */
+  /** \brief The ratio of outliers of points w.r.t. a normal distribution,
+   * Equation 6.7 [Magnusson 2009]. */
   double outlier_ratio_;
 
-  /** \brief The normalization constants used fit the point distribution to a normal
-   * distribution, Equation 6.8 [Magnusson 2009]. */
+  /** \brief The normalization constants used fit the point distribution to a
+   * normal distribution, Equation 6.8 [Magnusson 2009]. */
   double gauss_d1_, gauss_d2_;
 
   /** \brief The probability score of the transform applied to the input cloud,
@@ -489,24 +545,26 @@ protected:
 
   /** \brief Precomputed Angular Gradient
    *
-   * The precomputed angular derivatives for the jacobian of a transformation vector,
-   * Equation 6.19 [Magnusson 2009].
+   * The precomputed angular derivatives for the jacobian of a transformation
+   * vector, Equation 6.19 [Magnusson 2009].
    */
   Eigen::Matrix<double, 8, 4> angular_jacobian_;
 
   /** \brief Precomputed Angular Hessian
    *
-   * The precomputed angular derivatives for the hessian of a transformation vector,
-   * Equation 6.19 [Magnusson 2009].
+   * The precomputed angular derivatives for the hessian of a transformation
+   * vector, Equation 6.19 [Magnusson 2009].
    */
   Eigen::Matrix<double, 15, 4> angular_hessian_;
 
-  /** \brief The first order derivative of the transformation of a point w.r.t. the
-   * transform vector, \f$ J_E \f$ in Equation 6.18 [Magnusson 2009]. */
+  /** \brief The first order derivative of the transformation of a point
+   * w.r.t. the transform vector, \f$ J_E \f$ in Equation 6.18 [Magnusson
+   * 2009]. */
   Eigen::Matrix<double, 3, 6> point_jacobian_;
 
-  /** \brief The second order derivative of the transformation of a point w.r.t. the
-   * transform vector, \f$ H_E \f$ in Equation 6.20 [Magnusson 2009]. */
+  /** \brief The second order derivative of the transformation of a point
+   * w.r.t. the transform vector, \f$ H_E \f$ in Equation 6.20 [Magnusson
+   * 2009]. */
   Eigen::Matrix<double, 18, 6> point_hessian_;
 
 public:
