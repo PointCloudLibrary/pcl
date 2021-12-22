@@ -591,7 +591,8 @@ namespace pcl
 
           MLSVoxelGrid (PointCloudInConstPtr& cloud,
                         IndicesPtr &indices,
-                        float voxel_size);
+                        float voxel_size,
+                        int dilation_iteration_num);
 
           void
           dilate ();

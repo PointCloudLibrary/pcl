@@ -403,7 +403,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performUpsampling (PointCloudOut &
   {
     corresponding_input_indices_.reset (new PointIndices);
 
-    MLSVoxelGrid voxel_grid (input_, indices_, voxel_size_);
+    MLSVoxelGrid voxel_grid (input_, indices_, voxel_size_, dilation_iteration_num_);
     for (int iteration = 0; iteration < dilation_iteration_num_; ++iteration)
       voxel_grid.dilate ();
 
@@ -805,15 +805,18 @@ pcl::MLSResult::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
 template <typename PointInT, typename PointOutT>
 pcl::MovingLeastSquares<PointInT, PointOutT>::MLSVoxelGrid::MLSVoxelGrid (PointCloudInConstPtr& cloud,
                                                                           IndicesPtr &indices,
-                                                                          float voxel_size) :
+                                                                          float voxel_size,
+                                                                          int dilation_iteration_num) :
   voxel_grid_ (), data_size_ (), voxel_size_ (voxel_size)
 {
   pcl::getMinMax3D (*cloud, *indices, bounding_min_, bounding_max_);
+  bounding_min_ -= Eigen::Vector4f::Constant(voxel_size_ * (dilation_iteration_num + 1));
+  bounding_max_ += Eigen::Vector4f::Constant(voxel_size_ * (dilation_iteration_num + 1));
 
   Eigen::Vector4f bounding_box_size = bounding_max_ - bounding_min_;
   const double max_size = (std::max) ((std::max)(bounding_box_size.x (), bounding_box_size.y ()), bounding_box_size.z ());
   // Put initial cloud in voxel grid
-  data_size_ = static_cast<std::uint64_t> (1.5 * max_size / voxel_size_);
+  data_size_ = static_cast<std::uint64_t> (std::ceil(max_size / voxel_size_));
   for (std::size_t i = 0; i < indices->size (); ++i)
     if (std::isfinite ((*cloud)[(*indices)[i]].x))
     {
