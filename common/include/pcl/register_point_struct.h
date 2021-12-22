@@ -190,19 +190,19 @@ namespace pcl
         p[i] /= scalar;
     }
 
-    template<typename T1, typename T2> inline
-    std::enable_if_t<!std::is_array<T1>::value>
-    divscalar2 (T1 &p, const T2 &scalar)
+    template<typename NoArrayT, typename ScalarT> inline
+    std::enable_if_t<!std::is_array<NoArrayT>::value>
+    divscalar2 (NoArrayT &p, const ScalarT &scalar)
     {
       p = scalar / p;
     }
 
-    template<typename T1, typename T2> inline
-    std::enable_if_t<std::is_array<T1>::value>
-    divscalar2 (T1 &p, const T2 &scalar)
+    template<typename ArrayT, typename ScalarT> inline
+    std::enable_if_t<std::is_array<ArrayT>::value>
+    divscalar2 (ArrayT &p, const ScalarT &scalar)
     {
-      using type = std::remove_all_extents_t<T1>;
-      static const std::uint32_t count = sizeof (T1) / sizeof (type);
+      using type = std::remove_all_extents_t<ArrayT>;
+      static const std::uint32_t count = sizeof (ArrayT) / sizeof (type);
       for (std::uint32_t i = 0; i < count; ++i)
         p[i] = scalar / p[i];
     }
