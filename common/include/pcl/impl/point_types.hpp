@@ -218,7 +218,9 @@ namespace pcl
       static constexpr int descriptorSize_v = descriptorSize<FeaturePointT>::value;
     }
   }
-
+  
+  using Vector2fMap = Eigen::Map<Eigen::Vector2f>;
+  using Vector2fMapConst = const Eigen::Map<const Eigen::Vector2f>;
   using Array3fMap = Eigen::Map<Eigen::Array3f>;
   using Array3fMapConst = const Eigen::Map<const Eigen::Array3f>;
   using Array4fMap = Eigen::Map<Eigen::Array4f, Eigen::Aligned>;
@@ -246,6 +248,8 @@ namespace pcl
   };
 
 #define PCL_ADD_EIGEN_MAPS_POINT4D \
+  inline pcl::Vector2fMap getVector2fMap () { return (pcl::Vector2fMap (data)); } \
+  inline pcl::Vector2fMapConst getVector2fMap () const { return (pcl::Vector2fMapConst (data)); } \
   inline pcl::Vector3fMap getVector3fMap () { return (pcl::Vector3fMap (data)); } \
   inline pcl::Vector3fMapConst getVector3fMap () const { return (pcl::Vector3fMapConst (data)); } \
   inline pcl::Vector4fMap getVector4fMap () { return (pcl::Vector4fMap (data)); } \
@@ -830,13 +834,22 @@ namespace pcl
     */
   struct PointXY
   {
-    float x = 0.f;
-    float y = 0.f;
-
-    inline PointXY() = default;
+    union 
+    { 
+      float data[2]; 
+      struct 
+      { 
+        float x; 
+        float y; 
+      };
+    };
 
     inline PointXY(float _x, float _y): x(_x), y(_y) {}
-
+    inline PointXY():x(0.0f),y(0.0f) {}
+    
+    inline pcl::Vector2fMap getVector2fMap () { return (pcl::Vector2fMap (data)); }
+    inline pcl::Vector2fMapConst getVector2fMap () const { return (pcl::Vector2fMapConst (data)); }
+    
     friend std::ostream& operator << (std::ostream& os, const PointXY& p);
   };
 
