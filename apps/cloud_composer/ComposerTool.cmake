@@ -17,7 +17,7 @@ function(define_composer_tool TOOL_NAME TOOL_SOURCES TOOL_HEADERS DEPS)
   add_definitions(-DQT_PLUGIN)
   add_definitions(-DQT_SHARED)
 
-  target_link_libraries(${TOOL_TARGET} pcl_cc_tool_interface pcl_common pcl_io ${DEPS} Qt5::Widgets)
+  target_link_libraries(${TOOL_TARGET} pcl_cc_tool_interface pcl_common pcl_io ${DEPS} ${QTX}::Widgets)
 
   if(APPLE)
     set_target_properties(${TOOL_TARGET} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")

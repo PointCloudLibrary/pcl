@@ -89,8 +89,8 @@ template <class TupleType>
 class PCLCropHullTestFixture : public ::testing::Test
 {
   public:
-    using CropHullTestTraits = typename std::tuple_element<0, TupleType>::type;
-    using RandomGeneratorType =  typename std::tuple_element<1, TupleType>::type;
+    using CropHullTestTraits = typename std::tuple_element_t<0, TupleType>;
+    using RandomGeneratorType =  typename std::tuple_element_t<1, TupleType>;
 
     PCLCropHullTestFixture()
     {
@@ -286,12 +286,12 @@ using CropHullTestTraits3dList = std::tuple<
   std::tuple<CropHullTestTraits3d, RandomGenerator<456>>
   >;
 using CropHullTestTypes = ::testing::Types<
-  std::tuple_element<0, CropHullTestTraits2dList>::type,
-  std::tuple_element<1, CropHullTestTraits2dList>::type,
-  std::tuple_element<2, CropHullTestTraits2dList>::type,
-  std::tuple_element<0, CropHullTestTraits3dList>::type,
-  std::tuple_element<1, CropHullTestTraits3dList>::type,
-  std::tuple_element<2, CropHullTestTraits3dList>::type
+  std::tuple_element_t<0, CropHullTestTraits2dList>,
+  std::tuple_element_t<1, CropHullTestTraits2dList>,
+  std::tuple_element_t<2, CropHullTestTraits2dList>,
+  std::tuple_element_t<0, CropHullTestTraits3dList>,
+  std::tuple_element_t<1, CropHullTestTraits3dList>,
+  std::tuple_element_t<2, CropHullTestTraits3dList>
   >;
 TYPED_TEST_SUITE(PCLCropHullTestFixture, CropHullTestTypes);
 

@@ -6,7 +6,7 @@
 set(SUBSUBSYS_NAME cloud_composer)
 set(SUBSUBSYS_DESC "Cloud Composer - Application for Manipulating Point Clouds")
 set(SUBSUBSYS_DEPS common io visualization filters apps)
-set(SUBSUBSYS_EXT_DEPS vtk Qt5)
+set(SUBSUBSYS_EXT_DEPS vtk ${QTX})
 
 # QVTK?
 if(NOT HAVE_QVTK)
@@ -75,12 +75,8 @@ set(PCL_LIB_TYPE STATIC)
 
 PCL_ADD_LIBRARY(pcl_cc_tool_interface COMPONENT ${SUBSUBSYS_NAME} SOURCES ${INTERFACE_HEADERS} ${INTERFACE_SOURCES})
 
-set(vtk_libs ${VTK_LIBRARIES})
-#TODO: Update when CMAKE 3.10 is available
-if (NOT (${VTK_VERSION} VERSION_LESS 9.0))
-  set(vtk_libs VTK::GUISupportQt)
-endif()
-target_link_libraries(pcl_cc_tool_interface pcl_common pcl_filters pcl_search pcl_visualization Qt5::Widgets ${vtk_libs})
+
+target_link_libraries(pcl_cc_tool_interface pcl_common pcl_filters pcl_search pcl_visualization ${QTX}::Widgets)
 
 set(PCL_LIB_TYPE ${PCL_LIB_TYPE_ORIGIN})
 
@@ -133,7 +129,7 @@ list(APPEND CMAKE_AUTOUIC_SEARCH_PATHS "src")
 
 set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
 PCL_ADD_EXECUTABLE(${EXE_NAME} COMPONENT ${SUBSUBSYS_NAME} SOURCES ${uis} ${incs} ${srcs} ${resources} ${impl_incs})
-target_link_libraries("${EXE_NAME}" pcl_cc_tool_interface pcl_common pcl_io pcl_visualization pcl_filters Qt5::Widgets)
+target_link_libraries("${EXE_NAME}" pcl_cc_tool_interface pcl_common pcl_io pcl_visualization pcl_filters ${QTX}::Widgets)
 
 
 

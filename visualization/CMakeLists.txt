@@ -141,7 +141,7 @@ if(VTK_RENDERING_BACKEND_OPENGL_VERSION VERSION_LESS 2)
   )
 endif()
 
-if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
+if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
   if(NOT (";${VTK_AVAILABLE_COMPONENTS};" MATCHES ";RenderingContextOpenGL2;"))
     
     list(REMOVE_ITEM incs
@@ -166,10 +166,7 @@ endif()
 
 target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_kdtree ${OPENGL_LIBRARIES})
 
-if(${VTK_VERSION} VERSION_LESS 9.0)
-  target_include_directories("${LIB_NAME}" SYSTEM PUBLIC ${VTK_INCLUDE_DIRS})
-  target_link_libraries("${LIB_NAME}" ${VTK_LIBRARIES})
-else()
+if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
   #Some libs are referenced through depending on IO
   target_link_libraries("${LIB_NAME}"
                         VTK::ChartsCore
@@ -193,8 +190,48 @@ else()
                         VTK::RenderingOpenGL2
                         VTK::ViewsContext2D)
                         
-  if(";${VTK_AVAILABLE_COMPONENTS};" MATCHES ";RenderingContextOpenGL2;")
+  if("RenderingContextOpenGL2" IN_LIST VTK_AVAILABLE_COMPONENTS)
     target_link_libraries("${LIB_NAME}" VTK::RenderingContextOpenGL2)
+  endif()
+else()
+  target_include_directories("${LIB_NAME}" SYSTEM PUBLIC ${VTK_INCLUDE_DIRS})
+  target_link_libraries("${LIB_NAME}"
+                        vtkChartsCore
+                        vtkFiltersExtraction
+                        vtkFiltersGeometry
+                        vtkFiltersModeling
+                        vtkImagingCore
+                        vtkImagingSources
+                        vtkInteractionStyle
+                        vtkRenderingAnnotation
+                        vtkRenderingContext2D
+                        vtkRenderingContext${VTK_RENDERING_BACKEND}
+                        vtkRenderingFreeType
+                        vtkRenderingLOD
+                        vtkRendering${VTK_RENDERING_BACKEND}
+                        vtkViewsContext2D)
+  if(${VTK_VERSION} VERSION_LESS 7.0)
+    target_link_libraries("${LIB_NAME}" vtkRenderingVolume${VTK_RENDERING_BACKEND})  	
+  endif()
+  if(${VTK_VERSION} VERSION_GREATER_EQUAL 7.0 AND ${VTK_VERSION} VERSION_LESS 9.0)
+    target_link_libraries("${LIB_NAME}" vtkRenderingGL2PS${VTK_RENDERING_BACKEND})
+  endif()
+  
+  # These two libraries are present and required in ubuntu 18.04 VTK 6, but not present in later versions of ubuntu using VTK 6.
+  # They are also present on later versions of VTK on later versions of ubuntu.
+  if("vtkRenderingFreeTypeFontConfig" IN_LIST VTK_MODULES_ENABLED)
+    target_link_libraries("${LIB_NAME}" vtkRenderingFreeTypeFontConfig)
+  endif()
+  if("vtkRenderingMatplotlib" IN_LIST VTK_MODULES_ENABLED)
+    target_link_libraries("${LIB_NAME}" vtkRenderingMatplotlib)
+  endif()
+endif()
+
+if(HAVE_QVTK)
+  if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
+    target_link_libraries("${LIB_NAME}" VTK::GUISupportQt)
+  else()
+    target_link_libraries("${LIB_NAME}" vtkGUISupportQt)
   endif()
 endif()
 

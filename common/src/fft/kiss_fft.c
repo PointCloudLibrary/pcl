@@ -252,7 +252,7 @@ void kf_work(
     // top-level (not recursive)
     if (fstride==1 && p<=5)
     {
-        int k;
+        int k=0;
 
         // execute the p different work units in different threads
 // We cannot use OPENMP_LEGACY_CONST_DATA_SHARING_RULE here, because we cannot include

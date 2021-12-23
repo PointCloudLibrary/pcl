@@ -50,11 +50,7 @@
 
 #include <vtkImageData.h> // for vtkImageData
 #include <vtkSmartPointer.h>
-#include <vtkImageViewer2.h>
 #include <vtkTIFFReader.h>
-#include <vtkRenderWindow.h>
-#include <vtkRenderWindowInteractor.h>
-#include <vtkRenderer.h>
 
 using namespace pcl;
 

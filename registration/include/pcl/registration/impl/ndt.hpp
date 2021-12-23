@@ -154,7 +154,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeTransformation(
       update_visualizer_(output, pcl::Indices(), *target_, pcl::Indices());
 
     const double cos_angle =
-        0.5 * transformation_.template block<3, 3>(0, 0).trace() - 1;
+        0.5 * (transformation_.template block<3, 3>(0, 0).trace() - 1);
     const double translation_sqr =
         transformation_.template block<3, 1>(0, 3).squaredNorm();
 

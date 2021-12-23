@@ -1,7 +1,7 @@
 set(SUBSYS_NAME tools)
 set(SUBSYS_DESC "Useful PCL-based command line tools")
 set(SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree features surface octree registration recognition geometry keypoints ml)
-set(SUBSYS_OPT_DEPS visualization)
+set(SUBSYS_OPT_DEPS vtk visualization)
 set(DEFAULT ON)
 set(REASON "")
 
@@ -200,8 +200,8 @@ else()
 
   PCL_ADD_EXECUTABLE(pcl_obj2pcd COMPONENT ${SUBSYS_NAME} SOURCES obj2pcd.cpp)
   target_link_libraries(pcl_obj2pcd pcl_common pcl_io)
-  #TODO: Update when CMAKE 3.10 is available
-  if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
+
+  if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
     target_link_libraries(pcl_obj2pcd VTK::FiltersCore)
   endif()
 
@@ -210,8 +210,8 @@ else()
 
   PCL_ADD_EXECUTABLE(pcl_vtk2pcd COMPONENT ${SUBSYS_NAME} SOURCES vtk2pcd.cpp)
   target_link_libraries(pcl_vtk2pcd pcl_common pcl_io)
-  #TODO: Update when CMAKE 3.10 is available
-  if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
+
+  if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
     target_link_libraries(pcl_vtk2pcd VTK::FiltersCore)
   endif()
 
@@ -244,13 +244,13 @@ else()
     target_link_libraries(pcl_octree_viewer pcl_common pcl_io pcl_octree pcl_visualization pcl_kdtree pcl_filters)
 
     PCL_ADD_EXECUTABLE(pcl_mesh2pcd COMPONENT ${SUBSYS_NAME} SOURCES mesh2pcd.cpp)
-    target_link_libraries(pcl_mesh2pcd pcl_common pcl_io pcl_visualization pcl_filters ${VTK_LIBRARIES})
+    target_link_libraries(pcl_mesh2pcd pcl_common pcl_io pcl_visualization pcl_filters)
 
     PCL_ADD_EXECUTABLE(pcl_mesh_sampling COMPONENT ${SUBSYS_NAME} SOURCES mesh_sampling.cpp)
-    target_link_libraries(pcl_mesh_sampling pcl_common pcl_io pcl_visualization pcl_filters ${VTK_LIBRARIES})
+    target_link_libraries(pcl_mesh_sampling pcl_common pcl_io pcl_visualization pcl_filters)
 
     PCL_ADD_EXECUTABLE(pcl_virtual_scanner COMPONENT ${SUBSYS_NAME} SOURCES virtual_scanner.cpp)
-    target_link_libraries(pcl_virtual_scanner pcl_common pcl_io pcl_filters pcl_visualization ${VTK_LIBRARIES})
+    target_link_libraries(pcl_virtual_scanner pcl_common pcl_io pcl_filters pcl_visualization)
 
     PCL_ADD_EXECUTABLE(pcl_voxel_grid_occlusion_estimation COMPONENT ${SUBSYS_NAME} SOURCES voxel_grid_occlusion_estimation.cpp)
     target_link_libraries (pcl_voxel_grid_occlusion_estimation pcl_common pcl_io pcl_filters pcl_visualization)
@@ -272,7 +272,7 @@ else()
 
     if(WITH_OPENNI)
       PCL_ADD_EXECUTABLE(pcl_openni_save_image COMPONENT ${SUBSYS_NAME} SOURCES openni_save_image.cpp)
-      target_link_libraries(pcl_openni_save_image pcl_common pcl_io pcl_visualization)
+      target_link_libraries(pcl_openni_save_image pcl_common pcl_io pcl_visualization Boost::date_time)
 
       PCL_ADD_EXECUTABLE(pcl_pcd_grabber_viewer COMPONENT ${SUBSYS_NAME} SOURCES pcd_grabber_viewer.cpp BUNDLE)
       target_link_libraries(pcl_pcd_grabber_viewer pcl_common pcl_io pcl_kdtree pcl_visualization)
@@ -293,7 +293,7 @@ else()
       target_link_libraries(pcl_openni_viewer pcl_common pcl_io pcl_kdtree pcl_visualization)
 
       PCL_ADD_EXECUTABLE(pcl_openni_image COMPONENT ${SUBSYS_NAME} SOURCES openni_image.cpp BUNDLE)
-      target_link_libraries(pcl_openni_image pcl_common pcl_io pcl_kdtree pcl_visualization)
+      target_link_libraries(pcl_openni_image pcl_common pcl_io pcl_kdtree pcl_visualization Boost::date_time)
     endif()
 
     if(WITH_OPENNI2)

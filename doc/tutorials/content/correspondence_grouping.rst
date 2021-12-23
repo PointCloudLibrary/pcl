@@ -10,7 +10,7 @@ For each cluster, representing a possible model instance in the scene, the Corre
 The code
 --------
 
-Before you begin, you should download the PCD dataset used in this tutorial from GitHub (`milk.pcd <https://github.com/PointCloudLibrary/pcl/blob/master/test/milk.pcd?raw=true>`_ and
+Before you begin, you should download the PCD dataset used in this tutorial from GitHub (`milk.pcd <https://github.com/PointCloudLibrary/data/blob/master/tutorials/correspondence_grouping/milk.pcd?raw=true>`_ and
 `milk_cartoon_all_small_clorox.pcd <https://github.com/PointCloudLibrary/pcl/blob/master/test/milk_cartoon_all_small_clorox.pcd?raw=true>`_) and put the files in a folder of your convenience.
 
 Also, copy and paste the following code into your editor and save it as ``correspondence_grouping.cpp`` (or download the source file :download:`here <./sources/correspondence_grouping/correspondence_grouping.cpp>`).
@@ -177,7 +177,7 @@ After you have created the executable, you can then launch it following this exa
   
 Or, alternatively, if you prefer specifying the radii in units of cloud resolution::
 
-  $ ./correspondence_grouping milk.pcd milk_cartoon_all_small_clorox.pcd milk.pcd milk_cartoon_all_small_clorox.pcd -r --model_ss 7.5 --scene_ss 20 --rf_rad 10 --descr_rad 15 --cg_size 10
+  $ ./correspondence_grouping milk.pcd milk_cartoon_all_small_clorox.pcd -r --model_ss 7.5 --scene_ss 20 --rf_rad 10 --descr_rad 15 --cg_size 10
   
 Remember to replace ``milk.pcd`` and ``milk_cartoon_all_small_clorox.pcd`` with model and scene filenames, in this exact order. If you want you can add other command line options as described at the beginning of this tutorial.
 
@@ -195,12 +195,14 @@ After a few seconds, you will see an output similar to::
     Instance 1:
       Correspondences belonging to this instance: 24
 
-          |  0.969 -0.120  0.217 |
-      R = |  0.117  0.993  0.026 |
-          | -0.218 -0.000  0.976 |
+          |  0.968 -0.148  0.201 |
+      R = | -0.146 -0.989 -0.023 |
+          |  0.202 -0.007 -0.979 |
 
-      t = < -0.159, 0.212, -0.042 >
+      t = < -0.171, -0.204, 0.043 >
 	  
+You may see warnings about invalid reference frames (this can happen if a keypoint does not have enough other points in its neighborhood). If these warnings are only displayed for few points and the results look good otherwise, you can ignore them, else you should try to adapt the parameters.
+
 The output window should look like this (depending on the command line options used):
 
 .. image:: images/correspondence_grouping/correspondence_grouping.jpg

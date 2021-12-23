@@ -7,13 +7,16 @@ if(NOT BUILD_all_in_one_installer)
   return()
 endif()
 
-get_filename_component(BOOST_ROOT "${Boost_INCLUDE_DIR}" PATH)
-get_filename_component(BOOST_ROOT "${BOOST_ROOT}" PATH)
-get_filename_component(EIGEN_ROOT "${EIGEN_INCLUDE_DIRS}" PATH)
-get_filename_component(QHULL_ROOT "${QHULL_INCLUDE_DIRS}" PATH)
-get_filename_component(VTK_ROOT "${VTK_DIR}" PATH)
-get_filename_component(VTK_ROOT "${VTK_ROOT}" PATH)
-get_filename_component(VTK_ROOT "${VTK_ROOT}" PATH)
+# get root directory of each dependency libraries to be copied to PCL/3rdParty
+get_filename_component(BOOST_ROOT "${Boost_INCLUDE_DIR}" PATH)  # ../Boost/include/boost-x_x/ -> ../Boost/include/
+get_filename_component(BOOST_ROOT "${BOOST_ROOT}" PATH)         # ../Boost/include/           -> ../Boost/
+get_filename_component(EIGEN_ROOT "${EIGEN_INCLUDE_DIRS}" PATH) # ../Eigen3/include/          -> ../Eigen3/
+get_filename_component(QHULL_ROOT "${Qhull_DIR}" PATH)          # ../qhull/lib/cmake/Qhull/   -> ../qhull/lib/cmake
+get_filename_component(QHULL_ROOT "${QHULL_ROOT}" PATH)         # ../qhull/lib/cmake/         -> ../qhull/lib/
+get_filename_component(QHULL_ROOT "${QHULL_ROOT}" PATH)         # ../qhull/lib/               -> ../qhull/
+get_filename_component(VTK_ROOT "${VTK_DIR}" PATH)              # ../VTK/lib/cmake/vtk-x.x/   -> ../VTK/lib/cmake/
+get_filename_component(VTK_ROOT "${VTK_ROOT}" PATH)             # ../VTK/lib/cmake/           -> ../VTK/lib/
+get_filename_component(VTK_ROOT "${VTK_ROOT}" PATH)             # ../VTK/lib/                 -> ../VTK/
 
 set(PCL_3RDPARTY_COMPONENTS)
 foreach(dep Eigen Boost Qhull FLANN VTK)

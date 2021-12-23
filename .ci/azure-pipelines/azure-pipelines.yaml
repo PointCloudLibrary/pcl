@@ -78,9 +78,9 @@ stages:
             Catalina 10.15:
               VMIMAGE: 'macOS-10.15'
               OSX_VERSION: '10.15'
-            Mojave 10.14:
-              VMIMAGE: 'macOS-10.14'
-              OSX_VERSION: '10.14'
+            Big Sur 11:
+              VMIMAGE: 'macOS-11'
+              OSX_VERSION: '11'
         timeoutInMinutes: 0
         variables:
           BUILD_DIR: '$(Agent.WorkFolder)/build'

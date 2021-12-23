@@ -23,7 +23,7 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "")
   set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "build type default to RelWithDebInfo, set to Release to improve performance" FORCE)
 endif()
 
-project(PCL VERSION 1.12.0.99)
+project(PCL VERSION 1.12.1.99)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
 ### ---[ Find universal dependencies
@@ -283,6 +283,8 @@ if(OpenMP_FOUND)
       set(OPENMP_DLL VCOMP140)
     elseif(MSVC_VERSION MATCHES "^192[0-9]$")
       set(OPENMP_DLL VCOMP140)
+    elseif(MSVC_VERSION MATCHES "^193[0-9]$")
+      set(OPENMP_DLL VCOMP140)
     endif()
     if(OPENMP_DLL)
       string(APPEND CMAKE_SHARED_LINKER_FLAGS_DEBUG " /DELAYLOAD:${OPENMP_DLL}D.dll")
@@ -311,7 +313,7 @@ endif()
 # libusb
 option(WITH_LIBUSB "Build USB RGBD-Camera drivers" TRUE)
 if(WITH_LIBUSB)
-  find_package(libusb)
+  include("${PCL_SOURCE_DIR}/cmake/pcl_find_libusb.cmake")
 endif()
 
 # Dependencies for different grabbers
@@ -349,12 +351,9 @@ endif()
 # Qhull
 option(WITH_QHULL "Include convex-hull operations" TRUE)
 if(WITH_QHULL)
-  if(NOT PCL_SHARED_LIBS OR ((WIN32 AND NOT MINGW) AND NOT PCL_BUILD_WITH_QHULL_DYNAMIC_LINKING_WIN32))
-    set(QHULL_USE_STATIC ON)
-  endif()
   find_package(Qhull)
-  if(QHULL_FOUND)
-    include_directories(SYSTEM ${QHULL_INCLUDE_DIRS})
+  if(NOT (${QHULL_LIBRARY_TYPE} MATCHES ${PCL_QHULL_REQUIRED_TYPE}) AND NOT (${PCL_QHULL_REQUIRED_TYPE} MATCHES "DONTCARE"))
+    message(FATAL_ERROR "Qhull was selected with ${PCL_QHULL_REQUIRED_TYPE} but found as ${QHULL_LIBRARY_TYPE}")
   endif()
 endif()
 
@@ -377,40 +376,11 @@ if(WITH_VTK)
   endif()
 endif()
 
-#VTK can depend on Qt and search for its required version, so search after so we can overwrite Qt5_FOUND if the version we require is not found.
-option(WITH_QT "Build QT Front-End" TRUE)
+# VTK can depend on Qt and search for its required version, so search after so we can overwrite Qt5_FOUND/Qt6_FOUND if the version we require is not found.
+set(WITH_QT "AUTO" CACHE STRING "Build QT Front-End (AUTO|YES|QT6|QT5|NO)")
+set_property(CACHE WITH_QT PROPERTY STRINGS "AUTO" "YES" "QT6" "QT5" "NO")
 if(WITH_QT)
-  find_package(Qt5 5.9.5 COMPONENTS Concurrent OpenGL Widgets)
-  set(QT_DISABLE_PRECATED_BEFORE_VAL "0x050900")
-  
-  if(Qt5_FOUND)
-    message(STATUS "Qt5 version: ${Qt5_VERSION}")
-    set(QT5_FOUND ${Qt5_FOUND})
-    #Set Cmake Auto features to skip .hh files
-    if(POLICY CMP0100)
-      cmake_policy(SET CMP0100 OLD)
-    endif()
-    
-    #If building CUDA required libraries
-    #Change Qt5::Core fixed -fPIC flags to conditionally only CXX
-    #TODO: To be removed when QT is >5.14.1
-    if(BUILD_CUDA OR BUILD_GPU)
-      if(Qt5Widgets_VERSION VERSION_LESS 5.14.1)
-        get_property(core_options TARGET Qt5::Core PROPERTY INTERFACE_COMPILE_OPTIONS)
-        string(REPLACE "-fPIC" "$<IF:$<COMPILE_LANGUAGE:CXX>,-fPIC,>"  new_core_options ${core_options})
-        set_property(TARGET Qt5::Core PROPERTY INTERFACE_COMPILE_OPTIONS ${new_core_options})
-      endif()
-    endif()
-    
-    get_property(core_def TARGET Qt5::Core PROPERTY INTERFACE_COMPILE_DEFINITIONS)
-    list(APPEND core_def "QT_DISABLE_DEPRECATED_BEFORE=${QT_DISABLE_PRECATED_BEFORE_VAL}")
-    set_property(TARGET Qt5::Core PROPERTY INTERFACE_COMPILE_DEFINITIONS ${core_def})
-
-  else()
-    message(STATUS "Qt5 is not found.")
-  endif()
-else()
-  set(Qt5_FOUND FALSE)
+  include("${PCL_SOURCE_DIR}/cmake/pcl_find_qt.cmake")
 endif()
 
 #Find PCAP

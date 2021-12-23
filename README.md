@@ -5,7 +5,7 @@
 [![Release][release-image]][releases]
 [![License][license-image]][license]
 
-[release-image]: https://img.shields.io/badge/release-1.12.0-green.svg?style=flat
+[release-image]: https://img.shields.io/badge/release-1.12.1-green.svg?style=flat
 [releases]: https://github.com/PointCloudLibrary/pcl/releases
 
 [license-image]: https://img.shields.io/badge/license-BSD-green.svg?style=flat
@@ -26,7 +26,7 @@ Continuous integration
 [ci-ubuntu-20.10]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20GCC&jobName=Ubuntu&configuration=Ubuntu%2020.10%20GCC&label=Ubuntu%2020.10%20GCC
 [ci-windows-x86]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20MSVC&jobName=Windows%20Build&configuration=Windows%20Build%20x86&label=Windows%20VS2019%20x86
 [ci-windows-x64]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20MSVC&jobName=Windows%20Build&configuration=Windows%20Build%20x64&label=Windows%20VS2019%20x64
-[ci-macos-10.14]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Clang&jobName=macOS&configuration=macOS%20Mojave%2010.14&label=macOS%20Mojave%2010.14
+[ci-macos-11]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Clang&jobName=macOS&configuration=macOS%20Big%20Sur%2011&label=macOS%20Big%20Sur%2011
 [ci-macos-10.15]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Clang&jobName=macOS&configuration=macOS%20Catalina%2010.15&label=macOS%20Catalina%2010.15
 [ci-docs]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/Documentation?branchName=master
 [ci-latest-docs]: https://dev.azure.com/PointCloudLibrary/pcl/_build/latest?definitionId=14&branchName=master
@@ -35,7 +35,7 @@ Build Platform           | Status
 ------------------------ | ------------------------------------------------------------------------------------------------- |
 Ubuntu                   | [![Status][ci-ubuntu-18.04]][ci-latest-build] <br> [![Status][ci-ubuntu-20.04]][ci-latest-build]                              <br> [![Status][ci-ubuntu-20.10]][ci-latest-build]                                                |
 Windows                  | [![Status][ci-windows-x86]][ci-latest-build]  <br> [![Status][ci-windows-x64]][ci-latest-build]   |
-macOS                    | [![Status][ci-macos-10.14]][ci-latest-build]  <br> [![Status][ci-macos-10.15]][ci-latest-build]   |
+macOS                    | [![Status][ci-macos-10.15]][ci-latest-build]  <br> [![Status][ci-macos-11]][ci-latest-build]   |
 Documentation            | [![Status][ci-docs]][ci-latest-docs] |
 
 Community

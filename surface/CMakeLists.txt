@@ -174,20 +174,26 @@ PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${i
 target_link_libraries("${LIB_NAME}" pcl_common pcl_search pcl_kdtree pcl_octree ${ON_NURBS_LIBRARIES})
 
 if(VTK_FOUND)
-  if(${VTK_VERSION} VERSION_LESS 9.0)
+  if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
+    target_link_libraries("${LIB_NAME}"
+                          VTK::CommonDataModel
+                          VTK::CommonExecutionModel
+                          VTK::FiltersModeling
+                          VTK::FiltersCore)
+  else()
     include_directories(SYSTEM ${VTK_INCLUDE_DIRS})
     link_directories(${VTK_LIBRARY_DIRS})
-    target_link_libraries("${LIB_NAME}" ${VTK_LIBRARIES})
-  else()
-    target_link_libraries("${LIB_NAME}" VTK::CommonDataModel
-                                        VTK::CommonExecutionModel
-                                        VTK::FiltersModeling
-                                        VTK::FiltersCore)
+    target_link_libraries("${LIB_NAME}"
+                          vtkCommonCore
+                          vtkCommonDataModel
+                          vtkCommonExecutionModel
+                          vtkFiltersModeling
+                          vtkFiltersCore)
   endif()
 endif()
 
 if(QHULL_FOUND)
-  target_link_libraries("${LIB_NAME}" ${QHULL_LIBRARIES})
+  target_link_libraries("${LIB_NAME}" QHULL::QHULL)
 endif()
 
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS})
