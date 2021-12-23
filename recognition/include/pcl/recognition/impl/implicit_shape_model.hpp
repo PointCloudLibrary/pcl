@@ -851,8 +851,6 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::extractDes
   histograms.clear ();
   locations.clear ();
 
-  int n_key_points = 0;
-
   if (training_clouds_.empty () || training_classes_.empty () || feature_estimator_ == nullptr)
     return (false);
 
@@ -874,8 +872,6 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::extractDes
 
     shiftCloud (training_clouds_[i_cloud], models_center);
     shiftCloud (sampled_point_cloud, models_center);
-
-    n_key_points += static_cast<int> (sampled_point_cloud->size ());
 
     typename pcl::PointCloud<pcl::Histogram<FeatureSize> >::Ptr feature_cloud (new pcl::PointCloud<pcl::Histogram<FeatureSize> > ());
     estimateFeatures (sampled_point_cloud, sampled_normal_cloud, feature_cloud);

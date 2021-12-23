@@ -373,8 +373,6 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
   // typical focal length from kinect
   constexpr double oneOverFocalLength = 0.0018;
 
-  double radiusSearchTime = 0, radiusSearchLPTime = 0;
-
   for (unsigned int test_id = 0; test_id < test_runs; test_id++)
   {
     // generate point cloud
@@ -424,18 +422,11 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
     pcl::Indices cloudNWRSearch;
     std::vector<float> cloudNWRRadius;
 
-    double check_time = getTime();
     organizedNeighborSearch.setInputCloud (cloudIn);
     organizedNeighborSearch.radiusSearch ((*cloudIn)[randomIdx], searchRadius, cloudNWRSearch, cloudNWRRadius, std::numeric_limits<unsigned int>::max());
 
-    double check_time2 = getTime();
-
-    radiusSearchLPTime += check_time2 - check_time;
-
     organizedNeighborSearch.setInputCloud (cloudIn);
     organizedNeighborSearch.radiusSearch ((*cloudIn)[randomIdx], searchRadius, cloudNWRSearch, cloudNWRRadius, std::numeric_limits<unsigned int>::max());
-
-    radiusSearchTime += getTime() - check_time2;
   }
 }
 
