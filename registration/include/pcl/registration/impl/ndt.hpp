@@ -51,7 +51,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::NormalDistributionsTrans
 , outlier_ratio_(0.55)
 , gauss_d1_()
 , gauss_d2_()
-, trans_probability_()
+, trans_likelihood_()
 {
   reg_name_ = "NormalDistributionsTransform";
 
@@ -127,7 +127,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeTransformation(
     double delta_norm = delta.norm();
 
     if (delta_norm == 0 || std::isnan(delta_norm)) {
-      trans_probability_ = score / static_cast<double>(input_->size());
+      trans_likelihood_ = score / static_cast<double>(input_->size());
       converged_ = delta_norm == 0;
       return;
     }
@@ -173,10 +173,10 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeTransformation(
     }
   }
 
-  // Store transformation probability.  The realtive differences within each scan
+  // Store transformation likelihood.  The realtive differences within each scan
   // registration are accurate but the normalization constants need to be modified for
   // it to be globally accurate
-  trans_probability_ = score / static_cast<double>(input_->size());
+  trans_likelihood_ = score / static_cast<double>(input_->size());
 }
 
 template <typename PointSource, typename PointTarget>
@@ -372,7 +372,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::updateDerivatives(
 {
   // e^(-d_2/2 * (x_k - mu_k)^T Sigma_k^-1 (x_k - mu_k)) Equation 6.9 [Magnusson 2009]
   double e_x_cov_x = std::exp(-gauss_d2_ * x_trans.dot(c_inv * x_trans) / 2);
-  // Calculate probability of transformed points existence, Equation 6.9 [Magnusson
+  // Calculate likelihood of transformed points existence, Equation 6.9 [Magnusson
   // 2009]
   const double score_inc = -gauss_d1_ * e_x_cov_x;
 
