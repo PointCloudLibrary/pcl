@@ -180,6 +180,101 @@ namespace pcl
         GeneratorT x_generator_;
         GeneratorT y_generator_;
     };
+
+    /**
+     * @brief Allows generation of a point cloud using a random point generator
+     * 
+     * @tparam PointT Type of point cloud (eg: PointNormal, PointXYZRGB, etc.)
+     * @tparam GeneratorT A generator following the generator classes as shown in \file common/random.h
+     */
+    template <typename PointT, typename GeneratorT>
+    class PointCloudGenerator {
+    public:
+      using GeneratorParameters = typename GeneratorT::Parameters;
+
+      /// Default constructor
+      PointCloudGenerator() : point_generator_() {}
+
+      /**
+       * \brief Constructor with a generator to fill a cloud
+       * \details Uniqueness is ensured by incrementing the seed
+       * \param params parameters for point generation.
+       */
+      PointCloudGenerator(const GeneratorParameters& params) : point_generator_(params)
+      {}
+
+      /** Set parameters for point generation
+       * \param x_params parameters for point generation
+       */
+      void
+      setParameters(const GeneratorParameters& pt_params)
+      {
+        _point_generator.setParameters(pt_params);
+      }
+
+      /// \return Point generation parameters
+      const GeneratorParameters&
+      getParameters() const
+      {
+        return point_generator_.getParameters();
+      }
+
+      /// \return a single random generated point
+      PointT
+      get()
+      {
+        return point_generator_.run();
+      }
+
+      /**
+       * \brief Generates a cloud with the supplied generator and parameters.
+       * \note This function assumes that cloud is properly defined
+       * \param[out] cloud cloud to generate coordinates for
+       * \return 0 if generation went well else -1.
+       */
+      int
+      fill(pcl::PointCloud<PointT>& cloud)
+      {
+        return fill(cloud.width, cloud.height, cloud);
+      }
+
+      /**
+       * \brief Generates a cloud with the supplied generator and parameters.
+       * \param[in] width width of generated cloud
+       * \param[in] height height of generated cloud
+       * \param[out] cloud output cloud
+       * \return 0 if generation went well else -1.
+       */
+      int
+      fill(int width, int height, pcl::PointCloud<PointT>& cloud)
+      {
+        if (width < 1) {
+          PCL_ERROR("[pcl::common::CloudGenerator] Cloud width must be >= 1!\n");
+          return (-1);
+        }
+
+        if (height < 1) {
+          PCL_ERROR("[pcl::common::CloudGenerator] Cloud height must be >= 1!\n");
+          return (-1);
+        }
+
+        if (!cloud.empty()) {
+          PCL_WARN("[pcl::common::CloudGenerator] Cloud data will be erased with new "
+                   "data!\n");
+        }
+
+        cloud.resize(width, height);
+        cloud.is_dense = true;
+
+        for (auto& point : cloud) {
+          point = point_generator_.run();
+        }
+        return (0);
+      }
+
+    private:
+      GeneratorT point_generator_;
+    };
   }
 }
 
