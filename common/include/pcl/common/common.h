@@ -286,7 +286,7 @@ namespace pcl
   #if __cpp_lib_is_invocable
   std::invoke_result_t<Functor, decltype(*begin)>
   #else
-  typename std::result_of_t<Functor(decltype(*begin))>
+  std::result_of_t<Functor(decltype(*begin))>
   #endif
   {
     const std::size_t size = std::distance(begin, end);
