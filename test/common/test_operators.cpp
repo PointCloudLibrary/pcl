@@ -85,6 +85,55 @@ TEST (PointOperators, PointXYZ)
   EXPECT_EQ (p2.x, scalar / 2.0f * p0.x + scalar / 2.0f * p1.x);
   EXPECT_EQ (p2.y, scalar / 2.0f * p0.y + scalar / 2.0f * p1.y);
   EXPECT_EQ (p2.z, scalar / 2.0f * p0.z + scalar / 2.0f * p1.z);
+
+  { // Addition and addition assignment
+    pcl::PointXYZ point1(1.0f, -0.5f, 2.0f), point2(4.0f, -1.5f, -1.0f);
+    float scalar1 = 2.0f;
+    auto res1 = point1 + point2;
+    EXPECT_XYZ_EQ (res1, pcl::PointXYZ(5.0f, -2.0f, 1.0f));
+    auto res2 = point1 + scalar1;
+    EXPECT_XYZ_EQ (res2, pcl::PointXYZ(3.0f, 1.5f, 4.0f));
+    auto res3 = scalar1 + point1;
+    EXPECT_XYZ_EQ (res3, pcl::PointXYZ(3.0f, 1.5f, 4.0f));
+    point1 += point2;
+    EXPECT_XYZ_EQ (point1, pcl::PointXYZ(5.0f, -2.0f, 1.0f));
+    point2 += scalar1;
+    EXPECT_XYZ_EQ (point2, pcl::PointXYZ(6.0f, 0.5f, 1.0f));
+  }
+  { // Subtraction and subtraction assignment
+    pcl::PointXYZ point1(1.0f, -0.5f, 2.0f), point2(4.0f, -1.5f, -1.0f);
+    float scalar1 = 2.0f;
+    auto res1 = point1 - point2;
+    EXPECT_XYZ_EQ (res1, pcl::PointXYZ(-3.0f, 1.0f, 3.0f));
+    auto res2 = point1 - scalar1;
+    EXPECT_XYZ_EQ (res2, pcl::PointXYZ(-1.0f, -2.5f, 0.0f));
+    auto res3 = scalar1 - point1;
+    EXPECT_XYZ_EQ (res3, pcl::PointXYZ(1.0f, 2.5f, 0.0f));
+    point1 -= point2;
+    EXPECT_XYZ_EQ (point1, pcl::PointXYZ(-3.0f, 1.0f, 3.0f));
+    point2 -= scalar1;
+    EXPECT_XYZ_EQ (point2, pcl::PointXYZ(2.0f, -3.5f, -3.0f));
+  }
+  { // Multiplication and multiplication assignment
+    pcl::PointXYZ point1(1.0f, -0.5f, 2.0f), point2(4.0f, -1.5f, -1.0f);
+    float scalar1 = 2.0f;
+    auto res2 = point1 * scalar1;
+    EXPECT_XYZ_EQ (res2, pcl::PointXYZ(2.0f, -1.0f, 4.0f));
+    auto res3 = scalar1 * point1;
+    EXPECT_XYZ_EQ (res3, pcl::PointXYZ(2.0f, -1.0f, 4.0f));
+    point2 *= scalar1;
+    EXPECT_XYZ_EQ (point2, pcl::PointXYZ(8.0f, -3.0f, -2.0f));
+  }
+  { // Division and division assignment
+    pcl::PointXYZ point1(1.0f, -0.5f, 2.0f), point2(4.0f, -2.0f, -1.0f);
+    float scalar1 = 2.0f;
+    auto res2 = point1 / scalar1;
+    EXPECT_XYZ_EQ (res2, pcl::PointXYZ(0.5f, -0.25f, 1.0f));
+    auto res3 = scalar1 / point1;
+    EXPECT_XYZ_EQ (res3, pcl::PointXYZ(2.0f, -4.0f, 1.0f));
+    point2 /= scalar1;
+    EXPECT_XYZ_EQ (point2, pcl::PointXYZ(2.0f, -1.0f, -0.5f));
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////
