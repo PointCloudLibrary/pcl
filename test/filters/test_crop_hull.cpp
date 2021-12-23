@@ -89,8 +89,8 @@ template <class TupleType>
 class PCLCropHullTestFixture : public ::testing::Test
 {
   public:
-    using CropHullTestTraits = typename std::tuple_element_t<0, TupleType>;
-    using RandomGeneratorType =  typename std::tuple_element_t<1, TupleType>;
+    using CropHullTestTraits = std::tuple_element_t<0, TupleType>;
+    using RandomGeneratorType = std::tuple_element_t<1, TupleType>;
 
     PCLCropHullTestFixture()
     {
