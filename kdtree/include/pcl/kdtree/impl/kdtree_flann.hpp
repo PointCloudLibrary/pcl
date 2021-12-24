@@ -175,7 +175,8 @@ knn_search(A& index, B& query, C& k_indices, D& dists, unsigned int k, F& params
   std::transform(indices.cbegin(),
                  indices.cend(),
                  k_indices.begin(),
-                 [](std::size_t x) { return static_cast<pcl::index_t>(x); }) return ret;
+                 [](std::size_t x) { return static_cast<pcl::index_t>(x); });
+  return ret;
 }
 
 template <class IndexT, class A, class B, class F, CompatWithFlann<IndexT> = true>
