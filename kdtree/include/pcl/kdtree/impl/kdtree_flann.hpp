@@ -175,7 +175,7 @@ knn_search(A& index, B& query, C& k_indices, D& dists, unsigned int k, F& params
   std::transform(indices.cbegin(),
                  indices.cend(),
                  k_indices.begin(),
-                 [](std::size_t x) { return static_cast<pcl::index_t>(x); });
+                 [](const auto& x) { return static_cast<pcl::index_t>(x); });
   return ret;
 }
 
@@ -312,7 +312,7 @@ radius_search(A& index, B& query, C& k_indices, D& dists, float radius, F& param
   std::transform(indices[0].cbegin(),
                  indices[0].cend(),
                  k_indices.begin(),
-                 [](std::size_t x) { return static_cast<pcl::index_t>(x); });
+                 [](const auto& x) { return static_cast<pcl::index_t>(x); });
   return neighbors_in_radius;
 }
 
