@@ -190,8 +190,8 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::extractUniqueFeatu
 
     // Select only points outside (mean +/- alpha * standard_dev)
     std::list<std::size_t> indices_per_scale;
-    std::vector<bool> indices_table_per_scale (features_at_scale_[scale_i]->size (), false);
-    for (std::size_t point_i = 0; point_i < features_at_scale_[scale_i]->size (); ++point_i)
+    std::vector<bool> indices_table_per_scale (features_at_scale_vectorized_[scale_i].size (), false);
+    for (std::size_t point_i = 0; point_i < features_at_scale_vectorized_[scale_i].size (); ++point_i)
     {
       if (diff_vector[point_i] > alpha_ * standard_dev)
       {
