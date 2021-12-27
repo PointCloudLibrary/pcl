@@ -171,7 +171,11 @@ knn_search(A& index, B& query, C& k_indices, D& dists, unsigned int k, F& params
   // Wrap indices vector (no data allocation)
   ::flann::Matrix<std::size_t> indices_mat(&indices[0], 1, k);
   auto ret = index.knnSearch(query, indices_mat, dists, k, params);
-  std::copy(indices.cbegin(), indices.cend(), k_indices.begin());
+  // cast appropriately
+  std::transform(indices.cbegin(),
+                 indices.cend(),
+                 k_indices.begin(),
+                 [](const auto& x) { return static_cast<pcl::index_t>(x); });
   return ret;
 }
 
@@ -304,7 +308,11 @@ radius_search(A& index, B& query, C& k_indices, D& dists, float radius, F& param
   std::vector<std::vector<std::size_t>> indices(1);
   int neighbors_in_radius = index.radiusSearch(query, indices, dists, radius, params);
   k_indices.resize(indices[0].size());
-  std::copy(indices[0].cbegin(), indices[0].cend(), k_indices.begin());
+  // cast appropriately
+  std::transform(indices[0].cbegin(),
+                 indices[0].cend(),
+                 k_indices.begin(),
+                 [](const auto& x) { return static_cast<pcl::index_t>(x); });
   return neighbors_in_radius;
 }
 
