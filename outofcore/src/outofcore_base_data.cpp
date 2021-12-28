@@ -342,7 +342,7 @@ namespace pcl
     
     ////////////////////////////////////////////////////////////////////////////////
 
-    std::string
+    const std::string&
     OutofcoreOctreeBaseMetadata::getCoordinateSystem () const
     {
       return (this->coordinate_system_);
