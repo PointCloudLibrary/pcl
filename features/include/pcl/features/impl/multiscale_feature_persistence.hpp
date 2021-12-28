@@ -95,7 +95,7 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::computeFeaturesAtA
   {
     FeatureCloudPtr feature_cloud (new FeatureCloud ());
     computeFeatureAtScale (scale_values_[scale_i], feature_cloud);
-    features_at_scale_[scale_i] = feature_cloud;
+    features_at_scale_.push_back(feature_cloud);
 
     // Vectorize each feature and insert it into the vectorized feature storage
     std::vector<std::vector<float> > feature_cloud_vectorized;
@@ -147,7 +147,7 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::calculateMeanFeatu
                      feature.cbegin (), mean_feature_.begin (), std::plus<>{});
   }
 
-  const float factor = std::min<float>(1, normalization_factor);
+  const float factor = std::max<float>(1, normalization_factor);
   std::transform(mean_feature_.cbegin(),
                  mean_feature_.cend(),
                  mean_feature_.begin(),
@@ -166,11 +166,17 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::extractUniqueFeatu
   unique_features_indices_.reserve (scale_values_.size ());
   unique_features_table_.reserve (scale_values_.size ());
 
+  std::vector<float> diff_vector;
+  std::size_t size = 0;
+  for (const auto& feature : features_at_scale_vectorized_)
+  {
+    size = std::max(size, feature.size());
+  }
+  diff_vector.reserve(size);
   for (std::size_t scale_i = 0; scale_i < features_at_scale_vectorized_.size (); ++scale_i)
   {
     // Calculate standard deviation within the scale
     float standard_dev = 0.0;
-    std::vector<float> diff_vector (features_at_scale_vectorized_[scale_i].size ());
     diff_vector.clear();
 
     for (const auto& feature: features_at_scale_vectorized_[scale_i])
@@ -184,8 +190,8 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::extractUniqueFeatu
 
     // Select only points outside (mean +/- alpha * standard_dev)
     std::list<std::size_t> indices_per_scale;
-    std::vector<bool> indices_table_per_scale (features_at_scale_[scale_i]->size (), false);
-    for (std::size_t point_i = 0; point_i < features_at_scale_[scale_i]->size (); ++point_i)
+    std::vector<bool> indices_table_per_scale (features_at_scale_vectorized_[scale_i].size (), false);
+    for (std::size_t point_i = 0; point_i < features_at_scale_vectorized_[scale_i].size (); ++point_i)
     {
       if (diff_vector[point_i] > alpha_ * standard_dev)
       {
