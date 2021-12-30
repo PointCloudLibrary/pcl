@@ -355,6 +355,8 @@ namespace pcl
     *
     * Lorensen W.E., Cline H.E., "Marching cubes: A high resolution 3d surface construction algorithm",
     * SIGGRAPH '87
+    * 
+    * \tparam PointNT A point type similar to pcl::PointNormal
     *
     * \author Alexandru E. Ichim
     * \ingroup surface
