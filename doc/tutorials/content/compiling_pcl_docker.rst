@@ -1,100 +1,154 @@
 .. _compiling_pcl_docker:
 
 Compiling PCL from source on Docker
-------------------------------------
+===================================
 
-This tutorial explains how to build the Point Cloud Library **from source** on
-Docker.
+This tutorial explains how to build the Point Cloud Library **from source** on docker.
 
 .. note::
-The walkthrough of the procedure was done in Windows 10 where Ubuntu 20.04 is installed
-in virtual machine. The reason is that docker can be much easier installed in linux OSs
-compared to Windows
+
+   The walkthrough of the procedure was done in Windows 10 host machine where Ubuntu 20.04
+   was installed in virtual machine. The reason is that docker can be much easier installed
+   in linux OSs compared to Windows
 
 Requirements
 -------------
-Git installation
+Open a terminal in Ubuntu (inside VirtualBox) and run the coresponding commands from each 
+installation section
 
-Open a terminal in Ubuntu (inside VirtualBox) and run the following command in order to
-check if docker is already installed
+* Curl installation 
+
+  Check if curl is already installed::
+
+  $ curl --version
+
+  If it is not already installed, run in terminal the relative command for your OS::
+  `<https://www.tecmint.com/install-curl-in-linux>`_
+
+* Git installation
+
+  Check if git is already installed::
+
+  $ git --version
+
+  If it is not already installed, run in terminal the relative command for your OS::
+  `<https://git-scm.com/download/linux>`_ 
+
+* Docker installation
+
+  Check if docker is already installed::
+
+  $ docker --version
+
+  If it is not already installed, follow the instructions from 
+  `<https://github.com/docker/docker-install>`_ and run in terminal::
+
+  $ curl -fsSL https://get.docker.com -o get-docker.sh
+  $ sh get-docker.sh
+
+  Other useful command are()::
+
+  $ docker ps 
+  $ service docker status
+
+  The first one shows the running containers while the latter shows the docker status. 
+  If everything is fine it will be active (running).
+  You can start/stop docker if needed by running::
+
+  $ service docker start/stop
+
+
 .. note::
-	git --version
-If it is not already installed, run again in terminal the following commands
-.. note::
-	sudo apt install git
 
-Docker installation.
+   It might need to add an extra sudo in docker commands if permission are not set properly.
+   See part **run docker commands without sudo** on how to set them correctly so the sudo command to be not necessary.
 
-Open a terminal in Ubuntu (inside VirtualBox) and run the following command in order to
-check if docker is already installed
-.. note::
-	docker --version
-If it is not already installed, run again in terminal the following commands
-.. note::
-	sudo apt install docker.io
-	sudo snap install docker
-Verify if docker is really installed by running docker --version. The containeres
-sudo docker ps shows running container. Other useful command to see the docker are
-.. note::
-	service docker status which shows the docker status. If everything is fine it 
-	active (running). You can start/stop docker if needed by running service docker start/stop
+Downloading  PCL source code
+----------------------------
+Download the pcl source code in Ubuntu (inside VirtualBox)::
 
-Downloading PCL source code
----------------------------
-Download the pcl source code in Ubuntu (inside VirtualBox) with
-  git clone https://github.com/PointCloudLibrary/pcl.git
-
-
+  $ git clone https://github.com/PointCloudLibrary/pcl.git
 
 Docker container configuration
 ------------------------------
-Pull the docker image by running
+* To run docker commands without sudo::
+
+  $ sudo groupadd docker
+  $ sudo usermod -aG docker $USER
+  $ newgrp docker
+
+  Verify you can run docker without sudo::
+
+  $ docker run hello-world
+
+* Pull the docker image by running::
+
+  $ docker pull pointcloudlibrary/env:20.04
+
+  Do not worry if it takes enough time because all the pcl dependencies will be installed in this 
+  step. In other words, there is  no need to install Boost, Eigen other dependencies manually.
+
+  The docker image above will have OS Ubuntu 20.04. Other possible available images can be found under::
+
+  $ curl -L -s 'https://registry.hub.docker.com/v2/repositories/pointcloudlibrary/env/tags/' | jq '.results | map({(."name"): .last_updated}) | add'
+
+  jq can be installed with a single command depending on your OS . See `<https://stedolan.github.io/jq/download/>`_ for more details
+
 .. note::
-	sudo docker pull pointcloudlibrary/env:20.04
-	
-The docker image above will have OS Ubuntu 20.04. 
-Other possible images options can be found under
-https://github.com/PointCloudLibrary/pcl/blob/master/.ci/azure-pipelines/azure-pipelines.yaml#L17
 
-Do not worry if it takes enough time because all the pcl dependencies will be installed in this 
-step. In other word no need to install Boost or Eigen.
+   It is also possible to use the Dockerfile under .dev folder to set up your docker 
+   image. The method of pulling the official docker image is considered more 
+   stable option though.
 
-Running the container with
-.. note::
-	sudo docker run -v ~/Desktop/pcl:/home --rm -it pointcloudlibrary/env:20.04 bash
-where ~/Desktop/pcl represents the pcl source code in Ubuntu (inside VirtualBox) while 
-home represents the pcl source code inside the docker container. Instead of home any other 
-path can be used for example home/pcl.  Using volumes,  actions perfomred like creation of
-new file in  Ubuntu (inside VirtualBox) are directly mapped to the selected path location
-inside docker container. 
+* Run the container::
 
+  $ docker run --user $(id -u):$(id -g) -v $PWD/pcl:/home --rm -it pointcloudlibrary/env:20.04 bash
+
+  where $PWD:/pcl:/home represents the pcl source code in Ubuntu (inside VirtualBox) while
+  home represents the pcl source code inside the docker container.
+ 
+  Using volumes, actions performed  file in Ubuntu (inside VirtualBox) such as a creation of new are directly mapped
+  to the selected path location inside docker container.
+
+  To exit the container simply run in terminal exit
 
 Building PCL
 --------------
-After running the container, we need to nagivate to pcl source code by simply running
-cd home. Next step is to create a build folder and to that directory. This can be done
-with mkdir build && cd build inside docker container. 
+After running the container, we need to nagivate to pcl source code and create a build folder to that directory.
 
-In case you prefer to use a specifi compiler like clang instead of gcc run
-export CC=/usr/bin/clang
-export CXX=/usr/bin/clang++g
+  $ cd home && mkdir build && cd build
 
-Last step is the cmake configuration which is done by running inside the build folder
-.. note::
-	cmake ..
+In case you prefer to use a specific compiler like clang instead of gcc run::
+
+  $ export CC=/usr/bin/clang
+  $ export CXX=/usr/bin/clang++
+
+Last step is the cmake configuration which is done by running inside the build folder::
+
+  $ cmake ..
+
 Other cmake variables can be passed in this step for example cmake -DCMAKE_BUILD_TYPE=Release ..
-which will change the build target to “Release”
+which will change the build target to “Release”. More details about cmake variables can be found
+in :ref:`building_pcl`.
 
-Finally compile everything by running
-.. note::
-	make -j2
+Finally compile everything by running::
+
+  $ make -j2
 
 Installing PCL
 --------------
-Install the result:
-make -j2 install 
-or
-sudo make -j2 install
+Install the result on docker::
 
+  $ make -j2 install
 
+To get root access for just install command::
+
+  $ docker exec -it <container_name>
+
+Next steps
+----------
+All the steps mentioned in this tutorial should performed at least once and
+after that just running the container command and building or installing is
+enough. Periodically though it is needed to pull the latest image to have
+possible updates that are incoporated in the meantime.
 
