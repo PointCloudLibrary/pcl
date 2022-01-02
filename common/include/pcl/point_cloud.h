@@ -640,7 +640,7 @@ namespace pcl
         if (new_width == 0) {
           PCL_WARN("Assignment with new_width equal to 0,"
                    "setting width to size of the cloud and height to 1\n");
-          return assign(std::move{ilist));
+          return assign(std::move(ilist));
         }
         points.assign(std::move(ilist));
         width = new_width;
