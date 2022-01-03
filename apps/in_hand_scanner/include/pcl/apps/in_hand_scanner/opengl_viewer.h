@@ -57,8 +57,9 @@ namespace pcl {
 namespace ihs {
 namespace detail {
 /** \brief Mesh format more efficient for visualization than the half-edge data
- * structure. \see http://en.wikipedia.org/wiki/Polygon_mesh#Face-vertex_meshes \note
- * Only triangles are currently supported.
+ * structure. \see http://en.wikipedia.org/wiki/Polygon_mesh#Face-vertex_meshes
+ *
+ * \note Only triangles are currently supported.
  */
 class FaceVertexMesh {
 public:
@@ -97,6 +98,7 @@ public:
 } // End namespace detail
 
 /** \brief Viewer for the in-hand scanner based on Qt and OpenGL.
+ *
  * \note Currently you have to derive from this class to use it. Implement the
  * paintEvent: Call the paint event of this class and declare a QPainter.
  */
@@ -175,12 +177,17 @@ public:
   ~OpenGLViewer();
 
   /** \brief Add a mesh to be drawn.
+   *
    * \param[in] mesh The input mesh.
    * \param[in] id Unique identifier for the mesh. The internal mesh is replaced by the
-   * input mesh if the id already exists. \param[in] T Transformation applied to the
-   * mesh. Defaults to an identity transformation. \return true if success. \note
-   * Converts the mesh to the internal representation better suited for visualization.
-   * Therefore this method takes some time.
+   * input mesh if the id already exists.
+   * \param[in] T Transformation applied to the mesh. Defaults to an identity
+   * transformation.
+   *
+   * \return true if success.
+   *
+   * \note Converts the mesh to the internal representation better suited for
+   * visualization. Therefore this method takes some time.
    */
   bool
   addMesh(const MeshConstPtr& mesh,
@@ -188,11 +195,16 @@ public:
           const Eigen::Isometry3d& T = Eigen::Isometry3d::Identity());
 
   /** \brief Convert an organized cloud to a mesh and draw it.
+   *
    * \param[in] cloud Organized input cloud.
    * \param[in] id Unique identifier for the mesh. The internal mesh is replaced by the
-   * converted input mesh if the id already exists. \param[in] T Transformation applied
-   * to the mesh. Defaults to an identity transformation. \return true if success. \note
-   * This method takes some time for the conversion).
+   * converted input mesh if the id already exists.
+   * \param[in] T Transformation applied to the mesh. Defaults to an identity
+   * transformation.
+   *
+   * \return true if success.
+   *
+   * \note This method takes some time for the conversion).
    */
   bool
   addMesh(const CloudXYZRGBNormalConstPtr& cloud,
@@ -200,8 +212,11 @@ public:
           const Eigen::Isometry3d& T = Eigen::Isometry3d::Identity());
 
   /** \brief Remove the mesh with the given id.
+   *
    * \param[in] id Identifier of the mesh (results in a failure if the id does not
-   * exist). \return true if success.
+   * exist).
+   *
+   * \return true if success.
    */
   bool
   removeMesh(const std::string& id);
@@ -227,7 +242,9 @@ public:
   setPivot(const Eigen::Vector3d& pivot);
 
   /** \brief Searches the given id in the drawn meshes and calculates the pivot as the
-   * centroid of the found geometry. \note Returns immediately and computes the pivot in
+   * centroid of the found geometry.
+   *
+   * \note Returns immediately and computes the pivot in
    * another thread.
    */
   void
@@ -355,6 +372,7 @@ private:
   using FaceVertexMeshMap = std::unordered_map<std::string, FaceVertexMeshPtr>;
 
   /** \brief Check if the mesh with the given id is added.
+   *
    * \note Must lock the mutex before calling this method.
    */
   bool
@@ -365,6 +383,7 @@ private:
   calcPivot();
 
   /** \brief Draw all meshes.
+   *
    * \note Only triangle meshes are currently supported.
    */
   void

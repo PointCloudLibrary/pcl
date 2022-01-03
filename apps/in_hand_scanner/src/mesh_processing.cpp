@@ -120,8 +120,8 @@ pcl::ihs::MeshProcessing::processBoundary(
           // n_adb is the normal of triangle a-d-b.
           // The plane goes through edge a-b and is perpendicular to the plane through
           // a-d-b.
-          n_adb = (v_d - v_a).head<3>().cross(ab) /*.normalized ()*/;
-          n_plane = n_adb.cross(ab /*.nomalized ()*/);
+          n_adb = (v_d - v_a).head<3>().cross(ab) /*.normalized()*/;
+          n_plane = n_adb.cross(ab /*.nomalized()*/);
 
           if (n_plane.dot(ac) > 0.f) {
             mesh.addFace(vi_a, vi_b, vi_c);

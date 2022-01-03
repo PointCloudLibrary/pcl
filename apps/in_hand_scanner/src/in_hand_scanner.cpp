@@ -437,7 +437,6 @@ pcl::ihs::InHandScanner::newDataCallback(const CloudXYZRGBAConstPtr& cloud_in)
 void
 pcl::ihs::InHandScanner::paintEvent(QPaintEvent* event)
 {
-  // std::lock_guard<std::mutex> lock (mutex_);
   if (destructor_called_)
     return;
 
@@ -453,7 +452,6 @@ pcl::ihs::InHandScanner::paintEvent(QPaintEvent* event)
 
   Base::setVisibilityConfidenceNormalization(
       static_cast<float>(integration_->getMinDirections()));
-  // lock.unlock ();
 
   Base::paintEvent(event);
   this->drawText(); // NOTE: Must come AFTER the opengl calls

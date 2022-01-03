@@ -45,7 +45,10 @@
 namespace pcl {
 namespace ihs {
 /** \brief Contains methods that take advantage of the connectivity information in the
- * mesh. \author Martin Saelzle \ingroup apps
+ * mesh.
+ *
+ * \author Martin Saelzle
+ * \ingroup apps
  */
 class MeshProcessing {
 public:
@@ -59,9 +62,11 @@ public:
   MeshProcessing();
 
   /** \brief Inserts triangles into jagged boundaries, removes isolated triangles and
-   * closes triangular holes. \param[in,out] mesh The mesh which should be processed.
+   * closes triangular holes.
+   *
+   * \param[in,out] mesh The mesh which should be processed.
    * \param[in] boundary_collection Collection of boundary half-edges.
-   * \param[in] cleanup Calls mesh.cleanup () if true.
+   * \param[in] cleanup Calls mesh.cleanup() if true.
    */
   void
   processBoundary(Mesh& mesh,

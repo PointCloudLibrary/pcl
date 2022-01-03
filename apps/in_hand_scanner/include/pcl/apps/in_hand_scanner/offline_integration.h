@@ -69,7 +69,9 @@ class Integration;
 namespace pcl {
 namespace ihs {
 /** \brief Read the clouds and transformations from files and integrate them into one
- * common model. \todo Add Documentation
+ * common model.
+ *
+ * \todo Add Documentation
  */
 class PCL_EXPORTS OfflineIntegration : public pcl::ihs::OpenGLViewer {
   Q_OBJECT
@@ -137,9 +139,11 @@ private:
   };
 
   /** \brief Get a list of files with from a given directory.
+   *
    * \param[in] path_dir Path to search for the files.
    * \param[in] extension File extension (must start with a dot). E.g. '.pcd'.
    * \param[out] files Paths to the files.
+   *
    * \return True if success.
    */
   bool
@@ -148,17 +152,21 @@ private:
                         std::vector<std::string>& files) const;
 
   /** \brief Load the transformation matrix from the given file.
+   *
    * \param[in] filename Path to the file.
    * \param[out] transform The loaded transform.
+   *
    * \return True if success.
    */
   bool
   loadTransform(const std::string& filename, Eigen::Matrix4f& transform) const;
 
   /** \brief Load the cloud and transformation from the files and compute the normals.
+   *
    * \param[in] filename Path to the pcd file.
    * \param[out] cloud Cloud with computed normals.
    * \param[out] T Loaded transformation.
+   *
    * \return True if success.
    */
   bool

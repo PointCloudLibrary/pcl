@@ -71,11 +71,15 @@ public:
   InputDataProcessing();
 
   /** \brief Apply the segmentation on the input cloud (XYZ and HSV).
+   *
    * \param[in] cloud_in The input cloud.
    * \param[out] cloud_out The segmented cloud.
    * \param[out] cloud_discarded Cloud containing all points that were removed during
-   * the HSV segmentation. The points in the XYZ segmentation are NOT used! \return true
-   * if success. \note Converts from m to cm.
+   * the HSV segmentation. The points in the XYZ segmentation are NOT used!
+   *
+   * \return true if success.
+   *
+   * \note Converts from m to cm.
    */
   bool
   segment(const CloudXYZRGBAConstPtr& cloud_in,
@@ -83,9 +87,12 @@ public:
           CloudXYZRGBNormalPtr& cloud_discarded) const;
 
   /** \brief Calculate the normals of the input cloud.
+   *
    * \param[in] cloud_in The input cloud.
    * \param[out] cloud_out Input cloud with normals appended.
+   *
    * \return true if success.
+   *
    * \note Converts from m to cm.
    */
   bool
@@ -167,7 +174,9 @@ public:
   /** @{ */
   /** \brief Simple color segmentation in the HSV color space. Points inside of H - S -
    * V min / max are discarded. H must be in the range 0 and 360, S and V in the range 0
-   * and 1. \note If you set values outside of the allowed range the member variables
+   * and 1.
+   *
+   * \note If you set values outside of the allowed range the member variables
    * are clamped to the next best value. E.g. H is set to 0 if you pass -1.
    */
   inline void
@@ -316,10 +325,12 @@ private:
   dilate(MatrixXb& mask, const int k) const;
 
   /** \brief Calculates the manhattan distance map for the input matrix.
-   * \param[in] mat  Input matrix.
+   *
+   * \param[in] mat Input matrix.
    * \param[in] comp Compared value. mat==comp will have zero distance.
+   *
    * \return Matrix containing the distances to mat==comp
-   * \see http://ostermiller.org/dilate_and_erode.html
+   *         \see http://ostermiller.org/dilate_and_erode.html
    */
   MatrixXi
   manhattan(const MatrixXb& mat, const bool comp) const;

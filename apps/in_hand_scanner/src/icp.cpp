@@ -440,8 +440,8 @@ pcl::ihs::ICP::minimizePointPlane(const CloudNormal& cloud_source,
   // the origin."
   // - Gelfand et al.: Geometrically Stable Sampling for the ICP Algorithm (2003), in
   // sec 3.1: "As is common with PCA methods, we will shift the center of mass of the
-  // points	to the origin." ... "Therefore, af- ter shifting the center of mass, we will
-  // scale the point set so that the average distance of points	from the origin is 1."
+  // points to the origin." ... "Therefore, af- ter shifting the center of mass, we will
+  // scale the point set so that the average distance of points from the origin is 1."
   // - Hartley, Zisserman: - Multiple View Geometry (2004), page 109: They normalize to
   // sqrt(2)
   // TODO: Check the resulting C matrix for the conditioning.

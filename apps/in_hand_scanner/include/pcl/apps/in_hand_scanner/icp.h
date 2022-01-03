@@ -71,8 +71,9 @@ public:
   /** @{ */
   /** \brief Convergence is detected when the change of the fitness between the current
    * and previous iteration becomes smaller than the given epsilon (set in cm^2). The
-   * fitness is the mean squared euclidean distance between corresponding points. \note
-   * Only accepted if it is greater than 0.
+   * fitness is the mean squared euclidean distance between corresponding points.
+   *
+   * \note Only accepted if it is greater than 0.
    */
   void
   setEpsilon(const float epsilon);
@@ -83,7 +84,9 @@ public:
 
   /** @{ */
   /** \brief The registration fails if the number of iterations exceeds the maximum
-   * number of iterations. \note Must be greater than 0. Smaller values are set to 1.
+   * number of iterations.
+   *
+   * \note Must be greater than 0. Smaller values are set to 1.
    */
   void
   setMaxIterations(const unsigned int max_iter);
@@ -96,6 +99,7 @@ public:
   /** \brief The registration fails at the state of convergence if the overlap between
    * the model and data shape is smaller than a minimum overlap. The overlap is the
    * fraction of correspondences (after rejection) to the initial number of data points.
+   *
    * \note Must be between zero and one. Values outside this range are clamped to the
    * nearest valid value.
    */
@@ -108,7 +112,9 @@ public:
 
   /** @{ */
   /** \brief The registration fails at the state of convergence if the fitness is bigger
-   * than this threshold (set in cm^2) \note Must be greater than zero.
+   * than this threshold (set in cm^2)
+   *
+   * \note Must be greater than zero.
    */
   void
   setMaxFitness(const float fitness);
@@ -121,8 +127,9 @@ public:
   /** \brief Correspondences are rejected if the squared distance is above a threshold.
    * This threshold is initialized with infinity (all correspondences are accepted in
    * the first iteration). The threshold of the next iterations is set to the fitness of
-   * the current iteration multiplied by the factor set by this method. \note Must be
-   * greater or equal one. Smaller values are set to one.
+   * the current iteration multiplied by the factor set by this method.
+   *
+   * \note Must be greater or equal one. Smaller values are set to one.
    */
   void
   setCorrespondenceRejectionFactor(const float factor);
@@ -133,8 +140,10 @@ public:
 
   /** @{ */
   /** \brief Correspondences are rejected if the angle between the normals is bigger
-   * than this threshold. Set in degrees. \note Must be between 180 degrees and 0.
-   * Values outside this range are clamped to the nearest valid value.
+   * than this threshold. Set in degrees.
+   *
+   * \note Must be between 180 degrees and 0. Values outside this range are clamped to
+   * the nearest valid value.
    */
   void
   setMaxAngle(const float angle);
@@ -144,9 +153,13 @@ public:
   /** @} */
 
   /** \brief Find the transformation that aligns the data cloud (source) to the model
-   * mesh (target). \param[in] mesh_model Model mesh (target). \param[in] cloud_data
-   * Data cloud (source). \param[in] T_init Initial guess for the transformation.
-   * \paran[out] T_final The computed transformation.
+   * mesh (target).
+   *
+   * \param[in] mesh_model Model mesh (target).
+   * \param[in] cloud_data Data cloud (source).
+   * \param[in] T_init Initial guess for the transformation.
+   * \param[out] T_final The computed transformation.
+   *
    * \return true if success.
    */
   bool
@@ -166,17 +179,24 @@ private:
   using KdTreeConstPtr = KdTree::ConstPtr;
 
   /** \brief Selects the model points that are pointing towards to the camera (data
-   * coordinate system = camera coordinate system). \param[in] mesh_model Input mesh.
+   * coordinate system = camera coordinate system).
+   *
+   * \param[in] mesh_model Input mesh.
    * \param[in] T_inv Transformation that brings the model mesh into the camera
-   * coordinate system. \return Cloud containing the selected points (the connectivity
+   * coordinate system.
+   *
+   * \return Cloud containing the selected points (the connectivity
    * information of the mesh is currently not used during the registration).
    */
   CloudNormalConstPtr
   selectModelPoints(const MeshConstPtr& mesh_model, const Eigen::Matrix4f& T_inv) const;
 
   /** \brief Selects the valid data points. The input cloud is organized -> contains
-   * nans which are removed \param[in] cloud_data Input cloud. \return Cloud containing
-   * the selected points.
+   * nans which are removed
+   *
+   * \param[in] cloud_data Input cloud.
+   *
+   * \return Cloud containing the selected points.
    */
   CloudNormalConstPtr
   selectDataPoints(const CloudXYZRGBNormalConstPtr& cloud_data) const;
@@ -184,9 +204,13 @@ private:
   /** \brief Finds the transformation that minimizes the point to plane distance from
    * the source to the target cloud. The input clouds must be arranged to have one to
    * one correspondences (point 0 in source corresponds to point 0 in target, point 1 in
-   * source to point 1 in target and so on). \param[in] cloud_source Source cloud
-   * (data). \param[in] cloud_target Target cloud (model). \param[out] T The computed
-   * transformation. \return true if success
+   * source to point 1 in target and so on).
+   *
+   * \param[in] cloud_source Source cloud (data).
+   * \param[in] cloud_target Target cloud (model).
+   * \param[out] T The computed transformation.
+   *
+   * \return true if success
    */
   bool
   minimizePointPlane(const CloudNormal& cloud_source,

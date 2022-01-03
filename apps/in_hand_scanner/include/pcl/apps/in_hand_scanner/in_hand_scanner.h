@@ -186,6 +186,7 @@ public Q_SLOTS:
   reset();
 
   /** \brief Saves the model mesh in a file with the given filename and filetype.
+   *
    * \note The extension of the filename is ignored!
    */
   void

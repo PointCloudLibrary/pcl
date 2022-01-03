@@ -143,37 +143,37 @@ pcl::ihs::OpenGLViewer::OpenGLViewer(QWidget* parent)
   //#include <vtkSmartPointer.h>
 
   // int
-  // main ()
-  //{
-  //  static const unsigned int n = 256;
-  //  // double rgb_1 [] = { 59./255., 76./255., 192./255.};
-  //  // double rgb_2 [] = {180./255.,  4./255.,  38./255.};
-  //  double rgb_1 [] = {180./255.,   0./255.,  0./255.};
-  //  double rgb_2 [] = {  0./255., 180./255.,  0./255.};
-
-  //  vtkSmartPointer <vtkColorTransferFunction> ctf = vtkColorTransferFunction::New ();
-  //  ctf->SetColorSpaceToDiverging ();
-  //  ctf->AddRGBPoint (  0., rgb_1 [0], rgb_1 [1], rgb_1 [2]);
-  //  ctf->AddRGBPoint (  1., rgb_2 [0], rgb_2 [1], rgb_2 [2]);
-  //  ctf->Build ();
-
-  //  const unsigned char* colormap = ctf->GetTable (0., 1., n);
-
-  //  for (unsigned int i=0; i<n; ++i)
-  //  {
-  //    const unsigned int r = static_cast <unsigned int> (colormap [3 * i    ]);
-  //    const unsigned int g = static_cast <unsigned int> (colormap [3 * i + 1]);
-  //    const unsigned int b = static_cast <unsigned int> (colormap [3 * i + 2]);
-
-  //    std::cerr << "colormap_.col ("
-  //              << std::setw (3) << i << ") = Color ("
-  //              << std::setw (3) << r << ", "
-  //              << std::setw (3) << g << ", "
-  //              << std::setw (3) << b << ");\n";
-  //  }
-
-  //  return (EXIT_SUCCESS);
-  //}
+  // main()
+  // {
+  //   static const unsigned int n = 256;
+  //   // double rgb_1 [] = { 59./255., 76./255., 192./255.};
+  //   // double rgb_2 [] = {180./255.,  4./255.,  38./255.};
+  //   double rgb_1 [] = {180./255.,   0./255., 0./255.};
+  //   double rgb_2 [] = {  0./255., 180./255., 0./255.};
+  //
+  //   vtkSmartPointer <vtkColorTransferFunction> ctf = vtkColorTransferFunction::New();
+  //   ctf->SetColorSpaceToDiverging();
+  //   ctf->AddRGBPoint(0., rgb_1 [0], rgb_1 [1], rgb_1 [2]);
+  //   ctf->AddRGBPoint(1., rgb_2 [0], rgb_2 [1], rgb_2 [2]);
+  //   ctf->Build();
+  //
+  //   const unsigned char* colormap = ctf->GetTable (0., 1., n);
+  //
+  //   for (unsigned int i=0; i<n; ++i)
+  //   {
+  //     const unsigned int r = static_cast <unsigned int> (colormap [3 * i    ]);
+  //     const unsigned int g = static_cast <unsigned int> (colormap [3 * i + 1]);
+  //     const unsigned int b = static_cast <unsigned int> (colormap [3 * i + 2]);
+  //
+  //     std::cerr << "colormap_.col ("
+  //               << std::setw (3) << i << ") = Color ("
+  //               << std::setw (3) << r << ", "
+  //               << std::setw (3) << g << ", "
+  //               << std::setw (3) << b << ");\n";
+  //   }
+  //
+  //   return (EXIT_SUCCESS);
+  // }
 
   colormap_.col(0) = Color(180, 0, 0);
   colormap_.col(1) = Color(182, 9, 1);

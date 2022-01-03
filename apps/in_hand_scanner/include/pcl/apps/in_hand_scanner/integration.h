@@ -73,18 +73,22 @@ public:
   Integration();
 
   /** \brief Reconstructs a mesh from an organized cloud.
+   *
    * \param[in] cloud_data Input cloud. Must be organized.
    * \param[in] mesh_model Reconstructed mesh.
+   *
    * \return true if success.
    */
   bool
   reconstructMesh(const CloudXYZRGBNormalConstPtr& cloud_data,
                   MeshPtr& mesh_model) const;
 
-  /** \brief Merge the organized cloud into the mesh.
+  /** \brief Merge the organized cloud into the mesh.#
+   *
    * \param[in] cloud_data Input cloud. Must be organized.
    * \param[in,out] mesh_model Mesh with new points integrated.
    * \param[in] T Transformation that aligns the data cloud with the model mesh.
+   *
    * \return true if success.
    */
   bool
@@ -96,15 +100,19 @@ public:
    * again age by one iteration. Points that are observed again get an age of 0. Once a
    * point reaches the maximum age it is decided if the point is removed or kept in the
    * mesh. A point is removed if it has not been observed from a minimum number of
-   * directions. \param[in,out] mesh The mesh which should be processed. \param[in]
-   * cleanup Calls mesh.cleanup () if true.
+   * directions.
+   *
+   * \param[in,out] mesh The mesh which should be processed.
+   * \param[in] cleanup Calls mesh.cleanup() if true.
    */
   void
   age(const MeshPtr& mesh, const bool cleanup = true) const;
 
   /** \brief Removes unfit vertices regardless of their age. Unfit vertices are those
-   * that have not been observed from enough directions. \param[in,out] mesh The which
-   * should be processed. \param[in] cleanup Calls mesh.cleanup () if true.
+   * that have not been observed from enough directions.
+   *
+   * \param[in,out] mesh The which should be processed.
+   * \param[in] cleanup Calls mesh.cleanup() if true.
    */
   void
   removeUnfitVertices(const MeshPtr& mesh, const bool cleanup = true) const;
@@ -112,6 +120,7 @@ public:
   /** @{ */
   /** \brief Corresponding points are averaged out if their distance is below a distance
    * threshold. Else the points are added to the mesh as new vertices (Set in cm^2).
+   *
    * \note Must be greater than zero.
    */
   void
@@ -122,8 +131,10 @@ public:
 
   /** @{ */
   /** \brief Corresponding points are only averaged out if the angle between the normals
-   * is smaller than an angle threshold. \note Must be between 0 and 180. Values outside
-   * this range are clamped to the nearest valid value.
+   * is smaller than an angle threshold.
+   *
+   * \note Must be between 0 and 180. Values outside this range are clamped to the
+   * nearest valid value.
    */
   void
   setMaxAngle(const float angle);
@@ -131,9 +142,11 @@ public:
   getMaxAngle() const;
   /** @} */
 
-  /** @{  */
+  /** @{ */
   /** \brief Once a point reaches the maximum age it is decided if the point is removed
-   * or kept in the mesh. \note Must be greater than zero.
+   * or kept in the mesh.
+   *
+   * \note Must be greater than zero.
    */
   void
   setMaxAge(const unsigned int age);
@@ -141,9 +154,11 @@ public:
   getMaxAge() const;
   /** @} */
 
-  /** @{  */
+  /** @{ */
   /** \brief A point is removed if it has not been observed from a minimum number of
-   * directions. \note Must be greater than zero.
+   * directions.
+   *
+   * \note Must be greater than zero.
    */
   void
   setMinDirections(const unsigned int directions);
@@ -217,18 +232,21 @@ private:
   float max_squared_distance_;
 
   /** \brief Maximum angle between normals below which points are averaged out. In
-   * degrees. */
+   * degrees.
+   */
   float max_angle_;
 
   /** \brief Minimum weight above which points are added. */
   float min_weight_;
 
   /** \brief Once a point reaches the maximum age it is decided if the point is removed
-   * or kept in the mesh. */
+   * or kept in the mesh.
+   */
   unsigned int max_age_;
 
   /** \brief A point is removed if it has not been observed from a minimum number of
-   * directions. */
+   * directions.
+   */
   unsigned int min_directions_;
 };
 } // End namespace ihs

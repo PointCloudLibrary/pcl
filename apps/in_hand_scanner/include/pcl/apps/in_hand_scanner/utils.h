@@ -43,7 +43,8 @@
 namespace pcl {
 namespace ihs {
 /** \brief Clamp the value to the given range. All values smaller than min are set to
- * min and all values bigger than max are set to max. */
+ * min and all values bigger than max are set to max.
+ */
 template <class T>
 inline T
 clamp(const T value, const T min, const T max)
