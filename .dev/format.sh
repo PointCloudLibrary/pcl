@@ -8,7 +8,7 @@
 
 format() {
     # don't use a directory with whitespace
-    local whitelist="apps/3d_rec_framework apps/include apps/modeler apps/src benchmarks 2d geometry ml octree simulation stereo tracking registration gpu/containers gpu/segmentation"
+    local whitelist="apps/3d_rec_framework apps/in_hand_scanner apps/include apps/modeler apps/src benchmarks 2d geometry ml octree simulation stereo tracking registration gpu/containers gpu/segmentation"
 
     local PCL_DIR="${2}"
     local formatter="${1}"
