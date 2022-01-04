@@ -65,6 +65,8 @@ namespace pcl
   class SampleConsensusModelParallelPlane : public SampleConsensusModelPlane<PointT>
   {
     public:
+      PCL_MAKE_ALIGNED_OPERATOR_NEW;
+
       using SampleConsensusModel<PointT>::model_name_;
 
       using PointCloud = typename SampleConsensusModelPlane<PointT>::PointCloud;

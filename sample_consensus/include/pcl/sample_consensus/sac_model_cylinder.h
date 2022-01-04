@@ -79,6 +79,8 @@ namespace pcl
       using Ptr = shared_ptr<SampleConsensusModelCylinder<PointT, PointNT> >;
       using ConstPtr = shared_ptr<const SampleConsensusModelCylinder<PointT, PointNT>>;
 
+      PCL_MAKE_ALIGNED_OPERATOR_NEW;
+
       /** \brief Constructor for base SampleConsensusModelCylinder.
         * \param[in] cloud the input point cloud dataset
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)

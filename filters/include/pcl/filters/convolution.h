@@ -79,6 +79,7 @@ namespace pcl
         using Ptr = shared_ptr< Convolution<PointIn, PointOut> >;
         using ConstPtr = shared_ptr< const Convolution<PointIn, PointOut> >;
 
+        PCL_MAKE_ALIGNED_OPERATOR_NEW;
 
         /// The borders policy available
         enum BORDERS_POLICY

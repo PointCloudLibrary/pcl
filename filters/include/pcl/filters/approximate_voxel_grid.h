@@ -120,6 +120,7 @@ namespace pcl
       using Ptr = shared_ptr<ApproximateVoxelGrid<PointT> >;
       using ConstPtr = shared_ptr<const ApproximateVoxelGrid<PointT> >;
 
+      PCL_MAKE_ALIGNED_OPERATOR_NEW;
 
       /** \brief Empty constructor. */
       ApproximateVoxelGrid () : 

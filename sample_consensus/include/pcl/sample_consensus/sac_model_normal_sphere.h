@@ -152,7 +152,7 @@ namespace pcl
       inline pcl::SacModel 
       getModelType () const override { return (SACMODEL_NORMAL_SPHERE); }
 
-    	PCL_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
 
     protected:
       using SampleConsensusModel<PointT>::sample_size_;

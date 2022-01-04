@@ -59,7 +59,7 @@ namespace pcl
     using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
     public:
-      PCL_MAKE_ALIGNED_OPERATOR_NEW
+      PCL_MAKE_ALIGNED_OPERATOR_NEW;
 
       using Ptr = shared_ptr<CropBox<PointT> >;
       using ConstPtr = shared_ptr<const CropBox<PointT> >;

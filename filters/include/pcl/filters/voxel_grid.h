@@ -190,6 +190,8 @@ namespace pcl
       using Ptr = shared_ptr<VoxelGrid<PointT> >;
       using ConstPtr = shared_ptr<const VoxelGrid<PointT> >;
 
+      PCL_MAKE_ALIGNED_OPERATOR_NEW;
+
       /** \brief Empty constructor. */
       VoxelGrid () :
         leaf_size_ (Eigen::Vector4f::Zero ()),
