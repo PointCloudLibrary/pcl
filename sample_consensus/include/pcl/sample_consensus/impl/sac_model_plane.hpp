@@ -88,7 +88,7 @@ pcl::SampleConsensusModelPlane<PointT>::computeModelCoefficients (
 
   // Avoid some crashes by checking for collinearity here
   Eigen::Array4f dy1dy2 = p1p0 / p2p0;
-  if ( (dy1dy2[0] == dy1dy2[1]) && (dy1dy2[2] == dy1dy2[1]) )          // Check for collinearity
+  if ( p2p0.isZero() || ((dy1dy2[0] == dy1dy2[1]) && (dy1dy2[2] == dy1dy2[1])) )          // Check for collinearity
   {
     return (false);
   }
