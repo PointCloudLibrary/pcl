@@ -68,7 +68,7 @@ namespace pcl
     * // The indices_xz array indexes all points of cloud_in that have x between 0.0 and 1000.0 and z larger than 10.0 or smaller than -10.0
     * ptfilter.setIndices (indices_xz);
     * ptfilter.setFilterFieldName ("intensity");
-    * ptfilter.setFilterLimits (FLT_MIN, 0.5);
+    * ptfilter.setFilterLimits (-FLT_MAX, 0.5);
     * ptfilter.setNegative (false);
     * ptfilter.filter (*cloud_out);
     * // The resulting cloud_out contains all points of cloud_in that are finite and have:
