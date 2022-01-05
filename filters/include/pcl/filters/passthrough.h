@@ -68,7 +68,7 @@ namespace pcl
     * // The indices_xz array indexes all points of cloud_in that have x between 0.0 and 1000.0 and z larger than 10.0 or smaller than -10.0
     * ptfilter.setIndices (indices_xz);
     * ptfilter.setFilterFieldName ("intensity");
-    * ptfilter.setFilterLimits (FLT_MIN, 0.5);
+    * ptfilter.setFilterLimits (-FLT_MAX, 0.5);
     * ptfilter.setNegative (false);
     * ptfilter.filter (*cloud_out);
     * // The resulting cloud_out contains all points of cloud_in that are finite and have:
@@ -98,7 +98,7 @@ namespace pcl
       PassThrough (bool extract_removed_indices = false) :
         FilterIndices<PointT> (extract_removed_indices),
         filter_field_name_ (""),
-        filter_limit_min_ (FLT_MIN),
+        filter_limit_min_ (-FLT_MAX),
         filter_limit_max_ (FLT_MAX)
       {
         filter_name_ = "PassThrough";
@@ -125,7 +125,7 @@ namespace pcl
 
       /** \brief Set the numerical limits for the field for filtering data.
         * \details In conjunction with setFilterFieldName(), points having values outside this interval for this field will be discarded.
-        * \param[in] limit_min The minimum allowed field value (default = FLT_MIN).
+        * \param[in] limit_min The minimum allowed field value (default = -FLT_MAX).
         * \param[in] limit_max The maximum allowed field value (default = FLT_MAX).
         */
       inline void
@@ -136,7 +136,7 @@ namespace pcl
       }
 
       /** \brief Get the numerical limits for the field for filtering data.
-        * \param[out] limit_min The minimum allowed field value (default = FLT_MIN).
+        * \param[out] limit_min The minimum allowed field value (default = -FLT_MAX).
         * \param[out] limit_max The maximum allowed field value (default = FLT_MAX).
         */
       inline void
@@ -209,10 +209,10 @@ namespace pcl
       /** \brief The name of the field that will be used for filtering. */
       std::string filter_field_name_;
 
-      /** \brief The minimum allowed field value (default = FLT_MIN). */
+      /** \brief The minimum allowed field value (default = -FLT_MAX). */
       float filter_limit_min_;
 
-      /** \brief The maximum allowed field value (default = FLT_MIN). */
+      /** \brief The maximum allowed field value (default = FLT_MAX). */
       float filter_limit_max_;
   };
 
