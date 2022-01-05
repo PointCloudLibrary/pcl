@@ -73,7 +73,7 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::isBoundaryPoint (
 
   // Compute the angles between each neighboring point and the query point itself
   std::vector<float> angles (indices.size ());
-  float max_dif = FLT_MIN, dif;
+  float max_dif = 0, dif;
   int cp = 0;
 
   for (const auto &index : indices)
