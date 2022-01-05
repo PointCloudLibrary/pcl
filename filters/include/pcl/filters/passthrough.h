@@ -212,7 +212,7 @@ namespace pcl
       /** \brief The minimum allowed field value (default = -FLT_MAX). */
       float filter_limit_min_;
 
-      /** \brief The maximum allowed field value (default = FLT_MIN). */
+      /** \brief The maximum allowed field value (default = FLT_MAX). */
       float filter_limit_max_;
   };
 
