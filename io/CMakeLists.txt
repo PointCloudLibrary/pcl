@@ -415,7 +415,7 @@ if(PCAP_FOUND)
   target_link_libraries("${LIB_NAME}" ${PCAP_LIBRARIES})
 endif()
 
-set(EXT_DEPS boost eigen3)
+set(EXT_DEPS eigen3) # Although this depends on boost, that cannot be specified here because there is no boost.pc
 
 if(WITH_OPENNI)
   list(APPEND EXT_DEPS libopenni)
