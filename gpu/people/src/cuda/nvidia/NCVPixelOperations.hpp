@@ -41,29 +41,28 @@
 #ifndef _ncv_pixel_operations_hpp_
 #define _ncv_pixel_operations_hpp_
 
-#include <limits.h>
-#include <float.h>
+#include <limits>
 #include "NCV.hpp"
 
 template<typename TBase> inline __host__ __device__ TBase _pixMaxVal();
-template<>  inline __host__ __device__ Ncv8u  _pixMaxVal<Ncv8u>()  {return UCHAR_MAX;}
-template<>  inline __host__ __device__ Ncv16u _pixMaxVal<Ncv16u>() {return USHRT_MAX;}
-template<>  inline __host__ __device__ Ncv32u _pixMaxVal<Ncv32u>() {return  UINT_MAX;}
-template<>  inline __host__ __device__ Ncv8s  _pixMaxVal<Ncv8s>()  {return  SCHAR_MAX;}
-template<>  inline __host__ __device__ Ncv16s _pixMaxVal<Ncv16s>() {return  SHRT_MAX;}
-template<>  inline __host__ __device__ Ncv32s _pixMaxVal<Ncv32s>() {return   INT_MAX;}
-template<>  inline __host__ __device__ Ncv32f _pixMaxVal<Ncv32f>() {return   FLT_MAX;}
-template<>  inline __host__ __device__ Ncv64f _pixMaxVal<Ncv64f>() {return   DBL_MAX;}
+template<>  inline __host__ __device__ Ncv8u  _pixMaxVal<Ncv8u>()  {return std::numeric_limits<unsigned char>::max();}
+template<>  inline __host__ __device__ Ncv16u _pixMaxVal<Ncv16u>() {return std::numeric_limits<unsigned short>::max();}
+template<>  inline __host__ __device__ Ncv32u _pixMaxVal<Ncv32u>() {return std::numeric_limits<unsigned int>::max();}
+template<>  inline __host__ __device__ Ncv8s  _pixMaxVal<Ncv8s>()  {return std::numeric_limits<signed char>::max();}
+template<>  inline __host__ __device__ Ncv16s _pixMaxVal<Ncv16s>() {return std::numeric_limits<short>::max();}
+template<>  inline __host__ __device__ Ncv32s _pixMaxVal<Ncv32s>() {return std::numeric_limits<int>::max();}
+template<>  inline __host__ __device__ Ncv32f _pixMaxVal<Ncv32f>() {return std::numeric_limits<float>::max();}
+template<>  inline __host__ __device__ Ncv64f _pixMaxVal<Ncv64f>() {return std::numeric_limits<double>::max();}
 
 template<typename TBase> inline __host__ __device__ TBase _pixMinVal();
 template<>  inline __host__ __device__ Ncv8u  _pixMinVal<Ncv8u>()  {return 0;}
 template<>  inline __host__ __device__ Ncv16u _pixMinVal<Ncv16u>() {return 0;}
 template<>  inline __host__ __device__ Ncv32u _pixMinVal<Ncv32u>() {return 0;}
-template<>  inline __host__ __device__ Ncv8s  _pixMinVal<Ncv8s>()  {return SCHAR_MIN;}
-template<>  inline __host__ __device__ Ncv16s _pixMinVal<Ncv16s>() {return SHRT_MIN;}
-template<>  inline __host__ __device__ Ncv32s _pixMinVal<Ncv32s>() {return INT_MIN;}
-template<>  inline __host__ __device__ Ncv32f _pixMinVal<Ncv32f>() {return FLT_MIN;}
-template<>  inline __host__ __device__ Ncv64f _pixMinVal<Ncv64f>() {return DBL_MIN;}
+template<>  inline __host__ __device__ Ncv8s  _pixMinVal<Ncv8s>()  {return std::numeric_limits<signed char>::min();}
+template<>  inline __host__ __device__ Ncv16s _pixMinVal<Ncv16s>() {return std::numeric_limits<short>::min();}
+template<>  inline __host__ __device__ Ncv32s _pixMinVal<Ncv32s>() {return std::numeric_limits<int>::min();}
+template<>  inline __host__ __device__ Ncv32f _pixMinVal<Ncv32f>() {return std::numeric_limits<float>::min();}
+template<>  inline __host__ __device__ Ncv64f _pixMinVal<Ncv64f>() {return std::numeric_limits<double>::min();}
 
 template<typename Tvec> struct TConvVec2Base;
 template<> struct TConvVec2Base<uchar1>  {using TBase = Ncv8u;};
@@ -103,14 +102,14 @@ template<> struct TConvBase2Vec<Ncv64f, 4> {using TVec = double4;};
 
 //TODO: consider using CUDA intrinsics to avoid branching
 template<typename Tin> static inline __host__ __device__ void _TDemoteClampZ(Tin &a, Ncv8u &out) {out = (Ncv8u)CLAMP_0_255(a);};
-template<typename Tin> static inline __host__ __device__ void _TDemoteClampZ(Tin &a, Ncv16u &out) {out = (Ncv16u)CLAMP(a, 0, USHRT_MAX);}
-template<typename Tin> static inline __host__ __device__ void _TDemoteClampZ(Tin &a, Ncv32u &out) {out = (Ncv32u)CLAMP(a, 0, UINT_MAX);}
+template<typename Tin> static inline __host__ __device__ void _TDemoteClampZ(Tin &a, Ncv16u &out) {out = (Ncv16u)CLAMP(a, 0, std::numeric_limits<unsigned short>::max());}
+template<typename Tin> static inline __host__ __device__ void _TDemoteClampZ(Tin &a, Ncv32u &out) {out = (Ncv32u)CLAMP(a, 0, std::numeric_limits<unsigned int>::max());}
 template<typename Tin> static inline __host__ __device__ void _TDemoteClampZ(Tin &a, Ncv32f &out) {out = (Ncv32f)a;}
 
 //TODO: consider using CUDA intrinsics to avoid branching
 template<typename Tin> static inline __host__ __device__ void _TDemoteClampNN(Tin &a, Ncv8u &out) {out = (Ncv8u)CLAMP_0_255(a+0.5f);}
-template<typename Tin> static inline __host__ __device__ void _TDemoteClampNN(Tin &a, Ncv16u &out) {out = (Ncv16u)CLAMP(a+0.5f, 0, USHRT_MAX);}
-template<typename Tin> static inline __host__ __device__ void _TDemoteClampNN(Tin &a, Ncv32u &out) {out = (Ncv32u)CLAMP(a+0.5f, 0, UINT_MAX);}
+template<typename Tin> static inline __host__ __device__ void _TDemoteClampNN(Tin &a, Ncv16u &out) {out = (Ncv16u)CLAMP(a+0.5f, 0, std::numeric_limits<unsigned short>::max());}
+template<typename Tin> static inline __host__ __device__ void _TDemoteClampNN(Tin &a, Ncv32u &out) {out = (Ncv32u)CLAMP(a+0.5f, 0, std::numeric_limits<unsigned int>::max());}
 template<typename Tin> static inline __host__ __device__ void _TDemoteClampNN(Tin &a, Ncv32f &out) {out = (Ncv32f)a;}
 
 template<typename Tout> inline Tout _pixMakeZero();

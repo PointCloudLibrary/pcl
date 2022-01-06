@@ -38,6 +38,7 @@
 #include <pcl_cuda/sample_consensus/multi_ransac.h>
 #include <pcl_cuda/time_gpu.h>
 #include <stdio.h>
+#include <limits>
 //CUPRINTF #include "cuPrintf.cu"
 
 int min_nr_in_shape = 5000;
@@ -47,7 +48,7 @@ template <template <typename> class Storage> bool
 pcl_cuda::MultiRandomSampleConsensus<Storage>::computeModel (int debug_verbosity_level)
 {
   // Warn and exit if no threshold was set
-  if (threshold_ == DBL_MAX)
+  if (threshold_ == std::numeric_limits<double>::max())
   {
     std::cerr << "[pcl_cuda::MultiRandomSampleConsensus::computeModel] No threshold set!" << std::endl;
     return (false);

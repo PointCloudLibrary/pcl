@@ -37,6 +37,7 @@
 
 #include <pcl/surface/on_nurbs/fitting_curve_2d_apdm.h>
 #include <pcl/pcl_macros.h>
+#include <limits>
 #include <stdexcept>
 #include <Eigen/Geometry> // for cross
 
@@ -878,9 +879,9 @@ FittingCurve2dAPDM::inverseMappingO2 (const ON_NurbsCurve &nurbs, const Eigen::V
   std::vector<double> elements = getElementVector (nurbs);
 
   Eigen::Vector2d min_pt;
-  double min_param (DBL_MAX);
-  double min_dist (DBL_MAX);
-  error = DBL_MAX;
+  double min_param (std::numeric_limits<double>::max());
+  double min_dist (std::numeric_limits<double>::max());
+  error = std::numeric_limits<double>::max();
   int is_corner (-1);
 
   for (std::size_t i = 0; i < elements.size () - 1; i++)
@@ -994,7 +995,7 @@ FittingCurve2dAPDM::inverseMappingO2 (const ON_NurbsCurve &nurbs, const Eigen::V
 //
 //  if (phint == NULL)
 //  {
-//    double d_shortest (DBL_MAX);
+//    double d_shortest (std::numeric_limits<double>::max());
 //    for (unsigned i = 0; i < elements.size () - 1; i++)
 //    {
 //      double d;
@@ -1035,7 +1036,7 @@ FittingCurve2dAPDM::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, cons
   Eigen::Vector2d r = p - pt;
 
   double d_shortest_hint = r.squaredNorm ();
-  double d_shortest_elem (DBL_MAX);
+  double d_shortest_elem (std::numeric_limits<double>::max());
 
   // evaluate elements
   std::vector<double> elements = pcl::on_nurbs::FittingCurve2dAPDM::getElementVector (nurbs);
@@ -1081,7 +1082,7 @@ FittingCurve2dAPDM::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, cons
   std::vector<double> elements = pcl::on_nurbs::FittingCurve2dAPDM::getElementVector (nurbs);
   double points[2];
 
-  double d_shortest (DBL_MAX);
+  double d_shortest (std::numeric_limits<double>::max());
   double seg = 1.0 / (nurbs.Order () - 1);
 
   for (std::size_t i = 0; i < elements.size () - 1; i++)

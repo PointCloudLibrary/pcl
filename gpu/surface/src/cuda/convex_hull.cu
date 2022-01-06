@@ -309,7 +309,7 @@ namespace pcl
           }
 
           //if (neg_count == 0)
-          //  then internal point ==>> idx = INT_MAX
+          //  then internal point ==>> idx = std::numeric_limits<int>::max()
 
 		  std::uint64_t res = idx;
 		  res <<= 32;
@@ -684,7 +684,7 @@ namespace pcl
             }
 
             // if (neg_count == 0)
-            // new_idx = INT_MAX ==>> internal point
+            // new_idx = std::numeric_limits<int>::max() ==>> internal point
                       	       	 	   
             std::uint64_t res = new_idx;
 		    res <<= 32;

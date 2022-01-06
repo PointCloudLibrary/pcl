@@ -37,6 +37,8 @@
 
 #pragma once
 
+#include <limits>
+
 #include <pcl/common/common.h>
 #include <pcl/registration/registration.h>
 #include <pcl/memory.h>
@@ -54,7 +56,7 @@ namespace registration {
 struct MatchingCandidate {
   /** \brief Constructor. */
   MatchingCandidate()
-  : fitness_score(FLT_MAX), transformation(Eigen::Matrix4f::Identity()){};
+  : fitness_score(std::numeric_limits<float>::max()), transformation(Eigen::Matrix4f::Identity()){};
 
   /** \brief Value constructor. */
   MatchingCandidate(float s, const pcl::Correspondences& c, const Eigen::Matrix4f& m)

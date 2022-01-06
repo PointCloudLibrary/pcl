@@ -37,6 +37,7 @@
 #ifndef _PCL_GPU_OCTREE_
 #define _PCL_GPU_OCTREE_
 
+#include <limits>
 #include <vector>
 
 #include <pcl/memory.h>
@@ -106,7 +107,8 @@ namespace pcl
               * \param[out] out indeces of points within give sphere
               * \param[in] max_nn maximum numver of results returned
               */
-            void radiusSearchHost(const PointType& center, float radius, std::vector<int>& out, int max_nn = INT_MAX);
+            void radiusSearchHost(const PointType& center, float radius, std::vector<int>& out,
+                                  int max_nn = std::numeric_limits<int>::max());
 
             /** \brief Performs approximate nearest neighbor search on CPU. It call \a internalDownload if necessary
               * \param[in]  query 3D point for which neighbour is be fetched             

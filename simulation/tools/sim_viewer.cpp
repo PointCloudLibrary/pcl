@@ -70,7 +70,7 @@
 #include <GL/gl.h>
 #endif
 
-#include <cfloat>
+#include <limits>
 #include <cmath>
 #include <iostream>
 #ifdef _WIN32
@@ -535,8 +535,8 @@ main(int argc, char** argv)
   pcl::visualization::PCLHistogramVisualizer::Ptr ph;
 
   // Using min_p, max_p to set the global Y min/max range for the histogram
-  float min_p = FLT_MAX;
-  float max_p = -FLT_MAX;
+  float min_p = std::numeric_limits<float>::max();
+  float max_p = std::numeric_limits<float>::lowest();
 
   int k = 0, l = 0, viewport = 0;
   // Load the data files

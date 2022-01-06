@@ -42,7 +42,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/kdtree/kdtree_flann.h>
 
-#include <cfloat> // for FLT_MAX
+#include <limits>
 
 namespace pcl {
 
@@ -80,7 +80,7 @@ public:
   {
     // Do not limit the number of dimensions used in the tree
     typename pcl::CustomPointRepresentation<PointT>::Ptr cpr(
-        new pcl::CustomPointRepresentation<PointT>(INT_MAX, 0));
+        new pcl::CustomPointRepresentation<PointT>(std::numeric_limits<int>::max(), 0));
     tree_.reset(new pcl::KdTreeFLANN<PointT>);
     tree_->setPointRepresentation(cpr);
     tree_->setInputCloud(features);
@@ -191,7 +191,8 @@ public:
    * \return pair of label and score for each training class from the neighborhood
    */
   ResultPtr
-  classify(const PointT& p_q, double radius, float gaussian_param, int max_nn = INT_MAX)
+  classify(const PointT& p_q, double radius, float gaussian_param,
+           int max_nn = std::numeric_limits<int>::max())
   {
     pcl::Indices k_indices;
     std::vector<float> k_sqr_distances;
@@ -234,7 +235,7 @@ public:
                       double radius,
                       pcl::Indices& k_indices,
                       std::vector<float>& k_sqr_distances,
-                      int max_nn = INT_MAX)
+                      int max_nn = std::numeric_limits<int>::max())
   {
     return tree_->radiusSearch(p_q, radius, k_indices, k_sqr_distances, max_nn);
   }
@@ -250,7 +251,8 @@ public:
                               std::vector<float>& k_sqr_distances)
   {
     // Reserve space for distances
-    auto sqr_distances = std::make_shared<std::vector<float>>(classes_.size(), FLT_MAX);
+    auto sqr_distances = std::make_shared<std::vector<float>>(classes_.size(),
+                                                              std::numeric_limits<float>::max());
 
     // Select square distance to each class
     for (auto i = k_indices.cbegin(); i != k_indices.cend(); ++i)
@@ -282,7 +284,7 @@ public:
     for (std::vector<float>::const_iterator it = sqr_distances->begin();
          it != sqr_distances->end();
          ++it)
-      if (*it != FLT_MAX) {
+      if (*it != std::numeric_limits<float>::max()) {
         result->first.push_back(classes_[it - sqr_distances->begin()]);
         result->second.push_back(sqrt(*it));
         sum_dist += result->second.back();
@@ -320,7 +322,7 @@ public:
     for (std::vector<float>::const_iterator it = sqr_distances->begin();
          it != sqr_distances->end();
          ++it)
-      if (*it != FLT_MAX) {
+      if (*it != std::numeric_limits<float>::max()) {
         result->first.push_back(classes_[it - sqr_distances->begin()]);
         // TODO leave it squared, and relate param to sigma...
         result->second.push_back(std::exp(-std::sqrt(*it) / gaussian_param));

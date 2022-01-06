@@ -152,7 +152,7 @@ pcl::gpu::TsdfVolume::fetchCloudHost (PointCloud<PointType>& cloud, bool connect
   cloud.clear ();
   cloud.reserve (10000);
 
-  constexpr int DIVISOR = device::DIVISOR; // SHRT_MAX;
+  constexpr int DIVISOR = device::DIVISOR; // std::numeric_limits<short>::max();
 
 #define FETCH(x, y, z) volume_host[(x) + (y) * volume_x + (z) * volume_y * volume_x]
 

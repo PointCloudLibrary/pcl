@@ -36,7 +36,7 @@
 #pragma once
 
 #include <pcl_cuda/pcl_cuda_base.h>
-#include <float.h>
+#include <limits>
 
 namespace pcl_cuda
 {
@@ -69,7 +69,8 @@ namespace pcl_cuda
 
       /** \brief Empty constructor. */
       Filter () : filter_field_name_ (""), 
-                  filter_limit_min_ (-FLT_MAX), filter_limit_max_ (FLT_MAX), 
+                  filter_limit_min_ (std::numeric_limits<float>::lowest()),
+                  filter_limit_max_ (std::numeric_limits<float>::max()),
                   filter_limit_negative_ (false)
       {};
 
@@ -98,7 +99,7 @@ namespace pcl_cuda
       }
 
       /** \brief Get the field filter limits (min/max) set by the user. 
-        * The default values are -FLT_MAX, FLT_MAX. 
+        * The default values are std::numeric_limits<float>::lowest(), std::numeric_limits<float>::max().
         * \param limit_min the minimum limit
         * \param limit_max the maximum limit
         */

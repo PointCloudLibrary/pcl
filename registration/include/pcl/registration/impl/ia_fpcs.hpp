@@ -38,6 +38,8 @@
 #ifndef PCL_REGISTRATION_IMPL_IA_FPCS_H_
 #define PCL_REGISTRATION_IMPL_IA_FPCS_H_
 
+#include <limits>
+
 #include <pcl/common/distances.h>
 #include <pcl/common/time.h>
 #include <pcl/common/utils.h>
@@ -137,11 +139,11 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
 , nr_threads_(1)
 , approx_overlap_(0.5f)
 , delta_(1.f)
-, score_threshold_(FLT_MAX)
+, score_threshold_(std::numeric_limits<float>::max())
 , nr_samples_(0)
 , max_norm_diff_(90.f)
 , max_runtime_(0)
-, fitness_score_(FLT_MAX)
+, fitness_score_(std::numeric_limits<float>::max())
 , diameter_()
 , max_base_diameter_sqr_()
 , use_normals_(false)
@@ -318,14 +320,14 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   }
 
   // set further parameter
-  if (score_threshold_ == FLT_MAX)
+  if (score_threshold_ == std::numeric_limits<float>::max())
     score_threshold_ = 1.f - approx_overlap_;
 
   if (max_iterations_ < 4)
     max_iterations_ = 4;
 
   if (max_runtime_ < 1)
-    max_runtime_ = INT_MAX;
+    max_runtime_ = std::numeric_limits<int>::max();
 
   // calculate internal parameters based on the the estimated point density
   max_pair_diff_ = delta_ * 2.f;
@@ -335,7 +337,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   max_inlier_dist_sqr_ = powf(delta_ * 2.f, 2.f);
 
   // reset fitness_score
-  fitness_score_ = FLT_MAX;
+  fitness_score_ = std::numeric_limits<float>::max();
 
   return (true);
 }
@@ -352,7 +354,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   pcl::SampleConsensusModelPlane<PointTarget> plane(target_);
   plane.setIndices(target_indices_);
   Eigen::Vector4f centre_pt;
-  float nearest_to_plane = FLT_MAX;
+  float nearest_to_plane = std::numeric_limits<float>::max();
 
   // repeat base search until valid quadruple was found or ransac_iterations_ number of
   // tries were unsuccessful
@@ -394,7 +396,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
     }
 
     // check if at least one point fulfilled the conditions
-    if (nearest_to_plane != FLT_MAX) {
+    if (nearest_to_plane != std::numeric_limits<float>::max()) {
       // order points to build largest quadrangle and calcuate intersection ratios of
       // diagonals
       setupBase(base_indices, ratio);
@@ -450,7 +452,7 @@ void
 pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
     setupBase(pcl::Indices& base_indices, float (&ratio)[2])
 {
-  float best_t = FLT_MAX;
+  float best_t = std::numeric_limits<float>::max();
   const pcl::Indices copy(base_indices.begin(), base_indices.end());
   pcl::Indices temp(base_indices.begin(), base_indices.end());
 
@@ -741,7 +743,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
                   MatchingCandidates& candidates)
 {
   candidates.resize(1);
-  float fitness_score = FLT_MAX;
+  float fitness_score = std::numeric_limits<float>::max();
 
   // loop over all Candidate matches
   for (auto& match : matches) {
@@ -802,7 +804,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
        it_base++, it_match_orig++) {
     float dist_sqr_1 =
         pcl::squaredEuclideanDistance((*target_)[*it_base], centre_pt_base);
-    float best_diff_sqr = FLT_MAX;
+    float best_diff_sqr = std::numeric_limits<float>::max();
     int best_index = -1;
 
     for (const auto& match_index : copy) {
@@ -906,7 +908,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   // get best fitness_score over all tries
   int nr_candidates = static_cast<int>(candidates.size());
   int best_index = -1;
-  float best_score = FLT_MAX;
+  float best_score = std::numeric_limits<float>::max();
   for (int i = 0; i < nr_candidates; i++) {
     const float& fitness_score = candidates[i][0].fitness_score;
     if (fitness_score < best_score) {
