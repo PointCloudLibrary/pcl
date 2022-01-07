@@ -191,7 +191,9 @@ public:
    * \return pair of label and score for each training class from the neighborhood
    */
   ResultPtr
-  classify(const PointT& p_q, double radius, float gaussian_param,
+  classify(const PointT& p_q,
+           double radius,
+           float gaussian_param,
            int max_nn = std::numeric_limits<int>::max())
   {
     pcl::Indices k_indices;
@@ -251,8 +253,8 @@ public:
                               std::vector<float>& k_sqr_distances)
   {
     // Reserve space for distances
-    auto sqr_distances = std::make_shared<std::vector<float>>(classes_.size(),
-                                                              std::numeric_limits<float>::max());
+    auto sqr_distances = std::make_shared<std::vector<float>>(
+        classes_.size(), std::numeric_limits<float>::max());
 
     // Select square distance to each class
     for (auto i = k_indices.cbegin(); i != k_indices.cend(); ++i)

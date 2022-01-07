@@ -38,14 +38,14 @@
 #ifndef PCL_REGISTRATION_IMPL_IA_FPCS_H_
 #define PCL_REGISTRATION_IMPL_IA_FPCS_H_
 
-#include <limits>
-
 #include <pcl/common/distances.h>
 #include <pcl/common/time.h>
 #include <pcl/common/utils.h>
 #include <pcl/registration/ia_fpcs.h>
 #include <pcl/registration/transformation_estimation_3point.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
+
+#include <limits>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>

@@ -70,9 +70,9 @@
 #include <GL/gl.h>
 #endif
 
-#include <limits>
 #include <cmath>
 #include <iostream>
+#include <limits>
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>

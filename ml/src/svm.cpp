@@ -42,12 +42,12 @@
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/ml/svm.h>
 
-#include <limits>
 #include <cmath>
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <limits>
 int libsvm_version = LIBSVM_VERSION;
 using Qfloat = float;
 using schar = signed char;
@@ -736,8 +736,10 @@ Solver::Solve(int l,
   // optimization step
 
   int iter = 0;
-  int max_iter = max(10000000,
-    l > std::numeric_limits<int>::max() / 100 ? std::numeric_limits<int>::max() : 100 * l);
+  int max_iter =
+      max(10000000,
+          l > std::numeric_limits<int>::max() / 100 ? std::numeric_limits<int>::max()
+                                                    : 100 * l);
   int counter = min(l, 1000) + 1;
 
   while (iter < max_iter) {
