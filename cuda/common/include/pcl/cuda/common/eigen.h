@@ -101,6 +101,7 @@ namespace pcl
   
     inline __host__ __device__ bool isMuchSmallerThan (float x, float y)
     {
+      // inspired by Eigen's implementation
       float prec_sqr =
           std::numeric_limits<float>::epsilon() * std::numeric_limits<float>::epsilon();
       return x * x <= prec_sqr * y * y;
