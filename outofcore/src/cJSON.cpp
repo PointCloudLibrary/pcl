@@ -30,9 +30,8 @@
 #include <cstdio>
 #include <cmath>
 #include <cstdlib>
-#include <cfloat>
-#include <climits>
 #include <cctype>
+#include <limits>
 
 static const char *ep;
 

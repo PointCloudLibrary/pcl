@@ -76,7 +76,7 @@ namespace pcl
       /** \brief Empty constructor. */
       RandomSample (bool extract_removed_indices = false) : 
         FilterIndices<PointT> (extract_removed_indices),
-        sample_(std::numeric_limits<unsigned int>::max())
+        sample_ (std::numeric_limits<unsigned int>::max()),
         seed_ (static_cast<unsigned int> (time (nullptr)))
       {
         filter_name_ = "RandomSample";
@@ -160,9 +160,9 @@ namespace pcl
       using ConstPtr = shared_ptr<const RandomSample<pcl::PCLPointCloud2> >;
   
       /** \brief Empty constructor. */
-      RandomSample():
-        sample_(std::numeric_limits<unsigned int>::max()),
-        seed_(static_cast<unsigned int>(time(nullptr)))
+      RandomSample ():
+        sample_ (std::numeric_limits<unsigned int>::max()),
+        seed_ (static_cast<unsigned int>(time(nullptr)))
       {
         filter_name_ = "RandomSample";
       }
