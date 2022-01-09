@@ -146,7 +146,7 @@ namespace pcl
       }
 
       /** \brief Get the height limits (min/max) as set by the user. The
-        * default values are std::numeric_limits<float>::lowest(), std::numeric_limits<float>::max().
+        * default values are 0, std::numeric_limits<float>::max().
         * \param[out] height_min the resultant min height limit
         * \param[out] height_max the resultant max height limit
         */
