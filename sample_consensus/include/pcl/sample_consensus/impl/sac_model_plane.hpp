@@ -60,9 +60,10 @@ pcl::SampleConsensusModelPlane<PointT>::isSampleGood (const Indices &samples) co
   pcl::Array4fMapConst p1 = (*input_)[samples[1]].getArray4fMap ();
   pcl::Array4fMapConst p2 = (*input_)[samples[2]].getArray4fMap ();
 
-  Eigen::Array4f dy1dy2 = (p1-p0) / (p2-p0);
+  Eigen::Array4f p2p0 = p2 - p0;
+  Eigen::Array4f dy1dy2 = (p1-p0) / p2p0;
 
-  return ( (dy1dy2[0] != dy1dy2[1]) || (dy1dy2[2] != dy1dy2[1]) );
+  return ( ((dy1dy2[0] != dy1dy2[1]) || (dy1dy2[2] != dy1dy2[1])) && (!p2p0.isZero()) );
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -88,7 +89,7 @@ pcl::SampleConsensusModelPlane<PointT>::computeModelCoefficients (
 
   // Avoid some crashes by checking for collinearity here
   Eigen::Array4f dy1dy2 = p1p0 / p2p0;
-  if ( (dy1dy2[0] == dy1dy2[1]) && (dy1dy2[2] == dy1dy2[1]) )          // Check for collinearity
+  if ( p2p0.isZero() || ((dy1dy2[0] == dy1dy2[1]) && (dy1dy2[2] == dy1dy2[1])) )          // Check for collinearity
   {
     return (false);
   }
