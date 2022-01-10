@@ -352,6 +352,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
         leaf.cov_ = leaf.evecs_ * eigen_val * leaf.evecs_.inverse ();
       }
       leaf.evals_ = eigen_val.diagonal ();
+      leaf.cov_det_ = leaf.cov_.determinant ();
 
       leaf.icov_ = leaf.cov_.inverse ();
       if (leaf.icov_.maxCoeff () == std::numeric_limits<float>::infinity ( )

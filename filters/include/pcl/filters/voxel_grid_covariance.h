@@ -99,7 +99,8 @@ namespace pcl
           cov_ (Eigen::Matrix3d::Zero ()),
           icov_ (Eigen::Matrix3d::Zero ()),
           evecs_ (Eigen::Matrix3d::Identity ()),
-          evals_ (Eigen::Vector3d::Zero ())
+          evals_ (Eigen::Vector3d::Zero ()),
+          cov_det_ ()
         {
         }
 
@@ -150,6 +151,15 @@ namespace pcl
           return (evals_);
         }
 
+        /** \brief Get the determinant of the voxel covariance matrix.
+          * \return determinant of the covariance matrix
+          */
+        double
+        getCovDeterminant () const
+        {
+          return (cov_det_);
+        }
+
         /** \brief Get the number of points contained by this voxel.
           * \return number of points
           */
@@ -182,6 +192,8 @@ namespace pcl
         /** \brief Eigen values of voxel covariance matrix */
         Eigen::Vector3d evals_;
 
+        /** \brief Determinant of voxel covariance matrix */
+        double cov_det_;
       };
 
       /** \brief Pointer to VoxelGridCovariance leaf structure */
