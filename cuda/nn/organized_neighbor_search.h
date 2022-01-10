@@ -40,6 +40,7 @@
 #include <pcl/point_types.h>
 
 #include <algorithm>
+#include <limits>
 #include <queue>
 #include <vector>
 
@@ -111,7 +112,7 @@ namespace pcl
       int
       radiusSearch (const PointCloudConstPtr &cloud_arg, int index_arg, double radius_arg,
                     std::vector<int> &k_indices_arg, std::vector<float> &k_sqr_distances_arg,
-                    int max_nn_arg = INT_MAX);
+                    int max_nn_arg = std::numeric_limits<int>::max());
 
       /** \brief Search for all neighbors of query point that are within a given radius.
        * \param index_arg index representing the query point in the dataset given by \a setInputCloud.
@@ -124,7 +125,7 @@ namespace pcl
        */
       int
       radiusSearch (int index_arg, const double radius_arg, std::vector<int> &k_indices_arg,
-                    std::vector<float> &k_sqr_distances_arg, int max_nn_arg = INT_MAX) const;
+                    std::vector<float> &k_sqr_distances_arg, int max_nn_arg = std::numeric_limits<int>::max()) const;
 
       /** \brief Search for all neighbors of query point that are within a given radius.
        * \param p_q_arg the given query point
@@ -136,7 +137,7 @@ namespace pcl
        */
       int
       radiusSearch (const PointT &p_q_arg, const double radius_arg, std::vector<int> &k_indices_arg,
-                    std::vector<float> &k_sqr_distances_arg, int max_nn_arg = INT_MAX) const;
+                    std::vector<float> &k_sqr_distances_arg, int max_nn_arg = std::numeric_limits<int>::max()) const;
 
       /** \brief Search for k-nearest neighbors at the query point.
        * \param cloud_arg the point cloud data

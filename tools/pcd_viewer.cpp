@@ -43,7 +43,7 @@
 // PCL
 #include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
-#include <cfloat>
+#include <limits>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/visualization/histogram_visualizer.h>
@@ -334,7 +334,8 @@ main (int argc, char** argv)
   // Create the PCLPlotter object
   pcl::visualization::PCLPlotter::Ptr ph;
   // Using min_p, max_p to set the global Y min/max range for the histogram
-  float min_p = FLT_MAX; float max_p = -FLT_MAX;
+  float min_p = std::numeric_limits<float>::max();
+  float max_p = std::numeric_limits<float>::lowest();
 
   int k = 0, l = 0, viewport = 0;
   // Load the data files

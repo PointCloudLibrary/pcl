@@ -42,6 +42,8 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
+#include <limits>
+
 namespace pcl {
 namespace registration {
 /** \brief Container for matching candidate consisting of
@@ -54,7 +56,8 @@ namespace registration {
 struct MatchingCandidate {
   /** \brief Constructor. */
   MatchingCandidate()
-  : fitness_score(FLT_MAX), transformation(Eigen::Matrix4f::Identity()){};
+  : fitness_score(std::numeric_limits<float>::max())
+  , transformation(Eigen::Matrix4f::Identity()){};
 
   /** \brief Value constructor. */
   MatchingCandidate(float s, const pcl::Correspondences& c, const Eigen::Matrix4f& m)

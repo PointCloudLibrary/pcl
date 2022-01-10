@@ -41,7 +41,7 @@
 #ifndef PCL_FEATURES_IMPL_RSD_H_
 #define PCL_FEATURES_IMPL_RSD_H_
 
-#include <cfloat>
+#include <limits>
 #include <pcl/features/rsd.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -170,8 +170,8 @@ pcl::computeRSD (const pcl::PointCloud<PointNT> &normals,
   for (int di=1; di<nr_subdiv; di++)
   {
     min_max_angle_by_dist[di].resize (2);
-    min_max_angle_by_dist[di][0] = +DBL_MAX;
-    min_max_angle_by_dist[di][1] = -DBL_MAX;
+    min_max_angle_by_dist[di][0] = std::numeric_limits<double>::max();
+    min_max_angle_by_dist[di][1] = std::numeric_limits<double>::lowest();
   }
   
   // Compute distance by normal angle distribution for points

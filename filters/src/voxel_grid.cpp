@@ -39,6 +39,7 @@
  */
 
 #include <iostream>
+#include <limits>
 #include <pcl/common/io.h>
 #include <pcl/filters/impl/voxel_grid.hpp>
 #include <boost/sort/spreadsort/integer_sort.hpp>
@@ -61,8 +62,8 @@ pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx
   }
 
   Eigen::Array4f min_p, max_p;
-  min_p.setConstant (FLT_MAX);
-  max_p.setConstant (-FLT_MAX);
+  min_p.setConstant (std::numeric_limits<float>::max());
+  max_p.setConstant (std::numeric_limits<float>::lowest());
 
   std::size_t nr_points = cloud->width * cloud->height;
 
@@ -107,8 +108,8 @@ pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx
   }
 
   Eigen::Array4f min_p, max_p;
-  min_p.setConstant (FLT_MAX);
-  max_p.setConstant (-FLT_MAX);
+  min_p.setConstant (std::numeric_limits<float>::max());
+  max_p.setConstant (std::numeric_limits<float>::lowest());
 
   // Get the distance field index
   int distance_idx = pcl::getFieldIndex (*cloud, distance_field_name);

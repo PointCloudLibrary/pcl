@@ -71,7 +71,7 @@ namespace pcl
     };
 
     /** \brief Standard constructor.
-      * Sets \ref index_query to 0, \ref index_match to -1, and \ref distance to FLT_MAX.
+      * Sets \ref index_query to 0, \ref index_match to -1, and \ref distance to std::numeric_limits<float>::max().
       */
     inline Correspondence () = default;
 

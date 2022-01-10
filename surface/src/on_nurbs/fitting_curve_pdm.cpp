@@ -37,6 +37,7 @@
 
 #include <pcl/surface/on_nurbs/fitting_curve_pdm.h>
 #include <pcl/pcl_macros.h>
+#include <limits>
 #include <stdexcept>
 
 using namespace pcl;
@@ -415,7 +416,7 @@ FittingCurve::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Eige
   std::vector<double> elements = getElementVector (nurbs);
   double points[3];
 
-  double d_shortest (DBL_MAX);
+  double d_shortest (std::numeric_limits<double>::max());
 
   for (std::size_t i = 0; i < elements.size () - 1; i++)
   {

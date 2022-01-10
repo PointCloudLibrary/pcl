@@ -44,6 +44,7 @@
 #include "pcl/cuda/sample_consensus/ransac.h"
 #include "pcl/cuda/time_gpu.h"
 #include <stdio.h>
+#include <limits>
 
 namespace pcl
 {
@@ -54,14 +55,14 @@ namespace pcl
     RandomSampleConsensus<Storage>::computeModel (int debug_verbosity_level)
     {
       // Warn and exit if no threshold was set
-      if (threshold_ == DBL_MAX)
+      if (threshold_ == std::numeric_limits<double>::max())
       {
         std::cerr << "[pcl::cuda::RandomSampleConsensus::computeModel] No threshold set!" << std::endl;
         return (false);
       }
 
       iterations_ = 0;
-      int n_best_inliers_count = -INT_MAX;
+      int n_best_inliers_count = std::numeric_limits<int>::lowest();
       float k = 1.0;
 
       Indices inliers;

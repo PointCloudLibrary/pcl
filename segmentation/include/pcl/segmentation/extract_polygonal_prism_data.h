@@ -37,7 +37,7 @@
 
 #pragma once
 
-#include <cfloat> // for FLT_MAX
+#include <limits>
 
 #include <pcl/pcl_base.h>
 
@@ -116,7 +116,8 @@ namespace pcl
 
       /** \brief Empty constructor. */
       ExtractPolygonalPrismData () : planar_hull_ (), min_pts_hull_ (3), 
-                                     height_limit_min_ (0), height_limit_max_ (FLT_MAX),
+                                     height_limit_min_ (0),
+                                     height_limit_max_(std::numeric_limits<float>::max()),
                                      vpx_ (0), vpy_ (0), vpz_ (0)
       {};
 
@@ -145,7 +146,7 @@ namespace pcl
       }
 
       /** \brief Get the height limits (min/max) as set by the user. The
-        * default values are -FLT_MAX, FLT_MAX. 
+        * default values are 0, std::numeric_limits<float>::max().
         * \param[out] height_min the resultant min height limit
         * \param[out] height_max the resultant max height limit
         */

@@ -39,7 +39,7 @@
 
 #include <pcl/cuda/sample_consensus/sac_model.h>
 #include <pcl/cuda/point_cloud.h>
-#include <cfloat>
+#include <limits>
 //#include <set>
 
 namespace pcl
@@ -72,8 +72,8 @@ namespace pcl
           * \param model a Sample Consensus model
           */
         SampleConsensus (const SampleConsensusModelPtr &model) : 
-          sac_model_(model), probability_ (0.99), iterations_ (0), threshold_ (DBL_MAX), 
-          max_iterations_ (1000)
+          sac_model_(model), probability_(0.99), iterations_(0),
+          threshold_(std::numeric_limits<double>::max()), max_iterations_(1000)
         {};
 
         /** \brief Constructor for base SAC.

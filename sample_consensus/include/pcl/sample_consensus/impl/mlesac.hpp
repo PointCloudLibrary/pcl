@@ -41,8 +41,8 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_MLESAC_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_MLESAC_H_
 
+#include <limits>
 #include <pcl/sample_consensus/mlesac.h>
-#include <cfloat> // for FLT_MAX
 #include <pcl/common/common.h> // for computeMedian
 
 //////////////////////////////////////////////////////////////////////////
@@ -237,8 +237,8 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::getMinMax (
     Eigen::Vector4f &min_p, 
     Eigen::Vector4f &max_p) const
 {
-  min_p.setConstant (FLT_MAX);
-  max_p.setConstant (-FLT_MAX);
+  min_p.setConstant (std::numeric_limits<float>::max());
+  max_p.setConstant (std::numeric_limits<float>::lowest());
   min_p[3] = max_p[3] = 0;
 
   for (std::size_t i = 0; i < indices->size (); ++i)

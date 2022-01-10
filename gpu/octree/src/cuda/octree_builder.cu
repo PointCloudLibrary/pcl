@@ -34,7 +34,7 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#include <cfloat>
+#include <limits>
 #include "internal.hpp"
 
 #include "pcl/gpu/utils/timers_cuda.hpp"
@@ -343,8 +343,8 @@ void pcl::device::OctreeImpl::build()
 
         {
             PointType atmax, atmin;
-            atmax.x = atmax.y = atmax.z = FLT_MAX;
-            atmin.x = atmin.y = atmin.z = -FLT_MAX;
+            atmax.x = atmax.y = atmax.z = std::numeric_limits<float>::max();
+            atmin.x = atmin.y = atmin.z = std::numeric_limits<float>::lowest();
             atmax.w = atmin.w = 0;
 
             //ScopeTimer timer("reduce"); 

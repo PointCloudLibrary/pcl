@@ -7,6 +7,7 @@
 #include <pcl/console/print.h>
 #include <pcl/io/pcd_io.h>
 #include <iostream>
+#include <limits>
 #include <flann/flann.h>
 #include <flann/io/hdf5.h>
 #include <boost/filesystem.hpp>
@@ -112,7 +113,7 @@ main (int argc, char** argv)
 {
   int k = 6;
 
-  double thresh = DBL_MAX;     // No threshold, disabled by default
+  double thresh = std::numeric_limits<double>::max();     // No threshold, disabled by default
 
   if (argc < 2)
   {

@@ -39,7 +39,7 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CIRCLE_3D_HPP_
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CIRCLE_3D_HPP_
 
-#include <cfloat> // for DBL_MAX
+#include <limits>
 
 #include <unsupported/Eigen/NonLinearOptimization> // for LevenbergMarquardt
 #include <pcl/sample_consensus/sac_model_circle3d.h>
@@ -448,13 +448,13 @@ pcl::SampleConsensusModelCircle3D<PointT>::isModelValid (const Eigen::VectorXf &
   if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
     return (false);
 
-  if (radius_min_ != -DBL_MAX && model_coefficients[3] < radius_min_)
+  if (radius_min_ != std::numeric_limits<double>::lowest() && model_coefficients[3] < radius_min_)
   {
     PCL_DEBUG ("[pcl::SampleConsensusModelCircle3D::isModelValid] Radius of circle is too small: should be larger than %g, but is %g.\n",
                radius_min_, model_coefficients[3]);
     return (false);
   }
-  if (radius_max_ != DBL_MAX && model_coefficients[3] > radius_max_)
+  if (radius_max_ != std::numeric_limits<double>::max() && model_coefficients[3] > radius_max_)
   {
     PCL_DEBUG ("[pcl::SampleConsensusModelCircle3D::isModelValid] Radius of circle is too big: should be smaller than %g, but is %g.\n",
                radius_max_, model_coefficients[3]);

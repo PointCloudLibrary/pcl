@@ -36,6 +36,7 @@
  */
 
 #include <pcl/surface/on_nurbs/fitting_curve_2d.h>
+#include <limits>
 #include <stdexcept>
 #include <Eigen/LU> // for inverse
 
@@ -300,8 +301,10 @@ FittingCurve2d::initNurbsPCA (int order, NurbsDataCurve2d *data, int ncps)
   eigenvalues /= s; // seems that the eigenvalues are dependent on the number of points (???)
   Eigen::Matrix2d eigenvectors_inv = eigenvectors.inverse ();
 
-  Eigen::Vector2d v_max (-DBL_MAX, -DBL_MAX);
-  Eigen::Vector2d v_min (DBL_MAX, DBL_MAX);
+  Eigen::Vector2d v_max(std::numeric_limits<double>::lowest(),
+                        std::numeric_limits<double>::lowest());
+  Eigen::Vector2d v_min (std::numeric_limits<double>::max(),
+                         std::numeric_limits<double>::max());
   for (unsigned i = 0; i < s; i++)
   {
     Eigen::Vector2d p (eigenvectors_inv * (data->interior[i] - mean));
@@ -508,9 +511,9 @@ FittingCurve2d::inverseMappingO2 (const ON_NurbsCurve &nurbs, const Eigen::Vecto
   std::vector<double> elements = getElementVector (nurbs);
 
   Eigen::Vector2d min_pt;
-  double min_param (DBL_MAX);
-  double min_dist (DBL_MAX);
-  error = DBL_MAX;
+  double min_param (std::numeric_limits<double>::max());
+  double min_dist (std::numeric_limits<double>::max());
+  error = std::numeric_limits<double>::max();
   int is_corner (-1);
 
   for (std::size_t i = 0; i < elements.size () - 1; i++)
@@ -624,7 +627,7 @@ FittingCurve2d::inverseMappingO2 (const ON_NurbsCurve &nurbs, const Eigen::Vecto
 //
 //  if (phint == NULL)
 //  {
-//    double d_shortest (DBL_MAX);
+//    double d_shortest (std::numeric_limits<double>::max());
 //    for (unsigned i = 0; i < elements.size () - 1; i++)
 //    {
 //      double d;
@@ -665,7 +668,7 @@ FittingCurve2d::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Ei
   Eigen::Vector2d r = p - pt;
 
   double d_shortest_hint = r.squaredNorm ();
-  double d_shortest_elem (DBL_MAX);
+  double d_shortest_elem (std::numeric_limits<double>::max());
 
   // evaluate elements
   std::vector<double> elements = pcl::on_nurbs::FittingCurve2d::getElementVector (nurbs);
@@ -711,7 +714,7 @@ FittingCurve2d::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Ei
   std::vector<double> elements = pcl::on_nurbs::FittingCurve2d::getElementVector (nurbs);
   double points[2];
 
-  double d_shortest (DBL_MAX);
+  double d_shortest (std::numeric_limits<double>::max());
   double seg = 1.0 / (nurbs.Order () - 1);
 
   for (std::size_t i = 0; i < elements.size () - 1; i++)

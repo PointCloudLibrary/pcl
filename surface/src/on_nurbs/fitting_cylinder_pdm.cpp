@@ -35,6 +35,7 @@
  *
  */
 
+#include <limits>
 #include <stdexcept>
 #include <pcl/surface/on_nurbs/fitting_cylinder_pdm.h>
 #include <pcl/pcl_macros.h>
@@ -233,7 +234,9 @@ FittingCylinder::initNurbsPCACylinder (int order, NurbsDataSurface *data)
   eigenvalues /= s; // seems that the eigenvalues are dependent on the number of points (???)
 
   Eigen::Vector3d v_max (0.0, 0.0, 0.0);
-  Eigen::Vector3d v_min (DBL_MAX, DBL_MAX, DBL_MAX);
+  Eigen::Vector3d v_min(std::numeric_limits<double>::max(),
+                        std::numeric_limits<double>::max(),
+                        std::numeric_limits<double>::max());
   for (unsigned i = 0; i < s; i++)
   {
     Eigen::Vector3d p (eigenvectors.inverse () * (data->interior[i] - mean));
@@ -292,7 +295,9 @@ FittingCylinder::initNurbsCylinderWithAxes (int order, NurbsDataSurface *data, E
   data->mean = mean;
 
   Eigen::Vector3d v_max (0.0, 0.0, 0.0);
-  Eigen::Vector3d v_min (DBL_MAX, DBL_MAX, DBL_MAX);
+  Eigen::Vector3d v_min(std::numeric_limits<double>::max(),
+                        std::numeric_limits<double>::max(),
+                        std::numeric_limits<double>::max());
   for (unsigned i = 0; i < s; i++)
   {
     Eigen::Vector3d p (axes.inverse () * (data->interior[i] - mean));
