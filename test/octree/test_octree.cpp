@@ -1132,10 +1132,6 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
 
   std::priority_queue<prioPointQueueEntry, pcl::PointCloud<prioPointQueueEntry>::VectorType> pointCandidates;
 
-  // create octree
-  OctreePointCloudSearch<PointXYZ> octree (0.1);
-  octree.setInputCloud (cloudIn);
-
   Indices k_indices;
   std::vector<float> k_sqr_distances;
 
@@ -1143,6 +1139,10 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   std::vector<float> k_sqr_distances_bruteforce;
 
   for (const std::size_t maxObjsPerLeaf: {0, 5}) {
+    // create octree
+    OctreePointCloudSearch<PointXYZ> octree (0.1);
+    octree.setInputCloud (cloudIn);
+
     if (maxObjsPerLeaf != 0)
       octree.enableDynamicDepth (maxObjsPerLeaf);
     for (unsigned int test_id = 0; test_id < test_runs; test_id++)
@@ -1233,11 +1233,11 @@ TEST (PCL, Octree_Pointcloud_Box_Search)
 
   srand (static_cast<unsigned int> (time (nullptr)));
 
-  // create octree
-  OctreePointCloudSearch<PointXYZ> octree (1);
-  octree.setInputCloud (cloudIn);
-
   for (const std::size_t maxObjsPerLeaf: {0, 5}) {
+    // create octree
+    OctreePointCloudSearch<PointXYZ> octree (1);
+    octree.setInputCloud (cloudIn);
+
     if (maxObjsPerLeaf != 0)
       octree.enableDynamicDepth (maxObjsPerLeaf);
     for (unsigned int test_id = 0; test_id < test_runs; test_id++)
