@@ -417,11 +417,21 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector
       // compare results to each other
       #pragma omp parallel for \
         default(none) \
-        shared(distances, indices, passed, search_methods)
+        shared(distances, indices, passed, search_methods, radius)
       for (int sIdx = 1; sIdx < static_cast<int> (search_methods.size ()); ++sIdx)
       {
-        passed [sIdx] = passed [sIdx] && compareResults (indices [0],    distances [0],    search_methods [0]->getName (),
-                                                         indices [sIdx], distances [sIdx], search_methods [sIdx]->getName (), 1e-6f);
+        const bool same_results = compareResults (indices [0],    distances [0],    search_methods [0]->getName (),
+                                                  indices [sIdx], distances [sIdx], search_methods [sIdx]->getName (), 1e-6f);
+        if (!same_results) {
+          if ((((indices [0   ].size()+1)==indices [sIdx].size()) && std::abs(*distances [sIdx].crbegin()-radius*radius)<1e-6) ||
+              (((indices [sIdx].size()+1)==indices [0   ].size()) && std::abs(*distances [0   ].crbegin()-radius*radius)<1e-6)) {
+            // One result list has one entry more than the other, and this additional entry is very close to the radius boundary.
+            // Because of numerical inaccuracies, points very close to the boundary may be counted as inside or outside depending
+            // on the search method. The two result lists will still be considered the same in this case.
+          } else {
+            passed [sIdx] = false;
+          }
+        }
       }
     }
   }
@@ -588,6 +598,9 @@ main (int argc, char** argv)
 
   pcl::io::loadPCDFile (argv [1], *organized_sparse_cloud);
   
+  const unsigned int seed = time (nullptr);
+  srand (seed);
+
   // create unorganized cloud
   unorganized_dense_cloud->resize (unorganized_point_count);
   unorganized_dense_cloud->height = 1;
