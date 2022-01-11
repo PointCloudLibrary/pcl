@@ -48,24 +48,39 @@ NormalDistributionsTransform<PointSource, PointTarget>::NormalDistributionsTrans
 : target_cells_()
 , resolution_(1.0f)
 , step_size_(0.1)
-, outlier_ratio_(0.55)
+, outlier_ratio_(0.1)
+, constant_scaling_(false)
 , gauss_d1_()
 , gauss_d2_()
 , trans_likelihood_()
 {
   reg_name_ = "NormalDistributionsTransform";
 
-  // Initializes the gaussian fitting parameters (eq. 6.8) [Magnusson 2009]
-  const double gauss_c1 = 10.0 * (1 - outlier_ratio_);
-  const double gauss_c2 = outlier_ratio_ / pow(resolution_, 3);
-  const double gauss_d3 = -std::log(gauss_c2);
-  gauss_d1_ = -std::log(gauss_c1 + gauss_c2) - gauss_d3;
-  gauss_d2_ =
-      -2 * std::log((-std::log(gauss_c1 * std::exp(-0.5) + gauss_c2) - gauss_d3) /
-                    gauss_d1_);
+  auto p = getGaussianFittingParameters(1.0 / (100.0 * pow(2 * M_PI, 3)));
+  gauss_d1_ = p.first;
+  gauss_d2_ = p.second;
 
   transformation_epsilon_ = 0.1;
   max_iterations_ = 35;
+}
+
+template <typename PointSource, typename PointTarget>
+std::pair<double, double>
+NormalDistributionsTransform<PointSource, PointTarget>::getGaussianFittingParameters(
+    double c_det)
+{
+  assert(c_det > 0); // VoxelGridCovariance::applyFilter ensures that the covariance
+                     // matrix is non-singular
+
+  // Initializes the gaussian fitting parameters (eq. 6.8) [Magnusson 2009]
+  const double gauss_c1 = (1.0 - outlier_ratio_) / sqrt(pow(2 * M_PI, 3) * c_det);
+  const double gauss_c2 = outlier_ratio_ / pow(resolution_, 3);
+  const double gauss_d3 = -std::log(gauss_c2);
+  double gauss_d1 = -std::log(gauss_c1 + gauss_c2) - gauss_d3;
+  double gauss_d2 =
+      -2 * std::log((-std::log(gauss_c1 * std::exp(-0.5) + gauss_c2) - gauss_d3) /
+                    gauss_d1_);
+  return std::make_pair(gauss_d1, gauss_d2);
 }
 
 template <typename PointSource, typename PointTarget>
@@ -76,14 +91,9 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeTransformation(
   nr_iterations_ = 0;
   converged_ = false;
 
-  // Initializes the gaussian fitting parameters (eq. 6.8) [Magnusson 2009]
-  const double gauss_c1 = 10 * (1 - outlier_ratio_);
-  const double gauss_c2 = outlier_ratio_ / pow(resolution_, 3);
-  const double gauss_d3 = -std::log(gauss_c2);
-  gauss_d1_ = -std::log(gauss_c1 + gauss_c2) - gauss_d3;
-  gauss_d2_ =
-      -2 * std::log((-std::log(gauss_c1 * std::exp(-0.5) + gauss_c2) - gauss_d3) /
-                    gauss_d1_);
+  auto p = getGaussianFittingParameters(1.0 / (100.0 * pow(2 * M_PI, 3)));
+  gauss_d1_ = p.first;
+  gauss_d2_ = p.second;
 
   if (guess != Eigen::Matrix4f::Identity()) {
     // Initialise final transformation to the guessed one
@@ -223,8 +233,16 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeDerivatives(
       computePointDerivatives(x);
       // Update score, gradient and hessian, lines 19-21 in Algorithm 2, according to
       // Equations 6.10, 6.12 and 6.13, respectively [Magnusson 2009]
-      score +=
-          updateDerivatives(score_gradient, hessian, x_trans, c_inv, compute_hessian);
+      if (constant_scaling_) {
+        score +=
+            updateDerivatives(score_gradient, hessian, x_trans, c_inv, compute_hessian);
+      }
+      else {
+        const auto gauss_params =
+            getGaussianFittingParameters(cell->getCovDeterminant());
+        score += updateDerivatives(
+            score_gradient, hessian, x_trans, c_inv, gauss_params, compute_hessian);
+      }
     }
   }
   return score;
@@ -368,15 +386,16 @@ NormalDistributionsTransform<PointSource, PointTarget>::updateDerivatives(
     Eigen::Matrix<double, 6, 6>& hessian,
     const Eigen::Vector3d& x_trans,
     const Eigen::Matrix3d& c_inv,
+    const std::pair<double, double>& gauss_params,
     bool compute_hessian) const
 {
   // e^(-d_2/2 * (x_k - mu_k)^T Sigma_k^-1 (x_k - mu_k)) Equation 6.9 [Magnusson 2009]
-  double e_x_cov_x = std::exp(-gauss_d2_ * x_trans.dot(c_inv * x_trans) / 2);
+  double e_x_cov_x = std::exp(-gauss_params.second * x_trans.dot(c_inv * x_trans) / 2);
   // Calculate likelihood of transformed points existence, Equation 6.9 [Magnusson
   // 2009]
-  const double score_inc = -gauss_d1_ * e_x_cov_x;
+  const double score_inc = -gauss_params.first * e_x_cov_x;
 
-  e_x_cov_x = gauss_d2_ * e_x_cov_x;
+  e_x_cov_x = gauss_params.second * e_x_cov_x;
 
   // Error checking for invalid values.
   if (e_x_cov_x > 1 || e_x_cov_x < 0 || std::isnan(e_x_cov_x)) {
@@ -384,7 +403,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::updateDerivatives(
   }
 
   // Reusable portion of Equation 6.12 and 6.13 [Magnusson 2009]
-  e_x_cov_x *= gauss_d1_;
+  e_x_cov_x *= gauss_params.first;
 
   for (int i = 0; i < 6; i++) {
     // Sigma_k^-1 d(T(x,p))/dpi, Reusable portion of Equation 6.12 and 6.13 [Magnusson
@@ -398,7 +417,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::updateDerivatives(
       for (Eigen::Index j = 0; j < hessian.cols(); j++) {
         // Update hessian, Equation 6.13 [Magnusson 2009]
         hessian(i, j) +=
-            e_x_cov_x * (-gauss_d2_ * x_trans.dot(cov_dxd_pi) *
+            e_x_cov_x * (-gauss_params.second * x_trans.dot(cov_dxd_pi) *
                              x_trans.dot(c_inv * point_jacobian_.col(j)) +
                          x_trans.dot(c_inv * point_hessian_.block<3, 1>(3 * i, j)) +
                          point_jacobian_.col(j).dot(cov_dxd_pi));
@@ -407,6 +426,23 @@ NormalDistributionsTransform<PointSource, PointTarget>::updateDerivatives(
   }
 
   return score_inc;
+}
+
+template <typename PointSource, typename PointTarget>
+double
+NormalDistributionsTransform<PointSource, PointTarget>::updateDerivatives(
+    Eigen::Matrix<double, 6, 1>& score_gradient,
+    Eigen::Matrix<double, 6, 6>& hessian,
+    const Eigen::Vector3d& x_trans,
+    const Eigen::Matrix3d& c_inv,
+    bool compute_hessian) const
+{
+  return updateDerivatives(score_gradient,
+                           hessian,
+                           x_trans,
+                           c_inv,
+                           std::make_pair(gauss_d1_, gauss_d2_),
+                           compute_hessian);
 }
 
 template <typename PointSource, typename PointTarget>
@@ -446,7 +482,51 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeHessian(
       computePointDerivatives(x);
       // Update hessian, lines 21 in Algorithm 2, according to Equations 6.10, 6.12
       // and 6.13, respectively [Magnusson 2009]
-      updateHessian(hessian, x_trans, c_inv);
+
+      if (constant_scaling_) {
+        updateHessian(hessian, x_trans, c_inv);
+      }
+      else {
+        const auto gauss_params =
+            getGaussianFittingParameters(cell->getCovDeterminant());
+        updateHessian(hessian, x_trans, c_inv, gauss_params);
+      }
+    }
+  }
+}
+
+template <typename PointSource, typename PointTarget>
+void
+NormalDistributionsTransform<PointSource, PointTarget>::updateHessian(
+    Eigen::Matrix<double, 6, 6>& hessian,
+    const Eigen::Vector3d& x_trans,
+    const Eigen::Matrix3d& c_inv,
+    const std::pair<double, double>& gauss_params) const
+{
+  // e^(-d_2/2 * (x_k - mu_k)^T Sigma_k^-1 (x_k - mu_k)) Equation 6.9 [Magnusson 2009]
+  double e_x_cov_x = gauss_params.second *
+                     std::exp(-gauss_params.second * x_trans.dot(c_inv * x_trans) / 2);
+
+  // Error checking for invalid values.
+  if (e_x_cov_x > 1 || e_x_cov_x < 0 || std::isnan(e_x_cov_x)) {
+    return;
+  }
+
+  // Reusable portion of Equation 6.12 and 6.13 [Magnusson 2009]
+  e_x_cov_x *= gauss_params.first;
+
+  for (int i = 0; i < 6; i++) {
+    // Sigma_k^-1 d(T(x,p))/dpi, Reusable portion of Equation 6.12 and 6.13 [Magnusson
+    // 2009]
+    const Eigen::Vector3d cov_dxd_pi = c_inv * point_jacobian_.col(i);
+
+    for (Eigen::Index j = 0; j < hessian.cols(); j++) {
+      // Update hessian, Equation 6.13 [Magnusson 2009]
+      hessian(i, j) +=
+          e_x_cov_x * (-gauss_params.second * x_trans.dot(cov_dxd_pi) *
+                           x_trans.dot(c_inv * point_jacobian_.col(j)) +
+                       x_trans.dot(c_inv * point_hessian_.block<3, 1>(3 * i, j)) +
+                       point_jacobian_.col(j).dot(cov_dxd_pi));
     }
   }
 }
@@ -458,32 +538,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::updateHessian(
     const Eigen::Vector3d& x_trans,
     const Eigen::Matrix3d& c_inv) const
 {
-  // e^(-d_2/2 * (x_k - mu_k)^T Sigma_k^-1 (x_k - mu_k)) Equation 6.9 [Magnusson 2009]
-  double e_x_cov_x =
-      gauss_d2_ * std::exp(-gauss_d2_ * x_trans.dot(c_inv * x_trans) / 2);
-
-  // Error checking for invalid values.
-  if (e_x_cov_x > 1 || e_x_cov_x < 0 || std::isnan(e_x_cov_x)) {
-    return;
-  }
-
-  // Reusable portion of Equation 6.12 and 6.13 [Magnusson 2009]
-  e_x_cov_x *= gauss_d1_;
-
-  for (int i = 0; i < 6; i++) {
-    // Sigma_k^-1 d(T(x,p))/dpi, Reusable portion of Equation 6.12 and 6.13 [Magnusson
-    // 2009]
-    const Eigen::Vector3d cov_dxd_pi = c_inv * point_jacobian_.col(i);
-
-    for (Eigen::Index j = 0; j < hessian.cols(); j++) {
-      // Update hessian, Equation 6.13 [Magnusson 2009]
-      hessian(i, j) +=
-          e_x_cov_x * (-gauss_d2_ * x_trans.dot(cov_dxd_pi) *
-                           x_trans.dot(c_inv * point_jacobian_.col(j)) +
-                       x_trans.dot(c_inv * point_hessian_.block<3, 1>(3 * i, j)) +
-                       point_jacobian_.col(j).dot(cov_dxd_pi));
-    }
-  }
+  updateHessian(hessian, x_trans, c_inv, std::make_pair(gauss_d1_, gauss_d2_));
 }
 
 template <typename PointSource, typename PointTarget>

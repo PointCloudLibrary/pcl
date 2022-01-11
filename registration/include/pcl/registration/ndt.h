@@ -229,6 +229,28 @@ public:
     trans = _affine.matrix();
   }
 
+  /** \brief Set whether the scale factor c_1 from Eq. 6.7 should be
+   * approximated by a constant or computed according to Eq. 6.1 [Magnusson
+   * 2009].
+   * \param[in] constant_scaling true to approximate the scale factor using a
+   * constant
+   */
+  inline void
+  setConstantScaling(bool constant_scaling)
+  {
+    constant_scaling_ = constant_scaling;
+  }
+
+  /** \brief Get the current scale factor (c_1 from Eq. 6.7 [Magnusson 2009])
+   * computation method
+   * \return true when the scale factor is approximated by a constant
+   */
+  inline bool
+  getConstantScaling() const
+  {
+    return constant_scaling_;
+  }
+
 protected:
   using Registration<PointSource, PointTarget>::reg_name_;
   using Registration<PointSource, PointTarget>::getClassName;
@@ -276,6 +298,14 @@ protected:
     target_cells_.filter(true);
   }
 
+  /** \brief Set parameters for the approximation of the log likelihood by a
+   * Gaussian
+   * \param[in] c_det the determinant of the cell covariance
+   * \return a pair containing approximation parameters d_1 and d_2
+   */
+  std::pair<double, double>
+  getGaussianFittingParameters(double c_det);
+
   /** \brief Compute derivatives of likelihood function w.r.t. the
    * transformation vector.
    * \note Equation 6.10, 6.12 and 6.13 [Magnusson 2009].
@@ -294,6 +324,28 @@ protected:
                      const PointCloudSource& trans_cloud,
                      const Eigen::Matrix<double, 6, 1>& transform,
                      bool compute_hessian = true);
+
+  /** \brief Compute individual point contirbutions to derivatives of
+   * likelihood function w.r.t. the transformation vector.
+   * \note Equation 6.10, 6.12 and 6.13 [Magnusson 2009].
+   * \param[in,out] score_gradient the gradient vector of the likelihood
+   * function w.r.t. the transformation vector
+   * \param[in,out] hessian the hessian matrix of the likelihood function
+   * w.r.t. the transformation vector
+   * \param[in] x_trans transformed point minus mean of occupied covariance
+   * voxel
+   * \param[in] c_inv covariance of occupied covariance voxel
+   * \param[in] gauss_params parameters of the log-likelihood approximation
+   * \param[in] compute_hessian flag to calculate hessian, unnessissary for step
+   * calculation.
+   */
+  double
+  updateDerivatives(Eigen::Matrix<double, 6, 1>& score_gradient,
+                    Eigen::Matrix<double, 6, 6>& hessian,
+                    const Eigen::Vector3d& x_trans,
+                    const Eigen::Matrix3d& c_inv,
+                    const std::pair<double, double>& gauss_params,
+                    bool compute_hessian = true) const;
 
   /** \brief Compute individual point contirbutions to derivatives of
    * likelihood function w.r.t. the transformation vector.
@@ -362,6 +414,22 @@ protected:
     pcl::utils::ignore(transform);
     computeHessian(hessian, trans_cloud);
   }
+
+  /** \brief Compute individual point contirbutions to hessian of likelihood
+   * function w.r.t. the transformation vector.
+   * \note Equation 6.13 [Magnusson 2009].
+   * \param[in,out] hessian the hessian matrix of the likelihood function
+   * w.r.t. the transformation vector
+   * \param[in] x_trans transformed point minus mean of occupied covariance
+   * voxel
+   * \param[in] c_inv covariance of occupied covariance voxel
+   * \param[in] gauss_params parameters of the log-likelihood approximation
+   */
+  void
+  updateHessian(Eigen::Matrix<double, 6, 6>& hessian,
+                const Eigen::Vector3d& x_trans,
+                const Eigen::Matrix3d& c_inv,
+                const std::pair<double, double>& gauss_params) const;
 
   /** \brief Compute individual point contirbutions to hessian of likelihood
    * function w.r.t. the transformation vector.
@@ -547,6 +615,12 @@ protected:
   /** \brief The ratio of outliers of points w.r.t. a normal distribution,
    * Equation 6.7 [Magnusson 2009]. */
   double outlier_ratio_;
+
+  /** \brief When true, the scale factor c_1 from Eq. 6.7 [Magnusson 2009] is
+   * approximated by a constant (see normalization constants gauss_d1_ and
+   * gauss_d2_ below). Otherwise, the scale factor is computed according to
+   * Eq. 6.1 */
+  bool constant_scaling_;
 
   /** \brief The normalization constants used fit the point distribution to a
    * normal distribution, Equation 6.8 [Magnusson 2009]. */
