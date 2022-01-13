@@ -94,6 +94,10 @@ namespace pcl
         , vfov_ (60.0f)
         , np_dist_ (0.1f)
         , fp_dist_ (5.0f)
+        , roi_x_ (0.5f)
+        , roi_y_ (0.5f)
+        , roi_w_ (1.0f)
+        , roi_h_ (1.0f)
       {
         filter_name_ = "FrustumCulling";
       }
@@ -192,6 +196,36 @@ namespace pcl
       {
         return (fp_dist_);
       }
+      
+      /** \brief Set the region of interest (ROI)
+        * \param[in] roi_x X position of ROI
+        * \param[in] roi_y Y position of ROI
+        * \param[in] roi_w Width of ROI
+        * \param[in] roi_h Height of ROI
+        */
+      void 
+      setRegionOfInterest (float roi_x, float roi_y, float roi_w, float roi_h)
+      {
+        roi_x_ = roi_x;
+        roi_y_ = roi_y;
+        roi_w_ = roi_w;
+        roi_h_ = roi_h;
+      }
+      
+      /** \brief Get the region of interest (ROI)
+        * \param[in] roi_x X position of ROI
+        * \param[in] roi_y Y position of ROI
+        * \param[in] roi_w Width of ROI
+        * \param[in] roi_h Height of ROI
+        */
+      void 
+      getRegionOfInterest (float &roi_x, float &roi_y, float &roi_w, float &roi_h) const
+      {
+        roi_x = roi_x_;
+        roi_y = roi_y_;
+        roi_w = roi_w_;
+        roi_h = roi_h_;
+      }
 
     protected:
       using PCLBase<PointT>::input_;
@@ -221,6 +255,14 @@ namespace pcl
       float np_dist_;
       /** \brief Far plane distance */
       float fp_dist_;
+      /** \brief Region of interest x position*/
+      float roi_x_;
+      /** \brief Region of interest y position*/
+      float roi_y_;
+      /** \brief Region of interest width*/
+      float roi_w_;
+      /** \brief Region of interest height*/
+      float roi_h_;
 
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW
