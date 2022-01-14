@@ -77,16 +77,16 @@ pcl::FrustumCulling<PointT>::applyFilter (Indices &indices)
   float fp_w_r = float(2 * tan(hfov_rad / 2) * fp_dist_ * (roi_xmax - 0.5));         // far plane right width
 
   Eigen::Vector3f fp_c (T + view * fp_dist_);                           // far plane center
-  Eigen::Vector3f fp_tl (fp_c + (up * fp_h_u / 2) - (right * fp_w_l / 2));  // Top left corner of the far plane
-  Eigen::Vector3f fp_tr (fp_c + (up * fp_h_u / 2) + (right * fp_w_r / 2));  // Top right corner of the far plane
-  Eigen::Vector3f fp_bl (fp_c - (up * fp_h_d / 2) - (right * fp_w_l / 2));  // Bottom left corner of the far plane
-  Eigen::Vector3f fp_br (fp_c - (up * fp_h_d / 2) + (right * fp_w_r / 2));  // Bottom right corner of the far plane
+  Eigen::Vector3f fp_tl (fp_c + (up * fp_h_u) - (right * fp_w_l));  // Top left corner of the far plane
+  Eigen::Vector3f fp_tr (fp_c + (up * fp_h_u) + (right * fp_w_r));  // Top right corner of the far plane
+  Eigen::Vector3f fp_bl (fp_c - (up * fp_h_d) - (right * fp_w_l));  // Bottom left corner of the far plane
+  Eigen::Vector3f fp_br (fp_c - (up * fp_h_d) + (right * fp_w_r));  // Bottom right corner of the far plane
 
   Eigen::Vector3f np_c (T + view * np_dist_);                           // near plane center
-  //Eigen::Vector3f np_tl = np_c + (up * np_h-u/2) - (right * np_w_l/2);    // Top left corner of the near plane
-  Eigen::Vector3f np_tr (np_c + (up * np_h_u / 2) + (right * np_w_r / 2));  // Top right corner of the near plane
-  Eigen::Vector3f np_bl (np_c - (up * np_h_d / 2) - (right * np_w_l / 2));  // Bottom left corner of the near plane
-  Eigen::Vector3f np_br (np_c - (up * np_h_d / 2) + (right * np_w_r / 2));  // Bottom right corner of the near plane
+  //Eigen::Vector3f np_tl = np_c + (up * np_h_u) - (right * np_w_l);    // Top left corner of the near plane
+  Eigen::Vector3f np_tr (np_c + (up * np_h_u) + (right * np_w_r));  // Top right corner of the near plane
+  Eigen::Vector3f np_bl (np_c - (up * np_h_d) - (right * np_w_l));  // Bottom left corner of the near plane
+  Eigen::Vector3f np_br (np_c - (up * np_h_d) + (right * np_w_r));  // Bottom right corner of the near plane
 
   pl_f.head<3> () = (fp_bl - fp_br).cross (fp_tr - fp_br);  // Far plane equation - cross product of the 
   pl_f (3) = -fp_c.dot (pl_f.head<3> ());                   // perpendicular edges of the far plane

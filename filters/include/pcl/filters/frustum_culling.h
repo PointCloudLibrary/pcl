@@ -197,7 +197,7 @@ namespace pcl
         return (fp_dist_);
       }
       
-      /** \brief Set the region of interest (ROI)
+      /** \brief Set the region of interest (ROI) in normalized values (0 - 1)
         * \param[in] roi_x X position of ROI
         * \param[in] roi_y Y position of ROI
         * \param[in] roi_w Width of ROI
@@ -213,9 +213,9 @@ namespace pcl
       }
       
       /** \brief Get the region of interest (ROI)
-        * \param[in] roi_x X position of ROI
-        * \param[in] roi_y Y position of ROI
-        * \param[in] roi_w Width of ROI
+        * \param[in] roi_x X center position of ROI
+        * \param[in] roi_y Y center position of ROI
+        * \param[in] roi_w Width of ROI 
         * \param[in] roi_h Height of ROI
         */
       void 
@@ -255,13 +255,13 @@ namespace pcl
       float np_dist_;
       /** \brief Far plane distance */
       float fp_dist_;
-      /** \brief Region of interest x position*/
+      /** \brief Region of interest x center position (normalized)*/
       float roi_x_;
-      /** \brief Region of interest y position*/
+      /** \brief Region of interest y center position (normalized)*/
       float roi_y_;
-      /** \brief Region of interest width*/
+      /** \brief Region of interest width (normalized)*/
       float roi_w_;
-      /** \brief Region of interest height*/
+      /** \brief Region of interest height (normalized)*/
       float roi_h_;
 
     public:
