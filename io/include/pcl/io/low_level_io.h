@@ -175,16 +175,24 @@ namespace pcl
       // Android's libc doesn't have posix_fallocate.
       if (::fallocate(fd, 0, 0, length) == 0)
         return 0;
-#  else
-      // Conforming POSIX systems have posix_fallocate.
-      if (::posix_fallocate(fd, 0, length) == 0)
-        return 0;
-#  endif
 
+      // fallocate returns -1 on error and sets errno
       // EINVAL should indicate an unsupported filesystem.
       // All other errors are passed up.
       if (errno != EINVAL)
         return -1;
+#  else
+      // Conforming POSIX systems have posix_fallocate.
+      const int res = ::posix_fallocate(fd, 0, length);
+      if (res == 0)
+        return 0;
+
+      // posix_fallocate does not set errno
+      // EINVAL should indicate an unsupported filesystem.
+      // All other errors are passed up.
+      if (res != EINVAL)
+        return res;
+#  endif
 
       // Try to deal with unsupported filesystems by simply seeking + writing.
       // This may not really allocate space, but the file size will be set.
