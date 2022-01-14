@@ -186,7 +186,7 @@ namespace pcl
             __device__  __forceinline__ void operator()() const
             {             
                 //32 is a performance penalty step for search
-                static_assert((max_points_per_leaf % 32) == 0);
+                static_assert((max_points_per_leaf % 32) == 0, "max_points_per_leaf must be a multiple of 32");
 
                 if (threadIdx.x == 0)
                 {

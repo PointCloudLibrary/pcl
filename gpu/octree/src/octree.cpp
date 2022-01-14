@@ -51,7 +51,7 @@ using namespace pcl::device;
 
 pcl::gpu::Octree::Octree() : cloud_(nullptr), impl(nullptr)
 {
-    static_assert(sizeof(PointType) == sizeof(OctreeImpl::PointType));
+    static_assert(sizeof(PointType) == sizeof(OctreeImpl::PointType), "Point sizes do not match");
 
     int device;
     cudaSafeCall( cudaGetDevice( &device ) );
@@ -217,7 +217,7 @@ void pcl::gpu::bruteForceRadiusSearchGPU(const Octree::PointCloud& cloud, const 
     query_local.y = query.y;
     query_local.z = query.z;
 
-    static_assert(sizeof(PointType) == sizeof(OctreeImpl::PointType));
+    static_assert(sizeof(PointType) == sizeof(OctreeImpl::PointType), "Point sizes do not match");
 
     PointCloud cloud_local((PointType*)cloud.ptr(), cloud.size());
     bruteForceRadiusSearch(cloud_local, query_local, radius, result, buffer);
