@@ -104,14 +104,15 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
     point.z += nd.run();
   }
   
-  // Ensure deterministic sampling inside the rejector
-  std::srand (1e6);
+  // Test rejector with varying seeds
+  const unsigned int seed = std::time(nullptr);
+  std::srand (seed);
   
   // Create a rejection object
   pcl::registration::CorrespondenceRejectorPoly<pcl::PointXYZ, pcl::PointXYZ> reject;
-  reject.setIterations (10000);
+  reject.setIterations (20000);
   reject.setCardinality (3);
-  reject.setSimilarityThreshold (0.75f);
+  reject.setSimilarityThreshold (0.8f);
   reject.setInputSource (cloud.makeShared ());
   reject.setInputTarget (target.makeShared ());
   
