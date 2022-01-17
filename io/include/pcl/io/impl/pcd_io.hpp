@@ -174,13 +174,15 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 
 #else
   // Allocate disk space for the entire file to prevent bus errors.
-  if (io::raw_fallocate (fd, data_idx + data_size) != 0)
+  const int allocate_res = io::raw_fallocate (fd, data_idx + data_size);
+  if (allocate_res != 0)
   {
     io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
-    PCL_ERROR ("[pcl::PCDWriter::writeBinary] posix_fallocate errno: %d strerror: %s\n", errno, strerror (errno));
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] raw_fallocate(length=%zu) returned %i. errno: %d strerror: %s\n",
+               data_idx + data_size, allocate_res, errno, strerror (errno));
 
-    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during posix_fallocate ()!");
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during raw_fallocate ()!");
     return (-1);
   }
 
@@ -372,13 +374,15 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
 
 #else
   // Allocate disk space for the entire file to prevent bus errors.
-  if (io::raw_fallocate (fd, compressed_final_size) != 0)
+  const int allocate_res = io::raw_fallocate (fd, compressed_final_size);
+  if (allocate_res != 0)
   {
     io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
-    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] posix_fallocate errno: %d strerror: %s\n", errno, strerror (errno));
+    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] raw_fallocate(length=%u) returned %i. errno: %d strerror: %s\n",
+               compressed_final_size, allocate_res, errno, strerror (errno));
 
-    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during posix_fallocate ()!");
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during raw_fallocate ()!");
     return (-1);
   }
 
@@ -646,13 +650,15 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 
 #else
   // Allocate disk space for the entire file to prevent bus errors.
-  if (io::raw_fallocate (fd, data_idx + data_size) != 0)
+  const int allocate_res = io::raw_fallocate (fd, data_idx + data_size);
+  if (allocate_res != 0)
   {
     io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
-    PCL_ERROR ("[pcl::PCDWriter::writeBinary] posix_fallocate errno: %d strerror: %s\n", errno, strerror (errno));
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] raw_fallocate(length=%zu) returned %i. errno: %d strerror: %s\n",
+               data_idx + data_size, allocate_res, errno, strerror (errno));
 
-    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during posix_fallocate ()!");
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during raw_fallocate ()!");
     return (-1);
   }
 
