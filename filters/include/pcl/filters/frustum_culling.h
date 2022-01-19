@@ -197,9 +197,14 @@ namespace pcl
         return (fp_dist_);
       }
       
-      /** \brief Set the region of interest (ROI) in normalized values (0 - 1)
-        * \param[in] roi_x X position of ROI
-        * \param[in] roi_y Y position of ROI
+      /** \brief Set the region of interest (ROI) in normalized values
+        *  
+        * This is an optional feature. If ROI is not set, 
+        * all points in the FOV of the camera are returned.
+        * Can be used to cut out objects based on 2D bounding boxes by object detection.
+        * 
+        * \param[in] roi_x X center position of ROI
+        * \param[in] roi_y Y center position of ROI
         * \param[in] roi_w Width of ROI
         * \param[in] roi_h Height of ROI
         */
@@ -212,7 +217,7 @@ namespace pcl
         roi_h_ = roi_h;
       }
       
-      /** \brief Get the region of interest (ROI)
+      /** \brief Get the region of interest (ROI) in normalized values
         * \param[in] roi_x X center position of ROI
         * \param[in] roi_y Y center position of ROI
         * \param[in] roi_w Width of ROI 
