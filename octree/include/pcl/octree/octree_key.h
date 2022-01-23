@@ -37,6 +37,8 @@
 
 #pragma once
 
+#include <pcl/types.h> // for uindex_t
+
 #include <cstdint>
 #include <cstring> // for memcpy
 

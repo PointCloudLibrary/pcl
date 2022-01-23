@@ -44,7 +44,6 @@
 #include <pcl/common/concatenate.h>
 #include <pcl/common/copy_point.h>
 #include <pcl/common/io.h>
-#include <pcl/point_types.h>
 
 
 namespace pcl

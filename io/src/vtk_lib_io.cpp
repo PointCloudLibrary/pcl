@@ -41,10 +41,19 @@
 #include <pcl/PCLPointCloud2.h>
 #include <vtkCellArray.h>
 #include <vtkCellData.h>
-#include <vtkDoubleArray.h>
+#include <vtkFloatArray.h> // for vtkFloatArray
 #include <vtkImageData.h>
 #include <vtkImageShiftScale.h>
-#include <vtkPNGWriter.h>
+#include <vtkOBJReader.h> // for vtkOBJReader
+#include <vtkPoints.h> // for vtkPoints
+#include <vtkPolyDataReader.h> // for vtkPolyDataReader
+#include <vtkPolyDataWriter.h> // for vtkPolyDataWriter
+#include <vtkPLYReader.h> // for vtkPLYReader
+#include <vtkPLYWriter.h> // for vtkPLYWriter
+#include <vtkPNGWriter.h> // for vtkPNGWriter
+#include <vtkSTLReader.h> // for vtkSTLReader
+#include <vtkSTLWriter.h> // for vtkSTLWriter
+#include <vtkUnsignedCharArray.h> // for vtkUnsignedCharArray
 
 // Support for VTK 7.1 upwards
 #ifdef vtkGenericDataArray_h

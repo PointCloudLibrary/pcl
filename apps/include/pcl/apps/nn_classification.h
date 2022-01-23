@@ -43,6 +43,7 @@
 #include <pcl/kdtree/kdtree_flann.h>
 
 #include <limits>
+#include <map> // for std::map
 
 namespace pcl {
 

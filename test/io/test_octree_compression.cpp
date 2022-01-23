@@ -36,7 +36,6 @@
 #include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/octree/octree.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/compression/octree_pointcloud_compression.h>
 #include <pcl/compression/compression_profiles.h>
