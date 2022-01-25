@@ -1400,7 +1400,7 @@ pcl::SurfaceNormalModality<PointInT>::quantizeSurfaceNormals ()
       const float normal_y = surface_normals_ (col_index, row_index).normal_y;
       const float normal_z = surface_normals_ (col_index, row_index).normal_z;
 
-      if (pcl_isnan(normal_x) || pcl_isnan(normal_y) || pcl_isnan(normal_z) || normal_z > 0)
+      if (pcl_isnan(normal_x) || pcl_isnan(normal_y) || pcl_isnan(normal_z) || normal_z > 0 || (normal_x == 0 && normal_y == 0))
       {
         quantized_surface_normals_ (col_index, row_index) = 0;
         continue;
@@ -1414,7 +1414,7 @@ pcl::SurfaceNormalModality<PointInT>::quantizeSurfaceNormals ()
       if (angle < 0.0f) angle += 360.0f;
       if (angle >= 360.0f) angle -= 360.0f;
 
-      int bin_index = static_cast<int> (angle*8.0f/360.0f);
+      int bin_index = static_cast<int> (angle*8.0f/360.0f+1);
 
       //quantized_surface_normals_.data[row_index*width+col_index] = 0x1 << bin_index;
       quantized_surface_normals_ (col_index, row_index) = static_cast<unsigned char> (bin_index);
