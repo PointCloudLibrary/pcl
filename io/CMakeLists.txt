@@ -355,12 +355,15 @@ if(VTK_FOUND)
     target_link_libraries("${LIB_NAME}"
                           vtkIOImage
                           vtkIOGeometry
-                          vtkIOMPIImage
-                          vtkIOMPIParallel
                           vtkIOPLY
                           )
-    if(${VTK_VERSION} VERSION_GREATER_EQUAL 7.0 AND ${VTK_VERSION} VERSION_LESS 8.0)
-      target_link_libraries("${LIB_NAME}" vtkFiltersParallelDIY2)
+    if(${VTK_VERSION} VERSION_LESS 8.0)
+      target_link_libraries("${LIB_NAME}" vtkIOMPIImage vtkIOMPIParallel)
+      if(${VTK_VERSION} VERSION_GREATER_EQUAL 7.0)
+        target_link_libraries("${LIB_NAME}" vtkFiltersParallelDIY2)
+      endif()
+    else()
+      target_link_libraries("${LIB_NAME}" vtkImagingCore)
     endif()
   endif()
 endif()
