@@ -52,10 +52,14 @@ namespace pcl
 inline float
 RangeImage::asinLookUp (float value)
 {
-  return (asin_lookup_table[
-      static_cast<int> (
-        static_cast<float> (pcl_lrintf ( (static_cast<float> (lookup_table_size-1) / 2.0f) * value)) + 
-        static_cast<float> (lookup_table_size-1) / 2.0f)]);
+  if (-1.0f<=value && value<=1.0f) { // Also rejects NaN
+    return (asin_lookup_table[
+        static_cast<int> (
+          static_cast<float> (pcl_lrintf ( (static_cast<float> (lookup_table_size-1) / 2.0f) * value)) +
+          static_cast<float> (lookup_table_size-1) / 2.0f)]);
+  } else {
+    return 0.0f;
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////
