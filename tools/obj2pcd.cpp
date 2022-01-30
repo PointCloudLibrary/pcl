@@ -43,6 +43,9 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 
+#include <vtkOBJReader.h> // for vtkOBJReader
+#include <vtkPolyDataNormals.h> // vtkPolyDataNormals
+
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;

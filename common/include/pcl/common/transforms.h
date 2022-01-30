@@ -40,7 +40,6 @@
 #pragma once
 
 #include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 #include <pcl/common/centroid.h>
 #include <pcl/common/eigen.h>
 #include <pcl/PointIndices.h>

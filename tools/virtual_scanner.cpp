@@ -57,6 +57,8 @@
 
 #include <vtkGeneralTransform.h>
 #include <vtkPlatonicSolidSource.h>
+#include <vtkPolyDataReader.h> // for vtkPolyDataReader
+#include <vtkPLYReader.h> // for vtkPLYReader
 #include <vtkLoopSubdivisionFilter.h>
 #include <vtkCellLocator.h>
 #include <vtkMath.h>

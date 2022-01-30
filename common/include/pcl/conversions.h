@@ -51,8 +51,6 @@
 #include <pcl/for_each_type.h>
 #include <pcl/console/print.h>
 
-#include <boost/foreach.hpp>
-
 namespace pcl
 {
   namespace detail
