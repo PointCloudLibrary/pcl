@@ -216,6 +216,9 @@ else()
   if(${VTK_VERSION} VERSION_GREATER_EQUAL 7.0 AND ${VTK_VERSION} VERSION_LESS 9.0)
     target_link_libraries("${LIB_NAME}" vtkRenderingGL2PS${VTK_RENDERING_BACKEND})
   endif()
+  if(${VTK_VERSION} VERSION_GREATER_EQUAL 8.0)
+    target_link_libraries("${LIB_NAME}" vtkCommonColor vtkCommonComputationalGeometry)
+  endif()
   
   # These two libraries are present and required in ubuntu 18.04 VTK 6, but not present in later versions of ubuntu using VTK 6.
   # They are also present on later versions of VTK on later versions of ubuntu.
