@@ -47,7 +47,7 @@ set(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
 # Compiler identification
 # Define a variable CMAKE_COMPILER_IS_X where X is the compiler short name.
 # Note: CMake automatically defines one for GNUCXX, nothing to do in this case.
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(CMAKE_COMPILER_IS_CLANG 1)
 elseif(__COMPILER_PATHSCALE)
   set(CMAKE_COMPILER_IS_PATHSCALE 1)
