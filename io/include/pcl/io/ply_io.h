@@ -41,6 +41,7 @@
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
+#include <pcl/common/io.h> // for copyPointCloud
 #include <pcl/io/file_io.h>
 #include <pcl/io/ply/ply_parser.h>
 #include <pcl/PolygonMesh.h>
