@@ -52,14 +52,10 @@ namespace pcl
 inline float
 RangeImage::asinLookUp (float value)
 {
-  if (-1.0f<=value && value<=1.0f) { // Also rejects NaN
-    return (asin_lookup_table[
-        static_cast<int> (
-          static_cast<float> (pcl_lrintf ( (static_cast<float> (lookup_table_size-1) / 2.0f) * value)) +
-          static_cast<float> (lookup_table_size-1) / 2.0f)]);
-  } else {
-    return 0.0f;
-  }
+  return (asin_lookup_table[
+      static_cast<int> (
+        static_cast<float> (pcl_lrintf ( (static_cast<float> (lookup_table_size-1) / 2.0f) * value)) + 
+        static_cast<float> (lookup_table_size-1) / 2.0f)]);
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -360,6 +356,11 @@ RangeImage::getImagePoint (const Eigen::Vector3f& point, float& image_x, float& 
 {
   Eigen::Vector3f transformedPoint = to_range_image_system_ * point;
   range = transformedPoint.norm ();
+  if (range < std::numeric_limits<float>::epsilon()) {
+    PCL_DEBUG ("[pcl::RangeImage::getImagePoint] Transformed point is (0,0,0), cannot project it.\n");
+    image_x = image_y = 0.0f;
+    return;
+  }
   float angle_x = atan2LookUp (transformedPoint[0], transformedPoint[2]),
         angle_y = asinLookUp (transformedPoint[1]/range);
   getImagePointFromAngles (angle_x, angle_y, image_x, image_y);
