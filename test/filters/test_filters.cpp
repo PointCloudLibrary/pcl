@@ -56,7 +56,6 @@
 #include <pcl/filters/conditional_removal.h>
 #include <pcl/filters/median_filter.h>
 #include <pcl/filters/normal_refinement.h>
-#include <pcl/filters/crop_box.h>
 
 #include <pcl/common/transforms.h>
 #include <pcl/common/eigen.h>
@@ -2034,81 +2033,6 @@ TEST (FrustumCulling, Filters)
   removed = fc.getRemovedIndices ();
   EXPECT_EQ (removed->size (), input->size ());
 
-  // Should filter all points in the input cloud
-  fc.setNegative (false);
-  fc.setKeepOrganized (false);
-  fc.setRegionOfInterest (0.5f, 0.5f, 1.0f, 1.0f);
-  fc.filter (*output);
-  EXPECT_EQ (output->size (), input->size ());
-  removed = fc.getRemovedIndices ();
-  EXPECT_EQ (removed->size (), 0);
-  // Check invalid ROI values: no points should remain
-  fc.setRegionOfInterest (0.5f, 0.5f, 0.0f, 0.0f);
-  fc.filter (*output);
-  EXPECT_EQ (output->size (), 0);
-  removed = fc.getRemovedIndices ();
-  EXPECT_EQ (removed->size (), input->size ());
-  fc.setRegionOfInterest (-0.4f, 0.0f, 8.2f, -1.3f);
-  fc.filter (*output);
-  EXPECT_EQ (output->size (), 0);
-  removed = fc.getRemovedIndices ();
-  EXPECT_EQ (removed->size (), input->size ());
-
-  // Test on real point cloud, cut out milk cartoon in milk_cartoon_all_small_clorox.pcd
-  pcl::PointCloud <pcl::PointXYZ>::Ptr model (new pcl::PointCloud <pcl::PointXYZ>);
-  pcl::copyPointCloud (*cloud_organized, *model);
-
-  // Align point cloud with coordinate system
-  Eigen::Vector3f translation (0.5, 0.5, 0);
-  Eigen::Matrix3f rotation;
-  rotation = Eigen::AngleAxisf (-35 * M_PI / 180, Eigen::Vector3f::UnitZ ()) *
-       Eigen::AngleAxisf (90 * M_PI / 180, Eigen::Vector3f::UnitY ()) *
-       Eigen::AngleAxisf (180 * M_PI / 180, Eigen::Vector3f::UnitZ ());
-
-  Eigen::Matrix4f transformation;
-  transformation.setZero ();
-  transformation.block (0, 0, 3, 3) = rotation;
-  transformation.block (0, 3, 3, 1) = translation;
-  transformation (3, 3) = 1;
-
-  pcl::transformPointCloud (*model, *model, transformation);
-
-  pcl::CropBox<pcl::PointXYZ> bf;
-  bf.setMin (Eigen::Vector4f (0, -5, -5, 1.0));
-  bf.setMax (Eigen::Vector4f (5, 5, 5, 1.0));
-  bf.setInputCloud (model);
-  bf.filter (*model);
-
-  // Remove ground
-  pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
-  pcl::ModelCoefficients::Ptr coefficients(new pcl::ModelCoefficients);
-  pcl::SACSegmentation<pcl::PointXYZ> seg;
-  seg.setOptimizeCoefficients (true);
-  seg.setModelType (pcl::SACMODEL_PERPENDICULAR_PLANE);
-  seg.setMethodType (pcl::SAC_RANSAC);
-  seg.setDistanceThreshold (0.01);
-  seg.setAxis (Eigen::Vector3f (0, 1, 0));
-  seg.setInputCloud (model);
-  seg.segment (*inliers, *coefficients);
-
-  pcl::ExtractIndices<pcl::PointXYZ> extract;
-  extract.setInputCloud (model);
-  extract.setIndices (inliers);
-  extract.setNegative (true);
-  extract.filter (*output);
-
-  // Cut out object based on ROI 
-  fc.setInputCloud (output);
-  fc.setNegative (false);
-  fc.setVerticalFOV (45);
-  fc.setHorizontalFOV (45);
-  fc.setNearPlaneDistance (1.1);
-  fc.setFarPlaneDistance (1.35);
-  fc.setRegionOfInterest (0.44, 0.35, 0.17, 0.32);
-  fc.setCameraPose (Eigen::Matrix4f::Identity ());
-  fc.filter (*output);
-  // Should extract object; number of points based on milk.pcd
-  EXPECT_NEAR (output->size (), 13704, 13704 * 0.05); 
 
 }
 
