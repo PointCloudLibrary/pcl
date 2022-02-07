@@ -270,7 +270,8 @@ PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/vtk" ${vtk_incs})
 #TODO: Update when CMAKE 3.10 is available
 if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
   vtk_module_autoinit(TARGETS "${LIB_NAME}" 
-                      MODULES VTK::RenderingOpenGL2
+                      MODULES VTK::RenderingContextOpenGL2
+                              VTK::RenderingOpenGL2
                               VTK::RenderingFreeType)
 endif()
 
