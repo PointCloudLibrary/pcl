@@ -62,10 +62,8 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovariances(
   }
 
   Eigen::Vector3d mean;
-  pcl::Indices nn_indecies;
-  nn_indecies.reserve(k_correspondences_);
-  std::vector<float> nn_dist_sq;
-  nn_dist_sq.reserve(k_correspondences_);
+  pcl::Indices nn_indices(k_correspondences_);
+  std::vector<float> nn_dist_sq(k_correspondences_);
 
   // We should never get there but who knows
   if (cloud_covariances.size() < cloud->size())
@@ -81,11 +79,11 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovariances(
     mean.setZero();
 
     // Search for the K nearest neighbours
-    kdtree->nearestKSearch(query_point, k_correspondences_, nn_indecies, nn_dist_sq);
+    kdtree->nearestKSearch(query_point, k_correspondences_, nn_indices, nn_dist_sq);
 
     // Find the covariance matrix
     for (int j = 0; j < k_correspondences_; j++) {
-      const PointT& pt = (*cloud)[nn_indecies[j]];
+      const PointT& pt = (*cloud)[nn_indices[j]];
 
       mean[0] += pt.x;
       mean[1] += pt.y;
