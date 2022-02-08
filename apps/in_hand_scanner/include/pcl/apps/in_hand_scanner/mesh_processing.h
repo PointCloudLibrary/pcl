@@ -42,33 +42,36 @@
 
 #include <pcl/apps/in_hand_scanner/common_types.h>
 
-namespace pcl
-{
-  namespace ihs
-  {
-    /** \brief Contains methods that take advantage of the connectivity information in the mesh.
-      * \author Martin Saelzle
-      * \ingroup apps
-      */
-    class MeshProcessing
-    {
-      public:
+namespace pcl {
+namespace ihs {
+/** \brief Contains methods that take advantage of the connectivity information in the
+ * mesh.
+ *
+ * \author Martin Saelzle
+ * \ingroup apps
+ */
+class MeshProcessing {
+public:
+  using Mesh = pcl::ihs::Mesh;
+  using HalfEdgeIndices = Mesh::HalfEdgeIndices;
 
-        using Mesh = pcl::ihs::Mesh;
-        using HalfEdgeIndices = Mesh::HalfEdgeIndices;
+  static_assert(Mesh::IsManifold::value,
+                "MeshProcessing currently works only on the manifold mesh.");
 
-        static_assert (Mesh::IsManifold::value, "MeshProcessing currently works only on the manifold mesh.");
+  /** \brief Constructor. */
+  MeshProcessing();
 
-        /** \brief Constructor. */
-        MeshProcessing ();
-
-        /** \brief Inserts triangles into jagged boundaries, removes isolated triangles and closes triangular holes.
-          * \param[in,out] mesh The mesh which should be processed.
-          * \param[in] boundary_collection Collection of boundary half-edges.
-          * \param[in] cleanup Calls mesh.cleanup () if true.
-          */
-        void
-        processBoundary (Mesh& mesh, const std::vector <HalfEdgeIndices>& boundary_collection, const bool cleanup=true) const;
-    };
-  } // End namespace ihs
+  /** \brief Inserts triangles into jagged boundaries, removes isolated triangles and
+   * closes triangular holes.
+   *
+   * \param[in,out] mesh The mesh which should be processed.
+   * \param[in] boundary_collection Collection of boundary half-edges.
+   * \param[in] cleanup Calls mesh.cleanup() if true.
+   */
+  void
+  processBoundary(Mesh& mesh,
+                  const std::vector<HalfEdgeIndices>& boundary_collection,
+                  const bool cleanup = true) const;
+};
+} // End namespace ihs
 } // End namespace pcl

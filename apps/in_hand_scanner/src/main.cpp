@@ -38,15 +38,15 @@
  *
  */
 
-#include <QApplication>
-
 #include <pcl/apps/in_hand_scanner/main_window.h>
 
+#include <QApplication>
+
 int
-main (int argc, char** argv)
+main(int argc, char** argv)
 {
-  QApplication app (argc, argv);
+  QApplication app(argc, argv);
   pcl::ihs::MainWindow mw;
-  mw.show ();
-  return (QApplication::exec ());
+  mw.show();
+  return (QApplication::exec());
 }

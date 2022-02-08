@@ -40,48 +40,43 @@
 
 #pragma once
 
-#include <cstdint>
-
 #include <pcl/memory.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/pcl_macros.h>
 
-namespace pcl
-{
-  namespace ihs
-  {
-    // - Frequency 3 Icosahedron where each vertex corresponds to a viewing direction
-    // - First vertex aligned to z-axis
-    // - Removed vertices with z < 0.3
-    // -> 31 directions, fitting nicely into a 32 bit integer
-    // -> Very oblique angles are not considered
-    class PCL_EXPORTS Dome
-    {
-      public:
+#include <cstdint>
 
-        static const int num_directions = 31;
-        using Vertices = Eigen::Matrix <float, 4, num_directions>;
+namespace pcl {
+namespace ihs {
+// - Frequency 3 Icosahedron where each vertex corresponds to a viewing direction
+// - First vertex aligned to z-axis
+// - Removed vertices with z < 0.3
+// -> 31 directions, fitting nicely into a 32 bit integer
+// -> Very oblique angles are not considered
+class PCL_EXPORTS Dome {
+public:
+  static const int num_directions = 31;
+  using Vertices = Eigen::Matrix<float, 4, num_directions>;
 
-        Dome ();
+  Dome();
 
-        Vertices
-        getVertices () const;
+  Vertices
+  getVertices() const;
 
-      private:
+private:
+  Vertices vertices_;
 
-        Vertices vertices_;
+public:
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
+};
 
-      public:
-        PCL_MAKE_ALIGNED_OPERATOR_NEW
-    };
+PCL_EXPORTS void
+addDirection(const Eigen::Vector4f& normal,
+             const Eigen::Vector4f& direction,
+             std::uint32_t& directions);
 
-    PCL_EXPORTS void
-    addDirection (const Eigen::Vector4f& normal,
-                  const Eigen::Vector4f& direction,
-                  std::uint32_t&         directions);
+PCL_EXPORTS unsigned int
+countDirections(const std::uint32_t directions);
 
-    PCL_EXPORTS unsigned int
-    countDirections (const std::uint32_t directions);
-
-  } // End namespace ihs
+} // End namespace ihs
 } // End namespace pcl

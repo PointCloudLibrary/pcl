@@ -40,183 +40,214 @@
 
 #pragma once
 
-#include <cstdint>
-
 #include <pcl/apps/in_hand_scanner/common_types.h>
-#include <pcl/pcl_exports.h>
 #include <pcl/kdtree/kdtree.h>
+#include <pcl/pcl_exports.h>
+
+#include <cstdint>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Integration
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace pcl
-{
-  namespace ihs
-  {
-    /** \brief Integrate several clouds into a common mesh.
-      * \author Martin Saelzle
-      * \ingroup apps
-      */
-    class PCL_EXPORTS Integration
-    {
-      public:
+namespace pcl {
+namespace ihs {
+/** \brief Integrate several clouds into a common mesh.
+ * \author Martin Saelzle
+ * \ingroup apps
+ */
+class PCL_EXPORTS Integration {
+public:
+  using PointXYZRGBNormal = pcl::PointXYZRGBNormal;
+  using CloudXYZRGBNormal = pcl::PointCloud<PointXYZRGBNormal>;
+  using CloudXYZRGBNormalPtr = CloudXYZRGBNormal::Ptr;
+  using CloudXYZRGBNormalConstPtr = CloudXYZRGBNormal::ConstPtr;
 
-        using PointXYZRGBNormal = pcl::PointXYZRGBNormal;
-        using CloudXYZRGBNormal = pcl::PointCloud<PointXYZRGBNormal>;
-        using CloudXYZRGBNormalPtr = CloudXYZRGBNormal::Ptr;
-        using CloudXYZRGBNormalConstPtr = CloudXYZRGBNormal::ConstPtr;
+  using Mesh = pcl::ihs::Mesh;
+  using MeshPtr = pcl::ihs::MeshPtr;
+  using MeshConstPtr = pcl::ihs::MeshConstPtr;
+  using VertexIndex = Mesh::VertexIndex;
+  using VertexIndices = Mesh::VertexIndices;
 
-        using Mesh = pcl::ihs::Mesh;
-        using MeshPtr = pcl::ihs::MeshPtr;
-        using MeshConstPtr = pcl::ihs::MeshConstPtr;
-        using VertexIndex = Mesh::VertexIndex;
-        using VertexIndices = Mesh::VertexIndices;
+  /** \brief Constructor. */
+  Integration();
 
-        /** \brief Constructor. */
-        Integration ();
+  /** \brief Reconstructs a mesh from an organized cloud.
+   *
+   * \param[in] cloud_data Input cloud. Must be organized.
+   * \param[in] mesh_model Reconstructed mesh.
+   *
+   * \return true if success.
+   */
+  bool
+  reconstructMesh(const CloudXYZRGBNormalConstPtr& cloud_data,
+                  MeshPtr& mesh_model) const;
 
-        /** \brief Reconstructs a mesh from an organized cloud.
-          * \param[in] cloud_data Input cloud. Must be organized.
-          * \param[in] mesh_model Reconstructed mesh.
-          * \return true if success.
-          */
-        bool
-        reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_data,
-                         MeshPtr&                         mesh_model) const;
+  /** \brief Merge the organized cloud into the mesh.#
+   *
+   * \param[in] cloud_data Input cloud. Must be organized.
+   * \param[in,out] mesh_model Mesh with new points integrated.
+   * \param[in] T Transformation that aligns the data cloud with the model mesh.
+   *
+   * \return true if success.
+   */
+  bool
+  merge(const CloudXYZRGBNormalConstPtr& cloud_data,
+        MeshPtr& mesh_model,
+        const Eigen::Matrix4f& T) const;
 
-        /** \brief Merge the organized cloud into the mesh.
-          * \param[in] cloud_data Input cloud. Must be organized.
-          * \param[in,out] mesh_model Mesh with new points integrated.
-          * \param[in] T Transformation that aligns the data cloud with the model mesh.
-          * \return true if success.
-          */
-        bool
-        merge (const CloudXYZRGBNormalConstPtr& cloud_data,
-               MeshPtr&                         mesh_model,
-               const Eigen::Matrix4f&           T) const;
+  /** \brief Outlier rejection. In each merge step points that have not been observed
+   * again age by one iteration. Points that are observed again get an age of 0. Once a
+   * point reaches the maximum age it is decided if the point is removed or kept in the
+   * mesh. A point is removed if it has not been observed from a minimum number of
+   * directions.
+   *
+   * \param[in,out] mesh The mesh which should be processed.
+   * \param[in] cleanup Calls mesh.cleanup() if true.
+   */
+  void
+  age(const MeshPtr& mesh, const bool cleanup = true) const;
 
-        /** \brief Outlier rejection. In each merge step points that have not been observed again age by one iteration. Points that are observed again get an age of 0. Once a point reaches the maximum age it is decided if the point is removed or kept in the mesh. A point is removed if it has not been observed from a minimum number of directions.
-          * \param[in,out] mesh The mesh which should be processed.
-          * \param[in] cleanup Calls mesh.cleanup () if true.
-          */
-        void
-        age (const MeshPtr& mesh, const bool cleanup=true) const;
+  /** \brief Removes unfit vertices regardless of their age. Unfit vertices are those
+   * that have not been observed from enough directions.
+   *
+   * \param[in,out] mesh The which should be processed.
+   * \param[in] cleanup Calls mesh.cleanup() if true.
+   */
+  void
+  removeUnfitVertices(const MeshPtr& mesh, const bool cleanup = true) const;
 
-        /** \brief Removes unfit vertices regardless of their age. Unfit vertices are those that have not been observed from enough directions.
-          * \param[in,out] mesh The which should be processed.
-          * \param[in] cleanup Calls mesh.cleanup () if true.
-          */
-        void
-        removeUnfitVertices (const MeshPtr& mesh, const bool cleanup=true) const;
+  /** @{ */
+  /** \brief Corresponding points are averaged out if their distance is below a distance
+   * threshold. Else the points are added to the mesh as new vertices (Set in cm^2).
+   *
+   * \note Must be greater than zero.
+   */
+  void
+  setMaxSquaredDistance(const float squared_distance);
+  float
+  getMaxSquaredDistance() const;
+  /** @} */
 
-        /** @{ */
-        /** \brief Corresponding points are averaged out if their distance is below a distance threshold. Else the points are added to the mesh as new vertices (Set in cm^2).
-          * \note Must be greater than zero.
-          */
-        void  setMaxSquaredDistance (const float squared_distance);
-        float getMaxSquaredDistance () const;
-        /** @} */
+  /** @{ */
+  /** \brief Corresponding points are only averaged out if the angle between the normals
+   * is smaller than an angle threshold.
+   *
+   * \note Must be between 0 and 180. Values outside this range are clamped to the
+   * nearest valid value.
+   */
+  void
+  setMaxAngle(const float angle);
+  float
+  getMaxAngle() const;
+  /** @} */
 
-        /** @{ */
-        /** \brief Corresponding points are only averaged out if the angle between the normals is smaller than an angle threshold.
-          * \note Must be between 0 and 180. Values outside this range are clamped to the nearest valid value.
-          */
-        void  setMaxAngle (const float angle);
-        float getMaxAngle () const;
-        /** @} */
+  /** @{ */
+  /** \brief Once a point reaches the maximum age it is decided if the point is removed
+   * or kept in the mesh.
+   *
+   * \note Must be greater than zero.
+   */
+  void
+  setMaxAge(const unsigned int age);
+  unsigned int
+  getMaxAge() const;
+  /** @} */
 
-        /** @{  */
-        /** \brief Once a point reaches the maximum age it is decided if the point is removed or kept in the mesh.
-          * \note Must be greater than zero.
-          */
-        void         setMaxAge (const unsigned int age);
-        unsigned int getMaxAge () const;
-        /** @} */
+  /** @{ */
+  /** \brief A point is removed if it has not been observed from a minimum number of
+   * directions.
+   *
+   * \note Must be greater than zero.
+   */
+  void
+  setMinDirections(const unsigned int directions);
+  unsigned int
+  getMinDirections() const;
+  /** @} */
 
-        /** @{  */
-        /** \brief A point is removed if it has not been observed from a minimum number of directions.
-          * \note Must be greater than zero.
-          */
-        void         setMinDirections (const unsigned int directions);
-        unsigned int getMinDirections () const;
-        /** @} */
+private:
+  using PointXYZ = pcl::PointXYZ;
+  using CloudXYZ = pcl::PointCloud<PointXYZ>;
+  using CloudXYZPtr = CloudXYZ::Ptr;
+  using CloudXYZConstPtr = CloudXYZ::ConstPtr;
 
-      private:
+  using PointIHS = pcl::ihs::PointIHS;
+  using CloudIHS = pcl::ihs::CloudIHS;
+  using CloudIHSPtr = pcl::ihs::CloudIHSPtr;
+  using CloudIHSConstPtr = pcl::ihs::CloudIHSConstPtr;
 
-        using PointXYZ = pcl::PointXYZ;
-        using CloudXYZ = pcl::PointCloud<PointXYZ>;
-        using CloudXYZPtr = CloudXYZ::Ptr;
-        using CloudXYZConstPtr = CloudXYZ::ConstPtr;
+  using KdTree = pcl::KdTree<PointXYZ>;
+  using KdTreePtr = KdTree::Ptr;
+  using KdTreeConstPtr = KdTree::ConstPtr;
 
-        using PointIHS = pcl::ihs::PointIHS;
-        using CloudIHS = pcl::ihs::CloudIHS;
-        using CloudIHSPtr = pcl::ihs::CloudIHSPtr;
-        using CloudIHSConstPtr = pcl::ihs::CloudIHSConstPtr;
+  std::uint8_t
+  trimRGB(const float val) const;
 
-        using KdTree = pcl::KdTree<PointXYZ>;
-        using KdTreePtr = KdTree::Ptr;
-        using KdTreeConstPtr = KdTree::ConstPtr;
+  /** \brief Adds two triangles between points 0-1-3 and 1-2-3 to the mesh. */
+  void
+  addToMesh(const PointIHS& pt_0,
+            const PointIHS& pt_1,
+            const PointIHS& pt_2,
+            const PointIHS& pt_3,
+            VertexIndex& vi_0,
+            VertexIndex& vi_1,
+            VertexIndex& vi_2,
+            VertexIndex& vi_3,
+            const MeshPtr& mesh) const;
 
-        std::uint8_t
-        trimRGB (const float val) const;
+  /** \brief Adds a triangle between the points 0-1-2 to the mesh. */
+  void
+  addToMesh(const PointIHS& pt_0,
+            const PointIHS& pt_1,
+            const PointIHS& pt_2,
+            VertexIndex& vi_0,
+            VertexIndex& vi_1,
+            VertexIndex& vi_2,
+            const MeshPtr& mesh) const;
 
-        /** \brief Adds two triangles between points 0-1-3 and 1-2-3 to the mesh. */
-        void
-        addToMesh (const PointIHS& pt_0,
-                   const PointIHS& pt_1,
-                   const PointIHS& pt_2,
-                   const PointIHS& pt_3,
-                   VertexIndex&    vi_0,
-                   VertexIndex&    vi_1,
-                   VertexIndex&    vi_2,
-                   VertexIndex&    vi_3,
-                   const MeshPtr&  mesh) const;
+  /** \brief Returns true if the distance between the three points is below a threshold.
+   */
+  bool
+  distanceThreshold(const PointIHS& pt_0,
+                    const PointIHS& pt_1,
+                    const PointIHS& pt_2) const;
 
-        /** \brief Adds a triangle between the points 0-1-2 to the mesh. */
-        void
-        addToMesh (const PointIHS& pt_0,
-                   const PointIHS& pt_1,
-                   const PointIHS& pt_2,
-                   VertexIndex&    vi_0,
-                   VertexIndex&    vi_1,
-                   VertexIndex&    vi_2,
-                   const MeshPtr&  mesh) const;
+  /** \brief Returns true if the distance between the four points is below a threshold.
+   */
+  bool
+  distanceThreshold(const PointIHS& pt_0,
+                    const PointIHS& pt_1,
+                    const PointIHS& pt_2,
+                    const PointIHS& pt_3) const;
 
-        /** \brief Returns true if the distance between the three points is below a threshold. */
-        bool
-        distanceThreshold (const PointIHS& pt_0,
-                           const PointIHS& pt_1,
-                           const PointIHS& pt_2) const;
+  ////////////////////////////////////////////////////////////////////////
+  // Members
+  ////////////////////////////////////////////////////////////////////////
 
-        /** \brief Returns true if the distance between the four points is below a threshold. */
-        bool
-        distanceThreshold (const PointIHS& pt_0,
-                           const PointIHS& pt_1,
-                           const PointIHS& pt_2,
-                           const PointIHS& pt_3) const;
+  /** \brief Nearest neighbor search. */
+  KdTreePtr kd_tree_;
 
-        ////////////////////////////////////////////////////////////////////////
-        // Members
-        ////////////////////////////////////////////////////////////////////////
+  /** \brief Maximum squared distance below which points are averaged out. */
+  float max_squared_distance_;
 
-        /** \brief Nearest neighbor search. */
-        KdTreePtr kd_tree_;
+  /** \brief Maximum angle between normals below which points are averaged out. In
+   * degrees.
+   */
+  float max_angle_;
 
-        /** \brief Maximum squared distance below which points are averaged out. */
-        float max_squared_distance_;
+  /** \brief Minimum weight above which points are added. */
+  float min_weight_;
 
-        /** \brief Maximum angle between normals below which points are averaged out. In degrees. */
-        float max_angle_;
+  /** \brief Once a point reaches the maximum age it is decided if the point is removed
+   * or kept in the mesh.
+   */
+  unsigned int max_age_;
 
-        /** \brief Minimum weight above which points are added. */
-        float min_weight_;
-
-        /** \brief Once a point reaches the maximum age it is decided if the point is removed or kept in the mesh. */
-        unsigned int max_age_;
-
-        /** \brief A point is removed if it has not been observed from a minimum number of directions. */
-        unsigned int min_directions_;
-    };
-  } // End namespace ihs
+  /** \brief A point is removed if it has not been observed from a minimum number of
+   * directions.
+   */
+  unsigned int min_directions_;
+};
+} // End namespace ihs
 } // End namespace pcl
