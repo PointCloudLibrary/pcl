@@ -62,8 +62,10 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovariances(
   }
 
   Eigen::Vector3d mean;
-  pcl::Indices nn_indices(k_correspondences_);
-  std::vector<float> nn_dist_sq(k_correspondences_);
+  pcl::Indices nn_indices;
+  nn_indices.reserve(k_correspondences_);
+  std::vector<float> nn_dist_sq;
+  nn_dist_sq.reserve(k_correspondences_);
 
   // We should never get there but who knows
   if (cloud_covariances.size() < cloud->size())
