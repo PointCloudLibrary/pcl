@@ -3549,7 +3549,7 @@ pcl::visualization::PCLVisualizer::enableEDLRendering(int viewport)
     i++;
   }
 #else
-  PCL_WARN("EDL is only supported from VTK 7.");
+  PCL_WARN("EDL requires VTK version 8 or newer.");
   utils::ignore(viewport);
 #endif
 }
