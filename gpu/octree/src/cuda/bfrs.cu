@@ -43,8 +43,6 @@
 
 #include "cuda.h"
 
-using namespace thrust;
-
 namespace pcl
 {    
     namespace device
@@ -80,11 +78,11 @@ void pcl::device::bruteForceRadiusSearch(const OctreeImpl::PointCloud& cloud, co
 
     InSphere cond(query.x, query.y, query.z, radius);
 
-    device_ptr<const PointType> cloud_ptr((const PointType*)cloud.ptr());
-    device_ptr<int> res_ptr(buffer.ptr());
+    thrust::device_ptr<const PointType> cloud_ptr((const PointType*)cloud.ptr());
+    thrust::device_ptr<int> res_ptr(buffer.ptr());
     
-    counting_iterator<int> first(0);
-    counting_iterator<int> last = first + cloud.size();
+    thrust::counting_iterator<int> first(0);
+    thrust::counting_iterator<int> last = first + cloud.size();
     
     //main bottle neck is a kernel call overhead/allocs
     //work time for 871k points ~0.8ms

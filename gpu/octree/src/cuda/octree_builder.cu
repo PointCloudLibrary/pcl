@@ -51,7 +51,6 @@
 #include <thrust/device_ptr.h>
 
 using namespace pcl::gpu;
-using namespace thrust;
 
 namespace pcl 
 {
@@ -316,7 +315,7 @@ void pcl::device::OctreeImpl::build()
         // 3 * sizeof(int) => +1 row        
 
         const int transaction_size = 128 / sizeof(int);
-        int cols = max<int>(points_num, transaction_size * 4);
+        int cols = std::max<int>(points_num, transaction_size * 4);
         int rows = 10 + 1; // = 13
             
         storage.create(rows, cols);
@@ -338,8 +337,8 @@ void pcl::device::OctreeImpl::build()
     {
         //ScopeTimer timer("reduce-morton-sort-permutations"); 
     	
-        device_ptr<PointType> beg(points.ptr());
-        device_ptr<PointType> end = beg + points.size();
+        thrust::device_ptr<PointType> beg(points.ptr());
+        thrust::device_ptr<PointType> end = beg + points.size();
 
         {
             PointType atmax, atmin;
@@ -355,15 +354,15 @@ void pcl::device::OctreeImpl::build()
             octreeGlobal.maxp = make_float3(maxp.x, maxp.y, maxp.z);
         }
     		
-        device_ptr<int> codes_beg(codes.ptr());
-        device_ptr<int> codes_end = codes_beg + codes.size();
+        thrust::device_ptr<int> codes_beg(codes.ptr());
+        thrust::device_ptr<int> codes_end = codes_beg + codes.size();
         {
             //ScopeTimer timer("morton"); 
 	        thrust::transform(beg, end, codes_beg, CalcMorton(octreeGlobal.minp, octreeGlobal.maxp));
         }
 
-        device_ptr<int> indices_beg(indices.ptr());
-        device_ptr<int> indices_end = indices_beg + indices.size();
+        thrust::device_ptr<int> indices_beg(indices.ptr());
+        thrust::device_ptr<int> indices_end = indices_beg + indices.size();
         {
             //ScopeTimer timer("sort"); 
             thrust::sequence(indices_beg, indices_end);
@@ -378,9 +377,9 @@ void pcl::device::OctreeImpl::build()
         }
 
         {
-            device_ptr<float> xs(points_sorted.ptr(0));
-            device_ptr<float> ys(points_sorted.ptr(1));
-            device_ptr<float> zs(points_sorted.ptr(2));
+            thrust::device_ptr<float> xs(points_sorted.ptr(0));
+            thrust::device_ptr<float> ys(points_sorted.ptr(1));
+            thrust::device_ptr<float> zs(points_sorted.ptr(2));
             //ScopeTimer timer("perm2"); 
             thrust::transform(make_permutation_iterator(beg, indices_beg),
                               make_permutation_iterator(end, indices_end), 
