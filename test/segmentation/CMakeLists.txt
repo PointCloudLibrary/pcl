@@ -19,7 +19,7 @@ PCL_ADD_TEST(random_walker test_random_walker
 
 PCL_ADD_TEST(a_segmentation_test test_segmentation
              FILES test_segmentation.cpp
-             LINK_WITH pcl_gtest pcl_io pcl_segmentation pcl_features pcl_kdtree pcl_search pcl_common
+             LINK_WITH pcl_gtest pcl_io pcl_segmentation pcl_features pcl_kdtree pcl_search pcl_common pcl_surface
              ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd" "${PCL_SOURCE_DIR}/test/car6.pcd" "${PCL_SOURCE_DIR}/test/colored_cloud.pcd")
 
 if(QHULL_FOUND)
