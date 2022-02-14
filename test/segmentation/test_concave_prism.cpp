@@ -26,7 +26,7 @@ TEST(ExtractPolygonalPrism, two_rings)
       float radius = radiusDist(gen);
       float angle = radianDist(gen);
       float z = zDist(gen);
-      PointXYZ point(std::cosf(angle) * radius, std::sinf(angle) * radius, z);
+      PointXYZ point(cosf(angle) * radius, sinf(angle) * radius, z);
       ring->push_back(point);
     }
   }
@@ -52,16 +52,18 @@ TEST(ExtractPolygonalPrism, two_rings)
     auto xCenter = centers[i];
     for (float a = -M_PI; a < M_PI; a += 0.05f) {
       rings[i].vertices.push_back(hullCloud->size());
-      hullCloud->push_back({xCenter + r * std::cosf(a), r * std::sinf(a), 0});
+      PointXYZ point(xCenter + r * cosf(a), r * sinf(a), 0);
+      hullCloud->push_back(point);
     }
   }
 
   // add more points before using prism
   size_t ringsPointCount = cloud->size();
-  cloud->points.push_back({0, 0, 0});
+  cloud->points.push_back(PointXYZ(0, 0, 0));
   for (float a = -M_PI; a < M_PI; a += 0.05f) {
     float r = 4 * rMax;
-    cloud->points.push_back({r * std::cosf(a), r * std::sinf(a), 0});
+    PointXYZ point(r * cosf(a), r * sinf(a), 0);
+    cloud->points.push_back(point);
   }
 
   // do prism
