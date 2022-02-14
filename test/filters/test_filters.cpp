@@ -2070,7 +2070,7 @@ TEST (FrustumCulling, Filters)
   fc.setCameraPose (cam2robot);
   fc.filter (*output);
   // Should extract object; number of points based on milk.pcd
-  EXPECT_NEAR (output->size (), 13704, 13704 * 0.05); 
+  EXPECT_EQ (output->size (), 13541); 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
