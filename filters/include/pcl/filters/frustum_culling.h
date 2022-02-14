@@ -211,6 +211,15 @@ namespace pcl
       void 
       setRegionOfInterest (float roi_x, float roi_y, float roi_w, float roi_h)
       {
+        if ((roi_x > 1.0f) || (roi_x < 0.0f) ||
+            (roi_y > 1.0f) || (roi_y < 0.0f) ||
+            (roi_w <= 0.0f) || (roi_w > 1.0f) ||
+            (roi_h <= 0.0f) || (roi_h > 1.0f))
+        {
+          throw PCLException ("ROI X-Y values should be between 0 and 1. " 
+            "Width and height must not be zero.", 
+            "frustum_culling.h", "setRegionOfInterest");
+        }
         roi_x_ = roi_x;
         roi_y_ = roi_y;
         roi_w_ = roi_w;

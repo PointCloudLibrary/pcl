@@ -141,11 +141,7 @@ pcl::FrustumCulling<PointT>::applyFilter (Indices &indices)
                      (pt.dot (pl_t) <= 0) && 
                      (pt.dot (pl_b) <= 0) && 
                      (pt.dot (pl_f) <= 0) &&
-                     (pt.dot (pl_n) <= 0) &&
-                     (roi_xmax <= 1.0f) && (roi_xmin >= 0.0f) &&
-                     (roi_ymax <= 1.0f) && (roi_ymin >= 0.0f) &&
-                     (roi_w_ > 0.0f) && (roi_w_ <= 1.0f) &&
-                     (roi_h_ > 0.0f) && (roi_h_ <= 1.0f);
+                     (pt.dot (pl_n) <= 0);
     if (is_in_fov ^ negative_)
     {
       indices[indices_ctr++] = idx;

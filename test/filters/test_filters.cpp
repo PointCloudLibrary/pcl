@@ -2041,17 +2041,9 @@ TEST (FrustumCulling, Filters)
   EXPECT_EQ (output->size (), input->size ());
   removed = fc.getRemovedIndices ();
   EXPECT_EQ (removed->size (), 0);
-  // Check invalid ROI values: no points should remain
-  fc.setRegionOfInterest (0.5f, 0.5f, 0.0f, 0.0f);
-  fc.filter (*output);
-  EXPECT_EQ (output->size (), 0);
-  removed = fc.getRemovedIndices ();
-  EXPECT_EQ (removed->size (), input->size ());
-  fc.setRegionOfInterest (-0.4f, 0.0f, 8.2f, -1.3f);
-  fc.filter (*output);
-  EXPECT_EQ (output->size (), 0);
-  removed = fc.getRemovedIndices ();
-  EXPECT_EQ (removed->size (), input->size ());
+  // Check invalid ROI values
+  EXPECT_THROW (fc.setRegionOfInterest (0.5f, 0.5f, 0.0f, 0.0f), PCLException);
+  EXPECT_THROW (fc.setRegionOfInterest (-0.4f, 0.0f, 8.2f, -1.3f), PCLException);
 
   // Test on real point cloud, cut out milk cartoon in milk_cartoon_all_small_clorox.pcd
   pcl::PointCloud <pcl::PointXYZ>::Ptr model (new pcl::PointCloud <pcl::PointXYZ>);
