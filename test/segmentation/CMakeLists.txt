@@ -22,12 +22,10 @@ PCL_ADD_TEST(a_segmentation_test test_segmentation
              LINK_WITH pcl_gtest pcl_io pcl_segmentation pcl_features pcl_kdtree pcl_search pcl_common pcl_surface
              ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd" "${PCL_SOURCE_DIR}/test/car6.pcd" "${PCL_SOURCE_DIR}/test/colored_cloud.pcd")
 
-if(QHULL_FOUND)
-  PCL_ADD_TEST(a_prism_test test_concave_prism
+PCL_ADD_TEST(a_prism_test test_concave_prism
              FILES test_concave_prism.cpp
-             LINK_WITH pcl_gtest pcl_segmentation pcl_common pcl_surface
+             LINK_WITH pcl_gtest pcl_segmentation pcl_common
              ARGUMENTS)
-endif()
 
 PCL_ADD_TEST(test_non_linear test_non_linear
              FILES test_non_linear.cpp

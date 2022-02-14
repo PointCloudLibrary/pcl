@@ -1,7 +1,6 @@
 #include <pcl/test/gtest.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
-#include <pcl/surface/concave_hull.h>
 
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
 
@@ -12,12 +11,14 @@ using std::vector;
 
 TEST(ExtractPolygonalPrism, two_rings)
 {
+  float rMin = 0.1, rMax = 0.25f;
+  float dx = 0.5f; // shift the rings from [0,0,0] to [+/-dx, 0, 0]
+
   // prepare 2 rings
   PointCloud<PointXYZ>::Ptr ring(new PointCloud<PointXYZ>);
   { // use random
     std::random_device rd;
     std::mt19937 gen(rd());
-    float rMin = 0.1, rMax = 0.25f;
     std::uniform_real_distribution<float> radiusDist(rMin, rMax);
     std::uniform_real_distribution<float> radianDist(-M_PI, M_PI);
     std::uniform_real_distribution<float> zDist(-0.01f, 0.01f);
@@ -35,28 +36,31 @@ TEST(ExtractPolygonalPrism, two_rings)
   for (auto& point : ring->points) {
     auto left = point;
     auto rght = point;
-    left.x -= 0.5f;
-    rght.x += 0.5f;
+    left.x -= dx;
+    rght.x += dx;
     cloud->points.push_back(left);
     cloud->points.push_back(rght);
   }
 
-  // find hull
+  // create hull
   PointCloud<PointXYZ>::Ptr hullCloud(new PointCloud<PointXYZ>);
-  vector<Vertices> rings;
-  {
-    ConcaveHull<PointXYZ> concaveHull;
-    concaveHull.setInputCloud(cloud);
-    concaveHull.setAlpha(0.05);
-    concaveHull.reconstruct(*hullCloud, rings);
+  vector<Vertices> rings(4);
+  float radiuses[] = {rMin - 0.01f, rMax + 0.01f, rMin - 0.01f, rMax + 0.01f};
+  float centers[] = {-dx, -dx, +dx, +dx};
+  for (size_t i = 0; i < rings.size(); i++) {
+    auto r = radiuses[i];
+    auto xCenter = centers[i];
+    for (float a = -M_PI; a < M_PI; a += 0.05f) {
+      rings[i].vertices.push_back(hullCloud->size());
+      hullCloud->push_back({xCenter + r * cos(a), r * sin(a), 0});
+    }
   }
-  EXPECT_EQ(rings.size(), 4);
 
   // add more points before using prism
   size_t ringsPointCount = cloud->size();
   cloud->points.push_back({0, 0, 0});
   for (float a = -M_PI; a < M_PI; a += 0.05f) {
-    float r = 1.f;
+    float r = 4 * rMax;
     cloud->points.push_back({r * cos(a), r * sin(a), 0});
   }
 
@@ -71,10 +75,8 @@ TEST(ExtractPolygonalPrism, two_rings)
     ex.segment(*inliers);
   }
 
-  // check that almost all of the rings are in the prism.
-  // *almost* because the points on the border is not well defined,
-  // and may be inside or outside.
-  EXPECT_NEAR(inliers->indices.size(), ringsPointCount, 100);
+  // check that all of the rings are in the prism.
+  EXPECT_EQ(inliers->indices.size(), ringsPointCount);
 }
 
 int
