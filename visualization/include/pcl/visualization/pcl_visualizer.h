@@ -1709,7 +1709,7 @@ namespace pcl
                       int viewport = 0);
 
         /**
-         * @brief Eye-Dome Lightning makes dark areas to improve depth perception
+         * @brief Eye-Dome Lighting makes dark areas to improve depth perception
          * See https://www.kitware.com/eye-dome-lighting-a-non-photorealistic-shading-technique/
          * It is applied to all actors, including texts.
          * @param viewport 
