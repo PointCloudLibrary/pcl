@@ -140,7 +140,7 @@ printHelp (int, char **argv)
   print_info ("\n");
   print_info ("                     -optimal_label_colors    = maps existing labels to the optimal sequential glasbey colors, label_ids will not be mapped to fixed colors (default "); print_value ("disabled"); print_info (")\n");
   print_info ("\n");
-  print_info ("                     -edl                     = Enable Eye-Dome Lightning rendering, to improve depth perception. (default: "); print_value ("disabled"); print_info (")\n");
+  print_info ("                     -edl                     = Enable Eye-Dome Lighting rendering, to improve depth perception. (default: "); print_value ("disabled"); print_info (")\n");
   print_info ("\n");
 
   print_info ("\n(Note: for multiple .pcd files, provide multiple -{fc,ps,opaque,position,orientation} parameters; they will be automatically assigned to the right file)\n");
