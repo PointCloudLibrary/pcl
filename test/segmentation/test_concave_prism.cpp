@@ -35,11 +35,11 @@ TEST(ExtractPolygonalPrism, two_rings)
   cloud->reserve(ring->size() * 2);
   for (auto& point : ring->points) {
     auto left = point;
-    auto rght = point;
+    auto right = point;
     left.x -= dx;
-    rght.x += dx;
-    cloud->points.push_back(left);
-    cloud->points.push_back(rght);
+    right.x += dx;
+    cloud->push_back(left);
+    cloud->push_back(right);
   }
 
   // create hull
@@ -59,11 +59,11 @@ TEST(ExtractPolygonalPrism, two_rings)
 
   // add more points before using prism
   size_t ringsPointCount = cloud->size();
-  cloud->points.push_back(PointXYZ(0, 0, 0));
+  cloud->push_back(PointXYZ(0, 0, 0));
   for (float a = -M_PI; a < M_PI; a += 0.05f) {
     float r = 4 * rMax;
     PointXYZ point(r * cosf(a), r * sinf(a), 0);
-    cloud->points.push_back(point);
+    cloud->push_back(point);
   }
 
   // do prism
