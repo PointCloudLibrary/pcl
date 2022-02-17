@@ -1417,7 +1417,7 @@ pcl::SurfaceNormalModality<PointInT>::quantizeSurfaceNormals ()
       int bin_index = static_cast<int> (angle*8.0f/360.0f+1);
       // when angle is 359.999f, bin_index can overflow to 9
       if (bin_index >= 9){
-        bin_index -= 1;
+        bin_index = 8;
       }
 
       //quantized_surface_normals_.data[row_index*width+col_index] = 0x1 << bin_index;
