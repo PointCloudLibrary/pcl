@@ -427,13 +427,13 @@ main (int argc, char** argv)
   cloud_t_ = cloud_t.makeShared ();
 
   another_cloud_ = another_cloud.makeShared();
-  normals_ = (new pcl::PointCloud<pcl::Normal>)->makeShared();
+  normals_.reset (new pcl::PointCloud<pcl::Normal>);
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> normal_estimator;
   normal_estimator.setInputCloud(cloud_);
   normal_estimator.setKSearch(30);
   normal_estimator.compute(*normals_);
 
-  another_normals_ = (new pcl::PointCloud<pcl::Normal>)->makeShared();
+  another_normals_.reset (new pcl::PointCloud<pcl::Normal>);
   normal_estimator.setInputCloud(another_cloud_);
   normal_estimator.setKSearch(30);
   normal_estimator.compute(*another_normals_);

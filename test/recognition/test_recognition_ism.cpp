@@ -120,21 +120,21 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  training_cloud = (new pcl::PointCloud<pcl::PointXYZ>)->makeShared();
+  training_cloud.reset (new pcl::PointCloud<pcl::PointXYZ>);
   if (pcl::io::loadPCDFile (argv[1], *training_cloud) < 0)
   {
     std::cerr << "Failed to read test file. Please download `ism_train.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
-  testing_cloud = (new pcl::PointCloud<pcl::PointXYZ>)->makeShared();
+  testing_cloud.reset (new pcl::PointCloud<pcl::PointXYZ>);
   if (pcl::io::loadPCDFile (argv[2], *testing_cloud) < 0)
   {
     std::cerr << "Failed to read test file. Please download `ism_test.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
 
-  training_normals = (new pcl::PointCloud<pcl::Normal>)->makeShared();
-  testing_normals = (new pcl::PointCloud<pcl::Normal>)->makeShared();
+  training_normals.reset (new pcl::PointCloud<pcl::Normal>);
+  testing_normals.reset (new pcl::PointCloud<pcl::Normal>);
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> normal_estimator;
   normal_estimator.setRadiusSearch (25.0);
   normal_estimator.setInputCloud(training_cloud);
