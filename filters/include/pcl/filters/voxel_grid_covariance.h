@@ -360,7 +360,7 @@ namespace pcl
 
       }
 
-      /** \brief Get the voxels surrounding point p designated by #relative_coordinates.
+      /** \brief Get the voxels surrounding point p designated by \p relative_coordinates.
        * \note Only voxels containing a sufficient number of points are used.
        * \param[in] relative_coordinates 3xN matrix that represents relative coordinates of N neighboring voxels with respect to the center voxel
        * \param[in] reference_point the point to get the leaf structure at
