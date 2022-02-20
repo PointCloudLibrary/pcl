@@ -88,16 +88,18 @@ public:
   }
 
   /** \brief Get a list of valid correspondences after rejection from the original set
-   * of correspondences. \param[in] original_correspondences the set of initial
-   * correspondences given \param[out] remaining_correspondences the resultant filtered
-   * set of remaining correspondences
+   * of correspondences.
+   * \param[in] original_correspondences the set of initial correspondences given
+   * \param[out] remaining_correspondences the resultant filtered set of remaining
+   * correspondences
    */
   void
   getRemainingCorrespondences(const pcl::Correspondences& original_correspondences,
                               pcl::Correspondences& remaining_correspondences) override;
 
   /** \brief Provide a source point cloud dataset (must contain XYZ data!), used to
-   * compute the correspondence distance. \param[in] cloud a cloud containing XYZ data
+   * compute the correspondence distance.
+   * \param[in] cloud a cloud containing XYZ data
    */
   inline void
   setInputSource(const PointCloudSourceConstPtr& cloud)
@@ -106,7 +108,8 @@ public:
   }
 
   /** \brief Provide a target point cloud dataset (must contain XYZ data!), used to
-   * compute the correspondence distance. \param[in] target a cloud containing XYZ data
+   * compute the correspondence distance.
+   * \param[in] target a cloud containing XYZ data
    */
   inline void
   setInputTarget(const PointCloudTargetConstPtr& target)
@@ -235,9 +238,11 @@ public:
 
   /** \brief Polygonal rejection of a single polygon, indexed by two point index vectors
    * \param source_indices indices of polygon points in \ref input_, must have a size
-   * equal to \ref cardinality_ \param target_indices corresponding indices of polygon
-   * points in \ref target_, must have a size equal to \ref cardinality_ \return true if
-   * all edge length ratios are larger than or equal to \ref similarity_threshold_
+   * equal to \ref cardinality_
+   * \param target_indices corresponding indices of polygon points in \ref target_, must
+   * have a size equal to \ref cardinality_
+   * \return true if all edge length ratios are larger than or equal to
+   * \ref similarity_threshold_
    */
   inline bool
   thresholdPolygon(const pcl::Indices& source_indices,
@@ -266,9 +271,10 @@ protected:
   }
 
   /** \brief Get k unique random indices in range {0,...,n-1} (sampling without
-   * replacement) \note No check is made to ensure that k <= n. \param n upper index
-   * range, exclusive \param k number of unique indices to sample \return k unique
-   * random indices in range {0,...,n-1}
+   * replacement) \note No check is made to ensure that k <= n.
+   * \param n upper index range, exclusive
+   * \param k number of unique indices to sample
+   * \return k unique random indices in range {0,...,n-1}
    */
   inline std::vector<int>
   getUniqueRandomIndices(int n, int k)
@@ -340,15 +346,19 @@ protected:
 
   /** \brief Compute a linear histogram. This function is equivalent to the MATLAB
    * function \b histc, with the edges set as follows: <b>
-   * lower:(upper-lower)/bins:upper </b> \param data input samples \param lower lower
-   * bound of input samples \param upper upper bound of input samples \param bins number
-   * of bins in output \return linear histogram
+   * lower:(upper-lower)/bins:upper </b>
+   * \param data input samples
+   * \param lower lower bound of input samples
+   * \param upper upper bound of input samples
+   * \param bins number of bins in output
+   * \return linear histogram
    */
   std::vector<int>
   computeHistogram(const std::vector<float>& data, float lower, float upper, int bins);
 
   /** \brief Find the optimal value for binary histogram thresholding using Otsu's
-   * method \param histogram input histogram \return threshold value according to Otsu's
+   * method
+   * \param histogram input histogram \return threshold value according to Otsu's
    * criterion
    */
   int

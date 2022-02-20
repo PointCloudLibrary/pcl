@@ -52,7 +52,7 @@ namespace pcl
     * Implements the well known Region Growing algorithm used for segmentation.
     * Description can be found in the article
     * "Segmentation of point clouds using smoothness constraint"
-    * by T. Rabbania, F. A. van den Heuvelb, G. Vosselmanc.
+    * by T. Rabbani, F. A. van den Heuvel, G. Vosselman.
     * In addition to residual test, the possibility to test curvature is added.
     * \ingroup segmentation
     */

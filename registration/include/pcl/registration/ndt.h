@@ -204,7 +204,7 @@ public:
 
   /** \brief Convert 6 element transformation vector to affine transformation.
    * \param[in] x transformation vector of the form [x, y, z, roll, pitch, yaw]
-   * \param[out] trans affine transform corresponding to given transfomation
+   * \param[out] trans affine transform corresponding to given transformation
    * vector
    */
   static void
@@ -219,7 +219,7 @@ public:
   /** \brief Convert 6 element transformation vector to transformation matrix.
    * \param[in] x transformation vector of the form [x, y, z, roll, pitch, yaw]
    * \param[out] trans 4x4 transformation matrix corresponding to given
-   * transfomation vector
+   * transformation vector
    */
   static void
   convertTransform(const Eigen::Matrix<double, 6, 1>& x, Eigen::Matrix4f& trans)
@@ -285,7 +285,7 @@ protected:
    * w.r.t. the transformation vector
    * \param[in] trans_cloud transformed point cloud
    * \param[in] transform the current transform vector
-   * \param[in] compute_hessian flag to calculate hessian, unnessissary for step
+   * \param[in] compute_hessian flag to calculate hessian, unnecessary for step
    * calculation.
    */
   double
@@ -295,7 +295,7 @@ protected:
                      const Eigen::Matrix<double, 6, 1>& transform,
                      bool compute_hessian = true);
 
-  /** \brief Compute individual point contirbutions to derivatives of
+  /** \brief Compute individual point contributions to derivatives of
    * likelihood function w.r.t. the transformation vector.
    * \note Equation 6.10, 6.12 and 6.13 [Magnusson 2009].
    * \param[in,out] score_gradient the gradient vector of the likelihood
@@ -305,7 +305,7 @@ protected:
    * \param[in] x_trans transformed point minus mean of occupied covariance
    * voxel
    * \param[in] c_inv covariance of occupied covariance voxel
-   * \param[in] compute_hessian flag to calculate hessian, unnessissary for step
+   * \param[in] compute_hessian flag to calculate hessian, unnecessary for step
    * calculation.
    */
   double
@@ -315,10 +315,10 @@ protected:
                     const Eigen::Matrix3d& c_inv,
                     bool compute_hessian = true) const;
 
-  /** \brief Precompute anglular components of derivatives.
+  /** \brief Precompute angular components of derivatives.
    * \note Equation 6.19 and 6.21 [Magnusson 2009].
    * \param[in] transform the current transform vector
-   * \param[in] compute_hessian flag to calculate hessian, unnessissary for step
+   * \param[in] compute_hessian flag to calculate hessian, unnecessary for step
    * calculation.
    */
   void
@@ -328,7 +328,7 @@ protected:
   /** \brief Compute point derivatives.
    * \note Equation 6.18-21 [Magnusson 2009].
    * \param[in] x point from the input cloud
-   * \param[in] compute_hessian flag to calculate hessian, unnessissary for step
+   * \param[in] compute_hessian flag to calculate hessian, unnecessary for step
    * calculation.
    */
   void
@@ -363,7 +363,7 @@ protected:
     computeHessian(hessian, trans_cloud);
   }
 
-  /** \brief Compute individual point contirbutions to hessian of likelihood
+  /** \brief Compute individual point contributions to hessian of likelihood
    * function w.r.t. the transformation vector.
    * \note Equation 6.13 [Magnusson 2009].
    * \param[in,out] hessian the hessian matrix of the likelihood function
