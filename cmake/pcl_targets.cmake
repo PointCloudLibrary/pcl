@@ -281,7 +281,7 @@ function(PCL_CUDA_ADD_LIBRARY _name)
 
   set_target_properties(${_name} PROPERTIES
     VERSION ${PCL_VERSION}
-    SOVERSION ${PCL_VERSION_MAJOR}
+    SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
     DEFINE_SYMBOL "PCLAPI_EXPORTS")
   set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
 
