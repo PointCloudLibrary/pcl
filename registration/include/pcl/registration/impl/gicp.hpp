@@ -218,7 +218,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
   tmp_idx_src_ = &indices_src;
   tmp_idx_tgt_ = &indices_tgt;
 
-  // Optimize using forward-difference approximation LM
+  // Optimize using BFGS
   OptimizationFunctorWithIndices functor(this);
   BFGS<OptimizationFunctorWithIndices> bfgs(functor);
   bfgs.parameters.sigma = 0.01;
