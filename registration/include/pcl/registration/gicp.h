@@ -207,11 +207,11 @@ public:
     return mahalanobis_[index];
   }
 
-  /** \brief Computes rotation matrix derivative.
+  /** \brief Computes the derivative of the cost function w.r.t rotation angles.
    * rotation matrix is obtainded from rotation angles x[3], x[4] and x[5]
-   * \return d/d_rx, d/d_ry and d/d_rz respectively in g[3], g[4] and g[5]
+   * \return d/d_Phi, d/d_Theta, d/d_Psi respectively in g[3], g[4] and g[5]
    * param x array representing 3D transformation
-   * param R rotation matrix
+   * param R the transpose of the derivative of the cost function w.r.t rotation matrix
    * param g gradient vector
    */
   void
