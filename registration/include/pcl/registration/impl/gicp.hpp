@@ -393,7 +393,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformatio
   pcl::IterativeClosestPoint<PointSource, PointTarget>::initComputeReciprocal();
   // Difference between consecutive transforms
   double delta = 0;
-  // Get the size of the target
+  // Get the size of the source point cloud
   const std::size_t N = indices_->size();
   // Set the mahalanobis matrices to identity
   mahalanobis_.resize(N, Eigen::Matrix3d::Identity());
