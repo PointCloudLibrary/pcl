@@ -184,13 +184,14 @@ public:
   }
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
-   * point cloud using an iterative non-linear Levenberg-Marquardt approach. \param[in]
-   * cloud_src the source point cloud dataset \param[in] indices_src the vector of
-   * indices describing the points of interest in \a cloud_src
+   * point cloud using an iterative non-linear BFGS approach.
+   * \param[in] cloud_src the source point cloud dataset
+   * \param[in] indices_src the vector of indices describing
+   * the points of interest in \a cloud_src
    * \param[in] cloud_tgt the target point cloud dataset
    * \param[in] indices_tgt the vector of indices describing
    * the correspondences of the interest points from \a indices_src
-   * \param[out] transformation_matrix the resultant transformation matrix
+   * \param[in,out] transformation_matrix the resultant transformation matrix
    */
   void
   estimateRigidTransformationBFGS(const PointCloudSource& cloud_src,
