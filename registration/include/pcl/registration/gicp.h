@@ -375,15 +375,15 @@ protected:
 
   /** \return trace of mat1^t . mat2
    * \param mat1 matrix of dimension nxm
-   * \param mat2 matrix of dimension nxp
+   * \param mat2 matrix of dimension mxn
    */
   inline double
   matricesInnerProd(const Eigen::MatrixXd& mat1, const Eigen::MatrixXd& mat2) const
   {
     double r = 0.;
-    std::size_t n = mat1.rows();
+    std::size_t n = mat1.rows(), m = mat1.cols();
     // tr(mat1^t.mat2)
-    for (std::size_t i = 0; i < n; i++)
+    for (std::size_t i = 0; i < m; i++)
       for (std::size_t j = 0; j < n; j++)
         r += mat1(j, i) * mat2(i, j);
     return r;
