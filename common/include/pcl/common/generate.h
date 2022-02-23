@@ -209,7 +209,7 @@ namespace pcl
       void
       setParameters(const GeneratorParameters& pt_params)
       {
-        _point_generator.setParameters(pt_params);
+        point_generator_.setParameters(pt_params);
       }
 
       /// \return Point generation parameters
