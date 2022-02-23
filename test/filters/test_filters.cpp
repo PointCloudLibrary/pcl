@@ -2063,6 +2063,8 @@ TEST (FrustumCulling, Filters)
   fc.filter (*output);
   // Should extract object; number of points based on milk.pcd
   EXPECT_EQ (output->size (), 13541); 
+  removed = fc.getRemovedIndices ();
+  EXPECT_EQ (removed->size (), model->size () - output->size ()); 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
