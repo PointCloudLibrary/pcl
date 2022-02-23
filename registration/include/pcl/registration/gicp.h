@@ -375,7 +375,7 @@ protected:
 
   /** \return trace of mat1^t . mat2
    * \param mat1 matrix of dimension nxm
-   * \param mat2 matrix of dimension mxn
+   * \param mat2 matrix of dimension nxm
    */
   inline double
   matricesInnerProd(const Eigen::MatrixXd& mat1, const Eigen::MatrixXd& mat2) const
