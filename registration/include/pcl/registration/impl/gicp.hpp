@@ -271,14 +271,14 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
     // The last coordinate, p_tgt[3] is guaranteed to be set to 1.0 in registration.hpp
     Vector4fMapConst p_tgt =
         (*gicp_->tmp_tgt_)[(*gicp_->tmp_idx_tgt_)[i]].getVector4fMap();
-    Eigen::Vector4f pp(transformation_matrix * p_src);
+    Eigen::Vector4f p_trans_src(transformation_matrix * p_src);
     // Estimate the distance (cost function)
     // The last coordinate is still guaranteed to be set to 1.0
-    Eigen::Vector3d res(pp[0] - p_tgt[0], pp[1] - p_tgt[1], pp[2] - p_tgt[2]);
-    Eigen::Vector3d temp(gicp_->mahalanobis((*gicp_->tmp_idx_src_)[i]) * res);
-    // increment= res'*temp/num_matches = temp'*M*temp/num_matches (we postpone
+    Eigen::Vector3d d(p_trans_src[0] - p_tgt[0], p_trans_src[1] - p_tgt[1], p_trans_src[2] - p_tgt[2]);
+    Eigen::Vector3d Md(gicp_->mahalanobis((*gicp_->tmp_idx_src_)[i]) * d);
+    // increment= d'*Md/num_matches = Md'*M*Md/num_matches (we postpone
     // 1/num_matches after the loop closes)
-    f += double(res.transpose() * temp);
+    f += double(d.transpose() * Md);
   }
   return f / m;
 }
@@ -293,7 +293,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
   // Zero out g
   g.setZero();
   // Eigen::Vector3d g_t = g.head<3> ();
-  Eigen::Matrix3d R = Eigen::Matrix3d::Zero();
+  Eigen::Matrix3d dCost_dR = Eigen::Matrix3d::Zero();
   int m = static_cast<int>(gicp_->tmp_idx_src_->size());
   for (int i = 0; i < m; ++i) {
     // The last coordinate, p_src[3] is guaranteed to be set to 1.0 in registration.hpp
@@ -303,23 +303,23 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
     Vector4fMapConst p_tgt =
         (*gicp_->tmp_tgt_)[(*gicp_->tmp_idx_tgt_)[i]].getVector4fMap();
 
-    Eigen::Vector4f pp(transformation_matrix * p_src);
+    Eigen::Vector4f p_trans_src(transformation_matrix * p_src);
     // The last coordinate is still guaranteed to be set to 1.0
-    Eigen::Vector3d res(pp[0] - p_tgt[0], pp[1] - p_tgt[1], pp[2] - p_tgt[2]);
-    // temp = M*res
-    Eigen::Vector3d temp(gicp_->mahalanobis((*gicp_->tmp_idx_src_)[i]) * res);
+    Eigen::Vector3d d(p_trans_src[0] - p_tgt[0], p_trans_src[1] - p_tgt[1], p_trans_src[2] - p_tgt[2]);
+    // Md = M*d
+    Eigen::Vector3d Md(gicp_->mahalanobis((*gicp_->tmp_idx_src_)[i]) * d);
     // Increment translation gradient
-    // g.head<3> ()+= 2*M*res/num_matches (we postpone 2/num_matches after the loop
+    // g.head<3> ()+= 2*M*d/num_matches (we postpone 2/num_matches after the loop
     // closes)
-    g.head<3>() += temp;
+    g.head<3>() += Md;
     // Increment rotation gradient
-    pp = gicp_->base_transformation_ * p_src;
-    Eigen::Vector3d p_src3(pp[0], pp[1], pp[2]);
-    R += p_src3 * temp.transpose();
+    p_trans_src = gicp_->base_transformation_ * p_src;
+    Eigen::Vector3d p_base_src(p_trans_src[0], p_trans_src[1], p_trans_src[2]);
+    dCost_dR += p_base_src * Md.transpose();
   }
   g.head<3>() *= 2.0 / m;
-  R *= 2.0 / m;
-  gicp_->computeRDerivative(x, R, g);
+  dCost_dR *= 2.0 / m;
+  gicp_->computeRDerivative(x, dCost_dR, g);
 }
 
 template <typename PointSource, typename PointTarget>
@@ -331,7 +331,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
   gicp_->applyState(transformation_matrix, x);
   f = 0;
   g.setZero();
-  Eigen::Matrix3d R = Eigen::Matrix3d::Zero();
+  Eigen::Matrix3d dCost_dR = Eigen::Matrix3d::Zero();
   const int m = static_cast<int>(gicp_->tmp_idx_src_->size());
   for (int i = 0; i < m; ++i) {
     // The last coordinate, p_src[3] is guaranteed to be set to 1.0 in registration.hpp
@@ -340,26 +340,26 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
     // The last coordinate, p_tgt[3] is guaranteed to be set to 1.0 in registration.hpp
     Vector4fMapConst p_tgt =
         (*gicp_->tmp_tgt_)[(*gicp_->tmp_idx_tgt_)[i]].getVector4fMap();
-    Eigen::Vector4f pp(transformation_matrix * p_src);
+    Eigen::Vector4f p_trans_src(transformation_matrix * p_src);
     // The last coordinate is still guaranteed to be set to 1.0
-    Eigen::Vector3d res(pp[0] - p_tgt[0], pp[1] - p_tgt[1], pp[2] - p_tgt[2]);
-    // temp = M*res
-    Eigen::Vector3d temp(gicp_->mahalanobis((*gicp_->tmp_idx_src_)[i]) * res);
+    Eigen::Vector3d d(p_trans_src[0] - p_tgt[0], p_trans_src[1] - p_tgt[1], p_trans_src[2] - p_tgt[2]);
+    // Md = M*d
+    Eigen::Vector3d Md(gicp_->mahalanobis((*gicp_->tmp_idx_src_)[i]) * d);
     // Increment total error
-    f += double(res.transpose() * temp);
+    f += double(d.transpose() * Md);
     // Increment translation gradient
-    // g.head<3> ()+= 2*M*res/num_matches (we postpone 2/num_matches after the loop
+    // g.head<3> ()+= 2*M*d/num_matches (we postpone 2/num_matches after the loop
     // closes)
-    g.head<3>() += temp;
-    pp = gicp_->base_transformation_ * p_src;
-    Eigen::Vector3d p_src3(pp[0], pp[1], pp[2]);
+    g.head<3>() += Md;
+    p_trans_src = gicp_->base_transformation_ * p_src;
+    Eigen::Vector3d p_base_src(p_trans_src[0], p_trans_src[1], p_trans_src[2]);
     // Increment rotation gradient
-    R += p_src3 * temp.transpose();
+    dCost_dR += p_base_src * Md.transpose();
   }
   f /= double(m);
   g.head<3>() *= double(2.0 / m);
-  R *= 2.0 / m;
-  gicp_->computeRDerivative(x, R, g);
+  dCost_dR *= 2.0 / m;
+  gicp_->computeRDerivative(x, dCost_dR, g);
 }
 
 template <typename PointSource, typename PointTarget>
