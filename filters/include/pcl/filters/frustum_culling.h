@@ -199,8 +199,8 @@ namespace pcl
       
       /** \brief Set the region of interest (ROI) in normalized values
         *  
-        * This is an optional feature. If ROI is not set, 
-        * all points in the FOV of the camera are returned.
+        * Default value of ROI: roi_{x, y} = 0.5, roi_{w, h} = 1.0
+        * This corresponds to maximal FoV and returns all the points in the frustum
         * Can be used to cut out objects based on 2D bounding boxes by object detection.
         * 
         * \param[in] roi_x X center position of ROI
