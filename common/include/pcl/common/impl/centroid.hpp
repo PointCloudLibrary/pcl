@@ -199,6 +199,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
+    covariance_matrix.setZero ();
     point_count = static_cast<unsigned> (cloud.size ());
     // For each point in the cloud
     for (const auto& point: cloud)
@@ -288,6 +289,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
+    covariance_matrix.setZero ();
     point_count = indices.size ();
     // For each point in the cloud
     for (const auto& idx: indices)
