@@ -192,7 +192,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
                                     Eigen::Matrix4f& transformation_matrix)
 {
   // need at least min_number_correspondences_ samples
-  if (indices_src.size() < min_number_correspondences_) {
+  if (static_cast<int>(indices_src.size()) < min_number_correspondences_) {
     PCL_THROW_EXCEPTION(
         NotEnoughPointsException,
         "[pcl::GeneralizedIterativeClosestPoint::estimateRigidTransformationBFGS] Need "
