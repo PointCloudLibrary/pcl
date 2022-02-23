@@ -63,6 +63,7 @@ set(NON_PREFIX_PCL_VTK_COMPONENTS
   RenderingAnnotation
   RenderingCore
   RenderingContext2D
+  RenderingContextOpenGL2
   RenderingLOD
   RenderingFreeType
   ViewsCore
