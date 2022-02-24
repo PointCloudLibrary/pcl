@@ -374,20 +374,14 @@ protected:
                      const typename pcl::search::KdTree<PointT>::Ptr tree,
                      MatricesVector& cloud_covariances);
 
-  /** \return trace of mat1^t . mat2
+  /** \return trace of mat1 . mat2
    * \param mat1 matrix of dimension nxm
-   * \param mat2 matrix of dimension nxp
+   * \param mat2 matrix of dimension mxp
    */
   inline double
   matricesInnerProd(const Eigen::MatrixXd& mat1, const Eigen::MatrixXd& mat2) const
   {
-    double r = 0.;
-    std::size_t n = mat1.rows();
-    // tr(mat1^t.mat2)
-    for (std::size_t i = 0; i < n; i++)
-      for (std::size_t j = 0; j < n; j++)
-        r += mat1(j, i) * mat2(i, j);
-    return r;
+    return (mat1 * mat2).trace();
   }
 
   /** \brief Rigid transformation computation method  with initial guess.
