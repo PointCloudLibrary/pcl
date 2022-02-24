@@ -257,8 +257,9 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
     pt_xy.y = pt[k2];
 
     bool in_poly = false;
-    for (auto& poly : polygons)
+    for (const auto& poly : polygons) {
       in_poly ^= pcl::isXYPointIn2DXYPolygon(pt_xy, poly);
+    }
 
     if (!in_poly)
       continue;

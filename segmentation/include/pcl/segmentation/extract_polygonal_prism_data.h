@@ -40,7 +40,7 @@
 #include <limits>
 
 #include <pcl/pcl_base.h>
-#include <pcl/Vertices.h>
+#include <pcl/Vertices.h> // for Vertices
 
 namespace pcl
 {
