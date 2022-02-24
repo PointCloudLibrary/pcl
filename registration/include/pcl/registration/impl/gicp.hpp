@@ -294,7 +294,8 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
   // Zero out g
   g.setZero();
   // Eigen::Vector3d g_t = g.head<3> ();
-  Eigen::Matrix3d dCost_dR = Eigen::Matrix3d::Zero();
+  // the transpose of the derivative of the cost function w.r.t rotation matrix
+  Eigen::Matrix3d dCost_dR_T = Eigen::Matrix3d::Zero();
   int m = static_cast<int>(gicp_->tmp_idx_src_->size());
   for (int i = 0; i < m; ++i) {
     // The last coordinate, p_src[3] is guaranteed to be set to 1.0 in registration.hpp
@@ -317,11 +318,11 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
     // Increment rotation gradient
     p_trans_src = gicp_->base_transformation_ * p_src;
     Eigen::Vector3d p_base_src(p_trans_src[0], p_trans_src[1], p_trans_src[2]);
-    dCost_dR += p_base_src * Md.transpose();
+    dCost_dR_T += p_base_src * Md.transpose();
   }
   g.head<3>() *= 2.0 / m;
-  dCost_dR *= 2.0 / m;
-  gicp_->computeRDerivative(x, dCost_dR, g);
+  dCost_dR_T *= 2.0 / m;
+  gicp_->computeRDerivative(x, dCost_dR_T, g);
 }
 
 template <typename PointSource, typename PointTarget>
@@ -333,7 +334,8 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
   gicp_->applyState(transformation_matrix, x);
   f = 0;
   g.setZero();
-  Eigen::Matrix3d dCost_dR = Eigen::Matrix3d::Zero();
+  // the transpose of the derivative of the cost function w.r.t rotation matrix
+  Eigen::Matrix3d dCost_dR_T = Eigen::Matrix3d::Zero();
   const int m = static_cast<int>(gicp_->tmp_idx_src_->size());
   for (int i = 0; i < m; ++i) {
     // The last coordinate, p_src[3] is guaranteed to be set to 1.0 in registration.hpp
@@ -357,12 +359,12 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
     p_trans_src = gicp_->base_transformation_ * p_src;
     Eigen::Vector3d p_base_src(p_trans_src[0], p_trans_src[1], p_trans_src[2]);
     // Increment rotation gradient
-    dCost_dR += p_base_src * Md.transpose();
+    dCost_dR_T += p_base_src * Md.transpose();
   }
   f /= double(m);
   g.head<3>() *= double(2.0 / m);
-  dCost_dR *= 2.0 / m;
-  gicp_->computeRDerivative(x, dCost_dR, g);
+  dCost_dR_T *= 2.0 / m;
+  gicp_->computeRDerivative(x, dCost_dR_T, g);
 }
 
 template <typename PointSource, typename PointTarget>
