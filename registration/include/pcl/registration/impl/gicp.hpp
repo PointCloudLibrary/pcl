@@ -277,7 +277,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
     // The d here is the negative of the d in the paper
     Eigen::Vector3d d(p_trans_src[0] - p_tgt[0], p_trans_src[1] - p_tgt[1], p_trans_src[2] - p_tgt[2]);
     Eigen::Vector3d Md(gicp_->mahalanobis((*gicp_->tmp_idx_src_)[i]) * d);
-    // increment= d'*Md/num_matches = Md'*M*Md/num_matches (we postpone
+    // increment= d'*Md/num_matches = d'*M*d/num_matches (we postpone
     // 1/num_matches after the loop closes)
     f += double(d.transpose() * Md);
   }
