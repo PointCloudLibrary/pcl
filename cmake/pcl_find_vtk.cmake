@@ -63,7 +63,6 @@ set(NON_PREFIX_PCL_VTK_COMPONENTS
   RenderingAnnotation
   RenderingCore
   RenderingContext2D
-  RenderingContextOpenGL2
   RenderingLOD
   RenderingFreeType
   ViewsCore
@@ -84,7 +83,7 @@ else()
   set(VTK_RENDERING_BACKEND_OPENGL_VERSION "2")
 endif()
 
-list(APPEND NON_PREFIX_PCL_VTK_COMPONENTS Rendering${VTK_RENDERING_BACKEND})
+list(APPEND NON_PREFIX_PCL_VTK_COMPONENTS Rendering${VTK_RENDERING_BACKEND} RenderingContext${VTK_RENDERING_BACKEND})
 
 #Append vtk to components if version is <9.0
 if(VTK_VERSION VERSION_LESS 9.0)
