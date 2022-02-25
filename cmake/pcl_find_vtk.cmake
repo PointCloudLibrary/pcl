@@ -99,8 +99,7 @@ endif()
 checkVTKComponents(COMPONENTS ${PCL_VTK_COMPONENTS} MISSING_COMPONENTS vtkMissingComponents)
 
 if (vtkMissingComponents)
-  set(VTK_FOUND FALSE)
-  message(WARNING "Missing vtk modules: ${vtkMissingComponents}")
+  message(FATAL_ERROR "Missing vtk modules: ${vtkMissingComponents}")
 endif()
 
 if("vtkGUISupportQt" IN_LIST VTK_MODULES_ENABLED)
