@@ -46,7 +46,7 @@ installation section
   $ curl -fsSL https://get.docker.com -o get-docker.sh
   $ sh get-docker.sh
 
-  Other useful command are()::
+  Other useful commands are()::
 
   $ docker ps 
   $ service docker status
@@ -60,8 +60,8 @@ installation section
 
 .. note::
 
-   It might need to add an extra sudo in docker commands if permission are not set properly.
-   See part **run docker commands without sudo** on how to set them correctly so the sudo command to be not necessary.
+   It might be required to add sudo in docker commands if permissions are not set properly.
+   See part **run docker commands without sudo** on how to set them correctly so the sudo command is not required.
 
 Downloading  PCL source code
 ----------------------------
@@ -85,8 +85,8 @@ Docker container configuration
 
   $ docker pull pointcloudlibrary/env:20.04
 
-  Do not worry if it takes enough time because all the pcl dependencies will be installed in this 
-  step. In other words, there is  no need to install Boost, Eigen other dependencies manually.
+  Do not worry if it takes a long time because all the required pcl dependencies are preinstalled.
+  In other words, there is no need to install Boost, Eigen or other dependencies manually.
 
   The docker image above will have OS Ubuntu 20.04. Other possible available images can be found under::
 
@@ -107,14 +107,14 @@ Docker container configuration
   where $PWD:/pcl:/home represents the pcl source code in Ubuntu (inside VirtualBox) while
   home represents the pcl source code inside the docker container.
  
-  Using volumes, actions performed  file in Ubuntu (inside VirtualBox) such as a creation of new are directly mapped
+  Using volumes, actions performed on a file in Ubuntu (inside VirtualBox) such as creating new files are directly mapped
   to the selected path location inside docker container.
 
   To exit the container simply run in terminal exit
 
 Building PCL
 --------------
-After running the container, we need to nagivate to pcl source code and create a build folder to that directory.
+After running the container, we need to navigate to pcl source code and create a build folder in that directory.
 
   $ cd home && mkdir build && cd build
 
@@ -123,7 +123,7 @@ In case you prefer to use a specific compiler like clang instead of gcc run::
   $ export CC=/usr/bin/clang
   $ export CXX=/usr/bin/clang++
 
-Last step is the cmake configuration which is done by running inside the build folder::
+Last step is the cmake configuration which is done by running this inside the build folder::
 
   $ cmake ..
 
@@ -147,8 +147,8 @@ To get root access for just install command::
 
 Next steps
 ----------
-All the steps mentioned in this tutorial should performed at least once and
+All the steps mentioned in this tutorial should be performed at least once and
 after that just running the container command and building or installing is
 enough. Periodically though it is needed to pull the latest image to have
-possible updates that are incoporated in the meantime.
+possible updates that are incorporated in the meantime.
 
