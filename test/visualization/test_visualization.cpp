@@ -114,9 +114,9 @@ TEST (PCL, PCLVisualizer_camera)
   given_intrinsics (0, 2) = 320.f;
   given_intrinsics (1, 2) = 240.f;
 
-  float M_PIf = static_cast<float> (M_PI);
+  float M_PI_f = static_cast<float> (M_PI);
   Eigen::Matrix4f given_extrinsics (Eigen::Matrix4f::Identity ());
-  given_extrinsics.block<3, 3> (0, 0) = Eigen::AngleAxisf (30.f * M_PIf / 180.f, Eigen::Vector3f (1.f, 0.f, 0.f)).matrix ();
+  given_extrinsics.block<3, 3> (0, 0) = Eigen::AngleAxisf (30.f * M_PI_f / 180.f, Eigen::Vector3f (1.f, 0.f, 0.f)).matrix ();
   given_extrinsics.block<3, 1> (0, 3) = Eigen::Vector3f (10.f, 15.f, 20.f);
 
   visualizer.setCameraParameters (given_intrinsics, given_extrinsics);
@@ -132,7 +132,7 @@ TEST (PCL, PCLVisualizer_camera)
   Eigen::Vector3f trans (10.f, 2.f, 20.f);
   visualizer.setCameraPosition (trans[0], trans[1], trans[2], trans[0] + 1., trans[1], trans[2], 0., 1., 0.);
   viewer_pose = visualizer.getViewerPose ().matrix ();
-  Eigen::Matrix3f expected_rotation = Eigen::AngleAxisf (M_PIf / 2.0f, Eigen::Vector3f (0.f, 1.f, 0.f)).matrix ();
+  Eigen::Matrix3f expected_rotation = Eigen::AngleAxisf (M_PI_f / 2.0f, Eigen::Vector3f (0.f, 1.f, 0.f)).matrix ();
   for (std::size_t i = 0; i < 3; ++i)
     for (std::size_t j = 0; j < 3; ++j)
       EXPECT_NEAR (viewer_pose (i, j), expected_rotation (i, j), 1e-6);
