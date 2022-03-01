@@ -102,8 +102,6 @@ public:
 
   using Vector6d = Eigen::Matrix<double, 6, 1>;
 
-  PCL_MAKE_ALIGNED_OPERATOR_NEW;
-
   /** \brief Empty constructor. */
   GeneralizedIterativeClosestPoint()
   : k_correspondences_(20)
