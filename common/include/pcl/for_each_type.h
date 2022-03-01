@@ -74,7 +74,7 @@ namespace pcl
     {
       using arg = typename boost::mpl::deref<Iterator>::type;
 
-#if (defined _WIN32 && defined _MSC_VER)
+#if (defined _WIN32 && defined _MSC_VER && !defined(__clang__))
       boost::mpl::aux::unwrap (f, 0).operator()<arg> ();
 #else
       boost::mpl::aux::unwrap (f, 0).template operator()<arg> ();
