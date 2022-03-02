@@ -203,7 +203,7 @@ IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformation(
 
     std::size_t cnt = correspondences_->size();
     // Check whether we have enough correspondences
-    if (static_cast<int>(cnt) < min_number_correspondences_) {
+    if (static_cast<unsigned int>(cnt) < min_number_correspondences_) {
       PCL_ERROR("[pcl::%s::computeTransformation] Not enough correspondences found. "
                 "Relax your threshold parameters.\n",
                 getClassName().c_str());

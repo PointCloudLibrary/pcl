@@ -625,7 +625,7 @@ protected:
   /** \brief The minimum number of correspondences that the algorithm needs before
    * attempting to estimate the transformation. The default value is 3.
    */
-  int min_number_correspondences_;
+  unsigned int min_number_correspondences_;
 
   /** \brief The set of correspondences determined at this ICP step. */
   CorrespondencesPtr correspondences_;
