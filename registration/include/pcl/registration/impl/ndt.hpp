@@ -123,7 +123,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeTransformation(
     // Negative for maximization as opposed to minimization
     Eigen::Matrix<double, 6, 1> delta = sv.solve(-score_gradient);
 
-    // Calculate step length with guarnteed sufficient decrease [More, Thuente 1994]
+    // Calculate step length with guaranteed sufficient decrease [More, Thuente 1994]
     double delta_norm = delta.norm();
 
     if (delta_norm == 0 || std::isnan(delta_norm)) {
@@ -173,7 +173,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeTransformation(
     }
   }
 
-  // Store transformation likelihood.  The realtive differences within each scan
+  // Store transformation likelihood.  The relative differences within each scan
   // registration are accurate but the normalization constants need to be modified for
   // it to be globally accurate
   trans_likelihood_ = score / static_cast<double>(input_->size());
@@ -416,14 +416,14 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeHessian(
 {
   hessian.setZero();
 
-  // Precompute Angular Derivatives unessisary because only used after regular
+  // Precompute Angular Derivatives unnecessary because only used after regular
   // derivative calculation Update hessian for each point, line 17 in Algorithm 2
   // [Magnusson 2009]
   for (std::size_t idx = 0; idx < input_->size(); idx++) {
     // Transformed Point
     const auto& x_trans_pt = trans_cloud[idx];
 
-    // Find nieghbors (Radius search has been experimentally faster than direct neighbor
+    // Find neighbors (Radius search has been experimentally faster than direct neighbor
     // checking.
     std::vector<TargetGridLeafConstPtr> neighborhood;
     std::vector<float> distances;
@@ -709,8 +709,8 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengthMT(
   // New transformed point cloud
   transformPointCloud(*input_, trans_cloud, final_transformation_);
 
-  // Updates score, gradient and hessian.  Hessian calculation is unessisary but testing
-  // showed that most step calculations use the initial step suggestion and
+  // Updates score, gradient and hessian.  Hessian calculation is unnecessary but
+  // testing showed that most step calculations use the initial step suggestion and
   // recalculation the reusable portions of the hessian would intail more computation
   // time.
   score = computeDerivatives(score_gradient, hessian, trans_cloud, x_t, true);
@@ -793,7 +793,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengthMT(
   }
 
   // If inner loop was run then hessian needs to be calculated.
-  // Hessian is unnessisary for step length determination but gradients are required
+  // Hessian is unnecessary for step length determination but gradients are required
   // so derivative and transform data is stored for the next iteration.
   if (step_iterations) {
     computeHessian(hessian, trans_cloud);

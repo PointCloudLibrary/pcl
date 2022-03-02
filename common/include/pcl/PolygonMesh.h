@@ -57,7 +57,7 @@ namespace pcl
       return true;
     }
 
-    /** \brief Concatenate two pcl::PCLPointCloud2
+    /** \brief Concatenate two pcl::PolygonMesh
       * \param[in] mesh1 the first input mesh
       * \param[in] mesh2 the second input mesh
       * \param[out] mesh_out the resultant output mesh

@@ -261,7 +261,7 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
     std::vector<std::uint32_t> out_idx_tmp;
     pcl::on_nurbs::vector_vec2d out_pc_tmp;
 
-    for (const unsigned int &vi : poly.vertices)
+    for (const auto &vi : poly.vertices)
     {
       if (pt_is_in[vi])
         in++;
@@ -387,7 +387,7 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
     std::vector<std::uint32_t> out_idx_tmp;
     pcl::on_nurbs::vector_vec2d out_pc_tmp;
 
-    for (const unsigned int &vi : poly.vertices)
+    for (const auto &vi : poly.vertices)
     {
       if (pt_is_in[vi])
         in++;

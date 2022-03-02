@@ -47,7 +47,10 @@ class PreProcessorAndNormalEstimator {
       avg_distances[i] = avg_dist_neighbours;
     }
 
-    std::sort(avg_distances.begin(), avg_distances.end());
+    // median: nth_element is faster than sorting everything
+    std::nth_element(avg_distances.begin(),
+                     avg_distances.begin() + (avg_distances.size() / 2 + 1),
+                     avg_distances.end());
     float avg = avg_distances[static_cast<int>(avg_distances.size()) / 2 + 1];
     return avg;
   }
