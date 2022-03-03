@@ -128,8 +128,8 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovariances(
 
 template <typename PointSource, typename PointTarget>
 void
-GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeRDerivative(
-    const Vector6d& x, const Eigen::Matrix3d& R, Vector6d& g) const
+GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeDerivative(
+    const Vector6d& x, const Eigen::Matrix3d& dCost_dR_T, Vector6d& g) const
 {
   Eigen::Matrix3d dR_dPhi;
   Eigen::Matrix3d dR_dTheta;
@@ -177,9 +177,9 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeRDerivative(
   dR_dPsi(1, 2) = sphi * spsi + cphi * cpsi * stheta;
   dR_dPsi(2, 2) = 0.;
 
-  g[3] = matricesInnerProd(dR_dPhi, R);
-  g[4] = matricesInnerProd(dR_dTheta, R);
-  g[5] = matricesInnerProd(dR_dPsi, R);
+  g[3] = matricesInnerProd(dR_dPhi, dCost_dR_T);
+  g[4] = matricesInnerProd(dR_dTheta, dCost_dR_T);
+  g[5] = matricesInnerProd(dR_dPsi, dCost_dR_T);
 }
 
 template <typename PointSource, typename PointTarget>
@@ -326,7 +326,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
   }
   g.head<3>() *= 2.0 / m;
   dCost_dR_T *= 2.0 / m;
-  gicp_->computeRDerivative(x, dCost_dR_T, g);
+  gicp_->computeDerivative(x, dCost_dR_T, g);
 }
 
 template <typename PointSource, typename PointTarget>
@@ -370,7 +370,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
   f /= double(m);
   g.head<3>() *= double(2.0 / m);
   dCost_dR_T *= 2.0 / m;
-  gicp_->computeRDerivative(x, dCost_dR_T, g);
+  gicp_->computeDerivative(x, dCost_dR_T, g);
 }
 
 template <typename PointSource, typename PointTarget>

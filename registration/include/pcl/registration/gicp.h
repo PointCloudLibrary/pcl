@@ -216,7 +216,25 @@ public:
    * param g gradient vector
    */
   void
-  computeRDerivative(const Vector6d& x, const Eigen::Matrix3d& R, Vector6d& g) const;
+  computeDerivative(const Vector6d& x,
+                    const Eigen::Matrix3d& dCost_dR_T,
+                    Vector6d& g) const;
+
+  /** \brief Computes the derivative of the cost function w.r.t rotation angles.
+   * rotation matrix is obtainded from rotation angles x[3], x[4] and x[5]
+   * \return d/d_Phi, d/d_Theta, d/d_Psi respectively in g[3], g[4] and g[5]
+   * param x array representing 3D transformation
+   * param R the transpose of the derivative of the cost function w.r.t rotation matrix
+   * param g gradient vector
+   */
+  PCL_DEPRECATED(1, 15, "use computeDerivative() instead")
+  void
+  computeRDerivative(const Vector6d& x,
+                     const Eigen::Matrix3d& dCost_dR_T,
+                     Vector6d& g) const
+  {
+    return computeDerivative(x, dCost_dR_T, g);
+  };
 
   /** \brief Set the rotation epsilon (maximum allowable difference between two
    * consecutive rotations) in order for an optimization to be considered as having
