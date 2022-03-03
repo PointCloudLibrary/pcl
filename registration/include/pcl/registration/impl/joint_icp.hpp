@@ -211,9 +211,8 @@ JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
         *temp_correspondences = *correspondences_;
     }
 
-    int cnt = correspondences_->size();
     // Check whether we have enough correspondences
-    if (cnt < min_number_correspondences_) {
+    if (correspondences_->size() < min_number_correspondences_) {
       PCL_ERROR("[pcl::%s::computeTransformation] Not enough correspondences found. "
                 "Relax your threshold parameters.\n",
                 getClassName().c_str());
