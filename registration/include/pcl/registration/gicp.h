@@ -381,6 +381,13 @@ protected:
   inline double
   matricesInnerProd(const Eigen::MatrixXd& mat1, const Eigen::MatrixXd& mat2) const
   {
+    if (mat1.cols() != mat2.rows()) {
+      PCL_THROW_EXCEPTION(PCLException,
+                          "The two matrices' shapes don't match. "
+                          "They are ("
+                              << mat1.rows() << ", " << mat1.cols() << ") and ("
+                              << mat2.rows() << ", " << mat2.cols() << ")");
+    }
     return (mat1 * mat2).trace();
   }
 
