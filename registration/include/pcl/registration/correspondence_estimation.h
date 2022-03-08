@@ -72,9 +72,11 @@ public:
 
   using KdTree = pcl::search::KdTree<PointTarget>;
   using KdTreePtr = typename KdTree::Ptr;
+  using KdTreeConstPtr = typename KdTree::ConstPtr;
 
   using KdTreeReciprocal = pcl::search::KdTree<PointSource>;
-  using KdTreeReciprocalPtr = typename KdTree::Ptr;
+  using KdTreeReciprocalPtr = typename KdTreeReciprocal::Ptr;
+  using KdTreeReciprocalConstPtr = typename KdTreeReciprocal::ConstPtr;
 
   using PointCloudSource = pcl::PointCloud<PointSource>;
   using PointCloudSourcePtr = typename PointCloudSource::Ptr;
@@ -85,6 +87,8 @@ public:
   using PointCloudTargetConstPtr = typename PointCloudTarget::ConstPtr;
 
   using PointRepresentationConstPtr = typename KdTree::PointRepresentationConstPtr;
+  using PointRepresentationReciprocalConstPtr =
+      typename KdTreeReciprocal::PointRepresentationConstPtr;
 
   /** \brief Empty constructor. */
   CorrespondenceEstimationBase()
@@ -275,8 +279,8 @@ public:
       pcl::Correspondences& correspondences,
       double max_distance = std::numeric_limits<double>::max()) = 0;
 
-  /** \brief Provide a boost shared pointer to the PointRepresentation to be used
-   * when searching for nearest neighbors.
+  /** \brief Provide a boost shared pointer to the PointRepresentation for target cloud
+   * to be used when searching for nearest neighbors.
    *
    * \param[in] point_representation the PointRepresentation to be used by the
    * k-D tree for nearest neighbor search
@@ -285,6 +289,19 @@ public:
   setPointRepresentation(const PointRepresentationConstPtr& point_representation)
   {
     point_representation_ = point_representation;
+  }
+
+  /** \brief Provide a boost shared pointer to the PointRepresentation for source cloud
+   * to be used when searching for nearest neighbors.
+   *
+   * \param[in] point_representation the PointRepresentation to be used by the
+   * k-D tree for nearest neighbor search
+   */
+  inline void
+  setPointRepresentationReciprocal(
+      const PointRepresentationReciprocalConstPtr& point_representation_reciprocal)
+  {
+    point_representation_reciprocal_ = point_representation_reciprocal;
   }
 
   /** \brief Clone and cast to CorrespondenceEstimationBase */
@@ -307,8 +324,11 @@ protected:
   /** \brief The target point cloud dataset indices. */
   IndicesPtr target_indices_;
 
-  /** \brief The point representation used (internal). */
+  /** \brief The target point representation used (internal). */
   PointRepresentationConstPtr point_representation_;
+
+  /** \brief The source point representation used (internal). */
+  PointRepresentationReciprocalConstPtr point_representation_reciprocal_;
 
   /** \brief The transformed input source point cloud dataset. */
   PointCloudTargetPtr input_transformed_;
@@ -396,8 +416,24 @@ public:
   using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::input_fields_;
   using PCLBase<PointSource>::deinitCompute;
 
-  using KdTree = pcl::search::KdTree<PointTarget>;
-  using KdTreePtr = typename KdTree::Ptr;
+  using KdTree =
+      typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::KdTree;
+  using KdTreePtr = typename CorrespondenceEstimationBase<PointSource,
+                                                          PointTarget,
+                                                          Scalar>::KdTreePtr;
+  using KdTreeConstPtr = typename CorrespondenceEstimationBase<PointSource,
+                                                               PointTarget,
+                                                               Scalar>::KdTreeConstPtr;
+  using KdTreeReciprocal =
+      typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::
+          KdTreeReciprocal;
+  using KdTreeReciprocalPtr =
+      typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::
+          KdTreeReciprocalPtr;
+
+  using KdTreeReciprocalConstPtr =
+      typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::
+          KdTreeReciprocalConstPtr;
 
   using PointCloudSource = pcl::PointCloud<PointSource>;
   using PointCloudSourcePtr = typename PointCloudSource::Ptr;
@@ -408,6 +444,8 @@ public:
   using PointCloudTargetConstPtr = typename PointCloudTarget::ConstPtr;
 
   using PointRepresentationConstPtr = typename KdTree::PointRepresentationConstPtr;
+  using PointRepresentationReciprocalConstPtr =
+      typename KdTreeReciprocal::PointRepresentationConstPtr;
 
   /** \brief Empty constructor. */
   CorrespondenceEstimation() { corr_name_ = "CorrespondenceEstimation"; }

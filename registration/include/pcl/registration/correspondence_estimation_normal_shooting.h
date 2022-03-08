@@ -101,8 +101,18 @@ public:
       point_representation_;
   using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::target_indices_;
 
-  using KdTree = pcl::search::KdTree<PointTarget>;
-  using KdTreePtr = typename KdTree::Ptr;
+  using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::KdTree;
+  using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::
+      KdTreePtr;
+  using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::
+      KdTreeConstPtr;
+
+  using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::
+      KdTreeReciprocal;
+  using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::
+      KdTreeReciprocalPtr;
+  using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::
+      KdTreeReciprocalConstPtr;
 
   using PointCloudSource = pcl::PointCloud<PointSource>;
   using PointCloudSourcePtr = typename PointCloudSource::Ptr;
