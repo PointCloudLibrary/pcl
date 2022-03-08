@@ -47,9 +47,6 @@
 
 // Boost
 #include <pcl/outofcore/boost.h>
-#include <boost/random/bernoulli_distribution.hpp>
-#include <boost/random/uniform_int.hpp>
-#include <boost/uuid/uuid_io.hpp>
 
 // PCL
 #include <pcl/common/utils.h> // pcl::utils::ignore
@@ -72,33 +69,11 @@ namespace pcl
   namespace outofcore
   {
     template<typename PointT>
-    std::mutex OutofcoreOctreeDiskContainer<PointT>::rng_mutex_;
-
-    template<typename PointT> boost::mt19937
-    OutofcoreOctreeDiskContainer<PointT>::rand_gen_ (static_cast<unsigned int> (std::time(nullptr)));
-
-    template<typename PointT>
-    boost::uuids::basic_random_generator<boost::mt19937> OutofcoreOctreeDiskContainer<PointT>::uuid_gen_ (&rand_gen_);
-
-    template<typename PointT>
     const std::uint64_t OutofcoreOctreeDiskContainer<PointT>::READ_BLOCK_SIZE_ = static_cast<std::uint64_t> (2e12);
     template<typename PointT>
     const std::uint64_t OutofcoreOctreeDiskContainer<PointT>::WRITE_BUFF_MAX_ = static_cast<std::uint64_t> (2e12);
 
-    template<typename PointT> void
-    OutofcoreOctreeDiskContainer<PointT>::getRandomUUIDString (std::string& s)
-    {
-      boost::uuids::uuid u;
-      {
-        std::lock_guard<std::mutex> lock (rng_mutex_);
-        u = uuid_gen_ ();
-      }
-
-      std::stringstream ss;
-      ss << u;
-      s = ss.str ();
-    }
-    ////////////////////////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT>
     OutofcoreOctreeDiskContainer<PointT>::OutofcoreOctreeDiskContainer () 
@@ -119,9 +94,7 @@ namespace pcl
       {
         if (boost::filesystem::is_directory (path))
         {
-          std::string uuid;
-          getRandomUUIDString (uuid);
-          boost::filesystem::path filename (uuid);
+          boost::filesystem::path filename (boost::filesystem::unique_path());
           boost::filesystem::path file = path / filename;
 
           disk_storage_filename_ = file.string ();
@@ -298,12 +271,14 @@ namespace pcl
       {
         {
           std::lock_guard<std::mutex> lock (rng_mutex_);
-          boost::bernoulli_distribution<double> buffdist (percent);
-          boost::variate_generator<boost::mt19937&, boost::bernoulli_distribution<double> > buffcoin (rand_gen_, buffdist);
+
+          std::random_device buff_dev;
+          std::mt19937 buff_gen (buff_dev ());
+          std::bernoulli_distribution buffdist (percent);
 
           for (std::size_t i = buffstart; i < static_cast<std::uint64_t> (buffcount); i++)
           {
-            if (buffcoin ())
+            if (buffdist (buff_gen))
             {
               dst.push_back (writebuff_[i]);
             }
@@ -318,11 +293,13 @@ namespace pcl
         {
           std::lock_guard<std::mutex> lock (rng_mutex_);
 
-          boost::bernoulli_distribution<double> filedist (percent);
-          boost::variate_generator<boost::mt19937&, boost::bernoulli_distribution<double> > filecoin (rand_gen_, filedist);
+          std::random_device buff_dev;
+          std::mt19937 buff_gen (buff_dev ());
+          std::bernoulli_distribution buffdist (percent);
+
           for (std::uint64_t i = filestart; i < (filestart + filecount); i++)
           {
-            if (filecoin ())
+            if (buffdist (buff_gen))
             {
               offsets.push_back (i);
             }

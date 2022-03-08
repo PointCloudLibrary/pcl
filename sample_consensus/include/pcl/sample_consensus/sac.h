@@ -43,11 +43,9 @@
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/pcl_base.h>
 
-#include <boost/random/mersenne_twister.hpp> // for mt19937
-#include <boost/random/uniform_01.hpp> // for uniform_01
-
 #include <ctime>
 #include <memory>
+#include <random>
 #include <set>
 
 namespace pcl
@@ -63,7 +61,7 @@ namespace pcl
 
     private:
       /** \brief Constructor for base SAC. */
-      SampleConsensus () {};
+      SampleConsensus () {}
 
     public:
       using Ptr = shared_ptr<SampleConsensus<T> >;
@@ -81,14 +79,15 @@ namespace pcl
         , threshold_ (std::numeric_limits<double>::max ())
         , max_iterations_ (1000)
         , threads_ (-1)
-        , rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
+        , rng_alg_ (rnd_dev_ ())
+        , dist_ (new std::uniform_real_distribution<>(0.0, 1.0))
       {
          // Create a random number generator object
          if (random)
-           rng_->base ().seed (static_cast<unsigned> (std::time (nullptr)));
+           rng_alg_.seed (static_cast<unsigned> (std::time (nullptr)));
          else
-           rng_->base ().seed (12345u);
-      };
+           rng_alg_.seed (12345u);
+      }
 
       /** \brief Constructor for base SAC.
         * \param[in] model a Sample Consensus model
@@ -104,14 +103,15 @@ namespace pcl
         , threshold_ (threshold)
         , max_iterations_ (1000)
         , threads_ (-1)
-        , rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
+        , rng_alg_ (rnd_dev_ ())
+        , dist_ (new std::uniform_real_distribution<>(0.0, 1.0))
       {
          // Create a random number generator object
          if (random)
-           rng_->base ().seed (static_cast<unsigned> (std::time (nullptr)));
+           rng_alg_.seed (static_cast<unsigned> (std::time (nullptr)));
          else
-           rng_->base ().seed (12345u);
-      };
+           rng_alg_.seed (12345u);
+      }
 
       /** \brief Set the Sample Consensus model to use.
         * \param[in] model a Sample Consensus model
@@ -130,7 +130,7 @@ namespace pcl
       }
 
       /** \brief Destructor for base SAC. */
-      virtual ~SampleConsensus () {};
+      virtual ~SampleConsensus () {}
 
       /** \brief Set the distance to model threshold.
         * \param[in] threshold distance to model threshold
@@ -343,17 +343,20 @@ namespace pcl
       /** \brief The number of threads the scheduler should use, or a negative number if no parallelization is wanted. */
       int threads_;
 
-      /** \brief Boost-based random number generator algorithm. */
-      boost::mt19937 rng_alg_;
+      /** \brief Random number generator that produces non-deterministic random numbers. */
+      std::random_device rnd_dev_;
 
-      /** \brief Boost-based random number generator distribution. */
-      std::shared_ptr<boost::uniform_01<boost::mt19937> > rng_;
+      /** \brief Mersenne Twister random number generator algorithm. */
+      std::mt19937 rng_alg_;
+
+      /** \brief Uniform real random number distribution. */
+      std::shared_ptr<std::uniform_real_distribution<>> dist_;
 
       /** \brief Boost-based random number generator. */
       inline double
       rnd ()
       {
-        return ((*rng_) ());
+        return (*dist_)(rng_alg_);
       }
    };
 }
