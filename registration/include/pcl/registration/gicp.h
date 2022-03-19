@@ -374,20 +374,21 @@ protected:
                      const typename pcl::search::KdTree<PointT>::Ptr tree,
                      MatricesVector& cloud_covariances);
 
-  /** \return trace of mat1^t . mat2
+  /** \return trace of mat1 . mat2
    * \param mat1 matrix of dimension nxm
-   * \param mat2 matrix of dimension nxp
+   * \param mat2 matrix of dimension mxp
    */
   inline double
   matricesInnerProd(const Eigen::MatrixXd& mat1, const Eigen::MatrixXd& mat2) const
   {
-    double r = 0.;
-    std::size_t n = mat1.rows();
-    // tr(mat1^t.mat2)
-    for (std::size_t i = 0; i < n; i++)
-      for (std::size_t j = 0; j < n; j++)
-        r += mat1(j, i) * mat2(i, j);
-    return r;
+    if (mat1.cols() != mat2.rows()) {
+      PCL_THROW_EXCEPTION(PCLException,
+                          "The two matrices' shapes don't match. "
+                          "They are ("
+                              << mat1.rows() << ", " << mat1.cols() << ") and ("
+                              << mat2.rows() << ", " << mat2.cols() << ")");
+    }
+    return (mat1 * mat2).trace();
   }
 
   /** \brief Rigid transformation computation method  with initial guess.
