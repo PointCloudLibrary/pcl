@@ -564,7 +564,7 @@ pcl::MinCutSegmentation<PointT>::getColoredCloud ()
 
   if (!clusters_.empty ())
   {
-    colored_cloud = (new pcl::PointCloud<pcl::PointXYZRGB>)->makeShared ();
+    colored_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGB>);
     unsigned char foreground_color[3] = {255, 255, 255};
     unsigned char background_color[3] = {255, 0, 0};
     colored_cloud->width = (clusters_[0].indices.size () + clusters_[1].indices.size ());

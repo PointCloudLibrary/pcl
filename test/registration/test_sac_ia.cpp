@@ -74,26 +74,26 @@ TEST (PCL, SampleConsensusInitialAlignment)
   NormalEstimation<PointXYZ, Normal> norm_est;
   norm_est.setSearchMethod (tree);
   norm_est.setRadiusSearch (0.05);
-  PointCloud<Normal> normals;
+  PointCloud<Normal>::Ptr normals(new PointCloud<Normal>);
 
   FPFHEstimation<PointXYZ, Normal, FPFHSignature33> fpfh_est;
   fpfh_est.setSearchMethod (tree);
   fpfh_est.setRadiusSearch (0.05);
-  PointCloud<FPFHSignature33> features_source, features_target;
+  PointCloud<FPFHSignature33>::Ptr features_source(new PointCloud<FPFHSignature33>), features_target(new PointCloud<FPFHSignature33>);
 
   // Estimate the FPFH features for the source cloud
   norm_est.setInputCloud (cloud_source_ptr);
-  norm_est.compute (normals);
+  norm_est.compute (*normals);
   fpfh_est.setInputCloud (cloud_source_ptr);
-  fpfh_est.setInputNormals (normals.makeShared ());
-  fpfh_est.compute (features_source);
+  fpfh_est.setInputNormals (normals);
+  fpfh_est.compute (*features_source);
 
   // Estimate the FPFH features for the target cloud
   norm_est.setInputCloud (cloud_target_ptr);
-  norm_est.compute (normals);
+  norm_est.compute (*normals);
   fpfh_est.setInputCloud (cloud_target_ptr);
-  fpfh_est.setInputNormals (normals.makeShared ());
-  fpfh_est.compute (features_target);
+  fpfh_est.setInputNormals (normals);
+  fpfh_est.compute (*features_target);
 
   // Initialize Sample Consensus Initial Alignment (SAC-IA)
   SampleConsensusInitialAlignment<PointXYZ, PointXYZ, FPFHSignature33> reg;
@@ -103,8 +103,8 @@ TEST (PCL, SampleConsensusInitialAlignment)
 
   reg.setInputSource (cloud_source_ptr);
   reg.setInputTarget (cloud_target_ptr);
-  reg.setSourceFeatures (features_source.makeShared ());
-  reg.setTargetFeatures (features_target.makeShared ());
+  reg.setSourceFeatures (features_source);
+  reg.setTargetFeatures (features_target);
 
   // Register
   reg.align (cloud_reg);
@@ -165,27 +165,27 @@ TEST (PCL, SampleConsensusPrerejective)
   NormalEstimation<PointXYZ, Normal> norm_est;
   norm_est.setSearchMethod (tree);
   norm_est.setRadiusSearch (0.005);
-  PointCloud<Normal> normals;
+  PointCloud<Normal>::Ptr normals(new PointCloud<Normal>);
 
   // FPFH estimator
   FPFHEstimation<PointXYZ, Normal, FPFHSignature33> fpfh_est;
   fpfh_est.setSearchMethod (tree);
   fpfh_est.setRadiusSearch (0.05);
-  PointCloud<FPFHSignature33> features_source, features_target;
+  PointCloud<FPFHSignature33>::Ptr features_source(new PointCloud<FPFHSignature33>), features_target(new PointCloud<FPFHSignature33>);
 
   // Estimate the normals and the FPFH features for the source cloud
   norm_est.setInputCloud (cloud_source_ptr);
-  norm_est.compute (normals);
+  norm_est.compute (*normals);
   fpfh_est.setInputCloud (cloud_source_ptr);
-  fpfh_est.setInputNormals (normals.makeShared ());
-  fpfh_est.compute (features_source);
+  fpfh_est.setInputNormals (normals);
+  fpfh_est.compute (*features_source);
 
   // Estimate the normals and the FPFH features for the target cloud
   norm_est.setInputCloud (cloud_target_ptr);
-  norm_est.compute (normals);
+  norm_est.compute (*normals);
   fpfh_est.setInputCloud (cloud_target_ptr);
-  fpfh_est.setInputNormals (normals.makeShared ());
-  fpfh_est.compute (features_target);
+  fpfh_est.setInputNormals (normals);
+  fpfh_est.compute (*features_target);
 
   // Initialize Sample Consensus Prerejective with 5x the number of iterations and 1/5 feature kNNs as SAC-IA
   SampleConsensusPrerejective<PointXYZ, PointXYZ, FPFHSignature33> reg;
@@ -197,8 +197,8 @@ TEST (PCL, SampleConsensusPrerejective)
   // Set source and target cloud/features
   reg.setInputSource (cloud_source_ptr);
   reg.setInputTarget (cloud_target_ptr);
-  reg.setSourceFeatures (features_source.makeShared ());
-  reg.setTargetFeatures (features_target.makeShared ());
+  reg.setSourceFeatures (features_source);
+  reg.setTargetFeatures (features_target);
 
   // Register
   reg.align (cloud_reg);

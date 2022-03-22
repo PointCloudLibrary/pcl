@@ -634,7 +634,7 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloud ()
 
   if (!clusters_.empty ())
   {
-    colored_cloud = (new pcl::PointCloud<pcl::PointXYZRGB>)->makeShared ();
+    colored_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGB>);
 
     srand (static_cast<unsigned int> (time (nullptr)));
     std::vector<unsigned char> colors;
@@ -684,7 +684,7 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloudRGBA ()
 
   if (!clusters_.empty ())
   {
-    colored_cloud = (new pcl::PointCloud<pcl::PointXYZRGBA>)->makeShared ();
+    colored_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGBA>);
 
     srand (static_cast<unsigned int> (time (nullptr)));
     std::vector<unsigned char> colors;

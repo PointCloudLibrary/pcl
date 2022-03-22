@@ -88,7 +88,7 @@ template <typename PointT> typename pcl::PointCloud<pcl::PointXYZRGB>::Ptr
 pcl::features::ISMVoteList<PointT>::getColoredCloud (typename pcl::PointCloud<PointT>::Ptr cloud)
 {
   pcl::PointXYZRGB point;
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_cloud = (new pcl::PointCloud<pcl::PointXYZRGB>)->makeShared ();
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
   colored_cloud->height = 0;
   colored_cloud->width = 1;
 
