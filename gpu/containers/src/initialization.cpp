@@ -133,7 +133,10 @@ inline void
 getCudaAttribute(T* attribute, CUdevice_attribute device_attribute, int device)
 {
   *attribute = T();
-  CUresult error = cuDeviceGetAttribute(attribute, device_attribute, device);
+  (void)device_attribute;
+  (void)device;
+  CUresult error =
+	  CUDA_SUCCESS; //cuDeviceGetAttribute(attribute, device_attribute, device);
 
   if (CUDA_SUCCESS == error)
     return;
