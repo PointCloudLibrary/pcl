@@ -95,7 +95,11 @@
 #include <pcl/visualization/common/shapes.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/common/time.h>
+#if BOOST_VERSION>=106600
+#include <boost/uuid/detail/sha1.hpp>
+#else
 #include <boost/uuid/sha1.hpp>
+#endif
 #include <boost/filesystem.hpp>
 #include <pcl/console/parse.h>
 
