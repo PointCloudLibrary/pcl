@@ -130,11 +130,12 @@ pcl::gpu::checkIfPreFermiGPU(int device)
 namespace {
 template <class T>
 inline void
-getCudaAttribute(T* attribute, CUdevice_attribute device_attribute, int device)
+getCudaAttribute(T* attribute, CUdevice_attribute /*device_attribute*/, int /*device*/)
 {
   *attribute = T();
   CUresult error =
-      CUDA_SUCCESS; // = cuDeviceGetAttribute( attribute, device_attribute, device );
+      CUDA_SUCCESS; // cuDeviceGetAttribute(attribute, device_attribute, device);
+
   if (CUDA_SUCCESS == error)
     return;
 

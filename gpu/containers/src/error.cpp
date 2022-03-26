@@ -45,6 +45,7 @@ pcl::gpu::error(const char* error_string,
                 const int line,
                 const char* func)
 {
-  std::cout << "Error: " << error_string << "\t" << file << ":" << line << std::endl;
+  std::cout << "Error: " << error_string << "\t" << file << ":" << line << ":" << func
+            << std::endl;
   exit(EXIT_FAILURE);
 }
