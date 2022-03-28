@@ -258,6 +258,15 @@ pcl::SACSegmentation<PointT>::initSACModel (const int model_type)
       }
       break;
     }
+    case SACMODEL_CYLINDER:
+    case SACMODEL_NORMAL_PLANE:
+    case SACMODEL_NORMAL_PARALLEL_PLANE:
+    case SACMODEL_CONE:
+    case SACMODEL_NORMAL_SPHERE:
+    {
+      PCL_ERROR ("[pcl::%s::initSACModel] Use SACSegmentationFromNormals for this model instead!\n", getClassName ().c_str ());
+      return (false);
+    }
     default:
     {
       PCL_ERROR ("[pcl::%s::initSACModel] No valid model given!\n", getClassName ().c_str ());
