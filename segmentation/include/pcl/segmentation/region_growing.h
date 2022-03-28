@@ -248,7 +248,7 @@ namespace pcl
 
       /** \brief This function implements the algorithm described in the article
         * "Segmentation of point clouds using smoothness constraint"
-        * by T. Rabbania, F. A. van den Heuvelb, G. Vosselmanc.
+        * by T. Rabbani, F. A. van den Heuvel, G. Vosselman.
         */
       void
       applySmoothRegionGrowingAlgorithm ();
@@ -293,19 +293,19 @@ namespace pcl
       /** \brief If set to true then residual test will be done during segmentation. */
       bool residual_flag_;
 
-      /** \brief Thershold used for testing the smoothness between points. */
+      /** \brief Threshold used for testing the smoothness between points. */
       float theta_threshold_;
 
-      /** \brief Thershold used in residual test. */
+      /** \brief Threshold used in residual test. */
       float residual_threshold_;
 
-      /** \brief Thershold used in curvature test. */
+      /** \brief Threshold used in curvature test. */
       float curvature_threshold_;
 
       /** \brief Number of neighbours to find. */
       unsigned int neighbour_number_;
 
-      /** \brief Serch method that will be used for KNN. */
+      /** \brief Search method that will be used for KNN. */
       KdTreePtr search_;
 
       /** \brief Contains normals of the points that will be segmented. */
