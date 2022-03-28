@@ -1,6 +1,6 @@
 set(SUBSYS_NAME people)
 set(SUBSYS_DESC "Point cloud people library")
-set(SUBSYS_DEPS common kdtree search features sample_consensus filters io visualization geometry segmentation octree)
+set(SUBSYS_DEPS common kdtree search sample_consensus filters io visualization geometry segmentation octree)
 
 if(NOT VTK_FOUND)
   set(DEFAULT FALSE)
@@ -57,5 +57,5 @@ PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
 
 if(WITH_OPENNI)
   PCL_ADD_EXECUTABLE(pcl_ground_based_rgbd_people_detector COMPONENT ${SUBSYS_NAME} SOURCES apps/main_ground_based_people_detection.cpp BUNDLE)
-  target_link_libraries(pcl_ground_based_rgbd_people_detector pcl_common pcl_kdtree pcl_search pcl_features pcl_sample_consensus pcl_filters pcl_io pcl_visualization pcl_segmentation pcl_people)
+  target_link_libraries(pcl_ground_based_rgbd_people_detector pcl_common pcl_kdtree pcl_search pcl_sample_consensus pcl_filters pcl_io pcl_visualization pcl_segmentation pcl_people)
 endif()
