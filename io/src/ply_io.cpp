@@ -202,7 +202,7 @@ namespace pcl
       {
         if ((property_name == "red") || (property_name == "diffuse_red"))
           appendScalarProperty<pcl::io::ply::float32> ("rgb");
-        return [=] (pcl::io::ply::uint8 color) { vertexColorCallback (property_name, color); };
+        return [this, property_name] (pcl::io::ply::uint8 color) { vertexColorCallback (property_name, color); };
       }
       if (property_name == "alpha")
       {
