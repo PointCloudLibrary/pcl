@@ -128,7 +128,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovariances(
 
 template <typename PointSource, typename PointTarget>
 void
-GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeDerivative(
+GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeRDerivative(
     const Vector6d& x, const Eigen::Matrix3d& dCost_dR_T, Vector6d& g) const
 {
   Eigen::Matrix3d dR_dPhi;
