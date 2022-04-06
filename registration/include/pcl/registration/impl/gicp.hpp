@@ -326,7 +326,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
   }
   g.head<3>() *= 2.0 / m;
   dCost_dR_T *= 2.0 / m;
-  gicp_->computeDerivative(x, dCost_dR_T, g);
+  gicp_->computeRDerivative(x, dCost_dR_T, g);
 }
 
 template <typename PointSource, typename PointTarget>
@@ -370,7 +370,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
   f /= double(m);
   g.head<3>() *= double(2.0 / m);
   dCost_dR_T *= 2.0 / m;
-  gicp_->computeDerivative(x, dCost_dR_T, g);
+  gicp_->computeRDerivative(x, dCost_dR_T, g);
 }
 
 template <typename PointSource, typename PointTarget>
