@@ -214,7 +214,7 @@ public:
    * \param[in] x array representing 3D transformation
    * \param[in] dCost_dR_T the transpose of the derivative of the cost function w.r.t
    * rotation matrix
-   * \param[in] g gradient vector
+   * \param[out] g gradient vector
    */
   void
   computeRDerivative(const Vector6d& x,
