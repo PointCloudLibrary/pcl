@@ -369,6 +369,25 @@ namespace pcl
     * \param[in] in the input XYZRGB point cloud
     * \param[out] out the output XYZHSV point cloud
     */
+  
+  inline void 
+  PointCloudXYZHSVtoXYZRGB (const PointCloud<PointXYZHSV>& in,
+                            PointCloud<PointXYZRGB>&       out)
+  {
+    out.width   = in.width;
+    out.height  = in.height;
+    for (const auto &point : in.points)
+    {
+      PointXYZRGB p;
+      PointXYZHSVtoXYZRGB (point, p);
+      out.push_back (p);
+    }
+  }
+
+  /** \brief Convert a XYZHSV point cloud to a XYZRGB
+    * \param[in] in the input XYZHSV point cloud
+    * \param[out] out the output XYZRGB point cloud
+    */
   inline void
   PointCloudXYZRGBAtoXYZHSV (const PointCloud<PointXYZRGBA>& in,
                              PointCloud<PointXYZHSV>&        out)
