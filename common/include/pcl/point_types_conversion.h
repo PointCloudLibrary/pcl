@@ -303,7 +303,7 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (const auto &point : in.points)
+    for (const auto &point : in)
     {
       Intensity p;
       PointRGBtoI (point, p);
@@ -321,7 +321,7 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (const auto &point : in.points)
+    for (const auto &point : in)
     {
       Intensity8u p;
       PointRGBtoI (point, p);
@@ -339,7 +339,7 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (const auto &point : in.points)
+    for (const auto &point : in)
     {
       Intensity32u p;
       PointRGBtoI (point, p);
@@ -357,10 +357,28 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (const auto &point : in.points)
+    for (const auto &point : in)
     {
       PointXYZHSV p;
       PointXYZRGBtoXYZHSV (point, p);
+      out.push_back (p);
+    }
+  }
+ 
+  /** \brief Convert a XYZHSV point cloud to a XYZRGB
+    * \param[in] in the input XYZHSV point cloud
+    * \param[out] out the output XYZRGB point cloud
+    */
+  inline void 
+  PointCloudXYZHSVtoXYZRGB (const PointCloud<PointXYZHSV>& in,
+                            PointCloud<PointXYZRGB>&       out)
+  {
+    out.width   = in.width;
+    out.height  = in.height;
+    for (const auto &point : in)
+    {
+      PointXYZRGB p;
+      PointXYZHSVtoXYZRGB (point, p);
       out.push_back (p);
     }
   }
@@ -375,7 +393,7 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (const auto &point : in.points)
+    for (const auto &point : in)
     {
       PointXYZHSV p;
       PointXYZRGBAtoXYZHSV (point, p);
@@ -393,7 +411,7 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (const auto &point : in.points)
+    for (const auto &point : in)
     {
       PointXYZI p;
       PointXYZRGBtoXYZI (point, p);
