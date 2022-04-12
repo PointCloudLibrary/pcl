@@ -32,7 +32,7 @@ compile a series of 3rd party library dependencies:
 
     used as the matrix backend for SSE optimized math. **mandatory**
 
-    - **FLANN** version >= 1.6.8 (http://www.cs.ubc.ca/research/flann/)
+    - **FLANN** version >= 1.6.8 (https://github.com/flann-lib/flann)
 
     used in `kdtree` for fast approximate nearest neighbors search. **mandatory**
 
@@ -52,7 +52,7 @@ compile a series of 3rd party library dependencies:
 
     used to grab point clouds from OpenNI compliant devices. **optional**
 
-    - **Qt** version >= 4.6 (http://qt.digia.com/)
+    - **Qt** version >= 4.6 (https://www.qt.io/)
 
     used for developing applications with a graphical user interface (GUI) **optional**
 
