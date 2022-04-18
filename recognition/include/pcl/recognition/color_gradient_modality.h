@@ -162,11 +162,11 @@ namespace pcl
       }
 
       /** \brief Returns a point cloud containing the max-RGB gradients. */
-      inline pcl::PointCloud<pcl::GradientXY> &
-      getMaxColorGradients ()
-      {
-        return (color_gradients_);
-      }
+      //inline pcl::PointCloud<pcl::GradientXY> &
+      //getMaxColorGradients ()
+      //{
+      //  return (color_gradients_);
+      //}
   
       /** \brief Extracts features from this modality within the specified mask.
         * \param[in] mask defines the areas where features are searched in. 
