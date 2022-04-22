@@ -221,7 +221,7 @@ public:
                                   corr[idx[1]].index_query,
                                   corr[idx[0]].index_match,
                                   corr[idx[1]].index_match,
-                                  cardinality_));
+                                  similarity_threshold_squared_));
     }
     // Otherwise check all edges
     for (int i = 0; i < cardinality_; ++i) {
