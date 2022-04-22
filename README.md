@@ -23,7 +23,7 @@ Continuous integration
 [ci-latest-build]: https://dev.azure.com/PointCloudLibrary/pcl/_build/latest?definitionId=9&branchName=master
 [ci-ubuntu-18.04]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20GCC&jobName=Ubuntu&configuration=Ubuntu%2018.04%20GCC&label=Ubuntu%2018.04%20GCC
 [ci-ubuntu-20.04]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Clang&jobName=Ubuntu&configuration=Ubuntu%2020.04%20Clang&label=Ubuntu%2020.04%20Clang
-[ci-ubuntu-21.10]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20GCC&jobName=Ubuntu&configuration=Ubuntu%2021.10%20GCC&label=Ubuntu%2021.10%20GCC
+[ci-ubuntu-22.04]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20GCC&jobName=Ubuntu&configuration=Ubuntu%2022.04%20GCC&label=Ubuntu%2022.04%20GCC
 [ci-windows-x86]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20MSVC&jobName=Windows%20Build&configuration=Windows%20Build%20x86&label=Windows%20VS2019%20x86
 [ci-windows-x64]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20MSVC&jobName=Windows%20Build&configuration=Windows%20Build%20x64&label=Windows%20VS2019%20x64
 [ci-macos-11]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Clang&jobName=macOS&configuration=macOS%20Big%20Sur%2011&label=macOS%20Big%20Sur%2011
@@ -33,7 +33,7 @@ Continuous integration
 
 Build Platform           | Status
 ------------------------ | ------------------------------------------------------------------------------------------------- |
-Ubuntu                   | [![Status][ci-ubuntu-18.04]][ci-latest-build] <br> [![Status][ci-ubuntu-20.04]][ci-latest-build]                              <br> [![Status][ci-ubuntu-21.10]][ci-latest-build]                                                |
+Ubuntu                   | [![Status][ci-ubuntu-18.04]][ci-latest-build] <br> [![Status][ci-ubuntu-20.04]][ci-latest-build] <br> [![Status][ci-ubuntu-22.04]][ci-latest-build] |
 Windows                  | [![Status][ci-windows-x86]][ci-latest-build]  <br> [![Status][ci-windows-x64]][ci-latest-build]   |
 macOS                    | [![Status][ci-macos-10.15]][ci-latest-build]  <br> [![Status][ci-macos-11]][ci-latest-build]   |
 Documentation            | [![Status][ci-docs]][ci-latest-docs] |
