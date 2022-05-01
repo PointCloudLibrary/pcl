@@ -157,7 +157,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
           n_inliers_count++;
 
       // Compute the k parameter (k=std::log(z)/std::log(1-w^n))
-      const double w = static_cast<double> (n_best_inliers_count) * one_over_indices;
+      const double w = static_cast<double> (n_inliers_count) * one_over_indices;
       double p_outliers = 1.0 - std::pow (w, static_cast<double> (selection.size ()));       // Probability that selection is contaminated by at least one outlier
       p_outliers = (std::max) (std::numeric_limits<double>::epsilon (), p_outliers);         // Avoid division by -Inf
       p_outliers = (std::min) (1.0 - std::numeric_limits<double>::epsilon (), p_outliers);   // Avoid division by 0.
