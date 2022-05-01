@@ -3254,7 +3254,7 @@ svm_load_model(const char* model_file_name)
         res = fscanf(fp, "%d", &model->nSV[i]);
     }
     else if (res > 0 && strcmp(cmd, "scaling") == 0) {
-      char *idx, buff[10000];
+      char *idx, buff[10001]; // 1 char more than 10000 to leave room for \0 at the end
       int ii = 0;
       // char delims[]="\t: ";
       model->scaling = Malloc(struct svm_node, 1);

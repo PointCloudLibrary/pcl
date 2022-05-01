@@ -45,12 +45,17 @@
 #include <pcl/segmentation/extract_clusters.h>
 
 int 
-main (int, char **argv)
+main (int argc, char **argv)
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr (new pcl::PointCloud<pcl::PointXYZ> ());
   pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal> ());
   pcl::PCDWriter writer;
 	
+  if (argc < 2)
+  {
+    std::cout<<"No PCD file given!"<<std::endl;
+    return (-1);
+  }
   if (pcl::io::loadPCDFile<pcl::PointXYZ> (argv[1], *cloud_ptr) == -1)
   {
     std::cout<<"Couldn't read the file "<<argv[1]<<std::endl;

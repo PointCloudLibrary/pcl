@@ -737,7 +737,7 @@ namespace pcl
 
   namespace io
   {
-    /** \brief Load a PLY v.6 file into a templated PointCloud type.
+    /** \brief Load a PLY v.6 file into a PCLPointCloud2 type.
       *
       * Any PLY files containing sensor data will generate a warning as a
       * pcl/PCLPointCloud2 message cannot hold the sensor origin.
@@ -753,7 +753,7 @@ namespace pcl
       return (p.read (file_name, cloud));
     }
 
-    /** \brief Load any PLY file into a templated PointCloud type.
+    /** \brief Load any PLY file into a PCLPointCloud2 type.
       * \param[in] file_name the name of the file to load
       * \param[in] cloud the resultant templated point cloud
       * \param[in] origin the sensor acquisition origin (only for > PLY_V7 - null if not present)

@@ -374,26 +374,13 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   // bounding box cannot be changed once the octree contains elements
   assert(this->leaf_count_ == 0);
 
-  assert(max_x_arg >= min_x_arg);
-  assert(max_y_arg >= min_y_arg);
-  assert(max_z_arg >= min_z_arg);
+  min_x_ = std::min(min_x_arg, max_x_arg);
+  min_y_ = std::min(min_y_arg, max_y_arg);
+  min_z_ = std::min(min_z_arg, max_z_arg);
 
-  min_x_ = min_x_arg;
-  max_x_ = max_x_arg;
-
-  min_y_ = min_y_arg;
-  max_y_ = max_y_arg;
-
-  min_z_ = min_z_arg;
-  max_z_ = max_z_arg;
-
-  min_x_ = std::min(min_x_, max_x_);
-  min_y_ = std::min(min_y_, max_y_);
-  min_z_ = std::min(min_z_, max_z_);
-
-  max_x_ = std::max(min_x_, max_x_);
-  max_y_ = std::max(min_y_, max_y_);
-  max_z_ = std::max(min_z_, max_z_);
+  max_x_ = std::max(min_x_arg, max_x_arg);
+  max_y_ = std::max(min_y_arg, max_y_arg);
+  max_z_ = std::max(min_z_arg, max_z_arg);
 
   // generate bit masks for octree
   getKeyBitSize();
@@ -415,26 +402,13 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   // bounding box cannot be changed once the octree contains elements
   assert(this->leaf_count_ == 0);
 
-  assert(max_x_arg >= 0.0f);
-  assert(max_y_arg >= 0.0f);
-  assert(max_z_arg >= 0.0f);
+  min_x_ = std::min(0.0, max_x_arg);
+  min_y_ = std::min(0.0, max_y_arg);
+  min_z_ = std::min(0.0, max_z_arg);
 
-  min_x_ = 0.0f;
-  max_x_ = max_x_arg;
-
-  min_y_ = 0.0f;
-  max_y_ = max_y_arg;
-
-  min_z_ = 0.0f;
-  max_z_ = max_z_arg;
-
-  min_x_ = std::min(min_x_, max_x_);
-  min_y_ = std::min(min_y_, max_y_);
-  min_z_ = std::min(min_z_, max_z_);
-
-  max_x_ = std::max(min_x_, max_x_);
-  max_y_ = std::max(min_y_, max_y_);
-  max_z_ = std::max(min_z_, max_z_);
+  max_x_ = std::max(0.0, max_x_arg);
+  max_y_ = std::max(0.0, max_y_arg);
+  max_z_ = std::max(0.0, max_z_arg);
 
   // generate bit masks for octree
   getKeyBitSize();
@@ -454,24 +428,13 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   // bounding box cannot be changed once the octree contains elements
   assert(this->leaf_count_ == 0);
 
-  assert(cubeLen_arg >= 0.0f);
+  min_x_ = std::min(0.0, cubeLen_arg);
+  min_y_ = std::min(0.0, cubeLen_arg);
+  min_z_ = std::min(0.0, cubeLen_arg);
 
-  min_x_ = 0.0f;
-  max_x_ = cubeLen_arg;
-
-  min_y_ = 0.0f;
-  max_y_ = cubeLen_arg;
-
-  min_z_ = 0.0f;
-  max_z_ = cubeLen_arg;
-
-  min_x_ = std::min(min_x_, max_x_);
-  min_y_ = std::min(min_y_, max_y_);
-  min_z_ = std::min(min_z_, max_z_);
-
-  max_x_ = std::max(min_x_, max_x_);
-  max_y_ = std::max(min_y_, max_y_);
-  max_z_ = std::max(min_z_, max_z_);
+  max_x_ = std::max(0.0, cubeLen_arg);
+  max_y_ = std::max(0.0, cubeLen_arg);
+  max_z_ = std::max(0.0, cubeLen_arg);
 
   // generate bit masks for octree
   getKeyBitSize();
