@@ -60,6 +60,9 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
   double d_best_penalty = std::numeric_limits<double>::max();
   double k = 1.0;
 
+  const double log_probability  = std::log (1.0 - probability_);
+  const double one_over_indices = 1.0 / static_cast<double> (sac_model_->getIndices ()->size ());
+
   Indices selection;
   Eigen::VectorXf model_coefficients (sac_model_->getModelSize ());
   std::vector<double> distances;
@@ -154,11 +157,11 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
           n_inliers_count++;
 
       // Compute the k parameter (k=std::log(z)/std::log(1-w^n))
-      double w = static_cast<double> (n_inliers_count) / static_cast<double> (sac_model_->getIndices ()->size ());
-      double p_no_outliers = 1 - std::pow (w, static_cast<double> (selection.size ()));
-      p_no_outliers = (std::max) (std::numeric_limits<double>::epsilon (), p_no_outliers);       // Avoid division by -Inf
-      p_no_outliers = (std::min) (1 - std::numeric_limits<double>::epsilon (), p_no_outliers);   // Avoid division by 0.
-      k = std::log (1 - probability_) / std::log (p_no_outliers);
+      const double w = static_cast<double> (n_inliers_count) * one_over_indices;
+      double p_outliers = 1.0 - std::pow (w, static_cast<double> (selection.size ()));       // Probability that selection is contaminated by at least one outlier
+      p_outliers = (std::max) (std::numeric_limits<double>::epsilon (), p_outliers);         // Avoid division by -Inf
+      p_outliers = (std::min) (1.0 - std::numeric_limits<double>::epsilon (), p_outliers);   // Avoid division by 0.
+      k = log_probability / std::log (p_outliers);
     }
 
     ++iterations_;
