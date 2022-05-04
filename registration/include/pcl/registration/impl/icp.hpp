@@ -226,8 +226,13 @@ IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformation(
     ++nr_iterations_;
 
     // Update the vizualization of icp convergence
-    // if (update_visualizer_ != 0)
-    //  update_visualizer_(output, source_indices_good, *target_, target_indices_good );
+    pcl::Indices source_indices_good, target_indices_good;
+    for(const Correspondence& corr : *correspondences_) {
+      source_indices_good.emplace_back(corr.index_query);
+      target_indices_good.emplace_back(corr.index_match);
+    }
+    if (update_visualizer_ != 0)
+      update_visualizer_(*input_transformed, source_indices_good, *target_, target_indices_good );
 
     converged_ = static_cast<bool>((*convergence_criteria_));
   } while (convergence_criteria_->getConvergenceState() ==
