@@ -447,7 +447,7 @@ public:
     if (visualizerCallback) {
       update_visualizer_ = visualizerCallback;
       pcl::Indices indices;
-      update_visualizer_(*input_, indices, *target_, indices );
+      update_visualizer_(*input_, indices, *target_, indices);
       return (true);
     }
     return (false);
