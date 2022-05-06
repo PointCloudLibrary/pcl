@@ -68,6 +68,11 @@ namespace pcl
         maximum_displayed_correspondences_ (0)
       {}
 
+      ~RegistrationVisualizerMine ()
+      {
+          stopDisplay();
+      }
+
       /** \brief Set the registration algorithm whose intermediate steps will be rendered.
        * The method creates the local callback function pcl::RegistrationVisualizer::update_visualizer_ and
        * binds it to the local buffers update function pcl::RegistrationVisualizer::updateIntermediateCloud().
