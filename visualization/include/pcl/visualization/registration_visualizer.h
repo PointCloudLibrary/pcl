@@ -68,7 +68,7 @@ namespace pcl
         maximum_displayed_correspondences_ (0)
       {}
 
-      ~RegistrationVisualizerMine ()
+      ~RegistrationVisualizer ()
       {
           stopDisplay();
       }
