@@ -52,6 +52,7 @@ set(srcs
   src/vtk/pcl_image_canvas_source_2d.cpp
   src/vtk/pcl_context_item.cpp
   src/vtk/vtkRenderWindowInteractorFix.cpp
+  src/vtk/vtkFixedXRenderWindowInteractor.cxx
   src/pcl_painter2D.cpp
   src/pcl_plotter.cpp
 )
@@ -132,6 +133,7 @@ set(vtk_incs
   "include/pcl/${SUBSYS_NAME}/vtk/pcl_context_item.h"
   "include/pcl/${SUBSYS_NAME}/vtk/vtkRenderWindowInteractorFix.h"
   "include/pcl/${SUBSYS_NAME}/vtk/pcl_vtk_compatibility.h"
+  "include/pcl/${SUBSYS_NAME}/vtk/vtkFixedXRenderWindowInteractor.h"
 )
 
 if(VTK_RENDERING_BACKEND_OPENGL_VERSION VERSION_LESS 2)
