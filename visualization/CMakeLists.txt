@@ -52,10 +52,13 @@ set(srcs
   src/vtk/pcl_image_canvas_source_2d.cpp
   src/vtk/pcl_context_item.cpp
   src/vtk/vtkRenderWindowInteractorFix.cpp
-  src/vtk/vtkFixedXRenderWindowInteractor.cxx
   src/pcl_painter2D.cpp
   src/pcl_plotter.cpp
 )
+
+if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0 AND UNIX AND NOT ANDROID AND NOT APPLE AND NOT APPLE_IOS)
+  list(APPEND srcs "src/vtk/vtkFixedXRenderWindowInteractor.cxx")
+endif()
 
 if(VTK_RENDERING_BACKEND_OPENGL_VERSION VERSION_LESS 2)
   list(APPEND srcs
@@ -133,8 +136,11 @@ set(vtk_incs
   "include/pcl/${SUBSYS_NAME}/vtk/pcl_context_item.h"
   "include/pcl/${SUBSYS_NAME}/vtk/vtkRenderWindowInteractorFix.h"
   "include/pcl/${SUBSYS_NAME}/vtk/pcl_vtk_compatibility.h"
-  "include/pcl/${SUBSYS_NAME}/vtk/vtkFixedXRenderWindowInteractor.h"
 )
+
+if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0 AND UNIX AND NOT ANDROID AND NOT APPLE AND NOT APPLE_IOS)
+  list(APPEND vtk_incs "include/pcl/${SUBSYS_NAME}/vtk/vtkFixedXRenderWindowInteractor.h")
+endif()
 
 if(VTK_RENDERING_BACKEND_OPENGL_VERSION VERSION_LESS 2)
   list(APPEND vtk_incs
