@@ -36,9 +36,10 @@
   */
 #include <pcl/console/print.h> // for PCL_DEBUG
 #include <pcl/visualization/vtk/vtkRenderWindowInteractorFix.h>
-#include <pcl/visualization/vtk/vtkFixedXRenderWindowInteractor.h>
-
 #include <vtkVersion.h>
+#if __unix__ && VTK_MAJOR_VERSION == 9 && ((VTK_MINOR_VERSION == 0 && (VTK_BUILD_VERSION == 2 || VTK_BUILD_VERSION == 3)) || (VTK_MINOR_VERSION == 1 && VTK_BUILD_VERSION == 0))
+#include <pcl/visualization/vtk/vtkFixedXRenderWindowInteractor.h>
+#endif
 
 #ifndef __APPLE__
 vtkRenderWindowInteractor* vtkRenderWindowInteractorFixNew ()
