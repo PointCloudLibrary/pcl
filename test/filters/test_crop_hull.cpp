@@ -383,18 +383,7 @@ TYPED_TEST (PCLCropHullTestFixture, test_keep_organized)
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// this test will pass only for 2d case //
-template <class T>
-struct PCLCropHullTestFixture2dCrutch : PCLCropHullTestFixture<T>
-{};
-using CropHullTestTraits2dTypes = ::testing::Types<
-  std::tuple_element<0, CropHullTestTraits2dList>::type,
-  std::tuple_element<1, CropHullTestTraits2dList>::type,
-  std::tuple_element<2, CropHullTestTraits2dList>::type
-  >;
-TYPED_TEST_SUITE(PCLCropHullTestFixture2dCrutch, CropHullTestTraits2dTypes);
-
-TYPED_TEST (PCLCropHullTestFixture2dCrutch, test_crop_inside)
+TYPED_TEST (PCLCropHullTestFixture, test_crop_inside)
 {
   for (auto & entry : this->data_)
   {

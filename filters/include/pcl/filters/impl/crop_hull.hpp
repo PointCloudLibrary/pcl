@@ -168,9 +168,8 @@ pcl::CropHull<PointT>::applyFilter3D (Indices &indices)
         crossings[ray] += rayTriangleIntersect
           ((*input_)[(*indices_)[index]], rays[ray], hull_polygons_[poly], *hull_cloud_);
 
-    if (crop_outside_ && (crossings[0]&1) + (crossings[1]&1) + (crossings[2]&1) > 1)
-      indices.push_back ((*indices_)[index]);
-    else if (!crop_outside_)
+    bool crosses = (crossings[0]&1) + (crossings[1]&1) + (crossings[2]&1) > 1;
+    if ((crop_outside_ && crosses) || (!crop_outside_ && !crosses))
       indices.push_back ((*indices_)[index]);
     else
       removed_indices_->push_back ((*indices_)[index]);
