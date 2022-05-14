@@ -353,9 +353,10 @@ public:
   using IterativeClosestPoint<PointSource, PointTarget, Scalar>::
       correspondence_rejectors_;
 
-  using Ptr = shared_ptr<IterativeClosestPoint<PointSource, PointTarget, Scalar>>;
-  using ConstPtr =
-      shared_ptr<const IterativeClosestPoint<PointSource, PointTarget, Scalar>>;
+  using Ptr =
+      shared_ptr<IterativeClosestPointWithNormals<PointSource, PointTarget, Scalar>>;
+  using ConstPtr = shared_ptr<
+      const IterativeClosestPointWithNormals<PointSource, PointTarget, Scalar>>;
 
   /** \brief Empty constructor. */
   IterativeClosestPointWithNormals()
