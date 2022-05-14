@@ -41,7 +41,7 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CIRCLE_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CIRCLE_H_
 
-#include <pcl/sample_consensus/eigen.h>
+#include <unsupported/Eigen/NonLinearOptimization> // for LevenbergMarquardt
 #include <pcl/sample_consensus/sac_model_circle.h>
 #include <pcl/common/concatenate.h>
 
@@ -102,6 +102,8 @@ pcl::SampleConsensusModelCircle2D<PointT>::computeModelCoefficients (const Indic
   // Radius
   model_coefficients[2] = static_cast<float> (sqrt ((model_coefficients[0] - p0[0]) * (model_coefficients[0] - p0[0]) +
                                                     (model_coefficients[1] - p0[1]) * (model_coefficients[1] - p0[1])));
+  PCL_DEBUG ("[pcl::SampleConsensusModelCircle2D::computeModelCoefficients] Model is (%g,%g,%g).\n",
+             model_coefficients[0], model_coefficients[1], model_coefficients[2]);
   return (true);
 }
 
@@ -171,23 +173,23 @@ pcl::SampleConsensusModelCircle2D<PointT>::selectWithinDistance (
   inliers.reserve (indices_->size ());
   error_sqr_dists_.reserve (indices_->size ());
 
+  const float sqr_inner_radius = (model_coefficients[2] <= threshold ? 0.0f : (model_coefficients[2] - threshold) * (model_coefficients[2] - threshold));
+  const float sqr_outer_radius = (model_coefficients[2] + threshold) * (model_coefficients[2] + threshold);
   // Iterate through the 3d points and calculate the distances from them to the circle
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
-    // Calculate the distance from the point to the circle as the difference between
-    // dist(point,circle_origin) and circle_radius
-    float distance = std::abs (std::sqrt (
-                                      ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) *
-                                      ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) +
-
-                                      ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) *
-                                      ( (*input_)[(*indices_)[i]].y - model_coefficients[1] )
-                                      ) - model_coefficients[2]);
-    if (distance < threshold)
+    // To avoid sqrt computation: consider one larger circle (radius + threshold) and one smaller circle (radius - threshold).
+    // Valid if point is in larger circle, but not in smaller circle.
+    const float sqr_dist = ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) *
+                           ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) +
+                           ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) *
+                           ( (*input_)[(*indices_)[i]].y - model_coefficients[1] );
+    if ((sqr_dist <= sqr_outer_radius) && (sqr_dist >= sqr_inner_radius))
     {
       // Returns the indices of the points whose distances are smaller than the threshold
       inliers.push_back ((*indices_)[i]);
-      error_sqr_dists_.push_back (static_cast<double> (distance));
+      // Only compute exact distance if necessary (if point is inlier)
+      error_sqr_dists_.push_back (static_cast<double> (std::abs (std::sqrt (sqr_dist) - model_coefficients[2])));
     }
   }
 }
@@ -216,19 +218,18 @@ pcl::SampleConsensusModelCircle2D<PointT>::countWithinDistanceStandard (
       const Eigen::VectorXf &model_coefficients, const double threshold, std::size_t i) const
 {
   std::size_t nr_p = 0;
+  const float sqr_inner_radius = (model_coefficients[2] <= threshold ? 0.0f : (model_coefficients[2] - threshold) * (model_coefficients[2] - threshold));
+  const float sqr_outer_radius = (model_coefficients[2] + threshold) * (model_coefficients[2] + threshold);
   // Iterate through the 3d points and calculate the distances from them to the circle
   for (; i < indices_->size (); ++i)
   {
-    // Calculate the distance from the point to the circle as the difference between
-    // dist(point,circle_origin) and circle_radius
-    float distance = std::abs (std::sqrt (
-                                      ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) *
-                                      ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) +
-
-                                      ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) *
-                                      ( (*input_)[(*indices_)[i]].y - model_coefficients[1] )
-                                      ) - model_coefficients[2]);
-    if (distance < threshold)
+    // To avoid sqrt computation: consider one larger circle (radius + threshold) and one smaller circle (radius - threshold).
+    // Valid if point is in larger circle, but not in smaller circle.
+    const float sqr_dist = ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) *
+                           ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) +
+                           ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) *
+                           ( (*input_)[(*indices_)[i]].y - model_coefficients[1] );
+    if ((sqr_dist <= sqr_outer_radius) && (sqr_dist >= sqr_inner_radius))
       nr_p++;
   }
   return (nr_p);
@@ -244,13 +245,13 @@ pcl::SampleConsensusModelCircle2D<PointT>::countWithinDistanceSSE (
   const __m128 a_vec = _mm_set1_ps (model_coefficients[0]);
   const __m128 b_vec = _mm_set1_ps (model_coefficients[1]);
   // To avoid sqrt computation: consider one larger circle (radius + threshold) and one smaller circle (radius - threshold). Valid if point is in larger circle, but not in smaller circle.
-  const __m128 sqr_inner_circle = _mm_set1_ps ((model_coefficients[2] <= threshold ? 0.0 : (model_coefficients[2]-threshold)*(model_coefficients[2]-threshold)));
-  const __m128 sqr_outer_circle = _mm_set1_ps ((model_coefficients[2]+threshold)*(model_coefficients[2]+threshold));
+  const __m128 sqr_inner_radius = _mm_set1_ps ((model_coefficients[2] <= threshold ? 0.0 : (model_coefficients[2]-threshold)*(model_coefficients[2]-threshold)));
+  const __m128 sqr_outer_radius = _mm_set1_ps ((model_coefficients[2]+threshold)*(model_coefficients[2]+threshold));
   __m128i res = _mm_set1_epi32(0); // This corresponds to nr_p: 4 32bit integers that, summed together, hold the number of inliers
   for (; (i + 4) <= indices_->size (); i += 4)
   {
     const __m128 sqr_dist = sqr_dist4 (i, a_vec, b_vec);
-    const __m128 mask = _mm_and_ps (_mm_cmplt_ps (sqr_inner_circle, sqr_dist), _mm_cmplt_ps (sqr_dist, sqr_outer_circle)); // The mask contains 1 bits if the corresponding points are inliers, else 0 bits
+    const __m128 mask = _mm_and_ps (_mm_cmplt_ps (sqr_inner_radius, sqr_dist), _mm_cmplt_ps (sqr_dist, sqr_outer_radius)); // The mask contains 1 bits if the corresponding points are inliers, else 0 bits
     res = _mm_add_epi32 (res, _mm_and_si128 (_mm_set1_epi32 (1), _mm_castps_si128 (mask))); // The latter part creates a vector with ones (as 32bit integers) where the points are inliers
     //const int res = _mm_movemask_ps (mask);
     //if (res & 1) nr_p++;
@@ -279,13 +280,13 @@ pcl::SampleConsensusModelCircle2D<PointT>::countWithinDistanceAVX (
   const __m256 a_vec = _mm256_set1_ps (model_coefficients[0]);
   const __m256 b_vec = _mm256_set1_ps (model_coefficients[1]);
   // To avoid sqrt computation: consider one larger circle (radius + threshold) and one smaller circle (radius - threshold). Valid if point is in larger circle, but not in smaller circle.
-  const __m256 sqr_inner_circle = _mm256_set1_ps ((model_coefficients[2] <= threshold ? 0.0 : (model_coefficients[2]-threshold)*(model_coefficients[2]-threshold)));
-  const __m256 sqr_outer_circle = _mm256_set1_ps ((model_coefficients[2]+threshold)*(model_coefficients[2]+threshold));
+  const __m256 sqr_inner_radius = _mm256_set1_ps ((model_coefficients[2] <= threshold ? 0.0 : (model_coefficients[2]-threshold)*(model_coefficients[2]-threshold)));
+  const __m256 sqr_outer_radius = _mm256_set1_ps ((model_coefficients[2]+threshold)*(model_coefficients[2]+threshold));
   __m256i res = _mm256_set1_epi32(0); // This corresponds to nr_p: 8 32bit integers that, summed together, hold the number of inliers
   for (; (i + 8) <= indices_->size (); i += 8)
   {
     const __m256 sqr_dist = sqr_dist8 (i, a_vec, b_vec);
-    const __m256 mask = _mm256_and_ps (_mm256_cmp_ps (sqr_inner_circle, sqr_dist, _CMP_LT_OQ), _mm256_cmp_ps (sqr_dist, sqr_outer_circle, _CMP_LT_OQ)); // The mask contains 1 bits if the corresponding points are inliers, else 0 bits
+    const __m256 mask = _mm256_and_ps (_mm256_cmp_ps (sqr_inner_radius, sqr_dist, _CMP_LT_OQ), _mm256_cmp_ps (sqr_dist, sqr_outer_radius, _CMP_LT_OQ)); // The mask contains 1 bits if the corresponding points are inliers, else 0 bits
     res = _mm256_add_epi32 (res, _mm256_and_si256 (_mm256_set1_epi32 (1), _mm256_castps_si256 (mask))); // The latter part creates a vector with ones (as 32bit integers) where the points are inliers
     //const int res = _mm256_movemask_ps (mask);
     //if (res &   1) nr_p++;
@@ -422,17 +423,19 @@ pcl::SampleConsensusModelCircle2D<PointT>::doSamplesVerifyModel (
     return (false);
   }
 
+  const float sqr_inner_radius = (model_coefficients[2] <= threshold ? 0.0f : (model_coefficients[2] - threshold) * (model_coefficients[2] - threshold));
+  const float sqr_outer_radius = (model_coefficients[2] + threshold) * (model_coefficients[2] + threshold);
   for (const auto &index : indices)
-    // Calculate the distance from the point to the circle as the difference between
-    //dist(point,circle_origin) and circle_radius
-    if (std::abs (std::sqrt (
-                         ( (*input_)[index].x - model_coefficients[0] ) *
-                         ( (*input_)[index].x - model_coefficients[0] ) +
-                         ( (*input_)[index].y - model_coefficients[1] ) *
-                         ( (*input_)[index].y - model_coefficients[1] )
-                         ) - model_coefficients[2]) > threshold)
+  {
+    // To avoid sqrt computation: consider one larger circle (radius + threshold) and one smaller circle (radius - threshold).
+    // Valid if point is in larger circle, but not in smaller circle.
+    const float sqr_dist = ( (*input_)[index].x - model_coefficients[0] ) *
+                           ( (*input_)[index].x - model_coefficients[0] ) +
+                           ( (*input_)[index].y - model_coefficients[1] ) *
+                           ( (*input_)[index].y - model_coefficients[1] );
+    if ((sqr_dist > sqr_outer_radius) || (sqr_dist < sqr_inner_radius))
       return (false);
-
+  }
   return (true);
 }
 
@@ -444,9 +447,17 @@ pcl::SampleConsensusModelCircle2D<PointT>::isModelValid (const Eigen::VectorXf &
     return (false);
 
   if (radius_min_ != -std::numeric_limits<double>::max() && model_coefficients[2] < radius_min_)
+  {
+    PCL_DEBUG ("[pcl::SampleConsensusModelCircle2D::isModelValid] Radius of circle is too small: should be larger than %g, but is %g.\n",
+               radius_min_, model_coefficients[2]);
     return (false);
+  }
   if (radius_max_ != std::numeric_limits<double>::max() && model_coefficients[2] > radius_max_)
+  {
+    PCL_DEBUG ("[pcl::SampleConsensusModelCircle2D::isModelValid] Radius of circle is too big: should be smaller than %g, but is %g.\n",
+               radius_max_, model_coefficients[2]);
     return (false);
+  }
 
   return (true);
 }

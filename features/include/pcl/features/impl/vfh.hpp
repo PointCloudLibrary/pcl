@@ -93,7 +93,7 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (con
                                                                              const Eigen::Vector4f &centroid_n,
                                                                              const pcl::PointCloud<PointInT> &cloud,
                                                                              const pcl::PointCloud<PointNT> &normals,
-                                                                             const std::vector<int> &indices)
+                                                                             const pcl::Indices &indices)
 {
   Eigen::Vector4f pfh_tuple;
   // Reset the whole thing

@@ -38,7 +38,6 @@
 #pragma once
 
 #include <Eigen/Core>
-#include <vector>
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>

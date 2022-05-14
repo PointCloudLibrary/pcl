@@ -99,13 +99,12 @@ displayHeads(std::vector<Eigen::VectorXf>& heads,
              pcl::visualization::PCLVisualizer& vis)
 {
   for (std::size_t i = 0; i < heads.size(); i++) {
-    std::stringstream name;
-    name << "sphere" << i;
+    std::string name = "sphere" + std::to_string(i);
     pcl::PointXYZ center_point;
     center_point.x = heads[i][0];
     center_point.y = heads[i][1];
     center_point.z = heads[i][2];
-    vis.addSphere(center_point, 0.02, 0, 255, 0, name.str());
+    vis.addSphere(center_point, 0.02, 0, 255, 0, name);
 
     pcl::ModelCoefficients cylinder_coeff;
     cylinder_coeff.values.resize(7); // We need 7 values
@@ -127,8 +126,8 @@ displayHeads(std::vector<Eigen::VectorXf>& heads,
     cylinder_coeff.values[5] = vec[2];
 
     cylinder_coeff.values[6] = 0.01f;
-    name << "cylinder";
-    vis.addCylinder(cylinder_coeff, name.str());
+    name += "cylinder";
+    vis.addCylinder(cylinder_coeff, name);
   }
 }
 

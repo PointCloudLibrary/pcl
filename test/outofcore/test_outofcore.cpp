@@ -914,7 +914,7 @@ TEST_F (OutofcoreTest, PointCloud2_Query)
   std::uint64_t points_added = octreeA.addPointCloud (dst_blob, false);
   std::uint64_t LOD_points_added = octreeB.addPointCloud_and_genLOD (dst_blob);
 
-  ASSERT_EQ (points_added, dst_blob->width*dst_blob->height) << "Number of points returned by addPointCloud does not match the number of poitns in the input point cloud\n";
+  ASSERT_EQ (points_added, dst_blob->width*dst_blob->height) << "Number of points returned by addPointCloud does not match the number of points in the input point cloud\n";
   ASSERT_EQ (LOD_points_added, dst_blob->width*dst_blob->height) << "Number of points returned by addPointCloud_and_genLOD does not match the number of points in the input point cloud\n";
 
   pcl::PCLPointCloud2::Ptr query_result_a (new pcl::PCLPointCloud2 ());

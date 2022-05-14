@@ -37,8 +37,13 @@
 
 #pragma once
 
-#include <pcl/visualization/vtk.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
+
+#include <vtkSmartPointer.h>
+#include <vtkPolyData.h>
+#include <vtkActor.h>
+#include <vtkDataSetMapper.h>
+#include <vtkRenderer.h>
 
 namespace pcl
 {

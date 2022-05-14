@@ -270,7 +270,7 @@ namespace mets {
     std::tr1::variate_generator<random_generator&, 
       std::tr1::uniform_int<std::size_t> >gen(rng, unigen);
 #endif
-    std::random_shuffle(p.pi_m.begin(), p.pi_m.end(), gen);
+    std::shuffle(p.pi_m.begin(), p.pi_m.end(), gen);
     p.update_cost();
   }
   

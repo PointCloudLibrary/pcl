@@ -445,10 +445,9 @@ Cloud::restore (const CopyBuffer& copy_buffer, const Selection& selection)
 std::string
 Cloud::getStat () const
 {
-  std::string title = "Total number of points: ";
-  std::string num_str;
-  ::toString(cloud_.size(), num_str);
-  return (title + num_str);
+  const std::string title = "Total number of points: ";
+  const std::string num_str = std::to_string(cloud_.size());
+  return title + num_str;
 }
 
 void

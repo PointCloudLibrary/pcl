@@ -203,7 +203,7 @@ pcl::RealSenseGrabber::setConfidenceThreshold (unsigned int threshold)
 {
   if (threshold > 15)
   {
-    PCL_WARN ("[pcl::RealSenseGrabber::setConfidenceThreshold] Attempted to set threshold outside valid range (0-15)");
+    PCL_WARN ("[pcl::RealSenseGrabber::setConfidenceThreshold] Attempted to set threshold outside valid range (0-15)\n");
   }
   else
   {

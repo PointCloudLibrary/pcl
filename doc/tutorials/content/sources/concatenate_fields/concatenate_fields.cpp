@@ -1,9 +1,9 @@
 #include <iostream>
-#include <pcl/io/pcd_io.h>
+#include <pcl/common/io.h> // for concatenateFields
 #include <pcl/point_types.h>
 
 int
-  main (int argc, char** argv)
+  main ()
 {
   pcl::PointCloud<pcl::PointXYZ> cloud_a;
   pcl::PointCloud<pcl::Normal> cloud_b;

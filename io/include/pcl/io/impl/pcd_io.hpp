@@ -40,13 +40,13 @@
 #ifndef PCL_IO_PCD_IO_IMPL_H_
 #define PCL_IO_PCD_IO_IMPL_H_
 
+#include <boost/algorithm/string/trim.hpp> // for trim
 #include <fstream>
 #include <fcntl.h>
 #include <string>
 #include <cstdlib>
 #include <pcl/common/io.h> // for getFields, ...
 #include <pcl/console/print.h>
-#include <pcl/io/boost.h>
 #include <pcl/io/low_level_io.h>
 #include <pcl/io/pcd_io.h>
 
@@ -174,13 +174,15 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 
 #else
   // Allocate disk space for the entire file to prevent bus errors.
-  if (io::raw_fallocate (fd, data_idx + data_size) != 0)
+  const int allocate_res = io::raw_fallocate (fd, data_idx + data_size);
+  if (allocate_res != 0)
   {
     io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
-    PCL_ERROR ("[pcl::PCDWriter::writeBinary] posix_fallocate errno: %d strerror: %s\n", errno, strerror (errno));
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] raw_fallocate(length=%zu) returned %i. errno: %d strerror: %s\n",
+               data_idx + data_size, allocate_res, errno, strerror (errno));
 
-    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during posix_fallocate ()!");
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during raw_fallocate ()!");
     return (-1);
   }
 
@@ -372,13 +374,15 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
 
 #else
   // Allocate disk space for the entire file to prevent bus errors.
-  if (io::raw_fallocate (fd, compressed_final_size) != 0)
+  const int allocate_res = io::raw_fallocate (fd, compressed_final_size);
+  if (allocate_res != 0)
   {
     io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
-    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] posix_fallocate errno: %d strerror: %s\n", errno, strerror (errno));
+    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] raw_fallocate(length=%u) returned %i. errno: %d strerror: %s\n",
+               compressed_final_size, allocate_res, errno, strerror (errno));
 
-    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during posix_fallocate ()!");
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during raw_fallocate ()!");
     return (-1);
   }
 
@@ -447,7 +451,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
   }
 
   std::ofstream fs;
-  fs.open (file_name.c_str ());      // Open file
+  fs.open (file_name.c_str (), std::ios::binary);      // Open file
   
   if (!fs.is_open () || fs.fail ())
   {
@@ -586,7 +590,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
 template <typename PointT> int
 pcl::PCDWriter::writeBinary (const std::string &file_name, 
                              const pcl::PointCloud<PointT> &cloud, 
-                             const std::vector<int> &indices)
+                             const pcl::Indices &indices)
 {
   if (cloud.empty () || indices.empty ())
   {
@@ -646,13 +650,15 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 
 #else
   // Allocate disk space for the entire file to prevent bus errors.
-  if (io::raw_fallocate (fd, data_idx + data_size) != 0)
+  const int allocate_res = io::raw_fallocate (fd, data_idx + data_size);
+  if (allocate_res != 0)
   {
     io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
-    PCL_ERROR ("[pcl::PCDWriter::writeBinary] posix_fallocate errno: %d strerror: %s\n", errno, strerror (errno));
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] raw_fallocate(length=%zu) returned %i. errno: %d strerror: %s\n",
+               data_idx + data_size, allocate_res, errno, strerror (errno));
 
-    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during posix_fallocate ()!");
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during raw_fallocate ()!");
     return (-1);
   }
 
@@ -714,7 +720,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 template <typename PointT> int
 pcl::PCDWriter::writeASCII (const std::string &file_name, 
                             const pcl::PointCloud<PointT> &cloud, 
-                            const std::vector<int> &indices,
+                            const pcl::Indices &indices,
                             const int precision)
 {
   if (cloud.empty () || indices.empty ())
@@ -730,7 +736,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
   }
 
   std::ofstream fs;
-  fs.open (file_name.c_str ());      // Open file
+  fs.open (file_name.c_str (), std::ios::binary);      // Open file
   if (!fs.is_open () || fs.fail ())
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Could not open file for writing!");

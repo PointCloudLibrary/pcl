@@ -72,11 +72,11 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::setNonMaxSupression (bool n
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT> void
-pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::calculateCombinedCovar (const std::vector<int>& neighbors, float* coefficients) const
+pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::calculateCombinedCovar (const pcl::Indices& neighbors, float* coefficients) const
 {
   memset (coefficients, 0, sizeof (float) * 21);
   unsigned count = 0;
-  for (const int &neighbor : neighbors)
+  for (const auto &neighbor : neighbors)
   {
     if (std::isfinite ((*normals_)[neighbor].normal_x) && std::isfinite ((*intensity_gradients_)[neighbor].gradient [0]))
     {
@@ -234,13 +234,13 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
       if (!isFinite ((*response)[idx]) || (*response)[idx].intensity < threshold_)
         continue;
 
-      std::vector<int> nn_indices;
+      pcl::Indices nn_indices;
       std::vector<float> nn_dists;
       tree_->radiusSearch (idx, search_radius_, nn_indices, nn_dists);
       bool is_maxima = true;
-      for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
+      for (const auto& index : nn_indices)
       {
-        if ((*response)[idx].intensity < (*response)[*iIt].intensity)
+        if ((*response)[idx].intensity < (*response)[index].intensity)
         {
           is_maxima = false;
           break;
@@ -282,7 +282,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
     pointOut.intensity = 0.0; //std::numeric_limits<float>::quiet_NaN ();
     if (isFinite (pointIn))
     {
-      std::vector<int> nn_indices;
+      pcl::Indices nn_indices;
       std::vector<float> nn_dists;
       tree_->radiusSearch (pointIn, search_radius_, nn_indices, nn_dists);
       calculateCombinedCovar (nn_indices, covar);
@@ -376,13 +376,13 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
       corner.x = cornerIt->x;
       corner.y = cornerIt->y;
       corner.z = cornerIt->z;
-      std::vector<int> nn_indices;
+      pcl::Indices nn_indices;
       std::vector<float> nn_dists;      
       search.radiusSearch (corner, search_radius_, nn_indices, nn_dists);
-      for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
+      for (const auto& index : nn_indices)
       {
-        normal = reinterpret_cast<const Eigen::Vector3f*> (&((*normals_)[*iIt].normal_x));
-        point = reinterpret_cast<const Eigen::Vector3f*> (&((*surface_)[*iIt].x));
+        normal = reinterpret_cast<const Eigen::Vector3f*> (&((*normals_)[index].normal_x));
+        point = reinterpret_cast<const Eigen::Vector3f*> (&((*surface_)[index].x));
         nnT = (*normal) * (normal->transpose());
         NNT += nnT;
         NNTp += nnT * (*point);

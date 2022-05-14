@@ -37,6 +37,7 @@
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
 #include <boost/circular_buffer.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp> // for to_iso_string, local_time
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>

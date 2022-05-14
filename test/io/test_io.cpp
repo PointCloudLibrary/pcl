@@ -504,6 +504,7 @@ TEST (PCL, IO)
   EXPECT_EQ (bool (cloud_blob.is_dense), cloud.is_dense);
   EXPECT_EQ (std::size_t (cloud_blob.data.size () * 2),         // PointXYZI is 16*2 (XYZ+1, Intensity+3)
               cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for loadPCDFile ()
+  remove ("test_pcl_io.pcd");
 
   // Convert from blob to data type
   fromPCLPointCloud2 (cloud_blob, cloud);
@@ -523,7 +524,7 @@ TEST (PCL, IO)
   EXPECT_FLOAT_EQ (cloud[nr_p - 1].z, last.z);    // test for fromPCLPointCloud2 ()
   EXPECT_FLOAT_EQ (cloud[nr_p - 1].intensity, last.intensity); // test for fromPCLPointCloud2 ()
 
-  // Save as ASCII
+  // Save as binary
   try
   {
     w.write<PointXYZI> ("test_pcl_io_binary.pcd", cloud, true);
@@ -593,9 +594,9 @@ TEST (PCL, IO)
   EXPECT_FLOAT_EQ (cloud[nr_p - 1].z, last.z);    // test for fromPCLPointCloud2 ()
   EXPECT_FLOAT_EQ (float (cloud[nr_p - 1].intensity), float (last.intensity)); // test for fromPCLPointCloud2 ()
 
-  std::vector<int> indices (cloud.width * cloud.height / 2);
+  pcl::Indices indices (cloud.width * cloud.height / 2);
   for (int i = 0; i < static_cast<int> (indices.size ()); ++i) indices[i] = i;
-  // Save as ASCII
+  // Save as binary
   try
   {
     w.write<PointXYZI> ("test_pcl_io_binary.pcd", cloud, indices, true);
@@ -611,6 +612,7 @@ TEST (PCL, IO)
   EXPECT_EQ (bool (cloud_blob.is_dense), cloud.is_dense);
   EXPECT_EQ (std::size_t (cloud_blob.data.size () * 2),         // PointXYZI is 16*2 (XYZ+1, Intensity+3)
               cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for loadPCDFile ()
+  remove ("test_pcl_io_binary.pcd");
 
   // Convert from blob to data type
   fromPCLPointCloud2 (cloud_blob, cloud);
@@ -643,6 +645,7 @@ TEST (PCL, IO)
   EXPECT_TRUE (cloud_blob.is_dense);
   EXPECT_EQ (std::size_t (cloud_blob.data.size () * 2),         // PointXYZI is 16*2 (XYZ+1, Intensity+3)
               cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for loadPCDFile ()
+  remove ("test_pcl_io_ascii.pcd");
 
   // Convert from blob to data type
   fromPCLPointCloud2 (cloud_blob, cloud);
@@ -656,10 +659,6 @@ TEST (PCL, IO)
   EXPECT_FLOAT_EQ (cloud[0].y, first.y);     // test for fromPCLPointCloud2 ()
   EXPECT_FLOAT_EQ (cloud[0].z, first.z);     // test for fromPCLPointCloud2 ()
   EXPECT_FLOAT_EQ (cloud[0].intensity, first.intensity);  // test for fromPCLPointCloud2 ()
-
-  remove ("test_pcl_io_ascii.pcd");
-  remove ("test_pcl_io_binary.pcd");
-  remove ("test_pcl_io.pcd");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1274,7 +1273,7 @@ TEST (PCL, Locale)
     {
       PCL_WARN ("Failed to set locale, skipping test.\n");
     }
-    int res = writer.writeASCII<PointXYZ> ("test_pcl_io_ascii.pcd", cloud);
+    int res = writer.writeASCII<PointXYZ> ("test_pcl_io_ascii_locale.pcd", cloud);
     EXPECT_EQ (res, 0);
 
     PCDReader reader;
@@ -1290,7 +1289,7 @@ TEST (PCL, Locale)
     {
       PCL_WARN ("Failed to set locale, skipping test.\n");
     }
-    reader.read<PointXYZ> ("test_pcl_io_ascii.pcd", cloud2);
+    reader.read<PointXYZ> ("test_pcl_io_ascii_locale.pcd", cloud2);
     std::locale::global (std::locale::classic ());
 
     EXPECT_EQ (cloud2.width, cloud.width);
@@ -1312,7 +1311,7 @@ TEST (PCL, Locale)
   {
   }
 
-  remove ("test_pcl_io_ascii.pcd");
+  remove ("test_pcl_io_ascii_locale.pcd");
 #endif
 }
 

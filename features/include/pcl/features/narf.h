@@ -40,7 +40,6 @@
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/features/eigen.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_representation.h>
 

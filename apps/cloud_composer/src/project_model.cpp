@@ -14,6 +14,11 @@
 #include <QMessageBox>
 #include <QThread>
 
+#include <vtkSmartPointer.h>
+#include <vtkImageData.h>
+#include <vtkImageReader2Factory.h>
+#include <vtkImageReader2.h>
+
 pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
   : QStandardItemModel (parent)
 {

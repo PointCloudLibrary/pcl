@@ -54,8 +54,8 @@ namespace pcl
   class KdTree
   {
     public:
-      using IndicesPtr = shared_ptr<std::vector<int> >;
-      using IndicesConstPtr = shared_ptr<const std::vector<int> >;
+      using IndicesPtr = shared_ptr<Indices >;
+      using IndicesConstPtr = shared_ptr<const Indices >;
 
       using PointCloud = pcl::PointCloud<PointT>;
       using PointCloudPtr = typename PointCloud::Ptr;
@@ -68,11 +68,11 @@ namespace pcl
       using Ptr = shared_ptr<KdTree<PointT> >;
       using ConstPtr = shared_ptr<const KdTree<PointT> >;
 
-      /** \brief Empty constructor for KdTree. Sets some internal values to their defaults. 
-        * \param[in] sorted set to true if the application that the tree will be used for requires sorted nearest neighbor indices (default). False otherwise. 
+      /** \brief Empty constructor for KdTree. Sets some internal values to their defaults.
+        * \param[in] sorted set to true if the application that the tree will be used for requires sorted nearest neighbor indices (default). False otherwise.
         */
       KdTree (bool sorted = true) : input_(),
-                                    epsilon_(0.0f), min_pts_(1), sorted_(sorted), 
+                                    epsilon_(0.0f), min_pts_(1), sorted_(sorted),
                                     point_representation_ (new DefaultPointRepresentation<PointT>)
       {
       };
@@ -102,7 +102,7 @@ namespace pcl
         return (input_);
       }
 
-      /** \brief Provide a pointer to the point representation to use to convert points into k-D vectors. 
+      /** \brief Provide a pointer to the point representation to use to convert points into k-D vectors.
         * \param[in] point_representation the const boost shared pointer to a PointRepresentation
         */
       inline void
@@ -127,50 +127,50 @@ namespace pcl
         * \param[in] p_q the given query point
         * \param[in] k the number of neighbors to search for
         * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k 
+        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
         * a priori!)
         * \return number of neighbors found
         */
-      virtual int 
-      nearestKSearch (const PointT &p_q, int k, 
-                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const = 0;
+      virtual int
+      nearestKSearch (const PointT &p_q, unsigned int k,
+                      Indices &k_indices, std::vector<float> &k_sqr_distances) const = 0;
 
       /** \brief Search for k-nearest neighbors for the given query point.
-        * 
+        *
         * \attention This method does not do any bounds checking for the input index
         * (i.e., index >= cloud.size () || index < 0), and assumes valid (i.e., finite) data.
-        * 
+        *
         * \param[in] cloud the point cloud data
         * \param[in] index a \a valid index in \a cloud representing a \a valid (i.e., finite) query point
         * \param[in] k the number of neighbors to search for
         * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k 
+        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
         * a priori!)
-        * 
+        *
         * \return number of neighbors found
-        * 
+        *
         * \exception asserts in debug mode if the index is not between 0 and the maximum number of points
         */
-      virtual int 
-      nearestKSearch (const PointCloud &cloud, int index, int k, 
-                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
+      virtual int
+      nearestKSearch (const PointCloud &cloud, int index, unsigned int k,
+                      Indices &k_indices, std::vector<float> &k_sqr_distances) const
       {
         assert (index >= 0 && index < static_cast<int> (cloud.size ()) && "Out-of-bounds error in nearestKSearch!");
         return (nearestKSearch (cloud[index], k, k_indices, k_sqr_distances));
       }
 
-      /** \brief Search for k-nearest neighbors for the given query point. 
+      /** \brief Search for k-nearest neighbors for the given query point.
         * This method accepts a different template parameter for the point type.
         * \param[in] point the given query point
         * \param[in] k the number of neighbors to search for
         * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k 
+        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
         * a priori!)
         * \return number of neighbors found
         */
-      template <typename PointTDiff> inline int 
-      nearestKSearchT (const PointTDiff &point, int k, 
-                       std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
+      template <typename PointTDiff> inline int
+      nearestKSearchT (const PointTDiff &point, unsigned int k,
+                       Indices &k_indices, std::vector<float> &k_sqr_distances) const
       {
         PointT p;
         copyPoint (point, p);
@@ -178,25 +178,25 @@ namespace pcl
       }
 
       /** \brief Search for k-nearest neighbors for the given query point (zero-copy).
-        * 
+        *
         * \attention This method does not do any bounds checking for the input index
         * (i.e., index >= cloud.size () || index < 0), and assumes valid (i.e., finite) data.
-        * 
-        * \param[in] index a \a valid index representing a \a valid query point in the dataset given 
-        * by \a setInputCloud. If indices were given in setInputCloud, index will be the position in 
+        *
+        * \param[in] index a \a valid index representing a \a valid query point in the dataset given
+        * by \a setInputCloud. If indices were given in setInputCloud, index will be the position in
         * the indices vector.
-        * 
+        *
         * \param[in] k the number of neighbors to search for
         * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k 
+        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
         * a priori!)
         * \return number of neighbors found
-        * 
+        *
         * \exception asserts in debug mode if the index is not between 0 and the maximum number of points
         */
-      virtual int 
-      nearestKSearch (int index, int k, 
-                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
+      virtual int
+      nearestKSearch (int index, unsigned int k,
+                      Indices &k_indices, std::vector<float> &k_sqr_distances) const
       {
         if (indices_ == nullptr)
         {
@@ -218,15 +218,15 @@ namespace pcl
         * returned.
         * \return number of neighbors found in radius
         */
-      virtual int 
-      radiusSearch (const PointT &p_q, double radius, std::vector<int> &k_indices,
+      virtual int
+      radiusSearch (const PointT &p_q, double radius, Indices &k_indices,
                     std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const = 0;
 
       /** \brief Search for all the nearest neighbors of the query point in a given radius.
-        * 
+        *
         * \attention This method does not do any bounds checking for the input index
         * (i.e., index >= cloud.size () || index < 0), and assumes valid (i.e., finite) data.
-        * 
+        *
         * \param[in] cloud the point cloud data
         * \param[in] index a \a valid index in \a cloud representing a \a valid (i.e., finite) query point
         * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
@@ -236,12 +236,12 @@ namespace pcl
         * 0 or to a number higher than the number of points in the input cloud, all neighbors in \a radius will be
         * returned.
         * \return number of neighbors found in radius
-        * 
+        *
         * \exception asserts in debug mode if the index is not between 0 and the maximum number of points
         */
-      virtual int 
-      radiusSearch (const PointCloud &cloud, int index, double radius, 
-                    std::vector<int> &k_indices, std::vector<float> &k_sqr_distances, 
+      virtual int
+      radiusSearch (const PointCloud &cloud, int index, double radius,
+                    Indices &k_indices, std::vector<float> &k_sqr_distances,
                     unsigned int max_nn = 0) const
       {
         assert (index >= 0 && index < static_cast<int> (cloud.size ()) && "Out-of-bounds error in radiusSearch!");
@@ -258,8 +258,8 @@ namespace pcl
         * returned.
         * \return number of neighbors found in radius
         */
-      template <typename PointTDiff> inline int 
-      radiusSearchT (const PointTDiff &point, double radius, std::vector<int> &k_indices,
+      template <typename PointTDiff> inline int
+      radiusSearchT (const PointTDiff &point, double radius, Indices &k_indices,
                      std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const
       {
         PointT p;
@@ -268,14 +268,14 @@ namespace pcl
       }
 
       /** \brief Search for all the nearest neighbors of the query point in a given radius (zero-copy).
-        * 
+        *
         * \attention This method does not do any bounds checking for the input index
         * (i.e., index >= cloud.size () || index < 0), and assumes valid (i.e., finite) data.
-        * 
-        * \param[in] index a \a valid index representing a \a valid query point in the dataset given 
-        * by \a setInputCloud. If indices were given in setInputCloud, index will be the position in 
+        *
+        * \param[in] index a \a valid index representing a \a valid query point in the dataset given
+        * by \a setInputCloud. If indices were given in setInputCloud, index will be the position in
         * the indices vector.
-        * 
+        *
         * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
         * \param[out] k_indices the resultant indices of the neighboring points
         * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
@@ -283,11 +283,11 @@ namespace pcl
         * 0 or to a number higher than the number of points in the input cloud, all neighbors in \a radius will be
         * returned.
         * \return number of neighbors found in radius
-        * 
+        *
         * \exception asserts in debug mode if the index is not between 0 and the maximum number of points
         */
-      virtual int 
-      radiusSearch (int index, double radius, std::vector<int> &k_indices,
+      virtual int
+      radiusSearch (int index, double radius, Indices &k_indices,
                     std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const
       {
         if (indices_ == nullptr)
@@ -315,8 +315,8 @@ namespace pcl
         return (epsilon_);
       }
 
-      /** \brief Minimum allowed number of k nearest neighbors points that a viable result must contain. 
-        * \param[in] min_pts the minimum number of neighbors in a viable neighborhood 
+      /** \brief Minimum allowed number of k nearest neighbors points that a viable result must contain.
+        * \param[in] min_pts the minimum number of neighbors in a viable neighborhood
         */
       inline void
       setMinPts (int min_pts)
@@ -351,7 +351,7 @@ namespace pcl
       PointRepresentationConstPtr point_representation_;
 
       /** \brief Class getName method. */
-      virtual std::string 
+      virtual std::string
       getName () const = 0;
   };
 }

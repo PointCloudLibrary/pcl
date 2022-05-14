@@ -40,6 +40,8 @@
 #include <istream>
 #include <fstream>
 #include <boost/filesystem.hpp>
+#include <boost/lexical_cast.hpp> // for lexical_cast
+#include <boost/algorithm/string.hpp> // for split
 #include <cstdint>
 
 //////////////////////////////////////////////////////////////////////////////

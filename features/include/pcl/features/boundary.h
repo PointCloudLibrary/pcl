@@ -40,7 +40,6 @@
 
 #pragma once
 
-#include <pcl/features/eigen.h>
 #include <pcl/features/feature.h>
 
 namespace pcl
@@ -116,7 +115,7 @@ namespace pcl
         */
       bool 
       isBoundaryPoint (const pcl::PointCloud<PointInT> &cloud, 
-                       int q_idx, const std::vector<int> &indices, 
+                       int q_idx, const pcl::Indices &indices, 
                        const Eigen::Vector4f &u, const Eigen::Vector4f &v, const float angle_threshold);
 
       /** \brief Check whether a point is a boundary point in a planar patch of projected points given by indices.
@@ -131,7 +130,7 @@ namespace pcl
       bool 
       isBoundaryPoint (const pcl::PointCloud<PointInT> &cloud, 
                        const PointInT &q_point, 
-                       const std::vector<int> &indices, 
+                       const pcl::Indices &indices, 
                        const Eigen::Vector4f &u, const Eigen::Vector4f &v, const float angle_threshold);
 
       /** \brief Set the decision boundary (angle threshold) that marks points as boundary or regular. 

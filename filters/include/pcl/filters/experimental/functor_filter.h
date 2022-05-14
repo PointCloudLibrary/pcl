@@ -14,61 +14,70 @@
 
 namespace pcl {
 namespace experimental {
-template <typename PointT, typename Function>
-constexpr static bool is_functor_for_filter_v =
-    pcl::is_invocable_r_v<bool,
-                          Function,
-                          const pcl::remove_cvref_t<pcl::PointCloud<PointT>>&,
-                          pcl::index_t>;
-
 /**
- * \brief Filter point clouds and indices based on a functor passed in the ctor
+ * \brief Checks if the function object meets the usage in `FunctorFilter` class
+ * \details `Function` needs to be callable with a const reference to a PointCloud
+ * and an index value. The return type should be implicitly convertible to a boolean
+ */
+template <typename PointT, typename Function>
+constexpr static bool is_function_object_for_filter_v =
+    is_invocable_r_v<bool, Function, const PointCloud<PointT>&, index_t>;
+
+namespace advanced {
+/**
+ * \brief Filter point clouds and indices based on a function object passed in the ctor
+ * \details The function object can be anything (lambda, std::function, invocable class,
+ * etc.) that can be moved into the class. Additionally, it must satisfy the condition
+ * `is_function_object_for_filter_v`
  * \ingroup filters
  */
-template <typename PointT, typename Functor>
+template <typename PointT, typename FunctionObject>
 class FunctorFilter : public FilterIndices<PointT> {
   using Base = FilterIndices<PointT>;
-  using PCLBase = pcl::PCLBase<PointT>;
+  using PCL_Base = PCLBase<PointT>;
 
 public:
-  using FunctorT = Functor;
+  using FunctionObjectT = FunctionObject;
   // using in type would complicate signature
-  static_assert(is_functor_for_filter_v<PointT, FunctorT>,
-                "Functor signature must be similar to `bool(const PointCloud<PointT>&, "
-                "index_t)`");
+  static_assert(is_function_object_for_filter_v<PointT, FunctionObjectT>,
+                "Function object signature must be similar to `bool(const "
+                "PointCloud<PointT>&, index_t)`");
 
 protected:
   using Base::extract_removed_indices_;
   using Base::filter_name_;
   using Base::negative_;
   using Base::removed_indices_;
-  using PCLBase::indices_;
-  using PCLBase::input_;
+  using PCL_Base::indices_;
+  using PCL_Base::input_;
 
-  // need to hold a value because functors can only be copy or move constructed
-  FunctorT functor_;
+private:
+  // need to hold a value because lambdas can only be copy or move constructed in C++14
+  FunctionObjectT functionObject_;
 
 public:
   /** \brief Constructor.
+   * \param[in] function_object Object of effective type `FilterFunction` in order to
+   * filter out the indices for which it returns false
    * \param[in] extract_removed_indices Set to true if you want to be able to
    * extract the indices of points being removed (default = false).
    */
-  FunctorFilter(FunctorT functor, bool extract_removed_indices = false)
-  : Base(extract_removed_indices), functor_(std::move(functor))
+  FunctorFilter(FunctionObjectT function_object, bool extract_removed_indices = false)
+  : Base(extract_removed_indices), functionObject_(std::move(function_object))
   {
     filter_name_ = "functor_filter";
   }
 
-  const FunctorT&
-  getFunctor() const noexcept
+  const FunctionObjectT&
+  getFunctionObject() const noexcept
   {
-    return functor_;
+    return functionObject_;
   }
 
-  FunctorT&
-  getFunctor() noexcept
+  FunctionObjectT&
+  getFunctionObject() noexcept
   {
-    return functor_;
+    return functionObject_;
   }
 
   /**
@@ -79,15 +88,15 @@ public:
   applyFilter(Indices& indices) override
   {
     indices.clear();
-    indices.reserve(input_->size());
+    indices.reserve(indices_->size());
     if (extract_removed_indices_) {
       removed_indices_->clear();
-      removed_indices_->reserve(input_->size());
+      removed_indices_->reserve(indices_->size());
     }
 
     for (const auto index : *indices_) {
-      // functor returns true for points that should be selected
-      if (negative_ != functor_(*input_, index)) {
+      // function object returns true for points that should be selected
+      if (negative_ != functionObject_(*input_, index)) {
         indices.push_back(index);
       }
       else if (extract_removed_indices_) {
@@ -95,6 +104,37 @@ public:
       }
     }
   }
+
+protected:
+  /**
+   * \brief ctor to be used by derived classes with member function as FilterFunction
+   * \param[in] extract_removed_indices Set to true if you want to be able to
+   * extract the indices of points being removed (default = false).
+   * \note The class would be ill-defined until `setFunctionObject` has been called
+   * Do not call any filter routine until then
+   */
+  FunctorFilter(bool extract_removed_indices = false) : Base(extract_removed_indices)
+  {
+    filter_name_ = "functor_filter";
+  }
+
+  /**
+   * \brief utility function for derived class
+   * \param[in] function_object Object of effective type `FilterFunction` in order to
+   * filter out the indices for which it returns false
+   */
+  void
+  setFunctionObject(FunctionObjectT function_object) const noexcept
+  {
+    functionObject_ = std::move(function_object);
+  }
 };
+} // namespace advanced
+
+template <class PointT>
+using FilterFunction = std::function<bool(const PointCloud<PointT>&, index_t)>;
+
+template <class PointT>
+using FunctionFilter = advanced::FunctorFilter<PointT, FilterFunction<PointT>>;
 } // namespace experimental
 } // namespace pcl

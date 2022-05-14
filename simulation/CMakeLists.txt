@@ -4,12 +4,8 @@ set(SUBSYS_DEPS common io surface kdtree features search octree visualization fi
 
 set(build FALSE)
 find_package(OpenGL)
-if(APPLE)
-  # homebrew's FindGLEW module is not in good shape
-  find_package(glew CONFIG)
-ELSE()
-  find_package(GLEW)
-ENDIF()
+
+find_package(GLEW)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" OFF)
 PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} EXT_DEPS opengl glew)

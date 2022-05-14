@@ -82,7 +82,7 @@ namespace pcl
         */
       void 
       computePointMomentInvariants (const pcl::PointCloud<PointInT> &cloud, 
-                                    const std::vector<int> &indices, 
+                                    const pcl::Indices &indices, 
                                     float &j1, float &j2, float &j3);
 
       /** \brief Compute the 3 moment invariants (j1, j2, j3) for a given set of points, using their indices.

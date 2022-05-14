@@ -44,47 +44,52 @@
 #include <pcl/registration/icp.h>
 #include <pcl/registration/transformation_estimation_lm.h>
 
-namespace pcl
-{
-  /** \brief @b IterativeClosestPointNonLinear is an ICP variant that uses Levenberg-Marquardt optimization 
-    * backend. The resultant transformation is optimized as a quaternion.
-    *
-    * The algorithm has several termination criteria:
-    *
-    * <ol>
-    * <li>Number of iterations has reached the maximum user imposed number of iterations 
-    *     (via \ref setMaximumIterations)</li>
-    * <li>The epsilon (difference) between the previous transformation and the current estimated transformation is 
-    *     smaller than an user imposed value (via \ref setTransformationEpsilon)</li>
-    * <li>The sum of Euclidean squared errors is smaller than a user defined threshold 
-    *     (via \ref setEuclideanFitnessEpsilon)</li>
-    * </ol>
-    *
-    * \author Radu B. Rusu, Michael Dixon
-    * \ingroup registration
-    */
-  template <typename PointSource, typename PointTarget, typename Scalar = float>
-  class IterativeClosestPointNonLinear : public IterativeClosestPoint<PointSource, PointTarget, Scalar>
+namespace pcl {
+/** \brief @b IterativeClosestPointNonLinear is an ICP variant that uses
+ * Levenberg-Marquardt optimization backend. The resultant transformation is optimized
+ * as a quaternion.
+ *
+ * The algorithm has several termination criteria:
+ *
+ * <ol>
+ * <li>Number of iterations has reached the maximum user imposed number of iterations
+ *     (via \ref setMaximumIterations)</li>
+ * <li>The epsilon (difference) between the previous transformation and the current
+ * estimated transformation is smaller than an user imposed value (via \ref
+ * setTransformationEpsilon)</li> <li>The sum of Euclidean squared errors is smaller
+ * than a user defined threshold (via \ref setEuclideanFitnessEpsilon)</li>
+ * </ol>
+ *
+ * \author Radu B. Rusu, Michael Dixon
+ * \ingroup registration
+ */
+template <typename PointSource, typename PointTarget, typename Scalar = float>
+class IterativeClosestPointNonLinear
+: public IterativeClosestPoint<PointSource, PointTarget, Scalar> {
+  using IterativeClosestPoint<PointSource, PointTarget, Scalar>::
+      min_number_correspondences_;
+  using IterativeClosestPoint<PointSource, PointTarget, Scalar>::reg_name_;
+  using IterativeClosestPoint<PointSource, PointTarget, Scalar>::
+      transformation_estimation_;
+  using IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformation;
+
+public:
+  using Ptr =
+      shared_ptr<IterativeClosestPointNonLinear<PointSource, PointTarget, Scalar>>;
+  using ConstPtr = shared_ptr<
+      const IterativeClosestPointNonLinear<PointSource, PointTarget, Scalar>>;
+
+  using Matrix4 = typename Registration<PointSource, PointTarget, Scalar>::Matrix4;
+
+  /** \brief Empty constructor. */
+  IterativeClosestPointNonLinear()
   {
-    using IterativeClosestPoint<PointSource, PointTarget, Scalar>::min_number_correspondences_;
-    using IterativeClosestPoint<PointSource, PointTarget, Scalar>::reg_name_;
-    using IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformation_estimation_;
-    using IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformation;
+    min_number_correspondences_ = 4;
+    reg_name_ = "IterativeClosestPointNonLinear";
 
-    public:
-
-      using Ptr = shared_ptr< IterativeClosestPointNonLinear<PointSource, PointTarget, Scalar> >;
-      using ConstPtr = shared_ptr< const IterativeClosestPointNonLinear<PointSource, PointTarget, Scalar> >;
-
-      using Matrix4 = typename Registration<PointSource, PointTarget, Scalar>::Matrix4;
-
-      /** \brief Empty constructor. */
-      IterativeClosestPointNonLinear ()
-      {
-        min_number_correspondences_ = 4;
-        reg_name_ = "IterativeClosestPointNonLinear";
-
-        transformation_estimation_.reset (new pcl::registration::TransformationEstimationLM<PointSource, PointTarget, Scalar>);
-      }
-  };
-}
+    transformation_estimation_.reset(
+        new pcl::registration::
+            TransformationEstimationLM<PointSource, PointTarget, Scalar>);
+  }
+};
+} // namespace pcl

@@ -40,185 +40,183 @@
 
 #pragma once
 
+#include <pcl/apps/in_hand_scanner/common_types.h>
+#include <pcl/apps/in_hand_scanner/opengl_viewer.h>
+#include <pcl/common/time.h>
+#include <pcl/features/integral_image_normal.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/common/time.h>
-#include <pcl/features/integral_image_normal.h>
-#include <pcl/apps/in_hand_scanner/common_types.h>
-#include <pcl/apps/in_hand_scanner/boost.h>
-#include <pcl/apps/in_hand_scanner/eigen.h>
-#include <pcl/apps/in_hand_scanner/opengl_viewer.h>
 
 #include <mutex>
-#include <vector>
 #include <string>
+#include <vector>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Forward declarations
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace pcl
-{
-  namespace ihs
-  {
-    class Integration;
-  } // End namespace ihs
+namespace pcl {
+namespace ihs {
+class Integration;
+} // End namespace ihs
 } // End namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 // OfflineIntegration
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace pcl
-{
-  namespace ihs
-  {
-    /** \brief Read the clouds and transformations from files and integrate them into one common model.
-      * \todo Add Documentation
-      */
-    class PCL_EXPORTS OfflineIntegration : public pcl::ihs::OpenGLViewer
-    {
-      Q_OBJECT
+namespace pcl {
+namespace ihs {
+/** \brief Read the clouds and transformations from files and integrate them into one
+ * common model.
+ *
+ * \todo Add Documentation
+ */
+class PCL_EXPORTS OfflineIntegration : public pcl::ihs::OpenGLViewer {
+  Q_OBJECT
 
-      public:
+public:
+  using Base = pcl::ihs::OpenGLViewer;
+  using Self = pcl::ihs::OfflineIntegration;
 
-        using Base = pcl::ihs::OpenGLViewer;
-        using Self = pcl::ihs::OfflineIntegration;
+  /** \brief Constructor. */
+  explicit OfflineIntegration(Base* parent = nullptr);
 
-        /** \brief Constructor. */
-        explicit OfflineIntegration (Base* parent=nullptr);
+  /** \brief Destructor. */
+  ~OfflineIntegration();
 
-        /** \brief Destructor. */
-        ~OfflineIntegration ();
+public Q_SLOTS:
 
-      public Q_SLOTS:
+  /** \brief Start the procedure from a path. */
+  void
+  start();
 
-        /** \brief Start the procedure from a path. */
-        void
-        start ();
+private Q_SLOTS:
 
-      private Q_SLOTS:
+  /** \brief Loads in new data. */
+  void
+  computationThread();
 
-        /** \brief Loads in new data. */
-        void
-        computationThread ();
+private:
+  using PointXYZRGBA = pcl::PointXYZRGBA;
+  using CloudXYZRGBA = pcl::PointCloud<PointXYZRGBA>;
+  using CloudXYZRGBAPtr = CloudXYZRGBA::Ptr;
+  using CloudXYZRGBAConstPtr = CloudXYZRGBA::ConstPtr;
 
-      private:
+  using PointXYZRGBNormal = pcl::PointXYZRGBNormal;
+  using CloudXYZRGBNormal = pcl::PointCloud<PointXYZRGBNormal>;
+  using CloudXYZRGBNormalPtr = CloudXYZRGBNormal::Ptr;
+  using CloudXYZRGBNormalConstPtr = CloudXYZRGBNormal::ConstPtr;
 
-        using PointXYZRGBA = pcl::PointXYZRGBA;
-        using CloudXYZRGBA = pcl::PointCloud<PointXYZRGBA>;
-        using CloudXYZRGBAPtr = CloudXYZRGBA::Ptr;
-        using CloudXYZRGBAConstPtr = CloudXYZRGBA::ConstPtr;
+  using Mesh = pcl::ihs::Mesh;
+  using MeshPtr = pcl::ihs::MeshPtr;
+  using MeshConstPtr = pcl::ihs::MeshConstPtr;
 
-        using PointXYZRGBNormal = pcl::PointXYZRGBNormal;
-        using CloudXYZRGBNormal = pcl::PointCloud<PointXYZRGBNormal>;
-        using CloudXYZRGBNormalPtr = CloudXYZRGBNormal::Ptr;
-        using CloudXYZRGBNormalConstPtr = CloudXYZRGBNormal::ConstPtr;
+  using Integration = pcl::ihs::Integration;
+  using IntegrationPtr = std::shared_ptr<Integration>;
+  using IntegrationConstPtr = std::shared_ptr<const Integration>;
 
-        using Mesh = pcl::ihs::Mesh;
-        using MeshPtr = pcl::ihs::MeshPtr;
-        using MeshConstPtr = pcl::ihs::MeshConstPtr;
+  using NormalEstimation =
+      pcl::IntegralImageNormalEstimation<PointXYZRGBA, PointXYZRGBNormal>;
+  using NormalEstimationPtr = NormalEstimation::Ptr;
+  using NormalEstimationConstPtr = NormalEstimation::ConstPtr;
 
-        using Integration = pcl::ihs::Integration;
-        using IntegrationPtr = std::shared_ptr<Integration>;
-        using IntegrationConstPtr = std::shared_ptr<const Integration>;
+  /** \brief Helper object for the computation thread. Please have a look at the
+   * documentation of calcFPS. */
+  class ComputationFPS : public Base::FPS {
+  public:
+    ComputationFPS() {}
+    ~ComputationFPS() {}
+  };
 
-        using NormalEstimation = pcl::IntegralImageNormalEstimation <PointXYZRGBA, PointXYZRGBNormal>;
-        using NormalEstimationPtr = NormalEstimation::Ptr;
-        using NormalEstimationConstPtr = NormalEstimation::ConstPtr;
+  /** \brief Helper object for the visualization thread. Please have a look at the
+   * documentation of calcFPS. */
+  class VisualizationFPS : public Base::FPS {
+  public:
+    VisualizationFPS() {}
+    ~VisualizationFPS() {}
+  };
 
-        /** \brief Helper object for the computation thread. Please have a look at the documentation of calcFPS. */
-        class ComputationFPS : public Base::FPS
-        {
-          public:
-            ComputationFPS () {}
-            ~ComputationFPS () {}
-        };
+  /** \brief Get a list of files with from a given directory.
+   *
+   * \param[in] path_dir Path to search for the files.
+   * \param[in] extension File extension (must start with a dot). E.g. '.pcd'.
+   * \param[out] files Paths to the files.
+   *
+   * \return True if success.
+   */
+  bool
+  getFilesFromDirectory(const std::string& path_dir,
+                        const std::string& extension,
+                        std::vector<std::string>& files) const;
 
+  /** \brief Load the transformation matrix from the given file.
+   *
+   * \param[in] filename Path to the file.
+   * \param[out] transform The loaded transform.
+   *
+   * \return True if success.
+   */
+  bool
+  loadTransform(const std::string& filename, Eigen::Matrix4f& transform) const;
 
-        /** \brief Helper object for the visualization thread. Please have a look at the documentation of calcFPS. */
-        class VisualizationFPS : public Base::FPS
-        {
-          public:
-            VisualizationFPS () {}
-            ~VisualizationFPS () {}
-        };
+  /** \brief Load the cloud and transformation from the files and compute the normals.
+   *
+   * \param[in] filename Path to the pcd file.
+   * \param[out] cloud Cloud with computed normals.
+   * \param[out] T Loaded transformation.
+   *
+   * \return True if success.
+   */
+  bool
+  load(const std::string& filename,
+       CloudXYZRGBNormalPtr& cloud,
+       Eigen::Matrix4f& T) const;
 
-        /** \brief Get a list of files with from a given directory.
-          * \param[in] path_dir Path to search for the files.
-          * \param[in] extension File extension (must start with a dot). E.g. '.pcd'.
-          * \param[out] files Paths to the files.
-          * \return True if success.
-          */
-        bool
-        getFilesFromDirectory (const std::string&          path_dir,
-                               const std::string&          extension,
-                               std::vector <std::string>& files) const;
+  /** \see http://doc.qt.digia.com/qt/qwidget.html#paintEvent
+   * \see http://doc.qt.digia.com/qt/opengl-overpainting.html
+   */
+  void
+  paintEvent(QPaintEvent* event) override;
 
-        /** \brief Load the transformation matrix from the given file.
-          * \param[in] filename Path to the file.
-          * \param[out] transform The loaded transform.
-          * \return True if success.
-          */
-        bool
-        loadTransform (const std::string& filename,
-                       Eigen::Matrix4f&   transform) const;
+  /** \see http://doc.qt.digia.com/qt/qwidget.html#keyPressEvent */
+  void
+  keyPressEvent(QKeyEvent* event) override;
 
-        /** \brief Load the cloud and transformation from the files and compute the normals.
-          * \param[in] filename Path to the pcd file.
-          * \param[out] cloud Cloud with computed normals.
-          * \param[out] T Loaded transformation.
-          * \return True if success.
-          */
-        bool
-        load (const std::string&    filename,
-              CloudXYZRGBNormalPtr& cloud,
-              Eigen::Matrix4f&      T) const;
+  //////////////////////////////////////////////////////////////////////////
+  // Members
+  //////////////////////////////////////////////////////////////////////////
 
-        /** \see http://doc.qt.digia.com/qt/qwidget.html#paintEvent
-          * \see http://doc.qt.digia.com/qt/opengl-overpainting.html
-          */
-        void
-        paintEvent (QPaintEvent* event) override;
+  /** \brief Synchronization. */
+  std::mutex mutex_;
 
-        /** \see http://doc.qt.digia.com/qt/qwidget.html#keyPressEvent */
-        void
-        keyPressEvent (QKeyEvent* event) override;
+  /** \brief Wait until the data finished processing. */
+  std::mutex mutex_quit_;
 
-        //////////////////////////////////////////////////////////////////////////
-        // Members
-        //////////////////////////////////////////////////////////////////////////
+  /** \brief Please have a look at the documentation of ComputationFPS. */
+  ComputationFPS computation_fps_;
 
-        /** \brief Synchronization. */
-        std::mutex mutex_;
+  /** \brief Please have a look at the documentation of VisualizationFPS. */
+  VisualizationFPS visualization_fps_;
 
-        /** \brief Wait until the data finished processing. */
-        std::mutex mutex_quit_;
+  /** \brief Path to the pcd and transformation files. */
+  std::string path_dir_;
 
-        /** \brief Please have a look at the documentation of ComputationFPS. */
-        ComputationFPS computation_fps_;
+  /** \brief Model to which new data is registered to (stored as a mesh). */
+  MeshPtr mesh_model_;
 
-        /** \brief Please have a look at the documentation of VisualizationFPS. */
-        VisualizationFPS visualization_fps_;
+  /** \brief Compute the normals for the input clouds. */
+  NormalEstimationPtr normal_estimation_;
 
-        /** \brief Path to the pcd and transformation files. */
-        std::string path_dir_;
+  /** \brief Integrate the data cloud into a common model. */
+  IntegrationPtr integration_;
 
-        /** \brief Model to which new data is registered to (stored as a mesh). */
-        MeshPtr mesh_model_;
+  /** \brief Prevent the application to crash while closing. */
+  bool destructor_called_;
 
-        /** \brief Compute the normals for the input clouds. */
-        NormalEstimationPtr normal_estimation_;
-
-        /** \brief Integrate the data cloud into a common model. */
-        IntegrationPtr integration_;
-
-        /** \brief Prevent the application to crash while closing. */
-        bool destructor_called_;
-
-      public:
-        PCL_MAKE_ALIGNED_OPERATOR_NEW
-    };
-  } // End namespace ihs
+public:
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
+};
+} // End namespace ihs
 } // End namespace pcl

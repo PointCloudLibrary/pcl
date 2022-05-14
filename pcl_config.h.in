@@ -42,8 +42,6 @@
 
 #cmakedefine HAVE_QHULL 1
 
-#cmakedefine HAVE_QHULL_2011 1
-
 #cmakedefine HAVE_CUDA 1
 
 #cmakedefine HAVE_ENSENSO 1
@@ -53,12 +51,6 @@
 // SSE macros
 #cmakedefine HAVE_POSIX_MEMALIGN
 #cmakedefine HAVE_MM_MALLOC
-#cmakedefine HAVE_SSE4_2_EXTENSIONS
-#cmakedefine HAVE_SSE4_1_EXTENSIONS
-#cmakedefine HAVE_SSSE3_EXTENSIONS
-#cmakedefine HAVE_SSE3_EXTENSIONS
-#cmakedefine HAVE_SSE2_EXTENSIONS
-#cmakedefine HAVE_SSE_EXTENSIONS
 
 #cmakedefine HAVE_PNG
 
@@ -94,4 +86,6 @@
 
 /* Version of OpenGL used by VTK as rendering backend */
 #define VTK_RENDERING_BACKEND_OPENGL_VERSION ${VTK_RENDERING_BACKEND_OPENGL_VERSION}
+
+#cmakedefine HAVE_QVTK 1
 

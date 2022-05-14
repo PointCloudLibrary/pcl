@@ -179,7 +179,7 @@ int main (int argc, char** argv)
   // Ground plane estimation:
   Eigen::VectorXf ground_coeffs;
   ground_coeffs.resize(4);
-  std::vector<int> clicked_points_indices;
+  pcl::Indices clicked_points_indices;
   for (std::size_t i = 0; i < clicked_points_3d->size(); i++)
     clicked_points_indices.push_back(i);
   pcl::SampleConsensusModelPlane<PointT> model_plane(clicked_points_3d);

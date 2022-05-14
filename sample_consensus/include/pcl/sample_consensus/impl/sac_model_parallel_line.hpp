@@ -107,6 +107,7 @@ pcl::SampleConsensusModelParallelLine<PointT>::isModelValid (const Eigen::Vector
     // Check whether the current line model satisfies our angle threshold criterion with respect to the given axis
     if (angle_diff > eps_angle_)
     {
+      PCL_DEBUG ("[pcl::SampleConsensusModelParallelLine::isModelValid] Angle between line direction and given axis is too large.\n");
       return (false);
     }
   }

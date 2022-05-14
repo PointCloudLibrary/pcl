@@ -41,6 +41,7 @@
 #include <pcl/pcl_tests.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
+#include <pcl/common/utils.h>
 
 #include <pcl/sample_consensus/msac.h>
 #include <pcl/sample_consensus/lmeds.h>
@@ -61,7 +62,7 @@ using SampleConsensusModelNormalParallelPlanePtr = SampleConsensusModelNormalPar
 
 PointCloud<PointXYZ>::Ptr cloud_ (new PointCloud<PointXYZ> ());
 PointCloud<Normal>::Ptr normals_ (new PointCloud<Normal> ());
-std::vector<int> indices_;
+pcl::Indices indices_;
 float plane_coeffs_[] = {-0.8964f, -0.5868f, -1.208f};
 
 template <typename ModelType, typename SacType>
@@ -76,11 +77,11 @@ void verifyPlaneSac (ModelType& model,
   bool result = sac.computeModel ();
   ASSERT_TRUE (result);
 
-  std::vector<int> sample;
+  pcl::Indices sample;
   sac.getModel (sample);
   EXPECT_EQ (3, sample.size ());
 
-  std::vector<int> inliers;
+  pcl::Indices inliers;
   sac.getInliers (inliers);
   EXPECT_LT (inlier_number, inliers.size ());
 
@@ -276,7 +277,7 @@ TEST (SampleConsensusModelNormalParallelPlane, RANSAC)
     RandomSampleConsensus<PointXYZ> sac (model, 0.03);
     sac.computeModel();
 
-    std::vector<int> inliers;
+    pcl::Indices inliers;
     sac.getInliers (inliers);
     ASSERT_EQ (cloud.size (), inliers.size ());
   }
@@ -287,7 +288,7 @@ TEST (SampleConsensusModelNormalParallelPlane, RANSAC)
     RandomSampleConsensus<PointXYZ> sac (model, 0.03);
     sac.computeModel ();
 
-    std::vector<int> inliers;
+    pcl::Indices inliers;
     sac.getInliers (inliers);
     ASSERT_EQ (cloud.size (), inliers.size ());
   }
@@ -298,7 +299,7 @@ TEST (SampleConsensusModelNormalParallelPlane, RANSAC)
     RandomSampleConsensus<PointXYZ> sac (model, 0.03);
     sac.computeModel ();
 
-    std::vector<int> inliers;
+    pcl::Indices inliers;
     sac.getInliers (inliers);
     ASSERT_EQ (0, inliers.size ());
   }
@@ -327,7 +328,7 @@ TEST (SampleConsensusModelPlane, SIMD_countWithinDistance) // Test if all countW
   {
     // Generate a cloud with 1000 random points
     PointCloud<PointXYZ> cloud;
-    std::vector<int> indices;
+    pcl::Indices indices;
     cloud.resize (1000);
     for (std::size_t idx = 0; idx < cloud.size (); ++idx)
     {
@@ -392,7 +393,7 @@ TEST (SampleConsensusModelNormalPlane, SIMD_countWithinDistance) // Test if all 
     // Generate a cloud with 10000 random points
     PointCloud<PointXYZ> cloud;
     PointCloud<Normal> normal_cloud;
-    std::vector<int> indices;
+    pcl::Indices indices;
     cloud.resize (10000);
     normal_cloud.resize (10000);
     for (std::size_t idx = 0; idx < cloud.size (); ++idx)
@@ -430,6 +431,7 @@ TEST (SampleConsensusModelNormalPlane, SIMD_countWithinDistance) // Test if all 
 
     // The number of inliers is usually somewhere between 0 and 100
     const auto res_standard = model.countWithinDistanceStandard (model_coefficients, threshold); // Standard
+    pcl::utils::ignore(res_standard);
 #if defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
     const auto res_sse      = model.countWithinDistanceSSE (model_coefficients, threshold); // SSE
     EXPECT_LE ((res_standard > res_sse ? res_standard - res_sse : res_sse - res_standard), 2u) << "seed=" << seed << ", i=" << i
@@ -443,6 +445,30 @@ TEST (SampleConsensusModelNormalPlane, SIMD_countWithinDistance) // Test if all 
         << "), threshold=" << threshold << ", normal_distance_weight=" << normal_distance_weight << ", res_standard=" << res_standard << std::endl;
 #endif
   }
+}
+
+TEST (SampleConsensusModelPlane, OptimizeFarFromOrigin)
+{ // Test if the model can successfully optimize a plane that is far from the origin
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  Eigen::Vector3d x(-0.435197968, 0.598251061, -0.672828654);
+  Eigen::Vector3d y(-0.547340139, 0.417556627,  0.725303548);
+  Eigen::Vector3d z( 0.714857680, 0.683916759,  0.145727023); // This is the normal of the plane
+  Eigen::Vector3d center(7380.86467, -8350.60056617, 4324.22814107);
+  for(double i=-0.5; i<0.5; i+=0.01)
+    for(double j=-0.5; j<0.5; j+=0.01) {
+      Eigen::Vector3d p = center + i*x + j*y;
+      cloud->emplace_back(p[0], p[1], p[2]);
+    }
+  pcl::SampleConsensusModelPlane<pcl::PointXYZ> model(cloud, true);
+  pcl::Indices inliers;
+  for(std::size_t i=0; i<cloud->size(); ++i) inliers.push_back(i);
+  Eigen::VectorXf coeffs(4); // Doesn't have to be initialized, the function doesn't use them
+  Eigen::VectorXf optimized_coeffs(4);
+  model.optimizeModelCoefficients(inliers, coeffs, optimized_coeffs);
+  EXPECT_NEAR(optimized_coeffs[0], z[0], 5e-6);
+  EXPECT_NEAR(optimized_coeffs[1], z[1], 5e-6);
+  EXPECT_NEAR(optimized_coeffs[2], z[2], 5e-6);
+  EXPECT_NEAR(optimized_coeffs[3], -z.dot(center), 5e-2);
 }
 
 int

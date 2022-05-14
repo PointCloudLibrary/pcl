@@ -7,11 +7,11 @@
 
 OpenNICapture::OpenNICapture (const std::string& device_id)
   : grabber_ (device_id)
-  , most_recent_frame_ ()
+  , preview_ ()
   , frame_counter_ (0)
+  , most_recent_frame_ ()
   , use_trigger_ (false)
   , trigger_ (false)
-  , preview_ ()
 {
   // Register a callback function to our OpenNI grabber...
   std::function<void (const PointCloudConstPtr&)> frame_cb = [this] (const PointCloudConstPtr& cloud) { onNewFrame (cloud); };

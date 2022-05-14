@@ -45,7 +45,6 @@
 #include <QMainWindow>
 #include <QMutex>
 #include <QTimer>
-#include <ui_manual_registration.h>
 
 using PointT = pcl::PointXYZRGBA;
 
@@ -100,6 +99,9 @@ public:
   DstPointPickCallback(const pcl::visualization::PointPickingEvent& event, void*);
 
 protected:
+  void
+  refreshView();
+
   pcl::visualization::PCLVisualizer::Ptr vis_src_;
   pcl::visualization::PCLVisualizer::Ptr vis_dst_;
 

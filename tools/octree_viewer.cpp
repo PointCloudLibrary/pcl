@@ -40,7 +40,6 @@
 #include <pcl/io/auto_io.h>
 #include <pcl/common/time.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/common/common.h>
 
 #include <pcl/octree/octree_pointcloud_voxelcentroid.h>
@@ -212,7 +211,7 @@ private:
     }
 
     //remove NaN Points
-    std::vector<int> nanIndexes;
+    pcl::Indices nanIndexes;
     pcl::removeNaNFromPointCloud(*cloud, *cloud, nanIndexes);
     std::cout << "Loaded " << cloud->size() << " points" << std::endl;
 
@@ -244,7 +243,7 @@ private:
     viz.addText (dataDisplay, 0, 45, 1.0, 0.0, 0.0, "disp_original_points");
 
     char level[256];
-    sprintf (level, "Displayed depth is %d on %d", displayedDepth, octree.getTreeDepth());
+    sprintf (level, "Displayed depth is %d on %zu", displayedDepth, static_cast<std::size_t>(octree.getTreeDepth()));
     viz.removeShape ("level_t1");
     viz.addText (level, 0, 30, 1.0, 0.0, 0.0, "level_t1");
 

@@ -41,6 +41,9 @@
 #include <pcl/console/parse.h>
 #include <pcl/io/vtk_lib_io.h>
 
+#include <vtkPolyDataReader.h> // for vtkPolyDataReader
+#include <vtkPLYWriter.h> // for vtkPLYWriter
+
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;

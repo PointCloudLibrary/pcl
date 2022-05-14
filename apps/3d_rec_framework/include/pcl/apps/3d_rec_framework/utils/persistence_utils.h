@@ -88,31 +88,6 @@ getViewId(std::string id)
 }
 
 inline bool
-readFloatFromFile(const std::string& dir, std::string file, float& value)
-{
-
-  std::vector<std::string> strs;
-  boost::split(strs, file, boost::is_any_of("/"));
-
-  std::string str;
-  for (std::size_t i = 0; i < (strs.size() - 1); i++) {
-    str += strs[i] + "/";
-  }
-
-  std::stringstream matrix_file;
-  matrix_file << dir << "/" << str << "entropy_" << getViewId(file) << ".txt";
-
-  std::ifstream in;
-  in.open(matrix_file.str().c_str(), std::ifstream::in);
-
-  char linebuf[1024];
-  in.getline(linebuf, 1024);
-  value = static_cast<float>(atof(linebuf));
-
-  return true;
-}
-
-inline bool
 readFloatFromFile(const std::string& file, float& value)
 {
 
@@ -122,53 +97,6 @@ readFloatFromFile(const std::string& file, float& value)
   char linebuf[1024];
   in.getline(linebuf, 1024);
   value = static_cast<float>(atof(linebuf));
-
-  return true;
-}
-
-inline bool
-readMatrixFromFile(std::string dir, std::string file, Eigen::Matrix4f& matrix)
-{
-
-  // get the descriptor name from dir
-  std::vector<std::string> path;
-  boost::split(path, dir, boost::is_any_of("/"));
-
-  std::string dname = path[path.size() - 1];
-  std::string file_replaced;
-  for (std::size_t i = 0; i < (path.size() - 1); i++) {
-    file_replaced += path[i] + "/";
-  }
-
-  boost::split(path, file, boost::is_any_of("/"));
-  std::string id;
-
-  for (std::size_t i = 0; i < (path.size() - 1); i++) {
-    id += path[i];
-    if (i < (path.size() - 1)) {
-      id += "/";
-    }
-  }
-
-  boost::split(path, file, boost::is_any_of("/"));
-  std::string filename = path[path.size() - 1];
-
-  std::stringstream matrix_file;
-  matrix_file << file_replaced << id << "/" << dname << "/pose_" << getViewId(file)
-              << ".txt";
-
-  std::ifstream in;
-  in.open(matrix_file.str().c_str(), std::ifstream::in);
-
-  char linebuf[1024];
-  in.getline(linebuf, 1024);
-  std::string line(linebuf);
-  std::vector<std::string> strs_2;
-  boost::split(strs_2, line, boost::is_any_of(" "));
-
-  for (int i = 0; i < 16; i++) {
-    matrix(i % 4, i / 4) = static_cast<float>(atof(strs_2[i].c_str()));
-  }
 
   return true;
 }
@@ -192,61 +120,6 @@ readMatrixFromFile(const std::string& file, Eigen::Matrix4f& matrix)
 
   return true;
 }
-
-inline bool
-readMatrixFromFile2(const std::string& file, Eigen::Matrix4f& matrix)
-{
-
-  std::ifstream in;
-  in.open(file.c_str(), std::ifstream::in);
-
-  char linebuf[1024];
-  in.getline(linebuf, 1024);
-  std::string line(linebuf);
-  std::vector<std::string> strs_2;
-  boost::split(strs_2, line, boost::is_any_of(" "));
-
-  for (int i = 0; i < 16; i++) {
-    matrix(i / 4, i % 4) = static_cast<float>(atof(strs_2[i].c_str()));
-  }
-
-  return true;
-}
-
-template <typename PointInT>
-inline void
-getPointCloudFromFile(std::string dir,
-                      std::string file,
-                      typename pcl::PointCloud<PointInT>::Ptr& cloud)
-{
-
-  // get the descriptor name from dir
-  std::vector<std::string> path;
-  boost::split(path, dir, boost::is_any_of("/"));
-
-  std::string dname = path[path.size() - 1];
-  std::string file_replaced;
-  for (std::size_t i = 0; i < (path.size() - 1); i++) {
-    file_replaced += path[i] + "/";
-  }
-
-  boost::split(path, file, boost::is_any_of("/"));
-  std::string id;
-
-  for (std::size_t i = 0; i < (path.size() - 1); i++) {
-    id += path[i];
-    if (i < (path.size() - 1)) {
-      id += "/";
-    }
-  }
-
-  std::stringstream view_file;
-  view_file << file_replaced << id << "/" << dname << "/view_" << getViewId(file)
-            << ".pcd";
-
-  pcl::io::loadPCDFile(view_file.str(), *cloud);
-}
-
 } // namespace PersistenceUtils
 } // namespace rec_3d_framework
 } // namespace pcl

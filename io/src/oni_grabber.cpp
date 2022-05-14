@@ -42,7 +42,7 @@
 #include <pcl/point_types.h>
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
-#include <pcl/io/boost.h>  // for boost::shared_array
+#include <boost/shared_array.hpp> // for boost::shared_array
 #include <pcl/memory.h>  // for dynamic_pointer_cast
 #include <pcl/exceptions.h>
 
@@ -313,7 +313,7 @@ ONIGrabber::imageDepthImageCallback(const openni_wrapper::Image::Ptr &image, con
   // check if we have color point cloud slots
   if (point_cloud_rgb_signal_->num_slots () > 0)
   {
-    PCL_WARN ("PointXYZRGB callbacks deprecated. Use PointXYZRGBA instead.");
+    PCL_WARN ("PointXYZRGB callbacks deprecated. Use PointXYZRGBA instead.\n");
     point_cloud_rgb_signal_->operator() (convertToXYZRGBPointCloud (image, depth_image));
   }
 

@@ -43,7 +43,6 @@
 #include <random>
 
 #include <pcl/point_types.h>
-#include <pcl/features/boost.h>
 #include <pcl/features/feature.h>
 
 namespace pcl
@@ -171,7 +170,7 @@ namespace pcl
       /** \brief Estimate a descriptor for a given point.
         * \param[in] index the index of the point to estimate a descriptor for
         * \param[in] normals a pointer to the set of normals
-        * \param[in] rf the reference frame
+        * \param[out] rf the reference frame
         * \param[out] desc the resultant estimated descriptor
         * \return true if the descriptor was computed successfully, false if there was an error
         * (e.g. the nearest neighbor didn't return any neighbors)

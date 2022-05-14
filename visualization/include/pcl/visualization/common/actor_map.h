@@ -37,11 +37,13 @@
 
 #pragma once
 
-#include <pcl/visualization/point_cloud_handlers.h>
+#include <pcl/visualization/point_cloud_geometry_handlers.h> // for PointCloudGeometryHandler
+#include <pcl/visualization/point_cloud_color_handlers.h> // for PointCloudColorHandler
 #include <pcl/PCLPointCloud2.h>
 
 #include <vtkLODActor.h>
 #include <vtkSmartPointer.h>
+#include <vtkIdTypeArray.h>
 
 #include <unordered_map>
 #include <vector>

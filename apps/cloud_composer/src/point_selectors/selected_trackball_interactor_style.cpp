@@ -4,6 +4,15 @@
 #include <QDebug>
 #include <QItemSelectionModel>
 
+#include <vtkSmartPointer.h>
+#include <vtkMatrix4x4.h>
+#include <vtkLODActor.h>
+#include <vtkInteractorStyleTrackballActor.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkTransform.h>
+#include <vtkObjectFactory.h>
+
+
 namespace pcl
 {
   namespace cloud_composer

@@ -519,7 +519,7 @@ namespace pcl
          *  This could be overloaded with a parallelized implementation
          */
         void
-        sortOctantIndices (const pcl::PCLPointCloud2::Ptr &input_cloud, std::vector< std::vector<int> > &indices, const Eigen::Vector3d &mid_xyz);
+        sortOctantIndices (const pcl::PCLPointCloud2::Ptr &input_cloud, std::vector< pcl::Indices > &indices, const Eigen::Vector3d &mid_xyz);
 
         /** \brief Enlarges the shortest two sidelengths of the
          *  bounding box to a cubic shape; operation is done in

@@ -41,7 +41,7 @@
 #pragma once
 
 #include <ctime>
-#include <climits>
+#include <limits>
 #include <memory>
 #include <set>
 #include <boost/random/mersenne_twister.hpp> // for mt19937
@@ -179,7 +179,7 @@ namespace pcl
                      samples.size (), indices_->size ());
           // one of these will make it stop :)
           samples.clear ();
-          iterations = INT_MAX - 1;
+          iterations = std::numeric_limits<int>::max() - 1;
           return;
         }
 
@@ -605,6 +605,7 @@ namespace pcl
 
   /** \brief @b SampleConsensusModelFromNormals represents the base model class
     * for models that require the use of surface normals for estimation.
+    * \ingroup sample_consensus
     */
   template <typename PointT, typename PointNT>
   class SampleConsensusModelFromNormals //: public SampleConsensusModel<PointT>
@@ -630,6 +631,11 @@ namespace pcl
       inline void 
       setNormalDistanceWeight (const double w) 
       { 
+        if (w < 0.0 || w > 1.0)
+        {
+          PCL_ERROR ("[pcl::SampleConsensusModel::setNormalDistanceWeight] w is %g, but should be in [0; 1]. Weight will not be set.", w);
+          return;
+        }
         normal_distance_weight_ = w; 
       }
 

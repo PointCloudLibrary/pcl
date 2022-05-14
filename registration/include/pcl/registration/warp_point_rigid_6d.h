@@ -42,56 +42,55 @@
 
 #include <pcl/registration/warp_point_rigid.h>
 
-namespace pcl
-{
-  namespace registration
+namespace pcl {
+namespace registration {
+/** \brief @b WarpPointRigid3D enables 6D (3D rotation + 3D translation)
+ * transformations for points.
+ *
+ * \note The class is templated on the source and target point types as well as on the
+ * output scalar of the transformation matrix (i.e., float or double). Default: float.
+ * \author Radu B. Rusu
+ * \ingroup registration
+ */
+template <typename PointSourceT, typename PointTargetT, typename Scalar = float>
+class WarpPointRigid6D : public WarpPointRigid<PointSourceT, PointTargetT, Scalar> {
+public:
+  using WarpPointRigid<PointSourceT, PointTargetT, Scalar>::transform_matrix_;
+
+  using Matrix4 = typename WarpPointRigid<PointSourceT, PointTargetT, Scalar>::Matrix4;
+  using VectorX = typename WarpPointRigid<PointSourceT, PointTargetT, Scalar>::VectorX;
+
+  using Ptr = shared_ptr<WarpPointRigid6D<PointSourceT, PointTargetT, Scalar>>;
+  using ConstPtr =
+      shared_ptr<const WarpPointRigid6D<PointSourceT, PointTargetT, Scalar>>;
+
+  WarpPointRigid6D() : WarpPointRigid<PointSourceT, PointTargetT, Scalar>(6) {}
+
+  /** \brief Empty destructor */
+  ~WarpPointRigid6D() {}
+
+  /** \brief Set warp parameters.
+   * \note Assumes the quaternion parameters are normalized.
+   * \param[in] p warp parameters (tx ty tz qx qy qz)
+   */
+  void
+  setParam(const VectorX& p) override
   {
-    /** \brief @b WarpPointRigid3D enables 6D (3D rotation + 3D translation) 
-      * transformations for points.
-      * 
-      * \note The class is templated on the source and target point types as well as on the output scalar of the transformation matrix (i.e., float or double). Default: float.
-      * \author Radu B. Rusu
-      * \ingroup registration
-      */
-    template <typename PointSourceT, typename PointTargetT, typename Scalar = float>
-    class WarpPointRigid6D : public WarpPointRigid<PointSourceT, PointTargetT, Scalar>
-    {
-      public:
-        using WarpPointRigid<PointSourceT, PointTargetT, Scalar>::transform_matrix_;
+    assert(p.rows() == this->getDimension());
 
-        using Matrix4 = typename WarpPointRigid<PointSourceT, PointTargetT, Scalar>::Matrix4;
-        using VectorX = typename WarpPointRigid<PointSourceT, PointTargetT, Scalar>::VectorX;
+    // Copy the rotation and translation components
+    transform_matrix_.setZero();
+    transform_matrix_(0, 3) = p[0];
+    transform_matrix_(1, 3) = p[1];
+    transform_matrix_(2, 3) = p[2];
+    transform_matrix_(3, 3) = 1;
 
-        using Ptr = shared_ptr<WarpPointRigid6D<PointSourceT, PointTargetT, Scalar> >;
-        using ConstPtr = shared_ptr<const WarpPointRigid6D<PointSourceT, PointTargetT, Scalar> >;
-
-        WarpPointRigid6D () : WarpPointRigid<PointSourceT, PointTargetT, Scalar> (6) {}
-      
-        /** \brief Empty destructor */
-        ~WarpPointRigid6D () {}
-
-        /** \brief Set warp parameters. 
-          * \note Assumes the quaternion parameters are normalized. 
-          * \param[in] p warp parameters (tx ty tz qx qy qz)
-          */
-        void 
-        setParam (const VectorX& p) override
-        {
-          assert (p.rows () == this->getDimension ());
-
-          // Copy the rotation and translation components
-          transform_matrix_.setZero ();
-          transform_matrix_ (0, 3) = p[0];
-          transform_matrix_ (1, 3) = p[1];
-          transform_matrix_ (2, 3) = p[2];
-          transform_matrix_ (3, 3) = 1;
-          
-          // Compute w from the unit quaternion
-          Eigen::Quaternion<Scalar> q (0, p[3], p[4], p[5]);
-          q.w () = static_cast<Scalar> (std::sqrt (1 - q.dot (q)));
-          q.normalize ();
-          transform_matrix_.topLeftCorner (3, 3) = q.toRotationMatrix ();
-        }
-    };
+    // Compute w from the unit quaternion
+    Eigen::Quaternion<Scalar> q(0, p[3], p[4], p[5]);
+    q.w() = static_cast<Scalar>(std::sqrt(1 - q.dot(q)));
+    q.normalize();
+    transform_matrix_.topLeftCorner(3, 3) = q.toRotationMatrix();
   }
-}
+};
+} // namespace registration
+} // namespace pcl

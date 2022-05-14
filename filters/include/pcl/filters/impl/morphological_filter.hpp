@@ -43,7 +43,6 @@
 #define PCL_FILTERS_IMPL_MORPHOLOGICAL_FILTER_H_
 
 #include <limits>
-#include <vector>
 
 #include <Eigen/Core>
 
@@ -79,7 +78,7 @@ applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPtr &cl
       for (std::size_t p_idx = 0; p_idx < cloud_in->size (); ++p_idx)
       {
         Eigen::Vector3f bbox_min, bbox_max;
-        std::vector<int> pt_indices;
+        Indices pt_indices;
         float minx = (*cloud_in)[p_idx].x - half_res;
         float miny = (*cloud_in)[p_idx].y - half_res;
         float minz = -std::numeric_limits<float>::max ();
@@ -122,7 +121,7 @@ applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPtr &cl
       for (std::size_t p_idx = 0; p_idx < cloud_temp.size (); ++p_idx)
       {
         Eigen::Vector3f bbox_min, bbox_max;
-        std::vector<int> pt_indices;
+        Indices pt_indices;
         float minx = cloud_temp[p_idx].x - half_res;
         float miny = cloud_temp[p_idx].y - half_res;
         float minz = -std::numeric_limits<float>::max ();
@@ -159,7 +158,7 @@ applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPtr &cl
       for (std::size_t p_idx = 0; p_idx < cloud_temp.size (); ++p_idx)
       {
         Eigen::Vector3f bbox_min, bbox_max;
-        std::vector<int> pt_indices;
+        Indices pt_indices;
         float minx = cloud_temp[p_idx].x - half_res;
         float miny = cloud_temp[p_idx].y - half_res;
         float minz = -std::numeric_limits<float>::max ();

@@ -382,8 +382,9 @@ main(int argc, char** argv)
   if (!bServerFileMode) {
     if (bEnDecode) {
       // ENCODING
-      ofstream compressedPCFile;
-      compressedPCFile.open(fileName.c_str(), std::ios::out | std::ios::trunc | std::ios::binary);
+      std::ofstream compressedPCFile;
+      compressedPCFile.open(fileName.c_str(),
+                            std::ios::out | std::ios::trunc | std::ios::binary);
 
       if (!bShowInputCloud) {
         EventHelper v(compressedPCFile, octreeCoder, field_name, min_v, max_v);

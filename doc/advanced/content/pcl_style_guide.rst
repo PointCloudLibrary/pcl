@@ -45,7 +45,7 @@ same directory, in any other case the include statement is made with
  .. code-block:: cpp
 
   #include <pcl/module_name/file_name.h>
-  #incluce <pcl/module_name/impl/file_name.hpp>
+  #include <pcl/module_name/impl/file_name.hpp>
 
 1.4. Defines & Macros
 ^^^^^^^^^^^^^^^^^^^^^

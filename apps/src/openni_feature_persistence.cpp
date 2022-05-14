@@ -131,7 +131,7 @@ public:
     cloud_subsampled_.reset(new typename pcl::PointCloud<PointType>());
     normals_.reset(new pcl::PointCloud<pcl::Normal>());
     features_.reset(new pcl::PointCloud<pcl::FPFHSignature33>());
-    feature_indices_.reset(new std::vector<int>());
+    feature_indices_.reset(new pcl::Indices());
     feature_locations_.reset(new typename pcl::PointCloud<PointType>());
 
     // Subsample input cloud
@@ -152,7 +152,8 @@ public:
     extract_indices_filter_.setIndices(feature_indices_);
     extract_indices_filter_.filter(*feature_locations_);
 
-    PCL_INFO("Persistent feature locations %zu\n", static_cast<std::size_t>(feature_locations_->size()));
+    PCL_INFO("Persistent feature locations %zu\n",
+             static_cast<std::size_t>(feature_locations_->size()));
 
     cloud_ = cloud;
 

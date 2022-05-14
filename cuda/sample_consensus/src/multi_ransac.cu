@@ -41,11 +41,12 @@
 # include <windows.h>
 #endif
 
-#include <pcl/pcl_exports.h>
-
-#include "pcl/cuda/sample_consensus/multi_ransac.h"
-#include "pcl/cuda/time_gpu.h"
 #include <stdio.h>
+#include <limits>
+
+#include <pcl/pcl_exports.h>
+#include <pcl/cuda/sample_consensus/multi_ransac.h>
+#include <pcl/cuda/time_gpu.h>
 #include <pcl/cuda/time_cpu.h>
 //CUPRINTF #include "cuPrintf.cu"
 
@@ -63,7 +64,7 @@ namespace pcl
       double starttime = pcl::cuda::getTime ();
       int counter = 0;
       // Warn and exit if no threshold was set
-      if (threshold_ == DBL_MAX)
+      if (threshold_ == std::numeric_limits<double>::max())
       {
         std::cerr << "[pcl::cuda::MultiRandomSampleConsensus::computeModel] No threshold set!" << std::endl;
         return (false);

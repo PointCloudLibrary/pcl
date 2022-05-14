@@ -231,7 +231,7 @@ namespace pcl
         //we need to reason about occlusions before setting the model
         if (scene_cloud_ == nullptr)
         {
-          PCL_ERROR("setSceneCloud should be called before adding the model if reasoning about occlusions...");
+          PCL_ERROR("setSceneCloud should be called before adding the model if reasoning about occlusions...\n");
         }
 
         if (!occlusion_cloud_->isOrganized ())
@@ -252,7 +252,7 @@ namespace pcl
           typename pcl::PointCloud<ModelT>::Ptr filtered (new pcl::PointCloud<ModelT> ());
           typename pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT> zbuffer_self_occlusion (75, 75, 1.f);
           zbuffer_self_occlusion.computeDepthMap (models[i], true);
-          std::vector<int> indices;
+          pcl::Indices indices;
           zbuffer_self_occlusion.filter (models[i], indices, 0.005f);
           pcl::copyPointCloud (*models[i], indices, *filtered);
 

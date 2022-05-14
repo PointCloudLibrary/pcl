@@ -727,7 +727,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
   }
   else
   {
-    std::vector<int> indices = *Filter<PointT>::indices_;
+    Indices indices = *Filter<PointT>::indices_;
     std::sort (indices.begin (), indices.end ());   //TODO: is this necessary or can we assume the indices to be sorted?
     bool removed_p = false;
     std::size_t ci = 0;

@@ -205,4 +205,3 @@ before this one:
 .. code-block:: cmake
 
    find_package(PCL 1.3 REQUIRED COMPONENTS common io)
-     ...

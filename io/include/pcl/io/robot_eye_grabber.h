@@ -45,6 +45,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/memory.h>
 #include <boost/asio.hpp>
+#include <boost/shared_array.hpp> // for shared_array
 
 #include <memory>
 #include <thread>

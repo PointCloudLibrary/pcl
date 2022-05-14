@@ -24,7 +24,7 @@ be smoothed.
 
 .. image:: images/resampling_1.jpg
 
-On the left side of the figure above, we see the effect or estimating surface
+On the left side of the figure above, we see the effect of estimating surface
 normals in a dataset comprised of two registered point clouds together. Due to
 alignment errors, the resultant normals are noisy. On the right side we see the
 effects of surface normal estimation in the same dataset after it has been

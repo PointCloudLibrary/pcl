@@ -38,10 +38,12 @@
 #include <pcl/for_each_type.h>
 #include <pcl/io/image_grabber.h>
 #include <pcl/io/lzf_image_io.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/memory.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <boost/filesystem.hpp> // for exists, basename, is_directory, ...
+#include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
+#include <boost/date_time/posix_time/posix_time.hpp> // for posix_time
 
 #ifdef PCL_BUILT_WITH_VTK
   #include <vtkImageReader2.h>
@@ -288,7 +290,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
   if (!boost::filesystem::exists (dir) || !boost::filesystem::is_directory (dir))
   {
     PCL_ERROR ("[pcl::ImageGrabber::loadDepthAndRGBFiles] Error: attempted to instantiate a pcl::ImageGrabber from a path which"
-               " is not a directory: %s", dir.c_str ());
+               " is not a directory: %s\n", dir.c_str ());
     return;
   }
   std::string pathname;
@@ -324,13 +326,13 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
   if (!boost::filesystem::exists (depth_dir) || !boost::filesystem::is_directory (depth_dir))
   {
     PCL_ERROR ("[pcl::ImageGrabber::loadDepthAndRGBFiles] Error: attempted to instantiate a pcl::ImageGrabber from a path which"
-               " is not a directory: %s", depth_dir.c_str ());
+               " is not a directory: %s\n", depth_dir.c_str ());
     return;
   }
   if (!boost::filesystem::exists (rgb_dir) || !boost::filesystem::is_directory (rgb_dir))
   {
     PCL_ERROR ("[pcl::ImageGrabber::loadDepthAndRGBFiles] Error: attempted to instantiate a pcl::ImageGrabber from a path which"
-               " is not a directory: %s", rgb_dir.c_str ());
+               " is not a directory: %s\n", rgb_dir.c_str ());
     return;
   }
   std::string pathname;
@@ -368,15 +370,15 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
     }
   }
   if (depth_image_files_.size () != rgb_image_files_.size () )
-    PCL_WARN ("[pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles] : Watch out not same amount of depth and rgb images");
+    PCL_WARN ("[pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles] : Watch out not same amount of depth and rgb images\n");
   if (!depth_image_files_.empty ())
     sort (depth_image_files_.begin (), depth_image_files_.end ());
   else
-    PCL_ERROR ("[pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles] : no depth images added");
+    PCL_ERROR ("[pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles] : no depth images added\n");
   if (!rgb_image_files_.empty ())
     sort (rgb_image_files_.begin (), rgb_image_files_.end ());
   else
-    PCL_ERROR ("[pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles] : no rgb images added");
+    PCL_ERROR ("[pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles] : no rgb images added\n");
 }
 
 
@@ -387,7 +389,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadPCLZFFiles (const std::string &dir)
   if (!boost::filesystem::exists (dir) || !boost::filesystem::is_directory (dir))
   {
     PCL_ERROR ("[pcl::ImageGrabber::loadPCLZFFiles] Error: attempted to instantiate a pcl::ImageGrabber from a path which"
-               " is not a directory: %s", dir.c_str ());
+               " is not a directory: %s\n", dir.c_str ());
     return;
   }
   std::string pathname;

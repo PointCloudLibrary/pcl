@@ -43,7 +43,7 @@ namespace pcl
     {
       if (input_->height == 1)
       {
-        PCL_ERROR ("[pcl::%s::radiusSearch] Input dataset is not organized!", getName ().c_str ());
+        PCL_ERROR ("[pcl::%s::radiusSearch] Input dataset is not organized!\n", getName ().c_str ());
         return 0;
       }
 
@@ -171,7 +171,7 @@ namespace pcl
 
       if (input_->height == 1)
       {
-        PCL_ERROR ("[pcl::%s::nearestKSearch] Input dataset is not organized!", getName ().c_str ());
+        PCL_ERROR ("[pcl::%s::nearestKSearch] Input dataset is not organized!\n", getName ().c_str ());
         return 0;
       }
 

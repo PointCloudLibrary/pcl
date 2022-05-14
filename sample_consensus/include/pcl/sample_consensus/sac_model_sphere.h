@@ -40,6 +40,13 @@
 
 #pragma once
 
+#ifdef __SSE__
+#include <xmmintrin.h> // for __m128
+#endif // ifdef __SSE__
+#ifdef __AVX__
+#include <immintrin.h> // for __m256
+#endif // ifdef __AVX__
+
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
 

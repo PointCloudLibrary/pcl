@@ -97,6 +97,10 @@ pcl::Kmeans::computeCentroids()
   for (Centroids::value_type& centroid : centroids_) {
     PointId num_points_in_cluster = 0;
 
+    // Set zero
+    for (Point::value_type& c : centroid)
+      c = 0.0;
+
     // For each PointId in this set
     for (const auto& pid : clusters_to_points_[cid]) {
       Point p = data_[pid];

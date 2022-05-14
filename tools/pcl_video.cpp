@@ -52,7 +52,9 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
-#include "boost.h"
+#include <boost/date_time/gregorian/gregorian_types.hpp> // for date
+#include <boost/date_time/posix_time/posix_time.hpp> // for local_time
+#include <boost/date_time/posix_time/posix_time_types.hpp> // for time_duration
 
 using namespace std::chrono_literals;
 namespace bpt = boost::posix_time;

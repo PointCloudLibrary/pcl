@@ -78,11 +78,11 @@ TEST (SampleConsensusModelLine, RANSAC)
   bool result = sac.computeModel ();
   ASSERT_TRUE (result);
 
-  std::vector<int> sample;
+  pcl::Indices sample;
   sac.getModel (sample);
   EXPECT_EQ (2, sample.size ());
 
-  std::vector<int> inliers;
+  pcl::Indices inliers;
   sac.getInliers (inliers);
   EXPECT_EQ (8, inliers.size ());
 
@@ -136,7 +136,7 @@ TEST (SampleConsensusModelLine, OnGroundPlane)
   bool result = sac.computeModel ();
   ASSERT_TRUE (result);
 
-  std::vector<int> inliers;
+  pcl::Indices inliers;
   sac.getInliers (inliers);
   EXPECT_EQ (6, inliers.size ());
 
@@ -188,11 +188,11 @@ TEST (SampleConsensusModelParallelLine, RANSAC)
   bool result = sac.computeModel ();
   ASSERT_TRUE (result);
 
-  std::vector<int> sample;
+  pcl::Indices sample;
   sac.getModel (sample);
   EXPECT_EQ (2, sample.size ());
 
-  std::vector<int> inliers;
+  pcl::Indices inliers;
   sac.getInliers (inliers);
   EXPECT_EQ (6, inliers.size ());
 

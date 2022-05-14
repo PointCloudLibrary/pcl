@@ -2,7 +2,7 @@ jobs:
   - job: documentation
     displayName: Generate Documentation
     pool:
-      vmImage: 'Ubuntu 16.04'
+      vmImage: 'Ubuntu 20.04'
     container: doc
     variables:
       BUILD_DIR: '$(Agent.BuildDirectory)/build'

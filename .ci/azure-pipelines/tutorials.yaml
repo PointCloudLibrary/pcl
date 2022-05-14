@@ -2,8 +2,8 @@ jobs:
   - job: tutorials
     displayName: Building Tutorials
     pool:
-      vmImage: 'Ubuntu 16.04'
-    container: env1604
+      vmImage: 'Ubuntu 20.04'
+    container: env1804
     timeoutInMinutes: 0
     variables:
       BUILD_DIR: '$(Agent.BuildDirectory)/build'

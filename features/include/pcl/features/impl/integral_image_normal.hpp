@@ -140,6 +140,8 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initCovarianceMatrixMet
 template <typename PointInT, typename PointOutT> void
 pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initAverage3DGradientMethod ()
 {
+  delete[] diff_x_;
+  delete[] diff_y_;
   std::size_t data_size = (input_->size () << 2);
   diff_x_ = new float[data_size];
   diff_y_ = new float[data_size];

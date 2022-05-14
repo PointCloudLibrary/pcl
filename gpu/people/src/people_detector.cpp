@@ -193,7 +193,7 @@ pcl::gpu::people::PeopleDetector::process ()
     Tree2 t;
     buildTree(sorted, cloud_host_, Neck, c, t);
     
-    const std::vector<int>& seed = t.indices.indices;
+    const auto& seed = t.indices.indices;
         
     std::fill(flowermat_host_.begin(), flowermat_host_.end(), 0);
     {
@@ -332,7 +332,7 @@ pcl::gpu::people::PeopleDetector::processProb ()
     Tree2 t;
     buildTree(sorted, cloud_host_, Neck, c, t, person_attribs_);
 
-    const std::vector<int>& seed = t.indices.indices;
+    const auto& seed = t.indices.indices;
 
     std::fill(flowermat_host_.begin(), flowermat_host_.end(), 0);
     {
@@ -473,7 +473,7 @@ namespace
 }
 
 void 
-pcl::gpu::people::PeopleDetector::shs5(const pcl::PointCloud<PointT> &cloud, const std::vector<int>& indices, unsigned char *mask)
+pcl::gpu::people::PeopleDetector::shs5(const pcl::PointCloud<PointT> &cloud, const pcl::Indices& indices, unsigned char *mask)
 {
   pcl::device::Intr intr(fx_, fy_, cx_, cy_);
   intr.setDefaultPPIfIncorrect(cloud.width, cloud.height);

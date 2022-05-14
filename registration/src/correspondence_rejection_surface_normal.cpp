@@ -41,24 +41,26 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::registration::CorrespondenceRejectorSurfaceNormal::getRemainingCorrespondences (
+pcl::registration::CorrespondenceRejectorSurfaceNormal::getRemainingCorrespondences(
     const pcl::Correspondences& original_correspondences,
     pcl::Correspondences& remaining_correspondences)
 {
-  if (!data_container_)
-  {
-    PCL_ERROR ("[pcl::registratin::%s::getRemainingCorrespondences] DataContainer object is not initialized!\n", getClassName ().c_str ());
+  if (!data_container_) {
+    PCL_ERROR("[pcl::registratin::%s::getRemainingCorrespondences] DataContainer "
+              "object is not initialized!\n",
+              getClassName().c_str());
     return;
   }
 
   unsigned int number_valid_correspondences = 0;
-  remaining_correspondences.resize (original_correspondences.size ());
+  remaining_correspondences.resize(original_correspondences.size());
 
   // Test each correspondence
-  for (const auto &original_correspondence : original_correspondences)
-  {
-    if (data_container_->getCorrespondenceScoreFromNormals (original_correspondence) > threshold_)
-      remaining_correspondences[number_valid_correspondences++] = original_correspondence;
+  for (const auto& original_correspondence : original_correspondences) {
+    if (data_container_->getCorrespondenceScoreFromNormals(original_correspondence) >
+        threshold_)
+      remaining_correspondences[number_valid_correspondences++] =
+          original_correspondence;
   }
-  remaining_correspondences.resize (number_valid_correspondences);
+  remaining_correspondences.resize(number_valid_correspondences);
 }

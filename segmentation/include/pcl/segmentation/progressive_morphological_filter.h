@@ -39,7 +39,6 @@
 #pragma once
 
 #include <pcl/pcl_base.h>
-#include <pcl/search/search.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
@@ -133,7 +132,7 @@ namespace pcl
         * \param[out] ground indices of points determined to be ground returns.
         */
       virtual void
-      extract (std::vector<int>& ground);
+      extract (Indices& ground);
 
     protected:
 

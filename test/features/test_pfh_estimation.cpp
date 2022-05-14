@@ -56,7 +56,7 @@ using KdTreePtr = pcl::search::KdTree<PointT>::Ptr;
 using pcl::PointCloud;
 
 static PointCloud<PointT>::Ptr cloud (new PointCloud<PointT> ());
-static std::vector<int> indices;
+static pcl::Indices indices;
 static KdTreePtr tree;
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -282,12 +282,7 @@ template<>
 struct FPFHTest<FPFHEstimationOMP<PointT, PointT, FPFHSignature33> >
   : public ::testing::Test
 {
-  // Default Constructor is defined to instantiate 4 threads
-  FPFHTest<FPFHEstimationOMP<PointT, PointT, FPFHSignature33> > ()
-    : fpfh (4)
-  {}
-
-  FPFHEstimationOMP<PointT, PointT, FPFHSignature33> fpfh;
+  FPFHEstimationOMP<PointT, PointT, FPFHSignature33> fpfh{4}; // 4 threads
 };
 
 // Types which will be instantiated

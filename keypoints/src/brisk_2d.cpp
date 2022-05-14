@@ -1701,7 +1701,7 @@ pcl::keypoints::brisk::Layer::halfsample (
   }
 #else
   pcl::utils::ignore(srcimg, srcwidth, srcheight, dstimg, dstwidth);
-  PCL_ERROR("brisk without SSSE3 support not implemented");
+  PCL_ERROR("brisk without SSSE3 support not implemented\n");
 #endif
 }
 
@@ -1811,7 +1811,7 @@ pcl::keypoints::brisk::Layer::twothirdsample (
   }
 #else
   pcl::utils::ignore(srcimg, srcwidth, srcheight, dstimg, dstwidth);
-  PCL_ERROR("brisk without SSSE3 support not implemented");
+  PCL_ERROR("brisk without SSSE3 support not implemented\n");
 #endif
 }
 

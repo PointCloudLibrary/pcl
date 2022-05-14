@@ -43,22 +43,19 @@
 
 #include <pcl/common/eigen.h>
 
+namespace pcl {
 
-namespace pcl
-{
+namespace registration {
 
-namespace registration
+template <typename PointSource, typename PointTarget, typename Scalar>
+inline void
+TransformationEstimationSVD<PointSource, PointTarget, Scalar>::
+    estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
+                                const pcl::PointCloud<PointTarget>& cloud_tgt,
+                                Matrix4& transformation_matrix) const
 {
-
-template <typename PointSource, typename PointTarget, typename Scalar> inline void
-TransformationEstimationSVD<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
-    const pcl::PointCloud<PointSource> &cloud_src,
-    const pcl::PointCloud<PointTarget> &cloud_tgt,
-    Matrix4 &transformation_matrix) const
-{
-  const auto nr_points = cloud_src.size ();
-  if (cloud_tgt.size () != nr_points)
-  {
+  const auto nr_points = cloud_src.size();
+  if (cloud_tgt.size() != nr_points) {
     PCL_ERROR("[pcl::TransformationEstimationSVD::estimateRigidTransformation] Number "
               "or points in source (%zu) differs than target (%zu)!\n",
               static_cast<std::size_t>(nr_points),
@@ -66,21 +63,20 @@ TransformationEstimationSVD<PointSource, PointTarget, Scalar>::estimateRigidTran
     return;
   }
 
-  ConstCloudIterator<PointSource> source_it (cloud_src);
-  ConstCloudIterator<PointTarget> target_it (cloud_tgt);
-  estimateRigidTransformation (source_it, target_it, transformation_matrix);
+  ConstCloudIterator<PointSource> source_it(cloud_src);
+  ConstCloudIterator<PointTarget> target_it(cloud_tgt);
+  estimateRigidTransformation(source_it, target_it, transformation_matrix);
 }
 
-
-template <typename PointSource, typename PointTarget, typename Scalar> void
-TransformationEstimationSVD<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
-    const pcl::PointCloud<PointSource> &cloud_src,
-    const std::vector<int> &indices_src,
-    const pcl::PointCloud<PointTarget> &cloud_tgt,
-    Matrix4 &transformation_matrix) const
+template <typename PointSource, typename PointTarget, typename Scalar>
+void
+TransformationEstimationSVD<PointSource, PointTarget, Scalar>::
+    estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
+                                const pcl::Indices& indices_src,
+                                const pcl::PointCloud<PointTarget>& cloud_tgt,
+                                Matrix4& transformation_matrix) const
 {
-  if (indices_src.size () != cloud_tgt.size ())
-  {
+  if (indices_src.size() != cloud_tgt.size()) {
     PCL_ERROR("[pcl::TransformationSVD::estimateRigidTransformation] Number or points "
               "in source (%zu) differs than target (%zu)!\n",
               indices_src.size(),
@@ -88,22 +84,21 @@ TransformationEstimationSVD<PointSource, PointTarget, Scalar>::estimateRigidTran
     return;
   }
 
-  ConstCloudIterator<PointSource> source_it (cloud_src, indices_src);
-  ConstCloudIterator<PointTarget> target_it (cloud_tgt);
-  estimateRigidTransformation (source_it, target_it, transformation_matrix);
+  ConstCloudIterator<PointSource> source_it(cloud_src, indices_src);
+  ConstCloudIterator<PointTarget> target_it(cloud_tgt);
+  estimateRigidTransformation(source_it, target_it, transformation_matrix);
 }
 
-
-template <typename PointSource, typename PointTarget, typename Scalar> inline void
-TransformationEstimationSVD<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
-    const pcl::PointCloud<PointSource> &cloud_src,
-    const std::vector<int> &indices_src,
-    const pcl::PointCloud<PointTarget> &cloud_tgt,
-    const std::vector<int> &indices_tgt,
-    Matrix4 &transformation_matrix) const
+template <typename PointSource, typename PointTarget, typename Scalar>
+inline void
+TransformationEstimationSVD<PointSource, PointTarget, Scalar>::
+    estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
+                                const pcl::Indices& indices_src,
+                                const pcl::PointCloud<PointTarget>& cloud_tgt,
+                                const pcl::Indices& indices_tgt,
+                                Matrix4& transformation_matrix) const
 {
-  if (indices_src.size () != indices_tgt.size ())
-  {
+  if (indices_src.size() != indices_tgt.size()) {
     PCL_ERROR("[pcl::TransformationEstimationSVD::estimateRigidTransformation] Number "
               "or points in source (%zu) differs than target (%zu)!\n",
               indices_src.size(),
@@ -111,116 +106,120 @@ TransformationEstimationSVD<PointSource, PointTarget, Scalar>::estimateRigidTran
     return;
   }
 
-  ConstCloudIterator<PointSource> source_it (cloud_src, indices_src);
-  ConstCloudIterator<PointTarget> target_it (cloud_tgt, indices_tgt);
-  estimateRigidTransformation (source_it, target_it, transformation_matrix);
+  ConstCloudIterator<PointSource> source_it(cloud_src, indices_src);
+  ConstCloudIterator<PointTarget> target_it(cloud_tgt, indices_tgt);
+  estimateRigidTransformation(source_it, target_it, transformation_matrix);
 }
 
-
-template <typename PointSource, typename PointTarget, typename Scalar> void
-TransformationEstimationSVD<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
-    const pcl::PointCloud<PointSource> &cloud_src,
-    const pcl::PointCloud<PointTarget> &cloud_tgt,
-    const pcl::Correspondences &correspondences,
-    Matrix4 &transformation_matrix) const
+template <typename PointSource, typename PointTarget, typename Scalar>
+void
+TransformationEstimationSVD<PointSource, PointTarget, Scalar>::
+    estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
+                                const pcl::PointCloud<PointTarget>& cloud_tgt,
+                                const pcl::Correspondences& correspondences,
+                                Matrix4& transformation_matrix) const
 {
-  ConstCloudIterator<PointSource> source_it (cloud_src, correspondences, true);
-  ConstCloudIterator<PointTarget> target_it (cloud_tgt, correspondences, false);
-  estimateRigidTransformation (source_it, target_it, transformation_matrix);
+  ConstCloudIterator<PointSource> source_it(cloud_src, correspondences, true);
+  ConstCloudIterator<PointTarget> target_it(cloud_tgt, correspondences, false);
+  estimateRigidTransformation(source_it, target_it, transformation_matrix);
 }
 
-
-template <typename PointSource, typename PointTarget, typename Scalar> inline void
-TransformationEstimationSVD<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
-    ConstCloudIterator<PointSource>& source_it,
-    ConstCloudIterator<PointTarget>& target_it,
-    Matrix4 &transformation_matrix) const
+template <typename PointSource, typename PointTarget, typename Scalar>
+inline void
+TransformationEstimationSVD<PointSource, PointTarget, Scalar>::
+    estimateRigidTransformation(ConstCloudIterator<PointSource>& source_it,
+                                ConstCloudIterator<PointTarget>& target_it,
+                                Matrix4& transformation_matrix) const
 {
   // Convert to Eigen format
-  const int npts = static_cast <int> (source_it.size ());
+  const int npts = static_cast<int>(source_it.size());
 
+  if (use_umeyama_) {
+    Eigen::Matrix<Scalar, 3, Eigen::Dynamic> cloud_src(3, npts);
+    Eigen::Matrix<Scalar, 3, Eigen::Dynamic> cloud_tgt(3, npts);
 
-
-  if (use_umeyama_)
-  {
-    Eigen::Matrix<Scalar, 3, Eigen::Dynamic> cloud_src (3, npts);
-    Eigen::Matrix<Scalar, 3, Eigen::Dynamic> cloud_tgt (3, npts);
-
-    for (int i = 0; i < npts; ++i)
-    {
-      cloud_src (0, i) = source_it->x;
-      cloud_src (1, i) = source_it->y;
-      cloud_src (2, i) = source_it->z;
+    for (int i = 0; i < npts; ++i) {
+      cloud_src(0, i) = source_it->x;
+      cloud_src(1, i) = source_it->y;
+      cloud_src(2, i) = source_it->z;
       ++source_it;
 
-      cloud_tgt (0, i) = target_it->x;
-      cloud_tgt (1, i) = target_it->y;
-      cloud_tgt (2, i) = target_it->z;
+      cloud_tgt(0, i) = target_it->x;
+      cloud_tgt(1, i) = target_it->y;
+      cloud_tgt(2, i) = target_it->z;
       ++target_it;
     }
 
     // Call Umeyama directly from Eigen (PCL patched version until Eigen is released)
-    transformation_matrix = pcl::umeyama (cloud_src, cloud_tgt, false);
+    transformation_matrix = pcl::umeyama(cloud_src, cloud_tgt, false);
   }
-  else
-  {
-    source_it.reset (); target_it.reset ();
+  else {
+    source_it.reset();
+    target_it.reset();
     // <cloud_src,cloud_src> is the source dataset
-    transformation_matrix.setIdentity ();
+    transformation_matrix.setIdentity();
 
     Eigen::Matrix<Scalar, 4, 1> centroid_src, centroid_tgt;
     // Estimate the centroids of source, target
-    compute3DCentroid (source_it, centroid_src);
-    compute3DCentroid (target_it, centroid_tgt);
-    source_it.reset (); target_it.reset ();
+    compute3DCentroid(source_it, centroid_src);
+    compute3DCentroid(target_it, centroid_tgt);
+    source_it.reset();
+    target_it.reset();
 
     // Subtract the centroids from source, target
-    Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> cloud_src_demean, cloud_tgt_demean;
-    demeanPointCloud (source_it, centroid_src, cloud_src_demean);
-    demeanPointCloud (target_it, centroid_tgt, cloud_tgt_demean);
+    Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> cloud_src_demean,
+        cloud_tgt_demean;
+    demeanPointCloud(source_it, centroid_src, cloud_src_demean);
+    demeanPointCloud(target_it, centroid_tgt, cloud_tgt_demean);
 
-    getTransformationFromCorrelation (cloud_src_demean, centroid_src, cloud_tgt_demean, centroid_tgt, transformation_matrix);
+    getTransformationFromCorrelation(cloud_src_demean,
+                                     centroid_src,
+                                     cloud_tgt_demean,
+                                     centroid_tgt,
+                                     transformation_matrix);
   }
 }
 
-
-template <typename PointSource, typename PointTarget, typename Scalar> void
-TransformationEstimationSVD<PointSource, PointTarget, Scalar>::getTransformationFromCorrelation (
-    const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_src_demean,
-    const Eigen::Matrix<Scalar, 4, 1> &centroid_src,
-    const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_tgt_demean,
-    const Eigen::Matrix<Scalar, 4, 1> &centroid_tgt,
-    Matrix4 &transformation_matrix) const
+template <typename PointSource, typename PointTarget, typename Scalar>
+void
+TransformationEstimationSVD<PointSource, PointTarget, Scalar>::
+    getTransformationFromCorrelation(
+        const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>& cloud_src_demean,
+        const Eigen::Matrix<Scalar, 4, 1>& centroid_src,
+        const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>& cloud_tgt_demean,
+        const Eigen::Matrix<Scalar, 4, 1>& centroid_tgt,
+        Matrix4& transformation_matrix) const
 {
-  transformation_matrix.setIdentity ();
+  transformation_matrix.setIdentity();
 
   // Assemble the correlation matrix H = source * target'
-  Eigen::Matrix<Scalar, 3, 3> H = (cloud_src_demean * cloud_tgt_demean.transpose ()).topLeftCorner (3, 3);
+  Eigen::Matrix<Scalar, 3, 3> H =
+      (cloud_src_demean * cloud_tgt_demean.transpose()).topLeftCorner(3, 3);
 
   // Compute the Singular Value Decomposition
-  Eigen::JacobiSVD<Eigen::Matrix<Scalar, 3, 3> > svd (H, Eigen::ComputeFullU | Eigen::ComputeFullV);
-  Eigen::Matrix<Scalar, 3, 3> u = svd.matrixU ();
-  Eigen::Matrix<Scalar, 3, 3> v = svd.matrixV ();
+  Eigen::JacobiSVD<Eigen::Matrix<Scalar, 3, 3>> svd(
+      H, Eigen::ComputeFullU | Eigen::ComputeFullV);
+  Eigen::Matrix<Scalar, 3, 3> u = svd.matrixU();
+  Eigen::Matrix<Scalar, 3, 3> v = svd.matrixV();
 
   // Compute R = V * U'
-  if (u.determinant () * v.determinant () < 0)
-  {
+  if (u.determinant() * v.determinant() < 0) {
     for (int x = 0; x < 3; ++x)
-      v (x, 2) *= -1;
+      v(x, 2) *= -1;
   }
 
-  Eigen::Matrix<Scalar, 3, 3> R = v * u.transpose ();
+  Eigen::Matrix<Scalar, 3, 3> R = v * u.transpose();
 
   // Return the correct transformation
-  transformation_matrix.topLeftCorner (3, 3) = R;
-  const Eigen::Matrix<Scalar, 3, 1> Rc (R * centroid_src.head (3));
-  transformation_matrix.block (0, 3, 3, 1) = centroid_tgt.head (3) - Rc;
+  transformation_matrix.topLeftCorner(3, 3) = R;
+  const Eigen::Matrix<Scalar, 3, 1> Rc(R * centroid_src.head(3));
+  transformation_matrix.block(0, 3, 3, 1) = centroid_tgt.head(3) - Rc;
 }
 
 } // namespace registration
 } // namespace pcl
 
-//#define PCL_INSTANTIATE_TransformationEstimationSVD(T,U) template class PCL_EXPORTS pcl::registration::TransformationEstimationSVD<T,U>;
+//#define PCL_INSTANTIATE_TransformationEstimationSVD(T,U) template class PCL_EXPORTS
+// pcl::registration::TransformationEstimationSVD<T,U>;
 
 #endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_HPP_ */
-

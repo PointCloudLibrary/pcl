@@ -37,6 +37,7 @@
  */
 
 #include <pcl/test/gtest.h>
+#include <pcl/pcl_tests.h> // for EXPECT_XYZ_NEAR
 
 #include <pcl/sample_consensus/ransac.h>
 #include <pcl/sample_consensus/sac_model_sphere.h>
@@ -84,11 +85,11 @@ TEST (SampleConsensusModelSphere, RANSAC)
   bool result = sac.computeModel ();
   ASSERT_TRUE (result);
 
-  std::vector<int> sample;
+  pcl::Indices sample;
   sac.getModel (sample);
   EXPECT_EQ (4, sample.size ());
 
-  std::vector<int> inliers;
+  pcl::Indices inliers;
   sac.getInliers (inliers);
   EXPECT_EQ (9, inliers.size ());
 
@@ -130,7 +131,7 @@ TEST (SampleConsensusModelSphere, SIMD_countWithinDistance) // Test if all count
   {
     // Generate a cloud with 1000 random points
     PointCloud<PointXYZ> cloud;
-    std::vector<int> indices;
+    pcl::Indices indices;
     cloud.resize (1000);
     for (std::size_t idx = 0; idx < cloud.size (); ++idx)
     {
@@ -244,11 +245,11 @@ TEST (SampleConsensusModelNormalSphere, RANSAC)
   bool result = sac.computeModel ();
   ASSERT_TRUE (result);
 
-  std::vector<int> sample;
+  pcl::Indices sample;
   sac.getModel (sample);
   EXPECT_EQ (4, sample.size ());
 
-  std::vector<int> inliers;
+  pcl::Indices inliers;
   sac.getInliers (inliers);
   EXPECT_EQ (27, inliers.size ());
 
@@ -353,11 +354,11 @@ TEST (SampleConsensusModelCone, RANSAC)
   bool result = sac.computeModel ();
   ASSERT_TRUE (result);
 
-  std::vector<int> sample;
+  pcl::Indices sample;
   sac.getModel (sample);
   EXPECT_EQ (3, sample.size ());
 
-  std::vector<int> inliers;
+  pcl::Indices inliers;
   sac.getInliers (inliers);
   EXPECT_EQ (31, inliers.size ());
 
@@ -437,11 +438,11 @@ TEST (SampleConsensusModelCylinder, RANSAC)
   bool result = sac.computeModel ();
   ASSERT_TRUE (result);
 
-  std::vector<int> sample;
+  pcl::Indices sample;
   sac.getModel (sample);
   EXPECT_EQ (2, sample.size ());
 
-  std::vector<int> inliers;
+  pcl::Indices inliers;
   sac.getInliers (inliers);
   EXPECT_EQ (20, inliers.size ());
 
@@ -496,11 +497,11 @@ TEST (SampleConsensusModelCircle2D, RANSAC)
   bool result = sac.computeModel ();
   ASSERT_TRUE (result);
 
-  std::vector<int> sample;
+  pcl::Indices sample;
   sac.getModel (sample);
   EXPECT_EQ (3, sample.size ());
 
-  std::vector<int> inliers;
+  pcl::Indices inliers;
   sac.getInliers (inliers);
   EXPECT_EQ (17, inliers.size ());
 
@@ -542,7 +543,7 @@ TEST (SampleConsensusModelCircle2D, SIMD_countWithinDistance) // Test if all cou
   {
     // Generate a cloud with 1000 random points
     PointCloud<PointXYZ> cloud;
-    std::vector<int> indices;
+    pcl::Indices indices;
     cloud.resize (1000);
     for (std::size_t idx = 0; idx < cloud.size (); ++idx)
     {
@@ -619,11 +620,11 @@ TEST (SampleConsensusModelCircle3D, RANSAC)
   bool result = sac.computeModel ();
   ASSERT_TRUE (result);
 
-  std::vector<int> sample;
+  pcl::Indices sample;
   sac.getModel (sample);
   EXPECT_EQ (3, sample.size ());
 
-  std::vector<int> inliers;
+  pcl::Indices inliers;
   sac.getInliers (inliers);
   EXPECT_EQ (18, inliers.size ());
 
@@ -648,6 +649,95 @@ TEST (SampleConsensusModelCircle3D, RANSAC)
   EXPECT_NEAR ( 0.0, coeff_refined[4], 1e-3);
   EXPECT_NEAR (-1.0, coeff_refined[5], 1e-3);
   EXPECT_NEAR ( 0.0, coeff_refined[6], 1e-3);
+}
+
+TEST (SampleConsensusModelSphere, projectPoints)
+{
+  Eigen::VectorXf model_coefficients(4);
+  model_coefficients << -0.32, -0.89, 0.37, 0.12; // center and radius
+
+  pcl::PointCloud<pcl::PointXYZ>::Ptr input(new pcl::PointCloud<pcl::PointXYZ>);
+  input->emplace_back(-0.259754, -0.950873,  0.318377); // inlier, dist from center=0.10
+  input->emplace_back( 0.595892,  0.455094,  0.025545); // outlier, not projected
+  input->emplace_back(-0.221871, -0.973718,  0.353817); // inlier, dist from center=0.13
+  input->emplace_back(-0.332269, -0.848851,  0.437499); // inlier, dist from center=0.08
+  input->emplace_back(-0.242308, -0.561036, -0.365535); // outlier, not projected
+  input->emplace_back(-0.327668, -0.800009,  0.290988); // inlier, dist from center=0.12
+  input->emplace_back(-0.173948, -0.883831,  0.403625); // inlier, dist from center=0.15
+  input->emplace_back(-0.033891,  0.624537, -0.606994); // outlier, not projected
+
+  pcl::SampleConsensusModelSphere<pcl::PointXYZ> model(input);
+  pcl::Indices inliers = {0, 2, 3, 5, 6};
+
+  pcl::PointCloud<pcl::PointXYZ> projected_truth;
+  projected_truth.emplace_back(-0.247705, -0.963048, 0.308053);
+  projected_truth.emplace_back(-0.229419, -0.967278, 0.355062);
+  projected_truth.emplace_back(-0.338404, -0.828276, 0.471249);
+  projected_truth.emplace_back(-0.327668, -0.800009, 0.290988);
+  projected_truth.emplace_back(-0.203158, -0.885065, 0.396900);
+
+  pcl::PointCloud<pcl::PointXYZ> projected_points;
+  model.projectPoints(inliers, model_coefficients, projected_points, false);
+  EXPECT_EQ(projected_points.size(), 5);
+  for(int i=0; i<5; ++i)
+    EXPECT_XYZ_NEAR(projected_points[i], projected_truth[i], 1e-5);
+
+  pcl::PointCloud<pcl::PointXYZ> projected_points_all;
+  model.projectPoints(inliers, model_coefficients, projected_points_all, true);
+  EXPECT_EQ(projected_points_all.size(), 8);
+  EXPECT_XYZ_NEAR(projected_points_all[0], projected_truth[0], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[1],        (*input)[1], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[2], projected_truth[1], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[3], projected_truth[2], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[4],        (*input)[4], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[5], projected_truth[3], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[6], projected_truth[4], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[7],        (*input)[7], 1e-5);
+}
+
+TEST (SampleConsensusModelCylinder, projectPoints)
+{
+  Eigen::VectorXf model_coefficients(7);
+  model_coefficients << -0.59, 0.85, -0.80, 0.22, -0.70, 0.68, 0.18;
+
+  pcl::PointCloud<pcl::PointXYZ>::Ptr input(new pcl::PointCloud<pcl::PointXYZ>);
+  input->emplace_back(-0.616358,  0.713315, -0.885120); // inlier, dist from axis=0.16
+  input->emplace_back( 0.595892,  0.455094,  0.025545); // outlier, not projected
+  input->emplace_back(-0.952749,  1.450040, -1.305640); // inlier, dist from axis=0.19
+  input->emplace_back(-0.644947,  1.421240, -1.421170); // inlier, dist from axis=0.14
+  input->emplace_back(-0.242308, -0.561036, -0.365535); // outlier, not projected
+  input->emplace_back(-0.502111,  0.694671, -0.878344); // inlier, dist from axis=0.18
+  input->emplace_back(-0.664129,  0.557583, -0.750060); // inlier, dist from axis=0.21
+  input->emplace_back(-0.033891,  0.624537, -0.606994); // outlier, not projected
+
+  pcl::SampleConsensusModelCylinder<pcl::PointXYZ, pcl::Normal> model(input);
+  // not necessary to set normals for model here because projectPoints does not use them
+  pcl::Indices inliers = {0, 2, 3, 5, 6};
+
+  pcl::PointCloud<pcl::PointXYZ> projected_truth;
+  projected_truth.emplace_back(-0.620532, 0.699027, -0.898478);
+  projected_truth.emplace_back(-0.943418, 1.449510, -1.309200);
+  projected_truth.emplace_back(-0.608243, 1.417710, -1.436680);
+  projected_truth.emplace_back(-0.502111, 0.694671, -0.878344);
+  projected_truth.emplace_back(-0.646557, 0.577140, -0.735612);
+
+  pcl::PointCloud<pcl::PointXYZ> projected_points;
+  model.projectPoints(inliers, model_coefficients, projected_points, false);
+  EXPECT_EQ(projected_points.size(), 5);
+  for(int i=0; i<5; ++i)
+    EXPECT_XYZ_NEAR(projected_points[i], projected_truth[i], 1e-5);
+
+  pcl::PointCloud<pcl::PointXYZ> projected_points_all;
+  model.projectPoints(inliers, model_coefficients, projected_points_all, true);
+  EXPECT_EQ(projected_points_all.size(), 8);
+  EXPECT_XYZ_NEAR(projected_points_all[0], projected_truth[0], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[1],        (*input)[1], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[2], projected_truth[1], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[3], projected_truth[2], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[4],        (*input)[4], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[5], projected_truth[3], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[6], projected_truth[4], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[7],        (*input)[7], 1e-5);
 }
 
 int

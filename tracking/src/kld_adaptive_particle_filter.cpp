@@ -40,24 +40,13 @@
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
-#define PCL_TRACKING_NORMAL_SUPPORTED
 
 // clang-format off
 PCL_INSTANTIATE_PRODUCT(KLDAdaptiveParticleFilterTracker,
                         ((pcl::PointNormal)
                          (pcl::PointXYZINormal)
-                         (pcl::PointXYZRGBNormal))
-                        (PCL_STATE_POINT_TYPES))
-PCL_INSTANTIATE_PRODUCT(KLDAdaptiveParticleFilterOMPTracker,
-                        ((pcl::PointNormal)
-                         (pcl::PointXYZINormal)
-                         (pcl::PointXYZRGBNormal))
-                        (PCL_STATE_POINT_TYPES))
-// clang-format on
-#undef PCL_TRACKING_NORMAL_SUPPORTED
-// clang-format off
-PCL_INSTANTIATE_PRODUCT(KLDAdaptiveParticleFilterOMPTracker,
-                        ((pcl::PointXYZ)
+                         (pcl::PointXYZRGBNormal)
+                         (pcl::PointXYZ)
                          (pcl::PointXYZI)
                          (pcl::PointXYZRGBA)
                          (pcl::PointXYZRGB)
@@ -66,8 +55,12 @@ PCL_INSTANTIATE_PRODUCT(KLDAdaptiveParticleFilterOMPTracker,
                          (pcl::PointWithViewpoint)
                          (pcl::PointWithScale))
                         (PCL_STATE_POINT_TYPES))
-PCL_INSTANTIATE_PRODUCT(KLDAdaptiveParticleFilterTracker,
-                        ((pcl::PointXYZ)
+
+PCL_INSTANTIATE_PRODUCT(KLDAdaptiveParticleFilterOMPTracker,
+                        ((pcl::PointNormal)
+                         (pcl::PointXYZINormal)
+                         (pcl::PointXYZRGBNormal)
+                         (pcl::PointXYZ)
                          (pcl::PointXYZI)
                          (pcl::PointXYZRGBA)
                          (pcl::PointXYZRGB)

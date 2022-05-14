@@ -35,7 +35,6 @@
 *
 */
 
-#include <pcl/io/boost.h>
 #include <pcl/io/grabber.h>
 #include <pcl/io/io_exception.h>
 #include <pcl/point_cloud.h>
@@ -227,7 +226,7 @@ namespace pcl
   pcl::PointCloud<pcl::PointXYZ>::Ptr
   RealSense2Grabber::convertDepthToPointXYZ ( const rs2::points& points )
   {
-    return convertRealsensePointsToPointCloud<pcl::PointXYZ> ( points, []( pcl::PointXYZ& p, const rs2::texture_coordinate* uvptr ) {} );
+    return convertRealsensePointsToPointCloud<pcl::PointXYZ> ( points, []( pcl::PointXYZ&, const rs2::texture_coordinate*) {} );
   }
 
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr
@@ -286,15 +285,21 @@ namespace pcl
     cloud->width = sp.width ();
     cloud->height = sp.height ();
     cloud->is_dense = false;
-    cloud->points.resize ( size () );
+    cloud->resize ( points.size () );
 
     const auto cloud_vertices_ptr = points.get_vertices ();
     const auto cloud_texture_ptr = points.get_texture_coordinates ();
 
+#if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
 #pragma omp parallel for \
   default(none) \
-  shared(cloud, cloud_vertices_ptr, mapColorFunc)
-    for (int index = 0; index < cloud->size (); ++index)
+  shared(cloud, mapColorFunc)
+#else
+#pragma omp parallel for \
+  default(none) \
+  shared(cloud, cloud_texture_ptr, cloud_vertices_ptr, mapColorFunc)
+#endif
+    for (std::size_t index = 0; index < cloud->size (); ++index)
     {
       const auto ptr = cloud_vertices_ptr + index;
       const auto uvptr = cloud_texture_ptr + index;

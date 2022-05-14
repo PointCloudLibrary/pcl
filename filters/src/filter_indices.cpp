@@ -45,7 +45,7 @@ namespace pcl { struct PCLPointCloud2; }
  * \param output the resultant filtered point cloud dataset
  */
 void
-pcl::FilterIndices<pcl::PCLPointCloud2>::filter (std::vector<int> &indices)
+pcl::FilterIndices<pcl::PCLPointCloud2>::filter (Indices &indices)
 {
   if (!initCompute ())
     return;

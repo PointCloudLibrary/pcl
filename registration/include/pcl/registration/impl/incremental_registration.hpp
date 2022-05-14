@@ -38,43 +38,40 @@
 #ifndef PCL_REGISTRATION_IMPL_INCREMENTAL_REGISTRATION_HPP_
 #define PCL_REGISTRATION_IMPL_INCREMENTAL_REGISTRATION_HPP_
 
+namespace pcl {
 
-namespace pcl
-{
-
-namespace registration
-{
+namespace registration {
 
 template <typename PointT, typename Scalar>
-IncrementalRegistration<PointT, Scalar>::IncrementalRegistration () :
-  delta_transform_ (Matrix4::Identity ()),
-  abs_transform_ (Matrix4::Identity ())
+IncrementalRegistration<PointT, Scalar>::IncrementalRegistration()
+: delta_transform_(Matrix4::Identity()), abs_transform_(Matrix4::Identity())
 {}
 
-template <typename PointT, typename Scalar> bool
-IncrementalRegistration<PointT, Scalar>::registerCloud (const PointCloudConstPtr& cloud, const Matrix4& delta_estimate)
+template <typename PointT, typename Scalar>
+bool
+IncrementalRegistration<PointT, Scalar>::registerCloud(const PointCloudConstPtr& cloud,
+                                                       const Matrix4& delta_estimate)
 {
-  assert (registration_);
+  assert(registration_);
 
-  if (!last_cloud_)
-  {
+  if (!last_cloud_) {
     last_cloud_ = cloud;
     abs_transform_ = delta_transform_ = delta_estimate;
     return (true);
   }
 
-  registration_->setInputSource (cloud);
-  registration_->setInputTarget (last_cloud_);
+  registration_->setInputSource(cloud);
+  registration_->setInputTarget(last_cloud_);
 
   {
-  pcl::PointCloud<PointT> p;
-  registration_->align (p, delta_estimate);
+    pcl::PointCloud<PointT> p;
+    registration_->align(p, delta_estimate);
   }
 
-  bool converged = registration_->hasConverged ();
+  bool converged = registration_->hasConverged();
 
-  if ( converged ){
-    delta_transform_ = registration_->getFinalTransformation ();
+  if (converged) {
+    delta_transform_ = registration_->getFinalTransformation();
     abs_transform_ *= delta_transform_;
     last_cloud_ = cloud;
   }
@@ -82,27 +79,31 @@ IncrementalRegistration<PointT, Scalar>::registerCloud (const PointCloudConstPtr
   return (converged);
 }
 
-template <typename PointT, typename Scalar> inline typename pcl::registration::IncrementalRegistration<PointT, Scalar>::Matrix4
-IncrementalRegistration<PointT, Scalar>::getDeltaTransform () const
+template <typename PointT, typename Scalar>
+inline typename pcl::registration::IncrementalRegistration<PointT, Scalar>::Matrix4
+IncrementalRegistration<PointT, Scalar>::getDeltaTransform() const
 {
   return (delta_transform_);
 }
 
-template <typename PointT, typename Scalar> inline typename pcl::registration::IncrementalRegistration<PointT, Scalar>::Matrix4
-IncrementalRegistration<PointT, Scalar>::getAbsoluteTransform () const
+template <typename PointT, typename Scalar>
+inline typename pcl::registration::IncrementalRegistration<PointT, Scalar>::Matrix4
+IncrementalRegistration<PointT, Scalar>::getAbsoluteTransform() const
 {
   return (abs_transform_);
 }
 
-template <typename PointT, typename Scalar> inline void
-IncrementalRegistration<PointT, Scalar>::reset ()
+template <typename PointT, typename Scalar>
+inline void
+IncrementalRegistration<PointT, Scalar>::reset()
 {
-  last_cloud_.reset ();
-  delta_transform_ = abs_transform_ = Matrix4::Identity ();
+  last_cloud_.reset();
+  delta_transform_ = abs_transform_ = Matrix4::Identity();
 }
 
-template <typename PointT, typename Scalar> inline void
-IncrementalRegistration<PointT, Scalar>::setRegistration (RegistrationPtr registration)
+template <typename PointT, typename Scalar>
+inline void
+IncrementalRegistration<PointT, Scalar>::setRegistration(RegistrationPtr registration)
 {
   registration_ = registration;
 }
@@ -111,4 +112,3 @@ IncrementalRegistration<PointT, Scalar>::setRegistration (RegistrationPtr regist
 } // namespace pcl
 
 #endif /*PCL_REGISTRATION_IMPL_INCREMENTAL_REGISTRATION_HPP_*/
-

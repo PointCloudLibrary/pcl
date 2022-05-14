@@ -41,7 +41,6 @@
 #include <pcl/io/openni2/openni.h>
 #include <pcl/io/openni2/openni2_device_manager.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/boost.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>

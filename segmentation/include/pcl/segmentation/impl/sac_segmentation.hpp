@@ -108,13 +108,13 @@ pcl::SACSegmentation<PointT>::segment (PointIndices &inliers, ModelCoefficients 
   sac_->getInliers (inliers.indices);
 
   // Get the model coefficients
-  Eigen::VectorXf coeff;
+  Eigen::VectorXf coeff (model_->getModelSize ());
   sac_->getModelCoefficients (coeff);
 
   // If the user needs optimized coefficients
   if (optimize_coefficients_)
   {
-    Eigen::VectorXf coeff_refined;
+    Eigen::VectorXf coeff_refined (model_->getModelSize ());
     model_->optimizeModelCoefficients (inliers.indices, coeff, coeff_refined);
     model_coefficients.values.resize (coeff_refined.size ());
     memcpy (&model_coefficients.values[0], &coeff_refined[0], coeff_refined.size () * sizeof (float));
@@ -257,6 +257,15 @@ pcl::SACSegmentation<PointT>::initSACModel (const int model_type)
         model_parallel->setEpsAngle (eps_angle_);
       }
       break;
+    }
+    case SACMODEL_CYLINDER:
+    case SACMODEL_NORMAL_PLANE:
+    case SACMODEL_NORMAL_PARALLEL_PLANE:
+    case SACMODEL_CONE:
+    case SACMODEL_NORMAL_SPHERE:
+    {
+      PCL_ERROR ("[pcl::%s::initSACModel] Use SACSegmentationFromNormals for this model instead!\n", getClassName ().c_str ());
+      return (false);
     }
     default:
     {

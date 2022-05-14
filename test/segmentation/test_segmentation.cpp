@@ -398,42 +398,38 @@ main (int argc, char** argv)
   }
 
   // Load a standard PCD file from disk
-  PointCloud<PointXYZ> cloud, cloud_t, another_cloud;
-  PointCloud<PointXYZRGB> colored_cloud_1;
-  if (loadPCDFile (argv[1], cloud) < 0)
+  cloud_.reset(new PointCloud<PointXYZ>);
+  if (loadPCDFile (argv[1], *cloud_) < 0)
   {
     std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
-  if (pcl::io::loadPCDFile (argv[2], another_cloud) < 0)
+  another_cloud_.reset(new PointCloud<PointXYZ>);
+  if (pcl::io::loadPCDFile (argv[2], *another_cloud_) < 0)
   {
     std::cerr << "Failed to read test file. Please download `car6.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
-  if (pcl::io::loadPCDFile (argv[3], colored_cloud_1) < 0)
+  colored_cloud.reset(new PointCloud<PointXYZRGB>);
+  if (pcl::io::loadPCDFile (argv[3], *colored_cloud) < 0)
   {
     std::cerr << "Failed to read test file. Please download `colored_cloud.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
 
-  colored_cloud = colored_cloud_1.makeShared();
-
   // Tranpose the cloud
-  cloud_t = cloud;
-  for (auto& point: cloud_t)
+  cloud_t_.reset(new PointCloud<PointXYZ>);
+  *cloud_t_ = *cloud_;
+  for (auto& point: *cloud_t_)
     point.x += 0.01f;
 
-  cloud_   = cloud.makeShared ();
-  cloud_t_ = cloud_t.makeShared ();
-
-  another_cloud_ = another_cloud.makeShared();
-  normals_ = (new pcl::PointCloud<pcl::Normal>)->makeShared();
+  normals_.reset (new pcl::PointCloud<pcl::Normal>);
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> normal_estimator;
   normal_estimator.setInputCloud(cloud_);
   normal_estimator.setKSearch(30);
   normal_estimator.compute(*normals_);
 
-  another_normals_ = (new pcl::PointCloud<pcl::Normal>)->makeShared();
+  another_normals_.reset (new pcl::PointCloud<pcl::Normal>);
   normal_estimator.setInputCloud(another_cloud_);
   normal_estimator.setKSearch(30);
   normal_estimator.compute(*another_normals_);

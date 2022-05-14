@@ -113,19 +113,6 @@ namespace pcl
       void 
       setInputFields (const std::vector<pcl::PCLPointField>& fields);
 
-
-      /** \brief Set the ascii file point fields using a point type.
-        * \param[in] p  a point type
-        */
-      template<typename PointT>
-      PCL_DEPRECATED(1, 12, "use parameterless setInputFields<PointT>() instead")
-      inline void setInputFields (const PointT p)
-      {
-        pcl::utils::ignore(p);
-        setInputFields<PointT> ();
-      }
-
-
       /** \brief Set the Separating characters for the ascii point fields 2.
         * \param[in] chars string of separating characters
         *  Sets the separating characters for the point fields.  The

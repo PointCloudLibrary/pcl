@@ -40,11 +40,11 @@
 #ifndef PCL_CRF_SEGMENTATION_HPP_
 #define PCL_CRF_SEGMENTATION_HPP_
 
+#include <pcl/filters/voxel_grid_label.h> // for VoxelGridLabel
 #include <pcl/segmentation/crf_segmentation.h>
 
 #include <pcl/common/io.h>
 
-#include <cstdio>
 #include <cstdlib>
 #include <ctime>
 

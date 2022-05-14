@@ -1,25 +1,7 @@
 set(SUBSUBSYS_NAME 3d_rec_framework)
 set(SUBSUBSYS_DESC "3D recognition framework")
 set(SUBSUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search recognition ml)
-
-# Find VTK
-if(NOT VTK_FOUND)
-  set(DEFAULT AUTO_OFF)
-  set(REASON "VTK was not found.")
-else()
-  set(DEFAULT TRUE)
-  set(REASON)
-  include("${VTK_USE_FILE}")
-endif()
-
-# OpenNI found?
-if(NOT WITH_OPENNI)
-  set(DEFAULT AUTO_OFF)
-  set(REASON "OpenNI was not found or was disabled by the user.")
-elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
-  set(DEFAULT TRUE)
-  set(REASON)
-endif()
+set(SUBSUBSYS_EXT_DEPS vtk openni)
 
 # Default to not building for now
 if(${DEFAULT} STREQUAL "TRUE")
@@ -27,7 +9,7 @@ if(${DEFAULT} STREQUAL "TRUE")
 endif()
 
 PCL_SUBSUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" ${DEFAULT} "${REASON}")
-PCL_SUBSUBSYS_DEPEND(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" DEPS ${SUBSUBSYS_DEPS} EXT_DEPS vtk openni)
+PCL_SUBSUBSYS_DEPEND(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" DEPS ${SUBSUBSYS_DEPS} EXT_DEPS ${SUBSUBSYS_EXT_DEPS})
 
 if(NOT build)
   return()
@@ -112,10 +94,6 @@ target_link_libraries("${LIB_NAME}" pcl_apps pcl_common pcl_io pcl_filters pcl_v
 
 if(WITH_OPENNI)
   target_link_libraries("${LIB_NAME}" ${OPENNI_LIBRARIES})
-  if(NOT WIN32)
-    find_package(libusb-1.0 REQUIRED)
-    target_link_libraries("${LIB_NAME}" ${LIBUSB_1_LIBRARIES})
-  endif()
 endif()
 
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSUBSYS_NAME} DESC ${SUBSUBSYS_DESC})

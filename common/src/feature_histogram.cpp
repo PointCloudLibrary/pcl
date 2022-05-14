@@ -136,7 +136,7 @@ pcl::FeatureHistogram::getMeanValue ()
                      0.25f * histogram_[histogram_.size () - 2] * 2.0f;
   if (last_value > max)
   {
-    max_idx = histogram_.size ();
+    max_idx = histogram_.size () - 1;
   }
 
   // Compute mean value.

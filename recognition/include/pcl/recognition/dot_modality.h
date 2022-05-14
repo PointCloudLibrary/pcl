@@ -37,7 +37,6 @@
 
 #pragma once
 
-#include <vector>
 #include <pcl/pcl_macros.h>
 #include <pcl/recognition/quantized_map.h>
 #include <pcl/recognition/mask_map.h>

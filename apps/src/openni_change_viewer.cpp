@@ -70,7 +70,7 @@ public:
     octree->addPointsFromInputCloud();
 
     std::cerr << octree->getLeafCount() << " -- ";
-    std::vector<int> newPointIdxVector;
+    pcl::Indices newPointIdxVector;
 
     // get a vector of new points, which did not exist in previous buffer
     octree->getPointIndicesFromNewVoxels(newPointIdxVector, noise_filter_);
@@ -84,7 +84,7 @@ public:
       filtered_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGBA>(*cloud));
       filtered_cloud->points.reserve(newPointIdxVector.size());
 
-      for (const int& idx : newPointIdxVector)
+      for (const auto& idx : newPointIdxVector)
         (*filtered_cloud)[idx].rgba = 255 << 16;
 
       if (!viewer.wasStopped())
@@ -96,7 +96,7 @@ public:
 
       filtered_cloud->points.reserve(newPointIdxVector.size());
 
-      for (const int& idx : newPointIdxVector)
+      for (const auto& idx : newPointIdxVector)
         filtered_cloud->points.push_back((*cloud)[idx]);
 
       if (!viewer.wasStopped())

@@ -39,7 +39,7 @@
 
 #include <pcl/filters/filter_indices.h>
 #include <ctime>
-#include <climits>
+#include <limits>
 
 namespace pcl
 {
@@ -76,7 +76,7 @@ namespace pcl
       /** \brief Empty constructor. */
       RandomSample (bool extract_removed_indices = false) : 
         FilterIndices<PointT> (extract_removed_indices),
-        sample_ (UINT_MAX), 
+        sample_ (std::numeric_limits<unsigned int>::max()),
         seed_ (static_cast<unsigned int> (time (nullptr)))
       {
         filter_name_ = "RandomSample";
@@ -127,7 +127,7 @@ namespace pcl
         * \param indices the resultant point cloud indices
         */
       void
-      applyFilter (std::vector<int> &indices) override;
+      applyFilter (Indices &indices) override;
 
       /** \brief Return a random number fast using a LCG (Linear Congruential Generator) algorithm.
         * See http://software.intel.com/en-us/articles/fast-random-number-generator-on-the-intel-pentiumr-4-processor/ for more information.
@@ -160,7 +160,9 @@ namespace pcl
       using ConstPtr = shared_ptr<const RandomSample<pcl::PCLPointCloud2> >;
   
       /** \brief Empty constructor. */
-      RandomSample () : sample_ (UINT_MAX), seed_ (static_cast<unsigned int> (time (nullptr)))
+      RandomSample ():
+        sample_ (std::numeric_limits<unsigned int>::max()),
+        seed_ (static_cast<unsigned int>(time(nullptr)))
       {
         filter_name_ = "RandomSample";
       }
@@ -216,7 +218,7 @@ namespace pcl
         * \param indices the resultant point cloud indices
         */
       void
-      applyFilter (std::vector<int> &indices) override;
+      applyFilter (Indices &indices) override;
 
       /** \brief Return a random number fast using a LCG (Linear Congruential Generator) algorithm.
         * See http://software.intel.com/en-us/articles/fast-random-number-generator-on-the-intel-pentiumr-4-processor/ for more information.

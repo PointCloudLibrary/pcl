@@ -67,7 +67,7 @@ pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters &clus
   searcher_->setInputCloud (input_, indices_);
 
   // Temp variables used by search class
-  std::vector<int> nn_indices;
+  Indices nn_indices;
   std::vector<float> nn_distances;
 
   // Create a bool vector of processed point indices, and initialize it to false
@@ -75,19 +75,19 @@ pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters &clus
   std::vector<bool> processed (input_->size (), false);
 
   // Process all points indexed by indices_
-  for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)  // iii = input indices iterator
+  for (const auto& iindex : (*indices_)) // iindex = input index
   {
     // Has this point been processed before?
-    if ((*indices_)[iii] == -1 || processed[(*indices_)[iii]])
+    if (iindex == UNAVAILABLE || processed[iindex])
       continue;
 
     // Set up a new growing cluster
-    std::vector<int> current_cluster;
+    Indices current_cluster;
     int cii = 0;  // cii = cluster indices iterator
 
     // Add the point to the cluster
-    current_cluster.push_back ((*indices_)[iii]);
-    processed[(*indices_)[iii]] = true;
+    current_cluster.push_back (iindex);
+    processed[iindex] = true;
 
     // Process the current cluster (it can be growing in size as it is being processed)
     while (cii < static_cast<int> (current_cluster.size ()))
@@ -103,7 +103,7 @@ pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters &clus
       for (int nii = 1; nii < static_cast<int> (nn_indices.size ()); ++nii)  // nii = neighbor indices iterator
       {
         // Has this point been processed before?
-        if (nn_indices[nii] == -1 || processed[nn_indices[nii]])
+        if (nn_indices[nii] == UNAVAILABLE || processed[nn_indices[nii]])
           continue;
 
         // Validate if condition holds

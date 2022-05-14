@@ -38,70 +38,71 @@
 #ifndef PCL_REGISTRATION_IMPL_META_REGISTRATION_HPP_
 #define PCL_REGISTRATION_IMPL_META_REGISTRATION_HPP_
 
+namespace pcl {
 
-namespace pcl
-{
-
-namespace registration
-{
+namespace registration {
 
 template <typename PointT, typename Scalar>
-MetaRegistration<PointT, Scalar>::MetaRegistration () :
-  abs_transform_ (Matrix4::Identity ())
+MetaRegistration<PointT, Scalar>::MetaRegistration()
+: abs_transform_(Matrix4::Identity())
 {}
 
-template <typename PointT, typename Scalar> bool
-MetaRegistration<PointT, Scalar>::registerCloud (const PointCloudConstPtr& new_cloud, const Matrix4& delta_estimate)
+template <typename PointT, typename Scalar>
+bool
+MetaRegistration<PointT, Scalar>::registerCloud(const PointCloudConstPtr& new_cloud,
+                                                const Matrix4& delta_estimate)
 {
-  assert (registration_);
+  assert(registration_);
 
-  PointCloudPtr new_cloud_transformed (new pcl::PointCloud<PointT> ());
+  PointCloudPtr new_cloud_transformed(new pcl::PointCloud<PointT>());
 
-  if (!full_cloud_)
-  {
+  if (!full_cloud_) {
     pcl::transformPointCloud(*new_cloud, *new_cloud_transformed, delta_estimate);
     full_cloud_ = new_cloud_transformed;
     abs_transform_ = delta_estimate;
     return (true);
   }
 
-  registration_->setInputSource (new_cloud);
-  registration_->setInputTarget (full_cloud_);
+  registration_->setInputSource(new_cloud);
+  registration_->setInputTarget(full_cloud_);
 
-  registration_->align (*new_cloud_transformed, abs_transform_ * delta_estimate);
+  registration_->align(*new_cloud_transformed, abs_transform_ * delta_estimate);
 
-  bool converged = registration_->hasConverged ();
+  bool converged = registration_->hasConverged();
 
-  if (converged)
-  {
-    abs_transform_ = registration_->getFinalTransformation ();
+  if (converged) {
+    abs_transform_ = registration_->getFinalTransformation();
     *full_cloud_ += *new_cloud_transformed;
   }
 
   return (converged);
 }
 
-template <typename PointT, typename Scalar> inline typename MetaRegistration<PointT, Scalar>::Matrix4
-MetaRegistration<PointT, Scalar>::getAbsoluteTransform () const
+template <typename PointT, typename Scalar>
+inline typename MetaRegistration<PointT, Scalar>::Matrix4
+MetaRegistration<PointT, Scalar>::getAbsoluteTransform() const
 {
   return (abs_transform_);
 }
 
-template <typename PointT, typename Scalar> inline void
-MetaRegistration<PointT, Scalar>::reset ()
+template <typename PointT, typename Scalar>
+inline void
+MetaRegistration<PointT, Scalar>::reset()
 {
-  full_cloud_.reset ();
-  abs_transform_ = Matrix4::Identity ();
+  full_cloud_.reset();
+  abs_transform_ = Matrix4::Identity();
 }
 
-template <typename PointT, typename Scalar> inline void
-MetaRegistration<PointT, Scalar>::setRegistration (RegistrationPtr reg)
+template <typename PointT, typename Scalar>
+inline void
+MetaRegistration<PointT, Scalar>::setRegistration(RegistrationPtr reg)
 {
   registration_ = reg;
 }
 
-template <typename PointT, typename Scalar> inline typename MetaRegistration<PointT, Scalar>::PointCloudConstPtr
-MetaRegistration<PointT, Scalar>::getMetaCloud () const
+template <typename PointT, typename Scalar>
+inline typename MetaRegistration<PointT, Scalar>::PointCloudConstPtr
+MetaRegistration<PointT, Scalar>::getMetaCloud() const
 {
   return full_cloud_;
 }
@@ -110,4 +111,3 @@ MetaRegistration<PointT, Scalar>::getMetaCloud () const
 } // namespace pcl
 
 #endif /*PCL_REGISTRATION_IMPL_META_REGISTRATION_HPP_*/
-

@@ -41,7 +41,7 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_SPHERE_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_SPHERE_H_
 
-#include <pcl/sample_consensus/eigen.h>
+#include <unsupported/Eigen/NonLinearOptimization> // for LevenbergMarquardt
 #include <pcl/sample_consensus/sac_model_sphere.h>
 
 //////////////////////////////////////////////////////////////////////////
@@ -123,6 +123,8 @@ pcl::SampleConsensusModelSphere<PointT>::computeModelCoefficients (
                                      model_coefficients[1] * model_coefficients[1] +
                                      model_coefficients[2] * model_coefficients[2] - m15 / m11);
 
+  PCL_DEBUG ("[pcl::SampleConsensusModelSphere::computeModelCoefficients] Model is (%g,%g,%g,%g)\n",
+             model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3]);
   return (true);
 }
 
@@ -165,21 +167,13 @@ pcl::SampleConsensusModelSphere<PointT>::getDistancesToModel (
   }
   distances.resize (indices_->size ());
 
+  const Eigen::Vector3f center (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     // Calculate the distance from the point to the sphere as the difference between
     //dist(point,sphere_origin) and sphere_radius
-    distances[i] = std::abs (std::sqrt (
-                               ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) *
-                               ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) +
-
-                               ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) *
-                               ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) +
-
-                               ( (*input_)[(*indices_)[i]].z - model_coefficients[2] ) *
-                               ( (*input_)[(*indices_)[i]].z - model_coefficients[2] )
-                               ) - model_coefficients[3]);
+    distances[i] = std::abs (((*input_)[(*indices_)[i]].getVector3fMap () - center).norm () - model_coefficients[3]);
   }
 }
 
@@ -200,26 +194,21 @@ pcl::SampleConsensusModelSphere<PointT>::selectWithinDistance (
   inliers.reserve (indices_->size ());
   error_sqr_dists_.reserve (indices_->size ());
 
+  const float sqr_inner_radius = (model_coefficients[3] <= threshold ? 0.0f : (model_coefficients[3] - threshold) * (model_coefficients[3] - threshold));
+  const float sqr_outer_radius = (model_coefficients[3] + threshold) * (model_coefficients[3] + threshold);
+  const Eigen::Vector3f center (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
-    double distance = std::abs (std::sqrt (
-                          ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) *
-                          ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) +
-
-                          ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) *
-                          ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) +
-
-                          ( (*input_)[(*indices_)[i]].z - model_coefficients[2] ) *
-                          ( (*input_)[(*indices_)[i]].z - model_coefficients[2] )
-                          ) - model_coefficients[3]);
-    // Calculate the distance from the point to the sphere as the difference between
-    // dist(point,sphere_origin) and sphere_radius
-    if (distance < threshold)
+    // To avoid sqrt computation: consider one larger sphere (radius + threshold) and one smaller sphere (radius - threshold).
+    // Valid if point is in larger sphere, but not in smaller sphere.
+    const float sqr_dist = ((*input_)[(*indices_)[i]].getVector3fMap () - center).squaredNorm ();
+    if ((sqr_dist <= sqr_outer_radius) && (sqr_dist >= sqr_inner_radius))
     {
       // Returns the indices of the points whose distances are smaller than the threshold
       inliers.push_back ((*indices_)[i]);
-      error_sqr_dists_.push_back (static_cast<double> (distance));
+      // Only compute exact distance if necessary (if point is inlier)
+      error_sqr_dists_.push_back (static_cast<double> (std::abs (std::sqrt (sqr_dist) - model_coefficients[3])));
     }
   }
 }
@@ -248,21 +237,16 @@ pcl::SampleConsensusModelSphere<PointT>::countWithinDistanceStandard (
       const Eigen::VectorXf &model_coefficients, const double threshold, std::size_t i) const
 {
   std::size_t nr_p = 0;
+  const float sqr_inner_radius = (model_coefficients[3] <= threshold ? 0.0f : (model_coefficients[3] - threshold) * (model_coefficients[3] - threshold));
+  const float sqr_outer_radius = (model_coefficients[3] + threshold) * (model_coefficients[3] + threshold);
+  const Eigen::Vector3f center (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (; i < indices_->size (); ++i)
   {
-    // Calculate the distance from the point to the sphere as the difference between
-    // dist(point,sphere_origin) and sphere_radius
-    if (std::abs (std::sqrt (
-                        ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) *
-                        ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) +
-
-                        ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) *
-                        ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) +
-
-                        ( (*input_)[(*indices_)[i]].z - model_coefficients[2] ) *
-                        ( (*input_)[(*indices_)[i]].z - model_coefficients[2] )
-                        ) - model_coefficients[3]) < threshold)
+    // To avoid sqrt computation: consider one larger sphere (radius + threshold) and one smaller sphere (radius - threshold).
+    // Valid if point is in larger sphere, but not in smaller sphere.
+    const float sqr_dist = ((*input_)[(*indices_)[i]].getVector3fMap () - center).squaredNorm ();
+    if ((sqr_dist <= sqr_outer_radius) && (sqr_dist >= sqr_inner_radius))
       nr_p++;
   }
   return (nr_p);
@@ -279,13 +263,13 @@ pcl::SampleConsensusModelSphere<PointT>::countWithinDistanceSSE (
   const __m128 b_vec = _mm_set1_ps (model_coefficients[1]);
   const __m128 c_vec = _mm_set1_ps (model_coefficients[2]);
   // To avoid sqrt computation: consider one larger sphere (radius + threshold) and one smaller sphere (radius - threshold). Valid if point is in larger sphere, but not in smaller sphere.
-  const __m128 sqr_inner_sphere = _mm_set1_ps ((model_coefficients[3] <= threshold ? 0.0 : (model_coefficients[3]-threshold)*(model_coefficients[3]-threshold)));
-  const __m128 sqr_outer_sphere = _mm_set1_ps ((model_coefficients[3]+threshold)*(model_coefficients[3]+threshold));
+  const __m128 sqr_inner_radius = _mm_set1_ps ((model_coefficients[3] <= threshold ? 0.0 : (model_coefficients[3]-threshold)*(model_coefficients[3]-threshold)));
+  const __m128 sqr_outer_radius = _mm_set1_ps ((model_coefficients[3]+threshold)*(model_coefficients[3]+threshold));
   __m128i res = _mm_set1_epi32(0); // This corresponds to nr_p: 4 32bit integers that, summed together, hold the number of inliers
   for (; (i + 4) <= indices_->size (); i += 4)
   {
     const __m128 sqr_dist = sqr_dist4 (i, a_vec, b_vec, c_vec);
-    const __m128 mask = _mm_and_ps (_mm_cmplt_ps (sqr_inner_sphere, sqr_dist), _mm_cmplt_ps (sqr_dist, sqr_outer_sphere)); // The mask contains 1 bits if the corresponding points are inliers, else 0 bits
+    const __m128 mask = _mm_and_ps (_mm_cmplt_ps (sqr_inner_radius, sqr_dist), _mm_cmplt_ps (sqr_dist, sqr_outer_radius)); // The mask contains 1 bits if the corresponding points are inliers, else 0 bits
     res = _mm_add_epi32 (res, _mm_and_si128 (_mm_set1_epi32 (1), _mm_castps_si128 (mask))); // The latter part creates a vector with ones (as 32bit integers) where the points are inliers
     //const int res = _mm_movemask_ps (mask);
     //if (res & 1) nr_p++;
@@ -315,13 +299,13 @@ pcl::SampleConsensusModelSphere<PointT>::countWithinDistanceAVX (
   const __m256 b_vec = _mm256_set1_ps (model_coefficients[1]);
   const __m256 c_vec = _mm256_set1_ps (model_coefficients[2]);
   // To avoid sqrt computation: consider one larger sphere (radius + threshold) and one smaller sphere (radius - threshold). Valid if point is in larger sphere, but not in smaller sphere.
-  const __m256 sqr_inner_sphere = _mm256_set1_ps ((model_coefficients[3] <= threshold ? 0.0 : (model_coefficients[3]-threshold)*(model_coefficients[3]-threshold)));
-  const __m256 sqr_outer_sphere = _mm256_set1_ps ((model_coefficients[3]+threshold)*(model_coefficients[3]+threshold));
+  const __m256 sqr_inner_radius = _mm256_set1_ps ((model_coefficients[3] <= threshold ? 0.0 : (model_coefficients[3]-threshold)*(model_coefficients[3]-threshold)));
+  const __m256 sqr_outer_radius = _mm256_set1_ps ((model_coefficients[3]+threshold)*(model_coefficients[3]+threshold));
   __m256i res = _mm256_set1_epi32(0); // This corresponds to nr_p: 8 32bit integers that, summed together, hold the number of inliers
   for (; (i + 8) <= indices_->size (); i += 8)
   {
     const __m256 sqr_dist = sqr_dist8 (i, a_vec, b_vec, c_vec);
-    const __m256 mask = _mm256_and_ps (_mm256_cmp_ps (sqr_inner_sphere, sqr_dist, _CMP_LT_OQ), _mm256_cmp_ps (sqr_dist, sqr_outer_sphere, _CMP_LT_OQ)); // The mask contains 1 bits if the corresponding points are inliers, else 0 bits
+    const __m256 mask = _mm256_and_ps (_mm256_cmp_ps (sqr_inner_radius, sqr_dist, _CMP_LT_OQ), _mm256_cmp_ps (sqr_dist, sqr_outer_radius, _CMP_LT_OQ)); // The mask contains 1 bits if the corresponding points are inliers, else 0 bits
     res = _mm256_add_epi32 (res, _mm256_and_si256 (_mm256_set1_epi32 (1), _mm256_castps_si256 (mask))); // The latter part creates a vector with ones (as 32bit integers) where the points are inliers
     //const int res = _mm256_movemask_ps (mask);
     //if (res &   1) nr_p++;
@@ -382,24 +366,84 @@ pcl::SampleConsensusModelSphere<PointT>::optimizeModelCoefficients (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelSphere<PointT>::projectPoints (
-      const Indices &, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool) const
+      const Indices &inliers, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool copy_data_fields) const
 {
-  // Needs a valid model coefficients
+  // Needs a valid set of model coefficients
   if (!isModelValid (model_coefficients))
   {
     PCL_ERROR ("[pcl::SampleConsensusModelSphere::projectPoints] Given model is invalid!\n");
     return;
   }
 
-  // Allocate enough space and copy the basics
-  projected_points.resize (input_->size ());
   projected_points.header   = input_->header;
-  projected_points.width    = input_->width;
-  projected_points.height   = input_->height;
   projected_points.is_dense = input_->is_dense;
 
-  PCL_WARN ("[pcl::SampleConsensusModelSphere::projectPoints] Not implemented yet.\n");
-  projected_points.points = input_->points;
+  // C : sphere center
+  const Eigen::Vector3d C (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
+  // r : radius
+  const double r = model_coefficients[3];
+
+  // Copy all the data fields from the input cloud to the projected one?
+  if (copy_data_fields)
+  {
+    // Allocate enough space and copy the basics
+    projected_points.resize (input_->size ());
+    projected_points.width    = input_->width;
+    projected_points.height   = input_->height;
+
+    using FieldList = typename pcl::traits::fieldList<PointT>::type;
+    // Iterate over each point
+    for (std::size_t i = 0; i < projected_points.points.size (); ++i)
+      // Iterate over each dimension
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
+
+    // Iterate through the 3d points and calculate the distances from them to the sphere
+    for (std::size_t i = 0; i < inliers.size (); ++i)
+    {
+      // what i have:
+      // P : Sample Point
+      const Eigen::Vector3d P (input_->points[inliers[i]].x, input_->points[inliers[i]].y, input_->points[inliers[i]].z);
+
+      const Eigen::Vector3d direction = (P - C).normalized();
+
+      // K : Point on Sphere
+      const Eigen::Vector3d K = C + r * direction;
+
+      projected_points.points[inliers[i]].x = static_cast<float> (K[0]);
+      projected_points.points[inliers[i]].y = static_cast<float> (K[1]);
+      projected_points.points[inliers[i]].z = static_cast<float> (K[2]);
+    }
+  }
+  else
+  {
+    // Allocate enough space and copy the basics
+    projected_points.resize (inliers.size ());
+    projected_points.width    = static_cast<uint32_t> (inliers.size ());
+    projected_points.height   = 1;
+
+    using FieldList = typename pcl::traits::fieldList<PointT>::type;
+    // Iterate over each point
+    for (std::size_t i = 0; i < inliers.size (); ++i)
+      // Iterate over each dimension
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points.points[i]));
+
+    // Iterate through the 3d points and calculate the distances from them to the plane
+    for (std::size_t i = 0; i < inliers.size (); ++i)
+    {
+      // what i have:
+      // P : Sample Point
+      const Eigen::Vector3d P (input_->points[inliers[i]].x, input_->points[inliers[i]].y, input_->points[inliers[i]].z);
+
+      const Eigen::Vector3d direction = (P - C).normalized();
+
+      // K : Point on Sphere
+      const Eigen::Vector3d K = C + r * direction;
+
+      projected_points.points[i].x = static_cast<float> (K[0]);
+      projected_points.points[i].y = static_cast<float> (K[1]);
+      projected_points.points[i].z = static_cast<float> (K[2]);
+    }
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -414,18 +458,15 @@ pcl::SampleConsensusModelSphere<PointT>::doSamplesVerifyModel (
     return (false);
   }
 
+  const float sqr_inner_radius = (model_coefficients[3] <= threshold ? 0.0f : (model_coefficients[3] - threshold) * (model_coefficients[3] - threshold));
+  const float sqr_outer_radius = (model_coefficients[3] + threshold) * (model_coefficients[3] + threshold);
+  const Eigen::Vector3f center (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
   for (const auto &index : indices)
   {
-    // Calculate the distance from the point to the sphere as the difference between
-    //dist(point,sphere_origin) and sphere_radius
-    if (std::abs (sqrt (
-                    ( (*input_)[index].x - model_coefficients[0] ) *
-                    ( (*input_)[index].x - model_coefficients[0] ) +
-                    ( (*input_)[index].y - model_coefficients[1] ) *
-                    ( (*input_)[index].y - model_coefficients[1] ) +
-                    ( (*input_)[index].z - model_coefficients[2] ) *
-                    ( (*input_)[index].z - model_coefficients[2] )
-                   ) - model_coefficients[3]) > threshold)
+    // To avoid sqrt computation: consider one larger sphere (radius + threshold) and one smaller sphere (radius - threshold).
+    // Valid if point is in larger sphere, but not in smaller sphere.
+    const float sqr_dist = ((*input_)[index].getVector3fMap () - center).squaredNorm ();
+    if ((sqr_dist > sqr_outer_radius) || (sqr_dist < sqr_inner_radius))
     {
       return (false);
     }

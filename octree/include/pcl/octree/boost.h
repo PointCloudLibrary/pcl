@@ -42,6 +42,7 @@
 #ifdef __GNUC__
 #pragma GCC system_header
 #endif
+PCL_DEPRECATED_HEADER(1, 15, "Please include the needed boost headers directly.")
 
 // Marking all Boost headers as system headers to remove warnings
 #include <boost/graph/adjacency_list.hpp>

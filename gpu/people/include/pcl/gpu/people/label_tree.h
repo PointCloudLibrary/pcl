@@ -551,7 +551,7 @@ namespace pcl
         const Blob2& blob = sorted[part_label][part_lid];
 
         // iterate over the number of pixels that are part of this label
-        const std::vector<int>& indices = blob.indices.indices;
+        const auto& indices = blob.indices.indices;
         tree.indices.indices.insert(tree.indices.indices.end(), indices.begin(), indices.end());
 
         if(nr_children == 0)
@@ -583,7 +583,7 @@ namespace pcl
         const Blob2& blob = sorted[part_label][part_lid];
 
         // iterate over the number of pixels that are part of this label
-        const std::vector<int>& indices = blob.indices.indices;
+        const auto& indices = blob.indices.indices;
         tree.indices.indices.insert(tree.indices.indices.end(), indices.begin(), indices.end());
         
         if(nr_children == 0)

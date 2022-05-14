@@ -54,7 +54,7 @@ PointCloud<PointXYZ>::Ptr cloud_in (new PointCloud<PointXYZ>);
 TEST (ModelOutlierRemoval, Model_Outlier_Filter)
 {
   PointCloud<PointXYZ>::Ptr cloud_filter_out (new PointCloud<PointXYZ>);
-  std::vector<int> ransac_inliers;
+  pcl::Indices ransac_inliers;
   float thresh = 0.01;
   //run ransac
   Eigen::VectorXf model_coefficients;

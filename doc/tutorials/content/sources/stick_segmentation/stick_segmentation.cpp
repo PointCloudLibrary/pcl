@@ -3,8 +3,8 @@
 #include <pcl/console/time.h>
 #include <pcl/point_types.h>
 #include <pcl/memory.h>
+#include <pcl/point_cloud.h> // for PointCloud
 #include <pcl/io/pcd_io.h>
-#include <pcl/filters/passthrough.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/segmentation/sac_segmentation.h>

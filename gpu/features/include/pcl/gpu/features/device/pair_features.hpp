@@ -191,15 +191,15 @@ namespace pcl
             float3 row1, row2, row3; // == rotation_mg
             AngleAxisf(acos_value, cross_vector_norm, row1, row2, row3);
 
-            float3 traslation;
-            //traslation.x = row1.x * -model_reference_point.x + row1.y * -model_reference_point.y + row1.z * -model_reference_point.z;
-            traslation.y = row2.x * -model_reference_point.x + row2.y * -model_reference_point.y + row2.z * -model_reference_point.z;
-            traslation.z = row3.x * -model_reference_point.x + row3.y * -model_reference_point.y + row3.z * -model_reference_point.z;
+            float3 translation;
+            //translation.x = row1.x * -model_reference_point.x + row1.y * -model_reference_point.y + row1.z * -model_reference_point.z;
+            translation.y = row2.x * -model_reference_point.x + row2.y * -model_reference_point.y + row2.z * -model_reference_point.z;
+            translation.z = row3.x * -model_reference_point.x + row3.y * -model_reference_point.y + row3.z * -model_reference_point.z;
 
             float3 model_point_transformed;// = transform_mg * model_point;
-            //model_point_transformed.x = traslation.x + row1.x * model_point.x + row1.y * model_point.y + row1.z * model_point.z;
-            model_point_transformed.y = traslation.y + row2.x * model_point.x + row2.y * model_point.y + row2.z * model_point.z;
-            model_point_transformed.z = traslation.z + row3.x * model_point.x + row3.y * model_point.y + row3.z * model_point.z;
+            //model_point_transformed.x = translation.x + row1.x * model_point.x + row1.y * model_point.y + row1.z * model_point.z;
+            model_point_transformed.y = translation.y + row2.x * model_point.x + row2.y * model_point.y + row2.z * model_point.z;
+            model_point_transformed.z = translation.z + row3.x * model_point.x + row3.y * model_point.y + row3.z * model_point.z;
 
 
             float angle = std::atan2 ( -model_point_transformed.z, model_point_transformed.y);

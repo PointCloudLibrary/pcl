@@ -663,7 +663,7 @@ pcl::segmentation::grabcut::GMM::probabilityDensity (std::size_t i, const Color 
 
 void
 pcl::segmentation::grabcut::buildGMMs (const Image& image,
-                                       const std::vector<int>& indices,
+                                       const Indices& indices,
                                        const std::vector<SegmentationValue>& hard_segmentation,
                                        std::vector<std::size_t>& components,
                                        GMM& background_GMM, GMM& foreground_GMM)
@@ -779,7 +779,7 @@ pcl::segmentation::grabcut::buildGMMs (const Image& image,
 
 void
 pcl::segmentation::grabcut::learnGMMs (const Image& image,
-                                       const std::vector<int>& indices,
+                                       const Indices& indices,
                                        const std::vector<SegmentationValue>& hard_segmentation,
                                        std::vector<std::size_t>& components,
                                        GMM& background_GMM, GMM& foreground_GMM)

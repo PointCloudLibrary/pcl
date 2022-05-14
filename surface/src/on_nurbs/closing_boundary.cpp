@@ -35,6 +35,7 @@
  *
  */
 
+#include <limits>
 #include <pcl/surface/on_nurbs/closing_boundary.h>
 #include <Eigen/Geometry> // for cross
 
@@ -79,8 +80,8 @@ ClosingBoundary::commonBoundaryPoint1 (
 {
   Eigen::Vector3d current = start;
 
-  double error1 (DBL_MAX);
-  double error2 (DBL_MAX);
+  double error1 (std::numeric_limits<double>::max());
+  double error2 (std::numeric_limits<double>::max());
 
   Eigen::Vector3d p1, p2, tu1, tu2, tv1, tv2;
 
@@ -118,8 +119,8 @@ ClosingBoundary::commonBoundaryPoint2 (
 {
   Eigen::Vector3d current = start;
 
-  double error1 (DBL_MAX);
-  double error2 (DBL_MAX);
+  double error1 (std::numeric_limits<double>::max());
+  double error2 (std::numeric_limits<double>::max());
 
   Eigen::Vector3d p1, p2, tu1, tu2, tv1, tv2;
 
@@ -179,8 +180,8 @@ ClosingBoundary::commonBoundaryPoint3 (
 {
   Eigen::Vector3d current = start;
 
-  double error1 (DBL_MAX);
-  double error2 (DBL_MAX);
+  double error1 (std::numeric_limits<double>::max());
+  double error2 (std::numeric_limits<double>::max());
 
   Eigen::Vector3d p1, p2, tu1, tu2, tv1, tv2;
 

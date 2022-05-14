@@ -184,4 +184,8 @@ public Q_SLOTS:
 private Q_SLOTS:
   void
   timeoutSlot();
+
+private:
+  void
+  refreshView();
 };

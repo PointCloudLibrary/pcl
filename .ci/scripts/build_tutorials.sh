@@ -73,7 +73,7 @@ for DIRECTORY in "$SOURCE_DIR"/*/ ; do
     TUTORIAL_BUILD_DIR="$BUILD_DIR/$NAME"
     mkdir -p "$TUTORIAL_BUILD_DIR" && cd "$TUTORIAL_BUILD_DIR" || exit
     echo "Configuring tutorial: $NAME"
-    if ! cmake "$TUTORIAL_SOURCE_DIR" -DPCL_DIR="$INSTALL_DIR" -DCMAKE_CXX_FLAGS="-Werror"; then
+    if ! cmake "$TUTORIAL_SOURCE_DIR" -DPCL_DIR="$INSTALL_DIR" -DCMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic -Werror"; then
       STATUS="cmake error"
     else
       echo "Building tutorial: $NAME"

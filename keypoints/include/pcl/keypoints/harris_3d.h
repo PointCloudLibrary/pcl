@@ -168,7 +168,7 @@ namespace pcl
       void responseCurvature (PointCloudOut &output) const;
       void refineCorners (PointCloudOut &corners) const;
       /** \brief calculates the upper triangular part of unnormalized covariance matrix over the normals given by the indices.*/
-      void calculateNormalCovar (const std::vector<int>& neighbors, float* coefficients) const;
+      void calculateNormalCovar (const pcl::Indices& neighbors, float* coefficients) const;
     private:
       float threshold_;
       bool refine_;

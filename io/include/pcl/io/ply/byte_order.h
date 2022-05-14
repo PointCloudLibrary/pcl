@@ -42,6 +42,7 @@
 #include <boost/predef/other/endian.h>
 
 #include <cstddef>
+#include <utility> // for swap
 
 namespace pcl
 {

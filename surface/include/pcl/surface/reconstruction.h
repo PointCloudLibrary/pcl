@@ -41,7 +41,6 @@
 
 #include <pcl/pcl_base.h>
 #include <pcl/PolygonMesh.h>
-#include <pcl/conversions.h>
 #include <pcl/search/search.h> // for Search
 
 namespace pcl
@@ -54,6 +53,7 @@ namespace pcl
     *  - \b reconstruct(&PolygonMesh): creates a PolygonMesh object from the input data
     *
     * \author Radu B. Rusu, Michael Dixon, Alexandru E. Ichim
+    * \ingroup surface
     */
   template <typename PointInT>
   class PCLSurfaceBase: public PCLBase<PointInT>

@@ -48,6 +48,20 @@ stages:
     timeoutInMinutes: 360
     pool:
       vmImage: 'ubuntu-latest'
+    strategy:
+      matrix:
+        INT32:
+          PCL_INDEX_SIGNED: true
+          PCL_INDEX_SIZE: 32
+        UINT32:
+          PCL_INDEX_SIGNED: false
+          PCL_INDEX_SIZE: 32
+        INT64:
+          PCL_INDEX_SIGNED: true
+          PCL_INDEX_SIZE: 64
+        UINT64:
+          PCL_INDEX_SIGNED: false
+          PCL_INDEX_SIZE: 64
     variables:
       tag: "release"
     steps:
@@ -61,6 +75,8 @@ stages:
         arguments: |
           --no-cache
           -t $(dockerHubID)/release:$(tag)
+          --build-arg PCL_INDEX_SIGNED=$(PCL_INDEX_SIGNED)
+          --build-arg PCL_INDEX_SIZE=$(PCL_INDEX_SIZE)
         dockerfile: '$(Build.SourcesDirectory)/.dev/docker/release/Dockerfile'
         tags: "$(tag)"
 - stage: ROS

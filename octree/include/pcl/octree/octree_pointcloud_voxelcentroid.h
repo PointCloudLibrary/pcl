@@ -114,7 +114,7 @@ public:
   }
 
 private:
-  unsigned int point_counter_;
+  uindex_t point_counter_;
   PointT point_sum_;
 };
 
@@ -156,11 +156,11 @@ public:
    * \param pointIdx_arg
    */
   void
-  addPointIdx(const int pointIdx_arg) override
+  addPointIdx(const uindex_t pointIdx_arg) override
   {
     OctreeKey key;
 
-    assert(pointIdx_arg < static_cast<int>(this->input_->size()));
+    assert(pointIdx_arg < this->input_->size());
 
     const PointT& point = (*this->input_)[pointIdx_arg];
 
@@ -190,7 +190,8 @@ public:
    * \return "true" if voxel is found; "false" otherwise
    */
   inline bool
-  getVoxelCentroidAtPoint(const int& point_idx_arg, PointT& voxel_centroid_arg) const
+  getVoxelCentroidAtPoint(const index_t& point_idx_arg,
+                          PointT& voxel_centroid_arg) const
   {
     // get centroid at point
     return (this->getVoxelCentroidAtPoint((*this->input_)[point_idx_arg],
@@ -202,7 +203,7 @@ public:
    * elements
    * \return number of occupied voxels
    */
-  std::size_t
+  uindex_t
   getVoxelCentroids(
       typename OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::
           AlignedPointTVector& voxel_centroid_list_arg) const;

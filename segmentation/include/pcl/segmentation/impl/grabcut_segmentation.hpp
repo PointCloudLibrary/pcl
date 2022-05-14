@@ -89,7 +89,7 @@ GrabCut<PointT>::initCompute ()
   using namespace pcl::segmentation::grabcut;
   if (!pcl::PCLBase<PointT>::initCompute ())
   {
-    PCL_ERROR ("[pcl::GrabCut::initCompute ()] Init failed!");
+    PCL_ERROR ("[pcl::GrabCut::initCompute ()] Init failed!\n");
     return (false);
   }
 
@@ -97,7 +97,7 @@ GrabCut<PointT>::initCompute ()
   if ((pcl::getFieldIndex<PointT> ("rgb", in_fields_) == -1) &&
       (pcl::getFieldIndex<PointT> ("rgba", in_fields_) == -1))
   {
-    PCL_ERROR ("[pcl::GrabCut::initCompute ()] No RGB data available, aborting!");
+    PCL_ERROR ("[pcl::GrabCut::initCompute ()] No RGB data available, aborting!\n");
     return (false);
   }
 
@@ -168,7 +168,7 @@ GrabCut<PointT>::setBackgroundPointsIndices (const PointIndicesConstPtr &indices
 
   std::fill (trimap_.begin (), trimap_.end (), TrimapBackground);
   std::fill (hard_segmentation_.begin (), hard_segmentation_.end (), SegmentationBackground);
-  for (const int &index : indices->indices)
+  for (const auto &index : indices->indices)
   {
     trimap_[index] = TrimapUnknown;
     hard_segmentation_[index] = SegmentationForeground;
@@ -252,16 +252,16 @@ template <typename PointT> void
 GrabCut<PointT>::setTrimap (const PointIndicesConstPtr &indices, segmentation::grabcut::TrimapValue t)
 {
   using namespace pcl::segmentation::grabcut;
-  for (const int &index : indices->indices)
+  for (const auto &index : indices->indices)
     trimap_[index] = t;
 
   // Immediately set the hard segmentation as well so that the display will update.
   if (t == TrimapForeground)
-    for (const int &index : indices->indices)
+    for (const auto &index : indices->indices)
       hard_segmentation_[index] = SegmentationForeground;
   else
     if (t == TrimapBackground)
-      for (const int &index : indices->indices)
+      for (const auto &index : indices->indices)
         hard_segmentation_[index] = SegmentationBackground;
 }
 
@@ -317,11 +317,11 @@ GrabCut<PointT>::initGraph ()
     const NLinks &n_link = n_links_[i_point];
     if (n_link.nb_links > 0)
     {
-      int point_index = (*indices_) [i_point];
+      const auto point_index = (*indices_) [i_point];
       std::vector<float>::const_iterator weights_it  = n_link.weights.begin ();
       for (auto indices_it = n_link.indices.cbegin (); indices_it != n_link.indices.cend (); ++indices_it, ++weights_it)
       {
-        if ((*indices_it != point_index) && (*indices_it > -1))
+        if ((*indices_it != point_index) && (*indices_it != UNAVAILABLE))
         {
           addEdge (graph_nodes_[i_point], graph_nodes_[*indices_it], *weights_it, *weights_it);
         }
@@ -339,7 +339,7 @@ GrabCut<PointT>::computeNLinksNonOrganized ()
     NLinks &n_link = n_links_[i_point];
     if (n_link.nb_links > 0)
     {
-      int point_index = (*indices_) [i_point];
+      const auto point_index = (*indices_) [i_point];
       auto dists_it = n_link.dists.cbegin ();
       auto weights_it = n_link.weights.begin ();
       for (auto indices_it = n_link.indices.cbegin (); indices_it != n_link.indices.cend (); ++indices_it, ++dists_it, ++weights_it)
@@ -393,7 +393,7 @@ GrabCut<PointT>::computeBetaNonOrganized ()
 
   for (int i_point = 0; i_point < number_of_indices; i_point++)
   {
-    int point_index = (*indices_)[i_point];
+    const auto point_index = (*indices_)[i_point];
     const PointT& point = input_->points [point_index];
     if (pcl::isFinite (point))
     {
@@ -403,11 +403,11 @@ GrabCut<PointT>::computeBetaNonOrganized ()
       {
         links.nb_links = found - 1;
         links.weights.reserve (links.nb_links);
-        for (std::vector<int>::const_iterator nn_it = links.indices.begin (); nn_it != links.indices.end (); ++nn_it)
+        for (const auto& nn_index : links.indices)
         {
-          if (*nn_it != point_index)
+          if (nn_index != point_index)
           {
-            float color_distance = squaredEuclideanDistance ((*image_)[point_index], (*image_)[*nn_it]);
+            float color_distance = squaredEuclideanDistance ((*image_)[point_index], (*image_)[nn_index]);
             links.weights.push_back (color_distance);
             result+= color_distance;
             ++edges;

@@ -3,6 +3,14 @@
 
 #include <QDebug>
 
+#include <vtkSmartPointer.h>
+#include <vtkIdFilter.h>
+#include <vtkExtractGeometry.h>
+#include <vtkVertexGlyphFilter.h>
+#include <vtkPlanes.h>
+#include <vtkAreaPicker.h>
+#include <vtkObjectFactory.h>
+
 namespace pcl
 {
   namespace cloud_composer

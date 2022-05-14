@@ -69,7 +69,7 @@ main(int, char** argv)
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>);
   if(pcl::io::loadPCDFile<pcl::PointXYZ> (filename, *cloud_xyz) == -1) // load the file
   {
-    PCL_ERROR ("Couldn't read file");
+    PCL_ERROR("Couldn't read file\n");
     return -1;
   }
   std::cout << "points: " << cloud_xyz->size () <<std::endl;

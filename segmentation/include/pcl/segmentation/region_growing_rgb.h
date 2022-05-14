@@ -50,6 +50,7 @@ namespace pcl
     * Description can be found in the article
     * "Color-based segmentation of point clouds"
     * by Qingming Zhan, Yubin Liang, Yinghui Xiao
+    * \ingroup segmentation
     */
   template <typename PointT, typename NormalT = pcl::Normal>
   class PCL_EXPORTS RegionGrowingRGB : public RegionGrowing<PointT, NormalT>
@@ -175,7 +176,7 @@ namespace pcl
         * \param cluster
         */
       void
-      getSegmentFromPoint (int index, pcl::PointIndices& cluster) override;
+      getSegmentFromPoint (index_t index, pcl::PointIndices& cluster) override;
 
     protected:
 
@@ -204,7 +205,7 @@ namespace pcl
         * \param[out] dist the array of distances to the corresponding neighbours
         */
       void
-      findRegionsKNN (int index, int nghbr_number, std::vector<int>& nghbrs, std::vector<float>& dist);
+      findRegionsKNN (pcl::index_t index, pcl::uindex_t nghbr_number, Indices& nghbrs, std::vector<float>& dist);
 
       /** \brief This function implements the merging algorithm described in the article
         * "Color-based segmentation of point clouds"
@@ -229,7 +230,7 @@ namespace pcl
         * to the corresponding homogeneous region.
         */
       void
-      findRegionNeighbours (std::vector< std::vector< std::pair<float, int> > >& neighbours_out, std::vector< std::vector<int> >& regions_in);
+      findRegionNeighbours (std::vector< std::vector< std::pair<float, pcl::index_t> > >& neighbours_out, std::vector< std::vector<int> >& regions_in);
 
       /** \brief This function simply assembles the regions from list of point labels.
         * \param[in] num_pts_in_region for each final region it stores the corresponding number of points in it
@@ -246,7 +247,7 @@ namespace pcl
         * \param[out] is_a_seed this value is set to true if the point with index 'nghbr' can serve as the seed
         */
       bool
-      validatePoint (int initial_seed, int point, int nghbr, bool& is_a_seed) const override;
+      validatePoint (index_t initial_seed, index_t point, index_t nghbr, bool& is_a_seed) const override;
 
     protected:
 
@@ -266,7 +267,7 @@ namespace pcl
       std::vector< std::vector<float> > point_distances_;
 
       /** \brief Stores the neighboures for the corresponding segments. */
-      std::vector< std::vector<int> > segment_neighbours_;
+      std::vector< pcl::Indices > segment_neighbours_;
 
       /** \brief Stores distances for the segment neighbours from segment_neighbours_ */
       std::vector< std::vector<float> > segment_distances_;

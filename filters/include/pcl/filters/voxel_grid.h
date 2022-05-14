@@ -40,7 +40,7 @@
 #pragma once
 
 #include <pcl/filters/filter.h>
-#include <cfloat> // for FLT_MAX
+#include <limits>
 
 namespace pcl
 {
@@ -156,7 +156,7 @@ namespace pcl
     */
   template <typename PointT> void
   getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
-               const std::vector<int> &indices,
+               const Indices &indices,
                const std::string &distance_field_name, float min_distance, float max_distance,
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false);
 
@@ -190,6 +190,8 @@ namespace pcl
       using Ptr = shared_ptr<VoxelGrid<PointT> >;
       using ConstPtr = shared_ptr<const VoxelGrid<PointT> >;
 
+      PCL_MAKE_ALIGNED_OPERATOR_NEW;
+
       /** \brief Empty constructor. */
       VoxelGrid () :
         leaf_size_ (Eigen::Vector4f::Zero ()),
@@ -201,8 +203,8 @@ namespace pcl
         div_b_ (Eigen::Vector4i::Zero ()),
         divb_mul_ (Eigen::Vector4i::Zero ()),
         filter_field_name_ (""),
-        filter_limit_min_ (-FLT_MAX),
-        filter_limit_max_ (FLT_MAX),
+        filter_limit_min_ (std::numeric_limits<float>::lowest()),
+        filter_limit_max_ (std::numeric_limits<float>::max()),
         filter_limit_negative_ (false),
         min_points_per_voxel_ (0)
       {
@@ -411,7 +413,8 @@ namespace pcl
         filter_limit_max_ = limit_max;
       }
 
-      /** \brief Get the field filter limits (min/max) set by the user. The default values are -FLT_MAX, FLT_MAX.
+      /** \brief Get the field filter limits (min/max) set by the user.
+                 The default values are std::numeric_limits<float>::lowest(), std::numeric_limits<float>::max().
         * \param[out] limit_min the minimum allowed field value
         * \param[out] limit_max the maximum allowed field value
         */
@@ -435,6 +438,7 @@ namespace pcl
       /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
         * \param[out] limit_negative true if data \b outside the interval [min; max] is to be returned, false otherwise
         */
+      PCL_DEPRECATED(1, 16, "use bool getFilterLimitsNegative() instead")
       inline void
       getFilterLimitsNegative (bool &limit_negative) const
       {
@@ -527,8 +531,8 @@ namespace pcl
         div_b_ (Eigen::Vector4i::Zero ()),
         divb_mul_ (Eigen::Vector4i::Zero ()),
         filter_field_name_ (""),
-        filter_limit_min_ (-FLT_MAX),
-        filter_limit_max_ (FLT_MAX),
+        filter_limit_min_ (std::numeric_limits<float>::lowest()),
+        filter_limit_max_ (std::numeric_limits<float>::max()),
         filter_limit_negative_ (false),
         min_points_per_voxel_ (0)
       {
@@ -592,10 +596,10 @@ namespace pcl
       inline void
       setMinimumPointsNumberPerVoxel (unsigned int min_points_per_voxel) { min_points_per_voxel_ = min_points_per_voxel; }
 
-	  /** \brief Return the minimum number of points required for a voxel to be used.
-       */
-	  inline unsigned int
-	  getMinimumPointsNumberPerVoxel () const { return min_points_per_voxel_; }
+      /** \brief Return the minimum number of points required for a voxel to be used.
+        */
+      inline unsigned int
+      getMinimumPointsNumberPerVoxel () const { return min_points_per_voxel_; }
 
       /** \brief Set to true if leaf layout information needs to be saved for later access.
         * \param[in] save_leaf_layout the new value (true/false)
@@ -759,7 +763,8 @@ namespace pcl
         filter_limit_max_ = limit_max;
       }
 
-      /** \brief Get the field filter limits (min/max) set by the user. The default values are -FLT_MAX, FLT_MAX.
+      /** \brief Get the field filter limits (min/max) set by the user.
+        *        The default values are std::numeric_limits<float>::lowest(), std::numeric_limits<float>::max().
         * \param[out] limit_min the minimum allowed field value
         * \param[out] limit_max the maximum allowed field value
         */
@@ -783,6 +788,7 @@ namespace pcl
       /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
         * \param[out] limit_negative true if data \b outside the interval [min; max] is to be returned, false otherwise
         */
+      PCL_DEPRECATED(1, 16, "use bool getFilterLimitsNegative() instead")
       inline void
       getFilterLimitsNegative (bool &limit_negative) const
       {

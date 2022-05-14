@@ -38,8 +38,10 @@
 #include <pcl/point_types.h>
 #include <pcl/common/colors.h>
 
+#include <array>
+
 /// Glasbey lookup table
-static const unsigned char GLASBEY_LUT[] =
+static constexpr std::array<unsigned char, 256 * 3> GLASBEY_LUT =
 {
   77 , 175, 74 ,
   228, 26 , 28 ,
@@ -296,11 +298,11 @@ static const unsigned char GLASBEY_LUT[] =
   153, 61 , 225,
   237, 87 , 255,
   87 , 24 , 206,
-  117, 143, 207,
+  117, 143, 207
 };
 
 /// Viridis lookup table
-static const unsigned char VIRIDIS_LUT[] =
+static constexpr std::array<unsigned char, 256 * 3> VIRIDIS_LUT =
 {
   68 , 1  , 84 ,
   68 , 2  , 85 ,
@@ -557,27 +559,27 @@ static const unsigned char VIRIDIS_LUT[] =
   247, 230, 31 ,
   249, 231, 33 ,
   251, 231, 35 ,
-  254, 231, 36 ,
+  254, 231, 36
 };
 
 /// Number of colors in Glasbey lookup table
-static const std::size_t GLASBEY_LUT_SIZE = sizeof (GLASBEY_LUT) / (sizeof (GLASBEY_LUT[0]) * 3);
+static constexpr std::size_t GLASBEY_LUT_SIZE = GLASBEY_LUT.size() / 3;
 
 /// Number of colors in Viridis lookup table
-static const std::size_t VIRIDIS_LUT_SIZE = sizeof (VIRIDIS_LUT) / (sizeof (VIRIDIS_LUT[0]) * 3);
+static constexpr std::size_t VIRIDIS_LUT_SIZE = VIRIDIS_LUT.size() / 3;
 
-static const unsigned char* LUTS[] = { GLASBEY_LUT, VIRIDIS_LUT };
-static const std::size_t LUT_SIZES[] = { GLASBEY_LUT_SIZE, VIRIDIS_LUT_SIZE };
+static constexpr std::array<const std::array<unsigned char, 256 * 3>*, 2> LUTS = { &GLASBEY_LUT, &VIRIDIS_LUT };
+static constexpr std::array<std::size_t, 2> LUT_SIZES = { GLASBEY_LUT_SIZE, VIRIDIS_LUT_SIZE };
 
 template<typename pcl::ColorLUTName T> pcl::RGB
 pcl::ColorLUT<T>::at (std::size_t color_id)
 {
   assert (color_id < LUT_SIZES[T]);
   pcl::RGB color;
-  color.r = LUTS[T][color_id * 3 + 0];
-  color.g = LUTS[T][color_id * 3 + 1];
-  color.b = LUTS[T][color_id * 3 + 2];
-  return (color);
+  color.r = (*LUTS[T])[color_id * 3 + 0];
+  color.g = (*LUTS[T])[color_id * 3 + 1];
+  color.b = (*LUTS[T])[color_id * 3 + 2];
+  return color;
 }
 
 template<typename pcl::ColorLUTName T> std::size_t
@@ -589,7 +591,7 @@ pcl::ColorLUT<T>::size ()
 template<typename pcl::ColorLUTName T> const unsigned char*
 pcl::ColorLUT<T>::data ()
 {
-  return LUTS[T];
+  return LUTS[T]->data();
 }
 
 pcl::RGB

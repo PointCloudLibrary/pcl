@@ -18,9 +18,9 @@ Stable
 
 For systems for which we do not offer precompiled binaries, you need to compile Point Cloud Library (PCL) from source. Here are the steps that you need to take:
 Go to `Github <https://github.com/PointCloudLibrary/pcl/releases>`_ and download the version number of your choice.
-Uncompress the tar-bzip archive, e.g. (replace 1.7.2 with the correct version number)::
+Uncompress the tar-gzip archive, e.g. (replace 1.7.2 with the correct version number)::
 
-  tar xvfj pcl-pcl-1.7.2.tar.gz
+  tar xvf pcl-pcl-1.7.2.tar.gz
 
 Change the directory to the pcl-pcl-1.7.2 (replace 1.7.2 with the correct version number) directory, and create a build directory in there::
 
@@ -84,7 +84,7 @@ Mandatory
 The following code libraries are **required** for the compilation and usage of the PCL libraries shown below:
 
 .. note::
-pcl_* denotes all PCL libraries, meaning that the particular dependency is a strict requirement for the usage of anything in PCL.
+   pcl_* denotes all PCL libraries, meaning that the particular dependency is a strict requirement for the usage of anything in PCL.
 
 +---------------------------------------------------------------+-----------------+-------------------------+-------------------+
 | Logo                                                          | Library         | Minimum version         | Mandatory         |

@@ -64,7 +64,6 @@ namespace pcl
 
       using Ptr = shared_ptr<BilateralFilter<PointT> >;
       using ConstPtr = shared_ptr<const BilateralFilter<PointT> >;
- 
 
       /** \brief Constructor. 
         * Sets sigma_s_ to 0 and sigma_r_ to MAXDBL
@@ -74,14 +73,6 @@ namespace pcl
                            tree_ ()
       {
       }
-
-
-      /** \brief Filter the input data and store the results into output
-        * \param[out] output the resultant point cloud message
-        */
-      void
-      applyFilter (PointCloud &output) override;
-
       /** \brief Compute the intensity average for a single point
         * \param[in] pid the point index to compute the weight for
         * \param[in] indices the set of nearest neighor indices 
@@ -89,7 +80,7 @@ namespace pcl
         * \return the intensity average at a given point index
         */
       double 
-      computePointWeight (const int pid, const std::vector<int> &indices, const std::vector<float> &distances);
+      computePointWeight (const int pid, const Indices &indices, const std::vector<float> &distances);
 
       /** \brief Set the half size of the Gaussian bilateral filter window.
         * \param[in] sigma_s the half size of the Gaussian bilateral filter window to use
@@ -122,8 +113,14 @@ namespace pcl
       setSearchMethod (const KdTreePtr &tree)
       { tree_ = tree; }
 
-    private:
+    protected:
+      /** \brief Filter the input data and store the results into output
+        * \param[out] output the resultant point cloud message
+        */
+      void
+      applyFilter (PointCloud &output) override;
 
+    private:
       /** \brief The bilateral filter Gaussian distance kernel.
         * \param[in] x the spatial distance (distance or intensity)
         * \param[in] sigma standard deviation

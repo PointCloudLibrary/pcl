@@ -41,50 +41,51 @@
 #ifndef PCL_REGISTRATION_TRANSFORMATION_VALIDATION_EUCLIDEAN_IMPL_H_
 #define PCL_REGISTRATION_TRANSFORMATION_VALIDATION_EUCLIDEAN_IMPL_H_
 
+namespace pcl {
 
-namespace pcl
-{
+namespace registration {
 
-namespace registration
-{
-
-template <typename PointSource, typename PointTarget, typename Scalar> double
-TransformationValidationEuclidean<PointSource, PointTarget, Scalar>::validateTransformation (
-  const PointCloudSourceConstPtr &cloud_src,
-  const PointCloudTargetConstPtr &cloud_tgt,
-  const Matrix4 &transformation_matrix) const
+template <typename PointSource, typename PointTarget, typename Scalar>
+double
+TransformationValidationEuclidean<PointSource, PointTarget, Scalar>::
+    validateTransformation(const PointCloudSourceConstPtr& cloud_src,
+                           const PointCloudTargetConstPtr& cloud_tgt,
+                           const Matrix4& transformation_matrix) const
 {
   double fitness_score = 0.0;
 
   // Transform the input dataset using the final transformation
   pcl::PointCloud<PointSource> input_transformed;
-  //transformPointCloud (*cloud_src, input_transformed, transformation_matrix);
-  input_transformed.resize (cloud_src->size ());
-  for (std::size_t i = 0; i < cloud_src->size (); ++i)
-  {
-    const PointSource &src = (*cloud_src)[i];
-    PointTarget &tgt = input_transformed[i];
-    tgt.x = static_cast<float> (transformation_matrix (0, 0) * src.x + transformation_matrix (0, 1) * src.y + transformation_matrix (0, 2) * src.z + transformation_matrix (0, 3));
-    tgt.y = static_cast<float> (transformation_matrix (1, 0) * src.x + transformation_matrix (1, 1) * src.y + transformation_matrix (1, 2) * src.z + transformation_matrix (1, 3));
-    tgt.z = static_cast<float> (transformation_matrix (2, 0) * src.x + transformation_matrix (2, 1) * src.y + transformation_matrix (2, 2) * src.z + transformation_matrix (2, 3));
-   }
-
-  typename MyPointRepresentation::ConstPtr point_rep (new MyPointRepresentation);
-  if (!force_no_recompute_)
-  {
-    tree_->setPointRepresentation (point_rep);
-    tree_->setInputCloud (cloud_tgt);
+  // transformPointCloud (*cloud_src, input_transformed, transformation_matrix);
+  input_transformed.resize(cloud_src->size());
+  for (std::size_t i = 0; i < cloud_src->size(); ++i) {
+    const PointSource& src = (*cloud_src)[i];
+    PointTarget& tgt = input_transformed[i];
+    tgt.x = static_cast<float>(
+        transformation_matrix(0, 0) * src.x + transformation_matrix(0, 1) * src.y +
+        transformation_matrix(0, 2) * src.z + transformation_matrix(0, 3));
+    tgt.y = static_cast<float>(
+        transformation_matrix(1, 0) * src.x + transformation_matrix(1, 1) * src.y +
+        transformation_matrix(1, 2) * src.z + transformation_matrix(1, 3));
+    tgt.z = static_cast<float>(
+        transformation_matrix(2, 0) * src.x + transformation_matrix(2, 1) * src.y +
+        transformation_matrix(2, 2) * src.z + transformation_matrix(2, 3));
   }
 
-  std::vector<int> nn_indices (1);
-  std::vector<float> nn_dists (1);
+  typename MyPointRepresentation::ConstPtr point_rep(new MyPointRepresentation);
+  if (!force_no_recompute_) {
+    tree_->setPointRepresentation(point_rep);
+    tree_->setInputCloud(cloud_tgt);
+  }
+
+  pcl::Indices nn_indices(1);
+  std::vector<float> nn_dists(1);
 
   // For each point in the source dataset
   int nr = 0;
-  for (const auto& point: input_transformed)
-  {
+  for (const auto& point : input_transformed) {
     // Find its nearest neighbor in the target
-    tree_->nearestKSearch (point, 1, nn_indices, nn_dists);
+    tree_->nearestKSearch(point, 1, nn_indices, nn_dists);
 
     // Deal with occlusions (incomplete targets)
     if (nn_dists[0] > max_range_)
@@ -97,11 +98,10 @@ TransformationValidationEuclidean<PointSource, PointTarget, Scalar>::validateTra
 
   if (nr > 0)
     return (fitness_score / nr);
-  return (std::numeric_limits<double>::max ());
+  return (std::numeric_limits<double>::max());
 }
 
 } // namespace registration
 } // namespace pcl
 
-#endif    // PCL_REGISTRATION_TRANSFORMATION_VALIDATION_EUCLIDEAN_IMPL_H_
-
+#endif // PCL_REGISTRATION_TRANSFORMATION_VALIDATION_EUCLIDEAN_IMPL_H_

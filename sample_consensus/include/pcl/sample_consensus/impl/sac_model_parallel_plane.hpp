@@ -107,6 +107,7 @@ pcl::SampleConsensusModelParallelPlane<PointT>::isModelValid (const Eigen::Vecto
     Eigen::Vector4f axis (axis_[0], axis_[1], axis_[2], 0.0f);
     if (std::abs (axis.dot (coeff)) > sin_angle_)
     {
+      PCL_DEBUG ("[pcl::SampleConsensusModelParallelPlane::isModelValid] Angle between plane normal and given axis is too large.\n");
       return  (false);
     }
   }

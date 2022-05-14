@@ -1,5 +1,3 @@
-#include <pcl/point_cloud.h>
-
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/surface/on_nurbs/triangulation.h>
 

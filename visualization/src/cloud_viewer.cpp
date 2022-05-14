@@ -37,8 +37,10 @@
 
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/boost.h>
 #include <pcl/memory.h>
+
+#include <vtkOrientationMarkerWidget.h>
+#include <vtkRenderWindowInteractor.h>
 
 #include <mutex>
 #include <thread>

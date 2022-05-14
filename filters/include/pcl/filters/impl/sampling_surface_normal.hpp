@@ -48,7 +48,7 @@
 template<typename PointT> void
 pcl::SamplingSurfaceNormal<PointT>::applyFilter (PointCloud &output)
 {
-  std::vector <int> indices;
+  Indices indices;
   std::size_t npts = input_->size ();
   for (std::size_t i = 0; i < npts; i++)
     indices.push_back (i);
@@ -86,7 +86,7 @@ template<typename PointT> void
 pcl::SamplingSurfaceNormal<PointT>::partition (
     const PointCloud& cloud, const int first, const int last,
     const Vector min_values, const Vector max_values, 
-    std::vector<int>& indices, PointCloud&  output)
+    Indices& indices, PointCloud& output)
 {
 	const int count (last - first);
   if (count <= static_cast<int> (sample_))
@@ -124,7 +124,7 @@ pcl::SamplingSurfaceNormal<PointT>::partition (
 template<typename PointT> void 
 pcl::SamplingSurfaceNormal<PointT>::samplePartition (
     const PointCloud& data, const int first, const int last,
-    std::vector <int>& indices, PointCloud& output)
+    Indices& indices, PointCloud& output)
 {
   pcl::PointCloud <PointT> cloud;
   

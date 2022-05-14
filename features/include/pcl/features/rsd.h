@@ -86,18 +86,8 @@ namespace pcl
     */
   template <typename PointInT, typename PointNT, typename PointOutT> Eigen::MatrixXf
   computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud<PointNT> &normals,
-              const std::vector<int> &indices, double max_dist,
+              const pcl::Indices &indices, double max_dist,
               int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram = false);
-
-  template <typename PointInT, typename PointNT, typename PointOutT>
-  PCL_DEPRECATED(1, 12, "use computeRSD() overload that takes input point clouds by const reference")
-  Eigen::MatrixXf
-  computeRSD (typename pcl::PointCloud<PointInT>::ConstPtr &surface, typename pcl::PointCloud<PointNT>::ConstPtr &normals,
-              const std::vector<int> &indices, double max_dist,
-              int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram = false)
-  {
-    return computeRSD (*surface, *normals, indices, max_dist, nr_subdiv, plane_radius, radii, compute_histogram);
-  }
 
   /** \brief Estimate the Radius-based Surface Descriptor (RSD) for a given point based on its spatial neighborhood of 3D points with normals
     * \param[in] normals the dataset containing the surface normals at each point in the dataset
@@ -112,18 +102,8 @@ namespace pcl
     */
   template <typename PointNT, typename PointOutT> Eigen::MatrixXf
   computeRSD (const pcl::PointCloud<PointNT> &normals,
-              const std::vector<int> &indices, const std::vector<float> &sqr_dists, double max_dist,
+              const pcl::Indices &indices, const std::vector<float> &sqr_dists, double max_dist,
               int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram = false);
-
-  template <typename PointNT, typename PointOutT>
-  PCL_DEPRECATED(1, 12, "use computeRSD() overload that takes input point cloud by const reference")
-  Eigen::MatrixXf
-  computeRSD (typename pcl::PointCloud<PointNT>::ConstPtr &normals,
-              const std::vector<int> &indices, const std::vector<float> &sqr_dists, double max_dist,
-              int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram = false)
-  {
-    return computeRSD (*normals, indices, sqr_dists, max_dist, nr_subdiv, plane_radius, radii, compute_histogram);
-  }
 
   /** \brief @b RSDEstimation estimates the Radius-based Surface Descriptor (minimal and maximal radius of the local surface's curves)
     * for a given point cloud dataset containing points and normals.
@@ -186,7 +166,7 @@ namespace pcl
 
       /** \brief Set the maximum radius, above which everything can be considered planar.
         * \note the order of magnitude should be around 10-20 times the search radius (0.2 works well for typical datasets).
-        * \note on accurate 3D data (e.g. openni sernsors) a search radius as low as 0.01 still gives good results.
+        * \note on accurate 3D data (e.g. openni sensors) a search radius as low as 0.01 still gives good results.
         * \param[in] plane_radius the new plane radius
         */
       inline void 

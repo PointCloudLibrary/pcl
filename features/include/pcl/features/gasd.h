@@ -39,7 +39,6 @@
 #pragma once
 
 #include <pcl/features/feature.h>
-#include <pcl/point_cloud.h>
 
 namespace pcl
 {

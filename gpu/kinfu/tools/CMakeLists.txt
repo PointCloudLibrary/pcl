@@ -1,20 +1,22 @@
-if(NOT WITH_OPENNI)
+set(SUBSUBSYS_NAME tools)
+set(SUBSUBSYS_DESC "Kinfu tools")
+set(SUBSUBSYS_DEPS gpu_kinfu visualization)
+set(SUBSUBSYS_OPT_DEPS opencv)
+set(EXT_DEPS openni)
+set(DEFAULT TRUE)
+set(REASON "")
+
+PCL_SUBSUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSUBSYS_NAME} ${SUBSUBSYS_DESC} ${DEFAULT} ${REASON})
+PCL_SUBSUBSYS_DEPEND(build ${SUBSUBSYS_NAME} DEPS ${SUBSUBSYS_DEPS} OPT_DEPS ${SUBSUBSYS_OPT_DEPS} EXT_DEPS ${EXT_DEPS})
+
+if(NOT build)
   return()
 endif()
 
-if(NOT VTK_FOUND)
-  set(DEFAULT FALSE)
-  set(REASON "VTK was not found.")
-else()
-  set(DEFAULT TRUE)
-  set(REASON)
-  set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
-  include("${VTK_USE_FILE}")
-  include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-endif()
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 file(GLOB hdrs "*.h*")
-include_directories(SYSTEM ${VTK_INCLUDE_DIRS} ${OPENNI_INCLUDE_DIRS})
+include_directories(SYSTEM ${OPENNI_INCLUDE_DIRS})
 
 ## KINECT FUSION
 set(the_target pcl_kinfu_app)
@@ -22,8 +24,8 @@ set(srcs kinfu_app.cpp capture.cpp evaluation.cpp)
 
 source_group("Source Files" FILES ${srcs})
 
-PCL_ADD_EXECUTABLE(${the_target} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${hdrs} BUNDLE)
-target_link_libraries("${the_target}" pcl_common pcl_io ${OPENNI_LIBRARIES} pcl_visualization pcl_gpu_kinfu)
+PCL_ADD_EXECUTABLE(${the_target} COMPONENT ${SUBSUBSYS_NAME} SOURCES ${srcs} ${hdrs} BUNDLE)
+target_link_libraries(${the_target} pcl_common pcl_io ${OPENNI_LIBRARIES} pcl_visualization pcl_gpu_kinfu)
 
 if(OpenCV_FOUND)
   target_link_libraries("${the_target}" ${OpenCV_LIBS})
@@ -33,5 +35,5 @@ endif()
 set(the_target pcl_record_tsdfvolume)
 set(srcs record_tsdfvolume.cpp capture.cpp)
 
-PCL_ADD_EXECUTABLE(${the_target} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${hdrs})
-target_link_libraries("${the_target}" pcl_common pcl_io ${OPENNI_LIBRARIES} pcl_visualization pcl_gpu_kinfu)
+PCL_ADD_EXECUTABLE(${the_target} COMPONENT ${SUBSUBSYS_NAME} SOURCES ${srcs} ${hdrs})
+target_link_libraries(${the_target} pcl_common pcl_io ${OPENNI_LIBRARIES} pcl_visualization pcl_gpu_kinfu)

@@ -40,6 +40,7 @@
 #pragma once
 
 #include <pcl/pcl_base.h>
+#include <boost/optional.hpp>
 
 namespace pcl
 {
@@ -75,7 +76,7 @@ namespace pcl
           * \return the convolved point
           */
         virtual PointOutT
-        operator() (const std::vector<int>& indices, const std::vector<float>& distances) = 0;
+        operator() (const Indices& indices, const std::vector<float>& distances) = 0;
 
         /** \brief Must call this method before doing any computation
           * \note make sure to override this with at least
@@ -151,7 +152,7 @@ namespace pcl
         bool initCompute ();
 
         virtual PointOutT
-        operator() (const std::vector<int>& indices, const std::vector<float>& distances);
+        operator() (const Indices& indices, const std::vector<float>& distances);
 
       protected:
         float sigma_;
@@ -185,7 +186,7 @@ namespace pcl
         ~GaussianKernelRGB () {}
 
         PointOutT
-        operator() (const std::vector<int>& indices, const std::vector<float>& distances);
+        operator() (const Indices& indices, const std::vector<float>& distances);
     };
 
     /** Convolution3D handles the non organized case where width and height are unknown or if you

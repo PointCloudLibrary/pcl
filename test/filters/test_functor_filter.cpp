@@ -18,21 +18,21 @@ using namespace pcl::experimental;
 TEST(FunctorFilterTrait, CheckCompatibility)
 {
   const auto copy_all = [](PointCloud<PointXYZ>, index_t) { return 0; };
-  EXPECT_TRUE((is_functor_for_filter_v<PointXYZ, decltype(copy_all)>));
+  EXPECT_TRUE((is_function_object_for_filter_v<PointXYZ, decltype(copy_all)>));
 
   const auto ref_all = [](PointCloud<PointXYZ>&, index_t&) { return 0; };
-  EXPECT_FALSE((is_functor_for_filter_v<PointXYZ, decltype(ref_all)>));
+  EXPECT_FALSE((is_function_object_for_filter_v<PointXYZ, decltype(ref_all)>));
 
   const auto ref_cloud = [](PointCloud<PointXYZ>&, index_t) { return 0; };
-  EXPECT_FALSE((is_functor_for_filter_v<PointXYZ, decltype(ref_cloud)>));
+  EXPECT_FALSE((is_function_object_for_filter_v<PointXYZ, decltype(ref_cloud)>));
 
   const auto const_ref_cloud = [](const PointCloud<PointXYZ>&, index_t) { return 0; };
-  EXPECT_TRUE((is_functor_for_filter_v<PointXYZ, decltype(const_ref_cloud)>));
+  EXPECT_TRUE((is_function_object_for_filter_v<PointXYZ, decltype(const_ref_cloud)>));
 
   const auto const_ref_all = [](const PointCloud<PointXYZ>&, const index_t&) {
     return 0;
   };
-  EXPECT_TRUE((is_functor_for_filter_v<PointXYZ, decltype(const_ref_all)>));
+  EXPECT_TRUE((is_function_object_for_filter_v<PointXYZ, decltype(const_ref_all)>));
 }
 
 struct FunctorFilterRandom : public testing::TestWithParam<std::uint32_t> {
@@ -52,6 +52,7 @@ struct FunctorFilterRandom : public testing::TestWithParam<std::uint32_t> {
 
   shared_ptr<PointCloud<PointXYZ>> cloud;
   PointCloud<PointXYZ> out_cloud, negative_cloud, positive_cloud;
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 TEST_P(FunctorFilterRandom, functioning)
@@ -63,7 +64,7 @@ TEST_P(FunctorFilterRandom, functioning)
   };
 
   for (const auto& keep_removed : {true, false}) {
-    FunctorFilter<PointXYZ, decltype(lambda)> filter{lambda, keep_removed};
+    advanced::FunctorFilter<PointXYZ, decltype(lambda)> filter{lambda, keep_removed};
     filter.setInputCloud(cloud);
     const auto removed_size = filter.getRemovedIndices()->size();
 
@@ -165,28 +166,29 @@ using types = ::testing::Types<LambdaT,
 } // namespace type_test
 
 template <typename T>
-struct FunctorFilterFunctor : public ::testing::Test {
+struct FunctorFilterFunctionObject : public ::testing::Test {
   void
   SetUp() override
   {
     cloud.resize(2);
   }
   PointCloud<PointXYZ> cloud;
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 };
-TYPED_TEST_SUITE_P(FunctorFilterFunctor);
+TYPED_TEST_SUITE_P(FunctorFilterFunctionObject);
 
-TYPED_TEST_P(FunctorFilterFunctor, type_check)
+TYPED_TEST_P(FunctorFilterFunctionObject, type_check)
 {
   using FunctorT = TypeParam;
   const auto& functor = type_test::Helper<FunctorT>::value;
 
-  FunctorFilter<PointXYZ, FunctorT> filter_lambda{functor};
-  EXPECT_EQ(filter_lambda.getFunctor()(this->cloud, 0), 0);
-  EXPECT_EQ(filter_lambda.getFunctor()(this->cloud, 1), 1);
+  advanced::FunctorFilter<PointXYZ, FunctorT> filter_lambda{functor};
+  EXPECT_EQ(filter_lambda.getFunctionObject()(this->cloud, 0), 0);
+  EXPECT_EQ(filter_lambda.getFunctionObject()(this->cloud, 1), 1);
 }
 
-REGISTER_TYPED_TEST_SUITE_P(FunctorFilterFunctor, type_check);
-INSTANTIATE_TYPED_TEST_SUITE_P(pcl, FunctorFilterFunctor, type_test::types);
+REGISTER_TYPED_TEST_SUITE_P(FunctorFilterFunctionObject, type_check);
+INSTANTIATE_TYPED_TEST_SUITE_P(pcl, FunctorFilterFunctionObject, type_test::types);
 
 int
 main(int argc, char** argv)

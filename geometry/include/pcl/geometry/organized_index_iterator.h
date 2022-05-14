@@ -35,64 +35,73 @@
 
 #pragma once
 
-namespace pcl
-{
-/** \brief base class for iterators on 2-dimensional maps like images/organized clouds etc.
-  * \author Suat Gedikli <gedikli@willowgarage.com>
-  * \ingroup  geometry
-  */
-class OrganizedIndexIterator
-{
-  public:
-    /** \brief constructor
-     *  \param[in] width the width of the image/organized cloud
-     */
-    OrganizedIndexIterator (unsigned width);
-    
-    /** \brief virtual destructor*/
-    virtual ~OrganizedIndexIterator ();
-    
-    /** \brief go to next pixel/point in image/cloud*/
-    virtual void operator ++ () = 0;
-    
-    /** \brief go to next pixel/point in image/cloud*/
-    virtual void operator ++ (int);
-    
-    /** \brief returns the pixel/point index in the linearized memory of the image/cloud
-      * \return the pixel/point index in the linearized memory of the image/cloud 
-      */
-    unsigned operator* () const;
-    
-    /** \brief returns the pixel/point index in the linearized memory of the image/cloud 
-      * \return the pixel/point index in the linearized memory of the image/cloud 
-      */
-    virtual unsigned getIndex () const;
+namespace pcl {
+/** \brief base class for iterators on 2-dimensional maps like images/organized clouds
+ * etc.
+ * \author Suat Gedikli <gedikli@willowgarage.com>
+ * \ingroup  geometry
+ */
+class OrganizedIndexIterator {
+public:
+  /**
+   * \brief constructor
+   * \param[in] width the width of the image/organized cloud
+   */
+  OrganizedIndexIterator(unsigned width);
 
-    /** \brief returns the row index (y-coordinate) of the current pixel/point
-      * \return  the row index (y-coordinate) of the current pixel/point
-      */
-    virtual unsigned getRowIndex () const;
+  /** \brief virtual destructor*/
+  virtual ~OrganizedIndexIterator();
 
-    /** \brief returns the col index (x-coordinate) of the current pixel/point
-      * \return  the col index (x-coordinate) of the current pixel/point
-      */
-    virtual unsigned getColumnIndex () const;
+  /** \brief go to next pixel/point in image/cloud*/
+  virtual void
+  operator++() = 0;
 
-    /** \brief return whether the current visited pixel/point is valid or not.
-      * \return true if the current pixel/point is within the points to be iterated over, false otherwise
-      */
-    virtual bool isValid () const = 0;
+  /** \brief go to next pixel/point in image/cloud*/
+  virtual void
+  operator++(int);
 
-    /** \brief resets the iterator to the beginning of the line
-      */
-    virtual void reset () = 0;
-    
-  protected:
-    /** \brief the width of the image/cloud*/
-    unsigned width_;
-    
-    /** \brief the index of the current pixel/point*/
-    unsigned index_;
+  /** \brief returns the pixel/point index in the linearized memory of the image/cloud
+   * \return the pixel/point index in the linearized memory of the image/cloud
+   */
+  unsigned
+  operator*() const;
+
+  /** \brief returns the pixel/point index in the linearized memory of the image/cloud
+   * \return the pixel/point index in the linearized memory of the image/cloud
+   */
+  virtual unsigned
+  getIndex() const;
+
+  /** \brief returns the row index (y-coordinate) of the current pixel/point
+   * \return  the row index (y-coordinate) of the current pixel/point
+   */
+  virtual unsigned
+  getRowIndex() const;
+
+  /** \brief returns the col index (x-coordinate) of the current pixel/point
+   * \return  the col index (x-coordinate) of the current pixel/point
+   */
+  virtual unsigned
+  getColumnIndex() const;
+
+  /** \brief return whether the current visited pixel/point is valid or not.
+   * \return true if the current pixel/point is within the points to be iterated over,
+   * false otherwise
+   */
+  virtual bool
+  isValid() const = 0;
+
+  /** \brief resets the iterator to the beginning of the line
+   */
+  virtual void
+  reset() = 0;
+
+protected:
+  /** \brief the width of the image/cloud*/
+  unsigned width_;
+
+  /** \brief the index of the current pixel/point*/
+  unsigned index_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -100,50 +109,46 @@ class OrganizedIndexIterator
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
-inline OrganizedIndexIterator::OrganizedIndexIterator (unsigned width)
-: width_ (width)
-, index_ (0)
-{  
-}
+inline OrganizedIndexIterator::OrganizedIndexIterator(unsigned width)
+: width_(width), index_(0)
+{}
 
 ////////////////////////////////////////////////////////////////////////////////
-inline OrganizedIndexIterator::~OrganizedIndexIterator ()
-{  
-}
+inline OrganizedIndexIterator::~OrganizedIndexIterator() {}
 
 ////////////////////////////////////////////////////////////////////////////////
 inline void
-OrganizedIndexIterator::operator++ (int)
+OrganizedIndexIterator::operator++(int)
 {
-  return operator ++();
+  return operator++();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 inline unsigned
-pcl::OrganizedIndexIterator::operator * () const
+pcl::OrganizedIndexIterator::operator*() const
 {
   return index_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 inline unsigned
-pcl::OrganizedIndexIterator::getIndex () const
+pcl::OrganizedIndexIterator::getIndex() const
 {
   return index_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/** \brief default implementation. Should be overloaded 
+/** \brief default implementation. Should be overloaded
  */
 inline unsigned
-pcl::OrganizedIndexIterator::getRowIndex () const
+pcl::OrganizedIndexIterator::getRowIndex() const
 {
   return index_ / width_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 inline unsigned
-pcl::OrganizedIndexIterator::getColumnIndex () const
+pcl::OrganizedIndexIterator::getColumnIndex() const
 {
   return index_ % width_;
 }

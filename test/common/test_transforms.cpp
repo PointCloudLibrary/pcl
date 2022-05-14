@@ -279,6 +279,85 @@ TEST (PCL, Matrix4Affine3Transform)
   EXPECT_NEAR (pt.z, ct[0].z, 1e-4);
 }
 
+TEST (PCL, OrganizedTransform)
+{
+  const Eigen::Matrix4f transform=Eigen::Matrix4f::Identity();
+  // test if organized point cloud is still organized after transformPointCloud
+  pcl::PointCloud<PointXYZ> cloud_a, cloud_b, cloud_c;
+  cloud_a.resize (12);
+  cloud_a.width=4;
+  cloud_a.height=3;
+  pcl::transformPointCloud (cloud_a, cloud_b, transform, true);
+  EXPECT_EQ (cloud_a.width , cloud_b.width );
+  EXPECT_EQ (cloud_a.height, cloud_b.height);
+  pcl::transformPointCloud (cloud_a, cloud_c, transform, false);
+  EXPECT_EQ (cloud_a.width , cloud_c.width );
+  EXPECT_EQ (cloud_a.height, cloud_c.height);
+
+  // test if organized point cloud is still organized after transformPointCloudWithNormals
+  pcl::PointCloud<PointNormal> cloud_d, cloud_e, cloud_f;
+  cloud_d.resize (10);
+  cloud_d.width=2;
+  cloud_d.height=5;
+  pcl::transformPointCloudWithNormals (cloud_d, cloud_e, transform, true);
+  EXPECT_EQ (cloud_d.width , cloud_e.width );
+  EXPECT_EQ (cloud_d.height, cloud_e.height);
+  pcl::transformPointCloudWithNormals (cloud_d, cloud_f, transform, false);
+  EXPECT_EQ (cloud_d.width , cloud_f.width );
+  EXPECT_EQ (cloud_d.height, cloud_f.height);
+}
+
+TEST (PCL, PointXY)
+{
+  Eigen::Matrix<float, 2, 2> A; 
+  A << 1.0, 0.0, 0.0, -1.0;
+  Eigen::Affine2f tf{A};
+  pcl::PointCloud<pcl::PointXY> p,q;
+
+  p.push_back (pcl::PointXY ( 3.0, 1.0)); 
+  p.push_back (pcl::PointXY ( 2.0, 3.0)); 
+
+  pcl::transformPointCloud(p,q,tf,true);
+  ASSERT_EQ(p.size(),q.size());
+  for (std::size_t i = 0; i < q.size () ;i++)
+  {
+    EXPECT_FLOAT_EQ(q[i].x, p[i].x);
+    EXPECT_FLOAT_EQ(q[i].y, -p[i].y);
+  }
+
+  float theta = 30.0;
+  Eigen::Matrix<float, 2, 2> B;
+  B << cosf(theta),-sinf(theta), cosf(theta), sinf(theta);
+  Eigen::Affine2f tf2{B};
+  pcl::PointCloud<pcl::PointXY> cloud_in,cloud_out;
+
+  cloud_in.push_back (pcl::PointXY ( 3.0, 1.0)); 
+  cloud_in.push_back (pcl::PointXY ( 2.0, 3.0)); 
+  
+  pcl::transformPointCloud(cloud_in,cloud_out,tf2,true);
+  ASSERT_EQ(cloud_in.size(),cloud_out.size());
+  for (std::size_t i = 0;i < cloud_out.size () ;i++)
+  {
+    EXPECT_FLOAT_EQ(cloud_out[i].x, ((cloud_in[i].x * cosf(theta)) - (cloud_in[i].y * sinf(theta))));
+    EXPECT_FLOAT_EQ(cloud_out[i].y, ((cloud_in[i].x * cosf(theta)) + (cloud_in[i].y * sinf(theta))));
+  }
+
+  Eigen::Matrix<float, 2, 3> C; 
+  C << 1, 0, 1, 0, 1, 2;
+  Eigen::Affine2f t{C};
+  pcl::PointCloud<pcl::PointXY> c_in,c_out;
+
+  c_in.push_back (pcl::PointXY ( 3.0, 1.0)); 
+  c_in.push_back (pcl::PointXY ( 2.0, 3.0)); 
+
+  pcl::transformPointCloud(c_in,c_out,t,true);
+  for (std::size_t i = 0; i < c_out.size ();i++)
+  {
+    EXPECT_FLOAT_EQ(c_out[i].x, (c_in[i].x + 1));
+    EXPECT_FLOAT_EQ(c_out[i].y, (c_in[i].y + 2));
+  }
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)

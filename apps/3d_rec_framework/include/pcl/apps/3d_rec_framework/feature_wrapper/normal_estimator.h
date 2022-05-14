@@ -30,11 +30,9 @@ class PreProcessorAndNormalEstimator {
     KdTreeInPtr tree = pcl::make_shared<pcl::KdTreeFLANN<PointInT>>(false);
     tree->setInputCloud(input);
 
-    std::vector<int> nn_indices(9);
+    pcl::Indices nn_indices(9);
     std::vector<float> nn_distances(9);
-    std::vector<int> src_indices;
 
-    float sum_distances = 0.0;
     std::vector<float> avg_distances(input->size());
     // Iterate through the source data set
     for (std::size_t i = 0; i < input->size(); ++i) {
@@ -47,10 +45,12 @@ class PreProcessorAndNormalEstimator {
       avg_dist_neighbours /= static_cast<float>(nn_indices.size());
 
       avg_distances[i] = avg_dist_neighbours;
-      sum_distances += avg_dist_neighbours;
     }
 
-    std::sort(avg_distances.begin(), avg_distances.end());
+    // median: nth_element is faster than sorting everything
+    std::nth_element(avg_distances.begin(),
+                     avg_distances.begin() + (avg_distances.size() / 2 + 1),
+                     avg_distances.end());
     float avg = avg_distances[static_cast<int>(avg_distances.size()) / 2 + 1];
     return avg;
   }
@@ -198,7 +198,7 @@ public:
         }
 
         if (j != static_cast<pcl::index_t>(out->size())) {
-          PCL_ERROR("Contain nans...");
+          PCL_ERROR("Contain nans...\n");
         }
 
         out->points.resize(j);

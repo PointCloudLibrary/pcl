@@ -1,11 +1,11 @@
 #pragma once
 
-#include <pcl/io/pcd_io.h>
 #include <pcl/simulation/glsl_shader.h>
 #include <pcl/PolygonMesh.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_config.h>
 #include <pcl/pcl_macros.h>
+#include <pcl/point_cloud.h> // for PointCloud
 #include <pcl/point_types.h>
 
 #if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__)

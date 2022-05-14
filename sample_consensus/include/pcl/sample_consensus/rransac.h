@@ -45,9 +45,13 @@
 
 namespace pcl
 {
-  /** \brief @b RandomizedRandomSampleConsensus represents an implementation of the RRANSAC (Randomized RAndom SAmple 
+  /** \brief @b RandomizedRandomSampleConsensus represents an implementation of the RRANSAC (Randomized RANdom SAmple 
     * Consensus), as described in "Randomized RANSAC with Td,d test", O. Chum and J. Matas, Proc. British Machine Vision 
     * Conf. (BMVC '02), vol. 2, BMVA, pp. 448-457, 2002.
+    * 
+    * The algorithm works similar to RANSAC, with one addition: after computing the model coefficients, randomly select a fraction
+    * of points. If any of these points do not belong to the model (given a threshold), continue with the next iteration instead
+    * of checking all points. This may speed up the finding of the model if the fraction of points to pre-test is chosen well.
     * \note RRANSAC is useful in situations where most of the data samples belong to the model, and a fast outlier rejection algorithm is needed.
     * \author Radu B. Rusu
     * \ingroup sample_consensus
@@ -70,7 +74,7 @@ namespace pcl
       using SampleConsensus<PointT>::inliers_;
       using SampleConsensus<PointT>::probability_;
 
-      /** \brief RANSAC (Randomized RAndom SAmple Consensus) main constructor
+      /** \brief RRANSAC (Randomized RANdom SAmple Consensus) main constructor
         * \param[in] model a Sample Consensus model
         */
       RandomizedRandomSampleConsensus (const SampleConsensusModelPtr &model) 
@@ -81,7 +85,7 @@ namespace pcl
         max_iterations_ = 10000;
       }
 
-      /** \brief RRANSAC (RAndom SAmple Consensus) main constructor
+      /** \brief RRANSAC (Randomized RANdom SAmple Consensus) main constructor
         * \param[in] model a Sample Consensus model
         * \param[in] threshold distance to model threshold
         */

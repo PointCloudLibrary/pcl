@@ -39,6 +39,7 @@
 #include <pcl/pcl_macros.h>
 
 #include <Eigen/Cholesky> // for ldlt
+#include <limits>
 #include <stdexcept>
 
 using namespace pcl;
@@ -55,7 +56,7 @@ FittingSurfaceIM::computeMean () const
   double ds = 1.0 / double (m_indices.size ());
 
   const pcl::PointCloud<pcl::PointXYZRGB> &cloud_ref = *m_cloud;
-  for (const int &index : m_indices)
+  for (const auto &index : m_indices)
   {
     int i = index % cloud_ref.width;
     int j = index / cloud_ref.width;
@@ -76,10 +77,11 @@ Eigen::Vector4d
 FittingSurfaceIM::computeIndexBoundingBox (pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud,
                                            const std::vector<int> &indices)
 {
-  Eigen::Vector4d bb = Eigen::Vector4d (DBL_MAX, 0, DBL_MAX, 0);
+  Eigen::Vector4d bb = Eigen::Vector4d(
+      std::numeric_limits<double>::max(), 0, std::numeric_limits<double>::max(), 0);
   const pcl::PointCloud<pcl::PointXYZRGB> &cloud_ref = *cloud;
 
-  for (const int &index : indices)
+  for (const auto &index : indices)
   {
     int i = index % cloud_ref.width;
     int j = index / cloud_ref.width;
@@ -276,7 +278,7 @@ FittingSurfaceIM::assemble (bool inverse_mapping)
 
   // assemble data points
   const pcl::PointCloud<pcl::PointXYZRGB> &cloud_ref = *m_cloud;
-  for (const int &index : m_indices)
+  for (const auto &index : m_indices)
   {
     int px = index % cloud_ref.width;
     int py = index / cloud_ref.width;
@@ -525,7 +527,7 @@ FittingSurfaceIM::findClosestElementMidPoint (const ON_NurbsSurface &nurbs, cons
   std::vector<double> elementsU = getElementVector (nurbs, 0);
   std::vector<double> elementsV = getElementVector (nurbs, 1);
 
-  double d_shortest (DBL_MAX);
+  double d_shortest (std::numeric_limits<double>::max());
   for (std::size_t i = 0; i < elementsU.size () - 1; i++)
   {
     for (std::size_t j = 0; j < elementsV.size () - 1; j++)

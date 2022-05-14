@@ -10,7 +10,7 @@ typedef pcl::PointXYZI PointTypeIO;
 typedef pcl::PointXYZINormal PointTypeFull;
 
 bool
-enforceIntensitySimilarity (const PointTypeFull& point_a, const PointTypeFull& point_b, float squared_distance)
+enforceIntensitySimilarity (const PointTypeFull& point_a, const PointTypeFull& point_b, float /*squared_distance*/)
 {
   if (std::abs (point_a.intensity - point_b.intensity) < 5.0f)
     return (true);
@@ -19,12 +19,12 @@ enforceIntensitySimilarity (const PointTypeFull& point_a, const PointTypeFull& p
 }
 
 bool
-enforceCurvatureOrIntensitySimilarity (const PointTypeFull& point_a, const PointTypeFull& point_b, float squared_distance)
+enforceNormalOrIntensitySimilarity (const PointTypeFull& point_a, const PointTypeFull& point_b, float /*squared_distance*/)
 {
   Eigen::Map<const Eigen::Vector3f> point_a_normal = point_a.getNormalVector3fMap (), point_b_normal = point_b.getNormalVector3fMap ();
   if (std::abs (point_a.intensity - point_b.intensity) < 5.0f)
     return (true);
-  if (std::abs (point_a_normal.dot (point_b_normal)) < 0.05)
+  if (std::abs (point_a_normal.dot (point_b_normal)) > std::cos (30.0f / 180.0f * static_cast<float> (M_PI)))
     return (true);
   return (false);
 }
@@ -49,7 +49,7 @@ customRegionGrowing (const PointTypeFull& point_a, const PointTypeFull& point_b,
 }
 
 int
-main (int argc, char** argv)
+main ()
 {
   // Data containers used
   pcl::PointCloud<PointTypeIO>::Ptr cloud_in (new pcl::PointCloud<PointTypeIO>), cloud_out (new pcl::PointCloud<PointTypeIO>);
@@ -95,17 +95,17 @@ main (int argc, char** argv)
   std::cerr << ">> Done: " << tt.toc () << " ms\n";
 
   // Using the intensity channel for lazy visualization of the output
-  for (int i = 0; i < small_clusters->size (); ++i)
-    for (int j = 0; j < (*small_clusters)[i].indices.size (); ++j)
-      (*cloud_out)[(*small_clusters)[i].indices[j]].intensity = -2.0;
-  for (int i = 0; i < large_clusters->size (); ++i)
-    for (int j = 0; j < (*large_clusters)[i].indices.size (); ++j)
-      (*cloud_out)[(*large_clusters)[i].indices[j]].intensity = +10.0;
-  for (int i = 0; i < clusters->size (); ++i)
+  for (const auto& small_cluster : (*small_clusters))
+    for (const auto& j : small_cluster.indices)
+      (*cloud_out)[j].intensity = -2.0;
+  for (const auto& large_cluster : (*large_clusters))
+    for (const auto& j : large_cluster.indices)
+      (*cloud_out)[j].intensity = +10.0;
+  for (const auto& cluster : (*clusters))
   {
     int label = rand () % 8;
-    for (int j = 0; j < (*clusters)[i].indices.size (); ++j)
-      (*cloud_out)[(*clusters)[i].indices[j]].intensity = label;
+    for (const auto& j : cluster.indices)
+      (*cloud_out)[j].intensity = label;
   }
 
   // Save the output point cloud

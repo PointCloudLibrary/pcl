@@ -3,6 +3,9 @@ FROM debian:testing
 ARG VTK_VERSION=7
 ENV DEBIAN_FRONTEND=noninteractive
 
+ARG PCL_INDEX_SIGNED=true
+ARG PCL_INDEX_SIZE=32
+
 # Add sources so we can just install build-dependencies of PCL
 RUN sed -i 's/^deb \(.*\)$/deb \1\ndeb-src \1/' /etc/apt/sources.list \
  && apt update \
@@ -57,6 +60,8 @@ RUN cd \
     -DBUILD_tools=ON -DBUILD_tracking=ON -DBUILD_visualization=ON       \
     -DBUILD_apps_cloud_composer=OFF -DBUILD_apps_modeler=ON             \
     -DBUILD_apps_point_cloud_editor=ON -DBUILD_apps_in_hand_scanner=ON  \
+    -DPCL_INDEX_SIGNED=${PCL_INDEX_SIGNED} \
+    -DPCL_INDEX_SIZE=${PCL_INDEX_SIZE} \
  && make install -j2 \
  && cd \
  && rm -fr pcl

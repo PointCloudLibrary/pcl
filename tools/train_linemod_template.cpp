@@ -106,7 +106,7 @@ maskForegroundPoints (const PointCloudXYZRGBA::ConstPtr & input,
   std::vector<bool> foreground_mask (input->size (), false);
 
   // Mask off points outside the specified near and far depth thresholds
-  pcl::IndicesPtr indices (new std::vector<int>);
+  pcl::IndicesPtr indices (new pcl::Indices);
   for (std::size_t i = 0; i < input->size (); ++i)
   {
     const float z = (*input)[i].z;

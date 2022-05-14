@@ -100,9 +100,7 @@ public:
   std::string
   getStrBool(bool state)
   {
-    std::stringstream ss;
-    ss << state;
-    return ss.str();
+    return state ? "1" : "0";
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -176,8 +174,7 @@ public:
 
     std::size_t j = 0;
     for (std::size_t i = 0; i < keypoints->size(); ++i) {
-      PointT pt =
-          bilinearInterpolation(cloud, (*keypoints)[i].x, (*keypoints)[i].y);
+      PointT pt = bilinearInterpolation(cloud, (*keypoints)[i].x, (*keypoints)[i].y);
 
       keypoints3d[j].x = pt.x;
       keypoints3d[j].y = pt.y;

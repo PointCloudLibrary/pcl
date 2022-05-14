@@ -88,7 +88,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::findBin (const float *normal)
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename NormalT> void
-pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indices)
+pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (Indices &indices)
 {
   if (!initCompute ())
   {
@@ -180,10 +180,10 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
   // If we need to return the indices that we haven't sampled
   if (extract_removed_indices_)
   {
-    std::vector<int> indices_temp = indices;
+    Indices indices_temp = indices;
     std::sort (indices_temp.begin (), indices_temp.end ());
 
-    std::vector<int> all_indices_temp = *indices_;
+    Indices all_indices_temp = *indices_;
     std::sort (all_indices_temp.begin (), all_indices_temp.end ());
     set_difference (all_indices_temp.begin (), all_indices_temp.end (), 
                     indices_temp.begin (), indices_temp.end (), 

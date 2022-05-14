@@ -8,7 +8,7 @@
 #pragma once
 
 #include <pcl/apps/3d_rec_framework/pc_source/source.h>
-#include <pcl/io/io.h>
+#include <pcl/common/io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
@@ -100,9 +100,8 @@ public:
   void
   loadOrGenerate(std::string& dir, std::string& model_path, ModelT& model)
   {
-    std::stringstream pathmodel;
-    pathmodel << dir << "/" << model.class_ << "/" << model.id_;
-    bf::path trained_dir = pathmodel.str();
+    const std::string pathmodel = dir + '/' + model.class_ + '/' + model.id_;
+    const bf::path trained_dir = pathmodel;
 
     model.views_.reset(new std::vector<typename pcl::PointCloud<PointInT>::Ptr>);
     model.poses_.reset(
@@ -112,7 +111,6 @@ public:
     if (bf::exists(trained_dir)) {
       // load views and poses
       std::vector<std::string> view_filenames;
-      int number_of_views = 0;
       for (const auto& dir_entry : bf::directory_iterator(trained_dir)) {
         // check if its a directory, then get models in it
         if (!(bf::is_directory(*itr))) {
@@ -129,7 +127,6 @@ public:
 
           if (extension == "pcd" && strs_[0] == "view") {
             view_filenames.push_back((dir_entry.path().filename()).string());
-            number_of_views++;
           }
         }
       }
@@ -138,10 +135,9 @@ public:
           poses_to_assemble_;
 
       for (std::size_t i = 0; i < view_filenames.size(); i++) {
-        std::stringstream view_file;
-        view_file << pathmodel.str() << "/" << view_filenames[i];
+        const std::string view_file = pathmodel + '/' + view_filenames[i];
         typename pcl::PointCloud<PointInT>::Ptr cloud(new pcl::PointCloud<PointInT>());
-        pcl::io::loadPCDFile(view_file.str(), *cloud);
+        pcl::io::loadPCDFile(view_file, *cloud);
 
         model.views_->push_back(cloud);
 
@@ -150,10 +146,9 @@ public:
         boost::replace_all(file_replaced1, ".pcd", ".txt");
 
         // read pose as well
-        std::stringstream pose_file;
-        pose_file << pathmodel.str() << "/" << file_replaced1;
+        const std::string pose_file = pathmodel + '/' + file_replaced1;
         Eigen::Matrix4f pose;
-        PersistenceUtils::readMatrixFromFile(pose_file.str(), pose);
+        PersistenceUtils::readMatrixFromFile(pose_file, pose);
 
         if (pose_files_order_ != 0) {
           Eigen::Matrix4f pose_trans = pose.transpose();
@@ -175,8 +170,7 @@ public:
     else {
 
       // we just need to copy the views to the training directory
-      std::stringstream direc;
-      direc << dir << "/" << model.class_ << "/" << model.id_;
+      const std::string direc = dir + '/' + model.class_ + '/' << model.id_;
       createClassAndModelDirectories(dir, model.class_, model.id_);
 
       std::vector<std::string> view_filenames;
@@ -186,23 +180,20 @@ public:
       std::cout << view_filenames.size() << std::endl;
 
       for (std::size_t i = 0; i < view_filenames.size(); i++) {
-        std::stringstream view_file;
-        view_file << model_path << "/" << view_filenames[i];
+        const std::string view_file = model_path + '/' + view_filenames[i];
         typename pcl::PointCloud<PointInT>::Ptr cloud(new pcl::PointCloud<PointInT>());
-        pcl::io::loadPCDFile(view_file.str(), *cloud);
+        pcl::io::loadPCDFile(view_file, *cloud);
 
-        std::cout << view_file.str() << std::endl;
+        std::cout << view_file << std::endl;
 
-        std::stringstream path_view;
-        path_view << direc.str() << "/view_" << i << ".pcd";
-        pcl::io::savePCDFileBinary(path_view.str(), *cloud);
+        const std::string path_view = direc + "/view_" + std::to_string(i) + ".pcd";
+        pcl::io::savePCDFileBinary(path_view, *cloud);
 
-        std::string file_replaced1(view_file.str());
-        boost::replace_all(file_replaced1, view_prefix_, "pose");
-        boost::replace_all(file_replaced1, ".pcd", ".txt");
+        boost::replace_all(view_file, view_prefix_, "pose");
+        boost::replace_all(view_file, ".pcd", ".txt");
 
         Eigen::Matrix4f pose;
-        PersistenceUtils::readMatrixFromFile(file_replaced1, pose);
+        PersistenceUtils::readMatrixFromFile(view_file, pose);
 
         std::cout << pose << std::endl;
 
@@ -213,10 +204,8 @@ public:
           std::cout << pose << std::endl;
         }
 
-        std::stringstream path_pose;
-        path_pose << direc.str() << "/pose_" << i << ".txt";
-        pcl::rec_3d_framework::PersistenceUtils::writeMatrixToFile(path_pose.str(),
-                                                                   pose);
+        const std::string path_pose = direc + "/pose_" + std::to_string(i) + ".txt";
+        pcl::rec_3d_framework::PersistenceUtils::writeMatrixToFile(path_pose, pose);
       }
 
       loadOrGenerate(dir, model_path, model);
@@ -245,7 +234,7 @@ public:
       // check if its a directory, then get models in it
       if (bf::is_directory(dir_entry)) {
         std::string so_far =
-            rel_path_so_far + (dir_entry.path().filename()).string() + "/";
+            rel_path_so_far + (dir_entry.path().filename()).string() + '/';
         bf::path curr_path = dir_entry.path();
 
         if (isleafDirectory(curr_path)) {
@@ -289,14 +278,7 @@ public:
         m.id_ = strs[0];
       }
       else {
-        std::stringstream ss;
-        for (int i = 0; i < (static_cast<int>(strs.size()) - 1); i++) {
-          ss << strs[i];
-          if (i != (static_cast<int>(strs.size()) - 1))
-            ss << "/";
-        }
-
-        m.class_ = ss.str();
+        m.class_ = boost::algorithm::join(strs, '/');
         m.id_ = strs[strs.size() - 1];
       }
 
@@ -305,10 +287,8 @@ public:
       // load views, poses and self-occlusions for those that exist
       // generate otherwise
 
-      std::stringstream model_path;
-      model_path << path_ << "/" << files[i];
-      std::string path_model = model_path.str();
-      loadOrGenerate(training_dir, path_model, m);
+      const std::string model_path = path_ + '/' + files[i];
+      loadOrGenerate(training_dir, model_path, m);
 
       models_->push_back(m);
     }

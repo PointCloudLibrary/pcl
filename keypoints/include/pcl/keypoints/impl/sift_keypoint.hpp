@@ -167,7 +167,8 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
   computeScaleSpace (input, tree, scales, diff_of_gauss);
 
   // Find extrema in the DoG scale space
-  std::vector<int> extrema_indices, extrema_scales;
+  pcl::Indices extrema_indices;
+  std::vector<int> extrema_scales;
   findScaleSpaceExtrema (input, tree, diff_of_gauss, extrema_indices, extrema_scales);
 
   output.reserve (output.size () + extrema_indices.size ());
@@ -178,7 +179,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
     for (std::size_t i_keypoint = 0; i_keypoint < extrema_indices.size (); ++i_keypoint)
     {
       PointOutT keypoint;
-      const int &keypoint_index = extrema_indices[i_keypoint];
+      const auto &keypoint_index = extrema_indices[i_keypoint];
    
       keypoint.x = input[keypoint_index].x;
       keypoint.y = input[keypoint_index].y;
@@ -191,7 +192,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
   else
   {
     // Add keypoints to output
-    for (const int &keypoint_index : extrema_indices)
+    for (const auto &keypoint_index : extrema_indices)
     {
       PointOutT keypoint;
       keypoint.x = input[keypoint_index].x;
@@ -217,7 +218,7 @@ void pcl::SIFTKeypoint<PointInT, PointOutT>::computeScaleSpace (
 
   for (int i_point = 0; i_point < static_cast<int> (input.size ()); ++i_point)
   {
-    std::vector<int> nn_indices;
+    pcl::Indices nn_indices;
     std::vector<float> nn_dist;
     tree.radiusSearch (i_point, max_radius, nn_indices, nn_dist); // *
     // * note: at this stage of the algorithm, we must find all points within a radius defined by the maximum scale, 
@@ -258,10 +259,10 @@ void pcl::SIFTKeypoint<PointInT, PointOutT>::computeScaleSpace (
 template <typename PointInT, typename PointOutT> void 
 pcl::SIFTKeypoint<PointInT, PointOutT>::findScaleSpaceExtrema (
     const PointCloudIn &input, KdTree &tree, const Eigen::MatrixXf &diff_of_gauss, 
-    std::vector<int> &extrema_indices, std::vector<int> &extrema_scales)
+    pcl::Indices &extrema_indices, std::vector<int> &extrema_scales)
 {
   const int k = 25;
-  std::vector<int> nn_indices (k);
+  pcl::Indices nn_indices (k);
   std::vector<float> nn_dist (k);
 
   const int nr_scales = static_cast<int> (diff_of_gauss.cols ());
