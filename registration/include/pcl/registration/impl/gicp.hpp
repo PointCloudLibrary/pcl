@@ -523,6 +523,26 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformatio
   }
   final_transformation_ = previous_transformation_ * guess;
 
+  PCL_DEBUG("Transformation "
+            "is:\n\t%5f\t%5f\t%5f\t%5f\n\t%5f\t%5f\t%5f\t%5f\n\t%5f\t%5f\t%5f\t%5f\n\t%"
+            "5f\t%5f\t%5f\t%5f\n",
+            final_transformation_(0, 0),
+            final_transformation_(0, 1),
+            final_transformation_(0, 2),
+            final_transformation_(0, 3),
+            final_transformation_(1, 0),
+            final_transformation_(1, 1),
+            final_transformation_(1, 2),
+            final_transformation_(1, 3),
+            final_transformation_(2, 0),
+            final_transformation_(2, 1),
+            final_transformation_(2, 2),
+            final_transformation_(2, 3),
+            final_transformation_(3, 0),
+            final_transformation_(3, 1),
+            final_transformation_(3, 2),
+            final_transformation_(3, 3));
+
   // Transform the point cloud
   pcl::transformPointCloud(*input_, output, final_transformation_);
 }
