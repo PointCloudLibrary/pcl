@@ -110,6 +110,8 @@
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/console/parse.h>
 
+#include <thread>
+
 // Support for VTK 7.1 upwards
 #ifdef vtkGenericDataArray_h
 #define SetTupleValue SetTypedTuple
@@ -597,11 +599,23 @@ pcl::visualization::PCLVisualizer::spinOnce (int time, bool force_redraw)
   if (force_redraw)
     interactor_->Render ();
 
-  DO_EVERY (1.0 / interactor_->GetDesiredUpdateRate (),
-    exit_main_loop_timer_callback_->right_timer_id = interactor_->CreateRepeatingTimer (time);
-    interactor_->Start ();
-    interactor_->DestroyTimer (exit_main_loop_timer_callback_->right_timer_id);
-  );
+#if VTK_MAJOR_VERSION >= 9 && (VTK_MINOR_VERSION != 0 || VTK_BUILD_VERSION != 0) && (VTK_MINOR_VERSION != 0 || VTK_BUILD_VERSION != 1)
+// All VTK 9 versions, except 9.0.0 and 9.0.1
+  if(interactor_->IsA("vtkXRenderWindowInteractor")) {
+    DO_EVERY (1.0 / interactor_->GetDesiredUpdateRate (),
+      interactor_->ProcessEvents ();
+      std::this_thread::sleep_for (std::chrono::milliseconds (time));
+    );
+  }
+  else
+#endif
+  {
+    DO_EVERY (1.0 / interactor_->GetDesiredUpdateRate (),
+      exit_main_loop_timer_callback_->right_timer_id = interactor_->CreateRepeatingTimer (time);
+      interactor_->Start ();
+      interactor_->DestroyTimer (exit_main_loop_timer_callback_->right_timer_id);
+    );
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
