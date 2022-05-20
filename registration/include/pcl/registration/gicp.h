@@ -111,6 +111,7 @@ public:
   , max_inner_iterations_(20)
   , translation_gradient_tolerance_(1e-2)
   , rotation_gradient_tolerance_(1e-2)
+  , is_translation_turn_(true)
   {
     min_number_correspondences_ = 4;
     reg_name_ = "GeneralizedIterativeClosestPoint";
@@ -365,6 +366,12 @@ protected:
   /** \brief minimal rotation gradient for early optimization stop */
   double rotation_gradient_tolerance_;
 
+  /** \brief current transformation of source point cloud */
+  Vector6d current_transformation_;
+
+  /** \brief whether current iteration is optimizing translation part or not */
+  bool is_translation_turn_;
+
   /** \brief compute points covariances matrices according to the K nearest
    * neighbors. K is set via setCorrespondenceRandomness() method.
    * \param cloud pointer to point cloud
@@ -423,21 +430,39 @@ protected:
   void
   applyState(Eigen::Matrix4f& t, const Vector6d& x) const;
 
-  /// \brief optimization functor structure
-  struct OptimizationFunctorWithIndices : public BFGSDummyFunctor<double, 6> {
-    OptimizationFunctorWithIndices(const GeneralizedIterativeClosestPoint* gicp)
-    : BFGSDummyFunctor<double, 6>(), gicp_(gicp)
+  /// \brief optimization functor structure for translation part
+  struct OptimizationFunctorWithIndicesTranslation
+  : public BFGSDummyFunctor<double, 3> {
+    OptimizationFunctorWithIndicesTranslation(GeneralizedIterativeClosestPoint* gicp)
+    : BFGSDummyFunctor<double, 3>(), gicp_(gicp)
     {}
     double
-    operator()(const Vector6d& x) override;
+    operator()(const Eigen::Vector3d& x) override;
     void
-    df(const Vector6d& x, Vector6d& df) override;
+    df(const Eigen::Vector3d& x, Eigen::Vector3d& df) override;
     void
-    fdf(const Vector6d& x, double& f, Vector6d& df) override;
+    fdf(const Eigen::Vector3d& x, double& f, Eigen::Vector3d& df) override;
     BFGSSpace::Status
-    checkGradient(const Vector6d& g) override;
+    checkGradient(const Eigen::Vector3d& g) override;
 
-    const GeneralizedIterativeClosestPoint* gicp_;
+    GeneralizedIterativeClosestPoint* gicp_;
+  };
+
+  /// \brief optimization functor structure for rotation part
+  struct OptimizationFunctorWithIndicesRotation : public BFGSDummyFunctor<double, 3> {
+    OptimizationFunctorWithIndicesRotation(GeneralizedIterativeClosestPoint* gicp)
+    : BFGSDummyFunctor<double, 3>(), gicp_(gicp)
+    {}
+    double
+    operator()(const Eigen::Vector3d& x) override;
+    void
+    df(const Eigen::Vector3d& x, Eigen::Vector3d& df) override;
+    void
+    fdf(const Eigen::Vector3d& x, double& f, Eigen::Vector3d& df) override;
+    BFGSSpace::Status
+    checkGradient(const Eigen::Vector3d& g) override;
+
+    GeneralizedIterativeClosestPoint* gicp_;
   };
 
   std::function<void(const pcl::PointCloud<PointSource>& cloud_src,
