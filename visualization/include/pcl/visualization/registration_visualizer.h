@@ -61,7 +61,7 @@ namespace pcl
       /** \brief Empty constructor. */
       RegistrationVisualizer () : 
         update_visualizer_ (),
-        first_update_flag_ (),
+        first_update_flag_ (false),
         cloud_source_ (),
         cloud_target_ (),
         cloud_intermediate_ (),
@@ -94,9 +94,6 @@ namespace pcl
           updateIntermediateCloud (cloud_src, indices_src, cloud_tgt, indices_tgt);
         };
 
-        // Register the local callback function to the registration algorithm callback function
-        registration.registerVisualizationCallback (this->update_visualizer_);
-
         // Flag that no visualizer update was done. It indicates to visualizer update function to copy
         // the registration input source and the target point clouds in the next call.
         visualizer_updating_mutex_.lock ();
@@ -104,6 +101,9 @@ namespace pcl
         first_update_flag_ = false;
 
         visualizer_updating_mutex_.unlock ();
+
+        // Register the local callback function to the registration algorithm callback function
+        registration.registerVisualizationCallback (this->update_visualizer_);
 
         return true;
       }
