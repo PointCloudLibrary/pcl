@@ -252,7 +252,7 @@ namespace pcl
     {
       for (int i=0; i<rows; i++)
       {
-        for(int ii=0;ii<rowSizes[i];i++){m_ppElements[i][ii].Value*=V;}
+        for(int ii=0;ii<rowSizes[i];ii++){m_ppElements[i][ii].Value*=V;}
       }
       return *this;
     }
