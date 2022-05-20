@@ -100,7 +100,7 @@ public:
   using ConstPtr =
       shared_ptr<const GeneralizedIterativeClosestPoint<PointSource, PointTarget>>;
 
-  using Vector6d = Eigen::Matrix<double, 6, 1>;
+  using Vector6d = typename Eigen::Matrix<double, 6, 1>;
 
   /** \brief Empty constructor. */
   GeneralizedIterativeClosestPoint()
