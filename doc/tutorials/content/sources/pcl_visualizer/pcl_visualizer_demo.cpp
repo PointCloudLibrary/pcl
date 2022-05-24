@@ -301,9 +301,9 @@ main (int argc, char** argv)
       point.x = basic_point.x;
       point.y = basic_point.y;
       point.z = basic_point.z;
-      std::uint32_t rgb = (static_cast<std::uint32_t>(r) << 16 |
-              static_cast<std::uint32_t>(g) << 8 | static_cast<std::uint32_t>(b));
-      point.rgb = *reinterpret_cast<float*>(&rgb);
+      point.r = r;
+      point.g = g;
+      point.b = b;
       point_cloud_ptr->points.push_back (point);
     }
     if (z < 0.0)
