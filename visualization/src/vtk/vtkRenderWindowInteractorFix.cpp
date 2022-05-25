@@ -44,7 +44,7 @@
 #ifndef __APPLE__
 vtkRenderWindowInteractor* vtkRenderWindowInteractorFixNew ()
 {
-#if VTK_MAJOR_VERSION == 9 && ((VTK_MINOR_VERSION == 0 && (VTK_BUILD_VERSION == 2 || VTK_BUILD_VERSION == 3)) || (VTK_MINOR_VERSION == 1 && VTK_BUILD_VERSION == 0))
+#if __unix__ && VTK_MAJOR_VERSION == 9 && ((VTK_MINOR_VERSION == 0 && (VTK_BUILD_VERSION == 2 || VTK_BUILD_VERSION == 3)) || (VTK_MINOR_VERSION == 1 && VTK_BUILD_VERSION == 0))
 // VTK versions 9.0.2, 9.0.3, 9.1.0
   vtkRenderWindowInteractor* interactor = vtkRenderWindowInteractor::New ();
   if(interactor->IsA("vtkXRenderWindowInteractor")) {
