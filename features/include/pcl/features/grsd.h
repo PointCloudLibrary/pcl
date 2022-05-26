@@ -65,6 +65,7 @@ namespace pcl
     * \ref FPFHEstimationOMP for examples on parallel implementations of the FPFH (Fast Point Feature Histogram).
     * \author Zoltan Csaba Marton
     * \ingroup features
+    * \tparam PointOutT Suggested type is `pcl::GRSDSignature21`
     */
   
   template <typename PointInT, typename PointNT, typename PointOutT>

@@ -59,6 +59,7 @@ namespace pcl
     *
     * \author Radu B. Rusu
     * \ingroup features
+    * \tparam PointOutT Suggested type is `pcl::GFPFHSignature16`
     */
   template <typename PointInT, typename PointLT, typename PointOutT>
   class GFPFHEstimation : public FeatureFromLabels<PointInT, PointLT, PointOutT>
