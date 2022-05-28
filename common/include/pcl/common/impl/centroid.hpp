@@ -75,7 +75,7 @@ compute3DCentroid (ConstCloudIterator<PointT> &cloud_iterator,
     ++cloud_iterator;
   }
 
-  if (cp) {
+  if (cp > 0) {
     centroid = accumulator;
     centroid /= static_cast<Scalar> (cp);
     centroid[3] = 1;
@@ -122,7 +122,7 @@ compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
     accumulator[2] += point.z;
     ++cp;
   }
-  if (cp) {
+  if (cp > 0) {
     centroid = accumulator;
     centroid /= static_cast<Scalar> (cp);
     centroid[3] = 1;
@@ -169,7 +169,7 @@ compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
     accumulator[2] += cloud[index].z;
     ++cp;
   }
-  if (cp) {
+  if (cp > 0) {
     centroid = accumulator;
     centroid /= static_cast<Scalar> (cp);
     centroid[3] = 1;
@@ -249,7 +249,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
       temp_covariance_matrix (0, 2) += pt.z ();
       ++point_count;
     }
-    if (point_count) {
+    if (point_count > 0) {
       covariance_matrix = temp_covariance_matrix;
     }
   }
@@ -339,7 +339,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
       temp_covariance_matrix (0, 2) += pt.z ();
       ++point_count;
     }
-    if (point_count) {
+    if (point_count > 0) {
       covariance_matrix = temp_covariance_matrix;
     }
   }
