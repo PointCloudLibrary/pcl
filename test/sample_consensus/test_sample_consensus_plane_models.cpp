@@ -134,6 +134,97 @@ TEST (SampleConsensusModelPlane, Base)
   ASSERT_EQ (indices_.size (), indices->size ());
 }
 
+TEST (SampleConsensusModelPlane, SampleValidationPointsCollinear)
+{
+  PointCloud<PointXYZ> cloud;
+  cloud.resize (4);
+
+  // The "cheat point" makes it possible to find a set of valid samples and
+  // therefore avoids the log message of an unsuccessful sample validation
+  // being printed a 1000 times without any chance of success.
+  // The order is chosen such that with a known, fixed rng-state/-seed all
+  // validation steps are actually exercised.
+  const pcl::index_t firstCollinearPointIndex = 0;
+  const pcl::index_t secondCollinearPointIndex = 1;
+  const pcl::index_t thirdCollinearPointIndex = 2;
+  const pcl::index_t cheatPointIndex = 3;
+
+  cloud[firstCollinearPointIndex].getVector3fMap () <<  0.1f,  0.1f,  0.1f;
+  cloud[secondCollinearPointIndex].getVector3fMap () <<  0.2f,  0.2f,  0.2f;
+  cloud[thirdCollinearPointIndex].getVector3fMap () <<  0.3f,  0.3f,  0.3f;
+  cloud[cheatPointIndex].getVector3fMap () <<  0.0f,  0.1f,  0.0f; // <-- cheat point
+
+  // Create a shared line model pointer directly and explicitly disable the
+  // random seed for the reasons mentioned above
+  SampleConsensusModelPlanePtr model (
+    new SampleConsensusModelPlane<PointXYZ> (cloud.makeShared (), /* random = */ false));
+
+  // Algorithm tests
+  pcl::Indices samples;
+  int iterations = 0;
+  model->getSamples(iterations, samples);
+  EXPECT_EQ (samples.size(), 3);
+  // The "cheat point" has to be part of the sample, otherwise something is wrong.
+  // The best option would be to assert on stderr output here, but that doesn't
+  // seem to be that simple.
+  EXPECT_TRUE (std::find(samples.begin (), samples.end (), cheatPointIndex) != samples.end ());
+
+  pcl::Indices forcedSamples = {firstCollinearPointIndex, secondCollinearPointIndex, thirdCollinearPointIndex};
+  Eigen::VectorXf modelCoefficients;
+  EXPECT_FALSE (model->computeModelCoefficients (forcedSamples, modelCoefficients));
+}
+
+TEST (SampleConsensusModelPlane, SampleValidationPointsValid)
+{
+  PointCloud<PointXYZ> cloud;
+  cloud.resize (3);
+
+  cloud[0].getVector3fMap () <<  0.1f,  0.0f,  0.0f;
+  cloud[1].getVector3fMap () <<  0.0f,  0.1f,  0.0f;
+  cloud[2].getVector3fMap () <<  0.0f,  0.0f,  0.1f;
+
+  // Create a shared line model pointer directly
+  SampleConsensusModelPlanePtr model (
+    new SampleConsensusModelPlane<PointXYZ> (cloud.makeShared ()));
+
+  // Algorithm tests
+  pcl::Indices samples;
+  int iterations = 0;
+  model->getSamples(iterations, samples);
+  EXPECT_EQ (samples.size(), 3);
+
+  Eigen::VectorXf modelCoefficients;
+  EXPECT_TRUE (model->computeModelCoefficients (samples, modelCoefficients));
+}
+
+TEST (SampleConsensusModelPlane, SampleValidationNotEnoughSamples)
+{
+  PointCloud<PointXYZ> cloud;
+  cloud.resize (2);
+
+  cloud[0].getVector3fMap () <<  0.1f,  0.0f,  0.0f;
+  cloud[1].getVector3fMap () <<  0.0f,  0.1f,  0.0f;
+
+  std::vector<pcl::Indices> testIndices = {{}, {0,}, {0, 1}};
+
+  for( const auto& indices : testIndices) {
+    PointCloud<PointXYZ> subCloud {cloud, indices};
+
+    // Create a shared line model pointer directly
+    SampleConsensusModelPlanePtr model (
+      new SampleConsensusModelPlane<PointXYZ> (subCloud.makeShared ()));
+
+    // Algorithm tests
+    pcl::Indices samples;
+    int iterations = 0;
+    model->getSamples(iterations, samples);
+    EXPECT_EQ (samples.size(), 0);
+
+    Eigen::VectorXf modelCoefficients;
+    EXPECT_FALSE (model->computeModelCoefficients (indices, modelCoefficients));
+  }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (SampleConsensusModelPlane, RANSAC)
 {
