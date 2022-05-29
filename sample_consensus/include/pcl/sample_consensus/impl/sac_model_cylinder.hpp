@@ -55,6 +55,19 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::isSampleGood (const Indices 
     PCL_ERROR ("[pcl::SampleConsensusModelCylinder::isSampleGood] Wrong number of samples (is %lu, should be %lu)!\n", samples.size (), sample_size_);
     return (false);
   }
+
+  // Make sure that the two sample points are not identical
+  if (
+      std::abs ((*input_)[samples[0]].x - (*input_)[samples[1]].x) <= std::numeric_limits<float>::epsilon ()
+    &&
+      std::abs ((*input_)[samples[0]].y - (*input_)[samples[1]].y) <= std::numeric_limits<float>::epsilon ()
+    &&
+      std::abs ((*input_)[samples[0]].z - (*input_)[samples[1]].z) <= std::numeric_limits<float>::epsilon ())
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelCylinder::isSampleGood] The two sample points are (almost) identical!\n");
+    return (false);
+  }
+
   return (true);
 }
 
@@ -63,10 +76,10 @@ template <typename PointT, typename PointNT> bool
 pcl::SampleConsensusModelCylinder<PointT, PointNT>::computeModelCoefficients (
       const Indices &samples, Eigen::VectorXf &model_coefficients) const
 {
-  // Need 2 samples
-  if (samples.size () != sample_size_)
+  // Make sure that the samples are valid
+  if (!isSampleGood (samples))
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelCylinder::computeModelCoefficients] Invalid set of samples given (%lu)!\n", samples.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCylinder::computeModelCoefficients] Invalid set of samples given!\n");
     return (false);
   }
 
@@ -76,13 +89,6 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::computeModelCoefficients (
     return (false);
   }
 
-  if (std::abs ((*input_)[samples[0]].x - (*input_)[samples[1]].x) <= std::numeric_limits<float>::epsilon () && 
-      std::abs ((*input_)[samples[0]].y - (*input_)[samples[1]].y) <= std::numeric_limits<float>::epsilon () && 
-      std::abs ((*input_)[samples[0]].z - (*input_)[samples[1]].z) <= std::numeric_limits<float>::epsilon ()) 
-  {
-    return (false);
-  }
-  
   Eigen::Vector4f p1 ((*input_)[samples[0]].x, (*input_)[samples[0]].y, (*input_)[samples[0]].z, 0.0f);
   Eigen::Vector4f p2 ((*input_)[samples[1]].x, (*input_)[samples[1]].y, (*input_)[samples[1]].z, 0.0f);
 

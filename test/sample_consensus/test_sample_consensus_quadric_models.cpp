@@ -636,7 +636,8 @@ TEST (SampleConsensusModelCircle3D, RANSAC)
   EXPECT_NEAR (-3.0, coeff[2], 1e-3);
   EXPECT_NEAR ( 0.1, coeff[3], 1e-3);
   EXPECT_NEAR ( 0.0, coeff[4], 1e-3);
-  EXPECT_NEAR (-1.0, coeff[5], 1e-3);
+  // Use abs in y component because both variants are valid normal vectors
+  EXPECT_NEAR ( 1.0, std::abs (coeff[5]), 1e-3);
   EXPECT_NEAR ( 0.0, coeff[6], 1e-3);
 
   Eigen::VectorXf coeff_refined;
@@ -647,7 +648,7 @@ TEST (SampleConsensusModelCircle3D, RANSAC)
   EXPECT_NEAR (-3.0, coeff_refined[2], 1e-3);
   EXPECT_NEAR ( 0.1, coeff_refined[3], 1e-3);
   EXPECT_NEAR ( 0.0, coeff_refined[4], 1e-3);
-  EXPECT_NEAR (-1.0, coeff_refined[5], 1e-3);
+  EXPECT_NEAR ( 1.0, std::abs (coeff_refined[5]), 1e-3);
   EXPECT_NEAR ( 0.0, coeff_refined[6], 1e-3);
 }
 

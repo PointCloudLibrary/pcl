@@ -55,23 +55,29 @@ pcl::SampleConsensusModelCircle3D<PointT>::isSampleGood (
     PCL_ERROR ("[pcl::SampleConsensusModelCircle3D::isSampleGood] Wrong number of samples (is %lu, should be %lu)!\n", samples.size (), sample_size_);
     return (false);
   }
-  // Get the values at the three points
+
+  // Double precision here follows computeModelCoefficients, which means we
+  // can't use getVector3fMap-accessor to make our lives easier.
   Eigen::Vector3d p0 ((*input_)[samples[0]].x, (*input_)[samples[0]].y, (*input_)[samples[0]].z);
   Eigen::Vector3d p1 ((*input_)[samples[1]].x, (*input_)[samples[1]].y, (*input_)[samples[1]].z);
   Eigen::Vector3d p2 ((*input_)[samples[2]].x, (*input_)[samples[2]].y, (*input_)[samples[2]].z);
 
-  // calculate vectors between points
-  p1 -= p0;
-  p2 -= p0;
+  // Check if the squared norm of the cross-product is non-zero, otherwise
+  // common_helper_vec, which plays an important role in computeModelCoefficients,
+  // would likely be ill-formed.
+  if ((p1 - p0).cross(p1 - p2).squaredNorm() < Eigen::NumTraits<float>::dummy_precision ())
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelCircle3D::isSampleGood] Sample points too similar or collinear!\n");
+    return (false);
+  }
 
-  return (p1.dot (p2) < 0.000001);
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::SampleConsensusModelCircle3D<PointT>::computeModelCoefficients (const Indices &samples, Eigen::VectorXf &model_coefficients) const
 {
-  // Need 3 samples
   if (samples.size () != sample_size_)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelCircle3D::computeModelCoefficients] Invalid set of samples given (%lu)!\n", samples.size ());
@@ -93,6 +99,14 @@ pcl::SampleConsensusModelCircle3D<PointT>::computeModelCoefficients (const Indic
   Eigen::Vector3d helper_vec21 = p2 - p1;
 
   Eigen::Vector3d common_helper_vec = helper_vec01.cross (helper_vec12);
+
+  // The same check is implemented in isSampleGood, so be sure to look there too
+  // if you find the need to change something here.
+  if (common_helper_vec.squaredNorm() < Eigen::NumTraits<float>::dummy_precision ())
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelCircle3D::computeModelCoefficients] Sample points too similar or collinear!\n");
+    return (false);
+  }
 
   double commonDividend = 2.0 * common_helper_vec.squaredNorm ();
 

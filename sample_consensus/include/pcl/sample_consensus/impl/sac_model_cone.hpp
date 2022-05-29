@@ -61,10 +61,10 @@ template <typename PointT, typename PointNT> bool
 pcl::SampleConsensusModelCone<PointT, PointNT>::computeModelCoefficients (
     const Indices &samples, Eigen::VectorXf &model_coefficients) const
 {
-  // Need 3 samples
-  if (samples.size () != sample_size_)
+  // Make sure that the samples are valid
+  if (!isSampleGood (samples))
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelCone::computeModelCoefficients] Invalid set of samples given (%lu)!\n", samples.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCone::computeModelCoefficients] Invalid set of samples given\n");
     return (false);
   }
 
