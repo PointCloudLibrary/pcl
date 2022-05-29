@@ -56,10 +56,9 @@ template <typename PointT, typename Scalar> inline unsigned int
 compute3DCentroid (ConstCloudIterator<PointT> &cloud_iterator,
                    Eigen::Matrix<Scalar, 4, 1> &centroid)
 {
-  // Initialize to 0
-  centroid.setZero ();
+  Eigen::Matrix<Scalar, 4, 1> accumulator {0, 0, 0, 0};
 
-  unsigned cp = 0;
+  unsigned int cp = 0;
 
   // For each point in the cloud
   // If the data is dense, we don't need to check for NaN
@@ -68,15 +67,19 @@ compute3DCentroid (ConstCloudIterator<PointT> &cloud_iterator,
     // Check if the point is invalid
     if (pcl::isFinite (*cloud_iterator))
     {
-      centroid[0] += cloud_iterator->x;
-      centroid[1] += cloud_iterator->y;
-      centroid[2] += cloud_iterator->z;
+      accumulator[0] += cloud_iterator->x;
+      accumulator[1] += cloud_iterator->y;
+      accumulator[2] += cloud_iterator->z;
       ++cp;
     }
     ++cloud_iterator;
   }
-  centroid /= static_cast<Scalar> (cp);
-  centroid[3] = 1;
+
+  if (cp > 0) {
+    centroid = accumulator;
+    centroid /= static_cast<Scalar> (cp);
+    centroid[3] = 1;
+  }
   return (cp);
 }
 
@@ -88,12 +91,12 @@ compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
   if (cloud.empty ())
     return (0);
 
-  // Initialize to 0
-  centroid.setZero ();
   // For each point in the cloud
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
+    // Initialize to 0
+    centroid.setZero ();
     for (const auto& point: cloud)
     {
       centroid[0] += point.x;
@@ -106,20 +109,24 @@ compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
     return (static_cast<unsigned int> (cloud.size ()));
   }
   // NaN or Inf values could exist => check for them
-  unsigned cp = 0;
+  unsigned int cp = 0;
+  Eigen::Matrix<Scalar, 4, 1> accumulator {0, 0, 0, 0};
   for (const auto& point: cloud)
   {
     // Check if the point is invalid
     if (!isFinite (point))
       continue;
 
-    centroid[0] += point.x;
-    centroid[1] += point.y;
-    centroid[2] += point.z;
+    accumulator[0] += point.x;
+    accumulator[1] += point.y;
+    accumulator[2] += point.z;
     ++cp;
   }
-  centroid /= static_cast<Scalar> (cp);
-  centroid[3] = 1;
+  if (cp > 0) {
+    centroid = accumulator;
+    centroid /= static_cast<Scalar> (cp);
+    centroid[3] = 1;
+  }
 
   return (cp);
 }
@@ -133,11 +140,11 @@ compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
   if (indices.empty ())
     return (0);
 
-  // Initialize to 0
-  centroid.setZero ();
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
+    // Initialize to 0
+    centroid.setZero ();
     for (const auto& index : indices)
     {
       centroid[0] += cloud[index].x;
@@ -149,20 +156,24 @@ compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
     return (static_cast<unsigned int> (indices.size ()));
   }
   // NaN or Inf values could exist => check for them
-    unsigned cp = 0;
+  Eigen::Matrix<Scalar, 4, 1> accumulator {0, 0, 0, 0};
+  unsigned int cp = 0;
   for (const auto& index : indices)
   {
     // Check if the point is invalid
     if (!isFinite (cloud [index]))
       continue;
 
-    centroid[0] += cloud[index].x;
-    centroid[1] += cloud[index].y;
-    centroid[2] += cloud[index].z;
+    accumulator[0] += cloud[index].x;
+    accumulator[1] += cloud[index].y;
+    accumulator[2] += cloud[index].z;
     ++cp;
   }
-  centroid /= static_cast<Scalar> (cp);
-  centroid[3] = 1;
+  if (cp > 0) {
+    centroid = accumulator;
+    centroid /= static_cast<Scalar> (cp);
+    centroid[3] = 1;
+  }
   return (cp);
 }
 
@@ -184,13 +195,11 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   if (cloud.empty ())
     return (0);
 
-  // Initialize to 0
-  covariance_matrix.setZero ();
-
   unsigned point_count;
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
+    covariance_matrix.setZero ();
     point_count = static_cast<unsigned> (cloud.size ());
     // For each point in the cloud
     for (const auto& point: cloud)
@@ -214,6 +223,8 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   // NaN or Inf values could exist => check for them
   else
   {
+    Eigen::Matrix<Scalar, 3, 3> temp_covariance_matrix;
+    temp_covariance_matrix.setZero();
     point_count = 0;
     // For each point in the cloud
     for (const auto& point: cloud)
@@ -227,17 +238,23 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
       pt[1] = point.y - centroid[1];
       pt[2] = point.z - centroid[2];
 
-      covariance_matrix (1, 1) += pt.y () * pt.y ();
-      covariance_matrix (1, 2) += pt.y () * pt.z ();
+      temp_covariance_matrix (1, 1) += pt.y () * pt.y ();
+      temp_covariance_matrix (1, 2) += pt.y () * pt.z ();
 
-      covariance_matrix (2, 2) += pt.z () * pt.z ();
+      temp_covariance_matrix (2, 2) += pt.z () * pt.z ();
 
       pt *= pt.x ();
-      covariance_matrix (0, 0) += pt.x ();
-      covariance_matrix (0, 1) += pt.y ();
-      covariance_matrix (0, 2) += pt.z ();
+      temp_covariance_matrix (0, 0) += pt.x ();
+      temp_covariance_matrix (0, 1) += pt.y ();
+      temp_covariance_matrix (0, 2) += pt.z ();
       ++point_count;
     }
+    if (point_count > 0) {
+      covariance_matrix = temp_covariance_matrix;
+    }
+  }
+  if (point_count == 0) { 
+    return 0; 
   }
   covariance_matrix (1, 0) = covariance_matrix (0, 1);
   covariance_matrix (2, 0) = covariance_matrix (0, 2);
@@ -268,13 +285,11 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   if (indices.empty ())
     return (0);
 
-  // Initialize to 0
-  covariance_matrix.setZero ();
-
   std::size_t point_count;
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
+    covariance_matrix.setZero ();
     point_count = indices.size ();
     // For each point in the cloud
     for (const auto& idx: indices)
@@ -298,6 +313,8 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   // NaN or Inf values could exist => check for them
   else
   {
+    Eigen::Matrix<Scalar, 3, 3> temp_covariance_matrix;
+    temp_covariance_matrix.setZero ();
     point_count = 0;
     // For each point in the cloud
     for (const auto &index : indices)
@@ -311,17 +328,23 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
       pt[1] = cloud[index].y - centroid[1];
       pt[2] = cloud[index].z - centroid[2];
 
-      covariance_matrix (1, 1) += pt.y () * pt.y ();
-      covariance_matrix (1, 2) += pt.y () * pt.z ();
+      temp_covariance_matrix (1, 1) += pt.y () * pt.y ();
+      temp_covariance_matrix (1, 2) += pt.y () * pt.z ();
 
-      covariance_matrix (2, 2) += pt.z () * pt.z ();
+      temp_covariance_matrix (2, 2) += pt.z () * pt.z ();
 
       pt *= pt.x ();
-      covariance_matrix (0, 0) += pt.x ();
-      covariance_matrix (0, 1) += pt.y ();
-      covariance_matrix (0, 2) += pt.z ();
+      temp_covariance_matrix (0, 0) += pt.x ();
+      temp_covariance_matrix (0, 1) += pt.y ();
+      temp_covariance_matrix (0, 2) += pt.z ();
       ++point_count;
     }
+    if (point_count > 0) {
+      covariance_matrix = temp_covariance_matrix;
+    }
+  }
+  if (point_count == 0) { 
+    return 0; 
   }
   covariance_matrix (1, 0) = covariance_matrix (0, 1);
   covariance_matrix (2, 0) = covariance_matrix (0, 2);
