@@ -308,7 +308,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
     OptimizationFunctorWithIndicesTranslation::operator()(const Eigen::Vector3d& x)
 {
   Eigen::Matrix4f transformation_matrix = gicp_->base_transformation_;
-  gicp_->current_transformation_.head<3>() = x;
+  gicp_->current_transformation_.template head<3>() = x;
   gicp_->applyState(transformation_matrix, gicp_->current_transformation_);
   double f = 0;
   int m = static_cast<int>(gicp_->tmp_idx_src_->size());
@@ -341,7 +341,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
                                                   Eigen::Vector3d& g)
 {
   Eigen::Matrix4f transformation_matrix = gicp_->base_transformation_;
-  gicp_->current_transformation_.head<3>() = x;
+  gicp_->current_transformation_.template head<3>() = x;
   gicp_->applyState(transformation_matrix, gicp_->current_transformation_);
   // Zero out g
   g.setZero();
@@ -387,7 +387,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
                                                    Eigen::Vector3d& g)
 {
   Eigen::Matrix4f transformation_matrix = gicp_->base_transformation_;
-  gicp_->current_transformation_.head<3>() = x;
+  gicp_->current_transformation_.template head<3>() = x;
   gicp_->applyState(transformation_matrix, gicp_->current_transformation_);
   f = 0;
   g.setZero();
@@ -456,7 +456,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
     OptimizationFunctorWithIndicesRotation::operator()(const Eigen::Vector3d& x)
 {
   Eigen::Matrix4f transformation_matrix = gicp_->base_transformation_;
-  gicp_->current_transformation_.tail<3>() = x;
+  gicp_->current_transformation_.template tail<3>() = x;
   gicp_->applyState(transformation_matrix, gicp_->current_transformation_);
   double f = 0;
   int m = static_cast<int>(gicp_->tmp_idx_src_->size());
@@ -489,7 +489,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
                                                Eigen::Vector3d& g_r)
 {
   Eigen::Matrix4f transformation_matrix = gicp_->base_transformation_;
-  gicp_->current_transformation_.tail<3>() = x;
+  gicp_->current_transformation_.template tail<3>() = x;
   gicp_->applyState(transformation_matrix, gicp_->current_transformation_);
   // Zero out g
   Vector6d g;
@@ -538,7 +538,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
                                                 Eigen::Vector3d& g_r)
 {
   Eigen::Matrix4f transformation_matrix = gicp_->base_transformation_;
-  gicp_->current_transformation_.tail<3>() = x;
+  gicp_->current_transformation_.template tail<3>() = x;
   gicp_->applyState(transformation_matrix, gicp_->current_transformation_);
   f = 0;
   Vector6d g;
