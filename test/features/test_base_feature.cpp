@@ -85,7 +85,8 @@ TEST (PCL, BaseFeature)
 
   // computeCovarianceMatrix (indices)
   Eigen::Matrix3f covariance_matrix;
-  computeCovarianceMatrix (cloud, indices, centroid3, covariance_matrix);
+  auto result = computeCovarianceMatrix (cloud, indices, centroid3, covariance_matrix);
+  ASSERT_GT (result, 0);
   EXPECT_NEAR (covariance_matrix (0, 0), 0.710046, 1e-4);
   EXPECT_NEAR (covariance_matrix (0, 1), -0.234843, 1e-4);
   EXPECT_NEAR (covariance_matrix (0, 2), 0.0704933, 1e-4);
@@ -97,7 +98,8 @@ TEST (PCL, BaseFeature)
   EXPECT_NEAR (covariance_matrix (2, 2), 0.195448, 1e-4);
 
   // computeCovarianceMatrix
-  computeCovarianceMatrix (cloud, centroid3, covariance_matrix);
+  result = computeCovarianceMatrix (cloud, centroid3, covariance_matrix);
+  ASSERT_GT (result, 0);
   EXPECT_NEAR (covariance_matrix (0, 0), 0.710046, 1e-4);
   EXPECT_NEAR (covariance_matrix (0, 1), -0.234843, 1e-4);
   EXPECT_NEAR (covariance_matrix (0, 2), 0.0704933, 1e-4);
@@ -109,7 +111,8 @@ TEST (PCL, BaseFeature)
   EXPECT_NEAR (covariance_matrix (2, 2), 0.195448, 1e-4);
 
   // computeCovarianceMatrixNormalized (indices)
-  computeCovarianceMatrixNormalized (cloud, indices, centroid3, covariance_matrix);
+  result = computeCovarianceMatrixNormalized (cloud, indices, centroid3, covariance_matrix);
+  ASSERT_GT (result, 0);
   EXPECT_NEAR (covariance_matrix (0, 0), 1.7930e-03, 1e-5);
   EXPECT_NEAR (covariance_matrix (0, 1), -5.9304e-04, 1e-5);
   EXPECT_NEAR (covariance_matrix (0, 2), 1.7801e-04, 1e-5);
@@ -121,7 +124,8 @@ TEST (PCL, BaseFeature)
   EXPECT_NEAR (covariance_matrix (2, 2), 4.9356e-04, 1e-5);
 
   // computeCovarianceMatrixNormalized
-  computeCovarianceMatrixNormalized (cloud, centroid3, covariance_matrix);
+  result = computeCovarianceMatrixNormalized (cloud, centroid3, covariance_matrix);
+  ASSERT_GT (result, 0);
   EXPECT_NEAR (covariance_matrix (0, 0), 1.7930e-03, 1e-5);
   EXPECT_NEAR (covariance_matrix (0, 1), -5.9304e-04, 1e-5);
   EXPECT_NEAR (covariance_matrix (0, 2), 1.7801e-04, 1e-5);

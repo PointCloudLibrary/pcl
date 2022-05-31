@@ -50,6 +50,7 @@ namespace pcl
     * \ref NormalEstimationOMP for an example on how to extend this to parallel implementations.
     * \author Radu B. Rusu
     * \ingroup features
+    * \tparam PointOutT Suggested type is `pcl::MomentInvariants`
     */
   template <typename PointInT, typename PointOutT>
   class MomentInvariantsEstimation: public Feature<PointInT, PointOutT>

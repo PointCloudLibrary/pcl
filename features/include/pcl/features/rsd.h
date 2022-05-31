@@ -126,6 +126,7 @@ namespace pcl
     * @note The code is stateful as we do not expect this class to be multicore parallelized.
     * \author Zoltan-Csaba Marton
     * \ingroup features
+    * \tparam PointOutT Suggested type is `pcl::PrincipalRadiiRSD`
     */
   template <typename PointInT, typename PointNT, typename PointOutT>
   class RSDEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>

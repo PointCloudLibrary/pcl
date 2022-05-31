@@ -68,7 +68,8 @@ pcl::SampleConsensusModelSphere<PointT>::computeModelCoefficients (
     return (false);
   }
 
-  Eigen::Matrix4f temp;
+  // TODO maybe find a more stable algorithm for this?
+  Eigen::Matrix4d temp;
   for (int i = 0; i < 4; i++)
   {
     temp (i, 0) = (*input_)[samples[i]].x;
@@ -76,7 +77,7 @@ pcl::SampleConsensusModelSphere<PointT>::computeModelCoefficients (
     temp (i, 2) = (*input_)[samples[i]].z;
     temp (i, 3) = 1;
   }
-  float m11 = temp.determinant ();
+  const double m11 = temp.determinant ();
   if (m11 == 0)
   {
     return (false);             // the points don't define a sphere!
@@ -88,21 +89,21 @@ pcl::SampleConsensusModelSphere<PointT>::computeModelCoefficients (
                   ((*input_)[samples[i]].y) * ((*input_)[samples[i]].y) +
                   ((*input_)[samples[i]].z) * ((*input_)[samples[i]].z);
   }
-  float m12 = temp.determinant ();
+  const double m12 = temp.determinant ();
 
   for (int i = 0; i < 4; ++i)
   {
     temp (i, 1) = temp (i, 0);
     temp (i, 0) = (*input_)[samples[i]].x;
   }
-  float m13 = temp.determinant ();
+  const double m13 = temp.determinant ();
 
   for (int i = 0; i < 4; ++i)
   {
     temp (i, 2) = temp (i, 1);
     temp (i, 1) = (*input_)[samples[i]].y;
   }
-  float m14 = temp.determinant ();
+  const double m14 = temp.determinant ();
 
   for (int i = 0; i < 4; ++i)
   {
@@ -111,7 +112,7 @@ pcl::SampleConsensusModelSphere<PointT>::computeModelCoefficients (
     temp (i, 2) = (*input_)[samples[i]].y;
     temp (i, 3) = (*input_)[samples[i]].z;
   }
-  float m15 = temp.determinant ();
+  const double m15 = temp.determinant ();
 
   // Center (x , y, z)
   model_coefficients.resize (model_size_);
