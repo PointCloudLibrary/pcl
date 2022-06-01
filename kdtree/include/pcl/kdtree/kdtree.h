@@ -70,10 +70,11 @@ namespace pcl
 
       /** \brief Empty constructor for KdTree. Sets some internal values to their defaults.
         * \param[in] sorted set to true if the application that the tree will be used for requires sorted nearest neighbor indices (default). False otherwise.
+        * \param[in] max_leaf_size maximum leaf node size. Set to 15 by default.
         */
-      KdTree (bool sorted = true) : input_(),
-                                    epsilon_(0.0f), min_pts_(1), sorted_(sorted),
-                                    point_representation_ (new DefaultPointRepresentation<PointT>)
+      KdTree (bool sorted = true, int max_leaf_size = 15) : input_(),
+                                                            max_leaf_size_(max_leaf_size), epsilon_(0.0f), min_pts_(1), sorted_(sorted),
+                                                            point_representation_ (new DefaultPointRepresentation<PointT>)
       {
       };
 
@@ -299,6 +300,21 @@ namespace pcl
         return (radiusSearch ((*input_)[(*indices_)[index]], radius, k_indices, k_sqr_distances, max_nn));
       }
 
+      /** \brief Set the maximum leaf node size.
+       * \param[in] max_leaf_size maximum leaf node size
+       */
+      virtual inline void
+      setMaxLeafSize(int max_leaf_size)
+      {
+        max_leaf_size_ = max_leaf_size;
+      }
+
+      /** \brief Get the maximum leaf node size. */
+      inline int getMaxLeafSize() const
+      {
+        return (max_leaf_size_);
+      }
+      
       /** \brief Set the search epsilon precision (error bound) for nearest neighbors searches.
         * \param[in] eps precision (error bound) for nearest neighbors searches
         */
@@ -338,6 +354,9 @@ namespace pcl
       /** \brief A pointer to the vector of point indices to use. */
       IndicesConstPtr indices_;
 
+      /** \brief Maximum leaf node size */
+      int max_leaf_size_;
+      
       /** \brief Epsilon precision (error bound) for nearest neighbors searches. */
       float epsilon_;
 

@@ -133,6 +133,7 @@ class KdTreeFLANN : public pcl::KdTree<PointT> {
 public:
   using KdTree<PointT>::input_;
   using KdTree<PointT>::indices_;
+  using KdTree<PointT>::max_leaf_size_;
   using KdTree<PointT>::epsilon_;
   using KdTree<PointT>::sorted_;
   using KdTree<PointT>::point_representation_;
@@ -154,10 +155,11 @@ public:
   /** \brief Default Constructor for KdTreeFLANN.
    * \param[in] sorted set to true if the application that the tree will be used for
    * requires sorted nearest neighbor indices (default). False otherwise.
+   * \param[in] max_leaf_size maximum leaf node size. Set to 15 by default.
    *
    * By setting sorted to false, the \ref radiusSearch operations will be faster.
    */
-  KdTreeFLANN(bool sorted = true);
+  KdTreeFLANN(bool sorted = true, int max_leaf_size = 15);
 
   /** \brief Copy constructor
    * \param[in] k the tree to copy into this
@@ -182,6 +184,12 @@ public:
     return (*this);
   }
 
+  /** \brief Set the maximum leaf node size.
+   * \param[in] max_leaf_size maximum leaf node size
+   */
+  void
+  setMaxLeafSize(int max_leaf_size) override;
+  
   /** \brief Set the search epsilon precision (error bound) for nearest neighbors
    * searches. \param[in] eps precision (error bound) for nearest neighbors searches
    */

@@ -46,8 +46,8 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename Dist>
-pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (bool sorted)
-  : pcl::KdTree<PointT> (sorted)
+pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (bool sorted, int max_leaf_size)
+  : pcl::KdTree<PointT> (sorted, max_leaf_size)
   , flann_index_ ()
   , identity_mapping_ (false)
   , dim_ (0), total_nr_points_ (0)
@@ -133,7 +133,7 @@ pcl::KdTreeFLANN<PointT, Dist>::setInputCloud (const PointCloudConstPtr &cloud, 
   flann_index_.reset (new FLANNIndex (::flann::Matrix<float> (cloud_.get (),
                                                               index_mapping_.size (),
                                                               dim_),
-                                      ::flann::KDTreeSingleIndexParams (15))); // max 15 points/leaf
+                                      ::flann::KDTreeSingleIndexParams (max_leaf_size_)));
   flann_index_->buildIndex ();
 }
 
