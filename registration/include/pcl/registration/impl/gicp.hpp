@@ -506,6 +506,13 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformatio
       break;
     }
     nr_iterations_++;
+
+    if (update_visualizer_ != 0) {
+      PointCloudSourcePtr input_transformed(new PointCloudSource);
+      pcl::transformPointCloud(output, *input_transformed, transformation_);
+      update_visualizer_(*input_transformed, source_indices, *target_, target_indices);
+    }
+
     // Check for convergence
     if (nr_iterations_ >= max_iterations_ || delta < 1) {
       converged_ = true;

@@ -106,8 +106,6 @@ main (int argc, char** argv)
 //  /////////////////////////////////////////////////////////////////////////////////////////////////////
   pcl::RegistrationVisualizer<pcl::PointXYZ, pcl::PointXYZ> registrationVisualizer;
 
-  registrationVisualizer.startDisplay();
-
   registrationVisualizer.setMaximumDisplayedCorrespondences (100);
 //  /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -131,11 +129,15 @@ main (int argc, char** argv)
   // Register the registration algorithm to the RegistrationVisualizer
   registrationVisualizer.setRegistration (icp);
 
+  registrationVisualizer.startDisplay();
+
   // Start registration process
   icp.align (source_aligned);
 
   std::cout << "has converged:" << icp.hasConverged () << " score: " << icp.getFitnessScore () << std::endl;
   std::cout << icp.getFinalTransformation () << std::endl;
+
+  registrationVisualizer.stopDisplay();
 //  ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 //  ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -167,4 +169,5 @@ main (int argc, char** argv)
 //
 //  ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+  return 0;
 }
