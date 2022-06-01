@@ -319,7 +319,8 @@ find_package(Eigen 3.1 REQUIRED)
 include_directories(SYSTEM ${EIGEN_INCLUDE_DIRS})
 
 # FLANN (required)
-find_package(FLANN 1.9.1 REQUIRED)
+set(flann_DIR ${FLANN_DIR}) # hack for flann::flann_cuda target to be found
+find_package(FLANN 1.9.1 REQUIRED flann OPTIONAL_COMPONENTS flann_cuda)
 if(NOT (${FLANN_LIBRARY_TYPE} MATCHES ${PCL_FLANN_REQUIRED_TYPE}) AND NOT (${PCL_FLANN_REQUIRED_TYPE} MATCHES "DONTCARE"))
   message(FATAL_ERROR "Flann was selected with ${PCL_FLANN_REQUIRED_TYPE} but found as ${FLANN_LIBRARY_TYPE}")
 endif()

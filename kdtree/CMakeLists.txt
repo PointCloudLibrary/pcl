@@ -28,6 +28,7 @@ set(srcs
 )
 
 set(incs
+  "include/pcl/${SUBSYS_NAME}/base.h"
   "include/pcl/${SUBSYS_NAME}/kdtree.h"
   "include/pcl/${SUBSYS_NAME}/io.h"
   "include/pcl/${SUBSYS_NAME}/kdtree_flann.h"

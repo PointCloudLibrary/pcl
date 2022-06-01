@@ -48,6 +48,7 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 add_subdirectory(2d)
 add_subdirectory(common)
+add_subdirectory(cuda)
 add_subdirectory(features)
 add_subdirectory(filters)
 add_subdirectory(geometry)

@@ -38,11 +38,7 @@
 
 #pragma once
 
-#include <pcl/memory.h>
-#include <pcl/pcl_macros.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_representation.h>
-#include <pcl/common/copy_point.h>
+#include <pcl/kdtree/base.h>
 
 namespace pcl
 {
@@ -51,78 +47,27 @@ namespace pcl
     * \ingroup kdtree
     */
   template <typename PointT>
-  class KdTree
+  class KdTree : public KdTreeBase<PointT>
   {
+    using Base = KdTreeBase<PointT>;
+
     public:
-      using IndicesPtr = shared_ptr<Indices >;
-      using IndicesConstPtr = shared_ptr<const Indices >;
-
       using PointCloud = pcl::PointCloud<PointT>;
-      using PointCloudPtr = typename PointCloud::Ptr;
-      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-      using PointRepresentation = pcl::PointRepresentation<PointT>;
-      using PointRepresentationConstPtr = typename PointRepresentation::ConstPtr;
-
-      // Boost shared pointers
+      // Shared pointers
       using Ptr = shared_ptr<KdTree<PointT> >;
       using ConstPtr = shared_ptr<const KdTree<PointT> >;
+
+      using Base::setInputCloud;
 
       /** \brief Empty constructor for KdTree. Sets some internal values to their defaults.
         * \param[in] sorted set to true if the application that the tree will be used for requires sorted nearest neighbor indices (default). False otherwise.
         * \param[in] max_leaf_size maximum leaf node size. Set to 15 by default.
         */
-      KdTree (bool sorted = true, int max_leaf_size = 15) : input_(),
-                                                            max_leaf_size_(max_leaf_size), epsilon_(0.0f), min_pts_(1), sorted_(sorted),
-                                                            point_representation_ (new DefaultPointRepresentation<PointT>)
+      KdTree (bool sorted = true, int max_leaf_size = 15)
+        : Base (sorted, max_leaf_size)
       {
       };
-
-      /** \brief Provide a pointer to the input dataset.
-        * \param[in] cloud the const boost shared pointer to a PointCloud message
-        * \param[in] indices the point indices subset that is to be used from \a cloud - if NULL the whole cloud is used
-        */
-      virtual void
-      setInputCloud (const PointCloudConstPtr &cloud, const IndicesConstPtr &indices = IndicesConstPtr ())
-      {
-        input_   = cloud;
-        indices_ = indices;
-      }
-
-      /** \brief Get a pointer to the vector of indices used. */
-      inline IndicesConstPtr
-      getIndices () const
-      {
-        return (indices_);
-      }
-
-      /** \brief Get a pointer to the input point cloud dataset. */
-      inline PointCloudConstPtr
-      getInputCloud () const
-      {
-        return (input_);
-      }
-
-      /** \brief Provide a pointer to the point representation to use to convert points into k-D vectors.
-        * \param[in] point_representation the const boost shared pointer to a PointRepresentation
-        */
-      inline void
-      setPointRepresentation (const PointRepresentationConstPtr &point_representation)
-      {
-        point_representation_ = point_representation;
-        if (!input_) return;
-        setInputCloud (input_, indices_);  // Makes sense in derived classes to reinitialize the tree
-      }
-
-      /** \brief Get a pointer to the point representation used when converting points into k-D vectors. */
-      inline PointRepresentationConstPtr
-      getPointRepresentation () const
-      {
-        return (point_representation_);
-      }
-
-      /** \brief Destructor for KdTree. Deletes all allocated data arrays and destroys the kd-tree structures. */
-      virtual ~KdTree () {};
 
       /** \brief Search for k-nearest neighbors for the given query point.
         * \param[in] p_q the given query point
@@ -300,77 +245,8 @@ namespace pcl
         return (radiusSearch ((*input_)[(*indices_)[index]], radius, k_indices, k_sqr_distances, max_nn));
       }
 
-      /** \brief Set the maximum leaf node size.
-       * \param[in] max_leaf_size maximum leaf node size
-       */
-      virtual inline void
-      setMaxLeafSize(int max_leaf_size)
-      {
-        max_leaf_size_ = max_leaf_size;
-      }
-
-      /** \brief Get the maximum leaf node size. */
-      inline int getMaxLeafSize() const
-      {
-        return (max_leaf_size_);
-      }
-      
-      /** \brief Set the search epsilon precision (error bound) for nearest neighbors searches.
-        * \param[in] eps precision (error bound) for nearest neighbors searches
-        */
-      virtual inline void
-      setEpsilon (float eps)
-      {
-        epsilon_ = eps;
-      }
-
-      /** \brief Get the search epsilon precision (error bound) for nearest neighbors searches. */
-      inline float
-      getEpsilon () const
-      {
-        return (epsilon_);
-      }
-
-      /** \brief Minimum allowed number of k nearest neighbors points that a viable result must contain.
-        * \param[in] min_pts the minimum number of neighbors in a viable neighborhood
-        */
-      inline void
-      setMinPts (int min_pts)
-      {
-        min_pts_ = min_pts;
-      }
-
-      /** \brief Get the minimum allowed number of k nearest neighbors points that a viable result must contain. */
-      inline int
-      getMinPts () const
-      {
-        return (min_pts_);
-      }
-
     protected:
-      /** \brief The input point cloud dataset containing the points we need to use. */
-      PointCloudConstPtr input_;
-
-      /** \brief A pointer to the vector of point indices to use. */
-      IndicesConstPtr indices_;
-
-      /** \brief Maximum leaf node size */
-      int max_leaf_size_;
-      
-      /** \brief Epsilon precision (error bound) for nearest neighbors searches. */
-      float epsilon_;
-
-      /** \brief Minimum allowed number of k nearest neighbors points that a viable result must contain. */
-      int min_pts_;
-
-      /** \brief Return the radius search neighbours sorted **/
-      bool sorted_;
-
-      /** \brief For converting different point structures into k-dimensional vectors for nearest-neighbor search. */
-      PointRepresentationConstPtr point_representation_;
-
-      /** \brief Class getName method. */
-      virtual std::string
-      getName () const = 0;
+      using Base::input_;
+      using Base::indices_;
   };
-}
+} // namespace pcl
