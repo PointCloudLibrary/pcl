@@ -81,6 +81,20 @@ pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (const KdTreeFLANN<PointT, Dist> &k)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename Dist> void
+pcl::KdTreeFLANN<PointT, Dist>::setMaxLeafSize (int max_leaf_size)
+{
+  max_leaf_size_ = max_leaf_size;
+  
+  if (!input_) return;
+  flann_index_.reset (new FLANNIndex (::flann::Matrix<float> (cloud_.get (),
+                                                              index_mapping_.size (),
+                                                              dim_),
+                                      ::flann::KDTreeSingleIndexParams (max_leaf_size_)));
+  flann_index_->buildIndex ();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename Dist> void
 pcl::KdTreeFLANN<PointT, Dist>::setEpsilon (float eps)
 {
   epsilon_ = eps;

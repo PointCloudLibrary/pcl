@@ -74,10 +74,8 @@ pcl::KdTreeNanoflann<PointT, Dist, dims>::setMaxLeafSize (int max_leaf_size)
 {
   max_leaf_size_ = max_leaf_size;
   
-  if (nanoflann_index_ != nullptr)
-  {
-    nanoflann_index_.reset(new NanoflannIndex(dim_, cloud_mat_, max_leaf_size_));
-  }
+  if (!input_) return;
+  nanoflann_index_.reset(new NanoflannIndex(dim_, cloud_mat_, max_leaf_size_));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

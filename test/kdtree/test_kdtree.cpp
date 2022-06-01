@@ -56,6 +56,7 @@
 #include <algorithm>
 #include <iostream>  // For debug
 #include <map>
+#include <unordered_set>
 
 using namespace pcl;
 
@@ -358,6 +359,88 @@ TYPED_TEST (PCLKdTreeTestFixture, KdTree_32_vs_64_bit)
       EXPECT_EQ (neighbor_index, nn_indices_vector[vec_i][n_i]);
     }
   }
+}
+
+TYPED_TEST (PCLKdTreeTestFixture, KdTree_copy)
+{
+  using Tree = typename TestFixture::TreeMyPoint;
+
+  auto& cloud = this->cloud_;
+
+  MyPoint test_point (0.01f, 0.01f, 0.01f);
+  const int k = 10;
+  const int max_nn = 10;
+
+  Tree kdtree;
+  kdtree.setInputCloud (cloud.makeShared ());
+  
+  pcl::Indices k_indices;
+  std::vector<float> k_distances;
+  kdtree.nearestKSearch (test_point, k, k_indices, k_distances);
+  
+  pcl::Indices indices;
+  std::vector<float> distances;
+  kdtree.radiusSearch (test_point, max_nn, indices, distances);
+  
+  Tree kdtree_copy = kdtree;
+  pcl::Indices k_indices_copy;
+  std::vector<float> k_distances_copy;
+  kdtree_copy.nearestKSearch (test_point, k, k_indices_copy, k_distances_copy);
+
+  pcl::Indices indices_copy;
+  std::vector<float> distances_copy;
+  kdtree_copy.radiusSearch (test_point, max_nn, indices_copy, distances_copy);
+
+  EXPECT_EQ (k_indices, k_indices_copy);
+  EXPECT_EQ (k_distances, k_distances_copy);
+  EXPECT_EQ (indices, indices_copy);
+  EXPECT_EQ (distances, distances_copy);
+}
+
+TYPED_TEST (PCLKdTreeTestFixture, KdTree_setMaxLeafSize)
+{
+  using Tree = typename TestFixture::TreeMyPoint;
+
+  auto& cloud = this->cloud_;
+
+  MyPoint test_point (0.01f, 0.01f, 0.01f);
+  const int k = 10;
+
+  Tree kdtree;
+  kdtree.setInputCloud (cloud.makeShared ());
+  
+  pcl::Indices k_indices_default;
+  std::vector<float> k_distances_default;
+  kdtree.nearestKSearch (test_point, k, k_indices_default, k_distances_default);
+
+  kdtree.setMaxLeafSize (50);
+  
+  pcl::Indices k_indices_changed;
+  std::vector<float> k_distances_changed;
+  kdtree.nearestKSearch (test_point, k, k_indices_changed, k_distances_changed);
+
+  std::unordered_set<pcl::index_t> k_indices_set_default, k_indices_set_changed;
+  
+  std::copy(
+    k_indices_default.cbegin(),
+    k_indices_default.cend(),
+    std::inserter(
+      k_indices_set_default,
+      k_indices_set_default.end()
+    )
+  );
+  
+  std::copy(
+    k_indices_changed.cbegin(),
+    k_indices_changed.cend(),
+    std::inserter(
+      k_indices_set_changed,
+      k_indices_set_changed.end()
+    )
+  );
+
+  EXPECT_EQ (k_indices_set_default, k_indices_set_changed);
+  EXPECT_EQ (k_distances_default, k_distances_changed);
 }
 
 /* ---[ */
