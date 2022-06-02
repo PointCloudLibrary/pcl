@@ -1,6 +1,6 @@
 set(SUBSYS_NAME tools)
 set(SUBSYS_DESC "Useful PCL-based command line tools")
-set(SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree features surface octree registration recognition geometry keypoints ml)
+set(SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree features surface octree aabb_tree registration recognition geometry keypoints ml)
 set(SUBSYS_OPT_DEPS vtk visualization)
 set(DEFAULT ON)
 set(REASON "")
@@ -163,7 +163,7 @@ endif()
 
 if(QHULL_FOUND)
   PCL_ADD_EXECUTABLE(pcl_crop_to_hull COMPONENT ${SUBSYS_NAME} SOURCES crop_to_hull.cpp)
-  target_link_libraries(pcl_crop_to_hull pcl_common pcl_io pcl_filters pcl_surface)
+  target_link_libraries(pcl_crop_to_hull pcl_common pcl_io pcl_filters pcl_surface pcl_aabb_tree)
 
   PCL_ADD_EXECUTABLE(pcl_compute_hull COMPONENT ${SUBSYS_NAME} SOURCES compute_hull.cpp)
   target_link_libraries(pcl_compute_hull pcl_common pcl_io pcl_surface)

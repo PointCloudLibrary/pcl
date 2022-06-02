@@ -40,6 +40,17 @@
 
 #include <pcl/filters/crop_hull.h>
 
+#include <atomic>
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+void
+pcl::CropHull<PointT>::buildTree ()
+{
+  tree_.setInputMesh(hull_cloud_, hull_polygons_);
+  tree_dirty_ = false;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT>
@@ -140,39 +151,56 @@ pcl::CropHull<PointT>::applyFilter2D (Indices &indices)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT> void 
-pcl::CropHull<PointT>::applyFilter3D (Indices &indices)
+template <typename PointT>
+void
+pcl::CropHull<PointT>::applyFilter3D(Indices& indices)
 {
-  // This algorithm could definitely be sped up using kdtree/octree
-  // information, if that is available!
+  if (tree_dirty_)
+    buildTree();
 
-  for (std::size_t index = 0; index < indices_->size (); index++)
-  {
-    // test ray-crossings for three random rays, and take vote of crossings
-    // counts to determine if each point is inside the hull: the vote avoids
-    // tricky edge and corner cases when rays might fluke through the edge
-    // between two polygons
-    // 'random' rays are arbitrary - basically anything that is less likely to
-    // hit the edge between polygons than coordinate-axis aligned rays would
-    // be.
-    std::size_t crossings[3] = {0,0,0};
-    Eigen::Vector3f rays[3] = 
-    {
-      Eigen::Vector3f(0.264882f,  0.688399f, 0.675237f),
+  std::array<Eigen::Vector3f, 3> directions = {
+      Eigen::Vector3f(0.264882f, 0.688399f, 0.675237f),
       Eigen::Vector3f(0.0145419f, 0.732901f, 0.68018f),
-      Eigen::Vector3f(0.856514f,  0.508771f, 0.0868081f)
-    };
+      Eigen::Vector3f(0.856514f, 0.508771f, 0.0868081f)};
 
-    for (std::size_t poly = 0; poly < hull_polygons_.size (); poly++)
-      for (std::size_t ray = 0; ray < 3; ray++)
-        crossings[ray] += rayTriangleIntersect
-          ((*input_)[(*indices_)[index]], rays[ray], hull_polygons_[poly], *hull_cloud_);
+  std::vector<std::atomic<bool>> crosses_vec(indices_->size());
 
-    bool crosses = (crossings[0]&1) + (crossings[1]&1) + (crossings[2]&1) > 1;
+  {
+    // clang-format off
+#pragma omp parallel for \
+  default(none) \
+  shared(directions, crosses_vec) \
+  num_threads(num_threads_)
+    // clang-format on
+    for (int i = 0; i < static_cast<int>(indices_->size()); ++i) {
+      const index_t& index = (*indices_)[i];
+      std::atomic<bool>& crosses = crosses_vec[i];
+
+      const PointT& point = (*input_)[index];
+
+      std::array<size_t, 3> crossings;
+      std::transform(directions.cbegin(),
+                     directions.cend(),
+                     crossings.begin(),
+                     [this, &point](const auto& direction) {
+                       return tree_.numberOfIntersections(point, direction);
+                     });
+
+      crosses = (crossings[0] & 1) + (crossings[1] & 1) + (crossings[2] & 1) > 1;
+    }
+  }
+
+  auto index_itr = indices_->cbegin();
+  auto crosses_itr = crosses_vec.cbegin();
+
+  for (; index_itr != indices_->cend(); ++index_itr, ++crosses_itr) {
+    const auto& index = *index_itr;
+    const auto& crosses = *crosses_itr;
+
     if ((crop_outside_ && crosses) || (!crop_outside_ && !crosses))
-      indices.push_back ((*indices_)[index]);
+      indices.push_back(index);
     else
-      removed_indices_->push_back ((*indices_)[index]);
+      removed_indices_->push_back(index);
   }
 }
 
@@ -216,55 +244,6 @@ pcl::CropHull<PointT>::isPointIn2DPolyWithVertIndices (
   }
 
   return (in_poly);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT> bool
-pcl::CropHull<PointT>::rayTriangleIntersect (const PointT& point,
-                                             const Eigen::Vector3f& ray,
-                                             const Vertices& verts,
-                                             const PointCloud& cloud)
-{
-  // Algorithm here is adapted from:
-  // http://softsurfer.com/Archive/algorithm_0105/algorithm_0105.htm#intersect_RayTriangle()
-  //
-  // Original copyright notice:
-  // Copyright 2001, softSurfer (www.softsurfer.com)
-  // This code may be freely used and modified for any purpose
-  // providing that this copyright notice is included with it.
-  //
-  assert (verts.vertices.size () == 3);
-
-  const Eigen::Vector3f p = point.getVector3fMap ();
-  const Eigen::Vector3f a = cloud[verts.vertices[0]].getVector3fMap ();
-  const Eigen::Vector3f b = cloud[verts.vertices[1]].getVector3fMap ();
-  const Eigen::Vector3f c = cloud[verts.vertices[2]].getVector3fMap ();
-  const Eigen::Vector3f u = b - a;
-  const Eigen::Vector3f v = c - a;
-  const Eigen::Vector3f n = u.cross (v);
-  const float n_dot_ray = n.dot (ray);
-
-  if (std::fabs (n_dot_ray) < 1e-9)
-    return (false);
-
-  const float r = n.dot (a - p) / n_dot_ray;
-
-  if (r < 0)
-    return (false);
-
-  const Eigen::Vector3f w = p + r * ray - a;
-  const float denominator = u.dot (v) * u.dot (v) - u.dot (u) * v.dot (v);
-  const float s_numerator = u.dot (v) * w.dot (v) - v.dot (v) * w.dot (u);
-  const float s = s_numerator / denominator;
-  if (s < 0 || s > 1)
-    return (false);
-
-  const float t_numerator = u.dot (v) * w.dot (u) - u.dot (u) * w.dot (v);
-  const float t = t_numerator / denominator;
-  if (t < 0 || s+t > 1)
-    return (false);
-  
-  return (true);
 }
 
 #define PCL_INSTANTIATE_CropHull(T) template class PCL_EXPORTS pcl::CropHull<T>;

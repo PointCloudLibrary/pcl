@@ -39,6 +39,7 @@
 
 #include <pcl/Vertices.h>
 #include <pcl/filters/filter_indices.h>
+#include <pcl/aabb_tree/aabb_tree_cgal.h>
 
 namespace pcl
 {
@@ -67,8 +68,10 @@ namespace pcl
       /** \brief Empty Constructor. */
       CropHull () :
         hull_cloud_(),
+        tree_dirty_(true),
         dim_(3),
-        crop_outside_(true)
+        crop_outside_(true),
+        num_threads_(1)
       {
         filter_name_ = "CropHull";
       }
@@ -81,6 +84,7 @@ namespace pcl
       setHullIndices (const std::vector<Vertices>& polygons)
       {
         hull_polygons_ = polygons;
+        tree_dirty_ = true;
       }
 
       /** \brief Get the vertices of the hull used to filter points.
@@ -98,6 +102,7 @@ namespace pcl
       setHullCloud (PointCloudPtr points)
       {
         hull_cloud_ = points;
+        tree_dirty_ = true;
       }
 
       /** \brief Get the point cloud that the hull indices refer to. */
@@ -106,6 +111,10 @@ namespace pcl
       {
         return (hull_cloud_);
       }
+
+      /** \brief Build the AABB tree. */
+      void
+      buildTree ();
     
       /** \brief Set the dimensionality of the hull to be used.
         * This should be set to correspond to the dimensionality of the
@@ -127,6 +136,22 @@ namespace pcl
       setCropOutside(bool crop_outside)
       {
         crop_outside_ = crop_outside;
+      }
+
+      /** \brief Set the number of threads to be used.
+        * \param[in] num_threads The number of threads
+        */
+      inline void
+      setNumberOfThreads(unsigned int num_threads)
+      {
+        if (num_threads == 0)
+#ifdef _OPENMP
+          num_threads_ = omp_get_num_procs();
+#else
+          num_threads_ = 1;
+#endif
+        else
+          num_threads_ = num_threads;
       }
 
     protected:
@@ -182,26 +207,16 @@ namespace pcl
                                       const Vertices& verts,
                                       const PointCloud& cloud);
 
-      /** \brief Does a ray cast from a point intersect with an arbitrary
-        * triangle in 3D?
-        * See: http://softsurfer.com/Archive/algorithm_0105/algorithm_0105.htm#intersect_RayTriangle()
-        * \param[in] point Point from which the ray is cast.
-        * \param[in] ray   Vector in direction of ray.
-        * \param[in] verts Indices of vertices making the polygon.
-        * \param[in] cloud Cloud from which the vertex indices are drawn.
-        */
-      inline static bool
-      rayTriangleIntersect (const PointT& point,
-                            const Eigen::Vector3f& ray,
-                            const Vertices& verts,
-                            const PointCloud& cloud);
-
 
       /** \brief The vertices of the hull used to filter points. */
       std::vector<pcl::Vertices> hull_polygons_;
 
       /** \brief The point cloud that the hull indices refer to. */
       PointCloudPtr hull_cloud_;
+
+      AABBTreeCGAL<PointT> tree_;
+
+      bool tree_dirty_;
 
       /** \brief The dimensionality of the hull to be used. */
       int dim_;
@@ -210,6 +225,8 @@ namespace pcl
        * false, those inside will be removed.
        */
       bool crop_outside_;
+
+      unsigned int num_threads_;
   };
 
 } // namespace pcl
