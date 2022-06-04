@@ -39,9 +39,11 @@
 #include <fstream>
 #include <pcl/common/io.h>
 #include <pcl/console/time.h>
+#include <pcl/io/split.h>
+
 #include <boost/lexical_cast.hpp> // for lexical_cast
 #include <boost/filesystem.hpp> // for exists
-#include <boost/algorithm/string.hpp> // for split
+#include <boost/algorithm/string.hpp> // for trim
 
 pcl::MTLReader::MTLReader ()
 {
@@ -197,11 +199,7 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
         continue;
 
       // Tokenize the line
-      std::stringstream sstream (line);
-      sstream.imbue (std::locale::classic ());
-      line = sstream.str ();
-      boost::trim (line);
-      boost::split (st, line, boost::is_any_of ("\t\r "), boost::token_compress_on);
+      pcl::split (st, line, "\t\r ");
       // Ignore comments
       if (st[0] == "#")
         continue;
@@ -382,6 +380,7 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
         continue;
 
       // Trim the line
+      //TOOD: we can easily do this without boost
       boost::trim (line);
       
       // Ignore comments
@@ -416,7 +415,7 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
       if (line.substr (0, 6) == "mtllib")
       {
         std::vector<std::string> st;
-        boost::split(st, line, boost::is_any_of("\t\r "), boost::token_compress_on);
+        pcl::split(st, line, "\t\r ");
         material_files.push_back (st.at (1));
         continue;
       }
@@ -536,6 +535,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
   //   rgba_field = i;
 
   std::vector<std::string> st;
+  std::string line;
   try
   {
     uindex_t point_idx = 0;
@@ -543,18 +543,13 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
 
     while (!fs.eof ())
     {
-      std::string line;
       getline (fs, line);
       // Ignore empty lines
       if (line.empty())
         continue;
 
       // Tokenize the line
-      std::stringstream sstream (line);
-      sstream.imbue (std::locale::classic ());
-      line = sstream.str ();
-      boost::trim (line);
-      boost::split (st, line, boost::is_any_of ("\t\r "), boost::token_compress_on);
+      pcl::split (st, line, "\t\r ");
 
       // Ignore comments
       if (st[0] == "#")
@@ -693,11 +688,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
         continue;
 
       // Tokenize the line
-      std::stringstream sstream (line);
-      sstream.imbue (std::locale::classic ());
-      line = sstream.str ();
-      boost::trim (line);
-      boost::split (st, line, boost::is_any_of ("\t\r "), boost::token_compress_on);
+      pcl::split (st, line, "\t\r ");
 
       // Ignore comments
       if (st[0] == "#")
@@ -891,11 +882,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
         continue;
 
       // Tokenize the line
-      std::stringstream sstream (line);
-      sstream.imbue (std::locale::classic ());
-      line = sstream.str ();
-      boost::trim (line);
-      boost::split (st, line, boost::is_any_of ("\t\r "), boost::token_compress_on);
+      pcl::split (st, line, "\t\r ");
 
       // Ignore comments
       if (st[0] == "#")
