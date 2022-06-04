@@ -46,12 +46,12 @@
 #include <pcl/io/low_level_io.h>
 #include <pcl/io/lzf.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/io/split.h>
 #include <pcl/console/time.h>
 
 #include <cstring>
 #include <cerrno>
 #include <boost/filesystem.hpp> // for permissions
-#include <boost/algorithm/string.hpp> // for split
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -143,8 +143,7 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
         continue;
 
       // Tokenize the line
-      boost::trim (line);
-      boost::split (st, line, boost::is_any_of ("\t\r "), boost::token_compress_on);
+      pcl::split (st, line, "\t\r ");
 
       std::stringstream sstream (line);
       sstream.imbue (std::locale::classic ());
@@ -439,6 +438,8 @@ pcl::PCDReader::readBodyASCII (std::istream &fs, pcl::PCLPointCloud2 &cloud, int
   std::istringstream is;
   is.imbue (std::locale::classic ());
 
+  st.reserve(elems_per_line);
+
   try
   {
     while (idx < nr_points && !fs.eof ())
@@ -449,8 +450,7 @@ pcl::PCDReader::readBodyASCII (std::istream &fs, pcl::PCLPointCloud2 &cloud, int
         continue;
 
       // Tokenize the line
-      boost::trim (line);
-      boost::split (st, line, boost::is_any_of ("\t\r "), boost::token_compress_on);
+      pcl::split(st, line, "\r\t ");
 
       if (st.size () != elems_per_line) // If this is not checked, an exception might occur while accessing st
       {
