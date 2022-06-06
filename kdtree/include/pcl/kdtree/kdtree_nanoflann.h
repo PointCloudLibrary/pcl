@@ -192,7 +192,7 @@ public:
     return Ptr(new Tree(*this));
   }
 
-  /** \brief Destructor for KdTreeFLANN.
+  /** \brief Destructor for KdTreeNanoflann.
    * Deletes all allocated data arrays and destroys the kd-tree structures.
    */
   ~KdTreeNanoflann() { cleanup(); }

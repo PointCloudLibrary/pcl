@@ -145,8 +145,8 @@ protected:
   using Base::point_representation_;
 
 public:
-  using PointCloud = typename Base::PointCloud;
-  using PointCloudConstPtr = typename Base::PointCloudConstPtr;
+  using PointCloud = pcl::PointCloud<PointT>;
+  using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
   using PointRepresentation = pcl::PointRepresentation<PointT>;
   using PointRepresentationConstPtr = typename PointRepresentation::ConstPtr;
@@ -154,12 +154,12 @@ public:
   using IndicesPtr = shared_ptr<Indices>;
   using IndicesConstPtr = shared_ptr<const Indices>;
   
-  using PointVector = typename Base::PointVector;
-  using IndexMatrix = typename Base::IndexMatrix;
-  using DistanceMatrix = typename Base::DistanceMatrix;
+  using PointVector = typename cuda::KdTree<PointT>::PointVector;
+  using IndexMatrix = typename cuda::KdTree<PointT>::IndexMatrix;
+  using DistanceMatrix = typename cuda::KdTree<PointT>::DistanceMatrix;
 
-  using IndicesVector = typename Base::IndicesVector;
-  using DistancesVector = typename Base::DistancesVector;
+  using IndicesVector = typename cuda::KdTree<PointT>::IndicesVector;
+  using DistancesVector = typename cuda::KdTree<PointT>::DistancesVector;
 
   using FLANNIndex = ::flann::KDTreeCuda3dIndex<Dist>;
 
