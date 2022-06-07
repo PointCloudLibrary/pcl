@@ -407,8 +407,6 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformatio
   pcl::IterativeClosestPoint<PointSource, PointTarget>::initComputeReciprocal();
   // Point cloud containing the correspondences of each point in <input, indices>
   PointCloudSourcePtr input_transformed(new PointCloudSource);
-  // Difference between consecutive transforms
-  double delta = 0;
   // Get the size of the source point cloud
   const std::size_t N = indices_->size();
   // Set the mahalanobis matrices to identity

@@ -73,6 +73,7 @@ GICPConvergenceCriteria<Scalar>::hasConverged()
   // 2. The epsilon (difference) between the previous transformation and the current
   // estimated transformation
   /* compute the delta from this iteration */
+  // Difference between consecutive transforms
   double delta = 0.;
   for (int k = 0; k < 4; k++) {
     for (int l = 0; l < 4; l++) {
