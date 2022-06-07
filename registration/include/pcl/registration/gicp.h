@@ -169,7 +169,7 @@ public:
    * GICPConvergenceCriteria instance. \return Pointer to the
    * GeneralizedIterativeClosestPoint's GICPConvergenceCriteria.
    */
-  inline typename pcl::registration::GICPConvergenceCriteria<double>::Ptr
+  inline typename pcl::registration::GICPConvergenceCriteria<float>::Ptr
   getConvergeCriteria()
   {
     return convergence_criteria_;
