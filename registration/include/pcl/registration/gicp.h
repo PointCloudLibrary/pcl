@@ -41,8 +41,8 @@
 #pragma once
 
 #include <pcl/registration/bfgs.h>
-#include <pcl/registration/icp.h>
 #include <pcl/registration/gicp_convergence_criteria.h>
+#include <pcl/registration/icp.h>
 
 namespace pcl {
 /** \brief GeneralizedIterativeClosestPoint is an ICP variant that implements the
@@ -80,8 +80,10 @@ public:
   using IterativeClosestPoint<PointSource, PointTarget>::correspondences_;
   using IterativeClosestPoint<PointSource, PointTarget>::correspondence_estimation_;
   using IterativeClosestPoint<PointSource, PointTarget>::correspondence_rejectors_;
-  using IterativeClosestPoint<PointSource, PointTarget>::setUseReciprocalCorrespondences;
-  using IterativeClosestPoint<PointSource, PointTarget>::getUseReciprocalCorrespondences;
+  using IterativeClosestPoint<PointSource,
+                              PointTarget>::setUseReciprocalCorrespondences;
+  using IterativeClosestPoint<PointSource,
+                              PointTarget>::getUseReciprocalCorrespondences;
   using IterativeClosestPoint<PointSource, PointTarget>::determineRequiredBlobData;
   using IterativeClosestPoint<PointSource, PointTarget>::use_reciprocal_correspondence_;
   using IterativeClosestPoint<PointSource, PointTarget>::source_has_normals_;
@@ -114,8 +116,7 @@ public:
 
   using Vector6d = Eigen::Matrix<double, 6, 1>;
 
-  typename pcl::registration::GICPConvergenceCriteria<float>::Ptr
-      convergence_criteria_;
+  typename pcl::registration::GICPConvergenceCriteria<float>::Ptr convergence_criteria_;
 
   /** \brief Empty constructor. */
   GeneralizedIterativeClosestPoint()
@@ -140,9 +141,8 @@ public:
       estimateRigidTransformationBFGS(
           cloud_src, indices_src, cloud_tgt, indices_tgt, transformation_matrix);
     };
-    convergence_criteria_.reset(
-        new pcl::registration::GICPConvergenceCriteria<float>(
-            nr_iterations_, transformation_, previous_transformation_, *correspondences_));
+    convergence_criteria_.reset(new pcl::registration::GICPConvergenceCriteria<float>(
+        nr_iterations_, transformation_, previous_transformation_, *correspondences_));
   }
 
   /**
@@ -161,13 +161,13 @@ public:
   operator=(GeneralizedIterativeClosestPoint&&) = delete;
 
   /** \brief Returns a pointer to the GICPConvergenceCriteria used by the
-   * GeneralizedIterativeClosestPoint class. This allows to check the convergence state after the
-   * align() method as well as to configure GICPConvergenceCriteria's parameters not
-   * available through the GICP API before the align() method is called. Please note that
-   * the align method sets max_iterations_, transformation_epsilon_ and
+   * GeneralizedIterativeClosestPoint class. This allows to check the convergence state
+   * after the align() method as well as to configure GICPConvergenceCriteria's
+   * parameters not available through the GICP API before the align() method is called.
+   * Please note that the align method sets max_iterations_, transformation_epsilon_ and
    * rotation_epsilon_ and therefore overrides the default / set values of the
-   * GICPConvergenceCriteria instance. \return Pointer to the GeneralizedIterativeClosestPoint's
-   * GICPConvergenceCriteria.
+   * GICPConvergenceCriteria instance. \return Pointer to the
+   * GeneralizedIterativeClosestPoint's GICPConvergenceCriteria.
    */
   inline typename pcl::registration::GICPConvergenceCriteria<double>::Ptr
   getConvergeCriteria()

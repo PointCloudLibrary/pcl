@@ -451,7 +451,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformatio
   }
 
   convergence_criteria_->setMaximumIterations(max_iterations_);
-  //convergence_criteria_->setRelativeMSE(euclidean_fitness_epsilon_);
+  // convergence_criteria_->setRelativeMSE(euclidean_fitness_epsilon_);
   convergence_criteria_->setTranslationThreshold(transformation_epsilon_);
   convergence_criteria_->setRotationThreshold(rotation_epsilon_);
 
@@ -507,7 +507,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformatio
     std::size_t cnt = correspondences_->size();
     pcl::Indices source_indices(cnt);
     pcl::Indices target_indices(cnt);
-    for(size_t i = 0; i < cnt; ++i) {
+    for (size_t i = 0; i < cnt; ++i) {
       source_indices[i] = (*correspondences_)[i].index_query;
       target_indices[i] = (*correspondences_)[i].index_match;
     }
@@ -559,7 +559,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformatio
   } while (convergence_criteria_->getConvergenceState() ==
            pcl::registration::GICPConvergenceCriteria<
                float>::CONVERGENCE_CRITERIA_NOT_CONVERGED);
-  if(converged_) {
+  if (converged_) {
     PCL_DEBUG("[pcl::%s::computeTransformation] Convergence reached. Number of "
               "iterations: %d out of %d. Transformation difference: %f\n",
               getClassName().c_str(),
@@ -570,7 +570,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformatio
   }
   else {
     PCL_DEBUG("[pcl::%s::computeTransformation] Convergence failed\n",
-                getClassName().c_str());
+              getClassName().c_str());
   }
   final_transformation_ = previous_transformation_ * guess;
 

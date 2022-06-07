@@ -62,10 +62,10 @@ namespace registration {
  * \ingroup registration
  */
 template <typename Scalar = float>
-class GICPConvergenceCriteria  : public ConvergenceCriteria {
+class GICPConvergenceCriteria : public ConvergenceCriteria {
 public:
-  using Ptr = shared_ptr<GICPConvergenceCriteria <Scalar>>;
-  using ConstPtr = shared_ptr<const GICPConvergenceCriteria <Scalar>>;
+  using Ptr = shared_ptr<GICPConvergenceCriteria<Scalar>>;
+  using ConstPtr = shared_ptr<const GICPConvergenceCriteria<Scalar>>;
 
   using Matrix4 = Eigen::Matrix<Scalar, 4, 4>;
 
@@ -91,20 +91,20 @@ public:
    * transformation evaluation \param[in] correspondences a reference to the current set
    * of point correspondences between source and target
    */
-  GICPConvergenceCriteria (const int& iterations,
-                           const Matrix4& transform,
-                           const Matrix4 &previous_transform,
-                           const pcl::Correspondences& correspondences)
+  GICPConvergenceCriteria(const int& iterations,
+                          const Matrix4& transform,
+                          const Matrix4& previous_transform,
+                          const pcl::Correspondences& correspondences)
   : iterations_(iterations)
   , transformation_(transform)
-  , previous_transformation_ (previous_transform)
+  , previous_transformation_(previous_transform)
   , correspondences_(correspondences)
   , correspondences_prev_mse_(std::numeric_limits<double>::max())
   , correspondences_cur_mse_(std::numeric_limits<double>::max())
   , max_iterations_(100) // 100 iterations
   , failure_after_max_iter_(false)
-  , rotation_threshold_(0.99999)        // 0.256 degrees
-  , rotation_epsilon_ (2e-3)
+  , rotation_threshold_(0.99999) // 0.256 degrees
+  , rotation_epsilon_(2e-3)
   , translation_threshold_(3e-4 * 3e-4) // 0.0003 meters
   , mse_threshold_relative_(0.00001)    // 0.001% of the previous MSE (relative error)
   , mse_threshold_absolute_(1e-12)      // MSE (absolute error)
@@ -114,7 +114,7 @@ public:
   {}
 
   /** \brief Empty destructor */
-  ~GICPConvergenceCriteria () {}
+  ~GICPConvergenceCriteria() {}
 
   /** \brief Set the maximum number of consecutive iterations that the internal
    * rotation, translation, and MSE differences are allowed to be similar. \param[in]
@@ -208,7 +208,7 @@ public:
    * consecutive rotations) as set by the user.
    */
   inline double
-  getRotationEpsilon () const
+  getRotationEpsilon() const
   {
     return (rotation_epsilon_);
   }
@@ -309,7 +309,8 @@ protected:
    * method. */
   const Matrix4& transformation_;
 
-  /** \brief The previous transformation obtained by the transformation estimation method. */
+  /** \brief The previous transformation obtained by the transformation estimation
+   * method. */
   const Matrix4& previous_transformation_;
 
   /** \brief The current set of point correspondences between the source and the target.
@@ -334,7 +335,8 @@ protected:
    * angle cosine). */
   double rotation_threshold_;
 
-  /** \brief The rotation epsilon is the maximum allowable difference between two consecutive rotations. */
+  /** \brief The rotation epsilon is the maximum allowable difference between two
+   * consecutive rotations. */
   double rotation_epsilon_;
 
   /** \brief The translation threshold is the relative translation between two

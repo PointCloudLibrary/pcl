@@ -87,7 +87,7 @@ GICPConvergenceCriteria<Scalar>::hasConverged()
         delta = c_delta;
     }
   }
-  if(delta < 1) {
+  if (delta < 1) {
     if (iterations_similar_transforms_ >= max_iterations_similar_transforms_) {
       convergence_state_ = CONVERGENCE_CRITERIA_TRANSFORM;
       return (true);
