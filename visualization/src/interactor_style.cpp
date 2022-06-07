@@ -735,6 +735,8 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       }
     }
 
+    KeyboardEvent event (true, Interactor->GetKeySym (), Interactor->GetKeyCode (), Interactor->GetAltKey (), Interactor->GetControlKey (), Interactor->GetShiftKey ());
+    keyboard_signal_ (event);
     Interactor->Render ();
     return;
   }

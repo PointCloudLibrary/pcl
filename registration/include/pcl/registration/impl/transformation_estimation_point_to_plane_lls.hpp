@@ -266,6 +266,47 @@ TransformationEstimationPointToPlaneLLS<PointSource, PointTarget, Scalar>::
   // Construct the transformation matrix from x
   constructTransformationMatrix(
       x(0), x(1), x(2), x(3), x(4), x(5), transformation_matrix);
+
+  if (pcl::console::isVerbosityLevelEnabled(pcl::console::L_DEBUG)) {
+    size_t N = 0;
+    double loss = 0.0;
+    source_it.reset();
+    target_it.reset();
+    while (source_it.isValid() && target_it.isValid()) {
+      if (!std::isfinite(source_it->x) || !std::isfinite(source_it->y) ||
+          !std::isfinite(source_it->z) || !std::isfinite(target_it->x) ||
+          !std::isfinite(target_it->y) || !std::isfinite(target_it->z) ||
+          !std::isfinite(target_it->normal_x) || !std::isfinite(target_it->normal_y) ||
+          !std::isfinite(target_it->normal_z)) {
+        ++target_it;
+        ++source_it;
+        continue;
+      }
+      const float& sx = source_it->x;
+      const float& sy = source_it->y;
+      const float& sz = source_it->z;
+      const float& dx = target_it->x;
+      const float& dy = target_it->y;
+      const float& dz = target_it->z;
+      const float& nx = target_it->normal[0];
+      const float& ny = target_it->normal[1];
+      const float& nz = target_it->normal[2];
+      double a = nz * sy - ny * sz;
+      double b = nx * sz - nz * sx;
+      double c = ny * sx - nx * sy;
+      double d = nx * dx + ny * dy + nz * dz - nx * sx - ny * sy - nz * sz;
+      Vector6d Arow;
+      Arow << a, b, c, nx, ny, nz;
+      loss += pow(Arow.transpose() * x - d, 2);
+      ++target_it;
+      ++source_it;
+      ++N;
+    }
+    loss /= N;
+    PCL_DEBUG("[pcl::registration::TransformationEstimationPointToPlaneLLS::"
+              "estimateRigidTransformation] Loss :%.10e\n",
+              loss);
+  }
 }
 
 } // namespace registration

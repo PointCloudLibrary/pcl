@@ -360,7 +360,12 @@ pcl::SampleConsensusModelPlane<PointT>::optimizeModelCoefficients (
   EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
   Eigen::Vector4f xyz_centroid;
 
-  computeMeanAndCovarianceMatrix (*input_, inliers, covariance_matrix, xyz_centroid);
+  if (0 == computeMeanAndCovarianceMatrix (*input_, inliers, covariance_matrix, xyz_centroid))
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelPlane::optimizeModelCoefficients] computeMeanAndCovarianceMatrix failed (returned 0) because there are no valid inliers.\n");
+    optimized_coefficients = model_coefficients;
+    return;
+  }
 
   // Compute the model coefficients
   EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value;

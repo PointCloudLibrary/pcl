@@ -270,7 +270,12 @@ pcl::SampleConsensusModelStick<PointT>::optimizeModelCoefficients (
   Eigen::Vector4f centroid;
   Eigen::Matrix3f covariance_matrix;
 
-  computeMeanAndCovarianceMatrix (*input_, inliers, covariance_matrix, centroid);
+  if (0 == computeMeanAndCovarianceMatrix (*input_, inliers, covariance_matrix, centroid))
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelStick::optimizeModelCoefficients] computeMeanAndCovarianceMatrix failed (returned 0) because there are no valid inliers.\n");
+    optimized_coefficients = model_coefficients;
+    return;
+  }
 
   optimized_coefficients[0] = centroid[0];
   optimized_coefficients[1] = centroid[1];

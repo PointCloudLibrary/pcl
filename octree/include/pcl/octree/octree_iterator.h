@@ -68,12 +68,14 @@ struct IteratorState {
  * \author Julius Kammerl (julius@kammerl.de)
  */
 template <typename OctreeT>
-class OctreeIteratorBase : public std::iterator<std::forward_iterator_tag,
-                                                const OctreeNode,
-                                                void,
-                                                const OctreeNode*,
-                                                const OctreeNode&> {
+class OctreeIteratorBase {
 public:
+  using iterator_category = std::forward_iterator_tag;
+  using value_type = const OctreeNode;
+  using difference_type = void;
+  using pointer = const OctreeNode*;
+  using reference = const OctreeNode&;
+
   using LeafNode = typename OctreeT::LeafNode;
   using BranchNode = typename OctreeT::BranchNode;
 

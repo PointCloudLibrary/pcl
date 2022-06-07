@@ -56,6 +56,8 @@ template<typename PointSource, typename PointTarget> void
 RegistrationVisualizer<PointSource, PointTarget>::stopDisplay ()
 {
   // Stop the rendering thread. This will kill the display window.
+  if(viewer_thread_.joinable())
+    viewer_thread_.join();
   viewer_thread_.~thread ();
 }
 

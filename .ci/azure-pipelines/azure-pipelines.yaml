@@ -26,8 +26,8 @@ resources:
       image: pointcloudlibrary/env:18.04
     - container: env2004
       image: pointcloudlibrary/env:20.04
-    - container: env2110
-      image: pointcloudlibrary/env:21.10
+    - container: env2204
+      image: pointcloudlibrary/env:22.04
 
 stages:
   - stage: formatting
@@ -51,11 +51,11 @@ stages:
               CXX: g++
               BUILD_GPU: ON
               CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON'
-            21.10 GCC:  # latest Ubuntu
-              CONTAINER: env2110
+            22.04 GCC:  # latest Ubuntu
+              CONTAINER: env2204
               CC: gcc
               CXX: g++
-              BUILD_GPU: OFF
+              BUILD_GPU: OFF # There are currently incompatibilities between GCC 11.2 and CUDA 11.5
         container: $[ variables['CONTAINER'] ]
         timeoutInMinutes: 0
         variables:

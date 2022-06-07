@@ -81,7 +81,7 @@ Here is a screenshot of the PCL HDL Viewer in action, which uses the HDL Grabber
    :target: _images/pcl_hdl_viewer.png
 
 
-So let's look at the code. The following represents a simplified version of *visualization/tools/hdl_viewer_simple.cpp*
+So let's look at the code. The following represents a simplified version of *tools/hdl_viewer_simple.cpp*
 
 .. code-block:: cpp
    :linenos:
@@ -93,6 +93,7 @@ So let's look at the code. The following represents a simplified version of *vis
    #include <pcl/visualization/cloud_viewer.h>
    #include <pcl/console/parse.h>
 
+   using namespace std::chrono_literals;
    using namespace pcl::console;
    using namespace pcl::visualization;
 
@@ -102,7 +103,7 @@ So let's look at the code. The following represents a simplified version of *vis
        typedef pcl::PointCloud<pcl::PointXYZI> Cloud;
        typedef Cloud::ConstPtr CloudConstPtr;
 
-       SimpleHDLViewer (Grabber& grabber,
+       SimpleHDLViewer (pcl::Grabber& grabber,
            pcl::visualization::PointCloudColorHandler<pcl::PointXYZI> &handler) :
            cloud_viewer_ (new pcl::visualization::PCLVisualizer ("PCL HDL Cloud")),
            grabber_ (grabber),
@@ -154,7 +155,7 @@ So let's look at the code. The following represents a simplified version of *vis
            if (!grabber_.isRunning ())
              cloud_viewer_->spin ();
 
-           boost::this_thread::sleep (boost::posix_time::microseconds (100));
+           std::this_thread::sleep_for(100us);
          }
 
          grabber_.stop ();
@@ -182,7 +183,7 @@ So let's look at the code. The following represents a simplified version of *vis
 
      pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZI> color_handler ("intensity");
 
-     SimpleHDLViewer<PointXYZI> v (grabber, color_handler);
+     SimpleHDLViewer v (grabber, color_handler);
      v.run ();
      return (0);
    }

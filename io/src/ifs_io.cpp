@@ -122,7 +122,9 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
       char *keyword = new char [length_of_keyword];
       fs.read (keyword, sizeof (char) * length_of_keyword);
 
-      if (strcmp (keyword, "VERTICES") == 0)
+      const bool keyword_is_vertices = (strcmp (keyword, "VERTICES") == 0);
+      delete[] keyword;
+      if (keyword_is_vertices)
       {
         fs.read ((char*)&nr_points, sizeof (std::uint32_t));
         if ((nr_points == 0) || (nr_points > 10000000))

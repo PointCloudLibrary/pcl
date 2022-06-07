@@ -399,7 +399,7 @@ TEST (PCL, Octree2Buf_Test)
 
     // add data to leaf node voxel
     int* voxel_container = octreeA.createLeaf(voxels[i].x, voxels[i].y, voxels[i].z);
-    data[i] = *voxel_container;
+    *voxel_container = data[i];
 
   }
 
