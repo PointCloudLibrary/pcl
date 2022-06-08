@@ -93,7 +93,7 @@ public:
       shared_ptr<NormalDistributionsTransform<PointSource, PointTarget, Scalar>>;
   using ConstPtr =
       shared_ptr<const NormalDistributionsTransform<PointSource, PointTarget, Scalar>>;
-  using Vector3 = Eigen::Matrix<Scalar, 3, 1>;
+  using Vector3 = typename Eigen::Matrix<Scalar, 3, 1>;
   using Matrix4 = typename Registration<PointSource, PointTarget, Scalar>::Matrix4;
   using Affine3 = typename Eigen::Transform<Scalar, 3, Eigen::Affine>;
 
