@@ -105,7 +105,7 @@ NormalDistributionsTransform<PointSource, PointTarget, Scalar>::computeTransform
   Eigen::Matrix<double, 6, 1> transform, score_gradient;
   Vector3 init_translation = eig_transformation.translation();
   Vector3 init_rotation = eig_transformation.rotation().eulerAngles(0, 1, 2);
-  transform << init_translation.cast<double>(), init_rotation.cast<double>();
+  transform << init_translation.template cast<double>(), init_rotation.template cast<double>();
 
   Eigen::Matrix<double, 6, 6> hessian;
 
