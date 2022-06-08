@@ -222,84 +222,267 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
   tmp_idx_tgt_ = &indices_tgt;
 
   // Optimize using BFGS
-  int result;
   int inner_iterations_ = 0;
-  Eigen::Vector3d x_part;
-  if (is_translation_turn_) {
-    // construct BFGS in every iteration!? can be a member variable!
+  if (!is_alternating_) {
     // Optimize using BFGS
-    OptimizationFunctorWithIndicesTranslation functor_trans(this);
-    BFGS<OptimizationFunctorWithIndicesTranslation> bfgs_trans(functor_trans);
-    bfgs_trans.parameters.sigma = 0.01;
-    bfgs_trans.parameters.rho = 0.01;
-    bfgs_trans.parameters.tau1 = 9;
-    bfgs_trans.parameters.tau2 = 0.05;
-    bfgs_trans.parameters.tau3 = 0.5;
-    bfgs_trans.parameters.order = 3;
+    OptimizationFunctorWithIndices functor(this);
+    BFGS<OptimizationFunctorWithIndices> bfgs(functor);
+    bfgs.parameters.sigma = 0.01;
+    bfgs.parameters.rho = 0.01;
+    bfgs.parameters.tau1 = 9;
+    bfgs.parameters.tau2 = 0.05;
+    bfgs.parameters.tau3 = 0.5;
+    bfgs.parameters.order = 3;
 
-    x_part = x.head<3>();
-
-    result = bfgs_trans.minimizeInit(x_part);
+    int result = bfgs.minimizeInit(x);
     result = BFGSSpace::Running;
     do {
-      PCL_DEBUG("inner_iterations_: %f\n", inner_iterations_);
       inner_iterations_++;
-      result = bfgs_trans.minimizeOneStep(x_part);
-      PCL_DEBUG("BFGS minimizeOneStep finished with exit code %i \n", result);
+      result = bfgs.minimizeOneStep(x);
       if (result) {
         break;
       }
-      result = bfgs_trans.testGradient();
-      PCL_DEBUG("BFGS testGradient finished with exit code %i \n", result);
+      result = bfgs.testGradient();
     } while (result == BFGSSpace::Running && inner_iterations_ < max_inner_iterations_);
+    if (result == BFGSSpace::NoProgress || result == BFGSSpace::Success ||
+        inner_iterations_ == max_inner_iterations_) {
+      PCL_DEBUG("[pcl::registration::TransformationEstimationBFGS::"
+                "estimateRigidTransformation]");
+      PCL_DEBUG("BFGS solver finished with exit code %i \n", result);
+      transformation_matrix.setIdentity();
+      applyState(transformation_matrix, x);
+    }
+    else
+      PCL_THROW_EXCEPTION(
+          SolverDidntConvergeException,
+          "[pcl::"
+              << getClassName()
+              << "::TransformationEstimationBFGS::estimateRigidTransformation] BFGS "
+                 "solver didn't converge!");
   }
   else {
-    // Optimize using BFGS
-    OptimizationFunctorWithIndicesRotation functor_rot(this);
-    BFGS<OptimizationFunctorWithIndicesRotation> bfgs_rot(functor_rot);
-    bfgs_rot.parameters.sigma = 0.01;
-    bfgs_rot.parameters.rho = 0.01;
-    bfgs_rot.parameters.tau1 = 9;
-    bfgs_rot.parameters.tau2 = 0.05;
-    bfgs_rot.parameters.tau3 = 0.5;
-    bfgs_rot.parameters.order = 3;
-
-    x_part = x.tail<3>();
-
-    result = bfgs_rot.minimizeInit(x_part);
-    result = BFGSSpace::Running;
-    do {
-      PCL_DEBUG("inner_iterations_: %f\n", inner_iterations_);
-      inner_iterations_++;
-      result = bfgs_rot.minimizeOneStep(x_part);
-      PCL_DEBUG("BFGS minimizeOneStep finished with exit code %i \n", result);
-      if (result) {
-        break;
-      }
-      result = bfgs_rot.testGradient();
-      PCL_DEBUG("BFGS testGradient finished with exit code %i \n", result);
-    } while (result == BFGSSpace::Running && inner_iterations_ < max_inner_iterations_);
-  }
-  if (result == BFGSSpace::NoProgress || result == BFGSSpace::Success ||
-      inner_iterations_ == max_inner_iterations_) {
-    PCL_DEBUG("[pcl::registration::TransformationEstimationBFGS::"
-              "estimateRigidTransformation]");
-    PCL_DEBUG("BFGS solver finished with exit code %i \n", result);
-    transformation_matrix.setIdentity();
+    int result;
+    Eigen::Vector3d x_part;
     if (is_translation_turn_) {
-      x.head<3>() = x_part;
+      // construct BFGS in every iteration!? can be a member variable!
+      // Optimize using BFGS
+      OptimizationFunctorWithIndicesTranslation functor_trans(this);
+      BFGS<OptimizationFunctorWithIndicesTranslation> bfgs_trans(functor_trans);
+      bfgs_trans.parameters.sigma = 0.01;
+      bfgs_trans.parameters.rho = 0.01;
+      bfgs_trans.parameters.tau1 = 9;
+      bfgs_trans.parameters.tau2 = 0.05;
+      bfgs_trans.parameters.tau3 = 0.5;
+      bfgs_trans.parameters.order = 3;
+
+      x_part = x.head<3>();
+
+      result = bfgs_trans.minimizeInit(x_part);
+      result = BFGSSpace::Running;
+      do {
+        PCL_DEBUG("inner_iterations_: %f\n", inner_iterations_);
+        inner_iterations_++;
+        result = bfgs_trans.minimizeOneStep(x_part);
+        PCL_DEBUG("BFGS minimizeOneStep finished with exit code %i \n", result);
+        if (result) {
+          break;
+        }
+        result = bfgs_trans.testGradient();
+        PCL_DEBUG("BFGS testGradient finished with exit code %i \n", result);
+      } while (result == BFGSSpace::Running &&
+               inner_iterations_ < max_inner_iterations_);
     }
     else {
-      x.tail<3>() = x_part;
+      // Optimize using BFGS
+      OptimizationFunctorWithIndicesRotation functor_rot(this);
+      BFGS<OptimizationFunctorWithIndicesRotation> bfgs_rot(functor_rot);
+      bfgs_rot.parameters.sigma = 0.01;
+      bfgs_rot.parameters.rho = 0.01;
+      bfgs_rot.parameters.tau1 = 9;
+      bfgs_rot.parameters.tau2 = 0.05;
+      bfgs_rot.parameters.tau3 = 0.5;
+      bfgs_rot.parameters.order = 3;
+
+      x_part = x.tail<3>();
+
+      result = bfgs_rot.minimizeInit(x_part);
+      result = BFGSSpace::Running;
+      do {
+        PCL_DEBUG("inner_iterations_: %f\n", inner_iterations_);
+        inner_iterations_++;
+        result = bfgs_rot.minimizeOneStep(x_part);
+        PCL_DEBUG("BFGS minimizeOneStep finished with exit code %i \n", result);
+        if (result) {
+          break;
+        }
+        result = bfgs_rot.testGradient();
+        PCL_DEBUG("BFGS testGradient finished with exit code %i \n", result);
+      } while (result == BFGSSpace::Running &&
+               inner_iterations_ < max_inner_iterations_);
     }
-    applyState(transformation_matrix, x);
+    if (result == BFGSSpace::NoProgress || result == BFGSSpace::Success ||
+        inner_iterations_ == max_inner_iterations_) {
+      PCL_DEBUG("[pcl::registration::TransformationEstimationBFGS::"
+                "estimateRigidTransformation]");
+      PCL_DEBUG("BFGS solver finished with exit code %i \n", result);
+      transformation_matrix.setIdentity();
+      if (is_translation_turn_) {
+        x.head<3>() = x_part;
+      }
+      else {
+        x.tail<3>() = x_part;
+      }
+      applyState(transformation_matrix, x);
+    }
+    else
+      PCL_THROW_EXCEPTION(
+          SolverDidntConvergeException,
+          "[pcl::"
+              << getClassName()
+              << "::TransformationEstimationBFGS::estimateRigidTransformation] BFGS "
+                 "solver didn't converge!");
   }
-  else
-    PCL_THROW_EXCEPTION(
-        SolverDidntConvergeException,
-        "[pcl::" << getClassName()
-                 << "::TransformationEstimationBFGS::estimateRigidTransformation] BFGS "
-                    "solver didn't converge!");
+}
+
+template <typename PointSource, typename PointTarget>
+inline double
+GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
+    OptimizationFunctorWithIndices::operator()(const Vector6d& x)
+{
+  Eigen::Matrix4f transformation_matrix = gicp_->base_transformation_;
+  gicp_->applyState(transformation_matrix, x);
+  double f = 0;
+  int m = static_cast<int>(gicp_->tmp_idx_src_->size());
+  for (int i = 0; i < m; ++i) {
+    // The last coordinate, p_src[3] is guaranteed to be set to 1.0 in registration.hpp
+    Vector4fMapConst p_src =
+        (*gicp_->tmp_src_)[(*gicp_->tmp_idx_src_)[i]].getVector4fMap();
+    // The last coordinate, p_tgt[3] is guaranteed to be set to 1.0 in registration.hpp
+    Vector4fMapConst p_tgt =
+        (*gicp_->tmp_tgt_)[(*gicp_->tmp_idx_tgt_)[i]].getVector4fMap();
+    Eigen::Vector4f p_trans_src(transformation_matrix * p_src);
+    // Estimate the distance (cost function)
+    // The last coordinate is still guaranteed to be set to 1.0
+    // The d here is the negative of the d in the paper
+    Eigen::Vector3d d(p_trans_src[0] - p_tgt[0],
+                      p_trans_src[1] - p_tgt[1],
+                      p_trans_src[2] - p_tgt[2]);
+    Eigen::Vector3d Md(gicp_->mahalanobis((*gicp_->tmp_idx_src_)[i]) * d);
+    // increment= d'*Md/num_matches = d'*M*d/num_matches (we postpone
+    // 1/num_matches after the loop closes)
+    f += double(d.transpose() * Md);
+  }
+  return f / m;
+}
+
+template <typename PointSource, typename PointTarget>
+inline void
+GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
+    OptimizationFunctorWithIndices::df(const Vector6d& x, Vector6d& g)
+{
+  Eigen::Matrix4f transformation_matrix = gicp_->base_transformation_;
+  gicp_->applyState(transformation_matrix, x);
+  // Zero out g
+  g.setZero();
+  // Eigen::Vector3d g_t = g.head<3> ();
+  // the transpose of the derivative of the cost function w.r.t rotation matrix
+  Eigen::Matrix3d dCost_dR_T = Eigen::Matrix3d::Zero();
+  int m = static_cast<int>(gicp_->tmp_idx_src_->size());
+  for (int i = 0; i < m; ++i) {
+    // The last coordinate, p_src[3] is guaranteed to be set to 1.0 in registration.hpp
+    Vector4fMapConst p_src =
+        (*gicp_->tmp_src_)[(*gicp_->tmp_idx_src_)[i]].getVector4fMap();
+    // The last coordinate, p_tgt[3] is guaranteed to be set to 1.0 in registration.hpp
+    Vector4fMapConst p_tgt =
+        (*gicp_->tmp_tgt_)[(*gicp_->tmp_idx_tgt_)[i]].getVector4fMap();
+
+    Eigen::Vector4f p_trans_src(transformation_matrix * p_src);
+    // The last coordinate is still guaranteed to be set to 1.0
+    // The d here is the negative of the d in the paper
+    Eigen::Vector3d d(p_trans_src[0] - p_tgt[0],
+                      p_trans_src[1] - p_tgt[1],
+                      p_trans_src[2] - p_tgt[2]);
+    // Md = M*d
+    Eigen::Vector3d Md(gicp_->mahalanobis((*gicp_->tmp_idx_src_)[i]) * d);
+    // Increment translation gradient
+    // g.head<3> ()+= 2*M*d/num_matches (we postpone 2/num_matches after the loop
+    // closes)
+    g.head<3>() += Md;
+    // Increment rotation gradient
+    p_trans_src = gicp_->base_transformation_ * p_src;
+    Eigen::Vector3d p_base_src(p_trans_src[0], p_trans_src[1], p_trans_src[2]);
+    dCost_dR_T += p_base_src * Md.transpose();
+  }
+  g.head<3>() *= 2.0 / m;
+  dCost_dR_T *= 2.0 / m;
+  gicp_->computeRDerivative(x, dCost_dR_T, g);
+}
+
+template <typename PointSource, typename PointTarget>
+inline void
+GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
+    OptimizationFunctorWithIndices::fdf(const Vector6d& x, double& f, Vector6d& g)
+{
+  Eigen::Matrix4f transformation_matrix = gicp_->base_transformation_;
+  gicp_->applyState(transformation_matrix, x);
+  f = 0;
+  g.setZero();
+  // the transpose of the derivative of the cost function w.r.t rotation matrix
+  Eigen::Matrix3d dCost_dR_T = Eigen::Matrix3d::Zero();
+  const int m = static_cast<int>(gicp_->tmp_idx_src_->size());
+  for (int i = 0; i < m; ++i) {
+    // The last coordinate, p_src[3] is guaranteed to be set to 1.0 in registration.hpp
+    Vector4fMapConst p_src =
+        (*gicp_->tmp_src_)[(*gicp_->tmp_idx_src_)[i]].getVector4fMap();
+    // The last coordinate, p_tgt[3] is guaranteed to be set to 1.0 in registration.hpp
+    Vector4fMapConst p_tgt =
+        (*gicp_->tmp_tgt_)[(*gicp_->tmp_idx_tgt_)[i]].getVector4fMap();
+    Eigen::Vector4f p_trans_src(transformation_matrix * p_src);
+    // The last coordinate is still guaranteed to be set to 1.0
+    // The d here is the negative of the d in the paper
+    Eigen::Vector3d d(p_trans_src[0] - p_tgt[0],
+                      p_trans_src[1] - p_tgt[1],
+                      p_trans_src[2] - p_tgt[2]);
+    // Md = M*d
+    Eigen::Vector3d Md(gicp_->mahalanobis((*gicp_->tmp_idx_src_)[i]) * d);
+    // Increment total error
+    f += double(d.transpose() * Md);
+    // Increment translation gradient
+    // g.head<3> ()+= 2*M*d/num_matches (we postpone 2/num_matches after the loop
+    // closes)
+    g.head<3>() += Md;
+    p_trans_src = gicp_->base_transformation_ * p_src;
+    Eigen::Vector3d p_base_src(p_trans_src[0], p_trans_src[1], p_trans_src[2]);
+    // Increment rotation gradient
+    dCost_dR_T += p_base_src * Md.transpose();
+  }
+  f /= double(m);
+  g.head<3>() *= double(2.0 / m);
+  dCost_dR_T *= 2.0 / m;
+  gicp_->computeRDerivative(x, dCost_dR_T, g);
+}
+
+template <typename PointSource, typename PointTarget>
+inline BFGSSpace::Status
+GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
+    OptimizationFunctorWithIndices::checkGradient(const Vector6d& g)
+{
+  auto translation_epsilon = gicp_->translation_gradient_tolerance_;
+  auto rotation_epsilon = gicp_->rotation_gradient_tolerance_;
+
+  if ((translation_epsilon < 0.) || (rotation_epsilon < 0.))
+    return BFGSSpace::NegativeGradientEpsilon;
+
+  // express translation gradient as norm of translation parameters
+  auto translation_grad = g.head<3>().norm();
+
+  // express rotation gradient as a norm of rotation parameters
+  auto rotation_grad = g.tail<3>().norm();
+
+  if ((translation_grad < translation_epsilon) && (rotation_grad < rotation_epsilon))
+    return BFGSSpace::Success;
+
+  return BFGSSpace::Running;
 }
 
 template <typename PointSource, typename PointTarget>

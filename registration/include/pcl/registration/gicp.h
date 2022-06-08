@@ -111,6 +111,7 @@ public:
   , max_inner_iterations_(20)
   , translation_gradient_tolerance_(1e-2)
   , rotation_gradient_tolerance_(1e-2)
+  , is_alternating_(false)
   , is_translation_turn_(true)
   {
     min_number_correspondences_ = 4;
@@ -315,6 +316,26 @@ public:
     return rotation_gradient_tolerance_;
   }
 
+  /** \brief Set whether or not optimizing translation part and rotation part
+   * alternatively
+   * \param[in] is_alternating whether or not optimizing translation part
+   * and rotation part alternatively
+   */
+  void
+  setIsAlternating(bool is_alternating)
+  {
+    is_alternating_ = is_alternating;
+  }
+
+  /** \brief Return whether or not optimizing translation part and rotation part
+   * alternatively
+   */
+  bool
+  getIsAlternating() const
+  {
+    return is_alternating_;
+  }
+
 protected:
   /** \brief The number of neighbors used for covariances computation.
    * default: 20
@@ -368,6 +389,10 @@ protected:
 
   /** \brief current transformation of source point cloud */
   Vector6d current_transformation_;
+
+  /** \brief whether or not optimizing translation part and rotation part alternatively
+   */
+  bool is_alternating_;
 
   /** \brief whether current iteration is optimizing translation part or not */
   bool is_translation_turn_;
@@ -429,6 +454,23 @@ protected:
   /// \brief compute transformation matrix from transformation matrix
   void
   applyState(Eigen::Matrix4f& t, const Vector6d& x) const;
+
+  /// \brief optimization functor structure
+  struct OptimizationFunctorWithIndices : public BFGSDummyFunctor<double, 6> {
+    OptimizationFunctorWithIndices(const GeneralizedIterativeClosestPoint* gicp)
+    : BFGSDummyFunctor<double, 6>(), gicp_(gicp)
+    {}
+    double
+    operator()(const Vector6d& x) override;
+    void
+    df(const Vector6d& x, Vector6d& df) override;
+    void
+    fdf(const Vector6d& x, double& f, Vector6d& df) override;
+    BFGSSpace::Status
+    checkGradient(const Vector6d& g) override;
+
+    const GeneralizedIterativeClosestPoint* gicp_;
+  };
 
   /// \brief optimization functor structure for translation part
   struct OptimizationFunctorWithIndicesTranslation
