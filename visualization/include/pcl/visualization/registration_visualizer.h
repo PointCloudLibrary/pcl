@@ -53,7 +53,7 @@ namespace pcl
    * \author Gheorghe Lisca
    * \ingroup visualization
    */
-  template<typename PointSource, typename PointTarget>
+  template<typename PointSource, typename PointTarget, typename Scalar = float>
   class RegistrationVisualizer
   {
 
@@ -81,7 +81,7 @@ namespace pcl
        * \param registration represents the registration method whose intermediate steps will be rendered.
        */
       bool
-      setRegistration (pcl::Registration<PointSource, PointTarget> &registration)
+      setRegistration (pcl::Registration<PointSource, PointTarget, Scalar> &registration)
       {
         // Update the name of the registration method to be displayed
         registration_method_name_ = registration.getClassName();
