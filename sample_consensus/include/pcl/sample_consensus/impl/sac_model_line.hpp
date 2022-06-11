@@ -55,18 +55,20 @@ pcl::SampleConsensusModelLine<PointT>::isSampleGood (const Indices &samples) con
     PCL_ERROR ("[pcl::SampleConsensusModelLine::isSampleGood] Wrong number of samples (is %lu, should be %lu)!\n", samples.size (), sample_size_);
     return (false);
   }
+
   // Make sure that the two sample points are not identical
   if (
-      ((*input_)[samples[0]].x != (*input_)[samples[1]].x)
-    ||
-      ((*input_)[samples[0]].y != (*input_)[samples[1]].y)
-    ||
-      ((*input_)[samples[0]].z != (*input_)[samples[1]].z))
+      std::abs ((*input_)[samples[0]].x - (*input_)[samples[1]].x) <= std::numeric_limits<float>::epsilon ()
+    &&
+      std::abs ((*input_)[samples[0]].y - (*input_)[samples[1]].y) <= std::numeric_limits<float>::epsilon ()
+    &&
+      std::abs ((*input_)[samples[0]].z - (*input_)[samples[1]].z) <= std::numeric_limits<float>::epsilon ())
   {
-    return (true);
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::isSampleGood] The two sample points are (almost) identical!\n");
+    return (false);
   }
 
-  return (false);
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -74,17 +76,10 @@ template <typename PointT> bool
 pcl::SampleConsensusModelLine<PointT>::computeModelCoefficients (
       const Indices &samples, Eigen::VectorXf &model_coefficients) const
 {
-  // Need 2 samples
-  if (samples.size () != sample_size_)
+  // Make sure that the samples are valid
+  if (!isSampleGood (samples))
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelLine::computeModelCoefficients] Invalid set of samples given (%lu)!\n", samples.size ());
-    return (false);
-  }
-
-  if (std::abs ((*input_)[samples[0]].x - (*input_)[samples[1]].x) <= std::numeric_limits<float>::epsilon () && 
-      std::abs ((*input_)[samples[0]].y - (*input_)[samples[1]].y) <= std::numeric_limits<float>::epsilon () && 
-      std::abs ((*input_)[samples[0]].z - (*input_)[samples[1]].z) <= std::numeric_limits<float>::epsilon ())
-  {
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::computeModelCoefficients] Invalid set of samples given!\n");
     return (false);
   }
 
@@ -96,6 +91,9 @@ pcl::SampleConsensusModelLine<PointT>::computeModelCoefficients (
   model_coefficients[3] = (*input_)[samples[1]].x - model_coefficients[0];
   model_coefficients[4] = (*input_)[samples[1]].y - model_coefficients[1];
   model_coefficients[5] = (*input_)[samples[1]].z - model_coefficients[2];
+
+  // This precondition should hold if the samples have been found to be good
+  assert (model_coefficients.template tail<3> ().squaredNorm () > 0.0f);
 
   model_coefficients.template tail<3> ().normalize ();
   PCL_DEBUG ("[pcl::SampleConsensusModelLine::computeModelCoefficients] Model is (%g,%g,%g,%g,%g,%g).\n",

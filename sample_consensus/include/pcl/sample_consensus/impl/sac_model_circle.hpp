@@ -54,7 +54,9 @@ pcl::SampleConsensusModelCircle2D<PointT>::isSampleGood(const Indices &samples) 
     PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::isSampleGood] Wrong number of samples (is %lu, should be %lu)!\n", samples.size (), sample_size_);
     return (false);
   }
-  // Get the values at the two points
+
+  // Double precision here follows computeModelCoefficients, which means we
+  // can't use getVector3fMap-accessor to make our lives easier.
   Eigen::Array2d p0 ((*input_)[samples[0]].x, (*input_)[samples[0]].y);
   Eigen::Array2d p1 ((*input_)[samples[1]].x, (*input_)[samples[1]].y);
   Eigen::Array2d p2 ((*input_)[samples[2]].x, (*input_)[samples[2]].y);
@@ -64,19 +66,23 @@ pcl::SampleConsensusModelCircle2D<PointT>::isSampleGood(const Indices &samples) 
   // Compute the segment values (in 2d) between p2 and p0
   p2 -= p0;
 
-  Eigen::Array2d dy1dy2 = p1 / p2;
+  // Check if the triangle area spanned by the three sample points is greater than 0
+  // https://en.wikipedia.org/wiki/Triangle#Using_vectors
+  if (std::abs (p1.x()*p2.y() - p2.x()*p1.y()) < Eigen::NumTraits<double>::dummy_precision ()) {
+    PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::isSampleGood] Sample points too similar or collinear!\n");
+    return (false);
+  }
 
-  return (dy1dy2[0] != dy1dy2[1]);
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::SampleConsensusModelCircle2D<PointT>::computeModelCoefficients (const Indices &samples, Eigen::VectorXf &model_coefficients) const
 {
-  // Need 3 samples
-  if (samples.size () != sample_size_)
+  if (!isSampleGood (samples))
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::computeModelCoefficients] Invalid set of samples given (%lu)!\n", samples.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::computeModelCoefficients] Invalid set of samples given!\n");
     return (false);
   }
 

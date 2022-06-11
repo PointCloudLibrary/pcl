@@ -520,6 +520,89 @@ TEST (SampleConsensusModelCircle2D, RANSAC)
   EXPECT_NEAR ( 1, coeff_refined[2], 1e-3);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+TEST (SampleConsensusModelCircle2D, SampleValidationPointsValid)
+{
+  PointCloud<PointXYZ> cloud;
+  cloud.resize (3);
+
+  cloud[0].getVector3fMap () <<  1.0f,  2.0f,  0.0f;
+  cloud[1].getVector3fMap () <<  0.0f,  1.0f,  0.0f;
+  cloud[2].getVector3fMap () <<  1.5f,  0.0f,  0.0f;
+
+  // Create a shared line model pointer directly
+  SampleConsensusModelCircle2DPtr model (
+    new SampleConsensusModelCircle2D<PointXYZ> (cloud.makeShared ()));
+
+  // Algorithm tests
+  pcl::Indices samples;
+  int iterations = 0;
+  model->getSamples(iterations, samples);
+  EXPECT_EQ (samples.size(), 3);
+
+  Eigen::VectorXf modelCoefficients;
+  EXPECT_TRUE (model->computeModelCoefficients (samples, modelCoefficients));
+
+  EXPECT_NEAR (modelCoefficients[0], 1.05f, 1e-3);   // center x
+  EXPECT_NEAR (modelCoefficients[1], 0.95f, 1e-3);   // center y
+  EXPECT_NEAR (modelCoefficients[2], std::sqrt (1.105f), 1e-3);  // radius
+}
+
+using PointVector = std::vector<PointXYZ>;
+class SampleConsensusModelCircle2DCollinearTest
+  : public testing::TestWithParam<PointVector> {
+  protected:
+    void SetUp() override {
+      pointCloud_ = make_shared<PointCloud<PointXYZ>>();
+      for(const auto& point : GetParam()) {
+        pointCloud_->emplace_back(point);
+      }
+    }
+
+    PointCloud<PointXYZ>::Ptr pointCloud_ = nullptr;
+};
+
+// Parametric tests clearly show the input for which they failed and provide
+// clearer feedback if something is changed in the future.
+TEST_P (SampleConsensusModelCircle2DCollinearTest, SampleValidationPointsInvalid)
+{
+  ASSERT_NE (pointCloud_, nullptr);
+
+  SampleConsensusModelCircle2DPtr model (
+      new SampleConsensusModelCircle2D<PointXYZ> (pointCloud_));
+  ASSERT_GE (model->getInputCloud ()->size (), model->getSampleSize ());
+
+  // Algorithm tests
+  // (Maybe) TODO: try to implement the "cheat point" trick from
+  //               test_sample_consensus_line_models.cpp and friends here, too.
+  // pcl::Indices samples;
+  // int iterations = 0;
+  // model->getSamples(iterations, samples);
+  // EXPECT_EQ (samples.size(), 0);
+
+  // Explicitly enforce sample order so they can act as designed
+  pcl::Indices forcedSamples = {0, 1, 2};
+  Eigen::VectorXf modelCoefficients;
+  EXPECT_FALSE (model->computeModelCoefficients (forcedSamples, modelCoefficients));
+}
+
+INSTANTIATE_TEST_SUITE_P (CollinearInputs, SampleConsensusModelCircle2DCollinearTest,
+  testing::Values( // Throw in some negative coordinates and "asymmetric" points to cover more cases
+    PointVector {{ 0.0f,  0.0f, 0.0f}, { 1.0f,  0.0f, 0.0f}, { 2.0f,  0.0f, 0.0f}}, // collinear along x-axis
+    PointVector {{-1.0f,  0.0f, 0.0f}, { 1.0f,  0.0f, 0.0f}, { 2.0f,  0.0f, 0.0f}},
+    PointVector {{ 0.0f, -1.0f, 0.0f}, { 0.0f,  1.0f, 0.0f}, { 0.0f,  2.0f, 0.0f}}, // collinear along y-axis
+    PointVector {{ 0.0f, -1.0f, 0.0f}, { 0.0f,  1.0f, 0.0f}, { 0.0f,  2.0f, 0.0f}},
+    PointVector {{ 0.0f,  0.0f, 0.0f}, { 1.0f,  1.0f, 0.0f}, { 2.0f,  2.0f, 0.0f}}, // collinear along diagonal
+    PointVector {{ 0.0f,  0.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, {-2.0f, -2.0f, 0.0f}},
+    PointVector {{-3.0f, -6.5f, 0.0f}, {-2.0f, -0.5f, 0.0f}, {-1.5f,  2.5f, 0.0f}}, // other collinear input
+    PointVector {{ 2.0f,  2.0f, 0.0f}, { 0.0f,  0.0f, 0.0f}, { 0.0f,  0.0f, 0.0f}}, // two points equal
+    PointVector {{ 0.0f,  0.0f, 0.0f}, { 2.0f,  2.0f, 0.0f}, { 0.0f,  0.0f, 0.0f}},
+    PointVector {{ 0.0f,  0.0f, 0.0f}, { 0.0f,  0.0f, 0.0f}, { 2.0f,  2.0f, 0.0f}},
+    PointVector {{ 1.0f,  1.0f, 0.0f}, { 1.0f,  1.0f, 0.0f}, { 1.0f,  1.0f, 0.0f}}  // all points equal
+  )
+);
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 class SampleConsensusModelCircle2DTest : private SampleConsensusModelCircle2D<PointT>
@@ -636,7 +719,8 @@ TEST (SampleConsensusModelCircle3D, RANSAC)
   EXPECT_NEAR (-3.0, coeff[2], 1e-3);
   EXPECT_NEAR ( 0.1, coeff[3], 1e-3);
   EXPECT_NEAR ( 0.0, coeff[4], 1e-3);
-  EXPECT_NEAR (-1.0, coeff[5], 1e-3);
+  // Use abs in y component because both variants are valid normal vectors
+  EXPECT_NEAR ( 1.0, std::abs (coeff[5]), 1e-3);
   EXPECT_NEAR ( 0.0, coeff[6], 1e-3);
 
   Eigen::VectorXf coeff_refined;
@@ -647,7 +731,7 @@ TEST (SampleConsensusModelCircle3D, RANSAC)
   EXPECT_NEAR (-3.0, coeff_refined[2], 1e-3);
   EXPECT_NEAR ( 0.1, coeff_refined[3], 1e-3);
   EXPECT_NEAR ( 0.0, coeff_refined[4], 1e-3);
-  EXPECT_NEAR (-1.0, coeff_refined[5], 1e-3);
+  EXPECT_NEAR ( 1.0, std::abs (coeff_refined[5]), 1e-3);
   EXPECT_NEAR ( 0.0, coeff_refined[6], 1e-3);
 }
 
