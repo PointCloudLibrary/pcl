@@ -61,16 +61,17 @@ namespace pcl {
  * \note Math refactored by Todor Stoyanov.
  * \author Brian Okorn (Space and Naval Warfare Systems Center Pacific)
  */
-template <typename PointSource, typename PointTarget>
-class NormalDistributionsTransform : public Registration<PointSource, PointTarget> {
+template <typename PointSource, typename PointTarget, typename Scalar = float>
+class NormalDistributionsTransform
+: public Registration<PointSource, PointTarget, Scalar> {
 protected:
   using PointCloudSource =
-      typename Registration<PointSource, PointTarget>::PointCloudSource;
+      typename Registration<PointSource, PointTarget, Scalar>::PointCloudSource;
   using PointCloudSourcePtr = typename PointCloudSource::Ptr;
   using PointCloudSourceConstPtr = typename PointCloudSource::ConstPtr;
 
   using PointCloudTarget =
-      typename Registration<PointSource, PointTarget>::PointCloudTarget;
+      typename Registration<PointSource, PointTarget, Scalar>::PointCloudTarget;
   using PointCloudTargetPtr = typename PointCloudTarget::Ptr;
   using PointCloudTargetConstPtr = typename PointCloudTarget::ConstPtr;
 
@@ -88,9 +89,13 @@ protected:
   using TargetGridLeafConstPtr = typename TargetGrid::LeafConstPtr;
 
 public:
-  using Ptr = shared_ptr<NormalDistributionsTransform<PointSource, PointTarget>>;
+  using Ptr =
+      shared_ptr<NormalDistributionsTransform<PointSource, PointTarget, Scalar>>;
   using ConstPtr =
-      shared_ptr<const NormalDistributionsTransform<PointSource, PointTarget>>;
+      shared_ptr<const NormalDistributionsTransform<PointSource, PointTarget, Scalar>>;
+  using Vector3 = typename Eigen::Matrix<Scalar, 3, 1>;
+  using Matrix4 = typename Registration<PointSource, PointTarget, Scalar>::Matrix4;
+  using Affine3 = typename Eigen::Transform<Scalar, 3, Eigen::Affine>;
 
   /** \brief Constructor.  Sets \ref outlier_ratio_ to 0.35, \ref step_size_ to
    * 0.05 and \ref resolution_ to 1.0
@@ -107,7 +112,7 @@ public:
   inline void
   setInputTarget(const PointCloudTargetConstPtr& cloud) override
   {
-    Registration<PointSource, PointTarget>::setInputTarget(cloud);
+    Registration<PointSource, PointTarget, Scalar>::setInputTarget(cloud);
     init();
   }
 
@@ -208,12 +213,12 @@ public:
    * vector
    */
   static void
-  convertTransform(const Eigen::Matrix<double, 6, 1>& x, Eigen::Affine3f& trans)
+  convertTransform(const Eigen::Matrix<double, 6, 1>& x, Affine3& trans)
   {
-    trans = Eigen::Translation<float, 3>(x.head<3>().cast<float>()) *
-            Eigen::AngleAxis<float>(float(x(3)), Eigen::Vector3f::UnitX()) *
-            Eigen::AngleAxis<float>(float(x(4)), Eigen::Vector3f::UnitY()) *
-            Eigen::AngleAxis<float>(float(x(5)), Eigen::Vector3f::UnitZ());
+    trans = Eigen::Translation<Scalar, 3>(x.head<3>().cast<Scalar>()) *
+            Eigen::AngleAxis<Scalar>(Scalar(x(3)), Vector3::UnitX()) *
+            Eigen::AngleAxis<Scalar>(Scalar(x(4)), Vector3::UnitY()) *
+            Eigen::AngleAxis<Scalar>(Scalar(x(5)), Vector3::UnitZ());
   }
 
   /** \brief Convert 6 element transformation vector to transformation matrix.
@@ -222,31 +227,32 @@ public:
    * transformation vector
    */
   static void
-  convertTransform(const Eigen::Matrix<double, 6, 1>& x, Eigen::Matrix4f& trans)
+  convertTransform(const Eigen::Matrix<double, 6, 1>& x, Matrix4& trans)
   {
-    Eigen::Affine3f _affine;
+    Affine3 _affine;
     convertTransform(x, _affine);
     trans = _affine.matrix();
   }
 
 protected:
-  using Registration<PointSource, PointTarget>::reg_name_;
-  using Registration<PointSource, PointTarget>::getClassName;
-  using Registration<PointSource, PointTarget>::input_;
-  using Registration<PointSource, PointTarget>::indices_;
-  using Registration<PointSource, PointTarget>::target_;
-  using Registration<PointSource, PointTarget>::nr_iterations_;
-  using Registration<PointSource, PointTarget>::max_iterations_;
-  using Registration<PointSource, PointTarget>::previous_transformation_;
-  using Registration<PointSource, PointTarget>::final_transformation_;
-  using Registration<PointSource, PointTarget>::transformation_;
-  using Registration<PointSource, PointTarget>::transformation_epsilon_;
-  using Registration<PointSource, PointTarget>::transformation_rotation_epsilon_;
-  using Registration<PointSource, PointTarget>::converged_;
-  using Registration<PointSource, PointTarget>::corr_dist_threshold_;
-  using Registration<PointSource, PointTarget>::inlier_threshold_;
+  using Registration<PointSource, PointTarget, Scalar>::reg_name_;
+  using Registration<PointSource, PointTarget, Scalar>::getClassName;
+  using Registration<PointSource, PointTarget, Scalar>::input_;
+  using Registration<PointSource, PointTarget, Scalar>::indices_;
+  using Registration<PointSource, PointTarget, Scalar>::target_;
+  using Registration<PointSource, PointTarget, Scalar>::nr_iterations_;
+  using Registration<PointSource, PointTarget, Scalar>::max_iterations_;
+  using Registration<PointSource, PointTarget, Scalar>::previous_transformation_;
+  using Registration<PointSource, PointTarget, Scalar>::final_transformation_;
+  using Registration<PointSource, PointTarget, Scalar>::transformation_;
+  using Registration<PointSource, PointTarget, Scalar>::transformation_epsilon_;
+  using Registration<PointSource, PointTarget, Scalar>::
+      transformation_rotation_epsilon_;
+  using Registration<PointSource, PointTarget, Scalar>::converged_;
+  using Registration<PointSource, PointTarget, Scalar>::corr_dist_threshold_;
+  using Registration<PointSource, PointTarget, Scalar>::inlier_threshold_;
 
-  using Registration<PointSource, PointTarget>::update_visualizer_;
+  using Registration<PointSource, PointTarget, Scalar>::update_visualizer_;
 
   /** \brief Estimate the transformation and returns the transformed source
    * (input) as output.
@@ -255,7 +261,7 @@ protected:
   virtual void
   computeTransformation(PointCloudSource& output)
   {
-    computeTransformation(output, Eigen::Matrix4f::Identity());
+    computeTransformation(output, Matrix4::Identity());
   }
 
   /** \brief Estimate the transformation and returns the transformed source
@@ -264,8 +270,7 @@ protected:
    * \param[in] guess the initial gross estimation of the transformation
    */
   void
-  computeTransformation(PointCloudSource& output,
-                        const Eigen::Matrix4f& guess) override;
+  computeTransformation(PointCloudSource& output, const Matrix4& guess) override;
 
   /** \brief Initiate covariance voxel structure. */
   void inline init()
