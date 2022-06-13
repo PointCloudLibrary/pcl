@@ -8,7 +8,6 @@
 #pragma once
 
 #include "tree.h"
-#include <boost/array.hpp>
 
 namespace pcl
 {
@@ -21,10 +20,7 @@ namespace pcl
         // ################################################
         // ################################################
         // histogram stuff
-        class Histogram : public boost::array<std::uint32_t,NUMLABELS> {
-          public :
-          inline Histogram() { std::fill(begin(), end(), 0); }
-        };
+        using Histogram = std::array<std::uint32_t, NUMLABELS>;
 
         struct HistogramPair {
           public :
@@ -43,15 +39,14 @@ namespace pcl
             inline const Histogram h_true() const { return m_h_true; }
 
           protected :
-            Histogram m_h_false;
-            Histogram m_h_true;
+            Histogram m_h_false {0u};
+            Histogram m_h_true {0u};
         };
 
         // ###############################################
         // ###############################################
         // SplitPoint
         struct SplitPoint{
-          inline SplitPoint( int ai, Attrib t):attribId(ai), threshold(t){}
           int    attribId;
           Attrib threshold;
         };
@@ -60,31 +55,20 @@ namespace pcl
         // ###############################################
         // Data Structures as stored in binary files
         struct LabeledAttrib {
-          inline LabeledAttrib(){}
-          inline LabeledAttrib( const Label& label, const Attrib& attrib): l(label), a(attrib){}
           Label l;
           Attrib a;
         };
 
         // this is only going to be a helper structure
         struct LabeledFeature {  // : boost::noncopyable {
-          // constructors
-          inline LabeledFeature(): l(NOLABEL){
-          }
-          inline LabeledFeature( const LabeledFeature& B){
-            l = B.l;
-            std::copy( B.attribs, B.attribs + NUMATTRIBS, attribs );
-          }
-          Label  l; // WARNING the compiler will pad here
+          Label  l(NOLABEL); // WARNING the compiler will pad here
           Attrib attribs[NUMATTRIBS];
         };
 
 
          // compute the number of elements
         static inline std::uint64_t numElements( const Histogram& h ) {
-          std::uint64_t Ntotal = 0;
-          for(int li=0;li<NUMLABELS;++li) Ntotal += std::uint64_t(h[li]);
-          return Ntotal;
+          return std::accumulate(std::cbegin(h), std::cend(h), 0u);
         }
 
         /**

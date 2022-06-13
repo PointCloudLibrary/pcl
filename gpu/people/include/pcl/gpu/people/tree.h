@@ -57,8 +57,8 @@ namespace pcl
 
         // ###############################################
         // compile type values
-        enum { NUM_ATTRIBS  = 2000 };
-        enum { NUM_LABELS = 32 };
+        static constexpr std::size_t NUM_ATTRIBS  = 2000;
+        static constexpr std::size_t NUM_LABELS = 32;
 
         // ###############################################
         // base data types used in the structures

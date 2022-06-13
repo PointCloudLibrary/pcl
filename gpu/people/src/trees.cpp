@@ -191,7 +191,7 @@ pcl::gpu::people::trees::writeAttribLocs( const std::string& filename,
   // first we write the number of attribs we intend to write so that we ll avoid mismatches
   assert( alocs.size() == NUM_ATTRIBS );
   fout << NUM_ATTRIBS << "\n";
-  for(int ai=0;ai<NUM_ATTRIBS;++ai)
+  for(auto ai=0u;ai<NUM_ATTRIBS;++ai)
     fout << alocs[ai];
 }
 
@@ -209,7 +209,7 @@ pcl::gpu::people::trees::readAttribLocs( const std::string& filename,
     throw std::runtime_error(std::string("(E) the attribloc file has a wrong number of attribs ") + filename );
 
   alocs.resize(NUM_ATTRIBS);
-  for(int ai = 0; ai < NUM_ATTRIBS; ++ai) 
+  for(auto ai = 0u; ai < NUM_ATTRIBS; ++ai)
     fin >> alocs[ai];
 }
 
