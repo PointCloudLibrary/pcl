@@ -139,7 +139,7 @@ namespace pcl
         *                      but the mean of the points. If 0.0 it is equivalent to a normal z-buffer and
         *                      will always take the minimum per cell.
         * \param min_range the minimum visible range (defaults to 0)
-        * \param border_size the border size (defaults to 0)
+        * \param border_size the border size (defaults to 0). Set to `std::numeric_limits<int>::min()` to turn cropping off.
         */
       template <typename PointCloudType> void
       createFromPointCloud (const PointCloudType& point_cloud, float angular_resolution=pcl::deg2rad (0.5f),
@@ -163,7 +163,7 @@ namespace pcl
         *                      but the mean of the points. If 0.0 it is equivalent to a normal z-buffer and
         *                      will always take the minimum per cell.
         * \param min_range the minimum visible range (defaults to 0)
-        * \param border_size the border size (defaults to 0)
+        * \param border_size the border size (defaults to 0). Set to `std::numeric_limits<int>::min()` to turn cropping off.
         */
       template <typename PointCloudType> void
       createFromPointCloud (const PointCloudType& point_cloud,
@@ -186,7 +186,7 @@ namespace pcl
         *                      but the mean of the points. If 0.0 it is equivalent to a normal z-buffer and
         *                      will always take the minimum per cell.
         * \param min_range the minimum visible range (defaults to 0)
-        * \param border_size the border size (defaults to 0)
+        * \param border_size the border size (defaults to 0). Set to `std::numeric_limits<int>::min()` to turn cropping off.
         */
       template <typename PointCloudType> void
       createFromPointCloudWithKnownSize (const PointCloudType& point_cloud, float angular_resolution,
@@ -211,7 +211,7 @@ namespace pcl
         *                      but the mean of the points. If 0.0 it is equivalent to a normal z-buffer and
         *                      will always take the minimum per cell.
         * \param min_range the minimum visible range (defaults to 0)
-        * \param border_size the border size (defaults to 0)
+        * \param border_size the border size (defaults to 0). Set to `std::numeric_limits<int>::min()` to turn cropping off.
         */
       template <typename PointCloudType> void
       createFromPointCloudWithKnownSize (const PointCloudType& point_cloud,
@@ -232,7 +232,7 @@ namespace pcl
         *                      but the mean of the points. If 0.0 it is equivalent to a normal z-buffer and
         *                      will always take the minimum per cell.
         * \param min_range the minimum visible range (defaults to 0)
-        * \param border_size the border size (defaults to 0)
+        * \param border_size the border size (defaults to 0). Set to `std::numeric_limits<int>::min()` to turn cropping off.
         * \note If wrong_coordinate_system is true, the sensor pose will be rotated to change from a coordinate frame
         * with x to the front, y to the left and z to the top to the coordinate frame we use here (x to the right, y
         * to the bottom and z to the front) */
@@ -256,7 +256,7 @@ namespace pcl
         *                      but the mean of the points. If 0.0 it is equivalent to a normal z-buffer and
         *                      will always take the minimum per cell.
         * \param min_range the minimum visible range (defaults to 0)
-        * \param border_size the border size (defaults to 0)
+        * \param border_size the border size (defaults to 0). Set to `std::numeric_limits<int>::min()` to turn cropping off.
         * \note If wrong_coordinate_system is true, the sensor pose will be rotated to change from a coordinate frame
         * with x to the front, y to the left and z to the top to the coordinate frame we use here (x to the right, y
         * to the bottom and z to the front) */

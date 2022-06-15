@@ -135,9 +135,11 @@ RangeImage::createFromPointCloud (const PointCloudType& point_cloud,
   int top=height, right=-1, bottom=-1, left=width;
   doZBuffer (point_cloud, noise_level, min_range, top, right, bottom, left);
   
-  cropImage (border_size, top, right, bottom, left);
+  if (border_size != std::numeric_limits<int>::min()) {
+    cropImage (border_size, top, right, bottom, left);
   
-  recalculate3DPointPositions ();
+    recalculate3DPointPositions ();
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -196,9 +198,11 @@ RangeImage::createFromPointCloudWithKnownSize (const PointCloudType& point_cloud
   int top=height, right=-1, bottom=-1, left=width;
   doZBuffer (point_cloud, noise_level, min_range, top, right, bottom, left);
   
-  cropImage (border_size, top, right, bottom, left);
+  if (border_size != std::numeric_limits<int>::min()) {
+    cropImage (border_size, top, right, bottom, left);
   
-  recalculate3DPointPositions ();
+    recalculate3DPointPositions ();
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////
