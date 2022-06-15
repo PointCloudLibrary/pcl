@@ -232,7 +232,7 @@ public:
   }
 
   /** \brief Provide a pointer to the input target
-   * (e.g., the point cloud that we want to align to the target)
+   * (e.g., the point cloud that we want to align the input source to)
    *
    * \param[in] cloud the input point cloud target
    */
