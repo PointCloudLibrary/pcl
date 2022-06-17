@@ -34,61 +34,42 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: kdtree_flann.h 36261 2011-02-26 01:34:42Z mariusm $
- *
+ * kdtree_nanoflann.h
+ * Adapted from: kdtree_flann.h
+ * Created on: Jun 01, 2022
+ * Author: Ramzi Sabra
  */
 
 #pragma once
 
 #include <pcl/kdtree/kdtree.h>
-#include <flann/util/params.h>
+#include <nanoflann.hpp>
 
 #include <memory>
 
-// Forward declarations
-namespace flann
-{
-  template <typename T> struct L2_Simple;
-  template <typename T> class Index;
-}
-
-namespace pcl
-{
-namespace detail {
-// Helper struct to create a compatible Matrix and copy data back when needed
-// Replace using if constexpr in C++17
-template <typename IndexT>
-struct compat_with_flann : std::false_type {};
-
-template <>
-struct compat_with_flann<std::size_t> : std::true_type {};
-
-template <typename IndexT>
-using CompatWithFlann = std::enable_if_t<compat_with_flann<IndexT>::value, bool>;
-template <typename IndexT>
-using NotCompatWithFlann = std::enable_if_t<!compat_with_flann<IndexT>::value, bool>;
-} // namespace detail
-
+namespace pcl {
+namespace nanoflann {
 /**
- * @brief Comaptibility template function to allow use of various types of indices with
- * FLANN
- * @details Template is used for all params to not constrain any FLANN side capability
- * @param[in,out] index A index searcher, of type ::flann::Index<Dist> or similar, where
- * Dist is a template for computing distance between 2 points
- * @param[in] query A ::flann::Matrix<float> or compatible matrix representation of the
+ * @brief Compatibility template function to allow use of various types of indices with
+ * nanoflann
+ * @details Template is used for all params to not constrain any nanoflann side capability
+ * @param[in,out] index A index searcher, of type
+ * ::nanoflann::KDTreeSingleIndexAdaptor<Matrix, dims, Dist> or similar, where Dist is a
+ * template for computing distance between 2 points
+ * @param[in] query An Eigen::MatrixXf or compatible matrix representation of the
  * query point
  * @param[out] indices Indices found in radius
  * @param[out] dists Computed distance matrix
  * @param[in] radius Threshold for consideration
  * @param[in] params Any parameters to pass to the radius_search call
  */
-template <class FlannIndex,
+template <class NanoflannIndex,
           class Query,
           class Indices,
           class Distances,
           class SearchParams>
 int
-radius_search(const FlannIndex& index,
+radius_search(const NanoflannIndex& index,
               const Query& query,
               Indices& indices,
               Distances& dists,
@@ -96,40 +77,41 @@ radius_search(const FlannIndex& index,
               const SearchParams& params);
 
 /**
- * @brief Comaptibility template function to allow use of various types of indices with
- * FLANN
- * @details Template is used for all params to not constrain any FLANN side capability
- * @param[in,out] index A index searcher, of type ::flann::Index<Dist> or similar, where
- * Dist is a template for computing distance between 2 points
- * @param[in] query A ::flann::Matrix<float> or compatible matrix representation of the
+ * @brief Compatibility template function to allow use of various types of indices with
+ * nanoflann
+ * @details Template is used for all params to not constrain any nanoflann side capability
+ * @param[in,out] index A index searcher, of type
+ * ::nanoflann::KDTreeSingleIndexAdaptor<Matrix, dims, Dist> or similar, where Dist is a
+ * template for computing distance between 2 points
+ * @param[in] query An Eigen::MatrixXf or compatible matrix representation of the
  * query point
  * @param[out] indices Neighboring k indices found
  * @param[out] dists Computed distance matrix
  * @param[in] k Number of neighbors to search for
  * @param[in] params Any parameters to pass to the knn_search call
  */
-template <class FlannIndex,
+template <class NanoflannIndex,
           class Query,
           class Indices,
           class Distances,
           class SearchParams>
 int
-knn_search(const FlannIndex& index,
+knn_search(const NanoflannIndex& index,
            const Query& query,
            Indices& indices,
            Distances& dists,
            unsigned int k,
            const SearchParams& params);
+} // namespace nanoflann
 
-/** \brief KdTreeFLANN is a generic type of 3D spatial locator using kD-tree structures.
- * The class is making use of the FLANN (Fast Library for Approximate Nearest Neighbor)
- * project by Marius Muja and David Lowe.
+/** \brief KdTreeNanoflann is a generic type of 3D spatial locator using kd-tree structures.
+ * The class is making use of the nanoflann project by Jose Luis Blanco-Claraco.
  *
- * \author Radu B. Rusu, Marius Muja
+ * \author Ramzi Sabra
  * \ingroup kdtree
  */
-template <typename PointT, typename Dist = ::flann::L2_Simple<float>>
-class KdTreeFLANN : public pcl::KdTree<PointT> {
+template <typename PointT, typename Dist = ::nanoflann::metric_L2_Simple, int dims = -1>
+class KdTreeNanoflann : public pcl::KdTree<PointT> {
 public:
   using KdTree<PointT>::input_;
   using KdTree<PointT>::indices_;
@@ -146,41 +128,46 @@ public:
   using IndicesPtr = shared_ptr<Indices>;
   using IndicesConstPtr = shared_ptr<const Indices>;
 
-  using FLANNIndex = ::flann::Index<Dist>;
+  using Matrix = Eigen::Matrix<float, Eigen::Dynamic, dims, Eigen::RowMajor>;
+  using NanoflannIndex = ::nanoflann::KDTreeEigenMatrixAdaptor<Matrix, dims, Dist>;
 
-  // Boost shared pointers
-  using Ptr = shared_ptr<KdTreeFLANN<PointT, Dist>>;
-  using ConstPtr = shared_ptr<const KdTreeFLANN<PointT, Dist>>;
+  using Tree = KdTreeNanoflann<PointT, Dist, dims>;
+  using Ptr = shared_ptr<Tree>;
+  using ConstPtr = shared_ptr<const Tree>;
 
-  /** \brief Default Constructor for KdTreeFLANN.
+  /** \brief Default Constructor for KdTreeNanoflann.
    * \param[in] sorted set to true if the application that the tree will be used for
    * requires sorted nearest neighbor indices (default). False otherwise.
    * \param[in] max_leaf_size maximum leaf node size. Set to 15 by default.
    *
-   * By setting sorted to false, the \ref radiusSearch operations will be faster.
+   * By setting sorted to false, \ref radiusSearch operations will be faster.
    */
-  KdTreeFLANN(bool sorted = true, int max_leaf_size = 15);
+  KdTreeNanoflann(bool sorted = true, int max_leaf_size = 15);
 
   /** \brief Copy constructor
    * \param[in] k the tree to copy into this
    */
-  KdTreeFLANN(const KdTreeFLANN<PointT, Dist>& k);
+  KdTreeNanoflann(const Tree& k);
 
   /** \brief Copy operator
    * \param[in] k the tree to copy into this
    */
-  inline KdTreeFLANN<PointT, Dist>&
-  operator=(const KdTreeFLANN<PointT, Dist>& k)
+  inline Tree&
+  operator=(const Tree& k)
   {
     KdTree<PointT>::operator=(k);
-    flann_index_ = k.flann_index_;
-    cloud_ = k.cloud_;
     index_mapping_ = k.index_mapping_;
     identity_mapping_ = k.identity_mapping_;
     dim_ = k.dim_;
     total_nr_points_ = k.total_nr_points_;
-    param_k_ = k.param_k_;
     param_radius_ = k.param_radius_;
+    
+    if (k.nanoflann_index_ != nullptr)
+    {
+      cloud_mat_ = k.cloud_mat_;
+      nanoflann_index_.reset(new NanoflannIndex(dim_, cloud_mat_, max_leaf_size_));
+    }
+    
     return (*this);
   }
 
@@ -189,7 +176,7 @@ public:
    */
   void
   setMaxLeafSize(int max_leaf_size) override;
-  
+
   /** \brief Set the search epsilon precision (error bound) for nearest neighbors
    * searches. \param[in] eps precision (error bound) for nearest neighbors searches
    */
@@ -202,23 +189,23 @@ public:
   inline Ptr
   makeShared()
   {
-    return Ptr(new KdTreeFLANN<PointT, Dist>(*this));
+    return Ptr(new Tree(*this));
   }
 
-  /** \brief Destructor for KdTreeFLANN.
+  /** \brief Destructor for KdTreeNanoflann.
    * Deletes all allocated data arrays and destroys the kd-tree structures.
    */
-  ~KdTreeFLANN() { cleanup(); }
+  ~KdTreeNanoflann() { cleanup(); }
 
   /** \brief Provide a pointer to the input dataset.
-   * \param[in] cloud the const boost shared pointer to a PointCloud message
+   * \param[in] cloud the const shared pointer to a PointCloud message
    * \param[in] indices the point indices subset that is to be used from \a cloud - if
    * NULL the whole cloud is used
    */
   void
   setInputCloud(const PointCloudConstPtr& cloud,
                 const IndicesConstPtr& indices = IndicesConstPtr()) override;
-
+  
   /** \brief Search for k-nearest neighbors for the given query point.
    *
    * \attention This method does not do any bounds checking for the input index
@@ -226,10 +213,9 @@ public:
    *
    * \param[in] point a given \a valid (i.e., finite) query point
    * \param[in] k the number of neighbors to search for
-   * \param[out] k_indices the resultant indices of the neighboring points (must be
-   * resized to \a k a priori!) \param[out] k_sqr_distances the resultant squared
-   * distances to the neighboring points (must be resized to \a k a priori!) \return
-   * number of neighbors found
+   * \param[out] k_indices the resultant indices of the neighboring points
+   * \param[out] k_sqr_distances the resultant squared distances to the neighboring
+   * points \return number of neighbors found
    *
    * \exception asserts in debug mode if the index is not between 0 and the maximum
    * number of points
@@ -239,7 +225,7 @@ public:
                  unsigned int k,
                  Indices& k_indices,
                  std::vector<float>& k_sqr_distances) const override;
-
+  
   /** \brief Search for all the nearest neighbors of the query point in a given radius.
    *
    * \attention This method does not do any bounds checking for the input index
@@ -251,8 +237,9 @@ public:
    * \param[out] k_sqr_distances the resultant squared distances to the neighboring
    * points \param[in] max_nn if given, bounds the maximum returned neighbors to this
    * value. If \a max_nn is set to 0 or to a number higher than the number of points in
-   * the input cloud, all neighbors in \a radius will be returned. \return number of
-   * neighbors found in radius
+   * the input cloud, all neighbors in \a radius will be returned. Note that nanoflann,
+   * internally, fetches all neighbors in radius regardless of the value of \a max_nn.
+   * \return number of neighbors found in radius
    *
    * \exception asserts in debug mode if the index is not between 0 and the maximum
    * number of points
@@ -269,55 +256,50 @@ private:
   void
   cleanup();
 
-  /** \brief Converts a PointCloud to the internal FLANN point array representation.
-   * Returns the number of points. \param cloud the PointCloud
+  /** \brief Converts a PointCloud to an Eigen row-major matrix of floats.
+   * \param cloud the PointCloud
    */
   void
   convertCloudToArray(const PointCloud& cloud);
 
-  /** \brief Converts a PointCloud with a given set of indices to the internal FLANN
-   * point array representation. Returns the number of points. \param[in] cloud the
-   * PointCloud data \param[in] indices the point cloud indices
+  /** \brief Converts a PointCloud with a given set of indices to an Eigen row-major
+   * matrix of floats. \param[in] cloud the PointCloud data \param[in] indices the point
+   * cloud indices
    */
   void
   convertCloudToArray(const PointCloud& cloud, const Indices& indices);
 
-private:
   /** \brief Class getName method. */
   std::string
   getName() const override
   {
-    return ("KdTreeFLANN");
+    return ("KdTreeNanoflann");
   }
 
   /** \brief A FLANN index object. */
-  std::shared_ptr<FLANNIndex> flann_index_;
-
-  /** \brief Internal pointer to data. TODO: replace with std::shared_ptr<float[]> with
-   * C++17*/
-  std::shared_ptr<float> cloud_;
-
-  /** \brief mapping between internal and external indices. */
+  std::shared_ptr<NanoflannIndex> nanoflann_index_;
+  
+  /** \brief cloud dataset matrix. */
+  Matrix cloud_mat_;
+  
+  /** \brief Mapping between internal and external indices. */
   std::vector<int> index_mapping_;
-
-  /** \brief whether the mapping between internal and external indices is identity */
+  
+  /** \brief Whether the mapping between internal and external indices is identity */
   bool identity_mapping_;
-
+  
   /** \brief Tree dimensionality (i.e. the number of dimensions per point). */
   int dim_;
-
+  
   /** \brief The total size of the data (either equal to the number of points in the
    * input cloud or to the number of indices - if passed). */
   uindex_t total_nr_points_;
-
-  /** \brief The KdTree search parameters for K-nearest neighbors. */
-  ::flann::SearchParams param_k_;
-
-  /** \brief The KdTree search parameters for radius search. */
-  ::flann::SearchParams param_radius_;
-  };
+  
+  /** \brief The kd-tree search parameters for radius search. */
+  ::nanoflann::SearchParams param_radius_;
+};
 }
 
 #ifdef PCL_NO_PRECOMPILE
-#include <pcl/kdtree/impl/kdtree_flann.hpp>
+#include <pcl/kdtree/impl/kdtree_nanoflann.hpp>
 #endif

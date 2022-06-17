@@ -38,6 +38,10 @@
 
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
 
+#ifdef PCL_TEST_KDTREE_NANOFLANN
+#include <pcl/kdtree/impl/kdtree_nanoflann.hpp>
+#endif
+
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/distances.h>
@@ -52,6 +56,7 @@
 #include <algorithm>
 #include <iostream>  // For debug
 #include <map>
+#include <unordered_set>
 
 using namespace pcl;
 
@@ -65,33 +70,53 @@ struct MyPoint : public PointXYZ
     MyPoint (float x, float y, float z) {this->x=x; this->y=y; this->z=z;}
 };
 
-PointCloud<MyPoint> cloud, cloud_big;
-
-void 
-init ()
+template <typename TupleType>
+class PCLKdTreeTestFixture : public ::testing::Test
 {
-  float resolution = 0.1f;
-  for (float z = -0.5f; z <= 0.5f; z += resolution)
-    for (float y = -0.5f; y <= 0.5f; y += resolution)
-      for (float x = -0.5f; x <= 0.5f; x += resolution)
-        cloud.emplace_back(x, y, z);
-  cloud.width  = cloud.size ();
-  cloud.height = 1;
+  public:
+    using TreeMyPoint = std::tuple_element_t<0, TupleType>;
+    using TreePointXYZ = std::tuple_element_t<1, TupleType>;
+  
+    PointCloud<MyPoint> cloud_, cloud_big_;
 
-  cloud_big.width  = 640;
-  cloud_big.height = 480;
-  srand (static_cast<unsigned int> (time (nullptr)));
-  // Randomly create a new point cloud
-  for (std::size_t i = 0; i < cloud_big.width * cloud_big.height; ++i)
-    cloud_big.emplace_back(static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)),
-                                         static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)),
-                                         static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)));
-}
+    PCLKdTreeTestFixture()
+    {
+      float resolution = 0.1f;
+      for (float z = -0.5f; z <= 0.5f; z += resolution)
+        for (float y = -0.5f; y <= 0.5f; y += resolution)
+          for (float x = -0.5f; x <= 0.5f; x += resolution)
+            cloud_.emplace_back(x, y, z);
+      cloud_.width  = cloud_.size ();
+      cloud_.height = 1;
+
+      cloud_big_.width  = 640;
+      cloud_big_.height = 480;
+      srand (static_cast<unsigned int> (time (nullptr)));
+      // Randomly create a new point cloud
+      for (std::size_t i = 0; i < cloud_big_.width * cloud_big_.height; ++i)
+        cloud_big_.emplace_back(static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)),
+                                            static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)),
+                                            static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)));
+      }
+};
+
+using KdTreeTestTypes = ::testing::Types<
+  std::tuple<KdTreeFLANN<MyPoint>, KdTreeFLANN<PointXYZ>>
+  #ifdef PCL_TEST_KDTREE_NANOFLANN
+  , std::tuple<KdTreeNanoflann<MyPoint>, KdTreeNanoflann<PointXYZ>>
+  #endif
+>;
+TYPED_TEST_SUITE(PCLKdTreeTestFixture, KdTreeTestTypes);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, KdTreeFLANN_radiusSearch)
+TYPED_TEST (PCLKdTreeTestFixture, KdTree_radiusSearch)
 {
-  KdTreeFLANN<MyPoint> kdtree;
+  using Tree = typename TestFixture::TreeMyPoint;
+  
+  auto& cloud = this->cloud_;
+  auto& cloud_big = this->cloud_big_;
+  
+  Tree kdtree;
   kdtree.setInputCloud (cloud.makeShared ());
   MyPoint test_point(0.0f, 0.0f, 0.0f);
   double max_dist = 0.15;
@@ -123,10 +148,10 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   EXPECT_FALSE (error);
 
   {
-    KdTreeFLANN<MyPoint> kdtree;
+    Tree kdtree;
     kdtree.setInputCloud (cloud_big.makeShared ());
 
-    ScopeTime scopeTime ("FLANN radiusSearch");
+    ScopeTime scopeTime ("radiusSearch");
     {
       for (const auto &point : cloud_big.points)
         kdtree.radiusSearch (point, 0.1, k_indices, k_distances);
@@ -134,10 +159,10 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   }
   
   {
-    KdTreeFLANN<MyPoint> kdtree;
+    Tree kdtree;
     kdtree.setInputCloud (cloud_big.makeShared ());
 
-    ScopeTime scopeTime ("FLANN radiusSearch (max neighbors in radius)");
+    ScopeTime scopeTime ("radiusSearch (max neighbors in radius)");
     {
       for (const auto &point : cloud_big.points)
         kdtree.radiusSearch (point, 0.1, k_indices, k_distances, 10);
@@ -146,10 +171,10 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   
   
   {
-    KdTreeFLANN<MyPoint> kdtree (false);
+    Tree kdtree (false);
     kdtree.setInputCloud (cloud_big.makeShared ());
 
-    ScopeTime scopeTime ("FLANN radiusSearch (unsorted results)");
+    ScopeTime scopeTime ("radiusSearch (unsorted results)");
     {
       for (const auto &point : cloud_big.points)
         kdtree.radiusSearch (point, 0.1, k_indices, k_distances);
@@ -158,9 +183,14 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, KdTreeFLANN_nearestKSearch)
+TYPED_TEST (PCLKdTreeTestFixture, KdTree_nearestKSearch)
 {
-  KdTreeFLANN<MyPoint> kdtree;
+  using Tree = typename TestFixture::TreeMyPoint;
+  
+  auto& cloud = this->cloud_;
+  auto& cloud_big = this->cloud_big_;
+  
+  Tree kdtree;
   kdtree.setInputCloud (cloud.makeShared ());
   MyPoint test_point (0.01f, 0.01f, 0.01f);
   unsigned int no_of_neighbors = 20;
@@ -198,9 +228,9 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
     EXPECT_TRUE (ok);
   }
 
-  ScopeTime scopeTime ("FLANN nearestKSearch");
+  ScopeTime scopeTime ("nearestKSearch");
   {
-    KdTreeFLANN<MyPoint> kdtree;
+    Tree kdtree;
     kdtree.setInputCloud (cloud_big.makeShared ());
     for (const auto &point : cloud_big.points)
       kdtree.nearestKSearch (point, no_of_neighbors, k_indices, k_distances);
@@ -223,8 +253,10 @@ class MyPointRepresentationXY : public PointRepresentation<MyPoint>
     }
 };
 
-TEST (PCL, KdTreeFLANN_setPointRepresentation)
+TYPED_TEST (PCLKdTreeTestFixture, KdTree_setPointRepresentation)
 {
+  using Tree = typename TestFixture::TreeMyPoint;
+  
   PointCloud<MyPoint>::Ptr random_cloud (new PointCloud<MyPoint> ());
   random_cloud->points.emplace_back(86.6f, 42.1f, 92.4f);
   random_cloud->points.emplace_back(63.1f, 18.4f, 22.3f);
@@ -237,7 +269,7 @@ TEST (PCL, KdTreeFLANN_setPointRepresentation)
   random_cloud->points.emplace_back(14.2f, 95.7f, 34.7f);
   random_cloud->points.emplace_back( 2.5f, 26.5f, 66.0f);
 
-  KdTreeFLANN<MyPoint> kdtree;
+  Tree kdtree;
   kdtree.setInputCloud (random_cloud);
   MyPoint p (50.0f, 50.0f, 50.0f);
   
@@ -257,7 +289,7 @@ TEST (PCL, KdTreeFLANN_setPointRepresentation)
   }
   
   // Find k nearest neighbors with a different point representation
-  KdTreeFLANN<MyPoint>::PointRepresentationConstPtr ptrep (new MyPointRepresentationXY);
+  typename Tree::PointRepresentationConstPtr ptrep (new MyPointRepresentationXY);
   kdtree.setPointRepresentation (ptrep);
   kdtree.nearestKSearch (p, k, k_indices, k_distances);
   for (int i = 0; i < k; ++i)
@@ -289,9 +321,11 @@ TEST (PCL, KdTreeFLANN_setPointRepresentation)
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, KdTreeFLANN_32_vs_64_bit)
+TYPED_TEST (PCLKdTreeTestFixture, KdTree_32_vs_64_bit)
 {
-  KdTreeFLANN<PointXYZ> tree;
+  using Tree = typename TestFixture::TreePointXYZ;
+  
+  Tree tree;
   tree.setInputCloud (cloud_in);
 
   std::vector<pcl::Indices > nn_indices_vector;
@@ -327,6 +361,88 @@ TEST (PCL, KdTreeFLANN_32_vs_64_bit)
   }
 }
 
+TYPED_TEST (PCLKdTreeTestFixture, KdTree_copy)
+{
+  using Tree = typename TestFixture::TreeMyPoint;
+
+  auto& cloud = this->cloud_;
+
+  MyPoint test_point (0.01f, 0.01f, 0.01f);
+  const int k = 10;
+  const int max_nn = 10;
+
+  Tree kdtree;
+  kdtree.setInputCloud (cloud.makeShared ());
+  
+  pcl::Indices k_indices;
+  std::vector<float> k_distances;
+  kdtree.nearestKSearch (test_point, k, k_indices, k_distances);
+  
+  pcl::Indices indices;
+  std::vector<float> distances;
+  kdtree.radiusSearch (test_point, max_nn, indices, distances);
+  
+  Tree kdtree_copy = kdtree;
+  pcl::Indices k_indices_copy;
+  std::vector<float> k_distances_copy;
+  kdtree_copy.nearestKSearch (test_point, k, k_indices_copy, k_distances_copy);
+
+  pcl::Indices indices_copy;
+  std::vector<float> distances_copy;
+  kdtree_copy.radiusSearch (test_point, max_nn, indices_copy, distances_copy);
+
+  EXPECT_EQ (k_indices, k_indices_copy);
+  EXPECT_EQ (k_distances, k_distances_copy);
+  EXPECT_EQ (indices, indices_copy);
+  EXPECT_EQ (distances, distances_copy);
+}
+
+TYPED_TEST (PCLKdTreeTestFixture, KdTree_setMaxLeafSize)
+{
+  using Tree = typename TestFixture::TreeMyPoint;
+
+  auto& cloud = this->cloud_;
+
+  MyPoint test_point (0.01f, 0.01f, 0.01f);
+  const int k = 10;
+
+  Tree kdtree;
+  kdtree.setInputCloud (cloud.makeShared ());
+  
+  pcl::Indices k_indices_default;
+  std::vector<float> k_distances_default;
+  kdtree.nearestKSearch (test_point, k, k_indices_default, k_distances_default);
+
+  kdtree.setMaxLeafSize (50);
+  
+  pcl::Indices k_indices_changed;
+  std::vector<float> k_distances_changed;
+  kdtree.nearestKSearch (test_point, k, k_indices_changed, k_distances_changed);
+
+  std::unordered_set<pcl::index_t> k_indices_set_default, k_indices_set_changed;
+  
+  std::copy(
+    k_indices_default.cbegin(),
+    k_indices_default.cend(),
+    std::inserter(
+      k_indices_set_default,
+      k_indices_set_default.end()
+    )
+  );
+  
+  std::copy(
+    k_indices_changed.cbegin(),
+    k_indices_changed.cend(),
+    std::inserter(
+      k_indices_set_changed,
+      k_indices_set_changed.end()
+    )
+  );
+
+  EXPECT_EQ (k_indices_set_default, k_indices_set_changed);
+  EXPECT_EQ (k_distances_default, k_distances_changed);
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)
@@ -334,7 +450,7 @@ main (int argc, char** argv)
   // Load the standard PCD file from disk
   if (argc < 3)
   {
-    std::cerr << "No test file given. Please download `sac_plane_test.pcd` and 'kdtree_unit_test_results.xml' pass them path to the test." << std::endl;
+    std::cerr << "No test file given. Please download `sac_plane_test.pcd` and 'kdtree_unit_test_results.xml' pass their paths to the test." << std::endl;
     return (-1);
   }
 
@@ -346,7 +462,6 @@ main (int argc, char** argv)
 
   testing::InitGoogleTest (&argc, argv);
 
-  init ();
   return (RUN_ALL_TESTS ());
 }
 /* ]--- */

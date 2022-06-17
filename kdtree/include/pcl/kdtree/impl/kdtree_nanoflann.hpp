@@ -1,0 +1,400 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2009-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of the copyright holder(s) nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ * kdtree_nanoflann.hpp
+ * Adapted from: kdtree_flann.hpp
+ * Created on: Jun 01, 2022
+ * Author: Ramzi Sabra
+ */
+
+#ifndef PCL_KDTREE_KDTREE_IMPL_NANOFLANN_H_
+#define PCL_KDTREE_KDTREE_IMPL_NANOFLANN_H_
+
+#include <pcl/kdtree/kdtree_nanoflann.h>
+#include <pcl/console/print.h>
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename Dist, int dims>
+pcl::KdTreeNanoflann<PointT, Dist, dims>::KdTreeNanoflann (bool sorted, int max_leaf_size)
+  : pcl::KdTree<PointT> (sorted, max_leaf_size)
+  , nanoflann_index_ ()
+  , identity_mapping_ (false)
+  , dim_ (0), total_nr_points_ (0)
+  , param_radius_ (::nanoflann::SearchParams (-1, epsilon_, sorted))
+{}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename Dist, int dims>
+pcl::KdTreeNanoflann<PointT, Dist, dims>::KdTreeNanoflann (const KdTreeNanoflann<PointT, Dist, dims> &k)
+  : pcl::KdTree<PointT> (false)
+  , nanoflann_index_ ()
+  , identity_mapping_ (false)
+  , dim_ (0), total_nr_points_ (0)
+  , param_radius_ (::nanoflann::SearchParams (-1, epsilon_, false))
+{
+  *this = k;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename Dist, int dims> void
+pcl::KdTreeNanoflann<PointT, Dist, dims>::setMaxLeafSize (int max_leaf_size)
+{
+  max_leaf_size_ = max_leaf_size;
+  
+  if (!input_) return;
+  nanoflann_index_.reset(new NanoflannIndex(dim_, cloud_mat_, max_leaf_size_));
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename Dist, int dims> void
+pcl::KdTreeNanoflann<PointT, Dist, dims>::setEpsilon (float eps)
+{
+  epsilon_ = eps;
+  param_radius_ = ::nanoflann::SearchParams (-1 , epsilon_, sorted_);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename Dist, int dims> void
+pcl::KdTreeNanoflann<PointT, Dist, dims>::setSortedResults (bool sorted)
+{
+  sorted_ = sorted;
+  param_radius_ = ::nanoflann::SearchParams (-1, epsilon_, sorted_);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename Dist, int dims> void
+pcl::KdTreeNanoflann<PointT, Dist, dims>::setInputCloud (const PointCloudConstPtr &cloud, const IndicesConstPtr &indices)
+{
+  cleanup ();   // Perform an automatic cleanup of structures
+
+  epsilon_ = 0.0f;   // default error bound value
+  dim_ = point_representation_->getNumberOfDimensions (); // Number of dimensions - default is 3 = xyz
+
+  input_   = cloud;
+  indices_ = indices;
+
+  // Allocate enough data
+  if (!input_)
+  {
+    PCL_ERROR ("[pcl::KdTreeNanoflann::setInputCloud] Invalid input!\n");
+    return;
+  }
+  if (indices != nullptr)
+  {
+    convertCloudToArray (*input_, *indices_);
+  }
+  else
+  {
+    convertCloudToArray (*input_);
+  }
+  total_nr_points_ = static_cast<uindex_t> (index_mapping_.size ());
+  if (total_nr_points_ == 0)
+  {
+    PCL_ERROR ("[pcl::KdTreeNanoflann::setInputCloud] Cannot create a KDTree with an empty input cloud!\n");
+    return;
+  }
+
+  nanoflann_index_.reset(new NanoflannIndex(dim_, cloud_mat_, max_leaf_size_));
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+namespace pcl {
+namespace nanoflann {
+namespace detail {
+// Replace using constexpr in C++17
+template <class IndexT,
+          class A,
+          class B,
+          class C,
+          class D>
+int
+knn_search(A& index, B& query, C& k_indices, D& dists, unsigned int k)
+{
+  Eigen::Vector<long, Eigen::Dynamic> k_indices_long_mat(k);
+  int result = index.index->knnSearch(query.data(), k, k_indices_long_mat.data(), dists.data());
+  
+  // Wrap k_indices vector (no data allocation)
+  Eigen::Map<Eigen::Vector<index_t, Eigen::Dynamic>> k_indices_mat(&k_indices[0], k);
+  k_indices_mat = k_indices_long_mat.template cast<int>();
+  return result;
+}
+} // namespace detail
+template <class Index,
+          class Query,
+          class Indices,
+          class Distances>
+int
+knn_search(const Index& index,
+           const Query& query,
+           Indices& indices,
+           Distances& dists,
+           unsigned int k)
+{
+  return detail::knn_search<pcl::index_t>(index, query, indices, dists, k);
+}
+} // namespace nanoflann
+} // namespace pcl
+
+template <typename PointT, typename Dist, int dims> int 
+pcl::KdTreeNanoflann<PointT, Dist, dims>::nearestKSearch (const PointT &point, unsigned int k,
+                                                      Indices &k_indices,
+                                                      std::vector<float> &k_distances) const
+{
+  assert (point_representation_->isValid (point) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
+
+  if (k > total_nr_points_)
+    k = total_nr_points_;
+
+  k_indices.resize (k);
+  k_distances.resize (k);
+
+  if (k==0)
+    return 0;
+
+  std::vector<float> query (dim_);
+  point_representation_->vectorize (static_cast<PointT> (point), query);
+
+  Eigen::Map<Eigen::Vector<float, Eigen::Dynamic>> query_mat (&query[0], dim_);
+
+  // Wrap the k_distances vector (no data copy)
+  Eigen::Map<Eigen::Vector<float, Eigen::Dynamic>> k_distances_mat (&k_distances[0], k);
+
+  pcl::nanoflann::knn_search(*nanoflann_index_,
+             query_mat,
+             k_indices,
+             k_distances_mat,
+             k);
+
+  // Do mapping to original point cloud
+  if (!identity_mapping_)
+  {
+    for (std::size_t i = 0; i < static_cast<std::size_t> (k); ++i)
+    {
+      auto& neighbor_index = k_indices[i];
+      neighbor_index = index_mapping_[neighbor_index];
+    }
+  }
+
+  return (k);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+namespace pcl {
+namespace nanoflann {
+namespace detail {
+// Replace using constexpr in C++17
+template <class IndexT,
+          class A,
+          class B,
+          class C,
+          class D,
+          class F>
+int
+radius_search(A& index, B& query, C& k_indices, D& dists, float radius, F& params)
+{
+  std::vector<std::pair<long, float>> indices_dists(1);
+  int neighbors_in_radius = index.index->radiusSearch(query.data(), radius, indices_dists, params);
+
+  k_indices.clear();
+  k_indices.reserve(indices_dists.size());
+
+  dists.clear();
+  dists.reserve(indices_dists.size());
+  
+  for (const auto& index_dist : indices_dists)
+  {
+    const long& index = index_dist.first;
+    const float& dist = index_dist.second;
+    
+    k_indices.push_back(index);
+    dists.push_back(dist);
+  }
+
+  return neighbors_in_radius;
+}
+} // namespace detail
+template <class Index,
+          class Query,
+          class Indices,
+          class Distances,
+          class SearchParams>
+int
+radius_search(const Index& index,
+              const Query& query,
+              Indices& indices,
+              Distances& dists,
+              float radius,
+              const SearchParams& params)
+{
+  return detail::radius_search<pcl::index_t>(
+      index, query, indices, dists, radius, params);
+}
+} // namespace nanoflann
+} // namespace pcl
+
+template <typename PointT, typename Dist, int dims> int
+pcl::KdTreeNanoflann<PointT, Dist, dims>::radiusSearch (const PointT &point, double radius, Indices &k_indices,
+                                                    std::vector<float> &k_sqr_dists, unsigned int max_nn) const
+{
+  assert (point_representation_->isValid (point) && "Invalid (NaN, Inf) point coordinates given to radiusSearch!");
+
+  std::vector<float> query (dim_);
+  point_representation_->vectorize (static_cast<PointT> (point), query);
+
+  // Has max_nn been set properly?
+  if (max_nn == 0 || max_nn > total_nr_points_)
+    max_nn = total_nr_points_;
+
+  ::nanoflann::SearchParams params (param_radius_);
+
+  Eigen::Map<Eigen::Vector<float, Eigen::Dynamic>> query_mat (&query[0], dim_);
+  int neighbors_in_radius = pcl::nanoflann::radius_search(*nanoflann_index_,
+                                          query_mat,
+                                          k_indices,
+                                          k_sqr_dists,
+                                          static_cast<float>(radius * radius),
+                                          params);
+  
+  // testing
+  if (k_indices.size() > max_nn)
+  {
+    k_indices.resize(max_nn);
+    k_sqr_dists.resize(max_nn);
+  }
+
+  // Do mapping to original point cloud
+  if (!identity_mapping_)
+  {
+    for (int i = 0; i < neighbors_in_radius; ++i)
+    {
+      auto& neighbor_index = k_indices[i];
+      neighbor_index = index_mapping_[neighbor_index];
+    }
+  }
+
+  return (neighbors_in_radius);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename Dist, int dims> void
+pcl::KdTreeNanoflann<PointT, Dist, dims>::cleanup ()
+{
+  // Data array cleanup
+  index_mapping_.clear ();
+
+  if (indices_)
+    indices_.reset ();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename Dist, int dims> void
+pcl::KdTreeNanoflann<PointT, Dist, dims>::convertCloudToArray (const PointCloud &cloud)
+{
+  // No point in doing anything if the cloud is empty
+  if (cloud.empty ())
+  {
+    cloud_mat_.resize(0, dim_);
+    return;
+  }
+
+  const auto original_no_of_points = cloud.size ();
+  
+  cloud_mat_.resize(original_no_of_points, dim_);
+  
+  index_mapping_.reserve (original_no_of_points);
+  identity_mapping_ = true;
+
+  for (std::size_t cloud_index = 0; cloud_index < original_no_of_points; ++cloud_index)
+  {
+    // Check if the point is invalid
+    if (!point_representation_->isValid (cloud[cloud_index]))
+    {
+      identity_mapping_ = false;
+      continue;
+    }
+
+    index_mapping_.push_back (cloud_index);
+
+    auto point_vec = cloud_mat_.row(cloud_index);
+    point_representation_->vectorize (cloud[cloud_index], point_vec);
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename Dist, int dims> void
+pcl::KdTreeNanoflann<PointT, Dist, dims>::convertCloudToArray (const PointCloud &cloud, const Indices &indices)
+{
+  // No point in doing anything if the cloud is empty
+  if (cloud.empty ())
+  {
+    cloud_mat_.resize(0, dim_);
+    return;
+  }
+
+  int original_no_of_points = static_cast<int> (indices.size ());
+
+  cloud_mat_.resize(original_no_of_points, dim_);
+  
+  index_mapping_.reserve (original_no_of_points);
+  // its a subcloud -> false
+  // true only identity:
+  //     - indices size equals cloud size
+  //     - indices only contain values between 0 and cloud.size - 1
+  //     - no index is multiple times in the list
+  //     => index is complete
+  // But we can not guarantee that => identity_mapping_ = false
+  identity_mapping_ = false;
+
+  size_t row_idx = 0;
+
+  for (const auto &index : indices)
+  {
+    // Check if the point is invalid
+    if (!point_representation_->isValid (cloud[index]))
+      continue;
+
+    // map from 0 - N -> indices [0] - indices [N]
+    index_mapping_.push_back (index);  // If the returned index should be for the indices vector
+
+    auto point_vec = cloud_mat_.row(row_idx++);
+    point_representation_->vectorize (cloud[index], point_vec);
+  }
+}
+
+#define PCL_INSTANTIATE_KdTreeNanoflann(T) template class PCL_EXPORTS pcl::KdTreeNanoflann<T>;
+
+#endif  //#ifndef _PCL_KDTREE_KDTREE_IMPL_NANOFLANN_H_
+
