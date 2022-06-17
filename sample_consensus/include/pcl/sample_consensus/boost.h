@@ -44,4 +44,4 @@
 #endif
 PCL_DEPRECATED_HEADER(1, 15, "Please include the needed boost headers directly.")
 
-#include <boost/random.hpp>
+#include <random>

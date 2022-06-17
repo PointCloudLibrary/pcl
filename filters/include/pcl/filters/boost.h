@@ -46,8 +46,6 @@
 PCL_DEPRECATED_HEADER(1, 15, "Please include the needed boost headers directly.")
 
 // Marking all Boost headers as system headers to remove warnings
-#include <boost/random.hpp>
-#include <boost/random/normal_distribution.hpp>
 #include <boost/dynamic_bitset.hpp>
 #include <boost/mpl/size.hpp>
 #include <boost/fusion/sequence/intrinsic/at_key.hpp>
