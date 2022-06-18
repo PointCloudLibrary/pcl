@@ -183,6 +183,137 @@ TEST (PCL, NormalEstimation)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, TranslatedNormalEstimation)
+{
+  Eigen::Vector4f plane_parameters;
+  float curvature;
+
+  NormalEstimation<PointXYZ, Normal> n;
+
+  PointCloud<PointXYZ> translatedCloud(cloud);
+  for(size_t i = 0; i < translatedCloud.size(); ++i) {
+    translatedCloud[i].x += 100;
+    translatedCloud[i].y += 100;
+    translatedCloud[i].z += 100;
+  }
+
+  // computePointNormal (indices, Vector)
+  computePointNormal (translatedCloud, indices, plane_parameters, curvature);
+  EXPECT_NEAR (std::abs (plane_parameters[0]), 0.035592, 1e-4);
+  EXPECT_NEAR (std::abs (plane_parameters[1]), 0.369596, 1e-4);
+  EXPECT_NEAR (std::abs (plane_parameters[2]), 0.928511, 1e-4);
+// The points have moved so the location (not orientation is expected to change)
+//  EXPECT_NEAR (std::abs (plane_parameters[3]), 0.0622552, 1e-4);
+  EXPECT_NEAR (curvature, 0.0693136, 1e-4);
+
+  float nx, ny, nz;
+  // computePointNormal (indices)
+  n.computePointNormal (translatedCloud, indices, nx, ny, nz, curvature);
+  EXPECT_NEAR (std::abs (nx), 0.035592, 1e-4);
+  EXPECT_NEAR (std::abs (ny), 0.369596, 1e-4);
+  EXPECT_NEAR (std::abs (nz), 0.928511, 1e-4);
+  EXPECT_NEAR (curvature, 0.0693136, 1e-4);
+
+  // computePointNormal (Vector)
+  computePointNormal (translatedCloud, plane_parameters, curvature);
+  EXPECT_NEAR (plane_parameters[0],  0.035592,  1e-4);
+  EXPECT_NEAR (plane_parameters[1],  0.369596,  1e-4);
+  EXPECT_NEAR (plane_parameters[2],  0.928511,  1e-4);
+// The points have moved so the location (not orientation is expected to change)
+//  EXPECT_NEAR (plane_parameters[3], -0.0622552, 1e-4);
+  EXPECT_NEAR (curvature,            0.0693136, 1e-4);
+
+  // flipNormalTowardsViewpoint (Vector)
+  flipNormalTowardsViewpoint (translatedCloud.points[0], 0, 0, 0, plane_parameters);
+  EXPECT_NEAR (plane_parameters[0], -0.035592,  1e-4);
+  EXPECT_NEAR (plane_parameters[1], -0.369596,  1e-4);
+  EXPECT_NEAR (plane_parameters[2], -0.928511,  1e-4);
+// The points have moved so the location (not orientation is expected to change)
+//  EXPECT_NEAR (plane_parameters[3],  0.0799743, 1e-4);
+
+  // flipNormalTowardsViewpoint
+  flipNormalTowardsViewpoint (translatedCloud.points[0], 0, 0, 0, nx, ny, nz);
+  EXPECT_NEAR (nx, -0.035592, 1e-4);
+  EXPECT_NEAR (ny, -0.369596, 1e-4);
+  EXPECT_NEAR (nz, -0.928511, 1e-4);
+
+  // Object
+  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
+
+  // set parameters
+  PointCloud<PointXYZ>::Ptr cloudptr = translatedCloud.makeShared ();
+  n.setInputCloud (cloudptr);
+  EXPECT_EQ (n.getInputCloud (), cloudptr);
+  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
+  n.setIndices (indicesptr);
+  EXPECT_EQ (n.getIndices (), indicesptr);
+  n.setSearchMethod (tree);
+  EXPECT_EQ (n.getSearchMethod (), tree);
+  n.setKSearch (static_cast<int> (indices.size ()));
+
+  // estimate
+  n.compute (*normals);
+  EXPECT_EQ (normals->size (), indices.size ());
+
+  for (const auto &point : normals->points)
+  {
+    EXPECT_NEAR (point.normal[0], -0.035592, 1e-4);
+    EXPECT_NEAR (point.normal[1], -0.369596, 1e-4);
+    EXPECT_NEAR (point.normal[2], -0.928511, 1e-4);
+    EXPECT_NEAR (point.curvature, 0.0693136, 1e-4);
+  }
+
+  PointCloud<PointXYZ>::Ptr surfaceptr = cloudptr;
+  n.setSearchSurface (surfaceptr);
+  EXPECT_EQ (n.getSearchSurface (), surfaceptr);
+
+  // Additional test for searchForNeigbhors
+  surfaceptr.reset (new PointCloud<PointXYZ>);
+  *surfaceptr = *cloudptr;
+  surfaceptr->points.resize (640 * 480);
+  surfaceptr->width = 640;
+  surfaceptr->height = 480;
+  EXPECT_EQ (surfaceptr->size (), surfaceptr->width * surfaceptr->height);
+  n.setSearchSurface (surfaceptr);
+  tree.reset ();
+  n.setSearchMethod (tree);
+
+  // estimate
+  n.compute (*normals);
+  EXPECT_EQ (normals->size (), indices.size ());
+}
+
+TEST (NormalEstimation, FarFromOrigin)
+{ // Test if estimated normals are the same if the cloud is moved far away from the origin
+  pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne1;
+  ne1.setInputCloud(cloud.makeShared());
+  ne1.setKSearch(15);
+  pcl::PointCloud<pcl::Normal> normals1;
+  ne1.compute(normals1);
+
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_translated(new pcl::PointCloud<pcl::PointXYZ>(cloud));
+  for(auto& point : (*cloud_translated)) {
+    point.x += 123.0;
+    point.y += -45.0;
+    point.z +=  98.0;
+  }
+  pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne2;
+  ne2.setInputCloud(cloud_translated);
+  ne2.setKSearch(15);
+  ne2.setViewPoint(123.0, -45.0, 98.0); // Has to be set so that normals are oriented/flipped the same way
+  pcl::PointCloud<pcl::Normal> normals2;
+  ne2.compute(normals2);
+
+  ASSERT_EQ(normals1.size(), normals2.size());
+  for(std::size_t i=0; i<normals1.size(); ++i) {
+    EXPECT_NEAR(std::abs(normals1[i].getNormalVector3fMap().dot(normals2[i].getNormalVector3fMap())), 1.0, 1e-6);
+    EXPECT_NEAR(normals1[i].normal_x, normals2[i].normal_x, 5e-4);
+    EXPECT_NEAR(normals1[i].normal_y, normals2[i].normal_y, 5e-4);
+    EXPECT_NEAR(normals1[i].normal_z, normals2[i].normal_z, 5e-4);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // There was an issue where the vectors for the indices and the
 // distances of the neighbor search weren't initialized correctly
 // due to a wrong usage of OpenMP.

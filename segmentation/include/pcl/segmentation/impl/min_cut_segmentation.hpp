@@ -39,7 +39,7 @@
 #ifndef PCL_SEGMENTATION_MIN_CUT_SEGMENTATION_HPP_
 #define PCL_SEGMENTATION_MIN_CUT_SEGMENTATION_HPP_
 
-#include <pcl/segmentation/boost.h>
+#include <boost/graph/boykov_kolmogorov_max_flow.hpp> // for boykov_kolmogorov_max_flow
 #include <pcl/segmentation/min_cut_segmentation.h>
 #include <pcl/search/search.h>
 #include <pcl/search/kdtree.h>
@@ -342,7 +342,7 @@ pcl::MinCutSegmentation<PointT>::buildGraph ()
     addEdge (point_index, static_cast<int> (sink_), sink_weight);
   }
 
-  std::vector<int> neighbours;
+  pcl::Indices neighbours;
   std::vector<float> distances;
   search_->setInputCloud (input_, indices_);
   for (std::size_t i_point = 0; i_point < number_of_indices; i_point++)
@@ -564,7 +564,7 @@ pcl::MinCutSegmentation<PointT>::getColoredCloud ()
 
   if (!clusters_.empty ())
   {
-    colored_cloud = (new pcl::PointCloud<pcl::PointXYZRGB>)->makeShared ();
+    colored_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGB>);
     unsigned char foreground_color[3] = {255, 255, 255};
     unsigned char background_color[3] = {255, 0, 0};
     colored_cloud->width = (clusters_[0].indices.size () + clusters_[1].indices.size ());

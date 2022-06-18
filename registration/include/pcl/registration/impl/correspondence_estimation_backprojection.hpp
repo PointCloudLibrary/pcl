@@ -73,7 +73,7 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
 
   correspondences.resize(indices_->size());
 
-  std::vector<int> nn_indices(k_);
+  pcl::Indices nn_indices(k_);
   std::vector<float> nn_dists(k_);
 
   int min_index = 0;
@@ -177,9 +177,9 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
 
   correspondences.resize(indices_->size());
 
-  std::vector<int> nn_indices(k_);
+  pcl::Indices nn_indices(k_);
   std::vector<float> nn_dists(k_);
-  std::vector<int> index_reciprocal(1);
+  pcl::Indices index_reciprocal(1);
   std::vector<float> distance_reciprocal(1);
 
   int min_index = 0;

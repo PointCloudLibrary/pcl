@@ -42,7 +42,6 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/common/float_image_utils.h>
 #include <pcl/visualization/image_viewer.h>
-#include <pcl/visualization/vtk.h>
 #include <pcl/point_types.h>
 
 #include <boost/filesystem.hpp>

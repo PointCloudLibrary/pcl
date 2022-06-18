@@ -37,6 +37,7 @@
  */
 
 #include <pcl/test/gtest.h>
+#include <pcl/pcl_tests.h> // for EXPECT_XYZ_NEAR
 
 #include <pcl/sample_consensus/ransac.h>
 #include <pcl/sample_consensus/sac_model_sphere.h>
@@ -519,6 +520,89 @@ TEST (SampleConsensusModelCircle2D, RANSAC)
   EXPECT_NEAR ( 1, coeff_refined[2], 1e-3);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+TEST (SampleConsensusModelCircle2D, SampleValidationPointsValid)
+{
+  PointCloud<PointXYZ> cloud;
+  cloud.resize (3);
+
+  cloud[0].getVector3fMap () <<  1.0f,  2.0f,  0.0f;
+  cloud[1].getVector3fMap () <<  0.0f,  1.0f,  0.0f;
+  cloud[2].getVector3fMap () <<  1.5f,  0.0f,  0.0f;
+
+  // Create a shared line model pointer directly
+  SampleConsensusModelCircle2DPtr model (
+    new SampleConsensusModelCircle2D<PointXYZ> (cloud.makeShared ()));
+
+  // Algorithm tests
+  pcl::Indices samples;
+  int iterations = 0;
+  model->getSamples(iterations, samples);
+  EXPECT_EQ (samples.size(), 3);
+
+  Eigen::VectorXf modelCoefficients;
+  EXPECT_TRUE (model->computeModelCoefficients (samples, modelCoefficients));
+
+  EXPECT_NEAR (modelCoefficients[0], 1.05f, 1e-3);   // center x
+  EXPECT_NEAR (modelCoefficients[1], 0.95f, 1e-3);   // center y
+  EXPECT_NEAR (modelCoefficients[2], std::sqrt (1.105f), 1e-3);  // radius
+}
+
+using PointVector = std::vector<PointXYZ>;
+class SampleConsensusModelCircle2DCollinearTest
+  : public testing::TestWithParam<PointVector> {
+  protected:
+    void SetUp() override {
+      pointCloud_ = make_shared<PointCloud<PointXYZ>>();
+      for(const auto& point : GetParam()) {
+        pointCloud_->emplace_back(point);
+      }
+    }
+
+    PointCloud<PointXYZ>::Ptr pointCloud_ = nullptr;
+};
+
+// Parametric tests clearly show the input for which they failed and provide
+// clearer feedback if something is changed in the future.
+TEST_P (SampleConsensusModelCircle2DCollinearTest, SampleValidationPointsInvalid)
+{
+  ASSERT_NE (pointCloud_, nullptr);
+
+  SampleConsensusModelCircle2DPtr model (
+      new SampleConsensusModelCircle2D<PointXYZ> (pointCloud_));
+  ASSERT_GE (model->getInputCloud ()->size (), model->getSampleSize ());
+
+  // Algorithm tests
+  // (Maybe) TODO: try to implement the "cheat point" trick from
+  //               test_sample_consensus_line_models.cpp and friends here, too.
+  // pcl::Indices samples;
+  // int iterations = 0;
+  // model->getSamples(iterations, samples);
+  // EXPECT_EQ (samples.size(), 0);
+
+  // Explicitly enforce sample order so they can act as designed
+  pcl::Indices forcedSamples = {0, 1, 2};
+  Eigen::VectorXf modelCoefficients;
+  EXPECT_FALSE (model->computeModelCoefficients (forcedSamples, modelCoefficients));
+}
+
+INSTANTIATE_TEST_SUITE_P (CollinearInputs, SampleConsensusModelCircle2DCollinearTest,
+  testing::Values( // Throw in some negative coordinates and "asymmetric" points to cover more cases
+    PointVector {{ 0.0f,  0.0f, 0.0f}, { 1.0f,  0.0f, 0.0f}, { 2.0f,  0.0f, 0.0f}}, // collinear along x-axis
+    PointVector {{-1.0f,  0.0f, 0.0f}, { 1.0f,  0.0f, 0.0f}, { 2.0f,  0.0f, 0.0f}},
+    PointVector {{ 0.0f, -1.0f, 0.0f}, { 0.0f,  1.0f, 0.0f}, { 0.0f,  2.0f, 0.0f}}, // collinear along y-axis
+    PointVector {{ 0.0f, -1.0f, 0.0f}, { 0.0f,  1.0f, 0.0f}, { 0.0f,  2.0f, 0.0f}},
+    PointVector {{ 0.0f,  0.0f, 0.0f}, { 1.0f,  1.0f, 0.0f}, { 2.0f,  2.0f, 0.0f}}, // collinear along diagonal
+    PointVector {{ 0.0f,  0.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, {-2.0f, -2.0f, 0.0f}},
+    PointVector {{-3.0f, -6.5f, 0.0f}, {-2.0f, -0.5f, 0.0f}, {-1.5f,  2.5f, 0.0f}}, // other collinear input
+    PointVector {{ 2.0f,  2.0f, 0.0f}, { 0.0f,  0.0f, 0.0f}, { 0.0f,  0.0f, 0.0f}}, // two points equal
+    PointVector {{ 0.0f,  0.0f, 0.0f}, { 2.0f,  2.0f, 0.0f}, { 0.0f,  0.0f, 0.0f}},
+    PointVector {{ 0.0f,  0.0f, 0.0f}, { 0.0f,  0.0f, 0.0f}, { 2.0f,  2.0f, 0.0f}},
+    PointVector {{ 1.0f,  1.0f, 0.0f}, { 1.0f,  1.0f, 0.0f}, { 1.0f,  1.0f, 0.0f}}  // all points equal
+  )
+);
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 class SampleConsensusModelCircle2DTest : private SampleConsensusModelCircle2D<PointT>
@@ -635,7 +719,8 @@ TEST (SampleConsensusModelCircle3D, RANSAC)
   EXPECT_NEAR (-3.0, coeff[2], 1e-3);
   EXPECT_NEAR ( 0.1, coeff[3], 1e-3);
   EXPECT_NEAR ( 0.0, coeff[4], 1e-3);
-  EXPECT_NEAR (-1.0, coeff[5], 1e-3);
+  // Use abs in y component because both variants are valid normal vectors
+  EXPECT_NEAR ( 1.0, std::abs (coeff[5]), 1e-3);
   EXPECT_NEAR ( 0.0, coeff[6], 1e-3);
 
   Eigen::VectorXf coeff_refined;
@@ -646,8 +731,97 @@ TEST (SampleConsensusModelCircle3D, RANSAC)
   EXPECT_NEAR (-3.0, coeff_refined[2], 1e-3);
   EXPECT_NEAR ( 0.1, coeff_refined[3], 1e-3);
   EXPECT_NEAR ( 0.0, coeff_refined[4], 1e-3);
-  EXPECT_NEAR (-1.0, coeff_refined[5], 1e-3);
+  EXPECT_NEAR ( 1.0, std::abs (coeff_refined[5]), 1e-3);
   EXPECT_NEAR ( 0.0, coeff_refined[6], 1e-3);
+}
+
+TEST (SampleConsensusModelSphere, projectPoints)
+{
+  Eigen::VectorXf model_coefficients(4);
+  model_coefficients << -0.32, -0.89, 0.37, 0.12; // center and radius
+
+  pcl::PointCloud<pcl::PointXYZ>::Ptr input(new pcl::PointCloud<pcl::PointXYZ>);
+  input->emplace_back(-0.259754, -0.950873,  0.318377); // inlier, dist from center=0.10
+  input->emplace_back( 0.595892,  0.455094,  0.025545); // outlier, not projected
+  input->emplace_back(-0.221871, -0.973718,  0.353817); // inlier, dist from center=0.13
+  input->emplace_back(-0.332269, -0.848851,  0.437499); // inlier, dist from center=0.08
+  input->emplace_back(-0.242308, -0.561036, -0.365535); // outlier, not projected
+  input->emplace_back(-0.327668, -0.800009,  0.290988); // inlier, dist from center=0.12
+  input->emplace_back(-0.173948, -0.883831,  0.403625); // inlier, dist from center=0.15
+  input->emplace_back(-0.033891,  0.624537, -0.606994); // outlier, not projected
+
+  pcl::SampleConsensusModelSphere<pcl::PointXYZ> model(input);
+  pcl::Indices inliers = {0, 2, 3, 5, 6};
+
+  pcl::PointCloud<pcl::PointXYZ> projected_truth;
+  projected_truth.emplace_back(-0.247705, -0.963048, 0.308053);
+  projected_truth.emplace_back(-0.229419, -0.967278, 0.355062);
+  projected_truth.emplace_back(-0.338404, -0.828276, 0.471249);
+  projected_truth.emplace_back(-0.327668, -0.800009, 0.290988);
+  projected_truth.emplace_back(-0.203158, -0.885065, 0.396900);
+
+  pcl::PointCloud<pcl::PointXYZ> projected_points;
+  model.projectPoints(inliers, model_coefficients, projected_points, false);
+  EXPECT_EQ(projected_points.size(), 5);
+  for(int i=0; i<5; ++i)
+    EXPECT_XYZ_NEAR(projected_points[i], projected_truth[i], 1e-5);
+
+  pcl::PointCloud<pcl::PointXYZ> projected_points_all;
+  model.projectPoints(inliers, model_coefficients, projected_points_all, true);
+  EXPECT_EQ(projected_points_all.size(), 8);
+  EXPECT_XYZ_NEAR(projected_points_all[0], projected_truth[0], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[1],        (*input)[1], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[2], projected_truth[1], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[3], projected_truth[2], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[4],        (*input)[4], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[5], projected_truth[3], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[6], projected_truth[4], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[7],        (*input)[7], 1e-5);
+}
+
+TEST (SampleConsensusModelCylinder, projectPoints)
+{
+  Eigen::VectorXf model_coefficients(7);
+  model_coefficients << -0.59, 0.85, -0.80, 0.22, -0.70, 0.68, 0.18;
+
+  pcl::PointCloud<pcl::PointXYZ>::Ptr input(new pcl::PointCloud<pcl::PointXYZ>);
+  input->emplace_back(-0.616358,  0.713315, -0.885120); // inlier, dist from axis=0.16
+  input->emplace_back( 0.595892,  0.455094,  0.025545); // outlier, not projected
+  input->emplace_back(-0.952749,  1.450040, -1.305640); // inlier, dist from axis=0.19
+  input->emplace_back(-0.644947,  1.421240, -1.421170); // inlier, dist from axis=0.14
+  input->emplace_back(-0.242308, -0.561036, -0.365535); // outlier, not projected
+  input->emplace_back(-0.502111,  0.694671, -0.878344); // inlier, dist from axis=0.18
+  input->emplace_back(-0.664129,  0.557583, -0.750060); // inlier, dist from axis=0.21
+  input->emplace_back(-0.033891,  0.624537, -0.606994); // outlier, not projected
+
+  pcl::SampleConsensusModelCylinder<pcl::PointXYZ, pcl::Normal> model(input);
+  // not necessary to set normals for model here because projectPoints does not use them
+  pcl::Indices inliers = {0, 2, 3, 5, 6};
+
+  pcl::PointCloud<pcl::PointXYZ> projected_truth;
+  projected_truth.emplace_back(-0.620532, 0.699027, -0.898478);
+  projected_truth.emplace_back(-0.943418, 1.449510, -1.309200);
+  projected_truth.emplace_back(-0.608243, 1.417710, -1.436680);
+  projected_truth.emplace_back(-0.502111, 0.694671, -0.878344);
+  projected_truth.emplace_back(-0.646557, 0.577140, -0.735612);
+
+  pcl::PointCloud<pcl::PointXYZ> projected_points;
+  model.projectPoints(inliers, model_coefficients, projected_points, false);
+  EXPECT_EQ(projected_points.size(), 5);
+  for(int i=0; i<5; ++i)
+    EXPECT_XYZ_NEAR(projected_points[i], projected_truth[i], 1e-5);
+
+  pcl::PointCloud<pcl::PointXYZ> projected_points_all;
+  model.projectPoints(inliers, model_coefficients, projected_points_all, true);
+  EXPECT_EQ(projected_points_all.size(), 8);
+  EXPECT_XYZ_NEAR(projected_points_all[0], projected_truth[0], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[1],        (*input)[1], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[2], projected_truth[1], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[3], projected_truth[2], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[4],        (*input)[4], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[5], projected_truth[3], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[6], projected_truth[4], 1e-5);
+  EXPECT_XYZ_NEAR(projected_points_all[7],        (*input)[7], 1e-5);
 }
 
 int

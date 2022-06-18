@@ -114,7 +114,7 @@ public:
    */
   inline void
   getRejectedQueryIndices(const pcl::Correspondences& correspondences,
-                          std::vector<int>& indices)
+                          pcl::Indices& indices)
   {
     if (!input_correspondences_ || input_correspondences_->empty()) {
       PCL_WARN("[pcl::registration::%s::getRejectedQueryIndices] Input correspondences "
@@ -205,8 +205,8 @@ protected:
 };
 
 /** @b DataContainerInterface provides a generic interface for computing correspondence
- * scores between correspondent points in the input and target clouds \ingroup
- * registration
+ * scores between correspondent points in the input and target clouds
+ * \ingroup registration
  */
 class DataContainerInterface {
 public:
@@ -348,7 +348,7 @@ public:
     if (target_cloud_updated_ && !force_no_recompute_) {
       tree_->setInputCloud(target_);
     }
-    std::vector<int> indices(1);
+    pcl::Indices indices(1);
     std::vector<float> distances(1);
     if (tree_->nearestKSearch((*input_)[index], 1, indices, distances))
       return (distances[0]);

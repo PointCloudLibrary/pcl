@@ -40,7 +40,7 @@
 
 #include <pcl/point_types.h>
 #include <pcl/common/common.h>
-#include <cfloat> // for FLT_MAX
+#include <limits>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 inline double
@@ -196,7 +196,7 @@ pcl::getPointsInBox (const pcl::PointCloud<PointT> &cloud,
 template<typename PointT> inline void
 pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Eigen::Vector4f &pivot_pt, Eigen::Vector4f &max_pt)
 {
-  float max_dist = -FLT_MAX;
+  float max_dist = std::numeric_limits<float>::lowest();
   int max_idx = -1;
   float dist;
   const Eigen::Vector3f pivot_pt3 = pivot_pt.head<3> ();
@@ -244,7 +244,7 @@ template<typename PointT> inline void
 pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Indices &indices,
                      const Eigen::Vector4f &pivot_pt, Eigen::Vector4f &max_pt)
 {
-  float max_dist = -FLT_MAX;
+  float max_dist = std::numeric_limits<float>::lowest();
   int max_idx = -1;
   float dist;
   const Eigen::Vector3f pivot_pt3 = pivot_pt.head<3> ();
@@ -304,8 +304,8 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, PointT &min_pt, PointT &
 template <typename PointT> inline void
 pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt)
 {
-  min_pt.setConstant (FLT_MAX);
-  max_pt.setConstant (-FLT_MAX);
+  min_pt.setConstant (std::numeric_limits<float>::max());
+  max_pt.setConstant (std::numeric_limits<float>::lowest());
 
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
@@ -348,8 +348,8 @@ template <typename PointT> inline void
 pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const Indices &indices,
                   Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt)
 {
-  min_pt.setConstant (FLT_MAX);
-  max_pt.setConstant (-FLT_MAX);
+  min_pt.setConstant (std::numeric_limits<float>::max());
+  max_pt.setConstant (std::numeric_limits<float>::lowest());
 
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
@@ -399,8 +399,8 @@ pcl::getCircumcircleRadius (const PointT &pa, const PointT &pb, const PointT &pc
 template <typename PointT> inline void 
 pcl::getMinMax (const PointT &histogram, int len, float &min_p, float &max_p)
 {
-  min_p = FLT_MAX;
-  max_p = -FLT_MAX;
+  min_p = std::numeric_limits<float>::max();
+  max_p = std::numeric_limits<float>::lowest();
 
   for (int i = 0; i < len; ++i)
   {

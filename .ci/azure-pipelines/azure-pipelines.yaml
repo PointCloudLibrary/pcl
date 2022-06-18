@@ -1,15 +1,33 @@
+trigger:
+  paths:
+    exclude:
+    - doc
+    - README.md
+    - CHANGES.md
+    - CONTRIBUTING.md
+
+pr:
+  paths:
+    exclude:
+    - doc
+    - README.md
+    - CHANGES.md
+    - CONTRIBUTING.md
+
 resources:
   containers:
+    - container: winx86
+      image: pointcloudlibrary/env:winx86
+    - container: winx64
+      image: pointcloudlibrary/env:winx64
     - container: fmt
       image: pointcloudlibrary/fmt
     - container: env1804
       image: pointcloudlibrary/env:18.04
     - container: env2004
       image: pointcloudlibrary/env:20.04
-    - container: env2010
-      image: pointcloudlibrary/env:20.10
-    - container: doc
-      image: pointcloudlibrary/doc
+    - container: env2204
+      image: pointcloudlibrary/env:22.04
 
 stages:
   - stage: formatting
@@ -33,18 +51,17 @@ stages:
               CXX: g++
               BUILD_GPU: ON
               CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON'
-            20.10 GCC:  # latest Ubuntu
-              CONTAINER: env2010
+            22.04 GCC:  # latest Ubuntu
+              CONTAINER: env2204
               CC: gcc
               CXX: g++
-              BUILD_GPU: OFF
-              # surface is not ready for re-entrant QHull
-              CMAKE_ARGS: '-DBUILD_tests_surface=OFF'
+              BUILD_GPU: OFF # There are currently incompatibilities between GCC 11.2 and CUDA 11.5
         container: $[ variables['CONTAINER'] ]
         timeoutInMinutes: 0
         variables:
           BUILD_DIR: '$(Agent.BuildDirectory)/build'
           CMAKE_CXX_FLAGS: '-Wall -Wextra -Wnoexcept-type'
+          DISPLAY: :99.0 # Checked for in CMake
         steps:
           - template: build/ubuntu.yaml
 
@@ -61,9 +78,9 @@ stages:
             Catalina 10.15:
               VMIMAGE: 'macOS-10.15'
               OSX_VERSION: '10.15'
-            Mojave 10.14:
-              VMIMAGE: 'macOS-10.14'
-              OSX_VERSION: '10.14'
+            Big Sur 11:
+              VMIMAGE: 'macOS-11'
+              OSX_VERSION: '11'
         timeoutInMinutes: 0
         variables:
           BUILD_DIR: '$(Agent.WorkFolder)/build'
@@ -94,6 +111,7 @@ stages:
         variables:
           BUILD_DIR: '$(Agent.BuildDirectory)/build'
           CMAKE_CXX_FLAGS: '-Wall -Wextra'
+          DISPLAY: :99.0 # Checked for in CMake
         steps:
           - template: build/ubuntu.yaml
       - job: ubuntu_indices
@@ -124,37 +142,27 @@ stages:
     displayName: Build MSVC
     dependsOn: formatting
     jobs:
-      - job: vs2017
-        displayName: Windows VS2017 Build
+      - job: Windows
+        displayName: Windows Build
         pool:
-          vmImage: 'vs2017-win2016'
+          vmImage: 'windows-2019'
         strategy:
           matrix:
             x86:
+              CONTAINER: winx86
               PLATFORM: 'x86'
               ARCHITECTURE: 'x86'
-              GENERATOR: 'Visual Studio 15 2017'
+              GENERATOR: '"Visual Studio 16 2019" -A Win32'
             x64:
+              CONTAINER: winx64
               PLATFORM: 'x64'
               ARCHITECTURE: 'x86_amd64'
-              GENERATOR: 'Visual Studio 15 2017 Win64'
+              GENERATOR: '"Visual Studio 16 2019" -A x64'
+        container: $[ variables['CONTAINER'] ]
         timeoutInMinutes: 0
         variables:
           BUILD_DIR: 'c:\build'
           CONFIGURATION: 'Release'
-          VCPKG_ROOT: 'C:\vcpkg'
+          VCPKG_ROOT: 'c:\vcpkg'
         steps:
           - template: build/windows.yaml
-
-  - stage: documentation
-    displayName: Documentation
-    dependsOn: []
-    jobs:
-      - template: documentation.yaml
-
-  - stage: tutorials
-    displayName: Tutorials
-    dependsOn: build_gcc
-    jobs:
-      - template: tutorials.yaml
-

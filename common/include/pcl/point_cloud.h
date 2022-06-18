@@ -315,9 +315,12 @@ namespace pcl
       /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the specified dimensions of the PointCloud.
         * \note This method is for advanced users only! Use with care!
         *
-        * \attention Since 1.4.0, Eigen matrices are forced to Row Major to increase the efficiency of the algorithms in PCL
-        *   This means that the behavior of getMatrixXfMap changed, and is now correctly mapping 1-1 with a PointCloud structure,
-        *   that is: number of points in a cloud = rows in a matrix, number of point dimensions = columns in a matrix
+        * \attention Compile time flags used for Eigen might affect the dimension of the Eigen::Map returned. If Eigen
+        *   is using row major storage, the matrix shape would be (number of Points X elements in a Point) else
+        *   the matrix shape would be (elements in a Point X number of Points). Essentially,
+        *   * Major direction: number of points in cloud
+        *   * Minor direction: number of point dimensions
+        * By default, as of Eigen 3.3, Eigen uses Column major storage
         *
         * \param[in] dim the number of dimensions to consider for each point
         * \param[in] stride the number of values in each point (will be the number of values that separate two of the columns)
@@ -338,9 +341,12 @@ namespace pcl
       /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the specified dimensions of the PointCloud.
         * \note This method is for advanced users only! Use with care!
         *
-        * \attention Since 1.4.0, Eigen matrices are forced to Row Major to increase the efficiency of the algorithms in PCL
-        *   This means that the behavior of getMatrixXfMap changed, and is now correctly mapping 1-1 with a PointCloud structure,
-        *   that is: number of points in a cloud = rows in a matrix, number of point dimensions = columns in a matrix
+        * \attention Compile time flags used for Eigen might affect the dimension of the Eigen::Map returned. If Eigen
+        *   is using row major storage, the matrix shape would be (number of Points X elements in a Point) else
+        *   the matrix shape would be (elements in a Point X number of Points). Essentially,
+        *   * Major direction: number of points in cloud
+        *   * Minor direction: number of point dimensions
+        * By default, as of Eigen 3.3, Eigen uses Column major storage
         *
         * \param[in] dim the number of dimensions to consider for each point
         * \param[in] stride the number of values in each point (will be the number of values that separate two of the columns)
@@ -536,6 +542,7 @@ namespace pcl
        * \note This breaks the organized structure of the cloud by setting the height to
        * 1!
        * \param[in] count new size of the point cloud
+       * \param[in] value value each point of the cloud should have
        */
       inline void
       assign(index_t count, const PointT& value)
@@ -549,6 +556,7 @@ namespace pcl
        * \brief Replaces the points with `new_width * new_height` copies of `value`
        * \param[in] new_width new width of the point cloud
        * \param[in] new_height new height of the point cloud
+       * \param[in] value value each point of the cloud should have
        */
       inline void
       assign(index_t new_width, index_t new_height, const PointT& value)
@@ -580,18 +588,25 @@ namespace pcl
        * `*this`
        * \note This calculates the height based on size and width provided. This means
        * the assignment happens even if the size is not perfectly divisible by width
+       * \param[in] first, last the range from which the points are copied
        * \param[in] new_width new width of the point cloud
        */
       template <class InputIterator>
       inline void
       assign(InputIterator first, InputIterator last, index_t new_width)
       {
+        if (new_width == 0) {
+          PCL_WARN("Assignment with new_width equal to 0,"
+                   "setting width to size of the cloud and height to 1\n");
+          return assign(std::move(first), std::move(last));
+        }
+
         points.assign(std::move(first), std::move(last));
         width = new_width;
         height = size() / width;
         if (width * height != size()) {
           PCL_WARN("Mismatch in assignment. Requested width (%zu) doesn't divide "
-                   "provided size (%zu) cleanly. Setting height to 1",
+                   "provided size (%zu) cleanly. Setting height to 1\n",
                    static_cast<std::size_t>(width),
                    static_cast<std::size_t>(size()));
           width = size();
@@ -616,17 +631,23 @@ namespace pcl
        * \brief Replaces the points with the elements from the initializer list `ilist`
        * \note This calculates the height based on size and width provided. This means
        * the assignment happens even if the size is not perfectly divisible by width
+       * \param[in] ilist initializer list from which the points are copied
        * \param[in] new_width new width of the point cloud
        */
       void
       inline assign(std::initializer_list<PointT> ilist, index_t new_width)
       {
+        if (new_width == 0) {
+          PCL_WARN("Assignment with new_width equal to 0,"
+                   "setting width to size of the cloud and height to 1\n");
+          return assign(std::move(ilist));
+        }
         points.assign(std::move(ilist));
         width = new_width;
         height = size() / width;
         if (width * height != size()) {
           PCL_WARN("Mismatch in assignment. Requested width (%zu) doesn't divide "
-                   "provided size (%zu) cleanly. Setting height to 1",
+                   "provided size (%zu) cleanly. Setting height to 1\n",
                    static_cast<std::size_t>(width),
                    static_cast<std::size_t>(size()));
           width = size();

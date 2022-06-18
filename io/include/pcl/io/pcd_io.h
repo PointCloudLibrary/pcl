@@ -43,6 +43,7 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/io/file_io.h>
+#include <boost/interprocess/sync/file_lock.hpp> // for file_lock
 
 namespace pcl
 {

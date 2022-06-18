@@ -27,7 +27,7 @@ You need at least PCL 1.8.0 to be able to use the davidSDK. You need to make sur
 
 The default following values can be tweaked into CMake if you don't have a standard installation, for example:
 
-.. code-block:: cmake
+.. code-block::
 
   DAVIDSDK_ABI_DIR     /opt/davidsdk
 

@@ -43,7 +43,6 @@
 #include <pcl/common/common.h>
 #include <pcl/gpu/features/features.hpp>
 #include "data_source.hpp"
-#include <pcl/search/pcl_search.h>
 
 using namespace pcl;
 using namespace pcl::gpu;

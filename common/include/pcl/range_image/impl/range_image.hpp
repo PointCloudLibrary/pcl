@@ -135,9 +135,11 @@ RangeImage::createFromPointCloud (const PointCloudType& point_cloud,
   int top=height, right=-1, bottom=-1, left=width;
   doZBuffer (point_cloud, noise_level, min_range, top, right, bottom, left);
   
-  cropImage (border_size, top, right, bottom, left);
+  if (border_size != std::numeric_limits<int>::min()) {
+    cropImage (border_size, top, right, bottom, left);
   
-  recalculate3DPointPositions ();
+    recalculate3DPointPositions ();
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -196,9 +198,11 @@ RangeImage::createFromPointCloudWithKnownSize (const PointCloudType& point_cloud
   int top=height, right=-1, bottom=-1, left=width;
   doZBuffer (point_cloud, noise_level, min_range, top, right, bottom, left);
   
-  cropImage (border_size, top, right, bottom, left);
+  if (border_size != std::numeric_limits<int>::min()) {
+    cropImage (border_size, top, right, bottom, left);
   
-  recalculate3DPointPositions ();
+    recalculate3DPointPositions ();
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -356,6 +360,11 @@ RangeImage::getImagePoint (const Eigen::Vector3f& point, float& image_x, float& 
 {
   Eigen::Vector3f transformedPoint = to_range_image_system_ * point;
   range = transformedPoint.norm ();
+  if (range < std::numeric_limits<float>::epsilon()) {
+    PCL_DEBUG ("[pcl::RangeImage::getImagePoint] Transformed point is (0,0,0), cannot project it.\n");
+    image_x = image_y = 0.0f;
+    return;
+  }
   float angle_x = atan2LookUp (transformedPoint[0], transformedPoint[2]),
         angle_y = asinLookUp (transformedPoint[1]/range);
   getImagePointFromAngles (angle_x, angle_y, image_x, image_y);

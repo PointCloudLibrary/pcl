@@ -56,7 +56,7 @@
 template <typename PointT, typename NormalT>
 pcl::RegionGrowing<PointT, NormalT>::RegionGrowing () :
   min_pts_per_cluster_ (1),
-  max_pts_per_cluster_ (std::numeric_limits<int>::max ()),
+  max_pts_per_cluster_ (std::numeric_limits<pcl::uindex_t>::max ()),
   smooth_mode_flag_ (true),
   curvature_flag_ (true),
   residual_flag_ (false),
@@ -86,7 +86,7 @@ pcl::RegionGrowing<PointT, NormalT>::~RegionGrowing ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename NormalT> int
+template <typename PointT, typename NormalT> pcl::uindex_t
 pcl::RegionGrowing<PointT, NormalT>::getMinClusterSize ()
 {
   return (min_pts_per_cluster_);
@@ -94,13 +94,13 @@ pcl::RegionGrowing<PointT, NormalT>::getMinClusterSize ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT> void
-pcl::RegionGrowing<PointT, NormalT>::setMinClusterSize (int min_cluster_size)
+pcl::RegionGrowing<PointT, NormalT>::setMinClusterSize (pcl::uindex_t min_cluster_size)
 {
   min_pts_per_cluster_ = min_cluster_size;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename NormalT> int
+template <typename PointT, typename NormalT> pcl::uindex_t
 pcl::RegionGrowing<PointT, NormalT>::getMaxClusterSize ()
 {
   return (max_pts_per_cluster_);
@@ -108,7 +108,7 @@ pcl::RegionGrowing<PointT, NormalT>::getMaxClusterSize ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT> void
-pcl::RegionGrowing<PointT, NormalT>::setMaxClusterSize (int max_cluster_size)
+pcl::RegionGrowing<PointT, NormalT>::setMaxClusterSize (pcl::uindex_t max_cluster_size)
 {
   max_pts_per_cluster_ = max_cluster_size;
 }
@@ -278,8 +278,8 @@ pcl::RegionGrowing<PointT, NormalT>::extract (std::vector <pcl::PointIndices>& c
   std::vector<pcl::PointIndices>::iterator cluster_iter_input = clusters.begin ();
   for (const auto& cluster : clusters_)
   {
-    if ((static_cast<int> (cluster.indices.size ()) >= min_pts_per_cluster_) &&
-        (static_cast<int> (cluster.indices.size ()) <= max_pts_per_cluster_))
+    if ((cluster.indices.size () >= min_pts_per_cluster_) &&
+        (cluster.indices.size () <= max_pts_per_cluster_))
     {
       *cluster_iter_input = cluster;
       ++cluster_iter_input;
@@ -343,7 +343,7 @@ template <typename PointT, typename NormalT> void
 pcl::RegionGrowing<PointT, NormalT>::findPointNeighbours ()
 {
   int point_number = static_cast<int> (indices_->size ());
-  std::vector<int> neighbours;
+  pcl::Indices neighbours;
   std::vector<float> distances;
 
   point_neighbours_.resize (input_->size (), neighbours);
@@ -480,7 +480,7 @@ pcl::RegionGrowing<PointT, NormalT>::growRegion (int initial_seed, int segment_n
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT> bool
-pcl::RegionGrowing<PointT, NormalT>::validatePoint (int initial_seed, int point, int nghbr, bool& is_a_seed) const
+pcl::RegionGrowing<PointT, NormalT>::validatePoint (pcl::index_t initial_seed, pcl::index_t point, pcl::index_t nghbr, bool& is_a_seed) const
 {
   is_a_seed = true;
 
@@ -567,7 +567,7 @@ pcl::RegionGrowing<PointT, NormalT>::assembleRegions ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT> void
-pcl::RegionGrowing<PointT, NormalT>::getSegmentFromPoint (int index, pcl::PointIndices& cluster)
+pcl::RegionGrowing<PointT, NormalT>::getSegmentFromPoint (pcl::index_t index, pcl::PointIndices& cluster)
 {
   cluster.indices.clear ();
 
@@ -611,20 +611,13 @@ pcl::RegionGrowing<PointT, NormalT>::getSegmentFromPoint (int index, pcl::PointI
     // to which this point belongs
     for (const auto& i_segment : clusters_)
     {
-      bool segment_was_found = false;
-      for (const auto& i_point : (i_segment.indices))
+      const auto it = std::find (i_segment.indices.cbegin (), i_segment.indices.cend (), index);
+      if (it != i_segment.indices.cend())
       {
-        if (i_point == index)
-        {
-          segment_was_found = true;
-          cluster.indices.clear ();
-          cluster.indices.reserve (i_segment.indices.size ());
-          std::copy (i_segment.indices.begin (), i_segment.indices.end (), std::back_inserter (cluster.indices));
-          break;
-        }
-      }
-      if (segment_was_found)
-      {
+        // if segment was found
+        cluster.indices.clear ();
+        cluster.indices.reserve (i_segment.indices.size ());
+        std::copy (i_segment.indices.begin (), i_segment.indices.end (), std::back_inserter (cluster.indices));
         break;
       }
     }// next segment
@@ -641,7 +634,7 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloud ()
 
   if (!clusters_.empty ())
   {
-    colored_cloud = (new pcl::PointCloud<pcl::PointXYZRGB>)->makeShared ();
+    colored_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGB>);
 
     srand (static_cast<unsigned int> (time (nullptr)));
     std::vector<unsigned char> colors;
@@ -691,7 +684,7 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloudRGBA ()
 
   if (!clusters_.empty ())
   {
-    colored_cloud = (new pcl::PointCloud<pcl::PointXYZRGBA>)->makeShared ();
+    colored_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGBA>);
 
     srand (static_cast<unsigned int> (time (nullptr)));
     std::vector<unsigned char> colors;

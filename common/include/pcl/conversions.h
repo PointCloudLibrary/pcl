@@ -50,9 +50,6 @@
 #include <pcl/type_traits.h>
 #include <pcl/for_each_type.h>
 #include <pcl/console/print.h>
-#ifndef Q_MOC_RUN
-#include <boost/foreach.hpp>
-#endif
 
 namespace pcl
 {
@@ -67,10 +64,10 @@ namespace pcl
       template<typename U> void operator() ()
       {
         pcl::PCLPointField f;
-        f.name = traits::name<PointT, U>::value;
-        f.offset = traits::offset<PointT, U>::value;
-        f.datatype = traits::datatype<PointT, U>::value;
-        f.count = traits::datatype<PointT, U>::size;
+        f.name = pcl::traits::name<PointT, U>::value;
+        f.offset = pcl::traits::offset<PointT, U>::value;
+        f.datatype = pcl::traits::datatype<PointT, U>::value;
+        f.count = pcl::traits::datatype<PointT, U>::size;
         fields_.push_back (f);
       }
 
@@ -96,14 +93,14 @@ namespace pcl
           {
             FieldMapping mapping;
             mapping.serialized_offset = field.offset;
-            mapping.struct_offset = traits::offset<PointT, Tag>::value;
-            mapping.size = sizeof (typename traits::datatype<PointT, Tag>::type);
+            mapping.struct_offset = pcl::traits::offset<PointT, Tag>::value;
+            mapping.size = sizeof (typename pcl::traits::datatype<PointT, Tag>::type);
             map_.push_back (mapping);
             return;
           }
         }
         // Disable thrown exception per #595: http://dev.pointclouds.org/issues/595
-        PCL_WARN ("Failed to find match for field '%s'.\n", traits::name<PointT, Tag>::value);
+        PCL_WARN ("Failed to find match for field '%s'.\n", pcl::traits::name<PointT, Tag>::value);
         //throw pcl::InvalidConversionException (ss.str ());
       }
 
@@ -174,8 +171,7 @@ namespace pcl
     cloud.is_dense = msg.is_dense == 1;
 
     // Copy point data
-    std::uint32_t num_points = msg.width * msg.height;
-    cloud.resize (num_points);
+    cloud.resize (msg.width * msg.height);
     std::uint8_t* cloud_data = reinterpret_cast<std::uint8_t*>(&cloud[0]);
 
     // Check if we can copy adjacent points in a single memcpy.  We can do so if there
@@ -187,7 +183,7 @@ namespace pcl
         field_map[0].size == msg.point_step &&
         field_map[0].size == sizeof(PointT))
     {
-      std::uint32_t cloud_row_step = static_cast<std::uint32_t> (sizeof (PointT) * cloud.width);
+      const auto cloud_row_step = (sizeof (PointT) * cloud.width);
       const std::uint8_t* msg_data = &msg.data[0];
       // Should usually be able to copy all rows at once
       if (msg.row_step == cloud_row_step)
@@ -196,7 +192,7 @@ namespace pcl
       }
       else
       {
-        for (std::uint32_t i = 0; i < msg.height; ++i, cloud_data += cloud_row_step, msg_data += msg.row_step)
+        for (uindex_t i = 0; i < msg.height; ++i, cloud_data += cloud_row_step, msg_data += msg.row_step)
           memcpy (cloud_data, msg_data, cloud_row_step);
       }
 
@@ -204,10 +200,10 @@ namespace pcl
     else
     {
       // If not, memcpy each group of contiguous fields separately
-      for (index_t row = 0; row < msg.height; ++row)
+      for (uindex_t row = 0; row < msg.height; ++row)
       {
         const std::uint8_t* row_data = &msg.data[row * msg.row_step];
-        for (index_t col = 0; col < msg.width; ++col)
+        for (uindex_t col = 0; col < msg.width; ++col)
         {
           const std::uint8_t* msg_data = row_data + col * msg.point_step;
           for (const detail::FieldMapping& mapping : field_map)
@@ -266,7 +262,7 @@ namespace pcl
 
     msg.header     = cloud.header;
     msg.point_step = sizeof (PointT);
-    msg.row_step   = static_cast<std::uint32_t> (sizeof (PointT) * msg.width);
+    msg.row_step   = (sizeof (PointT) * msg.width);
     msg.is_dense   = cloud.is_dense;
     /// @todo msg.is_bigendian = ?;
   }
@@ -327,13 +323,13 @@ namespace pcl
       msg.height = cloud.height;
       msg.width = cloud.width;
     }
-    int rgb_offset = cloud.fields[rgb_index].offset;
-    int point_step = cloud.point_step;
+    auto rgb_offset = cloud.fields[rgb_index].offset;
+    const auto point_step = cloud.point_step;
 
     // pcl::image_encodings::BGR8;
     msg.header = cloud.header;
     msg.encoding = "bgr8";
-    msg.step = static_cast<std::uint32_t>(msg.width * sizeof (std::uint8_t) * 3);
+    msg.step = (msg.width * sizeof (std::uint8_t) * 3);
     msg.data.resize (msg.step * msg.height);
 
     for (std::size_t y = 0; y < cloud.height; y++)

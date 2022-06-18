@@ -12,7 +12,7 @@ position and orientation of the data sets. Once the alignment errors fall below
 a given threshold, the registration is said to be complete.
 
 The <b>pcl_registration</b> library implements a plethora of point cloud
-registration algorithms for both organized an unorganized (general purpose)
+registration algorithms for both organized and unorganized (general purpose)
 datasets.
 
 \image html http://www.pointclouds.org/assets/images/contents/documentation/registration_outdoor.png

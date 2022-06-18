@@ -53,7 +53,7 @@ namespace pcl
    * \author Gheorghe Lisca
    * \ingroup visualization
    */
-  template<typename PointSource, typename PointTarget>
+  template<typename PointSource, typename PointTarget, typename Scalar = float>
   class RegistrationVisualizer
   {
 
@@ -61,12 +61,17 @@ namespace pcl
       /** \brief Empty constructor. */
       RegistrationVisualizer () : 
         update_visualizer_ (),
-        first_update_flag_ (),
+        first_update_flag_ (false),
         cloud_source_ (),
         cloud_target_ (),
         cloud_intermediate_ (),
         maximum_displayed_correspondences_ (0)
       {}
+
+      ~RegistrationVisualizer ()
+      {
+          stopDisplay();
+      }
 
       /** \brief Set the registration algorithm whose intermediate steps will be rendered.
        * The method creates the local callback function pcl::RegistrationVisualizer::update_visualizer_ and
@@ -76,7 +81,7 @@ namespace pcl
        * \param registration represents the registration method whose intermediate steps will be rendered.
        */
       bool
-      setRegistration (pcl::Registration<PointSource, PointTarget> &registration)
+      setRegistration (pcl::Registration<PointSource, PointTarget, Scalar> &registration)
       {
         // Update the name of the registration method to be displayed
         registration_method_name_ = registration.getClassName();
@@ -89,9 +94,6 @@ namespace pcl
           updateIntermediateCloud (cloud_src, indices_src, cloud_tgt, indices_tgt);
         };
 
-        // Register the local callback function to the registration algorithm callback function
-        registration.registerVisualizationCallback (this->update_visualizer_);
-
         // Flag that no visualizer update was done. It indicates to visualizer update function to copy
         // the registration input source and the target point clouds in the next call.
         visualizer_updating_mutex_.lock ();
@@ -99,6 +101,9 @@ namespace pcl
         first_update_flag_ = false;
 
         visualizer_updating_mutex_.unlock ();
+
+        // Register the local callback function to the registration algorithm callback function
+        registration.registerVisualizationCallback (this->update_visualizer_);
 
         return true;
       }

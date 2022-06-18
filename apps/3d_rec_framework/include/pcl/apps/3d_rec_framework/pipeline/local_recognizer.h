@@ -80,7 +80,7 @@ class PCL_EXPORTS LocalRecognitionPipeline {
   flann::Index<DistT>* flann_index_;
   std::vector<flann_model> flann_models_;
 
-  std::vector<int> indices_;
+  pcl::Indices indices_;
 
   bool use_cache_;
   std::map<std::pair<std::string, int>,
@@ -242,7 +242,7 @@ public:
   }
 
   void
-  setIndices(std::vector<int>& indices)
+  setIndices(pcl::Indices& indices)
   {
     indices_ = indices;
   }

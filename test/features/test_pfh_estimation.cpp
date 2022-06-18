@@ -282,12 +282,7 @@ template<>
 struct FPFHTest<FPFHEstimationOMP<PointT, PointT, FPFHSignature33> >
   : public ::testing::Test
 {
-  // Default Constructor is defined to instantiate 4 threads
-  FPFHTest<FPFHEstimationOMP<PointT, PointT, FPFHSignature33> > ()
-    : fpfh (4)
-  {}
-
-  FPFHEstimationOMP<PointT, PointT, FPFHSignature33> fpfh;
+  FPFHEstimationOMP<PointT, PointT, FPFHSignature33> fpfh{4}; // 4 threads
 };
 
 // Types which will be instantiated

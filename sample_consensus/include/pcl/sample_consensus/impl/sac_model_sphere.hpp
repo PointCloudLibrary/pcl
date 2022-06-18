@@ -41,7 +41,7 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_SPHERE_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_SPHERE_H_
 
-#include <pcl/sample_consensus/eigen.h>
+#include <unsupported/Eigen/NonLinearOptimization> // for LevenbergMarquardt
 #include <pcl/sample_consensus/sac_model_sphere.h>
 
 //////////////////////////////////////////////////////////////////////////
@@ -68,7 +68,8 @@ pcl::SampleConsensusModelSphere<PointT>::computeModelCoefficients (
     return (false);
   }
 
-  Eigen::Matrix4f temp;
+  // TODO maybe find a more stable algorithm for this?
+  Eigen::Matrix4d temp;
   for (int i = 0; i < 4; i++)
   {
     temp (i, 0) = (*input_)[samples[i]].x;
@@ -76,7 +77,7 @@ pcl::SampleConsensusModelSphere<PointT>::computeModelCoefficients (
     temp (i, 2) = (*input_)[samples[i]].z;
     temp (i, 3) = 1;
   }
-  float m11 = temp.determinant ();
+  const double m11 = temp.determinant ();
   if (m11 == 0)
   {
     return (false);             // the points don't define a sphere!
@@ -88,21 +89,21 @@ pcl::SampleConsensusModelSphere<PointT>::computeModelCoefficients (
                   ((*input_)[samples[i]].y) * ((*input_)[samples[i]].y) +
                   ((*input_)[samples[i]].z) * ((*input_)[samples[i]].z);
   }
-  float m12 = temp.determinant ();
+  const double m12 = temp.determinant ();
 
   for (int i = 0; i < 4; ++i)
   {
     temp (i, 1) = temp (i, 0);
     temp (i, 0) = (*input_)[samples[i]].x;
   }
-  float m13 = temp.determinant ();
+  const double m13 = temp.determinant ();
 
   for (int i = 0; i < 4; ++i)
   {
     temp (i, 2) = temp (i, 1);
     temp (i, 1) = (*input_)[samples[i]].y;
   }
-  float m14 = temp.determinant ();
+  const double m14 = temp.determinant ();
 
   for (int i = 0; i < 4; ++i)
   {
@@ -111,7 +112,7 @@ pcl::SampleConsensusModelSphere<PointT>::computeModelCoefficients (
     temp (i, 2) = (*input_)[samples[i]].y;
     temp (i, 3) = (*input_)[samples[i]].z;
   }
-  float m15 = temp.determinant ();
+  const double m15 = temp.determinant ();
 
   // Center (x , y, z)
   model_coefficients.resize (model_size_);
@@ -123,6 +124,8 @@ pcl::SampleConsensusModelSphere<PointT>::computeModelCoefficients (
                                      model_coefficients[1] * model_coefficients[1] +
                                      model_coefficients[2] * model_coefficients[2] - m15 / m11);
 
+  PCL_DEBUG ("[pcl::SampleConsensusModelSphere::computeModelCoefficients] Model is (%g,%g,%g,%g)\n",
+             model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3]);
   return (true);
 }
 
@@ -364,24 +367,84 @@ pcl::SampleConsensusModelSphere<PointT>::optimizeModelCoefficients (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelSphere<PointT>::projectPoints (
-      const Indices &, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool) const
+      const Indices &inliers, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool copy_data_fields) const
 {
-  // Needs a valid model coefficients
+  // Needs a valid set of model coefficients
   if (!isModelValid (model_coefficients))
   {
     PCL_ERROR ("[pcl::SampleConsensusModelSphere::projectPoints] Given model is invalid!\n");
     return;
   }
 
-  // Allocate enough space and copy the basics
-  projected_points.resize (input_->size ());
   projected_points.header   = input_->header;
-  projected_points.width    = input_->width;
-  projected_points.height   = input_->height;
   projected_points.is_dense = input_->is_dense;
 
-  PCL_WARN ("[pcl::SampleConsensusModelSphere::projectPoints] Not implemented yet.\n");
-  projected_points.points = input_->points;
+  // C : sphere center
+  const Eigen::Vector3d C (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
+  // r : radius
+  const double r = model_coefficients[3];
+
+  // Copy all the data fields from the input cloud to the projected one?
+  if (copy_data_fields)
+  {
+    // Allocate enough space and copy the basics
+    projected_points.resize (input_->size ());
+    projected_points.width    = input_->width;
+    projected_points.height   = input_->height;
+
+    using FieldList = typename pcl::traits::fieldList<PointT>::type;
+    // Iterate over each point
+    for (std::size_t i = 0; i < projected_points.points.size (); ++i)
+      // Iterate over each dimension
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
+
+    // Iterate through the 3d points and calculate the distances from them to the sphere
+    for (std::size_t i = 0; i < inliers.size (); ++i)
+    {
+      // what i have:
+      // P : Sample Point
+      const Eigen::Vector3d P (input_->points[inliers[i]].x, input_->points[inliers[i]].y, input_->points[inliers[i]].z);
+
+      const Eigen::Vector3d direction = (P - C).normalized();
+
+      // K : Point on Sphere
+      const Eigen::Vector3d K = C + r * direction;
+
+      projected_points.points[inliers[i]].x = static_cast<float> (K[0]);
+      projected_points.points[inliers[i]].y = static_cast<float> (K[1]);
+      projected_points.points[inliers[i]].z = static_cast<float> (K[2]);
+    }
+  }
+  else
+  {
+    // Allocate enough space and copy the basics
+    projected_points.resize (inliers.size ());
+    projected_points.width    = static_cast<uint32_t> (inliers.size ());
+    projected_points.height   = 1;
+
+    using FieldList = typename pcl::traits::fieldList<PointT>::type;
+    // Iterate over each point
+    for (std::size_t i = 0; i < inliers.size (); ++i)
+      // Iterate over each dimension
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points.points[i]));
+
+    // Iterate through the 3d points and calculate the distances from them to the plane
+    for (std::size_t i = 0; i < inliers.size (); ++i)
+    {
+      // what i have:
+      // P : Sample Point
+      const Eigen::Vector3d P (input_->points[inliers[i]].x, input_->points[inliers[i]].y, input_->points[inliers[i]].z);
+
+      const Eigen::Vector3d direction = (P - C).normalized();
+
+      // K : Point on Sphere
+      const Eigen::Vector3d K = C + r * direction;
+
+      projected_points.points[i].x = static_cast<float> (K[0]);
+      projected_points.points[i].y = static_cast<float> (K[1]);
+      projected_points.points[i].z = static_cast<float> (K[2]);
+    }
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////

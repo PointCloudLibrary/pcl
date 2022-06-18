@@ -69,7 +69,7 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input
       Eigen::Vector4f source_origin = input_item->data (ItemDataRole::ORIGIN).value<Eigen::Vector4f> ();
       Eigen::Quaternionf source_orientation =  input_item->data (ItemDataRole::ORIENTATION).value<Eigen::Quaternionf> ();
       //Vector to accumulate the extracted indices
-      pcl::IndicesPtr extracted_indices (new std::vector<int> ());
+      pcl::IndicesPtr extracted_indices (new pcl::Indices ());
       //Put found clusters into new cloud_items!
       qDebug () << "Found "<<cluster_indices.size ()<<" clusters!";
       int cluster_count = 0;

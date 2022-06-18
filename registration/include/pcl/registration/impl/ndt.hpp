@@ -43,15 +43,16 @@
 
 namespace pcl {
 
-template <typename PointSource, typename PointTarget>
-NormalDistributionsTransform<PointSource, PointTarget>::NormalDistributionsTransform()
+template <typename PointSource, typename PointTarget, typename Scalar>
+NormalDistributionsTransform<PointSource, PointTarget, Scalar>::
+    NormalDistributionsTransform()
 : target_cells_()
 , resolution_(1.0f)
 , step_size_(0.1)
 , outlier_ratio_(0.55)
 , gauss_d1_()
 , gauss_d2_()
-, trans_probability_()
+, trans_likelihood_()
 {
   reg_name_ = "NormalDistributionsTransform";
 
@@ -68,10 +69,10 @@ NormalDistributionsTransform<PointSource, PointTarget>::NormalDistributionsTrans
   max_iterations_ = 35;
 }
 
-template <typename PointSource, typename PointTarget>
+template <typename PointSource, typename PointTarget, typename Scalar>
 void
-NormalDistributionsTransform<PointSource, PointTarget>::computeTransformation(
-    PointCloudSource& output, const Eigen::Matrix4f& guess)
+NormalDistributionsTransform<PointSource, PointTarget, Scalar>::computeTransformation(
+    PointCloudSource& output, const Matrix4& guess)
 {
   nr_iterations_ = 0;
   converged_ = false;
@@ -85,7 +86,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeTransformation(
       -2 * std::log((-std::log(gauss_c1 * std::exp(-0.5) + gauss_c2) - gauss_d3) /
                     gauss_d1_);
 
-  if (guess != Eigen::Matrix4f::Identity()) {
+  if (guess != Matrix4::Identity()) {
     // Initialise final transformation to the guessed one
     final_transformation_ = guess;
     // Apply guessed transformation prior to search for neighbours
@@ -97,14 +98,15 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeTransformation(
   point_jacobian_.block<3, 3>(0, 0).setIdentity();
   point_hessian_.setZero();
 
-  Eigen::Transform<float, 3, Eigen::Affine, Eigen::ColMajor> eig_transformation;
+  Eigen::Transform<Scalar, 3, Eigen::Affine, Eigen::ColMajor> eig_transformation;
   eig_transformation.matrix() = final_transformation_;
 
   // Convert initial guess matrix to 6 element transformation vector
   Eigen::Matrix<double, 6, 1> transform, score_gradient;
-  Eigen::Vector3f init_translation = eig_transformation.translation();
-  Eigen::Vector3f init_rotation = eig_transformation.rotation().eulerAngles(0, 1, 2);
-  transform << init_translation.cast<double>(), init_rotation.cast<double>();
+  Vector3 init_translation = eig_transformation.translation();
+  Vector3 init_rotation = eig_transformation.rotation().eulerAngles(0, 1, 2);
+  transform << init_translation.template cast<double>(),
+      init_rotation.template cast<double>();
 
   Eigen::Matrix<double, 6, 6> hessian;
 
@@ -123,11 +125,11 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeTransformation(
     // Negative for maximization as opposed to minimization
     Eigen::Matrix<double, 6, 1> delta = sv.solve(-score_gradient);
 
-    // Calculate step length with guarnteed sufficient decrease [More, Thuente 1994]
+    // Calculate step length with guaranteed sufficient decrease [More, Thuente 1994]
     double delta_norm = delta.norm();
 
     if (delta_norm == 0 || std::isnan(delta_norm)) {
-      trans_probability_ = score / static_cast<double>(input_->size());
+      trans_likelihood_ = score / static_cast<double>(input_->size());
       converged_ = delta_norm == 0;
       return;
     }
@@ -151,10 +153,10 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeTransformation(
 
     // Update Visualizer (untested)
     if (update_visualizer_)
-      update_visualizer_(output, std::vector<int>(), *target_, std::vector<int>());
+      update_visualizer_(output, pcl::Indices(), *target_, pcl::Indices());
 
     const double cos_angle =
-        0.5 * transformation_.template block<3, 3>(0, 0).trace() - 1;
+        0.5 * (transformation_.template block<3, 3>(0, 0).trace() - 1);
     const double translation_sqr =
         transformation_.template block<3, 1>(0, 3).squaredNorm();
 
@@ -173,15 +175,15 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeTransformation(
     }
   }
 
-  // Store transformation probability.  The realtive differences within each scan
+  // Store transformation likelihood.  The relative differences within each scan
   // registration are accurate but the normalization constants need to be modified for
   // it to be globally accurate
-  trans_probability_ = score / static_cast<double>(input_->size());
+  trans_likelihood_ = score / static_cast<double>(input_->size());
 }
 
-template <typename PointSource, typename PointTarget>
+template <typename PointSource, typename PointTarget, typename Scalar>
 double
-NormalDistributionsTransform<PointSource, PointTarget>::computeDerivatives(
+NormalDistributionsTransform<PointSource, PointTarget, Scalar>::computeDerivatives(
     Eigen::Matrix<double, 6, 1>& score_gradient,
     Eigen::Matrix<double, 6, 6>& hessian,
     const PointCloudSource& trans_cloud,
@@ -230,9 +232,9 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeDerivatives(
   return score;
 }
 
-template <typename PointSource, typename PointTarget>
+template <typename PointSource, typename PointTarget, typename Scalar>
 void
-NormalDistributionsTransform<PointSource, PointTarget>::computeAngleDerivatives(
+NormalDistributionsTransform<PointSource, PointTarget, Scalar>::computeAngleDerivatives(
     const Eigen::Matrix<double, 6, 1>& transform, bool compute_hessian)
 {
   // Simplified math for near 0 angles
@@ -286,13 +288,14 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeAngleDerivatives(
     angular_hessian_.row(3).noalias() =
         Eigen::Vector4d((sx * cy * cz), (-sx * cy * sz), (sx * sy), 0.0f); // b3
 
+    // The sign of 'sx * sz' in c2 is incorrect in the thesis, and is fixed here.
     angular_hessian_.row(4).noalias() = Eigen::Vector4d(
         (-sx * cz - cx * sy * sz), (sx * sz - cx * sy * cz), 0, 0.0f); // c2
     angular_hessian_.row(5).noalias() = Eigen::Vector4d(
         (cx * cz - sx * sy * sz), (-sx * sy * cz - cx * sz), 0, 0.0f); // c3
 
     angular_hessian_.row(6).noalias() =
-        Eigen::Vector4d((-cy * cz), (cy * sz), (sy), 0.0f); // d1
+        Eigen::Vector4d((-cy * cz), (cy * sz), (-sy), 0.0f); // d1
     angular_hessian_.row(7).noalias() =
         Eigen::Vector4d((-sx * sy * cz), (sx * sy * sz), (sx * cy), 0.0f); // d2
     angular_hessian_.row(8).noalias() =
@@ -314,9 +317,9 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeAngleDerivatives(
   }
 }
 
-template <typename PointSource, typename PointTarget>
+template <typename PointSource, typename PointTarget, typename Scalar>
 void
-NormalDistributionsTransform<PointSource, PointTarget>::computePointDerivatives(
+NormalDistributionsTransform<PointSource, PointTarget, Scalar>::computePointDerivatives(
     const Eigen::Vector3d& x, bool compute_hessian)
 {
   // Calculate first derivative of Transformation Equation 6.17 w.r.t. transform vector.
@@ -360,9 +363,9 @@ NormalDistributionsTransform<PointSource, PointTarget>::computePointDerivatives(
   }
 }
 
-template <typename PointSource, typename PointTarget>
+template <typename PointSource, typename PointTarget, typename Scalar>
 double
-NormalDistributionsTransform<PointSource, PointTarget>::updateDerivatives(
+NormalDistributionsTransform<PointSource, PointTarget, Scalar>::updateDerivatives(
     Eigen::Matrix<double, 6, 1>& score_gradient,
     Eigen::Matrix<double, 6, 6>& hessian,
     const Eigen::Vector3d& x_trans,
@@ -371,7 +374,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::updateDerivatives(
 {
   // e^(-d_2/2 * (x_k - mu_k)^T Sigma_k^-1 (x_k - mu_k)) Equation 6.9 [Magnusson 2009]
   double e_x_cov_x = std::exp(-gauss_d2_ * x_trans.dot(c_inv * x_trans) / 2);
-  // Calculate probability of transformed points existence, Equation 6.9 [Magnusson
+  // Calculate likelihood of transformed points existence, Equation 6.9 [Magnusson
   // 2009]
   const double score_inc = -gauss_d1_ * e_x_cov_x;
 
@@ -408,21 +411,21 @@ NormalDistributionsTransform<PointSource, PointTarget>::updateDerivatives(
   return score_inc;
 }
 
-template <typename PointSource, typename PointTarget>
+template <typename PointSource, typename PointTarget, typename Scalar>
 void
-NormalDistributionsTransform<PointSource, PointTarget>::computeHessian(
+NormalDistributionsTransform<PointSource, PointTarget, Scalar>::computeHessian(
     Eigen::Matrix<double, 6, 6>& hessian, const PointCloudSource& trans_cloud)
 {
   hessian.setZero();
 
-  // Precompute Angular Derivatives unessisary because only used after regular
+  // Precompute Angular Derivatives unnecessary because only used after regular
   // derivative calculation Update hessian for each point, line 17 in Algorithm 2
   // [Magnusson 2009]
   for (std::size_t idx = 0; idx < input_->size(); idx++) {
     // Transformed Point
     const auto& x_trans_pt = trans_cloud[idx];
 
-    // Find nieghbors (Radius search has been experimentally faster than direct neighbor
+    // Find neighbors (Radius search has been experimentally faster than direct neighbor
     // checking.
     std::vector<TargetGridLeafConstPtr> neighborhood;
     std::vector<float> distances;
@@ -450,9 +453,9 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeHessian(
   }
 }
 
-template <typename PointSource, typename PointTarget>
+template <typename PointSource, typename PointTarget, typename Scalar>
 void
-NormalDistributionsTransform<PointSource, PointTarget>::updateHessian(
+NormalDistributionsTransform<PointSource, PointTarget, Scalar>::updateHessian(
     Eigen::Matrix<double, 6, 6>& hessian,
     const Eigen::Vector3d& x_trans,
     const Eigen::Matrix3d& c_inv) const
@@ -485,9 +488,9 @@ NormalDistributionsTransform<PointSource, PointTarget>::updateHessian(
   }
 }
 
-template <typename PointSource, typename PointTarget>
+template <typename PointSource, typename PointTarget, typename Scalar>
 bool
-NormalDistributionsTransform<PointSource, PointTarget>::updateIntervalMT(
+NormalDistributionsTransform<PointSource, PointTarget, Scalar>::updateIntervalMT(
     double& a_l,
     double& f_l,
     double& g_l,
@@ -530,9 +533,9 @@ NormalDistributionsTransform<PointSource, PointTarget>::updateIntervalMT(
   return true;
 }
 
-template <typename PointSource, typename PointTarget>
+template <typename PointSource, typename PointTarget, typename Scalar>
 double
-NormalDistributionsTransform<PointSource, PointTarget>::trialValueSelectionMT(
+NormalDistributionsTransform<PointSource, PointTarget, Scalar>::trialValueSelectionMT(
     double a_l,
     double f_l,
     double g_l,
@@ -643,9 +646,9 @@ NormalDistributionsTransform<PointSource, PointTarget>::trialValueSelectionMT(
   }
 }
 
-template <typename PointSource, typename PointTarget>
+template <typename PointSource, typename PointTarget, typename Scalar>
 double
-NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengthMT(
+NormalDistributionsTransform<PointSource, PointTarget, Scalar>::computeStepLengthMT(
     const Eigen::Matrix<double, 6, 1>& x,
     Eigen::Matrix<double, 6, 1>& step_dir,
     double step_init,
@@ -708,8 +711,8 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengthMT(
   // New transformed point cloud
   transformPointCloud(*input_, trans_cloud, final_transformation_);
 
-  // Updates score, gradient and hessian.  Hessian calculation is unessisary but testing
-  // showed that most step calculations use the initial step suggestion and
+  // Updates score, gradient and hessian.  Hessian calculation is unnecessary but
+  // testing showed that most step calculations use the initial step suggestion and
   // recalculation the reusable portions of the hessian would intail more computation
   // time.
   score = computeDerivatives(score_gradient, hessian, trans_cloud, x_t, true);
@@ -792,7 +795,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengthMT(
   }
 
   // If inner loop was run then hessian needs to be calculated.
-  // Hessian is unnessisary for step length determination but gradients are required
+  // Hessian is unnecessary for step length determination but gradients are required
   // so derivative and transform data is stored for the next iteration.
   if (step_iterations) {
     computeHessian(hessian, trans_cloud);

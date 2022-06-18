@@ -172,25 +172,24 @@ pcl::UnaryClassifier<PointT>::getCloudWithLabel (typename pcl::PointCloud<PointT
   // find the 'label' field index
   std::vector <pcl::PCLPointField> fields;
   int label_idx = -1;
-  pcl::PointCloud <PointT> point;
   label_idx = pcl::getFieldIndex<PointT> ("label", fields);
 
   if (label_idx != -1)
   {
-    for (std::size_t i = 0; i < in->size (); i++)
+    for (const auto& point : (*in))
     {
       // get the 'label' field                                                                       
       std::uint32_t label;
-      memcpy (&label, reinterpret_cast<char*> (&(*in)[i]) + fields[label_idx].offset, sizeof(std::uint32_t));
+      memcpy (&label, reinterpret_cast<const char*> (&point) + fields[label_idx].offset, sizeof(std::uint32_t));
 
       if (static_cast<int> (label) == label_num)
       {
-        pcl::PointXYZ point;
+        pcl::PointXYZ tmp;
         // X Y Z
-        point.x = (*in)[i].x;
-        point.y = (*in)[i].y;
-        point.z = (*in)[i].z;
-        out->points.push_back (point);
+        tmp.x = point.x;
+        tmp.y = point.y;
+        tmp.z = point.z;
+        out->push_back (tmp);
       }
     }
     out->width = out->size ();
@@ -271,7 +270,7 @@ pcl::UnaryClassifier<PointT>::kmeansClustering (pcl::PointCloud<pcl::FPFHSignatu
 template <typename PointT> void
 pcl::UnaryClassifier<PointT>::queryFeatureDistances (std::vector<pcl::PointCloud<pcl::FPFHSignature33>::Ptr> &trained_features,
                                                      pcl::PointCloud<pcl::FPFHSignature33>::Ptr query_features,
-                                                     std::vector<int> &indi,
+                                                     pcl::Indices &indi,
                                                      std::vector<float> &dist)
 {
   // estimate the total number of row's needed
@@ -326,7 +325,7 @@ pcl::UnaryClassifier<PointT>::queryFeatureDistances (std::vector<pcl::PointCloud
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::UnaryClassifier<PointT>::assignLabels (std::vector<int> &indi,
+pcl::UnaryClassifier<PointT>::assignLabels (pcl::Indices &indi,
                                             std::vector<float> &dist,
                                             int n_feature_means,
                                             float feature_threshold,

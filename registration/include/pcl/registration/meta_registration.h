@@ -51,8 +51,9 @@ namespace registration {
  * will be aligned to the conglomerate of all previous clouds.
  *
  * \code
- * IterativeClosestPoint<PointXYZ,PointXYZ>::Ptr icp (new
- * IterativeClosestPoint<PointXYZ,PointXYZ>); icp->setMaxCorrespondenceDistance (0.05);
+ * IterativeClosestPoint<PointXYZ,PointXYZ>::Ptr icp
+ *   (new IterativeClosestPoint<PointXYZ,PointXYZ>);
+ * icp->setMaxCorrespondenceDistance (0.05);
  * icp->setMaximumIterations (50);
  *
  * MetaRegistration<PointXYZ> mreg;

@@ -54,8 +54,10 @@ namespace registration {
  * \code
  * pcl::PointCloud<pcl::PointNormal>::Ptr source, target;
  * // ... read or fill in source and target
- * pcl::CorrespondenceEstimationNormalShooting<pcl::PointNormal, pcl::PointNormal,
- * pcl::PointNormal> est; est.setInputSource (source); est.setSourceNormals (source);
+ * pcl::CorrespondenceEstimationNormalShooting
+ *   <pcl::PointNormal, pcl::PointNormal, pcl::PointNormal> est;
+ * est.setInputSource (source);
+ * est.setSourceNormals (source);
  *
  * est.setInputTarget (target);
  *

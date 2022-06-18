@@ -54,16 +54,16 @@ main (int argc, char** argv)
 //  /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //  /////////////////////////////////////////////////////////////////////////////////////////////////////
-  pcl::PointCloud<pcl::PointXYZ> inputCloud;
-  pcl::PointCloud<pcl::PointXYZ> targetCloud;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr inputCloud(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr targetCloud(new pcl::PointCloud<pcl::PointXYZ>);
 
-  if (pcl::io::loadPCDFile<pcl::PointXYZ> (argv[1], inputCloud) == -1) //* load the file
+  if (pcl::io::loadPCDFile<pcl::PointXYZ> (argv[1], *inputCloud) == -1) //* load the file
   {
     PCL_ERROR ("Couldn't read the first .pcd file \n");
     return (-1);
   }
 
-  if (pcl::io::loadPCDFile<pcl::PointXYZ> (argv[2], targetCloud) == -1) //* load the file
+  if (pcl::io::loadPCDFile<pcl::PointXYZ> (argv[2], *targetCloud) == -1) //* load the file
   {
     PCL_ERROR ("Couldn't read the second .pcd file \n");
     return (-1);
@@ -82,13 +82,13 @@ main (int argc, char** argv)
 //  sor.setLeafSize (0.4, 0.4, 0.4);
 //  sor.setLeafSize (0.5, 0.5, 0.5);
 
-  sor.setInputCloud (inputCloud.makeShared());
-  std::cout<<"\n inputCloud.size()="<<inputCloud.size()<<std::endl;
+  sor.setInputCloud (inputCloud);
+  std::cout<<"\n inputCloud->size()="<<inputCloud->size()<<std::endl;
   sor.filter (inputCloudFiltered);
   std::cout<<"\n inputCloudFiltered.size()="<<inputCloudFiltered.size()<<std::endl;
 
-  sor.setInputCloud (targetCloud.makeShared());
-  std::cout<<"\n targetCloud.size()="<<targetCloud.size()<<std::endl;
+  sor.setInputCloud (targetCloud);
+  std::cout<<"\n targetCloud->size()="<<targetCloud->size()<<std::endl;
   sor.filter (targetCloudFiltered);
   std::cout<<"\n targetCloudFiltered.size()="<<targetCloudFiltered.size()<<std::endl;
 //  /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -105,8 +105,6 @@ main (int argc, char** argv)
 
 //  /////////////////////////////////////////////////////////////////////////////////////////////////////
   pcl::RegistrationVisualizer<pcl::PointXYZ, pcl::PointXYZ> registrationVisualizer;
-
-  registrationVisualizer.startDisplay();
 
   registrationVisualizer.setMaximumDisplayedCorrespondences (100);
 //  /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -131,11 +129,15 @@ main (int argc, char** argv)
   // Register the registration algorithm to the RegistrationVisualizer
   registrationVisualizer.setRegistration (icp);
 
+  registrationVisualizer.startDisplay();
+
   // Start registration process
   icp.align (source_aligned);
 
   std::cout << "has converged:" << icp.hasConverged () << " score: " << icp.getFitnessScore () << std::endl;
   std::cout << icp.getFinalTransformation () << std::endl;
+
+  registrationVisualizer.stopDisplay();
 //  ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 //  ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -167,4 +169,5 @@ main (int argc, char** argv)
 //
 //  ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+  return 0;
 }

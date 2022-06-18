@@ -38,8 +38,10 @@
 #include <pcl/io/obj_io.h>
 #include <fstream>
 #include <pcl/common/io.h>
-#include <pcl/io/boost.h>
 #include <pcl/console/time.h>
+#include <boost/lexical_cast.hpp> // for lexical_cast
+#include <boost/filesystem.hpp> // for exists
+#include <boost/algorithm/string.hpp> // for split
 
 pcl::MTLReader::MTLReader ()
 {
@@ -536,8 +538,8 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
   std::vector<std::string> st;
   try
   {
-    index_t point_idx = 0;
-    index_t normal_idx = 0;
+    uindex_t point_idx = 0;
+    uindex_t normal_idx = 0;
 
     while (!fs.eof ())
     {
@@ -767,6 +769,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
       if (st[0] == "usemtl")
       {
         mesh.tex_polygons.emplace_back();
+        mesh.tex_coord_indices.emplace_back();
         mesh.tex_materials.emplace_back();
         for (const auto &companion : companions_)
         {
@@ -787,16 +790,24 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
       // Face
       if (st[0] == "f")
       {
-        //We only care for vertices indices
+        // TODO read in normal indices properly
         pcl::Vertices face_v; face_v.vertices.resize (st.size () - 1);
+        pcl::Vertices tex_indices; tex_indices.vertices.reserve (st.size () - 1);
         for (std::size_t i = 1; i < st.size (); ++i)
         {
-          int v;
-          sscanf (st[i].c_str (), "%d", &v);
+          char* str_end;
+          int v = std::strtol(st[i].c_str(), &str_end, 10);
           v = (v < 0) ? v_idx + v : v - 1;
           face_v.vertices[i-1] = v;
+          if (str_end[0] == '/' && str_end[1] != '/' && str_end[1] != '\0')
+          {
+            // texture coordinate indices are optional
+            int tex_index = std::strtol(str_end+1, &str_end, 10);
+            tex_indices.vertices.push_back (tex_index - 1);
+          }
         }
         mesh.tex_polygons.back ().push_back (face_v);
+        mesh.tex_coord_indices.back ().push_back (tex_indices);
         ++f_idx;
         continue;
       }
@@ -1106,14 +1117,14 @@ pcl::io::saveOBJFile (const std::string &file_name,
     {
       // Write faces with "f"
       fs << "f";
-      // There's one UV per vertex per face, i.e., the same vertex can have
-      // different UV depending on the face.
       for (std::size_t j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size (); ++j)
       {
         std::uint32_t idx = tex_mesh.tex_polygons[m][i].vertices[j] + 1;
-        fs << " " << idx
-           << "/" << tex_mesh.tex_polygons[m][i].vertices.size () * (i+f_idx) +j+1
-           << "/" << idx; // vertex index in obj file format starting with 1
+        fs << " " << idx << "/";
+        // texture coordinate indices are optional
+        if (!tex_mesh.tex_coord_indices[m][i].vertices.empty())
+          fs << tex_mesh.tex_coord_indices[m][i].vertices[j] + 1;
+        fs << "/" << idx; // vertex index in obj file format starting with 1
       }
       fs << '\n';
     }

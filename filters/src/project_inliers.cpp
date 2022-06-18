@@ -159,9 +159,8 @@ bool
 pcl::ProjectInliers<pcl::PCLPointCloud2>::initSACModel (int model_type)
 {
   // Convert the input data
-  PointCloud<PointXYZ> cloud;
-  fromPCLPointCloud2 (*input_, cloud);
-  PointCloud<PointXYZ>::Ptr cloud_ptr = cloud.makeShared ();
+  PointCloud<PointXYZ>::Ptr cloud_ptr(new PointCloud<PointXYZ>);
+  fromPCLPointCloud2 (*input_, *cloud_ptr);
 
   // Build the model
   switch (model_type)

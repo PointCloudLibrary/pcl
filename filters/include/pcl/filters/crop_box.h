@@ -59,6 +59,7 @@ namespace pcl
     using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
     public:
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
 
       using Ptr = shared_ptr<CropBox<PointT> >;
       using ConstPtr = shared_ptr<const CropBox<PointT> >;
@@ -207,6 +208,8 @@ namespace pcl
     using PCLPointCloud2ConstPtr = PCLPointCloud2::ConstPtr;
 
     public:
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
+
       /** \brief Constructor.
         * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
         */

@@ -44,8 +44,6 @@
 
 #include "pcl/gpu/utils/device/vector_math.hpp"
 
-using namespace thrust;
-
 namespace pcl
 {
     namespace device
@@ -124,9 +122,10 @@ float3 pcl::device::getMaxDistance(const DeviceArray<PointT>& cloud, const float
     thrust::counting_iterator<int> ce = cf + cloud.size();
 
     thrust::tuple<float, int> init(0.f, 0);
-    thrust::maximum< tuple<float, int> > op;
+    thrust::maximum<thrust::tuple<float, int>> op;
     
-    tuple<float, int> res = transform_reduce(
+    thrust::tuple<float, int> res =
+        transform_reduce(
         make_zip_iterator(make_tuple( src_beg, cf )),
         make_zip_iterator(make_tuple( src_beg, ce )),
         TupleDistCvt(pivot), init, op);
@@ -151,9 +150,9 @@ float3 pcl::device::getMaxDistance(const DeviceArray<PointT>& cloud, const Indic
     thrust::counting_iterator<int> ce = cf + indices.size();
 
     thrust::tuple<float, int> init(0.f, 0);
-    thrust::maximum< tuple<float, int> > op;
+    thrust::maximum<thrust::tuple<float, int>> op;
     
-    tuple<float, int> res = transform_reduce(
+    thrust::tuple<float, int> res = transform_reduce(
         make_zip_iterator(make_tuple( make_permutation_iterator(src_beg, map_beg), cf )),
         make_zip_iterator(make_tuple( make_permutation_iterator(src_beg, map_end), ce )),
         TupleDistCvt(pivot), init, op);

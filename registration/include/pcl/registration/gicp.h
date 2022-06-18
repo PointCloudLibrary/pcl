@@ -47,7 +47,7 @@ namespace pcl {
 /** \brief GeneralizedIterativeClosestPoint is an ICP variant that implements the
  * generalized iterative closest point algorithm as described by Alex Segal et al. in
  * http://www.robots.ox.ac.uk/~avsegal/resources/papers/Generalized_ICP.pdf
- * The approach is based on using anistropic cost functions to optimize the alignment
+ * The approach is based on using anisotropic cost functions to optimize the alignment
  * after closest point assignments have been made.
  * The original code uses GSL and ANN while in ours we use an eigen mapped BFGS and
  * FLANN.
@@ -118,9 +118,9 @@ public:
     transformation_epsilon_ = 5e-4;
     corr_dist_threshold_ = 5.;
     rigid_transformation_estimation_ = [this](const PointCloudSource& cloud_src,
-                                              const std::vector<int>& indices_src,
+                                              const pcl::Indices& indices_src,
                                               const PointCloudTarget& cloud_tgt,
-                                              const std::vector<int>& indices_tgt,
+                                              const pcl::Indices& indices_tgt,
                                               Eigen::Matrix4f& transformation_matrix) {
       estimateRigidTransformationBFGS(
           cloud_src, indices_src, cloud_tgt, indices_tgt, transformation_matrix);
@@ -184,18 +184,20 @@ public:
   }
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
-   * point cloud using an iterative non-linear Levenberg-Marquardt approach. \param[in]
-   * cloud_src the source point cloud dataset \param[in] indices_src the vector of
-   * indices describing the points of interest in \a cloud_src \param[in] cloud_tgt the
-   * target point cloud dataset \param[in] indices_tgt the vector of indices describing
-   * the correspondences of the interest points from \a indices_src \param[out]
-   * transformation_matrix the resultant transformation matrix
+   * point cloud using an iterative non-linear BFGS approach.
+   * \param[in] cloud_src the source point cloud dataset
+   * \param[in] indices_src the vector of indices describing
+   * the points of interest in \a cloud_src
+   * \param[in] cloud_tgt the target point cloud dataset
+   * \param[in] indices_tgt the vector of indices describing
+   * the correspondences of the interest points from \a indices_src
+   * \param[in,out] transformation_matrix the resultant transformation matrix
    */
   void
   estimateRigidTransformationBFGS(const PointCloudSource& cloud_src,
-                                  const std::vector<int>& indices_src,
+                                  const pcl::Indices& indices_src,
                                   const PointCloudTarget& cloud_tgt,
-                                  const std::vector<int>& indices_tgt,
+                                  const pcl::Indices& indices_tgt,
                                   Eigen::Matrix4f& transformation_matrix);
 
   /** \brief \return Mahalanobis distance matrix for the given point index */
@@ -206,15 +208,18 @@ public:
     return mahalanobis_[index];
   }
 
-  /** \brief Computes rotation matrix derivative.
+  /** \brief Computes the derivative of the cost function w.r.t rotation angles.
    * rotation matrix is obtainded from rotation angles x[3], x[4] and x[5]
-   * \return d/d_rx, d/d_ry and d/d_rz respectively in g[3], g[4] and g[5]
-   * param x array representing 3D transformation
-   * param R rotation matrix
-   * param g gradient vector
+   * \return d/d_Phi, d/d_Theta, d/d_Psi respectively in g[3], g[4] and g[5]
+   * \param[in] x array representing 3D transformation
+   * \param[in] dCost_dR_T the transpose of the derivative of the cost function w.r.t
+   * rotation matrix
+   * \param[out] g gradient vector
    */
   void
-  computeRDerivative(const Vector6d& x, const Eigen::Matrix3d& R, Vector6d& g) const;
+  computeRDerivative(const Vector6d& x,
+                     const Eigen::Matrix3d& dCost_dR_T,
+                     Vector6d& g) const;
 
   /** \brief Set the rotation epsilon (maximum allowable difference between two
    * consecutive rotations) in order for an optimization to be considered as having
@@ -275,7 +280,7 @@ public:
   }
 
   /** \brief Set the minimal translation gradient threshold for early optimization stop
-   * \param[in] translation gradient threshold in meters
+   * \param[in] tolerance translation gradient threshold in meters
    */
   void
   setTranslationGradientTolerance(double tolerance)
@@ -293,7 +298,7 @@ public:
   }
 
   /** \brief Set the minimal rotation gradient threshold for early optimization stop
-   * \param[in] rotation gradient threshold in radians
+   * \param[in] tolerance rotation gradient threshold in radians
    */
   void
   setRotationGradientTolerance(double tolerance)
@@ -337,10 +342,10 @@ protected:
   const PointCloudTarget* tmp_tgt_;
 
   /** \brief Temporary pointer to the source dataset indices. */
-  const std::vector<int>* tmp_idx_src_;
+  const pcl::Indices* tmp_idx_src_;
 
   /** \brief Temporary pointer to the target dataset indices. */
-  const std::vector<int>* tmp_idx_tgt_;
+  const pcl::Indices* tmp_idx_tgt_;
 
   /** \brief Input cloud points covariances. */
   MatricesVectorPtr input_covariances_;
@@ -372,20 +377,21 @@ protected:
                      const typename pcl::search::KdTree<PointT>::Ptr tree,
                      MatricesVector& cloud_covariances);
 
-  /** \return trace of mat1^t . mat2
+  /** \return trace of mat1 . mat2
    * \param mat1 matrix of dimension nxm
-   * \param mat2 matrix of dimension nxp
+   * \param mat2 matrix of dimension mxp
    */
   inline double
   matricesInnerProd(const Eigen::MatrixXd& mat1, const Eigen::MatrixXd& mat2) const
   {
-    double r = 0.;
-    std::size_t n = mat1.rows();
-    // tr(mat1^t.mat2)
-    for (std::size_t i = 0; i < n; i++)
-      for (std::size_t j = 0; j < n; j++)
-        r += mat1(j, i) * mat2(i, j);
-    return r;
+    if (mat1.cols() != mat2.rows()) {
+      PCL_THROW_EXCEPTION(PCLException,
+                          "The two matrices' shapes don't match. "
+                          "They are ("
+                              << mat1.rows() << ", " << mat1.cols() << ") and ("
+                              << mat2.rows() << ", " << mat2.cols() << ")");
+    }
+    return (mat1 * mat2).trace();
   }
 
   /** \brief Rigid transformation computation method  with initial guess.
@@ -404,7 +410,7 @@ protected:
    */
   inline bool
   searchForNeighbors(const PointSource& query,
-                     std::vector<int>& index,
+                     pcl::Indices& index,
                      std::vector<float>& distance)
   {
     int k = tree_->nearestKSearch(query, 1, index, distance);
@@ -435,9 +441,9 @@ protected:
   };
 
   std::function<void(const pcl::PointCloud<PointSource>& cloud_src,
-                     const std::vector<int>& src_indices,
+                     const pcl::Indices& src_indices,
                      const pcl::PointCloud<PointTarget>& cloud_tgt,
-                     const std::vector<int>& tgt_indices,
+                     const pcl::Indices& tgt_indices,
                      Eigen::Matrix4f& transformation_matrix)>
       rigid_transformation_estimation_;
 };

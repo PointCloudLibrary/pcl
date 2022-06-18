@@ -40,6 +40,8 @@
 #include <istream>
 #include <fstream>
 #include <boost/filesystem.hpp>
+#include <boost/lexical_cast.hpp> // for lexical_cast
+#include <boost/algorithm/string.hpp> // for split
 #include <cstdint>
 
 //////////////////////////////////////////////////////////////////////////////
@@ -114,7 +116,7 @@ pcl::ASCIIReader::readHeader (const std::string& file_name,
     total++;
 
   origin = Eigen::Vector4f::Zero ();
-  orientation = Eigen::Quaternionf ();
+  orientation = Eigen::Quaternionf::Identity ();
   cloud.width = total;
   cloud.height = 1;
   cloud.is_dense = true;

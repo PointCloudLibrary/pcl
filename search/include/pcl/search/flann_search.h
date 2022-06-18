@@ -367,4 +367,7 @@ namespace pcl
   }
 }
 
+// There is no cpp file containing template instantiations of FlannSearch
+#include <pcl/search/impl/flann_search.hpp>
+
 #define PCL_INSTANTIATE_FlannSearch(T) template class PCL_EXPORTS pcl::search::FlannSearch<T>;

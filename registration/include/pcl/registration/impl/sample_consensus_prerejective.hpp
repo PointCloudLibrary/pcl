@@ -75,7 +75,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::setTargetFeatur
 template <typename PointSource, typename PointTarget, typename FeatureT>
 void
 SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::selectSamples(
-    const PointCloudSource& cloud, int nr_samples, std::vector<int>& sample_indices)
+    const PointCloudSource& cloud, int nr_samples, pcl::Indices& sample_indices)
 {
   if (nr_samples > static_cast<int>(cloud.size())) {
     PCL_ERROR("[pcl::%s::selectSamples] ", getClassName().c_str());
@@ -118,9 +118,9 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::selectSamples(
 template <typename PointSource, typename PointTarget, typename FeatureT>
 void
 SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::findSimilarFeatures(
-    const std::vector<int>& sample_indices,
-    std::vector<std::vector<int>>& similar_features,
-    std::vector<int>& corresponding_indices)
+    const pcl::Indices& sample_indices,
+    std::vector<pcl::Indices>& similar_features,
+    pcl::Indices& corresponding_indices)
 {
   // Allocate results
   corresponding_indices.resize(sample_indices.size());
@@ -129,7 +129,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::findSimilarFeat
   // Loop over the sampled features
   for (std::size_t i = 0; i < sample_indices.size(); ++i) {
     // Current feature index
-    const int idx = sample_indices[i];
+    const auto& idx = sample_indices[i];
 
     // Find the k nearest feature neighbors to the sampled input feature if they are not
     // in the cache already
@@ -222,7 +222,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
   converged_ = false;
 
   // Temporaries
-  std::vector<int> inliers;
+  pcl::Indices inliers;
   float inlier_fraction;
   float error;
 
@@ -240,13 +240,13 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
   }
 
   // Feature correspondence cache
-  std::vector<std::vector<int>> similar_features(input_->size());
+  std::vector<pcl::Indices> similar_features(input_->size());
 
   // Start
   for (int i = 0; i < max_iterations_; ++i) {
     // Temporary containers
-    std::vector<int> sample_indices;
-    std::vector<int> corresponding_indices;
+    pcl::Indices sample_indices;
+    pcl::Indices corresponding_indices;
 
     // Draw nr_samples_ random samples
     selectSamples(*input_, nr_samples_, sample_indices);
@@ -305,7 +305,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
 template <typename PointSource, typename PointTarget, typename FeatureT>
 void
 SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness(
-    std::vector<int>& inliers, float& fitness_score)
+    pcl::Indices& inliers, float& fitness_score)
 {
   // Initialize variables
   inliers.clear();
@@ -323,14 +323,14 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness(
   // For each point in the source dataset
   for (std::size_t i = 0; i < input_transformed.size(); ++i) {
     // Find its nearest neighbor in the target
-    std::vector<int> nn_indices(1);
+    pcl::Indices nn_indices(1);
     std::vector<float> nn_dists(1);
     tree_->nearestKSearch(input_transformed[i], 1, nn_indices, nn_dists);
 
     // Check if point is an inlier
     if (nn_dists[0] < max_range) {
       // Update inliers
-      inliers.push_back(static_cast<int>(i));
+      inliers.push_back(i);
 
       // Update fitness score
       fitness_score += nn_dists[0];

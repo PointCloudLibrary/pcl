@@ -128,7 +128,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  cloud = (new pcl::PointCloud<pcl::PointXYZ> ())->makeShared ();
+  cloud.reset (new pcl::PointCloud<pcl::PointXYZ> ());
   if (pcl::io::loadPCDFile (argv[1], *cloud) < 0)
   {
     std::cerr << "Failed to read test file. Please download `rops_cloud.pcd` and pass its path to the test." << std::endl;

@@ -6,11 +6,11 @@
 #include <pcl/search/kdtree.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/visualization/cloud_viewer.h>
-#include <pcl/filters/passthrough.h>
+#include <pcl/filters/filter_indices.h> // for pcl::removeNaNFromPointCloud
 #include <pcl/segmentation/region_growing.h>
 
 int
-main (int argc, char** argv)
+main ()
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
   if ( pcl::io::loadPCDFile <pcl::PointXYZ> ("region_growing_tutorial.pcd", *cloud) == -1)
@@ -28,11 +28,7 @@ main (int argc, char** argv)
   normal_estimator.compute (*normals);
 
   pcl::IndicesPtr indices (new std::vector <int>);
-  pcl::PassThrough<pcl::PointXYZ> pass;
-  pass.setInputCloud (cloud);
-  pass.setFilterFieldName ("z");
-  pass.setFilterLimits (0.0, 1.0);
-  pass.filter (*indices);
+  pcl::removeNaNFromPointCloud(*cloud, *indices);
 
   pcl::RegionGrowing<pcl::PointXYZ, pcl::Normal> reg;
   reg.setMinClusterSize (50);
@@ -40,7 +36,7 @@ main (int argc, char** argv)
   reg.setSearchMethod (tree);
   reg.setNumberOfNeighbours (30);
   reg.setInputCloud (cloud);
-  //reg.setIndices (indices);
+  reg.setIndices (indices);
   reg.setInputNormals (normals);
   reg.setSmoothnessThreshold (3.0 / 180.0 * M_PI);
   reg.setCurvatureThreshold (1.0);
@@ -52,7 +48,7 @@ main (int argc, char** argv)
   std::cout << "First cluster has " << clusters[0].indices.size () << " points." << std::endl;
   std::cout << "These are the indices of the points of the initial" <<
     std::endl << "cloud that belong to the first cluster:" << std::endl;
-  int counter = 0;
+  std::size_t counter = 0;
   while (counter < clusters[0].indices.size ())
   {
     std::cout << clusters[0].indices[counter] << ", ";

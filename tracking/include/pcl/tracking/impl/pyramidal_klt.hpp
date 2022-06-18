@@ -69,8 +69,8 @@ PyramidalKLTTracker<PointInT, IntensityT>::setPointsToTrack(
     keypoints_ = p;
   }
 
-  keypoints_status_.reset(new pcl::PointIndices);
-  keypoints_status_->indices.resize(keypoints_->size(), 0);
+  keypoints_status_.reset(new std::vector<int>);
+  keypoints_status_->resize(keypoints_->size(), 0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -723,7 +723,7 @@ PyramidalKLTTracker<PointInT, IntensityT>::computeTracking()
   ref_ = input_;
   ref_pyramid_ = pyramid;
   keypoints_ = keypoints;
-  keypoints_status_->indices = status;
+  *keypoints_status_ = status;
 }
 
 } // namespace tracking

@@ -60,6 +60,7 @@ namespace pcl
   /** \brief Compute the smallest angle between two 3D vectors in radians (default) or degree.
     * \param v1 the first 3D vector (represented as a \a Eigen::Vector4f)
     * \param v2 the second 3D vector (represented as a \a Eigen::Vector4f)
+    * \param in_degree determine if angle should be in radians or degrees
     * \return the angle between v1 and v2 in radians or degrees
     * \note Handles rounding error for parallel and anti-parallel vectors
     * \ingroup common
@@ -281,7 +282,12 @@ namespace pcl
     * \ingroup common
     */
   template<typename IteratorT, typename Functor> inline auto
-  computeMedian (IteratorT begin, IteratorT end, Functor f) noexcept -> typename std::result_of<Functor(decltype(*begin))>::type
+  computeMedian (IteratorT begin, IteratorT end, Functor f) noexcept ->
+  #if __cpp_lib_is_invocable
+  std::invoke_result_t<Functor, decltype(*begin)>
+  #else
+  std::result_of_t<Functor(decltype(*begin))>
+  #endif
   {
     const std::size_t size = std::distance(begin, end);
     const std::size_t mid = size/2;

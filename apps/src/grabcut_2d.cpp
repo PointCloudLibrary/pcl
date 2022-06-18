@@ -236,11 +236,8 @@ GrabCutHelper::display(int display_type)
     break;
 
   case 1:
-    glDrawPixels(gmm_image_->width,
-                 gmm_image_->height,
-                 GL_RGB,
-                 GL_FLOAT,
-                 &((*gmm_image_)[0]));
+    glDrawPixels(
+        gmm_image_->width, gmm_image_->height, GL_RGB, GL_FLOAT, &((*gmm_image_)[0]));
     break;
 
   case 2:

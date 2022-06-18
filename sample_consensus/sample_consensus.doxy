@@ -4,7 +4,7 @@
   \section secSampleConsensusPresentation Overview
 
   The <b>pcl_sample_consensus</b> library holds SAmple Consensus (SAC) methods like 
-  <a href="http://en.wikipedia.org/wiki/RANSAC">RANSAC</a> and models like planes and cylinders.  These can
+  <a href="http://en.wikipedia.org/wiki/RANSAC">RANSAC</a> and models like planes and cylinders.  These can be
   combined freely in order to detect specific models and their parameters in point clouds.
 
   Some of the models implemented in this library include: lines, planes, cylinders, and spheres.  Plane fitting
@@ -37,11 +37,11 @@
   The following list describes the robust sample consensus estimators implemented:
   <ul>
     <li><a href="http://en.wikipedia.org/wiki/RANSAC">SAC_RANSAC</a> - RANdom SAmple Consensus</li>
-    <li><a href="http://research.microsoft.com/en-us/um/people/zhang/INRIA/Publis/Tutorial-Estim/node25.html">SAC_LMEDS</a> - Least Median of Squares</li> 
-    <li><a href="http://www.robots.ox.ac.uk/~vgg/publications-new/Public/2000/Torr00/torr00.pdf">SAC_MSAC</a> - M-Estimator SAmple Consensus</li>
-    <li><a href="http://cmp.felk.cvut.cz/~matas/papers/presentations/rransac-cvww02_pres.pdf">SAC_RRANSAC</a> - Randomized RANSAC</li>
-    <li><a href="http://cmp.felk.cvut.cz/~matas/papers/presentations/rransac-cvww02_pres.pdf">SAC_RMSAC</a> - Randomized MSAC</li>
-    <li><a href="http://www.robots.ox.ac.uk/~vgg/publications-new/Public/2000/Torr00/torr00.pdf">SAC_MLESAC</a> - Maximum LikeLihood Estimation SAmple Consensus</li>
+    <li><a href="https://www-sop.inria.fr/odyssee/software/old_robotvis/Tutorial-Estim/node25.html">SAC_LMEDS</a> - Least Median of Squares</li>
+    <li><a href="https://www.robots.ox.ac.uk/~vgg/publications/2000/Torr00/torr00.pdf">SAC_MSAC</a> - M-Estimator SAmple Consensus</li>
+    <li><a href="https://web.archive.org/web/20170811194151/http://www.bmva.org/bmvc/2002/papers/50/full_50.pdf">SAC_RRANSAC</a> - Randomized RANSAC</li>
+    <li><a href="https://web.archive.org/web/20170811194151/http://www.bmva.org/bmvc/2002/papers/50/full_50.pdf">SAC_RMSAC</a> - Randomized MSAC</li>
+    <li><a href="https://www.robots.ox.ac.uk/~vgg/publications/2000/Torr00/torr00.pdf">SAC_MLESAC</a> - Maximum LikeLihood Estimation SAmple Consensus</li>
     <li><a href="http://cmp.felk.cvut.cz/~matas/papers/chum-prosac-cvpr05.pdf">SAC_PROSAC</a> - PROgressive SAmple Consensus</li>
   </ul>
 

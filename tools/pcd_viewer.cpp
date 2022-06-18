@@ -43,8 +43,7 @@
 // PCL
 #include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
-#include <cfloat>
-#include <pcl/visualization/point_cloud_handlers.h>
+#include <limits>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/visualization/histogram_visualizer.h>
@@ -168,7 +167,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
     search.setInputCloud (xyzcloud);
   }
   // Return the correct index in the cloud instead of the index on the screen
-  std::vector<int> indices (1);
+  pcl::Indices indices (1);
   std::vector<float> distances (1);
 
   // Because VTK/OpenGL stores data without NaN, we lose the 1-1 correspondence, so we must search for the real point
@@ -335,7 +334,8 @@ main (int argc, char** argv)
   // Create the PCLPlotter object
   pcl::visualization::PCLPlotter::Ptr ph;
   // Using min_p, max_p to set the global Y min/max range for the histogram
-  float min_p = FLT_MAX; float max_p = -FLT_MAX;
+  float min_p = std::numeric_limits<float>::max();
+  float max_p = std::numeric_limits<float>::lowest();
 
   int k = 0, l = 0, viewport = 0;
   // Load the data files

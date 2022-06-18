@@ -68,14 +68,18 @@ void extractLabeledEuclideanClusters(
     unsigned int max_label);
 
 /** \brief Decompose a region of space into clusters based on the Euclidean distance
- * between points \param[in] cloud the point cloud message \param[in] tree the spatial
- * locator (e.g., kd-tree) used for nearest neighbors searching \note the tree has to be
- * created as a spatial locator on \a cloud \param[in] tolerance the spatial cluster
- * tolerance as a measure in L2 Euclidean space \param[out] labeled_clusters the
- * resultant clusters containing point indices (as a vector of PointIndices) \param[in]
- * min_pts_per_cluster minimum number of points that a cluster may contain (default: 1)
+ * between points
+ * \param[in] cloud the point cloud message
+ * \param[in] tree the spatial locator (e.g., kd-tree) used for nearest neighbors
+ * searching \note the tree has to be created as a spatial locator on \a cloud
+ * \param[in] tolerance the spatial cluster tolerance as a measure in L2 Euclidean space
+ * \param[out] labeled_clusters the resultant clusters containing point indices
+ * (as a vector of PointIndices)
+ * \param[in] min_pts_per_cluster minimum number of points that a cluster may contain
+ * (default: 1)
  * \param[in] max_pts_per_cluster maximum number of points that a cluster may contain
- * (default: max int) \ingroup segmentation
+ * (default: max int)
+ * \ingroup segmentation
  */
 template <typename PointT>
 void
@@ -91,8 +95,8 @@ extractLabeledEuclideanClusters(
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief @b LabeledEuclideanClusterExtraction represents a segmentation class for
- * cluster extraction in an Euclidean sense, with label info. \author Koen Buys \ingroup
- * segmentation
+ * cluster extraction in an Euclidean sense, with label info. \author Koen Buys
+ * \ingroup segmentation
  */
 template <typename PointT>
 class LabeledEuclideanClusterExtraction : public PCLBase<PointT> {

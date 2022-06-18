@@ -50,7 +50,7 @@ class RenderWindow : public PCLQVTKWidget {
 public:
   RenderWindow(RenderWindowItem* render_window_item,
                QWidget* parent = nullptr,
-               Qt::WindowFlags flags = nullptr);
+               Qt::WindowFlags flags = {});
   ~RenderWindow();
 
   QSize

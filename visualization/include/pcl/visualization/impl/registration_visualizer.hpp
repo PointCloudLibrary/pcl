@@ -44,24 +44,26 @@
 namespace pcl
 {
 
-template<typename PointSource, typename PointTarget> void
-RegistrationVisualizer<PointSource, PointTarget>::startDisplay ()
+template<typename PointSource, typename PointTarget, typename Scalar> void
+RegistrationVisualizer<PointSource, PointTarget, Scalar>::startDisplay ()
 {
   // Create and start the rendering thread. This will open the display window.
-  viewer_thread_ = std::thread (&pcl::RegistrationVisualizer<PointSource, PointTarget>::runDisplay, this);
+  viewer_thread_ = std::thread (&pcl::RegistrationVisualizer<PointSource, PointTarget, Scalar>::runDisplay, this);
 }
 
 
-template<typename PointSource, typename PointTarget> void
-RegistrationVisualizer<PointSource, PointTarget>::stopDisplay ()
+template<typename PointSource, typename PointTarget, typename Scalar> void
+RegistrationVisualizer<PointSource, PointTarget, Scalar>::stopDisplay ()
 {
   // Stop the rendering thread. This will kill the display window.
+  if(viewer_thread_.joinable())
+    viewer_thread_.join();
   viewer_thread_.~thread ();
 }
 
 
-template<typename PointSource, typename PointTarget> void
-RegistrationVisualizer<PointSource, PointTarget>::runDisplay ()
+template<typename PointSource, typename PointTarget, typename Scalar> void
+RegistrationVisualizer<PointSource, PointTarget, Scalar>::runDisplay ()
 {
   // Open 3D viewer
   viewer_
@@ -184,8 +186,8 @@ RegistrationVisualizer<PointSource, PointTarget>::runDisplay ()
 }
 
 
-template<typename PointSource, typename PointTarget> void
-RegistrationVisualizer<PointSource, PointTarget>::updateIntermediateCloud (
+template<typename PointSource, typename PointTarget, typename Scalar> void
+RegistrationVisualizer<PointSource, PointTarget, Scalar>::updateIntermediateCloud (
     const pcl::PointCloud<PointSource> &cloud_src,
     const pcl::Indices &indices_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
@@ -218,4 +220,3 @@ RegistrationVisualizer<PointSource, PointTarget>::updateIntermediateCloud (
 }
 
 } // namespace pcl
-

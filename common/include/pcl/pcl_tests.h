@@ -64,7 +64,7 @@ namespace pcl
     {
       SCOPED_TRACE("EXPECT_EQ_VECTORS failed");
       EXPECT_EQ (v1.size (), v2.size ());
-      std::size_t length = v1.size ();
+      std::size_t length = std::min<std::size_t> (v1.size (), v2.size ());
       for (std::size_t i = 0; i < length; ++i)
         EXPECT_EQ (v1[i], v2[i]);
     }
@@ -74,7 +74,7 @@ namespace pcl
     {
       SCOPED_TRACE("EXPECT_NEAR_VECTORS failed");
       EXPECT_EQ (v1.size (), v2.size ());
-      std::size_t length = v1.size ();
+      std::size_t length = std::min<std::size_t> (v1.size (), v2.size());
       for (std::size_t i = 0; i < length; ++i)
         EXPECT_NEAR (v1[i], v2[i], epsilon);
     }

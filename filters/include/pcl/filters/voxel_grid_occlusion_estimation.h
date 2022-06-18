@@ -66,6 +66,9 @@ namespace pcl
       using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
     public:
+
+      PCL_MAKE_ALIGNED_OPERATOR_NEW;
+
       /** \brief Empty constructor. */
       VoxelGridOcclusionEstimation ()
       {

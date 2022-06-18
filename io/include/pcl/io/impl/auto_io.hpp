@@ -40,12 +40,11 @@
 #ifndef PCL_IO_AUTO_IO_IMPL_H_
 #define PCL_IO_AUTO_IO_IMPL_H_
 
-// #include <pcl/io/file_io.h>
-// #include <pcl/io/boost.h>
+#include <pcl/io/obj_io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/io/ifs_io.h>
-// #include <pcl/io/vtk_io.h>
+#include <boost/filesystem.hpp> // for path
 
 namespace pcl
 {
@@ -63,6 +62,8 @@ namespace pcl
         result = pcl::io::loadPLYFile (file_name, cloud);
       else if (extension == ".ifs")
         result = pcl::io::loadIFSFile (file_name, cloud);
+      else if (extension == ".obj")
+        result = pcl::io::loadOBJFile (file_name, cloud);
       else
       {
         PCL_ERROR ("[pcl::io::load] Don't know how to handle file with extension %s\n", extension.c_str ());

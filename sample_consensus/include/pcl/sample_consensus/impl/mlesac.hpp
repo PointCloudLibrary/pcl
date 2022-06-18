@@ -41,8 +41,8 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_MLESAC_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_MLESAC_H_
 
+#include <limits>
 #include <pcl/sample_consensus/mlesac.h>
-#include <cfloat> // for FLT_MAX
 #include <pcl/common/common.h> // for computeMedian
 
 //////////////////////////////////////////////////////////////////////////
@@ -59,6 +59,9 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
   iterations_ = 0;
   double d_best_penalty = std::numeric_limits<double>::max();
   double k = 1.0;
+
+  const double log_probability  = std::log (1.0 - probability_);
+  const double one_over_indices = 1.0 / static_cast<double> (sac_model_->getIndices ()->size ());
 
   Indices selection;
   Eigen::VectorXf model_coefficients (sac_model_->getModelSize ());
@@ -154,11 +157,11 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
           n_inliers_count++;
 
       // Compute the k parameter (k=std::log(z)/std::log(1-w^n))
-      double w = static_cast<double> (n_inliers_count) / static_cast<double> (sac_model_->getIndices ()->size ());
-      double p_no_outliers = 1 - std::pow (w, static_cast<double> (selection.size ()));
-      p_no_outliers = (std::max) (std::numeric_limits<double>::epsilon (), p_no_outliers);       // Avoid division by -Inf
-      p_no_outliers = (std::min) (1 - std::numeric_limits<double>::epsilon (), p_no_outliers);   // Avoid division by 0.
-      k = std::log (1 - probability_) / std::log (p_no_outliers);
+      const double w = static_cast<double> (n_inliers_count) * one_over_indices;
+      double p_outliers = 1.0 - std::pow (w, static_cast<double> (selection.size ()));       // Probability that selection is contaminated by at least one outlier
+      p_outliers = (std::max) (std::numeric_limits<double>::epsilon (), p_outliers);         // Avoid division by -Inf
+      p_outliers = (std::min) (1.0 - std::numeric_limits<double>::epsilon (), p_outliers);   // Avoid division by 0.
+      k = log_probability / std::log (p_outliers);
     }
 
     ++iterations_;
@@ -237,8 +240,8 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::getMinMax (
     Eigen::Vector4f &min_p, 
     Eigen::Vector4f &max_p) const
 {
-  min_p.setConstant (FLT_MAX);
-  max_p.setConstant (-FLT_MAX);
+  min_p.setConstant (std::numeric_limits<float>::max());
+  max_p.setConstant (std::numeric_limits<float>::lowest());
   min_p[3] = max_p[3] = 0;
 
   for (std::size_t i = 0; i < indices->size (); ++i)

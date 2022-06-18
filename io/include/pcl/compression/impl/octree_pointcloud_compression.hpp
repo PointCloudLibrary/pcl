@@ -473,7 +473,7 @@ namespace pcl
         LeafT &leaf_arg, const OctreeKey & key_arg)
     {
       // reference to point indices vector stored within octree leaf
-      const std::vector<int>& leafIdx = leaf_arg.getPointIndicesVector();
+      const auto& leafIdx = leaf_arg.getPointIndicesVector();
 
       if (!do_voxel_grid_enDecoding_)
       {

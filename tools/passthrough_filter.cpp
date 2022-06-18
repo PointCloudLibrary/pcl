@@ -37,12 +37,13 @@
  */
 
 #include <pcl/PCLPointCloud2.h>
-#include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <pcl/filters/passthrough.h>
+#include <boost/filesystem.hpp> // for path, exists, ...
+#include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 
 using namespace pcl;
 using namespace pcl::io;

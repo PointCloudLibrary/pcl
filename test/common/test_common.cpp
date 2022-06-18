@@ -173,120 +173,6 @@ TEST (PCL, Eigen)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, PointCloud)
-{
-  PointCloud<PointXYZ> cloud;
-  cloud.width = 640;
-  cloud.height = 480;
-
-  EXPECT_TRUE (cloud.isOrganized ());
-
-  cloud.height = 1;
-  EXPECT_FALSE (cloud.isOrganized ());
-
-  cloud.width = 10;
-  for (std::uint32_t i = 0; i < cloud.width*cloud.height; ++i)
-  {
-    float j = static_cast<float> (i);
-    cloud.emplace_back(3.0f * j + 0.0f, 3.0f * j + 1.0f, 3.0f * j + 2.0f);
-  }
-
-  Eigen::MatrixXf mat_xyz1 = cloud.getMatrixXfMap ();
-  Eigen::MatrixXf mat_xyz = cloud.getMatrixXfMap (3, 4, 0);
-
-  if (Eigen::MatrixXf::Flags & Eigen::RowMajorBit)
-  {
-    EXPECT_EQ (mat_xyz1.cols (), 4);
-    EXPECT_EQ (mat_xyz1.rows (), cloud.width);
-    EXPECT_EQ (mat_xyz1 (0, 0), 0);
-    EXPECT_EQ (mat_xyz1 (cloud.width - 1, 2), 3 * cloud.width - 1);   // = 29
-
-    EXPECT_EQ (mat_xyz.cols (), 3);
-    EXPECT_EQ (mat_xyz.rows (), cloud.width);
-    EXPECT_EQ (mat_xyz (0, 0), 0);
-    EXPECT_EQ (mat_xyz (cloud.width - 1, 2), 3 * cloud.width - 1);    // = 29
-  }
-  else
-  {
-    EXPECT_EQ (mat_xyz1.cols (), cloud.width);
-    EXPECT_EQ (mat_xyz1.rows (), 4);
-    EXPECT_EQ (mat_xyz1 (0, 0), 0);
-    EXPECT_EQ (mat_xyz1 (2, cloud.width - 1), 3 * cloud.width - 1);   // = 29
-
-    EXPECT_EQ (mat_xyz.cols (), cloud.width);
-    EXPECT_EQ (mat_xyz.rows (), 3);
-    EXPECT_EQ (mat_xyz (0, 0), 0);
-    EXPECT_EQ (mat_xyz (2, cloud.width - 1), 3 * cloud.width - 1);    // = 29
-  }
-
-#ifdef NDEBUG
-  if (Eigen::MatrixXf::Flags & Eigen::RowMajorBit)
-  {
-    Eigen::MatrixXf mat_yz = cloud.getMatrixXfMap (2, 4, 1);
-    EXPECT_EQ (mat_yz.cols (), 2);
-    EXPECT_EQ (mat_yz.rows (), cloud.width);
-    EXPECT_EQ (mat_yz (0, 0), 1);
-    EXPECT_EQ (mat_yz (cloud.width - 1, 1), 3 * cloud.width - 1);
-    std::uint32_t j = 1;
-    for (std::uint32_t i = 1; i < cloud.width*cloud.height; i+=4, j+=3)
-    {
-      Eigen::MatrixXf mat_yz = cloud.getMatrixXfMap (2, 4, i);
-      EXPECT_EQ (mat_yz.cols (), 2);
-      EXPECT_EQ (mat_yz.rows (), cloud.width);
-      EXPECT_EQ (mat_yz (0, 0), j);
-    }
-  }
-  else
-  {
-    Eigen::MatrixXf mat_yz = cloud.getMatrixXfMap (2, 4, 1);
-    EXPECT_EQ (mat_yz.cols (), cloud.width);
-    EXPECT_EQ (mat_yz.rows (), 2);
-    EXPECT_EQ (mat_yz (0, 0), 1);
-    EXPECT_EQ (mat_yz (1, cloud.width - 1), 3 * cloud.width - 1);
-    std::uint32_t j = 1;
-    for (std::uint32_t i = 1; i < cloud.width*cloud.height; i+=4, j+=3)
-    {
-      Eigen::MatrixXf mat_yz = cloud.getMatrixXfMap (2, 4, i);
-      EXPECT_EQ (mat_yz.cols (), cloud.width);
-      EXPECT_EQ (mat_yz.rows (), 2);
-      EXPECT_EQ (mat_yz (0, 0), j);
-    }
-  }
-#endif
-  cloud.clear ();
-  EXPECT_EQ (cloud.width, 0);
-  EXPECT_EQ (cloud.height, 0);
-
-  cloud.width = 640;
-  cloud.height = 480;
-
-  cloud.insert (cloud.end (), PointXYZ (1, 1, 1));
-  EXPECT_FALSE (cloud.isOrganized ());
-  EXPECT_EQ (cloud.width, 1);
-
-  cloud.insert (cloud.end (), 5, PointXYZ (1, 1, 1));
-  EXPECT_FALSE (cloud.isOrganized ());
-  EXPECT_EQ (cloud.width, 6);
-
-  cloud.erase (cloud.end () - 1);
-  EXPECT_FALSE (cloud.isOrganized ());
-  EXPECT_EQ (cloud.width, 5);
-
-  cloud.erase (cloud.begin (), cloud.end ());
-  EXPECT_FALSE (cloud.isOrganized ());
-  EXPECT_EQ (cloud.width, 0);
-
-  cloud.emplace (cloud.end (), 1, 1, 1);
-  EXPECT_FALSE (cloud.isOrganized ());
-  EXPECT_EQ (cloud.width, 1);
-
-  auto& new_point = cloud.emplace_back (1, 1, 1);
-  EXPECT_FALSE (cloud.isOrganized ());
-  EXPECT_EQ (cloud.width, 2);
-  EXPECT_EQ (&new_point, &cloud.back ());
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PointTypes)
 {
   EXPECT_EQ (sizeof (PointXYZ), 16);
@@ -617,7 +503,7 @@ TEST (PCL, computeMedian)
   EXPECT_EQ(median1, 3.5f);
 
   std::vector<double> vector2{1.0, 25.0, 9.0, 4.0, 16.0};
-  const auto median2 = computeMedian (vector2.begin (), vector2.end (), static_cast<double(*)(double)>(std::sqrt));
+  const auto median2 = computeMedian (vector2.begin (), vector2.end (), [](const double& x){ return std::sqrt(x); });
   EXPECT_EQ(median2, 3.0);
 
   std::vector<double> vector3{1.0, 2.0, 6.0, 5.0, 4.0, 3.0};

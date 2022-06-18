@@ -39,7 +39,6 @@
 #include <pcl/common/time.h> //fps calculations
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/lzf_image_io.h>
-#include <pcl/visualization/boost.h>
 #include <pcl/visualization/common/float_image_utils.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
@@ -47,6 +46,7 @@
 #include <pcl/visualization/mouse_event.h>
 
 #include <boost/circular_buffer.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp> // for ptime, to_iso_string, ...
 
 #include <csignal>
 #include <limits>

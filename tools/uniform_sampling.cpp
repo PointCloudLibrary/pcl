@@ -44,7 +44,6 @@
 #include <boost/filesystem.hpp>
 #include <algorithm>
 #include <string>
-#include <pcl/io/vtk_io.h>
 
 using namespace pcl;
 using namespace pcl::io;

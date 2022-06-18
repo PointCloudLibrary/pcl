@@ -358,12 +358,7 @@ template<>
 struct SHOTShapeTest<SHOTEstimationOMP<PointXYZ, Normal, SHOT352> >
   : public ::testing::Test
 {
-  // Default Constructor is defined to instantiate 4 threads
-  SHOTShapeTest<SHOTEstimationOMP<PointXYZ, Normal, SHOT352> > ()
-    : shot (4)
-  {}
-
-  SHOTEstimationOMP<PointXYZ, Normal, SHOT352> shot;
+  SHOTEstimationOMP<PointXYZ, Normal, SHOT352> shot{4}; // 4 threads
 };
 
 // Types which will be instantiated
@@ -547,12 +542,7 @@ template<>
 struct SHOTShapeAndColorTest<SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT1344> >
   : public ::testing::Test
 {
-  // Default Constructor is defined to instantiate 4 threads
-  SHOTShapeAndColorTest<SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT1344> > ()
-    : shot (true, true, 4)
-  {}
-
-  SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT1344> shot;
+  SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT1344> shot{true, true, 4}; // 4 threads
 };
 
 // Types which will be instantiated

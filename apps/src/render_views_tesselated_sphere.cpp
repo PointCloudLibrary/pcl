@@ -6,14 +6,15 @@
  */
 
 #include <pcl/apps/render_views_tesselated_sphere.h>
-#include <pcl/point_types.h>
 #include <pcl/visualization/vtk/pcl_vtk_compatibility.h>
+#include <pcl/point_types.h>
 
 #include <vtkActor.h>
 #include <vtkCamera.h>
 #include <vtkCellArray.h>
 #include <vtkCellData.h>
 #include <vtkHardwareSelector.h>
+#include <vtkIdTypeArray.h>
 #include <vtkLoopSubdivisionFilter.h>
 #include <vtkPlatonicSolidSource.h>
 #include <vtkPointPicker.h>
@@ -27,7 +28,6 @@
 #include <vtkTransformFilter.h>
 #include <vtkTriangle.h>
 #include <vtkWorldPointPicker.h>
-#include <vtkIdTypeArray.h>
 
 #include <array>
 
@@ -93,21 +93,6 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
 
   mapper->SetInputConnection(trans_filter_scale->GetOutputPort());
   mapper->Update();
-
-  //////////////////////////////
-  // * Compute area of the mesh
-  //////////////////////////////
-  vtkSmartPointer<vtkCellArray> cells = mapper->GetInput()->GetPolys();
-  vtkIdType npts = 0;
-  vtkCellPtsPtr ptIds = nullptr;
-
-  double p1[3], p2[3], p3[3], totalArea = 0;
-  for (cells->InitTraversal(); cells->GetNextCell(npts, ptIds);) {
-    polydata_->GetPoint(ptIds[0], p1);
-    polydata_->GetPoint(ptIds[1], p2);
-    polydata_->GetPoint(ptIds[2], p3);
-    totalArea += vtkTriangle::TriangleArea(p1, p2, p3);
-  }
 
   // create icosahedron
   vtkSmartPointer<vtkPlatonicSolidSource> ico =

@@ -54,6 +54,7 @@ namespace registration {
  * the source) and the target point cloud must be given in the camera coordinate frame.
  * Any other transformation is specified by the src_to_tgt_transformation_ variable.
  * \author Alex Ichim
+ * \ingroup registration
  */
 template <typename PointSource, typename PointTarget, typename Scalar = float>
 class CorrespondenceEstimationOrganizedProjection
@@ -186,15 +187,21 @@ public:
   }
 
   /** \brief Computes the correspondences, applying a maximum Euclidean distance
-   * threshold. \param correspondences \param[in] max_distance Euclidean distance
-   * threshold above which correspondences will be rejected
+   * threshold.
+   * \param[out] correspondences the found correspondences (index of query point, index
+   * of target point, distance)
+   * \param[in] max_distance Euclidean distance threshold above which correspondences
+   * will be rejected
    */
   void
   determineCorrespondences(Correspondences& correspondences, double max_distance);
 
   /** \brief Computes the correspondences, applying a maximum Euclidean distance
-   * threshold. \param correspondences \param[in] max_distance Euclidean distance
-   * threshold above which correspondences will be rejected
+   * threshold.
+   * \param[out] correspondences the found correspondences (index of query and target
+   * point, distance)
+   * \param[in] max_distance Euclidean distance threshold above which correspondences
+   * will be rejected
    */
   void
   determineReciprocalCorrespondences(Correspondences& correspondences,

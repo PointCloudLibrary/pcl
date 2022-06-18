@@ -46,7 +46,6 @@
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
-#include <pcl/visualization/boost.h>
 #include <pcl/visualization/mouse_event.h>
 
 #include <vtkImageViewer.h>

@@ -38,6 +38,8 @@
  * \author Stephen Fox
  */
 
+#include <limits>
+
 #include <pcl/common/time.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -56,6 +58,7 @@
 #include <boost/accumulators/statistics/max.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
 #include <boost/accumulators/statistics/variance.hpp>
+#include <boost/algorithm/string/replace.hpp> // for replace_first
 
 namespace ba = boost::accumulators;
 
@@ -275,7 +278,7 @@ main (int argc, char* argv[])
     console::setVerbosityLevel (console::L_DEBUG);
 
   // Defaults
-  int depth = INT_MAX;
+  int depth = std::numeric_limits<int>::max();
   bool breadth_first = find_switch (argc, argv, "-breadth");
   bool bounding_box = find_switch (argc, argv, "-bounding_box");
   bool pcd = find_switch (argc, argv, "-pcd");

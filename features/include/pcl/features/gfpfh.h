@@ -59,6 +59,7 @@ namespace pcl
     *
     * \author Radu B. Rusu
     * \ingroup features
+    * \tparam PointOutT Suggested type is `pcl::GFPFHSignature16`
     */
   template <typename PointInT, typename PointLT, typename PointOutT>
   class GFPFHEstimation : public FeatureFromLabels<PointInT, PointLT, PointOutT>
@@ -133,7 +134,7 @@ namespace pcl
 
       /** \brief Return the dominant label of a set of points. */
       std::uint32_t
-      getDominantLabel (const std::vector<int>& indices);
+      getDominantLabel (const pcl::Indices& indices);
 
       /** \brief Compute the fixed-length histograms of transitions. */
       void computeTransitionHistograms (const std::vector< std::vector<int> >& label_histograms,

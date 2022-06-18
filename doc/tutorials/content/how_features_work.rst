@@ -54,13 +54,13 @@ the table below for a reference on each of the terms used.
 +=============+================================================+
 | Foo         | a class named `Foo`                            |
 +-------------+------------------------------------------------+
-| FooPtr      | a shared pointer to a class `Foo`,       |
+| FooPtr      | a shared pointer to a class `Foo`,             |
 |             |                                                | 
-|             | e.g., `shared_ptr<Foo>`                 |
+|             | e.g., `shared_ptr<Foo>`                        |
 +-------------+------------------------------------------------+
-| FooConstPtr | a const shared pointer to a class `Foo`, |
+| FooConstPtr | a const shared pointer to a class `Foo`,       |
 |             |                                                |
-|             | e.g., `const shared_ptr<const Foo>`     |
+|             | e.g., `const shared_ptr<const Foo>`            |
 +-------------+------------------------------------------------+
 
 How to pass the input

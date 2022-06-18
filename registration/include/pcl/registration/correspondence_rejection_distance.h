@@ -203,5 +203,3 @@ protected:
 
 } // namespace registration
 } // namespace pcl
-
-#include <pcl/registration/impl/correspondence_rejection_distance.hpp>

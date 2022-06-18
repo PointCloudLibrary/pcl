@@ -13,7 +13,7 @@
 #------------------------------------------------------------------------------------
 
 # Set default policy behavior similar to minimum requirement version
-cmake_policy(VERSION 3.5)
+cmake_policy(VERSION 3.10)
 
 # explicitly set policies we already support in newer cmake versions
 if(POLICY CMP0074)
@@ -93,22 +93,14 @@ macro(find_boost)
   elseif(NOT BOOST_INCLUDEDIR)
     set(BOOST_INCLUDEDIR "@Boost_INCLUDE_DIR@")
   endif()
-  # use static Boost in Windows
-  if(WIN32)
-    set(Boost_USE_STATIC_LIBS @Boost_USE_STATIC_LIBS@)
-    set(Boost_USE_STATIC @Boost_USE_STATIC@)
-    set(Boost_USE_MULTITHREAD @Boost_USE_MULTITHREAD@)
-  endif()
+  
   set(Boost_ADDITIONAL_VERSIONS
     "@Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@.@Boost_SUBMINOR_VERSION@" "@Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@"
-    "1.75.0" "1.75" 
+    "1.79.0" "1.79" "1.78.0" "1.78" "1.77.0" "1.77" "1.76.0" "1.76" "1.75.0" "1.75" 
     "1.74.0" "1.74" "1.73.0" "1.73" "1.72.0" "1.72" "1.71.0" "1.71" "1.70.0" "1.70"
-    "1.69.0" "1.69" "1.68.0" "1.68" "1.67.0" "1.67" "1.66.0" "1.66" "1.65.1" "1.65.0" "1.65"
-    "1.64.0" "1.64" "1.63.0" "1.63" "1.62.0" "1.62" "1.61.0" "1.61" "1.60.0" "1.60"
-    "1.59.0" "1.59" "1.58.0" "1.58" "1.57.0" "1.57" "1.56.0" "1.56" "1.55.0" "1.55")
-  # Disable the config mode of find_package(Boost)
-  set(Boost_NO_BOOST_CMAKE ON)
-  find_package(Boost 1.55.0 ${QUIET_} COMPONENTS @PCLCONFIG_AVAILABLE_BOOST_MODULES@)
+    "1.69.0" "1.69" "1.68.0" "1.68" "1.67.0" "1.67" "1.66.0" "1.66" "1.65.1" "1.65.0" "1.65")
+  
+  find_package(Boost 1.65.0 ${QUIET_} COMPONENTS @PCLCONFIG_AVAILABLE_BOOST_MODULES@)
 
   set(BOOST_FOUND ${Boost_FOUND})
   set(BOOST_INCLUDE_DIRS "${Boost_INCLUDE_DIR}")
@@ -137,7 +129,7 @@ macro(find_qhull)
     get_filename_component(QHULL_ROOT "@QHULL_INCLUDE_DIRS@" PATH)
   endif()
 
-  set(QHULL_USE_STATIC @QHULL_USE_STATIC@)
+  set(PCL_QHULL_REQUIRED_TYPE @PCL_QHULL_REQUIRED_TYPE@)
   find_package(Qhull)
 endmacro()
 
@@ -235,7 +227,7 @@ macro(find_flann)
     set(FLANN_ROOT "@FLANN_ROOT@")
   endif()
 
-  set(FLANN_USE_STATIC @FLANN_USE_STATIC@)
+  set(PCL_FLANN_REQUIRED_TYPE @PCL_FLANN_REQUIRED_TYPE@)
   find_package(FLANN)
 endmacro()
 
@@ -255,17 +247,7 @@ macro(find_VTK)
 endmacro()
 
 macro(find_libusb)
-  if(NOT WIN32)
-    find_path(LIBUSB_1_INCLUDE_DIR
-      NAMES libusb-1.0/libusb.h
-      PATHS /usr/include /usr/local/include /opt/local/include /sw/include
-      PATH_SUFFIXES libusb-1.0)
-
-    find_library(LIBUSB_1_LIBRARY
-      NAMES usb-1.0
-      PATHS /usr/lib /usr/local/lib /opt/local/lib /sw/lib)
-    find_package_handle_standard_args(libusb-1.0 LIBUSB_1_LIBRARY LIBUSB_1_INCLUDE_DIR)
-  endif()
+  find_package(libusb)
 endmacro()
 
 macro(find_glew)
@@ -310,7 +292,7 @@ macro(find_external_library _component _lib _is_optional)
     find_rssdk2()
   elseif("${_lib}" STREQUAL "vtk")
     find_VTK()
-  elseif("${_lib}" STREQUAL "libusb-1.0")
+  elseif("${_lib}" STREQUAL "libusb")
     find_libusb()
   elseif("${_lib}" STREQUAL "glew")
     find_glew()
@@ -323,13 +305,20 @@ macro(find_external_library _component _lib _is_optional)
   string(REGEX REPLACE "[.-]" "_" LIB ${LIB})
   if(${LIB}_FOUND)
     list(APPEND PCL_${COMPONENT}_INCLUDE_DIRS ${${LIB}_INCLUDE_DIRS})
-    if(${LIB}_USE_FILE)
+    
+    if(${LIB} MATCHES "VTK")
+      if(${${LIB}_VERSION_MAJOR} GREATER_EQUAL 9)
+        set(ISVTK9ORGREATER TRUE)
+      endif()
+    endif()
+    
+    if(${LIB}_USE_FILE AND NOT ISVTK9ORGREATER )
       include(${${LIB}_USE_FILE})
     else()
       list(APPEND PCL_${COMPONENT}_LIBRARY_DIRS "${${LIB}_LIBRARY_DIRS}")
     endif()
     if(${LIB}_LIBRARIES)
-      list(APPEND PCL_${COMPONENT}_LIBRARIES "${${LIB}_LIBRARIES}")
+      list(APPEND PCL_${COMPONENT}_LINK_LIBRARIES "${${LIB}_LIBRARIES}")
     endif()
     if(${LIB}_DEFINITIONS AND NOT ${LIB} STREQUAL "VTK")
       list(APPEND PCL_${COMPONENT}_DEFINITIONS ${${LIB}_DEFINITIONS})
@@ -396,6 +385,9 @@ file(TO_CMAKE_PATH "${PCL_DIR}" PCL_DIR)
 if(WIN32 AND NOT MINGW)
 # PCLConfig.cmake is installed to PCL_ROOT/cmake
   get_filename_component(PCL_ROOT "${PCL_DIR}" PATH)
+  if(EXISTS "${PCL_ROOT}/3rdParty")
+    set(PCL_ALL_IN_ONE_INSTALLER ON)
+  endif()
 else()
 # PCLConfig.cmake is installed to PCL_ROOT/share/pcl-x.y
   get_filename_component(PCL_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
@@ -407,23 +399,16 @@ if(EXISTS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}/pcl
   # pcl_message("Found a PCL installation")
   set(PCL_CONF_INCLUDE_DIR "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
   set(PCL_LIBRARY_DIRS "${PCL_ROOT}/@LIB_INSTALL_DIR@")
-  if(EXISTS "${PCL_ROOT}/3rdParty")
-    set(PCL_ALL_IN_ONE_INSTALLER ON)
-  endif()
 elseif(EXISTS "${PCL_ROOT}/include/pcl/pcl_config.h")
   # Found a non-standard (likely ANDROID) PCL installation
   # pcl_message("Found a PCL installation")
   set(PCL_CONF_INCLUDE_DIR "${PCL_ROOT}/include")
   set(PCL_LIBRARY_DIRS "${PCL_ROOT}/lib")
-  if(EXISTS "${PCL_ROOT}/3rdParty")
-    set(PCL_ALL_IN_ONE_INSTALLER ON)
-  endif()
 elseif(EXISTS "${PCL_DIR}/include/pcl/pcl_config.h")
   # Found PCLConfig.cmake in a build tree of PCL
   # pcl_message("PCL found into a build tree.")
   set(PCL_CONF_INCLUDE_DIR "${PCL_DIR}/include") # for pcl_config.h
   set(PCL_LIBRARY_DIRS "${PCL_DIR}/@LIB_INSTALL_DIR@")
-  set(PCL_SOURCES_TREE "@CMAKE_SOURCE_DIR@")
 else()
   pcl_report_not_found("PCL can not be found on this machine")
 endif()
@@ -434,9 +419,14 @@ set(PCL_INCLUDE_DIRS "${PCL_CONF_INCLUDE_DIR}")
 set(PCL_DEBUG_SUFFIX "@CMAKE_DEBUG_POSTFIX@")
 set(PCL_RELEASE_SUFFIX "@CMAKE_RELEASE_POSTFIX@")
 
+set(PCL_SHARED_LIBS "@PCL_SHARED_LIBS@")
+
 #set SSE flags used compiling PCL
 list(APPEND PCL_DEFINITIONS @PCLCONFIG_SSE_DEFINITIONS@)
 list(APPEND PCL_COMPILE_OPTIONS @PCLCONFIG_SSE_COMPILE_OPTIONS@)
+
+#set AVX flags used compiling PCL
+list(APPEND PCL_COMPILE_OPTIONS @PCLCONFIG_AVX_COMPILE_OPTIONS@)
 
 set(pcl_all_components @PCLCONFIG_AVAILABLE_COMPONENTS@)
 list(LENGTH pcl_all_components PCL_NB_COMPONENTS)
@@ -513,7 +503,6 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
           pcl/cuda/${cuda_component} pcl/cuda/${component}
           pcl/gpu/${gpu_component} pcl/gpu/${component}
     HINTS ${PCL_INCLUDE_DIRS}
-          "${PCL_SOURCES_TREE}"
     PATH_SUFFIXES
           ${component}/include
           apps/${component}/include
@@ -529,6 +518,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
     #pcl_message("No include directory found for pcl_${component}.")
   endif()
 
+  set(FPHSA_NAME_MISMATCHED 1) # Suppress warnings, see https://cmake.org/cmake/help/v3.17/module/FindPackageHandleStandardArgs.html
   # Skip find_library for header only modules
   list(FIND pcl_header_only_components ${component} _is_header_only)
   if(_is_header_only EQUAL -1)
@@ -565,6 +555,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
     find_package_handle_standard_args(PCL_${COMPONENT} DEFAULT_MSG
       PCL_${COMPONENT}_INCLUDE_DIR)
   endif()
+  unset(FPHSA_NAME_MISMATCHED)
 
   if(PCL_${COMPONENT}_FOUND)
     if(NOT "${PCL_${COMPONENT}_INCLUDE_DIRS}" STREQUAL "")
@@ -675,9 +666,13 @@ endif()
 pcl_remove_duplicate_libraries(PCL_COMPONENTS PCL_LIBRARIES)
 
 # Add 3rd party libraries, as user code might include our .HPP implementations
-list(APPEND PCL_LIBRARIES ${BOOST_LIBRARIES} ${QHULL_LIBRARIES} ${OPENNI_LIBRARIES} ${OPENNI2_LIBRARIES} ${ENSENSO_LIBRARIES} ${davidSDK_LIBRARIES} ${DSSDK_LIBRARIES} ${RSSDK_LIBRARIES} ${RSSDK2_LIBRARIES} ${VTK_LIBRARIES})
+list(APPEND PCL_LIBRARIES ${BOOST_LIBRARIES} ${OPENNI_LIBRARIES} ${OPENNI2_LIBRARIES} ${ENSENSO_LIBRARIES} ${davidSDK_LIBRARIES} ${DSSDK_LIBRARIES} ${RSSDK_LIBRARIES} ${RSSDK2_LIBRARIES} ${VTK_LIBRARIES})
 if (TARGET FLANN::FLANN)
   list(APPEND PCL_LIBRARIES FLANN::FLANN)
+endif()
+
+if(TARGET QHULL::QHULL)
+    list(APPEND PCL_LIBRARIES QHULL::QHULL)
 endif()
 
 find_package_handle_standard_args(PCL DEFAULT_MSG PCL_LIBRARIES PCL_INCLUDE_DIRS)

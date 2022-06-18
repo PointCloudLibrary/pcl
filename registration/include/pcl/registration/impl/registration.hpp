@@ -139,7 +139,7 @@ Registration<PointSource, PointTarget, Scalar>::getFitnessScore(double max_range
   PointCloudSource input_transformed;
   transformPointCloud(*input_, input_transformed, final_transformation_);
 
-  std::vector<int> nn_indices(1);
+  pcl::Indices nn_indices(1);
   std::vector<float> nn_dists(1);
 
   // For each point in the source dataset

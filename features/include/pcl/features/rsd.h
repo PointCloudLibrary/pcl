@@ -126,6 +126,7 @@ namespace pcl
     * @note The code is stateful as we do not expect this class to be multicore parallelized.
     * \author Zoltan-Csaba Marton
     * \ingroup features
+    * \tparam PointOutT Suggested type is `pcl::PrincipalRadiiRSD`
     */
   template <typename PointInT, typename PointNT, typename PointOutT>
   class RSDEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
@@ -166,7 +167,7 @@ namespace pcl
 
       /** \brief Set the maximum radius, above which everything can be considered planar.
         * \note the order of magnitude should be around 10-20 times the search radius (0.2 works well for typical datasets).
-        * \note on accurate 3D data (e.g. openni sernsors) a search radius as low as 0.01 still gives good results.
+        * \note on accurate 3D data (e.g. openni sensors) a search radius as low as 0.01 still gives good results.
         * \param[in] plane_radius the new plane radius
         */
       inline void 

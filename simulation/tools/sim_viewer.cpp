@@ -53,7 +53,6 @@
 #include <pcl/visualization/histogram_visualizer.h>
 #include <pcl/visualization/keyboard_event.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/point_picking_event.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_config.h>
@@ -71,9 +70,9 @@
 #include <GL/gl.h>
 #endif
 
-#include <cfloat>
 #include <cmath>
 #include <iostream>
+#include <limits>
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -536,8 +535,8 @@ main(int argc, char** argv)
   pcl::visualization::PCLHistogramVisualizer::Ptr ph;
 
   // Using min_p, max_p to set the global Y min/max range for the histogram
-  float min_p = FLT_MAX;
-  float max_p = -FLT_MAX;
+  float min_p = std::numeric_limits<float>::max();
+  float max_p = std::numeric_limits<float>::lowest();
 
   int k = 0, l = 0, viewport = 0;
   // Load the data files

@@ -237,7 +237,7 @@ protected:
 
   /** \brief resampling phase of particle filter method. sampling the particles
    * according to the weights calculated in weight method. in particular, "sample with
-   * replacement" is archieved by walker's alias method.
+   * replacement" is achieved by walker's alias method.
    */
   void
   resample() override;

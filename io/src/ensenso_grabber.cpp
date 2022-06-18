@@ -123,9 +123,17 @@ pcl::EnsensoGrabber::enumDevices () const
 
     for (int n = 0; n < cams.count (); ++n)
     {
+#if NXLIB_VERSION_MAJOR > 2 
       PCL_INFO ("%s   %s   %s\n", cams[n][itmSerialNumber].asString ().c_str (),
                                   cams[n][itmModelName].asString ().c_str (),
-                                  cams[n][itmStatus].asString ().c_str ());
+                                  cams[n][itmStatus][itmOpen].asBool()
+                                  ? "Open"
+                                  : (cams[n][itmStatus][itmAvailable].asBool() ? "Available" : "In Use"));
+#else
+      PCL_INFO ("%s   %s   %s\n", cams[n][itmSerialNumber].asString().c_str(),
+                                  cams[n][itmModelName].asString().c_str(),
+                                  cams[n][itmStatus].asString().c_str());
+#endif
     }
     PCL_INFO ("\n");
   }

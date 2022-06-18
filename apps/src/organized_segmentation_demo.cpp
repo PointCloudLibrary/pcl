@@ -11,9 +11,9 @@
 #include <QMutexLocker>
 #include <QObject>
 
+#include <vtkGenericOpenGLRenderWindow.h>
 #include <vtkRenderWindow.h>
 #include <vtkRendererCollection.h>
-#include <vtkGenericOpenGLRenderWindow.h>
 
 // #include <boost/filesystem.hpp>  // for boost::filesystem::directory_iterator
 #include <boost/signals2/connection.hpp> // for boost::signals2::connection
@@ -206,7 +206,7 @@ OrganizedSegmentationDemo::OrganizedSegmentationDemo(pcl::Grabber& grabber)
   ui_->setupUi(this);
 
   this->setWindowTitle("PCL Organized Connected Component Segmentation Demo");
-  
+
 #if VTK_MAJOR_VERSION > 8
   auto renderer = vtkSmartPointer<vtkRenderer>::New();
   auto renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
@@ -215,14 +215,14 @@ OrganizedSegmentationDemo::OrganizedSegmentationDemo(pcl::Grabber& grabber)
 #else
   vis_.reset(new pcl::visualization::PCLVisualizer("", false));
 #endif // VTK_MAJOR_VERSION > 8
-  setRenderWindowCompat(*(ui_->qvtk_widget),*(vis_->getRenderWindow()));
-  vis_->setupInteractor(getInteractorCompat(*(ui_->qvtk_widget)), getRenderWindowCompat(*(ui_->qvtk_widget)));
-  
+  setRenderWindowCompat(*(ui_->qvtk_widget), *(vis_->getRenderWindow()));
+  vis_->setupInteractor(getInteractorCompat(*(ui_->qvtk_widget)),
+                        getRenderWindowCompat(*(ui_->qvtk_widget)));
+
   refreshView();
-  
+
   vis_->getInteractorStyle()->setKeyboardModifier(
       pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
-  
 
   std::function<void(const CloudConstPtr&)> f = [this](const CloudConstPtr& cloud) {
     cloud_cb(cloud);

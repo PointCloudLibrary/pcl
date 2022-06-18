@@ -44,9 +44,7 @@
 #include <pcl/visualization/point_cloud_color_handlers.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/image_viewer.h>
-#include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
-#include <pcl/visualization/boost.h>
 
 #include <boost/algorithm/string.hpp>
 

@@ -45,10 +45,7 @@
 #endif
 
 #include <XnOS.h>
-//work around for qt 5 bug: https://bugreports.qt-project.org/browse/QTBUG-29331
-#ifndef Q_MOC_RUN
 #include <XnCppWrapper.h>
-#endif // Q_MOC_RUN
 #include <XnVersion.h>
 
 #endif

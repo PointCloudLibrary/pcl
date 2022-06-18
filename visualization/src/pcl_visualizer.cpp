@@ -58,7 +58,6 @@
 #include <vtkSelection.h>
 #include <vtkPointPicker.h>
 
-#include <pcl/visualization/boost.h>
 #include <pcl/visualization/vtk/vtkRenderWindowInteractorFix.h>
 #include <pcl/visualization/vtk/pcl_vtk_compatibility.h>
 
@@ -100,14 +99,18 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/common/common.h>
 #include <pcl/common/time.h>
+#include <boost/version.hpp> // for BOOST_VERSION
 #if (BOOST_VERSION >= 106600)
 #include <boost/uuid/detail/sha1.hpp>
 #else
 #include <boost/uuid/sha1.hpp>
 #endif
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp> // for split
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/console/parse.h>
+
+#include <thread>
 
 // Support for VTK 7.1 upwards
 #ifdef vtkGenericDataArray_h
@@ -596,11 +599,23 @@ pcl::visualization::PCLVisualizer::spinOnce (int time, bool force_redraw)
   if (force_redraw)
     interactor_->Render ();
 
-  DO_EVERY (1.0 / interactor_->GetDesiredUpdateRate (),
-    exit_main_loop_timer_callback_->right_timer_id = interactor_->CreateRepeatingTimer (time);
-    interactor_->Start ();
-    interactor_->DestroyTimer (exit_main_loop_timer_callback_->right_timer_id);
-  );
+#if VTK_MAJOR_VERSION >= 9 && (VTK_MINOR_VERSION != 0 || VTK_BUILD_VERSION != 0) && (VTK_MINOR_VERSION != 0 || VTK_BUILD_VERSION != 1)
+// All VTK 9 versions, except 9.0.0 and 9.0.1
+  if(interactor_->IsA("vtkXRenderWindowInteractor")) {
+    DO_EVERY (1.0 / interactor_->GetDesiredUpdateRate (),
+      interactor_->ProcessEvents ();
+      std::this_thread::sleep_for (std::chrono::milliseconds (time));
+    );
+  }
+  else
+#endif
+  {
+    DO_EVERY (1.0 / interactor_->GetDesiredUpdateRate (),
+      exit_main_loop_timer_callback_->right_timer_id = interactor_->CreateRepeatingTimer (time);
+      interactor_->Start ();
+      interactor_->DestroyTimer (exit_main_loop_timer_callback_->right_timer_id);
+    );
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -2248,7 +2263,7 @@ void
 pcl::visualization::PCLVisualizer::resetCameraViewpoint (const std::string &id)
 {
   vtkSmartPointer<vtkMatrix4x4> camera_pose;
-  static CloudActorMap::iterator it = cloud_actor_map_->find (id);
+  const CloudActorMap::iterator it = cloud_actor_map_->find(id);
   if (it != cloud_actor_map_->end ())
     camera_pose = it->second.viewpoint_transformation_;
   else
@@ -2428,6 +2443,34 @@ pcl::visualization::PCLVisualizer::addCube (float x_min, float x_max,
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
   actor->GetProperty ()->SetColor (r, g, b);
+  addActorToRenderer (actor, viewport);
+
+  // Save the pointer/ID pair to the global actor map
+  (*shape_actor_map_)[id] = actor;
+  return (true);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizer::addEllipsoid (
+  const Eigen::Isometry3d &transform,
+  double radius_x, double radius_y, double radius_z,
+  const std::string &id, int viewport)
+{
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  if (am_it != shape_actor_map_->end ())
+  {
+    pcl::console::print_warn (stderr, "[addEllipsoid] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    return (false);
+  }
+
+  vtkSmartPointer<vtkDataSet> data = createEllipsoid (transform, radius_x, radius_y, radius_z);
+
+  // Create an Actor
+  vtkSmartPointer<vtkLODActor> actor;
+  createActorFromVTKDataSet (data, actor);
+  actor->GetProperty ()->SetRepresentationToSurface ();
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -3660,22 +3703,6 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
 
   mapper->SetInputConnection (trans_filter_scale->GetOutputPort ());
   mapper->Update ();
-
-  //////////////////////////////
-  // * Compute area of the mesh
-  //////////////////////////////
-  vtkSmartPointer<vtkCellArray> cells = mapper->GetInput ()->GetPolys ();
-  vtkIdType npts = 0;
-  vtkCellPtsPtr ptIds = nullptr;
-
-  double p1[3], p2[3], p3[3], totalArea = 0;
-  for (cells->InitTraversal (); cells->GetNextCell(npts, ptIds);)
-  {
-    polydata->GetPoint (ptIds[0], p1);
-    polydata->GetPoint (ptIds[1], p2);
-    polydata->GetPoint (ptIds[2], p3);
-    totalArea += vtkTriangle::TriangleArea (p1, p2, p3);
-  }
 
   //create icosahedron
   vtkSmartPointer<vtkPlatonicSolidSource> ico = vtkSmartPointer<vtkPlatonicSolidSource>::New ();

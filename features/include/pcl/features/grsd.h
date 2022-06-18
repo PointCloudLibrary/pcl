@@ -65,6 +65,7 @@ namespace pcl
     * \ref FPFHEstimationOMP for examples on parallel implementations of the FPFH (Fast Point Feature Histogram).
     * \author Zoltan Csaba Marton
     * \ingroup features
+    * \tparam PointOutT Suggested type is `pcl::GRSDSignature21`
     */
   
   template <typename PointInT, typename PointNT, typename PointOutT>
@@ -86,7 +87,7 @@ namespace pcl
       using PointCloudInPtr = typename Feature<PointInT, PointOutT>::PointCloudInPtr;
 
       /** \brief Constructor. */
-      GRSDEstimation () : additive_ (true)
+      GRSDEstimation ()
       {
         feature_name_ = "GRSDEstimation";
         relative_coordinates_all_ = getAllNeighborCellIndices ();
@@ -104,7 +105,23 @@ namespace pcl
         */
       inline double
       getRadiusSearch () const { return (search_radius_); }
-      
+
+      /** \brief Set the number of subdivisions for the considered distance interval.
+        * This function configures the underlying RSDEstimation. For more info, see
+        * there. If this function is not called, the default from RSDEstimation is used.
+        * \param[in] nr_subdiv the number of subdivisions
+        */
+      inline void
+      setNrSubdivisions (int nr_subdiv) { rsd_nr_subdiv_ = nr_subdiv; }
+
+      /** \brief Set the maximum radius, above which everything can be considered planar.
+        * This function configures the underlying RSDEstimation. For more info, see
+        * there. If this function is not called, the default from RSDEstimation is used.
+        * \param[in] plane_radius the new plane radius
+        */
+      inline void
+      setPlaneRadius (double plane_radius) { rsd_plane_radius_ = plane_radius; }
+
       /** \brief Get the type of the local surface based on the min and max radius computed. 
         * \return the integer that represents the type of the local surface with values as
         * Plane (1), Cylinder (2), Noise or corner (0), Sphere (3) and Edge (4) 
@@ -129,10 +146,16 @@ namespace pcl
     private:
 
       /** \brief Defines if an additive feature is computed or ray-casting is used to get a more descriptive feature. */
-      bool additive_;
+      bool additive_ = true;
 
       /** \brief Defines the voxel size to be used. */
-      double width_;
+      double width_ = 0.0;
+
+      /** \brief For the underlying RSDEstimation. The number of subdivisions for the considered distance interval. */
+      int rsd_nr_subdiv_ = 0;
+
+      /** \brief For the underlying RSDEstimation. The maximum radius, above which everything can be considered planar. */
+      double rsd_plane_radius_ = 0.0;
 
       /** \brief Pre-computed the relative cell indices of all the 26 neighbors. */
       Eigen::MatrixXi relative_coordinates_all_;

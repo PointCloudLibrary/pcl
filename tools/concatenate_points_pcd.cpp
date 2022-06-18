@@ -47,7 +47,6 @@
 #include <iostream>
 #include <pcl/console/time.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
 
 Eigen::Vector4f    translation;
 Eigen::Quaternionf orientation;

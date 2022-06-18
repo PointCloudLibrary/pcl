@@ -56,11 +56,21 @@ set(srcs
   src/pcl_plotter.cpp
 )
 
+if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0 AND UNIX AND NOT ANDROID AND NOT APPLE AND NOT APPLE_IOS)
+  list(APPEND srcs "src/vtk/vtkFixedXRenderWindowInteractor.cxx")
+endif()
+
 if(VTK_RENDERING_BACKEND_OPENGL_VERSION VERSION_LESS 2)
   list(APPEND srcs
     "src/vtk/vtkVertexBufferObject.cxx"
     "src/vtk/vtkVertexBufferObjectMapper.cxx"
   )
+
+  # Code in this module may use deprecated declarations when using OpenGLv1
+  # Add the GCC exclusive rules for -Werror only for OpenGLv1 compile to avoid build interruption
+  if(CMAKE_COMPILER_IS_GNUCXX)
+    add_compile_options("-Wno-error=deprecated-declarations")
+  endif()
 endif()
 
 if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
@@ -128,6 +138,10 @@ set(vtk_incs
   "include/pcl/${SUBSYS_NAME}/vtk/pcl_vtk_compatibility.h"
 )
 
+if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0 AND UNIX AND NOT ANDROID AND NOT APPLE AND NOT APPLE_IOS)
+  list(APPEND vtk_incs "include/pcl/${SUBSYS_NAME}/vtk/vtkFixedXRenderWindowInteractor.h")
+endif()
+
 if(VTK_RENDERING_BACKEND_OPENGL_VERSION VERSION_LESS 2)
   list(APPEND vtk_incs
     "include/pcl/${SUBSYS_NAME}/vtk/vtkVertexBufferObject.h"
@@ -135,7 +149,7 @@ if(VTK_RENDERING_BACKEND_OPENGL_VERSION VERSION_LESS 2)
   )
 endif()
 
-if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
+if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
   if(NOT (";${VTK_AVAILABLE_COMPONENTS};" MATCHES ";RenderingContextOpenGL2;"))
     
     list(REMOVE_ITEM incs
@@ -160,14 +174,12 @@ endif()
 
 target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_kdtree ${OPENGL_LIBRARIES})
 
-if(${VTK_VERSION} VERSION_LESS 9.0)
-  target_include_directories("${LIB_NAME}" SYSTEM PUBLIC ${VTK_INCLUDE_DIRS})
-  target_link_libraries("${LIB_NAME}" ${VTK_LIBRARIES})
-else()
+if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
   #Some libs are referenced through depending on IO
   target_link_libraries("${LIB_NAME}"
                         VTK::ChartsCore
                         VTK::CommonColor
+                        VTK::CommonComputationalGeometry
                         VTK::CommonDataModel
                         VTK::FiltersExtraction
                         VTK::FiltersGeometry
@@ -186,8 +198,51 @@ else()
                         VTK::RenderingOpenGL2
                         VTK::ViewsContext2D)
                         
-  if(";${VTK_AVAILABLE_COMPONENTS};" MATCHES ";RenderingContextOpenGL2;")
+  if("RenderingContextOpenGL2" IN_LIST VTK_AVAILABLE_COMPONENTS)
     target_link_libraries("${LIB_NAME}" VTK::RenderingContextOpenGL2)
+  endif()
+else()
+  target_include_directories("${LIB_NAME}" SYSTEM PUBLIC ${VTK_INCLUDE_DIRS})
+  target_link_libraries("${LIB_NAME}"
+                        vtkChartsCore
+                        vtkFiltersExtraction
+                        vtkFiltersGeometry
+                        vtkFiltersModeling
+                        vtkImagingCore
+                        vtkImagingSources
+                        vtkInteractionStyle
+                        vtkRenderingAnnotation
+                        vtkRenderingContext2D
+                        vtkRenderingContext${VTK_RENDERING_BACKEND}
+                        vtkRenderingFreeType
+                        vtkRenderingLOD
+                        vtkRendering${VTK_RENDERING_BACKEND}
+                        vtkViewsContext2D)
+  if(${VTK_VERSION} VERSION_LESS 7.0)
+    target_link_libraries("${LIB_NAME}" vtkRenderingVolume${VTK_RENDERING_BACKEND})  	
+  endif()
+  if(${VTK_VERSION} VERSION_GREATER_EQUAL 7.0 AND ${VTK_VERSION} VERSION_LESS 9.0)
+    target_link_libraries("${LIB_NAME}" vtkRenderingGL2PS${VTK_RENDERING_BACKEND})
+  endif()
+  if(${VTK_VERSION} VERSION_GREATER_EQUAL 8.0)
+    target_link_libraries("${LIB_NAME}" vtkCommonColor vtkCommonComputationalGeometry)
+  endif()
+  
+  # These two libraries are present and required in ubuntu 18.04 VTK 6, but not present in later versions of ubuntu using VTK 6.
+  # They are also present on later versions of VTK on later versions of ubuntu.
+  if("vtkRenderingFreeTypeFontConfig" IN_LIST VTK_MODULES_ENABLED)
+    target_link_libraries("${LIB_NAME}" vtkRenderingFreeTypeFontConfig)
+  endif()
+  if("vtkRenderingMatplotlib" IN_LIST VTK_MODULES_ENABLED)
+    target_link_libraries("${LIB_NAME}" vtkRenderingMatplotlib)
+  endif()
+endif()
+
+if(HAVE_QVTK)
+  if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
+    target_link_libraries("${LIB_NAME}" VTK::GUISupportQt)
+  else()
+    target_link_libraries("${LIB_NAME}" vtkGUISupportQt)
   endif()
 endif()
 
@@ -223,7 +278,8 @@ PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/vtk" ${vtk_incs})
 #TODO: Update when CMAKE 3.10 is available
 if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
   vtk_module_autoinit(TARGETS "${LIB_NAME}" 
-                      MODULES VTK::RenderingOpenGL2
+                      MODULES VTK::RenderingContextOpenGL2
+                              VTK::RenderingOpenGL2
                               VTK::RenderingFreeType)
 endif()
 

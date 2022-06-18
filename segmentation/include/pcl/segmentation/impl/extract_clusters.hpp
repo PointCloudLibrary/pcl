@@ -87,7 +87,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
 
       for (std::size_t j = nn_start_idx; j < nn_indices.size (); ++j)             // can't assume sorted (default isn't!)
       {
-        if (nn_indices[j] == -1 || processed[nn_indices[j]])        // Has this point been processed before ?
+        if (nn_indices[j] == UNAVAILABLE || processed[nn_indices[j]])        // Has this point been processed before ?
           continue;
 
         // Perform a simple Euclidean clustering
@@ -184,7 +184,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
 
       for (std::size_t j = nn_start_idx; j < nn_indices.size (); ++j)             // can't assume sorted (default isn't!)
       {
-        if (nn_indices[j] == -1 || processed[nn_indices[j]])        // Has this point been processed before ?
+        if (nn_indices[j] == UNAVAILABLE || processed[nn_indices[j]])        // Has this point been processed before ?
           continue;
 
         // Perform a simple Euclidean clustering
@@ -259,6 +259,6 @@ pcl::EuclideanClusterExtraction<PointT>::extract (std::vector<PointIndices> &clu
 
 #define PCL_INSTANTIATE_EuclideanClusterExtraction(T) template class PCL_EXPORTS pcl::EuclideanClusterExtraction<T>;
 #define PCL_INSTANTIATE_extractEuclideanClusters(T) template void PCL_EXPORTS pcl::extractEuclideanClusters<T>(const pcl::PointCloud<T> &, const typename pcl::search::Search<T>::Ptr &, float , std::vector<pcl::PointIndices> &, unsigned int, unsigned int);
-#define PCL_INSTANTIATE_extractEuclideanClusters_indices(T) template void PCL_EXPORTS pcl::extractEuclideanClusters<T>(const pcl::PointCloud<T> &, const std::vector<int> &, const typename pcl::search::Search<T>::Ptr &, float , std::vector<pcl::PointIndices> &, unsigned int, unsigned int);
+#define PCL_INSTANTIATE_extractEuclideanClusters_indices(T) template void PCL_EXPORTS pcl::extractEuclideanClusters<T>(const pcl::PointCloud<T> &, const pcl::Indices &, const typename pcl::search::Search<T>::Ptr &, float , std::vector<pcl::PointIndices> &, unsigned int, unsigned int);
 
 #endif        // PCL_EXTRACT_CLUSTERS_IMPL_H_

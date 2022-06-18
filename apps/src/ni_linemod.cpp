@@ -208,7 +208,7 @@ public:
    * \param[out] object the segmented resultant object
    */
   void
-  segmentObject(int picked_idx,
+  segmentObject(pcl::index_t picked_idx,
                 const CloudConstPtr& cloud,
                 const PointIndices::Ptr& plane_indices,
                 const PointIndices::Ptr& plane_boundary_indices,
@@ -230,7 +230,7 @@ public:
       for (int p_it = 0; p_it < static_cast<int>(indices_fullset_.size()); ++p_it)
         indices_fullset_[p_it] = p_it;
     }
-    std::vector<int> indices_subset = plane_indices->indices;
+    pcl::Indices indices_subset = plane_indices->indices;
     std::sort(indices_subset.begin(), indices_subset.end());
     set_difference(indices_fullset_.begin(),
                    indices_fullset_.end(),
@@ -293,7 +293,7 @@ public:
   /////////////////////////////////////////////////////////////////////////
   void
   segment(const PointT& picked_point,
-          int picked_idx,
+          pcl::index_t picked_idx,
           PlanarRegion<PointT>& region,
           PointIndices&,
           CloudPtr& object)
@@ -385,7 +385,7 @@ public:
     if (idx == -1)
       return;
 
-    std::vector<int> indices(1);
+    pcl::Indices indices(1);
     std::vector<float> distances(1);
 
     // Use mutices to make sure we get the right cloud
@@ -569,7 +569,7 @@ private:
   bool first_frame_;
 
   // Segmentation
-  std::vector<int> indices_fullset_;
+  pcl::Indices indices_fullset_;
   PointIndices::Ptr plane_indices_;
   CloudPtr plane_;
   IntegralImageNormalEstimation<PointT, Normal> ne_;

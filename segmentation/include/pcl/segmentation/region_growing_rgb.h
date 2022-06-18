@@ -205,7 +205,7 @@ namespace pcl
         * \param[out] dist the array of distances to the corresponding neighbours
         */
       void
-      findRegionsKNN (index_t index, int nghbr_number, Indices& nghbrs, std::vector<float>& dist);
+      findRegionsKNN (pcl::index_t index, pcl::uindex_t nghbr_number, Indices& nghbrs, std::vector<float>& dist);
 
       /** \brief This function implements the merging algorithm described in the article
         * "Color-based segmentation of point clouds"
@@ -230,7 +230,7 @@ namespace pcl
         * to the corresponding homogeneous region.
         */
       void
-      findRegionNeighbours (std::vector< std::vector< std::pair<float, int> > >& neighbours_out, std::vector< std::vector<int> >& regions_in);
+      findRegionNeighbours (std::vector< std::vector< std::pair<float, pcl::index_t> > >& neighbours_out, std::vector< std::vector<int> >& regions_in);
 
       /** \brief This function simply assembles the regions from list of point labels.
         * \param[in] num_pts_in_region for each final region it stores the corresponding number of points in it
@@ -267,7 +267,7 @@ namespace pcl
       std::vector< std::vector<float> > point_distances_;
 
       /** \brief Stores the neighboures for the corresponding segments. */
-      std::vector< std::vector<int> > segment_neighbours_;
+      std::vector< pcl::Indices > segment_neighbours_;
 
       /** \brief Stores distances for the segment neighbours from segment_neighbours_ */
       std::vector< std::vector<float> > segment_distances_;

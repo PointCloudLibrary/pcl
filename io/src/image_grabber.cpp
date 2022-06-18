@@ -41,6 +41,9 @@
 #include <pcl/memory.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <boost/filesystem.hpp> // for exists, basename, is_directory, ...
+#include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
+#include <boost/date_time/posix_time/posix_time.hpp> // for posix_time
 
 #ifdef PCL_BUILT_WITH_VTK
   #include <vtkImageReader2.h>

@@ -37,6 +37,10 @@
  */
 
 #include <vtkVersion.h>
+#if VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION == 0
+#include <limits> // This must be included before vtkDoubleArray.h
+#endif
+#include <vtkDoubleArray.h>
 #include <vtkSmartPointer.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRenderWindow.h>
@@ -47,10 +51,10 @@
 #include <vtkContextScene.h>
 #include <vtkAxis.h>
 #include <vtkPlot.h>
-#include <vtkDoubleArray.h>
 #include <vtkTable.h>
 
 #include <fstream>
+#include <limits>
 
 #include <pcl/visualization/pcl_plotter.h>
 
@@ -204,7 +208,7 @@ pcl::visualization::PCLPlotter::addPlotData (
   {
     double xval = i*incr + x_min;
     double yval = compute(r_function, xval);
-    //if (yval == DBL_MAX) continue; //handling dived by zero 
+    //if (yval == std::numeric_limits<double>::max()) continue; //handling dived by zero
     
     array_x[i] = xval;
     array_y[i] = yval;
@@ -633,7 +637,7 @@ pcl::visualization::PCLPlotter::compute (RationalFunction const & r_function, do
   PolynomialFunction numerator = r_function.first, denominator = r_function.second;
   
   double dres = this->compute (denominator,val);
-  //if (dres == 0) return DBL_MAX;  //return the max possible double value to represent infinity
+  //if (dres == 0) return std::numeric_limits<double>::max();  //return the max possible double value to represent infinity
   double nres = this->compute (numerator,val);
   return (nres/dres);
 }

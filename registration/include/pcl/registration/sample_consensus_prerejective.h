@@ -240,7 +240,7 @@ public:
    * transformation
    * @return inlier indices
    */
-  inline const std::vector<int>&
+  inline const pcl::Indices&
   getInliers() const
   {
     return inliers_;
@@ -264,7 +264,7 @@ protected:
   void
   selectSamples(const PointCloudSource& cloud,
                 int nr_samples,
-                std::vector<int>& sample_indices);
+                pcl::Indices& sample_indices);
 
   /** \brief For each of the sample points, find a list of points in the target cloud
    * whose features are similar to the sample points' features. From these, select one
@@ -275,9 +275,9 @@ protected:
    * point in the target cloud
    */
   void
-  findSimilarFeatures(const std::vector<int>& sample_indices,
-                      std::vector<std::vector<int>>& similar_features,
-                      std::vector<int>& corresponding_indices);
+  findSimilarFeatures(const pcl::Indices& sample_indices,
+                      std::vector<pcl::Indices>& similar_features,
+                      pcl::Indices& corresponding_indices);
 
   /** \brief Rigid transformation computation method.
    * \param output the transformed input point cloud dataset using the rigid
@@ -296,7 +296,7 @@ protected:
    * \param fitness_score output fitness score as RMSE
    */
   void
-  getFitness(std::vector<int>& inliers, float& fitness_score);
+  getFitness(pcl::Indices& inliers, float& fitness_score);
 
   /** \brief The source point cloud's feature descriptors. */
   FeatureCloudConstPtr input_features_;
@@ -322,7 +322,7 @@ protected:
   float inlier_fraction_;
 
   /** \brief Inlier points of final transformation as indices into source */
-  std::vector<int> inliers_;
+  pcl::Indices inliers_;
 };
 } // namespace pcl
 

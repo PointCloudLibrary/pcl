@@ -40,6 +40,8 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <pcl/filters/conditional_removal.h>
+#include <boost/filesystem.hpp> // for path, exists, ...
+#include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 
 
 using PointType = pcl::PointXYZ;

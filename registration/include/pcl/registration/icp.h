@@ -74,7 +74,8 @@ namespace pcl {
  * icp.setInputTarget (cloud_target);
  *
  * // Set the max correspondence distance to 5cm (e.g., correspondences with higher
- * distances will be ignored) icp.setMaxCorrespondenceDistance (0.05);
+ * // distances will be ignored)
+ * icp.setMaxCorrespondenceDistance (0.05);
  * // Set the maximum number of iterations (criterion 1)
  * icp.setMaximumIterations (50);
  * // Set the transformation epsilon (criterion 2)
@@ -231,7 +232,7 @@ public:
   }
 
   /** \brief Provide a pointer to the input target
-   * (e.g., the point cloud that we want to align to the target)
+   * (e.g., the point cloud that we want to align the input source to)
    *
    * \param[in] cloud the input point cloud target
    */
@@ -269,7 +270,7 @@ public:
   }
 
 protected:
-  /** \brief Apply a rigid transform to a given dataset. Here we check whether whether
+  /** \brief Apply a rigid transform to a given dataset. Here we check whether
    * the dataset has surface normals in addition to XYZ, and rotate normals as well.
    * \param[in] input the input point cloud
    * \param[out] output the resultant output point cloud
@@ -352,9 +353,10 @@ public:
   using IterativeClosestPoint<PointSource, PointTarget, Scalar>::
       correspondence_rejectors_;
 
-  using Ptr = shared_ptr<IterativeClosestPoint<PointSource, PointTarget, Scalar>>;
-  using ConstPtr =
-      shared_ptr<const IterativeClosestPoint<PointSource, PointTarget, Scalar>>;
+  using Ptr =
+      shared_ptr<IterativeClosestPointWithNormals<PointSource, PointTarget, Scalar>>;
+  using ConstPtr = shared_ptr<
+      const IterativeClosestPointWithNormals<PointSource, PointTarget, Scalar>>;
 
   /** \brief Empty constructor. */
   IterativeClosestPointWithNormals()

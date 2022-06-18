@@ -41,7 +41,7 @@
 #pragma once
 
 #include <ctime>
-#include <climits>
+#include <limits>
 #include <memory>
 #include <set>
 #include <boost/random/mersenne_twister.hpp> // for mt19937
@@ -179,7 +179,7 @@ namespace pcl
                      samples.size (), indices_->size ());
           // one of these will make it stop :)
           samples.clear ();
-          iterations = INT_MAX - 1;
+          iterations = std::numeric_limits<int>::max() - 1;
           return;
         }
 

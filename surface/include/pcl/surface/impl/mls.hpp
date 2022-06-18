@@ -403,7 +403,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performUpsampling (PointCloudOut &
   {
     corresponding_input_indices_.reset (new PointIndices);
 
-    MLSVoxelGrid voxel_grid (input_, indices_, voxel_size_);
+    MLSVoxelGrid voxel_grid (input_, indices_, voxel_size_, dilation_iteration_num_);
     for (int iteration = 0; iteration < dilation_iteration_num_; ++iteration)
       voxel_grid.dilate ();
 
@@ -531,38 +531,6 @@ pcl::MLSResult::getPolynomialPartialDerivative (const double u, const double v) 
   }
 
   return (d);
-}
-
-Eigen::Vector2f
-pcl::MLSResult::calculatePrincipalCurvatures (const double u, const double v) const
-{
-  Eigen::Vector2f k (1e-5, 1e-5);
-
-  // Note: this use the Monge Patch to derive the Gaussian curvature and Mean Curvature found here http://mathworld.wolfram.com/MongePatch.html
-  // Then:
-  //      k1 = H + sqrt(H^2 - K)
-  //      k2 = H - sqrt(H^2 - K)
-  if (order > 1 && c_vec.size () >= (order + 1) * (order + 2) / 2 && std::isfinite (c_vec[0]))
-  {
-    const PolynomialPartialDerivative d = getPolynomialPartialDerivative (u, v);
-    const double Z = 1 + d.z_u * d.z_u + d.z_v * d.z_v;
-    const double Zlen = std::sqrt (Z);
-    const double K = (d.z_uu * d.z_vv - d.z_uv * d.z_uv) / (Z * Z);
-    const double H = ((1.0 + d.z_v * d.z_v) * d.z_uu - 2.0 * d.z_u * d.z_v * d.z_uv + (1.0 + d.z_u * d.z_u) * d.z_vv) / (2.0 * Zlen * Zlen * Zlen);
-    const double disc2 = H * H - K;
-    assert (disc2 >= 0.0);
-    const double disc = std::sqrt (disc2);
-    k[0] = H + disc;
-    k[1] = H - disc;
-
-    if (std::abs (k[0]) > std::abs (k[1])) std::swap (k[0], k[1]);
-  }
-  else
-  {
-    PCL_ERROR ("No Polynomial fit data, unable to calculate the principal curvatures!\n");
-  }
-
-  return (k);
 }
 
 pcl::MLSResult::MLSProjectionResults
@@ -781,7 +749,7 @@ pcl::MLSResult::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
     if (num_neighbors >= nr_coeff)
     {
       if (!weight_func)
-        weight_func = [=] (const double sq_dist) { return this->computeMLSWeight (sq_dist, search_radius * search_radius); };
+        weight_func = [this, search_radius] (const double sq_dist) { return this->computeMLSWeight (sq_dist, search_radius * search_radius); };
 
       // Allocate matrices and vectors to hold the data used for the polynomial fit
       Eigen::VectorXd weight_vec (num_neighbors);
@@ -837,15 +805,18 @@ pcl::MLSResult::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
 template <typename PointInT, typename PointOutT>
 pcl::MovingLeastSquares<PointInT, PointOutT>::MLSVoxelGrid::MLSVoxelGrid (PointCloudInConstPtr& cloud,
                                                                           IndicesPtr &indices,
-                                                                          float voxel_size) :
+                                                                          float voxel_size,
+                                                                          int dilation_iteration_num) :
   voxel_grid_ (), data_size_ (), voxel_size_ (voxel_size)
 {
   pcl::getMinMax3D (*cloud, *indices, bounding_min_, bounding_max_);
+  bounding_min_ -= Eigen::Vector4f::Constant(voxel_size_ * (dilation_iteration_num + 1));
+  bounding_max_ += Eigen::Vector4f::Constant(voxel_size_ * (dilation_iteration_num + 1));
 
   Eigen::Vector4f bounding_box_size = bounding_max_ - bounding_min_;
   const double max_size = (std::max) ((std::max)(bounding_box_size.x (), bounding_box_size.y ()), bounding_box_size.z ());
   // Put initial cloud in voxel grid
-  data_size_ = static_cast<std::uint64_t> (1.5 * max_size / voxel_size_);
+  data_size_ = static_cast<std::uint64_t> (std::ceil(max_size / voxel_size_));
   for (std::size_t i = 0; i < indices->size (); ++i)
     if (std::isfinite ((*cloud)[(*indices)[i]].x))
     {

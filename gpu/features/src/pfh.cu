@@ -197,13 +197,15 @@ namespace pcl
                         //if (computePairFeatures (pi, ni, pj, nj, f1, f2, f3, f4))
                         {                            
                             // Normalize the f1, f2, f3 features and push them in the histogram
-                            int find0 = std::floor( NR_SPLIT * ((f1 + PI) * (1.f / (2.f * PI))) );                            
+                            //Using floorf due to changes to MSVC 16.9. See details here: https://devtalk.blender.org/t/cuda-compile-error-windows-10/17886/4
+                            //floorf is without std:: see why here: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79700
+                            int find0 = floorf( NR_SPLIT * ((f1 + PI) * (1.f / (2.f * PI))) );                            
                             find0 = min(NR_SPLIT - 1, max(0, find0));
 
-                            int find1 = std::floor( NR_SPLIT * ( (f2 + 1.f) * 0.5f ) );
+                            int find1 = floorf( NR_SPLIT * ( (f2 + 1.f) * 0.5f ) );
                             find1 = min(NR_SPLIT - 1, max(0, find1));
 
-                            int find2 = std::floor( NR_SPLIT * ( (f3 + 1.f) * 0.5f ) );
+                            int find2 = floorf( NR_SPLIT * ( (f3 + 1.f) * 0.5f ) );
                             find2 = min(NR_SPLIT - 1, max(0, find2));
 
                             int h_index = find0 + NR_SPLIT * find1 + NR_SPLIT_2 * find2;
@@ -218,13 +220,13 @@ namespace pcl
                                 computeRGBPairFeatures_RGBOnly(ci, cj, f5, f6, f7);
 
                                 // color ratios are in [-1, 1]
-                                int find4 = std::floor (NR_SPLIT * ((f5 + 1.f) * 0.5f));
+                                int find4 = floorf(NR_SPLIT * ((f5 + 1.f) * 0.5f));
                                 find4 = min(NR_SPLIT - 1, max(0, find4));
 
-                                int find5 = std::floor (NR_SPLIT * ((f6 + 1.f) * 0.5f));
+                                int find5 = floorf(NR_SPLIT * ((f6 + 1.f) * 0.5f));
                                 find5 = min(NR_SPLIT - 1, max(0, find5));
 
-                                int find6 = std::floor (NR_SPLIT * ((f7 + 1.f) * 0.5f));
+                                int find6 = floorf(NR_SPLIT * ((f7 + 1.f) * 0.5f));
                                 find6 = min(NR_SPLIT - 1, max(0, find6));
 
                                 // and the colors

@@ -126,7 +126,7 @@ pcl::PCLBase<pcl::PCLPointCloud2>::initCompute ()
   }
 
   // If we have a set of fake indices, but they do not match the number of points in the cloud, update them
-  if (fake_indices_ && indices_->size () != static_cast<uindex_t>((input_->width * input_->height)))
+  if (fake_indices_ && indices_->size () != (input_->width * input_->height))
   {
     const auto indices_size = indices_->size ();
     try

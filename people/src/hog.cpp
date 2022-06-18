@@ -330,7 +330,8 @@ pcl::people::HOG::normalization (float *H, int h, int w, int bin_size, int n_ori
     if(md) for( y=1; y<hb-1; y++ ) { U(0,0); U(1,1); U(2,hb); U(3,hb+1); }
     if(rt) for( y=1; y<hb-1; y++ ) { U(2,hb); U(3,hb+1); }
     y=hb-1; if(!rt) U(1,1); if(!lf) U(3,hb+1);
-  } free(N);
+  }
+  free(N);
 }
       
 void

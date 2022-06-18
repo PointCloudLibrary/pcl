@@ -36,7 +36,7 @@ In order to help explain your problem, please consider adding
  - OS: [e.g. Ubuntu 16.04]
  - Compiler: [:eg GCC 8.1]
  - PCL Version [e.g. 1.10, HEAD] (NB: please ensure you don't have multiple versions available)
- - PCL Type: [Installed/Compiled from source]
+ - PCL Type: [e.g. Installed with VCPKG/Installed with apt/Compiled from source]
 
 If PCL was compiled from source or failure in compiling PCL itself:
  - GPU, Kinfu, CUDA enabled? Yes/No
