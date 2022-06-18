@@ -500,6 +500,9 @@ namespace pcl
       /** \brief Class get name method. */
       std::string getClassName () const override { return ("GridProjection"); }
 
+      /** \brief Output will be scaled up by this factor, if previously scaled down by scaleInputDataPoint. */
+      double cloud_scale_factor_ = 1.0;
+
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
