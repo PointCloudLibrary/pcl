@@ -134,7 +134,7 @@ public:
   {}
 
   /** \brief destructor. */
-  ~Registration() {}
+  ~Registration() override = default;
 
   /** \brief Provide a pointer to the transformation estimation object.
    * (e.g., SVD, point to plane etc.)

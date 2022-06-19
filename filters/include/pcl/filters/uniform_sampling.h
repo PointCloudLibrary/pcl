@@ -89,7 +89,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      ~UniformSampling ()
+      ~UniformSampling () override
       {
         leaves_.clear();
       }

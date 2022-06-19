@@ -91,7 +91,7 @@ namespace pcl
         search_radius_ = 2.0;
       }
 
-      ~UniqueShapeContext() { }
+      ~UniqueShapeContext() override = default;
 
       /** \return The number of bins along the azimuth. */
       inline std::size_t

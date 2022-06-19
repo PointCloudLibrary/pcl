@@ -121,7 +121,7 @@ namespace pcl
       }
 
       /** \brief Destructor for KdTree. Deletes all allocated data arrays and destroys the kd-tree structures. */
-      virtual ~KdTree () {};
+      virtual ~KdTree () = default;
 
       /** \brief Search for k-nearest neighbors for the given query point.
         * \param[in] p_q the given query point

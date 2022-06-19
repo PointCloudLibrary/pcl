@@ -192,7 +192,7 @@ private:
 
   /** \brief Structure for representing a single pyramid histogram level */
   struct PyramidFeatureHistogramLevel {
-    PyramidFeatureHistogramLevel() {}
+    PyramidFeatureHistogramLevel() = default;
 
     PyramidFeatureHistogramLevel(std::vector<std::size_t>& a_bins_per_dimension,
                                  std::vector<float>& a_bin_step)

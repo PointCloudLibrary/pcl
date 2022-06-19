@@ -162,7 +162,7 @@ namespace pcl
        };
 
       /** \brief Destructor for base SampleConsensusModel. */
-      virtual ~SampleConsensusModel () {};
+      virtual ~SampleConsensusModel () = default;
 
       /** \brief Get a set of random data samples and return them as point
         * indices.
@@ -621,7 +621,7 @@ namespace pcl
       SampleConsensusModelFromNormals () : normal_distance_weight_ (0.0), normals_ () {};
 
       /** \brief Destructor. */
-      virtual ~SampleConsensusModelFromNormals () {}
+      virtual ~SampleConsensusModelFromNormals () = default;
 
       /** \brief Set the normal angular distance weight.
         * \param[in] w the relative weight (between 0 and 1) to give to the angular
@@ -696,7 +696,7 @@ namespace pcl
       */
     Functor (int m_data_points) : m_data_points_ (m_data_points) {}
   
-    virtual ~Functor () {}
+    virtual ~Functor () = default;
 
     /** \brief Get the number of values. */ 
     int

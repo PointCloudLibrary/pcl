@@ -77,9 +77,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      ~VoxelGridOcclusionEstimation ()
-      {
-      }
+      ~VoxelGridOcclusionEstimation () override = default;
 
       /** \brief Initialize the voxel grid, needs to be called first
         * Builts the voxel grid and computes additional values for

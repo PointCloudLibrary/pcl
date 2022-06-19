@@ -65,8 +65,8 @@ public:
   using Matrix4 =
       typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4;
 
-  TransformationEstimation2D(){};
-  virtual ~TransformationEstimation2D(){};
+  TransformationEstimation2D() = default;
+  virtual ~TransformationEstimation2D() = default;
 
   /** \brief Estimate a rigid transformation between a source and a target point cloud
    * in 2D. \param[in] cloud_src the source point cloud dataset \param[in] cloud_tgt the

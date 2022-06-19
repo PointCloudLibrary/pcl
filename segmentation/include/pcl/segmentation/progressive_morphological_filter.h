@@ -69,7 +69,7 @@ namespace pcl
       ProgressiveMorphologicalFilter ();
 
       
-      ~ProgressiveMorphologicalFilter ();
+      ~ProgressiveMorphologicalFilter () override;
 
       /** \brief Get the maximum window size to be used in filtering ground returns. */
       inline int

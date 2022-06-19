@@ -111,7 +111,7 @@ public:
   {}
 
   /** \brief Empty destructor */
-  ~DefaultConvergenceCriteria() {}
+  ~DefaultConvergenceCriteria() override = default;
 
   /** \brief Set the maximum number of consecutive iterations that the internal
    * rotation, translation, and MSE differences are allowed to be similar. \param[in]

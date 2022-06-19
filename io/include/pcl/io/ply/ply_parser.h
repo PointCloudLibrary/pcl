@@ -305,7 +305,7 @@ namespace pcl
           struct property
           {
             property (const std::string& name) : name (name) {}
-            virtual ~property () {}
+            virtual ~property () = default;
             virtual bool parse (class ply_parser& ply_parser, format_type format, std::istream& istream) = 0;
             std::string name;
           };

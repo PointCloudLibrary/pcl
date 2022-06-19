@@ -86,7 +86,7 @@ namespace pcl
       ONIGrabber (const std::string& file_name, bool repeat, bool stream);
 
       /** \brief destructor never throws an exception */
-      ~ONIGrabber () noexcept;
+      ~ONIGrabber () noexcept override;
 
       /** \brief For devices that are streaming, the streams are started by calling this method.
         *        Trigger-based devices, just trigger the device once for each call of start.

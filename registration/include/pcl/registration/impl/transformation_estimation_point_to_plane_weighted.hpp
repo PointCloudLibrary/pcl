@@ -242,7 +242,7 @@ pcl::registration::
 
   tmp_src_ = NULL;
   tmp_tgt_ = NULL;
-  tmp_idx_src_ = tmp_idx_tgt_ = NULL;
+  tmp_idx_src_ = tmp_idx_tgt_ = nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

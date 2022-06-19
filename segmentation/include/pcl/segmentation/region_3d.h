@@ -67,7 +67,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      virtual ~Region3D () {}
+      virtual ~Region3D () = default;
 
       /** \brief Get the centroid of the region. */
       inline Eigen::Vector3f

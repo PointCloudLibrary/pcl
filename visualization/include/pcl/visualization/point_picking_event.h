@@ -59,7 +59,7 @@ namespace pcl
         PointPickingCallback () : x_ (0), y_ (0), z_ (0), idx_ (-1), pick_first_ (false) {}
       
         /** \brief Empty destructor */
-        ~PointPickingCallback () {}
+        ~PointPickingCallback () override = default;
 
         void
         Execute (vtkObject *caller, unsigned long eventid, void*) override;

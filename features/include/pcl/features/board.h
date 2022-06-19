@@ -75,7 +75,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      ~BOARDLocalReferenceFrameEstimation () {}
+      ~BOARDLocalReferenceFrameEstimation () override = default;
 
       //Getters/Setters
 

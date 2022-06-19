@@ -120,7 +120,7 @@ namespace pcl
         {}
       
         /** \brief Empty destructor */
-        ~PCLVisualizerInteractorStyle () {}
+        ~PCLVisualizerInteractorStyle () override = default;
 
         // this macro defines Superclass, the isA functionality and the safe downcast method
         vtkTypeMacro (PCLVisualizerInteractorStyle, vtkInteractorStyleRubberBandPick);

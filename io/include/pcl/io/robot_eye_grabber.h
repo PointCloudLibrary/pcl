@@ -73,7 +73,7 @@ namespace pcl
       RobotEyeGrabber (const boost::asio::ip::address& ipAddress, unsigned short port=443);
 
       /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
-      ~RobotEyeGrabber () noexcept;
+      ~RobotEyeGrabber () noexcept override;
 
       /** \brief Starts the RobotEye grabber.
        * The grabber runs on a separate thread, this call will return without blocking. */

@@ -125,7 +125,7 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (con
   if (normalize_bins_)
     hist_incr = 100.0f / static_cast<float> (indices.size () - 1);
 
-  float hist_incr_size_component = 0;;
+  float hist_incr_size_component = 0;
   if (size_component_)
     hist_incr_size_component = hist_incr;
 

@@ -104,7 +104,7 @@ public:
   , force_no_recompute_(false)
   {}
 
-  virtual ~TransformationValidationEuclidean(){};
+  virtual ~TransformationValidationEuclidean() = default;
 
   /** \brief Set the maximum allowable distance between a point and its correspondence
    * in the target in order for a correspondence to be considered \a valid. Default:
@@ -247,7 +247,7 @@ protected:
     }
 
     /** \brief Empty destructor */
-    virtual ~MyPointRepresentation() {}
+    virtual ~MyPointRepresentation() = default;
 
     virtual void
     copyToFloatArray(const PointTarget& p, float* out) const

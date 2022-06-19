@@ -86,7 +86,7 @@ namespace pcl
         feature_name_ = "DifferenceOfNormalsEstimation";
       }
 
-      ~DifferenceOfNormalsEstimation ()
+      ~DifferenceOfNormalsEstimation () override
       {
         //
       }

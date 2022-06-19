@@ -85,7 +85,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      ~MarchingCubesRBF ();
+      ~MarchingCubesRBF () override;
 
       /** \brief Convert the point cloud into voxel data.
         */

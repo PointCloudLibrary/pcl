@@ -73,7 +73,7 @@ public:
 
   TransformationEstimationSymmetricPointToPlaneLLS()
   : enforce_same_direction_normals_(true){};
-  ~TransformationEstimationSymmetricPointToPlaneLLS(){};
+  ~TransformationEstimationSymmetricPointToPlaneLLS() = default;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using SVD. \param[in] cloud_src the source point cloud dataset

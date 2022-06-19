@@ -173,7 +173,7 @@ namespace openni_wrapper
   {
   }
 
-  Image::~Image () noexcept { }
+  Image::~Image () noexcept = default;
 
   unsigned
   Image::getWidth () const throw ()

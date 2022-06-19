@@ -94,7 +94,7 @@ public:
 
   /** \brief Empty class constructor. */
 
-  ~OctreePointCloudOccupancy() {}
+  ~OctreePointCloudOccupancy() = default;
 
   /** \brief Set occupied voxel at point.
    *  \param point_arg:  input point

@@ -200,7 +200,10 @@ public:
   /** \brief Destructor for KdTreeFLANN.
    * Deletes all allocated data arrays and destroys the kd-tree structures.
    */
-  ~KdTreeFLANN() { cleanup(); }
+  ~KdTreeFLANN() override
+  {
+    cleanup();
+  }
 
   /** \brief Provide a pointer to the input dataset.
    * \param[in] cloud the const boost shared pointer to a PointCloud message

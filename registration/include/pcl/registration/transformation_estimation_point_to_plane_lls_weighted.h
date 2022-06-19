@@ -74,8 +74,8 @@ public:
   using Matrix4 =
       typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4;
 
-  TransformationEstimationPointToPlaneLLSWeighted(){};
-  virtual ~TransformationEstimationPointToPlaneLLSWeighted(){};
+  TransformationEstimationPointToPlaneLLSWeighted() = default;
+  virtual ~TransformationEstimationPointToPlaneLLSWeighted() = default;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using SVD. \param[in] cloud_src the source point cloud dataset

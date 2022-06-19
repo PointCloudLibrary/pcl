@@ -181,7 +181,7 @@ public:
   operator=(IterativeClosestPoint&&) = delete;
 
   /** \brief Empty destructor */
-  ~IterativeClosestPoint() {}
+  ~IterativeClosestPoint() override = default;
 
   /** \brief Returns a pointer to the DefaultConvergenceCriteria used by the
    * IterativeClosestPoint class. This allows to check the convergence state after the
@@ -368,7 +368,7 @@ public:
   };
 
   /** \brief Empty destructor */
-  virtual ~IterativeClosestPointWithNormals() {}
+  virtual ~IterativeClosestPointWithNormals() = default;
 
   /** \brief Set whether to use a symmetric objective function or not
    *

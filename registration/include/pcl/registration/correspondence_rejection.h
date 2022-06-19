@@ -57,10 +57,10 @@ public:
   using ConstPtr = shared_ptr<const CorrespondenceRejector>;
 
   /** \brief Empty constructor. */
-  CorrespondenceRejector() {}
+  CorrespondenceRejector() = default;
 
   /** \brief Empty destructor. */
-  virtual ~CorrespondenceRejector() {}
+  virtual ~CorrespondenceRejector() = default;
 
   /** \brief Provide a pointer to the vector of the input correspondences.
    * \param[in] correspondences the const shared pointer to a correspondence vector
@@ -255,7 +255,7 @@ public:
   {}
 
   /** \brief Empty destructor */
-  ~DataContainer() {}
+  ~DataContainer() override = default;
 
   /** \brief Provide a source point cloud dataset (must contain XYZ
    * data!), used to compute the correspondence distance.

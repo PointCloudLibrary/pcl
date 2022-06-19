@@ -165,7 +165,7 @@ struct Frame
 class Buffer
 {
 	public:
-    Buffer () {}
+    Buffer () = default;
 
     bool 
     pushBack (Frame::ConstPtr frame)

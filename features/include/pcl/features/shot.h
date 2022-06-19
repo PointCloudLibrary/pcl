@@ -104,7 +104,7 @@ namespace pcl
     public:
 
       /** \brief Empty destructor */
-      ~SHOTEstimationBase () {}
+      ~SHOTEstimationBase () override = default;
 
        /** \brief Estimate the SHOT descriptor for a given point based on its spatial neighborhood of 3D points with normals
          * \param[in] index the index of the point in indices_
@@ -252,7 +252,7 @@ namespace pcl
       };
       
       /** \brief Empty destructor */
-      ~SHOTEstimation () {}
+      ~SHOTEstimation () override = default;
 
       /** \brief Estimate the SHOT descriptor for a given point based on its spatial neighborhood of 3D points with normals
         * \param[in] index the index of the point in indices_
@@ -338,7 +338,7 @@ namespace pcl
       };
       
       /** \brief Empty destructor */
-      ~SHOTColorEstimation () {}
+      ~SHOTColorEstimation () override = default;
 
       /** \brief Estimate the SHOT descriptor for a given point based on its spatial neighborhood of 3D points with normals
         * \param[in] index the index of the point in indices_

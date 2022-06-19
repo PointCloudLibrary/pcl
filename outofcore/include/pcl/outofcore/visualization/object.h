@@ -24,7 +24,7 @@ public:
   Object (std::string name);
 
   virtual
-  ~Object () { }
+  ~Object () = default;
 
 
   // Accessors

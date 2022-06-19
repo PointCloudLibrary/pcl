@@ -81,7 +81,7 @@ namespace pcl
         * finding KNN. In other words it frees memory.
         */
 
-      ~RegionGrowing ();
+      ~RegionGrowing () override;
 
       /** \brief Get the minimum number of points that a cluster needs to contain in order to be considered valid. */
       pcl::uindex_t

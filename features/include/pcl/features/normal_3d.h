@@ -268,7 +268,7 @@ namespace pcl
       };
       
       /** \brief Empty destructor */
-      ~NormalEstimation () {}
+      ~NormalEstimation () override = default;
 
       /** \brief Compute the Least-Squares plane fit for a given set of points, using their indices,
         * and return the estimated plane parameters together with the surface curvature.

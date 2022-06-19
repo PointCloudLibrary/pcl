@@ -196,7 +196,7 @@ namespace pcl
         trivial_ = true;
       }
 
-      ~DefaultPointRepresentation () {}
+      ~DefaultPointRepresentation () override = default;
 
       inline Ptr
       makeShared () const

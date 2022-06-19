@@ -262,8 +262,8 @@ namespace pcl
   class MovingLeastSquares : public CloudSurfaceProcessing<PointInT, PointOutT>
   {
     public:
-      typedef shared_ptr<MovingLeastSquares<PointInT, PointOutT> > Ptr;
-      typedef shared_ptr<const MovingLeastSquares<PointInT, PointOutT> > ConstPtr;
+      using Ptr = shared_ptr<MovingLeastSquares<PointInT, PointOutT> >;
+      using ConstPtr = shared_ptr<const MovingLeastSquares<PointInT, PointOutT> >;
 
       using PCLBase<PointInT>::input_;
       using PCLBase<PointInT>::indices_;
@@ -325,7 +325,7 @@ namespace pcl
                               {};
 
       /** \brief Empty destructor */
-      ~MovingLeastSquares () {}
+      ~MovingLeastSquares () override = default;
 
 
       /** \brief Set whether the algorithm should also store the normals computed
@@ -630,7 +630,7 @@ namespace pcl
               point[i] = static_cast<Eigen::Vector3f::Scalar> (index_3d[i]) * voxel_size_ + bounding_min_[i];
           }
 
-          typedef std::map<std::uint64_t, Leaf> HashMap;
+          using HashMap = std::map<std::uint64_t, Leaf>;
           HashMap voxel_grid_;
           Eigen::Vector4f bounding_min_, bounding_max_;
           std::uint64_t data_size_;

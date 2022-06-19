@@ -126,7 +126,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      ~SampleConsensusModelCylinder () {}
+      ~SampleConsensusModelCylinder () override = default;
 
       /** \brief Copy constructor.
         * \param[in] source the model to copy into this

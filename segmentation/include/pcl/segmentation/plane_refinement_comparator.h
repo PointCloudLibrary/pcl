@@ -95,9 +95,7 @@ namespace pcl
       }
 
       /** \brief Destructor for PlaneCoefficientComparator. */
-      ~PlaneRefinementComparator ()
-      {
-      }
+      ~PlaneRefinementComparator () override = default;
 
       /** \brief Set the vector of model coefficients to which we will compare.
         * \param[in] models a vector of model coefficients produced by the initial segmentation step.

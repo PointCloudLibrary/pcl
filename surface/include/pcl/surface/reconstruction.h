@@ -69,7 +69,7 @@ namespace pcl
       PCLSurfaceBase () : tree_ () {}
       
       /** \brief Empty destructor */
-      ~PCLSurfaceBase () {}
+      ~PCLSurfaceBase () override = default;
 
       /** \brief Provide an optional pointer to a search object.
         * \param[in] tree a pointer to the spatial search object.
@@ -131,7 +131,7 @@ namespace pcl
       SurfaceReconstruction () : check_tree_ (true) {}
 
       /** \brief Destructor. */
-      ~SurfaceReconstruction () {}
+      ~SurfaceReconstruction () override = default;
 
        /** \brief Base method for surface reconstruction for all points given in
         * <setInputCloud (), setIndices ()> 
@@ -200,7 +200,7 @@ namespace pcl
       MeshConstruction () : check_tree_ (true) {}
 
       /** \brief Destructor. */
-      ~MeshConstruction () {}
+      ~MeshConstruction () override = default;
 
       /** \brief Base method for surface reconstruction for all points given in
         * <setInputCloud (), setIndices ()> 

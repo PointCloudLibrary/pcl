@@ -122,10 +122,7 @@ namespace pcl
           min_images_per_bin_ = -1;
         }
 
-        virtual ~FaceDetectorDataProvider()
-        {
-
-        }
+        virtual ~FaceDetectorDataProvider() = default;
 
         void setPatchesPerImage(int n)
         {

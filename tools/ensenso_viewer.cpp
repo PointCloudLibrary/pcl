@@ -69,7 +69,7 @@ grabberCallback (const PointCloudXYZ::Ptr& cloud)
 /** @brief Main function
  * @return Exit status */
 int
-main (void)
+main ()
 {
   viewer_ptr.reset (new CloudViewer ("Ensenso 3D cloud viewer"));
   ensenso_ptr.reset (new pcl::EnsensoGrabber);
