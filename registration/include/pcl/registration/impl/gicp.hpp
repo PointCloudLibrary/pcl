@@ -405,8 +405,8 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformatio
     PointCloudSource& output, const Eigen::Matrix4f& guess)
 {
   pcl::IterativeClosestPoint<PointSource, PointTarget>::initComputeReciprocal();
-  // Difference between consecutive transforms
-  double delta = 0;
+  // Point cloud containing the correspondences of each point in <input, indices>
+  PointCloudSourcePtr input_transformed(new PointCloudSource);
   // Get the size of the source point cloud
   const std::size_t N = indices_->size();
   // Set the mahalanobis matrices to identity
@@ -425,16 +425,90 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformatio
   base_transformation_ = Eigen::Matrix4f::Identity();
   nr_iterations_ = 0;
   converged_ = false;
-  double dist_threshold = corr_dist_threshold_ * corr_dist_threshold_;
-  pcl::Indices nn_indices(1);
-  std::vector<float> nn_dists(1);
 
   pcl::transformPointCloud(output, output, guess);
+  pcl::transformPointCloud(output, *input_transformed, transformation_);
 
-  while (!converged_) {
-    std::size_t cnt = 0;
-    pcl::Indices source_indices(indices_->size());
-    pcl::Indices target_indices(indices_->size());
+  // Make blobs if necessary
+  determineRequiredBlobData();
+  PCLPointCloud2::Ptr target_blob(new PCLPointCloud2);
+  if (need_target_blob_)
+    pcl::toPCLPointCloud2(*target_, *target_blob);
+
+  // Pass in the default target for the Correspondence Estimation/Rejection code
+  correspondence_estimation_->setInputTarget(target_);
+  if (correspondence_estimation_->requiresTargetNormals())
+    correspondence_estimation_->setTargetNormals(target_blob);
+  // Correspondence Rejectors need a binary blob
+  for (std::size_t i = 0; i < correspondence_rejectors_.size(); ++i) {
+    registration::CorrespondenceRejector::Ptr& rej = correspondence_rejectors_[i];
+    if (rej->requiresTargetPoints())
+      rej->setTargetPoints(target_blob);
+    if (rej->requiresTargetNormals() && target_has_normals_)
+      rej->setTargetNormals(target_blob);
+  }
+
+  convergence_criteria_->setMaximumIterations(max_iterations_);
+  // convergence_criteria_->setRelativeMSE(euclidean_fitness_epsilon_);
+  convergence_criteria_->setTranslationThreshold(transformation_epsilon_);
+  convergence_criteria_->setRotationThreshold(rotation_epsilon_);
+
+  do {
+    // Get blob data if needed
+    PCLPointCloud2::Ptr input_transformed_blob;
+    if (need_source_blob_) {
+      input_transformed_blob.reset(new PCLPointCloud2);
+      toPCLPointCloud2(*input_transformed, *input_transformed_blob);
+    }
+
+    // Set the source each iteration, to ensure the dirty flag is updated
+    correspondence_estimation_->setInputSource(input_transformed);
+    if (correspondence_estimation_->requiresSourceNormals())
+      correspondence_estimation_->setSourceNormals(input_transformed_blob);
+    // Estimate correspondences
+    if (use_reciprocal_correspondence_)
+      correspondence_estimation_->determineReciprocalCorrespondences(
+          *correspondences_, corr_dist_threshold_);
+    else
+      correspondence_estimation_->determineCorrespondences(*correspondences_,
+                                                           corr_dist_threshold_);
+
+    // if (correspondence_rejectors_.empty ())
+    CorrespondencesPtr temp_correspondences(new Correspondences(*correspondences_));
+    for (std::size_t i = 0; i < correspondence_rejectors_.size(); ++i) {
+      registration::CorrespondenceRejector::Ptr& rej = correspondence_rejectors_[i];
+      PCL_DEBUG("Applying a correspondence rejector method: %s.\n",
+                rej->getClassName().c_str());
+      if (rej->requiresSourcePoints())
+        rej->setSourcePoints(input_transformed_blob);
+      if (rej->requiresSourceNormals() && source_has_normals_)
+        rej->setSourceNormals(input_transformed_blob);
+      rej->setInputCorrespondences(temp_correspondences);
+      rej->getCorrespondences(*correspondences_);
+      // Modify input for the next iteration
+      if (i < correspondence_rejectors_.size() - 1)
+        *temp_correspondences = *correspondences_;
+    }
+
+    // Check whether we have enough correspondences
+    if (correspondences_->size() < min_number_correspondences_) {
+      PCL_ERROR("[pcl::%s::computeTransformation] Not enough correspondences found. "
+                "Relax your threshold parameters.\n",
+                getClassName().c_str());
+      convergence_criteria_->setConvergenceState(
+          pcl::registration::GICPConvergenceCriteria<
+              float>::CONVERGENCE_CRITERIA_NO_CORRESPONDENCES);
+      converged_ = false;
+      break;
+    }
+
+    std::size_t cnt = correspondences_->size();
+    pcl::Indices source_indices(cnt);
+    pcl::Indices target_indices(cnt);
+    for (size_t i = 0; i < cnt; ++i) {
+      source_indices[i] = (*correspondences_)[i].index_query;
+      target_indices[i] = (*correspondences_)[i].index_match;
+    }
 
     // guess corresponds to base_t and transformation_ to t
     Eigen::Matrix4d transform_R = Eigen::Matrix4d::Zero();
@@ -445,88 +519,56 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformatio
 
     Eigen::Matrix3d R = transform_R.topLeftCorner<3, 3>();
 
-    for (std::size_t i = 0; i < N; i++) {
-      PointSource query = output[i];
-      query.getVector4fMap() = transformation_ * query.getVector4fMap();
-
-      if (!searchForNeighbors(query, nn_indices, nn_dists)) {
-        PCL_ERROR("[pcl::%s::computeTransformation] Unable to find a nearest neighbor "
-                  "in the target dataset for point %d in the source!\n",
-                  getClassName().c_str(),
-                  (*indices_)[i]);
-        return;
-      }
-
-      // Check if the distance to the nearest neighbor is smaller than the user imposed
-      // threshold
-      if (nn_dists[0] < dist_threshold) {
-        Eigen::Matrix3d& C1 = (*input_covariances_)[i];
-        Eigen::Matrix3d& C2 = (*target_covariances_)[nn_indices[0]];
-        Eigen::Matrix3d& M = mahalanobis_[i];
-        // M = R*C1
-        M = R * C1;
-        // temp = M*R' + C2 = R*C1*R' + C2
-        Eigen::Matrix3d temp = M * R.transpose();
-        temp += C2;
-        // M = temp^-1
-        M = temp.inverse();
-        source_indices[cnt] = static_cast<int>(i);
-        target_indices[cnt] = nn_indices[0];
-        cnt++;
-      }
+    for (std::size_t i = 0; i < cnt; i++) {
+      Eigen::Matrix3d& C1 = (*input_covariances_)[source_indices[i]];
+      Eigen::Matrix3d& C2 = (*target_covariances_)[target_indices[i]];
+      Eigen::Matrix3d& M = mahalanobis_[source_indices[i]];
+      // M = R*C1
+      M = R * C1;
+      // temp = M*R' + C2 = R*C1*R' + C2
+      Eigen::Matrix3d temp = M * R.transpose();
+      temp += C2;
+      // M = temp^-1
+      M = temp.inverse();
     }
-    // Resize to the actual number of valid correspondences
-    source_indices.resize(cnt);
-    target_indices.resize(cnt);
+
     /* optimize transformation using the current assignment and Mahalanobis metrics*/
     previous_transformation_ = transformation_;
     // optimization right here
     try {
       rigid_transformation_estimation_(
           output, source_indices, *target_, target_indices, transformation_);
-      /* compute the delta from this iteration */
-      delta = 0.;
-      for (int k = 0; k < 4; k++) {
-        for (int l = 0; l < 4; l++) {
-          double ratio = 1;
-          if (k < 3 && l < 3) // rotation part of the transform
-            ratio = 1. / rotation_epsilon_;
-          else
-            ratio = 1. / transformation_epsilon_;
-          double c_delta =
-              ratio * std::abs(previous_transformation_(k, l) - transformation_(k, l));
-          if (c_delta > delta)
-            delta = c_delta;
-        }
-      }
     } catch (PCLException& e) {
       PCL_DEBUG("[pcl::%s::computeTransformation] Optimization issue %s\n",
                 getClassName().c_str(),
                 e.what());
       break;
     }
+
+    // Transform the data
+    pcl::transformPointCloud(output, *input_transformed, transformation_);
+
     nr_iterations_++;
 
     if (update_visualizer_ != 0) {
-      PointCloudSourcePtr input_transformed(new PointCloudSource);
-      pcl::transformPointCloud(output, *input_transformed, transformation_);
       update_visualizer_(*input_transformed, source_indices, *target_, target_indices);
     }
-
-    // Check for convergence
-    if (nr_iterations_ >= max_iterations_ || delta < 1) {
-      converged_ = true;
-      PCL_DEBUG("[pcl::%s::computeTransformation] Convergence reached. Number of "
-                "iterations: %d out of %d. Transformation difference: %f\n",
-                getClassName().c_str(),
-                nr_iterations_,
-                max_iterations_,
-                (transformation_ - previous_transformation_).array().abs().sum());
-      previous_transformation_ = transformation_;
-    }
-    else
-      PCL_DEBUG("[pcl::%s::computeTransformation] Convergence failed\n",
-                getClassName().c_str());
+    converged_ = static_cast<bool>((*convergence_criteria_));
+  } while (convergence_criteria_->getConvergenceState() ==
+           pcl::registration::GICPConvergenceCriteria<
+               float>::CONVERGENCE_CRITERIA_NOT_CONVERGED);
+  if (converged_) {
+    PCL_DEBUG("[pcl::%s::computeTransformation] Convergence reached. Number of "
+              "iterations: %d out of %d. Transformation difference: %f\n",
+              getClassName().c_str(),
+              nr_iterations_,
+              max_iterations_,
+              (transformation_ - previous_transformation_).array().abs().sum());
+    previous_transformation_ = transformation_;
+  }
+  else {
+    PCL_DEBUG("[pcl::%s::computeTransformation] Convergence failed\n",
+              getClassName().c_str());
   }
   final_transformation_ = previous_transformation_ * guess;
 
