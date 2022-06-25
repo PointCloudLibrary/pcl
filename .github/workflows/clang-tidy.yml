@@ -6,7 +6,7 @@ jobs:
   tidy:
     runs-on: ubuntu-latest
     container:
-      image: pointcloudlibrary/env:18.04
+      image: pointcloudlibrary/env:22.04
     
     steps:
     - name: Install git
@@ -27,7 +27,7 @@ jobs:
           apt-get install -y clang-tidy-10 clang-tools-10 python-pip
           pip install pyyaml
           cmake .
-          ./.github/workflows/clang-tidy-modern.sh
+          run-clang-tidy-10.py -config='' -header-filter='.*' -fix
           git diff > tidy.patch
           cat tidy.patch
           [ ! -s formatting.patch ]
