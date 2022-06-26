@@ -1,4 +1,4 @@
-name: tidy-modern
+name: clang-tidy
 
 on: [push, pull_request]
 
