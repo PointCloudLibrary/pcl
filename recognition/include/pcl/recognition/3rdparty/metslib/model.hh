@@ -507,9 +507,7 @@ namespace mets {
   public:
     ///
     /// @brief Initialize the move manager with an empty list of moves
-    move_manager() 
-      : moves_m() 
-    { }
+    move_manager() = default;
 
     /// @brief Virtual destructor
     virtual ~move_manager() = default;
@@ -537,7 +535,7 @@ namespace mets {
     { return moves_m.size(); }
 
   protected:
-    std::deque<move*> moves_m; ///< The moves queue
+    std::deque<move*> moves_m{}; ///< The moves queue
     move_manager(const move_manager&);
   };
   

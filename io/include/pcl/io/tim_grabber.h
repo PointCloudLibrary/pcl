@@ -75,7 +75,7 @@ class PCL_EXPORTS TimGrabber : public Grabber
 
     TimGrabber ();
     TimGrabber (const boost::asio::ip::address& ipAddress, const std::uint16_t port);
-    ~TimGrabber () noexcept;
+    ~TimGrabber () noexcept override;
 
     void
     start () override;

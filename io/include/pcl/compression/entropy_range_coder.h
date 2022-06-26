@@ -112,10 +112,7 @@ namespace pcl
   {
     public:
       /** \brief Constructor. */
-      StaticRangeCoder () :
-        cFreqTable_ (65537)
-      {
-      }
+      StaticRangeCoder () : cFreqTable_(65537, 0u) {}
 
       /** \brief Empty deconstructor. */
       virtual
@@ -158,10 +155,9 @@ namespace pcl
 
     private:
       /** \brief Vector containing cumulative symbol frequency table. */
-      std::vector<std::uint64_t> cFreqTable_;
-
+      std::vector<std::uint64_t> cFreqTable_{};
       /** \brief Vector containing compressed data. */
-      std::vector<char> outputCharVector_;
+      std::vector<char> outputCharVector_{};
 
   };
 }

@@ -54,7 +54,7 @@ namespace octree {
 class OctreeKey {
 public:
   /** \brief Empty constructor. */
-  OctreeKey() : x(0), y(0), z(0) {}
+  OctreeKey() = default;
 
   /** \brief Constructor for key initialization. */
   OctreeKey(uindex_t keyX, uindex_t keyY, uindex_t keyZ) : x(keyX), y(keyY), z(keyZ) {}
@@ -150,7 +150,7 @@ public:
       uindex_t y;
       uindex_t z;
     };
-    uindex_t key_[3];
+    uindex_t key_[3]{};
   };
 };
 } // namespace octree

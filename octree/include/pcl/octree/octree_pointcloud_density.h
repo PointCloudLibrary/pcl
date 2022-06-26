@@ -50,7 +50,7 @@ namespace octree {
 class OctreePointCloudDensityContainer : public OctreeContainerBase {
 public:
   /** \brief Class initialization. */
-  OctreePointCloudDensityContainer() : point_counter_(0) {}
+  OctreePointCloudDensityContainer() = default;
 
   /** \brief Empty class deconstructor. */
   ~OctreePointCloudDensityContainer() override = default;
@@ -95,7 +95,7 @@ public:
   }
 
 private:
-  uindex_t point_counter_;
+  uindex_t point_counter_ = 0u;
 };
 
 /** \brief @b Octree pointcloud density class

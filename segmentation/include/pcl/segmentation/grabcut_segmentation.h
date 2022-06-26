@@ -223,7 +223,7 @@ namespace pcl
       {
         public:
           /// Initialize GMM with ddesired number of gaussians.
-          GMM () : gaussians_ (0) {}
+          GMM () = default;
           /// Initialize GMM with ddesired number of gaussians.
           GMM (std::size_t K) : gaussians_ (K) {}
           /// Destructor
@@ -249,7 +249,7 @@ namespace pcl
 
         private:
           /// array of gaussians
-          std::vector<Gaussian> gaussians_;
+          std::vector<Gaussian> gaussians_{};
       };
 
       /** Helper class that fits a single Gaussian to color samples */

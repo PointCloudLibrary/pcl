@@ -109,7 +109,7 @@ namespace mets {
     notify();
   protected:
     subject();
-    std::set<observer<observed_subject>*> observers_m;
+    std::set<observer<observed_subject>*> observers_m{};
   };
   
   ///
@@ -143,9 +143,8 @@ namespace mets {
   // Implementation of the template methods in STL
   
   template<typename observed_subject>
-  subject<observed_subject>::subject() 
-    : observers_m() { }
-  
+  subject<observed_subject>::subject() = default;
+
   template<typename observed_subject>
   void 
   subject<observed_subject>::attach(observer<observed_subject>& o)
