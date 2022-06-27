@@ -15,7 +15,7 @@ jobs:
       run: |
           bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
           cmake -DWITH_OPENMP=TRUE .
-          run-clang-tidy-14.py -config='' -header-filter='.*' -fix
+          run-clang-tidy -header-filter='.*' -fix
           git diff > tidy.patch
           cat tidy.patch
           [ ! -s tidy.patch ]
