@@ -13,12 +13,7 @@ jobs:
 
     - name: Run clang-tidy
       run: |
-          wget https://apt.llvm.org/llvm.sh
-          chmod +x llvm.sh
-          ./llvm.sh 14
-          apt-get update
-          apt-get install -y clang-tidy-14 clang-tools-14 python3-pip
-          pip install pyyaml
+          bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
           cmake .
           run-clang-tidy-14.py -config='' -header-filter='.*' -fix
           git diff > tidy.patch
