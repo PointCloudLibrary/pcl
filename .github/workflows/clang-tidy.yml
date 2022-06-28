@@ -14,7 +14,7 @@ jobs:
     - name: Run clang-tidy
       run: |
           bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
-          cmake -DWITH_OPENMP=TRUE .
+          cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_CXX_COMPILER=/usr/bin/clang-14 -DCMAKE_C_COMPILER=/usr/bin/clang-14 .
           run-clang-tidy -header-filter='.*' -fix
           git diff > tidy.patch
           cat tidy.patch
