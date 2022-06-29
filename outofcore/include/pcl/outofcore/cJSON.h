@@ -44,7 +44,7 @@ extern "C"
 #define cJSON_IsReference 256
 
 /* The cJSON structure: */
-typedef struct cJSON {
+typedef struct cJSON {	// NOLINT
 	struct cJSON *next,*prev;	/* next/prev allow you to walk array/object chains. Alternatively, use GetArraySize/GetArrayItem/GetObjectItem */
 	struct cJSON *child;		/* An array or object item will have a child pointer pointing to a chain of the items in the array/object. */
 
@@ -57,7 +57,7 @@ typedef struct cJSON {
 	char *string;				/* The item's name string, if this item is the child of, or is in the list of subitems of an object. */
 } cJSON;
 
-typedef struct cJSON_Hooks {
+typedef struct cJSON_Hooks {	// NOLINT
       void *(*malloc_fn)(std::size_t sz);
       void (*free_fn)(void *ptr);
 } cJSON_Hooks;

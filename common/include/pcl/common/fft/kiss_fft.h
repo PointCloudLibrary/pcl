@@ -1,11 +1,11 @@
 #pragma once
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
-
 #include <pcl/pcl_exports.h>
+
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,12 +49,12 @@ extern "C" {
 # endif
 #endif
 
-typedef struct {
+typedef struct {	// NOLINT
     kiss_fft_scalar r;
     kiss_fft_scalar i;
 }kiss_fft_cpx;
 
-typedef struct kiss_fft_state* kiss_fft_cfg;
+typedef struct kiss_fft_state* kiss_fft_cfg;	// NOLINT
 
 /* 
  *  kiss_fft_alloc
