@@ -304,8 +304,5 @@ pcl::people::HeightMap2D<PointT>::getMaximaCloudIndicesFiltered ()
 }
 
 template <typename PointT>
-pcl::people::HeightMap2D<PointT>::~HeightMap2D ()
-{
-  // TODO Auto-generated destructor stub
-}
+pcl::people::HeightMap2D<PointT>::~HeightMap2D () = default;
 #endif /* PCL_PEOPLE_HEIGHT_MAP_2D_HPP_ */

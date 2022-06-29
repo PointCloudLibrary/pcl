@@ -82,7 +82,7 @@ namespace pcl
             }
           }
 
-          ~OpenNI2DeviceListener ()
+          ~OpenNI2DeviceListener () override
           {
             openni::OpenNI::removeDeviceConnectedListener (this);
             openni::OpenNI::removeDeviceDisconnectedListener (this);
@@ -191,9 +191,7 @@ pcl::io::openni2::OpenNI2DeviceManager::OpenNI2DeviceManager ()
   device_listener_.reset(new OpenNI2DeviceListener);
 }
 
-pcl::io::openni2::OpenNI2DeviceManager::~OpenNI2DeviceManager ()
-{
-}
+pcl::io::openni2::OpenNI2DeviceManager::~OpenNI2DeviceManager () = default;
 
 std::shared_ptr<std::vector<OpenNI2DeviceInfo>>
 pcl::io::openni2::OpenNI2DeviceManager::getConnectedDeviceInfos () const

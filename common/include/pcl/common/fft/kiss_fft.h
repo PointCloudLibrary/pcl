@@ -2,10 +2,10 @@
 
 #include <pcl/pcl_exports.h>
 
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <math.h>   // NOLINT
+#include <stdio.h>  // NOLINT
+#include <stdlib.h> // NOLINT
+#include <string.h> // NOLINT
 
 #ifdef __cplusplus
 extern "C" {

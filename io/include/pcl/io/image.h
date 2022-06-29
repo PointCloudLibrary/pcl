@@ -82,8 +82,7 @@ namespace pcl
         /**
         * @brief virtual Destructor that never throws an exception.
         */
-        inline virtual ~Image ()
-        {}
+        inline virtual ~Image () = default;
 
         /**
         * @param[in] input_width width of input image

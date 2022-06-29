@@ -58,11 +58,11 @@ namespace mets {
   public:
     /// @brief Ctor.
     update_observer(observed_subject* who) : who_m(who) {}
+    update_observer() = delete;
     /// @brief Subscript operator to update an observer.
     void 
     operator()(observer<observed_subject>* o) { o->update(who_m); }
   private:
-    update_observer() = delete;
     observed_subject* who_m;
   };
   

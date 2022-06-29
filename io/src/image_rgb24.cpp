@@ -55,8 +55,7 @@ pcl::io::ImageRGB24::ImageRGB24 (FrameWrapper::Ptr image_metadata, Timestamp tim
 {}
 
 
-pcl::io::ImageRGB24::~ImageRGB24 () noexcept
-{}
+pcl::io::ImageRGB24::~ImageRGB24 () noexcept = default;
 
 bool
 pcl::io::ImageRGB24::isResizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const
