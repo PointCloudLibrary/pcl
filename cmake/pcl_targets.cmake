@@ -896,3 +896,18 @@ endmacro()
 macro(PCL_SET_TEST_DEPENDENCIES _var _module)
   set(${_var} global_tests ${_module} ${PCL_SUBSYS_DEPS_${_module}})
 endmacro()
+
+###############################################################################
+# Add two test targets for both values of PCL_RUN_TESTS_AT_COMPILE_TIME 
+# boolean flag, binaries produced are named with "_runtime" and "_compiletime" 
+# for false and true values accordingly.
+# _name The test name.
+# _exename The exe name.
+# ARGN :
+#    see PCL_ADD_TEST documentation
+macro (PCL_ADD_COMPILETIME_AND_RUNTIME_TEST _name _exename)
+  PCL_ADD_TEST("${_name}_runtime" "${_exename}_runtime" ${ARGV})
+  target_compile_definitions("${_exename}_runtime" PRIVATE PCL_RUN_TESTS_AT_COMPILE_TIME=false)
+  PCL_ADD_TEST("${_name}_compiletime" "${_exename}_compiletime" ${ARGV})
+  target_compile_definitions("${_exename}_compiletime" PRIVATE PCL_RUN_TESTS_AT_COMPILE_TIME=true)
+endmacro()
