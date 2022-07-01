@@ -247,7 +247,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     PCL_DEBUG("[pcl::registration::TransformationEstimationBFGS::"
               "estimateRigidTransformation]");
     PCL_DEBUG("BFGS solver finished with exit code %i \n", result);
-    transformation_matrix.template setIdentity();
+    transformation_matrix.setIdentity();
     applyState(transformation_matrix, x);
   }
   else
