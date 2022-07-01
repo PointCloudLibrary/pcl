@@ -247,7 +247,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     PCL_DEBUG("[pcl::registration::TransformationEstimationBFGS::"
               "estimateRigidTransformation]");
     PCL_DEBUG("BFGS solver finished with exit code %i \n", result);
-    transformation_matrix.setIdentity();
+    transformation_matrix.template setIdentity();
     applyState(transformation_matrix, x);
   }
   else
@@ -566,7 +566,8 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::applyState(
   R = AngleAxis(static_cast<Scalar>(x[5]), Vector3::UnitZ()) *
       AngleAxis(static_cast<Scalar>(x[4]), Vector3::UnitY()) *
       AngleAxis(static_cast<Scalar>(x[3]), Vector3::UnitX());
-  t.topLeftCorner<3, 3>().matrix() = R * t.topLeftCorner<3, 3>().matrix();
+  t.template topLeftCorner<3, 3>().matrix() =
+      R * t.template topLeftCorner<3, 3>().matrix();
   Vector4 T(static_cast<Scalar>(x[0]),
             static_cast<Scalar>(x[1]),
             static_cast<Scalar>(x[2]),
