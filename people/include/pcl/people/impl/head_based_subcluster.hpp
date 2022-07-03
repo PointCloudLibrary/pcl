@@ -331,8 +331,5 @@ pcl::people::HeadBasedSubclustering<PointT>::subcluster (std::vector<pcl::people
 }
 
 template <typename PointT>
-pcl::people::HeadBasedSubclustering<PointT>::~HeadBasedSubclustering ()
-{
-  // TODO Auto-generated destructor stub
-}
+pcl::people::HeadBasedSubclustering<PointT>::~HeadBasedSubclustering () = default;
 #endif /* PCL_PEOPLE_HEAD_BASED_SUBCLUSTER_HPP_ */

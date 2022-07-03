@@ -145,7 +145,7 @@ private:
 std::set<vtkXRenderWindowInteractor*> vtkXRenderWindowInteractorInternals::Instances;
 
 // for some reason the X11 def of KeySym is getting messed up
-typedef XID vtkKeySym;
+using vtkKeySym = XID;
 
 //------------------------------------------------------------------------------
 vtkXRenderWindowInteractor::vtkXRenderWindowInteractor()

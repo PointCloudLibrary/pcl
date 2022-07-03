@@ -145,7 +145,7 @@ namespace pcl
           const Mode& image_mode = OpenNI_Default_Mode);
 
         /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
-        ~OpenNI2Grabber () noexcept;
+        ~OpenNI2Grabber () noexcept override;
 
         /** \brief Start the data acquisition. */
         void

@@ -55,7 +55,7 @@ namespace pcl
         ImageYUV422 (FrameWrapper::Ptr image_metadata);
         ImageYUV422 (FrameWrapper::Ptr image_metadata, Timestamp timestamp);
 
-        ~ImageYUV422 () noexcept;
+        ~ImageYUV422 () noexcept override;
 
         inline Encoding
         getEncoding () const override
