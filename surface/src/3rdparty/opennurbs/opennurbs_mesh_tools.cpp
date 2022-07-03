@@ -540,7 +540,7 @@ bool ON_Mesh::CollapseEdge( int topei )
         {
           nvi.oldvi = f.vi[fvi];
           ON__NEWVI* p = (ON__NEWVI*)bsearch(&nvi,old2new_map,old2new_map_count,sizeof(old2new_map[0]),(QSORTCMPFUNC)CompareNEWVI);
-          if ( 0 != p && p->oldvi != p->newvi)
+          if ( nullptr != p && p->oldvi != p->newvi)
           {
             f.vi[fvi] = p->newvi;
             bChangedFace = true;
@@ -703,10 +703,10 @@ ON_Mesh* ON_ControlPolygonMesh(
   int v0 = 0;
   int v1 = nurbs_surface.CVCount(1);
 
-  if ( 0 == nurbs_surface.m_cv || !nurbs_surface.IsValid() )
+  if ( nullptr == nurbs_surface.m_cv || !nurbs_surface.IsValid() )
   {
     ON_ERROR("ON_ControlPolygonMesh - surface is not valid");
-    return NULL;
+    return nullptr;
   }
 
   ON_SimpleArray<double> gu(u1);
@@ -746,7 +746,7 @@ ON_Mesh* ON_ControlPolygonMesh(
     d1.Set(gv[v0],gv[v1-1]);
   }
 
-  ON_Mesh* mesh = (0 == input_mesh) ? new ON_Mesh() : input_mesh;
+  ON_Mesh* mesh = (nullptr == input_mesh) ? new ON_Mesh() : input_mesh;
 
   int vertex_count = (u1-u0)*(v1-v0);
   int face_count = (u1-u0-1)*(v1-v0-1);
@@ -918,7 +918,7 @@ ON_Mesh* ON_ControlPolygonMesh(
         {
           delete mesh;
         }
-        mesh = 0;
+        mesh = nullptr;
       }
       else
       {
@@ -1179,7 +1179,7 @@ int ON_Mesh::GetConnectedComponents( bool bUseVertexConnections,
   SortedFaceArray.SetCount(facecount);
 
   int compct = GetConnectedComponents(bUseVertexConnections, bTopologicalConnections, SortedFaceArray);
-  if (0 == compct || 0 == components)
+  if (0 == compct || nullptr == components)
     return compct;
 
   bool bHasFaceNormals = HasFaceNormals();
@@ -1195,7 +1195,7 @@ int ON_Mesh::GetConnectedComponents( bool bUseVertexConnections,
   ON_SimpleArray<int> vertidxarray(m_V.Count());
   vertidxarray.SetCount(m_V.Count());
 
-  const ON_3dPoint* pMesh_D = 0;
+  const ON_3dPoint* pMesh_D = nullptr;
   if ( HasDoublePrecisionVertices() )
   {
     if ( m_V.Count() > 0 && HasSynchronizedDoubleAndSinglePrecisionVertices() )
@@ -1213,10 +1213,10 @@ int ON_Mesh::GetConnectedComponents( bool bUseVertexConnections,
       vertidxarray[k] = -1;
 
     ON_Mesh* pNewMesh = new ON_Mesh();
-    if (0 == pNewMesh)
+    if (nullptr == pNewMesh)
       continue;
 
-    ON_3dPointArray& pNewMesh_D = ( 0 != pMesh_D )
+    ON_3dPointArray& pNewMesh_D = ( nullptr != pMesh_D )
                        ? pNewMesh->DoublePrecisionVertices()
                        : bogus_D;
 
@@ -1235,7 +1235,7 @@ int ON_Mesh::GetConnectedComponents( bool bUseVertexConnections,
           }
 
           int newvi;
-          if ( 0 != pMesh_D )
+          if ( nullptr != pMesh_D )
           {
             newvi = pNewMesh_D.Count();
             pNewMesh_D.Append(pMesh_D[face.vi[k]]);
@@ -1273,7 +1273,7 @@ int ON_Mesh::GetConnectedComponents( bool bUseVertexConnections,
       }
     }
 
-    if ( 0 != pMesh_D )
+    if ( nullptr != pMesh_D )
       pNewMesh->UpdateSinglePrecisionVertices();
 
     pNewMesh->Compact();
@@ -1283,7 +1283,7 @@ int ON_Mesh::GetConnectedComponents( bool bUseVertexConnections,
     else
     {
       delete pNewMesh;
-      pNewMesh = 0;
+      pNewMesh = nullptr;
     }
   }
 

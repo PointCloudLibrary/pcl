@@ -47,7 +47,7 @@ ON_HSORT_FNAME( ON_SORT_TEMPLATE_TYPE* base, std::size_t nel )
   ON_SORT_TEMPLATE_TYPE* e_j;
   ON_SORT_TEMPLATE_TYPE tmp;
 
-  if (0 == base || nel < 2)
+  if (nullptr == base || nel < 2)
     return;
 
   k = nel >> 1;

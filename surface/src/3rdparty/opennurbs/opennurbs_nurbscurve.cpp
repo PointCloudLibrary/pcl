@@ -126,24 +126,24 @@ int ON_NurbsCurve::CVSize() const
   return (m_dim>0) ? (m_is_rat?(m_dim+1):m_dim) : 0;
 }
 
-int ON_NurbsCurve::Order( void ) const
+int ON_NurbsCurve::Order( ) const
 {
   return m_order;
 }
 
-int ON_NurbsCurve::CVCount( void ) const
+int ON_NurbsCurve::CVCount( ) const
 {
   return m_cv_count;
 }
 
-int ON_NurbsCurve::KnotCount( void ) const
+int ON_NurbsCurve::KnotCount( ) const
 {
   return ON_KnotCount( m_order, m_cv_count );
 }
 
 double* ON_NurbsCurve::CV( int i ) const
 {
-  return (m_cv) ? (m_cv + i*m_cv_stride) : NULL;
+  return (m_cv) ? (m_cv + i*m_cv_stride) : nullptr;
 }
 
 ON::point_style ON_NurbsCurve::CVStyle() const
@@ -202,7 +202,7 @@ bool ON_NurbsCurve::CreateClampedUniformNurbs(
         double knot_delta
         )
 {
-  bool rc = (dimension >= 1 && dimension<=3 && point!=NULL);
+  bool rc = (dimension >= 1 && dimension<=3 && point!=nullptr);
   if (rc)
     rc = Create( dimension, false, order, point_count );
   if ( rc )
@@ -224,7 +224,7 @@ bool ON_NurbsCurve::CreatePeriodicUniformNurbs(
         double knot_delta
         )
 {
-  bool rc = (dimension >= 1 && dimension<=3 && point!=NULL);
+  bool rc = (dimension >= 1 && dimension<=3 && point!=nullptr);
   if (rc)
     rc = Create( dimension, false, order, point_count+(order-1) );
   if ( rc )
@@ -268,8 +268,8 @@ bool ON_NurbsCurve::Create(
 void ON_NurbsCurve::Destroy()
 {
   DestroyCurveTree();
-  double* cv = ( m_cv && m_cv_capacity ) ? m_cv : NULL;
-  double* knot = ( m_knot && m_knot_capacity ) ? m_knot : NULL;
+  double* cv = ( m_cv && m_cv_capacity ) ? m_cv : nullptr;
+  double* knot = ( m_knot && m_knot_capacity ) ? m_knot : nullptr;
   Initialize();
   if ( cv )
     onfree(cv);
@@ -290,10 +290,10 @@ void ON_NurbsCurve::Initialize()
   m_order = 0;
   m_cv_count = 0;
   m_knot_capacity = 0;
-  m_knot = 0;
+  m_knot = nullptr;
   m_cv_stride = 0;
   m_cv_capacity = 0;
-  m_cv = 0;
+  m_cv = nullptr;
 }
 
 static void ON_NurbsCurveCopyHelper( const ON_NurbsCurve& src, ON_NurbsCurve& dest )
@@ -399,7 +399,7 @@ static bool ON_ControlPointsAreNotValid()
 static bool ON_ControlPointsAreValid( int cv_size, int cv_count, int cv_stride, const double* cv, ON_TextLog* text_log )
 {
   int i, j;
-  if ( 0 == cv  )
+  if ( nullptr == cv  )
   {
     if ( text_log )
     {
@@ -490,7 +490,7 @@ ON_BOOL32 ON_NurbsCurve::IsValid( ON_TextLog* text_log ) const
     }
   }
   
-  if (m_cv == NULL)
+  if (m_cv == nullptr)
   {
     if ( text_log )
     {
@@ -499,7 +499,7 @@ ON_BOOL32 ON_NurbsCurve::IsValid( ON_TextLog* text_log ) const
     return ON_NurbsCurveIsNotValid();
   }
   
-  if (m_knot == NULL)
+  if (m_knot == nullptr)
   {
     if ( text_log )
     {
@@ -671,7 +671,7 @@ ON_BOOL32 ON_NurbsCurve::Write(
     }
 
     // write knots
-    int count = (0 != m_knot && m_cv_count >= m_order && m_order >= 2)
+    int count = (nullptr != m_knot && m_cv_count >= m_order && m_order >= 2)
               ? KnotCount() 
               : 0;
     if (rc) rc = file.WriteInt(count);
@@ -1082,15 +1082,15 @@ int ON_NurbsCurve::IsPolyline(
       {
         rc++;
         // it's a polyline
-        if ( 0 != pline_points || 0 != pline_t )
+        if ( nullptr != pline_points || nullptr != pline_t )
         {
           GetCV(0,P);
-          if ( 0 != pline_points )
+          if ( nullptr != pline_points )
           {
             pline_points->Reserve(rc);
             GetCV(0,pline_points->AppendNew());
           }
-          if ( 0 != pline_t )
+          if ( nullptr != pline_t )
           {
             pline_t->Reserve(rc);
             pline_t->Append( m_knot[m_order-2] );
@@ -1103,9 +1103,9 @@ int ON_NurbsCurve::IsPolyline(
             {
               // see if this bezier segment is a line
               // with (roughly) linear parameterization.
-              if ( 0 != pline_points )
+              if ( nullptr != pline_points )
                 GetCV(i+m_order-1,pline_points->AppendNew());
-              if ( 0 != pline_t )
+              if ( nullptr != pline_t )
                 pline_t->Append(k[m_order-1]);
             }
           }
@@ -1113,7 +1113,7 @@ int ON_NurbsCurve::IsPolyline(
       }
     }
 
-    if( IsClosed() && rc >= 4 && 0 != pline_points )
+    if( IsClosed() && rc >= 4 && nullptr != pline_points )
     {
       // GBA 2/26/03
       // Make polyline spot on closed.	
@@ -1147,8 +1147,8 @@ ON_NurbsCurve::IsArc(
   if ( (2 == m_dim || 3 == m_dim)
        && m_cv_count >= m_order
        && degree >= 2
-       && 0 != m_knot
-       && 0 != m_cv
+       && nullptr != m_knot
+       && nullptr != m_cv
        && (bLooseTest || 0 != m_is_rat)
        )
   {
@@ -2514,7 +2514,7 @@ bool ON_NurbsCurve::MakePiecewiseBezier( bool bSetEndWeightsToOne )
       bez.ChangeWeights(0,w0,m_order-1,w1);
     }
 
-    bez.m_cv = 0;
+    bez.m_cv = nullptr;
   }
   return rc;
 }
@@ -3259,9 +3259,9 @@ ON_BOOL32 ON_NurbsCurve::Split(
         right->m_knot[i] = t;
       right->ClampEnd(2); // 26 June 2003 Dale Lear
 
-      if ( 0 == left_crv )
+      if ( nullptr == left_crv )
         left_crv = left;
-      if ( 0 == right_crv )
+      if ( nullptr == right_crv )
         right_crv = right;
       rc = true;
     }
@@ -3357,8 +3357,8 @@ static bool ON_IsDuplicateKnotVector( int order, int cv_count,
                const double* knot, const double* other_knot,
                bool bIgnoreParameterization )
 {
-  bool rc = (    0 != knot 
-              && 0 != other_knot 
+  bool rc = (    nullptr != knot 
+              && nullptr != other_knot 
               && order >= 2 
               && cv_count >= order);
 
@@ -3400,7 +3400,7 @@ static bool ON_IsDuplicatePointList( int dim, int is_rat,
 {
   bool rc = (dim > 0 && is_rat >= 0 && is_rat <= 1 && count > 0
              && abs(stride) >= dim+is_rat && abs(other_stride) >= (dim+is_rat)
-             && 0 != cv && 0 != other_cv);
+             && nullptr != cv && nullptr != other_cv);
   if (rc)
   {
     if ( tolerance < 0.0 )
@@ -3713,8 +3713,8 @@ bool ON_NurbsCurve::SpanIsSingular(
        || m_cv_count < m_order
        || m_dim <= 0
        || cv_size > m_cv_stride 
-       || 0 == m_knot
-       || 0 == m_cv
+       || nullptr == m_knot
+       || nullptr == m_cv
        )
   {
     ON_ERROR("Invalid NURBS curve.");
@@ -3739,7 +3739,7 @@ bool ON_NurbsCurve::SpanIsSingular(
     return false; 
   }
 
-  double* p = 0;
+  double* p = nullptr;
   int cv_stride = m_cv_stride;
   if ( knot[0] != knot[m_order-2] || knot[m_order-1] != knot[2*m_order-3] )
   {
@@ -3754,7 +3754,7 @@ bool ON_NurbsCurve::SpanIsSingular(
     cv = p;
   }
   const bool rc = ON_PointsAreCoincident(m_dim,m_is_rat,m_order,cv_stride,cv);
-  if ( 0 != p )
+  if ( nullptr != p )
     onfree(p);
 
   return rc;
@@ -3769,8 +3769,8 @@ bool ON_NurbsCurve::RemoveSpan(
        || m_cv_count < m_order
        || m_dim <= 0
        || cv_size > m_cv_stride 
-       || 0 == m_knot
-       || 0 == m_cv
+       || nullptr == m_knot
+       || nullptr == m_cv
        )
   {
     ON_ERROR("Invalid NURBS curve.");
@@ -3856,7 +3856,7 @@ bool ON_NurbsCurve::RemoveSpan(
     }
 
     int span_index0 = i0 - (m_order-1);
-    double* cv0 = 0;
+    double* cv0 = nullptr;
     if ( span_index0 >= 0 && k0 - i0 + 1 < m_order-1 )
     {
       cv0 = (double*)onmalloc( (m_order*cv_size + 2*m_order-2)*sizeof(cv0[0]) );
@@ -3890,12 +3890,12 @@ bool ON_NurbsCurve::RemoveSpan(
     k0 = i0;
     k1 = i1-m_order+2;
 
-    if ( 0 != cv0 )
+    if ( nullptr != cv0 )
     {
       for ( i = 0; i < m_order-1; i++ )
         memcpy(CV(i+span_index0),cv0 + (i*cv_size),sizeof_cv);
       onfree(cv0);
-      cv0 = 0;
+      cv0 = nullptr;
     }
 
     if ( k0 < k1 )
@@ -3934,8 +3934,8 @@ int ON_NurbsCurve::RemoveSingularSpans()
        || m_cv_count < m_order
        || m_dim <= 0
        || cv_size > m_cv_stride 
-       || 0 == m_knot
-       || 0 == m_cv
+       || nullptr == m_knot
+       || nullptr == m_cv
        )
   {
     ON_ERROR("Invalid NURBS curve.");

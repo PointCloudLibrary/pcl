@@ -21,9 +21,9 @@ ON_OBJECT_IMPLEMENT( ON_SumSurface, ON_Surface, "C4CD5359-446D-4690-9FF5-2905973
 void ON_SumSurface::DestroyRuntimeCache( bool bDelete )
 {
   ON_Surface::DestroyRuntimeCache(bDelete);
-  if ( 0 != m_curve[0] )
+  if ( nullptr != m_curve[0] )
     m_curve[0]->DestroyRuntimeCache(bDelete);
-  if ( 0 != m_curve[1] )
+  if ( nullptr != m_curve[1] )
     m_curve[1]->DestroyRuntimeCache(bDelete);
   // 15 August 2003 Dale Lear:
   //    Added the call to destroy the cached bounding box
@@ -43,8 +43,8 @@ ON_SumSurface* ON_SumSurface::New( const ON_SumSurface& rev_surface )
 ON_SumSurface::ON_SumSurface() : m_basepoint(0.0,0.0,0.0)
 {
   ON__SET__THIS__PTR(m_s_ON_SumSurface_ptr);
-  m_curve[0] = 0;
-  m_curve[1] = 0;
+  m_curve[0] = nullptr;
+  m_curve[1] = nullptr;
 }
 
 ON_SumSurface::~ON_SumSurface()
@@ -60,7 +60,7 @@ void ON_SumSurface::Destroy()
   {
     if ( m_curve[i] ) {
       delete m_curve[i];
-      m_curve[i] = 0;
+      m_curve[i] = nullptr;
     }
   }
   m_bbox.Destroy();
@@ -69,15 +69,15 @@ void ON_SumSurface::Destroy()
 
 void ON_SumSurface::EmergencyDestroy()
 {
-  m_curve[0] = 0;
-  m_curve[1] = 0;
+  m_curve[0] = nullptr;
+  m_curve[1] = nullptr;
 }
 
 ON_SumSurface::ON_SumSurface( const ON_SumSurface& src ) : ON_Surface(src)
 {
   ON__SET__THIS__PTR(m_s_ON_SumSurface_ptr);
-  m_curve[0] = 0;
-  m_curve[1] = 0;
+  m_curve[0] = nullptr;
+  m_curve[1] = nullptr;
   *this = src;
 }
 
@@ -258,14 +258,14 @@ ON_BOOL32 ON_SumSurface::Read( ON_BinaryArchive& file )
     ON_Object* obj;
     rc = file.ReadVector( m_basepoint );
     if (rc) rc = file.ReadBoundingBox( m_bbox );
-    obj = 0;
+    obj = nullptr;
     if (rc) rc = file.ReadObject(&obj);
     if (rc) {
       m_curve[0] = ON_Curve::Cast(obj);
       if ( !m_curve[0] )
         delete obj;
     }
-    obj = 0;
+    obj = nullptr;
     if (rc) rc = file.ReadObject(&obj);
     if (rc) {
       m_curve[1] = ON_Curve::Cast(obj);
@@ -431,7 +431,7 @@ ON_BOOL32 ON_SumSurface::SetDomain(
   bool rc = false;
   if ( t0 < t1 && dir >= 0 && dir <= 1 )
   {
-    if ( 0 != m_curve[dir] )
+    if ( nullptr != m_curve[dir] )
     {
       rc = m_curve[dir]->SetDomain(t0,t1) ? true : false;
       DestroyRuntimeCache();
@@ -464,10 +464,10 @@ ON_BOOL32 ON_SumSurface::GetSurfaceSize(
   int j;
   for ( j = 0; j < 2; j++ )
   {
-    if ( ptr[j] == NULL )
+    if ( ptr[j] == nullptr )
       continue;
     *ptr[j] = 0.0;
-    if ( m_curve[j] == NULL )
+    if ( m_curve[j] == nullptr )
       rc = false;
 
     if ( ! (*ptr[j] > 0.0) )
@@ -643,12 +643,12 @@ bool ON_SumSurface::GetNextDiscontinuity(
   bool rc = false;
   if ( 0 == dir || 1 == dir )
   {
-    if (0 !=  m_curve[dir] )
+    if (nullptr !=  m_curve[dir] )
     {
       rc = m_curve[dir]->GetNextDiscontinuity(
                 c,
                 t0,t1,t,
-                (hint?&hint[dir]:0),
+                (hint?&hint[dir]:nullptr),
                 dtype,
                 cos_angle_tolerance,
                 curvature_tolerance);
@@ -767,9 +767,9 @@ ON_BOOL32 ON_SumSurface::Evaluate( // returns false if unable to evaluate
       side1 = 1;
       break;
     }
-    rc = m_curve[0]->Evaluate(s,nder,dim,v0,side0,hint ? &crv_hint[0] : 0);
+    rc = m_curve[0]->Evaluate(s,nder,dim,v0,side0,hint ? &crv_hint[0] : nullptr);
     if ( rc )
-      rc = m_curve[1]->Evaluate(t,nder,dim,v1,side1,hint ? &crv_hint[1] : 0);
+      rc = m_curve[1]->Evaluate(t,nder,dim,v1,side1,hint ? &crv_hint[1] : nullptr);
     if (rc) 
     {
       int j,ds,dt,der;
@@ -814,7 +814,7 @@ ON_BOOL32 ON_SumSurface::Evaluate( // returns false if unable to evaluate
 
 ON_Curve* ON_SumSurface::IsoCurve(int dir, double c ) const
 {
-  ON_Curve* iso_curve = 0;
+  ON_Curve* iso_curve = nullptr;
   if ( dir >= 0 && dir <= 1 && m_curve[0] && m_curve[1] )
   {
     iso_curve = m_curve[dir]->Duplicate();
@@ -825,7 +825,7 @@ ON_Curve* ON_SumSurface::IsoCurve(int dir, double c ) const
       if ( !iso_curve->Translate(v) )
       {
         delete iso_curve;
-        iso_curve = 0;
+        iso_curve = nullptr;
       }
     }
   }
@@ -837,15 +837,15 @@ class ON_SumTensor : public ON_TensorProduct
 public:
   int dim;
   ON_3dPoint basepoint;
-  int DimensionA() const;
-  int DimensionB() const;
-  int DimensionC() const;
+  int DimensionA() const override;
+  int DimensionB() const override;
+  int DimensionC() const override;
   bool Evaluate( double,        // a
                  const double*, // A
                  double,        // b
                  const double*, // B
                  double*        // C
-                );
+                ) override;
 };
 
 int ON_SumTensor::DimensionA() const
@@ -885,8 +885,8 @@ int ON_SumSurface::GetNurbForm(
     ON_NurbsCurve tmpA, tmpB;
     int rcA = 0;
     int rcB = 0;
-    const ON_NurbsCurve* nurbs_curveA=0;
-    const ON_NurbsCurve* nurbs_curveB=0;
+    const ON_NurbsCurve* nurbs_curveA=nullptr;
+    const ON_NurbsCurve* nurbs_curveB=nullptr;
     nurbs_curveA = ON_NurbsCurve::Cast(m_curve[0]);
     if ( !nurbs_curveA ) 
     {
@@ -1037,8 +1037,8 @@ ON_BOOL32 ON_SumSurface::Split(int dir,
     return false;
   if ( !Domain(dir).Includes( c, true ) )
     return false;
-  ON_SumSurface* left_srf = 0;
-  ON_SumSurface* right_srf = 0;
+  ON_SumSurface* left_srf = nullptr;
+  ON_SumSurface* right_srf = nullptr;
 
 
   if ( west_or_south_side )
@@ -1070,12 +1070,12 @@ ON_BOOL32 ON_SumSurface::Split(int dir,
 
   if (left_srf != this) {
     delete left_srf->m_curve[dir];
-    left_srf->m_curve[dir] = 0;
+    left_srf->m_curve[dir] = nullptr;
   }
 
   if (right_srf != this) {
     delete right_srf->m_curve[dir];
-    right_srf->m_curve[dir] = 0;
+    right_srf->m_curve[dir] = nullptr;
   }
 
 

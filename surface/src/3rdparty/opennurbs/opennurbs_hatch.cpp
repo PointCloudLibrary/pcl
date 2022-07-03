@@ -28,27 +28,27 @@ public:
   static const ON_HatchExtra* HatchExtension(const ON_Hatch* pHatch, bool bCreate);
 
   ON_HatchExtra();
-  ~ON_HatchExtra();
+  ~ON_HatchExtra() override;
 
   void SetDefaults();
 
   // override virtual ON_Object::Dump function
-  void Dump( ON_TextLog& text_log ) const;
+  void Dump( ON_TextLog& text_log ) const override;
 
   // override virtual ON_Object::SizeOf function
-  unsigned int SizeOf() const;
+  unsigned int SizeOf() const override;
 
   // override virtual ON_Object::Write function
-  ON_BOOL32 Write(ON_BinaryArchive& binary_archive) const;
+  ON_BOOL32 Write(ON_BinaryArchive& binary_archive) const override;
 
   // override virtual ON_Object::Read function
-  ON_BOOL32 Read(ON_BinaryArchive& binary_archive);
+  ON_BOOL32 Read(ON_BinaryArchive& binary_archive) override;
 
   // override virtual ON_UserData::GetDescription function
-  ON_BOOL32 GetDescription( ON_wString& description );
+  ON_BOOL32 GetDescription( ON_wString& description ) override;
 
   // override virtual ON_UserData::Archive function
-  ON_BOOL32 Archive() const; 
+  ON_BOOL32 Archive() const override; 
 
   // Get and set a 2d point in the hatch's ECS coordinates
   void SetBasePoint(ON_2dPoint& basepoint);
@@ -63,11 +63,11 @@ ON_OBJECT_IMPLEMENT(ON_HatchExtra,ON_UserData,"3FF7007C-3D04-463f-84E3-132ACEB91
 
 ON_HatchExtra* ON_HatchExtra::HatchExtension(ON_Hatch* pHatch, bool bCreate)
 {
-  ON_HatchExtra* pExtra = 0;
+  ON_HatchExtra* pExtra = nullptr;
   if(pHatch)
   {
     pExtra = ON_HatchExtra::Cast(pHatch->GetUserData(ON_HatchExtra::m_ON_HatchExtra_class_id.Uuid()));
-    if(pExtra == 0 && bCreate)
+    if(pExtra == nullptr && bCreate)
     {
       pExtra = new ON_HatchExtra;
       if(pExtra)
@@ -75,7 +75,7 @@ ON_HatchExtra* ON_HatchExtra::HatchExtension(ON_Hatch* pHatch, bool bCreate)
         if(!pHatch->AttachUserData(pExtra))
         {
           delete pExtra;
-          pExtra = 0;
+          pExtra = nullptr;
         }
       }  
     }
@@ -100,8 +100,7 @@ ON_HatchExtra::ON_HatchExtra()
 }
 
 ON_HatchExtra::~ON_HatchExtra()
-{
-}
+= default;
 
 void ON_HatchExtra::SetDefaults()
 {
@@ -388,8 +387,7 @@ ON_HatchPattern::ON_HatchPattern()
 }
 
 ON_HatchPattern::~ON_HatchPattern()
-{
-}
+= default;
 
 ON_BOOL32 ON_HatchPattern::IsValid( ON_TextLog* text_log) const
 {
@@ -445,12 +443,12 @@ void ON_HatchPattern::Dump( ON_TextLog& dump) const
   dump.Print( "\n");
 
   const wchar_t* wsHatchPatternName = m_hatchpattern_name;
-  if ( 0 == wsHatchPatternName )
+  if ( nullptr == wsHatchPatternName )
     wsHatchPatternName = L"";
   dump.Print( "Name: %ls\n", wsHatchPatternName);
 
   const wchar_t* wsDescription =  m_description;
-  if ( 0 == wsDescription )
+  if ( nullptr == wsDescription )
     wsDescription = L"";
   dump.Print( "Description: %ls\n", wsDescription);
 
@@ -635,7 +633,7 @@ const ON_HatchLine* ON_HatchPattern::HatchLine( int index) const
   if( index >= 0 && index < m_lines.Count())
     return &m_lines[index];
   else
-    return NULL;
+    return nullptr;
 }
 
 bool ON_HatchPattern::RemoveHatchLine( int index)
@@ -712,7 +710,7 @@ void ON_HatchLoop::operator delete(void*, void*)
 
 
 ON_HatchLoop::ON_HatchLoop()
-: m_type( ON_HatchLoop::ltOuter), m_p2dCurve( NULL)
+: m_type( ON_HatchLoop::ltOuter), m_p2dCurve( nullptr)
 {
 }
 
@@ -722,7 +720,7 @@ ON_HatchLoop::ON_HatchLoop( ON_Curve* pCurve2d, eLoopType type)
 }
 
 ON_HatchLoop::ON_HatchLoop( const ON_HatchLoop& src)
-: m_type( src.m_type), m_p2dCurve( NULL)
+: m_type( src.m_type), m_p2dCurve( nullptr)
 { 
   if( src.m_p2dCurve)
     m_p2dCurve = src.m_p2dCurve->DuplicateCurve();
@@ -748,7 +746,7 @@ ON_HatchLoop& ON_HatchLoop::operator=( const ON_HatchLoop& src)
 
 ON_BOOL32 ON_HatchLoop::IsValid( ON_TextLog* text_log) const
 {
-  ON_BOOL32 rc = m_p2dCurve != NULL;
+  ON_BOOL32 rc = m_p2dCurve != nullptr;
   if( !rc)
   {
     if( text_log)
@@ -793,7 +791,7 @@ void ON_HatchLoop::Dump( ON_TextLog& dump) const
   if( m_type == ltInner)
     dump.Print( "Inner hatch loop\n");
 
-  if ( 0 == m_p2dCurve )
+  if ( nullptr == m_p2dCurve )
   {
     dump.Print( "2d curve: null pointer\n");
   }
@@ -817,7 +815,7 @@ ON_BOOL32 ON_HatchLoop::Read( ON_BinaryArchive& ar)
 {
   m_type = ltOuter;
   delete m_p2dCurve;
-  m_p2dCurve = NULL;
+  m_p2dCurve = nullptr;
   int major_version = 0;
   int minor_version = 0;
   ON_BOOL32 rc = ar.Read3dmChunkVersion( &major_version, &minor_version);
@@ -836,7 +834,7 @@ ON_BOOL32 ON_HatchLoop::Read( ON_BinaryArchive& ar)
     }
     if( rc)
     {
-      ON_Object* pObj = NULL;
+      ON_Object* pObj = nullptr;
       rc = ar.ReadObject( &pObj);
       if( pObj)
       {
@@ -1085,7 +1083,7 @@ int ON_Hatch::Dimension() const
 ON_Curve* ON_Hatch::LoopCurve3d( int index) const
 {
   int count = m_loops.Count();
-  ON_Curve* pC = NULL;
+  ON_Curve* pC = nullptr;
 
   if( index >= 0 && index < count)
   {
@@ -1370,7 +1368,7 @@ bool ON_Hatch::ReplaceLoops(ON_SimpleArray<const ON_Curve*> loop_curves)
       break;
     }
     ON_Curve* p2d = loop_curves[i]->Duplicate();
-    if(p2d == 0)
+    if(p2d == nullptr)
     {
       rc = false;
       break;
@@ -1420,7 +1418,7 @@ const ON_HatchLoop* ON_Hatch::Loop( int index) const
   if( index >= 0 && index < m_loops.Count())
     return m_loops[index];
   
-  return NULL;
+  return nullptr;
 }
 
 // Basepoint functions added March 23, 2008 -LW

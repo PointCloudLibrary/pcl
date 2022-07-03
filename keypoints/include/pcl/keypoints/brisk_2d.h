@@ -97,7 +97,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      ~BriskKeypoint2D () = default;
+      ~BriskKeypoint2D () override = default;
 
       /** \brief Sets the threshold for corner detection.
         * \param[in] threshold the threshold used for corner detection.

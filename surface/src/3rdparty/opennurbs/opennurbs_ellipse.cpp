@@ -39,7 +39,7 @@ ON_Ellipse::ON_Ellipse(
 }
 
 ON_Ellipse::~ON_Ellipse()
-{}
+= default;
 
 ON_Ellipse& ON_Ellipse::operator=(const ON_Circle& c)
 {
@@ -279,8 +279,8 @@ ON_BOOL32 ON_Ellipse::ClosestPointTo( const ON_3dPoint& point, double* t ) const
             et = 0.9*t0 + 0.1*t1;
           else if ( et >= t1 )
             et = 0.9*t1 + 0.1*t0;
-          distSqToEllipse( p, t0, &d0, NULL );
-          distSqToEllipse( p, t1, &d1, NULL );
+          distSqToEllipse( p, t0, &d0, nullptr );
+          distSqToEllipse( p, t1, &d1, nullptr );
           if ( d0 == 0.0 ) {
             *t = (t0 == 2.0*ON_PI) ? 0.0 : t0;
             return true;
@@ -295,7 +295,7 @@ ON_BOOL32 ON_Ellipse::ClosestPointTo( const ON_3dPoint& point, double* t ) const
           }
           *t = (t0 == 2.0*ON_PI) ? 0.0 : t0;
           for ( i = 0; true; i++ ) {
-            distSqToEllipse( p, et, &dt, NULL );
+            distSqToEllipse( p, et, &dt, nullptr );
             if ( dt < d0 )
             {
               *t = (et >= 2.0*ON_PI) ? 0.0 : et;

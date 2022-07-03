@@ -514,7 +514,7 @@ RELATED FUNCTIONS:
   double *cv0, *cv1;
   int i, j, k; 
   double* CV, *tmp;
-  void* free_me = 0;
+  void* free_me = nullptr;
   const int degree = order-1;
   const int cvdim = (is_rat)?dim+1:dim;
 
@@ -1407,7 +1407,7 @@ bool ON_EvaluateNurbsDeBoor(
 
   j = 0;
   delta_t = workarray;
-  free_delta_t = 0;
+  free_delta_t = nullptr;
   degree = order-1;  
   t0 = knots[degree-1];
   t1 = knots[degree];
@@ -1554,7 +1554,7 @@ bool ON_EvaluateNurbsBlossom(int cvdim,
   int degree = order-1;
   double workspace[32];
   double* space = workspace;
-  double* free_space = NULL;
+  double* free_space = nullptr;
   if (order > 32){
     free_space = (double*)onmalloc(order*sizeof(double));
     space = free_space;

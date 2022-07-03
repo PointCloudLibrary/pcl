@@ -23,8 +23,8 @@ ON_UserData::ON_UserData()
               m_application_uuid(ON_nil_uuid),
               m_userdata_copycount(0),
               m_userdata_xform(1),
-              m_userdata_owner(0),
-              m_userdata_next(0)
+              m_userdata_owner(nullptr),
+              m_userdata_next(nullptr)
 {}
 
 ON_UserData::ON_UserData(const ON_UserData& src) 
@@ -33,8 +33,8 @@ ON_UserData::ON_UserData(const ON_UserData& src)
               m_application_uuid(src.m_application_uuid),
               m_userdata_copycount(src.m_userdata_copycount),
               m_userdata_xform(src.m_userdata_xform),
-              m_userdata_owner(0), // do not copy owner
-              m_userdata_next(0)   // do not copy next
+              m_userdata_owner(nullptr), // do not copy owner
+              m_userdata_next(nullptr)   // do not copy next
 {
   if ( m_userdata_copycount) 
   {
@@ -90,7 +90,7 @@ ON_UserData::~ON_UserData()
   ON_Object* owner = m_userdata_owner;
   if ( owner ) {
     // remove this piece of user data from owner->m_userdata_list
-    ON_UserData* prev = 0;
+    ON_UserData* prev = nullptr;
     ON_UserData* p;
     for ( p = owner->m_userdata_list; p; prev = p, p = p->m_userdata_next ) {
       if ( p == this ) {
@@ -100,8 +100,8 @@ ON_UserData::~ON_UserData()
         else {
           owner->m_userdata_list = p->m_userdata_next;
         }
-        p->m_userdata_next = 0;
-        p->m_userdata_owner = 0;
+        p->m_userdata_next = nullptr;
+        p->m_userdata_owner = nullptr;
         break;
       }
     }
@@ -145,7 +145,7 @@ ON_BOOL32 ON_UserData::IsValid( ON_TextLog* text_log ) const
 {
   if ( 0 == ON_UuidCompare( &m_userdata_uuid, &ON_nil_uuid ) )
   {
-    if ( 0 != text_log )
+    if ( nullptr != text_log )
     {
       text_log->Print("invalid userdata - m_userdata_uuid = nil\n");
     }
@@ -154,7 +154,7 @@ ON_BOOL32 ON_UserData::IsValid( ON_TextLog* text_log ) const
 
   if ( 0 == ON_UuidCompare( m_userdata_uuid, ON_UserData::ClassId()->Uuid() ) )
   {
-    if ( 0 != text_log )
+    if ( nullptr != text_log )
     {
       text_log->Print("invalid userdata - m_userdata_uuid in use. Use guidgen to get a unique id.\n");
     }
@@ -167,7 +167,7 @@ ON_BOOL32 ON_UserData::IsValid( ON_TextLog* text_log ) const
     //  I added this test to help developers remember to use
     //  the ON_DECLARE_OBJECT/ON_IMPLEMENT_OBJECT macros when
     //  they create user data that gets archived.
-    if ( 0 != text_log )
+    if ( nullptr != text_log )
     {
       text_log->Print("invalid userdata - classes derived from ON_UserData that get saved in 3dm archives must have a class id and name defined by ON_OBJECT_DECLARE/ON_OBJECT_IMPLEMENT.\n");
     }
@@ -211,7 +211,7 @@ ON_OBJECT_IMPLEMENT(ON_UnknownUserData,ON_UserData,"850324A8-050E-11d4-BFFA-0010
 ON_UnknownUserData::ON_UnknownUserData() 
 : m_unknownclass_uuid(ON_nil_uuid)
 , m_sizeof_buffer(0)
-, m_buffer(0)
+, m_buffer(nullptr)
 , m_3dm_version(0)
 , m_3dm_opennurbs_version(0)
 {}
@@ -220,7 +220,7 @@ ON_UnknownUserData::ON_UnknownUserData(const ON_UnknownUserData& src)
 : ON_UserData(src)
 , m_unknownclass_uuid(ON_nil_uuid)
 , m_sizeof_buffer(0)
-, m_buffer(0)
+, m_buffer(nullptr)
 , m_3dm_version(0)
 , m_3dm_opennurbs_version(0)
 {
@@ -247,10 +247,10 @@ ON_UnknownUserData& ON_UnknownUserData::operator=(const ON_UnknownUserData& src)
   if ( this != &src ) 
   {
     m_sizeof_buffer = 0;
-    if ( 0 != m_buffer )
+    if ( nullptr != m_buffer )
     {
       onfree(m_buffer);
-      m_buffer = 0;
+      m_buffer = nullptr;
     }
 
     // ON_UserData::operator= handles setting m_userdata_copycount and
@@ -280,7 +280,7 @@ ON_UnknownUserData& ON_UnknownUserData::operator=(const ON_UnknownUserData& src)
       m_userdata_uuid = ON_nil_uuid;
       m_unknownclass_uuid = ON_nil_uuid;
       m_sizeof_buffer = 0;
-      m_buffer = 0;
+      m_buffer = nullptr;
       m_3dm_version = 0;
       m_3dm_opennurbs_version = 0;
     }
@@ -315,7 +315,7 @@ ON_BOOL32 ON_UnknownUserData::IsValid( ON_TextLog* text_log ) const
   if (rc) 
     rc = (m_sizeof_buffer>0);
   if (rc) 
-    rc = (m_buffer != NULL);
+    rc = (m_buffer != nullptr);
   
   // the unknown class uuid cannot be nil
   if (rc) 
@@ -368,26 +368,26 @@ class ON_UnknownUserDataArchive : public ON_BinaryArchive
   // from a memory buffer.
 public:
   ON_UnknownUserDataArchive( const ON_UnknownUserData& );
-  ~ON_UnknownUserDataArchive();
+  ~ON_UnknownUserDataArchive() override;
 
   // ON_BinaryArchive overrides
   std::size_t CurrentPosition( // current offset (in bytes) into archive ( like ftell() )
-                ) const; 
+                ) const override; 
   bool SeekFromCurrentPosition( // seek from current position ( like fseek( ,SEEK_CUR) )
                 int // byte offset ( >= -CurrentPostion() )
-                ); 
+                ) override; 
   bool SeekFromStart(  // seek from current position ( like fseek( ,SEEK_SET) )
                 std::size_t // byte offset ( >= 0 )
-                );
-  bool AtEnd() const; // true if at end of file
+                ) override;
+  bool AtEnd() const override; // true if at end of file
 
 protected:
-  std::size_t Read( std::size_t, void* ); // return actual number of bytes read (like fread())
-  std::size_t Write( std::size_t, const void* );
-  bool Flush();
+  std::size_t Read( std::size_t, void* ) override; // return actual number of bytes read (like fread())
+  std::size_t Write( std::size_t, const void* ) override;
+  bool Flush() override;
 
 private:
-  ON_UnknownUserDataArchive();
+  ON_UnknownUserDataArchive() = delete;
 
   std::size_t m_sizeof_buffer;
   const unsigned char* m_buffer;
@@ -403,8 +403,7 @@ ON_UnknownUserDataArchive::ON_UnknownUserDataArchive( const ON_UnknownUserData& 
 }
 
 ON_UnknownUserDataArchive::~ON_UnknownUserDataArchive()
-{
-}
+= default;
 
 std::size_t ON_UnknownUserDataArchive::CurrentPosition() const
 {
@@ -482,7 +481,7 @@ bool ON_UnknownUserDataArchive::Flush()
 
 ON_UserData* ON_UnknownUserData::Convert() const
 {
-  ON_UserData* ud = NULL;
+  ON_UserData* ud = nullptr;
   if ( IsValid() ) {
     const ON_ClassId* pID = ON_ClassId::ClassId( m_unknownclass_uuid );
     // if pID is NULL, it means the definiton of the unknown user data
@@ -515,7 +514,7 @@ bool ON_UserDataHolder::MoveUserDataFrom( const ON_Object& source_object )
 {
   PurgeUserData();
   MoveUserData(*const_cast<ON_Object*>(&source_object));
-  return (0 != FirstUserData());
+  return (nullptr != FirstUserData());
 }
 
 bool ON_UserDataHolder::MoveUserDataTo(  const ON_Object& source_object, bool bAppend )
@@ -526,7 +525,7 @@ bool ON_UserDataHolder::MoveUserDataTo(  const ON_Object& source_object, bool bA
   }
   const_cast<ON_Object*>(&source_object)->MoveUserData(*this);
   PurgeUserData();
-  return (0 != source_object.FirstUserData());
+  return (nullptr != source_object.FirstUserData());
 }
 
 ON_BOOL32 ON_UserDataHolder::IsValid( ON_TextLog* ) const
@@ -543,12 +542,10 @@ ON_BOOL32 ON_UserDataHolder::IsValid( ON_TextLog* ) const
 
 
 ON_UserString::ON_UserString()
-{
-}
+= default;
 
 ON_UserString::~ON_UserString()
-{
-}
+= default;
 
 
 bool ON_UserString::Write(ON_BinaryArchive& archive) const
@@ -627,8 +624,7 @@ ON_UserStringList::ON_UserStringList()
 }
 
 ON_UserStringList::~ON_UserStringList()
-{
-}
+= default;
 
 ON_BOOL32 ON_UserStringList::GetDescription( ON_wString& description )
 {
@@ -829,7 +825,7 @@ int ON_UserStringList::SetUserStrings( int count, const ON_UserString* us, bool 
   int added_count = 0;
   int i;
 
-  if ( count <= 0 || 0 == us )
+  if ( count <= 0 || nullptr == us )
     return 0;
 
   if ( 1 == count )
@@ -887,7 +883,7 @@ int ON_UserStringList::SetUserStrings( int count, const ON_UserString* us, bool 
     // the hash[] entries keys with the same hash code
     // as us[i].m_key.
     h = ON_BinarySearch2dexArray(hash1[i].i,hash,count0_plus_count);
-    if ( 0 == h )
+    if ( nullptr == h )
     {
       ON_ERROR("There is a bug in this function.");
       continue;
@@ -980,7 +976,7 @@ bool ON_Object::SetUserString( const wchar_t* key, const wchar_t* string_value )
     if ( !AttachUserData(us) )
     {
       delete us;
-      us = 0;
+      us = nullptr;
     }
     else
     {
@@ -1006,7 +1002,7 @@ bool ON_Object::SetUserString( const wchar_t* key, const wchar_t* string_value )
       // user data was new-ed up and has nothing in it
       // because the input was bogus.
       delete us;
-      us = 0;
+      us = nullptr;
       b = false;
     }
   }
@@ -1016,7 +1012,7 @@ bool ON_Object::SetUserString( const wchar_t* key, const wchar_t* string_value )
 
 int ON_Object::SetUserStrings( int count, const ON_UserString* user_strings, bool bReplace )
 {
-  if ( 0 == count || 0 == user_strings )
+  if ( 0 == count || nullptr == user_strings )
     return 0;
 
   int add_count = 0;
@@ -1040,7 +1036,7 @@ int ON_Object::SetUserStrings( int count, const ON_UserString* user_strings, boo
     if ( !AttachUserData(us) )
     {
       delete us;
-      us = 0;
+      us = nullptr;
     }
   }
 
@@ -1058,7 +1054,7 @@ bool ON_Object::GetUserString( const wchar_t* key, ON_wString& string_value ) co
 int ON_Object::UserStringCount() const
 {
   const ON_UserStringList* us = ON_UserStringList::Cast(GetUserData(ON_UserStringList::m_ON_UserStringList_class_id.Uuid()));
-  return ( 0 != us )
+  return ( nullptr != us )
          ? us->m_e.Count()
          : 0;
 }
@@ -1097,12 +1093,10 @@ int ON_Object::GetUserStringKeys(
 ON_OBJECT_IMPLEMENT(ON_DocumentUserStringList,ON_Object,"06F3218E-F5EC-4f6c-B74C-14583F0ED7BC");
 
 ON_DocumentUserStringList::ON_DocumentUserStringList()
-{
-}
+= default;
 
 ON_DocumentUserStringList::~ON_DocumentUserStringList()
-{
-}
+= default;
 
 ON_BOOL32 ON_DocumentUserStringList::IsValid( ON_TextLog* ) const
 {

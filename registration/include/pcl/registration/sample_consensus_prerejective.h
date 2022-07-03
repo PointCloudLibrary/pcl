@@ -135,7 +135,7 @@ public:
   };
 
   /** \brief Destructor */
-  ~SampleConsensusPrerejective() = default;
+  ~SampleConsensusPrerejective() override = default;
 
   /** \brief Provide a boost shared pointer to the source point cloud's feature
    * descriptors \param features the source point cloud's features

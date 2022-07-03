@@ -25,17 +25,17 @@ public:
   static ON_BrepRegionTopology* RegionTopology(const ON_Brep* brep,bool bValidateFaceCount);
 
   ON_BrepRegionTopologyUserData();
-  ~ON_BrepRegionTopologyUserData();
+  ~ON_BrepRegionTopologyUserData() override;
   ON_BrepRegionTopologyUserData(const ON_BrepRegionTopologyUserData&);
   ON_BrepRegionTopologyUserData& operator=(const ON_BrepRegionTopologyUserData&);
 
-  unsigned int SizeOf() const;
-  ON_BOOL32 Archive() const; 
-  ON_BOOL32 Transform( const ON_Xform& ); 
-  ON_BOOL32 Write(ON_BinaryArchive& binary_archive) const;
-  ON_BOOL32 Read(ON_BinaryArchive& binary_archive);
+  unsigned int SizeOf() const override;
+  ON_BOOL32 Archive() const override; 
+  ON_BOOL32 Transform( const ON_Xform& ) override; 
+  ON_BOOL32 Write(ON_BinaryArchive& binary_archive) const override;
+  ON_BOOL32 Read(ON_BinaryArchive& binary_archive) override;
 
-  ON_BOOL32 GetDescription( ON_wString& description );
+  ON_BOOL32 GetDescription( ON_wString& description ) override;
 
   ON_BrepRegionTopology m_region_topology;
 };
@@ -44,7 +44,7 @@ ON_OBJECT_IMPLEMENT(ON_BrepRegionTopologyUserData,ON_UserData,"7FE23D63-E536-43f
 
 ON_BrepRegionTopology* ON_BrepRegionTopologyUserData::RegionTopology(const ON_Brep* brep,bool bValidateFaceCount)
 {
-  ON_BrepRegionTopology* rtop = 0;
+  ON_BrepRegionTopology* rtop = nullptr;
   if ( brep )
   {
     ON_BrepRegionTopologyUserData* ud = ON_BrepRegionTopologyUserData::Cast(brep->GetUserData(ON_BrepRegionTopologyUserData::m_ON_BrepRegionTopologyUserData_class_id.Uuid()));
@@ -52,7 +52,7 @@ ON_BrepRegionTopology* ON_BrepRegionTopologyUserData::RegionTopology(const ON_Br
     {
       rtop = &ud->m_region_topology;
       if (bValidateFaceCount && rtop->m_FS.Count() != 2*brep->m_F.Count())
-        rtop = 0;
+        rtop = nullptr;
     }
   }
   return rtop;
@@ -66,8 +66,7 @@ ON_BrepRegionTopologyUserData::ON_BrepRegionTopologyUserData()
 }
 
 ON_BrepRegionTopologyUserData::~ON_BrepRegionTopologyUserData()
-{
-}
+= default;
 
 ON_BrepRegionTopologyUserData::ON_BrepRegionTopologyUserData( const ON_BrepRegionTopologyUserData& src ) 
                               : ON_UserData(src)
@@ -166,13 +165,12 @@ ON_BrepFaceSide::ON_BrepFaceSide()
   m_ri = -1;
   m_fi = -1;
   m_srf_dir = 0;
-  m_rtop = 0;
+  m_rtop = nullptr;
   memset(&m_faceside_user,0,sizeof(m_faceside_user));
 }
 
 ON_BrepFaceSide::~ON_BrepFaceSide()
-{
-}
+= default;
 
 ON_BrepFaceSide& ON_BrepFaceSide::operator=(const ON_BrepFaceSide& src)
 {
@@ -242,7 +240,7 @@ ON_BOOL32 ON_BrepFaceSide::Read(ON_BinaryArchive& file)
 
 ON_Brep* ON_BrepFaceSide::Brep() const
 {
-  return m_rtop ? m_rtop->Brep() : 0;
+  return m_rtop ? m_rtop->Brep() : nullptr;
 }
 
 
@@ -253,7 +251,7 @@ ON_BrepRegionTopology* ON_BrepFaceSide::RegionTopology() const
 
 ON_BrepRegion* ON_BrepFaceSide::Region() const
 {
-  ON_BrepRegion* region = 0;
+  ON_BrepRegion* region = nullptr;
   if ( m_rtop && m_ri >= 0 && m_ri < m_rtop->m_R.Count() )
   {
     region = &m_rtop->m_R[m_ri];
@@ -264,7 +262,7 @@ ON_BrepRegion* ON_BrepFaceSide::Region() const
 
 class ON_BrepFace* ON_BrepFaceSide::Face() const
 {
-  class ON_BrepFace* face = 0;
+  class ON_BrepFace* face = nullptr;
   if ( m_rtop && m_fi >= 0 )
   {
     ON_Brep* brep = m_rtop->Brep();
@@ -293,13 +291,12 @@ ON_BrepRegion::ON_BrepRegion()
 {
   m_region_index = -1;
   m_type = -1;
-  m_rtop = 0;
+  m_rtop = nullptr;
   memset(&m_region_user,0,sizeof(m_region_user));
 }
 
 ON_BrepRegion::~ON_BrepRegion()
-{
-}
+= default;
 
 ON_BrepRegion& ON_BrepRegion::operator=(const ON_BrepRegion& src)
 {
@@ -370,7 +367,7 @@ ON_BOOL32 ON_BrepRegion::Read(ON_BinaryArchive& file)
 
 ON_Brep* ON_BrepRegion::Brep() const
 {
-  return m_rtop ? m_rtop->Brep() : 0;
+  return m_rtop ? m_rtop->Brep() : nullptr;
 }
 
 ON_BrepRegionTopology* ON_BrepRegion::RegionTopology() const
@@ -381,7 +378,7 @@ ON_BrepRegionTopology* ON_BrepRegion::RegionTopology() const
 
 ON_BrepFaceSide* ON_BrepRegion::FaceSide(int rfsi) const
 {
-  ON_BrepFaceSide* faceside = 0;
+  ON_BrepFaceSide* faceside = nullptr;
   if ( m_rtop && rfsi >= 0 && rfsi < m_fsi.Count() )
   {
     int fsi = m_fsi[rfsi];
@@ -405,12 +402,10 @@ const ON_BoundingBox& ON_BrepRegion::BoundingBox() const
 }
 
 ON_BrepFaceSideArray::ON_BrepFaceSideArray()
-{
-}
+= default;
 
 ON_BrepFaceSideArray::~ON_BrepFaceSideArray()
-{
-}
+= default;
 
 bool ON_BrepFaceSideArray::Read( ON_BinaryArchive& file )
 {
@@ -468,12 +463,10 @@ unsigned int ON_BrepFaceSideArray::SizeOf() const
 }
 
 ON_BrepRegionArray::ON_BrepRegionArray()
-{
-}
+= default;
 
 ON_BrepRegionArray::~ON_BrepRegionArray()
-{
-}
+= default;
 
 bool ON_BrepRegionArray::Read( ON_BinaryArchive& file )
 {
@@ -531,18 +524,16 @@ unsigned int ON_BrepRegionArray::SizeOf() const
 }
 
 ON_BrepRegionTopology::ON_BrepRegionTopology()
-{
-}
+= default;
 
 ON_BrepRegionTopology::~ON_BrepRegionTopology()
-{
-}
+= default;
 
 ON_BrepRegionTopology::ON_BrepRegionTopology(const ON_BrepRegionTopology& src)
 {
   int i;
   // do not copy m_brep
-  m_brep = 0;
+  m_brep = nullptr;
   m_FS = src.m_FS;
   m_R = src.m_R;
   for (i = 0; i < m_FS.Count(); i++ )
@@ -761,7 +752,7 @@ unsigned int ON_BrepRegionTopology::SizeOf() const
 
 ON_BrepFaceSide* ON_BrepFace::FaceSide(int dir) const
 {
-  ON_BrepFaceSide* faceside = 0;
+  ON_BrepFaceSide* faceside = nullptr;
   const ON_BrepRegionTopology* rtop = ON_BrepRegionTopologyUserData::RegionTopology(m_brep,true);
   if ( rtop )
   {
@@ -770,7 +761,7 @@ ON_BrepFaceSide* ON_BrepFace::FaceSide(int dir) const
       int fsi = 2*m_face_index + ((dir<1)?1:0);
       faceside = const_cast<ON_BrepFaceSide*>(&rtop->m_FS[fsi]);
       if ( m_face_index != faceside->m_fi || dir != faceside->m_srf_dir )
-        faceside = 0;
+        faceside = nullptr;
     }
   }
   return faceside;
@@ -779,13 +770,13 @@ ON_BrepFaceSide* ON_BrepFace::FaceSide(int dir) const
 bool ON_Brep::HasRegionTopology() const
 {
   ON_UserData* ud = GetUserData(ON_BrepRegionTopologyUserData::m_ON_BrepRegionTopologyUserData_class_id.Uuid());
-  return (0 != ud);
+  return (nullptr != ud);
 }
 
 const ON_BrepRegionTopology& ON_Brep::RegionTopology() const
 {
   ON_BrepRegionTopology* rtop = ON_BrepRegionTopologyUserData::RegionTopology(this,false);
-  if ( 0 == rtop )
+  if ( nullptr == rtop )
   {
     ON_BrepRegionTopologyUserData* ud = new ON_BrepRegionTopologyUserData();
     if ( const_cast<ON_Brep*>(this)->AttachUserData(ud) )
@@ -872,7 +863,7 @@ ON_Brep* ON_Brep::SubBrep(
     // this class cleans up sub_brep in an
     // appropriate fashion.
   public:
-    LeakStopper() {m_p=0;m_sub_brep=0;}
+    LeakStopper() {m_p=nullptr;m_sub_brep=nullptr;}
     ~LeakStopper() {if (m_p) delete m_p; else if (m_sub_brep) m_sub_brep->Destroy();}
     ON_Brep* m_p;        // ON_Brep::SubBrep allocated sub_brep
     ON_Brep* m_sub_brep; // user's sub_brep argument
@@ -882,11 +873,11 @@ ON_Brep* ON_Brep::SubBrep(
   if ( sub_brep )
     sub_brep->Destroy();
 
-  if ( subfi_count <= 0 || 0 == subfi )
-    return 0;
+  if ( subfi_count <= 0 || nullptr == subfi )
+    return nullptr;
 
   if ( subfi_count > m_F.Count() )
-    return 0;
+    return nullptr;
 
   // validate indices in extract_fi[] and
   // make sure there are no duplicates.
@@ -907,7 +898,7 @@ ON_Brep* ON_Brep::SubBrep(
     if ( fi < 0 || fi >= m_F.Count() )
     {
       ON_ERROR("ON_Brep::SubBrep sub_fi[] has invalid indices");
-      return 0;
+      return nullptr;
     }
     if ( fi > maxfi )
       maxfi = fi;
@@ -920,7 +911,7 @@ ON_Brep* ON_Brep::SubBrep(
         if ( subfi[j] == fi )
         {
           ON_ERROR("ON_Brep::SubBrep sub_fi[] has duplicate indices");
-          return 0;
+          return nullptr;
         }
       }
     }
@@ -930,18 +921,18 @@ ON_Brep* ON_Brep::SubBrep(
     {
       const ON_BrepLoop* loop = face.Loop(fli);
       if ( !loop || this != loop->Brep() )
-        return 0;
+        return nullptr;
       Lcount++;
       for ( lti = 0; lti < loop->m_ti.Count(); lti++ )
       {
         const ON_BrepTrim* trim = loop->Trim(lti);
         if ( !trim || this != trim->Brep() )
-          return 0;
+          return nullptr;
         Tcount++;
         if ( trim->m_vi[0] < 0 || trim->m_vi[0] >= m_V.Count() )
-          return 0;
+          return nullptr;
         if ( trim->m_vi[1] < 0 || trim->m_vi[1] >= m_V.Count() )
-          return 0;
+          return nullptr;
         if ( 0 == Vmap[trim->m_vi[0]] )
         {
           Vmap[trim->m_vi[0]] = 1;
@@ -956,27 +947,27 @@ ON_Brep* ON_Brep::SubBrep(
              ON_BrepTrim::ptonsrf == trim->m_type)   // March 29, 2010 Lowell - Allow ptonsrf
         {
           if ( trim->m_ei >= 0 || trim->m_vi[0] != trim->m_vi[1] )
-            return 0;
+            return nullptr;
         }
         else if ( trim->m_ei >= 0 )
         {
           const ON_BrepEdge* edge = trim->Edge();
-          if ( 0 == edge || this != edge->Brep() )
-            return 0;
+          if ( nullptr == edge || this != edge->Brep() )
+            return nullptr;
           if ( 0 == Emap[trim->m_ei] )
           {
             Emap[trim->m_ei] = 1;
             Ecount++;
             // edge's vertices should already be mapped.
             if ( 0 == Vmap[edge->m_vi[0]] )
-              return 0;
+              return nullptr;
             if ( 0 == Vmap[edge->m_vi[1]] )
-              return 0;
+              return nullptr;
           }          
         }
         else
         {
-          return 0;
+          return nullptr;
         }
       }
     }
@@ -1024,16 +1015,16 @@ ON_Brep* ON_Brep::SubBrep(
     {
       const ON_BrepEdge& edge = m_E[i];
       if ( Vmap[edge.m_vi[0]] < 0 )
-        return 0;
+        return nullptr;
       if ( Vmap[edge.m_vi[1]] < 0 )
-        return 0;
+        return nullptr;
       ON_Curve* c3 = edge.DuplicateCurve();
-      if ( 0 == c3 )
-        return 0;
+      if ( nullptr == c3 )
+        return nullptr;
       sub_brep->m_C3.Append(c3);
       ON_BrepVertex& sub_v0 = sub_brep->m_V[Vmap[edge.m_vi[0]]];
       ON_BrepVertex& sub_v1 = sub_brep->m_V[Vmap[edge.m_vi[1]]];
-      ON_BrepEdge& sub_edge = sub_brep->NewEdge(sub_v0,sub_v1,sub_brep->m_C3.Count()-1,0,edge.m_tolerance);
+      ON_BrepEdge& sub_edge = sub_brep->NewEdge(sub_v0,sub_v1,sub_brep->m_C3.Count()-1,nullptr,edge.m_tolerance);
       Emap[i] = sub_edge.m_edge_index;
       sub_edge.CopyUserData(edge);
       // March 29, 2010 Lowell - Copy user fields
@@ -1051,7 +1042,7 @@ ON_Brep* ON_Brep::SubBrep(
     const ON_BrepFace& face = m_F[subfi[i]];
     ON_Surface* srf = face.DuplicateSurface();
     if (!srf)
-      return 0;
+      return nullptr;
     sub_brep->m_S.Append(srf);
     ON_BrepFace& sub_face = sub_brep->NewFace(sub_brep->m_S.Count()-1);
     sub_face.CopyUserData(face);
@@ -1089,18 +1080,18 @@ ON_Brep* ON_Brep::SubBrep(
       {
         const ON_BrepTrim& trim = m_T[loop.m_ti[lti]];
         if ( Vmap[trim.m_vi[0]] < 0 || Vmap[trim.m_vi[1]] < 0 )
-          return 0;
+          return nullptr;
         if ( trim.m_ei >= 0 && Emap[trim.m_ei] < 0 )
-          return 0;
+          return nullptr;
         if(trim.m_c2i >= 0)
         {
           ON_Curve* c2 = trim.DuplicateCurve();
           if ( !c2 )
-            return 0;
+            return nullptr;
           sub_brep->m_C2.Append(c2);
         }
         else if(trim.m_type != ON_BrepTrim::ptonsrf)
-          return 0;
+          return nullptr;
         if ( trim.m_ei >= 0 )
         {
           ON_BrepEdge& sub_edge = sub_brep->m_E[Emap[trim.m_ei]];
@@ -1121,7 +1112,7 @@ ON_Brep* ON_Brep::SubBrep(
         }
         else
         {
-          return 0;
+          return nullptr;
         }
         ON_BrepTrim& sub_trim = sub_brep->m_T[sub_brep->m_T.Count()-1];
         sub_trim.CopyUserData(trim);
@@ -1151,21 +1142,21 @@ ON_Brep* ON_Brep::SubBrep(
     sub_brep->m_bbox = sub_bbox;
 
   // return subbrep after disabling the leak stopper
-  leak_stopper.m_p = 0;
-  leak_stopper.m_sub_brep = 0;
+  leak_stopper.m_p = nullptr;
+  leak_stopper.m_sub_brep = nullptr;
   return sub_brep;
 }
 
 ON_Brep* ON_BrepRegion::RegionBoundaryBrep( ON_Brep* brep ) const
 {
   ON_Workspace ws;
-  if ( 0 == m_rtop )
-    return 0;
+  if ( nullptr == m_rtop )
+    return nullptr;
 
   const ON_Brep* rtop_brep = m_rtop->Brep();
 
-  if ( rtop_brep == brep || 0 == rtop_brep || rtop_brep->m_F.Count() <= 0 || m_fsi.Count() <= 0 )
-    return 0;
+  if ( rtop_brep == brep || nullptr == rtop_brep || rtop_brep->m_F.Count() <= 0 || m_fsi.Count() <= 0 )
+    return nullptr;
 
   ON_SimpleArray<const ON_BrepFaceSide*> FS(m_fsi.Count());
   ON_SimpleArray<int> subfi(m_fsi.Count());
@@ -1174,8 +1165,8 @@ ON_Brep* ON_BrepRegion::RegionBoundaryBrep( ON_Brep* brep ) const
   for ( rfsi = 0; rfsi < m_fsi.Count(); rfsi++ )
   {
     const ON_BrepFaceSide* fs = FaceSide(rfsi);
-    if ( 0 == fs || fs->m_fi < 0 || fs->m_fi >= rtop_brep->m_F.Count() )
-      return 0;
+    if ( nullptr == fs || fs->m_fi < 0 || fs->m_fi >= rtop_brep->m_F.Count() )
+      return nullptr;
     for ( i = 0; i < FS.Count(); i++ )
     {
       if ( fs->m_fi == FS[i]->m_fi )
@@ -1189,9 +1180,9 @@ ON_Brep* ON_BrepRegion::RegionBoundaryBrep( ON_Brep* brep ) const
 
   brep = rtop_brep->SubBrep(subfi.Count(),subfi.Array(),brep);
   if ( !brep )
-    return 0;
+    return nullptr;
   if ( brep->m_F.Count() != FS.Count() )
-    return 0;
+    return nullptr;
   for ( i = 0; i < FS.Count(); i++ )
   {
     ON_BrepFace& face = brep->m_F[i];

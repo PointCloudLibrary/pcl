@@ -37,14 +37,13 @@ ON_InstanceDefinition::ON_InstanceDefinition()
 }
 
 ON_InstanceDefinition::~ON_InstanceDefinition()
-{
-}
+= default;
 
 
 void ON_InstanceDefinition::Dump( ON_TextLog& text_log ) const
 {
   const wchar_t* wsIDefName = m_name;
-  if ( 0 == wsIDefName ) 
+  if ( nullptr == wsIDefName ) 
     wsIDefName = L"";
   text_log.Print("Name: \"%ls\"\n",wsIDefName);
 
@@ -77,22 +76,22 @@ void ON_InstanceDefinition::Dump( ON_TextLog& text_log ) const
   text_log.Print("Id: "); text_log.Print(m_uuid); text_log.Print("\n");
 
   const wchar_t* wsDescription = m_description;
-  if ( 0 != wsDescription && 0 != wsDescription[0]) 
+  if ( nullptr != wsDescription && 0 != wsDescription[0]) 
     text_log.Print("Description: \"%ls\"\n",wsDescription);
 
   const wchar_t* wsURL = m_url;
-  if ( 0 != wsURL && 0 != wsURL[0]) 
+  if ( nullptr != wsURL && 0 != wsURL[0]) 
     text_log.Print("URL: \"%ls\"\n",wsURL);
 
   const wchar_t* wsTag = m_url_tag;
-  if ( 0 != wsTag && 0 != wsTag[0]) 
+  if ( nullptr != wsTag && 0 != wsTag[0]) 
     text_log.Print("URL tag: \"%ls\"\n",wsTag);
 
   m_us.Dump(text_log);
 
   const wchar_t* wsSourceArchive = SourceArchive();
   text_log.Print("Source archive: ");
-  if ( 0 == wsSourceArchive || 0 == wsSourceArchive[0] )
+  if ( nullptr == wsSourceArchive || 0 == wsSourceArchive[0] )
   {
     text_log.Print("none.\n");
   }
@@ -107,7 +106,7 @@ void ON_InstanceDefinition::Dump( ON_TextLog& text_log ) const
     if ( GetAlternateSourceArchivePath(str,bRel) )
     {
       const wchar_t* wsAlternateArchive = str;
-      if ( 0 == wsAlternateArchive || 0 == wsAlternateArchive[0] )
+      if ( nullptr == wsAlternateArchive || 0 == wsAlternateArchive[0] )
         wsAlternateArchive = L"";
       text_log.Print("Alternate archive: \"%ls\" (%s)\n",wsAlternateArchive,bRel?"relative":"absolute");
     }
@@ -679,7 +678,7 @@ void ON_InstanceDefinition::SetSourceArchive(
   }
   else
   {
-    SetAlternateSourceArchivePath(0,false);
+    SetAlternateSourceArchivePath(nullptr,false);
     m_source_archive = s;
     m_source_bRelativePath = false;
     m_source_archive_checksum = checksum;
@@ -699,7 +698,7 @@ void ON_InstanceDefinition::DestroySourceArchive()
   m_idef_update_type = ON_InstanceDefinition::static_def;
   m_idef_layer_style = 0;
   m_idef_update_depth = 0;
-  SetAlternateSourceArchivePath(0,false);
+  SetAlternateSourceArchivePath(nullptr,false);
 }
 
 const wchar_t* ON_InstanceDefinition::SourceArchive() const
@@ -903,7 +902,7 @@ class /*NEVER EXPORT THIS CLASS DEFINITION*/ ON__IDefLayerSettingsUserData : pub
 
 public:
   ON__IDefLayerSettingsUserData();
-  ~ON__IDefLayerSettingsUserData();
+  ~ON__IDefLayerSettingsUserData() override;
   // default copy constructor and operator= work fine.
 
   ON__IDefLayerSettingsUserData(const ON__IDefLayerSettingsUserData& src);
@@ -916,7 +915,7 @@ private:
   void CreateHelper()
   {
     m_layers.Destroy();
-    m_idef_layer_table_parent_layer = 0;
+    m_idef_layer_table_parent_layer = nullptr;
   }
 
   void CopyHelper(const ON__IDefLayerSettingsUserData& src)
@@ -925,13 +924,13 @@ private:
     for ( int i = 0; i < src.m_layers.Count(); i++ )
     {
       const ON_Layer* src_layer = src.m_layers[i];
-      if ( 0 != src_layer )
+      if ( nullptr != src_layer )
       {
         m_layers.Append( new ON_Layer( *src_layer ) );
       }
     }
     
-    if ( 0 != src.m_idef_layer_table_parent_layer )
+    if ( nullptr != src.m_idef_layer_table_parent_layer )
     {
       m_idef_layer_table_parent_layer = new ON_Layer( *src.m_idef_layer_table_parent_layer );
     }
@@ -948,29 +947,29 @@ private:
       m_layers[i] = 0;
     }
     m_layers.Destroy();
-    if ( 0 != m_idef_layer_table_parent_layer )
+    if ( nullptr != m_idef_layer_table_parent_layer )
     {
       delete m_idef_layer_table_parent_layer;
-      m_idef_layer_table_parent_layer = 0;
+      m_idef_layer_table_parent_layer = nullptr;
     }
     m_runtime_layer_id_map.Empty();
   }
 
 public:
   // virtual ON_Object override
-  ON_BOOL32 IsValid( ON_TextLog* text_log = NULL ) const;
+  ON_BOOL32 IsValid( ON_TextLog* text_log = nullptr ) const override;
   // virtual ON_Object override
-  unsigned int SizeOf() const;
+  unsigned int SizeOf() const override;
   // virtual ON_Object override
-  ON__UINT32 DataCRC(ON__UINT32 current_remainder) const;
+  ON__UINT32 DataCRC(ON__UINT32 current_remainder) const override;
   // virtual ON_Object override
-  ON_BOOL32 Write(ON_BinaryArchive& binary_archive) const;
+  ON_BOOL32 Write(ON_BinaryArchive& binary_archive) const override;
   // virtual ON_Object override
-  ON_BOOL32 Read(ON_BinaryArchive& binary_archive);
+  ON_BOOL32 Read(ON_BinaryArchive& binary_archive) override;
   // virtual ON_UserData override
-  ON_BOOL32 Archive() const;
+  ON_BOOL32 Archive() const override;
   // virtual ON_UserData override
-  ON_BOOL32 GetDescription( ON_wString& description );
+  ON_BOOL32 GetDescription( ON_wString& description ) override;
 
 public:
   // m_layers[] satisfies
@@ -1084,7 +1083,7 @@ ON_BOOL32 ON__IDefLayerSettingsUserData::Write(ON_BinaryArchive& binary_archive)
       break;
 
     // added in version 1.1 chunks
-    bool bHaveParentLayer = ( 0 != m_idef_layer_table_parent_layer );
+    bool bHaveParentLayer = ( nullptr != m_idef_layer_table_parent_layer );
     if ( !binary_archive.WriteBool(bHaveParentLayer) )
       break;
 
@@ -1134,8 +1133,8 @@ ON_BOOL32 ON__IDefLayerSettingsUserData::Read(ON_BinaryArchive& binary_archive)
 
     if ( bHaveParentLayer )
     {
-      ON_Object* p = 0;
-      if ( !binary_archive.ReadObject(&p) || 0 == p )
+      ON_Object* p = nullptr;
+      if ( !binary_archive.ReadObject(&p) || nullptr == p )
       {
         if (p)
         {
@@ -1145,7 +1144,7 @@ ON_BOOL32 ON__IDefLayerSettingsUserData::Read(ON_BinaryArchive& binary_archive)
       }
 
       m_idef_layer_table_parent_layer = ON_Layer::Cast(p);
-      if ( 0 == m_idef_layer_table_parent_layer )
+      if ( nullptr == m_idef_layer_table_parent_layer )
       {
         delete p;
         break;
@@ -1254,22 +1253,22 @@ bool ON_InstanceDefinition::HasLinkedIdefLayerSettings() const
 
 static int compareLayerPtrId(const void* A, const void*B)
 {
-  if ( 0 == A )
+  if ( nullptr == A )
   {
-    return 0 == B ? 0 : -1;
+    return nullptr == B ? 0 : -1;
   }
-  if ( 0 == B )
+  if ( nullptr == B )
   {
     return 1;
   }
 
-  const ON_Layer* a = (0!=A) ? ( *((ON_Layer**)A) ) : 0;
-  const ON_Layer* b = (0!=B) ? ( *((ON_Layer**)B) ) : 0;
-  if ( 0 == a )
+  const ON_Layer* a = (nullptr!=A) ? ( *((ON_Layer**)A) ) : nullptr;
+  const ON_Layer* b = (nullptr!=B) ? ( *((ON_Layer**)B) ) : nullptr;
+  if ( nullptr == a )
   {
-    return (0 == b) ? 0 : -1;
+    return (nullptr == b) ? 0 : -1;
   }
-  if ( 0 == b )
+  if ( nullptr == b )
   {
     return 1;
   }
@@ -1289,7 +1288,7 @@ static int compareUuidIndexId(const void* a, const void* b)
 void ON_InstanceDefinition::UpdateLinkedIdefReferenceFileLayerRuntimeId( const ON_UuidPairList& id_map )
 {
   ON__IDefLayerSettingsUserData* ud = ON__IDefLayerSettingsUserData::FindOrCreate(*this,false);
-  if ( 0 == ud || ud->m_layers.Count() <= 0 )
+  if ( nullptr == ud || ud->m_layers.Count() <= 0 )
     return;
   ud->m_runtime_layer_id_map = id_map;
   ud->m_runtime_layer_id_map.ImproveSearchSpeed();
@@ -1297,16 +1296,16 @@ void ON_InstanceDefinition::UpdateLinkedIdefReferenceFileLayerRuntimeId( const O
 
 void ON_InstanceDefinition::UpdateLinkedIdefParentLayerSettings( const ON_Layer* linked_idef_parent_layer )
 {
-  bool bCreate = ( 0 != linked_idef_parent_layer );
+  bool bCreate = ( nullptr != linked_idef_parent_layer );
   ON__IDefLayerSettingsUserData* ud = ON__IDefLayerSettingsUserData::FindOrCreate(*this,bCreate);
-  if ( 0 != ud && ud->m_idef_layer_table_parent_layer != linked_idef_parent_layer )
+  if ( nullptr != ud && ud->m_idef_layer_table_parent_layer != linked_idef_parent_layer )
   {
     if ( ud->m_idef_layer_table_parent_layer )
     {
       delete ud->m_idef_layer_table_parent_layer;
-      ud->m_idef_layer_table_parent_layer = 0;
+      ud->m_idef_layer_table_parent_layer = nullptr;
     }
-    if ( 0 != linked_idef_parent_layer )
+    if ( nullptr != linked_idef_parent_layer )
     {
       ud->m_idef_layer_table_parent_layer = new ON_Layer( *linked_idef_parent_layer );
     }
@@ -1316,18 +1315,18 @@ void ON_InstanceDefinition::UpdateLinkedIdefParentLayerSettings( const ON_Layer*
 const ON_Layer* ON_InstanceDefinition::LinkedIdefParentLayerSettings() const
 {
   ON__IDefLayerSettingsUserData* ud = ON__IDefLayerSettingsUserData::FindOrCreate(*this,false);
-  return (0 != ud) ? ud->m_idef_layer_table_parent_layer : 0;
+  return (nullptr != ud) ? ud->m_idef_layer_table_parent_layer : nullptr;
 }
 
 void ON_InstanceDefinition::UpdateLinkedIdefReferenceFileLayerSettings( unsigned int layer_count, ON_Layer** layer_settings )
 {
   ON__IDefLayerSettingsUserData* ud;
 
-  if ( layer_count <= 0 || 0 == layer_settings )
+  if ( layer_count <= 0 || nullptr == layer_settings )
   {
     // delete linked idef layer settings
     ud = ON__IDefLayerSettingsUserData::FindOrCreate(*this,false);
-    if ( 0 != ud )
+    if ( nullptr != ud )
       delete ud;
     return;
   }
@@ -1346,7 +1345,7 @@ void ON_InstanceDefinition::UpdateLinkedIdefReferenceFileLayerSettings( unsigned
   for ( i = 0; i < layer_count; i++ )
   {
     layer = layer_settings[index_map[i]];
-    if ( 0 == layer )
+    if ( nullptr == layer )
       continue;
     layer->SaveSettings(0,false); // remove any saved settings on input layers
     if ( ON_UuidIsNil(layer->m_layer_id) )
@@ -1361,14 +1360,14 @@ void ON_InstanceDefinition::UpdateLinkedIdefReferenceFileLayerSettings( unsigned
   if ( iddex_count <= 0 )
   {
     // delete settings
-    UpdateLinkedIdefReferenceFileLayerSettings(0,0);
+    UpdateLinkedIdefReferenceFileLayerSettings(0,nullptr);
     return;
   }
 
   // Create or get user data where the saved layer settings
   // are stored.
   ud = ON__IDefLayerSettingsUserData::FindOrCreate(*this,true);
-  if ( 0 == ud )
+  if ( nullptr == ud )
     return;
     
   // Go through the saved settings that were previously
@@ -1390,7 +1389,7 @@ void ON_InstanceDefinition::UpdateLinkedIdefReferenceFileLayerSettings( unsigned
         break; // no settings were modified
       idx.m_id = layer->m_layer_id;
       const ON_UuidIndex* idx0 = (const ON_UuidIndex*)bsearch(&idx,iddex,iddex_count,sizeof(iddex[0]),compareUuidIndexId);
-      if ( 0 == idx0)
+      if ( nullptr == idx0)
         break; // this layer is not in the current layer_settings[] list
       layer_settings[idx0->m_i]->SaveSettings(settings,false); // saves the layer settings found in linked file
       layer_settings[idx0->m_i]->Set(settings,*layer);   // applies modifications found on idef
@@ -1414,16 +1413,16 @@ void ON_InstanceDefinition::UpdateLinkedIdefReferenceFileLayerSettings( unsigned
 
 void ON_InstanceDefinition::UpdateLinkedIdefLayerSettings( unsigned int layer_count, const ON_Layer*const* layer_settings )
 {
-  if ( layer_count <= 0 || 0 == layer_settings )
+  if ( layer_count <= 0 || nullptr == layer_settings )
   {
     // delete linked idef layer settings
-    UpdateLinkedIdefReferenceFileLayerSettings(0,0);
+    UpdateLinkedIdefReferenceFileLayerSettings(0,nullptr);
     return;
   }
 
   // Get layer information (saved on this idef) from the linked file 
   ON__IDefLayerSettingsUserData* ud = ON__IDefLayerSettingsUserData::FindOrCreate(*this,false);
-  if ( 0 == ud )
+  if ( nullptr == ud )
     return;
   if ( ud->m_layers.Count() <= 0 )
   {
@@ -1442,8 +1441,8 @@ void ON_InstanceDefinition::UpdateLinkedIdefLayerSettings( unsigned int layer_co
     if ( !ud->m_runtime_layer_id_map.FindId1(layer1->m_layer_id,&layerId.m_layer_id) )
       layerId.m_layer_id = layer1->m_layer_id;
     ON_Layer** pp = (ON_Layer**)bsearch(&layerPtrId,ud_layers,ud_layers_count,sizeof(ud_layers[0]),compareLayerPtrId);
-    ON_Layer* layer0 = (0 != pp) ? *pp : 0;
-    if ( 0 == layer0 )
+    ON_Layer* layer0 = (nullptr != pp) ? *pp : nullptr;
+    if ( nullptr == layer0 )
       continue;
     unsigned int settings0 = layer0->SavedSettings();
     unsigned int settings1 = ON_Layer::Differences(*layer0,*layer1);
@@ -1470,7 +1469,7 @@ class /*NEVER EXPORT THIS CLASS DEFINITION*/ ON__IDefAlternativePathUserData : p
 
 public:
   ON__IDefAlternativePathUserData();
-  ~ON__IDefAlternativePathUserData();
+  ~ON__IDefAlternativePathUserData() override;
   // default copy constructor and operator= work fine.
 
   ON__IDefAlternativePathUserData(const ON__IDefAlternativePathUserData& src);
@@ -1500,19 +1499,19 @@ private:
 
 public:
   // virtual ON_Object override
-  ON_BOOL32 IsValid( ON_TextLog* text_log = NULL ) const;
+  ON_BOOL32 IsValid( ON_TextLog* text_log = nullptr ) const override;
   // virtual ON_Object override
-  unsigned int SizeOf() const;
+  unsigned int SizeOf() const override;
   // virtual ON_Object override
-  ON__UINT32 DataCRC(ON__UINT32 current_remainder) const;
+  ON__UINT32 DataCRC(ON__UINT32 current_remainder) const override;
   // virtual ON_Object override
-  ON_BOOL32 Write(ON_BinaryArchive& binary_archive) const;
+  ON_BOOL32 Write(ON_BinaryArchive& binary_archive) const override;
   // virtual ON_Object override
-  ON_BOOL32 Read(ON_BinaryArchive& binary_archive);
+  ON_BOOL32 Read(ON_BinaryArchive& binary_archive) override;
   // virtual ON_UserData override
-  ON_BOOL32 Archive() const;
+  ON_BOOL32 Archive() const override;
   // virtual ON_UserData override
-  ON_BOOL32 GetDescription( ON_wString& description );
+  ON_BOOL32 GetDescription( ON_wString& description ) override;
 
 public:
   ON_wString m_alternate_path;
@@ -1660,18 +1659,18 @@ void ON_InstanceDefinition::SetAlternateSourceArchivePath(
       )
 {
   ON_wString s;
-  if ( 0 != alternate_source_archive_path )
+  if ( nullptr != alternate_source_archive_path )
   {
     s = alternate_source_archive_path;
     s.TrimLeftAndRight();
     alternate_source_archive_path = s;
-    if ( 0 != alternate_source_archive_path && 0 == alternate_source_archive_path[0] )
-      alternate_source_archive_path = 0;
+    if ( nullptr != alternate_source_archive_path && 0 == alternate_source_archive_path[0] )
+      alternate_source_archive_path = nullptr;
   }
-  ON__IDefAlternativePathUserData* ud = ON__IDefAlternativePathUserData::FindOrCreate(*this,0!=alternate_source_archive_path);
-  if ( 0 != ud )
+  ON__IDefAlternativePathUserData* ud = ON__IDefAlternativePathUserData::FindOrCreate(*this,nullptr!=alternate_source_archive_path);
+  if ( nullptr != ud )
   {
-    if ( 0 == alternate_source_archive_path )
+    if ( nullptr == alternate_source_archive_path )
       delete ud;
     else
     {
@@ -1687,8 +1686,8 @@ bool ON_InstanceDefinition::GetAlternateSourceArchivePath(
       ) const
 {
   const ON__IDefAlternativePathUserData* ud = ON__IDefAlternativePathUserData::FindOrCreate(*this,false);
-  const wchar_t* s = (0 != ud) ? ((const wchar_t*)ud->m_alternate_path) : 0;
-  if ( 0 != s && 0 != s[0] )
+  const wchar_t* s = (nullptr != ud) ? ((const wchar_t*)ud->m_alternate_path) : nullptr;
+  if ( nullptr != s && 0 != s[0] )
   {
     alternate_source_archive_path = s;
     bRelativePath = ud->m_bRelativePath;

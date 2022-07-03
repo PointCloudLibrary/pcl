@@ -225,7 +225,7 @@ ON_BOOL32 ON_NurbsCage::Write(ON_BinaryArchive& archive) const
 
 
 ON_NurbsCage::ON_NurbsCage()
-: m_dim(0),m_is_rat(0),m_cv_capacity(0),m_cv(0)
+: m_dim(0),m_is_rat(0),m_cv_capacity(0),m_cv(nullptr)
 {
   m_order[0] = 0;
   m_order[1] = 0;
@@ -236,9 +236,9 @@ ON_NurbsCage::ON_NurbsCage()
   m_knot_capacity[0] = 0;
   m_knot_capacity[1] = 0;
   m_knot_capacity[2] = 0;
-  m_knot[0] = 0;
-  m_knot[1] = 0;
-  m_knot[2] = 0;
+  m_knot[0] = nullptr;
+  m_knot[1] = nullptr;
+  m_knot[2] = nullptr;
   m_cv_stride[0] = 0;
   m_cv_stride[1] = 0;
   m_cv_stride[2] = 0;
@@ -252,7 +252,7 @@ ON_NurbsCage::ON_NurbsCage( int dim, bool is_rat,
                                 int cv_count1,
                                 int cv_count2
                                 )
-                 : m_dim(0),m_is_rat(0),m_cv_capacity(0),m_cv(0)
+                 : m_dim(0),m_is_rat(0),m_cv_capacity(0),m_cv(nullptr)
 {
   m_order[0] = 0;
   m_order[1] = 0;
@@ -263,9 +263,9 @@ ON_NurbsCage::ON_NurbsCage( int dim, bool is_rat,
   m_knot_capacity[0] = 0;
   m_knot_capacity[1] = 0;
   m_knot_capacity[2] = 0;
-  m_knot[0] = 0;
-  m_knot[1] = 0;
-  m_knot[2] = 0;
+  m_knot[0] = nullptr;
+  m_knot[1] = nullptr;
+  m_knot[2] = nullptr;
   m_cv_stride[0] = 0;
   m_cv_stride[1] = 0;
   m_cv_stride[2] = 0;
@@ -276,7 +276,7 @@ ON_NurbsCage::ON_NurbsCage( const ON_BoundingBox& bbox,
                                int order0, int order1, int order2,
                                int cv_count0, int cv_count1, int cv_count2
                                )
-: m_dim(0),m_is_rat(0),m_cv_capacity(0),m_cv(0)
+: m_dim(0),m_is_rat(0),m_cv_capacity(0),m_cv(nullptr)
 {
   m_order[0] = 0;
   m_order[1] = 0;
@@ -287,9 +287,9 @@ ON_NurbsCage::ON_NurbsCage( const ON_BoundingBox& bbox,
   m_knot_capacity[0] = 0;
   m_knot_capacity[1] = 0;
   m_knot_capacity[2] = 0;
-  m_knot[0] = 0;
-  m_knot[1] = 0;
-  m_knot[2] = 0;
+  m_knot[0] = nullptr;
+  m_knot[1] = nullptr;
+  m_knot[2] = nullptr;
   m_cv_stride[0] = 0;
   m_cv_stride[1] = 0;
   m_cv_stride[2] = 0;
@@ -354,7 +354,7 @@ ON_NurbsCage::ON_NurbsCage( const ON_3dPoint* box_corners,
                                int order0, int order1, int order2,
                                int cv_count0, int cv_count1, int cv_count2
                                )
-: m_dim(0),m_is_rat(0),m_cv_capacity(0),m_cv(0)
+: m_dim(0),m_is_rat(0),m_cv_capacity(0),m_cv(nullptr)
 {
   m_order[0] = 0;
   m_order[1] = 0;
@@ -365,9 +365,9 @@ ON_NurbsCage::ON_NurbsCage( const ON_3dPoint* box_corners,
   m_knot_capacity[0] = 0;
   m_knot_capacity[1] = 0;
   m_knot_capacity[2] = 0;
-  m_knot[0] = 0;
-  m_knot[1] = 0;
-  m_knot[2] = 0;
+  m_knot[0] = nullptr;
+  m_knot[1] = nullptr;
+  m_knot[2] = nullptr;
   m_cv_stride[0] = 0;
   m_cv_stride[1] = 0;
   m_cv_stride[2] = 0;
@@ -375,7 +375,7 @@ ON_NurbsCage::ON_NurbsCage( const ON_3dPoint* box_corners,
 }
 
 ON_NurbsCage::ON_NurbsCage( const ON_BezierCage& src )
-: m_dim(0),m_is_rat(0),m_cv_capacity(0),m_cv(0)
+: m_dim(0),m_is_rat(0),m_cv_capacity(0),m_cv(nullptr)
 {
   m_order[0] = 0;
   m_order[1] = 0;
@@ -386,9 +386,9 @@ ON_NurbsCage::ON_NurbsCage( const ON_BezierCage& src )
   m_knot_capacity[0] = 0;
   m_knot_capacity[1] = 0;
   m_knot_capacity[2] = 0;
-  m_knot[0] = 0;
-  m_knot[1] = 0;
-  m_knot[2] = 0;
+  m_knot[0] = nullptr;
+  m_knot[1] = nullptr;
+  m_knot[2] = nullptr;
   m_cv_stride[0] = 0;
   m_cv_stride[1] = 0;
   m_cv_stride[2] = 0;
@@ -550,7 +550,7 @@ ON__UINT32 ON_NurbsCage::DataCRC(ON__UINT32 current_remainder) const
 
 ON_NurbsCage::ON_NurbsCage(const ON_NurbsCage& src)
                  : ON_Geometry(src),
-                   m_dim(0),m_is_rat(0),m_cv_capacity(0),m_cv(0)
+                   m_dim(0),m_is_rat(0),m_cv_capacity(0),m_cv(nullptr)
 {
   m_order[0] = 0;
   m_order[1] = 0;
@@ -561,9 +561,9 @@ ON_NurbsCage::ON_NurbsCage(const ON_NurbsCage& src)
   m_knot_capacity[0] = 0;
   m_knot_capacity[1] = 0;
   m_knot_capacity[2] = 0;
-  m_knot[0] = 0;
-  m_knot[1] = 0;
-  m_knot[2] = 0;
+  m_knot[0] = nullptr;
+  m_knot[1] = nullptr;
+  m_knot[2] = nullptr;
   m_cv_stride[0] = 0;
   m_cv_stride[1] = 0;
   m_cv_stride[2] = 0;
@@ -625,16 +625,16 @@ ON_BOOL32 ON_NurbsCage::IsValid(
           ON_TextLog* //text_log 
           ) const
 {
-  if ( 0 == m_cv )
+  if ( nullptr == m_cv )
     return false;
 
-  if ( 0 == m_knot[0] )
+  if ( nullptr == m_knot[0] )
     return false;
 
-  if ( 0 == m_knot[1] )
+  if ( nullptr == m_knot[1] )
     return false;
 
-  if ( 0 == m_knot[2] )
+  if ( nullptr == m_knot[2] )
     return false;
 
   if ( m_order[0] < 2 )
@@ -858,7 +858,7 @@ bool ON_NurbsCage::Create(
   int i, j, k;
   double r,s,t;
   //bool rc = false;
-  if ( 0 == box_corners )
+  if ( nullptr == box_corners )
     return false;
   for( i = 0; i < 8; i++ )
   {
@@ -922,25 +922,25 @@ void ON_NurbsCage::Destroy()
   if ( m_cv && m_cv_capacity > 0 )
   {
     onfree(m_cv);
-    m_cv = 0;
+    m_cv = nullptr;
   }
 
   if ( m_knot[0] && m_knot_capacity[0] > 0 )
   {
     onfree(m_knot[0]);
-    m_knot[0] = 0;
+    m_knot[0] = nullptr;
   }
 
   if ( m_knot[1] && m_knot_capacity[1] > 0 )
   {
     onfree(m_knot[1]);
-    m_knot[1] = 0;
+    m_knot[1] = nullptr;
   }
 
   if ( m_knot[2] && m_knot_capacity[2] > 0 )
   {
     onfree(m_knot[2]);
-    m_knot[2] = 0;
+    m_knot[2] = nullptr;
   }
 
   m_cv_capacity = 0;
@@ -963,10 +963,10 @@ void ON_NurbsCage::Destroy()
 void ON_NurbsCage::EmergencyDestroy()
 {
   DestroyRuntimeCache(false);
-  m_cv = 0;
-  m_knot[0] = 0;
-  m_knot[1] = 0;
-  m_knot[2] = 0;
+  m_cv = nullptr;
+  m_knot[0] = nullptr;
+  m_knot[1] = nullptr;
+  m_knot[2] = nullptr;
   m_cv_capacity = 0;
   m_knot_capacity[0] = 0;
   m_knot_capacity[1] = 0;
@@ -989,7 +989,7 @@ ON_BOOL32 ON_NurbsCage::GetBBox( // returns true if successful
        ) const
 {
   int i, j;
-  bool rc = ( 0 != m_cv 
+  bool rc = ( nullptr != m_cv 
               && m_cv_count[0] >= 2 && m_cv_count[1] >= 2 && m_cv_count[2] >= 2 
               && m_cv_stride[0] > 0 && m_cv_stride[1] > 0 && m_cv_stride[2] > 0 ) ? true : false;
   if ( !rc )
@@ -1336,12 +1336,12 @@ ON_NurbsSurface* ON_NurbsCage::IsoSurface(
   if ( dir < 0 || dir > 2 )
   {
     ON_ERROR("ON_NurbsCage::IsoSurface - invalid dir parameter");
-    return 0;
+    return nullptr;
   }
-  if ( m_order[dir] < 2 || m_cv_count[dir] < m_order[dir] || 0 == m_knot[dir] )
+  if ( m_order[dir] < 2 || m_cv_count[dir] < m_order[dir] || nullptr == m_knot[dir] )
   {
     ON_ERROR("ON_NurbsCage::IsoSurface - invalid NURBS cage");
-    return 0;
+    return nullptr;
   }
 
   const int cage_cvdim = CVSize();
@@ -1419,8 +1419,8 @@ ON_NurbsSurface* ON_NurbsCage::IsoSurface(
 
   ON_NurbsSurface* iso_srf = srf ? srf : ON_NurbsSurface::New();
   iso_srf->Create(m_dim,m_is_rat,m_order[jj],m_order[kk],m_cv_count[jj],m_cv_count[kk]);
-  nurbs_curve.Evaluate(c,0,nurbs_curve.m_dim,iso_srf->m_cv,0,0);
-  nurbs_curve.m_knot = 0;
+  nurbs_curve.Evaluate(c,0,nurbs_curve.m_dim,iso_srf->m_cv,0,nullptr);
+  nurbs_curve.m_knot = nullptr;
   memcpy(iso_srf->m_knot[0],m_knot[jj],iso_srf->KnotCount(0)*sizeof(*iso_srf->m_knot[0]));
   memcpy(iso_srf->m_knot[1],m_knot[kk],iso_srf->KnotCount(1)*sizeof(*iso_srf->m_knot[1]));
 
@@ -1526,7 +1526,7 @@ double* ON_NurbsCage::CV( int i, int j, int k ) const
   }
 #endif
 
-  return (m_cv) ? (m_cv + i*m_cv_stride[0] + j*m_cv_stride[1] + k*m_cv_stride[2]) : 0;
+  return (m_cv) ? (m_cv + i*m_cv_stride[0] + j*m_cv_stride[1] + k*m_cv_stride[2]) : nullptr;
 }
 
 ON::point_style ON_NurbsCage::CVStyle() const
@@ -1753,7 +1753,7 @@ bool ON_NurbsCage::SetKnot(
   // Expert programmers who want to write fast code can directly
   // access the m_knot[] arrays.
   if (    dir >= 0 && dir < 3 
-       && 0 != m_knot[dir]
+       && nullptr != m_knot[dir]
        && knot_index >= 0 
        && knot_index < m_order[dir]+m_cv_count[dir]-2
      )
@@ -1780,7 +1780,7 @@ double ON_NurbsCage::Knot(
   // Expert programmers who want to write fast code can directly
   // access the m_knot[] arrays.
   if (    dir >= 0 && dir < 3 
-       && 0 != m_knot[dir]
+       && nullptr != m_knot[dir]
        && knot_index >= 0 
        && knot_index < m_order[dir]+m_cv_count[dir]-2
      )
@@ -1969,7 +1969,7 @@ bool ON_NurbsCage::ReserveKnotCapacity(
         m_knot_capacity[dir] = m_knot[dir] ? knot_capacity : 0;
       }
     }
-    rc = m_knot[dir] != 0;
+    rc = m_knot[dir] != nullptr;
   }
   return rc;
 }
@@ -2038,12 +2038,12 @@ bool ON_GetCageXform( const ON_NurbsCage& cage, ON_Xform& cage_xform )
 
 ON_CageMorph::ON_CageMorph()
 {
-  m_control = 0;
+  m_control = nullptr;
 }
 
 ON_CageMorph::~ON_CageMorph()
 {
-  m_control = 0;
+  m_control = nullptr;
 }
 
 bool ON_MorphControl::IsIdentity( const ON_BoundingBox& bbox ) const
@@ -2073,8 +2073,7 @@ ON_MorphControl::ON_MorphControl()
 
 
 ON_MorphControl::~ON_MorphControl()
-{
-}
+= default;
 
 void ON_MorphControl::Destroy()
 {
@@ -2319,7 +2318,7 @@ ON_Brep* ON_MorphControl::BrepForm( ON_Brep* brep ) const
     break;
 
   default:
-    brep = 0;
+    brep = nullptr;
     break;
   }
 
@@ -2461,18 +2460,18 @@ ON_3dex ON_MorphControl::MaxCVIndex() const
 
 const double* ON_MorphControl::Knot(int dir) const
 {
-  const double* knot = 0;
+  const double* knot = nullptr;
 
   switch(m_varient)
   {
   case 1:
-    knot = (0 == dir) ? m_nurbs_curve.m_knot : 0;
+    knot = (0 == dir) ? m_nurbs_curve.m_knot : nullptr;
     break;
   case 2:
-    knot = (0 == dir || 1 == dir) ? m_nurbs_surface.m_knot[dir] : 0;
+    knot = (0 == dir || 1 == dir) ? m_nurbs_surface.m_knot[dir] : nullptr;
     break;
   case 3:
-    knot = (0 <= dir && dir <= 2) ? m_nurbs_cage.m_knot[dir] : 0;
+    knot = (0 <= dir && dir <= 2) ? m_nurbs_cage.m_knot[dir] : nullptr;
     break;
   }
 
@@ -2481,14 +2480,14 @@ const double* ON_MorphControl::Knot(int dir) const
 
 const double* ON_MorphControl::CV(ON_3dex ijk) const
 {
-  const double* cv = 0;
+  const double* cv = nullptr;
   switch(m_varient)
   {
   case 1:
-    cv = (0 == ijk.j && 0 == ijk.k) ? m_nurbs_curve.CV(ijk.i) : 0;
+    cv = (0 == ijk.j && 0 == ijk.k) ? m_nurbs_curve.CV(ijk.i) : nullptr;
     break;
   case 2:
-    cv = (0 == ijk.k) ? m_nurbs_surface.CV(ijk.i,ijk.j) : 0;
+    cv = (0 == ijk.k) ? m_nurbs_surface.CV(ijk.i,ijk.j) : nullptr;
     break;
   case 3:
     cv = m_nurbs_cage.CV(ijk.i,ijk.j,ijk.k);

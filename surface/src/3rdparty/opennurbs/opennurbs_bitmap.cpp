@@ -61,8 +61,7 @@ ON_Bitmap::ON_Bitmap ()
 }
 
 ON_Bitmap::~ON_Bitmap ()
-{
-}
+= default;
 
 void
 ON_Bitmap::Dump (ON_TextLog& dump) const
@@ -116,12 +115,12 @@ ON_WindowsBitmapHelper_SizeofPalette (int bmiHeader_biClrUsed, int bmiHeader_biB
 }
 
 ON_WindowsBitmap::ON_WindowsBitmap () :
-  m_bmi (0), m_bits (0), m_bFreeBMI (0)
+  m_bmi (nullptr), m_bits (nullptr), m_bFreeBMI (0)
 {
 }
 
 ON_WindowsBitmap::ON_WindowsBitmap (const ON_WindowsBitmap& src) :
-  m_bmi (0), m_bits (0), m_bFreeBMI (0)
+  m_bmi (nullptr), m_bits (nullptr), m_bFreeBMI (0)
 {
   *this = src;
 }
@@ -129,8 +128,8 @@ ON_WindowsBitmap::ON_WindowsBitmap (const ON_WindowsBitmap& src) :
 void
 ON_WindowsBitmap::EmergencyDestroy ()
 {
-  m_bmi = 0;
-  m_bits = 0;
+  m_bmi = nullptr;
+  m_bits = nullptr;
   m_bFreeBMI = 0;
   ON_Bitmap::EmergencyDestroy ();
 }
@@ -142,13 +141,13 @@ ON_WindowsBitmap::Destroy ()
   {
     if (1 == m_bFreeBMI || 3 == m_bFreeBMI)
       onfree (m_bmi);
-    m_bmi = 0;
+    m_bmi = nullptr;
   }
   if (m_bits)
   {
     if (2 == m_bFreeBMI || 3 == m_bFreeBMI)
       onfree (m_bits);
-    m_bits = 0;
+    m_bits = nullptr;
   }
   m_bFreeBMI = 0;
   ON_Bitmap::Destroy ();
@@ -157,9 +156,9 @@ ON_WindowsBitmap::Destroy ()
 ON_BOOL32
 ON_WindowsBitmap::IsValid (ON_TextLog* text_log) const
 {
-  bool rc = (m_bmi != NULL && m_bits != NULL && Width () > 0 && Height () > 0) ? true : false;
+  bool rc = (m_bmi != nullptr && m_bits != nullptr && Width () > 0 && Height () > 0) ? true : false;
 
-  if (!rc && 0 != text_log)
+  if (!rc && nullptr != text_log)
   {
     // TODO:  add a detailed diagnostic message
     text_log->Print ("ON_WindowsBitmap is not valid\n");
@@ -319,7 +318,7 @@ ON_WindowsBitmap::operator= (const ON_WindowsBitmap& src)
             memset (m_bits, 0, sizeof_image);
         }
         else
-          m_bits = 0;
+          m_bits = nullptr;
       }
     }
   }
@@ -380,14 +379,14 @@ unsigned char*
 ON_WindowsBitmap::Bits (int scan_index)
 {
   const int sizeof_scan = SizeofScan ();
-  unsigned char* bits = m_bmi ? (unsigned char*)&m_bmi->bmiColors[PaletteColorCount ()] : 0;
+  unsigned char* bits = m_bmi ? (unsigned char*)&m_bmi->bmiColors[PaletteColorCount ()] : nullptr;
   if (bits && sizeof_scan && scan_index >= 0 && scan_index < Height ())
   {
     bits += (sizeof_scan * scan_index);
   }
   else
   {
-    bits = 0;
+    bits = nullptr;
   }
   return bits;
 }
@@ -396,14 +395,14 @@ const unsigned char*
 ON_WindowsBitmap::Bits (int scan_index) const
 {
   const int sizeof_scan = SizeofScan ();
-  const unsigned char* bits = m_bmi ? (const unsigned char*)&m_bmi->bmiColors[PaletteColorCount ()] : 0;
+  const unsigned char* bits = m_bmi ? (const unsigned char*)&m_bmi->bmiColors[PaletteColorCount ()] : nullptr;
   if (bits && sizeof_scan && scan_index >= 0 && scan_index < Height ())
   {
     bits += (sizeof_scan * scan_index);
   }
   else
   {
-    bits = 0;
+    bits = nullptr;
   }
   return bits;
 }
@@ -680,12 +679,10 @@ ON_WindowsBitmap::Read (ON_BinaryArchive& file)
 }
 
 ON_WindowsBitmapEx::ON_WindowsBitmapEx ()
-{
-}
+= default;
 
 ON_WindowsBitmapEx::~ON_WindowsBitmapEx ()
-{
-}
+= default;
 
 ON_BOOL32
 ON_WindowsBitmapEx::Write (ON_BinaryArchive& file) const
@@ -796,7 +793,7 @@ ON_WindowsBitmap::WriteCompressed (ON_BinaryArchive& file) const
     {
       const int sizeof_buffer = sizeof_palette + sizeof_image;
       // palette and bits are compressed in a single chunk
-      rc = file.WriteCompressedBuffer (sizeof_buffer, (0 != m_bmi) ? m_bmi->bmiColors : 0);
+      rc = file.WriteCompressedBuffer (sizeof_buffer, (nullptr != m_bmi) ? m_bmi->bmiColors : nullptr);
     }
     else
     {
@@ -944,7 +941,7 @@ bool
 ON_WindowsBitmap::IsContiguous () const
 {
   bool rc = false;
-  if (0 != m_bmi && 0 != m_bits && m_bmi->bmiHeader.biSizeImage > 0)
+  if (nullptr != m_bmi && nullptr != m_bits && m_bmi->bmiHeader.biSizeImage > 0)
   {
     // p1 points to the first byte after the color palette.
     unsigned char* p1 = (unsigned char*)&m_bmi->bmiColors[PaletteColorCount ()];
@@ -1044,7 +1041,7 @@ ON_WindowsBitmap::ON_WindowsBitmap( const BITMAPINFO* src )
 
 ON_EmbeddedBitmap::ON_EmbeddedBitmap ()
 {
-  m_buffer = 0;
+  m_buffer = nullptr;
   m_sizeof_buffer = 0;
   m_free_buffer = 0;
   m_biffer_crc32 = 0;
@@ -1058,7 +1055,7 @@ ON_EmbeddedBitmap::~ON_EmbeddedBitmap ()
 void
 ON_EmbeddedBitmap::EmergencyDestroy ()
 {
-  m_buffer = 0;
+  m_buffer = nullptr;
   m_sizeof_buffer = 0;
   m_free_buffer = 0;
   m_biffer_crc32 = 0;
@@ -1068,10 +1065,10 @@ ON_EmbeddedBitmap::EmergencyDestroy ()
 void
 ON_EmbeddedBitmap::Destroy ()
 {
-  if (0 != m_buffer && 1 == m_free_buffer)
+  if (nullptr != m_buffer && 1 == m_free_buffer)
   {
     onfree (m_buffer);
-    m_buffer = 0;
+    m_buffer = nullptr;
   }
   m_sizeof_buffer = 0;
   m_free_buffer = 0;
@@ -1086,7 +1083,7 @@ ON_EmbeddedBitmap::Create (int sizeof_buffer)
   if (sizeof_buffer > 0)
   {
     m_buffer = onmalloc (sizeof_buffer);
-    if (0 != m_buffer)
+    if (nullptr != m_buffer)
     {
       m_sizeof_buffer = sizeof_buffer;
       m_free_buffer = 1;
@@ -1097,9 +1094,9 @@ ON_EmbeddedBitmap::Create (int sizeof_buffer)
 ON_BOOL32
 ON_EmbeddedBitmap::IsValid (ON_TextLog* text_log) const
 {
-  if (0 == m_buffer)
+  if (nullptr == m_buffer)
   {
-    if (0 != text_log)
+    if (nullptr != text_log)
       text_log->Print ("ON_EmbeddedBitmap m_buffer = 0\n");
     return false;
   }
@@ -1219,11 +1216,11 @@ ON_EmbeddedBitmap::SizeofImage () const
 unsigned char*
 ON_EmbeddedBitmap::Bits (int)
 {
-  return 0;
+  return nullptr;
 }
 const unsigned char*
 ON_EmbeddedBitmap::Bits (int) const
 {
-  return 0;
+  return nullptr;
 }
 

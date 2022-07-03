@@ -166,11 +166,11 @@ static std::size_t MemPoolBlkSize( std::size_t leaf_count )
 }
 
 ON_RTreeMemPool::ON_RTreeMemPool( ON_MEMORY_POOL* heap, std::size_t leaf_count  )
-: m_nodes(0)
-, m_list_nodes(0)
-, m_buffer(0)
+: m_nodes(nullptr)
+, m_list_nodes(nullptr)
+, m_buffer(nullptr)
 , m_buffer_capacity(0)
-, m_blk_list(0)
+, m_blk_list(nullptr)
 , m_sizeof_blk(0)
 , m_heap(heap)
 , m_sizeof_heap(0)
@@ -185,7 +185,7 @@ ON_RTreeMemPool::~ON_RTreeMemPool()
 
 void ON_RTreeMemPool::GrowBuffer()
 {
-  if ( (0 == m_sizeof_blk) || (0 != m_blk_list && 0 == m_blk_list->m_next) )
+  if ( (0 == m_sizeof_blk) || (nullptr != m_blk_list && nullptr == m_blk_list->m_next) )
   {
     // Setting m_sizeof_blk happens twice per ON_RTreeMemPool.
     // The first time is typically at construction and not here.
@@ -210,7 +210,7 @@ void ON_RTreeMemPool::GrowBuffer()
   }
   else
   {
-    m_buffer = 0;
+    m_buffer = nullptr;
     m_buffer_capacity = 0;
     ON_ERROR("ON_RTreeMemPool::GrowBuffer - out of memory");
   }
@@ -229,10 +229,10 @@ ON_RTreeNode* ON_RTreeMemPool::AllocNode()
     if ( m_buffer_capacity < node_sz )
       GrowBuffer();
 
-    if ( 0 == (node = (ON_RTreeNode*)m_buffer) )
+    if ( nullptr == (node = (ON_RTreeNode*)m_buffer) )
     {
       ON_ERROR("ON_RTreeMemPool::AllocNode() - out of memory");
-      return 0;
+      return nullptr;
     }
 
     m_buffer += node_sz;
@@ -314,11 +314,11 @@ void ON_RTreeMemPool::DeallocateAll()
 {
   struct Blk* p = m_blk_list;
 
-  m_nodes = 0;
-  m_list_nodes = 0;
-  m_buffer = 0;
+  m_nodes = nullptr;
+  m_list_nodes = nullptr;
+  m_buffer = nullptr;
   m_buffer_capacity = 0;
-  m_blk_list = 0;
+  m_blk_list = nullptr;
   m_sizeof_blk = 0;
   m_sizeof_heap = 0;
 
@@ -337,7 +337,7 @@ void ON_RTreeMemPool::DeallocateAll()
 
 ON_RTreeIterator::ON_RTreeIterator()
 { 
-  Initialize(0);
+  Initialize(nullptr);
 }
 
 ON_RTreeIterator::ON_RTreeIterator(const class ON_RTree& rtree)
@@ -346,14 +346,13 @@ ON_RTreeIterator::ON_RTreeIterator(const class ON_RTree& rtree)
 }
 
 ON_RTreeIterator::~ON_RTreeIterator()
-{ 
-}
+= default;
 
 const ON_RTreeBranch* ON_RTreeIterator::Value() const
 {
-  return ( 0 != m_sp )
+  return ( nullptr != m_sp )
          ? &m_sp->m_node->m_branch[m_sp->m_branchIndex]
-         : 0;
+         : nullptr;
 }
 
 bool ON_RTreeIterator::Initialize(const ON_RTree& a_rtree)
@@ -363,8 +362,8 @@ bool ON_RTreeIterator::Initialize(const ON_RTree& a_rtree)
 
 bool ON_RTreeIterator::Initialize(const ON_RTreeNode* a_node)
 { 
-  m_sp = 0;
-  m_root = ( 0 != a_node && a_node->m_count > 0 ) ? a_node : 0;
+  m_sp = nullptr;
+  m_root = ( nullptr != a_node && a_node->m_count > 0 ) ? a_node : nullptr;
   return First();
 }
 
@@ -372,9 +371,9 @@ bool ON_RTreeIterator::PushChildren(StackElement* sp, bool bFirstChild )
 { 
   StackElement* spmax = &m_stack[0] + MAX_STACK;
   const ON_RTreeNode* node = sp->m_node;
-  m_sp = 0;
+  m_sp = nullptr;
   // push first leaf coverted by this node onto the stack
-  while( 0 != node && node->m_level >= 0 && node->m_count > 0 )
+  while( nullptr != node && node->m_level >= 0 && node->m_count > 0 )
   {
     if ( 0 == node->m_level )
     {
@@ -399,8 +398,8 @@ bool ON_RTreeIterator::PushChildren(StackElement* sp, bool bFirstChild )
 
 bool ON_RTreeIterator::First()
 { 
-  m_sp = 0;
-  if ( 0 == m_root || m_root->m_level < 0 || m_root->m_count <= 0 )
+  m_sp = nullptr;
+  if ( nullptr == m_root || m_root->m_level < 0 || m_root->m_count <= 0 )
     return false;
   m_stack[0].m_node = m_root;
   m_stack[0].m_branchIndex = 0;
@@ -409,8 +408,8 @@ bool ON_RTreeIterator::First()
 
 bool ON_RTreeIterator::Last()
 { 
-  m_sp = 0;
-  if ( 0 == m_root || m_root->m_level < 0 || m_root->m_count <= 0 )
+  m_sp = nullptr;
+  if ( nullptr == m_root || m_root->m_level < 0 || m_root->m_count <= 0 )
     return false;
   m_stack[0].m_node = m_root;
   m_stack[0].m_branchIndex = m_root->m_count - 1;
@@ -419,7 +418,7 @@ bool ON_RTreeIterator::Last()
 
 bool ON_RTreeIterator::Next()
 { 
-  if ( 0 == m_sp )
+  if ( nullptr == m_sp )
     return false; // invalid iterator
 
   if ( ++(m_sp->m_branchIndex) < m_sp->m_node->m_count )
@@ -428,7 +427,7 @@ bool ON_RTreeIterator::Next()
   // pop the stack until we find an element with room to move over.
   StackElement* sp0 = &m_stack[0];
   StackElement* sp = m_sp;
-  m_sp = 0;
+  m_sp = nullptr;
   while ( sp > sp0 )
   {        
     sp--; // pop the stack
@@ -447,7 +446,7 @@ bool ON_RTreeIterator::Next()
 
 bool ON_RTreeIterator::Prev()
 { 
-  if ( 0 == m_sp )
+  if ( nullptr == m_sp )
     return false; // invalid iterator
 
   if ( --(m_sp->m_branchIndex) >= 0 )
@@ -456,7 +455,7 @@ bool ON_RTreeIterator::Prev()
   // pop the stack until we find an element with room to move over.
   StackElement* sp0 = &m_stack[0];
   StackElement* sp = m_sp;
-  m_sp = 0;
+  m_sp = nullptr;
   while ( sp > sp0 )
   {        
     sp--; // pop the stack
@@ -481,7 +480,7 @@ bool ON_RTreeIterator::Prev()
 
 
 ON_RTree::ON_RTree( ON_MEMORY_POOL* heap, std::size_t leaf_count )
-: m_root(0)
+: m_root(nullptr)
 , m_reserved(0)
 , m_mem_pool(heap,leaf_count)
 {
@@ -506,7 +505,7 @@ bool ON_RTree::CreateMeshFaceTree( const ON_Mesh* mesh )
 
   RemoveAll();
 
-  if ( 0 == mesh )
+  if ( nullptr == mesh )
     return false;
 
   fcount = mesh->m_F.UnsignedCount();
@@ -514,18 +513,18 @@ bool ON_RTree::CreateMeshFaceTree( const ON_Mesh* mesh )
     return false;
 
   meshF = mesh->m_F.Array();
-  if ( 0 == meshF )
+  if ( nullptr == meshF )
     return false;
 
   meshfV = mesh->m_V.Array();
 
   meshdV = mesh->HasDoublePrecisionVertices() 
          ? mesh->DoublePrecisionVertices().Array() 
-         : 0;
+         : nullptr;
 
-  if ( 0 != meshfV )
+  if ( nullptr != meshfV )
   {
-    if ( 0 != meshdV )
+    if ( nullptr != meshdV )
     {
       for ( fi = 0; fi < fcount; fi++ )
       {
@@ -614,7 +613,7 @@ bool ON_RTree::CreateMeshFaceTree( const ON_Mesh* mesh )
       }
     }
   }
-  else if ( 0 != meshdV )
+  else if ( nullptr != meshdV )
   {
     for ( fi = 0; fi < fcount; fi++ )
     {
@@ -656,7 +655,7 @@ bool ON_RTree::CreateMeshFaceTree( const ON_Mesh* mesh )
     return false;
   }
 
-  return (0 != m_root);
+  return (nullptr != m_root);
 }
 
 bool ON_RTree::Insert2d(const double a_min[2], const double a_max[2], int a_element_id)
@@ -674,7 +673,7 @@ bool ON_RTree::Insert(const double a_min[ON_RTree_NODE_DIM], const double a_max[
   memcpy(rect.m_max,a_max,sizeof(rect.m_max));
   if ( rect.m_min[0] <= rect.m_max[0] && rect.m_min[1] <= rect.m_max[1] && rect.m_min[2] <= rect.m_max[2] )
   {  
-    if ( 0 == m_root )
+    if ( nullptr == m_root )
     {
       m_root = m_mem_pool.AllocNode();
       m_root->m_level = 0;
@@ -706,7 +705,7 @@ bool ON_RTree::Insert(const double a_min[ON_RTree_NODE_DIM], const double a_max[
   memcpy(rect.m_max,a_max,sizeof(rect.m_max));
   if ( rect.m_min[0] <= rect.m_max[0] && rect.m_min[1] <= rect.m_max[1] && rect.m_min[2] <= rect.m_max[2] )
   {  
-    if ( 0 == m_root )
+    if ( nullptr == m_root )
     {
       m_root = m_mem_pool.AllocNode();
       m_root->m_level = 0;
@@ -744,7 +743,7 @@ bool ON_RTree::Remove2d(const double a_min[2], const double a_max[2], int a_data
 bool ON_RTree::Remove(const double a_min[ON_RTree_NODE_DIM], const double a_max[ON_RTree_NODE_DIM], int a_dataId)
 {
   bool rc = false;
-  if ( 0 != m_root )
+  if ( nullptr != m_root )
   {
     ON_RTreeBBox rect;
     memcpy(rect.m_min,a_min,sizeof(rect.m_min));
@@ -773,7 +772,7 @@ bool ON_RTree::Remove2d(const double a_min[2], const double a_max[2],  void* a_d
 bool ON_RTree::Remove(const double a_min[ON_RTree_NODE_DIM], const double a_max[ON_RTree_NODE_DIM], void* a_dataId)
 {
   bool rc = false;
-  if ( 0 != m_root )
+  if ( nullptr != m_root )
   {
     ON_RTreeBBox rect;
     memcpy(rect.m_min,a_min,sizeof(rect.m_min));
@@ -808,7 +807,7 @@ bool ON_RTree::Search2d(const double a_min[2], const double a_max[2],
                           void* a_context
                           ) const
 {
-  if ( 0 == m_root )
+  if ( nullptr == m_root )
     return false;
 
   ON_RTreeBBox rect;
@@ -828,7 +827,7 @@ bool ON_RTree::Search(const double a_min[ON_RTree_NODE_DIM], const double a_max[
                           void* a_context
                           ) const
 {
-  if ( 0 == m_root )
+  if ( nullptr == m_root )
     return false;
 
   ON_RTreeBBox rect;
@@ -842,7 +841,7 @@ bool ON_RTree::Search( ON_RTreeBBox* a_rect,
                        void* a_context
                       ) const
 {
-  if ( 0 == m_root || 0 == a_rect )
+  if ( nullptr == m_root || nullptr == a_rect )
     return false;
 
   ON_RTreeSearchResultCallback result;
@@ -857,7 +856,7 @@ bool ON_RTree::Search(
     void* a_context
     ) const
 {
-  if ( 0 == m_root || 0 == a_sphere )
+  if ( nullptr == m_root || nullptr == a_sphere )
     return false;
 
   ON_RTreeSearchResultCallback result;
@@ -874,7 +873,7 @@ bool ON_RTree::Search(
   ) const
 {
   
-  if ( 0 == m_root || 0 == a_capsule )
+  if ( nullptr == m_root || nullptr == a_capsule )
     return false;
 
   ON_RTreeSearchResultCallback result;
@@ -888,7 +887,7 @@ bool ON_RTree::Search2d(const double a_min[2], const double a_max[2],
                           ON_SimpleArray<ON_RTreeLeaf>& a_result 
                           ) const
 {
-  if ( 0 == m_root )
+  if ( nullptr == m_root )
     return false;
 
   ON_RTreeBBox rect;
@@ -905,7 +904,7 @@ bool ON_RTree::Search(const double a_min[ON_RTree_NODE_DIM], const double a_max[
                           ON_SimpleArray<ON_RTreeLeaf>& a_result 
                           ) const
 {
-  if ( 0 == m_root )
+  if ( nullptr == m_root )
     return false;
 
   ON_RTreeBBox rect;
@@ -920,7 +919,7 @@ bool ON_RTree::Search2d(const double a_min[2], const double a_max[2],
                           ON_SimpleArray<void*>& a_result 
                           ) const
 {
-  if ( 0 == m_root )
+  if ( nullptr == m_root )
     return false;
 
   ON_RTreeBBox rect;
@@ -937,7 +936,7 @@ bool ON_RTree::Search(const double a_min[ON_RTree_NODE_DIM], const double a_max[
                           ON_SimpleArray<void*>& a_result 
                           ) const
 {
-  if ( 0 == m_root )
+  if ( nullptr == m_root )
     return false;
 
   ON_RTreeBBox rect;
@@ -952,7 +951,7 @@ bool ON_RTree::Search2d(const double a_min[2], const double a_max[2],
                           ON_SimpleArray<int>& a_result 
                           ) const
 {
-  if ( 0 == m_root )
+  if ( nullptr == m_root )
     return false;
 
   ON_RTreeBBox rect;
@@ -968,7 +967,7 @@ bool ON_RTree::Search(const double a_min[ON_RTree_NODE_DIM], const double a_max[
                           ON_SimpleArray<int>& a_result 
                           ) const
 {
-  if ( 0 == m_root )
+  if ( nullptr == m_root )
     return false;
 
   ON_RTreeBBox rect;
@@ -981,7 +980,7 @@ bool ON_RTree::Search(const double a_min[ON_RTree_NODE_DIM], const double a_max[
 bool ON_RTree::Search2d(const double a_min[2], const double a_max[2],
                           ON_RTreeSearchResult& a_result ) const
 {
-  if ( 0 == m_root )
+  if ( nullptr == m_root )
     return false;
 
   ON_RTreeBBox rect;
@@ -996,7 +995,7 @@ bool ON_RTree::Search2d(const double a_min[2], const double a_max[2],
 bool ON_RTree::Search(const double a_min[ON_RTree_NODE_DIM], const double a_max[ON_RTree_NODE_DIM],
                           ON_RTreeSearchResult& a_result ) const
 {
-  if ( 0 == m_root )
+  if ( nullptr == m_root )
     return false;
 
   ON_RTreeBBox rect;
@@ -1147,9 +1146,9 @@ bool ON_RTree::Search(
           ON_SimpleArray<ON_2dex>& a_result
           )
 {
-  if ( 0 == a_rtreeA.m_root )
+  if ( nullptr == a_rtreeA.m_root )
     return false;
-  if ( 0 == a_rtreeB.m_root )
+  if ( nullptr == a_rtreeB.m_root )
     return false;
   ON_RTreePairSearchResult r;
   r.m_tolerance = (ON_IsValid(tolerance) && tolerance > 0.0) ? tolerance : 0.0;
@@ -1367,9 +1366,9 @@ bool ON_RTree::Search(
           void* a_context
           )
 {
-  if ( 0 == a_rtreeA.m_root )
+  if ( nullptr == a_rtreeA.m_root )
     return false;
-  if ( 0 == a_rtreeB.m_root )
+  if ( nullptr == a_rtreeB.m_root )
     return false;
   ON_RTreePairSearchCallbackResult r;
   r.m_tolerance = (ON_IsValid(tolerance) && tolerance > 0.0) ? tolerance : 0.0;
@@ -1387,9 +1386,9 @@ bool ON_RTree::Search(
           void* a_context
           )
 {
-  if ( 0 == a_rtreeA.m_root )
+  if ( nullptr == a_rtreeA.m_root )
     return false;
-  if ( 0 == a_rtreeB.m_root )
+  if ( nullptr == a_rtreeB.m_root )
     return false;
   ON_RTreePairSearchCallbackResultBool r;
   r.m_tolerance = (ON_IsValid(tolerance) && tolerance > 0.0) ? tolerance : 0.0;
@@ -1413,7 +1412,7 @@ int ON_RTree::ElementCount()
 {
   int count = 0;
 
-  if ( 0 != m_root )
+  if ( nullptr != m_root )
     CountRec(m_root, count);
   
   return count;
@@ -1427,7 +1426,7 @@ const ON_RTreeNode* ON_RTree::Root() const
 ON_BoundingBox ON_RTree::BoundingBox() const
 {
   ON_BoundingBox bbox;
-  if ( 0 != m_root && m_root->m_count > 0 )
+  if ( nullptr != m_root && m_root->m_count > 0 )
   {
     bbox.m_min = m_root->m_branch[0].m_rect.m_min;
     bbox.m_max = m_root->m_branch[0].m_rect.m_max;
@@ -1474,7 +1473,7 @@ std::size_t ON_RTree::SizeOf() const
 
 static void NodeCountHelper( const ON_RTreeNode* node, std::size_t& node_count, std::size_t& wasted_branch_count, std::size_t& leaf_count )
 {
-  if ( 0 == node )
+  if ( nullptr == node )
     return;
   node_count++;
   wasted_branch_count += (ON_RTree_MAX_NODE_COUNT - node->m_count);
@@ -1491,7 +1490,7 @@ static void NodeCountHelper( const ON_RTreeNode* node, std::size_t& node_count, 
 
 void ON_RTree::RemoveAll()
 {
-  m_root = 0;
+  m_root = nullptr;
   m_mem_pool.DeallocateAll();
 }
 
@@ -1600,10 +1599,10 @@ bool ON_RTree::InsertRect(ON_RTreeBBox* a_rect, ON__INT_PTR a_id, ON_RTreeNode**
     newRoot->m_level = (*a_root)->m_level + 1;
     branch.m_rect = NodeCover(*a_root);
     branch.m_child = *a_root;
-    AddBranch(&branch, newRoot, NULL);
+    AddBranch(&branch, newRoot, nullptr);
     branch.m_rect = NodeCover(newNode);
     branch.m_child = newNode;
-    AddBranch(&branch, newRoot, NULL);
+    AddBranch(&branch, newRoot, nullptr);
     *a_root = newRoot;
     return true;
   }
@@ -1956,11 +1955,11 @@ void ON_RTree::LoadNodes(ON_RTreeNode* a_nodeA, ON_RTreeNode* a_nodeB, ON_RTreeP
   {
     if(a_parVars->m_partition[index] == 0)
     {
-      AddBranch(&a_parVars->m_branchBuf[index], a_nodeA, NULL);
+      AddBranch(&a_parVars->m_branchBuf[index], a_nodeA, nullptr);
     }
     else if(a_parVars->m_partition[index] == 1)
     {
-      AddBranch(&a_parVars->m_branchBuf[index], a_nodeB, NULL);
+      AddBranch(&a_parVars->m_branchBuf[index], a_nodeB, nullptr);
     }
   }
 }
@@ -2041,7 +2040,7 @@ void ClassifyHelper(int a_index, int a_group, ON_RTreePartitionVars* a_parVars)
 bool ON_RTree::RemoveRect(ON_RTreeBBox* a_rect, ON__INT_PTR a_id, ON_RTreeNode** a_root)
 {
   ON_RTreeNode* tempNode;
-  ON_RTreeListNode* reInsertList = NULL;
+  ON_RTreeListNode* reInsertList = nullptr;
 
   if(!RemoveRectRec(a_rect, a_id, *a_root, &reInsertList))
   {
@@ -2607,8 +2606,8 @@ bool ON_RTree::Search(
   void* a_context
   ) const
 {
-  if (    0 == m_root 
-       || 0 == a_plane_eqn 
+  if (    nullptr == m_root 
+       || nullptr == a_plane_eqn 
        || !(a_min <= a_max) 
        || (0.0 == a_plane_eqn[0] && 0.0 == a_plane_eqn[1] && 0.0 == a_plane_eqn[2])
      )

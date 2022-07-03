@@ -288,7 +288,7 @@ ON_Brep::IsValidFaceTopology( int face_index, ON_TextLog* text_log  ) const
     return false;
   }
 
-  if ( 0 == face.ProxySurface() )
+  if ( nullptr == face.ProxySurface() )
   {
     if ( text_log )
     {
@@ -399,7 +399,7 @@ ON_Brep::IsValidEdgeTopology( int edge_index, ON_TextLog* text_log ) const
     return false;
   }
 
-  if ( 0 == edge.ProxyCurve() )
+  if ( nullptr == edge.ProxyCurve() )
   {
     if ( text_log )
       text_log->Print("brep.m_E[%d].m_c3i = %d, but edge.ProxyCurve() is NULL.\n",edge_index,c3i);
@@ -807,7 +807,7 @@ ON_Brep::IsValidTrimTopology( int trim_index, ON_TextLog* text_log ) const
     return false;
   }
 
-  if ( 0 == trim.ProxyCurve() )
+  if ( nullptr == trim.ProxyCurve() )
   {
     if ( text_log )
       text_log->Print("brep.m_T[%d].m_c2i = %d, but trim.ProxyCurve() is NULL.\n",trim_index,trim.m_c2i);

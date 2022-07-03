@@ -79,7 +79,7 @@ public:
   static const ON_DimStyleExtra* DimStyleExtensionGet( const ON_DimStyle* pDimStyle);
 
   ON_DimStyleExtra();
-  ~ON_DimStyleExtra();
+  ~ON_DimStyleExtra() override;
 
   void SetDefaults();
 
@@ -90,22 +90,22 @@ public:
   bool IsDefault() const;
 
   // override virtual ON_Object::Dump function
-  void Dump( ON_TextLog& text_log ) const;
+  void Dump( ON_TextLog& text_log ) const override;
 
   // override virtual ON_Object::SizeOf function
-  unsigned int SizeOf() const;
+  unsigned int SizeOf() const override;
 
   // override virtual ON_Object::Write function
-  ON_BOOL32 Write(ON_BinaryArchive& binary_archive) const;
+  ON_BOOL32 Write(ON_BinaryArchive& binary_archive) const override;
 
   // override virtual ON_Object::Read function
-  ON_BOOL32 Read(ON_BinaryArchive& binary_archive);
+  ON_BOOL32 Read(ON_BinaryArchive& binary_archive) override;
 
   // override virtual ON_UserData::GetDescription function
-  ON_BOOL32 GetDescription( ON_wString& description );
+  ON_BOOL32 GetDescription( ON_wString& description ) override;
 
   // override virtual ON_UserData::Archive function
-  ON_BOOL32 Archive() const; 
+  ON_BOOL32 Archive() const override; 
 
   void SetFieldOverride( int field_id, bool bOverride);
   bool IsFieldOverride( int field_id) const;
@@ -223,7 +223,7 @@ ON_OBJECT_IMPLEMENT(ON_DimStyleExtra,ON_UserData,"513FDE53-7284-4065-8601-06CEA8
 // 26 Oct 2010 - Lowell - Changed to always create ON_DimStyleExtra if there's not one
 ON_DimStyleExtra* ON_DimStyleExtra::DimStyleExtensionGet( ON_DimStyle* pDimStyle, bool bCreateIfNoneExists )
 {
-  ON_DimStyleExtra* pExtra = 0;
+  ON_DimStyleExtra* pExtra = nullptr;
   if( pDimStyle)
   {
     pExtra = ON_DimStyleExtra::Cast( pDimStyle->GetUserData( ON_DimStyleExtra::m_ON_DimStyleExtra_class_id.Uuid()));
@@ -239,7 +239,7 @@ ON_DimStyleExtra* ON_DimStyleExtra::DimStyleExtensionGet( ON_DimStyle* pDimStyle
     //   If you have questions, please ask Dale Lear for details
     //   but please do not revert to constantly adding user
     //   data to dimstyles.
-    if( pExtra == 0 && bCreateIfNoneExists )
+    if( pExtra == nullptr && bCreateIfNoneExists )
     {
       pExtra = new ON_DimStyleExtra;
       if( pExtra)
@@ -247,7 +247,7 @@ ON_DimStyleExtra* ON_DimStyleExtra::DimStyleExtensionGet( ON_DimStyle* pDimStyle
         if( !pDimStyle->AttachUserData( pExtra))
         {
           delete pExtra;
-          pExtra = 0;
+          pExtra = nullptr;
         }
       }
     }
@@ -278,8 +278,7 @@ ON_DimStyleExtra::ON_DimStyleExtra()
 }
 
 ON_DimStyleExtra::~ON_DimStyleExtra()
-{
-}
+= default;
 
 void ON_DimStyleExtra::SetDefaults()
 {
@@ -585,7 +584,7 @@ ON_UUID ON_DimStyleExtra::SourceDimstyle() const
 // returns true if they are the same
 bool ON_DimStyleExtra::CompareFields(const ON_DimStyleExtra* pOther) const
 {
-  if(pOther == 0)
+  if(pOther == nullptr)
     return false;
 
   if((m_parent_dimstyle        != pOther->m_parent_dimstyle) ||
@@ -624,8 +623,7 @@ ON_DimStyle::ON_DimStyle()
 }
 
 ON_DimStyle::~ON_DimStyle()
-{
-}
+= default;
 
 void ON_DimStyle::SetDefaults()
 {
@@ -1384,11 +1382,11 @@ bool ON_DimStyle::OverrideFields( const ON_DimStyle& src, const ON_DimStyle& par
 
   for( int i = 0; i < ON_DimStyleExtra::eFieldCount; i++)
   {
-    bool bValidSrcField = ( 0 != pDEsrc && i < src_valid_fields_count )
+    bool bValidSrcField = ( nullptr != pDEsrc && i < src_valid_fields_count )
                         ? pDEsrc->m_valid_fields[i]
                         : false;
 
-    if ( bValidSrcField && 0 == pDE )
+    if ( bValidSrcField && nullptr == pDE )
     {
       // Actually need to create ON_DimStyleExtra user data on "this".
       pDE = ON_DimStyleExtra::DimStyleExtensionGet( this, true );
@@ -1396,7 +1394,7 @@ bool ON_DimStyle::OverrideFields( const ON_DimStyle& src, const ON_DimStyle& par
         this_valid_fields_count = pDE->m_valid_fields.Count();
     }
 
-    if ( 0 != pDE && i < this_valid_fields_count )
+    if ( nullptr != pDE && i < this_valid_fields_count )
     {
       pDE->m_valid_fields[i] = bValidSrcField;
     }
@@ -1543,7 +1541,7 @@ bool ON_DimStyle::InheritFields( const ON_DimStyle& parent)
   const ON_DimStyleExtra* pDE = ON_DimStyleExtra::DimStyleExtensionGet( this);
   for( int i = 0; i < ON_DimStyleExtra::eFieldCount; i++ )
   {
-    bool bValidField = ( 0 != pDE && i < pDE->m_valid_fields.Count() )
+    bool bValidField = ( nullptr != pDE && i < pDE->m_valid_fields.Count() )
                      ? pDE->m_valid_fields[i] : 
                      false;
                      
@@ -1890,7 +1888,7 @@ void ON_DimStyle::SetParentId( ON_UUID parent_id )
 ON_UUID ON_DimStyle::ParentId() const
 {
   const ON_DimStyleExtra* pDE = DimStyleExtension(); // get existing
-  return ( 0 != pDE ? pDE->m_parent_dimstyle : ON_nil_uuid );
+  return ( nullptr != pDE ? pDE->m_parent_dimstyle : ON_nil_uuid );
 }
 
 bool ON_DimStyleExtra::IsFieldOverride( int field_id) const
@@ -2322,7 +2320,7 @@ bool ON_DimStyle::CompareFields(const ON_DimStyle& other) const
   const ON_DimStyleExtra* pDEo = ON_DimStyleExtra::DimStyleExtensionGet(&other);
   const ON_DimStyleExtra* pDE  = ON_DimStyleExtra::DimStyleExtensionGet(this);
 
-  if ( 0 != pDEo && 0 != pDE && !pDE->CompareFields(pDEo) )
+  if ( nullptr != pDEo && nullptr != pDE && !pDE->CompareFields(pDEo) )
     return false;
 
   // 2 November 2011 Dale Lear:
@@ -2332,10 +2330,10 @@ bool ON_DimStyle::CompareFields(const ON_DimStyle& other) const
   //   all default settings is correctly handled.  (For the past year,
   //   every single dimstyle has had ON_DimStyleExtra added to it
   //   that starts out containing default settings.
-  if ( 0 == pDEo && 0 != pDE && !pDE->IsDefault() )
+  if ( nullptr == pDEo && nullptr != pDE && !pDE->IsDefault() )
     return false;
 
-  if ( 0 == pDE && 0 != pDEo && !pDEo->IsDefault() )
+  if ( nullptr == pDE && nullptr != pDEo && !pDEo->IsDefault() )
     return false;
 
   return true;

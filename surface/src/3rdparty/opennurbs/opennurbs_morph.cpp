@@ -19,8 +19,8 @@
 
 ON_Localizer::ON_Localizer()
 {
-  m_nurbs_curve = 0;
-  m_nurbs_surface = 0;
+  m_nurbs_curve = nullptr;
+  m_nurbs_surface = nullptr;
   Destroy();
 }
 
@@ -31,8 +31,8 @@ ON_Localizer::~ON_Localizer()
 
 ON_Localizer::ON_Localizer(const ON_Localizer& src)
 {
-  m_nurbs_curve = 0;
-  m_nurbs_surface = 0;
+  m_nurbs_curve = nullptr;
+  m_nurbs_surface = nullptr;
   Destroy();
   *this = src;
 }
@@ -64,12 +64,12 @@ void ON_Localizer::Destroy()
   if (m_nurbs_curve)
   {
     delete m_nurbs_curve;
-    m_nurbs_curve = 0;
+    m_nurbs_curve = nullptr;
   }
   if (m_nurbs_surface)
   {
     delete m_nurbs_surface;
-    m_nurbs_surface = 0;
+    m_nurbs_surface = nullptr;
   }
 }
 
@@ -424,8 +424,7 @@ ON_SpaceMorph::ON_SpaceMorph()
 }
 
 ON_SpaceMorph::~ON_SpaceMorph()
-{
-}
+= default;
 
 double ON_SpaceMorph::Tolerance() const
 {

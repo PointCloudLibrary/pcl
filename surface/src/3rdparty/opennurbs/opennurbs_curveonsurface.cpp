@@ -18,14 +18,14 @@
 
 ON_OBJECT_IMPLEMENT(ON_CurveOnSurface,ON_Curve,"4ED7D4D8-E947-11d3-BFE5-0010830122F0");
 
-ON_CurveOnSurface::ON_CurveOnSurface() : m_c2(0), m_c3(0), m_s(0)
+ON_CurveOnSurface::ON_CurveOnSurface() : m_c2(nullptr), m_c3(nullptr), m_s(nullptr)
 {}
 
 ON_CurveOnSurface::ON_CurveOnSurface( ON_Curve* c2, ON_Curve* c3, ON_Surface* s ) 
                  : m_c2(c2), m_c3(c3), m_s(s)
 {}
 
-ON_CurveOnSurface::ON_CurveOnSurface( const ON_CurveOnSurface& src ) : ON_Curve(src), m_c2(0), m_c3(0), m_s(0)
+ON_CurveOnSurface::ON_CurveOnSurface( const ON_CurveOnSurface& src ) : ON_Curve(src), m_c2(nullptr), m_c3(nullptr), m_s(nullptr)
 {
   *this = src;
 }
@@ -49,15 +49,15 @@ ON_CurveOnSurface& ON_CurveOnSurface::operator=( const ON_CurveOnSurface& src )
     ON_Curve::operator=(src);
     if ( m_c2 ) {
       delete m_c2;
-      m_c2 = 0;
+      m_c2 = nullptr;
     }
     if ( m_c3 ) {
       delete m_c3;
-      m_c3 = 0;
+      m_c3 = nullptr;
     }
     if ( m_s ) {
       delete m_s;
-      m_s = 0;
+      m_s = nullptr;
     }
     if ( ON_Curve::Cast(src.m_c2) ) {
       m_c2 = ON_Curve::Cast(src.m_c2->Duplicate());
@@ -76,15 +76,15 @@ ON_CurveOnSurface::~ON_CurveOnSurface()
 {
   if ( m_c2 ) {
     delete m_c2;
-    m_c2 = 0;
+    m_c2 = nullptr;
   }
   if ( m_c3 ) {
     delete m_c3;
-    m_c3 = 0;
+    m_c3 = nullptr;
   }
   if ( m_s ) {
     delete m_s;
-    m_s = 0;
+    m_s = nullptr;
   }
 }
 
@@ -145,12 +145,12 @@ ON_CurveOnSurface::Read(
 {
   delete m_c2; 
   delete m_c3; 
-  m_c2 = 0;
-  m_c3 = 0;
+  m_c2 = nullptr;
+  m_c3 = nullptr;
   delete m_s;
-  m_s = 0;
+  m_s = nullptr;
 
-  ON_Object *o=0;
+  ON_Object *o=nullptr;
   ON_BOOL32 rc = file.ReadObject(&o);
   if (rc && o) {
     m_c2 = ON_Curve::Cast(o);
@@ -159,7 +159,7 @@ ON_CurveOnSurface::Read(
     } rc = false;
   }
 
-  o = 0;
+  o = nullptr;
 
   ON_BOOL32 bHasC3 = 0;
   rc = file.ReadInt( &bHasC3 );
@@ -174,7 +174,7 @@ ON_CurveOnSurface::Read(
     }
   }
 
-  o = 0;
+  o = nullptr;
 
   if (rc)
     rc = file.ReadObject(&o);

@@ -111,7 +111,7 @@ ON_QSORT_FNAME (
   int stkptr;                 /* stack for saving sub-array to be processed */
   ON_SORT_TEMPLATE_TYPE tmp;
 
-  if ( 0 == base || num < 2 )
+  if ( nullptr == base || num < 2 )
     return;
 
   stkptr = 0;                 /* initialize stack */

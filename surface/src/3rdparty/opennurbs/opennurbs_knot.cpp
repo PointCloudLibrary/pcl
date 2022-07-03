@@ -120,7 +120,7 @@ int ON_KnotVectorSpanCount(
           const double* knot // knot[] array
           )
 {
-  if ( 0 == knot )
+  if ( nullptr == knot )
   {
     if ( 0 != order || 0 != cv_count )
     {
@@ -148,7 +148,7 @@ bool ON_GetKnotVectorSpanVector(
           double* s           // s[] array
           )
 {
-  if ( 0 == knot || 0 == s )
+  if ( nullptr == knot || nullptr == s )
   {
     if ( 0 != order || 0 != cv_count )
     {
@@ -423,7 +423,7 @@ bool ON_IsKnotVectorUniform(
           const double* knot 
           )
 {
-  bool rc = (order >= 2 && cv_count >= order && 0 != knot);
+  bool rc = (order >= 2 && cv_count >= order && nullptr != knot);
   if (rc)
   {
     const double delta = knot[order-1] - knot[order-2];
@@ -541,7 +541,7 @@ ON::knot_style ON_KnotVectorStyle(
 bool ON_SetKnotVectorDomain( int order, int cv_count, double* knot, double t0, double t1 )
 {
   bool rc = false;
-  if ( order < 2 || cv_count < order || 0 == knot || t0 >= t1 || !ON_IsValid(t0) || !ON_IsValid(t1) )
+  if ( order < 2 || cv_count < order || nullptr == knot || t0 >= t1 || !ON_IsValid(t0) || !ON_IsValid(t1) )
   {
     ON_ERROR("ON_SetKnotVectorDomain - invalid input");
   }
@@ -581,7 +581,7 @@ bool ON_GetKnotVectorDomain(
        double* k0, double* k1
        )
 {
-  if ( order < 2 || cv_count < order || knot == NULL )
+  if ( order < 2 || cv_count < order || knot == nullptr )
     return false;
   if ( k0 )
     *k0 = knot[order-2];
@@ -601,7 +601,7 @@ bool ON_ReverseKnotVector(
        double* knot
        )
 {
-  if ( order < 2 || cv_count < order || knot == NULL )
+  if ( order < 2 || cv_count < order || knot == nullptr )
     return false;
   const int knot_count = (order+cv_count-2);
   double t;
@@ -708,7 +708,7 @@ bool ON_IsValidKnotVector( int order, int cv_count, const double* knot, ON_TextL
     }
     return ON_KnotVectorIsNotValid(bSilentError);
   }
-  if ( knot == NULL )
+  if ( knot == nullptr )
   {
     if ( text_log )
     {
@@ -884,7 +884,7 @@ bool ON_MakeClampedUniformKnotVector(
           )
 {
   bool rc = false;
-  if ( order >= 2 && cv_count >= order && knot != NULL && delta > 0.0 )
+  if ( order >= 2 && cv_count >= order && knot != nullptr && delta > 0.0 )
   {
     double k;
     int i;
@@ -919,7 +919,7 @@ bool ON_MakePeriodicUniformKnotVector(
           )
 {
   bool rc = false;
-  if ( order >= 2 && cv_count >= order && knot != NULL && delta > 0.0 )
+  if ( order >= 2 && cv_count >= order && knot != nullptr && delta > 0.0 )
   {
     double k = 0.0;
     int i, knot_count = ON_KnotCount(order,cv_count);
@@ -1014,7 +1014,7 @@ bool ON_GetGrevilleKnotVector( // get knots from Greville abcissa
           )
 {
   bool rc = false;
-  double* p = NULL;
+  double* p = nullptr;
   int ki, knot_count, g_count, gi, j, degree;
   double k, dd;
 
@@ -1342,7 +1342,7 @@ int ON_InsertKnot(
     ON_ERROR("ON_InsertKnot(): out of memory");
     return 0;
   }
-  double* new_cv = 0;
+  double* new_cv = nullptr;
   memcpy( new_knot, knot, 2*degree*sizeof(*new_knot) );
   if ( cv ) {
     new_cv = new_knot + (2*degree+m);

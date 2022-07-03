@@ -83,7 +83,7 @@ bool ON_BinaryArchive::WriteCompressedBuffer(
 
   if ( !WriteMode() )
     return false;
-  if ( sizeof__inbuffer > 0 && 0 == inbuffer )
+  if ( sizeof__inbuffer > 0 && nullptr == inbuffer )
     return false;
 
 
@@ -152,7 +152,7 @@ bool ON_BinaryArchive::ReadCompressedBuffer( // read and uncompress
     return false;
   if ( 0 == sizeof__outbuffer )
     return true;
-  if ( 0 == outbuffer )
+  if ( nullptr == outbuffer )
     return false;
 
   if ( !ReadInt(&buffer_crc0) ) // 32 bit crc of uncompressed buffer
@@ -327,7 +327,7 @@ std::size_t ON_BinaryArchive::WriteDeflate( // returns number of bytes written
       // inbuffer[] had more than max_zlib_avail_in bytes in it
       // and I am feeding inbuffer[] to deflate in smaller chunks
       // that the 32 bit integers in the zlib code can handle.
-      if ( 0 == m_zlib.strm.avail_in || 0 == m_zlib.strm.next_in )
+      if ( 0 == m_zlib.strm.avail_in || nullptr == m_zlib.strm.next_in )
       {
         // The call to deflate() used up all the input 
         // in m_zlib.strm.next_in[].  I can feed it another chunk
@@ -385,7 +385,7 @@ bool ON_BinaryArchive::ReadInflate(
   const std::size_t max_avail = 0x7FFFFFF0; // See max_avail comment in ON_BinaryArchive::WriteInflate
 
   std::size_t sizeof__inbuffer = 0;
-  void* in___buffer = 0;
+  void* in___buffer = nullptr;
   bool rc = false;
 
   // read compressed buffer from 3dm archive
@@ -396,14 +396,14 @@ bool ON_BinaryArchive::ReadInflate(
     rc = BeginRead3dmBigChunk(&tcode,&big_value );
     if (!rc)
     {
-      if ( 0 != out___buffer && sizeof___outbuffer > 0 )
+      if ( nullptr != out___buffer && sizeof___outbuffer > 0 )
         memset(out___buffer,0,sizeof___outbuffer);
       return false;
     }
     if (   tcode == TCODE_ANONYMOUS_CHUNK 
         && big_value > 4 
         && sizeof___outbuffer > 0 
-        && 0 != out___buffer )
+        && nullptr != out___buffer )
     {
       // read compressed buffer from the archive
       sizeof__inbuffer = (std::size_t)(big_value-4); // the last 4 bytes in this chunk are a 32 bit crc
@@ -433,7 +433,7 @@ bool ON_BinaryArchive::ReadInflate(
                            : rc;
   }
 
-  if ( !bValidCompressedBuffer && 0 != out___buffer && sizeof___outbuffer > 0 )
+  if ( !bValidCompressedBuffer && nullptr != out___buffer && sizeof___outbuffer > 0 )
   {
     // Decompression will fail, but we might get something valid
     // at the start if the data flaw was near the end of the buffer.
@@ -445,7 +445,7 @@ bool ON_BinaryArchive::ReadInflate(
     if ( in___buffer )
     {
       onfree(in___buffer);
-      in___buffer = 0;
+      in___buffer = nullptr;
     }
     return false;
   }
@@ -510,7 +510,7 @@ bool ON_BinaryArchive::ReadInflate(
     d = 0;
     if ( my_avail_in > 0 && m_zlib.strm.avail_in < max_avail )
     {
-      if ( 0 == m_zlib.strm.avail_in || 0 == m_zlib.strm.next_in )
+      if ( 0 == m_zlib.strm.avail_in || nullptr == m_zlib.strm.next_in )
       {
         // The call to inflate() used up all the input 
         // in m_zlib.strm.next_in[].  I can feed it another chunk
@@ -537,7 +537,7 @@ bool ON_BinaryArchive::ReadInflate(
     if ( my_avail_out > 0 && m_zlib.strm.avail_out < max_avail )
     {
       // increase m_zlib.strm.next_out[] buffer
-      if ( 0 == m_zlib.strm.avail_out || 0 == m_zlib.strm.next_out )
+      if ( 0 == m_zlib.strm.avail_out || nullptr == m_zlib.strm.next_out )
       {
         d = my_avail_out;
         if ( d > max_avail )
@@ -565,7 +565,7 @@ bool ON_BinaryArchive::ReadInflate(
   if (in___buffer )
   {
     onfree(in___buffer);
-    in___buffer = 0;
+    in___buffer = nullptr;
   }
 
   if ( 0 == counter )
@@ -653,7 +653,7 @@ ON_CompressedBuffer::ON_CompressedBuffer()
                       m_method(0),
                       m_sizeof_element(0),
                       m_buffer_compressed_capacity(0),
-                      m_buffer_compressed(0)
+                      m_buffer_compressed(nullptr)
 {
 }
 
@@ -670,7 +670,7 @@ ON_CompressedBuffer::ON_CompressedBuffer(const ON_CompressedBuffer& src)
                       m_method(0),
                       m_sizeof_element(0),
                       m_buffer_compressed_capacity(0),
-                      m_buffer_compressed(0)
+                      m_buffer_compressed(nullptr)
 {
   *this = src;
 }
@@ -808,7 +808,7 @@ void ON_CompressedBuffer::Destroy()
   m_crc_compressed      = 0;
   m_method              = 0;
   m_sizeof_element      = 0;
-  m_buffer_compressed   = 0;
+  m_buffer_compressed   = nullptr;
   m_buffer_compressed_capacity = 0;
 }
 
@@ -823,7 +823,7 @@ bool ON_CompressedBuffer::Compress(
   //std::size_t compressed_size = 0;
   bool rc = false;
 
-  if ( sizeof__inbuffer > 0 && 0 == inbuffer )
+  if ( sizeof__inbuffer > 0 && nullptr == inbuffer )
     return false;
 
   if ( 0 == sizeof__inbuffer )
@@ -934,7 +934,7 @@ bool ON_CompressedBuffer::Uncompress(
     *bFailedCRC = false;
   if ( 0 == m_sizeof_uncompressed )
     return true;
-  if ( 0 == outbuffer )
+  if ( nullptr == outbuffer )
     return false;
 
   if ( m_method != 0 && m_method != 1 )
@@ -1185,7 +1185,7 @@ std::size_t ON_CompressedBuffer::DeflateHelper( // returns number of bytes writt
       // inbuffer[] had more than max_zlib_avail_in bytes in it
       // and I am feeding inbuffer[] to deflate in smaller chunks
       // that the 32 bit integers in the zlib code can handle.
-      if ( 0 == m_zlib.strm.avail_in || 0 == m_zlib.strm.next_in )
+      if ( 0 == m_zlib.strm.avail_in || nullptr == m_zlib.strm.next_in )
       {
         // The call to deflate() used up all the input 
         // in m_zlib.strm.next_in[].  I can feed it another chunk
@@ -1303,7 +1303,7 @@ bool ON_CompressedBuffer::InflateHelper(
     d = 0;
     if ( my_avail_in > 0 && m_zlib.strm.avail_in < max_avail )
     {
-      if ( 0 == m_zlib.strm.avail_in || 0 == m_zlib.strm.next_in )
+      if ( 0 == m_zlib.strm.avail_in || nullptr == m_zlib.strm.next_in )
       {
         // The call to inflate() used up all the input 
         // in m_zlib.strm.next_in[].  I can feed it another chunk
@@ -1330,7 +1330,7 @@ bool ON_CompressedBuffer::InflateHelper(
     if ( my_avail_out > 0 && m_zlib.strm.avail_out < max_avail )
     {
       // increase m_zlib.strm.next_out[] buffer
-      if ( 0 == m_zlib.strm.avail_out || 0 == m_zlib.strm.next_out )
+      if ( 0 == m_zlib.strm.avail_out || nullptr == m_zlib.strm.next_out )
       {
         d = my_avail_out;
         if ( d > max_avail )

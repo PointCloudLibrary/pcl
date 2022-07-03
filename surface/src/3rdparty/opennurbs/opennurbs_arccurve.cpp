@@ -66,8 +66,7 @@ ON_ArcCurve::ON_ArcCurve( const ON_ArcCurve& src ) : ON_Curve(src)
 }
 
 ON_ArcCurve::~ON_ArcCurve()
-{
-}
+= default;
 
 
 unsigned int ON_ArcCurve::SizeOf() const
@@ -169,14 +168,14 @@ ON_BOOL32 ON_ArcCurve::IsValid( ON_TextLog* text_log ) const
 {
   if ( !m_t.IsIncreasing() )
   {
-    if ( 0 != text_log )
+    if ( nullptr != text_log )
       text_log->Print("ON_ArcCurve - m_t=(%g,%g) - it should be an increasing interval.\n",m_t[0],m_t[1]);
     return false;
   }
 
   if ( !m_arc.IsValid() )
   {
-    if ( 0 != text_log )
+    if ( nullptr != text_log )
       text_log->Print("ON_ArcCurve m_arc is not valid\n");
     return false;
   }
@@ -588,28 +587,28 @@ ON_BOOL32 ON_ArcCurve::Split(
     return false;
 
   // make sure input curves are ok.
-  ON_ArcCurve* left_arc = 0;
-  ON_ArcCurve* right_arc = 0;
+  ON_ArcCurve* left_arc = nullptr;
+  ON_ArcCurve* right_arc = nullptr;
 
-  if ( 0 != left_side )
+  if ( nullptr != left_side )
   {
     if ( left_side == right_side )
       return false;
     left_arc = ON_ArcCurve::Cast(left_side);
-    if ( 0 == left_arc )
+    if ( nullptr == left_arc )
       return false;
     left_arc->DestroyCurveTree();
   }
 
-  if ( 0 != right_side )
+  if ( nullptr != right_side )
   {
     right_arc = ON_ArcCurve::Cast(right_side);
-    if ( 0 == right_arc )
+    if ( nullptr == right_arc )
       return false;
     right_arc->DestroyCurveTree();
   }
 
-  if ( 0 == left_arc )
+  if ( nullptr == left_arc )
   {
     left_arc = new ON_ArcCurve( *this );
   }
@@ -618,7 +617,7 @@ ON_BOOL32 ON_ArcCurve::Split(
     left_arc->operator=(*this);
   }
 
-  if ( 0 == right_arc )
+  if ( nullptr == right_arc )
   {
     right_arc = new ON_ArcCurve( *this );
   }
@@ -643,22 +642,22 @@ ON_BOOL32 ON_ArcCurve::Split(
 
   if ( rc )
   {
-    if ( 0 == left_side )
+    if ( nullptr == left_side )
       left_side = left_arc;
-    if ( 0 == right_side )
+    if ( nullptr == right_side )
       right_side = right_arc;
   }
   else
   {
-    if ( 0 == left_side && this != left_arc )
+    if ( nullptr == left_side && this != left_arc )
     {
       delete left_arc;
-      left_arc = 0;
+      left_arc = nullptr;
     }
-    if ( 0 == right_side && this != right_arc )
+    if ( nullptr == right_side && this != right_arc )
     {
       delete right_arc;
-      right_arc = 0;
+      right_arc = nullptr;
     }
   }
   return rc;
@@ -823,7 +822,7 @@ bool ON_Arc::GetRadianFromNurbFormParameter(double NurbParameter, double* Radian
 
 	ON_NurbsCurve crv;
 	
-	if( !IsValid()|| RadianParameter==NULL) 
+	if( !IsValid()|| RadianParameter==nullptr) 
 		return false;
 
 	ON_Interval dom= Domain();
@@ -898,7 +897,7 @@ bool ON_Arc::GetRadianFromNurbFormParameter(double NurbParameter, double* Radian
 
 bool ON_Arc::GetNurbFormParameterFromRadian(double RadianParameter, double* NurbParameter ) const
 {
-	if(!IsValid() || NurbParameter==NULL) 
+	if(!IsValid() || NurbParameter==nullptr) 
 		return false;
 
   ON_Interval ADomain = DomainRadians();
@@ -1036,7 +1035,7 @@ int ON_ArcCurve::GetNurbForm( // returns 0: unable to create NURBS representatio
     ON_ArcCurve trimmed_arc(*this);
     if ( trimmed_arc.Trim(*subdomain) ) 
     {
-      rc = trimmed_arc.GetNurbForm( c, tolerance, NULL );
+      rc = trimmed_arc.GetNurbForm( c, tolerance, nullptr );
     }
   }
   else if ( m_t.IsIncreasing() && m_arc.IsValid() ) 
@@ -1127,10 +1126,10 @@ class ON__OBSOLETE__CircleCurve : public ON_ArcCurve
 {
 public: 
   static const ON_ClassId m_ON_CircleCurve_class_id;
-  const ON_ClassId* ClassId() const;
+  const ON_ClassId* ClassId() const override;
   ON_BOOL32 Read(
          ON_BinaryArchive&  // open binary file
-       );
+       ) override;
 };
 
 static ON_Object* CreateNewON_CircleCurve() 
@@ -1144,7 +1143,7 @@ static ON_Object* CreateNewON_CircleCurve()
 
 const ON_ClassId ON__OBSOLETE__CircleCurve::m_ON_CircleCurve_class_id("ON__OBSOLETE__CircleCurve",
                                                            "ON_ArcCurve",
-                                                           CreateNewON_CircleCurve,0,
+                                                           CreateNewON_CircleCurve,nullptr,
                                                            "CF33BE29-09B4-11d4-BFFB-0010830122F0");
 
 const ON_ClassId* ON__OBSOLETE__CircleCurve::ClassId() const 

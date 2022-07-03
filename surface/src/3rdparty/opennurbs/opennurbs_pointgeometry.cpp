@@ -93,8 +93,8 @@ ON_BOOL32 ON_Point::SwapCoordinates( int i, int j )
 ON_Point::ON_Point() : point(0.0,0.0,0.0) 
 {}
 
-ON_Point::ON_Point(const ON_Point& src) : ON_Geometry(src), point(src.point) 
-{}
+ON_Point::ON_Point(const ON_Point& src)  
+= default;
 
 ON_Point::ON_Point(const ON_3dPoint& pt) : point(pt) 
 {}
@@ -103,7 +103,7 @@ ON_Point::ON_Point(double x,double y,double z) : point(x,y,z)
 {}
 
 ON_Point::~ON_Point() 
-{}
+= default;
 
 ON_Point& ON_Point::operator=(const ON_Point& src) 
 {

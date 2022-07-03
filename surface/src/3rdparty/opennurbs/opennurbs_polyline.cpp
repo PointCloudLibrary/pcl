@@ -17,8 +17,7 @@
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_Polyline::ON_Polyline()
-{
-}
+= default;
 
 ON_Polyline::ON_Polyline(const ON_3dPointArray& src) : ON_3dPointArray(src)
 {
@@ -94,8 +93,7 @@ ON_Polyline& ON_Polyline::operator=(const ON_3dPointArray& src)
 }
 
 ON_Polyline::~ON_Polyline()
-{
-}
+= default;
 
 int ON_Polyline::PointCount() const
 {

@@ -120,7 +120,7 @@ public:
     TruncatedError() = default;
 
   public:
-    ~TruncatedError() = default;
+    ~TruncatedError() override = default;
 
     TruncatedError(float threshold) : threshold_(threshold) {}
     float

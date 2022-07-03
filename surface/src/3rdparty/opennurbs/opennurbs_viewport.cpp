@@ -322,7 +322,7 @@ ON_Viewport::ON_Viewport()
 }
 
 ON_Viewport::~ON_Viewport()
-{}
+= default;
 
 ON_Viewport& ON_Viewport::operator=( const ON_Viewport& src )
 {
@@ -548,7 +548,7 @@ ON_BOOL32 ON_Viewport::IsValid( ON_TextLog* text_log ) const
 {
   if ( !IsValidCamera() )
   {
-    if ( 0 != text_log )
+    if ( nullptr != text_log )
     {
       text_log->Print("invalid viewport camera settings.\n");
     }
@@ -556,7 +556,7 @@ ON_BOOL32 ON_Viewport::IsValid( ON_TextLog* text_log ) const
   }
   if ( !IsValidFrustum() )
   {
-    if ( 0 != text_log )
+    if ( nullptr != text_log )
     {
       text_log->Print("invalid viewport frustum settings.\n");
     }
@@ -564,7 +564,7 @@ ON_BOOL32 ON_Viewport::IsValid( ON_TextLog* text_log ) const
   }
   if ( !m_bValidPort )
   {
-    if ( 0 != text_log )
+    if ( nullptr != text_log )
     {
       text_log->Print("invalid viewport port extents settings.\n");
     }
@@ -1171,7 +1171,7 @@ bool ON_Viewport::IsCameraFrameWorldPlan(
   int iy = 0;
   int iz = 0;
   double X[3], Y[3], Z[3];
-  bool rc = GetCameraFrame( NULL, X, Y, Z );
+  bool rc = GetCameraFrame( nullptr, X, Y, Z );
   if ( rc ) {
     for ( i = 0; i < 3; i++ ) {
       if ( X[i] == 1.0 ) {
@@ -1225,7 +1225,7 @@ bool ON_Viewport::GetCameraExtents(
   ON_Xform w2c;
   bool rc = bGrowBox?true:false;
   int i;
-  if ( count > 0 && stride >= 3 && points != NULL ) {
+  if ( count > 0 && stride >= 3 && points != nullptr ) {
     rc = false;
     if ( GetXform( ON::world_cs, ON::camera_cs, w2c ) ) {
       rc = true;
@@ -1869,9 +1869,9 @@ bool ON_Viewport::GetFrustumCenter( double* frus_center ) const
   double camZ[3], frus_near, frus_far, d;
   if ( !frus_center )
     return false;
-  if ( !GetCameraFrame( frus_center, NULL, NULL, camZ ) )
+  if ( !GetCameraFrame( frus_center, nullptr, nullptr, camZ ) )
     return false;
-  if ( !GetFrustum( NULL, NULL, NULL, NULL, &frus_near, &frus_far ) )
+  if ( !GetFrustum( nullptr, nullptr, nullptr, nullptr, &frus_near, &frus_far ) )
     return false;
   d = -0.5*(frus_near+frus_far);
   frus_center[0] += d*camZ[0];
@@ -2115,7 +2115,7 @@ bool ON_Viewport::GetCameraAngle(
   if ( angle_w )
     *angle_w = 0.0;
   double half_w, half_h, left, right, bot, top, near_dist;
-  if ( GetFrustum( &left, &right, &bot, &top, &near_dist, NULL ) ) 
+  if ( GetFrustum( &left, &right, &bot, &top, &near_dist, nullptr ) ) 
   {
     half_w = ( right > -left ) ? right : -left;
     half_h = ( top   > -bot  ) ? top   : -bot;
@@ -2139,7 +2139,7 @@ bool ON_Viewport::GetCameraAngle(
 {
   double angle_h = 0.0;
   double angle_w = 0.0;
-  bool rc = GetCameraAngle( NULL, &angle_h, &angle_w );
+  bool rc = GetCameraAngle( nullptr, &angle_h, &angle_w );
   if ( angle && rc ) {
     *angle = (angle_h < angle_w) ? angle_h : angle_w;
   }
@@ -2151,7 +2151,7 @@ bool ON_Viewport::SetCameraAngle( double angle )
   bool rc = false;
   double r, d, aspect, half_w, half_h, near_dist, far_dist;
   if ( angle > 0.0  && angle < 0.5*ON_PI*(1.0-ON_SQRT_EPSILON) ) {
-    if ( GetFrustum( NULL, NULL, NULL, NULL, &near_dist, &far_dist ) && GetFrustumAspect( aspect) ) {
+    if ( GetFrustum( nullptr, nullptr, nullptr, nullptr, &near_dist, &far_dist ) && GetFrustumAspect( aspect) ) {
       r = near_dist*tan(angle);
       // d = r/sqrt(1.0+aspect*aspect); // if angle is 1/2 diagonal angle
       d = r; // angle is 1/2 smallest angle
@@ -2496,7 +2496,7 @@ bool ON_Viewport::SetFrustumNearFar(
   box[0] = box_min;
   box[1] = box_max;
 
-  if ( GetCameraFrame( camLoc, NULL, NULL, camZ ) ) {
+  if ( GetCameraFrame( camLoc, nullptr, nullptr, camZ ) ) {
     n = f = -1.0;
     for(i=0;i<2;i++)for(j=0;j<2;j++)for(k=0;k<2;k++) {
       P[0] = box[i][0];
@@ -2545,7 +2545,7 @@ bool ON_Viewport::SetFrustumNearFar(
     return false;
   }
 
-  if ( GetCameraFrame( camLoc, NULL, NULL, camZ ) ) 
+  if ( GetCameraFrame( camLoc, nullptr, nullptr, camZ ) ) 
   {
     d = fabs(radius);
     P[0] = center[0] + d*camZ[0];
@@ -2695,7 +2695,7 @@ bool ON_Viewport::GetWorldToScreenScale( const ON_3dPoint& P, double* scale ) co
     ON_Xform w2s;
     ON_3dVector X;
     ON_3dPoint Q, ScrC, ScrQ;
-    if (!GetCameraFrame( NULL, X, NULL, NULL )) 
+    if (!GetCameraFrame( nullptr, X, nullptr, nullptr )) 
       return false;
     if (!GetXform( ON::world_cs, ON::screen_cs, w2s )) 
       return false;
@@ -2724,7 +2724,7 @@ bool ON_Viewport::GetCoordinateSprite(
   ON_Xform w2s;
   if (!GetFrustumCenter( C ) )
     return false;
-  if (!GetCameraFrame( NULL, X, NULL, Z )) 
+  if (!GetCameraFrame( nullptr, X, nullptr, Z )) 
     return false;
   if (!GetXform( ON::world_cs, ON::screen_cs, w2s )) 
     return false;
@@ -3110,9 +3110,9 @@ bool ON_Viewport::GetPointDepth(
   if ( point.x != ON_UNSET_VALUE )
   {
     double depth = (m_CamLoc - point)*m_CamZ;
-    if ( 0 != near_dist && (*near_dist == ON_UNSET_VALUE || !bGrowNearFar || *near_dist > depth) )
+    if ( nullptr != near_dist && (*near_dist == ON_UNSET_VALUE || !bGrowNearFar || *near_dist > depth) )
       *near_dist = depth;
-    if ( 0 != far_dist && (*far_dist == ON_UNSET_VALUE || !bGrowNearFar || *far_dist < depth) )
+    if ( nullptr != far_dist && (*far_dist == ON_UNSET_VALUE || !bGrowNearFar || *far_dist < depth) )
       *far_dist = depth;
     rc = true;
   }
@@ -3128,7 +3128,7 @@ bool ON_Viewport::GetPointDepth(
   if ( point.x != ON_UNSET_VALUE )
   {
     double depth = (m_CamLoc - point)*m_CamZ;
-    if ( 0 != view_plane_depth )
+    if ( nullptr != view_plane_depth )
       *view_plane_depth = depth;
     rc = true;
   }
@@ -3351,9 +3351,9 @@ bool ON_Viewport::GetBoundingBoxDepth(
         t[0] = 0.0;
     }
 
-    if ( 0 != near_dist && (!bGrowNearFar || !ON_IsValid(*near_dist) || t[0] < *near_dist) )
+    if ( nullptr != near_dist && (!bGrowNearFar || !ON_IsValid(*near_dist) || t[0] < *near_dist) )
       *near_dist = t[0];
-    if ( 0 != far_dist && (!bGrowNearFar || !ON_IsValid(*far_dist) || t[1] > *far_dist) )
+    if ( nullptr != far_dist && (!bGrowNearFar || !ON_IsValid(*far_dist) || t[1] > *far_dist) )
       *far_dist = t[1];
 
     rc = true;
@@ -3373,9 +3373,9 @@ bool ON_Viewport::GetSphereDepth(
   bool rc = GetPointDepth( sphere.Center(), near_dist, far_dist, bGrowNearFar );
   if ( rc && sphere.Radius() > 0.0 )
   {
-    if ( 0 != near_dist )
+    if ( nullptr != near_dist )
       *near_dist -= sphere.Radius();
-    if ( 0 != far_dist )
+    if ( nullptr != far_dist )
       *far_dist += sphere.Radius();
   }
   return rc;
@@ -4237,7 +4237,7 @@ void ON_Viewport::ChangeViewportId(const ON_UUID& viewport_id)
 }
 
 
-ON_UUID  ON_Viewport::ViewportId(void) const
+ON_UUID  ON_Viewport::ViewportId() const
 {
   return m_viewport_id;
 }

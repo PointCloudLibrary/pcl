@@ -37,7 +37,7 @@ static int w2c_size( int w_count, const wchar_t* w )
   int rc = 0;
   if ( w ) {
     unsigned int error_status = 0;
-    rc = ON_ConvertWideCharToUTF8(false,w,w_count,0,0,&error_status,0,0,0);
+    rc = ON_ConvertWideCharToUTF8(false,w,w_count,nullptr,0,&error_status,0,0,nullptr);
     if ( error_status )
     {
       ON_ERROR("Wide char string is not valid.");
@@ -67,7 +67,7 @@ static int w2c( int w_count,
       unsigned int error_status = 0;
       unsigned int error_mask = 0xFFFFFFFF;
       ON__UINT32 error_code_point = 0xFFFD;
-      const wchar_t* p1 = 0;
+      const wchar_t* p1 = nullptr;
       rc = ON_ConvertWideCharToUTF8(false,w,w_count,c, c_count, &error_status,error_mask,error_code_point,&p1);
       if ( error_status )
       {
@@ -113,7 +113,7 @@ static int c2w( int c_count,
       unsigned int error_status = 0;
       unsigned int error_mask = 0xFFFFFFFF;
       ON__UINT32 error_code_point = 0xFFFD;
-      const char* p1 = 0;
+      const char* p1 = nullptr;
       rc = ON_ConvertUTF8ToWideChar(c,c_count,w,w_count,&error_status,error_mask,error_code_point,&p1);
       if ( rc > 0 && rc <= w_count )
         w[rc] = 0;
@@ -434,7 +434,7 @@ ON_wString::~ON_wString()
 ON_wString::ON_wString(const ON_wString& src)
 {
 	if (    src.Header()->ref_count > 0 
-       && 0 == ON_WorkerMemoryPool()
+       && nullptr == ON_WorkerMemoryPool()
        )	
   {
 		m_s = src.m_s;
@@ -592,7 +592,7 @@ const ON_wString& ON_wString::operator=(const ON_wString& src)
       Create();
     }
     else if (    src.Header()->ref_count > 0 
-              && 0 == ON_WorkerMemoryPool()
+              && nullptr == ON_WorkerMemoryPool()
             ) 
     {
       Destroy();
@@ -799,12 +799,12 @@ void ON_wString::SetLength(std::size_t string_length)
 wchar_t* ON_wString::Array()
 {
   CopyArray();
-  return ( Header()->string_capacity > 0 ) ? m_s : 0;
+  return ( Header()->string_capacity > 0 ) ? m_s : nullptr;
 }
 
 const wchar_t* ON_wString::Array() const
 {
-  return ( Header()->string_capacity > 0 ) ? m_s : 0;
+  return ( Header()->string_capacity > 0 ) ? m_s : nullptr;
 }
 
 /*
@@ -1153,9 +1153,9 @@ int ON_wString::Replace( const wchar_t* token1, const wchar_t* token2 )
 {
   int count = 0;
 
-  if ( 0 != token1 && 0 != token1[0] )
+  if ( nullptr != token1 && 0 != token1[0] )
   {
-    if ( 0 == token2 )
+    if ( nullptr == token2 )
       token2 = L"";
     const int len1 = (int)wcslen(token1);
     if ( len1 > 0 )
@@ -1277,8 +1277,8 @@ int ON_wString::Replace( wchar_t token1, wchar_t token2 )
 void ON_wString::UrlEncode()
 {
   wchar_t c, c0, c1;
-  wchar_t* buffer = 0;
-  wchar_t* s1 = 0;
+  wchar_t* buffer = nullptr;
+  wchar_t* s1 = nullptr;
   const wchar_t* s = Array();
   const int count = Length();
   int i;
@@ -1469,7 +1469,7 @@ int ON_wString::ReplaceWhiteSpace( wchar_t token, const wchar_t* whitespace )
   int n;
   wchar_t c;
 
-  if ( 0 == (s0 = m_s) )
+  if ( nullptr == (s0 = m_s) )
     return 0;
   s1 = s0 + Length();
   if ( whitespace && *whitespace )
@@ -1535,7 +1535,7 @@ int ON_wString::RemoveWhiteSpace( const wchar_t* whitespace )
   int n;
   wchar_t c;
 
-  if ( 0 == (s0 = m_s) )
+  if ( nullptr == (s0 = m_s) )
     return 0;
   s1 = s0 + Length();
   if ( whitespace && *whitespace )
@@ -1602,7 +1602,7 @@ int ON_wString::RemoveWhiteSpace( const wchar_t* whitespace )
 
 ON_wString::operator const wchar_t*() const
 {
-  return ( m_s == pEmptywString ) ? NULL : m_s;
+  return ( m_s == pEmptywString ) ? nullptr : m_s;
 }
 
 int ON_wString::Find( char c ) const
@@ -1772,7 +1772,7 @@ int ON_wString::Remove( wchar_t c)
   wchar_t* s;
   int n;
 
-  if ( 0 == (s0 = m_s) )
+  if ( nullptr == (s0 = m_s) )
     return 0;
   s1 = s0 + Length();
   while( s0 < s1 )
@@ -2013,22 +2013,22 @@ void ON_String::SplitPath(
     ON_String* ext
     )
 {
-  const char* dr = 0;
-  const char* d = 0;
-  const char* f = 0;
-  const char* e = 0;
+  const char* dr = nullptr;
+  const char* d = nullptr;
+  const char* f = nullptr;
+  const char* e = nullptr;
 
   on_splitpath(path,&dr,&d,&f,&e);
 
-  if ( 0 != drive )
+  if ( nullptr != drive )
   {
-    if ( 0 != dr )
+    if ( nullptr != dr )
     {
-      if ( 0 != d )
+      if ( nullptr != d )
         drive->CopyToArray((int)(d-dr),dr);
-      else if ( 0 != f )
+      else if ( nullptr != f )
         drive->CopyToArray((int)(f-dr),dr);
-      else if ( 0 != e )
+      else if ( nullptr != e )
         drive->CopyToArray((int)(e-dr),dr);
       else
         *drive = dr;
@@ -2037,13 +2037,13 @@ void ON_String::SplitPath(
       drive->Empty();
   }
 
-  if ( 0 != dir )
+  if ( nullptr != dir )
   {
-    if ( 0 != d )
+    if ( nullptr != d )
     {
-      if ( 0 != f )
+      if ( nullptr != f )
         dir->CopyToArray((int)(f-d),d);
-      else if ( 0 != e )
+      else if ( nullptr != e )
         dir->CopyToArray((int)(e-d),d);
       else
         *dir = d;
@@ -2052,11 +2052,11 @@ void ON_String::SplitPath(
       dir->Empty();
   }
 
-  if ( 0 != fname )
+  if ( nullptr != fname )
   {
-    if ( 0 != f )
+    if ( nullptr != f )
     {
-      if ( 0 != e )
+      if ( nullptr != e )
         fname->CopyToArray((int)(e-f),f);
       else
         *fname = f;
@@ -2065,7 +2065,7 @@ void ON_String::SplitPath(
       fname->Empty();
   }
 
-  if ( 0 != ext )
+  if ( nullptr != ext )
   {
     *ext = e;
   }
@@ -2079,22 +2079,22 @@ void ON_wString::SplitPath(
     ON_wString* ext
     )
 {
-  const char* dr = 0;
-  const char* d = 0;
-  const char* f = 0;
-  const char* e = 0;
+  const char* dr = nullptr;
+  const char* d = nullptr;
+  const char* f = nullptr;
+  const char* e = nullptr;
 
   on_splitpath(path,&dr,&d,&f,&e);
 
-  if ( 0 != drive )
+  if ( nullptr != drive )
   {
-    if ( 0 != dr )
+    if ( nullptr != dr )
     {
-      if ( 0 != d )
+      if ( nullptr != d )
         drive->CopyToArray((int)(d-dr),dr);
-      else if ( 0 != f )
+      else if ( nullptr != f )
         drive->CopyToArray((int)(f-dr),dr);
-      else if ( 0 != e )
+      else if ( nullptr != e )
         drive->CopyToArray((int)(e-dr),dr);
       else
         *drive = dr;
@@ -2103,13 +2103,13 @@ void ON_wString::SplitPath(
       drive->Empty();
   }
 
-  if ( 0 != dir )
+  if ( nullptr != dir )
   {
-    if ( 0 != d )
+    if ( nullptr != d )
     {
-      if ( 0 != f )
+      if ( nullptr != f )
         dir->CopyToArray((int)(f-d),d);
-      else if ( 0 != e )
+      else if ( nullptr != e )
         dir->CopyToArray((int)(e-d),d);
       else
         *dir = d;
@@ -2118,11 +2118,11 @@ void ON_wString::SplitPath(
       dir->Empty();
   }
 
-  if ( 0 != fname )
+  if ( nullptr != fname )
   {
-    if ( 0 != f )
+    if ( nullptr != f )
     {
-      if ( 0 != e )
+      if ( nullptr != e )
         fname->CopyToArray((int)(e-f),f);
       else
         *fname = f;
@@ -2131,7 +2131,7 @@ void ON_wString::SplitPath(
       fname->Empty();
   }
 
-  if ( 0 != ext )
+  if ( nullptr != ext )
   {
     *ext = e;
   }
@@ -2145,22 +2145,22 @@ void ON_wString::SplitPath(
     ON_wString* ext
     )
 {
-  const wchar_t* dr = 0;
-  const wchar_t* d = 0;
-  const wchar_t* f = 0;
-  const wchar_t* e = 0;
+  const wchar_t* dr = nullptr;
+  const wchar_t* d = nullptr;
+  const wchar_t* f = nullptr;
+  const wchar_t* e = nullptr;
 
   on_wsplitpath(path,&dr,&d,&f,&e);
 
-  if ( 0 != drive )
+  if ( nullptr != drive )
   {
-    if ( 0 != dr )
+    if ( nullptr != dr )
     {
-      if ( 0 != d )
+      if ( nullptr != d )
         drive->CopyToArray((int)(d-dr),dr);
-      else if ( 0 != f )
+      else if ( nullptr != f )
         drive->CopyToArray((int)(f-dr),dr);
-      else if ( 0 != e )
+      else if ( nullptr != e )
         drive->CopyToArray((int)(e-dr),dr);
       else
         *drive = dr;
@@ -2169,13 +2169,13 @@ void ON_wString::SplitPath(
       drive->Empty();
   }
 
-  if ( 0 != dir )
+  if ( nullptr != dir )
   {
-    if ( 0 != d )
+    if ( nullptr != d )
     {
-      if ( 0 != f )
+      if ( nullptr != f )
         dir->CopyToArray((int)(f-d),d);
-      else if ( 0 != e )
+      else if ( nullptr != e )
         dir->CopyToArray((int)(e-d),d);
       else
         *dir = d;
@@ -2184,11 +2184,11 @@ void ON_wString::SplitPath(
       dir->Empty();
   }
 
-  if ( 0 != fname )
+  if ( nullptr != fname )
   {
-    if ( 0 != f )
+    if ( nullptr != f )
     {
-      if ( 0 != e )
+      if ( nullptr != e )
         fname->CopyToArray((int)(e-f),f);
       else
         *fname = f;
@@ -2197,7 +2197,7 @@ void ON_wString::SplitPath(
       fname->Empty();
   }
 
-  if ( 0 != ext )
+  if ( nullptr != ext )
   {
     *ext = e;
   }

@@ -62,8 +62,7 @@ ON_LineCurve::ON_LineCurve( const ON_LineCurve& src ) : ON_Curve(src)
 }
 
 ON_LineCurve::~ON_LineCurve()
-{
-}
+= default;
 
 unsigned int ON_LineCurve::SizeOf() const
 {
@@ -330,7 +329,7 @@ ON_LineCurve::IsPlanar(
       ) const
 {
   ON_BOOL32 rc = IsValid();
-  if ( plane != NULL && rc ) 
+  if ( plane != nullptr && rc ) 
   {
     if ( m_dim == 2 )
       rc = ON_Curve::IsPlanar(plane,tolerance);

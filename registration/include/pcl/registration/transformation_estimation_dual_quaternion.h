@@ -65,7 +65,7 @@ public:
       typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4;
 
   TransformationEstimationDualQuaternion() = default;
-  ~TransformationEstimationDualQuaternion() = default;
+  ~TransformationEstimationDualQuaternion() override = default;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using dual quaternion optimization \param[in] cloud_src the source

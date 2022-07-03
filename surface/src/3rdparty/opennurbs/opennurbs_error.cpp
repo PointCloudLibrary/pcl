@@ -139,7 +139,7 @@ static bool ON_PrintErrorHeader(
     {
       if ( ON_WARNING_COUNT < 50 )
       {
-        if (0 == sFileName )
+        if (nullptr == sFileName )
           sFileName = "";
         if ( sFunctionName && sFunctionName[0] )
           ON_SPRINTF4("openNURBS WARNING # %d %s.%d %s(): ",ON_WARNING_COUNT,sFileName,line_number,sFunctionName);
@@ -157,7 +157,7 @@ static bool ON_PrintErrorHeader(
     {
       if ( ON_ERROR_COUNT < 50 )
       {
-        if (0 == sFileName )
+        if (nullptr == sFileName )
           sFileName = "";
         if ( sFunctionName && sFunctionName[0] )
           ON_SPRINTF4("openNURBS ERROR # %d %s.%d %s(): ",ON_ERROR_COUNT,sFileName,line_number,sFunctionName);
@@ -185,7 +185,7 @@ void ON_Error(const char* sFileName, int line_number,
 {
   ON_IncrementErrorCount();
 
-  bool bPrintMessage = ON_PrintErrorHeader(1,sFileName,line_number,0);
+  bool bPrintMessage = ON_PrintErrorHeader(1,sFileName,line_number,nullptr);
 
   if ( bPrintMessage )
   {
@@ -229,7 +229,7 @@ void ON_Warning(const char* sFileName, int line_number,
 {
   ON_IncrementWarningCount();
 
-  bool bPrintMessage = ON_PrintErrorHeader(0,sFileName,line_number,0);
+  bool bPrintMessage = ON_PrintErrorHeader(0,sFileName,line_number,nullptr);
 
   if ( bPrintMessage )
   {
@@ -277,7 +277,7 @@ void ON_Assert(int bCondition,
   {
     ON_IncrementErrorCount();
 
-    bool bPrintMessage = ON_PrintErrorHeader(2,sFileName,line_number,0);
+    bool bPrintMessage = ON_PrintErrorHeader(2,sFileName,line_number,nullptr);
 
     if ( bPrintMessage )
     {

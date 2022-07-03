@@ -320,7 +320,7 @@ void ON_RandomNumberGenerator::RandomPermutation(void* base, std::size_t nel, st
 {
   ON__UINT32 i, j, n;
 
-  if ( 0 == base || nel <= 1 || sizeof_element <= 0 )
+  if ( nullptr == base || nel <= 1 || sizeof_element <= 0 )
     return;
 
 #if defined(ON_64BIT_POINTER)

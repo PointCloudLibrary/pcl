@@ -478,12 +478,12 @@ ON_Xform::ON_Xform( const ON_Matrix& m )
 
 double* ON_Xform::operator[](int i)
 {
-  return ( i >= 0 && i < 4 ) ? &m_xform[i][0] : NULL;
+  return ( i >= 0 && i < 4 ) ? &m_xform[i][0] : nullptr;
 }
 
 const double* ON_Xform::operator[](int i) const
 {
-  return ( i >= 0 && i < 4 ) ? &m_xform[i][0] : NULL;
+  return ( i >= 0 && i < 4 ) ? &m_xform[i][0] : nullptr;
 }
 
 ///////////////////////////////////////////////////////////////

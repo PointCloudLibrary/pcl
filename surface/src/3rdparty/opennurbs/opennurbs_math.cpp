@@ -431,7 +431,7 @@ ON_EvNormalPartials(
   const double ds_o_dt = ds*dt;
   const double dt_o_dt = dt*dt;
 
-  rc = ON_EvJacobian( ds_o_ds, ds_o_dt, dt_o_dt, NULL );
+  rc = ON_EvJacobian( ds_o_ds, ds_o_dt, dt_o_dt, nullptr );
   if (!rc) 
   {
     // degenerate Jacobian and unit surface normal is not well defined
@@ -541,7 +541,7 @@ ON_EvNormal(int limit_dir,
   const double DuoDu = Du.LengthSquared();
   const double DuoDv = Du*Dv;
   const double DvoDv = Dv.LengthSquared();
-  if ( ON_EvJacobian(DuoDu,DuoDv,DvoDv,NULL) ) {
+  if ( ON_EvJacobian(DuoDu,DuoDv,DvoDv,nullptr) ) {
     N = ON_CrossProduct(Du,Dv);
   }
   else {
@@ -1099,7 +1099,7 @@ ON_IsValidPointList(
        const float* p
        )
 {
-  return ( dim > 0 && stride >= (is_rat?(dim+1):dim) && count >= 0 && p != NULL ) ? true : false;
+  return ( dim > 0 && stride >= (is_rat?(dim+1):dim) && count >= 0 && p != nullptr ) ? true : false;
 }
 
 
@@ -1112,7 +1112,7 @@ ON_IsValidPointList(
        const double* p
        )
 {
-  return ( dim > 0 && stride >= (is_rat?(dim+1):dim) && count >= 0 && p != NULL ) ? true : false;
+  return ( dim > 0 && stride >= (is_rat?(dim+1):dim) && count >= 0 && p != nullptr ) ? true : false;
 }
 
 
@@ -1125,7 +1125,7 @@ ON_IsValidPointGrid(
         const double* p
         )
 {
-  if ( dim < 1 || point_count0 < 1 || point_count1 < 1 || p == NULL )
+  if ( dim < 1 || point_count0 < 1 || point_count1 < 1 || p == nullptr )
     return false;
   if ( is_rat )
     dim++;
@@ -1280,7 +1280,7 @@ ON_TransformPointList(
 
   if ( !ON_IsValidPointList( dim, is_rat, count, stride, point ) )
     return false;
-  if ( xform.m_xform == NULL )
+  if ( xform.m_xform == nullptr )
     return false;
   if (count == 0)
     return true;
@@ -1381,7 +1381,7 @@ ON_TransformPointList(
 
   if ( !ON_IsValidPointList( dim, is_rat, count, stride, point ) )
     return false;
-  if ( xform.m_xform == NULL )
+  if ( xform.m_xform == nullptr )
     return false;
   if (count == 0)
     return true;
@@ -1507,7 +1507,7 @@ ON_TransformVectorList(
 
   if ( !ON_IsValidPointList( dim, 0, count, stride, vector ) )
     return false;
-  if ( xform.m_xform == NULL )
+  if ( xform.m_xform == nullptr )
     return false;
   if (count == 0)
     return true;
@@ -1556,7 +1556,7 @@ ON_TransformVectorList(
 
   if ( !ON_IsValidPointList( dim, 0, count, stride, vector ) )
     return false;
-  if ( xform.m_xform == NULL )
+  if ( xform.m_xform == nullptr )
     return false;
   if (count == 0)
     return true;
@@ -1600,7 +1600,7 @@ bool ON_PointsAreCoincident(
 {
   double d, a, b, wa, wb;
   
-  if ( dim < 1 || 0 == pointA || 0 == pointB )
+  if ( dim < 1 || nullptr == pointA || nullptr == pointB )
     return false;
 
   if ( is_rat )
@@ -1651,7 +1651,7 @@ bool ON_PointsAreCoincident(
     const double* points
     )
 {
-  if ( 0 == points || point_count < 2 )
+  if ( nullptr == points || point_count < 2 )
     return false;
   if ( point_stride < (is_rat?(dim+1):dim) )
     return false;
@@ -1789,7 +1789,7 @@ ON_IsPointGridClosed(
        )
 {
   ON_BOOL32 rc = false;
-  if ( point_count0>0 && point_count1>0 && p != NULL ) {
+  if ( point_count0>0 && point_count1>0 && p != nullptr ) {
     int count, stride;
     const double* p0;
     const double* p1;
@@ -2275,12 +2275,12 @@ ON_Solve3x2(const double col0[3], const double col1[3],
 
 double ON_SolveNxN(bool bFullPivot, bool bNormalize, int n, double* M[], double B[], double X[])
 {
-  if ( n <= 0 || 0 == M || 0 == B || 0 == X )
+  if ( n <= 0 || nullptr == M || nullptr == B || nullptr == X )
     return 0.0;
 
   int i,j,maxi,maxj,n0, Xdex_buffer[64];
   double x,minpivot=0.0,maxpivot=1.0,*p;
-  int* Xdex = 0;
+  int* Xdex = nullptr;
   
   if ( bNormalize )
   {
@@ -2343,7 +2343,7 @@ double ON_SolveNxN(bool bFullPivot, bool bNormalize, int n, double* M[], double 
     {
       // system of equations is degenerate
       // Return -(rank of M) (M has rank n0)
-      if ( 0 != Xdex && Xdex != &Xdex_buffer[0] )
+      if ( nullptr != Xdex && Xdex != &Xdex_buffer[0] )
         onfree(Xdex);
       return -n0;
     }
@@ -2419,7 +2419,7 @@ double ON_SolveNxN(bool bFullPivot, bool bNormalize, int n, double* M[], double 
     for(i=0;i<n;i++)
       X[Xdex[i]] = B[i];
 
-    if ( 0 != Xdex && Xdex != &Xdex_buffer[0] )
+    if ( nullptr != Xdex && Xdex != &Xdex_buffer[0] )
       onfree(Xdex);
   }
   else
@@ -2939,7 +2939,7 @@ REFERENCE:
   const void* tmp;
   unsigned int i, j, k, tmpi, icount, isizeof_element;
   
-  if (count < 1 || 0 == index || sizeof_element <= 0) 
+  if (count < 1 || nullptr == index || sizeof_element <= 0) 
   {
     return;
   }
@@ -3035,7 +3035,7 @@ ON_Sort( ON::sort_algorithm method,
   const void* tmp;
   unsigned int i, j, k, tmpi, icount, isizeof_element;
   
-  if (count < 1 || 0 == index || sizeof_element <= 0) 
+  if (count < 1 || nullptr == index || sizeof_element <= 0) 
   {
     return;
   }
@@ -3168,13 +3168,13 @@ const int* ON_BinarySearchIntArray( int key, const int* base, std::size_t nel )
     // function.
     d = key-base[0];
     if ( d < 0 )
-      return 0;
+      return nullptr;
     if ( !d )
       return base;
 
     d = key-base[nel-1];
     if ( d > 0 )
-      return 0;
+      return nullptr;
     if ( !d )
       return (base + (nel-1));
 
@@ -3198,7 +3198,7 @@ const int* ON_BinarySearchIntArray( int key, const int* base, std::size_t nel )
       }
     }
   }
-  return 0;
+  return nullptr;
 }
 
 const unsigned int* ON_BinarySearchUnsignedIntArray( unsigned int key, const unsigned int* base, std::size_t nel )
@@ -3214,13 +3214,13 @@ const unsigned int* ON_BinarySearchUnsignedIntArray( unsigned int key, const uns
     // function.
     d = base[0];
     if ( key < d )
-      return 0;
+      return nullptr;
     if ( key == d )
       return base;
 
     d = base[nel-1];
     if ( key > d )
-      return 0;
+      return nullptr;
     if ( key == d )
       return (base + (nel-1));
 
@@ -3244,7 +3244,7 @@ const unsigned int* ON_BinarySearchUnsignedIntArray( unsigned int key, const uns
       }
     }
   }
-  return 0;
+  return nullptr;
 }
 
 const double* ON_BinarySearchDoubleArray( double key, const double* base, std::size_t nel )
@@ -3260,13 +3260,13 @@ const double* ON_BinarySearchDoubleArray( double key, const double* base, std::s
     // function.
     d = key-base[0];
     if ( d < 0.0 )
-      return 0;
+      return nullptr;
     if ( 0.0 == d )
       return base;
 
     d = key-base[nel-1];
     if ( d > 0.0 )
-      return 0;
+      return nullptr;
     if ( 0.0 == d )
       return (base + (nel-1));
 
@@ -3290,7 +3290,7 @@ const double* ON_BinarySearchDoubleArray( double key, const double* base, std::s
       }
     }
   }
-  return 0;
+  return nullptr;
 }
 
 
@@ -4307,8 +4307,7 @@ ON_Evaluator::ON_Evaluator(
 }
 
 ON_Evaluator::~ON_Evaluator()
-{
-}
+= default;
 
 
 int ON_Evaluator::EvaluateHessian(
@@ -4320,14 +4319,14 @@ int ON_Evaluator::EvaluateHessian(
 {
   if ( m_parameter_count==1)
   {
-    if ( 0 != gradient )
+    if ( nullptr != gradient )
     {
       // we have enough information to get the 
       // value and the gradient
       Evaluate(parameters,value,&gradient);
     }
 
-    if ( 0 != hessian )
+    if ( nullptr != hessian )
     {
       // zero out the hessian matrix
       int i;

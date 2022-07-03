@@ -43,10 +43,10 @@ bool ON_Base32ToString( const unsigned char* base32_digits, int base32_digit_cou
   unsigned char d;
   bool rc = false;
 
-  if ( 0 == sBase32 )
+  if ( nullptr == sBase32 )
     return false;
 
-  if ( 0 == base32_digits || base32_digit_count <= 0 )
+  if ( nullptr == base32_digits || base32_digit_count <= 0 )
   {
     *sBase32++ = error_symbol;
   }
@@ -74,7 +74,7 @@ bool ON_Base32ToString( const unsigned char* base32_digits, int base32_digit_cou
 
 int ON_CorrectBase32StringTypos( const char* sBase32, ON_String& sBase32clean )
 {
-  char* sClean = 0;
+  char* sClean = nullptr;
   if ( sBase32 == sBase32clean.Array() )
     sClean = sBase32clean.Array();
   else
@@ -90,7 +90,7 @@ int ON_CorrectBase32StringTypos( const char* sBase32, ON_String& sBase32clean )
 
 int ON_CorrectBase32StringTypos( const wchar_t* sBase32, ON_wString& sBase32clean )
 {
-  if ( 0 == sBase32 || 0 == sBase32[0] )
+  if ( nullptr == sBase32 || 0 == sBase32[0] )
     return 0;
   ON_String s = sBase32;
   int length = ON_CorrectBase32StringTypos(s.Array(),s.Array());
@@ -105,9 +105,9 @@ int ON_CorrectBase32StringTypos( const char* sBase32, char* sBase32clean )
 {
   char c;
   int length = 0;
-  if ( 0 == sBase32clean )
+  if ( nullptr == sBase32clean )
     return 0;
-  if (0 != sBase32 )
+  if (nullptr != sBase32 )
   {
     while ( 0 != (c = *sBase32++) )
     {
@@ -149,7 +149,7 @@ int ON_StringToBase32(const ON_wString& sBase32, ON_SimpleArray<unsigned char>& 
 int ON_StringToBase32(const ON_String& sBase32, ON_SimpleArray<unsigned char>& base32_digits )
 {
   const char* s = sBase32;
-  if ( 0 == s || 0 == s[0] )
+  if ( nullptr == s || 0 == s[0] )
     return 0;
   base32_digits.Reserve(sBase32.Length());
   int digit_count = ON_StringToBase32(sBase32,base32_digits.Array());
@@ -161,9 +161,9 @@ int ON_StringToBase32(const char* sBase32, unsigned char* base32_digits )
 {
   char c;
   int digit_count = 0;
-  if ( 0 == base32_digits )
+  if ( nullptr == base32_digits )
     return 0;
-  if ( 0 != sBase32 )
+  if ( nullptr != sBase32 )
   {
     while ( 0 != (c = *sBase32++) )
     {
@@ -210,13 +210,13 @@ int ON_GetBase32Digits( const unsigned char* x, int x_count, unsigned char* base
   unsigned int base32_digit_count = 0;
   int i;
 
-  if ( 0 == base32_digits || 0 == x || x_count <= 0 )
+  if ( nullptr == base32_digits || nullptr == x || x_count <= 0 )
     return 0;
 
   if ( x == base32_digits )
   {
     unsigned char* tmp = (unsigned char*)onmalloc(x_count*sizeof(x[0]));
-    if ( 0 == tmp )
+    if ( nullptr == tmp )
       return 0;
     memcpy(tmp,x,x_count*sizeof(x[0]));
     i = ON_GetBase32Digits(tmp,x_count,base32_digits);    

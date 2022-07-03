@@ -68,7 +68,7 @@ int ON_FindLocalMinimum(
 
   d=e=0.0;
 
-  if ( 0 == t_addr )
+  if ( nullptr == t_addr )
   {
     ON_ERROR("t_addr is NULL");
     return 0;
@@ -193,11 +193,11 @@ int ON_FindLocalMinimum(
 ON_LocalZero1::ON_LocalZero1() 
                : m_t0(ON_UNSET_VALUE), m_t1(ON_UNSET_VALUE),
                  m_f_tolerance(0.0), m_t_tolerance(0.0),
-                 m_k(NULL), m_k_count(0)
+                 m_k(nullptr), m_k_count(0)
 {}
 
 ON_LocalZero1::~ON_LocalZero1()
-{}
+= default;
 
 ON_BOOL32
 ON_LocalZero1::BracketZero( double s0, double f0, 
@@ -277,8 +277,8 @@ ON_LocalZero1::BracketSpan( double s0, double f0, double s1, double f1 )
       i0++;
     if ( i0 <= i1 ) {
       // we have s0 < m_k[i0] <= ... <= m_k[i1] < s1
-      Evaluate( m_k[i0], &fm, NULL,-1 ); // gaurd against C0 discontinuities
-      Evaluate( m_k[i0], &fp, NULL, 1 );
+      Evaluate( m_k[i0], &fm, nullptr,-1 ); // gaurd against C0 discontinuities
+      Evaluate( m_k[i0], &fp, nullptr, 1 );
       if ( (f0 <= 0.0 && fm >= 0.0) || (f0 >= 0.0 && fm <= 0.0) ) {
         m_s1 = m_k[i0];
         m_f1 = fm;
@@ -287,8 +287,8 @@ ON_LocalZero1::BracketSpan( double s0, double f0, double s1, double f1 )
         m_s0 = m_k[i0];
         m_f0 = fp;
         if ( i0 < i1 ) {
-          Evaluate( m_k[i1], &fm, NULL, -1 );
-          Evaluate( m_k[i1], &fp, NULL,  1 );
+          Evaluate( m_k[i1], &fm, nullptr, -1 );
+          Evaluate( m_k[i1], &fp, nullptr,  1 );
           if ( (f1 <= 0.0 && fp >= 0.0) || (f1 >= 0.0 && fp <= 0.0) ) {
             m_s0 = m_k[i1];
             m_f0 = fp;
@@ -302,8 +302,8 @@ ON_LocalZero1::BracketSpan( double s0, double f0, double s1, double f1 )
               // m_k[i],m_k[i+1].  We need to do this in order to make sure
               // we are passing a C2 function to the repeated zero finders.
               i = (i0+i1)>>1;
-              Evaluate( m_k[i], &fm, NULL, -1 );
-              Evaluate( m_k[i], &fp, NULL,  1 );
+              Evaluate( m_k[i], &fm, nullptr, -1 );
+              Evaluate( m_k[i], &fp, nullptr,  1 );
               if ( (f0 <= 0.0 && fm >= 0.0) || (f0 >= 0.0 && fm <= 0.0) ) {
                 m_s1 = m_k[i];
                 m_f1 = fm;
@@ -355,7 +355,7 @@ ON_BOOL32 ON_LocalZero1::FindZero( double* t )
       m_s0 = m_t1;
       m_s1 = m_t0;
       if ( m_t0 == m_t1 ) {
-        if ( Evaluate( m_t0, &m_f0, NULL, 1 ) ) {
+        if ( Evaluate( m_t0, &m_f0, nullptr, 1 ) ) {
           m_f1 = m_f0;
           if ( fabs(m_f0) <= m_f_tolerance ) {
             *t = m_t0;
@@ -369,9 +369,9 @@ ON_BOOL32 ON_LocalZero1::FindZero( double* t )
   }
 
   if (rc)
-    rc = Evaluate( m_s0, &m_f0, NULL, 1 );
+    rc = Evaluate( m_s0, &m_f0, nullptr, 1 );
   if (rc)
-    rc = Evaluate( m_s1, &m_f1, NULL, -1 );
+    rc = Evaluate( m_s1, &m_f1, nullptr, -1 );
 
   if (rc)
     rc = BracketZero( m_s0, m_f0, m_s1, m_f1 );

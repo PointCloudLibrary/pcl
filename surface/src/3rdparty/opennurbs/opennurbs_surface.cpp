@@ -23,8 +23,8 @@ ON_Surface::ON_Surface()
 {}
 
 ON_Surface::ON_Surface(const ON_Surface& src)
-: ON_Geometry(src)
-{}
+ 
+= default;
 
 unsigned int ON_Surface::SizeOf() const
 {
@@ -174,7 +174,7 @@ ON_Surface::IsIsoparametric( const ON_Curve& curve, const ON_Interval* subdomain
           ON_NurbsCurve nurbs_curve;
           if ( curve.GetNurbForm( nurbs_curve, 0.0,&cdom) )
           {
-            return IsIsoparametric( nurbs_curve, 0 );
+            return IsIsoparametric( nurbs_curve, nullptr );
           }
         }
       }
@@ -462,7 +462,7 @@ bool ON_Surface::GetNextDiscontinuity(
         if ( IsClosed(dir) )
         {
           int span_count = SpanCount(1-dir);
-          double* span_vector = (span_count>0) ? ((double*)onmalloc((span_count+1)*sizeof(*span_vector))) : 0;
+          double* span_vector = (span_count>0) ? ((double*)onmalloc((span_count+1)*sizeof(*span_vector))) : nullptr;
           if (!GetSpanVector(1-dir,span_vector))
             span_count = 0;
           st0[dir] = domain[0];
@@ -809,7 +809,7 @@ bool ON_Surface::IsSolid() const
     return true;
 
   const ON_Extrusion* extrusion = ON_Extrusion::Cast(this);
-  if ( 0 != extrusion && extrusion->IsSolid() )
+  if ( nullptr != extrusion && extrusion->IsSolid() )
     return true;
 
   return false;
@@ -1248,7 +1248,7 @@ ON_Curve* ON_Surface::IsoCurve(
        double      // value of constant parameter
        ) const
 {
-  return NULL;
+  return nullptr;
 }
 
 //virtual
@@ -1333,7 +1333,7 @@ ON_NurbsSurface* ON_Surface::NurbsSurface(
   {
     if (!pNurbsSurface)
       delete nurbs_surface;
-    nurbs_surface = NULL;
+    nurbs_surface = nullptr;
   }
   return nurbs_surface;
 }
@@ -1371,7 +1371,7 @@ ON_BOOL32 ON_SurfaceArray::Duplicate( ON_SurfaceArray& dst ) const
   ON_Surface* surface;
   for ( i = 0; i < count; i++ ) 
   {
-    surface = 0;
+    surface = nullptr;
     if ( m_a[i] ) 
     {
       surface = m_a[i]->Duplicate();
@@ -1435,7 +1435,7 @@ ON_BOOL32 ON_SurfaceArray::Read( ON_BinaryArchive& file )
           flag = 0;
           rc = file.ReadInt(&flag);
           if (rc && flag==1) {
-            p = 0;
+            p = nullptr;
             rc = file.ReadObject( &p ); // polymorphic surfaces
             m_a[i] = ON_Surface::Cast(p);
             if ( !m_a[i] )
@@ -1460,7 +1460,7 @@ ON_BOOL32 ON_Surface::HasBrepForm() const
 
 ON_Brep* ON_Surface::BrepForm( ON_Brep* brep ) const
 {
-  ON_Brep* pBrep = NULL;
+  ON_Brep* pBrep = nullptr;
   if ( brep )
     brep->Destroy();
   // 26 August 2008 Dale Lear - fixed bug
@@ -1478,11 +1478,11 @@ ON_Brep* ON_Surface::BrepForm( ON_Brep* brep ) const
       if ( pSurface )
       {
         delete pSurface;
-        pSurface = NULL;
+        pSurface = nullptr;
       }
       if ( !brep )
         delete pBrep;
-      pBrep = NULL;
+      pBrep = nullptr;
     }
   }
   return pBrep;
@@ -1503,7 +1503,7 @@ void ON_SurfaceProperties::Set( const ON_Surface* surface )
 {
   m_surface = surface;
 
-  if ( 0 == m_surface )
+  if ( nullptr == m_surface )
   {
     m_bIsSet = false;
 

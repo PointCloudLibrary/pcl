@@ -95,7 +95,7 @@ ON_Value::ON_Value( ON_Value::VALUE_TYPE value_type )
 }
 
 ON_Value::~ON_Value()
-{}
+= default;
 
 // base class virtuals do nothing.
 int  ON_Value::GetBools( const bool*& ) const {return 0;}
@@ -115,12 +115,12 @@ class ON_DummyValue : public ON_Value
 {
 public:
   ON_DummyValue();
-  ~ON_DummyValue();
-  ON_Value* Duplicate() const;
-  int  Count() const;
-  bool ReadHelper(ON_BinaryArchive& );
-  bool WriteHelper(ON_BinaryArchive& ) const;
-  bool ReportHelper(ON_TextLog& ) const;
+  ~ON_DummyValue() override;
+  ON_Value* Duplicate() const override;
+  int  Count() const override;
+  bool ReadHelper(ON_BinaryArchive& ) override;
+  bool WriteHelper(ON_BinaryArchive& ) const override;
+  bool ReportHelper(ON_TextLog& ) const override;
 };
 
 ON_DummyValue::ON_DummyValue() : ON_Value(ON_Value::no_value_type)
@@ -128,10 +128,9 @@ ON_DummyValue::ON_DummyValue() : ON_Value(ON_Value::no_value_type)
 }
 
 ON_DummyValue::~ON_DummyValue()
-{
-}
+= default;
 
-ON_Value* ON_DummyValue::Duplicate() const {return 0;}
+ON_Value* ON_DummyValue::Duplicate() const {return nullptr;}
 int  ON_DummyValue::Count() const {return 0;}
 bool ON_DummyValue::ReadHelper(ON_BinaryArchive& ) {return 0;}
 bool ON_DummyValue::WriteHelper(ON_BinaryArchive& ) const {return 0;}
@@ -145,27 +144,27 @@ class ON_BoolValue : public ON_Value
 {
 public:
   ON_BoolValue();
-  ~ON_BoolValue();
+  ~ON_BoolValue() override;
 
   ON_SimpleArray<bool> m_value;
 
   // virtual 
-  class ON_Value* Duplicate() const;
+  class ON_Value* Duplicate() const override;
 
   // virtual
-  int Count() const;
+  int Count() const override;
 
   // virtual 
-  bool ReadHelper(ON_BinaryArchive& archive );
+  bool ReadHelper(ON_BinaryArchive& archive ) override;
 
   // virtual 
-  bool WriteHelper(ON_BinaryArchive& archive ) const;
+  bool WriteHelper(ON_BinaryArchive& archive ) const override;
 
   // virtual 
-  bool ReportHelper(ON_TextLog& text_log ) const;
+  bool ReportHelper(ON_TextLog& text_log ) const override;
 
   // virtual 
-  int GetBools( const bool*& b ) const;
+  int GetBools( const bool*& b ) const override;
 };
 
 ON_BoolValue::ON_BoolValue() 
@@ -174,8 +173,7 @@ ON_BoolValue::ON_BoolValue()
 }
 
 ON_BoolValue::~ON_BoolValue()
-{
-}
+= default;
 
 // virtual 
 class ON_Value* ON_BoolValue::Duplicate() const
@@ -232,27 +230,27 @@ class ON_IntValue : public ON_Value
 {
 public:
   ON_IntValue();
-  ~ON_IntValue();
+  ~ON_IntValue() override;
 
   ON_SimpleArray<int> m_value;
 
   // virtual 
-  class ON_Value* Duplicate() const;
+  class ON_Value* Duplicate() const override;
 
   // virtual
-  int Count() const;
+  int Count() const override;
 
   // virtual 
-  bool ReadHelper(ON_BinaryArchive& archive );
+  bool ReadHelper(ON_BinaryArchive& archive ) override;
 
   // virtual 
-  bool WriteHelper(ON_BinaryArchive& archive ) const;
+  bool WriteHelper(ON_BinaryArchive& archive ) const override;
 
   // virtual 
-  bool ReportHelper(ON_TextLog& text_log ) const;
+  bool ReportHelper(ON_TextLog& text_log ) const override;
 
   // virtual 
-  int GetInts( const int*& b ) const;
+  int GetInts( const int*& b ) const override;
 };
 
 ON_IntValue::ON_IntValue() 
@@ -261,8 +259,7 @@ ON_IntValue::ON_IntValue()
 }
 
 ON_IntValue::~ON_IntValue()
-{
-}
+= default;
 
 // virtual 
 class ON_Value* ON_IntValue::Duplicate() const
@@ -319,27 +316,27 @@ class ON_DoubleValue : public ON_Value
 {
 public:
   ON_DoubleValue();
-  ~ON_DoubleValue();
+  ~ON_DoubleValue() override;
 
   ON_SimpleArray<double> m_value;
 
   // virtual 
-  class ON_Value* Duplicate() const;
+  class ON_Value* Duplicate() const override;
 
   // virtual
-  int Count() const;
+  int Count() const override;
 
   // virtual 
-  bool ReadHelper(ON_BinaryArchive& archive );
+  bool ReadHelper(ON_BinaryArchive& archive ) override;
 
   // virtual 
-  bool WriteHelper(ON_BinaryArchive& archive ) const;
+  bool WriteHelper(ON_BinaryArchive& archive ) const override;
 
   // virtual 
-  bool ReportHelper(ON_TextLog& text_log ) const;
+  bool ReportHelper(ON_TextLog& text_log ) const override;
 
   // virtual 
-  int GetDoubles( const double*& a ) const;
+  int GetDoubles( const double*& a ) const override;
 };
 
 ON_DoubleValue::ON_DoubleValue() 
@@ -348,8 +345,7 @@ ON_DoubleValue::ON_DoubleValue()
 }
 
 ON_DoubleValue::~ON_DoubleValue()
-{
-}
+= default;
 
 // virtual 
 class ON_Value* ON_DoubleValue::Duplicate() const
@@ -405,27 +401,27 @@ class ON_PointValue : public ON_Value
 {
 public:
   ON_PointValue();
-  ~ON_PointValue();
+  ~ON_PointValue() override;
 
   ON_SimpleArray<ON_3dPoint> m_value;
 
   // virtual 
-  class ON_Value* Duplicate() const;
+  class ON_Value* Duplicate() const override;
 
   // virtual
-  int Count() const;
+  int Count() const override;
 
   // virtual 
-  bool ReadHelper(ON_BinaryArchive& archive );
+  bool ReadHelper(ON_BinaryArchive& archive ) override;
 
   // virtual 
-  bool WriteHelper(ON_BinaryArchive& archive ) const;
+  bool WriteHelper(ON_BinaryArchive& archive ) const override;
 
   // virtual 
-  bool ReportHelper(ON_TextLog& text_log ) const;
+  bool ReportHelper(ON_TextLog& text_log ) const override;
 
   // virtual 
-  int Get3dPoints( const ON_3dPoint*& a ) const;
+  int Get3dPoints( const ON_3dPoint*& a ) const override;
 };
 
 ON_PointValue::ON_PointValue() 
@@ -434,8 +430,7 @@ ON_PointValue::ON_PointValue()
 }
 
 ON_PointValue::~ON_PointValue()
-{
-}
+= default;
 
 // virtual 
 class ON_Value* ON_PointValue::Duplicate() const
@@ -492,27 +487,27 @@ class ON_VectorValue : public ON_Value
 {
 public:
   ON_VectorValue();
-  ~ON_VectorValue();
+  ~ON_VectorValue() override;
 
   ON_SimpleArray<ON_3dVector> m_value;
 
   // virtual 
-  class ON_Value* Duplicate() const;
+  class ON_Value* Duplicate() const override;
 
   // virtual
-  int Count() const;
+  int Count() const override;
 
   // virtual 
-  bool ReadHelper(ON_BinaryArchive& archive );
+  bool ReadHelper(ON_BinaryArchive& archive ) override;
 
   // virtual 
-  bool WriteHelper(ON_BinaryArchive& archive ) const;
+  bool WriteHelper(ON_BinaryArchive& archive ) const override;
 
   // virtual 
-  bool ReportHelper(ON_TextLog& text_log ) const;
+  bool ReportHelper(ON_TextLog& text_log ) const override;
 
   // virtual 
-  int Get3dVectors( const ON_3dVector*& a ) const;
+  int Get3dVectors( const ON_3dVector*& a ) const override;
 };
 
 ON_VectorValue::ON_VectorValue() 
@@ -521,8 +516,7 @@ ON_VectorValue::ON_VectorValue()
 }
 
 ON_VectorValue::~ON_VectorValue()
-{
-}
+= default;
 
 // virtual 
 class ON_Value* ON_VectorValue::Duplicate() const
@@ -579,27 +573,27 @@ class ON_XformValue : public ON_Value
 {
 public:
   ON_XformValue();
-  ~ON_XformValue();
+  ~ON_XformValue() override;
 
   ON_SimpleArray<ON_Xform> m_value;
 
   // virtual 
-  class ON_Value* Duplicate() const;
+  class ON_Value* Duplicate() const override;
 
   // virtual
-  int Count() const;
+  int Count() const override;
 
   // virtual 
-  bool ReadHelper(ON_BinaryArchive& archive );
+  bool ReadHelper(ON_BinaryArchive& archive ) override;
 
   // virtual 
-  bool WriteHelper(ON_BinaryArchive& archive ) const;
+  bool WriteHelper(ON_BinaryArchive& archive ) const override;
 
   // virtual 
-  bool ReportHelper(ON_TextLog& text_log ) const;
+  bool ReportHelper(ON_TextLog& text_log ) const override;
 
   // virtual 
-  int GetXforms( const ON_Xform*& a ) const;
+  int GetXforms( const ON_Xform*& a ) const override;
 };
 
 ON_XformValue::ON_XformValue() 
@@ -608,8 +602,7 @@ ON_XformValue::ON_XformValue()
 }
 
 ON_XformValue::~ON_XformValue()
-{
-}
+= default;
 
 // virtual 
 class ON_Value* ON_XformValue::Duplicate() const
@@ -666,27 +659,27 @@ class ON_ColorValue : public ON_Value
 {
 public:
   ON_ColorValue();
-  ~ON_ColorValue();
+  ~ON_ColorValue() override;
 
   ON_SimpleArray<ON_Color> m_value;
 
   // virtual 
-  class ON_Value* Duplicate() const;
+  class ON_Value* Duplicate() const override;
 
   // virtual
-  int Count() const;
+  int Count() const override;
 
   // virtual 
-  bool ReadHelper(ON_BinaryArchive& archive );
+  bool ReadHelper(ON_BinaryArchive& archive ) override;
 
   // virtual 
-  bool WriteHelper(ON_BinaryArchive& archive ) const;
+  bool WriteHelper(ON_BinaryArchive& archive ) const override;
 
   // virtual 
-  bool ReportHelper(ON_TextLog& text_log ) const;
+  bool ReportHelper(ON_TextLog& text_log ) const override;
 
   // virtual 
-  int GetColors( const ON_Color*& a ) const;
+  int GetColors( const ON_Color*& a ) const override;
 };
 
 ON_ColorValue::ON_ColorValue() 
@@ -695,8 +688,7 @@ ON_ColorValue::ON_ColorValue()
 }
 
 ON_ColorValue::~ON_ColorValue()
-{
-}
+= default;
 
 // virtual 
 class ON_Value* ON_ColorValue::Duplicate() const
@@ -755,27 +747,27 @@ class ON_UuidValue : public ON_Value
 {
 public:
   ON_UuidValue();
-  ~ON_UuidValue();
+  ~ON_UuidValue() override;
 
   ON_SimpleArray<ON_UUID> m_value;
 
   // virtual 
-  class ON_Value* Duplicate() const;
+  class ON_Value* Duplicate() const override;
 
   // virtual
-  int Count() const;
+  int Count() const override;
 
   // virtual 
-  bool ReadHelper(ON_BinaryArchive& archive );
+  bool ReadHelper(ON_BinaryArchive& archive ) override;
 
   // virtual 
-  bool WriteHelper(ON_BinaryArchive& archive ) const;
+  bool WriteHelper(ON_BinaryArchive& archive ) const override;
 
   // virtual 
-  bool ReportHelper(ON_TextLog& text_log ) const;
+  bool ReportHelper(ON_TextLog& text_log ) const override;
 
   // virtual 
-  int GetUuids( const ON_UUID*& a ) const;
+  int GetUuids( const ON_UUID*& a ) const override;
 };
 
 ON_UuidValue::ON_UuidValue() 
@@ -784,8 +776,7 @@ ON_UuidValue::ON_UuidValue()
 }
 
 ON_UuidValue::~ON_UuidValue()
-{
-}
+= default;
 
 // virtual 
 class ON_Value* ON_UuidValue::Duplicate() const
@@ -841,27 +832,27 @@ class ON_StringValue : public ON_Value
 {
 public:
   ON_StringValue();
-  ~ON_StringValue();
+  ~ON_StringValue() override;
 
   ON_ClassArray<ON_wString> m_value;
 
   // virtual 
-  class ON_Value* Duplicate() const;
+  class ON_Value* Duplicate() const override;
 
   // virtual
-  int Count() const;
+  int Count() const override;
 
   // virtual 
-  bool ReadHelper(ON_BinaryArchive& archive );
+  bool ReadHelper(ON_BinaryArchive& archive ) override;
 
   // virtual 
-  bool WriteHelper(ON_BinaryArchive& archive ) const;
+  bool WriteHelper(ON_BinaryArchive& archive ) const override;
 
   // virtual 
-  bool ReportHelper(ON_TextLog& text_log ) const;
+  bool ReportHelper(ON_TextLog& text_log ) const override;
 
   // virtual 
-  int GetStrings( ON_ClassArray<ON_wString>& s ) const;
+  int GetStrings( ON_ClassArray<ON_wString>& s ) const override;
 };
 
 ON_StringValue::ON_StringValue() 
@@ -870,8 +861,7 @@ ON_StringValue::ON_StringValue()
 }
 
 ON_StringValue::~ON_StringValue()
-{
-}
+= default;
 
 // virtual 
 class ON_Value* ON_StringValue::Duplicate() const
@@ -928,27 +918,27 @@ class ON_ObjRefValue : public ON_Value
 {
 public:
   ON_ObjRefValue();
-  ~ON_ObjRefValue();
+  ~ON_ObjRefValue() override;
 
   ON_ClassArray<ON_ObjRef> m_value;
 
   // virtual 
-  class ON_Value* Duplicate() const;
+  class ON_Value* Duplicate() const override;
 
   // virtual
-  int Count() const;
+  int Count() const override;
 
   // virtual 
-  bool ReadHelper(ON_BinaryArchive& archive );
+  bool ReadHelper(ON_BinaryArchive& archive ) override;
 
   // virtual 
-  bool WriteHelper(ON_BinaryArchive& archive ) const;
+  bool WriteHelper(ON_BinaryArchive& archive ) const override;
 
   // virtual 
-  bool ReportHelper(ON_TextLog& text_log ) const;
+  bool ReportHelper(ON_TextLog& text_log ) const override;
 
   // virtual 
-  int GetObjRefs( ON_ClassArray<ON_ObjRef>& oref ) const;
+  int GetObjRefs( ON_ClassArray<ON_ObjRef>& oref ) const override;
 };
 
 ON_ObjRefValue::ON_ObjRefValue() 
@@ -957,8 +947,7 @@ ON_ObjRefValue::ON_ObjRefValue()
 }
 
 ON_ObjRefValue::~ON_ObjRefValue()
-{
-}
+= default;
 
 // virtual 
 class ON_Value* ON_ObjRefValue::Duplicate() const
@@ -1017,29 +1006,29 @@ class ON_GeometryValue : public ON_Value
 {
 public:
   ON_GeometryValue();
-  ~ON_GeometryValue();
+  ~ON_GeometryValue() override;
   ON_GeometryValue(const ON_GeometryValue& src);
   ON_GeometryValue& operator=(const ON_GeometryValue& src);
 
   ON_SimpleArray<ON_Geometry*> m_value;
 
   // virtual 
-  class ON_Value* Duplicate() const;
+  class ON_Value* Duplicate() const override;
 
   // virtual
-  int Count() const;
+  int Count() const override;
 
   // virtual 
-  bool ReadHelper(ON_BinaryArchive& archive );
+  bool ReadHelper(ON_BinaryArchive& archive ) override;
 
   // virtual 
-  bool WriteHelper(ON_BinaryArchive& archive ) const;
+  bool WriteHelper(ON_BinaryArchive& archive ) const override;
 
   // virtual 
-  bool ReportHelper(ON_TextLog& text_log ) const;
+  bool ReportHelper(ON_TextLog& text_log ) const override;
 
   // virtual 
-  int GetGeometryPointers( const ON_Geometry* const*& ) const;
+  int GetGeometryPointers( const ON_Geometry* const*& ) const override;
 };
 
 ON_GeometryValue::ON_GeometryValue() 
@@ -1135,14 +1124,14 @@ bool ON_GeometryValue::ReadHelper(ON_BinaryArchive& archive )
     
     for( i = 0; i < count && rc; i++ )
     {
-      ON_Object* p=0;
+      ON_Object* p=nullptr;
       rc = archive.ReadObject(&p) > 0;
       if (rc)
       {
         ON_Geometry* g = ON_Geometry::Cast(p);
         if (g)
         {
-          p = 0;
+          p = nullptr;
           m_value.Append(g);
         }
       }
@@ -1219,27 +1208,27 @@ class ON_PolyEdgeHistoryValue : public ON_Value
 {
 public:
   ON_PolyEdgeHistoryValue();
-  ~ON_PolyEdgeHistoryValue();
+  ~ON_PolyEdgeHistoryValue() override;
 
   ON_ClassArray<ON_PolyEdgeHistory> m_value;
 
   // virtual 
-  class ON_Value* Duplicate() const;
+  class ON_Value* Duplicate() const override;
 
   // virtual
-  int Count() const;
+  int Count() const override;
 
   // virtual 
-  bool ReadHelper(ON_BinaryArchive& archive );
+  bool ReadHelper(ON_BinaryArchive& archive ) override;
 
   // virtual 
-  bool WriteHelper(ON_BinaryArchive& archive ) const;
+  bool WriteHelper(ON_BinaryArchive& archive ) const override;
 
   // virtual 
-  bool ReportHelper(ON_TextLog& text_log ) const;
+  bool ReportHelper(ON_TextLog& text_log ) const override;
 
   // virtual 
-  int  GetPolyEdgePointers( ON_ClassArray<ON_PolyEdgeHistory>& ) const;
+  int  GetPolyEdgePointers( ON_ClassArray<ON_PolyEdgeHistory>& ) const override;
 };
 
 ON_PolyEdgeHistoryValue::ON_PolyEdgeHistoryValue() 
@@ -1393,7 +1382,7 @@ int ON_PolyEdgeHistoryValue::GetPolyEdgePointers( ON_ClassArray<ON_PolyEdgeHisto
 // static
 ON_Value* ON_Value::CreateValue( int value_type )
 {
-  ON_Value* value = 0;
+  ON_Value* value = nullptr;
   switch((unsigned int)value_type)
   {
   case no_value_type:
@@ -1488,7 +1477,7 @@ void  ON_HistoryRecord::CopyHelper(const ON_HistoryRecord& src)
 
   int i, count = src.m_value.Count();
   m_value.SetCapacity(count);
-  const ON_Value* prev_v = 0;
+  const ON_Value* prev_v = nullptr;
   for ( i = 0; i < count; i++ )
   {
     const ON_Value* src_v = src.m_value[i];
@@ -1715,7 +1704,7 @@ ON_Value* ON_HistoryRecord::FindValueHelper( int value_id, int value_type, bool 
       return new_value;
     }
   }
-  return 0;
+  return nullptr;
 }
 
 
@@ -1728,7 +1717,7 @@ bool ON_HistoryRecord::SetBoolValues( int value_id, int count, const bool* b)
     v->m_value.SetCapacity(count);
     v->m_value.Append(count,b);
   }
-  return (0 != v);
+  return (nullptr != v);
 }
 
 bool ON_HistoryRecord::SetIntValues( int value_id, int count, const int* i)
@@ -1740,7 +1729,7 @@ bool ON_HistoryRecord::SetIntValues( int value_id, int count, const int* i)
     v->m_value.SetCapacity(count);
     v->m_value.Append(count,i);
   }
-  return (0 != v);
+  return (nullptr != v);
 }
 
 bool ON_HistoryRecord::SetDoubleValues( int value_id, int count, const double* x)
@@ -1752,7 +1741,7 @@ bool ON_HistoryRecord::SetDoubleValues( int value_id, int count, const double* x
     v->m_value.SetCapacity(count);
     v->m_value.Append(count,x);
   }
-  return (0 != v);
+  return (nullptr != v);
 }
 
 bool ON_HistoryRecord::SetPointValues( int value_id, int count, const ON_3dPoint* P)
@@ -1764,7 +1753,7 @@ bool ON_HistoryRecord::SetPointValues( int value_id, int count, const ON_3dPoint
     v->m_value.SetCapacity(count);
     v->m_value.Append(count,P);
   }
-  return (0 != v);
+  return (nullptr != v);
 }
 
 bool ON_HistoryRecord::SetVectorValues( int value_id, int count, const ON_3dVector* V)
@@ -1776,7 +1765,7 @@ bool ON_HistoryRecord::SetVectorValues( int value_id, int count, const ON_3dVect
     v->m_value.SetCapacity(count);
     v->m_value.Append(count,V);
   }
-  return (0 != v);
+  return (nullptr != v);
 }
 
 bool ON_HistoryRecord::SetXformValues( int value_id, int count, const ON_Xform* xform)
@@ -1788,7 +1777,7 @@ bool ON_HistoryRecord::SetXformValues( int value_id, int count, const ON_Xform* 
     v->m_value.SetCapacity(count);
     v->m_value.Append(count,xform);
   }
-  return (0 != v);
+  return (nullptr != v);
 }
 
 bool ON_HistoryRecord::SetColorValues( int value_id, int count, const ON_Color* c)
@@ -1800,7 +1789,7 @@ bool ON_HistoryRecord::SetColorValues( int value_id, int count, const ON_Color* 
     v->m_value.SetCapacity(count);
     v->m_value.Append(count,c);
   }
-  return (0 != v);
+  return (nullptr != v);
 }
 
 bool ON_HistoryRecord::SetUuidValues( int value_id, int count, const ON_UUID* u )
@@ -1812,7 +1801,7 @@ bool ON_HistoryRecord::SetUuidValues( int value_id, int count, const ON_UUID* u 
     v->m_value.SetCapacity(count);
     v->m_value.Append(count,u);
   }
-  return (0 != v);
+  return (nullptr != v);
 }
 
 bool ON_HistoryRecord::SetStringValues( int value_id, int count, const wchar_t* const* s )
@@ -1828,7 +1817,7 @@ bool ON_HistoryRecord::SetStringValues( int value_id, int count, const wchar_t* 
       v->m_value.AppendNew() = s[i];
     }
   }
-  return (0 != v);
+  return (nullptr != v);
 }
 
 bool ON_HistoryRecord::SetStringValues( int value_id, const ON_ClassArray<ON_wString>& s )
@@ -1838,7 +1827,7 @@ bool ON_HistoryRecord::SetStringValues( int value_id, const ON_ClassArray<ON_wSt
   {
     v->m_value = s;
   }
-  return (0 != v);
+  return (nullptr != v);
 }
 
 bool ON_HistoryRecord::SetStringValue( int value_id, const wchar_t* s )
@@ -1849,7 +1838,7 @@ bool ON_HistoryRecord::SetStringValue( int value_id, const wchar_t* s )
     v->m_value.Destroy();
     v->m_value.AppendNew() = s;
   }
-  return (0 != v);
+  return (nullptr != v);
 }
 
 
@@ -1882,7 +1871,7 @@ bool ON_HistoryRecord::SetObjRefValues( int value_id, int count, const ON_ObjRef
       }
     }
   }
-  return (0 != v);
+  return (nullptr != v);
 }
 
 
@@ -1893,7 +1882,7 @@ bool ON_HistoryRecord::SetGeometryValues( int value_id, const ON_SimpleArray<ON_
   {
     v->m_value = a;
   }
-  return (0 != v);
+  return (nullptr != v);
 }
 
 bool ON_HistoryRecord::SetPolyEdgeValues( int value_id,  int count, const ON_PolyEdgeHistory* a )
@@ -1914,7 +1903,7 @@ bool ON_HistoryRecord::SetPolyEdgeValues( int value_id,  int count, const ON_Pol
       }
     }
   }
-  return (0 != v);
+  return (nullptr != v);
 }
 
 bool ON_HistoryRecord::GetBoolValue( int value_id, bool* b ) const
@@ -2028,7 +2017,7 @@ bool ON_HistoryRecord::GetStringValue( int value_id, ON_wString& str ) const
 bool ON_HistoryRecord::GetGeometryValue( int value_id, const ON_Geometry*& g ) const
 {
   bool rc = false;
-  g = 0;
+  g = nullptr;
   const ON_GeometryValue* v = static_cast<ON_GeometryValue*>(FindValueHelper(value_id,ON_Value::geometry_value,0));
   if ( v && 1 == v->m_value.Count())
   {
@@ -2041,7 +2030,7 @@ bool ON_HistoryRecord::GetGeometryValue( int value_id, const ON_Geometry*& g ) c
 bool ON_HistoryRecord::GetPolyEdgeValue( int value_id, const ON_PolyEdgeHistory*& polyedge ) const
 {
   bool rc = false;
-  polyedge = 0;
+  polyedge = nullptr;
   const ON_PolyEdgeHistoryValue* v = static_cast<ON_PolyEdgeHistoryValue*>(FindValueHelper(value_id,ON_Value::polyedge_value,0));
   if ( v && 1 == v->m_value.Count())
   {
@@ -2053,46 +2042,46 @@ bool ON_HistoryRecord::GetPolyEdgeValue( int value_id, const ON_PolyEdgeHistory*
 
 bool ON_HistoryRecord::GetCurveValue( int value_id, const ON_Curve*& c ) const
 {
-  c = 0;
-  const ON_Geometry* g = 0;
+  c = nullptr;
+  const ON_Geometry* g = nullptr;
   if (GetGeometryValue( value_id, g ))
   {
     c = ON_Curve::Cast(g);
   }
-  return (0 != c);
+  return (nullptr != c);
 }
 
 bool ON_HistoryRecord::GetSurfaceValue( int value_id, const ON_Surface*& s ) const
 {
-  s = 0;
-  const ON_Geometry* g = 0;
+  s = nullptr;
+  const ON_Geometry* g = nullptr;
   if (GetGeometryValue( value_id, g ))
   {
     s = ON_Surface::Cast(g);
   }
-  return (0 != s);
+  return (nullptr != s);
 }
 
 bool ON_HistoryRecord::GetBrepValue( int value_id, const ON_Brep*& b ) const
 {
-  b = 0;
-  const ON_Geometry* g = 0;
+  b = nullptr;
+  const ON_Geometry* g = nullptr;
   if (GetGeometryValue( value_id, g ))
   {
     b = ON_Brep::Cast(g);
   }
-  return (0 != b);
+  return (nullptr != b);
 }
 
 bool ON_HistoryRecord::GetMeshValue( int value_id, const ON_Mesh*& m ) const
 {
-  m = 0;
-  const ON_Geometry* g = 0;
+  m = nullptr;
+  const ON_Geometry* g = nullptr;
   if (GetGeometryValue( value_id, g ))
   {
     m = ON_Mesh::Cast(g);
   }
-  return (0 != m);
+  return (nullptr != m);
 }
 
 bool ON_HistoryRecord::GetUuidValue( int value_id, ON_UUID* uuid ) const
@@ -2588,12 +2577,10 @@ void ON_HistoryRecord::RemapObjectIds( const ON_SimpleArray<ON_UuidPair>& id_rem
 //
 
 ON_CurveProxyHistory::ON_CurveProxyHistory()
-{
-}
+= default;
 
 ON_CurveProxyHistory::~ON_CurveProxyHistory()
-{
-}
+= default;
 
 void ON_CurveProxyHistory::Destroy()
 {
@@ -2682,8 +2669,7 @@ ON_PolyEdgeHistory::ON_PolyEdgeHistory()
 }
 
 ON_PolyEdgeHistory::~ON_PolyEdgeHistory()
-{
-}
+= default;
 
 void ON_PolyEdgeHistory::Destroy()
 {

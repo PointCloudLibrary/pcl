@@ -18,27 +18,26 @@
 
 //////////////////////////////////////////////////////////////////////////////
 
-ON_TextLog::ON_TextLog() : m_pFile(0), m_pString(0), m_indent(""), m_beginning_of_line(1), m_indent_size(0)
+ON_TextLog::ON_TextLog() : m_pFile(nullptr), m_pString(nullptr), m_indent(""), m_beginning_of_line(1), m_indent_size(0)
 {
   SetFloatFormat("%g");
   SetDoubleFormat("%.17g");
 }
 
-ON_TextLog::ON_TextLog( FILE* pFile ) : m_pFile(pFile), m_pString(0), m_indent(""), m_beginning_of_line(1), m_indent_size(0)
+ON_TextLog::ON_TextLog( FILE* pFile ) : m_pFile(pFile), m_pString(nullptr), m_indent(""), m_beginning_of_line(1), m_indent_size(0)
 {
   SetFloatFormat("%g");
   SetDoubleFormat("%.17g");
 }
 
-ON_TextLog::ON_TextLog( ON_wString& wstr ) : m_pFile(0), m_pString(&wstr), m_indent(""), m_beginning_of_line(1), m_indent_size(0)
+ON_TextLog::ON_TextLog( ON_wString& wstr ) : m_pFile(nullptr), m_pString(&wstr), m_indent(""), m_beginning_of_line(1), m_indent_size(0)
 {
   SetFloatFormat("%g");
   SetDoubleFormat("%.17g");
 }
 
 ON_TextLog::~ON_TextLog()
-{
-}
+= default;
 
 void ON_TextLog::SetDoubleFormat(const char* sFormat)
 {
@@ -536,7 +535,7 @@ void ON_TextLog::PrintKnotVector( int order, int cv_count, const double* knot )
 
 void ON_TextLog::Print( const ON_3dPointArray& a, const char* sPreamble )
 {
-  const double* p = (a.Array() ? &a.Array()[0].x : NULL );
+  const double* p = (a.Array() ? &a.Array()[0].x : nullptr );
   PrintPointList( 3, false, a.Count(), 3, p, sPreamble );
 }
 

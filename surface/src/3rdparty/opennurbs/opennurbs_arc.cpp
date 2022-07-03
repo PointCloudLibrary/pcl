@@ -226,7 +226,7 @@ bool ON_Arc::Create(
 
 
 ON_Arc::~ON_Arc()
-{}
+= default;
 
 void ON_Arc::Dump( ON_TextLog& dump ) const
 {

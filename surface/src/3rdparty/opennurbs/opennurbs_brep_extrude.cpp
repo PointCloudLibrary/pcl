@@ -51,7 +51,7 @@ static
 ON_SumSurface* ON_BrepExtrudeHelper_MakeSumSrf( const ON_Curve& path_curve,
                                                  const ON_BrepEdge& base_edge, ON_BOOL32 bRev )
 {
-  ON_SumSurface* sum_srf = 0;
+  ON_SumSurface* sum_srf = nullptr;
   // create side surface
   if ( base_edge.ProxyCurve() )
   {
@@ -104,7 +104,7 @@ ON_NurbsSurface* ON_BrepExtrudeHelper_MakeConeSrf( const ON_3dPoint& apex_point,
   else
   {
     delete cone_srf;
-    cone_srf = 0;
+    cone_srf = nullptr;
   }
   return cone_srf;
 }
@@ -141,7 +141,7 @@ ON_BOOL32 ON_BrepExtrudeHelper_MakeSides(
 
   for ( lti = 0; lti < loop_trim_count; lti++ )
   {
-    ON_SumSurface* sum_srf = 0;
+    ON_SumSurface* sum_srf = nullptr;
     side_face_index.Append(-1);
     ti = brep.m_L[loop_index].m_ti[lti];
     if ( ti < 0 || ti >= trim_count0 )
@@ -376,14 +376,14 @@ bool ON_BrepExtrudeHelper_MakeTopLoop(
     // duplicate bottom edge curve
     const ON_BrepEdge& bottom_edge = brep.m_E[bottom_trim.m_ei];
     ON_Curve* top_c3 = bottom_edge.DuplicateCurve();
-    if ( 0 == top_c3 )
+    if ( nullptr == top_c3 )
       continue;
     // move new edge curve to top location
     top_c3->Translate(path_vector);
     ON_3dPoint P0 = top_c3->PointAtStart();
     ON_3dPoint P1 = top_c3->PointAtEnd();
     int top_c3i = brep.AddEdgeCurve(top_c3);
-    top_c3 = 0;
+    top_c3 = nullptr;
     // get vertices at start/end of the new edge
     int e_vi0 = top_vertex_index[lti];
     int e_vi1 = top_vertex_index[(lti+1)%loop_trim_count];
@@ -438,7 +438,7 @@ bool ON_BrepExtrudeHelper_MakeTopLoop(
   {
     const ON_BrepTrim& bottom_trim = brep.m_T[ bottom_loop.m_ti[lti] ];
     ON_Curve* top_c2 = bottom_trim.DuplicateCurve();
-    int top_c2i = (0!=top_c2) ? brep.AddTrimCurve(top_c2) : bottom_trim.m_c2i;
+    int top_c2i = (nullptr!=top_c2) ? brep.AddTrimCurve(top_c2) : bottom_trim.m_c2i;
     top_trim_index = -1;
     if ( bottom_trim.m_type == ON_BrepTrim::singular && top_vertex_index[lti] >= 0 )
     {
@@ -873,7 +873,7 @@ bool ON_BrepExtrude(
       }
       c3->Transform(tr);
       int c3i = brep.AddEdgeCurve(c3);
-      ON_BrepEdge& tope = brep.NewEdge(topv0,topv1,c3i,0,bottome.m_tolerance);
+      ON_BrepEdge& tope = brep.NewEdge(topv0,topv1,c3i,nullptr,bottome.m_tolerance);
       topeimap[ei] = tope.m_edge_index;
     }
   }
@@ -899,7 +899,7 @@ bool ON_BrepExtrude(
           ON_3dVector D = bottomv.point - PathStart;
           c3->Translate(D);
           int c3i = brep.AddEdgeCurve(c3);
-          const ON_BrepEdge& e = brep.NewEdge(bottomv,topv,c3i,0,0.0);
+          const ON_BrepEdge& e = brep.NewEdge(bottomv,topv,c3i,nullptr,0.0);
           sideveimap[vi] = e.m_edge_index;
         }
         break;
@@ -942,7 +942,7 @@ bool ON_BrepExtrude(
             break;
           }
           int c2i = brep.AddTrimCurve(c2);
-          ON_BrepTrim* topt = 0;
+          ON_BrepTrim* topt = nullptr;
           if ( bottomt.m_ei >= 0 )
           {
             ON_BrepEdge& tope = brep.m_E[topeimap[bottomt.m_ei]];
@@ -1160,7 +1160,7 @@ bool ON_BrepConeLoop(
 
   for ( lti = 0; lti < loop_trim_count; lti++ )
   {
-    ON_NurbsSurface* cone_srf = 0;
+    ON_NurbsSurface* cone_srf = nullptr;
     ti = brep.m_L[loop_index].m_ti[lti];
     if ( ti < 0 || ti >= trim_count0 )
       continue;

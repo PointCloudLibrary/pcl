@@ -19,19 +19,16 @@
 ON_VIRTUAL_OBJECT_IMPLEMENT(ON_Geometry,ON_Object,"4ED7D4DA-E947-11d3-BFE5-0010830122F0");
 
 ON_Geometry::ON_Geometry()
-{}
+= default;
 
-ON_Geometry::ON_Geometry(const ON_Geometry& src) : ON_Object(src)
-{}
+ON_Geometry::ON_Geometry(const ON_Geometry& src)  
+= default;
 
 ON_Geometry& ON_Geometry::operator=(const ON_Geometry& src)
-{
-  ON_Object::operator=(src);
-  return *this;
-}
+= default;
 
 ON_Geometry::~ON_Geometry()
-{}
+= default;
 
 ON_BoundingBox ON_Geometry::BoundingBox() const
 {
@@ -233,7 +230,7 @@ ON_BOOL32 ON_Geometry::HasBrepForm() const
 ON_Brep* ON_Geometry::BrepForm( ON_Brep* ) const
 {
   // override if specific geoemtry has brep form
-  return NULL;
+  return nullptr;
 }
 
 

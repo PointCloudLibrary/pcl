@@ -25,7 +25,7 @@ ON_Circle::ON_Circle()
 }
 
 ON_Circle::~ON_Circle()
-{}
+= default;
 
 ON_Circle::ON_Circle( const ON_Plane& p, double r )
 {

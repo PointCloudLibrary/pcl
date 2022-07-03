@@ -20,7 +20,7 @@ ON_OBJECT_IMPLEMENT(ON_ClippingPlaneSurface,ON_PlaneSurface,"DBC5A584-CE3F-4170-
 
 
 ON_PlaneSurface::ON_PlaneSurface()
-{}
+= default;
 
 ON_PlaneSurface::ON_PlaneSurface( const ON_PlaneSurface& src ) : ON_Surface(src)
 {
@@ -73,7 +73,7 @@ ON_PlaneSurface& ON_PlaneSurface::operator=( const ON_Plane& src )
 }
 
 ON_PlaneSurface::~ON_PlaneSurface()
-{}
+= default;
 
 ON_BOOL32
 ON_PlaneSurface::IsValid( ON_TextLog* ) const
@@ -383,7 +383,7 @@ ON_PlaneSurface::Evaluate( // returns false if unable to evaluate
 
 ON_Curve* ON_PlaneSurface::IsoCurve( int dir, double c ) const
 {
-  ON_LineCurve* line_curve = 0;
+  ON_LineCurve* line_curve = nullptr;
   if ( (dir == 0 || dir == 1) && IsValid() ) 
   {
     ON_Line line;
@@ -469,8 +469,8 @@ ON_BOOL32 ON_PlaneSurface::Split(
        ON_Surface*& east_or_north_side
        ) const
 {
-  ON_PlaneSurface* ws_side = 0;
-  ON_PlaneSurface* en_side = 0;
+  ON_PlaneSurface* ws_side = nullptr;
+  ON_PlaneSurface* en_side = nullptr;
 
   if ( dir < 0 || dir > 1 )
     return false;
@@ -532,9 +532,9 @@ bool ON_PlaneSurface::GetClosestPoint( const ON_3dPoint& test_point,
 
 	ON_Interval sdom = Domain(0);
 	ON_Interval tdom = Domain(1);
-	if(sdomain==NULL)
+	if(sdomain==nullptr)
 		sdomain = &sdom;
-	if(tdomain==NULL)
+	if(tdomain==nullptr)
 		tdomain = &tdom;
 
   bool rc = m_plane.ClosestPointTo( test_point, &u, &v );
@@ -747,7 +747,7 @@ bool ON_PlaneSurface::CreatePseudoInfinitePlane(
     return false;
   if ( point_count < 1 )
     return false;
-  if ( 0 == point_list )
+  if ( nullptr == point_list )
     return false;
   if ( !ON_IsValid(padding) || padding < 0.0 )
     return false;
@@ -889,8 +889,7 @@ ON_ClippingPlane::ON_ClippingPlane()
 }
 
 ON_ClippingPlane::~ON_ClippingPlane()
-{
-}
+= default;
 
 ON_ClippingPlaneInfo ON_ClippingPlane::ClippingPlaneInfo() const
 {
@@ -1008,8 +1007,7 @@ ON_ClippingPlaneSurface::ON_ClippingPlaneSurface()
 }
 
 ON_ClippingPlaneSurface::~ON_ClippingPlaneSurface()
-{
-}
+= default;
 
 ON_ClippingPlaneSurface::ON_ClippingPlaneSurface(const ON_PlaneSurface& src)
                         : ON_PlaneSurface(src)

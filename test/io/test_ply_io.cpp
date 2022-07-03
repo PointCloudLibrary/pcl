@@ -114,7 +114,7 @@ struct PLYTest : public ::testing::Test
   {}
 
   
-  ~PLYTest () { remove (mesh_file_ply_.c_str ()); }
+  ~PLYTest () override { remove (mesh_file_ply_.c_str ()); }
 
   std::string mesh_file_ply_;
 };

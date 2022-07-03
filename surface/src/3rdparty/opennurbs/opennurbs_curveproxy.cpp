@@ -18,11 +18,11 @@
 
 ON_OBJECT_IMPLEMENT(ON_CurveProxy,ON_Curve,"4ED7D4D9-E947-11d3-BFE5-0010830122F0");
 
-ON_CurveProxy::ON_CurveProxy() : m_real_curve(0), m_bReversed(0)
+ON_CurveProxy::ON_CurveProxy() : m_real_curve(nullptr), m_bReversed(0)
 {}
 
 ON_CurveProxy::ON_CurveProxy( const ON_CurveProxy& src ) 
-             : ON_Curve(src), m_real_curve(0), m_bReversed(0)
+             : ON_Curve(src), m_real_curve(nullptr), m_bReversed(0)
 {
   *this = src;
 }
@@ -76,7 +76,7 @@ ON_CurveProxy& ON_CurveProxy::operator=( const ON_CurveProxy& src )
 
 ON_CurveProxy::~ON_CurveProxy()
 {
-  m_real_curve = 0;
+  m_real_curve = nullptr;
 }
 
 double ON_CurveProxy::RealCurveParameter( double t ) const
@@ -129,7 +129,7 @@ void ON_CurveProxy::SetProxyCurve( const ON_Curve* real_curve )
 {
   // setting m_real_curve=0 prevents crashes if user has deleted
   // the "real" curve before calling SetProxyCurve().
-  m_real_curve = 0;
+  m_real_curve = nullptr;
 
   if ( real_curve )
     SetProxyCurve( real_curve, real_curve->Domain() );
@@ -149,7 +149,7 @@ void ON_CurveProxy::SetProxyCurve( const ON_Curve* real_curve,
   {
     // setting m_real_curve=0 prevents crashes if user has deleted
     // the "real" curve before calling SetProxyCurve().
-    m_real_curve = 0;
+    m_real_curve = nullptr;
     DestroyCurveTree();
     m_real_curve_domain.Destroy();
     m_this_domain.Destroy();
@@ -171,12 +171,12 @@ void ON_CurveProxy::SetProxyCurve( const ON_Curve* real_curve,
     }
     else
     {
-      real_curve = 0;
+      real_curve = nullptr;
     }
 
     // setting m_real_curve=0 prevents crashes if user has deleted
     // the "real" curve before calling SetProxyCurve().
-    m_real_curve = 0;
+    m_real_curve = nullptr;
     DestroyCurveTree();
   }
 
@@ -227,7 +227,7 @@ ON_Interval ON_CurveProxy::ProxyCurveDomain() const
 ON_Curve* ON_CurveProxy::DuplicateCurve() const
 {
   // duplicate underlying curve
-  ON_Curve* dup_crv = 0;
+  ON_Curve* dup_crv = nullptr;
   if ( m_real_curve && m_real_curve != this )
   {
     dup_crv = m_real_curve->DuplicateCurve();
@@ -496,7 +496,7 @@ ON_CurveProxy::IsLinear( // true if curve locus is a line segment
   //     when a proxy is restricted to using a linear portion
   //     of a non-linear real curve.
   bool rc = false;
-  if ( 0 != m_real_curve )
+  if ( nullptr != m_real_curve )
   {
     ON_Interval cdom = m_real_curve->Domain();
     if ( cdom == m_real_curve_domain )
@@ -511,7 +511,7 @@ ON_CurveProxy::IsLinear( // true if curve locus is a line segment
       // DuplicateCurve().  In this situation I rely on getting
       // the result returned by ON_CurveProxy::DuplicateCurve().
       ON_Curve* temp_curve = ON_CurveProxy::DuplicateCurve();
-      if ( 0 != temp_curve )
+      if ( nullptr != temp_curve )
       {
         rc = temp_curve->IsLinear(tolerance) ? true : false;
         delete temp_curve;
@@ -650,7 +650,7 @@ ON_CurveProxy::IsArc( // true if curve locus in an arc or circle
     // DuplicateCurve().  In this situation I rely on getting
     // the result returned by ON_CurveProxy::DuplicateCurve().
     ON_Curve* temp_curve = ON_CurveProxy::DuplicateCurve();
-    if ( 0 != temp_curve )
+    if ( nullptr != temp_curve )
     {
       rc = temp_curve->IsArc(plane,arc,tolerance) ? true : false;
       delete temp_curve;
@@ -712,10 +712,10 @@ bool ON_CurveProxy::GetNextDiscontinuity(
                 ) const
 {
   bool rc = false;
-  if ( 0 != dtype )
+  if ( nullptr != dtype )
     *dtype = 0;
 
-  if ( 0 != m_real_curve )
+  if ( nullptr != m_real_curve )
   {
     double s;
 
@@ -959,8 +959,8 @@ ON_BOOL32 ON_CurveProxy::Split(
     double crv_t = RealCurveParameter(t);
     if ( m_real_curve_domain.Includes(crv_t,true) )
     {
-      ON_CurveProxy* left_proxy = 0;
-      ON_CurveProxy* right_proxy = 0;
+      ON_CurveProxy* left_proxy = nullptr;
+      ON_CurveProxy* right_proxy = nullptr;
       if ( left_side )
       {
         left_proxy = ON_CurveProxy::Cast(left_side);
@@ -1071,7 +1071,7 @@ ON_CurveProxy::GetNurbForm( // returns 0: unable to create NURBS representation
       {
         double t0 = Domain()[0];
         double t1 = Domain()[1];
-        if ( 0 != sub_domain )
+        if ( nullptr != sub_domain )
         {
           if ( t0 < sub_domain->Min() )
             t0 = sub_domain->Min();
@@ -1151,14 +1151,14 @@ ON_BOOL32 ON_CurveProxy::GetCurveParameterFromNurbFormParameter(
     //     in converting NURBS parameter to arc parameter.
     const ON_Curve* real_crv = m_real_curve;
 
-    ON_Curve* tmp_real_crv = 0;
+    ON_Curve* tmp_real_crv = nullptr;
     if ( m_real_curve_domain != m_real_curve->Domain() )
     {
       const ON_ArcCurve* arc_curve = ON_ArcCurve::Cast(m_real_curve);
-      if ( 0 != arc_curve )
+      if ( nullptr != arc_curve )
       {
         tmp_real_crv = arc_curve->DuplicateCurve();
-        if ( 0 != tmp_real_crv )
+        if ( nullptr != tmp_real_crv )
         {
           if ( tmp_real_crv->Trim(m_real_curve_domain) )
           {
@@ -1172,7 +1172,7 @@ ON_BOOL32 ON_CurveProxy::GetCurveParameterFromNurbFormParameter(
     if ( rc )
       *curve_t = ThisCurveParameter(*curve_t);
 
-    if ( 0 != tmp_real_crv )
+    if ( nullptr != tmp_real_crv )
       delete tmp_real_crv;
   }
   return rc;
@@ -1191,14 +1191,14 @@ ON_BOOL32 ON_CurveProxy::GetNurbFormParameterFromCurveParameter(
     //     in converting NURBS parameter to arc parameter.
     const ON_Curve* real_crv = m_real_curve;
 
-    ON_Curve* tmp_real_crv = 0;
+    ON_Curve* tmp_real_crv = nullptr;
     if ( m_real_curve_domain != m_real_curve->Domain() )
     {
       const ON_ArcCurve* arc_curve = ON_ArcCurve::Cast(m_real_curve);
-      if ( 0 != arc_curve )
+      if ( nullptr != arc_curve )
       {
         tmp_real_crv = arc_curve->DuplicateCurve();
-        if ( 0 != tmp_real_crv )
+        if ( nullptr != tmp_real_crv )
         {
           if ( tmp_real_crv->Trim(m_real_curve_domain) )
           {
@@ -1212,7 +1212,7 @@ ON_BOOL32 ON_CurveProxy::GetNurbFormParameterFromCurveParameter(
     if ( rc )
       *nurbs_t = ThisCurveParameter(*nurbs_t);
 
-    if ( 0 != tmp_real_crv )
+    if ( nullptr != tmp_real_crv )
       delete tmp_real_crv;
   }
   return rc;

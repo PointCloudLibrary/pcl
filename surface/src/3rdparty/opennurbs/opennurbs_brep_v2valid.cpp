@@ -31,7 +31,7 @@ bool ON_Brep::IsValidForV2( const ON_BrepTrim& trim ) const
   if ( curve != trim.ProxyCurve() )
     return false;
   const ON_NurbsCurve* nurbs_curve = ON_NurbsCurve::Cast(curve);
-  if ( 0 == nurbs_curve )
+  if ( nullptr == nurbs_curve )
     return false;
   if ( !nurbs_curve->IsClamped(2) )
     return false;
@@ -56,7 +56,7 @@ bool ON_Brep::IsValidForV2( const ON_BrepTrim& trim ) const
     if ( trim.m_vi[0] != trim.m_vi[1] )
     {
       const ON_BrepLoop* loop = Loop(trim.m_li);
-      if ( 0 != loop && loop->m_ti.Count() > 1 )
+      if ( nullptr != loop && loop->m_ti.Count() > 1 )
         return false;
     }
   }
@@ -82,7 +82,7 @@ bool ON_Brep::IsValidForV2( const ON_BrepEdge& edge ) const
   if ( curve != edge.ProxyCurve() )
     return false;
   const ON_NurbsCurve* nurbs_curve = ON_NurbsCurve::Cast(curve);
-  if ( 0 == nurbs_curve )
+  if ( nullptr == nurbs_curve )
     return false;
   if ( !nurbs_curve->IsClamped(2) )
     return false;

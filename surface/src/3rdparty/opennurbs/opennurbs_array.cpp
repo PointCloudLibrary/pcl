@@ -17,15 +17,15 @@
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"   // openNURBS declarations of functions that perform simple calculations
 
 ON_2dPointArray::ON_2dPointArray() 
-{}
+= default;
 
 ON_2dPointArray::ON_2dPointArray(int c) 
                 : ON_SimpleArray<ON_2dPoint>(c) 
 {}
 
 ON_2dPointArray::ON_2dPointArray(const ON_2dPointArray& src) 
-                : ON_SimpleArray<ON_2dPoint>(src)
-{}
+                 
+= default;
 
 bool ON_2dPointArray::GetBBox( // returns true if successful
        double boxmin[2],
@@ -33,17 +33,17 @@ bool ON_2dPointArray::GetBBox( // returns true if successful
        int bGrowBox
        ) const
 {
-  return ON_GetPointListBoundingBox( 2, false, Count(), 2, (m_a) ? &m_a[0].x : 0, boxmin, boxmax, bGrowBox );
+  return ON_GetPointListBoundingBox( 2, false, Count(), 2, (m_a) ? &m_a[0].x : nullptr, boxmin, boxmax, bGrowBox );
 }
 
 bool ON_2dPointArray::Transform( const ON_Xform& xform )
 {
-  return ON_TransformPointList( 2, false, Count(), 2, (m_a) ? &m_a[0].x : 0, xform );
+  return ON_TransformPointList( 2, false, Count(), 2, (m_a) ? &m_a[0].x : nullptr, xform );
 }
 
 bool ON_2dPointArray::SwapCoordinates( int i, int j )
 {
-  return ON_SwapPointListCoordinates( Count(), 2, (m_a) ? &m_a[0].x : 0, i, j );
+  return ON_SwapPointListCoordinates( Count(), 2, (m_a) ? &m_a[0].x : nullptr, i, j );
 }
 
 ON_2dPointArray& ON_2dPointArray::operator=(const ON_2dPointArray& src)
@@ -55,7 +55,7 @@ ON_2dPointArray& ON_2dPointArray::operator=(const ON_2dPointArray& src)
 }
 
 ON_3dPointArray::ON_3dPointArray() 
-{}
+= default;
 
 ON_3dPointArray::ON_3dPointArray(int c) : ON_SimpleArray<ON_3dPoint>(c) 
 {}
@@ -90,17 +90,17 @@ bool ON_3dPointArray::GetBBox( // returns true if successful
        int bGrowBox
        ) const
 {
-  return ON_GetPointListBoundingBox( 3, false, Count(), 3, (m_a) ? &m_a[0].x : 0, boxmin, boxmax, bGrowBox );
+  return ON_GetPointListBoundingBox( 3, false, Count(), 3, (m_a) ? &m_a[0].x : nullptr, boxmin, boxmax, bGrowBox );
 }
 
 bool ON_3dPointArray::Transform( const ON_Xform& xform )
 {
-  return ON_TransformPointList( 3, false, Count(), 3, (m_a) ? &m_a[0].x : 0, xform );
+  return ON_TransformPointList( 3, false, Count(), 3, (m_a) ? &m_a[0].x : nullptr, xform );
 }
 
 bool ON_3dPointArray::SwapCoordinates( int i, int j )
 {
-  return ON_SwapPointListCoordinates( Count(), 3, (m_a) ? &m_a[0].x : 0, i, j );
+  return ON_SwapPointListCoordinates( Count(), 3, (m_a) ? &m_a[0].x : nullptr, i, j );
 }
 
 
@@ -269,22 +269,22 @@ bool ON_3dPointArray::Create(
 
 
 ON_4dPointArray::ON_4dPointArray() 
-{}
+= default;
 
 ON_4dPointArray::ON_4dPointArray(int c) : ON_SimpleArray<ON_4dPoint>(c) 
 {}
 
-ON_4dPointArray::ON_4dPointArray(const ON_4dPointArray& src) : ON_SimpleArray<ON_4dPoint>(src)
-{}
+ON_4dPointArray::ON_4dPointArray(const ON_4dPointArray& src)  
+= default;
 
 bool ON_4dPointArray::Transform( const ON_Xform& xform )
 {
-  return ON_TransformPointList( 3, true, Count(), 4, (m_a) ? &m_a[0].x : 0, xform );
+  return ON_TransformPointList( 3, true, Count(), 4, (m_a) ? &m_a[0].x : nullptr, xform );
 }
 
 bool ON_4dPointArray::SwapCoordinates( int i, int j )
 {
-  return ON_SwapPointListCoordinates( Count(), 4, (m_a) ? &m_a[0].x : 0, i, j );
+  return ON_SwapPointListCoordinates( Count(), 4, (m_a) ? &m_a[0].x : nullptr, i, j );
 }
 
 ON_4dPointArray& ON_4dPointArray::operator=(const ON_4dPointArray& src)
@@ -296,13 +296,13 @@ ON_4dPointArray& ON_4dPointArray::operator=(const ON_4dPointArray& src)
 }
 
 ON_2dVectorArray::ON_2dVectorArray() 
-{}
+= default;
 
 ON_2dVectorArray::ON_2dVectorArray(int c) : ON_SimpleArray<ON_2dVector>(c) 
 {}
 
-ON_2dVectorArray::ON_2dVectorArray(const ON_2dVectorArray& src) : ON_SimpleArray<ON_2dVector>(src)
-{}
+ON_2dVectorArray::ON_2dVectorArray(const ON_2dVectorArray& src)  
+= default;
 
 bool ON_2dVectorArray::GetBBox( // returns true if successful
        double boxmin[2],
@@ -310,17 +310,17 @@ bool ON_2dVectorArray::GetBBox( // returns true if successful
        int bGrowBox
        ) const
 {
-  return ON_GetPointListBoundingBox( 2, false, Count(), 2, (m_a) ? &m_a[0].x : 0, boxmin, boxmax, bGrowBox );
+  return ON_GetPointListBoundingBox( 2, false, Count(), 2, (m_a) ? &m_a[0].x : nullptr, boxmin, boxmax, bGrowBox );
 }
 
 bool ON_2dVectorArray::Transform( const ON_Xform& xform )
 {
-  return ON_TransformPointList( 2, false, Count(), 2, (m_a) ? &m_a[0].x : 0, xform );
+  return ON_TransformPointList( 2, false, Count(), 2, (m_a) ? &m_a[0].x : nullptr, xform );
 }
 
 bool ON_2dVectorArray::SwapCoordinates( int i, int j )
 {
-  return ON_SwapPointListCoordinates( Count(), 2, (m_a) ? &m_a[0].x : 0, i, j );
+  return ON_SwapPointListCoordinates( Count(), 2, (m_a) ? &m_a[0].x : nullptr, i, j );
 }
 
 ON_2dVectorArray& ON_2dVectorArray::operator=(const ON_2dVectorArray& src)
@@ -332,13 +332,13 @@ ON_2dVectorArray& ON_2dVectorArray::operator=(const ON_2dVectorArray& src)
 }
 
 ON_3dVectorArray::ON_3dVectorArray() 
-{}
+= default;
 
 ON_3dVectorArray::ON_3dVectorArray(int c) : ON_SimpleArray<ON_3dVector>(c) 
 {}
 
-ON_3dVectorArray::ON_3dVectorArray(const ON_3dVectorArray& src) : ON_SimpleArray<ON_3dVector>(src)
-{}
+ON_3dVectorArray::ON_3dVectorArray(const ON_3dVectorArray& src)  
+= default;
 
 bool ON_3dVectorArray::GetBBox(
        double boxmin[3],
@@ -346,17 +346,17 @@ bool ON_3dVectorArray::GetBBox(
        bool bGrowBox
        ) const
 {
-  return ON_GetPointListBoundingBox( 3, false, Count(), 3, (m_a) ? &m_a[0].x : 0, boxmin, boxmax, bGrowBox );
+  return ON_GetPointListBoundingBox( 3, false, Count(), 3, (m_a) ? &m_a[0].x : nullptr, boxmin, boxmax, bGrowBox );
 }
 
 bool ON_3dVectorArray::Transform( const ON_Xform& xform )
 {
-  return ON_TransformPointList( 3, false, Count(), 3, (m_a) ? &m_a[0].x : 0, xform );
+  return ON_TransformPointList( 3, false, Count(), 3, (m_a) ? &m_a[0].x : nullptr, xform );
 }
 
 bool ON_3dVectorArray::SwapCoordinates( int i, int j )
 {
-  return ON_SwapPointListCoordinates( Count(), 3, (m_a) ? &m_a[0].x : 0, i, j );
+  return ON_SwapPointListCoordinates( Count(), 3, (m_a) ? &m_a[0].x : nullptr, i, j );
 }
 
 ON_3dVectorArray& ON_3dVectorArray::operator=(const ON_3dVectorArray& src)
@@ -371,15 +371,15 @@ ON_3dVectorArray& ON_3dVectorArray::operator=(const ON_3dVectorArray& src)
 ////
 ////
 ON_2fPointArray::ON_2fPointArray() 
-{}
+= default;
 
 ON_2fPointArray::ON_2fPointArray(int c) 
                 : ON_SimpleArray<ON_2fPoint>(c) 
 {}
 
 ON_2fPointArray::ON_2fPointArray(const ON_2fPointArray& src) 
-                : ON_SimpleArray<ON_2fPoint>(src)
-{}
+                 
+= default;
 
 bool ON_2fPointArray::GetBBox( // returns true if successful
        float boxmin[2],
@@ -387,17 +387,17 @@ bool ON_2fPointArray::GetBBox( // returns true if successful
        int bGrowBox
        ) const
 {
-  return ON_GetPointListBoundingBox( 2, false, Count(), 2, (m_a) ? &m_a[0].x : 0, boxmin, boxmax, bGrowBox );
+  return ON_GetPointListBoundingBox( 2, false, Count(), 2, (m_a) ? &m_a[0].x : nullptr, boxmin, boxmax, bGrowBox );
 }
 
 bool ON_2fPointArray::Transform( const ON_Xform& xform )
 {
-  return ON_TransformPointList( 2, false, Count(), 2, (m_a) ? &m_a[0].x : 0, xform );
+  return ON_TransformPointList( 2, false, Count(), 2, (m_a) ? &m_a[0].x : nullptr, xform );
 }
 
 bool ON_2fPointArray::SwapCoordinates( int i, int j )
 {
-  return ON_SwapPointListCoordinates( Count(), 2, (m_a) ? &m_a[0].x : 0, i, j );
+  return ON_SwapPointListCoordinates( Count(), 2, (m_a) ? &m_a[0].x : nullptr, i, j );
 }
 
 ON_2fPointArray& ON_2fPointArray::operator=(const ON_2fPointArray& src)
@@ -410,13 +410,13 @@ ON_2fPointArray& ON_2fPointArray::operator=(const ON_2fPointArray& src)
 
 
 ON_3fPointArray::ON_3fPointArray() 
-{}
+= default;
 
 ON_3fPointArray::ON_3fPointArray(int c) : ON_SimpleArray<ON_3fPoint>(c)
 {}
 
-ON_3fPointArray::ON_3fPointArray(const ON_3fPointArray& src) : ON_SimpleArray<ON_3fPoint>(src)
-{}
+ON_3fPointArray::ON_3fPointArray(const ON_3fPointArray& src)  
+= default;
 
 bool ON_3fPointArray::GetBBox( // returns true if successful
        float boxmin[3],
@@ -424,17 +424,17 @@ bool ON_3fPointArray::GetBBox( // returns true if successful
        int bGrowBox
        ) const
 {
-  return ON_GetPointListBoundingBox( 3, false, Count(), 3, (m_a) ? &m_a[0].x : 0, boxmin, boxmax, bGrowBox );
+  return ON_GetPointListBoundingBox( 3, false, Count(), 3, (m_a) ? &m_a[0].x : nullptr, boxmin, boxmax, bGrowBox );
 }
 
 bool ON_3fPointArray::Transform( const ON_Xform& xform )
 {
-  return ON_TransformPointList( 3, false, Count(), 3, (m_a) ? &m_a[0].x : 0, xform );
+  return ON_TransformPointList( 3, false, Count(), 3, (m_a) ? &m_a[0].x : nullptr, xform );
 }
 
 bool ON_3fPointArray::SwapCoordinates( int i, int j )
 {
-  return ON_SwapPointListCoordinates( Count(), 3, (m_a) ? &m_a[0].x : 0, i, j );
+  return ON_SwapPointListCoordinates( Count(), 3, (m_a) ? &m_a[0].x : nullptr, i, j );
 }
 
 ON_3fPointArray& ON_3fPointArray::operator=(const ON_3fPointArray& src)
@@ -446,22 +446,22 @@ ON_3fPointArray& ON_3fPointArray::operator=(const ON_3fPointArray& src)
 }
 
 ON_4fPointArray::ON_4fPointArray() 
-{}
+= default;
 
 ON_4fPointArray::ON_4fPointArray(int c) : ON_SimpleArray<ON_4fPoint>(c) 
 {}
 
-ON_4fPointArray::ON_4fPointArray(const ON_4fPointArray& src) : ON_SimpleArray<ON_4fPoint>(src)
-{}
+ON_4fPointArray::ON_4fPointArray(const ON_4fPointArray& src)  
+= default;
 
 bool ON_4fPointArray::Transform( const ON_Xform& xform )
 {
-  return ON_TransformPointList( 3, true, Count(), 4, (m_a) ? &m_a[0].x : 0, xform );
+  return ON_TransformPointList( 3, true, Count(), 4, (m_a) ? &m_a[0].x : nullptr, xform );
 }
 
 bool ON_4fPointArray::SwapCoordinates( int i, int j )
 {
-  return ON_SwapPointListCoordinates( Count(), 4, (m_a) ? &m_a[0].x : 0, i, j );
+  return ON_SwapPointListCoordinates( Count(), 4, (m_a) ? &m_a[0].x : nullptr, i, j );
 }
 
 ON_4fPointArray& ON_4fPointArray::operator=(const ON_4fPointArray& src)
@@ -473,13 +473,13 @@ ON_4fPointArray& ON_4fPointArray::operator=(const ON_4fPointArray& src)
 }
 
 ON_2fVectorArray::ON_2fVectorArray() 
-{}
+= default;
 
 ON_2fVectorArray::ON_2fVectorArray(int c) : ON_SimpleArray<ON_2fVector>(c) 
 {}
 
-ON_2fVectorArray::ON_2fVectorArray(const ON_2fVectorArray& src) : ON_SimpleArray<ON_2fVector>(src)
-{}
+ON_2fVectorArray::ON_2fVectorArray(const ON_2fVectorArray& src)  
+= default;
 
 bool ON_2fVectorArray::GetBBox(
        float boxmin[2],
@@ -487,17 +487,17 @@ bool ON_2fVectorArray::GetBBox(
        bool bGrowBox
        ) const
 {
-  return ON_GetPointListBoundingBox( 2, false, Count(), 2, (m_a) ? &m_a[0].x : 0, boxmin, boxmax, bGrowBox );
+  return ON_GetPointListBoundingBox( 2, false, Count(), 2, (m_a) ? &m_a[0].x : nullptr, boxmin, boxmax, bGrowBox );
 }
 
 bool ON_2fVectorArray::Transform( const ON_Xform& xform )
 {
-  return ON_TransformPointList( 2, false, Count(), 2, (m_a) ? &m_a[0].x : 0, xform );
+  return ON_TransformPointList( 2, false, Count(), 2, (m_a) ? &m_a[0].x : nullptr, xform );
 }
 
 bool ON_2fVectorArray::SwapCoordinates( int i, int j )
 {
-  return ON_SwapPointListCoordinates( Count(), 2, (m_a) ? &m_a[0].x : 0, i, j );
+  return ON_SwapPointListCoordinates( Count(), 2, (m_a) ? &m_a[0].x : nullptr, i, j );
 }
 
 ON_2fVectorArray& ON_2fVectorArray::operator=(const ON_2fVectorArray& src)
@@ -509,13 +509,13 @@ ON_2fVectorArray& ON_2fVectorArray::operator=(const ON_2fVectorArray& src)
 }
 
 ON_3fVectorArray::ON_3fVectorArray() 
-{}
+= default;
 
 ON_3fVectorArray::ON_3fVectorArray(int c) : ON_SimpleArray<ON_3fVector>(c) 
 {}
 
-ON_3fVectorArray::ON_3fVectorArray(const ON_3fVectorArray& src) : ON_SimpleArray<ON_3fVector>(src)
-{}
+ON_3fVectorArray::ON_3fVectorArray(const ON_3fVectorArray& src)  
+= default;
 
 bool ON_3fVectorArray::GetBBox( // returns true if successful
        float boxmin[3],
@@ -523,17 +523,17 @@ bool ON_3fVectorArray::GetBBox( // returns true if successful
        int bGrowBox
        ) const
 {
-  return ON_GetPointListBoundingBox( 3, false, Count(), 3, (m_a) ? &m_a[0].x : 0, boxmin, boxmax, bGrowBox );
+  return ON_GetPointListBoundingBox( 3, false, Count(), 3, (m_a) ? &m_a[0].x : nullptr, boxmin, boxmax, bGrowBox );
 }
 
 bool ON_3fVectorArray::Transform( const ON_Xform& xform )
 {
-  return ON_TransformPointList( 3, false, Count(), 3, (m_a) ? &m_a[0].x : 0, xform );
+  return ON_TransformPointList( 3, false, Count(), 3, (m_a) ? &m_a[0].x : nullptr, xform );
 }
 
 bool ON_3fVectorArray::SwapCoordinates( int i, int j )
 {
-  return ON_SwapPointListCoordinates( Count(), 3, (m_a) ? &m_a[0].x : 0, i, j );
+  return ON_SwapPointListCoordinates( Count(), 3, (m_a) ? &m_a[0].x : nullptr, i, j );
 }
 
 ON_3fVectorArray& ON_3fVectorArray::operator=(const ON_3fVectorArray& src)
@@ -614,11 +614,9 @@ ON_UuidList::~ON_UuidList()
 }
 
 ON_UuidList::ON_UuidList(const ON_UuidList& src) 
-                     : ON_SimpleArray<ON_UUID>(src),
-                       m_sorted_count(src.m_sorted_count),
-                       m_removed_count(src.m_removed_count)
-{
-}
+                     
+                       
+= default;
 
 ON_UuidList& ON_UuidList::operator=(const ON_UuidList& src)
 {
@@ -668,7 +666,7 @@ void ON_UuidList::SortHelper()
 }
 const ON_UUID* ON_UuidList::Array() const
 {
-  const ON_UUID* array = 0;
+  const ON_UUID* array = nullptr;
   if ( m_count > m_removed_count )
   {
     const_cast<ON_UuidList*>(this)->SortHelper();
@@ -701,12 +699,12 @@ void ON_UuidList::Reserve(int capacity)
 bool ON_UuidList::RemoveUuid(ON_UUID uuid)
 {
   ON_UUID* p = SearchHelper(&uuid);
-  if ( 0 != p )
+  if ( nullptr != p )
   {
     *p = ON_max_uuid;
     m_removed_count++;
   }
-  return (0!=p);
+  return (nullptr!=p);
 }
 
 void ON_UuidList::Compact()
@@ -758,7 +756,7 @@ bool ON_UuidList::Read( class ON_BinaryArchive& archive )
 
 bool ON_UuidList::FindUuid(ON_UUID uuid) const
 {
-  return (0!=SearchHelper(&uuid));
+  return (nullptr!=SearchHelper(&uuid));
 }
 
 ON_UUID* ON_UuidList::SearchHelper(const ON_UUID* uuid) const
@@ -773,9 +771,9 @@ ON_UUID* ON_UuidList::SearchHelper(const ON_UUID* uuid) const
   ON_UUID* p = (m_sorted_count > 0 )
              ? (ON_UUID*)bsearch( uuid, m_a, m_sorted_count, sizeof(m_a[0]), 
                                   (int(*)(const void*,const void*))ON_UuidList::CompareUuid ) 
-             : 0;
+             : nullptr;
 
-  if (0 == p)
+  if (nullptr == p)
   {
     // do a slow search on the last m_count-m_sort_count elements
     // in the array.
@@ -816,11 +814,9 @@ ON_UuidIndexList::~ON_UuidIndexList()
 }
 
 ON_UuidIndexList::ON_UuidIndexList(const ON_UuidIndexList& src) 
-                     : ON_SimpleArray<ON_UuidIndex>(src),
-                       m_sorted_count(src.m_sorted_count),
-                       m_removed_count(src.m_removed_count)
-{
-}
+                     
+                       
+= default;
 
 ON_UuidIndexList& ON_UuidIndexList::operator=(const ON_UuidIndexList& src)
 {
@@ -835,7 +831,7 @@ ON_UuidIndexList& ON_UuidIndexList::operator=(const ON_UuidIndexList& src)
 
 bool ON_UuidIndexList::AddUuidIndex(ON_UUID uuid, int index, bool bCheckForDupicates)
 {
-  bool rc = bCheckForDupicates ? !FindUuid(uuid,NULL) : true;
+  bool rc = bCheckForDupicates ? !FindUuid(uuid,nullptr) : true;
   if (rc)
   {
     if ( ON_max_uuid == uuid )
@@ -871,7 +867,7 @@ void ON_UuidIndexList::Reserve( int capacity )
 bool ON_UuidIndexList::RemoveUuid(ON_UUID uuid)
 {
   ON_UuidIndex* p = SearchHelper(&uuid);
-  if ( 0 != p )
+  if ( nullptr != p )
   {
     p->m_id = ON_max_uuid;
     m_removed_count++;
@@ -879,7 +875,7 @@ bool ON_UuidIndexList::RemoveUuid(ON_UUID uuid)
     if ( i < m_sorted_count )
       m_sorted_count = i;
   }
-  return (0!=p);
+  return (nullptr!=p);
 }
 
 static
@@ -895,7 +891,7 @@ bool ON_UuidIndexList::FindUuid(ON_UUID uuid, int* index) const
   {
     *index = ui->m_i;
   }
-  return (0!=ui);
+  return (nullptr!=ui);
 }
 
 bool ON_UuidIndexList::FindUuidIndex(ON_UUID uuid, int index) const
@@ -903,9 +899,9 @@ bool ON_UuidIndexList::FindUuidIndex(ON_UUID uuid, int index) const
   const ON_UuidIndex* ui = SearchHelper(&uuid);
   if (ui && index != ui->m_i)
   {
-    ui = 0;
+    ui = nullptr;
   }
-  return (0!=ui);
+  return (nullptr!=ui);
 }
 
 
@@ -933,11 +929,8 @@ ON_UuidPairList::~ON_UuidPairList()
 }
 
 ON_UuidPairList::ON_UuidPairList(const ON_UuidPairList& src) 
-: ON_SimpleArray<ON_UuidPair>(src)
-, m_sorted_count(src.m_sorted_count)
-, m_removed_count(src.m_removed_count)
-{
-}
+ 
+= default;
 
 ON_UuidPairList& ON_UuidPairList::operator=(const ON_UuidPairList& src)
 {
@@ -952,7 +945,7 @@ ON_UuidPairList& ON_UuidPairList::operator=(const ON_UuidPairList& src)
 
 bool ON_UuidPairList::AddPair(ON_UUID id1, ON_UUID id2, bool bCheckForDupicates)
 {
-  bool rc = bCheckForDupicates ? !FindId1(id1,0) : true;
+  bool rc = bCheckForDupicates ? !FindId1(id1,nullptr) : true;
   if (rc)
   {
     if ( ON_max_uuid == id1 && ON_max_uuid == id2 )
@@ -993,7 +986,7 @@ void ON_UuidPairList::Reserve( int capacity )
 bool ON_UuidPairList::RemovePair(ON_UUID id1)
 {
   ON_UuidPair* p = SearchHelper(&id1);
-  if ( 0 != p )
+  if ( nullptr != p )
   {
     p->m_uuid[0] = ON_max_uuid;
     p->m_uuid[1] = ON_max_uuid;
@@ -1002,13 +995,13 @@ bool ON_UuidPairList::RemovePair(ON_UUID id1)
     if ( i < m_sorted_count )
       m_sorted_count = i;
   }
-  return (0!=p);
+  return (nullptr!=p);
 }
 
 bool ON_UuidPairList::RemovePair(ON_UUID id1, ON_UUID id2)
 {
   ON_UuidPair* p = SearchHelper(&id1);
-  if ( 0 != p && p->m_uuid[1] == id2)
+  if ( nullptr != p && p->m_uuid[1] == id2)
   {
     p->m_uuid[0] = ON_max_uuid;
     p->m_uuid[1] = ON_max_uuid;
@@ -1017,7 +1010,7 @@ bool ON_UuidPairList::RemovePair(ON_UUID id1, ON_UUID id2)
     if ( i < m_sorted_count )
       m_sorted_count = i;
   }
-  return (0!=p);
+  return (nullptr!=p);
 }
 
 static
@@ -1042,7 +1035,7 @@ bool ON_UuidPairList::FindId1(ON_UUID id1, ON_UUID* id2) const
   {
     *id2 = ui->m_uuid[1];
   }
-  return (0!=ui);
+  return (nullptr!=ui);
 }
 
 bool ON_UuidPairList::FindPair(ON_UUID id1, ON_UUID id2) const
@@ -1050,9 +1043,9 @@ bool ON_UuidPairList::FindPair(ON_UUID id1, ON_UUID id2) const
   const ON_UuidPair* ui = SearchHelper(&id1);
   if (ui && id2 != ui->m_uuid[1])
   {
-    ui = 0;
+    ui = nullptr;
   }
-  return (0!=ui);
+  return (nullptr!=ui);
 }
 
 int ON_UuidPairList::GetId1s(
@@ -1109,9 +1102,9 @@ ON_UuidPair* ON_UuidPairList::SearchHelper(const ON_UUID* id1) const
                    ? (ON_UuidPair*)bsearch( id1, m_a, m_sorted_count, 
                                         sizeof(m_a[0]), 
                                         (int(*)(const void*,const void*))compar_uuidpair_id1 ) 
-                   : 0;
+                   : nullptr;
 
-  if (0 == p)
+  if (nullptr == p)
   {
     // do a slow search on the last m_count-m_sort_count elements
     // in the array.
@@ -1236,8 +1229,8 @@ ON_UuidIndex* ON_UuidIndexList::SearchHelper(const ON_UUID* uuid) const
                    ? (ON_UuidIndex*)bsearch( uuid, m_a, m_sorted_count, 
                                         sizeof(m_a[0]), 
                                         (int(*)(const void*,const void*))compar_uuidindex_uuid ) 
-                   : 0;
-  if (0 == p)
+                   : nullptr;
+  if (nullptr == p)
   {
     // do a slow search on the last m_count-m_sort_count elements
     // in the array.
@@ -1264,7 +1257,7 @@ ON_2dexMap::ON_2dexMap(int capacity)
 {}
 
 ON_2dexMap::~ON_2dexMap()
-{}
+= default;
 
 int ON_2dexMap::Count() const
 {
@@ -1330,13 +1323,13 @@ const ON_2dex* ON_BinarySearch2dexArray( int key_i, const ON_2dex* base, std::si
 
     base_i = base[0].i;
     if ( key_i < base_i )
-      return 0;
+      return nullptr;
     if ( key_i == base_i )
       return base;
 
     base_i = base[nel-1].i;
     if ( key_i > base_i )
-      return 0;
+      return nullptr;
     if ( key_i == base_i )
       return (base + (nel-1));
 
@@ -1360,7 +1353,7 @@ const ON_2dex* ON_BinarySearch2dexArray( int key_i, const ON_2dex* base, std::si
       }
     }
   }
-  return 0;
+  return nullptr;
 }
 
 static
@@ -1377,7 +1370,7 @@ int compare_2dex_i(const void* a, const void* b)
 
 const ON_2dex* ON_2dexMap::Find2dex(int i) const
 {
-  const ON_2dex* e = 0;
+  const ON_2dex* e = nullptr;
   if ( m_count > 0 )
   {
     if ( !m_bSorted )
@@ -1398,7 +1391,7 @@ int ON_2dexMap::FindIndex( int i, int not_found_rc) const
 
 bool ON_2dexMap::AddIndex(  int i, int j )
 {
-  bool rc = (0 == Find2dex(i));
+  bool rc = (nullptr == Find2dex(i));
   if ( rc )
   {
     ON_2dex& d = AppendNew();
@@ -1416,7 +1409,7 @@ bool ON_2dexMap::SetIndex( int i, int j )
   {
     e->j = j;
   }
-  return (0!=e);
+  return (nullptr!=e);
 }
 
 void ON_2dexMap::SetOrAddIndex( int i, int j )
@@ -1444,6 +1437,6 @@ bool ON_2dexMap::RemoveIndex( int i )
     for( m_count--; n < m_count; n++ )
       m_a[n] = m_a[n+1];
   }
-  return (0 != e);
+  return (nullptr != e);
 }
 

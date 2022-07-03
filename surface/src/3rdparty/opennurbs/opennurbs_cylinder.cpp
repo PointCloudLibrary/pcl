@@ -38,7 +38,7 @@ ON_Cylinder::ON_Cylinder(
 }
 
 ON_Cylinder::~ON_Cylinder()
-{}
+= default;
 
 bool ON_Cylinder::Create(
     const ON_Circle& c
@@ -253,7 +253,7 @@ ON_RevSurface* ON_Cylinder::RevSurfaceForm( ON_RevSurface* srf ) const
 {
   if ( srf )
     srf->Destroy();
-  ON_RevSurface* pRevSurface = NULL;
+  ON_RevSurface* pRevSurface = nullptr;
   if ( IsFinite() && IsValid() )
   {
     ON_Line line;

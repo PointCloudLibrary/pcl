@@ -22,7 +22,7 @@ ON_OBJECT_IMPLEMENT( ON_RevSurface, ON_Surface, "A16220D3-163B-11d4-8000-0010830
 void ON_RevSurface::DestroyRuntimeCache( bool bDelete )
 {
   ON_Surface::DestroyRuntimeCache(bDelete);
-  if ( 0 != m_curve )
+  if ( nullptr != m_curve )
     m_curve->DestroyRuntimeCache(bDelete);
   // 15 August 2003 Dale Lear
   //    Added the call to destroy m_bbox.
@@ -40,7 +40,7 @@ ON_RevSurface* ON_RevSurface::New( const ON_RevSurface& rev_surface )
   return new ON_RevSurface(rev_surface);
 }
 
-ON_RevSurface::ON_RevSurface() : m_curve(0), 
+ON_RevSurface::ON_RevSurface() : m_curve(nullptr), 
                                  m_axis( ON_origin, ON_zaxis ), 
                                  m_angle( 0.0, 2.0*ON_PI ),
                                  m_t( 0.0, 2.0*ON_PI ),
@@ -60,7 +60,7 @@ void ON_RevSurface::Destroy()
   if ( m_curve)
   {
     delete m_curve;
-    m_curve = 0;
+    m_curve = nullptr;
   }
   m_axis.Create( ON_origin, ON_zaxis );
   m_angle.Set(0.0,2.0*ON_PI);
@@ -72,7 +72,7 @@ void ON_RevSurface::Destroy()
 ON_RevSurface::ON_RevSurface( const ON_RevSurface& src ) : ON_Surface(src)
 {
   ON__SET__THIS__PTR(m_s_ON_RevSurface_ptr);
-  m_curve = src.m_curve ? src.m_curve->Duplicate() : NULL;
+  m_curve = src.m_curve ? src.m_curve->Duplicate() : nullptr;
   m_axis = src.m_axis;
   m_angle = src.m_angle;
   m_t = src.m_t;
@@ -271,7 +271,7 @@ ON_BOOL32 ON_RevSurface::Read( ON_BinaryArchive& file )
     rc = file.ReadChar( &bHaveCurve );
     if ( bHaveCurve ) 
     {
-      ON_Object* obj = 0;
+      ON_Object* obj = nullptr;
       rc = file.ReadObject(&obj);
       if ( obj ) 
       {
@@ -293,7 +293,7 @@ ON_BOOL32 ON_RevSurface::Read( ON_BinaryArchive& file )
     rc = file.ReadChar( &bHaveCurve );
     if ( bHaveCurve ) 
     {
-      ON_Object* obj = 0;
+      ON_Object* obj = nullptr;
       rc = file.ReadObject(&obj);
       if ( obj ) 
       {
@@ -525,15 +525,15 @@ public:
   ON_3dVector X;
   ON_3dVector Y;
   ON_3dVector Z;
-  int DimensionA() const;
-  int DimensionB() const;
-  int DimensionC() const;
+  int DimensionA() const override;
+  int DimensionB() const override;
+  int DimensionC() const override;
   bool Evaluate( double,        // a
                  const double*, // A
                  double,        // b
                  const double*, // B
                  double*        // C
-                );
+                ) override;
 };
 
 int ON_RevolutionTensor::DimensionA() const
@@ -589,7 +589,7 @@ bool ON_RevolutionTensor::Evaluate( double a, const double* ArcPoint, double b, 
 int ON_RevSurface::GetNurbForm(class ON_NurbsSurface& srf , double tolerance ) const
 {
   int rc = 0;
-  if ( 0 != m_curve ) 
+  if ( nullptr != m_curve ) 
   {
     ON_NurbsCurve a, c;
     ON_Arc arc;
@@ -703,7 +703,7 @@ bool ON_RevSurface::GetSurfaceParameterFromNurbFormParameter(
       ) const
 {
   // NOTE: overrides ON_Surface virtual function
-  bool rc = (0 != m_curve);
+  bool rc = (nullptr != m_curve);
 
 
 
@@ -738,7 +738,7 @@ bool ON_RevSurface::GetNurbFormParameterFromSurfaceParameter(
       ) const
 {
   // NOTE: overrides ON_Surface virtual function
-  bool rc = (0 != m_curve);
+  bool rc = (nullptr != m_curve);
 
   if ( m_bTransposed )
   {
@@ -768,9 +768,9 @@ bool ON_RevSurface::GetNurbFormParameterFromSurfaceParameter(
 ON_Curve* ON_RevSurface::IsoCurve( int dir, double c ) const
 {
   if ( dir < 0 || dir > 1 || !m_curve )
-    return NULL;
+    return nullptr;
 
-  ON_Curve* crv = 0;
+  ON_Curve* crv = nullptr;
   
   if ( m_bTransposed )
     dir = 1-dir;
@@ -951,8 +951,8 @@ ON_BOOL32 ON_RevSurface::Split(
   if ( m_bTransposed )
     dir = 1-dir;
 
-  ON_Curve* left_side = 0;
-  ON_Curve* right_side = 0;
+  ON_Curve* left_side = nullptr;
+  ON_Curve* right_side = nullptr;
   ON_Interval left_angle, right_angle;
   ON_Interval left_t, right_t;
   left_angle = m_angle;
@@ -1014,14 +1014,14 @@ ON_BOOL32 ON_RevSurface::Split(
     else if ( srf_ws != this && srf_ws->m_curve )
     {
       delete srf_ws->m_curve;
-      srf_ws->m_curve = 0;
+      srf_ws->m_curve = nullptr;
     }
     if ( !srf_en )
       east_or_north_side = srf_en = new ON_RevSurface();
     if ( srf_en != this && srf_en->m_curve )
     {
       delete srf_en->m_curve;
-      srf_en->m_curve = 0;
+      srf_en->m_curve = nullptr;
     }
 
     srf_ws->m_axis = m_axis;
@@ -1126,7 +1126,7 @@ bool ON_RevSurface::GetNextDiscontinuity(
     rc = arc_curve.GetNextDiscontinuity(
       c,
       t0,t1,t,
-      (hint? &hint[dir] : 0),
+      (hint? &hint[dir] : nullptr),
       dtype,cos_angle_tolerance,
       curvature_tolerance);
   }
@@ -1135,7 +1135,7 @@ bool ON_RevSurface::GetNextDiscontinuity(
     rc = m_curve->GetNextDiscontinuity(
       c,
       t0,t1,t,
-      (hint? &hint[dir] : 0),
+      (hint? &hint[dir] : nullptr),
       dtype,cos_angle_tolerance,
       curvature_tolerance);
   }
@@ -1346,7 +1346,7 @@ ON_BOOL32 ON_RevSurface::GetSurfaceSize(
     ON_3dPoint pt;
     double length_estimate = 0.0;
 
-    if ( width != NULL || height != NULL )
+    if ( width != nullptr || height != nullptr )
     {
       double radius_estimate = 0.0;
       double r;
@@ -1362,11 +1362,11 @@ ON_BOOL32 ON_RevSurface::GetSurfaceSize(
           pt0 = pt;
         }
       }
-      if ( width != NULL )
+      if ( width != nullptr )
         *width = m_angle.Length()*radius_estimate;
     }
 
-    if ( height != NULL )
+    if ( height != nullptr )
     {
       *height = length_estimate;
     }
@@ -1596,9 +1596,9 @@ bool ON_Surface::IsSphere( ON_Sphere* sphere, double tolerance ) const
     return false;
 
   ON_Arc arc0;
-  int bIsArc0 = crv->IsArc(0,&arc0,tolerance > ON_ZERO_TOLERANCE ? tolerance : 0.0);
+  int bIsArc0 = crv->IsArc(nullptr,&arc0,tolerance > ON_ZERO_TOLERANCE ? tolerance : 0.0);
   delete crv;
-  crv = 0;
+  crv = nullptr;
   if ( !bIsArc0 )
     return false;
 
@@ -1606,9 +1606,9 @@ bool ON_Surface::IsSphere( ON_Sphere* sphere, double tolerance ) const
   if ( !crv )
     return false;
   ON_Arc arc1;
-  int bIsArc1 = crv->IsArc(0,&arc1,tolerance > ON_ZERO_TOLERANCE ? tolerance : 0.0);
+  int bIsArc1 = crv->IsArc(nullptr,&arc1,tolerance > ON_ZERO_TOLERANCE ? tolerance : 0.0);
   delete crv;
-  crv = 0;
+  crv = nullptr;
   if ( !bIsArc1 )
     return false;
 
@@ -1790,7 +1790,7 @@ bool ON_Surface::IsCylinder( ON_Cylinder* cylinder, double tolerance ) const
     ON_Arc arc;
     ON_Line line;
     int bIsLine = 0;
-    int bIsArc = crv->IsArc(0,&arc,tolerance > ON_ZERO_TOLERANCE ? tolerance : 0.0);
+    int bIsArc = crv->IsArc(nullptr,&arc,tolerance > ON_ZERO_TOLERANCE ? tolerance : 0.0);
     if ( !bIsArc )
     {
       bIsLine = crv->IsLinear(tolerance > ON_ZERO_TOLERANCE ? tolerance : 0.0);
@@ -1801,7 +1801,7 @@ bool ON_Surface::IsCylinder( ON_Cylinder* cylinder, double tolerance ) const
       }
     }
     delete crv;
-    crv = 0;
+    crv = nullptr;
     if ( !bIsArc && !bIsLine )
       return false;
 
@@ -1809,7 +1809,7 @@ bool ON_Surface::IsCylinder( ON_Cylinder* cylinder, double tolerance ) const
     if ( !crv )
       return false;
     if ( !bIsArc )
-      bIsArc = crv->IsArc(0,&arc,tolerance > ON_ZERO_TOLERANCE ? tolerance : 0.0);
+      bIsArc = crv->IsArc(nullptr,&arc,tolerance > ON_ZERO_TOLERANCE ? tolerance : 0.0);
     else if ( !bIsLine )
     {
       bIsLine = crv->IsLinear(tolerance > ON_ZERO_TOLERANCE ? tolerance : 0.0);
@@ -1820,7 +1820,7 @@ bool ON_Surface::IsCylinder( ON_Cylinder* cylinder, double tolerance ) const
       }
     }
     delete crv;
-    crv = 0;
+    crv = nullptr;
     if ( !bIsArc || !bIsLine )
       return false;
 
@@ -1897,7 +1897,7 @@ bool ON_Surface::IsCone( ON_Cone* cone, double tolerance ) const
   ON_Arc arc;
   ON_Line line;
   int bIsLine = 0;
-  int bIsArc = crv->IsArc(0,&arc,tolerance > ON_ZERO_TOLERANCE ? tolerance : 0.0);
+  int bIsArc = crv->IsArc(nullptr,&arc,tolerance > ON_ZERO_TOLERANCE ? tolerance : 0.0);
   if ( !bIsArc )
   {
     bIsLine = crv->IsLinear(tolerance > ON_ZERO_TOLERANCE ? tolerance : 0.0);
@@ -1908,7 +1908,7 @@ bool ON_Surface::IsCone( ON_Cone* cone, double tolerance ) const
     }
   }
   delete crv;
-  crv = 0;
+  crv = nullptr;
   if ( !bIsArc && !bIsLine )
     return false;
 
@@ -1916,7 +1916,7 @@ bool ON_Surface::IsCone( ON_Cone* cone, double tolerance ) const
   if ( !crv )
     return false;
   if ( !bIsArc )
-    bIsArc = crv->IsArc(0,&arc,tolerance > ON_ZERO_TOLERANCE ? tolerance : 0.0);
+    bIsArc = crv->IsArc(nullptr,&arc,tolerance > ON_ZERO_TOLERANCE ? tolerance : 0.0);
   else if ( !bIsLine )
   {
     bIsLine = crv->IsLinear(tolerance > ON_ZERO_TOLERANCE ? tolerance : 0.0);
@@ -1927,7 +1927,7 @@ bool ON_Surface::IsCone( ON_Cone* cone, double tolerance ) const
     }
   }
   delete crv;
-  crv = 0;
+  crv = nullptr;
   if ( !bIsArc || !bIsLine )
     return false;
 
@@ -2026,9 +2026,9 @@ bool ON_Surface::IsTorus( ON_Torus* torus, double tolerance ) const
     return false;
 
   ON_Arc arc0;
-  int bIsArc0 = crv->IsArc(0,&arc0,tolerance > ON_ZERO_TOLERANCE ? tolerance : 0.0);
+  int bIsArc0 = crv->IsArc(nullptr,&arc0,tolerance > ON_ZERO_TOLERANCE ? tolerance : 0.0);
   delete crv;
-  crv = 0;
+  crv = nullptr;
   if ( !bIsArc0 )
     return false;
 
@@ -2036,9 +2036,9 @@ bool ON_Surface::IsTorus( ON_Torus* torus, double tolerance ) const
   if ( !crv )
     return false;
   ON_Arc arc1;
-  int bIsArc1 = crv->IsArc(0,&arc1,tolerance > ON_ZERO_TOLERANCE ? tolerance : 0.0);
+  int bIsArc1 = crv->IsArc(nullptr,&arc1,tolerance > ON_ZERO_TOLERANCE ? tolerance : 0.0);
   delete crv;
-  crv = 0;
+  crv = nullptr;
   if ( !bIsArc1 )
     return false;
 

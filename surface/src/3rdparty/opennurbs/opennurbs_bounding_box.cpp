@@ -29,7 +29,7 @@ ON_BoundingBox::ON_BoundingBox( const ON_3dPoint& min_pt, const ON_3dPoint& max_
 {}
 
 ON_BoundingBox::~ON_BoundingBox()
-{}
+= default;
 
 void ON_BoundingBox::Destroy()
 {
@@ -1674,7 +1674,7 @@ bool ON_BoundingBox::Set(
     int bGrowBox
   )
 {
-  return ON_GetPointListBoundingBox(dim, is_rat, count, stride, points, *this, bGrowBox!=0, 0 );
+  return ON_GetPointListBoundingBox(dim, is_rat, count, stride, points, *this, bGrowBox!=0, nullptr );
 }
 
 bool ON_BoundingBox::Set ( const ON_3dPoint& P, int bGrowBox )
@@ -1697,22 +1697,22 @@ bool ON_BoundingBox::Set ( const ON_3dPoint& P, int bGrowBox )
 bool ON_BoundingBox::Set( const ON_SimpleArray<ON_4dPoint>& a, int bGrowBox )
 {
   const int count = a.Count();
-  const double* p = (count>0) ? &a.Array()->x : 0;
-  return ON_GetPointListBoundingBox(3, 1, count, 4, p, *this, bGrowBox!=0, 0 );
+  const double* p = (count>0) ? &a.Array()->x : nullptr;
+  return ON_GetPointListBoundingBox(3, 1, count, 4, p, *this, bGrowBox!=0, nullptr );
 }
 
 bool ON_BoundingBox::Set( const ON_SimpleArray<ON_3dPoint>& a, int bGrowBox )
 {
   const int count = a.Count();
-  const double* p = (count>0) ? &a.Array()->x : 0;
-  return ON_GetPointListBoundingBox(3, 0, count, 3, p, *this, bGrowBox!=0, 0 );
+  const double* p = (count>0) ? &a.Array()->x : nullptr;
+  return ON_GetPointListBoundingBox(3, 0, count, 3, p, *this, bGrowBox!=0, nullptr );
 }
 
 bool ON_BoundingBox::Set( const ON_SimpleArray<ON_2dPoint>& a, int bGrowBox )
 {
   const int count = a.Count();
-  const double* p = (count>0) ? &a.Array()->x : 0;
-  return ON_GetPointListBoundingBox(2, 0, count, 2, p, *this, bGrowBox!=0, 0 );
+  const double* p = (count>0) ? &a.Array()->x : nullptr;
+  return ON_GetPointListBoundingBox(2, 0, count, 2, p, *this, bGrowBox!=0, nullptr );
 }
 
 ON_BoundingBox ON_PointListBoundingBox(
@@ -1720,7 +1720,7 @@ ON_BoundingBox ON_PointListBoundingBox(
     )
 {
   ON_BoundingBox bbox;
-  ON_GetPointListBoundingBox( dim, is_rat, count, stride, points, bbox, false, 0 );
+  ON_GetPointListBoundingBox( dim, is_rat, count, stride, points, bbox, false, nullptr );
   return bbox;
 }
 
@@ -1755,7 +1755,7 @@ bool ON_GetPointListBoundingBox(
 
     if ( xform && xform->IsIdentity() )
     {
-      xform = 0;
+      xform = nullptr;
     }
     wi = dim;
     if ( dim > 3 )
@@ -1917,7 +1917,7 @@ bool ON_GetPointListBoundingBox(
   {
     if ( xform && xform->IsIdentity() )
     {
-      xform = 0;
+      xform = nullptr;
     }
     wi = dim;
     if ( dim > 3 )
@@ -2186,7 +2186,7 @@ ON_BoundingBox ON_PointListBoundingBox(
     )
 {
   ON_BoundingBox bbox;
-  ON_GetPointListBoundingBox( dim, is_rat, count, stride, points, bbox, false, 0 );
+  ON_GetPointListBoundingBox( dim, is_rat, count, stride, points, bbox, false, nullptr );
   return bbox;
 }
 
@@ -2387,7 +2387,7 @@ bool ON_BeyondSinglePrecision( const ON_BoundingBox& bbox, ON_Xform* xform )
     if ( bTooFar || bTooBig )
     {
       rc = true;
-      if ( 0 != xform )
+      if ( nullptr != xform )
       {
         ON_3dVector C = bbox.Center();
         // Any modification of coordinates contributes to 
@@ -2430,7 +2430,7 @@ bool ON_BeyondSinglePrecision( const ON_BoundingBox& bbox, ON_Xform* xform )
     }
   }
 
-  if (!rc && 0 != xform )
+  if (!rc && nullptr != xform )
     xform->Identity();
 
   return rc;
@@ -2453,7 +2453,7 @@ double ON_BoundingBoxTolerance(
 #pragma warning( disable : 4127 )
 #endif
 
-  ON_ASSERT_OR_RETURN( dim > 0 && bboxmin != NULL && bboxmax != NULL,tolerance);
+  ON_ASSERT_OR_RETURN( dim > 0 && bboxmin != nullptr && bboxmax != nullptr,tolerance);
   for ( i = 0; i < dim; i++ ) {
     ON_ASSERT_OR_RETURN(bboxmin[i] <= bboxmax[i],tolerance);
   }

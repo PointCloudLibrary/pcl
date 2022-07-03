@@ -20,11 +20,11 @@
 ON_Buffer::ON_Buffer()
 : m_buffer_size(0)
 , m_current_position(0)
-, m_first_segment(0)
-, m_last_segment(0)
-, m_current_segment(0)
-, m_heap(0)
-, m_error_handler(0)
+, m_first_segment(nullptr)
+, m_last_segment(nullptr)
+, m_current_segment(nullptr)
+, m_heap(nullptr)
+, m_error_handler(nullptr)
 , m_last_error(0)
 {
   memset(m_reserved,0,sizeof(m_reserved));
@@ -40,11 +40,11 @@ void ON_Buffer::EmergencyDestroy()
 {
   m_buffer_size = 0;
   m_current_position = 0;
-  m_first_segment = 0;
-  m_last_segment = 0;
-  m_current_segment = 0;
-  m_heap = 0;
-  m_error_handler = 0;
+  m_first_segment = nullptr;
+  m_last_segment = nullptr;
+  m_current_segment = nullptr;
+  m_heap = nullptr;
+  m_error_handler = nullptr;
   m_last_error = 0;
 }
 
@@ -82,7 +82,7 @@ int ON_Buffer::Compare( const ON_Buffer& a, const ON_Buffer& b )
   std::size_t sz;
   int rc = 0;
 
-  while ( 0 != aseg && 0 != bseg && size < buffer_size )
+  while ( nullptr != aseg && nullptr != bseg && size < buffer_size )
   {
     if ( 0 == asegsize )
     {
@@ -120,12 +120,12 @@ int ON_Buffer::Compare( const ON_Buffer& a, const ON_Buffer& b )
       continue;
     }
 
-    if ( 0 == aseg->m_segment_buffer )
+    if ( nullptr == aseg->m_segment_buffer )
     {
-      return (0 == bseg->m_segment_buffer) ? 0 : -1;
+      return (nullptr == bseg->m_segment_buffer) ? 0 : -1;
     }
 
-    if ( 0 == bseg->m_segment_buffer )
+    if ( nullptr == bseg->m_segment_buffer )
     {
       return 1;
     }
@@ -156,11 +156,11 @@ ON_Buffer::~ON_Buffer()
 ON_Buffer::ON_Buffer( const ON_Buffer& src )
 : m_buffer_size(0)
 , m_current_position(0)
-, m_first_segment(0)
-, m_last_segment(0)
-, m_current_segment(0)
+, m_first_segment(nullptr)
+, m_last_segment(nullptr)
+, m_current_segment(nullptr)
 , m_heap(src.m_heap)
-, m_error_handler(0)
+, m_error_handler(nullptr)
 , m_last_error(0)
 {
   memset(m_reserved,0,sizeof(m_reserved));
@@ -233,7 +233,7 @@ bool ON_Buffer::Seek( ON__INT64 offset, int origin )
   if ( pos1 != m_current_position )
   {
     m_current_position = pos1;
-    m_current_segment = 0;
+    m_current_segment = nullptr;
   }
 
   return true;
@@ -259,9 +259,9 @@ bool ON_Buffer::Compact()
   if ( 0 == m_buffer_size )
   {
     ChangeSize(0); // frees all heap and zeros everything but m_current_position.
-    m_current_segment = 0;
+    m_current_segment = nullptr;
   }
-  else if ( 0 != m_last_segment 
+  else if ( nullptr != m_last_segment 
             && m_buffer_size > m_last_segment->m_segment_position0
             && m_buffer_size <= m_last_segment->m_segment_position1
             )
@@ -270,29 +270,29 @@ bool ON_Buffer::Compact()
     {
       ON__UINT64 sizeof_segment_buffer = m_buffer_size - m_last_segment->m_segment_position0;
       struct ON_BUFFER_SEGMENT* prev_segment = m_last_segment->m_prev_segment;
-      void* last_buffer = ( 0 != m_last_segment->m_segment_buffer && m_last_segment->m_segment_buffer != (unsigned char*)(m_last_segment+1) )
+      void* last_buffer = ( nullptr != m_last_segment->m_segment_buffer && m_last_segment->m_segment_buffer != (unsigned char*)(m_last_segment+1) )
                         ? m_last_segment->m_segment_buffer
-                        : 0;
+                        : nullptr;
       struct ON_BUFFER_SEGMENT* new_last_segment = (struct ON_BUFFER_SEGMENT*)onrealloc(m_last_segment,sizeof(*m_last_segment) + ((std::size_t)sizeof_segment_buffer)); // sizeof_segment_buffer always < 0xFFFFFFFF
-      if ( 0 != new_last_segment )
+      if ( nullptr != new_last_segment )
       {
-        if ( new_last_segment != m_last_segment || 0 != last_buffer )
+        if ( new_last_segment != m_last_segment || nullptr != last_buffer )
         {
           new_last_segment->m_segment_buffer = (unsigned char*)(new_last_segment+1);
-          if ( 0 != last_buffer )
+          if ( nullptr != last_buffer )
           {
             memcpy(new_last_segment->m_segment_buffer,last_buffer,(std::size_t)sizeof_segment_buffer);
             onfree(last_buffer);
-            last_buffer = 0;
+            last_buffer = nullptr;
           }
           new_last_segment->m_prev_segment = prev_segment;
-          new_last_segment->m_next_segment = 0;
+          new_last_segment->m_next_segment = nullptr;
           if ( m_first_segment == m_last_segment )
             m_first_segment = new_last_segment;
           if ( m_current_segment == m_last_segment )
             m_current_segment = new_last_segment;
           m_last_segment = new_last_segment;
-          if ( 0 != prev_segment )
+          if ( nullptr != prev_segment )
           {
             prev_segment->m_next_segment = m_last_segment;
           }
@@ -309,17 +309,17 @@ bool ON_Buffer::ChangeSize(ON__UINT64 buffer_size)
   if ( buffer_size <= 0 )
   {
     struct ON_BUFFER_SEGMENT* p0 = m_last_segment;
-    struct ON_BUFFER_SEGMENT* p1 = 0;
+    struct ON_BUFFER_SEGMENT* p1 = nullptr;
     m_buffer_size = 0;
-    m_first_segment = 0;
-    m_last_segment = 0;
-    m_current_segment = 0;
+    m_first_segment = nullptr;
+    m_last_segment = nullptr;
+    m_current_segment = nullptr;
 
     // free in reverse order of allocation
-    while ( 0 != p0 )
+    while ( nullptr != p0 )
     {
       p1 = p0->m_prev_segment;
-      if ( 0 != p0->m_segment_buffer && (void*)(p0->m_segment_buffer) != (void*)(p0+1) )
+      if ( nullptr != p0->m_segment_buffer && (void*)(p0->m_segment_buffer) != (void*)(p0+1) )
         onfree(p0->m_segment_buffer);
       onfree(p0);
       p0 = p1;
@@ -327,15 +327,15 @@ bool ON_Buffer::ChangeSize(ON__UINT64 buffer_size)
   }
   else if ( buffer_size < m_buffer_size )
   {
-    m_current_segment = 0;
+    m_current_segment = nullptr;
 
-    if ( 0 == m_first_segment || 0 == m_last_segment )
+    if ( nullptr == m_first_segment || nullptr == m_last_segment )
     {
       ON_ERROR("Corrupt ON_Buffer");
       return false;
     }
 
-    while ( 0 != m_last_segment )
+    while ( nullptr != m_last_segment )
     {
       if ( m_last_segment->m_segment_position0 < buffer_size )
       {
@@ -347,12 +347,12 @@ bool ON_Buffer::ChangeSize(ON__UINT64 buffer_size)
           // ignored.
           if ( m_buffer_size > m_last_segment->m_segment_position1 )
             m_buffer_size = m_last_segment->m_segment_position1;
-          m_last_segment->m_next_segment = 0;
+          m_last_segment->m_next_segment = nullptr;
           if ( m_current_position > m_buffer_size )
             m_current_position = m_buffer_size;
           return false;
         }
-        if ( 0 != m_last_segment->m_segment_buffer && m_last_segment->m_segment_position1 > buffer_size )
+        if ( nullptr != m_last_segment->m_segment_buffer && m_last_segment->m_segment_position1 > buffer_size )
         {
           memset(m_last_segment->m_segment_buffer + (buffer_size - m_last_segment->m_segment_position0),
                  0,
@@ -363,9 +363,9 @@ bool ON_Buffer::ChangeSize(ON__UINT64 buffer_size)
         break;
       }
       struct ON_BUFFER_SEGMENT* p = m_last_segment->m_prev_segment;
-      if ( 0 != p )
-        p->m_next_segment = 0;
-      if ( 0 != m_last_segment->m_segment_buffer && (void*)(m_last_segment->m_segment_buffer) != (void*)(m_last_segment+1) )
+      if ( nullptr != p )
+        p->m_next_segment = nullptr;
+      if ( nullptr != m_last_segment->m_segment_buffer && (void*)(m_last_segment->m_segment_buffer) != (void*)(m_last_segment+1) )
         onfree(m_last_segment->m_segment_buffer);
       onfree(m_last_segment);
       m_last_segment = p;
@@ -395,7 +395,7 @@ void ON_Buffer::Copy( const ON_Buffer& src )
 {
   const struct ON_BUFFER_SEGMENT* src_seg;
   struct ON_BUFFER_SEGMENT* dst_seg;
-  for ( src_seg = src.m_first_segment; 0 != src_seg; src_seg = src_seg->m_next_segment )
+  for ( src_seg = src.m_first_segment; nullptr != src_seg; src_seg = src_seg->m_next_segment )
   {
     if (    m_buffer_size != src_seg->m_segment_position0 
          || src_seg->m_segment_position0 >= src.m_buffer_size
@@ -410,7 +410,7 @@ void ON_Buffer::Copy( const ON_Buffer& src )
       ON_ERROR("Attempt to copy corrupt source.");
       continue;
     }
-    ON__UINT64 segment_buffer_size = ( 0 != src_seg->m_segment_buffer)
+    ON__UINT64 segment_buffer_size = ( nullptr != src_seg->m_segment_buffer)
                                ? src_seg->m_segment_position1 - src_seg->m_segment_position0
                                : 0;
     dst_seg = (struct ON_BUFFER_SEGMENT*)onmalloc(sizeof(*dst_seg) + ((std::size_t)segment_buffer_size) );
@@ -422,10 +422,10 @@ void ON_Buffer::Copy( const ON_Buffer& src )
       memcpy( dst_seg->m_segment_buffer, src_seg->m_segment_buffer, (std::size_t)segment_buffer_size ); // segment_buffer_size always < 0xFFFFFFFF
     }
 
-    if ( 0 == m_first_segment )
+    if ( nullptr == m_first_segment )
       m_first_segment = dst_seg;
     dst_seg->m_prev_segment = m_last_segment;
-    if ( 0 != m_last_segment )
+    if ( nullptr != m_last_segment )
       m_last_segment->m_next_segment = dst_seg;
     m_last_segment = dst_seg;
     dst_seg->m_segment_position0 = src_seg->m_segment_position0;
@@ -452,35 +452,35 @@ bool ON_Buffer::IsValid( const ON_TextLog* ) const
   if ( 0 == m_buffer_size )
   {
 
-    if ( 0 != m_first_segment )
+    if ( nullptr != m_first_segment )
       return ON_Buffer_IsNotValid();
-    if ( 0 != m_last_segment )
+    if ( nullptr != m_last_segment )
       return ON_Buffer_IsNotValid();
-    if ( 0 != m_current_segment )
+    if ( nullptr != m_current_segment )
       return ON_Buffer_IsNotValid();
 
     return true;
   }
 
 
-  if ( 0 == m_first_segment )
+  if ( nullptr == m_first_segment )
     return ON_Buffer_IsNotValid();
-  if ( 0 != m_first_segment->m_prev_segment )
+  if ( nullptr != m_first_segment->m_prev_segment )
     return ON_Buffer_IsNotValid();
-  if ( 0 == m_last_segment )
+  if ( nullptr == m_last_segment )
     return ON_Buffer_IsNotValid();
-  if ( 0 != m_last_segment->m_next_segment )
+  if ( nullptr != m_last_segment->m_next_segment )
     return ON_Buffer_IsNotValid();
 
   ON__UINT64 pos = 0;
   ON__UINT64 u;
-  const struct ON_BUFFER_SEGMENT* prev_seg = 0;
+  const struct ON_BUFFER_SEGMENT* prev_seg = nullptr;
   const struct ON_BUFFER_SEGMENT* seg;
-  for ( seg = m_first_segment; seg != 0; seg = seg->m_next_segment )
+  for ( seg = m_first_segment; seg != nullptr; seg = seg->m_next_segment )
   {
     if ( prev_seg != seg->m_prev_segment )
       return ON_Buffer_IsNotValid();
-    if ( 0 != prev_seg && prev_seg->m_segment_position1 != seg->m_segment_position0 )
+    if ( nullptr != prev_seg && prev_seg->m_segment_position1 != seg->m_segment_position0 )
       return ON_Buffer_IsNotValid();
     if ( seg->m_segment_position1 <= seg->m_segment_position0 )
       return ON_Buffer_IsNotValid();
@@ -524,10 +524,10 @@ ON__UINT32 ON_Buffer::CRC32( ON__UINT32 current_remainder ) const
   ON__UINT64 size, seg_size;
   const struct ON_BUFFER_SEGMENT* prev_seg;
   const struct ON_BUFFER_SEGMENT* seg;
-  const struct ON_BUFFER_SEGMENT* seg0 = 0;
+  const struct ON_BUFFER_SEGMENT* seg0 = nullptr;
 
   size = 0;
-  for ( seg = m_first_segment; 0 != seg; seg = seg->m_next_segment )
+  for ( seg = m_first_segment; nullptr != seg; seg = seg->m_next_segment )
   {
     // prev_seg is set this way so that the error handling
     // code can use continue statments for non-fatal errors.
@@ -542,7 +542,7 @@ ON__UINT32 ON_Buffer::CRC32( ON__UINT32 current_remainder ) const
       continue;
     }
 
-    if ( 0 == prev_seg )
+    if ( nullptr == prev_seg )
     {
       if ( 0 != seg->m_segment_position0 )
       {
@@ -590,7 +590,7 @@ ON__UINT32 ON_Buffer::CRC32( ON__UINT32 current_remainder ) const
     size += seg_size;
     if ( size >= m_buffer_size )
     {
-      if ( seg != m_last_segment || 0 != seg->m_next_segment || size > m_buffer_size )
+      if ( seg != m_last_segment || nullptr != seg->m_next_segment || size > m_buffer_size )
       {
         // If you can determine how the corruption occured, please
         // make a bug report and assign it to Dale Lear.
@@ -624,16 +624,16 @@ bool ON_Buffer::SetCurrentSegment( bool bWritePending )
   // and m_current_segment_offset may need to be updated.
   //
 
-  if ( 0 == m_current_segment )
+  if ( nullptr == m_current_segment )
     m_current_segment = (m_current_position <= m_buffer_size/2) ? m_first_segment : m_last_segment;
 
   if ( !bWritePending && m_current_position >= m_buffer_size )
   {
-    m_current_segment = 0;
+    m_current_segment = nullptr;
     return false; // cannot read past end of buffer
   }
 
-  if ( 0 != m_current_segment 
+  if ( nullptr != m_current_segment 
        && m_current_segment->m_segment_position0 <= m_current_position 
        && m_current_position < m_current_segment->m_segment_position1 
      )
@@ -644,30 +644,30 @@ bool ON_Buffer::SetCurrentSegment( bool bWritePending )
     return true;
   }
 
-  if ( 0 == m_first_segment )
+  if ( nullptr == m_first_segment )
   {
     // m_current_position can be > 0 if we are writing
-    m_current_segment = 0;
+    m_current_segment = nullptr;
     return bWritePending;
   }
 
-  if ( 0 == m_last_segment )
+  if ( nullptr == m_last_segment )
   {
-    m_current_segment = 0;
+    m_current_segment = nullptr;
     ON_ERROR("Corrupt ON_Buffer");
     return false;
   }
 
   if ( m_current_position >= m_last_segment->m_segment_position1 )
   {
-    m_current_segment = 0;
+    m_current_segment = nullptr;
     return bWritePending;
   }
 
   while ( m_current_position < m_current_segment->m_segment_position0 )
   {
     m_current_segment = m_current_segment->m_prev_segment;
-    if ( 0 == m_current_segment )
+    if ( nullptr == m_current_segment )
     {
       ON_ERROR("Corrupt ON_Buffer");
       return false;
@@ -677,7 +677,7 @@ bool ON_Buffer::SetCurrentSegment( bool bWritePending )
   while ( m_current_position >= m_current_segment->m_segment_position1 )
   {
     m_current_segment = m_current_segment->m_next_segment;
-    if ( 0 == m_current_segment )
+    if ( nullptr == m_current_segment )
       return bWritePending;
   }
 
@@ -689,7 +689,7 @@ ON__UINT64 ON_Buffer::Write( ON__UINT64 size, const void* buffer )
   if ( 0 == size )
     return 0; // not an error condition
 
-  if ( 0 == buffer )
+  if ( nullptr == buffer )
   {
     ON_ERROR("size parameter > 0 and buffer parameter is null.");
     return 0;
@@ -706,7 +706,7 @@ ON__UINT64 ON_Buffer::Write( ON__UINT64 size, const void* buffer )
   ON__UINT64 rc = 0;
   while ( size > 0 )
   {
-    if ( 0 == m_current_segment )
+    if ( nullptr == m_current_segment )
     {
       // allocate a new segment
       const ON__UINT64 padding_size = 4*sizeof(void*); // room for os heap info
@@ -716,7 +716,7 @@ ON__UINT64 ON_Buffer::Write( ON__UINT64 size, const void* buffer )
         page_size = 4096;
       const ON__UINT64 max_malloc_size = 16*page_size;  // largest request we want to make
 
-      ON__UINT64 malloc_size = ( 0 != m_last_segment && m_last_segment->m_segment_position1 > m_last_segment->m_segment_position0 )
+      ON__UINT64 malloc_size = ( nullptr != m_last_segment && m_last_segment->m_segment_position1 > m_last_segment->m_segment_position0 )
                           ? padding_size + header_size + (m_last_segment->m_segment_position1 - m_last_segment->m_segment_position0)
                           : 0;
       if ( malloc_size < page_size/2 )
@@ -732,7 +732,7 @@ ON__UINT64 ON_Buffer::Write( ON__UINT64 size, const void* buffer )
       memset(m_current_segment,0,(std::size_t)malloc_size);
       m_current_segment->m_prev_segment = m_last_segment;
       m_current_segment->m_segment_buffer = (unsigned char*)(m_current_segment + 1);
-      if ( 0 != m_last_segment )
+      if ( nullptr != m_last_segment )
       {
         m_last_segment->m_next_segment = m_current_segment;
         m_current_segment->m_segment_position0 = m_last_segment->m_segment_position1;
@@ -790,7 +790,7 @@ ON__UINT64 ON_Buffer::Read( ON__UINT64 size, void* buffer )
     return 0;
   }
 
-  if ( 0 == buffer )
+  if ( nullptr == buffer )
   {
     // ON_Buffer error
     ON_ERROR("size parameter > 0 and buffer parameter is null.");
@@ -820,7 +820,7 @@ ON__UINT64 ON_Buffer::Read( ON__UINT64 size, void* buffer )
   ON__UINT64 rc = 0;
   while ( size > 0 )
   {
-    if( 0 == m_current_segment || 0 == m_current_segment->m_segment_buffer )
+    if( nullptr == m_current_segment || nullptr == m_current_segment->m_segment_buffer )
     {
       ON_ERROR("Corrupt ON_Buffer");
       return 0;
@@ -906,11 +906,11 @@ bool ON_Buffer::WriteToBinaryArchive( ON_BinaryArchive& archive ) const
 
     ON__UINT64 size = 0;
     for ( struct ON_BUFFER_SEGMENT* seg = m_first_segment; 
-          0 != seg && size < m_buffer_size; 
+          nullptr != seg && size < m_buffer_size; 
           seg = seg->m_next_segment 
         )
     {
-      if ( 0 == seg->m_segment_buffer )
+      if ( nullptr == seg->m_segment_buffer )
         continue;
       if ( seg->m_segment_position1 <= seg->m_segment_position0 )
         continue;
@@ -951,7 +951,7 @@ bool ON_Buffer::ReadFromBinaryArchive( ON_BinaryArchive& archive )
   ON__UINT64 saved_buffer_size = 0;
   ON__UINT32 saved_buffer_crc = 0;
   bool rc = false;
-  void* a = 0;
+  void* a = nullptr;
   for(;;)
   {
     if ( 1 != major_version )
@@ -992,7 +992,7 @@ bool ON_Buffer::ReadFromBinaryArchive( ON_BinaryArchive& archive )
       if ( a_capacity > 16*4096 )
         a_capacity = 16*4096;
       a = onmalloc((std::size_t)a_capacity);
-      if ( 0 == a )
+      if ( nullptr == a )
         break;
       ON__UINT64 size = 0;
       bool buffer_rc = true;
@@ -1019,7 +1019,7 @@ bool ON_Buffer::ReadFromBinaryArchive( ON_BinaryArchive& archive )
     break;
   }
 
-  if ( 0 != a )
+  if ( nullptr != a )
     onfree(a);
 
   if ( !archive.EndRead3dmChunk() )
@@ -1066,9 +1066,9 @@ bool ON_Buffer::Compress( ON_Buffer& compressed_buffer ) const
     if ( !compressor.Begin() )
       break;
 
-    struct ON_BUFFER_SEGMENT* prev_seg = 0;
-    struct ON_BUFFER_SEGMENT* seg = 0;
-    for ( seg = m_first_segment; 0 != seg; seg = seg->m_next_segment )
+    struct ON_BUFFER_SEGMENT* prev_seg = nullptr;
+    struct ON_BUFFER_SEGMENT* seg = nullptr;
+    for ( seg = m_first_segment; nullptr != seg; seg = seg->m_next_segment )
     {
       const ON__UINT64 pos1 = (uncompressed_size < seg->m_segment_position1)
                             ? uncompressed_size 
@@ -1077,7 +1077,7 @@ bool ON_Buffer::Compress( ON_Buffer& compressed_buffer ) const
         break;
       if ( prev_seg != seg->m_prev_segment )
         break;
-      if ( 0 == prev_seg )
+      if ( nullptr == prev_seg )
       {
         if ( 0 != seg->m_segment_position0 )
           break;
@@ -1091,7 +1091,7 @@ bool ON_Buffer::Compress( ON_Buffer& compressed_buffer ) const
         break;
       prev_seg = seg;
     }
-    if ( 0 != seg )
+    if ( nullptr != seg )
       break;
 
     if ( !compressor.End() )
@@ -1120,7 +1120,7 @@ bool ON_Buffer::Compress( ON_Buffer& compressed_buffer ) const
   {
     out->Compact();
     out->m_current_position = 0;
-    out->m_current_segment = 0;
+    out->m_current_segment = nullptr;
     if ( this == &compressed_buffer )
     {
       // transfer "out" to "this"
@@ -1134,9 +1134,9 @@ bool ON_Buffer::Compress( ON_Buffer& compressed_buffer ) const
       compressed_buffer.m_error_handler = out->m_error_handler;
       compressed_buffer.m_last_error = out->m_last_error;
       
-      out->m_first_segment = 0;
-      out->m_last_segment = 0;
-      out->m_current_segment = 0;
+      out->m_first_segment = nullptr;
+      out->m_last_segment = nullptr;
+      out->m_current_segment = nullptr;
       out->m_buffer_size = 0;
       delete out;
     }
@@ -1163,9 +1163,9 @@ bool ON_Buffer::Uncompress( ON_Buffer& uncompressed_buffer ) const
     if ( !uncompressor.Begin() )
       break;
 
-    struct ON_BUFFER_SEGMENT* prev_seg = 0;
-    struct ON_BUFFER_SEGMENT* seg = 0;
-    for ( seg = m_first_segment; 0 != seg; seg = seg->m_next_segment )
+    struct ON_BUFFER_SEGMENT* prev_seg = nullptr;
+    struct ON_BUFFER_SEGMENT* seg = nullptr;
+    for ( seg = m_first_segment; nullptr != seg; seg = seg->m_next_segment )
     {
       const ON__UINT64 pos1 = (compressed_size < seg->m_segment_position1)
                             ? compressed_size 
@@ -1174,7 +1174,7 @@ bool ON_Buffer::Uncompress( ON_Buffer& uncompressed_buffer ) const
         break;
       if ( prev_seg != seg->m_prev_segment )
         break;
-      if ( 0 == prev_seg )
+      if ( nullptr == prev_seg )
       {
         if ( 0 != seg->m_segment_position0 )
           break;
@@ -1188,7 +1188,7 @@ bool ON_Buffer::Uncompress( ON_Buffer& uncompressed_buffer ) const
         break;
       prev_seg = seg;
     }
-    if ( 0 != seg )
+    if ( nullptr != seg )
       break;
 
     if ( !uncompressor.End() )
@@ -1217,7 +1217,7 @@ bool ON_Buffer::Uncompress( ON_Buffer& uncompressed_buffer ) const
   {
     out->Compact();
     out->m_current_position = 0;
-    out->m_current_segment = 0;
+    out->m_current_segment = nullptr;
     if ( this == &uncompressed_buffer )
     {
       // transfer "out" to "this"
@@ -1231,9 +1231,9 @@ bool ON_Buffer::Uncompress( ON_Buffer& uncompressed_buffer ) const
       uncompressed_buffer.m_error_handler = out->m_error_handler;
       uncompressed_buffer.m_last_error = out->m_last_error;
       
-      out->m_first_segment = 0;
-      out->m_last_segment = 0;
-      out->m_current_segment = 0;
+      out->m_first_segment = nullptr;
+      out->m_last_segment = nullptr;
+      out->m_current_segment = nullptr;
       out->m_buffer_size = 0;
       delete out;
     }
@@ -1256,7 +1256,7 @@ bool ON_EmbeddedFile::Create(
 
   // ~ON_Workspace will close the file
   FILE* fp = ON_FileStream::Open(file_full_path_name,L"rb");
-  if ( 0 == fp )
+  if ( nullptr == fp )
     return false;
 
   bool rc = Create(fp,bCompress);
@@ -1273,7 +1273,7 @@ bool ON_EmbeddedFile::Create(
 
 ON_EmbeddedFile::ON_EmbeddedFile()
 : m_id(ON_nil_uuid)
-, m_reserved(0)
+, m_reserved(nullptr)
 , m_file_size(0)
 , m_file_time(0)
 , m_file_crc(0)
@@ -1294,7 +1294,7 @@ ON_EmbeddedFile::ON_EmbeddedFile(const ON_EmbeddedFile& src)
 , m_id(src.m_id)
 , m_full_file_name(src.m_full_file_name)
 , m_relative_file_name(src.m_relative_file_name)
-, m_reserved(0)
+, m_reserved(nullptr)
 , m_file_size(src.m_file_size)
 , m_file_time(src.m_file_time)
 , m_file_crc(src.m_file_crc)
@@ -1380,7 +1380,7 @@ bool ON_EmbeddedFile::Create(
 {
   Destroy();
 
-  if ( 0 == fp )
+  if ( nullptr == fp )
     return false;
   if ( !ON_FileStream::SeekFromStart(fp,0) )
     return false;
@@ -1397,7 +1397,7 @@ bool ON_EmbeddedFile::Create(
   const std::size_t buffer_capacity = 4090;
   ON__UINT64 buffer_size;
   void* buffer = (void*)ws.GetMemory(buffer_capacity);
-  if ( 0 == buffer )
+  if ( nullptr == buffer )
     return false;
 
   ON_CompressStream compress;
@@ -1472,12 +1472,12 @@ bool ON_EmbeddedFile::Extract(
   const wchar_t* destination_filename
   ) const
 {
-  if ( 0 == destination_filename || 0 == destination_filename[0] )
+  if ( nullptr == destination_filename || 0 == destination_filename[0] )
     return false;
   if ( m_buffer.Size() <= 0 )
     return false;
   FILE* fp = ON_FileStream::Open(destination_filename,L"wb");
-  if ( 0 == fp )
+  if ( nullptr == fp )
     return false;
   bool rc = Extract(fp);
   ON_FileStream::Close(fp);
@@ -1495,7 +1495,7 @@ bool ON_EmbeddedFile::Extract(
 {
   ON_Workspace ws;
 
-  if ( 0 == fp )
+  if ( nullptr == fp )
     return false;
   if ( m_buffer.Size() <= 0 )
     return false;
@@ -1580,7 +1580,7 @@ bool ON_EmbeddedFile::Extract(
     return false;
   if ( FileSize() <= 0 )
     return false;
-  if ( 0 == out_buffer )
+  if ( nullptr == out_buffer )
     return false;
 
   BufferAndSize bs;
@@ -1698,14 +1698,14 @@ ON_BOOL32 ON_EmbeddedFile::IsValid( ON_TextLog* text_log ) const
 {
   if ( !m_buffer.IsValid(text_log) )
   {
-    if ( 0 != text_log )
+    if ( nullptr != text_log )
       text_log->Print("m_buffer is not valid.");
     return ON_EmbeddedFileIsNotValid();
   }
 
   if ( m_buffer_crc != m_buffer.CRC32(0) )
   {
-    if ( 0 != text_log )
+    if ( nullptr != text_log )
       text_log->Print("m_buffer_crc != m_buffer.CRC32(0)");
     return ON_EmbeddedFileIsNotValid();
   }
@@ -1714,13 +1714,13 @@ ON_BOOL32 ON_EmbeddedFile::IsValid( ON_TextLog* text_log ) const
   {
     if ( m_file_size != m_buffer.Size() )
     {
-      if ( 0 != text_log )
+      if ( nullptr != text_log )
         text_log->Print("Uncompressed buffer - m_file_size != m_buffer.Size(0)");
       return ON_EmbeddedFileIsNotValid();
     }
     if ( m_file_crc != m_buffer_crc )
     {
-      if ( 0 != text_log )
+      if ( nullptr != text_log )
         text_log->Print("Uncompressed buffer - m_file_size != m_buffer.Size(0)");
       return ON_EmbeddedFileIsNotValid();
     }

@@ -244,7 +244,7 @@ bool ONX_IsValidName(
           const wchar_t* name 
           )
 {
-  bool is_valid = (0 != name && ONX_IsValidNameFirstChar(*name));
+  bool is_valid = (nullptr != name && ONX_IsValidNameFirstChar(*name));
   if ( is_valid )
   {
     bool is_integer = (*name >= '0' && *name <= '9');
@@ -267,18 +267,15 @@ bool ONX_IsValidName(
 ////////////////////////////////////////////////////////////////////////
 
 ONX_Model_RenderLight::ONX_Model_RenderLight()
-{
-}
+= default;
 
 ONX_Model_RenderLight::~ONX_Model_RenderLight()
-{
-}
+= default;
 
 ONX_Model_RenderLight::ONX_Model_RenderLight(const ONX_Model_RenderLight& src) 
-             : m_light(src.m_light), 
-               m_attributes(src.m_attributes)
-{
-}
+              
+               
+= default;
 
 ONX_Model_RenderLight& ONX_Model_RenderLight::operator=(const ONX_Model_RenderLight& src)
 {
@@ -296,8 +293,8 @@ ONX_Model_RenderLight& ONX_Model_RenderLight::operator=(const ONX_Model_RenderLi
 
 ONX_Model_Object::ONX_Model_Object() 
                  : m_bDeleteObject(0),
-                   m_object(0), 
-                   m_ref_count(0)
+                   m_object(nullptr), 
+                   m_ref_count(nullptr)
 {
 }
 
@@ -310,14 +307,14 @@ void ONX_Model_Object::Destroy()
     if ( *m_ref_count <= 0 ) 
     {
       delete m_ref_count;
-      m_ref_count = 0;
+      m_ref_count = nullptr;
     }
   }
-  if ( 0 == m_ref_count && 0 != m_object && m_bDeleteObject )
+  if ( nullptr == m_ref_count && nullptr != m_object && m_bDeleteObject )
   {
     delete m_object;
   }
-  m_object = 0;
+  m_object = nullptr;
   m_bDeleteObject = false;
 }
 
@@ -328,8 +325,8 @@ ONX_Model_Object::~ONX_Model_Object()
 
 ONX_Model_Object::ONX_Model_Object(const ONX_Model_Object& src) 
              : m_bDeleteObject(0),
-               m_object(0),
-               m_ref_count(0)
+               m_object(nullptr),
+               m_ref_count(nullptr)
 {
   *this = src;
 }
@@ -343,9 +340,9 @@ ONX_Model_Object& ONX_Model_Object::operator=(const ONX_Model_Object& src)
     m_object = src.m_object;
     m_attributes = src.m_attributes;
     m_ref_count = src.m_ref_count;
-    if ( 0 != m_object && m_bDeleteObject ) 
+    if ( nullptr != m_object && m_bDeleteObject ) 
     {
-      if ( 0 != m_ref_count )
+      if ( nullptr != m_ref_count )
         (*m_ref_count)++;
       else 
       {
@@ -370,8 +367,7 @@ ONX_Model_UserData::ONX_Model_UserData()
 }
 
 ONX_Model_UserData::~ONX_Model_UserData()
-{
-}
+= default;
 
 ONX_Model_UserData::ONX_Model_UserData(const ONX_Model_UserData& src) 
 : m_uuid(src.m_uuid)
@@ -804,13 +800,13 @@ void ONX_Model::DumpIDefTable( ON_TextLog& dump) const
 
 void ONX_Model_Object::Dump( ON_TextLog& dump ) const
 {
-  if ( 0 != m_object )
+  if ( nullptr != m_object )
   {
     m_object->Dump(dump);
 
     // user data attached to this object
     const ON_UserData* ud = m_object->FirstUserData();
-    while(0 != ud)
+    while(nullptr != ud)
     {
       dump.Print("object user data:\n");
       dump.PushIndent();
@@ -1307,8 +1303,8 @@ private:
 
 private:
   // no implementation - prohibit use
-  ON__CIndexMaps(const ON__CIndexMaps&);
-  ON__CIndexMaps& operator=(const ON__CIndexMaps&);
+  ON__CIndexMaps(const ON__CIndexMaps&) = delete;
+  ON__CIndexMaps& operator=(const ON__CIndexMaps&) = delete;
 };
 
 
@@ -2123,10 +2119,10 @@ bool ONX_Model::Read(
 {
   Destroy(); // get rid of any residual stuff
   bool rc = false;
-  if ( 0 != filename )
+  if ( nullptr != filename )
   {
     FILE* fp = ON::OpenFile(filename,"rb");
-    if ( 0 != fp )
+    if ( nullptr != fp )
     {
       ON_BinaryFile file(ON::read3dm,fp);
       rc = Read(file,error_log);
@@ -2143,10 +2139,10 @@ bool ONX_Model::Read(
 {
   Destroy(); // get rid of any residual stuff
   bool rc = false;
-  if ( 0 != filename )
+  if ( nullptr != filename )
   {
     FILE* fp = ON::OpenFile(filename,L"rb");
-    if ( 0 != fp )
+    if ( nullptr != fp )
     {
       ON_BinaryFile file(ON::read3dm,fp);
       rc = Read(file,error_log);
@@ -2202,10 +2198,10 @@ bool ONX_Model::Read(
   if ( archive.BeginRead3dmBitmapTable() )
   {
     // At the moment no bitmaps are embedded so this table is empty
-    ON_Bitmap* pBitmap = NULL;
+    ON_Bitmap* pBitmap = nullptr;
     for( count = 0; true; count++ ) 
     {
-      pBitmap = NULL;
+      pBitmap = nullptr;
       rc = archive.Read3dmBitmap(&pBitmap);
       if ( rc==0 )
         break; // end of bitmap table
@@ -2249,7 +2245,7 @@ bool ONX_Model::Read(
   // STEP 5: REQUIRED - Read texture mapping table
   if ( archive.BeginRead3dmTextureMappingTable() )
   {
-    ON_TextureMapping* pTextureMapping = NULL;
+    ON_TextureMapping* pTextureMapping = nullptr;
     for( count = 0; true; count++ ) 
     {
       rc = archive.Read3dmTextureMapping(&pTextureMapping);
@@ -2273,7 +2269,7 @@ bool ONX_Model::Read(
       pTextureMapping->m_mapping_index = count;
       ud.MoveUserDataTo(*m_mapping_table.Last(),false);
       delete pTextureMapping;
-      pTextureMapping = NULL;
+      pTextureMapping = nullptr;
     }
     
     // If BeginRead3dmTextureMappingTable() returns true, 
@@ -2300,7 +2296,7 @@ bool ONX_Model::Read(
   // STEP 6: REQUIRED - Read render material table
   if ( archive.BeginRead3dmMaterialTable() )
   {
-    ON_Material* pMaterial = NULL;
+    ON_Material* pMaterial = nullptr;
     for( count = 0; true; count++ ) 
     {
       rc = archive.Read3dmMaterial(&pMaterial);
@@ -2324,7 +2320,7 @@ bool ONX_Model::Read(
       m_material_table.Append(*pMaterial);
       ud.MoveUserDataTo(*m_material_table.Last(),false);
       delete pMaterial;
-      pMaterial = NULL;
+      pMaterial = nullptr;
     }
     
     // If BeginRead3dmMaterialTable() returns true, 
@@ -2351,7 +2347,7 @@ bool ONX_Model::Read(
   // STEP 7: REQUIRED - Read line type table
   if ( archive.BeginRead3dmLinetypeTable() )
   {
-    ON_Linetype* pLinetype = NULL;
+    ON_Linetype* pLinetype = nullptr;
     for( count = 0; true; count++ ) 
     {
       rc = archive.Read3dmLinetype(&pLinetype);
@@ -2375,7 +2371,7 @@ bool ONX_Model::Read(
       m_linetype_table.Append(*pLinetype);
       ud.MoveUserDataTo(*m_linetype_table.Last(),false);
       delete pLinetype;
-      pLinetype = NULL;
+      pLinetype = nullptr;
     }
     
     // If BeginRead3dmLinetypeTable() returns true, 
@@ -2401,10 +2397,10 @@ bool ONX_Model::Read(
   // STEP 8: REQUIRED - Read layer table
   if ( archive.BeginRead3dmLayerTable() )
   {
-    ON_Layer* pLayer = NULL;
+    ON_Layer* pLayer = nullptr;
     for( count = 0; true; count++ ) 
     {
-      pLayer = NULL;
+      pLayer = nullptr;
       rc = archive.Read3dmLayer(&pLayer);
       if ( rc==0 )
         break; // end of layer table
@@ -2426,7 +2422,7 @@ bool ONX_Model::Read(
       m_layer_table.Append(*pLayer);
       ud.MoveUserDataTo(*m_layer_table.Last(),false);
       delete pLayer;
-      pLayer = NULL;
+      pLayer = nullptr;
     }
     
     // If BeginRead3dmLayerTable() returns true, 
@@ -2452,7 +2448,7 @@ bool ONX_Model::Read(
   // STEP 9: REQUIRED - Read group table
   if ( archive.BeginRead3dmGroupTable() )
   {
-    ON_Group* pGroup = NULL;
+    ON_Group* pGroup = nullptr;
     for( count = 0; true; count++ ) 
     {
       rc = archive.Read3dmGroup(&pGroup);
@@ -2476,7 +2472,7 @@ bool ONX_Model::Read(
       m_group_table.Append(*pGroup);
       ud.MoveUserDataTo(*m_group_table.Last(),false);
       delete pGroup;
-      pGroup = NULL;
+      pGroup = nullptr;
     }
     
     // If BeginRead3dmGroupTable() returns true, 
@@ -2502,7 +2498,7 @@ bool ONX_Model::Read(
   // STEP 10: REQUIRED - Read font table
   if ( archive.BeginRead3dmFontTable() )
   {
-    ON_Font* pFont = NULL;
+    ON_Font* pFont = nullptr;
     for( count = 0; true; count++ ) 
     {
       rc = archive.Read3dmFont(&pFont);
@@ -2526,7 +2522,7 @@ bool ONX_Model::Read(
       m_font_table.Append(*pFont);
       ud.MoveUserDataTo(*m_font_table.Last(),false);
       delete pFont;
-      pFont = NULL;
+      pFont = nullptr;
     }
     
     // If BeginRead3dmFontTable() returns true, 
@@ -2552,7 +2548,7 @@ bool ONX_Model::Read(
   // STEP 11: REQUIRED - Read dimstyle table
   if ( archive.BeginRead3dmDimStyleTable() )
   {
-    ON_DimStyle* pDimStyle = NULL;
+    ON_DimStyle* pDimStyle = nullptr;
     for( count = 0; true; count++ ) 
     {
       rc = archive.Read3dmDimStyle(&pDimStyle);
@@ -2576,7 +2572,7 @@ bool ONX_Model::Read(
       m_dimstyle_table.Append(*pDimStyle);
       ud.MoveUserDataTo(*m_dimstyle_table.Last(),false);
       delete pDimStyle;
-      pDimStyle = NULL;
+      pDimStyle = nullptr;
     }
     
     // If BeginRead3dmDimStyleTable() returns true, 
@@ -2602,7 +2598,7 @@ bool ONX_Model::Read(
   // STEP 12: REQUIRED - Read render lights table
   if ( archive.BeginRead3dmLightTable() )
   {
-    ON_Light* pLight = NULL;
+    ON_Light* pLight = nullptr;
     ON_3dmObjectAttributes object_attributes;
     for( count = 0; true; count++ ) 
     {
@@ -2629,7 +2625,7 @@ bool ONX_Model::Read(
       ud.MoveUserDataTo(light.m_light,false);
       light.m_attributes = object_attributes;
       delete pLight;
-      pLight = NULL;
+      pLight = nullptr;
     }
     
     // If BeginRead3dmLightTable() returns true, 
@@ -2655,7 +2651,7 @@ bool ONX_Model::Read(
   // STEP 13 - read hatch pattern table
   if ( archive.BeginRead3dmHatchPatternTable() )
   {
-    ON_HatchPattern* pHatchPattern = NULL;
+    ON_HatchPattern* pHatchPattern = nullptr;
     for( count = 0; true; count++ ) 
     {
       rc = archive.Read3dmHatchPattern(&pHatchPattern);
@@ -2679,7 +2675,7 @@ bool ONX_Model::Read(
       m_hatch_pattern_table.Append(*pHatchPattern);
       ud.MoveUserDataTo(*m_hatch_pattern_table.Last(),false);
       delete pHatchPattern;
-      pHatchPattern = NULL;
+      pHatchPattern = nullptr;
     }
     
     // If BeginRead3dmHatchPatternTable() returns true, 
@@ -2705,7 +2701,7 @@ bool ONX_Model::Read(
   // STEP 14: REQUIRED - Read instance definition table
   if ( archive.BeginRead3dmInstanceDefinitionTable() )
   {
-    ON_InstanceDefinition* pIDef = NULL;
+    ON_InstanceDefinition* pIDef = nullptr;
     for( count = 0; true; count++ ) 
     {
       rc = archive.Read3dmInstanceDefinition(&pIDef);
@@ -2762,7 +2758,7 @@ bool ONX_Model::Read(
 
     for( count = 0; true; count++ ) 
     {
-      ON_Object* pObject = NULL;
+      ON_Object* pObject = nullptr;
       ON_3dmObjectAttributes attributes;
       rc = archive.Read3dmObject(&pObject,&attributes,object_filter);
       if ( rc == 0 )
@@ -2834,7 +2830,7 @@ bool ONX_Model::Read(
   {
     for( count = 0; true; count++ ) 
     {
-      ON_HistoryRecord* pHistoryRecord = NULL;
+      ON_HistoryRecord* pHistoryRecord = nullptr;
       rc = archive.Read3dmHistoryRecord(pHistoryRecord);
       if ( rc == 0 )
         break; // end of history record table
@@ -2994,10 +2990,10 @@ bool ONX_Model::Write(
        )
 {
   bool rc = false;
-  if ( 0 != filename )
+  if ( nullptr != filename )
   {
     FILE* fp = ON::OpenFile( filename, "wb" );
-    if ( 0 != fp )
+    if ( nullptr != fp )
     {
       ON_BinaryFile file( ON::write3dm, fp );
       ONX_Model_WriteHelper(file);
@@ -3016,10 +3012,10 @@ bool ONX_Model::Write(
        )
 {
   bool rc = false;
-  if ( 0 != filename )
+  if ( nullptr != filename )
   {
     FILE* fp = ON::OpenFile( filename, L"wb" );
-    if ( 0 != fp )
+    if ( nullptr != fp )
     {
       ON_BinaryFile file( ON::write3dm, fp );
       ONX_Model_WriteHelper(file);
@@ -3399,7 +3395,7 @@ bool ONX_Model::Write(
   }
   for( i = 0; ok && i < m_object_table.Count(); i++ )
   {
-    if ( 0 != m_object_table[i].m_object )
+    if ( nullptr != m_object_table[i].m_object )
     {
       ok = archive.Write3dmObject(*m_object_table[i].m_object,&m_object_table[i].m_attributes);
       if ( !ok )
@@ -3471,7 +3467,7 @@ bool ONX_Model::IsValid( ON_TextLog* text_log ) const
 {
   // Audit with no repairs will simply complain if it
   // finds something wrong;
-  int i = const_cast<ONX_Model*>(this)->Audit(false,NULL,text_log,NULL);
+  int i = const_cast<ONX_Model*>(this)->Audit(false,nullptr,text_log,nullptr);
   return (i>=0);
 }
 
@@ -3570,7 +3566,7 @@ int ONX_Model::IDefIndex( const wchar_t* idef_name ) const
   // and do something a little smarter.
   //
   int idef_index = -1;
-  if ( 0 != idef_name && 0 != idef_name[0]  )
+  if ( nullptr != idef_name && 0 != idef_name[0]  )
   {
     int i, idef_count = m_idef_table.Count();
     for ( i = 0; i < idef_count; i++ )
@@ -3631,12 +3627,12 @@ int ONX_Model::UsesIDef(
     if ( obj_index < 0 )
       continue;
     const ONX_Model_Object& obj = m_object_table[obj_index];
-    if ( 0 == obj.m_object )
+    if ( nullptr == obj.m_object )
       continue;
     if ( obj.m_object->ObjectType() == ON::instance_reference )
     {
       pNestedIRef = ON_InstanceRef::Cast(obj.m_object);
-      if ( 0 != pNestedIRef )
+      if ( nullptr != pNestedIRef )
       {
         if ( 0 == ON_UuidCompare( idef_uuid, pNestedIRef->m_instance_definition_uuid ) )
           return 2;
@@ -3654,7 +3650,7 @@ int ONX_Model::UsesIDef(
     for ( i = i0; i < i1; i++ )
     {
       pNestedIRef = iref_list[i];
-      if ( 0 == pNestedIRef )
+      if ( nullptr == pNestedIRef )
         continue;
       k = IDefIndex( pNestedIRef->m_instance_definition_uuid );
       if ( k < 0 )
@@ -3666,12 +3662,12 @@ int ONX_Model::UsesIDef(
         if ( obj_index < 0 )
           continue;
         const ONX_Model_Object& obj = m_object_table[obj_index];
-        if ( 0 == obj.m_object )
+        if ( nullptr == obj.m_object )
           continue;
         if ( obj.m_object->ObjectType() == ON::instance_reference )
         {
           pNestedIRef = ON_InstanceRef::Cast(obj.m_object);
-          if ( 0 != pNestedIRef )
+          if ( nullptr != pNestedIRef )
           {
             if ( 0 == ON_UuidCompare( idef_uuid, pNestedIRef->m_instance_definition_uuid ) )
               return depth;
@@ -3692,7 +3688,7 @@ int ONX_Model::LayerIndex( const wchar_t* layer_name ) const
   // and do something a little smarter.
 
   int layer_index = -1;
-  if ( 0 != layer_name && 0 != layer_name[0] )
+  if ( nullptr != layer_name && 0 != layer_name[0] )
   {
     int i, layer_count = m_layer_table.Count();
     for ( i = 0; i < layer_count; i++ )
@@ -3730,7 +3726,7 @@ bool ONX_Model::SetDocumentUserString( const wchar_t* key, const wchar_t* string
   // store document user string information until I can break
   // the public SDK in V6.
   bool rc = false;
-  if ( 0 != key && 0 != key[0] )
+  if ( nullptr != key && 0 != key[0] )
   {
     ON_UUID doc_userstring_id = ON_DocumentUserStringList::m_ON_DocumentUserStringList_class_id.Uuid();
     for (int i = 0; i < m_userdata_table.Count(); i++ )
@@ -3747,11 +3743,11 @@ bool ONX_Model::SetDocumentUserString( const wchar_t* key, const wchar_t* string
             m_3dm_file_version,
             m_3dm_opennurbs_version
             );
-          ON_Object* p = 0;
+          ON_Object* p = nullptr;
           if ( ba.ReadObject(&p) )
           {
             ON_DocumentUserStringList* sl = ON_DocumentUserStringList::Cast(p);
-            if ( 0 != sl )
+            if ( nullptr != sl )
             {
               // modify the user string information
               rc = sl->SetUserString(key,string_value);
@@ -3771,7 +3767,7 @@ bool ONX_Model::SetDocumentUserString( const wchar_t* key, const wchar_t* string
                     // update the "goo"
                     unsigned char* goo = (unsigned char*)newgoo.HarvestBuffer();
                     unsigned int value = (unsigned int)newgoo.SizeOfArchive();
-                    if ( 0 != goo && value > 0 )
+                    if ( nullptr != goo && value > 0 )
                     {
                       onfree(ud.m_goo.m_goo); // delete old "goo"
                       ud.m_goo.m_value = (int)value;
@@ -3782,10 +3778,10 @@ bool ONX_Model::SetDocumentUserString( const wchar_t* key, const wchar_t* string
               }
             }
           }
-          if ( 0 != p )
+          if ( nullptr != p )
           {
             delete p;
-            p = 0;
+            p = nullptr;
           }
         }
         break;
@@ -3798,8 +3794,8 @@ bool ONX_Model::SetDocumentUserString( const wchar_t* key, const wchar_t* string
 
 bool ONX_Model::GetDocumentUserString( const wchar_t* key, ON_wString& string_value ) const
 {
-  const wchar_t* s = 0;
-  if ( 0 != key && 0 != key[0] )
+  const wchar_t* s = nullptr;
+  if ( nullptr != key && 0 != key[0] )
   {
     // This is a slow and stupid way to get a single string,
     // but I cannot modify the ONX_Model class to transparently
@@ -3817,7 +3813,7 @@ bool ONX_Model::GetDocumentUserString( const wchar_t* key, ON_wString& string_va
     }
   }
   string_value = s;
-  return (0 != s);
+  return (nullptr != s);
 }
 
 
@@ -3843,19 +3839,19 @@ int ONX_Model::GetDocumentUserStrings( ON_ClassArray<ON_UserString>& user_string
           m_3dm_opennurbs_version
           );
 
-        ON_Object* p = 0;
+        ON_Object* p = nullptr;
         if ( ba.ReadObject(&p) )
         {
           const ON_DocumentUserStringList* sl = ON_DocumentUserStringList::Cast(p);
-          if ( 0 != sl )
+          if ( nullptr != sl )
           {
             rc = sl->GetUserStrings(user_strings);
           }
         }
-        if ( 0 != p )
+        if ( nullptr != p )
         {
           delete p;
-          p = 0;
+          p = nullptr;
         }
       }
       break;
@@ -4378,7 +4374,7 @@ static int AuditLayerTableHelper(
 
     const wchar_t* layer_name = layer.LayerName();
 
-    if ( 0 == layer_name || 0 == layer_name[0] )
+    if ( nullptr == layer_name || 0 == layer_name[0] )
     {
       if ( text_log )
       {
@@ -4664,7 +4660,7 @@ static int AuditLightIdsHelper(
 
     rc = AuditIdsHelper(
               id_list,
-              0, // no ONX_Model id index for lights
+              nullptr, // no ONX_Model id index for lights
               bAttemptRepair,
               repair_count,
               text_log,
@@ -4931,7 +4927,7 @@ static int AuditIDefTableHelper(
     bool idef_ok = true;
     ON_InstanceDefinition& idef = model.m_idef_table[i];
     const wchar_t* idef_name = idef.Name();
-    if ( 0 == idef_name )
+    if ( nullptr == idef_name )
       continue;
 
     if ( !ONX_IsValidName(idef_name) )
@@ -5021,7 +5017,7 @@ static int AuditIDefTableHelper(
             idef_ok = false;
           }
         }
-        else if ( 0 == obj.m_object )
+        else if ( nullptr == obj.m_object )
         {
           if ( text_log )
             text_log->Print("Object with uuid m_idef_table[%d].m_object_uuid[%d] has NULL m_object.\n",i,k);
@@ -5103,13 +5099,13 @@ static int AuditObjectTableHelper(
   for ( i = 0; i < count; i++ )
   {
     ONX_Model_Object& obj = model.m_object_table[i];
-    if ( 0 == obj.m_object )
+    if ( nullptr == obj.m_object )
     {
       rc = 7;
       if ( text_log )
         text_log->Print("m_object_table[%d].m_object is NULL.\n",i);
     }
-    else if ( false == obj.m_object->IsValid(NULL) )
+    else if ( false == obj.m_object->IsValid(nullptr) )
     {
       rc = 8;
       if ( text_log )
@@ -5298,38 +5294,38 @@ static const ON_UnknownUserData* RDKObjectUserDataHelper(const ON_UserData* obje
   
   const ON_UnknownUserData* unknown_ud = ON_UnknownUserData::Cast(objectud);
   
-  bool rc = ( 0 != unknown_ud 
+  bool rc = ( nullptr != unknown_ud 
               && unknown_ud->m_sizeof_buffer > 0
-              && 0 != unknown_ud->m_buffer
+              && nullptr != unknown_ud->m_buffer
               && 0 == ON_UuidCompare(CRhRdkUserData_object_id,unknown_ud->m_unknownclass_uuid)
               && 0 == ON_UuidCompare(CRhRdkUserData_userdata_uuid,unknown_ud->m_userdata_uuid)
             );
-  return rc ? unknown_ud : 0;
+  return rc ? unknown_ud : nullptr;
 }
 
 bool ONX_Model::IsRDKObjectInformation(const ON_UserData& objectud)
 {
-  return 0 != RDKObjectUserDataHelper(&objectud);
+  return nullptr != RDKObjectUserDataHelper(&objectud);
 }
 
 bool ONX_Model::GetRDKObjectInformation(const ON_Object& object,ON_wString& rdk_xml_object_data)
 {
   rdk_xml_object_data.SetLength(0);
-  const ON_UnknownUserData* unknown_ud = 0;
+  const ON_UnknownUserData* unknown_ud = nullptr;
   const ON_UserData* ud = ON_UserData::Cast(&object);
-  if ( 0 != ud )
+  if ( nullptr != ud )
   {
     unknown_ud = RDKObjectUserDataHelper(ud);
   }
   else
   {
-    for ( ud = object.FirstUserData(); 0 != ud && 0 == unknown_ud; ud = ud->Next() )
+    for ( ud = object.FirstUserData(); nullptr != ud && nullptr == unknown_ud; ud = ud->Next() )
     {
       unknown_ud = RDKObjectUserDataHelper(ud);
     }
   }
 
-  if ( 0 == unknown_ud )
+  if ( nullptr == unknown_ud )
     return false;
 
   ON_Read3dmBufferArchive a(unknown_ud->m_sizeof_buffer,unknown_ud->m_buffer,false,unknown_ud->m_3dm_version,unknown_ud->m_3dm_opennurbs_version);
@@ -5359,14 +5355,14 @@ bool ONX_Model::GetRDKObjectInformation(const ON_Object& object,ON_wString& rdk_
     if ( !a.ReadChar(slen,s.Array() ) ) 
       return false;
     const char* sArray = s.Array();
-    if ( 0 != sArray && 0 != sArray[0] )
+    if ( nullptr != sArray && 0 != sArray[0] )
     {
       unsigned int error_status = 0;
-      int wLen = ON_ConvertUTF8ToWideChar(sArray,-1,0,0,&error_status,0,0,0);
+      int wLen = ON_ConvertUTF8ToWideChar(sArray,-1,nullptr,0,&error_status,0,0,nullptr);
       if ( wLen > 0 && 0 == error_status )
       {
         rdk_xml_object_data.SetLength(wLen+2);
-        wLen = ON_ConvertUTF8ToWideChar(sArray,-1,rdk_xml_object_data.Array(),wLen+1,&error_status,0,0,0);
+        wLen = ON_ConvertUTF8ToWideChar(sArray,-1,rdk_xml_object_data.Array(),wLen+1,&error_status,0,0,nullptr);
         if ( wLen > 0 && 0 == error_status )
           rdk_xml_object_data.SetLength(wLen);
         else
@@ -5388,7 +5384,7 @@ bool ONX_Model::IsRDKDocumentInformation(const ONX_Model_UserData& docud)
   static const ON_UUID rdk_plugin_id = 
   { 0x16592D58, 0x4A2F, 0x401D, { 0xBF, 0x5E, 0x3B, 0x87, 0x74, 0x1C, 0x1B, 0x1B } };
 
-  return ( 0 == ON_UuidCompare(rdk_plugin_id,docud.m_uuid) && docud.m_goo.m_value >= 4 && 0 != docud.m_goo.m_goo );
+  return ( 0 == ON_UuidCompare(rdk_plugin_id,docud.m_uuid) && docud.m_goo.m_value >= 4 && nullptr != docud.m_goo.m_goo );
 }
 
 
@@ -5424,14 +5420,14 @@ bool ONX_Model::GetRDKDocumentInformation(const ONX_Model_UserData& docud,ON_wSt
     if ( !a.ReadChar(slen,s.Array()) )
       return 0;
     const char* sArray = s.Array();
-    if ( 0 != sArray && 0 != sArray[0] )
+    if ( nullptr != sArray && 0 != sArray[0] )
     {
       unsigned int error_status = 0;
-      int wLen = ON_ConvertUTF8ToWideChar(sArray,-1,0,0,&error_status,0,0,0);
+      int wLen = ON_ConvertUTF8ToWideChar(sArray,-1,nullptr,0,&error_status,0,0,nullptr);
       if ( wLen > 0 && 0 == error_status )
       {
         rdk_xml_document_data.SetLength(wLen+2);
-        wLen = ON_ConvertUTF8ToWideChar(sArray,-1,rdk_xml_document_data.Array(),wLen+1,&error_status,0,0,0);
+        wLen = ON_ConvertUTF8ToWideChar(sArray,-1,rdk_xml_document_data.Array(),wLen+1,&error_status,0,0,nullptr);
         if ( wLen > 0 && 0 == error_status )
           rdk_xml_document_data.SetLength(wLen);
         else

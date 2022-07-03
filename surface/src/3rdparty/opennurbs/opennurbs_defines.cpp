@@ -697,7 +697,7 @@ void ON_wString::MakeLower()
 wchar_t* on_wcsrev(wchar_t* s)
 {
   if ( !s )
-    return 0;
+    return nullptr;
   int i, j;
   wchar_t w;
   for ( j = 0; 0 != s[j]; j++ )
@@ -748,7 +748,7 @@ int on_WideCharToMultiByte(
   unsigned int error_status = 0;
   unsigned int error_mask = 0xFFFFFFFF;
   ON__UINT32 error_code_point = 0xFFFD;
-  const wchar_t* p1 = 0;
+  const wchar_t* p1 = nullptr;
   int count = ON_ConvertWideCharToUTF8(false,lpWideCharStr,cchWideChar,lpMultiByteStr,cchMultiByte,
                                        &error_status,error_mask,error_code_point,&p1);
   if ( 0 != error_status )
@@ -775,7 +775,7 @@ int on_MultiByteToWideChar(
   unsigned int error_status = 0;
   unsigned int error_mask = 0xFFFFFFFF;
   ON__UINT32 error_code_point = 0xFFFD;
-  const char* p1 = 0;
+  const char* p1 = nullptr;
   int count = ON_ConvertUTF8ToWideChar(lpMultiByteStr,cchMultiByte,lpWideCharStr,cchWideChar,
                                        &error_status,error_mask,error_code_point,&p1);
   if ( 0 != error_status )
@@ -851,16 +851,16 @@ void on_splitpath(
   const char* s;
   const char* s1;
 
-  if ( 0 != drive )
-    *drive = 0;
-  if ( 0 != dir )
-    *dir = 0;
-  if ( 0 != fname )
-    *fname = 0;
-  if ( 0 != ext )
-    *ext = 0;
+  if ( nullptr != drive )
+    *drive = nullptr;
+  if ( nullptr != dir )
+    *dir = nullptr;
+  if ( nullptr != fname )
+    *fname = nullptr;
+  if ( nullptr != ext )
+    *ext = nullptr;
 
-  if ( 0 != path && 0 != *path )
+  if ( nullptr != path && 0 != *path )
   {
     // deal with Windows' drive letter (even when the os is unix)
     if ( ':' == path[1] )
@@ -876,10 +876,10 @@ void on_splitpath(
     }
   }
 
-  if ( 0 != path && 0 != *path )
+  if ( nullptr != path && 0 != *path )
   {
-    e = 0;
-    f = 0;
+    e = nullptr;
+    f = nullptr;
     s1 = path;
     while ( 0 != *s1 )
       s1++;
@@ -912,20 +912,20 @@ void on_splitpath(
       }
     }
 
-    if ( 0 == f )
+    if ( nullptr == f )
     {
       // must have a non-empty filename in order to have and "extension"
       f = e;
-      e = 0;
+      e = nullptr;
     }
 
-    if ( 0 != dir && (0 == f || path < f) )
+    if ( nullptr != dir && (nullptr == f || path < f) )
       *dir = path;
 
-    if ( 0 != f && 0 != fname )
+    if ( nullptr != f && nullptr != fname )
       *fname = f;
 
-    if ( 0 != e && 0 != ext )
+    if ( nullptr != e && nullptr != ext )
       *ext = e;
   }
 
@@ -957,16 +957,16 @@ void on_wsplitpath(
   const wchar_t* s;
   const wchar_t* s1;
 
-  if ( 0 != drive )
-    *drive = 0;
-  if ( 0 != dir )
-    *dir = 0;
-  if ( 0 != fname )
-    *fname = 0;
-  if ( 0 != ext )
-    *ext = 0;
+  if ( nullptr != drive )
+    *drive = nullptr;
+  if ( nullptr != dir )
+    *dir = nullptr;
+  if ( nullptr != fname )
+    *fname = nullptr;
+  if ( nullptr != ext )
+    *ext = nullptr;
 
-  if ( 0 != path && 0 != *path )
+  if ( nullptr != path && 0 != *path )
   {
     // deal with Windows' drive letter (even when the os is unix)
     if ( ':' == path[1] )
@@ -982,10 +982,10 @@ void on_wsplitpath(
     }
   }
 
-  if ( 0 != path && 0 != *path )
+  if ( nullptr != path && 0 != *path )
   {
-    e = 0;
-    f = 0;
+    e = nullptr;
+    f = nullptr;
     s1 = path;
     while ( 0 != *s1 )
       s1++;
@@ -1018,20 +1018,20 @@ void on_wsplitpath(
       }
     }
 
-    if ( 0 == f )
+    if ( nullptr == f )
     {
       // must have a non-empty filename in order to have and "extension"
       f = e;
-      e = 0;
+      e = nullptr;
     }
 
-    if ( 0 != dir && (0 == f || path < f) )
+    if ( nullptr != dir && (nullptr == f || path < f) )
       *dir = path;
 
-    if ( 0 != f && 0 != fname )
+    if ( nullptr != f && nullptr != fname )
       *fname = f;
 
-    if ( 0 != e && 0 != ext )
+    if ( nullptr != e && nullptr != ext )
       *ext = e;
   }
 

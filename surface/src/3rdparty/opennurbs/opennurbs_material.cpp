@@ -79,7 +79,7 @@ ON_Material::ON_Material()
 }
 
 ON_Material::~ON_Material()
-{}
+= default;
 
 ON_BOOL32
 ON_Material::IsValid( ON_TextLog* ) const
@@ -246,7 +246,7 @@ bool ON_Material::WriteV3Helper( ON_BinaryArchive& file ) const
 
   ON_wString filename;
   int j = 0;
-  i = FindTexture( NULL, ON_Texture::bitmap_texture );
+  i = FindTexture( nullptr, ON_Texture::bitmap_texture );
   if ( i >= 0 )
   {
     const ON_Texture& tmap = m_textures[i];
@@ -267,7 +267,7 @@ bool ON_Material::WriteV3Helper( ON_BinaryArchive& file ) const
   filename.Destroy();
   j = 0;
   double bump_scale = 1.0;
-  i = FindTexture( NULL, ON_Texture::bump_texture );
+  i = FindTexture( nullptr, ON_Texture::bump_texture );
   if ( i >= 0 )
   {
     const ON_Texture& tmap = m_textures[i];
@@ -290,7 +290,7 @@ bool ON_Material::WriteV3Helper( ON_BinaryArchive& file ) const
 
   filename.Destroy();
   j = 0;
-  i = FindTexture( NULL, ON_Texture::emap_texture );
+  i = FindTexture( nullptr, ON_Texture::emap_texture );
   if ( i >= 0 )
   {
     const ON_Texture& tmap = m_textures[i];
@@ -650,7 +650,7 @@ int ON_Material::AddTexture( const ON_Texture& tx )
 
 int ON_Material::AddTexture(const wchar_t* filename,ON_Texture::TYPE type)
 {
-  int ti = FindTexture(NULL,type);
+  int ti = FindTexture(nullptr,type);
   if ( ti < 0 )
   {
     ti = m_textures.Count();
@@ -940,8 +940,7 @@ ON_Texture::ON_Texture()
 }
 
 ON_Texture::~ON_Texture()
-{
-}
+= default;
 
 ON_BOOL32 ON_Texture::IsValid( ON_TextLog* text_log ) const
 {
@@ -1263,7 +1262,7 @@ void ON_Texture::Default()
   m_blend_RGB[0] = m_blend_RGB[1] = 1.0; m_blend_RGB[2] = m_blend_RGB[3] = 0.0;
   m_blend_order = 0;
   m_runtime_ptr_id = ON_nil_uuid;
-  m_runtime_ptr = 0;
+  m_runtime_ptr = nullptr;
 }
 
 
@@ -1342,7 +1341,7 @@ ON_TextureMapping::TEXTURE_SPACE ON_TextureMapping::TextureSpaceFromInt(int i)
 
 ON_TextureMapping::ON_TextureMapping()
 {
-  m_mapping_primitive = 0;
+  m_mapping_primitive = nullptr;
   Default();
 }
 
@@ -1351,7 +1350,7 @@ ON_TextureMapping::~ON_TextureMapping()
   if ( m_mapping_primitive )
   {
     delete m_mapping_primitive;
-    m_mapping_primitive = 0;
+    m_mapping_primitive = nullptr;
   }
 }
 
@@ -1372,7 +1371,7 @@ ON_TextureMapping::ON_TextureMapping(const ON_TextureMapping& src)
   m_uvw           = src.m_uvw;
   m_mapping_primitive = ( src.m_mapping_primitive )
                       ? src.m_mapping_primitive->Duplicate()
-                      : 0;
+                      : nullptr;
 }
 
 ON_TextureMapping& ON_TextureMapping::operator=(const ON_TextureMapping& src)
@@ -1382,7 +1381,7 @@ ON_TextureMapping& ON_TextureMapping::operator=(const ON_TextureMapping& src)
     if ( m_mapping_primitive )
     {
       delete m_mapping_primitive;
-      m_mapping_primitive = 0;
+      m_mapping_primitive = nullptr;
     }
     ON_Object::operator=(src);
     m_mapping_id    = src.m_mapping_id;
@@ -1407,7 +1406,7 @@ void ON_TextureMapping::Default()
   if ( m_mapping_primitive )
   {
     delete m_mapping_primitive;
-    m_mapping_primitive = 0;
+    m_mapping_primitive = nullptr;
   }
 
   m_mapping_id = ON_nil_uuid;
@@ -2304,14 +2303,14 @@ ON__UINT32 ON_TextureMapping::MappingCRC() const
     crc32 = ON_CRC32(crc32,sizeof(m_Pxyz),          &m_Pxyz);
     // do not include m_Nxyz here - it won't help and may hurt
 
-	  if ( 0 != m_mapping_primitive )
+	  if ( nullptr != m_mapping_primitive )
 	  {
       switch( m_type )
       {
       case ON_TextureMapping::mesh_mapping_primitive:
         {
           const ON_Mesh* mesh = ON_Mesh::Cast(m_mapping_primitive);
-          if ( 0 == mesh )
+          if ( nullptr == mesh )
             break;
           crc32 = mesh->DataCRC(crc32);
           if ( mesh->HasTextureCoordinates() )
@@ -2330,7 +2329,7 @@ ON__UINT32 ON_TextureMapping::MappingCRC() const
       case ON_TextureMapping::brep_mapping_primitive:
         {
           const ON_Brep* brep = ON_Brep::Cast(m_mapping_primitive);
-          if ( 0 == brep )
+          if ( nullptr == brep )
             break;
           crc32 = brep->DataCRC(crc32);
           // 25 August 2010 Dale Lear
@@ -2347,7 +2346,7 @@ ON__UINT32 ON_TextureMapping::MappingCRC() const
       case ON_TextureMapping::srf_mapping_primitive:
         {
           const ON_Surface* surface = ON_Surface::Cast(m_mapping_primitive);
-          if ( 0 == surface )
+          if ( nullptr == surface )
             break;
           crc32 = surface->DataCRC(crc32);
         }
@@ -2387,7 +2386,7 @@ bool ON_TextureMapping::RequiresVertexNormals() const
 	return false;
 }
 
-bool ON_TextureMapping::IsPeriodic(void) const
+bool ON_TextureMapping::IsPeriodic() const
 {
 	return (m_type == sphere_mapping || m_type == cylinder_mapping);
 }
@@ -2650,12 +2649,12 @@ bool ON_TextureMapping::GetTextureCoordinates(
 		const ON_3fPoint*  mesh_V = mesh.m_V.Array();
 		const ON_3fVector* mesh_N = mesh.HasVertexNormals()
                               ? mesh.m_N.Array()
-                              : 0;
+                              : nullptr;
 
     T.Reserve(vcnt);
     T.SetCount(vcnt);
 
-    int* Tsd = 0;
+    int* Tsd = nullptr;
     if ( Tside )
     {
       Tside->Reserve(vcnt);
@@ -2665,14 +2664,14 @@ bool ON_TextureMapping::GetTextureCoordinates(
     }
 
     ON_Xform P_xform(1.0), N_xform(1.0);
-    const double* PT = 0;
-    const double* NT = 0;
+    const double* PT = nullptr;
+    const double* NT = nullptr;
     if ( mesh_xform )
     {
       if ( mesh_xform->IsZero() || mesh_xform->IsIdentity() )
       {
         // ignore transformation
-        mesh_xform = 0;
+        mesh_xform = nullptr;
       }
       else if ( 0.0 != mesh_xform->GetMappingXforms(P_xform,N_xform) )
       {
@@ -2681,7 +2680,7 @@ bool ON_TextureMapping::GetTextureCoordinates(
       }
       else
       {
-        mesh_xform = 0;
+        mesh_xform = nullptr;
       }
     }
 
@@ -2689,7 +2688,7 @@ bool ON_TextureMapping::GetTextureCoordinates(
     double w;
     int sd;
 
-		if (clspt_projection == m_projection && ON_TextureMapping::mesh_mapping_primitive == m_type && NULL != m_mapping_primitive)
+		if (clspt_projection == m_projection && ON_TextureMapping::mesh_mapping_primitive == m_type && nullptr != m_mapping_primitive)
 		{
       rc = false;
 		}
@@ -2948,8 +2947,8 @@ public:
   ON_SimpleArray< unsigned int > m_vuse;
 private:
   // no implementation
-  ON__CChangeTextureCoordinateHelper(const ON__CChangeTextureCoordinateHelper&);
-  ON__CChangeTextureCoordinateHelper& operator=(const ON__CChangeTextureCoordinateHelper&);
+  ON__CChangeTextureCoordinateHelper(const ON__CChangeTextureCoordinateHelper&) = delete;
+  ON__CChangeTextureCoordinateHelper& operator=(const ON__CChangeTextureCoordinateHelper&) = delete;
 };
 
 void ON__CChangeTextureCoordinateHelper::ChangeTextureCoordinate(int* Fvi, int fvi, float x, float y,
@@ -2983,7 +2982,7 @@ ON__CChangeTextureCoordinateHelper::ON__CChangeTextureCoordinateHelper(
     int newvcnt,
     float*& mesh_T ) 
 : m_mesh(mesh)
-, m_mesh_dV(0)
+, m_mesh_dV(nullptr)
 , m_vuse_count(0)
 {
   // adding vertices invalidates this cached information.
@@ -3040,7 +3039,7 @@ ON__CChangeTextureCoordinateHelper::ON__CChangeTextureCoordinateHelper(
   if ( m_bHasPrincipalCurvatures )
     m_mesh.m_K.Reserve(vcnt+newvcnt);
 
-  m_bHasHiddenVertices = (0 != m_mesh.HiddenVertexArray());
+  m_bHasHiddenVertices = (nullptr != m_mesh.HiddenVertexArray());
   if ( m_bHasHiddenVertices )
     m_mesh.m_H.Reserve(vcnt+newvcnt);
 
@@ -3067,11 +3066,11 @@ ON__CChangeTextureCoordinateHelper::ON__CChangeTextureCoordinateHelper(
 
 ON__CChangeTextureCoordinateHelper::~ON__CChangeTextureCoordinateHelper()
 {
-  if ( 0 != m_mesh_dV )
+  if ( nullptr != m_mesh_dV )
   {
     m_mesh.SetDoublePrecisionVerticesAsValid();
     m_mesh.SetSinglePrecisionVerticesAsValid();
-    m_mesh_dV = 0;
+    m_mesh_dV = nullptr;
   }
 }
 
@@ -3121,7 +3120,7 @@ int ON__CChangeTextureCoordinateHelper::DupVertex(int vi)
 
   m_mesh.m_V.AppendNew();
   *m_mesh.m_V.Last() = m_mesh.m_V[vi];
-  if ( 0 != m_mesh_dV )
+  if ( nullptr != m_mesh_dV )
   {
     m_mesh_dV->AppendNew();
     *(m_mesh_dV->Last()) = m_mesh_dV->operator[](vi);
@@ -3387,17 +3386,17 @@ bool EvBoxSideTextureCoordinateHelper1(
 	const ON_3fPoint*  mesh_V = mesh.m_V.Array();
 	const ON_3fVector* mesh_N = mesh.HasVertexNormals()
                             ? mesh.m_N.Array()
-                            : 0;
+                            : nullptr;
 
   ON_Xform P_xform(1.0), N_xform(1.0);
-  const double* PT = 0;
-  const double* NT = 0;
+  const double* PT = nullptr;
+  const double* NT = nullptr;
   if ( mesh_xform )
   {
     if ( mesh_xform->IsZero() || mesh_xform->IsIdentity() )
     {
       // ignore transformation
-      mesh_xform = 0;
+      mesh_xform = nullptr;
     }
     else if ( 0.0 != mesh_xform->GetMappingXforms(P_xform,N_xform) )
     {
@@ -3406,7 +3405,7 @@ bool EvBoxSideTextureCoordinateHelper1(
     }
     else
     {
-      mesh_xform = 0;
+      mesh_xform = nullptr;
     }
   }
 
@@ -3891,7 +3890,7 @@ void AdjustMeshPeriodicTextureCoordinatesHelper(
     return;
 
 
-  F = 0; // Setting them to NULL makes sure anybody who
+  F = nullptr; // Setting them to NULL makes sure anybody who
          // tries to use them below will crash.
 
   // reserve room for new vertex information
@@ -3986,12 +3985,12 @@ const ON_TextureCoordinates* ON_Mesh::SetCachedTextureCoordinates(
   ON_TextureMapping mp = mapping;
   double two_pi_tc = 1.0;
   ON_SimpleArray<int> Tside;
-  ON_SimpleArray<int>* Tsd = 0;
+  ON_SimpleArray<int>* Tsd = nullptr;
   bool bSeamCheck = SeamCheckHelper( mp, two_pi_tc, Tside, Tsd ) && HasSharedVertices(*this);
   if ( bSeamCheck )
     mp.m_uvw.Identity();
 
-  ON_TextureCoordinates* TC = 0;
+  ON_TextureCoordinates* TC = nullptr;
   {
     for ( int i = 0; i < m_TC.Count(); i++ )
     {
@@ -4017,7 +4016,7 @@ const ON_TextureCoordinates* ON_Mesh::SetCachedTextureCoordinates(
   {
     int tci = (int)(TC - m_TC.Array());
     m_TC.Remove(tci);
-    return 0;
+    return nullptr;
   }
 
   TC->m_tag.Set(mapping);
@@ -4036,9 +4035,9 @@ const ON_TextureCoordinates* ON_Mesh::SetCachedTextureCoordinates(
     float* mesh_T = (float*)TC->m_T.Array();
     int mesh_T_stride = sizeof(TC->m_T[0])/sizeof(mesh_T[0]);
     if ( Tsd && Tside.Count() != m_V.Count() )
-      Tsd = 0;
-    AdjustMeshPeriodicTextureCoordinatesHelper( *this, mesh_xform, mesh_T, mesh_T_stride, Tsd ? Tside.Array() : 0, two_pi_tc, mp );
-    mesh_T = 0; // when the array is grown, the pointer may become invalid
+      Tsd = nullptr;
+    AdjustMeshPeriodicTextureCoordinatesHelper( *this, mesh_xform, mesh_T, mesh_T_stride, Tsd ? Tside.Array() : nullptr, two_pi_tc, mp );
+    mesh_T = nullptr; // when the array is grown, the pointer may become invalid
     if ( !mapping.m_uvw.IsIdentity() && !mapping.m_uvw.IsZero() )
     {
       // Apply the uvw transformation that is on mapping
@@ -4070,7 +4069,7 @@ bool ON_Mesh::SetTextureCoordinates(
   InvalidateTextureCoordinateBoundingBox();
 
   ON_SimpleArray<int> Tside;
-  ON_SimpleArray<int>* Tsd = 0;
+  ON_SimpleArray<int>* Tsd = nullptr;
   ON_TextureMapping mp = mapping;
   
   double two_pi_tc = 1.0;
@@ -4102,9 +4101,9 @@ bool ON_Mesh::SetTextureCoordinates(
     float* mesh_T = (float*)m_T.Array();
     int mesh_T_stride = sizeof(m_T[0])/sizeof(mesh_T[0]);
     if ( Tsd && Tside.Count() != m_V.Count() )
-      Tsd = 0;
-    AdjustMeshPeriodicTextureCoordinatesHelper( *this, mesh_xform, mesh_T, mesh_T_stride, Tsd ? Tside.Array() : 0, two_pi_tc, mp );
-    mesh_T = 0; // when the array is grown, the pointer may become invalid
+      Tsd = nullptr;
+    AdjustMeshPeriodicTextureCoordinatesHelper( *this, mesh_xform, mesh_T, mesh_T_stride, Tsd ? Tside.Array() : nullptr, two_pi_tc, mp );
+    mesh_T = nullptr; // when the array is grown, the pointer may become invalid
     if ( !mapping.m_uvw.IsIdentity() && !mapping.m_uvw.IsZero() )
     {
       // Apply the uvw transformation that is on mapping
@@ -4496,7 +4495,7 @@ const ON_MaterialRef* ON_RenderingAttributes::MaterialRef( const ON_UUID& plugin
         return mr;
     }
   }
-  return 0;
+  return nullptr;
 }
 
 int ON_ObjectRenderingAttributes::Compare( const ON_ObjectRenderingAttributes& other ) const
@@ -4550,14 +4549,14 @@ const ON_MappingRef* ON_ObjectRenderingAttributes::MappingRef(
         return mr;
     }    
   }
-  return 0;
+  return nullptr;
 }
 
 ON_MappingRef* ON_ObjectRenderingAttributes::AddMappingRef( 
   const ON_UUID& plugin_id 
   )
 {
-  ON_MappingRef* mr = 0;
+  ON_MappingRef* mr = nullptr;
   int count;
   if ( (count = m_mappings.Count()) > 0 )
   {
@@ -4584,7 +4583,7 @@ bool ON_ObjectRenderingAttributes::DeleteMappingRef(
   const ON_MappingRef* mr = MappingRef(plugin_id);
   if ( mr ) 
     m_mappings.Remove( (int)(mr - m_mappings.Array()) ); // safe ptr to in conversion
-  return (0 != mr);  
+  return (nullptr != mr);  
 }
 
 const ON_MappingChannel* ON_ObjectRenderingAttributes::MappingChannel( 
@@ -4605,7 +4604,7 @@ const ON_MappingChannel* ON_ObjectRenderingAttributes::MappingChannel(
       }
     }
   }
-  return 0;
+  return nullptr;
 }
 
 const ON_MappingChannel* ON_ObjectRenderingAttributes::MappingChannel( 
@@ -4626,7 +4625,7 @@ const ON_MappingChannel* ON_ObjectRenderingAttributes::MappingChannel(
       }
     }
   }
-  return 0;
+  return nullptr;
 }
 
 
@@ -4694,7 +4693,7 @@ const ON_MappingChannel* ON_MappingRef::MappingChannel(
         return mc;
     }
   }
-  return 0;
+  return nullptr;
 }
 
 const ON_MappingChannel* ON_MappingRef::MappingChannel( 
@@ -4710,7 +4709,7 @@ const ON_MappingChannel* ON_MappingRef::MappingChannel(
         return mc;
     }
   }
-  return 0;
+  return nullptr;
 }
 
 
@@ -4750,7 +4749,7 @@ bool ON_MappingRef::DeleteMappingChannel(int mapping_channel_id)
   {
     m_mapping_channels.Remove((int)(mc - m_mapping_channels.Array()));
   }
-  return ( 0 != mc);
+  return ( nullptr != mc);
 }
 
 bool ON_MappingRef::DeleteMappingChannel(const ON_UUID& mapping_id)
@@ -4760,7 +4759,7 @@ bool ON_MappingRef::DeleteMappingChannel(const ON_UUID& mapping_id)
   {
     m_mapping_channels.Remove((int)(mc - m_mapping_channels.Array()));
   }
-  return ( 0 != mc);
+  return ( nullptr != mc);
 }
 
 bool ON_MappingRef::ChangeMappingChannel(
@@ -4773,7 +4772,7 @@ bool ON_MappingRef::ChangeMappingChannel(
   {
     mc->m_mapping_channel_id = new_mapping_channel_id;
   }
-  return ( 0 != mc );
+  return ( nullptr != mc );
 }
 
 bool ON_RenderingAttributes::Write( ON_BinaryArchive& archive ) const
@@ -4894,7 +4893,7 @@ bool ON_ObjectRenderingAttributes::Read( ON_BinaryArchive& archive )
 }
 
 
-bool ON_TextureMapping::SetSurfaceParameterMapping(void)
+bool ON_TextureMapping::SetSurfaceParameterMapping()
 {
   Default();
 	m_type = srfp_mapping;

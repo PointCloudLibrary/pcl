@@ -27,8 +27,7 @@ ON_Font::ON_Font()
 }
 
 ON_Font::~ON_Font()
-{
-}
+= default;
 
 bool ON_Font::CreateFontFromFaceName( 
   const wchar_t* facename,
@@ -39,7 +38,7 @@ bool ON_Font::CreateFontFromFaceName(
   PurgeUserData();
   Defaults();
 
-  if ( 0 == facename || 0 == facename[0] )
+  if ( nullptr == facename || 0 == facename[0] )
     facename = L"Arial";
 
   bool rc = SetFontFaceName(facename);

@@ -24,7 +24,7 @@ ON_3dmObjectAttributes::ON_3dmObjectAttributes()
 }
 
 ON_3dmObjectAttributes::~ON_3dmObjectAttributes()
-{}
+= default;
 
 /*
 void ON_3dmObjectAttributes::CopyHelper(const ON_3dmObjectAttributes& src)
@@ -1181,7 +1181,7 @@ int ON_3dmObjectAttributes::GroupCount() const
 // returns an int array of GroupCount() zero based group indices
 const int* ON_3dmObjectAttributes::GroupList() const
 {
-  return (m_group.Count()>0) ? m_group.Array() : 0;
+  return (m_group.Count()>0) ? m_group.Array() : nullptr;
 }
 
 int ON_3dmObjectAttributes::GetGroupList(ON_SimpleArray<int>& group_list) const

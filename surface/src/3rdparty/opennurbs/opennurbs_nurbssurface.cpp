@@ -200,7 +200,7 @@ int ON_NurbsSurface::CVCount( int dir ) const
   return m_cv_count[dir?1:0];
 }
 
-int ON_NurbsSurface::CVCount( void ) const
+int ON_NurbsSurface::CVCount( ) const
 {
   return m_cv_count[0]*m_cv_count[1];
 }
@@ -212,7 +212,7 @@ int ON_NurbsSurface::KnotCount( int dir ) const
 
 double* ON_NurbsSurface::CV( int i, int j ) const
 {
-  return (m_cv) ? (m_cv + i*m_cv_stride[0] + j*m_cv_stride[1]) : NULL;
+  return (m_cv) ? (m_cv + i*m_cv_stride[0] + j*m_cv_stride[1]) : nullptr;
 }
 
 ON::point_style ON_NurbsSurface::CVStyle() const
@@ -309,9 +309,9 @@ ON_BOOL32 ON_NurbsSurface::Create(
 
 void ON_NurbsSurface::Destroy()
 {
-  double* cv = ( m_cv && m_cv_capacity ) ? m_cv : NULL;
-  double* knot0 = ( m_knot[0] && m_knot_capacity[0] ) ? m_knot[0] : NULL;
-  double* knot1 = ( m_knot[1] && m_knot_capacity[1] ) ? m_knot[1] : NULL;
+  double* cv = ( m_cv && m_cv_capacity ) ? m_cv : nullptr;
+  double* knot0 = ( m_knot[0] && m_knot_capacity[0] ) ? m_knot[0] : nullptr;
+  double* knot1 = ( m_knot[1] && m_knot_capacity[1] ) ? m_knot[1] : nullptr;
   Initialize();
   if ( cv )
     onfree(cv);
@@ -337,12 +337,12 @@ void ON_NurbsSurface::Initialize()
   m_cv_count[1] = 0;
   m_knot_capacity[0] = 0;
   m_knot_capacity[1] = 0;
-  m_knot[0] = 0;
-  m_knot[1] = 0;
+  m_knot[0] = nullptr;
+  m_knot[1] = nullptr;
   m_cv_stride[0] = 0;
   m_cv_stride[1] = 0;
   m_cv_capacity = 0;
-  m_cv = 0;
+  m_cv = nullptr;
 }
 
 
@@ -540,7 +540,7 @@ ON_BOOL32 ON_NurbsSurface::IsValid( ON_TextLog* text_log ) const
       text_log->Print("ON_NurbsSurface.m_dim = %d (should be > 0).\n",m_dim);
     }
   }
-  else if ( m_cv == NULL )
+  else if ( m_cv == nullptr )
   {
     if ( text_log )
     {
@@ -568,7 +568,7 @@ ON_BOOL32 ON_NurbsSurface::IsValid( ON_TextLog* text_log ) const
           text_log->Print("ON_NurbsSurface.m_cv_count[%d] = %d (should be >= m_order[%d]=%d).\n",i,m_cv_count[i],i,m_order[i]);
         }
       }
-      else if (m_knot[i] == NULL)
+      else if (m_knot[i] == nullptr)
       {
         if ( text_log )
         {
@@ -771,7 +771,7 @@ ON_Interval ON_NurbsSurface::Domain( int dir ) const
 double ON_NurbsSurface::ControlPolygonLength( int dir ) const
 {
   double max_length = 0.0;
-  if ( dir >= 0 && dir <= 1 && m_cv_count[0] >= 2 && m_cv_count[1] >= 2 && m_cv != NULL )
+  if ( dir >= 0 && dir <= 1 && m_cv_count[0] >= 2 && m_cv_count[1] >= 2 && m_cv != nullptr )
   {
     double length;
     const double* p;
@@ -892,7 +892,7 @@ ON_Curve* ON_NurbsSurface::IsoCurve(
        double c          // value of constant parameter 
        ) const
 {
-  ON_Curve* crv = 0;
+  ON_Curve* crv = nullptr;
   int i,j,k,Scvsize,span_index;
   double* Ncv;
   const double* Scv;
@@ -927,11 +927,11 @@ ON_Curve* ON_NurbsSurface::IsoCurve(
 static ON_NurbsCurve* ToCurve( const ON_NurbsSurface& srf, int dir, 
                                ON_NurbsCurve* crv )
 {
-  double* tmp_cv = NULL;
+  double* tmp_cv = nullptr;
   if ( dir < 0 || dir > 1 )
-    return NULL;
+    return nullptr;
   if ( !srf.m_cv )
-    return NULL;
+    return nullptr;
   if ( !crv )
     crv = new ON_NurbsCurve();
   int srf_cv_size = srf.CVSize();
@@ -941,7 +941,7 @@ static ON_NurbsCurve* ToCurve( const ON_NurbsSurface& srf, int dir,
           srf.m_order[dir],
           srf.m_cv_count[dir]
           ) )
-    return NULL;
+    return nullptr;
   if ( crv->m_cv == srf.m_cv )
   {
     tmp_cv = (double*)onmalloc( crv->m_dim*crv->m_cv_stride*sizeof(tmp_cv[0]) );
@@ -997,7 +997,7 @@ static ON_BOOL32 FromCurve( ON_NurbsCurve& crv,
   srf.m_cv_capacity = crv.m_cv_capacity;
   srf.m_cv = crv.m_cv;
   crv.m_cv_capacity = 0;
-  crv.m_cv = 0;
+  crv.m_cv = nullptr;
   if ( srf.m_knot_capacity[dir] > 0 && srf.m_knot[dir] && srf.m_knot[dir] != crv.m_knot )
   {
     onfree(srf.m_knot[dir]);
@@ -1007,7 +1007,7 @@ static ON_BOOL32 FromCurve( ON_NurbsCurve& crv,
   srf.m_knot_capacity[dir] = crv.m_knot_capacity;
   srf.m_knot[dir] = crv.m_knot;
   crv.m_knot_capacity = 0;
-  crv.m_knot = 0;
+  crv.m_knot = nullptr;
   srf.m_cv_stride[dir] = crv.m_cv_stride;
   srf.m_cv_stride[1-dir] = srf_cv_size;
   return true;
@@ -1081,8 +1081,8 @@ ON_BOOL32 ON_NurbsSurface::Split(
     return false;
   if ( !Domain(dir).Includes( c, true ) )
     return false;
-  ON_NurbsSurface* left_srf = 0;
-  ON_NurbsSurface* right_srf = 0;
+  ON_NurbsSurface* left_srf = nullptr;
+  ON_NurbsSurface* right_srf = nullptr;
 
   if ( west_or_south_side )
   {
@@ -1207,7 +1207,7 @@ ON_Surface* ON_NurbsSurface::Offset(
 {
   // 3rd party developers who want to enhance openNURBS
   // may provide a working offset here.
-  return NULL;
+  return nullptr;
 }
 
 
@@ -1358,7 +1358,7 @@ ON_NurbsSurface::ChangeSurfaceSeam(
 	if(rc && IsClosed(dir) ){
 		DestroySurfaceTree();
 		ON_NurbsCurve crv;
-		rc = ToCurve(*this, dir, &crv)!=NULL;
+		rc = ToCurve(*this, dir, &crv)!=nullptr;
 		if(rc)
 			rc = crv.ChangeClosedCurveSeam(t)!=0;
 		rc = FromCurve(crv,*this, dir) && rc;
@@ -1644,7 +1644,7 @@ ON_NurbsSurface::IsSingular( // true if surface side is collapsed to a point
       ) const
 {
   bool rc = false;
-  const double* points = 0;
+  const double* points = nullptr;
   int point_count = 0;
   int point_stride = 0;
 
@@ -2254,7 +2254,7 @@ static void ConvertFromCurve( ON_NurbsCurve& crv, int dir, ON_NurbsSurface& srf 
     {
       // discard surface cvs because there isn't enough room
       onfree( srf.m_cv );
-      srf.m_cv = 0;
+      srf.m_cv = nullptr;
       srf.m_cv_capacity = 0;
     }
 
@@ -2268,7 +2268,7 @@ static void ConvertFromCurve( ON_NurbsCurve& crv, int dir, ON_NurbsSurface& srf 
       // move curve cvs to surface
       srf.m_cv = crv.m_cv;
       srf.m_cv_capacity = crv.m_cv_capacity;
-      crv.m_cv = 0;
+      crv.m_cv = nullptr;
       crv.m_cv_capacity  = 0;
     }
 
@@ -2280,12 +2280,12 @@ static void ConvertFromCurve( ON_NurbsCurve& crv, int dir, ON_NurbsSurface& srf 
     if ( srf.m_knot_capacity[dir] > 0 ) 
     {
       onfree( srf.m_knot[dir] );
-      srf.m_knot[dir] = 0;
+      srf.m_knot[dir] = nullptr;
       srf.m_knot_capacity[dir] = 0;
     }
     srf.m_knot[dir] = crv.m_knot;
     srf.m_knot_capacity[dir] = crv.m_knot_capacity;
-    crv.m_knot = 0;
+    crv.m_knot = nullptr;
     crv.m_knot_capacity = 0;
   }
 }
@@ -2329,7 +2329,7 @@ bool ON_NurbsSurface::InsertKnot(
       ON_NurbsCurve crv;
       crv.m_knot = m_knot[dir];
       crv.m_knot_capacity = m_knot_capacity[dir];
-      m_knot[dir] = 0;
+      m_knot[dir] = nullptr;
       m_knot_capacity[dir] = 0;
       crv.ReserveKnotCapacity(CVCount(dir)+knot_multiplicity);
       ConvertToCurve(*this,dir,crv);
@@ -2360,7 +2360,7 @@ bool ON_NurbsSurface::MakeRational()
     m_cv_stride[0] = b.m_cv_stride[0];
     m_cv_stride[1] = b.m_cv_stride[1];
     m_cv = b.m_cv;
-    b.m_cv = 0;
+    b.m_cv = nullptr;
   }
   return IsRational();
 }
@@ -2482,7 +2482,7 @@ bool ON_NurbsSurface::IncreaseDegree(
       ON_NurbsCurve crv;
       crv.m_knot = m_knot[dir];
       crv.m_knot_capacity = m_knot_capacity[dir];
-      m_knot[dir] = 0;
+      m_knot[dir] = nullptr;
       m_knot_capacity[dir] = 0;
       ConvertToCurve(*this,dir,crv);
       rc = crv.IncreaseDegree(desired_degree);
@@ -2511,16 +2511,16 @@ bool ON_NurbsSurface::MakeNonRational()
     m_cv_stride[0] = b.m_cv_stride[0];
     m_cv_stride[1] = b.m_cv_stride[1];
     m_cv = b.m_cv;
-    b.m_cv = 0;
+    b.m_cv = nullptr;
   }
   return IsRational() ? false : true;
 }
 
 ON_TensorProduct::ON_TensorProduct()
-{}
+= default;
 
 ON_TensorProduct::~ON_TensorProduct()
-{}
+= default;
 
 ON_BOOL32 ON_NurbsSurface::TensorProduct(
       const ON_NurbsCurve& nurbscurveA,
@@ -3102,7 +3102,7 @@ ON_BOOL32 ON_NurbsSurface::ConvertSpanToBezier(
     bezier_surface.m_cv_stride[1] = bispan.m_cv_stride[1];
     bezier_surface.m_cv = bispan.m_cv;
     bezier_surface.m_cv_capacity = bispan.m_cv_capacity;
-    bispan.m_cv = 0;
+    bispan.m_cv = nullptr;
     bispan.m_cv_capacity = 0;
   }
   return true;

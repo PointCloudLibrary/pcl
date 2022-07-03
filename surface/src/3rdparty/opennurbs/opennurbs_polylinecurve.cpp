@@ -34,8 +34,7 @@ ON_PolylineCurve::ON_PolylineCurve( const ON_3dPointArray& L )
 }
 
 ON_PolylineCurve::~ON_PolylineCurve()
-{
-}
+= default;
 
 unsigned int ON_PolylineCurve::SizeOf() const
 {
@@ -127,7 +126,7 @@ ON_BOOL32 ON_PolylineCurve::IsValid( ON_TextLog* text_log ) const
   {
     if ( !m_pline.IsValid() )
     {
-      if ( 0 != text_log )
+      if ( nullptr != text_log )
       {
         text_log->Print("PolylineCurve m_pline[] is not valid.\n");
       }
@@ -138,7 +137,7 @@ ON_BOOL32 ON_PolylineCurve::IsValid( ON_TextLog* text_log ) const
     {
       if ( m_t[i] <= m_t[i-1] )
       {
-        if ( 0 != text_log )
+        if ( nullptr != text_log )
         {
           text_log->Print("PolylineCurve m_t[%d]=%g should be less than m_t[%d]=(%g).\n",
                            i-1,m_t[i-1],i,m_t[i]);
@@ -149,12 +148,12 @@ ON_BOOL32 ON_PolylineCurve::IsValid( ON_TextLog* text_log ) const
 
     if (m_dim < 2 || m_dim > 3 )
     {
-      if (0 != text_log )
+      if (nullptr != text_log )
         text_log->Print("PolylineCurve m_dim = %d (should be 2 or 3).\n",m_dim);
       return ON_IsNotValid();
     }
   }
-  else if ( 0 != text_log )
+  else if ( nullptr != text_log )
   {
     if ( count < 2 )
       text_log->Print("PolylineCurve has %d points (should be >= 2)\n",count);
@@ -390,8 +389,8 @@ ON_PolylineCurve::IsLinear( // true if curve locus is a line segment
     // using ptr to make sure we go through vtable
     const ON_Curve* ptr = &nurbs_curve;
     rc = ptr->IsLinear(tolerance);
-    nurbs_curve.m_cv = 0;
-    nurbs_curve.m_knot = 0;
+    nurbs_curve.m_cv = nullptr;
+    nurbs_curve.m_knot = nullptr;
   }
   return rc;
 }
@@ -457,8 +456,8 @@ ON_PolylineCurve::IsPlanar(
       // using ptr to make sure we go through vtable
       const ON_Curve* ptr = &nurbs_curve;
       rc = ptr->IsPlanar(plane,tolerance);
-      nurbs_curve.m_cv = 0;
-      nurbs_curve.m_knot = 0;
+      nurbs_curve.m_cv = nullptr;
+      nurbs_curve.m_knot = nullptr;
     }
   }
   return rc;
@@ -482,8 +481,8 @@ ON_PolylineCurve::IsInPlane(
     nurbs_curve.m_cv_stride = (int)(&m_pline[1].x - nurbs_curve.m_cv);
     nurbs_curve.m_knot = const_cast<double*>(m_t.Array());
     rc = nurbs_curve.IsInPlane(plane,tolerance);
-    nurbs_curve.m_cv = 0;
-    nurbs_curve.m_knot = 0;
+    nurbs_curve.m_cv = nullptr;
+    nurbs_curve.m_knot = nullptr;
   }
   return rc;
 }
@@ -1120,8 +1119,8 @@ ON_BOOL32 ON_PolylineCurve::Split(
   ) const
 {
   bool rc = false;
-  ON_PolylineCurve* left_pl=0;
-  ON_PolylineCurve* right_pl=0;
+  ON_PolylineCurve* left_pl=nullptr;
+  ON_PolylineCurve* right_pl=nullptr;
   if ( left_side ) 
   {
     left_pl = ON_PolylineCurve::Cast(left_side);

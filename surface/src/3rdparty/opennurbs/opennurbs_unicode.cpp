@@ -377,7 +377,7 @@ int ON_DecodeUTF8(
   ON__UINT16 sUTF16[2];
   ON__UINT8 c;
 
-  if (  0 == sUTF8 || sUTF8_count <= 0 || 0 == unicode_code_point )
+  if (  nullptr == sUTF8 || sUTF8_count <= 0 || nullptr == unicode_code_point )
     return 0;
 
   // special cases for most common unicode values
@@ -469,7 +469,7 @@ int ON_DecodeUTF8(
   }
 
   // handle errors
-  if ( 0 == e )
+  if ( nullptr == e )
   {
     // no errors are masked.
     return 0;
@@ -535,7 +535,7 @@ int ON_DecodeUTF8(
       sUTF16[0] = (ON__UINT16)u0;
       sUTF16[1] = (ON__UINT16)u1;
       u0 = 0xFFFFFFFF;
-      if ( 2 == ON_ConvertUTF16ToUTF32(false,sUTF16,2,&u0,1,&error_status,0,0,0) 
+      if ( 2 == ON_ConvertUTF16ToUTF32(false,sUTF16,2,&u0,1,&error_status,0,0,nullptr) 
            && 0 == error_status 
            && ON_IsValidUnicodeCodePoint(u0)
          )
@@ -604,7 +604,7 @@ int ON_DecodeUTF16(
 {
   ON__UINT32 uhi, ulo;
 
-  if ( 0 == sUTF16 || sUTF16_count <= 0 || 0 == unicode_code_point )
+  if ( nullptr == sUTF16 || sUTF16_count <= 0 || nullptr == unicode_code_point )
     return 0;
 
   // special case for most common UTF-16 single element values
@@ -624,7 +624,7 @@ int ON_DecodeUTF16(
   }
 
   // handle errors
-  if ( 0 == e )
+  if ( nullptr == e )
   {
     // no errors are masked.
     return 0;
@@ -679,7 +679,7 @@ int ON_DecodeSwapByteUTF16(
   ON__UINT8* p1;
 
 
-  if ( 0 == sUTF16 || sUTF16_count <= 0 || 0 == unicode_code_point )
+  if ( nullptr == sUTF16 || sUTF16_count <= 0 || nullptr == unicode_code_point )
     return 0;
 
   // special case for most common UTF-16 single element values
@@ -711,7 +711,7 @@ int ON_DecodeSwapByteUTF16(
   }
 
   // handle errors
-  if ( 0 == e )
+  if ( nullptr == e )
   {
     // no errors are masked.
     return 0;
@@ -774,10 +774,10 @@ int ON_ConvertUTF8ToUTF16(
   ON__UINT16 w[2];
   struct ON_UnicodeErrorParameters e;
 
-  if ( 0 != error_status )
+  if ( nullptr != error_status )
     *error_status = 0;
 
-  if ( -1 == sUTF8_count && 0 != sUTF8 )
+  if ( -1 == sUTF8_count && nullptr != sUTF8 )
   {
     for ( sUTF8_count = 0; 0 != sUTF8[sUTF8_count]; sUTF8_count++)
     {
@@ -785,9 +785,9 @@ int ON_ConvertUTF8ToUTF16(
     }
   }
 
-  if ( 0 == sUTF8 || sUTF8_count < 0 )
+  if ( nullptr == sUTF8 || sUTF8_count < 0 )
   {
-    if ( 0 != error_status )
+    if ( nullptr != error_status )
       *error_status |= 1;
     if ( sNextUTF8 )
       *sNextUTF8 = sUTF8;
@@ -796,12 +796,12 @@ int ON_ConvertUTF8ToUTF16(
 
   if ( 0 == sUTF16_count )
   {
-    sUTF16 = 0;
+    sUTF16 = nullptr;
     sUTF16_count = 2147483647; // maximum value of a 32-bit signed int
   }
-  else if ( 0 == sUTF16 )
+  else if ( nullptr == sUTF16 )
   {
-    if ( 0 != error_status )
+    if ( nullptr != error_status )
       *error_status |= 1;
     if ( sNextUTF8 )
       *sNextUTF8 = sUTF8;
@@ -820,7 +820,7 @@ int ON_ConvertUTF8ToUTF16(
     if ( j <= 0 )
       break;
     k = ON_EncodeUTF16(u,w);
-    if ( 0 != sUTF16 )
+    if ( nullptr != sUTF16 )
     {
       if ( output_count + k > sUTF16_count )
       {
@@ -834,7 +834,7 @@ int ON_ConvertUTF8ToUTF16(
     output_count += k;
   }
 
-  if ( 0 != sUTF16 && output_count < sUTF16_count)
+  if ( nullptr != sUTF16 && output_count < sUTF16_count)
     sUTF16[output_count] = 0;
   if ( sNextUTF8 )
     *sNextUTF8 = sUTF8+i;
@@ -859,10 +859,10 @@ int ON_ConvertUTF8ToUTF32(
   ON__UINT32 u;
   struct ON_UnicodeErrorParameters e;
 
-  if ( 0 != error_status )
+  if ( nullptr != error_status )
     *error_status = 0;
 
-  if ( -1 == sUTF8_count && 0 != sUTF8 )
+  if ( -1 == sUTF8_count && nullptr != sUTF8 )
   {
     for ( sUTF8_count = 0; 0 != sUTF8[sUTF8_count]; sUTF8_count++)
     {
@@ -870,9 +870,9 @@ int ON_ConvertUTF8ToUTF32(
     }
   }
 
-  if ( 0 == sUTF8 || sUTF8_count < 0 )
+  if ( nullptr == sUTF8 || sUTF8_count < 0 )
   {
-    if ( 0 != error_status )
+    if ( nullptr != error_status )
       *error_status |= 1;
     if ( sNextUTF8 )
       *sNextUTF8 = sUTF8;
@@ -881,12 +881,12 @@ int ON_ConvertUTF8ToUTF32(
 
   if ( 0 == sUTF32_count )
   {
-    sUTF32 = 0;
+    sUTF32 = nullptr;
     sUTF32_count = 2147483647; // maximum value of a 32-bit signed int
   }
-  else if ( 0 == sUTF32 )
+  else if ( nullptr == sUTF32 )
   {
-    if ( 0 != error_status )
+    if ( nullptr != error_status )
       *error_status |= 1;
     if ( sNextUTF8 )
       *sNextUTF8 = sUTF8;
@@ -904,7 +904,7 @@ int ON_ConvertUTF8ToUTF32(
     j = ON_DecodeUTF8(sUTF8+i,sUTF8_count-i,&e,&u);
     if ( j <= 0 )
       break;
-    if ( 0 != sUTF32 )
+    if ( nullptr != sUTF32 )
     {
       if ( output_count >= sUTF32_count )
       {
@@ -916,7 +916,7 @@ int ON_ConvertUTF8ToUTF32(
     output_count++;
   }
 
-  if ( 0 != sUTF32 && output_count < sUTF32_count)
+  if ( nullptr != sUTF32 && output_count < sUTF32_count)
     sUTF32[output_count] = 0;
   if ( sNextUTF8 )
     *sNextUTF8 = sUTF8+i;
@@ -943,10 +943,10 @@ int ON_ConvertUTF16ToUTF8(
   ON__UINT8 s[6];
   struct ON_UnicodeErrorParameters e;
 
-  if ( 0 != error_status )
+  if ( nullptr != error_status )
     *error_status = 0;
 
-  if ( -1 == sUTF16_count && 0 != sUTF16 )
+  if ( -1 == sUTF16_count && nullptr != sUTF16 )
   {
     for ( sUTF16_count = 0; 0 != sUTF16[sUTF16_count]; sUTF16_count++)
     {
@@ -954,9 +954,9 @@ int ON_ConvertUTF16ToUTF8(
     }
   }
 
-  if ( 0 == sUTF16 || sUTF16_count < 0 )
+  if ( nullptr == sUTF16 || sUTF16_count < 0 )
   {
-    if ( 0 != error_status )
+    if ( nullptr != error_status )
       *error_status |= 1;
     if ( sNextUTF16 )
       *sNextUTF16 = sUTF16;
@@ -965,12 +965,12 @@ int ON_ConvertUTF16ToUTF8(
 
   if ( 0 == sUTF8_count )
   {
-    sUTF8 = 0;
+    sUTF8 = nullptr;
     sUTF8_count = 2147483647; // maximum value of a 32-bit signed int
   }
-  else if ( 0 == sUTF8 )
+  else if ( nullptr == sUTF8 )
   {
-    if ( 0 != error_status )
+    if ( nullptr != error_status )
       *error_status |= 1;
     if ( sNextUTF16 )
       *sNextUTF16 = sUTF16;
@@ -1009,7 +1009,7 @@ int ON_ConvertUTF16ToUTF8(
       if ( j <= 0 )
         break;
       k = ON_EncodeUTF8(u,s);
-      if ( 0 != sUTF8 )
+      if ( nullptr != sUTF8 )
       {
         if ( output_count + k > sUTF8_count )
         {
@@ -1029,7 +1029,7 @@ int ON_ConvertUTF16ToUTF8(
       if ( j <= 0 )
         break;
       k = ON_EncodeUTF8(u,s);
-      if ( 0 != sUTF8 )
+      if ( nullptr != sUTF8 )
       {
         if ( output_count + k > sUTF8_count )
         {
@@ -1041,7 +1041,7 @@ int ON_ConvertUTF16ToUTF8(
       output_count += k;
     }
   }
-  if ( 0 != sUTF8 && output_count < sUTF8_count)
+  if ( nullptr != sUTF8 && output_count < sUTF8_count)
     sUTF8[output_count] = 0;
   if ( sNextUTF16 )
     *sNextUTF16 = sUTF16+i;
@@ -1067,10 +1067,10 @@ int ON_ConvertUTF16ToUTF32(
   ON__UINT32 u;
   struct ON_UnicodeErrorParameters e;
 
-  if ( 0 != error_status )
+  if ( nullptr != error_status )
     *error_status = 0;
 
-  if ( -1 == sUTF16_count && 0 != sUTF16 )
+  if ( -1 == sUTF16_count && nullptr != sUTF16 )
   {
     for ( sUTF16_count = 0; 0 != sUTF16[sUTF16_count]; sUTF16_count++)
     {
@@ -1078,9 +1078,9 @@ int ON_ConvertUTF16ToUTF32(
     }
   }
 
-  if ( 0 == sUTF16 || sUTF16_count < 0 )
+  if ( nullptr == sUTF16 || sUTF16_count < 0 )
   {
-    if ( 0 != error_status )
+    if ( nullptr != error_status )
       *error_status |= 1;
     if ( sNextUTF16 )
       *sNextUTF16 = sUTF16;
@@ -1089,12 +1089,12 @@ int ON_ConvertUTF16ToUTF32(
 
   if ( 0 == sUTF32_count )
   {
-    sUTF32 = 0;
+    sUTF32 = nullptr;
     sUTF32_count = 2147483647; // maximum value of a 32-bit signed int
   }
-  else if ( 0 == sUTF32 )
+  else if ( nullptr == sUTF32 )
   {
-    if ( 0 != error_status )
+    if ( nullptr != error_status )
       *error_status |= 1;
     if ( sNextUTF16 )
       *sNextUTF16 = sUTF16;
@@ -1132,7 +1132,7 @@ int ON_ConvertUTF16ToUTF32(
       j = ON_DecodeSwapByteUTF16(sUTF16+i,sUTF16_count-i,&e,&u);
       if ( j <= 0 )
         break;
-      if ( 0 != sUTF32 )
+      if ( nullptr != sUTF32 )
       {
         if ( output_count >= sUTF32_count )
         {
@@ -1151,7 +1151,7 @@ int ON_ConvertUTF16ToUTF32(
       j = ON_DecodeUTF16(sUTF16+i,sUTF16_count-i,&e,&u);
       if ( j <= 0 )
         break;
-      if ( 0 != sUTF32 )
+      if ( nullptr != sUTF32 )
       {
         if ( output_count >= sUTF32_count )
         {
@@ -1164,7 +1164,7 @@ int ON_ConvertUTF16ToUTF32(
     }
   }
 
-  if ( 0 != sUTF32 && output_count < sUTF32_count)
+  if ( nullptr != sUTF32 && output_count < sUTF32_count)
     sUTF32[output_count] = 0;
   if ( sNextUTF16 )
     *sNextUTF16 = sUTF16+i;
@@ -1200,10 +1200,10 @@ int ON_ConvertUTF32ToUTF8(
   ON__UINT8 s[6];
   struct ON_UnicodeErrorParameters e;
 
-  if ( 0 != error_status )
+  if ( nullptr != error_status )
     *error_status = 0;
 
-  if ( -1 == sUTF32_count && 0 != sUTF32 )
+  if ( -1 == sUTF32_count && nullptr != sUTF32 )
   {
     for ( sUTF32_count = 0; 0 != sUTF32[sUTF32_count]; sUTF32_count++)
     {
@@ -1211,9 +1211,9 @@ int ON_ConvertUTF32ToUTF8(
     }
   }
 
-  if ( 0 == sUTF32 || sUTF32_count < 0 )
+  if ( nullptr == sUTF32 || sUTF32_count < 0 )
   {
-    if ( 0 != error_status )
+    if ( nullptr != error_status )
       *error_status |= 1;
     if ( sNextUTF32 )
       *sNextUTF32 = sUTF32;
@@ -1222,12 +1222,12 @@ int ON_ConvertUTF32ToUTF8(
 
   if ( 0 == sUTF8_count )
   {
-    sUTF8 = 0;
+    sUTF8 = nullptr;
     sUTF8_count = 2147483647; // maximum value of a 32-bit signed int
   }
-  else if ( 0 == sUTF8 )
+  else if ( nullptr == sUTF8 )
   {
-    if ( 0 != error_status )
+    if ( nullptr != error_status )
       *error_status |= 1;
     if ( sNextUTF32 )
       *sNextUTF32 = sUTF32;
@@ -1271,7 +1271,7 @@ int ON_ConvertUTF32ToUTF8(
       u = e.m_error_code_point;
     }
     k = ON_EncodeUTF8(u,s);
-    if ( 0 != sUTF8 )
+    if ( nullptr != sUTF8 )
     {
       if ( output_count + k > sUTF8_count )
       {
@@ -1283,7 +1283,7 @@ int ON_ConvertUTF32ToUTF8(
     output_count += k;
   }
 
-  if ( 0 != sUTF8 && output_count < sUTF8_count)
+  if ( nullptr != sUTF8 && output_count < sUTF8_count)
     sUTF8[output_count] = 0;
   if ( sNextUTF32 )
     *sNextUTF32 = sUTF32+i;
@@ -1310,10 +1310,10 @@ int ON_ConvertUTF32ToUTF16(
   ON__UINT16 w[2];
   struct ON_UnicodeErrorParameters e;
 
-  if ( 0 != error_status )
+  if ( nullptr != error_status )
     *error_status = 0;
 
-  if ( -1 == sUTF32_count && 0 != sUTF32 )
+  if ( -1 == sUTF32_count && nullptr != sUTF32 )
   {
     for ( sUTF32_count = 0; 0 != sUTF32[sUTF32_count]; sUTF32_count++)
     {
@@ -1321,9 +1321,9 @@ int ON_ConvertUTF32ToUTF16(
     }
   }
 
-  if ( 0 == sUTF32 || sUTF32_count < 0 )
+  if ( nullptr == sUTF32 || sUTF32_count < 0 )
   {
-    if ( 0 != error_status )
+    if ( nullptr != error_status )
       *error_status |= 1;
     if ( sNextUTF32 )
       *sNextUTF32 = sUTF32;
@@ -1332,12 +1332,12 @@ int ON_ConvertUTF32ToUTF16(
 
   if ( 0 == sUTF16_count )
   {
-    sUTF16 = 0;
+    sUTF16 = nullptr;
     sUTF16_count = 2147483647; // maximum value of a 32-bit signed int
   }
-  else if ( 0 == sUTF16 )
+  else if ( nullptr == sUTF16 )
   {
-    if ( 0 != error_status )
+    if ( nullptr != error_status )
       *error_status |= 1;
     if ( sNextUTF32 )
       *sNextUTF32 = sUTF32;
@@ -1381,7 +1381,7 @@ int ON_ConvertUTF32ToUTF16(
       u = e.m_error_code_point;
     }
     k = ON_EncodeUTF16(u,w);
-    if ( 0 != sUTF16 )
+    if ( nullptr != sUTF16 )
     {
       if ( output_count + k > sUTF16_count )
       {
@@ -1395,7 +1395,7 @@ int ON_ConvertUTF32ToUTF16(
     output_count += k;
   }
 
-  if ( 0 != sUTF16 && output_count < sUTF16_count)
+  if ( nullptr != sUTF16 && output_count < sUTF16_count)
     sUTF16[output_count] = 0;
   if ( sNextUTF32 )
     *sNextUTF32 = sUTF32+i;

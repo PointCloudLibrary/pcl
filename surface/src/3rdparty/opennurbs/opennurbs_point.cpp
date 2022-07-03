@@ -39,7 +39,7 @@ ON_Interval::ON_Interval(double t0, double t1)
 }
 
 ON_Interval::~ON_Interval()
-{}
+= default;
 
 double&
 ON_Interval::operator[](int i)
@@ -363,7 +363,7 @@ bool ON_Interval::Union(
   bool rc = false;
   double a, mn, mx;
 
-  if ( 0 != t )
+  if ( nullptr != t )
   {
     while ( count > 0 && !ON_IsValid(*t) )
     {
@@ -372,7 +372,7 @@ bool ON_Interval::Union(
     }
   }
 
-  if ( count <= 0 || 0 == t )
+  if ( count <= 0 || nullptr == t )
   {
     // this may be increasing, decreasing, or empty
     if ( !IsEmptySet() )
@@ -1376,7 +1376,7 @@ const ON_3fVector ON_fzaxis(0.0f, 0.0f, 1.0f);
 //
 
 ON_2fPoint::ON_2fPoint()
-{}
+= default;
 
 ON_2fPoint::ON_2fPoint( const double* p )
 {
@@ -1820,7 +1820,7 @@ ON_2dPoint operator*(double d, const ON_2fPoint& p)
 //
 
 ON_3fPoint::ON_3fPoint()
-{}
+= default;
 
 ON_3fPoint::ON_3fPoint( const double* p )
 {
@@ -2270,7 +2270,7 @@ ON_3dPoint operator*(double d, const ON_3fPoint& p)
 //
 
 ON_4fPoint::ON_4fPoint()
-{}
+= default;
 
 ON_4fPoint::ON_4fPoint( const double* p )
 {
@@ -2650,7 +2650,7 @@ const ON_2fVector& ON_2fVector::UnitVector(int index)
 }
 
 ON_2fVector::ON_2fVector()
-{}
+= default;
 
 ON_2fVector::ON_2fVector( const double* v )
 {
@@ -3147,7 +3147,7 @@ const ON_3fVector& ON_3fVector::UnitVector(int index)
 }
 
 ON_3fVector::ON_3fVector()
-{}
+= default;
 
 ON_3fVector::ON_3fVector( const double* v )
 {
@@ -3629,7 +3629,7 @@ float ON_TripleProduct( const float* a, const float* b, const float* c )
 //
 
 ON_2dPoint::ON_2dPoint()
-{}
+= default;
 
 ON_2dPoint::ON_2dPoint( const float* p )
 {
@@ -4096,7 +4096,7 @@ ON_2dPoint operator*(double d, const ON_2dPoint& p)
 //
 
 ON_3dPoint::ON_3dPoint()
-{}
+= default;
 
 ON_3dPoint::ON_3dPoint( const float* p )
 {
@@ -4129,10 +4129,10 @@ ON_3dPoint::ON_3dPoint(const ON_3fVector& p)
 {x=(double)p.x;y=(double)p.y;z=(double)p.z;}
 
 ON_3dRay::ON_3dRay()
-{}
+= default;
 
 ON_3dRay::~ON_3dRay()
-{}
+= default;
 
 ON_3dPoint::ON_3dPoint( const double* p )
 {
@@ -4566,7 +4566,7 @@ ON_3dPoint operator*(double d, const ON_3dPoint& p)
 //
 
 ON_4dPoint::ON_4dPoint()
-{}
+= default;
 
 ON_4dPoint::ON_4dPoint( const float* p )
 {
@@ -4958,7 +4958,7 @@ const ON_2dVector& ON_2dVector::UnitVector(int index)
 }
 
 ON_2dVector::ON_2dVector()
-{}
+= default;
 
 ON_2dVector::ON_2dVector( const float* v )
 {
@@ -5530,7 +5530,7 @@ const ON_3dVector& ON_3dVector::UnitVector(int index)
 }
 
 ON_3dVector::ON_3dVector()
-{}
+= default;
 
 ON_3dVector::ON_3dVector( const float* v )
 {
@@ -6376,19 +6376,19 @@ double* ON_PlaneEquation::ValueAt(
       double value_range[2]
       ) const
 {
-  if ( Pcount <= 0 || 0 == P )
-    return 0;
+  if ( Pcount <= 0 || nullptr == P )
+    return nullptr;
 
   int i;
   double s;
   const double* e = &x;
 
-  if ( 0 == value )
+  if ( nullptr == value )
     value =  (double*)onmalloc(Pcount * sizeof(*value) );
-  if ( 0 == value )
-    return 0;
+  if ( nullptr == value )
+    return nullptr;
 
-  if ( 0 != value_range )
+  if ( nullptr != value_range )
   {
     value[0] = s = e[0]*((double)P[0].x) + e[1]*((double)P[0].y) + e[2]*((double)P[0].z) + e[3];
     value_range[0] = s;
@@ -6420,19 +6420,19 @@ double* ON_PlaneEquation::ValueAt(
       double value_range[2]
       ) const
 {
-  if ( Pcount <= 0 || 0 == P )
-    return 0;
+  if ( Pcount <= 0 || nullptr == P )
+    return nullptr;
 
   int i;
   double s;
   const double* e = &x;
 
-  if ( 0 == value )
+  if ( nullptr == value )
     value =  (double*)onmalloc(Pcount * sizeof(*value) );
-  if ( 0 == value )
-    return 0;
+  if ( nullptr == value )
+    return nullptr;
 
-  if ( 0 != value_range )
+  if ( nullptr != value_range )
   {
     value[0] = s = e[0]*(P[0].x) + e[1]*(P[0].y) + e[2]*(P[0].z) + e[3];
     value_range[0] = s;
@@ -6510,7 +6510,7 @@ double ON_PlaneEquation::MaximumAbsoluteValueAt(
 
   if (    point_count < 1 
        || point_stride < (bRational?4:3) 
-       || 0 == points
+       || nullptr == points
        )
   {
     return ON_UNSET_VALUE;
@@ -6600,7 +6600,7 @@ double ON_PlaneEquation::MaximumValueAt(
 
   if (    point_count < 1 
        || point_stride < (bRational?4:3) 
-       || 0 == points
+       || nullptr == points
        )
   {
     return ON_UNSET_VALUE;
@@ -6690,7 +6690,7 @@ double ON_PlaneEquation::MinimumValueAt(
 
   if (    point_count < 1 
        || point_stride < (bRational?4:3) 
-       || 0 == points
+       || nullptr == points
        )
   {
     return ON_UNSET_VALUE;
@@ -7132,7 +7132,7 @@ bool ON_GetConicEquationThrough6Points(
   const double* p;
   int i, j, k;
 
-  if ( 0 == conic )
+  if ( nullptr == conic )
     return false;
   memset(conic,0,6*sizeof(conic[0]));
   if ( max_pivot )
@@ -7281,7 +7281,7 @@ bool ON_GetConicEquationThrough6Points(
   if ( x > max_piv ) max_piv = x; else if ( x < min_piv ) min_piv = x;
   if ( 0.0 == x )
   {
-    if ( 0 != max_pivot )
+    if ( nullptr != max_pivot )
       *max_pivot = max_piv;
     return false; // two distinct points in input point list.
   }
@@ -7346,7 +7346,7 @@ bool ON_GetConicEquationThrough6Points(
   if ( x > max_piv ) max_piv = x; else if ( x < min_piv ) min_piv = x;
   if ( 0.0 == x )
   {
-    if ( 0 != max_pivot )
+    if ( nullptr != max_pivot )
       *max_pivot = max_piv;
     return false; // three distinct points in input point list.
   }
@@ -7412,7 +7412,7 @@ bool ON_GetConicEquationThrough6Points(
   if ( x > max_piv ) max_piv = x; else if ( x < min_piv ) min_piv = x;
   if ( 0.0 == x )
   {
-    if ( 0 != max_pivot )
+    if ( nullptr != max_pivot )
       *max_pivot = max_piv;
     return false; // four distinct points in the input point list.
   }
@@ -7670,7 +7670,7 @@ bool ON_GetEllipseConicEquation(
     double conic[6]
     )
 {
-  if ( 0 == conic )
+  if ( nullptr == conic )
     return false;
 
   if ( !(a > 0.0 && b > 0.0 && ON_IsValid(x0) && ON_IsValid(y0) && ON_IsValid(alpha)) )

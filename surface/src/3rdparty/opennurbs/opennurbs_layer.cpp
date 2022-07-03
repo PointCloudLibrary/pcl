@@ -96,7 +96,7 @@ unsigned int ON::NameReferenceDelimiterLength()
 const wchar_t* ON::IsNameReferenceDelimiter(const wchar_t* s)
 {
   const wchar_t* d = ON::NameReferenceDelimiter();
-  if ( 0 != s )
+  if ( nullptr != s )
   {
     while ( 0 != *d && *d == *s )
     {
@@ -106,7 +106,7 @@ const wchar_t* ON::IsNameReferenceDelimiter(const wchar_t* s)
     if ( 0 == *d )
       return s;
   }
-  return 0;
+  return nullptr;
 }
 
 
@@ -123,8 +123,8 @@ const wchar_t* ON_Layer::LayerNamePathDelimiter()
 
 static const wchar_t* LayerFullName( const wchar_t* s0 )
 {
-  if ( 0 == s0 || 0 == s0[0] )
-    return 0;
+  if ( nullptr == s0 || 0 == s0[0] )
+    return nullptr;
   const wchar_t* t;
   const wchar_t* d;
   const wchar_t* d0 = ON_Layer::LayerNameReferenceDelimiter();
@@ -143,7 +143,7 @@ static const wchar_t* LayerFullName( const wchar_t* s0 )
         d++;
         if ( 0 == *d )
         {
-          return ((0 != *t) ? t : 0);
+          return ((0 != *t) ? t : nullptr);
         }
       }
     }
@@ -156,8 +156,8 @@ static const wchar_t* LayerFullName( const wchar_t* s0 )
 static const wchar_t* LayerLeafName( const wchar_t* s )
 {
   // this static helper function assumes s0 does not being with "reference : ".
-  if ( 0 == s || 0 == s[0] )
-    return 0;
+  if ( nullptr == s || 0 == s[0] )
+    return nullptr;
   
   const wchar_t* t;
   const wchar_t* d;
@@ -181,7 +181,7 @@ static const wchar_t* LayerLeafName( const wchar_t* s )
         if ( 0 == *d )
         {
           if ( 0 == *t )
-            return 0;
+            return nullptr;
           s = t;
           s0 = t-1;
           break;
@@ -200,7 +200,7 @@ bool ON_Layer::GetLeafName( const wchar_t* layer_name, ON_wString& leaf_name)
 {
   const wchar_t* s0 = LayerFullName(layer_name);
   const wchar_t* s1 = LayerLeafName( s0 );
-  if ( 0 != s1 && 0 != *s1 )
+  if ( nullptr != s1 && 0 != *s1 )
   {
     leaf_name = s1;
     return true;
@@ -213,7 +213,7 @@ bool ON_Layer::GetParentName( const wchar_t* layer_name, ON_wString& parent_path
 {
   const wchar_t* s0 = LayerFullName(layer_name);
   const wchar_t* s1 = LayerLeafName( s0 );
-  if ( 0 != s1 && 0 != *s1 && s0 < s1 )
+  if ( nullptr != s1 && 0 != *s1 && s0 < s1 )
   {
     // back up over the delimiter
     const wchar_t* d0 = ON_Layer::LayerNamePathDelimiter();
@@ -239,7 +239,7 @@ bool ON_Layer::GetParentName( const wchar_t* layer_name, ON_wString& parent_path
 bool ON_Layer::RemoveReferenceName( const wchar_t* layer_name, ON_wString& layer_path_name)
 {
   const wchar_t* s = LayerFullName(layer_name);
-  if ( 0 != s && 0 != *s )
+  if ( nullptr != s && 0 != *s )
   {
     layer_path_name = s;
     return true;
@@ -252,7 +252,7 @@ bool ON_Layer::GetReferenceName( const wchar_t* layer_name, ON_wString& referenc
 {
   const wchar_t* s0 = layer_name;
   const wchar_t* s1 = LayerFullName(layer_name);
-  if ( 0 != s1 && 0 != *s1 && s0 < s1 )
+  if ( nullptr != s1 && 0 != *s1 && s0 < s1 )
   {
     const wchar_t* d = ON_Layer::LayerNameReferenceDelimiter();
     while ( *d++ && s0 < s1 )
@@ -773,7 +773,7 @@ ON__UINT32 ON__LayerPerViewSettings::DataCRC(ON__UINT32 current_remainder) const
 
 void ON__LayerPerViewSettings::CopySettings( const ON__LayerPerViewSettings* src, unsigned int settings_mask )
 {
-  if ( 0 != src && this != src && 0 != settings_mask )
+  if ( nullptr != src && this != src && 0 != settings_mask )
   {
     if ( 0 != (settings_mask & ON_Layer::per_viewport_id) )
       m_viewport_id = src->m_viewport_id;
@@ -1049,24 +1049,24 @@ class /*NEVER EXPORT THIS CLASS DEFINITION*/ ON__LayerExtensions : public ON_Use
 
 public:
   ON__LayerExtensions();
-  ~ON__LayerExtensions();
+  ~ON__LayerExtensions() override;
   // default copy constructor and operator= work fine.
 
 public:
   // virtual ON_Object override
-  ON_BOOL32 IsValid( ON_TextLog* text_log = NULL ) const;
+  ON_BOOL32 IsValid( ON_TextLog* text_log = nullptr ) const override;
   // virtual ON_Object override
-  unsigned int SizeOf() const;
+  unsigned int SizeOf() const override;
   // virtual ON_Object override
-  ON__UINT32 DataCRC(ON__UINT32 current_remainder) const;
+  ON__UINT32 DataCRC(ON__UINT32 current_remainder) const override;
   // virtual ON_Object override
-  ON_BOOL32 Write(ON_BinaryArchive& binary_archive) const;
+  ON_BOOL32 Write(ON_BinaryArchive& binary_archive) const override;
   // virtual ON_Object override
-  ON_BOOL32 Read(ON_BinaryArchive& binary_archive);
+  ON_BOOL32 Read(ON_BinaryArchive& binary_archive) override;
   // virtual ON_UserData override
-  ON_BOOL32 Archive() const;
+  ON_BOOL32 Archive() const override;
   // virtual ON_UserData override
-  ON_BOOL32 GetDescription( ON_wString& description );
+  ON_BOOL32 GetDescription( ON_wString& description ) override;
 
 public:
   bool IsEmpty() const;
@@ -1102,7 +1102,7 @@ ON__LayerExtensions* ON__LayerExtensions::LayerExtensions(const ON_Layer& layer,
 {
   ON__LayerExtensions* ud = ON__LayerExtensions::Cast(layer.GetUserData(ON__LayerExtensions::m_ON__LayerExtensions_class_id.Uuid()));
 
-  if ( 0 == ud )
+  if ( nullptr == ud )
   {
     if ( bCreate )
     {
@@ -1143,8 +1143,7 @@ ON__LayerExtensions::ON__LayerExtensions()
 }
 
 ON__LayerExtensions::~ON__LayerExtensions()
-{
-}
+= default;
 
 // virtual ON_Object override
 ON_BOOL32 ON__LayerExtensions::IsValid( ON_TextLog* ) const
@@ -1178,7 +1177,7 @@ ON_BOOL32 ON__LayerExtensions::Write(ON_BinaryArchive& binary_archive) const
   for(;;)
   {
     const ON_Layer* layer = ON_Layer::Cast( Owner() );
-    if ( 0 == layer )
+    if ( nullptr == layer )
       break;
     int count = m_vp_settings.Count();
     rc = binary_archive.WriteInt(count);
@@ -1212,7 +1211,7 @@ ON_BOOL32 ON__LayerExtensions::Read(ON_BinaryArchive& binary_archive)
   for(;;)
   {
     const ON_Layer* layer = ON_Layer::Cast( Owner() );
-    rc = ( 0 != layer );
+    rc = ( nullptr != layer );
     if (!rc) break;
 
     rc = (1 == major_version);
@@ -1303,7 +1302,7 @@ ON__LayerPerViewSettings* ON__LayerExtensions::ViewportSettings(
       }
     }
   }
-  return 0;
+  return nullptr;
 }
 
 void ON__LayerExtensions::DeleteViewportSettings( 
@@ -1315,7 +1314,7 @@ void ON__LayerExtensions::DeleteViewportSettings(
   ON__LayerExtensions* ud = ON__LayerExtensions::LayerExtensions(layer,layer_m_extension_bits,false);
   if ( ud )
   {
-    if ( 0 == vp_settings_to_delete )
+    if ( nullptr == vp_settings_to_delete )
     {
       delete ud;
       // Set bit 0x01 of ON_Layer::m_extension_bits to prevent
@@ -1401,7 +1400,7 @@ ON_Color ON_Layer::PerViewportColor( ON_UUID viewport_id ) const
   if ( !ExtensionBit(m_extension_bits,0x01) )
   {
     const ON__LayerPerViewSettings* vp_settings = ON__LayerExtensions::ViewportSettings( *this, &m_extension_bits, viewport_id, false );
-    if ( 0 != vp_settings && ON_UNSET_COLOR != vp_settings->m_color )
+    if ( nullptr != vp_settings && ON_UNSET_COLOR != vp_settings->m_color )
       return vp_settings->m_color;
   }
 
@@ -1443,7 +1442,7 @@ ON_Color ON_Layer::PerViewportPlotColor( ON_UUID viewport_id ) const
   if ( !ExtensionBit(m_extension_bits,0x01) )
   {
     const ON__LayerPerViewSettings* vp_settings = ON__LayerExtensions::ViewportSettings( *this, &m_extension_bits, viewport_id, false );
-    if ( 0 != vp_settings && vp_settings->m_plot_color != ON_UNSET_COLOR )
+    if ( nullptr != vp_settings && vp_settings->m_plot_color != ON_UNSET_COLOR )
       return vp_settings->m_plot_color;
   }
 
@@ -1487,7 +1486,7 @@ double ON_Layer::PerViewportPlotWeight( ON_UUID viewport_id ) const
   if ( !ExtensionBit(m_extension_bits,0x01) )
   {
     const ON__LayerPerViewSettings* vp_settings = ON__LayerExtensions::ViewportSettings( *this, &m_extension_bits, viewport_id, false );
-    if ( 0 != vp_settings && (vp_settings->m_plot_weight_mm >= 0.0 || -1.0 == vp_settings->m_plot_weight_mm) )
+    if ( nullptr != vp_settings && (vp_settings->m_plot_weight_mm >= 0.0 || -1.0 == vp_settings->m_plot_weight_mm) )
       return vp_settings->m_plot_weight_mm;
   }
   return PlotWeight();
@@ -1510,7 +1509,7 @@ bool ON_Layer::PerViewportIsVisible( ON_UUID viewport_id ) const
       {
         // default setting is off - check for per view visibility
         const ON__LayerExtensions* ud = ON__LayerExtensions::LayerExtensions(*this,&m_extension_bits,false);
-        if ( 0 != ud )
+        if ( nullptr != ud )
         {
           int i, count = ud->m_vp_settings.Count();
           for ( i = 0; i < count; i++ )
@@ -1579,7 +1578,7 @@ bool ON_Layer::PerViewportPersistentVisibility( ON_UUID viewport_id ) const
   if ( !ExtensionBit(m_extension_bits,0x01) && ON_UuidIsNotNil(viewport_id) )
   {
     ON__LayerPerViewSettings* vp_settings = ON__LayerExtensions::ViewportSettings( *this, &m_extension_bits, viewport_id, false );
-    if ( 0 != vp_settings )
+    if ( nullptr != vp_settings )
     {
       if ( 1 == vp_settings->m_visible )
         return true;
@@ -1618,7 +1617,7 @@ void ON_Layer::UnsetPerViewportPersistentVisibility( ON_UUID viewport_id )
   if ( ON_UuidIsNil(viewport_id) )
   {
     ON__LayerExtensions* ud = ON__LayerExtensions::LayerExtensions( *this, &m_extension_bits, false );
-    if ( 0 != ud )
+    if ( nullptr != ud )
     {
       for ( int i = 0; i < ud->m_vp_settings.Count(); i++ )
       {
@@ -1642,7 +1641,7 @@ void ON_Layer::DeletePerViewportColor( const ON_UUID& viewport_id )
   if ( ON_UuidIsNil(viewport_id) )
   {
     ON__LayerExtensions* ud = ON__LayerExtensions::LayerExtensions(*this,&m_extension_bits,false);
-    if ( 0 != ud )
+    if ( nullptr != ud )
     {
       for ( int i = ud->m_vp_settings.Count(); i--; /*empty iterator*/ )
       {
@@ -1652,8 +1651,8 @@ void ON_Layer::DeletePerViewportColor( const ON_UUID& viewport_id )
       }
       if ( ud->IsEmpty() )
       {
-        ON__LayerExtensions::DeleteViewportSettings( *this, &m_extension_bits, 0 );
-        ud = 0;
+        ON__LayerExtensions::DeleteViewportSettings( *this, &m_extension_bits, nullptr );
+        ud = nullptr;
       }
     }
   }
@@ -1674,7 +1673,7 @@ void ON_Layer::DeletePerViewportPlotColor( const ON_UUID& viewport_id )
   if ( ON_UuidIsNil(viewport_id) )
   {
     ON__LayerExtensions* ud = ON__LayerExtensions::LayerExtensions(*this,&m_extension_bits,false);
-    if ( 0 != ud )
+    if ( nullptr != ud )
     {
       for ( int i = ud->m_vp_settings.Count(); i--; /*empty iterator*/ )
       {
@@ -1684,8 +1683,8 @@ void ON_Layer::DeletePerViewportPlotColor( const ON_UUID& viewport_id )
       }
       if ( ud->IsEmpty() )
       {
-        ON__LayerExtensions::DeleteViewportSettings( *this, &m_extension_bits, 0 );
-        ud = 0;
+        ON__LayerExtensions::DeleteViewportSettings( *this, &m_extension_bits, nullptr );
+        ud = nullptr;
       }
     }
   }
@@ -1706,7 +1705,7 @@ int ON_Layer::UpdateViewportIds( const ON_UuidPairList& viewport_id_map )
   if ( viewport_id_map.Count() <= 0 )
     return 0;
   ON__LayerExtensions* ud = ON__LayerExtensions::LayerExtensions(*this,&m_extension_bits,false);
-  if ( 0 == ud )
+  if ( nullptr == ud )
     return 0;
   int rc = 0;
   ON_UUID new_id;
@@ -1727,7 +1726,7 @@ void ON_Layer::DeletePerViewportPlotWeight( const ON_UUID& viewport_id )
   if ( ON_UuidIsNil(viewport_id) )
   {
     ON__LayerExtensions* ud = ON__LayerExtensions::LayerExtensions(*this,&m_extension_bits,false);
-    if ( 0 != ud )
+    if ( nullptr != ud )
     {
       for ( int i = ud->m_vp_settings.Count(); i--; /*empty iterator*/ )
       {
@@ -1737,8 +1736,8 @@ void ON_Layer::DeletePerViewportPlotWeight( const ON_UUID& viewport_id )
       }
       if ( ud->IsEmpty() )
       {
-        ON__LayerExtensions::DeleteViewportSettings( *this, &m_extension_bits, 0 );
-        ud = 0;
+        ON__LayerExtensions::DeleteViewportSettings( *this, &m_extension_bits, nullptr );
+        ud = nullptr;
       }
     }
   }
@@ -1759,7 +1758,7 @@ void ON_Layer::DeletePerViewportVisible( const ON_UUID& viewport_id )
   if ( ON_UuidIsNil(viewport_id) )
   {
     ON__LayerExtensions* ud = ON__LayerExtensions::LayerExtensions(*this,&m_extension_bits,false);
-    if ( 0 != ud )
+    if ( nullptr != ud )
     {
       for ( int i = ud->m_vp_settings.Count(); i--; /*empty iterator*/ )
       {
@@ -1770,8 +1769,8 @@ void ON_Layer::DeletePerViewportVisible( const ON_UUID& viewport_id )
       }
       if ( ud->IsEmpty() )
       {
-        ON__LayerExtensions::DeleteViewportSettings( *this, &m_extension_bits, 0 );
-        ud = 0;
+        ON__LayerExtensions::DeleteViewportSettings( *this, &m_extension_bits, nullptr );
+        ud = nullptr;
       }
     }
   }
@@ -1794,7 +1793,7 @@ void ON_Layer::GetPerViewportVisibilityViewportIds(
 {
   viewport_id_list.SetCount(0);
   const ON__LayerExtensions* ud = ON__LayerExtensions::LayerExtensions(*this,&m_extension_bits,false);
-  if ( 0 != ud )
+  if ( nullptr != ud )
   {
     const int count = ud->m_vp_settings.Count();
     if ( count > 0 )
@@ -1830,7 +1829,7 @@ bool ON_Layer::HasPerViewportSettings(
     if ( ON_UuidIsNil(viewport_id) )
     {
       const ON__LayerExtensions* ud = ON__LayerExtensions::LayerExtensions(*this,&m_extension_bits,false);
-      if ( 0 != ud )
+      if ( nullptr != ud )
       {
         const int count = ud->m_vp_settings.Count();
         for ( int i = 0; i < count; i++ )
@@ -1844,7 +1843,7 @@ bool ON_Layer::HasPerViewportSettings(
     else
     {
       const ON__LayerPerViewSettings* pvs = ON__LayerExtensions::ViewportSettings( *this, &m_extension_bits, viewport_id, false );
-      if ( 0 != pvs && 0 != (settings_mask & pvs->SettingsMask() ) )
+      if ( nullptr != pvs && 0 != (settings_mask & pvs->SettingsMask() ) )
         return true;
     }
   }
@@ -1861,15 +1860,15 @@ bool ON_Layer::CopyPerViewportSettings(ON_UUID source_viewport_id, ON_UUID desti
      )
   {
     const ON__LayerPerViewSettings* src = ON__LayerExtensions::ViewportSettings( *this, &m_extension_bits, source_viewport_id, false );
-    if( 0 != src )
+    if( nullptr != src )
     {
       // Make a local copy of the source settings because
       // the pointer to the source settings may be invalid
       // after adding storage for the destination settings.
       const ON__LayerPerViewSettings local_src(*src);
-      src = 0; // never use this pointer again in this function.
+      src = nullptr; // never use this pointer again in this function.
       ON__LayerPerViewSettings* dst = ON__LayerExtensions::ViewportSettings( *this, &m_extension_bits, destination_viewport_id, true);
-      if( 0 != dst )
+      if( nullptr != dst )
       {
         *dst = local_src;
         dst->m_viewport_id = destination_viewport_id;
@@ -1893,14 +1892,14 @@ bool ON_Layer::CopyPerViewportSettings(
     {
       // copy per viwport settings for every viewport
       const ON__LayerExtensions* soruce_layer_ud = ON__LayerExtensions::LayerExtensions(source_layer,&source_layer.m_extension_bits,false);
-      if ( 0 != soruce_layer_ud )
+      if ( nullptr != soruce_layer_ud )
       {
         const int count = soruce_layer_ud->m_vp_settings.Count();
         for ( int i = 0; i < count; i++ )
         {
           const ON__LayerPerViewSettings& src = soruce_layer_ud->m_vp_settings[i];
           ON__LayerPerViewSettings* dst = ON__LayerExtensions::ViewportSettings( *this, &m_extension_bits, src.m_viewport_id, true);
-          if ( 0 != dst )
+          if ( nullptr != dst )
           {
             dst->CopySettings(&src,settings_mask);
             rc = true;
@@ -1912,10 +1911,10 @@ bool ON_Layer::CopyPerViewportSettings(
     {
       // copy per viwport settings for a specified viewport.
       const ON__LayerPerViewSettings* src = ON__LayerExtensions::ViewportSettings( source_layer, &source_layer.m_extension_bits, viewport_id, false);
-      if ( 0 != src )
+      if ( nullptr != src )
       {
         ON__LayerPerViewSettings* dst = ON__LayerExtensions::ViewportSettings( *this, &m_extension_bits, viewport_id, true);
-        if ( 0 != dst )
+        if ( nullptr != dst )
         {
           dst->CopySettings(src,settings_mask);
           rc = true;
@@ -1931,7 +1930,7 @@ void ON_Layer::DeletePerViewportSettings( const ON_UUID& viewport_id ) const
 {
   if ( ON_UuidIsNil(viewport_id) )
   {
-    ON__LayerExtensions::DeleteViewportSettings(*this,&m_extension_bits,0);
+    ON__LayerExtensions::DeleteViewportSettings(*this,&m_extension_bits,nullptr);
   }
   else
   {
@@ -1945,15 +1944,15 @@ void ON_Layer::DeletePerViewportSettings( const ON_UUID& viewport_id ) const
 void ON_Layer::CullPerViewportSettings( int viewport_id_count, const ON_UUID* viewport_id_list )
 {
   ON__LayerExtensions* ud = ON__LayerExtensions::LayerExtensions(*this,&m_extension_bits,false);
-  if ( 0 != ud )
+  if ( nullptr != ud )
   {
     if ( viewport_id_count <= 0 )
     {
       // delete all per viewport settings
-      ON__LayerExtensions::DeleteViewportSettings( *this, &m_extension_bits, 0 );
-      ud = 0;
+      ON__LayerExtensions::DeleteViewportSettings( *this, &m_extension_bits, nullptr );
+      ud = nullptr;
     }
-    else if ( viewport_id_count > 0 && 0 != viewport_id_list )
+    else if ( viewport_id_count > 0 && nullptr != viewport_id_list )
     {
       int i, j;
       for ( i = ud->m_vp_settings.Count(); i--; /*empty iterator*/ )
@@ -1973,8 +1972,8 @@ void ON_Layer::CullPerViewportSettings( int viewport_id_count, const ON_UUID* vi
       if ( ud->IsEmpty() )
       {
         // nothing useful in ud
-        ON__LayerExtensions::DeleteViewportSettings( *this, &m_extension_bits, 0 );
-        ud = 0;
+        ON__LayerExtensions::DeleteViewportSettings( *this, &m_extension_bits, nullptr );
+        ud = nullptr;
       }
     }
   }
@@ -1986,7 +1985,7 @@ ON__UINT32 ON_Layer::PerViewportSettingsCRC() const
   if ( !ExtensionBit(m_extension_bits,0x01) )
   {
     ON__LayerExtensions* ud = ON__LayerExtensions::LayerExtensions(*this,&m_extension_bits,false);
-    if ( 0 != ud )
+    if ( nullptr != ud )
     {
       for ( int i = 0; i < ud->m_vp_settings.Count(); i++ )
         crc = ud->m_vp_settings[i].DataCRC(crc);
@@ -2023,14 +2022,14 @@ unsigned int ON_Layer::Differences( const ON_Layer& layer0, const ON_Layer& laye
 
   const ON_UserData* ud0 = layer0.FirstUserData();
   const ON_UserData* ud1 = layer1.FirstUserData();
-  while ( 0 != ud0 && 0 != ud1 )
+  while ( nullptr != ud0 && nullptr != ud1 )
   {
     if ( ud0->m_userdata_uuid != ud1->m_userdata_uuid )
       break;
     ud0 = ud0->Next();
     ud1 = ud1->Next();
   }
-  if ( 0 != ud0 || 0 != ud1 )
+  if ( nullptr != ud0 || nullptr != ud1 )
     differences |= ON_Layer::userdata_settings;
 
   if ( layer0.m_color != layer1.m_color )
@@ -2110,7 +2109,7 @@ class /*NEVER EXPORT THIS CLASS DEFINITION*/ ON__LayerSettingsUserData : public 
 
 public:
   ON__LayerSettingsUserData();
-  ~ON__LayerSettingsUserData();
+  ~ON__LayerSettingsUserData() override;
   // default copy constructor and operator= work fine.
 
   static ON__LayerSettingsUserData* LayerSettings(const ON_Layer& layer,bool bCreate);
@@ -2118,19 +2117,19 @@ public:
 
 public:
   // virtual ON_Object override
-  ON_BOOL32 IsValid( ON_TextLog* text_log = NULL ) const;
+  ON_BOOL32 IsValid( ON_TextLog* text_log = nullptr ) const override;
   // virtual ON_Object override
-  unsigned int SizeOf() const;
+  unsigned int SizeOf() const override;
   // virtual ON_Object override
-  ON__UINT32 DataCRC(ON__UINT32 current_remainder) const;
+  ON__UINT32 DataCRC(ON__UINT32 current_remainder) const override;
   // virtual ON_Object override
-  ON_BOOL32 Write(ON_BinaryArchive& binary_archive) const;
+  ON_BOOL32 Write(ON_BinaryArchive& binary_archive) const override;
   // virtual ON_Object override
-  ON_BOOL32 Read(ON_BinaryArchive& binary_archive);
+  ON_BOOL32 Read(ON_BinaryArchive& binary_archive) override;
   // virtual ON_UserData override
-  ON_BOOL32 Archive() const;
+  ON_BOOL32 Archive() const override;
   // virtual ON_UserData override
-  ON_BOOL32 GetDescription( ON_wString& description );
+  ON_BOOL32 GetDescription( ON_wString& description ) override;
 
 public:
 
@@ -2197,8 +2196,7 @@ ON__LayerSettingsUserData::ON__LayerSettingsUserData()
 }
 
 ON__LayerSettingsUserData::~ON__LayerSettingsUserData()
-{
-}
+= default;
 
 // virtual ON_Object override
 ON_BOOL32 ON__LayerSettingsUserData::IsValid( ON_TextLog* ) const
@@ -2322,7 +2320,7 @@ void ON_Layer::SaveSettings( unsigned int settings, bool bUpdate )
       if ( ud )
       {
         delete ud;
-        ud = 0;
+        ud = nullptr;
       }
     }
   }
@@ -2358,13 +2356,13 @@ void ON_Layer::SaveSettings( unsigned int settings, bool bUpdate )
 unsigned int ON_Layer::SavedSettings() const
 {
   const ON__LayerSettingsUserData* ud = ON__LayerSettingsUserData::LayerSettings(*this,false);
-  return ( 0 != ud ? ud->m_settings : 0 );
+  return ( nullptr != ud ? ud->m_settings : 0 );
 }
 
 bool ON_Layer::GetSavedSettings( ON_Layer& layer, unsigned int& ) const
 {
   const ON__LayerSettingsUserData* ud = ON__LayerSettingsUserData::LayerSettings(*this,false);
-  if ( 0 == ud )
+  if ( nullptr == ud )
     return false;
 
   if ( ud->HaveColor() )

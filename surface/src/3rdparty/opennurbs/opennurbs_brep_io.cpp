@@ -84,7 +84,7 @@ ON_BOOL32 ON_BrepEdge::Read( ON_BinaryArchive& file )
         domain = proxy_domain;
     }
   }
-  SetProxyCurve( NULL, proxy_domain );
+  SetProxyCurve( nullptr, proxy_domain );
   if ( bReversed )
     ON_CurveProxy::Reverse();
   SetDomain(domain);
@@ -625,7 +625,7 @@ ON_BOOL32 ON_BrepFaceArray::Write( ON_BinaryArchive& file ) const
 ON_BOOL32 ON_Brep::Write( ON_BinaryArchive& file ) const
 {
   const ON_Brep* brep = this;
-  ON_Brep* v2brep = 0;
+  ON_Brep* v2brep = nullptr;
 
   //ON_BOOL32 rc = file.Write3dmChunkVersion(3,0); // serialization version
   //ON_BOOL32 rc = file.Write3dmChunkVersion(3,1); // added meshes
@@ -673,7 +673,7 @@ ON_BOOL32 ON_Brep::Write( ON_BinaryArchive& file ) const
     if ( rc )
     {
       for ( fi = 0; rc && fi < face_count; fi++ ) {
-        const ON_Mesh* mesh = file.Save3dmRenderMeshes() ? brep->m_F[fi].m_render_mesh : 0;
+        const ON_Mesh* mesh = file.Save3dmRenderMeshes() ? brep->m_F[fi].m_render_mesh : nullptr;
         b = mesh ? 1 : 0;
         rc = file.WriteChar(b);
         if (rc && mesh) {
@@ -691,7 +691,7 @@ ON_BOOL32 ON_Brep::Write( ON_BinaryArchive& file ) const
     if ( rc )
     {
       for ( fi = 0; rc && fi < face_count; fi++ ) {
-        const ON_Mesh* mesh = file.Save3dmAnalysisMeshes() ? brep->m_F[fi].m_analysis_mesh : 0;
+        const ON_Mesh* mesh = file.Save3dmAnalysisMeshes() ? brep->m_F[fi].m_analysis_mesh : nullptr;
         b = mesh ? 1 : 0;
         rc = file.WriteChar(b);
         if (rc && mesh) {
@@ -714,7 +714,7 @@ ON_BOOL32 ON_Brep::Write( ON_BinaryArchive& file ) const
   }
   // end of chunk version 3.2
 
-  if ( 0 != v2brep )
+  if ( nullptr != v2brep )
     delete v2brep;
 
   return rc;
@@ -897,9 +897,9 @@ ON_BOOL32 ON_Brep::Read( ON_BinaryArchive& file )
             rc = file.ReadChar(&b);
             if (rc && b) 
             {
-              obj = 0;
+              obj = nullptr;
               rc = file.ReadObject(&obj);
-              if ( 0 != obj )
+              if ( nullptr != obj )
               {
                 m_F[fi].m_render_mesh = ON_Mesh::Cast(obj);
                 if ( !m_F[fi].m_render_mesh )
@@ -1172,7 +1172,7 @@ bool ON_Brep::ReadOld200( ON_BinaryArchive& file, int minor_version )
       ON_BrepFace& f = m_F[i];
       file.ReadChar(&b);
       if (b) {
-        obj = 0;
+        obj = nullptr;
         rc = (file.ReadObject(&obj)==1)?true:false;
         f.m_render_mesh = ON_Mesh::Cast(obj);
         if ( !f.m_render_mesh )
@@ -1185,7 +1185,7 @@ bool ON_Brep::ReadOld200( ON_BinaryArchive& file, int minor_version )
         ON_BrepFace& f = m_F[i];
         if ( f.m_render_mesh ) {
           delete f.m_render_mesh;
-          f.m_render_mesh = 0;
+          f.m_render_mesh = nullptr;
         }
       }
     }
@@ -1196,7 +1196,7 @@ bool ON_Brep::ReadOld200( ON_BinaryArchive& file, int minor_version )
         ON_BrepFace& f = m_F[i];
         file.ReadChar(&b);
         if (b) {
-          obj = 0;
+          obj = nullptr;
           rc = file.ReadObject(&obj)?true:false;
           f.m_analysis_mesh = ON_Mesh::Cast(obj);
           if ( !f.m_analysis_mesh )
@@ -1209,7 +1209,7 @@ bool ON_Brep::ReadOld200( ON_BinaryArchive& file, int minor_version )
           ON_BrepFace& f = m_F[i];
           if ( f.m_analysis_mesh ) {
             delete f.m_analysis_mesh;
-            f.m_analysis_mesh = 0;
+            f.m_analysis_mesh = nullptr;
           }
         }
       }
@@ -1334,9 +1334,9 @@ bool ON_Brep::ReadOld100( ON_BinaryArchive& file )
 
 bool ON_Brep::ReadOld101( ON_BinaryArchive& file )
 {
-  ON_Object*  pO = NULL;
-  ON_Curve*   pC = NULL;
-  ON_Surface* pS = NULL;
+  ON_Object*  pO = nullptr;
+  ON_Curve*   pC = nullptr;
+  ON_Surface* pS = nullptr;
   int i, count;
 
   // 2d curves
@@ -1344,14 +1344,14 @@ bool ON_Brep::ReadOld101( ON_BinaryArchive& file )
   m_C2.Reserve(count);
   for ( i = 0; i < count; i++ ) 
   {
-    pO = NULL;
+    pO = nullptr;
     file.ReadObject( &pO );
     pC = ON_Curve::Cast(pO);
     if ( !pC )
       delete pO; // ERROR!
     m_C2.Append( pC );
-    pC = NULL;
-    pO = NULL;
+    pC = nullptr;
+    pO = nullptr;
   }
 
   // 3d curves
@@ -1359,14 +1359,14 @@ bool ON_Brep::ReadOld101( ON_BinaryArchive& file )
   m_C3.Reserve(count);
   for ( i = 0; i < count; i++ ) 
   {
-    pO = NULL;
+    pO = nullptr;
     file.ReadObject( &pO );
     pC = ON_Curve::Cast(pO);
     if ( !pC )
       delete pO; // ERROR!
     m_C3.Append( pC );
-    pC = NULL;
-    pO = NULL;
+    pC = nullptr;
+    pO = nullptr;
   }
 
   // untrimmed surfaces
@@ -1374,14 +1374,14 @@ bool ON_Brep::ReadOld101( ON_BinaryArchive& file )
   m_S.Reserve(count);
   for ( i = 0; i < count; i++ ) 
   {
-    pO = NULL;
+    pO = nullptr;
     file.ReadObject( &pO );
     pS = ON_Surface::Cast(pO);
     if ( !pS )
       delete pO; // ERROR!
     m_S.Append( pS );
-    pS = NULL;
-    pO = NULL;
+    pS = nullptr;
+    pO = nullptr;
   }
 
   // vertices
@@ -1452,12 +1452,12 @@ bool ON_Brep::ReadOld101( ON_BinaryArchive& file )
 ON_Curve* ON_Brep::Read100_BrepCurve( ON_BinaryArchive& ) const
 {
   // TODO - look at old Rhino I/O tookit code and read b-rep curves
-  return NULL;
+  return nullptr;
 }
 
 ON_Surface* ON_Brep::Read100_BrepSurface( ON_BinaryArchive& ) const
 {
   // TODO - look at old Rhino I/O tookit code and read b-rep surfaces
-  return NULL;
+  return nullptr;
 }
 

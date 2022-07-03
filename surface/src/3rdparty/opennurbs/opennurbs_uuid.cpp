@@ -246,7 +246,7 @@ ON_UUID ON_UuidFromString( const wchar_t* sUUID )
   wchar_t w;
   char s[64];
   int i;
-  if( NULL == sUUID )
+  if( nullptr == sUUID )
     return ON_nil_uuid;
   while ( *sUUID && *sUUID <= ' ' ) // skip leading white space
     sUUID++;
@@ -443,7 +443,7 @@ char* ON_UuidToString( const ON_UUID& uuid, char* s)
   unsigned int c;
 
   if ( !s )
-    return 0;
+    return nullptr;
   p = s;
   for ( i = 0; i < 16; i++ ) {
     c = b[rho[i]];
@@ -487,7 +487,7 @@ wchar_t* ON_UuidToString( const ON_UUID& uuid, wchar_t* s)
   }
   else
   {
-    s = 0;
+    s = nullptr;
   }
   return s;
 }

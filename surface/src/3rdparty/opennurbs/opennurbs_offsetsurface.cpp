@@ -19,25 +19,25 @@
 ON_OBJECT_IMPLEMENT(ON_OffsetSurface,ON_SurfaceProxy,"00C61749-D430-4ecc-83A8-29130A20CF9C");
 
 ON_OffsetSurface::ON_OffsetSurface()
-                 : m__pSrf(0)
+                 : m__pSrf(nullptr)
 {
 }
 
 ON_OffsetSurface::~ON_OffsetSurface()
 {
-  m_offset_function.SetBaseSurface( 0 );
-  if ( 0 != m__pSrf && this != m__pSrf )
+  m_offset_function.SetBaseSurface( nullptr );
+  if ( nullptr != m__pSrf && this != m__pSrf )
     delete m__pSrf;
-  m__pSrf = 0;
+  m__pSrf = nullptr;
   
 }
 
 ON_OffsetSurface::ON_OffsetSurface( const ON_OffsetSurface& src)
                  : ON_SurfaceProxy(src),
-                   m__pSrf(0),
+                   m__pSrf(nullptr),
                    m_offset_function(src.m_offset_function)
 {
-  if ( 0 != src.m__pSrf )
+  if ( nullptr != src.m__pSrf )
   {
     m__pSrf = src.ON_SurfaceProxy::DuplicateSurface();
     SetProxySurface(m__pSrf);
@@ -49,10 +49,10 @@ ON_OffsetSurface& ON_OffsetSurface::operator=(const ON_OffsetSurface& src)
 {
   if ( this != &src )
   {
-    if ( 0 != m__pSrf && this != m__pSrf )
+    if ( nullptr != m__pSrf && this != m__pSrf )
       delete m__pSrf;
-    m__pSrf = 0;
-    if ( 0 != src.m__pSrf )
+    m__pSrf = nullptr;
+    if ( nullptr != src.m__pSrf )
     {
       m__pSrf = src.ON_SurfaceProxy::DuplicateSurface();
       SetProxySurface(m__pSrf);
@@ -86,19 +86,19 @@ bool ON_OffsetSurface::SetBaseSurface(
   if ( this != base_surface )
   {
     rc = true;
-    if ( 0 == base_surface )
+    if ( nullptr == base_surface )
     {
-      if ( 0 != m__pSrf && this != m__pSrf )
+      if ( nullptr != m__pSrf && this != m__pSrf )
         delete m__pSrf;
-      m__pSrf = 0;
-      ON_SurfaceProxy::SetProxySurface(0);
-      m_offset_function.SetBaseSurface(0);
+      m__pSrf = nullptr;
+      ON_SurfaceProxy::SetProxySurface(nullptr);
+      m_offset_function.SetBaseSurface(nullptr);
     }
     else if ( BaseSurface() != base_surface )
     {
-      if ( 0 != m__pSrf && this != m__pSrf )
+      if ( nullptr != m__pSrf && this != m__pSrf )
         delete m__pSrf;
-      m__pSrf = 0;
+      m__pSrf = nullptr;
       ON_SurfaceProxy::SetProxySurface(base_surface);
     }
     m_offset_function.SetBaseSurface( BaseSurface() );
@@ -140,13 +140,13 @@ ON_BOOL32 ON_OffsetSurface::GetBBox(
         distance = d;
     }
     distance *= 2;
-    if ( 0 != bbox_min )
+    if ( nullptr != bbox_min )
     {
       bbox_min[0] -= distance;
       bbox_min[1] -= distance;
       bbox_min[2] -= distance;
     }
-    if ( 0 != bbox_max )
+    if ( nullptr != bbox_max )
     {
       bbox_max[0] += distance;
       bbox_max[1] += distance;
@@ -384,7 +384,7 @@ bool ON_OffsetSurfaceFunction::SetBaseSurface( const ON_Surface* srf )
   bool rc = false;
   Destroy();
   m_srf = srf;
-  if ( 0 != m_srf )
+  if ( nullptr != m_srf )
   {
     m_domain[0] = m_srf->Domain(0);
     m_domain[1] = m_srf->Domain(1);
@@ -420,7 +420,7 @@ bool ON_OffsetSurfaceFunction::SideTangency(int side) const
 
 int ON_OffsetSurfaceFunction::OffsetPointCount() const
 {
-  return (0 != m_srf) ? m_offset_value.Count() : 0;
+  return (nullptr != m_srf) ? m_offset_value.Count() : 0;
 }
 
 
@@ -481,7 +481,7 @@ ON_3dPoint ON_OffsetSurfaceFunction::PointAt(
   //double d = 0.0;
   ON_3dPoint P;
   ON_3dVector N;
-  if ( 0 != m_srf )
+  if ( nullptr != m_srf )
   {
     if ( m_srf->EvNormal(s,t,P,N) )
     {
@@ -494,7 +494,7 @@ ON_3dPoint ON_OffsetSurfaceFunction::PointAt(
 ON_2dPoint ON_OffsetSurfaceFunction::OffsetSurfaceParameter(int i) const
 {
   ON_2dPoint p(ON_UNSET_VALUE,ON_UNSET_VALUE);
-  if ( 0 != m_srf && i >= 0 && i < m_offset_value.Count() )
+  if ( nullptr != m_srf && i >= 0 && i < m_offset_value.Count() )
   {
     p.x = m_offset_value[i].m_s;
     p.y = m_offset_value[i].m_t;
@@ -510,7 +510,7 @@ const ON_Surface* ON_OffsetSurfaceFunction::BaseSurface() const
 double ON_OffsetSurfaceFunction::OffsetDistance(int i) const
 {
   double d = ON_UNSET_VALUE;
-  if ( 0 != m_srf && i >= 0 && i < m_offset_value.Count() )
+  if ( nullptr != m_srf && i >= 0 && i < m_offset_value.Count() )
   {
     d = m_offset_value[i].m_distance;
   }
@@ -616,7 +616,7 @@ bool ON_OffsetSurfaceFunction::SetPoint( int index, double s, double t)
 
 void ON_OffsetSurfaceFunction::Destroy()
 {
-  m_srf = 0;
+  m_srf = nullptr;
   m_bZeroSideDerivative[0] = false;
   m_bZeroSideDerivative[1] = false;
   m_bZeroSideDerivative[2] = false;
@@ -643,7 +643,7 @@ ON_OffsetSurfaceFunction::~ON_OffsetSurfaceFunction()
 bool ON_OffsetSurfaceFunction::Initialize()
 {
   const int count = m_offset_value.Count();
-  if ( !m_bValid && 0 != m_srf && count > 0)
+  if ( !m_bValid && nullptr != m_srf && count > 0)
   {
     ON_Workspace ws;
     m_bumps.SetCount(0);

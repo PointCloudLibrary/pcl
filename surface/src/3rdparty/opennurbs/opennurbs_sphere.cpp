@@ -25,7 +25,7 @@ ON_Sphere::ON_Sphere( const ON_3dPoint& center, double r)
 }
 
 ON_Sphere::~ON_Sphere()
-{}
+= default;
 
 bool ON_Sphere::IsValid() const
 {
@@ -312,7 +312,7 @@ ON_RevSurface* ON_Sphere::RevSurfaceForm(
 {
   if ( srf )
     srf->Destroy();
-  ON_RevSurface* pRevSurface = NULL;
+  ON_RevSurface* pRevSurface = nullptr;
   if ( IsValid() )
   {
     ON_Arc arc;

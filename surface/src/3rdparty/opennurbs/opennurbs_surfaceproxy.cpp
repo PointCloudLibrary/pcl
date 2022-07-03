@@ -20,7 +20,7 @@ ON_OBJECT_IMPLEMENT(ON_SurfaceProxy,ON_Surface,"4ED7D4E2-E947-11d3-BFE5-00108301
 ;
 
 ON_SurfaceProxy::ON_SurfaceProxy () :
-  m_surface (0), m_bTransposed (0)
+  m_surface (nullptr), m_bTransposed (0)
 {
 }
 
@@ -30,7 +30,7 @@ ON_SurfaceProxy::ON_SurfaceProxy (const ON_Surface* s) :
 }
 
 ON_SurfaceProxy::ON_SurfaceProxy (const ON_SurfaceProxy& src) :
-  ON_Surface (src), m_surface (0), m_bTransposed (0)
+  ON_Surface (src), m_surface (nullptr), m_bTransposed (0)
 {
   *this = src;
 }
@@ -68,7 +68,7 @@ ON_SurfaceProxy::operator= (const ON_SurfaceProxy& src)
 
 ON_SurfaceProxy::~ON_SurfaceProxy ()
 {
-  m_surface = 0;
+  m_surface = nullptr;
 }
 
 void
@@ -76,11 +76,11 @@ ON_SurfaceProxy::SetProxySurface (const ON_Surface* proxy_surface)
 {
   // setting m_surface=0 prevents crashes if user has deleted
   // "real" surface before calling SetProxySurface().
-  m_surface = 0;
+  m_surface = nullptr;
 
   DestroySurfaceTree ();
   if (proxy_surface == this)
-    proxy_surface = 0;
+    proxy_surface = nullptr;
   m_surface = proxy_surface;
   m_bTransposed = false;
 }
@@ -100,7 +100,7 @@ ON_SurfaceProxy::ProxySurfaceIsTransposed () const
 ON_Surface*
 ON_SurfaceProxy::DuplicateSurface () const
 {
-  ON_Surface* dup_srf = 0;
+  ON_Surface* dup_srf = nullptr;
   if (m_surface)
   {
     dup_srf = m_surface->Duplicate ();
@@ -257,7 +257,7 @@ ON_SurfaceProxy::IsIsoparametric ( // returns isoparametric status of 2d curve
   // this is a virtual overide of an ON_Surface::IsIsoparametric
 
   const ON_Curve* pC = &crv;
-  ON_Curve* pTranC = NULL;
+  ON_Curve* pTranC = nullptr;
   if (m_bTransposed)
   {
     pTranC = crv.DuplicateCurve ();
@@ -371,7 +371,7 @@ ON_SurfaceProxy::GetNextDiscontinuity (int dir, ON::continuity c, double t0, dou
   // untested code
   bool rc = false;
 
-  if (0 != m_surface && dir >= 0 && dir <= 1)
+  if (nullptr != m_surface && dir >= 0 && dir <= 1)
   {
     rc = m_surface->GetNextDiscontinuity (m_bTransposed ? 1 - dir : dir, c, t0, t1, t, hint, dtype,
                                           cos_angle_tolerance, curvature_tolerance);
@@ -469,14 +469,14 @@ ON_SurfaceProxy::Evaluate ( // returns false if unable to evaluate
 ON_Curve*
 ON_SurfaceProxy::IsoCurve (int dir, double c) const
 {
-  ON_Curve* isocurve = 0;
+  ON_Curve* isocurve = nullptr;
 
   if (m_bTransposed)
   {
     dir = 1 - dir;
   }
 
-  if (0 != m_surface && dir >= 0 && dir <= 1)
+  if (nullptr != m_surface && dir >= 0 && dir <= 1)
   {
     isocurve = m_surface->IsoCurve (dir, c);
   }

@@ -25,17 +25,17 @@ class ON_CLASS ON_PolyEdgeCurve : public ON_PolyCurve
 
 public:
   ON_PolyEdgeCurve();
-  ~ON_PolyEdgeCurve();
+  ~ON_PolyEdgeCurve() override;
   // default copy constructor and operator= are fine.
 
   // virtual ON_Object::DestroyRuntimeCache override
-  void DestroyRuntimeCache( bool bDelete = true );
+  void DestroyRuntimeCache( bool bDelete = true ) override;
 
   // virtual ON_Curve::IsClosed override
-  ON_BOOL32 IsClosed() const;
+  ON_BOOL32 IsClosed() const override;
 
   // virtual ON_Curve::DuplicateCurve override
-  ON_Curve* DuplicateCurve() const;
+  ON_Curve* DuplicateCurve() const override;
 
   /*
   Description:
@@ -127,9 +127,9 @@ public:
 
   // virtual ON_Curve overrides do nothing
   // to prevent changing edge
-  ON_BOOL32 SetStartPoint(ON_3dPoint start_point);
-  ON_BOOL32 SetEndPoint(ON_3dPoint end_point);
-  ON_BOOL32 ChangeClosedCurveSeam( double t );
+  ON_BOOL32 SetStartPoint(ON_3dPoint start_point) override;
+  ON_BOOL32 SetEndPoint(ON_3dPoint end_point) override;
+  ON_BOOL32 ChangeClosedCurveSeam( double t ) override;
   ON_BOOL32 PrependAndMatch(ON_Curve*);
   ON_BOOL32 AppendAndMatch(ON_Curve*);
 
@@ -146,22 +146,22 @@ public:
   // construction
 
   ON_PolyEdgeSegment();
-  ~ON_PolyEdgeSegment();
+  ~ON_PolyEdgeSegment() override;
   // default copy constructor and operator= are fine.
 
   // virtual ON_Object::DestroyRuntimeCache override
-  void DestroyRuntimeCache( bool bDelete = true );
+  void DestroyRuntimeCache( bool bDelete = true ) override;
 
-  ON_BOOL32 Write( ON_BinaryArchive& ) const;
+  ON_BOOL32 Write( ON_BinaryArchive& ) const override;
 
-  ON_BOOL32 Read( ON_BinaryArchive& );
+  ON_BOOL32 Read( ON_BinaryArchive& ) override;
 
   // virtual ON_Curve::IsClosed override
-  ON_BOOL32 IsClosed() const;
+  ON_BOOL32 IsClosed() const override;
 
 
   // virtual ON_Curve::DuplicateCurve override
-  ON_Curve* DuplicateCurve() const;
+  ON_Curve* DuplicateCurve() const override;
 
   /*
   Description:

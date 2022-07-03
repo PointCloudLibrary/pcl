@@ -271,7 +271,7 @@ ON_String::~ON_String()
 ON_String::ON_String(const ON_String& src)
 {
 	if (    src.Header()->ref_count > 0 
-       && 0 == ON_WorkerMemoryPool()
+       && nullptr == ON_WorkerMemoryPool()
      )	
   {
 		m_s = src.m_s;
@@ -418,7 +418,7 @@ ON_String& ON_String::operator=(const ON_String& src)
       Create();
     }
     else if (    src.Header()->ref_count > 0 
-              && 0 == ON_WorkerMemoryPool()
+              && nullptr == ON_WorkerMemoryPool()
             ) 
     {
       Destroy();
@@ -577,12 +577,12 @@ void ON_String::SetLength(std::size_t string_length)
 char* ON_String::Array()
 {
   CopyArray();
-  return ( Header()->string_capacity > 0 ) ? m_s : 0;
+  return ( Header()->string_capacity > 0 ) ? m_s : nullptr;
 }
 
 const char* ON_String::Array() const
 {
-  return ( Header()->string_capacity > 0 ) ? m_s : 0;
+  return ( Header()->string_capacity > 0 ) ? m_s : nullptr;
 }
 
 /*
@@ -654,7 +654,7 @@ int ON_String::CompareNoCase( const unsigned char* s) const
 
 ON_String::operator const char*() const
 {
-  return ( m_s == pEmptyaString ) ? NULL : m_s;
+  return ( m_s == pEmptyaString ) ? nullptr : m_s;
 }
 
 
@@ -798,9 +798,9 @@ int ON_String::Replace( const char* token1, const char* token2 )
 {
   int count = 0;
 
-  if ( 0 != token1 && 0 != token1[0] )
+  if ( nullptr != token1 && 0 != token1[0] )
   {
-    if ( 0 == token2 )
+    if ( nullptr == token2 )
       token2 = "";
     const int len1 = (int)strlen(token1);
     if ( len1 > 0 )
@@ -1311,7 +1311,7 @@ bool ON_CheckSum::SetBufferCheckSum(
 {
   bool rc = false;
   Zero();
-  if ( size != 0 && buffer != 0 )
+  if ( size != 0 && buffer != nullptr )
   {
     m_size = (unsigned int)size;
 
@@ -1438,7 +1438,7 @@ bool ON::IsDirectory( const wchar_t* pathname )
 {
   bool rc = false;
 
-  if ( 0 != pathname && 0 != pathname[0] )
+  if ( nullptr != pathname && 0 != pathname[0] )
   {
     ON_wString buffer;
     const wchar_t* stail = pathname;
@@ -1476,7 +1476,7 @@ bool ON::IsDirectory( const char* utf8pathname )
 {
   bool rc = false;
 
-  if ( 0 != utf8pathname && 0 != utf8pathname[0] )
+  if ( nullptr != utf8pathname && 0 != utf8pathname[0] )
   {
     ON_String buffer;
     const char* stail = utf8pathname;
@@ -1520,7 +1520,7 @@ int ON::IsOpenNURBSFile( FILE* fp )
 {
   ON_String sStartSectionComment;
   int version = 0;
-  if ( 0 != fp )
+  if ( nullptr != fp )
   {
     ON_BinaryFile archive(ON::read3dm,fp);
     if ( !archive.Read3dmStartSection(&version,sStartSectionComment) )
@@ -1532,10 +1532,10 @@ int ON::IsOpenNURBSFile( FILE* fp )
 int ON::IsOpenNURBSFile( const wchar_t* pathname )
 {
   int version = 0;
-  if ( 0 != pathname && 0 != pathname[0] )
+  if ( nullptr != pathname && 0 != pathname[0] )
   {
     FILE* fp = ON::OpenFile(pathname,L"rb");
-    if ( 0 != fp )
+    if ( nullptr != fp )
     {
       version = ON::IsOpenNURBSFile(fp);
       ON::CloseFile(fp);
@@ -1547,10 +1547,10 @@ int ON::IsOpenNURBSFile( const wchar_t* pathname )
 int ON::IsOpenNURBSFile( const char* utf8pathname )
 {
   int version = 0;
-  if ( 0 != utf8pathname && 0 != utf8pathname[0] )
+  if ( nullptr != utf8pathname && 0 != utf8pathname[0] )
   {
     FILE* fp = ON::OpenFile(utf8pathname,"rb");
-    if ( 0 != fp )
+    if ( nullptr != fp )
     {
       version = ON::IsOpenNURBSFile(fp);
       ON::CloseFile(fp);
@@ -1567,7 +1567,7 @@ bool ON_CheckSum::SetFileCheckSum( FILE* fp )
   {
     std::size_t filesize = 0;
     time_t filetime = 0;
-    if ( ON::GetFileStats(fp,&filesize,NULL,&filetime) )
+    if ( ON::GetFileStats(fp,&filesize,nullptr,&filetime) )
     {
       m_time = filetime;
     }
@@ -1661,7 +1661,7 @@ bool ON_CheckSum::SetFileCheckSum( const wchar_t* filename )
 {
   bool rc = false;
   Zero();
-  if ( 0 == filename || 0 == filename[0] )
+  if ( nullptr == filename || 0 == filename[0] )
   {
     rc = true;
   }
@@ -1686,7 +1686,7 @@ bool ON_CheckSum::CheckBuffer(
     return false;
   if ( 0 == size )
     return true;
-  if ( 0 == buffer )
+  if ( nullptr == buffer )
     return false;
 
   ON__UINT32 crc = 0;
@@ -1725,7 +1725,7 @@ bool ON_CheckSum::CheckFile(
 
   std::size_t filesize=0;
   time_t filetime=0;
-  if ( ON::GetFileStats( fp, &filesize, NULL, &filetime ) )
+  if ( ON::GetFileStats( fp, &filesize, nullptr, &filetime ) )
   {
     if ( m_size != filesize )
     {

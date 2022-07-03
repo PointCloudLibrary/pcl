@@ -27,8 +27,7 @@ ON_Line::ON_Line( const ON_3dPoint& from_pt, const ON_3dPoint& to_pt )
 {}
 
 ON_Line::~ON_Line()
-{
-}
+= default;
 
 ON_3dPoint& ON_Line::operator[](int i)
 {
@@ -210,7 +209,7 @@ int ON_ArePointsOnLine( // returns 0=no, 1 = yes, 2 = pointset is (to tolerance)
     ON_ERROR("dim parameter not valid");
     return 0;
   }
-  if ( 0 == point )
+  if ( nullptr == point )
   {
     ON_ERROR("point parameter not valid");
     return 0;

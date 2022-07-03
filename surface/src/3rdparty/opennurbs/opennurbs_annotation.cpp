@@ -31,7 +31,7 @@ ON_BOOL32 ON_Leader::IsRealObject() const {return true;}
 
 #define REALLY_BIG_NUMBER 1e150
 
-static const ON_3dmAnnotationSettings* sglb_asets = 0;
+static const ON_3dmAnnotationSettings* sglb_asets = nullptr;
 
 void ON_Annotation::SetAnnotationSettings( const ON_3dmAnnotationSettings* p )
 {
@@ -144,7 +144,7 @@ ON_BOOL32 ON_Annotation::IsValid( ON_TextLog* text_log ) const
   bool rc = true;
   if ( ON::dtNothing == m_type  )
   {
-    if ( 0 != text_log )
+    if ( nullptr != text_log )
       text_log->Print("ON_Annotation has m_type = ON::dtNothing.\n");
     rc = false;
   }
@@ -321,16 +321,13 @@ ON_2dPoint ON_Annotation::Point( int idx ) const
 
 //----- ON_LinearDimension ------------------------------------------
 ON_LinearDimension::ON_LinearDimension()
-{
-}
+= default;
 
-ON_LinearDimension::ON_LinearDimension(const ON_LinearDimension& src) : ON_Annotation(src)
-{
-}
+ON_LinearDimension::ON_LinearDimension(const ON_LinearDimension& src)  
+= default;
 
 ON_LinearDimension::~ON_LinearDimension()
-{
-}
+= default;
 
 ON_LinearDimension& ON_LinearDimension::operator=(const ON_LinearDimension& src)
 {
@@ -357,16 +354,13 @@ void ON_LinearDimension::SetTextToDefault()
 
 //----- ON_RadialDimension ------------------------------------------
 ON_RadialDimension::ON_RadialDimension()
-{
-}
+= default;
 
-ON_RadialDimension::ON_RadialDimension(const ON_RadialDimension& src) : ON_Annotation(src)
-{
-}
+ON_RadialDimension::ON_RadialDimension(const ON_RadialDimension& src)  
+= default;
 
 ON_RadialDimension::~ON_RadialDimension()
-{
-}
+= default;
 
 ON_RadialDimension& ON_RadialDimension::operator=(const ON_RadialDimension& src)
 {
@@ -411,8 +405,7 @@ ON_AngularDimension::ON_AngularDimension(const ON_AngularDimension& src) : ON_An
 }
 
 ON_AngularDimension::~ON_AngularDimension()
-{
-}
+= default;
 
 ON_AngularDimension& ON_AngularDimension::operator=(const ON_AngularDimension& src)
 {
@@ -533,16 +526,13 @@ ON_BOOL32 ON_TextEntity::Read( ON_BinaryArchive& file )
 
 //----- ON_Leader ------------------------------------------
 ON_Leader::ON_Leader()
-{
-}
+= default;
 
-ON_Leader::ON_Leader(const ON_Leader& src) : ON_Annotation(src)
-{
-}
+ON_Leader::ON_Leader(const ON_Leader& src)  
+= default;
 
 ON_Leader::~ON_Leader()
-{
-}
+= default;
 
 ON_Leader& ON_Leader::operator=(const ON_Leader& src)
 {
@@ -561,15 +551,15 @@ void ON_Leader::EmergencyDestroy()
 ON_OBJECT_IMPLEMENT(ON_AnnotationTextDot,ON_Point,"8BD94E19-59E1-11d4-8018-0010830122F0");
 
 ON_AnnotationTextDot::ON_AnnotationTextDot()
-{}
+= default;
 
 ON_AnnotationTextDot::~ON_AnnotationTextDot()
 {
   m_text.Destroy();
 }
 
-ON_AnnotationTextDot::ON_AnnotationTextDot(const ON_AnnotationTextDot& src) : ON_Point(src), m_text(src.m_text)
-{}
+ON_AnnotationTextDot::ON_AnnotationTextDot(const ON_AnnotationTextDot& src)  
+= default;
 
 ON_AnnotationTextDot& ON_AnnotationTextDot::operator=(const ON_AnnotationTextDot& src)
 {
@@ -585,7 +575,7 @@ ON_BOOL32 ON_AnnotationTextDot::IsValid( ON_TextLog* text_log ) const
   bool rc = true;
   if ( m_text.IsEmpty() )
   {
-    if ( 0 != text_log )
+    if ( nullptr != text_log )
       text_log->Print("ON_AnnotationTextDot.m_text is empty\n");
     rc = false;
   }
@@ -629,10 +619,10 @@ ON_AnnotationArrow::ON_AnnotationArrow() : m_tail(0.0,0.0,0.0), m_head(0.0,0.0,0
 {}
 
 ON_AnnotationArrow::~ON_AnnotationArrow()
-{}
+= default;
 
-ON_AnnotationArrow::ON_AnnotationArrow(const ON_AnnotationArrow& src) : ON_Geometry(src), m_tail(src.m_tail), m_head(src.m_head)
-{}
+ON_AnnotationArrow::ON_AnnotationArrow(const ON_AnnotationArrow& src)  
+= default;
 
 ON_AnnotationArrow& ON_AnnotationArrow::operator=(const ON_AnnotationArrow& src)
 {
@@ -649,7 +639,7 @@ ON_BOOL32 ON_AnnotationArrow::IsValid( ON_TextLog* text_log ) const
   bool rc = true;
   if (m_tail == m_head)
   {
-    if ( 0 != text_log )
+    if ( nullptr != text_log )
       text_log->Print("ON_AnnotationArrow has m_head=m_tail.\n");
     rc = false;
   }

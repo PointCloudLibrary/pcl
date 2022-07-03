@@ -34,7 +34,7 @@ struct SinglePoly {
 };
 
 struct Vertex {
-  Vertex() {}
+  Vertex() = default;
   // Vertex(Eigen::Vector3f pos, Eigen::Vector3f norm) : pos(pos), norm(norm) {}
   Vertex(Eigen::Vector3f pos, Eigen::Vector3f rgb) : pos(pos), rgb(rgb) {}
   Eigen::Vector3f pos;

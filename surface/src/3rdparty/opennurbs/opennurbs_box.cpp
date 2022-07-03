@@ -1,7 +1,7 @@
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_Box::ON_Box()
-{}
+= default;
 
 ON_Box::ON_Box( const ON_BoundingBox& bbox )
 {
@@ -9,7 +9,7 @@ ON_Box::ON_Box( const ON_BoundingBox& bbox )
 }
 
 ON_Box::~ON_Box()
-{}
+= default;
 
 void ON_Box::Destroy()
 {

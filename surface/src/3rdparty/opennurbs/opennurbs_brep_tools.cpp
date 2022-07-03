@@ -22,11 +22,11 @@ const ON_BrepEdge* FindLinearEdge( const ON_Brep& brep, int vi0, int vi1 )
   // searchs for a linear edge connecting the vertices
   // brep.m_V[vi0] and brep.m_V[vi1].
   if ( vi0 < 0 || vi0 >= brep.m_V.Count() )
-    return NULL;
+    return nullptr;
   if ( vi1 < 0 || vi1 >= brep.m_V.Count() )
-    return NULL;
+    return nullptr;
   if ( vi0 == vi1 )
-    return NULL;
+    return nullptr;
   const ON_BrepVertex& v0 = brep.m_V[vi0];
   //const ON_BrepVertex& v1 = brep.m_V[vi1];
   int vei;
@@ -43,7 +43,7 @@ const ON_BrepEdge* FindLinearEdge( const ON_Brep& brep, int vi0, int vi1 )
       continue;
     return edge;
   }
-  return NULL;
+  return nullptr;
 }
 
 static
@@ -103,26 +103,26 @@ ON_BrepFace* ON_Brep::NewRuledFace(
       )
 {
   if ( edgeA.m_edge_index == edgeB.m_edge_index )
-    return NULL;
+    return nullptr;
   if ( Edge( edgeA.m_edge_index) != &edgeA )
-    return NULL;
+    return nullptr;
   if ( Edge( edgeB.m_edge_index) != &edgeB )
-    return NULL;
+    return nullptr;
 
   ON_NurbsCurve cA, cB;
   if ( !edgeA.GetNurbForm( cA ) )
-    return NULL;
+    return nullptr;
   if ( bRevEdgeA )
     cA.Reverse();
   if ( !edgeB.GetNurbForm( cB ) )
-    return NULL;
+    return nullptr;
   if ( bRevEdgeB )
     cB.Reverse();
   ON_NurbsSurface* srf = ON_NurbsSurface::New();
   if ( !srf->CreateRuledSurface( cA, cB ) )
   {
     delete srf;
-    return NULL;
+    return nullptr;
   }
 
   // corner vertices (sw,se,ne,nw)
@@ -186,23 +186,23 @@ ON_BrepFace* ON_Brep::NewConeFace(
       )
 {
   if ( Edge( edge.m_edge_index) != &edge )
-    return NULL;
+    return nullptr;
   if ( Vertex( vertex.m_vertex_index) != &vertex )
-    return NULL;
+    return nullptr;
   if ( edge.m_vi[0] == vertex.m_vertex_index )
-    return NULL;
+    return nullptr;
   if ( edge.m_vi[1] == vertex.m_vertex_index )
-    return NULL;
+    return nullptr;
   ON_NurbsCurve c;
   if ( !edge.GetNurbForm( c ) )
-    return NULL;
+    return nullptr;
   if ( bRevEdge )
     c.Reverse();
   ON_NurbsSurface* srf = ON_NurbsSurface::New();
   if ( !srf->CreateConeSurface( vertex.point, c ) )
   {
     delete srf;
-    return NULL;
+    return nullptr;
   }
 
   // corner vertices (sw,se,ne,nw)
@@ -422,9 +422,9 @@ ON_BrepFace* ON_Brep::NewFace(
   m_bbox.Destroy();
   m_is_solid = 0;
   ON_BOOL32 bAddedSurface = false;
-  ON_BrepFace* pFace = NULL;
+  ON_BrepFace* pFace = nullptr;
   if ( !pSurface )
-    return NULL;
+    return nullptr;
   int si;
   for ( si = 0; si < m_S.Count(); si++ )
   {
@@ -469,33 +469,33 @@ ON_BrepLoop* ON_Brep::NewOuterLoop(
 {
   m_is_solid = 0;
   if ( face_index < 0 || face_index >= m_F.Count() )
-    return NULL;
+    return nullptr;
   ON_BrepFace& face = m_F[face_index];
   const ON_Surface* pSurface = face.SurfaceOf();
   if (!pSurface) 
-    return NULL;
+    return nullptr;
 
   double u[2], v[2];
   if (!pSurface->GetDomain(0, &u[0], &u[1])) 
-      return 0;
+      return nullptr;
   if (!pSurface->GetDomain(1, &v[0], &v[1])) 
-      return 0;
+      return nullptr;
 
   ON_3dPoint srf_P[2][2];
   if ( !pSurface->EvPoint(u[0],v[0],srf_P[0][0] ) )
-    return 0;
+    return nullptr;
   if ( !pSurface->EvPoint(u[1],v[0],srf_P[1][0] ) )
-    return 0;
+    return nullptr;
   if ( !pSurface->EvPoint(u[0],v[1],srf_P[0][1] ) )
-    return 0;
+    return nullptr;
   if ( !pSurface->EvPoint(u[1],v[1],srf_P[1][1] ) )
-    return 0;
+    return nullptr;
 
 
   ON_BOOL32 bIsSingular[4]; // south, east, north, west
   ON_BOOL32 bIsClosed[2]; // u direction, v direction
   int i, eti;
-  ON_Curve* c3[4] = {NULL,NULL,NULL,NULL};
+  ON_Curve* c3[4] = {nullptr,nullptr,nullptr,nullptr};
 
   for ( i = 0; i < 4; i++ )
   {
@@ -511,7 +511,7 @@ ON_BrepLoop* ON_Brep::NewOuterLoop(
       if ( eid[i] < 0 || eid[i] >= m_E.Count() )
       {
         ON_ERROR("Bad edge index passed to ON_BrepNewFace.");
-        return 0;
+        return nullptr;
       }
       const int* edge_vi = m_E[eid[i]].m_vi;
       int vi0 = edge_vi[bRev3d[i]];
@@ -519,21 +519,21 @@ ON_BrepLoop* ON_Brep::NewOuterLoop(
       if ( vi0 < 0 || vi1 < 0 )
       {
         ON_ERROR("ON_Brep::NewFace(ON_Surface*,...) error: Bad edge vertex informtion.");
-        return 0;
+        return nullptr;
       }
       if ( vid[i] == -1 )
         vid[i] = vi0;
       else if ( vid[i] != vi0 )
       {
         ON_ERROR("ON_Brep::NewFace(ON_Surface*,...) error: Edge and vertex informtion do not match.");
-        return 0;
+        return nullptr;
       }
       if ( vid[(i+1)%4] == -1 )
         vid[(i+1)%4] = vi1;
       else if ( vid[(i+1)%4] != vi1 )
       {
         ON_ERROR("ON_Brep::NewFace(ON_Surface*,...) error: Edge and vertex informtion do not match.");
-        return 0;
+        return nullptr;
       }
     }
   }
@@ -546,7 +546,7 @@ ON_BrepLoop* ON_Brep::NewOuterLoop(
       if ( vid[i] < 0 || vid[i] >= m_V.Count() )
       {
         ON_ERROR("Bad vertex index passed to ON_Brep::NewFace.");
-        return 0;
+        return nullptr;
       }
     }
   }
@@ -577,7 +577,7 @@ ON_BrepLoop* ON_Brep::NewOuterLoop(
         if ( eid[j] != eid[k] || bRev3d[j] != 1-bRev3d[k] )
         {
           ON_ERROR("Bad edge information passed to ON_Brep::NewFace.");
-          return 0;
+          return nullptr;
         }
       }
     }
@@ -591,7 +591,7 @@ ON_BrepLoop* ON_Brep::NewOuterLoop(
       if ( eid[i] != -1 || bRev3d[i] )
       {
         ON_ERROR("Bad edge information passed to ON_Brep::NewFace.");
-        return 0;
+        return nullptr;
       }
     }
     if ( bIsSingular[i] || bIsClosed[i%2] )
@@ -599,7 +599,7 @@ ON_BrepLoop* ON_Brep::NewOuterLoop(
       if ( !CheckForMatchingVertexIndices(i,(i+1)%4,vid) )
       {
         ON_ERROR("Bad vertex indices passed to ON_Brep::NewFace.");
-        return 0;
+        return nullptr;
       }
     }
   }
@@ -644,7 +644,7 @@ ON_BrepLoop* ON_Brep::NewOuterLoop(
     if ( !c3[i] )
     {
      ON_ERROR("ON_Brep::NewLoop unable to make 3d edge curve.");
-      return 0;
+      return nullptr;
     }
     if ( pSurface->IsClosed(i%2) )
       bEdgeIsClosed[i] = true;
@@ -803,7 +803,7 @@ ON_BrepLoop* ON_Brep::NewOuterLoop(
 
 ON_Brep* ON_BrepBox( const ON_3dPoint* box_corners, ON_Brep* pBrep )
 {
-  ON_Brep* brep = 0;
+  ON_Brep* brep = nullptr;
   int vi, ei, fi, si, c2i;
   if (box_corners)
   {
@@ -830,21 +830,21 @@ ON_Brep* ON_BrepBox( const ON_3dPoint* box_corners, ON_Brep* pBrep )
       ON_BrepVertex& v0 = brep->m_V[ei];
       ON_BrepVertex& v1 = brep->m_V[(ei+1)%4];
       brep->m_C3.Append( new ON_LineCurve( v0.point, v1.point ) );
-      brep->NewEdge( v0, v1, ei, NULL, 0.0 );
+      brep->NewEdge( v0, v1, ei, nullptr, 0.0 );
     }
     for ( ei = 4; ei < 8; ei++ )
     {
       ON_BrepVertex& v0 = brep->m_V[ei];
       ON_BrepVertex& v1 = brep->m_V[ei==7?4:(ei+1)];
       brep->m_C3.Append( new ON_LineCurve( v0.point, v1.point ) );
-      brep->NewEdge( v0, v1, ei, NULL, 0.0 );
+      brep->NewEdge( v0, v1, ei, nullptr, 0.0 );
     }
     for ( ei = 8; ei < 12; ei++ )
     {
       ON_BrepVertex& v0 = brep->m_V[ei-8];
       ON_BrepVertex& v1 = brep->m_V[ei-4];
       brep->m_C3.Append( new ON_LineCurve( v0.point, v1.point ) );
-      brep->NewEdge( v0, v1, ei, NULL, 0.0 );
+      brep->NewEdge( v0, v1, ei, nullptr, 0.0 );
     }
 
     /*
@@ -939,18 +939,18 @@ ON_Brep* ON_BrepBox( const ON_3dPoint* box_corners, ON_Brep* pBrep )
         pBrep->Destroy();
       else
         delete brep;
-      brep = 0;
+      brep = nullptr;
     }
   }
   else 
-    brep = 0;
+    brep = nullptr;
   return brep;
 }
 
 
 ON_Brep* ON_BrepWedge( const ON_3dPoint* corners, ON_Brep* pBrep )
 {
-  ON_Brep* brep = 0;
+  ON_Brep* brep = nullptr;
 
   int vi, ei, ti, fi, si, c2i;
   
@@ -986,7 +986,7 @@ ON_Brep* ON_BrepWedge( const ON_3dPoint* corners, ON_Brep* pBrep )
       ON_BrepVertex& v0 = brep->m_V[ei];
       ON_BrepVertex& v1 = brep->m_V[(ei+1)%3];
       brep->m_C3.Append( new ON_LineCurve( v0.point, v1.point ) );
-      brep->NewEdge( v0, v1, ei, NULL, 0.0 );
+      brep->NewEdge( v0, v1, ei, nullptr, 0.0 );
     }
     // 3d edges around top e3 - e5
     for ( ei = 3; ei < 6; ei++ )
@@ -994,7 +994,7 @@ ON_Brep* ON_BrepWedge( const ON_3dPoint* corners, ON_Brep* pBrep )
       ON_BrepVertex& v0 = brep->m_V[ei];
       ON_BrepVertex& v1 = brep->m_V[ei==5?3:(ei+1)];
       brep->m_C3.Append( new ON_LineCurve( v0.point, v1.point ) );
-      brep->NewEdge( v0, v1, ei, NULL, 0.0 );
+      brep->NewEdge( v0, v1, ei, nullptr, 0.0 );
     }
     // 3d vertical edges e6 - e8
     for ( ei = 6; ei < 9; ei++ )
@@ -1002,7 +1002,7 @@ ON_Brep* ON_BrepWedge( const ON_3dPoint* corners, ON_Brep* pBrep )
       ON_BrepVertex& v0 = brep->m_V[ei-6];
       ON_BrepVertex& v1 = brep->m_V[ei-3];
       brep->m_C3.Append( new ON_LineCurve( v0.point, v1.point ) );
-      brep->NewEdge( v0, v1, ei, NULL, 0.0 );
+      brep->NewEdge( v0, v1, ei, nullptr, 0.0 );
     }
 
     /*
@@ -1038,7 +1038,7 @@ ON_Brep* ON_BrepWedge( const ON_3dPoint* corners, ON_Brep* pBrep )
       ON_BrepEdge* e0;
       ON_BrepEdge* e1;
       ON_BrepEdge* e2;
-      ON_BrepEdge* e3=0;
+      ON_BrepEdge* e3=nullptr;
 
       e0 = &brep->m_E[f[fi].e[0]];
       e1 = &brep->m_E[f[fi].e[1]];
@@ -1049,7 +1049,7 @@ ON_Brep* ON_BrepWedge( const ON_3dPoint* corners, ON_Brep* pBrep )
       ON_BrepVertex* v0;
       ON_BrepVertex* v1;
       ON_BrepVertex* v2;
-      ON_BrepVertex* v3=0;
+      ON_BrepVertex* v3=nullptr;
 
       v0 = &brep->m_V[e0->m_vi[f[fi].bRev[0]?1:0]];
       v1 = &brep->m_V[e1->m_vi[f[fi].bRev[1]?1:0]];
@@ -1129,11 +1129,11 @@ ON_Brep* ON_BrepWedge( const ON_3dPoint* corners, ON_Brep* pBrep )
         pBrep->Destroy();
       else
         delete brep;
-      brep = 0;
+      brep = nullptr;
     }
   }
   else 
-    brep = 0;
+    brep = nullptr;
   return brep;
 }
 
@@ -1141,7 +1141,7 @@ ON_Brep* ON_BrepWedge( const ON_3dPoint* corners, ON_Brep* pBrep )
 ON_Brep* ON_BrepSphere( const ON_Sphere& sphere, ON_Brep* pBrep )
 {
   bool bArcLengthParameterization = true;
-  ON_Brep* brep = NULL;
+  ON_Brep* brep = nullptr;
   if ( pBrep )
     pBrep->Destroy();
   ON_RevSurface* pRevSurface = sphere.RevSurfaceForm(bArcLengthParameterization);
@@ -1158,7 +1158,7 @@ ON_Brep* ON_BrepSphere( const ON_Sphere& sphere, ON_Brep* pBrep )
 ON_Brep* ON_BrepTorus( const ON_Torus& torus, ON_Brep* pBrep )
 {
   ON_BOOL32 bArcLengthParameterization = true;
-  ON_Brep* brep = NULL;
+  ON_Brep* brep = nullptr;
   if ( pBrep )
     pBrep->Destroy();
   ON_RevSurface* pRevSurface = torus.RevSurfaceForm();
@@ -1191,7 +1191,7 @@ ON_Brep* ON_BrepCylinder( const ON_Cylinder& cylinder,
                           ON_Brep* pBrep )
 {
   ON_BOOL32 bArcLengthParameterization = true;
-  ON_Brep* brep = NULL;
+  ON_Brep* brep = nullptr;
   if ( pBrep )
     pBrep->Destroy();
   ON_RevSurface* pRevSurface = cylinder.RevSurfaceForm();
@@ -1215,7 +1215,7 @@ ON_Brep* ON_BrepCylinder( const ON_Cylinder& cylinder,
 ON_Brep* ON_BrepCone( const ON_Cone& cone, ON_BOOL32 bCapBase, ON_Brep* pBrep )
 {
   ON_BOOL32 bArcLengthParameterization = true;
-  ON_Brep* brep = NULL;
+  ON_Brep* brep = nullptr;
   if ( pBrep )
     pBrep->Destroy();
   ON_RevSurface* pRevSurface = cone.RevSurfaceForm();
@@ -1243,7 +1243,7 @@ ON_Brep* ON_BrepRevSurface(
           ON_Brep* pBrep 
           )
 {
-  ON_Brep* brep = 0;
+  ON_Brep* brep = nullptr;
   if ( pBrep )
     pBrep->Destroy();
   if ( pRevSurface && pRevSurface->m_curve )
@@ -1268,7 +1268,7 @@ ON_Brep* ON_BrepRevSurface(
     {
       if (!brep)
         delete brep;
-      brep = 0;
+      brep = nullptr;
     }
     else if ( bCapStart || bCapEnd )
     {
@@ -1306,9 +1306,9 @@ ON_Brep* ON_BrepRevSurface(
         {
           ON_Arc arc;
           const ON_Curve* edge_curve = edge.EdgeCurveOf();
-          if ( 0 == edge_curve )
+          if ( nullptr == edge_curve )
             continue;
-          if ( !edge_curve->IsArc( NULL, &arc ) )
+          if ( !edge_curve->IsArc( nullptr, &arc ) )
             continue;
           if ( !arc.IsCircle() )
             continue;
@@ -1406,7 +1406,7 @@ static ON_BOOL32 AddC3Curve( const ON_Curve* c3, ON_SimpleArray<ON_Curve*>& C3 )
   else
   {
     ON_Curve* c3dup = c3->DuplicateCurve();
-    if ( 0 == c3dup )
+    if ( nullptr == c3dup )
       return false;
     if ( 2 == c3dup->Dimension() )
     {
@@ -1655,7 +1655,7 @@ ON_Brep* ON_BrepTrimmedPlane(
       pBrep->Destroy();
     else
       delete brep;
-    brep = NULL;
+    brep = nullptr;
   }
   return brep;
 }
@@ -1681,13 +1681,13 @@ ON_Brep* ON_BrepFromMesh(
 {
   ON_BezierCurve edge_line(3,false,2);
   ON_BezierCurve trim_line(2,false,2);
-  ON_Brep* brep = NULL;
+  ON_Brep* brep = nullptr;
   if ( pBrep )
     pBrep->Destroy();
   if ( mesh_topology.m_mesh && mesh_topology.IsValid() )
   {
     //const ON_Mesh& mesh = *mesh_topology.m_mesh;
-    brep = (pBrep != NULL) ? pBrep : new ON_Brep();
+    brep = (pBrep != nullptr) ? pBrep : new ON_Brep();
     const int vertex_count = mesh_topology.TopVertexCount();
     const int edge_count = mesh_topology.TopEdgeCount();
     const int face_count = mesh_topology.TopFaceCount();
@@ -1708,7 +1708,7 @@ ON_Brep* ON_BrepFromMesh(
 
     // May 1, 2012 Tim Fix for RR 104209
     // Use double precision vertexes from the mesh if they exist
-    const ON_3dPointArray* pDPV = 0;
+    const ON_3dPointArray* pDPV = nullptr;
     if (mesh_topology.m_mesh->HasDoublePrecisionVertices() && mesh_topology.m_mesh->DoublePrecisionVerticesAreValid())
       pDPV = &mesh_topology.m_mesh->DoublePrecisionVertices();
 
@@ -1719,7 +1719,7 @@ ON_Brep* ON_BrepFromMesh(
       // May 1, 2012 Tim Fix for RR 104209
       // Use double precision vertexes from the mesh if they exist
       const ON_MeshTopologyVertex& topvert = mesh_topology.m_topv[vi];
-      if (0 != pDPV)
+      if (nullptr != pDPV)
         pt = *pDPV->At(topvert.m_vi[0]);
       else
         pt = mesh_topology.m_mesh->m_V[topvert.m_vi[0]];
@@ -1933,9 +1933,9 @@ bool ON_Brep::ChangeVertex( int old_vi, int new_vi, bool bClearTolerances )
   ON_BrepVertex* old_v = Vertex(old_vi);
   ON_BrepVertex* new_v = Vertex(new_vi);
   
-  if ( 0 == old_v )
+  if ( nullptr == old_v )
     return false;
-  if ( 0 == new_v )
+  if ( nullptr == new_v )
     return false;
   if( old_v == new_v )
     return true;
@@ -1952,7 +1952,7 @@ bool ON_Brep::ChangeVertex( int old_vi, int new_vi, bool bClearTolerances )
   {
     ei = old_v->m_ei[vei];
     ON_BrepEdge* edge = Edge( ei );
-    if ( 0 == edge )
+    if ( nullptr == edge )
       continue;
     // edges that start/end at the same vertex are listed twice in old_v->m_ei[].
     if ( edge->m_vi[0] == old_v->m_vertex_index )
@@ -1974,7 +1974,7 @@ bool ON_Brep::ChangeVertex( int old_vi, int new_vi, bool bClearTolerances )
     for ( eti = 0; eti < edge->m_ti.Count(); eti++ )
     {
       ON_BrepTrim* trim = Trim( edge->m_ti[eti]);
-      if ( 0 == trim )
+      if ( nullptr == trim )
         continue;
       tvi = trim->m_bRev3d ? 1-evi : evi;
       trim->m_vi[tvi] = new_vi;
@@ -1987,7 +1987,7 @@ bool ON_Brep::ChangeVertex( int old_vi, int new_vi, bool bClearTolerances )
         else
           break;
 
-        if ( 0 == trim )
+        if ( nullptr == trim )
           break;
 
         if ( trim->m_ei >= 0 )
@@ -2020,14 +2020,14 @@ ON_BOOL32 ON_BrepEdge::SetEndPoint(ON_3dPoint)
 
 ON_BOOL32 ON_BrepTrim::SetStartPoint(ON_3dPoint point)
 {
-  if ( 0 == m_brep )
+  if ( nullptr == m_brep )
     return false;
   if ( point.x == ON_UNSET_VALUE || point.y == ON_UNSET_VALUE )
     return false;
   if ( m_c2i < 0 || m_c2i >= m_brep->m_C2.Count() )
     return false;
   const ON_Curve* c2 = m_brep->m_C2[m_c2i];
-  if ( 0 == c2 )
+  if ( nullptr == c2 )
     return false;
 
   point.z = 0.0;
@@ -2218,14 +2218,14 @@ bool ON_Brep::CloseTrimGap( ON_BrepTrim& trim0, ON_BrepTrim& trim1 )
 bool ON_Brep::CollapseEdge( int edge_index, bool bCloseTrimGap, int vertex_index  )
 {
   ON_BrepEdge* edge = Edge(edge_index);
-  if ( 0 == edge )
+  if ( nullptr == edge )
     return false;
   edge_index = edge->m_edge_index; // clear high bit
 
   if ( -1 == vertex_index )
     vertex_index = edge->m_vi[0];
   ON_BrepVertex* vertex = Vertex(vertex_index);
-  if ( 0 == vertex )
+  if ( nullptr == vertex )
     return false;
   vertex_index = vertex->m_vertex_index; // clear high bit
 
@@ -2328,7 +2328,7 @@ bool ON_Brep::RemoveNesting(
     for ( i = 0; i < count; i++ )
     {
       polycurve = ON_PolyCurve::Cast(m_C3[i]);
-      if ( 0 != polycurve )
+      if ( nullptr != polycurve )
       {
         if ( polycurve->RemoveNestingEx() )
           rc = true;
@@ -2346,7 +2346,7 @@ bool ON_Brep::RemoveNesting(
     for ( i = 0; i < count; i++ )
     {
       polycurve = ON_PolyCurve::Cast(m_C2[i]);
-      if ( 0 != polycurve )
+      if ( nullptr != polycurve )
       {
         if ( polycurve->RemoveNestingEx() )
           rc = true;
@@ -2637,7 +2637,7 @@ int ON_BrepMergeFaces(ON_Brep& B, int fid0, int fid1)
   //Find a manifold edge that joins the two faces and combine the loops by removing 
   //the trims at that edge.
 
-  ON_BrepEdge* pE = 0;
+  ON_BrepEdge* pE = nullptr;
 
   int li;
   int tid0 = -1, tid1 = -1;

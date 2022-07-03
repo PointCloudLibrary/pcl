@@ -85,8 +85,7 @@ bool ON_UnitSystem::operator!=(const ON_UnitSystem& other)
 }
 
 ON_UnitSystem::~ON_UnitSystem()
-{
-}
+= default;
 
 void ON_UnitSystem::Default()
 {
@@ -259,7 +258,7 @@ void ON_UnitSystem::Dump( ON_TextLog& dump ) const
     if ( m_custom_unit_name.Length() > 0 )
     {
       const wchar_t* wsCustomUnitName = m_custom_unit_name.Array();
-      if ( 0 != wsCustomUnitName && 0 != wsCustomUnitName[0] )
+      if ( nullptr != wsCustomUnitName && 0 != wsCustomUnitName[0] )
       {
         sUnitSystem.Format("%ls (= %g meters)",
                            wsCustomUnitName,
@@ -274,7 +273,7 @@ void ON_UnitSystem::Dump( ON_TextLog& dump ) const
     break;
   }
   const wchar_t* wsUnitSystem = sUnitSystem.Array();
-  if ( 0 != wsUnitSystem )
+  if ( nullptr != wsUnitSystem )
     dump.Print("Unit system: %ls\n",wsUnitSystem);
 }
 
@@ -302,7 +301,7 @@ ON_3dmUnitsAndTolerances::ON_3dmUnitsAndTolerances()
 }
 
 ON_3dmUnitsAndTolerances::~ON_3dmUnitsAndTolerances()
-{}
+= default;
 
 ON_3dmUnitsAndTolerances::ON_3dmUnitsAndTolerances(const ON_3dmUnitsAndTolerances& src )
                         : m_absolute_tolerance(0.0),
@@ -688,8 +687,7 @@ ON_3dmAnnotationSettings::ON_3dmAnnotationSettings()
 }
 
 ON_3dmAnnotationSettings::~ON_3dmAnnotationSettings()
-{
-}
+= default;
 
 ON_3dmAnnotationSettings::ON_3dmAnnotationSettings(const ON_3dmAnnotationSettings& src)
 {
@@ -940,8 +938,7 @@ ON_3dmConstructionPlane::ON_3dmConstructionPlane()
 }
 
 ON_3dmConstructionPlane::~ON_3dmConstructionPlane()
-{
-}
+= default;
 
 // default copy constructor and operator= work fine
 /*
@@ -1034,8 +1031,7 @@ ON_3dmConstructionPlaneGridDefaults::ON_3dmConstructionPlaneGridDefaults()
 }
 
 ON_3dmConstructionPlaneGridDefaults::~ON_3dmConstructionPlaneGridDefaults()
-{
-}
+= default;
 
 ON_3dmConstructionPlaneGridDefaults::ON_3dmConstructionPlaneGridDefaults(const ON_3dmConstructionPlaneGridDefaults& src)
 {
@@ -1115,8 +1111,7 @@ ON_3dmViewPosition::ON_3dmViewPosition()
 }
 
 ON_3dmViewPosition::~ON_3dmViewPosition()
-{
-}
+= default;
 
 ON_3dmViewPosition::ON_3dmViewPosition(const ON_3dmViewPosition& src)
 {
@@ -1242,8 +1237,7 @@ ON_3dmViewTraceImage::ON_3dmViewTraceImage()
 }
 
 ON_3dmViewTraceImage::~ON_3dmViewTraceImage()
-{
-}
+= default;
 
 void ON_3dmViewTraceImage::Default()
 {
@@ -1347,8 +1341,7 @@ ON_3dmWallpaperImage::ON_3dmWallpaperImage()
 }
 
 ON_3dmWallpaperImage::~ON_3dmWallpaperImage()
-{
-}
+= default;
 
 bool ON_3dmWallpaperImage::operator==( const ON_3dmWallpaperImage& other ) const
 {
@@ -1421,8 +1414,7 @@ ON_3dmPageSettings::ON_3dmPageSettings()
 }
 
 ON_3dmPageSettings::~ON_3dmPageSettings()
-{
-}
+= default;
 
 void ON_3dmPageSettings::Default()
 {
@@ -1647,8 +1639,7 @@ ON_3dmView::ON_3dmView()
 } 
 
 ON_3dmView::~ON_3dmView()
-{
-}
+= default;
 
 void ON_3dmView::Dump( ON_TextLog& dump ) const
 {
@@ -1931,7 +1922,7 @@ bool ON_3dmView::Write( ON_BinaryArchive& file ) const
         rc = false;
     }
   }
-  if(rc && 0 != m_vp.FirstUserData() && file.Archive3dmVersion() >= 4) 
+  if(rc && nullptr != m_vp.FirstUserData() && file.Archive3dmVersion() >= 4) 
   {
     rc = file.BeginWrite3dmChunk( TCODE_VIEW_VIEWPORT_USERDATA, 0 );
     if(rc) 
@@ -2296,8 +2287,7 @@ ON_EarthAnchorPoint::ON_EarthAnchorPoint()
 }
 
 ON_EarthAnchorPoint::~ON_EarthAnchorPoint()
-{
-}
+= default;
 
 void ON_EarthAnchorPoint::Default()
 {
@@ -2717,8 +2707,7 @@ ON_3dmSettings::ON_3dmSettings()
 };
 
 ON_3dmSettings::~ON_3dmSettings()
-{
-}
+= default;
 
 ON_3dmIOSettings::ON_3dmIOSettings()
 {

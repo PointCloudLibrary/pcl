@@ -163,7 +163,7 @@ const char* ON_DecodeBase64::Decode(const char* base64str)
     // rarely executed code
     if ( 1 == m_status )
     {
-      return 0;
+      return nullptr;
     }
     if ( base64str )
     {
@@ -176,13 +176,13 @@ const char* ON_DecodeBase64::Decode(const char* base64str)
       else if ('=' == i)            i = -1;
       else
       {
-        return 0;
+        return nullptr;
       }
 
       if ( 2 != m_status || -1 != m_cache[2] )
       {
         SetError();
-        return 0;
+        return nullptr;
       }
       if ( -1 != i )
       {
@@ -194,13 +194,13 @@ const char* ON_DecodeBase64::Decode(const char* base64str)
         // the 4th character in the group must be an equal sign and
         // the group encodes a single byte.
         SetError();
-        return 0;
+        return nullptr;
       }
     }
   }
 
   if (!base64str)
-    return 0;
+    return nullptr;
 
   outbuf = m_output+m_output_count;
 
@@ -242,7 +242,7 @@ const char* ON_DecodeBase64::Decode(const char* base64str)
           // An equal sign cannot be the 1rst or 2nd character
           // in a 4 character block
           SetError();
-          return 0;
+          return nullptr;
         }
         if ( 2 == m_cache_count )
         {
@@ -311,16 +311,16 @@ const char* ON_DecodeBase64::Decode(const char* base64str, std::size_t base64str
   char* sEnd;
   const char* p;
   char s[1025];
-  if ( 0 == base64str )
-    return 0;
+  if ( nullptr == base64str )
+    return nullptr;
   sEnd = s + 1024;
   *sEnd = 0;
   while ( base64str_count >= 1024 )
   {
     memcpy(s,base64str,1024);
     p = Decode(s);
-    if ( 0 == p )
-      return 0;
+    if ( nullptr == p )
+      return nullptr;
     if ( p != sEnd )
     {
       return base64str + (p - s);
@@ -333,8 +333,8 @@ const char* ON_DecodeBase64::Decode(const char* base64str, std::size_t base64str
     memcpy(s,base64str,base64str_count);
     s[base64str_count]=0;
     p = Decode(s);
-    if ( 0 == p )
-      return 0;
+    if ( nullptr == p )
+      return nullptr;
     base64str += (p - s);
   }
   return base64str;
@@ -344,8 +344,8 @@ const wchar_t* ON_DecodeBase64::Decode(const wchar_t* base64str)
 {
   const wchar_t* p;
   wchar_t w;
-  if ( 0 == base64str )
-    return 0;
+  if ( nullptr == base64str )
+    return nullptr;
   p = base64str;
   for(;;)
   {
@@ -363,8 +363,8 @@ const wchar_t* ON_DecodeBase64::Decode(const wchar_t* base64str, std::size_t bas
   char s[1025];
   std::size_t i;
   wchar_t w;
-  if ( 0 == base64str )
-    return 0;
+  if ( nullptr == base64str )
+    return nullptr;
   sEnd = s + 1024;
   *sEnd = 0;
   while ( base64str_count >= 1024 )
@@ -380,8 +380,8 @@ const wchar_t* ON_DecodeBase64::Decode(const wchar_t* base64str, std::size_t bas
       s[i] = (char)w;
     }
     p = Decode(s);
-    if ( 0 == p )
-      return 0;
+    if ( nullptr == p )
+      return nullptr;
     if ( p != sEnd )
     {
       return base64str + (p - s);
@@ -403,8 +403,8 @@ const wchar_t* ON_DecodeBase64::Decode(const wchar_t* base64str, std::size_t bas
     }
     s[i] = 0;
     p = Decode(s);
-    if ( 0 == p )
-      return 0;
+    if ( nullptr == p )
+      return nullptr;
     base64str += (p - s);
   }
   return base64str;
@@ -694,23 +694,23 @@ void ON_EncodeBase64::End()
 
 
 ON_Base64EncodeStream::ON_Base64EncodeStream()
-: m_out_callback_function(0)
-, m_out_callback_context(0)
+: m_out_callback_function(nullptr)
+, m_out_callback_context(nullptr)
 , m_in_size(0)
 , m_out_size(0)
 , m_in_crc(0)
 , m_out_crc(0)
-, m_implementation(0)
-, m_reserved(0)
+, m_implementation(nullptr)
+, m_reserved(nullptr)
 {}
 
 ON_Base64EncodeStream::~ON_Base64EncodeStream()
 {
 
-  if ( 0 != m_implementation )
+  if ( nullptr != m_implementation )
   {
     onfree(m_implementation);
-    m_implementation = 0;
+    m_implementation = nullptr;
   }
 }
 
@@ -738,10 +738,10 @@ public:
 
 bool ON_Base64EncodeStream::Begin()
 {
-  if ( 0 != m_implementation )
+  if ( nullptr != m_implementation )
   {
     onfree(m_implementation);
-    m_implementation = 0;
+    m_implementation = nullptr;
   }
 
   // zero these because the same instance of an 
@@ -898,13 +898,13 @@ bool ON_Base64EncodeStream::In(
   if ( in_buffer_size <= 0 )
     return true;
 
-  if ( 0 == m_implementation )
+  if ( nullptr == m_implementation )
   {
     ErrorHandler();
     return false;
   }
 
-  if ( 0 == in_buffer )
+  if ( nullptr == in_buffer )
   {
     ErrorHandler();
     return false;
@@ -936,13 +936,13 @@ bool ON_Base64EncodeStream::In(
     imp->m_in_buffer_size = 0;
 
     crc1 = ON_CRC32(m_out_crc,76,imp->m_out_buffer);
-    rc = ( 0 != m_out_callback_function )
+    rc = ( nullptr != m_out_callback_function )
         ? m_out_callback_function(m_out_callback_context,76,imp->m_out_buffer)
         : Out(m_out_callback_context,76,imp->m_out_buffer);
     if ( !rc )
     {
       onfree(m_implementation);
-      m_implementation = 0;
+      m_implementation = nullptr;
       return false;
     }
     m_in_crc = ON_CRC32(m_in_crc,57,imp->m_in_buffer);
@@ -956,13 +956,13 @@ bool ON_Base64EncodeStream::In(
     // base 64 encode 57 input bytes to create 76 output bytes
     EncodeBase64Helper57((const unsigned char*)in_buffer,imp->m_out_buffer);
     crc1 = ON_CRC32(m_out_crc,76,imp->m_out_buffer);
-    rc = ( 0 != m_out_callback_function )
+    rc = ( nullptr != m_out_callback_function )
         ? m_out_callback_function(m_out_callback_context,76,imp->m_out_buffer)
         : Out(m_out_callback_context,76,imp->m_out_buffer);
     if ( !rc )
     {
       onfree(m_implementation);
-      m_implementation = 0;
+      m_implementation = nullptr;
       return false;
     }
     m_in_crc = ON_CRC32(m_in_crc,57,in_buffer);
@@ -985,7 +985,7 @@ bool ON_Base64EncodeStream::In(
 
 bool ON_Base64EncodeStream::End()
 {
-  if ( 0 == m_implementation )
+  if ( nullptr == m_implementation )
   {
     ErrorHandler();
     return false;
@@ -1021,7 +1021,7 @@ bool ON_Base64EncodeStream::End()
     imp->m_out_buffer[out_buffer_size] = 0;
 
     ON__UINT32 crc1 = ON_CRC32(m_out_crc,out_buffer_size,imp->m_out_buffer);
-    rc = ( 0 != m_out_callback_function )
+    rc = ( nullptr != m_out_callback_function )
         ? m_out_callback_function(m_out_callback_context,out_buffer_size,imp->m_out_buffer)
         : Out(m_out_callback_context,out_buffer_size,imp->m_out_buffer);
     if ( rc )
@@ -1034,7 +1034,7 @@ bool ON_Base64EncodeStream::End()
   }
 
   onfree(m_implementation);
-  m_implementation = 0;
+  m_implementation = nullptr;
 
   return rc;
 }

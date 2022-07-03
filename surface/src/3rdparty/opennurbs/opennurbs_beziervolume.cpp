@@ -157,7 +157,7 @@ bool ON_BezierCage::Write(ON_BinaryArchive& archive) const
 
 
 ON_BezierCage::ON_BezierCage()
-: m_dim(0),m_is_rat(0),m_cv_capacity(0),m_cv(0)
+: m_dim(0),m_is_rat(0),m_cv_capacity(0),m_cv(nullptr)
 {
   m_order[0] = 0;
   m_order[1] = 0;
@@ -168,7 +168,7 @@ ON_BezierCage::ON_BezierCage()
 }
 
 ON_BezierCage::ON_BezierCage( int dim, bool is_rat, int order0, int order1, int order2 )
-                 : m_dim(0),m_is_rat(0),m_cv_capacity(0),m_cv(0)
+                 : m_dim(0),m_is_rat(0),m_cv_capacity(0),m_cv(nullptr)
 {
   m_order[0] = 0;
   m_order[1] = 0;
@@ -180,13 +180,13 @@ ON_BezierCage::ON_BezierCage( int dim, bool is_rat, int order0, int order1, int 
 }
 
 ON_BezierCage::ON_BezierCage( const ON_BoundingBox& bbox, int order0, int order1, int order2 )
-: m_dim(0),m_is_rat(0),m_cv_capacity(0),m_cv(0)
+: m_dim(0),m_is_rat(0),m_cv_capacity(0),m_cv(nullptr)
 {
   Create(bbox,order0,order1,order2);
 }
 
 ON_BezierCage::ON_BezierCage( const ON_3dPoint* box_corners, int order0, int order1, int order2 )
-: m_dim(0),m_is_rat(0),m_cv_capacity(0),m_cv(0)
+: m_dim(0),m_is_rat(0),m_cv_capacity(0),m_cv(nullptr)
 {
   Create(box_corners,order0,order1,order2);
 }
@@ -197,7 +197,7 @@ ON_BezierCage::~ON_BezierCage()
 }
   
 ON_BezierCage::ON_BezierCage(const ON_BezierCage& src)
-                 : m_dim(0),m_is_rat(0),m_cv_capacity(0),m_cv(0)
+                 : m_dim(0),m_is_rat(0),m_cv_capacity(0),m_cv(nullptr)
 {
   m_order[0] = 0;
   m_order[1] = 0;
@@ -233,7 +233,7 @@ ON_BezierCage& ON_BezierCage::operator=(const ON_BezierCage& src)
 
 bool ON_BezierCage::IsValid() const
 {
-  if ( m_cv == NULL )
+  if ( m_cv == nullptr )
     return false;
 
   if ( m_order[0] < 2 )
@@ -356,7 +356,7 @@ bool ON_BezierCage::Create( const ON_BoundingBox& bbox, int order0, int order1, 
 bool ON_BezierCage::Create( int dim, bool is_rat, int order0, int order1, int order2 )
 {
   if ( m_cv_capacity < 1 )
-    m_cv = 0;
+    m_cv = nullptr;
   m_dim = (dim>0) ? dim : 0;
   m_is_rat = is_rat ? 1 : 0;
   m_order[0] = (order0 >= 2) ? order0 : 0;
@@ -380,7 +380,7 @@ bool ON_BezierCage::Create(
   int i, j, k;
   double r,s,t;
 
-  if ( 0 == box_corners )
+  if ( nullptr == box_corners )
     return false;
   for( i = 0; i < 8; i++ )
   {
@@ -438,7 +438,7 @@ void ON_BezierCage::Destroy()
   m_cv_stride[0] = 0;
   m_cv_stride[1] = 0;
   m_cv_stride[2] = 0;
-  m_cv = 0;
+  m_cv = nullptr;
   m_dim = 0;
   m_is_rat = 0;
   m_order[0] = 0;
@@ -452,7 +452,7 @@ void ON_BezierCage::EmergencyDestroy()
   m_cv_stride[0] = 0;
   m_cv_stride[1] = 0;
   m_cv_stride[2] = 0;
-  m_cv = 0;
+  m_cv = nullptr;
   m_dim = 0;
   m_is_rat = 0;
   m_order[0] = 0;
@@ -714,7 +714,7 @@ double* ON_BezierCage::CV( int i, int j, int k ) const
     return 0;
   }
 #endif
-  return (m_cv) ? (m_cv + i*m_cv_stride[0] + j*m_cv_stride[1] + k*m_cv_stride[2]) : 0;
+  return (m_cv) ? (m_cv + i*m_cv_stride[0] + j*m_cv_stride[1] + k*m_cv_stride[2]) : nullptr;
 }
 
 ON::point_style ON_BezierCage::CVStyle() const
@@ -1157,8 +1157,7 @@ ON_BezierCageMorph::ON_BezierCageMorph() : m_bValid(0)
 }
 
 ON_BezierCageMorph::~ON_BezierCageMorph()
-{
-}
+= default;
 
 bool ON_BezierCageMorph::Create(
     ON_3dPoint P0,

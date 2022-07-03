@@ -318,8 +318,7 @@ void ON_ObjRefEvaluationParameter::Default()
 }
 
 ON_ObjRefEvaluationParameter::~ON_ObjRefEvaluationParameter()
-{
-}
+= default;
 
 bool ON_ObjRefEvaluationParameter::Write( ON_BinaryArchive& archive ) const
 {
@@ -400,15 +399,15 @@ bool ON_ObjRefEvaluationParameter::Read( ON_BinaryArchive& archive )
 
 ON_ObjRef::ON_ObjRef() 
           : m_uuid(ON_nil_uuid),
-            m_geometry(0),
-            m_parent_geometry(0),
+            m_geometry(nullptr),
+            m_parent_geometry(nullptr),
             m_geometry_type(ON::unknown_object_type),
             m_runtime_sn(0),
             m_point(ON_UNSET_POINT),
             m_osnap_mode(ON::os_none),
-            m__proxy1(0),
-            m__proxy2(0),
-            m__proxy_ref_count(0)
+            m__proxy1(nullptr),
+            m__proxy2(nullptr),
+            m__proxy_ref_count(nullptr)
 {
 }
 
@@ -416,15 +415,15 @@ void ON_ObjRef::Destroy()
 {
   DecrementProxyReferenceCount();
   m_uuid = ON_nil_uuid;
-  m_geometry = 0;
-  m_parent_geometry = 0;
+  m_geometry = nullptr;
+  m_parent_geometry = nullptr;
   m_geometry_type = ON::unknown_object_type;
   m_runtime_sn = 0;
   m_point = ON_UNSET_POINT;
   m_osnap_mode = ON::os_none;
-  m__proxy1 = 0;
-  m__proxy2 = 0;
-  m__proxy_ref_count = 0;
+  m__proxy1 = nullptr;
+  m__proxy2 = nullptr;
+  m__proxy_ref_count = nullptr;
 }
 
 
@@ -710,10 +709,10 @@ int ON_ObjRef::ProxyReferenceCount() const
 
 const ON_Brep* ON_BrepParent( const ON_Geometry* geo )
 {
-  const ON_Brep* brep = 0;
+  const ON_Brep* brep = nullptr;
 
-  if ( geo == NULL )
-    return NULL;
+  if ( geo == nullptr )
+    return nullptr;
 
   if  ( ON::brep_object == geo->ObjectType() )
   {
@@ -768,10 +767,10 @@ const ON_Brep* ON_BrepParent( const ON_Geometry* geo )
 
 const ON_Mesh* ON_MeshParent( const ON_Geometry* geo )
 {
-  const ON_Mesh* mesh = 0;
+  const ON_Mesh* mesh = nullptr;
 
-  if ( geo == NULL )
-    return NULL;
+  if ( geo == nullptr )
+    return nullptr;
 
   if  ( ON::mesh_object == geo->ObjectType() )
   {
@@ -826,8 +825,8 @@ bool ON_ObjRef::SetParentIRef( const ON_InstanceRef& iref,
   if ( m__iref.Count() > 0 )
   {
     // nested irefs
-    if (    0 == m__proxy2
-         || 0 == m__proxy_ref_count 
+    if (    nullptr == m__proxy2
+         || nullptr == m__proxy_ref_count 
          || *m__proxy_ref_count <= 0 )
     {
       return false;
@@ -845,12 +844,12 @@ bool ON_ObjRef::SetParentIRef( const ON_InstanceRef& iref,
     while ( m__proxy1 || m__proxy2 || m__proxy_ref_count )
     {
       // It it's an brep proxy for an extrusion object, then keep going.
-      if (    0 != m__proxy1
-           && 0 == m__proxy2 
-           && 0 != m__proxy_ref_count 
+      if (    nullptr != m__proxy1
+           && nullptr == m__proxy2 
+           && nullptr != m__proxy_ref_count 
            && 1 == *m__proxy_ref_count 
            && m__proxy1 != m_geometry
-           && 0 != ON_Brep::Cast(m_geometry)
+           && nullptr != ON_Brep::Cast(m_geometry)
            )
       {
         // 13 July 2011 - Part of the fix for bug 87827
@@ -885,7 +884,7 @@ bool ON_ObjRef::SetParentIRef( const ON_InstanceRef& iref,
     // was to put the m_geometry and m_parent_geometry
     // assignments after the call to SetProxy() which
     // was zeroing m_geometry and m_parent_geometry.
-    SetProxy(0,proxy_geo,true);
+    SetProxy(nullptr,proxy_geo,true);
     m_geometry = proxy_geo;
     m_parent_geometry = proxy_geo;
     rc = true;
@@ -907,7 +906,7 @@ bool ON_ObjRef::SetParentIRef( const ON_InstanceRef& iref,
       {
         return false;
       }
-      if ( m_parent_geometry != parent_brep && 0 != m_parent_geometry )
+      if ( m_parent_geometry != parent_brep && nullptr != m_parent_geometry )
       {
         return false;
       }
@@ -927,7 +926,7 @@ bool ON_ObjRef::SetParentIRef( const ON_InstanceRef& iref,
         delete brep_component;
         return false;
       }
-      SetProxy(0,proxy_brep,true);
+      SetProxy(nullptr,proxy_brep,true);
       m_geometry        = brep_component;
       m_parent_geometry = proxy_brep;
       rc = true;
@@ -1001,7 +1000,7 @@ const ON_Object* ON_ObjRef::ProxyObject(int proxy_object_index) const
 {
   return ( (1 == proxy_object_index) 
            ? m__proxy1 
-           : ((2==proxy_object_index) ? m__proxy2 : 0) 
+           : ((2==proxy_object_index) ? m__proxy2 : nullptr) 
          );
 }
 
@@ -1032,7 +1031,7 @@ void ON_ObjRef::SetProxy(
 
 void ON_ObjRef::DecrementProxyReferenceCount()
 {
-  if ( 0 != m__proxy_ref_count ) 
+  if ( nullptr != m__proxy_ref_count ) 
   {
     if (*m__proxy_ref_count > 1) 
     {
@@ -1078,10 +1077,10 @@ void ON_ObjRef::DecrementProxyReferenceCount()
 
   // In all cases, setting these pointers to zero indicates this
   // ON_ObjRef is no longer referencing any runtime geometry.
-  m__proxy_ref_count = 0;
-  m__proxy1 = 0;
-  m__proxy2 = 0;
-  m_geometry = 0;
+  m__proxy_ref_count = nullptr;
+  m__proxy1 = nullptr;
+  m__proxy2 = nullptr;
+  m_geometry = nullptr;
 }
 
 ON_ObjRef_IRefID::ON_ObjRef_IRefID()
@@ -1100,7 +1099,6 @@ void ON_ObjRef_IRefID::Default()
 }
 
 ON_ObjRef_IRefID::~ON_ObjRef_IRefID()
-{
-}
+= default;
 
 

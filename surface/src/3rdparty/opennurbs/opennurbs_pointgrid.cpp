@@ -51,7 +51,7 @@ int ON_PointGrid::PointCount( int dir ) const
   return m_point_count[dir?1:0];
 }
 
-int ON_PointGrid::PointCount( void ) const
+int ON_PointGrid::PointCount( ) const
 {
   return m_point_count[0]*m_point_count[1];
 }
@@ -72,12 +72,12 @@ ON_3dPoint ON_PointGrid::Point( int i, int j ) const
 
 double* ON_PointGrid::PointArray()
 {
-  return (m_point_count[0]>0&&m_point_count[1]>0) ? &m_point[0].x : NULL;
+  return (m_point_count[0]>0&&m_point_count[1]>0) ? &m_point[0].x : nullptr;
 }
 
 const double* ON_PointGrid::PointArray() const
 {
-  return (m_point_count[0]>0&&m_point_count[1]>0) ? &m_point[0].x : NULL;
+  return (m_point_count[0]>0&&m_point_count[1]>0) ? &m_point[0].x : nullptr;
 }
 
 int ON_PointGrid::PointArrayStride(  // point stride in grid direction
@@ -111,13 +111,13 @@ ON_BOOL32 ON_PointGrid::GetPoint( int i, int j, ON_3dPoint& point ) const
 ON_3dPoint* ON_PointGrid::operator[](int i)
 {
   return ( 0 <= i && i < m_point_count[0] ) 
-         ? m_point.Array() + i*m_point_stride0 : 0;
+         ? m_point.Array() + i*m_point_stride0 : nullptr;
 }
 
 const ON_3dPoint* ON_PointGrid::operator[](int i) const
 {
   return ( 0 <= i && i < m_point_count[0] ) 
-         ? m_point.Array() + i*m_point_stride0 : 0;
+         ? m_point.Array() + i*m_point_stride0 : nullptr;
 }
 
 ON_BOOL32

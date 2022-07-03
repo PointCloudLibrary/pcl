@@ -43,11 +43,11 @@ void ON_3dmRevisionHistory::Default()
 
 static int ON_CompareRevisionHistoryTime( const struct tm* time0, const struct tm* time1 )
 {
-  if ( 0 == time0 || 0 == time1 )
+  if ( nullptr == time0 || nullptr == time1 )
   {
-    if ( 0 != time0 )
+    if ( nullptr != time0 )
       return 1;
-    if ( 0 != time1 )
+    if ( nullptr != time1 )
       return -1;
     return 0;
   }
@@ -120,7 +120,7 @@ int ON_3dmRevisionHistory::NewRevision()
   struct tm current_time;
   memset(&current_time,0,sizeof(current_time));
   {
-    time_t gmt = time(0);
+    time_t gmt = time(nullptr);
     const struct tm* t = gmtime(&gmt);
     if ( t )
       current_time = *t;
@@ -299,8 +299,7 @@ void ON_3dmNotes::Dump(ON_TextLog& dump) const
 // ON_3dmApplication
 //
 ON_3dmApplication::ON_3dmApplication()
-{
-}
+= default;
 
 ON_3dmApplication::ON_3dmApplication( const ON_3dmApplication& src)
 {

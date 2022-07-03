@@ -31,7 +31,7 @@ ON_Cone::ON_Cone(
 }
 
 ON_Cone::~ON_Cone()
-{}
+= default;
 
 
 ON_BOOL32 ON_Cone::Create(
@@ -307,7 +307,7 @@ ON_RevSurface* ON_Cone::RevSurfaceForm( ON_RevSurface* srf ) const
 {
   if ( srf )
     srf->Destroy();
-  ON_RevSurface* pRevSurface = NULL;
+  ON_RevSurface* pRevSurface = nullptr;
   if ( IsValid() )
   {
     ON_Line line;

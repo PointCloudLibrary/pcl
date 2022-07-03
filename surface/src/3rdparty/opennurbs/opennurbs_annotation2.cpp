@@ -37,16 +37,15 @@ ON_TextExtra::ON_TextExtra()
 }
 
 ON_TextExtra::~ON_TextExtra()
-{
-}
+= default;
 
 ON_TextExtra* ON_TextExtra::TextExtension(ON_TextEntity2* pText, bool bCreate)
 {
-  ON_TextExtra* pExtra = 0;
+  ON_TextExtra* pExtra = nullptr;
   if(pText)
   {
     pExtra = ON_TextExtra::Cast(pText->GetUserData(ON_TextExtra::m_ON_TextExtra_class_id.Uuid()));
-    if(pExtra == 0 && bCreate)
+    if(pExtra == nullptr && bCreate)
     {
       pExtra = new ON_TextExtra;
       if(pExtra)
@@ -54,7 +53,7 @@ ON_TextExtra* ON_TextExtra::TextExtension(ON_TextEntity2* pText, bool bCreate)
         if(!pText->AttachUserData(pExtra))
         {
           delete pExtra;
-          pExtra = 0;
+          pExtra = nullptr;
         }
       }
     }
@@ -212,16 +211,15 @@ ON_DimensionExtra::ON_DimensionExtra()
 }
 
 ON_DimensionExtra::~ON_DimensionExtra()
-{
-}
+= default;
 
 static ON_DimensionExtra* AnnotationExtension(ON_Annotation2* pDim, bool bCreate)
 {
-  ON_DimensionExtra* pExtra = 0;
+  ON_DimensionExtra* pExtra = nullptr;
   if(pDim)
   {
     pExtra = ON_DimensionExtra::Cast(pDim->GetUserData(ON_DimensionExtra::m_ON_DimensionExtra_class_id.Uuid()));
-    if(pExtra == 0 && bCreate)
+    if(pExtra == nullptr && bCreate)
     {
       pExtra = new ON_DimensionExtra;
       if( pExtra)
@@ -229,7 +227,7 @@ static ON_DimensionExtra* AnnotationExtension(ON_Annotation2* pDim, bool bCreate
         if(!pDim->AttachUserData(pExtra))
         {
           delete pExtra;
-          pExtra = 0;
+          pExtra = nullptr;
         }
       }
     }
@@ -275,7 +273,7 @@ void ON_DimensionExtra::SetDefaults()
   m_partent_uuid = ON_nil_uuid;
   
   m_arrow_position = 0;
-  m_text_rects = 0;
+  m_text_rects = nullptr;
   m_distance_scale = 1.0;
   m_modelspace_basepoint = ON_origin;
 }
@@ -551,8 +549,8 @@ void ON_Annotation2::Destroy()
 {
   // 10-27-03 LW memory leak prevention
   m_points.Empty();
-  SetTextValue(0);
-  SetTextFormula(0);
+  SetTextValue(nullptr);
+  SetTextFormula(nullptr);
   m_type = ON::dtNothing;
   m_plane = ON_xy_plane;
   m_userpositionedtext = false;
@@ -634,7 +632,7 @@ ON_Annotation2& ON_Annotation2::operator=(const ON_Annotation& src)
 
 
   SetTextValue(src.UserText());
-  SetTextFormula(0);
+  SetTextFormula(nullptr);
   m_userpositionedtext = src.UserPositionedText()?true:false;
   m_index = 0;
   m_textheight = 1.0;
@@ -1574,9 +1572,9 @@ void ON_Annotation2::SetType( ON::eAnnotationType type )
   else if(type == ON::dtDimDiameter)
     SetTextValue(ON_RadialDimension2::DefaultDiameterText());
   else
-    SetTextValue(0);
+    SetTextValue(nullptr);
 
-  SetTextFormula(0);
+  SetTextFormula(nullptr);
 }
 
 ON::eAnnotationType ON_Annotation2::Type() const 
@@ -1723,15 +1721,14 @@ ON_LinearDimension2::ON_LinearDimension2()
   m_textdisplaymode = ON::dtAboveLine;
   m_plane = ON_xy_plane;
   SetTextValue(DefaultText());
-  SetTextFormula(0);
+  SetTextFormula(nullptr);
   m_points.Reserve(ON_LinearDimension2::dim_pt_count);
   m_points.SetCount(ON_LinearDimension2::dim_pt_count);
   m_points.Zero();
 }
 
 ON_LinearDimension2::~ON_LinearDimension2()
-{
-}
+= default;
 
 ON_BOOL32 ON_LinearDimension2::IsValid( ON_TextLog* text_log ) const
 {
@@ -2292,7 +2289,7 @@ bool ON_LinearDimension2::CreateFromV2(
       m_userpositionedtext = v2_ann.UserPositionedText();
       m_type = v2_ann.m_type;
       SetTextValue(v2_ann.UserText());
-      SetTextFormula(0);
+      SetTextFormula(nullptr);
 
       m_plane = v2_ann.m_plane;
       m_plane.UpdateEquation();
@@ -2597,15 +2594,14 @@ ON_RadialDimension2::ON_RadialDimension2()
   m_type = ON::dtDimDiameter;
   m_textdisplaymode = ON::dtInLine;
   SetTextValue(DefaultDiameterText());
-  SetTextFormula(0);
+  SetTextFormula(nullptr);
   m_points.Reserve(ON_RadialDimension2::dim_pt_count);
   m_points.SetCount(ON_RadialDimension2::dim_pt_count);
   m_points.Zero();
 }
 
 ON_RadialDimension2::~ON_RadialDimension2()
-{
-}
+= default;
 
 ON_BOOL32 ON_RadialDimension2::IsValid( ON_TextLog* text_log ) const
 {
@@ -2966,7 +2962,7 @@ bool ON_RadialDimension2::CreateFromV2(
       m_plane = v2_ann.m_plane;
       m_plane.UpdateEquation();
       SetTextValue(v2_ann.UserText());
-      SetTextFormula(0);
+      SetTextFormula(nullptr);
       m_userpositionedtext = false;
       m_type = v2_ann.Type();
       m_textdisplaymode = ( 2 == settings.m_textalign )
@@ -3003,25 +2999,25 @@ public:
   static const ON_AngularDimension2Extra* AngularDimensionExtra(const ON_AngularDimension2* pDim/*, bool bCreate*/);
 
   ON_AngularDimension2Extra();
-  ~ON_AngularDimension2Extra();
+  ~ON_AngularDimension2Extra() override;
 
   // override virtual ON_Object::Dump function
-  void Dump( ON_TextLog& text_log ) const;
+  void Dump( ON_TextLog& text_log ) const override;
 
   // override virtual ON_Object::SizeOf function
-  unsigned int SizeOf() const;
+  unsigned int SizeOf() const override;
 
   // override virtual ON_Object::Write function
-  ON_BOOL32 Write(ON_BinaryArchive& binary_archive) const;
+  ON_BOOL32 Write(ON_BinaryArchive& binary_archive) const override;
 
   // override virtual ON_Object::Read function
-  ON_BOOL32 Read(ON_BinaryArchive& binary_archive);
+  ON_BOOL32 Read(ON_BinaryArchive& binary_archive) override;
 
   // override virtual ON_UserData::GetDescription function
-  ON_BOOL32 GetDescription( ON_wString& description );
+  ON_BOOL32 GetDescription( ON_wString& description ) override;
 
   // override virtual ON_UserData::Archive function
-  ON_BOOL32 Archive() const; 
+  ON_BOOL32 Archive() const override; 
 
   // Scale all of the length values
   void Scale( double scale);
@@ -3041,11 +3037,11 @@ ON_OBJECT_IMPLEMENT(ON_AngularDimension2Extra,ON_UserData,"A68B151F-C778-4a6e-BC
 
 ON_AngularDimension2Extra* ON_AngularDimension2Extra::AngularDimensionExtra(ON_AngularDimension2* pDim)
 {
-  ON_AngularDimension2Extra* pExtra = 0;
+  ON_AngularDimension2Extra* pExtra = nullptr;
   if(pDim)
   {
     pExtra = ON_AngularDimension2Extra::Cast(pDim->GetUserData(ON_AngularDimension2Extra::m_ON_AngularDimension2Extra_class_id.Uuid()));
-    if(pExtra == 0)
+    if(pExtra == nullptr)
     {
       pExtra = new ON_AngularDimension2Extra;
       if( pExtra)
@@ -3053,7 +3049,7 @@ ON_AngularDimension2Extra* ON_AngularDimension2Extra::AngularDimensionExtra(ON_A
         if(!pDim->AttachUserData(pExtra))
         {
           delete pExtra;
-          pExtra = 0;
+          pExtra = nullptr;
         }
       }
     }
@@ -3080,8 +3076,7 @@ ON_AngularDimension2Extra::ON_AngularDimension2Extra()
 }
 
 ON_AngularDimension2Extra::~ON_AngularDimension2Extra()
-{
-}
+= default;
 
 void ON_AngularDimension2Extra::Dump( ON_TextLog& ) const
 {
@@ -3168,7 +3163,7 @@ ON_AngularDimension2::ON_AngularDimension2() : m_angle(0.0), m_radius(1.0)
   m_type = ON::dtDimAngular;
   m_textdisplaymode = ON::dtAboveLine;
   SetTextValue(DefaultText());
-  SetTextFormula(0);
+  SetTextFormula(nullptr);
   m_points.Reserve(ON_AngularDimension2::dim_pt_count);
   m_points.SetCount(ON_AngularDimension2::dim_pt_count);
   m_points.Zero();
@@ -3183,8 +3178,7 @@ ON_AngularDimension2::ON_AngularDimension2() : m_angle(0.0), m_radius(1.0)
 }
 
 ON_AngularDimension2::~ON_AngularDimension2()
-{
-}
+= default;
 
 
 ON_BOOL32 ON_AngularDimension2::IsValid( ON_TextLog* text_log ) const
@@ -3330,7 +3324,7 @@ ON_BOOL32 ON_AngularDimension2::GetBBox(
   ON_Arc arc;
   if ( GetArc(arc) )
   {
-    if ( arc.GetTightBoundingBox(bbox,bGrowBox?true:false,0) )
+    if ( arc.GetTightBoundingBox(bbox,bGrowBox?true:false,nullptr) )
       bGrowBox = true;    
   }
 
@@ -3639,7 +3633,7 @@ bool ON_AngularDimension2::CreateFromV2(
   m_radius = radius;
 
   SetTextValue(v2_ann.UserText());
-  SetTextFormula(0);
+  SetTextFormula(nullptr);
   m_userpositionedtext = bUserPositionedText;
 
   switch( settings.m_textalign)
@@ -3731,7 +3725,7 @@ bool ON_AngularDimension2::GetExtensionLines(ON_Line extensions[2]) const
       )
   {
     const ON_AngularDimension2Extra* pDE = ON_AngularDimension2Extra::AngularDimensionExtra(this);
-    if(pDE != 0)
+    if(pDE != nullptr)
     {
       double exoffset0 = pDE->DimpointOffset(0);
       double exoffset1 = pDE->DimpointOffset(1);
@@ -3821,7 +3815,7 @@ bool ON_AngularDimension2::CreateFromPoints(
   SetRadius( ON_2dVector( pa).Length());
 
   ON_AngularDimension2Extra* pDE = ON_AngularDimension2Extra::AngularDimensionExtra(this);
-  if(pDE != 0)
+  if(pDE != nullptr)
   {
     double os = ((ON_2dVector)pp0).Length();
     pDE->SetDimpointOffset(0, os);
@@ -4301,14 +4295,14 @@ int ON_AngularDimension2::GetDimensionArcSegments(
 double ON_AngularDimension2::DimpointOffset(int index) const
 {
   const ON_AngularDimension2Extra* pDE = ON_AngularDimension2Extra::AngularDimensionExtra(this);
-  if(pDE != 0)
+  if(pDE != nullptr)
     return pDE->DimpointOffset(index);
   return -1.0;
 }
 void ON_AngularDimension2::SetDimpointOffset(int index, double offset)
 {
   ON_AngularDimension2Extra* pDE = ON_AngularDimension2Extra::AngularDimensionExtra(this);
-  if(pDE != 0)
+  if(pDE != nullptr)
     pDE->SetDimpointOffset(index, offset);
 }
 
@@ -4318,7 +4312,7 @@ ON_OrdinateDimension2::ON_OrdinateDimension2()
 {
   m_type = ON::dtDimOrdinate;
   SetTextValue(DefaultText());
-  SetTextFormula(0);
+  SetTextFormula(nullptr);
   m_direction = -1;  // undetermined direction
   m_points.Reserve(ON_OrdinateDimension2::dim_pt_count);
   m_points.SetCount(ON_OrdinateDimension2::dim_pt_count);
@@ -4328,8 +4322,7 @@ ON_OrdinateDimension2::ON_OrdinateDimension2()
 }
 
 ON_OrdinateDimension2::~ON_OrdinateDimension2()
-{
-}
+= default;
 
 ON_BOOL32 ON_OrdinateDimension2::Transform( const ON_Xform& xform )
 {
@@ -4738,8 +4731,7 @@ ON_TextEntity2::ON_TextEntity2()
 }
 
 ON_TextEntity2::~ON_TextEntity2()
-{
-}
+= default;
 
 ON_BOOL32 ON_TextEntity2::IsValid( ON_TextLog* text_log ) const
 {
@@ -5119,8 +5111,7 @@ ON_Leader2::ON_Leader2()
 }
 
 ON_Leader2::~ON_Leader2()
-{
-}
+= default;
 
 ON_BOOL32 ON_Leader2::IsValid( ON_TextLog* text_log ) const
 {
@@ -5520,7 +5511,7 @@ bool ON_Leader2::CreateFromV2(
     m_points.Append(v2_ann.m_points.Count(),v2_ann.m_points.Array());
     ON_2dVector v = m_points[0];
     SetTextValue(v2_ann.UserText());
-    SetTextFormula(0);
+    SetTextFormula(nullptr);
     m_userpositionedtext = false;
     m_textdisplaymode = ( 2 == settings.m_textalign )
                       ? ON::dtHorizontal
@@ -5555,8 +5546,7 @@ ON_TextDot::ON_TextDot() :
 }
 
 ON_TextDot::~ON_TextDot()
-{
-}
+= default;
 
 void ON_TextDot::EmergencyDestroy()
 {
@@ -5574,7 +5564,7 @@ ON_BOOL32 ON_TextDot::IsValid(
   // 5/6/03 LW made dots with no text valid.
   if ( !m_point.IsValid() )
   {
-    if ( 0 != text_log )
+    if ( nullptr != text_log )
     {
       text_log->Print("ON_TextDot m_point is not valid\n");
     }
@@ -5687,7 +5677,7 @@ void ON_TextDot::SetTextString( const wchar_t* string)
   if( string)
   {
     int len = (int)wcslen(string);
-    wchar_t* str = 0;
+    wchar_t* str = nullptr;
     if(len > 0 && string[len-1] <= L' ')
     {
       // trim off trailing white space
@@ -5793,8 +5783,7 @@ ON_Annotation2Text::ON_Annotation2Text()
 }
 
 ON_Annotation2Text::~ON_Annotation2Text()
-{
-}
+= default;
 
 ON_Annotation2Text& ON_Annotation2Text::operator=(const char* s)
 {
@@ -6122,7 +6111,7 @@ bool ON_Annotation2::GetTextXform(
     {
       // This transform rotates the text in the annotation plane.
       const ON_AngularDimension2* angular_dim = ON_AngularDimension2::Cast(ann);
-      if ( 0 != angular_dim )
+      if ( nullptr != angular_dim )
       {
         double a = 0.5*angular_dim->m_angle;
         ON_2dVector R(cos(a),sin(a));
@@ -6402,10 +6391,10 @@ class /*NEVER PUT THIS CLASS IN THE SDK*/ ON_AnnotationTextFormula : public ON_U
   ON_OBJECT_DECLARE(ON_AnnotationTextFormula);
 public:
   ON_AnnotationTextFormula();
-  ~ON_AnnotationTextFormula();
+  ~ON_AnnotationTextFormula() override;
   // NO! - do not add IO support to this userdata! // ON_BOOL32 Write(ON_BinaryArchive&) const;
   // NO! - do not add IO support to this userdata! // ON_BOOL32 Read(ON_BinaryArchive&);
-  ON_BOOL32 GetDescription(ON_wString&);
+  ON_BOOL32 GetDescription(ON_wString&) override;
   // NO! - do not add IO support to this userdata! // ON_BOOL32 Archive() const; 
   static ON_AnnotationTextFormula* Get(const ON_Annotation2*);
   static void Set(ON_Annotation2*,const wchar_t* text_formula);
@@ -6418,7 +6407,7 @@ public:
 ON_OBJECT_IMPLEMENT(ON_AnnotationTextFormula,ON_UserData,"699FCC42-62D4-488c-9109-F1B7A37CE926");
 
 ON_AnnotationTextFormula::~ON_AnnotationTextFormula()
-{}
+= default;
 
 ON_AnnotationTextFormula::ON_AnnotationTextFormula()
 {
@@ -6435,24 +6424,24 @@ ON_BOOL32 ON_AnnotationTextFormula::GetDescription( ON_wString& description )
 
 ON_AnnotationTextFormula* ON_AnnotationTextFormula::Get(const ON_Annotation2* p)
 {
-  return (0 != p)
+  return (nullptr != p)
          ? ON_AnnotationTextFormula::Cast(p->GetUserData(ON_AnnotationTextFormula::m_ON_AnnotationTextFormula_class_id.Uuid()))
-         : 0;
+         : nullptr;
 }
 
 void ON_AnnotationTextFormula::Set(ON_Annotation2* p,const wchar_t* text_formula)
 {
-  if ( 0 != p )
+  if ( nullptr != p )
   {
     ON_AnnotationTextFormula* tf = Get(p);
-    if ( 0 == text_formula || 0 == text_formula[0] )
+    if ( nullptr == text_formula || 0 == text_formula[0] )
     {
-      if (0 != tf )
+      if (nullptr != tf )
         delete tf; 
     }
     else
     {
-      if ( 0 == tf )
+      if ( nullptr == tf )
       {
         tf = new ON_AnnotationTextFormula();
         p->AttachUserData(tf);
@@ -6484,6 +6473,6 @@ void ON_Annotation2::SetTextFormula( const wchar_t* text_formula )
 const wchar_t* ON_Annotation2::TextFormula() const
 {
   const ON_AnnotationTextFormula* tf = ON_AnnotationTextFormula::Get(this);
-  return (0 != tf) ? ((const wchar_t*)tf->m_text_formula) : 0;
+  return (nullptr != tf) ? ((const wchar_t*)tf->m_text_formula) : nullptr;
 }
 

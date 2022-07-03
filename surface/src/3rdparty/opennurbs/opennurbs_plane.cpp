@@ -75,7 +75,7 @@ ON_Plane::ON_Plane(
 }
 
 ON_Plane::~ON_Plane()
-{}
+= default;
 
 ON_3dPoint ON_Plane::PointAt( double s, double t ) const
 {
@@ -533,7 +533,7 @@ int ON_ArePointsOnPlane( // returns 0=no, 1 = yes, 2 = pointset is (to tolerance
     ON_ERROR("stride parameter is too small");
     return 0;
   }
-  if ( 0 == point )
+  if ( nullptr == point )
   {
     ON_ERROR("point parameter is null");
     return 0;

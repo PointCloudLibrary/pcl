@@ -46,8 +46,7 @@ ON_Light::ON_Light()
 }
 
 ON_Light::~ON_Light()
-{
-}
+= default;
 
 ON_BOOL32 ON_Light::IsValid( ON_TextLog* ) const
 {

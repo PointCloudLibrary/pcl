@@ -58,60 +58,60 @@ const double* ON_Matrix::operator[](int i) const
 }
 
 ON_Matrix::ON_Matrix()
-: m(0)
+: m(nullptr)
 , m_row_count(0)
 , m_col_count(0)
-, m_Mmem(0)
+, m_Mmem(nullptr)
 , m_row_offset(0)
 , m_col_offset(0)
-, m_cmem(0)
+, m_cmem(nullptr)
 {
 }
 
 ON_Matrix::ON_Matrix( int row_size, int col_size ) 
-: m(0)
+: m(nullptr)
 , m_row_count(0)
 , m_col_count(0)
-, m_Mmem(0)
+, m_Mmem(nullptr)
 , m_row_offset(0)
 , m_col_offset(0)
-, m_cmem(0)
+, m_cmem(nullptr)
 {
   Create(row_size,col_size);
 }
 
 ON_Matrix::ON_Matrix( int row0, int row1, int col0, int col1 ) 
-: m(0)
+: m(nullptr)
 , m_row_count(0)
 , m_col_count(0)
-, m_Mmem(0)
+, m_Mmem(nullptr)
 , m_row_offset(0)
 , m_col_offset(0)
-, m_cmem(0)
+, m_cmem(nullptr)
 {
   Create(row0,row1,col0,col1);
 }
 
 ON_Matrix::ON_Matrix( const ON_Xform& x ) 
-: m(0)
+: m(nullptr)
 , m_row_count(0)
 , m_col_count(0)
-, m_Mmem(0)
+, m_Mmem(nullptr)
 , m_row_offset(0)
 , m_col_offset(0)
-, m_cmem(0)
+, m_cmem(nullptr)
 {
   *this = x;
 }
 
 ON_Matrix::ON_Matrix( const ON_Matrix& src )
-: m(0)
+: m(nullptr)
 , m_row_count(0)
 , m_col_count(0)
-, m_Mmem(0)
+, m_Mmem(nullptr)
 , m_row_offset(0)
 , m_col_offset(0)
-, m_cmem(0)
+, m_cmem(nullptr)
 {
   *this = src;
 }
@@ -122,29 +122,29 @@ ON_Matrix::ON_Matrix(
   double** M,
   bool bDestructorFreeM
   )
-: m(0)
+: m(nullptr)
 , m_row_count(0)
 , m_col_count(0)
-, m_Mmem(0)
+, m_Mmem(nullptr)
 , m_row_offset(0)
 , m_col_offset(0)
-, m_cmem(0)
+, m_cmem(nullptr)
 {
   Create(row_count,col_count,M,bDestructorFreeM);
 }
 
 ON_Matrix::~ON_Matrix()
 {
-  if ( 0 != m_Mmem )
+  if ( nullptr != m_Mmem )
   {
     onfree(m_Mmem);
-    m_Mmem = 0;
+    m_Mmem = nullptr;
   }
   m_row_offset = 0;
   m_col_offset = 0;
   struct DBLBLK* p = (struct DBLBLK*)m_cmem;
-  m_cmem = 0;
-  while(0 != p)
+  m_cmem = nullptr;
+  while(nullptr != p)
   {
     struct DBLBLK* next = p->next;
     onfree(p);
@@ -179,7 +179,7 @@ bool ON_Matrix::Create( int row_count, int col_count)
   if ( row_count > 0 && col_count > 0 ) 
   {
     m_rowmem.Reserve(row_count);
-    if ( 0 != m_rowmem.Array() )
+    if ( nullptr != m_rowmem.Array() )
     {
       m_rowmem.SetCount(row_count);
       // In general, allocate coefficient memory in chunks 
@@ -274,7 +274,7 @@ bool ON_Matrix::Create(
   )
 {
   Destroy();
-  if ( row_count < 1 || col_count < 1 || 0 == M )
+  if ( row_count < 1 || col_count < 1 || nullptr == M )
     return false;
   m = M;
   m_row_count = row_count;
@@ -287,22 +287,22 @@ bool ON_Matrix::Create(
 
 void ON_Matrix::Destroy()
 {
-  m = 0;
+  m = nullptr;
   m_row_count = 0;
   m_col_count = 0;
   m_rowmem.SetCount(0);
-  if ( 0 != m_Mmem )
+  if ( nullptr != m_Mmem )
   {
     // pointer passed to Create( row_count, col_count, M, bDestructorFreeM )
     // when bDestructorFreeM = true.
     onfree(m_Mmem);
-    m_Mmem = 0;
+    m_Mmem = nullptr;
   }
 	m_row_offset = 0;
 	m_col_offset = 0;
   struct DBLBLK* cmem = (struct DBLBLK*)m_cmem;
-  m_cmem = 0;
-  while( 0 != cmem )
+  m_cmem = nullptr;
+  while( nullptr != cmem )
   {
     struct DBLBLK* next_cmem = cmem->next;
     onfree(cmem);
@@ -313,26 +313,26 @@ void ON_Matrix::Destroy()
 void ON_Matrix::EmergencyDestroy()
 {
   // call if memory pool used matrix by becomes invalid
-  m = 0;
+  m = nullptr;
   m_row_count = 0;
   m_col_count = 0;
   m_rowmem.EmergencyDestroy();
-	m_Mmem = 0;
+	m_Mmem = nullptr;
 	m_row_offset = 0;
 	m_col_offset = 0;
-  m_cmem = 0;
+  m_cmem = nullptr;
 }
 
 ON_Matrix& ON_Matrix::operator=(const ON_Matrix& src)
 {
   if ( this != &src ) 
   {
-    if ( src.m_row_count != m_row_count || src.m_col_count != m_col_count || 0 == m )
+    if ( src.m_row_count != m_row_count || src.m_col_count != m_col_count || nullptr == m )
     {
       Destroy();
       Create( src.RowCount(), src.ColCount() );
     }
-    if (src.m_row_count == m_row_count && src.m_col_count == m_col_count && 0 != m )
+    if (src.m_row_count == m_row_count && src.m_col_count == m_col_count && nullptr != m )
     {
       int i;
       // src rows may be permuted - copy row by row
@@ -354,12 +354,12 @@ ON_Matrix& ON_Matrix::operator=(const ON_Xform& src)
 {
   m_row_offset = 0;
   m_col_offset = 0;
-  if ( 4 != m_row_count || 4 != m_col_count || 0 == m )
+  if ( 4 != m_row_count || 4 != m_col_count || nullptr == m )
   {
     Destroy();
     Create( 4, 4 );
   }
-  if ( 4 == m_row_count && 4 == m_col_count && 0 != m )
+  if ( 4 == m_row_count && 4 == m_col_count && nullptr != m )
   {
     double** this_m = ThisM();
     if ( this_m )
@@ -900,9 +900,9 @@ ON_Matrix::BackSolve(
 void ON_Matrix::Zero()
 {
   struct DBLBLK* cmem = (struct DBLBLK*)m_cmem;
-  while ( 0 != cmem )
+  while ( nullptr != cmem )
   {
-    if ( 0 != cmem->a && cmem->count > 0 )
+    if ( nullptr != cmem->a && cmem->count > 0 )
     {
       memset( cmem->a, 0, cmem->count*sizeof(cmem->a[0]) );
     }
@@ -955,7 +955,7 @@ bool ON_Matrix::IsValid() const
 {
   if ( m_row_count < 1 || m_col_count < 1 )
     return false;
-  if ( 0 == m )
+  if ( nullptr == m )
     return false;
   return true;
 }
@@ -1170,9 +1170,9 @@ bool ON_Matrix::Scale( double s )
     struct DBLBLK* cmem = (struct DBLBLK*)m_cmem;
     int i;
     double* p;
-    while ( 0 != cmem )
+    while ( nullptr != cmem )
     {
-      if ( 0 != cmem->a && cmem->count > 0 )
+      if ( nullptr != cmem->a && cmem->count > 0 )
       {
         p = cmem->a;
         i = cmem->count;
@@ -1345,10 +1345,10 @@ int ON_InvertSVDW(
   double w, maxw;
   int i;
 
-  if ( 0 == W || count <= 0 )
+  if ( nullptr == W || count <= 0 )
     return -1;
 
-  if ( 0 == invW )
+  if ( nullptr == invW )
   {
     invW = (double*)onmalloc(count*sizeof(invW[0]));
   }
@@ -1394,10 +1394,10 @@ bool ON_SolveSVD(
   const double* p0;
   double workY[128], x;
 
-  if ( row_count < 1 || col_count < 1 || 0 == U || 0 == invW || 0 == V || 0 == B)
+  if ( row_count < 1 || col_count < 1 || nullptr == U || nullptr == invW || nullptr == V || nullptr == B)
     return false;
 
-  if ( 0 == X )
+  if ( nullptr == X )
     X = (double*)onmalloc(col_count*sizeof(X[0]));
   Y = (col_count > 128)
     ? ( (double*)onmalloc(col_count*sizeof(*Y)) )

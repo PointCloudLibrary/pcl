@@ -317,7 +317,7 @@ bool ON_GetClosestPointInPointList(
           )
 {
   bool rc = false;
-  if ( point_count>0 && 0 != point_list && closest_point_index )
+  if ( point_count>0 && nullptr != point_list && closest_point_index )
   {
     double d = 1.0e300;
     double d2 = 1.0e300;
@@ -429,7 +429,7 @@ const bool* ON_PointCloud::HiddenPointArray() const
 {
   return (m_hidden_count > 0 && m_H.Count() == m_P.Count()) 
          ? m_H.Array() 
-         : 0;
+         : nullptr;
 }
 
 void ON_PointCloud::SetHiddenPointFlag( int point_index, bool bHidden )

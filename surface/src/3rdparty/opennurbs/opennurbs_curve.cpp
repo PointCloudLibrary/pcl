@@ -23,8 +23,8 @@ ON_Curve::ON_Curve()
 {}
 
 ON_Curve::ON_Curve(const ON_Curve& src)
-: ON_Geometry(src)
-{}
+ 
+= default;
 
 ON_Curve& ON_Curve::operator=(const ON_Curve& src)
 {
@@ -302,9 +302,9 @@ bool ON_Curve::IsArcAt(
   int hint;
   if ( !GetDomain(&k0,&k1) )
     return false;
-  if ( 0 != t0 )
+  if ( nullptr != t0 )
     *t0 = k0;
-  if ( 0 != t1 )
+  if ( nullptr != t1 )
     *t1 = k1;
   if ( !ON_IsValid(t) )
     return false;
@@ -322,9 +322,9 @@ bool ON_Curve::IsArcAt(
       break; // sanity check to prevent infinite loops
     if( t <= k )
     {
-      if ( 0 != t0 )
+      if ( nullptr != t0 )
         *t0 = k0;
-      if ( 0 != t1 )
+      if ( nullptr != t1 )
         *t1 = k1;
       ON_CurveProxy subcrv(this,ON_Interval(k0,k));
       if ( subcrv.IsArc(plane,arc,tolerance) )
@@ -521,7 +521,7 @@ ON_BOOL32 ON_Curve::IsClosed() const
   bool rc = false;
   double *a, *b, *c, *p, w[12];
   const int dim = Dimension();
-  a = 0;
+  a = nullptr;
   if ( dim > 1 ) 
   {
     ON_Interval d = Domain();
@@ -553,7 +553,7 @@ ON_BOOL32 ON_Curve::IsClosed() const
         }
       }
     }
-    if ( dim > 3 && 0 != a )
+    if ( dim > 3 && nullptr != a )
       onfree(a);
   }
 
@@ -645,8 +645,8 @@ bool ON_Curve::GetNextDiscontinuity(
             // need to check locus continuity at start/end of closed curve.
             ON_3dPoint Pa, Pb;
             ON_3dVector D1a, D1b, D2a, D2b;
-            if (    Ev2Der(domain[0],Pa,D1a,D2a,1,NULL) 
-                 && Ev2Der(domain[1],Pb,D1b,D2b,-1,NULL) )
+            if (    Ev2Der(domain[0],Pa,D1a,D2a,1,nullptr) 
+                 && Ev2Der(domain[1],Pb,D1b,D2b,-1,nullptr) )
             {
               Pb = Pa; // IsClosed() = true means assume Pa=Pb;
               if ( bTestD1 )
@@ -997,7 +997,7 @@ ON_BOOL32 ON_Curve::EvTangent(
             tt = t + eps;
             if ( tt == t )
               break;
-            if (!Ev2Der( tt, p, d1, d2, side, 0 ))
+            if (!Ev2Der( tt, p, d1, d2, side, nullptr ))
               break;
             d1od2 = d1*d2;
             if ( d1od2 > d1od2tol )
@@ -1136,7 +1136,7 @@ bool ON_Curve::EvaluatePoint( const class ON_ObjRef& objref, ON_3dPoint& P ) con
   case ON::os_center:
     {
       ON_Ellipse ellipse;
-      if ( IsEllipse(0,&ellipse) )
+      if ( IsEllipse(nullptr,&ellipse) )
       {
         P = ellipse.plane.origin;
         rc = true;
@@ -1177,7 +1177,7 @@ bool ON_Curve::EvaluatePoint( const class ON_ObjRef& objref, ON_3dPoint& P ) con
   case ON::os_focus:
     {
       ON_Ellipse ellipse;
-      if ( IsEllipse(0,&ellipse) )
+      if ( IsEllipse(nullptr,&ellipse) )
       {
         ON_3dPoint F1, F2;
         if ( ellipse.GetFoci(F1,F2) )
@@ -1343,7 +1343,7 @@ ON::eCurveType ON_CurveType( const ON_Curve* curve )
   const ON_ClassId* id = curve->ClassId();
 
   // "fake virtual" handling of fast/easy special cases
-  while (0 != id && curve_id != id )
+  while (nullptr != id && curve_id != id )
   {
     if ( &ON_ArcCurve::m_ON_ArcCurve_class_id == id )
       return ON::ctArc;
@@ -1394,7 +1394,7 @@ bool ON_MatchCurveEnds( ON_Curve* curve0,
                         double gap_tolerance )
 {
   ON_BOOL32 rc = false;
-  if ( 0 != curve0 && 0 != curve1 
+  if ( nullptr != curve0 && nullptr != curve1 
        && end0 >= 0 && end0 <= 1 
        && end1 >= 0 && end1 <= 1 )
   {
@@ -1424,10 +1424,10 @@ bool ON_MatchCurveEnds( ON_Curve* curve0,
         {
           c->DestroyRuntimeCache();
           ON_PolyCurve* polycurve = ON_PolyCurve::Cast(c);
-          if ( 0 == polycurve )
+          if ( nullptr == polycurve )
             break;
           c = polycurve->SegmentCurve(e?(polycurve->Count()-1):0);
-          if( 0 == c )
+          if( nullptr == c )
             return false;
           ct = ON_CurveType(c);
         }
@@ -1622,10 +1622,10 @@ bool ON_ForceMatchCurveEnds(ON_Curve& Crv0, int end0, ON_Curve& Crv1, int end1)
     {
       c->DestroyRuntimeCache();
       ON_PolyCurve* polycurve = ON_PolyCurve::Cast(c);
-      if ( 0 == polycurve )
+      if ( nullptr == polycurve )
         break;
       c = polycurve->SegmentCurve(e?(polycurve->Count()-1):0);
-      if( 0 == c )
+      if( nullptr == c )
         return false;
       ct[i] = ON_CurveType(c);
     }
@@ -1690,11 +1690,11 @@ bool ON_NurbsCurve::RepairBadKnots( double knot_tolerance, bool bRepair )
 {
   bool rc = false;
   if ( m_order >= 2 && m_cv_count > m_order
-       && 0 != m_cv && 0 != m_knot 
+       && nullptr != m_cv && nullptr != m_knot 
        && m_dim > 0
        && m_cv_stride >= (m_is_rat)?(m_dim+1):m_dim
-       && 0 != m_cv
-       && 0 != m_knot
+       && nullptr != m_cv
+       && nullptr != m_knot
        && m_knot[m_cv_count-1] - m_knot[m_order-2] > knot_tolerance
        )
   {
@@ -1741,7 +1741,7 @@ bool ON_NurbsCurve::RepairBadKnots( double knot_tolerance, bool bRepair )
             for ( i = m_cv_count-1; i < m_cv_count+m_order-2; i++ )
               m_knot[i] = domain[1];
             onfree(cv);
-            cv = 0;
+            cv = nullptr;
           }
           else
             return rc;
@@ -1776,7 +1776,7 @@ bool ON_NurbsCurve::RepairBadKnots( double knot_tolerance, bool bRepair )
             for ( i = 0; i <= m_order-2; i++ )
               m_knot[i] = domain[0];
             onfree(cv);
-            cv = 0;
+            cv = nullptr;
           }
           else
             return rc;
@@ -1830,7 +1830,7 @@ bool ON_Curve::FirstSpanIsLinear(
   double tolerance
   ) const
 {
-  return FirstSpanIsLinear(min_length,tolerance,0);
+  return FirstSpanIsLinear(min_length,tolerance,nullptr);
 }
 
 bool ON_Curve::FirstSpanIsLinear( 
@@ -1840,16 +1840,16 @@ bool ON_Curve::FirstSpanIsLinear(
   ) const
 {
   const ON_NurbsCurve* nurbs_curve = ON_NurbsCurve::Cast(this);
-  if ( 0 != nurbs_curve )
+  if ( nullptr != nurbs_curve )
   {
     return nurbs_curve->SpanIsLinear(0,min_length,tolerance,span_line);
   }
 
   const ON_PolylineCurve* polyline_curve = ON_PolylineCurve::Cast(this);
-  if ( 0 != polyline_curve )
+  if ( nullptr != polyline_curve )
   {
     bool rc = (polyline_curve->PointCount() >= 2);
-    if (rc && 0 != span_line )
+    if (rc && nullptr != span_line )
     {
       span_line->from = polyline_curve->m_pline[0];
       span_line->to = polyline_curve->m_pline[1];
@@ -1858,7 +1858,7 @@ bool ON_Curve::FirstSpanIsLinear(
   }
 
   const ON_LineCurve* line_curve = ON_LineCurve::Cast(this);
-  if ( 0 != line_curve )
+  if ( nullptr != line_curve )
   {
     if ( span_line )
       *span_line = line_curve->m_line;
@@ -1866,23 +1866,23 @@ bool ON_Curve::FirstSpanIsLinear(
   }
 
   const ON_PolyCurve* poly_curve = ON_PolyCurve::Cast(this);
-  if ( 0 != poly_curve )
+  if ( nullptr != poly_curve )
   {
     const ON_Curve* segment = poly_curve->SegmentCurve(0);
-    return (0 != segment) ? segment->FirstSpanIsLinear(min_length,tolerance,span_line) : false;
+    return (nullptr != segment) ? segment->FirstSpanIsLinear(min_length,tolerance,span_line) : false;
   }
 
   const ON_CurveProxy* proxy_curve = ON_CurveProxy::Cast(this);
-  if ( 0 != proxy_curve )
+  if ( nullptr != proxy_curve )
   {
     const ON_Curve* curve = proxy_curve->ProxyCurve();
-    if ( 0 == curve )
+    if ( nullptr == curve )
       return false;
     bool bProxyCurveIsReversed = proxy_curve->ProxyCurveIsReversed();
     bool rc = bProxyCurveIsReversed
             ? curve->FirstSpanIsLinear(min_length,tolerance,span_line) 
             : curve->LastSpanIsLinear(min_length,tolerance,span_line);
-    if ( rc && bProxyCurveIsReversed && 0 != span_line )
+    if ( rc && bProxyCurveIsReversed && nullptr != span_line )
       span_line->Reverse();
     return rc;
   }
@@ -1897,7 +1897,7 @@ bool ON_Curve::LastSpanIsLinear(
   double tolerance
   ) const
 {
-  return LastSpanIsLinear(min_length,tolerance,0);
+  return LastSpanIsLinear(min_length,tolerance,nullptr);
 }
 
 bool ON_Curve::LastSpanIsLinear( 
@@ -1907,16 +1907,16 @@ bool ON_Curve::LastSpanIsLinear(
   ) const
 {
   const ON_NurbsCurve* nurbs_curve = ON_NurbsCurve::Cast(this);
-  if ( 0 != nurbs_curve )
+  if ( nullptr != nurbs_curve )
   {
     return nurbs_curve->SpanIsLinear(nurbs_curve->m_cv_count-nurbs_curve->m_order,min_length,tolerance,span_line);
   }
 
   const ON_PolylineCurve* polyline_curve = ON_PolylineCurve::Cast(this);
-  if ( 0 != polyline_curve )
+  if ( nullptr != polyline_curve )
   {
     int count = polyline_curve->PointCount();
-    if ( count >= 2 && 0 != span_line )
+    if ( count >= 2 && nullptr != span_line )
     {
       span_line->from = polyline_curve->m_pline[count-2];
       span_line->to = polyline_curve->m_pline[count-1];
@@ -1925,7 +1925,7 @@ bool ON_Curve::LastSpanIsLinear(
   }
 
   const ON_LineCurve* line_curve = ON_LineCurve::Cast(this);
-  if ( 0 != line_curve )
+  if ( nullptr != line_curve )
   {
     if ( span_line )
       *span_line = line_curve->m_line;
@@ -1933,23 +1933,23 @@ bool ON_Curve::LastSpanIsLinear(
   }
 
   const ON_PolyCurve* poly_curve = ON_PolyCurve::Cast(this);
-  if ( 0 != poly_curve )
+  if ( nullptr != poly_curve )
   {
     const ON_Curve* segment = poly_curve->SegmentCurve(poly_curve->Count()-1);
-    return (0 != segment) ? segment->LastSpanIsLinear(min_length,tolerance,span_line) : false;
+    return (nullptr != segment) ? segment->LastSpanIsLinear(min_length,tolerance,span_line) : false;
   }
 
   const ON_CurveProxy* proxy_curve = ON_CurveProxy::Cast(this);
-  if ( 0 != proxy_curve )
+  if ( nullptr != proxy_curve )
   {
     const ON_Curve* curve = proxy_curve->ProxyCurve();
-    if ( 0 == curve )
+    if ( nullptr == curve )
       return false;
     bool bProxyCurveIsReversed = proxy_curve->ProxyCurveIsReversed();
     bool rc = bProxyCurveIsReversed
            ? curve->LastSpanIsLinear(min_length,tolerance,span_line) 
            : curve->FirstSpanIsLinear(min_length,tolerance,span_line);
-    if ( rc && bProxyCurveIsReversed && 0 != span_line )
+    if ( rc && bProxyCurveIsReversed && nullptr != span_line )
       span_line->Reverse();
     return rc;
   }
@@ -1965,7 +1965,7 @@ bool ON_NurbsCurve::SpanIsLinear(
     double tolerance
     ) const
 {
-  return SpanIsLinear(span_index,min_length,tolerance,0);
+  return SpanIsLinear(span_index,min_length,tolerance,nullptr);
 }
 
 bool ON_NurbsCurve::SpanIsLinear(
@@ -2059,7 +2059,7 @@ ON_Curve* ON_TrimCurve(
             ON_Interval trim_parameters
             )
 {
-  ON_Curve* trimmed_curve = 0;
+  ON_Curve* trimmed_curve = nullptr;
 
   const ON_Interval curve_domain = curve.Domain();
   ON_BOOL32 bDecreasing = trim_parameters.IsDecreasing();
@@ -2070,13 +2070,13 @@ ON_Curve* ON_TrimCurve(
     if ( trim_parameters[0] == curve_domain[1] )
     {
       if ( trim_parameters[1] == curve_domain[0] )
-        return 0;
+        return nullptr;
       trim_parameters[0] = curve_domain[0];
     }
     else if ( trim_parameters[1] == curve_domain[0] )
       trim_parameters[1] = curve_domain[1];
     else if ( !trim_parameters.IsDecreasing() )
-      return 0;
+      return nullptr;
   }
 
   if ( trim_parameters.IsDecreasing() && curve.IsClosed() )
@@ -2085,17 +2085,17 @@ ON_Curve* ON_TrimCurve(
     if ( !left_crv->Trim(ON_Interval(trim_parameters[0],curve_domain[1])) )
     {
       delete left_crv;
-      return 0;
+      return nullptr;
     }
     ON_Curve* right_crv = curve.DuplicateCurve();
     if ( !right_crv->Trim(ON_Interval(curve_domain[0],trim_parameters[1])) )
     {
       delete left_crv;
       delete right_crv;
-      return 0;
+      return nullptr;
     }
     ON_PolyCurve* polycurve = ON_PolyCurve::Cast(left_crv);
-    if ( polycurve == NULL )
+    if ( polycurve == nullptr )
     {
       polycurve = new ON_PolyCurve();      
       polycurve->Append( left_crv );
@@ -2113,8 +2113,8 @@ ON_Curve* ON_TrimCurve(
         polycurve->Append( segment );
       }
       delete right_crv;
-      ptmp = 0;
-      right_crv = 0;
+      ptmp = nullptr;
+      right_crv = nullptr;
     }
     else
     {
@@ -2131,7 +2131,7 @@ ON_Curve* ON_TrimCurve(
     if( !trimmed_curve->Trim(trim_parameters) )
     {
       delete trimmed_curve;
-      trimmed_curve = 0;
+      trimmed_curve = nullptr;
     }
   }
 
@@ -2178,7 +2178,7 @@ ON_NurbsCurve* ON_Curve::NurbsCurve(
   {
     if (!pNurbsCurve)
       delete nurbs_curve;
-    nurbs_curve = NULL;
+    nurbs_curve = nullptr;
   }
   return nurbs_curve;
 }
@@ -2232,7 +2232,7 @@ bool ON_CurveArray::Duplicate( ON_CurveArray& dst ) const
   ON_Curve* curve;
   for ( i = 0; i < count; i++ ) 
   {
-    curve = 0;
+    curve = nullptr;
     if ( m_a[i] ) 
     {
       curve = m_a[i]->Duplicate();
@@ -2297,7 +2297,7 @@ bool ON_CurveArray::Read( ON_BinaryArchive& file )
           rc = file.ReadInt(&flag);
           if (rc && flag==1) 
           {
-            p = 0;
+            p = nullptr;
             rc = file.ReadObject( &p ) ? true : false; // polymorphic curves
             m_a[i] = ON_Curve::Cast(p);
             if ( !m_a[i] )
@@ -2855,7 +2855,7 @@ bool ON_SortLines(
     for ( i = 0; i < line_count; i++ ) 
       bReverse[i] = false;
   }
-  if ( line_count < 1 || 0 == line_list || 0 == index || 0 == bReverse )
+  if ( line_count < 1 || nullptr == line_list || nullptr == index || nullptr == bReverse )
   {
     ON_ERROR("ON_SortLines - illegal input");
     return false;
@@ -2947,7 +2947,7 @@ bool ON_SortCurves( int curve_count, const ON_Curve* const* curve_list, int* ind
 {
   int i;
 
-  if ( curve_count < 1 || 0 == curve_list || 0 == curve_list[0] || 0 == index || 0 == bReverse )
+  if ( curve_count < 1 || nullptr == curve_list || nullptr == curve_list[0] || nullptr == index || nullptr == bReverse )
   {
     if ( index ) 
     {

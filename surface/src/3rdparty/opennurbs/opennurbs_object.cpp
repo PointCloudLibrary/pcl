@@ -510,7 +510,7 @@ void ON::Begin()
   if ( !bRunning )
   {
     bRunning = true;
-    const ON_Object* p=0;
+    const ON_Object* p=nullptr;
 
     ON_Object::Cast(p);
     ON_3dmObjectAttributes::Cast(p);
@@ -604,8 +604,8 @@ void ON::Begin()
 }
 
 
-ON_ClassId* ON_ClassId::m_p0 = 0; // static pointer to first id in list
-ON_ClassId* ON_ClassId::m_p1 = 0; // static pointer to last id in list
+ON_ClassId* ON_ClassId::m_p0 = nullptr; // static pointer to first id in list
+ON_ClassId* ON_ClassId::m_p1 = nullptr; // static pointer to last id in list
 int ON_ClassId::m_mark0 = 0;
 
 int ON_ClassId::CurrentMark()
@@ -624,8 +624,8 @@ int ON_ClassId::Purge( int mark_value )
   // Fundamental openNURBS class ids have a mark value of 0 and cannot be purged.
   int purge_count = 0;
   if ( mark_value > 0 ) {
-    ON_ClassId* prev = 0;
-    ON_ClassId* next = 0;
+    ON_ClassId* prev = nullptr;
+    ON_ClassId* next = nullptr;
     ON_ClassId* p;
     for ( p = m_p0; p; p = next )
     {
@@ -636,7 +636,7 @@ int ON_ClassId::Purge( int mark_value )
           prev->m_pNext = next;
         else
           m_p0 = next;
-        p->m_pNext = 0;
+        p->m_pNext = nullptr;
       }
       else
         prev = p;
@@ -662,7 +662,7 @@ bool ON_ClassId::PurgeAfter(const ON_ClassId* pClassId)
     {
       // All class ids after pClassId are assumed to
       // be bad.
-      p->m_pNext = 0;
+      p->m_pNext = nullptr;
       m_p1 = p;
       return true;
     }
@@ -715,19 +715,19 @@ ON_ClassId::ON_ClassId( const char* sClassName,
                         bool (*copy)( const ON_Object*, ON_Object* ),
                         const char* sUUID // UUID in registry format from guidgen
                         ) 
-                        : m_pNext(0),
-                          m_pBaseClassId(0),
+                        : m_pNext(nullptr),
+                          m_pBaseClassId(nullptr),
                           m_create(create),
                           m_mark(m_mark0),
                           m_class_id_version(1),
                           m_copy(copy),
-                          m_f2(0),
-                          m_f3(0),
-                          m_f4(0),
-                          m_f5(0),
-                          m_f6(0),
-                          m_f7(0),
-                          m_f8(0)
+                          m_f2(nullptr),
+                          m_f3(nullptr),
+                          m_f4(nullptr),
+                          m_f5(nullptr),
+                          m_f6(nullptr),
+                          m_f7(nullptr),
+                          m_f8(nullptr)
 {
   // code compiled on or after opennurbs 200703060 calls this constructor
   ConstructorHelper(sClassName,sBaseClassName,sUUID);
@@ -741,8 +741,8 @@ ON_ClassId::ON_ClassId( const char* sClassName,
                         ON_Object* (*create)(),
                         const char* sUUID // UUID in registry format from guidgen
                         ) 
-                        : m_pNext(0),
-                          m_pBaseClassId(0),
+                        : m_pNext(nullptr),
+                          m_pBaseClassId(nullptr),
                           m_create(create),
                           m_mark(m_mark0)
 {
@@ -781,12 +781,12 @@ void ON_ClassId::ConstructorHelper( const char* sClassName,
   // The m_mark0 > 2 test prevents opennurbs and Rhino from
   // having two ON_Object derived classes that have the same
   // name.  Plug-ins are free to use any name.
-  if ( 0 != duplicate_class && m_mark0 > 2 )
+  if ( nullptr != duplicate_class && m_mark0 > 2 )
   {
     char s[7];
     int ver;
     ON_WARNING("ON_ClassId::ON_ClassId() - class name already in use.  Will append number to make it unique.");
-    for ( ver = 1; ver < 10000 && 0 != duplicate_class; ver++ )
+    for ( ver = 1; ver < 10000 && nullptr != duplicate_class; ver++ )
     {
       IntToString(ver,s);
       s[6] = 0;
@@ -796,7 +796,7 @@ void ON_ClassId::ConstructorHelper( const char* sClassName,
     }
   }
 
-  if ( 0 != duplicate_class )
+  if ( nullptr != duplicate_class )
   {
     // Do NOT permit core classes to have duplicate names.
     ON_ERROR("ON_ClassId::ON_ClassId() - class name already in use.");
@@ -859,11 +859,11 @@ void ON_ClassId::ConstructorHelper( const char* sClassName,
     m_p0 = this;
   }
   m_p1 = this;
-  m_p1->m_pNext = 0;
+  m_p1->m_pNext = nullptr;
 }
 
 ON_ClassId::~ON_ClassId()
-{}
+= default;
 
 static ON_UUID s_most_recent_class_id_create_uuid;
 
@@ -878,7 +878,7 @@ ON_Object* ON_ClassId::Create() const
   // can create approprate class.  The C++
   // opennurbs toolkit never uses this value.
   s_most_recent_class_id_create_uuid = m_uuid;
-  return m_create ? m_create() : 0;
+  return m_create ? m_create() : nullptr;
 }
 
 const ON_ClassId* ON_ClassId::ClassId( const char* sClassName )
@@ -889,7 +889,7 @@ const ON_ClassId* ON_ClassId::ClassId( const char* sClassName )
   const char* s0;
   const char* s1;
   if ( !sClassName || !sClassName[0] || sClassName[0] == '0' )
-    return NULL;
+    return nullptr;
   for(p = m_p0; p; p = p->m_pNext) {
     // avoid strcmp() because it crashes on NULL strings
     s0 = sClassName;
@@ -967,7 +967,7 @@ const ON_ClassId* ON_ClassId::ClassId( ON_UUID uuid )
     else if ( !ON_UuidCompare( &uuid, &sumsrf ) )
       p = &ON_SumSurface::m_ON_SumSurface_class_id;
     else
-      p = 0; // <- does nothing but it's a good place for debugger breakpoint
+      p = nullptr; // <- does nothing but it's a good place for debugger breakpoint
   }
   return p;
 }
@@ -988,14 +988,13 @@ public:
 
 ON__ClassIdDumpNode::ON__ClassIdDumpNode() 
 {
-  m_class_id=0;
-  m_parent_node=0;
+  m_class_id=nullptr;
+  m_parent_node=nullptr;
   m_depth=0;
 };
 
 ON__ClassIdDumpNode::~ON__ClassIdDumpNode() 
-{
-}
+= default;
 
 int ON__ClassIdDumpNode::CompareClassUuid( const class ON__ClassIdDumpNode& other ) const
 {
@@ -1004,11 +1003,11 @@ int ON__ClassIdDumpNode::CompareClassUuid( const class ON__ClassIdDumpNode& othe
   const ON_ClassId* b = other.m_class_id;
   if ( a != b )
   {
-    if ( 0 == a )
+    if ( nullptr == a )
     {
       rc = -1;
     }
-    else if ( 0 == b )
+    else if ( nullptr == b )
       rc = 1;
     else
     {
@@ -1029,19 +1028,19 @@ int ON__ClassIdDumpNode::CompareClassName( const class ON__ClassIdDumpNode& othe
   const ON_ClassId* b = other.m_class_id;
   if ( a != b )
   {
-    if ( 0 == a )
+    if ( nullptr == a )
     {
       rc = -1;
     }
-    else if ( 0 == b )
+    else if ( nullptr == b )
       rc = 1;
     else
     {
       const char* a_name = a->ClassName();
       const char* b_name = b->ClassName();
-      if ( 0 == a_name )
+      if ( nullptr == a_name )
       {
-        if ( 0 == b_name )
+        if ( nullptr == b_name )
         {
           rc = b->Mark() - a->Mark();
           if ( 0 == rc )
@@ -1050,7 +1049,7 @@ int ON__ClassIdDumpNode::CompareClassName( const class ON__ClassIdDumpNode& othe
         else
           rc = -1;
       }
-      else if ( 0 == b_name )
+      else if ( nullptr == b_name )
       {
         rc = 1;
       }
@@ -1077,11 +1076,11 @@ int ON__ClassIdDumpNode::CompareClassName( const class ON__ClassIdDumpNode& othe
 static int ON__ClassIdDumpNode_CompareUuid( const ON__ClassIdDumpNode* a, const ON__ClassIdDumpNode* b )
 {
   int rc = 0;
-  if ( 0 == a )
+  if ( nullptr == a )
   {
-    rc = (0 == b) ? 0 : -1;
+    rc = (nullptr == b) ? 0 : -1;
   }
-  else if ( 0 == b )
+  else if ( nullptr == b )
   {
     rc = 1;
   }
@@ -1095,11 +1094,11 @@ static int ON__ClassIdDumpNode_CompareUuid( const ON__ClassIdDumpNode* a, const 
 static int ON__ClassIdDumpNode_CompareName( ON__ClassIdDumpNode *const* a, ON__ClassIdDumpNode *const* b )
 {
   int rc = 0;
-  if ( 0 == a )
+  if ( nullptr == a )
   {
-    rc = (0 == b) ? 0 : -1;
+    rc = (nullptr == b) ? 0 : -1;
   }
-  else if ( 0 == b )
+  else if ( nullptr == b )
   {
     rc = 1;
   }
@@ -1113,13 +1112,13 @@ static int ON__ClassIdDumpNode_CompareName( ON__ClassIdDumpNode *const* a, ON__C
 bool ON__ClassIdDumpNode::Dump( int depth, ON_TextLog& text_log )
 {
   bool rc = true;
-  if ( 0 == m_class_id || m_depth != 0 || depth < 1)
+  if ( nullptr == m_class_id || m_depth != 0 || depth < 1)
     rc = false;
   else
   {
     m_depth = depth;
     const char* class_name = m_class_id->ClassName();
-    if ( 0 == class_name )
+    if ( nullptr == class_name )
     {
       class_name = "!!ERROR!!";
       rc = false;
@@ -1138,7 +1137,7 @@ bool ON__ClassIdDumpNode::Dump( int depth, ON_TextLog& text_log )
       for ( i = 0; i < count; i++ )
       {
         ON__ClassIdDumpNode* child_node = m_child_nodes[i];
-        if ( 0 == child_node )
+        if ( nullptr == child_node )
           rc = false;
         else
         {
@@ -1160,7 +1159,7 @@ void ON_ClassId::Dump( ON_TextLog& dump )
   {
     count++;
   }
-  if ( 0 != p )
+  if ( nullptr != p )
   {
     dump.Print("ON_ClassId::m_p0 list is damaged.\n");
   }
@@ -1182,7 +1181,7 @@ void ON_ClassId::Dump( ON_TextLog& dump )
     {
       ON__ClassIdDumpNode& node = nodes[i];
       p = node.m_class_id;
-      if ( 0 != p )
+      if ( nullptr != p )
       {
         tmp_node.m_class_id = p->BaseClass();
         j = nodes.BinarySearch(&tmp_node,ON__ClassIdDumpNode_CompareUuid);
@@ -1291,12 +1290,12 @@ bool ON_Object::CopyFrom( const ON_Object* src )
 
 ON_Object::ON_Object()
 : 
-m_userdata_list(0)
+m_userdata_list(nullptr)
 {}
 
 ON_Object::ON_Object(const ON_Object& src)
 :
-m_userdata_list(0)
+m_userdata_list(nullptr)
 {
   CopyUserData(src);
 }
@@ -1332,7 +1331,7 @@ bool ON__EnableLeakUserData(bool bEnable)
 
 void ON_Object::EmergencyDestroy()
 {
-  m_userdata_list = 0;
+  m_userdata_list = nullptr;
 }
 
 
@@ -1345,13 +1344,13 @@ void ON_Object::PurgeUserData()
     while(p) 
     {
       next = p->m_userdata_next;
-      p->m_userdata_owner = 0;
-      p->m_userdata_next = 0;
+      p->m_userdata_owner = nullptr;
+      p->m_userdata_next = nullptr;
       if ( !g__bLeakUserData )
         delete p;
       p = next;
     }
-    m_userdata_list = 0;
+    m_userdata_list = nullptr;
   }
 }
 
@@ -1359,9 +1358,9 @@ ON_BOOL32 ON_Object::AttachUserData( ON_UserData* p )
 {
   ON_BOOL32 rc = false;
   if ( p 
-       && NULL == p->m_userdata_owner
+       && nullptr == p->m_userdata_owner
        && ON_UuidCompare( &ON_nil_uuid, &p->m_userdata_uuid) 
-       && NULL == GetUserData( p->m_userdata_uuid )
+       && nullptr == GetUserData( p->m_userdata_uuid )
        ) {
     if ( p->IsUnknownUserData() ) {
       // make sure we have valid user data - the first beta release of Rhino 2.0 
@@ -1390,7 +1389,7 @@ ON_BOOL32 ON_Object::DetachUserData( ON_UserData* p )
   ON_BOOL32 rc = false;
   if ( p && p->m_userdata_owner == this ) 
   {
-    ON_UserData* prev = 0;
+    ON_UserData* prev = nullptr;
     ON_UserData* ud = m_userdata_list;
     while ( ud ) 
     {
@@ -1400,8 +1399,8 @@ ON_BOOL32 ON_Object::DetachUserData( ON_UserData* p )
           prev->m_userdata_next = ud->m_userdata_next;
         else
           m_userdata_list = ud->m_userdata_next;
-        ud->m_userdata_owner = 0;
-        ud->m_userdata_next = 0;
+        ud->m_userdata_owner = nullptr;
+        ud->m_userdata_next = nullptr;
         rc = true;
         break;
       }
@@ -1415,7 +1414,7 @@ ON_BOOL32 ON_Object::DetachUserData( ON_UserData* p )
 
 ON_UserData* ON_Object::GetUserData( const ON_UUID& userdata_uuid ) const
 {
-  ON_UserData* prev = NULL;
+  ON_UserData* prev = nullptr;
   ON_UserData* p;
   for ( p = m_userdata_list; p; prev = p, p = p->m_userdata_next ) 
   {
@@ -1447,8 +1446,8 @@ ON_UserData* ON_Object::GetUserData( const ON_UUID& userdata_uuid ) const
               realp->m_userdata_owner = pNotConst; // Dale Lear added 22 Jan 2004 to fix I/O bug 
             }
             realp->m_userdata_next = p->m_userdata_next;
-            p->m_userdata_next = 0;
-            p->m_userdata_owner = 0;
+            p->m_userdata_next = nullptr;
+            p->m_userdata_owner = nullptr;
             delete p;
             p = realp;
           }
@@ -1494,14 +1493,14 @@ void ON_Object::MoveUserData( ON_Object& src )
 {
   ON_UserData *p, *next;
 
-  if ( 0 == m_userdata_list )
+  if ( nullptr == m_userdata_list )
   {
     // quick and simple when the "this" doesn't
     // have any user data.
-    if ( 0 != src.m_userdata_list )
+    if ( nullptr != src.m_userdata_list )
     {
       m_userdata_list = src.m_userdata_list;
-      src.m_userdata_list = 0;
+      src.m_userdata_list = nullptr;
       for ( p = m_userdata_list; p; p = p->m_userdata_next )
       {
         p->m_userdata_owner = this;
@@ -1522,7 +1521,7 @@ void ON_Object::MoveUserData( ON_Object& src )
 
     // append source user data to this user data
     next = src.m_userdata_list;
-    src.m_userdata_list = 0;
+    src.m_userdata_list = nullptr;
     for ( p = next; p; p = p->m_userdata_next ) {
       p->m_userdata_owner = this;
     }
@@ -1646,7 +1645,7 @@ void ON_Object::Dump( ON_TextLog& dump ) const
   if ( p ) 
   {
     const char* class_name = p->ClassName();
-    if ( 0 == class_name ) 
+    if ( nullptr == class_name ) 
       class_name = "unknown";
     dump.Print("class name: %s\n",class_name);
     dump.Print("class uuid: ");
@@ -1714,10 +1713,10 @@ void ON_Curve::DestroyRuntimeCache( bool )
 void ON_CurveProxy::DestroyRuntimeCache( bool bDelete )
 {
   ON_Curve::DestroyRuntimeCache(bDelete);
-  if ( 0 != m_real_curve && m_real_curve != this )
+  if ( nullptr != m_real_curve && m_real_curve != this )
   {
     ON_Curve* curve = const_cast<ON_Curve*>(m_real_curve);
-    if ( 0 != curve )
+    if ( nullptr != curve )
       curve->DestroyRuntimeCache( bDelete );
   }
 }
@@ -1729,10 +1728,10 @@ void ON_Surface::DestroyRuntimeCache( bool )
 void ON_SurfaceProxy::DestroyRuntimeCache( bool bDelete )
 {
   ON_Surface::DestroyRuntimeCache( bDelete );
-  if ( 0 != m_surface && m_surface != this )
+  if ( nullptr != m_surface && m_surface != this )
   {
     ON_Surface* surface = const_cast<ON_Surface*>(m_surface);
-    if ( 0 != surface )
+    if ( nullptr != surface )
       surface->DestroyRuntimeCache( bDelete );
   }
 }

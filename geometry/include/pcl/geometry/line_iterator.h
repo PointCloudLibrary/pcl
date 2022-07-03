@@ -68,7 +68,7 @@ public:
                const Neighborhood& neighborhood = Neighbor8);
 
   /** \brief Destructor*/
-  ~LineIterator();
+  ~LineIterator() override;
 
   void
   operator++() override;
@@ -161,7 +161,7 @@ inline LineIterator::LineIterator(unsigned x_start,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-inline LineIterator::~LineIterator() {}
+inline LineIterator::~LineIterator() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 inline void

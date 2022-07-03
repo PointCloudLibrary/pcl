@@ -17,8 +17,8 @@
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_Workspace::ON_Workspace() 
-: m_pFileBlk(0)
-, m_pMemBlk(0)
+: m_pFileBlk(nullptr)
+, m_pMemBlk(nullptr)
 {}
 
 ON_Workspace::~ON_Workspace()
@@ -46,25 +46,25 @@ void ON_Workspace::Destroy()
       fclose( pFileBlk->pFile );
     pFileBlk = pFileBlk->pNext;
   }
-  m_pFileBlk = 0;
+  m_pFileBlk = nullptr;
 
   struct ON_Workspace_MBLK* pNext = m_pMemBlk;
-  struct ON_Workspace_MBLK* p = NULL;
+  struct ON_Workspace_MBLK* p = nullptr;
   while ( pNext ) {
     p = pNext;
     pNext = pNext->pNext;
     if ( p->pMem ) {
       onfree(p->pMem);
-      p->pMem = NULL;
+      p->pMem = nullptr;
     }
     onfree( p );
   }
-  m_pMemBlk = 0;
+  m_pMemBlk = nullptr;
 }
 
 void* ON_Workspace::GetMemory( std::size_t size )
 {
-  void* p = NULL;
+  void* p = nullptr;
   if ( size > 0 ) 
   {
     struct ON_Workspace_MBLK* pBlk = (struct ON_Workspace_MBLK*)onmalloc(sizeof(*pBlk));
@@ -80,7 +80,7 @@ void* ON_Workspace::GetMemory( std::size_t size )
 
 void* ON_Workspace::GrowMemory( void* p, std::size_t size )
 {
-  void* newp = NULL;
+  void* newp = nullptr;
   if ( !p ) {
     newp = GetMemory(size);
   }
@@ -107,12 +107,12 @@ void ON_Workspace::KeepAllMemory()
 {
   struct ON_Workspace_MBLK* p;
   struct ON_Workspace_MBLK* pNext = m_pMemBlk;
-  m_pMemBlk = 0;
+  m_pMemBlk = nullptr;
   while ( pNext )
   {
     p = pNext;
     pNext = pNext->pNext;
-    p->pMem = 0; // caller want to manage this heap
+    p->pMem = nullptr; // caller want to manage this heap
     onfree( p );
   }
 }
@@ -121,14 +121,14 @@ int ON_Workspace::KeepMemory( void* p )
 {
   int rc = false;
   if ( p ) {
-    struct ON_Workspace_MBLK* pPrevBlk = NULL;
+    struct ON_Workspace_MBLK* pPrevBlk = nullptr;
     struct ON_Workspace_MBLK* pBlk = m_pMemBlk;
     while ( pBlk ) {
       if ( pBlk->pMem == p ) {
         // Remove pBlk from list so ~ON_Workspace() won't onfree() its memory
         // and any future GrowMemory...() or KeepMemory() calls won't have
         // to search past it.
-        pBlk->pMem = NULL;
+        pBlk->pMem = nullptr;
         if ( pPrevBlk ) {
           pPrevBlk->pNext = pBlk->pNext;
         }
@@ -172,7 +172,7 @@ ON_3dVector* ON_Workspace::GetVectorMemory( std::size_t size )
 
 int** ON_Workspace::GetIntMemory( std::size_t row_count, std::size_t col_count )
 {
-  int** p = 0;
+  int** p = nullptr;
   std::size_t i;
   if ( row_count > 0 && col_count > 0 )
   {
@@ -191,7 +191,7 @@ int** ON_Workspace::GetIntMemory( std::size_t row_count, std::size_t col_count )
 
 double** ON_Workspace::GetDoubleMemory( std::size_t row_count, std::size_t col_count )
 {
-  double** p = 0;
+  double** p = nullptr;
   std::size_t i;
   if ( row_count > 0 && col_count > 0 )
   {
@@ -271,7 +271,7 @@ int ON_Workspace::KeepFile( FILE* pFile )
     struct ON_Workspace_FBLK* pFileBlk = m_pFileBlk;
     while ( pFileBlk ) {
       if ( pFileBlk->pFile == pFile ) {
-        pFileBlk->pFile = NULL;
+        pFileBlk->pFile = nullptr;
         rc = true;
         break;
       }

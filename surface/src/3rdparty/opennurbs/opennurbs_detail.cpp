@@ -24,8 +24,7 @@ ON_DetailView::ON_DetailView()
 }
 
 ON_DetailView::~ON_DetailView()
-{
-}
+= default;
 
 void ON_DetailView::MemoryRelocate()
 {

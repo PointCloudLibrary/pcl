@@ -30,7 +30,7 @@ ON_Torus::ON_Torus( const ON_Circle& major__circle, double minor__radius )
 }
 
 ON_Torus::~ON_Torus()
-{}
+= default;
 
 ON_BOOL32 ON_Torus::IsValid( ON_TextLog* text_log ) const
 {
@@ -263,7 +263,7 @@ ON_RevSurface* ON_Torus::RevSurfaceForm( ON_RevSurface* srf ) const
 {
   if ( srf )
     srf->Destroy();
-  ON_RevSurface* pRevSurface = NULL;
+  ON_RevSurface* pRevSurface = nullptr;
   if ( IsValid() )
   {
     ON_Circle circle = MinorCircleRadians(0.0);
