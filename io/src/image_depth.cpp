@@ -65,9 +65,7 @@ pcl::io::DepthImage::DepthImage (FrameWrapper::Ptr depth_metadata, float baselin
 {}
 
 
-pcl::io::DepthImage::~DepthImage ()
-{}
-
+pcl::io::DepthImage::~DepthImage () = default;
 
 const unsigned short*
 pcl::io::DepthImage::getData ()

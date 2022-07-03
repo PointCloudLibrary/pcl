@@ -417,8 +417,5 @@ void pcl::people::PersonCluster<PointT>::drawTBoundingBox (pcl::visualization::P
 }
 
 template <typename PointT>
-pcl::people::PersonCluster<PointT>::~PersonCluster ()
-{
-  // Auto-generated destructor stub
-}
+pcl::people::PersonCluster<PointT>::~PersonCluster () = default;
 #endif /* PCL_PEOPLE_PERSON_CLUSTER_HPP_ */

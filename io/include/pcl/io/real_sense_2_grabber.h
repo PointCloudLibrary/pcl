@@ -66,7 +66,7 @@ namespace pcl
     RealSense2Grabber ( const std::string& file_name_or_serial_number = "", const bool repeat_playback = true );
 
     /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
-    ~RealSense2Grabber ();
+    ~RealSense2Grabber () override;
 
     /** \brief Set the device options
     * \param[in] width resolution
@@ -104,10 +104,10 @@ namespace pcl
     getName () const override { return std::string ( "RealSense2Grabber" ); }
 
     //define callback signature typedefs
-    typedef void (signal_librealsense_PointXYZ) ( const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& );
-    typedef void (signal_librealsense_PointXYZI) ( const pcl::PointCloud<pcl::PointXYZI>::ConstPtr& );
-    typedef void (signal_librealsense_PointXYZRGB) ( const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& );
-    typedef void (signal_librealsense_PointXYZRGBA) ( const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& );
+    using signal_librealsense_PointXYZ = void( const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& );
+    using signal_librealsense_PointXYZI = void( const pcl::PointCloud<pcl::PointXYZI>::ConstPtr& );
+    using signal_librealsense_PointXYZRGB = void( const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& );
+    using signal_librealsense_PointXYZRGBA = void( const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& );
 
   protected:
 

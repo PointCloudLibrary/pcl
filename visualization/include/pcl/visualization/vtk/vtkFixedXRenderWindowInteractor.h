@@ -43,6 +43,9 @@ class vtkXRenderWindowInteractorInternals;
 class VTKRENDERINGUI_EXPORT vtkXRenderWindowInteractor : public vtkRenderWindowInteractor
 {
 public:
+  vtkXRenderWindowInteractor(const vtkXRenderWindowInteractor&) = delete;
+  void operator=(const vtkXRenderWindowInteractor&) = delete;
+
   static vtkXRenderWindowInteractor* New();
   vtkTypeMacro(vtkXRenderWindowInteractor, vtkRenderWindowInteractor);
   void PrintSelf(ostream& os, vtkIndent indent) override;
@@ -150,9 +153,6 @@ protected:
    */
   void Finalize();
 
-private:
-  vtkXRenderWindowInteractor(const vtkXRenderWindowInteractor&) = delete;
-  void operator=(const vtkXRenderWindowInteractor&) = delete;
 };
 } // namespace pcl
 

@@ -55,7 +55,7 @@ namespace pcl
 
         ImageRGB24 (FrameWrapper::Ptr image_metadata);
         ImageRGB24 (FrameWrapper::Ptr image_metadata, Timestamp timestamp);
-        ~ImageRGB24 () noexcept;
+        ~ImageRGB24 () noexcept override;
 
         inline Encoding
         getEncoding () const override
