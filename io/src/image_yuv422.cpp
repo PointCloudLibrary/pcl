@@ -57,8 +57,7 @@ pcl::io::ImageYUV422::ImageYUV422 (FrameWrapper::Ptr image_metadata, Timestamp t
 {}
 
 
-pcl::io::ImageYUV422::~ImageYUV422 () noexcept
-{}
+pcl::io::ImageYUV422::~ImageYUV422 () noexcept = default;
 
 bool
 pcl::io::ImageYUV422::isResizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const
