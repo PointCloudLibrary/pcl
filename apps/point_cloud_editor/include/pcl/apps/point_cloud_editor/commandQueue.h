@@ -65,8 +65,7 @@ class CommandQueue
 
     /// @brief Destructor
     ~CommandQueue ()
-    {
-    }
+    = default;
 
     /// @brief Executes a command. If the command has an undo function, then
     /// adds the command to the queue.

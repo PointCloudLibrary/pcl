@@ -48,28 +48,15 @@ TrackBall::TrackBall() : quat_(1.0f), origin_x_(0), origin_y_(0), origin_z_(0)
                 (TRACKBALL_RADIUS_SCALE * static_cast<float>(WINDOW_WIDTH));
 }
 
-TrackBall::TrackBall(const TrackBall &copy) :
-  quat_(copy.quat_), origin_x_(copy.origin_x_), origin_y_(copy.origin_y_),
-  origin_z_(copy.origin_z_), radius_sqr_(copy.radius_sqr_)
-{
-  
-}
+TrackBall::TrackBall(const TrackBall &copy)  
+= default;
 
 TrackBall::~TrackBall()
-{
-    
-}
+= default;
 
 TrackBall&
 TrackBall::operator=(const TrackBall &rhs)
-{
-  quat_ = rhs.quat_;
-  origin_x_ = rhs.origin_x_;
-  origin_y_ = rhs.origin_y_;
-  origin_z_ = rhs.origin_z_;
-  radius_sqr_ = rhs.radius_sqr_;
-  return *this;
-}
+= default;
 
 void
 TrackBall::start(int s_x, int s_y)
