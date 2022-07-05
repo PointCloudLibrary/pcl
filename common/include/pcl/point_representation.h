@@ -563,8 +563,8 @@ namespace pcl
         * \param[in] p the input point
         * \param[out] out the resultant output array
         */
-      virtual void
-      copyToFloatArray (const PointDefault &p, float *out) const
+      void
+      copyToFloatArray (const PointDefault &p, float *out) const override
       {
         // If point type is unknown, treat it as a struct/array of floats
         const float *ptr = (reinterpret_cast<const float*> (&p)) + start_dim_;
