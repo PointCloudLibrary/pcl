@@ -138,7 +138,7 @@ IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformation(
   determineRequiredBlobData();
   PCLPointCloud2::Ptr target_blob(new PCLPointCloud2);
   if (need_target_blob_)
-    pcl::toPCLPointCloud2(*target_, *target_blob);
+    toPCLPointCloud2(*target_, *target_blob);
 
   // Pass in the default target for the Correspondence Estimation/Rejection code
   correspondence_estimation_->setInputTarget(target_);

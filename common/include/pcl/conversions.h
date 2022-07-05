@@ -51,8 +51,6 @@
 #include <pcl/for_each_type.h>
 #include <pcl/console/print.h>
 
-#include <boost/foreach.hpp>
-
 #include <algorithm>
 #include <iterator>
 
@@ -199,7 +197,6 @@ namespace pcl
       {
         for (std::uint32_t i = 0; i < msg.height; ++i, cloud_data += cloud_row_step, msg_data += msg.row_step)
           std::copy_n(msg_data, cloud_row_step, cloud_data);
-        }
       }
 
     }

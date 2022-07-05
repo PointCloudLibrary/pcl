@@ -700,7 +700,7 @@ namespace pcl
         Eigen::Quaternionf orientation = cloud.sensor_orientation_;
 
         pcl::PCLPointCloud2 blob;
-        pcl::toPCLPointCloud2 (cloud, blob);
+        toPCLPointCloud2 (cloud, blob);
 
         // Save the data
         return (this->write (file_name, blob, origin, orientation, binary, use_camera));

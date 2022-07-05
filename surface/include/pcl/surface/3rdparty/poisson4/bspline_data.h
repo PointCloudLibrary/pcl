@@ -103,7 +103,7 @@ namespace pcl
     struct BSplineElementCoefficients
     {
         int coeffs[Degree+1];
-        BSplineElementCoefficients( void ) { memset( coeffs , 0 , sizeof( int ) * ( Degree+1 ) ); }
+        BSplineElementCoefficients( ) { memset( coeffs , 0 , sizeof( int ) * ( Degree+1 ) ); }
         int& operator[]( int idx ){ return coeffs[idx]; }
         const int& operator[]( int idx ) const { return coeffs[idx]; }
     };

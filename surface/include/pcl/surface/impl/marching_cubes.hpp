@@ -209,7 +209,7 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PolygonMesh &output)
 
   performReconstruction (points, output.polygons);
 
-  pcl::toPCLPointCloud2 (points, output.cloud);
+  toPCLPointCloud2 (points, output.cloud);
 }
 
 
