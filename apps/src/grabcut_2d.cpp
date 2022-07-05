@@ -38,7 +38,7 @@ public:
   : pcl::GrabCut<pcl::PointXYZRGB>(K, lambda)
   {}
 
-  ~GrabCutHelper() {}
+  ~GrabCutHelper() override = default;
 
   void
   setInputCloud(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud) override;

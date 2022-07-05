@@ -92,9 +92,8 @@ namespace pcl
 
       /** \brief Destructor for PlaneCoefficientComparator. */
 
-      ~EdgeAwarePlaneComparator ()
-      {
-      }
+      ~EdgeAwarePlaneComparator () override
+      = default;
 
       /** \brief Set a distance map to use. For an example of a valid distance map see
         * IntegralImageNormalEstimation::getDistanceMap
