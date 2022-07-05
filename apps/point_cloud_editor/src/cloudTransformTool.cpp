@@ -53,8 +53,7 @@ CloudTransformTool::CloudTransformTool (CloudPtr cloud_ptr)
 }
 
 CloudTransformTool::~CloudTransformTool ()
-{
-}
+= default;
 
 void
 CloudTransformTool::start (int x, int y, BitMask, BitMask)

@@ -55,7 +55,7 @@ class CloudTransformTool : public ToolInterface
     CloudTransformTool (CloudPtr cloud_ptr);
 
     /// @brief Destructor
-    ~CloudTransformTool ();
+    ~CloudTransformTool () override;
 
     /// @brief Initialize the current transform with mouse screen coordinates
     /// and key modifiers.

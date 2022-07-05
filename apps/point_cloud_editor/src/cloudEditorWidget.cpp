@@ -85,8 +85,7 @@ CloudEditorWidget::CloudEditorWidget (QWidget *parent)
 }
 
 CloudEditorWidget::~CloudEditorWidget ()
-{
-}
+= default;
 
 void
 CloudEditorWidget::loadFile(const std::string &filename)

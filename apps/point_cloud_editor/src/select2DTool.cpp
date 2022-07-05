@@ -54,8 +54,7 @@ Select2DTool::Select2DTool (SelectionPtr selection_ptr, CloudPtr cloud_ptr)
 }
 
 Select2DTool::~Select2DTool ()
-{
-}
+= default;
 
 void
 Select2DTool::start (int x, int y, BitMask, BitMask)
