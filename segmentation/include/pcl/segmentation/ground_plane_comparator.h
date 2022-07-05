@@ -97,9 +97,8 @@ namespace pcl
       
       /** \brief Destructor for GroundPlaneComparator. */
       
-      ~GroundPlaneComparator ()
-      {
-      }
+      ~GroundPlaneComparator () override
+      = default;
       /** \brief Provide the input cloud.
         * \param[in] cloud the input point cloud.
         */

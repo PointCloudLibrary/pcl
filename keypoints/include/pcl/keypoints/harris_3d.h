@@ -94,7 +94,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      ~HarrisKeypoint3D () = default;
+      ~HarrisKeypoint3D () override = default;
 
       /** \brief Provide a pointer to the input dataset
         * \param[in] cloud the const boost shared pointer to a PointCloud message
