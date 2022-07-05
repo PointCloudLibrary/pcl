@@ -49,8 +49,7 @@ class ToolInterface
   public:
     /// @brief Destructor.
     virtual ~ToolInterface ()
-    {
-    }
+    = default;
 
     /// @brief set the initial state of the tool from the screen coordinates
     /// of the mouse as well as the value of the modifier.
@@ -102,8 +101,7 @@ class ToolInterface
   protected:
     /// @brief Default constructor
     ToolInterface ()
-    {
-    }
+    = default;
 
   private:
     /// @brief Copy constructor - tools are non-copyable

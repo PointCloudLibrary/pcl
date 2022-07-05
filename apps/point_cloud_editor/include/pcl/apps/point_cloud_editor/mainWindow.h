@@ -73,7 +73,7 @@ class MainWindow : public QMainWindow
     MainWindow (int argc, char **argv);
 
     /// @brief Destructor
-    ~MainWindow ();
+    ~MainWindow () override;
 
     /// @brief Increase the value of the spinbox by 1.
     void
