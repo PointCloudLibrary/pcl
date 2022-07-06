@@ -172,7 +172,7 @@ namespace pcl
             * a maximum of max_leaf_size points per leaf node. Higher values make index creation
             * cheaper, but search more costly (and the other way around).
             */
-            KMeansIndexCreator ()= default;
+            KMeansIndexCreator () = default;
             
             /** \brief Empty destructor */
             virtual ~KMeansIndexCreator () = default;
