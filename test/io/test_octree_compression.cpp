@@ -88,7 +88,7 @@ TYPED_TEST_SUITE(OctreeDeCompressionTest, TestTypes);
 
 TYPED_TEST (OctreeDeCompressionTest, RandomClouds)
 {
-  srand(static_cast<unsigned int> (time(NULL)));
+  srand(static_cast<unsigned int> (time(nullptr)));
   for (const double MAX_XYZ : {1.0, 1024.0}) { // Small clouds, large clouds
     // iterate over all pre-defined compression profiles
     for (int compression_profile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
@@ -125,7 +125,7 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZRGBASameCloud)
   // Generate a random cloud. Put it into the encoder several times and make
   // sure that the decoded cloud has correct width and height each time.
   const double MAX_XYZ = 1.0;
-  srand(static_cast<unsigned int> (time(NULL)));
+  srand(static_cast<unsigned int> (time(nullptr)));
   // iterate over all pre-defined compression profiles
   for (int compression_profile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
     compression_profile != pcl::io::COMPRESSION_PROFILE_COUNT; ++compression_profile) {
@@ -161,7 +161,7 @@ TEST(PCL, OctreeDeCompressionFile)
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr input_cloud_ptr (new pcl::PointCloud<pcl::PointXYZRGB>);
 
   // load point cloud from file, when present
-  if (pcd_file == NULL) return;
+  if (pcd_file == nullptr) return;
   int rv = pcl::io::loadPCDFile(pcd_file, *input_cloud_ptr);
   float voxel_sizes[] = { 0.1, 0.01 };
 

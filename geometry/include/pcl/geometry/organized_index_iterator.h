@@ -114,7 +114,7 @@ inline OrganizedIndexIterator::OrganizedIndexIterator(unsigned width)
 {}
 
 ////////////////////////////////////////////////////////////////////////////////
-inline OrganizedIndexIterator::~OrganizedIndexIterator() {}
+inline OrganizedIndexIterator::~OrganizedIndexIterator() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 inline void

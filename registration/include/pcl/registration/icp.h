@@ -368,7 +368,7 @@ public:
   };
 
   /** \brief Empty destructor */
-  virtual ~IterativeClosestPointWithNormals() = default;
+  ~IterativeClosestPointWithNormals() override = default;
 
   /** \brief Set whether to use a symmetric objective function or not
    *
@@ -440,10 +440,10 @@ protected:
    * \param[in] transform a 4x4 rigid transformation
    * \note Can be used with cloud_in equal to cloud_out
    */
-  virtual void
+  void
   transformCloud(const PointCloudSource& input,
                  PointCloudSource& output,
-                 const Matrix4& transform);
+                 const Matrix4& transform) override;
 
   /** \brief Type of objective function (asymmetric vs. symmetric) used for transform
    * estimation */

@@ -122,7 +122,7 @@ public:
 
   /** \brief Empty class deconstructor. */
 
-  ~OctreePointCloudDensity() = default;
+  ~OctreePointCloudDensity() override = default;
 
   /** \brief Get the amount of points within a leaf node voxel which is addressed by a
    * point
