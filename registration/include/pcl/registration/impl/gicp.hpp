@@ -522,8 +522,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
                 getClassName().c_str(),
                 nr_iterations_,
                 max_iterations_,
-                static_cast<float>(
-                    (transformation_ - previous_transformation_).array().abs().sum()));
+                (transformation_ - previous_transformation_).array().abs().sum());
       previous_transformation_ = transformation_;
     }
     else
