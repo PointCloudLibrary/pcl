@@ -78,7 +78,7 @@ public:
 
   ManualRegistration();
 
-  ~ManualRegistration() {}
+  ~ManualRegistration() override = default;
 
   void
   setSrcCloud(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_src)

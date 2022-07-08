@@ -84,7 +84,7 @@ public:
 
   OrganizedSegmentationDemo(pcl::Grabber& grabber);
 
-  ~OrganizedSegmentationDemo()
+  ~OrganizedSegmentationDemo() override
   {
     if (grabber_.isRunning())
       grabber_.stop();
