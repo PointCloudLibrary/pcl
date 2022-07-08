@@ -737,7 +737,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      ~AgastKeypoint2D () = default;
+      ~AgastKeypoint2D () override = default;
 
     protected:
       /** \brief Detects the keypoints.

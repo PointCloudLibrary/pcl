@@ -53,7 +53,7 @@ public:
   OpenNIOrganizedEdgeDetection()
   : viewer(new pcl::visualization::PCLVisualizer("PCL Organized Edge Detection"))
   {}
-  ~OpenNIOrganizedEdgeDetection() {}
+  ~OpenNIOrganizedEdgeDetection() = default;
 
   pcl::visualization::PCLVisualizer::Ptr
   initCloudViewer(const pcl::PointCloud<PointT>::ConstPtr& cloud)

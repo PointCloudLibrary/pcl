@@ -153,7 +153,7 @@ public:
     do_CRH_ = true;
   }
 
-  ~GlobalNNCRHRecognizer() {}
+  ~GlobalNNCRHRecognizer() = default;
 
   void
   setNoise(float n)
