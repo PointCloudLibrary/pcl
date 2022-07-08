@@ -173,8 +173,18 @@ public:
   inline const OctreeKey&
   getCurrentOctreeKey() const
   {
-    assert(octree_ != 0);
-    assert(current_state_ != 0);
+    if (octree_ == 0) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::getCurrentOctreeKey] Octree must "
+                "not be nullptr!\n");
+      OctreeKey key;
+      return key;
+    }
+    if (current_state_ == 0) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::getCurrentOctreeKey] Current state "
+                "must not be nullptr!\n");
+      OctreeKey key;
+      return key;
+    }
 
     return (current_state_->key_);
   }
@@ -185,8 +195,16 @@ public:
   inline uindex_t
   getCurrentOctreeDepth() const
   {
-    assert(octree_ != 0);
-    assert(current_state_ != 0);
+    if (octree_ == 0) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::getCurrentOctreeDepth] Octree must "
+                "not be nullptr!\n");
+      return 0u;
+    }
+    if (current_state_ == 0) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::getCurrentOctreeDepth] Current "
+                "state must not be nullptr!\n");
+      return 0u;
+    }
 
     return (current_state_->depth_);
   }
@@ -197,8 +215,16 @@ public:
   inline OctreeNode*
   getCurrentOctreeNode() const
   {
-    assert(octree_ != 0);
-    assert(current_state_ != 0);
+    if (octree_ == 0) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::getCurrentOctreeNode] Octree must "
+                "not be nullptr!\n");
+      return nullptr;
+    }
+    if (current_state_ == 0) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::getCurrentOctreeNode] Current state "
+                "must not be nullptr!\n");
+      return nullptr;
+    }
 
     return (current_state_->node_);
   }
@@ -209,8 +235,16 @@ public:
   inline bool
   isBranchNode() const
   {
-    assert(octree_ != 0);
-    assert(current_state_ != 0);
+    if (octree_ == 0) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::isBranchNode] Octree must not be "
+                "nullptr!\n");
+      return false;
+    }
+    if (current_state_ == 0) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::isBranchNode] Current state must "
+                "not be nullptr!\n");
+      return false;
+    }
 
     return (current_state_->node_->getNodeType() == BRANCH_NODE);
   }
@@ -221,8 +255,16 @@ public:
   inline bool
   isLeafNode() const
   {
-    assert(octree_ != 0);
-    assert(current_state_ != 0);
+    if (octree_ == 0) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::isLeafNode] Octree must not be "
+                "nullptr!\n");
+      return false;
+    }
+    if (current_state_ == 0) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::isLeafNode] Current state must not "
+                "be nullptr!\n");
+      return false;
+    }
 
     return (current_state_->node_->getNodeType() == LEAF_NODE);
   }
@@ -250,8 +292,16 @@ public:
   {
     char ret = 0;
 
-    assert(octree_ != 0);
-    assert(current_state_ != 0);
+    if (octree_ == 0) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::getNodeConfiguration] Octree must "
+                "not be nullptr!\n");
+      return ret;
+    }
+    if (current_state_ == 0) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::getNodeConfiguration] Current state "
+                "must not be nullptr!\n");
+      return ret;
+    }
 
     if (isBranchNode()) {
 
@@ -272,9 +322,24 @@ public:
   const LeafContainer&
   getLeafContainer() const
   {
-    assert(octree_ != 0);
-    assert(current_state_ != 0);
-    assert(this->isLeafNode());
+    if (octree_ == 0) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::getLeafContainer] Octree must not "
+                "be nullptr!\n");
+      LeafContainer container;
+      return container;
+    }
+    if (current_state_ == 0) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::getLeafContainer] Current state "
+                "must not be nullptr!\n");
+      LeafContainer container;
+      return container;
+    }
+    if (!this->isLeafNode()) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::getLeafContainer] Current node must "
+                "be a leaf node!\n");
+      LeafContainer container;
+      return container;
+    }
 
     LeafNode* leaf_node = static_cast<LeafNode*>(current_state_->node_);
 
@@ -287,9 +352,24 @@ public:
   LeafContainer&
   getLeafContainer()
   {
-    assert(octree_ != 0);
-    assert(current_state_ != 0);
-    assert(this->isLeafNode());
+    if (octree_ == 0) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::getLeafContainer] Octree must not "
+                "be nullptr!\n");
+      LeafContainer container;
+      return container;
+    }
+    if (current_state_ == 0) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::getLeafContainer] Current state "
+                "must not be nullptr!\n");
+      LeafContainer container;
+      return container;
+    }
+    if (!this->isLeafNode()) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::getLeafContainer] Current node must "
+                "be a leaf node!\n");
+      LeafContainer container;
+      return container;
+    }
 
     LeafNode* leaf_node = static_cast<LeafNode*>(current_state_->node_);
 
@@ -302,9 +382,24 @@ public:
   const BranchContainer&
   getBranchContainer() const
   {
-    assert(octree_ != 0);
-    assert(current_state_ != 0);
-    assert(this->isBranchNode());
+    if (octree_ == 0) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::getBranchContainer] Octree must not "
+                "be nullptr!\n");
+      BranchContainer container;
+      return container;
+    }
+    if (current_state_ == 0) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::getBranchContainer] Current state "
+                "must not be nullptr!\n");
+      BranchContainer container;
+      return container;
+    }
+    if (!this->isBranchNode()) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::getBranchContainer] Current node "
+                "must be a branch node!\n");
+      BranchContainer container;
+      return container;
+    }
 
     BranchNode* branch_node = static_cast<BranchNode*>(current_state_->node_);
 
@@ -317,9 +412,24 @@ public:
   BranchContainer&
   getBranchContainer()
   {
-    assert(octree_ != 0);
-    assert(current_state_ != 0);
-    assert(this->isBranchNode());
+    if (octree_ == 0) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::getBranchContainer] Octree must not "
+                "be nullptr!\n");
+      BranchContainer container;
+      return container;
+    }
+    if (current_state_ == 0) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::getBranchContainer] Current state "
+                "must not be nullptr!\n");
+      BranchContainer container;
+      return container;
+    }
+    if (!this->isBranchNode()) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::getBranchContainer] Current node "
+                "must be a branch node!\n");
+      BranchContainer container;
+      return container;
+    }
 
     BranchNode* branch_node = static_cast<BranchNode*>(current_state_->node_);
 
@@ -334,8 +444,16 @@ public:
   {
     unsigned long id = 0;
 
-    assert(octree_ != 0);
-    assert(current_state_ != 0);
+    if (octree_ == 0) {
+      PCL_ERROR(
+          "[pcl::octree::OctreeIteratorBase::getNodeID] Octree must not be nullptr!\n");
+      return id;
+    }
+    if (current_state_ == 0) {
+      PCL_ERROR("[pcl::octree::OctreeIteratorBase::getNodeID] Current state must not "
+                "be nullptr!\n");
+      return id;
+    }
 
     if (current_state_) {
       const OctreeKey& key = getCurrentOctreeKey();

@@ -164,7 +164,11 @@ public:
   setResolution(double resolution_arg)
   {
     // octree needs to be empty to change its resolution
-    assert(this->leaf_count_ == 0);
+    if (this->leaf_count_ > 0) {
+      PCL_ERROR("[pcl::octree::OctreePointCloud::setResolution] Octree needs to be "
+                "empty to change its resolution(leaf count should must be 0)!\n");
+      return;
+    }
 
     resolution_ = resolution_arg;
 
@@ -416,7 +420,11 @@ public:
   inline void
   enableDynamicDepth(std::size_t maxObjsPerLeaf)
   {
-    assert(this->leaf_count_ == 0);
+    if (this->leaf_count_ > 0) {
+      PCL_ERROR("[pcl::octree::OctreePointCloud::enableDynamicDepth] Leaf count should "
+                "must be 0!\n");
+      return;
+    }
     max_objs_per_leaf_ = maxObjsPerLeaf;
 
     this->dynamic_depth_enabled_ = max_objs_per_leaf_ > 0;

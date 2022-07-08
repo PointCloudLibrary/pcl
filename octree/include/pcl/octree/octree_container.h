@@ -38,9 +38,9 @@
 
 #pragma once
 
+#include <pcl/console/print.h>
 #include <pcl/types.h>
 
-#include <cassert>
 #include <cstddef>
 #include <vector>
 
@@ -149,7 +149,8 @@ public:
   index_t
   getPointIndex() const
   {
-    assert("getPointIndex: undefined point index");
+    PCL_ERROR(
+        "[pcl::octree::OctreeContainerBase::getPointIndex] Undefined point index!\n");
     return -1;
   }
 

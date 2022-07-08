@@ -160,7 +160,13 @@ public:
   {
     OctreeKey key;
 
-    assert(pointIdx_arg < this->input_->size());
+    if (pointIdx_arg >= this->input_->size()) {
+      PCL_ERROR("[pcl::octree::OctreePointCloudVoxelCentroid::addPointIdx] Input point "
+                "index (%lu) must be < input cloud size (%lu)\n",
+                pointIdx_arg,
+                this->input_->size());
+      return;
+    }
 
     const PointT& point = (*this->input_)[pointIdx_arg];
 

@@ -94,7 +94,18 @@ public:
   inline OctreeNode*
   getChildPtr(unsigned char buffer_arg, unsigned char index_arg) const
   {
-    assert((buffer_arg < 2) && (index_arg < 8));
+    if (buffer_arg >= 2) {
+      PCL_ERROR("[pcl::octree::BufferedBranchNode::getChildPtr] Input buffer selector "
+                "index (%d) must be < 2!\n",
+                buffer_arg);
+      return nullptr;
+    }
+    if (index_arg >= 8) {
+      PCL_ERROR("[pcl::octree::BufferedBranchNode::getChildPtr] Input point index (%d) "
+                "must be < 8!\n",
+                index_arg);
+      return nullptr;
+    }
     return child_node_array_[buffer_arg][index_arg];
   }
 
@@ -108,7 +119,18 @@ public:
               unsigned char index_arg,
               OctreeNode* newNode_arg)
   {
-    assert((buffer_arg < 2) && (index_arg < 8));
+    if (buffer_arg >= 2) {
+      PCL_ERROR("[pcl::octree::BufferedBranchNode::getChildPtr] Input buffer selector "
+                "index (%d) must be < 2!\n",
+                buffer_arg);
+      return;
+    }
+    if (index_arg >= 8) {
+      PCL_ERROR("[pcl::octree::BufferedBranchNode::getChildPtr] Input point index (%d) "
+                "must be < 8!\n",
+                index_arg);
+      return;
+    }
     child_node_array_[buffer_arg][index_arg] = newNode_arg;
   }
 
@@ -120,7 +142,18 @@ public:
   inline bool
   hasChild(unsigned char buffer_arg, unsigned char index_arg) const
   {
-    assert((buffer_arg < 2) && (index_arg < 8));
+    if (buffer_arg >= 2) {
+      PCL_ERROR("[pcl::octree::BufferedBranchNode::getChildPtr] Input buffer selector "
+                "index (%d) must be < 2!\n",
+                buffer_arg);
+      return false;
+    }
+    if (index_arg >= 8) {
+      PCL_ERROR("[pcl::octree::BufferedBranchNode::getChildPtr] Input point index (%d) "
+                "must be < 8!\n",
+                index_arg);
+      return false;
+    }
     return (child_node_array_[buffer_arg][index_arg] != nullptr);
   }
 

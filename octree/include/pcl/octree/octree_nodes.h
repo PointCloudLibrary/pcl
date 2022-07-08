@@ -42,8 +42,6 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
-#include <cassert>
-
 namespace pcl {
 namespace octree {
 
@@ -225,7 +223,12 @@ public:
   inline OctreeNode*&
   operator[](unsigned char child_idx_arg)
   {
-    assert(child_idx_arg < 8);
+    if (child_idx_arg >= 8) {
+      PCL_ERROR(
+          "[pcl::octree::OctreeBranchNode::operator[]] Child index must be < 8!\n");
+      OctreeNode* node = nullptr;
+      return node;
+    }
     return child_node_array_[child_idx_arg];
   }
 
@@ -236,7 +239,11 @@ public:
   inline OctreeNode*
   getChildPtr(unsigned char child_idx_arg) const
   {
-    assert(child_idx_arg < 8);
+    if (child_idx_arg >= 8) {
+      PCL_ERROR(
+          "[pcl::octree::OctreeBranchNode::getChildPtr] Child index must be < 8!\n");
+      return nullptr;
+    }
     return child_node_array_[child_idx_arg];
   }
 
@@ -246,7 +253,11 @@ public:
   inline void
   setChildPtr(OctreeNode* child, unsigned char index)
   {
-    assert(index < 8);
+    if (index >= 8) {
+      PCL_ERROR(
+          "[pcl::octree::OctreeBranchNode::setChildPtr] Child index must be < 8!\n");
+      return;
+    }
     child_node_array_[index] = child;
   }
 

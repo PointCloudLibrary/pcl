@@ -39,8 +39,6 @@
 #ifndef PCL_OCTREE_SEARCH_IMPL_H_
 #define PCL_OCTREE_SEARCH_IMPL_H_
 
-#include <cassert>
-
 namespace pcl {
 
 namespace octree {
@@ -50,10 +48,15 @@ bool
 OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::voxelSearch(
     const PointT& point, Indices& point_idx_data)
 {
-  assert(isFinite(point) &&
-         "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
-  OctreeKey key;
   bool b_success = false;
+
+  if (!isFinite(point)) {
+    PCL_ERROR("[pcl::octree::OctreePointCloudSearch::voxelSearch] Invalid (NaN, Inf) "
+              "point coordinates given to nearestKSearch!\n");
+    return (b_success);
+  }
+
+  OctreeKey key;
 
   // generate key
   this->genOctreeKeyforPoint(point, key);
@@ -85,9 +88,17 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::nearestKSearch
     Indices& k_indices,
     std::vector<float>& k_sqr_distances)
 {
-  assert(this->leaf_count_ > 0);
-  assert(isFinite(p_q) &&
-         "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
+  if (this->leaf_count_ <= 0) {
+    PCL_ERROR("[pcl::octree::OctreePointCloudSearch::nearestKSearch] Leaf count (%lu) "
+              "must be > 0!\n",
+              this->leaf_count_);
+    return 0;
+  }
+  if (!isFinite(p_q)) {
+    PCL_ERROR("[pcl::octree::OctreePointCloudSearch::nearestKSearch] Invalid (NaN, "
+              "Inf) point coordinates given to nearestKSearch!\n");
+    return 0;
+  }
 
   k_indices.clear();
   k_sqr_distances.clear();
@@ -134,9 +145,17 @@ void
 OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::approxNearestSearch(
     const PointT& p_q, index_t& result_index, float& sqr_distance)
 {
-  assert(this->leaf_count_ > 0);
-  assert(isFinite(p_q) &&
-         "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
+  if (this->leaf_count_ <= 0) {
+    PCL_ERROR("[pcl::octree::OctreePointCloudSearch::approxNearestSearch] Leaf count "
+              "(%lu) must be > 0!\n",
+              this->leaf_count_);
+    return;
+  }
+  if (!isFinite(p_q)) {
+    PCL_ERROR("[pcl::octree::OctreePointCloudSearch::approxNearestSearch] Invalid "
+              "(NaN, Inf) point coordinates given to nearestKSearch!\n");
+    return;
+  }
 
   OctreeKey key;
   key.x = key.y = key.z = 0;
@@ -166,8 +185,11 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::radiusSearch(
     std::vector<float>& k_sqr_distances,
     uindex_t max_nn) const
 {
-  assert(isFinite(p_q) &&
-         "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
+  if (!isFinite(p_q)) {
+    PCL_ERROR("[pcl::octree::OctreePointCloudSearch::radiusSearch] Invalid (NaN, Inf) "
+              "point coordinates given to nearestKSearch!\n");
+    return 0;
+  }
   OctreeKey key;
   key.x = key.y = key.z = 0;
 
@@ -464,7 +486,12 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
   }
 
   // make sure we found at least one branch child
-  assert(min_child_idx < 8);
+  if (min_child_idx >= 8) {
+    PCL_ERROR("[pcl::octree::OctreePointCloudSearch::approxNearestSearchRecursive] "
+              "Child index (%lu) must be < 8!\n",
+              min_child_idx);
+    return;
+  }
 
   child_node = this->getBranchChildPtr(*node, min_child_idx);
 
