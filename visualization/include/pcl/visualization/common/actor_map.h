@@ -69,12 +69,7 @@ namespace pcl
       public:
         CloudActor () : color_handler_index_ (0), geometry_handler_index_ (0) {}
 
-        // Workaround for LLVM clang-tidy issue https://github.com/llvm/llvm-project/issues/56447
-        virtual ~CloudActor () // NOLINT
-        {
-          geometry_handlers.clear ();
-          color_handlers.clear ();
-        }
+        virtual ~CloudActor () = default;
 
         /** \brief The actor holding the data to render. */
         vtkSmartPointer<vtkLODActor> actor;
