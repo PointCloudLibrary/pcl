@@ -69,7 +69,7 @@ class CutCommand : public Command
     operator= (const CutCommand&) = delete;
 
     /// @brief Destructor
-    ~CutCommand ();
+    ~CutCommand () override;
 
   protected:
     /// @brief Moves the selected points to the copy buffer and removes them

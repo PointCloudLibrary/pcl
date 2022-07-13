@@ -69,7 +69,7 @@ class CloudEditorWidget : public QGLWidget
     CloudEditorWidget (QWidget *parent = nullptr);
 
     /// @brief Destructor
-    ~CloudEditorWidget ();
+    ~CloudEditorWidget () override;
 
     /// @brief Attempts to load the point cloud designated by the passed file
     /// name.

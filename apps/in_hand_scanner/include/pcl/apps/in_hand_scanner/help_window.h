@@ -53,7 +53,7 @@ class HelpWindow : public QDialog {
 
 public:
   explicit HelpWindow(QWidget* parent = nullptr);
-  ~HelpWindow();
+  ~HelpWindow() override;
 
 private:
   Ui::HelpWindow* ui;

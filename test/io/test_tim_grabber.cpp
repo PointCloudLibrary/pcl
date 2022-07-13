@@ -30,13 +30,13 @@ struct TestableTimGrabber : public pcl::TimGrabber {
 class TimGrabberTest : public ::testing::Test {
   protected:
     TimGrabberTest () = default;
-    ~TimGrabberTest () override {}
+    ~TimGrabberTest () override = default;
 
     std::vector<std::string> packets_;
     std::vector<CloudT> correct_clouds_;
     TestableTimGrabber grabber_;
 
-    virtual void SetUp () override {
+    void SetUp () override {
       constexpr float angle_start = - 1.0 * M_PI / 4.0;
       constexpr float angle_range = 2.0 * M_PI * 3.0 / 4.0;
 

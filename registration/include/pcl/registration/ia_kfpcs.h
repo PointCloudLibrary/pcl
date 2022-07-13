@@ -76,7 +76,7 @@ public:
   KFPCSInitialAlignment();
 
   /** \brief Destructor. */
-  ~KFPCSInitialAlignment(){};
+  ~KFPCSInitialAlignment() override = default;
 
   /** \brief Set the upper translation threshold used for score evaluation.
    * \param[in] upper_trl_boundary upper translation threshold

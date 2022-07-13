@@ -56,7 +56,7 @@ class DenoiseParameterForm : public QDialog
     DenoiseParameterForm();
 
     /// @brief Destructor
-    ~DenoiseParameterForm ();
+    ~DenoiseParameterForm () override;
 
     /// @brief Returns the mean
     inline

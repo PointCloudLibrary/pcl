@@ -59,9 +59,7 @@ namespace pcl
   {
     public:
       /** \brief Constructor. */
-      StopWatch () : start_time_ (std::chrono::steady_clock::now())
-      {
-      }
+      StopWatch () = default;
 
       /** \brief Retrieve the time in milliseconds spent since the last call to \a reset(). */
       inline double
@@ -86,7 +84,7 @@ namespace pcl
       }
 
     protected:
-      std::chrono::time_point<std::chrono::steady_clock> start_time_;
+      std::chrono::time_point<std::chrono::steady_clock> start_time_ = std::chrono::steady_clock::now();
   };
 
   /** \brief Class to measure the time spent in a scope

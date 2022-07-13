@@ -80,7 +80,7 @@ public:
   {}
 
   /** \brief Empty class constructor. */
-  ~OctreePointCloudSinglePoint() = default;
+  ~OctreePointCloudSinglePoint() override = default;
 };
 
 } // namespace octree

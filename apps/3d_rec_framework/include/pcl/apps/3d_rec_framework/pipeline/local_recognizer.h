@@ -233,7 +233,7 @@ public:
     threshold_accept_model_hypothesis_ = t;
   }
 
-  ~LocalRecognitionPipeline() {}
+  ~LocalRecognitionPipeline() = default;
 
   void
   setKdtreeSplits(int n)

@@ -73,7 +73,7 @@ public:
   using RunningMode = InHandScanner::RunningMode;
 
   explicit MainWindow(QWidget* parent = nullptr);
-  ~MainWindow();
+  ~MainWindow() override;
 
 public Q_SLOTS:
 

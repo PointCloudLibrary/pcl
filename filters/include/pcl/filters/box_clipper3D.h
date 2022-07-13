@@ -90,7 +90,7 @@ namespace pcl
       /**
         * \brief virtual destructor
         */
-      ~BoxClipper3D () noexcept;
+      ~BoxClipper3D () noexcept override;
 
       bool
       clipPoint3D (const PointT& point) const override;

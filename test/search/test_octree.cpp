@@ -50,8 +50,7 @@ class prioPointQueueEntry
 {
 public:
   prioPointQueueEntry ()
-  {
-  }
+  = default;
   prioPointQueueEntry (PointXYZ& point_arg, double pointDistance_arg, int pointIdx_arg)
   {
     point_ = point_arg;
