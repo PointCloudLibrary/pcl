@@ -486,12 +486,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
   }
 
   // make sure we found at least one branch child
-  if (min_child_idx >= 8) {
-    PCL_ERROR("[pcl::octree::OctreePointCloudSearch::approxNearestSearchRecursive] "
-              "Child index (%lu) must be < 8!\n",
-              min_child_idx);
-    return;
-  }
+  assert(min_child_idx < 8);
 
   child_node = this->getBranchChildPtr(*node, min_child_idx);
 
