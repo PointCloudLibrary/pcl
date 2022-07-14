@@ -65,9 +65,9 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 , max_objs_per_leaf_(0)
 {
   if (resolution <= 0.0) {
-    PCL_ERROR("[pcl::octree::OctreePointCloud::OctreePointCloud] Resolution (%f) must "
-              "be > 0!\n",
-              resolution);
+    PCL_THROW_EXCEPTION(InitFailedException,
+                        "[pcl::octree::OctreePointCloud::OctreePointCloud] Resolution "
+                            << resolution << " must be > 0!");
   }
 }
 
