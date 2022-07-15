@@ -1,19 +1,34 @@
 .. _compiling_pcl_docker:
 
-Compiling PCL from source on Docker
-===================================
+Compiling PCL from source using Docker
+======================================
 
-This tutorial explains how to build the Point Cloud Library **from source** on docker.
+This tutorial explains how to build the Point Cloud Library **from source** using docker.
 
 .. note::
 
-   The walkthrough of the procedure was done in Windows 10 host machine where Ubuntu 20.04
-   was installed in virtual machine. The reason is that docker can be much easier installed
-   in linux OSs compared to Windows
+   The walkthrough was done using Ubuntu as hosting OS of docker. The reason is that docker
+   can be much easier set up in linux OSs compared to Windows. Other possible alternatives
+   in case your main host is Windows could be WSL and or using virtual machine where some
+   linux OS is installed.
+
+Advantages - Disadvantages
+--------------------------
+Selecting to use docker to build PCL from source offers the following benefits:
+* Docker container provides some sort of isolated development environment. For someone familiar
+to python it is quite similar concept to virtual environment.
+* There is no need to install pcl dependencies standalone.
+* Installing, updating and maintaining different compilers (clang, g++) or version of other related
+programs is easier in docker container.
+* Once setting up docker the setup is pretty stable and there is no need to spend time for
+troubleshooting issues. Therefore the focus can be only in programming.
+
+Only disadvantage that i would think is the need to have a basic knowledge of linux OS and 
+commands since it is much easier to setup docker in linux OSs compared to Windows.
 
 Requirements
 -------------
-Open a terminal in Ubuntu (inside VirtualBox) and run the coresponding commands from each 
+Open a terminal in Ubuntu and run the corresponding commands from each 
 installation section
 
 * Curl installation 
@@ -46,7 +61,7 @@ installation section
   $ curl -fsSL https://get.docker.com -o get-docker.sh
   $ sh get-docker.sh
 
-  Other useful commands are()::
+  Other useful commands are::
 
   $ docker ps 
   $ service docker status
@@ -65,7 +80,7 @@ installation section
 
 Downloading  PCL source code
 ----------------------------
-Download the pcl source code in Ubuntu (inside VirtualBox)::
+Download the pcl source code in Ubuntu::
 
   $ git clone https://github.com/PointCloudLibrary/pcl.git
 
@@ -85,14 +100,8 @@ Docker container configuration
 
   $ docker pull pointcloudlibrary/env:20.04
 
-  Do not worry if it takes a long time because all the required pcl dependencies are preinstalled.
-  In other words, there is no need to install Boost, Eigen or other dependencies manually.
-
-  The docker image above will have OS Ubuntu 20.04. Other possible available images can be found under::
-
-  $ curl -L -s 'https://registry.hub.docker.com/v2/repositories/pointcloudlibrary/env/tags/' | jq '.results | map({(."name"): .last_updated}) | add'
-
-  jq can be installed with a single command depending on your OS . See `<https://stedolan.github.io/jq/download/>`_ for more details
+  The docker image above will have OS Ubuntu 20.04.
+  Other possible available images can be found under 'https://hub.docker.com/r/pointcloudlibrary/env/tags'
 
 .. note::
 
@@ -104,13 +113,16 @@ Docker container configuration
 
   $ docker run --user $(id -u):$(id -g) -v $PWD/pcl:/home --rm -it pointcloudlibrary/env:20.04 bash
 
-  where $PWD:/pcl:/home represents the pcl source code in Ubuntu (inside VirtualBox) while
-  home represents the pcl source code inside the docker container.
+  where $PWD:/pcl:/home represents the pcl source code in Ubuntu while home represents the pcl source
+  code inside the docker container. Option --rm tells docker to remove the container when it exits
+  automatically. By default, when the container exits, its file system persists on the host system.
+  The -it option is used when dealing with the interactive processes like bash and tells Docker to
+  keep the standard input attached to the terminal.
  
-  Using volumes, actions performed on a file in Ubuntu (inside VirtualBox) such as creating new files are directly mapped
+  Using volumes, actions performed on a file in Ubuntu such as creating new files are directly mapped
   to the selected path location inside docker container.
 
-  To exit the container simply run in terminal exit
+  To exit the container simply run in terminal exit.
 
 Building PCL
 --------------
@@ -149,6 +161,6 @@ Next steps
 ----------
 All the steps mentioned in this tutorial should be performed at least once and
 after that just running the container command and building or installing is
-enough. Periodically though it is needed to pull the latest image to have
+enough. Periodically though it is recommended to pull the latest image to have
 possible updates that are incorporated in the meantime.
 
