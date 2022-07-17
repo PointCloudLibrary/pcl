@@ -121,7 +121,11 @@ pcl::PLYReader::amendProperty (const std::string& old_name, const std::string& n
   for (; finder != cloud_->fields.rend (); ++finder)
     if (finder->name == old_name)
       break;
-  assert (finder != cloud_->fields.rend ());
+  if (finder == cloud_->fields.rend ())
+  {
+      assert (false);
+      return;
+  }
   finder->name = new_name;
   if (new_datatype > 0 && new_datatype != finder->datatype)
     finder->datatype = new_datatype;
