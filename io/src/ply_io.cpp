@@ -598,7 +598,15 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
                     pcl::getFieldSize (field.datatype) * field.count);
       }
       else
-        memcpy (&data[r* cloud_->point_step], &cloud_->data[(*range_grid_)[r][0] * cloud_->point_step], cloud_->point_step);
+      {
+        const auto srcIdx = (*range_grid_)[r][0] * cloud_->point_step;
+        if (srcIdx >= cloud_->data.size())
+        {
+          PCL_ERROR ("[pcl::PLYReader::read] invalid data index!\n");
+          return (-1);
+        }
+        memcpy (&data[r* cloud_->point_step], &cloud_->data[srcIdx], cloud_->point_step);
+      }
     }
     cloud_->data.swap (data);
   }
