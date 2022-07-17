@@ -557,7 +557,9 @@ inline bool pcl::io::ply::ply_parser::parse_scalar_property (format_type format,
     }
     catch (boost::bad_lexical_cast &)
     {
-      value = std::numeric_limits<scalar_type>::quiet_NaN ();
+      if (error_callback_)
+        error_callback_ (line_number_, "parse error");
+      return (false);
     }
 
     if (!istream.eof ())
