@@ -580,9 +580,8 @@ pcl::RegionGrowing<PointT, NormalT>::getSegmentFromPoint (pcl::index_t index, pc
 
   // first of all we need to find out if this point belongs to cloud
   bool point_was_found = false;
-  int number_of_points = static_cast <int> (indices_->size ());
-  for (int point = 0; point < number_of_points; point++)
-    if ( (*indices_)[point] == index)
+  for (const auto& point : (*indices_))
+    if (point == index)
     {
       point_was_found = true;
       break;
