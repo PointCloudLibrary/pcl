@@ -66,34 +66,6 @@ struct OctreeIteratorBaseTest : public testing::Test
   OctreeBaseT octree_;
 };
 
-TEST_F (OctreeIteratorBaseTest, CopyConstructor)
-{
-  OctreeIteratorBaseT it_a;
-  OctreeIteratorBaseT it_b (&octree_, 0);
-  OctreeIteratorBaseT it_c (it_b); //Our copy constructor
-
-  EXPECT_NE (it_a, it_c);
-  EXPECT_EQ (it_b, it_c);
-}
-
-TEST_F (OctreeIteratorBaseTest, CopyAssignment)
-{
-  OctreeIteratorBaseT it_a;
-  OctreeIteratorBaseT it_b (&octree_, 0);
-  OctreeIteratorBaseT it_c;
-
-  EXPECT_EQ (it_a, it_c);
-  EXPECT_NE (it_b, it_c);
-
-  it_c = it_a; //Our copy assignment
-  EXPECT_EQ (it_a, it_c);
-  EXPECT_NE (it_b, it_c);
-
-  it_c = it_b; //Our copy assignment
-  EXPECT_NE (it_a, it_c);
-  EXPECT_EQ (it_b, it_c);
-}
-
 ////////////////////////////////////////////////////////
 //        Iterator fixture setup
 ////////////////////////////////////////////////////////

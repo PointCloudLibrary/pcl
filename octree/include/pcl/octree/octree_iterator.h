@@ -167,6 +167,23 @@ public:
     }
   }
 
+  /** \brief Preincrement operator.
+   * \note step to next octree node
+   */
+  virtual OctreeIteratorBase&
+  operator++() = 0;
+
+  /** \brief postincrement operator.
+   * \note step to next octree node
+   */
+  inline OctreeIteratorBase
+  operator++(int)
+  {
+    OctreeIteratorBase _Tmp = *this;
+    ++*this;
+    return (_Tmp);
+  }
+
   /** \brief Get octree key for the current iterator octree node
    * \return octree key of current node
    */
