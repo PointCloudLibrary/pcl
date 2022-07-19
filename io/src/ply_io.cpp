@@ -123,9 +123,9 @@ pcl::PLYReader::amendProperty (const std::string& old_name, const std::string& n
       break;
   if (finder == cloud_->fields.rend ())
   {
-      assert (false);
-      PCL_ERROR("[pcl::PLYReader::amendProperty] old_name was not found in cloud_->fields!\n",
+      PCL_ERROR("[pcl::PLYReader::amendProperty] old_name '%s' was not found in cloud_->fields!\n",
           old_name.c_str());
+      assert (false);
       return;
   }
   finder->name = new_name;
