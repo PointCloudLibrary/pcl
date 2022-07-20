@@ -82,13 +82,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 {
   if (indices_) {
     for (const auto& index : *indices_) {
-      if (index < 0 || static_cast<std::size_t>(index) >= input_->size()) {
-        PCL_ERROR("[pcl::octree::OctreePointCloud::addPointsFromInputCloud] Index (%d) "
-                  "must be >=0 and < cloud size (%lu)!\n",
-                  index,
-                  input_->size());
-        return;
-      }
+      assert((index >= 0) && (static_cast<std::size_t>(index) < input_->size()));
 
       if (isFinite((*input_)[index])) {
         // add points to octree

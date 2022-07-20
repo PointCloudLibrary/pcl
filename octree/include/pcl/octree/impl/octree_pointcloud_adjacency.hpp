@@ -156,13 +156,7 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
 {
   OctreeKey key;
 
-  if (pointIdx_arg >= this->input_->size()) {
-    PCL_ERROR("[pcl::octree::OctreePointCloudAdjacency::addPointIdx] Input point index "
-              "(%lu) must be < input cloud size (%lu)\n",
-              pointIdx_arg,
-              this->input_->size());
-    return;
-  }
+  assert(pointIdx_arg < this->input_->size());
 
   const PointT& point = (*this->input_)[pointIdx_arg];
   if (!pcl::isFinite(point))
