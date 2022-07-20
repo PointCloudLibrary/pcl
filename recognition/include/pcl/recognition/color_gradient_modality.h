@@ -752,7 +752,7 @@ computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & c
   color_gradients_.width = width;
   color_gradients_.height = height;
 
-  const float pi = tan (1.0f) * 2;
+  const float pi = std::tan (1.0f) * 2;
   for (int row_index = 0; row_index < height-2; ++row_index)
   {
     for (int col_index = 0; col_index < width-2; ++col_index)
@@ -790,7 +790,7 @@ computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & c
       if (sqr_mag_r > sqr_mag_g && sqr_mag_r > sqr_mag_b)
       {
         GradientXY gradient;
-        gradient.magnitude = sqrt (sqr_mag_r);
+        gradient.magnitude = std::sqrt (sqr_mag_r);
         gradient.angle = std::atan2 (r_dy, r_dx) * 180.0f / pi;
         gradient.x = static_cast<float> (col_index);
         gradient.y = static_cast<float> (row_index);
@@ -800,7 +800,7 @@ computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & c
       else if (sqr_mag_g > sqr_mag_b)
       {
         GradientXY gradient;
-        gradient.magnitude = sqrt (sqr_mag_g);
+        gradient.magnitude = std::sqrt (sqr_mag_g);
         gradient.angle = std::atan2 (g_dy, g_dx) * 180.0f / pi;
         gradient.x = static_cast<float> (col_index);
         gradient.y = static_cast<float> (row_index);
@@ -810,7 +810,7 @@ computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & c
       else
       {
         GradientXY gradient;
-        gradient.magnitude = sqrt (sqr_mag_b);
+        gradient.magnitude = std::sqrt (sqr_mag_b);
         gradient.angle = std::atan2 (b_dy, b_dx) * 180.0f / pi;
         gradient.x = static_cast<float> (col_index);
         gradient.y = static_cast<float> (row_index);
