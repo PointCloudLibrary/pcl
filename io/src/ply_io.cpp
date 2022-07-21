@@ -280,7 +280,14 @@ namespace pcl
   {
     unsetDenseFlagIfNotFinite(value, cloud_);
 
-    memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
+    const auto i = vertex_count_ * cloud_->point_step + vertex_offset_before_;
+    if (i + sizeof (Scalar) > cloud_->data.size())
+    {
+      PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", i + sizeof (Scalar));
+      assert(false);
+      return;
+    }
+    memcpy (&cloud_->data[i],
             &value,
             sizeof (Scalar));
     vertex_offset_before_ += static_cast<int> (sizeof (Scalar));
@@ -306,7 +313,14 @@ namespace pcl
   {
     unsetDenseFlagIfNotFinite(value, cloud_);
 
-    memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
+    const auto i = vertex_count_ * cloud_->point_step + vertex_offset_before_;
+    if (i + sizeof (ContentType) > cloud_->data.size())
+    {
+      PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", i + sizeof (ContentType));
+      assert(false);
+      return;
+    }
+    memcpy (&cloud_->data[i],
             &value,
             sizeof (ContentType));
     vertex_offset_before_ += static_cast<int> (sizeof (ContentType));
@@ -372,7 +386,14 @@ pcl::PLYReader::vertexColorCallback (const std::string& color_name, pcl::io::ply
   {
     b_ = std::int32_t (color);
     std::int32_t rgb = r_ << 16 | g_ << 8 | b_;
-    memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_],
+    const auto i = vertex_count_ * cloud_->point_step + rgb_offset_before_;
+    if (i + sizeof (pcl::io::ply::float32) > cloud_->data.size())
+    {
+      PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", i + sizeof (pcl::io::ply::float32));
+      assert(false);
+      return;
+    }
+    memcpy (&cloud_->data[i],
             &rgb,
             sizeof (pcl::io::ply::float32));
     vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::float32));
@@ -383,14 +404,27 @@ void
 pcl::PLYReader::vertexAlphaCallback (pcl::io::ply::uint8 alpha)
 {
   a_ = std::uint32_t (alpha);
+  const auto i = vertex_count_ * cloud_->point_step + rgb_offset_before_;
+  if (i + sizeof (pcl::io::ply::float32) > cloud_->data.size())
+  {
+    PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", i + sizeof (pcl::io::ply::float32));
+    assert(false);
+    return;
+  }
+  if (i + sizeof (std::uint32_t) > cloud_->data.size())
+  {
+    PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", i + sizeof (std::uint32_t));
+    assert(false);
+    return;
+  }
   // get anscient rgb value and store it in rgba
   memcpy (&rgba_, 
-          &cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_], 
+          &cloud_->data[i], 
           sizeof (pcl::io::ply::float32));
   // append alpha
   rgba_ |= a_ << 24;
   // put rgba back
-  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_], 
+  memcpy (&cloud_->data[i], 
           &rgba_, 
           sizeof (std::uint32_t));
 }
@@ -398,8 +432,15 @@ pcl::PLYReader::vertexAlphaCallback (pcl::io::ply::uint8 alpha)
 void
 pcl::PLYReader::vertexIntensityCallback (pcl::io::ply::uint8 intensity)
 {
+  const auto i = vertex_count_ * cloud_->point_step + vertex_offset_before_;
+  if (i + sizeof (pcl::io::ply::float32) > cloud_->data.size())
+  {
+    PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", i + sizeof (pcl::io::ply::float32));
+    assert(false);
+    return;
+  }
   pcl::io::ply::float32 intensity_ (intensity);
-  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
+  memcpy (&cloud_->data[i],
           &intensity_,
           sizeof (pcl::io::ply::float32));
   vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::float32));
@@ -594,17 +635,49 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
       {
         for (const auto &field : cloud_->fields)
           if (field.datatype == ::pcl::PCLPointField::FLOAT32)
-            memcpy (&data[r * cloud_->point_step + field.offset],
+          {
+            const auto idx = r * cloud_->point_step + field.offset;
+            if (idx + sizeof (float) > cloud_->data.size())
+            {
+              PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", idx);
+              return (-1);
+            }
+            memcpy (&data[idx],
                     reinterpret_cast<const char*> (&f_nan), sizeof (float));
+          }
           else if (field.datatype == ::pcl::PCLPointField::FLOAT64)
-            memcpy (&data[r * cloud_->point_step + field.offset],
+          {
+            const auto idx = r * cloud_->point_step + field.offset;
+            if (idx + sizeof (double) > cloud_->data.size())
+            {
+              PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", idx);
+              return (-1);
+            }
+            memcpy (&data[idx],
                     reinterpret_cast<const char*> (&d_nan), sizeof (double));
+          }
           else
-            memset (&data[r * cloud_->point_step + field.offset], 0,
+          {
+            const auto idx = r * cloud_->point_step + field.offset;
+            if (idx + pcl::getFieldSize (field.datatype) * field.count > cloud_->data.size())
+            {
+              PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", idx);
+              return (-1);
+            }
+            memset (&data[idx], 0,
                     pcl::getFieldSize (field.datatype) * field.count);
+          }
       }
       else
-        memcpy (&data[r* cloud_->point_step], &cloud_->data[(*range_grid_)[r][0] * cloud_->point_step], cloud_->point_step);
+      {
+        const auto srcIdx = (*range_grid_)[r][0] * cloud_->point_step;
+        if (srcIdx + cloud_->point_step > cloud_->data.size())
+        {
+          PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", srcIdx);
+          return (-1);
+        }
+        memcpy (&data[r* cloud_->point_step], &cloud_->data[srcIdx], cloud_->point_step);
+      }
     }
     cloud_->data.swap (data);
   }
@@ -661,17 +734,49 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
       {
         for (const auto &field : cloud_->fields)
           if (field.datatype == ::pcl::PCLPointField::FLOAT32)
-            memcpy (&data[r * cloud_->point_step + field.offset],
+          {
+            const auto idx = r * cloud_->point_step + field.offset;
+            if (idx + sizeof (float) > data.size())
+            {
+              PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", idx);
+              return (-1);
+            }
+            memcpy (&data[idx],
                     reinterpret_cast<const char*> (&f_nan), sizeof (float));
+          }
           else if (field.datatype == ::pcl::PCLPointField::FLOAT64)
-            memcpy (&data[r * cloud_->point_step + field.offset],
+          {
+            const auto idx = r * cloud_->point_step + field.offset;
+            if (idx + sizeof (double) > data.size())
+            {
+              PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", idx);
+              return (-1);
+            }
+            memcpy (&data[idx],
                     reinterpret_cast<const char*> (&d_nan), sizeof (double));
+          }
           else
-            memset (&data[r * cloud_->point_step + field.offset], 0,
+          {
+            const auto idx = r * cloud_->point_step + field.offset;
+            if (idx + pcl::getFieldSize (field.datatype) * field.count > data.size())
+            {
+              PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", idx);
+              return (-1);
+            }
+            memset (&data[idx], 0,
                     pcl::getFieldSize (field.datatype) * field.count);
+          }
       }
       else
-        memcpy (&data[r* cloud_->point_step], &cloud_->data[(*range_grid_)[r][0] * cloud_->point_step], cloud_->point_step);
+      {
+        const auto srcIdx = (*range_grid_)[r][0] * cloud_->point_step;
+        if (srcIdx + cloud_->point_step > cloud_->data.size())
+        {
+          PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", srcIdx);
+          return (-1);
+        }
+        memcpy (&data[r* cloud_->point_step], &cloud_->data[srcIdx], cloud_->point_step);
+      }
     }
     cloud_->data.swap (data);
   }
@@ -910,36 +1015,71 @@ pcl::PLYWriter::writeContentWithCameraASCII (int nr_points,
         {
           case pcl::PCLPointField::INT8:
           {
+            const auto idx = i * point_size + cloud.fields[d].offset + c * sizeof (char);
+            if (idx + sizeof (char) > cloud.data.size())
+            {
+              PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", idx);
+              assert(false);
+              return;
+            }
             char value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (char)], sizeof (char));
+            memcpy (&value, &cloud.data[idx], sizeof (char));
             fs << boost::numeric_cast<int> (value);
             break;
           }
           case pcl::PCLPointField::UINT8:
           {
+            const auto idx = i * point_size + cloud.fields[d].offset + c * sizeof (unsigned char);
+            if (idx + sizeof (unsigned char) > cloud.data.size())
+            {
+              PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", idx);
+              assert(false);
+              return;
+            }
             unsigned char value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned char)], sizeof (unsigned char));
+            memcpy (&value, &cloud.data[idx], sizeof (unsigned char));
             fs << boost::numeric_cast<int> (value);
             break;
           }
           case pcl::PCLPointField::INT16:
           {
+            const auto idx = i * point_size + cloud.fields[d].offset + c * sizeof (short);
+            if (idx + sizeof (short) > cloud.data.size())
+            {
+              PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", idx);
+              assert(false);
+              return;
+            }
             short value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (short)], sizeof (short));
+            memcpy (&value, &cloud.data[idx], sizeof (short));
             fs << boost::numeric_cast<int> (value);
             break;
           }
           case pcl::PCLPointField::UINT16:
           {
+            const auto idx = i * point_size + cloud.fields[d].offset + c * sizeof (unsigned short);
+            if (idx + sizeof (unsigned short) > cloud.data.size())
+            {
+              PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", idx);
+              assert(false);
+              return;
+            }
             unsigned short value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned short)], sizeof (unsigned short));
+            memcpy (&value, &cloud.data[idx], sizeof (unsigned short));
             fs << boost::numeric_cast<int> (value);
             break;
           }
           case pcl::PCLPointField::INT32:
           {
+            const auto idx = i * point_size + cloud.fields[d].offset + c * sizeof (int);
+            if (idx + sizeof (int) > cloud.data.size())
+            {
+              PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", idx);
+              assert(false);
+              return;
+            }
             int value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (int)], sizeof (int));
+            memcpy (&value, &cloud.data[idx], sizeof (int));
             fs << value;
             break;
           }
@@ -947,14 +1087,28 @@ pcl::PLYWriter::writeContentWithCameraASCII (int nr_points,
           {
             if (cloud.fields[d].name.find ("rgba") == std::string::npos)
             {
+              const auto idx = i * point_size + cloud.fields[d].offset + c * sizeof (unsigned int);
+              if (idx + sizeof (unsigned int) > cloud.data.size())
+              {
+                PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", idx);
+                assert(false);
+                return;
+              }
               unsigned int value;
-              memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned int)], sizeof (unsigned int));
+              memcpy (&value, &cloud.data[idx], sizeof (unsigned int));
               fs << value;
             }
             else
             {
+              const auto idx = i * point_size + cloud.fields[d].offset + c * sizeof (pcl::RGB);
+              if (idx + sizeof (pcl::RGB) > cloud.data.size())
+              {
+                PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", idx);
+                assert(false);
+                return;
+              }
               pcl::RGB color;
-              memcpy (&color, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned int)], sizeof (pcl::RGB));
+              memcpy (&color, &cloud.data[idx], sizeof (pcl::RGB));
               int r = color.r;
               int g = color.g;
               int b = color.b;
@@ -967,14 +1121,28 @@ pcl::PLYWriter::writeContentWithCameraASCII (int nr_points,
           {
             if (cloud.fields[d].name.find ("rgb") == std::string::npos)
             {
+              const auto idx = i * point_size + cloud.fields[d].offset + c * sizeof (float);
+              if (idx + sizeof (float) > cloud.data.size())
+              {
+                PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", idx);
+                assert(false);
+                return;
+              }
               float value;
-              memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+              memcpy (&value, &cloud.data[idx], sizeof (float));
               fs << value;
             }
             else
             {
+              const auto idx = i * point_size + cloud.fields[d].offset + c * sizeof (pcl::RGB);
+              if (idx + sizeof (pcl::RGB) > cloud.data.size())
+              {
+                PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", idx);
+                assert(false);
+                return;
+              }
               pcl::RGB color;
-              memcpy (&color, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (pcl::RGB));
+              memcpy (&color, &cloud.data[idx], sizeof (pcl::RGB));
               int r = color.r;
               int g = color.g;
               int b = color.b;
@@ -984,8 +1152,15 @@ pcl::PLYWriter::writeContentWithCameraASCII (int nr_points,
           }
           case pcl::PCLPointField::FLOAT64:
           {
+            const auto idx = i * point_size + cloud.fields[d].offset + c * sizeof (double);
+            if (idx + sizeof (double) > cloud.data.size())
+            {
+              PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", idx);
+              assert(false);
+              return;
+            }
             double value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (double)], sizeof (double));
+            memcpy (&value, &cloud.data[idx], sizeof (double));
             fs << value;
             break;
           }
@@ -1051,36 +1226,71 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
         {
           case pcl::PCLPointField::INT8:
           {
+            const auto idx = i * point_size + cloud.fields[d].offset + c * sizeof (char);
+            if (idx + sizeof (char) > cloud.data.size())
+            {
+              PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", idx);
+              assert(false);
+              return;
+            }
             char value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (char)], sizeof (char));
+            memcpy (&value, &cloud.data[idx], sizeof (char));
             line << boost::numeric_cast<int> (value);
             break;
           }
           case pcl::PCLPointField::UINT8:
           {
+            const auto idx = i * point_size + cloud.fields[d].offset + c * sizeof (unsigned char);
+            if (idx + sizeof (unsigned char) > cloud.data.size())
+            {
+              PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", idx);
+              assert(false);
+              return;
+            }
             unsigned char value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned char)], sizeof (unsigned char));
+            memcpy (&value, &cloud.data[idx], sizeof (unsigned char));
             line << boost::numeric_cast<int> (value);
             break;
           }
           case pcl::PCLPointField::INT16:
           {
+            const auto idx = i * point_size + cloud.fields[d].offset + c * sizeof (short);
+            if (idx + sizeof (short) > cloud.data.size())
+            {
+              PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", idx);
+              assert(false);
+              return;
+            }
             short value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (short)], sizeof (short));
+            memcpy (&value, &cloud.data[idx], sizeof (short));
             line << boost::numeric_cast<int> (value);
             break;
           }
           case pcl::PCLPointField::UINT16:
           {
+            const auto idx = i * point_size + cloud.fields[d].offset + c * sizeof (unsigned short);
+            if (idx + sizeof (unsigned short) > cloud.data.size())
+            {
+              PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", idx);
+              assert(false);
+              return;
+            }
             unsigned short value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned short)], sizeof (unsigned short));
+            memcpy (&value, &cloud.data[idx], sizeof (unsigned short));
             line << boost::numeric_cast<int> (value);
             break;
           }
           case pcl::PCLPointField::INT32:
           {
+            const auto idx = i * point_size + cloud.fields[d].offset + c * sizeof (int);
+            if (idx + sizeof (int) > cloud.data.size())
+            {
+              PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", idx);
+              assert(false);
+              return;
+            }
             int value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (int)], sizeof (int));
+            memcpy (&value, &cloud.data[idx], sizeof (int));
             line << value;
             break;
           }
@@ -1088,14 +1298,28 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
           {
             if (cloud.fields[d].name.find ("rgba") == std::string::npos)
             {
+              const auto idx = i * point_size + cloud.fields[d].offset + c * sizeof (unsigned int);
+              if (idx + sizeof (unsigned int) > cloud.data.size())
+              {
+                PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", idx);
+                assert(false);
+                return;
+              }
               unsigned int value;
-              memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned int)], sizeof (unsigned int));
+              memcpy (&value, &cloud.data[idx], sizeof (unsigned int));
               line << value;
             }
             else
             {
+              const auto idx = i * point_size + cloud.fields[d].offset + c * sizeof (pcl::RGB);
+              if (idx + sizeof (pcl::RGB) > cloud.data.size())
+              {
+                PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", idx);
+                assert(false);
+                return;
+              }
               pcl::RGB color;
-              memcpy (&color, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned int)], sizeof (pcl::RGB));
+              memcpy (&color, &cloud.data[idx], sizeof (pcl::RGB));
               int r = color.r;
               int g = color.g;
               int b = color.b;
@@ -1108,8 +1332,15 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
           {
             if (cloud.fields[d].name.find ("rgb") == std::string::npos)
             {
+              const auto idx = i * point_size + cloud.fields[d].offset + c * sizeof (float);
+              if (idx + sizeof (float) > cloud.data.size())
+              {
+                PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", idx);
+                assert(false);
+                return;
+              }
               float value;
-              memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+              memcpy (&value, &cloud.data[idx], sizeof (float));
               // Test if x-coordinate is NaN, thus an invalid point
               if ("x" == cloud.fields[d].name)
               {
@@ -1120,8 +1351,15 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
             }
             else
             {
+              const auto idx = i * point_size + cloud.fields[d].offset + c * sizeof (pcl::RGB);
+              if (idx + sizeof (pcl::RGB) > cloud.data.size())
+              {
+                PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", idx);
+                assert(false);
+                return;
+              }
               pcl::RGB color;
-              memcpy (&color, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (pcl::RGB));
+              memcpy (&color, &cloud.data[idx], sizeof (pcl::RGB));
               int r = color.r;
               int g = color.g;
               int b = color.b;
@@ -1131,8 +1369,15 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
           }
           case pcl::PCLPointField::FLOAT64:
           {
+            const auto idx = i * point_size + cloud.fields[d].offset + c * sizeof (double);
+            if (idx + sizeof (double) > cloud.data.size())
+            {
+              PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", idx);
+              assert(false);
+              return;
+            }
             double value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (double)], sizeof (double));
+            memcpy (&value, &cloud.data[idx], sizeof (double));
             line << value;
             break;
           }
@@ -1220,8 +1465,14 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
     {
       for (std::size_t i=0; i < nr_points; ++i)
       {
+        const auto idx = i * point_size + cloud.fields[xfield].offset;
+        if (idx + sizeof (float) > cloud.data.size())
+        {
+          PCL_ERROR ("[pcl::PLYWriter::writeBinary] Incorrect data index specified (%lu)!\n", idx);
+          return (-1);
+        }
         float value;
-        memcpy(&value, &cloud.data[i * point_size + cloud.fields[xfield].offset], sizeof(float));
+        memcpy(&value, &cloud.data[idx], sizeof(float));
         if (std::isfinite(value))
         {
           rangegrid[i] = valid_points;
@@ -1279,36 +1530,66 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
         {
           case pcl::PCLPointField::INT8:
           {
+            const auto idx = i * point_size + cloud.fields[d].offset + (total + c) * sizeof (char);
+            if (idx + sizeof (char) > cloud.data.size())
+            {
+              PCL_ERROR ("[pcl::PLYWriter::writeBinary] Incorrect data index specified (%lu)!\n", idx);
+              return (-1);
+            }
             char value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (char)], sizeof (char));
+            memcpy (&value, &cloud.data[idx], sizeof (char));
             fpout.write (reinterpret_cast<const char*> (&value), sizeof (char));
             break;
           }
           case pcl::PCLPointField::UINT8:
           {
+            const auto idx = i * point_size + cloud.fields[d].offset + (total + c) * sizeof (unsigned char);
+            if (idx + sizeof (unsigned char) > cloud.data.size())
+            {
+              PCL_ERROR ("[pcl::PLYWriter::writeBinary] Incorrect data index specified (%lu)!\n", idx);
+              return (-1);
+            }
             unsigned char value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (unsigned char)], sizeof (unsigned char));
+            memcpy (&value, &cloud.data[idx], sizeof (unsigned char));
             fpout.write (reinterpret_cast<const char*> (&value), sizeof (unsigned char));
             break;
           }
           case pcl::PCLPointField::INT16:
           {
+            const auto idx = i * point_size + cloud.fields[d].offset + (total + c) * sizeof (short);
+            if (idx + sizeof (short) > cloud.data.size())
+            {
+              PCL_ERROR ("[pcl::PLYWriter::writeBinary] Incorrect data index specified (%lu)!\n", idx);
+              return (-1);
+            }
             short value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (short)], sizeof (short));
+            memcpy (&value, &cloud.data[idx], sizeof (short));
             fpout.write (reinterpret_cast<const char*> (&value), sizeof (short));
             break;
           }
           case pcl::PCLPointField::UINT16:
           {
+            const auto idx = i * point_size + cloud.fields[d].offset + (total + c) * sizeof (unsigned short);
+            if (idx + sizeof (unsigned short) > cloud.data.size())
+            {
+              PCL_ERROR ("[pcl::PLYWriter::writeBinary] Incorrect data index specified (%lu)!\n", idx);
+              return (-1);
+            }
             unsigned short value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (unsigned short)], sizeof (unsigned short));
+            memcpy (&value, &cloud.data[idx], sizeof (unsigned short));
             fpout.write (reinterpret_cast<const char*> (&value), sizeof (unsigned short));
             break;
           }
           case pcl::PCLPointField::INT32:
           {
+            const auto idx = i * point_size + cloud.fields[d].offset + (total + c) * sizeof (int);
+            if (idx + sizeof (int) > cloud.data.size())
+            {
+              PCL_ERROR ("[pcl::PLYWriter::writeBinary] Incorrect data index specified (%lu)!\n", idx);
+              return (-1);
+            }
             int value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (int)], sizeof (int));
+            memcpy (&value, &cloud.data[idx], sizeof (int));
             fpout.write (reinterpret_cast<const char*> (&value), sizeof (int));
             break;
           }
@@ -1316,14 +1597,26 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
           {
             if (cloud.fields[d].name.find ("rgba") == std::string::npos)
             {
+              const auto idx = i * point_size + cloud.fields[d].offset + (total + c) * sizeof (unsigned int);
+              if (idx + sizeof (unsigned int) > cloud.data.size())
+              {
+                PCL_ERROR ("[pcl::PLYWriter::writeBinary] Incorrect data index specified (%lu)!\n", idx);
+                return (-1);
+              }
               unsigned int value;
-              memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (unsigned int)], sizeof (unsigned int));
+              memcpy (&value, &cloud.data[idx], sizeof (unsigned int));
               fpout.write (reinterpret_cast<const char*> (&value), sizeof (unsigned int));
             }
             else
             {
+              const auto idx = i * point_size + cloud.fields[d].offset + (total + c) * sizeof (pcl::RGB);
+              if (idx + sizeof (pcl::RGB) > cloud.data.size())
+              {
+                PCL_ERROR ("[pcl::PLYWriter::writeBinary] Incorrect data index specified (%lu)!\n", idx);
+                return (-1);
+              }
               pcl::RGB color;
-              memcpy (&color, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (unsigned int)], sizeof (pcl::RGB));
+              memcpy (&color, &cloud.data[idx], sizeof (pcl::RGB));
               unsigned char r = color.r;
               unsigned char g = color.g;
               unsigned char b = color.b;
@@ -1339,14 +1632,26 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
           {
             if (cloud.fields[d].name.find ("rgb") == std::string::npos)
             {
+              const auto idx = i * point_size + cloud.fields[d].offset + (total + c) * sizeof (float);
+              if (idx + sizeof (float) > cloud.data.size())
+              {
+                PCL_ERROR ("[pcl::PLYWriter::writeBinary] Incorrect data index specified (%lu)!\n", idx);
+                return (-1);
+              }
               float value;
-              memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (float)], sizeof (float));
+              memcpy (&value, &cloud.data[idx], sizeof (float));
               fpout.write (reinterpret_cast<const char*> (&value), sizeof (float));
             }
             else
             {
+              const auto idx = i * point_size + cloud.fields[d].offset + (total + c) * sizeof (pcl::RGB);
+              if (idx + sizeof (pcl::RGB) > cloud.data.size())
+              {
+                PCL_ERROR ("[pcl::PLYWriter::writeBinary] Incorrect data index specified (%lu)!\n", idx);
+                return (-1);
+              }
               pcl::RGB color;
-              memcpy (&color, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (float)], sizeof (pcl::RGB));
+              memcpy (&color, &cloud.data[idx], sizeof (pcl::RGB));
               unsigned char r = color.r;
               unsigned char g = color.g;
               unsigned char b = color.b;
@@ -1358,8 +1663,14 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
           }
           case pcl::PCLPointField::FLOAT64:
           {
+            const auto idx = i * point_size + cloud.fields[d].offset + (total + c) * sizeof (double);
+            if (idx + sizeof (double) > cloud.data.size())
+            {
+              PCL_ERROR ("[pcl::PLYWriter::writeBinary] Incorrect data index specified (%lu)!\n", idx);
+              return (-1);
+            }
             double value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (double)], sizeof (double));
+            memcpy (&value, &cloud.data[idx], sizeof (double));
             fpout.write (reinterpret_cast<const char*> (&value), sizeof (double));
             break;
           }
@@ -1525,8 +1836,14 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
           mesh.cloud.fields[d].name == "y" ||
           mesh.cloud.fields[d].name == "z"))
       {
+        const auto idx = i * point_size + mesh.cloud.fields[d].offset;
+        if (idx + sizeof (float) > mesh.cloud.data.size())
+        {
+          PCL_ERROR ("[pcl::io::savePLYFile] Incorrect data index specified (%lu)!\n", idx);
+          return (-3);
+        }
         float value;
-        memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset], sizeof (float));
+        memcpy (&value, &mesh.cloud.data[idx], sizeof (float));
         fs << value << " ";
         // if (++xyz == 3)
         //   break;
@@ -1536,15 +1853,27 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
                 (mesh.cloud.fields[d].name == "rgb"))
 
       {
+        const auto idx = i * point_size + mesh.cloud.fields[d].offset;
+        if (idx + sizeof (RGB) > mesh.cloud.data.size())
+        {
+          PCL_ERROR ("[pcl::io::savePLYFile] Incorrect data index specified (%lu)!\n", idx);
+          return (-3);
+        }
         pcl::RGB color;
-        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset], sizeof (RGB));
+        memcpy (&color, &mesh.cloud.data[idx], sizeof (RGB));
         fs << int (color.r) << " " << int (color.g) << " " << int (color.b) << " ";
       }
       else if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::UINT32) &&
                (mesh.cloud.fields[d].name == "rgba"))
       {
+        const auto idx = i * point_size + mesh.cloud.fields[d].offset;
+        if (idx + sizeof (RGB) > mesh.cloud.data.size())
+        {
+          PCL_ERROR ("[pcl::io::savePLYFile] Incorrect data index specified (%lu)!\n", idx);
+          return (-3);
+        }
         pcl::RGB color;
-        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset], sizeof (RGB));
+        memcpy (&color, &mesh.cloud.data[idx], sizeof (RGB));
         fs << int (color.r) << " " << int (color.g) << " " << int (color.b) << " " << int (color.a) << " ";
       }
       else if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
@@ -1552,15 +1881,27 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
                 mesh.cloud.fields[d].name == "normal_y" ||
                 mesh.cloud.fields[d].name == "normal_z"))
       {
+        const auto idx = i * point_size + mesh.cloud.fields[d].offset;
+        if (idx + sizeof (float) > mesh.cloud.data.size())
+        {
+          PCL_ERROR ("[pcl::io::savePLYFile] Incorrect data index specified (%lu)!\n", idx);
+          return (-3);
+        }
         float value;
-        memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset], sizeof(float));
+        memcpy (&value, &mesh.cloud.data[idx], sizeof(float));
         fs << value << " ";
       }
       else if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
                 mesh.cloud.fields[d].name == "curvature"))
       {
+        const auto idx = i * point_size + mesh.cloud.fields[d].offset;
+        if (idx + sizeof (float) > mesh.cloud.data.size())
+        {
+          PCL_ERROR ("[pcl::io::savePLYFile] Incorrect data index specified (%lu)!\n", idx);
+          return (-3);
+        }
         float value;
-        memcpy(&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset], sizeof(float));
+        memcpy(&value, &mesh.cloud.data[idx], sizeof(float));
         fs << value << " ";
       }
     }
@@ -1633,8 +1974,14 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
           mesh.cloud.fields[d].name == "y" ||
           mesh.cloud.fields[d].name == "z"))
       {
+        const auto idx = i * point_size + mesh.cloud.fields[d].offset;
+        if (idx + sizeof (float) > mesh.cloud.data.size())
+        {
+          PCL_ERROR ("[pcl::io::writePLYFileBinary] Incorrect data index specified (%lu)!\n", idx);
+          return (-3);
+        }
         float value;
-        memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset], sizeof (float));
+        memcpy (&value, &mesh.cloud.data[idx], sizeof (float));
         fpout.write (reinterpret_cast<const char*> (&value), sizeof (float));
         // if (++xyz == 3)
         //   break;
@@ -1644,8 +1991,14 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
                 (mesh.cloud.fields[d].name == "rgb"))
 
       {
+        const auto idx = i * point_size + mesh.cloud.fields[d].offset;
+        if (idx + sizeof (RGB) > mesh.cloud.data.size())
+        {
+          PCL_ERROR ("[pcl::io::writePLYFileBinary] Incorrect data index specified (%lu)!\n", idx);
+          return (-3);
+        }
         pcl::RGB color;
-        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset], sizeof (RGB));
+        memcpy (&color, &mesh.cloud.data[idx], sizeof (RGB));
         fpout.write (reinterpret_cast<const char*> (&color.r), sizeof (unsigned char));
         fpout.write (reinterpret_cast<const char*> (&color.g), sizeof (unsigned char));
         fpout.write (reinterpret_cast<const char*> (&color.b), sizeof (unsigned char));
@@ -1653,8 +2006,14 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
       else if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::UINT32) &&
                (mesh.cloud.fields[d].name == "rgba"))
       {
+        const auto idx = i * point_size + mesh.cloud.fields[d].offset;
+        if (idx + sizeof (RGB) > mesh.cloud.data.size())
+        {
+          PCL_ERROR ("[pcl::io::writePLYFileBinary] Incorrect data index specified (%lu)!\n", idx);
+          return (-3);
+        }
         pcl::RGB color;
-        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset], sizeof (RGB));
+        memcpy (&color, &mesh.cloud.data[idx], sizeof (RGB));
         fpout.write (reinterpret_cast<const char*> (&color.r), sizeof (unsigned char));
         fpout.write (reinterpret_cast<const char*> (&color.g), sizeof (unsigned char));
         fpout.write (reinterpret_cast<const char*> (&color.b), sizeof (unsigned char));
@@ -1665,21 +2024,33 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
                mesh.cloud.fields[d].name == "normal_y" ||
                mesh.cloud.fields[d].name == "normal_z"))
       {
+        const auto idx = i * point_size + mesh.cloud.fields[d].offset;
+        if (idx + sizeof (float) > mesh.cloud.data.size())
+        {
+          PCL_ERROR ("[pcl::io::writePLYFileBinary] Incorrect data index specified (%lu)!\n", idx);
+          return (-3);
+        }
         float value;
-        memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset], sizeof (float));
+        memcpy (&value, &mesh.cloud.data[idx], sizeof (float));
         fpout.write (reinterpret_cast<const char*> (&value), sizeof (float));
       }
       else if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && 
                (mesh.cloud.fields[d].name == "curvature"))
       {
+        const auto idx = i * point_size + mesh.cloud.fields[d].offset;
+        if (idx + sizeof (float) > mesh.cloud.data.size())
+        {
+          PCL_ERROR ("[pcl::io::writePLYFileBinary] Incorrect data index specified (%lu)!\n", idx);
+          return (-3);
+        }
         float value;
-        memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset], sizeof (float));
+        memcpy (&value, &mesh.cloud.data[idx], sizeof (float));
         fpout.write (reinterpret_cast<const char*> (&value), sizeof (float));        
       }
     }
     if (xyz != 3)
     {
-      PCL_ERROR ("[pcl::io::savePLYFile] Input point cloud has no XYZ data!\n");
+      PCL_ERROR ("[pcl::io::writePLYFileBinary] Input point cloud has no XYZ data!\n");
       return (-2);
     }
   }
