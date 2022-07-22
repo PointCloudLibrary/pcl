@@ -39,6 +39,7 @@
 #include <pcl/common/io.h>
 #include <pcl/io/ply_io.h>
 
+#include <algorithm>
 #include <cstdlib>
 #include <fstream>
 #include <functional>
@@ -418,14 +419,14 @@ pcl::PLYReader::vertexAlphaCallback (pcl::io::ply::uint8 alpha)
     return;
   }
   // get anscient rgb value and store it in rgba
-  memcpy (&rgba_, 
-          &cloud_->data[i], 
+  memcpy (&rgba_,
+          &cloud_->data[i],
           sizeof (pcl::io::ply::float32));
   // append alpha
   rgba_ |= a_ << 24;
   // put rgba back
-  memcpy (&cloud_->data[i], 
-          &rgba_, 
+  memcpy (&cloud_->data[i],
+          &rgba_,
           sizeof (std::uint32_t));
 }
 
@@ -664,8 +665,8 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
               PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", idx);
               return (-1);
             }
-            memset (&data[idx], 0,
-                    pcl::getFieldSize (field.datatype) * field.count);
+            std::fill_n(&data[idx],
+                        pcl::getFieldSize (field.datatype) * field.count, 0);
           }
       }
       else
@@ -763,8 +764,8 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
               PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", idx);
               return (-1);
             }
-            memset (&data[idx], 0,
-                    pcl::getFieldSize (field.datatype) * field.count);
+            std::fill_n(&data[idx],
+                        pcl::getFieldSize (field.datatype) * field.count, 0);
           }
       }
       else
