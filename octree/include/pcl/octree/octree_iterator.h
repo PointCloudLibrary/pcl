@@ -173,12 +173,6 @@ public:
   virtual OctreeIteratorBase&
   operator++() = 0;
 
-  /** \brief postincrement operator.
-   * \note step to next octree node
-   */
-  inline OctreeIteratorBase
-  operator++(int) = 0;
-
   /** \brief Get octree key for the current iterator octree node
    * \return octree key of current node
    */
