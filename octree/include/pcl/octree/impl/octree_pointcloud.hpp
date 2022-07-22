@@ -653,13 +653,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 {
   OctreeKey key;
 
-  if (point_idx_arg >= input_->size()) {
-    PCL_ERROR("[pcl::octree::OctreePointCloud::addPointIdx] Input point index (%lu) "
-              "must be < input cloud size (%lu)\n",
-              point_idx_arg,
-              input_->size());
-    return;
-  }
+  assert(point_idx_arg < input_->size());
 
   const PointT& point = (*input_)[point_idx_arg];
 
@@ -706,14 +700,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     getPointByIndex(const uindex_t index_arg) const
 {
   // retrieve point from input cloud
-  if (index_arg >= input_->size()) {
-    PCL_ERROR("[pcl::octree::OctreePointCloud::getPointByIndex] Input point index "
-              "(%lu) must be < input cloud size (%lu)\n",
-              index_arg,
-              input_->size());
-    PointT point;
-    return point;
-  }
+  assert(index_arg < input_->size());
   return ((*this->input_)[index_arg]);
 }
 
