@@ -42,6 +42,10 @@ function(UseCompilerCache)
   set(multiValueArgs)
 
   cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  
+  if(ARGS_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "Unknown arguments given to UseCompilerCache: ${ARGS_UNPARSED_ARGUMENTS}")
+  endif()
 
   if(NOT ARGS_CCACHE)
     set(ARGS_CCACHE ccache)

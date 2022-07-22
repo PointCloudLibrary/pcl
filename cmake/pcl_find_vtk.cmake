@@ -1,5 +1,9 @@
 function(checkVTKComponents)
   cmake_parse_arguments(PARAM "" "MISSING_COMPONENTS" "COMPONENTS" ${ARGN})
+  
+  if(PARAM_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "Unknown arguments given to checkVTKComponents: ${PARAM_UNPARSED_ARGUMENTS}")
+  endif()
 
   set(vtkMissingComponents)
   
@@ -15,7 +19,9 @@ function(checkVTKComponents)
     endif()
   endforeach()
   
-  set(${PARAM_MISSING_COMPONENTS} ${vtkMissingComponents} PARENT_SCOPE)
+  if(PARAM_MISSING_COMPONENTS)
+    set(${PARAM_MISSING_COMPONENTS} ${vtkMissingComponents} PARENT_SCOPE)
+  endif()
 endfunction()
 
 # Start with a generic call to find any VTK version we are supporting, so we retrieve
