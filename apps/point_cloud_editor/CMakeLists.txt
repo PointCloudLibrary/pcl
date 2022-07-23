@@ -4,7 +4,7 @@ set(SUBSUBSYS_DEPS common filters io apps)
 set(SUBSUBSYS_EXT_DEPS vtk ${QTX} OpenGL)
 
 # Default to not building for now
-if(${DEFAULT} STREQUAL "TRUE")
+if(DEFAULT STREQUAL "TRUE")
   set(DEFAULT FALSE)
 endif()
 

@@ -73,7 +73,7 @@ if(VTK_RENDERING_BACKEND_OPENGL_VERSION VERSION_LESS 2)
   endif()
 endif()
 
-if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
+if(NOT (VTK_VERSION VERSION_LESS 9.0))
   if(NOT (";${VTK_AVAILABLE_COMPONENTS};" MATCHES ";RenderingContextOpenGL2;"))
     list(REMOVE_ITEM srcs
       src/pcl_painter2D.cpp
@@ -149,7 +149,7 @@ if(VTK_RENDERING_BACKEND_OPENGL_VERSION VERSION_LESS 2)
   )
 endif()
 
-if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
+if(VTK_VERSION VERSION_GREATER_EQUAL 9.0)
   if(NOT (";${VTK_AVAILABLE_COMPONENTS};" MATCHES ";RenderingContextOpenGL2;"))
     
     list(REMOVE_ITEM incs
@@ -174,7 +174,7 @@ endif()
 
 target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_kdtree ${OPENGL_LIBRARIES})
 
-if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
+if(VTK_VERSION VERSION_GREATER_EQUAL 9.0)
   #Some libs are referenced through depending on IO
   target_link_libraries("${LIB_NAME}"
                         VTK::ChartsCore
@@ -276,7 +276,7 @@ PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/common/impl" ${common_impl_inc
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/vtk" ${vtk_incs})
 
 #TODO: Update when CMAKE 3.10 is available
-if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
+if(NOT (VTK_VERSION VERSION_LESS 9.0))
   vtk_module_autoinit(TARGETS "${LIB_NAME}" 
                       MODULES VTK::RenderingContextOpenGL2
                               VTK::RenderingOpenGL2

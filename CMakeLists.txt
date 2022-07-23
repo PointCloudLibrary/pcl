@@ -1,6 +1,11 @@
 ### ---[ PCL global CMake
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
+if(POLICY CMP0054)
+  #Don't expand quoted variables.
+  cmake_policy(SET CMP0054 NEW)
+endif()
+
 if(POLICY CMP0074)
   # 1. Remove with 3.12.4.
   # 2. Remove search paths with *_ROOT since they will be automatically checked
@@ -19,7 +24,7 @@ set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "possible configurations" FORCE)
 
 # In case the user does not setup CMAKE_BUILD_TYPE, assume it's RelWithDebInfo
-if("${CMAKE_BUILD_TYPE}" STREQUAL "")
+if(CMAKE_BUILD_TYPE STREQUAL "")
   set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "build type default to RelWithDebInfo, set to Release to improve performance" FORCE)
 endif()
 
@@ -84,7 +89,7 @@ include("${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake")
 include("${PCL_SOURCE_DIR}/cmake/pcl_options.cmake")
 include("${PCL_SOURCE_DIR}/cmake/clang-format.cmake")
 
-if(${PCL_ENABLE_CCACHE})
+if(PCL_ENABLE_CCACHE)
   include (UseCompilerCache)
   UseCompilerCache(ccache REQUIRED)
 endif()
@@ -97,19 +102,19 @@ endif()
 
 # check for SSE flags
 include("${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake")
-if(PCL_ENABLE_SSE AND "${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
+if(PCL_ENABLE_SSE AND CMAKE_CXX_FLAGS STREQUAL CMAKE_CXX_FLAGS_DEFAULT)
   PCL_CHECK_FOR_SSE()
 endif()
 
 # check for AVX flags
-if(PCL_ENABLE_AVX AND "${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
+if(PCL_ENABLE_AVX AND CMAKE_CXX_FLAGS STREQUAL CMAKE_CXX_FLAGS_DEFAULT)
   include("${PCL_SOURCE_DIR}/cmake/pcl_find_avx.cmake")
   PCL_CHECK_FOR_AVX()
 endif()
 
 # ---[ Unix/Darwin/Windows specific flags
 if(CMAKE_COMPILER_IS_GNUCXX)
-  if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
+  if(CMAKE_CXX_FLAGS STREQUAL CMAKE_CXX_FLAGS_DEFAULT)
     if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7)
       string(APPEND CMAKE_CXX_FLAGS " -Wabi=11")
     else()
@@ -122,7 +127,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     string(APPEND CMAKE_CXX_FLAGS " -Werror -fno-strict-aliasing")
   endif()
 
-  if("${CMAKE_SHARED_LINKER_FLAGS}" STREQUAL "" AND NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+  if(CMAKE_SHARED_LINKER_FLAGS STREQUAL "" AND NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--as-needed")
   endif()
 
@@ -142,7 +147,7 @@ endif()
 if(CMAKE_COMPILER_IS_MSVC)
   add_definitions("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -DPCL_ONLY_CORE_POINT_TYPES ${SSE_DEFINITIONS}")
   
-  if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
+  if(CMAKE_CXX_FLAGS STREQUAL CMAKE_CXX_FLAGS_DEFAULT)
     string(APPEND CMAKE_CXX_FLAGS " /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS} ${AVX_FLAGS} /bigobj")
 
     # Add extra code generation/link optimizations
@@ -192,19 +197,19 @@ if(CMAKE_COMPILER_IS_MSVC)
 endif()
 
 if(CMAKE_COMPILER_IS_PATHSCALE)
-  if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
+  if(CMAKE_CXX_FLAGS STREQUAL CMAKE_CXX_FLAGS_DEFAULT)
     set(CMAKE_CXX_FLAGS "-Wno-uninitialized -zerouv -mp")
   endif()
-  if("${CMAKE_SHARED_LINKER_FLAGS}" STREQUAL "")
+  if(CMAKE_SHARED_LINKER_FLAGS STREQUAL "")
     set(CMAKE_SHARED_LINKER_FLAGS "-mp")
   endif()
 endif()
 
 if(CMAKE_COMPILER_IS_CLANG)
-  if("${CMAKE_C_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
+  if(CMAKE_C_FLAGS STREQUAL CMAKE_CXX_FLAGS_DEFAULT)
     set(CMAKE_C_FLAGS "-Qunused-arguments")
   endif()
-  if("${CMAKE_CXX_FLAGS}" STREQUAL "")
+  if(CMAKE_CXX_FLAGS STREQUAL "")
     set(CMAKE_CXX_FLAGS "-ftemplate-depth=1024 -Qunused-arguments -Wno-invalid-offsetof ${SSE_FLAGS} ${AVX_FLAGS}") # Unfortunately older Clang versions do not have this: -Wno-unnamed-type-template-args
     if(APPLE AND WITH_CUDA AND CUDA_FOUND)
       string(APPEND CMAKE_CXX_FLAGS " -stdlib=libstdc++")
@@ -269,8 +274,8 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}" is_system_dir)
-if("${is_system_dir}" STREQUAL "-1")
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
+if(is_system_dir STREQUAL "-1")
+  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
 endif()
 
 ### ---[ Find universal dependencies
@@ -283,7 +288,7 @@ endif()
 if(OpenMP_FOUND)
   string(APPEND CMAKE_C_FLAGS " ${OpenMP_C_FLAGS}")
   string(APPEND CMAKE_CXX_FLAGS " ${OpenMP_CXX_FLAGS}")
-  if(${CMAKE_VERSION} VERSION_LESS "3.7")
+  if(CMAKE_VERSION VERSION_LESS "3.7")
     message(STATUS "Found OpenMP")
   else()
     # We could use OpenMP_CXX_VERSION starting from CMake 3.9, but this value is only available on first run of CMake (see https://gitlab.kitware.com/cmake/cmake/issues/19150),
@@ -320,7 +325,7 @@ include_directories(SYSTEM ${EIGEN_INCLUDE_DIRS})
 
 # FLANN (required)
 find_package(FLANN 1.9.1 REQUIRED)
-if(NOT (${FLANN_LIBRARY_TYPE} MATCHES ${PCL_FLANN_REQUIRED_TYPE}) AND NOT (${PCL_FLANN_REQUIRED_TYPE} MATCHES "DONTCARE"))
+if(NOT (FLANN_LIBRARY_TYPE MATCHES PCL_FLANN_REQUIRED_TYPE) AND NOT (PCL_FLANN_REQUIRED_TYPE MATCHES "DONTCARE"))
   message(FATAL_ERROR "Flann was selected with ${PCL_FLANN_REQUIRED_TYPE} but found as ${FLANN_LIBRARY_TYPE}")
 endif()
 

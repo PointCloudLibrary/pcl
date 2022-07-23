@@ -5,7 +5,7 @@
 
 # RPM (disabled until RedHat/Fedora users/developers need this)
 #find_program(RPM_PROGRAM rpm)
-#if(EXISTS ${RPM_PROGRAM})
+#if(EXISTS RPM_PROGRAM)
 #  list(APPEND CPACK_GENERATOR "RPM")
 #endif()
 
@@ -16,9 +16,9 @@ set(CPACK_PACKAGE_VERSION_PATCH "${PCL_VERSION_PATCH}")
 set(CPACK_PACKAGE_CONFIG_INSTALL_DIR ${PCLCONFIG_INSTALL_DIR})
 
 # DEB
-if("${CMAKE_SYSTEM}" MATCHES "Linux")
+if(CMAKE_SYSTEM MATCHES "Linux")
   find_program(DPKG_PROGRAM dpkg)
-  if(EXISTS ${DPKG_PROGRAM})
+  if(EXISTS DPKG_PROGRAM)
     list(APPEND CPACK_GENERATOR "DEB")
   endif()
 endif()
@@ -59,7 +59,7 @@ endif()
 if(APPLE)
   find_program(PACKAGE_MAKER_PROGRAM PackageMaker
                HINTS /Developer/Applications/Utilities)
-  if(EXISTS ${PACKAGE_MAKER_PROGRAM})
+  if(EXISTS PACKAGE_MAKER_PROGRAM)
     list(APPEND CPACK_GENERATOR "PackageMaker")
   endif()
 endif()

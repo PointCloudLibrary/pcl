@@ -1,5 +1,5 @@
 #Disable some warnings which are all over Qt headers and make finding error messages hell
-#if(${CMAKE_CXX_FLAGS} MATCHES "-Wconversion")
+#if(CMAKE_CXX_FLAGS MATCHES "-Wconversion")
 #    string(REGEX REPLACE "-Wconversion(.+)" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 #endif()
 
@@ -12,13 +12,13 @@ set(SUBSUBSYS_EXT_DEPS vtk ${QTX})
 if(NOT HAVE_QVTK)
   set(DEFAULT AUTO_OFF)
   set(REASON "Cloud composer requires QVTK")
-elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
+elseif(NOT DEFAULT STREQUAL "AUTO_OFF")
   set(DEFAULT TRUE)
   set(REASON)
 endif()
 
 #Default to not building for now
-if("${DEFAULT}" STREQUAL "TRUE")
+if(DEFAULT STREQUAL "TRUE")
   set(DEFAULT FALSE)
 endif()
 

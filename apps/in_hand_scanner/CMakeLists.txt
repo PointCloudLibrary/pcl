@@ -7,7 +7,7 @@ set(SUBSUBSYS_EXT_DEPS ${QTX} OpenGL OpenGL_GLU openni)
 ################################################################################
 
 # Default to not building for now
-if(${DEFAULT} STREQUAL "TRUE")
+if(DEFAULT STREQUAL "TRUE")
   set(DEFAULT FALSE)
 endif()
 

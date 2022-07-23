@@ -9,23 +9,6 @@ macro(LIST_TO_STRING _string _list)
     endforeach()
 endmacro()
 
-
-###############################################################################
-# Filter a list by a pattern.
-# _list List to filter.
-# _pattern The regular expression to filter by. See the if(... MATCHES ...)
-#   expression in the CMake help.
-# _output The name of the destination variable.
-macro(FILTER_LIST _list _pattern _output)
-    set(${_output})
-    foreach(_item ${_list})
-        if("${_item}" MATCHES ${_pattern})
-            set(${_output} ${${_output}} ${_item})
-        endif()
-    endforeach()
-endmacro()
-
-
 ###############################################################################
 # Prefix every item in a list.
 # _output The name of the destination variable.
@@ -153,17 +136,6 @@ macro(PROCESS_ARGUMENTS _sources_args _include_dirs_args _lib_dirs_args
         endif()
     endforeach()
 endmacro()
-
-
-###############################################################################
-# Set a value in a map.
-# _map The map name.
-# _key The key name.
-# _value The value.
-macro(SET_IN_MAP _map _key _value)
-    set("${_map}_${_key}" "${_value}")
-endmacro()
-
 
 ###############################################################################
 # Set a value in a global, cached map.
@@ -306,51 +278,13 @@ macro(topological_sort LIST PREFIX SUFFIX)
 endmacro()
 
 ##
-# Swaps 2 elements at _pos1 and _pos2 of a list
-# _list [IN/OUT] a list
-# _pos1 [IN] position of the first element
-# _pos2 [IN] position of the second element
-# TODO ensure _pos1 and _pos2 are in range
-##
-macro(swap_elements _list _pos1 _pos2)
-  unset(pos1)
-  unset(pos2)
-  unset(element1)
-  unset(element2)
-  # sort pos1 and pos2 such us pos1 < pos2
-  if(NOT (${_pos1} EQUAL ${_pos2}))
-    if(${_pos1} GREATER ${_pos2})
-      set(pos1 ${${_pos2}})
-      set(pos2 ${${_pos1}})
-    else()
-      set(pos1 ${${_pos1}})
-      set(pos2 ${${_pos2}})
-    endif()
-
-    list(GET ${_list} ${pos1} element1)
-    math(EXPR distance "${pos2} - ${pos1}")
-    if(distance GREATER 1)
-      list(GET ${_list} ${pos2} element2)
-      list(INSERT ${_list} ${pos1} ${element2})
-      math(EXPR pos1 "${pos1} + 1")
-      list(REMOVE_AT ${_list} ${pos1})
-      list(INSERT ${_list} ${pos2} ${element1})
-      math(EXPR pos2 "${pos2} + 1")
-      list(REMOVE_AT ${_list} ${pos2})
-    else()
-      list(REMOVE_AT ${_list} ${pos1})
-      list(INSERT ${_list} ${pos2} ${element1})
-    endif()
-  endif()
-endmacro()
-
-##
 # Fills a list with _length x _value
 # _list the list to fill
 # _length the desired list size
 # _value the filler
 ##
 macro(fill_list _list _length _value)
+  # ${_length} expands to list_length which expands to the length, ie. 28
   if(${_length} LESS 1)
     message(FATAL_ERROR "${_length} must be at least equal to 1")
   endif()
