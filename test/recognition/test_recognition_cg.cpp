@@ -143,6 +143,7 @@ TEST (PCL, Hough3DGrouping)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, GeometricConsistencyGrouping)
 {
+  pcl::console::setVerbosityLevel(pcl::console::L_VERBOSE);
   std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > rototranslations;
 
   GeometricConsistencyGrouping<PointType, PointType> clusterer;
