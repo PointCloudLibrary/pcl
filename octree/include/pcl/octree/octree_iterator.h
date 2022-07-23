@@ -167,6 +167,12 @@ public:
     }
   }
 
+  /** \brief Preincrement operator.
+   * \note step to next octree node
+   */
+  virtual OctreeIteratorBase&
+  operator++() = 0;
+
   /** \brief Get octree key for the current iterator octree node
    * \return octree key of current node
    */
