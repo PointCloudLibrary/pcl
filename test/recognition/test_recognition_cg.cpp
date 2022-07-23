@@ -150,7 +150,7 @@ TEST (PCL, GeometricConsistencyGrouping)
   clusterer.setInputCloud (model_downsampled_);
   clusterer.setSceneCloud (scene_downsampled_);
   clusterer.setModelSceneCorrespondences (model_scene_corrs_);
-  clusterer.setGCSize (0.015);
+  clusterer.setGCSize (0.001);
   clusterer.setGCThreshold (25);
   EXPECT_TRUE (clusterer.recognize (rototranslations));
 
