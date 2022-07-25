@@ -242,6 +242,7 @@ public:
     depth_mask_ = source.depth_mask_;
     max_key_ = source.max_key_;
     octree_depth_ = source.octree_depth_;
+    dynamic_depth_enabled_ = source.dynamic_depth_enabled_;
     return (*this);
   }
 
