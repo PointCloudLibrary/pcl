@@ -450,3 +450,5 @@ MAKE_DEP_GRAPH()
 ### ---[ Finish up
 PCL_WRITE_STATUS_REPORT()
 PCL_RESET_MAPS()
+
+message(FATAL_ERROR "Aborted to save CI time")
