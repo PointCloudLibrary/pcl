@@ -173,18 +173,8 @@ public:
   inline const OctreeKey&
   getCurrentOctreeKey() const
   {
-    if (octree_ == 0) {
-      PCL_ERROR("[pcl::octree::OctreeIteratorBase::getCurrentOctreeKey] Octree must "
-                "not be nullptr!\n");
-      OctreeKey key;
-      return key;
-    }
-    if (current_state_ == 0) {
-      PCL_ERROR("[pcl::octree::OctreeIteratorBase::getCurrentOctreeKey] Current state "
-                "must not be nullptr!\n");
-      OctreeKey key;
-      return key;
-    }
+    assert(octree_ != 0);
+    assert(current_state_ != 0);
 
     return (current_state_->key_);
   }
