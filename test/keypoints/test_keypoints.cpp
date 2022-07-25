@@ -143,7 +143,7 @@ TEST (PCL, SIFTKeypoint_radiusSearch)
   std::vector<float> scales (nr_scales_per_octave + 3);
   for (int i_scale = 0; i_scale <= nr_scales_per_octave + 2; ++i_scale)
   {
-    scales[i_scale] = base_scale * pow (2.0f, static_cast<float> (i_scale-1) / nr_scales_per_octave);
+    scales[i_scale] = base_scale * std::pow (2.0f, static_cast<float> (i_scale-1) / nr_scales_per_octave);
   }
   Eigen::MatrixXf diff_of_gauss;
 

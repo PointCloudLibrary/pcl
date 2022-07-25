@@ -195,7 +195,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
     // Suat: ToDo: remove this magic number or expose using set/get
     if (len > 200.0)
     {
-      len = 1.0 / sqrt (len);
+      len = 1.0 / std::sqrt (len);
       intensity_gradients_->points [idx].gradient_x *= len;
       intensity_gradients_->points [idx].gradient_y *= len;
       intensity_gradients_->points [idx].gradient_z *= len;
