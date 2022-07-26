@@ -236,7 +236,7 @@ public:
   deleteTree()
   {
     // reset bounding box
-    min_x_ = min_y_ = max_y_ = min_z_ = max_z_ = 0;
+    min_x_ = max_x_ = min_y_ = max_y_ = min_z_ = max_z_ = 0;
     this->bounding_box_defined_ = false;
 
     OctreeT::deleteTree();
