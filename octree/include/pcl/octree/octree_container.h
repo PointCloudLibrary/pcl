@@ -228,7 +228,7 @@ public:
   uindex_t
   getSize() const override
   {
-    return data_ != static_cast<index_t>(-1) ? 0 : 1;
+    return data_ == static_cast<index_t>(-1) ? 0 : 1;
   }
 
   /** \brief Reset leaf node memory to zero. */
