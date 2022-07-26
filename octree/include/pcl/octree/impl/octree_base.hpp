@@ -109,7 +109,7 @@ OctreeBase<LeafContainerT, BranchContainerT>::findLeaf(uindex_t idx_x_arg,
   // generate key
   OctreeKey key(idx_x_arg, idx_y_arg, idx_z_arg);
 
-  // check if key exist in octree
+  // find the leaf node addressed by key
   return (findLeaf(key));
 }
 
@@ -123,7 +123,7 @@ OctreeBase<LeafContainerT, BranchContainerT>::createLeaf(uindex_t idx_x_arg,
   // generate key
   OctreeKey key(idx_x_arg, idx_y_arg, idx_z_arg);
 
-  // check if key exist in octree
+  // create a leaf node addressed by key
   return (createLeaf(key));
 }
 
@@ -151,7 +151,7 @@ OctreeBase<LeafContainerT, BranchContainerT>::removeLeaf(uindex_t idx_x_arg,
   // generate key
   OctreeKey key(idx_x_arg, idx_y_arg, idx_z_arg);
 
-  // check if key exist in octree
+  // delete the leaf node addressed by key
   deleteLeafRecursive(key, depth_mask_, root_node_);
 }
 
