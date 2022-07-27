@@ -223,12 +223,7 @@ public:
   inline OctreeNode*&
   operator[](unsigned char child_idx_arg)
   {
-    if (child_idx_arg >= 8) {
-      PCL_ERROR(
-          "[pcl::octree::OctreeBranchNode::operator[]] Child index must be < 8!\n");
-      OctreeNode* node = nullptr;
-      return node;
-    }
+    assert(child_idx_arg < 8);
     return child_node_array_[child_idx_arg];
   }
 
