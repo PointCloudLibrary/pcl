@@ -217,7 +217,7 @@ public:
   ~OctreeBranchNode() override = default;
 
   /** \brief Access operator.
-   *  \param child_idx_arg: index to child node
+   *  \param child_idx_arg: index to child node, must be less than 8
    *  \return OctreeNode pointer
    * */
   inline OctreeNode*&
@@ -228,7 +228,7 @@ public:
   }
 
   /** \brief Get pointer to child
-   *  \param child_idx_arg: index to child node
+   *  \param child_idx_arg: index to child node, must be less than 8
    *  \return OctreeNode pointer
    * */
   inline OctreeNode*
@@ -257,7 +257,7 @@ public:
   }
 
   /** \brief Check if branch is pointing to a particular child node
-   *  \param child_idx_arg: index to child node
+   *  \param child_idx_arg: index to child node, must be less than 8
    *  \return "true" if pointer to child node exists; "false" otherwise
    * */
   inline bool
