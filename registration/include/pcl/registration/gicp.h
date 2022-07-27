@@ -100,7 +100,7 @@ public:
   using ConstPtr =
       shared_ptr<const GeneralizedIterativeClosestPoint<PointSource, PointTarget>>;
 
-  using Vector6d = Eigen::Matrix<double, 6, 1>;
+  using Vector6d = typename Eigen::Matrix<double, 6, 1>;
 
   /** \brief Empty constructor. */
   GeneralizedIterativeClosestPoint()
@@ -111,6 +111,8 @@ public:
   , max_inner_iterations_(20)
   , translation_gradient_tolerance_(1e-2)
   , rotation_gradient_tolerance_(1e-2)
+  , is_alternating_(false)
+  , is_translation_turn_(true)
   {
     min_number_correspondences_ = 4;
     reg_name_ = "GeneralizedIterativeClosestPoint";
@@ -314,6 +316,26 @@ public:
     return rotation_gradient_tolerance_;
   }
 
+  /** \brief Set whether or not optimizing translation part and rotation part
+   * alternatively
+   * \param[in] is_alternating whether or not optimizing translation part
+   * and rotation part alternatively
+   */
+  void
+  setIsAlternating(bool is_alternating)
+  {
+    is_alternating_ = is_alternating;
+  }
+
+  /** \brief Return whether or not optimizing translation part and rotation part
+   * alternatively
+   */
+  bool
+  getIsAlternating() const
+  {
+    return is_alternating_;
+  }
+
 protected:
   /** \brief The number of neighbors used for covariances computation.
    * default: 20
@@ -364,6 +386,16 @@ protected:
 
   /** \brief minimal rotation gradient for early optimization stop */
   double rotation_gradient_tolerance_;
+
+  /** \brief current transformation of source point cloud */
+  Vector6d current_transformation_;
+
+  /** \brief whether or not optimizing translation part and rotation part alternatively
+   */
+  bool is_alternating_;
+
+  /** \brief whether current iteration is optimizing translation part or not */
+  bool is_translation_turn_;
 
   /** \brief compute points covariances matrices according to the K nearest
    * neighbors. K is set via setCorrespondenceRandomness() method.
@@ -438,6 +470,41 @@ protected:
     checkGradient(const Vector6d& g) override;
 
     const GeneralizedIterativeClosestPoint* gicp_;
+  };
+
+  /// \brief optimization functor structure for translation part
+  struct OptimizationFunctorWithIndicesTranslation
+  : public BFGSDummyFunctor<double, 3> {
+    OptimizationFunctorWithIndicesTranslation(GeneralizedIterativeClosestPoint* gicp)
+    : BFGSDummyFunctor<double, 3>(), gicp_(gicp)
+    {}
+    double
+    operator()(const Eigen::Vector3d& x) override;
+    void
+    df(const Eigen::Vector3d& x, Eigen::Vector3d& df) override;
+    void
+    fdf(const Eigen::Vector3d& x, double& f, Eigen::Vector3d& df) override;
+    BFGSSpace::Status
+    checkGradient(const Eigen::Vector3d& g) override;
+
+    GeneralizedIterativeClosestPoint* gicp_;
+  };
+
+  /// \brief optimization functor structure for rotation part
+  struct OptimizationFunctorWithIndicesRotation : public BFGSDummyFunctor<double, 3> {
+    OptimizationFunctorWithIndicesRotation(GeneralizedIterativeClosestPoint* gicp)
+    : BFGSDummyFunctor<double, 3>(), gicp_(gicp)
+    {}
+    double
+    operator()(const Eigen::Vector3d& x) override;
+    void
+    df(const Eigen::Vector3d& x, Eigen::Vector3d& df) override;
+    void
+    fdf(const Eigen::Vector3d& x, double& f, Eigen::Vector3d& df) override;
+    BFGSSpace::Status
+    checkGradient(const Eigen::Vector3d& g) override;
+
+    GeneralizedIterativeClosestPoint* gicp_;
   };
 
   std::function<void(const pcl::PointCloud<PointSource>& cloud_src,
