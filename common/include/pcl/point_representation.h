@@ -165,7 +165,7 @@ namespace pcl
       setRescaleValues (const float *rescale_array)
       {
         alpha_.resize (nr_dimensions_);
-        std::copy_n(rescale_array, nr_dimensions_, alpha_.begin());
+        std::copy(rescale_array, rescale_array + nr_dimensions_, alpha_.begin());
       }
 
       /** \brief Return the number of dimensions in the point's vector representation. */
@@ -209,7 +209,7 @@ namespace pcl
       {
         // If point type is unknown, treat it as a struct/array of floats
         const float* ptr = reinterpret_cast<const float*> (&p);
-        std::copy_n(ptr, nr_dimensions_, out);
+        std::copy(ptr, ptr + nr_dimensions_, out);
       }
   };
 
@@ -568,7 +568,7 @@ namespace pcl
       {
         // If point type is unknown, treat it as a struct/array of floats
         const float *ptr = (reinterpret_cast<const float*> (&p)) + start_dim_;
-        std::copy_n(ptr, nr_dimensions_, out);
+        std::copy(ptr, ptr + nr_dimensions_, out);
       }
 
     protected:

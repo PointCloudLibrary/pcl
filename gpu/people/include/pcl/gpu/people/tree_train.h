@@ -73,7 +73,7 @@ namespace pcl
           }
           inline LabeledFeature( const LabeledFeature& B){
             l = B.l;
-            std::copy_n( B.attribs, NUMATTRIBS, attribs );
+            std::copy( B.attribs, B.attribs + NUMATTRIBS, attribs );
           }
           Label  l; // WARNING the compiler will pad here
           Attrib attribs[NUMATTRIBS];

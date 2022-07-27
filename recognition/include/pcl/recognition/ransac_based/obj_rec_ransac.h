@@ -102,7 +102,7 @@ namespace pcl
               match_confidence_ (match_confidence),
               user_data_ (user_data)
             {
-              std::copy_n(rigid_transform, 12, this->rigid_transform_);
+              std::copy(rigid_transform, rigid_transform + 12, this->rigid_transform_);
             }
             virtual ~Output () = default;
 

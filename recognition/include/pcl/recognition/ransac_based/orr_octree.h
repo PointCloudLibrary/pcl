@@ -203,7 +203,7 @@ namespace pcl
             inline void
             getBounds(float b[6]) const
             {
-              std::copy_n(bounds_, 6, b);
+              std::copy(bounds_, bounds_ + 6, b);
             }
 
             inline Node*
@@ -427,7 +427,7 @@ namespace pcl
         inline void
         getBounds (float b[6]) const
         {
-          std::copy_n(bounds_, 6, b);
+          std::copy(bounds_, bounds_ + 6, b);
         }
 
         inline float

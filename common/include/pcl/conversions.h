@@ -195,8 +195,8 @@ namespace pcl
       }
       else
       {
-        for (std::uint32_t i = 0; i < msg.height; ++i, cloud_data += cloud_row_step, msg_data += msg.row_step)
-          std::copy_n(msg_data, cloud_row_step, cloud_data);
+        for (auto i = 0u; i < msg.height; ++i, cloud_data += cloud_row_step, msg_data += msg.row_step)
+          std::copy(msg_data, msg_data + cloud_row_step, cloud_data);
       }
 
     }
@@ -211,7 +211,7 @@ namespace pcl
           const std::uint8_t* msg_data = row_data + col * msg.point_step;
           for (const detail::FieldMapping& mapping : field_map)
           {
-            std::copy_n(msg_data + mapping.serialized_offset, mapping.size,
+            std::copy(msg_data + mapping.serialized_offset, msg_data + mapping.serialized_offset + mapping.size,
                         cloud_data + mapping.struct_offset);
           }
           cloud_data += sizeof (PointT);
@@ -301,7 +301,7 @@ namespace pcl
       for (std::size_t x = 0; x < cloud.width; x++)
       {
         std::uint8_t * pixel = &(msg.data[y * msg.step + x * 3]);
-        std::copy_n(&cloud(x, y).rgb, 3, pixel);
+        std::copy(&cloud(x, y).rgb, &cloud(x, y).rgb + 3, pixel);
       }
     }
   }
@@ -336,12 +336,12 @@ namespace pcl
     msg.step = (msg.width * sizeof (std::uint8_t) * 3);
     msg.data.resize (msg.step * msg.height);
 
-    for (std::size_t y = 0; y < cloud.height; y++)
+    for (auto y = 0u; y < cloud.height; ++y)
     {
-      for (std::size_t x = 0; x < cloud.width; x++, rgb_offset += point_step)
+      for (auto x = 0u; x < cloud.width; x++, rgb_offset += point_step)
       {
         std::uint8_t * pixel = &(msg.data[y * msg.step + x * 3]);
-        std::copy_n(&cloud.data[rgb_offset], 3, pixel);
+        std::copy(&cloud.data[rgb_offset], &cloud.data[rgb_offset] + 3, pixel);
       }
     }
   }

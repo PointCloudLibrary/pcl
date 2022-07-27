@@ -243,7 +243,8 @@ namespace pcl
         /** \brief Empty destructor */
         ~FeaturePointRepresentation () override = default;
         void copyToFloatArray (const PointT& p, float* out) const override {
-          std::copy_n(p->getDescriptor(), this->nr_dimensions_, out);
+          auto descriptor = p->getDescriptor();
+          std::copy(descriptor, descriptor + this->nr_dimensions_, out);
         }
       };
       

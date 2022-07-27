@@ -170,7 +170,7 @@ protected:
     // Allocate the new memory
     keys_ = new short[(old_capacity + 10) * key_size_]{};
     table_ = new int[capacity_]{};
-    std::copy_n(old_keys, filled_ * key_size_, keys_);
+    std::copy(old_keys, old_keys + filled_ * key_size_, keys_);
 
     // Reinsert each element
     for (int i = 0; i < old_capacity; i++)

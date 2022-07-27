@@ -661,12 +661,10 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloud ()
     }
 
     int next_color = 0;
-    for (auto i_segment = clusters_.cbegin (); i_segment != clusters_.cend (); i_segment++)
+    for (const auto& i_segment : clusters_)
     {
-      for (auto i_point = i_segment->indices.cbegin (); i_point != i_segment->indices.cend (); i_point++)
+      for (const auto& index : (i_segment.indices))
       {
-        int index;
-        index = *i_point;
         (*colored_cloud)[index].r = colors[3 * next_color];
         (*colored_cloud)[index].g = colors[3 * next_color + 1];
         (*colored_cloud)[index].b = colors[3 * next_color + 2];

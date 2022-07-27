@@ -62,7 +62,7 @@ namespace pcl
       static PCLContextItem *New();
       bool Paint (vtkContext2D *) override { return (false); };
       void setColors (unsigned char r, unsigned char g, unsigned char b);
-      void setColors (unsigned char rgb[3]) { std::copy_n(rgb, 3, colors); }
+      void setColors (unsigned char rgb[3]) { std::copy(rgb, rgb + 3, colors); }
       void setOpacity (double opacity) { SetOpacity (opacity); };
       unsigned char colors[3];
       std::vector<float> params;

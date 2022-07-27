@@ -40,7 +40,7 @@
 #ifndef PCL_SURFACE_RECONSTRUCTION_IMPL_H_
 #define PCL_SURFACE_RECONSTRUCTION_IMPL_H_
 
-#include <pcl/conversions.h> // for toPCLPointCloud2
+#include <pcl/conversions.h> // for pcl::toPCLPointCloud2
 #include <pcl/search/kdtree.h> // for KdTree
 #include <pcl/search/organized.h> // for OrganizedNeighbor
 
@@ -78,7 +78,7 @@ SurfaceReconstruction<PointInT>::reconstruct (pcl::PolygonMesh &output)
   }
 
   // Set up the output dataset
-  toPCLPointCloud2 (*input_, output.cloud); /// NOTE: passing in boost shared pointer with * as const& should be OK here
+  pcl::toPCLPointCloud2 (*input_, output.cloud); /// NOTE: passing in boost shared pointer with * as const& should be OK here
   output.polygons.clear ();
   output.polygons.reserve (2*indices_->size ()); /// NOTE: usually the number of triangles is around twice the number of vertices
   // Perform the actual surface reconstruction
@@ -158,7 +158,7 @@ MeshConstruction<PointInT>::reconstruct (pcl::PolygonMesh &output)
   }
 
   // Set up the output dataset
-  toPCLPointCloud2 (*input_, output.cloud); /// NOTE: passing in boost shared pointer with * as const& should be OK here
+  pcl::toPCLPointCloud2 (*input_, output.cloud); /// NOTE: passing in boost shared pointer with * as const& should be OK here
   //  output.polygons.clear ();
   //  output.polygons.reserve (2*indices_->size ()); /// NOTE: usually the number of triangles is around twice the number of vertices
   // Perform the actual surface reconstruction
