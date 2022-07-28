@@ -71,7 +71,7 @@ namespace pcl
         void cf(int info[4], int size, const void* input, void* output)
         {
             Info i;
-            std::copy_n(info, 4, i.data);
+            std::copy(info, info + 4, i.data);
 
             dim3 block(256);
             dim3 grid(divUp(size, block.x));

@@ -366,7 +366,7 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<PointT>
       for (std::uint32_t i = 0; i < cloud_in.height; i++, out_inner += cloud_out.width, in += cloud_in.width)
       {
         if (out_inner != in) {
-          std::copy_n(in, cloud_in.width, out_inner);
+          std::copy(in, in + cloud_in.width, out_inner);
         }
       }
     }
@@ -394,7 +394,7 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<PointT>
           for (std::uint32_t i = 0; i < cloud_in.height; i++, out_inner += cloud_out.width, in += cloud_in.width)
           {
             if (out_inner != in) {
-              std::copy_n(in, cloud_in.width, out_inner);
+              std::copy(in, in + cloud_in.width, out_inner);
             }
 
             for (int j = 0; j < left; j++)
@@ -407,14 +407,14 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<PointT>
           for (int i = 0; i < top; i++)
           {
             int j = pcl::interpolatePointIndex (i - top, cloud_in.height, border_type);
-            std::copy_n(out + (j+top) * cloud_out.width, cloud_out.width,
+            std::copy(out + (j+top) * cloud_out.width, out + (j+top) * cloud_out.width + cloud_out.width,
                         out + i*cloud_out.width);
           }
 
           for (int i = 0; i < bottom; i++)
           {
             int j = pcl::interpolatePointIndex (i + cloud_in.height, cloud_in.height, border_type);
-            std::copy_n(out + (j+top)*cloud_out.width, cloud_out.width,
+            std::copy(out + (j+top)*cloud_out.width, out + (j+top)*cloud_out.width + cloud_out.width,
                         out + (i + cloud_in.height + top)*cloud_out.width);
           }
         }
@@ -436,21 +436,21 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<PointT>
         for (std::uint32_t i = 0; i < cloud_in.height; i++, out_inner += cloud_out.width, in += cloud_in.width)
         {
           if (out_inner != in) {
-            std::copy_n(in, cloud_in.width, out_inner);
+            std::copy(in, in + cloud_in.width, out_inner);
           }
 
-          std::copy_n(buff_ptr, left, out_inner - left);
-          std::copy_n(buff_ptr, right, out_inner + cloud_in.width);
+          std::copy(buff_ptr, buff_ptr + left, out_inner - left);
+          std::copy(buff_ptr, buff_ptr + right, out_inner + cloud_in.width);
         }
 
         for (int i = 0; i < top; i++)
         {
-          std::copy_n(buff_ptr, cloud_out.width, out + i*cloud_out.width);
+          std::copy(buff_ptr, buff_ptr + cloud_out.width, out + i*cloud_out.width);
         }
 
         for (int i = 0; i < bottom; i++)
         {
-          std::copy_n(buff_ptr, cloud_out.width,
+          std::copy(buff_ptr, buff_ptr + cloud_out.width,
                       out + (i + cloud_in.height + top)*cloud_out.width);
         }
       }
