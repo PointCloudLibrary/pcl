@@ -687,8 +687,8 @@ protected:
    *  \param depth_mask_arg: depth mask used for octree key analysis and branch depth
    * indicator
    * \param branch_arg: current branch node
-   * \return "true" if branch does not contain any childs; "false" otherwise. This
-   * indicates if current branch can be deleted, too.
+   * \return "true" if current branch contains child(ren); "false" otherwise. If it's
+   * true, current branch cannot be deleted.
    **/
   bool
   deleteLeafRecursive(const OctreeKey& key_arg,
