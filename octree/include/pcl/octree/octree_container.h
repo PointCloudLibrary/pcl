@@ -89,9 +89,7 @@ public:
   /** \brief Empty addPointIndex implementation. This leaf node does not store any point
    * indices.
    */
-  virtual void
-  addPointIndex(index_t)
-  {}
+  virtual void addPointIndex(index_t) {}
 
   /** \brief Empty getPointIndex implementation as this leaf node does not store any
    * point indices.
