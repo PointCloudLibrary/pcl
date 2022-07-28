@@ -467,7 +467,7 @@ pcl::ConvexHull<PointInT>::performReconstruction (PolygonMesh &output)
   performReconstruction (hull_points, output.polygons, true);
 
   // Convert the PointCloud into a PCLPointCloud2
-  toPCLPointCloud2 (hull_points, output.cloud);
+  pcl::toPCLPointCloud2 (hull_points, output.cloud);
 }
 
 //////////////////////////////////////////////////////////////////////////

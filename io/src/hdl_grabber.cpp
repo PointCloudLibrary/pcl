@@ -473,7 +473,7 @@ pcl::HDLGrabber::enqueueHDLPacket (const std::uint8_t *data,
   if (bytesReceived == 1206)
   {
     auto dup = new std::uint8_t[bytesReceived];
-    std::copy_n(data, bytesReceived, dup);
+    std::copy(data, data + bytesReceived, dup);
 
     hdl_data_.enqueue (dup);
   }

@@ -119,14 +119,14 @@ JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
     correspondence_estimations_[i]->setInputTarget(targets_[i]);
     if (correspondence_estimations_[i]->requiresTargetNormals()) {
       PCLPointCloud2::Ptr target_blob(new PCLPointCloud2);
-      toPCLPointCloud2(*targets_[i], *target_blob);
+      pcl::toPCLPointCloud2(*targets_[i], *target_blob);
       correspondence_estimations_[i]->setTargetNormals(target_blob);
     }
   }
 
   PCLPointCloud2::Ptr targets_combined_blob(new PCLPointCloud2);
   if (!correspondence_rejectors_.empty() && need_target_blob_)
-    toPCLPointCloud2(*targets_combined, *targets_combined_blob);
+    pcl::toPCLPointCloud2(*targets_combined, *targets_combined_blob);
 
   for (std::size_t i = 0; i < correspondence_rejectors_.size(); ++i) {
     registration::CorrespondenceRejector::Ptr& rej = correspondence_rejectors_[i];

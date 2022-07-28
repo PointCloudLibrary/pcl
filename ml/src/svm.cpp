@@ -84,7 +84,7 @@ static inline void
 clone(T*& dst, S* src, int n)
 {
   dst = new T[n];
-  std::copy_n(src, n, dst);
+  std::copy(src, src + n, dst);
 }
 
 static inline double

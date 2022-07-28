@@ -195,7 +195,7 @@ namespace pcl
       }
       else
       {
-        for (auto i = 0u; i < msg.height; ++i, cloud_data += cloud_row_step, msg_data += msg.row_step)
+        for (std::uint32_t i = 0; i < msg.height; ++i, cloud_data += cloud_row_step, msg_data += msg.row_step)
           std::copy(msg_data, msg_data + cloud_row_step, cloud_data);
       }
 
@@ -336,9 +336,9 @@ namespace pcl
     msg.step = (msg.width * sizeof (std::uint8_t) * 3);
     msg.data.resize (msg.step * msg.height);
 
-    for (auto y = 0u; y < cloud.height; ++y)
+    for (std::size_t y = 0; y < cloud.height; y++)
     {
-      for (auto x = 0u; x < cloud.width; x++, rgb_offset += point_step)
+      for (std::size_t x = 0; x < cloud.width; x++, rgb_offset += point_step)
       {
         std::uint8_t * pixel = &(msg.data[y * msg.step + x * 3]);
         std::copy(&cloud.data[rgb_offset], &cloud.data[rgb_offset] + 3, pixel);

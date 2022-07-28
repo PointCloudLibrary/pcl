@@ -112,14 +112,14 @@ pcl::io::ImageRGB24::fillRGB (unsigned width, unsigned height, unsigned char* rg
     const unsigned char* src_line = static_cast<const unsigned char*> (wrapper_->getData ());
     if (rgb_line_step == 0 || rgb_line_step == line_size)
     {
-      std::copy_n(src_line, wrapper_->getDataSize(), rgb_buffer);
+      std::copy(src_line, src_line + wrapper_->getDataSize(), rgb_buffer);
     }
     else // line by line
     {
       unsigned char* rgb_line = rgb_buffer;
       for (unsigned yIdx = 0; yIdx < height; ++yIdx, rgb_line += rgb_line_step, src_line += line_size)
       {
-        std::copy_n(src_line, line_size, rgb_line);
+        std::copy(src_line, src_line + line_size, rgb_line);
       }
     }
   }

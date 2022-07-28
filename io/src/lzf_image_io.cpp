@@ -70,7 +70,7 @@ pcl::io::LZFImageWriter::saveImageBlob (const char* data,
   HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, data_size, NULL);
   char *map = static_cast<char*> (MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_size));
   CloseHandle (fm);
-  std::copy_n(data, data_size, map);
+  std::copy(data, data + data_size, map);
   UnmapViewOfFile (map);
   CloseHandle (h_native_file);
 #else
@@ -94,7 +94,7 @@ pcl::io::LZFImageWriter::saveImageBlob (const char* data,
   }
 
   // Copy the data
-  std::copy_n(data, data_size, map);
+  std::copy(data, data + data_size, map);
 
   if (::munmap (map, (data_size)) == -1)
   {
@@ -409,7 +409,7 @@ pcl::io::LZFImageReader::loadImageBlob (const std::string &filename,
 
   // Check the header identifier here
   char header_string[5];
-  std::copy_n(map, 5, header_string);
+  std::copy(map, map + 5, header_string);
   if (std::string (header_string).substr (0, 5) != "PCLZF")
   {
     PCL_ERROR ("[pcl::io::LZFImageReader::loadImage] Wrong signature header! Should be 'P'C'L'Z'F'.\n");

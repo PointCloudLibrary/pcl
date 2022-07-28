@@ -402,7 +402,7 @@ pcl::GrayStereoMatching::imgFlip(unsigned char*& img)
   unsigned char* temp_row = new unsigned char[width_];
 
   for (int j = 0; j < height_; j++) {
-    std::copy_n(img + j * width_, width_, temp_row);
+    std::copy(img + j * width_, img + j * width_ + width_, temp_row);
     for (int i = 0; i < width_; i++) {
       img[j * width_ + i] = temp_row[width_ - 1 - i];
     }

@@ -87,8 +87,8 @@ pcl::surface::SimplificationRemoveUnusedVertices::simplify(const pcl::PolygonMes
 
   // copy (only!) used points
   for (std::size_t i = 0; i < indices.size (); ++i) {
-    std::copy_n(&input.cloud.data[indices[i] * output.cloud.point_step],
-                output.cloud.point_step,
+    auto data = &input.cloud.data[indices[i] * output.cloud.point_step];
+    std::copy(data, data + output.cloud.point_step,
                 &output.cloud.data[i * output.cloud.point_step]);
   }
   // copy mesh information (and update indices)

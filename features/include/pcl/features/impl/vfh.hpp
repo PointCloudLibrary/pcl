@@ -243,9 +243,9 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
   for (int i = 0; i < 4; ++i)
   {
-    outPtr = std::copy_n (hist_f_[i].data (), hist_f_[i].size (), outPtr);
+    outPtr = std::copy (hist_f_[i].data (), hist_f_[i].data () + hist_f_[i].size (), outPtr);
   }
-  outPtr = std::copy_n (hist_vp_.data (), hist_vp_.size (), outPtr);
+  outPtr = std::copy (hist_vp_.data (), hist_vp_.data () + hist_vp_.size (), outPtr);
 }
 
 #define PCL_INSTANTIATE_VFHEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::VFHEstimation<T,NT,OutT>;

@@ -125,7 +125,7 @@ void pcl::io::IRImage::fillRaw (unsigned width, unsigned height, unsigned short*
   // special case no sclaing, no padding => memcopy!
   if (width == wrapper_->getWidth () && height == wrapper_->getHeight () && (line_step == width * sizeof (unsigned short))) {
     const unsigned char* src_line = static_cast<const unsigned char*> (wrapper_->getData ());
-    std::copy_n(src_line, wrapper_->getDataSize(), ir_buffer);
+    std::copy(src_line, src_line + wrapper_->getDataSize(), ir_buffer);
     return;
   }
 

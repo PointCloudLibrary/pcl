@@ -111,7 +111,7 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   {
     if (!copy_all_fields_)
     {
-      toPCLPointCloud2<pcl::PointXYZ> (cloud_out, output);
+      pcl::toPCLPointCloud2<pcl::PointXYZ> (cloud_out, output);
     }
     else
     {

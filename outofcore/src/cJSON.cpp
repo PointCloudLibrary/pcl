@@ -60,7 +60,7 @@ static char* cJSON_strdup(const char* str)
         return (nullptr);
       }
 
-      std::copy_n(str, len, copy);
+      std::copy(str, str + len, copy);
       return (copy);
 }
 

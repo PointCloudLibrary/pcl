@@ -150,6 +150,7 @@ class HashTableOLD {
   {
     table_ = new int[capacity_]{};
     keys_ = new short[(capacity_ / 2 + 10) * key_size_]{};
+    std::fill(table_, table_ + capacity_, -1);
   }
 
 protected:
@@ -170,6 +171,7 @@ protected:
     // Allocate the new memory
     keys_ = new short[(old_capacity + 10) * key_size_]{};
     table_ = new int[capacity_]{};
+    std::fill(table_, table_ + capacity_, -1);
     std::copy(old_keys, old_keys + filled_ * key_size_, keys_);
 
     // Reinsert each element
@@ -201,8 +203,9 @@ public:
   explicit HashTableOLD(int key_size, int n_elements)
   : key_size_(key_size), filled_(0), capacity_(2 * n_elements)
   {
-    table_ = new int[capacity_]{-1};
+    table_ = new int[capacity_]{};
     keys_ = new short[(capacity_ / 2 + 10) * key_size_]{};
+    std::fill(table_, table_ + capacity_, -1);
   }
 
   ~HashTableOLD()
@@ -221,7 +224,7 @@ public:
   reset()
   {
     filled_ = 0;
-    std::fill_n(table_, capacity_, -1);
+    std::fill(table_, table_ + capacity_, -1);
   }
 
   int

@@ -107,8 +107,8 @@ pcl::visualization::PCLPlotter::addPlotData (
   //creating a permanent copy of the arrays
   double *permanent_X = new double[size];
   double *permanent_Y = new double[size];
-  std::copy_n(array_X, size, permanent_X);
-  std::copy_n(array_Y, size, permanent_Y);
+  std::copy(array_X, array_X + size, permanent_X);
+  std::copy(array_Y, array_Y + size, permanent_Y);
 
   //transforming data to be fed to the vtkChartXY
   VTK_CREATE (vtkTable, table);

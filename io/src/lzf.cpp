@@ -350,7 +350,7 @@ pcl::lzfDecompress (const void *const in_data,  unsigned int in_len,
         if (op >= ref + len)
         {
           // Disjunct
-          std::copy_n(ref, len, op);
+          std::copy(ref, ref + len, op);
           op += len;
         }
         else

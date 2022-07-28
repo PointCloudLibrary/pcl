@@ -504,8 +504,8 @@ class Viewer
                                      &rgb_data[0]);
             }
             else {
-              std::copy_n(frame->image->getMetaData().Data(), rgb_data.size(),
-                          rgb_data.data());
+              std::copy(frame->image->getMetaData().Data(), frame->image->getMetaData().Data() + rgb_data.size(),
+                        rgb_data.data());
             }
 
             image_viewer_->addRGBImage (reinterpret_cast<unsigned char*> (&rgb_data[0]), 
