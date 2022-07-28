@@ -616,16 +616,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
       string(REGEX REPLACE "^-D" "" def3 "${def2}")
       list(APPEND definitions ${def3})
     endforeach()
-    if(CMAKE_VERSION VERSION_LESS 3.3)
-      set_target_properties(${pcl_component}
-        PROPERTIES
-          INTERFACE_COMPILE_DEFINITIONS "${definitions}"
-          INTERFACE_COMPILE_OPTIONS "${PCL_COMPILE_OPTIONS}"
-          INTERFACE_COMPILE_FEATURES "@PCL_CXX_COMPILE_FEATURES@"
-          INTERFACE_INCLUDE_DIRECTORIES "${PCL_${COMPONENT}_INCLUDE_DIRS};${PCL_CONF_INCLUDE_DIR}"
-          INTERFACE_LINK_LIBRARIES "${PCL_${COMPONENT}_LINK_LIBRARIES}"
-      )
-    elseif(CMAKE_VERSION VERSION_LESS 3.11)
+    if(CMAKE_VERSION VERSION_LESS 3.11)
       set_target_properties(${pcl_component}
         PROPERTIES
           INTERFACE_COMPILE_DEFINITIONS "${definitions}"
