@@ -104,7 +104,7 @@ template <typename LeafContainerT, typename BranchContainerT>
 LeafContainerT*
 OctreeBase<LeafContainerT, BranchContainerT>::findLeaf(uindex_t idx_x_arg,
                                                        uindex_t idx_y_arg,
-                                                       uindex_t idx_z_arg)
+                                                       uindex_t idx_z_arg) const
 {
   // generate key
   OctreeKey key(idx_x_arg, idx_y_arg, idx_z_arg);
@@ -173,7 +173,7 @@ OctreeBase<LeafContainerT, BranchContainerT>::deleteTree()
 template <typename LeafContainerT, typename BranchContainerT>
 void
 OctreeBase<LeafContainerT, BranchContainerT>::serializeTree(
-    std::vector<char>& binary_tree_out_arg)
+    std::vector<char>& binary_tree_out_arg) const
 {
 
   OctreeKey new_key;
@@ -190,7 +190,7 @@ template <typename LeafContainerT, typename BranchContainerT>
 void
 OctreeBase<LeafContainerT, BranchContainerT>::serializeTree(
     std::vector<char>& binary_tree_out_arg,
-    std::vector<LeafContainerT*>& leaf_container_vector_arg)
+    std::vector<LeafContainerT*>& leaf_container_vector_arg) const
 {
 
   OctreeKey new_key;
