@@ -9,7 +9,6 @@
 #include <pcl/filters/filter.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/registration/icp.h>
 #include <pcl/registration/sample_consensus_prerejective.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
@@ -28,6 +27,7 @@ main (int argc, char **argv)
   // Point clouds
   PointCloudT::Ptr object (new PointCloudT);
   PointCloudT::Ptr object_aligned (new PointCloudT);
+  PointCloudT::Ptr scene_before_downsampling (new PointCloudT);
   PointCloudT::Ptr scene (new PointCloudT);
   FeatureCloudT::Ptr object_features (new FeatureCloudT);
   FeatureCloudT::Ptr scene_features (new FeatureCloudT);
@@ -42,7 +42,7 @@ main (int argc, char **argv)
   // Load object and scene
   pcl::console::print_highlight ("Loading point clouds...\n");
   if (pcl::io::loadPCDFile<PointNT> (argv[1], *object) < 0 ||
-      pcl::io::loadPCDFile<PointNT> (argv[2], *scene) < 0)
+      pcl::io::loadPCDFile<PointNT> (argv[2], *scene_before_downsampling) < 0)
   {
     pcl::console::print_error ("Error loading object/scene file!\n");
     return (1);
@@ -55,14 +55,15 @@ main (int argc, char **argv)
   grid.setLeafSize (leaf, leaf, leaf);
   grid.setInputCloud (object);
   grid.filter (*object);
-  grid.setInputCloud (scene);
+  grid.setInputCloud (scene_before_downsampling);
   grid.filter (*scene);
   
   // Estimate normals for scene
   pcl::console::print_highlight ("Estimating scene normals...\n");
   pcl::NormalEstimationOMP<PointNT,PointNT> nest;
-  nest.setRadiusSearch (0.01);
+  nest.setRadiusSearch (0.005);
   nest.setInputCloud (scene);
+  nest.setSearchSurface (scene_before_downsampling);
   nest.compute (*scene);
   
   // Estimate features
@@ -86,7 +87,7 @@ main (int argc, char **argv)
   align.setMaximumIterations (50000); // Number of RANSAC iterations
   align.setNumberOfSamples (3); // Number of points to sample for generating/prerejecting a pose
   align.setCorrespondenceRandomness (5); // Number of nearest features to use
-  align.setSimilarityThreshold (0.9f); // Polygonal edge length similarity threshold
+  align.setSimilarityThreshold (0.95f); // Polygonal edge length similarity threshold
   align.setMaxCorrespondenceDistance (2.5f * leaf); // Inlier threshold
   align.setInlierFraction (0.25f); // Required inlier fraction for accepting a pose hypothesis
   {
