@@ -28,6 +28,7 @@ RUN apt-get update \
       build-essential \
       clang \
       clang-tidy \
+      libbenchmark-dev \
       libblas-dev \
       libboost-date-time-dev \
       libboost-filesystem-dev \
@@ -61,18 +62,6 @@ RUN apt-get update \
        apt-get -V install -y nvidia-cuda-toolkit g++-6 ; \
      else \
        apt-get -V install -y nvidia-cuda-toolkit-gcc ; \
-     fi \
- && if [ "$(lsb_release -sr)" = "21.10" ]; then \
-       wget -qO- https://github.com/google/benchmark/archive/refs/tags/v1.6.1.tar.gz | tar xz \
-       && cd benchmark-1.6.1 \
-       && mkdir build \
-       && cd build \
-       && cmake .. -DCMAKE_BUILD_TYPE=Release -DBENCHMARK_ENABLE_GTEST_TESTS=OFF -DBENCHMARK_ENABLE_TESTING=OFF \
-       && make -j$(nproc) install \
-       && cd ../.. \
-       && rm -rf benchmark-1.6.1 ; \
-     else \
-       apt-get -V install -y libbenchmark-dev ; \
      fi \
  && rm -rf /var/lib/apt/lists/*
 
