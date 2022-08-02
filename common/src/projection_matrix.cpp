@@ -37,8 +37,6 @@
 
 #include <pcl/common/projection_matrix.h>
 
-#include <algorithm>
-
 //////////////////////////////////////////////////////////////////////////////
 void 
 pcl::getCameraMatrixFromProjectionMatrix (

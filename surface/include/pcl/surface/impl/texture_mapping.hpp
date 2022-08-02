@@ -210,14 +210,9 @@ pcl::TextureMapping<PointInT>::mapTexture2MeshUV (pcl::TextureMesh &tex_mesh)
 
   for (int i = 0; i < nr_points; ++i)
   {
-    auto data0 = &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[0].offset];
-    std::copy(data0, data0 + sizeof(float), &x_);
-
-    auto data1 = &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[1].offset];
-    std::copy(data1, data1 + sizeof(float), &y_);
-
-    auto data2 = &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[2].offset];
-    std::copy(data2, data2 + sizeof(float), &z_);
+    memcpy (&x_, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[0].offset], sizeof(float));
+    memcpy (&y_, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[1].offset], sizeof(float));
+    memcpy (&z_, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[2].offset], sizeof(float));
     // x
     if (x_ <= x_lowest)
       x_lowest = x_;
@@ -260,15 +255,9 @@ pcl::TextureMapping<PointInT>::mapTexture2MeshUV (pcl::TextureMesh &tex_mesh)
       for (std::size_t j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size (); ++j)
       {
         std::size_t idx = tex_mesh.tex_polygons[m][i].vertices[j];
-
-        auto data0 = &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[0].offset];
-        std::copy(data0, data0 + sizeof(float), &x_);
-
-        auto data1 = &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[1].offset];
-        std::copy(data1, data1 + sizeof(float), &y_);
-
-        auto data2 = &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[2].offset];
-        std::copy(data2, data2 + sizeof(float), &z_);
+        memcpy (&x_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[0].offset], sizeof(float));
+        memcpy (&y_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[1].offset], sizeof(float));
+        memcpy (&z_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[2].offset], sizeof(float));
 
         // calculate uv coordinates
         tmp_VT[0] = (x_ + x_offset) / x_range;

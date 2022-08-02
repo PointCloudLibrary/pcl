@@ -258,15 +258,9 @@ pcl::VTKUtils::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyDa
     float nx = 0.0f, ny = 0.0f, nz = 0.0f;
     for (vtkIdType cp = 0; cp < nr_points; ++cp)
     {
-      auto fieldx = &mesh.cloud.data[cp*mesh.cloud.point_step+mesh.cloud.fields[idx_normal_x].offset];
-      std::copy(fieldx, fieldx + sizeof(float), &nx);
-
-      auto fieldy = &mesh.cloud.data[cp*mesh.cloud.point_step+mesh.cloud.fields[idx_normal_y].offset];
-      std::copy(fieldy, fieldy + sizeof(float), &ny);
-
-      auto fieldz = &mesh.cloud.data[cp*mesh.cloud.point_step+mesh.cloud.fields[idx_normal_z].offset];
-      std::copy(fieldz, fieldz + sizeof(float), &nz);
-
+      memcpy (&nx, &mesh.cloud.data[cp*mesh.cloud.point_step+mesh.cloud.fields[idx_normal_x].offset], sizeof(float));
+      memcpy (&ny, &mesh.cloud.data[cp*mesh.cloud.point_step+mesh.cloud.fields[idx_normal_y].offset], sizeof(float));
+      memcpy (&nz, &mesh.cloud.data[cp*mesh.cloud.point_step+mesh.cloud.fields[idx_normal_z].offset], sizeof(float));
       const float normal[3] = {nx, ny, nz};
       normals->InsertNextTupleValue (normal);
     }

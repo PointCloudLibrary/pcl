@@ -177,7 +177,7 @@ void
 GrabCutHelper::buildImages()
 {
   using namespace pcl::segmentation::grabcut;
-  n_links_image_.reset();
+  std::fill(n_links_image_->begin(), n_links_image_->end(), 0.0f);
   for (int y = 0; y < static_cast<int>(image_->height); ++y) {
     for (int x = 0; x < static_cast<int>(image_->width); ++x) {
       std::size_t index = y * image_->width + x;
