@@ -285,7 +285,7 @@ public:
    *  \return pointer to leaf node container if found, null pointer otherwise.
    */
   LeafContainerT*
-  findLeaf(uindex_t idx_x_arg, uindex_t idx_y_arg, uindex_t idx_z_arg);
+  findLeaf(uindex_t idx_x_arg, uindex_t idx_y_arg, uindex_t idx_z_arg) const;
 
   /** \brief idx_x_arg for the existence of leaf node at (idx_x_arg, idx_y_arg,
    * idx_z_arg).
@@ -334,7 +334,7 @@ public:
    * structure.
    */
   void
-  serializeTree(std::vector<char>& binary_tree_out_arg);
+  serializeTree(std::vector<char>& binary_tree_out_arg) const;
 
   /** \brief Serialize octree into a binary output vector describing its branch node
    * structure and push all LeafContainerT elements stored in the octree to a vector.
@@ -345,7 +345,7 @@ public:
    */
   void
   serializeTree(std::vector<char>& binary_tree_out_arg,
-                std::vector<LeafContainerT*>& leaf_container_vector_arg);
+                std::vector<LeafContainerT*>& leaf_container_vector_arg) const;
 
   /** \brief Outputs a vector of all LeafContainerT elements that are stored within the
    * octree leaf nodes.
@@ -677,7 +677,7 @@ protected:
    * \return "true"
    **/
   bool
-  octreeCanResize()
+  octreeCanResize() const
   {
     return (true);
   }
