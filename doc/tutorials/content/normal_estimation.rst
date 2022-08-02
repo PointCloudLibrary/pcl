@@ -240,6 +240,8 @@ and the fourth coordinate is D = nc . p_plane (centroid here) + p. The output su
 
    \sigma = \frac{\lambda_0}{\lambda_0 + \lambda_1 + \lambda_2}
 
+For a detailed description of this property, see [1].
+
 Speeding Normal Estimation with OpenMP
 --------------------------------------
 
@@ -254,5 +256,9 @@ times faster computation times.
 .. note::
 
    If your dataset is organized (e.g., acquired using a TOF camera, stereo camera, etc -- that is, it has a width and a height), for even faster results see the :ref:`normal_estimation_using_integral_images`.
+
+References
+--------------------------------------
+[1] M. Pauly, M. Gross and L. P. Kobbelt, "Efficient simplification of point-sampled surfaces," IEEE Visualization, 2002. VIS 2002., 2002, pp. 163-170, doi: 10.1109/VISUAL.2002.1183771.
 
 
