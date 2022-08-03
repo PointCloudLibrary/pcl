@@ -304,6 +304,8 @@ pcl::UnaryClassifier<PointT>::queryFeatureDistances (std::vector<pcl::PointCloud
   {
     // Query point  
     flann::Matrix<float> p = flann::Matrix<float>(new float[n_col], 1, n_col);
+    std::copy((*query_features)[i].histogram, (*query_features)[i].histogram + n_col, p.ptr());
+
     flann::Matrix<int> indices (new int[k], 1, k);
     flann::Matrix<float> distances (new float[k], 1, k);  
     index->knnSearch (p, indices, distances, k, flann::SearchParams (512));
