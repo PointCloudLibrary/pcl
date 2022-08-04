@@ -1077,6 +1077,7 @@ pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (
   vtkSmartPointer<vtkAppendPolyData> alldata = vtkSmartPointer<vtkAppendPolyData>::New ();
   alldata->AddInputData (line_1_data);
   alldata->AddInputData (line_2_data);
+  alldata->Update ();
 
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
