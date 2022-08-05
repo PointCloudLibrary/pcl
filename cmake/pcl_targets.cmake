@@ -88,6 +88,11 @@ macro(PCL_SUBSYS_DEPEND _var _name)
   set(oneValueArgs)
   set(multiValueArgs DEPS EXT_DEPS OPT_DEPS)
   cmake_parse_arguments(SUBSYS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+  if(SUBSYS_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "Unknown arguments given to PCL_SUBSYS_DEPEND: ${SUBSYS_UNPARSED_ARGUMENTS}")
+  endif()
+
   if(SUBSYS_DEPS)
     SET_IN_GLOBAL_MAP(PCL_SUBSYS_DEPS ${_name} "${SUBSYS_DEPS}")
   endif()
@@ -141,9 +146,13 @@ endmacro()
 macro(PCL_SUBSUBSYS_DEPEND _var _parent _name)
   set(options)
   set(parentArg)
-  set(nameArg)
   set(multiValueArgs DEPS EXT_DEPS OPT_DEPS)
-  cmake_parse_arguments(SUBSYS "${options}" "${parentArg}" "${nameArg}" "${multiValueArgs}" ${ARGN})
+  cmake_parse_arguments(SUBSYS "${options}" "${parentArg}" "${multiValueArgs}" ${ARGN})
+
+  if(SUBSYS_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "Unknown arguments given to PCL_SUBSUBSYS_DEPEND: ${SUBSYS_UNPARSED_ARGUMENTS}")
+  endif()
+
   if(SUBSUBSYS_DEPS)
     SET_IN_GLOBAL_MAP(PCL_SUBSYS_DEPS ${_parent}_${_name} "${SUBSUBSYS_DEPS}")
   endif()
@@ -220,6 +229,14 @@ function(PCL_ADD_LIBRARY _name)
   set(multiValueArgs SOURCES)
   cmake_parse_arguments(ADD_LIBRARY_OPTION "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
+  if(ADD_LIBRARY_OPTION_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "Unknown arguments given to PCL_ADD_LIBRARY: ${ADD_LIBRARY_OPTION_UNPARSED_ARGUMENTS}")
+  endif()
+
+  if(NOT ADD_LIBRARY_OPTION_COMPONENT)
+    message(FATAL_ERROR "PCL_ADD_LIBRARY requires parameter COMPONENT.")
+  endif()
+
   add_library(${_name} ${PCL_LIB_TYPE} ${ADD_LIBRARY_OPTION_SOURCES})
   PCL_ADD_VERSION_INFO(${_name})
   target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
@@ -269,6 +286,14 @@ function(PCL_CUDA_ADD_LIBRARY _name)
   set(multiValueArgs SOURCES)
   cmake_parse_arguments(ADD_LIBRARY_OPTION "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
+  if(ADD_LIBRARY_OPTION_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "Unknown arguments given to PCL_CUDA_ADD_LIBRARY: ${ADD_LIBRARY_OPTION_UNPARSED_ARGUMENTS}")
+  endif()
+
+  if(NOT ADD_LIBRARY_OPTION_COMPONENT)
+    message(FATAL_ERROR "PCL_CUDA_ADD_LIBRARY requires parameter COMPONENT.")
+  endif()
+
   REMOVE_VTK_DEFINITIONS()
 
   add_library(${_name} ${PCL_LIB_TYPE} ${ADD_LIBRARY_OPTION_SOURCES})
@@ -303,13 +328,21 @@ function(PCL_ADD_EXECUTABLE _name)
   set(multiValueArgs SOURCES)
   cmake_parse_arguments(ADD_LIBRARY_OPTION "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
+  if(ADD_LIBRARY_OPTION_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "Unknown arguments given to PCL_ADD_EXECUTABLE: ${ADD_LIBRARY_OPTION_UNPARSED_ARGUMENTS}")
+  endif()
+
+  if(NOT ADD_LIBRARY_OPTION_COMPONENT)
+    message(FATAL_ERROR "PCL_ADD_EXECUTABLE requires parameter COMPONENT.")
+  endif()
+
   if(ADD_LIBRARY_OPTION_BUNDLE AND APPLE AND VTK_USE_COCOA)
     add_executable(${_name} MACOSX_BUNDLE ${ADD_LIBRARY_OPTION_SOURCES})
   else()
     add_executable(${_name} ${ADD_LIBRARY_OPTION_SOURCES})
   endif()
   PCL_ADD_VERSION_INFO(${_name})
-  
+
   target_link_libraries(${_name} Threads::Threads)
 
   if(WIN32 AND MSVC)
@@ -348,14 +381,22 @@ function(PCL_CUDA_ADD_EXECUTABLE _name)
   set(multiValueArgs SOURCES)
   cmake_parse_arguments(ADD_LIBRARY_OPTION "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
+  if(ADD_LIBRARY_OPTION_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "Unknown arguments given to PCL_CUDA_ADD_EXECUTABLE: ${ADD_LIBRARY_OPTION_UNPARSED_ARGUMENTS}")
+  endif()
+
+  if(NOT ADD_LIBRARY_OPTION_COMPONENT)
+    message(FATAL_ERROR "PCL_CUDA_ADD_EXECUTABLE requires parameter COMPONENT.")
+  endif()
+
   REMOVE_VTK_DEFINITIONS()
-  
+
   add_executable(${_name} ${ADD_LIBRARY_OPTION_SOURCES})
-  
+
   PCL_ADD_VERSION_INFO(${_name})
 
   target_compile_options(${_name} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>: ${GEN_CODE} --expt-relaxed-constexpr>)
-  
+
   target_include_directories(${_name} PRIVATE ${CUDA_TOOLKIT_INCLUDE})
 
   if(WIN32 AND MSVC)
@@ -384,6 +425,11 @@ macro(PCL_ADD_TEST _name _exename)
   set(oneValueArgs)
   set(multiValueArgs FILES ARGUMENTS LINK_WITH)
   cmake_parse_arguments(PCL_ADD_TEST "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+  if(PCL_ADD_TEST_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "Unknown arguments given to PCL_ADD_TEST: ${PCL_ADD_TEST_UNPARSED_ARGUMENTS}")
+  endif()
+
   add_executable(${_exename} ${PCL_ADD_TEST_FILES})
   if(NOT WIN32)
     set_target_properties(${_exename} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
@@ -427,11 +473,15 @@ function(PCL_ADD_BENCHMARK _name)
   set(multiValueArgs FILES ARGUMENTS LINK_WITH)
   cmake_parse_arguments(PCL_ADD_BENCHMARK "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
+  if(PCL_ADD_BENCHMARK_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "Unknown arguments given to PCL_ADD_BENCHMARK: ${PCL_ADD_BENCHMARK_UNPARSED_ARGUMENTS}")
+  endif()
+
   add_executable(benchmark_${_name} ${PCL_ADD_BENCHMARK_FILES})
   set_target_properties(benchmark_${_name} PROPERTIES FOLDER "Benchmarks")
   target_link_libraries(benchmark_${_name} benchmark::benchmark ${PCL_ADD_BENCHMARK_LINK_WITH})
   set_target_properties(benchmark_${_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-  
+
   #Only applies to MSVC
   if(MSVC)
     #Requires CMAKE version 3.13.0
@@ -447,10 +497,10 @@ function(PCL_ADD_BENCHMARK _name)
       endif()
     endif()
   endif()
-  
+
   add_custom_target(run_benchmark_${_name} benchmark_${_name} ${PCL_ADD_BENCHMARK_ARGUMENTS})
   set_target_properties(run_benchmark_${_name} PROPERTIES FOLDER "Benchmarks")
-  
+
   add_dependencies(run_benchmarks run_benchmark_${_name})
 endfunction()
 
@@ -465,6 +515,11 @@ macro(PCL_ADD_EXAMPLE _name)
   set(oneValueArgs)
   set(multiValueArgs FILES LINK_WITH)
   cmake_parse_arguments(PCL_ADD_EXAMPLE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+  if(PCL_ADD_EXAMPLE_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "Unknown arguments given to PCL_ADD_EXAMPLE: ${PCL_ADD_EXAMPLE_UNPARSED_ARGUMENTS}")
+  endif()
+
   add_executable(${_name} ${PCL_ADD_EXAMPLE_FILES})
   target_link_libraries(${_name} ${PCL_ADD_EXAMPLE_LINK_WITH} ${CLANG_LIBRARIES})
   if(WIN32 AND MSVC)
@@ -523,6 +578,14 @@ function(PCL_MAKE_PKGCONFIG _name)
   set(oneValueArgs COMPONENT DESC CFLAGS LIB_FLAGS)
   set(multiValueArgs PCL_DEPS INT_DEPS EXT_DEPS)
   cmake_parse_arguments(PKGCONFIG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+  if(PKGCONFIG_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "Unknown arguments given to PCL_MAKE_PKGCONFIG: ${PKGCONFIG_UNPARSED_ARGUMENTS}")
+  endif()
+
+  if(NOT PKGCONFIG_COMPONENT)
+    message(FATAL_ERROR "PCL_MAKE_PKGCONFIG requires parameter COMPONENT.")
+  endif()
 
   set(PKG_NAME ${_name})
   set(PKG_DESC ${PKGCONFIG_DESC})
@@ -906,8 +969,8 @@ endmacro()
 # ARGN :
 #    see PCL_ADD_TEST documentation
 macro (PCL_ADD_COMPILETIME_AND_RUNTIME_TEST _name _exename)
-  PCL_ADD_TEST("${_name}_runtime" "${_exename}_runtime" ${ARGV})
+  PCL_ADD_TEST("${_name}_runtime" "${_exename}_runtime" ${ARGN})
   target_compile_definitions("${_exename}_runtime" PRIVATE PCL_RUN_TESTS_AT_COMPILE_TIME=false)
-  PCL_ADD_TEST("${_name}_compiletime" "${_exename}_compiletime" ${ARGV})
+  PCL_ADD_TEST("${_name}_compiletime" "${_exename}_compiletime" ${ARGN})
   target_compile_definitions("${_exename}_compiletime" PRIVATE PCL_RUN_TESTS_AT_COMPILE_TIME=true)
 endmacro()
