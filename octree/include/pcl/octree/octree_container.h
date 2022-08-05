@@ -94,6 +94,13 @@ public:
   /** \brief Empty getPointIndex implementation as this leaf node does not store any
    * point indices.
    */
+  void
+  getPointIndex(index_t&) const
+  {}
+
+  /** \brief Empty getPointIndex implementation as this leaf node does not store any
+   * point indices.
+   */
   virtual index_t
   getPointIndex() const
   {
