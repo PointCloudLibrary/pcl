@@ -397,6 +397,7 @@ public:
    * root node.
    * \param[in] max_depth_arg Depth limitation during traversal
    * \param[in] current_state A pointer to the current iterator state
+   * \param[in] stack A stack structure used for depth first search
    *
    *  \warning For advanced users only.
    */
