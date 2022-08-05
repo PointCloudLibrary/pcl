@@ -167,8 +167,7 @@ pcl::io::DepthImage::fillDepthImageRaw (unsigned width, unsigned height, unsigne
   // special case no sclaing, no padding => memcopy!
   if (width == wrapper_->getWidth () && height == wrapper_->getHeight () && (line_step == width * sizeof (unsigned short)))
   {
-    const unsigned char* src_line = static_cast<const unsigned char*> (wrapper_->getData ());
-    std::copy(src_line, src_line + wrapper_->getDataSize (), depth_buffer);
+    memcpy (depth_buffer, wrapper_->getData (), wrapper_->getDataSize ());
     return;
   }
 

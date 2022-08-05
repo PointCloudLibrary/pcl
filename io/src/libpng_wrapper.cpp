@@ -43,7 +43,7 @@
 #include <vector>
 #include <cstdlib>
 #include <cassert>
-#include <algorithm>
+#include <cstring> // for memcpy
 #include <iterator> // for back_inserter
 
 
@@ -56,7 +56,8 @@ namespace
   user_read_data (png_structp png_ptr, png_bytep data, png_size_t length)
   {
     std::uint8_t** input_pointer = reinterpret_cast<std::uint8_t**>(png_get_io_ptr (png_ptr));
-    std::copy(*input_pointer, *input_pointer + length, data);
+
+    memcpy (data, *input_pointer, sizeof (std::uint8_t) * length);
     (*input_pointer) += length;
   }
 

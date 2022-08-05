@@ -57,7 +57,7 @@ void ImageRGB24::fillRGB (unsigned width, unsigned height, unsigned char* rgb_bu
     unsigned line_size = width * 3;
     if (rgb_line_step == 0 || rgb_line_step == line_size)
     {
-      std::copy(image_md_->Data(), image_md_->Data() + image_md_->DataSize(), rgb_buffer);
+      memcpy (rgb_buffer, image_md_->Data(), image_md_->DataSize());
     }
     else // line by line
     {

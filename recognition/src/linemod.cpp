@@ -1083,7 +1083,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
         std::fill_n(tmp_score_sums, mem_size, 0);
       }
 #else
-      unsigned short * score_sums = new unsigned short[mem_size]{}};
+      unsigned short * score_sums = new unsigned short[mem_size]{};
 
 #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
       unsigned short * score_sums_1 = new unsigned short[mem_size]{};

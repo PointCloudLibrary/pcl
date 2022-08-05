@@ -56,7 +56,7 @@ void IRImage::fillRaw (unsigned width, unsigned height, unsigned short* ir_buffe
   // special case no sclaing, no padding => memcopy!
   if (width == ir_md_->XRes () && height == ir_md_->YRes () && (line_step == width * sizeof (unsigned short)))
   {
-    std::copy(ir_md_->Data(), ir_md_->Data() + ir_md_->DataSize(), ir_buffer);
+    memcpy (ir_buffer, ir_md_->Data(), ir_md_->DataSize ());
     return;
   }
 

@@ -301,7 +301,7 @@ namespace pcl
       for (std::size_t x = 0; x < cloud.width; x++)
       {
         std::uint8_t * pixel = &(msg.data[y * msg.step + x * 3]);
-        std::copy(&cloud(x, y).rgb, &cloud(x, y).rgb + 3, pixel);
+        memcpy (pixel, &cloud (x, y).rgb, 3 * sizeof(std::uint8_t));
       }
     }
   }
