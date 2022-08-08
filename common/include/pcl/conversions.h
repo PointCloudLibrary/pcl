@@ -195,8 +195,8 @@ namespace pcl
       }
       else
       {
-        for (std::uint32_t i = 0; i < msg.height; ++i, cloud_data += cloud_row_step, msg_data += msg.row_step)
-          std::copy(msg_data, msg_data + cloud_row_step, cloud_data);
+        for (uindex_t i = 0; i < msg.height; ++i, cloud_data += cloud_row_step, msg_data += msg.row_step)
+          memcpy (cloud_data, msg_data, cloud_row_step);
       }
 
     }

@@ -39,7 +39,6 @@
 #include <pcl/common/io.h>
 #include <pcl/io/ply_io.h>
 
-#include <algorithm>
 #include <cstdlib>
 #include <fstream>
 #include <functional>
