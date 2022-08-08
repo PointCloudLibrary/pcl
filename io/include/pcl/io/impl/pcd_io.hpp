@@ -113,8 +113,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 {
   if (cloud.empty ())
   {
-    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Input point cloud has no data!");
-    return (-1);
+    PCL_WARN ("[pcl::PCDWriter::writeBinary] Input point cloud has no data!");
   }
   int data_idx = 0;
   std::ostringstream oss;
@@ -246,8 +245,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
 {
   if (cloud.empty ())
   {
-    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Input point cloud has no data!");
-    return (-1);
+    PCL_WARN ("[pcl::PCDWriter::writeBinaryCompressed] Input point cloud has no data!");
   }
   int data_idx = 0;
   std::ostringstream oss;
@@ -341,29 +339,35 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
   }
 
   char* temp_buf = static_cast<char*> (malloc (static_cast<std::size_t> (static_cast<float> (data_size) * 1.5f + 8.0f)));
+  unsigned int compressed_final_size = 0;
+  if (data_size != 0) {
   // Compress the valid data
   unsigned int compressed_size = pcl::lzfCompress (only_valid_data, 
                                                    static_cast<std::uint32_t> (data_size), 
                                                    &temp_buf[8], 
                                                    static_cast<std::uint32_t> (static_cast<float>(data_size) * 1.5f));
-  unsigned int compressed_final_size = 0;
-  // Was the compression successful?
-  if (compressed_size)
-  {
-    char *header = &temp_buf[0];
-    memcpy (&header[0], &compressed_size, sizeof (unsigned int));
-    memcpy (&header[4], &data_size, sizeof (unsigned int));
-    data_size = compressed_size + 8;
-    compressed_final_size = static_cast<std::uint32_t> (data_size) + data_idx;
+    // Was the compression successful?
+    if (compressed_size)
+    {
+      char *header = &temp_buf[0];
+      memcpy (&header[0], &compressed_size, sizeof (unsigned int));
+      memcpy (&header[4], &data_size, sizeof (unsigned int));
+      data_size = compressed_size + 8;
+      compressed_final_size = static_cast<std::uint32_t> (data_size) + data_idx;
+    }
+    else
+    {
+  #ifndef _WIN32
+      io::raw_close (fd);
+  #endif
+      resetLockingPermissions (file_name, file_lock);
+      return (-1);
+    }
   }
   else
   {
-#ifndef _WIN32
-    io::raw_close (fd);
-#endif
-    resetLockingPermissions (file_name, file_lock);
-    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during compression!");
-    return (-1);
+    // empty cloud case
+    compressed_final_size = 8 + data_idx;
   }
 
   // Prepare the map
@@ -440,8 +444,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
 {
   if (cloud.empty ())
   {
-    throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Input point cloud has no data!");
-    return (-1);
+    PCL_WARN ("[pcl::PCDWriter::writeASCII] Input point cloud has no data!");
   }
 
   if (cloud.width * cloud.height != cloud.size ())
@@ -594,8 +597,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 {
   if (cloud.empty () || indices.empty ())
   {
-    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Input point cloud has no data or empty indices given!");
-    return (-1);
+    PCL_WARN ("[pcl::PCDWriter::writeBinary] Input point cloud has no data or empty indices given!");
   }
   int data_idx = 0;
   std::ostringstream oss;
@@ -725,8 +727,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
 {
   if (cloud.empty () || indices.empty ())
   {
-    throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Input point cloud has no data or empty indices given!");
-    return (-1);
+    PCL_WARN ("[pcl::PCDWriter::writeASCII] Input point cloud has no data or empty indices given!");
   }
 
   if (cloud.width * cloud.height != cloud.size ())
