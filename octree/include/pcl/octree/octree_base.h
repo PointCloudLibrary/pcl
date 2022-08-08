@@ -126,6 +126,12 @@ public:
     return ConstIterator(this, max_depth_arg ? max_depth_arg : this->octree_depth_);
   };
 
+  ConstIterator
+  cbegin(uindex_t max_depth_arg = 0u) const
+  {
+    return ConstIterator(this, max_depth_arg ? max_depth_arg : this->octree_depth_);
+  };
+
   const Iterator
   end()
   {
@@ -134,6 +140,12 @@ public:
 
   const ConstIterator
   end() const
+  {
+    return ConstIterator(this, 0, nullptr);
+  };
+
+  const ConstIterator
+  cend() const
   {
     return ConstIterator(this, 0, nullptr);
   };
