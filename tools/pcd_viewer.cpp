@@ -140,6 +140,8 @@ printHelp (int, char **argv)
   print_info ("\n");
   print_info ("                     -optimal_label_colors    = maps existing labels to the optimal sequential glasbey colors, label_ids will not be mapped to fixed colors (default "); print_value ("disabled"); print_info (")\n");
   print_info ("\n");
+  print_info ("                     -edl                     = Enable Eye-Dome Lighting rendering, to improve depth perception. (default: "); print_value ("disabled"); print_info (")\n");
+  print_info ("\n");
 
   print_info ("\n(Note: for multiple .pcd files, provide multiple -{fc,ps,opaque,position,orientation} parameters; they will be automatically assigned to the right file)\n");
 }
@@ -275,6 +277,11 @@ main (int argc, char** argv)
   if (use_vbos) 
     print_highlight ("Vertex Buffer Object (VBO) visualization enabled.\n");
 
+  bool useEDLRendering = false;
+  pcl::console::parse_argument(argc, argv, "-edl", useEDLRendering);
+  if (useEDLRendering)
+    print_highlight("EDL visualization enabled.\n");
+
   bool use_pp   = pcl::console::find_switch (argc, argv, "-use_point_picking");
   if (use_pp) 
     print_highlight ("Point picking enabled.\n");
@@ -361,6 +368,9 @@ main (int argc, char** argv)
     // Create the PCLVisualizer object here on the first encountered XYZ file
     if (!p)
       p.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCD viewer"));
+
+    if (useEDLRendering)
+      p->enableEDLRendering();
 
     // Multiview enabled?
     if (mview)
@@ -480,6 +490,9 @@ main (int argc, char** argv)
       p.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCD viewer"));
       if (use_pp)   // Only enable the point picking callback if the command line parameter is enabled
         p->registerPointPickingCallback (&pp_callback, static_cast<void*> (&cloud));
+
+      if (useEDLRendering)
+        p->enableEDLRendering();
 
       // Set whether or not we should be using the vtkVertexBufferObjectMapper
       p->setUseVbos (use_vbos);

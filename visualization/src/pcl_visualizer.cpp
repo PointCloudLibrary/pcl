@@ -54,7 +54,6 @@
 #include <vtkCellArray.h>
 #include <vtkHardwareSelector.h>
 #include <vtkSelectionNode.h>
-
 #include <vtkSelection.h>
 #include <vtkPointPicker.h>
 
@@ -93,6 +92,8 @@
 
 #if VTK_MAJOR_VERSION > 7
 #include <vtkTexture.h>
+#include <vtkRenderStepsPass.h>
+#include <vtkEDLShading.h>
 #endif
 
 #include <pcl/visualization/common/shapes.h>
@@ -3537,6 +3538,34 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
   (*cloud_actor_map_)[id].viewpoint_transformation_ = transformation;
 
   return (true);
+}
+
+void
+pcl::visualization::PCLVisualizer::enableEDLRendering(int viewport)
+{
+#if VTK_MAJOR_VERSION > 7
+  auto* basicPass = vtkRenderStepsPass::New();
+
+  auto* edl = vtkEDLShading::New();
+  edl->SetDelegatePass(basicPass);
+
+    // Add it to all renderers
+  rens_->InitTraversal();
+  vtkRenderer* renderer = nullptr;
+  int i = 0;
+  while ((renderer = rens_->GetNextItem())) {
+    if (i == 0) {
+      renderer->SetPass(edl);
+    }
+    else if (i == viewport) {
+      renderer->SetPass(edl);
+    }
+    i++;
+  }
+#else
+  PCL_WARN("EDL requires VTK version 8 or newer.");
+  utils::ignore(viewport);
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
