@@ -296,7 +296,7 @@ Pyramid<pcl::PointXYZRGBA>::compute(
 
 template <>
 inline void
-Pyramid<pcl::RGB>::nullify(pcl::RGB& p)
+Pyramid<pcl::RGB>::nullify(pcl::RGB& p) const
 {
   p.r = 0; p.g = 0; p.b = 0;
 }
