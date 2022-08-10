@@ -42,7 +42,11 @@
 #include <pcl/kdtree/kdtree.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (CorrespondenceEstimation, CorrespondenceEstimationNormalShooting)
+template <typename T> class CorrespondenceEstimation : public ::testing::Test { };
+using PointTypesForCorresponceEstimation = ::testing::Types<pcl::PointXYZ, pcl::PointNormal, pcl::PointXYZRGBA>;
+TYPED_TEST_SUITE (CorrespondenceEstimation, PointTypesForCorresponceEstimation);
+
+TYPED_TEST (CorrespondenceEstimation, CorrespondenceEstimationNormalShooting)
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud1 (new pcl::PointCloud<pcl::PointXYZ> ());
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud2 (new pcl::PointCloud<pcl::PointXYZ> ());
@@ -116,7 +120,6 @@ TEST (CorrespondenceEstimation, CorrespondenceEstimationSetSearchMethod)
     EXPECT_EQ(corr_orig[i].index_query, corr_cached[i].index_query);
     EXPECT_EQ(corr_orig[i].index_match, corr_cached[i].index_match);
   }
-  
 }
 
 /* ---[ */
