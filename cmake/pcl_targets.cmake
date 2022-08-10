@@ -456,6 +456,8 @@ macro(PCL_ADD_TEST _name _exename)
 
   set_target_properties(${_exename} PROPERTIES FOLDER "Tests")
   add_test(NAME ${_name} COMMAND ${_exename} ${PCL_ADD_TEST_ARGUMENTS})
+  set_tests_properties(${_name} PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/${LIB_INSTALL_DIR}")
+
 
   add_dependencies(tests ${_exename})
 endmacro()
