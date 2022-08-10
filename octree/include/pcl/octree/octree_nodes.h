@@ -234,25 +234,18 @@ public:
   inline OctreeNode*
   getChildPtr(unsigned char child_idx_arg) const
   {
-    if (child_idx_arg >= 8) {
-      PCL_ERROR(
-          "[pcl::octree::OctreeBranchNode::getChildPtr] Child index must be < 8!\n");
-      return nullptr;
-    }
+    assert(child_idx_arg < 8);
     return child_node_array_[child_idx_arg];
   }
 
   /** \brief Get pointer to child
+   *  \param index: index to child node, must be less than 8
    *  \return OctreeNode pointer
    * */
   inline void
   setChildPtr(OctreeNode* child, unsigned char index)
   {
-    if (index >= 8) {
-      PCL_ERROR(
-          "[pcl::octree::OctreeBranchNode::setChildPtr] Child index must be < 8!\n");
-      return;
-    }
+    assert(index < 8);
     child_node_array_[index] = child;
   }
 

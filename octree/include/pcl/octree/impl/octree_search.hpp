@@ -48,15 +48,10 @@ bool
 OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::voxelSearch(
     const PointT& point, Indices& point_idx_data)
 {
-  bool b_success = false;
-
-  if (!isFinite(point)) {
-    PCL_ERROR("[pcl::octree::OctreePointCloudSearch::voxelSearch] Invalid (NaN, Inf) "
-              "point coordinates given to nearestKSearch!\n");
-    return (b_success);
-  }
-
+  assert(isFinite(point) &&
+         "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
   OctreeKey key;
+  bool b_success = false;
 
   // generate key
   this->genOctreeKeyforPoint(point, key);

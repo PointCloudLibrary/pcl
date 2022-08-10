@@ -111,12 +111,7 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
     leaf_vector_.push_back(leaf_container);
   }
   // Make sure our leaf vector is correctly sized
-  if (leaf_vector_.size() != this->getLeafCount()) {
-    PCL_ERROR("[pcl::octree::OctreePointCloudAdjacency::addPointsFromInputCloud] Leaf "
-              "vector's size (%lu) must be equal to leaf count (%lu)!\n",
-              leaf_vector_.size(),
-              this->getLeafCount());
-  }
+  assert(leaf_vector_.size() == this->getLeafCount());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

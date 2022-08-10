@@ -87,31 +87,20 @@ public:
   }
 
   /** \brief Get child pointer in current branch node
-   *  \param buffer_arg: buffer selector
-   *  \param index_arg: index of child in node
+   *  \param buffer_arg: buffer selector, must be less than 2
+   *  \param index_arg: index of child in node, must be less than 8
    *  \return pointer to child node
    */
   inline OctreeNode*
   getChildPtr(unsigned char buffer_arg, unsigned char index_arg) const
   {
-    if (buffer_arg >= 2) {
-      PCL_ERROR("[pcl::octree::BufferedBranchNode::getChildPtr] Input buffer selector "
-                "index (%d) must be < 2!\n",
-                buffer_arg);
-      return nullptr;
-    }
-    if (index_arg >= 8) {
-      PCL_ERROR("[pcl::octree::BufferedBranchNode::getChildPtr] Input point index (%d) "
-                "must be < 8!\n",
-                index_arg);
-      return nullptr;
-    }
+    assert((buffer_arg < 2) && (index_arg < 8));
     return child_node_array_[buffer_arg][index_arg];
   }
 
   /** \brief Set child pointer in current branch node
-   *  \param buffer_arg: buffer selector
-   *  \param index_arg: index of child in node
+   *  \param buffer_arg: buffer selector, must be less than 2
+   *  \param index_arg: index of child in node, must be less than 8
    *  \param newNode_arg: pointer to new child node
    */
   inline void
@@ -119,41 +108,19 @@ public:
               unsigned char index_arg,
               OctreeNode* newNode_arg)
   {
-    if (buffer_arg >= 2) {
-      PCL_ERROR("[pcl::octree::BufferedBranchNode::getChildPtr] Input buffer selector "
-                "index (%d) must be < 2!\n",
-                buffer_arg);
-      return;
-    }
-    if (index_arg >= 8) {
-      PCL_ERROR("[pcl::octree::BufferedBranchNode::getChildPtr] Input point index (%d) "
-                "must be < 8!\n",
-                index_arg);
-      return;
-    }
+    assert((buffer_arg < 2) && (index_arg < 8));
     child_node_array_[buffer_arg][index_arg] = newNode_arg;
   }
 
   /** \brief Check if branch is pointing to a particular child node
-   *  \param buffer_arg: buffer selector
-   *  \param index_arg: index of child in node
+   *  \param buffer_arg: buffer selector, must be less than 2
+   *  \param index_arg: index of child in node, must be less than 8
    *  \return "true" if pointer to child node exists; "false" otherwise
    */
   inline bool
   hasChild(unsigned char buffer_arg, unsigned char index_arg) const
   {
-    if (buffer_arg >= 2) {
-      PCL_ERROR("[pcl::octree::BufferedBranchNode::getChildPtr] Input buffer selector "
-                "index (%d) must be < 2!\n",
-                buffer_arg);
-      return false;
-    }
-    if (index_arg >= 8) {
-      PCL_ERROR("[pcl::octree::BufferedBranchNode::getChildPtr] Input point index (%d) "
-                "must be < 8!\n",
-                index_arg);
-      return false;
-    }
+    assert((buffer_arg < 2) && (index_arg < 8));
     return (child_node_array_[buffer_arg][index_arg] != nullptr);
   }
 
