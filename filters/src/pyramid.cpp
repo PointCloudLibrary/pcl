@@ -39,6 +39,7 @@
 #include <pcl/console/print.h>
 #include <pcl/point_types.h>
 #include <pcl/common/distances.h> // for squaredEuclideanDistance
+#include <pcl/common/point_tests.h> // for isFinite
 
 namespace pcl {
 namespace filters {
@@ -375,8 +376,8 @@ Pyramid<pcl::RGB>::compute(std::vector<Pyramid<pcl::RGB>::PointCloudPtr>& output
                 jj = previous.width - 1;
               if (!isFinite(previous.at(jj, ii)))
                 continue;
-              if (pcl::squaredEuclideanDistance(previous.at(2 * j, 2 * i),
-                                                previous.at(jj, ii)) < threshold_) {
+              /*if (pcl::squaredEuclideanDistance(previous.at(2 * j, 2 * i),
+                                                previous.at(jj, ii)) < threshold_)*/ {
                 b += previous.at(jj, ii).b * kernel_(mm, nn);
                 g += previous.at(jj, ii).g * kernel_(mm, nn);
                 r += previous.at(jj, ii).r * kernel_(mm, nn);
