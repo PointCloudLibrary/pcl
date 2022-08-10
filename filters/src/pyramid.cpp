@@ -38,6 +38,7 @@
 #include <pcl/filters/pyramid.h>
 #include <pcl/console/print.h>
 #include <pcl/point_types.h>
+#include <pcl/common/distances.h> // for squaredEuclideanDistance
 
 namespace pcl {
 namespace filters {
