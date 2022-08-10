@@ -296,6 +296,13 @@ Pyramid<pcl::PointXYZRGBA>::compute(
 
 template <>
 inline void
+Pyramid<pcl::RGB>::nullify(pcl::RGB& p)
+{
+  p.r = 0; p.g = 0; p.b = 0;
+}
+
+template <>
+inline void
 Pyramid<pcl::RGB>::compute(std::vector<Pyramid<pcl::RGB>::PointCloudPtr>& output)
 {
   std::cout << "RGB" << std::endl;
