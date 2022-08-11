@@ -146,29 +146,6 @@ namespace pcl
         limit_max = filter_limit_max_;
       }
 
-      /** \brief Set to true if we want to return the data outside the interval specified by setFilterLimits (min, max)
-        * Default: false.
-        * \warning This method will be removed in the future. Use setNegative() instead.
-        * \param[in] limit_negative return data inside the interval (false) or outside (true)
-        */
-      PCL_DEPRECATED(1, 13, "use inherited FilterIndices::setNegative() instead")
-      inline void
-      setFilterLimitsNegative (const bool limit_negative)
-      {
-        negative_ = limit_negative;
-      }
-
-      /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
-        * \warning This method will be removed in the future. Use getNegative() instead.
-        * \param[out] limit_negative true if data \b outside the interval [min; max] is to be returned, false otherwise
-        */
-      PCL_DEPRECATED(1, 13, "use inherited FilterIndices::getNegative() instead")
-      inline void
-      getFilterLimitsNegative (bool &limit_negative) const
-      {
-        limit_negative = negative_;
-      }
-
       /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
         * \warning This method will be removed in the future. Use getNegative() instead.
         * \return true if data \b outside the interval [min; max] is to be returned, false otherwise

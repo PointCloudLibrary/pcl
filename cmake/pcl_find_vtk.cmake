@@ -75,16 +75,8 @@ set(NON_PREFIX_PCL_VTK_COMPONENTS
   ViewsContext2D
 )
 
-#If VTK version 6 use OpenGL
-if(VTK_VERSION VERSION_LESS 7.0)
-  set(VTK_RENDERING_BACKEND "OpenGL")
-  set(VTK_RENDERING_BACKEND_OPENGL_VERSION "1")
-  message(DEPRECATION "The rendering backend OpenGL is deprecated and not available anymore since VTK 8.2."
-					  "Please switch to the OpenGL2 backend instead, which is available since VTK 6.2."
-					  "Support of the deprecated backend will be dropped with PCL 1.13.")
-
 #If VTK version 7,8 or 9 use OpenGL2
-else()
+if(NOT (VTK_VERSION VERSION_LESS 7.0))
   set(VTK_RENDERING_BACKEND "OpenGL2")
   set(VTK_RENDERING_BACKEND_OPENGL_VERSION "2")
 endif()
