@@ -85,6 +85,34 @@ namespace pcl
     {
       return (PCLPointCloud2 (*this) += rhs);
     }
+
+    /** \brief Get value at specified offset.
+      * \param[in] point_index point index.
+      * \param[in] field_offset offset.
+      * \return value at the given offset.
+      */
+    template<typename T> inline
+    const T& at(const pcl::uindex_t& point_index, const pcl::uindex_t& field_offset) const {
+      const auto position = point_index * point_step + field_offset;
+      if (data.size () >= (position + sizeof(T)))
+        return reinterpret_cast<const T&>(data[position]);
+      else
+        throw std::out_of_range("PCLPointCloud2::at");
+    }
+
+    /** \brief Get value at specified offset.
+      * \param[in] point_index point index.
+      * \param[in] field_offset offset.
+      * \return value at the given offset.
+      */
+    template<typename T> inline
+    T& at(const pcl::uindex_t& point_index, const pcl::uindex_t& field_offset) {
+      const auto position = point_index * point_step + field_offset;
+      if (data.size () >= (position + sizeof(T)))
+        return reinterpret_cast<T&>(data[position]);
+      else
+        throw std::out_of_range("PCLPointCloud2::at");
+    }
   }; // struct PCLPointCloud2
 
   using PCLPointCloud2Ptr = PCLPointCloud2::Ptr;
