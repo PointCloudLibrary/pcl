@@ -279,19 +279,19 @@ namespace pcl
   template<typename Scalar> void
   PLYReader::vertexScalarPropertyCallback (Scalar value)
   {
-    unsetDenseFlagIfNotFinite(value, cloud_);
-
-    const auto i = vertex_count_ * cloud_->point_step + vertex_offset_before_;
-    if (i + sizeof (Scalar) > cloud_->data.size())
+    try
     {
-      PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", i + sizeof (Scalar));
-      assert(false);
-      return;
+      unsetDenseFlagIfNotFinite(value, cloud_);
+      memcpy (&cloud_->at<Scalar>(vertex_count_, vertex_offset_before_),
+              &value,
+              sizeof (Scalar));
+      vertex_offset_before_ += static_cast<int> (sizeof (Scalar));
     }
-    memcpy (&cloud_->data[i],
-            &value,
-            sizeof (Scalar));
-    vertex_offset_before_ += static_cast<int> (sizeof (Scalar));
+    catch(const std::out_of_range&)
+    {
+      PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", vertex_count_ * cloud_->point_step + vertex_offset_before_);
+      assert(false);
+    }
   }
 
   template <typename SizeType> void
@@ -312,19 +312,19 @@ namespace pcl
   template<typename ContentType> void
   PLYReader::vertexListPropertyContentCallback (ContentType value)
   {
-    unsetDenseFlagIfNotFinite(value, cloud_);
-
-    const auto i = vertex_count_ * cloud_->point_step + vertex_offset_before_;
-    if (i + sizeof (ContentType) > cloud_->data.size())
+    try
     {
-      PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", i + sizeof (ContentType));
-      assert(false);
-      return;
+      unsetDenseFlagIfNotFinite(value, cloud_);
+      memcpy (&cloud_->at<ContentType>(vertex_count_, vertex_offset_before_),
+              &value,
+              sizeof (ContentType));
+      vertex_offset_before_ += static_cast<int> (sizeof (ContentType));
     }
-    memcpy (&cloud_->data[i],
-            &value,
-            sizeof (ContentType));
-    vertex_offset_before_ += static_cast<int> (sizeof (ContentType));
+    catch(const std::out_of_range&)
+    {
+      PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", vertex_count_ * cloud_->point_step + vertex_offset_before_);
+      assert(false);
+    }
   }
 
   template <typename SizeType, typename ContentType>
@@ -387,17 +387,18 @@ pcl::PLYReader::vertexColorCallback (const std::string& color_name, pcl::io::ply
   {
     b_ = std::int32_t (color);
     std::int32_t rgb = r_ << 16 | g_ << 8 | b_;
-    const auto i = vertex_count_ * cloud_->point_step + rgb_offset_before_;
-    if (i + sizeof (pcl::io::ply::float32) > cloud_->data.size())
+    try
     {
-      PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", i + sizeof (pcl::io::ply::float32));
-      assert(false);
-      return;
+      memcpy (&cloud_->at<pcl::io::ply::float32>(vertex_count_, rgb_offset_before_),
+              &rgb,
+              sizeof (pcl::io::ply::float32));
+      vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::float32));
     }
-    memcpy (&cloud_->data[i],
-            &rgb,
-            sizeof (pcl::io::ply::float32));
-    vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::float32));
+    catch(const std::out_of_range&)
+    {
+      PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", vertex_count_ * cloud_->point_step + rgb_offset_before_);
+      assert(false);
+    }
   }
 }
 
@@ -405,27 +406,14 @@ void
 pcl::PLYReader::vertexAlphaCallback (pcl::io::ply::uint8 alpha)
 {
   a_ = std::uint32_t (alpha);
-  const auto i = vertex_count_ * cloud_->point_step + rgb_offset_before_;
-  if (i + sizeof (pcl::io::ply::float32) > cloud_->data.size())
-  {
-    PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", i + sizeof (pcl::io::ply::float32));
-    assert(false);
-    return;
-  }
-  if (i + sizeof (std::uint32_t) > cloud_->data.size())
-  {
-    PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", i + sizeof (std::uint32_t));
-    assert(false);
-    return;
-  }
   // get anscient rgb value and store it in rgba
   memcpy (&rgba_,
-          &cloud_->data[i],
+          &cloud_->at<pcl::io::ply::float32>(vertex_count_, rgb_offset_before_),
           sizeof (pcl::io::ply::float32));
   // append alpha
   rgba_ |= a_ << 24;
   // put rgba back
-  memcpy (&cloud_->data[i],
+  memcpy (&cloud_->at<std::uint32_t>(vertex_count_, rgb_offset_before_),
           &rgba_,
           sizeof (std::uint32_t));
 }
@@ -433,15 +421,8 @@ pcl::PLYReader::vertexAlphaCallback (pcl::io::ply::uint8 alpha)
 void
 pcl::PLYReader::vertexIntensityCallback (pcl::io::ply::uint8 intensity)
 {
-  const auto i = vertex_count_ * cloud_->point_step + vertex_offset_before_;
-  if (i + sizeof (pcl::io::ply::float32) > cloud_->data.size())
-  {
-    PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", i + sizeof (pcl::io::ply::float32));
-    assert(false);
-    return;
-  }
   pcl::io::ply::float32 intensity_ (intensity);
-  memcpy (&cloud_->data[i],
+  memcpy (&cloud_->at<pcl::io::ply::float32>(vertex_count_, vertex_offset_before_),
           &intensity_,
           sizeof (pcl::io::ply::float32));
   vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::float32));
@@ -638,7 +619,7 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
           if (field.datatype == ::pcl::PCLPointField::FLOAT32)
           {
             const auto idx = r * cloud_->point_step + field.offset;
-            if (idx + sizeof (float) > cloud_->data.size())
+            if (idx + sizeof (float) > data.size())
             {
               PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", idx);
               return (-1);
@@ -649,7 +630,7 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
           else if (field.datatype == ::pcl::PCLPointField::FLOAT64)
           {
             const auto idx = r * cloud_->point_step + field.offset;
-            if (idx + sizeof (double) > cloud_->data.size())
+            if (idx + sizeof (double) > data.size())
             {
               PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", idx);
               return (-1);
@@ -660,7 +641,7 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
           else
           {
             const auto idx = r * cloud_->point_step + field.offset;
-            if (idx + pcl::getFieldSize (field.datatype) * field.count > cloud_->data.size())
+            if (idx + pcl::getFieldSize (field.datatype) * field.count > data.size())
             {
               PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", idx);
               return (-1);
