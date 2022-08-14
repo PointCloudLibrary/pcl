@@ -405,7 +405,7 @@ pcl::PLYReader::vertexAlphaCallback (pcl::io::ply::uint8 alpha)
   a_ = std::uint32_t (alpha);
   rgba_ |= a_ << 24;
   // put rgba back
-    cloud_->at<std::uint32_t>(vertex_count_, rgb_offset_before_) = rgba_;
+  cloud_->at<std::uint32_t>(vertex_count_, rgb_offset_before_) = rgba_;
 }
 
 void
