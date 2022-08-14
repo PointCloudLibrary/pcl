@@ -282,9 +282,7 @@ namespace pcl
     try
     {
       unsetDenseFlagIfNotFinite(value, cloud_);
-      memcpy (&cloud_->at<Scalar>(vertex_count_, vertex_offset_before_),
-              &value,
-              sizeof (Scalar));
+      cloud_->at<Scalar>(vertex_count_, vertex_offset_before_) = value;
       vertex_offset_before_ += static_cast<int> (sizeof (Scalar));
     }
     catch(const std::out_of_range&)
@@ -315,9 +313,7 @@ namespace pcl
     try
     {
       unsetDenseFlagIfNotFinite(value, cloud_);
-      memcpy (&cloud_->at<ContentType>(vertex_count_, vertex_offset_before_),
-              &value,
-              sizeof (ContentType));
+      cloud_->at<ContentType>(vertex_count_, vertex_offset_before_) = value;
       vertex_offset_before_ += static_cast<int> (sizeof (ContentType));
     }
     catch(const std::out_of_range&)
@@ -389,9 +385,7 @@ pcl::PLYReader::vertexColorCallback (const std::string& color_name, pcl::io::ply
     std::int32_t rgb = r_ << 16 | g_ << 8 | b_;
     try
     {
-      memcpy (&cloud_->at<pcl::io::ply::float32>(vertex_count_, rgb_offset_before_),
-              &rgb,
-              sizeof (pcl::io::ply::float32));
+      cloud_->at<pcl::io::ply::float32>(vertex_count_, rgb_offset_before_) = rgb;
       vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::float32));
     }
     catch(const std::out_of_range&)
@@ -405,26 +399,20 @@ pcl::PLYReader::vertexColorCallback (const std::string& color_name, pcl::io::ply
 void
 pcl::PLYReader::vertexAlphaCallback (pcl::io::ply::uint8 alpha)
 {
-  a_ = std::uint32_t (alpha);
   // get anscient rgb value and store it in rgba
-  memcpy (&rgba_,
-          &cloud_->at<pcl::io::ply::float32>(vertex_count_, rgb_offset_before_),
-          sizeof (pcl::io::ply::float32));
+  rgba_ = cloud_->at<pcl::io::ply::float32>(vertex_count_, rgb_offset_before_);
   // append alpha
+  a_ = std::uint32_t (alpha);
   rgba_ |= a_ << 24;
   // put rgba back
-  memcpy (&cloud_->at<std::uint32_t>(vertex_count_, rgb_offset_before_),
-          &rgba_,
-          sizeof (std::uint32_t));
+    cloud_->at<std::uint32_t>(vertex_count_, rgb_offset_before_) = rgba_;
 }
 
 void
 pcl::PLYReader::vertexIntensityCallback (pcl::io::ply::uint8 intensity)
 {
   pcl::io::ply::float32 intensity_ (intensity);
-  memcpy (&cloud_->at<pcl::io::ply::float32>(vertex_count_, vertex_offset_before_),
-          &intensity_,
-          sizeof (pcl::io::ply::float32));
+  cloud_->at<pcl::io::ply::float32>(vertex_count_, vertex_offset_before_) = intensity_;
   vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::float32));
 }
 
