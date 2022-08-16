@@ -44,6 +44,7 @@
 #include <pcl/common/distances.h>
 #include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/common/vector_average.h> // for VectorAverage3f
+#include <vector>
 
 namespace pcl
 {
@@ -240,9 +241,8 @@ RangeImage::doZBuffer (const PointCloudType& point_cloud, float noise_level, flo
   const typename pcl::PointCloud<PointType2>::VectorType &points2 = point_cloud.points;
   
   unsigned int size = width*height;
-  int* counters = new int[size];
-  ERASE_ARRAY (counters, size);
-  
+  std::vector<int> counters(size, 0);
+
   top=height; right=-1; bottom=-1; left=width;
   
   float x_real, y_real, range_of_current_point;
@@ -280,7 +280,7 @@ RangeImage::doZBuffer (const PointCloudType& point_cloud, float noise_level, flo
       if (isInImage (n_x, n_y))
       {
         int neighbor_array_pos = n_y*width + n_x;
-        if (counters[neighbor_array_pos]==0)
+        if (counters[neighbor_array_pos] == 0)
         {
           float& neighbor_range = points[neighbor_array_pos].range;
           neighbor_range = (std::isinf (neighbor_range) ? range_of_current_point : (std::min) (neighbor_range, range_of_current_point));
@@ -325,8 +325,6 @@ RangeImage::doZBuffer (const PointCloudType& point_cloud, float noise_level, flo
       range_at_image_point += (range_of_current_point-range_at_image_point)/counter;
     }
   }
-  
-  delete[] counters;
 }
 
 /////////////////////////////////////////////////////////////////////////

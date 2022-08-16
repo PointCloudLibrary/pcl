@@ -3247,8 +3247,9 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   // If the dataset is dense (no NaNs)
   if (cloud->is_dense)
   {
-    for (vtkIdType i = 0; i < nr_points; ++i, ptr += 3)
-      std::copy (&(*cloud)[i].x, &(*cloud)[i].x + 3, &data[ptr]);
+    for (vtkIdType i = 0; i < nr_points; ++i, ptr += 3) {
+      std::copy(&(*cloud)[i].x, &(*cloud)[i].x + 3, &data[ptr]);
+    }
   }
   else
   {

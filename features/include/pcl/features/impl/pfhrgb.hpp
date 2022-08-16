@@ -151,7 +151,7 @@ pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudO
     // Estimate the PFH signature at each patch
     computePointPFHRGBSignature (*surface_, *normals_, nn_indices, nr_subdiv_, pfhrgb_histogram_);
 
-    std::copy_n (pfhrgb_histogram_.data (), pfhrgb_histogram_.size (),
+    std::copy (pfhrgb_histogram_.data (), pfhrgb_histogram_.data () + pfhrgb_histogram_.size (),
                  output[idx].histogram);
   }
 }

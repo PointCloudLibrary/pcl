@@ -74,7 +74,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::setNonMaxSupression (bool n
 template <typename PointInT, typename PointOutT, typename NormalT> void
 pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::calculateCombinedCovar (const pcl::Indices& neighbors, float* coefficients) const
 {
-  memset (coefficients, 0, sizeof (float) * 21);
+  std::fill_n(coefficients, 21, 0);
   unsigned count = 0;
   for (const auto &neighbor : neighbors)
   {

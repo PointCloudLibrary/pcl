@@ -59,8 +59,9 @@ pcl::io::PointCloudImageExtractor<PointT>::extract (const PointCloud& cloud, pcl
   {
     std::size_t size = img.encoding == "mono16" ? 2 : 3;
     for (std::size_t i = 0; i < cloud.size (); ++i)
-      if (!pcl::isFinite (cloud[i]))
-        std::memset (&img.data[i * size], 0, size);
+      if (!pcl::isFinite (cloud[i])) {
+        std::fill_n(&img.data[i * size], size, 0);
+      }
   }
 
   return (result);

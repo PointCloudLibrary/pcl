@@ -62,7 +62,7 @@ namespace pcl
         HypothesisBase (const ModelLibrary::Model* obj_model, const float* rigid_transform)
         : obj_model_ (obj_model)
         {
-          memcpy (rigid_transform_, rigid_transform, 12*sizeof (float));
+          std::copy(rigid_transform, rigid_transform + 12, rigid_transform_);
         }
 
         virtual  ~HypothesisBase () = default;
@@ -100,7 +100,7 @@ namespace pcl
         const Hypothesis&
         operator =(const Hypothesis& src)
         {
-          memcpy (this->rigid_transform_, src.rigid_transform_, 12*sizeof (float));
+          std::copy(src.rigid_transform_, src.rigid_transform_ + 12, this->rigid_transform_);
           this->obj_model_  = src.obj_model_;
           this->match_confidence_  = src.match_confidence_;
           this->explained_pixels_ = src.explained_pixels_;

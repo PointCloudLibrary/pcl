@@ -109,7 +109,7 @@ namespace pcl
                                              AlignedPointTVector& v)
     {
       v.resize (count);
-      memcpy (v.data (), container_.data () + start, count * sizeof(PointT));
+      std::copy(container_.cbegin() + start, container_.cbegin() + start + count, v.begin());
     }
 
     ////////////////////////////////////////////////////////////////////////////////

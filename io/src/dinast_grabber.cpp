@@ -254,7 +254,7 @@ pcl::DinastGrabber::readImage ()
                                     RGB16 * (image_size_) + sync_packet_size_, &actual_length, 1000);
     if (res != 0 || actual_length == 0)
     {
-      memset (&image_[0], 0x00, image_size_);
+      std::fill_n(image_, image_size_, 0x00);
       PCL_THROW_EXCEPTION (pcl::IOException, "[pcl::DinastGrabber::readImage] USB read error!");
     }
 

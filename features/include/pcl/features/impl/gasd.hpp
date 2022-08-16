@@ -240,7 +240,7 @@ pcl::GASDEstimation<PointInT, PointOutT>::copyShapeHistogramsToOutput (const std
       {
         const std::size_t idx = ( (i + 1) * (grid_size + 2) + (j + 1)) * (grid_size + 2) + (k + 1);
 
-        std::copy (hists[idx].data () + 1, hists[idx].data () + hists_size + 1, output[0].histogram + pos);
+        std::copy (hists[idx].data () + 1, hists[idx].data () + 1 + hists_size, output[0].histogram + pos);
         pos += hists_size;
       }
     }
@@ -326,7 +326,7 @@ pcl::GASDColorEstimation<PointInT, PointOutT>::copyColorHistogramsToOutput (cons
         hists[idx][1] += hists[idx][hists_size + 1];
         hists[idx][hists_size] += hists[idx][0];
 
-        std::copy (hists[idx].data () + 1, hists[idx].data () + hists_size + 1, output[0].histogram + pos);
+        std::copy (hists[idx].data () + 1, hists[idx].data () + 1 + hists_size, output[0].histogram + pos);
         pos += hists_size;
       }
     }

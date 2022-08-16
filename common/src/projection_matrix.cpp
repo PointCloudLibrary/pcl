@@ -49,7 +49,7 @@ pcl::getCameraMatrixFromProjectionMatrix (
   
   Eigen::Matrix3f cam = KR_KRT / KR_KRT.coeff (8);
 
-  memset (&(camera_matrix.coeffRef (0)), 0, sizeof (Eigen::Matrix3f::Scalar) * 9);
+  camera_matrix.setZero();
   camera_matrix.coeffRef (8) = 1.0;
   
   if (camera_matrix.Flags & Eigen::RowMajorBit)

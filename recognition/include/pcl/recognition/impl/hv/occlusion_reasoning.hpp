@@ -192,7 +192,7 @@ pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::computeDepthMap (typename 
       }
     }
 
-    memcpy (depth_, depth_smooth, sizeof(float) * cx_ * cy_);
+    std::copy(depth_smooth, depth_smooth + cx_ * cy_, depth_);
     delete[] depth_smooth;
   }
 }

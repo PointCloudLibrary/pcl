@@ -384,14 +384,14 @@ pcl::PLYReader::vertexAlphaCallback (pcl::io::ply::uint8 alpha)
 {
   a_ = std::uint32_t (alpha);
   // get anscient rgb value and store it in rgba
-  memcpy (&rgba_, 
-          &cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_], 
+  memcpy (&rgba_,
+          &cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_],
           sizeof (pcl::io::ply::float32));
   // append alpha
   rgba_ |= a_ << 24;
   // put rgba back
-  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_], 
-          &rgba_, 
+  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_],
+          &rgba_,
           sizeof (std::uint32_t));
 }
 
