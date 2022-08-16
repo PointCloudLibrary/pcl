@@ -1,13 +1,13 @@
 function(checkVTKComponents)
-  cmake_parse_arguments(PARAM "" "MISSING_COMPONENTS" "COMPONENTS" ${ARGN})
+  cmake_parse_arguments(ARGS "" "MISSING_COMPONENTS" "COMPONENTS" ${ARGN})
   
-  if(PARAM_UNPARSED_ARGUMENTS)
-    message(FATAL_ERROR "Unknown arguments given to checkVTKComponents: ${PARAM_UNPARSED_ARGUMENTS}")
+  if(ARGS_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "Unknown arguments given to checkVTKComponents: ${ARGS_UNPARSED_ARGUMENTS}")
   endif()
 
   set(vtkMissingComponents)
   
-  foreach(vtkComponent ${PARAM_COMPONENTS})
+  foreach(vtkComponent ${ARGS_COMPONENTS})
     if (VTK_VERSION VERSION_LESS 9.0)
       if (NOT TARGET ${vtkComponent})
         list(APPEND vtkMissingComponents ${vtkComponent})
@@ -19,8 +19,8 @@ function(checkVTKComponents)
     endif()
   endforeach()
   
-  if(PARAM_MISSING_COMPONENTS)
-    set(${PARAM_MISSING_COMPONENTS} ${vtkMissingComponents} PARENT_SCOPE)
+  if(ARGS_MISSING_COMPONENTS)
+    set(${ARGS_MISSING_COMPONENTS} ${vtkMissingComponents} PARENT_SCOPE)
   endif()
 endfunction()
 
