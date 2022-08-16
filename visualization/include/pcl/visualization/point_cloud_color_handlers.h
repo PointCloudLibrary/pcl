@@ -83,7 +83,7 @@ namespace pcl
         {}
 
         /** \brief Destructor. */
-        virtual ~PointCloudColorHandler () {}
+        virtual ~PointCloudColorHandler() = default;
 
         /** \brief Check if this handler is capable of handling the input data or not. */
         inline bool
@@ -214,9 +214,6 @@ namespace pcl
           capable_ = true;
         }
 
-        /** \brief Destructor. */
-        virtual ~PointCloudColorHandlerCustom () {};
-
         /** \brief Abstract getName method. */
         virtual std::string
         getName () const { return ("PointCloudColorHandlerCustom"); }
@@ -267,9 +264,6 @@ namespace pcl
           setInputCloud (cloud);
         }
 
-        /** \brief Destructor. */
-        virtual ~PointCloudColorHandlerRGBField () {}
-
         /** \brief Get the name of the field used. */
         virtual std::string
         getFieldName () const { return ("rgb"); }
@@ -314,9 +308,6 @@ namespace pcl
 
         /** \brief Constructor. */
         PointCloudColorHandlerHSVField (const PointCloudConstPtr &cloud);
-      
-        /** \brief Empty destructor */
-        virtual ~PointCloudColorHandlerHSVField () {}
 
         /** \brief Get the name of the field used. */
         virtual std::string
@@ -376,9 +367,6 @@ namespace pcl
           setInputCloud (cloud);
         }
 
-        /** \brief Destructor. */
-        virtual ~PointCloudColorHandlerGenericField () {}
-
         /** \brief Get the name of the field used. */
         virtual std::string getFieldName () const { return (field_name_); }
 
@@ -436,9 +424,6 @@ namespace pcl
         {
           setInputCloud (cloud);
         }
-
-        /** \brief Destructor. */
-        virtual ~PointCloudColorHandlerRGBAField () {}
 
         /** \brief Get the name of the field used. */
         virtual std::string
@@ -502,9 +487,6 @@ namespace pcl
           static_mapping_ = static_mapping;
         }
 
-        /** \brief Destructor. */
-        virtual ~PointCloudColorHandlerLabelField () {}
-
         /** \brief Get the name of the field used. */
         virtual std::string
         getFieldName () const { return ("label"); }
@@ -556,7 +538,7 @@ namespace pcl
         {}
         
         /** \brief Destructor. */
-        virtual ~PointCloudColorHandler () {}
+        virtual ~PointCloudColorHandler() = default;
 
         /** \brief Return whether this handler is capable of handling the input data or not. */
         inline bool
@@ -623,9 +605,6 @@ namespace pcl
         {
           capable_ = true;
         }
-      
-        /** \brief Empty destructor */
-        virtual ~PointCloudColorHandlerRandom () {}
 
         /** \brief Get the name of the class. */
         virtual std::string
@@ -661,9 +640,6 @@ namespace pcl
         {
           capable_ = true;
         }
-      
-        /** \brief Empty destructor */
-        virtual ~PointCloudColorHandlerCustom () {}
 
         /** \brief Get the name of the class. */
         virtual std::string
@@ -700,9 +676,6 @@ namespace pcl
 
         /** \brief Constructor. */
         PointCloudColorHandlerRGBField (const PointCloudConstPtr &cloud);
-      
-        /** \brief Empty destructor */
-        virtual ~PointCloudColorHandlerRGBField () {}
 
         vtkSmartPointer<vtkDataArray>
         getColor () const override;
@@ -735,9 +708,6 @@ namespace pcl
 
         /** \brief Constructor. */
         PointCloudColorHandlerHSVField (const PointCloudConstPtr &cloud);
-      
-        /** \brief Empty destructor */
-        virtual ~PointCloudColorHandlerHSVField () {}
 
         vtkSmartPointer<vtkDataArray>
         getColor () const override;
@@ -778,9 +748,6 @@ namespace pcl
         /** \brief Constructor. */
         PointCloudColorHandlerGenericField (const PointCloudConstPtr &cloud,
                                             const std::string &field_name);
-      
-        /** \brief Empty destructor */
-        virtual ~PointCloudColorHandlerGenericField () {}
 
         vtkSmartPointer<vtkDataArray>
         getColor () const override;
@@ -819,9 +786,6 @@ namespace pcl
         /** \brief Constructor. */
         PointCloudColorHandlerRGBAField (const PointCloudConstPtr &cloud);
 
-        /** \brief Empty destructor */
-        virtual ~PointCloudColorHandlerRGBAField () {}
-
         vtkSmartPointer<vtkDataArray>
         getColor () const override;
 
@@ -856,9 +820,6 @@ namespace pcl
           * \param[in] static_mapping Use a static colormapping from label_id to color (default true) */
         PointCloudColorHandlerLabelField (const PointCloudConstPtr &cloud,
                                           const bool static_mapping = true);
-
-        /** \brief Empty destructor */
-        virtual ~PointCloudColorHandlerLabelField () {}
 
         vtkSmartPointer<vtkDataArray>
         getColor () const override;

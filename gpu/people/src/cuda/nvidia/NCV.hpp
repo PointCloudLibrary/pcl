@@ -402,7 +402,7 @@ struct NCV_EXPORTS NCVMemSegment
 class NCV_EXPORTS INCVMemAllocator
 {
 public:
-    virtual ~INCVMemAllocator() = 0;
+    virtual ~INCVMemAllocator() = default;
 
     virtual NCVStatus alloc(NCVMemSegment &seg, std::size_t size) = 0;
     virtual NCVStatus dealloc(NCVMemSegment &seg) = 0;
@@ -414,9 +414,6 @@ public:
     virtual Ncv32u alignment() const = 0;
     virtual std::size_t maxSize() const = 0;
 };
-
-inline INCVMemAllocator::~INCVMemAllocator() {}
-
 
 /**
 * NCVMemStackAllocator
@@ -514,8 +511,6 @@ public:
     {
         clear();
     }
-
-    virtual ~NCVVector() {}
 
     void clear()
     {
@@ -686,8 +681,6 @@ public:
     {
         clear();
     }
-
-    virtual ~NCVMatrix() {}
 
     void clear()
     {

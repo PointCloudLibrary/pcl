@@ -49,7 +49,6 @@ namespace pcl
       Q_OBJECT
       public:
         VoxelGridDownsampleTool (PropertiesModel* parameter_model, QObject* parent);
-        ~VoxelGridDownsampleTool ();
         
         QList <CloudComposerItem*>
         performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) override;

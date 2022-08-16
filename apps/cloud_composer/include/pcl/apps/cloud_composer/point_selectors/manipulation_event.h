@@ -52,8 +52,6 @@ namespace pcl
         ManipulationEvent () 
         {}
         
-        ~ManipulationEvent ();
-        
         void
         addManipulation (const QString& id, const vtkSmartPointer<vtkMatrix4x4>& start, const vtkSmartPointer<vtkMatrix4x4>& end);
         

@@ -73,7 +73,7 @@ namespace pcl
 
       ColorGradientDOTModality (std::size_t bin_size);
   
-      virtual ~ColorGradientDOTModality ();
+      virtual ~ColorGradientDOTModality () = default;
   
       inline void
       setGradientMagnitudeThreshold (const float threshold)
@@ -139,13 +139,6 @@ template <typename PointInT>
 pcl::ColorGradientDOTModality<PointInT>::
 ColorGradientDOTModality (const std::size_t bin_size)
   : bin_size_ (bin_size), gradient_magnitude_threshold_ (80.0f), color_gradients_ (), dominant_quantized_color_gradients_ ()
-{
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT>
-pcl::ColorGradientDOTModality<PointInT>::
-~ColorGradientDOTModality ()
 {
 }
 

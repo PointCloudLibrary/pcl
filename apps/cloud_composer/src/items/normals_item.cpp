@@ -30,11 +30,6 @@ pcl::cloud_composer::NormalsItem::clone () const
   return new_item;  
 }
 
-pcl::cloud_composer::NormalsItem::~NormalsItem ()
-{
-  
-}
-
 void
 pcl::cloud_composer::NormalsItem::paintView (pcl::visualization::PCLVisualizer::Ptr vis) const
 {

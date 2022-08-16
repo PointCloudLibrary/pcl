@@ -81,10 +81,7 @@ namespace pcl
           ProbabilityProcessor::Ptr     probability_processor_;
 
           /** \brief Class constructor. */
-          PeopleDetector ();
-          
-          /** \brief Class destructor. */
-          ~PeopleDetector () {}                   
+          PeopleDetector ();               
 
           /** \brief User must set non standard intrinsics */
           void

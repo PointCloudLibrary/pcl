@@ -67,12 +67,6 @@ pcl::cloud_composer::CloudItem::clone () const
   return new_item;  
 }
 
-pcl::cloud_composer::CloudItem::~CloudItem ()
-{
-  qDebug () << "Cloud item destructor";
-}
-
-
 void
 pcl::cloud_composer::CloudItem::paintView (pcl::visualization::PCLVisualizer::Ptr vis) const
 {

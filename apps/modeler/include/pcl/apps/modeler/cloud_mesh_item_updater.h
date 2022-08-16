@@ -48,7 +48,6 @@ class CloudMeshItemUpdater : public QObject {
 
 public:
   CloudMeshItemUpdater(CloudMeshItem* cloud_mesh_item);
-  ~CloudMeshItemUpdater();
 
 public Q_SLOTS:
   void

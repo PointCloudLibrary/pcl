@@ -16,11 +16,6 @@ pcl::cloud_composer::FPFHEstimationTool::FPFHEstimationTool (PropertiesModel* pa
   
 }
 
-pcl::cloud_composer::FPFHEstimationTool::~FPFHEstimationTool ()
-{
-  
-}
-
 QList <pcl::cloud_composer::CloudComposerItem*>
 pcl::cloud_composer::FPFHEstimationTool::performAction (ConstItemList input_data, PointTypeFlags::PointType)
 {

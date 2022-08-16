@@ -27,10 +27,6 @@ pcl::cloud_composer::FPFHItem::clone () const
   return new_item;  
 }
 
-pcl::cloud_composer::FPFHItem::~FPFHItem ()
-{  
-}
-
 QMap <QString, QWidget*>
 pcl::cloud_composer::FPFHItem::getInspectorTabs ()
 {  

@@ -48,7 +48,6 @@ public:
                       Qt::WindowFlags flags = Qt::WindowFlags());
   explicit DockWidget(QWidget* parent = nullptr,
                       Qt::WindowFlags flags = Qt::WindowFlags());
-  ~DockWidget();
 
   void
   setFocusBasedStyle(bool focused);

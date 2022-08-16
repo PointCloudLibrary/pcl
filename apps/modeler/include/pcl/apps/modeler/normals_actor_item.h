@@ -49,7 +49,6 @@ public:
   NormalsActorItem(QTreeWidgetItem* parent,
                    const CloudMesh::Ptr& cloud_mesh,
                    const vtkSmartPointer<vtkRenderWindow>& render_window);
-  ~NormalsActorItem();
 
   std::string
   getItemName() const override

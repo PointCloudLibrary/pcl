@@ -15,11 +15,6 @@ pcl::cloud_composer::EuclideanClusteringTool::EuclideanClusteringTool (Propertie
 
 }
 
-pcl::cloud_composer::EuclideanClusteringTool::~EuclideanClusteringTool ()
-{
-
-}
-
 QList <pcl::cloud_composer::CloudComposerItem*>
 pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input_data, PointTypeFlags::PointType)
 {

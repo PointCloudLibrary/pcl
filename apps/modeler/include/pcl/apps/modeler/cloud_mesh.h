@@ -59,7 +59,6 @@ public:
 
   CloudMesh();
   CloudMesh(PointCloudPtr cloud);
-  ~CloudMesh();
 
   PointCloudPtr&
   getCloud()

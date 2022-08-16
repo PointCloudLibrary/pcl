@@ -50,7 +50,6 @@ public:
   ICPRegistrationWorker(CloudMesh::PointCloudPtr cloud,
                         const QList<CloudMeshItem*>& cloud_mesh_items,
                         QWidget* parent = nullptr);
-  ~ICPRegistrationWorker();
 
 protected:
   std::string

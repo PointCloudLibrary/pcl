@@ -26,11 +26,6 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::SelectedTrackballStyleInt
   manipulation_complete_event_ = interactor_events::MANIPULATION_COMPLETE_EVENT;  
 }
 
-pcl::cloud_composer::SelectedTrackballStyleInteractor::~SelectedTrackballStyleInteractor ()
-{
-  
-}
-
 void
 pcl::cloud_composer::SelectedTrackballStyleInteractor::setSelectedActors ()
 {

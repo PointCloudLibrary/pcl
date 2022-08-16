@@ -54,8 +54,6 @@ pcl::gpu::MarchingCubes::MarchingCubes()
   triTable_.upload(&triTable[0][0], 256 * 16);    
 }
 
-pcl::gpu::MarchingCubes::~MarchingCubes() {}
-
 DeviceArray<pcl::gpu::MarchingCubes::PointType> 
 pcl::gpu::MarchingCubes::run(const TsdfVolume& tsdf, DeviceArray<PointType>& triangles_buffer)
 {  

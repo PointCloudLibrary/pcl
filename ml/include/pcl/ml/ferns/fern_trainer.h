@@ -58,9 +58,6 @@ public:
   /** Constructor. */
   FernTrainer();
 
-  /** Destructor. */
-  virtual ~FernTrainer();
-
   /** Sets the feature handler used to create and evaluate features.
    *
    * \param[in] feature_handler the feature handler

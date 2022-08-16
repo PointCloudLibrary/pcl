@@ -50,7 +50,6 @@ namespace pcl
       Q_OBJECT
       public:
         StatisticalOutlierRemovalTool (PropertiesModel* parameter_model, QObject* parent);
-        ~StatisticalOutlierRemovalTool ();
         
         QList <CloudComposerItem*>
         performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) override;

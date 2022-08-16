@@ -87,7 +87,6 @@ namespace pcl
                    bool make_templated_cloud = true);
         
         CloudItem (const CloudItem& to_copy);
-        ~CloudItem ();
         
         /** \brief This creates a CloudItem from a templated cloud type */
         template <typename PointT>

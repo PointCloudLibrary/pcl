@@ -59,7 +59,7 @@ public:
   optimize(GraphHandler<GraphT>& inout_graph) = 0;
 
   /** \brief Empty destructor */
-  virtual ~GraphOptimizer() {}
+  virtual ~GraphOptimizer() = default;
 };
 } // namespace registration
 } // namespace pcl

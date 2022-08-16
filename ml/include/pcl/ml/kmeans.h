@@ -73,9 +73,6 @@ public:
   /** Empty constructor. */
   Kmeans(unsigned int num_points, unsigned int num_dimensions);
 
-  /** This destructor destroys. */
-  ~Kmeans();
-
   /** This method sets the k-means cluster size.
    *
    * \param[in] k number of clusters
