@@ -38,7 +38,7 @@
 
 #pragma once
 
-#include <pcl/outofcore/boost.h>
+#include <boost/filesystem.hpp>
 #include <vector>
 #include <ostream>
 

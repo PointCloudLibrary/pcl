@@ -39,7 +39,6 @@
 #include <pcl/point_types.h>
 #include <pcl/io/oni_grabber.h>
 #include <pcl/io/pcd_io.h>
-#include <vector>
 
 using namespace pcl;
 using namespace pcl::console;

@@ -120,8 +120,8 @@ f.write ("// NOTE: This file has been created with 'pcl_src/geometry/include/pcl
 f.write ('#ifndef PCL_GEOMETRY_MESH_CIRCULATORS_H\n')
 f.write ('#define PCL_GEOMETRY_MESH_CIRCULATORS_H\n\n')
 
-f.write ('#include <pcl/geometry/boost.h>\n')
 f.write ('#include <pcl/geometry/mesh_indices.h>\n\n')
+f.write ('#include <boost/operators.hpp>\n\n')
 
 for c in classes:
 

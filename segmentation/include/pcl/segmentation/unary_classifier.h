@@ -45,7 +45,6 @@
 #include <pcl/point_types.h>
 
 #include <pcl/features/fpfh.h>
-#include <pcl/features/normal_3d.h>
 
 #include <pcl/ml/kmeans.h>
 

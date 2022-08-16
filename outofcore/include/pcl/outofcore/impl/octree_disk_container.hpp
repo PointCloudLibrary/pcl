@@ -46,7 +46,6 @@
 #include <ctime>
 
 // Boost
-#include <pcl/outofcore/boost.h>
 #include <boost/random/bernoulli_distribution.hpp>
 #include <boost/random/uniform_int.hpp>
 #include <boost/uuid/uuid_io.hpp>
