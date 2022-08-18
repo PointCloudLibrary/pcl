@@ -69,13 +69,11 @@ namespace cuda
       return (r == rhs.r && g == rhs.g && b == rhs.b && alpha == rhs.alpha);
     }
 
-    inline __host__ __device__ RGB& operator - (RGB &rhs)
+    inline __host__ __device__ RGB operator - (RGB &rhs)
     {
-      r = -r;
-      g = -g;
-      b = -b;
-      alpha = -alpha;
-      return (*this);
+      RGB res = *this;
+      res -= rhs;
+      return (res);
     }
 
     inline __host__ __device__ RGB& operator += (const RGB &rhs)
