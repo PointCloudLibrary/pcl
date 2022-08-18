@@ -81,16 +81,24 @@ endmacro()
 # they are not being built.
 # _var The cumulative build variable. This will be set to FALSE if the
 #   dependencies are not met.
-# _name The name of the subsystem.
 # ARGN The subsystems and external libraries to depend on.
-macro(PCL_SUBSYS_DEPEND _var _name)
+macro(PCL_SUBSYS_DEPEND _var)
   set(options)
   set(oneValueArgs)
-  set(multiValueArgs DEPS EXT_DEPS OPT_DEPS)
+  set(multiValueArgs DEPS EXT_DEPS OPT_DEPS NAME PARENT_NAME)
   cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
   if(ARGS_UNPARSED_ARGUMENTS)
     message(FATAL_ERROR "Unknown arguments given to PCL_SUBSYS_DEPEND: ${ARGS_UNPARSED_ARGUMENTS}")
+  endif()
+
+  if(NOT ARGS_NAME)
+    message(FATAL_ERROR "PCL_SUBSYS_DEPEND requires parameter NAME!")
+  endif()
+
+  set(_name ${ARGS_NAME})
+  if(ARGS_PARENT_NAME)
+    string(PREPEND _name "${ARGS_PARENT_NAME}_")
   endif()
 
   if(ARGS_DEPS)
@@ -130,59 +138,6 @@ macro(PCL_SUBSYS_DEPEND _var _name)
       foreach(_dep ${ARGS_OPT_DEPS})
         PCL_GET_SUBSYS_INCLUDE_DIR(_include_dir ${_dep})
         include_directories(${PROJECT_SOURCE_DIR}/${_include_dir}/include)
-      endforeach()
-    endif()
-  endif()
-endmacro()
-
-###############################################################################
-# Make one subsystem depend on one or more other subsystems, and disable it if
-# they are not being built.
-# _var The cumulative build variable. This will be set to FALSE if the
-#   dependencies are not met.
-# _parent The parent subsystem name.
-# _name The name of the subsubsystem.
-# ARGN The subsystems and external libraries to depend on.
-macro(PCL_SUBSUBSYS_DEPEND _var _parent _name)
-  set(options)
-  set(parentArg)
-  set(multiValueArgs DEPS EXT_DEPS OPT_DEPS)
-  cmake_parse_arguments(ARGS "${options}" "${parentArg}" "${multiValueArgs}" ${ARGN})
-
-  if(ARGS_UNPARSED_ARGUMENTS)
-    message(FATAL_ERROR "Unknown arguments given to PCL_SUBSUBSYS_DEPEND: ${ARGS_UNPARSED_ARGUMENTS}")
-  endif()
-
-  if(ARGS_DEPS)
-    SET_IN_GLOBAL_MAP(PCL_SUBSYS_DEPS ${_parent}_${_name} "${ARGS_DEPS}")
-  endif()
-  if(ARGS_EXT_DEPS)
-    SET_IN_GLOBAL_MAP(PCL_SUBSYS_EXT_DEPS ${_parent}_${_name} "${ARGS_EXT_DEPS}")
-  endif()
-  if(ARGS_OPT_DEPS)
-    SET_IN_GLOBAL_MAP(PCL_SUBSYS_OPT_DEPS ${_parent}_${_name} "${ARGS_OPT_DEPS}")
-  endif()
-  GET_IN_MAP(subsys_status PCL_SUBSYS_HYPERSTATUS ${_parent}_${_name})
-  if(${_var} AND (NOT ("${subsys_status}" STREQUAL "AUTO_OFF")))
-    if(ARGS_DEPS)
-      foreach(_dep ${ARGS_DEPS})
-        PCL_GET_SUBSYS_STATUS(_status ${_dep})
-        if(NOT _status)
-          set(${_var} FALSE)
-          PCL_SET_SUBSYS_STATUS(${_parent}_${_name} FALSE "Requires ${_dep}.")
-        else()
-          PCL_GET_SUBSYS_INCLUDE_DIR(_include_dir ${_dep})
-          include_directories(${PROJECT_SOURCE_DIR}/${_include_dir}/include)
-        endif()
-      endforeach()
-    endif()
-    if(ARGS_EXT_DEPS)
-      foreach(_dep ${ARGS_EXT_DEPS})
-        string(TOUPPER "${_dep}_found" EXT_DEP_FOUND)
-        if(NOT ${EXT_DEP_FOUND})
-          set(${_var} FALSE)
-          PCL_SET_SUBSYS_STATUS(${_parent}_${_name} FALSE "Requires external library ${_dep}.")
-        endif()
       endforeach()
     endif()
   endif()
