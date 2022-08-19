@@ -313,7 +313,7 @@ endif()
 find_package(Threads REQUIRED)
 
 # Eigen (required)
-find_package(Eigen 3.1 REQUIRED)
+find_package(Eigen 3.3 REQUIRED)
 include_directories(SYSTEM ${EIGEN_INCLUDE_DIRS})
 
 # FLANN (required)
