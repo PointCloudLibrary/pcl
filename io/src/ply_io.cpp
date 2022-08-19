@@ -857,7 +857,7 @@ pcl::PLYWriter::writeASCII (const std::string &file_name,
   }
 
   unsigned int nr_points  = cloud.width * cloud.height;
-  unsigned int point_size = static_cast<unsigned int> (cloud.data.size () / nr_points);
+  auto point_size = static_cast<unsigned int> (cloud.data.size () / nr_points);
 
   // Write the header information if available
   if (use_camera)
@@ -1188,7 +1188,7 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
   }
 
   unsigned int nr_points  = cloud.width * cloud.height;
-  unsigned int point_size = static_cast<unsigned int> (cloud.data.size () / nr_points);
+  auto point_size = static_cast<unsigned int> (cloud.data.size () / nr_points);
 
   // Compute the range_grid, if necessary, and then write out the PLY header
   bool doRangeGrid = !use_camera && cloud.height > 1;
@@ -1681,7 +1681,7 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
   // Write down faces
   for (const pcl::Vertices& polygon : mesh.polygons)
   {
-    unsigned char value = static_cast<unsigned char> (polygon.vertices.size ());
+    auto value = static_cast<unsigned char> (polygon.vertices.size ());
     fpout.write (reinterpret_cast<const char*> (&value), sizeof (unsigned char));
     for (const int value : polygon.vertices)
     {

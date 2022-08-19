@@ -78,7 +78,7 @@ void cJSON_InitHooks(cJSON_Hooks* hooks)
 /* Internal constructor. */
 static cJSON *cJSON_New_Item()
 {
-	cJSON* node = static_cast<cJSON*> (cJSON_malloc(sizeof(cJSON)));
+	auto* node = static_cast<cJSON*> (cJSON_malloc(sizeof(cJSON)));
 	if (node) memset(node,0,sizeof(cJSON));
 	return node;
 }

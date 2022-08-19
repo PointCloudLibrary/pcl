@@ -409,8 +409,8 @@ pcl::people::HOG::grad1 (float *I, float *Gx, float *Gy, int h, int w, int x) co
       *Gx++ = (*In++ - *Ip++) * r;
   } else {
     _G = (__m128*) Gx;
-    __m128 *_Ip = (__m128*) Ip;
-    __m128 *_In = (__m128*) In;
+    auto *_Ip = (__m128*) Ip;
+    auto *_In = (__m128*) In;
     _r = pcl::sse_set(r);
     for(y = 0; y < h; y += 4)
       *_G++ = pcl::sse_mul(pcl::sse_sub(*_In++,*_Ip++), _r);

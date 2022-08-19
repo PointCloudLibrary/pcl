@@ -544,7 +544,7 @@ protected:
   BranchNode*
   createBranchChild(BranchNode& branch_arg, unsigned char child_idx_arg)
   {
-    BranchNode* new_branch_child = new BranchNode();
+    auto* new_branch_child = new BranchNode();
     branch_arg[child_idx_arg] = static_cast<OctreeNode*>(new_branch_child);
 
     return new_branch_child;
@@ -558,7 +558,7 @@ protected:
   LeafNode*
   createLeafChild(BranchNode& branch_arg, unsigned char child_idx_arg)
   {
-    LeafNode* new_leaf_child = new LeafNode();
+    auto* new_leaf_child = new LeafNode();
     branch_arg[child_idx_arg] = static_cast<OctreeNode*>(new_leaf_child);
 
     return new_leaf_child;

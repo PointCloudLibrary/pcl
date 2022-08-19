@@ -184,7 +184,7 @@ public:
   bool
   operator==(const OctreeContainerBase& other) const override
   {
-    const OctreeContainerPointIndex* otherConDataT =
+    const auto* otherConDataT =
         dynamic_cast<const OctreeContainerPointIndex*>(&other);
 
     return (this->data_ == otherConDataT->data_);
@@ -263,7 +263,7 @@ public:
   bool
   operator==(const OctreeContainerBase& other) const override
   {
-    const OctreeContainerPointIndices* otherConDataTVec =
+    const auto* otherConDataTVec =
         dynamic_cast<const OctreeContainerPointIndices*>(&other);
 
     return (this->leafDataTVector_ == otherConDataTVec->leafDataTVector_);

@@ -178,7 +178,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldMono)
   pcie.setColorMode (pcie.COLORS_MONO);
 
   ASSERT_TRUE (pcie.extract (cloud, image));
-  unsigned short* data = reinterpret_cast<unsigned short*> (&image.data[0]);
+  auto* data = reinterpret_cast<unsigned short*> (&image.data[0]);
 
   EXPECT_EQ ("mono16", image.encoding);
   EXPECT_EQ (cloud.width, image.width);
@@ -279,7 +279,7 @@ TEST (PCL, PointCloudImageExtractorFromZField)
   PointCloudImageExtractorFromZField<PointT> pcie;
 
   ASSERT_TRUE (pcie.extract (cloud, image));
-  unsigned short* data = reinterpret_cast<unsigned short*> (&image.data[0]);
+  auto* data = reinterpret_cast<unsigned short*> (&image.data[0]);
 
   EXPECT_EQ ("mono16", image.encoding);
   EXPECT_EQ (cloud.width, image.width);
@@ -309,7 +309,7 @@ TEST (PCL, PointCloudImageExtractorFromCurvatureField)
   PointCloudImageExtractorFromCurvatureField<PointT> pcie;
 
   ASSERT_TRUE (pcie.extract (cloud, image));
-  unsigned short* data = reinterpret_cast<unsigned short*> (&image.data[0]);
+  auto* data = reinterpret_cast<unsigned short*> (&image.data[0]);
 
   EXPECT_EQ ("mono16", image.encoding);
   EXPECT_EQ (cloud.width, image.width);
@@ -341,7 +341,7 @@ TEST (PCL, PointCloudImageExtractorFromIntensityField)
   PointCloudImageExtractorFromIntensityField<PointT> pcie;
 
   ASSERT_TRUE (pcie.extract (cloud, image));
-  unsigned short* data = reinterpret_cast<unsigned short*> (&image.data[0]);
+  auto* data = reinterpret_cast<unsigned short*> (&image.data[0]);
 
   EXPECT_EQ ("mono16", image.encoding);
   EXPECT_EQ (cloud.width, image.width);
@@ -412,7 +412,7 @@ TEST (PCL, PointCloudImageExtractorBlackNaNs)
   ASSERT_TRUE (pcie.extract (cloud, image));
 
   {
-    unsigned short* data = reinterpret_cast<unsigned short*> (&image.data[0]);
+    auto* data = reinterpret_cast<unsigned short*> (&image.data[0]);
     EXPECT_EQ (std::numeric_limits<unsigned short>::max (), data[3]);
   }
 
@@ -421,7 +421,7 @@ TEST (PCL, PointCloudImageExtractorBlackNaNs)
   ASSERT_TRUE (pcie.extract (cloud, image));
 
   {
-    unsigned short* data = reinterpret_cast<unsigned short*> (&image.data[0]);
+    auto* data = reinterpret_cast<unsigned short*> (&image.data[0]);
     EXPECT_EQ (0, data[3]);
   }
 }

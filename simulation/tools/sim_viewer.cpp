@@ -237,7 +237,7 @@ void
 capture(Eigen::Isometry3d pose_in)
 {
   // No reference image - but this is kept for compatibility with range_test_v2:
-  float* reference =
+  auto* reference =
       new float[range_likelihood_->getRowHeight() * range_likelihood_->getColWidth()];
   const float* depth_buffer = range_likelihood_->getDepthBuffer();
   // Copy one image from our last as a reference.

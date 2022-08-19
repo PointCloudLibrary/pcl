@@ -299,7 +299,7 @@ pcl::keypoints::agast::AbstractAgastDetector::computeCornerScores (
   const std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all,
   std::vector<ScoreIndex> &scores) const
 {
-  unsigned int num_corners = static_cast<unsigned int> (corners_all.size ());
+  auto num_corners = static_cast<unsigned int> (corners_all.size ());
 
   if (num_corners > scores.capacity ())
   {
@@ -329,7 +329,7 @@ pcl::keypoints::agast::AbstractAgastDetector::computeCornerScores (
   const std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all,
   std::vector<ScoreIndex> &scores) const
 {
-  unsigned int num_corners = static_cast<unsigned int> (corners_all.size ());
+  auto num_corners = static_cast<unsigned int> (corners_all.size ());
 
   if (num_corners > scores.capacity ())
   {

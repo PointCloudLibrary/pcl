@@ -225,7 +225,7 @@ namespace pcl
            // grayscale conversion
            for (std::size_t i = 0; i < size; ++i)
            {
-             std::uint8_t grayvalue = static_cast<std::uint8_t>(0.2989 * static_cast<float>(colorImage_arg[i*3+0]) +
+             auto grayvalue = static_cast<std::uint8_t>(0.2989 * static_cast<float>(colorImage_arg[i*3+0]) +
                                                       0.5870 * static_cast<float>(colorImage_arg[i*3+1]) +
                                                       0.1140 * static_cast<float>(colorImage_arg[i*3+2]));
              monoImage.push_back(grayvalue);

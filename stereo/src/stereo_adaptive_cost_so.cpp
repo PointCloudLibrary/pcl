@@ -58,15 +58,15 @@ pcl::AdaptiveCostSOStereoMatching::compute_impl(unsigned char* ref_img,
   // int n = radius_ * 2 + 1;
   // int sad_max = std::numeric_limits<int>::max ();
 
-  float** acc = new float*[width_];
+  auto** acc = new float*[width_];
   for (int d = 0; d < width_; d++) {
     acc[d] = new float[max_disp_];
     memset(acc[d], 0, sizeof(float) * max_disp_);
   }
 
   // data structures for Scanline Optimization
-  float** fwd = new float*[width_];
-  float** bck = new float*[width_];
+  auto** fwd = new float*[width_];
+  auto** bck = new float*[width_];
   for (int d = 0; d < width_; d++) {
     fwd[d] = new float[max_disp_];
     memset(fwd[d], 0, sizeof(float) * max_disp_);
@@ -75,7 +75,7 @@ pcl::AdaptiveCostSOStereoMatching::compute_impl(unsigned char* ref_img,
   }
 
   // spatial distance init
-  float* ds = new float[2 * radius_ + 1];
+  auto* ds = new float[2 * radius_ + 1];
   for (int j = -radius_; j <= radius_; j++)
     ds[j + radius_] = static_cast<float>(std::exp(-std::abs(j) / gamma_s_));
 
@@ -85,7 +85,7 @@ pcl::AdaptiveCostSOStereoMatching::compute_impl(unsigned char* ref_img,
     lut[j] = float(std::exp(-j / gamma_c_));
 
   // left weight array alloc
-  float* wl = new float[2 * radius_ + 1];
+  auto* wl = new float[2 * radius_ + 1];
 
   for (int y = radius_ + 1; y < height_ - radius_; y++) {
     for (int x = x_off_ + max_disp_ + 1; x < width_; x++) {

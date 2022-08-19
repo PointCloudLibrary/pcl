@@ -160,7 +160,7 @@ pcl::PPFRGBRegionEstimation<PointInT, PointNT, PointOutT>::computeFeature (Point
       }
     }
 
-    float normalization_factor = static_cast<float> (nn_indices.size ());
+    auto normalization_factor = static_cast<float> (nn_indices.size ());
     average_feature_nn.f1 /= normalization_factor;
     average_feature_nn.f2 /= normalization_factor;
     average_feature_nn.f3 /= normalization_factor;

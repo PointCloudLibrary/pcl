@@ -120,7 +120,7 @@ namespace pcl
       return;
     }
 
-    const float diff = static_cast <float> (max - min);
+    const auto diff = static_cast <float> (max - min);
     out.s = diff / static_cast <float> (max);
 
     if (min == max) // diff == 0 -> division by zero
@@ -209,7 +209,7 @@ namespace pcl
       return;
     }
 
-    const float diff = static_cast <float> (max - min);
+    const auto diff = static_cast <float> (max - min);
     out.s = diff / static_cast <float> (max);
 
     if (min == max) // diff == 0 -> division by zero

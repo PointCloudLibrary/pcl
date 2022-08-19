@@ -70,7 +70,7 @@ pcl::visualization::PCLPainter2D::addLine (float x1, float y1, float x2, float y
   line[2] = x2;
   line[3] = y2;
 
-  FPolyLine2D *pline = new FPolyLine2D(line, current_pen_, current_brush_, current_transform_);
+  auto *pline = new FPolyLine2D(line, current_pen_, current_brush_, current_transform_);
   figures_.push_back (pline);
 }
 
@@ -332,7 +332,7 @@ pcl::visualization::PCLPainter2D::setBackgroundColor (const double color[3])
 double*
 pcl::visualization::PCLPainter2D::getBackgroundColor ()
 {
-  double *bc = new double[3];
+  auto *bc = new double[3];
   bc[0] = bkg_color_[0];
   bc[1] = bkg_color_[1];
   bc[2] = bkg_color_[2];

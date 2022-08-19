@@ -135,7 +135,7 @@ pcl::MTLReader::fillRGBfromRGB (const std::vector<std::string>& split_line,
 std::vector<pcl::TexMaterial>::const_iterator
 pcl::MTLReader::getMaterial (const std::string& material_name) const
 {
-  std::vector<pcl::TexMaterial>::const_iterator mat_it = materials_.begin ();
+  auto mat_it = materials_.begin ();
   for (; mat_it != materials_.end (); ++mat_it)
     if (mat_it->tex_name == material_name)
       break;
@@ -562,7 +562,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
         {
           for (int i = 1, f = 0; i < 4; ++i, ++f)
           {
-            float value = boost::lexical_cast<float> (st[i]);
+            auto value = boost::lexical_cast<float> (st[i]);
             memcpy (&cloud.data[point_idx * cloud.point_step + cloud.fields[f].offset],
                 &value,
                 sizeof (float));
@@ -591,7 +591,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
         {
           for (int i = 1, f = normal_x_field; i < 4; ++i, ++f)
           {
-            float value = boost::lexical_cast<float> (st[i]);
+            auto value = boost::lexical_cast<float> (st[i]);
             memcpy (&cloud.data[normal_idx * cloud.point_step + cloud.fields[f].offset],
                 &value,
                 sizeof (float));
@@ -700,7 +700,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
         {
           for (int i = 1, f = 0; i < 4; ++i, ++f)
           {
-            float value = boost::lexical_cast<float> (st[i]);
+            auto value = boost::lexical_cast<float> (st[i]);
             memcpy (&mesh.cloud.data[v_idx * mesh.cloud.point_step + mesh.cloud.fields[f].offset],
                 &value,
                 sizeof (float));
@@ -721,7 +721,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
         {
           for (int i = 1, f = normal_x_field; i < 4; ++i, ++f)
           {
-            float value = boost::lexical_cast<float> (st[i]);
+            auto value = boost::lexical_cast<float> (st[i]);
             memcpy (&mesh.cloud.data[vn_idx * mesh.cloud.point_step + mesh.cloud.fields[f].offset],
                 &value,
                 sizeof (float));
@@ -895,7 +895,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
         {
           for (int i = 1, f = 0; i < 4; ++i, ++f)
           {
-            float value = boost::lexical_cast<float> (st[i]);
+            auto value = boost::lexical_cast<float> (st[i]);
             memcpy (&mesh.cloud.data[v_idx * mesh.cloud.point_step + mesh.cloud.fields[f].offset],
                 &value,
                 sizeof (float));
@@ -917,7 +917,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
         {
           for (int i = 1, f = normal_x_field; i < 4; ++i, ++f)
           {
-            float value = boost::lexical_cast<float> (st[i]);
+            auto value = boost::lexical_cast<float> (st[i]);
             memcpy (&mesh.cloud.data[vn_idx * mesh.cloud.point_step + mesh.cloud.fields[f].offset],
                 &value,
                 sizeof (float));
@@ -986,10 +986,10 @@ pcl::io::saveOBJFile (const std::string &file_name,
   /* Write 3D information */
   // number of points
   unsigned nr_points  = tex_mesh.cloud.width * tex_mesh.cloud.height;
-  unsigned point_size = static_cast<unsigned> (tex_mesh.cloud.data.size () / nr_points);
+  auto point_size = static_cast<unsigned> (tex_mesh.cloud.data.size () / nr_points);
 
   // mesh size
-  unsigned nr_meshes = static_cast<unsigned> (tex_mesh.tex_polygons.size ());
+  auto nr_meshes = static_cast<unsigned> (tex_mesh.tex_polygons.size ());
   // number of faces for header
   unsigned nr_faces = 0;
   for (unsigned m = 0; m < nr_meshes; ++m)
@@ -1169,9 +1169,9 @@ pcl::io::saveOBJFile (const std::string &file_name,
   // number of points
   int nr_points  = mesh.cloud.width * mesh.cloud.height;
   // point size
-  unsigned point_size = static_cast<unsigned> (mesh.cloud.data.size () / nr_points);
+  auto point_size = static_cast<unsigned> (mesh.cloud.data.size () / nr_points);
   // number of faces for header
-  unsigned nr_faces = static_cast<unsigned> (mesh.polygons.size ());
+  auto nr_faces = static_cast<unsigned> (mesh.polygons.size ());
   // Do we have vertices normals?
   int normal_index = getFieldIndex (mesh.cloud, "normal_x");
 

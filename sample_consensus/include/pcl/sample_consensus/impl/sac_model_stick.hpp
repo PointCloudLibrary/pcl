@@ -114,7 +114,7 @@ pcl::SampleConsensusModelStick<PointT>::getDistancesToModel (
     return;
   }
 
-  float sqr_threshold = static_cast<float> (radius_max_ * radius_max_);
+  auto sqr_threshold = static_cast<float> (radius_max_ * radius_max_);
   distances.resize (indices_->size ());
 
   // Obtain the line point and direction
@@ -154,7 +154,7 @@ pcl::SampleConsensusModelStick<PointT>::selectWithinDistance (
     return;
   }
 
-  float sqr_threshold = static_cast<float> (threshold * threshold);
+  auto sqr_threshold = static_cast<float> (threshold * threshold);
 
   inliers.clear ();
   error_sqr_dists_.clear ();
@@ -204,7 +204,7 @@ pcl::SampleConsensusModelStick<PointT>::countWithinDistance (
     return (0);
   }
 
-  float sqr_threshold = static_cast<float> (threshold * threshold);
+  auto sqr_threshold = static_cast<float> (threshold * threshold);
 
   std::size_t nr_i = 0, nr_o = 0;
 
@@ -388,7 +388,7 @@ pcl::SampleConsensusModelStick<PointT>::doSamplesVerifyModel (
   //Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
   line_dir.normalize ();
 
-  float sqr_threshold = static_cast<float> (threshold * threshold);
+  auto sqr_threshold = static_cast<float> (threshold * threshold);
   // Iterate through the 3d points and calculate the distances from them to the line
   for (const auto &index : indices)
   {

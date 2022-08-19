@@ -233,7 +233,7 @@ outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octr
   Scene *scene = Scene::instance ();
 
   // Clouds
-  OutofcoreCloud *cloud = new OutofcoreCloud ("my_octree", tree_root);
+  auto *cloud = new OutofcoreCloud ("my_octree", tree_root);
   cloud->setDisplayDepth (depth);
   cloud->setDisplayVoxels (display_octree);
   OutofcoreCloud::cloud_data_cache.setCapacity(gpu_cache_size*1024);
@@ -269,8 +269,8 @@ outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octr
   Viewport persp_viewport (window, 0.5, 0.0, 1.0, 1.0);
 
   // Cameras
-  Camera *persp_camera = new Camera ("persp", persp_viewport.getRenderer ()->GetActiveCamera ());
-  Camera *octree_camera = new Camera ("octree", octree_viewport.getRenderer ()->GetActiveCamera ());
+  auto *persp_camera = new Camera ("persp", persp_viewport.getRenderer ()->GetActiveCamera ());
+  auto *octree_camera = new Camera ("octree", octree_viewport.getRenderer ()->GetActiveCamera ());
   scene->addCamera (persp_camera);
   scene->addCamera (octree_camera);
   octree_camera->setDisplay(true);

@@ -544,7 +544,7 @@ pcl::console::parse_multiple_arguments (int argc, const char * const * argv, con
     // Search for the string
     if ((strcmp (argv[i], str) == 0) && (++i < argc))
     {
-      float val = static_cast<float> (atof (argv[i]));
+      auto val = static_cast<float> (atof (argv[i]));
       values.push_back (val);
     }
   }

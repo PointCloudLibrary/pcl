@@ -199,7 +199,7 @@ main (int argc, char** argv)
   pcl::removeNaNFromPointCloud (*cloud, *cloud, tmp_indices);
   
   // parse optional input arguments from the command line
-  float normal_radius_search = static_cast<float> (default_normal_radius_search);
+  auto normal_radius_search = static_cast<float> (default_normal_radius_search);
 
   // Command line parsing
   float leaf_x = default_leaf_size,

@@ -162,7 +162,7 @@ pcl::visualization::FloatImageUtils::getVisualImage (const float* float_image, i
   //std::cout << "Image is of size "<<width<<"x"<<height<<"\n";
   int size = width*height;
   int arraySize = 3 * size;
-  unsigned char* data = new unsigned char[arraySize];
+  auto* data = new unsigned char[arraySize];
   unsigned char* dataPtr = data;
   
   bool recalculateMinValue = std::isinf (min_value),
@@ -222,7 +222,7 @@ pcl::visualization::FloatImageUtils::getVisualImage (const unsigned short* short
   //std::cout << "Image is of size "<<width<<"x"<<height<<"\n";
   int size = width*height;
   int arraySize = 3 * size;
-  unsigned char* data = new unsigned char[arraySize];
+  auto* data = new unsigned char[arraySize];
   unsigned char* dataPtr = data;
   
   float factor = 1.0f / float (max_value - min_value), offset = float (-min_value);
@@ -255,7 +255,7 @@ pcl::visualization::FloatImageUtils::getVisualAngleImage (const float* angle_ima
 {
   int size = width*height;
   int arraySize = 3 * size;
-  unsigned char* data = new unsigned char[arraySize];
+  auto* data = new unsigned char[arraySize];
   unsigned char* dataPtr = data;
   
   for (int i=0; i<size; ++i) 
@@ -274,7 +274,7 @@ pcl::visualization::FloatImageUtils::getVisualHalfAngleImage (const float* angle
 {
   int size = width*height;
   int arraySize = 3 * size;
-  unsigned char* data = new unsigned char[arraySize];
+  auto* data = new unsigned char[arraySize];
   unsigned char* dataPtr = data;
   
   for (int i=0; i<size; ++i) 

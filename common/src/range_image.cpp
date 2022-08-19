@@ -279,7 +279,7 @@ float*
 RangeImage::getRangesArray () const 
 {
   int arraySize = width * height;
-  float* ranges = new float[arraySize];
+  auto* ranges = new float[arraySize];
   for (int i=0; i<arraySize; ++i)
     ranges[i] = points[i].range;
   return ranges;
@@ -465,7 +465,7 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
   Eigen::Affine3f inverse_pose = pose.inverse (Eigen::Isometry);
   
   int no_of_pixels = pixel_size*pixel_size;
-  float* surface_patch = new float[no_of_pixels];
+  auto* surface_patch = new float[no_of_pixels];
   SET_ARRAY (surface_patch, -std::numeric_limits<float>::infinity (), no_of_pixels);
   
   Eigen::Vector3f position = inverse_pose.translation ();
@@ -754,7 +754,7 @@ RangeImage::getImpactAngleImageBasedOnLocalNormals (int radius) const
 {
   MEASURE_FUNCTION_TIME;
   int size = width*height;
-  float* impact_angle_image = new float[size];
+  auto* impact_angle_image = new float[size];
   for (int y=0; y<int (height); ++y)
   {
     for (int x=0; x<int (width); ++x)

@@ -80,9 +80,9 @@ randomPointTriangle (float a1, float a2, float a3, float b1, float b2, float b3,
 inline void
 randPSurface (vtkPolyData * polydata, std::vector<double> * cumulativeAreas, double totalArea, Eigen::Vector3f& p, bool calcNormal, Eigen::Vector3f& n, bool calcColor, Eigen::Vector3f& c)
 {
-  float r = static_cast<float> (uniform_deviate (rand ()) * totalArea);
+  auto r = static_cast<float> (uniform_deviate (rand ()) * totalArea);
 
-  std::vector<double>::iterator low = std::lower_bound (cumulativeAreas->begin (), cumulativeAreas->end (), r);
+  auto low = std::lower_bound (cumulativeAreas->begin (), cumulativeAreas->end (), r);
   vtkIdType el = vtkIdType (low - cumulativeAreas->begin ());
 
   double A[3], B[3], C[3];
@@ -101,8 +101,8 @@ randPSurface (vtkPolyData * polydata, std::vector<double> * cumulativeAreas, dou
     n = v1.cross (v2);
     n.normalize ();
   }
-  float r1 = static_cast<float> (uniform_deviate (rand ()));
-  float r2 = static_cast<float> (uniform_deviate (rand ()));
+  auto r1 = static_cast<float> (uniform_deviate (rand ()));
+  auto r2 = static_cast<float> (uniform_deviate (rand ()));
   randomPointTriangle (float (A[0]), float (A[1]), float (A[2]),
                        float (B[0]), float (B[1]), float (B[2]),
                        float (C[0]), float (C[1]), float (C[2]), r1, r2, p);

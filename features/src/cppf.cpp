@@ -57,7 +57,7 @@
       return;
     }
 
-    const float diff = static_cast <float> (max - min);
+    const auto diff = static_cast <float> (max - min);
     out[1] = diff / static_cast <float> (max);
 
     if (min == max) // diff == 0 -> division by zero

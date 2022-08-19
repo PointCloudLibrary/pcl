@@ -189,9 +189,9 @@ main (int argc, char** argv)
   pcl::removeNaNFromPointCloud (*cloud, *cloud, tmp_indices);
   
   // parse optional input arguments from the command line
-  float normal_radius_search = static_cast<float> (default_normal_radius_search);
-  float fpfh_radius_search = static_cast<float> (default_fpfh_radius_search);
-  float feature_threshold = static_cast<float> (default_feature_threshold);
+  auto normal_radius_search = static_cast<float> (default_normal_radius_search);
+  auto fpfh_radius_search = static_cast<float> (default_fpfh_radius_search);
+  auto feature_threshold = static_cast<float> (default_feature_threshold);
   std::string dir_name;
 
   parse_argument (argc, argv, "-d", dir_name);

@@ -290,8 +290,8 @@ pcl::search::OrganizedNeighbor<PointT>::getProjectedRadiusSearchBox (const Point
   }
   else
   {
-    float y1 = static_cast<float> ((b - std::sqrt (det)) / a);
-    float y2 = static_cast<float> ((b + std::sqrt (det)) / a);
+    auto y1 = static_cast<float> ((b - std::sqrt (det)) / a);
+    auto y2 = static_cast<float> ((b + std::sqrt (det)) / a);
 
     min = std::min (static_cast<int> (std::floor (y1)), static_cast<int> (std::floor (y2)));
     max = std::max (static_cast<int> (std::ceil (y1)), static_cast<int> (std::ceil (y2)));
@@ -310,8 +310,8 @@ pcl::search::OrganizedNeighbor<PointT>::getProjectedRadiusSearchBox (const Point
   }
   else
   {
-    float x1 = static_cast<float> ((b - std::sqrt (det)) / a);
-    float x2 = static_cast<float> ((b + std::sqrt (det)) / a);
+    auto x1 = static_cast<float> ((b - std::sqrt (det)) / a);
+    auto x2 = static_cast<float> ((b + std::sqrt (det)) / a);
 
     min = std::min (static_cast<int> (std::floor (x1)), static_cast<int> (std::floor (x2)));
     max = std::max (static_cast<int> (std::ceil (x1)), static_cast<int> (std::ceil (x2)));

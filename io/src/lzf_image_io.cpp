@@ -116,7 +116,7 @@ pcl::io::LZFImageWriter::compress (const char* input,
                                    char *output)
 {
   static const int header_size = LZF_HEADER_SIZE;
-  float finput_size = static_cast<float> (uncompressed_size);
+  auto finput_size = static_cast<float> (uncompressed_size);
   unsigned int compressed_size = pcl::lzfCompress (input,
                                                    uncompressed_size,
                                                    &output[header_size],

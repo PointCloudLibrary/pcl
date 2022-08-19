@@ -687,7 +687,7 @@ LineRGBD<PointXYZT, PointRGBT>::refineDetectionsAlongDepth ()
 
         if (/*std::isfinite (point.x) && std::isfinite (point.y) && */std::isfinite (point.z))
         {
-          const std::size_t bin_index = static_cast<std::size_t> ((point.z - min_depth) / step_size);
+          const auto bin_index = static_cast<std::size_t> ((point.z - min_depth) / step_size);
           ++depth_bins[bin_index];
         }
       }
@@ -701,7 +701,7 @@ LineRGBD<PointXYZT, PointRGBT>::refineDetectionsAlongDepth ()
       integral_depth_bins[bin_index] = depth_bins[bin_index] + integral_depth_bins[bin_index-1];
     }
 
-    const std::size_t bb_depth_range = static_cast<std::size_t> (detection.bounding_box.depth / step_size);
+    const auto bb_depth_range = static_cast<std::size_t> (detection.bounding_box.depth / step_size);
 
     std::size_t max_nr_points = 0;
     std::size_t max_index = 0;

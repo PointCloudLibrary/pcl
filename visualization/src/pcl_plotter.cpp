@@ -104,8 +104,8 @@ pcl::visualization::PCLPlotter::addPlotData (
   current_plot_++;
   
   //creating a permanent copy of the arrays
-  double *permanent_X = new double[size];
-  double *permanent_Y = new double[size];
+  auto *permanent_X = new double[size];
+  auto *permanent_Y = new double[size];
   memcpy(permanent_X, array_X, size*sizeof(double));
   memcpy(permanent_Y, array_Y, size*sizeof(double));
   
@@ -157,8 +157,8 @@ pcl::visualization::PCLPlotter::addPlotData (
     int type, 
     std::vector<char> const &color)
 {
-  double *array_x = new double[plot_data.size ()];
-  double *array_y = new double[plot_data.size ()];
+  auto *array_x = new double[plot_data.size ()];
+  auto *array_y = new double[plot_data.size ()];
 
   for (std::size_t i = 0; i < plot_data.size (); i++)
   {
@@ -479,7 +479,7 @@ pcl::visualization::PCLPlotter::setBackgroundColor (const double color[3])
 double*
 pcl::visualization::PCLPlotter::getBackgroundColor ()
 {
-  double *bc = new double[3];
+  auto *bc = new double[3];
   bc[0] = bkg_color_[0];
   bc[1] = bkg_color_[1];
   bc[2] = bkg_color_[2];
@@ -611,7 +611,7 @@ pcl::visualization::PCLPlotter::computeHistogram (
   {
     if (std::isfinite (value))
     {
-      unsigned int index = (unsigned int) (std::floor ((value - min) / size));
+      auto index = (unsigned int) (std::floor ((value - min) / size));
       if (index == (unsigned int) nbins) index = nbins - 1; //including right boundary
       histogram[index].second++;
     }

@@ -255,7 +255,7 @@ update (CallbackParameters* params)
   int i = 0;
 
   // Show the hypotheses
-  for ( std::list<ObjRecRANSAC::Output>::iterator it = rec_output.begin () ; it != rec_output.end () ; ++it, ++i )
+  for ( auto it = rec_output.begin () ; it != rec_output.end () ; ++it, ++i )
   {
     std::cout << it->object_name_ << " has a confidence value of " << it->match_confidence_ << std::endl;
 

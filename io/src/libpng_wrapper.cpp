@@ -55,7 +55,7 @@ namespace
   void 
   user_read_data (png_structp png_ptr, png_bytep data, png_size_t length)
   {
-    std::uint8_t** input_pointer = reinterpret_cast<std::uint8_t**>(png_get_io_ptr (png_ptr));
+    auto** input_pointer = reinterpret_cast<std::uint8_t**>(png_get_io_ptr (png_ptr));
 
     memcpy (data, *input_pointer, sizeof (std::uint8_t) * length);
     (*input_pointer) += length;
@@ -65,7 +65,7 @@ namespace
   void 
   user_write_data (png_structp png_ptr,  png_bytep data, png_size_t length)
   {
-    std::vector<std::uint8_t>* pngVec = reinterpret_cast<std::vector<std::uint8_t>*>(png_get_io_ptr (png_ptr));
+    auto* pngVec = reinterpret_cast<std::vector<std::uint8_t>*>(png_get_io_ptr (png_ptr));
     std::copy (data, data + length, std::back_inserter (*pngVec));
   }
 

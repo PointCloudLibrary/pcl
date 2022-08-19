@@ -150,7 +150,7 @@ parseScaleOption (int argc, char** argv, T& pcie)
   {
     try
     {
-      float factor = boost::lexical_cast<float> (scaling);
+      auto factor = boost::lexical_cast<float> (scaling);
       pcie.setScalingMethod(pcie.SCALING_FIXED_FACTOR);
       pcie.setScalingFactor(factor);
     }

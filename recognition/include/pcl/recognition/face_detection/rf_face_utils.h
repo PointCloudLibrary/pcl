@@ -164,8 +164,8 @@ namespace pcl
           int el_f2 = te.iimages_[feature.used_ii_]->getFiniteElementsCount (te.col_ + feature.col2_, te.row_ + feature.row2_, feature.wsizex2_,
               feature.wsizey2_);
 
-          float sum_f1 = static_cast<float>(te.iimages_[feature.used_ii_]->getFirstOrderSum (te.col_ + feature.col1_, te.row_ + feature.row1_, feature.wsizex1_, feature.wsizey1_));
-          float sum_f2 = static_cast<float>(te.iimages_[feature.used_ii_]->getFirstOrderSum (te.col_ + feature.col2_, te.row_ + feature.row2_, feature.wsizex2_, feature.wsizey2_));
+          auto sum_f1 = static_cast<float>(te.iimages_[feature.used_ii_]->getFirstOrderSum (te.col_ + feature.col1_, te.row_ + feature.row1_, feature.wsizex1_, feature.wsizey1_));
+          auto sum_f2 = static_cast<float>(te.iimages_[feature.used_ii_]->getFirstOrderSum (te.col_ + feature.col2_, te.row_ + feature.row2_, feature.wsizex2_, feature.wsizey2_));
 
           float f = min_valid_small_patch_depth_;
           if (el_f1 == 0 || el_f2 == 0 || (el_f1 <= static_cast<int> (f * static_cast<float>(feature.wsizex1_ * feature.wsizey1_)))
@@ -230,7 +230,7 @@ namespace pcl
             Eigen::Vector3d & centroid) const
         {
           Eigen::Matrix<double, 1, 9, Eigen::RowMajor> accu = Eigen::Matrix<double, 1, 9, Eigen::RowMajor>::Zero ();
-          unsigned int point_count = static_cast<unsigned int> (examples.size ());
+          auto point_count = static_cast<unsigned int> (examples.size ());
 
           for (std::size_t i = 0; i < point_count; ++i)
           {
@@ -274,7 +274,7 @@ namespace pcl
             Eigen::Vector3d & centroid) const
         {
           Eigen::Matrix<double, 1, 9, Eigen::RowMajor> accu = Eigen::Matrix<double, 1, 9, Eigen::RowMajor>::Zero ();
-          unsigned int point_count = static_cast<unsigned int> (examples.size ());
+          auto point_count = static_cast<unsigned int> (examples.size ());
 
           for (std::size_t i = 0; i < point_count; ++i)
           {

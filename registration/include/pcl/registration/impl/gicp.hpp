@@ -71,7 +71,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovariances(
   if (cloud_covariances.size() < cloud->size())
     cloud_covariances.resize(cloud->size());
 
-  MatricesVector::iterator matrices_iterator = cloud_covariances.begin();
+  auto matrices_iterator = cloud_covariances.begin();
   for (auto points_iterator = cloud->begin(); points_iterator != cloud->end();
        ++points_iterator, ++matrices_iterator) {
     const PointT& query_point = *points_iterator;

@@ -54,7 +54,7 @@ main (int, char ** argv)
   pcl::fromPCLPointCloud2 (cloud, xyz);
   
   pcl::visualization::ImageViewer depth_image_viewer_;
-  float* img = new float[cloud.width * cloud.height];
+  auto* img = new float[cloud.width * cloud.height];
 
   for (int i = 0; i < static_cast<int> (xyz.size ()); ++i)
     img[i] = xyz[i].z;

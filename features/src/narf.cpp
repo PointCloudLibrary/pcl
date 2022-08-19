@@ -276,7 +276,7 @@ Narf::getBlurredSurfacePatch (int new_pixel_size, int blur_radius) const
   float new_to_old_factor = float(surface_patch_pixel_size_)/float(new_pixel_size);
   int new_size = new_pixel_size*new_pixel_size;
   
-  float* integral_image = new float[new_size];
+  auto* integral_image = new float[new_size];
   float* integral_image_ptr = integral_image;
   for (int y=0; y<new_pixel_size; ++y)
   {
@@ -303,7 +303,7 @@ Narf::getBlurredSurfacePatch (int new_pixel_size, int blur_radius) const
     }
   }
   
-  float* new_surface_patch = new float[new_size];
+  auto* new_surface_patch = new float[new_size];
   float* new_surface_patch_ptr = new_surface_patch;
   for (int y=0; y<new_pixel_size; ++y)
   {
@@ -477,14 +477,14 @@ Narf::getRotations (std::vector<float>& rotations, std::vector<float>& strengths
   
   while (!scored_orientations.empty())
   {
-    std::multimap<float, float>::iterator best_remaining_orientation_it = scored_orientations.end();
+    auto best_remaining_orientation_it = scored_orientations.end();
     --best_remaining_orientation_it;
     rotations.push_back(best_remaining_orientation_it->second);
     strengths.push_back(best_remaining_orientation_it->first);
     scored_orientations.erase(best_remaining_orientation_it);
-    for (std::multimap<float, float>::iterator it = scored_orientations.begin(); it!=scored_orientations.end();)
+    for (auto it = scored_orientations.begin(); it!=scored_orientations.end();)
     {
-      std::multimap<float, float>::iterator current_it = it++;
+      auto current_it = it++;
       if (normAngle(current_it->second - rotations.back()) < min_angle_dist_between_rotations)
         scored_orientations.erase(current_it);
     }

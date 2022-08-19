@@ -266,7 +266,7 @@ NarfKeypoint::calculateCompleteInterestImage ()
         height = range_image.height,
         array_size = width*height;
 
-    float* interest_image = new float[array_size];
+    auto* interest_image = new float[array_size];
     interest_image_scale_space_[scale_idx] = interest_image;
     //for (int i=0; i<array_size; ++i)
       //interest_image[i] = -1.0f;
@@ -811,7 +811,7 @@ NarfKeypoint::calculateInterestPoints ()
         
         if (!types.empty () && types[0]==0)
         {
-          float keypoint_x = static_cast<float> (x_values[0]+keypoint_x_int),
+          auto keypoint_x = static_cast<float> (x_values[0]+keypoint_x_int),
                 keypoint_y = static_cast<float> (y_values[0]+keypoint_y_int);
           
           keypoint_x_int = static_cast<int> (pcl_lrint (keypoint_x));

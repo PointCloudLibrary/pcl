@@ -296,10 +296,10 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::sgurf (Eigen::Vector3f & c
 
   //select the axis that could be disambiguated more easily
   float fx, fy;
-  float max_x = static_cast<float> (std::max (s_xplus, s_xminus));
-  float min_x = static_cast<float> (std::min (s_xplus, s_xminus));
-  float max_y = static_cast<float> (std::max (s_yplus, s_yminus));
-  float min_y = static_cast<float> (std::min (s_yplus, s_yminus));
+  auto max_x = static_cast<float> (std::max (s_xplus, s_xminus));
+  auto min_x = static_cast<float> (std::min (s_xplus, s_xminus));
+  auto max_y = static_cast<float> (std::max (s_yplus, s_yminus));
+  auto min_y = static_cast<float> (std::min (s_yplus, s_yminus));
 
   fx = (min_x / max_x);
   fy = (min_y / max_y);
@@ -422,7 +422,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
       else
         hist_incr = 1.0f;
 
-      float * weights = new float[num_hists];
+      auto * weights = new float[num_hists];
       float sigma = 0.01f; //1cm
       float sigma_sq = sigma * sigma;
 

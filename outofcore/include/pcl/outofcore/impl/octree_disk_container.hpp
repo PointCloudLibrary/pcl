@@ -384,7 +384,7 @@ namespace pcl
         buffcount = count - filecount;
       }
 
-      std::uint64_t filesamp = static_cast<std::uint64_t> (percent * static_cast<double> (filecount));
+      auto filesamp = static_cast<std::uint64_t> (percent * static_cast<double> (filecount));
       
       std::uint64_t buffsamp = (buffcount > 0) ? (static_cast<std::uint64_t > (percent * static_cast<double> (buffcount))) : 0;
 
@@ -610,7 +610,7 @@ namespace pcl
     {
 //      PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeDiskContainer] Deprecated\n");
       //copy the handles to a continuous block
-      PointT* arr = new PointT[count];
+      auto* arr = new PointT[count];
 
       //copy from start of array, element by element
       for (std::size_t i = 0; i < count; i++)

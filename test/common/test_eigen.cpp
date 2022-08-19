@@ -425,8 +425,8 @@ inline void generateSymPosMatrix2x2 (Matrix& matrix)
 
   unsigned test_case = rand_uint (rng) % 10;
 
-  Scalar val1 = Scalar (rand_double (rng));
-  Scalar val2 = Scalar (rand_double (rng));
+  auto val1 = Scalar (rand_double (rng));
+  auto val2 = Scalar (rand_double (rng));
 
   // 10% of test cases include equal eigenvalues
   if (test_case == 0)
@@ -592,9 +592,9 @@ inline void generateSymPosMatrix3x3 (Matrix& matrix)
 
   unsigned test_case = rand_uint (rng);
 
-  Scalar val1 = Scalar (rand_double (rng));
-  Scalar val2 = Scalar (rand_double (rng));
-  Scalar val3 = Scalar (rand_double (rng));
+  auto val1 = Scalar (rand_double (rng));
+  auto val2 = Scalar (rand_double (rng));
+  auto val3 = Scalar (rand_double (rng));
 
   // 1%: all three values are equal and non-zero
   if (test_case == 0)

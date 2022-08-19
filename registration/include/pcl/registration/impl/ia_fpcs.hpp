@@ -653,7 +653,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   // point cloud
   PointCloudSourcePtr cloud_e(new PointCloudSource);
   cloud_e->resize(pairs_a.size() * 2);
-  PointCloudSourceIterator it_pt = cloud_e->begin();
+  auto it_pt = cloud_e->begin();
   for (const auto& pair : pairs_a) {
     const PointSource* pt1 = &((*input_)[pair.index_match]);
     const PointSource* pt2 = &((*input_)[pair.index_query]);
@@ -876,7 +876,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   float inlier_score_temp = 0;
   pcl::Indices ids;
   std::vector<float> dists_sqr;
-  PointCloudSourceIterator it = source_transformed.begin();
+  auto it = source_transformed.begin();
 
   for (std::size_t i = 0; i < nr_points; it++, i++) {
     // search for nearest point using kd tree search

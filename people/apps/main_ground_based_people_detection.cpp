@@ -101,7 +101,7 @@ struct callback_args{
 void
 pp_callback (const pcl::visualization::PointPickingEvent& event, void* args)
 {
-  struct callback_args* data = (struct callback_args *)args;
+  auto* data = (struct callback_args *)args;
   if (event.getPointIndex () == -1)
     return;
   PointT current_point;

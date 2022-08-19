@@ -63,7 +63,7 @@ TEST(PCL, IntegralImage1D)
   IntegralImage2D<float,1> integral_image2(false);// calculate just first order (other if branch)
 
   // test for dense data with element stride = 1
-  float* data = new float[width * height];
+  auto* data = new float[width * height];
   for(unsigned yIdx = 0; yIdx < height; ++yIdx)
   {
     for(unsigned xIdx = 0; xIdx < width; ++xIdx)
@@ -275,7 +275,7 @@ TEST(PCL, IntegralImage3D)
   IntegralImage2D<float, 3> integral_image3(true);
   unsigned element_stride = 4;
   unsigned row_stride = width * element_stride + 1;
-  float* data = new float[row_stride * height];
+  auto* data = new float[row_stride * height];
   for(unsigned yIdx = 0; yIdx < height; ++yIdx)
   {
     for(unsigned xIdx = 0; xIdx < width; ++xIdx)

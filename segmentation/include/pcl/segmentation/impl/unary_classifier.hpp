@@ -332,7 +332,7 @@ pcl::UnaryClassifier<PointT>::assignLabels (pcl::Indices &indi,
                                             pcl::PointCloud<pcl::PointXYZRGBL>::Ptr out)
                               
 {
-  float nfm = static_cast<float> (n_feature_means);
+  auto nfm = static_cast<float> (n_feature_means);
   for (std::size_t i = 0; i < out->size (); i++)
   {
     if (dist[i] < feature_threshold)

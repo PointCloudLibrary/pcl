@@ -1644,8 +1644,8 @@ solve_c_svc(const svm_problem* prob,
             double Cn)
 {
   int l = prob->l;
-  double* minus_ones = new double[l];
-  schar* y = new schar[l];
+  auto* minus_ones = new double[l];
+  auto* y = new schar[l];
 
   for (int i = 0; i < l; i++) {
     alpha[i] = 0;
@@ -1695,7 +1695,7 @@ solve_nu_svc(const svm_problem* prob,
   int l = prob->l;
   double nu = param->nu;
 
-  schar* y = new schar[l];
+  auto* y = new schar[l];
 
   for (int i = 0; i < l; i++)
     if (prob->y[i] > 0)
@@ -1717,7 +1717,7 @@ solve_nu_svc(const svm_problem* prob,
       sum_neg -= alpha[i];
     }
 
-  double* zeros = new double[l];
+  auto* zeros = new double[l];
 
   for (int i = 0; i < l; i++)
     zeros[i] = 0;
@@ -1762,8 +1762,8 @@ solve_one_class(const svm_problem* prob,
                 Solver::SolutionInfo* si)
 {
   int l = prob->l;
-  double* zeros = new double[l];
-  schar* ones = new schar[l];
+  auto* zeros = new double[l];
+  auto* ones = new schar[l];
 
   int n = int(param->nu * prob->l); // # of alpha's at upper bound
 
@@ -1805,9 +1805,9 @@ solve_epsilon_svr(const svm_problem* prob,
                   Solver::SolutionInfo* si)
 {
   int l = prob->l;
-  double* alpha2 = new double[2 * l];
-  double* linear_term = new double[2 * l];
-  schar* y = new schar[2 * l];
+  auto* alpha2 = new double[2 * l];
+  auto* linear_term = new double[2 * l];
+  auto* y = new schar[2 * l];
 
   for (int i = 0; i < l; i++) {
     alpha2[i] = 0;
@@ -1854,9 +1854,9 @@ solve_nu_svr(const svm_problem* prob,
 {
   int l = prob->l;
   double C = param->C;
-  double* alpha2 = new double[2 * l];
-  double* linear_term = new double[2 * l];
-  schar* y = new schar[2 * l];
+  auto* alpha2 = new double[2 * l];
+  auto* linear_term = new double[2 * l];
+  auto* y = new schar[2 * l];
 
   double sum = C * param->nu * l / 2;
 
@@ -1908,7 +1908,7 @@ struct decision_function {
 static decision_function
 svm_train_one(const svm_problem* prob, const svm_parameter* param, double Cp, double Cn)
 {
-  double* alpha = Malloc(double, prob->l);
+  auto* alpha = Malloc(double, prob->l);
   Solver::SolutionInfo si;
 
   switch (param->svm_type) {
@@ -1989,7 +1989,7 @@ sigmoid_train(
 
   const double loTarget = 1 / (prior0 + 2.0);
 
-  double* t = Malloc(double, l);
+  auto* t = Malloc(double, l);
 
   // Initial Point and Initial Fun Value
   A = 0.0;
@@ -2113,8 +2113,8 @@ static void
 multiclass_probability(int k, double** r, double* p)
 {
   const int max_iter = max(100, k);
-  double** Q = Malloc(double*, k);
-  double* Qp = Malloc(double, k);
+  auto** Q = Malloc(double*, k);
+  auto* Qp = Malloc(double, k);
   const double eps = 0.005 / k;
 
   for (int t = 0; t < k; t++) {
@@ -2193,7 +2193,7 @@ svm_binary_svc_probability(const svm_problem* prob,
 {
   int nr_fold = 5;
   int* perm = Malloc(int, prob->l);
-  double* dec_values = Malloc(double, prob->l);
+  auto* dec_values = Malloc(double, prob->l);
 
   // random shuffle
 
@@ -2287,7 +2287,7 @@ static double
 svm_svr_probability(const svm_problem* prob, const svm_parameter* param)
 {
   int nr_fold = 5;
-  double* ymv = Malloc(double, prob->l);
+  auto* ymv = Malloc(double, prob->l);
   double mae = 0;
 
   svm_parameter newparam = *param;
@@ -2400,7 +2400,7 @@ svm_group_classes(const svm_problem* prob,
 svm_model*
 svm_train(const svm_problem* prob, const svm_parameter* param)
 {
-  svm_model* model = Malloc(svm_model, 1);
+  auto* model = Malloc(svm_model, 1);
   model->param = *param;
   model->free_sv = 0; // XXX
   model->probA = nullptr;
@@ -2465,14 +2465,14 @@ svm_train(const svm_problem* prob, const svm_parameter* param)
     if (nr_class == 1)
       info("WARNING: training data in only one class. See README for details.\n");
 
-    svm_node** x = Malloc(svm_node*, l);
+    auto** x = Malloc(svm_node*, l);
 
     for (int i = 0; i < l; i++)
       x[i] = prob->x[perm[i]];
 
     // calculate weighted C
 
-    double* weighted_C = Malloc(double, nr_class);
+    auto* weighted_C = Malloc(double, nr_class);
 
     for (int i = 0; i < nr_class; i++)
       weighted_C[i] = param->C;
@@ -2499,7 +2499,7 @@ svm_train(const svm_problem* prob, const svm_parameter* param)
     for (int i = 0; i < l; i++)
       nonzero[i] = false;
 
-    decision_function* f = Malloc(decision_function, nr_class * (nr_class - 1) / 2);
+    auto* f = Malloc(decision_function, nr_class * (nr_class - 1) / 2);
 
     double *probA = nullptr, *probB = nullptr;
 
@@ -2783,7 +2783,7 @@ svm_cross_validation(const svm_problem* prob,
     struct svm_model* submodel = svm_train(&subprob, param);
 
     if (param->probability && (param->svm_type == C_SVC || param->svm_type == NU_SVC)) {
-      double* prob_estimates = Malloc(double, svm_get_nr_class(submodel));
+      auto* prob_estimates = Malloc(double, svm_get_nr_class(submodel));
 
       for (int j = begin; j < end; j++)
         target[perm[j]] =
@@ -2860,7 +2860,7 @@ svm_predict_values(const svm_model* model, const svm_node* x, double* dec_values
   int nr_class = model->nr_class;
   int l = model->l;
 
-  double* kvalue = Malloc(double, l);
+  auto* kvalue = Malloc(double, l);
 
   for (int i = 0; i < l; i++)
     kvalue[i] = Kernel::k_function(x, model->SV[i], model->param);
@@ -2948,11 +2948,11 @@ svm_predict_probability(const svm_model* model,
   if ((model->param.svm_type == C_SVC || model->param.svm_type == NU_SVC) &&
       model->probA != nullptr && model->probB != nullptr) {
     int nr_class = model->nr_class;
-    double* dec_values = Malloc(double, nr_class*(nr_class - 1) / 2);
+    auto* dec_values = Malloc(double, nr_class*(nr_class - 1) / 2);
     svm_predict_values(model, x, dec_values);
 
     double min_prob = 1e-7;
-    double** pairwise_prob = Malloc(double*, nr_class);
+    auto** pairwise_prob = Malloc(double*, nr_class);
 
     for (int i = 0; i < nr_class; i++)
       pairwise_prob[i] = Malloc(double, nr_class);
@@ -3143,7 +3143,7 @@ svm_load_model(const char* model_file_name)
 
   // read parameters
 
-  svm_model* model = Malloc(svm_model, 1);
+  auto* model = Malloc(svm_model, 1);
 
   svm_parameter& param = model->param;
 

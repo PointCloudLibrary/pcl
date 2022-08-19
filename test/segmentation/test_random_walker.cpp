@@ -122,7 +122,7 @@ struct GraphInfo
     // Read expected potentials
     for (ptree::value_type& v : pt.get_child ("Potentials"))
     {
-      Color color = boost::lexical_cast<std::uint32_t> (v.first);
+      auto color = boost::lexical_cast<std::uint32_t> (v.first);
       potentials[color] = Vector::Zero (size);
       std::stringstream ss (v.second.data ());
       for (std::size_t i = 0; i < size; ++i)

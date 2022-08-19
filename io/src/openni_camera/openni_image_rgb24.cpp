@@ -62,7 +62,7 @@ void ImageRGB24::fillRGB (unsigned width, unsigned height, unsigned char* rgb_bu
     else // line by line
     {
       unsigned char* rgb_line = rgb_buffer;
-      const unsigned char* src_line = static_cast<const unsigned char*> (image_md_->Data());
+      const auto* src_line = static_cast<const unsigned char*> (image_md_->Data());
       for (unsigned yIdx = 0; yIdx < height; ++yIdx, rgb_line += rgb_line_step, src_line += line_size)
       {
         memcpy (rgb_line, src_line, line_size);
@@ -79,7 +79,7 @@ void ImageRGB24::fillRGB (unsigned width, unsigned height, unsigned char* rgb_bu
 
     unsigned dst_skip = rgb_line_step - width * 3; // skip of padding values in bytes
 
-    XnRGB24Pixel* dst_line = reinterpret_cast<XnRGB24Pixel*> (rgb_buffer);
+    auto* dst_line = reinterpret_cast<XnRGB24Pixel*> (rgb_buffer);
     const XnRGB24Pixel* src_line = image_md_->RGB24Data();
 
     for (unsigned yIdx = 0; yIdx < height; ++yIdx, src_line += src_skip)
@@ -92,7 +92,7 @@ void ImageRGB24::fillRGB (unsigned width, unsigned height, unsigned char* rgb_bu
       if (dst_skip != 0)
       {
         // use bytes to skip rather than XnRGB24Pixel's, since line_step does not need to be multiple of 3
-        unsigned char* temp = reinterpret_cast <unsigned char*> (dst_line);
+        auto* temp = reinterpret_cast <unsigned char*> (dst_line);
         dst_line = reinterpret_cast <XnRGB24Pixel*> (temp + dst_skip);
       }
     }

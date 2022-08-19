@@ -114,7 +114,7 @@ TEST (PCL, PCLVisualizer_camera)
   given_intrinsics (0, 2) = 320.f;
   given_intrinsics (1, 2) = 240.f;
 
-  float M_PI_f = static_cast<float> (M_PI);
+  auto M_PI_f = static_cast<float> (M_PI);
   Eigen::Matrix4f given_extrinsics (Eigen::Matrix4f::Identity ());
   given_extrinsics.block<3, 3> (0, 0) = Eigen::AngleAxisf (30.f * M_PI_f / 180.f, Eigen::Vector3f (1.f, 0.f, 0.f)).matrix ();
   given_extrinsics.block<3, 1> (0, 3) = Eigen::Vector3f (10.f, 15.f, 20.f);

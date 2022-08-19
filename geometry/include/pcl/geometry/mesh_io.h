@@ -229,14 +229,14 @@ public:
          << mesh.sizeFaces() << "\n";
 
     // Write the vertices
-    for (typename Vertices::const_iterator it = mesh.vertices_.begin();
+    for (auto it = mesh.vertices_.begin();
          it != mesh.vertices_.end();
          ++it) {
       file << it->idx_outgoing_half_edge_ << "\n";
     }
 
     // Write the half-edges
-    for (typename HalfEdges::const_iterator it = mesh.half_edges_.begin();
+    for (auto it = mesh.half_edges_.begin();
          it != mesh.half_edges_.end();
          ++it) {
       file << it->idx_terminating_vertex_ << " " << it->idx_next_half_edge_ << " "
@@ -244,7 +244,7 @@ public:
     }
 
     // Write the faces
-    for (typename Faces::const_iterator it = mesh.faces_.begin();
+    for (auto it = mesh.faces_.begin();
          it != mesh.faces_.end();
          ++it) {
       file << it->idx_inner_half_edge_ << "\n";

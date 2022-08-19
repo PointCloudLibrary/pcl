@@ -203,7 +203,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (
     /// Local point density = number of points in a sphere of radius "point_density_radius_" around the current neighbour
     pcl::Indices neighbour_indices;
     std::vector<float> neighbour_didtances;
-    float point_density = static_cast<float> (searchForNeighbors (*surface_, nn_indices[ne], point_density_radius_, neighbour_indices, neighbour_didtances));
+    auto point_density = static_cast<float> (searchForNeighbors (*surface_, nn_indices[ne], point_density_radius_, neighbour_indices, neighbour_didtances));
     /// point_density is always bigger than 0 because FindPointsWithinRadius returns at least the point itself
     float w = (1.0f / point_density) * volume_lut_[(l*elevation_bins_*radius_bins_) +
                                                    (k*radius_bins_) +

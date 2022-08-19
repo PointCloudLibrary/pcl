@@ -91,8 +91,8 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
                   void *out_data, unsigned int out_len)
 {
   LZF_STATE htab;
-  const unsigned char *ip = static_cast<const unsigned char *> (in_data);
-        unsigned char *op = static_cast<unsigned char *> (out_data);
+  const auto *ip = static_cast<const unsigned char *> (in_data);
+        auto *op = static_cast<unsigned char *> (out_data);
   const unsigned char *in_end  = ip + in_len;
         unsigned char *out_end = op + out_len;
 
@@ -280,8 +280,8 @@ unsigned int
 pcl::lzfDecompress (const void *const in_data,  unsigned int in_len,
                     void             *out_data, unsigned int out_len)
 {
-  unsigned char const *ip = static_cast<const unsigned char *> (in_data);
-  unsigned char       *op = static_cast<unsigned char *> (out_data);
+  auto const *ip = static_cast<const unsigned char *> (in_data);
+  auto       *op = static_cast<unsigned char *> (out_data);
   unsigned char const *const in_end  = ip + in_len;
   unsigned char       *const out_end = op + out_len;
 

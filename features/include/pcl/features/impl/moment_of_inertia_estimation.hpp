@@ -232,7 +232,7 @@ pcl::MomentOfInertiaEstimation<PointT>::computeOBB ()
   obb_max_point_.y = std::numeric_limits <float>::min ();
   obb_max_point_.z = std::numeric_limits <float>::min ();
 
-  unsigned int number_of_points = static_cast <unsigned int> (indices_->size ());
+  auto number_of_points = static_cast <unsigned int> (indices_->size ());
   for (unsigned int i_point = 0; i_point < number_of_points; i_point++)
   {
     float x = ((*input_)[(*indices_)[i_point]].x - mean_value_ (0)) * major_axis_ (0) +
@@ -332,7 +332,7 @@ pcl::MomentOfInertiaEstimation<PointT>::computeMeanValue ()
   aabb_max_point_.y = -std::numeric_limits <float>::max ();
   aabb_max_point_.z = -std::numeric_limits <float>::max ();
 
-  unsigned int number_of_points = static_cast <unsigned int> (indices_->size ());
+  auto number_of_points = static_cast <unsigned int> (indices_->size ());
   for (unsigned int i_point = 0; i_point < number_of_points; i_point++)
   {
     mean_value_ (0) += (*input_)[(*indices_)[i_point]].x;
@@ -362,7 +362,7 @@ pcl::MomentOfInertiaEstimation<PointT>::computeCovarianceMatrix (Eigen::Matrix <
 {
   covariance_matrix.setZero ();
 
-  unsigned int number_of_points = static_cast <unsigned int> (indices_->size ());
+  auto number_of_points = static_cast <unsigned int> (indices_->size ());
   float factor = 1.0f / static_cast <float> ((number_of_points - 1 > 0)?(number_of_points - 1):1);
   for (unsigned int i_point = 0; i_point < number_of_points; i_point++)
   {
@@ -482,7 +482,7 @@ template <typename PointT> float
 pcl::MomentOfInertiaEstimation<PointT>::calculateMomentOfInertia (const Eigen::Vector3f& current_axis, const Eigen::Vector3f& mean_value) const
 {
   float moment_of_inertia = 0.0f;
-  unsigned int number_of_points = static_cast <unsigned int> (indices_->size ());
+  auto number_of_points = static_cast <unsigned int> (indices_->size ());
   for (unsigned int i_point = 0; i_point < number_of_points; i_point++)
   {
     Eigen::Vector3f vector;
@@ -506,7 +506,7 @@ pcl::MomentOfInertiaEstimation<PointT>::getProjectedCloud (const Eigen::Vector3f
 {
   const float D = - normal_vector.dot (point);
 
-  unsigned int number_of_points = static_cast <unsigned int> (indices_->size ());
+  auto number_of_points = static_cast <unsigned int> (indices_->size ());
   projected_cloud->points.resize (number_of_points, PointT ());
 
   for (unsigned int i_point = 0; i_point < number_of_points; i_point++)

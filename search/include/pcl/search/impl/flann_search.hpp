@@ -201,7 +201,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::nearestKSearch (
       }
     }
 
-    float* data=new float [dim_*indices.size ()];
+    auto* data=new float [dim_*indices.size ()];
     for (std::size_t i = 0; i < indices.size (); ++i)
     {
       float* out = data+i*dim_;
@@ -330,7 +330,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::radiusSearch (
       }
     }
 
-    float* data = new float [dim_ * indices.size ()];
+    auto* data = new float [dim_ * indices.size ()];
     for (std::size_t i = 0; i < indices.size (); ++i)
     {
       float* out = data+i*dim_;

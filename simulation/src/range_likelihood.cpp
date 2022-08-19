@@ -517,8 +517,8 @@ pcl::simulation::RangeLikelihood::setupProjectionMatrix() const
   // Prepare scaled simulated camera projection matrix
   float sx = static_cast<float>(camera_width_) / static_cast<float>(col_width_);
   float sy = static_cast<float>(camera_height_) / static_cast<float>(row_height_);
-  float width = static_cast<float>(col_width_);
-  float height = static_cast<float>(row_height_);
+  auto width = static_cast<float>(col_width_);
+  auto height = static_cast<float>(row_height_);
 
   float fx = camera_fx_ / sx;
   float fy = camera_fy_ / sy;
@@ -681,7 +681,7 @@ costFunction4(float ref_val, float depth_val)
   if (top_lup > 300) {
     top_lup = 300;
   }
-  float top =
+  auto top =
       static_cast<float>(top_lookup[top_lup]); // round( std::abs(x-mu) *1000+1) );
 
   // bottom:
@@ -1023,7 +1023,7 @@ RangeLikelihood::computeLikelihoods(
       int reduced_col_width = col_width_ >> levels;
       int reduced_row_height = row_height_ >> levels;
 
-      float* score_sum = new float[reduced_width * reduced_height];
+      auto* score_sum = new float[reduced_width * reduced_height];
       sum_reduce_.sum(score_texture_, score_sum);
       for (int n = 0, row = 0; row < reduced_height; ++row) {
         for (int col = 0; col < reduced_width; ++col, ++n) {

@@ -71,7 +71,7 @@ void
 display_score_image(const float* score_buffer)
 {
   int npixels = range_likelihood_->getWidth() * range_likelihood_->getHeight();
-  std::uint8_t* score_img = new std::uint8_t[npixels * 3];
+  auto* score_img = new std::uint8_t[npixels * 3];
 
   float min_score = score_buffer[0];
   float max_score = score_buffer[0];
@@ -97,7 +97,7 @@ void
 display_depth_image(const float* depth_buffer, int width, int height)
 {
   int npixels = width * height;
-  std::uint8_t* depth_img = new std::uint8_t[npixels * 3];
+  auto* depth_img = new std::uint8_t[npixels * 3];
 
   float min_depth = depth_buffer[0];
   float max_depth = depth_buffer[0];
@@ -122,7 +122,7 @@ display_depth_image(const float* depth_buffer, int width, int height)
       kd = 2047;
 
     int pval = t_gamma[kd];
-    std::uint8_t lb = static_cast<std::uint8_t>(pval & 0xff);
+    auto lb = static_cast<std::uint8_t>(pval & 0xff);
     switch (pval >> 8) {
     case 0:
       depth_img[3 * i + 0] = 255;
@@ -171,7 +171,7 @@ display_depth_image(const float* depth_buffer, int width, int height)
 void
 display()
 {
-  float* reference =
+  auto* reference =
       new float[range_likelihood_->getRowHeight() * range_likelihood_->getColWidth()];
   const float* depth_buffer = range_likelihood_->getDepthBuffer();
   // Copy one image from our last as a reference.
@@ -184,7 +184,7 @@ display()
     }
   }
 
-  float* reference_vis = new float[range_likelihood_visualization_->getRowHeight() *
+  auto* reference_vis = new float[range_likelihood_visualization_->getRowHeight() *
                                    range_likelihood_visualization_->getColWidth()];
   const float* depth_buffer_vis = range_likelihood_visualization_->getDepthBuffer();
   // Copy one image from our last as a reference.
@@ -387,7 +387,7 @@ main(int argc, char** argv)
   }
 
   for (int i = 0; i < 2048; ++i) {
-    float v = static_cast<float>(i / 2048.0);
+    auto v = static_cast<float>(i / 2048.0);
     v = powf(v, 3) * 6;
     t_gamma[i] = static_cast<std::uint16_t>(v * 6 * 256);
   }
