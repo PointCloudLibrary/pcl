@@ -119,7 +119,7 @@ PyramidFeatureHistogram<PointFeature>::comparePyramidFeatureHistograms(
 
   // include self-similarity factors
   auto self_similarity_a = static_cast<float>(pyramid_a->nr_features),
-        self_similarity_b = static_cast<float>(pyramid_b->nr_features);
+       self_similarity_b = static_cast<float>(pyramid_b->nr_features);
   PCL_DEBUG("[pcl::PyramidFeatureMatching::comparePyramidFeatureHistograms] Self "
             "similarity measures: %f, %f\n",
             self_similarity_a,
@@ -145,8 +145,7 @@ PyramidFeatureHistogram<
     PointFeature>::PyramidFeatureHistogramLevel::initializeHistogramLevel()
 {
   std::size_t total_vector_size = 1;
-  for (auto dim_it = bins_per_dimension.begin();
-       dim_it != bins_per_dimension.end();
+  for (auto dim_it = bins_per_dimension.begin(); dim_it != bins_per_dimension.end();
        ++dim_it)
     total_vector_size *= *dim_it;
 
@@ -187,8 +186,7 @@ PyramidFeatureHistogram<PointFeature>::initializeHistogram()
   nr_dimensions = dimension_range_target_.size();
   nr_features = input_->size();
   float D = 0.0f;
-  for (auto range_it =
-           dimension_range_target_.begin();
+  for (auto range_it = dimension_range_target_.begin();
        range_it != dimension_range_target_.end();
        ++range_it) {
     float aux = range_it->first - range_it->second;

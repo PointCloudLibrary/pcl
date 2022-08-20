@@ -143,8 +143,7 @@ protected:
   virtual OctreePointCloudAdjacencyContainer*
   deepCopy() const
   {
-    auto new_container =
-        new OctreePointCloudAdjacencyContainer;
+    auto new_container = new OctreePointCloudAdjacencyContainer;
     new_container->setNeighbors(this->neighbors_);
     new_container->setPointCounter(this->num_points_);
     return new_container;

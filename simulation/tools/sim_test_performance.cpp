@@ -185,7 +185,7 @@ display()
   }
 
   auto reference_vis = new float[range_likelihood_visualization_->getRowHeight() *
-                                   range_likelihood_visualization_->getColWidth()];
+                                 range_likelihood_visualization_->getColWidth()];
   const float* depth_buffer_vis = range_likelihood_visualization_->getDepthBuffer();
   // Copy one image from our last as a reference.
   for (int i = 0, n = 0; i < range_likelihood_visualization_->getRowHeight(); ++i) {

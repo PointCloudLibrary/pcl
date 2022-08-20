@@ -156,8 +156,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
   // residual costs based on mse
   pcl::Indices ids;
   std::vector<float> dists_sqr;
-  for (auto it = source_transformed.begin(),
-                                it_e = source_transformed.end();
+  for (auto it = source_transformed.begin(), it_e = source_transformed.end();
        it != it_e;
        ++it) {
     // search for nearest point using kd tree search
@@ -240,8 +239,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getNBestCandid
   candidates.clear();
 
   // loop over all candidates starting from the best one
-  for (auto it_candidate = candidates_.begin(),
-                                    it_e = candidates_.end();
+  for (auto it_candidate = candidates_.begin(), it_e = candidates_.end();
        it_candidate != it_e;
        ++it_candidate) {
     // stop if current candidate has no valid score
@@ -279,8 +277,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getTBestCandid
   candidates.clear();
 
   // loop over all candidates starting from the best one
-  for (auto it_candidate = candidates_.begin(),
-                                    it_e = candidates_.end();
+  for (auto it_candidate = candidates_.begin(), it_e = candidates_.end();
        it_candidate != it_e;
        ++it_candidate) {
     // stop if current candidate has score below threshold
