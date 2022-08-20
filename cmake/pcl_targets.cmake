@@ -225,7 +225,7 @@ function(PCL_ADD_LIBRARY _name)
           ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT})
 
   # Copy PDB if available
-  if(MSVC AND PCL_SHARED_LIBS)
+  if(MSVC AND ${PCL_LIB_TYPE} EQUAL "SHARED")
     install(FILES $<TARGET_PDB_FILE:${_name}> DESTINATION ${BIN_INSTALL_DIR} OPTIONAL)
   endif()
 endfunction()
