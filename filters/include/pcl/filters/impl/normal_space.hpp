@@ -80,9 +80,9 @@ pcl::NormalSpaceSampling<PointT, NormalT>::isEntireBinSampled (boost::dynamic_bi
 template<typename PointT, typename NormalT> unsigned int 
 pcl::NormalSpaceSampling<PointT, NormalT>::findBin (const float *normal)
 {
-  const unsigned ix = static_cast<unsigned> (std::round (0.5f * (binsx_ - 1.f) * (normal[0] + 1.f)));
-  const unsigned iy = static_cast<unsigned> (std::round (0.5f * (binsy_ - 1.f) * (normal[1] + 1.f)));
-  const unsigned iz = static_cast<unsigned> (std::round (0.5f * (binsz_ - 1.f) * (normal[2] + 1.f)));
+  const auto ix = static_cast<unsigned> (std::round (0.5f * (binsx_ - 1.f) * (normal[0] + 1.f)));
+  const auto iy = static_cast<unsigned> (std::round (0.5f * (binsy_ - 1.f) * (normal[1] + 1.f)));
+  const auto iz = static_cast<unsigned> (std::round (0.5f * (binsz_ - 1.f) * (normal[2] + 1.f)));
   return ix * (binsy_*binsz_) + iy * binsz_ + iz;
 }
 
@@ -126,7 +126,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (Indices &indices)
     random_access[i].resize (normals_hg[i].size ());
 
     std::size_t j = 0;
-    for (std::list<int>::iterator itr = normals_hg[i].begin (); itr != normals_hg[i].end (); ++itr, ++j)
+    for (auto itr = normals_hg[i].begin (); itr != normals_hg[i].end (); ++itr, ++j)
       random_access[i][j] = itr;
   }
   std::vector<std::size_t> start_index (normals_hg.size ());
@@ -148,7 +148,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (Indices &indices)
     // Iterating through every bin and picking one point at random, until the required number of points are sampled.
     for (std::size_t j = 0; j < normals_hg.size (); j++)
     {
-      unsigned int M = static_cast<unsigned int> (normals_hg[j].size ());
+      auto M = static_cast<unsigned int> (normals_hg[j].size ());
       if (M == 0 || bin_empty_flag.test (j)) // bin_empty_flag(i) is set if all points in that bin are sampled..
         continue;
 

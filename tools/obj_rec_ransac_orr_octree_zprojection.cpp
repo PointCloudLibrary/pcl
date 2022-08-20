@@ -93,7 +93,7 @@ int main (int argc, char ** argv)
   }
 
   // Get the voxel size
-  float voxel_size = static_cast<float> (atof (argv[2]));
+  auto voxel_size = static_cast<float> (atof (argv[2]));
   if ( voxel_size <= 0.0 )
   {
     fprintf(stderr, "ERROR: leaf_size has to be positive and not %lf\n", voxel_size);

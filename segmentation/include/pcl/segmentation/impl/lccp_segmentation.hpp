@@ -252,7 +252,7 @@ pcl::LCCPSegmentation<PointT>::prepareSegmentation (const std::map<std::uint32_t
   std::map<std::uint32_t, VertexID> label_ID_map;
 
   // Add all supervoxel labels as vertices
-  for (typename std::map<std::uint32_t, typename pcl::Supervoxel<PointT>::Ptr>::iterator svlabel_itr = sv_label_to_supervoxel_map_.begin ();
+  for (auto svlabel_itr = sv_label_to_supervoxel_map_.begin ();
       svlabel_itr != sv_label_to_supervoxel_map_.end (); ++svlabel_itr)
   {
     const std::uint32_t& sv_label = svlabel_itr->first;
@@ -276,7 +276,7 @@ pcl::LCCPSegmentation<PointT>::prepareSegmentation (const std::map<std::uint32_t
   // Initialization
   // clear the processed_ map
   seg_label_to_sv_list_map_.clear ();
-  for (typename std::map<std::uint32_t, typename pcl::Supervoxel<PointT>::Ptr>::iterator svlabel_itr = sv_label_to_supervoxel_map_.begin ();
+  for (auto svlabel_itr = sv_label_to_supervoxel_map_.begin ();
       svlabel_itr != sv_label_to_supervoxel_map_.end (); ++svlabel_itr)
   {
     const std::uint32_t& sv_label = svlabel_itr->first;
@@ -293,7 +293,7 @@ pcl::LCCPSegmentation<PointT>::doGrouping ()
 {
   // clear the processed_ map
   seg_label_to_sv_list_map_.clear ();
-  for (typename std::map<std::uint32_t, typename pcl::Supervoxel<PointT>::Ptr>::iterator svlabel_itr = sv_label_to_supervoxel_map_.begin ();
+  for (auto svlabel_itr = sv_label_to_supervoxel_map_.begin ();
       svlabel_itr != sv_label_to_supervoxel_map_.end (); ++svlabel_itr)
   {
     const std::uint32_t& sv_label = svlabel_itr->first;

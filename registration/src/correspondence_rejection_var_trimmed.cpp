@@ -79,7 +79,7 @@ float
 pcl::registration::CorrespondenceRejectorVarTrimmed::optimizeInlierRatio(
     std::vector<double>& dists) const
 {
-  unsigned int points_nbr = static_cast<unsigned int>(dists.size());
+  auto points_nbr = static_cast<unsigned int>(dists.size());
   std::sort(dists.begin(), dists.end());
 
   const int min_el = int(std::floor(min_ratio_ * points_nbr));

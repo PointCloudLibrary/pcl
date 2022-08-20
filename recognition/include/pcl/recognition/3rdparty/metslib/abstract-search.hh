@@ -338,7 +338,7 @@ inline mets::solution_recorder::~solution_recorder()  = default;
 inline bool
 mets::best_ever_solution::accept(const mets::feasible_solution& sol)
 {
-  const evaluable_solution& s = dynamic_cast<const mets::evaluable_solution&>(sol);
+  const auto& s = dynamic_cast<const mets::evaluable_solution&>(sol);
   if(s.cost_function() < best_ever_m.cost_function())
     {
       best_ever_m.copy_from(s);

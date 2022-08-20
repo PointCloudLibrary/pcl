@@ -118,7 +118,7 @@ ModelLibrary::addModel (const PointCloudIn& points, const PointCloudN& normals, 
   }
 
   // It is unique -> create a new library model and save it
-  Model* new_model = new Model (points, normals, voxel_size_, object_name, frac_of_points_for_registration, user_data);
+  auto new_model = new Model (points, normals, voxel_size_, object_name, frac_of_points_for_registration, user_data);
   result.first->second = new_model;
 
   const ORROctree& octree = new_model->getOctree ();

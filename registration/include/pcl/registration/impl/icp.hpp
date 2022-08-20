@@ -60,8 +60,8 @@ IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformCloud(
     Eigen::Matrix3f rot = tr.block<3, 3>(0, 0);
 
     for (std::size_t i = 0; i < input.size(); ++i) {
-      const std::uint8_t* data_in = reinterpret_cast<const std::uint8_t*>(&input[i]);
-      std::uint8_t* data_out = reinterpret_cast<std::uint8_t*>(&output[i]);
+      const auto data_in = reinterpret_cast<const std::uint8_t*>(&input[i]);
+      auto data_out = reinterpret_cast<std::uint8_t*>(&output[i]);
       memcpy(&pt[0], data_in + x_idx_offset_, sizeof(float));
       memcpy(&pt[1], data_in + y_idx_offset_, sizeof(float));
       memcpy(&pt[2], data_in + z_idx_offset_, sizeof(float));
@@ -91,8 +91,8 @@ IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformCloud(
   }
   else {
     for (std::size_t i = 0; i < input.size(); ++i) {
-      const std::uint8_t* data_in = reinterpret_cast<const std::uint8_t*>(&input[i]);
-      std::uint8_t* data_out = reinterpret_cast<std::uint8_t*>(&output[i]);
+      const auto data_in = reinterpret_cast<const std::uint8_t*>(&input[i]);
+      auto data_out = reinterpret_cast<std::uint8_t*>(&output[i]);
       memcpy(&pt[0], data_in + x_idx_offset_, sizeof(float));
       memcpy(&pt[1], data_in + y_idx_offset_, sizeof(float));
       memcpy(&pt[2], data_in + z_idx_offset_, sizeof(float));

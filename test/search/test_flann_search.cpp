@@ -87,7 +87,7 @@ TEST (PCL, FlannSearch_nearestKSearch)
   }
   float max_dist = 0.0f;
   unsigned int counter = 0;
-  for (std::multimap<float, int>::iterator it = sorted_brute_force_result.begin (); it != sorted_brute_force_result.end ()
+  for (auto it = sorted_brute_force_result.begin (); it != sorted_brute_force_result.end ()
       && counter < no_of_neighbors; ++it)
   {
     max_dist = std::max (max_dist, it->first);

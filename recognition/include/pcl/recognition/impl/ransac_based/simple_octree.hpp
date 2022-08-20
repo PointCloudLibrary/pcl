@@ -230,7 +230,7 @@ SimpleOctree<NodeData, NodeDataCreator, Scalar>::build (const Scalar* bounds, Sc
     tree_levels_ = 0;
 
   // Compute the number of octree levels and the bounds of the root
-  Scalar half_root_side = static_cast<Scalar> (0.5f*pow (2.0, tree_levels_)*voxel_size);
+  auto half_root_side = static_cast<Scalar> (0.5f*pow (2.0, tree_levels_)*voxel_size);
 
   // Determine the bounding box of the octree
   bounds_[0] = center[0] - half_root_side;

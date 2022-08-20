@@ -392,7 +392,7 @@ private:
       // If the asked depth is the depth of the octree, retrieve the centroid at this LeafNode
       if (octree.getTreeDepth () == (unsigned int) depth)
       {
-        pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::LeafNode* container = static_cast<pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::LeafNode*> (tree_it.getCurrentOctreeNode ());
+        auto container = static_cast<pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::LeafNode*> (tree_it.getCurrentOctreeNode ());
 
         container->getContainer ().getCentroid (pt_centroid);
       }

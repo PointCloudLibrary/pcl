@@ -52,7 +52,7 @@ pcl::PPFHashMapSearch::setInputFeatureCloud(
 {
   // Discretize the feature cloud and insert it in the hash map
   feature_hash_map_->clear();
-  unsigned int n =
+  auto n =
       static_cast<unsigned int>(std::sqrt(static_cast<float>(feature_cloud->size())));
   int d1, d2, d3, d4;
   max_dist_ = -1.0;

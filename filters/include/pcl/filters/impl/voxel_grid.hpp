@@ -67,7 +67,7 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
     for (const auto& point: *cloud)
     {
       // Get the distance value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
+      const auto pt_data = reinterpret_cast<const std::uint8_t*> (&point);
       memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
       if (limit_negative)
@@ -93,7 +93,7 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
     for (const auto& point: *cloud)
     {
       // Get the distance value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
+      const auto pt_data = reinterpret_cast<const std::uint8_t*> (&point);
       memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
       if (limit_negative)
@@ -144,7 +144,7 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
     for (const auto &index : indices)
     {
       // Get the distance value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&(*cloud)[index]);
+      const auto pt_data = reinterpret_cast<const std::uint8_t*> (&(*cloud)[index]);
       memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
       if (limit_negative)
@@ -170,7 +170,7 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
     for (const auto &index : indices)
     {
       // Get the distance value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&(*cloud)[index]);
+      const auto pt_data = reinterpret_cast<const std::uint8_t*> (&(*cloud)[index]);
       memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
       if (limit_negative)
@@ -286,7 +286,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
           continue;
 
       // Get the distance value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&(*input_)[index]);
+      const auto pt_data = reinterpret_cast<const std::uint8_t*> (&(*input_)[index]);
       float distance_value = 0;
       memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 

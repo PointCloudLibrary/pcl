@@ -467,7 +467,7 @@ OctreeBase<LeafContainerT, BranchContainerT>::serializeTreeRecursive(
         break;
       }
       case LEAF_NODE: {
-        LeafNode* child_leaf = static_cast<LeafNode*>(childNode);
+        auto child_leaf = static_cast<LeafNode*>(childNode);
 
         if (leaf_container_vector_arg)
           leaf_container_vector_arg->push_back(child_leaf->getContainerPtr());

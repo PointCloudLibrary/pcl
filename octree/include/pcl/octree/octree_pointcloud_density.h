@@ -68,7 +68,7 @@ public:
   bool
   operator==(const OctreeContainerBase& other) const override
   {
-    const OctreePointCloudDensityContainer* otherContainer =
+    const auto otherContainer =
         dynamic_cast<const OctreePointCloudDensityContainer*>(&other);
 
     return (this->point_counter_ == otherContainer->point_counter_);

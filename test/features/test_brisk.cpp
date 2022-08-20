@@ -111,7 +111,7 @@ TEST (PCL, BRISK_2D)
     float sqr_dist = 0.0f;
     for (std::size_t index = 0; index < 33; ++index)
     {
-      const float dist = float (descriptor.descriptor[index] - descriptor_gt.descriptor[index]);
+      const auto dist = float (descriptor.descriptor[index] - descriptor_gt.descriptor[index]);
       sqr_dist += dist * dist;
     }
 

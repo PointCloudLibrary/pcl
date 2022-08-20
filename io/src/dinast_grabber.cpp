@@ -317,8 +317,8 @@ pcl::DinastGrabber::getXYZIPointCloud ()
       double pixel = image_[x + image_width_ * y];
 
       // Correcting distortion, data empirically got in a calibration test
-      double xc = static_cast<double> (x - image_width_ / 2);
-      double yc = static_cast<double> (y - image_height_ / 2);
+      auto xc = static_cast<double> (x - image_width_ / 2);
+      auto yc = static_cast<double> (y - image_height_ / 2);
       double r1 = sqrt (xc * xc + yc * yc);
       double r2 = r1 * r1;
       double r3 = r1 * r2;

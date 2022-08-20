@@ -204,7 +204,7 @@ RangeImageBorderExtractor::extractBorderScoreImages ()
 float*
 RangeImageBorderExtractor::updatedScoresAccordingToNeighborValues (const float* border_scores) const
 {
-  float* new_scores = new float[range_image_->width*range_image_->height];
+  auto new_scores = new float[range_image_->width*range_image_->height];
   float* new_scores_ptr = new_scores;
   for (int y=0; y < static_cast<int> (range_image_->height); ++y)
     for (int x=0; x < static_cast<int> (range_image_->width); ++x)
@@ -296,7 +296,7 @@ RangeImageBorderExtractor::getAnglesImageForBorderDirections ()
   int width  = range_image_->width,
       height = range_image_->height,
       array_size = width*height;
-  float* angles_image = new float[array_size];
+  auto angles_image = new float[array_size];
 
   for (int y=0; y<height; ++y)
   {
@@ -333,7 +333,7 @@ RangeImageBorderExtractor::getAnglesImageForSurfaceChangeDirections ()
   int width  = range_image_->width,
       height = range_image_->height,
       array_size = width*height;
-  float* angles_image = new float[array_size];
+  auto angles_image = new float[array_size];
 
   for (int y=0; y<height; ++y)
   {
@@ -493,7 +493,7 @@ RangeImageBorderExtractor::calculateBorderDirections ()
     }
   }
 
-  Eigen::Vector3f** average_border_directions = new Eigen::Vector3f*[size];
+  auto average_border_directions = new Eigen::Vector3f*[size];
   int radius = parameters_.pixel_radius_border_direction;
   int minimum_weight = radius+1;
   float min_cos_angle=std::cos(deg2rad(120.0f));
@@ -614,8 +614,8 @@ RangeImageBorderExtractor::blurSurfaceChanges ()
 
   const RangeImage& range_image = *range_image_;
 
-  Eigen::Vector3f* blurred_directions = new Eigen::Vector3f[range_image.width*range_image.height];
-  float* blurred_scores = new float[range_image.width*range_image.height];
+  auto blurred_directions = new Eigen::Vector3f[range_image.width*range_image.height];
+  auto blurred_scores = new float[range_image.width*range_image.height];
   for (int y=0; y<int(range_image.height); ++y)
   {
     for (int x=0; x<int(range_image.width); ++x)

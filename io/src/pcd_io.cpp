@@ -577,7 +577,7 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
       cloud.data.resize (uncompressed_size);
     }
 
-    unsigned int data_size = static_cast<unsigned int> (cloud.data.size ());
+    auto data_size = static_cast<unsigned int> (cloud.data.size ());
     std::vector<char> buf (data_size);
     // The size of the uncompressed data better be the same as what we stored in the header
     unsigned int tmp_size = pcl::lzfDecompress (&map[data_idx + 8], compressed_size, &buf[0], data_size);
@@ -811,7 +811,7 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
       return (-1);
     }
 #else
-    unsigned char *map = static_cast<unsigned char*> (::mmap (nullptr, mmap_size, PROT_READ, MAP_SHARED, fd, 0));
+    auto map = static_cast<unsigned char*> (::mmap (nullptr, mmap_size, PROT_READ, MAP_SHARED, fd, 0));
     if (map == reinterpret_cast<unsigned char*> (-1))    // MAP_FAILED
     {
       io::raw_close (fd);

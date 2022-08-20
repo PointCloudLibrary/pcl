@@ -43,8 +43,8 @@ pcl::PointXY32i::randomPoint(const int min_x,
                              const int min_y,
                              const int max_y)
 {
-  const float width = static_cast<float>(max_x - min_x);
-  const float height = static_cast<float>(max_y - min_y);
+  const auto width = static_cast<float>(max_x - min_x);
+  const auto height = static_cast<float>(max_y - min_y);
 
   PointXY32i point;
   point.x = static_cast<int>(width * static_cast<float>(rand()) /

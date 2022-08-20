@@ -229,7 +229,7 @@ class Producer
     void 
     grabAndSend ()
     {
-      OpenNIGrabber* grabber = new OpenNIGrabber ();
+      auto grabber = new OpenNIGrabber ();
       grabber->getDevice ()->setDepthOutputFormat (depth_mode_);
 
       Grabber* interface = grabber;

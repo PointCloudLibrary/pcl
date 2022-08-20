@@ -86,9 +86,9 @@ pcl::StereoMatching::medianFilter(int radius)
   // TODO: do median filter
   int side = radius * 2 + 1;
 
-  short int* out = new short int[width_ * height_]{};
+  auto out = new short int[width_ * height_]{};
 
-  short int* v = new short int[side * side];
+  auto v = new short int[side * side];
 
   for (int y = radius; y < height_ - radius; y++) {
     for (int x = radius; x < width_ - radius; x++) {
@@ -148,7 +148,7 @@ pcl::StereoMatching::getVisualMap(pcl::PointCloud<pcl::RGB>::Ptr vMap)
         vMap->at(x, y) = invalid_val;
       }
       else {
-        unsigned char val =
+        auto val =
             static_cast<unsigned char>(std::floor(scale * disp_map_[y * width_ + x]));
         vMap->at(x, y).r = val;
         vMap->at(x, y).g = val;
@@ -371,7 +371,7 @@ pcl::GrayStereoMatching::preProcessing(unsigned char* img, unsigned char* pp_img
                        img[(y - radius - 1) * width_ + x + radius];
       sum += v[x + radius] - v[x - radius - 1];
 
-      short int temp = static_cast<short int>(img[y * width_ + x] - (sum / area));
+      auto temp = static_cast<short int>(img[y * width_ + x] - (sum / area));
 
       if (temp < -threshold)
         pp_img[y * width_ + x] = 0;
@@ -399,7 +399,7 @@ pcl::GrayStereoMatching::preProcessing(unsigned char* img, unsigned char* pp_img
 void
 pcl::GrayStereoMatching::imgFlip(unsigned char*& img)
 {
-  unsigned char* temp_row = new unsigned char[width_];
+  auto temp_row = new unsigned char[width_];
 
   for (int j = 0; j < height_; j++) {
     std::copy(img + j * width_, img + j * width_ + width_, temp_row);

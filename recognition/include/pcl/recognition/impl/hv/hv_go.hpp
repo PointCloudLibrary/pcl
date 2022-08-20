@@ -717,7 +717,7 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::computeClutterCue(Recogn
         {
           //neighborhood_indices[i].first gives the index to the scene point and second to the explained scene point by the model causing this...
           //calculate weight of this clutter point based on the distance of the scene point and the model point causing it
-          float d = static_cast<float> (pow (
+          auto d = static_cast<float> (pow (
               ((*scene_cloud_downsampled_)[recog_model->explained_[neighborhood_index.second]].getVector3fMap ()
                   - (*scene_cloud_downsampled_)[neighborhood_index.first].getVector3fMap ()).norm (), 2));
           float d_weight = -(d / rn_sqr) + 1; //points that are close have a strong weight*/

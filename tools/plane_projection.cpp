@@ -160,10 +160,10 @@ main (int argc, char** argv)
   }
 
   // Command line parsing
-  float a = static_cast<float> (atof (argv[3]));
-  float b = static_cast<float> (atof (argv[4]));
-  float c = static_cast<float> (atof (argv[5]));
-  float d = static_cast<float> (atof (argv[6]));
+  auto a = static_cast<float> (atof (argv[3]));
+  auto b = static_cast<float> (atof (argv[4]));
+  auto c = static_cast<float> (atof (argv[5]));
+  auto d = static_cast<float> (atof (argv[6]));
 
   // Load the first file
   pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);

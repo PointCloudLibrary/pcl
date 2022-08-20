@@ -107,7 +107,7 @@ namespace pcl
 
         if (trivial_)
         {
-          const float* temp = reinterpret_cast<const float*>(&p);
+          const auto temp = reinterpret_cast<const float*>(&p);
 
           for (int i = 0; i < nr_dimensions_; ++i)
           {
@@ -120,7 +120,7 @@ namespace pcl
         }
         else
         {
-          float *temp = new float[nr_dimensions_];
+          auto temp = new float[nr_dimensions_];
           copyToFloatArray (p, temp);
 
           for (int i = 0; i < nr_dimensions_; ++i)
@@ -143,7 +143,7 @@ namespace pcl
       template <typename OutputType> void
       vectorize (const PointT &p, OutputType &out) const
       {
-        float *temp = new float[nr_dimensions_];
+        auto temp = new float[nr_dimensions_];
         copyToFloatArray (p, temp);
         if (alpha_.empty ())
         {
@@ -208,7 +208,7 @@ namespace pcl
       copyToFloatArray (const PointDefault &p, float * out) const override
       {
         // If point type is unknown, treat it as a struct/array of floats
-        const float* ptr = reinterpret_cast<const float*> (&p);
+        const auto ptr = reinterpret_cast<const float*> (&p);
         std::copy(ptr, ptr + nr_dimensions_, out);
       }
   };
@@ -274,7 +274,7 @@ namespace pcl
           const std::uint8_t * data_ptr = reinterpret_cast<const std::uint8_t *> (&p1) +
             pcl::traits::offset<PointDefault, Key>::value;
           int nr_dims = NrDims;
-          const FieldT * array = reinterpret_cast<const FieldT *> (data_ptr);
+          const auto  array = reinterpret_cast<const FieldT *> (data_ptr);
           for (int i = 0; i < nr_dims; ++i)
           {
             p2[f_idx++] = array[i];

@@ -56,7 +56,7 @@
 void
 pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned long eventid, void*)
 {
-  PCLVisualizerInteractorStyle *style = reinterpret_cast<PCLVisualizerInteractorStyle*>(caller);
+  auto style = reinterpret_cast<PCLVisualizerInteractorStyle*>(caller);
   vtkRenderWindowInteractor* iren = reinterpret_cast<pcl::visualization::PCLVisualizerInteractorStyle*>(caller)->GetInteractor ();
   if (style->CurrentMode == 0)
   {
@@ -168,12 +168,12 @@ int
 pcl::visualization::PointPickingCallback::performAreaPick (vtkRenderWindowInteractor *iren,
                                                            pcl::Indices &indices) const
 {
-  vtkAreaPicker *picker = static_cast<vtkAreaPicker*> (iren->GetPicker ());
+  auto picker = static_cast<vtkAreaPicker*> (iren->GetPicker ());
   vtkRenderer *ren = iren->FindPokedRenderer (iren->GetEventPosition ()[0], iren->GetEventPosition ()[1]);
   picker->AreaPick (x_, y_, iren->GetEventPosition ()[0], iren->GetEventPosition ()[1], ren);
   if (picker->GetDataSet ())
   {
-    vtkPolyData* points = reinterpret_cast<vtkPolyData*> (picker->GetDataSet ());
+    auto points = reinterpret_cast<vtkPolyData*> (picker->GetDataSet ());
 
     // This is a naive solution till we fugure out where to add the GlobalIds at an earlier stage
     if (!points->GetPointData ()->GetGlobalIds () ||

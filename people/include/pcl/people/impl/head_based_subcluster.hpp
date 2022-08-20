@@ -300,7 +300,7 @@ pcl::people::HeadBasedSubclustering<PointT>::subcluster (std::vector<pcl::people
   height_map_obj.setInputCloud(cloud_);
   height_map_obj.setSensorPortraitOrientation(vertical_);
   height_map_obj.setMinimumDistanceBetweenMaxima(heads_minimum_distance_);
-  for(typename std::vector<pcl::people::PersonCluster<PointT> >::iterator it = clusters.begin(); it != clusters.end(); ++it)   // for every cluster
+  for(auto it = clusters.begin(); it != clusters.end(); ++it)   // for every cluster
   {
     float height = it->getHeight();
     int number_of_points = it->getNumberPoints();

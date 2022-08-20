@@ -71,7 +71,7 @@ pcl::SVMTrain::doCrossValidation()
 {
   int total_correct = 0;
   double sumv = 0, sumy = 0, sumvv = 0, sumyy = 0, sumvy = 0;
-  double* target = Malloc(double, prob_.l);
+  auto target = Malloc(double, prob_.l);
 
   // number of fold for the cross validation (n of folds = number of splitting of the
   // input dataset)

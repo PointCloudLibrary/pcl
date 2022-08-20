@@ -91,7 +91,7 @@ main (int argc, char** argv)
     return (-1);
 
   // Compute the bounding box diagonal
-  float diag = static_cast<float> (sqrt (my_sqr (b[1]-b[0]) + my_sqr (b[3]-b[2]) + my_sqr (b[5]-b[4])));
+  auto diag = static_cast<float> (sqrt (my_sqr (b[1]-b[0]) + my_sqr (b[3]-b[2]) + my_sqr (b[5]-b[4])));
 
   // Create the recognition object (we need it only for its hash table)
   ObjRecRANSAC objrec (diag/8.0f, diag/60.0f);

@@ -124,7 +124,7 @@ duplicateColumns (const PointCloud<PointT>& input, PointCloud<PointT>& output,
   for (std::size_t j = 0; j < old_height; ++j)
     for(std::size_t i = 0; i < amount; ++i)
     {
-      typename PointCloud<PointT>::iterator start = output.begin () + (j * new_width);
+      auto start = output.begin () + (j * new_width);
       output.insert (start, *start);
       start = output.begin () + (j * new_width) + old_width + i;
       output.insert (start, *start);
@@ -182,7 +182,7 @@ mirrorColumns (const PointCloud<PointT>& input, PointCloud<PointT>& output,
   for (std::size_t j = 0; j < old_height; ++j)
     for(std::size_t i = 0; i < amount; ++i)
     {
-      typename PointCloud<PointT>::iterator start = output.begin () + (j * new_width);
+      auto start = output.begin () + (j * new_width);
       output.insert (start, *(start + 2*i));
       start = output.begin () + (j * new_width) + old_width + 2*i;
       output.insert (start+1, *(start - 2*i));
@@ -254,7 +254,7 @@ deleteCols (const PointCloud<PointT>& input, PointCloud<PointT>& output,
   std::uint32_t new_width = old_width - 2 * amount;
   for(std::size_t j = 0; j < old_height; j++)
   {
-    typename PointCloud<PointT>::iterator start = output.begin () + j * new_width;
+    auto start = output.begin () + j * new_width;
     output.erase (start, start + amount);
     start = output.begin () + (j+1) * new_width;
     output.erase (start, start + amount);

@@ -235,8 +235,8 @@ main (int argc, char** argv)
   
   // parse optional input arguments from the command line
   unsigned int k = default_cluster_size;
-  float normal_radius_search = static_cast<float> (default_normal_radius_search);
-  float fpfh_radius_search = static_cast<float> (default_fpfh_radius_search);
+  auto normal_radius_search = static_cast<float> (default_normal_radius_search);
+  auto fpfh_radius_search = static_cast<float> (default_fpfh_radius_search);
 
   parse_argument (argc, argv, "-k", k);
   parse_argument (argc, argv, "-normal-radius-search", normal_radius_search);

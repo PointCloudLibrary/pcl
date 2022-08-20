@@ -302,7 +302,7 @@ update (CallbackParameters* params)
   std::sort(accepted_hypotheses.begin (), accepted_hypotheses.end (), compareHypotheses);
 
   // Show the hypotheses
-  for ( std::vector<Hypothesis>::iterator acc_hypo = accepted_hypotheses.begin () ; i < params->num_hypotheses_to_show_ && acc_hypo != accepted_hypotheses.end () ; ++i, ++acc_hypo )
+  for ( auto acc_hypo = accepted_hypotheses.begin () ; i < params->num_hypotheses_to_show_ && acc_hypo != accepted_hypotheses.end () ; ++i, ++acc_hypo )
   {
     // Visualize the orientation as a tripod
     char frame_name[128];
@@ -383,7 +383,7 @@ update (CallbackParameters* params)
 void
 keyboardCB (const pcl::visualization::KeyboardEvent &event, void* params_void)
 {
-  CallbackParameters* params = static_cast<CallbackParameters*> (params_void);
+  auto params = static_cast<CallbackParameters*> (params_void);
 
   if (event.getKeyCode () == 13 /*enter*/ && event.keyUp ())
     update (params);
@@ -392,7 +392,7 @@ keyboardCB (const pcl::visualization::KeyboardEvent &event, void* params_void)
     // Switch models visibility
     params->show_models_ = !params->show_models_;
 
-    for ( std::list<vtkActor*>::iterator it = params->model_actors_.begin () ; it != params->model_actors_.end () ; ++it )
+    for ( auto it = params->model_actors_.begin () ; it != params->model_actors_.end () ; ++it )
       (*it)->SetVisibility (static_cast<int> (params->show_models_));
 
     params->viz_.getRenderWindow ()->Render ();

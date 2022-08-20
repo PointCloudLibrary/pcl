@@ -34,7 +34,7 @@ void pcl::RFFaceDetectorTrainer::trainWithDataProvider()
   if (use_normals_)
     fhda.setNumChannels (4);
 
-  pcl::TernaryTreeMissingDataBranchEstimator * btt = new pcl::TernaryTreeMissingDataBranchEstimator ();
+  auto  btt = new pcl::TernaryTreeMissingDataBranchEstimator ();
   pcl::face_detection::PoseClassRegressionVarianceStatsEstimator<float, NodeType, std::vector<face_detection::TrainingExample>, int> rse (btt);
 
   std::vector<float> thresholds_;
@@ -276,7 +276,7 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
 
   int element_stride = sizeof(pcl::PointXYZ) / sizeof(float);
   int row_stride = element_stride * cloud->width;
-  const float *data = reinterpret_cast<const float*> (&(*cloud)[0]);
+  const auto data = reinterpret_cast<const float*> (&(*cloud)[0]);
   integral_image_depth->setInput (data + 2, cloud->width, cloud->height, element_stride, row_stride);
 
   //Compute normals and normal integral images
@@ -302,15 +302,15 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
   if (use_normals_)
   {
     integral_image_normal_x.reset (new pcl::IntegralImage2D<float, 1> (false));
-    const float *data_nx = reinterpret_cast<const float*> (&(*normals)[0]);
+    const auto data_nx = reinterpret_cast<const float*> (&(*normals)[0]);
     integral_image_normal_x->setInput (data_nx, normals->width, normals->height, element_stride_normal, row_stride_normal);
 
     integral_image_normal_y.reset (new pcl::IntegralImage2D<float, 1> (false));
-    const float *data_ny = reinterpret_cast<const float*> (&(*normals)[0]);
+    const auto data_ny = reinterpret_cast<const float*> (&(*normals)[0]);
     integral_image_normal_y->setInput (data_ny + 1, normals->width, normals->height, element_stride_normal, row_stride_normal);
 
     integral_image_normal_z.reset (new pcl::IntegralImage2D<float, 1> (false));
-    const float *data_nz = reinterpret_cast<const float*> (&(*normals)[0]);
+    const auto data_nz = reinterpret_cast<const float*> (&(*normals)[0]);
     integral_image_normal_z->setInput (data_nz + 2, normals->width, normals->height, element_stride_normal, row_stride_normal);
   }
 
@@ -324,7 +324,7 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
       fhda.setNumChannels (4);
 
     //pcl::BinaryTreeThresholdBasedBranchEstimator * btt = new pcl::BinaryTreeThresholdBasedBranchEstimator ();
-    pcl::TernaryTreeMissingDataBranchEstimator * btt = new pcl::TernaryTreeMissingDataBranchEstimator ();
+    auto  btt = new pcl::TernaryTreeMissingDataBranchEstimator ();
     face_detection::PoseClassRegressionVarianceStatsEstimator<float, NodeType, std::vector<face_detection::TrainingExample>, int> rse (btt);
 
     std::vector<float> weights(cloud->size(), 0.f);

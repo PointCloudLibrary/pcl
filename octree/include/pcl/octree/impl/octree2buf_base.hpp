@@ -491,7 +491,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::findLeafRecursive(
     // we reached leaf node level
     if (branch_arg->hasChild(buffer_selector_, child_idx)) {
       // return existing leaf node
-      LeafNode* leaf_node =
+      auto leaf_node =
           static_cast<LeafNode*>(branch_arg->getChildPtr(buffer_selector_, child_idx));
       result_arg = leaf_node->getContainerPtr();
     }
@@ -601,7 +601,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::serializeTreeRecursive(
         break;
       }
       case LEAF_NODE: {
-        LeafNode* child_leaf = static_cast<LeafNode*>(child_node);
+        auto child_leaf = static_cast<LeafNode*>(child_node);
 
         if (new_leafs_filter_arg) {
           if (!branch_arg->hasChild(!buffer_selector_, child_idx)) {

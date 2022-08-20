@@ -1189,7 +1189,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
         pointCandidates.pop ();
 
       // copy results into vectors
-      unsigned idx = static_cast<unsigned> (pointCandidates.size ());
+      auto idx = static_cast<unsigned> (pointCandidates.size ());
       k_indices_bruteforce.resize (idx);
       k_sqr_distances_bruteforce.resize (idx);
       while (!pointCandidates.empty ())

@@ -63,8 +63,8 @@ pcl::registration::ELCH<PointT>::loopOptimizerAlgorithm(LOAGraph& g, double* wei
 
   int* p = new int[num_vertices(g)];
   int* p_min = new int[num_vertices(g)];
-  double* d = new double[num_vertices(g)];
-  double* d_min = new double[num_vertices(g)];
+  auto d = new double[num_vertices(g)];
+  auto d_min = new double[num_vertices(g)];
   bool do_swap = false;
   std::list<int>::iterator start_min, end_min;
 

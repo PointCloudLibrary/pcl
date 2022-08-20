@@ -62,8 +62,8 @@ ParticleFilterTracker<PointInT, StateT>::genAliasTable(
 {
   /* generate an alias table, a and q */
   std::vector<int> HL(particles->size());
-  std::vector<int>::iterator H = HL.begin();
-  std::vector<int>::iterator L = HL.end() - 1;
+  auto H = HL.begin();
+  auto L = HL.end() - 1;
   const auto num = particles->size();
   for (std::size_t i = 0; i < num; i++)
     q[i] = (*particles)[i].weight * static_cast<float>(num);

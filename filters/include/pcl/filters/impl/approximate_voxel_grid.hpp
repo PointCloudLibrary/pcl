@@ -94,7 +94,7 @@ pcl::ApproximateVoxelGrid<PointT>::applyFilter (PointCloud &output)
     int ix = static_cast<int> (std::floor (point.x * inverse_leaf_size_[0]));
     int iy = static_cast<int> (std::floor (point.y * inverse_leaf_size_[1]));
     int iz = static_cast<int> (std::floor (point.z * inverse_leaf_size_[2]));
-    unsigned int hash = static_cast<unsigned int> ((ix * 7171 + iy * 3079 + iz * 4231) & (histsize_ - 1));
+    auto hash = static_cast<unsigned int> ((ix * 7171 + iy * 3079 + iz * 4231) & (histsize_ - 1));
     he *hhe = &history_[hash];
     if (hhe->count && ((ix != hhe->ix) || (iy != hhe->iy) || (iz != hhe->iz))) 
     {

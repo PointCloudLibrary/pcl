@@ -117,7 +117,7 @@ pcl::Permutohedral::init(const std::vector<float>& feature,
 
     // Find the closest 0-colored simplex through rounding
     float down_factor = 1.0f / static_cast<float>(d_ + 1);
-    float up_factor = static_cast<float>(d_ + 1);
+    auto up_factor = static_cast<float>(d_ + 1);
     int sum = 0;
     for (int j = 0; j <= d_; j++) {
       float rd = std::floor(0.5f + (down_factor * elevated(j)));
@@ -336,13 +336,13 @@ pcl::Permutohedral::initOLD(const std::vector<float>& feature,
   barycentricOLD_ = new float[(d_ + 1) * N_];
 
   // Allocate the local memory
-  float* scale_factor = new float[d_];
-  float* elevated = new float[d_ + 1];
-  float* rem0 = new float[d_ + 1];
-  float* barycentric = new float[d_ + 2];
+  auto scale_factor = new float[d_];
+  auto elevated = new float[d_ + 1];
+  auto rem0 = new float[d_ + 1];
+  auto barycentric = new float[d_ + 2];
   int* rank = new int[d_ + 1];
-  short* canonical = new short[(d_ + 1) * (d_ + 1)];
-  short* key = new short[d_ + 1];
+  auto canonical = new short[(d_ + 1) * (d_ + 1)];
+  auto key = new short[d_ + 1];
 
   // Compute the canonical simplex
   for (int i = 0; i <= d_; i++) {
@@ -379,7 +379,7 @@ pcl::Permutohedral::initOLD(const std::vector<float>& feature,
 
     // Find the closest 0-colored simplex through rounding
     float down_factor = 1.0f / static_cast<float>(d_ + 1);
-    float up_factor = static_cast<float>(d_ + 1);
+    auto up_factor = static_cast<float>(d_ + 1);
     int sum = 0;
     for (int i = 0; i <= d_; i++) {
       int rd = static_cast<int>(pcl_round(down_factor * elevated[i]));
@@ -452,8 +452,8 @@ pcl::Permutohedral::initOLD(const std::vector<float>& feature,
   delete[] blur_neighborsOLD_;
   blur_neighborsOLD_ = new Neighbors[(d_ + 1) * M_];
 
-  short* n1 = new short[d_ + 1];
-  short* n2 = new short[d_ + 1];
+  auto n1 = new short[d_ + 1];
+  auto n2 = new short[d_ + 1];
 
   // For each of d+1 axes,
   for (int j = 0; j <= d_; j++) {
@@ -496,8 +496,8 @@ pcl::Permutohedral::computeOLD(std::vector<float>& out,
     out_size = N_ - out_offset;
 
   // Shift all values by 1 such that -1 -> 0 (used for blurring)
-  float* values = new float[(M_ + 2) * value_size];
-  float* new_values = new float[(M_ + 2) * value_size];
+  auto values = new float[(M_ + 2) * value_size];
+  auto new_values = new float[(M_ + 2) * value_size];
 
   for (int i = 0; i < (M_ + 2) * value_size; i++)
     values[i] = new_values[i] = 0;

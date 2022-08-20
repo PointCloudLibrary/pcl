@@ -220,8 +220,8 @@ namespace pcl
       double v,m;
       int *index=new int[dim];
       int *set=new int[dim];
-      double* myEqns=new double[dim*dim];
-      double* myValues=new double[dim];
+      auto myEqns=new double[dim*dim];
+      auto myValues=new double[dim];
 
       for(i=0;i<dim*dim;i++){myEqns[i]=eqns[i];}
       for(i=0;i<dim;i++){
