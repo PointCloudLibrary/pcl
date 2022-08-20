@@ -76,7 +76,7 @@ public:
 
   OpenNIPassthrough(pcl::OpenNIGrabber& grabber);
 
-  ~OpenNIPassthrough()
+  ~OpenNIPassthrough() override
   {
     if (grabber_.isRunning())
       grabber_.stop();
@@ -86,6 +86,9 @@ public:
   cloud_cb(const CloudConstPtr& cloud);
 
 protected:
+  void
+  refreshView();
+
   pcl::visualization::PCLVisualizer::Ptr vis_;
   pcl::OpenNIGrabber& grabber_;
   std::string device_id_;

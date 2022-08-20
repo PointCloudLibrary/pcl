@@ -6,6 +6,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/histogram_visualizer.h>
+#include <boost/algorithm/string/split.hpp> // for split
 
 int 
 main (int argc, char ** argv)

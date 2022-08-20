@@ -115,7 +115,7 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
         for (int d_idx = 0; d_idx < num_of_ngbr; d_idx++)
         {
           int nghr_idx = curr_idx + directions[d_idx].d_index;
-          assert (nghr_idx >= 0 && nghr_idx < input_->size ());
+          assert (nghr_idx >= 0 && static_cast<std::size_t>(nghr_idx) < input_->size ());
           if (!std::isfinite ((*input_)[nghr_idx].z))
           {
             found_invalid_neighbor = true;
@@ -158,7 +158,7 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
           for (const auto &direction : directions)
           {
             int nghr_idx = curr_idx + direction.d_index;
-            assert (nghr_idx >= 0 && nghr_idx < input_->size ());
+            assert (nghr_idx >= 0 && static_cast<std::size_t>(nghr_idx) < input_->size ());
             if (!std::isfinite ((*input_)[nghr_idx].z))
             {
               dx += direction.d_x;

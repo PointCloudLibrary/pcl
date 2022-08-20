@@ -48,7 +48,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computePointPrincipalCurvatures (
-      const pcl::PointCloud<PointNT> &normals, int p_idx, const std::vector<int> &indices,
+      const pcl::PointCloud<PointNT> &normals, int p_idx, const pcl::Indices &indices,
       float &pcx, float &pcy, float &pcz, float &pc1, float &pc2)
 {
   EIGEN_ALIGN16 Eigen::Matrix3f I = Eigen::Matrix3f::Identity ();
@@ -116,7 +116,7 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computeFeature
 {
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices (k_);
+  pcl::Indices nn_indices (k_);
   std::vector<float> nn_dists (k_);
 
   output.is_dense = true;

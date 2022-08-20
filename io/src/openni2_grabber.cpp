@@ -48,9 +48,9 @@
 #include <pcl/point_types.h>
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
-#include <pcl/io/boost.h>
 #include <pcl/exceptions.h>
 #include <iostream>
+#include <boost/filesystem.hpp> // for exists
 
 using namespace pcl::io::openni2;
 

@@ -54,7 +54,7 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
     return;
   }
 
-  std::vector<int> k_indices;
+  pcl::Indices k_indices;
   std::vector<float> k_sqr_distances;
 
   tree_->setInputCloud (input_);

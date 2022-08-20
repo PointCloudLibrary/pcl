@@ -154,7 +154,7 @@ pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (Indices &indices)
       }
       else if (extract_removed_indices_)
       {
-        (*removed_indices_)[removed_indices_count++] = static_cast<int> (index);
+        (*removed_indices_)[removed_indices_count++] = index;
       }
     }
     // If inside the cropbox
@@ -162,7 +162,7 @@ pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (Indices &indices)
     {
       if (negative_ && extract_removed_indices_)
       {
-        (*removed_indices_)[removed_indices_count++] = static_cast<int> (index);
+        (*removed_indices_)[removed_indices_count++] = index;
       }
       else if (!negative_) {
         indices[indices_count++] = index;

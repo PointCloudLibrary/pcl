@@ -13,12 +13,12 @@ namespace pcl
   {
      ::pcl::PCLHeader  header;
 
-    index_t height = 0;
-    index_t width = 0;
+    uindex_t height = 0;
+    uindex_t width = 0;
     std::string encoding;
 
     std::uint8_t is_bigendian = 0;
-    index_t step = 0;
+    uindex_t step = 0;
 
     std::vector<std::uint8_t> data;
 

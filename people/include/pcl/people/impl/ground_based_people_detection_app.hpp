@@ -359,7 +359,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
   filter();
 
   // Ground removal and update:
-  pcl::IndicesPtr inliers(new std::vector<int>);
+  pcl::IndicesPtr inliers(new pcl::Indices);
   typename pcl::SampleConsensusModelPlane<PointT>::Ptr ground_model (new pcl::SampleConsensusModelPlane<PointT> (cloud_filtered_));
   ground_model->selectWithinDistance(ground_coeffs_transformed_, 2 * voxel_size_, *inliers);
   no_ground_cloud_ = PointCloudPtr (new PointCloud);
@@ -416,8 +416,5 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
 }
 
 template <typename PointT>
-pcl::people::GroundBasedPeopleDetectionApp<PointT>::~GroundBasedPeopleDetectionApp ()
-{
-  // TODO Auto-generated destructor stub
-}
+pcl::people::GroundBasedPeopleDetectionApp<PointT>::~GroundBasedPeopleDetectionApp () = default;
 #endif /* PCL_PEOPLE_GROUND_BASED_PEOPLE_DETECTION_APP_HPP_ */

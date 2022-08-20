@@ -221,9 +221,8 @@ public:
 
     std::size_t j = 0;
     for (std::size_t i = 0; i < keypoints->size(); ++i) {
-      const PointT& pt =
-          (*cloud)(static_cast<long unsigned int>((*keypoints)[i].u),
-                   static_cast<long unsigned int>((*keypoints)[i].v));
+      const PointT& pt = (*cloud)(static_cast<long unsigned int>((*keypoints)[i].u),
+                                  static_cast<long unsigned int>((*keypoints)[i].v));
       if (!std::isfinite(pt.x) || !std::isfinite(pt.y) || !std::isfinite(pt.z))
         continue;
 

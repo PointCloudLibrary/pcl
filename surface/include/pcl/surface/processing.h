@@ -57,8 +57,8 @@ namespace pcl
   class CloudSurfaceProcessing : public PCLBase<PointInT>
   {
     public:
-      typedef shared_ptr<CloudSurfaceProcessing<PointInT, PointOutT> > Ptr;
-      typedef shared_ptr<const CloudSurfaceProcessing<PointInT, PointOutT> > ConstPtr;
+      using Ptr = shared_ptr<CloudSurfaceProcessing<PointInT, PointOutT> >;
+      using ConstPtr = shared_ptr<const CloudSurfaceProcessing<PointInT, PointOutT> >;
 
       using PCLBase<PointInT>::input_;
       using PCLBase<PointInT>::indices_;
@@ -71,7 +71,7 @@ namespace pcl
       {};
       
       /** \brief Empty destructor */
-      ~CloudSurfaceProcessing () {}
+      ~CloudSurfaceProcessing () override = default;
 
       /** \brief Process the input cloud and store the results
         * \param[out] output the cloud where the results will be stored
@@ -100,10 +100,10 @@ namespace pcl
       using PolygonMeshConstPtr = PolygonMesh::ConstPtr;
 
       /** \brief Constructor. */
-      MeshProcessing () {}
+      MeshProcessing () = default;
 
       /** \brief Destructor. */
-      virtual ~MeshProcessing () {}
+      virtual ~MeshProcessing () = default;
 
       /** \brief Set the input mesh that we want to process
         * \param[in] input the input polygonal mesh

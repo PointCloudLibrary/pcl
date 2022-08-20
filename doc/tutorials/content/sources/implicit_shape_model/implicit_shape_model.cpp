@@ -29,7 +29,7 @@ main (int argc, char** argv)
     if ( pcl::io::loadPCDFile <pcl::PointXYZ> (argv[i_cloud * 2 + 1], *tr_cloud) == -1 )
       return (-1);
 
-    pcl::PointCloud<pcl::Normal>::Ptr tr_normals = (new pcl::PointCloud<pcl::Normal>)->makeShared ();
+    pcl::PointCloud<pcl::Normal>::Ptr tr_normals (new pcl::PointCloud<pcl::Normal>);
     normal_estimator.setInputCloud (tr_cloud);
     normal_estimator.compute (*tr_normals);
 
@@ -65,7 +65,7 @@ main (int argc, char** argv)
   if ( pcl::io::loadPCDFile <pcl::PointXYZ> (argv[argc - 2], *testing_cloud) == -1 )
     return (-1);
 
-  pcl::PointCloud<pcl::Normal>::Ptr testing_normals = (new pcl::PointCloud<pcl::Normal>)->makeShared ();
+  pcl::PointCloud<pcl::Normal>::Ptr testing_normals (new pcl::PointCloud<pcl::Normal>);
   normal_estimator.setInputCloud (testing_cloud);
   normal_estimator.compute (*testing_normals);
 
@@ -80,7 +80,7 @@ main (int argc, char** argv)
   std::vector<pcl::ISMPeak, Eigen::aligned_allocator<pcl::ISMPeak> > strongest_peaks;
   vote_list->findStrongestPeaks (strongest_peaks, testing_class, radius, sigma);
 
-  pcl::PointCloud <pcl::PointXYZRGB>::Ptr colored_cloud = (new pcl::PointCloud<pcl::PointXYZRGB>)->makeShared ();
+  pcl::PointCloud <pcl::PointXYZRGB>::Ptr colored_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
   colored_cloud->height = 0;
   colored_cloud->width = 1;
 

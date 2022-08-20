@@ -198,13 +198,12 @@ public:
                       "approx_plane_%02zu_%03zu",
                       static_cast<std::size_t>(i),
                       static_cast<std::size_t>(idx));
-        viewer.addLine(
-            (*approx_contour)[idx],
-            (*approx_contour)[(idx + 1) % approx_contour->size()],
-            0.5 * red[i],
-            0.5 * grn[i],
-            0.5 * blu[i],
-            name);
+        viewer.addLine((*approx_contour)[idx],
+                       (*approx_contour)[(idx + 1) % approx_contour->size()],
+                       0.5 * red[i],
+                       0.5 * grn[i],
+                       0.5 * blu[i],
+                       name);
       }
     }
   }

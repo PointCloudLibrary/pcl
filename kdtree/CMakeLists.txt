@@ -4,7 +4,7 @@ set(SUBSYS_DEPS common)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
-PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} EXT_DEPS flann)
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS flann)
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
@@ -19,7 +19,6 @@ set(srcs
 set(incs
   "include/pcl/${SUBSYS_NAME}/kdtree.h"
   "include/pcl/${SUBSYS_NAME}/io.h"
-  "include/pcl/${SUBSYS_NAME}/flann.h"
   "include/pcl/${SUBSYS_NAME}/kdtree_flann.h"
 )
 

@@ -64,6 +64,8 @@ struct PoseEstimate {
                    typename pcl::PointCloud<PointT>::ConstPtr())
   : pose(p), cloud(c)
   {}
+
+  PCL_MAKE_ALIGNED_OPERATOR_NEW;
 };
 } // namespace registration
 } // namespace pcl

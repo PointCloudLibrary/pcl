@@ -139,13 +139,13 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
   Eigen::Map<Eigen::Vector3f> normal (rf + 6);
 
   // Find every point within specified search_radius_
-  std::vector<int> nn_indices;
+  pcl::Indices nn_indices;
   std::vector<float> nn_dists;
   const std::size_t neighb_cnt = searchForNeighbors ((*indices_)[index], search_radius_, nn_indices, nn_dists);
   if (neighb_cnt == 0)
   {
     std::fill (desc.begin (), desc.end (), std::numeric_limits<float>::quiet_NaN ());
-    std::fill (rf, rf + 9, 0.f);
+    std::fill_n (rf, 9, 0.f);
     return (false);
   }
 
@@ -156,6 +156,12 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
   Vector3fMapConst origin = (*input_)[(*indices_)[index]].getVector3fMap ();
   // Get origin normal
   // Use pre-computed normals
+  if (!pcl::isNormalFinite(normals[minIndex]))
+  {
+    std::fill (desc.begin (), desc.end (), std::numeric_limits<float>::quiet_NaN ());
+    std::fill (rf, rf + 9, 0.f);
+    return (false);
+  }
   normal = normals[minIndex].getNormalVector3fMap ();
 
   // Compute and store the RF direction
@@ -218,7 +224,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
     const auto l = std::distance(phi_divisions_.cbegin (), std::prev(phi_min));
 
     // Local point density = number of points in a sphere of radius "point_density_radius_" around the current neighbour
-    std::vector<int> neighbour_indices;
+    pcl::Indices neighbour_indices;
     std::vector<float> neighbour_distances;
     int point_density = searchForNeighbors (*surface_, nn_indices[ne], point_density_radius_, neighbour_indices, neighbour_distances);
     // point_density is NOT always bigger than 0 (on error, searchForNeighbors returns 0), so we must check for that
@@ -240,7 +246,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
   } // end for each neighbour
 
   // 3DSC does not define a repeatable local RF, we set it to zero to signal it to the user
-  std::fill (rf, rf + 9, 0);
+  std::fill_n (rf, 9, 0);
   return (true);
 }
 
@@ -259,9 +265,9 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computeFeature (Poi
     // If the point is not finite, set the descriptor to NaN and continue
     if (!isFinite ((*input_)[(*indices_)[point_index]]))
     {
-      std::fill (output[point_index].descriptor, output[point_index].descriptor + descriptor_length_,
-                 std::numeric_limits<float>::quiet_NaN ());
-      std::fill (output[point_index].rf, output[point_index].rf + 9, 0);
+      std::fill_n (output[point_index].descriptor, descriptor_length_,
+                   std::numeric_limits<float>::quiet_NaN ());
+      std::fill_n (output[point_index].rf, 9, 0);
       output.is_dense = false;
       continue;
     }
@@ -269,7 +275,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computeFeature (Poi
     std::vector<float> descriptor (descriptor_length_);
     if (!computePoint (point_index, *normals_, output[point_index].rf, descriptor))
       output.is_dense = false;
-    std::copy (descriptor.begin (), descriptor.end (), output[point_index].descriptor);
+    std::copy (descriptor.cbegin (), descriptor.cend (), output[point_index].descriptor);
   }
 }
 

@@ -135,14 +135,24 @@ namespace pcl
     inline PolynomialPartialDerivative
     getPolynomialPartialDerivative (const double u, const double v) const;
 
-    /** \brief Calculate the principle curvatures using the polynomial surface.
+    /** \brief Calculate the principal curvatures using the polynomial surface.
       * \param[in] u The u-coordinate of the point in local MLS frame.
       * \param[in] v The v-coordinate of the point in local MLS frame.
-      * \return The principle curvature [k1, k2] at the provided uv coordinates.
-      * \note If an error occurs the MLS_MINIMUM_PRINCIPLE_CURVATURE is returned.
+      * \return The principal curvature [k1, k2] at the provided uv coordinates.
+      * \note If an error occurs then 1e-5 is returned.
       */
+    Eigen::Vector2f
+    calculatePrincipalCurvatures (const double u, const double v) const;
+
+    /** \brief Calculate the principal curvatures using the polynomial surface.
+      * \param[in] u The u-coordinate of the point in local MLS frame.
+      * \param[in] v The v-coordinate of the point in local MLS frame.
+      * \return The principal curvature [k1, k2] at the provided uv coordinates.
+      * \note If an error occurs then 1e-5 is returned.
+      */
+    PCL_DEPRECATED(1, 15, "use calculatePrincipalCurvatures() instead")
     inline Eigen::Vector2f
-    calculatePrincipleCurvatures (const double u, const double v) const;
+    calculatePrincipleCurvatures (const double u, const double v) const { return calculatePrincipalCurvatures(u, v); };
 
     /** \brief Project a point orthogonal to the polynomial surface.
       * \param[in] u The u-coordinate of the point in local MLS frame.
@@ -196,7 +206,8 @@ namespace pcl
     inline MLSProjectionResults
     projectQueryPoint (ProjectionMethod method, int required_neighbors = 0) const;
 
-    /** \brief Smooth a given point and its neighborghood using Moving Least Squares.
+    /** \brief Smooth a given point and its neighborhood using Moving Least Squares.
+      * \param[in] cloud the input cloud, used together with index and nn_indices
       * \param[in] index the index of the query point in the input cloud
       * \param[in] nn_indices the set of nearest neighbors indices for pt
       * \param[in] search_radius the search radius used to find nearest neighbors for pt
@@ -205,8 +216,8 @@ namespace pcl
       */
     template <typename PointT> void
     computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
-                       int index,
-                       const std::vector<int> &nn_indices,
+                       pcl::index_t index,
+                       const pcl::Indices &nn_indices,
                        double search_radius,
                        int polynomial_order = 2,
                        std::function<double(const double)> weight_func = {});
@@ -251,8 +262,8 @@ namespace pcl
   class MovingLeastSquares : public CloudSurfaceProcessing<PointInT, PointOutT>
   {
     public:
-      typedef shared_ptr<MovingLeastSquares<PointInT, PointOutT> > Ptr;
-      typedef shared_ptr<const MovingLeastSquares<PointInT, PointOutT> > ConstPtr;
+      using Ptr = shared_ptr<MovingLeastSquares<PointInT, PointOutT> >;
+      using ConstPtr = shared_ptr<const MovingLeastSquares<PointInT, PointOutT> >;
 
       using PCLBase<PointInT>::input_;
       using PCLBase<PointInT>::indices_;
@@ -273,7 +284,7 @@ namespace pcl
       using PointCloudInPtr = typename PointCloudIn::Ptr;
       using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
 
-      using SearchMethod = std::function<int (int, double, std::vector<int> &, std::vector<float> &)>;
+      using SearchMethod = std::function<int (pcl::index_t, double, pcl::Indices &, std::vector<float> &)>;
 
       enum UpsamplingMethod
       {
@@ -314,7 +325,7 @@ namespace pcl
                               {};
 
       /** \brief Empty destructor */
-      ~MovingLeastSquares () {}
+      ~MovingLeastSquares () override = default;
 
 
       /** \brief Set whether the algorithm should also store the normals computed
@@ -331,7 +342,7 @@ namespace pcl
       {
         tree_ = tree;
         // Declare the search locator definition
-        search_method_ = [this] (int index, double radius, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)
+        search_method_ = [this] (pcl::index_t index, double radius, pcl::Indices& k_indices, std::vector<float>& k_sqr_distances)
         {
           return tree_->radiusSearch (index, radius, k_indices, k_sqr_distances, 0);
         };
@@ -580,7 +591,8 @@ namespace pcl
 
           MLSVoxelGrid (PointCloudInConstPtr& cloud,
                         IndicesPtr &indices,
-                        float voxel_size);
+                        float voxel_size,
+                        int dilation_iteration_num);
 
           void
           dilate ();
@@ -618,7 +630,7 @@ namespace pcl
               point[i] = static_cast<Eigen::Vector3f::Scalar> (index_3d[i]) * voxel_size_ + bounding_min_[i];
           }
 
-          typedef std::map<std::uint64_t, Leaf> HashMap;
+          using HashMap = std::map<std::uint64_t, Leaf>;
           HashMap voxel_grid_;
           Eigen::Vector4f bounding_min_, bounding_max_;
           std::uint64_t data_size_;
@@ -645,7 +657,7 @@ namespace pcl
         * \param[out] sqr_distances the resultant squared distances from the query point to the neighbors within search_radius_
         */
       inline int
-      searchForNeighbors (int index, std::vector<int> &indices, std::vector<float> &sqr_distances) const
+      searchForNeighbors (pcl::index_t index, pcl::Indices &indices, std::vector<float> &sqr_distances) const
       {
         return (search_method_ (index, search_radius_, indices, sqr_distances));
       }
@@ -662,8 +674,8 @@ namespace pcl
         * (used only in the case of VOXEL_GRID_DILATION or DISTINCT_CLOUD upsampling)
         */
       void
-      computeMLSPointNormal (int index,
-                             const std::vector<int> &nn_indices,
+      computeMLSPointNormal (pcl::index_t index,
+                             const pcl::Indices &nn_indices,
                              PointCloudOut &projected_points,
                              NormalCloud &projected_points_normals,
                              PointIndices &corresponding_input_indices,
@@ -680,7 +692,7 @@ namespace pcl
         * \param[out] corresponding_input_indices the set of indices with each point in output having the corresponding point in input
         */
       void
-      addProjectedPointNormal (int index,
+      addProjectedPointNormal (pcl::index_t index,
                                const Eigen::Vector3d &point,
                                const Eigen::Vector3d &normal,
                                double curvature,

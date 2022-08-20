@@ -40,13 +40,12 @@
 #include <pcl/io/image_grabber.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
-#include <pcl/visualization/boost.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/image_viewer.h>
-#include <pcl/io/pcd_io.h>
 
 #include <mutex>
 #include <thread>
+#include <boost/filesystem.hpp> // for exists
 
 using namespace std::chrono_literals;
 using pcl::console::print_error;

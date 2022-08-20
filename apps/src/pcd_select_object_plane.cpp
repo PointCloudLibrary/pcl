@@ -47,6 +47,7 @@
 #include <pcl/filters/project_inliers.h>
 #include <pcl/geometry/polygon_operations.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/sample_consensus/sac_model_plane.h> // for pointToPlaneDistance
 #include <pcl/segmentation/edge_aware_plane_comparator.h>
 #include <pcl/segmentation/euclidean_cluster_comparator.h>
 #include <pcl/segmentation/extract_clusters.h>
@@ -148,7 +149,7 @@ public:
    * \param[out] object the segmented resultant object
    */
   void
-  segmentObject(int picked_idx,
+  segmentObject(pcl::index_t picked_idx,
                 const typename PointCloud<PointT>::ConstPtr& cloud,
                 const PointIndices::Ptr& plane_indices,
                 PointCloud<PointT>& object)
@@ -178,9 +179,8 @@ public:
     exppd.setInputCloud(cloud);
     exppd.setIndices(indices_but_the_plane);
     exppd.setInputPlanarHull(plane_hull);
-    exppd.setViewPoint((*cloud)[picked_idx].x,
-                       (*cloud)[picked_idx].y,
-                       (*cloud)[picked_idx].z);
+    exppd.setViewPoint(
+        (*cloud)[picked_idx].x, (*cloud)[picked_idx].y, (*cloud)[picked_idx].z);
     exppd.setHeightLimits(0.001, 0.5); // up to half a meter
     exppd.segment(*points_above_plane);
 
@@ -257,7 +257,7 @@ public:
   /////////////////////////////////////////////////////////////////////////
   void
   segment(const PointT& picked_point,
-          int picked_idx,
+          pcl::index_t picked_idx,
           PlanarRegion<PointT>& region,
           typename PointCloud<PointT>::Ptr& object)
   {
@@ -440,7 +440,7 @@ public:
     if (idx == -1)
       return;
 
-    std::vector<int> indices(1);
+    pcl::Indices indices(1);
     std::vector<float> distances(1);
 
     // Get the point that was picked

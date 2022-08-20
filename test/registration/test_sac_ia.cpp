@@ -59,7 +59,7 @@ TEST (PCL, SampleConsensusInitialAlignment)
   // Transform the source cloud by a large amount
   Eigen::Vector3f initial_offset (100, 0, 0);
   float angle = static_cast<float> (M_PI) / 2.0f;
-  Eigen::Quaternionf initial_rotation (std::cos (angle / 2), 0, 0, sin (angle / 2));
+  Eigen::Quaternionf initial_rotation (std::cos (angle / 2), 0, 0, std::sin (angle / 2));
   PointCloud<PointXYZ> cloud_source_transformed;
   transformPointCloud (cloud_source, cloud_source_transformed, initial_offset, initial_rotation);
 
@@ -74,26 +74,26 @@ TEST (PCL, SampleConsensusInitialAlignment)
   NormalEstimation<PointXYZ, Normal> norm_est;
   norm_est.setSearchMethod (tree);
   norm_est.setRadiusSearch (0.05);
-  PointCloud<Normal> normals;
+  PointCloud<Normal>::Ptr normals(new PointCloud<Normal>);
 
   FPFHEstimation<PointXYZ, Normal, FPFHSignature33> fpfh_est;
   fpfh_est.setSearchMethod (tree);
   fpfh_est.setRadiusSearch (0.05);
-  PointCloud<FPFHSignature33> features_source, features_target;
+  PointCloud<FPFHSignature33>::Ptr features_source(new PointCloud<FPFHSignature33>), features_target(new PointCloud<FPFHSignature33>);
 
   // Estimate the FPFH features for the source cloud
   norm_est.setInputCloud (cloud_source_ptr);
-  norm_est.compute (normals);
+  norm_est.compute (*normals);
   fpfh_est.setInputCloud (cloud_source_ptr);
-  fpfh_est.setInputNormals (normals.makeShared ());
-  fpfh_est.compute (features_source);
+  fpfh_est.setInputNormals (normals);
+  fpfh_est.compute (*features_source);
 
   // Estimate the FPFH features for the target cloud
   norm_est.setInputCloud (cloud_target_ptr);
-  norm_est.compute (normals);
+  norm_est.compute (*normals);
   fpfh_est.setInputCloud (cloud_target_ptr);
-  fpfh_est.setInputNormals (normals.makeShared ());
-  fpfh_est.compute (features_target);
+  fpfh_est.setInputNormals (normals);
+  fpfh_est.compute (*features_target);
 
   // Initialize Sample Consensus Initial Alignment (SAC-IA)
   SampleConsensusInitialAlignment<PointXYZ, PointXYZ, FPFHSignature33> reg;
@@ -103,8 +103,8 @@ TEST (PCL, SampleConsensusInitialAlignment)
 
   reg.setInputSource (cloud_source_ptr);
   reg.setInputTarget (cloud_target_ptr);
-  reg.setSourceFeatures (features_source.makeShared ());
-  reg.setTargetFeatures (features_target.makeShared ());
+  reg.setSourceFeatures (features_source);
+  reg.setTargetFeatures (features_target);
 
   // Register
   reg.align (cloud_reg);
@@ -115,8 +115,8 @@ TEST (PCL, SampleConsensusInitialAlignment)
   using PointT = pcl::PointXYZ;
   for (int iter = 0; iter < 4; iter++)
   {
-    bool force_cache = (bool) iter/2;
-    bool force_cache_reciprocal = (bool) iter%2;
+    bool force_cache = static_cast<bool> (iter/2);
+    bool force_cache_reciprocal = static_cast<bool> (iter%2);
     pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
     // Ensure that, when force_cache is not set, we are robust to the wrong input
     if (force_cache)
@@ -149,7 +149,7 @@ TEST (PCL, SampleConsensusPrerejective)
   // Transform the source cloud by a large amount
   Eigen::Vector3f initial_offset (100, 0, 0);
   float angle = static_cast<float> (M_PI) / 2.0f;
-  Eigen::Quaternionf initial_rotation (std::cos (angle / 2), 0, 0, sin (angle / 2));
+  Eigen::Quaternionf initial_rotation (std::cos (angle / 2), 0, 0, std::sin (angle / 2));
   PointCloud<PointXYZ> cloud_source_transformed;
   transformPointCloud (cloud_source, cloud_source_transformed, initial_offset, initial_rotation);
 
@@ -165,27 +165,27 @@ TEST (PCL, SampleConsensusPrerejective)
   NormalEstimation<PointXYZ, Normal> norm_est;
   norm_est.setSearchMethod (tree);
   norm_est.setRadiusSearch (0.005);
-  PointCloud<Normal> normals;
+  PointCloud<Normal>::Ptr normals(new PointCloud<Normal>);
 
   // FPFH estimator
   FPFHEstimation<PointXYZ, Normal, FPFHSignature33> fpfh_est;
   fpfh_est.setSearchMethod (tree);
   fpfh_est.setRadiusSearch (0.05);
-  PointCloud<FPFHSignature33> features_source, features_target;
+  PointCloud<FPFHSignature33>::Ptr features_source(new PointCloud<FPFHSignature33>), features_target(new PointCloud<FPFHSignature33>);
 
   // Estimate the normals and the FPFH features for the source cloud
   norm_est.setInputCloud (cloud_source_ptr);
-  norm_est.compute (normals);
+  norm_est.compute (*normals);
   fpfh_est.setInputCloud (cloud_source_ptr);
-  fpfh_est.setInputNormals (normals.makeShared ());
-  fpfh_est.compute (features_source);
+  fpfh_est.setInputNormals (normals);
+  fpfh_est.compute (*features_source);
 
   // Estimate the normals and the FPFH features for the target cloud
   norm_est.setInputCloud (cloud_target_ptr);
-  norm_est.compute (normals);
+  norm_est.compute (*normals);
   fpfh_est.setInputCloud (cloud_target_ptr);
-  fpfh_est.setInputNormals (normals.makeShared ());
-  fpfh_est.compute (features_target);
+  fpfh_est.setInputNormals (normals);
+  fpfh_est.compute (*features_target);
 
   // Initialize Sample Consensus Prerejective with 5x the number of iterations and 1/5 feature kNNs as SAC-IA
   SampleConsensusPrerejective<PointXYZ, PointXYZ, FPFHSignature33> reg;
@@ -197,8 +197,8 @@ TEST (PCL, SampleConsensusPrerejective)
   // Set source and target cloud/features
   reg.setInputSource (cloud_source_ptr);
   reg.setInputTarget (cloud_target_ptr);
-  reg.setSourceFeatures (features_source.makeShared ());
-  reg.setTargetFeatures (features_target.makeShared ());
+  reg.setSourceFeatures (features_source);
+  reg.setTargetFeatures (features_target);
 
   // Register
   reg.align (cloud_reg);
@@ -212,8 +212,8 @@ TEST (PCL, SampleConsensusPrerejective)
   using PointT = pcl::PointXYZ;
   for (int iter = 0; iter < 4; iter++)
   {
-    bool force_cache = (bool) iter/2;
-    bool force_cache_reciprocal = (bool) iter%2;
+    bool force_cache = static_cast<bool> (iter/2);
+    bool force_cache_reciprocal = static_cast<bool> (iter%2);
     pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
     // Ensure that, when force_cache is not set, we are robust to the wrong input
     if (force_cache)

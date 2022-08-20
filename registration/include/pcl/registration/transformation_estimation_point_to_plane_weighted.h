@@ -115,7 +115,7 @@ public:
   }
 
   /** \brief Destructor. */
-  virtual ~TransformationEstimationPointToPlaneWeighted(){};
+  virtual ~TransformationEstimationPointToPlaneWeighted() = default;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using LM. \param[in] cloud_src the source point cloud dataset
@@ -131,29 +131,32 @@ public:
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using LM. \param[in] cloud_src the source point cloud dataset
    * \param[in] indices_src the vector of indices describing the points of interest in
-   * \a cloud_src \param[in] cloud_tgt the target point cloud dataset \param[out]
-   * transformation_matrix the resultant transformation matrix \note Uses the weights
-   * given by setWeights.
+   * \a cloud_src
+   * \param[in] cloud_tgt the target point cloud dataset
+   * \param[out] transformation_matrix the resultant transformation matrix
+   * \note Uses the weights given by setWeights.
    */
   inline void
   estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const std::vector<int>& indices_src,
+                              const pcl::Indices& indices_src,
                               const pcl::PointCloud<PointTarget>& cloud_tgt,
                               Matrix4& transformation_matrix) const;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using LM. \param[in] cloud_src the source point cloud dataset
    * \param[in] indices_src the vector of indices describing the points of interest in
-   * \a cloud_src \param[in] cloud_tgt the target point cloud dataset \param[in]
-   * indices_tgt the vector of indices describing the correspondences of the interest
-   * points from \a indices_src \param[out] transformation_matrix the resultant
-   * transformation matrix \note Uses the weights given by setWeights.
+   * \a cloud_src
+   * \param[in] cloud_tgt the target point cloud dataset
+   * \param[in] indices_tgt the vector of indices describing the correspondences of the
+   * interest points from \a indices_src
+   * \param[out] transformation_matrix the resultant transformation matrix
+   * \note Uses the weights given by setWeights.
    */
   void
   estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const std::vector<int>& indices_src,
+                              const pcl::Indices& indices_src,
                               const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              const std::vector<int>& indices_tgt,
+                              const pcl::Indices& indices_tgt,
                               Matrix4& transformation_matrix) const;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
@@ -204,10 +207,10 @@ protected:
   mutable const PointCloudTarget* tmp_tgt_;
 
   /** \brief Temporary pointer to the source dataset indices. */
-  mutable const std::vector<int>* tmp_idx_src_;
+  mutable const pcl::Indices* tmp_idx_src_;
 
   /** \brief Temporary pointer to the target dataset indices. */
-  mutable const std::vector<int>* tmp_idx_tgt_;
+  mutable const pcl::Indices* tmp_idx_tgt_;
 
   /** \brief The parameterized function used to warp the source to the target. */
   typename pcl::registration::WarpPointRigid<PointSource, PointTarget, MatScalar>::Ptr
@@ -236,7 +239,7 @@ protected:
     Functor(int m_data_points) : m_data_points_(m_data_points) {}
 
     /** \brief Destructor. */
-    virtual ~Functor() {}
+    virtual ~Functor() = default;
 
     /** \brief Get the number of values. */
     int
@@ -282,7 +285,7 @@ protected:
     }
 
     /** \brief Destructor. */
-    virtual ~OptimizationFunctor() {}
+    virtual ~OptimizationFunctor() = default;
 
     /** Fill fvec from x. For the current state vector x fill the f values
      * \param[in] x state vector
@@ -330,7 +333,7 @@ protected:
     }
 
     /** \brief Destructor. */
-    virtual ~OptimizationFunctorWithIndices() {}
+    virtual ~OptimizationFunctorWithIndices() = default;
 
     /** Fill fvec from x. For the current state vector x fill the f values
      * \param[in] x state vector

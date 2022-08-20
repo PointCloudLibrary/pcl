@@ -57,7 +57,7 @@ namespace pcl
 
     template <template <typename> class Storage>
     __inline__ __host__
-    void create_scatter_stencil (int new_w, int new_h, int skip, int width, int height, typename Storage<int>::type &stencil)
+    void create_scatter_stencil (unsigned int new_w, unsigned int new_h, int skip, int width, int height, typename Storage<int>::type &stencil)
     { 
       for (unsigned int i = 0; i < new_w * new_h; ++i)
       { 

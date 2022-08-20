@@ -65,7 +65,7 @@ namespace pcl
       /** \brief Constructor. */
       inline LINEMOD_OrientationMap () : width_ (0), height_ (0) {}
       /** \brief Destructor. */
-      inline ~LINEMOD_OrientationMap () {}
+      inline ~LINEMOD_OrientationMap () = default;
 
       /** \brief Returns the width of the modality data map. */
       inline std::size_t
@@ -336,7 +336,7 @@ namespace pcl
       /** \brief Constructor. */
       SurfaceNormalModality ();
       /** \brief Destructor. */
-      ~SurfaceNormalModality ();
+      ~SurfaceNormalModality () override;
 
       /** \brief Sets the spreading size.
         * \param[in] spreading_size the spreading size.
@@ -504,9 +504,7 @@ SurfaceNormalModality ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
-pcl::SurfaceNormalModality<PointInT>::~SurfaceNormalModality ()
-{
-}
+pcl::SurfaceNormalModality<PointInT>::~SurfaceNormalModality () = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
@@ -725,9 +723,8 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals2 ()
   const int width = input_->width;
   const int height = input_->height;
 
-  unsigned short * lp_depth = new unsigned short[width*height];
-  unsigned char * lp_normals = new unsigned char[width*height];
-  memset (lp_normals, 0, width*height);
+  unsigned short * lp_depth = new unsigned short[width*height]{};
+  unsigned char * lp_normals = new unsigned char[width*height]{};
 
   surface_normal_orientations_.resize (width, height, 0.0f);
 
@@ -933,8 +930,7 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals2 ()
   }
   /*cvSmooth(m_dep[0], m_dep[0], CV_MEDIAN, 5, 5);*/
 
-  unsigned char map[255];
-  memset(map, 0, 255);
+  unsigned char map[255]{};
 
   map[0x1<<0] = 0;
   map[0x1<<1] = 1;
@@ -983,8 +979,7 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
   for (auto &mask_map : mask_maps)
     mask_map.resize (width, height);
 
-  unsigned char map[255];
-  memset(map, 0, 255);
+  unsigned char map[255]{};
 
   map[0x1<<0] = 0;
   map[0x1<<1] = 1;
@@ -1254,8 +1249,7 @@ pcl::SurfaceNormalModality<PointInT>::extractAllFeatures (
   for (auto &mask_map : mask_maps)
     mask_map.resize (width, height);
 
-  unsigned char map[255];
-  memset(map, 0, 255);
+  unsigned char map[255]{};
 
   map[0x1<<0] = 0;
   map[0x1<<1] = 1;

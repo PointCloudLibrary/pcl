@@ -101,7 +101,7 @@ public:
   {}
 
   /** \brief Empty destructor */
-  ~CorrespondenceEstimationBase() {}
+  ~CorrespondenceEstimationBase() override = default;
 
   /** \brief Provide a pointer to the input source
    * (e.g., the point cloud that we want to align to the target)
@@ -212,9 +212,7 @@ public:
   setSearchMethodTarget(const KdTreePtr& tree, bool force_no_recompute = false)
   {
     tree_ = tree;
-    if (force_no_recompute) {
-      force_no_recompute_ = true;
-    }
+    force_no_recompute_ = force_no_recompute;
     // Since we just set a new tree, we need to check for updates
     target_cloud_updated_ = true;
   }
@@ -239,9 +237,7 @@ public:
                         bool force_no_recompute = false)
   {
     tree_reciprocal_ = tree;
-    if (force_no_recompute) {
-      force_no_recompute_reciprocal_ = true;
-    }
+    force_no_recompute_reciprocal_ = force_no_recompute;
     // Since we just set a new tree, we need to check for updates
     source_cloud_updated_ = true;
   }
@@ -415,7 +411,7 @@ public:
   CorrespondenceEstimation() { corr_name_ = "CorrespondenceEstimation"; }
 
   /** \brief Empty destructor */
-  ~CorrespondenceEstimation() {}
+  ~CorrespondenceEstimation() override = default;
 
   /** \brief Determine the correspondences between input and target cloud.
    * \param[out] correspondences the found correspondences (index of query point, index

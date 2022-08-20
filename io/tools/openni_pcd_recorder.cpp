@@ -37,6 +37,7 @@
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
 #include <boost/circular_buffer.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp> // for to_iso_string, local_time
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
@@ -101,7 +102,9 @@ template <typename PointT>
 class PCDBuffer
 {
   public:
-    PCDBuffer () {}
+    PCDBuffer () = default;
+    PCDBuffer (const PCDBuffer&) = delete; // Disabled copy constructor
+    PCDBuffer& operator = (const PCDBuffer&) = delete; // Disabled assignment operator
 
     bool 
     pushBack (typename PointCloud<PointT>::ConstPtr); // thread-save wrapper for push_back() method of ciruclar_buffer
@@ -144,9 +147,6 @@ class PCDBuffer
     }
 
   private:
-    PCDBuffer (const PCDBuffer&) = delete; // Disabled copy constructor
-    PCDBuffer& operator = (const PCDBuffer&) = delete; // Disabled assignment operator
-
     std::mutex bmutex_;
     std::condition_variable buff_empty_;
     boost::circular_buffer<typename PointCloud<PointT>::ConstPtr> buffer_;

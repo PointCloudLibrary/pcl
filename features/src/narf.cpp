@@ -41,6 +41,7 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <map> // for std::multimap
 using std::cout;
 using std::cerr;
 using std::vector;
@@ -116,7 +117,7 @@ Narf::deepCopy (const Narf& other)
     delete[] surface_patch_;
     surface_patch_ = new float[surface_patch_pixel_size_*surface_patch_pixel_size_];
   }
-  memcpy(surface_patch_, other.surface_patch_, sizeof(*surface_patch_)*surface_patch_pixel_size_*surface_patch_pixel_size_);
+  std::copy(other.surface_patch_, other.surface_patch_ + surface_patch_pixel_size_*surface_patch_pixel_size_, surface_patch_);
   surface_patch_world_size_ = other.surface_patch_world_size_;
   surface_patch_rotation_ = other.surface_patch_rotation_;
   
@@ -126,7 +127,7 @@ Narf::deepCopy (const Narf& other)
     delete[] descriptor_;
     descriptor_ = new float[descriptor_size_];
   }
-  memcpy(descriptor_, other.descriptor_, sizeof(*descriptor_)*descriptor_size_);
+  std::copy(other.descriptor_, other.descriptor_ + descriptor_size_, descriptor_);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -601,25 +602,23 @@ Narf::loadBinary (const std::string& filename)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-NarfDescriptor::NarfDescriptor (const RangeImage* range_image, const std::vector<int>* indices) : 
+NarfDescriptor::NarfDescriptor (const RangeImage* range_image, const pcl::Indices* indices) : 
   range_image_ ()
 {
   setRangeImage (range_image, indices);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-NarfDescriptor::~NarfDescriptor ()
-{
-}
+NarfDescriptor::~NarfDescriptor () = default;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
-NarfDescriptor::setRangeImage (const RangeImage* range_image, const std::vector<int>* indices)
+NarfDescriptor::setRangeImage (const RangeImage* range_image, const pcl::Indices* indices)
 {
   range_image_ = range_image;
   if (indices != nullptr)
   {
-    IndicesPtr indicesptr (new std::vector<int> (*indices));
+    IndicesPtr indicesptr (new pcl::Indices (*indices));
     setIndices (indicesptr);
   }
 }

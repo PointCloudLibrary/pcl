@@ -60,7 +60,7 @@ class Select2DTool : public ToolInterface
     Select2DTool (SelectionPtr selection_ptr, CloudPtr cloud_ptr);
 
     /// @brief Destructor
-    ~Select2DTool ();
+    ~Select2DTool () override;
   
     /// @brief Initializes the selection tool with the initial mouse screen
     /// coordinates and key modifiers. The passed coordinates are used for

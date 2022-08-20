@@ -14,12 +14,13 @@ private:
 
   static Scene *instance_;
 
+
+public:
+
   Scene ();
   Scene (const Scene& op) = delete;
   Scene&
   operator= (const Scene& op) = delete;
-
-public:
 
   // Singleton
   static Scene*

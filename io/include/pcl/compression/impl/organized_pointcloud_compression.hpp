@@ -199,8 +199,9 @@ namespace pcl
 
        for (std::size_t i = 0; i < cloud_size; ++i, ++depth_ptr, color_ptr += sizeof(std::uint8_t) * 3)
        {
-         if (!(*depth_ptr) || (*depth_ptr==0x7FF))
-           memset(color_ptr, 0, sizeof(std::uint8_t)*3);
+         if (!(*depth_ptr) || (*depth_ptr==0x7FF)) {
+           std::fill_n(color_ptr, 3, 0);
+         }
        }
 
        // Compress disparity information
@@ -288,8 +289,6 @@ namespace pcl
       std::uint32_t compressedColorSize;
 
       // PNG decoded parameters
-      std::size_t png_width = 0;
-      std::size_t png_height = 0;
       unsigned int png_channels = 1;
 
       // sync to frame header
@@ -327,6 +326,9 @@ namespace pcl
         compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedColorSize), sizeof (compressedColorSize));
         compressedColor.resize (compressedColorSize);
         compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedColor[0]), compressedColorSize * sizeof(std::uint8_t));
+
+        std::size_t png_width = 0;
+        std::size_t png_height = 0;
 
         // decode PNG compressed disparity data
         decodePNGToImage (compressedDisparity, disparityData, png_width, png_height, png_channels);

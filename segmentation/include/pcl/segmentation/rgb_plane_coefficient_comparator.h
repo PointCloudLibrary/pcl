@@ -39,7 +39,6 @@
 
 #pragma once
 
-#include <pcl/segmentation/boost.h>
 #include <pcl/segmentation/plane_coefficient_comparator.h>
 
 namespace pcl
@@ -85,9 +84,7 @@ namespace pcl
       
       /** \brief Destructor for RGBPlaneCoefficientComparator. */
       
-      ~RGBPlaneCoefficientComparator ()
-      {
-      }
+      ~RGBPlaneCoefficientComparator () = default;
 
       /** \brief Set the tolerance in color space between neighboring points, to be considered part of the same plane.
         * \param[in] color_threshold The distance in color space

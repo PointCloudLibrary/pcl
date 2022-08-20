@@ -53,12 +53,12 @@ using namespace pcl::io;
 using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 
 PointCloud<PointXYZ> cloud;
-std::vector<int> indices;
+pcl::Indices indices;
 KdTreePtr tree;
 
 ///////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
-shotCopyPointCloud (const PointCloud<PointT> &cloud_in, const std::vector<int> &indices,
+shotCopyPointCloud (const PointCloud<PointT> &cloud_in, const pcl::Indices &indices,
                     PointCloud<PointT> &cloud_out)
 {
   pcl::copyPointCloud<PointT>(cloud_in, indices, cloud_out);
@@ -358,12 +358,7 @@ template<>
 struct SHOTShapeTest<SHOTEstimationOMP<PointXYZ, Normal, SHOT352> >
   : public ::testing::Test
 {
-  // Default Constructor is defined to instantiate 4 threads
-  SHOTShapeTest<SHOTEstimationOMP<PointXYZ, Normal, SHOT352> > ()
-    : shot (4)
-  {}
-
-  SHOTEstimationOMP<PointXYZ, Normal, SHOT352> shot;
+  SHOTEstimationOMP<PointXYZ, Normal, SHOT352> shot{4}; // 4 threads
 };
 
 // Types which will be instantiated
@@ -547,12 +542,7 @@ template<>
 struct SHOTShapeAndColorTest<SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT1344> >
   : public ::testing::Test
 {
-  // Default Constructor is defined to instantiate 4 threads
-  SHOTShapeAndColorTest<SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT1344> > ()
-    : shot (true, true, 4)
-  {}
-
-  SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT1344> shot;
+  SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT1344> shot{true, true, 4}; // 4 threads
 };
 
 // Types which will be instantiated

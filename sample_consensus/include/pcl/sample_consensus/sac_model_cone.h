@@ -128,7 +128,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      ~SampleConsensusModelCone () {}
+      ~SampleConsensusModelCone () override = default;
 
       /** \brief Copy constructor.
         * \param[in] source the model to copy into this

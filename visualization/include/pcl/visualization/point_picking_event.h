@@ -39,7 +39,7 @@
 #pragma once
 
 #include <pcl/pcl_macros.h>
-#include <vector>
+#include <pcl/types.h> // for pcl::Indices
 
 #include <vtkCommand.h>
 class vtkRenderWindowInteractor;
@@ -59,7 +59,7 @@ namespace pcl
         PointPickingCallback () : x_ (0), y_ (0), z_ (0), idx_ (-1), pick_first_ (false) {}
       
         /** \brief Empty destructor */
-        ~PointPickingCallback () {}
+        ~PointPickingCallback () override = default;
 
         void
         Execute (vtkObject *caller, unsigned long eventid, void*) override;
@@ -71,7 +71,7 @@ namespace pcl
         performSinglePick (vtkRenderWindowInteractor *iren, float &x, float &y, float &z);
 
         int
-        performAreaPick (vtkRenderWindowInteractor *iren, std::vector<int> &indices) const;
+        performAreaPick (vtkRenderWindowInteractor *iren, pcl::Indices &indices) const;
 
       private:
         float x_, y_, z_;

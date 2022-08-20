@@ -58,11 +58,11 @@ namespace mets {
   public:
     /// @brief Ctor.
     update_observer(observed_subject* who) : who_m(who) {}
+    update_observer() = delete;
     /// @brief Subscript operator to update an observer.
     void 
     operator()(observer<observed_subject>* o) { o->update(who_m); }
   private:
-    update_observer();
     observed_subject* who_m;
   };
   
@@ -84,7 +84,7 @@ namespace mets {
   {
   public:
     virtual
-    ~subject() {};
+    ~subject() = default;;
     /// @brief Attach a new observer to this subject.
     ///
     /// @param o: a new observer for this subject.
@@ -127,7 +127,7 @@ namespace mets {
   {
   public:
     virtual
-    ~observer() {};
+    ~observer() = default;;
     /// @brief This method is automatically called when this
     ///        observer is attached to a "notified" subject.
     ///
@@ -136,7 +136,7 @@ namespace mets {
     virtual void
     update(observed_subject*) = 0;
   protected:
-    observer() {};
+    observer() = default;;
   };
   
 

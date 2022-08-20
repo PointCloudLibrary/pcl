@@ -51,8 +51,7 @@ CutCommand::CutCommand (CopyBufferPtr copy_buffer_ptr,
 }
 
 CutCommand::~CutCommand ()
-{
-}
+= default;
 
 void
 CutCommand::execute ()

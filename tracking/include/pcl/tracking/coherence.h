@@ -19,10 +19,10 @@ public:
 
 public:
   /** \brief empty constructor */
-  PointCoherence() {}
+  PointCoherence() = default;
 
   /** \brief empty distructor */
-  virtual ~PointCoherence() {}
+  virtual ~PointCoherence() = default;
 
   /** \brief compute coherence from the source point to the target point.
    * \param source instance of source point.
@@ -70,7 +70,7 @@ public:
   PointCloudCoherence() : target_input_(), point_coherences_() {}
 
   /** \brief Destructor. */
-  virtual ~PointCloudCoherence() {}
+  virtual ~PointCloudCoherence() = default;
 
   /** \brief compute coherence between two pointclouds. */
   inline void

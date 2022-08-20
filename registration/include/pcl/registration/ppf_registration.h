@@ -310,7 +310,7 @@ private:
   PPFHashMapSearch::Ptr search_method_;
 
   /** \brief parameter for the sampling rate of the scene reference points */
-  unsigned int scene_reference_point_sampling_rate_;
+  uindex_t scene_reference_point_sampling_rate_;
 
   /** \brief position and rotation difference thresholds below which two
    * poses are considered to be in the same cluster (for the clustering phase of the

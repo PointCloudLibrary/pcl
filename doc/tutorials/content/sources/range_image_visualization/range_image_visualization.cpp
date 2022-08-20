@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <pcl/common/common_headers.h>
+
 #include <pcl/range_image/range_image.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/range_image_visualizer.h>

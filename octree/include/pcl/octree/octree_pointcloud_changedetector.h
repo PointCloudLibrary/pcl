@@ -91,15 +91,15 @@ public:
    * \return number of point indices
    */
   std::size_t
-  getPointIndicesFromNewVoxels(std::vector<int>& indicesVector_arg,
-                               const int minPointsPerLeaf_arg = 0)
+  getPointIndicesFromNewVoxels(Indices& indicesVector_arg,
+                               const uindex_t minPointsPerLeaf_arg = 0)
   {
 
     std::vector<OctreeContainerPointIndices*> leaf_containers;
     this->serializeNewLeafs(leaf_containers);
 
     for (const auto& leaf_container : leaf_containers) {
-      if (static_cast<int>(leaf_container->getSize()) >= minPointsPerLeaf_arg)
+      if (static_cast<uindex_t>(leaf_container->getSize()) >= minPointsPerLeaf_arg)
         leaf_container->getPointIndices(indicesVector_arg);
     }
 

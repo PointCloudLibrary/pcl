@@ -53,9 +53,9 @@ TransformCommand::TransformCommand(const ConstSelectionPtr& selection_ptr,
     translate_z_(translate_z)
 {
   internal_selection_ptr_ = SelectionPtr(new Selection(*selection_ptr));
-  std::copy(matrix, matrix+MATRIX_SIZE, transform_matrix_);
+  std::copy(matrix, matrix + MATRIX_SIZE, transform_matrix_);
   const float *cloud_matrix = cloud_ptr_->getMatrix();
-  std::copy(cloud_matrix, cloud_matrix+MATRIX_SIZE, cloud_matrix_);
+  std::copy(cloud_matrix, cloud_matrix + MATRIX_SIZE, cloud_matrix_);
   invertMatrix(cloud_matrix, cloud_matrix_inv_);
   cloud_ptr_->getCenter(cloud_center_[X], cloud_center_[Y], cloud_center_[Z]);
 }

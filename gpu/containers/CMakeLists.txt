@@ -5,7 +5,7 @@ set(SUBSYS_DEPS common)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
-PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS})
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 PCL_SET_SUBSYS_INCLUDE_DIR("${SUBSYS_NAME}" "${SUBSYS_PATH}")
 mark_as_advanced("BUILD_${SUBSYS_NAME}")
 
@@ -25,6 +25,9 @@ get_filename_component(UTILS_INC "${CMAKE_CURRENT_SOURCE_DIR}/../utils/include" 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" ${UTILS_INC})
 PCL_CUDA_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs})
+
+#Ensures that CUDA is added and the project can compile as it uses cuda calls.
+set_source_files_properties(src/device_memory.cpp PROPERTIES LANGUAGE CUDA)
 
 set(EXT_DEPS "")
 #set(EXT_DEPS CUDA)

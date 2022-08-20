@@ -196,8 +196,8 @@ SelectionTransformTool::findSelectionCenter ()
   Selection::const_iterator it = selection_ptr_->begin();
   Point3D point_3d = cloud_ptr_->getObjectSpacePoint (*it);
   float *pt = &(point_3d.data[X]);
-  std::copy(pt, pt+XYZ_SIZE, max_xyz);
-  std::copy(max_xyz, max_xyz+XYZ_SIZE, min_xyz);
+  std::copy(pt, pt + XYZ_SIZE, max_xyz);
+  std::copy(max_xyz, max_xyz + XYZ_SIZE, min_xyz);
 
   for (++it; it != selection_ptr_->end(); ++it)
   {

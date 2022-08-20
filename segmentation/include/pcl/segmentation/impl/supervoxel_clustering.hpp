@@ -60,10 +60,7 @@ pcl::SupervoxelClustering<PointT>::SupervoxelClustering (float voxel_resolution,
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::SupervoxelClustering<PointT>::~SupervoxelClustering ()
-{
-
-}
+pcl::SupervoxelClustering<PointT>::~SupervoxelClustering () = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -381,7 +378,7 @@ pcl::SupervoxelClustering<PointT>::selectInitialSupervoxelSeeds (Indices &seed_i
   std::vector<int> seed_indices_orig;
   seed_indices_orig.resize (num_seeds, 0);
   seed_indices.clear ();
-  std::vector<int> closest_index;
+  pcl::Indices closest_index;
   std::vector<float> distance;
   closest_index.resize(1,0);
   distance.resize(1,0);
@@ -397,7 +394,7 @@ pcl::SupervoxelClustering<PointT>::selectInitialSupervoxelSeeds (Indices &seed_i
     seed_indices_orig[i] = closest_index[0];
   }
   
-  std::vector<int> neighbors;
+  pcl::Indices neighbors;
   std::vector<float> sqr_distances;
   seed_indices.reserve (seed_indices_orig.size ());
   float search_radius = 0.5f*seed_resolution_;

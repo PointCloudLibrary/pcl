@@ -93,7 +93,6 @@
 #include <pcl/cuda/cutil_math.h>
 
 #include <limits>
-#include <float.h>
 
 namespace pcl
 {
@@ -102,7 +101,9 @@ namespace pcl
   
     inline __host__ __device__ bool isMuchSmallerThan (float x, float y)
     {
-      float prec_sqr = FLT_EPSILON * FLT_EPSILON; // copied from <eigen>/include/Eigen/src/Core/NumTraits.h
+      // inspired by Eigen's implementation
+      float prec_sqr =
+          std::numeric_limits<float>::epsilon() * std::numeric_limits<float>::epsilon();
       return x * x <= prec_sqr * y * y;
     }
   
@@ -179,7 +180,7 @@ namespace pcl
       float  c2 = m.data[0].x + m.data[1].y + m.data[2].z;
   
   
-  		if (std::abs(c0) < FLT_EPSILON) // one root is 0 -> quadratic equation
+      if (std::abs(c0) < std::numeric_limits<float>::epsilon()) // one root is 0 -> quadratic equation
   			computeRoots2 (c2, c1, roots);
   		else
   		{
@@ -233,7 +234,7 @@ namespace pcl
       //Scalar scale = mat.cwiseAbs ().maxCoeff ();
       float3 scale_tmp = fmaxf (fmaxf (fabs (mat.data[0]), fabs (mat.data[1])), fabs (mat.data[2]));
       float scale = fmaxf (fmaxf (scale_tmp.x, scale_tmp.y), scale_tmp.z);
-      if (scale <= FLT_MIN)
+      if (scale <= std::numeric_limits<float>::min())
       	scale = 1.0f;
       
       CovarianceMatrix scaledMat;
@@ -244,14 +245,14 @@ namespace pcl
       // Compute the eigenvalues
       computeRoots (scaledMat, evals);
       
-  		if ((evals.z-evals.x) <= FLT_EPSILON)
+  		if ((evals.z - evals.x) <= std::numeric_limits<float>::epsilon())
   		{
   			// all three equal
   			evecs.data[0] = make_float3 (1.0f, 0.0f, 0.0f);
   			evecs.data[1] = make_float3 (0.0f, 1.0f, 0.0f);
   			evecs.data[2] = make_float3 (0.0f, 0.0f, 1.0f);
   		}
-  		else if ((evals.y-evals.x) <= FLT_EPSILON)
+      else if ((evals.y - evals.x) <= std::numeric_limits<float>::epsilon())
   		{
   			// first and second equal
   			CovarianceMatrix tmp;
@@ -281,7 +282,7 @@ namespace pcl
   			evecs.data[1] = unitOrthogonal (evecs.data[2]); 
   			evecs.data[0] = cross (evecs.data[1], evecs.data[2]);
   		}
-  		else if ((evals.z-evals.y) <= FLT_EPSILON)
+      else if ((evals.z - evals.y) <= std::numeric_limits<float>::epsilon())
   		{
   			// second and third equal
   			CovarianceMatrix tmp;

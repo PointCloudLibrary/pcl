@@ -36,7 +36,6 @@
 #include <pcl/common/time.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/features/organized_edge_detection.h>
-#include <pcl/io/io.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
@@ -54,7 +53,7 @@ public:
   OpenNIOrganizedEdgeDetection()
   : viewer(new pcl::visualization::PCLVisualizer("PCL Organized Edge Detection"))
   {}
-  ~OpenNIOrganizedEdgeDetection() {}
+  ~OpenNIOrganizedEdgeDetection() = default;
 
   pcl::visualization::PCLVisualizer::Ptr
   initCloudViewer(const pcl::PointCloud<PointT>::ConstPtr& cloud)

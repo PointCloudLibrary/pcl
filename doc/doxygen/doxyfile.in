@@ -10,6 +10,7 @@ OUTPUT_DIRECTORY       = "@CMAKE_CURRENT_BINARY_DIR@"
 CREATE_SUBDIRS         = NO
 ALLOW_UNICODE_NAMES    = NO
 OUTPUT_LANGUAGE        = English
+OUTPUT_TEXT_DIRECTION  = None
 BRIEF_MEMBER_DESC      = YES
 REPEAT_BRIEF           = YES
 ABBREVIATE_BRIEF       = "The $name class" \
@@ -30,17 +31,19 @@ STRIP_FROM_PATH        = @STRIPPED_HEADERS@
 STRIP_FROM_INC_PATH    = @STRIPPED_HEADERS@
 SHORT_NAMES            = @SHORT_NAMES@
 JAVADOC_AUTOBRIEF      = YES
+JAVADOC_BANNER         = NO
 QT_AUTOBRIEF           = NO
 MULTILINE_CPP_IS_BRIEF = NO
+PYTHON_DOCSTRING       = YES
 INHERIT_DOCS           = YES
 SEPARATE_MEMBER_PAGES  = NO
 TAB_SIZE               = 2
 ALIASES                =
-TCL_SUBST              =
 OPTIMIZE_OUTPUT_FOR_C  = NO
 OPTIMIZE_OUTPUT_JAVA   = NO
 OPTIMIZE_FOR_FORTRAN   = NO
 OPTIMIZE_OUTPUT_VHDL   = NO
+OPTIMIZE_OUTPUT_SLICE  = NO
 EXTENSION_MAPPING      =
 MARKDOWN_SUPPORT       = YES
 TOC_INCLUDE_HEADINGS   = 5
@@ -56,17 +59,20 @@ INLINE_GROUPED_CLASSES = NO
 INLINE_SIMPLE_STRUCTS  = NO
 TYPEDEF_HIDES_STRUCT   = NO
 LOOKUP_CACHE_SIZE      = 0
+NUM_PROC_THREADS       = 1
 
 #---------------------------------------------------------------------------
 # Build related configuration options
 #---------------------------------------------------------------------------
 EXTRACT_ALL            = YES
 EXTRACT_PRIVATE        = NO
+EXTRACT_PRIV_VIRTUAL   = NO
 EXTRACT_PACKAGE        = NO
 EXTRACT_STATIC         = YES
 EXTRACT_LOCAL_CLASSES  = NO
 EXTRACT_LOCAL_METHODS  = NO
 EXTRACT_ANON_NSPACES   = NO
+RESOLVE_UNNAMED_PARAMS = YES
 HIDE_UNDOC_MEMBERS     = NO
 HIDE_UNDOC_CLASSES     = NO
 HIDE_FRIEND_COMPOUNDS  = NO
@@ -163,7 +169,6 @@ VERBATIM_HEADERS       = YES
 # Configuration options related to the alphabetical class index
 #---------------------------------------------------------------------------
 ALPHABETICAL_INDEX     = YES
-COLS_IN_ALPHA_INDEX    = 5
 IGNORE_PREFIX          =
 
 #---------------------------------------------------------------------------
@@ -181,6 +186,7 @@ HTML_COLORSTYLE_HUE    = 87
 HTML_COLORSTYLE_SAT    = 46
 HTML_COLORSTYLE_GAMMA  = 73
 HTML_TIMESTAMP         = YES
+HTML_DYNAMIC_MENUS     = YES
 HTML_DYNAMIC_SECTIONS  = YES
 HTML_INDEX_NUM_ENTRIES = 100
 GENERATE_DOCSET        = YES
@@ -210,8 +216,10 @@ GENERATE_TREEVIEW      = NO
 ENUM_VALUES_PER_LINE   = 4
 TREEVIEW_WIDTH         = 250
 EXT_LINKS_IN_WINDOW    = NO
+HTML_FORMULA_FORMAT    = png
 FORMULA_FONTSIZE       = 10
 FORMULA_TRANSPARENT    = YES
+FORMULA_MACROFILE      =
 USE_MATHJAX            = NO
 MATHJAX_FORMAT         = HTML-CSS
 MATHJAX_RELPATH        = http://cdn.mathjax.org/mathjax/latest
@@ -232,9 +240,11 @@ GENERATE_LATEX         = YES
 LATEX_OUTPUT           = latex
 LATEX_CMD_NAME         = latex
 MAKEINDEX_CMD_NAME     = makeindex
+LATEX_MAKEINDEX_CMD    = makeindex
 COMPACT_LATEX          = NO
-PAPER_TYPE             = a4wide
-EXTRA_PACKAGES         = amsmath amssymb
+PAPER_TYPE             = a4
+EXTRA_PACKAGES         = amsmath \
+                         amssymb
 LATEX_HEADER           =
 LATEX_FOOTER           =
 LATEX_EXTRA_STYLESHEET =
@@ -246,6 +256,7 @@ LATEX_HIDE_INDICES     = NO
 LATEX_SOURCE_CODE      = NO
 LATEX_BIB_STYLE        = plain
 LATEX_TIMESTAMP        = NO
+LATEX_EMOJI_DIRECTORY  =
 
 #---------------------------------------------------------------------------
 # Configuration options related to the RTF output
@@ -273,6 +284,7 @@ MAN_LINKS              = NO
 GENERATE_XML           = NO
 XML_OUTPUT             = xml
 XML_PROGRAMLISTING     = YES
+XML_NS_MEMB_FILE_SCOPE = NO
 
 #---------------------------------------------------------------------------
 # Configuration options related to the DOCBOOK output
@@ -303,8 +315,7 @@ EXPAND_ONLY_PREDEF     = YES
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           =
 INCLUDE_FILE_PATTERNS  = *.h
-#PREDEFINED            = protected=private \
-PREDEFINED =           = "HAVE_QHULL=1" \
+PREDEFINED             = "HAVE_QHULL=1" \
                          "HAVE_OPENNI=1" \
                          "HAVE_ENSENSO=1" \
                          "HAVE_DAVIDSDK=1" \
@@ -320,7 +331,6 @@ SKIP_FUNCTION_MACROS   = YES
 # Configuration options related to external references
 #---------------------------------------------------------------------------
 TAGFILES               =
-#TAGFILES               = qtools_docs/qtools.tag=../../qtools_docs/html
 GENERATE_TAGFILE       = pcl.tag
 ALLEXTERNALS           = NO
 EXTERNAL_GROUPS        = YES
@@ -342,6 +352,8 @@ COLLABORATION_GRAPH    = YES
 GROUP_GRAPHS           = YES
 UML_LOOK               = NO
 UML_LIMIT_NUM_FIELDS   = 10
+DOT_UML_DETAILS        = NO
+DOT_WRAP_THRESHOLD     = 17
 TEMPLATE_RELATIONS     = YES
 INCLUDE_GRAPH          = YES
 INCLUDED_BY_GRAPH      = YES

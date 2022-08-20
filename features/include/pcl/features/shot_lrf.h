@@ -74,7 +74,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      ~SHOTLocalReferenceFrameEstimation () {}
+      ~SHOTLocalReferenceFrameEstimation () override = default;
 
     protected:
       using Feature<PointInT, PointOutT>::feature_name_;

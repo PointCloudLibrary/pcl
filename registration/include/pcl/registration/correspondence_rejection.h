@@ -57,10 +57,10 @@ public:
   using ConstPtr = shared_ptr<const CorrespondenceRejector>;
 
   /** \brief Empty constructor. */
-  CorrespondenceRejector() {}
+  CorrespondenceRejector() = default;
 
   /** \brief Empty destructor. */
-  virtual ~CorrespondenceRejector() {}
+  virtual ~CorrespondenceRejector() = default;
 
   /** \brief Provide a pointer to the vector of the input correspondences.
    * \param[in] correspondences the const shared pointer to a correspondence vector
@@ -114,7 +114,7 @@ public:
    */
   inline void
   getRejectedQueryIndices(const pcl::Correspondences& correspondences,
-                          std::vector<int>& indices)
+                          pcl::Indices& indices)
   {
     if (!input_correspondences_ || input_correspondences_->empty()) {
       PCL_WARN("[pcl::registration::%s::getRejectedQueryIndices] Input correspondences "
@@ -205,8 +205,8 @@ protected:
 };
 
 /** @b DataContainerInterface provides a generic interface for computing correspondence
- * scores between correspondent points in the input and target clouds \ingroup
- * registration
+ * scores between correspondent points in the input and target clouds
+ * \ingroup registration
  */
 class DataContainerInterface {
 public:
@@ -255,7 +255,7 @@ public:
   {}
 
   /** \brief Empty destructor */
-  ~DataContainer() {}
+  ~DataContainer() override = default;
 
   /** \brief Provide a source point cloud dataset (must contain XYZ
    * data!), used to compute the correspondence distance.
@@ -303,9 +303,7 @@ public:
   setSearchMethodTarget(const KdTreePtr& tree, bool force_no_recompute = false)
   {
     tree_ = tree;
-    if (force_no_recompute) {
-      force_no_recompute_ = true;
-    }
+    force_no_recompute_ = force_no_recompute;
     target_cloud_updated_ = true;
   }
 
@@ -350,7 +348,7 @@ public:
     if (target_cloud_updated_ && !force_no_recompute_) {
       tree_->setInputCloud(target_);
     }
-    std::vector<int> indices(1);
+    pcl::Indices indices(1);
     std::vector<float> distances(1);
     if (tree_->nearestKSearch((*input_)[index], 1, indices, distances))
       return (distances[0]);

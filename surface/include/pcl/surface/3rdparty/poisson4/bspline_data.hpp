@@ -81,7 +81,7 @@ namespace pcl
     }
 
     template< int Degree , class Real >
-    BSplineData<Degree,Real>::BSplineData( void )
+    BSplineData<Degree,Real>::BSplineData( )
     {
       vvDotTable = dvDotTable = ddDotTable = NULL;
       valueTables = dValueTables = NULL;
@@ -91,7 +91,7 @@ namespace pcl
     }
 
     template< int Degree , class Real >
-    BSplineData< Degree , Real >::~BSplineData(void)
+    BSplineData< Degree , Real >::~BSplineData()
     {
       if( functionCount )
       {
@@ -368,7 +368,7 @@ namespace pcl
 
 
     template<int Degree,class Real>
-    void BSplineData<Degree,Real>::clearValueTables(void){
+    void BSplineData<Degree,Real>::clearValueTables(){
       delete[]  valueTables;
       delete[] dValueTables;
       valueTables=dValueTables=NULL;

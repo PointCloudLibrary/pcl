@@ -44,10 +44,10 @@
 #define PCL_PEOPLE_PERSON_CLASSIFIER_HPP_
 
 template <typename PointT>
-pcl::people::PersonClassifier<PointT>::PersonClassifier () {}
+pcl::people::PersonClassifier<PointT>::PersonClassifier () = default;
 
 template <typename PointT>
-pcl::people::PersonClassifier<PointT>::~PersonClassifier () {}
+pcl::people::PersonClassifier<PointT>::~PersonClassifier () = default;
 
 template <typename PointT> bool
 pcl::people::PersonClassifier<PointT>::loadSVMFromFile (std::string svm_filename)
@@ -251,7 +251,8 @@ pcl::people::PersonClassifier<PointT>::evaluate (float height_person,
 
     // Calculate HOG descriptor:
     pcl::people::HOG hog;
-    float *descriptor = (float*) calloc(SVM_weights_.size(), sizeof(float));
+    float *descriptor = new float[SVM_weights_.size()];
+    std::fill_n(descriptor, SVM_weights_.size(), 0.0f);
     hog.compute(sample_float, descriptor);
  
     // Calculate confidence value by dot product:

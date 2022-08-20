@@ -137,7 +137,7 @@ public:
   };
 
   /** \brief Destructor */
-  ~SampleConsensusPrerejective() {}
+  ~SampleConsensusPrerejective() override = default;
 
   /** \brief Provide a boost shared pointer to the source point cloud's feature
    * descriptors \param features the source point cloud's features
@@ -242,7 +242,7 @@ public:
    * transformation
    * @return inlier indices
    */
-  inline const std::vector<int>&
+  inline const pcl::Indices&
   getInliers() const
   {
     return inliers_;
@@ -283,7 +283,7 @@ protected:
   void
   selectSamples(const PointCloudSource& cloud,
                 int nr_samples,
-                std::vector<int>& sample_indices) const;
+                pcl::Indices& sample_indices) const;
 
   /** \brief For each of the sample points, find a list of points in the target cloud
    * whose features are similar to the sample points' features. From these, select one
@@ -294,9 +294,9 @@ protected:
    * point in the target cloud
    */
   void
-  findSimilarFeatures(const std::vector<int>& sample_indices,
-                      std::vector<std::vector<int>>& similar_features,
-                      std::vector<int>& corresponding_indices) const;
+  findSimilarFeatures(const pcl::Indices& sample_indices,
+                      std::vector<pcl::Indices>& similar_features,
+                      pcl::Indices& corresponding_indices) const;
 
   /** \brief Rigid transformation computation method.
    * \param output the transformed input point cloud dataset using the rigid
@@ -319,7 +319,7 @@ protected:
                  15,
                  "Please use `getFitness(final_transformation_, inliers)` instead")
   void
-  getFitness(std::vector<int>& inliers, float& fitness_score) const;
+  getFitness(pcl::Indices& inliers, float& fitness_score) const;
 
   /** \brief Obtain the fitness of a transformation
    * The following metrics are calculated, based on
@@ -331,7 +331,7 @@ protected:
    * \return fitness_score fitness_score output fitness score as the MSE of the inliers
    */
   float
-  getFitness(const Eigen::Matrix4f& transformation, std::vector<int>& inliers) const;
+  getFitness(const Eigen::Matrix4f& transformation, pcl::Indices& inliers) const;
 
   /** \brief The source point cloud's feature descriptors. */
   FeatureCloudConstPtr input_features_;
@@ -357,7 +357,7 @@ protected:
   float inlier_fraction_;
 
   /** \brief Inlier points of final transformation as indices into source */
-  std::vector<int> inliers_;
+  pcl::Indices inliers_;
 
   /** \brief The number of threads the scheduler should use. */
   unsigned int num_threads_;

@@ -94,7 +94,7 @@ namespace pcl
         OutofcoreOctreeDiskContainer (const boost::filesystem::path &dir);
 
         /** \brief flushes write buffer, then frees memory */
-        ~OutofcoreOctreeDiskContainer ();
+        ~OutofcoreOctreeDiskContainer () override;
 
         /** \brief provides random access to points based on a linear index
          */
@@ -228,7 +228,7 @@ namespace pcl
             FILE* fxyz = fopen (path.string ().c_str (), "we");
 
             FILE* f = fopen (disk_storage_filename_.c_str (), "rbe");
-            assert (f != NULL);
+            assert (f != nullptr);
 
             std::uint64_t num = size ();
             PointT p;

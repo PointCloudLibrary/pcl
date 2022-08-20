@@ -55,8 +55,7 @@ pcl::io::ImageRGB24::ImageRGB24 (FrameWrapper::Ptr image_metadata, Timestamp tim
 {}
 
 
-pcl::io::ImageRGB24::~ImageRGB24 () noexcept
-{}
+pcl::io::ImageRGB24::~ImageRGB24 () noexcept = default;
 
 bool
 pcl::io::ImageRGB24::isResizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const
@@ -110,17 +109,17 @@ pcl::io::ImageRGB24::fillRGB (unsigned width, unsigned height, unsigned char* rg
   if (width == wrapper_->getWidth () && height == wrapper_->getHeight ())
   {
     unsigned line_size = width * 3;
+    const unsigned char* src_line = static_cast<const unsigned char*> (wrapper_->getData ());
     if (rgb_line_step == 0 || rgb_line_step == line_size)
     {
-      memcpy (rgb_buffer, wrapper_->getData (), wrapper_->getDataSize ());
+      std::copy(src_line, src_line + wrapper_->getDataSize(), rgb_buffer);
     }
     else // line by line
     {
       unsigned char* rgb_line = rgb_buffer;
-      const unsigned char* src_line = static_cast<const unsigned char*> (wrapper_->getData ());
       for (unsigned yIdx = 0; yIdx < height; ++yIdx, rgb_line += rgb_line_step, src_line += line_size)
       {
-        memcpy (rgb_line, src_line, line_size);
+        std::copy(src_line, src_line + line_size, rgb_line);
       }
     }
   }

@@ -39,7 +39,6 @@
 #pragma once
 
 #include <pcl/pcl_base.h>
-#include <pcl/search/search.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
@@ -70,7 +69,7 @@ namespace pcl
       ProgressiveMorphologicalFilter ();
 
       
-      ~ProgressiveMorphologicalFilter ();
+      ~ProgressiveMorphologicalFilter () override;
 
       /** \brief Get the maximum window size to be used in filtering ground returns. */
       inline int

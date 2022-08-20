@@ -283,7 +283,7 @@ main(int argc, char** argv)
   int detect_clutter = 1;
   int hv_method = 0;
   int use_hv = 1;
-  float thres_hyp_ = 0.2f;
+  float thres_hyp = 0.2f;
   float desc_radius = 0.04f;
 
   pcl::console::parse_argument(argc, argv, "-models_dir", path);
@@ -300,7 +300,8 @@ main(int argc, char** argv)
   pcl::console::parse_argument(argc, argv, "-detect_clutter", detect_clutter);
   pcl::console::parse_argument(argc, argv, "-hv_method", hv_method);
   pcl::console::parse_argument(argc, argv, "-use_hv", use_hv);
-  pcl::console::parse_argument(argc, argv, "-thres_hyp", thres_hyp_);
+  pcl::console::parse_argument(argc, argv, "-thres_hyp", thres_hyp);
+  pcl::console::parse_argument(argc, argv, "-desc_radius", desc_radius);
 
   if (mians_scenes.empty()) {
     PCL_ERROR("Set the directory containing mians scenes using the -mians_scenes_dir "
@@ -493,7 +494,7 @@ main(int argc, char** argv)
 
     local.setUseCache(static_cast<bool>(use_cache));
     local.initialize(static_cast<bool>(force_retrain));
-    local.setThresholdAcceptHyp(thres_hyp_);
+    local.setThresholdAcceptHyp(thres_hyp);
 
     uniform_keypoint_extractor->setSamplingDensity(0.005f);
     local.setICPIterations(icp_iterations);

@@ -71,6 +71,8 @@ namespace pcl
       using Ptr = shared_ptr<UniformSampling<PointT> >;
       using ConstPtr = shared_ptr<const UniformSampling<PointT> >;
 
+      PCL_MAKE_ALIGNED_OPERATOR_NEW;
+
       /** \brief Empty constructor. */
       UniformSampling (bool extract_removed_indices = false) :
         Filter<PointT>(extract_removed_indices),
@@ -87,7 +89,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      ~UniformSampling ()
+      ~UniformSampling () override
       {
         leaves_.clear();
       }

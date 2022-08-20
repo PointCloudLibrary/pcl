@@ -40,6 +40,7 @@
 #pragma once
 
 #include <pcl/pcl_base.h>
+#include <boost/optional.hpp>
 
 namespace pcl
 {

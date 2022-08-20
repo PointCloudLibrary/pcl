@@ -3814,7 +3814,7 @@ void AdjustMeshPeriodicTextureCoordinatesHelper(
         // map and clamp the tcs that hang over.  If the mesh
         // has edges near the texture seam, the picture will
         // still look ok.
-        float f0=0.0f, f1=0.0f, twopitc = (float)two_pi_tc;;
+        float f0=0.0f, f1=0.0f, twopitc = (float)two_pi_tc;
         //int f0cnt=0, f1cnt=0;
         if ( 1 == ftc.quad[0] ) f0 += ftc.Tx[0]; else if ( 4 == ftc.quad[0] ) f1 += twopitc-ftc.Tx[0];
         if ( 1 == ftc.quad[1] ) f0 += ftc.Tx[1]; else if ( 4 == ftc.quad[1] ) f1 += twopitc-ftc.Tx[1];

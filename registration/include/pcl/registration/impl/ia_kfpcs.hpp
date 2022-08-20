@@ -37,6 +37,8 @@
 #ifndef PCL_REGISTRATION_IMPL_IA_KFPCS_H_
 #define PCL_REGISTRATION_IMPL_IA_KFPCS_H_
 
+#include <limits>
+
 namespace pcl {
 
 namespace registration {
@@ -48,7 +50,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
 , upper_trl_boundary_(-1.f)
 , lambda_(0.5f)
 , use_trl_score_(false)
-, indices_validation_(new std::vector<int>)
+, indices_validation_(new pcl::Indices)
 {
   reg_name_ = "pcl::registration::KFPCSInitialAlignment";
 }
@@ -105,8 +107,8 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::initCompute()
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 void
 KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::handleMatches(
-    const std::vector<int>& base_indices,
-    std::vector<std::vector<int>>& matches,
+    const pcl::Indices& base_indices,
+    std::vector<pcl::Indices>& matches,
     MatchingCandidates& candidates)
 {
   candidates.clear();
@@ -116,7 +118,8 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::handleMatches(
     Eigen::Matrix4f transformation_temp;
     pcl::Correspondences correspondences_temp;
     float fitness_score =
-        FLT_MAX; // reset to FLT_MAX to accept all candidates and not only best
+        std::numeric_limits<float>::max(); // reset to std::numeric_limits<float>::max()
+                                           // to accept all candidates and not only best
 
     // determine corresondences between base and match according to their distance to
     // centroid
@@ -151,7 +154,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
   float score_a = 0.f, score_b = 0.f;
 
   // residual costs based on mse
-  std::vector<int> ids;
+  pcl::Indices ids;
   std::vector<float> dists_sqr;
   for (PointCloudSourceIterator it = source_transformed.begin(),
                                 it_e = source_transformed.end();
@@ -211,8 +214,9 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::finalCompute(
   // sort according to score value
   std::sort(candidates_.begin(), candidates_.end(), by_score());
 
-  // return here if no score was valid, i.e. all scores are FLT_MAX
-  if (candidates_[0].fitness_score == FLT_MAX) {
+  // return here if no score was valid, i.e. all scores are
+  // std::numeric_limits<float>::max()
+  if (candidates_[0].fitness_score == std::numeric_limits<float>::max()) {
     converged_ = false;
     return;
   }
@@ -241,7 +245,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getNBestCandid
        it_candidate != it_e;
        ++it_candidate) {
     // stop if current candidate has no valid score
-    if (it_candidate->fitness_score == FLT_MAX)
+    if (it_candidate->fitness_score == std::numeric_limits<float>::max())
       return;
 
     // check if current candidate is a unique one compared to previous using the

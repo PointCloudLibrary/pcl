@@ -76,7 +76,7 @@ public:
   KFPCSInitialAlignment();
 
   /** \brief Destructor. */
-  ~KFPCSInitialAlignment(){};
+  ~KFPCSInitialAlignment() override = default;
 
   /** \brief Set the upper translation threshold used for score evaluation.
    * \param[in] upper_trl_boundary upper translation threshold
@@ -205,8 +205,8 @@ protected:
    * contains the candidates matches M
    */
   void
-  handleMatches(const std::vector<int>& base_indices,
-                std::vector<std::vector<int>>& matches,
+  handleMatches(const pcl::Indices& base_indices,
+                std::vector<pcl::Indices>& matches,
                 MatchingCandidates& candidates) override;
 
   /** \brief Validate the transformation by calculating the score value after

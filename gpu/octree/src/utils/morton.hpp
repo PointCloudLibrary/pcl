@@ -122,10 +122,12 @@ namespace pcl
             }			
 
             __device__ __host__ __forceinline__ Morton::code_t operator()(const float3& p) const
-            {			
-                const int cellx = min((int)std::floor(depth_mult * min(1.f, max(0.f, (p.x - minp_.x)/dims_.x))), depth_mult - 1);
-                const int celly = min((int)std::floor(depth_mult * min(1.f, max(0.f, (p.y - minp_.y)/dims_.y))), depth_mult - 1);
-                const int cellz = min((int)std::floor(depth_mult * min(1.f, max(0.f, (p.z - minp_.z)/dims_.z))), depth_mult - 1);
+            {
+                //Using floorf due to changes to MSVC 16.9. See details here: https://devtalk.blender.org/t/cuda-compile-error-windows-10/17886/4
+                //floorf is without std:: see why here: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79700
+                const int cellx = min((int)floorf(depth_mult * min(1.f, max(0.f, (p.x - minp_.x)/dims_.x))), depth_mult - 1);
+                const int celly = min((int)floorf(depth_mult * min(1.f, max(0.f, (p.y - minp_.y)/dims_.y))), depth_mult - 1);
+                const int cellz = min((int)floorf(depth_mult * min(1.f, max(0.f, (p.z - minp_.z)/dims_.z))), depth_mult - 1);
 
                 return Morton::createCode(cellx, celly, cellz);
             }	

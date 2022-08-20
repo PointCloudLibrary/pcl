@@ -51,7 +51,7 @@ namespace pcl
       MTLReader ();
 
       /** \brief empty destructor */
-      virtual ~MTLReader() {}
+      virtual ~MTLReader() = default;
 
       /** \brief Read a MTL file given its full path.
         * \param[in] filename full path to MTL file
@@ -94,9 +94,9 @@ namespace pcl
   {
     public:
       /** \brief empty constructor */
-      OBJReader() {}
+      OBJReader() = default;
       /** \brief empty destructor */
-      ~OBJReader() {}
+      ~OBJReader() override = default;
       /** \brief Read a point cloud data header from a FILE file.
         *
         * Load only the meta information (number of points, their types, etc),
@@ -324,6 +324,7 @@ namespace pcl
       * \param[in] file_name the name of the file to write to disk
       * \param[in] tex_mesh the texture mesh to save
       * \param[in] precision the output ASCII precision
+      * \return 0 on success, else a negative number
       * \ingroup io
       */
     PCL_EXPORTS int
@@ -331,7 +332,7 @@ namespace pcl
                  const pcl::TextureMesh &tex_mesh,
                  unsigned precision = 5);
 
-    /** \brief Saves a PolygonMesh in ascii PLY format.
+    /** \brief Saves a PolygonMesh in ascii OBJ format.
       * \param[in] file_name the name of the file to write to disk
       * \param[in] mesh the polygonal mesh to save
       * \param[in] precision the output ASCII precision default 5

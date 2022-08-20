@@ -174,7 +174,7 @@ pcl::modeler::CloudMesh::updateVtkPoints()
   }
   // Need to check for NaNs, Infs, ec
   else {
-    pcl::IndicesPtr indices(new std::vector<int>());
+    pcl::IndicesPtr indices(new pcl::Indices());
     pcl::removeNaNFromPointCloud(*cloud_, *indices);
 
     data->SetNumberOfValues(3 * indices->size());
@@ -198,17 +198,17 @@ pcl::modeler::CloudMesh::updateVtkPolygons()
   if (cloud_->is_dense) {
     for (const auto& polygon : polygons_) {
       vtk_polygons_->InsertNextCell(polygon.vertices.size());
-      for (const unsigned int& vertex : polygon.vertices)
+      for (const auto& vertex : polygon.vertices)
         vtk_polygons_->InsertCellPoint(vertex);
     }
   }
   else {
-    pcl::IndicesPtr indices(new std::vector<int>());
+    pcl::IndicesPtr indices(new pcl::Indices());
     pcl::removeNaNFromPointCloud(*cloud_, *indices);
 
     for (const auto& polygon : polygons_) {
       vtk_polygons_->InsertNextCell(polygon.vertices.size());
-      for (const unsigned int& vertex : polygon.vertices)
+      for (const auto& vertex : polygon.vertices)
         vtk_polygons_->InsertCellPoint((*indices)[vertex]);
     }
   }

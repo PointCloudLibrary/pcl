@@ -52,7 +52,7 @@ template <typename PointXYZT, typename PointRGBT> bool
 LineRGBD<PointXYZT, PointRGBT>::readLTMHeader (int fd, pcl::io::TARHeader &header)
 {
   // Read in the header
-  int result = static_cast<int> (io::raw_read (fd, reinterpret_cast<char*> (&header.file_name[0]), 512));
+  int result = static_cast<int> (io::raw_read (fd, reinterpret_cast<char*> (&header), 512));
   if (result == -1)
     return (false);
 

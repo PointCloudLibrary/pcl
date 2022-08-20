@@ -11,7 +11,9 @@ endif()
 if(CMAKE_COMPILER_IS_GNUCXX)
   string(REPLACE "-Wold-style-cast" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
   string(REPLACE "-Wno-invalid-offsetof" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-conversion -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -Wno-unused-but-set-variable")
+  string(APPEND CMAKE_CXX_FLAGS " -Wno-conversion -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -Wno-unused-but-set-variable")
+  # allow deprecation warnings in Eigen(3.3.7)/Core, see here: https://gitlab.kitware.com/vtk/vtk/-/issues/17661
+  string(APPEND CMAKE_CXX_FLAGS " -Wno-error=cpp")
 endif()
 
 collect_subproject_directory_names("${CMAKE_CURRENT_SOURCE_DIR}" "CMakeLists.txt" PCL_CUDA_MODULES_NAMES PCL_CUDA_MODULES_DIRS)

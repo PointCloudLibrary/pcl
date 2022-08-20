@@ -55,14 +55,25 @@ pcl::SampleConsensusModelPlane<PointT>::isSampleGood (const Indices &samples) co
     PCL_ERROR ("[pcl::SampleConsensusModelPlane::isSampleGood] Wrong number of samples (is %lu, should be %lu)!\n", samples.size (), sample_size_);
     return (false);
   }
-  // Get the values at the two points
-  pcl::Array4fMapConst p0 = (*input_)[samples[0]].getArray4fMap ();
-  pcl::Array4fMapConst p1 = (*input_)[samples[1]].getArray4fMap ();
-  pcl::Array4fMapConst p2 = (*input_)[samples[2]].getArray4fMap ();
 
-  Eigen::Array4f dy1dy2 = (p1-p0) / (p2-p0);
+  // Check if the sample points are collinear
+  // Similar checks are implemented as precaution in computeModelCoefficients,
+  // so if you find the need to fix something in here, look there, too.
+  pcl::Vector3fMapConst p0 = (*input_)[samples[0]].getVector3fMap ();
+  pcl::Vector3fMapConst p1 = (*input_)[samples[1]].getVector3fMap ();
+  pcl::Vector3fMapConst p2 = (*input_)[samples[2]].getVector3fMap ();
 
-  return ( (dy1dy2[0] != dy1dy2[1]) || (dy1dy2[2] != dy1dy2[1]) );
+  // Check if the norm of the cross-product would be non-zero, otherwise
+  // normalization will fail. One could also interpret this as kind of check
+  // if the triangle spanned by those three points would have an area greater
+  // than zero.
+  if ((p1 - p0).cross(p2 - p0).stableNorm() < Eigen::NumTraits<float>::dummy_precision ())
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelPlane::isSampleGood] Sample points too similar or collinear!\n");
+    return (false);
+  }
+
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -70,43 +81,39 @@ template <typename PointT> bool
 pcl::SampleConsensusModelPlane<PointT>::computeModelCoefficients (
       const Indices &samples, Eigen::VectorXf &model_coefficients) const
 {
-  // Need 3 samples
+  // The checks are redundant with isSampleGood above, but since most of the
+  // computed values are also used to compute the model coefficients, this might
+  // be a situation where this duplication is acceptable.
   if (samples.size () != sample_size_)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelPlane::computeModelCoefficients] Invalid set of samples given (%lu)!\n", samples.size ());
     return (false);
   }
 
-  pcl::Array4fMapConst p0 = (*input_)[samples[0]].getArray4fMap ();
-  pcl::Array4fMapConst p1 = (*input_)[samples[1]].getArray4fMap ();
-  pcl::Array4fMapConst p2 = (*input_)[samples[2]].getArray4fMap ();
+  pcl::Vector3fMapConst p0 = (*input_)[samples[0]].getVector3fMap ();
+  pcl::Vector3fMapConst p1 = (*input_)[samples[1]].getVector3fMap ();
+  pcl::Vector3fMapConst p2 = (*input_)[samples[2]].getVector3fMap ();
 
-  // Compute the segment values (in 3d) between p1 and p0
-  Eigen::Array4f p1p0 = p1 - p0;
-  // Compute the segment values (in 3d) between p2 and p0
-  Eigen::Array4f p2p0 = p2 - p0;
+  const Eigen::Vector3f cross = (p1 - p0).cross(p2 - p0);
+  const float crossNorm = cross.stableNorm();
 
-  // Avoid some crashes by checking for collinearity here
-  Eigen::Array4f dy1dy2 = p1p0 / p2p0;
-  if ( (dy1dy2[0] == dy1dy2[1]) && (dy1dy2[2] == dy1dy2[1]) )          // Check for collinearity
+  // Checking for collinearity here
+  if (crossNorm < Eigen::NumTraits<float>::dummy_precision ())
   {
+    PCL_ERROR ("[pcl::SampleConsensusModelPlane::computeModelCoefficients] Chosen samples are collinear!\n");
     return (false);
   }
 
   // Compute the plane coefficients from the 3 given points in a straightforward manner
   // calculate the plane normal n = (p2-p1) x (p3-p1) = cross (p2-p1, p3-p1)
   model_coefficients.resize (model_size_);
-  model_coefficients[0] = p1p0[1] * p2p0[2] - p1p0[2] * p2p0[1];
-  model_coefficients[1] = p1p0[2] * p2p0[0] - p1p0[0] * p2p0[2];
-  model_coefficients[2] = p1p0[0] * p2p0[1] - p1p0[1] * p2p0[0];
-  model_coefficients[3] = 0.0f;
-
-  // Normalize
-  model_coefficients.normalize ();
+  model_coefficients.template head<3>() = cross / crossNorm;
 
   // ... + d = 0
-  model_coefficients[3] = -1.0f * (model_coefficients.template head<4>().dot (p0.matrix ()));
+  model_coefficients[3] = -1.0f * (model_coefficients.template head<3>().dot (p0));
 
+  PCL_DEBUG ("[pcl::SampleConsensusModelPlane::computeModelCoefficients] Model is (%g,%g,%g,%g).\n",
+             model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3]);
   return (true);
 }
 
@@ -357,7 +364,12 @@ pcl::SampleConsensusModelPlane<PointT>::optimizeModelCoefficients (
   EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
   Eigen::Vector4f xyz_centroid;
 
-  computeMeanAndCovarianceMatrix (*input_, inliers, covariance_matrix, xyz_centroid);
+  if (0 == computeMeanAndCovarianceMatrix (*input_, inliers, covariance_matrix, xyz_centroid))
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelPlane::optimizeModelCoefficients] computeMeanAndCovarianceMatrix failed (returned 0) because there are no valid inliers.\n");
+    optimized_coefficients = model_coefficients;
+    return;
+  }
 
   // Compute the model coefficients
   EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value;

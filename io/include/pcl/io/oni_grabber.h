@@ -44,7 +44,6 @@
 #ifdef HAVE_OPENNI
 
 #include <pcl/point_cloud.h>
-#include <pcl/io/boost.h>
 #include <pcl/io/grabber.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_camera/openni_device_oni.h>
@@ -87,7 +86,7 @@ namespace pcl
       ONIGrabber (const std::string& file_name, bool repeat, bool stream);
 
       /** \brief destructor never throws an exception */
-      ~ONIGrabber () noexcept;
+      ~ONIGrabber () noexcept override;
 
       /** \brief For devices that are streaming, the streams are started by calling this method.
         *        Trigger-based devices, just trigger the device once for each call of start.

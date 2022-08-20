@@ -45,9 +45,6 @@
 #include <pcl/search/search.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <list>
-#include <cmath>
-#include <ctime>
 
 namespace pcl
 {
@@ -55,7 +52,7 @@ namespace pcl
     * Implements the well known Region Growing algorithm used for segmentation.
     * Description can be found in the article
     * "Segmentation of point clouds using smoothness constraint"
-    * by T. Rabbania, F. A. van den Heuvelb, G. Vosselmanc.
+    * by T. Rabbani, F. A. van den Heuvel, G. Vosselman.
     * In addition to residual test, the possibility to test curvature is added.
     * \ingroup segmentation
     */
@@ -84,23 +81,23 @@ namespace pcl
         * finding KNN. In other words it frees memory.
         */
 
-      ~RegionGrowing ();
+      ~RegionGrowing () override;
 
       /** \brief Get the minimum number of points that a cluster needs to contain in order to be considered valid. */
-      int
+      pcl::uindex_t
       getMinClusterSize ();
 
       /** \brief Set the minimum number of points that a cluster needs to contain in order to be considered valid. */
       void
-      setMinClusterSize (int min_cluster_size);
+      setMinClusterSize (pcl::uindex_t min_cluster_size);
 
       /** \brief Get the maximum number of points that a cluster needs to contain in order to be considered valid. */
-      int
+      pcl::uindex_t
       getMaxClusterSize ();
 
       /** \brief Set the maximum number of points that a cluster needs to contain in order to be considered valid. */
       void
-      setMaxClusterSize (int max_cluster_size);
+      setMaxClusterSize (pcl::uindex_t max_cluster_size);
 
       /** \brief Returns the flag value. This flag signalizes which mode of algorithm will be used.
         * If it is set to true than it will work as said in the article. This means that
@@ -215,7 +212,7 @@ namespace pcl
         * \param[out] cluster cluster to which the point belongs.
         */
       virtual void
-      getSegmentFromPoint (int index, pcl::PointIndices& cluster);
+      getSegmentFromPoint (pcl::index_t index, pcl::PointIndices& cluster);
 
       /** \brief If the cloud was successfully segmented, then function
         * returns colored cloud. Otherwise it returns an empty pointer.
@@ -251,7 +248,7 @@ namespace pcl
 
       /** \brief This function implements the algorithm described in the article
         * "Segmentation of point clouds using smoothness constraint"
-        * by T. Rabbania, F. A. van den Heuvelb, G. Vosselmanc.
+        * by T. Rabbani, F. A. van den Heuvel, G. Vosselman.
         */
       void
       applySmoothRegionGrowingAlgorithm ();
@@ -271,7 +268,7 @@ namespace pcl
         * \param[out] is_a_seed this value is set to true if the point with index 'nghbr' can serve as the seed
         */
       virtual bool
-      validatePoint (int initial_seed, int point, int nghbr, bool& is_a_seed) const;
+      validatePoint (pcl::index_t initial_seed, pcl::index_t point, pcl::index_t nghbr, bool& is_a_seed) const;
 
       /** \brief This function simply assembles the regions from list of point labels.
         * Each cluster is an array of point indices.
@@ -282,10 +279,10 @@ namespace pcl
     protected:
 
       /** \brief Stores the minimum number of points that a cluster needs to contain in order to be considered valid. */
-      int min_pts_per_cluster_;
+      pcl::uindex_t min_pts_per_cluster_;
 
       /** \brief Stores the maximum number of points that a cluster needs to contain in order to be considered valid. */
-      int max_pts_per_cluster_;
+      pcl::uindex_t max_pts_per_cluster_;
 
       /** \brief Flag that signalizes if the smoothness constraint will be used. */
       bool smooth_mode_flag_;
@@ -296,26 +293,26 @@ namespace pcl
       /** \brief If set to true then residual test will be done during segmentation. */
       bool residual_flag_;
 
-      /** \brief Thershold used for testing the smoothness between points. */
+      /** \brief Threshold used for testing the smoothness between points. */
       float theta_threshold_;
 
-      /** \brief Thershold used in residual test. */
+      /** \brief Threshold used in residual test. */
       float residual_threshold_;
 
-      /** \brief Thershold used in curvature test. */
+      /** \brief Threshold used in curvature test. */
       float curvature_threshold_;
 
       /** \brief Number of neighbours to find. */
       unsigned int neighbour_number_;
 
-      /** \brief Serch method that will be used for KNN. */
+      /** \brief Search method that will be used for KNN. */
       KdTreePtr search_;
 
       /** \brief Contains normals of the points that will be segmented. */
       NormalPtr normals_;
 
       /** \brief Contains neighbours of each point. */
-      std::vector<std::vector<int> > point_neighbours_;
+      std::vector<pcl::Indices> point_neighbours_;
 
       /** \brief Point labels that tells to which segment each point belongs. */
       std::vector<int> point_labels_;
@@ -326,7 +323,7 @@ namespace pcl
       bool normal_flag_;
 
       /** \brief Tells how much points each segment contains. Used for reserving memory. */
-      std::vector<int> num_pts_in_segment_;
+      std::vector<pcl::uindex_t> num_pts_in_segment_;
 
       /** \brief After the segmentation it will contain the segments. */
       std::vector <pcl::PointIndices> clusters_;

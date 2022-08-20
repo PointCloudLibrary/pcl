@@ -319,9 +319,8 @@ LUM<PointT>::computeEdge(const Edge& e)
       corrs->size());
   std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f>> corrs_diff(
       corrs->size());
-  int oci = 0; // oci = output correspondence iterator
-  for (int ici = 0; ici != static_cast<int>(corrs->size());
-       ++ici) // ici = input correspondence iterator
+  int oci = 0;                       // oci = output correspondence iterator
+  for (const auto& icorr : (*corrs)) // icorr = input correspondence
   {
     // Compound the point pair onto the current pose
     Eigen::Vector3f source_compounded =
@@ -331,7 +330,7 @@ LUM<PointT>::computeEdge(const Edge& e)
                                source_pose(3),
                                source_pose(4),
                                source_pose(5)) *
-        (*source_cloud)[(*corrs)[ici].index_query].getVector3fMap();
+        (*source_cloud)[icorr.index_query].getVector3fMap();
     Eigen::Vector3f target_compounded =
         pcl::getTransformation(target_pose(0),
                                target_pose(1),
@@ -339,7 +338,7 @@ LUM<PointT>::computeEdge(const Edge& e)
                                target_pose(3),
                                target_pose(4),
                                target_pose(5)) *
-        (*target_cloud)[(*corrs)[ici].index_match].getVector3fMap();
+        (*target_cloud)[icorr.index_match].getVector3fMap();
 
     // NaN points can not be passed to the remaining computational pipeline
     if (!std::isfinite(source_compounded(0)) || !std::isfinite(source_compounded(1)) ||

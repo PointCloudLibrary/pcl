@@ -41,7 +41,6 @@
 
 #include <pcl/gpu/utils/device/algorithm.hpp>
 #include <pcl/gpu/utils/device/warp.hpp>
-#include <pcl/gpu/utils/device/static_check.hpp>
 //#include <pcl/gpu/utils/device/funcattrib.hpp>
 #include <pcl/gpu/utils/safe_call.hpp>
 
@@ -58,8 +57,6 @@
 #include <thrust/iterator/counting_iterator.h>
 #include <thrust/unique.h>
 #include <thrust/gather.h>
-
-using namespace thrust;
 
 namespace pcl
 {
@@ -138,8 +135,8 @@ namespace pcl
 	  template<typename It, typename Unary, typename Init, typename Binary>
       int transform_reduce_index(It beg, It end, Unary unop, Init init, Binary binary)
 	  {
-	    counting_iterator<int> cbeg(0);
-		counting_iterator<int> cend = cbeg + thrust::distance(beg, end);
+	    thrust::counting_iterator<int> cbeg(0);
+		thrust::counting_iterator<int> cend = cbeg + thrust::distance(beg, end);
 			 		
 	    thrust::tuple<float, int> t = transform_reduce( 
 		  make_zip_iterator(thrust::make_tuple(beg, cbeg)), 
@@ -171,14 +168,14 @@ pcl::device::PointStream::PointStream(const Cloud& cloud_) : cloud(cloud_)
   facets_dists.create(cloud_size);
   perm.create(cloud_size);
 
-  device_ptr<int> pbeg(perm.ptr());  
+  thrust::device_ptr<int> pbeg(perm.ptr());  
   thrust::sequence(pbeg, pbeg + cloud_size);
 }
 
 void pcl::device::PointStream::computeInitalSimplex()
 {
-  device_ptr<const PointType> beg(cloud.ptr());  
-  device_ptr<const PointType> end = beg + cloud_size;
+  thrust::device_ptr<const PointType> beg(cloud.ptr());  
+  thrust::device_ptr<const PointType> end = beg + cloud_size;
      
   int minx = transform_reduce_min_index(beg, end, X());
   int maxx = transform_reduce_max_index(beg, end, X());
@@ -197,11 +194,11 @@ void pcl::device::PointStream::computeInitalSimplex()
   simplex.x1 = tr(p1);  simplex.x2 = tr(p2);  simplex.x3 = tr(p3);  simplex.x4 = tr(p4);
   simplex.i1 = minx;    simplex.i2 = maxx;    simplex.i3 = maxl;    simplex.i4 = maxp;
 
-  float maxy = transform_reduce(beg, end, Y(), std::numeric_limits<float>::min(), maximum<float>()); 
-  float miny = transform_reduce(beg, end, Y(), std::numeric_limits<float>::max(), minimum<float>()); 
+  float maxy = transform_reduce(beg, end, Y(), std::numeric_limits<float>::min(), thrust::maximum<float>()); 
+  float miny = transform_reduce(beg, end, Y(), std::numeric_limits<float>::max(), thrust::minimum<float>()); 
 
-  float maxz = transform_reduce(beg, end, Z(), std::numeric_limits<float>::min(), maximum<float>()); 
-  float minz = transform_reduce(beg, end, Z(), std::numeric_limits<float>::max(), minimum<float>()); 
+  float maxz = transform_reduce(beg, end, Z(), std::numeric_limits<float>::min(), thrust::maximum<float>()); 
+  float minz = transform_reduce(beg, end, Z(), std::numeric_limits<float>::max(), thrust::minimum<float>()); 
 		  
   float dx = (p2.x - p1.x);
   float dy = (maxy - miny);
@@ -309,7 +306,7 @@ namespace pcl
           }
 
           //if (neg_count == 0)
-          //  then internal point ==>> idx = INT_MAX
+          //  then internal point ==>> idx = std::numeric_limits<int>::max()
 
 		  std::uint64_t res = idx;
 		  res <<= 32;
@@ -684,7 +681,7 @@ namespace pcl
             }
 
             // if (neg_count == 0)
-            // new_idx = INT_MAX ==>> internal point
+            // new_idx = std::numeric_limits<int>::max() ==>> internal point
                       	       	 	   
             std::uint64_t res = new_idx;
 		    res <<= 32;
@@ -825,12 +822,12 @@ void pcl::device::pack_hull(const DeviceArray<PointType>& points, const DeviceAr
 {
   output.create(indeces.size());
 
-  //device_ptr<const PointType> in(points.ptr());  
+  //thrust::device_ptr<const PointType> in(points.ptr());  
   
   //thrust::device_ptr<const int> mb(indeces.ptr());
   //thrust::device_ptr<const int> me = mb + indeces.size();
 
-  //device_ptr<PointType> out(output.ptr());  
+  //thrust::device_ptr<PointType> out(output.ptr());  
 
   //thrust::gather(mb, me, in, out);
   

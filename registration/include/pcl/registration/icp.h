@@ -70,11 +70,12 @@ namespace pcl {
  * \code
  * IterativeClosestPoint<PointXYZ, PointXYZ> icp;
  * // Set the input source and target
- * icp.setInputCloud (cloud_source);
+ * icp.setInputSource (cloud_source);
  * icp.setInputTarget (cloud_target);
  *
  * // Set the max correspondence distance to 5cm (e.g., correspondences with higher
- * distances will be ignored) icp.setMaxCorrespondenceDistance (0.05);
+ * // distances will be ignored)
+ * icp.setMaxCorrespondenceDistance (0.05);
  * // Set the maximum number of iterations (criterion 1)
  * icp.setMaximumIterations (50);
  * // Set the transformation epsilon (criterion 2)
@@ -180,7 +181,7 @@ public:
   operator=(IterativeClosestPoint&&) = delete;
 
   /** \brief Empty destructor */
-  ~IterativeClosestPoint() {}
+  ~IterativeClosestPoint() override = default;
 
   /** \brief Returns a pointer to the DefaultConvergenceCriteria used by the
    * IterativeClosestPoint class. This allows to check the convergence state after the
@@ -231,7 +232,7 @@ public:
   }
 
   /** \brief Provide a pointer to the input target
-   * (e.g., the point cloud that we want to align to the target)
+   * (e.g., the point cloud that we want to align the input source to)
    *
    * \param[in] cloud the input point cloud target
    */
@@ -269,7 +270,7 @@ public:
   }
 
 protected:
-  /** \brief Apply a rigid transform to a given dataset. Here we check whether whether
+  /** \brief Apply a rigid transform to a given dataset. Here we check whether
    * the dataset has surface normals in addition to XYZ, and rotate normals as well.
    * \param[in] input the input point cloud
    * \param[out] output the resultant output point cloud
@@ -352,9 +353,10 @@ public:
   using IterativeClosestPoint<PointSource, PointTarget, Scalar>::
       correspondence_rejectors_;
 
-  using Ptr = shared_ptr<IterativeClosestPoint<PointSource, PointTarget, Scalar>>;
-  using ConstPtr =
-      shared_ptr<const IterativeClosestPoint<PointSource, PointTarget, Scalar>>;
+  using Ptr =
+      shared_ptr<IterativeClosestPointWithNormals<PointSource, PointTarget, Scalar>>;
+  using ConstPtr = shared_ptr<
+      const IterativeClosestPointWithNormals<PointSource, PointTarget, Scalar>>;
 
   /** \brief Empty constructor. */
   IterativeClosestPointWithNormals()
@@ -366,7 +368,7 @@ public:
   };
 
   /** \brief Empty destructor */
-  virtual ~IterativeClosestPointWithNormals() {}
+  ~IterativeClosestPointWithNormals() override = default;
 
   /** \brief Set whether to use a symmetric objective function or not
    *
@@ -438,10 +440,10 @@ protected:
    * \param[in] transform a 4x4 rigid transformation
    * \note Can be used with cloud_in equal to cloud_out
    */
-  virtual void
+  void
   transformCloud(const PointCloudSource& input,
                  PointCloudSource& output,
-                 const Matrix4& transform);
+                 const Matrix4& transform) override;
 
   /** \brief Type of objective function (asymmetric vs. symmetric) used for transform
    * estimation */

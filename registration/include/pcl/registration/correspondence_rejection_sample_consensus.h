@@ -40,7 +40,6 @@
 
 #pragma once
 
-#include <pcl/common/transforms.h>
 #include <pcl/registration/correspondence_rejection.h>
 #include <pcl/memory.h>
 
@@ -81,7 +80,7 @@ public:
   }
 
   /** \brief Empty destructor. */
-  ~CorrespondenceRejectorSampleConsensus() {}
+  ~CorrespondenceRejectorSampleConsensus() override = default;
 
   /** \brief Get a list of valid correspondences after rejection from the original set
    * of correspondences. \param[in] original_correspondences the set of initial
@@ -226,7 +225,7 @@ public:
    * \param[out] inlier_indices Indices for the inliers
    */
   inline void
-  getInliersIndices(std::vector<int>& inlier_indices)
+  getInliersIndices(pcl::Indices& inlier_indices)
   {
     inlier_indices = inlier_indices_;
   }
@@ -268,7 +267,7 @@ protected:
   Eigen::Matrix4f best_transformation_;
 
   bool refine_;
-  std::vector<int> inlier_indices_;
+  pcl::Indices inlier_indices_;
   bool save_inliers_;
 
 public:

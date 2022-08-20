@@ -38,7 +38,6 @@
 
 #pragma once
 
-#include <pcl/segmentation/boost.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
@@ -47,6 +46,7 @@
 #include <pcl/search/search.h>
 #include <string>
 #include <set>
+#include <boost/graph/adjacency_list.hpp> // for adjacency_list
 
 namespace pcl
 {
@@ -111,7 +111,7 @@ namespace pcl
 
       /** \brief Destructor that frees memory. */
 
-      ~MinCutSegmentation ();
+      ~MinCutSegmentation () override;
 
       /** \brief This method simply sets the input point cloud.
         * \param[in] cloud the const boost shared pointer to a PointCloud

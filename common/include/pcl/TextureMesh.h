@@ -91,9 +91,17 @@ namespace pcl
     pcl::PCLHeader  header;
 
 
-    std::vector<std::vector<pcl::Vertices> >    tex_polygons;     // polygon which is mapped with specific texture defined in TexMaterial
-    std::vector<std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > > tex_coordinates;  // UV coordinates
-    std::vector<pcl::TexMaterial>               tex_materials;    // define texture material
+    /** \brief polygon which is mapped with specific texture defined in TexMaterial */
+    std::vector<std::vector<pcl::Vertices> >    tex_polygons;
+    /** \brief UV coordinates */
+    std::vector<std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > > tex_coordinates;
+    /** \brief define texture material */
+    std::vector<pcl::TexMaterial>               tex_materials;
+    /** \brief Specifies which texture coordinates from tex_coordinates each polygon/face uses.
+      * The vectors must have the same sizes as in tex_polygons, but the pcl::Vertices
+      * may be empty for those polygons/faces that do not use coordinates.
+      */
+    std::vector<std::vector<pcl::Vertices> >    tex_coord_indices;
 
     public:
       using Ptr = shared_ptr<pcl::TextureMesh>;

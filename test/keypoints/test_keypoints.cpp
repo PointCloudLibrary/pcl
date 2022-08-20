@@ -143,11 +143,11 @@ TEST (PCL, SIFTKeypoint_radiusSearch)
   std::vector<float> scales (nr_scales_per_octave + 3);
   for (int i_scale = 0; i_scale <= nr_scales_per_octave + 2; ++i_scale)
   {
-    scales[i_scale] = base_scale * pow (2.0f, static_cast<float> (i_scale-1) / nr_scales_per_octave);
+    scales[i_scale] = base_scale * std::pow (2.0f, static_cast<float> (i_scale-1) / nr_scales_per_octave);
   }
   Eigen::MatrixXf diff_of_gauss;
 
-  std::vector<int> nn_indices;
+  pcl::Indices nn_indices;
   std::vector<float> nn_dist;
   diff_of_gauss.resize (input.size (), scales.size () - 1);
 
@@ -157,8 +157,8 @@ TEST (PCL, SIFTKeypoint_radiusSearch)
   tree.radiusSearch (i_point, max_radius, nn_indices, nn_dist);
 
   // Are they all unique?
-  std::set<int> unique_indices;
-  for (const int &nn_index : nn_indices)
+  std::set<pcl::index_t> unique_indices;
+  for (const auto &nn_index : nn_indices)
   {
     unique_indices.insert (nn_index);
   }

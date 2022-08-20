@@ -82,7 +82,7 @@ public:
   OctreePointCloudAdjacencyContainer() : OctreeContainerBase() { this->reset(); }
 
   /** \brief Empty class deconstructor. */
-  ~OctreePointCloudAdjacencyContainer() {}
+  ~OctreePointCloudAdjacencyContainer() override = default;
 
   /** \brief Returns the number of neighbors this leaf has
    *  \returns number of neighbors
@@ -94,7 +94,7 @@ public:
   }
 
   /** \brief Gets the number of points contributing to this leaf */
-  int
+  uindex_t
   getPointCounter() const
   {
     return num_points_;
@@ -119,7 +119,7 @@ public:
   /** \brief  virtual method to get size of container
    * \return number of points added to leaf node container.
    */
-  std::size_t
+  uindex_t
   getSize() const override
   {
     return num_points_;
@@ -170,7 +170,7 @@ protected:
 
   /** \brief Sets the number of points contributing to this leaf */
   void
-  setPointCounter(int points_arg)
+  setPointCounter(uindex_t points_arg)
   {
     num_points_ = points_arg;
   }
@@ -218,7 +218,7 @@ protected:
   }
 
 private:
-  int num_points_;
+  uindex_t num_points_;
   NeighborListT neighbors_;
   DataT data_;
 };

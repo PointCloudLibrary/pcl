@@ -6,7 +6,7 @@ set(OPT_DEPS io features segmentation)
 set(DEFAULT ON)
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
-PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
 
 if(NOT build)
   return()
@@ -34,8 +34,12 @@ PCL_ADD_TEST(filters_uniform_sampling test_uniform_sampling
              LINK_WITH pcl_gtest pcl_common pcl_filters)
 
 PCL_ADD_TEST(filters_convolution test_convolution
-        FILES test_convolution.cpp
-        LINK_WITH pcl_gtest pcl_filters)
+             FILES test_convolution.cpp
+             LINK_WITH pcl_gtest pcl_filters)
+
+PCL_ADD_TEST(filters_crop_hull test_crop_hull
+             FILES test_crop_hull.cpp
+             LINK_WITH pcl_gtest pcl_filters)
 
 if(BUILD_io)
   PCL_ADD_TEST(filters_bilateral test_filters_bilateral

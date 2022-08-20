@@ -44,7 +44,6 @@
 #endif
 
 #include <pcl/io/openni_camera/openni_device_xtion.h>
-#include <pcl/io/boost.h>
 
 #include <mutex>
 #include <sstream>

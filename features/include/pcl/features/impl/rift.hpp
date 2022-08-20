@@ -47,7 +47,7 @@
 template <typename PointInT, typename GradientT, typename PointOutT> void
 pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT (
       const PointCloudIn &cloud, const PointCloudGradient &gradient, 
-      int p_idx, float radius, const std::vector<int> &indices, 
+      int p_idx, float radius, const pcl::Indices &indices, 
       const std::vector<float> &sqr_distances, Eigen::MatrixXf &rift_descriptor)
 {
   if (indices.empty ())
@@ -158,7 +158,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
   }
 
   Eigen::MatrixXf rift_descriptor (nr_distance_bins_, nr_gradient_bins_);
-  std::vector<int> nn_indices;
+  pcl::Indices nn_indices;
   std::vector<float> nn_dist_sqr;
  
   // Iterating over the entire index vector
@@ -171,7 +171,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
     computeRIFT (*surface_, *gradient_, (*indices_)[idx], static_cast<float> (search_radius_), nn_indices, nn_dist_sqr, rift_descriptor);
 
     // Default layout is column major, copy elementwise
-    std::copy_n (rift_descriptor.data (), rift_descriptor.size (), output[idx].histogram);
+    std::copy (rift_descriptor.data (), rift_descriptor.data () + rift_descriptor.size (), output[idx].histogram);
   }
 }
 

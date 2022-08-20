@@ -158,7 +158,7 @@ public:
   {
     FPS_CALC("I/O");
     const std::string time = boost::posix_time::to_iso_string(
-              boost::posix_time::microsec_clock::local_time());
+        boost::posix_time::microsec_clock::local_time());
     const std::string filepath = dir_name_ + '/' + file_name_ + '_' + time + ".pcd";
 
     if (format_ & 1) {

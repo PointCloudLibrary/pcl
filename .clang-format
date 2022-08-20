@@ -62,7 +62,7 @@ IncludeCategories:
   - Regex:           '^<(OpenGL|(GL(UT)?/))'
     Priority:        450
 # Matches all std includes. Match them before any unknown include, so we can order them behind.
-  - Regex:           '^<[a-z]+>$'
+  - Regex:           '^<[a-z_]+>$'
     Priority:        900
 # Any unknown include
   - Regex:           '.*'

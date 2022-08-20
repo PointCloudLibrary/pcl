@@ -33,10 +33,8 @@
  *
  */
 
-#include <pcl/common/time.h>
 #include <pcl/filters/extract_indices.h> // for ExtractIndices
-#include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/memory.h> // for pcl::make_shared
+#include <pcl/memory.h>                  // for pcl::make_shared
 
 template <typename PointType>
 void
@@ -312,7 +310,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast(
 
   std::map<float, float> connected_labels;
   float c_intensity = 0.1f;
-  float intensity_incr = 0.1f;
+  const float intensity_incr = 0.1f;
 
   {
 

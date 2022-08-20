@@ -26,7 +26,7 @@ What happens instead of the expected behavior?
 
 **To Reproduce**
 
-Provide a link to a live example, or an unambiguous set of steps to reproduce this bug. A reproducible example helps to provide faster answers.
+Provide a link to a live example, or an unambiguous set of steps to reproduce this bug. A reproducible example helps to provide faster answers. If you load data e.g. from a PCD or PLY file, please provide the file.
 
 **Screenshots/Code snippets**
 

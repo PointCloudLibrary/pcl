@@ -86,10 +86,7 @@ namespace pcl
         feature_name_ = "DifferenceOfNormalsEstimation";
       }
 
-      ~DifferenceOfNormalsEstimation ()
-      {
-        //
-      }
+      ~DifferenceOfNormalsEstimation () override = default;
 
       /**
        * Set the normals calculated using a smaller search radius (scale) for the DoN operator.

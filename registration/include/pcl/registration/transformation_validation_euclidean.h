@@ -104,7 +104,7 @@ public:
   , force_no_recompute_(false)
   {}
 
-  virtual ~TransformationValidationEuclidean(){};
+  virtual ~TransformationValidationEuclidean() = default;
 
   /** \brief Set the maximum allowable distance between a point and its correspondence
    * in the target in order for a correspondence to be considered \a valid. Default:
@@ -136,9 +136,7 @@ public:
   setSearchMethodTarget(const KdTreePtr& tree, bool force_no_recompute = false)
   {
     tree_ = tree;
-    if (force_no_recompute) {
-      force_no_recompute_ = true;
-    }
+    force_no_recompute_ = force_no_recompute;
   }
 
   /** \brief Set a threshold for which a specific transformation is considered valid.
@@ -249,7 +247,7 @@ protected:
     }
 
     /** \brief Empty destructor */
-    virtual ~MyPointRepresentation() {}
+    virtual ~MyPointRepresentation() = default;
 
     virtual void
     copyToFloatArray(const PointTarget& p, float* out) const

@@ -56,6 +56,7 @@ Work in progress: patch by Marco (AUG,19th 2012)
 #include <pcl/console/parse.h>
 
 #include <boost/filesystem.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp> // for microsec_clock::local_time
 
 #include <pcl/gpu/kinfu_large_scale/kinfu.h>
 #include <pcl/gpu/kinfu_large_scale/raycaster.h>

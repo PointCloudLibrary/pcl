@@ -35,7 +35,6 @@
 *
 */
 
-#include <pcl/io/boost.h>
 #include <pcl/io/grabber.h>
 #include <pcl/io/io_exception.h>
 #include <pcl/point_cloud.h>
@@ -227,7 +226,7 @@ namespace pcl
   pcl::PointCloud<pcl::PointXYZ>::Ptr
   RealSense2Grabber::convertDepthToPointXYZ ( const rs2::points& points )
   {
-    return convertRealsensePointsToPointCloud<pcl::PointXYZ> ( points, []( pcl::PointXYZ& p, const rs2::texture_coordinate* uvptr ) {} );
+    return convertRealsensePointsToPointCloud<pcl::PointXYZ> ( points, []( pcl::PointXYZ&, const rs2::texture_coordinate*) {} );
   }
 
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr

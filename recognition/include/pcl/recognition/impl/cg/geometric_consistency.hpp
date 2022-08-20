@@ -71,6 +71,10 @@ pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::clusterCorresponden
   std::sort (sorted_corrs->begin (), sorted_corrs->end (), gcCorrespSorter);
 
   model_scene_corrs_ = sorted_corrs;
+  PCL_DEBUG_STREAM("[pcl::GeometricConsistencyGrouping::clusterCorrespondences] Five best correspondences: ");
+  for(std::size_t i=0; i<std::min<std::size_t>(model_scene_corrs_->size(), 5); ++i)
+    PCL_DEBUG_STREAM("[" << (*input_)[(*model_scene_corrs_)[i].index_query] << " " << (*scene_)[(*model_scene_corrs_)[i].index_match] << " " << (*model_scene_corrs_)[i].distance << "] ");
+  PCL_DEBUG_STREAM(std::endl);
 
   std::vector<int> consensus_set;
   std::vector<bool> taken_corresps (model_scene_corrs_->size (), false);

@@ -64,10 +64,7 @@ pcl::FeatureHistogram::FeatureHistogram (std::size_t const number_of_bins,
   number_of_bins_ = number_of_bins;
 }
 
-pcl::FeatureHistogram::~FeatureHistogram ()
-{
-  
-}
+pcl::FeatureHistogram::~FeatureHistogram () = default;
 
 float
 pcl::FeatureHistogram::getThresholdMin () const
@@ -136,7 +133,7 @@ pcl::FeatureHistogram::getMeanValue ()
                      0.25f * histogram_[histogram_.size () - 2] * 2.0f;
   if (last_value > max)
   {
-    max_idx = histogram_.size ();
+    max_idx = histogram_.size () - 1;
   }
 
   // Compute mean value.

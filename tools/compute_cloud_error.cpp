@@ -120,7 +120,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
       if (!std::isfinite ((*xyz_source)[point_i].x) || !std::isfinite ((*xyz_source)[point_i].y) || !std::isfinite ((*xyz_source)[point_i].z))
         continue;
 
-      std::vector<int> nn_indices (1);
+      pcl::Indices nn_indices (1);
       std::vector<float> nn_distances (1);
       if (!tree->nearestKSearch ((*xyz_source)[point_i], 1, nn_indices, nn_distances))
         continue;
@@ -152,7 +152,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
       if (!std::isfinite ((*xyz_source)[point_i].x) || !std::isfinite ((*xyz_source)[point_i].y) || !std::isfinite ((*xyz_source)[point_i].z))
         continue;
 
-      std::vector<int> nn_indices (1);
+      pcl::Indices nn_indices (1);
       std::vector<float> nn_distances (1);
       if (!tree->nearestKSearch ((*xyz_source)[point_i], 1, nn_indices, nn_distances))
         continue;

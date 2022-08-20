@@ -133,7 +133,7 @@ public:
   };
 
   /** \brief Empty destructor */
-  ~JointIterativeClosestPoint() {}
+  ~JointIterativeClosestPoint() override = default;
 
   /** \brief Provide a pointer to the input source
    * (e.g., the point cloud that we want to align to the target)

@@ -99,13 +99,13 @@ pcl::BilateralFilter<PointT>::applyFilter (PointCloud &output)
   output = *input_;
 
   // For all the indices given (equal to the entire cloud if none given)
-  for (std::size_t i = 0; i < indices_->size (); ++i)
+  for (const auto& idx : (*indices_))
   {
     // Perform a radius search to find the nearest neighbors
-    tree_->radiusSearch ((*indices_)[i], sigma_s_ * 2, k_indices, k_distances);
+    tree_->radiusSearch (idx, sigma_s_ * 2, k_indices, k_distances);
 
     // Overwrite the intensity value with the computed average
-    output[(*indices_)[i]].intensity = static_cast<float> (computePointWeight ((*indices_)[i], k_indices, k_distances));
+    output[idx].intensity = static_cast<float> (computePointWeight (idx, k_indices, k_distances));
   }
 }
  

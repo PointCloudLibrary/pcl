@@ -252,7 +252,7 @@ namespace pcl
           typename pcl::PointCloud<ModelT>::Ptr filtered (new pcl::PointCloud<ModelT> ());
           typename pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT> zbuffer_self_occlusion (75, 75, 1.f);
           zbuffer_self_occlusion.computeDepthMap (models[i], true);
-          std::vector<int> indices;
+          pcl::Indices indices;
           zbuffer_self_occlusion.filter (models[i], indices, 0.005f);
           pcl::copyPointCloud (*models[i], indices, *filtered);
 

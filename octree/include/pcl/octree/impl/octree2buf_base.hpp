@@ -67,17 +67,17 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::~Octree2BufBase()
 template <typename LeafContainerT, typename BranchContainerT>
 void
 Octree2BufBase<LeafContainerT, BranchContainerT>::setMaxVoxelIndex(
-    unsigned int max_voxel_index_arg)
+    uindex_t max_voxel_index_arg)
 {
-  unsigned int treeDepth;
+  uindex_t treeDepth;
 
   assert(max_voxel_index_arg > 0);
 
   // tree depth == amount of bits of maxVoxels
-  treeDepth = std::max(
-      (std::min(static_cast<unsigned int>(OctreeKey::maxDepth),
-                static_cast<unsigned int>(std::ceil(std::log2(max_voxel_index_arg))))),
-      static_cast<unsigned int>(0));
+  treeDepth =
+      std::max<uindex_t>(std::min<uindex_t>(OctreeKey::maxDepth,
+                                            std::ceil(std::log2(max_voxel_index_arg))),
+                         0);
 
   // define depthMask_ by setting a single bit to 1 at bit position == tree depth
   depth_mask_ = (1 << (treeDepth - 1));
@@ -86,7 +86,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::setMaxVoxelIndex(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 void
-Octree2BufBase<LeafContainerT, BranchContainerT>::setTreeDepth(unsigned int depth_arg)
+Octree2BufBase<LeafContainerT, BranchContainerT>::setTreeDepth(uindex_t depth_arg)
 {
   assert(depth_arg > 0);
 
@@ -103,9 +103,9 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::setTreeDepth(unsigned int dept
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 LeafContainerT*
-Octree2BufBase<LeafContainerT, BranchContainerT>::findLeaf(unsigned int idx_x_arg,
-                                                           unsigned int idx_y_arg,
-                                                           unsigned int idx_z_arg)
+Octree2BufBase<LeafContainerT, BranchContainerT>::findLeaf(uindex_t idx_x_arg,
+                                                           uindex_t idx_y_arg,
+                                                           uindex_t idx_z_arg)
 {
   // generate key
   OctreeKey key(idx_x_arg, idx_y_arg, idx_z_arg);
@@ -117,9 +117,9 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::findLeaf(unsigned int idx_x_ar
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 LeafContainerT*
-Octree2BufBase<LeafContainerT, BranchContainerT>::createLeaf(unsigned int idx_x_arg,
-                                                             unsigned int idx_y_arg,
-                                                             unsigned int idx_z_arg)
+Octree2BufBase<LeafContainerT, BranchContainerT>::createLeaf(uindex_t idx_x_arg,
+                                                             uindex_t idx_y_arg,
+                                                             uindex_t idx_z_arg)
 {
   // generate key
   OctreeKey key(idx_x_arg, idx_y_arg, idx_z_arg);
@@ -131,8 +131,9 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::createLeaf(unsigned int idx_x_
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 bool
-Octree2BufBase<LeafContainerT, BranchContainerT>::existLeaf(
-    unsigned int idx_x_arg, unsigned int idx_y_arg, unsigned int idx_z_arg) const
+Octree2BufBase<LeafContainerT, BranchContainerT>::existLeaf(uindex_t idx_x_arg,
+                                                            uindex_t idx_y_arg,
+                                                            uindex_t idx_z_arg) const
 {
   // generate key
   OctreeKey key(idx_x_arg, idx_y_arg, idx_z_arg);
@@ -144,9 +145,9 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::existLeaf(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 void
-Octree2BufBase<LeafContainerT, BranchContainerT>::removeLeaf(unsigned int idx_x_arg,
-                                                             unsigned int idx_y_arg,
-                                                             unsigned int idx_z_arg)
+Octree2BufBase<LeafContainerT, BranchContainerT>::removeLeaf(uindex_t idx_x_arg,
+                                                             uindex_t idx_y_arg,
+                                                             uindex_t idx_z_arg)
 {
   // generate key
   OctreeKey key(idx_x_arg, idx_y_arg, idx_z_arg);
@@ -352,10 +353,10 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::serializeNewLeafs(
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
-unsigned int
+uindex_t
 Octree2BufBase<LeafContainerT, BranchContainerT>::createLeafRecursive(
     const OctreeKey& key_arg,
-    unsigned int depth_mask_arg,
+    uindex_t depth_mask_arg,
     BranchNode* branch_arg,
     LeafNode*& return_leaf_arg,
     BranchNode*& parent_of_leaf_arg,
@@ -431,6 +432,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::createLeafRecursive(
       OctreeNode* child_node = branch_arg->getChildPtr(!buffer_selector_, child_idx);
       if (child_node->getNodeType() == LEAF_NODE) {
         child_leaf = static_cast<LeafNode*>(child_node);
+        child_leaf->getContainer() = LeafContainer(); // Clear contents of leaf
         branch_arg->setChildPtr(buffer_selector_, child_idx, child_node);
       }
       else {
@@ -465,7 +467,7 @@ template <typename LeafContainerT, typename BranchContainerT>
 void
 Octree2BufBase<LeafContainerT, BranchContainerT>::findLeafRecursive(
     const OctreeKey& key_arg,
-    unsigned int depth_mask_arg,
+    uindex_t depth_mask_arg,
     BranchNode* branch_arg,
     LeafContainerT*& result_arg) const
 {
@@ -500,7 +502,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::findLeafRecursive(
 template <typename LeafContainerT, typename BranchContainerT>
 bool
 Octree2BufBase<LeafContainerT, BranchContainerT>::deleteLeafRecursive(
-    const OctreeKey& key_arg, unsigned int depth_mask_arg, BranchNode* branch_arg)
+    const OctreeKey& key_arg, uindex_t depth_mask_arg, BranchNode* branch_arg)
 {
   // index to branch child
   unsigned char child_idx;
@@ -559,21 +561,17 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::serializeTreeRecursive(
     bool do_XOR_encoding_arg,
     bool new_leafs_filter_arg)
 {
-  // bit pattern
-  char branch_bit_pattern_curr_buffer;
-  char branch_bit_pattern_prev_buffer;
-  char node_XOR_bit_pattern;
-
-  // occupancy bit patterns of branch node  (current and previous octree buffer)
-  branch_bit_pattern_curr_buffer = getBranchBitPattern(*branch_arg, buffer_selector_);
-  branch_bit_pattern_prev_buffer = getBranchBitPattern(*branch_arg, !buffer_selector_);
-
-  // XOR of current and previous occupancy bit patterns
-  node_XOR_bit_pattern =
-      branch_bit_pattern_curr_buffer ^ branch_bit_pattern_prev_buffer;
-
   if (binary_tree_out_arg) {
+    // occupancy bit patterns of branch node  (current octree buffer)
+    const char branch_bit_pattern_curr_buffer =
+        getBranchBitPattern(*branch_arg, buffer_selector_);
     if (do_XOR_encoding_arg) {
+      // occupancy bit patterns of branch node  (previous octree buffer)
+      const char branch_bit_pattern_prev_buffer =
+          getBranchBitPattern(*branch_arg, !buffer_selector_);
+      // XOR of current and previous occupancy bit patterns
+      const char node_XOR_bit_pattern =
+          branch_bit_pattern_curr_buffer ^ branch_bit_pattern_prev_buffer;
       // write XOR bit pattern to output vector
       binary_tree_out_arg->push_back(node_XOR_bit_pattern);
     }
@@ -642,7 +640,7 @@ template <typename LeafContainerT, typename BranchContainerT>
 void
 Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTreeRecursive(
     BranchNode* branch_arg,
-    unsigned int depth_mask_arg,
+    uindex_t depth_mask_arg,
     OctreeKey& key_arg,
     typename std::vector<char>::const_iterator& binaryTreeIT_arg,
     typename std::vector<char>::const_iterator& binaryTreeIT_End_arg,

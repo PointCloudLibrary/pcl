@@ -44,6 +44,7 @@
 #include <pcl/console/parse.h>
 
 #include <boost/filesystem.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp> // for microsec_clock::local_time
 
 #include <pcl/gpu/kinfu/kinfu.h>
 #include <pcl/gpu/kinfu/raycaster.h>
@@ -147,7 +148,7 @@ namespace pcl
             
           // Color every point
           if (nr_points != static_cast<vtkIdType>(rgb_->size ()))
-            std::fill (colors, colors + nr_points * 3, static_cast<unsigned char> (0xFF));
+            std::fill_n (colors, nr_points * 3, static_cast<unsigned char> (0xFF));
           else
             for (vtkIdType cp = 0; cp < nr_points; ++cp)
             {

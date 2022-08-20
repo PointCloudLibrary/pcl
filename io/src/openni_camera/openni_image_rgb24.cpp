@@ -11,9 +11,7 @@ ImageRGB24::ImageRGB24 (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noex
 {
 }
 
-ImageRGB24::~ImageRGB24 () noexcept
-{
-}
+ImageRGB24::~ImageRGB24 () noexcept = default;
 
 void ImageRGB24::fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step) const
 {
@@ -67,7 +65,7 @@ void ImageRGB24::fillRGB (unsigned width, unsigned height, unsigned char* rgb_bu
       const unsigned char* src_line = static_cast<const unsigned char*> (image_md_->Data());
       for (unsigned yIdx = 0; yIdx < height; ++yIdx, rgb_line += rgb_line_step, src_line += line_size)
       {
-        memcpy (rgb_line, src_line, line_size);
+        std::copy(src_line, src_line + line_size, rgb_line);
       }
     }
   }

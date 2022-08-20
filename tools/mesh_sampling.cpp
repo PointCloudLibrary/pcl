@@ -36,9 +36,9 @@
  */
 
 #include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/visualization/vtk/pcl_vtk_compatibility.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_lib_io.h>
-#include <pcl/common/transforms.h>
 #include <vtkVersion.h>
 #include <vtkPLYReader.h>
 #include <vtkOBJReader.h>
@@ -87,7 +87,8 @@ randPSurface (vtkPolyData * polydata, std::vector<double> * cumulativeAreas, dou
 
   double A[3], B[3], C[3];
   vtkIdType npts = 0;
-  vtkIdType *ptIds = nullptr;
+  vtkCellPtsPtr ptIds = nullptr;
+
   polydata->GetCellPoints (el, npts, ptIds);
   polydata->GetPoint (ptIds[0], A);
   polydata->GetPoint (ptIds[1], B);
@@ -138,7 +139,8 @@ uniform_sampling (vtkSmartPointer<vtkPolyData> polydata, std::size_t n_samples, 
 
   double p1[3], p2[3], p3[3], totalArea = 0;
   std::vector<double> cumulativeAreas (cells->GetNumberOfCells (), 0);
-  vtkIdType npts = 0, *ptIds = nullptr;
+  vtkIdType npts = 0;
+  vtkCellPtsPtr ptIds = nullptr;
   std::size_t cellId = 0;
   for (cells->InitTraversal (); cells->GetNextCell (npts, ptIds); cellId++)
   {

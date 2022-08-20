@@ -4,7 +4,7 @@ set(SUBSYS_DEPS)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
-PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} EXT_DEPS eigen boost)
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS eigen boost)
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
@@ -175,6 +175,8 @@ set(LIB_NAME "pcl_${SUBSYS_NAME}")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${kissfft_srcs} ${incs} ${common_incs} ${impl_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${range_image_incs} ${range_image_incs_impl})
 
+target_link_libraries(${LIB_NAME} Boost::boost)
+
 if(MSVC AND NOT (MSVC_VERSION LESS 1915))
   # MSVC resolved a byte alignment issue in compiler version 15.9
   # We get this due to using Eigen objects and allocating those objects with make_shared
@@ -182,7 +184,8 @@ if(MSVC AND NOT (MSVC_VERSION LESS 1915))
   target_compile_definitions(${LIB_NAME} PUBLIC _ENABLE_EXTENDED_ALIGNED_STORAGE)
 endif()
 
-PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC})
+set(EXT_DEPS eigen3)
+PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} EXT_DEPS ${EXT_DEPS})
 
 # Install include files
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "" ${incs})

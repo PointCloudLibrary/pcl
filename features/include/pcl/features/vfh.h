@@ -114,7 +114,7 @@ namespace pcl
       void
       computePointSPFHSignature (const Eigen::Vector4f &centroid_p, const Eigen::Vector4f &centroid_n,
                                  const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals,
-                                 const std::vector<int> &indices);
+                                 const pcl::Indices &indices);
 
       /** \brief Set the viewpoint.
         * \param[in] vpx the X coordinate of the viewpoint

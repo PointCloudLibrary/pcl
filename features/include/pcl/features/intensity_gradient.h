@@ -98,7 +98,7 @@ namespace pcl
         */
       void
       computePointIntensityGradient (const pcl::PointCloud<PointInT> &cloud,
-                                     const std::vector<int> &indices,
+                                     const pcl::Indices &indices,
                                      const Eigen::Vector3f &point, 
                                      float mean_intensity, 
                                      const Eigen::Vector3f &normal,

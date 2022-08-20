@@ -73,9 +73,7 @@ namespace pcl
             {
             }
 
-            virtual ~BoundedObject ()
-            {
-            }
+            virtual ~BoundedObject () = default;
 
             /** \brief This method is for std::sort. */
             inline static bool
@@ -127,11 +125,14 @@ namespace pcl
             Node (std::vector<BoundedObject*>& sorted_objects, int first_id, int last_id)
             {
               // Initialize the bounds of the node
-              memcpy (bounds_, sorted_objects[first_id]->getBounds (), 6*sizeof (float));
+              auto firstBounds = sorted_objects[first_id]->getBounds();
+              std::copy(firstBounds, firstBounds + 6, bounds_);
 
               // Expand the bounds of the node
               for ( int i = first_id + 1 ; i <= last_id ; ++i )
+              {
                 aux::expandBoundingBox(bounds_, sorted_objects[i]->getBounds());
+              }
 
               // Shall we create children?
               if ( first_id != last_id )

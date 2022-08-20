@@ -573,7 +573,7 @@ namespace pcl
 
       std::vector<BranchNode*> current_branch (number_of_nodes, static_cast<BranchNode*>(nullptr));
       current_branch[0] = root_node_;
-      assert (current_branch.back () != 0);
+      assert (current_branch.back () != nullptr);
       this->buildLODRecursive (current_branch);
     }
 
@@ -615,7 +615,7 @@ namespace pcl
         for (std::int64_t level = static_cast<std::int64_t>(current_branch.size ()-1); level >= 1; level--)
         {
           BranchNode* target_parent = current_branch[level-1];
-          assert (target_parent != 0);
+          assert (target_parent != nullptr);
           double exponent = static_cast<double>(current_branch.size () - target_parent->getDepth ());
           double current_depth_sample_percent = pow (sample_percent_, exponent);
 
@@ -640,7 +640,7 @@ namespace pcl
           pcl::PCLPointCloud2::Ptr downsampled_cloud (new pcl::PCLPointCloud2 ());
 
           //create destination for indices
-          pcl::IndicesPtr downsampled_cloud_indices (new std::vector< int > ());
+          pcl::IndicesPtr downsampled_cloud_indices (new pcl::Indices ());
           lod_filter_ptr_->filter (*downsampled_cloud_indices);
 
           //extract the "random subset", size by setSampleSize

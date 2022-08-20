@@ -38,8 +38,6 @@
 
 #pragma once
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 #include <pcl/features/feature.h>
 
 namespace pcl
@@ -72,7 +70,7 @@ namespace pcl
       };
 
       /** \brief Destructor */
-      ~LinearLeastSquaresNormalEstimation ();
+      ~LinearLeastSquaresNormalEstimation () override;
 
       /** \brief Computes the normal at the specified position. 
         * \param[in] pos_x x position (pixel)

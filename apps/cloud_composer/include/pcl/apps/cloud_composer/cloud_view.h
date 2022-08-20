@@ -42,7 +42,14 @@
 #include <vtkEventQtSlotConnect.h>
 
 #include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/visualization/qvtk_compatibility.h>
 #include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
+
+
+#include <vtkSmartPointer.h>
+#include <vtkOrientationMarkerWidget.h>
+#include <vtkAxesActor.h>
+#include <vtkVersion.h>
 
 class QItemSelection;
 class QStandardItem;
@@ -67,11 +74,12 @@ namespace pcl
       
       void 
       setModel (ProjectModel* new_model);
+      
       ProjectModel* 
       getModel () const { return model_; }
       
-      QVTKWidget* 
-      getQVTK() const {return qvtk_; }
+      PCLQVTKWidget*
+      getQVTK() const { return qvtk_; }
       
       pcl::visualization::PCLVisualizer::Ptr
       getPCLVisualizer () const { return vis_; }
@@ -141,7 +149,9 @@ namespace pcl
       
       pcl::visualization::PCLVisualizer::Ptr vis_;
       ProjectModel* model_;
-      QVTKWidget* qvtk_;
+
+      PCLQVTKWidget* qvtk_;
+
       vtkSmartPointer<InteractorStyleSwitch> style_switch_;
       
       vtkSmartPointer<vtkOrientationMarkerWidget> axes_widget_;

@@ -42,12 +42,13 @@
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/ml/svm.h>
 
-#include <climits>
+#include <algorithm>
 #include <cmath>
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <limits>
 int libsvm_version = LIBSVM_VERSION;
 using Qfloat = float;
 using schar = signed char;
@@ -83,8 +84,7 @@ static inline void
 clone(T*& dst, S* src, int n)
 {
   dst = new T[n];
-  memcpy(
-      reinterpret_cast<void*>(dst), reinterpret_cast<const void*>(src), sizeof(T) * n);
+  std::copy(src, src + n, dst);
 }
 
 static inline double
@@ -293,6 +293,7 @@ Cache::swap_index(int i, int j)
 // the member function get_Q is for getting one column from the Q Matrix
 //
 
+namespace pcl {
 class QMatrix {
 
 public:
@@ -302,14 +303,15 @@ public:
   get_QD() const = 0;
   virtual void
   swap_index(int i, int j) const = 0;
-  virtual ~QMatrix() {}
+  virtual ~QMatrix() = default;
 };
+} // namespace pcl
 
-class Kernel : public QMatrix {
+class Kernel : public pcl::QMatrix {
 
 public:
   Kernel(int l, svm_node* const* x, const svm_parameter& param);
-  ~Kernel();
+  ~Kernel() override;
 
   static double
   k_function(const svm_node* x, const svm_node* y, const svm_parameter& param);
@@ -520,9 +522,9 @@ Kernel::k_function(const svm_node* x, const svm_node* y, const svm_parameter& pa
 class Solver {
 
 public:
-  Solver(){};
+  Solver() = default;
 
-  virtual ~Solver(){};
+  virtual ~Solver() = default;
 
   struct SolutionInfo {
     double obj;
@@ -534,7 +536,7 @@ public:
 
   void
   Solve(int l,
-        const QMatrix& Q,
+        const pcl::QMatrix& Q,
         const double* p_,
         const schar* y_,
         double* alpha_,
@@ -551,7 +553,7 @@ protected:
   enum { LOWER_BOUND, UPPER_BOUND, FREE };
   char* alpha_status; // LOWER_BOUND, UPPER_BOUND, FREE
   double* alpha;
-  const QMatrix* Q;
+  const pcl::QMatrix* Q;
   const double* QD;
   double eps;
   double Cp, Cn;
@@ -668,7 +670,7 @@ Solver::reconstruct_gradient()
 
 void
 Solver::Solve(int l,
-              const QMatrix& Q,
+              const pcl::QMatrix& Q,
               const double* p_,
               const schar* y_,
               double* alpha_,
@@ -734,7 +736,10 @@ Solver::Solve(int l,
   // optimization step
 
   int iter = 0;
-  int max_iter = max(10000000, l > INT_MAX / 100 ? INT_MAX : 100 * l);
+  int max_iter =
+      max(10000000,
+          l > std::numeric_limits<int>::max() / 100 ? std::numeric_limits<int>::max()
+                                                    : 100 * l);
   int counter = min(l, 1000) + 1;
 
   while (iter < max_iter) {
@@ -1173,11 +1178,11 @@ Solver::calculate_rho()
 class Solver_NU : public Solver {
 
 public:
-  Solver_NU() {}
+  Solver_NU() = default;
 
   void
   Solve(int l,
-        const QMatrix& Q,
+        const pcl::QMatrix& Q,
         const double* p,
         const schar* y,
         double* alpha,
@@ -1477,7 +1482,7 @@ public:
     swap(QD[i], QD[j]);
   }
 
-  ~SVC_Q()
+  ~SVC_Q() override
   {
     delete[] y;
     delete cache;
@@ -1531,7 +1536,7 @@ public:
     swap(QD[i], QD[j]);
   }
 
-  ~ONE_CLASS_Q()
+  ~ONE_CLASS_Q() override
   {
     delete cache;
     delete[] QD;
@@ -1607,7 +1612,7 @@ public:
     return QD;
   }
 
-  ~SVR_Q()
+  ~SVR_Q() override
   {
     delete cache;
     delete[] sign;
@@ -3249,7 +3254,7 @@ svm_load_model(const char* model_file_name)
         res = fscanf(fp, "%d", &model->nSV[i]);
     }
     else if (res > 0 && strcmp(cmd, "scaling") == 0) {
-      char *idx, buff[10000];
+      char *idx, buff[10001]; // 1 char more than 10000 to leave room for \0 at the end
       int ii = 0;
       // char delims[]="\t: ";
       model->scaling = Malloc(struct svm_node, 1);

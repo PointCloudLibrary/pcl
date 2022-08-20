@@ -108,7 +108,7 @@ namespace pcl
   struct SparseQuantizedMultiModTemplate
   {
     /** \brief Constructor. */
-    SparseQuantizedMultiModTemplate () {}
+    SparseQuantizedMultiModTemplate () = default;
 
     /** \brief The storage for the multi-modality features. */
     std::vector<QuantizedMultiModFeature> features;

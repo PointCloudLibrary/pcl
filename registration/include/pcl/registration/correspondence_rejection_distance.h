@@ -74,7 +74,7 @@ public:
   }
 
   /** \brief Empty destructor */
-  ~CorrespondenceRejectorDistance() {}
+  ~CorrespondenceRejectorDistance() override = default;
 
   /** \brief Get a list of valid correspondences after rejection from the original set
    * of correspondences. \param[in] original_correspondences the set of initial
@@ -203,5 +203,3 @@ protected:
 
 } // namespace registration
 } // namespace pcl
-
-#include <pcl/registration/impl/correspondence_rejection_distance.hpp>

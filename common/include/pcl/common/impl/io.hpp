@@ -40,11 +40,10 @@
 
 #pragma once
 
+#include <pcl/conversions.h> // for FieldAdder
 #include <pcl/common/concatenate.h>
 #include <pcl/common/copy_point.h>
 #include <pcl/common/io.h>
-#include <pcl/point_types.h>
-
 
 namespace pcl
 {
@@ -116,6 +115,28 @@ getFieldsList (const pcl::PointCloud<PointT> &)
   return (result);
 }
 
+namespace detail
+{
+
+  template <typename PointInT, typename PointOutT> void
+  copyPointCloudMemcpy (const pcl::PointCloud<PointInT> &cloud_in,
+                        pcl::PointCloud<PointOutT> &cloud_out)
+  {
+    // Iterate over each point, if the point types of two clouds are different
+    for (std::size_t i = 0; i < cloud_in.size (); ++i)
+      copyPoint (cloud_in[i], cloud_out[i]);
+  }
+
+
+  template <typename PointT> void
+  copyPointCloudMemcpy (const pcl::PointCloud<PointT> &cloud_in,
+                        pcl::PointCloud<PointT> &cloud_out)
+  {
+    // Use std::copy directly, if the point types of two clouds are same
+    std::copy (&cloud_in[0], (&cloud_in[0]) + cloud_in.size (), &cloud_out[0]);
+  }
+
+} // namespace detail
 
 template <typename PointInT, typename PointOutT> void
 copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
@@ -130,16 +151,8 @@ copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
   cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
   cloud_out.resize (cloud_in.size ());
 
-  if (cloud_in.empty ())
-    return;
-
-  if (isSamePointType<PointInT, PointOutT> ())
-    // Copy the whole memory block
-    memcpy (&cloud_out[0], &cloud_in[0], cloud_in.size () * sizeof (PointInT));
-  else
-    // Iterate over each point
-    for (std::size_t i = 0; i < cloud_in.size (); ++i)
-      copyPoint (cloud_in[i], cloud_out[i]);
+  if (!cloud_in.empty ())
+    detail::copyPointCloudMemcpy (cloud_in, cloud_out);
 }
 
 
@@ -156,7 +169,8 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   }
 
   // Allocate enough space and copy the basics
-  cloud_out.resize (indices.size ());
+  cloud_out.clear ();
+  cloud_out.reserve (indices.size ());
   cloud_out.header   = cloud_in.header;
   cloud_out.width    = indices.size ();
   cloud_out.height   = 1;
@@ -165,8 +179,8 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
 
   // Iterate over each point
-  for (std::size_t i = 0; i < indices.size (); ++i)
-    cloud_out[i] = cloud_in[indices[i]];
+  for (const auto& index : indices)
+    cloud_out.transient_push_back (cloud_in[index]);
 }
 
 
@@ -195,25 +209,7 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                 const pcl::PointIndices &indices,
                      pcl::PointCloud<PointT> &cloud_out)
 {
-  // Do we want to copy everything?
-  if (indices.indices.size () == cloud_in.size ())
-  {
-    cloud_out = cloud_in;
-    return;
-  }
-
-  // Allocate enough space and copy the basics
-  cloud_out.resize (indices.indices.size ());
-  cloud_out.header   = cloud_in.header;
-  cloud_out.width    = indices.indices.size ();
-  cloud_out.height   = 1;
-  cloud_out.is_dense = cloud_in.is_dense;
-  cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
-  cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
-
-  // Iterate over each point
-  for (std::size_t i = 0; i < indices.indices.size (); ++i)
-    cloud_out[i] = cloud_in[indices.indices[i]];
+  copyPointCloud (cloud_in, indices.indices, cloud_out);
 }
 
 
@@ -231,7 +227,7 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                 const std::vector<pcl::PointIndices> &indices,
                 pcl::PointCloud<PointT> &cloud_out)
 {
-  int nr_p = 0;
+  std::size_t nr_p = 0;
   for (const auto &index : indices)
     nr_p += index.indices.size ();
 
@@ -243,7 +239,8 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   }
 
   // Allocate enough space and copy the basics
-  cloud_out.resize (nr_p);
+  cloud_out.clear ();
+  cloud_out.reserve (nr_p);
   cloud_out.header   = cloud_in.header;
   cloud_out.width    = nr_p;
   cloud_out.height   = 1;
@@ -252,15 +249,13 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
 
   // Iterate over each cluster
-  int cp = 0;
   for (const auto &cluster_index : indices)
   {
     // Iterate over each idx
     for (const auto &index : cluster_index.indices)
     {
       // Iterate over each dimension
-      cloud_out[cp] = cloud_in[index];
-      cp++;
+      cloud_out.transient_push_back (cloud_in[index]);
     }
   }
 }
@@ -370,8 +365,9 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<PointT>
       PointT* out_inner = out + cloud_out.width*top + left;
       for (std::uint32_t i = 0; i < cloud_in.height; i++, out_inner += cloud_out.width, in += cloud_in.width)
       {
-        if (out_inner != in)
-          memcpy (out_inner, in, cloud_in.width * sizeof (PointT));
+        if (out_inner != in) {
+          std::copy(in, in + cloud_in.width, out_inner);
+        }
       }
     }
     else
@@ -397,8 +393,9 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<PointT>
 
           for (std::uint32_t i = 0; i < cloud_in.height; i++, out_inner += cloud_out.width, in += cloud_in.width)
           {
-            if (out_inner != in)
-              memcpy (out_inner, in, cloud_in.width * sizeof (PointT));
+            if (out_inner != in) {
+              std::copy(in, in + cloud_in.width, out_inner);
+            }
 
             for (int j = 0; j < left; j++)
               out_inner[j - left] = in[padding[j]];
@@ -410,17 +407,15 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<PointT>
           for (int i = 0; i < top; i++)
           {
             int j = pcl::interpolatePointIndex (i - top, cloud_in.height, border_type);
-            memcpy (out + i*cloud_out.width,
-                    out + (j+top) * cloud_out.width,
-                    sizeof (PointT) * cloud_out.width);
+            std::copy(out + (j+top) * cloud_out.width, out + (j+top) * cloud_out.width + cloud_out.width,
+                        out + i*cloud_out.width);
           }
 
           for (int i = 0; i < bottom; i++)
           {
             int j = pcl::interpolatePointIndex (i + cloud_in.height, cloud_in.height, border_type);
-            memcpy (out + (i + cloud_in.height + top)*cloud_out.width,
-                    out + (j+top)*cloud_out.width,
-                    cloud_out.width * sizeof (PointT));
+            std::copy(out + (j+top)*cloud_out.width, out + (j+top)*cloud_out.width + cloud_out.width,
+                        out + (i + cloud_in.height + top)*cloud_out.width);
           }
         }
         catch (pcl::BadArgumentException&)
@@ -440,23 +435,23 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<PointT>
 
         for (std::uint32_t i = 0; i < cloud_in.height; i++, out_inner += cloud_out.width, in += cloud_in.width)
         {
-          if (out_inner != in)
-            memcpy (out_inner, in, cloud_in.width * sizeof (PointT));
+          if (out_inner != in) {
+            std::copy(in, in + cloud_in.width, out_inner);
+          }
 
-          memcpy (out_inner - left, buff_ptr, left  * sizeof (PointT));
-          memcpy (out_inner + cloud_in.width, buff_ptr, right * sizeof (PointT));
+          std::copy(buff_ptr, buff_ptr + left, out_inner - left);
+          std::copy(buff_ptr, buff_ptr + right, out_inner + cloud_in.width);
         }
 
         for (int i = 0; i < top; i++)
         {
-          memcpy (out + i*cloud_out.width, buff_ptr, cloud_out.width * sizeof (PointT));
+          std::copy(buff_ptr, buff_ptr + cloud_out.width, out + i*cloud_out.width);
         }
 
         for (int i = 0; i < bottom; i++)
         {
-          memcpy (out + (i + cloud_in.height + top)*cloud_out.width,
-                  buff_ptr,
-                  cloud_out.width * sizeof (PointT));
+          std::copy(buff_ptr, buff_ptr + cloud_out.width,
+                      out + (i + cloud_in.height + top)*cloud_out.width);
         }
       }
     }

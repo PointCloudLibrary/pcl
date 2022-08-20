@@ -169,7 +169,7 @@ namespace openni_wrapper
   , shadow_value_ (shadow_value)
   , no_sample_value_ (no_sample_value) { }
 
-  DepthImage::~DepthImage () noexcept { }
+  DepthImage::~DepthImage () noexcept = default;
 
   const xn::DepthMetaData&
   DepthImage::getDepthMetaData () const throw ()

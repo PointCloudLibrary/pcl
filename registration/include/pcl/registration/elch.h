@@ -40,7 +40,6 @@
 
 #pragma once
 
-#include <pcl/registration/boost.h>
 #include <pcl/registration/boost_graph.h>
 #include <pcl/registration/icp.h>
 #include <pcl/registration/registration.h>
@@ -95,7 +94,7 @@ public:
   , vd_(){};
 
   /** \brief Empty destructor */
-  ~ELCH() {}
+  ~ELCH() override = default;
 
   /** \brief Add a new point cloud to the internal graph.
    * \param[in] cloud the new point cloud

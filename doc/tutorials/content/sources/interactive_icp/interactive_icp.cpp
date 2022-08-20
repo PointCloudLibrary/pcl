@@ -25,7 +25,7 @@ print4x4Matrix (const Eigen::Matrix4d & matrix)
 
 void
 keyboardEventOccurred (const pcl::visualization::KeyboardEvent& event,
-                       void* nothing)
+                       void*)
 {
   if (event.getKeySym () == "space" && event.keyDown ())
     next_iteration = true;

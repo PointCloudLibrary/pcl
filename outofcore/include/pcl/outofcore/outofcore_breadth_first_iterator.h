@@ -39,6 +39,9 @@
 #pragma once
 
 #include <pcl/outofcore/outofcore_iterator_base.h>
+
+#include <deque>
+
 namespace pcl
 {
   namespace outofcore
@@ -65,7 +68,7 @@ namespace pcl
         OutofcoreBreadthFirstIterator (OctreeDisk& octree_arg);
 
         
-        ~OutofcoreBreadthFirstIterator ();
+        ~OutofcoreBreadthFirstIterator () override;
       
         OutofcoreBreadthFirstIterator&
         operator++ ();

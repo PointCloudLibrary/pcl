@@ -130,7 +130,7 @@ protected:
       poses_cache_;
   std::map<std::pair<std::string, int>, Eigen::Vector3f> centroids_cache_;
 
-  std::vector<int> indices_;
+  pcl::Indices indices_;
 
   bool compute_scale_;
 
@@ -213,7 +213,7 @@ public:
     use_single_categories_ = false;
   }
 
-  ~GlobalNNCVFHRecognizer() {}
+  ~GlobalNNCVFHRecognizer() = default;
 
   void
   getDescriptorDistances(std::vector<float>& ds)
@@ -295,7 +295,7 @@ public:
   }
 
   void
-  setIndices(std::vector<int>& indices)
+  setIndices(pcl::Indices& indices)
   {
     indices_ = indices;
   }

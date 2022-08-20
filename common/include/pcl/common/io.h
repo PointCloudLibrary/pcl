@@ -43,9 +43,8 @@
 #include <numeric>
 #include <string>
 
+#include <pcl/point_cloud.h>
 #include <pcl/PointIndices.h>
-#include <pcl/conversions.h>
-#include <pcl/exceptions.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/PolygonMesh.h>
 #include <locale>
@@ -255,10 +254,8 @@ namespace pcl
 
   /** \brief Concatenate two pcl::PCLPointCloud2
     *
-    * \warning This function subtly differs from the deprecated concatenatePointCloud()
-    * The difference is that this function will concatenate IFF the non-skip fields
-    * are in the correct order and same in number. The deprecated function skipped
-    * fields even if both clouds didn't agree on the number of output fields
+    * \warning This function will concatenate IFF the non-skip fields are in the correct
+    * order and same in number.
     * \param[in] cloud1 the first input point cloud dataset
     * \param[in] cloud2 the second input point cloud dataset
     * \param[out] cloud_out the resultant output point cloud dataset
@@ -288,19 +285,6 @@ namespace pcl
     return pcl::PolygonMesh::concatenate(mesh1, mesh2, mesh_out);
   }
 
-  /** \brief Concatenate two pcl::PCLPointCloud2
-    * \param[in] cloud1 the first input point cloud dataset
-    * \param[in] cloud2 the second input point cloud dataset
-    * \param[out] cloud_out the resultant output point cloud dataset
-    * \return true if successful, false otherwise (e.g., name/number of fields differs)
-    * \ingroup common
-    */
-  PCL_DEPRECATED(1, 12, "use pcl::concatenate() instead, but beware of subtle difference in behavior (see documentation)")
-  PCL_EXPORTS bool
-  concatenatePointCloud (const pcl::PCLPointCloud2 &cloud1,
-                         const pcl::PCLPointCloud2 &cloud2,
-                         pcl::PCLPointCloud2 &cloud_out);
-
   /** \brief Extract the indices of a given point cloud as a new point cloud
     * \param[in] cloud_in the input point cloud dataset
     * \param[in] indices the vector of indices representing the points to be copied from \a cloud_in
@@ -322,7 +306,7 @@ namespace pcl
     */
   PCL_EXPORTS void
   copyPointCloud (const pcl::PCLPointCloud2 &cloud_in,
-                  const IndicesAllocator< Eigen::aligned_allocator<int> > &indices,
+                  const IndicesAllocator< Eigen::aligned_allocator<index_t> > &indices,
                   pcl::PCLPointCloud2 &cloud_out);
 
   /** \brief Copy fields and point cloud data from \a cloud_in to \a cloud_out
@@ -335,10 +319,10 @@ namespace pcl
                   pcl::PCLPointCloud2 &cloud_out);
 
   /** \brief Check if two given point types are the same or not. */
-  template <typename Point1T, typename Point2T> inline bool
-  isSamePointType ()
+template <typename Point1T, typename Point2T> constexpr bool
+  isSamePointType() noexcept
   {
-    return (typeid (Point1T) == typeid (Point2T));
+    return (std::is_same<remove_cvref_t<Point1T>, remove_cvref_t<Point2T>>::value);
   }
 
   /** \brief Extract the indices of a given point cloud as a new point cloud
@@ -348,7 +332,7 @@ namespace pcl
     * \note Assumes unique indices.
     * \ingroup common
     */
-  template <typename PointT, typename IndicesVectorAllocator = std::allocator<int>> void
+  template <typename PointT, typename IndicesVectorAllocator = std::allocator<index_t>> void
   copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                   const IndicesAllocator< IndicesVectorAllocator> &indices,
                   pcl::PointCloud<PointT> &cloud_out);
@@ -393,7 +377,7 @@ namespace pcl
     * \note Assumes unique indices.
     * \ingroup common
     */
-  template <typename PointInT, typename PointOutT, typename IndicesVectorAllocator = std::allocator<int>> void
+  template <typename PointInT, typename PointOutT, typename IndicesVectorAllocator = std::allocator<index_t>> void
   copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
                   const IndicesAllocator<IndicesVectorAllocator> &indices,
                   pcl::PointCloud<PointOutT> &cloud_out);

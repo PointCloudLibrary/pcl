@@ -78,7 +78,7 @@ namespace pcl
             getBounds () const { return bounds_;}
 
             inline void
-            getBounds (Scalar b[6]) const { memcpy (b, bounds_, 6*sizeof (Scalar));}
+            getBounds (Scalar b[6]) const { std::copy(bounds_, bounds_ + 6, b); }
 
             inline Node*
             getChild (int id) { return &children_[id];}
@@ -188,7 +188,7 @@ namespace pcl
         getBounds () const { return (bounds_);}
 
         inline void
-        getBounds (Scalar b[6]) const { memcpy (b, bounds_, 6*sizeof (Scalar));}
+        getBounds (Scalar b[6]) const { std::copy(bounds_, bounds_ + 6, b); }
 
         inline Scalar
         getVoxelSize () const { return voxel_size_;}

@@ -78,7 +78,7 @@ namespace pcl
         
         // Color every point
         if (nr_points != static_cast<vtkIdType>(rgb_->size ()))
-          std::fill(colors, colors + nr_points * 3, (unsigned char)0xFF);
+          std::fill_n(colors, nr_points * 3, (unsigned char)0xFF);
         else
           for (vtkIdType cp = 0; cp < nr_points; ++cp)
           {

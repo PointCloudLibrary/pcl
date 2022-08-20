@@ -139,7 +139,10 @@ pcl::PCLBase<PointT>::initCompute ()
 {
   // Check if input was set
   if (!input_)
+  {
+    PCL_ERROR ("[initCompute] No input set.\n");
     return (false);
+  }
 
   // If no point indices have been given, construct a set of indices for the entire input point cloud
   if (!indices_)

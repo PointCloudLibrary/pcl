@@ -41,7 +41,6 @@
 #pragma once
 
 // PCL includes
-#include <pcl/common/transforms.h>
 #include <pcl/registration/correspondence_estimation.h>
 #include <pcl/registration/correspondence_rejection.h>
 #include <pcl/registration/transformation_estimation.h>
@@ -102,9 +101,9 @@ public:
    * cloud_tgt
    */
   using UpdateVisualizerCallbackSignature = void(const pcl::PointCloud<PointSource>&,
-                                                 const std::vector<int>&,
+                                                 const pcl::Indices&,
                                                  const pcl::PointCloud<PointTarget>&,
-                                                 const std::vector<int>&);
+                                                 const pcl::Indices&);
 
   /** \brief Empty constructor. */
   Registration()
@@ -135,7 +134,7 @@ public:
   {}
 
   /** \brief destructor. */
-  ~Registration() {}
+  ~Registration() override = default;
 
   /** \brief Provide a pointer to the transformation estimation object.
    * (e.g., SVD, point to plane etc.)
@@ -145,13 +144,14 @@ public:
    * Code example:
    *
    * \code
-   * TransformationEstimationPointToPlaneLLS<PointXYZ, PointXYZ>::Ptr trans_lls (new
-   * TransformationEstimationPointToPlaneLLS<PointXYZ, PointXYZ>);
+   * TransformationEstimationPointToPlaneLLS<PointXYZ, PointXYZ>::Ptr trans_lls
+   *   (new TransformationEstimationPointToPlaneLLS<PointXYZ, PointXYZ>);
    * icp.setTransformationEstimation (trans_lls);
    * // or...
-   * TransformationEstimationSVD<PointXYZ, PointXYZ>::Ptr trans_svd (new
-   * TransformationEstimationSVD<PointXYZ, PointXYZ>); icp.setTransformationEstimation
-   * (trans_svd); \endcode
+   * TransformationEstimationSVD<PointXYZ, PointXYZ>::Ptr trans_svd
+   *   (new TransformationEstimationSVD<PointXYZ, PointXYZ>);
+   * icp.setTransformationEstimation (trans_svd);
+   * \endcode
    */
   void
   setTransformationEstimation(const TransformationEstimationPtr& te)
@@ -167,13 +167,14 @@ public:
    * Code example:
    *
    * \code
-   * CorrespondenceEstimation<PointXYZ, PointXYZ>::Ptr ce (new
-   * CorrespondenceEstimation<PointXYZ, PointXYZ>); ce->setInputSource (source);
+   * CorrespondenceEstimation<PointXYZ, PointXYZ>::Ptr
+   *   ce (new CorrespondenceEstimation<PointXYZ, PointXYZ>);
+   * ce->setInputSource (source);
    * ce->setInputTarget (target);
    * icp.setCorrespondenceEstimation (ce);
    * // or...
    * CorrespondenceEstimationNormalShooting<PointNormal, PointNormal, PointNormal>::Ptr
-   * cens (new CorrespondenceEstimationNormalShooting<PointNormal, PointNormal>);
+   *   cens (new CorrespondenceEstimationNormalShooting<PointNormal, PointNormal>);
    * ce->setInputSource (source);
    * ce->setInputTarget (target);
    * ce->setSourceNormals (source);
@@ -226,9 +227,7 @@ public:
   setSearchMethodTarget(const KdTreePtr& tree, bool force_no_recompute = false)
   {
     tree_ = tree;
-    if (force_no_recompute) {
-      force_no_recompute_ = true;
-    }
+    force_no_recompute_ = force_no_recompute;
     // Since we just set a new tree, we need to check for updates
     target_cloud_updated_ = true;
   }
@@ -253,9 +252,7 @@ public:
                         bool force_no_recompute = false)
   {
     tree_reciprocal_ = tree;
-    if (force_no_recompute) {
-      force_no_recompute_reciprocal_ = true;
-    }
+    force_no_recompute_reciprocal_ = force_no_recompute;
     // Since we just set a new tree, we need to check for updates
     source_cloud_updated_ = true;
   }
@@ -449,6 +446,8 @@ public:
   {
     if (visualizerCallback) {
       update_visualizer_ = visualizerCallback;
+      pcl::Indices indices;
+      update_visualizer_(*input_, indices, *target_, indices);
       return (true);
     }
     return (false);
@@ -628,7 +627,7 @@ protected:
   /** \brief The minimum number of correspondences that the algorithm needs before
    * attempting to estimate the transformation. The default value is 3.
    */
-  int min_number_correspondences_;
+  unsigned int min_number_correspondences_;
 
   /** \brief The set of correspondences determined at this ICP step. */
   CorrespondencesPtr correspondences_;
@@ -675,7 +674,7 @@ protected:
   inline bool
   searchForNeighbors(const PointCloudSource& cloud,
                      int index,
-                     std::vector<int>& indices,
+                     pcl::Indices& indices,
                      std::vector<float>& distances)
   {
     int k = tree_->nearestKSearch(cloud, index, 1, indices, distances);

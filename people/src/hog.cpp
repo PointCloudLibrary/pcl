@@ -64,7 +64,7 @@ pcl::people::HOG::HOG ()
 }  
 
 /** \brief Destructor. */
-pcl::people::HOG::~HOG () {}
+pcl::people::HOG::~HOG () = default;
 
 void 
 pcl::people::HOG::gradMag( float *I, int h, int w, int d, float *M, float *O ) const
@@ -103,7 +103,7 @@ pcl::people::HOG::gradMag( float *I, int h, int w, int d, float *M, float *O ) c
     _Gx[y] = pcl::sse_xor( _Gx[y], pcl::sse_and(_Gy[y], pcl::sse_set(-0.f)) );
   };
 
-  memcpy( M+x*h, M2, h*sizeof(float) );
+  std::copy(M2, M2 + h, M + x * h);
   // compute and store gradient orientation (O) via table lookup
   if(O!=nullptr) for( y=0; y<h; y++ ) O[x*h+y] = acost[(int)Gx[y]];
   }
@@ -158,7 +158,7 @@ pcl::people::HOG::gradMag( float *I, int h, int w, int d, float *M, float *O ) c
     Gx[y] = -Gx[y];
   }
   
-  memcpy( M+x*h, M2, h*sizeof(float) );
+  std::copy(M2, M2 + h, M + x * h);
   // compute and store gradient orientation (O) via table lookup
   if(O!=0) for( y=0; y<h; y++ ) O[x*h+y] = acost[(int)Gx[y]];
   }
@@ -330,7 +330,8 @@ pcl::people::HOG::normalization (float *H, int h, int w, int bin_size, int n_ori
     if(md) for( y=1; y<hb-1; y++ ) { U(0,0); U(1,1); U(2,hb); U(3,hb+1); }
     if(rt) for( y=1; y<hb-1; y++ ) { U(2,hb); U(3,hb+1); }
     y=hb-1; if(!rt) U(1,1); if(!lf) U(3,hb+1);
-  } free(N);
+  }
+  free(N);
 }
       
 void

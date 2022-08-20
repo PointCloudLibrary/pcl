@@ -36,13 +36,14 @@
  */
 
 #include <fstream>
-#include <pcl/io/boost.h>
 #include <pcl/common/io.h>
 #include <pcl/io/ifs_io.h>
 #include <pcl/console/time.h>
 
 #include <cstring>
 #include <cerrno>
+#include <boost/filesystem.hpp> // for exists
+#include <boost/iostreams/device/mapped_file.hpp> // for mapped_file_source
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 int
@@ -121,7 +122,9 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
       char *keyword = new char [length_of_keyword];
       fs.read (keyword, sizeof (char) * length_of_keyword);
 
-      if (strcmp (keyword, "VERTICES") == 0)
+      const bool keyword_is_vertices = (strcmp (keyword, "VERTICES") == 0);
+      delete[] keyword;
+      if (keyword_is_vertices)
       {
         fs.read ((char*)&nr_points, sizeof (std::uint32_t));
         if ((nr_points == 0) || (nr_points > 10000000))

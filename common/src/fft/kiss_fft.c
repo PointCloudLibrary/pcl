@@ -252,7 +252,7 @@ void kf_work(
     // top-level (not recursive)
     if (fstride==1 && p<=5)
     {
-        int k;
+        int k=0;
 
         // execute the p different work units in different threads
 // We cannot use OPENMP_LEGACY_CONST_DATA_SHARING_RULE here, because we cannot include
@@ -260,11 +260,13 @@ void kf_work(
 #if (defined _OPENMP && (_OPENMP <= 201307)) || (defined __GNUC__ && (__GNUC__ >= 6 && __GNUC__ < 9))
 #pragma omp parallel for \
   default(none) \
-  shared(f, factors, Fout, in_stride)
+  shared(f, factors, Fout, in_stride) \
+  private(k)
 #else
 #pragma omp parallel for \
   default(none) \
-  shared(f, factors, Fout, fstride, in_stride, m, p, st)
+  shared(f, factors, Fout, fstride, in_stride, m, p, st) \
+  private(k)
 #endif
         for (k=0;k<p;++k) 
             kf_work( Fout +k*m, f+ fstride*in_stride*k,fstride*p,in_stride,factors,st);

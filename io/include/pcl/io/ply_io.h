@@ -41,6 +41,7 @@
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
+#include <pcl/common/io.h> // for copyPointCloud
 #include <pcl/io/file_io.h>
 #include <pcl/io/ply/ply_parser.h>
 #include <pcl/PolygonMesh.h>
@@ -125,7 +126,7 @@ namespace pcl
         return (*this);
       }
 
-      ~PLYReader () { delete range_grid_; }
+      ~PLYReader () override { delete range_grid_; }
       /** \brief Read a point cloud data header from a PLY file.
         *
         * Load only the meta information (number of points, their types, etc),
@@ -547,10 +548,10 @@ namespace pcl
   {
     public:
       ///Constructor
-      PLYWriter () {};
+      PLYWriter () = default;
 
       ///Destructor
-      ~PLYWriter () {};
+      ~PLYWriter () override = default;
 
       /** \brief Generate the header of a PLY v.7 file format
         * \param[in] cloud the point cloud data message
@@ -736,7 +737,7 @@ namespace pcl
 
   namespace io
   {
-    /** \brief Load a PLY v.6 file into a templated PointCloud type.
+    /** \brief Load a PLY v.6 file into a PCLPointCloud2 type.
       *
       * Any PLY files containing sensor data will generate a warning as a
       * pcl/PCLPointCloud2 message cannot hold the sensor origin.
@@ -752,7 +753,7 @@ namespace pcl
       return (p.read (file_name, cloud));
     }
 
-    /** \brief Load any PLY file into a templated PointCloud type.
+    /** \brief Load any PLY file into a PCLPointCloud2 type.
       * \param[in] file_name the name of the file to load
       * \param[in] cloud the resultant templated point cloud
       * \param[in] origin the sensor acquisition origin (only for > PLY_V7 - null if not present)
@@ -864,7 +865,7 @@ namespace pcl
       */
     template<typename PointT> int
     savePLYFile (const std::string &file_name, const pcl::PointCloud<PointT> &cloud,
-                 const std::vector<int> &indices, bool binary_mode = false)
+                 const pcl::Indices &indices, bool binary_mode = false)
     {
       // Copy indices to a new point cloud
       pcl::PointCloud<PointT> cloud_out;

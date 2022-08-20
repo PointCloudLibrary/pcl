@@ -60,13 +60,10 @@ namespace pcl
     public:
       
       /** \brief Empty constructor */
-      OutofcoreAbstractMetadata ()
-      {
-      }
+      OutofcoreAbstractMetadata () = default;
       
       virtual
-      ~OutofcoreAbstractMetadata ()
-      {}
+      ~OutofcoreAbstractMetadata () = default;
       
       /** \brief Write the metadata in the on-disk format, e.g. JSON. */
       virtual void

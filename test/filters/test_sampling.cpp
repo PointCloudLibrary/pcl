@@ -69,7 +69,7 @@ TEST (CovarianceSampling, Filters)
   // Conditioning number should be loosely close to the expected number. Adopting 10% of the reference value
   EXPECT_NEAR (113.29773, cond_num_walls, 10.);
 
-  IndicesPtr walls_indices (new std::vector<int> ());
+  IndicesPtr walls_indices (new pcl::Indices ());
   covariance_sampling.filter (*walls_indices);
   covariance_sampling.setIndices (walls_indices);
   double cond_num_walls_sampled = covariance_sampling.computeConditionNumber ();
@@ -86,16 +86,16 @@ TEST (CovarianceSampling, Filters)
   covariance_sampling.setNumberOfSamples (static_cast<unsigned int> (cloud_turtle_normals->size ()) / 8);
   double cond_num_turtle = covariance_sampling.computeConditionNumber ();
 
-  // Conditioning number should be loosely close to the expected number. Adopting 10% of the reference value
-  EXPECT_NEAR (cond_num_turtle, 20661.7663, 2e4);
+  // Conditioning number should be loosely close to the expected number
+  EXPECT_NEAR (cond_num_turtle, 102982728.6578, 2e4);
 
-  IndicesPtr turtle_indices (new std::vector<int> ());
+  IndicesPtr turtle_indices (new pcl::Indices ());
   covariance_sampling.filter (*turtle_indices);
   covariance_sampling.setIndices (turtle_indices);
   double cond_num_turtle_sampled = covariance_sampling.computeConditionNumber ();
 
-  // Conditioning number should be loosely close to the expected number. Adopting 10% of the reference value
-  EXPECT_NEAR (cond_num_turtle_sampled, 5795.5057, 5e3);
+  // Conditioning number should be loosely close to the expected number
+  EXPECT_NEAR (cond_num_turtle_sampled, 15697094.2996, 5e3);
 
   // Ensure it respects the requested sampling size
   EXPECT_EQ (static_cast<unsigned int> (cloud_turtle_normals->size ()) / 8, turtle_indices->size ());
@@ -154,7 +154,7 @@ TEST (RandomSample, Filters)
   sample.setSample (10);
 
   // Indices
-  std::vector<int> indices;
+  pcl::Indices indices;
   sample.filter (indices);
 
   EXPECT_EQ (int (indices.size ()), 10);
@@ -218,7 +218,7 @@ TEST (RandomSample, Filters)
   sample2.setSample (10);
 
   // Indices
-  std::vector<int> indices2;
+  pcl::Indices indices2;
   sample2.filter (indices2);
 
   EXPECT_EQ (int (indices2.size ()), 10);
@@ -268,7 +268,7 @@ main (int argc, char** argv)
   ne.compute (*cloud_walls_normals);
   copyPointCloud (*cloud_walls, *cloud_walls_normals);
 
-  std::vector<int> aux_indices;
+  pcl::Indices aux_indices;
   removeNaNFromPointCloud (*cloud_walls_normals, *cloud_walls_normals, aux_indices);
   removeNaNNormalsFromPointCloud (*cloud_walls_normals, *cloud_walls_normals, aux_indices);
 

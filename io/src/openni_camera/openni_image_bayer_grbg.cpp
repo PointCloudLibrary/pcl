@@ -55,9 +55,7 @@ openni_wrapper::ImageBayerGRBG::ImageBayerGRBG (pcl::shared_ptr<xn::ImageMetaDat
 }
 
 //////////////////////////////////////////////////////////////////////////////
-openni_wrapper::ImageBayerGRBG::~ImageBayerGRBG () noexcept
-{
-}
+openni_wrapper::ImageBayerGRBG::~ImageBayerGRBG () noexcept = default;
 
 //////////////////////////////////////////////////////////////////////////////
 bool 

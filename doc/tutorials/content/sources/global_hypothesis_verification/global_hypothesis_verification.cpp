@@ -451,7 +451,7 @@ main (int argc,
   GoHv.verify ();
   GoHv.getMask (hypotheses_mask);  // i-element TRUE if hvModels[i] verifies hypotheses
 
-  for (int i = 0; i < hypotheses_mask.size (); i++)
+  for (std::size_t i = 0; i < hypotheses_mask.size (); i++)
   {
     if (hypotheses_mask[i])
     {

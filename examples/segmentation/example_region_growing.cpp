@@ -74,7 +74,7 @@ main (int argc, char** av)
   // Remove the nans
   cloud_ptr->is_dense = false;
   cloud_no_nans->is_dense = false;
-  std::vector<int> indices;
+  pcl::Indices indices;
   pcl::removeNaNFromPointCloud (*cloud_ptr, *cloud_no_nans, indices);
   pcl::console::print_highlight("Removed nans from %zu to %zu\n",
                                 static_cast<std::size_t>(cloud_ptr->size()),
@@ -114,11 +114,9 @@ main (int argc, char** av)
     clusters_file.open ("clusters.dat");
     for (std::size_t i = 0; i < clusters.size (); ++i)
     {
-      clusters_file << i << "#" << clusters[i].indices.size () << ": ";
-      std::vector<int>::const_iterator pit = clusters[i].indices.begin ();
-      clusters_file << *pit;
-      for (; pit != clusters[i].indices.end (); ++pit)
-        clusters_file << " " << *pit;
+      clusters_file << i << "#" << clusters[i].indices.size () << ":";
+      for (const auto& cluster_idx : clusters[i].indices)
+        clusters_file << " " << cluster_idx;
       clusters_file << std::endl;
     }
     clusters_file.close ();

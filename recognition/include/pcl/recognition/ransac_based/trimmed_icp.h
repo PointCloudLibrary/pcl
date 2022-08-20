@@ -72,8 +72,7 @@ namespace pcl
         : new_to_old_energy_ratio_ (0.99f)
         {}
 
-        ~TrimmedICP ()
-        {}
+        ~TrimmedICP () override = default;
 
         /** \brief Call this method before calling align().
           *
@@ -113,7 +112,7 @@ namespace pcl
 
           // Some variables for the closest point search
           pcl::PointXYZ transformed_source_point;
-          std::vector<int> target_index (1);
+          pcl::Indices target_index (1);
           std::vector<float> sqr_dist_to_target (1);
           float old_energy, energy = std::numeric_limits<float>::max ();
 

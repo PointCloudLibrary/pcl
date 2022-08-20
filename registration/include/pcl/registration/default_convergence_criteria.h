@@ -81,7 +81,7 @@ public:
 
   /** \brief Empty constructor.
    * Sets:
-   *  * the maximum number of iterations to 1000
+   *  * the maximum number of iterations to 100
    *  * the rotation threshold to 0.256 degrees (0.99999)
    *  * the translation threshold to 0.0003 meters (3e-4^2)
    *  * the MSE relative / absolute thresholds to 0.001% and 1e-12
@@ -111,7 +111,7 @@ public:
   {}
 
   /** \brief Empty destructor */
-  ~DefaultConvergenceCriteria() {}
+  ~DefaultConvergenceCriteria() override = default;
 
   /** \brief Set the maximum number of consecutive iterations that the internal
    * rotation, translation, and MSE differences are allowed to be similar. \param[in]

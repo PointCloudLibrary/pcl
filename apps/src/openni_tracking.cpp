@@ -435,12 +435,12 @@ public:
     result.width = cloud->width;
     result.height = cloud->height;
     result.is_dense = cloud->is_dense;
-    for (std::size_t i = 0; i < cloud->size(); i++) {
+    for (const auto& pt : *cloud) {
       RefPointType point;
-      point.x = (*cloud)[i].x;
-      point.y = (*cloud)[i].y;
-      point.z = (*cloud)[i].z;
-      point.rgba = (*cloud)[i].rgba;
+      point.x = pt.x;
+      point.y = pt.y;
+      point.z = pt.z;
+      point.rgba = pt.rgba;
       result.push_back(point);
     }
   }
@@ -468,7 +468,7 @@ public:
   void
   removeZeroPoints(const CloudConstPtr& cloud, Cloud& result)
   {
-    for (const auto& point: *cloud) {
+    for (const auto& point : *cloud) {
       if (!(std::abs(point.x) < 0.01 && std::abs(point.y) < 0.01 &&
             std::abs(point.z) < 0.01) &&
           !std::isnan(point.x) && !std::isnan(point.y) && !std::isnan(point.z))

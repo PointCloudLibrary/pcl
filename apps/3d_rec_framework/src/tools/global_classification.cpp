@@ -62,9 +62,9 @@ segmentAndClassify(
     dps.compute_fast(clusters);
     dps.getIndicesClusters(indices);
     Eigen::Vector4f table_plane_;
+    dps.getTableCoefficients(table_plane_);
     Eigen::Vector3f normal_plane_ =
         Eigen::Vector3f(table_plane_[0], table_plane_[1], table_plane_[2]);
-    dps.getTableCoefficients(table_plane_);
 
     vis.removePointCloud("frame");
     vis.addPointCloud<OpenNIFrameSource::PointT>(frame, "frame");

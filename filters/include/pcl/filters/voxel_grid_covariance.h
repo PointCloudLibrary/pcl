@@ -91,12 +91,12 @@ namespace pcl
       struct Leaf
       {
         /** \brief Constructor.
-         * Sets \ref nr_points, \ref icov_, \ref mean_ and \ref evals_ to 0 and \ref cov_ and \ref evecs_ to the identity matrix
+         * Sets \ref nr_points, \ref cov_, \ref icov_, \ref mean_ and \ref evals_ to 0 and \ref evecs_ to the identity matrix
          */
         Leaf () :
           nr_points (0),
           mean_ (Eigen::Vector3d::Zero ()),
-          cov_ (Eigen::Matrix3d::Identity ()),
+          cov_ (Eigen::Matrix3d::Zero ()),
           icov_ (Eigen::Matrix3d::Zero ()),
           evecs_ (Eigen::Matrix3d::Identity ()),
           evals_ (Eigen::Vector3d::Zero ())
@@ -360,7 +360,7 @@ namespace pcl
 
       }
 
-      /** \brief Get the voxels surrounding point p designated by #relative_coordinates.
+      /** \brief Get the voxels surrounding point p designated by \p relative_coordinates.
        * \note Only voxels containing a sufficient number of points are used.
        * \param[in] relative_coordinates 3xN matrix that represents relative coordinates of N neighboring voxels with respect to the center voxel
        * \param[in] reference_point the point to get the leaf structure at

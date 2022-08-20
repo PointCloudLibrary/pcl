@@ -39,7 +39,7 @@ identity (double val)
 //............................................................................
 
 int
-main (int argc, char * argv [])
+main ()
 {
   //defining a plotter
   PCLPlotter *plotter = new PCLPlotter ("My Plotter");

@@ -38,6 +38,8 @@
 #ifndef PCL_FILTERS_IMPL_VOXEL_GRID_H_
 #define PCL_FILTERS_IMPL_VOXEL_GRID_H_
 
+#include <limits>
+
 #include <pcl/common/centroid.h>
 #include <pcl/common/common.h>
 #include <pcl/common/io.h>
@@ -51,8 +53,8 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
                   Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative)
 {
   Eigen::Array4f min_p, max_p;
-  min_p.setConstant (FLT_MAX);
-  max_p.setConstant (-FLT_MAX);
+  min_p.setConstant (std::numeric_limits<float>::max());
+  max_p.setConstant (std::numeric_limits<float>::lowest());
 
   // Get the fields list and the distance field index
   std::vector<pcl::PCLPointField> fields;
@@ -128,8 +130,8 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
                   Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative)
 {
   Eigen::Array4f min_p, max_p;
-  min_p.setConstant (FLT_MAX);
-  max_p.setConstant (-FLT_MAX);
+  min_p.setConstant (std::numeric_limits<float>::max());
+  max_p.setConstant (std::numeric_limits<float>::lowest());
 
   // Get the fields list and the distance field index
   std::vector<pcl::PCLPointField> fields;
@@ -240,7 +242,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
 
   if ((dx*dy*dz) > static_cast<std::int64_t>(std::numeric_limits<std::int32_t>::max()))
   {
-    PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.", getClassName().c_str());
+    PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.\n", getClassName().c_str());
     output = *input_;
     return;
   }

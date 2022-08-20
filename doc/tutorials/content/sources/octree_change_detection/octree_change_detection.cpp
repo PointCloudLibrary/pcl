@@ -6,7 +6,7 @@
 #include <ctime>
 
 int
-main (int argc, char** argv)
+main ()
 {
   srand ((unsigned int) time (NULL));
 

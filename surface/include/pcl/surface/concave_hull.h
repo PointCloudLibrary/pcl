@@ -76,7 +76,7 @@ namespace pcl
       };
       
       /** \brief Empty destructor */
-      ~ConcaveHull () {}
+      ~ConcaveHull () override = default;
 
       /** \brief Compute a concave hull for all points given 
         *

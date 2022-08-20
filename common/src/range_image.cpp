@@ -35,8 +35,11 @@
  */
 
 #include <cmath>
+#include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
 #include <pcl/common/time.h> // for MEASURE_FUNCTION_TIME
 #include <pcl/range_image/range_image.h>
+
+#include <algorithm>
 
 namespace pcl 
 {
@@ -465,8 +468,8 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
   
   int no_of_pixels = pixel_size*pixel_size;
   float* surface_patch = new float[no_of_pixels];
-  SET_ARRAY (surface_patch, -std::numeric_limits<float>::infinity (), no_of_pixels);
-  
+  std::fill_n(surface_patch, no_of_pixels, -std::numeric_limits<float>::infinity ());
+
   Eigen::Vector3f position = inverse_pose.translation ();
   int middle_x, middle_y;
   getImagePoint (position, middle_x, middle_y);
@@ -832,7 +835,7 @@ RangeImage::extractFarRanges (const pcl::PCLPointCloud2& point_cloud_data,
       vp_z_offset = point_cloud_data.fields[vp_z_idx].offset,
       distance_offset = point_cloud_data.fields[distance_idx].offset;
   
-  for (index_t point_idx = 0; point_idx < point_cloud_data.width*point_cloud_data.height; ++point_idx)
+  for (uindex_t point_idx = 0; point_idx < point_cloud_data.width*point_cloud_data.height; ++point_idx)
   {
     float x = *reinterpret_cast<const float*> (data+x_offset), 
           y = *reinterpret_cast<const float*> (data+y_offset), 

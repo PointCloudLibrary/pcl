@@ -147,7 +147,7 @@ pcl::kinfuLS::WorldModel<PointT>::getWorldAsCubes (const double size, std::vecto
 
   // remove nans from world cloud
   world_->is_dense = false;
-  std::vector<int> indices;
+  pcl::Indices indices;
   pcl::removeNaNFromPointCloud ( *world_, *world_, indices);
 
   PCL_INFO("World contains %zu points after nan removal.\n",

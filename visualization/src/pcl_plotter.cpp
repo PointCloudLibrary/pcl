@@ -37,6 +37,10 @@
  */
 
 #include <vtkVersion.h>
+#if VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION == 0
+#include <limits> // This must be included before vtkDoubleArray.h
+#endif
+#include <vtkDoubleArray.h>
 #include <vtkSmartPointer.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRenderWindow.h>
@@ -47,10 +51,11 @@
 #include <vtkContextScene.h>
 #include <vtkAxis.h>
 #include <vtkPlot.h>
-#include <vtkDoubleArray.h>
 #include <vtkTable.h>
 
+#include <algorithm>
 #include <fstream>
+#include <limits>
 
 #include <pcl/visualization/pcl_plotter.h>
 
@@ -87,7 +92,7 @@ pcl::visualization::PCLPlotter::PCLPlotter (char const *name)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::visualization::PCLPlotter::~PCLPlotter() {}
+pcl::visualization::PCLPlotter::~PCLPlotter() = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -102,9 +107,9 @@ pcl::visualization::PCLPlotter::addPlotData (
   //creating a permanent copy of the arrays
   double *permanent_X = new double[size];
   double *permanent_Y = new double[size];
-  memcpy(permanent_X, array_X, size*sizeof(double));
-  memcpy(permanent_Y, array_Y, size*sizeof(double));
-  
+  std::copy(array_X, array_X + size, permanent_X);
+  std::copy(array_Y, array_Y + size, permanent_Y);
+
   //transforming data to be fed to the vtkChartXY
   VTK_CREATE (vtkTable, table);
 
@@ -204,7 +209,7 @@ pcl::visualization::PCLPlotter::addPlotData (
   {
     double xval = i*incr + x_min;
     double yval = compute(r_function, xval);
-    //if (yval == DBL_MAX) continue; //handling dived by zero 
+    //if (yval == std::numeric_limits<double>::max()) continue; //handling dived by zero
     
     array_x[i] = xval;
     array_y[i] = yval;
@@ -330,10 +335,10 @@ bool
 pcl::visualization::PCLPlotter::addFeatureHistogram (
     const pcl::PCLPointCloud2 &cloud,
     const std::string &field_name, 
-    const int index,
+    const pcl::index_t index,
     const std::string &id, int win_width, int win_height)
 {
-  if (index < 0 || index >= static_cast<int> (cloud.width * cloud.height))
+  if (index < 0 || index >= static_cast<pcl::index_t> (cloud.width * cloud.height))
   {
     PCL_ERROR ("[addFeatureHistogram] Invalid point index (%d) given!\n", index);
     return (false);
@@ -633,7 +638,7 @@ pcl::visualization::PCLPlotter::compute (RationalFunction const & r_function, do
   PolynomialFunction numerator = r_function.first, denominator = r_function.second;
   
   double dres = this->compute (denominator,val);
-  //if (dres == 0) return DBL_MAX;  //return the max possible double value to represent infinity
+  //if (dres == 0) return std::numeric_limits<double>::max();  //return the max possible double value to represent infinity
   double nres = this->compute (numerator,val);
   return (nres/dres);
 }

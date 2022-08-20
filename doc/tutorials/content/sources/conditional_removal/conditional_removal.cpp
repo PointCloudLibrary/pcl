@@ -3,7 +3,7 @@
 #include <pcl/filters/conditional_removal.h>
 
 int
- main (int argc, char** argv)
+ main ()
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);

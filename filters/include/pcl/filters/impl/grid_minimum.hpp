@@ -93,7 +93,7 @@ pcl::GridMinimum<PointT>::applyFilterIndices (Indices &indices)
 
   if ((dx*dy) > static_cast<std::int64_t> (std::numeric_limits<std::int32_t>::max ()))
   {
-    PCL_WARN ("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.", getClassName ().c_str ());
+    PCL_WARN ("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.\n", getClassName ().c_str ());
     return;
   }
 

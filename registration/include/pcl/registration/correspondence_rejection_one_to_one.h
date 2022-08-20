@@ -90,5 +90,3 @@ protected:
 
 } // namespace registration
 } // namespace pcl
-
-#include <pcl/registration/impl/correspondence_rejection_one_to_one.hpp>

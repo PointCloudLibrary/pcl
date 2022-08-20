@@ -317,11 +317,11 @@ GrabCut<PointT>::initGraph ()
     const NLinks &n_link = n_links_[i_point];
     if (n_link.nb_links > 0)
     {
-      int point_index = (*indices_) [i_point];
+      const auto point_index = (*indices_) [i_point];
       std::vector<float>::const_iterator weights_it  = n_link.weights.begin ();
       for (auto indices_it = n_link.indices.cbegin (); indices_it != n_link.indices.cend (); ++indices_it, ++weights_it)
       {
-        if ((*indices_it != point_index) && (*indices_it > -1))
+        if ((*indices_it != point_index) && (*indices_it != UNAVAILABLE))
         {
           addEdge (graph_nodes_[i_point], graph_nodes_[*indices_it], *weights_it, *weights_it);
         }
@@ -339,7 +339,7 @@ GrabCut<PointT>::computeNLinksNonOrganized ()
     NLinks &n_link = n_links_[i_point];
     if (n_link.nb_links > 0)
     {
-      int point_index = (*indices_) [i_point];
+      const auto point_index = (*indices_) [i_point];
       auto dists_it = n_link.dists.cbegin ();
       auto weights_it = n_link.weights.begin ();
       for (auto indices_it = n_link.indices.cbegin (); indices_it != n_link.indices.cend (); ++indices_it, ++dists_it, ++weights_it)
@@ -393,7 +393,7 @@ GrabCut<PointT>::computeBetaNonOrganized ()
 
   for (int i_point = 0; i_point < number_of_indices; i_point++)
   {
-    int point_index = (*indices_)[i_point];
+    const auto point_index = (*indices_)[i_point];
     const PointT& point = input_->points [point_index];
     if (pcl::isFinite (point))
     {

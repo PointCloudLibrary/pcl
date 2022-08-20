@@ -69,9 +69,8 @@ class SelectionTransformTool : public ToolInterface
                             CommandQueuePtr command_queue_ptr);
 
     /// @brief Destructor
-    ~SelectionTransformTool ()
-    {
-    }
+    ~SelectionTransformTool () override
+    = default;
 
     /// @brief Initialize the transform tool with mouse screen coordinates
     /// and key modifiers.

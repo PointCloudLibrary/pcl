@@ -35,11 +35,10 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_FEATURES_INTEGRALIMAGE_BASED_IMPL_NORMAL_ESTIMATOR_H_
-#define PCL_FEATURES_INTEGRALIMAGE_BASED_IMPL_NORMAL_ESTIMATOR_H_
-
+#pragma once
 #include <pcl/features/integral_image_normal.h>
+
+#include <algorithm>
 
 //////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
@@ -140,12 +139,11 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initCovarianceMatrixMet
 template <typename PointInT, typename PointOutT> void
 pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initAverage3DGradientMethod ()
 {
+  delete[] diff_x_;
+  delete[] diff_y_;
   std::size_t data_size = (input_->size () << 2);
-  diff_x_ = new float[data_size];
-  diff_y_ = new float[data_size];
-
-  memset (diff_x_, 0, sizeof(float) * data_size);
-  memset (diff_y_, 0, sizeof(float) * data_size);
+  diff_x_ = new float[data_size]{};
+  diff_y_ = new float[data_size]{};
 
   // x u x
   // l x r
@@ -736,8 +734,8 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
   // compute depth-change map
-  unsigned char * depthChangeMap = new unsigned char[input_->size ()];
-  memset (depthChangeMap, 255, input_->size ());
+  auto depthChangeMap = new unsigned char[input_->size ()];
+  std::fill_n(depthChangeMap, input_->size(), 255);
 
   unsigned index = 0;
   for (unsigned int ri = 0; ri < input_->height-1; ++ri)
@@ -1200,6 +1198,4 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initCompute ()
 }
 
 #define PCL_INSTANTIATE_IntegralImageNormalEstimation(T,NT) template class PCL_EXPORTS pcl::IntegralImageNormalEstimation<T,NT>;
-
-#endif
 

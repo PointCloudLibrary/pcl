@@ -69,7 +69,7 @@ namespace pcl
           /// construct a maxflow/mincut problem with estimated max_nodes
           BoykovKolmogorov (std::size_t max_nodes = 0);
           /// destructor
-          virtual ~BoykovKolmogorov () {}
+          virtual ~BoykovKolmogorov () = default;
           /// get number of nodes in the graph
           std::size_t
           numNodes () const { return nodes_.size (); }
@@ -202,7 +202,7 @@ namespace pcl
       /// Gaussian structure
       struct Gaussian
       {
-        Gaussian () {}
+        Gaussian () = default;
         /// mean of the gaussian
         Color mu;
         /// covariance matrix of the gaussian
@@ -227,7 +227,7 @@ namespace pcl
           /// Initialize GMM with ddesired number of gaussians.
           GMM (std::size_t K) : gaussians_ (K) {}
           /// Destructor
-          ~GMM () {}
+          ~GMM () = default;
           /// \return K
           std::size_t
           getK () const { return gaussians_.size (); }
@@ -336,7 +336,7 @@ namespace pcl
         , initialized_ (false)
       {}
       /// Destructor
-      ~GrabCut () {};
+      ~GrabCut () override = default;
       // /// Set input cloud
       void
       setInputCloud (const PointCloudConstPtr& cloud) override;

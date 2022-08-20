@@ -32,7 +32,7 @@ readTextFile(const char* filename)
 
 pcl::simulation::gllib::Program::Program() { program_id_ = glCreateProgram(); }
 
-pcl::simulation::gllib::Program::~Program() {}
+pcl::simulation::gllib::Program::~Program() = default;
 
 int
 pcl::simulation::gllib::Program::getUniformLocation(const std::string& name) const

@@ -155,7 +155,7 @@ namespace pcl
 
         for (int z = 0; z < VOLUME_Z - 1; z++)
         {
-          int numVerts = 0;;
+          int numVerts = 0;
           if (x + 1 < VOLUME_X && y + 1 < VOLUME_Y)
           {
             float field[8];

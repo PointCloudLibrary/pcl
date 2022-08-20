@@ -41,7 +41,7 @@
 #ifndef PCL_NDT_2D_IMPL_H_
 #define PCL_NDT_2D_IMPL_H_
 
-#include <pcl/registration/boost.h>
+#include <boost/core/noncopyable.hpp> // for boost::noncopyable
 
 #include <Eigen/Eigenvalues> // for SelfAdjointEigenSolver, EigenSolver
 
