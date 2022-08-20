@@ -243,7 +243,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
   std::vector<float> nn_distances;
   nn_distances.reserve(k_correspondences_);
 
-#pragma omp parallel for default(none) shared(similar_features)    \
+#pragma omp parallel for default(none) shared(similar_features)                        \
     firstprivate(nn_distances) num_threads(num_threads_)
   for (int i = 0; i < static_cast<int>(input_->size()); ++i) {
     nn_distances.clear();
