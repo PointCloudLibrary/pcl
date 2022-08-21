@@ -259,6 +259,10 @@ function(PCL_CUDA_ADD_LIBRARY _name)
 
   target_include_directories(${_name} PRIVATE ${CUDA_TOOLKIT_INCLUDE})
 
+  if(MSVC)
+    target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
+  endif()
+
   set_target_properties(${_name} PROPERTIES
     VERSION ${PCL_VERSION}
     SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
