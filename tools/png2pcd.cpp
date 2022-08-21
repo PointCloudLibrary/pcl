@@ -226,8 +226,7 @@ main (int argc, char** argv)
   }
 
   // Retrieve the entries from the image data and copy them into the output RGB cloud
-  double* pixel = new double [4];
-  memset (pixel, 0, sizeof (double) * 4);
+  double* pixel = new double [4]{0.0};
   float depth;
 
   std::string intensity_type;

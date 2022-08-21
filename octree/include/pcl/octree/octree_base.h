@@ -103,10 +103,16 @@ public:
   friend class OctreeFixedDepthIterator<OctreeT>;
   friend class OctreeLeafNodeDepthFirstIterator<OctreeT>;
   friend class OctreeLeafNodeBreadthFirstIterator<OctreeT>;
+  friend class OctreeIteratorBase<const OctreeT>;
+  friend class OctreeDepthFirstIterator<const OctreeT>;
+  friend class OctreeBreadthFirstIterator<const OctreeT>;
+  friend class OctreeFixedDepthIterator<const OctreeT>;
+  friend class OctreeLeafNodeDepthFirstIterator<const OctreeT>;
+  friend class OctreeLeafNodeBreadthFirstIterator<const OctreeT>;
 
   // Octree default iterators
   using Iterator = OctreeDepthFirstIterator<OctreeT>;
-  using ConstIterator = const OctreeDepthFirstIterator<OctreeT>;
+  using ConstIterator = OctreeDepthFirstIterator<const OctreeT>;
 
   Iterator
   begin(uindex_t max_depth_arg = 0u)
@@ -114,10 +120,34 @@ public:
     return Iterator(this, max_depth_arg ? max_depth_arg : this->octree_depth_);
   };
 
+  ConstIterator
+  begin(uindex_t max_depth_arg = 0u) const
+  {
+    return ConstIterator(this, max_depth_arg ? max_depth_arg : this->octree_depth_);
+  };
+
+  ConstIterator
+  cbegin(uindex_t max_depth_arg = 0u) const
+  {
+    return ConstIterator(this, max_depth_arg ? max_depth_arg : this->octree_depth_);
+  };
+
   const Iterator
   end()
   {
     return Iterator(this, 0, nullptr);
+  };
+
+  const ConstIterator
+  end() const
+  {
+    return ConstIterator(this, 0, nullptr);
+  };
+
+  const ConstIterator
+  cend() const
+  {
+    return ConstIterator(this, 0, nullptr);
   };
 
   // Octree leaf node iterators
@@ -130,12 +160,19 @@ public:
   // The currently valide names
   using LeafNodeDepthFirstIterator = OctreeLeafNodeDepthFirstIterator<OctreeT>;
   using ConstLeafNodeDepthFirstIterator =
-      const OctreeLeafNodeDepthFirstIterator<OctreeT>;
+      OctreeLeafNodeDepthFirstIterator<const OctreeT>;
 
   LeafNodeDepthFirstIterator
   leaf_depth_begin(uindex_t max_depth_arg = 0u)
   {
     return LeafNodeDepthFirstIterator(
+        this, max_depth_arg ? max_depth_arg : this->octree_depth_);
+  };
+
+  ConstLeafNodeDepthFirstIterator
+  leaf_depth_begin(uindex_t max_depth_arg = 0u) const
+  {
+    return ConstLeafNodeDepthFirstIterator(
         this, max_depth_arg ? max_depth_arg : this->octree_depth_);
   };
 
@@ -145,9 +182,15 @@ public:
     return LeafNodeDepthFirstIterator(this, 0, nullptr);
   };
 
+  const ConstLeafNodeDepthFirstIterator
+  leaf_depth_end() const
+  {
+    return ConstLeafNodeDepthFirstIterator(this, 0, nullptr);
+  };
+
   // Octree depth-first iterators
   using DepthFirstIterator = OctreeDepthFirstIterator<OctreeT>;
-  using ConstDepthFirstIterator = const OctreeDepthFirstIterator<OctreeT>;
+  using ConstDepthFirstIterator = OctreeDepthFirstIterator<const OctreeT>;
 
   DepthFirstIterator
   depth_begin(uindex_t max_depth_arg = 0u)
@@ -156,15 +199,28 @@ public:
                               max_depth_arg ? max_depth_arg : this->octree_depth_);
   };
 
+  ConstDepthFirstIterator
+  depth_begin(uindex_t max_depth_arg = 0u) const
+  {
+    return ConstDepthFirstIterator(this,
+                                   max_depth_arg ? max_depth_arg : this->octree_depth_);
+  };
+
   const DepthFirstIterator
   depth_end()
   {
     return DepthFirstIterator(this, 0, nullptr);
   };
 
+  const ConstDepthFirstIterator
+  depth_end() const
+  {
+    return ConstDepthFirstIterator(this, 0, nullptr);
+  };
+
   // Octree breadth-first iterators
   using BreadthFirstIterator = OctreeBreadthFirstIterator<OctreeT>;
-  using ConstBreadthFirstIterator = const OctreeBreadthFirstIterator<OctreeT>;
+  using ConstBreadthFirstIterator = OctreeBreadthFirstIterator<const OctreeT>;
 
   BreadthFirstIterator
   breadth_begin(uindex_t max_depth_arg = 0u)
@@ -173,20 +229,39 @@ public:
                                 max_depth_arg ? max_depth_arg : this->octree_depth_);
   };
 
+  ConstBreadthFirstIterator
+  breadth_begin(uindex_t max_depth_arg = 0u) const
+  {
+    return ConstBreadthFirstIterator(
+        this, max_depth_arg ? max_depth_arg : this->octree_depth_);
+  };
+
   const BreadthFirstIterator
   breadth_end()
   {
     return BreadthFirstIterator(this, 0, nullptr);
   };
 
+  const ConstBreadthFirstIterator
+  breadth_end() const
+  {
+    return ConstBreadthFirstIterator(this, 0, nullptr);
+  };
+
   // Octree breadth iterators at a given depth
   using FixedDepthIterator = OctreeFixedDepthIterator<OctreeT>;
-  using ConstFixedDepthIterator = const OctreeFixedDepthIterator<OctreeT>;
+  using ConstFixedDepthIterator = OctreeFixedDepthIterator<const OctreeT>;
 
   FixedDepthIterator
   fixed_depth_begin(uindex_t fixed_depth_arg = 0u)
   {
     return FixedDepthIterator(this, fixed_depth_arg);
+  };
+
+  ConstFixedDepthIterator
+  fixed_depth_begin(uindex_t fixed_depth_arg = 0u) const
+  {
+    return ConstFixedDepthIterator(this, fixed_depth_arg);
   };
 
   const FixedDepthIterator
@@ -195,10 +270,16 @@ public:
     return FixedDepthIterator(this, 0, nullptr);
   };
 
+  const ConstFixedDepthIterator
+  fixed_depth_end() const
+  {
+    return ConstFixedDepthIterator(this, 0, nullptr);
+  };
+
   // Octree leaf node iterators
   using LeafNodeBreadthFirstIterator = OctreeLeafNodeBreadthFirstIterator<OctreeT>;
   using ConstLeafNodeBreadthFirstIterator =
-      const OctreeLeafNodeBreadthFirstIterator<OctreeT>;
+      OctreeLeafNodeBreadthFirstIterator<const OctreeT>;
 
   LeafNodeBreadthFirstIterator
   leaf_breadth_begin(uindex_t max_depth_arg = 0u)
@@ -207,10 +288,23 @@ public:
         this, max_depth_arg ? max_depth_arg : this->octree_depth_);
   };
 
+  ConstLeafNodeBreadthFirstIterator
+  leaf_breadth_begin(uindex_t max_depth_arg = 0u) const
+  {
+    return ConstLeafNodeBreadthFirstIterator(
+        this, max_depth_arg ? max_depth_arg : this->octree_depth_);
+  };
+
   const LeafNodeBreadthFirstIterator
   leaf_breadth_end()
   {
     return LeafNodeBreadthFirstIterator(this, 0, nullptr);
+  };
+
+  const ConstLeafNodeBreadthFirstIterator
+  leaf_breadth_end() const
+  {
+    return ConstLeafNodeBreadthFirstIterator(this, 0, nullptr);
   };
 
   /** \brief Empty constructor. */
@@ -242,6 +336,7 @@ public:
     depth_mask_ = source.depth_mask_;
     max_key_ = source.max_key_;
     octree_depth_ = source.octree_depth_;
+    dynamic_depth_enabled_ = source.dynamic_depth_enabled_;
     return (*this);
   }
 
@@ -284,7 +379,7 @@ public:
    *  \return pointer to leaf node container if found, null pointer otherwise.
    */
   LeafContainerT*
-  findLeaf(uindex_t idx_x_arg, uindex_t idx_y_arg, uindex_t idx_z_arg);
+  findLeaf(uindex_t idx_x_arg, uindex_t idx_y_arg, uindex_t idx_z_arg) const;
 
   /** \brief idx_x_arg for the existence of leaf node at (idx_x_arg, idx_y_arg,
    * idx_z_arg).
@@ -333,7 +428,7 @@ public:
    * structure.
    */
   void
-  serializeTree(std::vector<char>& binary_tree_out_arg);
+  serializeTree(std::vector<char>& binary_tree_out_arg) const;
 
   /** \brief Serialize octree into a binary output vector describing its branch node
    * structure and push all LeafContainerT elements stored in the octree to a vector.
@@ -344,7 +439,7 @@ public:
    */
   void
   serializeTree(std::vector<char>& binary_tree_out_arg,
-                std::vector<LeafContainerT*>& leaf_container_vector_arg);
+                std::vector<LeafContainerT*>& leaf_container_vector_arg) const;
 
   /** \brief Outputs a vector of all LeafContainerT elements that are stored within the
    * octree leaf nodes.
@@ -604,8 +699,8 @@ protected:
    *  \param depth_mask_arg: depth mask used for octree key analysis and branch depth
    * indicator
    * \param branch_arg: current branch node
-   * \return "true" if branch does not contain any childs; "false" otherwise. This
-   * indicates if current branch can be deleted, too.
+   * \return "true" if current branch contains child(ren); "false" otherwise. If it's
+   * true, current branch cannot be deleted.
    **/
   bool
   deleteLeafRecursive(const OctreeKey& key_arg,
@@ -676,7 +771,7 @@ protected:
    * \return "true"
    **/
   bool
-  octreeCanResize()
+  octreeCanResize() const
   {
     return (true);
   }

@@ -311,7 +311,7 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
     std::vector<int> cloudSearchBruteforce;
     for (std::size_t i = 0; i < cloudIn->size (); i++)
     {
-      pointDist = sqrt (
+      pointDist = std::sqrt (
                         ((*cloudIn)[i].x - searchPoint.x) * ((*cloudIn)[i].x - searchPoint.x)
                             + ((*cloudIn)[i].y - searchPoint.y) * ((*cloudIn)[i].y - searchPoint.y)
                             + ((*cloudIn)[i].z - searchPoint.z) * ((*cloudIn)[i].z - searchPoint.z));
@@ -335,7 +335,7 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
     // check if result from octree radius search can be also found in bruteforce search
     for (const auto& current : cloudNWRSearch)
     {
-      pointDist = sqrt (
+      pointDist = std::sqrt (
           ((*cloudIn)[current].x-searchPoint.x) * ((*cloudIn)[current].x-searchPoint.x) +
           ((*cloudIn)[current].y-searchPoint.y) * ((*cloudIn)[current].y-searchPoint.y) +
           ((*cloudIn)[current].z-searchPoint.z) * ((*cloudIn)[current].z-searchPoint.z)

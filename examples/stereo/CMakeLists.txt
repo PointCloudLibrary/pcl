@@ -2,7 +2,7 @@ if(NOT BUILD_visualization)
   return()
 endif()
 
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS visualization)
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS visualization)
 
 ## Find VTK
 if(NOT VTK_FOUND)

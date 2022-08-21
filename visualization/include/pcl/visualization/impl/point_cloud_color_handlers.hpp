@@ -175,7 +175,6 @@ PointCloudColorHandlerRGBField<PointT>::getColor () const
           !std::isfinite ((*cloud_)[cp].y) ||
           !std::isfinite ((*cloud_)[cp].z))
         continue;
-
       memcpy (&rgb, (reinterpret_cast<const char *> (&(*cloud_)[cp])) + rgba_offset, sizeof (pcl::RGB));
       colors[j    ] = rgb.r;
       colors[j + 1] = rgb.g;

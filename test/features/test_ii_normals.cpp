@@ -414,7 +414,7 @@ TEST (PCL, IINormalEstimationAverage3DGradient)
           !std::isfinite(output (u, v).normal_z))
         continue;
 
-      if (std::abs(fabs (output (u, v).normal_z) - 1) > 1e-2)
+      if (std::abs(std::abs (output (u, v).normal_z) - 1) > 1e-2)
       {
         std::cout << "T:" << u << " , " << v << " : " << output (u, v).normal_x << " , " << output (u, v).normal_y << " , " << output (u, v).normal_z <<std::endl;
       }
@@ -446,7 +446,7 @@ TEST (PCL, IINormalEstimationAverageDepthChange)
           !std::isfinite(output (u, v).normal_z))
         continue;
 
-      if (std::abs(fabs (output (u, v).normal_z) - 1) > 1e-2)
+      if (std::abs(std::abs (output (u, v).normal_z) - 1) > 1e-2)
       {
         std::cout << "T:" << u << " , " << v << " : " << output (u, v).normal_x << " , " << output (u, v).normal_y << " , " << output (u, v).normal_z <<std::endl;
       }
@@ -478,7 +478,7 @@ TEST (PCL, IINormalEstimationSimple3DGradient)
           !std::isfinite(output (u, v).normal_z))
         continue;
 
-      if (std::abs(fabs (output (u, v).normal_z) - 1) > 1e-2)
+      if (std::abs(std::abs (output (u, v).normal_z) - 1) > 1e-2)
       {
         std::cout << "T:" << u << " , " << v << " : " << output (u, v).normal_x << " , " << output (u, v).normal_y << " , " << output (u, v).normal_z <<std::endl;
       }

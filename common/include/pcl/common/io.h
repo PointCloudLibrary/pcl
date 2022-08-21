@@ -319,10 +319,10 @@ namespace pcl
                   pcl::PCLPointCloud2 &cloud_out);
 
   /** \brief Check if two given point types are the same or not. */
-  template <typename Point1T, typename Point2T> inline bool
-  isSamePointType ()
+template <typename Point1T, typename Point2T> constexpr bool
+  isSamePointType() noexcept
   {
-    return (typeid (Point1T) == typeid (Point2T));
+    return (std::is_same<remove_cvref_t<Point1T>, remove_cvref_t<Point2T>>::value);
   }
 
   /** \brief Extract the indices of a given point cloud as a new point cloud

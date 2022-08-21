@@ -96,6 +96,7 @@ macro(find_boost)
   
   set(Boost_ADDITIONAL_VERSIONS
     "@Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@.@Boost_SUBMINOR_VERSION@" "@Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@"
+    "1.80.0" "1.80"
     "1.79.0" "1.79" "1.78.0" "1.78" "1.77.0" "1.77" "1.76.0" "1.76" "1.75.0" "1.75" 
     "1.74.0" "1.74" "1.73.0" "1.73" "1.72.0" "1.72" "1.71.0" "1.71" "1.70.0" "1.70"
     "1.69.0" "1.69" "1.68.0" "1.68" "1.67.0" "1.67" "1.66.0" "1.66" "1.65.1" "1.65.0" "1.65")
@@ -118,7 +119,7 @@ macro(find_eigen)
   elseif(NOT EIGEN_ROOT)
     get_filename_component(EIGEN_ROOT "@EIGEN_INCLUDE_DIRS@" ABSOLUTE)
   endif()
-  find_package(Eigen 3.1)
+  find_package(Eigen 3.3)
 endmacro()
 
 #remove this as soon as qhull is shipped with FindQhull.cmake
@@ -616,16 +617,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
       string(REGEX REPLACE "^-D" "" def3 "${def2}")
       list(APPEND definitions ${def3})
     endforeach()
-    if(CMAKE_VERSION VERSION_LESS 3.3)
-      set_target_properties(${pcl_component}
-        PROPERTIES
-          INTERFACE_COMPILE_DEFINITIONS "${definitions}"
-          INTERFACE_COMPILE_OPTIONS "${PCL_COMPILE_OPTIONS}"
-          INTERFACE_COMPILE_FEATURES "@PCL_CXX_COMPILE_FEATURES@"
-          INTERFACE_INCLUDE_DIRECTORIES "${PCL_${COMPONENT}_INCLUDE_DIRS};${PCL_CONF_INCLUDE_DIR}"
-          INTERFACE_LINK_LIBRARIES "${PCL_${COMPONENT}_LINK_LIBRARIES}"
-      )
-    elseif(CMAKE_VERSION VERSION_LESS 3.11)
+    if(CMAKE_VERSION VERSION_LESS 3.11)
       set_target_properties(${pcl_component}
         PROPERTIES
           INTERFACE_COMPILE_DEFINITIONS "${definitions}"

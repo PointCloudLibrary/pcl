@@ -102,7 +102,7 @@ namespace pcl
         {
           //maps_[map_index] = new unsigned char[mapsSize];
           map = reinterpret_cast<unsigned char*> (aligned_malloc (mapsSize));
-          memset (map, 0, mapsSize);
+          std::fill_n(map, mapsSize, 0);
         }
       }
 
@@ -242,7 +242,7 @@ namespace pcl
         {
           //maps_[map_index] = new unsigned char[2*mapsSize];
           map = reinterpret_cast<unsigned char*> (aligned_malloc (2*mapsSize));
-          memset (map, 0, 2*mapsSize);
+          std::fill_n(map, 2*mapsSize, 0);
         }
       }
 

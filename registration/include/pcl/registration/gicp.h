@@ -54,28 +54,31 @@ namespace pcl {
  * \author Nizar Sallem
  * \ingroup registration
  */
-template <typename PointSource, typename PointTarget>
+template <typename PointSource, typename PointTarget, typename Scalar = float>
 class GeneralizedIterativeClosestPoint
-: public IterativeClosestPoint<PointSource, PointTarget> {
+: public IterativeClosestPoint<PointSource, PointTarget, Scalar> {
 public:
-  using IterativeClosestPoint<PointSource, PointTarget>::reg_name_;
-  using IterativeClosestPoint<PointSource, PointTarget>::getClassName;
-  using IterativeClosestPoint<PointSource, PointTarget>::indices_;
-  using IterativeClosestPoint<PointSource, PointTarget>::target_;
-  using IterativeClosestPoint<PointSource, PointTarget>::input_;
-  using IterativeClosestPoint<PointSource, PointTarget>::tree_;
-  using IterativeClosestPoint<PointSource, PointTarget>::tree_reciprocal_;
-  using IterativeClosestPoint<PointSource, PointTarget>::nr_iterations_;
-  using IterativeClosestPoint<PointSource, PointTarget>::max_iterations_;
-  using IterativeClosestPoint<PointSource, PointTarget>::previous_transformation_;
-  using IterativeClosestPoint<PointSource, PointTarget>::final_transformation_;
-  using IterativeClosestPoint<PointSource, PointTarget>::transformation_;
-  using IterativeClosestPoint<PointSource, PointTarget>::transformation_epsilon_;
-  using IterativeClosestPoint<PointSource, PointTarget>::converged_;
-  using IterativeClosestPoint<PointSource, PointTarget>::corr_dist_threshold_;
-  using IterativeClosestPoint<PointSource, PointTarget>::inlier_threshold_;
-  using IterativeClosestPoint<PointSource, PointTarget>::min_number_correspondences_;
-  using IterativeClosestPoint<PointSource, PointTarget>::update_visualizer_;
+  using IterativeClosestPoint<PointSource, PointTarget, Scalar>::reg_name_;
+  using IterativeClosestPoint<PointSource, PointTarget, Scalar>::getClassName;
+  using IterativeClosestPoint<PointSource, PointTarget, Scalar>::indices_;
+  using IterativeClosestPoint<PointSource, PointTarget, Scalar>::target_;
+  using IterativeClosestPoint<PointSource, PointTarget, Scalar>::input_;
+  using IterativeClosestPoint<PointSource, PointTarget, Scalar>::tree_;
+  using IterativeClosestPoint<PointSource, PointTarget, Scalar>::tree_reciprocal_;
+  using IterativeClosestPoint<PointSource, PointTarget, Scalar>::nr_iterations_;
+  using IterativeClosestPoint<PointSource, PointTarget, Scalar>::max_iterations_;
+  using IterativeClosestPoint<PointSource, PointTarget, Scalar>::
+      previous_transformation_;
+  using IterativeClosestPoint<PointSource, PointTarget, Scalar>::final_transformation_;
+  using IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformation_;
+  using IterativeClosestPoint<PointSource, PointTarget, Scalar>::
+      transformation_epsilon_;
+  using IterativeClosestPoint<PointSource, PointTarget, Scalar>::converged_;
+  using IterativeClosestPoint<PointSource, PointTarget, Scalar>::corr_dist_threshold_;
+  using IterativeClosestPoint<PointSource, PointTarget, Scalar>::inlier_threshold_;
+  using IterativeClosestPoint<PointSource, PointTarget, Scalar>::
+      min_number_correspondences_;
+  using IterativeClosestPoint<PointSource, PointTarget, Scalar>::update_visualizer_;
 
   using PointCloudSource = pcl::PointCloud<PointSource>;
   using PointCloudSourcePtr = typename PointCloudSource::Ptr;
@@ -93,14 +96,22 @@ public:
   using MatricesVectorPtr = shared_ptr<MatricesVector>;
   using MatricesVectorConstPtr = shared_ptr<const MatricesVector>;
 
-  using InputKdTree = typename Registration<PointSource, PointTarget>::KdTree;
-  using InputKdTreePtr = typename Registration<PointSource, PointTarget>::KdTreePtr;
+  using InputKdTree = typename Registration<PointSource, PointTarget, Scalar>::KdTree;
+  using InputKdTreePtr =
+      typename Registration<PointSource, PointTarget, Scalar>::KdTreePtr;
 
-  using Ptr = shared_ptr<GeneralizedIterativeClosestPoint<PointSource, PointTarget>>;
-  using ConstPtr =
-      shared_ptr<const GeneralizedIterativeClosestPoint<PointSource, PointTarget>>;
+  using Ptr =
+      shared_ptr<GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>>;
+  using ConstPtr = shared_ptr<
+      const GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>>;
 
+  using Vector3 = typename Eigen::Matrix<Scalar, 3, 1>;
+  using Vector4 = typename Eigen::Matrix<Scalar, 4, 1>;
   using Vector6d = Eigen::Matrix<double, 6, 1>;
+  using Matrix3 = typename Eigen::Matrix<Scalar, 3, 3>;
+  using Matrix4 =
+      typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::Matrix4;
+  using AngleAxis = typename Eigen::AngleAxis<Scalar>;
 
   /** \brief Empty constructor. */
   GeneralizedIterativeClosestPoint()
@@ -121,7 +132,7 @@ public:
                                               const pcl::Indices& indices_src,
                                               const PointCloudTarget& cloud_tgt,
                                               const pcl::Indices& indices_tgt,
-                                              Eigen::Matrix4f& transformation_matrix) {
+                                              Matrix4& transformation_matrix) {
       estimateRigidTransformationBFGS(
           cloud_src, indices_src, cloud_tgt, indices_tgt, transformation_matrix);
     };
@@ -145,7 +156,7 @@ public:
     for (std::size_t i = 0; i < input.size(); ++i)
       input[i].data[3] = 1.0;
 
-    pcl::IterativeClosestPoint<PointSource, PointTarget>::setInputSource(cloud);
+    pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::setInputSource(cloud);
     input_covariances_.reset();
   }
 
@@ -167,7 +178,8 @@ public:
   inline void
   setInputTarget(const PointCloudTargetConstPtr& target) override
   {
-    pcl::IterativeClosestPoint<PointSource, PointTarget>::setInputTarget(target);
+    pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::setInputTarget(
+        target);
     target_covariances_.reset();
   }
 
@@ -198,7 +210,7 @@ public:
                                   const pcl::Indices& indices_src,
                                   const PointCloudTarget& cloud_tgt,
                                   const pcl::Indices& indices_tgt,
-                                  Eigen::Matrix4f& transformation_matrix);
+                                  Matrix4& transformation_matrix);
 
   /** \brief \return Mahalanobis distance matrix for the given point index */
   inline const Eigen::Matrix3d&
@@ -333,7 +345,7 @@ protected:
   double rotation_epsilon_;
 
   /** \brief base transformation */
-  Eigen::Matrix4f base_transformation_;
+  Matrix4 base_transformation_;
 
   /** \brief Temporary pointer to the source dataset. */
   const PointCloudSource* tmp_src_;
@@ -400,8 +412,7 @@ protected:
    * compute
    */
   void
-  computeTransformation(PointCloudSource& output,
-                        const Eigen::Matrix4f& guess) override;
+  computeTransformation(PointCloudSource& output, const Matrix4& guess) override;
 
   /** \brief Search for the closest nearest neighbor of a given point.
    * \param query the point to search a nearest neighbour for
@@ -421,7 +432,7 @@ protected:
 
   /// \brief compute transformation matrix from transformation matrix
   void
-  applyState(Eigen::Matrix4f& t, const Vector6d& x) const;
+  applyState(Matrix4& t, const Vector6d& x) const;
 
   /// \brief optimization functor structure
   struct OptimizationFunctorWithIndices : public BFGSDummyFunctor<double, 6> {
@@ -444,7 +455,7 @@ protected:
                      const pcl::Indices& src_indices,
                      const pcl::PointCloud<PointTarget>& cloud_tgt,
                      const pcl::Indices& tgt_indices,
-                     Eigen::Matrix4f& transformation_matrix)>
+                     Matrix4& transformation_matrix)>
       rigid_transformation_estimation_;
 };
 } // namespace pcl

@@ -208,7 +208,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::extract (std::vector <pcl::PointIndices>
   }
 
   clusters.reserve (clusters_.size ());
-  std::copy (clusters_.begin (), clusters_.end (), std::back_inserter (clusters));
+  std::copy (clusters_.cbegin (), clusters_.cend (), std::back_inserter (clusters));
 
   deinitCompute ();
 }

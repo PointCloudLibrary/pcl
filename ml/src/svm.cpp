@@ -42,6 +42,7 @@
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/ml/svm.h>
 
+#include <algorithm>
 #include <cmath>
 #include <cstdarg>
 #include <cstdio>
@@ -83,8 +84,7 @@ static inline void
 clone(T*& dst, S* src, int n)
 {
   dst = new T[n];
-  memcpy(
-      reinterpret_cast<void*>(dst), reinterpret_cast<const void*>(src), sizeof(T) * n);
+  std::copy(src, src + n, dst);
 }
 
 static inline double

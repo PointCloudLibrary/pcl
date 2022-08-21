@@ -51,6 +51,9 @@
 #include <pcl/for_each_type.h>
 #include <pcl/console/print.h>
 
+#include <algorithm>
+#include <iterator>
+
 namespace pcl
 {
   namespace detail
@@ -188,7 +191,7 @@ namespace pcl
       // Should usually be able to copy all rows at once
       if (msg.row_step == cloud_row_step)
       {
-        memcpy (cloud_data, msg_data, msg.data.size ());
+        std::copy(msg.data.cbegin(), msg.data.cend(), cloud_data);
       }
       else
       {
@@ -208,7 +211,8 @@ namespace pcl
           const std::uint8_t* msg_data = row_data + col * msg.point_step;
           for (const detail::FieldMapping& mapping : field_map)
           {
-            memcpy (cloud_data + mapping.struct_offset, msg_data + mapping.serialized_offset, mapping.size);
+            std::copy(msg_data + mapping.serialized_offset, msg_data + mapping.serialized_offset + mapping.size,
+                        cloud_data + mapping.struct_offset);
           }
           cloud_data += sizeof (PointT);
         }
@@ -337,7 +341,7 @@ namespace pcl
       for (std::size_t x = 0; x < cloud.width; x++, rgb_offset += point_step)
       {
         std::uint8_t * pixel = &(msg.data[y * msg.step + x * 3]);
-        memcpy (pixel, &(cloud.data[rgb_offset]), 3 * sizeof (std::uint8_t));
+        std::copy(&cloud.data[rgb_offset], &cloud.data[rgb_offset] + 3, pixel);
       }
     }
   }
