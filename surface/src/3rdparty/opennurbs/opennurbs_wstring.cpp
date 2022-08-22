@@ -1831,7 +1831,7 @@ void ON_wString::SetAt( int i, wchar_t c )
 
 ON_wString ON_wString::Mid(int i, int count) const
 {
-  ON_wString(s);
+  ON_wString s;
   if ( i >= 0 && i < Length() && count > 0 ) {
     if ( count > Length() - i )
       count = Length() - i;

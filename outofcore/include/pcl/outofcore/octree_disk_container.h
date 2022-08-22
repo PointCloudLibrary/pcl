@@ -47,7 +47,6 @@
 #include <boost/uuid/random_generator.hpp>
 
 #include <pcl/common/utils.h> // pcl::utils::ignore
-#include <pcl/outofcore/boost.h>
 #include <pcl/outofcore/octree_abstract_node_container.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/PCLPointCloud2.h>

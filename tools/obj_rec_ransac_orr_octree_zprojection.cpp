@@ -62,7 +62,6 @@
 #include <vtkCubeSource.h>
 #include <vtkPointData.h>
 #include <vector>
-#include <list>
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>

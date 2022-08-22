@@ -46,6 +46,7 @@
 #include <flann/algorithms/linear_index.h>  // for flann::LinearIndexParams
 #include <flann/util/matrix.h>              // for flann::Matrix
 
+#include <pcl/features/normal_3d.h> // for NormalEstimation
 #include <pcl/segmentation/unary_classifier.h>
 #include <pcl/common/io.h>
 

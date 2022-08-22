@@ -46,7 +46,6 @@
 #include <vtkVersion.h>
 #include <vtkDoubleArray.h>
 #include <vtkTextProperty.h>
-#include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
 #include <vtkDataObject.h>
 #include <vtkProperty2D.h>

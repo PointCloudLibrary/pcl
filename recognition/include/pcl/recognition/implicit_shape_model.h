@@ -43,7 +43,6 @@
 #include <pcl/point_types.h>
 #include <pcl/point_representation.h>
 #include <pcl/features/feature.h>
-#include <pcl/features/spin_image.h>
 #include <pcl/kdtree/kdtree_flann.h> // for KdTreeFLANN
 
 namespace pcl

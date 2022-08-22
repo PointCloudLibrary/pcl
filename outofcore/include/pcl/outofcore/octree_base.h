@@ -39,7 +39,6 @@
 
 #pragma once
 
-#include <pcl/outofcore/boost.h>
 #include <pcl/common/io.h>
 
 //outofcore classes

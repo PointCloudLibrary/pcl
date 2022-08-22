@@ -40,7 +40,6 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_lib_io.h>
 #include <vtkVersion.h>
-#include <vtkPLYReader.h>
 #include <vtkOBJReader.h>
 #include <vtkTriangle.h>
 #include <vtkTriangleFilter.h>

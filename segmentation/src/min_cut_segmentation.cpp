@@ -36,8 +36,6 @@
  *
  */
 
-#include <boost/version.hpp>
-
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/segmentation/min_cut_segmentation.h>
