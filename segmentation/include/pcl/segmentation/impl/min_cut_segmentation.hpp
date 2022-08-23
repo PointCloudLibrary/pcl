@@ -422,7 +422,7 @@ pcl::MinCutSegmentation<PointT>::calculateUnaryPotential (int point, double& sou
 template <typename PointT> bool
 pcl::MinCutSegmentation<PointT>::addEdge (int source, int target, double weight)
 {
-  std::set<int>::iterator iter_out = edge_marker_[source].find (target);
+  auto iter_out = edge_marker_[source].find (target);
   if ( iter_out != edge_marker_[source].end () )
     return (false);
 
@@ -512,7 +512,7 @@ pcl::MinCutSegmentation<PointT>::recalculateBinaryPotentials ()
 
       //If we already changed weight for this edge then continue
       VertexDescriptor target_vertex = boost::target (*edge_iter, *graph_);
-      std::set<VertexDescriptor>::iterator iter_out = edge_marker[static_cast<int> (source_vertex)].find (target_vertex);
+      auto iter_out = edge_marker[static_cast<int> (source_vertex)].find (target_vertex);
       if ( iter_out != edge_marker[static_cast<int> (source_vertex)].end () )
         continue;
 

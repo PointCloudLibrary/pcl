@@ -232,7 +232,7 @@ mets::simulated_annealing<move_manager_t>::search()
 	.cost_function();*/
 
       base_t::moves_m.refresh(base_t::working_solution_m);
-      for(typename move_manager_t::iterator movit = base_t::moves_m.begin(); 
+      for(auto movit = base_t::moves_m.begin(); 
           movit != base_t::moves_m.end(); ++movit)
       {
         // apply move and record proposed cost function

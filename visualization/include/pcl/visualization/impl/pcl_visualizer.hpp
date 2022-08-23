@@ -116,7 +116,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   {
     // Here we're just pushing the handlers onto the queue. If needed, something fancier could
     // be done such as checking if a specific handler already exists, etc.
-    CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
+    auto am_it = cloud_actor_map_->find (id);
     am_it->second.geometry_handlers.push_back (geometry_handler);
     return (true);
   }
@@ -156,7 +156,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   const std::string &id, int viewport)
 {
   // Check to see if this entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
+  auto am_it = cloud_actor_map_->find (id);
   if (am_it != cloud_actor_map_->end ())
   {
     // Here we're just pushing the handlers onto the queue. If needed, something fancier could
@@ -178,7 +178,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   const std::string &id, int viewport)
 {
   // Check to see if this entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
+  auto am_it = cloud_actor_map_->find (id);
   if (am_it != cloud_actor_map_->end ())
   {
     // Here we're just pushing the handlers onto the queue. If needed, something fancier could
@@ -378,7 +378,7 @@ pcl::visualization::PCLVisualizer::addPolygon (
     return (false);
 
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  auto am_it = shape_actor_map_->find (id);
   if (am_it != shape_actor_map_->end ())
   {
     vtkSmartPointer<vtkAppendPolyData> all_data = vtkSmartPointer<vtkAppendPolyData>::New ();
@@ -432,7 +432,7 @@ pcl::visualization::PCLVisualizer::addPolygon (
     return (false);
 
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  auto am_it = shape_actor_map_->find (id);
   if (am_it != shape_actor_map_->end ())
   {
     vtkSmartPointer<vtkAppendPolyData> all_data = vtkSmartPointer<vtkAppendPolyData>::New ();
@@ -666,7 +666,7 @@ pcl::visualization::PCLVisualizer::updateSphere (const PointT &center, double ra
 
   //////////////////////////////////////////////////////////////////////////
   // Get the actor pointer
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  auto am_it = shape_actor_map_->find (id);
   vtkLODActor* actor = vtkLODActor::SafeDownCast (am_it->second);
   if (!actor)
     return (false);
@@ -899,7 +899,7 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
   // If the cloud is organized, then distribute the normal step in both directions
   if (cloud->isOrganized () && normals->isOrganized ())
   {
-    vtkIdType point_step = static_cast<vtkIdType> (sqrt (double (level)));
+    auto point_step = static_cast<vtkIdType> (sqrt (double (level)));
     nr_normals = (static_cast<vtkIdType> ((cloud->width - 1)/ point_step) + 1) *
                  (static_cast<vtkIdType> ((cloud->height - 1) / point_step) + 1);
     pts = new float[2 * nr_normals * 3];
@@ -1208,7 +1208,7 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   }
 
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  auto am_it = shape_actor_map_->find (id);
   if (am_it != shape_actor_map_->end () && !overwrite)
   {
     PCL_WARN ("[addCorrespondences] A set of correspondences with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
@@ -1528,7 +1528,7 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
                                                      const std::string &id)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
+  auto am_it = cloud_actor_map_->find (id);
 
   if (am_it == cloud_actor_map_->end ())
     return (false);
@@ -1562,7 +1562,7 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
                                                      const std::string &id)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
+  auto am_it = cloud_actor_map_->find (id);
 
   if (am_it == cloud_actor_map_->end ())
     return (false);
@@ -1597,7 +1597,7 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
                                                      const std::string &id)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
+  auto am_it = cloud_actor_map_->find (id);
 
   if (am_it == cloud_actor_map_->end ())
     return (false);
@@ -1665,7 +1665,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     {
       if (!isFinite ((*cloud)[i]))
         continue;
-      const pcl::RGB* const rgb_data = reinterpret_cast<const pcl::RGB*>(reinterpret_cast<const char*> (&(*cloud)[i]) + offset);
+      const auto* const rgb_data = reinterpret_cast<const pcl::RGB*>(reinterpret_cast<const char*> (&(*cloud)[i]) + offset);
       unsigned char color[3];
       color[0] = rgb_data->r;
       color[1] = rgb_data->g;
@@ -1795,7 +1795,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   }
 
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
+  auto am_it = cloud_actor_map_->find (id);
   if (am_it == cloud_actor_map_->end ())
     return (false);
 
@@ -1858,7 +1858,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
     {
       if (!isFinite ((*cloud)[i]))
         continue;
-      const pcl::RGB* const rgb_data = reinterpret_cast<const pcl::RGB*>(reinterpret_cast<const char*> (&(*cloud)[i]) + offset);
+      const auto* const rgb_data = reinterpret_cast<const pcl::RGB*>(reinterpret_cast<const char*> (&(*cloud)[i]) + offset);
       unsigned char color[3];
       color[0] = rgb_data->r;
       color[1] = rgb_data->g;

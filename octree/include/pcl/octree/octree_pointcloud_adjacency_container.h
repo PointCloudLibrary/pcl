@@ -143,7 +143,7 @@ protected:
   virtual OctreePointCloudAdjacencyContainer*
   deepCopy() const
   {
-    OctreePointCloudAdjacencyContainer* new_container =
+    auto* new_container =
         new OctreePointCloudAdjacencyContainer;
     new_container->setNeighbors(this->neighbors_);
     new_container->setPointCounter(this->num_points_);
@@ -199,7 +199,7 @@ protected:
   void
   removeNeighbor(OctreePointCloudAdjacencyContainer* neighbor)
   {
-    for (iterator neighb_it = neighbors_.begin(); neighb_it != neighbors_.end();
+    for (auto neighb_it = neighbors_.begin(); neighb_it != neighbors_.end();
          ++neighb_it) {
       if (*neighb_it == neighbor) {
         neighbors_.erase(neighb_it);

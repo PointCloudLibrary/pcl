@@ -59,7 +59,7 @@ TEST (PCL, Iterators)
 {
   Point mean (0,0,0);
 
-  for (PointCloud::iterator it = cloud.begin(); it != cloud.end(); ++it) 
+  for (auto it = cloud.begin(); it != cloud.end(); ++it) 
   {
     for (int i=0;i<3;i++) mean.data[i] += it->data[i];
   }

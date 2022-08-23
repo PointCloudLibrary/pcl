@@ -356,7 +356,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
         if (label_idx_ != -1)
         {
           // save the index in the cloud
-          std::uint32_t label = static_cast<std::uint32_t> (point_index);
+          auto label = static_cast<std::uint32_t> (point_index);
           memcpy (reinterpret_cast<char*> (&point_out) + out_fields_[label_idx_].offset,
                   &label, sizeof (std::uint32_t));
         }
@@ -389,7 +389,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
             if (label_idx_ != -1)
             {
               // save the index in the cloud
-              std::uint32_t label = static_cast<std::uint32_t> (point_index);
+              auto label = static_cast<std::uint32_t> (point_index);
               memcpy (reinterpret_cast<char*> (&point_out) + out_fields_[label_idx_].offset,
                       &label, sizeof (std::uint32_t));
             }

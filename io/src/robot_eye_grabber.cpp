@@ -291,7 +291,7 @@ pcl::RobotEyeGrabber::socketCallback (const boost::system::error_code&, std::siz
     || sensor_address_ == sender_endpoint_.address ())
   {
     data_size_ = number_of_bytes;
-    unsigned char *dup = new unsigned char[number_of_bytes];
+    auto *dup = new unsigned char[number_of_bytes];
     memcpy (dup, receive_buffer_, number_of_bytes);
     packet_queue_.enqueue (boost::shared_array<unsigned char>(dup));
   }

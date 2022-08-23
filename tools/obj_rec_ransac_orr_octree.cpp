@@ -120,7 +120,7 @@ int main (int argc, char ** argv)
 
 void keyboardCB (const pcl::visualization::KeyboardEvent &event, void* params_void)
 {
-  CallbackParameters* params = static_cast<CallbackParameters*> (params_void);
+  auto* params = static_cast<CallbackParameters*> (params_void);
 
   if (event.getKeySym () == "Left" && event.keyUp ())
   {
@@ -206,7 +206,7 @@ void run (const char* file_name, float voxel_size)
     octree.build (*points_in, voxel_size);
 
   // Get the first full leaf in the octree (arbitrary order)
-  std::vector<ORROctree::Node*>::iterator leaf = octree.getFullLeaves ().begin ();
+  auto leaf = octree.getFullLeaves ().begin ();
 
   // Get the average points in every full octree leaf
   octree.getFullLeavesPoints (*points_out);
@@ -352,7 +352,7 @@ void show_octree (ORROctree* octree, PCLVisualizer& viz, bool show_full_leaves_o
   }
 
   // Just print the leaf size
-  std::vector<ORROctree::Node*>::iterator first_leaf = octree->getFullLeaves ().begin ();
+  auto first_leaf = octree->getFullLeaves ().begin ();
   if ( first_leaf != octree->getFullLeaves ().end () )
 	  printf("leaf size = %f\n", (*first_leaf)->getBounds ()[1] - (*first_leaf)->getBounds ()[0]);
 

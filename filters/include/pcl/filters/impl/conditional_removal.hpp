@@ -193,7 +193,7 @@ template <typename PointT> bool
 pcl::PackedRGBComparison<PointT>::evaluate (const PointT &point) const
 {
   // extract the component value
-  const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
+  const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
   std::uint8_t my_val = *(pt_data + component_offset_);
 
   // now do the comparison
@@ -298,8 +298,8 @@ pcl::PackedHSIComparison<PointT>::evaluate (const PointT &point) const
   static std::uint8_t i_ = 0;
 
   // We know that rgb data is 32 bit aligned (verified in the ctor) so...
-  const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
-  const std::uint32_t* rgb_data = reinterpret_cast<const std::uint32_t*> (pt_data + rgb_offset_);
+  const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
+  const auto* rgb_data = reinterpret_cast<const std::uint32_t*> (pt_data + rgb_offset_);
   std::uint32_t new_rgb_val = *rgb_data;
 
   if (rgb_val_ != new_rgb_val) 
@@ -523,7 +523,7 @@ pcl::PointDataAtOffset<PointT>::compare (const PointT& p, const double& val)
   // if p(data) == val return 0
   // if p(data) < val return -1 
   
-  const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&p);
+  const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&p);
 
   switch (datatype_) 
   {

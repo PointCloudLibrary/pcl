@@ -100,7 +100,7 @@ pcl::FeatureHistogram::addValue (float value)
     ++number_of_elements_;
 
     // Increase the bin.
-    std::size_t bin_number = static_cast<std::size_t> ((value - threshold_min_) / step_);
+    auto bin_number = static_cast<std::size_t> ((value - threshold_min_) / step_);
     ++histogram_[bin_number];
   }
 }

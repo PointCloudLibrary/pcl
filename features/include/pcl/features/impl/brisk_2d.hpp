@@ -153,7 +153,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKernel (
             pattern_iterator->sigma = static_cast<float> (sigma_scale * scale_list_[scale] * (double (radius_list[ring])) * sin (M_PI / double (number_list[ring])));
 
           // adapt the sizeList if necessary
-          const unsigned int size = static_cast<unsigned int> (std::ceil (((scale_list_[scale] * radius_list[ring]) + pattern_iterator->sigma)) + 1);
+          const auto size = static_cast<unsigned int> (std::ceil (((scale_list_[scale] * radius_list[ring]) + pattern_iterator->sigma)) + 1);
 
           if (size_list_[scale] < size)
             size_list_[scale] = size;
@@ -453,8 +453,8 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
   }
 
   // image size
-  const index_t width = static_cast<index_t>(input_cloud_->width);
-  const index_t height = static_cast<index_t>(input_cloud_->height);
+  const auto width = static_cast<index_t>(input_cloud_->width);
+  const auto height = static_cast<index_t>(input_cloud_->height);
 
   // destination for intensity data; will be forwarded to BRISK
   std::vector<unsigned char> image_data (width*height);
@@ -470,8 +470,8 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
   // initialize constants
   static const float lb_scalerange = std::log2 (scalerange_);
 
-  typename std::vector<KeypointT, Eigen::aligned_allocator<KeypointT> >::iterator beginning = keypoints_->points.begin ();
-  std::vector<int>::iterator beginningkscales = kscales.begin ();
+  auto beginning = keypoints_->points.begin ();
+  auto beginningkscales = kscales.begin ();
 
   static const float basic_size_06 = basic_size_ * 0.6f;
   unsigned int basicscale = 0;
@@ -636,7 +636,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
 #endif
 
     // now iterate through all the pairings
-    UINT32_ALIAS* ptr2 = reinterpret_cast<UINT32_ALIAS*> (ptr);
+    auto* ptr2 = reinterpret_cast<UINT32_ALIAS*> (ptr);
     const BriskShortPair* max = short_pairs_ + no_short_pairs_;
 
     for (BriskShortPair* iter = short_pairs_; iter < max; ++iter)

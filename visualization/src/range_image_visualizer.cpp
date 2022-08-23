@@ -64,7 +64,7 @@ pcl::visualization::RangeImageVisualizer*
 pcl::visualization::RangeImageVisualizer::getRangeImageWidget (
     const pcl::RangeImage& range_image, float min_value, float max_value, bool grayscale, const std::string& name)
 {
-  RangeImageVisualizer* range_image_widget = new RangeImageVisualizer (name);
+  auto* range_image_widget = new RangeImageVisualizer (name);
   range_image_widget->showRangeImage (range_image, min_value, max_value, grayscale);
   return range_image_widget;
 }
@@ -102,7 +102,7 @@ pcl::visualization::RangeImageVisualizer::getRangeImageBordersWidget (
     const pcl::PointCloud<pcl::BorderDescription>& border_descriptions, const std::string& name)
 {
   //std::cout << PVARN(range_image)<<PVARN(min_value)<<PVARN(max_value)<<PVARN(grayscale);
-  RangeImageVisualizer* range_image_widget = new RangeImageVisualizer;
+  auto* range_image_widget = new RangeImageVisualizer;
   range_image_widget->visualizeBorders (range_image, min_value, max_value, grayscale,
                                         border_descriptions);
   range_image_widget->setWindowTitle (name);
@@ -113,7 +113,7 @@ pcl::visualization::RangeImageVisualizer*
 pcl::visualization::RangeImageVisualizer::getAnglesWidget (const pcl::RangeImage& range_image, float* angles_image,
                                                            const std::string& name)
 {
-  RangeImageVisualizer* widget = new RangeImageVisualizer;
+  auto* widget = new RangeImageVisualizer;
   widget->showAngleImage(angles_image, range_image.width, range_image.height);
   widget->setWindowTitle (name);
   return widget;
@@ -123,7 +123,7 @@ pcl::visualization::RangeImageVisualizer*
 pcl::visualization::RangeImageVisualizer::getHalfAnglesWidget (const pcl::RangeImage& range_image,
                                                                 float* angles_image, const std::string& name)
 {
-  RangeImageVisualizer* widget = new RangeImageVisualizer;
+  auto* widget = new RangeImageVisualizer;
   widget->showHalfAngleImage(angles_image, range_image.width, range_image.height);
   widget->setWindowTitle (name);
   return widget;
@@ -134,7 +134,7 @@ pcl::visualization::RangeImageVisualizer::getInterestPointsWidget (
     const pcl::RangeImage& range_image, const float* interest_image, float min_value, float max_value, 
     const pcl::PointCloud<pcl::InterestPoint>& interest_points, const std::string& name)
 {
-  RangeImageVisualizer* widget = new RangeImageVisualizer;
+  auto* widget = new RangeImageVisualizer;
   widget->showFloatImage (interest_image, range_image.width, range_image.height, min_value, max_value);
   widget->setWindowTitle (name);
   for (const auto &interest_point : interest_points.points)

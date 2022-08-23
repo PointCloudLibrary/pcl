@@ -681,7 +681,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         else
 #endif
         {
-          vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act.actor->GetMapper ());
+          auto* mapper = static_cast<vtkPolyDataMapper*>(act.actor->GetMapper ());
           mapper->SetInputData (data);
           // Modify the actor
           act.actor->SetMapper (mapper);
@@ -708,7 +708,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         double minmax[2];
         scalars->GetRange (minmax);
         // Update the data
-        vtkPolyData *data = static_cast<vtkPolyData*>(act.actor->GetMapper ()->GetInput ());
+        auto *data = static_cast<vtkPolyData*>(act.actor->GetMapper ()->GetInput ());
         data->GetPointData ()->SetScalars (scalars);
         // Modify the mapper
 #if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
@@ -724,7 +724,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         else
 #endif
         {
-          vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act.actor->GetMapper ());
+          auto* mapper = static_cast<vtkPolyDataMapper*>(act.actor->GetMapper ());
           mapper->SetScalarRange (minmax);
           mapper->SetScalarModeToUsePointData ();
           mapper->SetInputData (data);
@@ -860,7 +860,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     case 'j': case 'J':
     {
       char cam_fn[80], snapshot_fn[80];
-      unsigned t = static_cast<unsigned> (time (nullptr));
+      auto t = static_cast<unsigned> (time (nullptr));
       sprintf (snapshot_fn, "screenshot-%d.png" , t);
       saveScreenshot (snapshot_fn);
 
@@ -1078,7 +1078,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
 
       vtkSmartPointer<vtkCamera> cam = CurrentRenderer->GetActiveCamera ();
       
-      static CloudActorMap::iterator it = cloud_actors_->begin ();
+      static auto it = cloud_actors_->begin ();
       // it might be that some actors don't have a valid transformation set -> we skip them to avoid a seg fault.
       bool found_transformation = false;
       for (unsigned idx = 0; idx < cloud_actors_->size (); ++idx, ++it)

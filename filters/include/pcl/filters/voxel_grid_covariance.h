@@ -308,7 +308,7 @@ namespace pcl
       inline LeafConstPtr
       getLeaf (int index)
       {
-        typename std::map<std::size_t, Leaf>::iterator leaf_iter = leaves_.find (index);
+        auto leaf_iter = leaves_.find (index);
         if (leaf_iter != leaves_.end ())
         {
           LeafConstPtr ret (&(leaf_iter->second));
@@ -333,7 +333,7 @@ namespace pcl
         int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
 
         // Find leaf associated with index
-        typename std::map<std::size_t, Leaf>::iterator leaf_iter = leaves_.find (idx);
+        auto leaf_iter = leaves_.find (idx);
         if (leaf_iter != leaves_.end ())
         {
           // If such a leaf exists return the pointer to the leaf structure
@@ -359,7 +359,7 @@ namespace pcl
         int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
 
         // Find leaf associated with index
-        typename std::map<std::size_t, Leaf>::iterator leaf_iter = leaves_.find (idx);
+        auto leaf_iter = leaves_.find (idx);
         if (leaf_iter != leaves_.end ())
         {
           // If such a leaf exists return the pointer to the leaf structure

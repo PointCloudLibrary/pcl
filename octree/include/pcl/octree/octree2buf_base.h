@@ -785,7 +785,7 @@ protected:
   inline BranchNode*
   createBranchChild(BranchNode& branch_arg, unsigned char child_idx_arg)
   {
-    BranchNode* new_branch_child = new BranchNode();
+    auto* new_branch_child = new BranchNode();
 
     branch_arg.setChildPtr(
         buffer_selector_, child_idx_arg, static_cast<OctreeNode*>(new_branch_child));
@@ -801,7 +801,7 @@ protected:
   inline LeafNode*
   createLeafChild(BranchNode& branch_arg, unsigned char child_idx_arg)
   {
-    LeafNode* new_leaf_child = new LeafNode();
+    auto* new_leaf_child = new LeafNode();
 
     branch_arg.setChildPtr(buffer_selector_, child_idx_arg, new_leaf_child);
 

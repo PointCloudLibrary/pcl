@@ -113,7 +113,7 @@ struct OrganizedConversion<PointT, false>
       if (pcl::isFinite (point))
       {
         // Inverse depth quantization
-        std::uint16_t disparity = static_cast<std::uint16_t> ( focalLength_arg / (disparityScale_arg * point.z) + disparityShift_arg / disparityScale_arg);
+        auto disparity = static_cast<std::uint16_t> ( focalLength_arg / (disparityScale_arg * point.z) + disparityShift_arg / disparityScale_arg);
         disparityData_arg.push_back (disparity);
       }
       else
@@ -303,7 +303,7 @@ struct OrganizedConversion<PointT, true>
         if (convertToMono)
         {
           // Encode point color
-          std::uint8_t grayvalue = static_cast<std::uint8_t>(0.2989 * point.r
+          auto grayvalue = static_cast<std::uint8_t>(0.2989 * point.r
                                                     + 0.5870 * point.g
                                                     + 0.1140 * point.b);
 
@@ -317,7 +317,7 @@ struct OrganizedConversion<PointT, true>
         }
 
         // Inverse depth quantization
-        std::uint16_t disparity = static_cast<std::uint16_t> (focalLength_arg / (disparityScale_arg * point.z) + disparityShift_arg / disparityScale_arg);
+        auto disparity = static_cast<std::uint16_t> (focalLength_arg / (disparityScale_arg * point.z) + disparityShift_arg / disparityScale_arg);
 
         // Encode disparity
         disparityData_arg.push_back (disparity);

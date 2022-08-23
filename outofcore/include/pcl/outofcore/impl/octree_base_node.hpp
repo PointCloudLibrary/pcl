@@ -578,7 +578,7 @@ namespace pcl
 
       // Derive percentage from specified sample_percent and tree depth
       const double percent = pow(sample_percent_, double((this->root_node_->m_tree_->getDepth () - depth_)));
-      const std::uint64_t samplesize = static_cast<std::uint64_t>(percent * static_cast<double>(sampleBuff.size()));
+      const auto samplesize = static_cast<std::uint64_t>(percent * static_cast<double>(sampleBuff.size()));
       const std::uint64_t inputsize = sampleBuff.size();
 
       if(samplesize > 0)
@@ -1684,7 +1684,7 @@ namespace pcl
 
           //use STL random_shuffle and push back a random selection of the points onto our list
           std::shuffle (payload_cache_within_region.begin (), payload_cache_within_region.end (), std::mt19937(std::random_device()()));
-          std::size_t numpick = static_cast<std::size_t> (percent * static_cast<double> (payload_cache_within_region.size ()));;
+          auto numpick = static_cast<std::size_t> (percent * static_cast<double> (payload_cache_within_region.size ()));;
 
           for (std::size_t i = 0; i < numpick; i++)
           {

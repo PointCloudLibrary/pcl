@@ -156,7 +156,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
   // residual costs based on mse
   pcl::Indices ids;
   std::vector<float> dists_sqr;
-  for (PointCloudSourceIterator it = source_transformed.begin(),
+  for (auto it = source_transformed.begin(),
                                 it_e = source_transformed.end();
        it != it_e;
        ++it) {
@@ -240,7 +240,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getNBestCandid
   candidates.clear();
 
   // loop over all candidates starting from the best one
-  for (MatchingCandidates::iterator it_candidate = candidates_.begin(),
+  for (auto it_candidate = candidates_.begin(),
                                     it_e = candidates_.end();
        it_candidate != it_e;
        ++it_candidate) {
@@ -251,7 +251,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getNBestCandid
     // check if current candidate is a unique one compared to previous using the
     // min_diff threshold
     bool unique = true;
-    MatchingCandidates::iterator it = candidates.begin(), it_e2 = candidates.end();
+    auto it = candidates.begin(), it_e2 = candidates.end();
     while (unique && it != it_e2) {
       Eigen::Matrix4f diff =
           it_candidate->transformation.colPivHouseholderQr().solve(it->transformation);
@@ -279,7 +279,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getTBestCandid
   candidates.clear();
 
   // loop over all candidates starting from the best one
-  for (MatchingCandidates::iterator it_candidate = candidates_.begin(),
+  for (auto it_candidate = candidates_.begin(),
                                     it_e = candidates_.end();
        it_candidate != it_e;
        ++it_candidate) {
@@ -290,7 +290,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getTBestCandid
     // check if current candidate is a unique one compared to previous using the
     // min_diff threshold
     bool unique = true;
-    MatchingCandidates::iterator it = candidates.begin(), it_e2 = candidates.end();
+    auto it = candidates.begin(), it_e2 = candidates.end();
     while (unique && it != it_e2) {
       Eigen::Matrix4f diff =
           it_candidate->transformation.colPivHouseholderQr().solve(it->transformation);

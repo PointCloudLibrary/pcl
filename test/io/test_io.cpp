@@ -1213,7 +1213,7 @@ TEST (PCL, LZFInMem)
   EXPECT_EQ (blob2.height, blob.height);
   EXPECT_EQ (data_type, 2); // since it was written by writeBinaryCompressed(), it should be compressed.
 
-  const unsigned char *data = reinterpret_cast<const unsigned char *> (pcd_str.data ());
+  const auto *data = reinterpret_cast<const unsigned char *> (pcd_str.data ());
   res = reader.readBodyBinary (data, blob2, pcd_version, data_type == 2, data_idx);
   PointCloud<PointXYZRGBNormal> cloud2;
   pcl::fromPCLPointCloud2 (blob2, cloud2);
