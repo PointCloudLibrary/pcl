@@ -76,6 +76,11 @@ NormalDistributionsTransform<PointSource, PointTarget, Scalar>::computeTransform
 {
   nr_iterations_ = 0;
   converged_ = false;
+  if (target_cells_.getCentroids()->empty()) {
+    PCL_ERROR("[%s::computeTransformation] Voxel grid is not searchable!\n",
+              getClassName().c_str());
+    return;
+  }
 
   // Initializes the gaussian fitting parameters (eq. 6.8) [Magnusson 2009]
   const double gauss_c1 = 10 * (1 - outlier_ratio_);

@@ -223,7 +223,7 @@ namespace pcl
         }
         else
         {
-          PCL_WARN ("%s: Covariance calculation requires at least 3 points, setting Min Point per Voxel to 3 ", this->getClassName ().c_str ());
+          PCL_WARN ("[%s::setMinPointPerVoxel] Covariance calculation requires at least 3 points, setting Min Point per Voxel to 3\n", this->getClassName ().c_str ());
           min_points_per_voxel_ = 3;
         }
       }
@@ -267,10 +267,15 @@ namespace pcl
 
         voxel_centroids_ = PointCloudPtr (new PointCloud (output));
 
-        if (searchable_ && !voxel_centroids_->empty ())
+        if (searchable_)
         {
-          // Initiates kdtree of the centroids of voxels containing a sufficient number of points
-          kdtree_.setInputCloud (voxel_centroids_);
+          if (voxel_centroids_->empty ()) {
+            PCL_WARN ("[%s::filter] No voxels with a sufficient number of points. Grid will not be searchable. You can try reducing the min number of points required per voxel or increasing the voxel/leaf size.\n", this->getClassName ().c_str ());
+            searchable_ = false;
+          } else {
+            // Initiates kdtree of the centroids of voxels containing a sufficient number of points
+            kdtree_.setInputCloud (voxel_centroids_);
+          }
         }
       }
 
@@ -284,10 +289,15 @@ namespace pcl
         voxel_centroids_ = PointCloudPtr (new PointCloud);
         applyFilter (*voxel_centroids_);
 
-        if (searchable_ && !voxel_centroids_->empty ())
+        if (searchable_)
         {
-          // Initiates kdtree of the centroids of voxels containing a sufficient number of points
-          kdtree_.setInputCloud (voxel_centroids_);
+          if (voxel_centroids_->empty ()) {
+            PCL_WARN ("[%s::filter] No voxels with a sufficient number of points. Grid will not be searchable. You can try reducing the min number of points required per voxel or increasing the voxel/leaf size\n", this->getClassName ().c_str ());
+            searchable_ = false;
+          } else {
+            // Initiates kdtree of the centroids of voxels containing a sufficient number of points
+            kdtree_.setInputCloud (voxel_centroids_);
+          }
         }
       }
 
@@ -449,7 +459,7 @@ namespace pcl
         // Check if kdtree has been built
         if (!searchable_)
         {
-          PCL_WARN ("%s: Not Searchable", this->getClassName ().c_str ());
+          PCL_WARN ("[%s::nearestKSearch] Not Searchable\n", this->getClassName ().c_str ());
           return 0;
         }
 
@@ -508,7 +518,7 @@ namespace pcl
         // Check if kdtree has been built
         if (!searchable_)
         {
-          PCL_WARN ("%s: Not Searchable", this->getClassName ().c_str ());
+          PCL_WARN ("[%s::radiusSearch] Not Searchable\n", this->getClassName ().c_str ());
           return 0;
         }
 
