@@ -1028,7 +1028,7 @@ pcl::PLYWriter::writeContentWithCameraASCII (int nr_points,
             else
             {
               const pcl::RGB& color = cloud.at<pcl::RGB>(i, cloud.fields[d].offset + c * sizeof (pcl::RGB));
-              fs << color.r << " " << color.g << " " << color.b;
+              fs << static_cast<int>(color.r) << " " << static_cast<int>(color.g) << " " << static_cast<int>(color.b);
             }
             break;
           }
@@ -1130,7 +1130,7 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
             else
             {
               const pcl::RGB& color = cloud.at<pcl::RGB>(i, cloud.fields[d].offset + c * sizeof (pcl::RGB));
-              line << color.r << " " << color.g << " " << color.b << " " << color.a;
+              line << static_cast<int>(color.r) << " " << static_cast<int>(color.g) << " " << static_cast<int>(color.b) << " " << static_cast<int>(color.a);
             }
             break;
           }
@@ -1150,7 +1150,7 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
             else
             {
               const pcl::RGB& color = cloud.at<pcl::RGB>(i, cloud.fields[d].offset + c * sizeof (pcl::RGB));
-              line << color.r << " " << color.g << " " << color.b;
+              line << static_cast<int>(color.r) << " " << static_cast<int>(color.g) << " " << static_cast<int>(color.b);
             }
             break;
           }
