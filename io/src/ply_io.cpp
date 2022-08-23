@@ -385,7 +385,7 @@ pcl::PLYReader::vertexColorCallback (const std::string& color_name, pcl::io::ply
     std::int32_t rgb = r_ << 16 | g_ << 8 | b_;
     try
     {
-      cloud_->at<pcl::io::ply::float32>(vertex_count_, rgb_offset_before_) = rgb;
+      cloud_->at<std::int32_t>(vertex_count_, rgb_offset_before_) = rgb;
       vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::float32));
     }
     catch(const std::out_of_range&)
@@ -400,7 +400,7 @@ void
 pcl::PLYReader::vertexAlphaCallback (pcl::io::ply::uint8 alpha)
 {
   // get anscient rgb value and store it in rgba
-  rgba_ = cloud_->at<pcl::io::ply::float32>(vertex_count_, rgb_offset_before_);
+  rgba_ = cloud_->at<std::uint32_t>(vertex_count_, rgb_offset_before_);
   // append alpha
   a_ = std::uint32_t (alpha);
   rgba_ |= a_ << 24;
@@ -1657,7 +1657,7 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
     }
     if (xyz != 3)
     {
-      PCL_ERROR ("[pcl::io::writePLYFileBinary] Input point cloud has no XYZ data!\n");
+      PCL_ERROR ("[pcl::io::savePLYFileBinary] Input point cloud has no XYZ data!\n");
       return (-2);
     }
   }
