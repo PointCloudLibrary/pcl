@@ -182,7 +182,7 @@ pcl::io::DepthImage::fillDepthImageRaw (unsigned width, unsigned height, unsigne
   short bad_point = std::numeric_limits<short>::quiet_NaN ();
   unsigned depthIdx = 0;
 
-  auto* inputBuffer = static_cast<const unsigned short*> (wrapper_->getData ());
+  const auto* inputBuffer = static_cast<const unsigned short*> (wrapper_->getData ());
 
   for (unsigned yIdx = 0; yIdx < height; ++yIdx, depthIdx += ySkip)
   {

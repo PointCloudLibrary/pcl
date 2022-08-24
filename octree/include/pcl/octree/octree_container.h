@@ -192,8 +192,7 @@ public:
   bool
   operator==(const OctreeContainerBase& other) const override
   {
-    const auto* otherConDataT =
-        dynamic_cast<const OctreeContainerPointIndex*>(&other);
+    const auto* otherConDataT = dynamic_cast<const OctreeContainerPointIndex*>(&other);
 
     return (this->data_ == otherConDataT->data_);
   }
