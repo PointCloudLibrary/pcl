@@ -137,7 +137,7 @@ namespace pcl
             result->reserve (device_set_.size ());
 
             for (const auto& device : device_set_) {
-              result->push_back(device->uri_);
+              result->push_back(device.uri_);
             }
 
             return result;

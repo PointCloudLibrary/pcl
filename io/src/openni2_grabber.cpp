@@ -639,7 +639,7 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
     // Resize the image if nessacery
     depth_resize_buffer_.resize(depth_width_ * depth_height_);
     depth_map = depth_resize_buffer_.data();
-    depth_image->fillDepthImageRaw (depth_width_, depth_height_, reinterpret_cast<const unsigned short*>(depth_map) );
+    depth_image->fillDepthImageRaw (depth_width_, depth_height_, reinterpret_cast<unsigned short*>(depth_map) );
   }
 
   auto* rgb_buffer = reinterpret_cast<const std::uint8_t*>(image->getData ());
@@ -648,7 +648,7 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
     // Resize the image if nessacery
     color_resize_buffer_.resize(image_width_ * image_height_ * 3);
     rgb_buffer = color_resize_buffer_.data();
-    image->fillRGB (image_width_, image_height_, reinterpret_cast<const unsigned char*>(rgb_buffer), image_width_ * 3);
+    image->fillRGB (image_width_, image_height_, reinterpret_cast<unsigned char*>(rgb_buffer), image_width_ * 3);
   }
 
 
@@ -766,7 +766,7 @@ pcl::io::OpenNI2Grabber::convertToXYZIPointCloud (const IRImage::Ptr &ir_image, 
     // Resize the image if nessacery
     depth_resize_buffer_.resize(depth_width_ * depth_height_);
     depth_map = depth_resize_buffer_.data();
-    depth_image->fillDepthImageRaw (depth_width_, depth_height_, reinterpret_cast<const unsigned short*>(depth_map) );
+    depth_image->fillDepthImageRaw (depth_width_, depth_height_, reinterpret_cast<unsigned short*>(depth_map) );
   }
 
   auto* ir_map = reinterpret_cast<const std::uint16_t*>(ir_image->getData ());
@@ -775,7 +775,7 @@ pcl::io::OpenNI2Grabber::convertToXYZIPointCloud (const IRImage::Ptr &ir_image, 
     // Resize the image if nessacery
     ir_resize_buffer_.resize(depth_width_ * depth_height_);
     ir_map = ir_resize_buffer_.data();
-    ir_image->fillRaw (depth_width_, depth_height_, reinterpret_cast<const unsigned short*>(ir_map));
+    ir_image->fillRaw (depth_width_, depth_height_, reinterpret_cast<unsigned short*>(ir_map));
   }
 
 
