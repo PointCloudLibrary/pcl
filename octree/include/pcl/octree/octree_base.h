@@ -155,7 +155,7 @@ public:
   // LeafNodeIterator and ConstLeafNodeIterator are deprecated.
   // Please use LeafNodeDepthFirstIterator and ConstLeafNodeDepthFirstIterator instead.
   using LeafNodeIterator = OctreeLeafNodeDepthFirstIterator<OctreeT>;
-  using ConstLeafNodeIterator = const OctreeLeafNodeDepthFirstIterator<OctreeT>;
+  using ConstLeafNodeIterator = OctreeLeafNodeDepthFirstIterator<const OctreeT>;
 
   // The currently valide names
   using LeafNodeDepthFirstIterator = OctreeLeafNodeDepthFirstIterator<OctreeT>;
