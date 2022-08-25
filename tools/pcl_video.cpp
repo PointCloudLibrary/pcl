@@ -134,7 +134,7 @@ class Recorder
             boost::uuids::random_generator gen;
             boost::uuids::uuid uuid = gen();
             std::vector<char> uuid_data(uuid.size());
-            std::copy(uuid.begin(), uuid.end(), uuid_data.begin());
+            std::copy(uuid.cbegin(), uuid.cend(), uuid_data.begin());
             segment.info.uid(uuid_data);
             // The filename can be nice to know.
             segment.info.filename(filename_);

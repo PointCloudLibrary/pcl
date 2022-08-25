@@ -59,7 +59,7 @@ TEST (PCL, SampleConsensusInitialAlignment)
   // Transform the source cloud by a large amount
   Eigen::Vector3f initial_offset (100, 0, 0);
   float angle = static_cast<float> (M_PI) / 2.0f;
-  Eigen::Quaternionf initial_rotation (std::cos (angle / 2), 0, 0, sin (angle / 2));
+  Eigen::Quaternionf initial_rotation (std::cos (angle / 2), 0, 0, std::sin (angle / 2));
   PointCloud<PointXYZ> cloud_source_transformed;
   transformPointCloud (cloud_source, cloud_source_transformed, initial_offset, initial_rotation);
 
@@ -149,7 +149,7 @@ TEST (PCL, SampleConsensusPrerejective)
   // Transform the source cloud by a large amount
   Eigen::Vector3f initial_offset (100, 0, 0);
   float angle = static_cast<float> (M_PI) / 2.0f;
-  Eigen::Quaternionf initial_rotation (std::cos (angle / 2), 0, 0, sin (angle / 2));
+  Eigen::Quaternionf initial_rotation (std::cos (angle / 2), 0, 0, std::sin (angle / 2));
   PointCloud<PointXYZ> cloud_source_transformed;
   transformPointCloud (cloud_source, cloud_source_transformed, initial_offset, initial_rotation);
 

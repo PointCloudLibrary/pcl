@@ -41,9 +41,6 @@
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/ml/stats_estimator.h>
 
-#include <istream>
-#include <ostream>
-
 namespace pcl {
 
 /** Interface for branch estimators. */

@@ -173,7 +173,7 @@ pcl::io::openni2::OpenNI2Device::getIRFocalLength () const
 
   int frameWidth = stream->getVideoMode ().getResolutionX ();
   float hFov = stream->getHorizontalFieldOfView ();
-  float calculatedFocalLengthX = frameWidth / (2.0f * tan (hFov / 2.0f));
+  float calculatedFocalLengthX = frameWidth / (2.0f * std::tan (hFov / 2.0f));
   return (calculatedFocalLengthX);
 }
 
@@ -184,7 +184,7 @@ pcl::io::openni2::OpenNI2Device::getColorFocalLength () const
 
   int frameWidth = stream->getVideoMode ().getResolutionX ();
   float hFov = stream->getHorizontalFieldOfView ();
-  float calculatedFocalLengthX = frameWidth / (2.0f * tan (hFov / 2.0f));
+  float calculatedFocalLengthX = frameWidth / (2.0f * std::tan (hFov / 2.0f));
   return (calculatedFocalLengthX);
 }
 
@@ -195,7 +195,7 @@ pcl::io::openni2::OpenNI2Device::getDepthFocalLength () const
 
   int frameWidth = stream->getVideoMode ().getResolutionX ();
   float hFov = stream->getHorizontalFieldOfView ();
-  float calculatedFocalLengthX = frameWidth / (2.0f * tan (hFov / 2.0f));
+  float calculatedFocalLengthX = frameWidth / (2.0f * std::tan (hFov / 2.0f));
   return (calculatedFocalLengthX);
 }
 

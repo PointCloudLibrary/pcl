@@ -43,6 +43,8 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_representation.h>
 
+#include <algorithm>
+
 namespace pcl
 {
   // Forward declarations
@@ -240,7 +242,10 @@ namespace pcl
         FeaturePointRepresentation(int nr_dimensions) { this->nr_dimensions_ = nr_dimensions; }
         /** \brief Empty destructor */
         ~FeaturePointRepresentation () override = default;
-        void copyToFloatArray (const PointT& p, float* out) const override { memcpy(out, p->getDescriptor(), sizeof(*p->getDescriptor())*this->nr_dimensions_); }
+        void copyToFloatArray (const PointT& p, float* out) const override {
+          auto descriptor = p->getDescriptor();
+          std::copy(descriptor, descriptor + this->nr_dimensions_, out);
+        }
       };
       
     protected:

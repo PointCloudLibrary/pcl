@@ -72,7 +72,7 @@ template <typename PointSource, typename PointTarget>
 class RegistrationWrapper : public Registration<PointSource, PointTarget>
 {
 public:
-  void computeTransformation (pcl::PointCloud<PointSource> &, const Eigen::Matrix4f&) { }
+  void computeTransformation (pcl::PointCloud<PointSource> &, const Eigen::Matrix4f&) override { }
 
   bool hasValidFeaturesTest ()
   {

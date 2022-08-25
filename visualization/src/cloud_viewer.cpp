@@ -39,9 +39,6 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/memory.h>
 
-#include <vtkOrientationMarkerWidget.h>
-#include <vtkRenderWindowInteractor.h>
-
 #include <mutex>
 #include <thread>
 

@@ -506,20 +506,20 @@ template <typename PointT,
           typename OctreeT>
 void
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::
-    adoptBoundingBoxToPoint(const PointT& point_idx_arg)
+    adoptBoundingBoxToPoint(const PointT& point_arg)
 {
 
   const float minValue = std::numeric_limits<float>::epsilon();
 
   // increase octree size until point fits into bounding box
   while (true) {
-    bool bLowerBoundViolationX = (point_idx_arg.x < min_x_);
-    bool bLowerBoundViolationY = (point_idx_arg.y < min_y_);
-    bool bLowerBoundViolationZ = (point_idx_arg.z < min_z_);
+    bool bLowerBoundViolationX = (point_arg.x < min_x_);
+    bool bLowerBoundViolationY = (point_arg.y < min_y_);
+    bool bLowerBoundViolationZ = (point_arg.z < min_z_);
 
-    bool bUpperBoundViolationX = (point_idx_arg.x >= max_x_);
-    bool bUpperBoundViolationY = (point_idx_arg.y >= max_y_);
-    bool bUpperBoundViolationZ = (point_idx_arg.z >= max_z_);
+    bool bUpperBoundViolationX = (point_arg.x >= max_x_);
+    bool bUpperBoundViolationY = (point_arg.y >= max_y_);
+    bool bUpperBoundViolationZ = (point_arg.z >= max_z_);
 
     // do we violate any bounds?
     if (bLowerBoundViolationX || bLowerBoundViolationY || bLowerBoundViolationZ ||
@@ -573,13 +573,13 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
       // bounding box is not defined - set it to point position
       else {
         // octree is empty - we set the center of the bounding box to our first pixel
-        this->min_x_ = point_idx_arg.x - this->resolution_ / 2;
-        this->min_y_ = point_idx_arg.y - this->resolution_ / 2;
-        this->min_z_ = point_idx_arg.z - this->resolution_ / 2;
+        this->min_x_ = point_arg.x - this->resolution_ / 2;
+        this->min_y_ = point_arg.y - this->resolution_ / 2;
+        this->min_z_ = point_arg.z - this->resolution_ / 2;
 
-        this->max_x_ = point_idx_arg.x + this->resolution_ / 2;
-        this->max_y_ = point_idx_arg.y + this->resolution_ / 2;
-        this->max_z_ = point_idx_arg.z + this->resolution_ / 2;
+        this->max_x_ = point_arg.x + this->resolution_ / 2;
+        this->max_y_ = point_arg.y + this->resolution_ / 2;
+        this->max_z_ = point_arg.z + this->resolution_ / 2;
 
         getKeyBitSize();
 

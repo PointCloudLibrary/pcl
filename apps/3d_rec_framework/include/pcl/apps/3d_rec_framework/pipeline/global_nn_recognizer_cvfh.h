@@ -213,7 +213,7 @@ public:
     use_single_categories_ = false;
   }
 
-  ~GlobalNNCVFHRecognizer() {}
+  ~GlobalNNCVFHRecognizer() = default;
 
   void
   getDescriptorDistances(std::vector<float>& ds)

@@ -142,6 +142,21 @@ Basic Usage
      .. |mi_6| image:: images/macosx_logo.png
                :height: 100px
 
+  * :ref:`compiling_pcl_docker`
+
+     =======  ======
+     |mi_13|  Title: **Compiling PCL using docker**
+
+              Author: *Theodoros Nikolaou*
+
+              Compatibility: > PCL 1.12
+
+              This tutorial explains how to build and install PCL from source using docker
+     =======  ======
+
+     .. |mi_13| image:: images/pcl_logo.png
+               :height: 100px
+
   * :ref:`installing_homebrew`
 
      ======  ======

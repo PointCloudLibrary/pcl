@@ -86,8 +86,7 @@ pcl::StereoMatching::medianFilter(int radius)
   // TODO: do median filter
   int side = radius * 2 + 1;
 
-  short int* out = new short int[width_ * height_];
-  memset(out, 0, width_ * height_ * sizeof(short int));
+  short int* out = new short int[width_ * height_]{};
 
   short int* v = new short int[side * side];
 
@@ -343,8 +342,7 @@ pcl::GrayStereoMatching::preProcessing(unsigned char* img, unsigned char* pp_img
   int area = n * n;
   int threshold = 31;
 
-  int* v = new int[width_];
-  memset(v, 0, sizeof(int) * width_);
+  int* v = new int[width_]{};
 
   for (int x = 0; x < n; x++)
     for (int y = 0; y < n; y++)
@@ -404,7 +402,7 @@ pcl::GrayStereoMatching::imgFlip(unsigned char*& img)
   unsigned char* temp_row = new unsigned char[width_];
 
   for (int j = 0; j < height_; j++) {
-    memcpy(temp_row, img + j * width_, sizeof(unsigned char) * width_);
+    std::copy(img + j * width_, img + j * width_ + width_, temp_row);
     for (int i = 0; i < width_; i++) {
       img[j * width_ + i] = temp_row[width_ - 1 - i];
     }
@@ -515,7 +513,7 @@ pcl::GrayStereoMatching::compute(unsigned char* ref_img,
     pp_trg_img_ = nullptr;
   }
 
-  memset(disp_map_, 0, sizeof(short int) * height_ * width_);
+  std::fill_n(disp_map_, height_ * width_, 0);
 
   if (is_pre_proc_) {
     preProcessing(ref_img, pp_ref_img_);

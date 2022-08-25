@@ -45,10 +45,10 @@
 
 namespace pcl {
 
-template <typename PointSource, typename PointTarget>
+template <typename PointSource, typename PointTarget, typename Scalar>
 template <typename PointT>
 void
-GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovariances(
+GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeCovariances(
     typename pcl::PointCloud<PointT>::ConstPtr cloud,
     const typename pcl::search::KdTree<PointT>::Ptr kdtree,
     MatricesVector& cloud_covariances)
@@ -126,9 +126,9 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovariances(
   }
 }
 
-template <typename PointSource, typename PointTarget>
+template <typename PointSource, typename PointTarget, typename Scalar>
 void
-GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeRDerivative(
+GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeRDerivative(
     const Vector6d& x, const Eigen::Matrix3d& dCost_dR_T, Vector6d& g) const
 {
   Eigen::Matrix3d dR_dPhi;
@@ -182,14 +182,14 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeRDerivative(
   g[5] = matricesInnerProd(dR_dPsi, dCost_dR_T);
 }
 
-template <typename PointSource, typename PointTarget>
+template <typename PointSource, typename PointTarget, typename Scalar>
 void
-GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
+GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     estimateRigidTransformationBFGS(const PointCloudSource& cloud_src,
                                     const pcl::Indices& indices_src,
                                     const PointCloudTarget& cloud_tgt,
                                     const pcl::Indices& indices_tgt,
-                                    Eigen::Matrix4f& transformation_matrix)
+                                    Matrix4& transformation_matrix)
 {
   // need at least min_number_correspondences_ samples
   if (indices_src.size() < min_number_correspondences_) {
@@ -258,12 +258,12 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
                     "solver didn't converge!");
 }
 
-template <typename PointSource, typename PointTarget>
+template <typename PointSource, typename PointTarget, typename Scalar>
 inline double
-GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
+GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     OptimizationFunctorWithIndices::operator()(const Vector6d& x)
 {
-  Eigen::Matrix4f transformation_matrix = gicp_->base_transformation_;
+  Matrix4 transformation_matrix = gicp_->base_transformation_;
   gicp_->applyState(transformation_matrix, x);
   double f = 0;
   int m = static_cast<int>(gicp_->tmp_idx_src_->size());
@@ -274,7 +274,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
     // The last coordinate, p_tgt[3] is guaranteed to be set to 1.0 in registration.hpp
     Vector4fMapConst p_tgt =
         (*gicp_->tmp_tgt_)[(*gicp_->tmp_idx_tgt_)[i]].getVector4fMap();
-    Eigen::Vector4f p_trans_src(transformation_matrix * p_src);
+    Eigen::Vector4f p_trans_src(transformation_matrix.template cast<float>() * p_src);
     // Estimate the distance (cost function)
     // The last coordinate is still guaranteed to be set to 1.0
     // The d here is the negative of the d in the paper
@@ -289,12 +289,12 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
   return f / m;
 }
 
-template <typename PointSource, typename PointTarget>
+template <typename PointSource, typename PointTarget, typename Scalar>
 inline void
-GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
+GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     OptimizationFunctorWithIndices::df(const Vector6d& x, Vector6d& g)
 {
-  Eigen::Matrix4f transformation_matrix = gicp_->base_transformation_;
+  Matrix4 transformation_matrix = gicp_->base_transformation_;
   gicp_->applyState(transformation_matrix, x);
   // Zero out g
   g.setZero();
@@ -310,7 +310,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
     Vector4fMapConst p_tgt =
         (*gicp_->tmp_tgt_)[(*gicp_->tmp_idx_tgt_)[i]].getVector4fMap();
 
-    Eigen::Vector4f p_trans_src(transformation_matrix * p_src);
+    Eigen::Vector4f p_trans_src(transformation_matrix.template cast<float>() * p_src);
     // The last coordinate is still guaranteed to be set to 1.0
     // The d here is the negative of the d in the paper
     Eigen::Vector3d d(p_trans_src[0] - p_tgt[0],
@@ -323,7 +323,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
     // closes)
     g.head<3>() += Md;
     // Increment rotation gradient
-    p_trans_src = gicp_->base_transformation_ * p_src;
+    p_trans_src = gicp_->base_transformation_.template cast<float>() * p_src;
     Eigen::Vector3d p_base_src(p_trans_src[0], p_trans_src[1], p_trans_src[2]);
     dCost_dR_T += p_base_src * Md.transpose();
   }
@@ -332,12 +332,12 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
   gicp_->computeRDerivative(x, dCost_dR_T, g);
 }
 
-template <typename PointSource, typename PointTarget>
+template <typename PointSource, typename PointTarget, typename Scalar>
 inline void
-GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
+GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     OptimizationFunctorWithIndices::fdf(const Vector6d& x, double& f, Vector6d& g)
 {
-  Eigen::Matrix4f transformation_matrix = gicp_->base_transformation_;
+  Matrix4 transformation_matrix = gicp_->base_transformation_;
   gicp_->applyState(transformation_matrix, x);
   f = 0;
   g.setZero();
@@ -351,7 +351,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
     // The last coordinate, p_tgt[3] is guaranteed to be set to 1.0 in registration.hpp
     Vector4fMapConst p_tgt =
         (*gicp_->tmp_tgt_)[(*gicp_->tmp_idx_tgt_)[i]].getVector4fMap();
-    Eigen::Vector4f p_trans_src(transformation_matrix * p_src);
+    Eigen::Vector4f p_trans_src(transformation_matrix.template cast<float>() * p_src);
     // The last coordinate is still guaranteed to be set to 1.0
     // The d here is the negative of the d in the paper
     Eigen::Vector3d d(p_trans_src[0] - p_tgt[0],
@@ -365,7 +365,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
     // g.head<3> ()+= 2*M*d/num_matches (we postpone 2/num_matches after the loop
     // closes)
     g.head<3>() += Md;
-    p_trans_src = gicp_->base_transformation_ * p_src;
+    p_trans_src = gicp_->base_transformation_.template cast<float>() * p_src;
     Eigen::Vector3d p_base_src(p_trans_src[0], p_trans_src[1], p_trans_src[2]);
     // Increment rotation gradient
     dCost_dR_T += p_base_src * Md.transpose();
@@ -376,9 +376,9 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
   gicp_->computeRDerivative(x, dCost_dR_T, g);
 }
 
-template <typename PointSource, typename PointTarget>
+template <typename PointSource, typename PointTarget, typename Scalar>
 inline BFGSSpace::Status
-GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
+GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     OptimizationFunctorWithIndices::checkGradient(const Vector6d& g)
 {
   auto translation_epsilon = gicp_->translation_gradient_tolerance_;
@@ -399,12 +399,12 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::
   return BFGSSpace::Running;
 }
 
-template <typename PointSource, typename PointTarget>
+template <typename PointSource, typename PointTarget, typename Scalar>
 inline void
-GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformation(
-    PointCloudSource& output, const Eigen::Matrix4f& guess)
+GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
+    computeTransformation(PointCloudSource& output, const Matrix4& guess)
 {
-  pcl::IterativeClosestPoint<PointSource, PointTarget>::initComputeReciprocal();
+  pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::initComputeReciprocal();
   // Difference between consecutive transforms
   double delta = 0;
   // Get the size of the source point cloud
@@ -422,7 +422,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformatio
     computeCovariances<PointSource>(input_, tree_reciprocal_, *input_covariances_);
   }
 
-  base_transformation_ = Eigen::Matrix4f::Identity();
+  base_transformation_ = Matrix4::Identity();
   nr_iterations_ = 0;
   converged_ = false;
   double dist_threshold = corr_dist_threshold_ * corr_dist_threshold_;
@@ -447,7 +447,8 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformatio
 
     for (std::size_t i = 0; i < N; i++) {
       PointSource query = output[i];
-      query.getVector4fMap() = transformation_ * query.getVector4fMap();
+      query.getVector4fMap() =
+          transformation_.template cast<float>() * query.getVector4fMap();
 
       if (!searchForNeighbors(query, nn_indices, nn_dists)) {
         PCL_ERROR("[pcl::%s::computeTransformation] Unable to find a nearest neighbor "
@@ -554,21 +555,22 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformatio
   pcl::transformPointCloud(*input_, output, final_transformation_);
 }
 
-template <typename PointSource, typename PointTarget>
+template <typename PointSource, typename PointTarget, typename Scalar>
 void
-GeneralizedIterativeClosestPoint<PointSource, PointTarget>::applyState(
-    Eigen::Matrix4f& t, const Vector6d& x) const
+GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::applyState(
+    Matrix4& t, const Vector6d& x) const
 {
   // Z Y X euler angles convention
-  Eigen::Matrix3f R;
-  R = Eigen::AngleAxisf(static_cast<float>(x[5]), Eigen::Vector3f::UnitZ()) *
-      Eigen::AngleAxisf(static_cast<float>(x[4]), Eigen::Vector3f::UnitY()) *
-      Eigen::AngleAxisf(static_cast<float>(x[3]), Eigen::Vector3f::UnitX());
-  t.topLeftCorner<3, 3>().matrix() = R * t.topLeftCorner<3, 3>().matrix();
-  Eigen::Vector4f T(static_cast<float>(x[0]),
-                    static_cast<float>(x[1]),
-                    static_cast<float>(x[2]),
-                    0.0f);
+  Matrix3 R;
+  R = AngleAxis(static_cast<Scalar>(x[5]), Vector3::UnitZ()) *
+      AngleAxis(static_cast<Scalar>(x[4]), Vector3::UnitY()) *
+      AngleAxis(static_cast<Scalar>(x[3]), Vector3::UnitX());
+  t.template topLeftCorner<3, 3>().matrix() =
+      R * t.template topLeftCorner<3, 3>().matrix();
+  Vector4 T(static_cast<Scalar>(x[0]),
+            static_cast<Scalar>(x[1]),
+            static_cast<Scalar>(x[2]),
+            0.0f);
   t.col(3) += T;
 }
 

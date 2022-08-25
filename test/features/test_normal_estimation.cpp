@@ -323,8 +323,8 @@ template<typename PointT>
 class DummySearch : public pcl::search::Search<PointT>
 {
   public:
-    virtual int nearestKSearch (const PointT &point, int k, pcl::Indices &k_indices,
-                                std::vector<float> &k_sqr_distances ) const
+    int nearestKSearch (const PointT &point, int k, pcl::Indices &k_indices,
+                                std::vector<float> &k_sqr_distances ) const override
     {
       pcl::utils::ignore(point);
 
@@ -334,8 +334,8 @@ class DummySearch : public pcl::search::Search<PointT>
 	  return k;
     }
 
-    virtual int radiusSearch (const PointT& point, double radius, pcl::Indices& k_indices,
-                              std::vector<float>& k_sqr_distances, unsigned int max_nn = 0 ) const
+    int radiusSearch (const PointT& point, double radius, pcl::Indices& k_indices,
+                              std::vector<float>& k_sqr_distances, unsigned int max_nn = 0 ) const override
     {
       pcl::utils::ignore(point, radius, k_indices, k_sqr_distances);
 

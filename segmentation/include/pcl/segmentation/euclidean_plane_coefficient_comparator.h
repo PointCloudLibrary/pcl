@@ -68,15 +68,11 @@ namespace pcl
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::distance_threshold_;
       
       /** \brief Empty constructor for PlaneCoefficientComparator. */
-      EuclideanPlaneCoefficientComparator ()
-      {
-      }
+      EuclideanPlaneCoefficientComparator () = default;
 
       /** \brief Destructor for PlaneCoefficientComparator. */
       
-      ~EuclideanPlaneCoefficientComparator ()
-      {
-      }
+      ~EuclideanPlaneCoefficientComparator () = default;
 
       /** \brief Compare two neighboring points, by using normal information, and euclidean distance information.
         * \param[in] idx1 The index of the first point.

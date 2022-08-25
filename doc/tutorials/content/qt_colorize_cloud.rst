@@ -140,7 +140,7 @@ We also call the coloring function and update the cloud / QVTK widget.
    :language: cpp
    :lines: 215-235
 
-| This is the core function of the application. We are going to color the cloud following a color scheme.
+This is the core function of the application. We are going to color the cloud following a color scheme.
 The point cloud is going to be colored following one direction, we first need to know where it starts and where it ends 
 (the minimum & maximum point values along the chosen axis). We first set the initial minimal value to the first point value 
 (this is safe because we removed NaN points from the point clouds). The switch case allows us to deal with the 3 different axes.

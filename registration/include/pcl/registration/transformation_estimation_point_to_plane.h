@@ -72,7 +72,7 @@ public:
   using Vector4 = Eigen::Matrix<Scalar, 4, 1>;
 
   TransformationEstimationPointToPlane() = default;
-  ~TransformationEstimationPointToPlane() = default;
+  ~TransformationEstimationPointToPlane() override = default;
 
 protected:
   Scalar

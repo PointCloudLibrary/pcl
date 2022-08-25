@@ -58,7 +58,7 @@ public:
   OctreeNode() = default;
 
   virtual ~OctreeNode() = default;
-  /** \brief Pure virtual method for receiving the type of octree node (branch or leaf)
+  /** \brief Pure virtual method for retrieving the type of octree node (branch or leaf)
    */
   virtual node_type_t
   getNodeType() const = 0;
@@ -70,7 +70,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief @b Abstract octree leaf class
- * \note Octree leafs may collect data of type DataT
+ * \note Octree leaves may collect data of type ContainerT
  * \author Julius Kammerl (julius@kammerl.de)
  */
 

@@ -46,7 +46,6 @@
 #include <pcl/common/io.h>
 #include <pcl/PCLPointCloud2.h>
 
-#include <pcl/outofcore/boost.h>
 #include <pcl/outofcore/octree_base.h>
 #include <pcl/outofcore/octree_disk_container.h>
 #include <pcl/outofcore/outofcore_node_data.h>

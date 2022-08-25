@@ -132,12 +132,12 @@ pcl::SampleConsensusModelStick<PointT>::getDistancesToModel (
     if (sqr_distance < sqr_threshold)
     {
       // Need to estimate sqrt here to keep MSAC and friends general
-      distances[i] = sqrt (sqr_distance);
+      distances[i] = std::sqrt (sqr_distance);
     }
     else
     {
       // Penalize outliers by doubling the distance
-      distances[i] = 2 * sqrt (sqr_distance);
+      distances[i] = 2 * std::sqrt (sqr_distance);
     }
   }
 }

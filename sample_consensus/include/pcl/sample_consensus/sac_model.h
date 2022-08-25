@@ -472,7 +472,7 @@ namespace pcl
           // elements, that does not matter (and nowadays, random number generators are good)
           //std::swap (shuffled_indices_[i], shuffled_indices_[i + (rand () % (index_size - i))]);
           std::swap (shuffled_indices_[i], shuffled_indices_[i + (rnd () % (index_size - i))]);
-        std::copy (shuffled_indices_.begin (), shuffled_indices_.begin () + sample_size, sample.begin ());
+        std::copy (shuffled_indices_.cbegin (), shuffled_indices_.cbegin () + sample_size, sample.begin ());
       }
 
       /** \brief Fills a sample array with one random sample from the indices_ vector
@@ -513,7 +513,7 @@ namespace pcl
             shuffled_indices_[i] = indices[i-1];
         }
 
-        std::copy (shuffled_indices_.begin (), shuffled_indices_.begin () + sample_size, sample.begin ());
+        std::copy (shuffled_indices_.cbegin (), shuffled_indices_.cbegin () + sample_size, sample.begin ());
       }
 
       /** \brief Check whether a model is valid given the user constraints.

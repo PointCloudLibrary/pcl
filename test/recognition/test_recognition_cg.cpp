@@ -149,13 +149,13 @@ TEST (PCL, GeometricConsistencyGrouping)
   clusterer.setInputCloud (model_downsampled_);
   clusterer.setSceneCloud (scene_downsampled_);
   clusterer.setModelSceneCorrespondences (model_scene_corrs_);
-  clusterer.setGCSize (0.015);
+  clusterer.setGCSize (0.001);
   clusterer.setGCThreshold (25);
   EXPECT_TRUE (clusterer.recognize (rototranslations));
 
   //Assertions
   EXPECT_EQ (rototranslations.size (), 1);
-  EXPECT_LT (computeRmsE (model_, scene_, rototranslations[0]), 1E-4);
+  EXPECT_LT (computeRmsE (model_, scene_, rototranslations[0]), 1E-4) << std::endl << rototranslations[0] << std::endl << model_downsampled_->size() << std::endl << scene_downsampled_->size() << std::endl << model_scene_corrs_->size() << std::endl;
 }
 
 

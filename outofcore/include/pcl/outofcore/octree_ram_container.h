@@ -43,7 +43,6 @@
 #include <mutex>
 #include <random>
 
-#include <pcl/outofcore/boost.h>
 #include <pcl/outofcore/octree_abstract_node_container.h>
 
 namespace pcl

@@ -58,6 +58,7 @@ Proposals for the 2.x API:
    Boost::Iostreams.
  * Given the experience on `libpointmatcher <https://github.com/ethz-asl/libpointmatcher>`_,
    we (François Pomerleau and Stéphane Magnenat) propose the following data structures::
+
      cloud = map<space_identifier, space>
      space = tuple<type, components_identifiers, data_matrix>
      components_identifiers = vector<component_identifier>
@@ -65,7 +66,9 @@ Proposals for the 2.x API:
      space_identifier = string with standardised naming (pos, normals, color, etc.)
      component_identifier = string with standardised naming (x, y, r, g, b, etc.)
      type = type of space, underlying scalar type + distance definition (float with euclidean 2-norm distance, float representing gaussians with Mahalanobis distance, binary with manhattan distance, float with euclidean infinity norm distance, etc.)
+
    For instance, a simple point + color scenario could be::
+
      cloud = { "pos" => pos_space, "color" => color_space }
      pos_space = ( "float with euclidean 2-norm distance", { "x", "y", "z" }, [[(0.3,0,1.3) , ... , (1.2,3.1,2)], ... , [(1,0.3,1) , ... , (2,0,3.5)] )
      color_space = ( "uint8 with rgb distance", { "r", "g", "b" }, [[(0,255,0), ... , (128,255,32)] ... [(12,54,31) ... (255,0,192)]] )

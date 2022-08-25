@@ -2,7 +2,7 @@ if(NOT BUILD_visualization)
   return()
 endif()
 
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS visualization segmentation)
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS visualization segmentation)
 
 PCL_ADD_EXAMPLE(pcl_example_extract_clusters_normals FILES example_extract_clusters_normals.cpp
                 LINK_WITH pcl_common pcl_keypoints pcl_io pcl_segmentation)

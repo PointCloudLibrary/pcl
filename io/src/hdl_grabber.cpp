@@ -473,7 +473,7 @@ pcl::HDLGrabber::enqueueHDLPacket (const std::uint8_t *data,
   if (bytesReceived == 1206)
   {
     std::uint8_t *dup = static_cast<std::uint8_t *> (malloc (bytesReceived * sizeof(std::uint8_t)));
-    memcpy (dup, data, bytesReceived * sizeof (std::uint8_t));
+    std::copy(data, data + bytesReceived, dup);
 
     hdl_data_.enqueue (dup);
   }

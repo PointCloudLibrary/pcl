@@ -46,6 +46,7 @@
 #include <flann/algorithms/linear_index.h>  // for flann::LinearIndexParams
 #include <flann/util/matrix.h>              // for flann::Matrix
 
+#include <pcl/features/normal_3d.h> // for NormalEstimation
 #include <pcl/segmentation/unary_classifier.h>
 #include <pcl/common/io.h>
 
@@ -135,16 +136,14 @@ pcl::UnaryClassifier<PointT>::findClusters (typename pcl::PointCloud<PointT>::Pt
 {
   // find the 'label' field index
   std::vector <pcl::PCLPointField> fields;
-  int label_idx = -1;
-  pcl::PointCloud <PointT> point;
-  label_idx = pcl::getFieldIndex<PointT> ("label", fields);
+  const int label_idx = pcl::getFieldIndex<PointT> ("label", fields);
 
   if (label_idx != -1)
   {
     for (const auto& point: *in)
     {
       // get the 'label' field                                                                       
-      std::uint32_t label;      
+      std::uint32_t label;
       memcpy (&label, reinterpret_cast<const char*> (&point) + fields[label_idx].offset, sizeof(std::uint32_t));
 
       // check if label exist
@@ -306,7 +305,7 @@ pcl::UnaryClassifier<PointT>::queryFeatureDistances (std::vector<pcl::PointCloud
   {
     // Query point  
     flann::Matrix<float> p = flann::Matrix<float>(new float[n_col], 1, n_col);
-    memcpy (&p.ptr ()[0], (*query_features)[i].histogram, p.cols * p.rows * sizeof (float));
+    std::copy((*query_features)[i].histogram, (*query_features)[i].histogram + n_col, p.ptr());
 
     flann::Matrix<int> indices (new int[k], 1, k);
     flann::Matrix<float> distances (new float[k], 1, k);  

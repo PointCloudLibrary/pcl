@@ -52,7 +52,7 @@ private:
 public:
   using PCLBase<PointT>::input_;
 
-  Morphology() {}
+  Morphology() = default;
 
   /** \brief This function performs erosion followed by dilation.
    * It is useful for removing noise in the form of small blobs and patches.

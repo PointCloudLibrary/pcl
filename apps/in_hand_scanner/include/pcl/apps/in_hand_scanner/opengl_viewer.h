@@ -174,7 +174,7 @@ public:
   explicit OpenGLViewer(QWidget* parent = nullptr);
 
   /** \brief Destructor. */
-  ~OpenGLViewer();
+  ~OpenGLViewer() override;
 
   /** \brief Add a mesh to be drawn.
    *
@@ -324,7 +324,7 @@ protected:
     }
 
   protected:
-    ~FPS() {}
+    ~FPS() = default;
 
   private:
     double fps_;

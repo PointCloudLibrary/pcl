@@ -76,7 +76,7 @@ public:
 
   OpenNIPassthrough(pcl::OpenNIGrabber& grabber);
 
-  ~OpenNIPassthrough()
+  ~OpenNIPassthrough() override
   {
     if (grabber_.isRunning())
       grabber_.stop();

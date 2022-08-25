@@ -301,7 +301,7 @@ template <typename PointT> bool
 pcl::MomentOfInertiaEstimation<PointT>::getMomentOfInertia (std::vector <float>& moment_of_inertia) const
 {
   moment_of_inertia.resize (moment_of_inertia_.size (), 0.0f);
-  std::copy (moment_of_inertia_.begin (), moment_of_inertia_.end (), moment_of_inertia.begin ());
+  std::copy (moment_of_inertia_.cbegin (), moment_of_inertia_.cend (), moment_of_inertia.begin ());
 
   return (is_valid_);
 }
@@ -311,7 +311,7 @@ template <typename PointT> bool
 pcl::MomentOfInertiaEstimation<PointT>::getEccentricity (std::vector <float>& eccentricity) const
 {
   eccentricity.resize (eccentricity_.size (), 0.0f);
-  std::copy (eccentricity_.begin (), eccentricity_.end (), eccentricity.begin ());
+  std::copy (eccentricity_.cbegin (), eccentricity_.cend (), eccentricity.begin ());
 
   return (is_valid_);
 }

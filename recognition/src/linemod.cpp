@@ -219,8 +219,8 @@ pcl::LINEMOD::matchTemplates (const std::vector<QuantizableModality*> & modaliti
 #ifdef __SSE2__
     unsigned short * score_sums = reinterpret_cast<unsigned short*> (aligned_malloc (mem_size*sizeof(unsigned short)));
     unsigned char * tmp_score_sums = reinterpret_cast<unsigned char*> (aligned_malloc (mem_size*sizeof(unsigned char)));
-    memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
-    memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
+    std::fill_n(score_sums, mem_size, 0);
+    std::fill_n(tmp_score_sums, mem_size, 0);
 
     //__m128i * score_sums_m128i = reinterpret_cast<__m128i*> (score_sums);
     __m128i * tmp_score_sums_m128i = reinterpret_cast<__m128i*> (tmp_score_sums);
@@ -287,7 +287,7 @@ pcl::LINEMOD::matchTemplates (const std::vector<QuantizableModality*> & modaliti
           score_sums[mem_index] = static_cast<unsigned short> (score_sums[mem_index] + tmp_score_sums[mem_index]);
         }
 
-        memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
+        std::fill_n(tmp_score_sums, mem_size, 0);
       }
     }
     {
@@ -295,13 +295,11 @@ pcl::LINEMOD::matchTemplates (const std::vector<QuantizableModality*> & modaliti
       {
         score_sums[mem_index] = static_cast<unsigned short> (score_sums[mem_index] + tmp_score_sums[mem_index]);
       }
-        
-      memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
+
+      std::fill_n(tmp_score_sums, mem_size, 0);
     }
 #else
-    unsigned short * score_sums = new unsigned short[mem_size];
-    //unsigned char * score_sums = new unsigned char[mem_size];
-    memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
+    unsigned short * score_sums = new unsigned short[mem_size]{};
 
     std::size_t max_score = 0;
     for (std::size_t feature_index = 0; feature_index < templates_[template_index].features.size (); ++feature_index)
@@ -538,8 +536,8 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
 #ifdef __SSE2__
     unsigned short * score_sums = reinterpret_cast<unsigned short*> (aligned_malloc (mem_size*sizeof(unsigned short)));
     unsigned char * tmp_score_sums = reinterpret_cast<unsigned char*> (aligned_malloc (mem_size*sizeof(unsigned char)));
-    memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
-    memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
+    std::fill_n(score_sums, mem_size, 0);
+    std::fill_n(tmp_score_sums, mem_size, 0);
 
     //__m128i * score_sums_m128i = reinterpret_cast<__m128i*> (score_sums);
     __m128i * tmp_score_sums_m128i = reinterpret_cast<__m128i*> (tmp_score_sums);
@@ -606,7 +604,7 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
           score_sums[mem_index] = static_cast<unsigned short> (score_sums[mem_index] + tmp_score_sums[mem_index]);
         }
 
-        memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
+        std::fill_n(tmp_score_sums, mem_size, 0);
       }
     }
     {
@@ -614,21 +612,16 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
       {
         score_sums[mem_index] = static_cast<unsigned short> (score_sums[mem_index] + tmp_score_sums[mem_index]);
       }
-        
-      memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
+
+      std::fill_n(tmp_score_sums, mem_size, 0);
     }
 #else
-    unsigned short * score_sums = new unsigned short[mem_size];
-    //unsigned char * score_sums = new unsigned char[mem_size];
-    memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
+    unsigned short * score_sums = new unsigned short[mem_size]{};
 
 #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
-    unsigned short * score_sums_1 = new unsigned short[mem_size];
-    unsigned short * score_sums_2 = new unsigned short[mem_size];
-    unsigned short * score_sums_3 = new unsigned short[mem_size];
-    memset (score_sums_1, 0, mem_size*sizeof (score_sums_1[0]));
-    memset (score_sums_2, 0, mem_size*sizeof (score_sums_2[0]));
-    memset (score_sums_3, 0, mem_size*sizeof (score_sums_3[0]));
+    unsigned short * score_sums_1 = new unsigned short[mem_size]{};
+    unsigned short * score_sums_2 = new unsigned short[mem_size]{};
+    unsigned short * score_sums_3 = new unsigned short[mem_size]{};
 #endif
 
     int max_score = 0;
@@ -1009,8 +1002,8 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
 #ifdef __SSE2__
       unsigned short * score_sums = reinterpret_cast<unsigned short*> (aligned_malloc (mem_size*sizeof(unsigned short)));
       unsigned char * tmp_score_sums = reinterpret_cast<unsigned char*> (aligned_malloc (mem_size*sizeof(unsigned char)));
-      memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
-      memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
+      std::fill_n(score_sums, mem_size, 0);
+      std::fill_n(tmp_score_sums, mem_size, 0);
 
       //__m128i * score_sums_m128i = reinterpret_cast<__m128i*> (score_sums);
       __m128i * tmp_score_sums_m128i = reinterpret_cast<__m128i*> (tmp_score_sums);
@@ -1078,7 +1071,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
             score_sums[mem_index] = static_cast<unsigned short> (score_sums[mem_index] + tmp_score_sums[mem_index]);
           }
 
-          memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
+          std::fill_n(tmp_score_sums, mem_size, 0);
         }
       }
       {
@@ -1086,21 +1079,16 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
         {
           score_sums[mem_index] = static_cast<unsigned short> (score_sums[mem_index] + tmp_score_sums[mem_index]);
         }
-        
-        memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
+
+        std::fill_n(tmp_score_sums, mem_size, 0);
       }
 #else
-      unsigned short * score_sums = new unsigned short[mem_size];
-      //unsigned char * score_sums = new unsigned char[mem_size];
-      memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
+      unsigned short * score_sums = new unsigned short[mem_size]{};
 
 #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
-      unsigned short * score_sums_1 = new unsigned short[mem_size];
-      unsigned short * score_sums_2 = new unsigned short[mem_size];
-      unsigned short * score_sums_3 = new unsigned short[mem_size];
-      memset (score_sums_1, 0, mem_size*sizeof (score_sums_1[0]));
-      memset (score_sums_2, 0, mem_size*sizeof (score_sums_2[0]));
-      memset (score_sums_3, 0, mem_size*sizeof (score_sums_3[0]));
+      unsigned short * score_sums_1 = new unsigned short[mem_size]{};
+      unsigned short * score_sums_2 = new unsigned short[mem_size]{};
+      unsigned short * score_sums_3 = new unsigned short[mem_size]{};
 #endif
 
       int max_score = 0;

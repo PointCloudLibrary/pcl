@@ -42,6 +42,10 @@ function(UseCompilerCache)
   set(multiValueArgs)
 
   cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  
+  if(ARGS_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "Unknown arguments given to UseCompilerCache: ${ARGS_UNPARSED_ARGUMENTS}")
+  endif()
 
   if(NOT ARGS_CCACHE)
     set(ARGS_CCACHE ccache)
@@ -74,7 +78,7 @@ function(UseCompilerCache)
     endif()
   endforeach()
 
-  if(NOT QUIET)
+  if(NOT ARGS_QUIET)
     message(STATUS "Using Compiler Cache (${CCACHE_PROGRAM}) v${version} in the C/C++ toolchain")
   endif()
 
@@ -105,12 +109,7 @@ function(UseCompilerCache)
                   "${CMAKE_BINARY_DIR}/launch-c"
                   "${CMAKE_BINARY_DIR}/launch-cxx")
 
-  # Cuda support only added in CMake 3.10
-  set(cuda_supported FALSE)
-  if (NOT (CMAKE_VERSION VERSION_LESS 3.10) AND CMAKE_CUDA_COMPILER)
-    set(cuda_supported TRUE)
-  endif()
-  if(${cuda_supported})
+  if(CMAKE_CUDA_COMPILER)
     pcl_ccache_compat_file_gen("launch-cuda" ${CCACHE_PROGRAM} ${CMAKE_CUDA_COMPILER})
     execute_process(COMMAND chmod a+rx
                     "${CMAKE_BINARY_DIR}/launch-cuda")
@@ -127,7 +126,7 @@ function(UseCompilerCache)
     message(STATUS "Compiler cache via launch files to support Unix Makefiles and Ninja")
     set(CMAKE_C_COMPILER_LAUNCHER    "${CMAKE_BINARY_DIR}/launch-c" PARENT_SCOPE)
     set(CMAKE_CXX_COMPILER_LAUNCHER  "${CMAKE_BINARY_DIR}/launch-cxx" PARENT_SCOPE)
-    if (${cuda_supported})
+    if (CMAKE_CUDA_COMPILER)
         set(CMAKE_CUDA_COMPILER_LAUNCHER "${CMAKE_BINARY_DIR}/launch-cuda" PARENT_SCOPE)
     endif()
   endif()

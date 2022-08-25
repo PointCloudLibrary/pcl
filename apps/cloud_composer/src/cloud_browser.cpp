@@ -28,7 +28,7 @@ pcl::cloud_composer::BackgroundDelegate::paint (QPainter *painter, const QStyleO
  // if (background.canConvert<QBrush> ())
  //   painter->fillRect (option.rect, background.value<QBrush> ());
 
-  QVariant text_color_variant = index.data (Qt::TextColorRole);
+  QVariant text_color_variant = index.data (Qt::ForegroundRole);
   if (text_color_variant.canConvert<QColor> ())
   {
     QColor text_color = text_color_variant.value<QColor> ();

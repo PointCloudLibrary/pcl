@@ -148,8 +148,7 @@ pcl::RealSenseGrabber::start ()
     if (need_xyz_ || need_xyzrgba_)
     {
       selectMode ();
-      PXCCapture::Device::StreamProfileSet profile;
-      memset (&profile, 0, sizeof (profile));
+      PXCCapture::Device::StreamProfileSet profile{};
       profile.depth.frameRate.max = mode_selected_.fps;
       profile.depth.frameRate.min = mode_selected_.fps;
       profile.depth.imageInfo.width = mode_selected_.depth_width;

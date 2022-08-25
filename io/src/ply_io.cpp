@@ -121,7 +121,13 @@ pcl::PLYReader::amendProperty (const std::string& old_name, const std::string& n
   for (; finder != cloud_->fields.rend (); ++finder)
     if (finder->name == old_name)
       break;
-  assert (finder != cloud_->fields.rend ());
+  if (finder == cloud_->fields.rend ())
+  {
+      PCL_ERROR("[pcl::PLYReader::amendProperty] old_name '%s' was not found in cloud_->fields!\n",
+          old_name.c_str());
+      assert (false);
+      return;
+  }
   finder->name = new_name;
   if (new_datatype > 0 && new_datatype != finder->datatype)
     finder->datatype = new_datatype;
@@ -378,14 +384,14 @@ pcl::PLYReader::vertexAlphaCallback (pcl::io::ply::uint8 alpha)
 {
   a_ = std::uint32_t (alpha);
   // get anscient rgb value and store it in rgba
-  memcpy (&rgba_, 
-          &cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_], 
+  memcpy (&rgba_,
+          &cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_],
           sizeof (pcl::io::ply::float32));
   // append alpha
   rgba_ |= a_ << 24;
   // put rgba back
-  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_], 
-          &rgba_, 
+  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_],
+          &rgba_,
           sizeof (std::uint32_t));
 }
 

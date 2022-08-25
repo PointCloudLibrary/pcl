@@ -66,15 +66,15 @@ pcl::FrustumCulling<PointT>::applyFilter (Indices &indices)
   float roi_ymax = roi_y_ + (roi_h_ / 2);  // roi max y
   float roi_ymin = roi_y_ - (roi_h_ / 2);  // roi min y
   
-  float np_h_u = float(2 * tan(vfov_rad / 2) * np_dist_ * (roi_ymin - 0.5) * (-1));  // near plane upper height
-  float np_h_d = float(2 * tan(vfov_rad / 2) * np_dist_ * (roi_ymax - 0.5));         // near plane lower height
-  float np_w_l = float(2 * tan(hfov_rad / 2) * np_dist_ * (roi_xmin - 0.5) * (-1));  // near plane left width
-  float np_w_r = float(2 * tan(hfov_rad / 2) * np_dist_ * (roi_xmax - 0.5));         // near plane right width
+  float np_h_u = float(2 * std::tan(vfov_rad / 2) * np_dist_ * (roi_ymin - 0.5) * (-1));  // near plane upper height
+  float np_h_d = float(2 * std::tan(vfov_rad / 2) * np_dist_ * (roi_ymax - 0.5));         // near plane lower height
+  float np_w_l = float(2 * std::tan(hfov_rad / 2) * np_dist_ * (roi_xmin - 0.5) * (-1));  // near plane left width
+  float np_w_r = float(2 * std::tan(hfov_rad / 2) * np_dist_ * (roi_xmax - 0.5));         // near plane right width
 
-  float fp_h_u = float(2 * tan(vfov_rad / 2) * fp_dist_ * (roi_ymin - 0.5) * (-1));  // far plane upper height
-  float fp_h_d = float(2 * tan(vfov_rad / 2) * fp_dist_ * (roi_ymax - 0.5));         // far plane lower height
-  float fp_w_l = float(2 * tan(hfov_rad / 2) * fp_dist_ * (roi_xmin - 0.5) * (-1));  // far plane left width
-  float fp_w_r = float(2 * tan(hfov_rad / 2) * fp_dist_ * (roi_xmax - 0.5));         // far plane right width
+  float fp_h_u = float(2 * std::tan(vfov_rad / 2) * fp_dist_ * (roi_ymin - 0.5) * (-1));  // far plane upper height
+  float fp_h_d = float(2 * std::tan(vfov_rad / 2) * fp_dist_ * (roi_ymax - 0.5));         // far plane lower height
+  float fp_w_l = float(2 * std::tan(hfov_rad / 2) * fp_dist_ * (roi_xmin - 0.5) * (-1));  // far plane left width
+  float fp_w_r = float(2 * std::tan(hfov_rad / 2) * fp_dist_ * (roi_xmax - 0.5));         // far plane right width
 
   Eigen::Vector3f fp_c (T + view * fp_dist_);                           // far plane center
   Eigen::Vector3f fp_tl (fp_c + (up * fp_h_u) - (right * fp_w_l));  // Top left corner of the far plane

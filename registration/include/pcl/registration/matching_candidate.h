@@ -64,7 +64,7 @@ struct MatchingCandidate {
   : fitness_score(s), correspondences(c), transformation(m){};
 
   /** \brief Destructor. */
-  ~MatchingCandidate(){};
+  ~MatchingCandidate() = default;
 
   /** \brief Fitness score of current candidate resulting from matching algorithm. */
   float fitness_score;

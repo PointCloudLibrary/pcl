@@ -109,7 +109,7 @@ public:
   FPCSInitialAlignment();
 
   /** \brief Destructor. */
-  ~FPCSInitialAlignment(){};
+  ~FPCSInitialAlignment() override = default;
 
   /** \brief Provide a pointer to the vector of target indices.
    * \param[in] target_indices a pointer to the target indices

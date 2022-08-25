@@ -52,7 +52,7 @@ private:
   Convolution<ImageType> conv_2d;
 
 public:
-  Keypoint() {}
+  Keypoint() = default;
 
   void
   harrisCorner(ImageType& output,

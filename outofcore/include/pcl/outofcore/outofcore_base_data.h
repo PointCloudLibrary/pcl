@@ -40,7 +40,6 @@
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/outofcore/boost.h>
 #include <pcl/outofcore/cJSON.h>
 
 #include <pcl/outofcore/metadata.h>
