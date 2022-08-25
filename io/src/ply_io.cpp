@@ -287,7 +287,7 @@ namespace pcl
     }
     catch(const std::out_of_range&)
     {
-      PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", vertex_count_ * cloud_->point_step + vertex_offset_before_);
+      PCL_WARN ("[pcl::PLYReader::vertexScalarPropertyCallback] Incorrect data index specified (%lu)!\n", vertex_count_ * cloud_->point_step + vertex_offset_before_);
       assert(false);
     }
   }
@@ -318,7 +318,7 @@ namespace pcl
     }
     catch(const std::out_of_range&)
     {
-      PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", vertex_count_ * cloud_->point_step + vertex_offset_before_);
+      PCL_WARN ("[pcl::PLYReader::vertexListPropertyContentCallback] Incorrect data index specified (%lu)!\n", vertex_count_ * cloud_->point_step + vertex_offset_before_);
       assert(false);
     }
   }
@@ -390,7 +390,7 @@ pcl::PLYReader::vertexColorCallback (const std::string& color_name, pcl::io::ply
     }
     catch(const std::out_of_range&)
     {
-      PCL_WARN ("[pcl::PLYWriter::writeASCII] Incorrect data index specified (%lu)!\n", vertex_count_ * cloud_->point_step + rgb_offset_before_);
+      PCL_WARN ("[pcl::PLYReader::vertexColorCallback] Incorrect data index specified (%lu)!\n", vertex_count_ * cloud_->point_step + rgb_offset_before_);
       assert(false);
     }
   }
