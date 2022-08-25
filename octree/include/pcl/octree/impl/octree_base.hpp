@@ -78,7 +78,7 @@ OctreeBase<LeafContainerT, BranchContainerT>::setMaxVoxelIndex(
       std::min(static_cast<uindex_t>(OctreeKey::maxDepth),
                static_cast<uindex_t>(std::ceil(std::log2(max_voxel_index_arg))));
 
-  // define depthMask_ by setting a single bit to 1 at bit position == tree depth
+  // define depth_mask_ by setting a single bit to 1 at bit position == tree depth
   depth_mask_ = (1 << (tree_depth - 1));
 }
 
@@ -92,10 +92,10 @@ OctreeBase<LeafContainerT, BranchContainerT>::setTreeDepth(uindex_t depth_arg)
   // set octree depth
   octree_depth_ = depth_arg;
 
-  // define depthMask_ by setting a single bit to 1 at bit position == tree depth
+  // define depth_mask_ by setting a single bit to 1 at bit position == tree depth
   depth_mask_ = (1 << (depth_arg - 1));
 
-  // define max. keys
+  // define max_key_
   max_key_.x = max_key_.y = max_key_.z = (1 << depth_arg) - 1;
 }
 
