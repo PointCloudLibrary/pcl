@@ -720,16 +720,14 @@ namespace pcl
                       int valid_points);
       
       void
-      writeContentWithCameraASCII (int nr_points, 
-                                   int point_size,
+      writeContentWithCameraASCII (int nr_points,
                                    const pcl::PCLPointCloud2 &cloud,
                                    const Eigen::Vector4f &origin, 
                                    const Eigen::Quaternionf &orientation,
                                    std::ofstream& fs);
 
       void
-      writeContentWithRangeGridASCII (int nr_points, 
-                                      int point_size,
+      writeContentWithRangeGridASCII (int nr_points,
                                       const pcl::PCLPointCloud2 &cloud,
                                       std::ostringstream& fs,
                                       int& nb_valid_points);
