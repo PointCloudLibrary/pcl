@@ -938,7 +938,6 @@ pcl::PLYWriter::writeASCII (const std::string &file_name,
   }
 
   unsigned int nr_points  = cloud.width * cloud.height;
-  auto point_size = static_cast<unsigned int> (cloud.data.size () / nr_points);
 
   // Write the header information if available
   if (use_camera)
