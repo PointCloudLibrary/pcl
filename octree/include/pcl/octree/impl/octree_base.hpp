@@ -535,7 +535,8 @@ OctreeBase<LeafContainerT, BranchContainerT>::deserializeTreeRecursive(
           if (leaf_container_vector_it_arg &&
               (*leaf_container_vector_it_arg != *leaf_container_vector_it_end_arg)) {
             LeafContainerT& container = **child_leaf;
-            container = ***leaf_container_vector_it_arg;
+            LeafContainerT* src_container_ptr = **leaf_container_vector_it_arg;
+            container = *src_container_ptr;
             ++*leaf_container_vector_it_arg;
           }
 
