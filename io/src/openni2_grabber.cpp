@@ -648,7 +648,7 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
     // Resize the image if nessacery
     color_resize_buffer_.resize(image_width_ * image_height_ * 3);
     rgb_buffer = color_resize_buffer_.data();
-    image->fillRGB (image_width_, image_height_, reinterpret_cast<unsigned char*>(const_cast<std::uint16_t*>(rgb_buffer)), image_width_ * 3);
+    image->fillRGB (image_width_, image_height_, reinterpret_cast<unsigned char*>(const_cast<std::uint8_t*>(rgb_buffer)), image_width_ * 3);
   }
 
 
