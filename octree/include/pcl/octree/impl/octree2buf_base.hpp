@@ -414,7 +414,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::createLeafRecursive(
 
     // recursively proceed with indexed child branch
     return createLeafRecursive(key_arg,
-                               depth_mask_arg / 2,
+                               depth_mask_arg >> 1,
                                child_branch,
                                return_leaf_arg,
                                parent_of_leaf_arg,
@@ -485,7 +485,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::findLeafRecursive(
 
     if (child_branch)
       // recursively proceed with indexed child branch
-      findLeafRecursive(key_arg, depth_mask_arg / 2, child_branch, result_arg);
+      findLeafRecursive(key_arg, depth_mask_arg >> 1, child_branch, result_arg);
   }
   else {
     // we reached leaf node level
@@ -523,7 +523,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deleteLeafRecursive(
     if (child_branch) {
       // recursively explore the indexed child branch
       bool bBranchOccupied =
-          deleteLeafRecursive(key_arg, depth_mask_arg / 2, child_branch);
+          deleteLeafRecursive(key_arg, depth_mask_arg >> 1, child_branch);
 
       if (!bBranchOccupied) {
         // child branch does not own any sub-child nodes anymore -> delete child branch
@@ -721,7 +721,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTreeRecursive(
 
           // recursively proceed with indexed child branch
           deserializeTreeRecursive(child_branch,
-                                   depth_mask_arg / 2,
+                                   depth_mask_arg >> 1,
                                    key_arg,
                                    binaryTreeIT_arg,
                                    binaryTreeIT_End_arg,
