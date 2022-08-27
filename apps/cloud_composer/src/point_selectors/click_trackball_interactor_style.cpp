@@ -63,13 +63,14 @@ pcl::cloud_composer::ClickTrackballStyleInteractor::OnLeftButtonUp ()
     
     selected_actor->GetMatrix (end_matrix_);
     // Find the id of the actor we manipulated
+    pcl::visualization::CloudActorMap::const_iterator end = actors_->end ();
     QString manipulated_id;
-    for( const auto& aktor : actors_-)
+    for( pcl::visualization::CloudActorMap::const_iterator itr = actors_->begin (); itr != end; ++itr)
     {
       //qDebug () << "Id = "<<QString::fromStdString (itr->first);
-      if ( aktor.second.actor == selected_actor)
+      if ( (itr->second).actor == selected_actor)
       {
-        manipulated_id = (QString::fromStdString (aktor.first));
+        manipulated_id = (QString::fromStdString (itr->first));
         
       }
     }
@@ -97,13 +98,14 @@ pcl::cloud_composer::ClickTrackballStyleInteractor::OnRightButtonUp ()
     
     selected_actor->GetMatrix (end_matrix_);
     // Find the id of the actor we manipulated
+    pcl::visualization::CloudActorMap::const_iterator end = actors_->end ();
     QString manipulated_id;
-    for( const auto& aktor : actors_)
+    for( pcl::visualization::CloudActorMap::const_iterator itr = actors_->begin (); itr != end; ++itr)
     {
       //qDebug () << "Id = "<<QString::fromStdString (itr->first);
-      if ( aktor.second.actor == selected_actor)
+      if ( (itr->second).actor == selected_actor)
       {
-        manipulated_id = (QString::fromStdString (aktor.first));
+        manipulated_id = (QString::fromStdString (itr->first));
         
       }
     }
