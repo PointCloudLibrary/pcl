@@ -805,6 +805,26 @@ TEST (PCL, EmptyCloudToPCD)
   EXPECT_EQ (true, bool (incomplete_height_cloud2_in.is_dense));
   EXPECT_EQ (2 * 4 * 4, std::size_t (incomplete_height_cloud2_in.data.size ()));
 
+  // Test invalid height
+  fs.open ("invalid_height_ascii.pcd");
+  fs << "# .PCD v0.7 - Point Cloud Data file format\n"
+        "VERSION 0.7\n"
+        "FIELDS x y z intensity\n"
+        "SIZE 4 4 4 4\n"
+        "TYPE F F F F\n"
+        "COUNT 1 1 1 1\n"
+        "WIDTH 2\n"
+        "HEIGHT a\n"
+        "POINTS 2\n"
+        "DATA ascii\n"
+        "1 2 3 4\n"
+        "5 6 7 8";
+  fs.close ();
+  pcl::PCLPointCloud2 invalid_height_cloud2_in;
+  res = loadPCDFile ("invalid_height_ascii.pcd", invalid_height_cloud2_in);
+  remove("invalid_height_ascii.pcd");
+  EXPECT_EQ (-1, res);
+
   // Test for no field data
   pcl::PCLPointCloud2 empty_cloud;
   res = pcl::io::savePCDFile ("empty_cloud_ascii.pcd", empty_cloud,

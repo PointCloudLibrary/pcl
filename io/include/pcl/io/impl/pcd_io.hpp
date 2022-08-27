@@ -347,7 +347,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
                                                    &temp_buf[8], 
                                                    static_cast<std::uint32_t> (static_cast<float>(data_size) * 1.5f));
     // Was the compression successful?
-    if (compressed_size)
+    if (compressed_size > 0)
     {
       char *header = &temp_buf[0];
       memcpy (&header[0], &compressed_size, sizeof (unsigned int));

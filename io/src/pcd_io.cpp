@@ -284,6 +284,8 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
       if (line_type.substr (0, 6) == "HEIGHT")
       {
         sstream >> cloud.height;
+        if (sstream.fail ())
+          throw "Invalid HEIGHT value specified.";
         height_read = true;
         continue;
       }
