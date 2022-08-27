@@ -220,8 +220,8 @@ pcl::ihs::InputDataProcessing::calculateNormals(const CloudXYZRGBAConstPtr& clou
   cloud_out->height = cloud_in->height;
   cloud_out->is_dense = false;
 
-  CloudNormals::const_iterator it_n = cloud_normals->begin();
-  CloudXYZRGBNormal::iterator it_out = cloud_out->begin();
+  const auto& it_n = cloud_normals->begin();
+  auto& it_out = cloud_out->begin();
 
   PointXYZRGBNormal invalid_pt;
   invalid_pt.x = invalid_pt.y = invalid_pt.z = std::numeric_limits<float>::quiet_NaN();

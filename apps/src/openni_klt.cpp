@@ -326,12 +326,9 @@ main(int argc, char** argv)
                   << " , " << device->getProductName() << std::endl;
         std::vector<std::pair<int, XnMapOutputMode>> modes =
             grabber.getAvailableDepthModes();
-        for (std::vector<std::pair<int, XnMapOutputMode>>::const_iterator it =
-                 modes.begin();
-             it != modes.end();
-             ++it) {
-          std::cout << it->first << " = " << it->second.nXRes << " x "
-                    << it->second.nYRes << " @ " << it->second.nFPS << std::endl;
+        for (const auto& mode : modes) {
+          std::cout << mode.first << " = " << mode.second.nXRes << " x "
+                    << mode.second.nYRes << " @ " << mode.second.nFPS << std::endl;
         }
 
         if (device->hasImageStream()) {
@@ -339,12 +336,9 @@ main(int argc, char** argv)
                     << "Supported image modes for device: " << device->getVendorName()
                     << " , " << device->getProductName() << std::endl;
           modes = grabber.getAvailableImageModes();
-          for (std::vector<std::pair<int, XnMapOutputMode>>::const_iterator it =
-                   modes.begin();
-               it != modes.end();
-               ++it) {
-            std::cout << it->first << " = " << it->second.nXRes << " x "
-                      << it->second.nYRes << " @ " << it->second.nFPS << std::endl;
+          for (const auto& mode : modes) {
+            std::cout << mode.first << " = " << mode.second.nXRes << " x "
+                      << mode.second.nYRes << " @ " << mode.second.nFPS << std::endl;
           }
         }
       }

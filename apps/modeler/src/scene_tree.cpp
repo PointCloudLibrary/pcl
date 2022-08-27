@@ -176,15 +176,13 @@ pcl::modeler::SceneTree::slotOpenPointCloud()
     closePointCloud(cloud_mesh_items);
   }
 
-  for (QStringList::const_iterator filenames_it = filenames.begin();
-       filenames_it != filenames.end();
-       ++filenames_it) {
-    if (!openPointCloud(*filenames_it))
+  for (const auto& filename : filenames.begin()) {
+    if (!openPointCloud(filename))
       QMessageBox::warning(main_window,
                            tr("Failed to Open Point Cloud"),
                            tr("Can not open point cloud file %1, please check if it's "
                               "in valid .pcd format!")
-                               .arg(*filenames_it));
+                               .arg(filename));
   }
 }
 
@@ -260,11 +258,8 @@ pcl::modeler::SceneTree::closePointCloud(const QList<CloudMeshItem*>& items)
     delete item;
   }
 
-  for (QList<RenderWindowItem*>::const_iterator render_window_items_it =
-           render_window_items.begin();
-       render_window_items_it != render_window_items.end();
-       ++render_window_items_it) {
-    (*render_window_items_it)->getRenderWindow()->render();
+  for (const auto& render_window_item : render_window_items) {
+    render_window_item->getRenderWindow()->render();
   }
 }
 
@@ -395,12 +390,9 @@ pcl::modeler::SceneTree::slotUpdateOnSelectionChange(const QItemSelection& selec
   }
 
   QModelIndexList deselected_indices = deselected.indexes();
-  for (QModelIndexList::const_iterator deselected_indices_it =
-           deselected_indices.begin();
-       deselected_indices_it != deselected_indices.end();
-       ++deselected_indices_it) {
-    QTreeWidgetItem* item = itemFromIndex(*deselected_indices_it);
-    RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(item);
+  for (const auto& deselected_index : deselected_indices) {
+    QTreeWidgetItem* item = itemFromIndex(deselected_index);
+    auto render_window_item = dynamic_cast<RenderWindowItem*>(item);
     if (render_window_item != nullptr) {
       render_window_item->getRenderWindow()->setActive(false);
     }

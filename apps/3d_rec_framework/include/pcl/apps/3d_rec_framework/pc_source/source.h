@@ -195,7 +195,7 @@ public:
   getModels(std::string& model_id)
   {
 
-    typename std::vector<ModelT>::iterator it = models_->begin();
+    auto& it = models_->begin();
     while (it != models_->end()) {
       if (model_id != (*it).id_) {
         it = models_->erase(it);

@@ -610,7 +610,7 @@ pcl::cloud_composer::ProjectModel::onlyCloudItemsSelected ()
 void 
 pcl::cloud_composer::ProjectModel::setSelectedStyle (interactor_styles::INTERACTOR_STYLES style)
 {
-  QMap<interactor_styles::INTERACTOR_STYLES, bool>::iterator itr = selected_style_map_.begin();
+  auto itr = selected_style_map_.begin();
   while (itr != selected_style_map_.end ())
   {
     itr.value() = false;

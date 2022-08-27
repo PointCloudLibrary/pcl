@@ -180,13 +180,12 @@ pcl::cloud_composer::CloudCommand::restoreOriginalRemoveNew (const QList <const 
     QList <QStandardItem*> removed = parent_item->takeRow (to_remove_index.row ());
   }
   //Restore the original items
-  QMap <QStandardItem*, QStandardItem*>::iterator itr;
   foreach (const CloudComposerItem* item, originals)
   {
     //Point iterator to the correct spot
     // Find doesn't modify parameter so it should accept a const pointer, but it can't be because it is templated to the map type
     // So we hack to get around this with a const cast
-    itr = removed_to_parent_map_.find (const_cast<CloudComposerItem*> (item));
+    const auto& itr = removed_to_parent_map_.find (const_cast<CloudComposerItem*> (item));
     QStandardItem* parent = itr.value ();
     QStandardItem* original = itr.key ();
     parent->appendRow (original);
