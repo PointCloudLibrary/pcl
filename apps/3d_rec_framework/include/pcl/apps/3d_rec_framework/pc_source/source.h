@@ -195,13 +195,13 @@ public:
   getModels(std::string& model_id)
   {
 
-    auto& it = models_->begin();
+    const auto& it = models_->begin();
     while (it != models_->end()) {
       if (model_id != (*it).id_) {
         it = models_->erase(it);
       }
       else {
-        it++;
+        ++it;
       }
     }
 
