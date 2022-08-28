@@ -176,7 +176,7 @@ pcl::modeler::SceneTree::slotOpenPointCloud()
     closePointCloud(cloud_mesh_items);
   }
 
-  for (const auto& filename : filenames.begin()) {
+  for (const auto& filename : filenames) {
     if (!openPointCloud(filename))
       QMessageBox::warning(main_window,
                            tr("Failed to Open Point Cloud"),
