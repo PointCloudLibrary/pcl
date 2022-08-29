@@ -83,7 +83,7 @@ public:
 
   PCDVideoPlayer();
 
-  ~PCDVideoPlayer() {}
+  ~PCDVideoPlayer() override = default;
 
 protected:
   void

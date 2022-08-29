@@ -964,7 +964,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::calculateS
          if (curr_distance > max_distance)
            max_distance = curr_distance;
       }
-    max_distance = static_cast<float> (sqrt (max_distance));
+    max_distance = static_cast<float> (std::sqrt (max_distance));
     unsigned int i_class = training_classes_[i_object];
     objects_sigmas[i_class].push_back (max_distance);
   }
@@ -1200,14 +1200,14 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::alignYCoor
   float B = 0.0f;
   float sign = -1.0f;
 
-  float denom_X = static_cast<float> (sqrt (in_normal.normal_z * in_normal.normal_z + in_normal.normal_y * in_normal.normal_y));
+  float denom_X = static_cast<float> (std::sqrt (in_normal.normal_z * in_normal.normal_z + in_normal.normal_y * in_normal.normal_y));
   A = in_normal.normal_y / denom_X;
   B = sign * in_normal.normal_z / denom_X;
   rotation_matrix_X << 1.0f,   0.0f,   0.0f,
                        0.0f,      A,     -B,
                        0.0f,      B,      A;
 
-  float denom_Z = static_cast<float> (sqrt (in_normal.normal_x * in_normal.normal_x + in_normal.normal_y * in_normal.normal_y));
+  float denom_Z = static_cast<float> (std::sqrt (in_normal.normal_x * in_normal.normal_x + in_normal.normal_y * in_normal.normal_y));
   A = in_normal.normal_y / denom_Z;
   B = sign * in_normal.normal_x / denom_Z;
   rotation_matrix_Z <<    A,     -B,   0.0f,

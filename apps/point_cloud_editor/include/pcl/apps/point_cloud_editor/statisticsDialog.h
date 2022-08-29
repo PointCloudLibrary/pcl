@@ -58,7 +58,7 @@ class StatisticsDialog : public QDialog
     /// @brief Default Constructor
     StatisticsDialog(QWidget *parent = nullptr);
     /// @brief Destructor
-    ~StatisticsDialog ();
+    ~StatisticsDialog () override;
     
   public Q_SLOTS:
     /// @brief update the dialog box.

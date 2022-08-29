@@ -100,7 +100,7 @@ public:
   }
 
   /** Destructor */
-  ~PyramidalKLTTracker() {}
+  ~PyramidalKLTTracker() override = default;
 
   /** \brief Set the number of pyramid levels
    * \param levels desired number of pyramid levels

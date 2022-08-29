@@ -24,13 +24,13 @@ We start by defining convenience types in order not to clutter the code.
 
 .. literalinclude:: sources/alignment_prerejective/alignment_prerejective.cpp
    :language: cpp
-   :lines: 16-22
+   :lines: 15-21
 
 Then we instantiate the necessary data containers, check the input arguments and load the object and scene point clouds. Although we have defined the basic point type to contain normals, we only have those in advance for the object (which is often the case). We will estimate the normal information for the scene below.
 
 .. literalinclude:: sources/alignment_prerejective/alignment_prerejective.cpp
    :language: cpp
-   :lines: 28-49
+   :lines: 27-49
 
 To speed up processing, we use PCL's :pcl:`VoxelGrid <pcl::VoxelGrid>` class to downsample both the object and the scene point clouds to a resolution of 5 mm.
 
@@ -42,39 +42,39 @@ The missing surface normals for the scene are now estimated using PCL's :pcl:`No
 
 .. literalinclude:: sources/alignment_prerejective/alignment_prerejective.cpp
    :language: cpp
-   :lines: 61-66
+   :lines: 61-67
 
 For each point in the downsampled point clouds, we now use PCL's :pcl:`FPFHEstimationOMP <pcl::FPFHEstimationOMP>` class to compute *Fast Point Feature Histogram* (FPFH) descriptors used for matching during the alignment process.
 
 .. literalinclude:: sources/alignment_prerejective/alignment_prerejective.cpp
    :language: cpp
-   :lines: 68-77
+   :lines: 69-78
    
 We are now ready to setup the alignment process. We use the class :pcl:`SampleConsensusPrerejective <pcl::SampleConsensusPrerejective>`, which implements an efficient RANSAC pose estimation loop. This is achieved by early elimination of bad pose hypothesis using the class :pcl:`CorrespondenceRejectorPoly <pcl::registration::CorrespondenceRejectorPoly>`.
 
 .. literalinclude:: sources/alignment_prerejective/alignment_prerejective.cpp
    :language: cpp
-   :lines: 79-91
+   :lines: 80-92
 
 .. note:: Apart from the usual input point clouds and features, this class takes some additional runtime parameters which have great influence on the performance of the alignment algorithm. The first two have the same meaning as in the alignment class :pcl:`SampleConsensusInitialAlignment <pcl::SampleConsensusInitialAlignment>`:
 
   - Number of samples - *setNumberOfSamples ()*: The number of point correspondences to sample between the object and the scene. At minimum, 3 points are required to calculate a pose.
   - Correspondence randomness - *setCorrespondenceRandomness ()*: Instead of matching each object FPFH descriptor to its nearest matching feature in the scene, we can choose between the *N* best matches at random. This increases the iterations necessary, but also makes the algorithm robust towards outlier matches.
   - Polygonal similarity threshold - *setSimilarityThreshold ()*: The alignment class uses the :pcl:`CorrespondenceRejectorPoly <pcl::registration::CorrespondenceRejectorPoly>` class for early elimination of bad poses based on pose-invariant geometric consistencies of the inter-distances between sampled points on the object and the scene. The closer this value is set to 1, the more greedy and thereby fast the algorithm becomes. However, this also increases the risk of eliminating good poses when noise is present.
-  - Inlier threshold - *setMaxCorrespondenceDistance ()*: This is the Euclidean distance threshold used for determining whether a transformed object point is correctly aligned to the nearest scene point or not. In this example, we have used a heuristic value of 1.5 times the point cloud resolution.
+  - Inlier threshold - *setMaxCorrespondenceDistance ()*: This is the Euclidean distance threshold used for determining whether a transformed object point is correctly aligned to the nearest scene point or not. In this example, we have used a heuristic value of 2.5 times the point cloud resolution.
   - Inlier fraction - *setInlierFraction ()*: In many practical scenarios, large parts of the observed object in the scene are not visible, either due to clutter, occlusions or both. In such cases, we need to allow for pose hypotheses that do not align all object points to the scene. The absolute number of correctly aligned points is determined using the inlier threshold, and if the ratio of this number to the total number of points in the object is higher than the specified inlier fraction, we accept a pose hypothesis as valid.
 
 Finally, we are ready to execute the alignment process.
 
 .. literalinclude:: sources/alignment_prerejective/alignment_prerejective.cpp
    :language: cpp
-   :lines: 92-95
+   :lines: 93-96
 
 The aligned object is stored in the point cloud *object_aligned*. If a pose with enough inliers was found (more than 25 % of the total number of object points), the algorithm is said to converge, and we can print and visualize the results.
 
 .. literalinclude:: sources/alignment_prerejective/alignment_prerejective.cpp
    :language: cpp
-   :lines: 99-114
+   :lines: 100-115
 
 
 Compiling and running the program
@@ -98,9 +98,9 @@ After a few seconds, you will see a visualization and a terminal output similar 
   R = | -0.999 -0.035 -0.020 | 
       |  0.006  0.369 -0.929 | 
 
-  t = < -0.287, 0.045, 0.126 >
+  t = < -0.120, 0.055, 0.076 >
 
-  Inliers: 987/3432
+  Inliers: 1422/3432
 
 
 The visualization window should look something like the below figures. The scene is shown with green color, and the aligned object model is shown with blue color. Note the high number of non-visible object points.

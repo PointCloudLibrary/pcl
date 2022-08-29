@@ -199,8 +199,9 @@ namespace pcl
 
        for (std::size_t i = 0; i < cloud_size; ++i, ++depth_ptr, color_ptr += sizeof(std::uint8_t) * 3)
        {
-         if (!(*depth_ptr) || (*depth_ptr==0x7FF))
-           memset(color_ptr, 0, sizeof(std::uint8_t)*3);
+         if (!(*depth_ptr) || (*depth_ptr==0x7FF)) {
+           std::fill_n(color_ptr, 3, 0);
+         }
        }
 
        // Compress disparity information

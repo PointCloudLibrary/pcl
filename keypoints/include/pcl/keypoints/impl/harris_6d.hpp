@@ -74,7 +74,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::setNonMaxSupression (bool n
 template <typename PointInT, typename PointOutT, typename NormalT> void
 pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::calculateCombinedCovar (const pcl::Indices& neighbors, float* coefficients) const
 {
-  memset (coefficients, 0, sizeof (float) * 21);
+  std::fill_n(coefficients, 21, 0);
   unsigned count = 0;
   for (const auto &neighbor : neighbors)
   {
@@ -195,7 +195,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
     // Suat: ToDo: remove this magic number or expose using set/get
     if (len > 200.0)
     {
-      len = 1.0 / sqrt (len);
+      len = 1.0 / std::sqrt (len);
       intensity_gradients_->points [idx].gradient_x *= len;
       intensity_gradients_->points [idx].gradient_y *= len;
       intensity_gradients_->points [idx].gradient_z *= len;

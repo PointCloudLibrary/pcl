@@ -193,6 +193,7 @@ namespace pcl
         /** \brief Decode point cloud from input stream
           * \param compressed_tree_data_in_arg: binary input stream containing compressed data
           * \param cloud_arg: reference to decoded point cloud
+          * \warning This function is blocking until there is data available from the input stream. If the stream never contains any data, this will hang forever!
           */
         void
         decodePointCloud (std::istream& compressed_tree_data_in_arg, PointCloudPtr &cloud_arg);

@@ -62,7 +62,7 @@ using ssize_t = SSIZE_T;
 # include <sys/mman.h>
 # include <sys/types.h>
 # include <sys/stat.h>
-# include <sys/fcntl.h>
+# include <fcntl.h>
 # include <cerrno>
 #endif
 #include <cstddef>

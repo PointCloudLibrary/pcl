@@ -52,8 +52,7 @@ class prioPointQueueEntry
 {
 public:
   prioPointQueueEntry ()
-  {
-  }
+  = default;
   prioPointQueueEntry (PointXYZ& point_arg, double pointDistance_arg, int pointIdx_arg)
   {
     point_ = point_arg;
@@ -228,7 +227,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Neighbours_Within_Radius_Search)
 
     for (std::size_t i = 0; i < cloudIn->size (); i++)
     {
-      pointDist = sqrt (
+      pointDist = std::sqrt (
                         ((*cloudIn)[i].x - searchPoint.x) * ((*cloudIn)[i].x - searchPoint.x)
                       + ((*cloudIn)[i].y - searchPoint.y) * ((*cloudIn)[i].y - searchPoint.y)
                       + ((*cloudIn)[i].z - searchPoint.z) * ((*cloudIn)[i].z - searchPoint.z));
@@ -250,7 +249,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Neighbours_Within_Radius_Search)
     // check if result from organized radius search can be also found in bruteforce search
     for (const auto& current : cloudNWRSearch)
     {
-      pointDist = sqrt (
+      pointDist = std::sqrt (
           ((*cloudIn)[current].x-searchPoint.x) * ((*cloudIn)[current].x-searchPoint.x) +
           ((*cloudIn)[current].y-searchPoint.y) * ((*cloudIn)[current].y-searchPoint.y) +
           ((*cloudIn)[current].z-searchPoint.z) * ((*cloudIn)[current].z-searchPoint.z)
@@ -263,7 +262,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Neighbours_Within_Radius_Search)
     // check if bruteforce result from organized radius search can be also found in bruteforce search
     for (const auto& current : cloudSearchBruteforce)
     {
-      pointDist = sqrt (
+      pointDist = std::sqrt (
           ((*cloudIn)[current].x-searchPoint.x) * ((*cloudIn)[current].x-searchPoint.x) +
           ((*cloudIn)[current].y-searchPoint.y) * ((*cloudIn)[current].y-searchPoint.y) +
           ((*cloudIn)[current].z-searchPoint.z) * ((*cloudIn)[current].z-searchPoint.z)

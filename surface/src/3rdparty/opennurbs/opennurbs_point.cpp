@@ -3680,8 +3680,8 @@ ON_2dPoint::ON_2dPoint(const ON_3fPoint& p)
 ON_2dPoint::ON_2dPoint(const ON_4fPoint& h)
 {
   const double w = (h.w != 1.0f && h.w != 0.0f) ? 1.0/((double)h.w) : 1.0;
-  x *= w*h.x;
-  y *= w*h.y;
+  x = w*h.x;
+  y = w*h.y;
 }
 
 ON_2dPoint::ON_2dPoint(const ON_2fVector& v)

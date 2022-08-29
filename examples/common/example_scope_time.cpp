@@ -53,6 +53,7 @@ main ()
     {
       total += static_cast<float> (i);
     }
+    std::cout << "total = " << total << std::endl;
   }
   std::cout << "Done." << std::endl;
 

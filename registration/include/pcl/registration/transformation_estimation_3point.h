@@ -68,10 +68,10 @@ public:
   /** \endcond */
 
   /** \brief Constructor */
-  TransformationEstimation3Point(){};
+  TransformationEstimation3Point() = default;
 
   /** \brief Destructor */
-  ~TransformationEstimation3Point(){};
+  ~TransformationEstimation3Point() override = default;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud. \param[in] cloud_src the source point cloud dataset \param[in]

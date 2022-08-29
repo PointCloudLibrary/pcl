@@ -166,8 +166,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getScatterMatrix (const int& c
 {
   const PointInT& current_point = (*input_)[current_index];
 
-  double central_point[3];
-  memset(central_point, 0, sizeof(double) * 3);
+  double central_point[3]{};
 
   central_point[0] = current_point.x;
   central_point[1] = current_point.y;
@@ -186,15 +185,13 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getScatterMatrix (const int& c
   if (n_neighbors < min_neighbors_)
     return;
 
-  double cov[9];
-  memset(cov, 0, sizeof(double) * 9);
+  double cov[9]{};
 
   for (const auto& n_idx : nn_indices)
   {
     const PointInT& n_point = (*input_)[n_idx];
 
-    double neigh_point[3];
-    memset(neigh_point, 0, sizeof(double) * 3);
+    double neigh_point[3]{};
 
     neigh_point[0] = n_point.x;
     neigh_point[1] = n_point.y;
@@ -252,8 +249,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
 
     delete[] third_eigen_value_;
 
-  third_eigen_value_ = new double[input_->size ()];
-  memset(third_eigen_value_, 0, sizeof(double) * input_->size ());
+  third_eigen_value_ = new double[input_->size ()]{};
 
     delete[] edge_points_;
 

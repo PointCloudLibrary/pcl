@@ -49,8 +49,7 @@ class Statistics
   public:
     /// @brief Destructor
     virtual ~Statistics ()
-    {
-    }
+    = default;
 
     /// @brief Returns the strings of the statistics.
     static
@@ -64,8 +63,7 @@ class Statistics
   protected:
     /// @brief The default constructor.
     Statistics ()
-    {
-    }
+    = default;
 
     /// @brief Copy Constructor
     Statistics (const Statistics&)

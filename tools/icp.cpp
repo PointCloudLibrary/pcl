@@ -46,7 +46,6 @@
 
 #include <string>
 #include <iostream>
-#include <fstream>
 #include <vector>
 
 using PointType = pcl::PointXYZ;

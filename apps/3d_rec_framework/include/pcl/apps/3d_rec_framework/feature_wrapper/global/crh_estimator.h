@@ -28,7 +28,7 @@ class CRHEstimation : public GlobalEstimator<PointInT, FeatureT> {
   std::vector<CRHPointCloud::Ptr> crh_histograms_;
 
 public:
-  CRHEstimation() {}
+  CRHEstimation() = default;
 
   void
   setFeatureEstimator(

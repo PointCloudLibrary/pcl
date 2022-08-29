@@ -84,7 +84,7 @@ public:
   explicit OfflineIntegration(Base* parent = nullptr);
 
   /** \brief Destructor. */
-  ~OfflineIntegration();
+  ~OfflineIntegration() override;
 
 public Q_SLOTS:
 
@@ -126,16 +126,16 @@ private:
    * documentation of calcFPS. */
   class ComputationFPS : public Base::FPS {
   public:
-    ComputationFPS() {}
-    ~ComputationFPS() {}
+    ComputationFPS() = default;
+    ~ComputationFPS() = default;
   };
 
   /** \brief Helper object for the visualization thread. Please have a look at the
    * documentation of calcFPS. */
   class VisualizationFPS : public Base::FPS {
   public:
-    VisualizationFPS() {}
-    ~VisualizationFPS() {}
+    VisualizationFPS() = default;
+    ~VisualizationFPS() = default;
   };
 
   /** \brief Get a list of files with from a given directory.

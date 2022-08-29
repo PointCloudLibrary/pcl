@@ -43,8 +43,9 @@
 
 #pragma once
 
-#include <pcl/geometry/boost.h>
 #include <pcl/geometry/mesh_indices.h>
+
+#include <boost/operators.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 // VertexAroundVertexCirculator

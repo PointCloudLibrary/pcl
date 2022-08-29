@@ -136,7 +136,7 @@ namespace pcl
 
           /** \brief destructor 
             */
-            virtual ~FlannIndexCreator () {}
+            virtual ~FlannIndexCreator () = default;
         };
         using FlannIndexCreatorPtr = shared_ptr<FlannIndexCreator>;
 
@@ -152,7 +152,7 @@ namespace pcl
             KdTreeIndexCreator (unsigned int max_leaf_size=15) : max_leaf_size_ (max_leaf_size){}
       
             /** \brief Empty destructor */
-            ~KdTreeIndexCreator () {}
+            ~KdTreeIndexCreator () override = default;
 
           /** \brief Create a FLANN Index from the input data.
             * \param[in] data The FLANN matrix containing the input.
@@ -172,10 +172,10 @@ namespace pcl
             * a maximum of max_leaf_size points per leaf node. Higher values make index creation
             * cheaper, but search more costly (and the other way around).
             */
-            KMeansIndexCreator (){}
+            KMeansIndexCreator () = default;
             
             /** \brief Empty destructor */
-            virtual ~KMeansIndexCreator () {}
+            virtual ~KMeansIndexCreator () = default;
 
           /** \brief Create a FLANN Index from the input data.
             * \param[in] data The FLANN matrix containing the input.
@@ -197,7 +197,7 @@ namespace pcl
             KdTreeMultiIndexCreator (int trees = 4) : trees_ (trees) {}
       
             /** \brief Empty destructor */
-            virtual ~KdTreeMultiIndexCreator () {}
+            virtual ~KdTreeMultiIndexCreator () = default;
 
           /** \brief Create a FLANN Index from the input data.
             * \param[in] data The FLANN matrix containing the input.
@@ -212,7 +212,7 @@ namespace pcl
 
         /** \brief Destructor for FlannSearch. */
         
-        ~FlannSearch ();
+        ~FlannSearch () override;
 
 
         //void

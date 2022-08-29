@@ -1089,13 +1089,9 @@ pcl::io::saveOBJFile (const std::string &file_name,
     }
   }
 
-  unsigned f_idx = 0;
-
   // int idx_vt =0;
   for (unsigned m = 0; m < nr_meshes; ++m)
   {
-    if (m > 0) f_idx += static_cast<unsigned> (tex_mesh.tex_polygons[m-1].size ());
-
     fs << "# The material will be used for mesh " << m << '\n';
     fs << "usemtl " <<  tex_mesh.tex_materials[m].tex_name << '\n';
     fs << "# Faces" << '\n';

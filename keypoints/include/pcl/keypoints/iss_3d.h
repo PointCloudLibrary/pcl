@@ -129,7 +129,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      ~ISSKeypoint3D ()
+      ~ISSKeypoint3D () override
       {
         delete[] third_eigen_value_;
         delete[] edge_points_;

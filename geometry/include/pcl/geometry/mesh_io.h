@@ -74,7 +74,7 @@ public:
   using FaceIndex = typename Mesh::FaceIndex;
 
   /** \brief Constructor. */
-  MeshIO() {}
+  MeshIO() = default;
 
   /** \brief Read the mesh from a file with the given filename.
    * \param[in] filename Path to the file.

@@ -38,7 +38,7 @@ public:
   : pcl::GrabCut<pcl::PointXYZRGB>(K, lambda)
   {}
 
-  ~GrabCutHelper() {}
+  ~GrabCutHelper() override = default;
 
   void
   setInputCloud(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud) override;
@@ -177,7 +177,7 @@ void
 GrabCutHelper::buildImages()
 {
   using namespace pcl::segmentation::grabcut;
-  memset(&(*n_links_image_)[0], 0, sizeof(float) * n_links_image_->size());
+  std::fill(n_links_image_->begin(), n_links_image_->end(), 0.0f);
   for (int y = 0; y < static_cast<int>(image_->height); ++y) {
     for (int x = 0; x < static_cast<int>(image_->width); ++x) {
       std::size_t index = y * image_->width + x;

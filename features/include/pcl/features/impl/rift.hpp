@@ -171,7 +171,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
     computeRIFT (*surface_, *gradient_, (*indices_)[idx], static_cast<float> (search_radius_), nn_indices, nn_dist_sqr, rift_descriptor);
 
     // Default layout is column major, copy elementwise
-    std::copy_n (rift_descriptor.data (), rift_descriptor.size (), output[idx].histogram);
+    std::copy (rift_descriptor.data (), rift_descriptor.data () + rift_descriptor.size (), output[idx].histogram);
   }
 }
 

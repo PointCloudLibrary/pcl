@@ -76,7 +76,7 @@ public:
 
   /** \brief Read input data. Only an internal counter is increased.
    */
-  void addPointIndex(uindex_t) { point_counter_++; }
+  void addPointIndex(index_t) override { point_counter_++; }
 
   /** \brief Return point counter.
    * \return Amount of points
@@ -122,7 +122,7 @@ public:
 
   /** \brief Empty class deconstructor. */
 
-  ~OctreePointCloudDensity() = default;
+  ~OctreePointCloudDensity() override = default;
 
   /** \brief Get the amount of points within a leaf node voxel which is addressed by a
    * point

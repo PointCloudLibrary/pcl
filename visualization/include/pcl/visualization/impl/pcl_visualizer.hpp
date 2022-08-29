@@ -249,8 +249,9 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
   vtkIdType ptr = 0;
   if (cloud->is_dense)
   {
-    for (vtkIdType i = 0; i < nr_points; ++i, ptr += 3)
-      std::copy (&(*cloud)[i].x, &(*cloud)[i].x + 3, &data[ptr]);
+    for (vtkIdType i = 0; i < nr_points; ++i, ptr += 3) {
+      std::copy(&(*cloud)[i].x, &(*cloud)[i].x + 3, &data[ptr]);
+    }
   }
   else
   {
@@ -1077,6 +1078,7 @@ pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (
   vtkSmartPointer<vtkAppendPolyData> alldata = vtkSmartPointer<vtkAppendPolyData>::New ();
   alldata->AddInputData (line_1_data);
   alldata->AddInputData (line_2_data);
+  alldata->Update ();
 
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
@@ -1686,8 +1688,9 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
   // If the dataset is dense (no NaNs)
   if (cloud->is_dense)
   {
-    for (vtkIdType i = 0; i < nr_points; ++i, ptr += 3)
-      std::copy (&(*cloud)[i].x, &(*cloud)[i].x + 3, &data[ptr]);
+    for (vtkIdType i = 0; i < nr_points; ++i, ptr += 3) {
+      std::copy(&(*cloud)[i].x, &(*cloud)[i].x + 3, &data[ptr]);
+    }
   }
   else
   {

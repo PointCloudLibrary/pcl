@@ -28,7 +28,8 @@ steps:
         -DBUILD_apps_cloud_composer=ON \
         -DBUILD_apps_in_hand_scanner=ON \
         -DBUILD_apps_modeler=ON \
-        -DBUILD_apps_point_cloud_editor=ON
+        -DBUILD_apps_point_cloud_editor=ON \
+        -DBoost_USE_DEBUG_RUNTIME=OFF
     displayName: 'CMake Configuration'
   - script: |
       cd $BUILD_DIR

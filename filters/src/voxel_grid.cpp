@@ -38,7 +38,6 @@
  *
  */
 
-#include <iostream>
 #include <limits>
 #include <pcl/common/io.h>
 #include <pcl/filters/impl/voxel_grid.hpp>

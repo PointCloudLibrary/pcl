@@ -131,7 +131,7 @@ protected:
 public:
   GlobalNNPipeline() { NN_ = 1; }
 
-  ~GlobalNNPipeline() {}
+  ~GlobalNNPipeline() = default;
 
   void
   setNN(int nn) override

@@ -38,10 +38,10 @@
 
 #pragma once
 
+#include <boost/filesystem.hpp>
+
 #include <mutex>
 #include <vector>
-
-#include <pcl/outofcore/boost.h>
 
 namespace pcl
 {

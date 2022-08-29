@@ -56,9 +56,7 @@ window_width_(WINDOW_WIDTH), window_height_(WINDOW_HEIGHT)
 }
 
 MainWindow::~MainWindow()
-{
-
-}
+= default;
 
 void
 MainWindow::about ()

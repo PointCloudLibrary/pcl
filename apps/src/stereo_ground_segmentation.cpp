@@ -160,7 +160,7 @@ public:
     road_comparator->setAngularThreshold(pcl::deg2rad(3.0f));
   }
 
-  ~HRCSSegmentation() {}
+  ~HRCSSegmentation() = default;
 
   void
   cloud_cb_(const pcl::PointCloud<PointT>::ConstPtr& cloud)
