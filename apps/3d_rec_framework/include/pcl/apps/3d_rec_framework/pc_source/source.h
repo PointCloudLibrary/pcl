@@ -195,9 +195,9 @@ public:
   getModels(std::string& model_id)
   {
     models_->erase(std::remove_if(models_->begin(),
-                                 models_->end(),
-                                 [=](ModelT& s) { return (s.id_ == model_id); }),
-                  models_->end());
+                                  models_->end(),
+                                  [=](ModelT& s) { return (s.id_ == model_id); }),
+                   models_->end());
 
     return models_;
   }
