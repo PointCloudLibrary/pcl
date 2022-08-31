@@ -208,11 +208,12 @@ pcl::modeler::SceneTree::slotImportPointCloud()
     return;
 
   for (const auto& filename : filenames) {
-    if (!openPointCloud(filename))
+    if (!openPointCloud(filename)) {
       QMessageBox::warning(
           main_window,
           tr("Failed to Import Point Cloud"),
-          tr("Can not import point cloud file %1 as .pcd file!").arg(*filenames_it));
+          tr("Can not import point cloud file %1 as .pcd file!").arg(filename));
+    }
   }
 }
 
