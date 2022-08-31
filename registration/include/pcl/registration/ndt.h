@@ -131,6 +131,18 @@ public:
     }
   }
 
+  /** \brief Set the minimum number of points required for a cell to be used (must be 3
+   * or greater for covariance calculation). Calls the function of the underlying
+   * VoxelGridCovariance. This function must be called before `setInputTarget` and
+   * `setResolution`. \param[in] min_points_per_voxel the minimum number of points
+   * required for a voxel to be used
+   */
+  inline void
+  setMinPointPerVoxel(unsigned int min_points_per_voxel)
+  {
+    target_cells_.setMinPointPerVoxel(min_points_per_voxel);
+  }
+
   /** \brief Get voxel grid resolution.
    * \return side length of voxels
    */
