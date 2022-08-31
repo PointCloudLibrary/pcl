@@ -100,16 +100,16 @@ TEST (ORROctreeTest, OctreeSphereIntersection)
   list<ORROctree::Node*> inter_leaves;
 
   // Run through all full leaves
-  for ( std::vector<ORROctree::Node*>::const_iterator leaf1 = full_leaves.begin () ; leaf1 != full_leaves.end () ; ++leaf1 )
+  for ( const auto& leaf1 : full_leaves )
   {
-    const ORROctree::Node::Data* node_data1 = (*leaf1)->getData ();
+    const ORROctree::Node::Data* node_data1 = leaf1->getData ();
     // Get all full leaves at the right distance to the current leaf
     inter_leaves.clear ();
     octree.getFullLeavesIntersectedBySphere (node_data1->getPoint (), pair_width, inter_leaves);
     // Ensure that inter_leaves does not contain leaf1
-    for ( list<ORROctree::Node*>::iterator leaf2 = inter_leaves.begin () ; leaf2 != inter_leaves.end () ; ++leaf2 )
+    for ( const auto& leaf2 : inter_leaves )
     {
-      EXPECT_NE(*leaf1, *leaf2);
+      EXPECT_NE(leaf1, leaf2);
     }
   }
 }

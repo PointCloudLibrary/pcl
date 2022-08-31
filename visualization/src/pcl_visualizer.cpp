@@ -4592,15 +4592,15 @@ pcl::visualization::PCLVisualizer::textureFromTexMaterial (const pcl::TexMateria
                  boost::filesystem::directory_iterator (),
                  back_inserter (paths));
 
-      for (paths_vector::const_iterator it = paths.begin (); it != paths.end (); ++it)
+      for (const auto& path : paths)
       {
-        if (boost::filesystem::is_regular_file (*it))
+        if (boost::filesystem::is_regular_file (path))
         {
-          std::string name = it->string ();
+          std::string name = path.string ();
           boost::to_upper (name);
           if (name == upper_filename)
           {
-            real_name = it->string ();
+            real_name = path.string ();
             break;
           }
         }

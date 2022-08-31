@@ -618,8 +618,11 @@ pcl::visualization::PointCloudColorHandlerLabelField<pcl::PCLPointCloud2>::getCo
 
     // Assign Glasbey colors in ascending order of labels
     std::size_t color = 0;
-    for (auto iter = labels.begin (); iter != labels.end (); ++iter, ++color)
-      colormap[*iter] = GlasbeyLUT::at (color % GlasbeyLUT::size ());
+    for (const auto& label : labels)
+    {
+      colormap[label] = GlasbeyLUT::at(color % GlasbeyLUT::size());
+      ++color;
+    }
   }
   // If XYZ present, check if the points are invalid
   int x_idx = pcl::getFieldIndex (*cloud_, "x");

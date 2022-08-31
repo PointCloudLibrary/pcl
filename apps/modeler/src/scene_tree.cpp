@@ -207,10 +207,8 @@ pcl::modeler::SceneTree::slotImportPointCloud()
   if (filenames.isEmpty())
     return;
 
-  for (QStringList::const_iterator filenames_it = filenames.begin();
-       filenames_it != filenames.end();
-       ++filenames_it) {
-    if (!openPointCloud(*filenames_it))
+  for (const auto& filename : filenames) {
+    if (!openPointCloud(filename))
       QMessageBox::warning(
           main_window,
           tr("Failed to Import Point Cloud"),
@@ -379,10 +377,8 @@ pcl::modeler::SceneTree::slotUpdateOnSelectionChange(const QItemSelection& selec
                                                      const QItemSelection& deselected)
 {
   QModelIndexList selected_indices = selected.indexes();
-  for (QModelIndexList::const_iterator selected_indices_it = selected_indices.begin();
-       selected_indices_it != selected_indices.end();
-       ++selected_indices_it) {
-    QTreeWidgetItem* item = itemFromIndex(*selected_indices_it);
+  for (const auto& selected_index : selected_indices) {
+    QTreeWidgetItem* item = itemFromIndex(selected_index);
     RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(item);
     if (render_window_item != nullptr) {
       render_window_item->getRenderWindow()->setActive(true);

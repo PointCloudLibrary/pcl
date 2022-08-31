@@ -1491,17 +1491,15 @@ struct OctreePointCloudSierpinskiTest
     std::srand (42);
 
     // Fill the point cloud
-    for (std::vector<std::pair<Eigen::Vector3f, Eigen::Vector3f> >::const_iterator it = voxels.begin ();
-        it != voxels.end ();
-        ++it)
+    for (const auto& voxel : voxels)
     {
       const static float eps = std::numeric_limits<float>::epsilon ();
-      double x_min = it->first.x () + eps;
-      double y_min = it->first.y () + eps;
-      double z_min = it->first.z () + eps;
-      double x_max = it->second.x () - eps;
-      double y_max = it->second.y () - eps;
-      double z_max = it->second.z () - eps;
+      double x_min = voxel.first.x () + eps;
+      double y_min = voxel.first.y () + eps;
+      double z_min = voxel.first.z () + eps;
+      double x_max = voxel.second.x () - eps;
+      double y_max = voxel.second.y () - eps;
+      double z_max = voxel.second.z () - eps;
 
       for (unsigned int i = 0; i < nb_pt_in_voxel; ++i)
       {

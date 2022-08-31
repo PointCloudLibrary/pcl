@@ -89,11 +89,12 @@ main (int argc, char **argv)
 
   // Saving the clusters in separate pcd files
   int j = 0;
-  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
+  for (const auto& cluster : cluster_indices)
   {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
-    for (const auto &index : it->indices)
-      cloud_cluster->push_back ((*cloud_ptr)[index]); 
+    for (const auto &index : cluster.indices) {
+      cloud_cluster->push_back((*cloud_ptr)[index]);
+    }
     cloud_cluster->width = cloud_cluster->size ();
     cloud_cluster->height = 1;
     cloud_cluster->is_dense = true;
@@ -102,7 +103,7 @@ main (int argc, char **argv)
     std::stringstream ss;
     ss << "./cloud_cluster_" << j << ".pcd";
     writer.write<pcl::PointXYZ> (ss.str (), *cloud_cluster, false); 
-    j++;
+    ++j;
   }
 
   return (0);

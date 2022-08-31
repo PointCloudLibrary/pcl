@@ -168,7 +168,7 @@ main (int argc, char *argv[])
   ec.extract (cluster_indices);
 
   int j = 0;
-  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it, j++)
+  for (const auto& cluster : cluster_indices)
   {
     pcl::PointCloud<PointNormal>::Ptr cloud_cluster_don (new pcl::PointCloud<PointNormal>);
     for (const auto& idx : it->indices)
@@ -185,5 +185,6 @@ main (int argc, char *argv[])
     std::stringstream ss;
     ss << "don_cluster_" << j << ".pcd";
     writer.write<pcl::PointNormal> (ss.str (), *cloud_cluster_don, false);
+    ++j;
   }
 }
