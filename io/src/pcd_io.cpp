@@ -634,10 +634,7 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
     memcpy (&cloud.data[0], &map[0] + data_idx, cloud.data.size ());
 
   // Extra checks (not needed for ASCII)
-  int point_size = 0;
-  if (cloud.width * cloud.height != 0) {
-    point_size = static_cast<int> (cloud.data.size () / (cloud.height * cloud.width));
-  }
+  int point_size = (cloud.width * cloud.height == 0) ? 0 : static_cast<int> (cloud.data.size () / (cloud.height * cloud.width));
   // Once copied, we need to go over each field and check if it has NaN/Inf values and assign cloud.is_dense to true or false
   for (uindex_t i = 0; i < cloud.width * cloud.height; ++i)
   {
@@ -1153,13 +1150,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PCLPointClo
   setLockingPermissions (file_name, file_lock);
 
   int nr_points  = cloud.width * cloud.height;
-  int point_size = 0;
-  if (nr_points != 0) {
-    point_size = static_cast<int> (cloud.data.size () / nr_points);
-  } else {
-    // Do nothing
-    // If nr_points is equal to 0, there is no need to set point_size correctly
-  }
+  int point_size = (nr_points == 0) ? 0 : static_cast<int> (cloud.data.size () / nr_points);
 
   // Write the header information
   fs << generateHeaderASCII (cloud, origin, orientation) << "DATA ascii\n";

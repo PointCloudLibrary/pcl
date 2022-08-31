@@ -113,7 +113,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 {
   if (cloud.empty ())
   {
-    PCL_WARN ("[pcl::PCDWriter::writeBinary] Input point cloud has no data!");
+    PCL_WARN ("[pcl::PCDWriter::writeBinary] Input point cloud has no data!\n");
   }
   int data_idx = 0;
   std::ostringstream oss;
@@ -245,7 +245,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
 {
   if (cloud.empty ())
   {
-    PCL_WARN ("[pcl::PCDWriter::writeBinaryCompressed] Input point cloud has no data!");
+    PCL_WARN ("[pcl::PCDWriter::writeBinaryCompressed] Input point cloud has no data!\n");
   }
   int data_idx = 0;
   std::ostringstream oss;
@@ -361,6 +361,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
       io::raw_close (fd);
   #endif
       resetLockingPermissions (file_name, file_lock);
+      PCL_WARN("[pcl::PCDWriter::writeBinaryCompressed] Error during compression!\n");
       return (-1);
     }
   }
@@ -444,7 +445,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
 {
   if (cloud.empty ())
   {
-    PCL_WARN ("[pcl::PCDWriter::writeASCII] Input point cloud has no data!");
+    PCL_WARN ("[pcl::PCDWriter::writeASCII] Input point cloud has no data!\n");
   }
 
   if (cloud.width * cloud.height != cloud.size ())
@@ -597,7 +598,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 {
   if (cloud.empty () || indices.empty ())
   {
-    PCL_WARN ("[pcl::PCDWriter::writeBinary] Input point cloud has no data or empty indices given!");
+    PCL_WARN ("[pcl::PCDWriter::writeBinary] Input point cloud has no data or empty indices given!\n");
   }
   int data_idx = 0;
   std::ostringstream oss;
@@ -727,7 +728,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
 {
   if (cloud.empty () || indices.empty ())
   {
-    PCL_WARN ("[pcl::PCDWriter::writeASCII] Input point cloud has no data or empty indices given!");
+    PCL_WARN ("[pcl::PCDWriter::writeASCII] Input point cloud has no data or empty indices given!\n");
   }
 
   if (cloud.width * cloud.height != cloud.size ())

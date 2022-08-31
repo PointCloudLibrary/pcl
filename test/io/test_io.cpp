@@ -670,40 +670,44 @@ TEST (PCL, EmptyCloudToPCD)
   pcl::PointCloud<pcl::PointXYZ> cloud_in_ascii;
   cloud_in_ascii.width = 10; // Make sure loadPCDFile overwrites this
   cloud_in_ascii.height = 10; // Make sure loadPCDFile overwrites this
-  pcl::io::loadPCDFile("ascii.pcd", cloud_in_ascii);
-  remove("ascii.pcd");
+  res = pcl::io::loadPCDFile("ascii.pcd", cloud_in_ascii);
+  EXPECT_EQ (0, res);
   EXPECT_EQ(cloud.width, cloud_in_ascii.width);
   EXPECT_EQ(cloud.height, cloud_in_ascii.height);
+  remove ("ascii.pcd");
   
   pcl::Indices indices;
   res = pcl::io::savePCDFile("ascii_indices.pcd", cloud, indices);
   EXPECT_EQ (0, res);
   pcl::PointCloud<pcl::PointXYZ> cloud_in_indices;
   cloud_in_indices.width = 10; // Make sure loadPCDFile overwrites this
-  pcl::io::loadPCDFile("ascii_indices.pcd", cloud_in_indices);
-  remove("ascii_indices.pcd");
+  res = pcl::io::loadPCDFile("ascii_indices.pcd", cloud_in_indices);
+  EXPECT_EQ (0, res);
   EXPECT_EQ(cloud.width, cloud_in_indices.width);
   EXPECT_EQ(1, cloud_in_indices.height); // if we specify indices height must be 1
+  remove ("ascii_indices.pcd");
   
   res = pcl::io::savePCDFileBinary("binary.pcd", cloud);
   EXPECT_EQ (0, res);
   pcl::PointCloud<pcl::PointXYZ> cloud_in_binary;
   cloud_in_binary.width = 10; // Make sure loadPCDFile overwrites this
   cloud_in_binary.height = 10; // Make sure loadPCDFile overwrites this
-  pcl::io::loadPCDFile("binary.pcd", cloud_in_binary);
-  remove("binary.pcd");
+  res = pcl::io::loadPCDFile("binary.pcd", cloud_in_binary);
+  EXPECT_EQ (0, res);
   EXPECT_EQ(cloud.width, cloud_in_binary.width);
   EXPECT_EQ(cloud.height, cloud_in_binary.height);
+  remove ("binary.pcd");
 
   res = pcl::io::savePCDFileBinaryCompressed("binary_compressed.pcd", cloud);
   EXPECT_EQ (0, res);
   pcl::PointCloud<pcl::PointXYZ> cloud_in_compressed;
   cloud_in_compressed.width = 10; // Make sure loadPCDFile overwrites this
   cloud_in_compressed.height = 10; // Make sure loadPCDFile overwrites this
-  pcl::io::loadPCDFile("binary_compressed.pcd", cloud_in_compressed);
-  remove("binary_compressed.pcd");
+  res = pcl::io::loadPCDFile("binary_compressed.pcd", cloud_in_compressed);
+  EXPECT_EQ (0, res);
   EXPECT_EQ(cloud.width, cloud_in_compressed.width);
   EXPECT_EQ(cloud.height, cloud_in_compressed.height);
+  remove ("binary_compressed.pcd");
 
   // Data initialization for pcl::PCLPointCloud2 interface
   pcl::PCLPointCloud2 cloud2;
@@ -727,10 +731,10 @@ TEST (PCL, EmptyCloudToPCD)
   cloud2_in_ascii.width = 10;
   cloud2_in_ascii.height = 10;
   res = loadPCDFile ("ascii_pc2.pcd", cloud2_in_ascii);
-  remove("ascii_pc2.pcd");
-  EXPECT_NE (-1, res);
+  EXPECT_EQ (0, res);
   EXPECT_EQ (cloud2.width, cloud2_in_ascii.width);
   EXPECT_EQ (cloud2.height, cloud2_in_ascii.height);
+  remove ("ascii_pc2.pcd");
 
   res = pcl::io::savePCDFile ("binary_pc2.pcd", cloud2,
                               Eigen::Vector4f::Zero (),
@@ -742,10 +746,10 @@ TEST (PCL, EmptyCloudToPCD)
   cloud2_in_binary.width = 10;
   cloud2_in_binary.height = 10;
   res = loadPCDFile ("binary_pc2.pcd", cloud2_in_binary);
-  remove("binary_pc2.pcd");
-  EXPECT_NE (-1, res);
+  EXPECT_EQ (0, res);
   EXPECT_EQ (cloud2.width, cloud2_in_binary.width);
   EXPECT_EQ (cloud2.height, cloud2_in_binary.height);
+  remove ("binary_pc2.pcd");
 
   PCDWriter w;
   res = w.writeBinaryCompressed ("compressed_pc2.pcd", cloud2);
@@ -754,10 +758,10 @@ TEST (PCL, EmptyCloudToPCD)
   cloud2_in_compressed.width = 10;
   cloud2_in_compressed.height = 10;
   res = loadPCDFile ("compressed_pc2.pcd", cloud2_in_compressed);
-  remove("compressed_pc2.pcd");
-  EXPECT_NE (-1, res);
+  EXPECT_EQ (0, res);
   EXPECT_EQ (cloud2.width, cloud2_in_compressed.width);
   EXPECT_EQ (cloud2.height, cloud2_in_compressed.height);
+  remove ("compressed_pc2.pcd");
 
   // Test when WIDTH and HEIGHT are not defined
   std::ofstream fs;
@@ -775,12 +779,12 @@ TEST (PCL, EmptyCloudToPCD)
   fs.close ();
   pcl::PCLPointCloud2 incomplete_cloud2_in;
   res = loadPCDFile ("incomplete_ascii.pcd", incomplete_cloud2_in);
-  remove("incomplete_ascii.pcd");
-  EXPECT_NE (-1, res);
+  EXPECT_EQ (0, res);
   EXPECT_EQ (2, incomplete_cloud2_in.width);
   EXPECT_EQ (1, incomplete_cloud2_in.height);
   EXPECT_EQ (true, bool (incomplete_cloud2_in.is_dense));
   EXPECT_EQ (2 * 4 * 4, std::size_t (incomplete_cloud2_in.data.size ()));
+  remove ("incomplete_ascii.pcd");
 
   // Test when HEIGHT are not defined
   fs.open ("incomplete_height_ascii.pcd");
@@ -798,12 +802,12 @@ TEST (PCL, EmptyCloudToPCD)
   fs.close ();
   pcl::PCLPointCloud2 incomplete_height_cloud2_in;
   res = loadPCDFile ("incomplete_height_ascii.pcd", incomplete_height_cloud2_in);
-  remove("incomplete_height_ascii.pcd");
-  EXPECT_NE (-1, res);
+  EXPECT_EQ (0, res);
   EXPECT_EQ (2, incomplete_height_cloud2_in.width);
   EXPECT_EQ (1, incomplete_height_cloud2_in.height);
   EXPECT_EQ (true, bool (incomplete_height_cloud2_in.is_dense));
   EXPECT_EQ (2 * 4 * 4, std::size_t (incomplete_height_cloud2_in.data.size ()));
+  remove ("incomplete_height_ascii.pcd");
 
   // Test invalid height
   fs.open ("invalid_height_ascii.pcd");
@@ -822,27 +826,27 @@ TEST (PCL, EmptyCloudToPCD)
   fs.close ();
   pcl::PCLPointCloud2 invalid_height_cloud2_in;
   res = loadPCDFile ("invalid_height_ascii.pcd", invalid_height_cloud2_in);
-  remove("invalid_height_ascii.pcd");
   EXPECT_EQ (-1, res);
+  remove ("invalid_height_ascii.pcd");
 
   // Test for no field data
   pcl::PCLPointCloud2 empty_cloud;
   res = pcl::io::savePCDFile ("empty_cloud_ascii.pcd", empty_cloud,
                               Eigen::Vector4f::Zero (),
                               Eigen::Quaternionf::Identity ());
-  remove("empty_cloud_ascii.pcd");
   EXPECT_EQ (-1, res);
+  remove ("empty_cloud_ascii.pcd");
 
   res = pcl::io::savePCDFile ("empty_cloud_binary.pcd", empty_cloud,
                               Eigen::Vector4f::Zero (),
                               Eigen::Quaternionf::Identity (),
                               true);
-  remove("empty_cloud_binary.pcd");
   EXPECT_EQ (-1, res);
+  remove ("empty_cloud_binary.pcd");
 
   EXPECT_THROW(w.writeBinaryCompressed ("empty_cloud_compressed.pcd", empty_cloud),
                pcl::IOException);
-  remove("empty_cloud_compressed.pcd");
+  remove ("empty_cloud_compressed.pcd");
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PCDReaderWriter)
