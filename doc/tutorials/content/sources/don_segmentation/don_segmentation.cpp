@@ -171,7 +171,7 @@ main (int argc, char *argv[])
   for (const auto& cluster : cluster_indices)
   {
     pcl::PointCloud<PointNormal>::Ptr cloud_cluster_don (new pcl::PointCloud<PointNormal>);
-    for (const auto& idx : it->indices)
+    for (const auto& idx : cluster.indices)
     {
       cloud_cluster_don->points.push_back ((*doncloud)[idx]);
     }

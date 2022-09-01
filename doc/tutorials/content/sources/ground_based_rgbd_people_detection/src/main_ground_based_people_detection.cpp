@@ -221,13 +221,13 @@ int main (int argc, char** argv)
       pcl::visualization::PointCloudColorHandlerRGBField<PointT> rgb(cloud);
       viewer.addPointCloud<PointT> (cloud, rgb, "input_cloud");
       unsigned int k = 0;
-      for(const auto& cluster : clusters)
+      for(auto& cluster : clusters)
       {
         if(cluster.getPersonConfidence() > min_confidence)             // draw only people with confidence above a threshold
         {
           // draw theoretical person bounding box in the PCL viewer:
           cluster.drawTBoundingBox(viewer, k);
-          k++;
+          ++k;
         }
       }
       std::cout << k << " people found" << std::endl;
