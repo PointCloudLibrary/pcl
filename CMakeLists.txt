@@ -158,6 +158,14 @@ if(CMAKE_COMPILER_IS_MSVC)
     # /MANIFEST:NO") # please, don't disable manifest generation, otherwise crash at start for vs2008
 
     if(PCL_WARNINGS_ARE_ERRORS)
+      # MSVC supports external includes only since Visual Studio 2019 version 16.10.0.
+      # CMake supports external includes since 3.22.0 using the Ninja generator or NMake files (see https://gitlab.kitware.com/cmake/cmake/-/merge_requests/4766)
+      # CMake supports external includes for Visual Studio also since 3.24.0 (see https://gitlab.kitware.com/cmake/cmake/-/merge_requests/7238)
+      if(CMAKE_C_COMPILER_VERSION VERSION_LESS "19.29.30036.3" OR CMAKE_VERSION VERSION_LESS 3.22.0 OR (CMAKE_VERSION VERSION_LESS 3.24.0 AND CMAKE_GENERATOR MATCHES "Visual Studio"))
+        message(WARNING "With the used combination of compiler and CMake version it is not recommended to activate PCL_WARNINGS_ARE_ERRORS, "
+                        "because also warnings from 3rd party components are marked as errors. It is recommended to upgrade to "
+                        "Visual Studio 2019 version 16.10.0 and CMake 3.24.0 (or CMake 3.22.0 if using Ninja or NMake files).")
+      endif()
       string(APPEND CMAKE_CXX_FLAGS " /WX")
     endif()
 
