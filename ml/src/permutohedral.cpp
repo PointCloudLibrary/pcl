@@ -555,19 +555,28 @@ void
 pcl::Permutohedral::debug()
 {
   bool same = true;
-  for (std::size_t i = 0; i < barycentric_.size(); i++) {
-    if (barycentric_[i] != barycentricOLD_[i])
-      same = false;
-    if (offset_[i] != offsetOLD_[i]) {
+  auto i = 0;
+  for (const auto& bary : barycentric_) {
+    if (bary != barycentricOLD_[i]) {
       same = false;
     }
+    if (offset_[i] != offsetOLD_[i]) {
+      {
+        same = false;
+      }
+    }
+    ++i;
   }
 
-  for (std::size_t i = 0; i < blur_neighbors_.size(); i++) {
-    if (blur_neighbors_[i].n1 != blur_neighborsOLD_[i].n1)
+  i = 0;
+  for (const auto& neighbor : blur_neighbors_) {
+    if (neighbor.n1 != blur_neighborsOLD_[i].n1) {
       same = false;
-    if (blur_neighbors_[i].n2 != blur_neighborsOLD_[i].n2)
+    }
+    if (neighbor.n2 != blur_neighborsOLD_[i].n2) {
       same = false;
+    }
+    ++i;
   }
 
   if (same)

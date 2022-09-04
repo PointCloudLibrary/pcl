@@ -169,9 +169,10 @@ public:
 
     pcl::PlanarPolygon<PointT> approx_polygon;
     // Draw Visualization
-    for (std::size_t i = 0; i < regions.size(); i++) {
-      Eigen::Vector3f centroid = regions[i].getCentroid();
-      Eigen::Vector4f model = regions[i].getCoefficients();
+    std::size_t i = 0u;
+    for (const auto& region : regions) {
+      Eigen::Vector3f centroid = region.getCentroid();
+      Eigen::Vector4f model = region.getCoefficients();
       pcl::PointXYZ pt1 = pcl::PointXYZ(centroid[0], centroid[1], centroid[2]);
       pcl::PointXYZ pt2 = pcl::PointXYZ(centroid[0] + (0.5f * model[0]),
                                         centroid[1] + (0.5f * model[1]),
@@ -179,14 +180,14 @@ public:
       std::snprintf(name, sizeof(name), "normal_%zu", i);
       viewer.addArrow(pt2, pt1, 1.0, 0, 0, std::string(name));
 
-      contour->points = regions[i].getContour();
+      contour->points = region.getContour();
       std::snprintf(name, sizeof(name), "plane_%02zu", i);
       pcl::visualization::PointCloudColorHandlerCustom<PointT> color(
           contour, red[i], grn[i], blu[i]);
       viewer.addPointCloud(contour, color, name);
 
       pcl::approximatePolygon(
-          regions[i], approx_polygon, threshold_, polygon_refinement_);
+          region, approx_polygon, threshold_, polygon_refinement_);
       approx_contour->points = approx_polygon.getContour();
       std::cout << "polygon: " << contour->size() << " -> " << approx_contour->size()
                 << std::endl;
@@ -205,6 +206,8 @@ public:
                        0.5 * blu[i],
                        name);
       }
+
+      ++i;
     }
   }
 

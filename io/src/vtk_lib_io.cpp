@@ -434,16 +434,19 @@ pcl::io::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyData>& p
 
   // get field indices for x, y, z (as well as rgb and/or rgba)
   int idx_x = -1, idx_y = -1, idx_z = -1, idx_rgb = -1, idx_rgba = -1, idx_normal_x = -1, idx_normal_y = -1, idx_normal_z = -1;
-  for (int d = 0; d < static_cast<int> (mesh.cloud.fields.size ()); ++d)
+  auto d = 0;
+  for (const auto& field : mesh.cloud.fields)
   {
-    if (mesh.cloud.fields[d].name == "x") idx_x = d;
-    else if (mesh.cloud.fields[d].name == "y") idx_y = d;
-    else if (mesh.cloud.fields[d].name == "z") idx_z = d;
-    else if (mesh.cloud.fields[d].name == "rgb") idx_rgb = d;
-    else if (mesh.cloud.fields[d].name == "rgba") idx_rgba = d;
-    else if (mesh.cloud.fields[d].name == "normal_x") idx_normal_x = d;
-    else if (mesh.cloud.fields[d].name == "normal_y") idx_normal_y = d;
-    else if (mesh.cloud.fields[d].name == "normal_z") idx_normal_z = d;
+    if (field.name == "x") idx_x = d;
+    else if (field.name == "y") idx_y = d;
+    else if (field.name == "z") idx_z = d;
+    else if (field.name == "rgb") idx_rgb = d;
+    else if (field.name == "rgba") idx_rgba = d;
+    else if (field.name == "normal_x") idx_normal_x = d;
+    else if (field.name == "normal_y") idx_normal_y = d;
+    else if (field.name == "normal_z") idx_normal_z = d;
+
+    ++d;
   }
   if ( ( idx_x == -1 ) || ( idx_y == -1 ) || ( idx_z == -1 ) )
     nr_points = 0;

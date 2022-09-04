@@ -340,14 +340,18 @@ ICCVTutorial<FeatureType>::filterCorrespondences()
 {
   std::cout << "correspondence rejection..." << std::flush;
   std::vector<std::pair<unsigned, unsigned>> correspondences;
-  for (std::size_t cIdx = 0; cIdx < source2target_.size(); ++cIdx)
-    if (target2source_[source2target_[cIdx]] == static_cast<int>(cIdx))
-      correspondences.push_back(std::make_pair(cIdx, source2target_[cIdx]));
+  auto cIdx = 0;
+  for (const auto& s2t : source2target_) {
+    if (target2source_[s2t] == static_cast<int>(cIdx)) {
+      correspondences.push_back(std::make_pair(cIdx, s2t));
+    }
+    ++cIdx;
+  }
 
   correspondences_->resize(correspondences.size());
-  for (std::size_t cIdx = 0; cIdx < correspondences.size(); ++cIdx) {
-    (*correspondences_)[cIdx].index_query = correspondences[cIdx].first;
-    (*correspondences_)[cIdx].index_match = correspondences[cIdx].second;
+  for (const auto& correspondence : correspondences) {
+    (*correspondences_)[cIdx].index_query = correspondence.first;
+    (*correspondences_)[cIdx].index_match = correspondence.second;
   }
 
   pcl::registration::CorrespondenceRejectorSampleConsensus<pcl::PointXYZI> rejector;
