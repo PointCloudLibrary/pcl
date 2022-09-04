@@ -186,8 +186,7 @@ public:
           contour, red[i], grn[i], blu[i]);
       viewer.addPointCloud(contour, color, name);
 
-      pcl::approximatePolygon(
-          region, approx_polygon, threshold_, polygon_refinement_);
+      pcl::approximatePolygon(region, approx_polygon, threshold_, polygon_refinement_);
       approx_contour->points = approx_polygon.getContour();
       std::cout << "polygon: " << contour->size() << " -> " << approx_contour->size()
                 << std::endl;

@@ -206,11 +206,9 @@ pcl::SVM::adaptInputToLibSVM(std::vector<SVMData> training_set, svm_problem& pro
     int k = 0;
 
     for (const auto& train_SV : training_set[i].SV)
-      if (train_SV.idx != -1 &&
-          std::isfinite(train_SV.value)) {
+      if (train_SV.idx != -1 && std::isfinite(train_SV.value)) {
         prob.x[i][k].index = train_SV.idx;
-        if (train_SV.idx < scaling_.max &&
-            scaling_.obj[train_SV.idx].index == 1) {
+        if (train_SV.idx < scaling_.max && scaling_.obj[train_SV.idx].index == 1) {
           prob.x[i][k].value = train_SV.value / scaling_.obj[train_SV.idx].value;
         }
         else {
