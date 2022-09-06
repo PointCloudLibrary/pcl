@@ -556,7 +556,7 @@ pcl::io::OpenNI2Grabber::convertToXYZPointCloud (const DepthImage::Ptr& depth_im
 
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-  auto* depth_map = reinterpret_cast<const std::uint16_t*>(depth_image->getData ());
+  const auto* depth_map = reinterpret_cast<const std::uint16_t*>(depth_image->getData ());
   if (depth_image->getWidth () != depth_width_ || depth_image->getHeight () != depth_height_)
   {
     // Resize the image if nessacery
@@ -633,7 +633,7 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
   float fx_inv = 1.0f / fx;
   float fy_inv = 1.0f / fy;
 
-  auto* depth_map = reinterpret_cast<const std::uint16_t*>(depth_image->getData ());
+  const auto* depth_map = reinterpret_cast<const std::uint16_t*>(depth_image->getData ());
   if (depth_image->getWidth () != depth_width_ || depth_image->getHeight () != depth_height_)
   {
     // Resize the image if nessacery
@@ -642,7 +642,7 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
     depth_map = depth_resize_buffer_.data();
   }
 
-  auto* rgb_buffer = reinterpret_cast<const std::uint8_t*>(image->getData ());
+  const auto* rgb_buffer = reinterpret_cast<const std::uint8_t*>(image->getData ());
   if (image->getWidth () != image_width_ || image->getHeight () != image_height_)
   {
     // Resize the image if nessacery
@@ -760,7 +760,7 @@ pcl::io::OpenNI2Grabber::convertToXYZIPointCloud (const IRImage::Ptr &ir_image, 
   float fy_inv = 1.0f / fy;
 
 
-  auto* depth_map = reinterpret_cast<const std::uint16_t*>(depth_image->getData ());
+  const auto* depth_map = reinterpret_cast<const std::uint16_t*>(depth_image->getData ());
   if (depth_image->getWidth () != depth_width_ || depth_image->getHeight () != depth_height_)
   {
     // Resize the image if nessacery
@@ -769,7 +769,7 @@ pcl::io::OpenNI2Grabber::convertToXYZIPointCloud (const IRImage::Ptr &ir_image, 
     depth_map = depth_resize_buffer_.data();
   }
 
-  auto* ir_map = reinterpret_cast<const std::uint16_t*>(ir_image->getData ());
+  const auto* ir_map = reinterpret_cast<const std::uint16_t*>(ir_image->getData ());
   if (ir_image->getWidth () != depth_width_ || ir_image->getHeight () != depth_height_)
   {
     // Resize the image if nessacery
