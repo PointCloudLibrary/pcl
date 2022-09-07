@@ -122,35 +122,7 @@ namespace pcl
         ~OctreePointCloudCompression () override = default;
 
         /** \brief Initialize globals */
-        void initialization () {
-          if (selected_profile_ != MANUAL_CONFIGURATION)
-          {
-            // apply selected compression profile
-
-            // retrieve profile settings
-            const configurationProfile_t selectedProfile = compressionProfiles_[selected_profile_];
-
-            // apply profile settings
-            i_frame_rate_ = selectedProfile.iFrameRate;
-            do_voxel_grid_enDecoding_ = selectedProfile.doVoxelGridDownSampling;
-            this->setResolution (selectedProfile.octreeResolution);
-            point_coder_.setPrecision (static_cast<float> (selectedProfile.pointResolution));
-            do_color_encoding_ = selectedProfile.doColorEncoding;
-            color_coder_.setBitDepth (selectedProfile.colorBitResolution);
-
-          }
-          else 
-          {
-            // configure point & color coder
-            point_coder_.setPrecision (static_cast<float> (point_resolution_));
-            color_coder_.setBitDepth (color_bit_resolution_);
-          }
-
-          if (point_coder_.getPrecision () == this->getResolution ())
-            //disable differential point colding
-            do_voxel_grid_enDecoding_ = true;
-
-        }
+        void initialization ();
 
         /** \brief Add point at index from input pointcloud dataset to octree
          * \param[in] pointIdx_arg the index representing the point in the dataset given by \a setInputCloud to be added
