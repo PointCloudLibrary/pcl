@@ -47,6 +47,7 @@
 #include <QMutexLocker>
 #include <QObject>
 #include <QRadioButton>
+#include <QVTKOpenGLWindow.h>
 #include <ui_pcd_video_player.h>
 
 #include <vtkCamera.h>
@@ -310,6 +311,7 @@ print_usage()
 int
 main(int argc, char** argv)
 {
+  QSurfaceFormat::setDefaultFormat(QVTKOpenGLWindow::defaultFormat());
   QApplication app(argc, argv);
 
   PCDVideoPlayer VideoPlayer;
