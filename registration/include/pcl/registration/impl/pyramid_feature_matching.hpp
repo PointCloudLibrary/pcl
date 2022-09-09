@@ -145,10 +145,9 @@ PyramidFeatureHistogram<
     PointFeature>::PyramidFeatureHistogramLevel::initializeHistogramLevel()
 {
   std::size_t total_vector_size = 1;
-  for (std::vector<std::size_t>::iterator dim_it = bins_per_dimension.begin();
-       dim_it != bins_per_dimension.end();
-       ++dim_it)
-    total_vector_size *= *dim_it;
+  for (const auto& bin : bins_per_dimension) {
+    total_vector_size *= bin;
+  }
 
   hist.resize(total_vector_size, 0);
 }
@@ -187,11 +186,8 @@ PyramidFeatureHistogram<PointFeature>::initializeHistogram()
   nr_dimensions = dimension_range_target_.size();
   nr_features = input_->size();
   float D = 0.0f;
-  for (std::vector<std::pair<float, float>>::iterator range_it =
-           dimension_range_target_.begin();
-       range_it != dimension_range_target_.end();
-       ++range_it) {
-    float aux = range_it->first - range_it->second;
+  for (const auto& dim : dimension_range_target_) {
+    float aux = dim.first - dim.second;
     D += aux * aux;
   }
   D = std::sqrt(D);

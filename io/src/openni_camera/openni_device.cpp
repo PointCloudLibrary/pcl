@@ -394,7 +394,7 @@ void openni_wrapper::OpenNIDevice::InitShiftToDepthConversion ()
 
     for (std::uint32_t nIndex = 1; nIndex < shift_conversion_parameters_.device_max_shift_; nIndex++)
     {
-      std::int32_t nShiftValue = (std::int32_t)nIndex;
+      auto nShiftValue = (std::int32_t)nIndex;
 
       double dFixedRefX = (double) (nShiftValue - nConstShift) /
                           (double) shift_conversion_parameters_.param_coeff_;
@@ -696,8 +696,8 @@ openni_wrapper::OpenNIDevice::isDepthRegistered () const throw ()
 {
   if (hasDepthStream () && hasImageStream() )
   {
-    xn::DepthGenerator& depth_generator = const_cast<xn::DepthGenerator&>(depth_generator_);
-    xn::ImageGenerator& image_generator = const_cast<xn::ImageGenerator&>(image_generator_);
+    auto& depth_generator = const_cast<xn::DepthGenerator&>(depth_generator_);
+    auto& image_generator = const_cast<xn::ImageGenerator&>(image_generator_);
 
     std::lock_guard<std::mutex> image_lock (image_mutex_);
     std::lock_guard<std::mutex> depth_lock (depth_mutex_);
@@ -712,7 +712,7 @@ openni_wrapper::OpenNIDevice::isDepthRegistrationSupported () const throw ()
 {
   std::lock_guard<std::mutex> image_lock (image_mutex_);
   std::lock_guard<std::mutex> depth_lock (depth_mutex_);
-  xn::ImageGenerator& image_generator = const_cast<xn::ImageGenerator&> (image_generator_);
+  auto& image_generator = const_cast<xn::ImageGenerator&> (image_generator_);
   return (depth_generator_.IsValid() && image_generator_.IsValid() && depth_generator_.GetAlternativeViewPointCap().IsViewPointSupported(image_generator));
 }
 
@@ -760,8 +760,8 @@ openni_wrapper::OpenNIDevice::isSynchronized () const throw ()
   {
     std::lock_guard<std::mutex> image_lock (image_mutex_);
     std::lock_guard<std::mutex> depth_lock (depth_mutex_);
-    xn::DepthGenerator& depth_generator = const_cast<xn::DepthGenerator&>(depth_generator_);
-    xn::ImageGenerator& image_generator = const_cast<xn::ImageGenerator&>(image_generator_);
+    auto& depth_generator = const_cast<xn::DepthGenerator&>(depth_generator_);
+    auto& image_generator = const_cast<xn::ImageGenerator&>(image_generator_);
     return (depth_generator.GetFrameSyncCap ().CanFrameSyncWith (image_generator) && depth_generator.GetFrameSyncCap ().IsFrameSyncedWith (image_generator));
   }
   return (false);
@@ -783,7 +783,7 @@ openni_wrapper::OpenNIDevice::isDepthCropped () const
   {
     std::lock_guard<std::mutex> depth_lock (depth_mutex_);
     XnCropping cropping;
-    xn::DepthGenerator& depth_generator = const_cast<xn::DepthGenerator&>(depth_generator_);
+    auto& depth_generator = const_cast<xn::DepthGenerator&>(depth_generator_);
     XnStatus status = depth_generator.GetCroppingCap ().GetCropping (cropping);
     if (status != XN_STATUS_OK)
       THROW_OPENNI_EXCEPTION ("could not read cropping information for depth stream. Reason: %s", xnGetStatusString (status));
@@ -908,7 +908,7 @@ openni_wrapper::OpenNIDevice::IRDataThreadFunction ()
 void __stdcall 
 openni_wrapper::OpenNIDevice::NewDepthDataAvailable (xn::ProductionNode&, void* cookie) noexcept
 {
-  OpenNIDevice* device = reinterpret_cast<OpenNIDevice*>(cookie);
+  auto* device = reinterpret_cast<OpenNIDevice*>(cookie);
   device->depth_condition_.notify_all ();
 }
 
@@ -916,7 +916,7 @@ openni_wrapper::OpenNIDevice::NewDepthDataAvailable (xn::ProductionNode&, void* 
 void __stdcall 
 openni_wrapper::OpenNIDevice::NewImageDataAvailable (xn::ProductionNode&, void* cookie) noexcept
 {
-  OpenNIDevice* device = reinterpret_cast<OpenNIDevice*>(cookie);
+  auto* device = reinterpret_cast<OpenNIDevice*>(cookie);
   device->image_condition_.notify_all ();
 }
 
@@ -924,7 +924,7 @@ openni_wrapper::OpenNIDevice::NewImageDataAvailable (xn::ProductionNode&, void* 
 void __stdcall 
 openni_wrapper::OpenNIDevice::NewIRDataAvailable (xn::ProductionNode&, void* cookie) noexcept
 {
-  OpenNIDevice* device = reinterpret_cast<OpenNIDevice*>(cookie);
+  auto* device = reinterpret_cast<OpenNIDevice*>(cookie);
   device->ir_condition_.notify_all ();
 }
 
@@ -1055,7 +1055,7 @@ openni_wrapper::OpenNIDevice::getAddress () const throw ()
 const char* 
 openni_wrapper::OpenNIDevice::getVendorName () const throw ()
 {
-  XnProductionNodeDescription& description = const_cast<XnProductionNodeDescription&>(device_node_info_.GetDescription ());
+  auto& description = const_cast<XnProductionNodeDescription&>(device_node_info_.GetDescription ());
   return (description.strVendor);
 }
 
@@ -1063,7 +1063,7 @@ openni_wrapper::OpenNIDevice::getVendorName () const throw ()
 const char* 
 openni_wrapper::OpenNIDevice::getProductName () const throw ()
 {
-  XnProductionNodeDescription& description = const_cast<XnProductionNodeDescription&>(device_node_info_.GetDescription ());
+  auto& description = const_cast<XnProductionNodeDescription&>(device_node_info_.GetDescription ());
   return (description.strName);
 }
 

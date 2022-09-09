@@ -93,8 +93,8 @@ using GeometryHandler =
 using GeometryHandlerPtr = GeometryHandler::Ptr;
 using GeometryHandlerConstPtr = GeometryHandler::ConstPtr;
 
-#define NORMALS_SCALE 0.01
-#define PC_SCALE 0.001
+constexpr double NORMALS_SCALE = 0.01;
+constexpr double PC_SCALE = 0.001;
 
 std::uint16_t t_gamma[2048];
 Scene::Ptr scene_;
@@ -494,8 +494,8 @@ main(int argc, char** argv)
 
     int y_s = 0;
     if (!p_file_indices.empty()) {
-      y_s =
-          static_cast<int>(std::floor(sqrt(static_cast<float>(p_file_indices.size()))));
+      y_s = static_cast<int>(
+          std::floor(std::sqrt(static_cast<float>(p_file_indices.size()))));
       x_s = y_s + static_cast<int>(std::ceil(
                       (p_file_indices.size() / static_cast<double>(y_s)) - y_s));
       print_highlight("Preparing to load ");
@@ -503,7 +503,7 @@ main(int argc, char** argv)
     }
     else if (!vtk_file_indices.empty()) {
       y_s = static_cast<int>(
-          std::floor(sqrt(static_cast<float>(vtk_file_indices.size()))));
+          std::floor(std::sqrt(static_cast<float>(vtk_file_indices.size()))));
       x_s = y_s + static_cast<int>(std::ceil(
                       (vtk_file_indices.size() / static_cast<double>(y_s)) - y_s));
       print_highlight("Preparing to load ");

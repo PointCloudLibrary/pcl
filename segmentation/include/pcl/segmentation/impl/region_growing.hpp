@@ -275,7 +275,7 @@ pcl::RegionGrowing<PointT, NormalT>::extract (std::vector <pcl::PointIndices>& c
   assembleRegions ();
 
   clusters.resize (clusters_.size ());
-  std::vector<pcl::PointIndices>::iterator cluster_iter_input = clusters.begin ();
+  auto cluster_iter_input = clusters.begin ();
   for (const auto& cluster : clusters_)
   {
     if ((cluster.indices.size () >= min_pts_per_cluster_) &&

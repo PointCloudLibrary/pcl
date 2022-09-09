@@ -131,7 +131,7 @@ namespace pcl
       {
         target_ = target;
         // Cache the size and fill the target indices
-        const index_t target_size = static_cast<index_t> (target->size ());
+        const auto target_size = static_cast<index_t> (target->size ());
         indices_tgt_.reset (new Indices (target_size));
         std::iota (indices_tgt_->begin (), indices_tgt_->end (), 0);
         computeOriginalIndexMapping ();

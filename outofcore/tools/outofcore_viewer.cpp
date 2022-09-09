@@ -233,7 +233,7 @@ outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octr
   Scene *scene = Scene::instance ();
 
   // Clouds
-  OutofcoreCloud *cloud = new OutofcoreCloud ("my_octree", tree_root);
+  auto *cloud = new OutofcoreCloud ("my_octree", tree_root);
   cloud->setDisplayDepth (depth);
   cloud->setDisplayVoxels (display_octree);
   OutofcoreCloud::cloud_data_cache.setCapacity(gpu_cache_size*1024);

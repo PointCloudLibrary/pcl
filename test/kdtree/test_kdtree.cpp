@@ -107,7 +107,7 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   
   for (const auto &k_index : k_indices)
   {
-    std::set<int>::iterator brute_force_result_it = brute_force_result.find (k_index);
+    auto brute_force_result_it = brute_force_result.find (k_index);
     bool ok = brute_force_result_it != brute_force_result.end ();
     //if (!ok)  std::cerr << k_indices[i] << " is not correct...\n";
     //else      std::cerr << k_indices[i] << " is correct...\n";
@@ -172,7 +172,7 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
   }
   float max_dist = 0.0f;
   unsigned int counter = 0;
-  for (std::multimap<float, int>::iterator it = sorted_brute_force_result.begin (); it != sorted_brute_force_result.end () && counter < no_of_neighbors; ++it)
+  for (auto it = sorted_brute_force_result.begin (); it != sorted_brute_force_result.end () && counter < no_of_neighbors; ++it)
   {
     max_dist = std::max (max_dist, it->first);
     ++counter;

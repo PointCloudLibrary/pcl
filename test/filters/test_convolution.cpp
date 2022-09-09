@@ -62,7 +62,7 @@ RGB interpolate_color(float lower_bound, float upper_bound, float value)
   if (value <= lower_bound) return colormap[0];
   if (value >= upper_bound) return colormap.back();
   float step_size = (upper_bound - lower_bound) / static_cast<float>(colormap.size() - 1);
-  std::size_t lower_index = static_cast<std::size_t>((value - lower_bound) / step_size);
+  auto lower_index = static_cast<std::size_t>((value - lower_bound) / step_size);
   value -= (lower_bound + static_cast<float>(lower_index) * step_size);
   if (value == 0) return colormap[lower_index];
   auto interpolate = [](std::uint8_t lower, std::uint8_t upper, float step_size, float value) {

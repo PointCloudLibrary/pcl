@@ -53,7 +53,7 @@ PCLHistogramVisualizer::addFeatureHistogram (
     const pcl::PointCloud<PointT> &cloud, int hsize,
     const std::string &id, int win_width, int win_height)
 {
-  RenWinInteractMap::iterator am_it = wins_.find (id);
+  auto am_it = wins_.find (id);
   if (am_it != wins_.end ())
   {
     PCL_WARN ("[addFeatureHistogram] A window with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
@@ -105,7 +105,7 @@ PCLHistogramVisualizer::addFeatureHistogram (
     return (false);
   }
 
-  RenWinInteractMap::iterator am_it = wins_.find (id);
+  auto am_it = wins_.find (id);
   if (am_it != wins_.end ())
   {
     PCL_WARN ("[addFeatureHistogram] A window with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
@@ -141,7 +141,7 @@ PCLHistogramVisualizer::updateFeatureHistogram (
     const pcl::PointCloud<PointT> &cloud, int hsize,
     const std::string &id)
 {
-  RenWinInteractMap::iterator am_it = wins_.find (id);
+  auto am_it = wins_.find (id);
   if (am_it == wins_.end ())
   {
     PCL_WARN ("[updateFeatureHistogram] A window with id <%s> does not exists!.\n", id.c_str ());
@@ -187,7 +187,7 @@ PCLHistogramVisualizer::updateFeatureHistogram (
     return (false);
   }
 
-  RenWinInteractMap::iterator am_it = wins_.find (id);
+  auto am_it = wins_.find (id);
   if (am_it == wins_.end ())
   {
     PCL_WARN ("[updateFeatureHistogram] A window with id <%s> does not exists!.\n", id.c_str ());

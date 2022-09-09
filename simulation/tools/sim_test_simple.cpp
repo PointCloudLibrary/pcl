@@ -91,7 +91,7 @@ void
 display_score_image(const float* score_buffer)
 {
   int npixels = range_likelihood_->getWidth() * range_likelihood_->getHeight();
-  std::uint8_t* score_img = new std::uint8_t[npixels * 3];
+  auto* score_img = new std::uint8_t[npixels * 3];
 
   float min_score = score_buffer[0];
   float max_score = score_buffer[0];
@@ -123,7 +123,7 @@ void
 display_depth_image(const float* depth_buffer, int width, int height)
 {
   int npixels = width * height;
-  std::uint8_t* depth_img = new std::uint8_t[npixels * 3];
+  auto* depth_img = new std::uint8_t[npixels * 3];
 
   float min_depth = depth_buffer[0];
   float max_depth = depth_buffer[0];
@@ -141,7 +141,7 @@ display_depth_image(const float* depth_buffer, int width, int height)
     float z = -zf * zn / ((zf - zn) * (d - zf / (zf - zn)));
     float b = 0.075f;
     float f = 580.0f;
-    std::uint16_t kd = static_cast<std::uint16_t>(1090 - b * f / z * 8);
+    auto kd = static_cast<std::uint16_t>(1090 - b * f / z * 8);
     if (kd > 2047)
       kd = 2047;
 

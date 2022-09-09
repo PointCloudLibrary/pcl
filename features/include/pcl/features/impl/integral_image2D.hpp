@@ -177,7 +177,7 @@ IntegralImage2D<DataType, Dimension>::computeIntegralImages (
       {
         current_row [colIdx + 1] = previous_row [colIdx + 1] + current_row [colIdx] - previous_row [colIdx];
         count_current_row [colIdx + 1] = count_previous_row [colIdx + 1] + count_current_row [colIdx] - count_previous_row [colIdx];
-        const InputType* element = reinterpret_cast <const InputType*> (&data [valIdx]);
+        const auto* element = reinterpret_cast <const InputType*> (&data [valIdx]);
         if (std::isfinite (element->sum ()))
         {
           current_row [colIdx + 1] += element->template cast<typename IntegralImageTypeTraits<DataType>::IntegralType>();
@@ -208,7 +208,7 @@ IntegralImage2D<DataType, Dimension>::computeIntegralImages (
         so_current_row [colIdx + 1] = so_previous_row [colIdx + 1] + so_current_row [colIdx] - so_previous_row [colIdx];
         count_current_row [colIdx + 1] = count_previous_row [colIdx + 1] + count_current_row [colIdx] - count_previous_row [colIdx];
 
-        const InputType* element = reinterpret_cast <const InputType*> (&data [valIdx]);
+        const auto* element = reinterpret_cast <const InputType*> (&data [valIdx]);
         if (std::isfinite (element->sum ()))
         {
           current_row [colIdx + 1] += element->template cast<typename IntegralImageTypeTraits<DataType>::IntegralType>();

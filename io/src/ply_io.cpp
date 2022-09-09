@@ -1014,7 +1014,7 @@ pcl::PLYWriter::writeContentWithCameraASCII (int nr_points,
             }
             else
             {
-              const pcl::RGB& color = cloud.at<pcl::RGB>(i, cloud.fields[d].offset + c * sizeof (pcl::RGB));
+              const auto& color = cloud.at<pcl::RGB>(i, cloud.fields[d].offset + c * sizeof (pcl::RGB));
               fs << static_cast<int>(color.r) << " " << static_cast<int>(color.g) << " " << static_cast<int>(color.b) << " " << static_cast<int>(color.a);
             }
             break;
@@ -1027,7 +1027,7 @@ pcl::PLYWriter::writeContentWithCameraASCII (int nr_points,
             }
             else
             {
-              const pcl::RGB& color = cloud.at<pcl::RGB>(i, cloud.fields[d].offset + c * sizeof (pcl::RGB));
+              const auto& color = cloud.at<pcl::RGB>(i, cloud.fields[d].offset + c * sizeof (pcl::RGB));
               fs << static_cast<int>(color.r) << " " << static_cast<int>(color.g) << " " << static_cast<int>(color.b);
             }
             break;
@@ -1129,7 +1129,7 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
             }
             else
             {
-              const pcl::RGB& color = cloud.at<pcl::RGB>(i, cloud.fields[d].offset + c * sizeof (pcl::RGB));
+              const auto& color = cloud.at<pcl::RGB>(i, cloud.fields[d].offset + c * sizeof (pcl::RGB));
               line << static_cast<int>(color.r) << " " << static_cast<int>(color.g) << " " << static_cast<int>(color.b) << " " << static_cast<int>(color.a);
             }
             break;
@@ -1149,7 +1149,7 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
             }
             else
             {
-              const pcl::RGB& color = cloud.at<pcl::RGB>(i, cloud.fields[d].offset + c * sizeof (pcl::RGB));
+              const auto& color = cloud.at<pcl::RGB>(i, cloud.fields[d].offset + c * sizeof (pcl::RGB));
               line << static_cast<int>(color.r) << " " << static_cast<int>(color.g) << " " << static_cast<int>(color.b);
             }
             break;
@@ -1331,7 +1331,7 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
             }
             else
             {
-              const pcl::RGB& color = cloud.at<pcl::RGB>(i, cloud.fields[d].offset + (total + c) * sizeof (pcl::RGB));
+              const auto& color = cloud.at<pcl::RGB>(i, cloud.fields[d].offset + (total + c) * sizeof (pcl::RGB));
               fpout.write (reinterpret_cast<const char*> (&color.r), sizeof (unsigned char));
               fpout.write (reinterpret_cast<const char*> (&color.g), sizeof (unsigned char));
               fpout.write (reinterpret_cast<const char*> (&color.b), sizeof (unsigned char));
@@ -1347,7 +1347,7 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
             }
             else
             {
-              const pcl::RGB& color = cloud.at<pcl::RGB>(i, cloud.fields[d].offset + (total + c) * sizeof (pcl::RGB));
+              const auto& color = cloud.at<pcl::RGB>(i, cloud.fields[d].offset + (total + c) * sizeof (pcl::RGB));
               fpout.write (reinterpret_cast<const char*> (&color.r), sizeof (unsigned char));
               fpout.write (reinterpret_cast<const char*> (&color.g), sizeof (unsigned char));
               fpout.write (reinterpret_cast<const char*> (&color.b), sizeof (unsigned char));
@@ -1529,13 +1529,13 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
                 (mesh.cloud.fields[d].name == "rgb"))
 
       {
-        const pcl::RGB& color = mesh.cloud.at<RGB>(i, mesh.cloud.fields[d].offset);
+        const auto& color = mesh.cloud.at<RGB>(i, mesh.cloud.fields[d].offset);
         fs << int (color.r) << " " << int (color.g) << " " << int (color.b) << " ";
       }
       else if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::UINT32) &&
                (mesh.cloud.fields[d].name == "rgba"))
       {
-        const pcl::RGB& color = mesh.cloud.at<RGB>(i, mesh.cloud.fields[d].offset);
+        const auto& color = mesh.cloud.at<RGB>(i, mesh.cloud.fields[d].offset);
         fs << int (color.r) << " " << int (color.g) << " " << int (color.b) << " " << int (color.a) << " ";
       }
       else if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
@@ -1628,7 +1628,7 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
                 (mesh.cloud.fields[d].name == "rgb"))
 
       {
-        const pcl::RGB& color = mesh.cloud.at<RGB>(i, mesh.cloud.fields[d].offset);
+        const auto& color = mesh.cloud.at<RGB>(i, mesh.cloud.fields[d].offset);
         fpout.write (reinterpret_cast<const char*> (&color.r), sizeof (unsigned char));
         fpout.write (reinterpret_cast<const char*> (&color.g), sizeof (unsigned char));
         fpout.write (reinterpret_cast<const char*> (&color.b), sizeof (unsigned char));
@@ -1636,7 +1636,7 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
       else if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::UINT32) &&
                (mesh.cloud.fields[d].name == "rgba"))
       {
-        const pcl::RGB& color = mesh.cloud.at<RGB>(i, mesh.cloud.fields[d].offset);
+        const auto& color = mesh.cloud.at<RGB>(i, mesh.cloud.fields[d].offset);
         fpout.write (reinterpret_cast<const char*> (&color.r), sizeof (unsigned char));
         fpout.write (reinterpret_cast<const char*> (&color.g), sizeof (unsigned char));
         fpout.write (reinterpret_cast<const char*> (&color.b), sizeof (unsigned char));
@@ -1665,7 +1665,7 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
   // Write down faces
   for (const pcl::Vertices& polygon : mesh.polygons)
   {
-    unsigned char value = static_cast<unsigned char> (polygon.vertices.size ());
+    auto value = static_cast<unsigned char> (polygon.vertices.size ());
     fpout.write (reinterpret_cast<const char*> (&value), sizeof (unsigned char));
     for (const int value : polygon.vertices)
     {

@@ -450,12 +450,12 @@ extractFeatures (const MaskMap & mask, const std::size_t nr_features, const std:
       while (!feature_selection_finished)
       {
         float best_score = 0.0f;
-        typename std::list<Candidate>::iterator best_iter = list1.end ();
-        for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
+        auto best_iter = list1.end ();
+        for (auto iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
         {
           // find smallest distance
           float smallest_distance = std::numeric_limits<float>::max ();
-          for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
+          for (auto iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
           {
             const float dx = static_cast<float> (iter1->x) - static_cast<float> (iter2->x);
             const float dy = static_cast<float> (iter1->y) - static_cast<float> (iter2->y);
@@ -480,10 +480,10 @@ extractFeatures (const MaskMap & mask, const std::size_t nr_features, const std:
 
         float min_min_sqr_distance = std::numeric_limits<float>::max ();
         float max_min_sqr_distance = 0;
-        for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
+        for (auto iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
         {
           float min_sqr_distance = std::numeric_limits<float>::max ();
-          for (typename std::list<Candidate>::iterator iter3 = list2.begin (); iter3 != list2.end (); ++iter3)
+          for (auto iter3 = list2.begin (); iter3 != list2.end (); ++iter3)
           {
             if (iter2 == iter3)
               continue;
@@ -543,7 +543,7 @@ extractFeatures (const MaskMap & mask, const std::size_t nr_features, const std:
     {
       if (list1.size () <= nr_features)
       {
-        for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
+        for (auto iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
         {
           QuantizedMultiModFeature feature;
           
@@ -561,12 +561,12 @@ extractFeatures (const MaskMap & mask, const std::size_t nr_features, const std:
       while (list2.size () != nr_features)
       {
         float best_score = 0.0f;
-        typename std::list<Candidate>::iterator best_iter = list1.end ();
-        for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
+        auto best_iter = list1.end ();
+        for (auto iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
         {
           // find smallest distance
           float smallest_distance = std::numeric_limits<float>::max ();
-          for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
+          for (auto iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
           {
             const float dx = static_cast<float> (iter1->x) - static_cast<float> (iter2->x);
             const float dy = static_cast<float> (iter1->y) - static_cast<float> (iter2->y);
@@ -631,7 +631,7 @@ extractFeatures (const MaskMap & mask, const std::size_t nr_features, const std:
 
     if (list1.size () <= nr_features)
     {
-      for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
+      for (auto iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
       {
         QuantizedMultiModFeature feature;
           
@@ -649,11 +649,11 @@ extractFeatures (const MaskMap & mask, const std::size_t nr_features, const std:
     while (list2.size () != nr_features)
     {
       const std::size_t sqr_distance = distance*distance;
-      for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
+      for (auto iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
       {
         bool candidate_accepted = true;
 
-        for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
+        for (auto iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
         {
           const int dx = iter1->x - iter2->x;
           const int dy = iter1->y - iter2->y;
@@ -677,7 +677,7 @@ extractFeatures (const MaskMap & mask, const std::size_t nr_features, const std:
     }
   }
 
-  for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
+  for (auto iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
   {
     QuantizedMultiModFeature feature;
     
@@ -726,7 +726,7 @@ extractAllFeatures (const MaskMap & mask, const std::size_t, const std::size_t m
 
   list1.sort();
 
-  for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
+  for (auto iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
   {
     QuantizedMultiModFeature feature;
           

@@ -322,7 +322,7 @@ namespace pcl
 
           if ( !node->getData () )
           {
-            Node::Data* data = new Node::Data (
+            auto* data = new Node::Data (
                 static_cast<int> ((node->getCenter ()[0] - bounds_[0])/voxel_size_),
                 static_cast<int> ((node->getCenter ()[1] - bounds_[2])/voxel_size_),
                 static_cast<int> ((node->getCenter ()[2] - bounds_[4])/voxel_size_),

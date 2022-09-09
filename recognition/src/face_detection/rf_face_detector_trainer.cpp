@@ -34,7 +34,7 @@ void pcl::RFFaceDetectorTrainer::trainWithDataProvider()
   if (use_normals_)
     fhda.setNumChannels (4);
 
-  pcl::TernaryTreeMissingDataBranchEstimator * btt = new pcl::TernaryTreeMissingDataBranchEstimator ();
+  auto * btt = new pcl::TernaryTreeMissingDataBranchEstimator ();
   pcl::face_detection::PoseClassRegressionVarianceStatsEstimator<float, NodeType, std::vector<face_detection::TrainingExample>, int> rse (btt);
 
   std::vector<float> thresholds_;
@@ -324,7 +324,7 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
       fhda.setNumChannels (4);
 
     //pcl::BinaryTreeThresholdBasedBranchEstimator * btt = new pcl::BinaryTreeThresholdBasedBranchEstimator ();
-    pcl::TernaryTreeMissingDataBranchEstimator * btt = new pcl::TernaryTreeMissingDataBranchEstimator ();
+    auto * btt = new pcl::TernaryTreeMissingDataBranchEstimator ();
     face_detection::PoseClassRegressionVarianceStatsEstimator<float, NodeType, std::vector<face_detection::TrainingExample>, int> rse (btt);
 
     std::vector<float> weights(cloud->size(), 0.f);

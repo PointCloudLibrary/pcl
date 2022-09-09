@@ -355,7 +355,7 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (Indices &indices)
       }
 
       // Get the field's value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&input_->data[ii * input_->point_step]);
+      const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&input_->data[ii * input_->point_step]);
       float field_value = 0;
       memcpy (&field_value, pt_data + input_->fields[distance_idx].offset, sizeof (float));
 

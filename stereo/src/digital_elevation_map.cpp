@@ -98,7 +98,7 @@ pcl::DigitalElevationMapBuilder::compute(pcl::PointCloud<PointDEM>& out_cloud)
   const float kHeightMin = -0.5f;
   const float kHeightMax = 1.5f;
   const float kHeightResolution = 0.01f;
-  const std::size_t kHeightBins =
+  const auto kHeightBins =
       static_cast<std::size_t>((kHeightMax - kHeightMin) / kHeightResolution);
   // Histogram for initializing other height histograms.
   FeatureHistogram height_histogram_example(kHeightBins, kHeightMin, kHeightMax);
@@ -137,7 +137,7 @@ pcl::DigitalElevationMapBuilder::compute(pcl::PointCloud<PointDEM>& out_cloud)
 
         // Calculate index of histograms.
         std::size_t index_column = column / kColumnStep;
-        std::size_t index_disparity = static_cast<std::size_t>(
+        auto index_disparity = static_cast<std::size_t>(
             (disparity - disparity_threshold_min_) / kDisparityStep);
 
         std::size_t index = index_column + index_disparity * resolution_column_;

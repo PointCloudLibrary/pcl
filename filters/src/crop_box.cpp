@@ -71,7 +71,7 @@ pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     const static float user_filter_value = user_filter_value_;
     for (const auto ri : *removed_indices_) // ri = removed index
     {
-      std::uint8_t* pt_data = reinterpret_cast<std::uint8_t*> (&output.data[ri * output.point_step]);
+      auto* pt_data = reinterpret_cast<std::uint8_t*> (&output.data[ri * output.point_step]);
       for (const auto &offset : offsets)
       {
         memcpy (pt_data + offset, &user_filter_value, sizeof (float));

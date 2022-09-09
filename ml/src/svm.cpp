@@ -2400,7 +2400,7 @@ svm_group_classes(const svm_problem* prob,
 svm_model*
 svm_train(const svm_problem* prob, const svm_parameter* param)
 {
-  svm_model* model = Malloc(svm_model, 1);
+  auto* model = Malloc(svm_model, 1);
   model->param = *param;
   model->free_sv = 0; // XXX
   model->probA = nullptr;
@@ -2465,7 +2465,7 @@ svm_train(const svm_problem* prob, const svm_parameter* param)
     if (nr_class == 1)
       info("WARNING: training data in only one class. See README for details.\n");
 
-    svm_node** x = Malloc(svm_node*, l);
+    auto** x = Malloc(svm_node*, l);
 
     for (int i = 0; i < l; i++)
       x[i] = prob->x[perm[i]];
@@ -2499,7 +2499,7 @@ svm_train(const svm_problem* prob, const svm_parameter* param)
     for (int i = 0; i < l; i++)
       nonzero[i] = false;
 
-    decision_function* f = Malloc(decision_function, nr_class * (nr_class - 1) / 2);
+    auto* f = Malloc(decision_function, nr_class * (nr_class - 1) / 2);
 
     double *probA = nullptr, *probB = nullptr;
 
@@ -3143,7 +3143,7 @@ svm_load_model(const char* model_file_name)
 
   // read parameters
 
-  svm_model* model = Malloc(svm_model, 1);
+  auto* model = Malloc(svm_model, 1);
 
   svm_parameter& param = model->param;
 

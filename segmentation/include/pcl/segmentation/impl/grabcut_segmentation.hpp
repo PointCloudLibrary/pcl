@@ -318,7 +318,7 @@ GrabCut<PointT>::initGraph ()
     if (n_link.nb_links > 0)
     {
       const auto point_index = (*indices_) [i_point];
-      std::vector<float>::const_iterator weights_it  = n_link.weights.begin ();
+      auto weights_it  = n_link.weights.begin ();
       for (auto indices_it = n_link.indices.cbegin (); indices_it != n_link.indices.cend (); ++indices_it, ++weights_it)
       {
         if ((*indices_it != point_index) && (*indices_it != UNAVAILABLE))

@@ -140,7 +140,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
           continue;
 
       // Get the distance value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
+      const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
       float distance_value = 0;
       memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
@@ -275,7 +275,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   // Eigen values less than a threshold of max eigen value are inflated to a set fraction of the max eigen value.
   double min_covar_eigvalue;
 
-  for (typename std::map<std::size_t, Leaf>::iterator it = leaves_.begin (); it != leaves_.end (); ++it)
+  for (auto it = leaves_.begin (); it != leaves_.end (); ++it)
   {
 
     // Normalize the centroid
@@ -461,7 +461,7 @@ pcl::VoxelGridCovariance<PointT>::getDisplayCloud (pcl::PointCloud<PointXYZ>& ce
       [this] (auto& l) { return (l.second.nr_points >= min_points_per_voxel_); }));
 
   // Generate points for each occupied voxel with sufficient points.
-  for (typename std::map<std::size_t, Leaf>::iterator it = leaves_.begin (); it != leaves_.end (); ++it)
+  for (auto it = leaves_.begin (); it != leaves_.end (); ++it)
   {
     Leaf& leaf = it->second;
 

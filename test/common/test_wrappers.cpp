@@ -120,7 +120,7 @@ TEST (PointCloud, insert_range)
   for (std::uint32_t i = 0; i < 10; ++i)
     cloud2[i] = PointXYZ (5.0f * static_cast<float>(i) + 0, 5.0f * static_cast<float> (i) + 1, 5.0f * static_cast<float> (i) + 2);
 
-  std::uint32_t old_size = static_cast<std::uint32_t> (cloud.size ());
+  auto old_size = static_cast<std::uint32_t> (cloud.size ());
   cloud.insert (cloud.begin (), cloud2.begin (), cloud2.end ());
   EXPECT_EQ (cloud.width, cloud.size ());
   EXPECT_EQ (cloud.height, 1);

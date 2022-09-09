@@ -249,8 +249,8 @@ TEST (PCL, LineIterator8NeighborsGeneral)
   float d_alpha = float(M_PI / angular_resolution);
   for (unsigned idx = 0; idx < angular_resolution; ++idx)
   {
-    unsigned x_end = unsigned (length * std::cos (float(idx) * d_alpha) + center_x + 0.5);
-    unsigned y_end = unsigned (length * std::sin (float(idx) * d_alpha) + center_y + 0.5);
+    auto x_end = unsigned (length * std::cos (float(idx) * d_alpha) + center_x + 0.5);
+    auto y_end = unsigned (length * std::sin (float(idx) * d_alpha) + center_y + 0.5);
     
     // right
     checkGeneralLine (center_x, center_y, x_end, y_end, cloud, true);
@@ -273,8 +273,8 @@ TEST (PCL, LineIterator4NeighborsGeneral)
   float d_alpha = float(2.0 * M_PI / angular_resolution);
   for (unsigned idx = 0; idx < angular_resolution; ++idx)
   {
-    unsigned x_end = unsigned (length * std::cos (float(idx) * d_alpha) + center_x + 0.5);
-    unsigned y_end = unsigned (length * std::sin (float(idx) * d_alpha) + center_y + 0.5);
+    auto x_end = unsigned (length * std::cos (float(idx) * d_alpha) + center_x + 0.5);
+    auto y_end = unsigned (length * std::sin (float(idx) * d_alpha) + center_y + 0.5);
     
     // right
     checkGeneralLine (center_x, center_y, x_end, y_end, cloud, false);

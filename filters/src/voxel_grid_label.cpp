@@ -136,7 +136,7 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
           continue;
 
       // Get the distance value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&(*input_)[cp]);
+      const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&(*input_)[cp]);
       float distance_value = 0;
       memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
@@ -265,7 +265,7 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
       {
         // store the label in a map data structure
         std::uint32_t label = (*input_)[index_vector[cp].cloud_point_index].label;
-        std::map<int, int>::iterator it = labels.find (label);
+        auto it = labels.find (label);
         if (it == labels.end ())
           labels.insert (labels.begin (), std::pair<int, int> (label, 1));
         else

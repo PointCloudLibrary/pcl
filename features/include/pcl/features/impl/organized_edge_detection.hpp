@@ -66,7 +66,7 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::compute (pcl::PointCloud<PointLT>& labe
 template<typename PointT, typename PointLT> void
 pcl::OrganizedEdgeBase<PointT, PointLT>::assignLabelIndices (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const
 {
-  const unsigned invalid_label = unsigned (0);
+  const auto invalid_label = unsigned (0);
   label_indices.resize (num_of_edgetype_);
   for (std::size_t idx = 0; idx < input_->size (); idx++)
   {

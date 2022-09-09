@@ -226,7 +226,7 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
                             (*normals_)[index].normal[2], 0);
     // Normalize
     double alpha = (normal.dot (d_vp_p) + 1.0) * 0.5;
-    std::size_t fi = static_cast<std::size_t> (std::floor (alpha * hist_vp_.size ()));
+    auto fi = static_cast<std::size_t> (std::floor (alpha * hist_vp_.size ()));
     fi = std::max<std::size_t> (0u, fi);
     fi = std::min<std::size_t> (hist_vp_.size () - 1, fi);
     // Bin into the histogram
