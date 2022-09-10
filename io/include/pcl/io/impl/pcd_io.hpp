@@ -369,6 +369,10 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
   {
     // empty cloud case
     compressed_final_size = 8 + data_idx;
+    std::uint32_t *header = reinterpret_cast<std::uint32_t*>(&temp_buf[0]);
+    header[0] = 0; // compressed_size is 0
+    header[1] = 0; // data_size is 0
+    data_size = 8; // correct data_size to header size
   }
 
   // Prepare the map

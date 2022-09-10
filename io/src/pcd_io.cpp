@@ -1461,6 +1461,10 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
     memcpy (&temp_buf[0], &compressed_size, 4);
     memcpy (&temp_buf[4], &data_size, 4);
     temp_buf.resize (compressed_size + 8);
+  } else {
+    std::uint32_t *header = reinterpret_cast<std::uint32_t*>(&temp_buf[0]);
+    header[0] = 0; // compressed_size is 0
+    header[1] = 0; // data_size is 0
   }
 
   os.imbue (std::locale::classic ());
