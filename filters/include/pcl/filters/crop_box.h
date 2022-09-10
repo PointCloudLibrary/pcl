@@ -39,10 +39,7 @@
 
 #pragma once
 
-#include <pcl/point_types.h>
 #include <pcl/filters/filter_indices.h>
-#include <pcl/common/transforms.h>
-#include <pcl/common/eigen.h>
 
 namespace pcl
 {
@@ -62,6 +59,7 @@ namespace pcl
     using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
     public:
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
 
       using Ptr = shared_ptr<CropBox<PointT> >;
       using ConstPtr = shared_ptr<const CropBox<PointT> >;
@@ -178,7 +176,7 @@ namespace pcl
         * \param[out] indices the resultant point cloud indices
         */
       void
-      applyFilter (std::vector<int> &indices) override;
+      applyFilter (Indices &indices) override;
     private:
       /** \brief The minimum point of the box. */
       Eigen::Vector4f min_pt_;
@@ -210,6 +208,8 @@ namespace pcl
     using PCLPointCloud2ConstPtr = PCLPointCloud2::ConstPtr;
 
     public:
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
+
       /** \brief Constructor.
         * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
         */
@@ -319,7 +319,7 @@ namespace pcl
         * \param indices the resultant point cloud indices
         */
       void
-      applyFilter (std::vector<int> &indices) override;
+      applyFilter (Indices &indices) override;
 
       /** \brief The minimum point of the box. */
       Eigen::Vector4f min_pt_;

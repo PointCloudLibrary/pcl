@@ -39,17 +39,10 @@
  */
 
 #include <pcl/test/gtest.h>
-#include <pcl/PCLPointCloud2.h>
 #include <pcl/type_traits.h>
 #include <pcl/point_types.h>
-#include <pcl/common/io.h>
-#include <pcl/console/print.h>
 #include <pcl/io/ply_io.h>
-#include <pcl/io/ascii_io.h>
 #include <pcl/io/vtk_lib_io.h>
-#include <fstream>
-#include <locale>
-#include <stdexcept>
 
 std::string mesh_file_vtk_;
 
@@ -285,6 +278,80 @@ TEST (PCL, PLYPolygonMeshColoredIO)
   remove ("test_mesh_rgb_binary.ply");
   remove ("test_mesh_rgba_binary.ply");
 }
+
+TEST (PCL, PLYPolygonMeshSpecificFieldOrder)
+{ // test a specific order of xyz, rgba, and normal fields
+  pcl::PolygonMesh mesh;
+  auto add_field = [](std::vector<pcl::PCLPointField>& fields, const std::string& name, const pcl::uindex_t offset, const std::uint8_t datatype)
+                   { fields.emplace_back(); fields.back().name = name; fields.back().offset = offset; fields.back().datatype = datatype; fields.back().count = 1; };
+  add_field(mesh.cloud.fields, "x", 0, pcl::PCLPointField::PointFieldTypes::FLOAT32);
+  add_field(mesh.cloud.fields, "y", 4, pcl::PCLPointField::PointFieldTypes::FLOAT32);
+  add_field(mesh.cloud.fields, "z", 8, pcl::PCLPointField::PointFieldTypes::FLOAT32);
+  add_field(mesh.cloud.fields, "normal_x", 12, pcl::PCLPointField::PointFieldTypes::FLOAT32);
+  add_field(mesh.cloud.fields, "normal_y", 16, pcl::PCLPointField::PointFieldTypes::FLOAT32);
+  add_field(mesh.cloud.fields, "normal_z", 20, pcl::PCLPointField::PointFieldTypes::FLOAT32);
+  add_field(mesh.cloud.fields, "rgba", 24, pcl::PCLPointField::PointFieldTypes::UINT32);
+  mesh.cloud.height = mesh.cloud.width = 1;
+  mesh.cloud.data.resize(28);
+  const float x = 0.0, y = 1.0, z = 2.0, normal_x = 1.0, normal_y = 0.0, normal_z = 0.0;
+  const std::uint32_t rgba = 0x326496;
+  memcpy(&mesh.cloud.data[0], &x, sizeof(float));
+  memcpy(&mesh.cloud.data[4], &y, sizeof(float));
+  memcpy(&mesh.cloud.data[8], &z, sizeof(float));
+  memcpy(&mesh.cloud.data[12], &normal_x, sizeof(float));
+  memcpy(&mesh.cloud.data[16], &normal_y, sizeof(float));
+  memcpy(&mesh.cloud.data[20], &normal_z, sizeof(float));
+  memcpy(&mesh.cloud.data[24], &rgba, sizeof(std::uint32_t));
+
+  pcl::io::savePLYFileBinary("test_mesh_xyzrgbnormal_binary.ply", mesh);
+  pcl::PolygonMesh mesh_in_binary;
+  pcl::io::loadPLYFile("test_mesh_xyzrgbnormal_binary.ply", mesh_in_binary);
+  ASSERT_EQ (mesh.cloud.data.size(), mesh_in_binary.cloud.data.size());
+  for(std::size_t i=0; i<mesh.cloud.data.size(); ++i) {
+    EXPECT_EQ (mesh.cloud.data[i], mesh_in_binary.cloud.data[i]);
+  }
+  remove ("test_mesh_xyzrgbnormal_binary.ply");
+
+  pcl::io::savePLYFile("test_mesh_xyzrgbnormal_ascii.ply", mesh);
+  pcl::PolygonMesh mesh_in_ascii;
+  pcl::io::loadPLYFile("test_mesh_xyzrgbnormal_ascii.ply", mesh_in_ascii);
+  ASSERT_EQ (mesh.cloud.data.size(), mesh_in_ascii.cloud.data.size());
+  for(std::size_t i=0; i<mesh.cloud.data.size(); ++i) {
+    EXPECT_EQ (mesh.cloud.data[i], mesh_in_ascii.cloud.data[i]);
+  }
+  remove ("test_mesh_xyzrgbnormal_ascii.ply");
+}
+
+TEST (PCL, PLYPolygonMeshUintIndices)
+{
+  std::ofstream fs;
+  fs.open ("mesh_uint_indices.ply");
+  fs <<
+    "ply\n"
+    "format ascii 1.0\n"
+    "element vertex 3\n"
+    "property float x\n"
+    "property float y\n"
+    "property float z\n"
+    "element face 1\n"
+    "property list uchar uint vertex_indices\n"
+    "end_header\n"
+    "0.0 0.0 0.0\n"
+    "1.0 0.0 0.0\n"
+    "1.0 1.1 0.0\n"
+    "3 2 0 1\n";
+  fs.close();
+  pcl::PolygonMesh mesh;
+  int const res = pcl::io::loadPLYFile("mesh_uint_indices.ply", mesh);
+  EXPECT_NE (res, -1);
+  EXPECT_EQ (mesh.cloud.width, 3);
+  EXPECT_EQ (mesh.cloud.height, 1);
+  EXPECT_EQ (mesh.polygons.size(), 1);
+  EXPECT_EQ (mesh.polygons.front().vertices.size(), 3);
+
+  remove("mesh_uint_indices.ply");
+}
+
 
 /* ---[ */
 int

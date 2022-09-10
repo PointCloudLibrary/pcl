@@ -39,8 +39,6 @@
 
 #include <QStandardItemModel>
 
-#include <pcl/common/boost.h> 
-
 namespace pcl
 {
   namespace cloud_composer

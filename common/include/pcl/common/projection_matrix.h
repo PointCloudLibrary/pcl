@@ -37,8 +37,9 @@
 
 #pragma once
 
-#include <pcl/common/eigen.h>
-#include <pcl/console/print.h>
+#include <pcl/types.h>
+#include <pcl/point_cloud.h> // for PointCloud
+#include <Eigen/Core> // for Matrix, RowMajor, Matrix3f
 
 /**
   * \file common/geometry.h
@@ -49,8 +50,6 @@
 /*@{*/
 namespace pcl
 {
-  template <typename T> class PointCloud;
-
   /** \brief Estimates the projection matrix P = K * (R|-R*t) from organized point clouds, with
     *        K = [[fx, s, cx], [0, fy, cy], [0, 0, 1]]
     *        R = rotation matrix and
@@ -62,7 +61,7 @@ namespace pcl
     * \return the resudial error. A high residual indicates, that the point cloud was not from a projective device.
     */
   template<typename PointT> double
-  estimateProjectionMatrix (typename pcl::PointCloud<PointT>::ConstPtr cloud, Eigen::Matrix<float, 3, 4, Eigen::RowMajor>& projection_matrix, const std::vector<int>& indices = std::vector<int> ());
+  estimateProjectionMatrix (typename pcl::PointCloud<PointT>::ConstPtr cloud, Eigen::Matrix<float, 3, 4, Eigen::RowMajor>& projection_matrix, const Indices& indices = {});
   
   /** \brief Determines the camera matrix from the given projection matrix.
     * \note This method does NOT use a RQ decomposition, but uses the fact that the left 3x3 matrix P' of P squared eliminates the rotational part.

@@ -44,6 +44,9 @@
 #include <QtGui/QColor>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 #include <pcl/apps/point_cloud_editor/statistics.h>
+
+#include <pcl/memory.h>  // for pcl::weak_ptr
+
 #ifdef OPENGL_IS_A_FRAMEWORK
 # include <OpenGL/gl.h>
 # include <OpenGL/glu.h>
@@ -70,11 +73,17 @@
 /// the origin.
 // XXX - handle shifting upon setting of a Cloud3D
 // XXX - add functions for retrieving an unshifted Cloud3D
-// XXX - add functions for retrieveing unshifted points by index
+// XXX - add functions for retrieving unshifted points by index
 // XXX - mark access functions below as returning shifted values
 class Cloud : public Statistics
 {
   public:
+    /// The type for shared pointer pointing to a selection buffer
+    using SelectionPtr = pcl::shared_ptr<Selection>;
+
+    /// The type for weak pointer pointing to a selection buffer
+    using SelectionWeakPtr = pcl::weak_ptr<Selection>;
+
     /// @brief Default Constructor
     Cloud ();
 
@@ -247,7 +256,7 @@ class Cloud : public Statistics
     void
     drawWithHighlightColor () const;
 
-    /// @brief Sets the axis along which the displyed points should have the
+    /// @brief Sets the axis along which the displayed points should have the
     /// color ramp applied.
     /// @param a The axis id describing which direction the ramp should be
     /// applied.
@@ -375,17 +384,17 @@ class Cloud : public Statistics
     static const float DEFAULT_POINT_DISPLAY_SIZE_;
     /// Default Highlight Point Size
     static const float DEFAULT_POINT_HIGHLIGHT_SIZE_;
-    /// Default Point Color - Red componenet
+    /// Default Point Color - Red component
     static const float DEFAULT_POINT_DISPLAY_COLOR_RED_;
-    /// Default Point Color - Green componenet
+    /// Default Point Color - Green component
     static const float DEFAULT_POINT_DISPLAY_COLOR_GREEN_;
-    /// Default Point Color - Blue componenet
+    /// Default Point Color - Blue component
     static const float DEFAULT_POINT_DISPLAY_COLOR_BLUE_;
-    /// Default Point Highlight Color - Red componenet
+    /// Default Point Highlight Color - Red component
     static const float DEFAULT_POINT_HIGHLIGHT_COLOR_RED_;
-    /// Default Point Highlight Color - Green componenet
+    /// Default Point Highlight Color - Green component
     static const float DEFAULT_POINT_HIGHLIGHT_COLOR_GREEN_;
-    /// Default Point Highlight Color - Blue componenet
+    /// Default Point Highlight Color - Blue component
     static const float DEFAULT_POINT_HIGHLIGHT_COLOR_BLUE_;
 
   private:
@@ -412,7 +421,7 @@ class Cloud : public Statistics
     /// @brief A weak pointer pointing to the selection object.
     /// @details This implementation uses the weak pointer to allow for a lazy
     /// update of the cloud if the selection object is destroyed.
-    std::weak_ptr<Selection> selection_wk_ptr_;
+    SelectionWeakPtr selection_wk_ptr_;
 
     /// Flag that indicates whether a color ramp should be used (true) or not
     /// (false) when displaying the cloud

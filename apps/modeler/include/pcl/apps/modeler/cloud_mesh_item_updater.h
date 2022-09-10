@@ -38,26 +38,25 @@
 
 #include <QObject>
 
-namespace pcl
-{
-  namespace modeler
-  {
-    class CloudMeshItem;
+namespace pcl {
+namespace modeler {
 
-    class CloudMeshItemUpdater : public QObject
-    {
-      Q_OBJECT
+class CloudMeshItem;
 
-      public:
-        CloudMeshItemUpdater (CloudMeshItem* cloud_mesh_item);
-        ~CloudMeshItemUpdater ();
+class CloudMeshItemUpdater : public QObject {
+  Q_OBJECT
 
-      public Q_SLOTS:
-        void
-        updateCloudMeshItem();
+public:
+  CloudMeshItemUpdater(CloudMeshItem* cloud_mesh_item);
+  ~CloudMeshItemUpdater();
 
-      private:
-        CloudMeshItem*      cloud_mesh_item_;
-    };
-  }
-}
+public Q_SLOTS:
+  void
+  updateCloudMeshItem();
+
+private:
+  CloudMeshItem* cloud_mesh_item_;
+};
+
+} // namespace modeler
+} // namespace pcl

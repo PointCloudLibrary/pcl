@@ -41,7 +41,6 @@
 
 #pragma once
 
-#include <pcl/filters/boost.h>
 #include <pcl/filters/filter.h>
 #include <pcl/filters/filter_indices.h>
 
@@ -78,9 +77,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      ~GridMinimum ()
-      {
-      }
+      ~GridMinimum () override = default;
 
       /** \brief Set the grid resolution.
         * \param[in] resolution the grid resolution
@@ -114,7 +111,7 @@ namespace pcl
         * \param[out] indices The resultant indices.
         */
       void
-      applyFilter (std::vector<int> &indices) override
+      applyFilter (Indices &indices) override
       {
         applyFilterIndices (indices);
       }
@@ -123,7 +120,7 @@ namespace pcl
         * \param[out] indices The resultant indices.
         */
       void
-      applyFilterIndices (std::vector<int> &indices);
+      applyFilterIndices (Indices &indices);
 
   };
 }

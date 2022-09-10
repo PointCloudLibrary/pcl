@@ -34,7 +34,7 @@ the OpenNI Grabber.
 
 .. raw:: html
   
-  <iframe title="PCL OpenNI Viewer example" width="480" height="390" src="http://www.youtube.com/embed/x3SaWQkPsPI?rel=0" frameborder="0" allowfullscreen></iframe>
+  <iframe title="PCL OpenNI Viewer example" width="480" height="390" src="https://www.youtube.com/embed/x3SaWQkPsPI?rel=0" frameborder="0" allowfullscreen></iframe>
 
 So let's look at the code. From *visualization/tools/openni_viewer_simple.cpp*
 

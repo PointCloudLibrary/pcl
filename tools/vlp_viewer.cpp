@@ -39,25 +39,18 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/time.h> //fps calculations
-#include <pcl/io/pcd_io.h>
 #include <pcl/io/hdl_grabber.h>
 #include <pcl/io/vlp_grabber.h>
 #include <pcl/visualization/point_cloud_color_handlers.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/image_viewer.h>
-#include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
-#include <pcl/visualization/boost.h>
-#include <pcl/visualization/mouse_event.h>
 
 #include <boost/algorithm/string.hpp>
 
 #include <mutex>
-#include <vector>
 #include <string>
-#include <typeinfo>
 
-using namespace std;
 using namespace std::chrono_literals;
 using namespace pcl;
 using namespace pcl::console;
@@ -231,7 +224,7 @@ main (int argc,
 
   VLPGrabber grabber (pcapFile);
 
-  PointCloudColorHandlerGenericField<PointXYZI> *color_handler = new PointCloudColorHandlerGenericField<PointXYZI> ("intensity");
+  auto *color_handler = new PointCloudColorHandlerGenericField<PointXYZI> ("intensity");
 
   SimpleVLPViewer<PointXYZI> v (grabber, color_handler);
   v.run ();

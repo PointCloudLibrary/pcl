@@ -203,7 +203,7 @@ namespace pcl
        * \param[out] indices The resultant indices.
        */
       void
-      applyFilter (std::vector<int> &indices) override
+      applyFilter (Indices &indices) override
       {
         applyFilterIndices (indices);
       }
@@ -212,7 +212,7 @@ namespace pcl
        * \param[out] indices The resultant indices.
        */
       void
-      applyFilterIndices (std::vector<int> &indices);
+      applyFilterIndices (Indices &indices);
 
     protected:
       double normals_distance_weight_;

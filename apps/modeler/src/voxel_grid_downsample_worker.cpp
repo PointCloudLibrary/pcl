@@ -34,24 +34,28 @@
  *
  */
 
-#include <pcl/apps/modeler/voxel_grid_downsample_worker.h>
-#include <pcl/apps/modeler/parameter.h>
-#include <pcl/apps/modeler/parameter_dialog.h>
 #include <pcl/apps/modeler/cloud_mesh.h>
 #include <pcl/apps/modeler/cloud_mesh_item.h>
-#include <pcl/filters/voxel_grid.h>
+#include <pcl/apps/modeler/parameter.h>
+#include <pcl/apps/modeler/parameter_dialog.h>
+#include <pcl/apps/modeler/voxel_grid_downsample_worker.h>
 #include <pcl/common/common.h>
-
+#include <pcl/filters/voxel_grid.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::VoxelGridDownampleWorker::VoxelGridDownampleWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent) :
-  AbstractWorker(cloud_mesh_items, parent),
-  x_min_(std::numeric_limits<double>::max()), x_max_(std::numeric_limits<double>::min()),
-  y_min_(std::numeric_limits<double>::max()), y_max_(std::numeric_limits<double>::min()),
-  z_min_(std::numeric_limits<double>::max()), z_max_(std::numeric_limits<double>::min()),
-  leaf_size_x_(nullptr), leaf_size_y_(nullptr), leaf_size_z_(nullptr)
-{
-}
+pcl::modeler::VoxelGridDownampleWorker::VoxelGridDownampleWorker(
+    const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent)
+: AbstractWorker(cloud_mesh_items, parent)
+, x_min_(std::numeric_limits<double>::max())
+, x_max_(std::numeric_limits<double>::min())
+, y_min_(std::numeric_limits<double>::max())
+, y_max_(std::numeric_limits<double>::min())
+, z_min_(std::numeric_limits<double>::max())
+, z_max_(std::numeric_limits<double>::min())
+, leaf_size_x_(nullptr)
+, leaf_size_y_(nullptr)
+, leaf_size_z_(nullptr)
+{}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::VoxelGridDownampleWorker::~VoxelGridDownampleWorker()
@@ -76,8 +80,6 @@ pcl::modeler::VoxelGridDownampleWorker::initParameters(CloudMeshItem* cloud_mesh
 
   z_min_ = std::min(double(min_pt.z()), z_min_);
   z_max_ = std::max(double(max_pt.z()), z_max_);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,18 +91,19 @@ pcl::modeler::VoxelGridDownampleWorker::setupParameters()
   double z_range = z_max_ - z_min_;
 
   double range_max = std::max(x_range, std::max(y_range, z_range));
-  double size = range_max/1000;
-  double step = range_max/1000;
+  double size = range_max / 1000;
+  double step = range_max / 1000;
 
-  leaf_size_x_ = new DoubleParameter("Leaf Size X", "The X size of the voxel grid", size, 0, x_max_-x_min_, step);
-  leaf_size_y_ = new DoubleParameter("Leaf Size Y", "The Y size of the voxel grid", size, 0, y_max_-y_min_, step);
-  leaf_size_z_ = new DoubleParameter("Leaf Size Z", "The Z size of the voxel grid", size, 0, z_max_-z_min_, step);
+  leaf_size_x_ = new DoubleParameter(
+      "Leaf Size X", "The X size of the voxel grid", size, 0, x_max_ - x_min_, step);
+  leaf_size_y_ = new DoubleParameter(
+      "Leaf Size Y", "The Y size of the voxel grid", size, 0, y_max_ - y_min_, step);
+  leaf_size_z_ = new DoubleParameter(
+      "Leaf Size Z", "The Z size of the voxel grid", size, 0, z_max_ - z_min_, step);
 
   parameter_dialog_->addParameter(leaf_size_x_);
   parameter_dialog_->addParameter(leaf_size_y_);
   parameter_dialog_->addParameter(leaf_size_z_);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -109,7 +112,8 @@ pcl::modeler::VoxelGridDownampleWorker::processImpl(CloudMeshItem* cloud_mesh_it
 {
   pcl::VoxelGrid<pcl::PointSurfel> voxel_grid;
   voxel_grid.setInputCloud(cloud_mesh_item->getCloudMesh()->getCloud());
-  voxel_grid.setLeafSize (float (*leaf_size_x_), float (*leaf_size_y_), float (*leaf_size_z_));
+  voxel_grid.setLeafSize(
+      float(*leaf_size_x_), float(*leaf_size_y_), float(*leaf_size_z_));
 
   CloudMesh::PointCloudPtr cloud(new CloudMesh::PointCloud());
   voxel_grid.filter(*cloud);
@@ -117,6 +121,4 @@ pcl::modeler::VoxelGridDownampleWorker::processImpl(CloudMeshItem* cloud_mesh_it
   cloud_mesh_item->getCloudMesh()->getCloud() = cloud;
 
   emitDataUpdated(cloud_mesh_item);
-
-  return;
 }

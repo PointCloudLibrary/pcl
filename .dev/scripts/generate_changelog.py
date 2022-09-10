@@ -46,7 +46,7 @@ import re
 
 
 CATEGORIES = {
-    "new feature": ("New features", ""),
+    "new feature": ("New features", "added to PCL"),
     "deprecation": (
         "Deprecation",
         "of public APIs, scheduled to be removed after two minor releases",

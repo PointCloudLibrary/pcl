@@ -36,11 +36,12 @@
  *
  */
 
-#ifndef PCL_COMMON_NORMS_IMPL_HPP_
-#define PCL_COMMON_NORMS_IMPL_HPP_
+#pragma once
 
-#include <pcl/pcl_macros.h>
+#include <pcl/common/norms.h>
 #include <pcl/console/print.h>
+#include <pcl/pcl_macros.h>
+
 
 namespace pcl
 {
@@ -237,6 +238,5 @@ HIK_Norm(FloatVectorT a, FloatVectorT b, int dim)
   return norm;
 }
 
-}
-#endif
+} // namespace pcl
 

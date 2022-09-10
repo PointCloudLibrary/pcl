@@ -46,7 +46,6 @@
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::registration;
-using namespace std;
 
 PointCloud<PointXYZ> cloud_source, cloud_target;
 
@@ -56,7 +55,7 @@ TEST (PCL, FPCSInitialAlignment)
   // transform the source cloud by a large amount
   Eigen::Vector3f initial_offset (1.f, 0.f, 0.f);
   float angle = static_cast<float> (M_PI) / 2.f;
-  Eigen::Quaternionf initial_rotation (std::cos (angle / 2.f), 0, 0, sin (angle / 2.f));
+  Eigen::Quaternionf initial_rotation (std::cos (angle / 2.f), 0, 0, std::sin (angle / 2.f));
   PointCloud<PointXYZ> cloud_source_transformed;
   transformPointCloud (cloud_source, cloud_source_transformed, initial_offset, initial_rotation);
 
@@ -78,7 +77,7 @@ TEST (PCL, FPCSInitialAlignment)
 
   // align
   fpcs_ia.align (source_aligned);
-  EXPECT_EQ (static_cast <int> (source_aligned.points.size ()), static_cast <int> (cloud_source.points.size ()));
+  EXPECT_EQ (source_aligned.size (), cloud_source.size ());
 
   // check for correct coarse transformation marix
   //Eigen::Matrix4f transform_res_from_fpcs = fpcs_ia.getFinalTransformation ();

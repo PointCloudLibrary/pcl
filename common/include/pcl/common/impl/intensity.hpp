@@ -38,10 +38,12 @@
  *
  */
 
-#ifndef PCL_COMMON_INTENSITY_FIELD_ACCESSOR_IMPL_HPP
-#define PCL_COMMON_INTENSITY_FIELD_ACCESSOR_IMPL_HPP
+#pragma once
 
+#include <pcl/common/intensity.h>
 #include <pcl/point_types.h>
+
+
 namespace pcl
 {
   namespace common
@@ -271,6 +273,40 @@ namespace pcl
         float intensity = this->operator () (p);
         intensity += value;
         set (p, intensity);
+      }
+    };
+
+    template<>
+    struct IntensityFieldAccessor<pcl::PointXYZLAB>
+    {
+      inline float
+      operator () (const pcl::PointXYZLAB &p) const
+      {
+        return (p.L);
+      }
+
+      inline void
+      get (const pcl::PointXYZLAB &p, float &intensity) const
+      {
+        intensity = p.L;
+      }
+
+      inline void
+      set (pcl::PointXYZLAB &p, float intensity) const
+      {
+        p.L = intensity;
+      }
+
+      inline void
+      demean (pcl::PointXYZLAB& p, float value) const
+      {
+        p.L -= value;
+      }
+
+      inline void
+      add (pcl::PointXYZLAB& p, float value) const
+      {
+        p.L += value;
       }
     };
 
@@ -551,4 +587,3 @@ namespace pcl
   }
 }
 
-#endif

@@ -75,7 +75,7 @@ A graphical display of the filtering process is shown below.
 
 .. image:: images/passthrough_2.png
 
-Note that the coordinate axis are represented as red (x), green (y), and blue
+Note that the coordinate axes are represented as red (x), green (y), and blue
 (z). The five points are represented with green as the points remaining after
 filtering and red as the points that have been removed by the filter.
 

@@ -39,7 +39,7 @@
 
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/search/pcl_search.h>
+#include <pcl/search/search.h> // for Search
 
 namespace pcl
 {
@@ -58,18 +58,6 @@ namespace pcl
       double threshold,
       const typename pcl::search::Search<PointT>::Ptr &tree,
       pcl::PointCloud<PointT> &output);
-
-  template <typename PointT>
-  PCL_DEPRECATED(1, 12, "tgt parameter is not used; it is deprecated and will be removed in future releases")
-  inline void getPointCloudDifference (
-      const pcl::PointCloud<PointT> &src,
-      const pcl::PointCloud<PointT> & /* tgt */,
-      double threshold,
-      const typename pcl::search::Search<PointT>::Ptr &tree,
-      pcl::PointCloud<PointT> &output)
-  {
-    getPointCloudDifference<PointT> (src, threshold, tree, output);
-  }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////

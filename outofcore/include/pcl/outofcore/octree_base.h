@@ -39,7 +39,6 @@
 
 #pragma once
 
-#include <pcl/outofcore/boost.h>
 #include <pcl/common/io.h>
 
 //outofcore classes
@@ -180,8 +179,8 @@ namespace pcl
 
         using PointCloud = pcl::PointCloud<PointT>;
 
-        using IndicesPtr = shared_ptr<std::vector<int> >;
-        using IndicesConstPtr = shared_ptr<const std::vector<int> >;
+        using IndicesPtr = shared_ptr<pcl::Indices>;
+        using IndicesConstPtr = shared_ptr<const pcl::Indices>;
 
         using PointCloudPtr = typename PointCloud::Ptr;
         using PointCloudConstPtr = typename PointCloud::ConstPtr;
@@ -257,7 +256,7 @@ namespace pcl
          *
          * \param[in] input_cloud The cloud of points to be inserted into the out-of-core octree. Note if multiple PCLPointCloud2 objects are added to the tree, this assumes that they all have exactly the same fields.
          * \param[in] skip_bb_check (default=false) whether to skip the bounding box check on insertion. Note the bounding box check is never skipped in the current implementation.
-         * \return Number of poitns successfully copied from the point cloud to the octree
+         * \return Number of points successfully copied from the point cloud to the octree
          */
         std::uint64_t
         addPointCloud (pcl::PCLPointCloud2::Ptr &input_cloud, const bool skip_bb_check = false);
@@ -611,22 +610,15 @@ namespace pcl
         bool
         checkExtension (const boost::filesystem::path& path_name);
 
-
-        /** \brief DEPRECATED - Flush all nodes' cache 
-         *  \deprecated this was moved to the octree_node class
-         */
+        /** \brief Flush all nodes' cache */
         void
         flushToDisk ();
 
-        /** \brief DEPRECATED - Flush all non leaf nodes' cache 
-         *  \deprecated
-         */
+        /** \brief Flush all non leaf nodes' cache */
         void
         flushToDiskLazy ();
 
-        /** \brief DEPRECATED - Flush empty nodes only 
-         *  \deprecated
-         */
+        /** \brief Flush empty nodes only */
         void
         DeAllocEmptyNodeCache ();
 

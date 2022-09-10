@@ -3,14 +3,14 @@
 Plane model segmentation
 -------------------------
 
-In this tutorial we will learn how do a simple plane segmentation of a set of
-points, that is find all the points within a point cloud that support a plane
+In this tutorial we will learn how to do a simple plane segmentation of a set of
+points, that is to find all the points within a point cloud that support a plane
 model. This tutorial supports the :ref:`extract_indices` tutorial, presented in
 the **filtering** section.
 
 .. raw:: html
 
-   <iframe title="Planar model segmentation" width="480" height="390" src="http://www.youtube.com/embed/ZTK7NR1Xx4c?rel=0" frameborder="0" allowfullscreen></iframe>
+   <iframe title="Planar model segmentation" width="480" height="390" src="https://www.youtube.com/embed/ZTK7NR1Xx4c?rel=0" frameborder="0" allowfullscreen></iframe>
 
 The code
 --------
@@ -36,7 +36,7 @@ Lines:
 
 .. important::
 
-  Please visit http://docs.pointclouds.org/trunk/a02954.html
+  Please visit https://pointclouds.org/documentation/group__sample__consensus.html
   for more information on various other implemented Sample Consensus models and
   robust estimators.
 
@@ -58,8 +58,7 @@ Then, lines:
 
    
 create the :pcl:`SACSegmentation <pcl::SACSegmentation>` object and set the model and method type.  
-This is also where we specify the "distance threshold", which  determines how close a point must be to the model 
-in order to be considered an inlier. 
+This is also where we specify the "distance threshold", which determines how close a point must be to the model in order to be considered an inlier. 
 In this tutorial, we will use the RANSAC method (pcl::SAC_RANSAC) as the robust estimator of choice. 
 Our decision is motivated by RANSAC's simplicity (other robust estimators use it as
 a base and add additional, more complicated concepts). For more information
@@ -127,7 +126,7 @@ A graphical display of the segmentation process is shown below.
 
 .. image:: images/planar_segmentation_2.png
 
-Note that the coordinate axis are represented as red (x), green (y), and blue
+Note that the coordinate axes are represented as red (x), green (y), and blue
 (z). The points are represented with red as the outliers, and green as the
 inliers of the plane model found.
 

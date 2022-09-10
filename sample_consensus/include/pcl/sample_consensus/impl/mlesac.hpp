@@ -41,8 +41,9 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_MLESAC_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_MLESAC_H_
 
+#include <limits>
 #include <pcl/sample_consensus/mlesac.h>
-#include <pcl/point_types.h>
+#include <pcl/common/common.h> // for computeMedian
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
@@ -59,12 +60,17 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
   double d_best_penalty = std::numeric_limits<double>::max();
   double k = 1.0;
 
+  const double log_probability  = std::log (1.0 - probability_);
+  const double one_over_indices = 1.0 / static_cast<double> (sac_model_->getIndices ()->size ());
+
   Indices selection;
-  Eigen::VectorXf model_coefficients;
+  Eigen::VectorXf model_coefficients (sac_model_->getModelSize ());
   std::vector<double> distances;
 
   // Compute sigma - remember to set threshold_ correctly !
   sigma_ = computeMedianAbsoluteDeviation (sac_model_->getInputCloud (), sac_model_->getIndices (), threshold_);
+  const double dist_scaling_factor = -1.0 / (2.0 * sigma_ * sigma_); // Precompute since this does not change
+  const double normalization_factor = 1.0 / (sqrt (2 * M_PI) * sigma_);
   if (debug_verbosity_level > 1)
     PCL_DEBUG ("[pcl::MaximumLikelihoodSampleConsensus::computeModel] Estimated sigma value: %f.\n", sigma_);
 
@@ -106,7 +112,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
       continue;
     }
     
-    // Use Expectiation-Maximization to find out the right value for d_cur_penalty
+    // Use Expectation-Maximization to find out the right value for d_cur_penalty
     // ---[ Initial estimate for the gamma mixing parameter = 1/2
     double gamma = 0.5;
     double p_outlier_prob = 0;
@@ -115,10 +121,10 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
     std::vector<double> p_inlier_prob (indices_size);
     for (int j = 0; j < iterations_EM_; ++j)
     {
+      const double weighted_normalization_factor = gamma * normalization_factor;
       // Likelihood of a datum given that it is an inlier
       for (std::size_t i = 0; i < indices_size; ++i)
-        p_inlier_prob[i] = gamma * std::exp (- (distances[i] * distances[i] ) / 2 * (sigma_ * sigma_) ) /
-                           (sqrt (2 * M_PI) * sigma_);
+        p_inlier_prob[i] = weighted_normalization_factor * std::exp ( dist_scaling_factor * distances[i] * distances[i] );
 
       // Likelihood of a datum given that it is an outlier
       p_outlier_prob = (1 - gamma) / v;
@@ -151,11 +157,11 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
           n_inliers_count++;
 
       // Compute the k parameter (k=std::log(z)/std::log(1-w^n))
-      double w = static_cast<double> (n_inliers_count) / static_cast<double> (sac_model_->getIndices ()->size ());
-      double p_no_outliers = 1 - std::pow (w, static_cast<double> (selection.size ()));
-      p_no_outliers = (std::max) (std::numeric_limits<double>::epsilon (), p_no_outliers);       // Avoid division by -Inf
-      p_no_outliers = (std::min) (1 - std::numeric_limits<double>::epsilon (), p_no_outliers);   // Avoid division by 0.
-      k = std::log (1 - probability_) / std::log (p_no_outliers);
+      const double w = static_cast<double> (n_inliers_count) * one_over_indices;
+      double p_outliers = 1.0 - std::pow (w, static_cast<double> (selection.size ()));       // Probability that selection is contaminated by at least one outlier
+      p_outliers = (std::max) (std::numeric_limits<double>::epsilon (), p_outliers);         // Avoid division by -Inf
+      p_outliers = (std::min) (1.0 - std::numeric_limits<double>::epsilon (), p_outliers);   // Avoid division by 0.
+      k = log_probability / std::log (p_outliers);
     }
 
     ++iterations_;
@@ -216,21 +222,13 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeMedianAbsoluteDeviation (
 
   for (std::size_t i = 0; i < indices->size (); ++i)
   {
-    pcl::Vector4fMapConst pt = cloud->points[(*indices)[i]].getVector4fMap ();
+    pcl::Vector4fMapConst pt = (*cloud)[(*indices)[i]].getVector4fMap ();
     Eigen::Vector4f ptdiff = pt - median;
     ptdiff[3] = 0;
     distances[i] = ptdiff.dot (ptdiff);
   }
 
-  std::sort (distances.begin (), distances.end ());
-
-  double result;
-  std::size_t mid = indices->size () / 2;
-  // Do we have a "middle" point or should we "estimate" one ?
-  if (indices->size () % 2 == 0)
-    result = (sqrt (distances[mid-1]) + sqrt (distances[mid])) / 2;
-  else
-    result = sqrt (distances[mid]);
+  const double result = pcl::computeMedian (distances.begin (), distances.end (), static_cast<double(*)(double)>(std::sqrt));
   return (sigma * result);
 }
 
@@ -242,19 +240,19 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::getMinMax (
     Eigen::Vector4f &min_p, 
     Eigen::Vector4f &max_p) const
 {
-  min_p.setConstant (FLT_MAX);
-  max_p.setConstant (-FLT_MAX);
+  min_p.setConstant (std::numeric_limits<float>::max());
+  max_p.setConstant (std::numeric_limits<float>::lowest());
   min_p[3] = max_p[3] = 0;
 
   for (std::size_t i = 0; i < indices->size (); ++i)
   {
-    if (cloud->points[(*indices)[i]].x < min_p[0]) min_p[0] = cloud->points[(*indices)[i]].x;
-    if (cloud->points[(*indices)[i]].y < min_p[1]) min_p[1] = cloud->points[(*indices)[i]].y;
-    if (cloud->points[(*indices)[i]].z < min_p[2]) min_p[2] = cloud->points[(*indices)[i]].z;
+    if ((*cloud)[(*indices)[i]].x < min_p[0]) min_p[0] = (*cloud)[(*indices)[i]].x;
+    if ((*cloud)[(*indices)[i]].y < min_p[1]) min_p[1] = (*cloud)[(*indices)[i]].y;
+    if ((*cloud)[(*indices)[i]].z < min_p[2]) min_p[2] = (*cloud)[(*indices)[i]].z;
 
-    if (cloud->points[(*indices)[i]].x > max_p[0]) max_p[0] = cloud->points[(*indices)[i]].x;
-    if (cloud->points[(*indices)[i]].y > max_p[1]) max_p[1] = cloud->points[(*indices)[i]].y;
-    if (cloud->points[(*indices)[i]].z > max_p[2]) max_p[2] = cloud->points[(*indices)[i]].z;
+    if ((*cloud)[(*indices)[i]].x > max_p[0]) max_p[0] = (*cloud)[(*indices)[i]].x;
+    if ((*cloud)[(*indices)[i]].y > max_p[1]) max_p[1] = (*cloud)[(*indices)[i]].y;
+    if ((*cloud)[(*indices)[i]].z > max_p[2]) max_p[2] = (*cloud)[(*indices)[i]].z;
   }
 }
 
@@ -271,27 +269,14 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeMedian (
   std::vector<float> z (indices->size ());
   for (std::size_t i = 0; i < indices->size (); ++i)
   {
-    x[i] = cloud->points[(*indices)[i]].x;
-    y[i] = cloud->points[(*indices)[i]].y;
-    z[i] = cloud->points[(*indices)[i]].z;
+    x[i] = (*cloud)[(*indices)[i]].x;
+    y[i] = (*cloud)[(*indices)[i]].y;
+    z[i] = (*cloud)[(*indices)[i]].z;
   }
-  std::sort (x.begin (), x.end ());
-  std::sort (y.begin (), y.end ());
-  std::sort (z.begin (), z.end ());
 
-  std::size_t mid = indices->size () / 2;
-  if (indices->size () % 2 == 0)
-  {
-    median[0] = (x[mid-1] + x[mid]) / 2;
-    median[1] = (y[mid-1] + y[mid]) / 2;
-    median[2] = (z[mid-1] + z[mid]) / 2;
-  }
-  else
-  {
-    median[0] = x[mid];
-    median[1] = y[mid];
-    median[2] = z[mid];
-  }
+  median[0] = pcl::computeMedian (x.begin(), x.end());
+  median[1] = pcl::computeMedian (y.begin(), y.end());
+  median[2] = pcl::computeMedian (z.begin(), z.end());
   median[3] = 0;
 }
 

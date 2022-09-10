@@ -41,7 +41,6 @@
   */
 
 #include <pcl/test/gtest.h>
-#include <iostream>
 #include <pcl/range_image/bearing_angle_image.h>
 
 pcl::BearingAngleImage bearing_angle_image;
@@ -60,20 +59,20 @@ TEST (BearingAngleImageTest, GetAngle)
 /////////////////////////////////////////////////////////////////////
 TEST (BearingAngleImageTest, GenerateBAImage)
 {
-  point_cloud.points[0] = pcl::PointXYZ (3.0, 1.5, -2.0);
-  point_cloud.points[1] = pcl::PointXYZ (1.0, 3.0, 2.0);
-  point_cloud.points[2] = pcl::PointXYZ (2.0, 3.0, 2.0);
+  point_cloud[0] = pcl::PointXYZ (3.0, 1.5, -2.0);
+  point_cloud[1] = pcl::PointXYZ (1.0, 3.0, 2.0);
+  point_cloud[2] = pcl::PointXYZ (2.0, 3.0, 2.0);
 
-  point_cloud.points[3] = pcl::PointXYZ (2.0, 3.0, 1.0);
-  point_cloud.points[4] = pcl::PointXYZ (4.0, 2.0, 2.0);
-  point_cloud.points[5] = pcl::PointXYZ (-1.5, 3.0, 1.0);
+  point_cloud[3] = pcl::PointXYZ (2.0, 3.0, 1.0);
+  point_cloud[4] = pcl::PointXYZ (4.0, 2.0, 2.0);
+  point_cloud[5] = pcl::PointXYZ (-1.5, 3.0, 1.0);
 
   bearing_angle_image.generateBAImage (point_cloud);
 
   std::uint8_t grays[6];
   for (int i = 0; i < 3 * 2; ++i)
   {
-    grays[i] = (bearing_angle_image.points[i].rgba >> 8) & 0xff;
+    grays[i] = (bearing_angle_image[i].rgba >> 8) & 0xff;
   }
 
   EXPECT_EQ (0, grays[0]);

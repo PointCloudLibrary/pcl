@@ -13,9 +13,7 @@
 #include <vtkActor.h>
 #include <vtkCamera.h>
 #include <vtkCameraActor.h>
-#include <vtkHull.h>
 #include <vtkPlanes.h>
-#include <vtkPolyData.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkProperty.h>
 #include <vtkSmartPointer.h>

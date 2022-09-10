@@ -45,11 +45,9 @@
 
 #include <pcl/type_traits.h>  // for has_custom_allocator
 
-#include <boost/make_shared.hpp>  // for boost::allocate_shared, boost::make_shared
-#include <boost/smart_ptr/shared_ptr.hpp>  // for boost::shared_ptr
-
 #include <Eigen/Core>  // for EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
+#include <memory>  // for std::allocate_shared, std::dynamic_pointer_cast, std::make_shared, std::shared_ptr, std::static_pointer_cast, std::weak_ptr
 #include <type_traits>  // for std::enable_if_t, std::false_type, std::true_type
 #include <utility>  // for std::forward
 
@@ -70,22 +68,33 @@
 namespace pcl
 {
 /**
- * \brief Alias for boost::shared_ptr
+ * \brief Force ADL for `shared_ptr`
  *
  * For ease of switching from boost::shared_ptr to std::shared_ptr
  *
  * \see pcl::make_shared
- * \tparam T Type of the object stored inside the shared_ptr
  */
-template <typename T>
-using shared_ptr = boost::shared_ptr<T>;
+using std::shared_ptr;
+
+/**
+ * \brief Force ADL for `weak_ptr`
+ *
+ * For ease of switching from boost::weak_ptr to std::weak_ptr
+ */
+using std::weak_ptr;
+
+/** ADL doesn't work until C++20 for dynamic_pointer_cast since it requires an explicit Tparam */
+using std::dynamic_pointer_cast;
+
+/** ADL doesn't work until C++20 for static_pointer_cast since it requires an explicit Tparam */
+using std::static_pointer_cast;
 
 #ifdef DOXYGEN_ONLY
 
 /**
  * \brief Returns a pcl::shared_ptr compliant with type T's allocation policy.
  *
- * boost::allocate_shared or boost::make_shared will be invoked in case T has or
+ * std::allocate_shared or std::make_shared will be invoked in case T has or
  * doesn't have a custom allocator, respectively.
  *
  * \note In MSVC < 1915 (before version 15.8) alignment was incorrectly set at
@@ -106,13 +115,13 @@ shared_ptr<T> make_shared(Args&&... args);
 template<typename T, typename ... Args>
 std::enable_if_t<has_custom_allocator<T>::value, shared_ptr<T>> make_shared(Args&&... args)
 {
-  return boost::allocate_shared<T>(Eigen::aligned_allocator<T>(), std::forward<Args> (args)...);
+  return std::allocate_shared<T>(Eigen::aligned_allocator<T>(), std::forward<Args> (args)...);
 }
 
 template<typename T, typename ... Args>
 std::enable_if_t<!has_custom_allocator<T>::value, shared_ptr<T>> make_shared(Args&&... args)
 {
-  return boost::make_shared<T>(std::forward<Args> (args)...);
+  return std::make_shared<T>(std::forward<Args> (args)...);
 }
 
 #endif

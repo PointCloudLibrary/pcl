@@ -36,7 +36,6 @@
 
 #pragma once
 
-#include <pcl/io/boost.h>
 #include <pcl/io/image_metadata_wrapper.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_config.h>
@@ -83,8 +82,7 @@ namespace pcl
         /**
         * @brief virtual Destructor that never throws an exception.
         */
-        inline virtual ~Image ()
-        {}
+        inline virtual ~Image () = default;
 
         /**
         * @param[in] input_width width of input image

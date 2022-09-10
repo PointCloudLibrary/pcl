@@ -37,7 +37,6 @@ which parts of PCL are installed.
 
    #. Install Homebrew. See the Homebrew website for instructions.
    #. Execute ``brew update``.
-   #. Execute ``brew tap homebrew/science``.
 
 To install the latest version using the formula, execute the following command::
 

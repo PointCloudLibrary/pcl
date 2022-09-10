@@ -12,11 +12,11 @@ main (int , char **)
   PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 
   cloud->points.resize (5);
-  for (std::size_t i = 0; i < cloud->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud->size (); ++i)
   {
-    cloud->points[i].x = float (i); 
-    cloud->points[i].y = float (i / 2);
-    cloud->points[i].z = 0.0f;
+    (*cloud)[i].x = float (i); 
+    (*cloud)[i].y = float (i / 2);
+    (*cloud)[i].z = 0.0f;
   }
 
   // Start the visualizer
@@ -28,16 +28,16 @@ main (int , char **)
   p.addPolygon<PointXYZ> (cloud, 1.0, 0.0, 0.0, "polygon", 0);
   p.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "polygon");
   
-  p.addLine<PointXYZ, PointXYZ> (cloud->points[0], cloud->points[1], 0.0, 1.0, 0.0);
+  p.addLine<PointXYZ, PointXYZ> ((*cloud)[0], (*cloud)[1], 0.0, 1.0, 0.0);
   p.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 50, "line");
 
-  p.addSphere<PointXYZ> (cloud->points[0], 1, 0.0, 1.0, 0.0);
+  p.addSphere<PointXYZ> ((*cloud)[0], 1, 0.0, 1.0, 0.0);
   p.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5, "sphere");
 //  p.removePolygon ("poly");
 
   p.addText ("text", 200, 200, 1.0, 0, 0, "text");
   
-  p.addText3D ("text3D", cloud->points[0], 1.0, 1.0, 0.0, 0.0);
+  p.addText3D ("text3D", (*cloud)[0], 1.0, 1.0, 0.0, 0.0);
   p.spin ();
   p.removeCoordinateSystem ("first", 0);
   p.spin ();

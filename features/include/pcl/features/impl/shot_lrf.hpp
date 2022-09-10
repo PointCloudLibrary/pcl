@@ -40,6 +40,7 @@
 #ifndef PCL_FEATURES_IMPL_SHOT_LRF_H_
 #define PCL_FEATURES_IMPL_SHOT_LRF_H_
 
+#include <Eigen/Eigenvalues> // for SelfAdjointEigenSolver
 #include <utility>
 #include <pcl/features/shot_lrf.h>
 
@@ -49,7 +50,7 @@ template<typename PointInT, typename PointOutT> float
 pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::getLocalRF (const int& current_point_idx, Eigen::Matrix3f &rf)
 {
   const Eigen::Vector4f& central_point = (*input_)[current_point_idx].getVector4fMap ();
-  std::vector<int> n_indices;
+  pcl::Indices n_indices;
   std::vector<float> n_sqr_distances;
 
   this->searchForNeighbors (current_point_idx, search_parameter_, n_indices, n_sqr_distances);
@@ -65,7 +66,7 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::getLocalRF (const i
 
   for (std::size_t i_idx = 0; i_idx < n_indices.size (); ++i_idx)
   {
-    Eigen::Vector4f pt = surface_->points[n_indices[i_idx]].getVector4fMap ();
+    Eigen::Vector4f pt = (*surface_)[n_indices[i_idx]].getVector4fMap ();
     if (pt.head<3> () == central_point.head<3> ())
 		  continue;
 

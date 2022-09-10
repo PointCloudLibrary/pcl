@@ -16,6 +16,9 @@
 
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
+#include <pcl/common/utils.h> // pcl::utils::ignore
+
+
 FILE* ON_FileStream::Open( const wchar_t* filename, const wchar_t* mode )
 {
   FILE* fp = 0;
@@ -2605,7 +2608,7 @@ ON_BinaryArchive::ReadSize(std::size_t* sz)
 bool ON_BinaryArchive::WriteBigSize(std::size_t sz)
 {
   ON__UINT64 u = (ON__UINT64)sz;
-  return WriteInt64(1,(ON__INT64*)&u);;
+  return WriteInt64(1,(ON__INT64*)&u);
 }
 
 bool ON_BinaryArchive::ReadBigSize( std::size_t* sz )
@@ -13305,7 +13308,7 @@ bool ON_BinaryFile::AtEnd() const
       {
         int buffer;
         std::size_t res = fread( &buffer, 1, 1, m_fp );
-        (void) res;
+        pcl::utils::ignore(res);
         if ( feof( m_fp ) ) 
         {
           rc = true;

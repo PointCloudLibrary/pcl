@@ -38,6 +38,7 @@
 #include <pcl/surface/on_nurbs/fitting_surface_tdm.h>
 #include <pcl/pcl_macros.h>
 
+#include <Eigen/Geometry> // for cross
 #include <stdexcept>
 
 using namespace pcl;

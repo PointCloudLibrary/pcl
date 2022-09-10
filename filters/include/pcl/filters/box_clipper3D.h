@@ -90,7 +90,7 @@ namespace pcl
       /**
         * \brief virtual destructor
         */
-      ~BoxClipper3D () noexcept;
+      ~BoxClipper3D () noexcept override;
 
       bool
       clipPoint3D (const PointT& point) const override;
@@ -105,7 +105,7 @@ namespace pcl
       clipPlanarPolygon3D (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& polygon, std::vector<PointT, Eigen::aligned_allocator<PointT> >& clipped_polygon) const override;
 
       void
-      clipPointCloud3D (const pcl::PointCloud<PointT> &cloud_in, std::vector<int>& clipped, const std::vector<int>& indices = std::vector<int> ()) const override;
+      clipPointCloud3D (const pcl::PointCloud<PointT> &cloud_in, Indices& clipped, const Indices& indices = Indices ()) const override;
 
       Clipper3D<PointT>*
       clone () const override;

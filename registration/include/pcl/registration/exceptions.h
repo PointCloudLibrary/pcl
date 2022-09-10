@@ -42,34 +42,31 @@
 
 #include <pcl/exceptions.h>
 
-namespace pcl
-{
-  /** \class SolverDidntConvergeException
-    * \brief An exception that is thrown when the non linear solver didn't converge
-    */
-  class PCL_EXPORTS SolverDidntConvergeException : public PCLException
-  {
-    public:
-    
-    SolverDidntConvergeException (const std::string& error_description,
-                                  const char* file_name = nullptr,
-                                  const char* function_name = nullptr,
-                                  unsigned line_number = 0)
-      : pcl::PCLException (error_description, file_name, function_name, line_number) { }
-  } ;
+namespace pcl {
+/** \class SolverDidntConvergeException
+ * \brief An exception that is thrown when the non linear solver didn't converge
+ */
+class PCL_EXPORTS SolverDidntConvergeException : public PCLException {
+public:
+  SolverDidntConvergeException(const std::string& error_description,
+                               const char* file_name = nullptr,
+                               const char* function_name = nullptr,
+                               unsigned line_number = 0)
+  : pcl::PCLException(error_description, file_name, function_name, line_number)
+  {}
+};
 
- /** \class NotEnoughPointsException
-    * \brief An exception that is thrown when the number of correspondents is not equal
-    * to the minimum required
-    */
-  class PCL_EXPORTS NotEnoughPointsException : public PCLException
-  {
-    public:
-    
-    NotEnoughPointsException (const std::string& error_description,
-                              const char* file_name = nullptr,
-                              const char* function_name = nullptr,
-                              unsigned line_number = 0)
-      : pcl::PCLException (error_description, file_name, function_name, line_number) { }
-  } ;
-}
+/** \class NotEnoughPointsException
+ * \brief An exception that is thrown when the number of correspondents is not equal
+ * to the minimum required
+ */
+class PCL_EXPORTS NotEnoughPointsException : public PCLException {
+public:
+  NotEnoughPointsException(const std::string& error_description,
+                           const char* file_name = nullptr,
+                           const char* function_name = nullptr,
+                           unsigned line_number = 0)
+  : pcl::PCLException(error_description, file_name, function_name, line_number)
+  {}
+};
+} // namespace pcl

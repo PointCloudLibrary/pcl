@@ -36,67 +36,65 @@
 
 #pragma once
 
+#include <pcl/apps/modeler/abstract_item.h>
+#include <pcl/apps/modeler/cloud_mesh.h>
+#include <pcl/common/eigen.h>
+
 #include <QTreeWidgetItem>
 
 #include <vtkSmartPointer.h>
-
-#include <pcl/common/eigen.h>
-#include <pcl/apps/modeler/abstract_item.h>
-#include <pcl/apps/modeler/cloud_mesh.h>
 
 class vtkActor;
 class vtkPolyData;
 class vtkMatrix4x4;
 class vtkRenderWindow;
 
+namespace pcl {
+namespace modeler {
 
-namespace pcl
-{
-  namespace modeler
-  {
-    class ChannelActorItem : public QTreeWidgetItem, public AbstractItem
-    {
-      public:
-        ChannelActorItem(QTreeWidgetItem* parent,
-                         const CloudMesh::Ptr& cloud_mesh,
-                         const vtkSmartPointer<vtkRenderWindow>& render_window,
-                         const vtkSmartPointer<vtkActor>& actor,
-                         const std::string& channel_name);
-        ~ChannelActorItem();
+class ChannelActorItem : public QTreeWidgetItem, public AbstractItem {
+public:
+  ChannelActorItem(QTreeWidgetItem* parent,
+                   const CloudMesh::Ptr& cloud_mesh,
+                   const vtkSmartPointer<vtkRenderWindow>& render_window,
+                   const vtkSmartPointer<vtkActor>& actor,
+                   const std::string& channel_name);
+  ~ChannelActorItem();
 
-        void
-        init();
+  void
+  init();
 
-        void
-        update();
+  void
+  update();
 
-        void
-        switchRenderWindow(vtkRenderWindow* render_window);
+  void
+  switchRenderWindow(vtkRenderWindow* render_window);
 
-      protected:
-        void
-        attachActor();
+protected:
+  void
+  attachActor();
 
-        void
-        detachActor();
+  void
+  detachActor();
 
-        virtual void
-        initImpl() = 0;
+  virtual void
+  initImpl() = 0;
 
-        virtual void
-        updateImpl() = 0;
+  virtual void
+  updateImpl() = 0;
 
-        void
-        prepareContextMenu(QMenu* menu) const override;
+  void
+  prepareContextMenu(QMenu* menu) const override;
 
-        CloudMesh::Ptr                    cloud_mesh_;
-        vtkSmartPointer<vtkPolyData>      poly_data_;
-        vtkSmartPointer<vtkRenderWindow>  render_window_;
-        std::string                       color_scheme_;
-        vtkSmartPointer<vtkActor>         actor_;
-        double                            r_, g_, b_;
+  CloudMesh::Ptr cloud_mesh_;
+  vtkSmartPointer<vtkPolyData> poly_data_;
+  vtkSmartPointer<vtkRenderWindow> render_window_;
+  std::string color_scheme_;
+  vtkSmartPointer<vtkActor> actor_;
+  double r_, g_, b_;
 
-      private:
-    };
-  }
-}
+private:
+};
+
+} // namespace modeler
+} // namespace pcl

@@ -37,9 +37,10 @@
  *
  */
 
-#include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/registration/lum.h>
+// Must come after its header
 #include <pcl/registration/impl/lum.hpp>
+#include <pcl/point_types.h>
 
 PCL_INSTANTIATE(LUM, PCL_XYZ_POINT_TYPES);

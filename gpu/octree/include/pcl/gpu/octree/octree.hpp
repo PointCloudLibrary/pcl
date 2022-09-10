@@ -37,6 +37,7 @@
 #ifndef _PCL_GPU_OCTREE_
 #define _PCL_GPU_OCTREE_
 
+#include <limits>
 #include <vector>
 
 #include <pcl/memory.h>
@@ -106,7 +107,8 @@ namespace pcl
               * \param[out] out indeces of points within give sphere
               * \param[in] max_nn maximum numver of results returned
               */
-            void radiusSearchHost(const PointType& center, float radius, std::vector<int>& out, int max_nn = INT_MAX);
+            void radiusSearchHost(const PointType& center, float radius, std::vector<int>& out,
+                                  int max_nn = std::numeric_limits<int>::max());
 
             /** \brief Performs approximate nearest neighbor search on CPU. It call \a internalDownload if necessary
               * \param[in]  query 3D point for which neighbour is be fetched             
@@ -144,7 +146,15 @@ namespace pcl
               * \param[in] queries array of centers
               * \param[out] result array of results ( one index for each query ) 
               */
+            PCL_DEPRECATED(1, 14, "use approxNearestSearch() which returns square distances instead")
             void approxNearestSearch(const Queries& queries, NeighborIndices& result) const;
+
+            /** \brief Batch approximate nearest search on GPU
+              * \param[in] queries array of centers
+              * \param[out] result array of results ( one index for each query )
+              * \param[out] sqr_distance corresponding square distances to results from query point
+              */
+            void approxNearestSearch(const Queries& queries, NeighborIndices& result, ResultSqrDists& sqr_distance) const;
 
             /** \brief Batch exact k-nearest search on GPU for k == 1 only!
               * \param[in] queries array of centers
@@ -152,6 +162,14 @@ namespace pcl
               * \param[out] results array of results
               */
             void nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results) const;
+
+            /** \brief Batch exact k-nearest search on GPU for k == 1 only!
+              * \param[in] queries array of centers
+              * \param[in] k number of neighbors (only k == 1 is supported)
+              * \param[out] results array of results
+              * \param[out] sqr_distances square distances to results
+              */
+            void nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results, ResultSqrDists& sqr_distances) const;
 
             /** \brief Desroys octree and release all resources */
             void clear();            

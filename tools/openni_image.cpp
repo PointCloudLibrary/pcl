@@ -35,12 +35,10 @@
  *	
  */
 
-#include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/time.h> //fps calculations
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/lzf_image_io.h>
-#include <pcl/visualization/boost.h>
 #include <pcl/visualization/common/float_image_utils.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
@@ -48,6 +46,7 @@
 #include <pcl/visualization/mouse_event.h>
 
 #include <boost/circular_buffer.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp> // for ptime, to_iso_string, ...
 
 #include <csignal>
 #include <limits>
@@ -55,7 +54,6 @@
 #include <thread>
 #include <memory>
 
-using namespace std;
 using namespace std::chrono_literals;
 using namespace pcl;
 using namespace pcl::console;
@@ -167,7 +165,9 @@ struct Frame
 class Buffer
 {
 	public:
-    Buffer () {}
+    Buffer () = default;
+    Buffer (const Buffer&) = delete;            // Disabled copy constructor
+    Buffer& operator =(const Buffer&) = delete; // Disabled assignment operator
 
     bool 
     pushBack (Frame::ConstPtr frame)
@@ -247,9 +247,6 @@ class Buffer
     }
 
 	private:
-		Buffer (const Buffer&) = delete;            // Disabled copy constructor
-		Buffer& operator =(const Buffer&) = delete; // Disabled assignment operator
-		
     std::mutex bmutex_;
 		std::condition_variable buff_empty_;
 		boost::circular_buffer<Frame::ConstPtr> buffer_;
@@ -269,45 +266,43 @@ class Writer
       FPS_CALC_WRITER ("data write   ", buf_);
       nr_frames_total++;
       
-      stringstream ss1, ss2, ss3;
-
-      string time_string = boost::posix_time::to_iso_string (frame->time);
+      std::string time_string = boost::posix_time::to_iso_string (frame->time);
       // Save RGB data
-      ss1 << "frame_" << time_string << "_rgb.pclzf";
+      const std::string rgb_filename = "frame_" + time_string + "_rgb.pclzf";
       switch (frame->image->getEncoding ())
       {
         case openni_wrapper::Image::YUV422:
         {
           io::LZFYUV422ImageWriter lrgb;
-          lrgb.write (reinterpret_cast<const char*> (&frame->image->getMetaData ().Data ()[0]), frame->image->getWidth (), frame->image->getHeight (), ss1.str ());
+          lrgb.write (reinterpret_cast<const char*> (&frame->image->getMetaData ().Data ()[0]), frame->image->getWidth (), frame->image->getHeight (), rgb_filename);
           break;
         }
         case openni_wrapper::Image::RGB:
         {
           io::LZFRGB24ImageWriter lrgb;
-          lrgb.write (reinterpret_cast<const char*> (&frame->image->getMetaData ().Data ()[0]), frame->image->getWidth (), frame->image->getHeight (), ss1.str ());
+          lrgb.write (reinterpret_cast<const char*> (&frame->image->getMetaData ().Data ()[0]), frame->image->getWidth (), frame->image->getHeight (), rgb_filename);
           break;
         }
         case openni_wrapper::Image::BAYER_GRBG:
         {
           io::LZFBayer8ImageWriter lrgb;
-          lrgb.write (reinterpret_cast<const char*> (&frame->image->getMetaData ().Data ()[0]), frame->image->getWidth (), frame->image->getHeight (), ss1.str ());
+          lrgb.write (reinterpret_cast<const char*> (&frame->image->getMetaData ().Data ()[0]), frame->image->getWidth (), frame->image->getHeight (), rgb_filename);
           break;
         }
       }
 
       // Save depth data
-      ss2 << "frame_" + time_string + "_depth.pclzf";
+      const std::string depth_filename = "frame_" + time_string + "_depth.pclzf";
       io::LZFDepth16ImageWriter ld;
       //io::LZFShift11ImageWriter ld;
-      ld.write (reinterpret_cast<const char*> (&frame->depth_image->getDepthMetaData ().Data ()[0]), frame->depth_image->getWidth (), frame->depth_image->getHeight (), ss2.str ());
+      ld.write (reinterpret_cast<const char*> (&frame->depth_image->getDepthMetaData ().Data ()[0]), frame->depth_image->getWidth (), frame->depth_image->getHeight (), depth_filename);
       
       // Save depth data
-      ss3 << "frame_" << time_string << ".xml";
+      const std::string xml_filename = "frame_" + time_string + ".xml";
          
       io::LZFRGB24ImageWriter lrgb;
-      lrgb.writeParameters (frame->parameters_rgb, ss3.str ());
-      ld.writeParameters (frame->parameters_depth, ss3.str ());
+      lrgb.writeParameters (frame->parameters_rgb, xml_filename);
+      ld.writeParameters (frame->parameters_depth, xml_filename);
       // By default, the z-value depth multiplication factor is written as part of the LZFDepthImageWriter's writeParameters as 0.001
       // If you want to change that, uncomment the next line and change the value
       //ld.writeParameter (0.001, "depth.z_multiplication_factor", ss3.str ());
@@ -463,8 +458,8 @@ class Viewer
     void 
     receiveAndView ()
     {
-      string mouseMsg2D ("Mouse coordinates in image viewer");
-      string keyMsg2D ("Key event for image viewer");
+      std::string mouseMsg2D ("Mouse coordinates in image viewer");
+      std::string keyMsg2D ("Key event for image viewer");
 
       image_viewer_->registerMouseCallback (&Viewer::mouse_callback, *this, static_cast<void*> (&mouseMsg2D));
       image_viewer_->registerKeyboardCallback(&Viewer::keyboard_callback, *this, static_cast<void*> (&keyMsg2D));
@@ -509,8 +504,8 @@ class Viewer
                                      &rgb_data[0]);
             }
             else
-              memcpy (&rgb_data[0], 
-                      frame->image->getMetaData ().Data (), 
+              memcpy (&rgb_data[0],
+                      frame->image->getMetaData ().Data (),
                       rgb_data.size ());
 
             image_viewer_->addRGBImage (reinterpret_cast<unsigned char*> (&rgb_data[0]), 
@@ -681,7 +676,7 @@ main (int argc, char ** argv)
   else
     print_highlight ("Using default buffer size of %d frames.\n", buff_size);
 
-  string device_id;
+  std::string device_id;
   OpenNIGrabber::Mode image_mode = OpenNIGrabber::OpenNI_Default_Mode;
   OpenNIGrabber::Mode depth_mode = OpenNIGrabber::OpenNI_Default_Mode;
   
@@ -699,13 +694,13 @@ main (int argc, char ** argv)
       {
         OpenNIGrabber grabber (argv[2]);
         auto device = grabber.getDevice ();
-        std::vector<pair<int, XnMapOutputMode> > modes;
+        std::vector<std::pair<int, XnMapOutputMode> > modes;
 
         if (device->hasImageStream ())
         {
           std::cout << std::endl << "Supported image modes for device: " << device->getVendorName () << " , " << device->getProductName () << std::endl;
           modes = grabber.getAvailableImageModes ();
-          for (vector<pair<int, XnMapOutputMode> >::const_iterator it = modes.begin (); it != modes.end (); ++it)
+          for (std::vector<std::pair<int, XnMapOutputMode> >::const_iterator it = modes.begin (); it != modes.end (); ++it)
           {
             std::cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << std::endl;
           }
@@ -713,7 +708,7 @@ main (int argc, char ** argv)
         {
           std::cout << std::endl << "Supported depth modes for device: " << device->getVendorName () << " , " << device->getProductName () << std::endl;
           modes = grabber.getAvailableDepthModes ();
-          for (vector<pair<int, XnMapOutputMode> >::const_iterator it = modes.begin (); it != modes.end (); ++it)
+          for (std::vector<std::pair<int, XnMapOutputMode> >::const_iterator it = modes.begin (); it != modes.end (); ++it)
           {
             std::cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << std::endl;
           }

@@ -41,26 +41,25 @@
 #include <fcntl.h>
 #include <string>
 #include <cstdlib>
-#include <pcl/io/boost.h>
+#include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/common/io.h>
 #include <pcl/io/low_level_io.h>
 #include <pcl/io/lzf.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/io/split.h>
 #include <pcl/console/time.h>
 
 #include <cstring>
 #include <cerrno>
-
-#include <boost/version.hpp>
+#include <boost/filesystem.hpp> // for permissions
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::PCDWriter::setLockingPermissions (const std::string &file_name,
                                        boost::interprocess::file_lock &lock)
 {
-  (void)file_name;
-  (void)lock;
-#ifndef WIN32
+  pcl::utils::ignore(file_name, lock);
+#ifndef _WIN32
 #ifndef NO_MANDATORY_LOCKING
   // Attempt to lock the file.
   // For mandatory locking, the filesystem must be mounted with the "mand" option in Linux (see http://www.hackinglinuxexposed.com/articles/20030623.html)
@@ -88,11 +87,9 @@ void
 pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
                                          boost::interprocess::file_lock &lock)
 {
-  (void)file_name;
-  (void)lock;
-#ifndef WIN32
+  pcl::utils::ignore(file_name, lock);
+#ifndef _WIN32
 #ifndef NO_MANDATORY_LOCKING
-  (void)file_name;
   namespace fs = boost::filesystem;
   try
   {
@@ -146,8 +143,7 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
         continue;
 
       // Tokenize the line
-      boost::trim (line);
-      boost::split (st, line, boost::is_any_of ("\t\r "), boost::token_compress_on);
+      pcl::split (st, line, "\t\r ");
 
       std::stringstream sstream (line);
       sstream.imbue (std::locale::classic ());
@@ -428,6 +424,10 @@ pcl::PCDReader::readBodyASCII (std::istream &fs, pcl::PCLPointCloud2 &cloud, int
 {
   // Get the number of points the cloud should have
   unsigned int nr_points = cloud.width * cloud.height;
+  // The number of elements each line/point should have
+  const unsigned int elems_per_line = std::accumulate (cloud.fields.cbegin (), cloud.fields.cend (), 0u,
+                                                       [](const auto& i, const auto& field){ return (i + field.count); });
+  PCL_DEBUG ("[pcl::PCDReader::readBodyASCII] Will check that each line in the PCD file has %u elements.\n", elems_per_line);
 
   // Setting the is_dense property to true by default
   cloud.is_dense = true;
@@ -435,6 +435,10 @@ pcl::PCDReader::readBodyASCII (std::istream &fs, pcl::PCLPointCloud2 &cloud, int
   unsigned int idx = 0;
   std::string line;
   std::vector<std::string> st;
+  std::istringstream is;
+  is.imbue (std::locale::classic ());
+
+  st.reserve(elems_per_line);
 
   try
   {
@@ -446,8 +450,15 @@ pcl::PCDReader::readBodyASCII (std::istream &fs, pcl::PCLPointCloud2 &cloud, int
         continue;
 
       // Tokenize the line
-      boost::trim (line);
-      boost::split (st, line, boost::is_any_of ("\t\r "), boost::token_compress_on);
+      pcl::split(st, line, "\r\t ");
+
+      if (st.size () != elems_per_line) // If this is not checked, an exception might occur while accessing st
+      {
+        PCL_WARN ("[pcl::PCDReader::readBodyASCII] Possibly malformed PCD file: point number %u has %zu elements, but should have %u\n",
+                  idx+1, st.size (), elems_per_line);
+        ++idx; // Skip this line/point, but read all others
+        continue;
+      }
 
       if (idx >= nr_points)
       {
@@ -465,56 +476,56 @@ pcl::PCDReader::readBodyASCII (std::istream &fs, pcl::PCLPointCloud2 &cloud, int
           total += cloud.fields[d].count; // jump over this many elements in the string token
           continue;
         }
-        for (unsigned int c = 0; c < cloud.fields[d].count; ++c)
+        for (uindex_t c = 0; c < cloud.fields[d].count; ++c)
         {
           switch (cloud.fields[d].datatype)
           {
             case pcl::PCLPointField::INT8:
             {
               copyStringValue<pcl::traits::asType<pcl::PCLPointField::INT8>::type> (
-                  st.at (total + c), cloud, idx, d, c);
+                  st.at (total + c), cloud, idx, d, c, is);
               break;
             }
             case pcl::PCLPointField::UINT8:
             {
               copyStringValue<pcl::traits::asType<pcl::PCLPointField::UINT8>::type> (
-                  st.at (total + c), cloud, idx, d, c);
+                  st.at (total + c), cloud, idx, d, c, is);
               break;
             }
             case pcl::PCLPointField::INT16:
             {
               copyStringValue<pcl::traits::asType<pcl::PCLPointField::INT16>::type> (
-                  st.at (total + c), cloud, idx, d, c);
+                  st.at (total + c), cloud, idx, d, c, is);
               break;
             }
             case pcl::PCLPointField::UINT16:
             {
               copyStringValue<pcl::traits::asType<pcl::PCLPointField::UINT16>::type> (
-                  st.at (total + c), cloud, idx, d, c);
+                  st.at (total + c), cloud, idx, d, c, is);
               break;
             }
             case pcl::PCLPointField::INT32:
             {
               copyStringValue<pcl::traits::asType<pcl::PCLPointField::INT32>::type> (
-                  st.at (total + c), cloud, idx, d, c);
+                  st.at (total + c), cloud, idx, d, c, is);
               break;
             }
             case pcl::PCLPointField::UINT32:
             {
               copyStringValue<pcl::traits::asType<pcl::PCLPointField::UINT32>::type> (
-                  st.at (total + c), cloud, idx, d, c);
+                  st.at (total + c), cloud, idx, d, c, is);
               break;
             }
             case pcl::PCLPointField::FLOAT32:
             {
               copyStringValue<pcl::traits::asType<pcl::PCLPointField::FLOAT32>::type> (
-                  st.at (total + c), cloud, idx, d, c);
+                  st.at (total + c), cloud, idx, d, c, is);
               break;
             }
             case pcl::PCLPointField::FLOAT64:
             {
               copyStringValue<pcl::traits::asType<pcl::PCLPointField::FLOAT64>::type> (
-                  st.at (total + c), cloud, idx, d, c);
+                  st.at (total + c), cloud, idx, d, c, is);
               break;
             }
             default:
@@ -566,7 +577,7 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
       cloud.data.resize (uncompressed_size);
     }
 
-    unsigned int data_size = static_cast<unsigned int> (cloud.data.size ());
+    auto data_size = static_cast<unsigned int> (cloud.data.size ());
     std::vector<char> buf (data_size);
     // The size of the uncompressed data better be the same as what we stored in the header
     unsigned int tmp_size = pcl::lzfDecompress (&map[data_idx + 8], compressed_size, &buf[0], data_size);
@@ -601,7 +612,7 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
       toff += fields_sizes[i] * cloud.width * cloud.height;
     }
     // Copy it to the cloud
-    for (std::size_t i = 0; i < cloud.width * cloud.height; ++i)
+    for (uindex_t i = 0; i < cloud.width * cloud.height; ++i)
     {
       for (std::size_t j = 0; j < pters.size (); ++j)
       {
@@ -619,11 +630,11 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
   // Extra checks (not needed for ASCII)
   int point_size = static_cast<int> (cloud.data.size () / (cloud.height * cloud.width));
   // Once copied, we need to go over each field and check if it has NaN/Inf values and assign cloud.is_dense to true or false
-  for (std::uint32_t i = 0; i < cloud.width * cloud.height; ++i)
+  for (uindex_t i = 0; i < cloud.width * cloud.height; ++i)
   {
     for (unsigned int d = 0; d < static_cast<unsigned int> (cloud.fields.size ()); ++d)
     {
-      for (std::uint32_t c = 0; c < cloud.fields[d].count; ++c)
+      for (uindex_t c = 0; c < cloud.fields[d].count; ++c)
       {
         switch (cloud.fields[d].datatype)
         {
@@ -800,7 +811,7 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
       return (-1);
     }
 #else
-    unsigned char *map = static_cast<unsigned char*> (::mmap (nullptr, mmap_size, PROT_READ, MAP_SHARED, fd, 0));
+    auto *map = static_cast<unsigned char*> (::mmap (nullptr, mmap_size, PROT_READ, MAP_SHARED, fd, 0));
     if (map == reinterpret_cast<unsigned char*> (-1))    // MAP_FAILED
     {
       io::raw_close (fd);
@@ -984,7 +995,7 @@ pcl::PCDWriter::generateHeaderBinary (const pcl::PCLPointCloud2 &cloud,
 
   std::stringstream field_names, field_types, field_sizes, field_counts;
   // Check if the size of the fields is smaller than the size of the point step
-  unsigned int toffset = 0;
+  std::size_t toffset = 0;
   for (std::size_t i = 0; i < cloud.fields.size (); ++i)
   {
     // If field offsets do not match, then we need to create fake fields
@@ -1118,7 +1129,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PCLPointClo
   std::ofstream fs;
   fs.precision (precision);
   fs.imbue (std::locale::classic ());
-  fs.open (file_name.c_str ());      // Open file
+  fs.open (file_name.c_str (), std::ios::binary);      // Open file
   if (!fs.is_open () || fs.fail ())
   {
     PCL_ERROR("[pcl::PCDWriter::writeASCII] Could not open file '%s' for writing! Error : %s\n", file_name.c_str (), strerror(errno)); 
@@ -1405,7 +1416,7 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
   }
 
   // Go over all the points, and copy the data in the appropriate places
-  for (std::size_t i = 0; i < cloud.width * cloud.height; ++i)
+  for (uindex_t i = 0; i < cloud.width * cloud.height; ++i)
   {
     for (std::size_t j = 0; j < pters.size (); ++j)
     {
@@ -1433,7 +1444,7 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
 
   os.imbue (std::locale::classic ());
   os << "DATA binary_compressed\n";
-  std::copy (temp_buf.begin (), temp_buf.end (), std::ostream_iterator<char> (os));
+  std::copy (temp_buf.cbegin (), temp_buf.cend (), std::ostream_iterator<char> (os));
   os.flush ();
 
   return (os ? 0 : -1);

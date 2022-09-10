@@ -90,11 +90,7 @@ pcl::FieldComparison<PointT>::FieldComparison (
 template <typename PointT>
 pcl::FieldComparison<PointT>::~FieldComparison () 
 {
-  if (point_data_ != nullptr)
-  {
-    delete point_data_;
-    point_data_ = nullptr;
-  }
+  delete point_data_;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -197,7 +193,7 @@ template <typename PointT> bool
 pcl::PackedRGBComparison<PointT>::evaluate (const PointT &point) const
 {
   // extract the component value
-  const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
+  const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
   std::uint8_t my_val = *(pt_data + component_offset_);
 
   // now do the comparison
@@ -302,8 +298,8 @@ pcl::PackedHSIComparison<PointT>::evaluate (const PointT &point) const
   static std::uint8_t i_ = 0;
 
   // We know that rgb data is 32 bit aligned (verified in the ctor) so...
-  const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
-  const std::uint32_t* rgb_data = reinterpret_cast<const std::uint32_t*> (pt_data + rgb_offset_);
+  const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
+  const auto* rgb_data = reinterpret_cast<const std::uint32_t*> (pt_data + rgb_offset_);
   std::uint32_t new_rgb_val = *rgb_data;
 
   if (rgb_val_ != new_rgb_val) 
@@ -527,7 +523,7 @@ pcl::PointDataAtOffset<PointT>::compare (const PointT& p, const double& val)
   // if p(data) == val return 0
   // if p(data) < val return -1 
   
-  const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&p);
+  const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&p);
 
   switch (datatype_) 
   {
@@ -686,8 +682,8 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
     output.width    = this->input_->width;
     output.is_dense = this->input_->is_dense;
   }
-  output.points.resize (input_->points.size ());
-  removed_indices_->resize (input_->points.size ());
+  output.resize (input_->size ());
+  removed_indices_->resize (input_->size ());
 
   int nr_removed_p = 0;
 
@@ -697,7 +693,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
     for (std::size_t index: (*Filter<PointT>::indices_))
     {
 
-      const PointT& point = input_->points[index];
+      const PointT& point = (*input_)[index];
       // Check if the point is invalid
       if (!std::isfinite (point.x)
           || !std::isfinite (point.y)
@@ -713,7 +709,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
 
       if (condition_->evaluate (point))
       {
-        copyPoint (point, output.points[nr_p]);
+        copyPoint (point, output[nr_p]);
         nr_p++;
       }
       else
@@ -727,15 +723,15 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
     }
 
     output.width = nr_p;
-    output.points.resize (nr_p);
+    output.resize (nr_p);
   }
   else
   {
-    std::vector<int> indices = *Filter<PointT>::indices_;
+    Indices indices = *Filter<PointT>::indices_;
     std::sort (indices.begin (), indices.end ());   //TODO: is this necessary or can we assume the indices to be sorted?
     bool removed_p = false;
     std::size_t ci = 0;
-    for (std::size_t cp = 0; cp < input_->points.size (); ++cp)
+    for (std::size_t cp = 0; cp < input_->size (); ++cp)
     {
       if (cp == static_cast<std::size_t> (indices[ci]))
       {
@@ -747,11 +743,11 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
         }
 
         // copy all the fields
-        copyPoint (input_->points[cp], output.points[cp]);
+        copyPoint ((*input_)[cp], output[cp]);
 
-        if (!condition_->evaluate (input_->points[cp]))
+        if (!condition_->evaluate ((*input_)[cp]))
         {
-          output.points[cp].getVector4fMap ().setConstant (user_filter_value_);
+          output[cp].getVector4fMap ().setConstant (user_filter_value_);
           removed_p = true;
 
           if (extract_removed_indices_)
@@ -763,7 +759,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
       }
       else
       {
-        output.points[cp].getVector4fMap ().setConstant (user_filter_value_);
+        output[cp].getVector4fMap ().setConstant (user_filter_value_);
         removed_p = true;
         //as for !keep_organized_: removed points due to setIndices are not considered as removed_indices_
       }

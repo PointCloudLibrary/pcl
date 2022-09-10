@@ -93,8 +93,6 @@ namespace pcl
     //  if (!output)
     //    output.reset (new PointCloudAOS<Device>);
     //
-    //  using namespace thrust;
-    //
     //  // Prepare the output
     //  output->height = depth_image->height;
     //  output->width  = depth_image->width;
@@ -184,8 +182,6 @@ namespace pcl
     {
       if (!output)
         output.reset (new PointCloudAOS<Storage>);
-    
-      using namespace thrust;
     
       int depth_width = depth_image->getWidth ();
       int depth_height = depth_image->getHeight ();

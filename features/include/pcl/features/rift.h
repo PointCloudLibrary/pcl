@@ -127,7 +127,7 @@ namespace pcl
         */
       void 
       computeRIFT (const PointCloudIn &cloud, const PointCloudGradient &gradient, int p_idx, float radius,
-                   const std::vector<int> &indices, const std::vector<float> &squared_distances, 
+                   const pcl::Indices &indices, const std::vector<float> &squared_distances, 
                    Eigen::MatrixXf &rift_descriptor);
 
     protected:

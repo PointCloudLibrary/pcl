@@ -35,26 +35,25 @@
  *
  */
 
-#include <pcl_cuda/time_cpu.h>
-#include <pcl_cuda/time_gpu.h>
-#include <pcl_cuda/io/cloud_to_pcl.h>
-#include <pcl_cuda/io/extract_indices.h>
-#include <pcl_cuda/io/disparity_to_cloud.h>
-#include <pcl_cuda/io/host_device.h>
-#include <pcl_cuda/sample_consensus/sac_model_1point_plane.h>
-#include <pcl_cuda/sample_consensus/ransac.h>
-
+#include <pcl/memory.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/cuda/time_cpu.h>
+#include <pcl/cuda/time_gpu.h>
+#include <pcl/cuda/io/cloud_to_pcl.h>
+#include <pcl/cuda/io/disparity_to_cloud.h>
+#include <pcl/cuda/io/extract_indices.h>
+#include <pcl/cuda/io/host_device.h>
+#include <pcl/cuda/sample_consensus/ransac.h>
+#include <pcl/cuda/sample_consensus/sac_model_1point_plane.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-
-#include <boost/shared_ptr.hpp>
 
 #include <functional>
 #include <iostream>
 #include <mutex>
+
 
 using namespace pcl_cuda;
 
@@ -69,16 +68,16 @@ class SimpleKinectTool
       pcl::ScopeTime ttt ("all");
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr output (new pcl::PointCloud<pcl::PointXYZRGB>);
       PointCloudAOS<Host> data_host;
-      data_host.points.resize (cloud->points.size());
+      data_host.resize (cloud->points.size());
       for (std::size_t i = 0; i < cloud->points.size (); ++i)
       {
         PointXYZRGB pt;
-        pt.x = cloud->points[i].x;
-        pt.y = cloud->points[i].y;
-        pt.z = cloud->points[i].z;
+        pt.x = (*cloud)[i].x;
+        pt.y = (*cloud)[i].y;
+        pt.z = (*cloud)[i].z;
         // Pack RGB into a float
-        pt.rgb = *(float*)(&cloud->points[i].rgb);
-        data_host.points[i] = pt;
+        pt.rgb = *(float*)(&(*cloud)[i].rgb);
+        data_host[i] = pt;
       }
       data_host.width = cloud->width;
       data_host.height = cloud->height;
@@ -98,8 +97,8 @@ class SimpleKinectTool
         }
         else
         {
-          typename SampleConsensusModel1PointPlane<Storage>::IndicesPtr inliers_stencil;
-          inliers_stencil = sac.getInliersStencil ();
+          //typename SampleConsensusModel1PointPlane<Storage>::IndicesPtr inliers_stencil;
+          //inliers_stencil = sac.getInliersStencil ();
 
       //    OpenNIRGB color;
       //    color.r = 253; color.g = 0; color.b = 0;
@@ -158,7 +157,6 @@ class SimpleKinectTool
     run (bool use_device)
     {
 #if 1
-      pcl::Grabber* filegrabber = 0;
 
       float frames_per_second = 1;
       bool repeat = false;

@@ -41,8 +41,9 @@
 #pragma GCC system_header
 #endif
 
+#include <Eigen/Core> // for Matrix, ...
+
 #include <pcl/pcl_macros.h>
-#include <pcl/visualization/eigen.h>
 #include <vtkMatrix4x4.h>
 #include <vtkSmartPointer.h>
 #include <vtkLookupTable.h>

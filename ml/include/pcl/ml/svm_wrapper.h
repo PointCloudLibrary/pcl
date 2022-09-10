@@ -38,17 +38,15 @@
 
 #pragma once
 
-#include <cctype>
-#include <cerrno>
+#include <pcl/console/print.h> // for PCL_ERROR
+#include <pcl/ml/svm.h>
+
+#include <cassert> // for assert
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
-#include <fstream>
-#include <iostream>
-#include <pcl/common/eigen.h>
+#include <limits> // for numeric_limits
+#include <string> // for string
 #include <vector>
-
-#include <pcl/ml/svm.h>
 #define Malloc(type, n) static_cast<type*>(malloc((n) * sizeof(type)))
 
 namespace pcl {

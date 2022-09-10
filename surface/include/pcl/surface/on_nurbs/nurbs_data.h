@@ -38,8 +38,6 @@
 #pragma once
 
 #include <vector>
-#include <list>
-#include <cstdio>
 
 #undef Success
 #include <Eigen/StdVector>

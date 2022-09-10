@@ -86,7 +86,7 @@ void    ON_Error( const char*, /* sFileName:   __FILE__ will do fine */
                   ...          /* printf() style ags */
                   );
 
-ON_DECL
+PCL_EXPORTS ON_DECL
 void    ON_ErrorEx( const char*, // sFileName:   __FILE__ will do fine
                   int,           // line number: __LINE__ will do fine
                   const char*,   // sFunctionName: __FUNCTION__ will do fine

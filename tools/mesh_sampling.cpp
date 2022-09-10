@@ -36,11 +36,10 @@
  */
 
 #include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/visualization/vtk/pcl_vtk_compatibility.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_lib_io.h>
-#include <pcl/common/transforms.h>
 #include <vtkVersion.h>
-#include <vtkPLYReader.h>
 #include <vtkOBJReader.h>
 #include <vtkTriangle.h>
 #include <vtkTriangleFilter.h>
@@ -82,12 +81,13 @@ randPSurface (vtkPolyData * polydata, std::vector<double> * cumulativeAreas, dou
 {
   float r = static_cast<float> (uniform_deviate (rand ()) * totalArea);
 
-  std::vector<double>::iterator low = std::lower_bound (cumulativeAreas->begin (), cumulativeAreas->end (), r);
+  auto low = std::lower_bound (cumulativeAreas->begin (), cumulativeAreas->end (), r);
   vtkIdType el = vtkIdType (low - cumulativeAreas->begin ());
 
   double A[3], B[3], C[3];
   vtkIdType npts = 0;
-  vtkIdType *ptIds = nullptr;
+  vtkCellPtsPtr ptIds = nullptr;
+
   polydata->GetCellPoints (el, npts, ptIds);
   polydata->GetPoint (ptIds[0], A);
   polydata->GetPoint (ptIds[1], B);
@@ -124,7 +124,7 @@ randPSurface (vtkPolyData * polydata, std::vector<double> * cumulativeAreas, dou
     {
       static bool printed_once = false;
       if (!printed_once)
-        PCL_WARN ("Mesh has no vertex colors, or vertex colors are not RGB!");
+        PCL_WARN ("Mesh has no vertex colors, or vertex colors are not RGB!\n");
       printed_once = true;
     }
   }
@@ -138,7 +138,8 @@ uniform_sampling (vtkSmartPointer<vtkPolyData> polydata, std::size_t n_samples, 
 
   double p1[3], p2[3], p3[3], totalArea = 0;
   std::vector<double> cumulativeAreas (cells->GetNumberOfCells (), 0);
-  vtkIdType npts = 0, *ptIds = nullptr;
+  vtkIdType npts = 0;
+  vtkCellPtsPtr ptIds = nullptr;
   std::size_t cellId = 0;
   for (cells->InitTraversal (); cells->GetNextCell (npts, ptIds); cellId++)
   {
@@ -149,7 +150,7 @@ uniform_sampling (vtkSmartPointer<vtkPolyData> polydata, std::size_t n_samples, 
     cumulativeAreas[cellId] = totalArea;
   }
 
-  cloud_out.points.resize (n_samples);
+  cloud_out.resize (n_samples);
   cloud_out.width = static_cast<std::uint32_t> (n_samples);
   cloud_out.height = 1;
 
@@ -159,20 +160,20 @@ uniform_sampling (vtkSmartPointer<vtkPolyData> polydata, std::size_t n_samples, 
     Eigen::Vector3f n (0, 0, 0);
     Eigen::Vector3f c (0, 0, 0);
     randPSurface (polydata, &cumulativeAreas, totalArea, p, calc_normal, n, calc_color, c);
-    cloud_out.points[i].x = p[0];
-    cloud_out.points[i].y = p[1];
-    cloud_out.points[i].z = p[2];
+    cloud_out[i].x = p[0];
+    cloud_out[i].y = p[1];
+    cloud_out[i].z = p[2];
     if (calc_normal)
     {
-      cloud_out.points[i].normal_x = n[0];
-      cloud_out.points[i].normal_y = n[1];
-      cloud_out.points[i].normal_z = n[2];
+      cloud_out[i].normal_x = n[0];
+      cloud_out[i].normal_y = n[1];
+      cloud_out[i].normal_z = n[2];
     }
     if (calc_color)
     {
-      cloud_out.points[i].r = static_cast<std::uint8_t>(c[0]);
-      cloud_out.points[i].g = static_cast<std::uint8_t>(c[1]);
-      cloud_out.points[i].b = static_cast<std::uint8_t>(c[2]);
+      cloud_out[i].r = static_cast<std::uint8_t>(c[0]);
+      cloud_out[i].g = static_cast<std::uint8_t>(c[1]);
+      cloud_out[i].b = static_cast<std::uint8_t>(c[2]);
     }
   }
 }

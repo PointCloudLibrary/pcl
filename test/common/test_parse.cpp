@@ -39,8 +39,6 @@
 #include <pcl/pcl_tests.h>
 #include <pcl/console/parse.h>
 
-using namespace std;
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, parse_double)
 {

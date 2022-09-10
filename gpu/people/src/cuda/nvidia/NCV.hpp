@@ -41,7 +41,7 @@
 #ifndef PCL_GPU_PEOPLE__NCV_HPP_
 #define PCL_GPU_PEOPLE__NCV_HPP_
 
-#if (defined WIN32 || defined _WIN32 || defined WINCE) && defined CVAPI_EXPORTS
+#if (defined _WIN32 || defined WINCE) && defined CVAPI_EXPORTS
     #define NCV_EXPORTS __declspec(dllexport)
 #else
     #define NCV_EXPORTS

@@ -112,13 +112,7 @@ Features
 	
 	.. image:: images/features_normal.jpg
 
-	An example of two of the most widely used geometric point features are the underlying surface's estimated curvature and normal at a query point ``p``. Both of them are considered local features, as they characterize a point using the information provided by its ``k`` closest point neighbors. For determining these neighbors efficiently, the input dataset is usually split into smaller chunks using spatial decomposition techniques such as octrees or kD-trees (see the figure below - left: kD-tree, right: octree), and then closest point searches are performed in that space. Depending on the application one can opt for either determining a fixed number of ``k`` points in the vicinity of ``p``, or all points which are found inside of a sphere of radius ``r`` centered at ``p``. Unarguably, one the easiest methods for estimating the surface normals and curvature changes at a point ``p`` is to perform an eigendecomposition (i.e., compute the eigenvectors and eigenvalues) of the k-neighborhood point surface patch. Thus, the eigenvector corresponding to the smallest eigenvalue will approximate the surface normal ``n`` at point ``p``, while the surface curvature change will be estimated from the eigenvalues as:
-
-	.. image:: images/form_0.png
-	
-	.. image:: images/form_1.png
-	
-	|
+	An example of two of the most widely used geometric point features are the underlying surface's estimated curvature and normal at a query point ``p``. Both of them are considered local features, as they characterize a point using the information provided by its ``k`` closest point neighbors. For determining these neighbors efficiently, the input dataset is usually split into smaller chunks using spatial decomposition techniques such as octrees or kD-trees, and then closest point searches are performed in that space. Depending on the application one can opt for either determining a fixed number of ``k`` points in the vicinity of ``p``, or all points which are found inside of a sphere of radius ``r`` centered at ``p``. Unarguably, one the easiest methods for estimating the surface normals and curvature changes at a point ``p`` is to perform an eigendecomposition (i.e., compute the eigenvectors and eigenvalues) of the k-neighborhood point surface patch. Thus, the eigenvector corresponding to the smallest eigenvalue will approximate the surface normal ``n`` at point ``p``, while the surface curvature change will be estimated from the eigenvalues as :math:`\frac{\lambda_0}{\lambda_0+\lambda_1+\lambda_2}` with :math:`\lambda_0<\lambda_1<\lambda_2`.
 
 	.. image:: images/features_bunny.jpg
 	
@@ -382,7 +376,7 @@ Sample Consensus
 
 **Background**
 
-	The *sample_consensus* library holds SAmple Consensus (SAC) methods like RANSAC and models like planes and cylinders. These can combined freely in order to detect specific models and their parameters in point clouds.
+	The *sample_consensus* library holds SAmple Consensus (SAC) methods like RANSAC and models like planes and cylinders. These can be combined freely in order to detect specific models and their parameters in point clouds.
 	
 	A theoretical primer explaining how sample consensus algorithms work can be found in the `Random Sample Consensus tutorial <http://pointclouds.org/documentation/tutorials/random_sample_consensus.php#random-sample-consensus>`_
 
@@ -730,42 +724,42 @@ This section provides a quick reference for some of the common tools in PCL.
 
 |
 		
-	* ``pcd_convert_NaN_nan``: converts "NaN" values to "nan" values. *(Note: Starting with PCL version 1.0.1 the string representation for NaN is “nan”.)*
+	* ``pcl_pcd_convert_NaN_nan``: converts "NaN" values to "nan" values. *(Note: Starting with PCL version 1.0.1 the string representation for NaN is “nan”.)*
 		
 		**Usage example:**
 		
-		``pcd_convert_NaN_nan input.pcd output.pcd``
+		``pcl_pcd_convert_NaN_nan input.pcd output.pcd``
 	
-	* ``convert_pcd_ascii_binary``: converts PCD (Point Cloud Data) files from ASCII to binary and viceversa. 
+	* ``pcl_convert_pcd_ascii_binary``: converts PCD (Point Cloud Data) files from ASCII to binary and viceversa. 
 	
 	 	**Usage example:**
 		
-		``convert_pcd_ascii_binary <file_in.pcd> <file_out.pcd> 0/1/2 (ascii/binary/binary_compressed) [precision (ASCII)]``
+		``pcl_convert_pcd_ascii_binary <file_in.pcd> <file_out.pcd> 0/1/2 (ascii/binary/binary_compressed) [precision (ASCII)]``
 		
-	* ``concatenate_points_pcd``: concatenates the points of two or more PCD (Point Cloud Data) files into a single PCD file.
+	* ``pcl_concatenate_points_pcd``: concatenates the points of two or more PCD (Point Cloud Data) files into a single PCD file.
 	 	
 	 	**Usage example:**
 	 	
-	 	``concatenate_points_pcd <filename 1..N.pcd>``
+	 	``pcl_concatenate_points_pcd <filename 1..N.pcd>``
 	 	
 	 	*(Note: the resulting PCD file will be ``output.pcd``)*
 		
 	
-	* ``pcd2vtk``: converts PCD (Point Cloud Data) files to the `VTK format <http://www.vtk.org/VTK/img/file-formats.pdf>`_. 
+	* ``pcl_pcd2vtk``: converts PCD (Point Cloud Data) files to the `VTK format <http://www.vtk.org/VTK/img/file-formats.pdf>`_. 
 	
 		**Usage example:**
 		
-		``pcd2vtk input.pcd output.vtk`` 	
+		``pcl_pcd2vtk input.pcd output.vtk`` 	
 
-	* ``pcd2ply``: converts PCD (Point Cloud Data) files to the `PLY format <http://en.wikipedia.org/wiki/PLY_%28file_format%29>`_. 
+	* ``pcl_pcd2ply``: converts PCD (Point Cloud Data) files to the `PLY format <http://en.wikipedia.org/wiki/PLY_%28file_format%29>`_. 
 
 		**Usage example:**
 
-		``pcd2ply input.pcd output.ply``
+		``pcl_pcd2ply input.pcd output.ply``
 
-	* ``mesh2pcd``: convert a CAD model to a PCD (Point Cloud Data) file, using ray tracing operations.
+	* ``pcl_mesh2pcd``: convert a CAD model to a PCD (Point Cloud Data) file, using ray tracing operations.
 	
-	 	**Syntax is: mesh2pcd input.{ply,obj} output.pcd <options>**, where options are:
+	 	**Syntax is: pcl_mesh2pcd input.{ply,obj} output.pcd <options>**, where options are:
 	 	
 		                     -level X      = tessellated sphere level (default: 2)
 		
@@ -776,17 +770,16 @@ This section provides a quick reference for some of the common tools in PCL.
 
 	.. _`octree_viewer`: 
 	
-	* ``octree_viewer``: allows the visualization of `octrees`__
+	* ``pcl_octree_viewer``: allows the visualization of `octrees`__
 	
 		**Syntax is: octree_viewer <file_name.pcd> <octree resolution>**
 		
 		**Usage example:**
 		
-		``Example: ./octree_viewer ../../test/bunny.pcd 0.02``
+		``Example: ./pcl_octree_viewer ../../test/bunny.pcd 0.02``
 		
 		.. image:: images/octree_bunny2.png
 		
 		__ Octree_
 
 Top_
-

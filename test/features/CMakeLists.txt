@@ -6,7 +6,7 @@ set(OPT_DEPS io keypoints) # module does not depend on these
 set(DEFAULT ON)
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
-PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
 
 if(NOT build)
   return()
@@ -108,6 +108,9 @@ if(BUILD_io)
                FILES test_gasd_estimation.cpp
                LINK_WITH pcl_gtest pcl_io pcl_features
                ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd")
+  PCL_ADD_TEST(feature_organized_edge_detection test_organized_edge_detection
+               FILES test_organized_edge_detection.cpp
+               LINK_WITH pcl_gtest pcl_features pcl_io)
   if(BUILD_keypoints)
     PCL_ADD_TEST(feature_brisk test_brisk
                  FILES test_brisk.cpp

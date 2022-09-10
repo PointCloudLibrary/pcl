@@ -38,41 +38,42 @@
 
 #include <pcl/apps/modeler/abstract_worker.h>
 
-namespace pcl
-{
-  namespace modeler
+namespace pcl {
+namespace modeler {
+
+class DoubleParameter;
+
+class VoxelGridDownampleWorker : public AbstractWorker {
+public:
+  VoxelGridDownampleWorker(const QList<CloudMeshItem*>& cloud_mesh_items,
+                           QWidget* parent = nullptr);
+  ~VoxelGridDownampleWorker();
+
+protected:
+  std::string
+  getName() const override
   {
-    class DoubleParameter;
-
-    class VoxelGridDownampleWorker : public AbstractWorker 
-    {
-      public:
-        VoxelGridDownampleWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=nullptr);
-        ~VoxelGridDownampleWorker();
-
-      protected:
-        std::string
-        getName () const override {return ("Down Sample");}
-
-        void
-        initParameters(CloudMeshItem* cloud_mesh_item) override;
-
-        void
-        setupParameters() override;
-
-        void
-        processImpl(CloudMeshItem* cloud_mesh_item) override;
-
-      private:
-        double x_min_, x_max_;
-        double y_min_, y_max_;
-        double z_min_, z_max_;
-
-        DoubleParameter* leaf_size_x_;
-        DoubleParameter* leaf_size_y_;
-        DoubleParameter* leaf_size_z_;
-
-    };
-
+    return "Down Sample";
   }
-}
+
+  void
+  initParameters(CloudMeshItem* cloud_mesh_item) override;
+
+  void
+  setupParameters() override;
+
+  void
+  processImpl(CloudMeshItem* cloud_mesh_item) override;
+
+private:
+  double x_min_, x_max_;
+  double y_min_, y_max_;
+  double z_min_, z_max_;
+
+  DoubleParameter* leaf_size_x_;
+  DoubleParameter* leaf_size_y_;
+  DoubleParameter* leaf_size_z_;
+};
+
+} // namespace modeler
+} // namespace pcl

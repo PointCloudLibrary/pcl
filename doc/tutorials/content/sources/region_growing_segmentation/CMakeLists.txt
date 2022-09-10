@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(region_growing_segmentation)
 
@@ -10,5 +10,4 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (region_growing_segmentation region_growing_segmentation.cpp)
 target_link_libraries (region_growing_segmentation ${PCL_LIBRARIES})
-
 

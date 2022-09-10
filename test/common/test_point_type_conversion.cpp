@@ -40,10 +40,7 @@
 #include <pcl/test/gtest.h>
 #include <pcl/pcl_tests.h>
 #include <pcl/point_types.h>
-#include <pcl/point_cloud.h>
 #include <pcl/point_types_conversion.h>
-#include <iomanip>
-#include <iostream>
 
 using namespace pcl;
 using namespace pcl::test;

@@ -47,7 +47,6 @@
 #include <fstream>
 
 #include <pcl/point_types.h>
-#include <pcl/pcl_base.h>
 #include <pcl/io/pcd_io.h>
 
 char *lena;

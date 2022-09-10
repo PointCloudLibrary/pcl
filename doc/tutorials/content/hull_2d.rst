@@ -15,7 +15,7 @@ First, download the dataset `table_scene_mug_stereo_textured.pcd
 and save it somewhere to disk.
 
 Then, create a file, let's say, ``concave_hull_2d.cpp`` or
-``convex_hull2d.cpp`` in your favorite editor and place the following inside:
+``convex_hull_2d.cpp`` in your favorite editor and place the following inside:
 
 .. literalinclude:: sources/concave_hull_2d/concave_hull_2d.cpp
    :language: cpp

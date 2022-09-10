@@ -42,10 +42,10 @@
 #define PCL_FEATURES_IMPL_ESF_H_
 
 #include <pcl/features/esf.h>
-#include <pcl/common/common.h>
 #include <pcl/common/distances.h>
 #include <pcl/common/transforms.h>
 #include <vector>
+#include <ctime> // for time
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
@@ -56,7 +56,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
   unsigned int sample_size = 20000;
   // @TODO: Replace with c++ stdlib uniform_random_generator
   srand (static_cast<unsigned int> (time (nullptr)));
-  int maxindex = static_cast<int> (pc.points.size ());
+  const auto maxindex = pc.size ();
 
   std::vector<float> d2v, d1v, d3v, wt_d3;
   std::vector<int> wt_d2;
@@ -98,9 +98,9 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
       continue;
     }
 
-    Eigen::Vector4f p1 = pc.points[index1].getVector4fMap ();
-    Eigen::Vector4f p2 = pc.points[index2].getVector4fMap ();
-    Eigen::Vector4f p3 = pc.points[index3].getVector4fMap ();
+    Eigen::Vector4f p1 = pc[index1].getVector4fMap ();
+    Eigen::Vector4f p2 = pc[index2].getVector4fMap ();
+    Eigen::Vector4f p3 = pc[index3].getVector4fMap ();
 
     // A3
     Eigen::Vector4f v21 (p2 - p1);
@@ -138,9 +138,9 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
     }
 
     // D2
-    d2v.push_back (pcl::euclideanDistance (pc.points[index1], pc.points[index2]));
-    d2v.push_back (pcl::euclideanDistance (pc.points[index1], pc.points[index3]));
-    d2v.push_back (pcl::euclideanDistance (pc.points[index2], pc.points[index3]));
+    d2v.push_back (pcl::euclideanDistance (pc[index1], pc[index2]));
+    d2v.push_back (pcl::euclideanDistance (pc[index1], pc[index3]));
+    d2v.push_back (pcl::euclideanDistance (pc[index2], pc[index3]));
 
     int vxlcnt_sum = 0;
     int p_cnt = 0;
@@ -342,7 +342,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::lci (
     int err_2 = dz2 - l;
     for (int i = 1; i<l; i++)
     {
-      voxelcount++;;
+      voxelcount++;
       voxel_in +=  static_cast<int>(lut_[act_voxel[0]][act_voxel[1]][act_voxel[2]] == 1);
       if (err_1 > 0)
       {
@@ -424,11 +424,11 @@ pcl::ESFEstimation<PointInT, PointOutT>::lci (
 template <typename PointInT, typename PointOutT> void
 pcl::ESFEstimation<PointInT, PointOutT>::voxelize9 (PointCloudIn &cluster)
 {
-  for (std::size_t i = 0; i < cluster.points.size (); ++i)
+  for (const auto& point: cluster)
   {
-    int xx = cluster.points[i].x<0.0? static_cast<int>(std::floor(cluster.points[i].x)+GRIDSIZE_H) : static_cast<int>(std::ceil(cluster.points[i].x)+GRIDSIZE_H-1);
-    int yy = cluster.points[i].y<0.0? static_cast<int>(std::floor(cluster.points[i].y)+GRIDSIZE_H) : static_cast<int>(std::ceil(cluster.points[i].y)+GRIDSIZE_H-1);
-    int zz = cluster.points[i].z<0.0? static_cast<int>(std::floor(cluster.points[i].z)+GRIDSIZE_H) : static_cast<int>(std::ceil(cluster.points[i].z)+GRIDSIZE_H-1);
+    int xx = point.x<0.0? static_cast<int>(std::floor(point.x)+GRIDSIZE_H) : static_cast<int>(std::ceil(point.x)+GRIDSIZE_H-1);
+    int yy = point.y<0.0? static_cast<int>(std::floor(point.y)+GRIDSIZE_H) : static_cast<int>(std::ceil(point.y)+GRIDSIZE_H-1);
+    int zz = point.z<0.0? static_cast<int>(std::floor(point.z)+GRIDSIZE_H) : static_cast<int>(std::ceil(point.z)+GRIDSIZE_H-1);
 
     for (int x = -1; x < 2; x++)
       for (int y = -1; y < 2; y++)
@@ -452,11 +452,11 @@ pcl::ESFEstimation<PointInT, PointOutT>::voxelize9 (PointCloudIn &cluster)
 template <typename PointInT, typename PointOutT> void
 pcl::ESFEstimation<PointInT, PointOutT>::cleanup9 (PointCloudIn &cluster)
 {
-  for (std::size_t i = 0; i < cluster.points.size (); ++i)
+  for (const auto& point: cluster)
   {
-    int xx = cluster.points[i].x<0.0? static_cast<int>(std::floor(cluster.points[i].x)+GRIDSIZE_H) : static_cast<int>(std::ceil(cluster.points[i].x)+GRIDSIZE_H-1);
-    int yy = cluster.points[i].y<0.0? static_cast<int>(std::floor(cluster.points[i].y)+GRIDSIZE_H) : static_cast<int>(std::ceil(cluster.points[i].y)+GRIDSIZE_H-1);
-    int zz = cluster.points[i].z<0.0? static_cast<int>(std::floor(cluster.points[i].z)+GRIDSIZE_H) : static_cast<int>(std::ceil(cluster.points[i].z)+GRIDSIZE_H-1);
+    int xx = point.x<0.0? static_cast<int>(std::floor(point.x)+GRIDSIZE_H) : static_cast<int>(std::ceil(point.x)+GRIDSIZE_H-1);
+    int yy = point.y<0.0? static_cast<int>(std::floor(point.y)+GRIDSIZE_H) : static_cast<int>(std::ceil(point.y)+GRIDSIZE_H-1);
+    int zz = point.z<0.0? static_cast<int>(std::floor(point.z)+GRIDSIZE_H) : static_cast<int>(std::ceil(point.z)+GRIDSIZE_H-1);
 
     for (int x = -1; x < 2; x++)
       for (int y = -1; y < 2; y++)
@@ -487,9 +487,9 @@ pcl::ESFEstimation<PointInT, PointOutT>::scale_points_unit_sphere (
   float max_distance = 0;
   pcl::PointXYZ cog (0, 0, 0);
 
-  for (std::size_t i = 0; i < local_cloud_.points.size (); ++i)
+  for (const auto& point: local_cloud_)
   {
-    float d = pcl::euclideanDistance(cog,local_cloud_.points[i]);
+    float d = pcl::euclideanDistance(cog,point);
     if (d > max_distance)
       max_distance = d;
   }
@@ -508,7 +508,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::compute (PointCloudOut &output)
   if (!Feature<PointInT, PointOutT>::initCompute ())
   {
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   // Copy the header
@@ -520,7 +520,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::compute (PointCloudOut &output)
   // (see http://dev.pointclouds.org/issues/657)
   output.width = output.height = 1;
   output.is_dense = input_->is_dense;
-  output.points.resize (1);
+  output.resize (1);
 
   // Perform the actual feature computation
   computeFeature (output);
@@ -541,12 +541,12 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
   this->cleanup9 (local_cloud_);
 
   // We only output _1_ signature
-  output.points.resize (1);
+  output.resize (1);
   output.width = 1;
   output.height = 1;
 
   for (std::size_t d = 0; d < hist.size (); ++d)
-    output.points[0].histogram[d] = hist[d];
+    output[0].histogram[d] = hist[d];
 }
 
 #define PCL_INSTANTIATE_ESFEstimation(T,OutT) template class PCL_EXPORTS pcl::ESFEstimation<T,OutT>;

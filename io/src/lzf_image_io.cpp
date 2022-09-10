@@ -70,7 +70,7 @@ pcl::io::LZFImageWriter::saveImageBlob (const char* data,
   HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, data_size, NULL);
   char *map = static_cast<char*> (MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_size));
   CloseHandle (fm);
-  memcpy (&map[0], data, data_size);
+  std::copy(data, data + data_size, map);
   UnmapViewOfFile (map);
   CloseHandle (h_native_file);
 #else
@@ -94,7 +94,7 @@ pcl::io::LZFImageWriter::saveImageBlob (const char* data,
   }
 
   // Copy the data
-  memcpy (&map[0], data, data_size);
+  std::copy(data, data + data_size, map);
 
   if (::munmap (map, (data_size)) == -1)
   {
@@ -187,7 +187,7 @@ pcl::io::LZFImageWriter::writeParameter (const double &parameter,
   {
     boost::property_tree::xml_parser::read_xml (filename, pt, boost::property_tree::xml_parser::trim_whitespace);
   }
-  catch (std::exception& e)
+  catch (std::exception&)
   {}
 
   pt.put (tag, parameter);
@@ -206,7 +206,7 @@ pcl::io::LZFDepth16ImageWriter::writeParameters (const pcl::io::CameraParameters
   {
     boost::property_tree::xml_parser::read_xml (filename, pt, boost::property_tree::xml_parser::trim_whitespace);
   }
-  catch (std::exception& e)
+  catch (std::exception&)
   {}
 
   pt.put ("depth.focal_length_x", parameters.focal_length_x);
@@ -266,7 +266,7 @@ pcl::io::LZFRGB24ImageWriter::writeParameters (const pcl::io::CameraParameters &
   {
     boost::property_tree::xml_parser::read_xml (filename, pt, boost::property_tree::xml_parser::trim_whitespace);
   }
-  catch (std::exception& e)
+  catch (std::exception&)
   {}
 
   pt.put ("rgb.focal_length_x", parameters.focal_length_x);
@@ -409,7 +409,7 @@ pcl::io::LZFImageReader::loadImageBlob (const std::string &filename,
 
   // Check the header identifier here
   char header_string[5];
-  memcpy (&header_string,    &map[0], 5);        // PCLZF
+  std::copy(map, map + 5, header_string);
   if (std::string (header_string).substr (0, 5) != "PCLZF")
   {
     PCL_ERROR ("[pcl::io::LZFImageReader::loadImage] Wrong signature header! Should be 'P'C'L'Z'F'.\n");
@@ -448,7 +448,7 @@ pcl::io::LZFImageReader::loadImageBlob (const std::string &filename,
 
   data.resize (compressed_size);
   memcpy (&data[0], &map[header_size], compressed_size);
- 
+
 #ifdef _WIN32
   UnmapViewOfFile (map);
   CloseHandle (fm);

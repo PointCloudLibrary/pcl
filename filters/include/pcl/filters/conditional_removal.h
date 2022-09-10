@@ -38,8 +38,7 @@
 #pragma once
 
 #include <pcl/memory.h>
-#include <pcl/pcl_macros.h>
-#include <pcl/common/eigen.h>
+#include <pcl/pcl_config.h> // for PCL_NO_PRECOMPILE
 #include <pcl/filters/filter.h>
 
 namespace pcl
@@ -97,7 +96,7 @@ namespace pcl
       ComparisonBase () : capable_ (false), offset_ (), op_ () {}
 
       /** \brief Destructor. */
-      virtual ~ComparisonBase () {}
+      virtual ~ComparisonBase () = default;
 
       /** \brief Return if the comparison is capable. */
       inline bool
@@ -166,7 +165,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      ~FieldComparison ();
+      ~FieldComparison () override;
 
       /** \brief Determine the result of this comparison.  
         * \param point the point to evaluate
@@ -209,7 +208,7 @@ namespace pcl
       PackedRGBComparison (const std::string &component_name, ComparisonOps::CompareOp op, double compare_val);
 
       /** \brief Destructor. */
-      ~PackedRGBComparison () {}
+      ~PackedRGBComparison () override = default;
 
       /** \brief Determine the result of this comparison.  
         * \param point the point to evaluate
@@ -256,7 +255,7 @@ namespace pcl
       PackedHSIComparison (const std::string &component_name, ComparisonOps::CompareOp op, double compare_val);
 
       /** \brief Destructor. */
-      ~PackedHSIComparison () {}
+      ~PackedHSIComparison () override = default;
 
       /** \brief Determine the result of this comparison.  
         * \param point the point to evaluate
@@ -321,7 +320,7 @@ namespace pcl
       TfQuadraticXYZComparison ();
       
       /** \brief Empty destructor */
-      ~TfQuadraticXYZComparison () {}
+      ~TfQuadraticXYZComparison () override = default;
 
       /** \brief Constructor.
        * \param op the operator "[OP]" of the comparison "p'Ap + 2v'p + c [OP] 0".

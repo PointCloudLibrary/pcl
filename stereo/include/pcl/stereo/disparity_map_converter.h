@@ -36,11 +36,11 @@
 
 #pragma once
 
-#include <cstring>
-#include <vector>
-
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+
+#include <cstring>
+#include <vector>
 
 namespace pcl {
 

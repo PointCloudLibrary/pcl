@@ -41,6 +41,7 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/keypoints/brisk_2d.h>
 #include <pcl/point_types.h>
+#include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/impl/instantiate.hpp>
 #if defined(__SSSE3__) && !defined(__i386__)
 #include <tmmintrin.h>
@@ -63,9 +64,7 @@ pcl::keypoints::brisk::ScaleSpace::ScaleSpace (int octaves)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
-pcl::keypoints::brisk::ScaleSpace::~ScaleSpace ()
-{
-}
+pcl::keypoints::brisk::ScaleSpace::~ScaleSpace () = default;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // construct the image pyramids
@@ -246,7 +245,7 @@ pcl::keypoints::brisk::ScaleSpace::getScoreAbove (
     const int r_x_1 =6 - r_x;
     const int r_y = (sixths_y % 6);
     const int r_y_1 = 6 - r_y;
-    std::uint8_t score = static_cast<std::uint8_t> (
+    auto score = static_cast<std::uint8_t> (
                     0xFF & ((r_x_1 * r_y_1 * l.getAgastScore (x_above,     y_above,     1) +
                              r_x   * r_y_1 * l.getAgastScore (x_above + 1, y_above,     1) +
                              r_x_1 * r_y   * l.getAgastScore (x_above,     y_above + 1, 1) +
@@ -264,7 +263,7 @@ pcl::keypoints::brisk::ScaleSpace::getScoreAbove (
   const int r_x_1 = 8 - r_x;
   const int r_y = (eighths_y % 8);
   const int r_y_1 = 8 - r_y;
-  std::uint8_t score = static_cast<std::uint8_t> (
+  auto score = static_cast<std::uint8_t> (
                   0xFF & ((r_x_1 * r_y_1 * l.getAgastScore (x_above,     y_above,     1) +
                            r_x   * r_y_1  * l.getAgastScore (x_above + 1, y_above,     1) +
                            r_x_1 * r_y    * l.getAgastScore (x_above ,    y_above + 1, 1) +
@@ -448,7 +447,7 @@ pcl::keypoints::brisk::ScaleSpace::isMax2D (
     delta.push_back (1);
   }
   
-  unsigned int deltasize = static_cast<unsigned int> (delta.size ());
+  auto deltasize = static_cast<unsigned int> (delta.size ());
   if (deltasize != 0)
   {
     // in this case, we have to analyze the situation more carefully:
@@ -513,7 +512,7 @@ pcl::keypoints::brisk::ScaleSpace::refine3D (
       // guess the lower intra octave...
       pcl::keypoints::brisk::Layer& l = pyramid_[0];
       int s_0_0 = l.getAgastScore_5_8 (x_layer - 1, y_layer - 1, 1);
-      unsigned char max_below_uchar = static_cast<unsigned char> (s_0_0);
+      auto max_below_uchar = static_cast<unsigned char> (s_0_0);
       int s_1_0 = l.getAgastScore_5_8 (x_layer, y_layer - 1, 1);
 
       if (s_1_0 > max_below_uchar) max_below_uchar = static_cast<unsigned char> (s_1_0);
@@ -1399,7 +1398,7 @@ pcl::keypoints::brisk::Layer::getAgastScore_5_8 (int x, int y, std::uint8_t thre
   }
 
   agast_detector_5_8_->setThreshold (threshold - 1);
-  std::uint8_t score = std::uint8_t (agast_detector_5_8_->computeCornerScore (&img_[0] + x + y * img_width_));
+  auto score = std::uint8_t (agast_detector_5_8_->computeCornerScore (&img_[0] + x + y * img_width_));
   if (score < threshold) score = 0;
   return (score);
 }
@@ -1445,7 +1444,7 @@ pcl::keypoints::brisk::Layer::getValue (
     int width, int height,
     float xf, float yf, float scale)
 {
-  (void)height;
+  pcl::utils::ignore(height);
   assert (!mat.empty ());
   // get the position
   const int x = int (std::floor (xf));
@@ -1559,9 +1558,9 @@ pcl::keypoints::brisk::Layer::halfsample (
     std::vector<unsigned char>& dstimg,
     int dstwidth, int dstheight)
 {
-  (void)dstheight;
+  pcl::utils::ignore(dstheight);
 #if defined(__SSSE3__) && !defined(__i386__)
-  const unsigned short leftoverCols = static_cast<unsigned short> ((srcwidth % 16) / 2); // take care with border...
+  const auto leftoverCols = static_cast<unsigned short> ((srcwidth % 16) / 2); // take care with border...
   const bool noleftover = (srcwidth % 16) == 0; // note: leftoverCols can be zero but this still false...
 
   // make sure the destination image is of the right size:
@@ -1572,9 +1571,9 @@ pcl::keypoints::brisk::Layer::halfsample (
   __m128i mask = _mm_set_epi32 (0x00FF00FF, 0x00FF00FF, 0x00FF00FF, 0x00FF00FF);
 
   // data pointers:
-  const __m128i* p1 = reinterpret_cast<const __m128i*> (&srcimg[0]);
-  const __m128i* p2 = reinterpret_cast<const __m128i*> (&srcimg[0] + srcwidth);
-  __m128i* p_dest = reinterpret_cast<__m128i*> (&dstimg[0]);
+  const auto* p1 = reinterpret_cast<const __m128i*> (&srcimg[0]);
+  const auto* p2 = reinterpret_cast<const __m128i*> (&srcimg[0] + srcwidth);
+  auto* p_dest = reinterpret_cast<__m128i*> (&dstimg[0]);
   unsigned char* p_dest_char;//=(unsigned char*)p_dest;
 
   // size:
@@ -1663,7 +1662,7 @@ pcl::keypoints::brisk::Layer::halfsample (
       // Todo: find the equivalent to may_alias
       #define UCHAR_ALIAS unsigned char //__declspec(noalias)
 #endif
-      const UCHAR_ALIAS* result = reinterpret_cast<const UCHAR_ALIAS*> (&result1);
+      const auto* result = reinterpret_cast<const UCHAR_ALIAS*> (&result1);
       for (unsigned int j = 0; j < 8; j++)
       {
         *(p_dest_char++) = static_cast<unsigned char> ((*(result + 2 * j) + *(result + 2 * j + 1)) / 2);
@@ -1684,11 +1683,11 @@ pcl::keypoints::brisk::Layer::halfsample (
     }
     else
     {
-      const unsigned char* p1_src_char = reinterpret_cast<const unsigned char*> (p1);
-      const unsigned char* p2_src_char = reinterpret_cast<const unsigned char*> (p2);
+      const auto* p1_src_char = reinterpret_cast<const unsigned char*> (p1);
+      const auto* p2_src_char = reinterpret_cast<const unsigned char*> (p2);
       for (unsigned int k = 0; k < leftoverCols; k++)
       {
-        unsigned short tmp = static_cast<unsigned short> (p1_src_char[k] + p1_src_char[k+1]+ p2_src_char[k] + p2_src_char[k+1]);
+        auto tmp = static_cast<unsigned short> (p1_src_char[k] + p1_src_char[k+1]+ p2_src_char[k] + p2_src_char[k+1]);
         *(p_dest_char++) = static_cast<unsigned char>(tmp / 4);
       }
       // done with the two rows:
@@ -1699,12 +1698,8 @@ pcl::keypoints::brisk::Layer::halfsample (
     }
   }
 #else
-  (void) (srcimg);
-  (void) (srcwidth);
-  (void) (srcheight);
-  (void) (dstimg); 
-  (void) (dstwidth);
-  PCL_ERROR("brisk without SSSE3 support not implemented");
+  pcl::utils::ignore(srcimg, srcwidth, srcheight, dstimg, dstwidth);
+  PCL_ERROR("brisk without SSSE3 support not implemented\n");
 #endif
 }
 
@@ -1716,9 +1711,9 @@ pcl::keypoints::brisk::Layer::twothirdsample (
     std::vector<unsigned char>& dstimg,
     int dstwidth, int dstheight)
 {
-  (void)dstheight;
+  pcl::utils::ignore(dstheight);
 #if defined(__SSSE3__) && !defined(__i386__)
-  const unsigned short leftoverCols = static_cast<unsigned short> (((srcwidth / 3) * 3) % 15);// take care with border...
+  const auto leftoverCols = static_cast<unsigned short> (((srcwidth / 3) * 3) % 15);// take care with border...
 
   // make sure the destination image is of the right size:
   assert (std::floor (double (srcwidth) / 3.0 * 2.0) == dstwidth);
@@ -1813,12 +1808,8 @@ pcl::keypoints::brisk::Layer::twothirdsample (
     p_dest2 = p_dest1 + dstwidth;
   }
 #else
-  (void) (srcimg);
-  (void) (srcwidth);
-  (void) (srcheight);
-  (void) (dstimg); 
-  (void) (dstwidth);
-  PCL_ERROR("brisk without SSSE3 support not implemented");
+  pcl::utils::ignore(srcimg, srcwidth, srcheight, dstimg, dstwidth);
+  PCL_ERROR("brisk without SSSE3 support not implemented\n");
 #endif
 }
 

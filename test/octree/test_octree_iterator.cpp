@@ -38,7 +38,6 @@
 #include <pcl/octree/octree_pointcloud_adjacency.h>
 #include <pcl/octree/octree_base.h>
 #include <pcl/octree/octree_iterator.h>
-#include <pcl/common/projection_matrix.h>
 #include <pcl/point_types.h>
 #include <pcl/test/gtest.h>
 
@@ -66,34 +65,6 @@ struct OctreeIteratorBaseTest : public testing::Test
   // members
   OctreeBaseT octree_;
 };
-
-TEST_F (OctreeIteratorBaseTest, CopyConstructor)
-{
-  OctreeIteratorBaseT it_a;
-  OctreeIteratorBaseT it_b (&octree_, 0);
-  OctreeIteratorBaseT it_c (it_b); //Our copy constructor
-
-  EXPECT_NE (it_a, it_c);
-  EXPECT_EQ (it_b, it_c);
-}
-
-TEST_F (OctreeIteratorBaseTest, CopyAssignment)
-{
-  OctreeIteratorBaseT it_a;
-  OctreeIteratorBaseT it_b (&octree_, 0);
-  OctreeIteratorBaseT it_c;
-
-  EXPECT_EQ (it_a, it_c);
-  EXPECT_NE (it_b, it_c);
-
-  it_c = it_a; //Our copy assignment
-  EXPECT_EQ (it_a, it_c);
-  EXPECT_NE (it_b, it_c);
-
-  it_c = it_b; //Our copy assignment
-  EXPECT_NE (it_a, it_c);
-  EXPECT_EQ (it_b, it_c);
-}
 
 ////////////////////////////////////////////////////////
 //        Iterator fixture setup
@@ -234,6 +205,7 @@ struct OctreeBaseBeginEndIteratorsTest : public testing::Test
 
   // Members
   OctreeT oct_a_, oct_b_;
+  const OctreeT const_oct_a_, const_oct_b_;
 };
 
 TEST_F (OctreeBaseBeginEndIteratorsTest, Begin)
@@ -1113,6 +1085,145 @@ TEST_F (OctreeBaseIteratorsPrePostTest, LeafNodeBreadthFirstIterator)
 
   // Iterate over every node of the octree oct_a_.
   for (it_a_pre = oct_a_.leaf_breadth_begin (), it_a_post = oct_a_.leaf_breadth_begin ();
+       ((it_a_pre != it_a_end) && (it_a_post != it_a_end)); )
+  {
+    EXPECT_EQ (it_a_pre, it_a_post++);
+    EXPECT_EQ (++it_a_pre, it_a_post);
+  }
+
+  EXPECT_EQ (it_a_pre, it_a_end);
+  EXPECT_EQ (it_a_post, it_a_end);
+}
+
+TEST_F (OctreeBaseIteratorsPrePostTest, ConstDefaultIterator)
+{
+  // Useful types
+  using ConstIteratorT = OctreeT::ConstIterator;
+
+  // Default initialization
+  ConstIteratorT it_a_pre;
+  ConstIteratorT it_a_post;
+  ConstIteratorT it_a_end = const_oct_a_.end ();
+
+  // Iterate over every node of the octree const_oct_a_.
+  for (it_a_pre = const_oct_a_.begin (), it_a_post = const_oct_a_.begin ();
+       ((it_a_pre != it_a_end) && (it_a_post != it_a_end)); )
+  {
+    EXPECT_EQ (it_a_pre, it_a_post++);
+    EXPECT_EQ (++it_a_pre, it_a_post);
+  }
+
+  EXPECT_EQ (it_a_pre, it_a_end);
+  EXPECT_EQ (it_a_post, it_a_end);
+}
+
+TEST_F (OctreeBaseIteratorsPrePostTest, ConstLeafNodeDepthFirstIterator)
+{
+  // Useful types
+  using ConstIteratorT = OctreeT::ConstLeafNodeDepthFirstIterator;
+
+  // Default initialization
+  ConstIteratorT it_a_pre;
+  ConstIteratorT it_a_post;
+  ConstIteratorT it_a_end = const_oct_a_.leaf_depth_end ();
+
+  // Iterate over every node of the octree const_oct_a_.
+  for (it_a_pre = const_oct_a_.leaf_depth_begin (), it_a_post = const_oct_a_.leaf_depth_begin ();
+       ((it_a_pre != it_a_end) && (it_a_post != it_a_end)); )
+  {
+    EXPECT_EQ (it_a_pre, it_a_post++);
+    EXPECT_EQ (++it_a_pre, it_a_post);
+  }
+
+  EXPECT_EQ (it_a_pre, it_a_end);
+  EXPECT_EQ (it_a_post, it_a_end);
+}
+
+TEST_F (OctreeBaseIteratorsPrePostTest, ConstDepthFirstIterator)
+{
+  // Useful types
+  using ConstIteratorT = OctreeT::ConstDepthFirstIterator;
+
+  // Default initialization
+  ConstIteratorT it_a_pre;
+  ConstIteratorT it_a_post;
+  ConstIteratorT it_a_end = const_oct_a_.depth_end ();
+
+  // Iterate over every node of the octree const_oct_a_.
+  for (it_a_pre = const_oct_a_.depth_begin (), it_a_post = const_oct_a_.depth_begin ();
+       ((it_a_pre != it_a_end) && (it_a_post != it_a_end)); )
+  {
+    EXPECT_EQ (it_a_pre, it_a_post++);
+    EXPECT_EQ (++it_a_pre, it_a_post);
+  }
+
+  EXPECT_EQ (it_a_pre, it_a_end);
+  EXPECT_EQ (it_a_post, it_a_end);
+}
+
+TEST_F (OctreeBaseIteratorsPrePostTest, ConstBreadthFirstIterator)
+{
+  // Useful types
+  using ConstIteratorT = OctreeT::ConstBreadthFirstIterator;
+
+  // Default initialization
+  ConstIteratorT it_a_pre;
+  ConstIteratorT it_a_post;
+  ConstIteratorT it_a_end = const_oct_a_.breadth_end ();
+
+  // Iterate over every node of the octree const_oct_a_.
+  for (it_a_pre = const_oct_a_.breadth_begin (), it_a_post = const_oct_a_.breadth_begin ();
+       ((it_a_pre != it_a_end) && (it_a_post != it_a_end)); )
+  {
+    EXPECT_EQ (it_a_pre, it_a_post++);
+    EXPECT_EQ (++it_a_pre, it_a_post);
+  }
+
+  EXPECT_EQ (it_a_pre, it_a_end);
+  EXPECT_EQ (it_a_post, it_a_end);
+}
+
+TEST_F (OctreeBaseIteratorsPrePostTest, ConstFixedDepthIterator)
+{
+  // Useful types
+  using ConstIteratorT = OctreeT::ConstFixedDepthIterator;
+
+  // Default initialization
+  ConstIteratorT it_a_pre;
+  ConstIteratorT it_a_post;
+  ConstIteratorT it_a_end = const_oct_a_.fixed_depth_end ();
+
+  for (unsigned int depth = 0; depth <= const_oct_a_.getTreeDepth (); ++depth)
+  {
+    auto it_a_pre = const_oct_a_.fixed_depth_begin (depth);
+    auto it_a_post = const_oct_a_.fixed_depth_begin (depth);
+
+
+    // Iterate over every node at a given depth of the octree const_oct_a_.
+    for (it_a_pre = const_oct_a_.fixed_depth_begin (depth), it_a_post = const_oct_a_.fixed_depth_begin (depth);
+         ((it_a_pre != it_a_end) && (it_a_post != it_a_end)); )
+    {
+      EXPECT_EQ (it_a_pre, it_a_post++);
+      EXPECT_EQ (++it_a_pre, it_a_post);
+    }
+
+    EXPECT_EQ (it_a_pre, it_a_end);
+    EXPECT_EQ (it_a_post, it_a_end);
+  }
+}
+
+TEST_F (OctreeBaseIteratorsPrePostTest, ConstLeafNodeBreadthFirstIterator)
+{
+  // Useful types
+  using ConstIteratorT = OctreeT::ConstLeafNodeBreadthFirstIterator;
+
+  // Default initialization
+  ConstIteratorT it_a_pre;
+  ConstIteratorT it_a_post;
+  ConstIteratorT it_a_end = const_oct_a_.leaf_breadth_end ();
+
+  // Iterate over every node of the octree const_oct_a_.
+  for (it_a_pre = const_oct_a_.leaf_breadth_begin (), it_a_post = const_oct_a_.leaf_breadth_begin ();
        ((it_a_pre != it_a_end) && (it_a_post != it_a_end)); )
   {
     EXPECT_EQ (it_a_pre, it_a_post++);

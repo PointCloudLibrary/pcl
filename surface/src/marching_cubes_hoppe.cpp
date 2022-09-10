@@ -37,7 +37,6 @@
 #include <pcl/point_types.h>
 #include <pcl/surface/marching_cubes_hoppe.h>
 #include <pcl/surface/impl/marching_cubes_hoppe.hpp>
-#include <pcl/surface/impl/marching_cubes.hpp>
 
 // Instantiations of specific point types
 PCL_INSTANTIATE(MarchingCubesHoppe, (pcl::PointNormal)(pcl::PointXYZRGBNormal)(pcl::PointXYZINormal))

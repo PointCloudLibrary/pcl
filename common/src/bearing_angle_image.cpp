@@ -40,7 +40,6 @@
   * \author: Qinghua Li (qinghua__li@163.com)
   */
 
-#include <pcl/common/eigen.h>
 #include <pcl/range_image/bearing_angle_image.h>
 
 namespace pcl

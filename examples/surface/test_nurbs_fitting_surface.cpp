@@ -1,6 +1,4 @@
 #include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl/common/io.h>
 
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/surface/on_nurbs/fitting_surface_tdm.h>

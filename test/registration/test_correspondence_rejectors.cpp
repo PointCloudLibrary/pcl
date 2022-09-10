@@ -37,18 +37,17 @@
  *
  */
 
-#include <random>
-
 #include <pcl/test/gtest.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/common/eigen.h>
+#include <pcl/common/random.h> // NormalGenerator
 #include <pcl/common/transforms.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/registration/correspondence_rejection_median_distance.h>
 #include <pcl/registration/correspondence_rejection_poly.h>
 
-pcl::PointCloud<pcl::PointXYZ> cloud;
+pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (CorrespondenceRejectors, CorrespondenceRejectionMedianDistance)
@@ -77,7 +76,7 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionMedianDistance)
 TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
 {
   // Size of point cloud
-  const int size = static_cast<int> (cloud.size ());
+  const int size = static_cast<int> (cloud->size ());
   
   // Ground truth correspondences
   pcl::Correspondences corr (size);
@@ -91,31 +90,31 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
     corr[i].index_match += inc;  
   
   // Transform the target
-  pcl::PointCloud<pcl::PointXYZ> target;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr target(new pcl::PointCloud<pcl::PointXYZ>);
   Eigen::Vector3f t(0.1f, 0.2f, 0.3f);
   Eigen::Quaternionf q (float (std::cos (0.5*M_PI_4)), 0.0f, 0.0f, float (std::sin (0.5*M_PI_4)));
-  pcl::transformPointCloud (cloud, target, t, q);
+  pcl::transformPointCloud (*cloud, *target, t, q);
   
   // Noisify the target with a known seed and N(0, 0.005) using deterministic sampling
-  std::mt19937 rng(1e6);
-  std::normal_distribution<> nd(0, 0.005);
-  for (auto &point : target)
+  pcl::common::NormalGenerator<float> nd(0, 0.005, 1e6);
+  for (auto &point : *target)
   {
-    point.x += static_cast<float> (nd(rng));
-    point.y += static_cast<float> (nd(rng));
-    point.z += static_cast<float> (nd(rng));
+    point.x += nd.run();
+    point.y += nd.run();
+    point.z += nd.run();
   }
   
-  // Ensure deterministic sampling inside the rejector
-  std::srand (1e6);
+  // Test rejector with varying seeds
+  const unsigned int seed = std::time(nullptr);
+  std::srand (seed);
   
   // Create a rejection object
   pcl::registration::CorrespondenceRejectorPoly<pcl::PointXYZ, pcl::PointXYZ> reject;
-  reject.setIterations (10000);
+  reject.setIterations (20000);
   reject.setCardinality (3);
-  reject.setSimilarityThreshold (0.75f);
-  reject.setInputSource (cloud.makeShared ());
-  reject.setInputTarget (target.makeShared ());
+  reject.setSimilarityThreshold (0.8f);
+  reject.setInputSource (cloud);
+  reject.setInputTarget (target);
   
   // Run rejection
   pcl::Correspondences result;
@@ -130,8 +129,10 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
    * but not too many
    */
   EXPECT_GE(accepted_frac, ground_truth_frac);
-  EXPECT_LE(accepted_frac, 1.5f*ground_truth_frac);
-  
+  // Factor 1.5 raised to 1.6 as there is a variance in the noise added from the various standard implementations
+  // See #2995 for details
+  EXPECT_LE(accepted_frac, 1.6f*ground_truth_frac);
+
   /*
    * Test criterion 2: expect high precision/recall. The true positives are the unscrambled correspondences
    * where the query/match index are equal.
@@ -160,7 +161,8 @@ int
   }
 
   // Input
-  if (pcl::io::loadPCDFile (argv[1], cloud) < 0)
+  cloud.reset(new pcl::PointCloud<pcl::PointXYZ>);
+  if (pcl::io::loadPCDFile (argv[1], *cloud) < 0)
   {
     std::cerr << "Failed to read test file. Please download `bunny.pcd` and pass its path to the test." << std::endl;
     return (-1);

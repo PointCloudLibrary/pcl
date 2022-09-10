@@ -40,85 +40,86 @@
 
 #pragma once
 
-#include <pcl/point_cloud.h>
 #include <pcl/registration/graph_handler.h>
+#include <pcl/point_cloud.h>
 
-namespace pcl
-{
-  /** \brief @b GraphRegistration class is the base class for graph-based registration methods
-    * \author Nicola Fioraio
-    * \ingroup registration
-    */
-  template <typename GraphT>
-  class GraphRegistration
+namespace pcl {
+/** \brief @b GraphRegistration class is the base class for graph-based registration
+ * methods \author Nicola Fioraio \ingroup registration
+ */
+template <typename GraphT>
+class GraphRegistration {
+public:
+  using GraphHandler = pcl::registration::GraphHandler<GraphT>;
+  using GraphHandlerPtr = typename pcl::registration::GraphHandler<GraphT>::Ptr;
+  using GraphHandlerConstPtr =
+      typename pcl::registration::GraphHandler<GraphT>::ConstPtr;
+  using GraphHandlerVertex = typename pcl::registration::GraphHandler<GraphT>::Vertex;
+
+  /** \brief Empty constructor */
+  GraphRegistration()
+  : graph_handler_(new GraphHandler)
+  , last_aligned_vertex_(boost::graph_traits<GraphT>::null_vertex())
+  , last_vertices_()
+  {}
+
+  /** \brief Empty destructor */
+  virtual ~GraphRegistration() {}
+
+  /** \brief Add a point cloud and the associated camera pose to the graph */
+  template <typename PointT>
+  inline void
+  addPointCloud(const typename pcl::PointCloud<PointT>::ConstPtr& cloud,
+                const Eigen::Matrix4f& pose)
   {
-    public:
-      using GraphHandler = pcl::registration::GraphHandler<GraphT>;
-      using GraphHandlerPtr = typename pcl::registration::GraphHandler<GraphT>::Ptr;
-      using GraphHandlerConstPtr = typename pcl::registration::GraphHandler<GraphT>::ConstPtr;
-      using GraphHandlerVertex = typename pcl::registration::GraphHandler<GraphT>::Vertex;
+    last_vertices_.push_back(graph_handler_->addPointCloud(cloud, pose));
+  }
 
-      /** \brief Empty constructor */
-      GraphRegistration ()  : graph_handler_ (new GraphHandler),
-                              last_aligned_vertex_ (boost::graph_traits<GraphT>::null_vertex ()),
-                              last_vertices_ ()
-      {}
-      
-      /** \brief Empty destructor */
-      virtual ~GraphRegistration () {}
+  /** \brief Set the graph handler */
+  inline void
+  setGraphHandler(GraphHandlerPtr& gh)
+  {
+    graph_handler_ = gh;
+  }
 
-      /** \brief Add a point cloud and the associated camera pose to the graph */
-      template <typename PointT> inline void
-      addPointCloud (const typename pcl::PointCloud<PointT>::ConstPtr& cloud, const Eigen::Matrix4f& pose)
-      {
-        last_vertices_.push_back (graph_handler_->addPointCloud (cloud, pose));
-      }
+  /** \brief Get a pointer to the graph handler */
+  inline GraphHandlerPtr
+  getGraphHandler()
+  {
+    return graph_handler_;
+  }
 
-      /** \brief Set the graph handler */
-      inline void
-      setGraphHandler (GraphHandlerPtr& gh)
-      {
-        graph_handler_ = gh;
-      }
+  /** \brief Get a pointer to the graph handler */
+  inline GraphHandlerConstPtr
+  getGraphHandler() const
+  {
+    return graph_handler_;
+  }
 
-      /** \brief Get a pointer to the graph handler */
-      inline GraphHandlerPtr
-      getGraphHandler ()
-      {
-        return graph_handler_;
-      }
+  /** \brief Check if new poses have been added, then call the registration
+   * method which is implemented by the subclasses
+   */
+  inline void
+  compute()
+  {
+    if (last_vertices_.empty())
+      return;
+    computeRegistration();
+    last_aligned_vertex_ = last_vertices_.back();
+    last_vertices_.clear();
+  }
 
-      /** \brief Get a pointer to the graph handler */
-      inline GraphHandlerConstPtr
-      getGraphHandler () const
-      {
-        return graph_handler_;
-      }
+protected:
+  /** \brief The graph handler */
+  GraphHandlerPtr graph_handler_;
+  /** \brief The last estimated pose */
+  GraphHandlerVertex last_aligned_vertex_;
+  /** \brief The vertices added to the graph since the last call to compute */
+  std::vector<GraphHandlerVertex> last_vertices_;
 
-      /** \brief Check if new poses have been added, then call the registration
-        * method which is implemented by the subclasses
-        */
-      inline void
-      compute ()
-      {
-        if (last_vertices_.empty ())
-          return;
-        computeRegistration ();
-        last_aligned_vertex_ = last_vertices_.back ();
-        last_vertices_.clear ();
-      }
-
-    protected:
-      /** \brief The graph handler */
-      GraphHandlerPtr graph_handler_;
-      /** \brief The last estimated pose */
-      GraphHandlerVertex last_aligned_vertex_;
-      /** \brief The vertices added to the graph since the last call to compute */
-      std::vector<GraphHandlerVertex> last_vertices_;
-
-    private:
-      /** \brief The registration method */
-      virtual void
-      computeRegistration () = 0;
-  };
-}
+private:
+  /** \brief The registration method */
+  virtual void
+  computeRegistration() = 0;
+};
+} // namespace pcl

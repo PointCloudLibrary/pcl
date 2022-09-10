@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(bspline_fitting)
 
@@ -10,4 +10,3 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (bspline_fitting bspline_fitting.cpp)
 target_link_libraries (bspline_fitting ${PCL_LIBRARIES})
-

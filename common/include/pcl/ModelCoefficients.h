@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include <vector>
 #include <ostream>
 
@@ -11,9 +10,7 @@ namespace pcl
 {
   struct ModelCoefficients
   {
-    ModelCoefficients ()
-    {
-    }
+    ModelCoefficients () = default;
 
     ::pcl::PCLHeader header;
 

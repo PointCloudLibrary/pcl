@@ -53,8 +53,6 @@ namespace pcl
 {
   namespace recognition
   {
-    class ORROctree;
-
     class PCL_EXPORTS ORROctreeZProjection
     {
       public:

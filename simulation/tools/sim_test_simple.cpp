@@ -16,18 +16,22 @@
  *
  */
 
-#include <Eigen/Dense>
-#include <boost/shared_ptr.hpp>
-#include <cmath>
-#include <iostream>
-#include <thread>
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
+#include <pcl/common/common.h>
+#include <pcl/console/print.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/io/vtk_lib_io.h>
+#include <pcl/range_image/range_image_planar.h> // RangeImage
+#include <pcl/simulation/camera.h>
+#include <pcl/simulation/model.h>
+#include <pcl/simulation/range_likelihood.h>
+#include <pcl/simulation/scene.h>
+#include <pcl/visualization/cloud_viewer.h> // Pop-up viewer
+#include <pcl/memory.h>
+#include <pcl/pcl_config.h>
+#include <pcl/point_types.h>
+
 #include <GL/glew.h>
 
-#include <pcl/pcl_config.h>
 #ifdef OPENGL_IS_A_FRAMEWORK
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
@@ -41,34 +45,13 @@
 #include <GL/glut.h>
 #endif
 
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-
-#include "pcl/common/common.h"
-#include "pcl/common/transforms.h"
-
-#include <pcl/features/normal_3d.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-#include <pcl/surface/gp3.h>
-
-// define the following in order to eliminate the deprecated headers warning
-#define VTK_EXCLUDE_STRSTREAM_HEADERS
-#include <pcl/io/vtk_lib_io.h>
-
-#include "pcl/simulation/camera.h"
-#include "pcl/simulation/model.h"
-#include "pcl/simulation/range_likelihood.h"
-#include "pcl/simulation/scene.h"
-
-#include <pcl/console/parse.h>
-#include <pcl/console/print.h>
-
-// RangeImage:
-#include <pcl/range_image/range_image_planar.h>
-
-// Pop-up viewer
-#include <pcl/visualization/cloud_viewer.h>
+#include <cmath>
+#include <iostream>
+#include <thread>
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
 
 using namespace Eigen;
 using namespace pcl;
@@ -76,7 +59,6 @@ using namespace pcl::console;
 using namespace pcl::io;
 using namespace pcl::simulation;
 
-using namespace std;
 using namespace std::chrono_literals;
 
 std::uint16_t t_gamma[2048];
@@ -109,7 +91,7 @@ void
 display_score_image(const float* score_buffer)
 {
   int npixels = range_likelihood_->getWidth() * range_likelihood_->getHeight();
-  std::uint8_t* score_img = new std::uint8_t[npixels * 3];
+  auto* score_img = new std::uint8_t[npixels * 3];
 
   float min_score = score_buffer[0];
   float max_score = score_buffer[0];
@@ -141,7 +123,7 @@ void
 display_depth_image(const float* depth_buffer, int width, int height)
 {
   int npixels = width * height;
-  std::uint8_t* depth_img = new std::uint8_t[npixels * 3];
+  auto* depth_img = new std::uint8_t[npixels * 3];
 
   float min_depth = depth_buffer[0];
   float max_depth = depth_buffer[0];
@@ -159,7 +141,7 @@ display_depth_image(const float* depth_buffer, int width, int height)
     float z = -zf * zn / ((zf - zn) * (d - zf / (zf - zn)));
     float b = 0.075f;
     float f = 580.0f;
-    std::uint16_t kd = static_cast<std::uint16_t>(1090 - b * f / z * 8);
+    auto kd = static_cast<std::uint16_t>(1090 - b * f / z * 8);
     if (kd > 2047)
       kd = 2047;
 

@@ -39,7 +39,6 @@
 #pragma once
 
 #include <pcl/visualization/common/actor_map.h>
-#include <pcl/console/print.h>
 
 class vtkPolyData;
 
@@ -55,7 +54,7 @@ namespace pcl
       * \ingroup visualization
       */
     PCL_EXPORTS void 
-    getCorrespondingPointCloud (vtkPolyData *src, const pcl::PointCloud<pcl::PointXYZ> &tgt, std::vector<int> &indices);
+    getCorrespondingPointCloud (vtkPolyData *src, const pcl::PointCloud<pcl::PointXYZ> &tgt, pcl::Indices &indices);
 
     /** \brief Saves the vtk-formatted Point Cloud data into a set of files, based on whether
       * the data comes from previously loaded PCD files. The PCD files are matched using the 

@@ -38,7 +38,6 @@
 #include <vector>
 #include "internal.h"
 
-using namespace std;
 using namespace pcl::gpu::people;
 
 pcl::RGB pcl::gpu::people::getLColor (unsigned char l)
@@ -72,7 +71,7 @@ void pcl::gpu::people::colorLMap (const pcl::PointCloud<pcl::Label>& cloud_in, p
 {
   colormap_out.resize(cloud_in.size());
   for(std::size_t i = 0; i < cloud_in.size (); i++)
-    colormap_out.points[i] = getLColor(cloud_in.points[i]);
+    colormap_out[i] = getLColor(cloud_in[i]);
 
   colormap_out.width = cloud_in.width;
   colormap_out.height = cloud_in.height;

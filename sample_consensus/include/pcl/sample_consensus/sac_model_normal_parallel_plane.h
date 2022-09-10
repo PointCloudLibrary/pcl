@@ -142,7 +142,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      ~SampleConsensusModelNormalParallelPlane () {}
+      ~SampleConsensusModelNormalParallelPlane () override = default;
 
       /** \brief Set the axis along which we need to search for a plane perpendicular to.
         * \param[in] ax the axis along which we need to search for a plane perpendicular to

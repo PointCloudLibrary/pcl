@@ -41,7 +41,6 @@
 #pragma once
 
 #include <pcl/features/feature.h>
-#include <set>
 
 namespace pcl
 {
@@ -130,8 +129,8 @@ namespace pcl
         */
       void 
       computePointSPFHSignature (const pcl::PointCloud<PointInT> &cloud, 
-                                 const pcl::PointCloud<PointNT> &normals, int p_idx, int row, 
-                                 const std::vector<int> &indices, 
+                                 const pcl::PointCloud<PointNT> &normals, pcl::index_t p_idx, int row, 
+                                 const pcl::Indices &indices, 
                                  Eigen::MatrixXf &hist_f1, Eigen::MatrixXf &hist_f2, Eigen::MatrixXf &hist_f3);
 
       /** \brief Weight the SPFH (Simple Point Feature Histograms) individual histograms to create the final FPFH
@@ -147,7 +146,7 @@ namespace pcl
       weightPointSPFHSignature (const Eigen::MatrixXf &hist_f1, 
                                 const Eigen::MatrixXf &hist_f2, 
                                 const Eigen::MatrixXf &hist_f3, 
-                                const std::vector<int> &indices, 
+                                const pcl::Indices &indices, 
                                 const std::vector<float> &dists, 
                                 Eigen::VectorXf &fpfh_histogram);
 

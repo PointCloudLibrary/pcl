@@ -70,7 +70,7 @@ TEST (ROPSFeature, FeatureExtraction)
   pcl::PointCloud<pcl::Histogram <135> >::Ptr histograms (new pcl::PointCloud <pcl::Histogram <135> > ());
   feature_estimator.compute (*histograms);
 
-  EXPECT_NE (0, histograms->points.size ());
+  EXPECT_NE (0, histograms->size ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -114,7 +114,7 @@ TEST (ROPSFeature, InvalidParameters)
   std::vector <pcl::Vertices> empty_triangles;
   feature_estimator.setTriangles (empty_triangles);
   feature_estimator.compute (*histograms);
-  EXPECT_EQ (0, histograms->points.size ());
+  EXPECT_EQ (0, histograms->size ());
 }
 
 /* ---[ */
@@ -128,7 +128,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  cloud = (new pcl::PointCloud<pcl::PointXYZ> ())->makeShared ();
+  cloud.reset (new pcl::PointCloud<pcl::PointXYZ> ());
   if (pcl::io::loadPCDFile (argv[1], *cloud) < 0)
   {
     std::cerr << "Failed to read test file. Please download `rops_cloud.pcd` and pass its path to the test." << std::endl;

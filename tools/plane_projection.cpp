@@ -98,10 +98,10 @@ project (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   projected_cloud_pcl->sensor_origin_ = xyz->sensor_origin_;
   projected_cloud_pcl->sensor_orientation_ = xyz->sensor_orientation_;
 
-  for(std::size_t i = 0; i < xyz->points.size(); ++i)
+  for (const auto& point: *xyz)
   {
     pcl::PointXYZ projection;
-    pcl::projectPoint<PointXYZ> (xyz->points[i], coeffs, projection);
+    pcl::projectPoint<PointXYZ> (point, coeffs, projection);
     projected_cloud_pcl->points.push_back(projection);
   }
 

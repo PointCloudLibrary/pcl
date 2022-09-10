@@ -1,5 +1,8 @@
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
+#include <pcl/common/utils.h> // pcl::utils::ignore
+
+
 /*
 If the speed of ON_qsort() functions on arrays that
 are nearly sorted is as good as heap sort, then define
@@ -43,8 +46,7 @@ ON__QSORT_FASTER_THAN_HSORT.
 void 
 ON_qsort( void *base, std::size_t nel, std::size_t width, int (*compar)(void*,const void *, const void *),void* context)
 {
-  // no-op to suppress warning on all compilers
-  (void) base; (void) nel; (void) width; (void) compar; (void) context;
+  pcl::utils::ignore(base, nel, width, compar, context);
 #if defined(ON__HAVE_RELIABLE_SYSTEM_CONTEXT_QSORT)
   // The call here must be a thread safe system qsort
   // that is faster than the alternative code in this function.

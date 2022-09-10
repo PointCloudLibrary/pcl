@@ -9,7 +9,7 @@ the video below:
 
 .. raw:: html
 
-   <iframe title="Smoothing and normal estimation based on polynomial reconstruction" width="480" height="390" src="http://www.youtube.com/embed/FqHroDuo_I8?rel=0" frameborder="0" allowfullscreen></iframe>
+   <iframe title="Smoothing and normal estimation based on polynomial reconstruction" width="480" height="390" src="https://www.youtube.com/embed/FqHroDuo_I8?rel=0" frameborder="0" allowfullscreen></iframe>
 
 
 Some of the data irregularities (caused by small distance measurement errors)
@@ -24,7 +24,7 @@ be smoothed.
 
 .. image:: images/resampling_1.jpg
 
-On the left side of the figure above, we see the effect or estimating surface
+On the left side of the figure above, we see the effect of estimating surface
 normals in a dataset comprised of two registered point clouds together. Due to
 alignment errors, the resultant normals are noisy. On the right side we see the
 effects of surface normal estimation in the same dataset after it has been
@@ -36,16 +36,20 @@ we obtain:
 
 To approximate the surface defined by a local neighborhood of points 
 **p1**, **p2** ... **pk** at a point **q** we use a bivariate polynomial height function
-defined on a on a robustly computed reference plane. 
+defined on a robustly computed reference plane. 
 
 .. raw:: html
 
-   <iframe title="Removing noisy data through resampling" width="480" height="390" src="http://www.youtube.com/embed/N5AgC0KEcw0?rel=0" frameborder="0" allowfullscreen></iframe>
+   <iframe title="Removing noisy data through resampling" width="480" height="390" src="https://www.youtube.com/embed/N5AgC0KEcw0?rel=0" frameborder="0" allowfullscreen></iframe>
 
 The code
 --------
 
-First, create a file, let's say, ``resampling.cpp`` in your favorite
+First, download the dataset `bun0.pcd
+<https://raw.githubusercontent.com/PointCloudLibrary/pcl/master/test/bun0.pcd>`_
+and save it somewhere to disk.
+
+Then, create a file, let's say, ``resampling.cpp`` in your favorite
 editor, and place the following inside it:
 
 

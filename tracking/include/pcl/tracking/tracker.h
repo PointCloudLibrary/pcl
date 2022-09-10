@@ -39,97 +39,104 @@
 
 #pragma once
 
+#include <pcl/search/search.h>
 #include <pcl/tracking/tracking.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/search/search.h>
 
-namespace pcl
-{
-	namespace tracking
+namespace pcl {
+namespace tracking {
+/** \brief @b Tracker represents the base tracker class.
+ * \author Ryohei Ueda
+ * \ingroup tracking
+ */
+template <typename PointInT, typename StateT>
+class Tracker : public PCLBase<PointInT> {
+protected:
+  using PCLBase<PointInT>::deinitCompute;
+
+public:
+  using PCLBase<PointInT>::indices_;
+  using PCLBase<PointInT>::input_;
+
+  using BaseClass = PCLBase<PointInT>;
+  using Ptr = shared_ptr<Tracker<PointInT, StateT>>;
+  using ConstPtr = shared_ptr<const Tracker<PointInT, StateT>>;
+
+  using SearchPtr = typename pcl::search::Search<PointInT>::Ptr;
+  using SearchConstPtr = typename pcl::search::Search<PointInT>::ConstPtr;
+
+  using PointCloudIn = pcl::PointCloud<PointInT>;
+  using PointCloudInPtr = typename PointCloudIn::Ptr;
+  using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
+
+  using PointCloudState = pcl::PointCloud<StateT>;
+  using PointCloudStatePtr = typename PointCloudState::Ptr;
+  using PointCloudStateConstPtr = typename PointCloudState::ConstPtr;
+
+public:
+  /** \brief Empty constructor. */
+  Tracker() : search_() {}
+
+  /** \brief Base method for tracking for all points given in
+   * <setInputCloud (), setIndices ()> using the indices in setIndices ()
+   */
+  void
+  compute();
+
+protected:
+  /** \brief The tracker name. */
+  std::string tracker_name_;
+
+  /** \brief A pointer to the spatial search object. */
+  SearchPtr search_;
+
+  /** \brief Get a string representation of the name of this class. */
+  inline const std::string&
+  getClassName() const
   {
-    /** \brief @b Tracker represents the base tracker class.
-      * \author Ryohei Ueda
-      * \ingroup tracking
-      */
-    template <typename PointInT, typename StateT>
-    class Tracker: public PCLBase<PointInT>
-    {
-    protected:
-      using PCLBase<PointInT>::deinitCompute;
-
-    public:
-      using PCLBase<PointInT>::indices_;
-      using PCLBase<PointInT>::input_;
-
-      using BaseClass = PCLBase<PointInT>;
-      using Ptr = shared_ptr< Tracker<PointInT, StateT> >;
-      using ConstPtr = shared_ptr< const Tracker<PointInT, StateT> >;
-
-      using SearchPtr = typename pcl::search::Search<PointInT>::Ptr;
-      using SearchConstPtr = typename pcl::search::Search<PointInT>::ConstPtr;
-
-      using PointCloudIn = pcl::PointCloud<PointInT>;
-      using PointCloudInPtr = typename PointCloudIn::Ptr;
-      using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
-
-      using PointCloudState = pcl::PointCloud<StateT>;
-      using PointCloudStatePtr = typename PointCloudState::Ptr;
-      using PointCloudStateConstPtr = typename PointCloudState::ConstPtr;
-
-    public:
-      /** \brief Empty constructor. */
-      Tracker (): search_ () {}
-
-      /** \brief Base method for tracking for all points given in
-        * <setInputCloud (), setIndices ()> using the indices in setIndices ()
-        */
-      void
-      compute ();
-
-    protected:
-      /** \brief The tracker name. */
-      std::string tracker_name_;
-
-      /** \brief A pointer to the spatial search object. */
-      SearchPtr search_;
-
-      /** \brief Get a string representation of the name of this class. */
-      inline const std::string&
-      getClassName () const { return (tracker_name_); }
-
-      /** \brief This method should get called before starting the actual computation. */
-      virtual bool
-				initCompute ();
-
-      /** \brief Provide a pointer to a dataset to add additional information
-       * to estimate the features for every point in the input dataset.  This
-       * is optional, if this is not set, it will only use the data in the
-       * input cloud to estimate the features.  This is useful when you only
-       * need to compute the features for a downsampled cloud.
-       * \param search a pointer to a PointCloud message
-       */
-      inline void
-      setSearchMethod (const SearchPtr &search) { search_ = search; }
-
-      /** \brief Get a pointer to the point cloud dataset. */
-      inline SearchPtr
-      getSearchMethod () { return (search_); }
-
-      /** \brief Get an instance of the result of tracking. */
-      virtual StateT
-      getResult () const = 0;
-
-    private:
-      /** \brief Abstract tracking method. */
-      virtual void
-      computeTracking () = 0;
-
-    public:
-      PCL_MAKE_ALIGNED_OPERATOR_NEW
-    };
+    return (tracker_name_);
   }
-}
+
+  /** \brief This method should get called before starting the actual
+   * computation. */
+  virtual bool
+  initCompute();
+
+  /** \brief Provide a pointer to a dataset to add additional information
+   * to estimate the features for every point in the input dataset.  This
+   * is optional, if this is not set, it will only use the data in the
+   * input cloud to estimate the features.  This is useful when you only
+   * need to compute the features for a downsampled cloud.
+   * \param search a pointer to a PointCloud message
+   */
+  inline void
+  setSearchMethod(const SearchPtr& search)
+  {
+    search_ = search;
+  }
+
+  /** \brief Get a pointer to the point cloud dataset. */
+  inline SearchPtr
+  getSearchMethod()
+  {
+    return (search_);
+  }
+
+  /** \brief Get an instance of the result of tracking. */
+  virtual StateT
+  getResult() const = 0;
+
+private:
+  /** \brief Abstract tracking method. */
+  virtual void
+  computeTracking() = 0;
+
+public:
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
+};
+} // namespace tracking
+} // namespace pcl
 
 #include <pcl/tracking/impl/tracker.hpp>

@@ -39,11 +39,11 @@
 #include <suitesparse/umfpack.h>
 #include <iostream>
 #include <stdio.h>
+#include <time.h> // for clock, clock_t
 #include <stdexcept>
 
 #include <pcl/surface/on_nurbs/nurbs_solve.h>
 
-using namespace std;
 using namespace pcl;
 using namespace on_nurbs;
 

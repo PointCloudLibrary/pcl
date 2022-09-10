@@ -50,6 +50,7 @@
 #include <exception>
 
 #include <pcl/common/common.h>
+#include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/visualization/common/common.h>
 #include <pcl/outofcore/octree_base_node.h>
 #include <pcl/filters/random_sample.h>
@@ -190,7 +191,7 @@ namespace pcl
       , payload_ ()
       , node_metadata_ (new OutofcoreOctreeNodeMetadata ())
     {
-      assert (tree != NULL);
+      assert (tree != nullptr);
       node_metadata_->setOutofcoreVersion (3);
       init_root_node (bb_min, bb_max, tree, root_name);
     }
@@ -200,7 +201,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::init_root_node (const Eigen::Vector3d& bb_min, const Eigen::Vector3d& bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const boost::filesystem::path& root_name)
     {
-      assert (tree != NULL);
+      assert (tree != nullptr);
 
       parent_ = nullptr;
       root_node_ = this;
@@ -337,11 +338,7 @@ namespace pcl
 
       for (std::size_t i = 0; i < 8; i++)
       {
-        if (children_[i])
-        {
-          OutofcoreOctreeBaseNode<ContainerT, PointT>* current = children_[i];
-          delete (current);
-        }
+        delete static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>*>(children_[i]);
       }
       children_.resize (8, static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>* > (nullptr));
       num_children_ = 0;
@@ -497,7 +494,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> std::uint64_t
     OutofcoreOctreeBaseNode<ContainerT, PointT>::addPointCloud (const typename pcl::PCLPointCloud2::Ptr& input_cloud, const bool skip_bb_check)
     {
-      assert (this->root_node_->m_tree_ != NULL);
+      assert (this->root_node_->m_tree_ != nullptr);
       
       if (input_cloud->height*input_cloud->width == 0)
         return (0);
@@ -514,7 +511,7 @@ namespace pcl
 
         //indices to store the points for each bin
         //these lists will be used to copy data to new point clouds and pass down recursively
-        std::vector < std::vector<int> > indices;
+        std::vector < pcl::Indices > indices;
         indices.resize (8);
         
         this->sortOctantIndices (input_cloud, indices, node_metadata_->getVoxelCenter ());
@@ -561,7 +558,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::randomSample(const AlignedPointTVector& p, AlignedPointTVector& insertBuff, const bool skip_bb_check)
     {
-      assert (this->root_node_->m_tree_ != NULL);
+      assert (this->root_node_->m_tree_ != nullptr);
       
       AlignedPointTVector sampleBuff;
       if (!skip_bb_check)
@@ -581,7 +578,7 @@ namespace pcl
 
       // Derive percentage from specified sample_percent and tree depth
       const double percent = pow(sample_percent_, double((this->root_node_->m_tree_->getDepth () - depth_)));
-      const std::uint64_t samplesize = static_cast<std::uint64_t>(percent * static_cast<double>(sampleBuff.size()));
+      const auto samplesize = static_cast<std::uint64_t>(percent * static_cast<double>(sampleBuff.size()));
       const std::uint64_t inputsize = sampleBuff.size();
 
       if(samplesize > 0)
@@ -616,7 +613,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> std::uint64_t
     OutofcoreOctreeBaseNode<ContainerT, PointT>::addDataAtMaxDepth (const AlignedPointTVector& p, const bool skip_bb_check)
     {
-      assert (this->root_node_->m_tree_ != NULL);
+      assert (this->root_node_->m_tree_ != nullptr);
 
       // Trust me, just add the points
       if (skip_bb_check)
@@ -742,7 +739,7 @@ namespace pcl
       pcl::PCLPointCloud2::Ptr downsampled_cloud ( new pcl::PCLPointCloud2 () );
 
       //create destination for indices
-      pcl::IndicesPtr downsampled_cloud_indices ( new std::vector< int > () );
+      pcl::IndicesPtr downsampled_cloud_indices ( new pcl::Indices () );
       random_sampler.filter (*downsampled_cloud_indices);
 
       //extract the "random subset", size by setSampleSize
@@ -769,7 +766,7 @@ namespace pcl
       PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Remaining points are %u\n",__FUNCTION__, remaining_points->width*remaining_points->height);
 
       //subdivide remaining data by destination octant
-      std::vector<std::vector<int> > indices;
+      std::vector<pcl::Indices> indices;
       indices.resize (8);
 
       this->sortOctantIndices (remaining_points, indices, node_metadata_->getVoxelCenter ());
@@ -810,7 +807,7 @@ namespace pcl
 
       //  when adding data and generating sampled LOD 
       // If the max depth has been reached
-      assert (this->root_node_->m_tree_ != NULL );
+      assert (this->root_node_->m_tree_ != nullptr );
       
       if (this->depth_ == this->root_node_->m_tree_->getDepth ())
       {
@@ -867,7 +864,7 @@ namespace pcl
       //if already has 8 children, return
       if (children_[idx] || (num_children_ == 8))
       {
-        PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeBaseNode::createChild] Not allowed to create a 9th child of %s",this->node_metadata_->getMetadataFilename ().c_str ());
+        PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeBaseNode::createChild] Not allowed to create a 9th child of %s\n",this->node_metadata_->getMetadataFilename ().c_str ());
         return;
       }
 
@@ -1426,7 +1423,7 @@ namespace pcl
               PCL_DEBUG ("[pcl::outofocre::OutofcoreOctreeBaseNode::%s] Size of cloud before: %lu\n", __FUNCTION__, dst_blob->width*dst_blob->height );
               PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Concatenating point cloud\n", __FUNCTION__);
               int res = pcl::concatenate (*dst_blob, *tmp_blob, *dst_blob);
-              (void)res;
+              pcl::utils::ignore(res);
               assert (res == 1);
 
               PCL_DEBUG ("[pcl::outofocre::OutofcoreOctreeBaseNode::%s] Size of cloud after: %lu\n", __FUNCTION__, dst_blob->width*dst_blob->height );
@@ -1454,7 +1451,7 @@ namespace pcl
           Eigen::Vector4f min_pt ( static_cast<float> ( min_bb[0] ), static_cast<float> ( min_bb[1] ), static_cast<float> ( min_bb[2] ), 1.0f);
           Eigen::Vector4f max_pt ( static_cast<float> ( max_bb[0] ), static_cast<float> ( max_bb[1] ) , static_cast<float>( max_bb[2] ), 1.0f );
 
-          std::vector<int> indices;
+          pcl::Indices indices;
 
           pcl::getPointsInBox ( *tmp_cloud, min_pt, max_pt, indices );
           PCL_DEBUG ( "[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Points in box: %d\n", __FUNCTION__, indices.size () );
@@ -1474,9 +1471,8 @@ namespace pcl
               //concatenate those points into the returned dst_blob
               PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Concatenating point cloud in place\n", __FUNCTION__);
               std::uint64_t orig_points_in_destination = dst_blob->width*dst_blob->height;
-              (void)orig_points_in_destination;
               int res = pcl::concatenate (*dst_blob, *tmp_blob_within_bb, *dst_blob);
-              (void)res;
+              pcl::utils::ignore(orig_points_in_destination, res);
               assert (res == 1);
               assert (dst_blob->width*dst_blob->height == indices.size () + orig_points_in_destination);
 
@@ -1618,7 +1614,7 @@ namespace pcl
               pcl::ExtractIndices<pcl::PCLPointCloud2> extractor;
               extractor.setInputCloud (tmp_blob);
               
-              pcl::IndicesPtr downsampled_cloud_indices (new std::vector<int> ());
+              pcl::IndicesPtr downsampled_cloud_indices (new pcl::Indices ());
               random_sampler.filter (*downsampled_cloud_indices);
               extractor.setIndices (downsampled_cloud_indices);
               extractor.filter (*downsampled_points);
@@ -1688,7 +1684,7 @@ namespace pcl
 
           //use STL random_shuffle and push back a random selection of the points onto our list
           std::shuffle (payload_cache_within_region.begin (), payload_cache_within_region.end (), std::mt19937(std::random_device()()));
-          std::size_t numpick = static_cast<std::size_t> (percent * static_cast<double> (payload_cache_within_region.size ()));;
+          auto numpick = static_cast<std::size_t> (percent * static_cast<double> (payload_cache_within_region.size ()));;
 
           for (std::size_t i = 0; i < numpick; i++)
           {
@@ -1723,7 +1719,7 @@ namespace pcl
       this->parent_ = super;
       root_node_ = super->root_node_;
       m_tree_ = super->root_node_->m_tree_;
-      assert (m_tree_ != NULL);
+      assert (m_tree_ != nullptr);
 
       depth_ = super->depth_ + 1;
       num_children_ = 0;
@@ -1977,7 +1973,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBaseNode<ContainerT, PointT>::sortOctantIndices (const pcl::PCLPointCloud2::Ptr &input_cloud, std::vector< std::vector<int> > &indices, const Eigen::Vector3d &mid_xyz)
+    OutofcoreOctreeBaseNode<ContainerT, PointT>::sortOctantIndices (const pcl::PCLPointCloud2::Ptr &input_cloud, std::vector< pcl::Indices > &indices, const Eigen::Vector3d &mid_xyz)
     {
       if (indices.size () < 8)
         indices.resize (8);
@@ -2003,7 +1999,7 @@ namespace pcl
 
         if(!this->pointInBoundingBox (local_pt))
         {
-          PCL_ERROR ("pcl::outofcore::OutofcoreOctreeBaseNode::%s] Point %2.lf %.2lf %.2lf not in bounding box", __FUNCTION__, local_pt.x, local_pt.y, local_pt.z);
+          PCL_ERROR ("pcl::outofcore::OutofcoreOctreeBaseNode::%s] Point %2.lf %.2lf %.2lf not in bounding box\n", __FUNCTION__, local_pt.x, local_pt.y, local_pt.z);
         }
         
         assert (this->pointInBoundingBox (local_pt) == true);

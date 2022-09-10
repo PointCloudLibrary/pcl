@@ -35,6 +35,7 @@
  *
  */
 
+#include <pcl/memory.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
@@ -43,7 +44,6 @@
 #include <pcl/io/depth_sense_grabber.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
-#include <boost/shared_ptr.hpp>
 #include <boost/format.hpp>
 
 #include <iostream>

@@ -41,7 +41,6 @@
 
 #pragma once
 
-#include <cmath>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 

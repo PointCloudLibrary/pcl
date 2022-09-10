@@ -102,7 +102,7 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
   {
     read_xml(filename,pt);
   }
-  catch(boost::exception const&  exb)
+  catch(boost::exception const&)
   {
     PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : Unable to read filename with boost exception\n");
     return NCV_HAAR_XML_LOADING_EXCEPTION;
@@ -301,7 +301,7 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
       level1++;
     }
   }
-  catch(boost::exception const&  exb)
+  catch(boost::exception const&)
   {
     PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : Unable to process content with boost exception\n");
     return (NCV_HAAR_XML_LOADING_EXCEPTION);
@@ -565,7 +565,7 @@ pcl::gpu::people::FaceDetector::NCVprocess(pcl::PointCloud<pcl::RGB>&           
 
   cloud_out.width = input_gray.width;
   cloud_out.height = input_gray.height;
-  cloud_out.points.resize (input_gray.points.size ());
+  cloud_out.resize (input_gray.size ());
 
   PCL_ASSERT_ERROR_PRINT_RETURN(!gpu_allocator.isCounting(),"retcode=NCV_NULL_PTR", NCV_NULL_PTR);
 

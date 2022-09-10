@@ -49,11 +49,11 @@ pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computeRGBPairFeatures (
     int p_idx, int q_idx,
     float &f1, float &f2, float &f3, float &f4, float &f5, float &f6, float &f7)
 {
-  Eigen::Vector4i colors1 (cloud.points[p_idx].r, cloud.points[p_idx].g, cloud.points[p_idx].b, 0),
-      colors2 (cloud.points[q_idx].r, cloud.points[q_idx].g, cloud.points[q_idx].b, 0);
-  pcl::computeRGBPairFeatures (cloud.points[p_idx].getVector4fMap (), normals.points[p_idx].getNormalVector4fMap (),
+  Eigen::Vector4i colors1 (cloud[p_idx].r, cloud[p_idx].g, cloud[p_idx].b, 0),
+      colors2 (cloud[q_idx].r, cloud[q_idx].g, cloud[q_idx].b, 0);
+  pcl::computeRGBPairFeatures (cloud[p_idx].getVector4fMap (), normals[p_idx].getNormalVector4fMap (),
                                colors1,
-                               cloud.points[q_idx].getVector4fMap (), normals.points[q_idx].getNormalVector4fMap (),
+                               cloud[q_idx].getVector4fMap (), normals[q_idx].getNormalVector4fMap (),
                                colors2,
                                f1, f2, f3, f4, f5, f6, f7);
   return (true);
@@ -63,7 +63,7 @@ pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computeRGBPairFeatures (
 template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computePointPFHRGBSignature (
     const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals,
-    const std::vector<int> &indices, int nr_split, Eigen::VectorXf &pfhrgb_histogram)
+    const pcl::Indices &indices, int nr_split, Eigen::VectorXf &pfhrgb_histogram)
 {
   int h_index, h_p;
 
@@ -140,7 +140,7 @@ pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudO
 
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices (k_);
+  pcl::Indices nn_indices (k_);
   std::vector<float> nn_dists (k_);
 
   // Iterating over the entire index vector
@@ -151,8 +151,8 @@ pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudO
     // Estimate the PFH signature at each patch
     computePointPFHRGBSignature (*surface_, *normals_, nn_indices, nr_subdiv_, pfhrgb_histogram_);
 
-    std::copy_n (pfhrgb_histogram_.data (), pfhrgb_histogram_.size (),
-                 output.points[idx].histogram);
+    std::copy (pfhrgb_histogram_.data (), pfhrgb_histogram_.data () + pfhrgb_histogram_.size (),
+                 output[idx].histogram);
   }
 }
 

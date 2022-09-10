@@ -38,17 +38,14 @@
 
 #include <thread>
 
-#include <pcl/common/common_headers.h>
+#include <pcl/common/time.h> // for DO_EVERY
 #include <pcl/visualization/common/common.h>
 #include <vtkRenderWindowInteractor.h>
 #include <pcl/visualization/histogram_visualizer.h>
-#include <pcl/visualization/boost.h>
 
 #include <vtkVersion.h>
-#include <vtkXYPlotActor.h>
 #include <vtkDoubleArray.h>
 #include <vtkTextProperty.h>
-#include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
 #include <vtkDataObject.h>
 #include <vtkProperty2D.h>
@@ -287,11 +284,11 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
   int field_idx = pcl::getFieldIndex (cloud, field_name);
   if (field_idx == -1)
   {
-    PCL_ERROR ("[addFeatureHistogram] Invalid field (%s) given!", field_name.c_str ());
+    PCL_ERROR ("[addFeatureHistogram] Invalid field (%s) given!\n", field_name.c_str ());
     return (false);
   }
 
-  RenWinInteractMap::iterator am_it = wins_.find (id);
+  auto am_it = wins_.find (id);
   if (am_it != wins_.end ())
   {
     PCL_WARN ("[addFeatureHistogram] A window with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
@@ -304,7 +301,7 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
 
   // Parse the cloud data and store it in the array
   double xy[2];
-  for (unsigned int d = 0; d < cloud.fields[field_idx].count; ++d)
+  for (uindex_t d = 0; d < cloud.fields[field_idx].count; ++d)
   {
     xy[0] = d;
     float data;
@@ -326,10 +323,10 @@ bool
 pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
     const pcl::PCLPointCloud2 &cloud,
     const std::string &field_name, 
-    const int index,
+    const pcl::index_t index,
     const std::string &id, int win_width, int win_height)
 {
-  if (index < 0 || index >= static_cast<int> (cloud.width * cloud.height))
+  if (index < 0 || index >= static_cast<pcl::index_t> (cloud.width * cloud.height))
   {
     PCL_ERROR ("[addFeatureHistogram] Invalid point index (%d) given!\n", index);
     return (false);
@@ -343,7 +340,7 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
     return (false);
   }
 
-  RenWinInteractMap::iterator am_it = wins_.find (id);
+  auto am_it = wins_.find (id);
   if (am_it != wins_.end ())
   {
     PCL_ERROR ("[addFeatureHistogram] A window with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
@@ -361,7 +358,7 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
 
   // Parse the cloud data and store it in the array
   double xy[2];
-  for (unsigned int d = 0; d < cloud.fields[field_idx].count; ++d)
+  for (uindex_t d = 0; d < cloud.fields[field_idx].count; ++d)
   {
     xy[0] = d;
     float data;
@@ -384,7 +381,7 @@ pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
     const pcl::PCLPointCloud2 &cloud, const std::string &field_name,
     const std::string &id)
 {
-  RenWinInteractMap::iterator am_it = wins_.find (id);
+  auto am_it = wins_.find (id);
   if (am_it == wins_.end ())
   {
     PCL_WARN ("[updateFeatureHistogram] A window with id <%s> does not exists!.\n", id.c_str ());
@@ -405,7 +402,7 @@ pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
 
   // Parse the cloud data and store it in the array
   double xy[2];
-  for (unsigned int d = 0; d < cloud.fields[field_idx].count; ++d)
+  for (uindex_t d = 0; d < cloud.fields[field_idx].count; ++d)
   {
     xy[0] = d;
     float data;
@@ -422,15 +419,15 @@ bool
 pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
     const pcl::PCLPointCloud2 &cloud,
     const std::string &field_name, 
-    const int index,
+    const pcl::index_t index,
     const std::string &id)
 {
-  if (index < 0 || index >= static_cast<int> (cloud.width * cloud.height))
+  if (index < 0 || index >= static_cast<pcl::index_t> (cloud.width * cloud.height))
   {
     PCL_ERROR ("[updateFeatureHistogram] Invalid point index (%d) given!\n", index);
     return (false);
   }
-  RenWinInteractMap::iterator am_it = wins_.find (id);
+  auto am_it = wins_.find (id);
   if (am_it == wins_.end ())
   {
     PCL_WARN ("[updateFeatureHistogram] A window with id <%s> does not exists!.\n", id.c_str ());
@@ -456,7 +453,7 @@ pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
 
   // Parse the cloud data and store it in the array
   double xy[2];
-  for (unsigned int d = 0; d < cloud.fields[field_idx].count; ++d)
+  for (uindex_t d = 0; d < cloud.fields[field_idx].count; ++d)
   {
     xy[0] = d;
     float data;

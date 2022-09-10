@@ -38,5 +38,5 @@
  */
 
 #pragma once
-
+PCL_DEPRECATED_HEADER(1, 15, "Please include pcl/common/io.h directly.")
 #include <pcl/common/io.h>

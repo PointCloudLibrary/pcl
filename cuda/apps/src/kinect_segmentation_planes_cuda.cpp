@@ -35,30 +35,30 @@
  *
  */
 
-#include <pcl/cuda/features/normal_3d.h>
+#include <pcl/memory.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 #include <pcl/cuda/time_cpu.h>
 #include <pcl/cuda/time_gpu.h>
+#include <pcl/cuda/features/normal_3d.h>
 #include <pcl/cuda/io/cloud_to_pcl.h>
-#include <pcl/cuda/io/extract_indices.h>
 #include <pcl/cuda/io/disparity_to_cloud.h>
+#include <pcl/cuda/io/extract_indices.h>
 #include <pcl/cuda/io/host_device.h>
 #include <pcl/cuda/segmentation/connected_components.h>
 #include <pcl/cuda/segmentation/mssegmentation.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/gpu/gpu.hpp>
 
-#include <boost/shared_ptr.hpp>
-
-#include <iostream>
 #include <fstream>
 #include <functional>
+#include <iostream>
 #include <mutex>
+
 
 using namespace pcl::cuda;
 
@@ -123,16 +123,16 @@ class Segmentation
     {
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr output (new pcl::PointCloud<pcl::PointXYZRGB>);
       PointCloudAOS<Host> data_host;
-      data_host.points.resize (cloud->points.size());
+      data_host.resize (cloud->points.size());
       for (std::size_t i = 0; i < cloud->points.size (); ++i)
       {
         PointXYZRGB pt;
-        pt.x = cloud->points[i].x;
-        pt.y = cloud->points[i].y;
-        pt.z = cloud->points[i].z;
+        pt.x = (*cloud)[i].x;
+        pt.y = (*cloud)[i].y;
+        pt.z = (*cloud)[i].z;
         // Pack RGB into a float
-        pt.rgb = *(float*)(&cloud->points[i].rgb);
-        data_host.points[i] = pt;
+        pt.rgb = *(float*)(&(*cloud)[i].rgb);
+        data_host[i] = pt;
       }
       data_host.width = cloud->width;
       data_host.height = cloud->height;
@@ -262,18 +262,17 @@ class Segmentation
       {
         pcl::OpenNIGrabber grabber {};
 
-        boost::signals2::connection c;
         if (use_device)
         {
           std::cerr << "[Segmentation] Using GPU..." << std::endl;
           std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)> f = std::bind (&Segmentation::cloud_cb<Device>, this, _1, _2, _3);
-          c = grabber.registerCallback (f);
+          grabber.registerCallback (f);
         }
         else
         {
 //          std::cerr << "[Segmentation] Using CPU..." << std::endl;
 //          std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)> f = std::bind (&Segmentation::cloud_cb<Host>, this, _1, _2, _3);
-//          c = grabber.registerCallback (f);
+//          grabber.registerCallback (f);
         }
 
         viewer.runOnVisualizationThread (std::bind(&Segmentation::viz_cb, this, _1), "viz_cb");

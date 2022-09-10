@@ -37,14 +37,9 @@
  */
 
 #include <pcl/io/pcd_io.h>
-#include <pcl/console/print.h>
-
-#include <pcl/point_types.h>
-#include <pcl/PCLPointCloud2.h>
 
 #include <pcl/outofcore/outofcore.h>
 #include <pcl/outofcore/outofcore_impl.h>
-#include <pcl/outofcore/boost.h>
 
 using namespace pcl::outofcore;
 

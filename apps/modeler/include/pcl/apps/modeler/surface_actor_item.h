@@ -41,46 +41,49 @@
 
 class vtkIdTypeArray;
 
-namespace pcl
-{
-  namespace modeler
+namespace pcl {
+namespace modeler {
+
+class SurfaceActorItem : public ChannelActorItem {
+public:
+  using GeometryHandler =
+      pcl::visualization::PointCloudGeometryHandler<pcl::PointSurfel>;
+  using GeometryHandlerPtr = GeometryHandler::Ptr;
+  using GeometryHandlerConstPtr = GeometryHandler::ConstPtr;
+
+  using ColorHandler = pcl::visualization::PointCloudColorHandler<pcl::PointSurfel>;
+  using ColorHandlerPtr = ColorHandler::Ptr;
+  using ColorHandlerConstPtr = ColorHandler::ConstPtr;
+
+  SurfaceActorItem(QTreeWidgetItem* parent,
+                   const CloudMesh::Ptr& cloud_mesh,
+                   const vtkSmartPointer<vtkRenderWindow>& render_window);
+  ~SurfaceActorItem();
+
+  std::string
+  getItemName() const override
   {
-    class SurfaceActorItem : public ChannelActorItem
-    {
-      public:
-        using GeometryHandler = pcl::visualization::PointCloudGeometryHandler<pcl::PointSurfel>;
-        using GeometryHandlerPtr = GeometryHandler::Ptr;
-        using GeometryHandlerConstPtr = GeometryHandler::ConstPtr;
-
-        using ColorHandler = pcl::visualization::PointCloudColorHandler<pcl::PointSurfel>;
-        using ColorHandlerPtr = ColorHandler::Ptr;
-        using ColorHandlerConstPtr = ColorHandler::ConstPtr;
-
-        SurfaceActorItem(QTreeWidgetItem* parent,
-                        const CloudMesh::Ptr& cloud_mesh,
-                        const vtkSmartPointer<vtkRenderWindow>& render_window);
-        ~SurfaceActorItem ();
-
-        std::string
-        getItemName() const override {return "Points Actor Item";}
-
-      protected:
-        void
-        initImpl() override;
-
-        void
-        updateImpl() override;
-
-        void
-        prepareContextMenu(QMenu* menu) const override;
-
-        void
-        prepareProperties(ParameterDialog* parameter_dialog) override;
-
-        void
-        setProperties() override;
-
-      private:
-    };
+    return "Points Actor Item";
   }
-}
+
+protected:
+  void
+  initImpl() override;
+
+  void
+  updateImpl() override;
+
+  void
+  prepareContextMenu(QMenu* menu) const override;
+
+  void
+  prepareProperties(ParameterDialog* parameter_dialog) override;
+
+  void
+  setProperties() override;
+
+private:
+};
+
+} // namespace modeler
+} // namespace pcl

@@ -39,9 +39,10 @@
 
 #pragma once
 
+#include <pcl/memory.h>
+
 #include <vector>
 
-#include <boost/shared_ptr.hpp>
 
 namespace pcl
 {
@@ -128,7 +129,7 @@ namespace pcl
 
       /** \brief Destructor */
       virtual
-      ~IntegralImage2D () { }
+      ~IntegralImage2D () = default;
 
       /** \brief sets the computation for second order integral images on or off.
         * \param compute_second_order_integral_images
@@ -253,7 +254,7 @@ namespace pcl
 
       /** \brief Destructor */
       virtual
-      ~IntegralImage2D () { }
+      ~IntegralImage2D () = default;
 
       /** \brief Set the input data to compute the integral image for
         * \param[in] data the input data

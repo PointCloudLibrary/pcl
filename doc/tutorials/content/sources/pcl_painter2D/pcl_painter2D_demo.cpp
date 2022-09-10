@@ -6,7 +6,7 @@
 #include <pcl/visualization/pcl_painter2D.h>
 //----------------------------------------------------------------------------
 
-int main (int argc, char * argv [])
+int main ()
 {
   pcl::visualization::PCLPainter2D *painter = new pcl::visualization::PCLPainter2D();
   

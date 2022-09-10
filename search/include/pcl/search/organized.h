@@ -42,14 +42,11 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 #include <pcl/search/search.h>
 #include <pcl/common/eigen.h>
 
 #include <algorithm>
-#include <queue>
 #include <vector>
-#include <pcl/common/projection_matrix.h>
 
 namespace pcl
 {
@@ -69,7 +66,6 @@ namespace pcl
         using PointCloudPtr = typename PointCloud::Ptr;
 
         using PointCloudConstPtr = typename PointCloud::ConstPtr;
-        using typename Search<PointT>::IndicesConstPtr;
 
         using Ptr = shared_ptr<pcl::search::OrganizedNeighbor<PointT> >;
         using ConstPtr = shared_ptr<const pcl::search::OrganizedNeighbor<PointT> >;
@@ -97,7 +93,7 @@ namespace pcl
         }
 
         /** \brief Empty deconstructor. */
-        ~OrganizedNeighbor () {}
+        ~OrganizedNeighbor () override = default;
 
         /** \brief Test whether this search-object is valid (input is organized AND from projective device)
           *        User should use this method after setting the input cloud, since setInput just prints an error 
@@ -137,8 +133,8 @@ namespace pcl
           if (indices_ && !indices_->empty())
           {
             mask_.assign (input_->size (), 0);
-            for (std::vector<int>::const_iterator iIt = indices_->begin (); iIt != indices_->end (); ++iIt)
-              mask_[*iIt] = 1;
+            for (const auto& idx : *indices_)
+              mask_[idx] = 1;
           }
           else
             mask_.assign (input_->size (), 1);
@@ -159,7 +155,7 @@ namespace pcl
         int
         radiusSearch (const PointT &p_q,
                       double radius,
-                      std::vector<int> &k_indices,
+                      Indices &k_indices,
                       std::vector<float> &k_sqr_distances,
                       unsigned int max_nn = 0) const override;
 
@@ -179,7 +175,7 @@ namespace pcl
         int
         nearestKSearch (const PointT &p_q,
                         int k,
-                        std::vector<int> &k_indices,
+                        Indices &k_indices,
                         std::vector<float> &k_sqr_distances) const override;
 
         /** \brief projects a point into the image
@@ -193,9 +189,9 @@ namespace pcl
 
         struct Entry
         {
-          Entry (int idx, float dist) : index (idx), distance (dist) {}
+          Entry (index_t idx, float dist) : index (idx), distance (dist) {}
           Entry () : index (0), distance (0) {}
-          unsigned index;
+          index_t index;
           float distance;
           
           inline bool 
@@ -213,7 +209,7 @@ namespace pcl
           * \return whether the top element changed or not.
           */
         inline bool 
-        testPoint (const PointT& query, unsigned k, std::priority_queue<Entry>& queue, unsigned index) const
+        testPoint (const PointT& query, unsigned k, std::vector<Entry>& queue, index_t index) const
         {
           const PointT& point = input_->points [index];
           if (mask_ [index] && std::isfinite (point.x))
@@ -223,15 +219,20 @@ namespace pcl
             float dist_y = point.y - query.y;
             float dist_z = point.z - query.z;
             float squared_distance = dist_x * dist_x + dist_y * dist_y + dist_z * dist_z;
-            if (queue.size () < k)
+            const auto queue_size = queue.size ();
+            const auto insert_into_queue = [&]{ queue.emplace (
+                                                std::upper_bound (queue.begin(), queue.end(), squared_distance,
+                                                [](float dist, const Entry& ent){ return dist<ent.distance; }),
+                                                               index, squared_distance); };
+            if (queue_size < k)
             {
-              queue.push (Entry (index, squared_distance));
-              return queue.size () == k;
+              insert_into_queue ();
+              return (queue_size + 1) == k;
             }
-            if (queue.top ().distance > squared_distance)
+            if (queue.back ().distance > squared_distance)
             {
-              queue.pop ();
-              queue.push (Entry (index, squared_distance));
+              queue.pop_back ();
+              insert_into_queue ();
               return true; // top element has changed!
             }
           }

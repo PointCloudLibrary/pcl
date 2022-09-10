@@ -40,8 +40,6 @@
 #include <pcl/pcl_config.h>
 #include <pcl/io/dinast_grabber.h>
 
-using namespace std;
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::DinastGrabber::DinastGrabber (const int device_position)
   : image_width_ (320)
@@ -49,6 +47,7 @@ pcl::DinastGrabber::DinastGrabber (const int device_position)
   , sync_packet_size_ (512)
   , fov_ (64. * M_PI / 180.)
   , context_ (nullptr)
+  , device_handle_ (nullptr)
   , bulk_ep_ (std::numeric_limits<unsigned char>::max ())
   , second_image_ (false)
   , running_ (false)
@@ -255,7 +254,7 @@ pcl::DinastGrabber::readImage ()
                                     RGB16 * (image_size_) + sync_packet_size_, &actual_length, 1000);
     if (res != 0 || actual_length == 0)
     {
-      memset (&image_[0], 0x00, image_size_);
+      std::fill_n(image_, image_size_, 0x00);
       PCL_THROW_EXCEPTION (pcl::IOException, "[pcl::DinastGrabber::readImage] USB read error!");
     }
 
@@ -336,22 +335,22 @@ pcl::DinastGrabber::getXYZIPointCloud ()
       double s_theta = sin (theta_colati);
       double c_ksai = static_cast<double> (x - 160) / r1;
       double s_ksai = static_cast<double> (y - 120) / r1;
-      cloud->points[depth_idx].x = static_cast<float> ((dist * s_theta * c_ksai) / 500.0 + 0.5);
-      cloud->points[depth_idx].y = static_cast<float> ((dist * s_theta * s_ksai) / 500.0 + 0.5);
-      cloud->points[depth_idx].z = static_cast<float> (dist * c_theta);
-      if (cloud->points[depth_idx].z < 0.01f)
-        cloud->points[depth_idx].z = 0.01f;
-      cloud->points[depth_idx].z /= 500.0f;
-      cloud->points[depth_idx].intensity = static_cast<float> (pixel);
+      (*cloud)[depth_idx].x = static_cast<float> ((dist * s_theta * c_ksai) / 500.0 + 0.5);
+      (*cloud)[depth_idx].y = static_cast<float> ((dist * s_theta * s_ksai) / 500.0 + 0.5);
+      (*cloud)[depth_idx].z = static_cast<float> (dist * c_theta);
+      if ((*cloud)[depth_idx].z < 0.01f)
+        (*cloud)[depth_idx].z = 0.01f;
+      (*cloud)[depth_idx].z /= 500.0f;
+      (*cloud)[depth_idx].intensity = static_cast<float> (pixel);
 
       
       // Get rid of the noise
-      if(cloud->points[depth_idx].z > 0.8f || cloud->points[depth_idx].z < 0.02f)
+      if((*cloud)[depth_idx].z > 0.8f || (*cloud)[depth_idx].z < 0.02f)
       {
-        cloud->points[depth_idx].x = std::numeric_limits<float>::quiet_NaN ();
-      	cloud->points[depth_idx].y = std::numeric_limits<float>::quiet_NaN ();
-      	cloud->points[depth_idx].z = std::numeric_limits<float>::quiet_NaN ();
-        cloud->points[depth_idx].intensity = static_cast<float> (pixel);
+        (*cloud)[depth_idx].x = std::numeric_limits<float>::quiet_NaN ();
+      	(*cloud)[depth_idx].y = std::numeric_limits<float>::quiet_NaN ();
+      	(*cloud)[depth_idx].z = std::numeric_limits<float>::quiet_NaN ();
+        (*cloud)[depth_idx].intensity = static_cast<float> (pixel);
       }
     }
   }

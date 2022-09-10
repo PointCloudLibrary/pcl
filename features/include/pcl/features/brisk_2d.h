@@ -41,7 +41,6 @@
 
 // PCL includes
 #include <pcl/features/feature.h>
-#include <pcl/common/eigen.h>
 #include <pcl/common/centroid.h>
 #include <pcl/common/intensity.h>
 

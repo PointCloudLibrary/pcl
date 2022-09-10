@@ -35,14 +35,16 @@
  *
  */
 
-#ifndef PCL_2D_MORPHOLOGY_HPP_
-#define PCL_2D_MORPHOLOGY_HPP_
+#pragma once
 
-//////////////////////////////////////////////////////////////////////////////
+#include <pcl/2d/morphology.h>
+
+namespace pcl {
+
 // Assumes input, kernel and output images have 0's and 1's only
 template <typename PointT>
 void
-pcl::Morphology<PointT>::erosionBinary(pcl::PointCloud<PointT>& output)
+Morphology<PointT>::erosionBinary(pcl::PointCloud<PointT>& output)
 {
   const int height = input_->height;
   const int width = input_->width;
@@ -90,11 +92,10 @@ pcl::Morphology<PointT>::erosionBinary(pcl::PointCloud<PointT>& output)
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////
 // Assumes input, kernel and output images have 0's and 1's only
 template <typename PointT>
 void
-pcl::Morphology<PointT>::dilationBinary(pcl::PointCloud<PointT>& output)
+Morphology<PointT>::dilationBinary(pcl::PointCloud<PointT>& output)
 {
   const int height = input_->height;
   const int width = input_->width;
@@ -136,11 +137,10 @@ pcl::Morphology<PointT>::dilationBinary(pcl::PointCloud<PointT>& output)
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////
 // Assumes input, kernel and output images have 0's and 1's only
 template <typename PointT>
 void
-pcl::Morphology<PointT>::openingBinary(pcl::PointCloud<PointT>& output)
+Morphology<PointT>::openingBinary(pcl::PointCloud<PointT>& output)
 {
   PointCloudInPtr intermediate_output(new PointCloudIn);
   erosionBinary(*intermediate_output);
@@ -148,11 +148,10 @@ pcl::Morphology<PointT>::openingBinary(pcl::PointCloud<PointT>& output)
   dilationBinary(output);
 }
 
-//////////////////////////////////////////////////////////////////////////////
 // Assumes input, kernel and output images have 0's and 1's only
 template <typename PointT>
 void
-pcl::Morphology<PointT>::closingBinary(pcl::PointCloud<PointT>& output)
+Morphology<PointT>::closingBinary(pcl::PointCloud<PointT>& output)
 {
   PointCloudInPtr intermediate_output(new PointCloudIn);
   dilationBinary(*intermediate_output);
@@ -160,10 +159,9 @@ pcl::Morphology<PointT>::closingBinary(pcl::PointCloud<PointT>& output)
   erosionBinary(output);
 }
 
-//////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::Morphology<PointT>::erosionGray(pcl::PointCloud<PointT>& output)
+Morphology<PointT>::erosionGray(pcl::PointCloud<PointT>& output)
 {
   const int height = input_->height;
   const int width = input_->width;
@@ -203,10 +201,9 @@ pcl::Morphology<PointT>::erosionGray(pcl::PointCloud<PointT>& output)
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::Morphology<PointT>::dilationGray(pcl::PointCloud<PointT>& output)
+Morphology<PointT>::dilationGray(pcl::PointCloud<PointT>& output)
 {
   const int height = input_->height;
   const int width = input_->width;
@@ -247,10 +244,9 @@ pcl::Morphology<PointT>::dilationGray(pcl::PointCloud<PointT>& output)
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::Morphology<PointT>::openingGray(pcl::PointCloud<PointT>& output)
+Morphology<PointT>::openingGray(pcl::PointCloud<PointT>& output)
 {
   PointCloudInPtr intermediate_output(new PointCloudIn);
   erosionGray(*intermediate_output);
@@ -258,10 +254,9 @@ pcl::Morphology<PointT>::openingGray(pcl::PointCloud<PointT>& output)
   dilationGray(output);
 }
 
-//////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::Morphology<PointT>::closingGray(pcl::PointCloud<PointT>& output)
+Morphology<PointT>::closingGray(pcl::PointCloud<PointT>& output)
 {
   PointCloudInPtr intermediate_output(new PointCloudIn);
   dilationGray(*intermediate_output);
@@ -269,12 +264,11 @@ pcl::Morphology<PointT>::closingGray(pcl::PointCloud<PointT>& output)
   erosionGray(output);
 }
 
-//////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::Morphology<PointT>::subtractionBinary(pcl::PointCloud<PointT>& output,
-                                           const pcl::PointCloud<PointT>& input1,
-                                           const pcl::PointCloud<PointT>& input2)
+Morphology<PointT>::subtractionBinary(pcl::PointCloud<PointT>& output,
+                                      const pcl::PointCloud<PointT>& input1,
+                                      const pcl::PointCloud<PointT>& input2)
 {
   const int height = (input1.height < input2.height) ? input1.height : input2.height;
   const int width = (input1.width < input2.width) ? input1.width : input2.width;
@@ -290,12 +284,11 @@ pcl::Morphology<PointT>::subtractionBinary(pcl::PointCloud<PointT>& output,
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::Morphology<PointT>::unionBinary(pcl::PointCloud<PointT>& output,
-                                     const pcl::PointCloud<PointT>& input1,
-                                     const pcl::PointCloud<PointT>& input2)
+Morphology<PointT>::unionBinary(pcl::PointCloud<PointT>& output,
+                                const pcl::PointCloud<PointT>& input1,
+                                const pcl::PointCloud<PointT>& input2)
 {
   const int height = (input1.height < input2.height) ? input1.height : input2.height;
   const int width = (input1.width < input2.width) ? input1.width : input2.width;
@@ -311,12 +304,11 @@ pcl::Morphology<PointT>::unionBinary(pcl::PointCloud<PointT>& output,
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::Morphology<PointT>::intersectionBinary(pcl::PointCloud<PointT>& output,
-                                            const pcl::PointCloud<PointT>& input1,
-                                            const pcl::PointCloud<PointT>& input2)
+Morphology<PointT>::intersectionBinary(pcl::PointCloud<PointT>& output,
+                                       const pcl::PointCloud<PointT>& input1,
+                                       const pcl::PointCloud<PointT>& input2)
 {
   const int height = (input1.height < input2.height) ? input1.height : input2.height;
   const int width = (input1.width < input2.width) ? input1.width : input2.width;
@@ -332,11 +324,10 @@ pcl::Morphology<PointT>::intersectionBinary(pcl::PointCloud<PointT>& output,
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::Morphology<PointT>::structuringElementCircular(pcl::PointCloud<PointT>& kernel,
-                                                    const int radius)
+Morphology<PointT>::structuringElementCircular(pcl::PointCloud<PointT>& kernel,
+                                               const int radius)
 {
   const int dim = 2 * radius;
   kernel.height = dim;
@@ -353,12 +344,11 @@ pcl::Morphology<PointT>::structuringElementCircular(pcl::PointCloud<PointT>& ker
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::Morphology<PointT>::structuringElementRectangle(pcl::PointCloud<PointT>& kernel,
-                                                     const int height,
-                                                     const int width)
+Morphology<PointT>::structuringElementRectangle(pcl::PointCloud<PointT>& kernel,
+                                                const int height,
+                                                const int width)
 {
   kernel.height = height;
   kernel.width = width;
@@ -367,13 +357,11 @@ pcl::Morphology<PointT>::structuringElementRectangle(pcl::PointCloud<PointT>& ke
     kernel[i].intensity = 1;
 }
 
-//////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::Morphology<PointT>::setStructuringElement(
-    const PointCloudInPtr& structuring_element)
+Morphology<PointT>::setStructuringElement(const PointCloudInPtr& structuring_element)
 {
   structuring_element_ = structuring_element;
 }
 
-#endif // PCL_2D_MORPHOLOGY_HPP_
+} // namespace pcl

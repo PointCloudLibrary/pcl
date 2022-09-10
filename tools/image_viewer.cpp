@@ -38,17 +38,10 @@
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/common/time.h> //fps calculations
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/image_viewer.h>
-#include <pcl/io/openni_camera/openni_driver.h>
-#include <pcl/console/parse.h>
-#include <pcl/visualization/mouse_event.h>
 #include <vector>
-#include <string>
-
-using namespace std;
 
 int
 main (int, char ** argv)
@@ -63,8 +56,8 @@ main (int, char ** argv)
   pcl::visualization::ImageViewer depth_image_viewer_;
   float* img = new float[cloud.width * cloud.height];
 
-  for (int i = 0; i < static_cast<int> (xyz.points.size ()); ++i)
-    img[i] = xyz.points[i].z;
+  for (int i = 0; i < static_cast<int> (xyz.size ()); ++i)
+    img[i] = xyz[i].z;
   
   depth_image_viewer_.showFloatImage (img, 
                                       cloud.width, cloud.height,

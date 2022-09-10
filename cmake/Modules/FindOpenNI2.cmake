@@ -11,30 +11,6 @@
 #  OPENNI2_DEFINITIONS         Compiler flags for OpenNI2
 
 find_package(PkgConfig QUIET)
-
-# Find LibUSB
-if(NOT WIN32)
-  pkg_check_modules(PC_USB_10 libusb-1.0)
-  find_path(USB_10_INCLUDE_DIR libusb-1.0/libusb.h
-            HINTS ${PC_USB_10_INCLUDEDIR} ${PC_USB_10_INCLUDE_DIRS} "${USB_10_ROOT}" "$ENV{USB_10_ROOT}"
-            PATH_SUFFIXES libusb-1.0)
-
-  find_library(USB_10_LIBRARY
-               NAMES usb-1.0
-               HINTS ${PC_USB_10_LIBDIR} ${PC_USB_10_LIBRARY_DIRS} "${USB_10_ROOT}" "$ENV{USB_10_ROOT}"
-               PATH_SUFFIXES lib)
-
-  include(FindPackageHandleStandardArgs)
-  find_package_handle_standard_args(USB_10 DEFAULT_MSG USB_10_LIBRARY USB_10_INCLUDE_DIR)
-
-  if(NOT USB_10_FOUND)
-    message(STATUS "OpenNI 2 disabled because libusb-1.0 not found.")
-    return()
-  else()
-    include_directories(SYSTEM ${USB_10_INCLUDE_DIR})
-  endif()
-endif()
-
 pkg_check_modules(PC_OPENNI2 QUIET libopenni2)
 
 set(OPENNI2_DEFINITIONS ${PC_OPENNI_CFLAGS_OTHER})
@@ -65,8 +41,9 @@ if(OPENNI2_INCLUDE_DIR AND OPENNI2_LIBRARY)
   mark_as_advanced(OPENNI2_INCLUDE_DIRS)
 
   # Libraries
-  if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    set(OPENNI2_LIBRARIES ${OPENNI2_LIBRARY} ${LIBUSB_1_LIBRARIES})
+  if(NOT WIN32)
+    find_package(libusb REQUIRED)
+    set(OPENNI2_LIBRARIES ${OPENNI2_LIBRARY} libusb::libusb)
   else()
     set(OPENNI2_LIBRARIES ${OPENNI2_LIBRARY})
   endif()
@@ -78,12 +55,24 @@ if(OPENNI2_INCLUDE_DIR AND OPENNI2_LIBRARY)
 
 endif()
 
+if(EXISTS "${OPENNI2_INCLUDE_DIR}/OniVersion.h")
+  file(STRINGS "${OPENNI2_INCLUDE_DIR}/OniVersion.h" _contents REGEX "^#define[ \t]+ONI_VERSION_[A-Z]+[ \t]+[0-9]+")
+  if(_contents)
+    string(REGEX REPLACE ".*#define[ \t]+ONI_VERSION_MAJOR[ \t]+([0-9]+).*" "\\1" OPENNI2_VERSION_MAJOR "${_contents}")
+    string(REGEX REPLACE ".*#define[ \t]+ONI_VERSION_MINOR[ \t]+([0-9]+).*" "\\1" OPENNI2_VERSION_MINOR "${_contents}")
+    string(REGEX REPLACE ".*#define[ \t]+ONI_VERSION_MAINTENANCE[ \t]+([0-9]+).*" "\\1" OPENNI2_VERSION_PATCH "${_contents}")
+    string(REGEX REPLACE ".*#define[ \t]+ONI_VERSION_BUILD[ \t]+([0-9]+).*" "\\1" OPENNI2_VERSION_BUILD "${_contents}")
+    set(OPENNI2_VERSION "${OPENNI2_VERSION_MAJOR}.${OPENNI2_VERSION_MINOR}.${OPENNI2_VERSION_PATCH}.${OPENNI2_VERSION_BUILD}")
+  endif()
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(OpenNI2
   FOUND_VAR OPENNI2_FOUND
   REQUIRED_VARS OPENNI2_LIBRARIES OPENNI2_INCLUDE_DIRS
+  VERSION_VAR OPENNI2_VERSION
 )
 
 if(OPENNI2_FOUND)
-  message(STATUS "OpenNI2 found (include: ${OPENNI2_INCLUDE_DIRS}, lib: ${OPENNI2_LIBRARIES})")
+  message(STATUS "OpenNI2 found (version: ${OPENNI2_VERSION}, include: ${OPENNI2_INCLUDE_DIRS}, lib: ${OPENNI2_LIBRARIES})")
 endif()

@@ -44,7 +44,6 @@
 #include "openni_exception.h"
 #include "openni.h"
 
-#include <pcl/io/boost.h>
 #include <pcl/io/openni_camera/openni_image.h>
 #include <pcl/io/openni_camera/openni_depth_image.h>
 #include <pcl/io/openni_camera/openni_ir_image.h>
@@ -55,7 +54,6 @@
 #include <map>
 #include <mutex>
 #include <thread>
-#include <utility>
 #include <vector>
 
 /// @todo Get rid of all exception-specifications, these are useless and soon to be deprecated

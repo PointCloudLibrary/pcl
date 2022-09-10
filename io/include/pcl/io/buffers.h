@@ -37,12 +37,8 @@
 
 #pragma once
 
-#include <cassert>
-#include <limits>
 #include <mutex>
 #include <vector>
-
-#include <cstdint>
 
 namespace pcl
 {
@@ -113,7 +109,7 @@ namespace pcl
         SingleBuffer (std::size_t size);
 
         
-        ~SingleBuffer ();
+        ~SingleBuffer () override;
 
         T
         operator[] (std::size_t idx) const override;
@@ -157,7 +153,7 @@ namespace pcl
         MedianBuffer (std::size_t size, unsigned char window_size);
 
         
-        ~MedianBuffer ();
+        ~MedianBuffer () override;
 
         /** Access an element at a given index.
           *
@@ -233,7 +229,7 @@ namespace pcl
         AverageBuffer (std::size_t size, unsigned char window_size);
 
         
-        ~AverageBuffer ();
+        ~AverageBuffer () override;
 
         /** Access an element at a given index.
           *

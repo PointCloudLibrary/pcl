@@ -35,6 +35,8 @@
 *
 */
 
+#include <limits>
+
 #include <pcl/test/gtest.h>
 
 #include <pcl/point_types.h>
@@ -46,13 +48,14 @@
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::registration;
-using namespace std;
 
 PointCloud<PointXYZI> cloud_source, cloud_target;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, KFPCSInitialAlignment)
 {
+  const auto previous_verbosity_level = pcl::console::getVerbosityLevel();
+  pcl::console::setVerbosityLevel(pcl::console::L_VERBOSE);
   // create shared pointers
   PointCloud<PointXYZI>::Ptr cloud_source_ptr, cloud_target_ptr;
   cloud_source_ptr = cloud_source.makeShared ();
@@ -71,7 +74,7 @@ TEST (PCL, KFPCSInitialAlignment)
 
   // repeat alignment 2 times to increase probability to ~99.99%
   const float max_angle3d = 0.1745f, max_translation3d = 1.f;
-  float angle3d = FLT_MAX, translation3d = FLT_MAX;
+  float angle3d = std::numeric_limits<float>::max(), translation3d = std::numeric_limits<float>::max();
   for (int i = 0; i < 2; i++)
   {
     kfpcs_ia.align (cloud_source_aligned);
@@ -91,9 +94,10 @@ TEST (PCL, KFPCSInitialAlignment)
       break;
   }
 
-  EXPECT_EQ (static_cast <int> (cloud_source_aligned.points.size ()), static_cast <int> (cloud_source.points.size ()));
+  EXPECT_EQ (cloud_source_aligned.size (), cloud_source.size ());
   EXPECT_NEAR (angle3d, 0.f, max_angle3d);
   EXPECT_NEAR (translation3d, 0.f, max_translation3d);
+  pcl::console::setVerbosityLevel(previous_verbosity_level); // reset verbosity level
 }
 
 

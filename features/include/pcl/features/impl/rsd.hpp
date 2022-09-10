@@ -41,13 +41,13 @@
 #ifndef PCL_FEATURES_IMPL_RSD_H_
 #define PCL_FEATURES_IMPL_RSD_H_
 
-#include <cfloat>
+#include <limits>
 #include <pcl/features/rsd.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> Eigen::MatrixXf
 pcl::computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud<PointNT> &normals,
-		 const std::vector<int> &indices, double max_dist,
+		 const pcl::Indices &indices, double max_dist,
 		 int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram)
 {
   // Check if the full histogram has to be saved or not
@@ -74,22 +74,22 @@ pcl::computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud
   min_max_angle_by_dist[0][0] = min_max_angle_by_dist[0][1] = 0.0;
 
   // Compute distance by normal angle distribution for points
-  std::vector<int>::const_iterator i, begin (indices.begin()), end (indices.end());
+  pcl::Indices::const_iterator i, begin (indices.begin()), end (indices.end());
   for (i = begin+1; i != end; ++i)
   {
     // compute angle between the two lines going through normals (disregard orientation!)
-    double cosine = normals.points[*i].normal[0] * normals.points[*begin].normal[0] +
-                    normals.points[*i].normal[1] * normals.points[*begin].normal[1] +
-                    normals.points[*i].normal[2] * normals.points[*begin].normal[2];
+    double cosine = normals[*i].normal[0] * normals[*begin].normal[0] +
+                    normals[*i].normal[1] * normals[*begin].normal[1] +
+                    normals[*i].normal[2] * normals[*begin].normal[2];
     if (cosine > 1) cosine = 1;
     if (cosine < -1) cosine = -1;
     double angle  = std::acos (cosine);
     if (angle > M_PI/2) angle = M_PI - angle; /// \note: orientation is neglected!
 
     // Compute point to point distance
-    double dist = sqrt ((surface.points[*i].x - surface.points[*begin].x) * (surface.points[*i].x - surface.points[*begin].x) +
-                        (surface.points[*i].y - surface.points[*begin].y) * (surface.points[*i].y - surface.points[*begin].y) +
-                        (surface.points[*i].z - surface.points[*begin].z) * (surface.points[*i].z - surface.points[*begin].z));
+    double dist = sqrt ((surface[*i].x - surface[*begin].x) * (surface[*i].x - surface[*begin].x) +
+                        (surface[*i].y - surface[*begin].y) * (surface[*i].y - surface[*begin].y) +
+                        (surface[*i].z - surface[*begin].z) * (surface[*i].z - surface[*begin].z));
 
     if (dist > max_dist)
       continue; /// \note: we neglect points that are outside the specified interval!
@@ -147,7 +147,7 @@ pcl::computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT, typename PointOutT> Eigen::MatrixXf
 pcl::computeRSD (const pcl::PointCloud<PointNT> &normals,
-		 const std::vector<int> &indices, const std::vector<float> &sqr_dists, double max_dist,
+		 const pcl::Indices &indices, const std::vector<float> &sqr_dists, double max_dist,
 		 int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram)
 {
   // Check if the full histogram has to be saved or not
@@ -170,18 +170,18 @@ pcl::computeRSD (const pcl::PointCloud<PointNT> &normals,
   for (int di=1; di<nr_subdiv; di++)
   {
     min_max_angle_by_dist[di].resize (2);
-    min_max_angle_by_dist[di][0] = +DBL_MAX;
-    min_max_angle_by_dist[di][1] = -DBL_MAX;
+    min_max_angle_by_dist[di][0] = std::numeric_limits<double>::max();
+    min_max_angle_by_dist[di][1] = std::numeric_limits<double>::lowest();
   }
   
   // Compute distance by normal angle distribution for points
-  std::vector<int>::const_iterator i, begin (indices.begin()), end (indices.end());
+  pcl::Indices::const_iterator i, begin (indices.begin()), end (indices.end());
   for (i = begin+1; i != end; ++i)
   {
     // compute angle between the two lines going through normals (disregard orientation!)
-    double cosine = normals.points[*i].normal[0] * normals.points[*begin].normal[0] +
-                    normals.points[*i].normal[1] * normals.points[*begin].normal[1] +
-                    normals.points[*i].normal[2] * normals.points[*begin].normal[2];
+    double cosine = normals[*i].normal[0] * normals[*begin].normal[0] +
+                    normals[*i].normal[1] * normals[*begin].normal[1] +
+                    normals[*i].normal[2] * normals[*begin].normal[2];
     if (cosine > 1) cosine = 1;
     if (cosine < -1) cosine = -1;
     double angle  = std::acos (cosine);
@@ -252,13 +252,13 @@ pcl::RSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   {
     PCL_ERROR ("[pcl::%s::computeFeature] A search radius needs to be set!\n", getClassName ().c_str ());
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
   // List of indices and corresponding squared distances for a neighborhood
   // \note resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices;
+  pcl::Indices nn_indices;
   std::vector<float> nn_sqr_dists;
 
   // Check if the full histogram has to be saved or not
@@ -266,15 +266,15 @@ pcl::RSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   {
     // Reserve space for the output histogram dataset
     histograms_.reset (new std::vector<Eigen::MatrixXf, Eigen::aligned_allocator<Eigen::MatrixXf> >);
-    histograms_->reserve (output.points.size ());
+    histograms_->reserve (output.size ());
     
     // Iterating over the entire index vector
     for (std::size_t idx = 0; idx < indices_->size (); ++idx)
     {
       // Compute and store r_min and r_max in the output cloud
       this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_sqr_dists);
-      //histograms_->push_back (computeRSD (*surface_, *normals_, nn_indices, search_radius_, nr_subdiv_, plane_radius_, output.points[idx], true));
-      histograms_->push_back (computeRSD (*normals_, nn_indices, nn_sqr_dists, search_radius_, nr_subdiv_, plane_radius_, output.points[idx], true));
+      //histograms_->push_back (computeRSD (*surface_, *normals_, nn_indices, search_radius_, nr_subdiv_, plane_radius_, output[idx], true));
+      histograms_->push_back (computeRSD (*normals_, nn_indices, nn_sqr_dists, search_radius_, nr_subdiv_, plane_radius_, output[idx], true));
     }
   }
   else
@@ -284,8 +284,8 @@ pcl::RSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
     {
       // Compute and store r_min and r_max in the output cloud
       this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_sqr_dists);
-      //computeRSD (*surface_, *normals_, nn_indices, search_radius_, nr_subdiv_, plane_radius_, output.points[idx], false);
-      computeRSD (*normals_, nn_indices, nn_sqr_dists, search_radius_, nr_subdiv_, plane_radius_, output.points[idx], false);
+      //computeRSD (*surface_, *normals_, nn_indices, search_radius_, nr_subdiv_, plane_radius_, output[idx], false);
+      computeRSD (*normals_, nn_indices, nn_sqr_dists, search_radius_, nr_subdiv_, plane_radius_, output[idx], false);
     }
   }
 }

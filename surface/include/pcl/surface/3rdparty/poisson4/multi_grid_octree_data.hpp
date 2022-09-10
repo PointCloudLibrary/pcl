@@ -77,16 +77,16 @@ namespace pcl
       maxDepth=0;
     }
     SortedTreeNodes::~SortedTreeNodes(void){
-      if( nodeCount ) delete[] nodeCount;
-      if( treeNodes ) delete[] treeNodes;
+      delete[] nodeCount;
+      delete[] treeNodes;
       nodeCount = NULL;
       treeNodes = NULL;
     }
 
     void SortedTreeNodes::set( TreeOctNode& root )
     {
-      if( nodeCount ) delete[] nodeCount;
-      if( treeNodes ) delete[] treeNodes;
+      delete[] nodeCount;
+      delete[] treeNodes;
       maxDepth = root.maxDepth()+1;
       nodeCount = new int[ maxDepth+1 ];
       treeNodes = new TreeOctNode*[ root.nodes() ];
@@ -784,9 +784,9 @@ namespace pcl
       while (cnt != input_->size ())
       {
         Point3D< Real > p;
-        p[0] = input_->points[cnt].x;
-        p[1] = input_->points[cnt].y;
-        p[2] = input_->points[cnt].z;
+        p[0] = (*input_)[cnt].x;
+        p[1] = (*input_)[cnt].y;
+        p[2] = (*input_)[cnt].z;
 
         for (i = 0; i < DIMENSION; i++)
         {
@@ -806,12 +806,13 @@ namespace pcl
         cnt = 0;
         while (cnt != input_->size ())
         {
-          position[0] = input_->points[cnt].x;
-          position[1] = input_->points[cnt].y;
-          position[2] = input_->points[cnt].z;
-          normal[0] = input_->points[cnt].normal_x;
-          normal[1] = input_->points[cnt].normal_y;
-          normal[2] = input_->points[cnt].normal_z;
+          position[0] = (*input_)[cnt].x;
+          position[1] = (*input_)[cnt].y;
+          position[2] = (*input_)[cnt].z;
+          normal[0] = (*input_)[cnt].normal_x;
+          normal[1] = (*input_)[cnt].normal_y;
+          normal[2] = (*input_)[cnt].normal_z;
+          cnt++;
 
           for( i=0 ; i<DIMENSION ; i++ ) position[i] = ( position[i]-center[i] ) / scale;
           myCenter[0] = myCenter[1] = myCenter[2] = Real(0.5);
@@ -838,7 +839,6 @@ namespace pcl
             d++;
           }
           NonLinearUpdateWeightContribution( temp , position , weight );
-          cnt++;
         }
       }
 
@@ -846,12 +846,12 @@ namespace pcl
       cnt=0;
       while (cnt != input_->size ())
       {
-        position[0] = input_->points[cnt].x;
-        position[1] = input_->points[cnt].y;
-        position[2] = input_->points[cnt].z;
-        normal[0] = input_->points[cnt].normal_x;
-        normal[1] = input_->points[cnt].normal_y;
-        normal[2] = input_->points[cnt].normal_z;
+        position[0] = (*input_)[cnt].x;
+        position[1] = (*input_)[cnt].y;
+        position[2] = (*input_)[cnt].z;
+        normal[0] = (*input_)[cnt].normal_x;
+        normal[1] = (*input_)[cnt].normal_y;
+        normal[2] = (*input_)[cnt].normal_z;
         cnt ++;
         for( i=0 ; i<DIMENSION ; i++ ) position[i] = ( position[i]-center[i] ) / scale;
         myCenter[0] = myCenter[1] = myCenter[2] = Real(0.5);
@@ -2373,7 +2373,7 @@ namespace pcl
                 (*vertexCount)[key1].second--;
                 (*vertexCount)[key2].second++;
               }
-              else fprintf( stderr , "Bad Edge 1: %d %d\n" , ri1.key , ri2.key );
+              else fprintf( stderr , "Bad Edge 1: %lld %lld\n" , ri1.key , ri2.key );
       }
     }
 
@@ -3550,13 +3550,13 @@ namespace pcl
                 {
                   int r1 = MarchingCubes::HasEdgeRoots( node->nodeData.mcIndex , isoTri[j*3+k] );
                   int r2 = MarchingCubes::HasEdgeRoots( node->nodeData.mcIndex , isoTri[j*3+((k+1)%3)] );
-                  fprintf( stderr , "Bad Edge 2: %d %d\t%d %d\n" , ri1.key , ri2.key , r1 , r2 );
+                  fprintf( stderr , "Bad Edge 2: %lld %lld\t%d %d\n" , ri1.key , ri2.key , r1 , r2 );
                 }
         }
       }
       for( int i=0 ; i<int(edges.size()) ; i++ )
       {
-        if( vertexCount.count( edges[i].first.key )==0 ) printf( "Could not find vertex: %lld\n" , edges[i].first );
+        if( vertexCount.count( edges[i].first.key )==0 ) printf( "Could not find vertex: %lld\n" , edges[i].first.key );
         else if( vertexCount[ edges[i].first.key ].second )
         {
           RootInfo ri;
@@ -3576,7 +3576,7 @@ namespace pcl
           }
         }
 
-        if( vertexCount.count( edges[i].second.key )==0 ) printf( "Could not find vertex: %lld\n" , edges[i].second );
+        if( vertexCount.count( edges[i].second.key )==0 ) printf( "Could not find vertex: %lld\n" , edges[i].second.key );
         else if( vertexCount[edges[i].second.key].second )
         {
           RootInfo ri;

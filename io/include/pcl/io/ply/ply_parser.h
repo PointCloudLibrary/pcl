@@ -40,27 +40,22 @@
 
 #pragma once
 
-#ifdef BUILD_Maintainer
-#  if defined __GNUC__
-#    pragma GCC system_header 
-#  elif defined _MSC_VER
-#    pragma warning(push, 1)
-#  endif
-#endif
-
-#include <pcl/io/boost.h>
 #include <pcl/io/ply/ply.h>
 #include <pcl/io/ply/io_operators.h>
 #include <pcl/pcl_macros.h>
 
-#include <fstream>
-#include <iostream>
 #include <istream>
 #include <memory>
-#include <sstream>
 #include <string>
 #include <tuple>
 #include <vector>
+#include <boost/lexical_cast.hpp> // for lexical_cast
+#include <boost/mpl/fold.hpp> // for fold
+#include <boost/mpl/inherit.hpp> // for inherit
+#include <boost/mpl/inherit_linearly.hpp> // for inherit_linearly
+#include <boost/mpl/joint_view.hpp> // for joint_view
+#include <boost/mpl/transform.hpp> // for transform
+#include <boost/mpl/vector.hpp> // for vector
 
 namespace pcl
 {
@@ -310,7 +305,7 @@ namespace pcl
           struct property
           {
             property (const std::string& name) : name (name) {}
-            virtual ~property () {}
+            virtual ~property () = default;
             virtual bool parse (class ply_parser& ply_parser, format_type format, std::istream& istream) = 0;
             std::string name;
           };
@@ -705,14 +700,3 @@ inline bool pcl::io::ply::ply_parser::parse_list_property (format_type format, s
   }
   return (true);
 }
-
-#ifdef BUILD_Maintainer
-#  if defined __GNUC__
-#    if __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#      pragma GCC diagnostic warning "-Weffc++"
-#      pragma GCC diagnostic warning "-pedantic"
-#    endif
-#  elif defined _MSC_VER
-#    pragma warning(pop)
-#  endif
-#endif

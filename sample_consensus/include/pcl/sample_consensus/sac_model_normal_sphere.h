@@ -43,7 +43,6 @@
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/sac_model_sphere.h>
 #include <pcl/sample_consensus/model_types.h>
-#include <pcl/common/common.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
@@ -120,7 +119,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      ~SampleConsensusModelNormalSphere () {}
+      ~SampleConsensusModelNormalSphere () override = default;
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
         * \param[in] model_coefficients the coefficients of a sphere model that we need to compute distances to

@@ -1,7 +1,6 @@
 #include <pcl/apps/cloud_composer/transform_clouds.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
 
-#include <pcl/filters/extract_indices.h>
 #include <pcl/point_types.h>
 
 #include <pcl/apps/cloud_composer/impl/transform_clouds.hpp>

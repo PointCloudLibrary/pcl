@@ -64,7 +64,6 @@
 
 using namespace pcl;
 using namespace pcl::io;
-using namespace std;
 
 PointCloud<PointXYZ> cloud_source, cloud_target, cloud_reg;
 PointCloud<PointXYZRGBA> cloud_with_color;
@@ -73,7 +72,7 @@ template <typename PointSource, typename PointTarget>
 class RegistrationWrapper : public Registration<PointSource, PointTarget>
 {
 public:
-  void computeTransformation (pcl::PointCloud<PointSource> &, const Eigen::Matrix4f&) { }
+  void computeTransformation (pcl::PointCloud<PointSource> &, const Eigen::Matrix4f&) override { }
 
   bool hasValidFeaturesTest ()
   {
@@ -104,25 +103,25 @@ TEST (PCL, findFeatureCorrespondences)
       FeatureT f;
       f.histogram[0] = x;
       f.histogram[1] = y;
-      feature0.points.push_back (f);
+      feature0.push_back (f);
 
       f.histogram[0] = x;
       f.histogram[1] = y - 2.5f;
-      feature1.points.push_back (f);
+      feature1.push_back (f);
 
       f.histogram[0] = x - 2.0f;
       f.histogram[1] = y + 1.5f;
-      feature2.points.push_back (f);
+      feature2.push_back (f);
 
       f.histogram[0] = x + 2.0f;
       f.histogram[1] = y + 1.5f;
-      feature3.points.push_back (f);
+      feature3.push_back (f);
     }
   }
-  feature0.width = static_cast<std::uint32_t> (feature0.points.size ());
-  feature1.width = static_cast<std::uint32_t> (feature1.points.size ());
-  feature2.width = static_cast<std::uint32_t> (feature2.points.size ());
-  feature3.width = static_cast<std::uint32_t> (feature3.points.size ());
+  feature0.width = feature0.size ();
+  feature1.width = feature1.size ();
+  feature2.width = feature2.size ();
+  feature3.width = feature3.size ();
 
   KdTreeFLANN<FeatureT> tree;
 
@@ -185,7 +184,7 @@ TEST(PCL, ICP_translated)
   icp.align(Final);
 
   // Check that we have sucessfully converged
-  ASSERT_EQ(icp.hasConverged(), true);
+  ASSERT_TRUE(icp.hasConverged());
 
   // Test that the fitness score is below acceptable threshold
   EXPECT_LT(icp.getFitnessScore(), 1e-6);
@@ -209,7 +208,7 @@ TEST (PCL, IterativeClosestPoint)
 
   // Register
   reg.align (cloud_reg);
-  EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_EQ (cloud_reg.size (), cloud_source.size ());
 
   Eigen::Matrix4f transformation = reg.getFinalTransformation ();
   EXPECT_NEAR (transformation (0, 0), 0.8806,  1e-3);
@@ -383,7 +382,7 @@ TEST (PCL, IterativeClosestPointNonLinear)
 
   // Register
   reg.align (output);
-  EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_EQ (output.size (), cloud_source.size ());
   // We get different results on 32 vs 64-bit systems.  To address this, we've removed the explicit output test
   // on the transformation matrix.  Instead, we're testing to make sure the algorithm converges to a sufficiently
   // low error by checking the fitness score.
@@ -430,7 +429,7 @@ TEST (PCL, IterativeClosestPointNonLinear)
 
     // Register
     reg.align (output);
-    EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+    EXPECT_EQ (output.size (), cloud_source.size ());
     EXPECT_LT (reg.getFitnessScore (), 0.001);
   }
 
@@ -470,14 +469,14 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
 
   // Register
   reg.align (output);
-  EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_EQ (output.size (), cloud_source.size ());
   EXPECT_LT (reg.getFitnessScore (), 0.005);
 
   // Check again, for all possible caching schemes
   for (int iter = 0; iter < 4; iter++)
   {
-    bool force_cache = (bool) iter/2;
-    bool force_cache_reciprocal = (bool) iter%2;
+    bool force_cache = static_cast<bool> (iter/2);
+    bool force_cache_reciprocal = static_cast<bool> (iter%2);
     pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
     // Ensure that, when force_cache is not set, we are robust to the wrong input
     if (force_cache)
@@ -491,7 +490,7 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
 
     // Register
     reg.align (output);
-    EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+    EXPECT_EQ (output.size (), cloud_source.size ());
     EXPECT_LT (reg.getFitnessScore (), 0.005);
   }
 
@@ -543,14 +542,14 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
 
   // Register
   reg.align (output);
-  EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_EQ (output.size (), cloud_source.size ());
   EXPECT_LT (reg.getFitnessScore (), 0.0001);
 
   // Check again, for all possible caching schemes
   for (int iter = 0; iter < 4; iter++)
   {
-    bool force_cache = (bool) iter/2;
-    bool force_cache_reciprocal = (bool) iter%2;
+    bool force_cache = static_cast<bool> (iter/2);
+    bool force_cache_reciprocal = static_cast<bool> (iter%2);
     pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
     // Ensure that, when force_cache is not set, we are robust to the wrong input
     if (force_cache)
@@ -564,7 +563,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
 
     // Register
     reg.align (output);
-    EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+    EXPECT_EQ (output.size (), cloud_source.size ());
     EXPECT_LT (reg.getFitnessScore (), 0.001);
   }
 
@@ -582,7 +581,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
   reg_guess.setMaximumIterations (50);
   reg_guess.setTransformationEpsilon (1e-8);
   reg_guess.align (output, transform.matrix ());
-  EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_EQ (output.size (), cloud_source.size ());
   EXPECT_LT (reg.getFitnessScore (), 0.0001);
 }
 
@@ -616,14 +615,14 @@ TEST (PCL, GeneralizedIterativeClosestPoint6D)
 
   // Register
   reg.align (output);
-  EXPECT_EQ (int (output.points.size ()), int (src->points.size ()));
+  EXPECT_EQ (output.size (), src->size ());
   EXPECT_LT (reg.getFitnessScore (), 0.003);
 
   // Check again, for all possible caching schemes
   for (int iter = 0; iter < 4; iter++)
   {
-    bool force_cache = (bool) iter/2;
-    bool force_cache_reciprocal = (bool) iter%2;
+    bool force_cache = static_cast<bool> (iter/2);
+    bool force_cache_reciprocal = static_cast<bool> (iter%2);
     pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
     // Ensure that, when force_cache is not set, we are robust to the wrong input
     if (force_cache)
@@ -637,7 +636,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint6D)
 
     // Register
     reg.align (output);
-    EXPECT_EQ (int (output.points.size ()), int (src->points.size ()));
+    EXPECT_EQ (output.size (), src->size ());
     EXPECT_LT (reg.getFitnessScore (), 0.003);
   }
 }
@@ -675,7 +674,7 @@ TEST (PCL, PyramidFeatureHistogram)
   ppf_estimator.compute (*ppf_signature_target);
 
 
-  std::vector<pair<float, float> > dim_range_input, dim_range_target;
+  std::vector<std::pair<float, float> > dim_range_input, dim_range_target;
   for (std::size_t i = 0; i < 3; ++i) dim_range_input.emplace_back(static_cast<float> (-M_PI), static_cast<float> (M_PI));
   dim_range_input.emplace_back(0.0f, 1.0f);
   for (std::size_t i = 0; i < 3; ++i) dim_range_target.emplace_back(static_cast<float> (-M_PI) * 10.0f, static_cast<float> (M_PI) * 10.0f);
@@ -695,9 +694,9 @@ TEST (PCL, PyramidFeatureHistogram)
   pyramid_target->compute ();
 
   float similarity_value = PyramidFeatureHistogram<PPFSignature>::comparePyramidFeatureHistograms (pyramid_source, pyramid_target);
-  EXPECT_NEAR (similarity_value, 0.74101555347442627, 1e-4);
+  EXPECT_NEAR (similarity_value, 0.738492727, 1e-4);
 
-  std::vector<pair<float, float> > dim_range_target2;
+  std::vector<std::pair<float, float> > dim_range_target2;
   for (std::size_t i = 0; i < 3; ++i) dim_range_target2.emplace_back(static_cast<float> (-M_PI) * 5.0f, static_cast<float> (M_PI) * 5.0f);
     dim_range_target2.emplace_back(0.0f, 20.0f);
 
@@ -708,10 +707,10 @@ TEST (PCL, PyramidFeatureHistogram)
   pyramid_target->compute ();
 
   float similarity_value2 = PyramidFeatureHistogram<PPFSignature>::comparePyramidFeatureHistograms (pyramid_source, pyramid_target);
-  EXPECT_NEAR (similarity_value2, 0.80097091197967529, 1e-4);
+  EXPECT_NEAR (similarity_value2, 0.798465133, 1e-4);
 
 
-  std::vector<pair<float, float> > dim_range_target3;
+  std::vector<std::pair<float, float> > dim_range_target3;
   for (std::size_t i = 0; i < 3; ++i) dim_range_target3.emplace_back(static_cast<float> (-M_PI) * 2.0f, static_cast<float> (M_PI) * 2.0f);
   dim_range_target3.emplace_back(0.0f, 10.0f);
 
@@ -722,7 +721,7 @@ TEST (PCL, PyramidFeatureHistogram)
   pyramid_target->compute ();
 
   float similarity_value3 = PyramidFeatureHistogram<PPFSignature>::comparePyramidFeatureHistograms (pyramid_source, pyramid_target);
-  EXPECT_NEAR (similarity_value3, 0.87623238563537598, 1e-3);
+  EXPECT_NEAR (similarity_value3, 0.873699546, 1e-3);
 }
 
 // Suat G: disabled, since the transformation does not look correct.
@@ -837,9 +836,9 @@ main (int argc, char** argv)
   return (RUN_ALL_TESTS ());
 
   // Tranpose the cloud_model
-  /*for (std::size_t i = 0; i < cloud_model.points.size (); ++i)
+  /*for (std::size_t i = 0; i < cloud_model.size (); ++i)
   {
-  //  cloud_model.points[i].z += 1;
+  //  cloud_model[i].z += 1;
   }*/
 }
 /* ]--- */

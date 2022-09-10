@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(implicit_shape_model)
 
@@ -11,5 +11,3 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (implicit_shape_model implicit_shape_model.cpp)
 target_link_libraries (implicit_shape_model ${PCL_LIBRARIES})
-
-

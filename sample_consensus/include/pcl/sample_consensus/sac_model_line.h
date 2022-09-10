@@ -42,7 +42,6 @@
 
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
-#include <pcl/common/eigen.h>
 
 namespace pcl
 {
@@ -103,7 +102,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      ~SampleConsensusModelLine () {}
+      ~SampleConsensusModelLine () override = default;
 
       /** \brief Check whether the given index samples can form a valid line model, compute the model coefficients from
         * these samples and store them internally in model_coefficients_. The line coefficients are represented by a

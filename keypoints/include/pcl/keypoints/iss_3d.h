@@ -36,6 +36,7 @@
 #pragma once
 
 #include <pcl/keypoints/keypoint.h>
+#include <pcl/octree/octree_search.h> // for OctreePointCloudSearch
 
 namespace pcl
 {
@@ -53,7 +54,7 @@ namespace pcl
     * Code example:
     *
     * \code
-    * pcl::PointCloud<pcl::PointXYZRGBA>::Ptr model (new pcl::PointCloud<pcl::PointXYZRGBA> ());;
+    * pcl::PointCloud<pcl::PointXYZRGBA>::Ptr model (new pcl::PointCloud<pcl::PointXYZRGBA> ());
     * pcl::PointCloud<pcl::PointXYZRGBA>::Ptr model_keypoints (new pcl::PointCloud<pcl::PointXYZRGBA> ());
     * pcl::search::KdTree<pcl::PointXYZRGBA>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZRGBA> ());
     *
@@ -124,10 +125,11 @@ namespace pcl
       {
         name_ = "ISSKeypoint3D";
         search_radius_ = salient_radius_;
+        setNumberOfThreads(threads_); // Reset number of threads with the member's initialization value to apply input validation.
       }
 
       /** \brief Destructor. */
-      ~ISSKeypoint3D ()
+      ~ISSKeypoint3D () override
       {
         delete[] third_eigen_value_;
         delete[] edge_points_;
@@ -196,8 +198,8 @@ namespace pcl
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param[in] nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
-      inline void
-      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
+      void
+      setNumberOfThreads (unsigned int nr_threads = 0);
 
     protected:
 

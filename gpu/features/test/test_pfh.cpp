@@ -46,7 +46,6 @@
 #include "data_source.hpp"
 #include <pcl/search/search.h>
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::gpu;
 
@@ -61,7 +60,7 @@ TEST(PCL_FeaturesGPU, pfh_low_level)
                    
     std::vector<int> data;
     source.getNeghborsArray(data);
-    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
     std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
     //uploading data to GPU
@@ -96,7 +95,7 @@ TEST(PCL_FeaturesGPU, pfh_low_level)
     for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
         PFHSignature125& gpu = downloaded[i];
-        PFHSignature125& cpu = pfhs.points[i];
+        PFHSignature125& cpu = pfhs[i];
         
         std::size_t FSize = sizeof(PFHSignature125)/sizeof(gpu.histogram[0]);                                
         
@@ -128,7 +127,7 @@ TEST(PCL_FeaturesGPU, pfh_high_level1)
 
     PointCloud<Normal>::Ptr& normals = source.normals;
 
-    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
     std::transform(normals->points.begin(), normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
 
     //uploading data to GPU
@@ -175,7 +174,7 @@ TEST(PCL_FeaturesGPU, pfh_high_level1)
     for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
         PFHSignature125& gpu = downloaded[i];
-        PFHSignature125& cpu = fpfhs.points[i];
+        PFHSignature125& cpu = fpfhs[i];
         
         std::size_t FSize = sizeof(PFHSignature125)/sizeof(gpu.histogram[0]);                                
         
@@ -206,7 +205,7 @@ TEST(PCL_FeaturesGPU, pfh_high_level2)
 
     PointCloud<Normal>::Ptr& normals = source.normals;
 
-    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
     std::transform(normals->points.begin(), normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
 
     //uploading data to GPU
@@ -253,7 +252,7 @@ TEST(PCL_FeaturesGPU, pfh_high_level2)
     for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
         PFHSignature125& gpu = downloaded[i];
-        PFHSignature125& cpu = fpfhs.points[i];
+        PFHSignature125& cpu = fpfhs[i];
         
         std::size_t FSize = sizeof(PFHSignature125)/sizeof(gpu.histogram[0]);                                
         
@@ -284,7 +283,7 @@ TEST(PCL_FeaturesGPU, pfh_high_level3)
 
     PointCloud<Normal>::Ptr& normals = source.normals_surface;
 
-    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
     std::transform(normals->points.begin(), normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
 
     //uploading data to GPU
@@ -331,7 +330,7 @@ TEST(PCL_FeaturesGPU, pfh_high_level3)
     for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
         PFHSignature125& gpu = downloaded[i];
-        PFHSignature125& cpu = fpfhs.points[i];
+        PFHSignature125& cpu = fpfhs[i];
         
         std::size_t FSize = sizeof(PFHSignature125)/sizeof(gpu.histogram[0]);                                
         
@@ -362,7 +361,7 @@ TEST(PCL_FeaturesGPU, pfh_high_level4)
 
     PointCloud<Normal>::Ptr& normals = source.normals_surface;
 
-    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
     std::transform(normals->points.begin(), normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
 
     //uploading data to GPU
@@ -409,7 +408,7 @@ TEST(PCL_FeaturesGPU, pfh_high_level4)
     for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
         PFHSignature125& gpu = downloaded[i];
-        PFHSignature125& cpu = fpfhs.points[i];
+        PFHSignature125& cpu = fpfhs[i];
         
         std::size_t FSize = sizeof(PFHSignature125)/sizeof(gpu.histogram[0]);                                
         
@@ -440,7 +439,7 @@ TEST(PCL_FeaturesGPU, pfhrgb)
 
     PointCloud<Normal>::Ptr& normals = source.normals;
 
-    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
     std::transform(normals->points.begin(), normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
 
     //uploading data to GPU
@@ -472,9 +471,8 @@ TEST(PCL_FeaturesGPU, pfhrgb)
 
     PointCloud<PointXYZRGB>::Ptr cloud_XYZRGB(new PointCloud<PointXYZRGB>());
     cloud_XYZRGB->points.clear();
-    for(std::size_t i = 0; i < source.cloud->points.size(); ++i)               
+    for (const auto& p: *source.cloud)
     {
-        const PointXYZ& p = source.cloud->points[i];
         PointXYZRGB o;
 
         int color = *(int*)&p.data[3];
@@ -487,7 +485,7 @@ TEST(PCL_FeaturesGPU, pfhrgb)
         
         cloud_XYZRGB->points.push_back(o);
     }
-    cloud_XYZRGB->width = cloud_XYZRGB->points.size();
+    cloud_XYZRGB->width = cloud_XYZRGB->size();
     cloud_XYZRGB->height = 1;
             
     fe.setInputCloud (cloud_XYZRGB);
@@ -508,7 +506,7 @@ TEST(PCL_FeaturesGPU, pfhrgb)
     for(std::size_t i = 170; i < downloaded.size(); ++i)
     {
         PFHRGBSignature250& gpu = downloaded[i];
-        PFHRGBSignature250& cpu = fpfhs.points[i];
+        PFHRGBSignature250& cpu = fpfhs[i];
         
         std::size_t FSize = sizeof(PFHRGBSignature250)/sizeof(gpu.histogram[0]);                                
         

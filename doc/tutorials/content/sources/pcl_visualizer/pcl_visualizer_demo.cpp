@@ -3,7 +3,7 @@
 #include <iostream>
 #include <thread>
 
-#include <pcl/common/common_headers.h>
+#include <pcl/common/angles.h> // for pcl::deg2rad
 #include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -113,9 +113,9 @@ pcl::visualization::PCLVisualizer::Ptr shapesVis (pcl::PointCloud<pcl::PointXYZR
   //------------------------------------
   //-----Add shapes at cloud points-----
   //------------------------------------
-  viewer->addLine<pcl::PointXYZRGB> (cloud->points[0],
-                                     cloud->points[cloud->size() - 1], "line");
-  viewer->addSphere (cloud->points[0], 0.2, 0.5, 0.5, 0.0, "sphere");
+  viewer->addLine<pcl::PointXYZRGB> ((*cloud)[0],
+                                     (*cloud)[cloud->size() - 1], "line");
+  viewer->addSphere ((*cloud)[0], 0.2, 0.5, 0.5, 0.0, "sphere");
 
   //---------------------------------------
   //-----Add shapes at other locations-----
@@ -301,9 +301,9 @@ main (int argc, char** argv)
       point.x = basic_point.x;
       point.y = basic_point.y;
       point.z = basic_point.z;
-      std::uint32_t rgb = (static_cast<std::uint32_t>(r) << 16 |
-              static_cast<std::uint32_t>(g) << 8 | static_cast<std::uint32_t>(b));
-      point.rgb = *reinterpret_cast<float*>(&rgb);
+      point.r = r;
+      point.g = g;
+      point.b = b;
       point_cloud_ptr->points.push_back (point);
     }
     if (z < 0.0)
@@ -317,9 +317,9 @@ main (int argc, char** argv)
       b += 12;
     }
   }
-  basic_cloud_ptr->width = (int) basic_cloud_ptr->points.size ();
+  basic_cloud_ptr->width = basic_cloud_ptr->size ();
   basic_cloud_ptr->height = 1;
-  point_cloud_ptr->width = (int) point_cloud_ptr->points.size ();
+  point_cloud_ptr->width = point_cloud_ptr->size ();
   point_cloud_ptr->height = 1;
 
   // ----------------------------------------------------------------

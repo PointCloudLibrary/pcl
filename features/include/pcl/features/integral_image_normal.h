@@ -41,7 +41,6 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 #include <pcl/features/feature.h>
 #include <pcl/features/integral_image2D.h>
 
@@ -137,7 +136,7 @@ namespace pcl
       }
 
       /** \brief Destructor **/
-      ~IntegralImageNormalEstimation ();
+      ~IntegralImageNormalEstimation () override;
 
       /** \brief Set the regions size which is considered for normal estimation.
         * \param[in] width the width of the search rectangle

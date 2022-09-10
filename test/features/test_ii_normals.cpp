@@ -44,7 +44,6 @@
 #include <iostream>
 
 using namespace pcl;
-using namespace std;
 
 using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 PointCloud<PointXYZ> cloud;
@@ -228,9 +227,9 @@ TEST(PCL, IntegralImage1D)
       // set nans for odd fields
       if (xIdx & 1)
       {
-        data[row_stride * yIdx + element_stride * xIdx]     = std::numeric_limits<float>::quiet_NaN ();;
-        data[row_stride * yIdx + element_stride * xIdx + 1] = std::numeric_limits<float>::quiet_NaN ();;
-        data[row_stride * yIdx + element_stride * xIdx + 2] = std::numeric_limits<float>::quiet_NaN ();;
+        data[row_stride * yIdx + element_stride * xIdx]     = std::numeric_limits<float>::quiet_NaN ();
+        data[row_stride * yIdx + element_stride * xIdx + 1] = std::numeric_limits<float>::quiet_NaN ();
+        data[row_stride * yIdx + element_stride * xIdx + 2] = std::numeric_limits<float>::quiet_NaN ();
       }
       else
       {
@@ -354,15 +353,15 @@ TEST (PCL, NormalEstimation)
   PointCloud<Normal> output;
   n.compute (output);
 
-  EXPECT_EQ (output.points.size (), cloud.points.size ());
+  EXPECT_EQ (output.size (), cloud.size ());
   EXPECT_EQ (output.width, cloud.width);
   EXPECT_EQ (output.height, cloud.height);
 
-  for (std::size_t i = 0; i < cloud.points.size (); ++i)
+  for (const auto& point: output)
   {
-    EXPECT_NEAR (std::abs (output.points[i].normal_x),   0, 1e-2);
-    EXPECT_NEAR (std::abs (output.points[i].normal_y),   0, 1e-2);
-    EXPECT_NEAR (std::abs (output.points[i].normal_z), 1.0, 1e-2);
+    EXPECT_NEAR (std::abs (point.normal_x),   0, 1e-2);
+    EXPECT_NEAR (std::abs (point.normal_y),   0, 1e-2);
+    EXPECT_NEAR (std::abs (point.normal_z), 1.0, 1e-2);
   }
 }
 
@@ -374,7 +373,7 @@ TEST (PCL, IINormalEstimationCovariance)
   ne.setNormalEstimationMethod (ne.COVARIANCE_MATRIX);
   ne.compute (output);
 
-  EXPECT_EQ (output.points.size (), cloud.points.size ());
+  EXPECT_EQ (output.size (), cloud.size ());
   EXPECT_EQ (output.width, cloud.width);
   EXPECT_EQ (output.height, cloud.height);
 
@@ -402,7 +401,7 @@ TEST (PCL, IINormalEstimationAverage3DGradient)
   ne.setNormalEstimationMethod (ne.AVERAGE_3D_GRADIENT);
   ne.compute (output);
 
-  EXPECT_EQ (output.points.size (), cloud.points.size ());
+  EXPECT_EQ (output.size (), cloud.size ());
   EXPECT_EQ (output.width, cloud.width);
   EXPECT_EQ (output.height, cloud.height);
 
@@ -415,7 +414,7 @@ TEST (PCL, IINormalEstimationAverage3DGradient)
           !std::isfinite(output (u, v).normal_z))
         continue;
 
-      if (std::abs(fabs (output (u, v).normal_z) - 1) > 1e-2)
+      if (std::abs(std::abs (output (u, v).normal_z) - 1) > 1e-2)
       {
         std::cout << "T:" << u << " , " << v << " : " << output (u, v).normal_x << " , " << output (u, v).normal_y << " , " << output (u, v).normal_z <<std::endl;
       }
@@ -434,7 +433,7 @@ TEST (PCL, IINormalEstimationAverageDepthChange)
   ne.setNormalEstimationMethod (ne.AVERAGE_DEPTH_CHANGE);
   ne.compute (output);
 
-  EXPECT_EQ (output.points.size (), cloud.points.size ());
+  EXPECT_EQ (output.size (), cloud.size ());
   EXPECT_EQ (output.width, cloud.width);
   EXPECT_EQ (output.height, cloud.height);
 
@@ -447,7 +446,7 @@ TEST (PCL, IINormalEstimationAverageDepthChange)
           !std::isfinite(output (u, v).normal_z))
         continue;
 
-      if (std::abs(fabs (output (u, v).normal_z) - 1) > 1e-2)
+      if (std::abs(std::abs (output (u, v).normal_z) - 1) > 1e-2)
       {
         std::cout << "T:" << u << " , " << v << " : " << output (u, v).normal_x << " , " << output (u, v).normal_y << " , " << output (u, v).normal_z <<std::endl;
       }
@@ -466,7 +465,7 @@ TEST (PCL, IINormalEstimationSimple3DGradient)
   ne.setNormalEstimationMethod (ne.SIMPLE_3D_GRADIENT);
   ne.compute (output);
 
-  EXPECT_EQ (output.points.size (), cloud.points.size ());
+  EXPECT_EQ (output.size (), cloud.size ());
   EXPECT_EQ (output.width, cloud.width);
   EXPECT_EQ (output.height, cloud.height);
 
@@ -479,7 +478,7 @@ TEST (PCL, IINormalEstimationSimple3DGradient)
           !std::isfinite(output (u, v).normal_z))
         continue;
 
-      if (std::abs(fabs (output (u, v).normal_z) - 1) > 1e-2)
+      if (std::abs(std::abs (output (u, v).normal_z) - 1) > 1e-2)
       {
         std::cout << "T:" << u << " , " << v << " : " << output (u, v).normal_x << " , " << output (u, v).normal_y << " , " << output (u, v).normal_z <<std::endl;
       }
@@ -495,13 +494,13 @@ TEST (PCL, IINormalEstimationSimple3DGradientUnorganized)
 {
   PointCloud<Normal> output;
   cloud.height = 1;
-  cloud.points.resize (cloud.height * cloud.width);
+  cloud.resize (cloud.height * cloud.width);
   ne.setInputCloud (cloud.makeShared ());
   ne.setRectSize (3, 3);
   ne.setNormalEstimationMethod (ne.SIMPLE_3D_GRADIENT);
   ne.compute (output);
 
-  EXPECT_EQ (output.points.size (), 0);
+  EXPECT_EQ (output.size (), 0);
   EXPECT_EQ (output.width, 0);
   EXPECT_EQ (output.height, 0);
 }
@@ -512,7 +511,7 @@ main (int argc, char** argv)
 {
   cloud.width = 640;
   cloud.height = 480;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
   cloud.is_dense = true;
   for (std::size_t v = 0; v < cloud.height; ++v)
   {

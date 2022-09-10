@@ -46,9 +46,9 @@
 
 using namespace pcl;
 using namespace pcl::io;
- 
+
 PointCloud<PointXYZ> cloud_source, cloud_target;
- 
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, NormalDistributionsTransform)
 {
@@ -68,14 +68,14 @@ TEST (PCL, NormalDistributionsTransform)
   reg.setTransformationEpsilon (1e-8);
   // Register
   reg.align (output);
-  EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_EQ (output.size (), cloud_source.size ());
   EXPECT_LT (reg.getFitnessScore (), 0.001);
 
   // Check again, for all possible caching schemes
   for (int iter = 0; iter < 4; iter++)
   {
-    bool force_cache = (bool) iter/2;
-    bool force_cache_reciprocal = (bool) iter%2;
+    bool force_cache = static_cast<bool> (iter/2);
+    bool force_cache_reciprocal = static_cast<bool> (iter%2);
     pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
     // Ensure that, when force_cache is not set, we are robust to the wrong input
     if (force_cache)
@@ -89,7 +89,7 @@ TEST (PCL, NormalDistributionsTransform)
 
     // Register
     reg.align (output);
-    EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+    EXPECT_EQ (output.size (), cloud_source.size ());
     EXPECT_LT (reg.getFitnessScore (), 0.001);
   }
 }

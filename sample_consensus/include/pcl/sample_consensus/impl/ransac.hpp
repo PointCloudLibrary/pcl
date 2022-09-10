@@ -68,12 +68,11 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
   double k = std::numeric_limits<double>::max();
 
   Indices selection;
-  Eigen::VectorXf model_coefficients;
+  Eigen::VectorXf model_coefficients (sac_model_->getModelSize ());
 
   const double log_probability  = std::log (1.0 - probability_);
   const double one_over_indices = 1.0 / static_cast<double> (sac_model_->getIndices ()->size ());
 
-  std::size_t n_inliers_count;
   unsigned skipped_count = 0;
 
   // suppress infinite loops by just allowing 10 x maximum allowed iterations for invalid model parameters!
@@ -96,7 +95,7 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
   }
 
 #if OPENMP_AVAILABLE_RANSAC
-#pragma omp parallel if(threads > 0) num_threads(threads) shared(k, skipped_count, n_best_inliers_count) private(selection, model_coefficients, n_inliers_count) // would be nice to have a default(none)-clause here, but then some compilers complain about the shared const variables
+#pragma omp parallel if(threads > 0) num_threads(threads) shared(k, skipped_count, n_best_inliers_count) firstprivate(selection, model_coefficients) // would be nice to have a default(none)-clause here, but then some compilers complain about the shared const variables
 #endif
   {
 #if OPENMP_AVAILABLE_RANSAC
@@ -144,7 +143,7 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
       //if (inliers.empty () && k > 1.0)
       //  continue;
 
-      n_inliers_count = sac_model_->countWithinDistance (model_coefficients, threshold_); // This functions has to be thread-safe. Most work is done here
+      std::size_t n_inliers_count = sac_model_->countWithinDistance (model_coefficients, threshold_); // This functions has to be thread-safe. Most work is done here
 
       std::size_t n_best_inliers_count_tmp;
 #if OPENMP_AVAILABLE_RANSAC
@@ -170,10 +169,10 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
 
             // Compute the k parameter (k=std::log(z)/std::log(1-w^n))
             const double w = static_cast<double> (n_best_inliers_count) * one_over_indices;
-            double p_no_outliers = 1.0 - std::pow (w, static_cast<double> (selection.size ()));
-            p_no_outliers = (std::max) (std::numeric_limits<double>::epsilon (), p_no_outliers);       // Avoid division by -Inf
-            p_no_outliers = (std::min) (1.0 - std::numeric_limits<double>::epsilon (), p_no_outliers);   // Avoid division by 0.
-            k = log_probability / std::log (p_no_outliers);
+            double p_outliers = 1.0 - std::pow (w, static_cast<double> (selection.size ()));      // Probability that selection is contaminated by at least one outlier
+            p_outliers = (std::max) (std::numeric_limits<double>::epsilon (), p_outliers);        // Avoid division by -Inf
+            p_outliers = (std::min) (1.0 - std::numeric_limits<double>::epsilon (), p_outliers);  // Avoid division by 0.
+            k = log_probability / std::log (p_outliers);
           }
         } // omp critical
       }

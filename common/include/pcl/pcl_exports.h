@@ -38,7 +38,7 @@
 // Header 'pcl_macros' is not suitable since it includes <Eigen/Core>,
 // which can't be eaten by nvcc (it's too weak)
 
-#if defined WIN32 || defined _WIN32 || defined WINCE || defined __MINGW32__
+#if defined _WIN32 || defined WINCE || defined __MINGW32__
     #ifdef PCLAPI_EXPORTS
         #define PCL_EXPORTS __declspec(dllexport)
     #else

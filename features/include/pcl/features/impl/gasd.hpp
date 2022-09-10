@@ -40,8 +40,8 @@
 #define PCL_FEATURES_IMPL_GASD_H_
 
 #include <pcl/features/gasd.h>
+#include <pcl/common/common.h> // for getMinMax3D
 #include <pcl/common/transforms.h>
-#include <pcl/point_types_conversion.h>
 
 #include <vector>
 
@@ -52,7 +52,7 @@ pcl::GASDEstimation<PointInT, PointOutT>::compute (PointCloudOut &output)
   if (!Feature<PointInT, PointOutT>::initCompute ())
   {
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
@@ -240,7 +240,7 @@ pcl::GASDEstimation<PointInT, PointOutT>::copyShapeHistogramsToOutput (const std
       {
         const std::size_t idx = ( (i + 1) * (grid_size + 2) + (j + 1)) * (grid_size + 2) + (k + 1);
 
-        std::copy (hists[idx].data () + 1, hists[idx].data () + hists_size + 1, output.points[0].histogram + pos);
+        std::copy (hists[idx].data () + 1, hists[idx].data () + 1 + hists_size, output[0].histogram + pos);
         pos += hists_size;
       }
     }
@@ -304,7 +304,7 @@ pcl::GASDEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
   copyShapeHistogramsToOutput (shape_grid_size, shape_hists_size_, shape_hists, output, pos_);
 
   // set remaining values of the descriptor to zero (if any)
-  std::fill (output.points[0].histogram + pos_, output.points[0].histogram + output.points[0].descriptorSize (), 0.0f);
+  std::fill (output[0].histogram + pos_, output[0].histogram + output[0].descriptorSize (), 0.0f);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -326,7 +326,7 @@ pcl::GASDColorEstimation<PointInT, PointOutT>::copyColorHistogramsToOutput (cons
         hists[idx][1] += hists[idx][hists_size + 1];
         hists[idx][hists_size] += hists[idx][0];
 
-        std::copy (hists[idx].data () + 1, hists[idx].data () + hists_size + 1, output.points[0].histogram + pos);
+        std::copy (hists[idx].data () + 1, hists[idx].data () + 1 + hists_size, output[0].histogram + pos);
         pos += hists_size;
       }
     }
@@ -392,7 +392,7 @@ pcl::GASDColorEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
   copyColorHistogramsToOutput (color_grid_size, color_hists_size_, color_hists, output, pos_);
 
   // set remaining values of the descriptor to zero (if any)
-  std::fill (output.points[0].histogram + pos_, output.points[0].histogram + output.points[0].descriptorSize (), 0.0f);
+  std::fill (output[0].histogram + pos_, output[0].histogram + output[0].descriptorSize (), 0.0f);
 }
 
 #define PCL_INSTANTIATE_GASDEstimation(InT, OutT) template class PCL_EXPORTS pcl::GASDEstimation<InT, OutT>;

@@ -35,13 +35,15 @@
  *
  */
 
-#ifndef PCL_2D_CONVOLUTION_IMPL_HPP
-#define PCL_2D_CONVOLUTION_IMPL_HPP
+#pragma once
 
-//////////////////////////////////////////////////////////////////////////////
+#include <pcl/2d/convolution.h>
+
+namespace pcl {
+
 template <typename PointT>
 void
-pcl::Convolution<PointT>::filter(pcl::PointCloud<PointT>& output)
+Convolution<PointT>::filter(pcl::PointCloud<PointT>& output)
 {
   int input_row = 0;
   int input_col = 0;
@@ -133,5 +135,4 @@ pcl::Convolution<PointT>::filter(pcl::PointCloud<PointT>& output)
   }
   } // switch
 }
-
-#endif
+} // namespace pcl

@@ -8,6 +8,7 @@
 #include <pcl/pcl_macros.h>  // for PCL_EXPORTS
 #include <pcl/PCLHeader.h>
 #include <pcl/PCLPointField.h>
+#include <pcl/types.h>
 
 namespace pcl
 {
@@ -16,15 +17,15 @@ namespace pcl
   {
     ::pcl::PCLHeader header;
 
-    std::uint32_t height = 0;
-    std::uint32_t width = 0;
+    uindex_t height = 0;
+    uindex_t width = 0;
 
     std::vector<::pcl::PCLPointField>  fields;
 
     static_assert(BOOST_ENDIAN_BIG_BYTE || BOOST_ENDIAN_LITTLE_BYTE, "unable to determine system endianness");
     std::uint8_t is_bigendian = BOOST_ENDIAN_BIG_BYTE;
-    std::uint32_t point_step = 0;
-    std::uint32_t row_step = 0;
+    uindex_t point_step = 0;
+    uindex_t row_step = 0;
 
     std::vector<std::uint8_t> data;
 
@@ -83,6 +84,34 @@ namespace pcl
     operator + (const PCLPointCloud2& rhs)
     {
       return (PCLPointCloud2 (*this) += rhs);
+    }
+
+    /** \brief Get value at specified offset.
+      * \param[in] point_index point index.
+      * \param[in] field_offset offset.
+      * \return value at the given offset.
+      */
+    template<typename T> inline
+    const T& at(const pcl::uindex_t& point_index, const pcl::uindex_t& field_offset) const {
+      const auto position = point_index * point_step + field_offset;
+      if (data.size () >= (position + sizeof(T)))
+        return reinterpret_cast<const T&>(data[position]);
+      else
+        throw std::out_of_range("PCLPointCloud2::at");
+    }
+
+    /** \brief Get value at specified offset.
+      * \param[in] point_index point index.
+      * \param[in] field_offset offset.
+      * \return value at the given offset.
+      */
+    template<typename T> inline
+    T& at(const pcl::uindex_t& point_index, const pcl::uindex_t& field_offset) {
+      const auto position = point_index * point_step + field_offset;
+      if (data.size () >= (position + sizeof(T)))
+        return reinterpret_cast<T&>(data[position]);
+      else
+        throw std::out_of_range("PCLPointCloud2::at");
     }
   }; // struct PCLPointCloud2
 

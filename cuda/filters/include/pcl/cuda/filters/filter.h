@@ -36,14 +36,14 @@
 #pragma once
 
 #include <pcl_cuda/pcl_cuda_base.h>
-#include <float.h>
+#include <limits>
 
 namespace pcl_cuda
 {
   /** \brief Removes points with x, y, or z equal to NaN
     * \param cloud_in the input point cloud
     * \param cloud_out the input point cloud
-    * \param index the mapping (ordered): cloud_out.points[i] = cloud_in.points[index[i]]
+    * \param index the mapping (ordered): cloud_out[i] = cloud_in[index[i]]
     * \note The density of the point cloud is lost.
     * \note Can be called with cloud_in == cloud_out
     */
@@ -69,7 +69,8 @@ namespace pcl_cuda
 
       /** \brief Empty constructor. */
       Filter () : filter_field_name_ (""), 
-                  filter_limit_min_ (-FLT_MAX), filter_limit_max_ (FLT_MAX), 
+                  filter_limit_min_ (std::numeric_limits<float>::lowest()),
+                  filter_limit_max_ (std::numeric_limits<float>::max()),
                   filter_limit_negative_ (false)
       {};
 
@@ -98,7 +99,7 @@ namespace pcl_cuda
       }
 
       /** \brief Get the field filter limits (min/max) set by the user. 
-        * The default values are -FLT_MAX, FLT_MAX. 
+        * The default values are std::numeric_limits<float>::lowest(), std::numeric_limits<float>::max().
         * \param limit_min the minimum limit
         * \param limit_max the maximum limit
         */
@@ -123,8 +124,14 @@ namespace pcl_cuda
         * returned (true) or inside (false). 
         * \param limit_negative the limit_negative flag
         */
+      PCL_DEPRECATED(1, 16, "use bool getFilterLimitsNegative() instead")
       inline void 
       getFilterLimitsNegative (bool &limit_negative) { limit_negative = filter_limit_negative_; }
+
+      /** \brief Get whether the data outside the interval (min/max) is to be
+        * returned (true) or inside (false). 
+        * \return true if data \b outside the interval [min; max] is to be returned, false otherwise
+        */
       inline bool 
       getFilterLimitsNegative () { return (filter_limit_negative_); }
 

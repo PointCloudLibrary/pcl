@@ -59,10 +59,7 @@
   #define _USE_MATH_DEFINES
 #endif
 #include <cmath>
-#include <cstdarg>
-#include <cstdio>
 #include <cstdlib>
-#include <cstdint>
 #include <iostream>
 
 // We need to check for GCC version, because GCC releases before 9 were implementing an
@@ -76,53 +73,117 @@
 
 #include <pcl/pcl_config.h>
 
+#include <boost/preprocessor/arithmetic/add.hpp>
 #include <boost/preprocessor/comparison/equal.hpp>
 #include <boost/preprocessor/comparison/less.hpp>
 #include <boost/preprocessor/control/if.hpp>
 #include <boost/preprocessor/stringize.hpp>
 
-// It seems that __has_cpp_attribute doesn't work correctly
-// when compiling with some versions of nvcc so we
-// additionally check if nvcc is used before setting the
-// PCL_DEPRECATED_IMPL macro to [[deprecated]].
-#if defined(__has_cpp_attribute) && __has_cpp_attribute(deprecated) && !defined(__CUDACC__)
-  #define PCL_DEPRECATED_IMPL(message) [[deprecated(message)]]
-#elif defined(__GNUC__) || defined(__clang__)
-  #define PCL_DEPRECATED_IMPL(message) __attribute__((deprecated(message)))
-#elif defined(_MSC_VER)
-  // Until Visual Studio 2013 you had to use __declspec(deprecated).
-  // However, we decided to ignore the deprecation for these version because
-  // of simplicity reasons. See PR #3634 for the details.
-  #define PCL_DEPRECATED_IMPL(message)
+// MSVC < 2019 have issues:
+// * can't short-circuiting logic in macros
+// * don't define standard macros
+// => this leads to annyoing C4067 warnings (see https://developercommunity.visualstudio.com/content/problem/327796/-has-cpp-attribute-emits-warning-is-wrong-highligh.html)
+#if defined(_MSC_VER)
+  // nvcc on msvc can't work with [[deprecated]]
+  #if !defined(__CUDACC__)
+    #define _PCL_DEPRECATED_IMPL(Message) [[deprecated(Message)]]
+  #else
+    #define _PCL_DEPRECATED_IMPL(Message)
+  #endif
+#elif __has_cpp_attribute(deprecated)
+  #define _PCL_DEPRECATED_IMPL(Message) [[deprecated(Message)]]
 #else
-  #warning "You need to implement PCL_DEPRECATED_IMPL for this compiler"
-  #define PCL_DEPRECATED_IMPL(message)
+  #warning "You need to implement _PCL_DEPRECATED_IMPL for this compiler"
+  #define _PCL_DEPRECATED_IMPL(Message)
 #endif
 
-#define PCL_DEPRECATED_MODIFY_MSG(major, minor, msg) \
-    msg " (It will be removed in PCL " \
-    BOOST_PP_STRINGIZE(major.minor) ")"
+// Macro for pragma operator
+#if (defined (__GNUC__) || defined(__clang__))
+  #define PCL_PRAGMA(x) _Pragma (#x)
+#elif _MSC_VER
+  #define PCL_PRAGMA(x) __pragma (#x)
+#else
+  #define PCL_PRAGMA
+#endif
 
-#define PCL_DEPRECATED_MINOR(Minor, Msg)                      \
-    BOOST_PP_IF(BOOST_PP_LESS(PCL_MINOR_VERSION, Minor),  \
-                PCL_DEPRECATED_IMPL(Msg),           \
-                unneeded_deprecation)
+// Macro for emitting pragma warning for deprecated headers
+#if (defined (__GNUC__) || defined(__clang__))
+  #define _PCL_DEPRECATED_HEADER_IMPL(Message) PCL_PRAGMA (GCC warning Message)
+#elif _MSC_VER
+  #define _PCL_DEPRECATED_HEADER_IMPL(Message) PCL_PRAGMA (warning (Message))
+#else
+  #warning "You need to implement _PCL_DEPRECATED_HEADER_IMPL for this compiler"
+  #define _PCL_DEPRECATED_HEADER_IMPL(Message)
+#endif
+
+/**
+ * \brief A handy way to inform the user of the removal deadline
+ */
+#define _PCL_PREPARE_REMOVAL_MESSAGE(Major, Minor, Msg)                                 \
+  Msg " (It will be removed in PCL " BOOST_PP_STRINGIZE(Major.Minor) ")"
+
+/**
+ * \brief Tests for Minor < PCL_MINOR_VERSION
+ * \details When PCL VERSION is of format `34.12.99`, this macro behaves as if it is
+ * already `34.13.0`, and allows for smoother transition for maintainers
+ */
+#define _PCL_COMPAT_MINOR_VERSION(Minor, IfPass, IfFail)                                \
+  BOOST_PP_IF(BOOST_PP_EQUAL(PCL_REVISION_VERSION, 99),                                 \
+    BOOST_PP_IF(BOOST_PP_LESS(BOOST_PP_ADD(PCL_MINOR_VERSION, 1), Minor), IfPass, IfFail),           \
+    BOOST_PP_IF(BOOST_PP_LESS(PCL_MINOR_VERSION, Minor), IfPass, IfFail))
+
+/**
+ * \brief Tests for Major == PCL_MAJOR_VERSION
+ * \details When PCL VERSION is of format `34.99.12`, this macro behaves as if it is
+ * already `35.0.0`, and allows for smoother transition for maintainers
+ */
+#define _PCL_COMPAT_MAJOR_VERSION(Major, IfPass, IfFail)                                \
+  BOOST_PP_IF(BOOST_PP_EQUAL(PCL_MINOR_VERSION, 99),                                    \
+    BOOST_PP_IF(BOOST_PP_EQUAL(BOOST_PP_ADD(PCL_MAJOR_VERSION, 1), Major), IfPass, IfFail),          \
+    BOOST_PP_IF(BOOST_PP_EQUAL(PCL_MAJOR_VERSION, Major), IfPass, IfFail))
 
 /**
  * \brief macro for compatibility across compilers and help remove old deprecated
  *        items for the Major.Minor release
  *
- * \detail compiler errors of `unneeded_deprecation` and `major_version_mismatch`
+ * \details compiler errors of `unneeded_deprecation` and `major_version_mismatch`
  * are hints to the developer that those items can be safely removed.
- * Warning message with PCL_DEPRECATED(1, 99, "Not needed anymore") till PCL 1.98:
- * "Slated for removal in PCL 1.99: Not needed anymore"
+ * Behavior of PCL_DEPRECATED(1, 99, "Not needed anymore")
+ *   * till PCL 1.98: "Not needed anymore (It will be removed in PCL 1.99)"
+ *   * PCL 1.99 onwards: compiler error with "unneeded_deprecation"
+ *   * PCL 2.0 onwards: compiler error with "major_version_mismatch"
  */
-#define PCL_DEPRECATED(Major, Minor, Message)                           \
-    BOOST_PP_IF(BOOST_PP_EQUAL(PCL_MAJOR_VERSION, Major),               \
-                PCL_DEPRECATED_MINOR(Minor,                             \
-                    PCL_DEPRECATED_MODIFY_MSG(Major, Minor, Message)),  \
-                major_version_mismatch)
+#define PCL_DEPRECATED(Major, Minor, Message)                                          \
+  _PCL_COMPAT_MAJOR_VERSION(                                                           \
+      Major,                                                                           \
+      _PCL_COMPAT_MINOR_VERSION(                                                       \
+          Minor,                                                                       \
+          _PCL_DEPRECATED_IMPL(_PCL_PREPARE_REMOVAL_MESSAGE(Major, Minor, Message)),   \
+          unneeded_deprecation),                                                       \
+      major_version_mismatch)
 
+/**
+ * \brief macro for compatibility across compilers and help remove old deprecated
+ *        headers for the Major.Minor release
+ *
+ * \details compiler errors of `unneeded_header` and `major_version_mismatch`
+ * are hints to the developer that those items can be safely removed.
+ * Behavior of PCL_DEPRECATED_HEADER(1, 99, "Use file <newfile.h> instead.")
+ *   * till PCL 1.98: "This header is deprecated. Use file <newfile.h> instead. (It will be removed in PCL 1.99)"
+ *   * PCL 1.99 onwards: compiler error with "unneeded_header"
+ *   * PCL 2.0 onwards: compiler error with "major_version_mismatch"
+ */
+#define PCL_DEPRECATED_HEADER(Major, Minor, Message)                                   \
+  _PCL_COMPAT_MAJOR_VERSION(                                                           \
+      Major,                                                                           \
+      _PCL_COMPAT_MINOR_VERSION(                                                       \
+          Minor,                                                                       \
+          _PCL_DEPRECATED_HEADER_IMPL(_PCL_PREPARE_REMOVAL_MESSAGE(                    \
+              Major,                                                                   \
+              Minor,                                                                   \
+              "This header is deprecated. " Message)),                                 \
+          unneeded_header),                                                            \
+      major_version_mismatch)
 
 #if defined _WIN32
 // Define math constants, without including math.h, to prevent polluting global namespace with old math methods
@@ -157,20 +218,6 @@
   #define __func__ __FUNCTION__
 #endif
 #endif // defined _WIN32
-
-
-template<typename T>
-PCL_DEPRECATED(1, 12, "use std::isnan instead of pcl_isnan")
-bool pcl_isnan (T&& x) { return std::isnan (std::forward<T> (x)); }
-
-template<typename T>
-PCL_DEPRECATED(1, 12, "use std::isfinite instead of pcl_isfinite")
-bool pcl_isfinite (T&& x) { return std::isfinite (std::forward<T> (x)); }
-
-template<typename T>
-PCL_DEPRECATED(1, 12, "use std::isinf instead of pcl_isinf")
-bool pcl_isinf (T&& x) { return std::isinf (std::forward<T> (x)); }
-
 
 #ifndef DEG2RAD
 #define DEG2RAD(x) ((x)*0.017453293)
@@ -291,24 +338,6 @@ pcl_round (float number)
     #define PCLAPI(rettype) PCL_EXTERN_C PCL_EXPORTS rettype PCL_CDECL
 #endif
 
-// Macro for pragma operator
-#if (defined (__GNUC__) || defined(__clang__))
-  #define PCL_PRAGMA(x) _Pragma (#x)
-#elif _MSC_VER
-  #define PCL_PRAGMA(x) __pragma (#x)
-#else
-  #define PCL_PRAGMA
-#endif
-
-// Macro for emitting pragma warning
-#if (defined (__GNUC__) || defined(__clang__))
-  #define PCL_PRAGMA_WARNING(x) PCL_PRAGMA (GCC warning x)
-#elif _MSC_VER
-  #define PCL_PRAGMA_WARNING(x) PCL_PRAGMA (warning (x))
-#else
-  #define PCL_PRAGMA_WARNING
-#endif
-
 //for clang cf. http://clang.llvm.org/docs/LanguageExtensions.html
 #ifndef __has_extension
   #define __has_extension(x) 0 // Compatibility with pre-3.0 compilers.
@@ -347,43 +376,47 @@ pcl_round (float number)
   #endif
 #endif
 
+namespace pcl {
+
 inline void*
-aligned_malloc (std::size_t size)
+aligned_malloc(std::size_t size)
 {
-  void *ptr;
-#if   defined (MALLOC_ALIGNED)
-  ptr = std::malloc (size);
-#elif defined (HAVE_POSIX_MEMALIGN)
-  if (posix_memalign (&ptr, 16, size))
+  void* ptr;
+#if defined(MALLOC_ALIGNED)
+  ptr = std::malloc(size);
+#elif defined(HAVE_POSIX_MEMALIGN)
+  if (posix_memalign(&ptr, 16, size))
     ptr = 0;
-#elif defined (HAVE_MM_MALLOC)
-  ptr = _mm_malloc (size, 16);
-#elif defined (_MSC_VER)
-  ptr = _aligned_malloc (size, 16);
-#elif defined (ANDROID)
-  ptr = memalign (16, size);
+#elif defined(HAVE_MM_MALLOC)
+  ptr = _mm_malloc(size, 16);
+#elif defined(_MSC_VER)
+  ptr = _aligned_malloc(size, 16);
+#elif defined(ANDROID)
+  ptr = memalign(16, size);
 #else
-  #error aligned_malloc not supported on your platform
+#error aligned_malloc not supported on your platform
   ptr = 0;
 #endif
   return (ptr);
 }
 
 inline void
-aligned_free (void* ptr)
+aligned_free(void* ptr)
 {
-#if   defined (MALLOC_ALIGNED) || defined (HAVE_POSIX_MEMALIGN)
-  std::free (ptr);
-#elif defined (HAVE_MM_MALLOC)
-  _mm_free (ptr);
-#elif defined (_MSC_VER)
-  _aligned_free (ptr);
-#elif defined (ANDROID)
-  free (ptr);
+#if defined(MALLOC_ALIGNED) || defined(HAVE_POSIX_MEMALIGN)
+  std::free(ptr);
+#elif defined(HAVE_MM_MALLOC)
+  _mm_free(ptr);
+#elif defined(_MSC_VER)
+  _aligned_free(ptr);
+#elif defined(ANDROID)
+  free(ptr);
 #else
-  #error aligned_free not supported on your platform
+#error aligned_free not supported on your platform
 #endif
 }
+
+} // namespace pcl
 
 /**
  * \brief Macro to add a no-op or a fallthrough attribute based on compiler feature
@@ -410,3 +443,39 @@ aligned_free (void* ptr)
   #define PCL_NODISCARD
 #endif
 
+#ifdef __cpp_if_constexpr
+  #define PCL_IF_CONSTEXPR(x) if constexpr(x)
+#else
+  #define PCL_IF_CONSTEXPR(x) if (x)
+#endif
+
+// [[unlikely]] can be used on any conditional branch, but __builtin_expect is restricted to the evaluation point
+// This makes it quite difficult to create a single macro for switch and while/if
+/**
+ * @def PCL_CONDITION_UNLIKELY
+ * @brief Tries to inform the compiler to optimize codegen assuming that the condition will probably evaluate to false
+ * @note Prefer using `PCL_{IF,WHILE}_UNLIKELY`
+ * @warning This can't be used with switch statements
+ * @details This tries to help the compiler optimize for the unlikely case.
+ * Most compilers assume that the condition would evaluate to true in if and while loops (reference needed)
+ * As such the opposite of this macro (PCL_CONDITION_LIKELY) will not result in significant performance improvement
+ * 
+ * Some sample usage:
+ * @code{.cpp}
+ * if PCL_CONDITION_UNLIKELY(x == 0) { return; } else { throw std::runtime_error("some error"); }
+ * //
+ * while PCL_CONDITION_UNLIKELY(wait_for_result) { sleep(1); }  // busy wait, with minimal chances of waiting
+ * @endcode
+ */
+#if __has_cpp_attribute(unlikely)
+  #define PCL_CONDITION_UNLIKELY(x) (static_cast<bool>(x)) [[unlikely]]
+#elif defined(__GNUC__)
+  #define PCL_CONDITION_UNLIKELY(x) (__builtin_expect(static_cast<bool>(x), 0))
+#elif defined(__clang__) && (PCL_LINEAR_VERSION(__clang_major__, __clang_minor__, 0) >= PCL_LINEAR_VERSION(3, 9, 0))
+  #define PCL_CONDITION_UNLIKELY(x) (__builtin_expect(static_cast<bool>(x), 0))
+#else  // MSVC has no such alternative
+  #define PCL_CONDITION_UNLIKELY(x) (x)
+#endif
+
+#define PCL_IF_UNLIKELY(x) if PCL_CONDITION_UNLIKELY(x)
+#define PCL_WHILE_UNLIKELY(x) while PCL_CONDITION_UNLIKELY(x)

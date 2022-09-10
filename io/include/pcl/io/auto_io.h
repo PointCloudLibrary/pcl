@@ -38,10 +38,7 @@
 #pragma once
 
 #include <pcl/pcl_macros.h>
-#include <pcl/common/io.h>
-#include <pcl/io/boost.h>
-#include <cmath>
-#include <sstream>
+#include <pcl/point_cloud.h> // for PointCloud
 #include <pcl/PolygonMesh.h>
 #include <pcl/TextureMesh.h>
 

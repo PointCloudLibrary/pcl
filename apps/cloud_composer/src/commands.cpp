@@ -22,7 +22,6 @@ pcl::cloud_composer::CloudCommand::~CloudCommand ()
     QList <QStandardItem*> items_to_remove = removed_to_parent_map_.keys ();
     foreach (QStandardItem* to_remove, items_to_remove)
     {
-      if (to_remove)
         delete to_remove;
     }
   }
@@ -33,10 +32,10 @@ pcl::cloud_composer::CloudCommand::~CloudCommand ()
     {
       QList <CloudComposerItem*> new_items = output_pair.output_items_;
       foreach (CloudComposerItem* item, new_items)
-        if (item)
-          delete item;
+      {
+        delete item;
+      }
     }
-    
   }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

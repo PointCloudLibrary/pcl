@@ -46,8 +46,9 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/segmentation/approximate_progressive_morphological_filter.h>
 #include <pcl/segmentation/progressive_morphological_filter.h>
+#include <boost/filesystem.hpp> // for path, exists, ...
+#include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
@@ -115,11 +116,11 @@ compute (ConstCloudPtr &input, Cloud &output, int max_window_size, float slope, 
 
   print_highlight (stderr, "Computing ");
 
-  std::vector<int> ground;
+  pcl::Indices ground;
 
   if (approximate)
   {
-    PCL_DEBUG ("approx with %d points\n", input->points.size ());
+    PCL_DEBUG("approx with %zu points\n", static_cast<std::size_t>(input->size()));
     ApproximateProgressiveMorphologicalFilter<PointType> pmf;
     pmf.setInputCloud (input);
     pmf.setMaxWindowSize (max_window_size);
@@ -173,9 +174,9 @@ saveCloud (const std::string &filename, const Cloud &output)
 }
 
 int
-batchProcess (const std::vector<string> &pcd_files, string &output_dir, int max_window_size, float slope, float max_distance, float initial_distance, float cell_size, float base, bool exponential, bool approximate)
+batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir, int max_window_size, float slope, float max_distance, float initial_distance, float cell_size, float base, bool exponential, bool approximate)
 {
-  std::vector<string> st;
+  std::vector<std::string> st;
   for (const auto &pcd_file : pcd_files)
   {
     // Load the first file
@@ -188,14 +189,11 @@ batchProcess (const std::vector<string> &pcd_files, string &output_dir, int max_
     compute (cloud, output, max_window_size, slope, max_distance, initial_distance, cell_size, base, exponential, approximate);
 
     // Prepare output file name
-    string filename = pcd_file;
-    boost::trim (filename);
-    boost::split (st, filename, boost::is_any_of ("/\\"), boost::token_compress_on);
-
+    std::string filename = boost::filesystem::path(pcd_file).filename().string();
+    
     // Save into the second file
-    stringstream ss;
-    ss << output_dir << "/" << st.at (st.size () - 1);
-    saveCloud (ss.str (), output);
+    const std::string filepath = output_dir + '/' + filename;
+    saveCloud (filepath, output);
   }
   return (0);
 }
@@ -234,7 +232,7 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-exponential", exponential);
   approximate = find_switch (argc, argv, "-approximate");
   parse_argument (argc, argv, "-verbosity", verbosity_level);
-  string input_dir, output_dir;
+  std::string input_dir, output_dir;
   if (parse_argument (argc, argv, "-input_dir", input_dir) != -1)
   {
     PCL_INFO ("Input directory given as %s. Batch process mode on.\n", input_dir.c_str ());
@@ -302,7 +300,7 @@ main (int argc, char** argv)
   {
     if (!input_dir.empty() && boost::filesystem::exists (input_dir))
     {
-      std::vector<string> pcd_files;
+      std::vector<std::string> pcd_files;
       boost::filesystem::directory_iterator end_itr;
       for (boost::filesystem::directory_iterator itr (input_dir); itr != end_itr; ++itr)
       {

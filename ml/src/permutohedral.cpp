@@ -36,6 +36,9 @@
  */
 
 #include <pcl/ml/permutohedral.h>
+#include <pcl/pcl_macros.h> // for pcl_round
+
+#include <map> // for multimap
 
 pcl::Permutohedral::Permutohedral()
 : N_(0)

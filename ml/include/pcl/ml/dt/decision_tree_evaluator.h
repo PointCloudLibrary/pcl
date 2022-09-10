@@ -38,7 +38,6 @@
 #pragma once
 
 #include <pcl/common/common.h>
-
 #include <pcl/ml/dt/decision_tree.h>
 #include <pcl/ml/feature_handler.h>
 #include <pcl/ml/stats_estimator.h>

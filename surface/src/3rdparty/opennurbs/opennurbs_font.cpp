@@ -16,6 +16,9 @@
 
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
+#include <pcl/common/utils.h> // pcl::utils::ignore
+
+
 ON_OBJECT_IMPLEMENT( ON_Font, ON_Object, "4F0F51FB-35D0-4865-9998-6D2C6A99721D" );
 
 ON_Font::ON_Font()
@@ -277,7 +280,7 @@ int CALLBACK ON__IsSymbolFontFaceNameHelper( ENUMLOGFONTEX*, NEWTEXTMETRICEX*, D
 bool ON_Font::IsSymbolFontFaceName( const wchar_t* s)
 {
   bool rc = false;
-  (void) s; // no op to supress warning
+  pcl::utils::ignore(s);
 #if defined(ON_OS_WINDOWS_GDI)
   if( s && s[0])
   {

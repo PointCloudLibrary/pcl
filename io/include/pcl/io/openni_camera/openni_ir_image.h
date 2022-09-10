@@ -40,7 +40,6 @@
 #include <pcl/memory.h>
 #include "openni.h"
 #include "openni_exception.h"
-#include <pcl/io/boost.h>
 
 namespace openni_wrapper
 {
@@ -75,9 +74,7 @@ IRImage::IRImage (pcl::shared_ptr<xn::IRMetaData> ir_meta_data) noexcept
 {
 }
 
-IRImage::~IRImage () noexcept
-{
-}
+IRImage::~IRImage () noexcept = default;
 
 unsigned IRImage::getWidth () const throw ()
 {

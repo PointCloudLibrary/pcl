@@ -7,17 +7,16 @@
 
 #pragma once
 
-#include <iostream>
+#include <pcl/memory.h>
+#include <pcl/ml/dt/decision_tree_data_provider.h>
+#include <pcl/recognition/face_detection/face_common.h>
+
+#include <boost/algorithm/string.hpp>
+#include <boost/filesystem/operations.hpp>
+
 #include <fstream>
 #include <string>
 
-#include <boost/filesystem/operations.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/algorithm/string.hpp>
-
-#include <pcl/common/common.h>
-#include <pcl/recognition/face_detection/face_common.h>
-#include <pcl/ml/dt/decision_tree_data_provider.h>
 
 namespace bf = boost::filesystem;
 
@@ -97,7 +96,7 @@ namespace pcl
         {
           cloud_out.width = max_col - min_col + 1;
           cloud_out.height = max_row - min_row + 1;
-          cloud_out.points.resize (cloud_out.width * cloud_out.height);
+          cloud_out.resize (cloud_out.width * cloud_out.height);
           for (unsigned int u = 0; u < cloud_out.width; u++)
           {
             for (unsigned int v = 0; v < cloud_out.height; v++)
@@ -123,10 +122,7 @@ namespace pcl
           min_images_per_bin_ = -1;
         }
 
-        virtual ~FaceDetectorDataProvider()
-        {
-
-        }
+        virtual ~FaceDetectorDataProvider() = default;
 
         void setPatchesPerImage(int n)
         {

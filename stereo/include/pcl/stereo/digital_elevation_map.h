@@ -36,8 +36,8 @@
 
 #pragma once
 
-#include <pcl/point_types.h>
 #include <pcl/stereo/disparity_map_converter.h>
+#include <pcl/point_types.h>
 
 namespace pcl {
 
@@ -88,7 +88,7 @@ public:
   DigitalElevationMapBuilder();
 
   /** \brief Empty destructor. */
-  ~DigitalElevationMapBuilder();
+  ~DigitalElevationMapBuilder() override;
 
   /** \brief Set resolution of the DEM.
    * \param[in] resolution_column the column resolution.

@@ -38,14 +38,16 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_USC_HPP_
-#define PCL_FEATURES_IMPL_USC_HPP_
+#pragma once
 
+#include <numeric> // for partial_sum
 #include <pcl/features/usc.h>
 #include <pcl/features/shot_lrf.h>
-#include <pcl/common/geometry.h>
 #include <pcl/common/angles.h>
+#include <pcl/common/geometry.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/common/utils.h>
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename PointRFT> bool
@@ -143,18 +145,18 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::initCompute ()
 template <typename PointInT, typename PointOutT, typename PointRFT> void
 pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (std::size_t index, /*float rf[9],*/ std::vector<float> &desc)
 {
-  pcl::Vector3fMapConst origin = input_->points[(*indices_)[index]].getVector3fMap ();
+  pcl::Vector3fMapConst origin = (*input_)[(*indices_)[index]].getVector3fMap ();
 
-  const Eigen::Vector3f x_axis (frames_->points[index].x_axis[0],
-                                frames_->points[index].x_axis[1],
-                                frames_->points[index].x_axis[2]);
-  //const Eigen::Vector3f& y_axis = frames_->points[index].y_axis.getNormalVector3fMap ();
-  const Eigen::Vector3f normal (frames_->points[index].z_axis[0],
-                                frames_->points[index].z_axis[1],
-                                frames_->points[index].z_axis[2]);
+  const Eigen::Vector3f x_axis ((*frames_)[index].x_axis[0],
+                                (*frames_)[index].x_axis[1],
+                                (*frames_)[index].x_axis[2]);
+  //const Eigen::Vector3f& y_axis = (*frames_)[index].y_axis.getNormalVector3fMap ();
+  const Eigen::Vector3f normal ((*frames_)[index].z_axis[0],
+                                (*frames_)[index].z_axis[1],
+                                (*frames_)[index].z_axis[2]);
 
   // Find every point within specified search_radius_
-  std::vector<int> nn_indices;
+  pcl::Indices nn_indices;
   std::vector<float> nn_dists;
   const std::size_t neighb_cnt = searchForNeighbors ((*indices_)[index], search_radius_, nn_indices, nn_dists);
   // For each point within radius
@@ -163,7 +165,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (
     if (pcl::utils::equal(nn_dists[ne], 0.0f))
       continue;
     // Get neighbours coordinates
-    Eigen::Vector3f neighbour = surface_->points[nn_indices[ne]].getVector3fMap ();
+    Eigen::Vector3f neighbour = (*surface_)[nn_indices[ne]].getVector3fMap ();
 
     // ----- Compute current neighbour polar coordinates -----
 
@@ -199,7 +201,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (
     const auto l = std::distance(phi_divisions_.cbegin (), std::prev(phi_min));
 
     /// Local point density = number of points in a sphere of radius "point_density_radius_" around the current neighbour
-    std::vector<int> neighbour_indices;
+    pcl::Indices neighbour_indices;
     std::vector<float> neighbour_didtances;
     float point_density = static_cast<float> (searchForNeighbors (*surface_, nn_indices[ne], point_density_radius_, neighbour_indices, neighbour_didtances));
     /// point_density is always bigger than 0 because FindPointsWithinRadius returns at least the point itself
@@ -238,26 +240,25 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointClo
         !std::isfinite (current_frame.y_axis[0]) ||
         !std::isfinite (current_frame.z_axis[0])  )
     {
-      std::fill (output.points[point_index].descriptor, output.points[point_index].descriptor + descriptor_length_,
-                 std::numeric_limits<float>::quiet_NaN ());
-      std::fill (output.points[point_index].rf, output.points[point_index].rf + 9, 0);
+      std::fill_n (output[point_index].descriptor, descriptor_length_,
+                   std::numeric_limits<float>::quiet_NaN ());
+      std::fill_n (output[point_index].rf, 9, 0);
       output.is_dense = false;
       continue;
     }
 
     for (int d = 0; d < 3; ++d)
     {
-      output.points[point_index].rf[0 + d] = current_frame.x_axis[d];
-      output.points[point_index].rf[3 + d] = current_frame.y_axis[d];
-      output.points[point_index].rf[6 + d] = current_frame.z_axis[d];
+      output[point_index].rf[0 + d] = current_frame.x_axis[d];
+      output[point_index].rf[3 + d] = current_frame.y_axis[d];
+      output[point_index].rf[6 + d] = current_frame.z_axis[d];
     }
 
     std::vector<float> descriptor (descriptor_length_);
     computePointDescriptor (point_index, descriptor);
-    std::copy (descriptor.begin (), descriptor.end (), output.points[point_index].descriptor);
+    std::copy (descriptor.cbegin (), descriptor.cend (), output[point_index].descriptor);
   }
 }
 
 #define PCL_INSTANTIATE_UniqueShapeContext(T,OutT,RFT) template class PCL_EXPORTS pcl::UniqueShapeContext<T,OutT,RFT>;
 
-#endif

@@ -44,11 +44,11 @@ sensorPose defines the 6DOF position of the virtual sensor as the origin with ro
 
 coordinate_frame=CAMERA_FRAME tells the system that x is facing right, y downwards and the z axis is forward. An alternative would be LASER_FRAME, with x facing forward, y to the left and z upwards.
 
-For noiseLevel=0 the range image is created using a normal z-buffer. Yet if you want to average over points falling in the same cell you can use a higher value. 0.05 would mean, that all point with a maximum distance of 5cm to the closest point are used to calculate the range.
+For noiseLevel=0 the range image is created using a normal z-buffer. Yet if you want to average over points falling in the same cell you can use a higher value. 0.05 would mean, that all points with a maximum distance of 5cm to the closest point are used to calculate the range.
 
-If minRange is greater 0 all points that are closer will be ignored.
+If minRange is greater than 0, all points that are closer will be ignored.
 
-borderSize greater 0 will leave a border of unobserved points around the image when cropping it.
+borderSize greater than 0 will leave a border of unobserved points around the image when cropping it.
 
 
 .. literalinclude:: sources/range_image_creation/range_image_creation.cpp
@@ -57,7 +57,7 @@ borderSize greater 0 will leave a border of unobserved points around the image w
 
 The remaining code creates the range image from the point cloud with the given parameters and outputs some information on the terminal.
 
-The range image is derived from the PointCloud class and its points have the members x,y,z and range. There are three kinds of points. Valid points have a real range greater zero. Unobserved points have x=y=z=NAN and range=-INFINITY. Far range points have x=y=z=NAN and range=INFINITY.
+The range image is derived from the PointCloud class and its points have the members x,y,z and range. There are three kinds of points. Valid points have a real range greater than zero. Unobserved points have x=y=z=NAN and range=-INFINITY. Far range points have x=y=z=NAN and range=INFINITY.
 
 Compiling and running the program
 ---------------------------------

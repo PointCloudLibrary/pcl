@@ -43,73 +43,70 @@
 #include <pcl/registration/graph_registration.h>
 #include <pcl/registration/registration.h>
 
-namespace pcl
-{
-  /** \brief @b PairwiseGraphRegistration class aligns the clouds two by two
-    * \author Nicola Fioraio
-    * \ingroup registration
-    */
-  template <typename GraphT, typename PointT>
-  class PairwiseGraphRegistration : public GraphRegistration<GraphT>
+namespace pcl {
+/** \brief @b PairwiseGraphRegistration class aligns the clouds two by two
+ * \author Nicola Fioraio
+ * \ingroup registration
+ */
+template <typename GraphT, typename PointT>
+class PairwiseGraphRegistration : public GraphRegistration<GraphT> {
+public:
+  using GraphRegistration<GraphT>::graph_handler_;
+  using GraphRegistration<GraphT>::last_aligned_vertex_;
+  using GraphRegistration<GraphT>::last_vertices_;
+
+  using RegistrationPtr = typename Registration<PointT, PointT>::Ptr;
+  using GraphHandlerVertex = typename pcl::registration::GraphHandler<GraphT>::Vertex;
+
+  /** \brief Empty destructor */
+  virtual ~PairwiseGraphRegistration() {}
+
+  /** \brief Empty constructor */
+  PairwiseGraphRegistration() : registration_method_(), incremental_(true) {}
+  /** \brief Constructor */
+  PairwiseGraphRegistration(const RegistrationPtr& reg, bool incremental)
+  : registration_method_(reg), incremental_(incremental)
+  {}
+
+  /** \brief Set the registration object */
+  inline void
+  setRegistrationMethod(const RegistrationPtr& reg)
   {
-    public:
-      using GraphRegistration<GraphT>::graph_handler_;
-      using GraphRegistration<GraphT>::last_aligned_vertex_;
-      using GraphRegistration<GraphT>::last_vertices_;
+    registration_method_ = reg;
+  }
 
-      using RegistrationPtr = typename Registration<PointT, PointT>::Ptr;
-      using GraphHandlerVertex = typename pcl::registration::GraphHandler<GraphT>::Vertex;
+  /** \brief Get the registration object */
+  inline RegistrationPtr
+  getRegistrationMethod()
+  {
+    return registration_method_;
+  }
 
-      /** \brief Empty destructor */
-      virtual ~PairwiseGraphRegistration () {}
+  /** \brief If True the initial transformation is always set to the Identity */
+  inline void
+  setIncremental(bool incremental)
+  {
+    incremental_ = incremental;
+  }
 
+  /** \brief Is incremental ? */
+  inline bool
+  isIncremental() const
+  {
+    return incremental_;
+  }
 
-      /** \brief Empty constructor */
-      PairwiseGraphRegistration () : registration_method_ (), incremental_ (true)
-      {}
-      /** \brief Constructor */
-      PairwiseGraphRegistration (const RegistrationPtr& reg, bool incremental) : registration_method_ (reg), incremental_ (incremental)
-      {}
+protected:
+  /** \brief The registration object */
+  RegistrationPtr registration_method_;
+  /** \brief If True the initial transformation is always set to the Identity */
+  bool incremental_;
 
-      /** \brief Set the registration object */
-      inline void
-      setRegistrationMethod (const RegistrationPtr& reg)
-      {
-        registration_method_ = reg;
-      }
-
-      /** \brief Get the registration object */
-      inline RegistrationPtr
-      getRegistrationMethod ()
-      {
-        return registration_method_;
-      }
-
-      /** \brief If True the initial transformation is always set to the Identity */
-      inline void
-      setIncremental (bool incremental)
-      {
-        incremental_ = incremental;
-      }
-
-      /** \brief Is incremental ? */
-      inline bool
-      isIncremental () const
-      {
-        return incremental_;
-      }
-
-    protected:
-      /** \brief The registration object */
-      RegistrationPtr registration_method_;
-      /** \brief If True the initial transformation is always set to the Identity */
-      bool incremental_;
-
-    private:
-      /** \brief The registration method */
-      virtual void
-      computeRegistration ();
-  };
-}
+private:
+  /** \brief The registration method */
+  virtual void
+  computeRegistration();
+};
+} // namespace pcl
 
 #include <pcl/registration/impl/pairwise_graph_registration.hpp>

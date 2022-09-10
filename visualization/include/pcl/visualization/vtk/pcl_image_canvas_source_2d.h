@@ -40,6 +40,7 @@
 
 #include <pcl/pcl_macros.h>
 #include <vtkImageCanvasSource2D.h>
+class vtkImageData;
 
 namespace pcl
 {

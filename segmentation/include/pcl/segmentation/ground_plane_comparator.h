@@ -39,11 +39,11 @@
 
 #pragma once
 
-#include <pcl/common/angles.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
+#include <pcl/common/angles.h>
 #include <pcl/segmentation/comparator.h>
-#include <boost/make_shared.hpp>
+
 
 namespace pcl
 {
@@ -97,9 +97,8 @@ namespace pcl
       
       /** \brief Destructor for GroundPlaneComparator. */
       
-      ~GroundPlaneComparator ()
-      {
-      }
+      ~GroundPlaneComparator () override
+      = default;
       /** \brief Provide the input cloud.
         * \param[in] cloud the input point cloud.
         */
@@ -140,7 +139,7 @@ namespace pcl
       void
       setPlaneCoeffD (std::vector<float>& plane_coeff_d)
       {
-        plane_coeff_d_ = boost::make_shared<std::vector<float> >(plane_coeff_d);
+        plane_coeff_d_ = pcl::make_shared<std::vector<float> >(plane_coeff_d);
       }
       
       /** \brief Get a pointer to the vector of the d-coefficient of the planes' hessian normal form. */
@@ -214,22 +213,23 @@ namespace pcl
       {
         // Normal must be similar to neighbor
         // Normal must be similar to expected normal
-        float threshold = distance_threshold_;
-        if (depth_dependent_)
-        {
-          Eigen::Vector3f vec = input_->points[idx1].getVector3fMap ();
+        // TODO check logic in this class: which member variables are needed?
+        // float threshold = distance_threshold_;
+        // if (depth_dependent_)
+        // {
+        //   Eigen::Vector3f vec = (*input_)[idx1].getVector3fMap ();
           
-          float z = vec.dot (z_axis_);
-          threshold *= z * z;
-        }
+        //   float z = vec.dot (z_axis_);
+        //   threshold *= z * z;
+        // }
 
-        return ( (normals_->points[idx1].getNormalVector3fMap ().dot (desired_road_axis_) > road_angular_threshold_) &&
-                 (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) > angular_threshold_ ));
+        return ( ((*normals_)[idx1].getNormalVector3fMap ().dot (desired_road_axis_) > road_angular_threshold_) &&
+                 ((*normals_)[idx1].getNormalVector3fMap ().dot ((*normals_)[idx2].getNormalVector3fMap () ) > angular_threshold_ ));
         
         // Euclidean proximity of neighbors does not seem to be required -- pixel adjacency handles this well enough 
-        //return ( (normals_->points[idx1].getNormalVector3fMap ().dot (desired_road_axis_) > road_angular_threshold_) &&
-        //          (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) > angular_threshold_ ) &&
-        //         (pcl::euclideanDistance (input_->points[idx1], input_->points[idx2]) < distance_threshold_ ));
+        //return ( ((*normals_)[idx1].getNormalVector3fMap ().dot (desired_road_axis_) > road_angular_threshold_) &&
+        //          ((*normals_)[idx1].getNormalVector3fMap ().dot ((*normals_)[idx2].getNormalVector3fMap () ) > angular_threshold_ ) &&
+        //         (pcl::euclideanDistance ((*input_)[idx1], (*input_)[idx2]) < distance_threshold_ ));
       }
       
     protected:

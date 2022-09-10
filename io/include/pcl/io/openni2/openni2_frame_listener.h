@@ -56,13 +56,12 @@ namespace pcl
       {
         public:
 
-          OpenNI2FrameListener ()
-          {}
+          OpenNI2FrameListener () = default;
+
           OpenNI2FrameListener (StreamCallbackFunction cb)
             : callback_(std::move(cb)) {}
 
-          ~OpenNI2FrameListener ()
-          { };
+          ~OpenNI2FrameListener () override = default;
 
           inline void
           onNewFrame (openni::VideoStream& stream) override

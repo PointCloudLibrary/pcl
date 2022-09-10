@@ -1,4 +1,3 @@
-#include <iostream>
 #include <pcl/simulation/camera.h>
 
 using namespace Eigen;

@@ -40,10 +40,6 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/tar.h>
 #include <pcl/memory.h>
-#include <pcl/pcl_config.h>
-#include <pcl/pcl_macros.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////// GrabberImplementation //////////////////////
@@ -250,7 +246,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::closeTARFile ()
   io::raw_close (tar_fd_);
   tar_fd_ = -1;
   tar_offset_ = 0;
-  memset (&tar_header_.file_name[0], 0, 512);
+  tar_header_ = pcl::io::TARHeader{};
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

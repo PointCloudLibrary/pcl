@@ -37,8 +37,6 @@
 /// @details the implementation of class CloudTransformTool
 /// @author Yue Li and Matthew Hielsberg
 
-#include <algorithm>
-#include <cmath>
 #include <pcl/apps/point_cloud_editor/common.h>
 #include <pcl/apps/point_cloud_editor/cloudTransformTool.h>
 #include <pcl/apps/point_cloud_editor/cloud.h>
@@ -55,8 +53,7 @@ CloudTransformTool::CloudTransformTool (CloudPtr cloud_ptr)
 }
 
 CloudTransformTool::~CloudTransformTool ()
-{
-}
+= default;
 
 void
 CloudTransformTool::start (int x, int y, BitMask, BitMask)

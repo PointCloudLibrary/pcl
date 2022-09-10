@@ -78,7 +78,7 @@ namespace pcl
       PCDGrabberBase (const std::vector<std::string>& pcd_files, float frames_per_second, bool repeat);
 
       /** \brief Virtual destructor. */
-      ~PCDGrabberBase () noexcept;
+      ~PCDGrabberBase () noexcept override;
 
       /** \brief Starts playing the list of PCD files if frames_per_second is > 0. Otherwise it works as a trigger: publishes only the next PCD file in the list. */
       void
@@ -146,7 +146,7 @@ namespace pcl
       PCDGrabber (const std::vector<std::string>& pcd_files, float frames_per_second = 0, bool repeat = false);
 
       /** \brief Virtual destructor. */
-      ~PCDGrabber () noexcept
+      ~PCDGrabber () noexcept override
       {
         stop ();
       }
@@ -275,7 +275,7 @@ namespace pcl
         {
           // Fill r/g/b data, assuming that the order is BGRA
           pcl::RGB rgb;
-          memcpy (&rgb, reinterpret_cast<const char*> (&cloud->points[k]) + rgba_index, sizeof (RGB));
+          memcpy (&rgb, reinterpret_cast<const char*> (&(*cloud)[k]) + rgba_index, sizeof (RGB));
           image_map[k].nRed = static_cast<XnUInt8> (rgb.r);
           image_map[k].nGreen = static_cast<XnUInt8> (rgb.g);
           image_map[k].nBlue = static_cast<XnUInt8> (rgb.b);

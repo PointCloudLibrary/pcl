@@ -43,7 +43,7 @@
 void
 pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 {
-  std::vector<int> indices;
+  Indices indices;
   if (keep_organized_)
   {
     bool temp = extract_removed_indices_;
@@ -71,7 +71,7 @@ pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     const static float user_filter_value = user_filter_value_;
     for (const auto ri : *removed_indices_) // ri = removed index
     {
-      std::uint8_t* pt_data = reinterpret_cast<std::uint8_t*> (&output.data[ri * output.point_step]);
+      auto* pt_data = reinterpret_cast<std::uint8_t*> (&output.data[ri * output.point_step]);
       for (const auto &offset : offsets)
       {
         memcpy (pt_data + offset, &user_filter_value, sizeof (float));
@@ -96,7 +96,7 @@ pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 
 ///////////////////////////////////////////////////////////////////////////////
 void
-pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
+pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (Indices &indices)
 {
   indices.resize (input_->width * input_->height);
   removed_indices_->resize (input_->width * input_->height);
@@ -154,7 +154,7 @@ pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
       }
       else if (extract_removed_indices_)
       {
-        (*removed_indices_)[removed_indices_count++] = static_cast<int> (index);
+        (*removed_indices_)[removed_indices_count++] = index;
       }
     }
     // If inside the cropbox
@@ -162,7 +162,7 @@ pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
     {
       if (negative_ && extract_removed_indices_)
       {
-        (*removed_indices_)[removed_indices_count++] = static_cast<int> (index);
+        (*removed_indices_)[removed_indices_count++] = index;
       }
       else if (!negative_) {
         indices[indices_count++] = index;

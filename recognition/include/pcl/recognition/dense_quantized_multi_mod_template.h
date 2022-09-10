@@ -51,7 +51,7 @@ namespace pcl
     void 
     serialize (std::ostream & stream) const
     {
-      const std::size_t num_of_features = static_cast<std::size_t> (features.size ());
+      const auto num_of_features = static_cast<std::size_t> (features.size ());
       write (stream, num_of_features);
       for (std::size_t feature_index = 0; feature_index < num_of_features; ++feature_index)
       {
@@ -84,7 +84,7 @@ namespace pcl
     void 
     serialize (std::ostream & stream) const
     {
-      const std::size_t num_of_modalities = static_cast<std::size_t> (modalities.size ());
+      const auto num_of_modalities = static_cast<std::size_t> (modalities.size ());
       write (stream, num_of_modalities);
       for (std::size_t modality_index = 0; modality_index < num_of_modalities; ++modality_index)
       {

@@ -42,8 +42,10 @@
 #include <pcl/point_types.h>
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
-#include <pcl/io/boost.h>
+#include <boost/shared_array.hpp> // for boost::shared_array
+#include <pcl/memory.h>  // for dynamic_pointer_cast
 #include <pcl/exceptions.h>
+
 #include <iostream>
 
 namespace
@@ -82,7 +84,7 @@ ONIGrabber::ONIGrabber (const std::string& file_name, bool repeat, bool stream)
   , point_cloud_rgba_signal_ ()
 {
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
-  device_ = boost::dynamic_pointer_cast< openni_wrapper::DeviceONI> (driver.createVirtualDevice (file_name, repeat, stream));
+  device_ = dynamic_pointer_cast< openni_wrapper::DeviceONI> (driver.createVirtualDevice (file_name, repeat, stream));
 
   if (!device_->hasDepthStream ())
     PCL_THROW_EXCEPTION (pcl::IOException, "Device does not provide 3D information.");
@@ -311,7 +313,7 @@ ONIGrabber::imageDepthImageCallback(const openni_wrapper::Image::Ptr &image, con
   // check if we have color point cloud slots
   if (point_cloud_rgb_signal_->num_slots () > 0)
   {
-    PCL_WARN ("PointXYZRGB callbacks deprecated. Use PointXYZRGBA instead.");
+    PCL_WARN ("PointXYZRGB callbacks deprecated. Use PointXYZRGBA instead.\n");
     point_cloud_rgb_signal_->operator() (convertToXYZRGBPointCloud (image, depth_image));
   }
 
@@ -386,7 +388,7 @@ ONIGrabber::convertToXYZPointCloud(const openni_wrapper::DepthImage::Ptr& depth_
   {
     for (int u = -centerX; u < centerX; ++u, ++depth_idx)
     {
-      pcl::PointXYZ& pt = cloud->points[depth_idx];
+      pcl::PointXYZ& pt = (*cloud)[depth_idx];
       // Check for invalid measurements
       if (depth_map[depth_idx] == 0 ||
           depth_map[depth_idx] == depth_image->getNoSampleValue () ||
@@ -462,7 +464,7 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr ONIGrabber::convertToXYZRGBPointCloud (
   {
     for (int u = -centerX; u < centerX; ++u, color_idx += 3, ++depth_idx)
     {
-      pcl::PointXYZRGB& pt = cloud->points[depth_idx];
+      pcl::PointXYZRGB& pt = (*cloud)[depth_idx];
       /// @todo Different values for these cases
       // Check for invalid measurements
       if (depth_map[depth_idx] == 0 ||
@@ -546,7 +548,7 @@ pcl::PointCloud<pcl::PointXYZRGBA>::Ptr ONIGrabber::convertToXYZRGBAPointCloud (
   {
     for (int u = -centerX; u < centerX; ++u, color_idx += 3, ++depth_idx)
     {
-      pcl::PointXYZRGBA& pt = cloud->points[depth_idx];
+      pcl::PointXYZRGBA& pt = (*cloud)[depth_idx];
       /// @todo Different values for these cases
       // Check for invalid measurements
       if (depth_map[depth_idx] == 0 ||
@@ -619,7 +621,7 @@ pcl::PointCloud<pcl::PointXYZI>::Ptr ONIGrabber::convertToXYZIPointCloud(const o
   {
     for (int u = -centerX; u < centerX; ++u, ++depth_idx)
     {
-      pcl::PointXYZI& pt = cloud->points[depth_idx];
+      pcl::PointXYZI& pt = (*cloud)[depth_idx];
       /// @todo Different values for these cases
       // Check for invalid measurements
       if (depth_map[depth_idx] == 0 ||

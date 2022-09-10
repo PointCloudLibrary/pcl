@@ -57,9 +57,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT, typename ContainerT> 
-    OutofcoreDepthFirstIterator<PointT, ContainerT>::~OutofcoreDepthFirstIterator ()
-    {
-    }
+    OutofcoreDepthFirstIterator<PointT, ContainerT>::~OutofcoreDepthFirstIterator () = default;
 
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -75,7 +73,7 @@ namespace pcl
 
         if (this->currentNode_->getNodeType () == pcl::octree::BRANCH_NODE)
         {
-          BranchNode* currentBranch = static_cast<BranchNode*> (this->currentNode_);
+          auto* currentBranch = static_cast<BranchNode*> (this->currentNode_);
           
           if (currentChildIdx_ < 8)
           {

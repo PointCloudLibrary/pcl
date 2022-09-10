@@ -40,7 +40,7 @@ The interesting part begins here:
   
   pcl::PointCloud<int> keypoint_indices;
   narf_keypoint_detector.compute (keypoint_indices);
-  std::cout << "Found "<<keypoint_indices.points.size ()<<" key points.\n";
+  std::cout << "Found "<<keypoint_indices.size ()<<" key points.\n";
   ...
 
 This creates a RangeImageBorderExtractor object, that is needed for the

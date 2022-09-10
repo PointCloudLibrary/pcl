@@ -1,0 +1,12 @@
+blank_issues_enabled: true
+
+contact_links:
+- name: Learn using Tutorials
+  url: https://pcl-tutorials.readthedocs.io/en/master/
+  about: Read the tutorials to learn how to use PCL better
+- name: Get help on Discord
+  url: https://discord.gg/JFFMAXS
+  about: Have a quick question about PCL or how to use PCL in your project?
+- name: Get help on StackOverflow
+  url: https://stackoverflow.com/tags/point-cloud-library/
+  about: Need some support to use PCL in your project?

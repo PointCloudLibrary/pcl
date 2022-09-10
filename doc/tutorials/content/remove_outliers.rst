@@ -3,7 +3,7 @@
 Removing outliers using a Conditional or RadiusOutlier removal
 --------------------------------------------------------------
 
-This document demonstrates how to remove outliers from a PointCloud using several different methods in the filter module.  First we will look at how to use a ConditionalRemoval filter which removes all indices in the given input cloud that do not satisfy one or more given conditions.  Then we will learn how to us a RadiusOutlierRemoval filter which removes all indices in it's input cloud that don't have at least some number of neighbors within a certain range.
+This document demonstrates how to remove outliers from a PointCloud using several different methods in the filter module.  First we will look at how to use a ConditionalRemoval filter which removes all indices in the given input cloud that do not satisfy one or more given conditions.  Then we will learn how to us a RadiusOutlierRemoval filter which removes all indices in its input cloud that don't have at least some number of neighbors within a certain range.
 
 The code
 --------
@@ -52,7 +52,7 @@ For the *RadiusOutlierRemoval*, the user must specify '-r' as the command line a
 
 .. literalinclude:: sources/remove_outliers/remove_outliers.cpp
    :language: cpp
-   :lines: 29-37
+   :lines: 29-38
 
 Basically, we create the RadiusOutlierRemoval filter object, set its parameters and apply it to our input cloud.  The radius of search is set to 0.8, and a point must have a minimum of 2 neighbors in that radius to be kept as part of the PointCloud.
 
@@ -60,7 +60,7 @@ For the *ConditionalRemoval* class, the user must specify '-c' as the command li
 
 .. literalinclude:: sources/remove_outliers/remove_outliers.cpp
    :language: cpp
-   :lines: 38-53
+   :lines: 39-54
 
 Basically, we create the condition which a given point must satisfy for it to remain in our PointCloud.  In this example, we use add two comparisons to the condition: greater than (GT) 0.0 and less than (LT) 0.8.  This condition is then used to build the filter. 
 
@@ -70,7 +70,7 @@ The following code just outputs PointCloud before filtering and then after apply
 
 .. literalinclude:: sources/remove_outliers/remove_outliers.cpp
    :language: cpp
-   :lines: 58-68
+   :lines: 59-69
 
 Compiling and running remove_outliers.cpp
 ---------------------------------------------

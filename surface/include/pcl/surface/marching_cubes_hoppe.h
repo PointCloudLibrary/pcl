@@ -37,7 +37,6 @@
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/surface/boost.h>
 #include <pcl/surface/marching_cubes.h>
 
 namespace pcl
@@ -82,7 +81,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      ~MarchingCubesHoppe ();
+      ~MarchingCubesHoppe () override;
 
       /** \brief Convert the point cloud into voxel data.
         */

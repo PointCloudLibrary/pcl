@@ -1,0 +1,34 @@
+steps:
+  - checkout: self
+    # find the commit hash on a quick non-forced update too
+    fetchDepth: 10
+  - script: |
+      mkdir %BUILD_DIR% && cd %BUILD_DIR% && dir
+      cmake $(Build.SourcesDirectory) ^
+        -G%GENERATOR% ^
+        -DVCPKG_TARGET_TRIPLET=%PLATFORM%-windows-rel ^
+        -DCMAKE_BUILD_TYPE="MinSizeRel" ^
+        -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ^
+        -DVCPKG_APPLOCAL_DEPS=ON ^
+        -DPCL_BUILD_WITH_BOOST_DYNAMIC_LINKING_WIN32=ON ^
+        -DPCL_BUILD_WITH_FLANN_DYNAMIC_LINKING_WIN32=ON ^
+        -DPCL_BUILD_WITH_QHULL_DYNAMIC_LINKING_WIN32=ON ^
+        -DBUILD_global_tests=ON ^
+        -DBUILD_benchmarks=ON ^
+        -DBUILD_tools=OFF ^
+        -DBUILD_surface_on_nurbs=ON ^
+        -DPCL_DISABLE_VISUALIZATION_TESTS=ON
+    displayName: 'CMake Configuration'
+  - script: |
+      cd %BUILD_DIR% && cmake --build . --config %CONFIGURATION%
+    displayName: 'Build Library'
+  - script: |
+      cd %BUILD_DIR% && cmake --build . --target tests --config %CONFIGURATION%
+    displayName: 'Run Unit Tests'
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'CTest'
+      testResultsFiles: '**/Test*.xml'
+      searchFolder: '$(BUILD_DIR)'
+    condition: succeededOrFailed()
+

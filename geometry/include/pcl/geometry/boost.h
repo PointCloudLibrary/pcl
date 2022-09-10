@@ -41,9 +41,8 @@
 #pragma once
 
 #ifdef __GNUC__
-#  pragma GCC system_header
+#pragma GCC system_header
 #endif
 
 #include <boost/operators.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/version.hpp>

@@ -37,7 +37,6 @@
 
 #pragma once
 
-#include <pcl/filters/boost.h>
 #include <pcl/filters/filter.h>
 
 namespace pcl
@@ -152,7 +151,7 @@ namespace pcl
 
       /** \brief Destructor.
         */
-      ~ApproximateVoxelGrid ()
+      ~ApproximateVoxelGrid () override
       {
         delete [] history_;
       }

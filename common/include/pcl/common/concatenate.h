@@ -38,8 +38,6 @@
 
 #pragma once
 
-#include <pcl/conversions.h>
-
 #include <type_traits>
 
 namespace pcl

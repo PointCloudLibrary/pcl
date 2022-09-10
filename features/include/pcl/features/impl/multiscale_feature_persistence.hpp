@@ -40,7 +40,6 @@
 #ifndef PCL_FEATURES_IMPL_MULTISCALE_FEATURE_PERSISTENCE_H_
 #define PCL_FEATURES_IMPL_MULTISCALE_FEATURE_PERSISTENCE_H_
 
-#include <numeric>
 #include <pcl/features/multiscale_feature_persistence.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,11 +95,11 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::computeFeaturesAtA
   {
     FeatureCloudPtr feature_cloud (new FeatureCloud ());
     computeFeatureAtScale (scale_values_[scale_i], feature_cloud);
-    features_at_scale_[scale_i] = feature_cloud;
+    features_at_scale_.push_back(feature_cloud);
 
     // Vectorize each feature and insert it into the vectorized feature storage
     std::vector<std::vector<float> > feature_cloud_vectorized;
-    feature_cloud_vectorized.reserve (feature_cloud->points.size ());
+    feature_cloud_vectorized.reserve (feature_cloud->size ());
 
     for (const auto& feature: feature_cloud->points)
     {
@@ -148,7 +147,7 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::calculateMeanFeatu
                      feature.cbegin (), mean_feature_.begin (), std::plus<>{});
   }
 
-  const float factor = std::min<float>(1, normalization_factor);
+  const float factor = std::max<float>(1, normalization_factor);
   std::transform(mean_feature_.cbegin(),
                  mean_feature_.cend(),
                  mean_feature_.begin(),
@@ -167,11 +166,17 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::extractUniqueFeatu
   unique_features_indices_.reserve (scale_values_.size ());
   unique_features_table_.reserve (scale_values_.size ());
 
+  std::vector<float> diff_vector;
+  std::size_t size = 0;
+  for (const auto& feature : features_at_scale_vectorized_)
+  {
+    size = std::max(size, feature.size());
+  }
+  diff_vector.reserve(size);
   for (std::size_t scale_i = 0; scale_i < features_at_scale_vectorized_.size (); ++scale_i)
   {
     // Calculate standard deviation within the scale
     float standard_dev = 0.0;
-    std::vector<float> diff_vector (features_at_scale_vectorized_[scale_i].size ());
     diff_vector.clear();
 
     for (const auto& feature: features_at_scale_vectorized_[scale_i])
@@ -185,8 +190,8 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::extractUniqueFeatu
 
     // Select only points outside (mean +/- alpha * standard_dev)
     std::list<std::size_t> indices_per_scale;
-    std::vector<bool> indices_table_per_scale (features_at_scale_[scale_i]->points.size (), false);
-    for (std::size_t point_i = 0; point_i < features_at_scale_[scale_i]->points.size (); ++point_i)
+    std::vector<bool> indices_table_per_scale (features_at_scale_vectorized_[scale_i].size (), false);
+    for (std::size_t point_i = 0; point_i < features_at_scale_vectorized_[scale_i].size (); ++point_i)
     {
       if (diff_vector[point_i] > alpha_ * standard_dev)
       {
@@ -203,7 +208,7 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::extractUniqueFeatu
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointFeature> void
 pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::determinePersistentFeatures (FeatureCloud &output_features,
-                                                                                           shared_ptr<std::vector<int> > &output_indices)
+                                                                                           pcl::IndicesPtr &output_indices)
 {
   if (!initCompute ())
     return;
@@ -230,7 +235,7 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::determinePersisten
     {
       if (unique_features_table_[scale_i][*feature_it] == true)
       {
-        output_features.points.push_back (features_at_scale[scale_i]->points[*feature_it]);
+        output_features.push_back ((*features_at_scale_[scale_i])[*feature_it]);
         output_indices->push_back (feature_estimator_->getIndices ()->at (*feature_it));
       }
     }
@@ -244,7 +249,7 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::determinePersisten
 
     if (present_in_all)
     {
-      output_features.points.emplace_back (features_at_scale_.front ()->points[feature]);
+      output_features.emplace_back ((*features_at_scale_.front ())[feature]);
       output_indices->emplace_back (feature_estimator_->getIndices ()->at (feature));
     }
   }
@@ -252,7 +257,7 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::determinePersisten
   // Consider that output cloud is unorganized
   output_features.header = feature_estimator_->getInputCloud ()->header;
   output_features.is_dense = feature_estimator_->getInputCloud ()->is_dense;
-  output_features.width = static_cast<std::uint32_t> (output_features.points.size ());
+  output_features.width = output_features.size ();
   output_features.height = 1;
 }
 

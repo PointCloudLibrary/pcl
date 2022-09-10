@@ -45,8 +45,6 @@
 #include <pcl/recognition/ransac_based/obj_rec_ransac.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/console/print.h>
-#include <pcl/console/parse.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/point_cloud.h>
 #include <vtkVersion.h>
 #include <vtkPolyDataReader.h>
@@ -56,9 +54,7 @@
 #include <vtkHedgeHog.h>
 #include <cstdio>
 #include <thread>
-#include <vector>
 
-using namespace std;
 using namespace std::chrono_literals;
 using namespace pcl;
 using namespace io;
@@ -82,7 +78,7 @@ main (int argc, char** argv)
 
   const int num_params = 3;
   float parameters[num_params] = {10.0f/*pair width*/, 5.0f/*voxel size*/, 5.0f/*max co-planarity angle*/};
-  string parameter_names[num_params] = {"pair_width", "voxel_size", "max_coplanarity_angle"};
+  std::string parameter_names[num_params] = {"pair_width", "voxel_size", "max_coplanarity_angle"};
 
   // Read the user input if any
   for ( int i = 0 ; i < argc-1 && i < num_params ; ++i )
@@ -190,7 +186,7 @@ void showModelOpps (PCLVisualizer& viz, const ModelLibrary::HashTable& hash_tabl
   for (int i = 0 ; i < num_cells ; ++i )
   {
     // Make sure that we get only point pairs belonging to 'model'
-	ModelLibrary::HashTableCell::const_iterator res = cells[i].find (model);
+	auto res = cells[i].find (model);
     if ( res == cells[i].end () )
       continue;
 

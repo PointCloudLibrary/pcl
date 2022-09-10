@@ -39,8 +39,6 @@
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_REGISTRATION_2D_HPP_
 
 #include <pcl/sample_consensus/sac_model_registration_2d.h>
-#include <pcl/common/point_operators.h>
-#include <pcl/common/eigen.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
@@ -55,9 +53,9 @@ pcl::SampleConsensusModelRegistration2D<PointT>::isSampleGood (const Indices&sam
   //using namespace pcl::common;
   //using namespace pcl::traits;
 
-  //PointT p10 = input_->points[samples[1]] - input_->points[samples[0]];
-  //PointT p20 = input_->points[samples[2]] - input_->points[samples[0]];
-  //PointT p21 = input_->points[samples[2]] - input_->points[samples[1]];
+  //PointT p10 = (*input_)[samples[1]] - (*input_)[samples[0]];
+  //PointT p20 = (*input_)[samples[2]] - (*input_)[samples[0]];
+  //PointT p21 = (*input_)[samples[2]] - (*input_)[samples[1]];
 
   //return ((p10.x * p10.x + p10.y * p10.y + p10.z * p10.z) > sample_dist_thresh_ && 
   //        (p20.x * p20.x + p20.y * p20.y + p20.z * p20.z) > sample_dist_thresh_ && 
@@ -92,9 +90,9 @@ pcl::SampleConsensusModelRegistration2D<PointT>::getDistancesToModel (const Eige
 
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
-    Eigen::Vector4f pt_src (input_->points[(*indices_)[i]].x, 
-                            input_->points[(*indices_)[i]].y, 
-                            input_->points[(*indices_)[i]].z, 1.0f);
+    Eigen::Vector4f pt_src ((*input_)[(*indices_)[i]].x, 
+                            (*input_)[(*indices_)[i]].y, 
+                            (*input_)[(*indices_)[i]].z, 1.0f);
 
     Eigen::Vector4f p_tr (transform * pt_src);
 
@@ -111,10 +109,10 @@ pcl::SampleConsensusModelRegistration2D<PointT>::getDistancesToModel (const Eige
 
     // Calculate the distance from the transformed point to its correspondence
     // need to compute the real norm here to keep MSAC and friends general
-    distances[i] = std::sqrt ((uv[0] - target_->points[(*indices_tgt_)[i]].u) *
-                              (uv[0] - target_->points[(*indices_tgt_)[i]].u) +
-                              (uv[1] - target_->points[(*indices_tgt_)[i]].v) *
-                              (uv[1] - target_->points[(*indices_tgt_)[i]].v));
+    distances[i] = std::sqrt ((uv[0] - (*target_)[(*indices_tgt_)[i]].u) *
+                              (uv[0] - (*target_)[(*indices_tgt_)[i]].u) +
+                              (uv[1] - (*target_)[(*indices_tgt_)[i]].v) *
+                              (uv[1] - (*target_)[(*indices_tgt_)[i]].v));
   }
 }
 
@@ -149,9 +147,9 @@ pcl::SampleConsensusModelRegistration2D<PointT>::selectWithinDistance (const Eig
 
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
-    Eigen::Vector4f pt_src (input_->points[(*indices_)[i]].x, 
-                            input_->points[(*indices_)[i]].y, 
-                            input_->points[(*indices_)[i]].z, 1.0f);
+    Eigen::Vector4f pt_src ((*input_)[(*indices_)[i]].x, 
+                            (*input_)[(*indices_)[i]].y, 
+                            (*input_)[(*indices_)[i]].z, 1.0f);
 
     Eigen::Vector4f p_tr (transform * pt_src);
 
@@ -164,10 +162,10 @@ pcl::SampleConsensusModelRegistration2D<PointT>::selectWithinDistance (const Eig
 
     uv /= uv[2];
 
-    double distance = ((uv[0] - target_->points[(*indices_tgt_)[i]].u) *
-                       (uv[0] - target_->points[(*indices_tgt_)[i]].u) +
-                       (uv[1] - target_->points[(*indices_tgt_)[i]].v) *
-                       (uv[1] - target_->points[(*indices_tgt_)[i]].v));
+    double distance = ((uv[0] - (*target_)[(*indices_tgt_)[i]].u) *
+                       (uv[0] - (*target_)[(*indices_tgt_)[i]].u) +
+                       (uv[1] - (*target_)[(*indices_tgt_)[i]].v) *
+                       (uv[1] - (*target_)[(*indices_tgt_)[i]].v));
 
     // Calculate the distance from the transformed point to its correspondence
     if (distance < thresh)
@@ -206,9 +204,9 @@ pcl::SampleConsensusModelRegistration2D<PointT>::countWithinDistance (
   
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
-    Eigen::Vector4f pt_src (input_->points[(*indices_)[i]].x, 
-                            input_->points[(*indices_)[i]].y, 
-                            input_->points[(*indices_)[i]].z, 1.0f);
+    Eigen::Vector4f pt_src ((*input_)[(*indices_)[i]].x, 
+                            (*input_)[(*indices_)[i]].y, 
+                            (*input_)[(*indices_)[i]].z, 1.0f);
 
     Eigen::Vector4f p_tr (transform * pt_src);
 
@@ -224,10 +222,10 @@ pcl::SampleConsensusModelRegistration2D<PointT>::countWithinDistance (
     uv /= uv[2];
 
     // Calculate the distance from the transformed point to its correspondence
-    if (((uv[0] - target_->points[(*indices_tgt_)[i]].u) *
-         (uv[0] - target_->points[(*indices_tgt_)[i]].u) +
-         (uv[1] - target_->points[(*indices_tgt_)[i]].v) *
-         (uv[1] - target_->points[(*indices_tgt_)[i]].v)) < thresh)
+    if (((uv[0] - (*target_)[(*indices_tgt_)[i]].u) *
+         (uv[0] - (*target_)[(*indices_tgt_)[i]].u) +
+         (uv[1] - (*target_)[(*indices_tgt_)[i]].v) *
+         (uv[1] - (*target_)[(*indices_tgt_)[i]].v)) < thresh)
     {
       ++nr_p;
     }

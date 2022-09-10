@@ -21,7 +21,7 @@ void main()
   float depth_val = texture2D(DepthSampler, TexCoord0.st).r; 
   float ref_meters = 1.0 / (reference_depth_val * (1.0/f - 1.0/n) + 1.0/n);
   float depth_meters = 1.0 / (depth_val * (1.0/f - 1.0/n) + 1.0/n); 
-  float min_dist = std::abs(ref_meters - depth_meters);
+  float min_dist = abs(ref_meters - depth_meters);
  
   float likelihood = texture2D(CostSampler, vec2(clamp(min_dist/3.0, 0.0, 1.0),0.0)).r;
   float ratio = 0.99;

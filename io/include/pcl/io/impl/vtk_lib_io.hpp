@@ -37,12 +37,10 @@
  *
  */
 
-#ifndef PCL_IO_VTK_IO_IMPL_H_
-#define PCL_IO_VTK_IO_IMPL_H_
+#pragma once
 
 // PCL
-#include <pcl/common/io.h>
-#include <pcl/io/pcd_io.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/point_types.h>
 #include <pcl/type_traits.h>
 
@@ -77,7 +75,7 @@ pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<P
   cloud.width = polydata->GetNumberOfPoints ();
   cloud.height = 1; // This indicates that the point cloud is unorganized
   cloud.is_dense = false;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
 
   // Get a list of all the fields available
   std::vector<pcl::PCLPointField> fields;
@@ -97,13 +95,13 @@ pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<P
   // Set the coordinates of the pcl::PointCloud (if the pcl::PointCloud supports coordinates)
   if (x_idx != -1 && y_idx != -1 && z_idx != -1)
   {
-    for (std::size_t i = 0; i < cloud.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud.size (); ++i)
     {
       double coordinate[3];
       polydata->GetPoint (i, coordinate);
-      pcl::setFieldValue<PointT, float> (cloud.points[i], x_idx, coordinate[0]);
-      pcl::setFieldValue<PointT, float> (cloud.points[i], y_idx, coordinate[1]);
-      pcl::setFieldValue<PointT, float> (cloud.points[i], z_idx, coordinate[2]);
+      pcl::setFieldValue<PointT, float> (cloud[i], x_idx, coordinate[0]);
+      pcl::setFieldValue<PointT, float> (cloud[i], y_idx, coordinate[1]);
+      pcl::setFieldValue<PointT, float> (cloud[i], z_idx, coordinate[2]);
     }
   }
 
@@ -122,13 +120,13 @@ pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<P
   vtkFloatArray* normals = vtkFloatArray::SafeDownCast (polydata->GetPointData ()->GetNormals ());
   if (normal_x_idx != -1 && normal_y_idx != -1 && normal_z_idx != -1 && normals)
   {
-    for (std::size_t i = 0; i < cloud.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud.size (); ++i)
     {
       float normal[3];
       normals->GetTupleValue (i, normal);
-      pcl::setFieldValue<PointT, float> (cloud.points[i], normal_x_idx, normal[0]);
-      pcl::setFieldValue<PointT, float> (cloud.points[i], normal_y_idx, normal[1]);
-      pcl::setFieldValue<PointT, float> (cloud.points[i], normal_z_idx, normal[2]);
+      pcl::setFieldValue<PointT, float> (cloud[i], normal_x_idx, normal[0]);
+      pcl::setFieldValue<PointT, float> (cloud[i], normal_y_idx, normal[1]);
+      pcl::setFieldValue<PointT, float> (cloud[i], normal_z_idx, normal[2]);
     }
   }
 
@@ -146,13 +144,13 @@ pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<P
 
   if (rgb_idx != -1 && colors)
   {
-    for (std::size_t i = 0; i < cloud.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud.size (); ++i)
     {
       unsigned char color[3];
       colors->GetTupleValue (i, color);
       pcl::RGB rgb;
       rgb.r = color[0]; rgb.g = color[1]; rgb.b = color[2];
-      pcl::setFieldValue<PointT, std::uint32_t> (cloud.points[i], rgb_idx, rgb.rgba);
+      pcl::setFieldValue<PointT, std::uint32_t> (cloud[i], rgb_idx, rgb.rgba);
     }
   }
 }
@@ -166,7 +164,7 @@ pcl::io::vtkStructuredGridToPointCloud (vtkStructuredGrid* const structured_grid
   cloud.width = dimensions[0];
   cloud.height = dimensions[1]; // This indicates that the point cloud is organized
   cloud.is_dense = true;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
 
   // Get a list of all the fields available
   std::vector<pcl::PCLPointField> fields;
@@ -192,9 +190,9 @@ pcl::io::vtkStructuredGridToPointCloud (vtkStructuredGrid* const structured_grid
       {
         int queryPoint[3] = {i, j, 0};
         vtkIdType pointId = vtkStructuredData::ComputePointId (dimensions, queryPoint);
-        double coordinate[3];
         if (structured_grid->IsPointVisible (pointId))
         {
+          double coordinate[3];
           structured_grid->GetPoint (pointId, coordinate);
           pcl::setFieldValue<PointT, float> (cloud (i, j), x_idx, coordinate[0]);
           pcl::setFieldValue<PointT, float> (cloud (i, j), y_idx, coordinate[1]);
@@ -230,9 +228,9 @@ pcl::io::vtkStructuredGridToPointCloud (vtkStructuredGrid* const structured_grid
       {
         int queryPoint[3] = {i, j, 0};
         vtkIdType pointId = vtkStructuredData::ComputePointId (dimensions, queryPoint);
-        float normal[3];
         if (structured_grid->IsPointVisible (pointId))
         {
+          float normal[3];
           normals->GetTupleValue (i, normal);
           pcl::setFieldValue<PointT, float> (cloud (i, j), normal_x_idx, normal[0]);
           pcl::setFieldValue<PointT, float> (cloud (i, j), normal_y_idx, normal[1]);
@@ -292,7 +290,7 @@ pcl::io::pointCloudTovtkPolyData (const pcl::PointCloud<PointT>& cloud, vtkPolyD
   pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type>(pcl::detail::FieldAdder<PointT>(fields));
 
   // Coordinates (always must have coordinates)
-  vtkIdType nr_points = cloud.points.size ();
+  vtkIdType nr_points = cloud.size ();
   vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New ();
   points->SetNumberOfPoints (nr_points);
   // Get a pointer to the beginning of the data array
@@ -511,6 +509,4 @@ pcl::io::pointCloudTovtkStructuredGrid (const pcl::PointCloud<PointT>& cloud, vt
 #undef InsertNextTupleValue
 #undef GetTupleValue
 #endif
-
-#endif  //#ifndef PCL_IO_VTK_IO_H_
 

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(min_cut_segmentation)
 
@@ -10,5 +10,3 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (min_cut_segmentation min_cut_segmentation.cpp)
 target_link_libraries (min_cut_segmentation ${PCL_LIBRARIES})
-
-

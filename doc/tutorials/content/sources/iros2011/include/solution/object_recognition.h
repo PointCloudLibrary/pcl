@@ -94,7 +94,7 @@ class ObjectRecognition
     {
       ObjectModel query_object;
       constructObjectModel (query_cloud, query_object);
-      const GlobalDescriptorT & query_descriptor = query_object.global_descriptor->points[0];
+      const GlobalDescriptorT & query_descriptor = (*query_object.global_descriptor)[0];
       
       std::vector<int> nn_index (1);
       std::vector<float> nn_sqr_distance (1);
@@ -109,7 +109,7 @@ class ObjectRecognition
     {
       ObjectModel query_object;
       constructObjectModel (query_cloud, query_object);
-      const GlobalDescriptorT & query_descriptor = query_object.global_descriptor->points[0];
+      const GlobalDescriptorT & query_descriptor = (*query_object.global_descriptor)[0];
       
       std::vector<int> nn_index (1);
       std::vector<float> nn_sqr_distance (1);

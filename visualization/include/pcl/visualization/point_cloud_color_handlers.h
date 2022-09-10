@@ -44,7 +44,7 @@
 // PCL includes
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
-#include <pcl/common/io.h>
+#include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
 #include <pcl/visualization/common/common.h>
 // VTK includes
 #include <vtkSmartPointer.h>
@@ -98,28 +98,11 @@ namespace pcl
         getFieldName () const = 0;
 
         /** Obtain the actual color for the input dataset as a VTK data array.
-          * Deriving handlers should override this method. The default implementation is
-          * provided only for backwards compatibility with handlers that were written
-          * before PCL 1.10.0 and will be removed in future.
+          * Deriving handlers should override this method.
           * \return smart pointer to VTK array if the operation was successful (the
           * handler is capable and the input cloud was given), a null pointer otherwise */
         virtual vtkSmartPointer<vtkDataArray>
-        getColor () const {
-          vtkSmartPointer<vtkDataArray> scalars;
-          getColor (scalars);
-          return scalars;
-        }
-
-        /** Obtain the actual color for the input dataset as a VTK data array.
-          * This virtual method should not be overriden or used. The default implementation
-          * is provided only for backwards compatibility with handlers that were written
-          * before PCL 1.10.0 and will be removed in future. */
-        PCL_DEPRECATED(1, 12, "use getColor() without parameters instead")
-        virtual bool
-        getColor (vtkSmartPointer<vtkDataArray> &scalars) const {
-          scalars = getColor ();
-          return scalars.Get() != nullptr;
-        }
+        getColor () const = 0;
 
         /** \brief Set the input cloud to be used.
           * \param[in] cloud the input cloud to be used by the handler
@@ -187,8 +170,6 @@ namespace pcl
         vtkSmartPointer<vtkDataArray>
         getColor () const override;
 
-        using PointCloudColorHandler<PointT>::getColor;
-
       protected:
         // Members derived from the base class
         using PointCloudColorHandler<PointT>::cloud_;
@@ -247,8 +228,6 @@ namespace pcl
         vtkSmartPointer<vtkDataArray>
         getColor () const override;
 
-        using PointCloudColorHandler<PointT>::getColor;
-
       protected:
         // Members derived from the base class
         using PointCloudColorHandler<PointT>::cloud_;
@@ -298,8 +277,6 @@ namespace pcl
         vtkSmartPointer<vtkDataArray>
         getColor () const override;
 
-        using PointCloudColorHandler<PointT>::getColor;
-
         /** \brief Set the input cloud to be used.
           * \param[in] cloud the input cloud to be used by the handler
           */
@@ -347,8 +324,6 @@ namespace pcl
 
         vtkSmartPointer<vtkDataArray>
         getColor () const override;
-
-        using PointCloudColorHandler<PointT>::getColor;
 
       protected:
         /** \brief Class getName method. */
@@ -409,8 +384,6 @@ namespace pcl
 
         vtkSmartPointer<vtkDataArray>
         getColor () const override;
-
-        using PointCloudColorHandler<PointT>::getColor;
 
         /** \brief Set the input cloud to be used.
           * \param[in] cloud the input cloud to be used by the handler
@@ -473,8 +446,6 @@ namespace pcl
 
         vtkSmartPointer<vtkDataArray>
         getColor () const override;
-
-        using PointCloudColorHandler<PointT>::getColor;
 
         /** \brief Set the input cloud to be used.
           * \param[in] cloud the input cloud to be used by the handler
@@ -606,22 +577,7 @@ namespace pcl
           * \return smart pointer to VTK array if the operation was successful (the
           * handler is capable and the input cloud was given), a null pointer otherwise */
         virtual vtkSmartPointer<vtkDataArray>
-        getColor () const {
-          vtkSmartPointer<vtkDataArray> scalars;
-          getColor (scalars);
-          return scalars;
-        }
-
-        /** Obtain the actual color for the input dataset as a VTK data array.
-          * This virtual method should not be overriden or used. The default implementation
-          * is provided only for backwards compatibility with handlers that were written
-          * before PCL 1.10.0 and will be removed in future. */
-        PCL_DEPRECATED(1, 12, "use getColor() without parameters instead")
-        virtual bool
-        getColor (vtkSmartPointer<vtkDataArray> &scalars) const {
-          scalars = getColor ();
-          return scalars.Get() != nullptr;
-        }
+          getColor() const = 0;
 
         /** \brief Set the input cloud to be used.
           * \param[in] cloud the input cloud to be used by the handler
@@ -681,8 +637,6 @@ namespace pcl
 
         vtkSmartPointer<vtkDataArray>
         getColor () const override;
-
-        using PointCloudColorHandler<pcl::PCLPointCloud2>::getColor;
     };
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -722,8 +676,6 @@ namespace pcl
         vtkSmartPointer<vtkDataArray>
         getColor () const override;
 
-        using PointCloudColorHandler<pcl::PCLPointCloud2>::getColor;
-
       protected:
         /** \brief Internal R, G, B holding the values given by the user. */
         double r_, g_, b_;
@@ -754,8 +706,6 @@ namespace pcl
 
         vtkSmartPointer<vtkDataArray>
         getColor () const override;
-
-        using PointCloudColorHandler<pcl::PCLPointCloud2>::getColor;
 
       protected:
         /** \brief Get the name of the class. */
@@ -791,8 +741,6 @@ namespace pcl
 
         vtkSmartPointer<vtkDataArray>
         getColor () const override;
-
-        using PointCloudColorHandler<pcl::PCLPointCloud2>::getColor;
 
       protected:
         /** \brief Get the name of the class. */
@@ -837,8 +785,6 @@ namespace pcl
         vtkSmartPointer<vtkDataArray>
         getColor () const override;
 
-        using PointCloudColorHandler<pcl::PCLPointCloud2>::getColor;
-
       protected:
         /** \brief Get the name of the class. */
         virtual std::string
@@ -879,8 +825,6 @@ namespace pcl
         vtkSmartPointer<vtkDataArray>
         getColor () const override;
 
-        using PointCloudColorHandler<pcl::PCLPointCloud2>::getColor;
-
       protected:
         /** \brief Get the name of the class. */
         virtual std::string
@@ -918,8 +862,6 @@ namespace pcl
 
         vtkSmartPointer<vtkDataArray>
         getColor () const override;
-
-        using PointCloudColorHandler<pcl::PCLPointCloud2>::getColor;
 
       protected:
         /** \brief Get the name of the class. */

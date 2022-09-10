@@ -28,6 +28,10 @@ DAMAGE.
 
 #include "factor.h"
 
+#include <cstdio>
+#include <cstdlib>  // for malloc, needed by gcc-5
+#include <cstring>
+
 ////////////////////////
 // StartingPolynomial //
 ////////////////////////
@@ -370,7 +374,7 @@ namespace pcl
       }
       printf("\n");
     }
-    template< >
+    template< > inline
     PPolynomial< 0 > PPolynomial< 0 >::BSpline( double radius )
     {
       PPolynomial q;

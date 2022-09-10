@@ -174,7 +174,7 @@ computeMaxColorGradients ()
   const int width = input_->width;
   const int height = input_->height;
 
-  color_gradients_.points.resize (width*height);
+  color_gradients_.resize (width*height);
   color_gradients_.width = width;
   color_gradients_.height = height;
 
@@ -187,17 +187,17 @@ computeMaxColorGradients ()
       const int index_c = row_index*width+col_index+2;
       const int index_r = (row_index+2)*width+col_index;
 
-      const unsigned char r0 = input_->points[index0].r;
-      const unsigned char g0 = input_->points[index0].g;
-      const unsigned char b0 = input_->points[index0].b;
+      const unsigned char r0 = (*input_)[index0].r;
+      const unsigned char g0 = (*input_)[index0].g;
+      const unsigned char b0 = (*input_)[index0].b;
 
-      const unsigned char r_c = input_->points[index_c].r;
-      const unsigned char g_c = input_->points[index_c].g;
-      const unsigned char b_c = input_->points[index_c].b;
+      const unsigned char r_c = (*input_)[index_c].r;
+      const unsigned char g_c = (*input_)[index_c].g;
+      const unsigned char b_c = (*input_)[index_c].b;
 
-      const unsigned char r_r = input_->points[index_r].r;
-      const unsigned char g_r = input_->points[index_r].g;
-      const unsigned char b_r = input_->points[index_r].b;
+      const unsigned char r_r = (*input_)[index_r].r;
+      const unsigned char g_r = (*input_)[index_r].g;
+      const unsigned char b_r = (*input_)[index_r].b;
 
       const float r_dx = static_cast<float> (r_c) - static_cast<float> (r0);
       const float g_dx = static_cast<float> (g_c) - static_cast<float> (g0);
@@ -259,7 +259,7 @@ computeDominantQuantizedGradients ()
   constexpr float divisor = 180.0f / (num_gradient_bins - 1.0f);
 
   unsigned char * peak_pointer = dominant_quantized_color_gradients_.getData ();
-  memset (peak_pointer, 0, output_width*output_height);
+  std::fill_n(peak_pointer, output_width*output_height, 0);
   
   for (std::size_t row_bin_index = 0; row_bin_index < output_height; ++row_bin_index)
   {

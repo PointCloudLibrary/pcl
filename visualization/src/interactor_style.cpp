@@ -36,6 +36,7 @@
  *
  */
 
+#include <fstream>
 #include <list>
 #include <pcl/common/angles.h>
 #include <pcl/visualization/common/io.h>
@@ -64,6 +65,10 @@
 #include <vtkAbstractPicker.h>
 #include <vtkPointPicker.h>
 #include <vtkAreaPicker.h>
+
+#include <boost/algorithm/string/classification.hpp> // for is_any_of
+#include <boost/algorithm/string/split.hpp> // for split
+#include <boost/filesystem.hpp> // for exists
 
 #if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
 #include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
@@ -137,7 +142,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::saveCameraParameters (const st
 {
   FindPokedRenderer (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
 
-  ofstream ofs_cam (file.c_str ());
+  std::ofstream ofs_cam (file.c_str ());
   if (!ofs_cam.is_open ())
   {
     return (false);
@@ -676,7 +681,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         else
 #endif
         {
-          vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act.actor->GetMapper ());
+          auto* mapper = static_cast<vtkPolyDataMapper*>(act.actor->GetMapper ());
           mapper->SetInputData (data);
           // Modify the actor
           act.actor->SetMapper (mapper);
@@ -703,7 +708,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         double minmax[2];
         scalars->GetRange (minmax);
         // Update the data
-        vtkPolyData *data = static_cast<vtkPolyData*>(act.actor->GetMapper ()->GetInput ());
+        auto *data = static_cast<vtkPolyData*>(act.actor->GetMapper ()->GetInput ());
         data->GetPointData ()->SetScalars (scalars);
         // Modify the mapper
 #if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
@@ -719,7 +724,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         else
 #endif
         {
-          vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act.actor->GetMapper ());
+          auto* mapper = static_cast<vtkPolyDataMapper*>(act.actor->GetMapper ());
           mapper->SetScalarRange (minmax);
           mapper->SetScalarModeToUsePointData ();
           mapper->SetInputData (data);
@@ -730,6 +735,8 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       }
     }
 
+    KeyboardEvent event (true, Interactor->GetKeySym (), Interactor->GetKeyCode (), Interactor->GetAltKey (), Interactor->GetControlKey (), Interactor->GetShiftKey ());
+    keyboard_signal_ (event);
     Interactor->Render ();
     return;
   }
@@ -853,7 +860,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     case 'j': case 'J':
     {
       char cam_fn[80], snapshot_fn[80];
-      unsigned t = static_cast<unsigned> (time (nullptr));
+      auto t = static_cast<unsigned> (time (nullptr));
       sprintf (snapshot_fn, "screenshot-%d.png" , t);
       saveScreenshot (snapshot_fn);
 
@@ -1063,7 +1070,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         if(CurrentRenderer)
           CurrentRenderer->ResetCamera ();
         else
-          PCL_WARN ("no current renderer on the interactor style.");
+          PCL_WARN ("no current renderer on the interactor style.\n");
 
         CurrentRenderer->Render ();
         break;
@@ -1071,7 +1078,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
 
       vtkSmartPointer<vtkCamera> cam = CurrentRenderer->GetActiveCamera ();
       
-      static CloudActorMap::iterator it = cloud_actors_->begin ();
+      static auto it = cloud_actors_->begin ();
       // it might be that some actors don't have a valid transformation set -> we skip them to avoid a seg fault.
       bool found_transformation = false;
       for (unsigned idx = 0; idx < cloud_actors_->size (); ++idx, ++it)

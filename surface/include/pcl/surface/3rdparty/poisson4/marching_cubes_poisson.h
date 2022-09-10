@@ -29,7 +29,6 @@ DAMAGE.
 #ifndef MARCHING_CUBES_INCLUDED
 #define MARCHING_CUBES_INCLUDED
 #include <pcl/pcl_macros.h>
-#include <vector>
 #include "geometry.h"
 
 

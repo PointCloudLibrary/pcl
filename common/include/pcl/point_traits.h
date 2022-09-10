@@ -38,6 +38,6 @@
 
 #pragma once
 
-#warning "Deprecated in favor of type_traits.h"
+PCL_DEPRECATED_HEADER(1, 13, "Use <pcl/type_traits.h> instead.")
 
 #include <pcl/type_traits.h>

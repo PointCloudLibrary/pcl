@@ -45,7 +45,6 @@
 #include <pcl/common/eigen.h>
 
 using namespace pcl;
-using namespace std;
 
 namespace
 {

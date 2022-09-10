@@ -37,9 +37,6 @@
 
 #include <pcl/ml/point_xy_32i.h>
 
-#include <istream>
-#include <ostream>
-
 pcl::PointXY32i
 pcl::PointXY32i::randomPoint(const int min_x,
                              const int max_x,

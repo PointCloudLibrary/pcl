@@ -42,11 +42,12 @@
 #pragma GCC system_header
 #endif
 
+#include <pcl/pcl_base.h>
 #include <pcl/memory.h>
+#include <pcl/types.h>
 #include <Eigen/StdVector>
 #include <Eigen/Geometry>
 #include <pcl/pcl_exports.h>
-#include <pcl/pcl_macros.h>
 
 namespace pcl
 {
@@ -59,9 +60,9 @@ namespace pcl
   struct Correspondence
   {
     /** \brief Index of the query (source) point. */
-    int index_query = 0;
+    index_t index_query = 0;
     /** \brief Index of the matching (target) point. Set to -1 if no correspondence found. */
-    int index_match = -1;
+    index_t index_match = UNAVAILABLE;
     /** \brief Distance between the corresponding points, or the weight denoting the confidence in correspondence estimation */
     union
     {
@@ -70,12 +71,12 @@ namespace pcl
     };
 
     /** \brief Standard constructor.
-      * Sets \ref index_query to 0, \ref index_match to -1, and \ref distance to FLT_MAX.
+      * Sets \ref index_query to 0, \ref index_match to -1, and \ref distance to std::numeric_limits<float>::max().
       */
     inline Correspondence () = default;
 
     /** \brief Constructor. */
-    inline Correspondence (int _index_query, int _index_match, float _distance) :
+    inline Correspondence (index_t _index_query, index_t _index_match, float _distance) :
       index_query (_index_query), index_match (_index_match), distance (_distance)
     {}
 
@@ -105,7 +106,7 @@ namespace pcl
   void
   getRejectedQueryIndices (const pcl::Correspondences &correspondences_before,
                            const pcl::Correspondences &correspondences_after,
-                           std::vector<int>& indices,
+                           Indices& indices,
                            bool presorting_required = true);
 
   /**

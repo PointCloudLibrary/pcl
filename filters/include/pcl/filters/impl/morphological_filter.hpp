@@ -43,7 +43,6 @@
 #define PCL_FILTERS_IMPL_MORPHOLOGICAL_FILTER_H_
 
 #include <limits>
-#include <vector>
 
 #include <Eigen/Core>
 
@@ -52,11 +51,12 @@
 #include <pcl/filters/morphological_filter.h>
 #include <pcl/octree/octree_search.h>
 
-///////////////////////////////////////////////////////////////////////////////////////////
+namespace pcl
+{
 template <typename PointT> void
-pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPtr &cloud_in,
-                                 float resolution, const int morphological_operator,
-                                 pcl::PointCloud<PointT> &cloud_out)
+applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPtr &cloud_in,
+                            float resolution, const int morphological_operator,
+                            pcl::PointCloud<PointT> &cloud_out)
 {
   if (cloud_in->empty ())
     return;
@@ -75,15 +75,15 @@ pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPt
     case MORPH_DILATE:
     case MORPH_ERODE:
     {
-      for (std::size_t p_idx = 0; p_idx < cloud_in->points.size (); ++p_idx)
+      for (std::size_t p_idx = 0; p_idx < cloud_in->size (); ++p_idx)
       {
         Eigen::Vector3f bbox_min, bbox_max;
-        std::vector<int> pt_indices;
-        float minx = cloud_in->points[p_idx].x - half_res;
-        float miny = cloud_in->points[p_idx].y - half_res;
+        Indices pt_indices;
+        float minx = (*cloud_in)[p_idx].x - half_res;
+        float miny = (*cloud_in)[p_idx].y - half_res;
         float minz = -std::numeric_limits<float>::max ();
-        float maxx = cloud_in->points[p_idx].x + half_res;
-        float maxy = cloud_in->points[p_idx].y + half_res;
+        float maxx = (*cloud_in)[p_idx].x + half_res;
+        float maxy = (*cloud_in)[p_idx].y + half_res;
         float maxz = std::numeric_limits<float>::max ();
         bbox_min = Eigen::Vector3f (minx, miny, minz);
         bbox_max = Eigen::Vector3f (maxx, maxy, maxz);
@@ -98,12 +98,12 @@ pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPt
           {
             case MORPH_DILATE:
             {
-              cloud_out.points[p_idx].z = max_pt.z ();
+              cloud_out[p_idx].z = max_pt.z ();
               break;
             }
             case MORPH_ERODE:
             {
-              cloud_out.points[p_idx].z = min_pt.z ();
+              cloud_out[p_idx].z = min_pt.z ();
               break;
             }
           }
@@ -118,15 +118,15 @@ pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPt
 
       pcl::copyPointCloud (*cloud_in, cloud_temp);
 
-      for (std::size_t p_idx = 0; p_idx < cloud_temp.points.size (); ++p_idx)
+      for (std::size_t p_idx = 0; p_idx < cloud_temp.size (); ++p_idx)
       {
         Eigen::Vector3f bbox_min, bbox_max;
-        std::vector<int> pt_indices;
-        float minx = cloud_temp.points[p_idx].x - half_res;
-        float miny = cloud_temp.points[p_idx].y - half_res;
+        Indices pt_indices;
+        float minx = cloud_temp[p_idx].x - half_res;
+        float miny = cloud_temp[p_idx].y - half_res;
         float minz = -std::numeric_limits<float>::max ();
-        float maxx = cloud_temp.points[p_idx].x + half_res;
-        float maxy = cloud_temp.points[p_idx].y + half_res;
+        float maxx = cloud_temp[p_idx].x + half_res;
+        float maxy = cloud_temp[p_idx].y + half_res;
         float maxz = std::numeric_limits<float>::max ();
         bbox_min = Eigen::Vector3f (minx, miny, minz);
         bbox_max = Eigen::Vector3f (maxx, maxy, maxz);
@@ -141,12 +141,12 @@ pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPt
           {
             case MORPH_OPEN:
             {
-              cloud_out.points[p_idx].z = min_pt.z ();
+              cloud_out[p_idx].z = min_pt.z ();
               break;
             }
             case MORPH_CLOSE:
             {
-              cloud_out.points[p_idx].z = max_pt.z ();
+              cloud_out[p_idx].z = max_pt.z ();
               break;
             }
           }
@@ -155,15 +155,15 @@ pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPt
 
       cloud_temp.swap (cloud_out);
 
-      for (std::size_t p_idx = 0; p_idx < cloud_temp.points.size (); ++p_idx)
+      for (std::size_t p_idx = 0; p_idx < cloud_temp.size (); ++p_idx)
       {
         Eigen::Vector3f bbox_min, bbox_max;
-        std::vector<int> pt_indices;
-        float minx = cloud_temp.points[p_idx].x - half_res;
-        float miny = cloud_temp.points[p_idx].y - half_res;
+        Indices pt_indices;
+        float minx = cloud_temp[p_idx].x - half_res;
+        float miny = cloud_temp[p_idx].y - half_res;
         float minz = -std::numeric_limits<float>::max ();
-        float maxx = cloud_temp.points[p_idx].x + half_res;
-        float maxy = cloud_temp.points[p_idx].y + half_res;
+        float maxx = cloud_temp[p_idx].x + half_res;
+        float maxy = cloud_temp[p_idx].y + half_res;
         float maxz = std::numeric_limits<float>::max ();
         bbox_min = Eigen::Vector3f (minx, miny, minz);
         bbox_max = Eigen::Vector3f (maxx, maxy, maxz);
@@ -179,12 +179,12 @@ pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPt
             case MORPH_OPEN:
             default:
             {
-              cloud_out.points[p_idx].z = max_pt.z ();
+              cloud_out[p_idx].z = max_pt.z ();
               break;
             }
             case MORPH_CLOSE:
             {
-              cloud_out.points[p_idx].z = min_pt.z ();
+              cloud_out[p_idx].z = min_pt.z ();
               break;
             }
           }
@@ -202,7 +202,8 @@ pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPt
   return;
 }
 
+} // namespace pcl
+
 #define PCL_INSTANTIATE_applyMorphologicalOperator(T) template PCL_EXPORTS void pcl::applyMorphologicalOperator<T> (const pcl::PointCloud<T>::ConstPtr &, float, const int, pcl::PointCloud<T> &);
 
 #endif  //#ifndef PCL_FILTERS_IMPL_MORPHOLOGICAL_FILTER_H_
-

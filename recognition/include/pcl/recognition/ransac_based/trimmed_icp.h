@@ -72,8 +72,7 @@ namespace pcl
         : new_to_old_energy_ratio_ (0.99f)
         {}
 
-        ~TrimmedICP ()
-        {}
+        ~TrimmedICP () override = default;
 
         /** \brief Call this method before calling align().
           *
@@ -113,7 +112,7 @@ namespace pcl
 
           // Some variables for the closest point search
           pcl::PointXYZ transformed_source_point;
-          std::vector<int> target_index (1);
+          pcl::Indices target_index (1);
           std::vector<float> sqr_dist_to_target (1);
           float old_energy, energy = std::numeric_limits<float>::max ();
 
@@ -125,7 +124,7 @@ namespace pcl
             for ( int i = 0 ; i < num_source_points ; ++i )
             {
               // Transform the i-th source point based on the current transform matrix
-              aux::transform (guess_and_result, source_points.points[i], transformed_source_point);
+              aux::transform (guess_and_result, source_points[i], transformed_source_point);
 
               // Perform the closest point search
               kdtree_.nearestKSearch (transformed_source_point, 1, target_index, sqr_dist_to_target);

@@ -38,8 +38,6 @@
 
 #pragma once
 
-#include <iostream>
-#include <map>
 #include <vector>
 #include <pcl/pcl_exports.h>
 #include <vtkRenderer.h>

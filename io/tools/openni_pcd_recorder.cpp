@@ -37,6 +37,7 @@
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
 #include <boost/circular_buffer.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp> // for to_iso_string, local_time
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
@@ -47,7 +48,6 @@
 #include <memory>
 #include <thread>
 
-using namespace std;
 using namespace std::chrono_literals;
 using namespace pcl;
 using namespace pcl::console;
@@ -102,7 +102,9 @@ template <typename PointT>
 class PCDBuffer
 {
   public:
-    PCDBuffer () {}
+    PCDBuffer () = default;
+    PCDBuffer (const PCDBuffer&) = delete; // Disabled copy constructor
+    PCDBuffer& operator = (const PCDBuffer&) = delete; // Disabled assignment operator
 
     bool 
     pushBack (typename PointCloud<PointT>::ConstPtr); // thread-save wrapper for push_back() method of ciruclar_buffer
@@ -145,9 +147,6 @@ class PCDBuffer
     }
 
   private:
-    PCDBuffer (const PCDBuffer&) = delete; // Disabled copy constructor
-    PCDBuffer& operator = (const PCDBuffer&) = delete; // Disabled assignment operator
-
     std::mutex bmutex_;
     std::condition_variable buff_empty_;
     boost::circular_buffer<typename PointCloud<PointT>::ConstPtr> buffer_;
@@ -230,7 +229,7 @@ class Producer
     void 
     grabAndSend ()
     {
-      OpenNIGrabber* grabber = new OpenNIGrabber ();
+      auto* grabber = new OpenNIGrabber ();
       grabber->getDevice ()->setDepthOutputFormat (depth_mode_);
 
       Grabber* interface = grabber;
@@ -283,7 +282,7 @@ class Consumer
     void 
     writeToDisk (const typename PointCloud<PointT>::ConstPtr& cloud)
     {
-      stringstream ss;
+      std::stringstream ss;
       std::string time = boost::posix_time::to_iso_string (boost::posix_time::microsec_clock::local_time ());
       ss << "frame-" << time << ".pcd";
       writer_.writeBinaryCompressed (ss.str (), *cloud);

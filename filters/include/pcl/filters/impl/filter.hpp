@@ -35,54 +35,54 @@
  *
  */
 
-#ifndef PCL_FILTERS_IMPL_FILTER_H_
-#define PCL_FILTERS_IMPL_FILTER_H_
+#pragma once
 
-#include <pcl/pcl_macros.h>
+#include <pcl/pcl_exports.h> // for PCL_EXPORTS
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/filters/filter.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                               pcl::PointCloud<PointT> &cloud_out,
-                              std::vector<int> &index)
+                              Indices &index)
 {
   // If the clouds are not the same, prepare the output
   if (&cloud_in != &cloud_out)
   {
     cloud_out.header = cloud_in.header;
-    cloud_out.points.resize (cloud_in.points.size ());
+    cloud_out.resize (cloud_in.size ());
     cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
     cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
   }
   // Reserve enough space for the indices
-  index.resize (cloud_in.points.size ());
+  index.resize (cloud_in.size ());
 
   // If the data is dense, we don't need to check for NaN
   if (cloud_in.is_dense)
   {
     // Simply copy the data
     cloud_out = cloud_in;
-    for (std::size_t j = 0; j < cloud_out.points.size (); ++j)
-      index[j] = static_cast<int>(j);
+    for (std::size_t j = 0; j < cloud_out.size (); ++j)
+      index[j] = j;
   }
   else
   {
     std::size_t j = 0;
-    for (std::size_t i = 0; i < cloud_in.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud_in.size (); ++i)
     {
-      if (!std::isfinite (cloud_in.points[i].x) ||
-          !std::isfinite (cloud_in.points[i].y) ||
-          !std::isfinite (cloud_in.points[i].z))
+      if (!std::isfinite (cloud_in[i].x) ||
+          !std::isfinite (cloud_in[i].y) ||
+          !std::isfinite (cloud_in[i].z))
         continue;
-      cloud_out.points[j] = cloud_in.points[i];
-      index[j] = static_cast<int>(i);
+      cloud_out[j] = cloud_in[i];
+      index[j] = i;
       j++;
     }
-    if (j != cloud_in.points.size ())
+    if (j != cloud_in.size ())
     {
       // Resize to the correct size
-      cloud_out.points.resize (j);
+      cloud_out.resize (j);
       index.resize (j);
     }
 
@@ -98,49 +98,47 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 template <typename PointT> void
 pcl::removeNaNNormalsFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                                      pcl::PointCloud<PointT> &cloud_out,
-                                     std::vector<int> &index)
+                                     Indices &index)
 {
   // If the clouds are not the same, prepare the output
   if (&cloud_in != &cloud_out)
   {
     cloud_out.header = cloud_in.header;
-    cloud_out.points.resize (cloud_in.points.size ());
+    cloud_out.resize (cloud_in.size ());
     cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
     cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
   }
   // Reserve enough space for the indices
-  index.resize (cloud_in.points.size ());
+  index.resize (cloud_in.size ());
   std::size_t j = 0;
 
   // Assume cloud is dense
   cloud_out.is_dense = true;
 
-  for (std::size_t i = 0; i < cloud_in.points.size (); ++i)
+  for (std::size_t i = 0; i < cloud_in.size (); ++i)
   {
-    if (!std::isfinite (cloud_in.points[i].normal_x) ||
-        !std::isfinite (cloud_in.points[i].normal_y) ||
-        !std::isfinite (cloud_in.points[i].normal_z))
+    if (!std::isfinite (cloud_in[i].normal_x) ||
+        !std::isfinite (cloud_in[i].normal_y) ||
+        !std::isfinite (cloud_in[i].normal_z))
       continue;
-    if (cloud_out.is_dense && !pcl::isFinite(cloud_in.points[i]))
+    if (cloud_out.is_dense && !pcl::isFinite(cloud_in[i]))
       cloud_out.is_dense = false;
-    cloud_out.points[j] = cloud_in.points[i];
-    index[j] = static_cast<int>(i);
+    cloud_out[j] = cloud_in[i];
+    index[j] = i;
     j++;
   }
-  if (j != cloud_in.points.size ())
+  if (j != cloud_in.size ())
   {
     // Resize to the correct size
-    cloud_out.points.resize (j);
+    cloud_out.resize (j);
     index.resize (j);
   }
 
   cloud_out.height = 1;
-  cloud_out.width  = static_cast<std::uint32_t>(j);
+  cloud_out.width  = j;
 }
 
 
-#define PCL_INSTANTIATE_removeNaNFromPointCloud(T) template PCL_EXPORTS void pcl::removeNaNFromPointCloud<T>(const pcl::PointCloud<T>&, pcl::PointCloud<T>&, std::vector<int>&);
-#define PCL_INSTANTIATE_removeNaNNormalsFromPointCloud(T) template PCL_EXPORTS void pcl::removeNaNNormalsFromPointCloud<T>(const pcl::PointCloud<T>&, pcl::PointCloud<T>&, std::vector<int>&);
-
-#endif    // PCL_FILTERS_IMPL_FILTER_H_
+#define PCL_INSTANTIATE_removeNaNFromPointCloud(T) template PCL_EXPORTS void pcl::removeNaNFromPointCloud<T>(const pcl::PointCloud<T>&, pcl::PointCloud<T>&, Indices&);
+#define PCL_INSTANTIATE_removeNaNNormalsFromPointCloud(T) template PCL_EXPORTS void pcl::removeNaNNormalsFromPointCloud<T>(const pcl::PointCloud<T>&, pcl::PointCloud<T>&, Indices&);
 

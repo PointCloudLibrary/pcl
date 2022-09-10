@@ -45,7 +45,6 @@
 #include <pcl/console/time.h>
 #include <pcl/search/kdtree.h>
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
@@ -76,7 +75,7 @@ loadCloud (const std::string &filename, Cloud &cloud)
 }
 
 void
-compute (Cloud &cloud_a, Cloud &cloud_b)
+compute (const Cloud::ConstPtr &cloud_a, const Cloud::ConstPtr &cloud_b)
 {
   // Estimate
   TicToc tt;
@@ -86,11 +85,11 @@ compute (Cloud &cloud_a, Cloud &cloud_b)
 
   // compare A to B
   pcl::search::KdTree<PointType> tree_b;
-  tree_b.setInputCloud (cloud_b.makeShared ());
+  tree_b.setInputCloud (cloud_b);
   float max_dist_a = -std::numeric_limits<float>::max ();
-  for (const auto &point : cloud_a.points)
+  for (const auto &point : (*cloud_a))
   {
-    std::vector<int> indices (1);
+    pcl::Indices indices (1);
     std::vector<float> sqr_distances (1);
 
     tree_b.nearestKSearch (point, 1, indices, sqr_distances);
@@ -100,11 +99,11 @@ compute (Cloud &cloud_a, Cloud &cloud_b)
 
   // compare B to A
   pcl::search::KdTree<PointType> tree_a;
-  tree_a.setInputCloud (cloud_a.makeShared ());
+  tree_a.setInputCloud (cloud_a);
   float max_dist_b = -std::numeric_limits<float>::max ();
-  for (const auto &point : cloud_b.points)
+  for (const auto &point : (*cloud_b))
   {
-    std::vector<int> indices (1);
+    pcl::Indices indices (1);
     std::vector<float> sqr_distances (1);
 
     tree_a.nearestKSearch (point, 1, indices, sqr_distances);
@@ -156,6 +155,6 @@ main (int argc, char** argv)
     return (-1);
 
   // Compute the Hausdorff distance
-  compute (*cloud_a, *cloud_b);
+  compute (cloud_a, cloud_b);
 }
 

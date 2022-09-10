@@ -57,8 +57,6 @@
 
 #ifndef _WIN32
 #include <libusb-1.0/libusb.h>
-#else
-#include <pcl/io/boost.h>
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -247,8 +245,6 @@ openni_wrapper::OpenNIDriver::createVirtualDevice (const std::string& path, bool
 openni_wrapper::OpenNIDevice::Ptr
 openni_wrapper::OpenNIDriver::getDeviceByIndex (unsigned index) const
 {
-  using namespace std;
-
   if (index >= device_context_.size ())
     THROW_OPENNI_EXCEPTION ("Device index out of range. Only %d devices connected but device %d requested.", device_context_.size (), index);
   auto device = device_context_[index].device.lock ();
@@ -295,7 +291,7 @@ openni_wrapper::OpenNIDriver::getDeviceByIndex (unsigned index) const
 openni_wrapper::OpenNIDevice::Ptr
 openni_wrapper::OpenNIDriver::getDeviceBySerialNumber (const std::string& serial_number) const
 {
-  std::map<std::string, unsigned>::const_iterator it = serial_map_.find (serial_number);
+  auto it = serial_map_.find (serial_number);
 
   if (it != serial_map_.end ())
   {
@@ -313,10 +309,10 @@ openni_wrapper::OpenNIDriver::getDeviceBySerialNumber (const std::string& serial
 openni_wrapper::OpenNIDevice::Ptr
 openni_wrapper::OpenNIDriver::getDeviceByAddress (unsigned char bus, unsigned char address) const
 {
-  std::map<unsigned char, std::map<unsigned char, unsigned> >::const_iterator busIt = bus_map_.find (bus);
+  auto busIt = bus_map_.find (bus);
   if (busIt != bus_map_.end ())
   {
-    std::map<unsigned char, unsigned>::const_iterator devIt = busIt->second.find (address);
+    auto devIt = busIt->second.find (address);
     if (devIt != busIt->second.end ())
     {
       return getDeviceByIndex (devIt->second);
@@ -354,13 +350,13 @@ openni_wrapper::OpenNIDriver::getDeviceInfos () noexcept
       continue;
 
     std::uint8_t address = libusb_get_device_address (device);
-    std::map<unsigned char, unsigned>::const_iterator addressIt = busIt->second.find (address);
+    auto addressIt = busIt->second.find (address);
     if (addressIt == busIt->second.end ())
       continue;
 
     unsigned nodeIdx = addressIt->second;
     xn::NodeInfo& current_node = device_context_[nodeIdx].device_node;
-    XnProductionNodeDescription& description = const_cast<XnProductionNodeDescription&>(current_node.GetDescription ());
+    auto& description = const_cast<XnProductionNodeDescription&>(current_node.GetDescription ());
 
     libusb_device_descriptor descriptor;
     result = libusb_get_device_descriptor (devices[devIdx], &descriptor);
@@ -558,13 +554,6 @@ openni_wrapper::OpenNIDriver::DeviceContext::DeviceContext (const xn::NodeInfo& 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-openni_wrapper::OpenNIDriver::DeviceContext::DeviceContext (const DeviceContext& other)
-: device_node (other.device_node)
-, image_node (other.image_node)
-, depth_node (other.depth_node)
-, ir_node (other.ir_node)
-, device (other.device)
-{
-}
+openni_wrapper::OpenNIDriver::DeviceContext::DeviceContext (const DeviceContext& other) = default;
 
 #endif

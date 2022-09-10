@@ -53,7 +53,7 @@ namespace pcl
     public:
       CloudIterator (PointCloud<PointT>& cloud);
 
-      CloudIterator (PointCloud<PointT>& cloud, const std::vector<int>& indices);
+      CloudIterator (PointCloud<PointT>& cloud, const Indices& indices);
 
       CloudIterator (PointCloud<PointT>& cloud, const PointIndices& indices);
 
@@ -89,7 +89,7 @@ namespace pcl
       class Iterator
       {
         public:
-          virtual ~Iterator ()  {}
+          virtual ~Iterator ()  = default;
 
           virtual void operator ++ () = 0;
 
@@ -122,7 +122,7 @@ namespace pcl
     public:
       ConstCloudIterator (const PointCloud<PointT>& cloud);
 
-      ConstCloudIterator (const PointCloud<PointT>& cloud, const std::vector<int>& indices);
+      ConstCloudIterator (const PointCloud<PointT>& cloud, const Indices& indices);
 
       ConstCloudIterator (const PointCloud<PointT>& cloud, const PointIndices& indices);
 
@@ -158,7 +158,7 @@ namespace pcl
       class Iterator
       {
         public:
-          virtual ~Iterator ()  {}
+          virtual ~Iterator ()  = default;
 
           virtual void operator ++ () = 0;
 

@@ -40,8 +40,12 @@
 
 #include <pcl/features/integral_image_normal.h>
 
+
+namespace pcl
+{
+
 template <typename PointInT, typename PointOutT, typename NormalT> bool
-pcl::TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
+TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
 {
   if (!PCLBase<PointInT>::initCompute ())
     return (false);
@@ -89,9 +93,9 @@ pcl::TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
   return (true);
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointInT, typename PointOutT, typename NormalT> void
-pcl::TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut &output)
+TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut &output)
 {
   response_.reset (new pcl::PointCloud<float> (input_->width, input_->height));
   const Normals &normals = *normals_;
@@ -236,7 +240,7 @@ pcl::TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCl
     }
   }
   // Non maximas suppression
-  std::vector<int> indices = *indices_;
+  pcl::Indices indices = *indices_;
   std::sort (indices.begin (), indices.end (), [this] (int p1, int p2) { return greaterCornernessAtIndices (p1, p2); });
 
   output.clear ();
@@ -260,11 +264,11 @@ pcl::TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCl
   for (int i = 0; i < static_cast<int>(indices.size ()); ++i)
   {
     int idx = indices[static_cast<std::size_t>(i)];
-    if ((response_->points[idx] < second_threshold_) || occupency_map[idx])
+    if (((*response_)[idx] < second_threshold_) || occupency_map[idx])
       continue;
 
     PointOutT p;
-    p.getVector3fMap () = input_->points[idx].getVector3fMap ();
+    p.getVector3fMap () = (*input_)[idx].getVector3fMap ();
     p.intensity = response_->points [idx];
 
 #pragma omp critical
@@ -283,10 +287,14 @@ pcl::TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCl
   }
 
   output.height = 1;
-  output.width = static_cast<std::uint32_t> (output.size());
+  output.width = output.size();
   // we don not change the denseness
   output.is_dense = true;
 }
 
+} // namespace pcl
+
 #define PCL_INSTANTIATE_TrajkovicKeypoint3D(T,U,N) template class PCL_EXPORTS pcl::TrajkovicKeypoint3D<T,U,N>;
+
 #endif
+

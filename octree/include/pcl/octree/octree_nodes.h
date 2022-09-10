@@ -38,16 +38,11 @@
 
 #pragma once
 
-#include <cstddef>
-
-#include <cassert>
-
-#include <Eigen/Core>
-
+#include <pcl/octree/octree_container.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
-#include "octree_container.h"
+#include <cassert>
 
 namespace pcl {
 namespace octree {
@@ -62,10 +57,10 @@ enum node_type_t { BRANCH_NODE, LEAF_NODE };
  */
 class PCL_EXPORTS OctreeNode {
 public:
-  OctreeNode() {}
+  OctreeNode() = default;
 
-  virtual ~OctreeNode() {}
-  /** \brief Pure virtual method for receiving the type of octree node (branch or leaf)
+  virtual ~OctreeNode() = default;
+  /** \brief Pure virtual method for retrieving the type of octree node (branch or leaf)
    */
   virtual node_type_t
   getNodeType() const = 0;
@@ -77,7 +72,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief @b Abstract octree leaf class
- * \note Octree leafs may collect data of type DataT
+ * \note Octree leaves may collect data of type ContainerT
  * \author Julius Kammerl (julius@kammerl.de)
  */
 
@@ -95,7 +90,7 @@ public:
 
   /** \brief Empty deconstructor. */
 
-  ~OctreeLeafNode() {}
+  ~OctreeLeafNode() override = default;
 
   /** \brief Method to perform a deep copy of the octree */
   OctreeLeafNode<ContainerT>*
@@ -112,16 +107,32 @@ public:
   }
 
   /** \brief Get const pointer to container */
-  const ContainerT* operator->() const { return &container_; }
+  const ContainerT*
+  operator->() const
+  {
+    return &container_;
+  }
 
   /** \brief Get pointer to container */
-  ContainerT* operator->() { return &container_; }
+  ContainerT*
+  operator->()
+  {
+    return &container_;
+  }
 
   /** \brief Get const reference to container */
-  const ContainerT& operator*() const { return container_; }
+  const ContainerT&
+  operator*() const
+  {
+    return container_;
+  }
 
   /** \brief Get reference to container */
-  ContainerT& operator*() { return container_; }
+  ContainerT&
+  operator*()
+  {
+    return container_;
+  }
 
   /** \brief Get const reference to container */
   const ContainerT&
@@ -205,13 +216,14 @@ public:
 
   /** \brief Empty deconstructor. */
 
-  ~OctreeBranchNode() {}
+  ~OctreeBranchNode() override = default;
 
   /** \brief Access operator.
    *  \param child_idx_arg: index to child node
    *  \return OctreeNode pointer
    * */
-  inline OctreeNode*& operator[](unsigned char child_idx_arg)
+  inline OctreeNode*&
+  operator[](unsigned char child_idx_arg)
   {
     assert(child_idx_arg < 8);
     return child_node_array_[child_idx_arg];
@@ -288,16 +300,32 @@ public:
   }
 
   /** \brief Get const pointer to container */
-  const ContainerT* operator->() const { return &container_; }
+  const ContainerT*
+  operator->() const
+  {
+    return &container_;
+  }
 
   /** \brief Get pointer to container */
-  ContainerT* operator->() { return &container_; }
+  ContainerT*
+  operator->()
+  {
+    return &container_;
+  }
 
   /** \brief Get const reference to container */
-  const ContainerT& operator*() const { return container_; }
+  const ContainerT&
+  operator*() const
+  {
+    return container_;
+  }
 
   /** \brief Get reference to container */
-  ContainerT& operator*() { return container_; }
+  ContainerT&
+  operator*()
+  {
+    return container_;
+  }
 
   /** \brief Get const reference to container */
   const ContainerT&

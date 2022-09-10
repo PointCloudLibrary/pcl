@@ -55,7 +55,6 @@
 #define MEMORY_ALLOCATOR_BLOCK_SIZE 1<<12
 
 #include <cstdarg>
-#include <string>
 
 using namespace pcl;
 
@@ -81,15 +80,28 @@ pcl::Poisson<PointNT>::Poisson ()
   , show_residual_ (false)
   , min_iterations_ (8)
   , solver_accuracy_ (1e-3f)
+  , threads_(1)
 {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
-pcl::Poisson<PointNT>::~Poisson ()
-{
-}
+pcl::Poisson<PointNT>::~Poisson () = default;
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointNT> void
+pcl::Poisson<PointNT>::setThreads (int threads)
+{
+  if (threads == 0)
+#ifdef _OPENMP
+    threads_ = omp_get_num_procs();
+#else
+    threads_ = 1;
+#endif
+  else
+    threads_ = threads;
+}
+      
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> template <int Degree> void
 pcl::Poisson<PointNT>::execute (poisson::CoredVectorMeshData &mesh,
@@ -100,8 +112,8 @@ pcl::Poisson<PointNT>::execute (poisson::CoredVectorMeshData &mesh,
   poisson::TreeNodeData::UseIndex = 1;
   poisson::Octree<Degree> tree;
 
-  /// TODO OPENMP stuff
-  //    tree.threads = Threads.value;
+  
+  tree.threads = threads_;
   center.coords[0] = center.coords[1] = center.coords[2] = 0;
 
 
@@ -190,21 +202,21 @@ pcl::Poisson<PointNT>::performReconstruction (PolygonMesh &output)
 
   // Write output PolygonMesh
   pcl::PointCloud<pcl::PointXYZ> cloud;
-  cloud.points.resize (int (mesh.outOfCorePointCount () + mesh.inCorePoints.size ()));
+  cloud.resize (int (mesh.outOfCorePointCount () + mesh.inCorePoints.size ()));
   poisson::Point3D<float> p;
   for (int i = 0; i < int (mesh.inCorePoints.size ()); i++)
   {
     p = mesh.inCorePoints[i];
-    cloud.points[i].x = p.coords[0]*scale+center.coords[0];
-    cloud.points[i].y = p.coords[1]*scale+center.coords[1];
-    cloud.points[i].z = p.coords[2]*scale+center.coords[2];
+    cloud[i].x = p.coords[0]*scale+center.coords[0];
+    cloud[i].y = p.coords[1]*scale+center.coords[1];
+    cloud[i].z = p.coords[2]*scale+center.coords[2];
   }
   for (int i = int (mesh.inCorePoints.size ()); i < int (mesh.outOfCorePointCount () + mesh.inCorePoints.size ()); i++)
   {
     mesh.nextOutOfCorePoint (p);
-    cloud.points[i].x = p.coords[0]*scale+center.coords[0];
-    cloud.points[i].y = p.coords[1]*scale+center.coords[1];
-    cloud.points[i].z = p.coords[2]*scale+center.coords[2];
+    cloud[i].x = p.coords[0]*scale+center.coords[0];
+    cloud[i].y = p.coords[1]*scale+center.coords[1];
+    cloud[i].z = p.coords[2]*scale+center.coords[2];
   }
   pcl::toPCLPointCloud2 (cloud, output.cloud);
   output.polygons.resize (mesh.polygonCount ());
@@ -276,16 +288,16 @@ pcl::Poisson<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &points,
   for (int i = 0; i < int(mesh.inCorePoints.size ()); i++)
   {
     p = mesh.inCorePoints[i];
-    points.points[i].x = p.coords[0]*scale+center.coords[0];
-    points.points[i].y = p.coords[1]*scale+center.coords[1];
-    points.points[i].z = p.coords[2]*scale+center.coords[2];
+    points[i].x = p.coords[0]*scale+center.coords[0];
+    points[i].y = p.coords[1]*scale+center.coords[1];
+    points[i].z = p.coords[2]*scale+center.coords[2];
   }
   for (int i = int(mesh.inCorePoints.size()); i < int (mesh.outOfCorePointCount() + mesh.inCorePoints.size ()); i++)
   {
     mesh.nextOutOfCorePoint (p);
-    points.points[i].x = p.coords[0]*scale+center.coords[0];
-    points.points[i].y = p.coords[1]*scale+center.coords[1];
-    points.points[i].z = p.coords[2]*scale+center.coords[2];
+    points[i].x = p.coords[0]*scale+center.coords[0];
+    points[i].y = p.coords[1]*scale+center.coords[1];
+    points[i].z = p.coords[2]*scale+center.coords[2];
   }
 
   polygons.resize (mesh.polygonCount ());

@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <pcl/common/common_headers.h>
+
 #include <pcl/range_image/range_image.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/range_image_visualizer.h>
@@ -106,10 +106,10 @@ main (int argc, char** argv)
       for (float y=-0.5f; y<=0.5f; y+=0.01f)
       {
         PointType point;  point.x = x;  point.y = y;  point.z = 2.0f - y;
-        point_cloud.points.push_back (point);
+        point_cloud.push_back (point);
       }
     }
-    point_cloud.width = (int) point_cloud.points.size ();  point_cloud.height = 1;
+    point_cloud.width = point_cloud.size ();  point_cloud.height = 1;
   }
   
   // -----------------------------------------------

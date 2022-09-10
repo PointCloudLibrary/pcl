@@ -33,8 +33,12 @@
  *
  */
 
-#include <pcl/pcl_macros.h>
+#pragma once
+
 #include <pcl/common/eigen.h>
+#include <pcl/range_image/range_image_spherical.h>
+#include <pcl/pcl_macros.h>
+
 
 namespace pcl
 {
@@ -75,4 +79,5 @@ RangeImageSpherical::getImagePointFromAngles (float angle_x, float angle_y, floa
   image_x = (angle_x + static_cast<float> (M_PI))*angular_resolution_x_reciprocal_ - static_cast<float> (image_offset_x_);
   image_y = (angle_y + 0.5f*static_cast<float> (M_PI))*angular_resolution_y_reciprocal_ - static_cast<float> (image_offset_y_);
 }
-}  // namespace end
+}  // namespace pcl
+

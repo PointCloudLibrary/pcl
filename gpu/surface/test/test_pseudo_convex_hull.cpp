@@ -64,8 +64,6 @@
 #include <pcl/common/time.h>
 
 using namespace pcl::gpu;
-using namespace std;
-
 
 int loadCloud(const std::string& file, pcl::PointCloud<pcl::PointXYZ>& cloud)
 {  
@@ -73,7 +71,7 @@ int loadCloud(const std::string& file, pcl::PointCloud<pcl::PointXYZ>& cloud)
   if (result != -1)
       return result;
 
-  string name = file.substr(0, file.find_last_of("."));
+  std::string name = file.substr(0, file.find_last_of("."));
       
   result = pcl::io::loadPCDFile(name + ".pcd", cloud);
   if (result != -1)

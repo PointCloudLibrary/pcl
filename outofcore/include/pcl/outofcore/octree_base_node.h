@@ -46,7 +46,6 @@
 #include <pcl/common/io.h>
 #include <pcl/PCLPointCloud2.h>
 
-#include <pcl/outofcore/boost.h>
 #include <pcl/outofcore/octree_base.h>
 #include <pcl/outofcore/octree_disk_container.h>
 #include <pcl/outofcore/outofcore_node_data.h>
@@ -129,7 +128,7 @@ namespace pcl
 
         /** \brief Will recursively delete all children calling recFreeChildrein */
         
-        ~OutofcoreOctreeBaseNode ();
+        ~OutofcoreOctreeBaseNode () override;
 
         //query
         /** \brief gets the minimum and maximum corner of the bounding box represented by this node
@@ -477,9 +476,7 @@ namespace pcl
         void
         loadFromFile (const boost::filesystem::path &path, OutofcoreOctreeBaseNode* super);
 
-        /** \brief Recursively converts data files to ascii XZY files
-         *  \note This will be deprecated soon
-         */
+        /** \brief Recursively converts data files to ascii XZY files */
         void
         convertToXYZRecursive ();
 
@@ -521,7 +518,7 @@ namespace pcl
          *  This could be overloaded with a parallelized implementation
          */
         void
-        sortOctantIndices (const pcl::PCLPointCloud2::Ptr &input_cloud, std::vector< std::vector<int> > &indices, const Eigen::Vector3d &mid_xyz);
+        sortOctantIndices (const pcl::PCLPointCloud2::Ptr &input_cloud, std::vector< pcl::Indices > &indices, const Eigen::Vector3d &mid_xyz);
 
         /** \brief Enlarges the shortest two sidelengths of the
          *  bounding box to a cubic shape; operation is done in

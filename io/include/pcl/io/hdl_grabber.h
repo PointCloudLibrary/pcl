@@ -71,9 +71,6 @@ namespace pcl
        */
       using sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba = void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &, float, float);
 
-      using sig_cb_velodyne_hdl_scan_point_cloud_xyzrgb PCL_DEPRECATED(1, 12, "use sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba instead")
-              = sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba;
-
       /** \brief Signal used for a single sector
        *         Represents 1 corrected packet from the HDL Velodyne with the returned intensity.
        */
@@ -97,9 +94,6 @@ namespace pcl
        */
       using sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba = void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &);
 
-      using sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgb PCL_DEPRECATED(1, 12, "use sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba instead")
-              = sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba;
-
       /** \brief Constructor taking an optional path to an HDL corrections file.  The Grabber will listen on the default IP/port for data packets [192.168.3.255/2368]
        * \param[in] correctionsFile Path to a file which contains the correction parameters for the HDL.  This parameter is mandatory for the HDL-64, optional for the HDL-32
        * \param[in] pcapFile Path to a file which contains previously captured data packets.  This parameter is optional
@@ -118,7 +112,7 @@ namespace pcl
 
       /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
       
-      ~HDLGrabber () noexcept;
+      ~HDLGrabber () noexcept override;
 
       /** \brief Starts processing the Velodyne packets, either from the network or PCAP file. */
       void

@@ -41,7 +41,6 @@
 #pragma once
 
 #include <pcl/sample_consensus/sac_model_plane.h>
-#include <pcl/common/common.h>
 
 namespace pcl
 {
@@ -110,7 +109,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      ~SampleConsensusModelParallelPlane () {}
+      ~SampleConsensusModelParallelPlane () override = default;
 
       /** \brief Set the axis along which we need to search for a plane perpendicular to.
         * \param[in] ax the axis along which we need to search for a plane perpendicular to

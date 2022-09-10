@@ -42,8 +42,7 @@
 
 #include <pcl/features/feature.h>
 #include <pcl/features/vfh.h>
-#include <pcl/search/pcl_search.h>
-#include <pcl/common/common.h>
+#include <pcl/search/search.h> // for Search
 
 namespace pcl
 {
@@ -103,8 +102,8 @@ namespace pcl
         * \param[in] threshold threshold value for curvature
         */
       void
-      filterNormalsWithHighCurvature (const pcl::PointCloud<PointNT> & cloud, std::vector<int> & indices_to_use, std::vector<int> &indices_out,
-                                      std::vector<int> &indices_in, float threshold);
+      filterNormalsWithHighCurvature (const pcl::PointCloud<PointNT> & cloud, pcl::Indices & indices_to_use, pcl::Indices &indices_out,
+                                      pcl::Indices &indices_in, float threshold);
 
       /** \brief Set the viewpoint.
         * \param[in] vpx the X coordinate of the viewpoint

@@ -84,7 +84,7 @@ pcl::keypoints::agast::AbstractAgastDetector::detectKeypoints (
   detect (&(intensity_data[0]), output.points);
 
   output.height = 1;
-  output.width = static_cast<std::uint32_t> (output.points.size ());
+  output.width = output.size ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -96,7 +96,7 @@ pcl::keypoints::agast::AbstractAgastDetector::detectKeypoints (
   detect (&(intensity_data[0]), output.points);
 
   output.height = 1;
-  output.width = static_cast<std::uint32_t> (output.points.size ());
+  output.width = output.size ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -232,7 +232,7 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
   }
 
   output.height = 1;
-  output.width = static_cast<std::uint32_t> (output.points.size ());
+  output.width = output.size ();
   output.is_dense = input.is_dense;
 }
 
@@ -299,7 +299,7 @@ pcl::keypoints::agast::AbstractAgastDetector::computeCornerScores (
   const std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all,
   std::vector<ScoreIndex> &scores) const
 {
-  unsigned int num_corners = static_cast<unsigned int> (corners_all.size ());
+  auto num_corners = static_cast<unsigned int> (corners_all.size ());
 
   if (num_corners > scores.capacity ())
   {
@@ -329,7 +329,7 @@ pcl::keypoints::agast::AbstractAgastDetector::computeCornerScores (
   const std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all,
   std::vector<ScoreIndex> &scores) const
 {
-  unsigned int num_corners = static_cast<unsigned int> (corners_all.size ());
+  auto num_corners = static_cast<unsigned int> (corners_all.size ());
 
   if (num_corners > scores.capacity ())
   {

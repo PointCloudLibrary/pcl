@@ -35,8 +35,8 @@
  *
  */
 
-#include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
+#include <boost/lexical_cast.hpp> // for lexical_cast
 
 /** @brief PCL point object */
 using PointT = pcl::PointXYZRGBA;

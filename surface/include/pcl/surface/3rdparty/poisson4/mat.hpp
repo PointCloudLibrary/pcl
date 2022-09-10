@@ -43,10 +43,8 @@ namespace pcl
     template <class Real>
     MinimalAreaTriangulation<Real>::~MinimalAreaTriangulation(void)
     {
-      if(bestTriangulation)
         delete[] bestTriangulation;
       bestTriangulation=NULL;
-      if(midPoint)
         delete[] midPoint;
       midPoint=NULL;
     }
@@ -104,9 +102,7 @@ namespace pcl
         }
         return;
       }
-      if(bestTriangulation)
         delete[] bestTriangulation;
-      if(midPoint)
         delete[] midPoint;
       bestTriangulation=NULL;
       midPoint=NULL;
@@ -123,9 +119,7 @@ namespace pcl
     template <class Real>
     Real MinimalAreaTriangulation<Real>::GetArea(const std::vector<Point3D<Real> >& vertices)
     {
-      if(bestTriangulation)
         delete[] bestTriangulation;
-      if(midPoint)
         delete[] midPoint;
       bestTriangulation=NULL;
       midPoint=NULL;

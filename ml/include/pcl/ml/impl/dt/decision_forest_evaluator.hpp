@@ -38,7 +38,6 @@
 #pragma once
 
 #include <pcl/common/common.h>
-
 #include <pcl/ml/dt/decision_forest.h>
 #include <pcl/ml/dt/decision_forest_evaluator.h>
 #include <pcl/ml/feature_handler.h>
@@ -62,8 +61,7 @@ template <class FeatureType,
           class ExampleIndex,
           class NodeType>
 pcl::DecisionForestEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    ~DecisionForestEvaluator()
-{}
+    ~DecisionForestEvaluator() = default;
 
 template <class FeatureType,
           class DataSet,

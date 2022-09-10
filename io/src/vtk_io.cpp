@@ -40,7 +40,6 @@
 #include <pcl/point_types.h>
 #include <pcl/io/vtk_io.h>
 #include <fstream>
-#include <iostream>
 #include <pcl/common/io.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -60,7 +59,7 @@ pcl::io::saveVTKFile (const std::string &file_name,
   fs.open (file_name.c_str ());
 
   unsigned int nr_points  = triangles.cloud.width * triangles.cloud.height;
-  unsigned int point_size = static_cast<unsigned int> (triangles.cloud.data.size () / nr_points);
+  auto point_size = static_cast<unsigned int> (triangles.cloud.data.size () / nr_points);
 
   // Write the header information
   fs << "# vtk DataFile Version 3.0\nvtk output\nASCII\nDATASET POLYDATA\nPOINTS " << nr_points << " float" << '\n';
@@ -154,7 +153,7 @@ pcl::io::saveVTKFile (const std::string &file_name,
   fs.open (file_name.c_str ());
 
   unsigned int nr_points  = cloud.width * cloud.height;
-  unsigned int point_size = static_cast<unsigned int> (cloud.data.size () / nr_points);
+  auto point_size = static_cast<unsigned int> (cloud.data.size () / nr_points);
 
   // Write the header information
   fs << "# vtk DataFile Version 3.0\nvtk output\nASCII\nDATASET POLYDATA\nPOINTS " << nr_points << " float" << '\n';

@@ -47,7 +47,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
 pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computePointMomentInvariants (
-      const pcl::PointCloud<PointInT> &cloud, const std::vector<int> &indices,
+      const pcl::PointCloud<PointInT> &cloud, const pcl::Indices &indices,
       float &j1, float &j2, float &j3)
 {
   // Estimate the XYZ centroid
@@ -57,12 +57,12 @@ pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computePointMomentInvarian
   float mu200 = 0, mu020 = 0, mu002 = 0, mu110 = 0, mu101 = 0, mu011  = 0;
 
   // Iterate over the nearest neighbors set
-  for (const int &index : indices)
+  for (const auto &index : indices)
   {
     // Demean the points
-    temp_pt_[0] = cloud.points[index].x - xyz_centroid_[0];
-    temp_pt_[1] = cloud.points[index].y - xyz_centroid_[1];
-    temp_pt_[2] = cloud.points[index].z - xyz_centroid_[2];
+    temp_pt_[0] = cloud[index].x - xyz_centroid_[0];
+    temp_pt_[1] = cloud[index].y - xyz_centroid_[1];
+    temp_pt_[2] = cloud[index].z - xyz_centroid_[2];
 
     mu200 += temp_pt_[0] * temp_pt_[0];
     mu020 += temp_pt_[1] * temp_pt_[1];
@@ -117,7 +117,7 @@ pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computeFeature (PointCloud
 {
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices (k_);
+  pcl::Indices nn_indices (k_);
   std::vector<float> nn_dists (k_);
 
   output.is_dense = true;
@@ -129,13 +129,13 @@ pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computeFeature (PointCloud
     {
       if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
-        output.points[idx].j1 = output.points[idx].j2 = output.points[idx].j3 = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].j1 = output[idx].j2 = output[idx].j3 = std::numeric_limits<float>::quiet_NaN ();
         output.is_dense = false;
         continue;
       }
      
       computePointMomentInvariants (*surface_, nn_indices,
-                                    output.points[idx].j1, output.points[idx].j2, output.points[idx].j3);
+                                    output[idx].j1, output[idx].j2, output[idx].j3);
     }
   }
   else
@@ -146,13 +146,13 @@ pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computeFeature (PointCloud
       if (!isFinite ((*input_)[(*indices_)[idx]]) ||
           this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
-        output.points[idx].j1 = output.points[idx].j2 = output.points[idx].j3 = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].j1 = output[idx].j2 = output[idx].j3 = std::numeric_limits<float>::quiet_NaN ();
         output.is_dense = false;
         continue;
       }
 
       computePointMomentInvariants (*surface_, nn_indices,
-                                    output.points[idx].j1, output.points[idx].j2, output.points[idx].j3);
+                                    output[idx].j1, output[idx].j2, output[idx].j3);
     }
   }
 }

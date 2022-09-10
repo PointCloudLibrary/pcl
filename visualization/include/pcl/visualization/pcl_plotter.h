@@ -41,7 +41,6 @@
 #include <iostream>
 #include <vector>
 #include <utility>
-#include <cfloat>
 
 #include <pcl/visualization/common/common.h>
 #include <pcl/point_types.h>
@@ -49,15 +48,15 @@
 #include <pcl/point_cloud.h>
 #include <pcl/common/io.h>
 
-class vtkRenderWindow;
-class vtkRenderWindowInteractor;
-class vtkContextView;
-class vtkChartXY;
-class vtkColorSeries;
-
+#include <vtkContextView.h>
+#include <vtkChartXY.h>
+#include <vtkColorSeries.h>
 #include <vtkSmartPointer.h>
 #include <vtkCommand.h>
 #include <vtkChart.h>
+
+class vtkRenderWindow;
+class vtkRenderWindowInteractor;
 
 namespace pcl
 {
@@ -244,7 +243,7 @@ namespace pcl
         template <typename PointT> bool 
         addFeatureHistogram (const pcl::PointCloud<PointT> &cloud, 
                              const std::string &field_name, 
-                             const int index,
+                             const pcl::index_t index,
                              const std::string &id = "cloud", int win_width = 640, int win_height = 200);
         
         /** \brief Add a histogram feature to screen as a separate window.
@@ -258,7 +257,7 @@ namespace pcl
         bool 
         addFeatureHistogram (const pcl::PCLPointCloud2 &cloud,
                              const std::string &field_name, 
-                             const int index,
+                             const pcl::index_t index,
                              const std::string &id = "cloud", int win_width = 640, int win_height = 200);
         
         /** \brief Draws all the plots added by addPlotData() or addHistogramData() till now */

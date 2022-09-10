@@ -40,11 +40,12 @@
 #pragma once
 
 #include <pcl/pcl_base.h>
-#include <pcl/point_cloud.h>
 #include <pcl/PolygonMesh.h>
 
 namespace pcl
 {
+  template <typename PointT> class PointCloud;
+
   /** \brief @b CloudSurfaceProcessing represents the base class for algorithms that takes a point cloud as input and
     * produces a new output cloud that has been modified towards a better surface representation. These types of
     * algorithms include surface smoothing, hole filling, cloud upsampling etc.
@@ -56,8 +57,8 @@ namespace pcl
   class CloudSurfaceProcessing : public PCLBase<PointInT>
   {
     public:
-      typedef shared_ptr<CloudSurfaceProcessing<PointInT, PointOutT> > Ptr;
-      typedef shared_ptr<const CloudSurfaceProcessing<PointInT, PointOutT> > ConstPtr;
+      using Ptr = shared_ptr<CloudSurfaceProcessing<PointInT, PointOutT> >;
+      using ConstPtr = shared_ptr<const CloudSurfaceProcessing<PointInT, PointOutT> >;
 
       using PCLBase<PointInT>::input_;
       using PCLBase<PointInT>::indices_;
@@ -70,7 +71,7 @@ namespace pcl
       {};
       
       /** \brief Empty destructor */
-      ~CloudSurfaceProcessing () {}
+      ~CloudSurfaceProcessing () override = default;
 
       /** \brief Process the input cloud and store the results
         * \param[out] output the cloud where the results will be stored
@@ -99,10 +100,10 @@ namespace pcl
       using PolygonMeshConstPtr = PolygonMesh::ConstPtr;
 
       /** \brief Constructor. */
-      MeshProcessing () {}
+      MeshProcessing () = default;
 
       /** \brief Destructor. */
-      virtual ~MeshProcessing () {}
+      virtual ~MeshProcessing () = default;
 
       /** \brief Set the input mesh that we want to process
         * \param[in] input the input polygonal mesh

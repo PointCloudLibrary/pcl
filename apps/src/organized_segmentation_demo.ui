@@ -37,7 +37,7 @@
    </property>
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="3">
-     <widget class="QVTKWidget" name="qvtk_widget">
+     <widget class="PCLQVTKWidget" name="qvtk_widget">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>255</horstretch>
@@ -214,9 +214,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QVTKWidget</class>
-   <extends>QWidget</extends>
-   <header>QVTKWidget.h</header>
+   <class>PCLQVTKWidget</class>
+   <extends>QOpenGLWidget</extends>
+   <header location="global">pcl/visualization/qvtk_compatibility.h</header>
   </customwidget>
  </customwidgets>
  <resources>

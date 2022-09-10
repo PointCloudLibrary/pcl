@@ -43,7 +43,6 @@
 #include <pcl/io/hdl_grabber.h>
 #include <pcl/io/grabber.h>
 #include <pcl/point_types.h>
-#include <pcl/point_cloud.h>
 #include <boost/asio.hpp>
 #include <string>
 
@@ -71,7 +70,7 @@ namespace pcl
 
       /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
       
-      ~VLPGrabber () noexcept;
+      ~VLPGrabber () noexcept override;
 
       /** \brief Obtains the name of this I/O Grabber
        *  \return The name of the grabber

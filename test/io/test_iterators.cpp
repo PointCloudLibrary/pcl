@@ -36,10 +36,6 @@
 
 #include <pcl/test/gtest.h>
 
-#include <iostream>  
-
-#include <pcl/PCLPointCloud2.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
@@ -63,7 +59,7 @@ TEST (PCL, Iterators)
 {
   Point mean (0,0,0);
 
-  for (PointCloud::iterator it = cloud.begin(); it != cloud.end(); ++it) 
+  for (auto it = cloud.begin(); it != cloud.end(); ++it) 
   {
     for (int i=0;i<3;i++) mean.data[i] += it->data[i];
   }

@@ -40,9 +40,7 @@
 
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
-#include <pcl/common/common.h>
 #include <pcl/common/distances.h>
-#include <climits>
 
 namespace pcl
 {
@@ -130,7 +128,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      ~SampleConsensusModelCone () {}
+      ~SampleConsensusModelCone () override = default;
 
       /** \brief Copy constructor.
         * \param[in] source the model to copy into this
@@ -330,9 +328,8 @@ namespace pcl
           for (int i = 0; i < values (); ++i)
           {
             // dist = f - r
-            Eigen::Vector4f pt (model_->input_->points[indices_[i]].x,
-                                model_->input_->points[indices_[i]].y,
-                                model_->input_->points[indices_[i]].z, 0);
+            Eigen::Vector4f pt = (*model_->input_)[indices_[i]].getVector4fMap();
+            pt[3] = 0;
 
             // Calculate the point's projection on the cone axis
             float k = (pt.dot (axis_dir) - apexdotdir) * dirdotdir;

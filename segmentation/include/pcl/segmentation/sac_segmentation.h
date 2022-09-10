@@ -102,7 +102,7 @@ namespace pcl
       }
 
       /** \brief Empty destructor. */
-      ~SACSegmentation () { /*srv_.reset ();*/ };
+      ~SACSegmentation () override = default;
 
       /** \brief The type of model to use (user given parameter).
         * \param[in] model the model type (check \a model_types.h)
@@ -358,7 +358,7 @@ namespace pcl
 
       /** \brief Provide a pointer to the input dataset that contains the point normals of 
         * the XYZ dataset.
-        * \param[in] normals the const boost shared pointer to a PointCloud message
+        * \param[in] normals the const shared pointer to a PointCloud message
         */
       inline void 
       setInputNormals (const PointCloudNConstPtr &normals) { normals_ = normals; }

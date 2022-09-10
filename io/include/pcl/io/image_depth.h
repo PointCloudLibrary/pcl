@@ -42,7 +42,6 @@
 
 #include <pcl/pcl_config.h>
 #include <pcl/pcl_exports.h>
-#include <pcl/io/boost.h>
 
 #include<pcl/io/image_metadata_wrapper.h>
 

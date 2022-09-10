@@ -9,7 +9,7 @@ correct light sources that generate shadings and other visual effects.
 
 Given a geometric surface, it's usually trivial to infer the direction of the
 normal at a certain point on the surface as the vector perpendicular to the
-surface in that point. However, since the point cloud datasets that we acquire
+surface at that point. However, since the point cloud datasets that we acquire
 represent a set of point samples on the real surface, there are two
 possibilities:
 
@@ -26,7 +26,7 @@ directly compute the surface normals at each point in the cloud.
 
 .. raw:: html
 
-  <iframe width="425" height="349" src="http://www.youtube.com/embed/x1FSssJrfik" frameborder="0" allowfullscreen></iframe>
+  <iframe width="425" height="349" src="https://www.youtube.com/embed/x1FSssJrfik" frameborder="0" allowfullscreen></iframe>
 
 Theoretical primer
 ------------------
@@ -133,7 +133,7 @@ the surrounding point neighborhood support of the point (also called
 **k-neighborhood**).
 
 The specifics of the nearest-neighbor estimation problem raise the question of
-the *right scale factor*: given a sampled point cloud dataset , what are the
+the *right scale factor*: given a sampled point cloud dataset, what are the
 correct **k** (given via **pcl::Feature::setKSearch**) or **r** (given via
 **pcl::Feature::setRadiusSearch**) values that should be used in determining
 the set of nearest neighbors of a point? 
@@ -143,7 +143,7 @@ automatic estimation (i.e., without user given thresholds) of a point feature
 representation. To better illustrate this issue, the figure below presents the
 effects of selecting a smaller scale (i.e., small **r** or **k**) versus a
 larger scale (i.e., large **r** or **k**). The left part of the figures depicts
-a reasonable well chosen scale factor, with estimated surface normals
+a reasonable well-chosen scale factor, with estimated surface normals
 approximately perpendicular for the two planar surfaces and small edges
 visible all across the table. If the scale factor however is too big (right
 part), and thus the set of neighbors is larger covering points from adjacent
@@ -203,7 +203,7 @@ points in the input dataset.
      // Compute the features
      ne.compute (*cloud_normals);
 
-     // cloud_normals->points.size () should have the same size as the input cloud->points.size ()*
+     // cloud_normals->size () should have the same size as the input cloud->size ()*
    }
 
 The actual **compute** call from the **NormalEstimation** class does nothing internally but::
@@ -240,6 +240,8 @@ and the fourth coordinate is D = nc . p_plane (centroid here) + p. The output su
 
    \sigma = \frac{\lambda_0}{\lambda_0 + \lambda_1 + \lambda_2}
 
+For a detailed description of this property, see M. Pauly, M. Gross and L. P. Kobbelt, "Efficient simplification of point-sampled surfaces".
+
 Speeding Normal Estimation with OpenMP
 --------------------------------------
 
@@ -254,5 +256,3 @@ times faster computation times.
 .. note::
 
    If your dataset is organized (e.g., acquired using a TOF camera, stereo camera, etc -- that is, it has a width and a height), for even faster results see the :ref:`normal_estimation_using_integral_images`.
-
-

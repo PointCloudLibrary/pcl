@@ -42,7 +42,6 @@
 #include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
 
 #undef Success
-#include <Eigen/Dense>
 
 namespace pcl
 {

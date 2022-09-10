@@ -38,593 +38,204 @@
  *
  */
 
-// NOTE: This file has been created with 'pcl_src/geometry/include/pcl/geometry/mesh_indices.py'
-
 #pragma once
+
+#include <boost/operators.hpp>
 
 #include <iostream>
 
-#include <pcl/geometry/boost.h>
-
 ////////////////////////////////////////////////////////////////////////////////
-// VertexIndex
+// MeshIndex
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace pcl
-{
-  namespace geometry
+namespace pcl {
+namespace detail {
+
+template <class IndexTagT>
+class MeshIndex;
+
+template <class IndexTagT>
+std::istream&
+operator>>(std::istream& is, MeshIndex<IndexTagT>&);
+
+template <class IndexTagT>
+class MeshIndex
+: boost::totally_ordered<
+      MeshIndex<IndexTagT>,                                      // < > <= >= == !=
+      boost::unit_steppable<MeshIndex<IndexTagT>,                // ++ -- (pre and post)
+                            boost::additive<MeshIndex<IndexTagT> // += +
+                                                                 // -= -
+                                            >>> {
+
+public:
+  using Base = boost::totally_ordered<
+      MeshIndex<IndexTagT>,
+      boost::unit_steppable<MeshIndex<IndexTagT>,
+                            boost::additive<MeshIndex<IndexTagT>>>>;
+  using Self = MeshIndex<IndexTagT>;
+
+  /** \brief Constructor. Initializes with an invalid index. */
+  MeshIndex() : index_(-1) {}
+
+  /** \brief Constructor.
+   * \param[in] index The integer index.
+   */
+  explicit MeshIndex(const int index) : index_(index) {}
+
+  /** \brief Returns true if the index is valid. */
+  inline bool
+  isValid() const
   {
-    /** \brief Index used to access elements in the half-edge mesh. It is basically just a wrapper around an integer with a few added methods.
-      * \author Martin Saelzle
-      * \ingroup geometry
-      */
-    class VertexIndex
-        : boost::totally_ordered <pcl::geometry::VertexIndex // < > <= >= == !=
-        , boost::unit_steppable  <pcl::geometry::VertexIndex // ++ -- (pre and post)
-        , boost::additive        <pcl::geometry::VertexIndex // += + -= -
-        > > >
-    {
-      public:
+    return (index_ >= 0);
+  }
 
-        using Base = boost::totally_ordered <pcl::geometry::VertexIndex,
-                     boost::unit_steppable  <pcl::geometry::VertexIndex,
-                     boost::additive        <pcl::geometry::VertexIndex> > >;
-        using Self = pcl::geometry::VertexIndex;
+  /** \brief Invalidate the index. */
+  inline void
+  invalidate()
+  {
+    index_ = -1;
+  }
 
-        /** \brief Constructor. Initializes with an invalid index. */
-        VertexIndex ()
-          : index_ (-1)
-        {
-        }
+  /** \brief Get the index. */
+  inline int
+  get() const
+  {
+    return (index_);
+  }
 
-        /** \brief Constructor.
-          * \param[in] index The integer index.
-          */
-        explicit VertexIndex (const int index)
-          : index_ (index)
-        {
-        }
+  /** \brief Set the index. */
+  inline void
+  set(const int index)
+  {
+    index_ = index;
+  }
 
-        /** \brief Returns true if the index is valid. */
-        inline bool
-        isValid () const
-        {
-          return (index_ >= 0);
-        }
+  /** \brief Comparison operators (with boost::operators): < > <= >= */
+  inline bool
+  operator<(const Self& other) const
+  {
+    return (this->get() < other.get());
+  }
 
-        /** \brief Invalidate the index. */
-        inline void
-        invalidate ()
-        {
-          index_ = -1;
-        }
+  /** \brief Comparison operators (with boost::operators): == != */
+  inline bool
+  operator==(const Self& other) const
+  {
+    return (this->get() == other.get());
+  }
 
-        /** \brief Get the index. */
-        inline int
-        get () const
-        {
-          return (index_);
-        }
+  /** \brief Increment operators (with boost::operators): ++ (pre and post) */
+  inline Self&
+  operator++()
+  {
+    ++index_;
+    return (*this);
+  }
 
-        /** \brief Set the index. */
-        inline void
-        set (const int index)
-        {
-          index_ = index;
-        }
+  /** \brief Decrement operators (with boost::operators): \-\- (pre and post) */
+  inline Self&
+  operator--()
+  {
+    --index_;
+    return (*this);
+  }
 
-        /** \brief Comparison operators (with boost::operators): < > <= >= */
-        inline bool
-        operator < (const Self& other) const
-        {
-          return (this->get () < other.get ());
-        }
+  /** \brief Addition operators (with boost::operators): + += */
+  inline Self&
+  operator+=(const Self& other)
+  {
+    index_ += other.get();
+    return (*this);
+  }
 
-        /** \brief Comparison operators (with boost::operators): == != */
-        inline bool
-        operator == (const Self& other) const
-        {
-          return (this->get () == other.get ());
-        }
+  /** \brief Subtraction operators (with boost::operators): - -= */
+  inline Self&
+  operator-=(const Self& other)
+  {
+    index_ -= other.get();
+    return (*this);
+  }
 
-        /** \brief Increment operators (with boost::operators): ++ (pre and post) */
-        inline Self&
-        operator ++ ()
-        {
-          ++index_;
-          return (*this);
-        }
+private:
+  /** \brief Stored index. */
+  int index_;
 
-        /** \brief Decrement operators (with boost::operators): \-\- (pre and post) */
-        inline Self&
-        operator -- ()
-        {
-          --index_;
-          return (*this);
-        }
+  friend std::istream& operator>><>(std::istream& is, MeshIndex<IndexTagT>& index);
+};
 
-        /** \brief Addition operators (with boost::operators): + += */
-        inline Self&
-        operator += (const Self& other)
-        {
-          index_ += other.get ();
-          return (*this);
-        }
+/** \brief ostream operator. */
+template <class IndexTagT>
+inline std::ostream&
+operator<<(std::ostream& os, const MeshIndex<IndexTagT>& index)
+{
+  return (os << index.get());
+}
 
-        /** \brief Subtraction operators (with boost::operators): - -= */
-        inline Self&
-        operator -= (const Self& other)
-        {
-          index_ -= other.get ();
-          return (*this);
-        }
+/** \brief istream operator. */
+template <class IndexTagT>
+inline std::istream&
+operator>>(std::istream& is, MeshIndex<IndexTagT>& index)
+{
+  return (is >> index.index_);
+}
 
-      private:
-
-        /** \brief Stored index. */
-        int index_;
-
-        friend std::istream&
-        operator >> (std::istream& is, pcl::geometry::VertexIndex& index);
-    };
-
-    /** \brief ostream operator. */
-    inline std::ostream&
-    operator << (std::ostream& os, const pcl::geometry::VertexIndex& index)
-    {
-      return (os << index.get ());
-    }
-
-    /** \brief istream operator. */
-    inline std::istream&
-    operator >> (std::istream& is, pcl::geometry::VertexIndex& index)
-    {
-      return (is >> index.index_);
-    }
-
-  } // End namespace geometry
+} // End namespace detail
 } // End namespace pcl
 
-////////////////////////////////////////////////////////////////////////////////
-// HalfEdgeIndex
-////////////////////////////////////////////////////////////////////////////////
+namespace pcl {
+namespace geometry {
+/** \brief Index used to access elements in the half-edge mesh. It is basically just a
+ * wrapper around an integer with a few added methods.
+ * \author Martin Saelzle
+ * \ingroup geometry
+ */
+using VertexIndex = pcl::detail::MeshIndex<struct VertexIndexTag>;
+/** \brief Index used to access elements in the half-edge mesh. It is basically just a
+ * wrapper around an integer with a few added methods.
+ * \author Martin Saelzle
+ * \ingroup geometry
+ */
+using HalfEdgeIndex = pcl::detail::MeshIndex<struct HalfEdgeIndexTag>;
+/** \brief Index used to access elements in the half-edge mesh. It is basically just a
+ * wrapper around an integer with a few added methods.
+ * \author Martin Saelzle
+ * \ingroup geometry
+ */
+using EdgeIndex = pcl::detail::MeshIndex<struct EdgeIndexTag>;
+/** \brief Index used to access elements in the half-edge mesh. It is basically just a
+ * wrapper around an integer with a few added methods.
+ * \author Martin Saelzle
+ * \ingroup geometry
+ */
+using FaceIndex = pcl::detail::MeshIndex<struct FaceIndexTag>;
 
-namespace pcl
-{
-  namespace geometry
-  {
-    /** \brief Index used to access elements in the half-edge mesh. It is basically just a wrapper around an integer with a few added methods.
-      * \author Martin Saelzle
-      * \ingroup geometry
-      */
-    class HalfEdgeIndex
-        : boost::totally_ordered <pcl::geometry::HalfEdgeIndex // < > <= >= == !=
-        , boost::unit_steppable  <pcl::geometry::HalfEdgeIndex // ++ -- (pre and post)
-        , boost::additive        <pcl::geometry::HalfEdgeIndex // += + -= -
-        > > >
-    {
-      public:
-
-        using Base = boost::totally_ordered <pcl::geometry::HalfEdgeIndex,
-                     boost::unit_steppable  <pcl::geometry::HalfEdgeIndex,
-                     boost::additive        <pcl::geometry::HalfEdgeIndex> > >;
-        using Self = pcl::geometry::HalfEdgeIndex;
-
-        /** \brief Constructor. Initializes with an invalid index. */
-        HalfEdgeIndex ()
-          : index_ (-1)
-        {
-        }
-
-        /** \brief Constructor.
-          * \param[in] index The integer index.
-          */
-        explicit HalfEdgeIndex (const int index)
-          : index_ (index)
-        {
-        }
-
-        /** \brief Returns true if the index is valid. */
-        inline bool
-        isValid () const
-        {
-          return (index_ >= 0);
-        }
-
-        /** \brief Invalidate the index. */
-        inline void
-        invalidate ()
-        {
-          index_ = -1;
-        }
-
-        /** \brief Get the index. */
-        inline int
-        get () const
-        {
-          return (index_);
-        }
-
-        /** \brief Set the index. */
-        inline void
-        set (const int index)
-        {
-          index_ = index;
-        }
-
-        /** \brief Comparison operators (with boost::operators): < > <= >= */
-        inline bool
-        operator < (const Self& other) const
-        {
-          return (this->get () < other.get ());
-        }
-
-        /** \brief Comparison operators (with boost::operators): == != */
-        inline bool
-        operator == (const Self& other) const
-        {
-          return (this->get () == other.get ());
-        }
-
-        /** \brief Increment operators (with boost::operators): ++ (pre and post) */
-        inline Self&
-        operator ++ ()
-        {
-          ++index_;
-          return (*this);
-        }
-
-        /** \brief Decrement operators (with boost::operators): \-\- (pre and post) */
-        inline Self&
-        operator -- ()
-        {
-          --index_;
-          return (*this);
-        }
-
-        /** \brief Addition operators (with boost::operators): + += */
-        inline Self&
-        operator += (const Self& other)
-        {
-          index_ += other.get ();
-          return (*this);
-        }
-
-        /** \brief Subtraction operators (with boost::operators): - -= */
-        inline Self&
-        operator -= (const Self& other)
-        {
-          index_ -= other.get ();
-          return (*this);
-        }
-
-      private:
-
-        /** \brief Stored index. */
-        int index_;
-
-        friend std::istream&
-        operator >> (std::istream& is, pcl::geometry::HalfEdgeIndex& index);
-    };
-
-    /** \brief ostream operator. */
-    inline std::ostream&
-    operator << (std::ostream& os, const pcl::geometry::HalfEdgeIndex& index)
-    {
-      return (os << index.get ());
-    }
-
-    /** \brief istream operator. */
-    inline std::istream&
-    operator >> (std::istream& is, pcl::geometry::HalfEdgeIndex& index)
-    {
-      return (is >> index.index_);
-    }
-
-  } // End namespace geometry
-} // End namespace pcl
-
-////////////////////////////////////////////////////////////////////////////////
-// EdgeIndex
-////////////////////////////////////////////////////////////////////////////////
-
-namespace pcl
-{
-  namespace geometry
-  {
-    /** \brief Index used to access elements in the half-edge mesh. It is basically just a wrapper around an integer with a few added methods.
-      * \author Martin Saelzle
-      * \ingroup geometry
-      */
-    class EdgeIndex
-        : boost::totally_ordered <pcl::geometry::EdgeIndex // < > <= >= == !=
-        , boost::unit_steppable  <pcl::geometry::EdgeIndex // ++ -- (pre and post)
-        , boost::additive        <pcl::geometry::EdgeIndex // += + -= -
-        > > >
-    {
-      public:
-
-        using Base = boost::totally_ordered <pcl::geometry::EdgeIndex,
-                     boost::unit_steppable  <pcl::geometry::EdgeIndex,
-                     boost::additive        <pcl::geometry::EdgeIndex> > >;
-        using Self = pcl::geometry::EdgeIndex;
-
-        /** \brief Constructor. Initializes with an invalid index. */
-        EdgeIndex ()
-          : index_ (-1)
-        {
-        }
-
-        /** \brief Constructor.
-          * \param[in] index The integer index.
-          */
-        explicit EdgeIndex (const int index)
-          : index_ (index)
-        {
-        }
-
-        /** \brief Returns true if the index is valid. */
-        inline bool
-        isValid () const
-        {
-          return (index_ >= 0);
-        }
-
-        /** \brief Invalidate the index. */
-        inline void
-        invalidate ()
-        {
-          index_ = -1;
-        }
-
-        /** \brief Get the index. */
-        inline int
-        get () const
-        {
-          return (index_);
-        }
-
-        /** \brief Set the index. */
-        inline void
-        set (const int index)
-        {
-          index_ = index;
-        }
-
-        /** \brief Comparison operators (with boost::operators): < > <= >= */
-        inline bool
-        operator < (const Self& other) const
-        {
-          return (this->get () < other.get ());
-        }
-
-        /** \brief Comparison operators (with boost::operators): == != */
-        inline bool
-        operator == (const Self& other) const
-        {
-          return (this->get () == other.get ());
-        }
-
-        /** \brief Increment operators (with boost::operators): ++ (pre and post) */
-        inline Self&
-        operator ++ ()
-        {
-          ++index_;
-          return (*this);
-        }
-
-        /** \brief Decrement operators (with boost::operators): \-\- (pre and post) */
-        inline Self&
-        operator -- ()
-        {
-          --index_;
-          return (*this);
-        }
-
-        /** \brief Addition operators (with boost::operators): + += */
-        inline Self&
-        operator += (const Self& other)
-        {
-          index_ += other.get ();
-          return (*this);
-        }
-
-        /** \brief Subtraction operators (with boost::operators): - -= */
-        inline Self&
-        operator -= (const Self& other)
-        {
-          index_ -= other.get ();
-          return (*this);
-        }
-
-      private:
-
-        /** \brief Stored index. */
-        int index_;
-
-        friend std::istream&
-        operator >> (std::istream& is, pcl::geometry::EdgeIndex& index);
-    };
-
-    /** \brief ostream operator. */
-    inline std::ostream&
-    operator << (std::ostream& os, const pcl::geometry::EdgeIndex& index)
-    {
-      return (os << index.get ());
-    }
-
-    /** \brief istream operator. */
-    inline std::istream&
-    operator >> (std::istream& is, pcl::geometry::EdgeIndex& index)
-    {
-      return (is >> index.index_);
-    }
-
-  } // End namespace geometry
-} // End namespace pcl
-
-////////////////////////////////////////////////////////////////////////////////
-// FaceIndex
-////////////////////////////////////////////////////////////////////////////////
-
-namespace pcl
-{
-  namespace geometry
-  {
-    /** \brief Index used to access elements in the half-edge mesh. It is basically just a wrapper around an integer with a few added methods.
-      * \author Martin Saelzle
-      * \ingroup geometry
-      */
-    class FaceIndex
-        : boost::totally_ordered <pcl::geometry::FaceIndex // < > <= >= == !=
-        , boost::unit_steppable  <pcl::geometry::FaceIndex // ++ -- (pre and post)
-        , boost::additive        <pcl::geometry::FaceIndex // += + -= -
-        > > >
-    {
-      public:
-
-        using Base = boost::totally_ordered <pcl::geometry::FaceIndex,
-                     boost::unit_steppable  <pcl::geometry::FaceIndex,
-                     boost::additive        <pcl::geometry::FaceIndex> > >;
-        using Self = pcl::geometry::FaceIndex;
-
-        /** \brief Constructor. Initializes with an invalid index. */
-        FaceIndex ()
-          : index_ (-1)
-        {
-        }
-
-        /** \brief Constructor.
-          * \param[in] index The integer index.
-          */
-        explicit FaceIndex (const int index)
-          : index_ (index)
-        {
-        }
-
-        /** \brief Returns true if the index is valid. */
-        inline bool
-        isValid () const
-        {
-          return (index_ >= 0);
-        }
-
-        /** \brief Invalidate the index. */
-        inline void
-        invalidate ()
-        {
-          index_ = -1;
-        }
-
-        /** \brief Get the index. */
-        inline int
-        get () const
-        {
-          return (index_);
-        }
-
-        /** \brief Set the index. */
-        inline void
-        set (const int index)
-        {
-          index_ = index;
-        }
-
-        /** \brief Comparison operators (with boost::operators): < > <= >= */
-        inline bool
-        operator < (const Self& other) const
-        {
-          return (this->get () < other.get ());
-        }
-
-        /** \brief Comparison operators (with boost::operators): == != */
-        inline bool
-        operator == (const Self& other) const
-        {
-          return (this->get () == other.get ());
-        }
-
-        /** \brief Increment operators (with boost::operators): ++ (pre and post) */
-        inline Self&
-        operator ++ ()
-        {
-          ++index_;
-          return (*this);
-        }
-
-        /** \brief Decrement operators (with boost::operators): \-\- (pre and post) */
-        inline Self&
-        operator -- ()
-        {
-          --index_;
-          return (*this);
-        }
-
-        /** \brief Addition operators (with boost::operators): + += */
-        inline Self&
-        operator += (const Self& other)
-        {
-          index_ += other.get ();
-          return (*this);
-        }
-
-        /** \brief Subtraction operators (with boost::operators): - -= */
-        inline Self&
-        operator -= (const Self& other)
-        {
-          index_ -= other.get ();
-          return (*this);
-        }
-
-      private:
-
-        /** \brief Stored index. */
-        int index_;
-
-        friend std::istream&
-        operator >> (std::istream& is, pcl::geometry::FaceIndex& index);
-    };
-
-    /** \brief ostream operator. */
-    inline std::ostream&
-    operator << (std::ostream& os, const pcl::geometry::FaceIndex& index)
-    {
-      return (os << index.get ());
-    }
-
-    /** \brief istream operator. */
-    inline std::istream&
-    operator >> (std::istream& is, pcl::geometry::FaceIndex& index)
-    {
-      return (is >> index.index_);
-    }
-
-  } // End namespace geometry
+} // End namespace geometry
 } // End namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 // Conversions
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace pcl
+namespace pcl {
+namespace geometry {
+/** \brief Convert the given half-edge index to an edge index. */
+inline EdgeIndex
+toEdgeIndex(const HalfEdgeIndex& index)
 {
-  namespace geometry
-  {
-    /** \brief Convert the given half-edge index to an edge index. */
-    inline pcl::geometry::EdgeIndex
-    toEdgeIndex (const HalfEdgeIndex& index)
-    {
-      return (index.isValid () ? EdgeIndex (index.get () / 2) : EdgeIndex ());
-    }
+  return (index.isValid() ? EdgeIndex(index.get() / 2) : EdgeIndex());
+}
 
-    /** \brief Convert the given edge index to a half-edge index.
-      * \param index
-      * \param[in] get_first The first half-edge of the edge is returned if this variable is true; elsewise the second.
-      */
-    inline pcl::geometry::HalfEdgeIndex
-    toHalfEdgeIndex (const EdgeIndex& index, const bool get_first=true)
-    {
-      return (index.isValid () ? HalfEdgeIndex (index.get () * 2 + static_cast <int> (!get_first)) : HalfEdgeIndex ());
-    }
-  } // End namespace geometry
+/** \brief Convert the given edge index to a half-edge index.
+ * \param index
+ * \param[in] get_first The first half-edge of the edge is returned if this
+ * variable is true; elsewise the second.
+ */
+inline HalfEdgeIndex
+toHalfEdgeIndex(const EdgeIndex& index, const bool get_first = true)
+{
+  return (index.isValid()
+              ? HalfEdgeIndex(index.get() * 2 + static_cast<int>(!get_first))
+              : HalfEdgeIndex());
+}
+} // End namespace geometry
 } // End namespace pcl

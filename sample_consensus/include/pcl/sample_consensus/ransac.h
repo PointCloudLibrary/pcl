@@ -49,6 +49,15 @@ namespace pcl
     * described in: "Random Sample Consensus: A Paradigm for Model Fitting with Applications to Image Analysis and 
     * Automated Cartography", Martin A. Fischler and Robert C. Bolles, Comm. Of the ACM 24: 381–395, June 1981.
     * A parallel variant is available, enable with setNumberOfThreads. Default is non-parallel.
+    * 
+    * The algorithm works as follows:
+    * <ol>
+    *   <li> randomly select samples from the cloud, just as many as needed to determine a model
+    *   <li> compute the coefficients of the model from the samples
+    *   <li> count how many points of the cloud belong to the model, given a threshold. These are called inliers
+    *   <li> repeat until a good model has been found or a max number of iterations has been reached
+    *   <li> return the model with the most inliers 
+    * </ol>
     * \author Radu B. Rusu
     * \ingroup sample_consensus
     */
@@ -71,7 +80,7 @@ namespace pcl
       using SampleConsensus<PointT>::probability_;
       using SampleConsensus<PointT>::threads_;
 
-      /** \brief RANSAC (RAndom SAmple Consensus) main constructor
+      /** \brief RANSAC (RANdom SAmple Consensus) main constructor
         * \param[in] model a Sample Consensus model
         */
       RandomSampleConsensus (const SampleConsensusModelPtr &model) 
@@ -81,7 +90,7 @@ namespace pcl
         max_iterations_ = 10000;
       }
 
-      /** \brief RANSAC (RAndom SAmple Consensus) main constructor
+      /** \brief RANSAC (RANdom SAmple Consensus) main constructor
         * \param[in] model a Sample Consensus model
         * \param[in] threshold distance to model threshold
         */

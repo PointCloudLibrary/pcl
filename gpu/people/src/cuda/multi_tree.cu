@@ -54,7 +54,6 @@ using pcl::gpu::people::trees::Attrib;
 using pcl::gpu::people::trees::focal;
 using pcl::gpu::people::trees::NUM_LABELS;
 
-using namespace std;
 using uint = unsigned int;
 
 #ifdef __CDT_PARSER__ // This is an eclipse specific hack, does nothing to the code
@@ -387,12 +386,12 @@ pcl::device::MultiTreeLiveProc::process (const Depth& dmap, Labels& lmap, int FG
 {
   assert(!trees.empty());
 
-  unsigned int numTrees = static_cast<int> (trees.size ());
+  unsigned int numTrees = static_cast<unsigned int> (trees.size ());
 
   multilmap.create(dmap.rows(), dmap.cols());
 
   // 1 - run the multi passes  
-  for( int ti = 0; ti < numTrees; ++ti ) 
+  for(unsigned int ti = 0; ti < numTrees; ++ti ) 
   {
     const CUDATree& t = trees[ti];
 
@@ -415,7 +414,7 @@ pcl::device::MultiTreeLiveProc::processProb (const Depth& dmap, Labels& lmap, La
   multilmap.create(dmap.rows(), dmap.cols());
 
   // 1 - run the multi passes
-  for( int ti = 0; ti < numTrees; ++ti )
+  for(unsigned int ti = 0; ti < numTrees; ++ti )
   {
     const CUDATree& t = trees[ti];
     CUDA_runMultiTreePass ( FGThresh, ti, static_cast<float> (focal), t.treeHeight, t.numNodes, t.nodes_device, t.leaves_device, dmap, multilmap );

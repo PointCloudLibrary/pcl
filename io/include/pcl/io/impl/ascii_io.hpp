@@ -35,17 +35,22 @@
  *
  */
 
+
 #ifndef PCL_IO_ASCII_IO_HPP_
 #define PCL_IO_ASCII_IO_HPP_
 
+
+namespace pcl
+{
+
 template<typename PointT> void
-pcl::ASCIIReader::setInputFields ()
+ASCIIReader::setInputFields ()
 {
   fields_ = pcl::getFields<PointT> ();
 
   // Remove empty fields and adjust offset
   int offset =0;
-  for (std::vector<pcl::PCLPointField>::iterator field_iter = fields_.begin ();
+  for (auto field_iter = fields_.begin ();
        field_iter != fields_.end (); ++field_iter)
   {
     if (field_iter->name == "_") 
@@ -55,5 +60,6 @@ pcl::ASCIIReader::setInputFields ()
   }
 }
 
+} // namespace pcl
 
 #endif    //PCL_IO_ASCII_IO_HPP_

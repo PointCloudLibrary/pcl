@@ -46,7 +46,6 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::common;
@@ -175,7 +174,7 @@ main (int argc, char** argv)
   if (distribution == "uniform")
   {
     CloudGenerator<pcl::PointXYZ, UniformGenerator<float> > generator;
-    std::uint32_t seed = static_cast<std::uint32_t> (time (nullptr));
+    auto seed = static_cast<std::uint32_t> (time (nullptr));
     UniformGenerator<float>::Parameters x_params (xmin, xmax, seed++);
     generator.setParametersForX (x_params);
     UniformGenerator<float>::Parameters y_params (ymin, ymax, seed++);
@@ -188,7 +187,7 @@ main (int argc, char** argv)
   else if (distribution == "normal")
   {
     CloudGenerator<pcl::PointXYZ, NormalGenerator<float> > generator;
-    std::uint32_t seed = static_cast<std::uint32_t> (time (nullptr));
+    auto seed = static_cast<std::uint32_t> (time (nullptr));
     NormalGenerator<float>::Parameters x_params (xmean, xstddev, seed++);
     generator.setParametersForX (x_params);
     NormalGenerator<float>::Parameters y_params (ymean, ystddev, seed++);

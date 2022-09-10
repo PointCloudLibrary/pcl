@@ -35,6 +35,8 @@
  *
  */
 
+#include <Eigen/Geometry> // for Quaternionf
+
 #include <pcl/test/gtest.h>
 
 #include <pcl/point_types.h>

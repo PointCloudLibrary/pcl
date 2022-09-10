@@ -5,6 +5,7 @@
 #include <ostream>  // for ostream
 
 #include <pcl/PCLHeader.h>   // for PCLHeader
+#include <pcl/types.h> //for index_t
 
 namespace pcl
 {
@@ -12,12 +13,12 @@ namespace pcl
   {
      ::pcl::PCLHeader  header;
 
-    std::uint32_t height = 0;
-    std::uint32_t width = 0;
+    uindex_t height = 0;
+    uindex_t width = 0;
     std::string encoding;
 
     std::uint8_t is_bigendian = 0;
-    std::uint32_t step = 0;
+    uindex_t step = 0;
 
     std::vector<std::uint8_t> data;
 

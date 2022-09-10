@@ -50,8 +50,7 @@ class Command
   public:
     /// @brief Destructor
     virtual ~Command ()
-    {
-    }
+    = default;
 
   protected:
     /// Allows command queues to be the only objects which are able to execute

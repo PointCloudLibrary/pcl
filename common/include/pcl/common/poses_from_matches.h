@@ -37,9 +37,10 @@
 
 #pragma once
 
+#include <pcl/correspondence.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/correspondence.h>
+#include <pcl/types.h>
 
 namespace pcl
 {
@@ -63,7 +64,7 @@ namespace pcl
       {
         Eigen::Affine3f transformation = Eigen::Affine3f::Identity ();   //!< The estimated transformation between the two coordinate systems
         float score = 0;                         //!< An estimate in [0,1], how good the estimated pose is 
-        std::vector<int> correspondence_indices;  //!< The indices of the used correspondences
+        Indices correspondence_indices;  //!< The indices of the used correspondences
 
         struct IsBetter 
         {

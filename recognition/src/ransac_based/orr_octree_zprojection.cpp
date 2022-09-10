@@ -47,7 +47,6 @@
 #include <array>
 #include <vector>
 
-using namespace std;
 
 //=========================================================================================================================================
 
@@ -60,7 +59,6 @@ pcl::recognition::ORROctreeZProjection::clear ()
     {
       // Delete pixel by pixel
       for ( int j = 0 ; j < num_pixels_y_ ; ++j )
-        if ( pixels_[i][j] )
           delete pixels_[i][j];
 
       // Delete the whole row
@@ -76,7 +74,6 @@ pcl::recognition::ORROctreeZProjection::clear ()
     for ( int i = 0 ; i < num_pixels_x_ ; ++i )
     {
       for ( int j = 0 ; j < num_pixels_y_ ; ++j )
-        if ( sets_[i][j] )
           delete sets_[i][j];
 
       delete[] sets_[i];
@@ -172,7 +169,7 @@ pcl::recognition::ORROctreeZProjection::build (const ORROctree& input, float eps
   for (const auto &full_set : full_sets_)
   {
     // Get the first node in the set
-    set<ORROctree::Node*, bool(*)(ORROctree::Node*,ORROctree::Node*)>::iterator node = full_set->get_nodes ().begin ();
+    auto node = full_set->get_nodes ().begin ();
     // Initialize
     float best_min = (*node)->getBounds ()[4];
     float best_max = (*node)->getBounds ()[5];

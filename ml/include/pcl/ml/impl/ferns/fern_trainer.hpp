@@ -37,12 +37,14 @@
 
 #pragma once
 
+namespace pcl {
+
 template <class FeatureType,
           class DataSet,
           class LabelType,
           class ExampleIndex,
           class NodeType>
-pcl::FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::FernTrainer()
+FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::FernTrainer()
 : fern_depth_(10)
 , num_of_features_(1000)
 , num_of_thresholds_(10)
@@ -58,8 +60,7 @@ template <class FeatureType,
           class LabelType,
           class ExampleIndex,
           class NodeType>
-pcl::FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    ~FernTrainer()
+FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::~FernTrainer()
 {}
 
 template <class FeatureType,
@@ -68,7 +69,7 @@ template <class FeatureType,
           class ExampleIndex,
           class NodeType>
 void
-pcl::FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train(
+FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train(
     pcl::Fern<FeatureType, NodeType>& fern)
 {
   const std::size_t num_of_branches = stats_estimator_->getNumOfBranches();
@@ -295,7 +296,7 @@ template <class FeatureType,
           class ExampleIndex,
           class NodeType>
 void
-pcl::FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
+FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
     createThresholdsUniform(const std::size_t num_of_thresholds,
                             std::vector<float>& values,
                             std::vector<float>& thresholds)
@@ -325,3 +326,5 @@ pcl::FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
     thresholds[threshold_index] = min_value + step * (threshold_index + 1);
   }
 }
+
+} // namespace pcl

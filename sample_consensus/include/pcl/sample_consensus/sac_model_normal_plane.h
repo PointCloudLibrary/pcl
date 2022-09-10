@@ -44,7 +44,6 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
-#include <pcl/sample_consensus/sac_model_perpendicular_plane.h>
 #include <pcl/sample_consensus/model_types.h>
 
 namespace pcl
@@ -126,7 +125,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      ~SampleConsensusModelNormalPlane () {}
+      ~SampleConsensusModelNormalPlane () override = default;
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
         * \param[in] model_coefficients the coefficients of a plane model that we need to compute distances to
@@ -165,6 +164,34 @@ namespace pcl
     protected:
       using SampleConsensusModel<PointT>::sample_size_;
       using SampleConsensusModel<PointT>::model_size_;
+
+      /** This implementation uses no SIMD instructions. It is not intended for normal use.
+        * See countWithinDistance which automatically uses the fastest implementation.
+        */
+      std::size_t
+      countWithinDistanceStandard (const Eigen::VectorXf &model_coefficients,
+                                   const double threshold,
+                                   std::size_t i = 0) const;
+
+#if defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
+      /** This implementation uses SSE, SSE2, and SSE4.1 instructions. It is not intended for normal use.
+        * See countWithinDistance which automatically uses the fastest implementation.
+        */
+      std::size_t
+      countWithinDistanceSSE (const Eigen::VectorXf &model_coefficients,
+                              const double threshold,
+                              std::size_t i = 0) const;
+#endif
+
+#if defined (__AVX__) && defined (__AVX2__)
+      /** This implementation uses AVX and AVX2 instructions. It is not intended for normal use.
+        * See countWithinDistance which automatically uses the fastest implementation.
+        */
+      std::size_t
+      countWithinDistanceAVX (const Eigen::VectorXf &model_coefficients,
+                              const double threshold,
+                              std::size_t i = 0) const;
+#endif
   };
 }
 

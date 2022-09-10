@@ -34,30 +34,27 @@
  *
  */
 
+#include <pcl/apps/modeler/cloud_mesh.h>
 #include <pcl/apps/modeler/surface_actor_item.h>
 
-#include <pcl/apps/modeler/cloud_mesh.h>
-
-#include <vtkLODActor.h>
-#include <vtkPolyData.h>
 #include <vtkCellArray.h>
 #include <vtkDataSetMapper.h>
+#include <vtkLODActor.h>
 #include <vtkPointData.h>
+#include <vtkPolyData.h>
 #include <vtkProperty.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::SurfaceActorItem::SurfaceActorItem(QTreeWidgetItem* parent,
-                                                 const CloudMesh::Ptr& cloud_mesh,
-                                                 const vtkSmartPointer<vtkRenderWindow>& render_window)
-  :ChannelActorItem(parent, cloud_mesh, render_window, vtkSmartPointer<vtkLODActor>::New(), "Surface")
-{
-}
+pcl::modeler::SurfaceActorItem::SurfaceActorItem(
+    QTreeWidgetItem* parent,
+    const CloudMesh::Ptr& cloud_mesh,
+    const vtkSmartPointer<vtkRenderWindow>& render_window)
+: ChannelActorItem(
+      parent, cloud_mesh, render_window, vtkSmartPointer<vtkLODActor>::New(), "Surface")
+{}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::SurfaceActorItem::~SurfaceActorItem ()
-{
-
-}
+pcl::modeler::SurfaceActorItem::~SurfaceActorItem() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -68,34 +65,34 @@ pcl::modeler::SurfaceActorItem::initImpl()
 
   vtkSmartPointer<vtkDataArray> scalars;
   cloud_mesh_->getColorScalarsFromField(scalars, color_scheme_);
-  poly_data_->GetPointData ()->SetScalars (scalars);
+  poly_data_->GetPointData()->SetScalars(scalars);
 
   vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New();
-  mapper->SetInputData (poly_data_);
+  mapper->SetInputData(poly_data_);
 
   double minmax[2];
   scalars->GetRange(minmax);
   mapper->SetScalarRange(minmax);
 
-  mapper->SetScalarModeToUsePointData ();
-  mapper->InterpolateScalarsBeforeMappingOn ();
-  mapper->ScalarVisibilityOn ();
+  mapper->SetScalarModeToUsePointData();
+  mapper->InterpolateScalarsBeforeMappingOn();
+  mapper->ScalarVisibilityOn();
 #if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
-  mapper->ImmediateModeRenderingOff ();
+  mapper->ImmediateModeRenderingOff();
 #endif
 
-  vtkSmartPointer<vtkLODActor> actor = vtkSmartPointer<vtkLODActor>(dynamic_cast<vtkLODActor*>(actor_.GetPointer()));
+  vtkSmartPointer<vtkLODActor> actor =
+      vtkSmartPointer<vtkLODActor>(dynamic_cast<vtkLODActor*>(actor_.GetPointer()));
   actor->SetMapper(mapper);
 
-  actor->SetNumberOfCloudPoints(int(std::max<vtkIdType> (1, poly_data_->GetNumberOfPoints () / 10)));
-  actor->GetProperty ()->SetInterpolationToFlat ();
+  actor->SetNumberOfCloudPoints(
+      int(std::max<vtkIdType>(1, poly_data_->GetNumberOfPoints() / 10)));
+  actor->GetProperty()->SetInterpolationToFlat();
 
-  actor->GetProperty ()->SetRepresentationToSurface ();
-  actor->GetProperty ()->BackfaceCullingOn ();
-  actor->GetProperty ()->EdgeVisibilityOff ();
-  actor->GetProperty ()->ShadingOff ();
-
-  return;
+  actor->GetProperty()->SetRepresentationToSurface();
+  actor->GetProperty()->BackfaceCullingOn();
+  actor->GetProperty()->EdgeVisibilityOff();
+  actor->GetProperty()->ShadingOff();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -104,31 +101,23 @@ pcl::modeler::SurfaceActorItem::updateImpl()
 {
   vtkSmartPointer<vtkDataArray> scalars;
   cloud_mesh_->getColorScalarsFromField(scalars, "random");
-  poly_data_->GetPointData ()->SetScalars (scalars);
+  poly_data_->GetPointData()->SetScalars(scalars);
   double minmax[2];
   scalars->GetRange(minmax);
   actor_->GetMapper()->SetScalarRange(minmax);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::SurfaceActorItem::prepareContextMenu(QMenu *) const
-{
-
-}
+pcl::modeler::SurfaceActorItem::prepareContextMenu(QMenu*) const
+{}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::SurfaceActorItem::prepareProperties(ParameterDialog *)
-{
-
-}
+pcl::modeler::SurfaceActorItem::prepareProperties(ParameterDialog*)
+{}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::modeler::SurfaceActorItem::setProperties()
-{
-
-}
+{}

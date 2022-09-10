@@ -37,7 +37,6 @@
  */
 
 #include <pcl/sample_consensus/impl/sac_model_normal_sphere.hpp>
-#include <pcl/sample_consensus/impl/sac_model_sphere.hpp>
 
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>

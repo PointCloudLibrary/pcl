@@ -38,6 +38,8 @@
 #define PCL_SEGMENTATION_IMPL_CONDITIONAL_EUCLIDEAN_CLUSTERING_HPP_
 
 #include <pcl/segmentation/conditional_euclidean_clustering.h>
+#include <pcl/search/organized.h> // for OrganizedNeighbor
+#include <pcl/search/kdtree.h> // for KdTree
 
 template<typename PointT> void
 pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters &clusters)
@@ -65,33 +67,33 @@ pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters &clus
   searcher_->setInputCloud (input_, indices_);
 
   // Temp variables used by search class
-  std::vector<int> nn_indices;
+  Indices nn_indices;
   std::vector<float> nn_distances;
 
   // Create a bool vector of processed point indices, and initialize it to false
   // Need to have it contain all possible points because radius search can not return indices into indices
-  std::vector<bool> processed (input_->points.size (), false);
+  std::vector<bool> processed (input_->size (), false);
 
   // Process all points indexed by indices_
-  for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)  // iii = input indices iterator
+  for (const auto& iindex : (*indices_)) // iindex = input index
   {
     // Has this point been processed before?
-    if ((*indices_)[iii] == -1 || processed[(*indices_)[iii]])
+    if (iindex == UNAVAILABLE || processed[iindex])
       continue;
 
     // Set up a new growing cluster
-    std::vector<int> current_cluster;
+    Indices current_cluster;
     int cii = 0;  // cii = cluster indices iterator
 
     // Add the point to the cluster
-    current_cluster.push_back ((*indices_)[iii]);
-    processed[(*indices_)[iii]] = true;
+    current_cluster.push_back (iindex);
+    processed[iindex] = true;
 
     // Process the current cluster (it can be growing in size as it is being processed)
     while (cii < static_cast<int> (current_cluster.size ()))
     {
       // Search for neighbors around the current seed point of the current cluster
-      if (searcher_->radiusSearch (input_->points[current_cluster[cii]], cluster_tolerance_, nn_indices, nn_distances) < 1)
+      if (searcher_->radiusSearch ((*input_)[current_cluster[cii]], cluster_tolerance_, nn_indices, nn_distances) < 1)
       {
         cii++;
         continue;
@@ -101,11 +103,11 @@ pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters &clus
       for (int nii = 1; nii < static_cast<int> (nn_indices.size ()); ++nii)  // nii = neighbor indices iterator
       {
         // Has this point been processed before?
-        if (nn_indices[nii] == -1 || processed[nn_indices[nii]])
+        if (nn_indices[nii] == UNAVAILABLE || processed[nn_indices[nii]])
           continue;
 
         // Validate if condition holds
-        if (condition_function_ (input_->points[current_cluster[cii]], input_->points[nn_indices[nii]], nn_distances[nii]))
+        if (condition_function_ ((*input_)[current_cluster[cii]], (*input_)[nn_indices[nii]], nn_distances[nii]))
         {
           // Add the point to the cluster
           current_cluster.push_back (nn_indices[nii]);

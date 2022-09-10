@@ -34,16 +34,15 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <pcl/stereo/digital_elevation_map.h>
-
 #include <pcl/common/feature_histogram.h>
 #include <pcl/console/print.h>
+#include <pcl/stereo/digital_elevation_map.h>
 
 pcl::DigitalElevationMapBuilder::DigitalElevationMapBuilder()
 : resolution_column_(64), resolution_disparity_(32), min_points_in_cell_(1)
 {}
 
-pcl::DigitalElevationMapBuilder::~DigitalElevationMapBuilder() {}
+pcl::DigitalElevationMapBuilder::~DigitalElevationMapBuilder() = default;
 
 void
 pcl::DigitalElevationMapBuilder::setResolution(std::size_t resolution_column,
@@ -99,7 +98,7 @@ pcl::DigitalElevationMapBuilder::compute(pcl::PointCloud<PointDEM>& out_cloud)
   const float kHeightMin = -0.5f;
   const float kHeightMax = 1.5f;
   const float kHeightResolution = 0.01f;
-  const std::size_t kHeightBins =
+  const auto kHeightBins =
       static_cast<std::size_t>((kHeightMax - kHeightMin) / kHeightResolution);
   // Histogram for initializing other height histograms.
   FeatureHistogram height_histogram_example(kHeightBins, kHeightMin, kHeightMax);
@@ -132,13 +131,13 @@ pcl::DigitalElevationMapBuilder::compute(pcl::PointCloud<PointDEM>& out_cloud)
         PointXYZ point_3D = translateCoordinates(row, column, disparity);
         float height = point_3D.y;
 
-        RGB point_RGB = image_->points[column + row * disparity_map_width_];
+        RGB point_RGB = (*image_)[column + row * disparity_map_width_];
         float intensity =
             static_cast<float>((point_RGB.r + point_RGB.g + point_RGB.b) / 3);
 
         // Calculate index of histograms.
         std::size_t index_column = column / kColumnStep;
-        std::size_t index_disparity = static_cast<std::size_t>(
+        auto index_disparity = static_cast<std::size_t>(
             (disparity - disparity_threshold_min_) / kDisparityStep);
 
         std::size_t index = index_column + index_disparity * resolution_column_;

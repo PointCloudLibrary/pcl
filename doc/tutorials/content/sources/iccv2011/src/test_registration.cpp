@@ -5,7 +5,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
-
+#include <boost/algorithm/string/split.hpp> // for split
 #include "load_clouds.h"
 
 int 

@@ -10,8 +10,12 @@
  * pcl_sim_terminal_demo 2 ../../../../kmcl/models/table_models/meta_model.ply
  */
 
-#include <Eigen/Dense>
-#include <boost/shared_ptr.hpp>
+#include <pcl/common/time.h> // for getTime
+#include <pcl/io/pcd_io.h>   // for PCDWriter
+#include <pcl/memory.h>
+
+#include "simulation_io.hpp"
+
 #include <cmath>
 #include <iostream>
 #ifdef _WIN32
@@ -19,14 +23,11 @@
 #include <windows.h>
 #endif
 
-#include "simulation_io.hpp"
-
 using namespace Eigen;
 using namespace pcl;
 using namespace pcl::console;
 using namespace pcl::io;
 using namespace pcl::simulation;
-using namespace std;
 
 SimExample::Ptr simexample;
 
@@ -39,7 +40,7 @@ printHelp(int, char** argv)
 
 // Output the simulated output to file:
 void
-write_sim_output(const string& fname_root)
+write_sim_output(const std::string& fname_root)
 {
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc_out(new pcl::PointCloud<pcl::PointXYZRGB>);
 
@@ -60,23 +61,23 @@ write_sim_output(const string& fname_root)
   // TODO: what to do when there are more than one simulated view?
 
   if (!pc_out->points.empty()) {
-    std::cout << pc_out->points.size() << " points written to file\n";
+    std::cout << pc_out->size() << " points written to file\n";
 
     pcl::PCDWriter writer;
     // writer.write ( string (fname_root + ".pcd"), *pc_out,	false);  /// ASCII
-    writer.writeBinary(string(fname_root + ".pcd"), *pc_out);
+    writer.writeBinary(std::string(fname_root + ".pcd"), *pc_out);
     // std::cout << "finished writing file\n";
   }
   else {
-    std::cout << pc_out->points.size() << " points in cloud, not written\n";
+    std::cout << pc_out->size() << " points in cloud, not written\n";
   }
 
   // simexample->write_score_image (simexample->rl_->getScoreBuffer (),
   //                               string (fname_root + "_score.png") );
   simexample->write_rgb_image(simexample->rl_->getColorBuffer(),
-                              string(fname_root + "_rgb.png"));
+                              std::string(fname_root + "_rgb.png"));
   simexample->write_depth_image(simexample->rl_->getDepthBuffer(),
-                                string(fname_root + "_depth.png"));
+                                std::string(fname_root + "_depth.png"));
   // simexample->write_depth_image_uint (simexample->rl_->getDepthBuffer (),
   //                                    string (fname_root + "_depth_uint.png") );
 

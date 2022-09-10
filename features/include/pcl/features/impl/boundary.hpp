@@ -38,28 +38,30 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_BOUNDARY_H_
-#define PCL_FEATURES_IMPL_BOUNDARY_H_
+#pragma once
 
 #include <pcl/features/boundary.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
+
 #include <cfloat>
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> bool
 pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::isBoundaryPoint (
       const pcl::PointCloud<PointInT> &cloud, int q_idx, 
-      const std::vector<int> &indices, 
+      const pcl::Indices &indices, 
       const Eigen::Vector4f &u, const Eigen::Vector4f &v, 
       const float angle_threshold)
 {
-  return (isBoundaryPoint (cloud, cloud.points[q_idx], indices, u, v, angle_threshold));
+  return (isBoundaryPoint (cloud, cloud[q_idx], indices, u, v, angle_threshold));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> bool
 pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::isBoundaryPoint (
       const pcl::PointCloud<PointInT> &cloud, const PointInT &q_point, 
-      const std::vector<int> &indices, 
+      const pcl::Indices &indices, 
       const Eigen::Vector4f &u, const Eigen::Vector4f &v, 
       const float angle_threshold)
 {
@@ -71,17 +73,17 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::isBoundaryPoint (
 
   // Compute the angles between each neighboring point and the query point itself
   std::vector<float> angles (indices.size ());
-  float max_dif = FLT_MIN, dif;
+  float max_dif = 0, dif;
   int cp = 0;
 
-  for (const int &index : indices)
+  for (const auto &index : indices)
   {
-    if (!std::isfinite (cloud.points[index].x) || 
-        !std::isfinite (cloud.points[index].y) || 
-        !std::isfinite (cloud.points[index].z))
+    if (!std::isfinite (cloud[index].x) || 
+        !std::isfinite (cloud[index].y) || 
+        !std::isfinite (cloud[index].z))
       continue;
 
-    Eigen::Vector4f delta = cloud.points[index].getVector4fMap () - q_point.getVector4fMap ();
+    Eigen::Vector4f delta = cloud[index].getVector4fMap () - q_point.getVector4fMap ();
     if (delta == Eigen::Vector4f::Zero())
       continue;
 
@@ -115,7 +117,7 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointClou
 {
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices (k_);
+  pcl::Indices nn_indices (k_);
   std::vector<float> nn_dists (k_);
 
   Eigen::Vector4f u = Eigen::Vector4f::Zero (), v = Eigen::Vector4f::Zero ();
@@ -129,18 +131,18 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointClou
     {
       if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
-        output.points[idx].boundary_point = std::numeric_limits<std::uint8_t>::quiet_NaN ();
+        output[idx].boundary_point = std::numeric_limits<std::uint8_t>::quiet_NaN ();
         output.is_dense = false;
         continue;
       }
 
       // Obtain a coordinate system on the least-squares plane
-      //v = normals_->points[(*indices_)[idx]].getNormalVector4fMap ().unitOrthogonal ();
-      //u = normals_->points[(*indices_)[idx]].getNormalVector4fMap ().cross3 (v);
-      getCoordinateSystemOnPlane (normals_->points[(*indices_)[idx]], u, v);
+      //v = (*normals_)[(*indices_)[idx]].getNormalVector4fMap ().unitOrthogonal ();
+      //u = (*normals_)[(*indices_)[idx]].getNormalVector4fMap ().cross3 (v);
+      getCoordinateSystemOnPlane ((*normals_)[(*indices_)[idx]], u, v);
 
       // Estimate whether the point is lying on a boundary surface or not
-      output.points[idx].boundary_point = isBoundaryPoint (*surface_, input_->points[(*indices_)[idx]], nn_indices, u, v, angle_threshold_);
+      output[idx].boundary_point = isBoundaryPoint (*surface_, (*input_)[(*indices_)[idx]], nn_indices, u, v, angle_threshold_);
     }
   }
   else
@@ -151,23 +153,21 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointClou
       if (!isFinite ((*input_)[(*indices_)[idx]]) ||
           this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
-        output.points[idx].boundary_point = std::numeric_limits<std::uint8_t>::quiet_NaN ();
+        output[idx].boundary_point = std::numeric_limits<std::uint8_t>::quiet_NaN ();
         output.is_dense = false;
         continue;
       }
 
       // Obtain a coordinate system on the least-squares plane
-      //v = normals_->points[(*indices_)[idx]].getNormalVector4fMap ().unitOrthogonal ();
-      //u = normals_->points[(*indices_)[idx]].getNormalVector4fMap ().cross3 (v);
-      getCoordinateSystemOnPlane (normals_->points[(*indices_)[idx]], u, v);
+      //v = (*normals_)[(*indices_)[idx]].getNormalVector4fMap ().unitOrthogonal ();
+      //u = (*normals_)[(*indices_)[idx]].getNormalVector4fMap ().cross3 (v);
+      getCoordinateSystemOnPlane ((*normals_)[(*indices_)[idx]], u, v);
 
       // Estimate whether the point is lying on a boundary surface or not
-      output.points[idx].boundary_point = isBoundaryPoint (*surface_, input_->points[(*indices_)[idx]], nn_indices, u, v, angle_threshold_);
+      output[idx].boundary_point = isBoundaryPoint (*surface_, (*input_)[(*indices_)[idx]], nn_indices, u, v, angle_threshold_);
     }
   }
 }
 
 #define PCL_INSTANTIATE_BoundaryEstimation(PointInT,PointNT,PointOutT) template class PCL_EXPORTS pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>;
-
-#endif    // PCL_FEATURES_IMPL_BOUNDARY_H_ 
 

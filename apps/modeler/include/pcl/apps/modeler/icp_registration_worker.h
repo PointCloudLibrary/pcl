@@ -39,44 +39,47 @@
 #include <pcl/apps/modeler/abstract_worker.h>
 #include <pcl/apps/modeler/cloud_mesh.h>
 
-namespace pcl
-{
-  namespace modeler
+namespace pcl {
+namespace modeler {
+
+class IntParameter;
+class DoubleParameter;
+
+class ICPRegistrationWorker : public AbstractWorker {
+public:
+  ICPRegistrationWorker(CloudMesh::PointCloudPtr cloud,
+                        const QList<CloudMeshItem*>& cloud_mesh_items,
+                        QWidget* parent = nullptr);
+  ~ICPRegistrationWorker();
+
+protected:
+  std::string
+  getName() const override
   {
-    class IntParameter;
-    class DoubleParameter;
-
-    class ICPRegistrationWorker : public AbstractWorker 
-    {
-      public:
-        ICPRegistrationWorker(CloudMesh::PointCloudPtr cloud, const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=nullptr);
-        ~ICPRegistrationWorker();
-
-      protected:
-        std::string
-        getName () const override {return ("Normal Estimation");}
-
-        void
-        initParameters(CloudMeshItem* cloud_mesh_item) override;
-
-        void
-        setupParameters() override;
-
-        void
-        processImpl(CloudMeshItem* cloud_mesh_item) override;
-
-      private:
-        CloudMesh::PointCloudPtr    cloud_;
-
-        double x_min_, x_max_;
-        double y_min_, y_max_;
-        double z_min_, z_max_;
-
-        DoubleParameter*  max_correspondence_distance_;
-        IntParameter*     max_iterations_;
-        DoubleParameter*  transformation_epsilon_;
-        DoubleParameter*  euclidean_fitness_epsilon_;
-    };
-
+    return "Normal Estimation";
   }
-}
+
+  void
+  initParameters(CloudMeshItem* cloud_mesh_item) override;
+
+  void
+  setupParameters() override;
+
+  void
+  processImpl(CloudMeshItem* cloud_mesh_item) override;
+
+private:
+  CloudMesh::PointCloudPtr cloud_;
+
+  double x_min_, x_max_;
+  double y_min_, y_max_;
+  double z_min_, z_max_;
+
+  DoubleParameter* max_correspondence_distance_;
+  IntParameter* max_iterations_;
+  DoubleParameter* transformation_epsilon_;
+  DoubleParameter* euclidean_fitness_epsilon_;
+};
+
+} // namespace modeler
+} // namespace pcl

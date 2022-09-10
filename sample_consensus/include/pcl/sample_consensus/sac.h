@@ -40,9 +40,11 @@
 
 #pragma once
 
-#include <pcl/sample_consensus/boost.h>
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/pcl_base.h>
+
+#include <boost/random/mersenne_twister.hpp> // for mt19937
+#include <boost/random/uniform_01.hpp> // for uniform_01
 
 #include <ctime>
 #include <memory>
@@ -61,7 +63,7 @@ namespace pcl
 
     private:
       /** \brief Constructor for base SAC. */
-      SampleConsensus () {};
+      SampleConsensus () = default;
 
     public:
       using Ptr = shared_ptr<SampleConsensus<T> >;
@@ -128,7 +130,7 @@ namespace pcl
       }
 
       /** \brief Destructor for base SAC. */
-      virtual ~SampleConsensus () {};
+      virtual ~SampleConsensus () = default;
 
       /** \brief Set the distance to model threshold.
         * \param[in] threshold distance to model threshold

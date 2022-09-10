@@ -42,7 +42,6 @@
 #include <pcl/common/common.h>
 #include <pcl/common/io.h>
 #include <pcl/filters/morphological_filter.h>
-#include <pcl/filters/extract_indices.h>
 #include <pcl/segmentation/approximate_progressive_morphological_filter.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -63,13 +62,11 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::ApproximateProgressiveMo
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::ApproximateProgressiveMorphologicalFilter<PointT>::~ApproximateProgressiveMorphologicalFilter ()
-{
-}
+pcl::ApproximateProgressiveMorphologicalFilter<PointT>::~ApproximateProgressiveMorphologicalFilter () = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (std::vector<int>& ground)
+pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (Indices& ground)
 {
   bool segmentation_is_possible = initCompute ();
   if (!segmentation_is_possible)
@@ -83,25 +80,17 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (std::vector<int
   std::vector<float> window_sizes;
   std::vector<int> half_sizes;
   int iteration = 0;
-  int half_size = 0.0f;
-  float window_size = 0.0f;
-  float height_threshold = 0.0f;
+  float window_size = 0.0f;	
 
   while (window_size < max_window_size_)
   {
     // Determine the initial window size.
-    if (exponential_)
-      half_size = static_cast<int> (std::pow (static_cast<float> (base_), iteration));
-    else
-      half_size = (iteration+1) * base_;
+    int half_size = (exponential_) ? (static_cast<int> (std::pow (static_cast<float> (base_), iteration))) : ((iteration+1) * base_);
 
     window_size = 2 * half_size + 1;
 
     // Calculate the height threshold to be used in the next iteration.
-    if (iteration == 0)
-      height_threshold = initial_distance_;
-    else
-      height_threshold = slope_ * (window_size - window_sizes[iteration-1]) * cell_size_ + initial_distance_;
+    float height_threshold = (iteration == 0) ? (initial_distance_) : (slope_ * (window_size - window_sizes[iteration-1]) * cell_size_ + initial_distance_);
 
     // Enforce max distance on height threshold
     if (height_threshold > max_distance_)
@@ -137,10 +126,10 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (std::vector<int
   default(none) \
   shared(A, global_min) \
   num_threads(threads_)
-  for (int i = 0; i < (int)input_->points.size (); ++i)
+  for (int i = 0; i < (int)input_->size (); ++i)
   {
     // ...then test for lower points within the cell
-    PointT p = input_->points[i];
+    PointT p = (*input_)[i];
     int row = std::floor((p.y - global_min.y ()) / cell_size_);
     int col = std::floor((p.x - global_min.x ()) / cell_size_);
 
@@ -237,10 +226,10 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (std::vector<int
 
     // Find indices of the points whose difference between the source and
     // filtered point clouds is less than the current height threshold.
-    std::vector<int> pt_indices;
+    Indices pt_indices;
     for (std::size_t p_idx = 0; p_idx < ground.size (); ++p_idx)
     {
-      PointT p = cloud->points[p_idx];
+      PointT p = (*cloud)[p_idx];
       int erow = static_cast<int> (std::floor ((p.y - global_min.y ()) / cell_size_));
       int ecol = static_cast<int> (std::floor ((p.x - global_min.x ()) / cell_size_));
 

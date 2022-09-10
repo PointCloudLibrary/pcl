@@ -39,23 +39,25 @@
  *      Author: somani
  */
 
-#ifndef PCL_2D_KEYPOINT_HPP_
-#define PCL_2D_KEYPOINT_HPP_
+#pragma once
 
-#include <limits>
 #include <pcl/2d/convolution.h>
 #include <pcl/2d/edge.h>
+#include <pcl/2d/keypoint.h> // for pcl::Keypoint
 
-//////////////////////////////////////////////////////////////////////////////
+#include <limits>
+
+namespace pcl {
+
+template <typename ImageType>
 void
-pcl::keypoint::harrisCorner(ImageType& output,
-                            ImageType& input,
-                            const float sigma_d,
-                            const float sigma_i,
-                            const float alpha,
-                            const float thresh)
+Keypoint<ImageType>::harrisCorner(ImageType& output,
+                                  ImageType& input,
+                                  const float sigma_d,
+                                  const float sigma_i,
+                                  const float alpha,
+                                  const float thresh)
 {
-
   /*creating the gaussian kernels*/
   ImageType kernel_d;
   ImageType kernel_i;
@@ -115,12 +117,12 @@ pcl::keypoint::harrisCorner(ImageType& output,
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+template <typename ImageType>
 void
-pcl::keypoint::hessianBlob(ImageType& output,
-                           ImageType& input,
-                           const float sigma,
-                           bool SCALED)
+Keypoint<ImageType>::hessianBlob(ImageType& output,
+                                 ImageType& input,
+                                 const float sigma,
+                                 bool SCALED)
 {
   /*creating the gaussian kernels*/
   ImageType kernel, cornerness;
@@ -175,13 +177,13 @@ pcl::keypoint::hessianBlob(ImageType& output,
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+template <typename ImageType>
 void
-pcl::keypoint::hessianBlob(ImageType& output,
-                           ImageType& input,
-                           const float start_scale,
-                           const float scaling_factor,
-                           const int num_scales)
+Keypoint<ImageType>::hessianBlob(ImageType& output,
+                                 ImageType& input,
+                                 const float start_scale,
+                                 const float scaling_factor,
+                                 const int num_scales)
 {
   const std::size_t height = input.size();
   const std::size_t width = input[0].size();
@@ -193,17 +195,15 @@ pcl::keypoint::hessianBlob(ImageType& output,
     hessianBlob(cornerness[i], input, scale, false);
     scale *= scaling_factor;
   }
-  bool non_max_flag = false;
-  float scale_max, local_max;
   for (std::size_t i = 0; i < height; i++) {
     for (std::size_t j = 0; j < width; j++) {
-      scale_max = std::numeric_limits<float>::min();
+      float scale_max = std::numeric_limits<float>::min();
       /*default output in case of no blob at the current point is 0*/
       output[i][j] = 0;
       for (int k = 0; k < num_scales; k++) {
         /*check if the current point (k,i,j) is a maximum in the defined search radius*/
-        non_max_flag = false;
-        local_max = cornerness[k][i][j];
+        bool non_max_flag = false;
+        const float local_max = cornerness[k][i][j];
         for (int n = -local_search_radius; n <= local_search_radius; n++) {
           if (n + k < 0 || n + k >= num_scales)
             continue;
@@ -231,7 +231,7 @@ pcl::keypoint::hessianBlob(ImageType& output,
             scale_max = cornerness[k][i][j];
             /*output indicates the scale at which the blob is found at the current
              * location in the image*/
-            output[i][i] = start_scale * pow(scaling_factor, k);
+            output[i][j] = start_scale * pow(scaling_factor, k);
           }
         }
       }
@@ -239,11 +239,11 @@ pcl::keypoint::hessianBlob(ImageType& output,
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+template <typename ImageType>
 void
-pcl::keypoint::imageElementMultiply(ImageType& output,
-                                    ImageType& input1,
-                                    ImageType& input2)
+Keypoint<ImageType>::imageElementMultiply(ImageType& output,
+                                          ImageType& input1,
+                                          ImageType& input2)
 {
   const std::size_t height = input1.size();
   const std::size_t width = input1[0].size();
@@ -255,5 +255,4 @@ pcl::keypoint::imageElementMultiply(ImageType& output,
     }
   }
 }
-
-#endif // PCL_2D_KEYPOINT_HPP_
+} // namespace pcl

@@ -7,8 +7,8 @@
 
 OpenNICapture::OpenNICapture (const std::string& device_id)
   : grabber_ (device_id)
-  , most_recent_frame_ ()
   , frame_counter_ (0)
+  , most_recent_frame_ ()
   , use_trigger_ (false)
   , trigger_ (false)
 {

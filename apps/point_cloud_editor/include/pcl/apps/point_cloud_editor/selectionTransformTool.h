@@ -43,6 +43,10 @@
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 #include <pcl/apps/point_cloud_editor/trackball.h>
 
+#include <pcl/memory.h>  // for pcl::shared_ptr
+
+class Selection;
+
 /// @brief The selection transform tool computes the transform matrix from
 /// mouse input.  It then updates the cloud's transform matrix for the
 /// selected points so that the transformed and selected points will be
@@ -53,6 +57,9 @@
 class SelectionTransformTool : public ToolInterface
 {
   public:
+    /// The type for shared pointer pointing to a constant selection buffer
+    using ConstSelectionPtr = pcl::shared_ptr<const Selection>;
+
     /// @brief Constructor
     /// @param selection_ptr a shared pointer pointing to the selection object.
     /// @param cloud_ptr a shared pointer pointing to the cloud object.
@@ -62,9 +69,8 @@ class SelectionTransformTool : public ToolInterface
                             CommandQueuePtr command_queue_ptr);
 
     /// @brief Destructor
-    ~SelectionTransformTool ()
-    {
-    }
+    ~SelectionTransformTool () override
+    = default;
 
     /// @brief Initialize the transform tool with mouse screen coordinates
     /// and key modifiers.

@@ -5,15 +5,18 @@ daysUntilStale: 30
 
 # Number of days of inactivity before an Issue or Pull Request with the stale label is closed.
 # Set to false to disable. If disabled, issues still need to be closed manually, but will remain marked as stale.
-daysUntilClose: 7
+daysUntilClose: false
 
 # Only issues or pull requests with all of these labels are check if stale. Defaults to `[]` (disabled)
-onlyLabels:
-  - "needs: author reply"
-  - "needs: more work"
+onlyLabels: []
 
 # Issues or Pull Requests with these labels will never be considered stale. Set to `[]` to disable
-exemptLabels: []
+exemptLabels:
+  - "kind: todo"
+  - "needs: code review"
+  - "needs: feedback"
+  - "needs: pr merge"
+  - "needs: testing"
 
 # Set to true to ignore issues in a project (defaults to false)
 exemptProjects: false
@@ -29,7 +32,7 @@ staleLabel: "status: stale"
 
 # Comment to post when marking as stale. Set to `false` to disable
 markComment: >
-  This issue has been automatically marked as stale because it has not had any activity in the past month. It will be closed if no further activity occurs.
+  Marking this as stale due to 30 days of inactivity. It will be closed in 7 days if no further activity occurs.
 
 # Comment to post when removing the stale label.
 # unmarkComment: >
@@ -49,4 +52,4 @@ limitPerRun: 30
 pulls:
   daysUntilClose: false
   markComment: >
-    This pull request has been automatically marked as stale because it has not had any activity in the past month. Commenting or adding a new commit to the pull request will revert this.
+    Marking this as stale due to 30 days of inactivity. Commenting or adding a new commit to the pull request will revert this.

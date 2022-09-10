@@ -4,7 +4,7 @@ Using a matrix to transform a point cloud
 -----------------------------------------
 
 In this tutorial we will learn how to transform a point cloud using a 4x4 matrix.
-We will apply a rotation and a translation to a loaded point cloud and display then
+We will apply a rotation and a translation to a loaded point cloud and display the
 result.
 
 This program is able to load one PCD or PLY file; apply a matrix transformation on it

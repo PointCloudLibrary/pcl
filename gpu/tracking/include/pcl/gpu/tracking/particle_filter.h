@@ -11,8 +11,6 @@
 #include <pcl/gpu/kinfu/pixel_rgb.h>
 #include <pcl/tracking/particle_filter.h>
 
-#include <Eigen/Dense>
-
 #include "internal.h"
 
 namespace pcl

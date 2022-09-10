@@ -48,9 +48,9 @@
 #include <pcl/point_types.h>
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
-#include <pcl/io/boost.h>
 #include <pcl/exceptions.h>
 #include <iostream>
+#include <boost/filesystem.hpp> // for exists
 
 using namespace pcl::io::openni2;
 
@@ -556,13 +556,13 @@ pcl::io::OpenNI2Grabber::convertToXYZPointCloud (const DepthImage::Ptr& depth_im
 
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-  const std::uint16_t* depth_map = (const std::uint16_t*) depth_image->getData ();
+  const auto* depth_map = reinterpret_cast<const std::uint16_t*>(depth_image->getData ());
   if (depth_image->getWidth () != depth_width_ || depth_image->getHeight () != depth_height_)
   {
     // Resize the image if nessacery
     depth_resize_buffer_.resize(depth_width_ * depth_height_);
 
-    depth_image->fillDepthImageRaw (depth_width_, depth_height_, (std::uint16_t*) depth_resize_buffer_.data() );
+    depth_image->fillDepthImageRaw (depth_width_, depth_height_, reinterpret_cast<std::uint16_t*>(depth_resize_buffer_.data()) );
     depth_map = depth_resize_buffer_.data();
   }
 
@@ -571,7 +571,7 @@ pcl::io::OpenNI2Grabber::convertToXYZPointCloud (const DepthImage::Ptr& depth_im
   {
     for (unsigned u = 0; u < depth_width_; ++u, ++depth_idx)
     {
-      pcl::PointXYZ& pt = cloud->points[depth_idx];
+      pcl::PointXYZ& pt = (*cloud)[depth_idx];
       // Check for invalid measurements
       if (depth_map[depth_idx] == 0 ||
         depth_map[depth_idx] == depth_image->getNoSampleValue () ||
@@ -633,22 +633,22 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
   float fx_inv = 1.0f / fx;
   float fy_inv = 1.0f / fy;
 
-  const std::uint16_t* depth_map = (const std::uint16_t*) depth_image->getData ();
+  const auto* depth_map = reinterpret_cast<const std::uint16_t*>(depth_image->getData ());
   if (depth_image->getWidth () != depth_width_ || depth_image->getHeight () != depth_height_)
   {
     // Resize the image if nessacery
     depth_resize_buffer_.resize(depth_width_ * depth_height_);
+    depth_image->fillDepthImageRaw (depth_width_, depth_height_, depth_resize_buffer_.data() );
     depth_map = depth_resize_buffer_.data();
-    depth_image->fillDepthImageRaw (depth_width_, depth_height_, (unsigned short*) depth_map );
   }
 
-  const std::uint8_t* rgb_buffer = (const std::uint8_t*) image->getData ();
+  const auto* rgb_buffer = reinterpret_cast<const std::uint8_t*>(image->getData ());
   if (image->getWidth () != image_width_ || image->getHeight () != image_height_)
   {
     // Resize the image if nessacery
     color_resize_buffer_.resize(image_width_ * image_height_ * 3);
+    image->fillRGB (image_width_, image_height_, color_resize_buffer_.data(), image_width_ * 3);
     rgb_buffer = color_resize_buffer_.data();
-    image->fillRGB (image_width_, image_height_, (unsigned char*) rgb_buffer, image_width_ * 3);
   }
 
 
@@ -661,7 +661,7 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
     pt.x = pt.y = pt.z = bad_point;
     pt.b = pt.g = pt.r = 0;
     pt.a = 255; // point has no color info -> alpha = max => transparent
-    cloud->points.assign (cloud->points.size (), pt);
+    cloud->points.assign (cloud->size (), pt);
   }
 
   // fill in XYZ values
@@ -674,7 +674,7 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
   {
     for (unsigned u = 0; u < depth_width_; ++u, ++value_idx, point_idx += step)
     {
-      PointT& pt = cloud->points[point_idx];
+      PointT& pt = (*cloud)[point_idx];
       /// @todo Different values for these cases
       // Check for invalid measurements
 
@@ -707,7 +707,7 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
   {
     for (unsigned xIdx = 0; xIdx < image_width_; ++xIdx, point_idx += step, value_idx += 3)
     {
-      PointT& pt = cloud->points[point_idx];
+      PointT& pt = (*cloud)[point_idx];
 
       color.Red   = rgb_buffer[value_idx];
       color.Green = rgb_buffer[value_idx + 1];
@@ -760,22 +760,22 @@ pcl::io::OpenNI2Grabber::convertToXYZIPointCloud (const IRImage::Ptr &ir_image, 
   float fy_inv = 1.0f / fy;
 
 
-  const std::uint16_t* depth_map = (const std::uint16_t*) depth_image->getData ();
+  const auto* depth_map = reinterpret_cast<const std::uint16_t*>(depth_image->getData ());
   if (depth_image->getWidth () != depth_width_ || depth_image->getHeight () != depth_height_)
   {
     // Resize the image if nessacery
     depth_resize_buffer_.resize(depth_width_ * depth_height_);
+    depth_image->fillDepthImageRaw (depth_width_, depth_height_, depth_resize_buffer_.data() );
     depth_map = depth_resize_buffer_.data();
-    depth_image->fillDepthImageRaw (depth_width_, depth_height_, (unsigned short*) depth_map );
   }
 
-  const std::uint16_t* ir_map = (const std::uint16_t*) ir_image->getData ();
+  const auto* ir_map = reinterpret_cast<const std::uint16_t*>(ir_image->getData ());
   if (ir_image->getWidth () != depth_width_ || ir_image->getHeight () != depth_height_)
   {
     // Resize the image if nessacery
     ir_resize_buffer_.resize(depth_width_ * depth_height_);
+    ir_image->fillRaw (depth_width_, depth_height_, ir_resize_buffer_.data());
     ir_map = ir_resize_buffer_.data();
-    ir_image->fillRaw (depth_width_, depth_height_, (unsigned short*) ir_map);
   }
 
 
@@ -786,7 +786,7 @@ pcl::io::OpenNI2Grabber::convertToXYZIPointCloud (const IRImage::Ptr &ir_image, 
   {
     for (unsigned u = 0; u < depth_width_; ++u, ++depth_idx)
     {
-      pcl::PointXYZI& pt = cloud->points[depth_idx];
+      pcl::PointXYZI& pt = (*cloud)[depth_idx];
       /// @todo Different values for these cases
       // Check for invalid measurements
       if (depth_map[depth_idx] == 0 ||
@@ -817,7 +817,7 @@ pcl::io::OpenNI2Grabber::updateModeMaps ()
 {
   using VideoMode = pcl::io::openni2::OpenNI2VideoMode;
 
-pcl::io::openni2::OpenNI2VideoMode output_mode;
+  pcl::io::openni2::OpenNI2VideoMode output_mode;
 
   config2oni_map_[OpenNI_SXGA_15Hz] = VideoMode (XN_SXGA_X_RES, XN_SXGA_Y_RES, 15);
 
@@ -837,7 +837,7 @@ pcl::io::openni2::OpenNI2VideoMode output_mode;
 bool
 pcl::io::OpenNI2Grabber::mapMode2XnMode (int mode, OpenNI2VideoMode &xnmode) const
 {
-  std::map<int, pcl::io::openni2::OpenNI2VideoMode>::const_iterator it = config2oni_map_.find (mode);
+  auto it = config2oni_map_.find (mode);
   if (it != config2oni_map_.end ())
   {
     xnmode = it->second;

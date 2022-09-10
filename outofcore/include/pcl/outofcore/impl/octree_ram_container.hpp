@@ -109,7 +109,7 @@ namespace pcl
                                              AlignedPointTVector& v)
     {
       v.resize (count);
-      memcpy (v.data (), container_.data () + start, count * sizeof(PointT));
+      std::copy(container_.cbegin() + start, container_.cbegin() + start + count, v.begin());
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -120,7 +120,7 @@ namespace pcl
                                                       const double percent, 
                                                       AlignedPointTVector& v)
     {
-      std::uint64_t samplesize = static_cast<std::uint64_t> (percent * static_cast<double> (count));
+      auto samplesize = static_cast<std::uint64_t> (percent * static_cast<double> (count));
 
       std::lock_guard<std::mutex> lock (rng_mutex_);
 

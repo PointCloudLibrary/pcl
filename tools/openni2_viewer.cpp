@@ -37,12 +37,10 @@
 
 #define MEASURE_FUNCTION_TIME
 #include <pcl/common/time.h> //fps calculations
-#include <pcl/common/angles.h>
 #include <pcl/io/openni2_grabber.h>
 #include <pcl/io/openni2/openni.h>
 #include <pcl/io/openni2/openni2_device_manager.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/boost.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>

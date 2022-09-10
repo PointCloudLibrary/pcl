@@ -1,12 +1,12 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
-#include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/io/pcd_io.h>
 #include <boost/filesystem.hpp>
 #include <flann/flann.h>
 #include <flann/io/hdf5.h>
 #include <fstream>
+
 
 typedef std::pair<std::string, std::vector<float> > vfh_model;
 
@@ -50,7 +50,7 @@ loadHist (const boost::filesystem::path &path, vfh_model &vfh)
 
   for (std::size_t i = 0; i < fields[vfh_idx].count; ++i)
   {
-    vfh.second[i] = point.points[0].histogram[i];
+    vfh.second[i] = point[0].histogram[i];
   }
   vfh.first = path.string ();
   return (true);

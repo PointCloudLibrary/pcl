@@ -39,12 +39,10 @@
 
 #pragma once
 
-#include <pcl/octree/boost.h>
 #include <pcl/octree/octree_pointcloud.h>
 #include <pcl/octree/octree_pointcloud_adjacency_container.h>
 
-#include <list>
-#include <set>
+#include <boost/graph/adjacency_list.hpp> // for adjacency_list
 
 namespace pcl {
 
@@ -197,7 +195,7 @@ protected:
    * \note This virtual implementation allows the use of a transform function to compute
    * keys. */
   void
-  addPointIdx(const int point_idx_arg) override;
+  addPointIdx(uindex_t point_idx_arg) override;
 
   /** \brief Fills in the neighbors fields for new voxels.
    *

@@ -20,7 +20,7 @@
  *     The minimum distance between any two random samples
  *   max_correspondence_distance
  *     The 
- *   nr_interations
+ *   nr_iterations
  *     The number of RANSAC iterations to perform
  * Return: A transformation matrix that will roughly align the points in source to the points in target
  */
@@ -34,7 +34,7 @@ computeInitialAlignment (const PointCloudPtr & source_points, const LocalDescrip
   sac_ia.setMaxCorrespondenceDistance (max_correspondence_distance);
   sac_ia.setMaximumIterations (nr_iterations);
   
-  sac_ia.setInputCloud (source_points);
+  sac_ia.setInputSource (source_points);
   sac_ia.setSourceFeatures (source_descriptors);
 
   sac_ia.setInputTarget (target_points);
@@ -53,7 +53,7 @@ computeInitialAlignment (const PointCloudPtr & source_points, const LocalDescrip
  *     The "source" points, i.e., the points that must be transformed to align with the target point cloud
  *   target_points
  *     The "target" points, i.e., the points to which the source point cloud will be aligned
- *   intial_alignment
+ *   initial_alignment
  *     An initial estimate of the transformation matrix that aligns the source points to the target points
  *   max_correspondence_distance
  *     A threshold on the distance between any two corresponding points.  Any corresponding points that are further 
@@ -81,7 +81,7 @@ refineAlignment (const PointCloudPtr & source_points, const PointCloudPtr & targ
   PointCloudPtr source_points_transformed (new PointCloud);
   pcl::transformPointCloud (*source_points, *source_points_transformed, initial_alignment);
 
-  icp.setInputCloud (source_points_transformed);
+  icp.setInputSource (source_points_transformed);
   icp.setInputTarget (target_points);
 
   PointCloud registration_output;

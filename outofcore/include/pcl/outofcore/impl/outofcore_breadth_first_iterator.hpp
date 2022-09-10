@@ -54,9 +54,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT, typename ContainerT> 
-    OutofcoreBreadthFirstIterator<PointT, ContainerT>::~OutofcoreBreadthFirstIterator ()
-    {
-    }
+    OutofcoreBreadthFirstIterator<PointT, ContainerT>::~OutofcoreBreadthFirstIterator () = default;
 
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -74,7 +72,7 @@ namespace pcl
         if (!skip_child_voxels_ && node->getDepth () < this->max_depth_ && node->getNodeType () == pcl::octree::BRANCH_NODE)
         {
           // Get the branch node
-          BranchNode* branch = static_cast<BranchNode*> (node);
+          auto* branch = static_cast<BranchNode*> (node);
           OctreeDiskNode* child = nullptr;
 
           // Iterate over the branches children

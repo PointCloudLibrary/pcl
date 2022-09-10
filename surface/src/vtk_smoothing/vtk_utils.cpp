@@ -39,15 +39,16 @@
 
 #include <pcl/surface/vtk_smoothing/vtk_utils.h>
 
+#include <pcl/PolygonMesh.h>
 #include <pcl/conversions.h>
-#include <pcl/common/common.h>
-#include <vtkVersion.h>
+#include <pcl/point_types.h> // for PointXYZ, PointXYZRGB, RGB
 #include <vtkCellArray.h>
 #include <vtkTriangleFilter.h>
 #include <vtkPoints.h>
 #include <vtkPolyData.h>
 #include <vtkPointData.h>
 #include <vtkFloatArray.h>
+#include <vtkUnsignedCharArray.h>
 
 // Support for VTK 7.1 upwards
 #ifdef vtkGenericDataArray_h
@@ -119,16 +120,16 @@ pcl::VTKUtils::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::Pol
     for (vtkIdType i = 0; i < mesh_points->GetNumberOfPoints (); ++i)
     {
       mesh_points->GetPoint (i, &point_xyz[0]);
-      cloud_temp->points[i].x = static_cast<float> (point_xyz[0]);
-      cloud_temp->points[i].y = static_cast<float> (point_xyz[1]);
-      cloud_temp->points[i].z = static_cast<float> (point_xyz[2]);
+      (*cloud_temp)[i].x = static_cast<float> (point_xyz[0]);
+      (*cloud_temp)[i].y = static_cast<float> (point_xyz[1]);
+      (*cloud_temp)[i].z = static_cast<float> (point_xyz[2]);
 
       poly_colors->GetTupleValue (i, &point_color[0]);
-      cloud_temp->points[i].r = point_color[0];
-      cloud_temp->points[i].g = point_color[1];
-      cloud_temp->points[i].b = point_color[2];
+      (*cloud_temp)[i].r = point_color[0];
+      (*cloud_temp)[i].g = point_color[1];
+      (*cloud_temp)[i].b = point_color[2];
     }
-    cloud_temp->width = static_cast<std::uint32_t> (cloud_temp->points.size ());
+    cloud_temp->width = cloud_temp->size ();
     cloud_temp->height = 1;
     cloud_temp->is_dense = true;
 
@@ -142,11 +143,11 @@ pcl::VTKUtils::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::Pol
     for (vtkIdType i = 0; i < mesh_points->GetNumberOfPoints (); ++i)
     {
       mesh_points->GetPoint (i, &point_xyz[0]);
-      cloud_temp->points[i].x = static_cast<float> (point_xyz[0]);
-      cloud_temp->points[i].y = static_cast<float> (point_xyz[1]);
-      cloud_temp->points[i].z = static_cast<float> (point_xyz[2]);
+      (*cloud_temp)[i].x = static_cast<float> (point_xyz[0]);
+      (*cloud_temp)[i].y = static_cast<float> (point_xyz[1]);
+      (*cloud_temp)[i].z = static_cast<float> (point_xyz[2]);
     }
-    cloud_temp->width = static_cast<std::uint32_t> (cloud_temp->points.size ());
+    cloud_temp->width = cloud_temp->size ();
     cloud_temp->height = 1;
     cloud_temp->is_dense = true;
 
@@ -154,7 +155,11 @@ pcl::VTKUtils::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::Pol
   }
 
   mesh.polygons.resize (nr_polygons);
+#ifdef VTK_CELL_ARRAY_V2
+  vtkIdType const *cell_points;
+#else
   vtkIdType* cell_points;
+#endif
   vtkIdType nr_cell_points;
   vtkCellArray * mesh_polygons = poly_data->GetPolys ();
   mesh_polygons->InitTraversal ();
@@ -219,7 +224,7 @@ pcl::VTKUtils::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyDa
   {
     for (int i = 0; i < nr_polygons; i++)
     {
-      unsigned int nr_points_in_polygon = static_cast<unsigned int> (mesh.polygons[i].vertices.size ());
+      auto nr_points_in_polygon = static_cast<unsigned int> (mesh.polygons[i].vertices.size ());
       vtk_mesh_polygons->InsertNextCell (nr_points_in_polygon);
       for (unsigned int j = 0; j < nr_points_in_polygon; j++)
         vtk_mesh_polygons->InsertCellPoint(mesh.polygons[i].vertices[j]);

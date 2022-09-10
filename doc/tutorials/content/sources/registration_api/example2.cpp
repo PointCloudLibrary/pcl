@@ -12,7 +12,6 @@
 #include <pcl/registration/correspondence_rejection_distance.h>
 #include <pcl/registration/transformation_estimation_svd.h>
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
@@ -120,7 +119,7 @@ rejectBadCorrespondences (const CorrespondencesPtr &all_correspondences,
                           Correspondences &remaining_correspondences)
 {
   CorrespondenceRejectorDistance rej;
-  rej.setInputCloud<PointXYZ> (keypoints_src);
+  rej.setInputSource<PointXYZ> (keypoints_src);
   rej.setInputTarget<PointXYZ> (keypoints_tgt);
   rej.setMaximumDistance (1);    // 1m
   rej.setInputCorrespondences (all_correspondences);
@@ -139,13 +138,13 @@ computeTransformation (const PointCloud<PointXYZ>::Ptr &src,
                             keypoints_tgt (new PointCloud<PointXYZ>);
 
   estimateKeypoints (src, tgt, *keypoints_src, *keypoints_tgt);
-  print_info ("Found %lu and %lu keypoints for the source and target datasets.\n", keypoints_src->points.size (), keypoints_tgt->points.size ());
+  print_info ("Found %zu and %zu keypoints for the source and target datasets.\n", static_cast<std::size_t>(keypoints_src->size ()), static_cast<std::size_t>(keypoints_tgt->size ()));
 
   // Compute normals for all points keypoint
   PointCloud<Normal>::Ptr normals_src (new PointCloud<Normal>), 
                           normals_tgt (new PointCloud<Normal>);
   estimateNormals (src, tgt, *normals_src, *normals_tgt);
-  print_info ("Estimated %lu and %lu normals for the source and target datasets.\n", normals_src->points.size (), normals_tgt->points.size ());
+  print_info ("Estimated %zu and %zu normals for the source and target datasets.\n", static_cast<std::size_t>(normals_src->size ()), static_cast<std::size_t>(normals_tgt->size ()));
 
   // Compute FPFH features at each keypoint
   PointCloud<FPFHSignature33>::Ptr fpfhs_src (new PointCloud<FPFHSignature33>), 
@@ -167,8 +166,8 @@ computeTransformation (const PointCloud<PointXYZ>::Ptr &src,
   // Reject correspondences based on their XYZ distance
   rejectBadCorrespondences (all_correspondences, keypoints_src, keypoints_tgt, *good_correspondences);
 
-  for (int i = 0; i < good_correspondences->size (); ++i)
-    std::cerr << good_correspondences->at (i) << std::endl;
+  for (const auto& corr : (*good_correspondences))
+    std::cerr << corr << std::endl;
   // Obtain the best transformation between the two sets of keypoints given the remaining correspondences
   TransformationEstimationSVD<PointXYZ, PointXYZ> trans_est;
   trans_est.estimateRigidTransformation (*keypoints_src, *keypoints_tgt, *good_correspondences, transform);

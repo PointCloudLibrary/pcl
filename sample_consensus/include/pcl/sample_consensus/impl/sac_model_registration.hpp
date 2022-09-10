@@ -42,9 +42,6 @@
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_REGISTRATION_H_
 
 #include <pcl/sample_consensus/sac_model_registration.h>
-#include <pcl/common/point_operators.h>
-#include <pcl/common/eigen.h>
-#include <pcl/point_types.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
@@ -58,9 +55,9 @@ pcl::SampleConsensusModelRegistration<PointT>::isSampleGood (const Indices &samp
   using namespace pcl::common;
   using namespace pcl::traits;
 
-  PointT p10 = input_->points[samples[1]] - input_->points[samples[0]];
-  PointT p20 = input_->points[samples[2]] - input_->points[samples[0]];
-  PointT p21 = input_->points[samples[2]] - input_->points[samples[1]];
+  PointT p10 = (*input_)[samples[1]] - (*input_)[samples[0]];
+  PointT p20 = (*input_)[samples[2]] - (*input_)[samples[0]];
+  PointT p21 = (*input_)[samples[2]] - (*input_)[samples[1]];
 
   return ((p10.x * p10.x + p10.y * p10.y + p10.z * p10.z) > sample_dist_thresh_ && 
           (p20.x * p20.x + p20.y * p20.y + p20.z * p20.z) > sample_dist_thresh_ && 
@@ -85,7 +82,14 @@ pcl::SampleConsensusModelRegistration<PointT>::computeModelCoefficients (const I
   Indices indices_tgt (3);
   for (int i = 0; i < 3; ++i)
   {
-    indices_tgt[i] = correspondences_.at (samples[i]);
+    const auto it = correspondences_.find (samples[i]);
+    if (it == correspondences_.cend ())
+    {
+      PCL_ERROR ("[pcl::SampleConsensusModelRegistration::computeModelCoefficients] Element with key %i is not in map (map contains %lu elements).\n",
+                 samples[i], correspondences_.size ());
+      return (false);
+    }
+    indices_tgt[i] = it->second;
   }
 
   estimateRigidTransformationSVD (*input_, samples, *target_, indices_tgt, model_coefficients);
@@ -124,12 +128,12 @@ pcl::SampleConsensusModelRegistration<PointT>::getDistancesToModel (const Eigen:
 
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
-    Eigen::Vector4f pt_src (input_->points[(*indices_)[i]].x, 
-                            input_->points[(*indices_)[i]].y, 
-                            input_->points[(*indices_)[i]].z, 1.0f);
-    Eigen::Vector4f pt_tgt (target_->points[(*indices_tgt_)[i]].x, 
-                            target_->points[(*indices_tgt_)[i]].y, 
-                            target_->points[(*indices_tgt_)[i]].z, 1.0f);
+    Eigen::Vector4f pt_src ((*input_)[(*indices_)[i]].x, 
+                            (*input_)[(*indices_)[i]].y, 
+                            (*input_)[(*indices_)[i]].z, 1.0f);
+    Eigen::Vector4f pt_tgt ((*target_)[(*indices_tgt_)[i]].x, 
+                            (*target_)[(*indices_tgt_)[i]].y, 
+                            (*target_)[(*indices_tgt_)[i]].z, 1.0f);
 
     Eigen::Vector4f p_tr (transform * pt_src);
     // Calculate the distance from the transformed point to its correspondence
@@ -176,12 +180,12 @@ pcl::SampleConsensusModelRegistration<PointT>::selectWithinDistance (const Eigen
 
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
-    Eigen::Vector4f pt_src (input_->points[(*indices_)[i]].x, 
-                            input_->points[(*indices_)[i]].y, 
-                            input_->points[(*indices_)[i]].z, 1); 
-    Eigen::Vector4f pt_tgt (target_->points[(*indices_tgt_)[i]].x, 
-                            target_->points[(*indices_tgt_)[i]].y, 
-                            target_->points[(*indices_tgt_)[i]].z, 1); 
+    Eigen::Vector4f pt_src ((*input_)[(*indices_)[i]].x, 
+                            (*input_)[(*indices_)[i]].y, 
+                            (*input_)[(*indices_)[i]].z, 1); 
+    Eigen::Vector4f pt_tgt ((*target_)[(*indices_tgt_)[i]].x, 
+                            (*target_)[(*indices_tgt_)[i]].y, 
+                            (*target_)[(*indices_tgt_)[i]].z, 1); 
 
     Eigen::Vector4f p_tr (transform * pt_src);
   
@@ -228,18 +232,19 @@ pcl::SampleConsensusModelRegistration<PointT>::countWithinDistance (
   std::size_t nr_p = 0;
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
-    Eigen::Vector4f pt_src (input_->points[(*indices_)[i]].x, 
-                            input_->points[(*indices_)[i]].y, 
-                            input_->points[(*indices_)[i]].z, 1); 
-    Eigen::Vector4f pt_tgt (target_->points[(*indices_tgt_)[i]].x, 
-                            target_->points[(*indices_tgt_)[i]].y, 
-                            target_->points[(*indices_tgt_)[i]].z, 1); 
+    Eigen::Vector4f pt_src ((*input_)[(*indices_)[i]].x, 
+                            (*input_)[(*indices_)[i]].y, 
+                            (*input_)[(*indices_)[i]].z, 1); 
+    Eigen::Vector4f pt_tgt ((*target_)[(*indices_tgt_)[i]].x, 
+                            (*target_)[(*indices_tgt_)[i]].y, 
+                            (*target_)[(*indices_tgt_)[i]].z, 1); 
 
     Eigen::Vector4f p_tr (transform * pt_src);
     // Calculate the distance from the transformed point to its correspondence
     if ((p_tr - pt_tgt).squaredNorm () < thresh)
       nr_p++;
   }
+  PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::countWithinDistance] %zu inliers of %zu total points, threshold=%g\n", nr_p, indices_->size(), threshold);
   return (nr_p);
 } 
 
@@ -266,7 +271,15 @@ pcl::SampleConsensusModelRegistration<PointT>::optimizeModelCoefficients (const 
   for (std::size_t i = 0; i < inliers.size (); ++i)
   {
     indices_src[i] = inliers[i];
-    indices_tgt[i] = correspondences_.at (indices_src[i]);
+    const auto it = correspondences_.find (indices_src[i]);
+    if (it == correspondences_.cend ())
+    {
+      PCL_ERROR ("[pcl::SampleConsensusModelRegistration::optimizeModelCoefficients] Element with key %i is not in map (map contains %lu elements).\n",
+                 indices_src[i], correspondences_.size ());
+      optimized_coefficients = model_coefficients;
+      return;
+    }
+    indices_tgt[i] = it->second;
   }
 
   estimateRigidTransformationSVD (*input_, indices_src, *target_, indices_tgt, optimized_coefficients);
@@ -298,6 +311,7 @@ pcl::SampleConsensusModelRegistration<PointT>::estimateRigidTransformationSVD (
   }
 
   // Call Umeyama directly from Eigen
+  PCL_DEBUG_STREAM("[pcl::SampleConsensusModelRegistration::estimateRigidTransformationSVD] src and tgt:" << std::endl << src << std::endl << std::endl << tgt << std::endl);
   Eigen::Matrix4d transformation_matrix = pcl::umeyama (src, tgt, false);
 
   // Return the correct transformation

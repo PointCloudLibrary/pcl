@@ -3,7 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
- *  
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -37,11 +37,16 @@
  *
  */
 
+
 #ifndef PCL_RECOGNITION_CORRESPONDENCE_GROUPING_IMPL_H_
 #define PCL_RECOGNITION_CORRESPONDENCE_GROUPING_IMPL_H_
 
+
+namespace pcl
+{
+
 template <typename PointModelT, typename PointSceneT> void
-pcl::CorrespondenceGrouping<PointModelT, PointSceneT>::cluster (std::vector<Correspondences> &clustered_corrs)
+CorrespondenceGrouping<PointModelT, PointSceneT>::cluster (std::vector<Correspondences> &clustered_corrs)
 {
   clustered_corrs.clear ();
   corr_group_scale_.clear ();
@@ -57,4 +62,7 @@ pcl::CorrespondenceGrouping<PointModelT, PointSceneT>::cluster (std::vector<Corr
   deinitCompute ();
 }
 
+} // namespace pcl
+
 #endif // PCL_RECOGNITION_CORRESPONDENCE_GROUPING_IMPL_H_
+

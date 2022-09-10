@@ -52,7 +52,9 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
-#include "boost.h"
+#include <boost/date_time/gregorian/gregorian_types.hpp> // for date
+#include <boost/date_time/posix_time/posix_time.hpp> // for local_time
+#include <boost/date_time/posix_time/posix_time_types.hpp> // for time_duration
 
 using namespace std::chrono_literals;
 namespace bpt = boost::posix_time;
@@ -132,7 +134,7 @@ class Recorder
             boost::uuids::random_generator gen;
             boost::uuids::uuid uuid = gen();
             std::vector<char> uuid_data(uuid.size());
-            std::copy(uuid.begin(), uuid.end(), uuid_data.begin());
+            std::copy(uuid.cbegin(), uuid.cend(), uuid_data.begin());
             segment.info.uid(uuid_data);
             // The filename can be nice to know.
             segment.info.filename(filename_);

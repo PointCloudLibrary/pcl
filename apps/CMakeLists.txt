@@ -1,14 +1,21 @@
 set(SUBSYS_NAME apps)
 set(SUBSYS_DESC "Application examples/samples that show how PCL works")
 set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search recognition ml stereo 2d)
+set(SUBSYS_OPT_DEPS openni vtk ${QTX})
 
 set(DEFAULT FALSE)
+set(REASON "Disabled by default")
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
-PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk)
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS ${SUBSYS_OPT_DEPS})
 
 if(NOT build)
   return()
 endif()
+
+#Enable cmakes QT auto features.
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
 # to be filled with all targets the apps subsystem
 set(PCL_APPS_ALL_TARGETS)
@@ -27,14 +34,12 @@ target_link_libraries(pcl_pyramid_surface_matching pcl_common pcl_io pcl_feature
 PCL_ADD_EXECUTABLE(pcl_statistical_multiscale_interest_region_extraction_example COMPONENT ${SUBSYS_NAME} SOURCES src/statistical_multiscale_interest_region_extraction_example.cpp)
 target_link_libraries(pcl_statistical_multiscale_interest_region_extraction_example pcl_common pcl_io pcl_features pcl_filters)
 
-if(LIBUSB_1_FOUND)
+if(LIBUSB_FOUND)
   PCL_ADD_EXECUTABLE(pcl_dinast_grabber COMPONENT ${SUBSYS_NAME} SOURCES src/dinast_grabber_example.cpp)
   target_link_libraries(pcl_dinast_grabber pcl_common pcl_visualization pcl_io)
 endif()
 
 if(VTK_FOUND)
-  include("${VTK_USE_FILE}")
-
   set(incs "include/pcl/${SUBSYS_NAME}/render_views_tesselated_sphere.h")
   set(srcs "src/render_views_tesselated_sphere.cpp")
 
@@ -51,7 +56,7 @@ if(VTK_FOUND)
   target_link_libraries(pcl_feature_matching pcl_common pcl_io pcl_registration pcl_keypoints pcl_sample_consensus pcl_visualization pcl_search pcl_features pcl_kdtree pcl_surface pcl_segmentation)
 
   PCL_ADD_EXECUTABLE(pcl_convolve COMPONENT ${SUBSYS_NAME} SOURCES src/convolve.cpp)
-  target_link_libraries(pcl_convolve pcl_common pcl_io pcl_visualization)
+  target_link_libraries(pcl_convolve pcl_common pcl_filters pcl_io pcl_visualization)
 
   PCL_ADD_EXECUTABLE(pcl_pcd_organized_multi_plane_segmentation COMPONENT ${SUBSYS_NAME} SOURCES src/pcd_organized_multi_plane_segmentation.cpp)
   target_link_libraries(pcl_pcd_organized_multi_plane_segmentation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_features)
@@ -65,25 +70,37 @@ if(VTK_FOUND)
   target_link_libraries(pcl_pcd_organized_edge_detection pcl_common pcl_io pcl_features pcl_visualization)
 
   PCL_ADD_EXECUTABLE(pcl_face_trainer COMPONENT ${SUBSYS_NAME} SOURCES src/face_detection/face_trainer.cpp)
-  target_link_libraries(pcl_face_trainer pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree ${VTK_LIBRARIES})
+  target_link_libraries(pcl_face_trainer pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree)
 
   PCL_ADD_EXECUTABLE(pcl_fs_face_detector COMPONENT ${SUBSYS_NAME} SOURCES src/face_detection//filesystem_face_detection.cpp BUNDLE)
-  target_link_libraries(pcl_fs_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree ${VTK_LIBRARIES})
+  target_link_libraries(pcl_fs_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree)
 
   PCL_ADD_EXECUTABLE(pcl_stereo_ground_segmentation COMPONENT ${SUBSYS_NAME} SOURCES src/stereo_ground_segmentation.cpp)
   target_link_libraries(pcl_stereo_ground_segmentation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_features pcl_stereo)
 
-  if(Qt5_FOUND AND QVTK_FOUND)
+  if(QT_FOUND AND HAVE_QVTK)
     # Manual registration demo
-    QT5_WRAP_UI(manual_registration_ui src/manual_registration/manual_registration.ui)
-    QT5_WRAP_CPP(manual_registration_moc include/pcl/apps/manual_registration.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
-    PCL_ADD_EXECUTABLE(pcl_manual_registration COMPONENT ${SUBSYS_NAME} SOURCES ${manual_registration_ui} ${manual_registration_moc} src/manual_registration/manual_registration.cpp BUNDLE)
-    target_link_libraries(pcl_manual_registration pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface Qt5::Widgets)
+    PCL_ADD_EXECUTABLE(pcl_manual_registration
+      COMPONENT
+      ${SUBSYS_NAME}
+      SOURCES
+      include/pcl/apps/manual_registration.h
+      src/manual_registration/manual_registration.cpp
+      src/manual_registration/manual_registration.ui
+      BUNDLE)
+      
+    target_link_libraries(pcl_manual_registration pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface ${QTX}::Widgets)
 
-    QT5_WRAP_UI(pcd_video_player_ui src/pcd_video_player/pcd_video_player.ui)
-    QT5_WRAP_CPP(pcd_video_player_moc include/pcl/apps/pcd_video_player.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
-    PCL_ADD_EXECUTABLE(pcl_pcd_video_player COMPONENT ${SUBSYS_NAME} SOURCES ${pcd_video_player_ui} ${pcd_video_player_moc} src/pcd_video_player/pcd_video_player.cpp BUNDLE)
-    target_link_libraries(pcl_pcd_video_player pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface Qt5::Widgets)
+    PCL_ADD_EXECUTABLE(pcl_pcd_video_player
+      COMPONENT
+      ${SUBSYS_NAME}
+      SOURCES
+      include/pcl/apps/pcd_video_player.h
+      src/pcd_video_player/pcd_video_player.cpp
+      src/pcd_video_player/pcd_video_player.ui
+      BUNDLE)
+    
+    target_link_libraries(pcl_pcd_video_player pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface ${QTX}::Widgets)
   endif()
 
   if(WITH_OPENNI)
@@ -135,20 +152,34 @@ if(VTK_FOUND)
     target_link_libraries(pcl_openni_organized_edge_detection pcl_common pcl_io pcl_features pcl_visualization)
 
     PCL_ADD_EXECUTABLE(pcl_openni_face_detector COMPONENT ${SUBSYS_NAME} SOURCES src/face_detection//openni_face_detection.cpp src/face_detection//openni_frame_source.cpp BUNDLE)
-    target_link_libraries(pcl_openni_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree ${VTK_LIBRARIES})
+    target_link_libraries(pcl_openni_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree)
 
-    if(Qt5_FOUND AND QVTK_FOUND)
-    # OpenNI Passthrough application demo
-    QT5_WRAP_UI(openni_passthrough_ui src/openni_passthrough.ui)
-    QT5_WRAP_CPP(openni_passthrough_moc include/pcl/apps/openni_passthrough.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
-    PCL_ADD_EXECUTABLE(pcl_openni_passthrough COMPONENT ${SUBSYS_NAME} SOURCES ${openni_passthrough_ui} ${openni_passthrough_moc} src/openni_passthrough.cpp)
-    target_link_libraries(pcl_openni_passthrough pcl_common pcl_io pcl_filters pcl_visualization Qt5::Widgets)
+    if(QT_FOUND AND HAVE_QVTK)
+      # OpenNI Passthrough application demo
+      PCL_ADD_EXECUTABLE(pcl_openni_passthrough
+        COMPONENT
+          ${SUBSYS_NAME}
+        SOURCES
+          include/pcl/apps/openni_passthrough.h
+          src/openni_passthrough.cpp
+          src/openni_passthrough.ui)
+          
+      target_link_libraries(pcl_openni_passthrough pcl_common pcl_io pcl_filters pcl_visualization ${QTX}::Widgets)
 
-    # OpenNI Organized Connected Component application demo
-    QT5_WRAP_UI(organized_segmentation_demo_ui src/organized_segmentation_demo.ui)
-    QT5_WRAP_CPP(organized_segmentation_demo_moc include/pcl/apps/organized_segmentation_demo.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
-    PCL_ADD_EXECUTABLE(pcl_organized_segmentation_demo COMPONENT ${SUBSYS_NAME} SOURCES ${organized_segmentation_demo_ui} ${organized_segmentation_demo_moc} src/organized_segmentation_demo.cpp BUNDLE)
-    target_link_libraries(pcl_organized_segmentation_demo pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface Qt5::Widgets)
+      list(APPEND CMAKE_AUTOUIC_SEARCH_PATHS "src")
+
+      # OpenNI Organized Connected Component application demo
+      PCL_ADD_EXECUTABLE(pcl_organized_segmentation_demo
+        COMPONENT
+          ${SUBSYS_NAME}
+        SOURCES
+          include/pcl/apps/organized_segmentation_demo_qt.h
+          include/pcl/apps/organized_segmentation_demo.h
+          src/organized_segmentation_demo.cpp
+          src/organized_segmentation_demo.ui
+        BUNDLE)
+      target_link_libraries(pcl_organized_segmentation_demo pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface ${QTX}::Widgets)
+
     endif()
 
     if(QHULL_FOUND)
@@ -191,7 +222,12 @@ if(OPENGL_FOUND AND GLUT_FOUND)
     include_directories(SYSTEM "${OPENGL_INCLUDE_DIR}")
   endif()
   PCL_ADD_EXECUTABLE(pcl_grabcut_2d COMPONENT ${SUBSYS_NAME} SOURCES src/grabcut_2d.cpp BUNDLE)
-  target_link_libraries (pcl_grabcut_2d pcl_common pcl_io pcl_segmentation pcl_search GLUT::GLUT ${OPENGL_LIBRARIES})
+  if(APPLE)
+    set(_glut_target ${GLUT_glut_LIBRARY})
+  else()
+    set(_glut_target GLUT::GLUT)
+  endif()
+  target_link_libraries (pcl_grabcut_2d pcl_common pcl_io pcl_segmentation pcl_search ${_glut_target} ${OPENGL_LIBRARIES})
 endif()
 
 collect_subproject_directory_names("${CMAKE_CURRENT_SOURCE_DIR}" "CMakeLists.txt" PCL_APPS_MODULES_NAMES PCL_APPS_MODULES_DIRS ${SUBSYS_NAME})
@@ -227,4 +263,3 @@ else()
 endif()
 add_custom_target(${SUBSYS_TARGET_NAME} DEPENDS ${PCL_APPS_ALL_TARGETS})
 set_target_properties(${SUBSYS_TARGET_NAME} PROPERTIES FOLDER "Apps")
-

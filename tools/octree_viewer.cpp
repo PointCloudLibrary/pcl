@@ -40,14 +40,12 @@
 #include <pcl/io/auto_io.h>
 #include <pcl/common/time.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/common/common.h>
 
 #include <pcl/octree/octree_pointcloud_voxelcentroid.h>
 #include <pcl/common/centroid.h>
 
 #include <pcl/filters/filter.h>
-#include "boost.h"
 
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
@@ -213,9 +211,9 @@ private:
     }
 
     //remove NaN Points
-    std::vector<int> nanIndexes;
+    pcl::Indices nanIndexes;
     pcl::removeNaNFromPointCloud(*cloud, *cloud, nanIndexes);
-    std::cout << "Loaded " << cloud->points.size() << " points" << std::endl;
+    std::cout << "Loaded " << cloud->size() << " points" << std::endl;
 
     //create octree structure
     octree.setInputCloud(cloud);
@@ -245,13 +243,15 @@ private:
     viz.addText (dataDisplay, 0, 45, 1.0, 0.0, 0.0, "disp_original_points");
 
     char level[256];
-    sprintf (level, "Displayed depth is %d on %d", displayedDepth, octree.getTreeDepth());
+    sprintf (level, "Displayed depth is %d on %zu", displayedDepth, static_cast<std::size_t>(octree.getTreeDepth()));
     viz.removeShape ("level_t1");
     viz.addText (level, 0, 30, 1.0, 0.0, 0.0, "level_t1");
 
     viz.removeShape ("level_t2");
-    sprintf (level, "Voxel size: %.4fm [%lu voxels]", std::sqrt (octree.getVoxelSquaredSideLen (displayedDepth)),
-             cloudVoxel->points.size ());
+    sprintf(level,
+            "Voxel size: %.4fm [%zu voxels]",
+            std::sqrt(octree.getVoxelSquaredSideLen(displayedDepth)),
+            static_cast<std::size_t>(cloudVoxel->size()));
     viz.addText (level, 0, 15, 1.0, 0.0, 0.0, "level_t2");
   }
 
@@ -392,7 +392,7 @@ private:
       // If the asked depth is the depth of the octree, retrieve the centroid at this LeafNode
       if (octree.getTreeDepth () == (unsigned int) depth)
       {
-        pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::LeafNode* container = static_cast<pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::LeafNode*> (tree_it.getCurrentOctreeNode ());
+        auto* container = static_cast<pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::LeafNode*> (tree_it.getCurrentOctreeNode ());
 
         container->getContainer ().getCentroid (pt_centroid);
       }
@@ -417,8 +417,10 @@ private:
     }
 
     double end = pcl::getTime ();
-    printf("%lu pts, %.4gs. %.4gs./pt. =====\n", displayCloud->points.size (), end - start,
-           (end - start) / static_cast<double> (displayCloud->points.size ()));
+    printf("%zu pts, %.4gs. %.4gs./pt. =====\n",
+           static_cast<std::size_t>(displayCloud->size()),
+           end - start,
+           (end - start) / static_cast<double>(displayCloud->size()));
 
     update();
   }

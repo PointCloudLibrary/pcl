@@ -103,7 +103,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      ~SUSANKeypoint () {}
+      ~SUSANKeypoint () override = default;
 
       /** \brief set the radius for normal estimation and non maxima supression.
         * \param[in] radius

@@ -6,7 +6,7 @@
 #include <ctime>
 
 int
-main (int argc, char** argv)
+main ()
 {
   srand (time (NULL));
 
@@ -17,11 +17,11 @@ main (int argc, char** argv)
   cloud->height = 1;
   cloud->points.resize (cloud->width * cloud->height);
 
-  for (std::size_t i = 0; i < cloud->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud->size (); ++i)
   {
-    cloud->points[i].x = 1024.0f * rand () / (RAND_MAX + 1.0f);
-    cloud->points[i].y = 1024.0f * rand () / (RAND_MAX + 1.0f);
-    cloud->points[i].z = 1024.0f * rand () / (RAND_MAX + 1.0f);
+    (*cloud)[i].x = 1024.0f * rand () / (RAND_MAX + 1.0f);
+    (*cloud)[i].y = 1024.0f * rand () / (RAND_MAX + 1.0f);
+    (*cloud)[i].z = 1024.0f * rand () / (RAND_MAX + 1.0f);
   }
 
   pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
@@ -38,21 +38,21 @@ main (int argc, char** argv)
 
   int K = 10;
 
-  std::vector<int> pointIdxNKNSearch(K);
-  std::vector<float> pointNKNSquaredDistance(K);
+  std::vector<int> pointIdxKNNSearch(K);
+  std::vector<float> pointKNNSquaredDistance(K);
 
   std::cout << "K nearest neighbor search at (" << searchPoint.x 
             << " " << searchPoint.y 
             << " " << searchPoint.z
             << ") with K=" << K << std::endl;
 
-  if ( kdtree.nearestKSearch (searchPoint, K, pointIdxNKNSearch, pointNKNSquaredDistance) > 0 )
+  if ( kdtree.nearestKSearch (searchPoint, K, pointIdxKNNSearch, pointKNNSquaredDistance) > 0 )
   {
-    for (std::size_t i = 0; i < pointIdxNKNSearch.size (); ++i)
-      std::cout << "    "  <<   cloud->points[ pointIdxNKNSearch[i] ].x 
-                << " " << cloud->points[ pointIdxNKNSearch[i] ].y 
-                << " " << cloud->points[ pointIdxNKNSearch[i] ].z 
-                << " (squared distance: " << pointNKNSquaredDistance[i] << ")" << std::endl;
+    for (std::size_t i = 0; i < pointIdxKNNSearch.size (); ++i)
+      std::cout << "    "  <<   (*cloud)[ pointIdxKNNSearch[i] ].x 
+                << " " << (*cloud)[ pointIdxKNNSearch[i] ].y 
+                << " " << (*cloud)[ pointIdxKNNSearch[i] ].z 
+                << " (squared distance: " << pointKNNSquaredDistance[i] << ")" << std::endl;
   }
 
   // Neighbors within radius search
@@ -71,9 +71,9 @@ main (int argc, char** argv)
   if ( kdtree.radiusSearch (searchPoint, radius, pointIdxRadiusSearch, pointRadiusSquaredDistance) > 0 )
   {
     for (std::size_t i = 0; i < pointIdxRadiusSearch.size (); ++i)
-      std::cout << "    "  <<   cloud->points[ pointIdxRadiusSearch[i] ].x 
-                << " " << cloud->points[ pointIdxRadiusSearch[i] ].y 
-                << " " << cloud->points[ pointIdxRadiusSearch[i] ].z 
+      std::cout << "    "  <<   (*cloud)[ pointIdxRadiusSearch[i] ].x 
+                << " " << (*cloud)[ pointIdxRadiusSearch[i] ].y 
+                << " " << (*cloud)[ pointIdxRadiusSearch[i] ].z 
                 << " (squared distance: " << pointRadiusSquaredDistance[i] << ")" << std::endl;
   }
 

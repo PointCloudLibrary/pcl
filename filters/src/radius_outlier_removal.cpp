@@ -47,7 +47,7 @@ void
 pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 {
   // If fields x/y/z are not present, we cannot filter
-  if (x_idx_ == -1 || y_idx_ == -1 || z_idx_ == -1)
+  if (x_idx_ == UNAVAILABLE|| y_idx_ == UNAVAILABLE || z_idx_ == UNAVAILABLE)
   {
     PCL_ERROR ("[pcl::%s::applyFilter] Input dataset doesn't have x-y-z coordinates!\n", getClassName ().c_str ());
     output.width = output.height = 0;
@@ -83,7 +83,7 @@ pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &out
   searcher_->setInputCloud (cloud);
 
   // Allocate enough space to hold the results
-  std::vector<int> nn_indices (indices_->size ());
+  Indices nn_indices (indices_->size ());
   std::vector<float> nn_dists (indices_->size ());
 
   // Copy the common fields
@@ -154,7 +154,7 @@ pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &out
 }
 
 void
-pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
+pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (Indices &indices)
 {
   if (search_radius_ == 0.0)
   {
@@ -178,7 +178,7 @@ pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &i
   searcher_->setInputCloud (cloud);
 
   // The arrays to be used
-  std::vector<int> nn_indices (indices_->size ());
+  Indices nn_indices (indices_->size ());
   std::vector<float> nn_dists (indices_->size ());
   indices.resize (indices_->size ());
   removed_indices_->resize (indices_->size ());

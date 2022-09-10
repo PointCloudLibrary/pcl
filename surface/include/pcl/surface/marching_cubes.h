@@ -37,7 +37,6 @@
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/surface/boost.h>
 #include <pcl/surface/reconstruction.h>
 
 namespace pcl
@@ -384,7 +383,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      ~MarchingCubes ();
+      ~MarchingCubes () override;
 
 
       /** \brief Method that sets the iso level of the surface to be extracted.

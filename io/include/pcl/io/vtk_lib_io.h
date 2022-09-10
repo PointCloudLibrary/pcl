@@ -40,37 +40,20 @@
 
 #pragma once
 
-#include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/PolygonMesh.h>
 #include <pcl/TextureMesh.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/conversions.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/range_image/range_image_planar.h>
 
 // Ignore warnings in the above headers
 #ifdef __GNUC__
 #pragma GCC system_header 
 #endif
-#include <vtkVersion.h>
+#include <vtkPolyData.h> // for vtkPolyData
 #include <vtkSmartPointer.h>
 #include <vtkStructuredGrid.h>
-#include <vtkPoints.h>
-#include <vtkPointData.h>
-#include <vtkCellArray.h>
-#include <vtkUnsignedCharArray.h>
-#include <vtkFloatArray.h>
-#include <vtkPolyDataReader.h>
-#include <vtkPolyDataWriter.h>
-#include <vtkPLYReader.h>
-#include <vtkPLYWriter.h>
-#include <vtkOBJReader.h>
-#include <vtkSTLReader.h>
-#include <vtkSTLWriter.h>
-#include <vtkPNGReader.h>
-#include <vtkImageData.h>
-#include <vtkPolyDataNormals.h>
 
 namespace pcl
 {

@@ -39,7 +39,6 @@
  */
 
 #include <vector>
-#include <typeinfo>
 
 #include <pcl/test/gtest.h>
 

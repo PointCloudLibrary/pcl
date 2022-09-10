@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(narf_keypoint_extraction)
 
@@ -10,4 +10,3 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (narf_keypoint_extraction narf_keypoint_extraction.cpp)
 target_link_libraries (narf_keypoint_extraction ${PCL_LIBRARIES})
-

@@ -44,16 +44,23 @@
 #include <pcl/apps/point_cloud_editor/toolInterface.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 
+#include <pcl/memory.h>  // for pcl::shared_ptr
+
+class Selection;
+
 class Select2DTool : public ToolInterface
 {
   public:
+    /// The type for shared pointer pointing to a selection buffer
+    using SelectionPtr = pcl::shared_ptr<Selection>;
+
     /// @brief Constructor
     /// @param selection_ptr a shared pointer pointing to the selection object.
     /// @param cloud_ptr a shared pointer pointing to the cloud object.
     Select2DTool (SelectionPtr selection_ptr, CloudPtr cloud_ptr);
 
     /// @brief Destructor
-    ~Select2DTool ();
+    ~Select2DTool () override;
   
     /// @brief Initializes the selection tool with the initial mouse screen
     /// coordinates and key modifiers. The passed coordinates are used for

@@ -48,7 +48,6 @@
 #include <ctime>
 #include <string>
 #include <list>
-#include <set>
 #include <map>
 
 namespace pcl
@@ -77,7 +76,7 @@ namespace pcl
                 return;
 
               // Initialize
-              std::vector<ORROctree::Node*>::const_iterator it = full_leaves.begin ();
+              auto it = full_leaves.begin ();
               const float *p = (*it)->getData ()->getPoint ();
               aux::copy3 (p, octree_center_of_mass_);
               bounds_of_octree_points_[0] = bounds_of_octree_points_[1] = p[0];
@@ -121,9 +120,7 @@ namespace pcl
               }
             }
 
-            virtual ~Model ()
-            {
-            }
+            virtual ~Model () = default;
 
             inline const std::string&
             getObjectName () const
@@ -235,7 +232,7 @@ namespace pcl
         inline const Model*
         getModel (const std::string& name) const
         {
-          std::map<std::string,Model*>::const_iterator it = models_.find (name);
+          auto it = models_.find (name);
           if ( it != models_.end () )
             return (it->second);
 

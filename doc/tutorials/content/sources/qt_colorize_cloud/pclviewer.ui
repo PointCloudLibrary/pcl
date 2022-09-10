@@ -271,7 +271,7 @@
      </layout>
     </item>
     <item>
-     <widget class="QVTKWidget" name="qvtkWidget" native="true">
+     <widget class="PCLQVTKWidget" name="qvtkWidget" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>50</horstretch>
@@ -291,9 +291,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QVTKWidget</class>
-   <extends>QWidget</extends>
-   <header>QVTKWidget.h</header>
+   <class>PCLQVTKWidget</class>
+   <extends>QOpenGLWidget</extends>
+   <header location="global">pcl/visualization/qvtk_compatibility.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

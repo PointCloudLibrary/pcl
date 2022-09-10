@@ -56,7 +56,7 @@ namespace mets {
     /// 
     /// @param next Optional next criteria in the chain.
     explicit
-    aspiration_criteria_chain(aspiration_criteria_chain *next = 0)
+    aspiration_criteria_chain(aspiration_criteria_chain *next = nullptr)
       : next_m(next) 
     { }
     
@@ -68,8 +68,7 @@ namespace mets {
 
     /// @brief Virtual destructor.
     virtual 
-    ~aspiration_criteria_chain() 
-    { } 
+    ~aspiration_criteria_chain() = default;
 
     /// @brief A method to reset this aspiration criteria chain to its
     /// original state.
@@ -118,7 +117,7 @@ namespace mets {
     /// Create an abstract tabu list with a certain tenure
     explicit
     tabu_list_chain(unsigned int tenure) 
-      : next_m(0), tenure_m(tenure) 
+      : next_m(nullptr), tenure_m(tenure) 
     { }
 
     /// @brief Create an abstract tabu list with a certain tenure and
@@ -129,8 +128,7 @@ namespace mets {
 
     /// @brief Virtual destructor
     virtual 
-    ~tabu_list_chain() 
-    { } 
+    ~tabu_list_chain() = default;
 
     ///
     /// @brief Make a move tabu when starting from a certain solution.
@@ -232,7 +230,7 @@ namespace mets {
     search_type& operator=(const search_type&);
 
     virtual 
-    ~tabu_search() {}
+    ~tabu_search() = default;
 
     /// @brief This method starts the tabu search process.
     /// 
@@ -300,7 +298,7 @@ namespace mets {
 	tabu_hash_m(tenure) {}
 
     /// @brief Destructor
-    ~simple_tabu_list();
+    ~simple_tabu_list() override;
 
     /// @brief Make move a tabu.
     /// 
@@ -309,7 +307,7 @@ namespace mets {
     /// @param sol The current working solution
     /// @param mov The move to make tabu
     void
-    tabu(feasible_solution& sol, /* const */ move& mov);
+    tabu(feasible_solution& sol, /* const */ move& mov) override;
 
     /// @brief True if the move is tabu for the given solution.
     ///
@@ -321,16 +319,12 @@ namespace mets {
     /// @return True if this move was already made during the last
     /// tenure iterations
     bool
-    is_tabu(feasible_solution& sol, move& mov) const;
+    is_tabu(feasible_solution& sol, move& mov) const override;
 
   protected:
     using move_list_type = std::deque<move *>;
 #if defined (METSLIB_TR1_BOOST)
-    typedef boost::unordered_map<
-          mana_move*, // Key type
-          int, //insert a move and the number of times it's present in the list
-          mana_move_hash,
-          dereferenced_equal_to<mana_move*> > move_map_type;
+    using move_map_type = boost::unordered_map<mana_move *, int, mana_move_hash, dereferenced_equal_to<mana_move *> >;
 #elif defined (METSLIB_HAVE_UNORDERED_MAP) && !defined (METSLIB_TR1_MIXED_NAMESPACE)
     typedef std::unordered_map<
       mana_move*, // Key type
@@ -366,13 +360,13 @@ namespace mets {
 		       double min_improvement = 1e-6);
     
     void 
-    reset();
+    reset() override;
 
     void
-    accept(feasible_solution& fs, move& mov, gol_type evaluation);
+    accept(feasible_solution& fs, move& mov, gol_type evaluation) override;
 
     bool 
-    operator()(feasible_solution& fs, move& mov, gol_type evaluation) const;
+    operator()(feasible_solution& fs, move& mov, gol_type evaluation) const override;
 
   protected:
     gol_type best_m;

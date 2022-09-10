@@ -6,7 +6,7 @@ set(OPT_DEPS io features sample_consensus filters) # module does not depend on t
 set(DEFAULT ON)
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
-PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
 
 if(NOT (build AND BUILD_io AND BUILD_features))
   return()
@@ -35,6 +35,10 @@ PCL_ADD_TEST(surface_grid_projection test_grid_projection
 PCL_ADD_TEST(surface_ear_clipping test_ear_clipping
              FILES test_ear_clipping.cpp
              LINK_WITH pcl_gtest pcl_io pcl_kdtree pcl_surface pcl_features pcl_search
+             ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd")
+PCL_ADD_TEST(surface_poisson test_poisson
+             FILES test_poisson.cpp
+             LINK_WITH pcl_gtest pcl_io pcl_kdtree pcl_surface pcl_features
              ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd")
 
 if(QHULL_FOUND)

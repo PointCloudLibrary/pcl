@@ -48,7 +48,6 @@
 
 using namespace pcl;
 using namespace pcl::io;
-using namespace std;
 
 PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
@@ -64,6 +63,8 @@ search::KdTree<PointNormal>::Ptr tree4;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, Poisson)
 {
+  // NOTE: The test checks for implementation changes and not the validity of the implementation itself
+
   Poisson<PointNormal> poisson;
   poisson.setInputCloud (cloud_with_normals);
   PolygonMesh mesh;
@@ -72,22 +73,22 @@ TEST (PCL, Poisson)
 
 //  io::saveVTKFile ("bunny_poisson.vtk", mesh);
 
-  ASSERT_EQ (mesh.polygons.size (), 1051);
+  ASSERT_EQ (mesh.polygons.size (), 4828);
   // All polygons should be triangles
   for (std::size_t i = 0; i < mesh.polygons.size (); ++i)
     EXPECT_EQ (mesh.polygons[i].vertices.size (), 3);
 
-  EXPECT_EQ (mesh.polygons[10].vertices[0], 121);
-  EXPECT_EQ (mesh.polygons[10].vertices[1], 120);
-  EXPECT_EQ (mesh.polygons[10].vertices[2], 23);
+  EXPECT_EQ (mesh.polygons[10].vertices[0], 197);
+  EXPECT_EQ (mesh.polygons[10].vertices[1], 198);
+  EXPECT_EQ (mesh.polygons[10].vertices[2], 201);
 
-  EXPECT_EQ (mesh.polygons[200].vertices[0], 130);
-  EXPECT_EQ (mesh.polygons[200].vertices[1], 119);
-  EXPECT_EQ (mesh.polygons[200].vertices[2], 131);
+  EXPECT_EQ (mesh.polygons[200].vertices[0], 302);
+  EXPECT_EQ (mesh.polygons[200].vertices[1], 313);
+  EXPECT_EQ (mesh.polygons[200].vertices[2], 310);
 
-  EXPECT_EQ (mesh.polygons[1000].vertices[0], 521);
-  EXPECT_EQ (mesh.polygons[1000].vertices[1], 516);
-  EXPECT_EQ (mesh.polygons[1000].vertices[2], 517);
+  EXPECT_EQ (mesh.polygons[1000].vertices[0], 705);
+  EXPECT_EQ (mesh.polygons[1000].vertices[1], 706);
+  EXPECT_EQ (mesh.polygons[1000].vertices[2], 715);
 }
 
 /* ---[ */

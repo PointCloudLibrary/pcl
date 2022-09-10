@@ -38,16 +38,12 @@
 #include <iostream>
 using std::cout;
 using std::cerr;
-#include <map>
-#include <set>
 #include <cmath>
 #include <pcl/pcl_macros.h>
-#include <pcl/common/common_headers.h>
 #include <pcl/range_image/range_image.h>
 #include <pcl/point_cloud.h>
-#include <pcl/common/vector_average.h>
-#include <pcl/features/eigen.h>
 #include <pcl/features/range_image_border_extractor.h>
+#include <Eigen/Core> // for Vector3f
 
 namespace pcl
 {
@@ -89,9 +85,9 @@ RangeImageBorderExtractor::clearData ()
       delete border_directions_[i];
   }
   delete[] surface_structure_; surface_structure_ = nullptr;
-  delete border_descriptions_; border_descriptions_ = nullptr;
   delete[] shadow_border_informations_; shadow_border_informations_ = nullptr;
   delete[] border_directions_; border_directions_ = nullptr;
+  delete border_descriptions_; border_descriptions_ = nullptr;
 
   delete[] surface_change_scores_;  surface_change_scores_ = nullptr;
   delete[] surface_change_directions_;  surface_change_directions_ = nullptr;
@@ -404,7 +400,7 @@ RangeImageBorderExtractor::classifyBorders ()
     for (int x = 0; x < static_cast<int> (width); ++x)
     {
       int index = y*width+x;
-      BorderDescription& border_description = border_descriptions_->points[index];
+      BorderDescription& border_description = (*border_descriptions_)[index];
       border_description.x = x;
       border_description.y = y;
       BorderTraits& border_traits = border_description.traits;
@@ -416,12 +412,12 @@ RangeImageBorderExtractor::classifyBorders ()
       int shadow_border_index = shadow_border_indices->left;
       if (shadow_border_index >= 0 && checkIfMaximum(x, y, -1, 0, border_scores_left_.data (), shadow_border_index))
       {
-        BorderTraits& shadow_traits = border_descriptions_->points[shadow_border_index].traits;
+        BorderTraits& shadow_traits = (*border_descriptions_)[shadow_border_index].traits;
         border_traits[BORDER_TRAIT__OBSTACLE_BORDER] = border_traits[BORDER_TRAIT__OBSTACLE_BORDER_LEFT] = true;
         shadow_traits[BORDER_TRAIT__SHADOW_BORDER] = shadow_traits[BORDER_TRAIT__SHADOW_BORDER_RIGHT] = true;
         for (int index3=index-1; index3>shadow_border_index; --index3)
         {
-          BorderTraits& veil_point = border_descriptions_->points[index3].traits;
+          BorderTraits& veil_point = (*border_descriptions_)[index3].traits;
           veil_point[BORDER_TRAIT__VEIL_POINT] = veil_point[BORDER_TRAIT__VEIL_POINT_RIGHT] = true;
         }
       }
@@ -429,12 +425,12 @@ RangeImageBorderExtractor::classifyBorders ()
       shadow_border_index = shadow_border_indices->right;
       if (shadow_border_index >= 0 && checkIfMaximum(x, y, 1, 0, border_scores_right_.data (), shadow_border_index))
       {
-        BorderTraits& shadow_traits = border_descriptions_->points[shadow_border_index].traits;
+        BorderTraits& shadow_traits = (*border_descriptions_)[shadow_border_index].traits;
         border_traits[BORDER_TRAIT__OBSTACLE_BORDER] = border_traits[BORDER_TRAIT__OBSTACLE_BORDER_RIGHT] = true;
         shadow_traits[BORDER_TRAIT__SHADOW_BORDER] = shadow_traits[BORDER_TRAIT__SHADOW_BORDER_LEFT] = true;
         for (int index3=index+1; index3<shadow_border_index; ++index3)
         {
-          BorderTraits& veil_point = border_descriptions_->points[index3].traits;
+          BorderTraits& veil_point = (*border_descriptions_)[index3].traits;
           veil_point[BORDER_TRAIT__VEIL_POINT] = veil_point[BORDER_TRAIT__VEIL_POINT_LEFT] = true;
         }
       }
@@ -442,13 +438,13 @@ RangeImageBorderExtractor::classifyBorders ()
       shadow_border_index = shadow_border_indices->top;
       if (shadow_border_index >= 0 && checkIfMaximum(x, y, 0, -1, border_scores_top_.data (), shadow_border_index))
       {
-        BorderTraits& shadow_traits = border_descriptions_->points[shadow_border_index].traits;
+        BorderTraits& shadow_traits = (*border_descriptions_)[shadow_border_index].traits;
         border_traits[BORDER_TRAIT__OBSTACLE_BORDER] = border_traits[BORDER_TRAIT__OBSTACLE_BORDER_TOP] = true;
         shadow_traits[BORDER_TRAIT__SHADOW_BORDER] = shadow_traits[BORDER_TRAIT__SHADOW_BORDER_BOTTOM] = true;
         for (int index3=index-width; index3>shadow_border_index; index3-=width)
         {
           //std::cout << "Adding veil point at "<<(index3-index)%width<<","<<(index3-index)/width<<".\n";
-          BorderTraits& veil_point = border_descriptions_->points[index3].traits;
+          BorderTraits& veil_point = (*border_descriptions_)[index3].traits;
           veil_point[BORDER_TRAIT__VEIL_POINT] = veil_point[BORDER_TRAIT__VEIL_POINT_BOTTOM] = true;
         }
       }
@@ -456,13 +452,13 @@ RangeImageBorderExtractor::classifyBorders ()
       shadow_border_index = shadow_border_indices->bottom;
       if (shadow_border_index >= 0 && checkIfMaximum(x, y, 0, 1, border_scores_bottom_.data (), shadow_border_index))
       {
-        BorderTraits& shadow_traits = border_descriptions_->points[shadow_border_index].traits;
+        BorderTraits& shadow_traits = (*border_descriptions_)[shadow_border_index].traits;
         border_traits[BORDER_TRAIT__OBSTACLE_BORDER] = border_traits[BORDER_TRAIT__OBSTACLE_BORDER_BOTTOM] = true;
         shadow_traits[BORDER_TRAIT__SHADOW_BORDER] = shadow_traits[BORDER_TRAIT__SHADOW_BORDER_TOP] = true;
         for (int index3=index+width; index3<shadow_border_index; index3+=width)
         {
           //std::cout << "Adding veil point at "<<(index3-index)%width<<","<<(index3-index)/width<<".\n";
-          BorderTraits& veil_point = border_descriptions_->points[index3].traits;
+          BorderTraits& veil_point = (*border_descriptions_)[index3].traits;
           veil_point[BORDER_TRAIT__VEIL_POINT] = veil_point[BORDER_TRAIT__VEIL_POINT_TOP] = true;
         }
       }
@@ -497,7 +493,7 @@ RangeImageBorderExtractor::calculateBorderDirections ()
     }
   }
 
-  Eigen::Vector3f** average_border_directions = new Eigen::Vector3f*[size];
+  auto** average_border_directions = new Eigen::Vector3f*[size];
   int radius = parameters_.pixel_radius_border_direction;
   int minimum_weight = radius+1;
   float min_cos_angle=std::cos(deg2rad(120.0f));
@@ -588,7 +584,7 @@ RangeImageBorderExtractor::calculateSurfaceChanges ()
       Eigen::Vector3f& surface_change_direction = surface_change_directions_[index];
       surface_change_direction.setZero();
 
-      const BorderTraits& border_traits = border_descriptions_->points[index].traits;
+      const BorderTraits& border_traits = (*border_descriptions_)[index].traits;
       if (border_traits[BORDER_TRAIT__VEIL_POINT] || border_traits[BORDER_TRAIT__SHADOW_BORDER])
         continue;
       if (border_directions_[index]!=nullptr)
@@ -618,7 +614,7 @@ RangeImageBorderExtractor::blurSurfaceChanges ()
 
   const RangeImage& range_image = *range_image_;
 
-  Eigen::Vector3f* blurred_directions = new Eigen::Vector3f[range_image.width*range_image.height];
+  auto* blurred_directions = new Eigen::Vector3f[range_image.width*range_image.height];
   float* blurred_scores = new float[range_image.width*range_image.height];
   for (int y=0; y<int(range_image.height); ++y)
   {
@@ -631,7 +627,7 @@ RangeImageBorderExtractor::blurSurfaceChanges ()
       new_score = 0.0f;
       if (!range_image.isValid(index))
         continue;
-      const BorderTraits& border_traits = border_descriptions_->points[index].traits;
+      const BorderTraits& border_traits = (*border_descriptions_)[index].traits;
       if (border_traits[BORDER_TRAIT__VEIL_POINT] || border_traits[BORDER_TRAIT__SHADOW_BORDER])
         continue;
       const Eigen::Vector3f& point = surface_change_directions_[index];
@@ -675,14 +671,14 @@ RangeImageBorderExtractor::blurSurfaceChanges ()
 void
 RangeImageBorderExtractor::computeFeature (PointCloudOut& output)
 {
-  output.points.clear();
+  output.clear();
 
   if (indices_)
   {
     std::cerr << __PRETTY_FUNCTION__
               << ": Sorry, usage of indices for the extraction is not supported for range image border extraction (yet).\n\n";
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
@@ -692,7 +688,7 @@ RangeImageBorderExtractor::computeFeature (PointCloudOut& output)
               << ": RangeImage is not set. Sorry, the border extraction works on range images, not on normal point clouds."
               << " Use setRangeImage(...).\n\n";
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   output = getBorderDescriptions ();

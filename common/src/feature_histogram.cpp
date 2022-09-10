@@ -36,8 +36,6 @@
 
 #include <pcl/common/feature_histogram.h>
 
-#include <algorithm>
-
 #include <pcl/console/print.h>
 
 pcl::FeatureHistogram::FeatureHistogram (std::size_t const number_of_bins,
@@ -49,7 +47,7 @@ pcl::FeatureHistogram::FeatureHistogram (std::size_t const number_of_bins,
   {
     threshold_min_ = min;
     threshold_max_ = max;
-    step_ = (max - min) / static_cast<float> (number_of_bins_);
+    step_ = (max - min) / static_cast<float> (number_of_bins);
   }
   else
   {
@@ -66,10 +64,7 @@ pcl::FeatureHistogram::FeatureHistogram (std::size_t const number_of_bins,
   number_of_bins_ = number_of_bins;
 }
 
-pcl::FeatureHistogram::~FeatureHistogram ()
-{
-  
-}
+pcl::FeatureHistogram::~FeatureHistogram () = default;
 
 float
 pcl::FeatureHistogram::getThresholdMin () const
@@ -105,7 +100,7 @@ pcl::FeatureHistogram::addValue (float value)
     ++number_of_elements_;
 
     // Increase the bin.
-    std::size_t bin_number = static_cast<std::size_t> ((value - threshold_min_) / step_);
+    auto bin_number = static_cast<std::size_t> ((value - threshold_min_) / step_);
     ++histogram_[bin_number];
   }
 }
@@ -138,7 +133,7 @@ pcl::FeatureHistogram::getMeanValue ()
                      0.25f * histogram_[histogram_.size () - 2] * 2.0f;
   if (last_value > max)
   {
-    max_idx = histogram_.size ();
+    max_idx = histogram_.size () - 1;
   }
 
   // Compute mean value.

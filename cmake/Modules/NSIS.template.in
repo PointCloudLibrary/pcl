@@ -40,6 +40,7 @@
 @CPACK_NSIS_DEFINES@
 
   !include Sections.nsh
+  !macroundef RemoveSection
 
 ;--- Component support macros: ---
 ; The code for the add/remove functionality is from:

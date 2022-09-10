@@ -36,13 +36,14 @@
  */
 #include <pcl/console/print.h>
 #include <algorithm>
+#include <cstdarg> // for va_list, va_start, va_end
 #include <cstdlib>
 #include <cctype> // for toupper
 #include <map>
 #include <string>
 #include <boost/optional.hpp>
 
-#if defined WIN32
+#if defined _WIN32
 # include <windows.h>
 # include <io.h>
 
@@ -100,7 +101,7 @@ useColoredOutput (FILE *stream)
   if (!colored)
   {
     // Use colored output if PCL_CLICOLOR_FORCE is set or if the output is an interactive terminal
-#ifdef WIN32
+#ifdef _WIN32
     colored = getenv ("PCL_CLICOLOR_FORCE") || _isatty (_fileno (stream));
 #else
     colored = getenv ("PCL_CLICOLOR_FORCE") || isatty (fileno (stream));
@@ -122,7 +123,7 @@ pcl::console::change_text_color (FILE *stream, int attribute, int fg, int bg)
 {
   if (!useColoredOutput (stream)) return;
 
-#ifdef WIN32
+#ifdef _WIN32
   HANDLE h = GetStdHandle ((stream == stdout) ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE);
   SetConsoleTextAttribute (h, convertAttributesColor (attribute, fg, bg));
 #else
@@ -139,7 +140,7 @@ pcl::console::change_text_color (FILE *stream, int attribute, int fg)
 {
   if (!useColoredOutput (stream)) return;
 
-#ifdef WIN32
+#ifdef _WIN32
   HANDLE h = GetStdHandle ((stream == stdout) ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE);
   SetConsoleTextAttribute (h, convertAttributesColor (attribute, fg));
 #else
@@ -156,7 +157,7 @@ pcl::console::reset_text_color (FILE *stream)
 {
   if (!useColoredOutput (stream)) return;
 
-#ifdef WIN32
+#ifdef _WIN32
   HANDLE h = GetStdHandle ((stream == stdout) ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE);
   SetConsoleTextAttribute (h, convertAttributesColor (0, TT_WHITE, TT_BLACK));
 #else

@@ -35,6 +35,7 @@
  *
  */
 
+#include <pcl/memory.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
@@ -44,7 +45,6 @@
 #include <pcl/visualization/pcl_visualizer.h>
 
 #include <boost/format.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include <iostream>
 #include <mutex>

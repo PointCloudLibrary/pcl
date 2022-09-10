@@ -37,14 +37,14 @@
 
 #pragma once
 
-#include <pcl/visualization/boost.h>
-#include <pcl/visualization/point_cloud_handlers.h>
+#include <pcl/visualization/point_cloud_geometry_handlers.h> // for PointCloudGeometryHandler
+#include <pcl/visualization/point_cloud_color_handlers.h> // for PointCloudColorHandler
 #include <pcl/PCLPointCloud2.h>
 
 #include <vtkLODActor.h>
 #include <vtkSmartPointer.h>
+#include <vtkIdTypeArray.h>
 
-#include <map>
 #include <unordered_map>
 #include <vector>
 
@@ -69,11 +69,7 @@ namespace pcl
       public:
         CloudActor () : color_handler_index_ (0), geometry_handler_index_ (0) {}
 
-        virtual ~CloudActor ()
-        {
-          geometry_handlers.clear ();
-          color_handlers.clear ();
-        }
+        virtual ~CloudActor () = default;
 
         /** \brief The actor holding the data to render. */
         vtkSmartPointer<vtkLODActor> actor;

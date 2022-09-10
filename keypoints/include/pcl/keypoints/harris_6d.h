@@ -85,7 +85,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      virtual ~HarrisKeypoint6D () {}
+      virtual ~HarrisKeypoint6D () = default;
 
       /**
        * @brief set the radius for normal estimation and non maxima supression.
@@ -126,7 +126,7 @@ namespace pcl
       void detectKeypoints (PointCloudOut &output);
       void responseTomasi (PointCloudOut &output) const;
       void refineCorners (PointCloudOut &corners) const;
-      void calculateCombinedCovar (const std::vector<int>& neighbors, float* coefficients) const;
+      void calculateCombinedCovar (const pcl::Indices& neighbors, float* coefficients) const;
     private:
       float threshold_;
       bool refine_;

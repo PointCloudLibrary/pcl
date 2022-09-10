@@ -4,7 +4,7 @@ set(SUBSYS_DEPS common sample_consensus search kdtree octree)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
-PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS})
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
@@ -14,6 +14,7 @@ endif()
 
 set(srcs
   src/conditional_removal.cpp
+  src/convolution.cpp
   src/crop_box.cpp
   src/extract_indices.cpp
   src/filter.cpp
@@ -21,6 +22,7 @@ set(srcs
   src/passthrough.cpp
   src/shadowpoints.cpp
   src/project_inliers.cpp
+  src/pyramid.cpp
   src/radius_outlier_removal.cpp
   src/random_sample.cpp
   src/normal_space.cpp
@@ -87,6 +89,9 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/model_outlier_removal.h"
   "include/pcl/${SUBSYS_NAME}/farthest_point_sampling.h"
 )
+set(experimental_incs
+  "include/pcl/${SUBSYS_NAME}/experimental/functor_filter.h"
+)
 
 set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/conditional_removal.hpp"
@@ -134,4 +139,5 @@ PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_
 
 # Install include files
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})
+PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/experimental" ${experimental_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})

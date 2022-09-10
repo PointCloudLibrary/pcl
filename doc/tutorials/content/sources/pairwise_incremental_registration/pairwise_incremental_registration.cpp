@@ -143,11 +143,11 @@ void showCloudsRight(const PointCloudWithNormals::Ptr cloud_target, const PointC
 
   PointCloudColorHandlerGenericField<PointNormalT> tgt_color_handler (cloud_target, "curvature");
   if (!tgt_color_handler.isCapable ())
-      PCL_WARN ("Cannot create curvature color handler!");
+      PCL_WARN ("Cannot create curvature color handler!\n");
 
   PointCloudColorHandlerGenericField<PointNormalT> src_color_handler (cloud_source, "curvature");
   if (!src_color_handler.isCapable ())
-      PCL_WARN ("Cannot create curvature color handler!");
+      PCL_WARN ("Cannot create curvature color handler!\n");
 
 
   p->addPointCloud (cloud_target, tgt_color_handler, "target", vp_2);
@@ -332,11 +332,11 @@ int main (int argc, char** argv)
   // Check user input
   if (data.empty ())
   {
-    PCL_ERROR ("Syntax is: %s <source.pcd> <target.pcd> [*]", argv[0]);
-    PCL_ERROR ("[*] - multiple files can be added. The registration results of (i, i+1) will be registered against (i+2), etc");
+    PCL_ERROR ("Syntax is: %s <source.pcd> <target.pcd> [*]\n", argv[0]);
+    PCL_ERROR ("[*] - multiple files can be added. The registration results of (i, i+1) will be registered against (i+2), etc\n");
     return (-1);
   }
-  PCL_INFO ("Loaded %d datasets.", (int)data.size ());
+  PCL_INFO ("Loaded %d datasets.\n", (int)data.size ());
   
   // Create a PCLVisualizer object
   p = new pcl::visualization::PCLVisualizer (argc, argv, "Pairwise Incremental Registration example");
@@ -355,7 +355,7 @@ int main (int argc, char** argv)
     showCloudsLeft(source, target);
 
     PointCloud::Ptr temp (new PointCloud);
-    PCL_INFO ("Aligning %s (%d) with %s (%d).\n", data[i-1].f_name.c_str (), source->points.size (), data[i].f_name.c_str (), target->points.size ());
+    PCL_INFO ("Aligning %s (%zu) with %s (%zu).\n", data[i-1].f_name.c_str (), static_cast<std::size_t>(source->size ()), data[i].f_name.c_str (), static_cast<std::size_t>(target->size ()));
     pairAlign (source, target, temp, pairTransform, true);
 
     //transform current pair into the global transform

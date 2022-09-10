@@ -47,7 +47,7 @@
 template <typename PointInT, typename GradientT, typename PointOutT> void
 pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT (
       const PointCloudIn &cloud, const PointCloudGradient &gradient, 
-      int p_idx, float radius, const std::vector<int> &indices, 
+      int p_idx, float radius, const pcl::Indices &indices, 
       const std::vector<float> &sqr_distances, Eigen::MatrixXf &rift_descriptor)
 {
   if (indices.empty ())
@@ -61,15 +61,15 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT (
   int nr_gradient_bins = static_cast<int> (rift_descriptor.cols ());
 
   // Get the center point
-  pcl::Vector3fMapConst p0 = cloud.points[p_idx].getVector3fMap ();
+  pcl::Vector3fMapConst p0 = cloud[p_idx].getVector3fMap ();
 
   // Compute the RIFT descriptor
   rift_descriptor.setZero ();
   for (std::size_t idx = 0; idx < indices.size (); ++idx)
   {
     // Compute the gradient magnitude and orientation (relative to the center point)
-    pcl::Vector3fMapConst point = cloud.points[indices[idx]].getVector3fMap ();
-    Eigen::Map<const Eigen::Vector3f> gradient_vector (& (gradient.points[indices[idx]].gradient[0]));
+    pcl::Vector3fMapConst point = cloud[indices[idx]].getVector3fMap ();
+    Eigen::Map<const Eigen::Vector3f> gradient_vector (& (gradient[indices[idx]].gradient[0]));
 
     float gradient_magnitude = gradient_vector.norm ();
     float gradient_angle_from_center = std::acos (gradient_vector.dot ((point - p0).normalized ()) / gradient_magnitude);
@@ -118,7 +118,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
     PCL_ERROR ("[pcl::%s::computeFeature] The search radius must be set before computing the feature!\n",
                getClassName ().c_str ());
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
@@ -128,7 +128,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
     PCL_ERROR ("[pcl::%s::computeFeature] The number of gradient bins must be greater than zero!\n",
                getClassName ().c_str ());
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   if (nr_distance_bins_ <= 0)
@@ -136,7 +136,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
     PCL_ERROR ("[pcl::%s::computeFeature] The number of distance bins must be greater than zero!\n",
                getClassName ().c_str ());
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
@@ -145,20 +145,20 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
   {
     PCL_ERROR ("[pcl::%s::computeFeature] No input gradient was given!\n", getClassName ().c_str ());
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
-  if (gradient_->points.size () != surface_->points.size ())
+  if (gradient_->size () != surface_->size ())
   {
     PCL_ERROR ("[pcl::%s::computeFeature] ", getClassName ().c_str ());
     PCL_ERROR ("The number of points in the input dataset differs from the number of points in the gradient!\n");
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
   Eigen::MatrixXf rift_descriptor (nr_distance_bins_, nr_gradient_bins_);
-  std::vector<int> nn_indices;
+  pcl::Indices nn_indices;
   std::vector<float> nn_dist_sqr;
  
   // Iterating over the entire index vector
@@ -171,7 +171,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
     computeRIFT (*surface_, *gradient_, (*indices_)[idx], static_cast<float> (search_radius_), nn_indices, nn_dist_sqr, rift_descriptor);
 
     // Default layout is column major, copy elementwise
-    std::copy_n (rift_descriptor.data (), rift_descriptor.size (), output.points[idx].histogram);
+    std::copy (rift_descriptor.data (), rift_descriptor.data () + rift_descriptor.size (), output[idx].histogram);
   }
 }
 

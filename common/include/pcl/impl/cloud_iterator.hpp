@@ -56,9 +56,7 @@ namespace pcl
       {
       }
 
-      ~DefaultIterator ()
-      {
-      }
+      ~DefaultIterator () = default;
 
       void operator ++ ()
       {
@@ -116,7 +114,7 @@ namespace pcl
   class IteratorIdx : public CloudIterator<PointT>::Iterator
   {
     public:
-      IteratorIdx (PointCloud<PointT>& cloud, const std::vector<int>& indices)
+      IteratorIdx (PointCloud<PointT>& cloud, const Indices& indices)
         : cloud_ (cloud)
         , indices_ (indices)
         , iterator_ (indices_.begin ())
@@ -130,7 +128,7 @@ namespace pcl
       {
       }
 
-      virtual ~IteratorIdx () {}
+      virtual ~IteratorIdx () = default;
 
       void operator ++ ()
       {
@@ -179,8 +177,8 @@ namespace pcl
 
       private:
         PointCloud<PointT>& cloud_;
-        std::vector<int> indices_;
-        std::vector<int>::iterator iterator_;
+        Indices indices_;
+        Indices::iterator iterator_;
   };
 
   /** \brief
@@ -196,9 +194,7 @@ namespace pcl
       {
       }
 
-      ~DefaultConstIterator ()
-      {
-      }
+      ~DefaultConstIterator () override = default;
 
       void operator ++ () override
       {
@@ -257,7 +253,7 @@ namespace pcl
   {
     public:
       ConstIteratorIdx (const PointCloud<PointT>& cloud,
-                        const std::vector<int>& indices)
+                        const Indices& indices)
         : cloud_ (cloud)
         , indices_ (indices)
         , iterator_ (indices_.begin ())
@@ -272,7 +268,7 @@ namespace pcl
       {
       }
 
-      ~ConstIteratorIdx () {}
+      ~ConstIteratorIdx () override = default;
 
       void operator ++ () override
       {
@@ -286,7 +282,7 @@ namespace pcl
 
       const PointT& operator* () const override
       {
-        return (cloud_.points[*iterator_]);
+        return (cloud_[*iterator_]);
       }
 
       const PointT* operator-> () const override
@@ -321,8 +317,8 @@ namespace pcl
 
       private:
         const PointCloud<PointT>& cloud_;
-        std::vector<int> indices_;
-        std::vector<int>::iterator iterator_;
+        Indices indices_;
+        Indices::iterator iterator_;
   };
 } // namespace pcl
 
@@ -336,7 +332,7 @@ pcl::CloudIterator<PointT>::CloudIterator (PointCloud<PointT>& cloud)
 //////////////////////////////////////////////////////////////////////////////
 template <class PointT>
 pcl::CloudIterator<PointT>::CloudIterator (
-    PointCloud<PointT>& cloud, const std::vector<int>& indices)
+    PointCloud<PointT>& cloud, const Indices& indices)
   : iterator_ (new IteratorIdx<PointT> (cloud, indices))
 {
 }
@@ -354,7 +350,7 @@ template <class PointT>
 pcl::CloudIterator<PointT>::CloudIterator (
     PointCloud<PointT>& cloud, const Correspondences& corrs, bool source)
 {
-  std::vector<int> indices;
+  Indices indices;
   indices.reserve (corrs.size ());
   if (source)
   {
@@ -450,7 +446,7 @@ pcl::ConstCloudIterator<PointT>::ConstCloudIterator (const PointCloud<PointT>& c
 //////////////////////////////////////////////////////////////////////////////
 template <class PointT>
 pcl::ConstCloudIterator<PointT>::ConstCloudIterator (
-    const PointCloud<PointT>& cloud, const std::vector<int>& indices)
+    const PointCloud<PointT>& cloud, const Indices& indices)
   : iterator_ (new typename pcl::ConstCloudIterator<PointT>::ConstIteratorIdx (cloud, indices))
 {
 }
@@ -468,7 +464,7 @@ template <class PointT>
 pcl::ConstCloudIterator<PointT>::ConstCloudIterator (
     const PointCloud<PointT>& cloud, const Correspondences& corrs, bool source)
 {
-  std::vector<int> indices;
+  Indices indices;
   indices.reserve (corrs.size ());
   if (source)
   {

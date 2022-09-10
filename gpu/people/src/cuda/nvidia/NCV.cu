@@ -44,8 +44,6 @@
 #include <algorithm>
 #include "NCV.hpp"
 
-using namespace std;
-
 
 //==============================================================================
 //
@@ -54,7 +52,7 @@ using namespace std;
 //==============================================================================
 
 
-static void stdDebugOutput(const string &msg)
+static void stdDebugOutput(const std::string &msg)
 {
     std::cout << msg;
 }
@@ -63,7 +61,7 @@ static void stdDebugOutput(const string &msg)
 static NCVDebugOutputHandler *debugOutputHandler = stdDebugOutput;
 
 
-void ncvDebugOutput(const string &msg)
+void ncvDebugOutput(const std::string &msg)
 {
     debugOutputHandler(msg);
 }
@@ -352,7 +350,7 @@ NCVStatus NCVMemStackAllocator::alloc(NCVMemSegment &seg, std::size_t size)
 
     size = alignUp(size, this->_alignment);
     this->currentSize += size;
-    this->_maxSize = std::max(this->_maxSize, this->currentSize);
+    this->_maxSize = max(this->_maxSize, this->currentSize);
 
     if (!isCounting())
     {
@@ -461,7 +459,7 @@ NCVStatus NCVMemNativeAllocator::alloc(NCVMemSegment &seg, std::size_t size)
     }
 
     this->currentSize += alignUp(size, this->_alignment);
-    this->_maxSize = std::max(this->_maxSize, this->currentSize);
+    this->_maxSize = max(this->_maxSize, this->currentSize);
 
     seg.begin.memtype = this->_memType;
     seg.size = size;

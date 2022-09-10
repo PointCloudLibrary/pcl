@@ -42,20 +42,15 @@
 #include <iostream>
 #include <boost/filesystem.hpp>
 
-#include <pcl/pcl_base.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/io/pcd_io.h>
 
-#include <pcl/io/vtk_lib_io.h>
+#include <vtkImageData.h> // for vtkImageData
 #include <vtkSmartPointer.h>
-#include <vtkImageViewer2.h>
 #include <vtkTIFFReader.h>
-#include <vtkRenderWindow.h>
-#include <vtkRenderWindowInteractor.h>
-#include <vtkRenderer.h>
 
 using namespace pcl;
 
@@ -128,8 +123,8 @@ void processAndSave( vtkSmartPointer<vtkImageData>  depth_data,
       color_point.b = xyzrgba_point.b = static_cast<std::uint8_t> (rgb_data->GetScalarComponentAsFloat(u,v,0,2));
       xyzrgba_point.a = 0;
 
-      pc_image.points.push_back(color_point);
-      pc_depth.points.push_back(depth_point);
+      pc_image.push_back(color_point);
+      pc_depth.push_back(depth_point);
 
       float d =  depth_data->GetScalarComponentAsFloat(u,v,0,0);
       depth_point.intensity = d;
@@ -144,38 +139,30 @@ void processAndSave( vtkSmartPointer<vtkImageData>  depth_data,
       {
         xyzrgba_point.z = xyzrgba_point.x = xyzrgba_point.y = bad_point;
       }
-      pc_xyzrgba.points.push_back(xyzrgba_point);
+      pc_xyzrgba.push_back(xyzrgba_point);
 
     } // for u
   } // for v
 
-  std::stringstream ss;
-
   if(depth)
   {
+    std::string depth_filename = "frame_" + time + "_depth.pcd";
     if(use_output_path)
-      ss << output_path << "/frame_" << time << "_depth.pcd";
-    else
-      ss << "frame_" << time << "_depth.pcd";
-    pcl::io::savePCDFile (ss.str(), pc_depth, format);
-    ss.str(""); //empty
+      depth_filename = output_path + '/' + depth_filename;
+    pcl::io::savePCDFile (depth_filename, pc_depth, format);
   }
 
   if(color)
   {
+    std::string color_filename = "frame_" + time + "_color.pcd";
     if(use_output_path)
-      ss << output_path << "/frame_" << time << "_color.pcd";
-    else
-      ss << "frame_" << time << "_color.pcd";
-    pcl::io::savePCDFile (ss.str(), pc_image, format);
-    ss.str(""); //empty
+      color_filename = output_path + '/' + color_filename;
+    pcl::io::savePCDFile (color_filename, pc_image, format);
   }
-
+  std::string xyzrgba_filename = "frame_" + time + "_xyzrgba.pcd";
   if(use_output_path)
-    ss << output_path << "/frame_" << time << "_xyzrgba.pcd";
-  else
-    ss << "frame_" << time << "_xyzrgba.pcd";
-  pcl::io::savePCDFile (ss.str(), pc_xyzrgba, format);
+    xyzrgba_filename = output_path + '/' + xyzrgba_filename;
+  pcl::io::savePCDFile (xyzrgba_filename, pc_xyzrgba, format);
 
   std::cout << "Saved " << time << " to pcd" << std::endl;
   return;

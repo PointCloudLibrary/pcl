@@ -43,7 +43,6 @@
 #pragma GCC system_header 
 #endif
 
-#ifndef Q_MOC_RUN
 #include <boost/mpl/is_sequence.hpp>
 #include <boost/mpl/begin_end.hpp>
 #include <boost/mpl/next_prior.hpp>
@@ -53,7 +52,6 @@
 #include <boost/mpl/contains.hpp>
 #include <boost/mpl/not.hpp>
 #include <boost/mpl/aux_/unwrap.hpp>
-#endif
 
 #include <type_traits>
 
@@ -76,7 +74,7 @@ namespace pcl
     {
       using arg = typename boost::mpl::deref<Iterator>::type;
 
-#if (defined _WIN32 && defined _MSC_VER)
+#if (defined _WIN32 && defined _MSC_VER && !defined(__clang__))
       boost::mpl::aux::unwrap (f, 0).operator()<arg> ();
 #else
       boost::mpl::aux::unwrap (f, 0).template operator()<arg> ();

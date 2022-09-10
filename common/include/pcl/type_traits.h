@@ -37,18 +37,14 @@
 
 #pragma once
 
-#include <boost/mpl/assert.hpp>
+#include <pcl/point_struct_traits.h>  // for pcl::traits::POD, pcl::traits::name, pcl::traits::datatype, pcl::traits::offset
 
-// This is required for the workaround at line 109
-#ifdef _MSC_VER
-#include <Eigen/Core>
-#include <Eigen/src/StlSupport/details.h>
-#endif
+#include <cstddef>  // for std::size_t
+#include <cstdint>  // for std::uint8_t
 
-#include <string>
-#include <type_traits>
-
-#include <cstdint>
+#include <functional>   // for std::function, needed till C++17
+#include <string>       // for std::string
+#include <type_traits>  // for std::false_type, std::true_type
 
 namespace pcl
 {
@@ -71,7 +67,7 @@ namespace pcl
     /**
      * \brief Enumeration for different numerical types
      *
-     * \detail struct used to enable scope and implicit conversion to int
+     * \details struct used to enable scope and implicit conversion to int
      */
     struct PointFieldTypes {
         static const std::uint8_t INT8 = 1,    UINT8 = 2,
@@ -109,98 +105,7 @@ namespace pcl
     template<int index>
     using asType_t = typename asType<index>::type;
 
-    // Metafunction to decompose a type (possibly of array of any number of dimensions) into
-    // its scalar type and total number of elements.
-    template<typename T> struct decomposeArray
-    {
-      using type = std::remove_all_extents_t<T>;
-      static const std::uint32_t value = sizeof (T) / sizeof (type);
-    };
-
-    // For non-POD point types, this is specialized to return the corresponding POD type.
-    template<typename PointT>
-    struct POD
-    {
-      using type = PointT;
-    };
-
-#ifdef _MSC_VER
-
-    /* Sometimes when calling functions like `copyPoint()` or `copyPointCloud`
-     * without explicitly specifying point types, MSVC deduces them to be e.g.
-     * `Eigen::internal::workaround_msvc_stl_support<pcl::PointXYZ>` instead of
-     * plain `pcl::PointXYZ`. Subsequently these types are passed to meta-
-     * functions like `has_field` or `fieldList` and make them choke. This hack
-     * makes use of the fact that internally `fieldList` always applies `POD` to
-     * its argument type. This specialization therefore allows to unwrap the
-     * contained point type. */
-    template<typename PointT>
-    struct POD<Eigen::internal::workaround_msvc_stl_support<PointT> >
-    {
-      using type = PointT;
-    };
-
-#endif
-
-    // name
-    /* This really only depends on Tag, but we go through some gymnastics to avoid ODR violations.
-       We template it on the point type PointT to avoid ODR violations when registering multiple
-       point types with shared tags.
-       The dummy parameter is so we can partially specialize name on PointT and Tag but leave it
-       templated on dummy. Each specialization declares a static char array containing the tag
-       name. The definition of the static member would conflict when linking multiple translation
-       units that include the point type registration. But when the static member definition is
-       templated (on dummy), we sidestep the ODR issue.
-    */
-    template<class PointT, typename Tag, int dummy = 0>
-    struct name : name<typename POD<PointT>::type, Tag, dummy>
-    {
-      // Contents of specialization:
-      // static const char value[];
-
-      // Avoid infinite compile-time recursion
-      BOOST_MPL_ASSERT_MSG((!std::is_same<PointT, typename POD<PointT>::type>::value),
-                           POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
-    };
-
-    // offset
-    template<class PointT, typename Tag>
-    struct offset : offset<typename POD<PointT>::type, Tag>
-    {
-      // Contents of specialization:
-      // static const std::size_t value;
-
-      // Avoid infinite compile-time recursion
-      BOOST_MPL_ASSERT_MSG((!std::is_same<PointT, typename POD<PointT>::type>::value),
-                           POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
-    };
-
-    // datatype
-    template<class PointT, typename Tag>
-    struct datatype : datatype<typename POD<PointT>::type, Tag>
-    {
-      // Contents of specialization:
-      // using type = ...;
-      // static const std::uint8_t value;
-      // static const std::uint32_t size;
-
-      // Avoid infinite compile-time recursion
-      BOOST_MPL_ASSERT_MSG((!std::is_same<PointT, typename POD<PointT>::type>::value),
-                           POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
-    };
-
-    // fields
-    template<typename PointT>
-    struct fieldList : fieldList<typename POD<PointT>::type>
-    {
-      // Contents of specialization:
-      // using type = boost::mpl::vector<...>;
-
-      // Avoid infinite compile-time recursion
-      BOOST_MPL_ASSERT_MSG((!std::is_same<PointT, typename POD<PointT>::type>::value),
-                           POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
-    };
-  } //namespace traits
+  } // namespace traits
 
   /** \brief A helper functor that can copy a specific value if the given field exists.
     *
@@ -357,5 +262,33 @@ namespace pcl
   template <typename T> struct has_custom_allocator<T, void_t<typename T::_custom_allocator_type_trait>> : std::true_type {};
 
 #endif
-}
 
+  /**
+   * \todo: Remove in C++17
+   */
+#ifndef __cpp_lib_is_invocable
+  // Implementation taken from: https://stackoverflow.com/a/51188325
+  template <typename F, typename... Args>
+  constexpr bool is_invocable_v =
+      std::is_constructible<std::function<void(Args...)>,
+                            std::reference_wrapper<std::remove_reference_t<F>>>::value;
+
+  template <typename R, typename F, typename... Args>
+  constexpr bool is_invocable_r_v =
+      std::is_constructible<std::function<R(Args...)>,
+                            std::reference_wrapper<std::remove_reference_t<F>>>::value;
+#else
+  using std::is_invocable_v;
+  using std::is_invocable_r_v;
+#endif
+
+  /**
+   * \todo: Remove in C++17
+   */
+#ifndef __cpp_lib_remove_cvref
+  template <typename T>
+  using remove_cvref_t = std::remove_cv_t<std::remove_reference_t<T>>;
+#else
+  using std::remove_cvref_t;
+#endif
+}

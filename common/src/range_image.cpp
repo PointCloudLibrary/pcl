@@ -34,13 +34,12 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cstddef>
-#include <iostream>
 #include <cmath>
-#include <set>
-#include <pcl/common/eigen.h>
+#include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
+#include <pcl/common/time.h> // for MEASURE_FUNCTION_TIME
 #include <pcl/range_image/range_image.h>
-#include <pcl/common/transformation_from_correspondences.h>
+
+#include <algorithm>
 
 namespace pcl 
 {
@@ -257,7 +256,7 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
         currentPoint = unobserved_point;
         continue;
       }
-      currentPoint = oldRangeImage.points[oldY*oldRangeImage.width + oldX];
+      currentPoint = oldRangeImage[oldY*oldRangeImage.width + oldX];
     }
   }
 }
@@ -353,8 +352,8 @@ RangeImage::getHalfImage (RangeImage& half_image) const
   half_image.width  = width/2;
   half_image.height = height/2;
   half_image.is_dense = is_dense;
-  half_image.points.clear ();
-  half_image.points.resize (half_image.width*half_image.height);
+  half_image.clear ();
+  half_image.resize (half_image.width*half_image.height);
   
   int src_start_x = 2*half_image.image_offset_x_ - image_offset_x_,
       src_start_y = 2*half_image.image_offset_y_ - image_offset_y_;
@@ -397,8 +396,8 @@ RangeImage::getSubImage (int sub_image_image_offset_x, int sub_image_image_offse
   sub_image.width = sub_image_width;
   sub_image.height = sub_image_height;
   sub_image.is_dense = is_dense;
-  sub_image.points.clear ();
-  sub_image.points.resize (sub_image.width*sub_image.height);
+  sub_image.clear ();
+  sub_image.resize (sub_image.width*sub_image.height);
   
   int src_start_x = combine_pixels*sub_image.image_offset_x_ - image_offset_x_,
       src_start_y = combine_pixels*sub_image.image_offset_y_ - image_offset_y_;
@@ -469,8 +468,8 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
   
   int no_of_pixels = pixel_size*pixel_size;
   float* surface_patch = new float[no_of_pixels];
-  SET_ARRAY (surface_patch, -std::numeric_limits<float>::infinity (), no_of_pixels);
-  
+  std::fill_n(surface_patch, no_of_pixels, -std::numeric_limits<float>::infinity ());
+
   Eigen::Vector3f position = inverse_pose.translation ();
   int middle_x, middle_y;
   getImagePoint (position, middle_x, middle_y);
@@ -836,7 +835,7 @@ RangeImage::extractFarRanges (const pcl::PCLPointCloud2& point_cloud_data,
       vp_z_offset = point_cloud_data.fields[vp_z_idx].offset,
       distance_offset = point_cloud_data.fields[distance_idx].offset;
   
-  for (std::size_t point_idx = 0; point_idx < point_cloud_data.width*point_cloud_data.height; ++point_idx)
+  for (uindex_t point_idx = 0; point_idx < point_cloud_data.width*point_cloud_data.height; ++point_idx)
   {
     float x = *reinterpret_cast<const float*> (data+x_offset), 
           y = *reinterpret_cast<const float*> (data+y_offset), 
@@ -852,10 +851,10 @@ RangeImage::extractFarRanges (const pcl::PCLPointCloud2& point_cloud_data,
       PointWithViewpoint point;
       point.x=distance; point.y=y; point.z=z;
       point.vp_x=vp_x; point.vp_y=vp_y; point.vp_z=vp_z;
-      far_ranges.points.push_back (point);
+      far_ranges.push_back (point);
     }
   }
-  far_ranges.width= static_cast<std::uint32_t> (far_ranges.points.size ());  far_ranges.height = 1;
+  far_ranges.width= far_ranges.size ();  far_ranges.height = 1;
   far_ranges.is_dense = false;
 }
 

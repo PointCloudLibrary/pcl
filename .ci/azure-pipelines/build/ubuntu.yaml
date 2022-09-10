@@ -1,0 +1,47 @@
+steps:
+  - script: (nohup Xvfb :99 -screen 0 1280x1024x24 -nolisten tcp -nolisten unix &)
+    displayName: "Start Xvfb for DISPLAY=$(DISPLAY)"
+  - checkout: self
+    # find the commit hash on a quick non-forced update too
+    fetchDepth: 10
+  - script: |
+      mkdir $BUILD_DIR && cd $BUILD_DIR
+      cmake $(Build.SourcesDirectory) $(CMAKE_ARGS) \
+      -DCMAKE_BUILD_TYPE="MinSizeRel" \
+      -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
+      -DPCL_ONLY_CORE_POINT_TYPES=ON \
+      -DPCL_DISABLE_GPU_TESTS=ON \
+      -DBUILD_simulation=ON \
+      -DBUILD_surface_on_nurbs=ON \
+      -DBUILD_global_tests=ON \
+      -DBUILD_benchmarks=ON \
+      -DBUILD_examples=ON \
+      -DBUILD_tools=ON \
+      -DBUILD_apps=ON \
+      -DBUILD_apps_3d_rec_framework=ON \
+      -DBUILD_apps_cloud_composer=ON \
+      -DBUILD_apps_in_hand_scanner=ON \
+      -DBUILD_apps_modeler=ON \
+      -DBUILD_apps_point_cloud_editor=ON \
+      -DBUILD_CUDA=$BUILD_GPU \
+      -DBUILD_GPU=$BUILD_GPU \
+      -DBUILD_cuda_io=$BUILD_GPU \
+      -DBUILD_gpu_tracking=$BUILD_GPU \
+      -DBUILD_gpu_surface=$BUILD_GPU \
+      -DBUILD_gpu_people=$BUILD_GPU
+      # Temporary fix to ensure no tests are skipped
+      cmake $(Build.SourcesDirectory)
+    displayName: 'CMake Configuration'
+  - script: |
+      cd $BUILD_DIR
+      cmake --build . -- -j2
+    displayName: 'Build Library'
+  - script: |
+      cd $BUILD_DIR && cmake --build . -- tests
+    displayName: 'Run Unit Tests'
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'CTest'
+      testResultsFiles: '**/Test*.xml'
+      searchFolder: '$(Agent.BuildDirectory)/build'
+    condition: succeededOrFailed()

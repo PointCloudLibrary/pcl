@@ -41,8 +41,9 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CYLINDER_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CYLINDER_H_
 
-#include <pcl/sample_consensus/eigen.h>
+#include <unsupported/Eigen/NonLinearOptimization> // for LevenbergMarquardt
 #include <pcl/sample_consensus/sac_model_cylinder.h>
+#include <pcl/common/common.h> // for getAngle3D
 #include <pcl/common/concatenate.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,6 +55,19 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::isSampleGood (const Indices 
     PCL_ERROR ("[pcl::SampleConsensusModelCylinder::isSampleGood] Wrong number of samples (is %lu, should be %lu)!\n", samples.size (), sample_size_);
     return (false);
   }
+
+  // Make sure that the two sample points are not identical
+  if (
+      std::abs ((*input_)[samples[0]].x - (*input_)[samples[1]].x) <= std::numeric_limits<float>::epsilon ()
+    &&
+      std::abs ((*input_)[samples[0]].y - (*input_)[samples[1]].y) <= std::numeric_limits<float>::epsilon ()
+    &&
+      std::abs ((*input_)[samples[0]].z - (*input_)[samples[1]].z) <= std::numeric_limits<float>::epsilon ())
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelCylinder::isSampleGood] The two sample points are (almost) identical!\n");
+    return (false);
+  }
+
   return (true);
 }
 
@@ -62,10 +76,10 @@ template <typename PointT, typename PointNT> bool
 pcl::SampleConsensusModelCylinder<PointT, PointNT>::computeModelCoefficients (
       const Indices &samples, Eigen::VectorXf &model_coefficients) const
 {
-  // Need 2 samples
-  if (samples.size () != sample_size_)
+  // Make sure that the samples are valid
+  if (!isSampleGood (samples))
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelCylinder::computeModelCoefficients] Invalid set of samples given (%lu)!\n", samples.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCylinder::computeModelCoefficients] Invalid set of samples given!\n");
     return (false);
   }
 
@@ -75,18 +89,11 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::computeModelCoefficients (
     return (false);
   }
 
-  if (std::abs (input_->points[samples[0]].x - input_->points[samples[1]].x) <= std::numeric_limits<float>::epsilon () && 
-      std::abs (input_->points[samples[0]].y - input_->points[samples[1]].y) <= std::numeric_limits<float>::epsilon () && 
-      std::abs (input_->points[samples[0]].z - input_->points[samples[1]].z) <= std::numeric_limits<float>::epsilon ()) 
-  {
-    return (false);
-  }
-  
-  Eigen::Vector4f p1 (input_->points[samples[0]].x, input_->points[samples[0]].y, input_->points[samples[0]].z, 0.0f);
-  Eigen::Vector4f p2 (input_->points[samples[1]].x, input_->points[samples[1]].y, input_->points[samples[1]].z, 0.0f);
+  Eigen::Vector4f p1 ((*input_)[samples[0]].x, (*input_)[samples[0]].y, (*input_)[samples[0]].z, 0.0f);
+  Eigen::Vector4f p2 ((*input_)[samples[1]].x, (*input_)[samples[1]].y, (*input_)[samples[1]].z, 0.0f);
 
-  Eigen::Vector4f n1 (normals_->points[samples[0]].normal[0], normals_->points[samples[0]].normal[1], normals_->points[samples[0]].normal[2], 0.0f);
-  Eigen::Vector4f n2 (normals_->points[samples[1]].normal[0], normals_->points[samples[1]].normal[1], normals_->points[samples[1]].normal[2], 0.0f);
+  Eigen::Vector4f n1 ((*normals_)[samples[0]].normal[0], (*normals_)[samples[0]].normal[1], (*normals_)[samples[0]].normal[2], 0.0f);
+  Eigen::Vector4f n2 ((*normals_)[samples[1]].normal[0], (*normals_)[samples[1]].normal[1], (*normals_)[samples[1]].normal[2], 0.0f);
   Eigen::Vector4f w = n1 + p1 - p2;
 
   float a = n1.dot (n1);
@@ -128,6 +135,9 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::computeModelCoefficients (
   if (model_coefficients[6] > radius_max_ || model_coefficients[6] < radius_min_)
     return (false);
 
+  PCL_DEBUG ("[pcl::SampleConsensusModelCylinder::computeModelCoefficients] Model is (%g,%g,%g,%g,%g,%g,%g).\n",
+             model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3],
+             model_coefficients[4], model_coefficients[5], model_coefficients[6]);
   return (true);
 }
 
@@ -155,10 +165,9 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::getDistancesToModel (
     // Approximate the distance from the point to the cylinder as the difference between
     // dist(point,cylinder_axis) and cylinder radius
     // @note need to revise this.
-    Eigen::Vector4f pt (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z, 0.0f);
-    Eigen::Vector4f n  (normals_->points[(*indices_)[i]].normal[0], normals_->points[(*indices_)[i]].normal[1], normals_->points[(*indices_)[i]].normal[2], 0.0f);
+    Eigen::Vector4f pt ((*input_)[(*indices_)[i]].x, (*input_)[(*indices_)[i]].y, (*input_)[(*indices_)[i]].z, 0.0f);
 
-    double d_euclid = std::abs (pointToLineDistance (pt, model_coefficients) - model_coefficients[6]);
+    const double weighted_euclid_dist = (1.0 - normal_distance_weight_) * std::abs (pointToLineDistance (pt, model_coefficients) - model_coefficients[6]);
 
     // Calculate the point's projection on the cylinder axis
     float k = (pt.dot (line_dir) - ptdotdir) * dirdotdir;
@@ -167,10 +176,11 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::getDistancesToModel (
     dir.normalize ();
 
     // Calculate the angular distance between the point normal and the (dir=pt_proj->pt) vector
+    Eigen::Vector4f n  ((*normals_)[(*indices_)[i]].normal[0], (*normals_)[(*indices_)[i]].normal[1], (*normals_)[(*indices_)[i]].normal[2], 0.0f);
     double d_normal = std::abs (getAngle3D (n, dir));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
-    distances[i] = std::abs (normal_distance_weight_ * d_normal + (1.0 - normal_distance_weight_) * d_euclid);
+    distances[i] = std::abs (normal_distance_weight_ * d_normal + weighted_euclid_dist);
   }
 }
 
@@ -200,9 +210,10 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::selectWithinDistance (
   {
     // Approximate the distance from the point to the cylinder as the difference between
     // dist(point,cylinder_axis) and cylinder radius
-    Eigen::Vector4f pt (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z, 0.0f);
-    Eigen::Vector4f n  (normals_->points[(*indices_)[i]].normal[0], normals_->points[(*indices_)[i]].normal[1], normals_->points[(*indices_)[i]].normal[2], 0.0f);
-    double d_euclid = std::abs (pointToLineDistance (pt, model_coefficients) - model_coefficients[6]);
+    Eigen::Vector4f pt ((*input_)[(*indices_)[i]].x, (*input_)[(*indices_)[i]].y, (*input_)[(*indices_)[i]].z, 0.0f);
+    const double weighted_euclid_dist = (1.0 - normal_distance_weight_) * std::abs (pointToLineDistance (pt, model_coefficients) - model_coefficients[6]);
+    if (weighted_euclid_dist > threshold) // Early termination: cannot be an inlier
+      continue;
 
     // Calculate the point's projection on the cylinder axis
     float k = (pt.dot (line_dir) - ptdotdir) * dirdotdir;
@@ -211,10 +222,11 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::selectWithinDistance (
     dir.normalize ();
 
     // Calculate the angular distance between the point normal and the (dir=pt_proj->pt) vector
+    Eigen::Vector4f n  ((*normals_)[(*indices_)[i]].normal[0], (*normals_)[(*indices_)[i]].normal[1], (*normals_)[(*indices_)[i]].normal[2], 0.0f);
     double d_normal = std::abs (getAngle3D (n, dir));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
-    double distance = std::abs (normal_distance_weight_ * d_normal + (1.0 - normal_distance_weight_) * d_euclid);
+    double distance = std::abs (normal_distance_weight_ * d_normal + weighted_euclid_dist);
     if (distance < threshold)
     {
       // Returns the indices of the points whose distances are smaller than the threshold
@@ -244,9 +256,10 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::countWithinDistance (
   {
     // Approximate the distance from the point to the cylinder as the difference between
     // dist(point,cylinder_axis) and cylinder radius
-    Eigen::Vector4f pt (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z, 0.0f);
-    Eigen::Vector4f n  (normals_->points[(*indices_)[i]].normal[0], normals_->points[(*indices_)[i]].normal[1], normals_->points[(*indices_)[i]].normal[2], 0.0f);
-    double d_euclid = std::abs (pointToLineDistance (pt, model_coefficients) - model_coefficients[6]);
+    Eigen::Vector4f pt ((*input_)[(*indices_)[i]].x, (*input_)[(*indices_)[i]].y, (*input_)[(*indices_)[i]].z, 0.0f);
+    const double weighted_euclid_dist = (1.0 - normal_distance_weight_) * std::abs (pointToLineDistance (pt, model_coefficients) - model_coefficients[6]);
+    if (weighted_euclid_dist > threshold) // Early termination: cannot be an inlier
+      continue;
 
     // Calculate the point's projection on the cylinder axis
     float k = (pt.dot (line_dir) - ptdotdir) * dirdotdir;
@@ -255,10 +268,11 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::countWithinDistance (
     dir.normalize ();
 
     // Calculate the angular distance between the point normal and the (dir=pt_proj->pt) vector
+    Eigen::Vector4f n  ((*normals_)[(*indices_)[i]].normal[0], (*normals_)[(*indices_)[i]].normal[1], (*normals_)[(*indices_)[i]].normal[2], 0.0f);
     double d_normal = std::abs (getAngle3D (n, dir));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
-    if (std::abs (normal_distance_weight_ * d_normal + (1.0 - normal_distance_weight_) * d_euclid) < threshold)
+    if (std::abs (normal_distance_weight_ * d_normal + weighted_euclid_dist) < threshold)
       nr_p++;
   }
   return (nr_p);
@@ -326,30 +340,31 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
   if (copy_data_fields)
   {
     // Allocate enough space and copy the basics
-    projected_points.points.resize (input_->points.size ());
+    projected_points.resize (input_->size ());
     projected_points.width    = input_->width;
     projected_points.height   = input_->height;
 
     using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
-    for (std::size_t i = 0; i < projected_points.points.size (); ++i)
+    for (std::size_t i = 0; i < projected_points.size (); ++i)
       // Iterate over each dimension
-      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> ((*input_)[i], projected_points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the cylinder
     for (const auto &inlier : inliers)
     {
-      Eigen::Vector4f p (input_->points[inlier].x,
-                         input_->points[inlier].y,
-                         input_->points[inlier].z,
+      Eigen::Vector4f p ((*input_)[inlier].x,
+                         (*input_)[inlier].y,
+                         (*input_)[inlier].z,
                          1);
 
       float k = (p.dot (line_dir) - ptdotdir) * dirdotdir;
 
-      pcl::Vector4fMap pp = projected_points.points[inlier].getVector4fMap ();
+      pcl::Vector4fMap pp = projected_points[inlier].getVector4fMap ();
       pp.matrix () = line_pt + k * line_dir;
 
       Eigen::Vector4f dir = p - pp;
+      dir[3] = 0.0f;
       dir.normalize ();
 
       // Calculate the projection of the point onto the cylinder
@@ -359,27 +374,28 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
   else
   {
     // Allocate enough space and copy the basics
-    projected_points.points.resize (inliers.size ());
-    projected_points.width    = static_cast<std::uint32_t> (inliers.size ());
+    projected_points.resize (inliers.size ());
+    projected_points.width    = inliers.size ();
     projected_points.height   = 1;
 
     using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
     for (std::size_t i = 0; i < inliers.size (); ++i)
       // Iterate over each dimension
-      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points.points[i]));
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> ((*input_)[inliers[i]], projected_points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the cylinder
     for (std::size_t i = 0; i < inliers.size (); ++i)
     {
-      pcl::Vector4fMap pp = projected_points.points[i].getVector4fMap ();
-      pcl::Vector4fMapConst p = input_->points[inliers[i]].getVector4fMap ();
+      pcl::Vector4fMap pp = projected_points[i].getVector4fMap ();
+      pcl::Vector4fMapConst p = (*input_)[inliers[i]].getVector4fMap ();
 
       float k = (p.dot (line_dir) - ptdotdir) * dirdotdir;
       // Calculate the projection of the point on the line
       pp.matrix () = line_pt + k * line_dir;
 
       Eigen::Vector4f dir = p - pp;
+      dir[3] = 0.0f;
       dir.normalize ();
 
       // Calculate the projection of the point onto the cylinder
@@ -405,7 +421,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::doSamplesVerifyModel (
     // Approximate the distance from the point to the cylinder as the difference between
     // dist(point,cylinder_axis) and cylinder radius
     // @note need to revise this.
-    Eigen::Vector4f pt (input_->points[index].x, input_->points[index].y, input_->points[index].z, 0.0f);
+    Eigen::Vector4f pt ((*input_)[index].x, (*input_)[index].y, (*input_)[index].z, 0.0f);
     if (std::abs (pointToLineDistance (pt, model_coefficients) - model_coefficients[6]) > threshold)
       return (false);
   }
@@ -458,13 +474,24 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::isModelValid (const Eigen::V
     angle_diff = (std::min) (angle_diff, M_PI - angle_diff);
     // Check whether the current cylinder model satisfies our angle threshold criterion with respect to the given axis
     if (angle_diff > eps_angle_)
+    {
+      PCL_DEBUG ("[pcl::SampleConsensusModelCylinder::isModelValid] Angle between cylinder direction and given axis is too large.\n");
       return (false);
+    }
   }
 
   if (radius_min_ != -std::numeric_limits<double>::max() && model_coefficients[6] < radius_min_)
+  {
+    PCL_DEBUG ("[pcl::SampleConsensusModelCylinder::isModelValid] Radius is too small: should be larger than %g, but is %g.\n",
+               radius_min_, model_coefficients[6]);
     return (false);
+  }
   if (radius_max_ != std::numeric_limits<double>::max() && model_coefficients[6] > radius_max_)
+  {
+    PCL_DEBUG ("[pcl::SampleConsensusModelCylinder::isModelValid] Radius is too big: should be smaller than %g, but is %g.\n",
+               radius_max_, model_coefficients[6]);
     return (false);
+  }
 
   return (true);
 }

@@ -37,7 +37,6 @@
 
 #include <pcl/common/time_trigger.h>
 #include <pcl/common/time.h>
-#include <iostream>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::TimeTrigger::TimeTrigger (double interval, const callback_type& callback)

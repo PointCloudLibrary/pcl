@@ -38,6 +38,8 @@
 #include <vtkCamera.h>
 #include <vtkRenderWindow.h>
 
+#include <Eigen/Geometry> // for cross
+
 #include <pcl/point_types.h>
 #include <pcl/visualization/common/common.h>
 #include <pcl/console/print.h>

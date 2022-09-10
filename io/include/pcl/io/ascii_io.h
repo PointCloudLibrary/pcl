@@ -41,6 +41,7 @@
 #include <pcl/io/file_io.h>
 #include <pcl/PCLPointField.h>
 #include <pcl/common/io.h>
+#include <pcl/common/utils.h> // pcl::utils::ignore
 
 
 namespace pcl
@@ -55,7 +56,7 @@ namespace pcl
   {
     public:
       ASCIIReader ();
-      ~ASCIIReader ();
+      ~ASCIIReader () override;
       using FileReader::read;
 
       /* Load only the meta information (number of points, their types, etc),
@@ -111,19 +112,6 @@ namespace pcl
         */
       void 
       setInputFields (const std::vector<pcl::PCLPointField>& fields);
-
-
-      /** \brief Set the ascii file point fields using a point type.
-        * \param[in] p  a point type
-        */
-      template<typename PointT>
-      PCL_DEPRECATED(1, 12, "use parameterless setInputFields<PointT>() instead")
-      inline void setInputFields (const PointT p)
-      {
-        (void) p;
-        setInputFields<PointT> ();
-      }
-
 
       /** \brief Set the Separating characters for the ascii point fields 2.
         * \param[in] chars string of separating characters

@@ -45,9 +45,14 @@
 #include <pcl/apps/point_cloud_editor/copyBuffer.h>
 #include <pcl/apps/point_cloud_editor/selection.h>
 
+#include <pcl/memory.h>  // for pcl::shared_ptr
+
 class CutCommand : public Command
 {
   public:
+    /// The type for shared pointer pointing to a selection buffer
+    using SelectionPtr = pcl::shared_ptr<Selection>;
+
     /// @brief Constructor
     /// @param copy_buffer_ptr a shared pointer pointing to the copy buffer.
     /// @param selection_ptr a shared pointer pointing to the selection object.
@@ -64,7 +69,7 @@ class CutCommand : public Command
     operator= (const CutCommand&) = delete;
 
     /// @brief Destructor
-    ~CutCommand ();
+    ~CutCommand () override;
 
   protected:
     /// @brief Moves the selected points to the copy buffer and removes them

@@ -1,0 +1,46 @@
+steps:
+  - checkout: self
+    # find the commit hash on a quick non-forced update too
+    fetchDepth: 10
+  - script: |
+      brew install cmake pkg-config boost eigen flann glew libusb qhull vtk glew qt5 libpcap libomp google-benchmark
+      brew install brewsci/science/openni
+      git clone https://github.com/abseil/googletest.git $GOOGLE_TEST_DIR # the official endpoint changed to abseil/googletest
+      cd $GOOGLE_TEST_DIR && git checkout release-1.8.1
+    displayName: 'Install Dependencies'
+  - script: |
+      mkdir $BUILD_DIR && cd $BUILD_DIR
+      cmake $(Build.SourcesDirectory) \
+        -DCMAKE_BUILD_TYPE="MinSizeRel" \
+        -DCMAKE_OSX_SYSROOT="/Library/Developer/CommandLineTools/SDKs/MacOSX$(OSX_VERSION).sdk" \
+        -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
+        -DGTEST_SRC_DIR="$GOOGLE_TEST_DIR/googletest" \
+        -DGTEST_INCLUDE_DIR="$GOOGLE_TEST_DIR/googletest/include" \
+        -DQt5_DIR=/usr/local/opt/qt5/lib/cmake/Qt5 \
+        -DPCL_ONLY_CORE_POINT_TYPES=ON \
+        -DBUILD_simulation=ON \
+        -DBUILD_global_tests=ON \
+        -DBUILD_benchmarks=ON \
+        -DBUILD_examples=ON \
+        -DBUILD_tools=ON \
+        -DBUILD_apps=ON \
+        -DBUILD_apps_3d_rec_framework=ON \
+        -DBUILD_apps_cloud_composer=ON \
+        -DBUILD_apps_in_hand_scanner=ON \
+        -DBUILD_apps_modeler=ON \
+        -DBUILD_apps_point_cloud_editor=ON \
+        -DBoost_USE_DEBUG_RUNTIME=OFF
+    displayName: 'CMake Configuration'
+  - script: |
+      cd $BUILD_DIR
+      cmake --build . -- -j2
+    displayName: 'Build Library'
+  - script: cd $BUILD_DIR && cmake --build . -- tests
+    displayName: 'Run Unit Tests'
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'CTest'
+      testResultsFiles: '**/Test*.xml'
+      searchFolder: '$(Agent.WorkFolder)/build'
+    condition: succeededOrFailed()
+

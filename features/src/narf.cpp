@@ -41,6 +41,7 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <map> // for std::multimap
 using std::cout;
 using std::cerr;
 using std::vector;
@@ -48,8 +49,6 @@ using std::vector;
 using Eigen::Vector3f;
 
 #include <pcl/range_image/range_image.h>
-#include <pcl/common/vector_average.h>
-#include <pcl/common/common_headers.h>
 
 namespace pcl 
 {
@@ -118,7 +117,7 @@ Narf::deepCopy (const Narf& other)
     delete[] surface_patch_;
     surface_patch_ = new float[surface_patch_pixel_size_*surface_patch_pixel_size_];
   }
-  memcpy(surface_patch_, other.surface_patch_, sizeof(*surface_patch_)*surface_patch_pixel_size_*surface_patch_pixel_size_);
+  std::copy(other.surface_patch_, other.surface_patch_ + surface_patch_pixel_size_*surface_patch_pixel_size_, surface_patch_);
   surface_patch_world_size_ = other.surface_patch_world_size_;
   surface_patch_rotation_ = other.surface_patch_rotation_;
   
@@ -128,7 +127,7 @@ Narf::deepCopy (const Narf& other)
     delete[] descriptor_;
     descriptor_ = new float[descriptor_size_];
   }
-  memcpy(descriptor_, other.descriptor_, sizeof(*descriptor_)*descriptor_size_);
+  std::copy(other.descriptor_, other.descriptor_ + descriptor_size_, descriptor_);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -377,9 +376,9 @@ Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<
   schedule(dynamic, 10) \
   num_threads(max_no_of_threads)
   //!!! nizar 20110408 : for OpenMP sake on MSVC this must be kept signed
-  for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t>(interest_points.points.size ()); ++idx)
+  for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t>(interest_points.size ()); ++idx)
   {
-    const auto& interest_point = interest_points.points[idx];
+    const auto& interest_point = interest_points[idx];
     Vector3fMapConst point = interest_point.getVector3fMap ();
 
     Narf* feature = new Narf;
@@ -478,14 +477,14 @@ Narf::getRotations (std::vector<float>& rotations, std::vector<float>& strengths
   
   while (!scored_orientations.empty())
   {
-    std::multimap<float, float>::iterator best_remaining_orientation_it = scored_orientations.end();
+    auto best_remaining_orientation_it = scored_orientations.end();
     --best_remaining_orientation_it;
     rotations.push_back(best_remaining_orientation_it->second);
     strengths.push_back(best_remaining_orientation_it->first);
     scored_orientations.erase(best_remaining_orientation_it);
-    for (std::multimap<float, float>::iterator it = scored_orientations.begin(); it!=scored_orientations.end();)
+    for (auto it = scored_orientations.begin(); it!=scored_orientations.end();)
     {
-      std::multimap<float, float>::iterator current_it = it++;
+      auto current_it = it++;
       if (normAngle(current_it->second - rotations.back()) < min_angle_dist_between_rotations)
         scored_orientations.erase(current_it);
     }
@@ -603,25 +602,23 @@ Narf::loadBinary (const std::string& filename)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-NarfDescriptor::NarfDescriptor (const RangeImage* range_image, const std::vector<int>* indices) : 
+NarfDescriptor::NarfDescriptor (const RangeImage* range_image, const pcl::Indices* indices) : 
   range_image_ ()
 {
   setRangeImage (range_image, indices);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-NarfDescriptor::~NarfDescriptor ()
-{
-}
+NarfDescriptor::~NarfDescriptor () = default;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
-NarfDescriptor::setRangeImage (const RangeImage* range_image, const std::vector<int>* indices)
+NarfDescriptor::setRangeImage (const RangeImage* range_image, const pcl::Indices* indices)
 {
   range_image_ = range_image;
   if (indices != nullptr)
   {
-    IndicesPtr indicesptr (new std::vector<int> (*indices));
+    IndicesPtr indicesptr (new pcl::Indices (*indices));
     setIndices (indicesptr);
   }
 }
@@ -632,7 +629,7 @@ NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
 {
   //std::cout << __PRETTY_FUNCTION__ << " called.\n";
   
-  output.points.clear();
+  output.clear();
   
   if (range_image_==nullptr)
   {
@@ -640,7 +637,7 @@ NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
               << ": RangeImage is not set. Sorry, the NARF descriptor calculation works on range images, not on normal point clouds."
               << " Use setRangeImage(...).\n\n";
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   if (parameters_.support_size <= 0.0f)
@@ -648,7 +645,7 @@ NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
     std::cerr << __PRETTY_FUNCTION__
               << ": support size is not set. Use getParameters().support_size = ...\n\n";
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   std::vector<Narf*> feature_list;
@@ -675,10 +672,10 @@ NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
   }
   
   // Copy to NARF36 struct
-  output.points.resize(feature_list.size());
+  output.resize(feature_list.size());
   for (std::size_t i = 0; i < feature_list.size(); ++i)
   {
-    feature_list[i]->copyToNarf36(output.points[i]);
+    feature_list[i]->copyToNarf36(output[i]);
   }
   
   // Cleanup

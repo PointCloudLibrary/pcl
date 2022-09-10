@@ -39,9 +39,9 @@
 
 #pragma once
 
-#include <vector>
-
 #include <pcl/ml/permutohedral.h>
+
+#include <vector>
 
 namespace pcl {
 
@@ -54,7 +54,7 @@ public:
                     const float w);
 
   /** Deconstructor for PairwisePotential class. */
-  ~PairwisePotential(){};
+  ~PairwisePotential() = default;
 
   void
   compute(std::vector<float>& out,

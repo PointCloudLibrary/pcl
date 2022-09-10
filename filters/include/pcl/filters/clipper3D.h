@@ -60,7 +60,7 @@ namespace pcl
       /**
         * \brief virtual destructor. Never throws an exception.
         */
-      virtual ~Clipper3D () noexcept {}
+      virtual ~Clipper3D () noexcept = default;
 
       /**
         * \brief interface to clip a single point
@@ -103,7 +103,7 @@ namespace pcl
         * \return list of indices of remaining points after clipping.
         */
       virtual void
-      clipPointCloud3D (const pcl::PointCloud<PointT> &cloud_in, std::vector<int>& clipped, const std::vector<int>& indices = std::vector<int> ()) const = 0;
+      clipPointCloud3D (const pcl::PointCloud<PointT> &cloud_in, Indices& clipped, const Indices& indices = Indices ()) const = 0;
 
       /**
         * \brief polymorphic method to clone the underlying clipper with its parameters.

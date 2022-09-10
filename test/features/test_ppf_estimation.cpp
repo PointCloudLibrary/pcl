@@ -45,7 +45,6 @@
 
 using namespace pcl;
 using namespace pcl::io;
-using namespace std;
 
 using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 
@@ -73,30 +72,30 @@ TEST (PCL, PPFEstimation)
   ppf_estimation.compute (*feature_cloud);
 
   // Check for size of output
-  EXPECT_EQ (feature_cloud->points.size (), indices.size () * cloud.points.size ());
+  EXPECT_EQ (feature_cloud->size (), indices.size () * cloud.size ());
 
   // Now check for a few values in the feature cloud
-  EXPECT_TRUE (std::isnan (feature_cloud->points[0].f1));
-  EXPECT_TRUE (std::isnan (feature_cloud->points[0].f2));
-  EXPECT_TRUE (std::isnan (feature_cloud->points[0].f3));
-  EXPECT_TRUE (std::isnan (feature_cloud->points[0].f4));
-  EXPECT_TRUE (std::isnan (feature_cloud->points[0].alpha_m));
+  EXPECT_TRUE (std::isnan ((*feature_cloud)[0].f1));
+  EXPECT_TRUE (std::isnan ((*feature_cloud)[0].f2));
+  EXPECT_TRUE (std::isnan ((*feature_cloud)[0].f3));
+  EXPECT_TRUE (std::isnan ((*feature_cloud)[0].f4));
+  EXPECT_TRUE (std::isnan ((*feature_cloud)[0].alpha_m));
 
-  EXPECT_NEAR (feature_cloud->points[15127].f1, -2.51637, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[15127].f2, -0.00365916, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[15127].f3, -0.521141, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[15127].f4, 0.0106809, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[15127].alpha_m, -0.255664, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[30254].f1, 0.185142, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[30254].f2, 0.0425001, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[30254].f3, -0.191276, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[30254].f4, 0.0138508, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[30254].alpha_m, 2.42955, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[45381].f1, -1.96263, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[45381].f2, -0.431919, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[45381].f3, 0.868716, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[45381].f4, 0.140129, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[45381].alpha_m, -1.97276, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[15127].f1, -2.51637, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[15127].f2, -0.00365916, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[15127].f3, -0.521141, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[15127].f4, 0.0106809, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[15127].alpha_m, -0.255664, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[30254].f1, 0.185142, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[30254].f2, 0.0425001, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[30254].f3, -0.191276, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[30254].f4, 0.0138508, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[30254].alpha_m, 2.42955, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[45381].f1, -1.96263, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[45381].f2, -0.431919, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[45381].f3, 0.868716, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[45381].f4, 0.140129, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[45381].alpha_m, -1.97276, 1e-4);
 }
 
 /* ---[ */
@@ -115,7 +114,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  indices.resize (cloud.points.size ());
+  indices.resize (cloud.size ());
   for (int i = 0; i < static_cast<int> (indices.size ()); ++i)
     indices[i] = i;
 

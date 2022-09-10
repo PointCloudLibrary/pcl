@@ -34,279 +34,216 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#include <limits>
-
 #include "internal.hpp"
 #include "pcl/gpu/utils/device/warp.hpp"
-
-#include "utils/copygen.hpp"
+#include "utils/approx_nearest_utils.hpp"
 #include "utils/boxutils.hpp"
+#include "utils/copygen.hpp"
 #include "utils/scan_block.hpp"
+#include <assert.h>
 
+#include <limits>
+#include <tuple>
 
-namespace pcl { namespace device { namespace appnearest_search
-{   
-    using PointType = OctreeImpl::PointType;
-	
-	struct Batch
-	{   
-		const PointType* queries;
+namespace pcl {
+namespace device {
+namespace appnearest_search {
+using PointType = OctreeImpl::PointType;
 
-		const int *indices;
-		const float* points;
-		int points_step; // elem step
+struct Batch {
+  const PointType* queries;
 
-		OctreeGlobalWithBox octree;
-	    
-		int queries_num;                
-		mutable int* output;                
-	};
+  const int* indices;
+  const float* points;
+  int points_step; // elem step
 
-	struct KernelPolicy
-	{
-		enum 
-		{
-			CTA_SIZE = 512,
+  OctreeGlobalWithBox octree;
 
-			LOG_WARP_SIZE = 5,
-			WARP_SIZE = 1 << LOG_WARP_SIZE,
-			WARPS_COUNT = CTA_SIZE/WARP_SIZE,                    
-		};	
-	};
+  int queries_num;
+  mutable int* output;
+  mutable float* sqr_distance;
+};
 
-	struct Warp_appNearestSearch
-	{   
-	public:                		
-		const Batch& batch;
+struct KernelPolicy {
+  enum {
+    CTA_SIZE = 512,
 
-		int query_index;        
-		float3 query;  
-		int result_idx;
+    LOG_WARP_SIZE = 5,
+    WARP_SIZE = 1 << LOG_WARP_SIZE,
+    WARPS_COUNT = CTA_SIZE / WARP_SIZE,
+  };
+};
 
-		__device__ __forceinline__ Warp_appNearestSearch(const Batch& batch_arg, int query_index_arg) 
-			: batch(batch_arg), query_index(query_index_arg){}
+struct Warp_appNearestSearch {
+public:
+  const Batch& batch;
 
-		__device__ __forceinline__ void launch(bool active)
-		{              
-			int node_idx = -1;
-			if (active)
-			{
-				PointType q = batch.queries[query_index];
-				query = make_float3(q.x, q.y, q.z);                        
+  int query_index;
+  float3 query;
+  int result_idx;
+  float sqr_dist;
 
-				node_idx = findNode();
-			}           
+  __device__ __forceinline__
+  Warp_appNearestSearch(const Batch& batch_arg, int query_index_arg)
+  : batch(batch_arg), query_index(query_index_arg)
+  {}
 
-			processNode(node_idx);                    
+  __device__ __forceinline__ void
+  launch(bool active)
+  {
+    int node_idx = -1;
+    if (active) {
+      PointType q = batch.queries[query_index];
+      query = make_float3(q.x, q.y, q.z);
 
-			if (active)
-				batch.output[query_index] = batch.indices[result_idx];
-		}    
+      const float3& minp = batch.octree.minp;
+      const float3& maxp = batch.octree.maxp;
 
-	private:
+      node_idx = pcl::device::findNode(minp, maxp, query, batch.octree.nodes);
+    }
 
-		__device__ __forceinline__ int findNode()
-		{                                             
-			float3 minp = batch.octree.minp;
-			float3 maxp = batch.octree.maxp;
+    processNode(node_idx);
 
-			if(query.x < minp.x || query.y < minp.y ||  query.z < minp.z)
-				return 0;
+    if (active)
+    {
+      batch.output[query_index] = batch.indices[result_idx];
+      batch.sqr_distance[query_index] = sqr_dist;
+    }
+  }
 
-			if(query.x > maxp.x || query.y > maxp.y ||  query.z > maxp.z)
-				return 0;
+private:
+  __device__ __forceinline__ void
+  processNode(const int node_idx)
+  {
+    __shared__ volatile int per_warp_buffer[KernelPolicy::WARPS_COUNT];
 
-			int node_idx = 0;
-			int code = CalcMorton(minp, maxp)(query);
-			int level = 0;
+    int mask = __ballot_sync(0xFFFFFFFF, node_idx != -1);
 
-			for(;;)
-			{
-				int mask_pos = 1 << Morton::extractLevelCode(code, level);
+    while (mask) {
+      const unsigned int laneId = Warp::laneId();
 
-				int node = batch.octree.nodes[node_idx];
-				int mask = node & 0xFF;
+      const int active_lane = __ffs(mask) - 1; //[0..31]
+      mask &= ~(1 << active_lane);
 
-				if(__popc(mask) == 0)  // leaf
-					return node_idx; 
+      // broadcast beg and end
+      int fbeg, fend;
+      if (active_lane == laneId) {
+        fbeg = batch.octree.begs[node_idx];
+        fend = batch.octree.ends[node_idx];
+      }
+      const int beg = __shfl_sync(0xFFFFFFFF, fbeg, active_lane);
+      const int end = __shfl_sync(0xFFFFFFFF, fend, active_lane);
 
-				if ( (mask & mask_pos) == 0) // no child
-					return node_idx;                         
+      // broadcast warp_query
+      const float3 active_query =
+          make_float3(__shfl_sync(0xFFFFFFFF, query.x, active_lane),
+                      __shfl_sync(0xFFFFFFFF, query.y, active_lane),
+                      __shfl_sync(0xFFFFFFFF, query.z, active_lane));
 
-				node_idx = (node >> 8) + __popc(mask & (mask_pos - 1));
-				++level;
-			}
-		};
+      const auto nearestPoint = NearestWarpKernel<KernelPolicy::CTA_SIZE>(
+          beg, batch.points_step, end - beg, active_query);
 
-		__device__ __forceinline__ void processNode(int node_idx)
-		{   
-            __shared__ volatile int  per_warp_buffer[KernelPolicy::WARPS_COUNT];
+      if (active_lane == laneId)
+      {
+        result_idx = beg + nearestPoint.first;
+        sqr_dist = nearestPoint.second;
+      }
+    }
+  }
 
-			int mask = __ballot_sync(0xFFFFFFFF, node_idx != -1);                        
+  template <int CTA_SIZE>
+  __device__ std::pair<int, float>
+  NearestWarpKernel(const int beg,
+                    const int field_step,
+                    const int length,
+                    const float3& active_query)
 
-			while(mask)
-			{                
-				unsigned int laneId = Warp::laneId();
-				unsigned int warpId = threadIdx.x/warpSize;            
+  {
+    int index = 0;
+    float dist_squared = std::numeric_limits<float>::max();
 
-				int active_lane = __ffs(mask) - 1; //[0..31]                        
-				mask &= ~(1 << active_lane);   
+    // serial step
+    for (int idx = Warp::laneId(); idx < length; idx += Warp::STRIDE) {
+      const float dx = batch.points[beg + idx] - active_query.x;
+      const float dy = batch.points[beg + idx + field_step] - active_query.y;
+      const float dz = batch.points[beg + idx + field_step * 2] - active_query.z;
 
-				volatile int* warp_buffer = &per_warp_buffer[warpId];
+      const float d2 = dx * dx + dy * dy + dz * dz;
 
-				//broadcast beg
-				if (active_lane == laneId)
-					*warp_buffer = batch.octree.begs[node_idx];                    
-				int beg = *warp_buffer;
+      if (dist_squared > d2) {
+        dist_squared = d2;
+        index = idx;
+      }
+    }
 
-				//broadcast end
-				if (active_lane == laneId)
-					*warp_buffer = batch.octree.ends[node_idx];
-				int end = *warp_buffer;
+    // find minimum distance among warp threads
+    constexpr unsigned FULL_MASK = 0xFFFFFFFF;
+    static_assert(KernelPolicy::WARP_SIZE <= 8 * sizeof(FULL_MASK),
+                  "WARP_SIZE exceeds size of bit_offset.");
 
-				float3 active_query;
-				volatile float* warp_buffer_float = (float*)&per_warp_buffer[warpId];
+    for (unsigned int bit_offset = KernelPolicy::WARP_SIZE / 2; bit_offset > 0;
+         bit_offset /= 2) {
+      const float next = __shfl_down_sync(FULL_MASK, dist_squared, bit_offset);
+      const int next_index = __shfl_down_sync(FULL_MASK, index, bit_offset);
 
-				//broadcast warp_query
-				if (active_lane == laneId)
-					*warp_buffer_float = query.x;
-				active_query.x = *warp_buffer_float;
+      if (dist_squared > next) {
+        dist_squared = next;
+        index = next_index;
+      }
+    }
 
-				if (active_lane == laneId)
-					*warp_buffer_float = query.y;
-				active_query.y = *warp_buffer_float;
+    // retrieve index and distance
+    index = __shfl_sync(FULL_MASK, index, 0);
+    dist_squared = __shfl_sync(FULL_MASK, dist_squared, 0);
 
-				if (active_lane == laneId)
-					*warp_buffer_float = query.z;
-				active_query.z = *warp_buffer_float;                            
+    return {index, dist_squared};
+  }
+};
 
-				int offset = NearestWarpKernel<KernelPolicy::CTA_SIZE>(batch.points + beg, batch.points_step, end - beg, active_query);                    
-
-				if (active_lane == laneId)
-					result_idx = beg + offset;
-			}
-		}
-
-        template<int CTA_SIZE>
-		__device__ __forceinline__ int NearestWarpKernel(const float* points, int points_step, int length, const float3& active_query)
-		{                        						
-            __shared__ volatile float dist2[CTA_SIZE];
-            __shared__ volatile int   index[CTA_SIZE];
-			
-            int tid = threadIdx.x;
-			dist2[tid] = std::numeric_limits<float>::max();
-
-			//serial step
-            for (int idx = Warp::laneId(); idx < length; idx += Warp::STRIDE)
-			{
-				float dx = points[idx                  ] - active_query.x;
-				float dy = points[idx + points_step    ] - active_query.y;
-				float dz = points[idx + points_step * 2] - active_query.z;
-
-				float d2 = dx * dx + dy * dy + dz * dz;
-
-				if (dist2[tid] > d2)
-				{
-					dist2[tid] = d2;
-					index[tid] = idx;                            
-				}
-			}
-			//parallel step
-			unsigned int lane = Warp::laneId();
-
-			float mind2 = dist2[tid];
-
-			if (lane < 16)
-			{
-				float next = dist2[tid + 16];
-				if (mind2 > next) 
-				{ 
-					dist2[tid] = mind2 = next; 
-					index[tid] = index[tid + 16]; 
-				}                        
-			}
-
-			if (lane < 8)
-			{
-				float next = dist2[tid + 8];
-				if (mind2 > next) 
-				{ 
-					dist2[tid] = mind2 = next; 
-					index[tid] = index[tid + 8]; 
-				}                        
-			}
-
-			if (lane < 4)
-			{
-				float next = dist2[tid + 4];
-				if (mind2 > next) 
-				{ 
-					dist2[tid] = mind2 = next; 
-					index[tid] = index[tid + 4]; 
-				}                        
-			}
-
-			if (lane < 2)
-			{
-				float next = dist2[tid + 2];
-				if (mind2 > next) 
-				{ 
-					dist2[tid] = mind2 = next; 
-					index[tid] = index[tid + 2]; 
-				}                        
-			}
-
-			if (lane < 1)
-			{
-				float next = dist2[tid + 1];
-				if (mind2 > next) 
-				{ 
-					dist2[tid] = mind2 = next; 
-					index[tid] = index[tid + 1]; 
-				}                        
-			}        
-
-			return index[tid - lane];
-		}
-	};
-	
-	__global__ void KernelAN(const Batch batch) 
-	{         
-		int query_index = blockIdx.x * blockDim.x + threadIdx.x;
-
-		bool active = query_index < batch.queries_num;
-
-		if (__all_sync(0xFFFFFFFF, active == false)) 
-			return;
-
-		Warp_appNearestSearch search(batch, query_index);
-		search.launch(active); 
-	}
-
-} } }
-
-
-void pcl::device::OctreeImpl::approxNearestSearch(const Queries& queries, NeighborIndices& results) const
+__global__ void
+KernelAN(const Batch batch)
 {
-    using BatchType = pcl::device::appnearest_search::Batch;
+  const int query_index = blockIdx.x * blockDim.x + threadIdx.x;
 
-    BatchType batch;
-    batch.indices = indices;
-    batch.octree = octreeGlobal;
+  const bool active = query_index < batch.queries_num;
 
-    batch.queries_num = (int)queries.size();        
-    batch.output = results.data;     
+  if (__all_sync(0xFFFFFFFF, active == false))
+    return;
 
-    batch.points = points_sorted;
-    batch.points_step = (int)points_sorted.elem_step();
-    batch.queries = queries;
+  Warp_appNearestSearch search(batch, query_index);
+  search.launch(active);
+}
 
-    int block = pcl::device::appnearest_search::KernelPolicy::CTA_SIZE;
-    int grid = (batch.queries_num + block - 1) / block;    
+} // namespace appnearest_search
+} // namespace device
+} // namespace pcl
 
-    cudaSafeCall( cudaFuncSetCacheConfig(pcl::device::appnearest_search::KernelAN, cudaFuncCachePreferL1) );
+void
+pcl::device::OctreeImpl::approxNearestSearch(const Queries& queries,
+                                             NeighborIndices& results,
+                                             BatchResultSqrDists& sqr_distance) const
+{
+  using BatchType = pcl::device::appnearest_search::Batch;
 
-    pcl::device::appnearest_search::KernelAN<<<grid, block>>>(batch);
-    cudaSafeCall( cudaGetLastError() );
-    cudaSafeCall( cudaDeviceSynchronize() );
+  BatchType batch;
+  batch.indices = indices;
+  batch.octree = octreeGlobal;
+
+  batch.queries_num = (int)queries.size();
+  batch.output = results.data;
+  batch.sqr_distance = sqr_distance;
+
+  batch.points = points_sorted;
+  batch.points_step = (int)points_sorted.elem_step();
+  batch.queries = queries;
+
+  int block = pcl::device::appnearest_search::KernelPolicy::CTA_SIZE;
+  int grid = (batch.queries_num + block - 1) / block;
+
+  cudaSafeCall(cudaFuncSetCacheConfig(pcl::device::appnearest_search::KernelAN,
+                                      cudaFuncCachePreferL1));
+
+  pcl::device::appnearest_search::KernelAN<<<grid, block>>>(batch);
+  cudaSafeCall(cudaGetLastError());
+  cudaSafeCall(cudaDeviceSynchronize());
 }

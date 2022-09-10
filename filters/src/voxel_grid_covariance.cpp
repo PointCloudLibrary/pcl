@@ -37,7 +37,6 @@
  */
 
 #include <pcl/filters/impl/voxel_grid_covariance.hpp>
-#include <pcl/filters/impl/voxel_grid.hpp>
 
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/point_types.h>

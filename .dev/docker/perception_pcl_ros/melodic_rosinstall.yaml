@@ -1,0 +1,12 @@
+- git:
+    local-name: 'melodic/perception_pcl'
+    uri: 'https://github.com/ros-perception/perception_pcl'
+    version: 'melodic-devel'
+- git:
+    local-name: 'melodic/pcl_msgs'
+    uri: 'https://github.com/ros-perception/pcl_msgs'
+    version: 'indigo-devel'
+- git:
+    local-name: 'pcl'
+    uri: 'https://github.com/PointCloudLibrary/pcl'
+    version: 'master'

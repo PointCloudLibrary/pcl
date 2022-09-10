@@ -87,9 +87,9 @@ namespace pcl
       * search.setInputCloud (target);
       * 
       * // Do search
-      * std::vector<std::vector<int> > k_indices;
+      * std::vector<Indices> k_indices;
       * std::vector<std::vector<float> > k_sqr_distances;
-      * search.nearestKSearch (*query, std::vector<int> (), 2, k_indices, k_sqr_distances);
+      * search.nearestKSearch (*query, Indices (), 2, k_indices, k_sqr_distances);
       * \endcode
       *
       * \author Andreas Muetzel
@@ -109,9 +109,6 @@ namespace pcl
         
         using PointCloud = typename Search<PointT>::PointCloud;
         using PointCloudConstPtr = typename Search<PointT>::PointCloudConstPtr;
-
-        using typename Search<PointT>::IndicesPtr;
-        using typename Search<PointT>::IndicesConstPtr;
 
         using MatrixPtr = shared_ptr<flann::Matrix<float> >;
         using MatrixConstPtr = shared_ptr<const flann::Matrix<float> >;
@@ -139,7 +136,7 @@ namespace pcl
 
           /** \brief destructor 
             */
-            virtual ~FlannIndexCreator () {}
+            virtual ~FlannIndexCreator () = default;
         };
         using FlannIndexCreatorPtr = shared_ptr<FlannIndexCreator>;
 
@@ -155,7 +152,7 @@ namespace pcl
             KdTreeIndexCreator (unsigned int max_leaf_size=15) : max_leaf_size_ (max_leaf_size){}
       
             /** \brief Empty destructor */
-            ~KdTreeIndexCreator () {}
+            ~KdTreeIndexCreator () override = default;
 
           /** \brief Create a FLANN Index from the input data.
             * \param[in] data The FLANN matrix containing the input.
@@ -175,10 +172,10 @@ namespace pcl
             * a maximum of max_leaf_size points per leaf node. Higher values make index creation
             * cheaper, but search more costly (and the other way around).
             */
-            KMeansIndexCreator (){}
+            KMeansIndexCreator () = default;
             
             /** \brief Empty destructor */
-            virtual ~KMeansIndexCreator () {}
+            virtual ~KMeansIndexCreator () = default;
 
           /** \brief Create a FLANN Index from the input data.
             * \param[in] data The FLANN matrix containing the input.
@@ -200,7 +197,7 @@ namespace pcl
             KdTreeMultiIndexCreator (int trees = 4) : trees_ (trees) {}
       
             /** \brief Empty destructor */
-            virtual ~KdTreeMultiIndexCreator () {}
+            virtual ~KdTreeMultiIndexCreator () = default;
 
           /** \brief Create a FLANN Index from the input data.
             * \param[in] data The FLANN matrix containing the input.
@@ -215,7 +212,7 @@ namespace pcl
 
         /** \brief Destructor for FlannSearch. */
         
-        ~FlannSearch ();
+        ~FlannSearch () override;
 
 
         //void
@@ -271,7 +268,7 @@ namespace pcl
           * \return number of neighbors found
           */
         int
-        nearestKSearch (const PointT &point, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const override;
+        nearestKSearch (const PointT &point, int k, Indices &k_indices, std::vector<float> &k_sqr_distances) const override;
 
 
         /** \brief Search for the k-nearest neighbors for the given query point.
@@ -282,8 +279,8 @@ namespace pcl
           * \param[out] k_sqr_distances the resultant squared distances to the neighboring points, k_sqr_distances[i] corresponds to the neighbors of the query point i
           */
         void
-        nearestKSearch (const PointCloud& cloud, const std::vector<int>& indices, int k, 
-                        std::vector< std::vector<int> >& k_indices, std::vector< std::vector<float> >& k_sqr_distances) const override;
+        nearestKSearch (const PointCloud& cloud, const Indices& indices, int k,
+                        std::vector<Indices>& k_indices, std::vector< std::vector<float> >& k_sqr_distances) const override;
 
         /** \brief Search for all the nearest neighbors of the query point in a given radius.
           * \param[in] point the given query point
@@ -297,7 +294,7 @@ namespace pcl
           */
         int
         radiusSearch (const PointT& point, double radius, 
-                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
+                      Indices &k_indices, std::vector<float> &k_sqr_distances,
                       unsigned int max_nn = 0) const override;
 
         /** \brief Search for the k-nearest neighbors for the given query point.
@@ -309,7 +306,7 @@ namespace pcl
           * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
           */
         void
-        radiusSearch (const PointCloud& cloud, const std::vector<int>& indices, double radius, std::vector< std::vector<int> >& k_indices,
+        radiusSearch (const PointCloud& cloud, const Indices& indices, double radius, std::vector<Indices>& k_indices,
                 std::vector< std::vector<float> >& k_sqr_distances, unsigned int max_nn=0) const override;
 
         /** \brief Provide a pointer to the point representation to use to convert points into k-D vectors.
@@ -363,11 +360,14 @@ namespace pcl
 
         int dim_;
 
-        std::vector<int> index_mapping_;
+        Indices index_mapping_;
         bool identity_mapping_;
 
     };
   }
 }
+
+// There is no cpp file containing template instantiations of FlannSearch
+#include <pcl/search/impl/flann_search.hpp>
 
 #define PCL_INSTANTIATE_FlannSearch(T) template class PCL_EXPORTS pcl::search::FlannSearch<T>;

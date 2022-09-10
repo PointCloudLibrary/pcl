@@ -55,7 +55,7 @@ public:
   OctreePointCloudVoxelCentroidContainer() { this->reset(); }
 
   /** \brief Empty class deconstructor. */
-  ~OctreePointCloudVoxelCentroidContainer() {}
+  ~OctreePointCloudVoxelCentroidContainer() override = default;
 
   /** \brief deep copy function */
   virtual OctreePointCloudVoxelCentroidContainer*
@@ -114,7 +114,7 @@ public:
   }
 
 private:
-  unsigned int point_counter_;
+  uindex_t point_counter_;
   PointT point_sum_;
 };
 
@@ -150,19 +150,19 @@ public:
 
   /** \brief Empty class deconstructor. */
 
-  ~OctreePointCloudVoxelCentroid() {}
+  ~OctreePointCloudVoxelCentroid() override = default;
 
   /** \brief Add DataT object to leaf node at octree key.
    * \param pointIdx_arg
    */
   void
-  addPointIdx(const int pointIdx_arg) override
+  addPointIdx(const uindex_t pointIdx_arg) override
   {
     OctreeKey key;
 
-    assert(pointIdx_arg < static_cast<int>(this->input_->points.size()));
+    assert(pointIdx_arg < this->input_->size());
 
-    const PointT& point = this->input_->points[pointIdx_arg];
+    const PointT& point = (*this->input_)[pointIdx_arg];
 
     // make sure bounding box is big enough
     this->adoptBoundingBoxToPoint(point);
@@ -190,10 +190,11 @@ public:
    * \return "true" if voxel is found; "false" otherwise
    */
   inline bool
-  getVoxelCentroidAtPoint(const int& point_idx_arg, PointT& voxel_centroid_arg) const
+  getVoxelCentroidAtPoint(const index_t& point_idx_arg,
+                          PointT& voxel_centroid_arg) const
   {
     // get centroid at point
-    return (this->getVoxelCentroidAtPoint(this->input_->points[point_idx_arg],
+    return (this->getVoxelCentroidAtPoint((*this->input_)[point_idx_arg],
                                           voxel_centroid_arg));
   }
 
@@ -202,7 +203,7 @@ public:
    * elements
    * \return number of occupied voxels
    */
-  std::size_t
+  uindex_t
   getVoxelCentroids(
       typename OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::
           AlignedPointTVector& voxel_centroid_list_arg) const;

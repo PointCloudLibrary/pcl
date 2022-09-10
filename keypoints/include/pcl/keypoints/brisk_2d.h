@@ -39,7 +39,9 @@
 
 #pragma once
 
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/keypoints/agast_2d.h>
+
 
 namespace pcl
 {
@@ -95,9 +97,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      ~BriskKeypoint2D ()
-      {
-      }
+      ~BriskKeypoint2D () override = default;
 
       /** \brief Sets the threshold for corner detection.
         * \param[in] threshold the threshold used for corner detection.

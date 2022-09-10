@@ -173,7 +173,7 @@ pcl::io::openni2::OpenNI2Device::getIRFocalLength () const
 
   int frameWidth = stream->getVideoMode ().getResolutionX ();
   float hFov = stream->getHorizontalFieldOfView ();
-  float calculatedFocalLengthX = frameWidth / (2.0f * tan (hFov / 2.0f));
+  float calculatedFocalLengthX = frameWidth / (2.0f * std::tan (hFov / 2.0f));
   return (calculatedFocalLengthX);
 }
 
@@ -184,7 +184,7 @@ pcl::io::openni2::OpenNI2Device::getColorFocalLength () const
 
   int frameWidth = stream->getVideoMode ().getResolutionX ();
   float hFov = stream->getHorizontalFieldOfView ();
-  float calculatedFocalLengthX = frameWidth / (2.0f * tan (hFov / 2.0f));
+  float calculatedFocalLengthX = frameWidth / (2.0f * std::tan (hFov / 2.0f));
   return (calculatedFocalLengthX);
 }
 
@@ -195,7 +195,7 @@ pcl::io::openni2::OpenNI2Device::getDepthFocalLength () const
 
   int frameWidth = stream->getVideoMode ().getResolutionX ();
   float hFov = stream->getHorizontalFieldOfView ();
-  float calculatedFocalLengthX = frameWidth / (2.0f * tan (hFov / 2.0f));
+  float calculatedFocalLengthX = frameWidth / (2.0f * std::tan (hFov / 2.0f));
   return (calculatedFocalLengthX);
 }
 
@@ -501,6 +501,8 @@ pcl::io::openni2::OpenNI2Device::getDefaultIRMode () const
     if ( (mode.x_resolution_ == 640) && (mode.y_resolution_ == 480) && (mode.frame_rate_ == 30.0) )
       return mode;
   }
+  if (modeList.empty())
+      THROW_IO_EXCEPTION("Device claims to have a IR sensor, but doesn't have any IR streaming mode");
   return (modeList.at (0)); // Return first mode if we can't find VGA
 }
 
@@ -514,6 +516,8 @@ pcl::io::openni2::OpenNI2Device::getDefaultColorMode () const
     if ( (mode.x_resolution_ == 640) && (mode.y_resolution_ == 480) && (mode.frame_rate_ == 30.0) )
       return mode;
   }
+  if (modeList.empty())
+      THROW_IO_EXCEPTION("Device claims to have a color sensor, but doesn't have any color streaming mode");
   return (modeList.at (0)); // Return first mode if we can't find VGA
 }
 
@@ -527,6 +531,8 @@ pcl::io::openni2::OpenNI2Device::getDefaultDepthMode () const
     if ( (mode.x_resolution_ == 640) && (mode.y_resolution_ == 480) && (mode.frame_rate_ == 30.0) )
       return mode;
   }
+  if (modeList.empty())
+      THROW_IO_EXCEPTION("Device claims to have a depth sensor, but doesn't have any depth streaming mode");
   return (modeList.at (0)); // Return first mode if we can't find VGA
 }
 

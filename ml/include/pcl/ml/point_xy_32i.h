@@ -37,10 +37,9 @@
 
 #pragma once
 
-#include <pcl/common/common.h>
+#include <pcl/pcl_exports.h> // for PCL_EXPORTS
 
 #include <istream>
-#include <ostream>
 
 namespace pcl {
 
@@ -51,7 +50,7 @@ public:
   inline PointXY32i() : x(0), y(0) {}
 
   /** Destructor. */
-  inline virtual ~PointXY32i() {}
+  inline virtual ~PointXY32i() = default;
 
   /** Serializes the point to the specified stream.
    *

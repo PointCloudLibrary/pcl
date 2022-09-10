@@ -37,13 +37,15 @@
 
 #pragma once
 
-#include <pcl/surface/boost.h>
-#include <pcl/PolygonMesh.h>
+#include <vector> // for vector
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
+#include <pcl/types.h> // for pcl::Indices
 
 namespace pcl
 {
+  struct PolygonMesh;
+
   namespace surface
   {
     class PCL_EXPORTS SimplificationRemoveUnusedVertices
@@ -53,9 +55,9 @@ namespace pcl
         using ConstPtr = shared_ptr<const SimplificationRemoveUnusedVertices>;
 
         /** \brief Constructor. */
-        SimplificationRemoveUnusedVertices () {};
+        SimplificationRemoveUnusedVertices () = default;
         /** \brief Destructor. */
-        ~SimplificationRemoveUnusedVertices () {};
+        ~SimplificationRemoveUnusedVertices () = default;
 
         /** \brief Simply a polygonal mesh.
           * \param[in] input the input mesh
@@ -64,7 +66,7 @@ namespace pcl
         inline void
         simplify (const pcl::PolygonMesh& input, pcl::PolygonMesh& output)
         {
-          std::vector<int> indices;
+          pcl::Indices indices;
           simplify (input, output, indices);
         }
 
@@ -74,7 +76,7 @@ namespace pcl
           * \param[out] indices the resultant vector of indices
           */
         void
-        simplify (const pcl::PolygonMesh& input, pcl::PolygonMesh& output, std::vector<int>& indices);
+        simplify (const pcl::PolygonMesh& input, pcl::PolygonMesh& output, pcl::Indices& indices);
 
     };
   }

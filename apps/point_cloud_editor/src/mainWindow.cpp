@@ -37,7 +37,6 @@
 /// @details the implementation of the MainWindow class
 /// @author Yue Li and Matthew Hielsberg
 
-#include <algorithm>
 #include <pcl/apps/point_cloud_editor/mainWindow.h>
 #include <pcl/apps/point_cloud_editor/cloudEditorWidget.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
@@ -57,9 +56,7 @@ window_width_(WINDOW_WIDTH), window_height_(WINDOW_HEIGHT)
 }
 
 MainWindow::~MainWindow()
-{
-
-}
+= default;
 
 void
 MainWindow::about ()

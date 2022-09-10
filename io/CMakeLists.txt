@@ -1,13 +1,14 @@
 set(SUBSYS_NAME io)
 set(SUBSYS_DESC "Point cloud IO library")
 set(SUBSYS_DEPS common octree)
+set(SUBSYS_EXT_DEPS boost eigen)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 if(WIN32)
-  PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk rssdk2 pcap png vtk)
+  PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk rssdk2 pcap png vtk EXT_DEPS ${SUBSYS_EXT_DEPS})
 else()
-  PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk pcap png vtk libusb-1.0)
+  PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk pcap png vtk libusb EXT_DEPS ${SUBSYS_EXT_DEPS})
 endif()
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
@@ -160,8 +161,7 @@ if(WITH_RSSDK)
   )
 endif()
 
-# RSSDK2 is restricted to Windows until it is functional under other OSs
-if(WIN32 AND WITH_RSSDK2)
+if(WITH_RSSDK2)
   set(RSSDK2_GRABBER_INCLUDES
       include/pcl/io/real_sense_2_grabber.h
   )
@@ -170,7 +170,7 @@ if(WIN32 AND WITH_RSSDK2)
   )
 endif()
 
-if(LIBUSB_1_FOUND)
+if(LIBUSB_FOUND)
   set(DINAST_GRABBER_INCLUDES
     include/pcl/io/dinast_grabber.h
   )
@@ -191,7 +191,7 @@ if(VTK_FOUND AND NOT ANDROID)
     src/vtk_lib_io.cpp
     src/png_io.cpp
   )
-  set(VTK_IO_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets vtkIO vtkImaging vtkHybrid vtkGraphics vtkRendering vtkFiltering vtkVolumeRendering)
+
   # Indicates that we can rely on VTK to be present
   set(VTK_DEFINES -DPCL_BUILT_WITH_VTK)
 endif()
@@ -205,8 +205,13 @@ set(PLY_INCLUDES
 )
 
 PCL_ADD_LIBRARY(pcl_io_ply COMPONENT ${SUBSYS_NAME} SOURCES ${PLY_SOURCES} ${PLY_INCLUDES})
+if(MINGW)
+  # libws2_32 isn't added by default for MinGW
+  target_link_libraries(pcl_io_ply ws2_32)
+endif()
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/ply" ${PLY_INCLUDES})
 target_include_directories(pcl_io_ply PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_link_libraries(pcl_io_ply Boost::boost)
 
 set(srcs
   src/debayer.cpp
@@ -224,9 +229,9 @@ set(srcs
   src/hdl_grabber.cpp
   src/vlp_grabber.cpp
   src/robot_eye_grabber.cpp
-  src/file_io.cpp
   src/auto_io.cpp
   src/io_exception.cpp
+  src/tim_grabber.cpp
   ${VTK_IO_SOURCE}
   ${OPENNI_GRABBER_SOURCES}
   ${OPENNI2_GRABBER_SOURCES}
@@ -278,6 +283,7 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/robot_eye_grabber.h"
   "include/pcl/${SUBSYS_NAME}/point_cloud_image_extractors.h"
   "include/pcl/${SUBSYS_NAME}/io_exception.h"
+  "include/pcl/${SUBSYS_NAME}/tim_grabber.h"
   ${VTK_IO_INCLUDES}
   ${OPENNI_GRABBER_INCLUDES}
   ${OPENNI2_GRABBER_INCLUDES}
@@ -288,7 +294,6 @@ set(incs
   ${DSSDK_GRABBER_INCLUDES}
   ${RSSDK_GRABBER_INCLUDES}
   ${RSSDK2_GRABBER_INCLUDES}
-  "include/pcl/${SUBSYS_NAME}/pxc_grabber.h"  # contains only depreciation note
 )
 
 set(compression_incs
@@ -332,16 +337,43 @@ endif()
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 
 add_definitions(${VTK_DEFINES})
+
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES} ${OPENNI2_INCLUDES})
+
 target_include_directories(${LIB_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
-link_directories(${VTK_LINK_DIRECTORIES})
-target_link_libraries("${LIB_NAME}" pcl_common pcl_io_ply ${VTK_LIBRARIES})
+
+target_link_libraries("${LIB_NAME}" Boost::boost Boost::filesystem Boost::iostreams pcl_common pcl_io_ply)
+
+if(VTK_FOUND)
+  if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
+    target_link_libraries("${LIB_NAME}" 
+                          VTK::IOImage
+                          VTK::IOGeometry
+                          VTK::IOPLY)
+  else()
+    link_directories(${VTK_LINK_DIRECTORIES})
+    target_link_libraries("${LIB_NAME}"
+                          vtkIOImage
+                          vtkIOGeometry
+                          vtkIOPLY
+                          )
+    if(${VTK_VERSION} VERSION_LESS 8.0)
+      target_link_libraries("${LIB_NAME}" vtkIOMPIImage vtkIOMPIParallel)
+      if(${VTK_VERSION} VERSION_GREATER_EQUAL 7.0)
+        target_link_libraries("${LIB_NAME}" vtkFiltersParallelDIY2)
+      endif()
+    else()
+      target_link_libraries("${LIB_NAME}" vtkImagingCore)
+    endif()
+  endif()
+endif()
+
 if(PNG_FOUND)
   target_link_libraries("${LIB_NAME}" ${PNG_LIBRARIES})
 endif()
 
-if(LIBUSB_1_FOUND)
-  target_link_libraries("${LIB_NAME}" ${LIBUSB_1_LIBRARIES})
+if(LIBUSB_FOUND)
+  target_link_libraries("${LIB_NAME}" libusb::libusb)
 endif()
 
 if(WITH_OPENNI2)
@@ -350,6 +382,9 @@ endif()
 
 if(WITH_OPENNI)
   target_link_libraries("${LIB_NAME}" ${OPENNI_LIBRARIES})
+  if(VTK_FOUND AND (NOT ${VTK_VERSION} VERSION_LESS 9.0))
+    target_link_libraries("${LIB_NAME}" VTK::FiltersCore VTK::FiltersGeneral)
+  endif()
 endif()
 
 if(WITH_FZAPI)
@@ -375,8 +410,7 @@ if(WITH_RSSDK)
   target_link_libraries(${LIB_NAME} ${RSSDK_LIBRARIES})
 endif()
 
-# RSSDK2 is restricted to Windows until it is functional under other OSs
-if(WIN32 AND WITH_RSSDK2)
+if(WITH_RSSDK2)
   target_link_libraries(${LIB_NAME} ${RSSDK2_LIBRARIES})
 endif()
 
@@ -384,7 +418,7 @@ if(PCAP_FOUND)
   target_link_libraries("${LIB_NAME}" ${PCAP_LIBRARIES})
 endif()
 
-set(EXT_DEPS eigen3)
+set(EXT_DEPS eigen3) # Although this depends on boost, that cannot be specified here because there is no boost.pc
 
 if(WITH_OPENNI)
   list(APPEND EXT_DEPS libopenni)

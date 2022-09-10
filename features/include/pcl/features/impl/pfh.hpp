@@ -36,10 +36,13 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_PFH_H_
-#define PCL_FEATURES_IMPL_PFH_H_
+#pragma once
 
 #include <pcl/features/pfh.h>
+#include <pcl/features/pfh_tools.h> // for computePairFeatures
+
+#include <pcl/common/point_tests.h> // for pcl::isFinite
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> bool
@@ -47,8 +50,8 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePairFeatures (
       const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals,
       int p_idx, int q_idx, float &f1, float &f2, float &f3, float &f4)
 {
-  pcl::computePairFeatures (cloud.points[p_idx].getVector4fMap (), normals.points[p_idx].getNormalVector4fMap (),
-                            cloud.points[q_idx].getVector4fMap (), normals.points[q_idx].getNormalVector4fMap (),
+  pcl::computePairFeatures (cloud[p_idx].getVector4fMap (), normals[p_idx].getNormalVector4fMap (),
+                            cloud[q_idx].getVector4fMap (), normals[q_idx].getNormalVector4fMap (),
                             f1, f2, f3, f4);
   return (true);
 }
@@ -57,7 +60,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePairFeatures (
 template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePointPFHSignature (
       const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals,
-      const std::vector<int> &indices, int nr_split, Eigen::VectorXf &pfh_histogram)
+      const pcl::Indices &indices, int nr_split, Eigen::VectorXf &pfh_histogram)
 {
   int h_index, h_p;
 
@@ -76,7 +79,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePointPFHSignature (
     for (std::size_t j_idx = 0; j_idx < i_idx; ++j_idx)
     {
       // If the 3D points are invalid, don't bother estimating, just continue
-      if (!isFinite (cloud.points[indices[i_idx]]) || !isFinite (cloud.points[indices[j_idx]]))
+      if (!isFinite (cloud[indices[i_idx]]) || !isFinite (cloud[indices[j_idx]]))
         continue;
 
       if (use_cache_)
@@ -96,7 +99,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePointPFHSignature (
         key = std::pair<int, int> (p1, p2);
 
         // Check to see if we already estimated this pair in the global hashmap
-        std::map<std::pair<int, int>, Eigen::Vector4f, std::less<>, Eigen::aligned_allocator<std::pair<const std::pair<int, int>, Eigen::Vector4f> > >::iterator fm_it = feature_map_.find (key);
+        auto fm_it = feature_map_.find (key);
         if (fm_it != feature_map_.end ())
         {
           pfh_tuple_ = fm_it->second;
@@ -172,7 +175,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices (k_);
+  pcl::Indices nn_indices (k_);
   std::vector<float> nn_dists (k_);
 
   output.is_dense = true;
@@ -185,7 +188,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
       if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
         for (Eigen::Index d = 0; d < pfh_histogram_.size (); ++d)
-          output.points[idx].histogram[d] = std::numeric_limits<float>::quiet_NaN ();
+          output[idx].histogram[d] = std::numeric_limits<float>::quiet_NaN ();
 
         output.is_dense = false;
         continue;
@@ -196,7 +199,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
       // Copy into the resultant cloud
       for (Eigen::Index d = 0; d < pfh_histogram_.size (); ++d)
-        output.points[idx].histogram[d] = pfh_histogram_[d];
+        output[idx].histogram[d] = pfh_histogram_[d];
     }
   }
   else
@@ -208,7 +211,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
           this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
         for (Eigen::Index d = 0; d < pfh_histogram_.size (); ++d)
-          output.points[idx].histogram[d] = std::numeric_limits<float>::quiet_NaN ();
+          output[idx].histogram[d] = std::numeric_limits<float>::quiet_NaN ();
 
         output.is_dense = false;
         continue;
@@ -219,12 +222,10 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
       // Copy into the resultant cloud
       for (Eigen::Index d = 0; d < pfh_histogram_.size (); ++d)
-        output.points[idx].histogram[d] = pfh_histogram_[d];
+        output[idx].histogram[d] = pfh_histogram_[d];
     }
   }
 }
 
 #define PCL_INSTANTIATE_PFHEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::PFHEstimation<T,NT,OutT>;
-
-#endif    // PCL_FEATURES_IMPL_PFH_H_ 
 

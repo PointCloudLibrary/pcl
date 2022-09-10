@@ -1119,7 +1119,7 @@ void ON_String::SetAt( int i, unsigned char c )
 
 ON_String ON_String::Mid(int i, int count) const
 {
-  ON_String(s);
+  ON_String s;
   if ( i >= 0 && i < Length() && count > 0 ) {
     if ( count > Length() - i )
       count = Length() - i;

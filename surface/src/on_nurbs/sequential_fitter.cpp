@@ -37,6 +37,8 @@
 
 #include <pcl/surface/on_nurbs/sequential_fitter.h>
 
+#include <Eigen/Geometry> // for cross
+
 using namespace pcl;
 using namespace on_nurbs;
 using namespace Eigen;
@@ -480,13 +482,13 @@ SequentialFitter::grow (float max_dist, float max_angle, unsigned min_length, un
 
   if (unsigned (this->m_data.boundary.size ()) != num_bnd)
   {
-    printf ("[SequentialFitter::grow] %lu %u\n", this->m_data.boundary.size (), num_bnd);
+    printf ("[SequentialFitter::grow] %zu %u\n", this->m_data.boundary.size (), num_bnd);
     throw std::runtime_error ("[SequentialFitter::grow] size of boundary and boundary parameters do not match.");
   }
 
   if (this->m_boundary_indices->indices.size () != num_bnd)
   {
-    printf ("[SequentialFitter::grow] %lu %u\n", this->m_boundary_indices->indices.size (), num_bnd);
+    printf ("[SequentialFitter::grow] %zu %u\n", this->m_boundary_indices->indices.size (), num_bnd);
     throw std::runtime_error ("[SequentialFitter::grow] size of boundary indices and boundary parameters do not match.");
   }
 
@@ -603,12 +605,12 @@ SequentialFitter::grow (float max_dist, float max_angle, unsigned min_length, un
 }
 
 unsigned
-SequentialFitter::PCL2ON (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_cloud, const std::vector<int> &indices,
+SequentialFitter::PCL2ON (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_cloud, const pcl::Indices &indices,
                           vector_vec3d &on_cloud)
 {
   std::size_t numPoints = 0;
 
-  for (const int &index : indices)
+  for (const auto &index : indices)
   {
 
     pcl::PointXYZRGB &pt = pcl_cloud->at (index);

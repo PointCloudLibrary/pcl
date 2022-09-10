@@ -160,7 +160,7 @@ namespace pcl
         void
         initValuesAndVisualization ()
         {
-          cloud_.points.resize(1);
+          cloud_.resize(1);
           
           PCL_WARN("Setting buffer size to %d entries.\n", nb_values_);
           values_.resize(nb_values_);
@@ -178,7 +178,7 @@ namespace pcl
         {
           for(int i = 0 ; i < nb_values_ ; ++i)
           {
-            cloud_.points[0].histogram[i] = values_[i];
+            cloud_[0].histogram[i] = values_[i];
           }  
         }
     

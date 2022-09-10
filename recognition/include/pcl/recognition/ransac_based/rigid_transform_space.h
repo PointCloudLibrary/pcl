@@ -138,7 +138,7 @@ namespace pcl
         };// class Entry
 
       public:
-        RotationSpaceCell (){}
+        RotationSpaceCell () = default;
         virtual ~RotationSpaceCell ()
         {
           model_to_entry_.clear ();
@@ -153,7 +153,7 @@ namespace pcl
         inline const RotationSpaceCell::Entry*
         getEntry (const ModelLibrary::Model* model) const
         {
-          std::map<const ModelLibrary::Model*, Entry>::const_iterator res = model_to_entry_.find (model);
+          auto res = model_to_entry_.find (model);
 
           if ( res != model_to_entry_.end () )
             return (&res->second);
@@ -174,8 +174,8 @@ namespace pcl
     class RotationSpaceCellCreator
     {
       public:
-        RotationSpaceCellCreator (){}
-        virtual ~RotationSpaceCellCreator (){}
+        RotationSpaceCellCreator () = default;
+        virtual ~RotationSpaceCellCreator () = default;
 
         RotationSpaceCell* create (const SimpleOctree<RotationSpaceCell, RotationSpaceCellCreator, float>::Node* )
         {
@@ -297,11 +297,11 @@ namespace pcl
         : counter_ (0)
         {}
 
-        virtual ~RotationSpaceCreator(){}
+        virtual ~RotationSpaceCreator() = default;
 
         RotationSpace* create(const SimpleOctree<RotationSpace, RotationSpaceCreator, float>::Node* leaf)
         {
-          RotationSpace *rot_space = new RotationSpace (discretization_);
+          auto *rot_space = new RotationSpace (discretization_);
           rot_space->setCenter (leaf->getCenter ());
           rotation_spaces_.push_back (rot_space);
 
@@ -340,7 +340,7 @@ namespace pcl
     class PCL_EXPORTS RigidTransformSpace
     {
       public:
-        RigidTransformSpace (){}
+        RigidTransformSpace () = default;
         virtual ~RigidTransformSpace (){ this->clear ();}
 
         inline void

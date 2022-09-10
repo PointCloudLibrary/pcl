@@ -1,9 +1,6 @@
 #include <thread>
 
-#include <pcl/common/time.h>
 #include <pcl/console/parse.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 #include <pcl/io/png_io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -406,7 +403,7 @@ main (int argc, char ** argv)
         {
           viewer->removePointCloud (ss.str ());
           viewer->addPointCloudNormals<PointT,Normal> ((sv_itr->second)->voxels_,(sv_itr->second)->normals_,10,0.02f,ss.str ());
-        //  std::cout << (sv_itr->second)->normals_->points[0]<<"\n";
+        //  std::cout << (sv_itr->second)->normals_[0]<<"\n";
           
         }
           

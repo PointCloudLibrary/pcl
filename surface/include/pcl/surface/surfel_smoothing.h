@@ -38,7 +38,7 @@
 #pragma once
 
 #include <pcl/pcl_base.h>
-#include <pcl/search/pcl_search.h>
+#include <pcl/search/search.h> // for Search
 
 namespace pcl
 {
@@ -49,8 +49,8 @@ namespace pcl
     using PCLBase<PointT>::initCompute;
 
     public:
-      typedef shared_ptr<SurfelSmoothing<PointT, PointNT> > Ptr;
-      typedef shared_ptr<const SurfelSmoothing<PointT, PointNT> > ConstPtr;
+      using Ptr = shared_ptr<SurfelSmoothing<PointT, PointNT> >;
+      using ConstPtr = shared_ptr<const SurfelSmoothing<PointT, PointNT> >;
 
       using PointCloudIn = pcl::PointCloud<PointT>;
       using PointCloudInPtr = typename pcl::PointCloud<PointT>::Ptr;

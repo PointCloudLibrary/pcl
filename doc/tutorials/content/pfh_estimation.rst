@@ -88,9 +88,9 @@ See the API documentation for additional details.
 
 To create the final PFH representation for the query point, the set of all
 quadruplets is binned into a histogram. The binning process divides each
-features’s value range into **b** subdivisions, and counts the number of
+feature’s value range into **b** subdivisions, and counts the number of
 occurrences in each subinterval. Since three out of the four features presented
-above are measure of the angles between normals, their values can easily be
+above are measures of the angles between normals, their values can easily be
 normalized to the same interval on the trigonometric circle. A binning example
 is to divide each feature interval into the same number of equal parts, and
 therefore create a histogram with :math:`b^4` bins in a fully correlated space.
@@ -163,7 +163,7 @@ points in the input dataset.
      // Compute the features
      pfh.compute (*pfhs);
 
-     // pfhs->points.size () should have the same size as the input cloud->points.size ()*
+     // pfhs->size () should have the same size as the input cloud->size ()*
    }
 
 The actual **compute** call from the **PFHEstimation** class does nothing internally but::
@@ -196,16 +196,16 @@ resultant histogram as an array of float values.
 
 .. note::
   
-  For efficiency reasons, the **compute** method in **PFHEstimation** does not check if the normals contains NaN or infinite values.
+  For efficiency reasons, the **compute** method in **PFHEstimation** does not check if the normals contain NaN or infinite values.
   Passing such values to **compute()** will result in undefined output.
   It is advisable to check the normals, at least during the design of the processing chain or when setting the parameters.
   This can be done by inserting the following code before the call to **compute()**:
 
   .. code-block:: cpp
 
-     for (int i = 0; i < normals->points.size(); i++)
+     for (int i = 0; i < normals->size(); i++)
      {
-       if (!pcl::isFinite<pcl::Normal>(normals->points[i]))
+       if (!pcl::isFinite<pcl::Normal>((*normals)[i]))
        {
          PCL_WARN("normals[%d] is not finite\n", i);
        }

@@ -70,7 +70,7 @@ namespace pcl
       ApproximateProgressiveMorphologicalFilter ();
 
       
-      ~ApproximateProgressiveMorphologicalFilter ();
+      ~ApproximateProgressiveMorphologicalFilter () override;
 
       /** \brief Get the maximum window size to be used in filtering ground returns. */
       inline int
@@ -139,7 +139,7 @@ namespace pcl
         * \param[out] ground indices of points determined to be ground returns.
         */
       virtual void
-      extract (std::vector<int>& ground);
+      extract (Indices& ground);
 
     protected:
 

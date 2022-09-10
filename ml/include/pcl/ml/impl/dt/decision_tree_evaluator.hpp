@@ -38,30 +38,29 @@
 #pragma once
 
 #include <pcl/common/common.h>
-
 #include <pcl/ml/dt/decision_tree.h>
 #include <pcl/ml/feature_handler.h>
 #include <pcl/ml/stats_estimator.h>
 
 #include <vector>
 
-template <class FeatureType,
-          class DataSet,
-          class LabelType,
-          class ExampleIndex,
-          class NodeType>
-pcl::DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    DecisionTreeEvaluator()
-{}
+namespace pcl {
 
 template <class FeatureType,
           class DataSet,
           class LabelType,
           class ExampleIndex,
           class NodeType>
-pcl::DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    ~DecisionTreeEvaluator()
-{}
+DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
+    DecisionTreeEvaluator() = default;
+
+template <class FeatureType,
+          class DataSet,
+          class LabelType,
+          class ExampleIndex,
+          class NodeType>
+DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
+    ~DecisionTreeEvaluator() = default;
 
 template <class FeatureType,
           class DataSet,
@@ -69,7 +68,7 @@ template <class FeatureType,
           class ExampleIndex,
           class NodeType>
 void
-pcl::DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
+DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
     evaluate(pcl::DecisionTree<NodeType>& tree,
              pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
              pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>&
@@ -106,7 +105,7 @@ template <class FeatureType,
           class ExampleIndex,
           class NodeType>
 void
-pcl::DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
+DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
     evaluateAndAdd(
         pcl::DecisionTree<NodeType>& tree,
         pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
@@ -143,7 +142,7 @@ template <class FeatureType,
           class ExampleIndex,
           class NodeType>
 void
-pcl::DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
+DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
     evaluate(pcl::DecisionTree<NodeType>& tree,
              pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
              pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>&
@@ -152,7 +151,6 @@ pcl::DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeTy
              ExampleIndex example,
              NodeType& leave)
 {
-
   NodeType* node = &(tree.getRoot());
 
   while (!node->sub_nodes.empty()) {
@@ -177,7 +175,7 @@ template <class FeatureType,
           class ExampleIndex,
           class NodeType>
 void
-pcl::DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
+DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
     getNodes(pcl::DecisionTree<NodeType>& tree,
              pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
              pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>&
@@ -206,3 +204,5 @@ pcl::DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeTy
     nodes.push_back(node);
   }
 }
+
+} // namespace pcl

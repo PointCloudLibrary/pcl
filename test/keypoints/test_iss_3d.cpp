@@ -87,13 +87,13 @@ TEST (PCL, ISSKeypoint3D_WBE)
     };
 
 
-  ASSERT_EQ (keypoints.points.size (), correct_nr_keypoints);
+  ASSERT_EQ (keypoints.size (), correct_nr_keypoints);
 
   for (std::size_t i = 0; i < correct_nr_keypoints; ++i)
   {
-    EXPECT_NEAR (keypoints.points[i].x, correct_keypoints[i][0], 1e-6);
-    EXPECT_NEAR (keypoints.points[i].y, correct_keypoints[i][1], 1e-6);
-    EXPECT_NEAR (keypoints.points[i].z, correct_keypoints[i][2], 1e-6);
+    EXPECT_NEAR (keypoints[i].x, correct_keypoints[i][0], 1e-6);
+    EXPECT_NEAR (keypoints[i].y, correct_keypoints[i][1], 1e-6);
+    EXPECT_NEAR (keypoints[i].z, correct_keypoints[i][2], 1e-6);
   }
 
   tree.reset (new search::KdTree<PointXYZ> ());
@@ -141,13 +141,13 @@ TEST (PCL, ISSKeypoint3D_BE)
       {-0.030035f,  0.066130f,  0.038942f}
     };
 
-  ASSERT_EQ (keypoints.points.size (), correct_nr_keypoints);
+  ASSERT_EQ (keypoints.size (), correct_nr_keypoints);
 
   for (std::size_t i = 0; i < correct_nr_keypoints; ++i)
   {
-    EXPECT_NEAR (keypoints.points[i].x, correct_keypoints[i][0], 1e-6);
-    EXPECT_NEAR (keypoints.points[i].y, correct_keypoints[i][1], 1e-6);
-    EXPECT_NEAR (keypoints.points[i].z, correct_keypoints[i][2], 1e-6);
+    EXPECT_NEAR (keypoints[i].x, correct_keypoints[i][0], 1e-6);
+    EXPECT_NEAR (keypoints[i].y, correct_keypoints[i][1], 1e-6);
+    EXPECT_NEAR (keypoints[i].z, correct_keypoints[i][2], 1e-6);
   }
 
   tree.reset (new search::KdTree<PointXYZ> ());

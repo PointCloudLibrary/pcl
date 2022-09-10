@@ -41,9 +41,9 @@
 #ifndef PCL_FILTERS_IMPL_COVARIANCE_SAMPLING_H_
 #define PCL_FILTERS_IMPL_COVARIANCE_SAMPLING_H_
 
-#include <pcl/common/eigen.h>
 #include <pcl/filters/covariance_sampling.h>
 #include <list>
+#include <Eigen/Eigenvalues> // for SelfAdjointEigenSolver
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename PointNT> bool
@@ -73,6 +73,7 @@ pcl::CovarianceSampling<PointT, PointNT>::initCompute ()
     scaled_points_[p_i] = (*input_)[(*indices_)[p_i]].getVector3fMap () - centroid;
     average_norm += scaled_points_[p_i].norm ();
   }
+
   average_norm /= double (scaled_points_.size ());
   for (std::size_t p_i = 0; p_i < scaled_points_.size (); ++p_i)
     scaled_points_[p_i] /= float (average_norm);
@@ -127,7 +128,7 @@ pcl::CovarianceSampling<PointT, PointNT>::computeCovarianceMatrix (Eigen::Matrix
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename PointNT> void
-pcl::CovarianceSampling<PointT, PointNT>::applyFilter (std::vector<int> &sampled_indices)
+pcl::CovarianceSampling<PointT, PointNT>::applyFilter (Indices &sampled_indices)
 {
   Eigen::Matrix<double, 6, 6> c_mat;
   // Invokes initCompute()
@@ -202,7 +203,7 @@ pcl::CovarianceSampling<PointT, PointNT>::applyFilter (std::vector<int> &sampled
   }
 
   // Remap the sampled_indices to the input_ cloud
-  for (int &sampled_index : sampled_indices)
+  for (auto &sampled_index : sampled_indices)
     sampled_index = (*indices_)[candidate_indices[sampled_index]];
 }
 
@@ -211,13 +212,13 @@ pcl::CovarianceSampling<PointT, PointNT>::applyFilter (std::vector<int> &sampled
 template<typename PointT, typename PointNT> void
 pcl::CovarianceSampling<PointT, PointNT>::applyFilter (Cloud &output)
 {
-  std::vector<int> sampled_indices;
+  Indices sampled_indices;
   applyFilter (sampled_indices);
 
   output.resize (sampled_indices.size ());
   output.header = input_->header;
   output.height = 1;
-  output.width = std::uint32_t (output.size ());
+  output.width = output.size ();
   output.is_dense = true;
   for (std::size_t i = 0; i < sampled_indices.size (); ++i)
     output[i] = (*input_)[sampled_indices[i]];

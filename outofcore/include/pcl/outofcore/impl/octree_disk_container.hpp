@@ -46,12 +46,12 @@
 #include <ctime>
 
 // Boost
-#include <pcl/outofcore/boost.h>
 #include <boost/random/bernoulli_distribution.hpp>
 #include <boost/random/uniform_int.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
 // PCL
+#include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/PCLPointCloud2.h>
@@ -60,7 +60,7 @@
 #include <pcl/outofcore/octree_disk_container.h>
 
 //allows operation on POSIX
-#if !defined WIN32
+#if !defined _WIN32
 #define _fseeki64 fseeko
 #elif defined __MINGW32__
 #define _fseeki64 fseeko64
@@ -170,7 +170,7 @@ namespace pcl
         //construct the point cloud for this node
         typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
         
-        cloud->width = static_cast<std::uint32_t> (writebuff_.size ());
+        cloud->width = writebuff_.size ();
         cloud->height = 1;
 
         cloud->points = writebuff_;
@@ -183,7 +183,7 @@ namespace pcl
         
         // Write ascii for now to debug
         int res = writer.writeBinaryCompressed (disk_storage_filename_, *cloud);
-        (void)res;
+        pcl::utils::ignore(res);
         assert (res == 0);
         if (force_cache_dealloc)
         {
@@ -205,19 +205,19 @@ namespace pcl
         PointT temp;
         //open our file
         FILE* f = fopen (disk_storage_filename_.c_str (), "rbe");
-        assert (f != NULL);
+        assert (f != nullptr);
 
         //seek the right length; 
         int seekret = _fseeki64 (f, idx * sizeof(PointT), SEEK_SET);
-        (void)seekret;
+        pcl::utils::ignore(seekret);
         assert (seekret == 0);
 
         std::size_t readlen = fread (&temp, 1, sizeof(PointT), f);
-        (void)readlen;
+        pcl::utils::ignore(readlen);
         assert (readlen == sizeof (PointT));
 
         int res = fclose (f);
-        (void)res;
+        pcl::utils::ignore(res);
         assert (res == 0);
 
         return (temp);
@@ -252,11 +252,10 @@ namespace pcl
       typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
       
       int res = reader.read (disk_storage_filename_, *cloud);
-      (void)res;
+      pcl::utils::ignore(res);
       assert (res == 0);
       
-      for (std::size_t i=0; i < cloud->points.size (); i++)
-        dst.push_back (cloud->points[i]);
+      dst.insert(dst.end(), cloud->cbegin(), cloud->cend());
       
     }
     ////////////////////////////////////////////////////////////////////////////////
@@ -331,7 +330,7 @@ namespace pcl
         std::sort (offsets.begin (), offsets.end ());
 
         FILE* f = fopen (disk_storage_filename_.c_str (), "rbe");
-        assert (f != NULL);
+        assert (f != nullptr);
         PointT p;
         char* loc = reinterpret_cast<char*> (&p);
         
@@ -339,10 +338,10 @@ namespace pcl
         for (std::uint64_t i = 0; i < filesamp; i++)
         {
           int seekret = _fseeki64 (f, offsets[i] * static_cast<std::uint64_t> (sizeof(PointT)), SEEK_SET);
-          (void)seekret;
+          pcl::utils::ignore(seekret);
           assert (seekret == 0);
           std::size_t readlen = fread (loc, sizeof(PointT), 1, f);
-          (void)readlen;
+          pcl::utils::ignore(readlen);
           assert (readlen == 1);
 
           dst.push_back (p);
@@ -384,7 +383,7 @@ namespace pcl
         buffcount = count - filecount;
       }
 
-      std::uint64_t filesamp = static_cast<std::uint64_t> (percent * static_cast<double> (filecount));
+      auto filesamp = static_cast<std::uint64_t> (percent * static_cast<double> (filecount));
       
       std::uint64_t buffsamp = (buffcount > 0) ? (static_cast<std::uint64_t > (percent * static_cast<double> (buffcount))) : 0;
 
@@ -430,22 +429,22 @@ namespace pcl
         std::sort (offsets.begin (), offsets.end ());
 
         FILE* f = fopen (disk_storage_filename_.c_str (), "rbe");
-        assert (f != NULL);
+        assert (f != nullptr);
         PointT p;
         char* loc = reinterpret_cast<char*> (&p);
         for (std::uint64_t i = 0; i < filesamp; i++)
         {
           int seekret = _fseeki64 (f, offsets[i] * static_cast<std::uint64_t> (sizeof(PointT)), SEEK_SET);
-          (void)seekret;
+          pcl::utils::ignore(seekret);
           assert (seekret == 0);
           std::size_t readlen = fread (loc, sizeof(PointT), 1, f);
-          (void)readlen;
+          pcl::utils::ignore(readlen);
           assert (readlen == 1);
 
           dst.push_back (p);
         }
         int res = fclose (f);
-        (void)res;
+        pcl::utils::ignore(res);
         assert (res == 0);
       }
     }
@@ -475,33 +474,33 @@ namespace pcl
         // Open the existing file
         pcl::PCDReader reader;
         int res = reader.read (disk_storage_filename_, *tmp_cloud);
-        (void)res;
+        pcl::utils::ignore(res);
         assert (res == 0);
       }
       // Otherwise create the point cloud which will be saved to the pcd file for the first time
       else 
       {
-        tmp_cloud->width = static_cast<std::uint32_t> (count + writebuff_.size ());
+        tmp_cloud->width = count + writebuff_.size ();
         tmp_cloud->height = 1;
       }            
 
       for (std::size_t i = 0; i < src.size (); i++)
-        tmp_cloud->points.push_back (src[i]);
+        tmp_cloud->push_back (src[i]);
       
       // If there are any points in the write cache writebuff_, a different write cache than this one, concatenate
       for (std::size_t i = 0; i < writebuff_.size (); i++)
       {
-        tmp_cloud->points.push_back (writebuff_[i]);
+        tmp_cloud->push_back (writebuff_[i]);
       }
 
       //assume unorganized point cloud
-      tmp_cloud->width = static_cast<std::uint32_t> (tmp_cloud->points.size ());
+      tmp_cloud->width = tmp_cloud->size ();
             
       //save and close
       PCDWriter writer;
       
       int res = writer.writeBinaryCompressed (disk_storage_filename_, *tmp_cloud);
-      (void)res;
+      pcl::utils::ignore(res);
       assert (res == 0);
     }
   
@@ -518,7 +517,7 @@ namespace pcl
         //open the existing file
         pcl::PCDReader reader;
         int res = reader.read (disk_storage_filename_, *tmp_cloud);
-        (void)res;
+        pcl::utils::ignore(res);
         assert (res == 0);
         pcl::PCDWriter writer;
         PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeDiskContainer::%s] Concatenating point cloud from %s to new cloud\n", __FUNCTION__, disk_storage_filename_.c_str ());
@@ -528,8 +527,8 @@ namespace pcl
         pcl::concatenate (*tmp_cloud, *input_cloud, *tmp_cloud);
         std::size_t res_pts = tmp_cloud->width*tmp_cloud->height;
         
-        (void)previous_num_pts;
-        (void)res_pts;
+        pcl::utils::ignore(previous_num_pts);
+        pcl::utils::ignore(res_pts);
         
         assert (previous_num_pts == res_pts);
         
@@ -540,7 +539,7 @@ namespace pcl
       {
         pcl::PCDWriter writer;
         int res = writer.writeBinaryCompressed (disk_storage_filename_, *input_cloud);
-        (void)res;
+        pcl::utils::ignore(res);
         assert (res == 0);
       }            
 
@@ -561,7 +560,7 @@ namespace pcl
 //            PCL_INFO ("[pcl::outofcore::OutofcoreOctreeDiskContainer::%s] Reading points from disk from %s.\n", __FUNCTION__ , disk_storage_filename_->c_str ());
         int  pcd_version;
         int res = reader.read (disk_storage_filename_, *dst, origin, orientation, pcd_version);
-        (void)res;
+        pcl::utils::ignore(res);
         assert (res != -1);
       }
       else
@@ -581,7 +580,7 @@ namespace pcl
       {
 //            PCL_INFO ("[pcl::outofcore::OutofcoreOctreeDiskContainer::%s] Reading points from disk from %s.\n", __FUNCTION__ , disk_storage_filename_->c_str ());
         int res = pcl::io::loadPCDFile (disk_storage_filename_, *temp_output_cloud);
-        (void)res;
+        pcl::utils::ignore(res);
         assert (res != -1);
         if(res == -1)
           return (-1);
@@ -635,35 +634,35 @@ namespace pcl
         pcl::PCDReader reader;
         // Open it
         int res = reader.read (disk_storage_filename_, *tmp_cloud);
-        (void)res; 
+        pcl::utils::ignore(res); 
         assert (res == 0);
       }
       else //otherwise create the pcd file
       {
-        tmp_cloud->width = static_cast<std::uint32_t> (count) + static_cast<std::uint32_t> (writebuff_.size ());
+        tmp_cloud->width = count + writebuff_.size ();
         tmp_cloud->height = 1;
       }            
 
       // Add any points in the cache
       for (std::size_t i = 0; i < writebuff_.size (); i++)
       {
-        tmp_cloud->points.push_back (writebuff_ [i]);
+        tmp_cloud->push_back (writebuff_ [i]);
       }
 
       //add the new points passed with this function
       for (std::size_t i = 0; i < count; i++)
       {
-        tmp_cloud->points.push_back (*(start + i));
+        tmp_cloud->push_back (*(start + i));
       }
 
-      tmp_cloud->width = static_cast<std::uint32_t> (tmp_cloud->points.size ());
+      tmp_cloud->width = tmp_cloud->size ();
       tmp_cloud->height = 1;
             
       //save and close
       PCDWriter writer;
 
       int res = writer.writeBinaryCompressed (disk_storage_filename_, *tmp_cloud);
-      (void)res;
+      pcl::utils::ignore(res);
       assert (res == 0);
     }
     ////////////////////////////////////////////////////////////////////////////////

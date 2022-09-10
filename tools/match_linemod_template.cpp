@@ -39,7 +39,6 @@
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
-#include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 
 #include <pcl/recognition/linemod.h>
@@ -129,7 +128,7 @@ compute (const PointCloudXYZRGBA::ConstPtr & input, const char * templates_filen
   {
     for (std::size_t x = 0; x < image.get_width (); ++x)
     {
-      const pcl::PointXYZRGBA & p = input->points[i++];
+      const pcl::PointXYZRGBA & p = (*input)[i++];
       image[y][x] = png::rgb_pixel(p.r, p.g, p.b);
     }
   }

@@ -38,7 +38,6 @@
 #pragma once
 
 #include <Eigen/Core>
-#include <vector>
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
@@ -68,7 +67,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      virtual ~Region3D () {}
+      virtual ~Region3D () = default;
 
       /** \brief Get the centroid of the region. */
       inline Eigen::Vector3f

@@ -40,7 +40,6 @@
 
 #pragma once
 
-#include <algorithm>
 #include <pcl/sample_consensus/sac.h>
 #include <pcl/sample_consensus/sac_model.h>
 

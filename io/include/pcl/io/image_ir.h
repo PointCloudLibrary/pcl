@@ -40,7 +40,6 @@
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/io/boost.h>
 
 #include <pcl/io/image_metadata_wrapper.h>
 
@@ -64,8 +63,7 @@ namespace pcl
         IRImage (FrameWrapper::Ptr ir_metadata);
         IRImage (FrameWrapper::Ptr ir_metadata, Timestamp time);
 
-        ~IRImage () noexcept
-        {}
+        ~IRImage () noexcept = default;
 
         void
         fillRaw (unsigned width, unsigned height, unsigned short* ir_buffer, unsigned line_step = 0) const;

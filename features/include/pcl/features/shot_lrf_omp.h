@@ -77,7 +77,7 @@ namespace pcl
       }
 
     /** \brief Empty destructor */
-    ~SHOTLocalReferenceFrameEstimationOMP () {}
+    ~SHOTLocalReferenceFrameEstimationOMP () override = default;
 
     /** \brief Initialize the scheduler and set the number of threads to use.
      * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)

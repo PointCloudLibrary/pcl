@@ -475,8 +475,11 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-   OutofcoreOctreeBase<ContainerT, PointT>::DeAllocEmptyNodeCache (OutofcoreOctreeBaseNode<ContainerT, PointT>* current)
+    OutofcoreOctreeBase<ContainerT, PointT>::DeAllocEmptyNodeCache (OutofcoreOctreeBaseNode<ContainerT, PointT>* current)
     {
+      if (current == nullptr)
+        current = root_node_;
+
       if (current->size () == 0)
       {
         current->flush_DeAlloc_this_only ();
@@ -486,7 +489,6 @@ namespace pcl
       {
         DeAllocEmptyNodeCache (current->children[i]);
       }
-
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -516,7 +518,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBase<ContainerT, PointT>::setLODFilter (const pcl::Filter<pcl::PCLPointCloud2>::Ptr& filter_arg)
     {
-      lod_filter_ptr_ = filter_arg;
+      lod_filter_ptr_ = std::static_pointer_cast<decltype(lod_filter_ptr_)>(filter_arg);
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -571,7 +573,7 @@ namespace pcl
 
       std::vector<BranchNode*> current_branch (number_of_nodes, static_cast<BranchNode*>(nullptr));
       current_branch[0] = root_node_;
-      assert (current_branch.back () != 0);
+      assert (current_branch.back () != nullptr);
       this->buildLODRecursive (current_branch);
     }
 
@@ -610,10 +612,10 @@ namespace pcl
         assert (leaf_input_cloud->width*leaf_input_cloud->height > 0);
         
         //go up the tree, re-downsampling the full resolution leaf cloud at lower and lower resolution
-        for (std::int64_t level = static_cast<std::int64_t>(current_branch.size ()-1); level >= 1; level--)
+        for (auto level = static_cast<std::int64_t>(current_branch.size ()-1); level >= 1; level--)
         {
           BranchNode* target_parent = current_branch[level-1];
-          assert (target_parent != 0);
+          assert (target_parent != nullptr);
           double exponent = static_cast<double>(current_branch.size () - target_parent->getDepth ());
           double current_depth_sample_percent = pow (sample_percent_, exponent);
 
@@ -627,7 +629,7 @@ namespace pcl
           lod_filter_ptr_->setInputCloud (leaf_input_cloud);
 
           //set sample size to 1/8 of total points (12.5%)
-          std::uint64_t sample_size = static_cast<std::uint64_t> (static_cast<double> (leaf_input_cloud->width*leaf_input_cloud->height) * current_depth_sample_percent);
+          auto sample_size = static_cast<std::uint64_t> (static_cast<double> (leaf_input_cloud->width*leaf_input_cloud->height) * current_depth_sample_percent);
 
           if (sample_size == 0)
             sample_size = 1;
@@ -638,7 +640,7 @@ namespace pcl
           pcl::PCLPointCloud2::Ptr downsampled_cloud (new pcl::PCLPointCloud2 ());
 
           //create destination for indices
-          pcl::IndicesPtr downsampled_cloud_indices (new std::vector< int > ());
+          pcl::IndicesPtr downsampled_cloud_indices (new pcl::Indices ());
           lod_filter_ptr_->filter (*downsampled_cloud_indices);
 
           //extract the "random subset", size by setSampleSize
@@ -734,7 +736,7 @@ namespace pcl
       if (side_length < leaf_resolution)
           return (0);
           
-      std::uint64_t res = static_cast<std::uint64_t> (std::ceil (std::log2 (side_length / leaf_resolution)));
+      auto res = static_cast<std::uint64_t> (std::ceil (std::log2 (side_length / leaf_resolution)));
       
       PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBase::calculateDepth] Setting depth to %d\n",res);
       return (res);

@@ -46,12 +46,9 @@
 #ifdef HAVE_OPENNI2
 
 #include <pcl/point_cloud.h>
-#include <pcl/io/eigen.h>
-#include <pcl/io/boost.h>
 #include <pcl/io/grabber.h>
 #include <pcl/io/openni2/openni2_device.h>
 #include <string>
-#include <deque>
 #include <pcl/common/synchronizer.h>
 
 #include <pcl/io/image.h>
@@ -148,7 +145,7 @@ namespace pcl
           const Mode& image_mode = OpenNI_Default_Mode);
 
         /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
-        ~OpenNI2Grabber () noexcept;
+        ~OpenNI2Grabber () noexcept override;
 
         /** \brief Start the data acquisition. */
         void

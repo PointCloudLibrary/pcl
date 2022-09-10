@@ -2,7 +2,7 @@ if(NOT (BUILD_surface_on_nurbs AND BUILD_visualization))
   return()
 endif()
 
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS visualization geometry surface)
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS visualization geometry surface)
 
 ## Find VTK
 if(NOT VTK_FOUND)
@@ -11,7 +11,6 @@ if(NOT VTK_FOUND)
 else()
   set(DEFAULT TRUE)
   set(REASON)
-  include(${VTK_USE_FILE})
 endif()
 
 PCL_ADD_EXAMPLE(pcl_test_nurbs_fitting_surface

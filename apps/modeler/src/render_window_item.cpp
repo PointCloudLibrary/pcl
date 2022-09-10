@@ -34,29 +34,26 @@
  *
  */
 
-#include <pcl/apps/modeler/render_window_item.h>
-#include <pcl/apps/modeler/render_window.h>
 #include <pcl/apps/modeler/cloud_mesh_item.h>
 #include <pcl/apps/modeler/main_window.h>
 #include <pcl/apps/modeler/parameter.h>
 #include <pcl/apps/modeler/parameter_dialog.h>
-
+#include <pcl/apps/modeler/render_window.h>
+#include <pcl/apps/modeler/render_window_item.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::RenderWindowItem::RenderWindowItem(QTreeWidget * parent)
-  : QTreeWidgetItem(parent),
-  render_window_(new RenderWindow(this)),
-  background_color_(new ColorParameter("Background Color", "The background color of the render window", QColor(0, 0, 0))),
-  show_axes_(new BoolParameter("Show Axes", "Show Axes", true))
+pcl::modeler::RenderWindowItem::RenderWindowItem(QTreeWidget* parent)
+: QTreeWidgetItem(parent)
+, render_window_(new RenderWindow(this))
+, background_color_(new ColorParameter(
+      "Background Color", "The background color of the render window", QColor(0, 0, 0)))
+, show_axes_(new BoolParameter("Show Axes", "Show Axes", true))
 {
-  setFlags(flags()&(~Qt::ItemIsDragEnabled));
+  setFlags(flags() & (~Qt::ItemIsDragEnabled));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::RenderWindowItem::~RenderWindowItem()
-{
-  render_window_->deleteLater();
-}
+pcl::modeler::RenderWindowItem::~RenderWindowItem() { render_window_->deleteLater(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
@@ -65,16 +62,15 @@ pcl::modeler::RenderWindowItem::openPointCloud(const QString& filename)
   CloudMeshItem* cloud_mesh_item = new CloudMeshItem(this, filename.toStdString());
   addChild(cloud_mesh_item);
 
-  if (!cloud_mesh_item->open())
-  {
+  if (!cloud_mesh_item->open()) {
     removeChild(cloud_mesh_item);
     delete cloud_mesh_item;
-    return (false);
+    return false;
   }
 
   treeWidget()->setCurrentItem(cloud_mesh_item);
 
-  return (true);
+  return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -86,7 +82,7 @@ pcl::modeler::RenderWindowItem::addPointCloud(CloudMesh::PointCloudPtr cloud)
 
   treeWidget()->setCurrentItem(cloud_mesh_item);
 
-  return (cloud_mesh_item);
+  return cloud_mesh_item;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -105,7 +101,8 @@ pcl::modeler::RenderWindowItem::prepareProperties(ParameterDialog* parameter_dia
 {
   double r, g, b;
   render_window_->getBackground(r, g, b);
-  QColor color(static_cast<int> (r*255), static_cast<int> (g*255), static_cast<int> (b*255));
+  QColor color(
+      static_cast<int>(r * 255), static_cast<int>(g * 255), static_cast<int>(b * 255));
   background_color_->setDefaultValue(color);
   parameter_dialog->addParameter(background_color_);
   parameter_dialog->addParameter(show_axes_);
@@ -116,9 +113,8 @@ void
 pcl::modeler::RenderWindowItem::setProperties()
 {
   QColor color = *background_color_;
-  render_window_->setBackground(color.red()/255.0, color.green()/255.0, color.blue()/255.0);
+  render_window_->setBackground(
+      color.red() / 255.0, color.green() / 255.0, color.blue() / 255.0);
 
   render_window_->setShowAxes(*show_axes_);
-
-  return;
 }

@@ -37,12 +37,14 @@
 
 #pragma once
 
+namespace pcl {
+
 template <class FeatureType,
           class DataSet,
           class LabelType,
           class ExampleIndex,
           class NodeType>
-pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
+DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
     DecisionTreeTrainer()
 : max_tree_depth_(15)
 , num_of_features_(1000)
@@ -61,9 +63,8 @@ template <class FeatureType,
           class LabelType,
           class ExampleIndex,
           class NodeType>
-pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    ~DecisionTreeTrainer()
-{}
+DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
+    ~DecisionTreeTrainer() = default;
 
 template <class FeatureType,
           class DataSet,
@@ -71,8 +72,8 @@ template <class FeatureType,
           class ExampleIndex,
           class NodeType>
 void
-pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    train(pcl::DecisionTree<NodeType>& tree)
+DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train(
+    pcl::DecisionTree<NodeType>& tree)
 {
   // create random features
   std::vector<FeatureType> features;
@@ -107,7 +108,7 @@ template <class FeatureType,
           class ExampleIndex,
           class NodeType>
 void
-pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
+DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
     trainDecisionTreeNode(std::vector<FeatureType>& features,
                           std::vector<ExampleIndex>& examples,
                           std::vector<LabelType>& label_data,
@@ -117,7 +118,7 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
   const std::size_t num_of_examples = examples.size();
   if (num_of_examples == 0) {
     PCL_ERROR(
-        "Reached invalid point in decision tree training: Number of examples is 0!");
+        "Reached invalid point in decision tree training: Number of examples is 0!\n");
     return;
   };
 
@@ -272,7 +273,7 @@ template <class FeatureType,
           class ExampleIndex,
           class NodeType>
 void
-pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
+DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
     createThresholdsUniform(const std::size_t num_of_thresholds,
                             std::vector<float>& values,
                             std::vector<float>& thresholds)
@@ -303,3 +304,5 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
         min_value + step * (static_cast<float>(threshold_index + 1));
   }
 }
+
+} // namespace pcl

@@ -59,7 +59,7 @@ class DevicePrimesense : public OpenNIDevice
   friend class OpenNIDriver;
 public:
   DevicePrimesense (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node);
-  ~DevicePrimesense () noexcept;
+  ~DevicePrimesense () noexcept override;
   //virtual void setImageOutputMode (const XnMapOutputMode& output_mode);
 
 protected:

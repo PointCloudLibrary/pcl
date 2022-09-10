@@ -41,9 +41,8 @@
 #pragma GCC system_header
 #endif
 
-#include <ui_openni_passthrough.h>
-// QT4
 #include <QMainWindow>
 #include <QMutex>
-#include <QTimer>
 #include <QObject>
+#include <QTimer>
+#include <ui_openni_passthrough.h>

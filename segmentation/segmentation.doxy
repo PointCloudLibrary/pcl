@@ -13,5 +13,6 @@
   - \ref sample_consensus "sample_consensus"
   - \ref kdtree "kdtree"
   - \ref octree "octree"
+  - \ref features "features"
 
 */

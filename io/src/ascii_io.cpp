@@ -35,10 +35,13 @@
  *
  */
 
+#include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/io/ascii_io.h>
 #include <istream>
 #include <fstream>
 #include <boost/filesystem.hpp>
+#include <boost/lexical_cast.hpp> // for lexical_cast
+#include <boost/algorithm/string.hpp> // for split
 #include <cstdint>
 
 //////////////////////////////////////////////////////////////////////////////
@@ -77,9 +80,7 @@ pcl::ASCIIReader::ASCIIReader ()
 }
 
 //////////////////////////////////////////////////////////////////////////////
-pcl::ASCIIReader::~ASCIIReader ()
-{
-}
+pcl::ASCIIReader::~ASCIIReader () = default;
 
 //////////////////////////////////////////////////////////////////////////////
 int
@@ -88,7 +89,7 @@ pcl::ASCIIReader::readHeader (const std::string& file_name,
   Eigen::Quaternionf& orientation, int& file_version, int& data_type,
   unsigned int& data_idx, const int offset)
 {
-	(void)offset; //offset is not used for ascii file implementation
+  pcl::utils::ignore(offset); //offset is not used for ascii file implementation
 	
   boost::filesystem::path fpath = file_name;
 
@@ -115,7 +116,7 @@ pcl::ASCIIReader::readHeader (const std::string& file_name,
     total++;
 
   origin = Eigen::Vector4f::Zero ();
-  orientation = Eigen::Quaternionf ();
+  orientation = Eigen::Quaternionf::Identity ();
   cloud.width = total;
   cloud.height = 1;
   cloud.is_dense = true;

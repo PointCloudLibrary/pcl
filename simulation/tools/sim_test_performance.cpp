@@ -5,17 +5,19 @@
  *
  */
 
-#include <Eigen/Dense>
-#include <boost/shared_ptr.hpp>
-#include <cmath>
-#include <iostream>
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
+#include <pcl/console/print.h>
+#include <pcl/console/time.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/io/vtk_lib_io.h>
+#include <pcl/simulation/camera.h>
+#include <pcl/simulation/model.h>
+#include <pcl/simulation/range_likelihood.h>
+#include <pcl/simulation/scene.h>
+#include <pcl/memory.h>
+#include <pcl/pcl_config.h>
+
 #include <GL/glew.h>
 
-#include <pcl/pcl_config.h>
 #ifdef OPENGL_IS_A_FRAMEWORK
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
@@ -29,36 +31,18 @@
 #include <GL/glut.h>
 #endif
 
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-
-#include <pcl/common/common.h>
-#include <pcl/common/transforms.h>
-
-#include <pcl/features/normal_3d.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-#include <pcl/surface/gp3.h>
-
-// define the following in order to eliminate the deprecated headers warning
-#define VTK_EXCLUDE_STRSTREAM_HEADERS
-#include <pcl/io/vtk_lib_io.h>
-
-#include <pcl/simulation/camera.h>
-#include <pcl/simulation/model.h>
-#include <pcl/simulation/range_likelihood.h>
-#include <pcl/simulation/scene.h>
-
-#include <pcl/console/parse.h>
-#include <pcl/console/print.h>
-#include <pcl/console/time.h>
+#include <cmath>
+#include <iostream>
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
 
 using namespace Eigen;
 using namespace pcl;
 using namespace pcl::console;
 using namespace pcl::io;
 using namespace pcl::simulation;
-using namespace std;
 
 std::uint16_t t_gamma[2048];
 
@@ -87,7 +71,7 @@ void
 display_score_image(const float* score_buffer)
 {
   int npixels = range_likelihood_->getWidth() * range_likelihood_->getHeight();
-  std::uint8_t* score_img = new std::uint8_t[npixels * 3];
+  auto* score_img = new std::uint8_t[npixels * 3];
 
   float min_score = score_buffer[0];
   float max_score = score_buffer[0];
@@ -113,7 +97,7 @@ void
 display_depth_image(const float* depth_buffer, int width, int height)
 {
   int npixels = width * height;
-  std::uint8_t* depth_img = new std::uint8_t[npixels * 3];
+  auto* depth_img = new std::uint8_t[npixels * 3];
 
   float min_depth = depth_buffer[0];
   float max_depth = depth_buffer[0];
@@ -138,7 +122,7 @@ display_depth_image(const float* depth_buffer, int width, int height)
       kd = 2047;
 
     int pval = t_gamma[kd];
-    std::uint8_t lb = static_cast<std::uint8_t>(pval & 0xff);
+    auto lb = static_cast<std::uint8_t>(pval & 0xff);
     switch (pval >> 8) {
     case 0:
       depth_img[3 * i + 0] = 255;

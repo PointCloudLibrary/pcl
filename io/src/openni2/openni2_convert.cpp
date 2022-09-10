@@ -29,12 +29,12 @@
  *      Author: Julius Kammerl (jkammerl@willowgarage.com)
  */
 
-#include "pcl/io/openni2/openni2_convert.h"
-#include "pcl/io/io_exception.h"
-
-#include <boost/make_shared.hpp>
+#include <pcl/memory.h>
+#include <pcl/io/io_exception.h>
+#include <pcl/io/openni2/openni2_convert.h>
 
 #include <string>
+
 
 namespace pcl
 {

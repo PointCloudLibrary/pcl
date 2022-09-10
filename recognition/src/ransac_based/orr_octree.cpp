@@ -40,12 +40,11 @@
 #include <pcl/recognition/ransac_based/orr_octree.h>
 #include <pcl/common/common.h>
 #include <pcl/common/random.h>
-#include <cstdlib>
 #include <cmath>
+#include <ctime> // for time
 #include <algorithm>
 #include <list>
 
-using namespace std;
 using namespace pcl::recognition;
 
 pcl::recognition::ORROctree::ORROctree ()
@@ -60,11 +59,8 @@ pcl::recognition::ORROctree::ORROctree ()
 void
 pcl::recognition::ORROctree::clear ()
 {
-  if ( root_ )
-  {
-    delete root_;
-    root_ = nullptr;
-  }
+  delete root_;
+  root_ = nullptr;
 
   full_leaves_.clear();
 }
@@ -289,7 +285,7 @@ pcl::recognition::ORROctree::Node::createChildren()
 void
 pcl::recognition::ORROctree::getFullLeavesIntersectedBySphere (const float* p, float radius, std::list<ORROctree::Node*>& out) const
 {
-  list<ORROctree::Node*> nodes;
+  std::list<ORROctree::Node*> nodes;
   nodes.push_back (root_);
 
   ORROctree::Node *node, *child;
@@ -335,7 +331,7 @@ pcl::recognition::ORROctree::getRandomFullLeafOnSphere (const float* p, float ra
 
   pcl::common::UniformGenerator<int> randgen (0, 1, static_cast<std::uint32_t> (time (nullptr)));
 
-  list<ORROctree::Node*> nodes;
+  std::list<ORROctree::Node*> nodes;
   nodes.push_back (root_);
 
   while ( !nodes.empty () )
@@ -418,7 +414,7 @@ pcl::recognition::ORROctree::getFullLeavesPoints (PointCloudOut& out) const
   std::size_t i = 0;
 
   // Now iterate over all full leaves and compute the normals and average points
-  for ( std::vector<ORROctree::Node*>::const_iterator it = full_leaves_.begin() ; it != full_leaves_.end() ; ++it, ++i )
+  for ( auto it = full_leaves_.begin() ; it != full_leaves_.end() ; ++it, ++i )
   {
     out[i].x = (*it)->getData ()->getPoint ()[0];
     out[i].y = (*it)->getData ()->getPoint ()[1];
@@ -435,7 +431,7 @@ pcl::recognition::ORROctree::getNormalsOfFullLeaves (PointCloudN& out) const
   std::size_t i = 0;
 
   // Now iterate over all full leaves and compute the normals and average points
-  for ( std::vector<ORROctree::Node*>::const_iterator it = full_leaves_.begin() ; it != full_leaves_.end() ; ++it, ++i )
+  for ( auto it = full_leaves_.begin() ; it != full_leaves_.end() ; ++it, ++i )
   {
     out[i].normal_x = (*it)->getData ()->getNormal ()[0];
     out[i].normal_y = (*it)->getData ()->getNormal ()[1];

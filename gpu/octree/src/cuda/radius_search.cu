@@ -64,9 +64,9 @@ namespace pcl
         struct DirectQuery
         {
             PtrSz<PointType> queries;
-            __device__ __forceinline__ float3 fetch(int query_index) const
+            __device__ __forceinline__ float3 fetch(const int query_index) const
             {
-                PointType q = queries.data[query_index];
+                const PointType& q = queries.data[query_index];
                 return make_float3(q.x, q.y, q.z);
             }
         };
@@ -75,9 +75,9 @@ namespace pcl
         struct IndicesQuery : public DirectQuery
         {
             const int* queries_indices;
-            __device__ __forceinline__ float3 fetch(int query_index) const
+            __device__ __forceinline__ float3 fetch(const int query_index) const
             {
-                PointType q = queries[queries_indices[query_index]];
+                const PointType& q = queries[queries_indices[query_index]];
                 return make_float3(q.x, q.y, q.z);
             }
         };
@@ -85,23 +85,13 @@ namespace pcl
         struct SharedRadius
         {
             float radius;
-            __device__ __forceinline__ float getRadius(int /*index*/) const { return radius; }
-            __device__ __forceinline__ float bradcastRadius2(float* /*ptr*/, bool /*active*/, float& /*radius_reg*/) const
-            {
-                return radius * radius;
-            }
+            __device__ __forceinline__ float getRadius(const int /*index*/) const { return radius; }
         };
 
         struct IndividualRadius
         {
             const float* radiuses;
-            __device__ __forceinline__ float getRadius(int index) const { return radiuses[index]; }
-            __device__ __forceinline__ float bradcastRadius2(float* ptr, bool active, float& radius_reg) const
-            {
-                if (active)
-                    *ptr = radius_reg * radius_reg;
-                return *ptr;
-            }
+            __device__ __forceinline__ float getRadius(const int index) const { return radiuses[index]; }
         };
 
         struct KernelPolicy
@@ -142,7 +132,7 @@ namespace pcl
             float3 query;
             float radius;
 
-            __device__ __forceinline__ Warp_radiusSearch(const BatchType& batch_arg, int query_index_arg)
+            __device__ __forceinline__ Warp_radiusSearch(const BatchType& batch_arg, const int query_index_arg)
                 : batch(batch_arg), iterator(/**/batch.octree/*storage.paths*/), found_count(0), query_index(query_index_arg){}
 
             __device__ __forceinline__ void launch(bool active)
@@ -177,8 +167,8 @@ namespace pcl
             {                        
                 using namespace pcl::gpu;
 
-                int node_idx = *iterator;
-                int code = batch.octree.codes[node_idx];
+                const int node_idx = *iterator;
+                const int code = batch.octree.codes[node_idx];
 
                 float3 node_minp = batch.octree.minp;
                 float3 node_maxp = batch.octree.maxp;        
@@ -198,9 +188,9 @@ namespace pcl
                 }                              
 
                 //need to go to next level
-                int node = batch.octree.nodes[node_idx];
-                int children_mask = node & 0xFF;            
-                bool isLeaf = children_mask == 0;            
+                const int node = batch.octree.nodes[node_idx];
+                const int children_mask = node & 0xFF;            
+                const bool isLeaf = children_mask == 0;            
 
                 if (isLeaf)
                 {
@@ -209,8 +199,8 @@ namespace pcl
                 }
 
                 //goto next level
-                int first = node >> 8;
-                int len   = __popc(children_mask);
+                const int first = node >> 8;
+                const int len   = __popc(children_mask);
                 iterator.gotoNextLevel(first, len);                    
                 return -1;
             };
@@ -221,62 +211,50 @@ namespace pcl
 
                 while(mask)
                 {                
-                    unsigned int laneId = Warp::laneId();
-                    unsigned int warpId = Warp::id();            
+                    const unsigned int laneId = Warp::laneId();
 
                     int active_lane = __ffs(mask) - 1; //[0..31]
 
                     mask &= ~(1 << active_lane);              
 
                     //broadcast active_found_count                                
-                    if (active_lane == laneId)                
-                        storage.per_warp_buffer[warpId] = found_count;                                            
-                    int active_found_count = storage.per_warp_buffer[warpId];
+                    const int active_found_count = __shfl_sync(0xFFFFFFFF, found_count, active_lane);
 
-                    int node_idx = leaf & ~KernelPolicy::CHECK_FLAG;
+                    const int node_idx = leaf & ~KernelPolicy::CHECK_FLAG;
 
-                    //broadcast beg
+                    //broadcast beg and end
+                    int fbeg, fend;
                     if (active_lane == laneId)
-                        storage.per_warp_buffer[warpId] = batch.octree.begs[node_idx];                    
-                    int beg = storage.per_warp_buffer[warpId];
-
-                    //broadcast end
-                    if (active_lane == laneId)
-                        storage.per_warp_buffer[warpId] = batch.octree.ends[node_idx];
-                    int end = storage.per_warp_buffer[warpId];
+                    {
+                      fbeg = batch.octree.begs[node_idx];
+                      fend = batch.octree.ends[node_idx];
+                    }
+                    const int beg = __shfl_sync(0xFFFFFFFF, fbeg, active_lane);
+                    const int end = __shfl_sync(0xFFFFFFFF, fend, active_lane);
 
                     //broadcast active_query_index
-                    if (active_lane == laneId)
-                        storage.per_warp_buffer[warpId] = query_index;
-                    int active_query_index = storage.per_warp_buffer[warpId];
+                    const int active_query_index = __shfl_sync(0xFFFFFFFF, query_index, active_lane);
 
                     int length = end - beg;
 
                     int *out = batch.output + active_query_index * batch.max_results + active_found_count;                    
-                    int length_left = batch.max_results - active_found_count;
+                    const int length_left = batch.max_results - active_found_count;
 
-                    int test = __any_sync(0xFFFFFFFF, active_lane == laneId && (leaf & KernelPolicy::CHECK_FLAG));
+                    const int test = __any_sync(0xFFFFFFFF, active_lane == laneId && (leaf & KernelPolicy::CHECK_FLAG));
 
                     if (test)
-                    {                                        
-                        float3 active_query;
+                    {
+                        //broadcast warp_radius
+                        const float radius2 = __shfl_sync(0xFFFFFFFF, radius * radius, active_lane);
 
                         //broadcast warp_query
-                        if (active_lane == laneId)
-                            storage.per_warp_buffer[warpId] = __float_as_int(query.x);
-                        active_query.x = __int_as_float(storage.per_warp_buffer[warpId]);
+                        const float3 active_query = make_float3(
+                            __shfl_sync(0xFFFFFFFF, query.x, active_lane),
+                            __shfl_sync(0xFFFFFFFF, query.y, active_lane),
+                            __shfl_sync(0xFFFFFFFF, query.z, active_lane)
+                        );
 
-                        if (active_lane == laneId)
-                            storage.per_warp_buffer[warpId] = __float_as_int(query.y);
-                        active_query.y = __int_as_float(storage.per_warp_buffer[warpId]);
-
-                        if (active_lane == laneId)
-                            storage.per_warp_buffer[warpId] = __float_as_int(query.z);
-                        active_query.z = __int_as_float(storage.per_warp_buffer[warpId]);                            
-
-                        float radius2 = batch.bradcastRadius2((float*)&storage.per_warp_buffer[warpId], (active_lane == laneId), radius);                            
-
-                        length = TestWarpKernel(beg, active_query, radius2, length, out, length_left);                    
+                        length = TestWarpKernel(beg, active_query, radius2, length, out, length_left);
                     }
                     else
                     {                            
@@ -289,10 +267,10 @@ namespace pcl
                 }            
             }    
 
-            __device__ __forceinline__ int TestWarpKernel(int beg, const float3& active_query, float radius2, int length, int* out, int length_left)
+            __device__ __forceinline__ int TestWarpKernel(const int beg, const float3& active_query, const float radius2, const int length, int* out, const int length_left)
             {                        
                 unsigned int idx = Warp::laneId();
-                int last_threadIdx = threadIdx.x - idx + 31;            
+                const int last_threadIdx = threadIdx.x - idx + 31;            
 
                 int total_new = 0;
 
@@ -302,11 +280,11 @@ namespace pcl
 
                     if (idx < length)
                     {                                                                                                            
-                        float dx = batch.points.ptr(0)[beg + idx] - active_query.x;
-                        float dy = batch.points.ptr(1)[beg + idx] - active_query.y;
-                        float dz = batch.points.ptr(2)[beg + idx] - active_query.z;
+                        const float dx = batch.points.ptr(0)[beg + idx] - active_query.x;
+                        const float dy = batch.points.ptr(1)[beg + idx] - active_query.y;
+                        const float dz = batch.points.ptr(2)[beg + idx] - active_query.z;
 
-                        float d2 = dx * dx + dy * dy + dz * dz;
+                        const float d2 = dx * dx + dy * dy + dz * dz;
 
                         if (d2 < radius2)
                             take = 1;
@@ -314,15 +292,15 @@ namespace pcl
 
                     storage.cta_buffer[threadIdx.x] = take;
 
-                    int offset = scan_warp<exclusive>(storage.cta_buffer);
+                    const int offset = scan_warp<exclusive>(storage.cta_buffer);
 
                     //ensure that we copy
-                    bool out_of_bounds = (offset + total_new) >= length_left;                              
+                    const bool out_of_bounds = (offset + total_new) >= length_left;                              
 
                     if (take && !out_of_bounds)
                         out[offset] = batch.indices[beg + idx];
 
-                    int new_nodes = storage.cta_buffer[last_threadIdx];
+                    const int new_nodes = storage.cta_buffer[last_threadIdx];
 
                     idx += Warp::STRIDE;
 
@@ -339,9 +317,9 @@ namespace pcl
         template<typename BatchType>
         __global__ void KernelRS(const BatchType batch) 
         {         
-            int query_index = blockIdx.x * blockDim.x + threadIdx.x;
+            const int query_index = blockIdx.x * blockDim.x + threadIdx.x;
 
-            bool active = query_index < batch.queries.size;
+            const bool active = query_index < batch.queries.size;
 
             if (__all_sync(0xFFFFFFFF, active == false)) 
                 return;

@@ -41,10 +41,8 @@
 
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 #include <pcl/console/print.h>
 #include <string>
-#include <vector>
 #include <pcl/io/point_cloud_image_extractors.h>
 
 namespace pcl

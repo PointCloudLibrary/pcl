@@ -36,9 +36,12 @@
  */
 
 #include <iostream>
+#include <limits>
 #include <stdexcept>
 #include <map>
 #include <algorithm>
+#include <Eigen/Eigenvalues> // for SelfAdjointEigenSolver
+#include <Eigen/Geometry> // for cross
 #include <pcl/surface/on_nurbs/nurbs_tools.h>
 
 using namespace pcl;
@@ -90,7 +93,7 @@ NurbsTools::getClosestPoint (const Eigen::Vector2d &p, const vector_vec2d &data)
     throw std::runtime_error ("[NurbsTools::getClosestPoint(2d)] Data empty.\n");
 
   std::size_t idx = 0;
-  double dist2 (DBL_MAX);
+  double dist2 (std::numeric_limits<double>::max());
   for (std::size_t i = 0; i < data.size (); i++)
   {
     double d2 = (data[i] - p).squaredNorm ();
@@ -110,7 +113,7 @@ NurbsTools::getClosestPoint (const Eigen::Vector3d &p, const vector_vec3d &data)
     throw std::runtime_error ("[NurbsTools::getClosestPoint(2d)] Data empty.\n");
 
   std::size_t idx = 0;
-  double dist2 (DBL_MAX);
+  double dist2 (std::numeric_limits<double>::max());
   for (std::size_t i = 0; i < data.size (); i++)
   {
     double d2 = (data[i] - p).squaredNorm ();
@@ -133,7 +136,7 @@ NurbsTools::getClosestPoint (const Eigen::Vector2d &p, const Eigen::Vector2d &di
   std::size_t idx = 0;
   idxcp = 0;
   double dist2 (0.0);
-  double dist2cp (DBL_MAX);
+  double dist2cp (std::numeric_limits<double>::max());
   for (std::size_t i = 0; i < data.size (); i++)
   {
     Eigen::Vector2d v = (data[i] - p);
@@ -225,8 +228,10 @@ NurbsTools::computeVariance (const Eigen::Vector2d &mean, const vector_vec2d &da
 void
 NurbsTools::computeBoundingBox (const ON_NurbsCurve &nurbs, Eigen::Vector3d &_min, Eigen::Vector3d &_max)
 {
-  _min = Eigen::Vector3d (DBL_MAX, DBL_MAX, DBL_MAX);
-  _max = Eigen::Vector3d (-DBL_MAX, -DBL_MAX, -DBL_MAX);
+  _min = Eigen::Vector3d (std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+  _max = Eigen::Vector3d(std::numeric_limits<double>::lowest(),
+                         std::numeric_limits<double>::lowest(),
+                         std::numeric_limits<double>::lowest());
   for (int i = 0; i < nurbs.CVCount (); i++)
   {
     ON_3dPoint p;
@@ -251,8 +256,12 @@ NurbsTools::computeBoundingBox (const ON_NurbsCurve &nurbs, Eigen::Vector3d &_mi
 void
 NurbsTools::computeBoundingBox (const ON_NurbsSurface &nurbs, Eigen::Vector3d &_min, Eigen::Vector3d &_max)
 {
-  _min = Eigen::Vector3d (DBL_MAX, DBL_MAX, DBL_MAX);
-  _max = Eigen::Vector3d (-DBL_MAX, -DBL_MAX, -DBL_MAX);
+  _min = Eigen::Vector3d(std::numeric_limits<double>::max(),
+                         std::numeric_limits<double>::max(),
+                         std::numeric_limits<double>::max());
+  _max = Eigen::Vector3d(std::numeric_limits<double>::lowest(),
+                         std::numeric_limits<double>::lowest(),
+                         std::numeric_limits<double>::lowest());
   for (int i = 0; i < nurbs.CVCount (0); i++)
   {
     for (int j = 0; j < nurbs.CVCount (1); j++)

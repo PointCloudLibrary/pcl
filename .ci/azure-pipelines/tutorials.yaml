@@ -1,21 +1,19 @@
-resources:
-  containers:
-    - container: env1604
-      image: pointcloudlibrary/env:16.04
-
 jobs:
   - job: tutorials
-    displayName: Tutorials
-    timeoutInMinutes: 0
+    displayName: Building Tutorials
     pool:
-      vmImage: 'Ubuntu 16.04'
-    container: env1604
+      vmImage: 'Ubuntu 20.04'
+    container: env1804
+    timeoutInMinutes: 0
     variables:
       BUILD_DIR: '$(Agent.BuildDirectory)/build'
       INSTALL_DIR: '$(Agent.BuildDirectory)/install'
-      CMAKE_CXX_FLAGS: '-Wall -Wextra -Wabi -O2'
+      CMAKE_CXX_FLAGS: '-Wall -Wextra -Wabi'
       EXCLUDE_TUTORIALS: 'davidsdk,ensenso_cameras,gpu'
     steps:
+      - checkout: self
+        # find the commit hash on a quick non-forced update too
+        fetchDepth: 10
       - script: |
           mkdir $BUILD_DIR && cd $BUILD_DIR
           cmake $(Build.SourcesDirectory) \
@@ -41,5 +39,15 @@ jobs:
           cmake --build . -- install
         displayName: 'Install PCL'
       - script: |
-          $(Build.SourcesDirectory)/.ci/scripts/build_tutorials.sh -k -s -e $EXCLUDE_TUTORIALS $INSTALL_DIR/share/pcl-1.10 $(Build.SourcesDirectory) $BUILD_DIR/tutorials
+          cd $BUILD_DIR
+          major=$(find . -type f -exec sed -n -e \
+              's,#define PCL_MAJOR_VERSION \([0-9]\+\),\1,p' {} \;)
+          minor=$(find . -type f -exec sed -n -e \
+              's,#define PCL_MINOR_VERSION \([0-9]\+\),\1,p' {} \;)
+          $(Build.SourcesDirectory)/.ci/scripts/build_tutorials.sh \
+              -k -s \
+              -e $EXCLUDE_TUTORIALS \
+              $INSTALL_DIR/share/pcl-${major}.${minor} \
+              $(Build.SourcesDirectory) \
+              $BUILD_DIR/tutorials
         displayName: 'Build Tutorials'

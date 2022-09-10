@@ -1,16 +1,14 @@
-resources:
-  containers:
-    - container: fmt
-      image: pointcloudlibrary/fmt
-
 jobs:
   - job: formatting
     displayName: Check code formatting
     pool:
-      vmImage: 'Ubuntu 16.04'
+      vmImage: 'Ubuntu 20.04'
     container: fmt
     steps:
-      - script: ./.dev/format.sh $(which clang-format-8) .
+      - checkout: self
+        # find the commit hash on a quick non-forced update too
+        fetchDepth: 10
+      - script: ./.dev/format.sh $(which clang-format) .
         displayName: 'Run clang-format'
       - script: git diff > formatting.patch
         displayName: 'Compute diff'

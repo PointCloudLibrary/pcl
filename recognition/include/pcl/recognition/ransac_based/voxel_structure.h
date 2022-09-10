@@ -38,8 +38,6 @@
 
 #pragma once
 
-#include <cstdlib>
-
 namespace pcl
 {
   namespace recognition
@@ -58,7 +56,7 @@ namespace pcl
 
       /** \brief Release the memory allocated for the voxels. */
       inline void
-      clear (){ if ( voxels_ ){ delete[] voxels_; voxels_ = nullptr;}}
+      clear (){ delete[] voxels_; voxels_ = nullptr;}
 
       /** \brief Returns a pointer to the voxel which contains p or NULL if p is not inside the structure. */
       inline T*

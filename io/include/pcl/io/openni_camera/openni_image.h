@@ -43,7 +43,6 @@
 #include <pcl/pcl_exports.h>
 #include "openni.h"
 #include "openni_exception.h"
-#include <pcl/io/boost.h>
 
 namespace openni_wrapper
 {
@@ -174,7 +173,7 @@ namespace openni_wrapper
   {
   }
 
-  Image::~Image () noexcept { }
+  Image::~Image () noexcept = default;
 
   unsigned
   Image::getWidth () const throw ()

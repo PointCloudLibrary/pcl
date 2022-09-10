@@ -46,8 +46,6 @@
 #include <pcl/recognition/ransac_based/obj_rec_ransac.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/console/print.h>
-#include <pcl/console/parse.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/point_cloud.h>
 #include <vtkVersion.h>
 #include <vtkPolyDataReader.h>
@@ -64,7 +62,6 @@
 #include <thread>
 #include <vector>
 
-using namespace std;
 using namespace std::chrono_literals;
 using namespace pcl;
 using namespace io;
@@ -97,7 +94,7 @@ class CallbackParameters
     PointCloud<PointXYZ>& points_;
     PointCloud<Normal>& normals_;
     int num_hypotheses_to_show_;
-    list<vtkActor*> actors_, model_actors_;
+    std::list<vtkActor*> actors_, model_actors_;
     bool show_models_;
 };
 
@@ -160,7 +157,7 @@ vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, Poin
 //===============================================================================================================================
 
 void
-showHypothesisAsCoordinateFrame (Hypothesis& hypo, CallbackParameters* parameters, const string &frame_name)
+showHypothesisAsCoordinateFrame (Hypothesis& hypo, CallbackParameters* parameters, const std::string &frame_name)
 {
   float rot_col[3], x_dir[3], y_dir[3], z_dir[3], origin[3], scale = 2.0f*parameters->objrec_.getPairWidth ();
   pcl::ModelCoefficients coeffs; coeffs.values.resize (6);
@@ -232,7 +229,7 @@ arrayToVtkMatrix (const float* a, vtkMatrix4x4* m)
 void
 update (CallbackParameters* params)
 {
-  list<ObjRecRANSAC::Output> dummy_output;
+  std::list<ObjRecRANSAC::Output> dummy_output;
 
   // Run the recognition method
   params->objrec_.recognize (params->points_, params->normals_, dummy_output);
@@ -287,11 +284,11 @@ update (CallbackParameters* params)
   vtk_hh->Update ();
 
   // The lines
-  string lines_str_id = "opps";
+  std::string lines_str_id = "opps";
   params->viz_.addModelFromPolyData (vtk_opps, lines_str_id);
   params->viz_.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 0.0, 1.0, lines_str_id);
   // The normals
-  string normals_str_id = "opps normals";
+  std::string normals_str_id = "opps normals";
   params->viz_.addModelFromPolyData (vtk_hh->GetOutput (), normals_str_id);
   params->viz_.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 1.0, 0.0, normals_str_id);
 #endif
@@ -305,7 +302,7 @@ update (CallbackParameters* params)
   std::sort(accepted_hypotheses.begin (), accepted_hypotheses.end (), compareHypotheses);
 
   // Show the hypotheses
-  for ( std::vector<Hypothesis>::iterator acc_hypo = accepted_hypotheses.begin () ; i < params->num_hypotheses_to_show_ && acc_hypo != accepted_hypotheses.end () ; ++i, ++acc_hypo )
+  for ( auto acc_hypo = accepted_hypotheses.begin () ; i < params->num_hypotheses_to_show_ && acc_hypo != accepted_hypotheses.end () ; ++i, ++acc_hypo )
   {
     // Visualize the orientation as a tripod
     char frame_name[128];
@@ -386,7 +383,7 @@ update (CallbackParameters* params)
 void
 keyboardCB (const pcl::visualization::KeyboardEvent &event, void* params_void)
 {
-  CallbackParameters* params = static_cast<CallbackParameters*> (params_void);
+  auto* params = static_cast<CallbackParameters*> (params_void);
 
   if (event.getKeyCode () == 13 /*enter*/ && event.keyUp ())
     update (params);
@@ -395,7 +392,7 @@ keyboardCB (const pcl::visualization::KeyboardEvent &event, void* params_void)
     // Switch models visibility
     params->show_models_ = !params->show_models_;
 
-    for ( list<vtkActor*>::iterator it = params->model_actors_.begin () ; it != params->model_actors_.end () ; ++it )
+    for ( auto it = params->model_actors_.begin () ; it != params->model_actors_.end () ; ++it )
       (*it)->SetVisibility (static_cast<int> (params->show_models_));
 
     params->viz_.getRenderWindow ()->Render ();
@@ -474,7 +471,7 @@ main (int argc, char** argv)
 
   const int num_params = 4;
   float parameters[num_params] = {40.0f/*pair width*/, 5.0f/*voxel size*/, 15.0f/*max co-planarity angle*/, 1/*n_hypotheses_to_show*/};
-  string parameter_names[num_params] = {"pair_width", "voxel_size", "max_coplanarity_angle", "n_hypotheses_to_show"};
+  std::string parameter_names[num_params] = {"pair_width", "voxel_size", "max_coplanarity_angle", "n_hypotheses_to_show"};
 
   // Read the user input if any
   for ( int i = 0 ; i < argc-1 && i < num_params ; ++i )
