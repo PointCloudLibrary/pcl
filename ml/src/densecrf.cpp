@@ -93,13 +93,11 @@ pcl::DenseCrf::addPairwiseGaussian(float sx, float sy, float sz, float w)
   feature.resize(N_ * 3);
 
   // fill the feature vector
-  auto i = 0;
-  for (const auto& datum : data_) {
-    feature[i * 3] = static_cast<float>(datum.x()) / sx;
-    feature[i * 3 + 1] = static_cast<float>(datum.y()) / sy;
-    feature[i * 3 + 2] = static_cast<float>(datum.z()) / sz;
+  for (std::size_t i = 0; i < data_.size(); i++) {
+    feature[i * 3] = static_cast<float>(data_[i].x()) / sx;
+    feature[i * 3 + 1] = static_cast<float>(data_[i].y()) / sy;
+    feature[i * 3 + 2] = static_cast<float>(data_[i].z()) / sz;
   }
-  ++i;
   // add kernel
   addPairwiseEnergy(feature, 3, w);
 }
@@ -269,11 +267,8 @@ void
 pcl::DenseCrf::runInference(float relax)
 {
   // set the unary potentials
-  auto i = 0;
-  for (const auto& unary : unary_) {
-    next_[i] = -unary;
-    ++i;
-  }
+  for (std::size_t i = 0; i < unary_.size(); i++)
+    next_[i] = -unary_[i];
 
   // Add up all pairwise potentials
   for (auto& p : pairwise_potential_) {

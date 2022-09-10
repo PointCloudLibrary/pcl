@@ -125,13 +125,11 @@ public:
   {
     results.resize(examples.size());
     flags.resize(examples.size());
-    auto example_index = 0;
-    for (const auto& ex : examples) {
-      const MultipleData2DExampleIndex& example = ex;
+    for (int example_index = 0; example_index < examples.size(); ++example_index) {
+      const MultipleData2DExampleIndex& example = examples[example_index];
 
       evaluateFeature(
           feature, data_set, example, results[example_index], flags[example_index]);
-      ++example_index;
     }
   }
 
@@ -279,13 +277,11 @@ public:
   {
     results.resize(examples.size());
     flags.resize(examples.size());
-    auto example_index = 0;
-    for (const auto& ex : examples) {
-      const MultipleData2DExampleIndex& example = ex;
+    for (int example_index = 0; example_index < examples.size(); ++example_index) {
+      const MultipleData2DExampleIndex& example = examples[example_index];
 
       evaluateFeature(
           feature, data_set, example, results[example_index], flags[example_index]);
-      ++example_index;
     }
   }
 
