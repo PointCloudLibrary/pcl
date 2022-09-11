@@ -64,7 +64,7 @@ public:
   {}
 
   /** \brief Empty destructor */
-  virtual ~GraphRegistration() {}
+  virtual ~GraphRegistration() = default;
 
   /** \brief Add a point cloud and the associated camera pose to the graph */
   template <typename PointT>

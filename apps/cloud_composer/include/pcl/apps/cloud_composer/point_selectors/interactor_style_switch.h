@@ -89,7 +89,6 @@ namespace pcl
         vtkTypeMacro(InteractorStyleSwitch, vtkInteractorStyle);
         
         InteractorStyleSwitch();
-        ~InteractorStyleSwitch();
   
         void 
         SetInteractor(vtkRenderWindowInteractor *iren) override;

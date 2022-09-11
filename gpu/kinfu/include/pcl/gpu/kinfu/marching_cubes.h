@@ -72,9 +72,6 @@ namespace pcl
       /** \brief Default constructor */
       MarchingCubes();
       
-      /** \brief Destructor */
-      ~MarchingCubes();
-      
       /** \brief Runs marching cubes triangulation.
           * \param[in] tsdf
           * \param[in] triangles_buffer Buffer for triangles. Its size determines max extracted triangles. If empty, it will be allocated with default size to be used.          

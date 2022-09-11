@@ -20,7 +20,6 @@ pcl::cloud_composer::CloudComposerItem::CloudComposerItem (const QString& name)
 pcl::cloud_composer::CloudComposerItem::~CloudComposerItem ()
 {
   properties_->deleteLater ();
-  qDebug () << "Cloud Composer Item Destructor";
 }
 
 pcl::cloud_composer::CloudComposerItem*

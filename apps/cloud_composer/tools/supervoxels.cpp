@@ -15,11 +15,6 @@ pcl::cloud_composer::SupervoxelsTool::SupervoxelsTool (PropertiesModel* paramete
   
 }
 
-pcl::cloud_composer::SupervoxelsTool::~SupervoxelsTool ()
-{
-  
-}
-
 QList <pcl::cloud_composer::CloudComposerItem*>
 pcl::cloud_composer::SupervoxelsTool::performAction (ConstItemList input_data, PointTypeFlags::PointType type)
 {

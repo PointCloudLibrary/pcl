@@ -24,11 +24,6 @@ pcl::cloud_composer::ClickTrackballStyleInteractor::ClickTrackballStyleInteracto
   transform_ = vtkSmartPointer<vtkTransform>::New ();
 }
 
-pcl::cloud_composer::ClickTrackballStyleInteractor::~ClickTrackballStyleInteractor ()
-{
-  
-}
-
 void
 pcl::cloud_composer::ClickTrackballStyleInteractor::OnLeftButtonDown ()
 {

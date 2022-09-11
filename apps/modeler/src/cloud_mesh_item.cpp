@@ -108,9 +108,6 @@ pcl::modeler::CloudMeshItem::CloudMeshItem(QTreeWidgetItem* parent,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::CloudMeshItem::~CloudMeshItem() {}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::modeler::CloudMeshItem::savePointCloud(const QList<CloudMeshItem*>& items,
                                             const QString& filename)

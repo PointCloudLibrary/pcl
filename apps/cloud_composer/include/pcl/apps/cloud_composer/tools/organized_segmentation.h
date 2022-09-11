@@ -50,7 +50,6 @@
        Q_OBJECT
      public:
        OrganizedSegmentationTool (PropertiesModel* parameter_model, QObject* parent);
-       ~OrganizedSegmentationTool ();
        
        QList <CloudComposerItem*>
        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) override;

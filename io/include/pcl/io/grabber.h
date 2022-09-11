@@ -85,11 +85,7 @@ namespace pcl
       Grabber& operator=(Grabber&&) = default;
 
       /** \brief virtual destructor. */
-      #if defined(_MSC_VER)
-        virtual inline ~Grabber () noexcept {}
-      #else
-        virtual inline ~Grabber () noexcept = default;
-      #endif
+      virtual inline ~Grabber () noexcept = default;
 
       /** \brief registers a callback function/method to a signal with the corresponding signature
         * \param[in] callback: the callback function/method

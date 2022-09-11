@@ -74,9 +74,7 @@ namespace pcl
 
       /** \brief Empty deconstructor. */
       virtual
-      ~OrganizedNeighborSearch ()
-      {
-      }
+      ~OrganizedNeighborSearch() = default;
 
       // public typedefs
       using PointCloud = pcl::PointCloud<PointT>;
@@ -211,11 +209,6 @@ namespace pcl
         {
         }
 
-        /** \brief Empty deconstructor  */
-        ~radiusSearchLoopkupEntry ()
-        {
-        }
-
         /** \brief Define search point and calculate squared distance
          * @param x_shift shift in x dimension
          * @param y_shift shift in y dimension
@@ -256,11 +249,6 @@ namespace pcl
 
         /** \brief Empty constructor  */
         nearestNeighborCandidate ()
-        {
-        }
-
-        /** \brief Empty deconstructor  */
-        ~nearestNeighborCandidate ()
         {
         }
 

@@ -50,7 +50,6 @@ namespace pcl
       Q_OBJECT
       public:
         FPFHEstimationTool (PropertiesModel* parameter_model, QObject* parent);
-        ~FPFHEstimationTool ();
         
         QList <CloudComposerItem*>
         performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) override;

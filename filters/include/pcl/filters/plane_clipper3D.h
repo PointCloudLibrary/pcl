@@ -63,7 +63,7 @@ namespace pcl
        */
       PlaneClipper3D (const Eigen::Vector4f& plane_params);
 
-      virtual ~PlaneClipper3D () noexcept;
+      virtual ~PlaneClipper3D () noexcept = default;
 
       /**
         * \brief Set new plane parameters

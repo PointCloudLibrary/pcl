@@ -77,7 +77,7 @@ namespace pcl
         {}
 
         /** \brief Destructor. */
-        virtual ~PointCloudGeometryHandler () {}
+        virtual ~PointCloudGeometryHandler() = default;
 
         /** \brief Abstract getName method.
           * \return the name of the class/object.
@@ -149,9 +149,6 @@ namespace pcl
 
         /** \brief Constructor. */
         PointCloudGeometryHandlerXYZ (const PointCloudConstPtr &cloud);
-
-        /** \brief Destructor. */
-        virtual ~PointCloudGeometryHandlerXYZ () {};
 
         /** \brief Class getName method. */
         virtual std::string
@@ -343,7 +340,7 @@ namespace pcl
         }
 
         /** \brief Destructor. */
-        virtual ~PointCloudGeometryHandler () {}
+        virtual ~PointCloudGeometryHandler() = default;
 
         /** \brief Abstract getName method. */
         virtual std::string
@@ -414,9 +411,6 @@ namespace pcl
         /** \brief Constructor. */
         PointCloudGeometryHandlerXYZ (const PointCloudConstPtr &cloud);
 
-        /** \brief Destructor. */
-        virtual ~PointCloudGeometryHandlerXYZ () {}
-
         /** \brief Class getName method. */
         virtual std::string 
         getName () const { return ("PointCloudGeometryHandlerXYZ"); }
@@ -476,9 +470,6 @@ namespace pcl
                                          const std::string &x_field_name,
                                          const std::string &y_field_name,
                                          const std::string &z_field_name);
-
-        /** \brief Destructor. */
-        virtual ~PointCloudGeometryHandlerCustom () {}
 
         /** \brief Class getName method. */
         virtual std::string

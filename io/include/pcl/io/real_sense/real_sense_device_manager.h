@@ -116,8 +116,6 @@ namespace pcl
           std::shared_ptr<RealSenseDevice>
           capture (DeviceInfo& device_info);
 
-          RealSenseDeviceManager ();
-
           /** This function discovers devices that are capable of streaming
             * depth data. */
           void

@@ -38,11 +38,6 @@ pcl::cloud_composer::InteractorStyleSwitch::InteractorStyleSwitch ()
   
 }
 
-pcl::cloud_composer::InteractorStyleSwitch::~InteractorStyleSwitch ()
-{
-    
-}
-
 void
 pcl::cloud_composer::InteractorStyleSwitch::initializeInteractorStyles (pcl::visualization::PCLVisualizer::Ptr vis, ProjectModel* model)
 {

@@ -51,9 +51,6 @@ public:
   /** Constructor. */
   Fern() : num_of_decisions_(0), features_(0), thresholds_(0), nodes_(1) {}
 
-  /** Destructor. */
-  virtual ~Fern() {}
-
   /** Initializes the fern.
    *
    * \param num_of_decisions the number of decisions taken to access the nodes
