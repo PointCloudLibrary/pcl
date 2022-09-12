@@ -122,6 +122,10 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
   // By default, assume that there are _no_ invalid (e.g., NaN) points
   //cloud.is_dense = true;
 
+  // Used to determine if a value has been read
+  bool width_read = false;
+  bool height_read = false;
+
   std::size_t nr_points = 0;
   std::string line;
 
@@ -270,6 +274,7 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
         sstream >> cloud.width;
         if (sstream.fail ())
           throw "Invalid WIDTH value specified.";
+        width_read = true;
         if (cloud.point_step != 0)
           cloud.row_step = cloud.point_step * cloud.width;      // row_step only makes sense for organized datasets
         continue;
@@ -279,6 +284,9 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
       if (line_type.substr (0, 6) == "HEIGHT")
       {
         sstream >> cloud.height;
+        if (sstream.fail ())
+          throw "Invalid HEIGHT value specified.";
+        height_read = true;
         continue;
       }
 
@@ -328,15 +336,13 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
     return (-1);
   }
 
-  // Exit early: if no points have been given, there's no sense to read or check anything anymore
   if (nr_points == 0)
   {
-    PCL_ERROR ("[pcl::PCDReader::readHeader] No points to read\n");
-    return (-1);
+    PCL_WARN ("[pcl::PCDReader::readHeader] No points to read\n");
   }
   
   // Compatibility with older PCD file versions
-  if (cloud.width == 0 && cloud.height == 0)
+  if (!width_read && !height_read)
   {
     cloud.width  = nr_points;
     cloud.height = 1;
@@ -345,7 +351,7 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
   //assert (cloud.row_step != 0);       // If row_step = 0, either point_step was not set or width is 0
 
   // if both height/width are not given, assume an unorganized dataset
-  if (cloud.height == 0)
+  if (!height_read)
   {
     cloud.height = 1;
     PCL_WARN ("[pcl::PCDReader::readHeader] no HEIGHT given, setting to 1 (unorganized).\n");
@@ -628,7 +634,7 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
     memcpy (&cloud.data[0], &map[0] + data_idx, cloud.data.size ());
 
   // Extra checks (not needed for ASCII)
-  int point_size = static_cast<int> (cloud.data.size () / (cloud.height * cloud.width));
+  int point_size = (cloud.width * cloud.height == 0) ? 0 : static_cast<int> (cloud.data.size () / (cloud.height * cloud.width));
   // Once copied, we need to go over each field and check if it has NaN/Inf values and assign cloud.is_dense to true or false
   for (uindex_t i = 0; i < cloud.width * cloud.height; ++i)
   {
@@ -1122,7 +1128,11 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PCLPointClo
 {
   if (cloud.data.empty ())
   {
-    PCL_ERROR ("[pcl::PCDWriter::writeASCII] Input point cloud has no data!\n");
+    PCL_WARN ("[pcl::PCDWriter::writeASCII] Input point cloud has no data!\n");
+  }
+  if (cloud.fields.empty())
+  {
+    PCL_ERROR ("[pcl::PCDWriter::writeASCII] Input point cloud has no field data!\n");
     return (-1);
   }
 
@@ -1140,7 +1150,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PCLPointClo
   setLockingPermissions (file_name, file_lock);
 
   int nr_points  = cloud.width * cloud.height;
-  int point_size = static_cast<int> (cloud.data.size () / nr_points);
+  int point_size = (nr_points == 0) ? 0 : static_cast<int> (cloud.data.size () / nr_points);
 
   // Write the header information
   fs << generateHeaderASCII (cloud, origin, orientation) << "DATA ascii\n";
@@ -1241,9 +1251,14 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCl
 {
   if (cloud.data.empty ())
   {
-    PCL_ERROR ("[pcl::PCDWriter::writeBinary] Input point cloud has no data!\n");
+    PCL_WARN ("[pcl::PCDWriter::writeBinary] Input point cloud has no data!\n");
+  }
+  if (cloud.fields.empty())
+  {
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] Input point cloud has no field data!\n");
     return (-1);
   }
+
   std::streamoff data_idx = 0;
   std::ostringstream oss;
   oss.imbue (std::locale::classic ());
@@ -1352,9 +1367,14 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
 {
   if (cloud.data.empty ())
   {
-    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Input point cloud has no data!\n");
+    PCL_WARN ("[pcl::PCDWriter::writeBinaryCompressed] Input point cloud has no data!\n");
+  }
+  if (cloud.fields.empty())
+  {
+    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Input point cloud has no field data!\n");
     return (-1);
   }
+
 
   if (generateHeaderBinaryCompressed (os, cloud, origin, orientation))
   {
@@ -1427,20 +1447,25 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
   }
 
   std::vector<char> temp_buf (data_size * 3 / 2 + 8);
-  // Compress the valid data
-  unsigned int compressed_size = pcl::lzfCompress (&only_valid_data.front (), 
-                                                   static_cast<unsigned int> (data_size), 
-                                                   &temp_buf[8], 
-                                                   data_size * 3 / 2);
-  // Was the compression successful?
-  if (compressed_size == 0)
-  {
-    return (-1);
+  if (data_size != 0) {
+    // Compress the valid data
+    unsigned int compressed_size = pcl::lzfCompress (&only_valid_data.front (),
+                                                    static_cast<unsigned int> (data_size),
+                                                    &temp_buf[8],
+                                                    data_size * 3 / 2);
+    // Was the compression successful?
+    if (compressed_size == 0)
+    {
+      return (-1);
+    }
+    memcpy (&temp_buf[0], &compressed_size, 4);
+    memcpy (&temp_buf[4], &data_size, 4);
+    temp_buf.resize (compressed_size + 8);
+  } else {
+    auto *header = reinterpret_cast<std::uint32_t*>(&temp_buf[0]);
+    header[0] = 0; // compressed_size is 0
+    header[1] = 0; // data_size is 0
   }
-
-  memcpy (&temp_buf[0], &compressed_size, 4);
-  memcpy (&temp_buf[4], &data_size, 4);
-  temp_buf.resize (compressed_size + 8);
 
   os.imbue (std::locale::classic ());
   os << "DATA binary_compressed\n";
