@@ -98,7 +98,7 @@ public:
     }
 
     for (const auto& threshold : thresholds_) {
-      stream.write(reinterpret_cast<const char*>(&(datum)), sizeof(datum));
+      stream.write(reinterpret_cast<const char*>(&threshold), sizeof(threshold));
     }
 
     for (auto& node : nodes_) {

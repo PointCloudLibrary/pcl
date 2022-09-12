@@ -389,7 +389,7 @@ pcl::modeler::SceneTree::slotUpdateOnSelectionChange(const QItemSelection& selec
   QModelIndexList deselected_indices = deselected.indexes();
   for (const auto& deselected_index : deselected_indices) {
     QTreeWidgetItem* item = itemFromIndex(deselected_index);
-    auto render_window_item = dynamic_cast<RenderWindowItem*>(item);
+    auto* render_window_item = dynamic_cast<RenderWindowItem*>(item);
     if (render_window_item != nullptr) {
       render_window_item->getRenderWindow()->setActive(false);
     }

@@ -77,11 +77,11 @@ TEST(PCL_FeaturesGPU, normals_lowlevel)
     std::vector<PointXYZ> downloaded;
     normals.download(downloaded);
 
-    for(const auto& download : downloaded)
+    for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
         Normal n = (*source.normals)[i];
 
-        PointXYZ xyz = download;
+        PointXYZ xyz = downloaded[i];
         float curvature = xyz.data[3];               
 
         float abs_error = 0.01f;
@@ -141,11 +141,11 @@ TEST(PCL_FeaturesGPU, normals_highlevel_1)
     std::vector<PointXYZ> downloaded;
     normals_device.download(downloaded);
 
-    for(const auto& download : downloaded)
+    for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
         Normal n = (*normals)[i];
 
-        PointXYZ xyz = download;
+        PointXYZ xyz = downloaded[i];
         float curvature = xyz.data[3];                        
 
         float abs_error = 0.01f;
@@ -206,11 +206,11 @@ TEST(PCL_FeaturesGPU, normals_highlevel_2)
     std::vector<PointXYZ> downloaded;
     normals_device.download(downloaded);
 
-    for (const auto& download : downloaded)
+    for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
         Normal n = (*normals)[i];
 
-        PointXYZ xyz = download;
+        PointXYZ xyz = downloaded[i];
         float curvature = xyz.data[3];                        
 
         float abs_error = 0.01f;
@@ -271,11 +271,11 @@ TEST(PCL_FeaturesGPU, normals_highlevel_3)
     std::vector<PointXYZ> downloaded;
     normals_device.download(downloaded);
 
-    for(const auto& download : downloaded)
+    for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
         Normal n = (*normals)[i];
 
-        PointXYZ xyz = download;
+        PointXYZ xyz = downloaded[i];
         float curvature = xyz.data[3];
 
         float abs_error = 0.01f;
@@ -345,11 +345,11 @@ TEST(PCL_FeaturesGPU, normals_highlevel_4)
     std::vector<PointXYZ> downloaded;
     normals_device.download(downloaded);
 
-   for(const auto& download : downloaded)
+   for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
         Normal n = (*normals)[i];
 
-        PointXYZ xyz = download;
+        PointXYZ xyz = downloaded[i];
         float curvature = xyz.data[3];
 
         float abs_error = 0.01f;

@@ -90,9 +90,9 @@ TEST(PCL_FeaturesGPU, fpfh_low_level)
     PointCloud<FPFHSignature33> fpfhs;
     fe.compute (fpfhs);
 
-    for(const auto& download : downloaded)
+    for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
-        FPFHSignature33& gpu = download;
+        FPFHSignature33& gpu = downloaded[i];
         FPFHSignature33& cpu = fpfhs[i];
         
         std::size_t FSize = sizeof(FPFHSignature33)/sizeof(gpu.histogram[0]);                                
@@ -165,9 +165,9 @@ TEST(PCL_FeaturesGPU, fpfh_high_level1)
     std::vector<FPFHSignature33> downloaded;
     fpfhs_gpu.download(downloaded, stub);
 
-    for(const auto& download : downloaded)
+    for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
-        FPFHSignature33& gpu = download;
+        FPFHSignature33& gpu = downloaded[i];
         FPFHSignature33& cpu = fpfhs[i];
         
         std::size_t FSize = sizeof(FPFHSignature33)/sizeof(gpu.histogram[0]);                                
@@ -243,9 +243,9 @@ TEST(PCL_FeaturesGPU, fpfh_high_level2)
     std::vector<FPFHSignature33> downloaded;
     fpfhs_gpu.download(downloaded, stub);
 
-    for(const auto& download : downloaded)
+    for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
-        FPFHSignature33& gpu = download;
+        FPFHSignature33& gpu = downloaded[i];
         FPFHSignature33& cpu = fpfhs[i];
         
         std::size_t FSize = sizeof(FPFHSignature33)/sizeof(gpu.histogram[0]);                                
@@ -320,9 +320,9 @@ TEST(PCL_FeaturesGPU, fpfh_high_level3)
     std::vector<FPFHSignature33> downloaded;
     fpfhs_gpu.download(downloaded, stub);
 
-    for(const auto& download : downloaded)
+    for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
-        FPFHSignature33& gpu = download;
+        FPFHSignature33& gpu = downloaded[i];
         FPFHSignature33& cpu = fpfhs[i];
         
         std::size_t FSize = sizeof(FPFHSignature33)/sizeof(gpu.histogram[0]);                                
@@ -398,9 +398,9 @@ TEST(PCL_FeaturesGPU, fpfh_high_level4)
     std::vector<FPFHSignature33> downloaded;
     fpfhs_gpu.download(downloaded, stub);
 
-    for(const auto& download : downloaded)
+    for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
-        FPFHSignature33& gpu = download;
+        FPFHSignature33& gpu = downloaded[i];
         FPFHSignature33& cpu = fpfhs[i];
         
         std::size_t FSize = sizeof(FPFHSignature33)/sizeof(gpu.histogram[0]);                                
