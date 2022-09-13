@@ -1183,10 +1183,9 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
     for (int i = 0; i < nr_points; ++i)
     {
       fs << grids [i].size ();
-      for (std::vector <int>::const_iterator it = grids [i].begin ();
-           it != grids [i].end ();
-           ++it)
-        fs << " " << *it;
+      for (const auto& grid : grids [i]) {
+        fs << " " << grid;
+      }
       fs << '\n';
     }
   }

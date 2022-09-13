@@ -231,10 +231,8 @@ public:
       }
     } while (++circ != circ_end);
 
-    for (FaceIndices::const_iterator it = delete_faces_vertex_.begin();
-         it != delete_faces_vertex_.end();
-         ++it) {
-      this->deleteFace(*it);
+    for (const auto& delete_me : delete_faces_vertex_) {
+      this->deleteFace(delete_me);
     }
   }
 

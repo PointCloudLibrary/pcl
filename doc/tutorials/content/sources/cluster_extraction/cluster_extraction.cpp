@@ -82,11 +82,12 @@ main ()
   ec.extract (cluster_indices);
 
   int j = 0;
-  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
+  for (const auto& cluster : cluster_indices)
   {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
-    for (const auto& idx : it->indices)
-      cloud_cluster->push_back ((*cloud_filtered)[idx]); //*
+    for (const auto& idx : cluster.indices) {
+      cloud_cluster->push_back((*cloud_filtered)[idx]);
+    } //*
     cloud_cluster->width = cloud_cluster->size ();
     cloud_cluster->height = 1;
     cloud_cluster->is_dense = true;

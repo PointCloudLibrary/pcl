@@ -94,11 +94,11 @@ TEST (PointCloud, constructor_with_allocation_valued)
   EXPECT_EQ (cloud2.width, 5);
   EXPECT_EQ (cloud2.height, 80);
   EXPECT_EQ (cloud2.size (), 5*80);
-  for (PointCloud<PointXYZ>::const_iterator pit = cloud2.begin (); pit != cloud2.end (); ++pit)
+  for (const auto& point : cloud2)
   {
-    EXPECT_NEAR (pit->x, 0.1, 1e-3);
-    EXPECT_NEAR (pit->y, 0.2, 1e-3);
-    EXPECT_NEAR (pit->z, 0.3, 1e-3);
+    EXPECT_NEAR (point.x, 0.1, 1e-3);
+    EXPECT_NEAR (point.y, 0.2, 1e-3);
+    EXPECT_NEAR (point.z, 0.3, 1e-3);
   }
 }
 
