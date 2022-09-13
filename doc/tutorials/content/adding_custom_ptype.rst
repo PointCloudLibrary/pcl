@@ -816,7 +816,7 @@ for any classes that you expose (from PCL our outside PCL).
    
 .. note::
    The invocation of `POINT_CLOUD_REGISTER_POINT_STRUCT` must be in the global 
-   namespace and the name of the new point type mmust be fully qualified.
+   namespace and the name of the new point type must be fully qualified.
 
 Example
 -------
