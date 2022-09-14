@@ -47,7 +47,10 @@
 #include <QMutexLocker>
 #include <QObject>
 #include <QRadioButton>
+#if VTK_MAJOR_VERSION >= 8 && VTK_MINOR_VERSION >= 2
+#define HAS_VTK_82
 #include <QVTKOpenGLWindow.h>
+#endif
 #include <ui_pcd_video_player.h>
 
 #include <vtkCamera.h>
@@ -311,7 +314,9 @@ print_usage()
 int
 main(int argc, char** argv)
 {
+#ifdef HAS_VTK_82
   QSurfaceFormat::setDefaultFormat(QVTKOpenGLWindow::defaultFormat());
+#endif
   QApplication app(argc, argv);
 
   PCDVideoPlayer VideoPlayer;
