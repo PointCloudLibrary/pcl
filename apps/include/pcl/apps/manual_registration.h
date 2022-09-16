@@ -46,7 +46,7 @@
 #include <QMutex>
 #include <QTimer>
 
-using PointT = pcl::PointXYZRGBA;
+using PointT = pcl::PointXYZ;
 
 // Useful macros
 // clang-format off
@@ -81,13 +81,13 @@ public:
   ~ManualRegistration() override = default;
 
   void
-  setSrcCloud(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_src)
+  setSrcCloud(pcl::PointCloud<PointT>::Ptr cloud_src)
   {
     cloud_src_ = std::move(cloud_src);
     cloud_src_present_ = true;
   }
   void
-  setDstCloud(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_dst)
+  setDstCloud(pcl::PointCloud<PointT>::Ptr cloud_dst)
   {
     cloud_dst_ = std::move(cloud_dst);
     cloud_dst_present_ = true;
@@ -105,8 +105,8 @@ protected:
   pcl::visualization::PCLVisualizer::Ptr vis_src_;
   pcl::visualization::PCLVisualizer::Ptr vis_dst_;
 
-  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_src_;
-  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_dst_;
+  pcl::PointCloud<PointT>::Ptr cloud_src_;
+  pcl::PointCloud<PointT>::Ptr cloud_dst_;
 
   QMutex mtx_;
   QMutex vis_mtx_;
@@ -121,13 +121,15 @@ protected:
   bool src_point_selected_;
   bool dst_point_selected_;
 
+  bool transform_computed_ = false;
+
   pcl::PointXYZ src_point_;
   pcl::PointXYZ dst_point_;
 
   pcl::PointCloud<pcl::PointXYZ> src_pc_;
   pcl::PointCloud<pcl::PointXYZ> dst_pc_;
 
-  Eigen::Matrix4f transform_;
+  Eigen::Matrix4f transform_ = Eigen::Affine3f::Identity().matrix();
 
 public Q_SLOTS:
   void

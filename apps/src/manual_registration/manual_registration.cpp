@@ -45,7 +45,7 @@
 #include <QEvent>
 #include <QMutexLocker>
 #include <QObject>
-#if VTK_MAJOR_VERSION >= 8 && VTK_MINOR_VERSION >= 2
+#if VTK_MAJOR_VERSION >= 9
 #define HAS_QVTKOPENGLWINDOW_H
 #include <QVTKOpenGLWindow.h>
 #endif
@@ -267,7 +267,13 @@ ManualRegistration::orthoChanged(int state)
 // TODO
 void
 ManualRegistration::applyTransformPressed()
-{}
+{
+  visualization::PCLVisualizer vis_both;
+  vis_both.addPointCloud(cloud_dst_, "cloud_dst_");
+  vis_both.addPointCloud(cloud_src_, "cloud_src_");
+  vis_both.updatePointCloudPose("cloud_src_", Eigen::Affine3f(transform_));
+  vis_both.spin();
+}
 
 void
 ManualRegistration::refinePressed()
@@ -284,6 +290,10 @@ ManualRegistration::safePressed()
 void
 ManualRegistration::timeoutSlot()
 {
+  if (transform_computed_) {
+    transform_computed_ = false;
+    vis_src_->updatePointCloudPose("cloud_dst_", Eigen::Affine3f(transform_));
+  }
   if (cloud_src_present_ && cloud_src_modified_) {
     if (!vis_src_->updatePointCloud(cloud_src_, "cloud_src_")) {
       vis_src_->addPointCloud(cloud_src_, "cloud_src_");
@@ -327,10 +337,8 @@ main(int argc, char** argv)
 #endif
   QApplication app(argc, argv);
 
-  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_src(
-      new pcl::PointCloud<pcl::PointXYZRGBA>);
-  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_dst(
-      new pcl::PointCloud<pcl::PointXYZRGBA>);
+  pcl::PointCloud<PointT>::Ptr cloud_src(new pcl::PointCloud<PointT>);
+  pcl::PointCloud<PointT>::Ptr cloud_dst(new pcl::PointCloud<PointT>);
 
   if (argc < 3) {
     PCL_ERROR("Incorrect usage\n");
@@ -338,14 +346,12 @@ main(int argc, char** argv)
   }
 
   // TODO do this with PCL console
-  if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>(argv[1], *cloud_src) ==
-      -1) //* load the file
+  if (pcl::io::loadPCDFile<PointT>(argv[1], *cloud_src) == -1) //* load the file
   {
     PCL_ERROR("Couldn't read file %s \n", argv[1]);
     return -1;
   }
-  if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>(argv[2], *cloud_dst) ==
-      -1) //* load the file
+  if (pcl::io::loadPCDFile<PointT>(argv[2], *cloud_dst) == -1) //* load the file
   {
     PCL_ERROR("Couldn't read file %s \n", argv[2]);
     return -1;
