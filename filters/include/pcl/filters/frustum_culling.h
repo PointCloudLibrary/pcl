@@ -171,6 +171,11 @@ namespace pcl
       void 
       setNearPlaneDistance (float np_dist)
       {
+        if (np_dist < 0.0f)
+        {
+          throw PCLException ("Near plane distance should be greater than or equal to 0.",
+            "frustum_culling.h", "setNearPlaneDistance");
+        }
         np_dist_ = np_dist;
       }
 
@@ -187,6 +192,11 @@ namespace pcl
       void 
       setFarPlaneDistance (float fp_dist)
       {
+        if (fp_dist <= 0.0f)
+        {
+          throw PCLException ("Far plane distance should be greater than 0.",
+            "frustum_culling.h", "setFarPlaneDistance");
+        }
         fp_dist_ = fp_dist;
       }
 
