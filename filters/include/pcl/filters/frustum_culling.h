@@ -166,7 +166,7 @@ namespace pcl
       }
 
       /** \brief Set the near plane distance
-        * \param[in] np_dist the near plane distance
+        * \param[in] np_dist the near plane distance. Setting it to 0 to extract a square cone.
         */
       void 
       setNearPlaneDistance (float np_dist)
@@ -187,7 +187,8 @@ namespace pcl
       }
 
       /** \brief Set the far plane distance
-        * \param[in] fp_dist the far plane distance
+        * \param[in] fp_dist the far plane distance.
+        * Setting it to std::numeric_limits<float>::max() so points will not be filtered by far plane.
         */
       void 
       setFarPlaneDistance (float fp_dist)
