@@ -84,10 +84,7 @@ namespace pcl
       /** \brief Constructor        
         */
       StandaloneMarchingCubes (int voxels_x = 512, int voxels_y = 512, int voxels_z = 512, float volume_size = 3.0f);
-      
-      /** \brief Destructor
-        */
-      ~StandaloneMarchingCubes (){}
+
 
       /** \brief Run marching cubes in a TSDF cloud and returns a PolygonMesh. Input X,Y,Z coordinates must be in indices of the TSDF volume grid, output is in meters. 
         * \param[in] cloud TSDF cloud with indices between [0 ... VOXELS_X][0 ... VOXELS_Y][0 ... VOXELS_Z]. Intensity value corresponds to the TSDF value in that coordinate.

@@ -96,7 +96,7 @@ pcl::PassThrough<PointT>::applyFilterIndices (Indices &indices)
       }
 
       // Get the field's value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&(*input_)[ii]);
+      const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&(*input_)[ii]);
       float field_value = 0;
       memcpy (&field_value, pt_data + fields[distance_idx].offset, sizeof (float));
 

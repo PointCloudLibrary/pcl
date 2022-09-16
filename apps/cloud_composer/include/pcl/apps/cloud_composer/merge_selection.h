@@ -48,7 +48,6 @@ namespace pcl
       Q_OBJECT
       public:
         MergeSelection (QMap <const CloudItem*, pcl::PointIndices::ConstPtr > selected_item_index_map, QObject* parent = nullptr);
-        ~MergeSelection ();
         
         QList <CloudComposerItem*>
         performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) override;

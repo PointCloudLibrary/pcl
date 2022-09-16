@@ -71,7 +71,7 @@ void
 display_score_image(const float* score_buffer)
 {
   int npixels = range_likelihood_->getWidth() * range_likelihood_->getHeight();
-  std::uint8_t* score_img = new std::uint8_t[npixels * 3];
+  auto* score_img = new std::uint8_t[npixels * 3];
 
   float min_score = score_buffer[0];
   float max_score = score_buffer[0];
@@ -97,7 +97,7 @@ void
 display_depth_image(const float* depth_buffer, int width, int height)
 {
   int npixels = width * height;
-  std::uint8_t* depth_img = new std::uint8_t[npixels * 3];
+  auto* depth_img = new std::uint8_t[npixels * 3];
 
   float min_depth = depth_buffer[0];
   float max_depth = depth_buffer[0];
@@ -122,7 +122,7 @@ display_depth_image(const float* depth_buffer, int width, int height)
       kd = 2047;
 
     int pval = t_gamma[kd];
-    std::uint8_t lb = static_cast<std::uint8_t>(pval & 0xff);
+    auto lb = static_cast<std::uint8_t>(pval & 0xff);
     switch (pval >> 8) {
     case 0:
       depth_img[3 * i + 0] = 255;

@@ -261,14 +261,14 @@ update (CallbackParameters* params)
   vtkIdType ids[2] = {0, 1};
 
   // Insert the points and compute the lines
-  for ( list<ObjRecRANSAC::OrientedPointPair>::const_iterator it = opps.begin () ; it != opps.end () ; ++it )
+  for ( const auto& opp : opps )
   {
-    vtk_opps_points->SetPoint (ids[0], it->p1_[0], it->p1_[1], it->p1_[2]);
-    vtk_opps_points->SetPoint (ids[1], it->p2_[0], it->p2_[1], it->p2_[2]);
+    vtk_opps_points->SetPoint (ids[0], opp.p1_[0], opp.p1_[1], opp.p1_[2]);
+    vtk_opps_points->SetPoint (ids[1], opp.p2_[0], opp.p2_[1], opp.p2_[2]);
     vtk_opps_lines->InsertNextCell (2, ids);
 
-    vtk_normals->SetTuple3 (ids[0], it->n1_[0], it->n1_[1], it->n1_[2]);
-    vtk_normals->SetTuple3 (ids[1], it->n2_[0], it->n2_[1], it->n2_[2]);
+    vtk_normals->SetTuple3 (ids[0], opp.n1_[0], opp.n1_[1], opp.n1_[2]);
+    vtk_normals->SetTuple3 (ids[1], opp.n2_[0], opp.n2_[1], opp.n2_[2]);
 
     ids[0] += 2;
     ids[1] += 2;
@@ -302,7 +302,7 @@ update (CallbackParameters* params)
   std::sort(accepted_hypotheses.begin (), accepted_hypotheses.end (), compareHypotheses);
 
   // Show the hypotheses
-  for ( std::vector<Hypothesis>::iterator acc_hypo = accepted_hypotheses.begin () ; i < params->num_hypotheses_to_show_ && acc_hypo != accepted_hypotheses.end () ; ++i, ++acc_hypo )
+  for ( auto acc_hypo = accepted_hypotheses.begin () ; i < params->num_hypotheses_to_show_ && acc_hypo != accepted_hypotheses.end () ; ++i, ++acc_hypo )
   {
     // Visualize the orientation as a tripod
     char frame_name[128];
@@ -383,7 +383,7 @@ update (CallbackParameters* params)
 void
 keyboardCB (const pcl::visualization::KeyboardEvent &event, void* params_void)
 {
-  CallbackParameters* params = static_cast<CallbackParameters*> (params_void);
+  auto* params = static_cast<CallbackParameters*> (params_void);
 
   if (event.getKeyCode () == 13 /*enter*/ && event.keyUp ())
     update (params);
@@ -392,7 +392,7 @@ keyboardCB (const pcl::visualization::KeyboardEvent &event, void* params_void)
     // Switch models visibility
     params->show_models_ = !params->show_models_;
 
-    for ( std::list<vtkActor*>::iterator it = params->model_actors_.begin () ; it != params->model_actors_.end () ; ++it )
+    for ( auto it = params->model_actors_.begin () ; it != params->model_actors_.end () ; ++it )
       (*it)->SetVisibility (static_cast<int> (params->show_models_));
 
     params->viz_.getRenderWindow ()->Render ();

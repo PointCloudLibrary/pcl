@@ -271,8 +271,9 @@ pcl::DenseCrf::runInference(float relax)
     next_[i] = -unary_[i];
 
   // Add up all pairwise potentials
-  for (auto& p : pairwise_potential_)
+  for (auto& p : pairwise_potential_) {
     p->compute(next_, current_, tmp_, M_);
+  }
 
   // Exponentiate and normalize
   expAndNormalize(current_, next_, 1.0, relax);

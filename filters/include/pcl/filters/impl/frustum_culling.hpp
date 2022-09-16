@@ -92,7 +92,7 @@ pcl::FrustumCulling<PointT>::applyFilter (Indices &indices)
   pl_f (3) = -fp_c.dot (pl_f.head<3> ());                   // perpendicular edges of the far plane
 
   pl_n.head<3> () = (np_tr - np_br).cross (np_bl - np_br);  // Near plane equation - cross product of the 
-  pl_n (3) = -np_c.dot (pl_n.head<3> ());                   // perpendicular edges of the far plane
+  pl_n (3) = -np_c.dot (pl_n.head<3> ());                   // perpendicular edges of the near plane
 
   Eigen::Vector3f a (fp_bl - T);  // Vector connecting the camera and far plane bottom left
   Eigen::Vector3f b (fp_br - T);  // Vector connecting the camera and far plane bottom right

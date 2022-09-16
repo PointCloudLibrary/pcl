@@ -53,9 +53,6 @@ public:
   /** Constructor. */
   RegressionVarianceNode() : value(0), variance(0), threshold(0), sub_nodes() {}
 
-  /** Destructor. */
-  virtual ~RegressionVarianceNode() {}
-
   /** Serializes the node to the specified stream.
    *
    * \param[out] stream the destination for the serialization
@@ -130,9 +127,6 @@ public:
   RegressionVarianceStatsEstimator(BranchEstimator* branch_estimator)
   : branch_estimator_(branch_estimator)
   {}
-
-  /** Destructor. */
-  virtual ~RegressionVarianceStatsEstimator() {}
 
   /** Returns the number of branches the corresponding tree has. */
   inline std::size_t

@@ -57,7 +57,6 @@ namespace pcl
                      const pcl::PointCloud<pcl::FPFHSignature33>::Ptr& fpfh_ptr,
                      double radius);
         FPFHItem (const FPFHItem& to_copy);
-        ~FPFHItem ();
         
         inline int 
         type () const override { return FPFH_ITEM; }

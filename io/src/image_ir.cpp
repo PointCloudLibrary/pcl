@@ -138,7 +138,7 @@ void pcl::io::IRImage::fillRaw (unsigned width, unsigned height, unsigned short*
 
   unsigned irIdx = 0;
 
-  const unsigned short* inputBuffer = static_cast<const unsigned short*> (wrapper_->getData ());
+  const auto* inputBuffer = static_cast<const unsigned short*> (wrapper_->getData ());
 
   for (unsigned yIdx = 0; yIdx < height; ++yIdx, irIdx += ySkip)
   {

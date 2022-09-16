@@ -12,11 +12,6 @@ pcl::cloud_composer::TransformClouds::TransformClouds (QMap <QString, vtkSmartPo
   
 }
 
-pcl::cloud_composer::TransformClouds::~TransformClouds ()
-{
-  
-}
-
 QList <pcl::cloud_composer::CloudComposerItem*>
 pcl::cloud_composer::TransformClouds::performAction (ConstItemList input_data, PointTypeFlags::PointType type)
 {

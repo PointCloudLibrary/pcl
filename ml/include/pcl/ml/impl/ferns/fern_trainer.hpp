@@ -60,14 +60,6 @@ template <class FeatureType,
           class LabelType,
           class ExampleIndex,
           class NodeType>
-FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::~FernTrainer()
-{}
-
-template <class FeatureType,
-          class DataSet,
-          class LabelType,
-          class ExampleIndex,
-          class NodeType>
 void
 FernTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train(
     pcl::Fern<FeatureType, NodeType>& fern)

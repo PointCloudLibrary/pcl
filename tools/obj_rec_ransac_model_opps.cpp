@@ -186,7 +186,7 @@ void showModelOpps (PCLVisualizer& viz, const ModelLibrary::HashTable& hash_tabl
   for (int i = 0 ; i < num_cells ; ++i )
   {
     // Make sure that we get only point pairs belonging to 'model'
-	ModelLibrary::HashTableCell::const_iterator res = cells[i].find (model);
+	auto res = cells[i].find (model);
     if ( res == cells[i].end () )
       continue;
 

@@ -14,11 +14,6 @@ pcl::cloud_composer::MergeSelection::MergeSelection (QMap <const CloudItem*, pcl
 
 }
 
-pcl::cloud_composer::MergeSelection::~MergeSelection ()
-{
-
-}
-
 QList <pcl::cloud_composer::CloudComposerItem*>
 pcl::cloud_composer::MergeSelection::performAction (ConstItemList input_data, PointTypeFlags::PointType type)
 {

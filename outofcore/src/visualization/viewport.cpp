@@ -99,7 +99,7 @@ void
 Viewport::viewportModifiedCallback (vtkObject* vtkNotUsed (caller), unsigned long int vtkNotUsed (eventId),
                                     void* clientData, void* vtkNotUsed (callData))
 {
-  Viewport *viewport = reinterpret_cast<Viewport*> (clientData);
+  auto *viewport = reinterpret_cast<Viewport*> (clientData);
   viewport->viewportModified ();
 }
 
@@ -123,7 +123,7 @@ void
 Viewport::viewportActorUpdateCallback (vtkObject* /*caller*/, unsigned long int vtkNotUsed (eventId), void* clientData,
                                        void* vtkNotUsed (callData))
 {
-  Viewport *viewport = reinterpret_cast<Viewport*> (clientData);
+  auto *viewport = reinterpret_cast<Viewport*> (clientData);
   viewport->viewportActorUpdate ();
 }
 
@@ -151,7 +151,7 @@ void
 Viewport::viewportHudUpdateCallback (vtkObject* vtkNotUsed (caller), unsigned long int vtkNotUsed (eventId),
                                      void* clientData, void* vtkNotUsed (callData))
 {
-  Viewport *viewport = reinterpret_cast<Viewport*> (clientData);
+  auto *viewport = reinterpret_cast<Viewport*> (clientData);
   viewport->viewportHudUpdate ();
 }
 

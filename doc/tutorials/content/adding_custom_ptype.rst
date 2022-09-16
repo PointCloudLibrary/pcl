@@ -813,6 +813,10 @@ for any classes that you expose (from PCL our outside PCL).
 .. note::
    Starting with PCL-1.7 you need to define PCL_NO_PRECOMPILE before you include
    any PCL headers to include the templated algorithms as well.
+   
+.. note::
+   The invocation of `POINT_CLOUD_REGISTER_POINT_STRUCT` must be in the global 
+   namespace and the name of the new point type must be fully qualified.
 
 Example
 -------

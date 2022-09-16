@@ -15,7 +15,7 @@ public:
   EIGEN_POLYNOMIAL_SOLVER_BASE_INHERITED_TYPES(PS_Base)
 
 public:
-  virtual ~PolynomialSolver() {}
+  virtual ~PolynomialSolver() = default;
 
   template <typename OtherPolynomial>
   inline PolynomialSolver(const OtherPolynomial& poly, bool& hasRealRoot)
@@ -87,7 +87,7 @@ struct BFGSDummyFunctor {
   BFGSDummyFunctor() : m_inputs(InputsAtCompileTime) {}
   BFGSDummyFunctor(int inputs) : m_inputs(inputs) {}
 
-  virtual ~BFGSDummyFunctor() {}
+  virtual ~BFGSDummyFunctor() = default;
   int
   inputs() const
   {

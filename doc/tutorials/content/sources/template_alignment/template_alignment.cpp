@@ -29,8 +29,6 @@ class FeatureCloud
       feature_radius_ (0.02f)
     {}
 
-    ~FeatureCloud () {}
-
     // Process the given cloud
     void
     setInputCloud (PointCloud::Ptr xyz)
@@ -139,8 +137,6 @@ class TemplateAlignment
       sac_ia_.setMaxCorrespondenceDistance (max_correspondence_distance_);
       sac_ia_.setMaximumIterations (nr_iterations_);
     }
-
-    ~TemplateAlignment () {}
 
     // Set the given cloud as the target to which the templates will be aligned
     void

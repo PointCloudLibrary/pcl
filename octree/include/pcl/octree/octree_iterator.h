@@ -127,7 +127,7 @@ public:
   {}
 
   /** \brief Empty deconstructor. */
-  virtual ~OctreeIteratorBase() {}
+  virtual ~OctreeIteratorBase() = default;
 
   /** \brief Equal comparison operator
    * \param[in] other OctreeIteratorBase to compare with

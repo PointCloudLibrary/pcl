@@ -949,11 +949,9 @@ pcl::ihs::OpenGLViewer::drawMeshes()
     exit(EXIT_FAILURE);
   }
 
-  for (FaceVertexMeshMap::const_iterator it = drawn_meshes_.begin();
-       it != drawn_meshes_.end();
-       ++it) {
-    if (it->second && !it->second->vertices.empty()) {
-      const FaceVertexMesh& mesh = *it->second;
+  for (const auto& drawn_mesh : drawn_meshes_) {
+    if (drawn_mesh.second && !drawn_mesh.second->vertices.empty()) {
+      const FaceVertexMesh& mesh = *drawn_mesh.second;
 
       glVertexPointer(3, GL_FLOAT, sizeof(PointIHS), &(mesh.vertices[0].x));
       glNormalPointer(GL_FLOAT, sizeof(PointIHS), &(mesh.vertices[0].normal_x));

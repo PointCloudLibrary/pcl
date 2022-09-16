@@ -259,7 +259,7 @@ getBoundaryVertices (const MeshT& mesh, const int first, const bool verbose = fa
 template <class ContainerT> bool
 isCircularPermutation (const ContainerT& expected, const ContainerT& actual, const bool verbose = false)
 {
-  const unsigned int n = static_cast <unsigned int> (expected.size ());
+  const auto n = static_cast <unsigned int> (expected.size ());
   EXPECT_EQ (n, actual.size ());
   if (n != actual.size ())
   {
@@ -295,7 +295,7 @@ isCircularPermutation (const ContainerT& expected, const ContainerT& actual, con
 template <class ContainerT> bool
 isCircularPermutationVec (const std::vector <ContainerT> &expected, const std::vector <ContainerT> &actual, const bool verbose = false)
 {
-  const unsigned int n = static_cast<unsigned int> (expected.size ());
+  const auto n = static_cast<unsigned int> (expected.size ());
   EXPECT_EQ (n, actual.size ());
   if (n != actual.size ())
   {

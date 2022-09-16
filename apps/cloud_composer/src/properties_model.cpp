@@ -38,10 +38,6 @@ pcl::cloud_composer::PropertiesModel::PropertiesModel (const PropertiesModel& to
   }
 }
 
-pcl::cloud_composer::PropertiesModel::~PropertiesModel ()
-{  
-}
-
 void
 pcl::cloud_composer::PropertiesModel::addProperty (const QString& prop_name, const QVariant& value,  Qt::ItemFlags flags, const QString& category)
 {

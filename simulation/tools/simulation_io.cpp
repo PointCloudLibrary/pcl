@@ -116,7 +116,7 @@ pcl::simulation::SimExample::write_score_image(const float* score_buffer,
                                                std::string fname)
 {
   int npixels = rl_->getWidth() * rl_->getHeight();
-  std::uint8_t* score_img = new std::uint8_t[npixels * 3];
+  auto* score_img = new std::uint8_t[npixels * 3];
 
   float min_score = score_buffer[0];
   float max_score = score_buffer[0];
@@ -150,7 +150,7 @@ pcl::simulation::SimExample::write_depth_image(const float* depth_buffer,
                                                std::string fname)
 {
   int npixels = rl_->getWidth() * rl_->getHeight();
-  std::uint8_t* depth_img = new std::uint8_t[npixels * 3];
+  auto* depth_img = new std::uint8_t[npixels * 3];
 
   float min_depth = depth_buffer[0];
   float max_depth = depth_buffer[0];
@@ -172,7 +172,7 @@ pcl::simulation::SimExample::write_depth_image(const float* depth_buffer,
       float z = -zf * zn / ((zf - zn) * (d - zf / (zf - zn)));
       float b = 0.075;
       float f = 580.0;
-      std::uint16_t kd = static_cast<std::uint16_t>(1090 - b * f / z * 8);
+      auto kd = static_cast<std::uint16_t>(1090 - b * f / z * 8);
       if (kd > 2047)
         kd = 2047;
 
@@ -229,7 +229,7 @@ pcl::simulation::SimExample::write_depth_image_uint(const float* depth_buffer,
                                                     std::string fname)
 {
   int npixels = rl_->getWidth() * rl_->getHeight();
-  unsigned short* depth_img = new unsigned short[npixels];
+  auto* depth_img = new unsigned short[npixels];
 
   float min_depth = depth_buffer[0];
   float max_depth = depth_buffer[0];
@@ -271,7 +271,7 @@ pcl::simulation::SimExample::write_rgb_image(const std::uint8_t* rgb_buffer,
                                              std::string fname)
 {
   int npixels = rl_->getWidth() * rl_->getHeight();
-  std::uint8_t* rgb_img = new std::uint8_t[npixels * 3];
+  auto* rgb_img = new std::uint8_t[npixels * 3];
 
   for (int y = 0; y < height_; ++y) {
     for (int x = 0; x < width_; ++x) {

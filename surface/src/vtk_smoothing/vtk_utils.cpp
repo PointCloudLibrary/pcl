@@ -224,7 +224,7 @@ pcl::VTKUtils::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyDa
   {
     for (int i = 0; i < nr_polygons; i++)
     {
-      unsigned int nr_points_in_polygon = static_cast<unsigned int> (mesh.polygons[i].vertices.size ());
+      auto nr_points_in_polygon = static_cast<unsigned int> (mesh.polygons[i].vertices.size ());
       vtk_mesh_polygons->InsertNextCell (nr_points_in_polygon);
       for (unsigned int j = 0; j < nr_points_in_polygon; j++)
         vtk_mesh_polygons->InsertCellPoint(mesh.polygons[i].vertices[j]);

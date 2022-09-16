@@ -14,11 +14,6 @@ pcl::cloud_composer::VoxelGridDownsampleTool::VoxelGridDownsampleTool (Propertie
   
 }
 
-pcl::cloud_composer::VoxelGridDownsampleTool::~VoxelGridDownsampleTool ()
-{
-  
-}
-
 QList <pcl::cloud_composer::CloudComposerItem*>
 pcl::cloud_composer::VoxelGridDownsampleTool::performAction (ConstItemList input_data, PointTypeFlags::PointType)
 {

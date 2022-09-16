@@ -223,7 +223,7 @@ openni_wrapper::DeviceONI::PlayerThreadFunction ()
 void __stdcall 
 openni_wrapper::DeviceONI::NewONIDepthDataAvailable (xn::ProductionNode&, void* cookie) noexcept
 {
-  DeviceONI* device = reinterpret_cast<DeviceONI*>(cookie);
+  auto* device = reinterpret_cast<DeviceONI*>(cookie);
   if (device->depth_stream_running_)
     device->depth_condition_.notify_all ();
 }
@@ -232,7 +232,7 @@ openni_wrapper::DeviceONI::NewONIDepthDataAvailable (xn::ProductionNode&, void* 
 void __stdcall 
 openni_wrapper::DeviceONI::NewONIImageDataAvailable (xn::ProductionNode&, void* cookie) noexcept
 {
-  DeviceONI* device = reinterpret_cast<DeviceONI*> (cookie);
+  auto* device = reinterpret_cast<DeviceONI*> (cookie);
   if (device->image_stream_running_)
     device->image_condition_.notify_all ();
 }
@@ -241,7 +241,7 @@ openni_wrapper::DeviceONI::NewONIImageDataAvailable (xn::ProductionNode&, void* 
 void __stdcall 
 openni_wrapper::DeviceONI::NewONIIRDataAvailable (xn::ProductionNode&, void* cookie) noexcept
 {
-  DeviceONI* device = reinterpret_cast<DeviceONI*> (cookie);
+  auto* device = reinterpret_cast<DeviceONI*> (cookie);
   if (device->ir_stream_running_)
     device->ir_condition_.notify_all ();
 }

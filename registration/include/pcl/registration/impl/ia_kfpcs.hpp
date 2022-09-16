@@ -156,12 +156,9 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
   // residual costs based on mse
   pcl::Indices ids;
   std::vector<float> dists_sqr;
-  for (PointCloudSourceIterator it = source_transformed.begin(),
-                                it_e = source_transformed.end();
-       it != it_e;
-       ++it) {
+  for (const auto& source : source_transformed) {
     // search for nearest point using kd tree search
-    tree_->nearestKSearch(*it, 1, ids, dists_sqr);
+    tree_->nearestKSearch(source, 1, ids, dists_sqr);
     score_a += (dists_sqr[0] < max_inlier_dist_sqr_ ? dists_sqr[0]
                                                     : max_inlier_dist_sqr_); // MSAC
   }
@@ -240,30 +237,28 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getNBestCandid
   candidates.clear();
 
   // loop over all candidates starting from the best one
-  for (MatchingCandidates::iterator it_candidate = candidates_.begin(),
-                                    it_e = candidates_.end();
-       it_candidate != it_e;
-       ++it_candidate) {
+  for (const auto& candidate : candidates_) {
     // stop if current candidate has no valid score
-    if (it_candidate->fitness_score == std::numeric_limits<float>::max())
+    if (candidate.fitness_score == std::numeric_limits<float>::max())
       return;
 
     // check if current candidate is a unique one compared to previous using the
     // min_diff threshold
     bool unique = true;
-    MatchingCandidates::iterator it = candidates.begin(), it_e2 = candidates.end();
-    while (unique && it != it_e2) {
+    for (const auto& c2 : candidates) {
       Eigen::Matrix4f diff =
-          it_candidate->transformation.colPivHouseholderQr().solve(it->transformation);
+          candidate.transformation.colPivHouseholderQr().solve(c2.transformation);
       const float angle3d = Eigen::AngleAxisf(diff.block<3, 3>(0, 0)).angle();
       const float translation3d = diff.block<3, 1>(0, 3).norm();
       unique = angle3d > min_angle3d && translation3d > min_translation3d;
-      ++it;
+      if (!unique) {
+        break;
+      }
     }
 
     // add candidate to best candidates
     if (unique)
-      candidates.push_back(*it_candidate);
+      candidates.push_back(candidate);
 
     // stop if n candidates are reached
     if (candidates.size() == n)
@@ -279,30 +274,28 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getTBestCandid
   candidates.clear();
 
   // loop over all candidates starting from the best one
-  for (MatchingCandidates::iterator it_candidate = candidates_.begin(),
-                                    it_e = candidates_.end();
-       it_candidate != it_e;
-       ++it_candidate) {
+  for (const auto& candidate : candidates_) {
     // stop if current candidate has score below threshold
-    if (it_candidate->fitness_score > t)
+    if (candidate.fitness_score > t)
       return;
 
     // check if current candidate is a unique one compared to previous using the
     // min_diff threshold
     bool unique = true;
-    MatchingCandidates::iterator it = candidates.begin(), it_e2 = candidates.end();
-    while (unique && it != it_e2) {
+    for (const auto& c2 : candidates) {
       Eigen::Matrix4f diff =
-          it_candidate->transformation.colPivHouseholderQr().solve(it->transformation);
+          candidate.transformation.colPivHouseholderQr().solve(c2.transformation);
       const float angle3d = Eigen::AngleAxisf(diff.block<3, 3>(0, 0)).angle();
       const float translation3d = diff.block<3, 1>(0, 3).norm();
       unique = angle3d > min_angle3d && translation3d > min_translation3d;
-      ++it;
+      if (!unique) {
+        break;
+      }
     }
 
     // add candidate to best candidates
     if (unique)
-      candidates.push_back(*it_candidate);
+      candidates.push_back(candidate);
   }
 }
 

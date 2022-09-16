@@ -272,7 +272,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
       // Facets are tetrahedrons (3d)
       if (!facet->upperdelaunay)
       {
-        vertexT *anyVertex = static_cast<vertexT*> (facet->vertices->e[0].p);
+        auto *anyVertex = static_cast<vertexT*> (facet->vertices->e[0].p);
         double *center = facet->center;
         double r = qh_pointdist (anyVertex->point,center,dim_);
 
@@ -400,7 +400,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
       {
         // Check if the distance from any vertex to the facet->center
         // (center of the voronoi cell) is smaller than alpha
-        vertexT *anyVertex = static_cast<vertexT*>(facet->vertices->e[0].p);
+        auto *anyVertex = static_cast<vertexT*>(facet->vertices->e[0].p);
         double r = (sqrt ((anyVertex->point[0] - facet->center[0]) *
                           (anyVertex->point[0] - facet->center[0]) +
                           (anyVertex->point[1] - facet->center[1]) *
@@ -480,7 +480,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     alpha_shape_sorted.resize (vertices);
 
     // iterate over edges until they are empty!
-    std::map<int, std::vector<int> >::iterator curr = edges.begin ();
+    auto curr = edges.begin ();
     int next = - 1;
     std::vector<bool> used (vertices, false);   // used to decide which direction should we take!
     std::vector<int> pcd_idx_start_polygons;

@@ -119,10 +119,6 @@ pcl::io::real_sense::RealSenseDeviceManager::RealSenseDeviceManager ()
   populateDeviceList ();
 }
 
-pcl::io::real_sense::RealSenseDeviceManager::~RealSenseDeviceManager ()
-{
-}
-
 pcl::io::real_sense::RealSenseDevice::Ptr
 pcl::io::real_sense::RealSenseDeviceManager::captureDevice ()
 {

@@ -51,9 +51,6 @@ public:
   /** Constructor. */
   Fern() : num_of_decisions_(0), features_(0), thresholds_(0), nodes_(1) {}
 
-  /** Destructor. */
-  virtual ~Fern() {}
-
   /** Initializes the fern.
    *
    * \param num_of_decisions the number of decisions taken to access the nodes
@@ -93,19 +90,16 @@ public:
     stream.write(reinterpret_cast<const char*>(&num_of_decisions_),
                  sizeof(num_of_decisions_));
 
-    for (std::size_t feature_index = 0; feature_index < features_.size();
-         ++feature_index) {
-      features_[feature_index].serialize(stream);
+    for (auto& feature : features_) {
+      feature.serialize(stream);
     }
 
-    for (std::size_t threshold_index = 0; threshold_index < thresholds_.size();
-         ++threshold_index) {
-      stream.write(reinterpret_cast<const char*>(&(thresholds_[threshold_index])),
-                   sizeof(thresholds_[threshold_index]));
+    for (const auto& threshold : thresholds_) {
+      stream.write(reinterpret_cast<const char*>(&threshold), sizeof(threshold));
     }
 
-    for (std::size_t node_index = 0; node_index < nodes_.size(); ++node_index) {
-      nodes_[node_index].serialize(stream);
+    for (auto& node : nodes_) {
+      node.serialize(stream);
     }
   }
 
@@ -122,19 +116,16 @@ public:
     thresholds_.resize(num_of_decisions_);
     nodes_.resize(0x1 << num_of_decisions_);
 
-    for (std::size_t feature_index = 0; feature_index < features_.size();
-         ++feature_index) {
-      features_[feature_index].deserialize(stream);
+    for (auto& feature : features_) {
+      feature.deserialize(stream);
     }
 
-    for (std::size_t threshold_index = 0; threshold_index < thresholds_.size();
-         ++threshold_index) {
-      stream.read(reinterpret_cast<char*>(&(thresholds_[threshold_index])),
-                  sizeof(thresholds_[threshold_index]));
+    for (const auto& threshold : thresholds_) {
+      stream.read(reinterpret_cast<char*>(&(threshold)), sizeof(threshold));
     }
 
-    for (std::size_t node_index = 0; node_index < nodes_.size(); ++node_index) {
-      nodes_[node_index].deserialize(stream);
+    for (auto& node : nodes_) {
+      node.deserialize(stream);
     }
   }
 

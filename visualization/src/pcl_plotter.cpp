@@ -612,7 +612,7 @@ pcl::visualization::PCLPlotter::computeHistogram (
   {
     if (std::isfinite (value))
     {
-      unsigned int index = (unsigned int) (std::floor ((value - min) / size));
+      auto index = (unsigned int) (std::floor ((value - min) / size));
       if (index == (unsigned int) nbins) index = nbins - 1; //including right boundary
       histogram[index].second++;
     }

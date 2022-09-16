@@ -85,7 +85,6 @@ namespace pcl
             static void get_gpu_arch_compiled_for(int& bin, int& ptr);
 
             OctreeImpl() {};
-            ~OctreeImpl() {};
 
             void setCloud(const PointCloud& input_points);           
             void build();

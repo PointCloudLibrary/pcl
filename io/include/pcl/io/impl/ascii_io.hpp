@@ -50,7 +50,7 @@ ASCIIReader::setInputFields ()
 
   // Remove empty fields and adjust offset
   int offset =0;
-  for (std::vector<pcl::PCLPointField>::iterator field_iter = fields_.begin ();
+  for (auto field_iter = fields_.begin ();
        field_iter != fields_.end (); ++field_iter)
   {
     if (field_iter->name == "_") 

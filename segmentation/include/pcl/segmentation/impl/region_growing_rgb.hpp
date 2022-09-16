@@ -195,7 +195,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::extract (std::vector <pcl::PointIndices>
   findSegmentNeighbours ();
   applyRegionMergingAlgorithm ();
 
-  std::vector<pcl::PointIndices>::iterator cluster_iter = clusters_.begin ();
+  auto cluster_iter = clusters_.begin ();
   while (cluster_iter != clusters_.end ())
   {
     if (cluster_iter->indices.size () < min_pts_per_cluster_ ||

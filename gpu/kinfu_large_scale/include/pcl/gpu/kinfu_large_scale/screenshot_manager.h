@@ -72,9 +72,6 @@ namespace pcl
           /** Constructor */
           ScreenshotManager();
 
-          /** Destructor */
-          ~ScreenshotManager(){}
-          
           /** \brief Sets Depth camera intrinsics
             * \param[in] focal focal length x 
             * \param height

@@ -66,7 +66,6 @@ pcl::device::FacetStream::canSplit() const
 struct pcl::gpu::PseudoConvexHull3D::Impl
 {
     Impl(std::size_t buffer_size) : fs(buffer_size) {}
-    ~Impl() {};
     
     device::FacetStream fs;
 };
@@ -75,8 +74,6 @@ pcl::gpu::PseudoConvexHull3D::PseudoConvexHull3D(std::size_t bsize)
 {
   impl_.reset( new Impl(bsize) );
 }
-pcl::gpu::PseudoConvexHull3D::~PseudoConvexHull3D() {}
-
 
 void 
 pcl::gpu::PseudoConvexHull3D::reconstruct (const Cloud &cloud, DeviceArray2D<int>& vertexes)

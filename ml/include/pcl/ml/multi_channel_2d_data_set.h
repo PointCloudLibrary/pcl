@@ -51,9 +51,6 @@ public:
   /** Constructor. */
   inline MultiChannel2DData() : data_(NULL), width_(0), height_(0) {}
 
-  /** Destructor. */
-  virtual ~MultiChannel2DData() {}
-
   /** Resizes the internal data storage.
    *
    * \param[in] width the width of the resized 2D data array
@@ -141,9 +138,6 @@ class PCL_EXPORTS MultiChannel2DDataSet {
 public:
   /** Constructor. */
   inline MultiChannel2DDataSet() : data_set_() {}
-
-  /** Destructor. */
-  virtual ~MultiChannel2DDataSet() {}
 
   /** Adds a new two-dimensional data block to the data set.
    *

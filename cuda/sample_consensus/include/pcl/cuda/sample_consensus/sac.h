@@ -86,7 +86,7 @@ namespace pcl
         {};
 
         /** \brief Destructor for base SAC. */
-        virtual ~SampleConsensus () {};
+        virtual ~SampleConsensus() = default;
 
         /** \brief Set the distance to model threshold.
           * \param threshold distance to model threshold

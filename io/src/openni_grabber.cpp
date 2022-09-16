@@ -110,7 +110,7 @@ pcl::OpenNIGrabber::OpenNIGrabber (const std::string& device_id, const Mode& dep
     {
       imageDepthImageCallback (image, depth_image);
     });
-    openni_wrapper::DeviceKinect* kinect = dynamic_cast<openni_wrapper::DeviceKinect*> (device_.get ());
+    auto* kinect = dynamic_cast<openni_wrapper::DeviceKinect*> (device_.get ());
     if (kinect)
       kinect->setDebayeringMethod (openni_wrapper::ImageBayerGRBG::EdgeAware);
   }
@@ -849,7 +849,7 @@ pcl::OpenNIGrabber::updateModeMaps ()
 bool
 pcl::OpenNIGrabber::mapConfigMode2XnMode (int mode, XnMapOutputMode &xnmode) const
 {
-  std::map<int, XnMapOutputMode>::const_iterator it = config2xn_map_.find (mode);
+  auto it = config2xn_map_.find (mode);
   if (it != config2xn_map_.end ())
   {
     xnmode = it->second;

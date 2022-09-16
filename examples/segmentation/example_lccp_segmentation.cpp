@@ -379,7 +379,7 @@ LCCPSegmentation Parameters: \n\
     
     // Create a polydata to store everything in
     vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New ();
-    for (VertexIterator itr = vertex_iterator_range.first; itr != vertex_iterator_range.second; ++itr)
+    for (auto itr = vertex_iterator_range.first; itr != vertex_iterator_range.second; ++itr)
     {
       const std::uint32_t sv_label = sv_adjacency_list[*itr];
       std::pair<AdjacencyIterator, AdjacencyIterator> neighbors = boost::adjacent_vertices (*itr, sv_adjacency_list);

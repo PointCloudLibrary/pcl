@@ -103,7 +103,7 @@ keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
 void 
 mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
 {
-  std::string* message = static_cast<std::string*> (cookie);
+  auto* message = static_cast<std::string*> (cookie);
   if (mouse_event.getType() == pcl::visualization::MouseEvent::MouseButtonPress && mouse_event.getButton() == pcl::visualization::MouseEvent::LeftButton)
   {
     std::cout << (*message) << " :: " << mouse_event.getX () << " , " << mouse_event.getY () << std::endl;

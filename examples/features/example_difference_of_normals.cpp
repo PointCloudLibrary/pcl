@@ -209,10 +209,10 @@ int main (int argc, char *argv[])
   ec.extract (cluster_indices);
 
   int j = 0;
-  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it, j++)
+  for (const auto& cluster : cluster_indices)
   {
     pcl::PointCloud<PointOutT>::Ptr cloud_cluster_don (new pcl::PointCloud<PointOutT>);
-    for (const auto &index : it->indices){
+    for (const auto &index : cluster.indices){
       cloud_cluster_don->points.push_back ((*doncloud)[index]);
     }
 
@@ -224,6 +224,7 @@ int main (int argc, char *argv[])
     std::stringstream ss;
     ss << outfile.substr(0,outfile.length()-4) << "_threshold_"<< threshold << "_cluster_" << j << ".pcd";
     writer.write<PointOutT> (ss.str (), *cloud_cluster_don, false);
+    ++j;
   }
 }
 

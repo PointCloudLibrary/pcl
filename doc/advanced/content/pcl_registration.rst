@@ -145,7 +145,7 @@ LoopDetection
    class LoopDetection
    {
      public:
-       virtual ~LoopDetection () {}
+       virtual ~LoopDetection() = default;
        virtual list<std::pair<PointCloud*, PointCloud*> > detectLoop(list<PosedPointCloud*> poses, list<PosedPointCloud*> query) {} = 0;
    }
 

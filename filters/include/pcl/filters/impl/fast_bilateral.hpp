@@ -138,7 +138,7 @@ FastBilateralFilter<PointT>::applyFilter (PointCloud &output)
 
   if (early_division_)
   {
-    for (std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> >::iterator d = data.begin (); d != data.end (); ++d)
+    for (auto d = data.begin (); d != data.end (); ++d)
       *d /= ((*d)[0] != 0) ? (*d)[1] : 1;
 
     for (std::size_t x = 0; x < input_->width; x++)

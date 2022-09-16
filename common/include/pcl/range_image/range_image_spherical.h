@@ -59,7 +59,7 @@ namespace pcl
       /** Constructor */
       PCL_EXPORTS RangeImageSpherical () {}
       /** Destructor */
-      PCL_EXPORTS virtual ~RangeImageSpherical () {}
+      PCL_EXPORTS virtual ~RangeImageSpherical () = default;
 
       /** Return a newly created RangeImagePlanar.
        *  Reimplementation to return an image of the same type. */

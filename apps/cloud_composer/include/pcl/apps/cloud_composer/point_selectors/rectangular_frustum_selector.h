@@ -55,8 +55,6 @@ namespace pcl
         vtkTypeMacro(RectangularFrustumSelector,vtkInteractorStyleRubberBandPick);
         
         RectangularFrustumSelector ();
-        
-        ~RectangularFrustumSelector ();
                
         /** \brief Pass a pointer to the actor map
           * \param[in] actors the actor map that will be used with this style
