@@ -88,8 +88,8 @@ if(VTK_FOUND)
       src/manual_registration/manual_registration.cpp
       src/manual_registration/manual_registration.ui
       BUNDLE)
-      
-    target_link_libraries(pcl_manual_registration pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface ${QTX}::Widgets)
+
+    target_link_libraries(pcl_manual_registration pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface pcl_filters ${QTX}::Widgets)
 
     PCL_ADD_EXECUTABLE(pcl_pcd_video_player
       COMPONENT
@@ -99,7 +99,7 @@ if(VTK_FOUND)
       src/pcd_video_player/pcd_video_player.cpp
       src/pcd_video_player/pcd_video_player.ui
       BUNDLE)
-    
+
     target_link_libraries(pcl_pcd_video_player pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface ${QTX}::Widgets)
   endif()
 
@@ -163,7 +163,7 @@ if(VTK_FOUND)
           include/pcl/apps/openni_passthrough.h
           src/openni_passthrough.cpp
           src/openni_passthrough.ui)
-          
+
       target_link_libraries(pcl_openni_passthrough pcl_common pcl_io pcl_filters pcl_visualization ${QTX}::Widgets)
 
       list(APPEND CMAKE_AUTOUIC_SEARCH_PATHS "src")

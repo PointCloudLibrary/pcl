@@ -39,7 +39,9 @@
  */
 
 #include <pcl/apps/manual_registration.h>
+#include <pcl/filters/voxel_grid.h>
 #include <pcl/io/pcd_io.h> // for loadPCDFile
+#include <pcl/registration/icp.h>
 
 #include <QApplication>
 #include <QEvent>
@@ -277,7 +279,30 @@ ManualRegistration::applyTransformPressed()
 
 void
 ManualRegistration::refinePressed()
-{}
+{
+  VoxelGrid<PointT> grid_filter;
+  grid_filter.setLeafSize(0.05, 0.05, 0.05);
+  PointCloud<PointT>::Ptr src_copy{new PointCloud<PointT>(*cloud_src_)};
+  PointCloud<PointT>::Ptr dst_copy{new PointCloud<PointT>(*cloud_dst_)};
+  grid_filter.setInputCloud(src_copy);
+  grid_filter.filter(*src_copy);
+  grid_filter.setInputCloud(dst_copy);
+  grid_filter.filter(*dst_copy);
+
+  IterativeClosestPoint<PointT, PointT>::Ptr icp{
+      new IterativeClosestPoint<PointT, PointT>};
+  icp->setInputSource(src_copy);
+  icp->setInputTarget(dst_copy);
+  icp->setMaximumIterations(100);
+  icp->setMaxCorrespondenceDistance(0.1);
+  icp->setEuclideanFitnessEpsilon(0.000000001);
+  icp->setTransformationEpsilon(0.000000001);
+  icp->setTransformationRotationEpsilon(0.000000001);
+  PointCloud<PointT>::Ptr aligned{new PointCloud<PointT>};
+  icp->align(*aligned, transform_);
+  transform_ = icp->getFinalTransformation();
+  std::cout << "refined transform:\n" << transform_ << std::endl;
+}
 
 void
 ManualRegistration::undoPressed()
