@@ -44,10 +44,14 @@
 #include <pcl/octree/octree_nodes.h>
 #include <pcl/pcl_macros.h>
 
+#include <array>
 #include <vector>
 
 namespace pcl {
 namespace octree {
+
+using OctreeNodePair = std::array<OctreeNode*, 2>;
+using OctreeNodeArray = std::array<OctreeNodePair, 8>;
 
 template <typename ContainerT>
 class BufferedBranchNode : public OctreeNode {
@@ -66,12 +70,13 @@ public:
   inline BufferedBranchNode&
   operator=(const BufferedBranchNode& source_arg)
   {
-    memset(child_node_array_, 0, sizeof(child_node_array_));
-
-    for (unsigned char b = 0; b < 2; ++b)
+    child_node_array_ = {};
+    for (unsigned char b = 0; b < 2; ++b) {
       for (unsigned char i = 0; i < 8; ++i)
-        if (source_arg.child_node_array_[b][i])
+        if (source_arg.child_node_array_[b][i]) {
           child_node_array_[b][i] = source_arg.child_node_array_[b][i]->deepCopy();
+        }
+    }
 
     return (*this);
   }
@@ -135,7 +140,7 @@ public:
   inline void
   reset()
   {
-    memset(&child_node_array_[0][0], 0, sizeof(OctreeNode*) * 8 * 2);
+    child_node_array_ = {};
   }
 
   /** \brief Get const pointer to container */
@@ -197,7 +202,7 @@ public:
 protected:
   ContainerT container_;
 
-  OctreeNode* child_node_array_[2][8];
+  OctreeNodeArray child_node_array_{};
 };
 
 /** \brief @b Octree double buffer class

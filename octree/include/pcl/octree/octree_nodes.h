@@ -42,6 +42,7 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
+#include <array>
 #include <cassert>
 
 namespace pcl {
@@ -182,28 +183,31 @@ public:
   OctreeBranchNode() : OctreeNode()
   {
     // reset pointer to child node vectors
-    memset(child_node_array_, 0, sizeof(child_node_array_));
+    child_node_array_ = {};
   }
 
   /** \brief Empty constructor. */
   OctreeBranchNode(const OctreeBranchNode& source) : OctreeNode()
   {
-    memset(child_node_array_, 0, sizeof(child_node_array_));
+    child_node_array_ = {};
 
     for (unsigned char i = 0; i < 8; ++i)
-      if (source.child_node_array_[i])
+      if (source.child_node_array_[i]) {
         child_node_array_[i] = source.child_node_array_[i]->deepCopy();
+      }
   }
 
   /** \brief Copy operator. */
   inline OctreeBranchNode&
   operator=(const OctreeBranchNode& source)
   {
-    memset(child_node_array_, 0, sizeof(child_node_array_));
+    child_node_array_ = {};
 
-    for (unsigned char i = 0; i < 8; ++i)
-      if (source.child_node_array_[i])
+    for (unsigned char i = 0; i < 8; ++i) {
+      if (source.child_node_array_[i]) {
         child_node_array_[i] = source.child_node_array_[i]->deepCopy();
+      }
+    }
     return (*this);
   }
 
@@ -295,7 +299,7 @@ public:
   void
   reset()
   {
-    memset(child_node_array_, 0, sizeof(child_node_array_));
+    child_node_array_ = {};
     container_.reset();
   }
 
@@ -356,7 +360,7 @@ public:
   }
 
 protected:
-  OctreeNode* child_node_array_[8];
+  std::array<OctreeNode*, 8> child_node_array_{};
 
   ContainerT container_;
 };
