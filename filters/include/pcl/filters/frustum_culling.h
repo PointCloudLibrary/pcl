@@ -160,7 +160,7 @@ namespace pcl
       void 
       setVerticalFOV (float vfov)
       {
-        if (hfov <= 0 || hfov >= 180)
+        if (vfov <= 0 || vfov >= 180)
         {
           throw PCLException ("Vertical field of view should be between 0 and 180(excluded).",
             "frustum_culling.h", "setVerticalFOV");
