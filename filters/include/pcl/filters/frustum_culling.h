@@ -166,7 +166,7 @@ namespace pcl
       }
 
       /** \brief Set the near plane distance
-        * \param[in] np_dist the near plane distance. Setting it to 0 to extract a square cone.
+        * \param[in] np_dist the near plane distance. You can set this to 0 to disable near-plane filtering and extract a pyramid instead of a frustum.
         */
       void 
       setNearPlaneDistance (float np_dist)
