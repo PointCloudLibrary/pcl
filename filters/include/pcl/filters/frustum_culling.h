@@ -188,7 +188,7 @@ namespace pcl
 
       /** \brief Set the far plane distance
         * \param[in] fp_dist the far plane distance.
-        * Setting it to std::numeric_limits<float>::max() so points will not be filtered by far plane.
+        * You can set this to std::numeric_limits<float>::max(), then points will not be filtered by the far plane.
         */
       void 
       setFarPlaneDistance (float fp_dist)
