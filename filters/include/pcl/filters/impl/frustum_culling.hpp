@@ -47,7 +47,7 @@ pcl::FrustumCulling<PointT>::applyFilter (Indices &indices)
 {
     bool is_far_plane_infinite = (fp_dist_ == std::numeric_limits<float>::max());
     if(is_far_plane_infinite) {
-        fp_dist_ = (np_dist_ != 0) ? np_dist_ : 1.0f;
+        fp_dist_ = np_dist_ + 1.0f;
     }
 
   Eigen::Vector4f pl_n; // near plane 
