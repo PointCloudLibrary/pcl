@@ -45,6 +45,11 @@
 template <typename PointT> void
 pcl::FrustumCulling<PointT>::applyFilter (Indices &indices)
 {
+    bool is_far_plane_infinite = (fp_dist_ == std::numeric_limits<float>::max());
+    if(is_far_plane_infinite) {
+        fp_dist_ = np_dist_ + 1.0f;
+    }
+
   Eigen::Vector4f pl_n; // near plane 
   Eigen::Vector4f pl_f; // far plane
   Eigen::Vector4f pl_t; // top plane
@@ -90,6 +95,11 @@ pcl::FrustumCulling<PointT>::applyFilter (Indices &indices)
 
   pl_f.head<3> () = (fp_bl - fp_br).cross (fp_tr - fp_br);  // Far plane equation - cross product of the 
   pl_f (3) = -fp_c.dot (pl_f.head<3> ());                   // perpendicular edges of the far plane
+
+  if(is_far_plane_infinite) {
+      pl_f.setZero();
+      fp_dist_ = std::numeric_limits<float>::max();
+  }
 
   pl_n.head<3> () = (np_tr - np_br).cross (np_bl - np_br);  // Near plane equation - cross product of the 
   pl_n (3) = -np_c.dot (pl_n.head<3> ());                   // perpendicular edges of the near plane

@@ -176,11 +176,16 @@ namespace pcl
       }
 
       /** \brief Set the near plane distance
-        * \param[in] np_dist the near plane distance
+        * \param[in] np_dist the near plane distance. You can set this to 0 to disable near-plane filtering and extract a rectangular pyramid instead of a frustum.
         */
       void 
       setNearPlaneDistance (float np_dist)
       {
+        if (np_dist < 0.0f)
+        {
+          throw PCLException ("Near plane distance should be greater than or equal to 0.",
+            "frustum_culling.h", "setNearPlaneDistance");
+        }
         np_dist_ = np_dist;
       }
 
@@ -192,11 +197,17 @@ namespace pcl
       }
 
       /** \brief Set the far plane distance
-        * \param[in] fp_dist the far plane distance
+        * \param[in] fp_dist the far plane distance.
+        * You can set this to std::numeric_limits<float>::max(), then points will not be filtered by the far plane.
         */
       void 
       setFarPlaneDistance (float fp_dist)
       {
+        if (fp_dist <= 0.0f)
+        {
+          throw PCLException ("Far plane distance should be greater than 0.",
+            "frustum_culling.h", "setFarPlaneDistance");
+        }
         fp_dist_ = fp_dist;
       }
 
