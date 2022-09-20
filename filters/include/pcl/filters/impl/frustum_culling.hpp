@@ -63,23 +63,25 @@ pcl::FrustumCulling<PointT>::applyFilter (Indices &indices)
   Eigen::Vector3f T = camera_pose_.block<3, 1> (0, 3);       // The (X, Y, Z) position of the camera w.r.t origin
 
 
-  float vfov_rad = float (vfov_ * M_PI / 180);  // degrees to radians
-  float hfov_rad = float (hfov_ * M_PI / 180);  // degrees to radians
+  float fov_lower_bound_rad = float (fov_lower_bound_ * M_PI / 180);  // degrees to radians
+  float fov_upper_bound_rad = float (fov_upper_bound_ * M_PI / 180);  // degrees to radians
+  float fov_left_bound_rad = float (fov_left_bound_ * M_PI / 180);    // degrees to radians
+  float fov_right_bound_rad = float (fov_right_bound_ * M_PI / 180);  // degrees to radians
 
   float roi_xmax = roi_x_ + (roi_w_ / 2);  // roi max x
   float roi_xmin = roi_x_ - (roi_w_ / 2);  // roi min x
   float roi_ymax = roi_y_ + (roi_h_ / 2);  // roi max y
   float roi_ymin = roi_y_ - (roi_h_ / 2);  // roi min y
   
-  float np_h_u = float(2 * std::tan(vfov_rad / 2) * np_dist_ * (roi_ymin - 0.5) * (-1));  // near plane upper height
-  float np_h_d = float(2 * std::tan(vfov_rad / 2) * np_dist_ * (roi_ymax - 0.5));         // near plane lower height
-  float np_w_l = float(2 * std::tan(hfov_rad / 2) * np_dist_ * (roi_xmin - 0.5) * (-1));  // near plane left width
-  float np_w_r = float(2 * std::tan(hfov_rad / 2) * np_dist_ * (roi_xmax - 0.5));         // near plane right width
+  float np_h_u = float(2 * std::tan(fov_lower_bound_rad) * np_dist_ * (roi_ymin - 0.5));  // near plane upper height
+  float np_h_d = float(2 * std::tan(fov_upper_bound_rad) * np_dist_ * (roi_ymax - 0.5));  // near plane lower height
+  float np_w_l = float(2 * std::tan(fov_left_bound_rad) * np_dist_ * (roi_xmin - 0.5));   // near plane left width
+  float np_w_r = float(2 * std::tan(fov_right_bound_rad) * np_dist_ * (roi_xmax - 0.5));  // near plane right width
 
-  float fp_h_u = float(2 * std::tan(vfov_rad / 2) * fp_dist_ * (roi_ymin - 0.5) * (-1));  // far plane upper height
-  float fp_h_d = float(2 * std::tan(vfov_rad / 2) * fp_dist_ * (roi_ymax - 0.5));         // far plane lower height
-  float fp_w_l = float(2 * std::tan(hfov_rad / 2) * fp_dist_ * (roi_xmin - 0.5) * (-1));  // far plane left width
-  float fp_w_r = float(2 * std::tan(hfov_rad / 2) * fp_dist_ * (roi_xmax - 0.5));         // far plane right width
+  float fp_h_u = float(2 * std::tan(fov_lower_bound_rad) * fp_dist_ * (roi_ymin - 0.5));  // far plane upper height
+  float fp_h_d = float(2 * std::tan(fov_upper_bound_rad) * fp_dist_ * (roi_ymax - 0.5));  // far plane lower height
+  float fp_w_l = float(2 * std::tan(fov_left_bound_rad) * fp_dist_ * (roi_xmin - 0.5));   // far plane left width
+  float fp_w_r = float(2 * std::tan(fov_right_bound_rad) * fp_dist_ * (roi_xmax - 0.5));  // far plane right width
 
   Eigen::Vector3f fp_c (T + view * fp_dist_);                           // far plane center
   Eigen::Vector3f fp_tl (fp_c + (up * fp_h_u) - (right * fp_w_l));  // Top left corner of the far plane
