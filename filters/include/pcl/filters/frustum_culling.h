@@ -242,7 +242,7 @@ namespace pcl
           PCL_WARN("Your vertical field of view is asymmetrical: "
             "lower bound's absolute value(%f) != upper bound's absolute value(%f)! "
             "Please use getVerticalFOV (float& fov_lower_bound, float& fov_upper_bound) instead.\n",
-            std::fabs(fov_lower_bound) _, std::fabs(fov_upper_bound_));
+            std::fabs(fov_lower_bound_), std::fabs(fov_upper_bound_));
         }
         return (fov_upper_bound_ - fov_lower_bound_);
       }
