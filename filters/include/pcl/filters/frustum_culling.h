@@ -137,6 +137,7 @@ namespace pcl
 
       /** \brief Set the horizontal field of view for the camera in degrees
         * \param[in] hfov the field of view
+        * Note: setHorizontalFOV(60.0) is equivalent to setHorizontalFOV(-30.0, 30.0).
         */
       void 
       setHorizontalFOV (float hfov)
@@ -153,6 +154,12 @@ namespace pcl
       /** \brief Set the horizontal field of view for the camera in degrees
         * \param[in] fov_left_bound the left bound of horizontal field of view
         * \param[in] fov_right_bound the right bound of horizontal field of view
+        * Note: Bounds can be either positive or negative values.
+        * Negative value means the camera would look to its left,
+        * and positive value means the camera would look to its right.
+        * In general cases, fov_left_bound should be set to a negative value,
+        * if it is set to a positive value, the camera would only look to its right.
+        * Also note that setHorizontalFOV(-30.0, 30.0) is equivalent to setHorizontalFOV(60.0).
         */
       void
       setHorizontalFOV (float fov_left_bound, float fov_right_bound)
@@ -190,6 +197,7 @@ namespace pcl
 
       /** \brief Set the vertical field of view for the camera in degrees
         * \param[in] vfov the field of view
+        * Note: setVerticalFOV(60.0) is equivalent to setVerticalFOV(-30.0, 30.0).
         */
       void 
       setVerticalFOV (float vfov)
@@ -206,6 +214,12 @@ namespace pcl
       /** \brief Set the vertical field of view for the camera in degrees
         * \param[in] fov_lower_bound the lower bound of vertical field of view
         * \param[in] fov_upper_bound the upper bound of vertical field of view
+        * Note: Bounds can be either positive or negative values.
+        * Negative value means the camera would look down,
+        * and positive value means the camera would look up.
+        * In general cases, fov_lower_bound should be set to a negative value,
+        * if it is set to a positive value, the camera would only look up.
+        * Also note that setVerticalFOV(-30.0, 30.0) is equivalent to setVerticalFOV(60.0).
         */
       void
       setVerticalFOV (float fov_lower_bound, float fov_upper_bound)
