@@ -44,14 +44,12 @@
 #include <pcl/octree/octree_nodes.h>
 #include <pcl/pcl_macros.h>
 
+#include <algorithm>
 #include <array>
 #include <vector>
 
 namespace pcl {
 namespace octree {
-
-using OctreeNodePair = std::array<OctreeNode*, 2>;
-using OctreeNodeArray = std::array<OctreeNodePair, 8>;
 
 template <typename ContainerT>
 class BufferedBranchNode : public OctreeNode {
@@ -72,12 +70,12 @@ public:
   {
     child_node_array_ = {};
     for (unsigned char b = 0; b < 2; ++b) {
-      for (unsigned char i = 0; i < 8; ++i)
+      for (unsigned char i = 0; i < 8; ++i) {
         if (source_arg.child_node_array_[b][i]) {
           child_node_array_[b][i] = source_arg.child_node_array_[b][i]->deepCopy();
         }
+      }
     }
-
     return (*this);
   }
 
@@ -202,7 +200,10 @@ public:
 protected:
   ContainerT container_;
 
-  OctreeNodeArray child_node_array_{};
+  template <typename T, std::size_t ROW, std::size_t COL>
+  using OctreeMatrix = std::array<std::array<T, COL>, ROW>;
+
+  OctreeMatrix<OctreeNode*, 2, 8> child_node_array_{};
 };
 
 /** \brief @b Octree double buffer class
