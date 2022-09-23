@@ -83,9 +83,7 @@ isValidFieldName (const std::string &field)
 bool
 isMultiDimensionalFeatureField (const pcl::PCLPointField &field)
 {
-  if (field.count > 1)
-    return (true);
-  return (false);
+  return (field.count > 1 && field.name != "_"); // check for padding fields "_"
 }
 
 bool
