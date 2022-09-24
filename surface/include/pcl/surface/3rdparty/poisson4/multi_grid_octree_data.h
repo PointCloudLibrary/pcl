@@ -72,6 +72,7 @@ DAMAGE.
 // This should be enabled if GRADIENT_DOMAIN_SOLUTION is not, so that CG doesn't run into trouble.
 
 
+#include <algorithm>
 #include <unordered_map>
 
 #include "bspline_data.h"
@@ -122,7 +123,7 @@ namespace pcl
         void set( TreeOctNode& root );
         struct CornerIndices
         {
-            int idx[pcl::poisson::Cube::CORNERS] = {};
+            int idx[pcl::poisson::Cube::CORNERS] = {-1, -1, -1, -1, -1, -1, -1, -1};
             CornerIndices( void ) = default;
             int& operator[] ( int i ) { return idx[i]; }
             const int& operator[] ( int i ) const { return idx[i]; }
@@ -146,8 +147,8 @@ namespace pcl
         int getMaxCornerCount( const TreeOctNode* rootNode , int depth , int maxDepth , int threads ) const ;
         struct EdgeIndices
         {
-            int idx[pcl::poisson::Cube::EDGES] = {};
-            EdgeIndices( void ) = default;
+            int idx[pcl::poisson::Cube::EDGES] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+           EdgeIndices( void ) = default;
             int& operator[] ( int i ) { return idx[i]; }
             const int& operator[] ( int i ) const { return idx[i]; }
         };

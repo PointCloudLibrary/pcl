@@ -44,7 +44,6 @@
 #include <pcl/octree/octree_nodes.h>
 #include <pcl/pcl_macros.h>
 
-#include <algorithm>
 #include <array>
 #include <vector>
 
