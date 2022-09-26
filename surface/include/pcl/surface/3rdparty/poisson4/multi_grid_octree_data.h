@@ -72,7 +72,6 @@ DAMAGE.
 // This should be enabled if GRADIENT_DOMAIN_SOLUTION is not, so that CG doesn't run into trouble.
 
 
-#include <algorithm>
 #include <unordered_map>
 
 #include "bspline_data.h"
