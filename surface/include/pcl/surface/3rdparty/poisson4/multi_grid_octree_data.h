@@ -122,8 +122,8 @@ namespace pcl
         void set( TreeOctNode& root );
         struct CornerIndices
         {
-            int idx[pcl::poisson::Cube::CORNERS];
-            CornerIndices( void ) { memset( idx , -1 , sizeof( int ) * pcl::poisson::Cube::CORNERS ); }
+            int idx[pcl::poisson::Cube::CORNERS] = {-1, -1, -1, -1, -1, -1, -1, -1};
+            CornerIndices( void ) = default;
             int& operator[] ( int i ) { return idx[i]; }
             const int& operator[] ( int i ) const { return idx[i]; }
         };
@@ -146,8 +146,8 @@ namespace pcl
         int getMaxCornerCount( const TreeOctNode* rootNode , int depth , int maxDepth , int threads ) const ;
         struct EdgeIndices
         {
-            int idx[pcl::poisson::Cube::EDGES];
-            EdgeIndices( void ) { memset( idx , -1 , sizeof( int ) * pcl::poisson::Cube::EDGES ); }
+            int idx[pcl::poisson::Cube::EDGES] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+           EdgeIndices( void ) = default;
             int& operator[] ( int i ) { return idx[i]; }
             const int& operator[] ( int i ) const { return idx[i]; }
         };
