@@ -49,7 +49,7 @@ pcl::TimGrabber::initialize ()
 float
 pcl::TimGrabber::getFramesPerSecond () const
 {
-  boost::mutex::scoped_lock lock (frequency_mutex_);
+  std::lock_guard<std::mutex> lock (frequency_mutex_);
   return (frequency_.getFrequency ());
 }
 

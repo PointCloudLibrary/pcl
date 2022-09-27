@@ -39,7 +39,6 @@
 #include <pcl/gpu/utils/safe_call.hpp>
 #include <pcl/point_types_conversion.h>
 
-#include <boost/foreach.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 

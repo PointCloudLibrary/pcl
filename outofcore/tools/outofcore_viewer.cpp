@@ -131,7 +131,6 @@ using AlignedPointT = Eigen::aligned_allocator<PointT>;
 #include <vtkParallelCoordinatesInteractorStyle.h>
 
 // Boost
-#include <boost/date_time.hpp>
 #include <boost/filesystem.hpp>
 
 // Globals
