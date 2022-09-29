@@ -635,9 +635,6 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
   actor->GetProperty ()->SetRepresentationToSurface ();
   actor->GetProperty ()->SetInterpolationToFlat ();
   actor->GetProperty ()->SetColor (r, g, b);
-#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
-  actor->GetMapper ()->ImmediateModeRenderingOn ();
-#endif
   actor->GetMapper ()->StaticOn ();
   actor->GetMapper ()->ScalarVisibilityOff ();
   actor->GetMapper ()->Update ();
@@ -1545,9 +1542,6 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   double minmax[2];
   minmax[0] = std::numeric_limits<double>::min ();
   minmax[1] = std::numeric_limits<double>::max ();
-#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
-  am_it->second.actor->GetMapper ()->ImmediateModeRenderingOff ();
-#endif
   am_it->second.actor->GetMapper ()->SetScalarRange (minmax);
 
   // Update the mapper
@@ -1579,9 +1573,6 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   double minmax[2];
   minmax[0] = std::numeric_limits<double>::min ();
   minmax[1] = std::numeric_limits<double>::max ();
-#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
-  am_it->second.actor->GetMapper ()->ImmediateModeRenderingOff ();
-#endif
   am_it->second.actor->GetMapper ()->SetScalarRange (minmax);
 
   // Update the mapper
@@ -1619,10 +1610,6 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
     scalars->GetRange (minmax);
     has_colors = true;
   }
-
-#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
-  am_it->second.actor->GetMapper ()->ImmediateModeRenderingOff ();
-#endif
 
   if (has_colors)
     am_it->second.actor->GetMapper ()->SetScalarRange (minmax);

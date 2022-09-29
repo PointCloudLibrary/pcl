@@ -60,10 +60,6 @@
 #include <pcl/visualization/vtk/vtkRenderWindowInteractorFix.h>
 #include <pcl/visualization/vtk/pcl_vtk_compatibility.h>
 
-#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
-#include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
-#endif
-
 #include <vtkPolyLine.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkRenderWindow.h>
@@ -422,11 +418,6 @@ void pcl::visualization::PCLVisualizer::setupRenderWindow (const std::string& na
 {
   if (!win_)
     PCL_ERROR ("Pointer to render window is null\n");
-
-  // This is temporary measures for disable display of deprecated warnings
-  #if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
-  win_->GlobalWarningDisplayOff();
-  #endif
 
   win_->SetWindowName (name.c_str ());
 
@@ -1188,72 +1179,33 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
   if (!actor)
     actor = vtkSmartPointer<vtkLODActor>::New ();
 
-#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
-  if (use_vbos_)
+  vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
+  mapper->SetInputData (data);
+
+  if (use_scalars)
   {
-    vtkSmartPointer<vtkVertexBufferObjectMapper> mapper = vtkSmartPointer<vtkVertexBufferObjectMapper>::New ();
-
-    mapper->SetInput (data);
-
-    if (use_scalars)
+    vtkSmartPointer<vtkDataArray> scalars = data->GetPointData ()->GetScalars ();
+    if (scalars)
     {
-      vtkSmartPointer<vtkDataArray> scalars = data->GetPointData ()->GetScalars ();
-      if (scalars)
-      {
-        double minmax[2];
-        scalars->GetRange (minmax);
-        mapper->SetScalarRange (minmax);
+      double minmax[2];
+      scalars->GetRange (minmax);
+      mapper->SetScalarRange (minmax);
 
-        mapper->SetScalarModeToUsePointData ();
-        mapper->SetInterpolateScalarsBeforeMapping (getDefaultScalarInterpolationForDataSet (data));
-        mapper->ScalarVisibilityOn ();
-      }
+      mapper->SetScalarModeToUsePointData ();
+      mapper->SetInterpolateScalarsBeforeMapping (getDefaultScalarInterpolationForDataSet (data));
+      mapper->ScalarVisibilityOn ();
     }
-
-    actor->SetNumberOfCloudPoints (int (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10)));
-    actor->GetProperty ()->SetInterpolationToFlat ();
-
-    /// FIXME disabling backface culling due to known VTK bug: vtkTextActors are not
-    /// shown when there is a vtkActor with backface culling on present in the scene
-    /// Please see VTK bug tracker for more details: http://www.vtk.org/Bug/view.php?id=12588
-    // actor->GetProperty ()->BackfaceCullingOn ();
-
-    actor->SetMapper (mapper);
   }
-  else
-#endif
-  {
-    vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
-    mapper->SetInputData (data);
 
-    if (use_scalars)
-    {
-      vtkSmartPointer<vtkDataArray> scalars = data->GetPointData ()->GetScalars ();
-      if (scalars)
-      {
-        double minmax[2];
-        scalars->GetRange (minmax);
-        mapper->SetScalarRange (minmax);
+  actor->SetNumberOfCloudPoints (int (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10)));
+  actor->GetProperty ()->SetInterpolationToFlat ();
 
-        mapper->SetScalarModeToUsePointData ();
-        mapper->SetInterpolateScalarsBeforeMapping (getDefaultScalarInterpolationForDataSet (data));
-        mapper->ScalarVisibilityOn ();
-      }
-    }
-#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
-    mapper->ImmediateModeRenderingOff ();
-#endif
+  /// FIXME disabling backface culling due to known VTK bug: vtkTextActors are not
+  /// shown when there is a vtkActor with backface culling on present in the scene
+  /// Please see VTK bug tracker for more details: http://www.vtk.org/Bug/view.php?id=12588
+  // actor->GetProperty ()->BackfaceCullingOn ();
 
-    actor->SetNumberOfCloudPoints (int (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10)));
-    actor->GetProperty ()->SetInterpolationToFlat ();
-
-    /// FIXME disabling backface culling due to known VTK bug: vtkTextActors are not
-    /// shown when there is a vtkActor with backface culling on present in the scene
-    /// Please see VTK bug tracker for more details: http://www.vtk.org/Bug/view.php?id=12588
-    // actor->GetProperty ()->BackfaceCullingOn ();
-
-    actor->SetMapper (mapper);
-  }
+  actor->SetMapper (mapper);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1266,72 +1218,33 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
   if (!actor)
     actor = vtkSmartPointer<vtkActor>::New ();
 
-#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
-  if (use_vbos_)
+  vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
+  mapper->SetInputData (data);
+
+  if (use_scalars)
   {
-    vtkSmartPointer<vtkVertexBufferObjectMapper> mapper = vtkSmartPointer<vtkVertexBufferObjectMapper>::New ();
-
-    mapper->SetInput (data);
-
-    if (use_scalars)
+    vtkSmartPointer<vtkDataArray> scalars = data->GetPointData ()->GetScalars ();
+    if (scalars)
     {
-      vtkSmartPointer<vtkDataArray> scalars = data->GetPointData ()->GetScalars ();
-      if (scalars)
-      {
-        double minmax[2];
-        scalars->GetRange (minmax);
-        mapper->SetScalarRange (minmax);
+      double minmax[2];
+      scalars->GetRange (minmax);
+      mapper->SetScalarRange (minmax);
 
-        mapper->SetScalarModeToUsePointData ();
-        mapper->SetInterpolateScalarsBeforeMapping (getDefaultScalarInterpolationForDataSet (data));
-        mapper->ScalarVisibilityOn ();
-      }
+      mapper->SetScalarModeToUsePointData ();
+      mapper->SetInterpolateScalarsBeforeMapping (getDefaultScalarInterpolationForDataSet (data));
+      mapper->ScalarVisibilityOn ();
     }
+  }
 
     //actor->SetNumberOfCloudPoints (int (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10)));
-    actor->GetProperty ()->SetInterpolationToFlat ();
+  actor->GetProperty ()->SetInterpolationToFlat ();
 
-    /// FIXME disabling backface culling due to known VTK bug: vtkTextActors are not
-    /// shown when there is a vtkActor with backface culling on present in the scene
-    /// Please see VTK bug tracker for more details: http://www.vtk.org/Bug/view.php?id=12588
-    // actor->GetProperty ()->BackfaceCullingOn ();
+  /// FIXME disabling backface culling due to known VTK bug: vtkTextActors are not
+  /// shown when there is a vtkActor with backface culling on present in the scene
+  /// Please see VTK bug tracker for more details: http://www.vtk.org/Bug/view.php?id=12588
+  // actor->GetProperty ()->BackfaceCullingOn ();
 
-    actor->SetMapper (mapper);
-  }
-  else
-#endif
-  {
-    vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
-    mapper->SetInputData (data);
-
-    if (use_scalars)
-    {
-      vtkSmartPointer<vtkDataArray> scalars = data->GetPointData ()->GetScalars ();
-      if (scalars)
-      {
-        double minmax[2];
-        scalars->GetRange (minmax);
-        mapper->SetScalarRange (minmax);
-
-        mapper->SetScalarModeToUsePointData ();
-        mapper->SetInterpolateScalarsBeforeMapping (getDefaultScalarInterpolationForDataSet (data));
-        mapper->ScalarVisibilityOn ();
-      }
-    }
-#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
-    mapper->ImmediateModeRenderingOff ();
-#endif
-
-    //actor->SetNumberOfCloudPoints (int (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10)));
-    actor->GetProperty ()->SetInterpolationToFlat ();
-
-    /// FIXME disabling backface culling due to known VTK bug: vtkTextActors are not
-    /// shown when there is a vtkActor with backface culling on present in the scene
-    /// Please see VTK bug tracker for more details: http://www.vtk.org/Bug/view.php?id=12588
-    // actor->GetProperty ()->BackfaceCullingOn ();
-
-    actor->SetMapper (mapper);
-  }
+  actor->SetMapper (mapper);
 
   //actor->SetNumberOfCloudPoints (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10));
   actor->GetProperty ()->SetInterpolationToFlat ();
@@ -1631,9 +1544,6 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
     // using immediate more rendering.
     case PCL_VISUALIZER_IMMEDIATE_RENDERING:
     {
-#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
-      actor->GetMapper ()->SetImmediateModeRendering (int (value));
-#endif
       actor->Modified ();
       break;
     }
@@ -3053,34 +2963,16 @@ pcl::visualization::PCLVisualizer::updateColorHandlerIndex (const std::string &i
   auto *data = static_cast<vtkPolyData*>(am_it->second.actor->GetMapper ()->GetInput ());
   data->GetPointData ()->SetScalars (scalars);
   // Modify the mapper
-#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
-  if (use_vbos_)
-  {
-    vtkVertexBufferObjectMapper* mapper = static_cast<vtkVertexBufferObjectMapper*>(am_it->second.actor->GetMapper ());
-    mapper->SetScalarRange (minmax);
-    mapper->SetScalarModeToUsePointData ();
-    mapper->SetInput (data);
-    // Modify the actor
-    am_it->second.actor->SetMapper (mapper);
-    am_it->second.actor->Modified ();
-    am_it->second.color_handler_index_ = index;
+  auto* mapper = static_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ());
+  mapper->SetScalarRange (minmax);
+  mapper->SetScalarModeToUsePointData ();
+  mapper->SetInputData (data);
+  // Modify the actor
+  am_it->second.actor->SetMapper (mapper);
+  am_it->second.actor->Modified ();
+  am_it->second.color_handler_index_ = index;
 
-    //style_->setCloudActorMap (cloud_actor_map_);
-  }
-  else
-#endif
-  {
-    auto* mapper = static_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ());
-    mapper->SetScalarRange (minmax);
-    mapper->SetScalarModeToUsePointData ();
-    mapper->SetInputData (data);
-    // Modify the actor
-    am_it->second.actor->SetMapper (mapper);
-    am_it->second.actor->Modified ();
-    am_it->second.color_handler_index_ = index;
-
-    //style_->setCloudActorMap (cloud_actor_map_);
-  }
+  //style_->setCloudActorMap (cloud_actor_map_);
 
   return (true);
 }
@@ -4491,13 +4383,8 @@ pcl::visualization::PCLVisualizer::resetStoppedFlag ()
 void
 pcl::visualization::PCLVisualizer::setUseVbos (bool use_vbos)
 {
-#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
-  use_vbos_ = use_vbos;
-  style_->setUseVbos (use_vbos_);
-#else
   PCL_WARN ("[PCLVisualizer::setUseVbos] Has no effect when OpenGL version is ≥ 2\n");
   pcl::utils::ignore(use_vbos);
-#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

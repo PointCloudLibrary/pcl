@@ -130,11 +130,6 @@ namespace pcl
       }
 
     protected:
-      /** \brief Filter the input points using the 2D or 3D polygon hull.
-        * \param[out] output The set of points that passed the filter
-        */
-      void
-      applyFilter (PointCloud &output) override;
 
       /** \brief Filter the input points using the 2D or 3D polygon hull.
         * \param[out] indices the indices of the set of points that passed the filter.
