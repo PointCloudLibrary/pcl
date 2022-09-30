@@ -173,8 +173,8 @@ TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar>::
     c2[6] += a.x + b.x;
     c2[7] += a.y - b.y;
     c2[11] += a.z - b.z;
-    source_it++;
-    target_it++;
+    ++source_it;
+    ++target_it;
   }
 
   c1[4] = c1[1];
