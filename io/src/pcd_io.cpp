@@ -254,8 +254,8 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
           cloud.fields[i].offset = offset;
           int col_count;
           sstream >> col_count;
-          if (col_count < 1 && cloud.fields[i].name != "_")
-            throw "Invalid COUNT value specified.";
+          if (col_count < 1)
+            PCL_WARN("[pcl::PCDReader::readHeader] Invalid COUNT value specified (%i, should be larger than 0). This field will be removed.\n", col_count);
           cloud.fields[i].count = col_count;
           offset += col_count * field_sizes[i];
         }
@@ -327,6 +327,9 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
     PCL_ERROR ("[pcl::PCDReader::readHeader] %s\n", exception);
     return (-1);
   }
+  cloud.fields.erase(std::remove_if(cloud.fields.begin(), cloud.fields.end(),
+                                    [](const pcl::PCLPointField& field)->bool { return field.count < 1; }),
+                     cloud.fields.end());
 
   // Exit early: if no points have been given, there's no sense to read or check anything anymore
   if (nr_points == 0)
