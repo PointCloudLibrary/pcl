@@ -88,7 +88,7 @@ loadCloud (const std::string &filename, Cloud &cloud)
 }
 
 void
-compute (ConstCloudPtr &input, Cloud &output, float resolution, std::string method)
+compute (ConstCloudPtr &input, Cloud &output, float resolution, const std::string& method)
 {
   // Estimate
   TicToc tt;
