@@ -70,10 +70,10 @@ namespace pcl
         Pyramid (int levels = 4)
           : levels_ (levels)
           , large_ (false)
+          , name_ ("Pyramid")
           , threshold_ (0.01)
           , threads_ (0)
         {
-          name_ = "Pyramid";
         }
       
         /** \brief Provide a pointer to the input dataset

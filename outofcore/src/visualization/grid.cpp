@@ -12,9 +12,8 @@
 // Operators
 // -----------------------------------------------------------------------------
 Grid::Grid (std::string name, int size/*=10*/, double spacing/*=1.0*/) :
-    Object (name)
+    Object (name), grid_ (vtkSmartPointer<vtkRectilinearGrid>::New ())
 {
-  grid_ = vtkSmartPointer<vtkRectilinearGrid>::New ();
   grid_actor_ = vtkSmartPointer<vtkActor>::New ();
 
   vtkSmartPointer<vtkDataSetMapper> grid_mapper = vtkSmartPointer<vtkDataSetMapper>::New ();

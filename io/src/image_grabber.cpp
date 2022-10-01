@@ -237,6 +237,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   , frames_per_second_ (frames_per_second)
   , repeat_ (repeat)
   , running_ (false)
+  , depth_image_files_ (depth_image_files)
   , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), [this] { trigger (); })
   , valid_ (false)
   , pclzf_mode_ (false)
@@ -248,7 +249,6 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   , principal_point_y_ (239.5)
   , num_threads_ (1)
 {
-  depth_image_files_ = depth_image_files;
   cur_frame_ = 0;
 }
 

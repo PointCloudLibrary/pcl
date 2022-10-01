@@ -45,12 +45,8 @@
 #include <cstdint>
 
 //////////////////////////////////////////////////////////////////////////////
-pcl::ASCIIReader::ASCIIReader ()
+pcl::ASCIIReader::ASCIIReader (): sep_chars_(", \n\r\t"), extension_(".txt"), name_("AsciiReader")
 {
-  extension_ = ".txt";
-  sep_chars_ = ", \n\r\t";
-  name_ = "AsciiReader";
-
   {
     pcl::PCLPointField f;
     f.datatype = pcl::PCLPointField::FLOAT32;
