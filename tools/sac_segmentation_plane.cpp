@@ -179,7 +179,6 @@ saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 int
 batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir, int max_it, double thresh, bool negative)
 {
-  std::vector<std::string> st;
   for (const auto &pcd_file : pcd_files)
   {
     // Load the first file
