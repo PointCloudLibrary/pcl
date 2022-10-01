@@ -294,6 +294,7 @@ namespace pcl
 
   /** \brief Modality based on surface normals.
     * \author Stefan Holzer
+    * \ingroup recognition
     */
   template <typename PointInT>
   class SurfaceNormalModality : public QuantizableModality, public PCLBase<PointInT>

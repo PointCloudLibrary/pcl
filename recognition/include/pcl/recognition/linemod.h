@@ -326,6 +326,7 @@ namespace pcl
   /**
     * \brief Template matching using the LINEMOD approach.
     * \author Stefan Holzer, Stefan Hinterstoisser
+    * \ingroup recognition
     */
   class PCL_EXPORTS LINEMOD
   {
