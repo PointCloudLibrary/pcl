@@ -55,7 +55,7 @@ pcl::getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud
                          int nr_threads)
 {
   const float max_dist_sqr = max_dist * max_dist;
-  const std::size_t s = cloud.size();
+  const std::size_t s = cloud->size();
 
   pcl::search::KdTree<PointT> tree;
   tree.setInputCloud(cloud);
