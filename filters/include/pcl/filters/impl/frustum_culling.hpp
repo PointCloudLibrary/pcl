@@ -100,7 +100,7 @@ pcl::FrustumCulling<PointT>::applyFilter (Indices &indices)
   Eigen::Vector3f fp_br (fp_c + (up * fp_roi_h_d) + (right * fp_roi_w_r));  // Bottom right corner of the far plane
 
   Eigen::Vector3f np_c (T + view * np_dist_);                           // near plane center
-  Eigen::Vector3f np_tl (np_c + (up * np_roi_h_u) + (right * np_roi_w_l));  // Top left corner of the near plane
+  //Eigen::Vector3f np_tl (np_c + (up * np_roi_h_u) + (right * np_roi_w_l));  // Top left corner of the near plane
   Eigen::Vector3f np_tr (np_c + (up * np_roi_h_u) + (right * np_roi_w_r));  // Top right corner of the near plane
   Eigen::Vector3f np_bl (np_c + (up * np_roi_h_d) + (right * np_roi_w_l));  // Bottom left corner of the near plane
   Eigen::Vector3f np_br (np_c + (up * np_roi_h_d) + (right * np_roi_w_r));  // Bottom right corner of the near plane
