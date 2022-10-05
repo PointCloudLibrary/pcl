@@ -72,7 +72,7 @@ namespace pcl
         BSplineComponents* baseBSplines;
 
         BSplineData();
-        ~BSplineData();
+        virtual ~BSplineData();
 
         virtual void   setDotTables( int flags );
         virtual void clearDotTables( int flags );

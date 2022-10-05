@@ -81,6 +81,9 @@ public:
   /** \brief Empty constructor. */
   EuclideanClusterExtraction() = default;
 
+  /** \brief Default virtual destructor. */
+  virtual ~EuclideanClusterExtraction() = default;
+
   /** \brief the destructor */
   /*        ~EuclideanClusterExtraction ()
           {

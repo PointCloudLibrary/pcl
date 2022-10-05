@@ -97,6 +97,10 @@ namespace pcl
          * \param[in] nc B-Spline curve used for fitting.        */
         FittingCurve2dAPDM (NurbsDataCurve2d *data, const ON_NurbsCurve &nc);
 
+        /** \brief Default virtual destructor. */
+        virtual
+        ~FittingCurve2dAPDM() = default;
+
         /** \brief Find the element in which the parameter xi lies.
          * \param[in] xi value in parameter domain of the B-Spline curve.
          * \param[in] elements the vector of elements of the curve.
