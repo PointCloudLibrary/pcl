@@ -246,7 +246,7 @@ TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClou
   shared(height, indices, occupency_map, output, width) \
   num_threads(threads_)
 #endif
-  for (std::size_t i = 0; i < indices.size (); ++i)
+  for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t> (indices.size ()); ++i)
   {
     int idx = indices[i];
     if (((*response_)[idx] < second_threshold_) || occupency_map[idx])
