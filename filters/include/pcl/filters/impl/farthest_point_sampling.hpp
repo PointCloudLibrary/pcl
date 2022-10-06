@@ -79,7 +79,7 @@ pcl::FarthestPointSampling<PointT>::applyFilter (Indices &indices)
     index_t next_max_index = 0;
     
     //recompute distances
-    for (index_t i = 0; i < size; ++i)
+    for (std::size_t i = 0; i < size; ++i)
     {
       if (distances_to_selected_points[i] != -1.0)
         distances_to_selected_points[i] = std::min(distances_to_selected_points[i], geometry::distance((*input_)[i], (*input_)[max_index]));
