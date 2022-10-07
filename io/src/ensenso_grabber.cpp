@@ -49,8 +49,8 @@
 // Handle Ensenso SDK exceptions
 // This function is called whenever an exception is raised to provide details about the error
 void
-ensensoExceptionHandling (const NxLibException &ex,
-                          const std::string &func_nam)
+ensensoExceptionHandling (const NxLibException& ex,
+                          const std::string& func_nam)
 {
   PCL_ERROR ("%s: NxLib error %s (%d) occurred while accessing item %s.\n", func_nam.c_str (), ex.getErrorText ().c_str (), ex.getErrorCode (),
             ex.getItemPath ().c_str ());
