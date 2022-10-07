@@ -100,7 +100,7 @@ public:
   void
   run(int argc, char** argv)
   {
-    pcl::OpenNIGrabber interface{device_id_};
+    pcl::OpenNIGrabber interface(device_id_);
 
     std::function<void(const CloudConstPtr&)> f = [this](const CloudConstPtr& cloud) {
       cloud_cb(cloud);

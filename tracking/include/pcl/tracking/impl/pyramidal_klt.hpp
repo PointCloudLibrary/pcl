@@ -202,7 +202,7 @@ PyramidalKLTTracker<PointInT, IntensityT>::derivatives(const FloatImage& src,
     const float* srow0 = src_ptr + (y > 0 ? y - 1 : height > 1 ? 1 : 0) * width;
     const float* srow1 = src_ptr + y * width;
     const float* srow2 =
-        src_ptr + (y < height - 1 ? y + 1 : height > 1 ? height - 2 : 0) * width;
+        src_ptr + (y < height - 1 ? y + 1 : (height > 1 ? height - 2 : 0)) * width;
     float* grad_x_row = &(grad_x[y * width]);
     float* grad_y_row = &(grad_y[y * width]);
 
