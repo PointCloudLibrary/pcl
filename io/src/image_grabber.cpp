@@ -135,7 +135,7 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   pcl::ImageGrabberBase& grabber_;
   float frames_per_second_;
   bool repeat_;
-  bool running_;
+  bool running_ = false;
   // VTK
   std::vector<std::string> depth_image_files_;
   std::vector<std::string> rgb_image_files_;
@@ -144,7 +144,7 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   std::vector<std::string> rgb_pclzf_files_;
   std::vector<std::string> xml_files_;
 
-  std::size_t cur_frame_;
+  std::size_t cur_frame_ = 0;
 
   TimeTrigger time_trigger_;
 
@@ -155,20 +155,20 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   Eigen::Vector4f origin_;
   Eigen::Quaternionf orientation_;
   PCL_MAKE_ALIGNED_OPERATOR_NEW
-  bool valid_;
+  bool valid_ = false;
   //! Flag to say if a user set the focal length by hand
   //  (so we don't attempt to adjust for QVGA, QQVGA, etc).
-  bool pclzf_mode_;
+  bool pclzf_mode_ = false;
 
-  float depth_image_units_;
+  float depth_image_units_ = 1E-3f;
 
-  bool manual_intrinsics_;
-  double focal_length_x_;
-  double focal_length_y_;
-  double principal_point_x_;
-  double principal_point_y_;
+  bool manual_intrinsics_ = false;
+  double focal_length_x_ = 525.;
+  double focal_length_y_ = 525.;
+  double principal_point_x_ = 319.5;
+  double principal_point_y_ = 239.5;
 
-  unsigned int num_threads_;
+  unsigned int num_threads_ = 1;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -180,17 +180,8 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   : grabber_ (grabber)
   , frames_per_second_ (frames_per_second)
   , repeat_ (repeat)
-  , running_ (false)
   , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), [this] { trigger (); })
-  , valid_ (false)
   , pclzf_mode_(pclzf_mode)
-  , depth_image_units_ (1E-3f)
-  , manual_intrinsics_ (false)
-  , focal_length_x_ (525.)
-  , focal_length_y_ (525.)
-  , principal_point_x_ (319.5)
-  , principal_point_y_ (239.5)
-  , num_threads_ (1)
 {
   if(pclzf_mode_)
   {
@@ -200,7 +191,6 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   {
     loadDepthAndRGBFiles (dir);
   }
-  cur_frame_ = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -212,20 +202,9 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   : grabber_ (grabber)
   , frames_per_second_ (frames_per_second)
   , repeat_ (repeat)
-  , running_ (false)
   , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), [this] { trigger (); })
-  , valid_ (false)
-  , pclzf_mode_ (false)
-  , depth_image_units_ (1E-3f)
-  , manual_intrinsics_ (false)
-  , focal_length_x_ (525.)
-  , focal_length_y_ (525.)
-  , principal_point_x_ (319.5)
-  , principal_point_y_ (239.5)
-  , num_threads_ (1)
 {
   loadDepthAndRGBFiles (depth_dir, rgb_dir);
-  cur_frame_ = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -236,20 +215,9 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   : grabber_ (grabber)
   , frames_per_second_ (frames_per_second)
   , repeat_ (repeat)
-  , running_ (false)
   , depth_image_files_ (depth_image_files)
   , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), [this] { trigger (); })
-  , valid_ (false)
-  , pclzf_mode_ (false)
-  , depth_image_units_ (1E-3f)
-  , manual_intrinsics_ (false)
-  , focal_length_x_ (525.)
-  , focal_length_y_ (525.)
-  , principal_point_x_ (319.5)
-  , principal_point_y_ (239.5)
-  , num_threads_ (1)
 {
-  cur_frame_ = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

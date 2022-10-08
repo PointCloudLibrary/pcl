@@ -45,7 +45,7 @@
 #include <cstdint>
 
 //////////////////////////////////////////////////////////////////////////////
-pcl::ASCIIReader::ASCIIReader (): sep_chars_(", \n\r\t"), extension_(".txt"), name_("AsciiReader")
+pcl::ASCIIReader::ASCIIReader ()
 {
   {
     pcl::PCLPointField f;
