@@ -50,11 +50,13 @@ pcl::FarthestPointSampling<PointT>::applyFilter (Indices &indices)
   {
     index_t next_max_index = 0;
     
+    const PointT& max_index_point = (*input_)[max_index];
     //recompute distances
     for (std::size_t i = 0; i < size; ++i)
     {
-      if (distances_to_selected_points[i] != -1.0)
-        distances_to_selected_points[i] = std::min(distances_to_selected_points[i], geometry::distance((*input_)[i], (*input_)[max_index]));
+      if (distances_to_selected_points[i] == -1.0)
+        continue;
+      distances_to_selected_points[i] = std::min(distances_to_selected_points[i], geometry::distance((*input_)[i], max_index_point));
       if (distances_to_selected_points[i] > distances_to_selected_points[next_max_index])
         next_max_index = i;
     }
