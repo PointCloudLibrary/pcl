@@ -48,6 +48,7 @@ namespace pcl
 {
   /** \brief Interface for a quantizable modality. 
     * \author Stefan Holzer
+    * \ingroup recognition
     */
   class PCL_EXPORTS QuantizableModality
   {

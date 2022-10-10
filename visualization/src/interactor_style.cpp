@@ -833,10 +833,10 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     {
       char cam_fn[80], snapshot_fn[80];
       auto t = static_cast<unsigned> (time (nullptr));
-      sprintf (snapshot_fn, "screenshot-%d.png" , t);
+      sprintf (snapshot_fn, "screenshot-%u.png" , t);
       saveScreenshot (snapshot_fn);
 
-      sprintf (cam_fn, "screenshot-%d.cam", t);
+      sprintf (cam_fn, "screenshot-%u.cam", t);
       saveCameraParameters (cam_fn);
 
       pcl::console::print_info ("Screenshot (%s) and camera information (%s) successfully captured.\n", snapshot_fn, cam_fn);

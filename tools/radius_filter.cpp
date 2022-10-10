@@ -119,7 +119,6 @@ int
 batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir,
               float radius, bool inside, bool keep_organized)
 {
-  std::vector<std::string> st;
   for (const auto &pcd_file : pcd_files)
   {
     // Load the first file

@@ -4,11 +4,8 @@
 
 // Operators
 // -----------------------------------------------------------------------------
-Object::Object (std::string name)
+Object::Object (std::string name): actors_(vtkSmartPointer<vtkActorCollection>::New ()), name_(name)
 {
-  name_ = name;
-
-  actors_ = vtkSmartPointer<vtkActorCollection>::New ();
 }
 
 // Accessors

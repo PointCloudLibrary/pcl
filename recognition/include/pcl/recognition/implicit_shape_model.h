@@ -235,6 +235,7 @@ namespace pcl
       * by Jan Knopp, Mukta Prasad, Geert Willems, Radu Timofte, and Luc Van Gool
       *
       * Authors: Roman Shapovalov, Alexander Velizhev, Sergey Ushakov
+      * \ingroup recognition
       */
     template <int FeatureSize, typename PointT, typename NormalT = pcl::Normal>
     class PCL_EXPORTS ImplicitShapeModelEstimation

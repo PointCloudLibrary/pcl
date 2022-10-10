@@ -97,8 +97,8 @@ public:
   using Matrix4 = typename Registration<PointSource, PointTarget, Scalar>::Matrix4;
   using Affine3 = typename Eigen::Transform<Scalar, 3, Eigen::Affine>;
 
-  /** \brief Constructor.  Sets \ref outlier_ratio_ to 0.35, \ref step_size_ to
-   * 0.05 and \ref resolution_ to 1.0
+  /** \brief Constructor.  Sets \ref outlier_ratio_ to 0.55, \ref step_size_ to
+   * 0.1 and \ref resolution_ to 1.0
    */
   NormalDistributionsTransform();
 
@@ -122,7 +122,7 @@ public:
   inline void
   setResolution(float resolution)
   {
-    // Prevents unnessary voxel initiations
+    // Prevents unnecessary voxel initiations
     if (resolution_ != resolution) {
       resolution_ = resolution;
       if (input_) {

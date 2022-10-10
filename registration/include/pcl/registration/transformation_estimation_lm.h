@@ -101,6 +101,7 @@ public:
     tmp_idx_src_ = src.tmp_idx_src_;
     tmp_idx_tgt_ = src.tmp_idx_tgt_;
     warp_point_ = src.warp_point_;
+    return (*this);
   }
 
   /** \brief Destructor. */

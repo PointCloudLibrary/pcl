@@ -47,10 +47,6 @@
 //////////////////////////////////////////////////////////////////////////////
 pcl::ASCIIReader::ASCIIReader ()
 {
-  extension_ = ".txt";
-  sep_chars_ = ", \n\r\t";
-  name_ = "AsciiReader";
-
   {
     pcl::PCLPointField f;
     f.datatype = pcl::PCLPointField::FLOAT32;

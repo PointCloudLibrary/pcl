@@ -112,6 +112,7 @@ public:
     warp_point_ = src.warp_point_;
     correspondence_weights_ = src.correspondence_weights_;
     use_correspondence_weights_ = src.use_correspondence_weights_;
+    return (*this);
   }
 
   /** \brief Destructor. */
