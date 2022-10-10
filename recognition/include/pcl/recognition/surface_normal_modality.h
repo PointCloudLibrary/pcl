@@ -898,7 +898,7 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals2 ()
           l_ny *= l_norminv;
           l_nz *= l_norminv;
 
-          float angle = 22.5f + std::atan2 (l_ny, l_nx) * 180.0f / 3.14f;
+          float angle = 11.25f + std::atan2 (l_ny, l_nx) * 180.0f / 3.14f;
 
           if (angle < 0.0f) angle += 360.0f;
           if (angle >= 360.0f) angle -= 360.0f;
