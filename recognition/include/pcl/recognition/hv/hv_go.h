@@ -30,6 +30,7 @@ namespace pcl
   /** \brief A hypothesis verification method proposed in
     * "A Global Hypotheses Verification Method for 3D Object Recognition", A. Aldoma and F. Tombari and L. Di Stefano and Markus Vincze, ECCV 2012
     * \author Aitor Aldoma
+    * \ingroup recognition
     */
   template<typename ModelT, typename SceneT>
   class PCL_EXPORTS GlobalHypothesesVerification: public HypothesisVerification<ModelT, SceneT>

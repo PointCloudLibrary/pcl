@@ -48,6 +48,9 @@
 #include <pcl/io/openni_camera/openni_device_primesense.h>
 #include <pcl/io/openni_camera/openni_device_xtion.h>
 #include <pcl/io/openni_camera/openni_device_oni.h>
+
+#include <boost/tokenizer.hpp>
+
 #include <sstream>
 #include <iostream>
 #include <algorithm>
@@ -193,8 +196,8 @@ openni_wrapper::OpenNIDriver::updateDeviceList ()
 #ifdef _WIN32
     if (vendor_id == 0x45e)
     {
-      strcpy (const_cast<char*> (device_context_[device].device_node.GetDescription ().strVendor), "Microsoft");
-      strcpy (const_cast<char*> (device_context_[device].device_node.GetDescription ().strName), "Xbox NUI Camera");
+      strcpy (const_cast<char*> (device.device_node.GetDescription ().strVendor), "Microsoft");
+      strcpy (const_cast<char*> (device.device_node.GetDescription ().strName), "Xbox NUI Camera");
     }
     else
 #endif

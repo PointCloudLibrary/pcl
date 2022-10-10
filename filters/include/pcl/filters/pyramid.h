@@ -52,7 +52,7 @@ namespace pcl
       * It is an iterative smoothing subsampling algorithm.
       * The subsampling is fixed to 2. Two smoothing kernels may be used:
       * - [1/16 1/4 3/8 1/4 1/16] slower but produces finer result;
-      * - [1/4 1/2 1/2] the more conventional binomial kernel which is faster.
+      * - [1/4 1/2 1/4] the more conventional binomial kernel which is faster.
       * We use a memory efficient algorithm so the convolving and subsampling are combined in a 
       * single step.
       *
@@ -70,10 +70,10 @@ namespace pcl
         Pyramid (int levels = 4)
           : levels_ (levels)
           , large_ (false)
+          , name_ ("Pyramid")
           , threshold_ (0.01)
           , threads_ (0)
         {
-          name_ = "Pyramid";
         }
       
         /** \brief Provide a pointer to the input dataset

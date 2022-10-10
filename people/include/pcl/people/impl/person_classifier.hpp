@@ -50,7 +50,7 @@ template <typename PointT>
 pcl::people::PersonClassifier<PointT>::~PersonClassifier () = default;
 
 template <typename PointT> bool
-pcl::people::PersonClassifier<PointT>::loadSVMFromFile (std::string svm_filename)
+pcl::people::PersonClassifier<PointT>::loadSVMFromFile (const std::string& svm_filename)
 {
   std::string line;
   std::ifstream SVM_file;

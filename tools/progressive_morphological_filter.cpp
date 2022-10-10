@@ -176,7 +176,6 @@ saveCloud (const std::string &filename, const Cloud &output)
 int
 batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir, int max_window_size, float slope, float max_distance, float initial_distance, float cell_size, float base, bool exponential, bool approximate)
 {
-  std::vector<std::string> st;
   for (const auto &pcd_file : pcd_files)
   {
     // Load the first file

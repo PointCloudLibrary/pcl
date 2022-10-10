@@ -84,7 +84,7 @@ namespace pcl
        * \return true if SVM has been correctly set, false otherwise.
        */
       bool
-      loadSVMFromFile (std::string svm_filename);
+      loadSVMFromFile (const std::string& svm_filename);
 
       /**
        * \brief Set trained SVM for person confidence estimation.

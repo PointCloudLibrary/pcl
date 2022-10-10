@@ -71,7 +71,7 @@ pcl::SVMTrain::doCrossValidation()
 {
   int total_correct = 0;
   double sumv = 0, sumy = 0, sumvv = 0, sumyy = 0, sumvy = 0;
-  double* target = Malloc(double, prob_.l);
+  double* target;
 
   // number of fold for the cross validation (n of folds = number of splitting of the
   // input dataset)
@@ -79,6 +79,7 @@ pcl::SVMTrain::doCrossValidation()
     fprintf(stderr, "n-fold cross validation: n must >= 2\n");
     return;
   }
+  target = Malloc(double, prob_.l);
 
   svm_cross_validation(&prob_, &param_, nr_fold_, target); // perform cross validation
 

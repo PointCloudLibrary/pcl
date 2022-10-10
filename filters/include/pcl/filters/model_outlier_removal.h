@@ -92,7 +92,7 @@ namespace pcl
 
       /** \brief sets the models coefficients */
       inline void
-      setModelCoefficients (const pcl::ModelCoefficients model_coefficients)
+      setModelCoefficients (const pcl::ModelCoefficients& model_coefficients)
       {
         model_coefficients_.resize (model_coefficients.values.size ());
         for (std::size_t i = 0; i < model_coefficients.values.size (); i++)
