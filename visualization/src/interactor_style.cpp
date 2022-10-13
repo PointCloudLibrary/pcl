@@ -719,7 +719,17 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
   else if (key.find ("XF86ZoomOut") != std::string::npos)
     zoomOut ();
 
-  switch (Interactor->GetKeyCode ())
+  char KeyCodeChar = Interactor->GetKeyCode ();
+  if (KeyCodeChar == 0)
+  {
+    std::string KeyString(Interactor->GetKeySym());
+    if (KeyString == "KP_Add")
+      KeyCodeChar = '+';
+    else if (KeyString == "KP_Subtract")
+      KeyCodeChar = '-';
+  }
+
+  switch (KeyCodeChar)
   {
     case 'h': case 'H':
     {
