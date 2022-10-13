@@ -446,6 +446,10 @@ namespace pcl
       /** \brief Empty constructor. */
       FeatureWithLocalReferenceFrames () : frames_ (), frames_never_defined_ (true) {}
 
+      /** \brief Default virtual destructor. */
+      virtual
+      ~FeatureWithLocalReferenceFrames() = default;
+
       /** \brief Provide a pointer to the input dataset that contains the local
         * reference frames of the XYZ dataset.
         * In case of search surface is set to be different from the input cloud,

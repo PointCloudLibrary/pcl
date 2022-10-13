@@ -95,6 +95,13 @@ namespace pcl
         this->brush_->DeepCopy (b);
         this->transform_->SetMatrix (t->GetMatrix());
       }
+
+      virtual ~Figure2D()
+      {
+        pen_->Delete();
+        brush_->Delete();
+        transform_->Delete();
+      }
       
       void applyInternals (vtkContext2D *painter) const
       {

@@ -20,6 +20,8 @@ class PCL_EXPORTS GlobalClassifier {
 public:
   using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
 
+  virtual ~GlobalClassifier() = default;
+
   virtual void
   setNN(int nn) = 0;
 
@@ -130,8 +132,6 @@ protected:
 
 public:
   GlobalNNPipeline() { NN_ = 1; }
-
-  ~GlobalNNPipeline() = default;
 
   void
   setNN(int nn) override
