@@ -45,7 +45,7 @@
 #include <QEvent>
 #include <QMutexLocker>
 #include <QObject>
-#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(8,2,0)
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(8, 2, 0)
 #define HAS_QVTKOPENGLWINDOW_H
 #include <QVTKOpenGLWindow.h>
 #endif
