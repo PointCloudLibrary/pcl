@@ -684,7 +684,8 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals ()
         if (angle < 0.0f) angle += 360.0f;
         if (angle >= 360.0f) angle -= 360.0f;
 
-        int bin_index = static_cast<int> (angle*8.0f/360.0f) & 7;
+        int bin_index = static_cast<int> (angle*8.0f/360.0f + 1);
+        bin_index = (bin_index < 1) ? 1 : (8 < bin_index) ? 8 : bin_index;
 
         quantized_surface_normals_ (x, y) = static_cast<unsigned char> (bin_index);
       }
@@ -903,7 +904,7 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals2 ()
           if (angle < 0.0f) angle += 360.0f;
           if (angle >= 360.0f) angle -= 360.0f;
 
-          int bin_index = static_cast<int> (angle*8.0f/360.0f) & 7;
+          int bin_index = static_cast<int> (angle*8.0f/360.0f);
 
           surface_normal_orientations_ (l_x, l_y) = angle;
 
@@ -933,14 +934,14 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals2 ()
 
   unsigned char map[255]{};
 
-  map[0x1<<0] = 0;
-  map[0x1<<1] = 1;
-  map[0x1<<2] = 2;
-  map[0x1<<3] = 3;
-  map[0x1<<4] = 4;
-  map[0x1<<5] = 5;
-  map[0x1<<6] = 6;
-  map[0x1<<7] = 7;
+  map[0x1<<0] = 1;
+  map[0x1<<1] = 2;
+  map[0x1<<2] = 3;
+  map[0x1<<3] = 4;
+  map[0x1<<4] = 5;
+  map[0x1<<5] = 6;
+  map[0x1<<6] = 7;
+  map[0x1<<7] = 8;
 
   quantized_surface_normals_.resize (width, height);
   for (int row_index = 0; row_index < height; ++row_index)
@@ -1372,7 +1373,7 @@ pcl::SurfaceNormalModality<PointInT>::quantizeSurfaceNormals ()
       const float normal_y = surface_normals_ (col_index, row_index).normal_y;
       const float normal_z = surface_normals_ (col_index, row_index).normal_z;
 
-      if (std::isnan(normal_x) || std::isnan(normal_y) || std::isnan(normal_z) || normal_z > 0)
+      if (std::isnan(normal_x) || std::isnan(normal_y) || std::isnan(normal_z) || normal_z > 0 || (normal_x == 0 && normal_y == 0))
       {
         quantized_surface_normals_ (col_index, row_index) = 0;
         continue;
@@ -1386,7 +1387,8 @@ pcl::SurfaceNormalModality<PointInT>::quantizeSurfaceNormals ()
       if (angle < 0.0f) angle += 360.0f;
       if (angle >= 360.0f) angle -= 360.0f;
 
-      int bin_index = static_cast<int> (angle*8.0f/360.0f);
+      int bin_index = static_cast<int> (angle*8.0f/360.0f + 1);
+      bin_index = (bin_index < 1) ? 1 : (8 < bin_index) ? 8 : bin_index;
 
       //quantized_surface_normals_.data[row_index*width+col_index] = 0x1 << bin_index;
       quantized_surface_normals_ (col_index, row_index) = static_cast<unsigned char> (bin_index);
