@@ -69,7 +69,11 @@ pcl::gpu::DeviceMemory::operator=(const pcl::gpu::DeviceMemory&)
   return *this;
 }
 
-void pcl::gpu::DeviceMemory::create(std::size_t) { throw_nogpu(); }
+void
+pcl::gpu::DeviceMemory::create(std::size_t)
+{
+  throw_nogpu();
+}
 
 void
 pcl::gpu::DeviceMemory::release()

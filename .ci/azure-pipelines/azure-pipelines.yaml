@@ -20,8 +20,6 @@ resources:
       image: pointcloudlibrary/env:winx86
     - container: winx64
       image: pointcloudlibrary/env:winx64
-    - container: fmt
-      image: pointcloudlibrary/fmt
     - container: env1804
       image: pointcloudlibrary/env:18.04
     - container: env2004

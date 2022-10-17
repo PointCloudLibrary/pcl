@@ -144,7 +144,7 @@ public:
   void
   run()
   {
-    pcl::OpenNIGrabber interface{device_id_};
+    pcl::OpenNIGrabber interface(device_id_);
 
     std::function<void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f =
         [this](const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud) {
