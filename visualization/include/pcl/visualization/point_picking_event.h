@@ -62,8 +62,6 @@ namespace pcl
         { 
           return (new PointPickingCallback); 
         }
-
-        PointPickingCallback () : x_ (0), y_ (0), z_ (0), idx_ (-1), pick_first_ (false) {}
       
         /** \brief Empty destructor */
         ~PointPickingCallback () override = default;
@@ -71,32 +69,32 @@ namespace pcl
         void
         Execute (vtkObject *caller, unsigned long eventid, void*) override;
 
-        int
+        index_t
         performSinglePick (vtkRenderWindowInteractor *iren);
 
-        int
+        index_t
         performSinglePick (vtkRenderWindowInteractor *iren, float &x, float &y, float &z);
 
-        int
+        index_t
         performAreaPick (vtkRenderWindowInteractor *iren,
                          CloudActorMapPtr cam_ptr,
                          std::map<std::string, pcl::Indices>& cloud_indices) const;
 
 
       private:
-        float x_, y_, z_;
-        int idx_;
-        bool pick_first_;
-        const vtkActor* actor_;
+        float x_{0}, y_{0}, z_{0};
+        index_t idx_{-1};
+        bool pick_first_{false};
+        const vtkActor* actor_{nullptr};
      };
 
     /** /brief Class representing 3D point picking events. */
     class PCL_EXPORTS PointPickingEvent
     {
       public:
-        PointPickingEvent (int idx) : PointPickingEvent ( idx, -1,-1, -1) {}
-        PointPickingEvent (int idx, float x, float y, float z, const std::string& name = "") : idx_ (idx), idx2_ (-1), x_ (x), y_ (y), z_ (z), x2_ (), y2_ (), z2_ (), name_ (name) {}
-        PointPickingEvent (int idx1, int idx2, float x1, float y1, float z1, float x2, float y2, float z2) :
+        PointPickingEvent (pcl::index_t idx) : PointPickingEvent ( idx, -1,-1, -1) {}
+        PointPickingEvent (pcl::index_t idx, float x, float y, float z, const std::string& name = "") : idx_ (idx), idx2_ (-1), x_ (x), y_ (y), z_ (z), x2_ (), y2_ (), z2_ (), name_ (name) {}
+        PointPickingEvent (pcl::index_t idx1, int idx2, float x1, float y1, float z1, float x2, float y2, float z2) :
           idx_ (idx1), idx2_ (idx2), x_ (x1), y_ (y1), z_ (z1), x2_ (x2), y2_ (y2), z2_ (z2) 
         {}
 
@@ -170,7 +168,7 @@ namespace pcl
         getCloudName () const { return name_; }
 
       private:
-        int idx_, idx2_;
+        pcl::index_t idx_, idx2_;
 
         float x_, y_, z_;
         float x2_, y2_, z2_;

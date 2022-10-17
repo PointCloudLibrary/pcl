@@ -136,7 +136,7 @@ pcl::visualization::PointPickingCallback::performSinglePick (vtkRenderWindowInte
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-int
+pcl::index_t
 pcl::visualization::PointPickingCallback::performSinglePick (
     vtkRenderWindowInteractor *iren,
     float &x, float &y, float &z)
@@ -156,7 +156,7 @@ pcl::visualization::PointPickingCallback::performSinglePick (
   vtkRenderer *ren = iren->FindPokedRenderer (mouse_x, mouse_y);
   point_picker->Pick (mouse_x, mouse_y, 0.0, ren);
 
-  int idx = static_cast<int> (point_picker->GetPointId ());
+  index_t idx = static_cast<index_t>(point_picker->GetPointId());
   if (point_picker->GetDataSet ())
   {
     double p[3];
@@ -169,7 +169,7 @@ pcl::visualization::PointPickingCallback::performSinglePick (
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-int
+pcl::index_t
 pcl::visualization::PointPickingCallback::performAreaPick (vtkRenderWindowInteractor *iren,pcl::visualization::CloudActorMapPtr cam_ptr,
                                                            std::map<std::string, pcl::Indices>& cloud_indices) const
 {
@@ -181,7 +181,7 @@ pcl::visualization::PointPickingCallback::performAreaPick (vtkRenderWindowIntera
   if (!props)
     return -1;
 
-  int pt_numb = 0;
+  index_t pt_numb = 0;
   vtkCollectionSimpleIterator pit;
   vtkProp3D* prop;
   for (props->InitTraversal (pit); (prop = props->GetNextProp3D (pit));)
