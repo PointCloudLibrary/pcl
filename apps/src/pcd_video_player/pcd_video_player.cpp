@@ -47,7 +47,7 @@
 #include <QMutexLocker>
 #include <QObject>
 #include <QRadioButton>
-#if VTK_MAJOR_VERSION >= 8 && VTK_MINOR_VERSION >= 2
+#if VTK_MAJOR_VERSION >= 9 || (VTK_MAJOR_VERSION == 8 && VTK_MINOR_VERSION >= 2)
 #define HAS_QVTKOPENGLWINDOW_H
 #include <QVTKOpenGLWindow.h>
 #endif
