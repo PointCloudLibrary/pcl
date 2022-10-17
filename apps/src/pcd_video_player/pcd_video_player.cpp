@@ -314,7 +314,7 @@ print_usage()
 int
 main(int argc, char** argv)
 {
-#ifdef HAS_VTK_82
+#ifdef HAS_QVTKOPENGLWINDOW_H
   QSurfaceFormat::setDefaultFormat(QVTKOpenGLWindow::defaultFormat());
 #endif
   QApplication app(argc, argv);
