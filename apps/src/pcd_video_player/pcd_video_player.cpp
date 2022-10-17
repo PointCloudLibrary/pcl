@@ -48,7 +48,7 @@
 #include <QObject>
 #include <QRadioButton>
 #if VTK_MAJOR_VERSION >= 8 && VTK_MINOR_VERSION >= 2
-#define HAS_VTK_82
+#define HAS_QVTKOPENGLWINDOW_H
 #include <QVTKOpenGLWindow.h>
 #endif
 #include <ui_pcd_video_player.h>
