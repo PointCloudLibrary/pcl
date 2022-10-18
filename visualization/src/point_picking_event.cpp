@@ -114,7 +114,7 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-int
+pcl::index_t
 pcl::visualization::PointPickingCallback::performSinglePick (vtkRenderWindowInteractor *iren)
 {
   vtkPointPicker* point_picker = vtkPointPicker::SafeDownCast (iren->GetPicker ());
@@ -132,7 +132,7 @@ pcl::visualization::PointPickingCallback::performSinglePick (vtkRenderWindowInte
   vtkRenderer *ren = iren->FindPokedRenderer (mouse_x, mouse_y);
   point_picker->Pick (mouse_x, mouse_y, 0.0, ren);
 
-  return (static_cast<int> (point_picker->GetPointId ()));
+  return (static_cast<pcl::index_t>(point_picker->GetPointId()));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

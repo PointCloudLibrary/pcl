@@ -69,13 +69,13 @@ namespace pcl
         void
         Execute (vtkObject *caller, unsigned long eventid, void*) override;
 
-        index_t
+        pcl::index_t
         performSinglePick (vtkRenderWindowInteractor *iren);
 
-        index_t
+        pcl::index_t
         performSinglePick (vtkRenderWindowInteractor *iren, float &x, float &y, float &z);
 
-        index_t
+        pcl::index_t
         performAreaPick (vtkRenderWindowInteractor *iren,
                          CloudActorMapPtr cam_ptr,
                          std::map<std::string, pcl::Indices>& cloud_indices) const;
@@ -83,7 +83,7 @@ namespace pcl
 
       private:
         float x_{0}, y_{0}, z_{0};
-        index_t idx_{-1};
+        pcl::index_t idx_{static_cast<pcl::index_t>(-1)};
         bool pick_first_{false};
         const vtkActor* actor_{nullptr};
      };
@@ -94,7 +94,7 @@ namespace pcl
       public:
         PointPickingEvent (pcl::index_t idx) : PointPickingEvent ( idx, -1,-1, -1) {}
         PointPickingEvent (pcl::index_t idx, float x, float y, float z, const std::string& name = "") : idx_ (idx), idx2_ (-1), x_ (x), y_ (y), z_ (z), x2_ (), y2_ (), z2_ (), name_ (name) {}
-        PointPickingEvent (pcl::index_t idx1, int idx2, float x1, float y1, float z1, float x2, float y2, float z2) :
+        PointPickingEvent (pcl::index_t idx1, pcl::index_t idx2, float x1, float y1, float z1, float x2, float y2, float z2) :
           idx_ (idx1), idx2_ (idx2), x_ (x1), y_ (y1), z_ (z1), x2_ (x2), y2_ (y2), z2_ (z2) 
         {}
 
@@ -105,7 +105,7 @@ namespace pcl
           * cloud for the correct index. An example of how to do this can be found in the pp_callback function in
           * visualization/tools/pcd_viewer.cpp
           */
-        inline int
+        inline pcl::index_t
         getPointIndex () const
         {
           return (idx_);
@@ -134,7 +134,7 @@ namespace pcl
         inline bool
         getPoints (float &x1, float &y1, float &z1, float &x2, float &y2, float &z2) const
         {
-          if (idx2_ == -1)
+          if (idx2_ == static_cast<pcl::index_t>(-1))
             return (false);
           x1 = x_; y1 = y_; z1 = z_;
           x2 = x2_; y2 = y2_; z2 = z2_;
@@ -152,9 +152,9 @@ namespace pcl
           * visualization/tools/pcd_viewer.cpp
           */
         inline bool
-        getPointIndices (int &index_1, int &index_2) const
+        getPointIndices(pcl::index_t& index_1, pcl::index_t& index_2) const
         {
-          if (idx2_ == -1)
+          if (idx2_ == static_cast<pcl::index_t>(-1))
             return (false);
           index_1 = idx_;
           index_2 = idx2_;
