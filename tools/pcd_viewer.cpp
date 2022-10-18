@@ -155,7 +155,7 @@ pcl::PCLPointCloud2::Ptr cloud;
 pcl::PointCloud<pcl::PointXYZ>::Ptr xyzcloud;
 
 void
-area_callback(const pcl::visualization::AreaPickingEvent& event, void* cookie)
+area_callback(const pcl::visualization::AreaPickingEvent& event, void* /*cookie*/)
 {
   const auto names = event.getCloudNames();
 
@@ -508,7 +508,7 @@ main (int argc, char** argv)
         p->registerPointPickingCallback (&pp_callback, static_cast<void*> (&cloud));
 
       if (use_ap)
-        p->registerAreaPickingCallback(&area_callback, static_cast<void*>(&cloud));
+        p->registerAreaPickingCallback(&area_callback);
 
       if (useEDLRendering)
         p->enableEDLRendering();
