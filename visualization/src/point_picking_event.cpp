@@ -73,7 +73,7 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
         CloudActorMapPtr cam_ptr = style->getCloudActorMap();
         const auto actor = std::find_if(cam_ptr->cbegin(), cam_ptr->cend(), [this](const auto& cloud_actor) { return cloud_actor.second.actor.GetPointer() == actor_; });
         const std::string name = (actor != cam_ptr->cend()) ? actor->first : "";
-        style->point_picking_signal_ (PointPickingEvent (idx, x, y, z, std::move (name)));
+        style->point_picking_signal_ (PointPickingEvent (idx, x, y, z, name));
       }
     }
     else if ((eventid == vtkCommand::LeftButtonPressEvent) && (iren->GetAltKey () == 1))
@@ -156,7 +156,7 @@ pcl::visualization::PointPickingCallback::performSinglePick (
   vtkRenderer *ren = iren->FindPokedRenderer (mouse_x, mouse_y);
   point_picker->Pick (mouse_x, mouse_y, 0.0, ren);
 
-  index_t idx = static_cast<index_t>(point_picker->GetPointId());
+  auto idx = static_cast<index_t>(point_picker->GetPointId());
   if (point_picker->GetDataSet ())
   {
     double p[3];
