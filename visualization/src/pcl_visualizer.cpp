@@ -4579,8 +4579,8 @@ pcl::visualization::PCLVisualizer::getUniqueCameraFile (int argc, char **argv)
       if (boost::filesystem::exists (path))
       {
         path = boost::filesystem::canonical (path);
-        const char *str = path.string ().c_str ();
-        sha1.process_bytes (str, std::strlen (str));
+        const auto pathStr = path.string ();
+        sha1.process_bytes (pathStr.c_str(), pathStr.size());
         valid = true;
       }
     }
