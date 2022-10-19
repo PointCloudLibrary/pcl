@@ -236,7 +236,7 @@ main(int argc, char** argv)
 
   if (arg == "--help" || arg == "-h") {
     usage(argv);
-    return 1;
+    return 0;
   }
 
   int port = 11111;
