@@ -267,7 +267,7 @@ main(int argc, char** argv)
             << "Use \"-h\" to get more info about the available options.\n";
 
   std::string arg;
-  if(argc > 1)
+  if (argc > 1)
     arg = std::string(argv[1]);
 
   if (pcl::console::find_argument(argc, argv, "-h") == -1) {

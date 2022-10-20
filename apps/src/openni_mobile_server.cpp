@@ -231,7 +231,7 @@ int
 main(int argc, char** argv)
 {
   std::string arg; 
-  if(argc > 1)
+  if (argc > 1)
     arg = std::string(argv[1]);
 
   if (pcl::console::find_argument(argc, argv, "-h") != -1) {
