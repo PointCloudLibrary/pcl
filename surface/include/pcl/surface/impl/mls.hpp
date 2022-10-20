@@ -63,10 +63,10 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
   // Reset or initialize the collection of indices
   corresponding_input_indices_.reset (new PointIndices);
 
+  normals_.reset (new NormalCloud); // always init this since it is dereferenced in performUpsampling
   // Check if normals have to be computed/saved
   if (compute_normals_)
   {
-    normals_.reset (new NormalCloud);
     // Copy the header
     normals_->header = input_->header;
     // Clear the fields in case the method exits before computation
