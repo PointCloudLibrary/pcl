@@ -605,6 +605,10 @@ namespace pcl
       using ConditionBase = pcl::ConditionBase<PointT>;
       using ConditionBasePtr = typename ConditionBase::Ptr;
       using ConditionBaseConstPtr = typename ConditionBase::ConstPtr;
+      
+      using Ptr = shared_ptr<ConditionalRemoval<PointT> >;    
+      using ConstPtr = shared_ptr<const ConditionalRemoval<PointT> >;
+
 
       /** \brief the default constructor.  
         *
