@@ -189,15 +189,15 @@ main(int argc, char** argv)
     return 1;
   }
 
-  pcl::OpenNIGrabber grabber(arg);
+  pcl::OpenNIGrabber grabber("");
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {
     PCL_INFO("PointXYZRGBA mode enabled.\n");
-    OpenNIFastMesh<pcl::PointXYZRGBA> v(arg);
+    OpenNIFastMesh<pcl::PointXYZRGBA> v("");
     v.run(argc, argv);
   }
   else {
     PCL_INFO("PointXYZ mode enabled.\n");
-    OpenNIFastMesh<pcl::PointXYZ> v(arg);
+    OpenNIFastMesh<pcl::PointXYZ> v("");
     v.run(argc, argv);
   }
   return 0;

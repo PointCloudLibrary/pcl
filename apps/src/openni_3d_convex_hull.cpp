@@ -193,15 +193,15 @@ main(int argc, char** argv)
     return 1;
   }
 
-  pcl::OpenNIGrabber grabber(arg);
+  pcl::OpenNIGrabber grabber("");
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {
     PCL_INFO("PointXYZRGBA mode enabled.\n");
-    OpenNI3DConvexHull<pcl::PointXYZRGBA> v(arg);
+    OpenNI3DConvexHull<pcl::PointXYZRGBA> v("");
     v.run();
   }
   else {
     PCL_INFO("PointXYZ mode enabled.\n");
-    OpenNI3DConvexHull<pcl::PointXYZ> v(arg);
+    OpenNI3DConvexHull<pcl::PointXYZ> v("");
     v.run();
   }
   return 0;

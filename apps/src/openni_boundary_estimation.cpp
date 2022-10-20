@@ -210,9 +210,9 @@ main(int argc, char** argv)
     return 1;
   }
 
-  pcl::OpenNIGrabber grabber(arg);
+  pcl::OpenNIGrabber grabber("");
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb>()) {
-    OpenNIIntegralImageNormalEstimation v(arg);
+    OpenNIIntegralImageNormalEstimation v("");
     v.run();
   }
   else
