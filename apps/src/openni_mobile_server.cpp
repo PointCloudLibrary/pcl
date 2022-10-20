@@ -230,7 +230,7 @@ usage(char** argv)
 int
 main(int argc, char** argv)
 {
-  std::string arg; 
+  std::string arg;
   if (argc > 1)
     arg = std::string(argv[1]);
 
