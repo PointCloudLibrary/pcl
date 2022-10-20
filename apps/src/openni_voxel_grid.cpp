@@ -173,10 +173,9 @@ main(int argc, char** argv)
   if (argc > 1)
     arg = std::string(argv[1]);  
 
-  if (pcl::console::find_argument(argc, argv, "-h") != -1) {
+  if (pcl::console::find_argument(argc, argv, "-h") != -1)
     usage(argv);
     return 0;
-  }
 
   float min_v = 0.0f, max_v = 5.0f;
   pcl::console::parse_2x_arguments(argc, argv, "-minmax", min_v, max_v);
