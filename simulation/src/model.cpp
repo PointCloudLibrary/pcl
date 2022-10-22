@@ -288,10 +288,11 @@ pcl::simulation::Quad::render() const
 }
 
 pcl::simulation::TexturedQuad::TexturedQuad(int width, int height)
-: width_(width), height_(height)
+: width_(width)
+, height_(height)
+, program_(
+      gllib::Program::loadProgramFromFile("single_texture.vert", "single_texture.frag"))
 {
-  program_ =
-      gllib::Program::loadProgramFromFile("single_texture.vert", "single_texture.frag");
   program_->use();
   Eigen::Matrix<float, 4, 4> MVP;
   MVP.setIdentity();

@@ -51,9 +51,9 @@ namespace common
 
 template <typename T>
 UniformGenerator<T>::UniformGenerator(T min, T max, std::uint32_t seed)
-  : distribution_ (min, max)
+  : parameters_ ({min, max, seed})
+  , distribution_ (min, max)
 {
-  parameters_ = Parameters (min, max, seed);
   if(parameters_.seed != static_cast<std::uint32_t> (-1))
     rng_.seed (seed);
 }
@@ -111,9 +111,9 @@ UniformGenerator<T>::setParameters (const Parameters& parameters)
 
 template <typename T>
 NormalGenerator<T>::NormalGenerator(T mean, T sigma, std::uint32_t seed)
-  : distribution_ (mean, sigma)
+  : parameters_ ({mean, sigma, seed})
+  , distribution_ (mean, sigma)
 {
-  parameters_ = Parameters (mean, sigma, seed);
   if(parameters_.seed != static_cast<std::uint32_t> (-1))
     rng_.seed (seed);
 }

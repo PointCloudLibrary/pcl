@@ -30,7 +30,7 @@ readTextFile(const char* filename)
   return buf;
 }
 
-pcl::simulation::gllib::Program::Program() { program_id_ = glCreateProgram(); }
+pcl::simulation::gllib::Program::Program() : program_id_(glCreateProgram()) {}
 
 pcl::simulation::gllib::Program::~Program() = default;
 

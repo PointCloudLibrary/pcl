@@ -64,14 +64,12 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLPlotter::PCLPlotter (char const *name)
+  : view_ (vtkSmartPointer<vtkContextView>::New ())
+  , chart_(vtkSmartPointer<vtkChartXY>::New())
+  , color_series_(vtkSmartPointer<vtkColorSeries>::New ())
+  , exit_loop_timer_(vtkSmartPointer<ExitMainLoopTimerCallback>::New ())
+  , exit_callback_(vtkSmartPointer<ExitCallback>::New ())
 {
-  //constructing
-  view_ = vtkSmartPointer<vtkContextView>::New ();
-  chart_=vtkSmartPointer<vtkChartXY>::New();
-  color_series_ = vtkSmartPointer<vtkColorSeries>::New ();
-  exit_loop_timer_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
-  exit_callback_ = vtkSmartPointer<ExitCallback>::New ();
-  
   //connecting and mandatory bookkeeping
   view_->GetScene ()->AddItem (chart_);
   view_->GetRenderWindow ()->SetWindowName (name);
