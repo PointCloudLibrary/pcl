@@ -266,8 +266,8 @@ main(int argc, char** argv)
                "MultiscaleFeaturePersistence class using the FPFH features\n"
             << "Use \"-h\" to get more info about the available options.\n";
 
-  std::string arg;
-  if (argc > 1)
+  std::string arg = "";
+  if (argc > 1 && argv[1][0] != '-')
     arg = std::string(argv[1]);
 
   if (pcl::console::find_argument(argc, argv, "-h") == -1) {
