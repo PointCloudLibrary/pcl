@@ -566,11 +566,10 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::applyState(
       AngleAxis(static_cast<Scalar>(x[5]), Vector3::UnitZ()) *
       AngleAxis(static_cast<Scalar>(x[4]), Vector3::UnitY()) *
       AngleAxis(static_cast<Scalar>(x[3]), Vector3::UnitX());
-  R.template block<4, 1>(0, 3) = Vector4(
-      static_cast<Scalar>(x[0]),
-      static_cast<Scalar>(x[1]),
-      static_cast<Scalar>(x[2]),
-      Scalar(1.0));
+  R.template block<4, 1>(0, 3) = Vector4(static_cast<Scalar>(x[0]),
+                                         static_cast<Scalar>(x[1]),
+                                         static_cast<Scalar>(x[2]),
+                                         Scalar(1.0));
   t = R * t;
 }
 
