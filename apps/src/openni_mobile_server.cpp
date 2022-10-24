@@ -231,7 +231,7 @@ int
 main(int argc, char** argv)
 {
   std::string device_id = "";
-  if ((argc > 1) && (argv[1][0] != '-'))
+  if (argc > 1 && argv[1][0] != '-')
     device_id = std::string(argv[1]);
 
   if (pcl::console::find_argument(argc, argv, "-h") != -1) {
