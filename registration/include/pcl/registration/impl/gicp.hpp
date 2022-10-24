@@ -561,17 +561,17 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::applyState(
     Matrix4& t, const Vector6d& x) const
 {
   // Z Y X euler angles convention
-  Matrix3 R;
-  R = AngleAxis(static_cast<Scalar>(x[5]), Vector3::UnitZ()) *
+  Matrix4 R = Matrix4::Zero();
+  R.template block<3, 3>(0, 0) =
+      AngleAxis(static_cast<Scalar>(x[5]), Vector3::UnitZ()) *
       AngleAxis(static_cast<Scalar>(x[4]), Vector3::UnitY()) *
       AngleAxis(static_cast<Scalar>(x[3]), Vector3::UnitX());
-  t.template topLeftCorner<3, 3>().matrix() =
-      R * t.template topLeftCorner<3, 3>().matrix();
-  Vector4 T(static_cast<Scalar>(x[0]),
-            static_cast<Scalar>(x[1]),
-            static_cast<Scalar>(x[2]),
-            0.0f);
-  t.col(3) += T;
+  R.template block<4, 1>(0, 3) = Vector4(
+      static_cast<Scalar>(x[0]),
+      static_cast<Scalar>(x[1]),
+      static_cast<Scalar>(x[2]),
+      Scalar(1.0));
+  t = R * t;
 }
 
 } // namespace pcl
