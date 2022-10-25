@@ -567,9 +567,8 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::applyState(
                   .toRotationMatrix();
   Matrix4 T = Matrix4::Identity();
   T.template block<3, 3>(0, 0) = R;
-  T.template block<3, 1>(0, 3) =
-      Vector3(static_cast<Scalar>(x[0]), static_cast<Scalar>(x[1]),
-              static_cast<Scalar>(x[2]));
+  T.template block<3, 1>(0, 3) = Vector3(
+      static_cast<Scalar>(x[0]), static_cast<Scalar>(x[1]), static_cast<Scalar>(x[2]));
   t = T * t;
 }
 
