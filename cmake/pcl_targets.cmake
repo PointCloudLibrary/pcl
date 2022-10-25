@@ -441,6 +441,11 @@ function(PCL_ADD_BENCHMARK _name)
   target_link_libraries(benchmark_${_name} benchmark::benchmark ${ARGS_LINK_WITH})
   set_target_properties(benchmark_${_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
+  # See https://github.com/google/benchmark/issues/1457
+  if(BenchmarkBuildType STREQUAL "STATIC_LIBRARY" AND benchmark_VERSION STREQUAL "1.7.0")
+    target_compile_definitions(benchmark_${_name} PUBLIC -DBENCHMARK_STATIC_DEFINE)
+  endif()
+
   #Only applies to MSVC
   if(MSVC)
     #Requires CMAKE version 3.13.0

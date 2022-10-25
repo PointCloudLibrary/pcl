@@ -11,6 +11,8 @@ if(NOT build)
 endif()
 
 find_package(benchmark REQUIRED)
+get_target_property(BenchmarkBuildType benchmark::benchmark TYPE)
+
 add_custom_target(run_benchmarks)
 
 PCL_ADD_BENCHMARK(features_normal_3d FILES features/normal_3d.cpp
