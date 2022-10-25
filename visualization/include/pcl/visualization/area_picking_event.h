@@ -41,6 +41,7 @@
 #include <pcl/pcl_macros.h>
 
 #include <map>
+
 namespace pcl
 {
   namespace visualization
@@ -49,14 +50,13 @@ namespace pcl
     class PCL_EXPORTS AreaPickingEvent
     {
       public:
-        AreaPickingEvent (index_t nb_points, std::map<std::string, pcl::Indices> cloud_indices)
-          : nb_points_ (nb_points)
-          , cloud_indices_ (std::move(cloud_indices))
+        AreaPickingEvent (std::map<std::string, pcl::Indices> cloud_indices)
+        : cloud_indices_ (std::move(cloud_indices))
         {}
 
         PCL_DEPRECATED(1,16,"This constructor is deprecated!")
-        AreaPickingEvent (int nb_points, const pcl::Indices& indices)
-          : AreaPickingEvent (nb_points, {{"",indices}}) {}
+        AreaPickingEvent(int /*nb_points*/, const pcl::Indices& indices)
+          : AreaPickingEvent ({{"",indices}}) {}
 
         /** \brief For situations where a whole area is selected, return the points indices.
           * \param[out] indices indices of the points under the area selected by user.
@@ -65,10 +65,12 @@ namespace pcl
         inline bool
         getPointsIndices (pcl::Indices& indices) const
         {
-          if (nb_points_ <= 0)
+          if (cloud_indices_.empty())
             return (false);
+
           for (const auto& i : cloud_indices_)
             indices.insert(indices.cend (), i.second.cbegin (), i.second.cend ());
+
           return (true);
         }
         /** \brief For situations where a whole area is selected, return the names
@@ -99,7 +101,6 @@ namespace pcl
         }
 
       private:
-        index_t nb_points_;
         std::map<std::string, pcl::Indices> cloud_indices_;
     };
   } //namespace visualization

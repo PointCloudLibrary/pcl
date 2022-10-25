@@ -68,7 +68,7 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
       float x = 0, y = 0, z = 0;
       int idx = performSinglePick (iren, x, y, z);
       // Create a PointPickingEvent if a point was selected
-      if (idx != -1)
+      if (idx != pcl::UNAVAILABLE)
       {
         CloudActorMapPtr cam_ptr = style->getCloudActorMap();
         const auto actor = std::find_if(cam_ptr->cbegin(), cam_ptr->cend(), [this](const auto& cloud_actor) { return cloud_actor.second.actor.GetPointer() == actor_; });
@@ -80,7 +80,7 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
     {
       pick_first_ = !pick_first_;
       float x = 0, y = 0, z = 0;
-      int idx = -1;
+      index_t idx = pcl::UNAVAILABLE;
       if (pick_first_)
         idx_ = performSinglePick (iren, x_, y_, z_);
       else
@@ -107,8 +107,8 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
     {
       style->OnLeftButtonUp ();
       std::map<std::string, Indices> cloud_indices;
-      int nb_points = performAreaPick (iren, style->getCloudActorMap(), cloud_indices);
-      style->area_picking_signal_ (AreaPickingEvent (nb_points, std::move(cloud_indices)));
+      performAreaPick (iren, style->getCloudActorMap(), cloud_indices);
+      style->area_picking_signal_ (AreaPickingEvent (std::move(cloud_indices)));
     }
   }
 }

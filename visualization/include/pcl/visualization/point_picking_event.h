@@ -38,6 +38,7 @@
 
 #pragma once
 
+#include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/types.h> // for pcl::Indices
 #include <pcl/visualization/common/actor_map.h>
@@ -83,7 +84,7 @@ namespace pcl
 
       private:
         float x_{0}, y_{0}, z_{0};
-        pcl::index_t idx_{static_cast<pcl::index_t>(-1)};
+        pcl::index_t idx_{pcl::UNAVAILABLE};
         bool pick_first_{false};
         const vtkActor* actor_{nullptr};
      };
@@ -134,7 +135,7 @@ namespace pcl
         inline bool
         getPoints (float &x1, float &y1, float &z1, float &x2, float &y2, float &z2) const
         {
-          if (idx2_ == static_cast<pcl::index_t>(-1))
+          if (idx2_ == pcl::UNAVAILABLE)
             return (false);
           x1 = x_; y1 = y_; z1 = z_;
           x2 = x2_; y2 = y2_; z2 = z2_;
@@ -154,7 +155,7 @@ namespace pcl
         inline bool
         getPointIndices(pcl::index_t& index_1, pcl::index_t& index_2) const
         {
-          if (idx2_ == static_cast<pcl::index_t>(-1))
+          if (idx2_ == pcl::UNAVAILABLE)
             return (false);
           index_1 = idx_;
           index_2 = idx2_;
