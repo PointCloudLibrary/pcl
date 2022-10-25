@@ -230,15 +230,15 @@ main(int argc, char** argv)
   std::cout << "<Q,q> quit\n\n";
   // clang-format on
 
-  pcl::OpenNIGrabber grabber("");
+  pcl::OpenNIGrabber grabber(arg);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {
     PCL_INFO("PointXYZRGBA mode enabled.\n");
-    OpenNIIntegralImageNormalEstimation<pcl::PointXYZRGBA> v("");
+    OpenNIIntegralImageNormalEstimation<pcl::PointXYZRGBA> v(arg);
     v.run();
   }
   else {
     PCL_INFO("PointXYZ mode enabled.\n");
-    OpenNIIntegralImageNormalEstimation<pcl::PointXYZ> v("");
+    OpenNIIntegralImageNormalEstimation<pcl::PointXYZ> v(arg);
     v.run();
   }
 
