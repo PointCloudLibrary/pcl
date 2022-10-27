@@ -159,9 +159,10 @@ public:
 void
 usage(char** argv)
 {
-  std::cout << "usage: " << argv[0]
-            << " <device_id> [-rgb <red> <green> <blue> [-radius <radius>] ]\n\n"
-            << std::endl;
+  std::cout << "usage: " << argv[0] << " <device_id> <options>\n\n"
+            << "where options are:\n"
+            << "    -rgb <red> <green> <blue> (default: 0 0 0)\n"
+            << "    -radius <radius> (default: 442)\n";
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
   if (driver.getNumberDevices() > 0) {
@@ -182,17 +183,14 @@ usage(char** argv)
 int
 main(int argc, char** argv)
 {
-  if (argc < 2) {
-    usage(argv);
-    return 1;
+  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
+      pcl::console::find_argument(argc, argv, "--help") != -1) {
+    usage(argv); return 1;
   }
 
-  std::string arg(argv[1]);
-
-  if (arg == "--help" || arg == "-h") {
-    usage(argv);
-    return 1;
-  }
+  std::string device_id = "";
+  if (argc > 1 && argv[1][0] != '-')
+    device_id = std::string(argv[1]);
 
   unsigned char red = 0, green = 0, blue = 0;
   int rr, gg, bb;
@@ -214,7 +212,7 @@ main(int argc, char** argv)
       blue = (unsigned char)bb;
   }
 
-  pcl::OpenNIGrabber grabber(arg);
+  pcl::OpenNIGrabber grabber(device_id);
 
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {
     OpenNIPassthrough<pcl::PointXYZRGBA> v(grabber, red, green, blue, radius);

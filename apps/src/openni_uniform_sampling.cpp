@@ -171,24 +171,21 @@ usage(char** argv)
 int
 main(int argc, char** argv)
 {
-  if (argc < 2) {
-    usage(argv);
-    return 1;
+  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
+      pcl::console::find_argument(argc, argv, "--help") != -1) {
+    usage(argv); return 1;
   }
 
-  std::string arg(argv[1]);
-
-  if (arg == "--help" || arg == "-h") {
-    usage(argv);
-    return 1;
-  }
+  std::string device_id = "";
+  if (argc > 1 && argv[1][0] != '-')
+    device_id = std::string(argv[1]);
 
   float leaf_res = 0.05f;
   pcl::console::parse_argument(argc, argv, "-leaf", leaf_res);
   PCL_INFO("Using %f as a leaf size for UniformSampling.\n", leaf_res);
 
-  pcl::OpenNIGrabber grabber(arg);
-  OpenNIUniformSampling v(arg, leaf_res);
+  pcl::OpenNIGrabber grabber(device_id);
+  OpenNIUniformSampling v(device_id, leaf_res);
   v.run();
 
   return 0;

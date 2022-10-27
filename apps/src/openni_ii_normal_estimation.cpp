@@ -190,7 +190,7 @@ public:
 void
 usage(char** argv)
 {
-  std::cout << "usage: " << argv[0] << " [<device_id>]\n\n";
+  std::cout << "usage: " << argv[0] << " <device_id>\n\n";
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
   if (driver.getNumberDevices() > 0) {
@@ -211,15 +211,16 @@ usage(char** argv)
 int
 main(int argc, char** argv)
 {
-  std::string arg;
+  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
+      pcl::console::find_argument(argc, argv, "--help") != -1) {
+    usage(argv); return 1;
+  }
+
+  std::string device_id = "";
   if (argc > 1)
-    arg = std::string(argv[1]);
+    device_id = std::string(argv[1]);
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
-  if (arg == "--help" || arg == "-h" || driver.getNumberDevices() == 0) {
-    usage(argv);
-    return 1;
-  }
 
   // clang-format off
   std::cout << "Press following keys to switch to the different integral image normal estimation methods:\n";
@@ -230,15 +231,15 @@ main(int argc, char** argv)
   std::cout << "<Q,q> quit\n\n";
   // clang-format on
 
-  pcl::OpenNIGrabber grabber(arg);
+  pcl::OpenNIGrabber grabber(device_id);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {
     PCL_INFO("PointXYZRGBA mode enabled.\n");
-    OpenNIIntegralImageNormalEstimation<pcl::PointXYZRGBA> v(arg);
+    OpenNIIntegralImageNormalEstimation<pcl::PointXYZRGBA> v(device_id);
     v.run();
   }
   else {
     PCL_INFO("PointXYZ mode enabled.\n");
-    OpenNIIntegralImageNormalEstimation<pcl::PointXYZ> v(arg);
+    OpenNIIntegralImageNormalEstimation<pcl::PointXYZ> v(device_id);
     v.run();
   }
 

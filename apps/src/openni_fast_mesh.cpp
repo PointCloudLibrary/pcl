@@ -151,7 +151,7 @@ public:
 void
 usage(char** argv)
 {
-  std::cout << "usage: " << argv[0] << " <device_id> <options>\n\n";
+  std::cout << "usage: " << argv[0] << " <device_id>\n\n";
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
   if (driver.getNumberDevices() > 0) {
@@ -180,24 +180,24 @@ usage(char** argv)
 int
 main(int argc, char** argv)
 {
-  std::string arg;
-  if (argc > 1)
-    arg = std::string(argv[1]);
-
-  if (arg == "--help" || arg == "-h") {
-    usage(argv);
-    return 1;
+  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
+      pcl::console::find_argument(argc, argv, "--help") != -1) {
+    usage(argv); return 1;
   }
 
-  pcl::OpenNIGrabber grabber(arg);
+  std::string device_id = "";
+  if (argc > 1)
+    device_id = std::string(argv[1]);
+
+  pcl::OpenNIGrabber grabber(device_id);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {
     PCL_INFO("PointXYZRGBA mode enabled.\n");
-    OpenNIFastMesh<pcl::PointXYZRGBA> v(arg);
+    OpenNIFastMesh<pcl::PointXYZRGBA> v(device_id);
     v.run(argc, argv);
   }
   else {
     PCL_INFO("PointXYZ mode enabled.\n");
-    OpenNIFastMesh<pcl::PointXYZ> v(arg);
+    OpenNIFastMesh<pcl::PointXYZ> v(device_id);
     v.run(argc, argv);
   }
   return 0;

@@ -203,17 +203,14 @@ usage(char** argv)
 int
 main(int argc, char** argv)
 {
-  if (argc < 2) {
-    usage(argv);
-    return 1;
+  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
+      pcl::console::find_argument(argc, argv, "--help") != -1) {
+    usage(argv); return 1;
   }
 
-  std::string arg(argv[1]);
-
-  if (arg == "--help" || arg == "-h") {
-    usage(argv);
-    return 1;
-  }
+  std::string device_id = "";
+  if (argc > 1 && argv[1][0] != '-')
+    device_id = std::string(argv[1]);
 
   // Command line parsing
   double search_radius = default_search_radius;
@@ -227,15 +224,15 @@ main(int argc, char** argv)
     sqr_gauss_param_set = false;
   pcl::console::parse_argument(argc, argv, "-polynomial_order", polynomial_order);
 
-  pcl::OpenNIGrabber grabber(arg);
+  pcl::OpenNIGrabber grabber(device_id);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {
     OpenNISmoothing<pcl::PointXYZRGBA> v(
-        search_radius, sqr_gauss_param_set, sqr_gauss_param, polynomial_order, arg);
+        search_radius, sqr_gauss_param_set, sqr_gauss_param, polynomial_order, device_id);
     v.run();
   }
   else {
     OpenNISmoothing<pcl::PointXYZ> v(
-        search_radius, sqr_gauss_param_set, sqr_gauss_param, polynomial_order, arg);
+        search_radius, sqr_gauss_param_set, sqr_gauss_param, polynomial_order, device_id);
     v.run();
   }
 

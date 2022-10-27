@@ -166,28 +166,25 @@ usage(char** argv)
 int
 main(int argc, char** argv)
 {
-  if (argc < 2) {
-    usage(argv);
-    return 1;
+  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
+      pcl::console::find_argument(argc, argv, "--help") != -1) {
+    usage(argv); return 1;
   }
 
-  std::string arg(argv[1]);
-
-  if (arg == "--help" || arg == "-h") {
-    usage(argv);
-    return 1;
-  }
+  std::string device_id = "";
+  if (argc > 1 && argv[1][0] != '-')
+    device_id = std::string(argv[1]);
 
   double threshold = 0.05;
   pcl::console::parse_argument(argc, argv, "-thresh", threshold);
 
-  pcl::OpenNIGrabber grabber(arg);
+  pcl::OpenNIGrabber grabber(device_id);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {
-    OpenNIPlanarSegmentation<pcl::PointXYZRGBA> v(arg, threshold);
+    OpenNIPlanarSegmentation<pcl::PointXYZRGBA> v(device_id, threshold);
     v.run();
   }
   else {
-    OpenNIPlanarSegmentation<pcl::PointXYZ> v(arg, threshold);
+    OpenNIPlanarSegmentation<pcl::PointXYZ> v(device_id, threshold);
     v.run();
   }
 

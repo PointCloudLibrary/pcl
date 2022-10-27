@@ -312,12 +312,13 @@ main(int argc, char** argv)
   pcl::OpenNIGrabber::Mode image_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
   bool xyz = false;
 
+  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
+      pcl::console::find_argument(argc, argv, "--help") != -1) {
+    printHelp(argc, argv); return 1;
+  }
+
   if (argc >= 2) {
     device_id = argv[1];
-    if (device_id == "--help" || device_id == "-h") {
-      printHelp(argc, argv);
-      return 0;
-    }
     if (device_id == "-l") {
       if (argc >= 3) {
         pcl::OpenNIGrabber grabber(argv[2]);

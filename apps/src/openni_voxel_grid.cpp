@@ -169,14 +169,14 @@ usage(char** argv)
 int
 main(int argc, char** argv)
 {
-  std::string arg = "";
-  if ((argc > 1) && (argv[1][0] != '-'))
-    arg = std::string(argv[1]);
-
-  if (pcl::console::find_argument(argc, argv, "-h") != -1) {
-    usage(argv);
-    return 1;
+  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
+      pcl::console::find_argument(argc, argv, "--help") != -1) {
+    usage(argv); return 1;
   }
+
+  std::string device_id = "";
+  if (argc > 1 && argv[1][0] != '-')
+    device_id = std::string(argv[1]);
 
   float min_v = 0.0f, max_v = 5.0f;
   pcl::console::parse_2x_arguments(argc, argv, "-minmax", min_v, max_v);
@@ -188,15 +188,15 @@ main(int argc, char** argv)
   pcl::console::parse_3x_arguments(argc, argv, "-leaf", leaf_x, leaf_y, leaf_z);
   PCL_INFO("Using %f, %f, %f as a leaf size for VoxelGrid.\n", leaf_x, leaf_y, leaf_z);
 
-  pcl::OpenNIGrabber grabber(arg);
+  pcl::OpenNIGrabber grabber(device_id);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {
     OpenNIVoxelGrid<pcl::PointXYZRGBA> v(
-        arg, field_name, min_v, max_v, leaf_x, leaf_y, leaf_z);
+        device_id, field_name, min_v, max_v, leaf_x, leaf_y, leaf_z);
     v.run();
   }
   else {
     OpenNIVoxelGrid<pcl::PointXYZ> v(
-        arg, field_name, min_v, max_v, leaf_x, leaf_y, leaf_z);
+        device_id, field_name, min_v, max_v, leaf_x, leaf_y, leaf_z);
     v.run();
   }
 

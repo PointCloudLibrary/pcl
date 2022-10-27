@@ -266,14 +266,14 @@ main(int argc, char** argv)
                "MultiscaleFeaturePersistence class using the FPFH features\n"
             << "Use \"-h\" to get more info about the available options.\n";
 
-  std::string arg = "";
-  if ((argc > 1) && (argv[1][0] != '-'))
-    arg = std::string(argv[1]);
-
-  if (pcl::console::find_argument(argc, argv, "-h") == -1) {
-    usage(argv);
-    return 1;
+  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
+      pcl::console::find_argument(argc, argv, "--help") != -1) {
+    usage(argv); return 1;
   }
+
+  std::string device_id = "";
+  if (argc > 1 && argv[1][0] != '-')
+    device_id = std::string(argv[1]);
 
   // Parse arguments
   float subsampling_leaf_size = default_subsampling_leaf_size;
@@ -290,17 +290,17 @@ main(int argc, char** argv)
   float alpha = default_alpha;
   pcl::console::parse_argument(argc, argv, "-persistence_alpha", alpha);
 
-  pcl::OpenNIGrabber grabber(arg);
+  pcl::OpenNIGrabber grabber(device_id);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {
     PCL_INFO("PointXYZRGBA mode enabled.\n");
     OpenNIFeaturePersistence<pcl::PointXYZRGBA> v(
-        subsampling_leaf_size, normal_search_radius, scales_vector, alpha, arg);
+        subsampling_leaf_size, normal_search_radius, scales_vector, alpha, device_id);
     v.run();
   }
   else {
     PCL_INFO("PointXYZ mode enabled.\n");
     OpenNIFeaturePersistence<pcl::PointXYZ> v(
-        subsampling_leaf_size, normal_search_radius, scales_vector, alpha, arg);
+        subsampling_leaf_size, normal_search_radius, scales_vector, alpha, device_id);
     v.run();
   }
 

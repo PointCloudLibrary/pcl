@@ -286,7 +286,7 @@ public:
 void
 usage(char** argv)
 {
-  std::cout << "usage: " << argv[0] << " <device_id> <options>\n\n";
+  std::cout << "usage: " << argv[0] << " <device_id>\n\n";
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
   if (driver.getNumberDevices() > 0) {
@@ -307,14 +307,14 @@ usage(char** argv)
 int
 main(int argc, char** argv)
 {
-  std::string arg;
-  if (argc > 1)
-    arg = std::string(argv[1]);
-
-  if (arg == "--help" || arg == "-h") {
-    usage(argv);
-    return 1;
+  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
+      pcl::console::find_argument(argc, argv, "--help") != -1) {
+    usage(argv); return 1;
   }
+
+  std::string device_id = "";
+  if (argc > 1)
+    device_id = std::string(argv[1]);
 
   // clang-format off
   std::cout << "Press following keys to enable/disable the different edge types:" << std::endl;
@@ -325,7 +325,7 @@ main(int argc, char** argv)
   //std::cout << "<5> EDGELABEL_RGB_CANNY edge" << std::endl;
   std::cout << "<Q,q> quit" << std::endl;
   // clang-format on
-  pcl::OpenNIGrabber grabber(arg);
+  pcl::OpenNIGrabber grabber(device_id);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb>()) {
     OpenNIOrganizedEdgeDetection app;
     app.run();
