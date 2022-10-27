@@ -40,6 +40,7 @@
 #include <pcl/visualization/pcl_visualizer.h> // for PCLVisualizer
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/console/parse.h>
 
 #include <mutex>
 #include <thread>
