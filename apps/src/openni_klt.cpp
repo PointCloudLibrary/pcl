@@ -314,7 +314,8 @@ main(int argc, char** argv)
 
   if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
       pcl::console::find_argument(argc, argv, "--help") != -1) {
-    printHelp(argc, argv); return 1;
+    printHelp(argc, argv); 
+    return 1;
   }
 
   if (argc >= 2) {
