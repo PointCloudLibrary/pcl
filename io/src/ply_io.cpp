@@ -118,20 +118,21 @@ pcl::PLYReader::appendScalarProperty (const std::string& name, const std::size_t
 void
 pcl::PLYReader::amendProperty (const std::string& old_name, const std::string& new_name, std::uint8_t new_datatype)
 {
-  auto finder = cloud_->fields.rbegin ();
-  for (; finder != cloud_->fields.rend (); ++finder)
-    if (finder->name == old_name)
-      break;
-  if (finder == cloud_->fields.rend ())
+  const auto fieldIndex = pcl::getFieldIndex(*cloud_,old_name);
+  if (fieldIndex == -1)
   {
       PCL_ERROR("[pcl::PLYReader::amendProperty] old_name '%s' was not found in cloud_->fields!\n",
           old_name.c_str());
       assert (false);
       return;
   }
-  finder->name = new_name;
-  if (new_datatype > 0 && new_datatype != finder->datatype)
-    finder->datatype = new_datatype;
+
+  auto& field = cloud_->fields[fieldIndex];
+
+  field.name = new_name;
+  
+  if (new_datatype > 0 && new_datatype != field.datatype)
+    field.datatype = new_datatype;
 }
 
 namespace pcl
@@ -213,6 +214,12 @@ namespace pcl
       }
       if (property_name == "alpha")
       {
+        if(pcl::getFieldIndex(*cloud_,"rgb") == -1)
+        {
+          PCL_ERROR("No RGB field to append aplha channel to.\n");
+          return {};
+        }
+
         amendProperty ("rgb", "rgba", pcl::PCLPointField::UINT32);
         return [this] (pcl::io::ply::uint8 alpha) { vertexAlphaCallback (alpha); };
       }
