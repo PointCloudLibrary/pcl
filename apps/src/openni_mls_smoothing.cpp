@@ -205,7 +205,7 @@ main(int argc, char** argv)
 {
   if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
       pcl::console::find_argument(argc, argv, "--help") != -1) {
-    usage(argv); 
+    usage(argv);
     return 1;
   }
 
