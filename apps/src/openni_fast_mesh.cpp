@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- */
+  */
 
 #include <pcl/common/time.h>
 #include <pcl/io/openni_camera/openni_driver.h>
