@@ -224,8 +224,8 @@ pcl::simulation::PointCloudModel::PointCloudModel(
 
 pcl::simulation::PointCloudModel::~PointCloudModel()
 {
-  delete vertices_;
-  delete colors_;
+  delete[] vertices_;
+  delete[] colors_;
 }
 
 void
