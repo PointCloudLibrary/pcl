@@ -3465,7 +3465,6 @@ pcl::visualization::PCLVisualizer::enableEDLRendering(int viewport)
 void
 pcl::visualization::PCLVisualizer::setRepresentationToSurfaceForAllActors ()
 {
-  ShapeActorMap::iterator am_it;
   rens_->InitTraversal ();
   vtkRenderer* renderer = nullptr;
   while ((renderer = rens_->GetNextItem ()))
@@ -3485,7 +3484,6 @@ pcl::visualization::PCLVisualizer::setRepresentationToSurfaceForAllActors ()
 void
 pcl::visualization::PCLVisualizer::setRepresentationToPointsForAllActors ()
 {
-  ShapeActorMap::iterator am_it;
   rens_->InitTraversal ();
   vtkRenderer* renderer = nullptr;
   while ((renderer = rens_->GetNextItem ()))
@@ -3504,7 +3502,6 @@ pcl::visualization::PCLVisualizer::setRepresentationToPointsForAllActors ()
 void
 pcl::visualization::PCLVisualizer::setRepresentationToWireframeForAllActors ()
 {
-  ShapeActorMap::iterator am_it;
   rens_->InitTraversal ();
   vtkRenderer* renderer = nullptr;
   while ((renderer = rens_->GetNextItem ()))
