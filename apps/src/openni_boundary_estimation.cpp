@@ -36,6 +36,7 @@
  */
 
 #include <pcl/common/time.h>
+#include <pcl/console/parse.h>
 #include <pcl/features/boundary.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/filters/approximate_voxel_grid.h>

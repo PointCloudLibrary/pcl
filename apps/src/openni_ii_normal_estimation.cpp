@@ -34,6 +34,7 @@
  */
 
 #include <pcl/common/time.h>
+#include <pcl/console/parse.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_grabber.h>
