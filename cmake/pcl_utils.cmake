@@ -85,30 +85,44 @@ endmacro()
 
 ###############################################################################
 # Set the destination directories for installing stuff.
+# We use GNUInstallDirs for this, to ensure platform indepence.
 # Sets LIB_INSTALL_DIR. Install libraries here.
 # Sets BIN_INSTALL_DIR. Install binaries here.
 # Sets INCLUDE_INSTALL_DIR. Install include files here, preferably in a
 # subdirectory named after the library in question (e.g.
 # "registration/blorgle.h")
+include(GNUInstallDirs)
 macro(SET_INSTALL_DIRS)
   if(NOT DEFINED LIB_INSTALL_DIR)
-    set(LIB_INSTALL_DIR "lib")
+    set(LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR})
   endif()
-    if(NOT ANDROID)
-      set(INCLUDE_INSTALL_ROOT
-          "include/${PROJECT_NAME_LOWER}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
-    else()
-      set(INCLUDE_INSTALL_ROOT "include") # Android, don't put into subdir
-    endif()
+  if(NOT ANDROID)
+    set(INCLUDE_INSTALL_ROOT
+        "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME_LOWER}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
+  else()
+    set(INCLUDE_INSTALL_ROOT "${CMAKE_INSTALL_INCLUDEDIR}") # Android, don't put into subdir
+  endif()
+  if(NOT DEFINED INCLUDE_INSTALL_DIR)
     set(INCLUDE_INSTALL_DIR "${INCLUDE_INSTALL_ROOT}/pcl")
-    set(DOC_INSTALL_DIR "share/doc/${PROJECT_NAME_LOWER}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
-    set(BIN_INSTALL_DIR "bin")
-    set(PKGCFG_INSTALL_DIR "${LIB_INSTALL_DIR}/pkgconfig")
+  endif()
+  if(NOT DEFINED DOC_INSTALL_DIR)
+    set(DOC_INSTALL_DIR "${CMAKE_INSTALL_DOCDIR}")
+  endif()
+  if(NOT DEFINED BIN_INSTALL_DIR)
+    set(BIN_INSTALL_DIR "${CMAKE_INSTALL_BINDIR}")
+  endif()
+  if(NOT DEFINED PKGCFG_INSTALL_DIR)
+    set(PKGCFG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+  endif()
+  if(NOT DEFINED PCLCONFIG_INSTALL_DIR)
     if(WIN32 AND NOT MINGW)
-        set(PCLCONFIG_INSTALL_DIR "cmake")
-      else()
-        set(PCLCONFIG_INSTALL_DIR "share/${PROJECT_NAME_LOWER}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
-      endif()
+      set(PCLCONFIG_INSTALL_DIR "cmake")
+    else()
+      # Most distributions install cmake config files in /usr/lib*/cmake
+      # and not in /usr/share/cmake.
+      set(PCLCONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME_LOWER}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
+    endif()
+  endif()
 endmacro()
 
 
