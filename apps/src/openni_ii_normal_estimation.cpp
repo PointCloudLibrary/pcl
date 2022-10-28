@@ -222,8 +222,6 @@ main(int argc, char** argv)
   if (argc > 1)
     device_id = std::string(argv[1]);
 
-  openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
-
   // clang-format off
   std::cout << "Press following keys to switch to the different integral image normal estimation methods:\n";
   std::cout << "<1> COVARIANCE_MATRIX method\n";
