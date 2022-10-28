@@ -68,8 +68,8 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
                     bool pclzf_mode=false);
   //! For now, split rgb / depth folders only makes sense for VTK images
   ImageGrabberImpl (pcl::ImageGrabberBase& grabber,
-                    const std::string& rgb_dir,
                     const std::string& depth_dir,
+                    const std::string& rgb_dir,
                     float frames_per_second,
                     bool repeat);
   ImageGrabberImpl (pcl::ImageGrabberBase& grabber,
@@ -805,8 +805,8 @@ pcl::ImageGrabberBase::ImageGrabberBase (const std::string& directory, float fra
 }
 
 //////////////////////////////////////////////////////////
-pcl::ImageGrabberBase::ImageGrabberBase (const std::string& rgb_dir, const std::string &depth_dir, float frames_per_second, bool repeat)
-  : impl_ (new ImageGrabberImpl (*this, rgb_dir, depth_dir, frames_per_second, repeat))
+pcl::ImageGrabberBase::ImageGrabberBase (const std::string& depth_directory, const std::string &rgb_directory, float frames_per_second, bool repeat)
+  : impl_ (new ImageGrabberImpl (*this, depth_directory, rgb_directory, frames_per_second, repeat))
 {
 }
 

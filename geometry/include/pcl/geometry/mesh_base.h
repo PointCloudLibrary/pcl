@@ -894,7 +894,7 @@ public:
   inline void
   resizeVertices(const std::size_t n, const VertexData& data = VertexData())
   {
-    vertices_.resize(n);
+    vertices_.resize(n, Vertex());
     this->resizeData(vertex_data_cloud_, n, data, HasVertexData());
   }
 
@@ -904,7 +904,7 @@ public:
               const EdgeData& edge_data = EdgeData(),
               const HalfEdgeData he_data = HalfEdgeData())
   {
-    half_edges_.resize(2 * n);
+    half_edges_.resize(2 * n, HalfEdge());
     this->resizeData(half_edge_data_cloud_, 2 * n, he_data, HasHalfEdgeData());
     this->resizeData(edge_data_cloud_, n, edge_data, HasEdgeData());
   }
@@ -913,7 +913,7 @@ public:
   inline void
   resizeFaces(const std::size_t n, const FaceData& data = FaceData())
   {
-    faces_.resize(n);
+    faces_.resize(n, Face());
     this->resizeData(face_data_cloud_, n, data, HasFaceData());
   }
 
