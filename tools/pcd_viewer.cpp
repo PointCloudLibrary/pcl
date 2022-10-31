@@ -136,6 +136,8 @@ printHelp (int, char **argv)
   print_info ("\n");
   print_info ("                     -use_point_picking       = enable the usage of picking points on screen (default "); print_value ("disabled"); print_info (")\n");
   print_info ("\n");
+  print_info ("                     -use_area_picking       = enable the usage of area picking points on screen (default "); print_value("disabled"); print_info(")\n");
+  print_info ("\n");
   print_info ("                     -optimal_label_colors    = maps existing labels to the optimal sequential glasbey colors, label_ids will not be mapped to fixed colors (default "); print_value ("disabled"); print_info (")\n");
   print_info ("\n");
   print_info ("                     -edl                     = Enable Eye-Dome Lighting rendering, to improve depth perception. (default: "); print_value ("disabled"); print_info (")\n");
@@ -151,6 +153,18 @@ std::vector<pcl::visualization::ImageViewer::Ptr > imgs;
 pcl::search::KdTree<pcl::PointXYZ> search;
 pcl::PCLPointCloud2::Ptr cloud;
 pcl::PointCloud<pcl::PointXYZ>::Ptr xyzcloud;
+
+void
+area_callback(const pcl::visualization::AreaPickingEvent& event, void* /*cookie*/)
+{
+  const auto names = event.getCloudNames();
+
+  for (const std::string& name : names) {
+    const pcl::Indices indices = event.getPointsIndices(name);
+
+    PCL_INFO("Picked %d points from %s \n", indices.size(), name.c_str());
+  }
+}
 
 void
 pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
@@ -283,6 +297,10 @@ main (int argc, char** argv)
   bool use_pp   = pcl::console::find_switch (argc, argv, "-use_point_picking");
   if (use_pp) 
     print_highlight ("Point picking enabled.\n");
+
+  bool use_ap = pcl::console::find_switch(argc, argv, "-use_area_picking");
+  if (use_ap)
+    print_highlight("Area picking enabled. \n");
 
   bool use_optimal_l_colors = pcl::console::find_switch (argc, argv, "-optimal_label_colors");
   if (use_optimal_l_colors)
@@ -488,6 +506,9 @@ main (int argc, char** argv)
       p.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCD viewer"));
       if (use_pp)   // Only enable the point picking callback if the command line parameter is enabled
         p->registerPointPickingCallback (&pp_callback, static_cast<void*> (&cloud));
+
+      if (use_ap)
+        p->registerAreaPickingCallback(&area_callback);
 
       if (useEDLRendering)
         p->enableEDLRendering();
