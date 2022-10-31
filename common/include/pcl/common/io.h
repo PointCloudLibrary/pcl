@@ -164,7 +164,7 @@ namespace pcl
   {
     type = std::toupper (type, std::locale::classic ());
 
-    // extra logic for bool because it's size is undefined
+    // extra logic for bool because its size is undefined
     if (type == 'B') {
       if (size == sizeof(bool)) {
         return pcl::PCLPointField::BOOL;
