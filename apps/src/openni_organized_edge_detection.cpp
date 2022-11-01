@@ -287,8 +287,7 @@ public:
 void
 usage(char** argv)
 {
-  std::cout << "usage: " << argv[0]
-            << " [-device_id X (default: \"#1\")]\n\n";
+  std::cout << "usage: " << argv[0] << " [-device_id X (default: \"#1\")]\n\n";
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
   if (driver.getNumberDevices() > 0) {
