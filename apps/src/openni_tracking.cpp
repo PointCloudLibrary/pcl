@@ -670,7 +670,7 @@ main(int argc, char** argv)
   }
 
   std::string device_id = "";
-  
+
   bool use_convex_hull = true;
   bool visualize_non_downsample = false;
   bool visualize_particles = true;
