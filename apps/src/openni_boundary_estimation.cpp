@@ -188,8 +188,11 @@ usage(char** argv)
   if (driver.getNumberDevices() > 0) {
     for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices(); ++deviceIdx) {
       // clang-format off
-      std::cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx) << ", product: " << driver.getProductName (deviceIdx)
-                << ", connected: " << driver.getBus (deviceIdx) << " @ " << driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << std::endl;
+      std::cout << "Device: " << deviceIdx + 1 
+                << ", vendor: " << driver.getVendorName (deviceIdx) 
+                << ", product: " << driver.getProductName (deviceIdx)
+                << ", connected: " << driver.getBus (deviceIdx) << " @ " << driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" 
+                << std::endl;
       // clang-format on
     }
 
