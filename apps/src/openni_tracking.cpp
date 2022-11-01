@@ -650,12 +650,12 @@ usage(char** argv)
   std::cout
       << "usage: " << argv[0] << " [options]\n\n"
       << "where options are:\n"
-      << "    -device_id [device_id]: specify the device id (defaults to \"#1\").\n"
+      << "    -device_id X: specify the device id (defaults to \"#1\").\n"
       << "    -C: initialize the pointcloud to track without plane segmentation.\n"
       << "    -D: visualizing with non-downsampled pointclouds.\n"
       << "    -P: not visualizing particle cloud.\n"
       << "    -fixed: use the fixed number of the particles.\n"
-      << "    -d [value]: specify the grid size of downsampling (defaults to 0.01).";
+      << "    -d X: specify the grid size of downsampling (defaults to 0.01).";
   // clang format on
 }
 
@@ -670,16 +670,13 @@ main(int argc, char** argv)
   }
 
   std::string device_id = "";
-
   bool use_convex_hull = true;
   bool visualize_non_downsample = false;
   bool visualize_particles = true;
   bool use_fixed = false;
-
   double downsampling_grid_size = 0.01;
 
   pcl::console::parse_argument(argc, argv, "-device_id", device_id);
-
   if (pcl::console::find_argument(argc, argv, "-C") != -1)
     use_convex_hull = false;
   if (pcl::console::find_argument(argc, argv, "-D") != -1)
@@ -688,7 +685,6 @@ main(int argc, char** argv)
     visualize_particles = false;
   if (pcl::console::find_argument(argc, argv, "-fixed") != -1)
     use_fixed = true;
-
   pcl::console::parse_argument(argc, argv, "-d", downsampling_grid_size);
   /////////////////////////////////////////////////////////////////////
 
