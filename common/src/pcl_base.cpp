@@ -40,6 +40,7 @@
 #include <numeric>
 
 #include <pcl/impl/pcl_base.hpp>
+#include <pcl/common/io.h>  // for getFieldSize
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 pcl::PCLBase<pcl::PCLPointCloud2>::PCLBase ()
@@ -74,32 +75,19 @@ pcl::PCLBase<pcl::PCLPointCloud2>::setInputCloud (const PCLPointCloud2ConstPtr &
   // Obtain the size of datatype
   const auto sizeofDatatype = [](const auto& datatype) -> int
   {
-    switch (datatype)
-    {
-      case pcl::PCLPointField::INT8:
-      case pcl::PCLPointField::UINT8: return 1;
-
-      case pcl::PCLPointField::INT16:
-      case pcl::PCLPointField::UINT16: return 2;
-
-      case pcl::PCLPointField::INT32:
-      case pcl::PCLPointField::UINT32:
-      case pcl::PCLPointField::FLOAT32: return 4;
-
-      case pcl::PCLPointField::FLOAT64: return 8;
-
-      default:
+    const auto size = getFieldSize(datatype);
+    if (size == 0) {
         PCL_ERROR("[PCLBase::setInputCloud] Invalid field type (%d)!\n", datatype);
-        return 0;
     }
+    return size;
   };
 
-  // Restrict size of a field to be at-max sizeof(FLOAT32) for now
+  // Restrict size of a field to be at-max sizeof(FLOAT64) now to support {U}INT64
   field_sizes_.resize(input_->fields.size());
   std::transform(input_->fields.begin(), input_->fields.end(), field_sizes_.begin(),
                  [&sizeofDatatype](const auto& field)
                  {
-                   return std::min(sizeofDatatype(field.datatype), static_cast<int>(sizeof(float)));
+                   return std::min(sizeofDatatype(field.datatype), static_cast<int>(sizeof(double)));
                  });
 }
 
