@@ -229,7 +229,7 @@ main(int argc, char** argv)
 
   pcl::console::parse_argument(argc, argv, "-device_id", device_id);
   pcl::console::parse_argument(argc, argv, "-search_radius", search_radius);
-  if (pcl::console::parse_argument(argc, argv, "-sqr_gauss_param", sqr_gauss_param) == 
+  if (pcl::console::parse_argument(argc, argv, "-sqr_gauss_param", sqr_gauss_param) ==
       -1)
     sqr_gauss_param_set = false;
   pcl::console::parse_argument(argc, argv, "-polynomial_order", polynomial_order);
