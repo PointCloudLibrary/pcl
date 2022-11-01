@@ -141,12 +141,15 @@ public:
 void
 usage(char** argv)
 {
-  std::cout << "usage: " << argv[0] << " [options]\n\n"
-            << "where options are:\n"
-            << "    -device_id X: specify the device id (default: \"#1\").\n"         
-            << "    -minmax min-max: set the ApproximateVoxelGrid min-max cutting values (default: 0-5.0)\n"
-            << "    -field X: use field/dimension 'X' to filter data on (default: 'z')\n"
-            << "    -leaf x, y, z: set the ApproximateVoxelGrid leaf size (default: 0.01)\n\n";
+  std::cout
+      << "usage: " << argv[0] << " [options]\n\n"
+      << "where options are:\n"
+      << "    -device_id X: specify the device id (default: \"#1\").\n"
+      << "    -minmax min-max: set the ApproximateVoxelGrid min-max cutting values "
+         "(default: 0-5.0)\n"
+      << "    -field X: use field/dimension 'X' to filter data on (default: 'z')\n"
+      << "    -leaf x, y, z: set the ApproximateVoxelGrid leaf size (default: "
+         "0.01)\n\n";
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
   if (driver.getNumberDevices() > 0) {

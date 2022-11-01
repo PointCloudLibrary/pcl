@@ -143,10 +143,11 @@ public:
 void
 usage(char** argv)
 {
-  std::cout << "usage: " << argv[0] << " [options]\n\n"
-            << "where options are:\n"
-            << "    -device_id X: specify the device id (default: \"#1\").\n"
-            << "    -thresh X: set the planar segmentation threshold (default: 0.5)\n\n";
+  std::cout
+      << "usage: " << argv[0] << " [options]\n\n"
+      << "where options are:\n"
+      << "    -device_id X: specify the device id (default: \"#1\").\n"
+      << "    -thresh X: set the planar segmentation threshold (default: 0.5)\n\n";
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
   if (driver.getNumberDevices() > 0) {
