@@ -666,7 +666,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         data->SetPoints (points);
         data->SetVerts (vertices);
         // Modify the mapper
-        auto* mapper = static_cast<vtkPolyDataMapper*>(act.actor->GetMapper ());
+        auto* mapper = dynamic_cast<vtkPolyDataMapper*>(act.actor->GetMapper ());
         mapper->SetInputData (data);
         // Modify the actor
         act.actor->SetMapper (mapper);
@@ -693,10 +693,10 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         double minmax[2];
         scalars->GetRange (minmax);
         // Update the data
-        auto *data = static_cast<vtkPolyData*>(act.actor->GetMapper ()->GetInput ());
+        auto *data = dynamic_cast<vtkPolyData*>(act.actor->GetMapper ()->GetInput ());
         data->GetPointData ()->SetScalars (scalars);
         // Modify the mapper
-        auto* mapper = static_cast<vtkPolyDataMapper*>(act.actor->GetMapper ());
+        auto* mapper = dynamic_cast<vtkPolyDataMapper*>(act.actor->GetMapper ());
         mapper->SetScalarRange (minmax);
         mapper->SetScalarModeToUsePointData ();
         mapper->SetInputData (data);
@@ -903,7 +903,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         {
           for (actor->InitPathTraversal (); vtkAssemblyPath* path = actor->GetNextPath (); )
           {
-            vtkSmartPointer<vtkActor> apart = static_cast<vtkActor*> (path->GetLastNode ()->GetViewProp ());
+            vtkSmartPointer<vtkActor> apart = dynamic_cast<vtkActor*> (path->GetLastNode ()->GetViewProp ());
             float psize = apart->GetProperty ()->GetPointSize ();
             if (psize > 1.0f)
               apart->GetProperty ()->SetPointSize (psize - 1.0f);
@@ -1117,7 +1117,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       if (CurrentMode == SELECT_MODE)
       {
         // Save the point picker
-        point_picker_ = static_cast<vtkPointPicker*> (Interactor->GetPicker ());
+        point_picker_ = dynamic_cast<vtkPointPicker*> (Interactor->GetPicker ());
         // Switch for an area picker
         vtkSmartPointer<vtkAreaPicker> area_picker = vtkSmartPointer<vtkAreaPicker>::New ();
         Interactor->SetPicker (area_picker);
