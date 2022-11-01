@@ -650,12 +650,12 @@ usage(char** argv)
   std::cout
       << "usage: " << argv[0] << " [options]\n\n"
       << "where options are:\n"
-      << "    -device_id X: specify the device id (defaults to \"#1\").\n"
+      << "    -device_id device_id: specify the device id (defaults to \"#1\").\n"
       << "    -C: initialize the pointcloud to track without plane segmentation.\n"
       << "    -D: visualizing with non-downsampled pointclouds.\n"
       << "    -P: not visualizing particle cloud.\n"
       << "    -fixed: use the fixed number of the particles.\n"
-      << "    -d X: specify the grid size of downsampling (defaults to 0.01).";
+      << "    -d: specify the grid size of downsampling (defaults to 0.01).";
   // clang format on
 }
 

@@ -182,7 +182,7 @@ usage(char** argv)
             << "    -device_id X: specify the device id (default: \"#1\").\n"
             << "    -search_radius X: sphere radius to be used for finding the k-nearest neighbors used for fitting (default: " << default_search_radius << ")\n"
             << "    -sqr_gauss_param X: parameter used for the distance based weighting of neighbors (recommended = search_radius^2) (default: " << default_sqr_gauss_param << ")\n"
-            << "    -polynomial_order X: order of the polynomial to be fit (0 means tangent estimation) (default: " << default_polynomial_order << ")\n";
+            << "    -polynomial_order X: order of the polynomial to be fit (0 means tangent estimation) (default: " << default_polynomial_order << ")\n\n";
   // clang-format on
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
@@ -205,7 +205,7 @@ usage(char** argv)
                  "usb-bus/address combination (works only in Linux) or"
 
               << "    <serial-number> (only in Linux and for devices which provide "
-                 "serial numbers)"
+                 "serial numbers)";
   }
   else
     std::cout << "No devices connected." << std::endl;

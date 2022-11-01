@@ -203,7 +203,7 @@ usage(char** argv)
                  "usb-bus/address combination (works only in Linux) or"
 
               << "    <serial-number> (only in Linux and for devices which provide "
-                 "serial numbers)"
+                 "serial numbers)";
   }
   else
     std::cout << "No devices connected." << std::endl;

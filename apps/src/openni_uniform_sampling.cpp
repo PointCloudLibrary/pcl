@@ -150,7 +150,7 @@ usage(char** argv)
   std::cout << "usage: " << argv[0] << " [options]\n\n"
             << "where options are:\n"
             << "    -device_id X: specify the device id (default: \"#1\").\n"
-            << "    -leaf X: set the UniformSampling leaf size (default: 0.01)\n";
+            << "    -leaf X: set the UniformSampling leaf size (default: 0.01)\n\n";
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
   if (driver.getNumberDevices() > 0) {
@@ -172,7 +172,7 @@ usage(char** argv)
                  "usb-bus/address combination (works only in Linux) or"
 
               << "    <serial-number> (only in Linux and for devices which provide "
-                 "serial numbers)"
+                 "serial numbers)";
   }
   else
     std::cout << "No devices connected." << std::endl;
