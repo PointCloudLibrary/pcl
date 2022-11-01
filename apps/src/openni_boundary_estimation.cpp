@@ -181,7 +181,8 @@ public:
 void
 usage(char** argv)
 {
-  std::cout << "usage: " << argv[0] << " [-device_id [device_id] (default: \"#1\")]\n\n";
+  std::cout << "usage: " << argv[0] 
+            << " [-device_id [device_id] (default: \"#1\")]\n\n";
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
   if (driver.getNumberDevices() > 0) {
@@ -193,9 +194,14 @@ usage(char** argv)
     }
 
     std::cout << "\ndevice_id may be:" << std::endl 
-      << "    #1, #2, ... for the first second etc device in the list or" << std::endl
-      << "    bus@address for the device connected to a specific usb-bus / address combination (works only in Linux) or" << std::endl
-      << "    <serial-number> (only in Linux and for devices which provide serial numbers)"  << std::endl;
+      << "    #1, #2, ... for the first second etc device in the list or" 
+      << std::endl
+
+      << "    bus@address for the device connected to a specific usb-bus / address combination (works only in Linux) or" 
+      << std::endl
+
+      << "    <serial-number> (only in Linux and for devices which provide serial numbers)"  
+      << std::endl;
   }
   else
     std::cout << "No devices connected." << std::endl;
