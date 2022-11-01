@@ -118,9 +118,9 @@ namespace pcl
             for (std::size_t j = 0; j < 3; j++)
               stream.write (reinterpret_cast<const char*> (&covariance_rot_ (i, j)), sizeof(covariance_rot_ (i, j)));
 
-          for (int sub_node_index = 0; sub_node_index < num_of_sub_nodes; ++sub_node_index)
+          for (auto sub_node_index : sub_nodes)
           {
-            sub_nodes[sub_node_index].serialize (stream);
+            sub_node_index.serialize (stream);
           }
         }
 
@@ -128,15 +128,20 @@ namespace pcl
         {
           int num_of_sub_nodes;
           stream.read (reinterpret_cast<char*> (&num_of_sub_nodes), sizeof(num_of_sub_nodes));
+          PCL_CHECK_IO_STREAM(stream, "num_of_sub_nodes");
 
           if (num_of_sub_nodes > 0)
           {
             feature.deserialize (stream);
             stream.read (reinterpret_cast<char*> (&threshold), sizeof(threshold));
+            PCL_CHECK_IO_STREAM(stream, "threshold");
           }
 
           stream.read (reinterpret_cast<char*> (&value), sizeof(value));
+          PCL_CHECK_IO_STREAM(stream, "value");
+
           stream.read (reinterpret_cast<char*> (&variance), sizeof(variance));
+          PCL_CHECK_IO_STREAM(stream, "variance");
 
           for (std::size_t i = 0; i < 3; i++)
             stream.read (reinterpret_cast<char*> (&trans_mean_[i]), sizeof(trans_mean_[i]));
@@ -152,14 +157,15 @@ namespace pcl
             for (std::size_t j = 0; j < 3; j++)
               stream.read (reinterpret_cast<char*> (&covariance_rot_ (i, j)), sizeof(covariance_rot_ (i, j)));
 
+          if (num_of_sub_nodes < 0)
+          {
+              return ;
+          }
           sub_nodes.resize (num_of_sub_nodes);
 
-          if (num_of_sub_nodes > 0)
+          for (auto sub_node_index : sub_nodes)
           {
-            for (int sub_node_index = 0; sub_node_index < num_of_sub_nodes; ++sub_node_index)
-            {
-              sub_nodes[sub_node_index].deserialize (stream);
-            }
+            sub_node_index.deserialize (stream);
           }
         }
     };

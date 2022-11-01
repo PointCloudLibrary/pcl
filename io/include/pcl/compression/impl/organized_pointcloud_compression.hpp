@@ -311,21 +311,42 @@ namespace pcl
         //////////////
         // reading frame header
         compressedDataIn_arg.read (reinterpret_cast<char*> (&cloud_width), sizeof (cloud_width));
+        PCL_CHECK_IO_STREAM(compressedDataIn_arg, "cloud_width");
+
         compressedDataIn_arg.read (reinterpret_cast<char*> (&cloud_height), sizeof (cloud_height));
+        PCL_CHECK_IO_STREAM(compressedDataIn_arg, "cloud_height");
+
         compressedDataIn_arg.read (reinterpret_cast<char*> (&maxDepth), sizeof (maxDepth));
+        PCL_CHECK_IO_STREAM(compressedDataIn_arg, "maxDepth");
+
         compressedDataIn_arg.read (reinterpret_cast<char*> (&focalLength), sizeof (focalLength));
+        PCL_CHECK_IO_STREAM(compressedDataIn_arg, "focalLength");
+
         compressedDataIn_arg.read (reinterpret_cast<char*> (&disparityScale), sizeof (disparityScale));
+        PCL_CHECK_IO_STREAM(compressedDataIn_arg, "disparityScale");
+
         compressedDataIn_arg.read (reinterpret_cast<char*> (&disparityShift), sizeof (disparityShift));
+        PCL_CHECK_IO_STREAM(compressedDataIn_arg, "disparityShift");
 
         // reading compressed disparity data
         compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedDisparitySize), sizeof (compressedDisparitySize));
+        PCL_CHECK_IO_STREAM(compressedDataIn_arg, "compressedDisparitySize");
+
         compressedDisparity.resize (compressedDisparitySize);
         compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedDisparity[0]), compressedDisparitySize * sizeof(std::uint8_t));
+        PCL_CHECK_IO_STREAM(compressedDataIn_arg, "compressedDisparity's first value");
 
         // reading compressed rgb data
         compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedColorSize), sizeof (compressedColorSize));
+        PCL_CHECK_IO_STREAM(compressedDataIn_arg, "compressedColorSize");
+        if (compressedColorSize <= 0)
+        {
+          PCL_THROW_EXCEPTION (pcl::BadValueException, "Error! Size of compressed color specified in the file is not positive!");
+        }
         compressedColor.resize (compressedColorSize);
+
         compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedColor[0]), compressedColorSize * sizeof(std::uint8_t));
+        PCL_CHECK_IO_STREAM(compressedDataIn_arg, "compressedColor's first value");
 
         std::size_t png_width = 0;
         std::size_t png_height = 0;

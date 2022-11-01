@@ -53,6 +53,30 @@
   throw ExceptionName(s.str(), __FILE__, BOOST_CURRENT_FUNCTION, __LINE__); \
 }
 
+/** \macro PCL_CHECK_IO_STREAM
+  * \brief helper macro to be used to detect failure in reading from file
+  * \detail checks the istream to see whether badbit or failbit is set
+  *         and if either is set, throws an IOException and lets upper
+  *         layers of stack decide what to do
+  * This is an example of how to use:
+  * PCL_CHECK_IO_STREAM(stream, "num_of_elements")
+  */
+#define PCL_CHECK_IO_STREAM(stream, msg)                                    \
+{                                                                           \
+  std::string message;                                                      \
+  if (stream.bad())                                                         \
+  {                                                                         \
+    message = "Failed in reading " + std::string(msg) + " from file";       \
+    PCL_THROW_EXCEPTION (IOException, message);                             \
+  }                                                                         \
+  else if (stream.fail())                                                   \
+  {                                                                         \
+    message = "Bad formatting or corrupted file encountered while reading " \
+      + std::string(msg);                                                   \
+    PCL_THROW_EXCEPTION (IOException, message);                             \
+  }                                                                         \
+}
+
 namespace pcl
 {
 
@@ -259,6 +283,19 @@ namespace pcl
                           const char* file_name = nullptr,
                           const char* function_name = nullptr,
                           unsigned line_number = 0)
+      : pcl::PCLException (error_description, file_name, function_name, line_number) { }
+  };
+  /** \class BadValueException
+    * \brief An exception that is thrown when the value of a variable is out of expected
+    *        range. Example - Negative value being given to a variable that stores size.
+    */
+  class BadValueException : public PCLException
+  {
+    public:
+    BadValueException (const std::string& error_description,
+                                 const char* file_name = nullptr,
+                                 const char* function_name = nullptr,
+                                 unsigned line_number = 0)
       : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   };
 }

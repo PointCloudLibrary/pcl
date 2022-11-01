@@ -79,8 +79,12 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   //Read the magic
   std::uint32_t length_of_magic;
   fs.read ((char*)&length_of_magic, sizeof (std::uint32_t));
+  PCL_CHECK_IO_STREAM(fs, "length of magic");
+
   char *magic = new char [length_of_magic];
   fs.read (magic, sizeof (char) * length_of_magic);
+  PCL_CHECK_IO_STREAM(fs, "magic");
+
   if (strcmp (magic, "IFS"))
   {
     PCL_ERROR ("[pcl::IFSReader::readHeader] File %s is not an IFS file!\n", file_name.c_str ());
@@ -107,8 +111,11 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   //Read the name
   std::uint32_t length_of_name;
   fs.read ((char*)&length_of_name, sizeof (std::uint32_t));
+  PCL_CHECK_IO_STREAM(fs, "length_of_name");
+
   char *name = new char [length_of_name];
   fs.read (name, sizeof (char) * length_of_name);
+  PCL_CHECK_IO_STREAM(fs, "name");
   delete[] name;
 
   // Read the header and fill it in with wonderful values
@@ -119,8 +126,11 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
       //Read the keyword
       std::uint32_t length_of_keyword;
       fs.read ((char*)&length_of_keyword, sizeof (std::uint32_t));
+      PCL_CHECK_IO_STREAM(fs, "length of keyword");
+
       char *keyword = new char [length_of_keyword];
       fs.read (keyword, sizeof (char) * length_of_keyword);
+      PCL_CHECK_IO_STREAM(fs, "keyword");
 
       const bool keyword_is_vertices = (strcmp (keyword, "VERTICES") == 0);
       delete[] keyword;
@@ -281,8 +291,12 @@ pcl::IFSReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, int 
   // Read the TRIANGLES keyword
   std::uint32_t length_of_keyword;
   fs.read ((char*)&length_of_keyword, sizeof (std::uint32_t));
+  PCL_CHECK_IO_STREAM(fs, "length of keyword");
+
   char *keyword = new char [length_of_keyword];
   fs.read (keyword, sizeof (char) * length_of_keyword);
+  PCL_CHECK_IO_STREAM(fs, "keyword");
+
   if (strcmp (keyword, "TRIANGLES"))
   {
     PCL_ERROR ("[pcl::IFSReader::read] File %s is does not contain facets!\n", file_name.c_str ());
@@ -307,8 +321,13 @@ pcl::IFSReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, int 
     pcl::Vertices &facet = mesh.polygons[i];
     facet.vertices.resize (3);
     fs.read ((char*)&(facet.vertices[0]), sizeof (std::uint32_t));
+    PCL_CHECK_IO_STREAM (fs, "first value of facet.vertices");
+
     fs.read ((char*)&(facet.vertices[1]), sizeof (std::uint32_t));
+    PCL_CHECK_IO_STREAM (fs, "second value of facet.vertices");
+
     fs.read ((char*)&(facet.vertices[2]), sizeof (std::uint32_t));
+    PCL_CHECK_IO_STREAM (fs, "third value of facet.vertices");
   }
   // We are done, close the file
   fs.close ();

@@ -577,16 +577,27 @@ Narf::loadBinary (std::istream& file)
   pcl::loadBinary(position_.matrix(), file);
   pcl::loadBinary(transformation_.matrix(), file);
   file.read(reinterpret_cast<char*>(&surface_patch_pixel_size_), sizeof(surface_patch_pixel_size_));
+  PCL_CHECK_IO_STREAM(file, "surface_patch_pixel_size_");
+
   surface_patch_ = new float[surface_patch_pixel_size_*surface_patch_pixel_size_];
   file.read(reinterpret_cast<char*>(surface_patch_),
-            surface_patch_pixel_size_*surface_patch_pixel_size_*sizeof(*surface_patch_));
+        surface_patch_pixel_size_*surface_patch_pixel_size_*sizeof(*surface_patch_));
+  PCL_CHECK_IO_STREAM(file, "surface_patch_");
+
   file.read(reinterpret_cast<char*>(&surface_patch_world_size_), sizeof(surface_patch_world_size_));
+  PCL_CHECK_IO_STREAM(file, "surface_patch_world_size_");
+
   file.read(reinterpret_cast<char*>(&surface_patch_rotation_), sizeof(surface_patch_rotation_));
+  PCL_CHECK_IO_STREAM(file, "surface_patch_rotation_");
+
   file.read(reinterpret_cast<char*>(&descriptor_size_), sizeof(descriptor_size_));
+  PCL_CHECK_IO_STREAM(file, "descriptor_size_");
+
   descriptor_ = new float[descriptor_size_];
   if (file.eof())
     std::cout << ":-(\n";
   file.read (reinterpret_cast<char*>(descriptor_), descriptor_size_*sizeof(*descriptor_));
+  PCL_CHECK_IO_STREAM(file, "descriptor_");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
