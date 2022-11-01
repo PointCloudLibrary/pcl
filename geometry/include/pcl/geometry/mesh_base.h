@@ -2026,12 +2026,12 @@ protected:
   /** \brief Resize the mesh data. */
   template <class DataCloudT>
   inline void
-  resizeData(DataCloudT& /*data_cloud*/,
+  resizeData(DataCloudT& data_cloud,
              const std::size_t n,
              const typename DataCloudT::value_type& data,
              std::true_type /*has_data*/) const
   {
-    data.resize(n, data);
+    data_cloud.resize(n, data);
   }
 
   /** \brief Does nothing. */
