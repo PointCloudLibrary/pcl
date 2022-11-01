@@ -197,11 +197,11 @@ usage(char** argv)
               << "    #1, #2, ... for the first second etc device in the list or"
               << std::endl
 
-              << "    bus@address for the device connected to a specific usb-bus/address combination (works only in Linux) or"
-              << std::endl
+              << "    bus@address for the device connected to a specific "
+                 "usb-bus/address combination (works only in Linux) or"
 
-              << "    <serial-number> (only in Linux and for devices which provide serial numbers)"
-              << std::endl;
+              << "    <serial-number> (only in Linux and for devices which provide "
+                 "serial numbers)"
   }
   else
     std::cout << "No devices connected." << std::endl;
