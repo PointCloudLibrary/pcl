@@ -99,6 +99,7 @@ namespace pcl
       va_list args;
       va_start (args, format);
       vsnprintf (msg, 1024, format, args);
+      va_end (args);
       throw IOException (function, file, line, msg);
     }
   } // namespace

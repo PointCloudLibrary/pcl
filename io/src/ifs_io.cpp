@@ -81,13 +81,14 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   fs.read ((char*)&length_of_magic, sizeof (std::uint32_t));
   char *magic = new char [length_of_magic];
   fs.read (magic, sizeof (char) * length_of_magic);
-  if (strcmp (magic, "IFS"))
+  const bool file_is_ifs_file = (strcmp (magic, "IFS") == 0);
+  delete[] magic;
+  if (!file_is_ifs_file)
   {
     PCL_ERROR ("[pcl::IFSReader::readHeader] File %s is not an IFS file!\n", file_name.c_str ());
     fs.close ();
     return (-1);
   }
-  delete[] magic;
 
   //Read IFS version
   float version;

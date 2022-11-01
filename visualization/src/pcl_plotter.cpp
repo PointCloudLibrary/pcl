@@ -167,6 +167,8 @@ pcl::visualization::PCLPlotter::addPlotData (
     array_y[i] = plot_data[i].second;
   }
   this->addPlotData (array_x, array_y, static_cast<unsigned long> (plot_data.size ()), name, type, (color.empty ()) ? nullptr : &color[0]);
+  delete[] array_x;
+  delete[] array_y;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
