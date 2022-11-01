@@ -648,19 +648,29 @@ usage(char** argv)
 {
   // clang format off
   std::cout
-      << "usage: " << argv[0] << " <device_id> <options>\n\n"
+      << "usage: " << argv[0] << " [options]\n\n"
       << "where options are:\n"
-      << "    -C:  initialize the pointcloud to track without plane segmentation\n"
+      << "    -device_id [device_id]: specify the device id (defaults to \"#1\").\n"
+      << "    -C: initialize the pointcloud to track without plane segmentation.\n"
       << "    -D: visualizing with non-downsampled pointclouds.\n"
       << "    -P: not visualizing particle cloud.\n"
       << "    -fixed: use the fixed number of the particles.\n"
-      << "    -d <value>: specify the grid size of downsampling (defaults to 0.01).";
+      << "    -d [value]: specify the grid size of downsampling (defaults to 0.01).";
   // clang format on
 }
 
 int
 main(int argc, char** argv)
 {
+  /////////////////////////////////////////////////////////////////////
+  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
+      pcl::console::find_argument(argc, argv, "--help") != -1) {
+    usage(argv);
+    return 1;
+  }
+
+  std::string device_id = "";
+  
   bool use_convex_hull = true;
   bool visualize_non_downsample = false;
   bool visualize_particles = true;
@@ -668,25 +678,19 @@ main(int argc, char** argv)
 
   double downsampling_grid_size = 0.01;
 
-  if (pcl::console::find_argument(argc, argv, "-C") > 0)
+  pcl::console::parse_argument(argc, argv, "-device_id", device_id);
+
+  if (pcl::console::find_argument(argc, argv, "-C") != -1)
     use_convex_hull = false;
-  if (pcl::console::find_argument(argc, argv, "-D") > 0)
+  if (pcl::console::find_argument(argc, argv, "-D") != -1)
     visualize_non_downsample = true;
-  if (pcl::console::find_argument(argc, argv, "-P") > 0)
+  if (pcl::console::find_argument(argc, argv, "-P") != -1)
     visualize_particles = false;
-  if (pcl::console::find_argument(argc, argv, "-fixed") > 0)
+  if (pcl::console::find_argument(argc, argv, "-fixed") != -1)
     use_fixed = true;
-  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
-      pcl::console::find_argument(argc, argv, "--help") != -1) {
-    usage(argv);
-    return 1;
-  }
 
   pcl::console::parse_argument(argc, argv, "-d", downsampling_grid_size);
-
-  std::string device_id = "";
-  if (argc > 1 && argv[1][0] != '-')
-    device_id = std::string(argv[1]);
+  /////////////////////////////////////////////////////////////////////
 
   // open kinect
   OpenNISegmentTracking<pcl::PointXYZRGBA> v(device_id,
