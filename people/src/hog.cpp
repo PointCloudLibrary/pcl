@@ -312,7 +312,7 @@ pcl::people::HOG::normalization (float *H, int h, int w, int bin_size, int n_ori
   float *N, *N1, *H1; int o, x, y, hb=h/bin_size, wb=w/bin_size, nb=wb*hb;
   float eps = 1e-4f/4/bin_size/bin_size/bin_size/bin_size; // precise backward equality
   // compute 2x2 block normalization values
-  N = (float*) calloc(nb,sizeof(float));
+  N = reinterpret_cast<float*>(calloc(nb,sizeof(float)));
   for( o=0; o<n_orients; o++ ) for( x=0; x<nb; x++ ) N[x]+=H[x+o*nb]*H[x+o*nb];
   for( x=0; x<wb-1; x++ ) for( y=0; y<hb-1; y++ ) {
     N1=N+x*hb+y; *N1=1/float(std::sqrt( N1[0] + N1[1] + N1[hb] + N1[hb+1] +eps )); }
@@ -408,7 +408,7 @@ pcl::people::HOG::grad1 (float *I, float *Gx, float *Gy, int h, int w, int x) co
     for( y = 0; y < h; y++ )
       *Gx++ = (*In++ - *Ip++) * r;
   } else {
-    _G = (__m128*) Gx;
+    _G = reinterpret_cast<__m128*>(Gx);
     __m128 *_Ip = reinterpret_cast<__m128*>(Ip);
     __m128 *_In = reinterpret_cast<__m128*>(In);
     _r = pcl::sse_set(r);
@@ -423,7 +423,7 @@ pcl::people::HOG::grad1 (float *I, float *Gx, float *Gy, int h, int w, int x) co
   Ip = I;
   In = Ip + 1;
   // GRADY(1); Ip--; for(y = 1; y < h-1; y++) GRADY(.5f); In--; GRADY(1);
-  y1 = ((~((std::size_t) Gy) + 1) & 15)/4;
+  y1 = ((~(reinterpret_cast<std::size_t>(Gy)) + 1) & 15)/4;
   if(y1 == 0) y1 = 4;
   if(y1 > h-1) y1 = h-1;
   GRADY(1);
@@ -552,9 +552,9 @@ inline MemT*
 pcl::people::HOG::alMalloc (std::size_t size, int alignment) const
 {
   const std::size_t pSize = sizeof(void*), a = alignment-1;
-  void *raw = malloc(size + a + pSize);
-  void *aligned = reinterpret_cast<void*>((reinterpret_cast<std::size_t>(raw) + pSize + a) & ~a);
-  *(void**) (reinterpret_cast<std::size_t>(aligned-pSize)) = raw;
+  MemT *raw = reinterpret_cast<MemT*>(malloc(size + a + pSize));
+  MemT *aligned = reinterpret_cast<MemT*>((reinterpret_cast<std::size_t>(raw) + pSize + a) & ~a);
+  *(MemT**) (reinterpret_cast<std::size_t>(aligned-pSize)) = raw;
   return reinterpret_cast<MemT*>(aligned);
 }
 
