@@ -77,9 +77,9 @@ pcl::people::HOG::gradMag( float *I, int h, int w, int d, float *M, float *O ) c
   h4=(h%4==0) ? h : h-(h%4)+4; s=d*h4*sizeof(float);
 
   M2=reinterpret_cast<float*>(alMalloc(s,16));
-  _M2=(__m128*) M2;
-  Gx=reinterpret_cast<float*>(alMalloc(s,16)); _Gx=(__m128*) Gx;
-  Gy=reinterpret_cast<float*>(alMalloc(s,16)); _Gy=(__m128*) Gy;
+  _M2=reinterpret_cast<__m128*>(M2);
+  Gx=reinterpret_cast<float*>(alMalloc(s,16)); _Gx=reinterpret_cast<__m128*>(Gx);
+  Gy=reinterpret_cast<float*>(alMalloc(s,16)); _Gy=reinterpret_cast<__m128*>(Gy);
 
   // compute gradient magnitude and orientation for each column
   for( x=0; x<w; x++ ) {
@@ -552,15 +552,15 @@ pcl::people::HOG::alMalloc (std::size_t size, int alignment) const
 {
   const std::size_t pSize = sizeof(void*), a = alignment-1;
   void *raw = malloc(size + a + pSize);
-  void *aligned = (void*) (((std::size_t) raw + pSize + a) & ~a);
-  *(void**) ((std::size_t) aligned-pSize) = raw;
+  void *aligned = reinterpret_cast<void*>(((std::size_t) raw + pSize + a) & ~a);
+  *reinterpret_cast<void**>(reinterpret_cast<std::size_t>(aligned)-pSize) = raw;
   return aligned;
 }
 
 inline void 
 pcl::people::HOG::alFree (void* aligned) const
 {
-  void* raw = *(void**)((char*)aligned-sizeof(void*));
+  void* raw = *reinterpret_cast<void**>(reinterpret_cast<char*>(aligned)-sizeof(void*));
   free(raw);
 }
 
