@@ -552,7 +552,7 @@ pcl::people::HOG::alMalloc (std::size_t size, int alignment) const
 {
   const std::size_t pSize = sizeof(void*), a = alignment-1;
   void *raw = malloc(size + a + pSize);
-  void *aligned = reinterpret_cast<void*>(((std::size_t) raw + pSize + a) & ~a);
+  void *aligned = reinterpret_cast<void*>((reinterpret_cast<std::size_t>(raw) + pSize + a) & ~a);
   *reinterpret_cast<void**>(reinterpret_cast<std::size_t>(aligned)-pSize) = raw;
   return aligned;
 }
