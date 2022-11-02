@@ -150,16 +150,14 @@ namespace pcl
       /** 
        * \brief Platform independent aligned memory allocation (see also alFree).
        */
-      template<typename MemT>
-      MemT*
+      void*
       alMalloc ( std::size_t size, int alignment ) const;
       
       /** 
        * \brief Platform independent aligned memory de-allocation (see also alMalloc).
        */ 
-      template<typename MemT>
       void
-      alFree (MemT* aligned) const;
+      alFree (void* aligned) const;
       
     protected:
       

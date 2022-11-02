@@ -498,7 +498,7 @@ pcl::SVM::saveProblemNorm(const char* filename,
 bool
 pcl::SVMClassify::loadClassifierModel(const char* filename)
 {
-  SVMModel* out = reinterpret_cast<SVMModel*>(svm_load_model(filename));
+  auto* out = reinterpret_cast<SVMModel*>(svm_load_model(filename));
   if (out == nullptr) {
     PCL_ERROR("[pcl::%s::loadClassifierModel] Can't open classifier model %s.\n",
               getClassName().c_str(),

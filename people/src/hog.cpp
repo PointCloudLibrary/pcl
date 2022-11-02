@@ -76,10 +76,10 @@ pcl::people::HOG::gradMag( float *I, int h, int w, int d, float *M, float *O ) c
   // allocate memory for storing one column of output (padded so h4%4==0)
   h4=(h%4==0) ? h : h-(h%4)+4; s=d*h4*sizeof(float);
 
-  M2=alMalloc<float>(s,16);
-  _M2=reinterpret_cast<__m128*>(M2);
-  Gx=alMalloc<float>(s,16); _Gx=reinterpret_cast<__m128*>(Gx);
-  Gy=alMalloc<float>(s,16); _Gy=reinterpret_cast<__m128*>(Gy);
+  M2=reinterpret_cast<float*>(alMalloc(s,16));
+  _M2=(__m128*) M2;
+  Gx=reinterpret_cast<float*>(alMalloc(s,16)); _Gx=(__m128*) Gx;
+  Gy=reinterpret_cast<float*>(alMalloc(s,16)); _Gy=(__m128*) Gy;
 
   // compute gradient magnitude and orientation for each column
   for( x=0; x<w; x++ ) {
@@ -115,9 +115,9 @@ pcl::people::HOG::gradMag( float *I, int h, int w, int d, float *M, float *O ) c
   // allocate memory for storing one column of output (padded so h4%4==0)
   h4=(h%4==0) ? h : h-(h%4)+4; s=d*h4*sizeof(float);
 
-  M2=alMalloc<float>(s,16);
-  Gx=alMalloc<float>(s,16);
-  Gy=alMalloc<float>(s,16);
+  M2=reinterpret_cast<float*>(alMalloc(s,16));
+  Gx=reinterpret_cast<float*>(alMalloc(s,16)); 
+  Gy=reinterpret_cast<float*>(alMalloc(s,16)); 
   float m;
 
   // compute gradient magnitude and orientation for each column
@@ -172,8 +172,8 @@ pcl::people::HOG::gradHist( float *M, float *O, int h, int w, int bin_size, int 
   const int hb=h/bin_size, wb=w/bin_size, h0=hb*bin_size, w0=wb*bin_size, nb=wb*hb;
   const float s=(float)bin_size, sInv=1/s, sInv2=1/s/s;
   float *H0, *H1, *M0, *M1; int *O0, *O1;
-  O0=alMalloc<int>(h*sizeof(int),16); M0=alMalloc<float>(h*sizeof(float),16);
-  O1=alMalloc<int>(h*sizeof(int),16); M1=alMalloc<float>(h*sizeof(float),16);
+  O0=reinterpret_cast<int*>(alMalloc(h*sizeof(int),16)); M0=reinterpret_cast<float*>(alMalloc(h*sizeof(float),16));
+  O1=reinterpret_cast<int*>(alMalloc(h*sizeof(int),16)); M1=reinterpret_cast<float*>(alMalloc(h*sizeof(float),16));
 
   // main loop
   float xb = 0;
@@ -547,22 +547,20 @@ pcl::people::HOG::gradQuantize (float *O, float *M, int *O0, int *O1, float *M0,
   }
 }
 
-template<typename MemT>
-inline MemT*
+inline void* 
 pcl::people::HOG::alMalloc (std::size_t size, int alignment) const
 {
   const std::size_t pSize = sizeof(void*), a = alignment-1;
-  MemT *raw = reinterpret_cast<MemT*>(malloc(size + a + pSize));
-  MemT *aligned = reinterpret_cast<MemT*>((reinterpret_cast<std::size_t>(raw) + pSize + a) & ~a);
-  *(MemT**) (reinterpret_cast<std::size_t>(aligned-pSize)) = raw;
-  return reinterpret_cast<MemT*>(aligned);
+  void *raw = malloc(size + a + pSize);
+  void *aligned = (void*) (((std::size_t) raw + pSize + a) & ~a);
+  *(void**) ((std::size_t) aligned-pSize) = raw;
+  return aligned;
 }
 
-template<typename MemT>
 inline void 
-pcl::people::HOG::alFree (MemT* aligned) const
+pcl::people::HOG::alFree (void* aligned) const
 {
-  void* raw = *reinterpret_cast<void**>(reinterpret_cast<char*>(aligned)-sizeof(void*));
+  void* raw = *(void**)((char*)aligned-sizeof(void*));
   free(raw);
 }
 
