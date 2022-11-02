@@ -247,7 +247,7 @@ public:
         }
 
         if (image->getEncoding () == pcl::io::openni2::Image::RGB)
-          image_viewer_->addRGBImage ( (const unsigned char*)image->getData (), image->getWidth (), image->getHeight ());
+          image_viewer_->addRGBImage ( reinterpret_cast<const unsigned char*>(image->getData ()), image->getWidth (), image->getHeight ());
         else
           image_viewer_->addRGBImage (rgb_data_, image->getWidth (), image->getHeight ());
         image_viewer_->spinOnce ();

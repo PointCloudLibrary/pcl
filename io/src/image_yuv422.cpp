@@ -79,7 +79,7 @@ pcl::io::ImageYUV422::fillRGB (unsigned width, unsigned height, unsigned char* r
       THROW_IO_EXCEPTION ("Downsampling only possible for power of two scale in both dimensions. Request was %d x %d -> %d x %d.", wrapper_->getWidth (), wrapper_->getHeight (), width, height);
   }
 
-  const std::uint8_t* yuv_buffer = (std::uint8_t*) wrapper_->getData ();
+  const auto* yuv_buffer = reinterpret_cast<const std::uint8_t*>(wrapper_->getData ());
 
   unsigned rgb_line_skip = 0;
   if (rgb_line_step != 0)
