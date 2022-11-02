@@ -280,7 +280,7 @@ pcl::IFSReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, int 
   fs.seekg (data_size);
   // Read the TRIANGLES keyword
   std::uint32_t length_of_keyword;
-  fs.read ((char*)&length_of_keyword, sizeof (std::uint32_t));
+  fs.read (reinterpret_cast<char*>(&length_of_keyword), sizeof (std::uint32_t));
   char *keyword = new char [length_of_keyword];
   fs.read (keyword, sizeof (char) * length_of_keyword);
   if (strcmp (keyword, "TRIANGLES"))

@@ -143,7 +143,7 @@ pcl::io::ImageYUV422::fillGrayscale (unsigned width, unsigned height, unsigned c
   unsigned yuv_step = wrapper_->getWidth () / width;
   unsigned yuv_x_step = yuv_step << 1;
   unsigned yuv_skip = (wrapper_->getHeight () / height - 1) * ( wrapper_->getWidth () << 1 );
-  const std::uint8_t* yuv_buffer = ( (std::uint8_t*) wrapper_->getData () + 1);
+  const std::uint8_t* yuv_buffer = ( reinterpret_cast<const std::uint8_t*>(wrapper_->getData ()) + 1);
 
   for (unsigned yIdx = 0; yIdx < wrapper_->getHeight (); yIdx += yuv_step, yuv_buffer += yuv_skip, gray_buffer += gray_line_skip)
   {
