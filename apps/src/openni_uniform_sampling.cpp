@@ -196,7 +196,6 @@ main(int argc, char** argv)
   PCL_INFO("Using %f as a leaf size for UniformSampling.\n", leaf_res);
   /////////////////////////////////////////////////////////////////////
 
-  pcl::OpenNIGrabber grabber(device_id);
   OpenNIUniformSampling v(device_id, leaf_res);
   v.run();
 

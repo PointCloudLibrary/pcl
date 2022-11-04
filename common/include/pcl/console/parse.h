@@ -209,7 +209,7 @@ namespace pcl
     PCL_EXPORTS int
     parse_2x_arguments (int argc, const char * const * argv, const char * str, int &f, int &s, bool debug = true);
 
-    /** \brief Parse for specific given command line arguments (2x values comma
+    /** \brief Parse for specific given command line arguments (3x values comma
       * separated).
       * \param[in] argc the number of command line arguments
       * \param[in] argv the command line arguments
