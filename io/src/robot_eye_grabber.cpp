@@ -179,14 +179,14 @@ pcl::RobotEyeGrabber::convertPacketData (unsigned char *data_packet, std::size_t
     //char[6]  "EBRBEP"
     //std::uint32_t Timestamp // counts of a 66 MHz clock since power-on of eye.
     const std::string PACKET_HEADER("EBRBEP");
-    std::string packet(reinterpret_cast<const char*>(data_packet));
-    std::size_t response_size = 6; //"EBRBEP"
-    if(packet != PACKET_HEADER)
+    constexpr std::size_t RESPONSE_SIZE = 6; //"EBRBEP"
+    std::string packet(reinterpret_cast<const char*>(data_packet), RESPONSE_SIZE);
+    if(packet == PACKET_HEADER)
     {
       std::uint32_t timestamp; // counts of a 66 MHz clock since power-on of eye.
-      computeTimestamp(timestamp, data_packet + response_size);
+      computeTimestamp(timestamp, data_packet + RESPONSE_SIZE);
       //std::cout << "Timestamp: " << timestamp << std::endl;
-      offset = (response_size + sizeof(timestamp));
+      offset = (RESPONSE_SIZE + sizeof(timestamp));
     }
     else
     {
