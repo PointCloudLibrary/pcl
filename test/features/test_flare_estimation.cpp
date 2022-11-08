@@ -165,7 +165,7 @@ main (int argc, char** argv)
   sampled_cloud.reset (new pcl::PointCloud<pcl::PointXYZ> ());
 
   pcl::Indices sampled_indices;
-  for (float sa = 0.0f; sa < (float)cloud->size (); sa += sampling_incr)
+  for (float sa = 0.0f; sa < static_cast<float>(cloud->size ()); sa += sampling_incr)
     sampled_indices.push_back (static_cast<int> (sa));
   copyPointCloud (*cloud, sampled_indices, *sampled_cloud);
 

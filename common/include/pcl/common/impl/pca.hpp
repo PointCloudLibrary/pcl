@@ -71,7 +71,7 @@ PCA<PointT>::initCompute ()
   demeanPointCloud (*input_, *indices_, mean_, cloud_demean);
   assert (cloud_demean.cols () == int (indices_->size ()));
   // Compute the product cloud_demean * cloud_demean^T
-  const Eigen::Matrix3f alpha = (1.f / (float (indices_->size ()) - 1.f))
+  const Eigen::Matrix3f alpha = (1.f / (static_cast<float>(indices_->size ()) - 1.f))
                                   * cloud_demean.topRows<3> () * cloud_demean.topRows<3> ().transpose ();
 
   // Compute eigen vectors and values

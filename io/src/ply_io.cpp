@@ -379,16 +379,16 @@ pcl::PLYReader::vertexColorCallback (const std::string& color_name, pcl::io::ply
 {
   if ((color_name == "red") || (color_name == "diffuse_red"))
   {
-    r_ = std::int32_t (color);
+    r_ = static_cast<std::int32_t>(color);
     rgb_offset_before_ = vertex_offset_before_;
   }
   if ((color_name == "green") || (color_name == "diffuse_green"))
   {
-    g_ = std::int32_t (color);
+    g_ = static_cast<std::int32_t>(color);
   }
   if ((color_name == "blue") || (color_name == "diffuse_blue"))
   {
-    b_ = std::int32_t (color);
+    b_ = static_cast<std::int32_t>(color);
     std::int32_t rgb = r_ << 16 | g_ << 8 | b_;
     try
     {
@@ -409,7 +409,7 @@ pcl::PLYReader::vertexAlphaCallback (pcl::io::ply::uint8 alpha)
   // get anscient rgb value and store it in rgba
   rgba_ = cloud_->at<std::uint32_t>(vertex_count_, rgb_offset_before_);
   // append alpha
-  a_ = std::uint32_t (alpha);
+  a_ = static_cast<std::uint32_t>(alpha);
   rgba_ |= a_ << 24;
   // put rgba back
   cloud_->at<std::uint32_t>(vertex_count_, rgb_offset_before_) = rgba_;
@@ -1536,13 +1536,13 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
 
       {
         const auto& color = mesh.cloud.at<RGB>(i, mesh.cloud.fields[d].offset);
-        fs << int (color.r) << " " << int (color.g) << " " << int (color.b) << " ";
+        fs << static_cast<int>(color.r) << " " << static_cast<int>(color.g) << " " << static_cast<int>(color.b) << " ";
       }
       else if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::UINT32) &&
                (mesh.cloud.fields[d].name == "rgba"))
       {
         const auto& color = mesh.cloud.at<RGB>(i, mesh.cloud.fields[d].offset);
-        fs << int (color.r) << " " << int (color.g) << " " << int (color.b) << " " << int (color.a) << " ";
+        fs << static_cast<int>(color.r) << " " << static_cast<int>(color.g) << " " << static_cast<int>(color.b) << " " << static_cast<int>(color.a) << " ";
       }
       else if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
                 mesh.cloud.fields[d].name == "normal_x" ||

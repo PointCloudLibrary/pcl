@@ -240,8 +240,8 @@ NarfKeypoint::calculateCompleteInterestImage ()
   
   std::vector<float> start_usage_ranges;
   start_usage_ranges.resize (range_image_scale_space_.size ());
-  start_usage_ranges[int (range_image_scale_space_.size ())-1] = 0.0f;
-  for (int scale_idx = int (range_image_scale_space_.size ())-2;  scale_idx >= 0; --scale_idx)
+  start_usage_ranges[static_cast<int>(range_image_scale_space_.size ())-1] = 0.0f;
+  for (int scale_idx = static_cast<int>(range_image_scale_space_.size ())-2;  scale_idx >= 0; --scale_idx)
   {
     start_usage_ranges[scale_idx] = parameters_.support_size / 
       tanf (static_cast<float> (parameters_.optimal_range_image_patch_size) * range_image_scale_space_[scale_idx+1]->getAngularResolution ());
@@ -251,7 +251,7 @@ NarfKeypoint::calculateCompleteInterestImage ()
   //double interest_value_calculation_start_time = getTime ();
   interest_image_scale_space_.clear ();
   interest_image_scale_space_.resize (range_image_scale_space_.size (), nullptr);
-  for (int scale_idx = int (range_image_scale_space_.size ())-1;  scale_idx >= 0; --scale_idx)
+  for (int scale_idx = static_cast<int>(range_image_scale_space_.size ())-1;  scale_idx >= 0; --scale_idx)
   {
     const RangeImage& range_image = *range_image_scale_space_[scale_idx];
     RangeImageBorderExtractor& border_extractor = *border_extractor_scale_space_[scale_idx];
@@ -305,8 +305,8 @@ NarfKeypoint::calculateCompleteInterestImage ()
       {
         const RangeImage& half_range_image = *range_image_scale_space_[scale_idx+1];
         float* half_interest_image = interest_image_scale_space_[scale_idx+1];
-        int half_x = std::min (x/2, int (half_range_image.width)-1),
-            half_y = std::min (y/2, int (half_range_image.height)-1);
+        int half_x = std::min (x/2, static_cast<int>(half_range_image.width)-1),
+            half_y = std::min (y/2, static_cast<int>(half_range_image.height)-1);
         interest_value = half_interest_image[half_y*half_range_image.width + half_x];
         continue;
       }
@@ -343,9 +343,9 @@ NarfKeypoint::calculateCompleteInterestImage ()
             continue;
         }
         
-        for (int y3=std::max (0,y2-1); y3<=std::min (y2+1,int (range_image.height)-1); ++y3)
+        for (int y3=std::max (0,y2-1); y3<=std::min (y2+1,static_cast<int>(range_image.height)-1); ++y3)
         {
-          for (int x3=std::max (0,x2-1); x3<=std::min (x2+1,int (range_image.width)-1); ++x3)
+          for (int x3=std::max (0,x2-1); x3<=std::min (x2+1,static_cast<int>(range_image.width)-1); ++x3)
           {
             int index3 = y3*range_image.width + x3;
             if (!was_touched[index3])
@@ -390,7 +390,7 @@ NarfKeypoint::calculateCompleteInterestImage ()
           if (angle_histogram[histogram_cell2]==0.0f)
             continue;
           // TODO: lookup table for the following:
-          float normalized_angle_diff = 2.0f*float (histogram_cell2-histogram_cell1)/float (angle_histogram_size);
+          float normalized_angle_diff = 2.0f*static_cast<float>(histogram_cell2-histogram_cell1)/static_cast<float>(angle_histogram_size);
           normalized_angle_diff = (normalized_angle_diff <= 1.0f ? normalized_angle_diff : 2.0f-normalized_angle_diff);
           
           angle_change_value = std::max (angle_histogram[histogram_cell1] * angle_histogram[histogram_cell2] *
@@ -534,9 +534,9 @@ NarfKeypoint::calculateSparseInterestImage ()
           continue;
       }
       
-      for (int y3=std::max (0,y2-1); y3<=std::min (y2+1,int (range_image.height)-1); ++y3)
+      for (int y3=std::max (0,y2-1); y3<=std::min (y2+1,static_cast<int>(range_image.height)-1); ++y3)
       {
-        for (int x3=std::max (0,x2-1); x3<=std::min (x2+1,int (range_image.width)-1); ++x3)
+        for (int x3=std::max (0,x2-1); x3<=std::min (x2+1,static_cast<int>(range_image.width)-1); ++x3)
         {
           int index3 = y3*range_image.width + x3;
           if (!was_touched[index3])
@@ -574,7 +574,7 @@ NarfKeypoint::calculateSparseInterestImage ()
         if (angle_histogram[histogram_cell2]==0.0f)
           continue;
         // TODO: lookup table for the following:
-        float normalized_angle_diff = 2.0f*float (histogram_cell2-histogram_cell1)/float (angle_histogram_size);
+        float normalized_angle_diff = 2.0f*static_cast<float>(histogram_cell2-histogram_cell1)/static_cast<float>(angle_histogram_size);
         normalized_angle_diff = (normalized_angle_diff <= 1.0f ? normalized_angle_diff : 2.0f-normalized_angle_diff);
         
         angle_change_value = std::max (angle_histogram[histogram_cell1] * angle_histogram[histogram_cell2] *
@@ -608,12 +608,12 @@ NarfKeypoint::calculateSparseInterestImage ()
         std::sort(relevent_point_indices.begin(), relevent_point_indices.end(), secondPairElementIsGreater);
         relevant_point_still_valid.clear();
         relevant_point_still_valid.resize(relevent_point_indices.size(), true);
-        for (int rpi_idx1=0; rpi_idx1<int(relevent_point_indices.size ())-1; ++rpi_idx1)
+        for (int rpi_idx1=0; rpi_idx1<static_cast<int>(relevent_point_indices.size ())-1; ++rpi_idx1)
         {
           if (!relevant_point_still_valid[rpi_idx1])
             continue;
           const PointWithRange& relevant_point1 = range_image.getPoint (relevent_point_indices[rpi_idx1].first);
-          for (int rpi_idx2=rpi_idx1+1; rpi_idx2<int(relevent_point_indices.size ()); ++rpi_idx2)
+          for (int rpi_idx2=rpi_idx1+1; rpi_idx2<static_cast<int>(relevent_point_indices.size ()); ++rpi_idx2)
           {
             if (!relevant_point_still_valid[rpi_idx2])
               continue;
@@ -625,7 +625,7 @@ NarfKeypoint::calculateSparseInterestImage ()
           }
         }
         int newPointIdx=0;
-        for (int oldPointIdx=0; oldPointIdx<int(relevant_point_still_valid.size()); ++oldPointIdx) {
+        for (int oldPointIdx=0; oldPointIdx<static_cast<int>(relevant_point_still_valid.size()); ++oldPointIdx) {
           if (relevant_point_still_valid[oldPointIdx])
             relevent_point_indices[newPointIdx++] = relevent_point_indices[oldPointIdx];
         }
@@ -677,7 +677,7 @@ NarfKeypoint::calculateSparseInterestImage ()
             if (angle_histogram[histogram_cell2]==0.0f)
               continue;
             // TODO: lookup table for the following:
-            float normalized_angle_diff = 2.0f*float (histogram_cell2-histogram_cell1)/float (angle_histogram_size);
+            float normalized_angle_diff = 2.0f*static_cast<float>(histogram_cell2-histogram_cell1)/static_cast<float>(angle_histogram_size);
             normalized_angle_diff = (normalized_angle_diff <= 1.0f ? normalized_angle_diff : 2.0f-normalized_angle_diff);
             angle_change_value = std::max (angle_change_value, angle_histogram[histogram_cell1] *
                                                                angle_histogram[histogram_cell2] *
@@ -842,7 +842,7 @@ NarfKeypoint::calculateInterestPoints ()
   float min_distance_squared = powf (parameters_.min_distance_between_interest_points*parameters_.support_size, 2);
   for (const auto &interest_point : tmp_interest_points)
   {
-    if (parameters_.max_no_of_interest_points > 0  &&  int (interest_points_->size ()) >= parameters_.max_no_of_interest_points)
+    if (parameters_.max_no_of_interest_points > 0  &&  static_cast<int>(interest_points_->size ()) >= parameters_.max_no_of_interest_points)
       break;
     bool better_point_too_close = false;
     for (const auto &interest_point2 : interest_points_->points)

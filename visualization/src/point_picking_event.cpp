@@ -161,7 +161,7 @@ pcl::visualization::PointPickingCallback::performSinglePick (
   {
     double p[3];
     point_picker->GetDataSet ()->GetPoint (idx, p);
-    x = float (p[0]); y = float (p[1]); z = float (p[2]);
+    x = static_cast<float>(p[0]); y = static_cast<float>(p[1]); z = static_cast<float>(p[2]);
     actor_ = point_picker->GetActor();
   }
 

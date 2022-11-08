@@ -56,7 +56,7 @@ pcl::SVM::readline(FILE* input)
   while (strrchr(line_, '\n') == nullptr) {
     max_line_len_ *= 2;
     line_ = static_cast<char*>(realloc(line_, max_line_len_));
-    int len = int(strlen(line_));
+    int len = static_cast<int>(strlen(line_));
 
     // if the new read part of the string is unavailable, break the while
     if (fgets(line_ + len, max_line_len_ - len, input) == nullptr)
@@ -166,7 +166,7 @@ pcl::SVM::adaptLibSVMToInput(std::vector<SVMData>& training_set, svm_problem pro
 
       if (std::isfinite(prob.x[i][j].value)) {
         seed.idx = prob.x[i][j].index;
-        seed.value = float(prob.x[i][j].value);
+        seed.value = static_cast<float>(prob.x[i][j].value);
         parent.SV.push_back(seed);
       }
 
@@ -190,7 +190,7 @@ pcl::SVM::adaptInputToLibSVM(std::vector<SVMData> training_set, svm_problem& pro
     return;
   }
 
-  prob.l = int(training_set.size()); // n of elements/points
+  prob.l = static_cast<int>(training_set.size()); // n of elements/points
   prob.y = Malloc(double, prob.l);
   prob.x = Malloc(struct svm_node*, prob.l);
 
@@ -371,7 +371,7 @@ pcl::SVM::loadProblem(const char* filename, svm_problem& prob)
       // std::cout << idx << ":" << val<< " ";
       errno = 0;
 
-      x_space_[j].index = int(strtol(idx, &endptr, 10));
+      x_space_[j].index = static_cast<int>(strtol(idx, &endptr, 10));
 
       if (endptr == idx || errno != 0 || *endptr != '\0' ||
           x_space_[j].index <= inst_max_index)
@@ -408,7 +408,7 @@ pcl::SVM::loadProblem(const char* filename, svm_problem& prob)
         return false;
       }
 
-      if (int(prob.x[i][0].value) <= 0 || int(prob.x[i][0].value) > max_index) {
+      if (static_cast<int>(prob.x[i][0].value) <= 0 || static_cast<int>(prob.x[i][0].value) > max_index) {
         PCL_ERROR("[pcl::%s] Wrong input format: sample_serial_number out of range.\n",
                   getClassName().c_str());
         return false;
@@ -641,7 +641,7 @@ pcl::SVMClassify::classificationTest()
   else {
     pcl::console::print_info(" - Accuracy (classification) = ");
     pcl::console::print_value(
-        "%g%% (%d/%d)\n", double(correct) / total * 100, correct, total);
+        "%g%% (%d/%d)\n", static_cast<double>(correct) / total * 100, correct, total);
   }
 
   if (predict_probability_)

@@ -58,7 +58,7 @@ pcl::PCLPointCloud2::concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPoi
   const auto size1 = cloud1.width * cloud1.height;
   const auto size2 = cloud2.width * cloud2.height;
   //if one input cloud has no points, but the other input does, just select the cloud with points
-  switch ((bool (size1) << 1) + bool (size2))
+  switch ((static_cast<bool>(size1) << 1) + static_cast<bool>(size2))
   {
     case 1:
       cloud1 = cloud2;

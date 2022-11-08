@@ -511,9 +511,9 @@ template <typename PointT, typename NormalT> float
 pcl::RegionGrowingRGB<PointT, NormalT>::calculateColorimetricalDifference (std::vector<unsigned int>& first_color, std::vector<unsigned int>& second_color) const
 {
   float difference = 0.0f;
-  difference += float ((first_color[0] - second_color[0]) * (first_color[0] - second_color[0]));
-  difference += float ((first_color[1] - second_color[1]) * (first_color[1] - second_color[1]));
-  difference += float ((first_color[2] - second_color[2]) * (first_color[2] - second_color[2]));
+  difference += static_cast<float>((first_color[0] - second_color[0]) * (first_color[0] - second_color[0]));
+  difference += static_cast<float>((first_color[1] - second_color[1]) * (first_color[1] - second_color[1]));
+  difference += static_cast<float>((first_color[2] - second_color[2]) * (first_color[2] - second_color[2]));
   return (difference);
 }
 

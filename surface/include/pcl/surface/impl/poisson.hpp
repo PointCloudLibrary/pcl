@@ -132,7 +132,7 @@ pcl::Poisson<PointNT>::execute (poisson::CoredVectorMeshData &mesh,
 
   kernel_depth_ = depth_ - 2;
 
-  tree.setBSplineData (depth_, pcl::poisson::Real (1.0 / (1 << depth_)), true);
+  tree.setBSplineData (depth_, static_cast<pcl::poisson::Real>(1.0 / (1 << depth_)), true);
 
   tree.maxMemoryUsage = 0;
 
@@ -202,16 +202,16 @@ pcl::Poisson<PointNT>::performReconstruction (PolygonMesh &output)
 
   // Write output PolygonMesh
   pcl::PointCloud<pcl::PointXYZ> cloud;
-  cloud.resize (int (mesh.outOfCorePointCount () + mesh.inCorePoints.size ()));
+  cloud.resize (static_cast<int>(mesh.outOfCorePointCount () + mesh.inCorePoints.size ()));
   poisson::Point3D<float> p;
-  for (int i = 0; i < int (mesh.inCorePoints.size ()); i++)
+  for (int i = 0; i < static_cast<int>(mesh.inCorePoints.size ()); i++)
   {
     p = mesh.inCorePoints[i];
     cloud[i].x = p.coords[0]*scale+center.coords[0];
     cloud[i].y = p.coords[1]*scale+center.coords[1];
     cloud[i].z = p.coords[2]*scale+center.coords[2];
   }
-  for (int i = int (mesh.inCorePoints.size ()); i < int (mesh.outOfCorePointCount () + mesh.inCorePoints.size ()); i++)
+  for (int i = static_cast<int>(mesh.inCorePoints.size ()); i < static_cast<int>(mesh.outOfCorePointCount () + mesh.inCorePoints.size ()); i++)
   {
     mesh.nextOutOfCorePoint (p);
     cloud[i].x = p.coords[0]*scale+center.coords[0];
@@ -233,7 +233,7 @@ pcl::Poisson<PointNT>::performReconstruction (PolygonMesh &output)
       if (polygon[i].inCore )
         v.vertices[i] = polygon[i].idx;
       else
-        v.vertices[i] = polygon[i].idx + int (mesh.inCorePoints.size ());
+        v.vertices[i] = polygon[i].idx + static_cast<int>(mesh.inCorePoints.size ());
 
     output.polygons[p_i] = v;
   }
@@ -283,16 +283,16 @@ pcl::Poisson<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &points,
 
   // Write output PolygonMesh
   // Write vertices
-  points.resize (int (mesh.outOfCorePointCount () + mesh.inCorePoints.size ()));
+  points.resize (static_cast<int>(mesh.outOfCorePointCount () + mesh.inCorePoints.size ()));
   poisson::Point3D<float> p;
-  for (int i = 0; i < int(mesh.inCorePoints.size ()); i++)
+  for (int i = 0; i < static_cast<int>(mesh.inCorePoints.size ()); i++)
   {
     p = mesh.inCorePoints[i];
     points[i].x = p.coords[0]*scale+center.coords[0];
     points[i].y = p.coords[1]*scale+center.coords[1];
     points[i].z = p.coords[2]*scale+center.coords[2];
   }
-  for (int i = int(mesh.inCorePoints.size()); i < int (mesh.outOfCorePointCount() + mesh.inCorePoints.size ()); i++)
+  for (int i = static_cast<int>(mesh.inCorePoints.size()); i < static_cast<int>(mesh.outOfCorePointCount() + mesh.inCorePoints.size ()); i++)
   {
     mesh.nextOutOfCorePoint (p);
     points[i].x = p.coords[0]*scale+center.coords[0];
@@ -314,7 +314,7 @@ pcl::Poisson<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &points,
       if (polygon[i].inCore )
         v.vertices[i] = polygon[i].idx;
       else
-        v.vertices[i] = polygon[i].idx + int (mesh.inCorePoints.size ());
+        v.vertices[i] = polygon[i].idx + static_cast<int>(mesh.inCorePoints.size ());
 
     polygons[p_i] = v;
   }

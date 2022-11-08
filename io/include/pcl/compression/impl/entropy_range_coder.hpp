@@ -84,7 +84,7 @@ pcl::AdaptiveRangeCoder::encodeCharVectorToStream (const std::vector<char>& inpu
     range *= freq[ch + 1] - freq[ch];
 
     // check range limits
-    while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -int (low) & (bottom - 1)), 1)))
+    while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -static_cast<int>(low) & (bottom - 1)), 1)))
     {
       char out = static_cast<char> (low >> 24);
       range <<= 8;
@@ -186,7 +186,7 @@ pcl::AdaptiveRangeCoder::decodeStreamToCharVector (std::istream& inputByteStream
     range *= freq[symbol + 1] - freq[symbol];
 
     // decode range limits
-    while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -int (low) & (bottom - 1)), 1)))
+    while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -static_cast<int>(low) & (bottom - 1)), 1)))
     {
       std::uint8_t ch;
       inputByteStream_arg.read (reinterpret_cast<char*> (&ch), sizeof(char));
@@ -509,7 +509,7 @@ pcl::StaticRangeCoder::encodeCharVectorToStream (const std::vector<char>& inputB
     range *= freq[ch + 1] - freq[ch];
 
     // check range limits
-    while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -int (low) & (bottom - 1)), 1)))
+    while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -static_cast<int>(low) & (bottom - 1)), 1)))
     {
       char out = static_cast<char> (low >> 24);
       range <<= 8;
@@ -602,7 +602,7 @@ pcl::StaticRangeCoder::decodeStreamToCharVector (std::istream& inputByteStream_a
     range *= freq[symbol + 1] - freq[symbol];
 
     // check range limits
-    while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -int (low) & (bottom - 1)), 1)))
+    while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -static_cast<int>(low) & (bottom - 1)), 1)))
     {
       std::uint8_t ch;
       inputByteStream_arg.read (reinterpret_cast<char*> (&ch), sizeof(char));

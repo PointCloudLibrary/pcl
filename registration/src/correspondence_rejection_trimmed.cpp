@@ -47,7 +47,7 @@ pcl::registration::CorrespondenceRejectorTrimmed::getRemainingCorrespondences(
 {
   // not really an efficient implementation
   remaining_correspondences = original_correspondences;
-  unsigned int number_valid_correspondences = (int(std::floor(
+  unsigned int number_valid_correspondences = (static_cast<int>(std::floor(
       overlap_ratio_ * static_cast<float>(remaining_correspondences.size()))));
   number_valid_correspondences =
       std::max(number_valid_correspondences, nr_min_correspondences_);

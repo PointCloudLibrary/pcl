@@ -576,7 +576,7 @@ namespace pcl
       }
 
       // Derive percentage from specified sample_percent and tree depth
-      const double percent = pow(sample_percent_, double((this->root_node_->m_tree_->getDepth () - depth_)));
+      const double percent = pow(sample_percent_, static_cast<double>((this->root_node_->m_tree_->getDepth () - depth_)));
       const auto samplesize = static_cast<std::uint64_t>(percent * static_cast<double>(sampleBuff.size()));
       const std::uint64_t inputsize = sampleBuff.size();
 

@@ -244,7 +244,7 @@ int main (int argc, char** argv)
       if (++count == 30)
       {
         double now = pcl::getTime ();
-        std::cout << "Average framerate: " << double(count)/double(now - last) << " Hz" <<  std::endl;
+        std::cout << "Average framerate: " << static_cast<double>(count)/(now - last) << " Hz" <<  std::endl;
         count = 0;
         last = now;
       }

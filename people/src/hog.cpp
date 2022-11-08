@@ -105,7 +105,7 @@ pcl::people::HOG::gradMag( float *I, int h, int w, int d, float *M, float *O ) c
 
   std::copy(M2, M2 + h, M + x * h);
   // compute and store gradient orientation (O) via table lookup
-  if(O!=nullptr) for( y=0; y<h; y++ ) O[x*h+y] = acost[(int)Gx[y]];
+  if(O!=nullptr) for( y=0; y<h; y++ ) O[x*h+y] = acost[static_cast<int>(Gx[y])];
   }
   alFree(Gx); alFree(Gy); alFree(M2); 
 #else
@@ -170,7 +170,7 @@ void
 pcl::people::HOG::gradHist( float *M, float *O, int h, int w, int bin_size, int n_orients, bool soft_bin, float *H ) const
 {
   const int hb=h/bin_size, wb=w/bin_size, h0=hb*bin_size, w0=wb*bin_size, nb=wb*hb;
-  const float s=(float)bin_size, sInv=1/s, sInv2=1/s/s;
+  const float s=static_cast<float>(bin_size), sInv=1/s, sInv2=1/s/s;
   float *H0, *H1, *M0, *M1; int *O0, *O1;
   O0=reinterpret_cast<int*>(alMalloc(h*sizeof(int),16)); M0=reinterpret_cast<float*>(alMalloc(h*sizeof(float),16));
   O1=reinterpret_cast<int*>(alMalloc(h*sizeof(int),16)); M1=reinterpret_cast<float*>(alMalloc(h*sizeof(float),16));
@@ -203,7 +203,7 @@ pcl::people::HOG::gradHist( float *M, float *O, int h, int w, int bin_size, int 
       float ms[4], xyd, yb, xd, yd; __m128 _m, _m0, _m1;
       bool hasLf, hasRt; int xb0, yb0;
       if( x==0 ) { init=(0+.5f)*sInv-0.5f; xb=init; }
-      hasLf = xb>=0; xb0 = hasLf?(int)xb:-1; hasRt = xb0 < wb-1;
+      hasLf = xb>=0; xb0 = hasLf?static_cast<int>(xb):-1; hasRt = xb0 < wb-1;
       xd=xb-xb0; xb+=sInv; yb=init;
       int y=0;
       // lambda for code conciseness
@@ -233,7 +233,7 @@ pcl::people::HOG::gradHist( float *M, float *O, int h, int w, int bin_size, int 
       }
       // main rows, has top and bottom bins, use SSE for minor speedup
       for( ; ; y++ ) {
-        yb0 = (int) yb; if(yb0>=hb-1) break; GHinit();
+        yb0 = static_cast<int>(yb); if(yb0>=hb-1) break; GHinit();
         _m0=pcl::sse_set(M0[y]); _m1=pcl::sse_set(M1[y]);
         if(hasLf) { _m=pcl::sse_set(0,0,ms[1],ms[0]);
         GH(H0+O0[y],_m,_m0); GH(H0+O1[y],_m,_m1); }
@@ -242,7 +242,7 @@ pcl::people::HOG::gradHist( float *M, float *O, int h, int w, int bin_size, int 
       }      
       // final rows, no bottom bin_size
       for( ; y<h0; y++ ) {
-        yb0 = (int) yb; GHinit();
+        yb0 = static_cast<int>(yb); GHinit();
         if(hasLf) { H0[O0[y]]+=ms[0]*M0[y]; H0[O1[y]]+=ms[0]*M1[y]; }
         if(hasRt) { H0[O0[y]+hb]+=ms[2]*M0[y]; H0[O1[y]+hb]+=ms[2]*M1[y]; }
       }       
@@ -315,7 +315,7 @@ pcl::people::HOG::normalization (float *H, int h, int w, int bin_size, int n_ori
   N = reinterpret_cast<float*>(calloc(nb,sizeof(float)));
   for( o=0; o<n_orients; o++ ) for( x=0; x<nb; x++ ) N[x]+=H[x+o*nb]*H[x+o*nb];
   for( x=0; x<wb-1; x++ ) for( y=0; y<hb-1; y++ ) {
-    N1=N+x*hb+y; *N1=1/float(std::sqrt( N1[0] + N1[1] + N1[hb] + N1[hb+1] +eps )); }
+    N1=N+x*hb+y; *N1=1/(std::sqrt( N1[0] + N1[1] + N1[hb] + N1[hb+1] +eps )); }
   // perform 4 normalizations per spatial block (handling boundary regions)
   for( o=0; o<n_orients; o++ ) for( x=0; x<wb; x++ ) {
     H1=H+o*nb+x*hb; N1=N+x*hb; float *Gs[4]; Gs[0]=G+o*nb+x*hb;
@@ -483,12 +483,12 @@ pcl::people::HOG::acosTable () const
   static float a[25000];
   static bool init = false;
   if( init ) return a+n2;
-  float ni = 2.02f/(float) n;
+  float ni = 2.02f/static_cast<float>(n);
   for(int i=0; i<n; i++ )
   {
     float t = i*ni - 1.01f;
     t = t<-1 ? -1 : (t>1 ? 1 : t);
-    t = (float) std::acos( t );
+    t = std::acos( t );
     a[i] = (t <= M_PI-1e-5f) ? t : 0;
   }
   init = true;
@@ -499,7 +499,7 @@ void
 pcl::people::HOG::gradQuantize (float *O, float *M, int *O0, int *O1, float *M0, float *M1, int n_orients, int nb, int n, float norm) const
 {
   // define useful constants
-  const float oMult = (float)n_orients/M_PI;
+  const float oMult = static_cast<float>(n_orients)/M_PI;
   const int oMax = n_orients * nb;
 
   int i = 0;
@@ -508,7 +508,7 @@ pcl::people::HOG::gradQuantize (float *O, float *M, int *O0, int *O1, float *M0,
   __m128i _o0, _o1, *_O0, *_O1; __m128 _o, _o0f, _m, *_M0, *_M1;
   const __m128 _norm = pcl::sse_set(norm);
   const __m128 _oMult = pcl::sse_set(oMult);
-  const __m128 _nbf = pcl::sse_set((float)nb);
+  const __m128 _nbf = pcl::sse_set(static_cast<float>(nb));
   const __m128i _oMax = pcl::sse_set(oMax);
   const __m128i _nb = pcl::sse_set(nb);
 
@@ -535,7 +535,7 @@ pcl::people::HOG::gradQuantize (float *O, float *M, int *O0, int *O1, float *M0,
   for( ; i < n; i++ ) {
     float o = O[i] * oMult;
     float m = M[i] * norm;
-    int o0 = (int) o;
+    int o0 = static_cast<int>(o);
     float od = o - o0;
     o0 *= nb;
     int o1 = o0 + nb;

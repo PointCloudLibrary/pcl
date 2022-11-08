@@ -339,7 +339,7 @@ namespace pcl
         }
         for( int j=0 ; j<sampleCount ; j++ )
         {
-          double x=double(j)/(sampleCount-1);
+          double x=static_cast<double>(j)/(sampleCount-1);
           if(flags &   VALUE_FLAG){ valueTables[j*functionCount+i]=Real( function(x));}
           if(flags & D_VALUE_FLAG){dValueTables[j*functionCount+i]=Real(dFunction(x));}
         }
@@ -359,7 +359,7 @@ namespace pcl
         else				{dFunction=baseFunctions[i].derivative();}
 
         for(int j=0;j<sampleCount;j++){
-          double x=double(j)/(sampleCount-1);
+          double x=static_cast<double>(j)/(sampleCount-1);
           if(flags &   VALUE_FLAG){ valueTables[j*functionCount+i]=Real( function(x));}
           if(flags & D_VALUE_FLAG){dValueTables[j*functionCount+i]=Real(dFunction(x));}
         }

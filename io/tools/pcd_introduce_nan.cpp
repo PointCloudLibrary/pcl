@@ -65,8 +65,8 @@ main (int argc,
 
   for (auto &point : *cloud)
   {
-    int random = 1 + (rand () % (int) (100));
-    int random_xyz = 1 + (rand () % (int) (3 - 1 + 1));
+    int random = 1 + (rand () % (100));
+    int random_xyz = 1 + (rand () % (3 - 1 + 1));
 
     if (random < percentage_of_NaN)
     {

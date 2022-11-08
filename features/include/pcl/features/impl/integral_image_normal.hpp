@@ -511,9 +511,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     auto cb_xyz_sosse = [this] (unsigned p1, unsigned p2, unsigned p3, unsigned p4) { return integral_image_XYZ_.getSecondOrderSumSE (p1, p2, p3, p4); };
     sumArea<typename IntegralImage2D<float, 3>::SecondOrderType>(start_x, start_y, end_x, end_y, width, height, cb_xyz_sosse, so_elements);
 
-    center[0] = float (tmp_center[0]);
-    center[1] = float (tmp_center[1]);
-    center[2] = float (tmp_center[2]);
+    center[0] = static_cast<float>(tmp_center[0]);
+    center[1] = static_cast<float>(tmp_center[1]);
+    center[2] = static_cast<float>(tmp_center[2]);
 
     covariance_matrix.coeffRef (0) = static_cast<float> (so_elements [0]);
     covariance_matrix.coeffRef (1) = covariance_matrix.coeffRef (3) = static_cast<float> (so_elements [1]);
@@ -670,10 +670,10 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     sumArea<float>(start_x_U, start_y_U, end_x_U, end_y_U, width, height, cb_fosse, mean_U_z);
     sumArea<float>(start_x_D, start_y_D, end_x_D, end_y_D, width, height, cb_fosse, mean_D_z);
 
-    mean_L_z /= float (count_L_z);
-    mean_R_z /= float (count_R_z);
-    mean_U_z /= float (count_U_z);
-    mean_D_z /= float (count_D_z);
+    mean_L_z /= static_cast<float>(count_L_z);
+    mean_R_z /= static_cast<float>(count_R_z);
+    mean_U_z /= static_cast<float>(count_U_z);
+    mean_D_z /= static_cast<float>(count_D_z);
 
 
     PointInT pointL = (*input_)[point_index_L_y*width + point_index_L_x];
@@ -845,7 +845,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
     // top and bottom borders
     // That sets the output density to false!
     output.is_dense = false;
-    unsigned border = int(normal_smoothing_size_);
+    unsigned border = static_cast<int>(normal_smoothing_size_);
     PointOutT* vec1 = &output [0];
     PointOutT* vec2 = vec1 + input_->width * (input_->height - border);
 
@@ -1027,7 +1027,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
   if (border_policy_ == BORDER_POLICY_IGNORE)
   {
     output.is_dense = false;
-    unsigned border = int(normal_smoothing_size_);
+    unsigned border = static_cast<int>(normal_smoothing_size_);
     unsigned bottom = input_->height > border ? input_->height - border : 0;
     unsigned right = input_->width > border ? input_->width - border : 0;
     if (use_depth_dependent_smoothing_)

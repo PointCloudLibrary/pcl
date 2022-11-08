@@ -99,7 +99,7 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
              c_it != centers.end (); ++c_it, ++w_it)
           f += *w_it * kernel (*c_it, point);
 
-        grid_[x * res_y_*res_z_ + y * res_z_ + z] = float (f);
+        grid_[x * res_y_*res_z_ + y * res_z_ + z] = static_cast<float>(f);
       }
 }
 

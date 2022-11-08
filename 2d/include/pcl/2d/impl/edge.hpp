@@ -277,7 +277,7 @@ Edge<PointInT, PointOutT>::suppressNonMaxima(
 
       // maxima (j, i).intensity = 0;
 
-      switch (int(ptedge.direction)) {
+      switch (static_cast<int>(ptedge.direction)) {
       case 0: {
         if (ptedge.magnitude >= edges(j - 1, i).magnitude &&
             ptedge.magnitude >= edges(j + 1, i).magnitude)

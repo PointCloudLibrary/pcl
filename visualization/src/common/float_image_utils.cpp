@@ -225,7 +225,7 @@ pcl::visualization::FloatImageUtils::getVisualImage (const unsigned short* short
   auto* data = new unsigned char[arraySize];
   unsigned char* dataPtr = data;
   
-  float factor = 1.0f / float (max_value - min_value), offset = float (-min_value);
+  float factor = 1.0f / static_cast<float>(max_value - min_value), offset = static_cast<float>(-min_value);
   
   for (int i=0; i<size; ++i) 
   {

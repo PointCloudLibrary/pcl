@@ -153,12 +153,12 @@ TEST (PCL, concatenatePointCloud2)
   pcl::fromPCLPointCloud2 (cloud_out, cloud_all);
 
   EXPECT_EQ (cloud_all.size (), cloud_xyz_rgba.size () + cloud_xyz_rgba2.size ());
-  for (int i = 0; i < int (cloud_xyz_rgba.size ()); ++i)
+  for (int i = 0; i < static_cast<int>(cloud_xyz_rgba.size ()); ++i)
   {
     EXPECT_XYZ_EQ (cloud_all[i], cloud_xyz_rgba[i]);
     EXPECT_RGBA_EQ (cloud_all[i], cloud_xyz_rgba[i]);
   }
-  for (int i = 0; i < int (cloud_xyz_rgba2.size ()); ++i)
+  for (int i = 0; i < static_cast<int>(cloud_xyz_rgba2.size ()); ++i)
   {
     EXPECT_XYZ_EQ (cloud_all[cloud_xyz_rgba.size () + i], cloud_xyz_rgba2[i]);
     EXPECT_RGBA_EQ (cloud_all[cloud_xyz_rgba.size () + i], cloud_xyz_rgba2[i]);
@@ -175,12 +175,12 @@ TEST (PCL, concatenatePointCloud2)
   pcl::fromPCLPointCloud2 (cloud_out2, cloud_all);
 
   EXPECT_EQ (cloud_all.size (), cloud_xyz_rgba.size () + cloud_xyz_rgba2.size ());
-  for (int i = 0; i < int (cloud_xyz_rgba.size ()); ++i)
+  for (int i = 0; i < static_cast<int>(cloud_xyz_rgba.size ()); ++i)
   {
     EXPECT_XYZ_EQ (cloud_all[i], cloud_xyz_rgba[i]);
     EXPECT_RGBA_EQ (cloud_all[i], cloud_xyz_rgba[i]);
   }
-  for (int i = 0; i < int (cloud_xyz_rgb.size ()); ++i)
+  for (int i = 0; i < static_cast<int>(cloud_xyz_rgb.size ()); ++i)
   {
     EXPECT_XYZ_EQ (cloud_all[cloud_xyz_rgba.size () + i], cloud_xyz_rgb[i]);
     EXPECT_RGBA_EQ (cloud_all[cloud_xyz_rgba.size () + i], cloud_xyz_rgb[i]);
@@ -209,13 +209,13 @@ TEST (PCL, concatenatePointCloud2)
   pcl::fromPCLPointCloud2 (cloud_out3, cloud_all);
 
   EXPECT_EQ (cloud_all.size (), cloud_xyz_rgba.size () + cloud_xyz_rgb.size ());
-  for (int i = 0; i < int (cloud_xyz_rgba.size ()); ++i)
+  for (int i = 0; i < static_cast<int>(cloud_xyz_rgba.size ()); ++i)
   {
     EXPECT_XYZ_EQ (cloud_all[i], cloud_xyz_rgba[i]);
     // Data doesn't get modified
     EXPECT_RGBA_EQ (cloud_all[i], cloud_xyz_rgba[i]);
   }
-  for (int i = 0; i < int (cloud_xyz_rgb.size ()); ++i)
+  for (int i = 0; i < static_cast<int>(cloud_xyz_rgb.size ()); ++i)
   {
     EXPECT_XYZ_EQ (cloud_all[cloud_xyz_rgba.size () + i], cloud_xyz_rgb[i]);
     EXPECT_RGBA_EQ (cloud_all[cloud_xyz_rgba.size () + i], cloud_xyz_rgb[i]);

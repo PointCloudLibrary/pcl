@@ -616,9 +616,9 @@ RangeImageBorderExtractor::blurSurfaceChanges ()
 
   auto* blurred_directions = new Eigen::Vector3f[range_image.width*range_image.height];
   float* blurred_scores = new float[range_image.width*range_image.height];
-  for (int y=0; y<int(range_image.height); ++y)
+  for (int y=0; y<static_cast<int>(range_image.height); ++y)
   {
-    for (int x=0; x<int(range_image.width); ++x)
+    for (int x=0; x<static_cast<int>(range_image.width); ++x)
     {
       int index = y*range_image.width + x;
       Eigen::Vector3f& new_point = blurred_directions[index];
