@@ -253,8 +253,7 @@ pcl::SVMTrain::trainClassifier()
     doCrossValidation();
   }
   else {
-    SVMModel* out;
-    out = static_cast<SVMModel*>(svm_train(&prob_, &param_));
+    auto* out = reinterpret_cast<SVMModel*>(svm_train(&prob_, &param_));
     if (out == nullptr) {
       PCL_ERROR("[pcl::%s::trainClassifier] Error taining the classifier model.\n",
                 getClassName().c_str());
@@ -499,8 +498,7 @@ pcl::SVM::saveProblemNorm(const char* filename,
 bool
 pcl::SVMClassify::loadClassifierModel(const char* filename)
 {
-  SVMModel* out;
-  out = static_cast<SVMModel*>(svm_load_model(filename));
+  auto* out = reinterpret_cast<SVMModel*>(svm_load_model(filename));
   if (out == nullptr) {
     PCL_ERROR("[pcl::%s::loadClassifierModel] Can't open classifier model %s.\n",
               getClassName().c_str(),

@@ -2960,10 +2960,10 @@ pcl::visualization::PCLVisualizer::updateColorHandlerIndex (const std::string &i
   double minmax[2];
   scalars->GetRange (minmax);
   // Update the data
-  auto *data = static_cast<vtkPolyData*>(am_it->second.actor->GetMapper ()->GetInput ());
+  auto *data = dynamic_cast<vtkPolyData*>(am_it->second.actor->GetMapper ()->GetInput ());
   data->GetPointData ()->SetScalars (scalars);
   // Modify the mapper
-  auto* mapper = static_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ());
+  auto* mapper = dynamic_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ());
   mapper->SetScalarRange (minmax);
   mapper->SetScalarModeToUsePointData ();
   mapper->SetInputData (data);
@@ -3120,7 +3120,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   std::vector<pcl::Vertices> verts (poly_mesh.polygons); // copy vector
 
   // Get the current poly data
-  vtkSmartPointer<vtkPolyData> polydata = static_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->GetInput ();
+  vtkSmartPointer<vtkPolyData> polydata = dynamic_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->GetInput ();
   if (!polydata)
     return (false);
   vtkSmartPointer<vtkCellArray> cells = polydata->GetStrips ();
@@ -3132,7 +3132,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   points->SetNumberOfPoints (nr_points);
 
   // Get a pointer to the beginning of the data array
-  float *data = static_cast<vtkFloatArray*> (points->GetData ())->GetPointer (0);
+  float *data = dynamic_cast<vtkFloatArray*> (points->GetData ())->GetPointer (0);
 
   int ptr = 0;
   std::vector<int> lookup;

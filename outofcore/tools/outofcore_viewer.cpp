@@ -159,7 +159,7 @@ public:
     std::cout << "Key Pressed: " << key << std::endl;
 
     Scene *scene = Scene::instance ();
-    OutofcoreCloud *cloud = static_cast<OutofcoreCloud*> (scene->getObjectByName ("my_octree"));
+    OutofcoreCloud *cloud = dynamic_cast<OutofcoreCloud*> (scene->getObjectByName ("my_octree"));
 
     if (key == "Up" || key == "Down")
     {
