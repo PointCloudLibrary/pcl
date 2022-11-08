@@ -167,7 +167,7 @@ int main (int argc, char** argv)
   PointCloudT::Ptr clicked_points_3d (new PointCloudT);
   cb_args.clicked_points_3d = clicked_points_3d;
   cb_args.viewerPtr = pcl::visualization::PCLVisualizer::Ptr(&viewer);
-  viewer.registerPointPickingCallback (pp_callback, (void*)&cb_args);
+  viewer.registerPointPickingCallback (pp_callback, reinterpret_cast<void*>(&cb_args));
   std::cout << "Shift+click on three floor points, then press 'Q'..." << std::endl;
 
   // Spin until 'Q' is pressed:

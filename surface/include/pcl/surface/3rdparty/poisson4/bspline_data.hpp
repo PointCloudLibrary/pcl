@@ -126,13 +126,13 @@ namespace pcl
       baseBSplines = new BSplineComponents[functionCount];
 
       baseFunction = PPolynomial< Degree >::BSpline();
-      for( int i=0 ; i<=Degree ; i++ ) baseBSpline[i] = Polynomial< Degree >::BSplineComponent( i ).shift( double(-(Degree+1)/2) + i - 0.5 );
+      for( int i=0 ; i<=Degree ; i++ ) baseBSpline[i] = Polynomial< Degree >::BSplineComponent( i ).shift( static_cast<double>(-(Degree+1)/2) + i - 0.5 );
       dBaseFunction = baseFunction.derivative();
       StartingPolynomial< Degree > sPolys[Degree+3];
 
       for( int i=0 ; i<Degree+3 ; i++ )
       {
-        sPolys[i].start = double(-(Degree+1)/2) + i - 1.5;
+        sPolys[i].start = static_cast<double>(-(Degree+1)/2) + i - 1.5;
         sPolys[i].p *= 0;
         if(         i<=Degree   )  sPolys[i].p += baseBSpline[i  ].shift( -1 );
         if( i>=1 && i<=Degree+1 )  sPolys[i].p += baseBSpline[i-1];
@@ -141,7 +141,7 @@ namespace pcl
       leftBaseFunction.set( sPolys , Degree+3 );
       for( int i=0 ; i<Degree+3 ; i++ )
       {
-        sPolys[i].start = double(-(Degree+1)/2) + i - 0.5;
+        sPolys[i].start = static_cast<double>(-(Degree+1)/2) + i - 0.5;
         sPolys[i].p *= 0;
         if(         i<=Degree   )  sPolys[i].p += baseBSpline[i  ];
         if( i>=1 && i<=Degree+1 )  sPolys[i].p += baseBSpline[i-1].shift( 1 );
@@ -179,18 +179,15 @@ namespace pcl
       int fullSize = functionCount*functionCount;
       if( flags & VV_DOT_FLAG )
       {
-        vvDotTable = new Real[size];
-        memset( vvDotTable , 0 , sizeof(Real)*size );
+        vvDotTable = new Real[size]{};
       }
       if( flags & DV_DOT_FLAG )
       {
-        dvDotTable = new Real[fullSize];
-        memset( dvDotTable , 0 , sizeof(Real)*fullSize );
+        dvDotTable = new Real[fullSize]{};
       }
       if( flags & DD_DOT_FLAG )
       {
-        ddDotTable = new Real[size];
-        memset( ddDotTable , 0 , sizeof(Real)*size );
+        ddDotTable = new Real[size]{};
       }
       double vvIntegrals[Degree+1][Degree+1];
       double vdIntegrals[Degree+1][Degree  ];
@@ -309,12 +306,12 @@ namespace pcl
       //   (start)/(sampleCount-1) >_start && (start-1)/(sampleCount-1)<=_start
       // => start > _start * (sampleCount-1 ) && start <= _start*(sampleCount-1) + 1
       // => _start * (sampleCount-1) + 1 >= start > _start * (sampleCount-1)
-      start = int( floor( _start * (sampleCount-1) + 1 ) );
+      start = static_cast<int>( floor( _start * (sampleCount-1) + 1 ) );
       if( start<0 ) start = 0;
       //   (end)/(sampleCount-1)<_end && (end+1)/(sampleCount-1)>=_end
       // => end < _end * (sampleCount-1 ) && end >= _end*(sampleCount-1) - 1
       // => _end * (sampleCount-1) > end >= _end * (sampleCount-1) - 1
-      end = int( ceil( _end * (sampleCount-1) - 1 ) );
+      end = static_cast<int>( ceil( _end * (sampleCount-1) - 1 ) );
       if( end>=sampleCount ) end = sampleCount-1;
     }
     template<int Degree,class Real>

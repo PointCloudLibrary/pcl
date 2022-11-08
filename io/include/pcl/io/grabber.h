@@ -266,6 +266,7 @@ namespace pcl
       const auto [iterator, success] =
     #else
       typename decltype(signals_)::const_iterator iterator;
+      std::string signame{typeid (T).name ()};
       bool success;
       std::tie (iterator, success) =
     #endif
@@ -275,7 +276,7 @@ namespace pcl
     #else
       signals_.emplace (
     #endif
-                         std::string (typeid (T).name ()), DefferedPtr ());
+            signame, DefferedPtr ());
     if (!success)
     {
       return nullptr;

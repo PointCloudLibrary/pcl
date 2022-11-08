@@ -425,8 +425,8 @@ inline void generateSymPosMatrix2x2 (Matrix& matrix)
 
   unsigned test_case = rand_uint (rng) % 10;
 
-  Scalar val1 = Scalar (rand_double (rng));
-  Scalar val2 = Scalar (rand_double (rng));
+  Scalar val1 = static_cast<Scalar> (rand_double (rng));
+  Scalar val2 = static_cast<Scalar> (rand_double (rng));
 
   // 10% of test cases include equal eigenvalues
   if (test_case == 0)
@@ -446,8 +446,8 @@ inline void generateSymPosMatrix2x2 (Matrix& matrix)
   {
     do
     {
-      eigenvectors.col (0)[0] = Scalar (rand_double (rng));
-      eigenvectors.col (0)[1] = Scalar (rand_double (rng));
+      eigenvectors.col (0)[0] = static_cast<Scalar> (rand_double (rng));
+      eigenvectors.col (0)[1] = static_cast<Scalar> (rand_double (rng));
       sqrNorm = eigenvectors.col (0).squaredNorm ();
     } while (sqrNorm == 0);
     eigenvectors.col (0) /= sqrt (sqrNorm);
@@ -592,9 +592,9 @@ inline void generateSymPosMatrix3x3 (Matrix& matrix)
 
   unsigned test_case = rand_uint (rng);
 
-  Scalar val1 = Scalar (rand_double (rng));
-  Scalar val2 = Scalar (rand_double (rng));
-  Scalar val3 = Scalar (rand_double (rng));
+  Scalar val1 = static_cast<Scalar> (rand_double (rng));
+  Scalar val2 = static_cast<Scalar> (rand_double (rng));
+  Scalar val3 = static_cast<Scalar> (rand_double (rng));
 
   // 1%: all three values are equal and non-zero
   if (test_case == 0)
@@ -635,12 +635,12 @@ inline void generateSymPosMatrix3x3 (Matrix& matrix)
 
   do
   {
-    eigenvectors.col (0)[0] = Scalar (rand_double (rng));
-    eigenvectors.col (0)[1] = Scalar (rand_double (rng));
-    eigenvectors.col (0)[2] = Scalar (rand_double (rng));
-    eigenvectors.col (1)[0] = Scalar (rand_double (rng));
-    eigenvectors.col (1)[1] = Scalar (rand_double (rng));
-    eigenvectors.col (1)[2] = Scalar (rand_double (rng));
+    eigenvectors.col (0)[0] = static_cast<Scalar> (rand_double (rng));
+    eigenvectors.col (0)[1] = static_cast<Scalar> (rand_double (rng));
+    eigenvectors.col (0)[2] = static_cast<Scalar> (rand_double (rng));
+    eigenvectors.col (1)[0] = static_cast<Scalar> (rand_double (rng));
+    eigenvectors.col (1)[1] = static_cast<Scalar> (rand_double (rng));
+    eigenvectors.col (1)[2] = static_cast<Scalar> (rand_double (rng));
     eigenvectors.col (2) = eigenvectors.col (0).cross (eigenvectors.col (1));
 
     sqrNorm = eigenvectors.col (2).squaredNorm ();

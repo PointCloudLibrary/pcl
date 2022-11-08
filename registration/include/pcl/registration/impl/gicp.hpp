@@ -284,7 +284,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     Eigen::Vector3d Md(gicp_->mahalanobis((*gicp_->tmp_idx_src_)[i]) * d);
     // increment= d'*Md/num_matches = d'*M*d/num_matches (we postpone
     // 1/num_matches after the loop closes)
-    f += double(d.transpose() * Md);
+    f += static_cast<double>(d.transpose() * Md);
   }
   return f / m;
 }
@@ -360,7 +360,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     // Md = M*d
     Eigen::Vector3d Md(gicp_->mahalanobis((*gicp_->tmp_idx_src_)[i]) * d);
     // Increment total error
-    f += double(d.transpose() * Md);
+    f += static_cast<double>(d.transpose() * Md);
     // Increment translation gradient
     // g.head<3> ()+= 2*M*d/num_matches (we postpone 2/num_matches after the loop
     // closes)

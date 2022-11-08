@@ -3462,12 +3462,12 @@ namespace pcl
       {
         T2 bmin = static_cast<T2>(score_threshold);
         T2 bmax = static_cast<T2>(im_bmax); // 255;
-        int b_test = int ((bmax + bmin) / 2);
+        int b_test = static_cast<int> ((bmax + bmin) / 2);
 
         while (true)
         {
-          const T2 cb = *p + T2 (b_test);
-          const T2 c_b = *p - T2 (b_test);
+          const T2 cb = *p + static_cast<T2> (b_test);
+          const T2 c_b = *p - static_cast<T2> (b_test);
 
           if (AgastDetector7_12s_is_a_corner(p, cb, c_b,
             offset[0],
@@ -3483,16 +3483,16 @@ namespace pcl
             offset[10],
             offset[11]))
           {
-            bmin = T2 (b_test);
+            bmin = static_cast<T2> (b_test);
           }
           else
           {
-            bmax = T2 (b_test);
+            bmax = static_cast<T2> (b_test);
           }
 
           if (bmin == bmax - 1 || bmin == bmax)
-            return (int (bmin));
-          b_test = int ((bmin + bmax) / 2);
+            return (static_cast<int> (bmin));
+          b_test = static_cast<int> ((bmin + bmax) / 2);
         }
       }
     } // namespace agast
@@ -4446,12 +4446,12 @@ namespace pcl
       {
         T2 bmin = static_cast<T2>(score_threshold);
         T2 bmax = static_cast<T2>(im_bmax);
-        int b_test = int ((bmax + bmin) / 2);
+        int b_test = static_cast<int> ((bmax + bmin) / 2);
 
         while (true)
         {
-          const T2 cb = *p + T2 (b_test);
-          const T2 c_b = *p - T2 (b_test);
+          const T2 cb = *p + static_cast<T2> (b_test);
+          const T2 c_b = *p - static_cast<T2> (b_test);
 
           if (AgastDetector5_8_is_a_corner(p, cb, c_b,
             offset[0],
@@ -4463,16 +4463,16 @@ namespace pcl
             offset[6],
             offset[7]))
           {
-            bmin = T2 (b_test);
+            bmin = static_cast<T2> (b_test);
           }
           else
           {
-            bmax = T2 (b_test);
+            bmax = static_cast<T2> (b_test);
           }
 
           if (bmin == bmax - 1 || bmin == bmax)
-            return (int (bmin));
-          b_test = int ((bmin + bmax) / 2);
+            return (static_cast<int> (bmin));
+          b_test = static_cast<int> ((bmin + bmax) / 2);
         }
       }
     } // namespace agast
@@ -6644,7 +6644,7 @@ namespace pcl
       {
         T2 bmin = static_cast<T2>(score_threshold);
         T2 bmax = static_cast<T2>(im_bmax);
-        int b_test = int ((bmax + bmin) / 2);
+        int b_test = static_cast<int> ((bmax + bmin) / 2);
 
         std::int_fast16_t offset0  = offset[0];
         std::int_fast16_t offset1  = offset[1];
@@ -6665,8 +6665,8 @@ namespace pcl
 
         while (true)
         {
-          const T2 cb = *p + T2 (b_test);
-          const T2 c_b = *p - T2 (b_test);
+          const T2 cb = *p + static_cast<T2> (b_test);
+          const T2 c_b = *p - static_cast<T2> (b_test);
           if (p[offset0] > cb)
             if (p[offset2] > cb)
               if (p[offset4] > cb)
@@ -8698,18 +8698,18 @@ namespace pcl
               goto is_not_a_corner;
 
           is_a_corner:
-            bmin = T2 (b_test);
+            bmin = static_cast<T2> (b_test);
             goto end;
 
           is_not_a_corner:
-            bmax = T2 (b_test);
+            bmax = static_cast<T2> (b_test);
             goto end;
 
           end:
 
           if (bmin == bmax - 1 || bmin == bmax)
-            return (int (bmin));
-          b_test = int ((bmin + bmax) / 2);
+            return (static_cast<int> (bmin));
+          b_test = static_cast<int> ((bmin + bmax) / 2);
         }
       }
     } // namespace agast

@@ -243,9 +243,9 @@ pcl::people::PersonClassifier<PointT>::evaluate (float height_person,
     {
       for (std::uint32_t col = 0; col < sample->width; col++)
       {
-        sample_float[row + sample->height * col] = ((float) ((*sample)(col, row).r))/255; //ptr[col * 3 + 2];
-        sample_float[row + sample->height * col + delta] = ((float) ((*sample)(col, row).g))/255; //ptr[col * 3 + 1];
-        sample_float[row + sample->height * col + delta * 2] = (float) (((*sample)(col, row).b))/255; //ptr[col * 3];
+        sample_float[row + sample->height * col] = (static_cast<float> ((*sample)(col, row).r))/255; //ptr[col * 3 + 2];
+        sample_float[row + sample->height * col + delta] = (static_cast<float> ((*sample)(col, row).g))/255; //ptr[col * 3 + 1];
+        sample_float[row + sample->height * col + delta * 2] = static_cast<float> (((*sample)(col, row).b))/255; //ptr[col * 3];
       }
     }
 
