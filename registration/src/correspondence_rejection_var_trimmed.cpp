@@ -57,9 +57,12 @@ pcl::registration::CorrespondenceRejectorVarTrimmed::getRemainingCorrespondences
     }
   }
   factor_ = optimizeInlierRatio(dists);
-  nth_element(
-      dists.begin(), dists.begin() + static_cast<int>(static_cast<double>(dists.size()) * factor_), dists.end());
-  trimmed_distance_ = dists[static_cast<int>(static_cast<double>(dists.size()) * factor_)];
+  nth_element(dists.begin(),
+              dists.begin() +
+                  static_cast<int>(static_cast<double>(dists.size()) * factor_),
+              dists.end());
+  trimmed_distance_ =
+      dists[static_cast<int>(static_cast<double>(dists.size()) * factor_)];
 
   unsigned int number_valid_correspondences = 0;
   remaining_correspondences.resize(original_correspondences.size());
@@ -99,6 +102,7 @@ pcl::registration::CorrespondenceRejectorVarTrimmed::optimizeInlierRatio(
   int min_index(0);
   FRMS.minCoeff(&min_index);
 
-  const float opt_ratio = static_cast<float>(min_index + min_el) / static_cast<float>(points_nbr);
+  const float opt_ratio =
+      static_cast<float>(min_index + min_el) / static_cast<float>(points_nbr);
   return (opt_ratio);
 }

@@ -408,7 +408,8 @@ pcl::SVM::loadProblem(const char* filename, svm_problem& prob)
         return false;
       }
 
-      if (static_cast<int>(prob.x[i][0].value) <= 0 || static_cast<int>(prob.x[i][0].value) > max_index) {
+      if (static_cast<int>(prob.x[i][0].value) <= 0 ||
+          static_cast<int>(prob.x[i][0].value) > max_index) {
         PCL_ERROR("[pcl::%s] Wrong input format: sample_serial_number out of range.\n",
                   getClassName().c_str());
         return false;

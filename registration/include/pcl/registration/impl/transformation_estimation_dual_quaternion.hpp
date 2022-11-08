@@ -201,7 +201,8 @@ TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar>::
   ptrdiff_t i;
   es.eigenvalues().real().maxCoeff(&i);
   const Eigen::Matrix<double, 4, 1> qmat = es.eigenvectors().col(i).real();
-  const Eigen::Matrix<double, 4, 1> smat = -(0.5 / static_cast<double>(npts)) * C2 * qmat;
+  const Eigen::Matrix<double, 4, 1> smat =
+      -(0.5 / static_cast<double>(npts)) * C2 * qmat;
 
   const Eigen::Quaternion<double> q(qmat(3), qmat(0), qmat(1), qmat(2));
   const Eigen::Quaternion<double> s(smat(3), smat(0), smat(1), smat(2));

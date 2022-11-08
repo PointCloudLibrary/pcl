@@ -312,9 +312,9 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   // heuristic determination of number of trials to have high probability of finding a
   // good solution
   if (max_iterations_ == 0) {
-    float first_est =
-        std::log(small_error_) /
-        std::log(1.0 - std::pow(static_cast<double>(approx_overlap_), static_cast<double>(min_iterations)));
+    float first_est = std::log(small_error_) /
+                      std::log(1.0 - std::pow(static_cast<double>(approx_overlap_),
+                                              static_cast<double>(min_iterations)));
     max_iterations_ =
         static_cast<int>(first_est / (diameter_fraction * approx_overlap_ * 2.f));
   }
