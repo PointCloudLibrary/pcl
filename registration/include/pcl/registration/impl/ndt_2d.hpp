@@ -194,7 +194,8 @@ public:
       for (std::size_t j = 0; j < 3; j++)
         r.hessian(i, j) =
             -exp_qt_cvi_q *
-            (static_cast<double>(-qt_cvi * jacobian.col(i)) * static_cast<double>(-qt_cvi * jacobian.col(j)) +
+            (static_cast<double>(-qt_cvi * jacobian.col(i)) *
+                 static_cast<double>(-qt_cvi * jacobian.col(j)) +
              (-qt_cvi * ((i == 2 && j == 2) ? d2q_didj : Eigen::Vector2d::Zero())) +
              (-jacobian.col(j).transpose() * covar_inv_ * jacobian.col(i)));
 

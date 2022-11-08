@@ -645,21 +645,24 @@ public:
   inline bool
   isValid(const HalfEdgeIndex& idx_he) const
   {
-    return (idx_he >= static_cast<HalfEdgeIndex>(0) && idx_he < static_cast<HalfEdgeIndex>(half_edges_.size()));
+    return (idx_he >= static_cast<HalfEdgeIndex>(0) &&
+            idx_he < static_cast<HalfEdgeIndex>(half_edges_.size()));
   }
 
   /** \brief Check if the given edge index is a valid index into the mesh. */
   inline bool
   isValid(const EdgeIndex& idx_edge) const
   {
-    return (idx_edge >= static_cast<EdgeIndex>(0) && idx_edge < static_cast<EdgeIndex>(half_edges_.size() / 2));
+    return (idx_edge >= static_cast<EdgeIndex>(0) &&
+            idx_edge < static_cast<EdgeIndex>(half_edges_.size() / 2));
   }
 
   /** \brief Check if the given face index is a valid index into the mesh.  */
   inline bool
   isValid(const FaceIndex& idx_face) const
   {
-    return (idx_face >= static_cast<FaceIndex>(0) && idx_face < static_cast<FaceIndex>(faces_.size()));
+    return (idx_face >= static_cast<FaceIndex>(0) &&
+            idx_face < static_cast<FaceIndex>(faces_.size()));
   }
 
   ////////////////////////////////////////////////////////////////////////
