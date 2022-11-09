@@ -1050,11 +1050,14 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       {
         FindPokedRenderer(Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
         if(CurrentRenderer)
+        {
           CurrentRenderer->ResetCamera ();
+          CurrentRenderer->Render ();
+        }
         else
+        {
           PCL_WARN ("no current renderer on the interactor style.\n");
-
-        CurrentRenderer->Render ();
+        }
         break;
       }
 
