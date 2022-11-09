@@ -628,8 +628,8 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const openni_wrapper::Image::Ptr 
   //float constant = 1.0f / device_->getImageFocalLength (depth_width_);
   float constant_x = 1.0f / device_->getDepthFocalLength (depth_width_);
   float constant_y = 1.0f / device_->getDepthFocalLength (depth_width_);
-  float centerX = ((float)cloud->width - 1.f) / 2.f;
-  float centerY = ((float)cloud->height - 1.f) / 2.f;
+  float centerX = (static_cast<float>(cloud->width) - 1.f) / 2.f;
+  float centerY = (static_cast<float>(cloud->height) - 1.f) / 2.f;
 
   if (std::isfinite (depth_focal_length_x_))
     constant_x =  1.0f / static_cast<float> (depth_focal_length_x_);

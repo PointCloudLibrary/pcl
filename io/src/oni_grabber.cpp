@@ -412,7 +412,7 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr ONIGrabber::convertToXYZRGBPointCloud (
     const openni_wrapper::DepthImage::Ptr &depth_image) const
 {
   static unsigned rgb_array_size = 0;
-  static boost::shared_array<unsigned char> rgb_array((unsigned char*)nullptr);
+  static boost::shared_array<unsigned char> rgb_array(nullptr);
   static unsigned char* rgb_buffer = nullptr;
 
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
@@ -496,7 +496,7 @@ pcl::PointCloud<pcl::PointXYZRGBA>::Ptr ONIGrabber::convertToXYZRGBAPointCloud (
     const openni_wrapper::DepthImage::Ptr &depth_image) const
 {
   static unsigned rgb_array_size = 0;
-  static boost::shared_array<unsigned char> rgb_array((unsigned char*)nullptr);
+  static boost::shared_array<unsigned char> rgb_array(nullptr);
   static unsigned char* rgb_buffer = nullptr;
 
   pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGBA>);

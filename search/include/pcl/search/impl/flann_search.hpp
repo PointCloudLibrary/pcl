@@ -70,7 +70,7 @@ template <typename PointT, typename FlannDistance>
 typename pcl::search::FlannSearch<PointT, FlannDistance>::IndexPtr
 pcl::search::FlannSearch<PointT, FlannDistance>::KdTreeMultiIndexCreator::createIndex (MatrixConstPtr data)
 {
-  return (static_cast<IndexPtr> (new flann::KDTreeIndex<FlannDistance> (*data, flann::KDTreeIndexParams (trees_))));
+  return (static_cast<IndexPtr> (new flann::KDTreeIndex<FlannDistance> (*data, static_cast<flann::KDTreeIndexParams> (trees_))));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

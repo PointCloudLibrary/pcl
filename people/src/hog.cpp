@@ -403,7 +403,7 @@ pcl::people::HOG::grad1 (float *I, float *Gx, float *Gy, int h, int w, int x) co
     r = 1;
     In -= h;
   }
-  if( h<4 || h%4>0 || (std::size_t(I)&15) || (std::size_t(Gx)&15) )
+  if( h<4 || h%4>0 || (reinterpret_cast<std::size_t>(I)&15) || (reinterpret_cast<std::size_t>(Gx)&15) )
   {
     for( y = 0; y < h; y++ )
       *Gx++ = (*In++ - *Ip++) * r;
