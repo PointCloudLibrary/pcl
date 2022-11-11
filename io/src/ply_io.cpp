@@ -115,16 +115,12 @@ pcl::PLYReader::appendScalarProperty (const std::string& name, const std::size_t
   cloud_->point_step += static_cast<std::uint32_t> (pcl::getFieldSize (pcl::traits::asEnum<Scalar>::value) * size);
 }
 
-void
+bool
 pcl::PLYReader::amendProperty (const std::string& old_name, const std::string& new_name, std::uint8_t new_datatype)
 {
-  const auto fieldIndex = pcl::getFieldIndex(*cloud_,old_name);
-  if (fieldIndex == -1)
-  {
-      PCL_ERROR("[pcl::PLYReader::amendProperty] old_name '%s' was not found in cloud_->fields!\n",
-          old_name.c_str());
-      assert (false);
-      return;
+  const auto fieldIndex = pcl::getFieldIndex(*cloud_, old_name);
+  if (fieldIndex == -1) {
+    return false;
   }
 
   auto& field = cloud_->fields[fieldIndex];
@@ -133,6 +129,8 @@ pcl::PLYReader::amendProperty (const std::string& old_name, const std::string& n
   
   if (new_datatype > 0 && new_datatype != field.datatype)
     field.datatype = new_datatype;
+
+  return true;
 }
 
 namespace pcl
@@ -214,13 +212,15 @@ namespace pcl
       }
       if (property_name == "alpha")
       {
-        if(pcl::getFieldIndex(*cloud_,"rgb") == -1)
+        if (!amendProperty("rgb", "rgba", pcl::PCLPointField::UINT32))
         {
-          PCL_ERROR("No RGB field to append aplha channel to.\n");
+          PCL_ERROR("[pcl::PLYReader::scalarPropertyDefinitionCallback] 'rgb' was not "
+                    "found in cloud_->fields!,"
+                    " can't amend property '%s' to get new type 'rgba' \n",
+                    property_name.c_str());
           return {};
         }
-
-        amendProperty ("rgb", "rgba", pcl::PCLPointField::UINT32);
+        
         return [this] (pcl::io::ply::uint8 alpha) { vertexAlphaCallback (alpha); };
       }
       if (property_name == "intensity")

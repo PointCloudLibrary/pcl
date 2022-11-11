@@ -39,7 +39,6 @@
  */
 
 #include <vector>
-#include <iterator>
 
 #include <pcl/common/io.h>
 #include <pcl/pcl_macros.h>
