@@ -7,8 +7,7 @@
  *  All rights reserved
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_ELLIPSE_3D_HPP_
-#define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_ELLIPSE_3D_HPP_
+#pragma once
 
 #include <limits>
 
@@ -120,7 +119,7 @@ pcl::SampleConsensusModelEllipse3D<PointT>::computeModelCoefficients (const Indi
       X(5) * X(5), X(5) * Y(5), Y(5) * Y(5), X(5), Y(5), 1.0;
 
   // Scatter matrix S
-  Eigen::MatrixXf S = D.transpose() * D;
+  const Eigen::MatrixXf S = D.transpose() * D;
 
   // Constraint matrix C
   Eigen::MatrixXf C = Eigen::MatrixXf::Zero(6, 6);
@@ -131,12 +130,12 @@ pcl::SampleConsensusModelEllipse3D<PointT>::computeModelCoefficients (const Indi
   // Solve the Generalized Eigensystem: S*a = lambda*C*a
   Eigen::GeneralizedEigenSolver<Eigen::MatrixXf> solver;
   solver.compute(S, C);
-  Eigen::VectorXf eigvals = solver.eigenvalues().real();
+  const Eigen::VectorXf eigvals = solver.eigenvalues().real();
 
   // Find the negative eigenvalue 'neigvec' (the largest, if many exist)
   int idx(-1);
   float absmin(0.0);
-  for (size_t i(0); i < (size_t) eigvals.size(); ++i) {
+  for (size_t i(0); i < static_cast<size_t>(eigvals.size()); ++i) {
     if (eigvals(i) < absmin && !std::isinf(eigvals(i))) {
       idx = i;
     }
@@ -146,18 +145,18 @@ pcl::SampleConsensusModelEllipse3D<PointT>::computeModelCoefficients (const Indi
     PCL_DEBUG("[pcl::SampleConsensusModelEllipse3D::computeModelCoefficients] Failed to find the negative eigenvalue in the GES.\n");
     return (false);
   }
-  Eigen::VectorXf neigvec = solver.eigenvectors().real().col(idx).normalized();
+  const Eigen::VectorXf neigvec = solver.eigenvectors().real().col(idx).normalized();
 
 
   // Convert the conic model parameters to parametric ones
 
   // Conic parameters
-  float con_A(neigvec(0));
-  float con_B(neigvec(1));
-  float con_C(neigvec(2));
-  float con_D(neigvec(3));
-  float con_E(neigvec(4));
-  float con_F(neigvec(5));
+  const float con_A(neigvec(0));
+  const float con_B(neigvec(1));
+  const float con_C(neigvec(2));
+  const float con_D(neigvec(3));
+  const float con_E(neigvec(4));
+  const float con_F(neigvec(5));
 
   // Build matrix M0
   Eigen::MatrixXf M0(3, 3);
@@ -306,13 +305,12 @@ pcl::SampleConsensusModelEllipse3D<PointT>::selectWithinDistance (
     const Eigen::VectorXf &model_coefficients, const double threshold,
     Indices &inliers)
 {
+  inliers.clear();
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
   {
-    inliers.clear();
     return;
   }
-  inliers.clear();
   inliers.reserve (indices_->size ());
 
   // c : Ellipse Center
@@ -860,6 +858,3 @@ float inline pcl::SampleConsensusModelEllipse3D<PointT>::golden_section_search(
 
 
 #define PCL_INSTANTIATE_SampleConsensusModelEllipse3D(T) template class PCL_EXPORTS pcl::SampleConsensusModelEllipse3D<T>;
-
-#endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_ELLIPSE3D_HPP_
-
