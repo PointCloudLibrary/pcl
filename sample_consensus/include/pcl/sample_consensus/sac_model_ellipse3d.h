@@ -213,41 +213,42 @@ namespace pcl
         int operator() (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const
         {
           // c : Ellipse Center
-          Eigen::Vector3f c(x[0], x[1], x[2]);
+          const Eigen::Vector3f c(x[0], x[1], x[2]);
           // n : Ellipse (Plane) Normal
-          Eigen::Vector3f n_axis(x[5], x[6], x[7]);
+          const Eigen::Vector3f n_axis(x[5], x[6], x[7]);
           // x : Ellipse (Plane) X-Axis
-          Eigen::Vector3f x_axis(x[8], x[9], x[10]);
+          const Eigen::Vector3f x_axis(x[8], x[9], x[10]);
           // y : Ellipse (Plane) Y-Axis
-          Eigen::Vector3f y_axis = n_axis.cross(x_axis).normalized();
+          const Eigen::Vector3f y_axis = n_axis.cross(x_axis).normalized();
           // a : Ellipse semi-major axis (X) length
-          float par_a(x[3]);
+          const float par_a(x[3]);
           // b : Ellipse semi-minor axis (Y) length
-          float par_b(x[4]);
+          const float par_b(x[4]);
 
-          // Create the rotation matrix
-          Eigen::Matrix3f Rot;
-          Rot << x_axis(0), y_axis(0), n_axis(0),
+          // Compute the rotation matrix and its transpose
+          const Eigen::Matrix3f Rot = (Eigen::Matrix3f(3,3)
+            << x_axis(0), y_axis(0), n_axis(0),
             x_axis(1), y_axis(1), n_axis(1),
-            x_axis(2), y_axis(2), n_axis(2);
+            x_axis(2), y_axis(2), n_axis(2))
+            .finished();
+          const Eigen::Matrix3f Rot_T = Rot.transpose();
 
           for (int i = 0; i < values (); ++i)
           {
             // what i have:
             // p : Sample Point
-            Eigen::Vector3f p = (*model_->input_)[indices_[i]].getVector3fMap().template cast<float>();
+            const Eigen::Vector3f p = (*model_->input_)[indices_[i]].getVector3fMap().template cast<float>();
 
             // Local coordinates of sample point p
-            Eigen::Vector3f p_ = Rot.transpose() * (p - c);
+            const Eigen::Vector3f p_ = Rot_T * (p - c);
 
             // k : Point on Ellipse
             // Calculate the shortest distance from the point to the ellipse which is
             // given by the norm of a vector that is normal to the ellipse tangent
             // calculated at the point it intersects the tangent.
-            Eigen::VectorXf params(5);
-            params << par_a, par_b, 0.0, 0.0, 0.0;
+            const Eigen::VectorXf params = (Eigen::VectorXf(5) << par_a, par_b, 0.0, 0.0, 0.0).finished();
             float th_opt;
-            Eigen::Vector2f distanceVector = dvec2ellipse(params, p_(0), p_(1), th_opt);
+            const Eigen::Vector2f distanceVector = dvec2ellipse(params, p_(0), p_(1), th_opt);
             fvec[i] = distanceVector.norm();
           }
           return (0);
