@@ -151,9 +151,6 @@ if(VTK_FOUND)
     PCL_ADD_EXECUTABLE(pcl_openni_organized_edge_detection COMPONENT ${SUBSYS_NAME} SOURCES src/openni_organized_edge_detection.cpp BUNDLE)
     target_link_libraries(pcl_openni_organized_edge_detection pcl_common pcl_io pcl_features pcl_visualization)
 
-    PCL_ADD_EXECUTABLE(pcl_openni_face_detector COMPONENT ${SUBSYS_NAME} SOURCES src/face_detection//openni_face_detection.cpp src/face_detection//openni_frame_source.cpp BUNDLE)
-    target_link_libraries(pcl_openni_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree)
-
     if(QT_FOUND AND HAVE_QVTK)
       # OpenNI Passthrough application demo
       PCL_ADD_EXECUTABLE(pcl_openni_passthrough
