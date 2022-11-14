@@ -262,11 +262,11 @@ namespace pcl
       operator std::unique_ptr<Base>() const { return std::make_unique<Signal>(); }
     };
     // TODO: remove later for C++17 features: structured bindings and try_emplace
+    std::string signame{typeid (T).name ()};
     #ifdef __cpp_structured_bindings
       const auto [iterator, success] =
     #else
       typename decltype(signals_)::const_iterator iterator;
-      std::string signame{typeid (T).name ()};
       bool success;
       std::tie (iterator, success) =
     #endif

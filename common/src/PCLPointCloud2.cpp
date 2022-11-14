@@ -58,17 +58,15 @@ pcl::PCLPointCloud2::concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPoi
   const auto size1 = cloud1.width * cloud1.height;
   const auto size2 = cloud2.width * cloud2.height;
   //if one input cloud has no points, but the other input does, just select the cloud with points
-  switch ((static_cast<bool>(size1) << 1) + static_cast<bool>(size2))
+  auto chooser = (static_cast<bool>(size1) << 1) + static_cast<bool>(size2);
+  if (chooser == 1) {
+    cloud1 = cloud2;
+  }
+
+  if ((chooser == 0) || (chooser == 2))
   {
-    case 1:
-      cloud1 = cloud2;
-      PCL_FALLTHROUGH
-    case 0:
-    case 2:
-      cloud1.header.stamp = std::max (cloud1.header.stamp, cloud2.header.stamp);
-      return (true);
-    default:
-      break;
+    cloud1.header.stamp = std::max(cloud1.header.stamp, cloud2.header.stamp);
+    return (true);
   }
 
   // Ideally this should be in PCLPointField class since this is global behavior

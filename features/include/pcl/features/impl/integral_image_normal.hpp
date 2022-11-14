@@ -845,7 +845,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
     // top and bottom borders
     // That sets the output density to false!
     output.is_dense = false;
-    unsigned border = static_cast<int>(normal_smoothing_size_);
+    unsigned border = static_cast<unsigned>(normal_smoothing_size_);
     PointOutT* vec1 = &output [0];
     PointOutT* vec2 = vec1 + input_->width * (input_->height - border);
 
@@ -1027,7 +1027,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
   if (border_policy_ == BORDER_POLICY_IGNORE)
   {
     output.is_dense = false;
-    unsigned border = static_cast<int>(normal_smoothing_size_);
+    unsigned border = static_cast<unsigned>(normal_smoothing_size_);
     unsigned bottom = input_->height > border ? input_->height - border : 0;
     unsigned right = input_->width > border ? input_->width - border : 0;
     if (use_depth_dependent_smoothing_)
