@@ -448,10 +448,13 @@ namespace pcl
 
       /** Amend property from cloud fields identified by \a old_name renaming
         * it \a new_name.
+        *  * Returns:
+        *  * false on error
+        *  * true success
         * param[in] old_name property old name
         * param[in] new_name property new name
         */
-      void
+      bool
       amendProperty (const std::string& old_name, const std::string& new_name, std::uint8_t datatype = 0);
 
       /** Callback function for the begin of vertex line */
