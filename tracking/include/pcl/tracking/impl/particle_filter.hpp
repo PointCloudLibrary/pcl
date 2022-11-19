@@ -386,7 +386,6 @@ ParticleFilterTracker<PointInT, StateT>::update()
     yaw_x = yaw_x + std::cos(p.yaw + M_PI) * p.weight;
     yaw_y = yaw_y + std::sin(p.yaw + M_PI) * p.weight;
   }
-  
   representative_state_.roll = std::atan2(roll_y, roll_x) - M_PI;
   representative_state_.pitch = std::atan2(pitch_y, pitch_x) - M_PI;
   representative_state_.yaw = std::atan2(yaw_y, yaw_x) - M_PI;
