@@ -52,7 +52,14 @@ RUN apt-get update \
  && if [ "$USE_LATEST_CMAKE" = true ] ; then \
       cmake_ubuntu_version=$(lsb_release -cs) ; \
       if ! wget -q --method=HEAD "https://apt.kitware.com/ubuntu/dists/$cmake_ubuntu_version/Release"; then \
-        cmake_ubuntu_version="focal" ; \
+        ubuntu_version=$(lsb_release -sr) ; \
+        if dpkg --compare-versions ${ubuntu_version} ge 22.04; then \
+          cmake_ubuntu_version="jammy" ; \
+        elif dpkg --compare-versions ${ubuntu_version} ge 20.04; then \
+          cmake_ubuntu_version="focal" ; \
+        else \
+          cmake_ubuntu_version="bionic" ; \
+        fi ; \
       fi ; \
       wget -qO - https://apt.kitware.com/kitware-archive.sh | bash -s -- --release $cmake_ubuntu_version ; \
       apt-get update ; \
