@@ -166,7 +166,7 @@ TEST (PCL, NormalEstimation)
   n.setSearchSurface (surfaceptr);
   EXPECT_EQ (n.getSearchSurface (), surfaceptr);
 
-  // Additional test for searchForNeigbhors
+  // Additional test for searchForNeighbors
   surfaceptr.reset (new PointCloud<PointXYZ>);
   *surfaceptr = *cloudptr;
   surfaceptr->points.resize (640 * 480);
@@ -267,7 +267,7 @@ TEST (PCL, TranslatedNormalEstimation)
   n.setSearchSurface (surfaceptr);
   EXPECT_EQ (n.getSearchSurface (), surfaceptr);
 
-  // Additional test for searchForNeigbhors
+  // Additional test for searchForNeighbors
   surfaceptr.reset (new PointCloud<PointXYZ>);
   *surfaceptr = *cloudptr;
   surfaceptr->points.resize (640 * 480);

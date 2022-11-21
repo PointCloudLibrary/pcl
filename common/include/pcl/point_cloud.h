@@ -204,7 +204,7 @@ namespace pcl
         , height (height_)
       {}
 
-      //TODO: check if copy/move contructors/assignment operators are needed
+      //TODO: check if copy/move constructors/assignment operators are needed
 
       /** \brief Add a point cloud to the current cloud.
         * \param[in] rhs the cloud to add to the current cloud

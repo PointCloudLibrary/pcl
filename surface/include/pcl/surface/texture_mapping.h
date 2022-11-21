@@ -406,7 +406,7 @@ namespace pcl
         * \param[in] p1 first point of the triangle.
         * \param[in] p2 second point of the triangle.
         * \param[in] p3 third point of the triangle.
-        * \param[in] pt the querry point.
+        * \param[in] pt the query point.
         */
       inline bool
       checkPointInsideTriangle (const pcl::PointXY &p1, const pcl::PointXY &p2, const pcl::PointXY &p3, const pcl::PointXY &pt);

@@ -95,7 +95,7 @@ public:
 
   /** \brief Creates the TSDF volume on the GPU
    * param[in] depth depth readings from the sensor
-   * param[in] intr camaera intrinsics
+   * param[in] intr camera intrinsics
    */
   void
   createFromDepth (const pcl::device::PtrStepSz<const unsigned short> &depth, const pcl::device::Intr &intr);

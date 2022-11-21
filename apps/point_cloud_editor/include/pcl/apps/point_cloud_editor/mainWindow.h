@@ -68,7 +68,7 @@ class MainWindow : public QMainWindow
     /// @brief Constructor
     /// @param argc The number of c-strings to be expected in argv
     /// @param argv An array of c-strings.  The zero entry is expected to be
-    /// the name of the appliation.  Any additional strings will be interpreted
+    /// the name of the application.  Any additional strings will be interpreted
     /// as filenames designating point clouds to be loaded.
     MainWindow (int argc, char **argv);
 

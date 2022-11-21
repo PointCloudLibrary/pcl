@@ -380,7 +380,7 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
         continue;
 
       // Trim the line
-      //TOOD: we can easily do this without boost
+      //TODO: we can easily do this without boost
       boost::trim (line);
       
       // Ignore comments

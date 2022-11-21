@@ -96,10 +96,10 @@ namespace pcl
         getColoredCloud (typename pcl::PointCloud<PointT>::Ptr cloud = 0);
 
         /** \brief This method finds the strongest peaks (points were density has most higher values).
-          * It is based on the non maxima supression principles.
+          * It is based on the non maxima suppression principles.
           * \param[out] out_peaks it will contain the strongest peaks
           * \param[in] in_class_id class of interest for which peaks are evaluated
-          * \param[in] in_non_maxima_radius non maxima supression radius. The shapes radius is recommended for this value.
+          * \param[in] in_non_maxima_radius non maxima suppression radius. The shapes radius is recommended for this value.
           * \param in_sigma
           */
         void
@@ -150,7 +150,7 @@ namespace pcl
     };
 
     /** \brief The assignment of this structure is to store the statistical/learned weights and other information
-      * of the trained Implict Shape Model algorithm.
+      * of the trained Implicit Shape Model algorithm.
       */
     struct PCL_EXPORTS ISMModel
     {

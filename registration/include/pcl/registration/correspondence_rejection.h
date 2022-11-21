@@ -396,7 +396,7 @@ private:
   /** \brief The input transformed point cloud dataset */
   PointCloudPtr input_transformed_;
 
-  /** \brief The target point cloud datase. */
+  /** \brief The target point cloud dataset. */
   PointCloudConstPtr target_;
 
   /** \brief Normals to the input point cloud */

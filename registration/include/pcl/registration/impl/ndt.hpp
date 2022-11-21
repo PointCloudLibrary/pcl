@@ -684,7 +684,7 @@ NormalDistributionsTransform<PointSource, PointTarget, Scalar>::computeStepLengt
   const int max_step_iterations = 10;
   int step_iterations = 0;
 
-  // Sufficient decreace constant, Equation 1.1 [More, Thuete 1994]
+  // Sufficient decrease constant, Equation 1.1 [More, Thuete 1994]
   const double mu = 1.e-4;
   // Curvature condition constant, Equation 1.2 [More, Thuete 1994]
   const double nu = 0.9;
@@ -718,7 +718,7 @@ NormalDistributionsTransform<PointSource, PointTarget, Scalar>::computeStepLengt
 
   // Updates score, gradient and hessian.  Hessian calculation is unnecessary but
   // testing showed that most step calculations use the initial step suggestion and
-  // recalculation the reusable portions of the hessian would intail more computation
+  // recalculation the reusable portions of the hessian would entail more computation
   // time.
   score = computeDerivatives(score_gradient, hessian, trans_cloud, x_t, true);
 
@@ -732,7 +732,7 @@ NormalDistributionsTransform<PointSource, PointTarget, Scalar>::computeStepLengt
   // Calculate psi'(alpha_t)
   double d_psi_t = auxilaryFunction_dPsiMT(d_phi_t, d_phi_0, mu);
 
-  // Iterate until max number of iterations, interval convergance or a value satisfies
+  // Iterate until max number of iterations, interval convergence or a value satisfies
   // the sufficient decrease, Equation 1.1, and curvature condition, Equation 1.2 [More,
   // Thuente 1994]
   while (!interval_converged && step_iterations < max_step_iterations &&

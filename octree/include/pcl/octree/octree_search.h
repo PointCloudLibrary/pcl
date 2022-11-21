@@ -403,7 +403,7 @@ protected:
    * \param[in] key octree key addressing a leaf node.
    * \param[in] tree_depth current depth/level in the octree
    * \param[in] squared_search_radius squared search radius distance
-   * \param[out] point_candidates priority queue of nearest neigbor point candidates
+   * \param[out] point_candidates priority queue of nearest neighbor point candidates
    * \return squared search radius based on current point candidate set found
    */
   double
