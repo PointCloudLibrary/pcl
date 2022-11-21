@@ -36,6 +36,7 @@ RUN apt-get update \
       libflann-dev \
       libglew-dev \
       libgtest-dev \
+      libopencv-dev \
       libopenni-dev \
       libopenni2-dev \
       libproj-dev \
