@@ -55,10 +55,10 @@ IntegralImageNormalEstimation<PointXYZ, Normal> ne;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST(PCL, IntegralImage1D)
 {
-  const unsigned width = 640;
-  const unsigned height = 480;
-  const unsigned max_window_size = 5;
-  const unsigned min_window_size = 1;
+  constexpr unsigned width = 640;
+  constexpr unsigned height = 480;
+  constexpr unsigned max_window_size = 5;
+  constexpr unsigned min_window_size = 1;
   IntegralImage2D<float,1> integral_image1(true); // calculate second order
   IntegralImage2D<float,1> integral_image2(false);// calculate just first order (other if branch)
 
@@ -268,10 +268,10 @@ TEST(PCL, IntegralImage1D)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST(PCL, IntegralImage3D)
 {
-  const unsigned width = 640;
-  const unsigned height = 480;
-  const unsigned max_window_size = 5;
-  const unsigned min_window_size = 1;
+  constexpr unsigned width = 640;
+  constexpr unsigned height = 480;
+  constexpr unsigned max_window_size = 5;
+  constexpr unsigned min_window_size = 1;
   IntegralImage2D<float, 3> integral_image3(true);
   unsigned element_stride = 4;
   unsigned row_stride = width * element_stride + 1;

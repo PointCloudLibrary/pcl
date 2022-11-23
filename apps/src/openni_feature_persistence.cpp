@@ -69,11 +69,11 @@ using namespace std::chrono_literals;
   } while (false)
 // clang-format on
 
-const float default_subsampling_leaf_size = 0.02f;
-const float default_normal_search_radius = 0.041f;
+constexpr float default_subsampling_leaf_size = 0.02f;
+constexpr float default_normal_search_radius = 0.041f;
 const double aux[] = {0.21, 0.32};
 const std::vector<double> default_scales_vector(aux, aux + 2);
-const float default_alpha = 1.2f;
+constexpr float default_alpha = 1.2f;
 
 template <typename PointType>
 class OpenNIFeaturePersistence {

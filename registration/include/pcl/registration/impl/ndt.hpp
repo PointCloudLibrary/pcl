@@ -681,13 +681,13 @@ NormalDistributionsTransform<PointSource, PointTarget, Scalar>::computeStepLengt
 
   // The Search Algorithm for T(mu) [More, Thuente 1994]
 
-  const int max_step_iterations = 10;
+  constexpr int max_step_iterations = 10;
   int step_iterations = 0;
 
   // Sufficient decrease constant, Equation 1.1 [More, Thuete 1994]
-  const double mu = 1.e-4;
+  constexpr double mu = 1.e-4;
   // Curvature condition constant, Equation 1.2 [More, Thuete 1994]
-  const double nu = 0.9;
+  constexpr double nu = 0.9;
 
   // Initial endpoints of Interval I,
   double a_l = 0, a_u = 0;

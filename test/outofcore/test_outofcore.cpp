@@ -67,7 +67,7 @@ using namespace pcl::outofcore;
 
 // For doing exhaustive checks this is set low remove those, and this can be
 // set much higher
-const static std::uint64_t numPts (10000);
+constexpr std::uint64_t numPts (10000);
 
 constexpr std::uint32_t rngseed = 0xAAFF33DD;
 
@@ -702,7 +702,7 @@ TEST_F (OutofcoreTest, PointCloud2_Constructors)
   const Eigen::Vector3d min (-100.1, -100.1, -100.1);
   const Eigen::Vector3d max (100.1, 100.1, 100.1);
   
-  const std::uint64_t depth = 2;
+  constexpr std::uint64_t depth = 2;
   
   //create a point cloud
   pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());
@@ -833,7 +833,7 @@ TEST_F (OutofcoreTest, PointCloud2_QueryBoundingBox)
   const Eigen::Vector3d min (-100.1, -100.1, -100.1);
   const Eigen::Vector3d max (100.1, 100.1, 100.1);
   
-  const std::uint64_t depth = 2;
+  constexpr std::uint64_t depth = 2;
 
   //create a point cloud
   pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());
@@ -885,7 +885,7 @@ TEST_F (OutofcoreTest, PointCloud2_Query)
   const Eigen::Vector3d min (-100.1, -100.1, -100.1);
   const Eigen::Vector3d max (100.1, 100.1, 100.1);
   
-  const std::uint64_t depth = 2;
+  constexpr std::uint64_t depth = 2;
   
   //create a point cloud
   pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());

@@ -290,8 +290,8 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   }
 
   // set predefined variables
-  const int min_iterations = 4;
-  const float diameter_fraction = 0.3f;
+  constexpr int min_iterations = 4;
+  constexpr float diameter_fraction = 0.3f;
 
   // get diameter of input cloud (distance between farthest points)
   Eigen::Vector4f pt_min, pt_max;

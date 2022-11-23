@@ -70,8 +70,8 @@ using pcl::console::print_info;
 
 using octree_disk = OutofcoreOctreeBase<>;
 
-const int OCTREE_DEPTH (0);
-const int OCTREE_RESOLUTION (1);
+constexpr int OCTREE_DEPTH (0);
+constexpr int OCTREE_RESOLUTION(1);
 
 PCLPointCloud2::Ptr
 getCloudFromFile (boost::filesystem::path pcd_path)

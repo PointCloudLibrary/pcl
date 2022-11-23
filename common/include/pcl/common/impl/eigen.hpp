@@ -89,7 +89,7 @@ computeRoots (const Matrix& m, Roots& roots)
     computeRoots2 (c2, c1, roots);
   else
   {
-    const Scalar s_inv3 = Scalar (1.0 / 3.0);
+    constexpr Scalar s_inv3 = Scalar(1.0 / 3.0);
     const Scalar s_sqrt3 = std::sqrt (Scalar (3.0));
     // Construct the parameters used in classifying the roots of the equation
     // and in solving the equation for the roots in closed form.

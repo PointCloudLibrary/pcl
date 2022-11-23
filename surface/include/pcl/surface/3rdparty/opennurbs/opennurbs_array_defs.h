@@ -842,7 +842,7 @@ int ON_ClassArray<T>::NewCapacity() const
   // Reserve() size and then wasting gigabytes of memory.
 
   // cap_size = 128 MB on 32-bit os, 256 MB on 64 bit os
-  const std::size_t cap_size = 32*sizeof(void*)*1024*1024;
+  constexpr std::size_t cap_size = 32*sizeof(void*)*1024*1024;
   if (m_count*sizeof(T) <= cap_size || m_count < 8)
     return ((m_count <= 2) ? 4 : 2*m_count);
 

@@ -245,8 +245,8 @@ TEST (PCL, LineIterator8NeighborsGeneral)
   unsigned center_y = 50;
   unsigned length = 45;
   
-  const unsigned angular_resolution = 180;
-  float d_alpha = float(M_PI / angular_resolution);
+  constexpr unsigned angular_resolution = 180;
+  constexpr float d_alpha = float(M_PI / angular_resolution);
   for (unsigned idx = 0; idx < angular_resolution; ++idx)
   {
     auto x_end = unsigned (length * std::cos (float(idx) * d_alpha) + center_x + 0.5);
@@ -269,8 +269,8 @@ TEST (PCL, LineIterator4NeighborsGeneral)
   unsigned center_y = 50;
   unsigned length = 45;
   
-  const unsigned angular_resolution = 360;
-  float d_alpha = float(2.0 * M_PI / angular_resolution);
+  constexpr unsigned angular_resolution = 360;
+  constexpr float d_alpha = float(2.0 * M_PI / angular_resolution);
   for (unsigned idx = 0; idx < angular_resolution; ++idx)
   {
     auto x_end = unsigned (length * std::cos (float(idx) * d_alpha) + center_x + 0.5);

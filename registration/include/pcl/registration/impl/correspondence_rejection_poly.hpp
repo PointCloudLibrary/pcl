@@ -178,7 +178,7 @@ CorrespondenceRejectorPoly<SourceT, TargetT>::findThresholdOtsu(
     const std::vector<int>& histogram)
 {
   // Precision
-  const double eps = std::numeric_limits<double>::epsilon();
+  constexpr double eps = std::numeric_limits<double>::epsilon();
 
   // Histogram dimension
   const int nbins = static_cast<int>(histogram.size());

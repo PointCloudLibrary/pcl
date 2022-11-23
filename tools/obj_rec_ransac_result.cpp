@@ -106,7 +106,7 @@ main (int argc, char** argv)
 {
   printf ("\nUsage: ./pcl_obj_rec_ransac_scene_opps <pair_width> <voxel_size> <max_coplanarity_angle>\n\n");
 
-  const int num_params = 3;
+  constexpr int num_params = 3;
   float parameters[num_params] = {40.0f/*pair width*/, 5.0f/*voxel size*/, 15.0f/*max co-planarity angle*/};
   std::string parameter_names[num_params] = {"pair_width", "voxel_size", "max_coplanarity_angle"};
 

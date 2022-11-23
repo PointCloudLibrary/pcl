@@ -58,7 +58,7 @@ createTestDataSuite(
     std::function<pcl::PointXYZ()> outside_point_generator)
 {
   std::vector<TestData> test_data_suite;
-  size_t const chunk_size = 1000;
+  constexpr size_t chunk_size = 1000;
   pcl::PointCloud<pcl::PointXYZ>::Ptr inside_cloud(new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PointCloud<pcl::PointXYZ>::Ptr outside_cloud(new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PointCloud<pcl::PointXYZ>::Ptr mixed_cloud(new pcl::PointCloud<pcl::PointXYZ>);

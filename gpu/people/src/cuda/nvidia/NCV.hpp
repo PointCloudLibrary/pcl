@@ -212,8 +212,8 @@ NCV_CT_ASSERT(sizeof(NcvPoint2D32u) == 2 * sizeof(Ncv32u));
 //
 //==============================================================================
 
-const Ncv32u K_WARP_SIZE = 32;
-const Ncv32u K_LOG2_WARP_SIZE = 5;
+constexpr Ncv32u K_WARP_SIZE = 32;
+constexpr Ncv32u K_LOG2_WARP_SIZE = 5;
 
 //==============================================================================
 //

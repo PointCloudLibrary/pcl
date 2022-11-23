@@ -51,7 +51,7 @@ TEST (PCL, parse_double)
   const char* argv_1[] = { &arg0[0], &arg1[0], &arg2_1[0], nullptr};
   const char* argv_2[] = { &arg0[0], &arg1[0], &arg2_2[0], nullptr};
   const char* argv_3[] = { &arg0[0], &arg1[0], &arg2_3[0], nullptr};
-  const int argc = static_cast<int> (sizeof (argv_1)/sizeof (argv_1[0])) - 1;
+  constexpr int argc = static_cast<int> (sizeof (argv_1)/sizeof (argv_1[0])) - 1;
 
   int index = -1;
   double value = 0;
@@ -79,7 +79,7 @@ TEST (PCL, parse_float)
   const char* argv_1[] = { &arg0[0], &arg1[0], &arg2_1[0], nullptr};
   const char* argv_2[] = { &arg0[0], &arg1[0], &arg2_2[0], nullptr};
   const char* argv_3[] = { &arg0[0], &arg1[0], &arg2_3[0], nullptr};
-  const int argc = static_cast<int> (sizeof (argv_1)/sizeof (argv_1[0])) - 1;
+  constexpr int argc = static_cast<int>(sizeof(argv_1) / sizeof(argv_1[0])) - 1;
 
   int index = -1;
   float value = 0;
@@ -107,7 +107,7 @@ TEST (PCL, parse_longint)
   const char* argv_1[] = { &arg0[0], &arg1[0], &arg2_1[0], nullptr};
   const char* argv_2[] = { &arg0[0], &arg1[0], &arg2_2[0], nullptr};
   const char* argv_3[] = { &arg0[0], &arg1[0], &arg2_3[0], nullptr};
-  const int argc = static_cast<int> (sizeof (argv_1)/sizeof (argv_1[0])) - 1;
+  constexpr int argc = static_cast<int>(sizeof(argv_1) / sizeof(argv_1[0])) - 1;
 
   int index = -1;
   long int value = 0;
@@ -135,7 +135,7 @@ TEST (PCL, parse_unsignedint)
   const char* argv_1[] = { &arg0[0], &arg1[0], &arg2_1[0], nullptr};
   const char* argv_2[] = { &arg0[0], &arg1[0], &arg2_2[0], nullptr};
   const char* argv_3[] = { &arg0[0], &arg1[0], &arg2_3[0], nullptr};
-  const int argc = static_cast<int> (sizeof (argv_1)/sizeof (argv_1[0])) - 1;
+  constexpr int argc = static_cast<int>(sizeof(argv_1) / sizeof(argv_1[0])) - 1;
 
   int index = -1;
   unsigned int value = 53;
@@ -163,7 +163,7 @@ TEST (PCL, parse_int)
   const char* argv_1[] = { &arg0[0], &arg1[0], &arg2_1[0], nullptr};
   const char* argv_2[] = { &arg0[0], &arg1[0], &arg2_2[0], nullptr};
   const char* argv_3[] = { &arg0[0], &arg1[0], &arg2_3[0], nullptr};
-  const int argc = static_cast<int> (sizeof (argv_1)/sizeof (argv_1[0])) - 1;
+  constexpr int argc = static_cast<int>(sizeof(argv_1) / sizeof(argv_1[0])) - 1;
 
   int index = -1;
   int value = 0;

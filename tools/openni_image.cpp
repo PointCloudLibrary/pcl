@@ -82,7 +82,7 @@ getTotalSystemMemory ()
 const int BUFFER_SIZE = int (getTotalSystemMemory () / (640 * 480) / 2);
 #else
 
-const int BUFFER_SIZE = 200;
+constexpr int BUFFER_SIZE = 200;
 #endif
 
 int buff_size = BUFFER_SIZE;

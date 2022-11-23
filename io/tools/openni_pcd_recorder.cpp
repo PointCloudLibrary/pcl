@@ -94,7 +94,7 @@ getTotalSystemMemory ()
 const std::size_t BUFFER_SIZE = std::size_t (getTotalSystemMemory () / (640 * 480 * sizeof (pcl::PointXYZRGBA)));
 #else
 
-const std::size_t BUFFER_SIZE = 200;
+constexpr std::size_t BUFFER_SIZE = 200;
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
