@@ -30,13 +30,13 @@ main (int , char **)
 
   //p.addPolygon (cloud, "polygon");
   p.addPolygon<PointXYZ> (cloud, 1.0, 0.0, 0.0, "polygon", leftPort);
-  p.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "polygon", leftPort);
+  p.setShapeRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_LINE_WIDTH, 10, "polygon", leftPort);
   
   p.addLine<PointXYZ, PointXYZ> ((*cloud)[0], (*cloud)[1], 0.0, 1.0, 0.0, "line", leftPort);
-  p.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 50, "line", leftPort);
+  p.setShapeRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_LINE_WIDTH, 50, "line", leftPort);
 
   p.addSphere<PointXYZ> ((*cloud)[0], 1, 0.0, 1.0, 0.0, "sphere", leftPort);
-  p.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5, "sphere", leftPort);
+  p.setShapeRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_LINE_WIDTH, 5, "sphere", leftPort);
 //  p.removePolygon ("poly");
 
   p.addText ("text", 200, 200, 1.0, 0, 0, "text", leftPort);

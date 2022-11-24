@@ -408,7 +408,7 @@ main (int argc, char* argv[])
   // pcl::visualization::PointCloudColorHandlerRGBField<PointT> color_handler (cloud);
   // pcl::visualization::PointCloudColorHandlerCustom<PointT> color_handler (cloud, 0.5, 0.5, 0.5);
   visualizer.addPointCloud<PointT> (cloud); //, color_handler, "cloud");
-  visualizer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1);
+  visualizer.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 1);
   visualizer.addCoordinateSystem (1);
   visualizer.initCameraParameters();
   visualizer.registerKeyboardCallback (keyboard_callback);

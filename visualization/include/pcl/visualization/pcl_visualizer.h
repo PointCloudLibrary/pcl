@@ -1147,35 +1147,32 @@ namespace pcl
           * \param[in] val2 the second value to be set
           * \param[in] val3 the third value to be set
           * \param[in] id the point cloud object id (default: cloud)
-          * \param[in] viewport the view port where the Point Cloud's rendering properties should be modified (default: all)
           * \note The list of properties can be found in \ref pcl::visualization::LookUpTableRepresentationProperties.
           */
         bool
-        setPointCloudRenderingProperties (int property, double val1, double val2, double val3,
-                                          const std::string &id = "cloud", int viewport = 0);
+        setPointCloudRenderingProperties (RenderingProperties property, double val1, double val2, double val3,
+                                          const std::string &id = "cloud");
 
         /** \brief Set the rendering properties of a PointCloud (2x values - e.g., LUT minmax values)
           * \param[in] property the property type
           * \param[in] val1 the first value to be set
           * \param[in] val2 the second value to be set
           * \param[in] id the point cloud object id (default: cloud)
-          * \param[in] viewport the view port where the Point Cloud's rendering properties should be modified (default: all)
           * \note The list of properties can be found in \ref pcl::visualization::LookUpTableRepresentationProperties.
           */
         bool
-        setPointCloudRenderingProperties (int property, double val1, double val2,
-                                          const std::string &id = "cloud", int viewport = 0);
+        setPointCloudRenderingProperties (RenderingProperties property, double val1, double val2,
+                                          const std::string &id = "cloud");
 
        /** \brief Set the rendering properties of a PointCloud
          * \param[in] property the property type
          * \param[in] value the value to be set
          * \param[in] id the point cloud object id (default: cloud)
-         * \param[in] viewport the view port where the Point Cloud's rendering properties should be modified (default: all)
          * \note The list of properties can be found in \ref pcl::visualization::LookUpTableRepresentationProperties.
          */
         bool
-        setPointCloudRenderingProperties (int property, double value,
-                                          const std::string &id = "cloud", int viewport = 0);
+        setPointCloudRenderingProperties (RenderingProperties property, double value,
+                                          const std::string &id = "cloud");
 
        /** \brief Get the rendering properties of a PointCloud
          * \param[in] property the property type
@@ -1184,7 +1181,7 @@ namespace pcl
          * \note The list of properties can be found in \ref pcl::visualization::LookUpTableRepresentationProperties.
          */
         bool
-        getPointCloudRenderingProperties (int property, double &value,
+        getPointCloudRenderingProperties (RenderingProperties property, double &value,
                                           const std::string &id = "cloud");
 
        /** \brief Get the rendering properties of a PointCloud
@@ -1216,7 +1213,7 @@ namespace pcl
          * \note The list of properties can be found in \ref pcl::visualization::LookUpTableRepresentationProperties.
          */
         bool
-        setShapeRenderingProperties (int property, double value,
+        setShapeRenderingProperties (RenderingProperties property, double value,
                                      const std::string &id, int viewport = 0);
 
         /** \brief Set the rendering properties of a shape (2x values - e.g., LUT minmax values)
@@ -1228,7 +1225,7 @@ namespace pcl
           * \note When using \ref addPolygonMesh you you should use \ref setPointCloudRenderingProperties
           */
          bool
-         setShapeRenderingProperties (int property, double val1, double val2,
+         setShapeRenderingProperties (RenderingProperties property, double val1, double val2,
                                       const std::string &id, int viewport = 0);
 
          /** \brief Set the rendering properties of a shape (3x values - e.g., RGB)
@@ -1241,7 +1238,7 @@ namespace pcl
           * \note When using \ref addPolygonMesh you you should use \ref setPointCloudRenderingProperties
           */
          bool
-         setShapeRenderingProperties (int property, double val1, double val2, double val3,
+         setShapeRenderingProperties (RenderingProperties property, double val1, double val2, double val3,
                                       const std::string &id, int viewport = 0);
 
         /** \brief Returns true when the user tried to close the window */

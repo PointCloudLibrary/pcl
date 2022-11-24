@@ -256,13 +256,13 @@ main (int argc, char** argv)
       std::stringstream line_name;
       line_name << "line_" << i;
       p.addLine (min_p, max_p, 1, 0, 0, line_name.str (), viewport);
-      p.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5, line_name.str (), viewport);
+      p.setShapeRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_LINE_WIDTH, 5, line_name.str (), viewport);
     }
     else
       p.addText (ss.str (), 20, 30, 0, 1, 0, ss.str (), viewport);
 
     // Increase the font size for the score*
-    p.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_FONT_SIZE, 18, ss.str (), viewport);
+    p.setShapeRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_FONT_SIZE, 18, ss.str (), viewport);
 
     // Add the cluster name
     p.addText (cloud_name, 20, 10, cloud_name, viewport);

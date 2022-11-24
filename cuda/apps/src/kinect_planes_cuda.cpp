@@ -96,9 +96,9 @@ class MultiRansac
         static bool first_time = true;
         if (!first_time)
         {
-          viz.getPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
-          viz.getPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
-          viz.getPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
+          viz.getPointCloudRenderingProperties(pcl::visualization::RenderingProperties::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
+          viz.getPointCloudRenderingProperties(pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
+          viz.getPointCloudRenderingProperties(pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
           //viz.removePointCloud ("normalcloud");
           viz.removePointCloud ("cloud");
         }
@@ -107,9 +107,9 @@ class MultiRansac
 
         //viz.addPointCloudNormals<pcl::PointXYZRGBNormal> (normal_cloud, 139, 0.1, "normalcloud");
         viz.addPointCloud<pcl::PointXYZRGBNormal> (normal_cloud, Color_handler, std::string("cloud"), 0);
-        viz.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
-        viz.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
-        viz.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
+        viz.setPointCloudRenderingProperties(pcl::visualization::RenderingProperties::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
+        viz.setPointCloudRenderingProperties(pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
+        viz.setPointCloudRenderingProperties(pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
         new_cloud = false;
       }
     }

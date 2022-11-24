@@ -228,9 +228,9 @@ void run (const char* file_name, float voxel_size)
     viz.addPointCloudNormals<PointXYZ,Normal> (points_out, normals_out, 1, 6.0f, "normals out");
 
   // Change the appearance
-  viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "cloud in");
-  viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, "cloud out");
-  viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, "cloud out");
+  viz.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 2, "cloud in");
+  viz.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 5, "cloud out");
+  viz.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, "cloud out");
 
   // Convert the octree to a VTK poly-data object
 //  show_octree(&octree, viz, true/*show full leaves only*/);

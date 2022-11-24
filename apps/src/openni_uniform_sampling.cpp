@@ -110,7 +110,9 @@ public:
     if (!viz.updatePointCloud<pcl::PointXYZ>(keypoints_, "keypoints")) {
       viz.addPointCloud<pcl::PointXYZ>(keypoints_, "keypoints");
       viz.setPointCloudRenderingProperties(
-          pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5.0, "keypoints");
+          pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE,
+          5.0,
+          "keypoints");
       viz.resetCameraViewpoint("keypoints");
     }
   }

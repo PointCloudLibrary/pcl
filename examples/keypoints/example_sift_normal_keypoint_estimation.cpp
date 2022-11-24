@@ -112,7 +112,7 @@ main(int, char** argv)
   viewer.setBackgroundColor( 0.0, 0.0, 0.0 );
   viewer.addPointCloud(cloud_xyz, cloud_color_handler, "cloud");
   viewer.addPointCloud(cloud_temp, keypoints_color_handler, "keypoints");
-  viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 7, "keypoints");
+  viewer.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 7, "keypoints");
   
   while(!viewer.wasStopped ())
   {

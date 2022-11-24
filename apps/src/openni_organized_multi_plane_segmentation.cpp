@@ -66,9 +66,9 @@ public:
         cloud, 0, 255, 0);
     viewer->addPointCloud<PointT>(cloud, single_color, "cloud");
     viewer->setPointCloudRenderingProperties(
-        pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "cloud");
+        pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 1, "cloud");
     viewer->setPointCloudRenderingProperties(
-        pcl::visualization::PCL_VISUALIZER_OPACITY, 0.15, "cloud");
+        pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY, 0.15, "cloud");
     viewer->addCoordinateSystem(1.0, "global");
     viewer->initCameraParameters();
     return viewer;
@@ -180,7 +180,9 @@ public:
               contour, red[i], grn[i], blu[i]);
           viewer->addPointCloud(contour, color, name);
           viewer->setPointCloudRenderingProperties(
-              pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 4, name);
+              pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE,
+              4,
+              name);
         }
         prev_models_size = regions.size();
         cloud_mutex.unlock();

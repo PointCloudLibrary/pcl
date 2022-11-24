@@ -48,7 +48,7 @@ displayPlanarRegions(
     if (!viewer->updatePointCloud(contour, color, name))
       viewer->addPointCloud(contour, color, name);
     viewer->setPointCloudRenderingProperties(
-        pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, name);
+        pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 5, name);
   }
 }
 
@@ -70,9 +70,9 @@ displayEuclideanClusters(const pcl::PointCloud<PointT>::CloudVectorType& cluster
     if (!viewer->updatePointCloud(cluster_cloud, color0, name))
       viewer->addPointCloud(cluster_cloud, color0, name);
     viewer->setPointCloudRenderingProperties(
-        pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, name);
+        pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 5, name);
     viewer->setPointCloudRenderingProperties(
-        pcl::visualization::PCL_VISUALIZER_OPACITY, 0.3, name);
+        pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY, 0.3, name);
   }
 }
 
@@ -449,7 +449,9 @@ OrganizedSegmentationDemo::timeoutSlot()
         vis_->addPointCloudNormals<PointT, pcl::Normal>(
             prev_cloud_.makeShared(), prev_normals_.makeShared(), 10, 0.05f, "normals");
         vis_->setPointCloudRenderingProperties(
-            pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, "normals");
+            pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY,
+            0.5,
+            "normals");
       }
       else {
         vis_->removePointCloud("normals");

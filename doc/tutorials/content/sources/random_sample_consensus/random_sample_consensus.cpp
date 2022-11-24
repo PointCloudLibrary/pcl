@@ -21,7 +21,7 @@ simpleVis (pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud)
   pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
   viewer->setBackgroundColor (0, 0, 0);
   viewer->addPointCloud<pcl::PointXYZ> (cloud, "sample cloud");
-  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");
+  viewer->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");
   //viewer->addCoordinateSystem (1.0, "global");
   viewer->initCameraParameters ();
   return (viewer);

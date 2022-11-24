@@ -128,7 +128,7 @@ main (int argc, char ** argv)
     {
       pcl::visualization::PointCloudColorHandlerCustom<PointT> red (keypoints, 255, 0, 0);
       vis.addPointCloud (keypoints, red, "keypoints");
-      vis.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "keypoints");
+      vis.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 3, "keypoints");
     }
     if (global_descriptor)
     {

@@ -61,7 +61,7 @@ public:
     viewer->setSize(640, 480);
     viewer->addPointCloud<PointT>(cloud, "cloud");
     viewer->setPointCloudRenderingProperties(
-        pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "cloud");
+        pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 1, "cloud");
     viewer->addCoordinateSystem(0.2f, "global");
     viewer->initCameraParameters();
     viewer->registerKeyboardCallback(&OpenNIOrganizedEdgeDetection::keyboard_callback,
@@ -71,43 +71,63 @@ public:
     const int point_size = 2;
     viewer->addPointCloud<PointT>(cloud, "nan boundary edges");
     viewer->setPointCloudRenderingProperties(
-        pcl::visualization::PCL_VISUALIZER_POINT_SIZE,
+        pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE,
         point_size,
         "nan boundary edges");
-    viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR,
-                                             0.0f,
-                                             0.0f,
-                                             1.0f,
-                                             "nan boundary edges");
+    viewer->setPointCloudRenderingProperties(
+        pcl::visualization::RenderingProperties::PCL_VISUALIZER_IMMEDIATE_RENDERING,
+        0.0f,
+        0.0f,
+        1.0f,
+        "nan boundary edges");
 
     viewer->addPointCloud<PointT>(cloud, "occluding edges");
     viewer->setPointCloudRenderingProperties(
-        pcl::visualization::PCL_VISUALIZER_POINT_SIZE, point_size, "occluding edges");
+        pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE,
+        point_size,
+        "occluding edges");
     viewer->setPointCloudRenderingProperties(
-        pcl::visualization::PCL_VISUALIZER_COLOR, 0.0f, 1.0f, 0.0f, "occluding edges");
+        pcl::visualization::RenderingProperties::PCL_VISUALIZER_COLOR,
+        0.0f,
+        1.0f,
+        0.0f,
+        "occluding edges");
 
     viewer->addPointCloud<PointT>(cloud, "occluded edges");
     viewer->setPointCloudRenderingProperties(
-        pcl::visualization::PCL_VISUALIZER_POINT_SIZE, point_size, "occluded edges");
+        pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE,
+        point_size,
+        "occluded edges");
     viewer->setPointCloudRenderingProperties(
-        pcl::visualization::PCL_VISUALIZER_COLOR, 1.0f, 0.0f, 0.0f, "occluded edges");
+        pcl::visualization::RenderingProperties::PCL_VISUALIZER_COLOR,
+        1.0f,
+        0.0f,
+        0.0f,
+        "occluded edges");
 
     viewer->addPointCloud<PointT>(cloud, "high curvature edges");
     viewer->setPointCloudRenderingProperties(
-        pcl::visualization::PCL_VISUALIZER_POINT_SIZE,
+        pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE,
         point_size,
         "high curvature edges");
-    viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR,
-                                             1.0f,
-                                             1.0f,
-                                             0.0f,
-                                             "high curvature edges");
+    viewer->setPointCloudRenderingProperties(
+        pcl::visualization::RenderingProperties::PCL_VISUALIZER_COLOR,
+        1.0f,
+        1.0f,
+        0.0f,
+        "high curvature edges");
 
     viewer->addPointCloud<PointT>(cloud, "rgb edges");
     viewer->setPointCloudRenderingProperties(
-        pcl::visualization::PCL_VISUALIZER_POINT_SIZE, point_size, "rgb edges");
+        pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE,
+        point_size,
+        "rgb edges");
     viewer->setPointCloudRenderingProperties(
-        pcl::visualization::PCL_VISUALIZER_COLOR, 0.0f, 1.0f, 1.0f, "rgb edges");
+        pcl::visualization::RenderingProperties::PCL_VISUALIZER_COLOR,
+        0.0f,
+        1.0f,
+        1.0f,
+        "rgb edges");
 
     return viewer;
   }
@@ -120,43 +140,53 @@ public:
       switch (event.getKeyCode()) {
       case '1':
         viewer->getPointCloudRenderingProperties(
-            pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, "nan boundary edges");
+            pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY,
+            opacity,
+            "nan boundary edges");
         viewer->setPointCloudRenderingProperties(
-            pcl::visualization::PCL_VISUALIZER_OPACITY,
+            pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY,
             1.0 - opacity,
             "nan boundary edges");
         break;
       case '2':
         viewer->getPointCloudRenderingProperties(
-            pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, "occluding edges");
+            pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY,
+            opacity,
+            "occluding edges");
         viewer->setPointCloudRenderingProperties(
-            pcl::visualization::PCL_VISUALIZER_OPACITY,
+            pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY,
             1.0 - opacity,
             "occluding edges");
         break;
       case '3':
         viewer->getPointCloudRenderingProperties(
-            pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, "occluded edges");
+            pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY,
+            opacity,
+            "occluded edges");
         viewer->setPointCloudRenderingProperties(
-            pcl::visualization::PCL_VISUALIZER_OPACITY,
+            pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY,
             1.0 - opacity,
             "occluded edges");
         break;
       case '4':
         viewer->getPointCloudRenderingProperties(
-            pcl::visualization::PCL_VISUALIZER_OPACITY,
+            pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY,
             opacity,
             "high curvature edges");
         viewer->setPointCloudRenderingProperties(
-            pcl::visualization::PCL_VISUALIZER_OPACITY,
+            pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY,
             1.0 - opacity,
             "high curvature edges");
         break;
       case '5':
         viewer->getPointCloudRenderingProperties(
-            pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, "rgb edges");
+            pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY,
+            opacity,
+            "rgb edges");
         viewer->setPointCloudRenderingProperties(
-            pcl::visualization::PCL_VISUALIZER_OPACITY, 1.0 - opacity, "rgb edges");
+            pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY,
+            1.0 - opacity,
+            "rgb edges");
         break;
       }
     }

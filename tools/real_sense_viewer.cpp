@@ -182,7 +182,7 @@ class RealSenseViewer
           if (!viewer_.updatePointCloud (new_cloud_, "cloud"))
           {
             viewer_.addPointCloud (new_cloud_, "cloud");
-            viewer_.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "cloud");
+            viewer_.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 2, "cloud");
           }
           displaySettings ();
           last_cloud_ = new_cloud_;
