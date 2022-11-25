@@ -129,7 +129,7 @@ public:
   void
   run()
   {
-    pcl::OpenNIGrabber interface{device_id_};
+    pcl::OpenNIGrabber interface(device_id_);
 
     std::function<void(const CloudConstPtr&)> f = [this](const CloudConstPtr& cloud) {
       cloud_cb(cloud);
@@ -193,15 +193,15 @@ main(int argc, char** argv)
     return 1;
   }
 
-  pcl::OpenNIGrabber grabber("");
+  pcl::OpenNIGrabber grabber(arg);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {
     PCL_INFO("PointXYZRGBA mode enabled.\n");
-    OpenNI3DConvexHull<pcl::PointXYZRGBA> v("");
+    OpenNI3DConvexHull<pcl::PointXYZRGBA> v(arg);
     v.run();
   }
   else {
     PCL_INFO("PointXYZ mode enabled.\n");
-    OpenNI3DConvexHull<pcl::PointXYZ> v("");
+    OpenNI3DConvexHull<pcl::PointXYZ> v(arg);
     v.run();
   }
   return 0;

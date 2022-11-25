@@ -175,7 +175,7 @@ public:
   void
   run()
   {
-    pcl::OpenNIGrabber interface{};
+    pcl::OpenNIGrabber interface;
 
     std::function<void(const pcl::PointCloud<PointT>::ConstPtr&)> f =
         [this](const pcl::PointCloud<PointT>::ConstPtr& cloud) { cloud_cb_(cloud); };
@@ -325,7 +325,7 @@ main(int argc, char** argv)
   //std::cout << "<5> EDGELABEL_RGB_CANNY edge" << std::endl;
   std::cout << "<Q,q> quit" << std::endl;
   // clang-format on
-  pcl::OpenNIGrabber grabber("");
+  pcl::OpenNIGrabber grabber(arg);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb>()) {
     OpenNIOrganizedEdgeDetection app;
     app.run();

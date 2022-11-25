@@ -44,7 +44,7 @@ public:
   getCamera (vtkCamera *camera);
 
   Camera*
-  getCamera (std::string name);
+  getCamera (const std::string& name);
 
   // Accessors - Objects
   // -----------------------------------------------------------------------------
@@ -52,7 +52,7 @@ public:
   addObject (Object *object);
 
   Object*
-  getObjectByName (std::string name);
+  getObjectByName (const std::string& name);
 
   std::vector<Object*>
   getObjects ();

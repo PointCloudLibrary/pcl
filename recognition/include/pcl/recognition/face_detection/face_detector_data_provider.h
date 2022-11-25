@@ -62,7 +62,7 @@ namespace pcl
           }
         }
 
-        inline bool readMatrixFromFile(std::string file, Eigen::Matrix4f & matrix)
+        inline bool readMatrixFromFile(const std::string& file, Eigen::Matrix4f & matrix)
         {
 
           std::ifstream in;
@@ -121,8 +121,6 @@ namespace pcl
           patches_per_image_ = 20;
           min_images_per_bin_ = -1;
         }
-
-        virtual ~FaceDetectorDataProvider() = default;
 
         void setPatchesPerImage(int n)
         {

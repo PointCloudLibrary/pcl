@@ -26,9 +26,8 @@ public:
   // Operators
   // -----------------------------------------------------------------------------
   Axes (std::string name, float size = 1.0) :
-      Object (name)
+      Object (name), axes_ (vtkSmartPointer<vtkAxes>::New ())
   {
-    axes_ = vtkSmartPointer<vtkAxes>::New ();
     axes_->SetOrigin (0, 0, 0);
     axes_->SetScaleFactor (size);
     axes_->Update ();

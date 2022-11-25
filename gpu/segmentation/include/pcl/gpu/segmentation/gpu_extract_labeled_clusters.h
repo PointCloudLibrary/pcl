@@ -82,6 +82,9 @@ public:
   /** \brief Empty constructor. */
   EuclideanLabeledClusterExtraction() = default;
 
+  /** \brief Default virtual destructor. */
+  virtual ~EuclideanLabeledClusterExtraction() = default;
+
   /** \brief Provide a pointer to the search object.
    * \param tree a pointer to the spatial search object.
    */

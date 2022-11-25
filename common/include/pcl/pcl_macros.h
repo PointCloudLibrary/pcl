@@ -108,7 +108,7 @@
 
 // Macro for emitting pragma warning for deprecated headers
 #if (defined (__GNUC__) || defined(__clang__))
-  #define _PCL_DEPRECATED_HEADER_IMPL(Message) PCL_PRAGMA (GCC warning Message)
+  #define _PCL_DEPRECATED_HEADER_IMPL(Message) PCL_PRAGMA (message Message)
 #elif _MSC_VER
   #define _PCL_DEPRECATED_HEADER_IMPL(Message) PCL_PRAGMA (warning (Message))
 #else

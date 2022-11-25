@@ -751,7 +751,8 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (pcl
 
   assert(descLength_ == 352);
 
-  shot_.setZero (descLength_);
+  Eigen::VectorXf shot;
+  shot.setZero (descLength_);
 
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
@@ -788,11 +789,11 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (pcl
     }
 
     // Estimate the SHOT descriptor at each patch
-    computePointSHOT (static_cast<int> (idx), nn_indices, nn_dists, shot_);
+    computePointSHOT (static_cast<int> (idx), nn_indices, nn_dists, shot);
 
     // Copy into the resultant cloud
     for (int d = 0; d < descLength_; ++d)
-      output[idx].descriptor[d] = shot_[d];
+      output[idx].descriptor[d] = shot[d];
     for (int d = 0; d < 3; ++d)
     {
       output[idx].rf[d + 0] = (*frames_)[idx].x_axis[d];
@@ -823,7 +824,8 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature
   radius1_4_ = search_radius_ / 4;
   radius1_2_ = search_radius_ / 2;
 
-  shot_.setZero (descLength_);
+  Eigen::VectorXf shot;
+  shot.setZero (descLength_);
 
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
@@ -860,11 +862,11 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature
     }
 
     // Compute the SHOT descriptor for the current 3D feature
-    computePointSHOT (static_cast<int> (idx), nn_indices, nn_dists, shot_);
+    computePointSHOT (static_cast<int> (idx), nn_indices, nn_dists, shot);
 
     // Copy into the resultant cloud
     for (int d = 0; d < descLength_; ++d)
-      output[idx].descriptor[d] = shot_[d];
+      output[idx].descriptor[d] = shot[d];
     for (int d = 0; d < 3; ++d)
     {
       output[idx].rf[d + 0] = (*frames_)[idx].x_axis[d];

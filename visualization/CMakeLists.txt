@@ -60,19 +60,6 @@ if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0 AND UNIX AND NOT ANDROID AND NOT APP
   list(APPEND srcs "src/vtk/vtkFixedXRenderWindowInteractor.cxx")
 endif()
 
-if(VTK_RENDERING_BACKEND_OPENGL_VERSION VERSION_LESS 2)
-  list(APPEND srcs
-    "src/vtk/vtkVertexBufferObject.cxx"
-    "src/vtk/vtkVertexBufferObjectMapper.cxx"
-  )
-
-  # Code in this module may use deprecated declarations when using OpenGLv1
-  # Add the GCC exclusive rules for -Werror only for OpenGLv1 compile to avoid build interruption
-  if(CMAKE_COMPILER_IS_GNUCXX)
-    add_compile_options("-Wno-error=deprecated-declarations")
-  endif()
-endif()
-
 if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
   if(NOT (";${VTK_AVAILABLE_COMPONENTS};" MATCHES ";RenderingContextOpenGL2;"))
     list(REMOVE_ITEM srcs
@@ -140,13 +127,6 @@ set(vtk_incs
 
 if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0 AND UNIX AND NOT ANDROID AND NOT APPLE AND NOT APPLE_IOS)
   list(APPEND vtk_incs "include/pcl/${SUBSYS_NAME}/vtk/vtkFixedXRenderWindowInteractor.h")
-endif()
-
-if(VTK_RENDERING_BACKEND_OPENGL_VERSION VERSION_LESS 2)
-  list(APPEND vtk_incs
-    "include/pcl/${SUBSYS_NAME}/vtk/vtkVertexBufferObject.h"
-    "include/pcl/${SUBSYS_NAME}/vtk/vtkVertexBufferObjectMapper.h"
-  )
 endif()
 
 if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)

@@ -32,6 +32,7 @@
     <li>\link pcl::SampleConsensusModelParallelPlane SACMODEL_PARALLEL_PLANE \endlink - a model for determining a plane <b>parallel</b> to a user-specified axis, within a maximum specified angular deviation. The plane coefficients are similar to \link pcl::SampleConsensusModelPlane SACMODEL_PLANE \endlink.</li>
     <li>\link pcl::SampleConsensusModelNormalParallelPlane SACMODEL_NORMAL_PARALLEL_PLANE \endlink defines a model for 3D plane segmentation using additional surface normal constraints. The plane normal must lie <b>parallel</b> to a user-specified axis. SACMODEL_NORMAL_PARALLEL_PLANE therefore is equivalent to SACMODEL_NORMAL_PLANE + SACMODEL_PERPENDICULAR_PLANE. The plane coefficients are similar to \link pcl::SampleConsensusModelPlane SACMODEL_PLANE \endlink.</li>
     <li>\link pcl::SampleConsensusModelStick SACMODEL_STICK \endlink - a model for 3D stick segmentation. A stick is a line with a user given minimum/maximum width.</li>
+    <li>\link pcl::SampleConsensusModelEllipse3D SACMODEL_ELLIPSE3D \endlink - used to determine 3D ellipses in a plane. The ellipses's <b>eleven</b> coefficients are given by its center and radius as: [<b>center.x, center.y, center.z, semi_axis.u, semi_axis.v, normal.x, normal.y, normal.z, u.x, u.y, u.z</b>]</li>
   </ul>
 
   The following list describes the robust sample consensus estimators implemented:

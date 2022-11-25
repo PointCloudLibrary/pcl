@@ -233,7 +233,7 @@ namespace pcl
           * \param[in] file the name of the camera parameter file
           */
         void
-        setCameraFile (const std::string file)
+        setCameraFile (const std::string& file)
         {
           camera_file_ = file;
         }

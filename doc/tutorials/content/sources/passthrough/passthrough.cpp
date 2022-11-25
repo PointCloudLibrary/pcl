@@ -31,7 +31,7 @@ int
   pass.setInputCloud (cloud);
   pass.setFilterFieldName ("z");
   pass.setFilterLimits (0.0, 1.0);
-  //pass.setFilterLimitsNegative (true);
+  //pass.setNegative (true);
   pass.filter (*cloud_filtered);
 
   std::cerr << "Cloud after filtering: " << std::endl;

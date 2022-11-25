@@ -259,7 +259,7 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
           int col_count;
           sstream >> col_count;
           if (col_count < 1)
-            throw "Invalid COUNT value specified.";
+            PCL_WARN("[pcl::PCDReader::readHeader] Invalid COUNT value specified (%i, should be larger than 0). This field will be removed.\n", col_count);
           cloud.fields[i].count = col_count;
           offset += col_count * field_sizes[i];
         }
@@ -335,6 +335,9 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
     PCL_ERROR ("[pcl::PCDReader::readHeader] %s\n", exception);
     return (-1);
   }
+  cloud.fields.erase(std::remove_if(cloud.fields.begin(), cloud.fields.end(),
+                                    [](const pcl::PCLPointField& field)->bool { return field.count < 1; }),
+                     cloud.fields.end());
 
   if (nr_points == 0)
   {
@@ -484,60 +487,30 @@ pcl::PCDReader::readBodyASCII (std::istream &fs, pcl::PCLPointCloud2 &cloud, int
         }
         for (uindex_t c = 0; c < cloud.fields[d].count; ++c)
         {
+#define COPY_STRING(CASE_LABEL)                                                        \
+  case CASE_LABEL: {                                                                   \
+    copyStringValue<pcl::traits::asType_t<CASE_LABEL>>(                                \
+        st.at(total + c), cloud, idx, d, c, is);                                       \
+    break;                                                                             \
+  }
           switch (cloud.fields[d].datatype)
           {
-            case pcl::PCLPointField::INT8:
-            {
-              copyStringValue<pcl::traits::asType<pcl::PCLPointField::INT8>::type> (
-                  st.at (total + c), cloud, idx, d, c, is);
-              break;
-            }
-            case pcl::PCLPointField::UINT8:
-            {
-              copyStringValue<pcl::traits::asType<pcl::PCLPointField::UINT8>::type> (
-                  st.at (total + c), cloud, idx, d, c, is);
-              break;
-            }
-            case pcl::PCLPointField::INT16:
-            {
-              copyStringValue<pcl::traits::asType<pcl::PCLPointField::INT16>::type> (
-                  st.at (total + c), cloud, idx, d, c, is);
-              break;
-            }
-            case pcl::PCLPointField::UINT16:
-            {
-              copyStringValue<pcl::traits::asType<pcl::PCLPointField::UINT16>::type> (
-                  st.at (total + c), cloud, idx, d, c, is);
-              break;
-            }
-            case pcl::PCLPointField::INT32:
-            {
-              copyStringValue<pcl::traits::asType<pcl::PCLPointField::INT32>::type> (
-                  st.at (total + c), cloud, idx, d, c, is);
-              break;
-            }
-            case pcl::PCLPointField::UINT32:
-            {
-              copyStringValue<pcl::traits::asType<pcl::PCLPointField::UINT32>::type> (
-                  st.at (total + c), cloud, idx, d, c, is);
-              break;
-            }
-            case pcl::PCLPointField::FLOAT32:
-            {
-              copyStringValue<pcl::traits::asType<pcl::PCLPointField::FLOAT32>::type> (
-                  st.at (total + c), cloud, idx, d, c, is);
-              break;
-            }
-            case pcl::PCLPointField::FLOAT64:
-            {
-              copyStringValue<pcl::traits::asType<pcl::PCLPointField::FLOAT64>::type> (
-                  st.at (total + c), cloud, idx, d, c, is);
-              break;
-            }
+            COPY_STRING(pcl::PCLPointField::BOOL)
+            COPY_STRING(pcl::PCLPointField::INT8)
+            COPY_STRING(pcl::PCLPointField::UINT8)
+            COPY_STRING(pcl::PCLPointField::INT16)
+            COPY_STRING(pcl::PCLPointField::UINT16)
+            COPY_STRING(pcl::PCLPointField::INT32)
+            COPY_STRING(pcl::PCLPointField::UINT32)
+            COPY_STRING(pcl::PCLPointField::INT64)
+            COPY_STRING(pcl::PCLPointField::UINT64)
+            COPY_STRING(pcl::PCLPointField::FLOAT32)
+            COPY_STRING(pcl::PCLPointField::FLOAT64)
             default:
               PCL_WARN ("[pcl::PCDReader::read] Incorrect field data type specified (%d)!\n",cloud.fields[d].datatype);
               break;
           }
+#undef COPY_STRING
         }
         total += cloud.fields[d].count; // jump over this many elements in the string token
       }
@@ -642,57 +615,27 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
     {
       for (uindex_t c = 0; c < cloud.fields[d].count; ++c)
       {
+#define SET_CLOUD_DENSE(CASE_LABEL)                                                    \
+  case CASE_LABEL: {                                                                   \
+    if (!isValueFinite<pcl::traits::asType_t<CASE_LABEL>>(cloud, i, point_size, d, c)) \
+      cloud.is_dense = false;                                                          \
+    break;                                                                             \
+  }
         switch (cloud.fields[d].datatype)
         {
-          case pcl::PCLPointField::INT8:
-          {
-            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::INT8>::type> (cloud, i, point_size, d, c))
-              cloud.is_dense = false;
-            break;
-          }
-          case pcl::PCLPointField::UINT8:
-          {
-            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::UINT8>::type> (cloud, i, point_size, d, c))
-              cloud.is_dense = false;
-            break;
-          }
-          case pcl::PCLPointField::INT16:
-          {
-            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::INT16>::type> (cloud, i, point_size, d, c))
-              cloud.is_dense = false;
-            break;
-          }
-          case pcl::PCLPointField::UINT16:
-          {
-            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::UINT16>::type> (cloud, i, point_size, d, c))
-              cloud.is_dense = false;
-            break;
-          }
-          case pcl::PCLPointField::INT32:
-          {
-            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::INT32>::type> (cloud, i, point_size, d, c))
-              cloud.is_dense = false;
-            break;
-          }
-          case pcl::PCLPointField::UINT32:
-          {
-            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::UINT32>::type> (cloud, i, point_size, d, c))
-              cloud.is_dense = false;
-            break;
-          }
-          case pcl::PCLPointField::FLOAT32:
-          {
-            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::FLOAT32>::type> (cloud, i, point_size, d, c))
-              cloud.is_dense = false;
-            break;
-          }
-          case pcl::PCLPointField::FLOAT64:
-          {
-            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::FLOAT64>::type> (cloud, i, point_size, d, c))
-              cloud.is_dense = false;
-            break;
-          }
+          SET_CLOUD_DENSE(pcl::PCLPointField::BOOL)
+          SET_CLOUD_DENSE(pcl::PCLPointField::INT8)
+          SET_CLOUD_DENSE(pcl::PCLPointField::UINT8)
+          SET_CLOUD_DENSE(pcl::PCLPointField::INT16)
+          SET_CLOUD_DENSE(pcl::PCLPointField::UINT16)
+          SET_CLOUD_DENSE(pcl::PCLPointField::INT32)
+          SET_CLOUD_DENSE(pcl::PCLPointField::UINT32)
+          SET_CLOUD_DENSE(pcl::PCLPointField::INT64)
+          SET_CLOUD_DENSE(pcl::PCLPointField::UINT64)
+          SET_CLOUD_DENSE(pcl::PCLPointField::FLOAT32)
+          SET_CLOUD_DENSE(pcl::PCLPointField::FLOAT64)
         }
+#undef SET_CLOUD_DENSE
       }
     }
   }
@@ -1174,69 +1117,55 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PCLPointClo
 
       for (int c = 0; c < count; ++c)
       {
-        switch (cloud.fields[d].datatype)
-        {
-          case pcl::PCLPointField::INT8:
-          {
-            copyValueString<pcl::traits::asType<pcl::PCLPointField::INT8>::type>(cloud, i, point_size, d, c, stream);
-            break;
-          }
-          case pcl::PCLPointField::UINT8:
-          {
-            copyValueString<pcl::traits::asType<pcl::PCLPointField::UINT8>::type>(cloud, i, point_size, d, c, stream);
-            break;
-          }
-          case pcl::PCLPointField::INT16:
-          {
-            copyValueString<pcl::traits::asType<pcl::PCLPointField::INT16>::type>(cloud, i, point_size, d, c, stream);
-            break;
-          }
-          case pcl::PCLPointField::UINT16:
-          {
-            copyValueString<pcl::traits::asType<pcl::PCLPointField::UINT16>::type>(cloud, i, point_size, d, c, stream);
-            break;
-          }
-          case pcl::PCLPointField::INT32:
-          {
-            copyValueString<pcl::traits::asType<pcl::PCLPointField::INT32>::type>(cloud, i, point_size, d, c, stream);
-            break;
-          }
-          case pcl::PCLPointField::UINT32:
-          {
-            copyValueString<pcl::traits::asType<pcl::PCLPointField::UINT32>::type>(cloud, i, point_size, d, c, stream);
-            break;
-          }
-          case pcl::PCLPointField::FLOAT32:
-          {
-            /*
-             * Despite the float type, store the rgb field as uint32
-             * because several fully opaque color values are mapped to
-             * nan.
-             */
-            if ("rgb" == cloud.fields[d].name)
-              copyValueString<pcl::traits::asType<pcl::PCLPointField::UINT32>::type>(cloud, i, point_size, d, c, stream);
-            else
-              copyValueString<pcl::traits::asType<pcl::PCLPointField::FLOAT32>::type>(cloud, i, point_size, d, c, stream);
-            break;
-          }
-          case pcl::PCLPointField::FLOAT64:
-          {
-            copyValueString<pcl::traits::asType<pcl::PCLPointField::FLOAT64>::type>(cloud, i, point_size, d, c, stream);
-            break;
-          }
-          default:
-            PCL_WARN ("[pcl::PCDWriter::writeASCII] Incorrect field data type specified (%d)!\n", cloud.fields[d].datatype);
-            break;
-        }
+#define COPY_VALUE(CASE_LABEL)                                                         \
+  case CASE_LABEL: {                                                                   \
+    copyValueString<pcl::traits::asType_t<CASE_LABEL>>(                                \
+        cloud, i, point_size, d, c, stream);                                           \
+    break;                                                                             \
+  }
+        switch (cloud.fields[d].datatype) {
+          COPY_VALUE(pcl::PCLPointField::BOOL)
+          COPY_VALUE(pcl::PCLPointField::INT8)
+          COPY_VALUE(pcl::PCLPointField::UINT8)
+          COPY_VALUE(pcl::PCLPointField::INT16)
+          COPY_VALUE(pcl::PCLPointField::UINT16)
+          COPY_VALUE(pcl::PCLPointField::INT32)
+          COPY_VALUE(pcl::PCLPointField::UINT32)
+          COPY_VALUE(pcl::PCLPointField::INT64)
+          COPY_VALUE(pcl::PCLPointField::UINT64)
+          COPY_VALUE(pcl::PCLPointField::FLOAT64)
 
-        if (d < cloud.fields.size () - 1 || c < static_cast<int> (cloud.fields[d].count) - 1)
+        case pcl::PCLPointField::FLOAT32: {
+          /*
+           * Despite the float type, store the rgb field as uint32
+           * because several fully opaque color values are mapped to
+           * nan.
+           */
+          if ("rgb" == cloud.fields[d].name)
+            copyValueString<pcl::traits::asType_t<pcl::PCLPointField::UINT32>>(
+                cloud, i, point_size, d, c, stream);
+          else
+            copyValueString<pcl::traits::asType_t<pcl::PCLPointField::FLOAT32>>(
+                cloud, i, point_size, d, c, stream);
+          break;
+        }
+        default:
+          PCL_WARN("[pcl::PCDWriter::writeASCII] Incorrect field data type specified "
+                   "(%d)!\n",
+                   cloud.fields[d].datatype);
+          break;
+        }
+#undef COPY_VALUE
+
+        if ((d < cloud.fields.size() - 1) ||
+            (c < static_cast<int>(cloud.fields[d].count) - 1))
           stream << " ";
       }
     }
     // Copy the stream, trim it, and write it to disk
-    std::string result = stream.str ();
-    boost::trim (result);
-    stream.str ("");
+    std::string result = stream.str();
+    boost::trim(result);
+    stream.str("");
     fs << result << "\n";
   }
   fs.close ();              // Close file

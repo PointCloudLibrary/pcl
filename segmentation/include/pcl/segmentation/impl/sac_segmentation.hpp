@@ -69,6 +69,7 @@
 #include <pcl/sample_consensus/sac_model_sphere.h>
 #include <pcl/sample_consensus/sac_model_normal_sphere.h>
 #include <pcl/sample_consensus/sac_model_stick.h>
+#include <pcl/sample_consensus/sac_model_ellipse3d.h>
 
 #include <pcl/memory.h>  // for static_pointer_cast
 
@@ -255,6 +256,19 @@ pcl::SACSegmentation<PointT>::initSACModel (const int model_type)
       {
         PCL_DEBUG ("[pcl::%s::initSACModel] Setting the epsilon angle to %f (%f degrees)\n", getClassName ().c_str (), eps_angle_, eps_angle_ * 180.0 / M_PI);
         model_parallel->setEpsAngle (eps_angle_);
+      }
+      break;
+    }
+    case SACMODEL_ELLIPSE3D:
+    {
+      PCL_DEBUG("[pcl::%s::initSACModel] Using a model of type: SACMODEL_ELLIPSE3D\n", getClassName().c_str());
+      model_.reset(new SampleConsensusModelEllipse3D<PointT>(input_, *indices_));
+      typename SampleConsensusModelEllipse3D<PointT>::Ptr model_ellipse3d = static_pointer_cast<SampleConsensusModelEllipse3D<PointT>>(model_);
+      double min_radius, max_radius;
+      model_ellipse3d->getRadiusLimits(min_radius, max_radius);
+      if (radius_min_ != min_radius && radius_max_ != max_radius) {
+        PCL_DEBUG("[pcl::%s::initSACModel] Setting radius limits to %f/%f\n", getClassName().c_str(), radius_min_, radius_max_);
+        model_ellipse3d->setRadiusLimits(radius_min_, radius_max_);
       }
       break;
     }

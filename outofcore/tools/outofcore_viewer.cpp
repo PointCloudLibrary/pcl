@@ -56,9 +56,6 @@
 // PCL - visualziation
 //#include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/common/common.h>
-#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
-#include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
-#endif
 
 //#include "vtkVBOPolyDataMapper.h"
 
@@ -131,7 +128,6 @@ using AlignedPointT = Eigen::aligned_allocator<PointT>;
 #include <vtkParallelCoordinatesInteractorStyle.h>
 
 // Boost
-#include <boost/date_time.hpp>
 #include <boost/filesystem.hpp>
 
 // Globals
@@ -163,7 +159,7 @@ public:
     std::cout << "Key Pressed: " << key << std::endl;
 
     Scene *scene = Scene::instance ();
-    OutofcoreCloud *cloud = static_cast<OutofcoreCloud*> (scene->getObjectByName ("my_octree"));
+    OutofcoreCloud *cloud = dynamic_cast<OutofcoreCloud*> (scene->getObjectByName ("my_octree"));
 
     if (key == "Up" || key == "Down")
     {

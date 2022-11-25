@@ -812,9 +812,9 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
   }
 
   double total_time = tt.toc ();
-  PCL_DEBUG ("[pcl::OBJReader::read] Loaded %s as a TextureMesh in %g ms with %g points, %g texture materials, %g polygons.\n",
+  PCL_DEBUG ("[pcl::OBJReader::read] Loaded %s as a TextureMesh in %g ms with %zu points, %zu texture materials, %zu polygons.\n",
              file_name.c_str (), total_time,
-             v_idx -1, mesh.tex_materials.size (), f_idx -1);
+             v_idx, mesh.tex_materials.size (), f_idx);
   fs.close ();
   return (0);
 }
@@ -956,9 +956,9 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
   }
 
   double total_time = tt.toc ();
-  PCL_DEBUG ("[pcl::OBJReader::read] Loaded %s as a PolygonMesh in %g ms with %g points and %g polygons.\n",
+  PCL_DEBUG ("[pcl::OBJReader::read] Loaded %s as a PolygonMesh in %g ms with %zu points and %zu polygons.\n",
              file_name.c_str (), total_time,
-             mesh.cloud.width * mesh.cloud.height, mesh.polygons.size ());
+             static_cast<std::size_t> (mesh.cloud.width * mesh.cloud.height), mesh.polygons.size ());
   fs.close ();
   return (0);
 }

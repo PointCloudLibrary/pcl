@@ -224,8 +224,8 @@ pcl::simulation::PointCloudModel::PointCloudModel(
 
 pcl::simulation::PointCloudModel::~PointCloudModel()
 {
-  delete vertices_;
-  delete colors_;
+  delete[] vertices_;
+  delete[] colors_;
 }
 
 void
@@ -278,7 +278,8 @@ pcl::simulation::Quad::render() const
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, nullptr);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (const GLvoid*)12);
+  glVertexAttribPointer(
+      1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, reinterpret_cast<const GLvoid*>(12));
 
   glDrawArrays(GL_QUADS, 0, 4);
 

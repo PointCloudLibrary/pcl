@@ -467,7 +467,7 @@ pcl::MinCutSegmentation<PointT>::recalculateUnaryPotentials ()
   OutEdgeIterator src_edge_end;
   std::pair<EdgeDescriptor, bool> sink_edge;
 
-  for (boost::tie (src_edge_iter, src_edge_end) = boost::out_edges (source_, *graph_); src_edge_iter != src_edge_end; src_edge_iter++)
+  for (boost::tie (src_edge_iter, src_edge_end) = boost::out_edges (source_, *graph_); src_edge_iter != src_edge_end; ++src_edge_iter)
   {
     double source_weight = 0.0;
     double sink_weight = 0.0;
@@ -498,12 +498,12 @@ pcl::MinCutSegmentation<PointT>::recalculateBinaryPotentials ()
   edge_marker.clear ();
   edge_marker.resize (indices_->size () + 2, out_edges_marker);
 
-  for (boost::tie (vertex_iter, vertex_end) = boost::vertices (*graph_); vertex_iter != vertex_end; vertex_iter++)
+  for (boost::tie (vertex_iter, vertex_end) = boost::vertices (*graph_); vertex_iter != vertex_end; ++vertex_iter)
   {
     VertexDescriptor source_vertex = *vertex_iter;
     if (source_vertex == source_ || source_vertex == sink_)
       continue;
-    for (boost::tie (edge_iter, edge_end) = boost::out_edges (source_vertex, *graph_); edge_iter != edge_end; edge_iter++)
+    for (boost::tie (edge_iter, edge_end) = boost::out_edges (source_vertex, *graph_); edge_iter != edge_end; ++edge_iter)
     {
       //If this is not the edge of the graph, but the reverse fictitious edge that is needed for the algorithm then continue
       EdgeDescriptor reverse_edge = (*reverse_edges_)[*edge_iter];
@@ -544,7 +544,7 @@ pcl::MinCutSegmentation<PointT>::assembleLabels (ResidualCapacityMap& residual_c
   clusters_.resize (2, segment);
 
   OutEdgeIterator edge_iter, edge_end;
-  for ( boost::tie (edge_iter, edge_end) = boost::out_edges (source_, *graph_); edge_iter != edge_end; edge_iter++ )
+  for ( boost::tie (edge_iter, edge_end) = boost::out_edges (source_, *graph_); edge_iter != edge_end; ++edge_iter )
   {
     if (labels[edge_iter->m_target] == 1)
     {

@@ -210,7 +210,7 @@ namespace pcl
       std::cerr << __PRETTY_FUNCTION__<<": Given range image is not a RangeImagePlanar!\n";
       return;
     }
-    RangeImagePlanar& ret = * (static_cast<RangeImagePlanar*> (&half_image));
+    RangeImagePlanar& ret = * (dynamic_cast<RangeImagePlanar*> (&half_image));
     
     ret.focal_length_x_ = focal_length_x_/2;
     ret.focal_length_x_reciprocal_ = 1.0f/ret.focal_length_x_;
@@ -233,7 +233,7 @@ namespace pcl
       std::cerr << __PRETTY_FUNCTION__<<": Given range image is not a RangeImagePlanar!\n";
       return;
     }
-    RangeImagePlanar& ret = * (static_cast<RangeImagePlanar*> (&sub_image));
+    RangeImagePlanar& ret = * (dynamic_cast<RangeImagePlanar*> (&sub_image));
     
     ret.focal_length_x_ = focal_length_x_ / static_cast<float> (combine_pixels);
     ret.focal_length_x_reciprocal_ = 1.0f / ret.focal_length_x_;
@@ -255,7 +255,7 @@ namespace pcl
       std::cerr << PVARC(typeid (*this).name())<<PVARN(typeid (other).name());
     }
     assert (ERROR_GIVEN_RANGE_IMAGE_IS_NOT_A_RangeImagePlanar);
-    *static_cast<RangeImagePlanar*> (&other) = *this;
+    *dynamic_cast<RangeImagePlanar*> (&other) = *this;
   }
 
 }  // namespace end

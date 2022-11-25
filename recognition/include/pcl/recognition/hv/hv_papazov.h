@@ -48,6 +48,7 @@ namespace pcl
   /** \brief A hypothesis verification method proposed in
     * "An Efficient RANSAC for 3D Object Recognition in Noisy and Occluded Scenes", C. Papazov and D. Burschka, ACCV 2010
     * \author Aitor Aldoma, Federico Tombari
+    * \ingroup recognition
     */
 
   template<typename ModelT, typename SceneT>

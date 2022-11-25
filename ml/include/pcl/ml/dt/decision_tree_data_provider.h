@@ -70,7 +70,7 @@ public:
   DecisionTreeTrainerDataProvider() = default;
 
   /** Destructor. */
-  ~DecisionTreeTrainerDataProvider() = default;
+  virtual ~DecisionTreeTrainerDataProvider() = default;
 
   /** Virtual function called to obtain training examples and labels before
    *  training a specific tree */

@@ -407,10 +407,8 @@ pcl::io::LZFImageReader::loadImageBlob (const std::string &filename,
   }
 #endif
 
-  // Check the header identifier here
-  char header_string[5];
-  std::copy(map, map + 5, header_string);
-  if (std::string (header_string).substr (0, 5) != "PCLZF")
+  // Check the header identifier here (PCLZF)
+  if (map[0] != 'P' || map[1] != 'C' || map[2] != 'L' || map[3] != 'Z' || map[4] != 'F')
   {
     PCL_ERROR ("[pcl::io::LZFImageReader::loadImage] Wrong signature header! Should be 'P'C'L'Z'F'.\n");
 #ifdef _WIN32
@@ -423,10 +421,7 @@ pcl::io::LZFImageReader::loadImageBlob (const std::string &filename,
   }
   memcpy (&width_,            &map[5], sizeof (std::uint32_t));
   memcpy (&height_,           &map[9], sizeof (std::uint32_t));
-  char imgtype_string[16];
-  memcpy (&imgtype_string,    &map[13], 16);       // BAYER8, RGB24_, YUV422_, ...
-  image_type_identifier_ = std::string (imgtype_string).substr (0, 15);
-  image_type_identifier_.insert (image_type_identifier_.end (), 1, '\0');
+  image_type_identifier_ = std::string (map+13, 16); // BAYER8, RGB24_, YUV422_, ...
 
   static const int header_size = LZF_HEADER_SIZE;
   std::uint32_t compressed_size;

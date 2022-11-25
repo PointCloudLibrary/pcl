@@ -83,6 +83,10 @@ namespace pcl
        * \param[in] nurbs set of B-Spline surface used for fitting.        */
       GlobalOptimization (const std::vector<NurbsDataSurface*> &data, const std::vector<ON_NurbsSurface*> &nurbs);
 
+      /** \brief Default virtual destructor. */
+      virtual
+      ~GlobalOptimization() = default;
+
       /** \brief Set common boundary points two NURBS should lie on
        *  \param[in] boundary vector of boundary points.
        *  \param[in] nurbs_indices vector of 2 NURBS indices sharing the boundary point. */

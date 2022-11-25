@@ -37,7 +37,7 @@ Scene::getCamera (vtkCamera *camera)
 }
 
 Camera*
-Scene::getCamera (std::string name)
+Scene::getCamera (const std::string& name)
 {
   for (const auto &camera : cameras_)
     if (camera->getName () == name)
@@ -55,7 +55,7 @@ Scene::addObject (Object *object)
 }
 
 Object*
-Scene::getObjectByName (std::string name)
+Scene::getObjectByName (const std::string& name)
 {
   for (const auto &object : objects_)
     if (object->getName () == name)

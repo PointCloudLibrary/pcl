@@ -144,7 +144,7 @@ public:
   void
   run()
   {
-    pcl::OpenNIGrabber interface{device_id_};
+    pcl::OpenNIGrabber interface(device_id_);
 
     std::function<void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f =
         [this](const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud) {
@@ -210,9 +210,9 @@ main(int argc, char** argv)
     return 1;
   }
 
-  pcl::OpenNIGrabber grabber("");
+  pcl::OpenNIGrabber grabber(arg);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb>()) {
-    OpenNIIntegralImageNormalEstimation v("");
+    OpenNIIntegralImageNormalEstimation v(arg);
     v.run();
   }
   else
