@@ -39,6 +39,7 @@
  */
 
 #include <pcl/apps/manual_registration.h>
+#include <pcl/apps/pcl_viewer_dialog.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/pcd_io.h> // for loadPCDFile
 #include <pcl/registration/icp.h>
@@ -61,6 +62,9 @@
 #include <vtkRendererCollection.h>
 
 using namespace pcl;
+using namespace pcl::visualization;
+using std::string;
+using std::to_string;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 ManualRegistration::ManualRegistration()
@@ -93,7 +97,7 @@ ManualRegistration::ManualRegistration()
   vis_src_->getInteractorStyle()->setKeyboardModifier(
       pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
 
-  vis_src_->registerPointPickingCallback(&ManualRegistration::SourcePointPickCallback,
+  vis_src_->registerPointPickingCallback(&ManualRegistration::SrcPointPickCallback,
                                          *this);
 
   // Set up the destination window
@@ -135,15 +139,14 @@ ManualRegistration::ManualRegistration()
           this,
           SLOT(applyTransformPressed()));
   connect(ui_->refineButton, SIGNAL(clicked()), this, SLOT(refinePressed()));
-  connect(ui_->undoButton, SIGNAL(clicked()), this, SLOT(undoPressed()));
-  connect(ui_->safeButton, SIGNAL(clicked()), this, SLOT(safePressed()));
+  /* connect(ui_->undoButton, SIGNAL(clicked()), this, SLOT(undoPressed())); */
 
   cloud_src_modified_ = true; // first iteration is always a new pointcloud
   cloud_dst_modified_ = true;
 }
 
 void
-ManualRegistration::SourcePointPickCallback(
+ManualRegistration::SrcPointPickCallback(
     const pcl::visualization::PointPickingEvent& event, void*)
 {
   // Check to see if we got a valid point. Early exit.
@@ -188,6 +191,13 @@ ManualRegistration::confirmSrcPointPressed()
     PCL_INFO("Selected %zu source points\n", static_cast<std::size_t>(src_pc_.size()));
     src_point_selected_ = false;
     src_pc_.width = src_pc_.size();
+    const string annotation = "marker-" + to_string(annotations_src_.size());
+    vis_src_->addSphere(src_point_, 0.02, annotation);
+    vis_src_->setShapeRenderingProperties(PCL_VISUALIZER_OPACITY, 0.2, annotation);
+    vis_src_->setShapeRenderingProperties(
+        PCL_VISUALIZER_COLOR, 0.5, 0.25, 0.25, annotation);
+    vis_src_->getShapeActorMap()->at(annotation)->SetPickable(false);
+    annotations_src_.emplace(annotation);
   }
   else {
     PCL_INFO("Please select a point in the source window first\n");
@@ -203,6 +213,14 @@ ManualRegistration::confirmDstPointPressed()
              static_cast<std::size_t>(dst_pc_.size()));
     dst_point_selected_ = false;
     dst_pc_.width = dst_pc_.size();
+
+    const string annotation = "marker-" + std::to_string(annotations_dst_.size());
+    vis_dst_->addSphere(dst_point_, 0.02, annotation);
+    vis_dst_->setShapeRenderingProperties(PCL_VISUALIZER_OPACITY, 0.2, annotation);
+    vis_dst_->setShapeRenderingProperties(
+        PCL_VISUALIZER_COLOR, 0.5, 0.25, 0.25, annotation);
+    vis_dst_->getShapeActorMap()->at(annotation)->SetPickable(false);
+    annotations_dst_.emplace(annotation);
   }
   else {
     PCL_INFO("Please select a point in the destination window first\n");
@@ -218,12 +236,30 @@ ManualRegistration::calculatePressed()
   }
   pcl::registration::TransformationEstimationSVD<pcl::PointXYZ, pcl::PointXYZ> tfe;
   tfe.estimateRigidTransformation(src_pc_, dst_pc_, transform_);
-  std::cout << "Transform : " << std::endl << transform_ << std::endl;
+  PCL_INFO("Calculated tranform:\n%1.5f %1.5f %1.5f %1.5f\n%1.5f %1.5f %1.5f "
+           "%1.5f\n%1.5f %1.5f %1.5f %1.5f\n%1.5f %1.5f %1.5f %1.5f\n",
+           transform_(0, 0),
+           transform_(0, 1),
+           transform_(0, 2),
+           transform_(0, 3),
+           transform_(1, 0),
+           transform_(1, 1),
+           transform_(1, 2),
+           transform_(1, 3),
+           transform_(2, 0),
+           transform_(2, 1),
+           transform_(2, 2),
+           transform_(2, 3),
+           transform_(3, 0),
+           transform_(3, 1),
+           transform_(3, 2),
+           transform_(3, 3));
 }
 
 void
 ManualRegistration::clearPressed()
 {
+  PCL_INFO("Clearing points.");
   dst_point_selected_ = false;
   src_point_selected_ = false;
   src_pc_.clear();
@@ -232,6 +268,16 @@ ManualRegistration::clearPressed()
   src_pc_.width = 0;
   dst_pc_.height = 1;
   dst_pc_.width = 0;
+
+  for (const string& annotation : annotations_src_) {
+    vis_src_->removeShape(annotation);
+  }
+  annotations_src_.clear();
+
+  for (const string& annotation : annotations_dst_) {
+    vis_dst_->removeShape(annotation);
+  }
+  annotations_dst_.clear();
 }
 
 void
@@ -272,16 +318,17 @@ ManualRegistration::orthoChanged(int state)
 void
 ManualRegistration::applyTransformPressed()
 {
-  visualization::PCLVisualizer vis_both;
-  vis_both.addPointCloud(cloud_dst_, "cloud_dst_");
-  vis_both.addPointCloud(cloud_src_, "cloud_src_");
-  vis_both.updatePointCloudPose("cloud_src_", Eigen::Affine3f(transform_));
-  vis_both.spin();
+  PCLViewerDialog* diag = new PCLViewerDialog(this);
+  diag->setModal(true);
+  diag->setGeometry(this->x(), this->y(), this->width(), this->height());
+  diag->setPointClouds(cloud_src_, cloud_dst_, Eigen::Affine3f(transform_));
+  diag->show();
 }
 
 void
 ManualRegistration::refinePressed()
 {
+  PCL_INFO("Refining transform ...\n");
   VoxelGrid<PointT> grid_filter;
   grid_filter.setLeafSize(0.05, 0.05, 0.05);
   PointCloud<PointT>::Ptr src_copy{new PointCloud<PointT>(*cloud_src_)};
@@ -291,28 +338,43 @@ ManualRegistration::refinePressed()
   grid_filter.setInputCloud(dst_copy);
   grid_filter.filter(*dst_copy);
 
-  IterativeClosestPoint<PointT, PointT>::Ptr icp{
-      new IterativeClosestPoint<PointT, PointT>};
+  using ICP = IterativeClosestPoint<PointT, PointT>;
+  ICP::Ptr icp = pcl::make_shared<ICP>();
   icp->setInputSource(src_copy);
   icp->setInputTarget(dst_copy);
+
   icp->setMaximumIterations(100);
-  icp->setMaxCorrespondenceDistance(0.1);
-  icp->setEuclideanFitnessEpsilon(0.000000001);
-  icp->setTransformationEpsilon(0.000000001);
-  icp->setTransformationRotationEpsilon(0.000000001);
+  icp->setMaxCorrespondenceDistance(0.3);
+  icp->setEuclideanFitnessEpsilon(0.01);
+  icp->setTransformationEpsilon(0.01);
+  icp->setTransformationRotationEpsilon(0.01);
   PointCloud<PointT>::Ptr aligned{new PointCloud<PointT>};
   icp->align(*aligned, transform_);
   transform_ = icp->getFinalTransformation();
-  std::cout << "refined transform:\n" << transform_ << std::endl;
+
+  PCL_INFO("Calculated tranform:\n%1.5f %1.5f %1.5f %1.5f\n%1.5f %1.5f %1.5f "
+           "%1.5f\n%1.5f %1.5f %1.5f %1.5f\n%1.5f %1.5f %1.5f %1.5f\n",
+           transform_(0, 0),
+           transform_(0, 1),
+           transform_(0, 2),
+           transform_(0, 3),
+           transform_(1, 0),
+           transform_(1, 1),
+           transform_(1, 2),
+           transform_(1, 3),
+           transform_(2, 0),
+           transform_(2, 1),
+           transform_(2, 2),
+           transform_(2, 3),
+           transform_(3, 0),
+           transform_(3, 1),
+           transform_(3, 2),
+           transform_(3, 3));
 }
 
-void
-ManualRegistration::undoPressed()
-{}
-
-void
-ManualRegistration::safePressed()
-{}
+/* void */
+/* ManualRegistration::undoPressed() */
+/* {} */
 
 void
 ManualRegistration::timeoutSlot()
@@ -343,8 +405,10 @@ ManualRegistration::refreshView()
 {
 #if VTK_MAJOR_VERSION > 8
   ui_->qvtk_widget_dst->renderWindow()->Render();
+  ui_->qvtk_widget_src->renderWindow()->Render();
 #else
   ui_->qvtk_widget_dst->update();
+  ui_->qvtk_widget_src->update();
 #endif // VTK_MAJOR_VERSION > 8
 }
 

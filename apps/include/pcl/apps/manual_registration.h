@@ -48,23 +48,6 @@
 
 using PointT = pcl::PointXYZ;
 
-// Useful macros
-// clang-format off
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-    static unsigned count = 0;                                                         \
-    static double last = pcl::getTime();                                               \
-    double now = pcl::getTime();                                                       \
-    ++count;                                                                           \
-    if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
-                << double(count) / double(now - last) << " Hz" << std::endl;           \
-      count = 0;                                                                       \
-      last = now;                                                                      \
-    }                                                                                  \
-  } while (false)
-// clang-format on
-
 namespace Ui {
 class MainWindow;
 }
@@ -75,6 +58,8 @@ public:
   using Cloud = pcl::PointCloud<PointT>;
   using CloudPtr = Cloud::Ptr;
   using CloudConstPtr = Cloud::ConstPtr;
+
+  PCL_MAKE_ALIGNED_OPERATOR_NEW;
 
   ManualRegistration();
 
@@ -94,7 +79,7 @@ public:
   }
 
   void
-  SourcePointPickCallback(const pcl::visualization::PointPickingEvent& event, void*);
+  SrcPointPickCallback(const pcl::visualization::PointPickingEvent& event, void*);
   void
   DstPointPickCallback(const pcl::visualization::PointPickingEvent& event, void*);
 
@@ -131,6 +116,9 @@ protected:
 
   Eigen::Matrix4f transform_ = Eigen::Affine3f::Identity().matrix();
 
+  std::set<std::string> annotations_src_;
+  std::set<std::string> annotations_dst_;
+
 public Q_SLOTS:
   void
   confirmSrcPointPressed();
@@ -146,10 +134,8 @@ public Q_SLOTS:
   applyTransformPressed();
   void
   refinePressed();
-  void
-  undoPressed();
-  void
-  safePressed();
+  /* void */
+  /* undoPressed(); */
 
 private Q_SLOTS:
   void
