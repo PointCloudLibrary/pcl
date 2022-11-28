@@ -69,7 +69,7 @@ namespace pcl
         virtual QString 
         getIconName () const = 0;
         
-        /** \brief Reimpiement this function to return the proper number if tool requires more than one input item */
+        /** \brief Reimplement this function to return the proper number if tool requires more than one input item */
         inline virtual int
         getNumInputItems () const 
         { 
