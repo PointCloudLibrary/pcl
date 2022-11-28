@@ -65,7 +65,7 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       Indices indices = *indices_;
       std::sort (indices.begin (), indices.end ());
 
-      // Get the difderence
+      // Get the difference
       Indices remaining_indices;
       set_difference (all_indices.begin (), all_indices.end (), indices.begin (), indices.end (),
                       inserter (remaining_indices, remaining_indices.begin ()));
