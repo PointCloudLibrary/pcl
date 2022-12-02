@@ -52,9 +52,6 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
 
   std::size_t number_of_format_statements = 0;
   std::size_t number_of_element_statements = 0;
-  std::size_t number_of_property_statements = 0;
-  std::size_t number_of_obj_info_statements = 0;
-  std::size_t number_of_comment_statements = 0;
 
   format_type format = pcl::io::ply::unknown;
   std::vector<std::shared_ptr<element>> elements;
@@ -262,7 +259,6 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
           error_callback_ (line_number_, "parse error: unknown type");
           return false;
         }
-        ++number_of_property_statements;
       }
       else
       {
@@ -418,7 +414,6 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
           error_callback_ (line_number_, "parse error: unknown list size type");
           return false;
         }
-        ++number_of_property_statements;
       }
     }
 
@@ -426,14 +421,12 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
     else if (keyword == "comment")
     {
       comment_callback_ (line);
-      ++number_of_comment_statements;
     }
 
     // obj_info
     else if (keyword == "obj_info")
     {
       obj_info_callback_ (line);
-      ++number_of_obj_info_statements;
     }
 
     // end_header

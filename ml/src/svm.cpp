@@ -3365,8 +3365,6 @@ svm_load_model(const char* model_file_name)
       model->sv_coef[k][i] = strtod(p, nullptr);
     }
 
-    int jj = 0;
-
     while (true) {
       char* idx = strtok(nullptr, ":");
       char* val = strtok(nullptr, " \t");
@@ -3377,10 +3375,6 @@ svm_load_model(const char* model_file_name)
       x_space[j].index = static_cast<int>(strtol(idx, nullptr, 10));
 
       x_space[j].value = strtod(val, nullptr);
-
-      //             printf("i=%d, j=%d, %f ,%d e %f\n",i,j,model->sv_coef[0][i],
-      //                    model->SV[i][jj].index, model->SV[i][jj].value);
-      jj++;
 
       ++j;
     }

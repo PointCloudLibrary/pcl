@@ -680,8 +680,6 @@ pcl::SVMClassify::classification()
                getClassName().c_str());
   }
 
-  // int correct = 0;
-  int total = 0;
   int svm_type = svm_get_svm_type(&model_);
   int nr_class = svm_get_nr_class(&model_);
 
@@ -723,8 +721,6 @@ pcl::SVMClassify::classification()
       predict_label = svm_predict(&model_, prob_.x[ii]);
       prediction_[ii].push_back(predict_label);
     }
-
-    ++total;
 
     ii++;
   }

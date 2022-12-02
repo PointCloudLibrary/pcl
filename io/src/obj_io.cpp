@@ -678,7 +678,6 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
   try
   {
     std::size_t vn_idx = 0;
-    std::size_t vt_idx = 0;
 
     while (!fs.eof ())
     {
@@ -747,7 +746,6 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
             coordinates.emplace_back(c[0], c[1]);
           else
             coordinates.emplace_back(c[0]/c[2], c[1]/c[2]);
-          ++vt_idx;
         }
         catch (const boost::bad_lexical_cast&)
         {
