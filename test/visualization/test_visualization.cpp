@@ -191,6 +191,36 @@ TEST (PCL, PCLVisualizer_getPointCloudRenderingProperties)
   EXPECT_EQ (b, 0.);
 }
 
+// This test was added to make sure the dynamic_cast in updateColorHandlerIndex works correctly
+// (see https://github.com/PointCloudLibrary/pcl/issues/5545)
+TEST(PCL, PCLVisualizer_updateColorHandlerIndex) {
+  // create
+  visualization::PCLVisualizer::Ptr viewer_ptr(
+      new visualization::PCLVisualizer);
+  // generates points
+  common::CloudGenerator<PointXYZRGB, common::UniformGenerator<float>>
+      generator;
+  PointCloud<PointXYZRGB>::Ptr rgb_cloud_ptr(new PointCloud<PointXYZRGB>());
+  generator.fill(3, 1, *rgb_cloud_ptr);
+
+  PCLPointCloud2::Ptr rgb_cloud2_ptr(new PCLPointCloud2());
+  toPCLPointCloud2(*rgb_cloud_ptr, *rgb_cloud2_ptr);
+
+  // add cloud
+  const std::string cloud_name = "RGB_cloud";
+  visualization::PointCloudColorHandlerRGBField<PCLPointCloud2>::Ptr
+      color_handler_ptr(
+          new visualization::PointCloudColorHandlerRGBField<PCLPointCloud2>(
+              rgb_cloud2_ptr));
+  viewer_ptr->addPointCloud(rgb_cloud2_ptr,
+                            color_handler_ptr,
+                            Eigen::Vector4f::Zero(),
+                            Eigen::Quaternionf(),
+                            cloud_name,
+                            0);
+  EXPECT_TRUE(viewer_ptr->updateColorHandlerIndex(cloud_name, 0));
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)
