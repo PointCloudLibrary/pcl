@@ -45,6 +45,7 @@
 #include <vtkLODActor.h>
 #include <vtkPolyData.h>
 #include <vtkPolyDataMapper.h>
+#include <vtkDataSetMapper.h>
 #include <vtkCellArray.h>
 #include <vtkTextProperty.h>
 #include <vtkAbstractPropPicker.h>
@@ -666,7 +667,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         data->SetPoints (points);
         data->SetVerts (vertices);
         // Modify the mapper
-        auto* mapper = dynamic_cast<vtkPolyDataMapper*>(act.actor->GetMapper ());
+        auto* mapper = dynamic_cast<vtkDataSetMapper*>(act.actor->GetMapper ());
         mapper->SetInputData (data);
         // Modify the actor
         act.actor->SetMapper (mapper);
@@ -696,7 +697,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         auto *data = dynamic_cast<vtkPolyData*>(act.actor->GetMapper ()->GetInput ());
         data->GetPointData ()->SetScalars (scalars);
         // Modify the mapper
-        auto* mapper = dynamic_cast<vtkPolyDataMapper*>(act.actor->GetMapper ());
+        auto* mapper = dynamic_cast<vtkDataSetMapper*>(act.actor->GetMapper ());
         mapper->SetScalarRange (minmax);
         mapper->SetScalarModeToUsePointData ();
         mapper->SetInputData (data);
