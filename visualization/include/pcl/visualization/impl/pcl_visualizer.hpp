@@ -1787,7 +1787,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
     return (false);
 
   // Get the current poly data
-  vtkSmartPointer<vtkPolyData> polydata = dynamic_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->GetInput ();
+  vtkSmartPointer<vtkPolyData> polydata = dynamic_cast<vtkPolyData*>(am_it->second.actor->GetMapper ()->GetInput ());
   if (!polydata)
     return (false);
   vtkSmartPointer<vtkCellArray> cells = polydata->GetPolys ();
