@@ -12,7 +12,7 @@ if(NOT build)
   return()
 endif()
 
-PCL_ADD_TEST(gpu_octree_performance test_gpu_octree_perfomance FILES perfomance.cpp LINK_WITH pcl_gtest pcl_common pcl_octree pcl_gpu_octree)
+PCL_ADD_TEST(gpu_octree_performance test_gpu_octree_performance FILES performance.cpp LINK_WITH pcl_gtest pcl_common pcl_octree pcl_gpu_octree)
 PCL_ADD_TEST(gpu_octree_approx_nearest test_gpu_approx_nearest FILES test_approx_nearest.cpp LINK_WITH pcl_gtest pcl_common pcl_octree pcl_gpu_octree pcl_gpu_utils)
 PCL_ADD_TEST(gpu_octree_bfrs test_gpu_bfrs FILES test_bfrs_gpu.cpp LINK_WITH pcl_gtest pcl_common pcl_octree pcl_gpu_octree)
 PCL_ADD_TEST(gpu_octree_host_radius test_gpu_host_radius_search FILES test_host_radius_search.cpp LINK_WITH pcl_gtest pcl_common pcl_octree pcl_gpu_octree)
