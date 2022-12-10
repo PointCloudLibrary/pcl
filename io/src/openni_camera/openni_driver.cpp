@@ -221,7 +221,7 @@ openni_wrapper::OpenNIDriver::stopAll ()
 
 openni_wrapper::OpenNIDriver::~OpenNIDriver () noexcept
 {
-  // no exception during destuctor
+  // no exception during destructor
   try
   {
     stopAll ();

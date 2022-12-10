@@ -258,7 +258,7 @@ public:
   using LeafNodeIterator = OctreeLeafNodeDepthFirstIterator<OctreeT>;
   using ConstLeafNodeIterator = const OctreeLeafNodeDepthFirstIterator<OctreeT>;
 
-  // The currently valide names
+  // The currently valid names
   using LeafNodeDepthFirstIterator = OctreeLeafNodeDepthFirstIterator<OctreeT>;
   using ConstLeafNodeDepthFirstIterator =
       const OctreeLeafNodeDepthFirstIterator<OctreeT>;

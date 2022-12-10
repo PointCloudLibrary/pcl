@@ -251,7 +251,7 @@ namespace pcl
     integrateTsdfVolume (const PtrStepSz<ushort>& depth_raw, const Intr& intr, const float3& volume_size, 
                          const Mat33& Rcurr_inv, const float3& tcurr, float tranc_dist, PtrStep<short2> volume, DeviceArray2D<float>& depthRawScaled);
     
-    /** \brief Initialzied color volume
+    /** \brief Initialized color volume
       * \param[out] color_volume color volume for initialization
       */
 
@@ -352,7 +352,7 @@ namespace pcl
     void 
     extractNormals (const PtrStep<short2>& volume, const float3& volume_size, const PtrSz<PointType>& input, NormalType* output);
 
-    /** \brief Performs colors exctraction from color volume
+    /** \brief Performs colors extraction from color volume
       * \param[in] color_volume color volume
       * \param[in] volume_size volume size
       * \param[in] points points for which color are computed

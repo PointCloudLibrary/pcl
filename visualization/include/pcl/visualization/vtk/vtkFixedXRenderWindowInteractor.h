@@ -148,7 +148,7 @@ protected:
   void StartEventLoop() override;
 
   /**
-   * Deallocate X ressource that may have been allocated
+   * Deallocate X resource that may have been allocated
    * Also calls finalize on the render window if available
    */
   void Finalize();

@@ -154,7 +154,7 @@ int main(void) {
 
 # in Fortran, an implementation may provide an omp_lib.h header
 # or omp_lib module, or both (OpenMP standard, section 3.1)
-# Furthmore !$ is the Fortran equivalent of #ifdef _OPENMP (OpenMP standard, 2.2.2)
+# Furthermore !$ is the Fortran equivalent of #ifdef _OPENMP (OpenMP standard, 2.2.2)
 # Without the conditional compilation, some compilers (e.g. PGI) might compile OpenMP code
 # while not actually enabling OpenMP, building code sequentially
 set(OpenMP_Fortran_TEST_SOURCE

@@ -25,7 +25,7 @@
 namespace pcl
 {
 
-//// note: Protcol named CoLaA (used by SICK) has some information.
+//// note: Protocol named CoLaA (used by SICK) has some information.
 ////       In this Grabber, only the amount_of_data is used, so other information is truncated.
 ////       Details of the protocol can be found at the following URL.
 

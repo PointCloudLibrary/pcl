@@ -71,7 +71,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::initCompute()
   pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
       initCompute();
 
-  // set the threshold values with respect to keypoint charactersitics
+  // set the threshold values with respect to keypoint characteristics
   max_pair_diff_ = delta_ * 1.414f;      // diff between 2 points of delta_ accuracy
   coincidation_limit_ = delta_ * 2.828f; // diff between diff of 2 points
   max_edge_diff_ =

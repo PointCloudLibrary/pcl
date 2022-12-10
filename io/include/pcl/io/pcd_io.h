@@ -204,7 +204,7 @@ namespace pcl
         * \param[out] cloud the resultant point cloud dataset to be filled.
         * \param[in] pcd_version the PCD version of the stream (from readHeader()).
         * \param[in] compressed indicates whether the PCD block contains compressed
-        * data.  This should be true if the data_type returne by readHeader() == 2.
+        * data.  This should be true if the data_type returned by readHeader() == 2.
         * \param[in] data_idx the offset of the body, as reported by readHeader().
         *
         * \return

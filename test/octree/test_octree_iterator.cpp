@@ -1581,7 +1581,7 @@ struct OctreePointCloudSierpinskiTest
   /** \brief Computes the total number of parent nodes at the specified depth
     *
     * The octree is built such that the number of the leaf nodes is equal to
-    * 4^depth and the number of branch nodes is egal to (4^depth -1)/(4 - 1),
+    * 4^depth and the number of branch nodes is equal to (4^depth -1)/(4 - 1),
     * where depth is the detph of the octree. The details of the expression
     * provided for the number of branch nodes could be found at:
     * https://en.wikipedia.org/wiki/Geometric_progression#Geometric_series

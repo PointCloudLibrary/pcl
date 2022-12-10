@@ -484,7 +484,7 @@ protected:
   computeTransformedPointCloudWithoutNormal(const StateT& hypothesis,
                                             PointCloudIn& cloud);
 
-  /** \brief This method should get called before starting the actua computation. */
+  /** \brief This method should get called before starting the actual computation. */
   bool
   initCompute() override;
 

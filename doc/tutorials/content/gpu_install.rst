@@ -4,7 +4,7 @@ Configuring your PC to use your Nvidia GPU with PCL
 ---------------------------------------------------
 
 In this tutorial you will learn how to configure your system to make it compatible to run the GPU methods provided by PCL.
-This tutorial is for Ubuntu, other Linux distrubutions can follow a similar process to set it up.  
+This tutorial is for Ubuntu, other Linux distributions can follow a similar process to set it up.  
 
 Windows is currently  **not** officially supported for the GPU methods.
 

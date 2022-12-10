@@ -2,7 +2,7 @@ ARG UBUNTU_VERSION=20.04
 
 FROM "ubuntu:${UBUNTU_VERSION}"
 
-# Eigen patch (https://eigen.tuxfamily.org/bz/show_bug.cgi?id=1462) to fix issue metioned
+# Eigen patch (https://eigen.tuxfamily.org/bz/show_bug.cgi?id=1462) to fix issue mentioned
 # in https://github.com/PointCloudLibrary/pcl/issues/3729 is available in Eigen 3.3.7.
 # Not needed from 20.04 since it is the default version from apt
 ARG EIGEN_MINIMUM_VERSION=3.3.7
@@ -14,7 +14,7 @@ ARG ENSENSOSDK_VERSION=3.2.489
 ARG REALSENSE_VERSION=2.50.0
 
 # Check https://packages.ubuntu.com/search?suite=all&arch=any&searchon=names&keywords=libvtk%20qt-dev
-# for available packes for choosen UBUNTU_VERSION
+# for available packages for chosen UBUNTU_VERSION
 ARG VTK_VERSION=6
 
 # Use the latest version of CMake by adding the Kitware repository if true,

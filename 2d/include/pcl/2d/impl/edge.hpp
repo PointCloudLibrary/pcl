@@ -266,7 +266,7 @@ Edge<PointInT, PointOutT>::suppressNonMaxima(
   for (auto& point : maxima)
     point.intensity = 0.0f;
 
-  // tHigh and non-maximal supression
+  // tHigh and non-maximal suppression
   for (int i = 1; i < height - 1; i++) {
     for (int j = 1; j < width - 1; j++) {
       const PointXYZIEdge& ptedge = edges(j, i);
@@ -339,7 +339,7 @@ Edge<PointInT, PointOutT>::detectEdgeCanny(pcl::PointCloud<PointOutT>& output)
   // Edge discretization
   discretizeAngles(*edges);
 
-  // tHigh and non-maximal supression
+  // tHigh and non-maximal suppression
   pcl::PointCloud<PointXYZI>::Ptr maxima(new pcl::PointCloud<PointXYZI>);
   suppressNonMaxima(*edges, *maxima, tLow);
 

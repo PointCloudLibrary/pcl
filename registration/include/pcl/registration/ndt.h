@@ -404,7 +404,7 @@ protected:
    * Thuente 1994) and \f$ \delta \vec{p} \f$ normalized in Algorithm 2
    * [Magnusson 2009]
    * \param[in] step_init initial step length estimate, \f$ \alpha_0 \f$ in
-   * Moore-Thuente (1994) and the noramal of \f$ \delta \vec{p} \f$ in Algorithm
+   * Moore-Thuente (1994) and the normal of \f$ \delta \vec{p} \f$ in Algorithm
    * 2 [Magnusson 2009]
    * \param[in] step_max maximum step length, \f$ \alpha_max \f$ in
    * Moore-Thuente (1994)

@@ -387,7 +387,7 @@ namespace pcl
               }
             }
 
-            //compute covariance from offsets and angles for all branchs
+            //compute covariance from offsets and angles for all branches
             std::vector < Eigen::Matrix3d > offset_covariances;
             std::vector < Eigen::Matrix3d > angle_covariances;
 

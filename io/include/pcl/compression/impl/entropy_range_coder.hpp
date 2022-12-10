@@ -313,7 +313,7 @@ pcl::StaticRangeCoder::encodeIntVectorToStream (std::vector<unsigned int>& input
   while (readPos < input_size)
   {
 
-    // read symol
+    // read symbol
     unsigned int inputsymbol = inputIntVector_arg[readPos++];
 
     // map to range
@@ -501,7 +501,7 @@ pcl::StaticRangeCoder::encodeCharVectorToStream (const std::vector<char>& inputB
   // start encoding
   while (readPos < input_size)
   {
-    // read symol
+    // read symbol
     std::uint8_t ch = inputByteVector_arg[readPos++];
 
     // map to range

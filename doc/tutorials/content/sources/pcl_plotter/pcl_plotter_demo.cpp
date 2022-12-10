@@ -47,7 +47,7 @@ main ()
   //setting some properties
   plotter->setShowLegend (true);
 
-  //generating point correspondances
+  //generating point correspondences
   int numPoints = 69;
   double ax[100], acos[100], asin[100];
   generateData (ax, acos, asin, numPoints);

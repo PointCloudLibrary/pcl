@@ -183,7 +183,7 @@ TEST(PCL, ICP_translated)
   pcl::PointCloud<pcl::PointXYZ> Final;
   icp.align(Final);
 
-  // Check that we have sucessfully converged
+  // Check that we have successfully converged
   ASSERT_TRUE(icp.hasConverged());
 
   // Test that the fitness score is below acceptable threshold

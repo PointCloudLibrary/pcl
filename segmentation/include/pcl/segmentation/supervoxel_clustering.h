@@ -275,14 +275,14 @@ namespace pcl
 
       /** \brief Returns labeled cloud
         * Points that belong to the same supervoxel have the same label.
-        * Labels for segments start from 1, unlabled points have label 0
+        * Labels for segments start from 1, unlabeled points have label 0
         */
       typename pcl::PointCloud<PointXYZL>::Ptr
       getLabeledCloud () const;
 
       /** \brief Returns labeled voxelized cloud
        * Points that belong to the same supervoxel have the same label.
-       * Labels for segments start from 1, unlabled points have label 0
+       * Labels for segments start from 1, unlabeled points have label 0
        */
       pcl::PointCloud<pcl::PointXYZL>::Ptr
       getLabeledVoxelCloud () const;

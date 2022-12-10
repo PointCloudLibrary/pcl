@@ -254,7 +254,7 @@ grabberMapsCallBack(const openni_wrapper::Image::Ptr& image_wrapper, const openn
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// Procuder thread function
+// Producer thread function
 void 
 grabAndSend ()
 {
