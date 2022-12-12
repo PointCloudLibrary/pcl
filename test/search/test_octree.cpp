@@ -41,6 +41,9 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/search/octree.h> // for pcl::search::Octree
+#include "precise_distances.h" // for point_distance, squared_point_distance
+
+#define TOLERANCE 0.000001
 
 using namespace pcl;
 using namespace octree;
@@ -119,9 +122,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
     // push all points and their distance to the search point into a priority queue - bruteforce approach.
     for (std::size_t i = 0; i < cloudIn->size (); i++)
     {
-      double pointDist = (((*cloudIn)[i].x - searchPoint.x) * ((*cloudIn)[i].x - searchPoint.x) +
-                          ((*cloudIn)[i].y - searchPoint.y) * ((*cloudIn)[i].y - searchPoint.y) +
-                          ((*cloudIn)[i].z - searchPoint.z) * ((*cloudIn)[i].z - searchPoint.z));
+      const auto pointDist = pcl_tests::squared_point_distance((*cloudIn)[i], searchPoint);
 
       prioPointQueueEntry pointEntry ((*cloudIn)[i], pointDist, static_cast<int> (i));
 
@@ -276,7 +277,6 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
 
   // instantiate point clouds
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
-  PointCloud<PointXYZ>::Ptr cloudOut (new PointCloud<PointXYZ> ());
 
   const unsigned int seed = time (nullptr);
   srand (seed);
@@ -301,25 +301,21 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
                                      static_cast<float> (5.0 *  (rand () / static_cast<double> (RAND_MAX))));
     }
 
-    pcl::search::Search<PointXYZ>* octree = new pcl::search::Octree<PointXYZ> (0.001);
+    pcl::search::Octree<PointXYZ> octree(0.001);
 
     // build octree
-    double pointDist;
     double searchRadius = 5.0 * rand () / static_cast<double> (RAND_MAX);
     
     // bruteforce radius search
-    std::vector<int> cloudSearchBruteforce;
+    std::size_t cloudSearchBruteforce_size_lower = 0, cloudSearchBruteforce_size_upper = 0;
     for (std::size_t i = 0; i < cloudIn->size (); i++)
     {
-      pointDist = std::sqrt (
-                        ((*cloudIn)[i].x - searchPoint.x) * ((*cloudIn)[i].x - searchPoint.x)
-                            + ((*cloudIn)[i].y - searchPoint.y) * ((*cloudIn)[i].y - searchPoint.y)
-                            + ((*cloudIn)[i].z - searchPoint.z) * ((*cloudIn)[i].z - searchPoint.z));
-
-      if (pointDist <= searchRadius)
-      {
-        // add point candidates to vector list
-        cloudSearchBruteforce.push_back (static_cast<int> (i));
+      const auto pointDist = pcl_tests::point_distance((*cloudIn)[i], searchPoint);
+      if (pointDist <= (searchRadius+TOLERANCE)) {
+        ++cloudSearchBruteforce_size_upper;
+        if (pointDist <= (searchRadius-TOLERANCE)) {
+          ++cloudSearchBruteforce_size_lower;
+        }
       }
     }
 
@@ -327,25 +323,21 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
     std::vector<float> cloudNWRRadius;
 
     // execute octree radius search
-    octree->setInputCloud (cloudIn);
-    octree->radiusSearch (searchPoint, searchRadius, cloudNWRSearch, cloudNWRRadius);
+    octree.setInputCloud (cloudIn);
+    octree.radiusSearch (searchPoint, searchRadius, cloudNWRSearch, cloudNWRRadius);
 
-    ASSERT_EQ ( cloudNWRRadius.size() , cloudSearchBruteforce.size());
+    ASSERT_GE ( cloudNWRRadius.size() , cloudSearchBruteforce_size_lower);
+    ASSERT_LE ( cloudNWRRadius.size() , cloudSearchBruteforce_size_upper);
 
-    // check if result from octree radius search can be also found in bruteforce search
+    // check if results from organized radius search are indeed within the search radius
     for (const auto& current : cloudNWRSearch)
     {
-      pointDist = std::sqrt (
-          ((*cloudIn)[current].x-searchPoint.x) * ((*cloudIn)[current].x-searchPoint.x) +
-          ((*cloudIn)[current].y-searchPoint.y) * ((*cloudIn)[current].y-searchPoint.y) +
-          ((*cloudIn)[current].z-searchPoint.z) * ((*cloudIn)[current].z-searchPoint.z)
-      );
-
-      ASSERT_LE (pointDist, searchRadius);
+      const auto pointDist = pcl_tests::point_distance((*cloudIn)[current], searchPoint);
+      ASSERT_LE (pointDist, (searchRadius+TOLERANCE));
     }
 
     // check if result limitation works
-    octree->radiusSearch(searchPoint, searchRadius, cloudNWRSearch, cloudNWRRadius, 5);
+    octree.radiusSearch(searchPoint, searchRadius, cloudNWRSearch, cloudNWRRadius, 5);
     ASSERT_LE (cloudNWRRadius.size(), 5);
   }
 }
