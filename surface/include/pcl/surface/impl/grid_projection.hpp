@@ -651,7 +651,6 @@ pcl::GridProjection<PointNT>::reconstructPolygons (std::vector<pcl::Vertices> &p
   }
 
   Eigen::Vector3i index;
-  int numOfFilledPad = 0;
 
   for (int i = 0; i < data_size_; ++i)
   {
@@ -665,7 +664,6 @@ pcl::GridProjection<PointNT>::reconstructPolygons (std::vector<pcl::Vertices> &p
         if (occupied_cell_list_[getIndexIn1D (index)])
         {
           fillPad (index);
-          numOfFilledPad++;
         }
       }
     }
