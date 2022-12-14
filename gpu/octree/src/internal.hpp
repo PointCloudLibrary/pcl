@@ -88,13 +88,13 @@ namespace pcl
 
             void setCloud(const PointCloud& input_points);           
             void build();
-            void radiusSearchHost(const PointType& center, float radius, std::vector<int>& out, int max_nn) const;
+            void radiusSearchHost(const PointType& center, const float radius, std::vector<int>& out, std::vector<float>& sqr_distances, const int max_nn, const bool compute_all_distances) const;
             void approxNearestSearchHost(const PointType& query, int& out_index, float& sqr_dist) const;
             
-            void radiusSearch(const Queries& queries, float radius, NeighborIndices& results);
-            void radiusSearch(const Queries& queries, const Radiuses& radiuses, NeighborIndices& results);
+            void radiusSearch(const Queries& queries, const float radius, NeighborIndices& results, BatchResultSqrDists& sqr_distances,  const int max_results, const bool compute_all_distances);
+            void radiusSearch(const Queries& queries, const Radiuses& radiuses, NeighborIndices& results, BatchResultSqrDists& sqr_distances,  const int max_results, const bool compute_all_distances);
 
-            void radiusSearch(const Queries& queries, const Indices& indices, float radius, NeighborIndices& results);
+            void radiusSearch(const Queries& queries, const Indices& indices, const float radius, NeighborIndices& results, BatchResultSqrDists& sqr_distances, const int max_results, const bool compute_all_distances);
 
             void approxNearestSearch(const Queries& queries, NeighborIndices& results, BatchResultSqrDists& sqr_distance) const;
             
@@ -135,7 +135,7 @@ namespace pcl
             void internalDownload(); 
         private:
             template<typename BatchType>
-            void radiusSearchEx(BatchType& batch, const Queries& queries, NeighborIndices& results);
+            void radiusSearchEx(BatchType& batch, const Queries& queries, NeighborIndices& results, BatchResultSqrDists& sqr_distances, const int max_results, const bool compute_all_distances);
         };
 
         void bruteForceRadiusSearch(const OctreeImpl::PointCloud& cloud, const OctreeImpl::PointType& query, float radius, DeviceArray<int>& result, DeviceArray<int>& buffer);
