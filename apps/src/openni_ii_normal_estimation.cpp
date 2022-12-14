@@ -33,7 +33,7 @@
  *
  */
 
-#include <pcl/common/time.h>
+#include <pcl/apps/timer.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_grabber.h>
@@ -45,22 +45,6 @@
 #include <thread>
 
 using namespace std::chrono_literals;
-
-// clang-format off
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-    static unsigned count = 0;                                                         \
-    static double last = pcl::getTime();                                               \
-    double now = pcl::getTime();                                                       \
-    ++count;                                                                           \
-    if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
-                << double(count) / double(now - last) << " Hz" << std::endl;           \
-      count = 0;                                                                       \
-      last = now;                                                                      \
-    }                                                                                  \
-  } while (false)
-// clang-format on
 
 template <typename PointType>
 class OpenNIIntegralImageNormalEstimation {

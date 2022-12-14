@@ -37,11 +37,8 @@
  *
  */
 
-#define SHOW_FPS 1
-
 #include <pcl/apps/timer.h>
 #include <pcl/common/common.h>
-#include <pcl/common/time.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/keypoints/brisk_2d.h>
 #include <pcl/visualization/image_viewer.h>
@@ -73,7 +70,7 @@ public:
   void
   cloud_callback(const CloudConstPtr& cloud)
   {
-    FPS_CALC("cloud callback");
+    fps_calc("cloud callback", 0);
     std::lock_guard<std::mutex> lock(cloud_mutex_);
     cloud_ = cloud;
 

@@ -33,8 +33,7 @@
  *
  */
 
-#define MEASURE_FUNCTION_TIME
-#include <pcl/common/time.h> //fps calculations
+#include <pcl/apps/timer.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/io/openni_grabber.h>
@@ -46,29 +45,6 @@
 #include <boost/date_time/posix_time/posix_time.hpp> // for to_iso_string, local_time
 
 #include <mutex>
-
-#define SHOW_FPS 1
-#if SHOW_FPS
-// clang-format off
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-    static unsigned count = 0;                                                         \
-    static double last = pcl::getTime();                                               \
-    double now = pcl::getTime();                                                       \
-    ++count;                                                                           \
-    if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
-                << double(count) / double(now - last) << " Hz" << std::endl;           \
-      count = 0;                                                                       \
-      last = now;                                                                      \
-    }                                                                                  \
-  } while (false)
-// clang-format on
-#else
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-  } while (false)
-#endif
 
 void
 printHelp(int, char** argv)
@@ -136,7 +112,7 @@ public:
   void
   cloud_callback(const CloudConstPtr& cloud)
   {
-    FPS_CALC("cloud callback");
+    fps_calc("cloud callback", 0);
     std::lock_guard<std::mutex> lock(cloud_mutex_);
     cloud_ = cloud;
     // Compute Tomasi keypoints
@@ -152,7 +128,7 @@ public:
   void
   image_callback(const openni_wrapper::Image::Ptr& image)
   {
-    FPS_CALC("image callback");
+    fps_calc("image callback", 0);
     std::lock_guard<std::mutex> lock(image_mutex_);
     image_ = image;
 

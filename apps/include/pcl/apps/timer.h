@@ -42,24 +42,75 @@
 #define MEASURE_FUNCTION_TIME
 #include <pcl/common/time.h> //fps calculations
 
+#include <memory>
+
+#define SHOW_FPS 1
+
 #if SHOW_FPS
-// clang-format off
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-    static unsigned count = 0;                                                         \
-    static double last = pcl::getTime();                                               \
-    double now = pcl::getTime();                                                       \
-    ++count;                                                                           \
-    if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
-                << double(count) / double(now - last) << " Hz" << std::endl;           \
-      count = 0;                                                                       \
-      last = now;                                                                      \
-    }                                                                                  \
-  } while (false)
-// clang-format on
+auto fps_calc = [](std::string what, unsigned which_iter) {
+  static unsigned count = 0;
+  static double last = pcl::getTime();
+  if (!which_iter) {
+    double now = pcl::getTime();
+    ++count;
+    if (now - last >= 1.0) {
+      std::cout << "Average framerate(" << what
+                << "): " << double(count) / double(now - last) << " Hz" << std::endl;
+      count = 0;
+      last = now;
+    }
+  }
+  else {
+    if (++count == which_iter) {
+      double now = pcl::getTime();
+      std::cout << "Average framerate(" << what
+                << "): " << double(count) / double(now - last) << " Hz" << std::endl;
+      count = 0;
+      last = now;
+    }
+  }
+};
+
+auto fps_calc_with_stop = [](std::string what, std::shared_ptr<bool>& stop_computing) {
+  static unsigned count = 0;
+  static double last = pcl::getTime();
+  double now = pcl::getTime();
+  ++count;
+  if (now - last >= 1.0) {
+    std::cout << "Average framerate(" << what
+              << "): " << double(count) / double(now - last) << " Hz" << std::endl;
+    count = 0;
+    last = now;
+    if (*stop_computing)
+      std::cout << "Press 's' to start computing!\n";
+  }
+};
+
+auto fps_calc_begin_end = [](std::string what, unsigned which_iter) {
+  static double duration = 0;
+  static double start_time = 0;
+
+  if (what == "begin") {
+    start_time = pcl::getTime();
+  }
+  else {
+    double end_time = pcl::getTime();
+    static unsigned count = 0;
+    if (++count == which_iter) {
+      std::cout << "Average framerate(" << what
+                << "): " << double(count) / double(duration) << " Hz" << std::endl;
+      count = 0;
+      duration = 0.0;
+    }
+    else {
+      duration += end_time - start_time;
+    }
+  }
+};
+
 #else
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-  } while (false)
+auto fps_calc = [](std::string /*what*/, unsigned /*which_iter*/) {};
+auto fps_calc_with_stop = [](std::string /*what*/,
+                             std::shared_ptr<bool>& /*stop_computing*/) {};
+auto fps_calc_begin_end = [](std::string /*what*/, unsigned /*which_iter*/) {};
 #endif

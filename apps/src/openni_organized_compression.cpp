@@ -34,7 +34,7 @@
  * Author: Julius Kammerl (julius@kammerl.de)
  */
 
-#include <pcl/common/time.h>
+#include <pcl/apps/timer.h>
 #include <pcl/compression/organized_pointcloud_compression.h>
 #include <pcl/console/parse.h>
 #include <pcl/io/openni_grabber.h>
@@ -83,22 +83,6 @@ char usage[] = "\n"
                "  example:\n"
                "      ./pcl_openni_organized_compression -x -t -f pc_compressed.pcc \n"
                "\n";
-
-// clang-format off
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-    static unsigned count = 0;                                                         \
-    static double last = pcl::getTime();                                               \
-    double now = pcl::getTime();                                                       \
-    ++count;                                                                           \
-    if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
-                << double(count) / double(now - last) << " Hz" << std::endl;           \
-      count = 0;                                                                       \
-      last = now;                                                                      \
-    }                                                                                  \
-  } while (false)
-// clang-format on
 
 void
 print_usage(const std::string& msg)
@@ -490,7 +474,7 @@ main(int argc, char** argv)
             "Decoded Point Cloud - PCL Compression Viewer");
 
         while (!socketStream.fail()) {
-          FPS_CALC("drawing");
+          fps_calc("drawing", 0);
           PointCloud<PointXYZRGBA>::Ptr cloudOut(new PointCloud<PointXYZRGBA>());
           organizedCoder->decodePointCloud(socketStream, cloudOut);
           viewer.showCloud(cloudOut);

@@ -35,7 +35,7 @@
  *         Christian Potthast (potthast@usc.edu)
  */
 
-#include <pcl/common/time.h>
+#include <pcl/apps/timer.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/io/openni_grabber.h>
@@ -49,30 +49,6 @@
 #include <mutex>
 
 using namespace std::chrono_literals;
-
-#define SHOW_FPS 1
-#if SHOW_FPS
-// clang-format off
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-    static unsigned count = 0;                                                         \
-    static double last = pcl::getTime();                                               \
-    double now = pcl::getTime();                                                       \
-    ++count;                                                                           \
-    if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
-                << double(count) / double(now - last) << " Hz" << std::endl;           \
-      count = 0;                                                                       \
-      last = now;                                                                      \
-    }                                                                                  \
-  } while (false)
-// clang-format on
-#else
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-  } while (false)
-#endif
-
 using namespace pcl::console;
 using namespace boost::filesystem;
 
@@ -156,7 +132,7 @@ public:
   void
   saveCloud()
   {
-    FPS_CALC("I/O");
+    fps_calc("I/O", 0);
     const std::string time = boost::posix_time::to_iso_string(
         boost::posix_time::microsec_clock::local_time());
     const std::string filepath = dir_name_ + '/' + file_name_ + '_' + time + ".pcd";

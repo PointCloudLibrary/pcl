@@ -106,7 +106,7 @@ void
 OpenNIPassthrough::cloud_cb(const CloudConstPtr& cloud)
 {
   QMutexLocker locker(&mtx_);
-  FPS_CALC("computation");
+  fps_calc("computation", 0);
 
   // Computation goes here
   cloud_pass_.reset(new Cloud);
@@ -133,7 +133,7 @@ OpenNIPassthrough::timeoutSlot()
     vis_->addPointCloud(temp_cloud, "cloud_pass");
     vis_->resetCameraViewpoint("cloud_pass");
   }
-  FPS_CALC("visualization");
+  fps_calc("visualization", 0);
   ui_->qvtk_widget->update();
 }
 

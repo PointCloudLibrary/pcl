@@ -34,7 +34,7 @@
  *  Author: Suat Gedikli (gedikli@willowgarage.com)
  */
 
-#include <pcl/common/time.h>
+#include <pcl/apps/timer.h>
 #include <pcl/console/parse.h>
 #include <pcl/filters/color.h>
 #include <pcl/io/openni_camera/openni_driver.h>
@@ -44,22 +44,6 @@
 #include <pcl/point_types.h>
 
 #include <mutex>
-
-// clang-format off
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-    static unsigned count = 0;                                                         \
-    static double last = pcl::getTime();                                               \
-    double now = pcl::getTime();                                                       \
-    ++count;                                                                           \
-    if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
-                << double(count) / double(now - last) << " Hz" << std::endl;           \
-      count = 0;                                                                       \
-      last = now;                                                                      \
-    }                                                                                  \
-  } while (false)
-// clang-format on
 
 template <typename PointType>
 class OpenNIPassthrough {
@@ -118,7 +102,7 @@ public:
   cloud_cb_(const CloudConstPtr& cloud)
   {
     std::lock_guard<std::mutex> lock(mtx_);
-    FPS_CALC("computation");
+    fps_calc("computation", 0);
 
     cloud_color_.reset(new Cloud);
     // Computation goes here
@@ -137,7 +121,7 @@ public:
       if (cloud_color_) {
         std::lock_guard<std::mutex> lock(mtx_);
 
-        FPS_CALC("visualization");
+        fps_calc("visualization", 0);
         CloudPtr temp_cloud;
         temp_cloud.swap(cloud_color_); // here we set cloud_ to null, so that
         viewer.showCloud(temp_cloud);
