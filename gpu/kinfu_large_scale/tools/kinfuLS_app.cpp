@@ -790,7 +790,7 @@ struct KinFuLSApp
   {
     if(registration_)
     {
-      const int max_color_integration_weight = 2;
+      constexpr int max_color_integration_weight = 2;
       kinfu_->initColorIntegration(max_color_integration_weight);
       integrate_colors_ = true;      
     }    

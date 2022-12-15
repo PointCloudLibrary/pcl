@@ -118,10 +118,10 @@ struct CopyPointHelper<PointInT, PointOutT,
     using FieldListInT = typename pcl::traits::fieldList<PointInT>::type;
     using FieldListOutT = typename pcl::traits::fieldList<PointOutT>::type;
     using FieldList = typename pcl::intersect<FieldListInT, FieldListOutT>::type;
-    const std::uint32_t offset_in  = boost::mpl::if_<pcl::traits::has_field<PointInT, pcl::fields::rgb>,
+    constexpr std::uint32_t offset_in  = boost::mpl::if_<pcl::traits::has_field<PointInT, pcl::fields::rgb>,
                                                 pcl::traits::offset<PointInT, pcl::fields::rgb>,
                                                 pcl::traits::offset<PointInT, pcl::fields::rgba> >::type::value;
-    const std::uint32_t offset_out = boost::mpl::if_<pcl::traits::has_field<PointOutT, pcl::fields::rgb>,
+    constexpr std::uint32_t offset_out = boost::mpl::if_<pcl::traits::has_field<PointOutT, pcl::fields::rgb>,
                                                 pcl::traits::offset<PointOutT, pcl::fields::rgb>,
                                                 pcl::traits::offset<PointOutT, pcl::fields::rgba> >::type::value;
     pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointInT, PointOutT> (point_in, point_out));

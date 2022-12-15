@@ -534,7 +534,7 @@ protected:
                        unsigned char& a) const
   {
     // Account for division by zero when direction vector is 0.0
-    const float epsilon = 1e-10f;
+    constexpr float epsilon = 1e-10f;
     if (direction.x() == 0.0)
       direction.x() = epsilon;
     if (direction.y() == 0.0)

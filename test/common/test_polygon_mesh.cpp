@@ -66,7 +66,7 @@ TEST(PolygonMesh, concatenate_header)
 TEST(PolygonMesh, concatenate_cloud)
 {
     PointCloud<PointXYZ> cloud_template;
-    const std::size_t size = 10 * 480;
+    constexpr std::size_t size = 10 * 480;
 
     cloud_template.width = 10;
     cloud_template.height = 480;
@@ -91,7 +91,7 @@ TEST(PolygonMesh, concatenate_cloud)
 
 TEST(PolygonMesh, concatenate_vertices)
 {
-    const std::size_t size = 15;
+    constexpr std::size_t size = 15;
 
     PolygonMesh test, dummy;
     // The algorithm works regardless of the organization.

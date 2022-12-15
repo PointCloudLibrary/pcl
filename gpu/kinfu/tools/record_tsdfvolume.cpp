@@ -138,8 +138,8 @@ DeviceVolume::createFromDepth (const pcl::device::PtrStepSz<const unsigned short
 
   using Matrix3frm = Eigen::Matrix<float, 3, 3, Eigen::RowMajor>;
 
-  const int rows = 480;
-  const int cols = 640;
+  constexpr int rows = 480;
+  constexpr int cols = 640;
 
   // scale depth values
   gpu::DeviceArray2D<float> device_depth_scaled;
@@ -197,7 +197,7 @@ DeviceVolume::getVolume (pcl::TSDFVolume<VoxelT, WeightT>::Ptr &volume)
 bool
 DeviceVolume::getCloud (pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud)
 {
-  const int DEFAULT_VOLUME_CLOUD_BUFFER_SIZE = 10 * 1000 * 1000;
+  constexpr int DEFAULT_VOLUME_CLOUD_BUFFER_SIZE = 10 * 1000 * 1000;
 
   // point buffer on the device
   pcl::gpu::DeviceArray<pcl::PointXYZ> device_cloud_buffer (DEFAULT_VOLUME_CLOUD_BUFFER_SIZE);

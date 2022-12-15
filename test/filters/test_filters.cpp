@@ -2302,7 +2302,7 @@ TEST (NormalRefinement, Filters)
   const float vp_z = cloud_organized_nonan.sensor_origin_[2];
 
   // Search parameters
-  const int k = 5;
+  constexpr int k = 5;
   std::vector<pcl::Indices> k_indices;
   std::vector<std::vector<float> > k_sqr_distances;
 

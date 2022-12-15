@@ -44,7 +44,7 @@
 TEST(UniformSampling, extractRemovedIndices)
 {
   using namespace pcl::common;
-  const int SEED = 1234;
+  constexpr int SEED = 1234;
   CloudGenerator<pcl::PointXYZ, UniformGenerator<float>> generator;
   UniformGenerator<float>::Parameters x_params(0, 1, SEED + 1);
   generator.setParametersForX(x_params);

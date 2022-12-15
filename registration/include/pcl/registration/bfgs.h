@@ -28,7 +28,7 @@ public:
   void
   compute(const OtherPolynomial& poly, bool& hasRealRoot)
   {
-    const Scalar ZERO(0);
+    constexpr Scalar ZERO(0);
     Scalar a2(2 * poly[2]);
     assert(ZERO != poly[poly.size() - 1]);
     Scalar discriminant((poly[1] * poly[1]) - (4 * poly[0] * poly[2]));

@@ -99,7 +99,7 @@ TEST (PCL, SIFTKeypoint)
   ASSERT_EQ (keypoints.height, 1);
 
   // Compare to previously validated output
-  const std::size_t correct_nr_keypoints = 5;
+  constexpr std::size_t correct_nr_keypoints = 5;
   const float correct_keypoints[correct_nr_keypoints][4] = 
     { 
       // { x,  y,  z,  scale }
@@ -123,14 +123,14 @@ TEST (PCL, SIFTKeypoint)
 
 TEST (PCL, SIFTKeypoint_radiusSearch)
 {
-  const int nr_scales_per_octave = 3;
-  const float scale = 0.02f;
+  constexpr int nr_scales_per_octave = 3;
+  constexpr float scale = 0.02f;
 
   KdTreeFLANN<PointXYZI>::Ptr tree_ (new KdTreeFLANN<PointXYZI>);
   auto cloud = cloud_xyzi->makeShared ();
 
   ApproximateVoxelGrid<PointXYZI> voxel_grid;
-  const float s = 1.0 * scale;
+  constexpr float s = 1.0 * scale;
   voxel_grid.setLeafSize (s, s, s);
   voxel_grid.setInputCloud (cloud);
   voxel_grid.filter (*cloud);
@@ -138,12 +138,11 @@ TEST (PCL, SIFTKeypoint_radiusSearch)
   
   const PointCloud<PointXYZI> & input = *cloud;
   KdTreeFLANN<PointXYZI> & tree = *tree_;
-  const float base_scale = scale;
 
   std::vector<float> scales (nr_scales_per_octave + 3);
   for (int i_scale = 0; i_scale <= nr_scales_per_octave + 2; ++i_scale)
   {
-    scales[i_scale] = base_scale * std::pow (2.0f, static_cast<float> (i_scale-1) / nr_scales_per_octave);
+    scales[i_scale] = scale * std::pow (2.0f, static_cast<float> (i_scale-1) / nr_scales_per_octave);
   }
   Eigen::MatrixXf diff_of_gauss;
 
@@ -151,9 +150,9 @@ TEST (PCL, SIFTKeypoint_radiusSearch)
   std::vector<float> nn_dist;
   diff_of_gauss.resize (input.size (), scales.size () - 1);
 
-  const float max_radius = 0.10f;
+  constexpr float max_radius = 0.10f;
 
-  const std::size_t i_point = 500;
+  constexpr std::size_t i_point = 500;
   tree.radiusSearch (i_point, max_radius, nn_indices, nn_dist);
 
   // Are they all unique?

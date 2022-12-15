@@ -46,8 +46,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 // Abort circulating if the number of evaluations is too damn high.
-const unsigned int max_number_polygon_vertices  = 100;
-const unsigned int max_number_boundary_vertices = 100;
+constexpr unsigned int max_number_polygon_vertices = 100;
+constexpr unsigned int max_number_boundary_vertices = 100;
 
 ////////////////////////////////////////////////////////////////////////////////
 

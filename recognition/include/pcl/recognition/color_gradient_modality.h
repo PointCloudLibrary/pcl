@@ -295,7 +295,7 @@ computeGaussianKernel (const std::size_t kernel_size, const float sigma, std::ve
 {
   // code taken from OpenCV
   const int n = int (kernel_size);
-  const int SMALL_GAUSSIAN_SIZE = 7;
+  constexpr int SMALL_GAUSSIAN_SIZE = 7;
   static const float small_gaussian_tab[][SMALL_GAUSSIAN_SIZE] =
   {
       {1.f},
@@ -340,7 +340,7 @@ pcl::ColorGradientModality<PointInT>::
 processInputData ()
 {
   // compute gaussian kernel values
-  const std::size_t kernel_size = 7;
+  constexpr std::size_t kernel_size = 7;
   std::vector<float> kernel_values;
   computeGaussianKernel (kernel_size, 0.0f, kernel_values);
 
@@ -971,7 +971,7 @@ quantizeColorGradients ()
 
   quantized_color_gradients_.resize (width, height);
 
-  const float angleScale = 16.0f/360.0f;
+  constexpr float angleScale = 16.0f / 360.0f;
 
   //float min_angle = std::numeric_limits<float>::max ();
   //float max_angle = -std::numeric_limits<float>::max ();

@@ -71,7 +71,7 @@ do \
 bool is_done = false;
 std::mutex io_mutex;
 
-const int BUFFER_SIZE = 1000;
+constexpr int BUFFER_SIZE = 1000;
 static int counter = 1;
 //////////////////////////////////////////////////////////////////////////////////////////
 class MapsBuffer

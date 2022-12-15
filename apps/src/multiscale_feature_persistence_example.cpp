@@ -47,7 +47,7 @@
 using namespace pcl;
 
 const Eigen::Vector4f subsampling_leaf_size(0.01f, 0.01f, 0.01f, 0.0f);
-const float normal_estimation_search_radius = 0.05f;
+constexpr float normal_estimation_search_radius = 0.05f;
 
 void
 subsampleAndCalculateNormals(PointCloud<PointXYZ>::Ptr& cloud,

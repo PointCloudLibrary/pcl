@@ -124,7 +124,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKernel (
   scale_list_ = new float[scales_];
   size_list_  = new unsigned int[scales_];
 
-  const float sigma_scale = 1.3f;
+  constexpr float sigma_scale = 1.3f;
 
   for (unsigned int scale = 0; scale < scales_; ++scale)
   {

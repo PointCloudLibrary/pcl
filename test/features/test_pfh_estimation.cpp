@@ -476,7 +476,7 @@ TEST (PCL, GFPFH)
 
   PointCloud<PointXYZL>::Ptr cloud (new PointCloud<PointXYZL>());
 
-  const unsigned num_classes = 3;
+  constexpr unsigned num_classes = 3;
 
   // Build a cubic shape with a hole and changing labels.
   for (int z = -10; z < 10; ++z)

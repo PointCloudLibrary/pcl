@@ -74,7 +74,7 @@ TEST (PCL, ISSKeypoint3D_WBE)
   //
   // Compare to previously validated output
   //
-  const std::size_t correct_nr_keypoints = 6;
+  constexpr std::size_t correct_nr_keypoints = 6;
   const float correct_keypoints[correct_nr_keypoints][3] =
     {
       // { x,  y,  z}
@@ -130,7 +130,7 @@ TEST (PCL, ISSKeypoint3D_BE)
   //
   // Compare to previously validated output
   //
-  const std::size_t correct_nr_keypoints = 5;
+  constexpr std::size_t correct_nr_keypoints = 5;
   const float correct_keypoints[correct_nr_keypoints][3] =
     {
       // { x,  y,  z}

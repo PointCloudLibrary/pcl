@@ -484,7 +484,7 @@ pcl::ihs::OpenGLViewer::addMesh(const CloudXYZRGBNormalConstPtr& cloud,
   const int h = cloud->height;
   const int offset_1 = -w;
   const int offset_2 = -w - 1;
-  const int offset_3 = -1;
+  constexpr int offset_3 = -1;
 
   FaceVertexMeshPtr mesh(new FaceVertexMesh());
   mesh->transformation = T;
@@ -1083,7 +1083,7 @@ pcl::ihs::OpenGLViewer::initializeGL()
 void
 pcl::ihs::OpenGLViewer::setupViewport(const int w, const int h)
 {
-  const float aspect_ratio = 4. / 3.;
+  constexpr float aspect_ratio = 4. / 3.;
 
   // Use the biggest possible area of the window to draw to
   //    case 1 (w < w_scaled):        case 2 (w >= w_scaled):

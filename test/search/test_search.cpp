@@ -69,16 +69,16 @@ using namespace pcl;
 
 #if EXCESSIVE_TESTING
 /** \brief number of points used for creating unordered point clouds */
-const unsigned int unorganized_point_count = 100000;
+constexpr unsigned int unorganized_point_count = 100000;
 
 /** \brief number of search operations on ordered point clouds*/
-const unsigned int query_count = 5000;
+constexpr unsigned int query_count = 5000;
 #else
 /** \brief number of points used for creating unordered point clouds */
-const unsigned int unorganized_point_count = 1200;
+constexpr unsigned int unorganized_point_count = 1200;
 
 /** \brief number of search operations on ordered point clouds*/
-const unsigned int query_count = 100;
+constexpr unsigned int query_count = 100;
 #endif
 
 /** \brief organized point cloud*/
