@@ -1,6 +1,6 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <iostream>
-#include <pcl/io/io.h>
+#include <pcl/common/io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/integral_image_normal.h>
     
