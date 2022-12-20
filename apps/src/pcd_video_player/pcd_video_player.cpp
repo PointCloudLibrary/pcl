@@ -36,7 +36,6 @@
  */
 
 #include <pcl/apps/pcd_video_player.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 
 #include <QApplication>
@@ -81,10 +80,11 @@ PCDVideoPlayer::PCDVideoPlayer()
   ui_ = new Ui::MainWindow;
   ui_->setupUi(this);
 
-  this->setWindowTitle("PCL PCD Video Player");
+  this->setWindowTitle("PCL PCD Video Player_mod");
 
   // Setup the cloud pointer
-  cloud_.reset(new pcl::PointCloud<pcl::PointXYZRGBA>);
+  cloud_ptr.reset(new pcl::PointCloud<pcl::PointXYZI>);
+  new_cloud.reset(new pcl::PointCloud<pcl::PointXYZI>);
 
   // Create the QVTKWidget
 #if VTK_MAJOR_VERSION > 8
@@ -95,6 +95,21 @@ PCDVideoPlayer::PCDVideoPlayer()
 #else
   vis_.reset(new pcl::visualization::PCLVisualizer("", false));
 #endif // VTK_MAJOR_VERSION > 8
+  vis_->setBackgroundColor(0.7, 0.7, 0.7);
+
+  // Draw and label the axes
+  PointXYZ pt_origin{0.0, 0.0, 0.0};
+  PointXYZ pt_x{5, 0, 0};
+  PointXYZ pt_y{0, 5, 0};
+  PointXYZ pt_z{0, 0, 5};
+  vis_->addArrow<PointXYZ,PointXYZ>(pt_x, pt_origin, 1.0 ,0.0, 0.0, false, "axisX");
+  vis_->addArrow<PointXYZ,PointXYZ>(pt_y, pt_origin, 0.0 ,1.0, 0.0, false, "axisY");
+  vis_->addArrow<PointXYZ,PointXYZ>(pt_z, pt_origin, 0.0 ,0.0, 1.0, false, "axisZ");
+
+  vis_->addText3D<PointXYZ>("X", pt_x, 1, 1.0, 0.0, 0.0);
+  vis_->addText3D<PointXYZ>("Y", pt_y, 1, 0.0, 1.0, 0.0);
+  vis_->addText3D<PointXYZ>("Z", pt_z, 1, 0.0, 0.0, 1.0);
+
   setRenderWindowCompat(*(ui_->qvtk_widget), *(vis_->getRenderWindow()));
   vis_->setupInteractor(getInteractorCompat(*(ui_->qvtk_widget)),
                         getRenderWindowCompat(*(ui_->qvtk_widget)));
@@ -123,6 +138,8 @@ PCDVideoPlayer::PCDVideoPlayer()
           SIGNAL(valueChanged(int)),
           this,
           SLOT(indexSliderValueChanged(int)));
+
+  std::cout << "\n Created instance for PCDVideoPlayer \n";
 }
 
 void
@@ -158,6 +175,8 @@ PCDVideoPlayer::nextButtonPressed()
 void
 PCDVideoPlayer::selectFolderButtonPressed()
 {
+    std::cout << "\n Selecting folder for PCDVideoPlayer \n";
+
   pcd_files_.clear(); // Clear the std::vector
   pcd_paths_.clear(); // Clear the boost filesystem paths
 
@@ -170,19 +189,23 @@ PCDVideoPlayer::selectFolderButtonPressed()
   boost::filesystem::directory_iterator end_itr;
 
   if (boost::filesystem::is_directory(dir_.toStdString())) {
-    for (boost::filesystem::directory_iterator itr(dir_.toStdString()); itr != end_itr;
-         ++itr) {
+    for (boost::filesystem::directory_iterator itr(dir_.toStdString()); itr != end_itr; ++itr) {
       std::string ext = itr->path().extension().string();
-      if (ext == ".pcd") {
+      if (boost::filesystem::is_regular_file(itr->path()) && ext == ".pcd") {
+        std::cout << "\t Read file:" << itr->path().string() << "\n";
         pcd_files_.push_back(itr->path().string());
         pcd_paths_.push_back(itr->path());
       }
       else {
         // Found non pcd file
+        std::cerr << "\t (!) Found non pcd file..." << std::endl;
         PCL_DEBUG(
             "[PCDVideoPlayer::selectFolderButtonPressed] : found a different file\n");
       }
     }
+    // Sort files by name to play them back properly
+    static const auto strcomp = [](const std::string& s1, const std::string& s2) { return s1 < s2;};
+    std::sort<decltype(pcd_files_.begin()), decltype(strcomp)>(pcd_files_.begin(), pcd_files_.end(), strcomp);
   }
   else {
     PCL_ERROR("Path is not a directory\n");
@@ -229,6 +252,8 @@ PCDVideoPlayer::selectFilesButtonPressed()
     pcd_files_.push_back(qt_pcd_files.at(i).toStdString());
   }
 
+  // FIXME : Look up for .pcd files and sort them by name
+
   current_frame_ = 0;
 
   // Reset the Slider
@@ -242,6 +267,8 @@ PCDVideoPlayer::selectFilesButtonPressed()
 void
 PCDVideoPlayer::timeoutSlot()
 {
+  //std::cout << "\t Initialiting playback now... \n";
+
   if (play_mode_) {
     if (speed_counter_ == speed_value_) {
       if (current_frame_ == (nr_of_frames_ - 1)) // Reached the end
@@ -261,15 +288,38 @@ PCDVideoPlayer::timeoutSlot()
   }
 
   if (cloud_present_ && cloud_modified_) {
-    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>(pcd_files_[current_frame_], *cloud_) ==
-        -1) //* load the file
+    auto current_file = pcd_files_[current_frame_];
+    std::cout << "Reading " << current_file << endl;
+
+    new_cloud.reset(new pcl::PointCloud<pcl::PointXYZI>);
+    if(pcdReader.read(current_file, *new_cloud) == -1)
     {
+      std::cout << "[PCDVideoPlayer::timeoutSlot] : Couldn't read file" << current_file << std::endl;
       PCL_ERROR("[PCDVideoPlayer::timeoutSlot] : Couldn't read file %s\n");
     }
+    else{
+      std::cout << "Done." << endl;
+    }
+    
+    // Update cloud_ptr to visualize
+    cloud_ptr = new_cloud;
 
-    if (!vis_->updatePointCloud(cloud_, "cloud_")) {
-      vis_->addPointCloud(cloud_, "cloud_");
-      vis_->resetCameraViewpoint("cloud_");
+    pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZI> colorh(cloud_ptr, "intensity");
+    pcl::PointCloud<PointXYZI>::ConstPtr const_cloud_ptr{cloud_ptr};
+
+    if (!vis_->updatePointCloud<pcl::PointXYZI>(cloud_ptr, colorh, "cloud")) {
+      // Setting up visualizer for first time
+      vis_->resetCameraViewpoint("cloud");
+      vis_->addPointCloud<pcl::PointXYZI>(cloud_ptr, colorh, "cloud");
+      vis_->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 4, "cloud");
+      vis_->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_LUT, 
+                                             pcl::visualization::PCL_VISUALIZER_LUT_JET, "cloud");
+      vis_->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_LUT_RANGE, 0, 255, "cloud");
+      vis_->addText("current_file_path", 0, 0, 30, 0.f, 0.f, 0.f, "message");
+    }
+    else{
+      // Visualizer is set
+      vis_->updateText(current_file, 0, 0, 30, 0.f, 0.f, 0.f, "message");
     }
     cloud_modified_ = false;
   }

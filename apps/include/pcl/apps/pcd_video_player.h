@@ -41,6 +41,7 @@
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/io/pcd_io.h>
 
 #include <boost/filesystem.hpp>
 
@@ -90,7 +91,8 @@ protected:
   refreshView();
 
   pcl::visualization::PCLVisualizer::Ptr vis_;
-  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_;
+  pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_ptr, new_cloud;
+  pcl::PCDReader pcdReader;
 
   QMutex mtx_;
   QMutex vis_mtx_;

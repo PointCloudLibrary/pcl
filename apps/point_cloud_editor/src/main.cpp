@@ -56,6 +56,7 @@
 int
 main(int argc, char *argv[])
 {
+  std::cout << "\n\n  Starting pcl_point_cloud_editor... \n\n";
   QApplication app(argc, argv);
   //QApplication::setWindowIcon(QIcon(":/pceditor.icns"));
   MainWindow main_window(argc, argv);
