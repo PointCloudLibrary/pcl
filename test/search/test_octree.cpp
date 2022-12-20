@@ -329,7 +329,7 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
     ASSERT_GE ( cloudNWRRadius.size() , cloudSearchBruteforce_size_lower);
     ASSERT_LE ( cloudNWRRadius.size() , cloudSearchBruteforce_size_upper);
 
-    // check if results from organized radius search are indeed within the search radius
+    // check if results from octree radius search are indeed within the search radius
     for (const auto& current : cloudNWRSearch)
     {
       const auto pointDist = pcl_tests::point_distance((*cloudIn)[current], searchPoint);
