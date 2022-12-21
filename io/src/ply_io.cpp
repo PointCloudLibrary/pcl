@@ -614,8 +614,7 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
           if (field.datatype == ::pcl::PCLPointField::FLOAT32)
           {
             const auto idx = r * cloud_->point_step + field.offset;
-            if (((std::numeric_limits<decltype(idx)>::max () - sizeof (float)) < idx) ||
-                idx + sizeof (float) > data.size())
+            if (idx + sizeof (float) > data.size())
             {
               PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", idx);
               return (-1);
@@ -626,8 +625,7 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
           else if (field.datatype == ::pcl::PCLPointField::FLOAT64)
           {
             const auto idx = r * cloud_->point_step + field.offset;
-            if (((std::numeric_limits<decltype(idx)>::max () - sizeof (double)) < idx) ||
-                idx + sizeof (double) > data.size())
+            if (idx + sizeof (double) > data.size())
             {
               PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", idx);
               return (-1);
@@ -638,8 +636,7 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
           else
           {
             const auto idx = r * cloud_->point_step + field.offset;
-            if (((std::numeric_limits<decltype(idx)>::max () - pcl::getFieldSize (field.datatype) * field.count) < idx) ||
-                idx + pcl::getFieldSize (field.datatype) * field.count > data.size())
+            if (idx + pcl::getFieldSize (field.datatype) * field.count > data.size())
             {
               PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", idx);
               return (-1);
@@ -650,9 +647,8 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
       }
       else
       {
-        const auto srcIdx = (*range_grid_)[r][0] * cloud_->point_step;
-        if (((std::numeric_limits<decltype(srcIdx)>::max () - cloud_->point_step) < srcIdx) ||
-            srcIdx + cloud_->point_step > cloud_->data.size())
+        const std::size_t srcIdx = (*range_grid_)[r][0] * cloud_->point_step;
+        if (srcIdx + cloud_->point_step > cloud_->data.size())
         {
           PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", srcIdx);
           return (-1);
@@ -717,8 +713,7 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
           if (field.datatype == ::pcl::PCLPointField::FLOAT32)
           {
             const auto idx = r * cloud_->point_step + field.offset;
-            if (((std::numeric_limits<decltype(idx)>::max () - sizeof (float)) < idx) ||
-                idx + sizeof (float) > data.size())
+            if (idx + sizeof (float) > data.size())
             {
               PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", idx);
               return (-1);
@@ -729,8 +724,7 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
           else if (field.datatype == ::pcl::PCLPointField::FLOAT64)
           {
             const auto idx = r * cloud_->point_step + field.offset;
-            if (((std::numeric_limits<decltype(idx)>::max () - sizeof (double)) < idx) ||
-                idx + sizeof (double) > data.size())
+            if (idx + sizeof (double) > data.size())
             {
               PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", idx);
               return (-1);
@@ -741,8 +735,7 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
           else
           {
             const auto idx = r * cloud_->point_step + field.offset;
-            if (((std::numeric_limits<decltype(idx)>::max () - pcl::getFieldSize (field.datatype) * field.count) < idx) ||
-                idx + pcl::getFieldSize (field.datatype) * field.count > data.size())
+            if (idx + pcl::getFieldSize (field.datatype) * field.count > data.size())
             {
               PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", idx);
               return (-1);
@@ -753,9 +746,8 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
       }
       else
       {
-        const auto srcIdx = (*range_grid_)[r][0] * cloud_->point_step;
-        if (((std::numeric_limits<decltype(srcIdx)>::max () - cloud_->point_step) < srcIdx) ||
-            srcIdx + cloud_->point_step > cloud_->data.size())
+        const std::size_t srcIdx = (*range_grid_)[r][0] * cloud_->point_step;
+        if (srcIdx + cloud_->point_step > cloud_->data.size())
         {
           PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", srcIdx);
           return (-1);
