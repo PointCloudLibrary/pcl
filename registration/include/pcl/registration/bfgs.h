@@ -101,7 +101,7 @@ struct BFGSDummyFunctor {
   virtual void
   fdf(const VectorType& x, Scalar& f, VectorType& df) = 0;
   virtual BFGSSpace::Status
-  checkGradient(const VectorType& g)
+  checkGradient(const VectorType& /*g*/)
   {
     return BFGSSpace::NotStarted;
   };
@@ -351,7 +351,7 @@ BFGS<FunctorType>::minimize(FVectorType& x)
   BFGSSpace::Status status = minimizeInit(x);
   do {
     status = minimizeOneStep(x);
-    iter++;
+    ++iter;
   } while (status == BFGSSpace::Success && iter < parameters.max_iters);
   return status;
 }
