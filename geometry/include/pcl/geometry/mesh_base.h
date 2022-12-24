@@ -638,7 +638,7 @@ public:
   isValid(const VertexIndex& idx_vertex) const
   {
     return (idx_vertex >= static_cast<VertexIndex>(0) &&
-            idx_vertex < static_cast<VertexIndex>(static_cast<int>(vertices_.size())));
+            idx_vertex < static_cast<VertexIndex>(vertices_.size()));
   }
 
   /** \brief Check if the given half-edge index is a valid index into the mesh.  */

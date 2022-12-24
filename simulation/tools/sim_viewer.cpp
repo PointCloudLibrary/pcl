@@ -670,7 +670,7 @@ main(int argc, char** argv)
     print_info("[done, ");
     print_value("%g", tt.toc());
     print_info(" ms : ");
-    print_value("%d", static_cast<int>(cloud->width) * cloud->height);
+    print_value("%d", static_cast<int>(cloud->width * cloud->height));
     print_info(" points]\n");
     print_info("Available dimensions: ");
     print_value("%s\n", pcl::getFieldsList(*cloud).c_str());
