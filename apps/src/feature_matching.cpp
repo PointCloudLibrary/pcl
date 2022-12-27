@@ -324,7 +324,7 @@ ICCVTutorial<FeatureType>::findCorrespondences(
 
   // Find the index of the best match for each keypoint, and store it in
   // "correspondences_out"
-  const int k = 1;
+  constexpr int k = 1;
   pcl::Indices k_indices(k);
   std::vector<float> k_squared_distances(k);
   for (int i = 0; i < static_cast<int>(source->size()); ++i) {

@@ -106,7 +106,7 @@ namespace pcl
           /** \brief Applies non-max-suppression. 
             * \param[in] intensity_data the image data
             * \param[in] input the keypoint positions
-            * \param[out] output the resultant keypoints after non-max-supression
+            * \param[out] output the resultant keypoints after non-max-suppression
             */
           void
           applyNonMaxSuppression (const std::vector<unsigned char>& intensity_data, 
@@ -116,7 +116,7 @@ namespace pcl
           /** \brief Applies non-max-suppression. 
             * \param[in] intensity_data the image data
             * \param[in] input the keypoint positions
-            * \param[out] output the resultant keypoints after non-max-supression
+            * \param[out] output the resultant keypoints after non-max-suppression
             */
           void
           applyNonMaxSuppression (const std::vector<float>& intensity_data, 
@@ -213,7 +213,7 @@ namespace pcl
           /** \brief Non-max-suppression helper method.
             * \param[in] input the keypoint positions
             * \param[in] scores the keypoint scores computed on the image data
-            * \param[out] output the resultant keypoints after non-max-supression
+            * \param[out] output the resultant keypoints after non-max-suppression
             */
           void
           applyNonMaxSuppression (const pcl::PointCloud<pcl::PointUV> &input, 

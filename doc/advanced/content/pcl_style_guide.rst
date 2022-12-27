@@ -397,7 +397,7 @@ For get/set type methods the following rules apply:
 * If large amounts of data needs to be set (usually the case with input data
   in PCL) it is preferred to pass a boost shared pointer instead of the actual
   data.
-* Getters always need to pass exactly the same types as their repsective setters
+* Getters always need to pass exactly the same types as their respective setters
   and vice versa.
 * For getters, if only one argument needs to be passed this will be done via
   the return keyword. If two or more arguments need to be passed they will

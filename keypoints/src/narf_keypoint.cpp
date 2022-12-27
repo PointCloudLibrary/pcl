@@ -632,7 +632,7 @@ NarfKeypoint::calculateSparseInterestImage ()
         relevent_point_indices.resize(newPointIdx);
       }
 
-      // Caclulate interest values for neighbors
+      // Calculate interest values for neighbors
       for (const int &index2 : neighbors_within_radius_overhead)
       {
         int y2 = index2/range_image.width,

@@ -2963,7 +2963,7 @@ pcl::visualization::PCLVisualizer::updateColorHandlerIndex (const std::string &i
   auto *data = dynamic_cast<vtkPolyData*>(am_it->second.actor->GetMapper ()->GetInput ());
   data->GetPointData ()->SetScalars (scalars);
   // Modify the mapper
-  auto* mapper = dynamic_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ());
+  auto* mapper = dynamic_cast<vtkDataSetMapper*>(am_it->second.actor->GetMapper ());
   mapper->SetScalarRange (minmax);
   mapper->SetScalarModeToUsePointData ();
   mapper->SetInputData (data);
@@ -3120,7 +3120,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   std::vector<pcl::Vertices> verts (poly_mesh.polygons); // copy vector
 
   // Get the current poly data
-  vtkSmartPointer<vtkPolyData> polydata = dynamic_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->GetInput ();
+  vtkSmartPointer<vtkPolyData> polydata = dynamic_cast<vtkPolyData*>(am_it->second.actor->GetMapper ()->GetInput ());
   if (!polydata)
     return (false);
   vtkSmartPointer<vtkCellArray> cells = polydata->GetStrips ();

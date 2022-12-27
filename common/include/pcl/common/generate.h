@@ -48,7 +48,7 @@ namespace pcl
 
   namespace common
   {
-    /** \brief CloudGenerator class generates a point cloud using some randoom number generator.
+    /** \brief CloudGenerator class generates a point cloud using some random number generator.
       * Generators can be found in \file common/random.h and easily extensible.
       *  
       * \ingroup common
@@ -79,7 +79,7 @@ namespace pcl
                       const GeneratorParameters& z_params);
 
       /** Set parameters for x, y and z values. Uniqueness is ensured through seed incrementation.
-        * \param params parameteres for X, Y and Z values generation. 
+        * \param params parameters for X, Y and Z values generation. 
         */
       void
       setParameters (const GeneratorParameters& params);

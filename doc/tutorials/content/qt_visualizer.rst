@@ -52,7 +52,7 @@ Use relative paths like this is better than absolute paths; this project should 
 We specify in the general section that we want to build in the folder ``../build`` (this is a relative path from the ``.pro`` file).
 
 The first step of the building is to call ``cmake`` (from the ``build`` folder) with argument ``../src``; this is gonna create all files in the
-``build`` folder without modifying anything in the ``src`` foler; thus keeping it clean.
+``build`` folder without modifying anything in the ``src`` folder; thus keeping it clean.
 
 Then we just have to compile our program; the argument ``-j2`` allow to specify how many thread of your CPU you want to use for compilation. The more thread you use
 the faster the compilation will be (especially on big projects); but if you take all threads from the CPU your OS will likely be unresponsive during 
@@ -192,7 +192,7 @@ Here we connect slots and signals, this links UI actions to functions. Here is a
 
 | This is the last part of our constructor; we add the point cloud to the visualizer, call the method ``pSliderValueChanged`` to change the point size to 2.
 
-We finally reset the camera within the PCL Visualizer not avoid the user having to zoom out and refesh the view to be 
+We finally reset the camera within the PCL Visualizer not avoid the user having to zoom out and refresh the view to be 
 sure the modifications will be displayed.
 
 .. literalinclude:: sources/qt_visualizer/pclviewer.cpp

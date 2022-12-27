@@ -124,7 +124,7 @@ pcl::ihs::Integration::reconstructMesh(const CloudXYZRGBNormalConstPtr& cloud_da
   // *   3 - 0  //
   const int offset_1 = -width;
   const int offset_2 = -width - 1;
-  const int offset_3 = -1;
+  constexpr int offset_3 = -1;
   const int offset_4 = -width - 2;
 
   for (int r = 1; r < height; ++r) {
@@ -262,7 +262,7 @@ pcl::ihs::Integration::merge(const CloudXYZRGBNormalConstPtr& cloud_data,
   // *   3 - 0  //
   const int offset_1 = -width;
   const int offset_2 = -width - 1;
-  const int offset_3 = -1;
+  constexpr int offset_3 = -1;
   const int offset_4 = -width - 2;
 
   const float dot_min = std::cos(max_angle_ * 17.45329252e-3); // deg to rad

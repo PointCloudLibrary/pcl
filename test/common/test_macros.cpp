@@ -67,7 +67,7 @@ TEST(MACROS, expect_near_vectors_macro)
 {
   v1.clear ();
   v2.clear ();
-  const static float epsilon = 1e-5f;
+  constexpr float epsilon = 1e-5f;
   for (std::size_t i = 0; i < 3; i++)
   {
     float val = static_cast<float> (i) * 1.5f;

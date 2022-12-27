@@ -144,10 +144,10 @@ TEST (SampleConsensusModelPlane, SampleValidationPointsCollinear)
   // being printed a 1000 times without any chance of success.
   // The order is chosen such that with a known, fixed rng-state/-seed all
   // validation steps are actually exercised.
-  const pcl::index_t firstCollinearPointIndex = 0;
-  const pcl::index_t secondCollinearPointIndex = 1;
-  const pcl::index_t thirdCollinearPointIndex = 2;
-  const pcl::index_t cheatPointIndex = 3;
+  constexpr pcl::index_t firstCollinearPointIndex = 0;
+  constexpr pcl::index_t secondCollinearPointIndex = 1;
+  constexpr pcl::index_t thirdCollinearPointIndex = 2;
+  constexpr pcl::index_t cheatPointIndex = 3;
 
   cloud[firstCollinearPointIndex].getVector3fMap () <<  0.1f,  0.1f,  0.1f;
   cloud[secondCollinearPointIndex].getVector3fMap () <<  0.2f,  0.2f,  0.2f;
@@ -357,8 +357,8 @@ TEST (SampleConsensusModelNormalParallelPlane, RANSAC)
   SampleConsensusModelNormalParallelPlanePtr model (new SampleConsensusModelNormalParallelPlane<PointXYZ, Normal> (cloud.makeShared ()));
   model->setInputNormals (normals.makeShared ());
 
-  const float max_angle_rad = 0.01f;
-  const float angle_eps = 0.001f;
+  constexpr float max_angle_rad = 0.01f;
+  constexpr float angle_eps = 0.001f;
   model->setEpsAngle (max_angle_rad);
 
   // Test true axis

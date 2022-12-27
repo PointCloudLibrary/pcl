@@ -730,7 +730,7 @@ This section provides a quick reference for some of the common tools in PCL.
 		
 		``pcl_pcd_convert_NaN_nan input.pcd output.pcd``
 	
-	* ``pcl_convert_pcd_ascii_binary``: converts PCD (Point Cloud Data) files from ASCII to binary and viceversa. 
+	* ``pcl_convert_pcd_ascii_binary``: converts PCD (Point Cloud Data) files from ASCII to binary and vice-versa. 
 	
 	 	**Usage example:**
 		

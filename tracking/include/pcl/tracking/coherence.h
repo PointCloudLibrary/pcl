@@ -21,7 +21,7 @@ public:
   /** \brief empty constructor */
   PointCoherence() = default;
 
-  /** \brief empty distructor */
+  /** \brief empty destructor */
   virtual ~PointCoherence() = default;
 
   /** \brief compute coherence from the source point to the target point.

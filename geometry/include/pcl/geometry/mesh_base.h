@@ -727,7 +727,7 @@ public:
     return (this->isBoundary(this->getOutgoingHalfEdgeIndex(idx_vertex)));
   }
 
-  /** \brief Check if the given half-edge lies on the bounddary. */
+  /** \brief Check if the given half-edge lies on the boundary. */
   inline bool
   isBoundary(const HalfEdgeIndex& idx_he) const
   {
@@ -2167,7 +2167,7 @@ private:
   /** \brief Connectivity information for the faces. */
   Faces faces_;
 
-  // NOTE: It is MUCH faster to store these variables permamently.
+  // NOTE: It is MUCH faster to store these variables permanently.
 
   /** \brief Storage for addFaceImplBase and deleteFace. */
   HalfEdgeIndices inner_he_;

@@ -88,7 +88,7 @@ namespace pcl
       virtual ~HarrisKeypoint6D () = default;
 
       /**
-       * @brief set the radius for normal estimation and non maxima supression.
+       * @brief set the radius for normal estimation and non maxima suppression.
        * @param radius
        */
       void setRadius (float radius);
@@ -109,7 +109,7 @@ namespace pcl
 
       /**
        * @brief whether the detected key points should be refined or not. If turned of, the key points are a subset of the original point cloud. Otherwise the key points may be arbitrary.
-       * @brief note non maxima supression needs to be on in order to use this feature.
+       * @brief note non maxima suppression needs to be on in order to use this feature.
        * @param do_refine
        */
       void setRefine (bool do_refine);

@@ -264,7 +264,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
     target_cloud_updated_ = true;
   }
 
-  // if a sample size for the point clouds is given; prefarably no sampling of target
+  // if a sample size for the point clouds is given; preferably no sampling of target
   // cloud
   if (nr_samples_ != 0) {
     const int ss = static_cast<int>(indices_->size());
@@ -290,8 +290,8 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   }
 
   // set predefined variables
-  const int min_iterations = 4;
-  const float diameter_fraction = 0.3f;
+  constexpr int min_iterations = 4;
+  constexpr float diameter_fraction = 0.3f;
 
   // get diameter of input cloud (distance between farthest points)
   Eigen::Vector4f pt_min, pt_max;
@@ -397,7 +397,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
 
     // check if at least one point fulfilled the conditions
     if (nearest_to_plane != std::numeric_limits<float>::max()) {
-      // order points to build largest quadrangle and calcuate intersection ratios of
+      // order points to build largest quadrangle and calculate intersection ratios of
       // diagonals
       setupBase(base_indices, ratio);
       return (0);
@@ -834,7 +834,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
                   const pcl::Correspondences& correspondences,
                   Eigen::Matrix4f& transformation)
 {
-  // only use triplet of points to simlify process (possible due to planar case)
+  // only use triplet of points to simplify process (possible due to planar case)
   pcl::Correspondences correspondences_temp = correspondences;
   correspondences_temp.erase(correspondences_temp.end() - 1);
 

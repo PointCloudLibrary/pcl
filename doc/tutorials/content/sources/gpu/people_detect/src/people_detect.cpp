@@ -318,7 +318,7 @@ class PeoplePCDApp
 
 int main(int argc, char** argv)
 {
-  // selecting GPU and prining info
+  // selecting GPU and printing info
   int device = 0;
   pc::parse_argument (argc, argv, "-gpu", device);
   pcl::gpu::setDevice (device);

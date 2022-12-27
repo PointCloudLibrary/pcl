@@ -560,7 +560,7 @@ namespace pcl
         bool
         wasStopped () const { return (stopped_); }
 
-        /** \brief Stop the interaction and close the visualizaton window. */
+        /** \brief Stop the interaction and close the visualization window. */
         void
         close ()
         {

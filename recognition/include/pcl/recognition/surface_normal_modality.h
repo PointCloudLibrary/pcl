@@ -192,15 +192,15 @@ namespace pcl
       delete[] lut;
       lut = new unsigned char[size_x*size_y*size_z];
 
-      const int nr_normals = 8;
+      constexpr int nr_normals = 8;
 	    pcl::PointCloud<PointXYZ>::VectorType ref_normals (nr_normals);
       
-      const float normal0_angle = 40.0f * 3.14f / 180.0f;
+      constexpr float normal0_angle = 40.0f * 3.14f / 180.0f;
       ref_normals[0].x = std::cos (normal0_angle);
       ref_normals[0].y = 0.0f;
       ref_normals[0].z = -sinf (normal0_angle);
 
-      const float inv_nr_normals = 1.0f / static_cast<float> (nr_normals);
+      constexpr float inv_nr_normals = 1.0f / static_cast<float>(nr_normals);
       for (int normal_index = 1; normal_index < nr_normals; ++normal_index)
       {
         const float angle = 2.0f * static_cast<float> (M_PI * normal_index * inv_nr_normals);
@@ -749,7 +749,7 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals2 ()
   const int l_W = width;
   const int l_H = height;
 
-  const int l_r = 5; // used to be 7
+  constexpr int l_r = 5; // used to be 7
   //const int l_offset0 = -l_r - l_r * l_W;
   //const int l_offset1 =    0 - l_r * l_W;
   //const int l_offset2 = +l_r - l_r * l_W;
@@ -774,8 +774,8 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals2 ()
   //const int l_offsetx = GRANULARITY / 2;
   //const int l_offsety = GRANULARITY / 2;
 
-  const int difference_threshold = 50;
-  const int distance_threshold = 2000;
+  constexpr int difference_threshold = 50;
+  constexpr int distance_threshold = 2000;
 
   //const double scale = 1000.0;
   //const double difference_threshold = 0.05 * scale;
@@ -1027,7 +1027,7 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
 
   float weights[8] = {0,0,0,0,0,0,0,0};
 
-  const std::size_t off = 4;
+  constexpr std::size_t off = 4;
   for (std::size_t row_index = off; row_index < height-off; ++row_index)
   {
     for (std::size_t col_index = off; col_index < width-off; ++col_index)
@@ -1297,7 +1297,7 @@ pcl::SurfaceNormalModality<PointInT>::extractAllFeatures (
 
   float weights[8] = {0,0,0,0,0,0,0,0};
 
-  const std::size_t off = 4;
+  constexpr std::size_t off = 4;
   for (std::size_t row_index = off; row_index < height-off; ++row_index)
   {
     for (std::size_t col_index = off; col_index < width-off; ++col_index)

@@ -373,7 +373,7 @@ int main(int argc, char** argv)
   if(pc::find_switch (argc, argv, "--help") || pc::find_switch (argc, argv, "-h"))
     return print_help(), 0;
   
-  // selecting GPU and prining info
+  // selecting GPU and printing info
   int device = 0;
   pc::parse_argument (argc, argv, "-gpu", device);
   pcl::gpu::setDevice (device);

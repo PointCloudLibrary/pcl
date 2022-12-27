@@ -349,7 +349,7 @@ pcl::CrfSegmentation<PointT>::createUnaryPotentials (std::vector<float> &unary,
       }
     }
   
-    // set the engeries for the labels
+    // set the energies for the labels
     std::size_t u_idx = k * n_labels;
     if (label > 0)
     {

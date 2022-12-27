@@ -242,7 +242,7 @@ TEST (PCL, KdTreeFLANN_setPointRepresentation)
   MyPoint p (50.0f, 50.0f, 50.0f);
   
   // Find k nearest neighbors
-  const int k = 10;
+  constexpr int k = 10;
   pcl::Indices k_indices (k);
   std::vector<float> k_distances (k);
   kdtree.nearestKSearch (p, k, k_indices, k_distances);

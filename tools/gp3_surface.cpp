@@ -58,7 +58,7 @@ printHelp (int, char **argv)
   print_info ("  where options are:\n");
   print_info ("                     -radius X = use a radius of Xm around each point to determine the neighborhood (default: "); 
   print_value ("%f", default_radius); print_info (")\n");
-  print_info ("                     -mu X     = set the multipler of the nearest neighbor distance to obtain the final search radius (default: "); 
+  print_info ("                     -mu X     = set the multiplier of the nearest neighbor distance to obtain the final search radius (default: "); 
   print_value ("%f", default_mu); print_info (")\n");
 }
 

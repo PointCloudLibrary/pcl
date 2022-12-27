@@ -89,7 +89,7 @@ namespace pcl
         virtual std::string
         getFieldName () const  = 0;
 
-        /** \brief Checl if this handler is capable of handling the input data or not. */
+        /** \brief Check if this handler is capable of handling the input data or not. */
         inline bool
         isCapable () const { return (capable_); }
 

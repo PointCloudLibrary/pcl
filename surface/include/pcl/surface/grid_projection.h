@@ -318,7 +318,7 @@ namespace pcl
       getDataPtsUnion (const Eigen::Vector3i &index, pcl::Indices &pt_union_indices);
 
       /** \brief Given the index of a cell, exam it's up, left, front edges, and add
-        * the vectices to m_surface list.the up, left, front edges only share 4
+        * the vertices to m_surface list.the up, left, front edges only share 4
         * points, we first get the vectors at these 4 points and exam whether those
         * three edges are intersected by the surface \param index the input index
         * \param pt_union_indices the union of input data points within the cell and padding cells
@@ -399,7 +399,7 @@ namespace pcl
 
       /** \brief Test whether the edge is intersected by the surface by 
         * doing the dot product of the vector at two end points. Also test 
-        * whether the edge is intersected by the maximum surface by examing 
+        * whether the edge is intersected by the maximum surface by examining 
         * the 2nd derivative of the intersection point 
         * \param end_pts the two points of the edge
         * \param vect_at_end_pts 

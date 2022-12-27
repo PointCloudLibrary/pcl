@@ -81,7 +81,7 @@ namespace pcl
         * \param[in] centroid the centroid of the region.
         * \param[in] covariance the covariance of the region.
         * \param[in] count the number of points in the region.
-        * \param[in] contour the contour / boudnary for the region
+        * \param[in] contour the contour / boundary for the region
         * \param[in] coefficients the model coefficients (a,b,c,d) for the plane
         */
       PlanarRegion (const Eigen::Vector3f& centroid, const Eigen::Matrix3f& covariance, unsigned count,

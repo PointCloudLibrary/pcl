@@ -112,7 +112,6 @@ using AlignedPointT = Eigen::aligned_allocator<PointT>;
 #include <vtkLODActor.h>
 #include <vtkMath.h>
 #include <vtkMatrix4x4.h>
-#include <vtkMutexLock.h>
 #include <vtkObjectFactory.h>
 #include <vtkPolyData.h>
 #include <vtkProperty.h>

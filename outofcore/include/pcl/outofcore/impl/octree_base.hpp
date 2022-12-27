@@ -209,7 +209,7 @@ namespace pcl
     {
       std::unique_lock < std::shared_timed_mutex > lock (read_write_mutex_);
 
-      const bool _FORCE_BB_CHECK = true;
+      constexpr bool _FORCE_BB_CHECK = true;
       
       std::uint64_t pt_added = root_node_->addDataToLeaf (p, _FORCE_BB_CHECK);
 
@@ -569,7 +569,7 @@ namespace pcl
 
       std::unique_lock < std::shared_timed_mutex > lock (read_write_mutex_);
 
-      const int number_of_nodes = 1;
+      constexpr int number_of_nodes = 1;
 
       std::vector<BranchNode*> current_branch (number_of_nodes, static_cast<BranchNode*>(nullptr));
       current_branch[0] = root_node_;

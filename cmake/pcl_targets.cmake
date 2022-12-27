@@ -310,7 +310,7 @@ function(PCL_ADD_EXECUTABLE _name)
   endif()
 
   # Some app targets report are defined with subsys other than apps
-  # It's simpler check for tools and assume everythin else as an app
+  # It's simpler check for tools and assume everything else as an app
   if(${ARGS_COMPONENT} STREQUAL "tools")
     set_target_properties(${_name} PROPERTIES FOLDER "Tools")
   else()

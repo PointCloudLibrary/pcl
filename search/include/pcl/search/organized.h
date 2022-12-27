@@ -52,7 +52,7 @@ namespace pcl
 {
   namespace search
   {
-    /** \brief OrganizedNeighbor is a class for optimized nearest neigbhor search in organized point clouds.
+    /** \brief OrganizedNeighbor is a class for optimized nearest neighbor search in organized point clouds.
       * \author Radu B. Rusu, Julius Kammerl, Suat Gedikli, Koen Buys
       * \ingroup search
       */

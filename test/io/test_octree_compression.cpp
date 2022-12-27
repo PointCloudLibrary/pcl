@@ -124,7 +124,7 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZRGBASameCloud)
 {
   // Generate a random cloud. Put it into the encoder several times and make
   // sure that the decoded cloud has correct width and height each time.
-  const double MAX_XYZ = 1.0;
+  constexpr double MAX_XYZ = 1.0;
   srand(static_cast<unsigned int> (time(nullptr)));
   // iterate over all pre-defined compression profiles
   for (int compression_profile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;

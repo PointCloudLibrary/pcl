@@ -329,9 +329,9 @@ namespace pcl
         {
           // 'p_obj' is the probability that given that the first sample point belongs to an object,
           // the second sample point will belong to the same object
-          const double p_obj = 0.25f;
+          constexpr double p_obj = 0.25f;
           // old version: p = p_obj*relative_obj_size_*fraction_of_pairs_in_hash_table_;
-          const double p = p_obj*relative_obj_size_;
+          const double p = p_obj * relative_obj_size_;
 
           if ( 1.0 - p <= 0.0 )
             return 1;

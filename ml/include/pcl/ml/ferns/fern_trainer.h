@@ -149,7 +149,7 @@ public:
   train(Fern<FeatureType, NodeType>& fern);
 
 protected:
-  /** Creates uniformely distrebuted thresholds over the range of the supplied
+  /** Creates uniformly distributed thresholds over the range of the supplied
    *  values.
    *
    * \param[in] num_of_thresholds the number of thresholds to create

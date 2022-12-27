@@ -78,7 +78,7 @@ The purpose of these lines is to show that ``pcl::MinCutSegmentation`` class can
    :lines: 21-21
 
 Here is the line where the instantiation of the ``pcl::MinCutSegmentation`` class takes place.
-It is the tamplate class that has only one parameter - PointT - which says what type of points will be used.
+It is the template class that has only one parameter - PointT - which says what type of points will be used.
 
 .. literalinclude:: sources/min_cut_segmentation/min_cut_segmentation.cpp
    :language: cpp
