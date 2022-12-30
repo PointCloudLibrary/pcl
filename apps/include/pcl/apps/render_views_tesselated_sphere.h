@@ -51,7 +51,7 @@ private:
   };
 
 public:
-  RenderViewsTesselatedSphere()
+  RenderViewsTesselatedSphere() : campos_constraints_func_(camPosConstraintsAllTrue())
   {
     resolution_ = 150;
     tesselation_level_ = 1;
@@ -60,7 +60,6 @@ public:
     radius_sphere_ = 1.f;
     compute_entropy_ = false;
     gen_organized_ = false;
-    campos_constraints_func_ = camPosConstraintsAllTrue();
   }
 
   void

@@ -25,8 +25,8 @@
 // -----------------------------------------------------------------------------
 Viewport::Viewport (vtkSmartPointer<vtkRenderWindow> window, double xmin/*=0.0*/, double ymin/*=0.0*/,
                     double xmax/*=1.0*/, double ymax/*=1.0*/)
+  : renderer_ (vtkSmartPointer<vtkRenderer>::New ())
 {
-  renderer_ = vtkSmartPointer<vtkRenderer>::New ();
   renderer_->SetViewport (xmin, ymin, xmax, ymax);
   renderer_->GradientBackgroundOn ();
   renderer_->SetBackground (.1, .1, .1);

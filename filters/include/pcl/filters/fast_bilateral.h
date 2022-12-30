@@ -116,11 +116,11 @@ namespace pcl
       {
         public:
           Array3D (const std::size_t width, const std::size_t height, const std::size_t depth)
+            : v_({(width*height*depth), Eigen::Vector2f (0.0f, 0.0f), Eigen::aligned_allocator<Eigen::Vector2f>()})
           {
             x_dim_ = width;
             y_dim_ = height;
             z_dim_ = depth;
-            v_ = std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > (width*height*depth, Eigen::Vector2f (0.0f, 0.0f));
           }
 
           inline Eigen::Vector2f&
