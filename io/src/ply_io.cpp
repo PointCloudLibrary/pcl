@@ -647,7 +647,7 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
       }
       else
       {
-        const auto srcIdx = (*range_grid_)[r][0] * cloud_->point_step;
+        const std::size_t srcIdx = (*range_grid_)[r][0] * cloud_->point_step;
         if (srcIdx + cloud_->point_step > cloud_->data.size())
         {
           PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", srcIdx);
@@ -746,7 +746,7 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
       }
       else
       {
-        const auto srcIdx = (*range_grid_)[r][0] * cloud_->point_step;
+        const std::size_t srcIdx = (*range_grid_)[r][0] * cloud_->point_step;
         if (srcIdx + cloud_->point_step > cloud_->data.size())
         {
           PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", srcIdx);
