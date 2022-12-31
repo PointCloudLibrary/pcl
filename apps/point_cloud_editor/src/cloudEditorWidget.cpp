@@ -41,8 +41,6 @@
 #include <QMessageBox>
 #include <QMouseEvent>
 #include <QApplication>
-#include <QDesktopWidget>
-#include <qgl.h>
 
 #include <pcl/pcl_config.h>
 
@@ -72,8 +70,7 @@
 #include <pcl/apps/point_cloud_editor/mainWindow.h>
 
 CloudEditorWidget::CloudEditorWidget (QWidget *parent)
-  : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer |
-                        QGL::Rgba | QGL::StencilBuffer), parent),
+  : QOpenGLWidget(parent),
     point_size_(2.0f), selected_point_size_(4.0f),
     cam_fov_(60.0), cam_aspect_(1.0), cam_near_(0.0001), cam_far_(100.0),
     color_scheme_(COLOR_BY_PURE), is_colored_(false)
@@ -116,7 +113,6 @@ CloudEditorWidget::load ()
                              tr("Can not load %1.").arg(file_path));
   }
   update();
-  updateGL();
 }
 
 void

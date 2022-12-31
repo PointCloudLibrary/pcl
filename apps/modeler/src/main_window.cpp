@@ -282,7 +282,7 @@ pcl::modeler::MainWindow::updateRecentActions(
   }
 
   recent_items.removeDuplicates();
-  int recent_number = std::min(int(MAX_RECENT_NUMBER), recent_items.size());
+  int recent_number = std::min<int>(int(MAX_RECENT_NUMBER), recent_items.size());
   for (int i = 0; i < recent_number; ++i) {
     QString text = tr("%1 %2").arg(i + 1).arg(recent_items[i]);
     recent_actions[i]->setText(text);

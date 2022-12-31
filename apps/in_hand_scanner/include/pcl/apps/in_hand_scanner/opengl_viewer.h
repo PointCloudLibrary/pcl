@@ -46,7 +46,7 @@
 #include <pcl/pcl_exports.h>
 #include <pcl/pcl_macros.h>
 
-#include <QGLWidget>
+#include <QOpenGLWidget>
 
 #include <iomanip>
 #include <mutex>
@@ -102,7 +102,7 @@ public:
  * \note Currently you have to derive from this class to use it. Implement the
  * paintEvent: Call the paint event of this class and declare a QPainter.
  */
-class PCL_EXPORTS OpenGLViewer : public QGLWidget {
+class PCL_EXPORTS OpenGLViewer : public QOpenGLWidget {
   Q_OBJECT
 
 public:

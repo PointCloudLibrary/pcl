@@ -50,6 +50,7 @@
 #include <QApplication>
 #include <QFileDialog>
 #include <QKeyEvent>
+#include <QPainter>
 #include <QtConcurrent>
 #include <QtCore>
 
