@@ -129,10 +129,10 @@ printHelp (int, char **argv)
   print_info ("\n");
   print_info ("                     -immediate_rendering 0/1 = use immediate mode rendering to draw the data (default: "); print_value ("disabled"); print_info (")\n");
   print_info ("                                                Note: the use of immediate rendering will enable the visualization of larger datasets at the expense of extra RAM.\n");
-  print_info ("                                                See http://en.wikipedia.org/wiki/Immediate_mode for more information.\n");
+  print_info ("                                                See https://en.wikipedia.org/wiki/Immediate_mode for more information.\n");
   print_info ("                     -vbo_rendering 0/1       = use OpenGL 1.4+ Vertex Buffer Objects for rendering (default: "); print_value ("disabled"); print_info (")\n");
   print_info ("                                                Note: the use of VBOs will enable the visualization of larger datasets at the expense of extra RAM.\n");
-  print_info ("                                                See http://en.wikipedia.org/wiki/Vertex_Buffer_Object for more information.\n");
+  print_info ("                                                See https://en.wikipedia.org/wiki/Vertex_Buffer_Object for more information.\n");
   print_info ("\n");
   print_info ("                     -use_point_picking       = enable the usage of picking points on screen (default "); print_value ("disabled"); print_info (")\n");
   print_info ("\n");

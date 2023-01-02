@@ -57,7 +57,7 @@ namespace pcl {
 namespace ihs {
 namespace detail {
 /** \brief Mesh format more efficient for visualization than the half-edge data
- * structure. \see http://en.wikipedia.org/wiki/Polygon_mesh#Face-vertex_meshes
+ * structure. \see https://en.wikipedia.org/wiki/Polygon_mesh#Face-vertex_meshes
  *
  * \note Only triangles are currently supported.
  */

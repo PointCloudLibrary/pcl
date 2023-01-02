@@ -355,7 +355,7 @@ namespace pcl
       mapTexture2Face (const Eigen::Vector3f &p1, const Eigen::Vector3f &p2, const Eigen::Vector3f &p3);
 
       /** \brief Returns the circumcenter of a triangle and the circle's radius.
-        * \details see http://en.wikipedia.org/wiki/Circumcenter for formulas.
+        * \details see https://en.wikipedia.org/wiki/Circumcenter for formulas.
         * \param[in] p1 first point of the triangle.
         * \param[in] p2 second point of the triangle.
         * \param[in] p3 third point of the triangle.

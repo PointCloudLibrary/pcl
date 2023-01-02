@@ -284,13 +284,14 @@ pcl::IFSReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, int 
   fs.read (reinterpret_cast<char*>(&length_of_keyword), sizeof (std::uint32_t));
   char *keyword = new char [length_of_keyword];
   fs.read (keyword, sizeof (char) * length_of_keyword);
-  if (strcmp (keyword, "TRIANGLES"))
+  const bool keyword_is_triangles = (strcmp (keyword, "TRIANGLES") == 0);
+  delete[] keyword;
+  if (!keyword_is_triangles)
   {
     PCL_ERROR ("[pcl::IFSReader::read] File %s is does not contain facets!\n", file_name.c_str ());
     fs.close ();
     return (-1);
   }
-  delete[] keyword;
   // Read the number of facets
   std::uint32_t nr_facets;
   fs.read (reinterpret_cast<char*>(&nr_facets), sizeof (std::uint32_t));

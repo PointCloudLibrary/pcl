@@ -46,21 +46,17 @@
 int
 main (int, char ** argv)
 {
-  pcl::PCDReader reader;
-  pcl::PCLPointCloud2 cloud;
-  reader.read (argv[1], cloud);
-  
   pcl::PointCloud<pcl::PointXYZ> xyz;
-  pcl::fromPCLPointCloud2 (cloud, xyz);
+  pcl::io::loadPCDFile(argv[1], xyz);
   
   pcl::visualization::ImageViewer depth_image_viewer_;
-  float* img = new float[cloud.width * cloud.height];
+  float* img = new float[xyz.width * xyz.height];
 
   for (int i = 0; i < static_cast<int> (xyz.size ()); ++i)
     img[i] = xyz[i].z;
   
   depth_image_viewer_.showFloatImage (img, 
-                                      cloud.width, cloud.height,
+                                      xyz.width, xyz.height,
                                       std::numeric_limits<float>::min (), 
                                       // Scale so that the colors look brigher on screen
                                       std::numeric_limits<float>::max () / 10, 
