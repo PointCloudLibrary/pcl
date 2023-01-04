@@ -62,7 +62,7 @@ pcl::PCLPointCloud2::concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPoi
     cloud1 = cloud2;
   }
 
-  if (size2 == 0) {
+  if ((size1 == 0) || (size2 == 0)) {
     cloud1.header.stamp = std::max (cloud1.header.stamp, cloud2.header.stamp);
     return true;
   }
