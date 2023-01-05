@@ -91,7 +91,11 @@ PCL_ADD_EXECUTABLE(
     ${IMPL_INCS}
     ${UI}
   BUNDLE)
+
 target_link_libraries("${EXE_NAME}" ${SUBSUBSYS_LIBS} ${OPENGL_LIBRARIES} ${QTX}::Concurrent ${QTX}::Widgets ${QTX}::OpenGL)
+if (${QTX} MATCHES "Qt6")
+  target_link_libraries("${EXE_NAME}" ${QTX}::OpenGLWidgets)
+endif()
 
 pcl_add_includes("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${INCS})
 pcl_add_includes("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}/impl" ${IMPL_INCS})
@@ -108,6 +112,9 @@ PCL_ADD_EXECUTABLE(
   BUNDLE)
 
 target_link_libraries(pcl_offline_integration ${SUBSUBSYS_LIBS} ${OPENGL_LIBRARIES} ${QTX}::Concurrent ${QTX}::Widgets ${QTX}::OpenGL)
+if (${QTX} MATCHES "Qt6")
+  target_link_libraries(pcl_offline_integration ${QTX}::OpenGLWidgets)
+endif()
 
 # Add to the compound apps target
 list(APPEND PCL_APPS_ALL_TARGETS ${PCL_IN_HAND_SCANNER_ALL_TARGETS})

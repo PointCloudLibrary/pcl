@@ -56,6 +56,7 @@
 #include <pcl/common/centroid.h>
 #include <pcl/common/impl/centroid.hpp> // TODO: PointIHS is not registered
 
+#include <QApplication>
 #include <QtOpenGL>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -101,7 +102,7 @@ pcl::ihs::detail::FaceVertexMesh::FaceVertexMesh(const Mesh& mesh,
 ////////////////////////////////////////////////////////////////////////////////
 
 pcl::ihs::OpenGLViewer::OpenGLViewer(QWidget* parent)
-: QGLWidget(parent)
+: QOpenGLWidget(parent)
 , timer_vis_(new QTimer(this))
 , colormap_(Colormap::Constant(255))
 , vis_conf_norm_(1)
@@ -1195,8 +1196,8 @@ pcl::ihs::OpenGLViewer::wheelEvent(QWheelEvent* event)
         std::max((cam_pivot_ - R_cam_ * o - t_cam_).norm(), .1 / scaling_factor_) / d;
 
     // http://doc.qt.digia.com/qt/qwheelevent.html#delta
-    t_cam_ +=
-        scale * Eigen::Vector3d(R_cam_ * (ez * static_cast<double>(event->delta())));
+    t_cam_ += scale * Eigen::Vector3d(
+                          R_cam_ * (ez * static_cast<double>(event->angleDelta().y())));
   }
 }
 
