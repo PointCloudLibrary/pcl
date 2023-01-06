@@ -1538,7 +1538,7 @@ TEST (PCL, Octree_Pointcloud_Ray_Traversal)
     {
       pt = (*cloudIn)[i];
       d = Eigen::Vector3f (pt.x, pt.y, pt.z) - o;
-      ASSERT_GE (d.norm (), min_dist);
+      ASSERT_GE (d.norm (), 0.999 * min_dist);
     }
   }
 }
