@@ -2058,21 +2058,22 @@ TEST (FrustumCulling, Filters)
   fc.setHorizontalFOV (57);
   fc.setNearPlaneDistance (0);
   fc.setFarPlaneDistance (0.9);
-  fc.setRegionOfInterest (0.44f, 0.30f, 0.16f, 0.38f);
+  fc.setRegionOfInterest (0.44f, 0.73f, 0.16f, 0.43f);
   fc.setCameraPose (cam2robot);
   fc.filter (*output);
-  // Should extract milk cartoon with 13541 points
-  EXPECT_EQ (output->size (), 13541); 
+  // Should extract milk cartoon with 14317 points
+  EXPECT_EQ (output->size (), 14317);
   removed = fc.getRemovedIndices ();
   EXPECT_EQ (removed->size (), model->size () - output->size ());
 
   // Cut out object based on field of view
+  fc.setFarPlaneDistance (0.7);
   fc.setRegionOfInterest (0.5f, 0.5f, 1.0f, 1.0f); // reset ROI
-  fc.setVerticalFOV (-22, 6);
-  fc.setHorizontalFOV (-22.5, -13.5);
+  fc.setVerticalFOV (-6.0f, 12.0f);
+  fc.setHorizontalFOV (-22.5f, -13.0f);
   fc.filter (*output);
-  // Should extract "all" laundry detergent with 10689 points
-  EXPECT_EQ (output->size (), 10689);
+  // Should extract "all" laundry detergent with 9838 points
+  EXPECT_EQ (output->size (), 9838);
   removed = fc.getRemovedIndices ();
   EXPECT_EQ (removed->size (), model->size () - output->size ());
 }

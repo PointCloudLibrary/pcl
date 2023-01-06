@@ -73,27 +73,37 @@ pcl::FrustumCulling<PointT>::applyFilter (Indices &indices)
   float roi_ymax = roi_y_ + (roi_h_ / 2);  // roi max y
   float roi_ymin = roi_y_ - (roi_h_ / 2);  // roi min y
   
-  float np_h_u = float(2 * std::tan(fov_lower_bound_rad) * np_dist_ * (roi_ymin - 0.5));  // near plane upper height
-  float np_h_d = float(2 * std::tan(fov_upper_bound_rad) * np_dist_ * (roi_ymax - 0.5));  // near plane lower height
-  float np_w_l = float(2 * std::tan(fov_left_bound_rad) * np_dist_ * (roi_xmin - 0.5));   // near plane left width
-  float np_w_r = float(2 * std::tan(fov_right_bound_rad) * np_dist_ * (roi_xmax - 0.5));  // near plane right width
+  float np_h_u = float(std::tan(fov_upper_bound_rad) * np_dist_);  // near plane upper height
+  float np_h_d = float(std::tan(fov_lower_bound_rad) * np_dist_);  // near plane lower height
+  float np_w_l = float(std::tan(fov_left_bound_rad) * np_dist_);   // near plane left width
+  float np_w_r = float(std::tan(fov_right_bound_rad) * np_dist_);  // near plane right width
 
-  float fp_h_u = float(2 * std::tan(fov_lower_bound_rad) * fp_dist_ * (roi_ymin - 0.5));  // far plane upper height
-  float fp_h_d = float(2 * std::tan(fov_upper_bound_rad) * fp_dist_ * (roi_ymax - 0.5));  // far plane lower height
-  float fp_w_l = float(2 * std::tan(fov_left_bound_rad) * fp_dist_ * (roi_xmin - 0.5));   // far plane left width
-  float fp_w_r = float(2 * std::tan(fov_right_bound_rad) * fp_dist_ * (roi_xmax - 0.5));  // far plane right width
+  float np_roi_h_u = np_h_d + (np_h_u - np_h_d) * roi_ymax;
+  float np_roi_h_d = np_h_d + (np_h_u - np_h_d) * roi_ymin;
+  float np_roi_w_l = np_w_l + (np_w_r - np_w_l) * roi_xmin;
+  float np_roi_w_r = np_w_l + (np_w_r - np_w_l) * roi_xmax;
+
+  float fp_h_u = float(std::tan(fov_upper_bound_rad) * fp_dist_);  // far plane upper height
+  float fp_h_d = float(std::tan(fov_lower_bound_rad) * fp_dist_);  // far plane lower height
+  float fp_w_l = float(std::tan(fov_left_bound_rad) * fp_dist_);   // far plane left width
+  float fp_w_r = float(std::tan(fov_right_bound_rad) * fp_dist_);  // far plane right width
+
+  float fp_roi_h_u = fp_h_d + (fp_h_u - fp_h_d) * roi_ymax;
+  float fp_roi_h_d = fp_h_d + (fp_h_u - fp_h_d) * roi_ymin;
+  float fp_roi_w_l = fp_w_l + (fp_w_r - fp_w_l) * roi_xmin;
+  float fp_roi_w_r = fp_w_l + (fp_w_r - fp_w_l) * roi_xmax;
 
   Eigen::Vector3f fp_c (T + view * fp_dist_);                           // far plane center
-  Eigen::Vector3f fp_tl (fp_c + (up * fp_h_u) - (right * fp_w_l));  // Top left corner of the far plane
-  Eigen::Vector3f fp_tr (fp_c + (up * fp_h_u) + (right * fp_w_r));  // Top right corner of the far plane
-  Eigen::Vector3f fp_bl (fp_c - (up * fp_h_d) - (right * fp_w_l));  // Bottom left corner of the far plane
-  Eigen::Vector3f fp_br (fp_c - (up * fp_h_d) + (right * fp_w_r));  // Bottom right corner of the far plane
+  Eigen::Vector3f fp_tl (fp_c + (up * fp_roi_h_u) + (right * fp_roi_w_l));  // Top left corner of the far plane
+  Eigen::Vector3f fp_tr (fp_c + (up * fp_roi_h_u) + (right * fp_roi_w_r));  // Top right corner of the far plane
+  Eigen::Vector3f fp_bl (fp_c + (up * fp_roi_h_d) + (right * fp_roi_w_l));  // Bottom left corner of the far plane
+  Eigen::Vector3f fp_br (fp_c + (up * fp_roi_h_d) + (right * fp_roi_w_r));  // Bottom right corner of the far plane
 
   Eigen::Vector3f np_c (T + view * np_dist_);                           // near plane center
-  //Eigen::Vector3f np_tl = np_c + (up * np_h_u) - (right * np_w_l);    // Top left corner of the near plane
-  Eigen::Vector3f np_tr (np_c + (up * np_h_u) + (right * np_w_r));  // Top right corner of the near plane
-  Eigen::Vector3f np_bl (np_c - (up * np_h_d) - (right * np_w_l));  // Bottom left corner of the near plane
-  Eigen::Vector3f np_br (np_c - (up * np_h_d) + (right * np_w_r));  // Bottom right corner of the near plane
+  //Eigen::Vector3f np_tl (np_c + (up * np_roi_h_u) + (right * np_roi_w_l));  // Top left corner of the near plane
+  Eigen::Vector3f np_tr (np_c + (up * np_roi_h_u) + (right * np_roi_w_r));  // Top right corner of the near plane
+  Eigen::Vector3f np_bl (np_c + (up * np_roi_h_d) + (right * np_roi_w_l));  // Bottom left corner of the near plane
+  Eigen::Vector3f np_br (np_c + (up * np_roi_h_d) + (right * np_roi_w_r));  // Bottom right corner of the near plane
 
   pl_f.head<3> () = (fp_bl - fp_br).cross (fp_tr - fp_br);  // Far plane equation - cross product of the 
   pl_f (3) = -fp_c.dot (pl_f.head<3> ());                   // perpendicular edges of the far plane
