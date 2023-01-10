@@ -125,7 +125,7 @@ namespace pcl
           void
           setIcpCorespFilteringParams (float distThreshold, float sineOfAngle);
           
-          /** \brief Sets integration threshold. TSDF volume is integrated iff a camera movement metric exceedes the threshold value. 
+          /** \brief Sets integration threshold. TSDF volume is integrated iff a camera movement metric exceeds the threshold value. 
             * The metric represents the following: M = (rodrigues(Rotation).norm() + alpha*translation.norm())/2, where alpha = 1.f (hardcoded constant)
             * \param[in] threshold a value to compare with the metric. Suitable values are ~0.001          
             */
@@ -421,7 +421,7 @@ namespace pcl
           /** \brief Array of camera translations for each moment of time. */
           std::vector<Vector3f> tvecs_;
 
-          /** \brief Camera movement threshold. TSDF is integrated iff a camera movement metric exceedes some value. */
+          /** \brief Camera movement threshold. TSDF is integrated iff a camera movement metric exceeds some value. */
           float integration_metric_threshold_;          
                   
           /** \brief When set to true, KinFu will extract the whole world and mesh it. */

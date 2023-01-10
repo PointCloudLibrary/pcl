@@ -370,7 +370,7 @@ private:
   double
   kernel_precomputed(int i, int j) const
   {
-    return x[i][int(x[j][0].value)].value;
+    return x[i][static_cast<int>(x[j][0].value)].value;
   }
 };
 
@@ -493,7 +493,7 @@ Kernel::k_function(const svm_node* x, const svm_node* y, const svm_parameter& pa
     return std::tanh(param.gamma * dot(x, y) + param.coef0);
 
   case PRECOMPUTED: // x: test (validation), y: SV
-    return x[int(y->value)].value;
+    return x[static_cast<int>(y->value)].value;
 
   default:
     return 0; // Unreachable
@@ -971,7 +971,7 @@ Solver::select_working_set(int& out_i, int& out_j)
   // return i,j such that
   // i: maximizes -y_i * grad(f)_i, i in I_up(\alpha)
   // j: minimizes the decrease of obj value
-  //    (if quadratic coefficeint <= 0, replace it with tau)
+  //    (if quadratic coefficient <= 0, replace it with tau)
   //    -y_j*grad(f)_j < -y_i*grad(f)_i, j in I_low(\alpha)
 
   double Gmax = -INF;
@@ -1215,7 +1215,7 @@ Solver_NU::select_working_set(int& out_i, int& out_j)
   // return i,j such that y_i = y_j and
   // i: maximizes -y_i * grad(f)_i, i in I_up(\alpha)
   // j: minimizes the decrease of obj value
-  //    (if quadratic coefficeint <= 0, replace it with tau)
+  //    (if quadratic coefficient <= 0, replace it with tau)
   //    -y_j*grad(f)_j < -y_i*grad(f)_i, j in I_low(\alpha)
 
   double Gmaxp = -INF;
@@ -1461,7 +1461,7 @@ public:
 
     if ((start = cache->get_data(i, &data, len)) < len) {
       for (int j = start; j < len; j++)
-        data[j] = Qfloat(y[i] * y[j] * (this->*kernel_function)(i, j));
+        data[j] = static_cast<Qfloat>(y[i] * y[j] * (this->*kernel_function)(i, j));
     }
 
     return data;
@@ -1516,7 +1516,7 @@ public:
 
     if ((start = cache->get_data(i, &data, len)) < len) {
       for (int j = start; j < len; j++)
-        data[j] = Qfloat((this->*kernel_function)(i, j));
+        data[j] = static_cast<Qfloat>((this->*kernel_function)(i, j));
     }
 
     return data;
@@ -1590,7 +1590,7 @@ public:
 
     if (cache->get_data(real_i, &data, l) < l) {
       for (j = 0; j < l; j++)
-        data[j] = Qfloat((this->*kernel_function)(real_i, j));
+        data[j] = static_cast<Qfloat>((this->*kernel_function)(real_i, j));
     }
 
     // reorder and copy
@@ -1601,7 +1601,7 @@ public:
     schar si = sign[i];
 
     for (j = 0; j < len; j++)
-      buf[j] = Qfloat(si) * Qfloat(sign[j]) * data[index[j]];
+      buf[j] = static_cast<Qfloat>(si) * static_cast<Qfloat>(sign[j]) * data[index[j]];
 
     return buf;
   }
@@ -1765,7 +1765,7 @@ solve_one_class(const svm_problem* prob,
   double* zeros = new double[l];
   schar* ones = new schar[l];
 
-  int n = int(param->nu * prob->l); // # of alpha's at upper bound
+  int n = static_cast<int>(param->nu * prob->l); // # of alpha's at upper bound
 
   for (int i = 0; i < n; i++)
     alpha[i] = 1;
@@ -2340,7 +2340,7 @@ svm_group_classes(const svm_problem* prob,
   int* data_label = Malloc(int, l);
 
   for (int i = 0; i < l; i++) {
-    int this_label = int(prob->y[i]);
+    int this_label = static_cast<int>(prob->y[i]);
     int j;
 
     for (j = 0; j < nr_class; j++) {
@@ -3097,7 +3097,7 @@ svm_save_model(const char* model_file_name, const svm_model* model)
     const svm_node* p = SV[i];
 
     if (param.kernel_type == PRECOMPUTED)
-      fprintf(fp, "0:%d ", int(p->value));
+      fprintf(fp, "0:%d ", static_cast<int>(p->value));
     else
       while (p->index != -1) {
         fprintf(fp, "%d:%.8g ", p->index, p->value);
@@ -3124,7 +3124,7 @@ readline(FILE* input)
   while (strrchr(line, '\n') == nullptr) {
     max_line_len *= 2;
     line = static_cast<char*>(realloc(line, max_line_len));
-    int len = int(strlen(line));
+    int len = static_cast<int>(strlen(line));
 
     if (fgets(line + len, max_line_len - len, input) == nullptr)
       break;
@@ -3365,8 +3365,6 @@ svm_load_model(const char* model_file_name)
       model->sv_coef[k][i] = strtod(p, nullptr);
     }
 
-    int jj = 0;
-
     while (true) {
       char* idx = strtok(nullptr, ":");
       char* val = strtok(nullptr, " \t");
@@ -3374,13 +3372,9 @@ svm_load_model(const char* model_file_name)
       if (val == nullptr)
         break;
 
-      x_space[j].index = int(strtol(idx, nullptr, 10));
+      x_space[j].index = static_cast<int>(strtol(idx, nullptr, 10));
 
       x_space[j].value = strtod(val, nullptr);
-
-      //             printf("i=%d, j=%d, %f ,%d e %f\n",i,j,model->sv_coef[0][i],
-      //                    model->SV[i][jj].index, model->SV[i][jj].value);
-      jj++;
 
       ++j;
     }
@@ -3521,7 +3515,7 @@ svm_check_parameter(const svm_problem* prob, const svm_parameter* param)
     int* count = Malloc(int, max_nr_class);
 
     for (int i = 0; i < l; i++) {
-      int this_label = int(prob->y[i]);
+      int this_label = static_cast<int>(prob->y[i]);
       int j;
 
       for (j = 0; j < nr_class; j++)

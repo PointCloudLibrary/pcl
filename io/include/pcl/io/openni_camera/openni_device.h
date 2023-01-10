@@ -101,7 +101,7 @@ namespace openni_wrapper
       findCompatibleImageMode (const XnMapOutputMode& output_mode, XnMapOutputMode& mode ) const throw ();
 
       /** \brief finds a depth output mode that can be used to retrieve depth images in desired output mode.
-        *        e.g If device just supports VGA at 30Hz, then a desired mode of QVGA at 30Hz would be possbile by downsampling,
+        *        e.g If device just supports VGA at 30Hz, then a desired mode of QVGA at 30Hz would be possible by downsampling,
         *        but the modes VGA at 25Hz and SXGA at 30Hz would not be compatible.
         * \param[in] output_mode the desired output mode
         * \param[out] mode the compatible mode that the device natively supports.

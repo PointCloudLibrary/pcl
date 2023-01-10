@@ -120,7 +120,7 @@ parse_argument (int argc, const char * const * argv, const char * str, long long
 int
 parse_argument (int argc, const char * const * argv, const char * str, unsigned long long int &val) noexcept
 {
-  long long int dummy;
+  long long int dummy = -1;
   const auto ret = parse_argument (argc, argv, str, dummy);
   if ((ret == -1) || dummy < 0)
   {

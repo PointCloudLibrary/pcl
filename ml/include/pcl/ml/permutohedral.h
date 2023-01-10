@@ -102,7 +102,7 @@ public:
   void
   debug();
 
-  /** Pseudo radnom generator. */
+  /** Pseudo random generator. */
   inline std::size_t
   generateHashKey(const std::vector<short>& k)
   {

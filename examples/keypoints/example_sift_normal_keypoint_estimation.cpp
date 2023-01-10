@@ -63,10 +63,10 @@ main(int, char** argv)
   std::cout << "points: " << cloud_xyz->size () <<std::endl;
   
   // Parameters for sift computation
-  const float min_scale = 0.01f;
-  const int n_octaves = 3;
-  const int n_scales_per_octave = 4;
-  const float min_contrast = 0.001f;
+  constexpr float min_scale = 0.01f;
+  constexpr int n_octaves = 3;
+  constexpr int n_scales_per_octave = 4;
+  constexpr float min_contrast = 0.001f;
   
   // Estimate the normals of the cloud_xyz
   pcl::NormalEstimation<pcl::PointXYZ, pcl::PointNormal> ne;

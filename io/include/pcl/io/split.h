@@ -14,7 +14,7 @@ namespace pcl {
 
 /** \brief Lightweight tokenization function
  * This function can be used as a boost::split substitute. When benchmarked against
- * boost, this function will create much less alocations and hence it is much better
+ * boost, this function will create much less allocations and hence it is much better
  * suited for quick line tokenization.
  *
  * Cool thing is this function will work with SequenceSequenceT =

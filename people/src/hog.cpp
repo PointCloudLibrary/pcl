@@ -76,10 +76,10 @@ pcl::people::HOG::gradMag( float *I, int h, int w, int d, float *M, float *O ) c
   // allocate memory for storing one column of output (padded so h4%4==0)
   h4=(h%4==0) ? h : h-(h%4)+4; s=d*h4*sizeof(float);
 
-  M2=(float*) alMalloc(s,16);
-  _M2=(__m128*) M2;
-  Gx=(float*) alMalloc(s,16); _Gx=(__m128*) Gx;
-  Gy=(float*) alMalloc(s,16); _Gy=(__m128*) Gy;
+  M2=reinterpret_cast<float*>(alMalloc(s,16));
+  _M2=reinterpret_cast<__m128*>(M2);
+  Gx=reinterpret_cast<float*>(alMalloc(s,16)); _Gx=reinterpret_cast<__m128*>(Gx);
+  Gy=reinterpret_cast<float*>(alMalloc(s,16)); _Gy=reinterpret_cast<__m128*>(Gy);
 
   // compute gradient magnitude and orientation for each column
   for( x=0; x<w; x++ ) {
@@ -115,9 +115,9 @@ pcl::people::HOG::gradMag( float *I, int h, int w, int d, float *M, float *O ) c
   // allocate memory for storing one column of output (padded so h4%4==0)
   h4=(h%4==0) ? h : h-(h%4)+4; s=d*h4*sizeof(float);
 
-  M2=(float*) alMalloc(s,16);
-  Gx=(float*) alMalloc(s,16); 
-  Gy=(float*) alMalloc(s,16); 
+  M2=reinterpret_cast<float*>(alMalloc(s,16));
+  Gx=reinterpret_cast<float*>(alMalloc(s,16)); 
+  Gy=reinterpret_cast<float*>(alMalloc(s,16)); 
   float m;
 
   // compute gradient magnitude and orientation for each column
@@ -172,8 +172,8 @@ pcl::people::HOG::gradHist( float *M, float *O, int h, int w, int bin_size, int 
   const int hb=h/bin_size, wb=w/bin_size, h0=hb*bin_size, w0=wb*bin_size, nb=wb*hb;
   const float s=(float)bin_size, sInv=1/s, sInv2=1/s/s;
   float *H0, *H1, *M0, *M1; int *O0, *O1;
-  O0=(int*)alMalloc(h*sizeof(int),16); M0=(float*) alMalloc(h*sizeof(float),16);
-  O1=(int*)alMalloc(h*sizeof(int),16); M1=(float*) alMalloc(h*sizeof(float),16);
+  O0=reinterpret_cast<int*>(alMalloc(h*sizeof(int),16)); M0=reinterpret_cast<float*>(alMalloc(h*sizeof(float),16));
+  O1=reinterpret_cast<int*>(alMalloc(h*sizeof(int),16)); M1=reinterpret_cast<float*>(alMalloc(h*sizeof(float),16));
 
   // main loop
   float xb = 0;
@@ -312,7 +312,7 @@ pcl::people::HOG::normalization (float *H, int h, int w, int bin_size, int n_ori
   float *N, *N1, *H1; int o, x, y, hb=h/bin_size, wb=w/bin_size, nb=wb*hb;
   float eps = 1e-4f/4/bin_size/bin_size/bin_size/bin_size; // precise backward equality
   // compute 2x2 block normalization values
-  N = (float*) calloc(nb,sizeof(float));
+  N = reinterpret_cast<float*>(calloc(nb,sizeof(float)));
   for( o=0; o<n_orients; o++ ) for( x=0; x<nb; x++ ) N[x]+=H[x+o*nb]*H[x+o*nb];
   for( x=0; x<wb-1; x++ ) for( y=0; y<hb-1; y++ ) {
     N1=N+x*hb+y; *N1=1/float(std::sqrt( N1[0] + N1[1] + N1[hb] + N1[hb+1] +eps )); }
@@ -408,9 +408,9 @@ pcl::people::HOG::grad1 (float *I, float *Gx, float *Gy, int h, int w, int x) co
     for( y = 0; y < h; y++ )
       *Gx++ = (*In++ - *Ip++) * r;
   } else {
-    _G = (__m128*) Gx;
-    __m128 *_Ip = (__m128*) Ip;
-    __m128 *_In = (__m128*) In;
+    _G = reinterpret_cast<__m128*>(Gx);
+    __m128 *_Ip = reinterpret_cast<__m128*>(Ip);
+    __m128 *_In = reinterpret_cast<__m128*>(In);
     _r = pcl::sse_set(r);
     for(y = 0; y < h; y += 4)
       *_G++ = pcl::sse_mul(pcl::sse_sub(*_In++,*_Ip++), _r);
@@ -423,14 +423,14 @@ pcl::people::HOG::grad1 (float *I, float *Gx, float *Gy, int h, int w, int x) co
   Ip = I;
   In = Ip + 1;
   // GRADY(1); Ip--; for(y = 1; y < h-1; y++) GRADY(.5f); In--; GRADY(1);
-  y1 = ((~((std::size_t) Gy) + 1) & 15)/4;
+  y1 = ((~(reinterpret_cast<std::size_t>(Gy)) + 1) & 15)/4;
   if(y1 == 0) y1 = 4;
   if(y1 > h-1) y1 = h-1;
   GRADY(1);
   Ip--;
   for(y = 1; y < y1; y++) GRADY(.5f);
   _r = pcl::sse_set(.5f);
-  _G = (__m128*) Gy;
+  _G = reinterpret_cast<__m128*>(Gy);
   for(; y+4 < h-1; y += 4, Ip += 4, In += 4, Gy += 4)
     *_G++ = pcl::sse_mul(pcl::sse_sub(pcl::sse_ldu(*In),pcl::sse_ldu(*Ip)), _r);
   for(; y < h-1; y++) GRADY(.5f);
@@ -513,10 +513,10 @@ pcl::people::HOG::gradQuantize (float *O, float *M, int *O0, int *O1, float *M0,
   const __m128i _nb = pcl::sse_set(nb);
 
   // perform the majority of the work with sse
-  _O0=(__m128i*) O0;
-  _O1=(__m128i*) O1;
-  _M0=(__m128*) M0;
-  _M1=(__m128*) M1;
+  _O0=reinterpret_cast<__m128i*>(O0);
+  _O1=reinterpret_cast<__m128i*>(O1);
+  _M0=reinterpret_cast<__m128*>(M0);
+  _M1=reinterpret_cast<__m128*>(M1);
   for( ; i <= n-4; i += 4 ) {
     _o = pcl::sse_mul(pcl::sse_ldu(O[i]),_oMult);
     _o0f = pcl::sse_cvt(pcl::sse_cvt(_o));
@@ -552,15 +552,15 @@ pcl::people::HOG::alMalloc (std::size_t size, int alignment) const
 {
   const std::size_t pSize = sizeof(void*), a = alignment-1;
   void *raw = malloc(size + a + pSize);
-  void *aligned = (void*) (((std::size_t) raw + pSize + a) & ~a);
-  *(void**) ((std::size_t) aligned-pSize) = raw;
+  void *aligned = reinterpret_cast<void*>((reinterpret_cast<std::size_t>(raw) + pSize + a) & ~a);
+  *reinterpret_cast<void**>(reinterpret_cast<std::size_t>(aligned)-pSize) = raw;
   return aligned;
 }
 
 inline void 
 pcl::people::HOG::alFree (void* aligned) const
 {
-  void* raw = *(void**)((char*)aligned-sizeof(void*));
+  void* raw = *reinterpret_cast<void**>(reinterpret_cast<char*>(aligned)-sizeof(void*));
   free(raw);
 }
 

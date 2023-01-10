@@ -64,14 +64,12 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLPlotter::PCLPlotter (char const *name)
+  : view_ (vtkSmartPointer<vtkContextView>::New ())
+  , chart_(vtkSmartPointer<vtkChartXY>::New())
+  , color_series_(vtkSmartPointer<vtkColorSeries>::New ())
+  , exit_loop_timer_(vtkSmartPointer<ExitMainLoopTimerCallback>::New ())
+  , exit_callback_(vtkSmartPointer<ExitCallback>::New ())
 {
-  //constructing
-  view_ = vtkSmartPointer<vtkContextView>::New ();
-  chart_=vtkSmartPointer<vtkChartXY>::New();
-  color_series_ = vtkSmartPointer<vtkColorSeries>::New ();
-  exit_loop_timer_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
-  exit_callback_ = vtkSmartPointer<ExitCallback>::New ();
-  
   //connecting and mandatory bookkeeping
   view_->GetScene ()->AddItem (chart_);
   view_->GetRenderWindow ()->SetWindowName (name);
@@ -167,6 +165,8 @@ pcl::visualization::PCLPlotter::addPlotData (
     array_y[i] = plot_data[i].second;
   }
   this->addPlotData (array_x, array_y, static_cast<unsigned long> (plot_data.size ()), name, type, (color.empty ()) ? nullptr : &color[0]);
+  delete[] array_x;
+  delete[] array_y;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

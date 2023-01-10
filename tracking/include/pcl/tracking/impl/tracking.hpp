@@ -86,7 +86,7 @@ struct EIGEN_ALIGN16 ParticleXYZRPY : public _ParticleXYZRPY {
 
     // Scales 1.0 radians of variance in RPY sampling into equivalent units for
     // quaternion sampling.
-    const float scale_factor = 0.2862;
+    constexpr float scale_factor = 0.2862;
 
     float a = sampleNormal(0, scale_factor * cov[3]);
     float b = sampleNormal(0, scale_factor * cov[4]);

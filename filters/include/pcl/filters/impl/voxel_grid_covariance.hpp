@@ -267,7 +267,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   if (save_leaf_layout_)
     leaf_layout_.resize (div_b_[0] * div_b_[1] * div_b_[2], -1);
 
-  // Eigen values and vectors calculated to prevent near singluar matrices
+  // Eigen values and vectors calculated to prevent near singular matrices
   Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> eigensolver;
   Eigen::Matrix3d eigen_val;
   Eigen::Vector3d pt_sum;
@@ -289,7 +289,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
     leaf.mean_ /= leaf.nr_points;
 
     // If the voxel contains sufficient points, its covariance is calculated and is added to the voxel centroids and output clouds.
-    // Points with less than the minimum points will have a can not be accuratly approximated using a normal distribution.
+    // Points with less than the minimum points will have a can not be accurately approximated using a normal distribution.
     if (leaf.nr_points >= min_points_per_voxel_)
     {
       if (save_leaf_layout_)

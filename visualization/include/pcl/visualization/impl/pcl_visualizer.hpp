@@ -243,7 +243,7 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
   points->SetNumberOfPoints (nr_points);
 
   // Get a pointer to the beginning of the data array
-  float *data = (static_cast<vtkFloatArray*> (points->GetData ()))->GetPointer (0);
+  float *data = (dynamic_cast<vtkFloatArray*> (points->GetData ()))->GetPointer (0);
 
   // Set the points
   vtkIdType ptr = 0;
@@ -1668,7 +1668,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
   vtkSmartPointer<vtkLODActor> actor;
 
   // Get a pointer to the beginning of the data array
-  float *data = static_cast<vtkFloatArray*> (points->GetData ())->GetPointer (0);
+  float *data = dynamic_cast<vtkFloatArray*> (points->GetData ())->GetPointer (0);
 
   vtkIdType ptr = 0;
   std::vector<int> lookup;
@@ -1787,7 +1787,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
     return (false);
 
   // Get the current poly data
-  vtkSmartPointer<vtkPolyData> polydata = static_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->GetInput ();
+  vtkSmartPointer<vtkPolyData> polydata = dynamic_cast<vtkPolyData*>(am_it->second.actor->GetMapper ()->GetInput ());
   if (!polydata)
     return (false);
   vtkSmartPointer<vtkCellArray> cells = polydata->GetPolys ();
@@ -1799,7 +1799,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   points->SetNumberOfPoints (nr_points);
 
   // Get a pointer to the beginning of the data array
-  float *data = (static_cast<vtkFloatArray*> (points->GetData ()))->GetPointer (0);
+  float *data = (dynamic_cast<vtkFloatArray*> (points->GetData ()))->GetPointer (0);
 
   int ptr = 0;
   std::vector<int> lookup;

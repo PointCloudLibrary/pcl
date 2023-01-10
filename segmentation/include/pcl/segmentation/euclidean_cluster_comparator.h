@@ -48,7 +48,7 @@
 
 namespace pcl
 {
-  /** \brief EuclideanClusterComparator is a comparator used for finding clusters based on euclidian distance.
+  /** \brief EuclideanClusterComparator is a comparator used for finding clusters based on euclidean distance.
   *
   * \author Alex Trevor
   */
@@ -126,7 +126,7 @@ namespace pcl
         return labels_;
       }
 
-      /** \brief Get exlude labels */
+      /** \brief Get exclude labels */
       const ExcludeLabelSetConstPtr&
       getExcludeLabels () const
       {

@@ -250,7 +250,7 @@ namespace pcl
       template<typename Key> inline void operator() ()
       {
         using FieldT = typename pcl::traits::datatype<PointDefault, Key>::type;
-        const int NrDims = pcl::traits::datatype<PointDefault, Key>::size;
+        constexpr int NrDims = pcl::traits::datatype<PointDefault, Key>::size;
         Helper<Key, FieldT, NrDims>::copyPoint (p1_, p2_, f_idx_);
       }
 

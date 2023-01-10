@@ -499,6 +499,13 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
       {
         switch (fields[d].datatype)
         {
+          case pcl::PCLPointField::BOOL:
+          {
+            bool value;
+            memcpy (&value, reinterpret_cast<const char*> (&point) + fields[d].offset + c * sizeof (bool), sizeof (bool));
+            stream << boost::numeric_cast<std::int32_t>(value);
+            break;
+          }
           case pcl::PCLPointField::INT8:
           {
             std::int8_t value;
@@ -539,6 +546,20 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
             std::uint32_t value;
             memcpy (&value, reinterpret_cast<const char*> (&point) + fields[d].offset + c * sizeof (std::uint32_t), sizeof (std::uint32_t));
             stream << boost::numeric_cast<std::uint32_t>(value);
+            break;
+          }
+          case pcl::PCLPointField::INT64:
+          {
+            std::int64_t value;
+            memcpy (&value, reinterpret_cast<const char*> (&point) + fields[d].offset + c * sizeof (std::int64_t), sizeof (std::int64_t));
+            stream << boost::numeric_cast<std::int64_t>(value);
+            break;
+          }
+          case pcl::PCLPointField::UINT64:
+          {
+            std::uint64_t value;
+            memcpy (&value, reinterpret_cast<const char*> (&point) + fields[d].offset + c * sizeof (std::uint64_t), sizeof (std::uint64_t));
+            stream << boost::numeric_cast<std::uint64_t>(value);
             break;
           }
           case pcl::PCLPointField::FLOAT32:
@@ -782,6 +803,13 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
       {
         switch (fields[d].datatype)
         {
+          case pcl::PCLPointField::BOOL:
+          {
+            bool value;
+            memcpy (&value, reinterpret_cast<const char*> (&cloud.points[index]) + fields[d].offset + c * sizeof (bool), sizeof (bool));
+            stream << boost::numeric_cast<std::int32_t>(value);
+            break;
+          }
           case pcl::PCLPointField::INT8:
           {
             std::int8_t value;
@@ -822,6 +850,20 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
             std::uint32_t value;
             memcpy (&value, reinterpret_cast<const char*> (&cloud[index]) + fields[d].offset + c * sizeof (std::uint32_t), sizeof (std::uint32_t));
             stream << boost::numeric_cast<std::uint32_t>(value);
+            break;
+          }
+          case pcl::PCLPointField::INT64:
+          {
+            std::int64_t value;
+            memcpy (&value, reinterpret_cast<const char*> (&cloud.points[index]) + fields[d].offset + c * sizeof (std::int64_t), sizeof (std::int64_t));
+            stream << boost::numeric_cast<std::int64_t>(value);
+            break;
+          }
+          case pcl::PCLPointField::UINT64:
+          {
+            std::uint64_t value;
+            memcpy (&value, reinterpret_cast<const char*> (&cloud.points[index]) + fields[d].offset + c * sizeof (std::uint64_t), sizeof (std::uint64_t));
+            stream << boost::numeric_cast<std::uint64_t>(value);
             break;
           }
           case pcl::PCLPointField::FLOAT32:

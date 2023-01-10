@@ -46,7 +46,7 @@ PCAP Files
 
 `Wireshark <http://www.wireshark.org/>`_ is a popular Network Packet Analyzer Program which
 is available for most platforms, including Linux, MacOS and Windows.  This tool uses a defacto
-standard network packet capture file format called `PCAP <http://en.wikipedia.org/wiki/Pcap>`_.
+standard network packet capture file format called `PCAP <https://en.wikipedia.org/wiki/Pcap>`_.
 Many publicly available Velodyne HDL packet captures use this PCAP file format as a means of
 recording and playback.  These PCAP files can be used with the HDL Grabber if PCL is compiled with
 PCAP support.

@@ -53,7 +53,7 @@ namespace pcl
       namespace trees
       {
         // this has nothing to do here...
-        static const double focal = 1000.;
+        constexpr double focal = 1000.;
 
         // ###############################################
         // compile type values

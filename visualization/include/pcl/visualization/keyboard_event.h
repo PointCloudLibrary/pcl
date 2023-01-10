@@ -48,11 +48,11 @@ namespace pcl
     class KeyboardEvent
     {
       public:
-        /** \brief bit patter for the ALT key*/
+        /** \brief bit pattern for the ALT key*/
         static const unsigned int Alt   = 1;
-        /** \brief bit patter for the Control key*/
+        /** \brief bit pattern for the Control key*/
         static const unsigned int Ctrl  = 2;
-        /** \brief bit patter for the Shift key*/
+        /** \brief bit pattern for the Shift key*/
         static const unsigned int Shift = 4;
 
         /** \brief Constructor

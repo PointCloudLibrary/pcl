@@ -267,7 +267,7 @@ main (int argc, char** argv)
     // Add the cluster name
     p.addText (cloud_name, 20, 10, cloud_name, viewport);
   }
-  // Add coordianate systems to all viewports
+  // Add coordinate systems to all viewports
   p.addCoordinateSystem (0.1, "global", 0);
 
   p.spin ();

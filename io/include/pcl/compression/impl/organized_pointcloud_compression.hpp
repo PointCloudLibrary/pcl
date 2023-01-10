@@ -335,6 +335,9 @@ namespace pcl
 
         // decode PNG compressed rgb data
         decodePNGToImage (compressedColor, colorData, png_width, png_height, png_channels);
+      } else {
+        PCL_ERROR("[OrganizedPointCloudCompression::decodePointCloud] Unable to find an encoded point cloud in the input stream!\n");
+        return false;
       }
 
       if (disparityShift==0.0f)

@@ -181,9 +181,10 @@ pcl::visualization::PointCloudColorHandlerRGBField<pcl::PCLPointCloud2>::getColo
   }
   if (j != 0)
     scalars->SetArray (colors, j, 0, vtkUnsignedCharArray::VTK_DATA_ARRAY_DELETE);
-  else
+  else {
     scalars->SetNumberOfTuples (0);
-  //delete [] colors;
+    delete [] colors;
+  }
   return scalars;
 }
 
@@ -565,9 +566,10 @@ pcl::visualization::PointCloudColorHandlerRGBAField<pcl::PCLPointCloud2>::getCol
   }
   if (j != 0)
     scalars->SetArray (colors, j, 0, vtkUnsignedCharArray::VTK_DATA_ARRAY_DELETE);
-  else
+  else {
     scalars->SetNumberOfTuples (0);
-  //delete [] colors;
+    delete [] colors;
+  }
   return scalars;
 }
 
@@ -670,9 +672,10 @@ pcl::visualization::PointCloudColorHandlerLabelField<pcl::PCLPointCloud2>::getCo
   }
   if (j != 0)
     scalars->SetArray (colors, j, 0, vtkUnsignedCharArray::VTK_DATA_ARRAY_DELETE);
-  else
+  else {
     scalars->SetNumberOfTuples (0);
-  //delete [] colors;
+    delete [] colors;
+  }
   return scalars;
 }
 

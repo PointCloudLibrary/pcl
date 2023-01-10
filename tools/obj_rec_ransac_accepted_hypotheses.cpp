@@ -469,7 +469,7 @@ main (int argc, char** argv)
 {
   printf ("\nUsage: ./obj_rec_ransac_accepted_hypotheses <pair_width> <voxel_size> <max_coplanarity_angle> <n_hypotheses_to_show> <show_hypotheses_as_coordinate_frames>\n\n");
 
-  const int num_params = 4;
+  constexpr int num_params = 4;
   float parameters[num_params] = {40.0f/*pair width*/, 5.0f/*voxel size*/, 15.0f/*max co-planarity angle*/, 1/*n_hypotheses_to_show*/};
   std::string parameter_names[num_params] = {"pair_width", "voxel_size", "max_coplanarity_angle", "n_hypotheses_to_show"};
 

@@ -40,6 +40,8 @@
 
 #include <pcl/pcl_macros.h>
 
+#include <map>
+
 namespace pcl
 {
   namespace visualization
@@ -48,27 +50,58 @@ namespace pcl
     class PCL_EXPORTS AreaPickingEvent
     {
       public:
-        AreaPickingEvent (int nb_points, const pcl::Indices& indices)
-          : nb_points_ (nb_points)
-          , indices_ (indices)
+        AreaPickingEvent (std::map<std::string, pcl::Indices> cloud_indices)
+        : cloud_indices_ (std::move(cloud_indices))
         {}
 
-        /** \brief For situations where a whole are is selected, return the points indices.
+        PCL_DEPRECATED(1,16,"This constructor is deprecated!")
+        AreaPickingEvent(int /*nb_points*/, const pcl::Indices& indices)
+          : AreaPickingEvent ({{"",indices}}) {}
+
+        /** \brief For situations where a whole area is selected, return the points indices.
           * \param[out] indices indices of the points under the area selected by user.
           * \return true, if the area selected by the user contains points, false otherwise
           */
         inline bool
         getPointsIndices (pcl::Indices& indices) const
         {
-          if (nb_points_ <= 0)
+          if (cloud_indices_.empty())
             return (false);
-          indices = indices_;
+
+          for (const auto& i : cloud_indices_)
+            indices.insert(indices.cend (), i.second.cbegin (), i.second.cend ());
+
           return (true);
+        }
+        /** \brief For situations where a whole area is selected, return the names
+          * of the selected point clouds.
+          * \return The names of selected point clouds
+          */
+        inline std::vector<std::string>
+        getCloudNames () const
+        {
+          std::vector<std::string> names;
+          for (const auto& i : cloud_indices_)
+            names.push_back (i.first);
+          return names;
+        }
+        /** \brief For situations where a whole area is selected, return the points indices
+          * for a given point cloud
+          * \param[in] name of selected clouds.
+          * \return The indices for the selected cloud.
+          */
+        inline Indices
+        getPointsIndices (const std::string& name) const
+        {
+          const auto cloud = cloud_indices_.find (name);
+          if(cloud == cloud_indices_.cend ())
+            return Indices ();
+
+          return cloud->second;
         }
 
       private:
-        int nb_points_;
-        pcl::Indices indices_;
+        std::map<std::string, pcl::Indices> cloud_indices_;
     };
   } //namespace visualization
 } //namespace pcl

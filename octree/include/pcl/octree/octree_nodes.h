@@ -84,10 +84,9 @@ public:
   OctreeLeafNode() : OctreeNode() {}
 
   /** \brief Copy constructor. */
-  OctreeLeafNode(const OctreeLeafNode& source) : OctreeNode()
-  {
-    container_ = source.container_;
-  }
+  OctreeLeafNode(const OctreeLeafNode& source)
+  : OctreeNode(), container_(source.container_)
+  {}
 
   /** \brief Empty deconstructor. */
 
@@ -180,17 +179,11 @@ template <typename ContainerT>
 class OctreeBranchNode : public OctreeNode {
 public:
   /** \brief Empty constructor. */
-  OctreeBranchNode() : OctreeNode()
-  {
-    // reset pointer to child node vectors
-    child_node_array_ = {};
-  }
+  OctreeBranchNode() : OctreeNode() {}
 
-  /** \brief Empty constructor. */
+  /** \brief Copy constructor. */
   OctreeBranchNode(const OctreeBranchNode& source) : OctreeNode()
   {
-    child_node_array_ = {};
-
     for (unsigned char i = 0; i < 8; ++i)
       if (source.child_node_array_[i]) {
         child_node_array_[i] = source.child_node_array_[i]->deepCopy();

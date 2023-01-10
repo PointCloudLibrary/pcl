@@ -188,7 +188,7 @@ pcl::gpu::people::RDFBodyPartsDetector::process (const pcl::device::Depth& depth
     labels_smoothed_.download(lmap_host_, c);
     //async_labels_download.download(labels_smoothed_);
 
-    // cc = generalized floodfill = approximation of euclidian clusterisation
+    // cc = generalized floodfill = approximation of euclidean clusterisation
     device::ConnectedComponents::computeEdges(labels_smoothed_, depth, NUM_PARTS, cluster_tolerance_ * cluster_tolerance_, edges_);
     device::ConnectedComponents::labelComponents(edges_, comps_);
 
@@ -283,7 +283,7 @@ pcl::gpu::people::RDFBodyPartsDetector::processSmooth (const pcl::device::Depth&
   labels_smoothed_.download(lmap_host_, c);
   //async_labels_download.download(labels_smoothed_);
 
-  // cc = generalized floodfill = approximation of euclidian clusterisation
+  // cc = generalized floodfill = approximation of euclidean clusterisation
   device::ConnectedComponents::computeEdges(labels_smoothed_, depth, NUM_PARTS, cluster_tolerance_ * cluster_tolerance_, edges_);
   device::ConnectedComponents::labelComponents(edges_, comps_);
 

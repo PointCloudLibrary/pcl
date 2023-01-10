@@ -72,7 +72,7 @@ public:
   bool grab (double stamp, pcl::gpu::PtrStepSz<const unsigned short>& depth);
 
   /** \brief Reads depth & rgb frame from the folder. Before calling this folder please call 'setMatchFile', or an error will be returned otherwise.
-    * \param stamp index of accociated frame pair (stamps are not implemented)
+    * \param stamp index of associated frame pair (stamps are not implemented)
     * \param depth
     * \param rgb24
     */

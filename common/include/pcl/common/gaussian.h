@@ -59,7 +59,7 @@ namespace pcl
     public:
 
       static const unsigned MAX_KERNEL_WIDTH = 71;
-      /** Computes the gaussian kernel and dervative assiociated to sigma.
+      /** Computes the gaussian kernel and dervative associated to sigma.
         * The kernel and derivative width are adjusted according.
         * \param[in] sigma
         * \param[out] kernel the computed gaussian kernel
@@ -71,7 +71,7 @@ namespace pcl
                Eigen::VectorXf &kernel,
                unsigned kernel_width = MAX_KERNEL_WIDTH) const;
 
-      /** Computes the gaussian kernel and dervative assiociated to sigma.
+      /** Computes the gaussian kernel and dervative associated to sigma.
         * The kernel and derivative width are adjusted according.
         * \param[in] sigma
         * \param[out] kernel the computed gaussian kernel
