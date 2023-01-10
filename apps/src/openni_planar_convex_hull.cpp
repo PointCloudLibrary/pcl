@@ -163,8 +163,10 @@ usage(char** argv)
       std::cout << "Device: " << deviceIdx + 1 
                 << ", vendor: " << driver.getVendorName (deviceIdx) 
                 << ", product: " << driver.getProductName (deviceIdx)
-                << ", connected: " << driver.getBus (deviceIdx) << " @ " << driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" 
-                << std::endl;
+                << ", connected: " << driver.getBus (deviceIdx) << " @ " << driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << std::endl;
+      std::cout << "device_id may be #1, #2, ... for the first second etc device in the list or" << std::endl
+                << "                 bus@address for the device connected to a specific usb-bus / address combination (works only in Linux) or" << std::endl
+                << "                 <serial-number> (only in Linux and for devices which provide serial numbers)"  << std::endl;
       // clang-format on
     }
 
