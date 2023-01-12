@@ -92,7 +92,7 @@ if(VTK_FOUND)
       src/manual_registration/pcl_viewer_dialog.ui
       BUNDLE)
 
-    target_link_libraries(pcl_manual_registration pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface pcl_filters ${QTX}::Widgets)
+    target_link_libraries(pcl_manual_registration pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface ${QTX}::Widgets)
 
     PCL_ADD_EXECUTABLE(pcl_pcd_video_player
       COMPONENT
