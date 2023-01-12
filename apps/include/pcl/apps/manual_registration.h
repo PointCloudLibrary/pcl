@@ -69,13 +69,13 @@ public:
   setSrcCloud(pcl::PointCloud<PointT>::Ptr cloud_src)
   {
     cloud_src_ = std::move(cloud_src);
-    cloud_src_present_ = true;
+    vis_src_->addPointCloud(cloud_src_, "cloud_src_");
   }
   void
   setDstCloud(pcl::PointCloud<PointT>::Ptr cloud_dst)
   {
     cloud_dst_ = std::move(cloud_dst);
-    cloud_dst_present_ = true;
+    vis_dst_->addPointCloud(cloud_dst_, "cloud_dst_");
   }
 
   void
@@ -96,17 +96,9 @@ protected:
   QMutex mtx_;
   QMutex vis_mtx_;
   Ui::MainWindow* ui_;
-  QTimer* vis_timer_;
 
-  bool cloud_src_present_;
-  bool cloud_src_modified_;
-  bool cloud_dst_present_;
-  bool cloud_dst_modified_;
-
-  bool src_point_selected_;
-  bool dst_point_selected_;
-
-  bool transform_computed_ = false;
+  bool src_point_selected_{false};
+  bool dst_point_selected_{false};
 
   pcl::PointXYZ src_point_;
   pcl::PointXYZ dst_point_;
@@ -134,10 +126,4 @@ public Q_SLOTS:
   applyTransformPressed();
   void
   refinePressed();
-  /* void */
-  /* undoPressed(); */
-
-private Q_SLOTS:
-  void
-  timeoutSlot();
 };

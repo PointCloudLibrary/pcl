@@ -12,11 +12,6 @@ PCLViewerDialog::PCLViewerDialog(QWidget* parent) : QDialog(parent)
   ui_ = new Ui::PCLViewerDialogUi;
   ui_->setupUi(this);
 
-  render_timer_ = new QTimer(this);
-  render_timer_->start(10);
-
-  connect(render_timer_, SIGNAL(timeout()), this, SLOT(refreshView()));
-
   // Set up the source window
 #if VTK_MAJOR_VERSION > 8
   auto renderer = vtkSmartPointer<vtkRenderer>::New();
@@ -39,6 +34,8 @@ PCLViewerDialog::setPointClouds(CloudT::ConstPtr src_cloud,
   vis_->addPointCloud(src_cloud, "cloud_src_");
   vis_->updatePointCloudPose("cloud_src_", t);
   vis_->setPointCloudRenderingProperties(PCL_VISUALIZER_COLOR, 1, 0, 0, "cloud_src_");
+
+  refreshView();
 }
 
 void

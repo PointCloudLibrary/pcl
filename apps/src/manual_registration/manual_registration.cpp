@@ -69,12 +69,6 @@ using std::to_string;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 ManualRegistration::ManualRegistration()
 {
-  // Create a timer
-  vis_timer_ = new QTimer(this);
-  vis_timer_->start(5); // 5ms
-
-  connect(vis_timer_, SIGNAL(timeout()), this, SLOT(timeoutSlot()));
-
   ui_ = new Ui::MainWindow;
   ui_->setupUi(this);
 
@@ -139,10 +133,6 @@ ManualRegistration::ManualRegistration()
           this,
           SLOT(applyTransformPressed()));
   connect(ui_->refineButton, SIGNAL(clicked()), this, SLOT(refinePressed()));
-  /* connect(ui_->undoButton, SIGNAL(clicked()), this, SLOT(undoPressed())); */
-
-  cloud_src_modified_ = true; // first iteration is always a new pointcloud
-  cloud_dst_modified_ = true;
 }
 
 void
@@ -198,6 +188,8 @@ ManualRegistration::confirmSrcPointPressed()
         PCL_VISUALIZER_COLOR, 0.5, 0.25, 0.25, annotation);
     vis_src_->getShapeActorMap()->at(annotation)->SetPickable(false);
     annotations_src_.emplace(annotation);
+
+    refreshView();
   }
   else {
     PCL_INFO("Please select a point in the source window first\n");
@@ -221,6 +213,8 @@ ManualRegistration::confirmDstPointPressed()
         PCL_VISUALIZER_COLOR, 0.5, 0.25, 0.25, annotation);
     vis_dst_->getShapeActorMap()->at(annotation)->SetPickable(false);
     annotations_dst_.emplace(annotation);
+
+    refreshView();
   }
   else {
     PCL_INFO("Please select a point in the destination window first\n");
@@ -278,6 +272,8 @@ ManualRegistration::clearPressed()
     vis_dst_->removeShape(annotation);
   }
   annotations_dst_.clear();
+
+  refreshView();
 }
 
 void
@@ -370,34 +366,6 @@ ManualRegistration::refinePressed()
            transform_(3, 1),
            transform_(3, 2),
            transform_(3, 3));
-}
-
-/* void */
-/* ManualRegistration::undoPressed() */
-/* {} */
-
-void
-ManualRegistration::timeoutSlot()
-{
-  if (transform_computed_) {
-    transform_computed_ = false;
-    vis_src_->updatePointCloudPose("cloud_dst_", Eigen::Affine3f(transform_));
-  }
-  if (cloud_src_present_ && cloud_src_modified_) {
-    if (!vis_src_->updatePointCloud(cloud_src_, "cloud_src_")) {
-      vis_src_->addPointCloud(cloud_src_, "cloud_src_");
-      vis_src_->resetCameraViewpoint("cloud_src_");
-    }
-    cloud_src_modified_ = false;
-  }
-  if (cloud_dst_present_ && cloud_dst_modified_) {
-    if (!vis_dst_->updatePointCloud(cloud_dst_, "cloud_dst_")) {
-      vis_dst_->addPointCloud(cloud_dst_, "cloud_dst_");
-      vis_dst_->resetCameraViewpoint("cloud_dst_");
-    }
-    cloud_dst_modified_ = false;
-  }
-  refreshView();
 }
 
 void
