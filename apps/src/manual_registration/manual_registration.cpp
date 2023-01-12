@@ -42,7 +42,7 @@
 #include <pcl/apps/pcl_viewer_dialog.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/pcd_io.h> // for loadPCDFile
-#include <pcl/registration/icp.h>
+#include <pcl/registration/gicp.h>
 
 #include <QApplication>
 #include <QEvent>
@@ -338,7 +338,7 @@ ManualRegistration::refinePressed()
   grid_filter.setInputCloud(dst_copy);
   grid_filter.filter(*dst_copy);
 
-  using ICP = IterativeClosestPoint<PointT, PointT>;
+  using ICP = GeneralizedIterativeClosestPoint<PointT, PointT>;
   ICP::Ptr icp = pcl::make_shared<ICP>();
   icp->setInputSource(src_copy);
   icp->setInputTarget(dst_copy);
