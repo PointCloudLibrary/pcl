@@ -17,7 +17,6 @@ class PCLViewerDialogUi;
 class PCLViewerDialog : public QDialog {
   Q_OBJECT
   Ui::PCLViewerDialogUi* ui_;
-  QTimer* render_timer_;
   pcl::visualization::PCLVisualizer::Ptr vis_;
 
 public:
