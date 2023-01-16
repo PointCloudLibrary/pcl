@@ -183,7 +183,7 @@ public:
   {
     vertices_.push_back(Vertex());
     this->addData(vertex_data_cloud_, vertex_data, HasVertexData());
-    return (static_cast<VertexIndex>(static_cast<int>(this->sizeVertices() - 1)));
+    return (static_cast<VertexIndex>(this->sizeVertices() - 1));
   }
 
   /**
@@ -1251,7 +1251,7 @@ protected:
     this->addData(half_edge_data_cloud_, he_data, HasHalfEdgeData());
     this->addData(edge_data_cloud_, edge_data, HasEdgeData());
 
-    return (static_cast<HalfEdgeIndex>(static_cast<int>(half_edges_.size() - 2)));
+    return (static_cast<HalfEdgeIndex>(half_edges_.size() - 2));
   }
 
   ////////////////////////////////////////////////////////////////////////
