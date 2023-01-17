@@ -290,10 +290,10 @@ main(int argc, char ** argv)
   
   unsigned imagemode;
   if (pcl::console::parse (argc, argv, "-imagemode", imagemode) != -1)
-    image_mode = pcl::OpenNIGrabber::Mode (imagemode);
+    image_mode = static_cast<pcl::OpenNIGrabber::Mode>(imagemode);
   unsigned depthmode;
   if (pcl::console::parse (argc, argv, "-depthmode", depthmode) != -1)
-    depth_mode = pcl::OpenNIGrabber::Mode (depthmode);
+    depth_mode = static_cast<pcl::OpenNIGrabber::Mode>(depthmode);
   
 
   pcl::OpenNIGrabber grabber (device_id, depth_mode, image_mode);

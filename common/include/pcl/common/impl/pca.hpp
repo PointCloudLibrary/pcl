@@ -71,7 +71,7 @@ PCA<PointT>::initCompute ()
   demeanPointCloud (*input_, *indices_, mean_, cloud_demean);
   assert (cloud_demean.cols () == int (indices_->size ()));
   // Compute the product cloud_demean * cloud_demean^T
-  const Eigen::Matrix3f alpha = (1.f / (float (indices_->size ()) - 1.f))
+  const Eigen::Matrix3f alpha = (1.f / (static_cast<float>(indices_->size ()) - 1.f))
                                   * cloud_demean.topRows<3> () * cloud_demean.topRows<3> ().transpose ();
 
   // Compute eigen vectors and values
@@ -102,7 +102,7 @@ PCA<PointT>::update (const PointT& input_point, FLAG flag)
 
   Eigen::Vector3f input (input_point.x, input_point.y, input_point.z);
   const std::size_t n = eigenvectors_.cols ();// number of eigen vectors
-  Eigen::VectorXf meanp = (float(n) * (mean_.head<3>() + input)) / float(n + 1);
+  Eigen::VectorXf meanp = (static_cast<float>(n) * (mean_.head<3>() + input)) / static_cast<float>(n + 1);
   Eigen::VectorXf a = eigenvectors_.transpose() * (input - mean_.head<3>());
   Eigen::VectorXf y = (eigenvectors_ * a) + mean_.head<3>();
   Eigen::VectorXf h = y - input;
@@ -113,12 +113,12 @@ PCA<PointT>::update (const PointT& input_point, FLAG flag)
   float gamma = h.dot(input - mean_.head<3>());
   Eigen::MatrixXf D = Eigen::MatrixXf::Zero (a.size() + 1, a.size() + 1);
   D.block(0,0,n,n) = a * a.transpose();
-  D /=  float(n)/float((n+1) * (n+1));
+  D /=  static_cast<float>(n)/static_cast<float>((n+1) * (n+1));
   for(std::size_t i=0; i < a.size(); i++) {
-    D(i,i)+= float(n)/float(n+1)*eigenvalues_(i);
-    D(D.rows()-1,i) = float(n) / float((n+1) * (n+1)) * gamma * a(i);
+    D(i,i)+= static_cast<float>(n)/static_cast<float>(n+1)*eigenvalues_(i);
+    D(D.rows()-1,i) = static_cast<float>(n) / static_cast<float>((n+1) * (n+1)) * gamma * a(i);
     D(i,D.cols()-1) = D(D.rows()-1,i);
-    D(D.rows()-1,D.cols()-1) = float(n)/float((n+1) * (n+1)) * gamma * gamma;
+    D(D.rows()-1,D.cols()-1) = static_cast<float>(n)/static_cast<float>((n+1) * (n+1)) * gamma * gamma;
   }
 
   Eigen::MatrixXf R(D.rows(), D.cols());

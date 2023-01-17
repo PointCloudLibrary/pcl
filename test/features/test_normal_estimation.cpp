@@ -430,7 +430,7 @@ TEST (PCL, IntegralImageNormalEstimationIndexingIssue)
       double y = ypos;
       double x = xpos;
 
-      (*cloudptr)[idx++] = PointXYZ(float(x), float(y), float(z));
+      (*cloudptr)[idx++] = PointXYZ(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
     }
   }
 

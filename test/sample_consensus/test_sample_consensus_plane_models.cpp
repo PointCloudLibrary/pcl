@@ -583,7 +583,7 @@ main (int argc, char** argv)
   fromPCLPointCloud2 (cloud_blob, *normals_);
 
   indices_.resize (cloud_->size ());
-  for (std::size_t i = 0; i < indices_.size (); ++i) { indices_[i] = int (i); }
+  for (std::size_t i = 0; i < indices_.size (); ++i) { indices_[i] = static_cast<int>(i); }
 
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());

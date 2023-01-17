@@ -100,7 +100,8 @@ generate_halo(
     int n_poses)
 {
 
-  for (double t = 0; t < (2 * M_PI); t = t + (2 * M_PI) / ((double)n_poses)) {
+  for (double t = 0; t < (2 * M_PI);
+       t = t + (2 * M_PI) / (static_cast<double>(n_poses))) {
     double x = halo_r * std::cos(t);
     double y = halo_r * sin(t);
     double z = halo_dz;
@@ -189,7 +190,7 @@ main(int argc, char** argv)
     pose2.rotate(rot2);
 
     int n_poses = 20;
-    for (double i = 0; i <= 1; i += 1 / ((double)n_poses - 1)) {
+    for (double i = 0; i <= 1; i += 1 / (static_cast<double>(n_poses) - 1)) {
       Eigen::Quaterniond rot3;
       Eigen::Quaterniond r1(pose1.rotation());
       Eigen::Quaterniond r2(pose2.rotation());

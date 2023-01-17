@@ -68,7 +68,7 @@ createDataSetFromVTKPoints (vtkPoints *points)
   // Iterate through the points                                                          
                              
   for (vtkIdType i = 0; i < points->GetNumberOfPoints (); i++)
-    verts->InsertNextCell ((vtkIdType)1, &i);
+    verts->InsertNextCell (static_cast<vtkIdType>(1), &i);
   data->SetPoints (points);
   data->SetVerts (verts);
   return data;
@@ -201,7 +201,7 @@ int main (int argc, char** argv)
   std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> > occluded_voxels;
   vg.occlusionEstimationAll (occluded_voxels);
 
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", (int)occluded_voxels.size ()); print_info (" occluded voxels]\n");
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", static_cast<int>(occluded_voxels.size ())); print_info (" occluded voxels]\n");
   
   CloudT::Ptr occ_centroids (new CloudT);
   occ_centroids->width = occluded_voxels.size ();

@@ -920,7 +920,7 @@ TEST_F (OutofcoreTest, PointCloud2_Query)
   pcl::PCLPointCloud2::Ptr query_result_a (new pcl::PCLPointCloud2 ());
   pcl::PCLPointCloud2::Ptr query_result_b (new pcl::PCLPointCloud2 ());
 
-  octreeA.queryBBIncludes (min, max, int (octreeA.getDepth ()), query_result_a);
+  octreeA.queryBBIncludes (min, max, static_cast<int>(octreeA.getDepth ()), query_result_a);
   
   EXPECT_EQ (test_cloud->width*test_cloud->height, query_result_a->width*query_result_a->height) << "PCLPointCloud2 Query number of points returned failed\n";
 

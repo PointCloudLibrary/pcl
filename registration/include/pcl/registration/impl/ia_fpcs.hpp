@@ -312,9 +312,9 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   // heuristic determination of number of trials to have high probability of finding a
   // good solution
   if (max_iterations_ == 0) {
-    float first_est =
-        std::log(small_error_) /
-        std::log(1.0 - std::pow((double)approx_overlap_, (double)min_iterations));
+    float first_est = std::log(small_error_) /
+                      std::log(1.0 - std::pow(static_cast<double>(approx_overlap_),
+                                              static_cast<double>(min_iterations)));
     max_iterations_ =
         static_cast<int>(first_est / (diameter_fraction * approx_overlap_ * 2.f));
   }
@@ -691,9 +691,9 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
         pcl::Indices match_indices(4);
 
         match_indices[0] =
-            pairs_a[static_cast<int>(std::floor((float)(id / 2.f)))].index_match;
+            pairs_a[static_cast<int>(std::floor((id / 2.f)))].index_match;
         match_indices[1] =
-            pairs_a[static_cast<int>(std::floor((float)(id / 2.f)))].index_query;
+            pairs_a[static_cast<int>(std::floor((id / 2.f)))].index_query;
         match_indices[2] = pair.index_match;
         match_indices[3] = pair.index_query;
 

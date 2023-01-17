@@ -114,7 +114,7 @@ TEST (PCL, GASDShapeEstimationNoInterp)
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
   EXPECT_EQ (descriptor.size (), 1);
-  for (std::size_t i = 0; i < std::size_t (descriptor[0].descriptorSize ()); ++i)
+  for (std::size_t i = 0; i < static_cast<std::size_t>(descriptor[0].descriptorSize ()); ++i)
   {
     EXPECT_NEAR (descriptor[0].histogram[i], ref_values[i], 1e-5);
   }
@@ -158,7 +158,7 @@ TEST(PCL, GASDShapeEstimationTrilinearInterp)
     0, 0, 0, 0, 0, 0, 0, 0};
 
   EXPECT_EQ (descriptor.size (), 1);
-  for (std::size_t i = 0; i < std::size_t (descriptor[0].descriptorSize ()); ++i)
+  for (std::size_t i = 0; i < static_cast<std::size_t>(descriptor[0].descriptorSize ()); ++i)
   {
     EXPECT_NEAR (descriptor[0].histogram[i], ref_values[i], 1e-5);
   }
@@ -217,7 +217,7 @@ TEST (PCL, GASDShapeAndColorEstimationNoInterp)
     0, 0, 0, 0, 0, 0, 0, 0};
 
   EXPECT_EQ (descriptor.size (), 1);
-  for (std::size_t i = 0; i < std::size_t (descriptor[0].descriptorSize ()); ++i)
+  for (std::size_t i = 0; i < static_cast<std::size_t>(descriptor[0].descriptorSize ()); ++i)
   {
     EXPECT_NEAR (descriptor[0].histogram[i], ref_values[i], 1e-5);
   }
@@ -304,7 +304,7 @@ TEST(PCL, GASDShapeAndColorEstimationQuadrilinearInterp)
     0, 0, 0, 0, 0, 0, 0, 0};
 
   EXPECT_EQ (descriptor.size (), 1);
-  for (std::size_t i = 0; i < std::size_t( descriptor[0].descriptorSize ()); ++i)
+  for (std::size_t i = 0; i < static_cast<std::size_t>( descriptor[0].descriptorSize ()); ++i)
   {
     EXPECT_NEAR (descriptor[0].histogram[i], ref_values[i], 1e-5);
   }

@@ -179,9 +179,9 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
 
     // bilinear interpolation
     double beta_bin_size = is_radial_ ? (M_PI / 2 / image_width_) : bin_size;
-    int beta_bin = int(std::floor (beta / beta_bin_size)) + int(image_width_);
+    int beta_bin = static_cast<int>(std::floor (beta / beta_bin_size)) + static_cast<int>(image_width_);
     assert (0 <= beta_bin && beta_bin < m_matrix.cols ());
-    int alpha_bin = int(std::floor (alpha / bin_size));
+    int alpha_bin = static_cast<int>(std::floor (alpha / bin_size));
     assert (0 <= alpha_bin && alpha_bin < m_matrix.rows ());
 
     if (alpha_bin == static_cast<int> (image_width_))  // border points
@@ -190,15 +190,15 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
       // HACK: to prevent a > 1
       alpha = bin_size * (alpha_bin + 1) - std::numeric_limits<double>::epsilon ();
     }
-    if (beta_bin == int(2*image_width_) )  // border points
+    if (beta_bin == static_cast<int>(2*image_width_) )  // border points
     {
       beta_bin--;
       // HACK: to prevent b > 1
-      beta = beta_bin_size * (beta_bin - int(image_width_) + 1) - std::numeric_limits<double>::epsilon ();
+      beta = beta_bin_size * (beta_bin - static_cast<int>(image_width_) + 1) - std::numeric_limits<double>::epsilon ();
     }
 
-    double a = alpha/bin_size - double(alpha_bin);
-    double b = beta/beta_bin_size - double(beta_bin-int(image_width_)); 
+    double a = alpha/bin_size - static_cast<double>(alpha_bin);
+    double b = beta/beta_bin_size - static_cast<double>(beta_bin-static_cast<int>(image_width_)); 
 
     assert (0 <= a && a <= 1);
     assert (0 <= b && b <= 1);

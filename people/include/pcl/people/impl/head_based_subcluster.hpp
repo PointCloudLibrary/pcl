@@ -291,7 +291,7 @@ pcl::people::HeadBasedSubclustering<PointT>::subcluster (std::vector<pcl::people
   clusters = new_clusters;
 
   std::vector<pcl::people::PersonCluster<PointT> > subclusters;
-  int cluster_min_points_sub = int(float(min_points_) * 1.5);
+  int cluster_min_points_sub = static_cast<int>(static_cast<float>(min_points_) * 1.5);
   //  int cluster_max_points_sub = max_points_;
 
   // create HeightMap2D object:

@@ -136,7 +136,7 @@ Narf::extractDescriptor (int descriptor_size)
 {
   float weight_for_first_point = 2.0f; // The weight for the last point is always 1.0f
   int no_of_beam_points = getNoOfBeamPoints();
-  float weight_factor = -2.0f*(weight_for_first_point-1.0f) / ((weight_for_first_point+1.0f)*float(no_of_beam_points-1)),
+  float weight_factor = -2.0f*(weight_for_first_point-1.0f) / ((weight_for_first_point+1.0f)*static_cast<float>(no_of_beam_points-1)),
         weight_offset = 2.0f*weight_for_first_point / (weight_for_first_point+1.0f);
 
   if (descriptor_size != descriptor_size_)
@@ -148,7 +148,7 @@ Narf::extractDescriptor (int descriptor_size)
   float angle_step_size = deg2rad (360.0f) / static_cast<float> (descriptor_size_);
   //std::cout << PVARN(no_of_beam_points)<<PVARN(surface_patch_pixel_size_);
 
-  float cell_size = surface_patch_world_size_/float(surface_patch_pixel_size_),
+  float cell_size = surface_patch_world_size_/static_cast<float>(surface_patch_pixel_size_),
         cell_factor = 1.0f/cell_size,
         cell_offset = 0.5f*(surface_patch_world_size_ - cell_size),
         max_dist = 0.5f*surface_patch_world_size_,
@@ -188,7 +188,7 @@ Narf::extractDescriptor (int descriptor_size)
       float beam_value1=beam_values[beam_value_idx],
             beam_value2=beam_values[beam_value_idx+1];
 
-      float current_weight = weight_factor*float(beam_value_idx) + weight_offset;
+      float current_weight = weight_factor*static_cast<float>(beam_value_idx) + weight_offset;
       float diff = beam_value2-beam_value1;
       current_cell += current_weight * diff;
     }
@@ -273,7 +273,7 @@ Narf::extractFromRangeImageWithBestRotation (const RangeImage& range_image, cons
 float* 
 Narf::getBlurredSurfacePatch (int new_pixel_size, int blur_radius) const
 {
-  float new_to_old_factor = float(surface_patch_pixel_size_)/float(new_pixel_size);
+  float new_to_old_factor = static_cast<float>(surface_patch_pixel_size_)/static_cast<float>(new_pixel_size);
   int new_size = new_pixel_size*new_pixel_size;
   
   float* integral_image = new float[new_size];

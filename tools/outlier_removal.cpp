@@ -111,7 +111,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   if (keep_organized)
   {
     xyz_cloud = xyz_cloud_pre;
-    for (int i = 0; i < int (xyz_cloud->size ()); ++i)
+    for (int i = 0; i < static_cast<int>(xyz_cloud->size ()); ++i)
       valid_indices.push_back (i);
   }
   else

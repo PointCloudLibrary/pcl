@@ -90,8 +90,8 @@ TEST (CorrespondenceEstimation, CorrespondenceEstimationSetSearchMethod)
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud2 (new pcl::PointCloud<pcl::PointXYZ> ());
   for ( std::size_t i = 0; i < 50; i++ )
   {
-    cloud1->points.emplace_back(float (rand()), float (rand()), float (rand()));
-    cloud2->points.emplace_back(float (rand()), float (rand()), float (rand()));
+    cloud1->points.emplace_back(static_cast<float>(rand()), static_cast<float>(rand()), static_cast<float>(rand()));
+    cloud2->points.emplace_back(static_cast<float>(rand()), static_cast<float>(rand()), static_cast<float>(rand()));
   }
   // Build a KdTree for each
   pcl::search::KdTree<pcl::PointXYZ>::Ptr tree1 (new pcl::search::KdTree<pcl::PointXYZ> ());

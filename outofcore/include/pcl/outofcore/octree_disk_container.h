@@ -210,7 +210,7 @@ namespace pcl
           writebuff_.clear ();
           //remove the binary data in the directory
           PCL_DEBUG ("[Octree Disk Container] Removing the point data from disk, in file %s\n", disk_storage_filename_.c_str ());
-          boost::filesystem::remove (boost::filesystem::path (disk_storage_filename_.c_str ()));
+          boost::filesystem::remove (static_cast<boost::filesystem::path> (disk_storage_filename_.c_str ()));
           //reset the size-of-file counter
           filelen_ = 0;
         }

@@ -114,9 +114,9 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search)
     for (int ypos = -centerY; ypos < centerY; ypos++)
       for (int xpos = -centerX; xpos < centerX; xpos++)
       {
-        double z = 15.0 * ((double)rand () / (double)(RAND_MAX+1.0))+20;
-        double y = (double)ypos*oneOverFocalLength*(double)z;
-        double x = (double)xpos*oneOverFocalLength*(double)z;
+        double z = 15.0 * (static_cast<double>(rand ()) / (RAND_MAX+1.0))+20;
+        double y = static_cast<double>(ypos)*oneOverFocalLength*z;
+        double x = static_cast<double>(xpos)*oneOverFocalLength*z;
 
         cloudIn->points.emplace_back(x, y, z);
       }
@@ -220,7 +220,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search_Kinec
 
     // organized nearest neighbor search
     organizedNeighborSearch.setInputCloud (cloudIn);
-    organizedNeighborSearch.nearestKSearch (searchPoint, (int)K, k_indices, k_sqr_distances);
+    organizedNeighborSearch.nearestKSearch (searchPoint, static_cast<int>(K), k_indices, k_sqr_distances);
 
     k_indices_bruteforce.clear();
     k_sqr_distances_bruteforce.clear();
@@ -287,7 +287,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
     for (int ypos = -centerY; ypos < centerY; ypos++)
       for (int xpos = -centerX; xpos < centerX; xpos++)
       {
-        double z = 5.0 * ( ((double)rand () / (double)RAND_MAX))+5;
+        double z = 5.0 * ( (static_cast<double>(rand ()) / static_cast<double>(RAND_MAX)))+5;
         double y = ypos*oneOverFocalLength*z;
         double x = xpos*oneOverFocalLength*z;
         (*cloudIn)[idx++]= PointXYZ (x, y, z);
@@ -297,7 +297,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
 
     const PointXYZ& searchPoint = (*cloudIn)[randomIdx];
 
-    const double searchRadius = 1.0 * ((double)rand () / (double)RAND_MAX);
+    const double searchRadius = 1.0 * (static_cast<double>(rand ()) / static_cast<double>(RAND_MAX));
     //   double searchRadius = 1/10;
 
     // bruteforce radius search
@@ -376,7 +376,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
     for (int ypos = -centerY; ypos < centerY; ypos++)
       for (int xpos = -centerX; xpos < centerX; xpos++)
       {
-        double z = 5.0 * ( ((double)rand () / (double)RAND_MAX))+5;
+        double z = 5.0 * ( (static_cast<double>(rand ()) / static_cast<double>(RAND_MAX)))+5;
         double y = ypos*oneOverFocalLength*z;
         double x = xpos*oneOverFocalLength*z;
 
@@ -387,7 +387,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
 
     const PointXYZ& searchPoint = (*cloudIn)[randomIdx];
 
-    const double searchRadius = 1.0 * ((double)rand () / (double)RAND_MAX);
+    const double searchRadius = 1.0 * (static_cast<double>(rand ()) / static_cast<double>(RAND_MAX));
 
     // bruteforce radius search
     std::vector<int> cloudSearchBruteforce;

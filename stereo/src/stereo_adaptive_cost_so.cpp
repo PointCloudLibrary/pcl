@@ -79,7 +79,7 @@ pcl::AdaptiveCostSOStereoMatching::compute_impl(unsigned char* ref_img,
   // LUT for color distance weight computation
   float lut[256];
   for (int j = 0; j < 256; j++)
-    lut[j] = float(std::exp(-j / gamma_c_));
+    lut[j] = static_cast<float>(std::exp(-j / gamma_c_));
 
   // left weight array alloc
   float* wl = new float[2 * radius_ + 1];

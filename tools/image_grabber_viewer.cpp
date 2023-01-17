@@ -129,7 +129,7 @@ mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
 int
 main (int argc, char** argv)
 {
-  srand (unsigned (time (nullptr)));
+  srand (static_cast<unsigned>(time (nullptr)));
 
   if (argc > 1)
   {
@@ -207,7 +207,7 @@ main (int argc, char** argv)
     printHelp (argc, argv);
     return (-1);
   }
-  grabber->setDepthImageUnits (float (1E-3));
+  grabber->setDepthImageUnits (static_cast<float>(1E-3));
 
   // Before manually setting
   double fx, fy, cx, cy;

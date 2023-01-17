@@ -148,7 +148,7 @@ pcl::SamplingSurfaceNormal<PointT>::samplePartition (
   for (const auto& point: cloud)
   {
     // TODO: change to Boost random number generators!
-    const float r = float (std::rand ()) / float (RAND_MAX);
+    const float r = static_cast<float>(std::rand ()) / static_cast<float>(RAND_MAX);
 
     if (r < ratio_)
     {

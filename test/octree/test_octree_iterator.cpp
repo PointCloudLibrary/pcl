@@ -1259,12 +1259,12 @@ struct OctreePointCloudAdjacencyBeginEndIteratorsTest
 
     // Generate Point Cloud
     typename PointCloudT::Ptr cloud (new PointCloudT (100, 1));
-    constexpr float max_inv = 1.f / float (RAND_MAX);
+    constexpr float max_inv = 1.f / static_cast<float>(RAND_MAX);
     for (std::size_t i = 0; i < 100; ++i)
     {
-      const PointT pt (10.f * (float (std::rand ()) * max_inv - .5f),
-                       10.f * (float (std::rand ()) * max_inv - .5f),
-                       10.f * (float (std::rand ()) * max_inv - .5f));
+      const PointT pt (10.f * (static_cast<float>(std::rand ()) * max_inv - .5f),
+                       10.f * (static_cast<float>(std::rand ()) * max_inv - .5f),
+                       10.f * (static_cast<float>(std::rand ()) * max_inv - .5f));
       (*cloud)[i] = pt;
     }
 
@@ -1503,9 +1503,9 @@ struct OctreePointCloudSierpinskiTest
 
       for (unsigned int i = 0; i < nb_pt_in_voxel; ++i)
       {
-        float x = x_min + (rand () / ((float)(RAND_MAX) + 1)) * (x_max - x_min);
-        float y = y_min + (rand () / ((float)(RAND_MAX) + 1)) * (y_max - y_min);
-        float z = z_min + (rand () / ((float)(RAND_MAX) + 1)) * (z_max - z_min);
+        float x = x_min + (rand () / (static_cast<float>(RAND_MAX) + 1)) * (x_max - x_min);
+        float y = y_min + (rand () / (static_cast<float>(RAND_MAX) + 1)) * (y_max - y_min);
+        float z = z_min + (rand () / (static_cast<float>(RAND_MAX) + 1)) * (z_max - z_min);
 
         cloud->points.emplace_back(x, y, z);
       }

@@ -168,7 +168,7 @@ pcl::getPointsInBox (const pcl::PointCloud<PointT> &cloud,
         continue;
       if (cloud[i].x > max_pt[0] || cloud[i].y > max_pt[1] || cloud[i].z > max_pt[2])
         continue;
-      indices[l++] = int (i);
+      indices[l++] = static_cast<int>(i);
     }
   }
   // NaN or Inf values could exist => check for them
@@ -186,7 +186,7 @@ pcl::getPointsInBox (const pcl::PointCloud<PointT> &cloud,
         continue;
       if (cloud[i].x > max_pt[0] || cloud[i].y > max_pt[1] || cloud[i].z > max_pt[2])
         continue;
-      indices[l++] = int (i);
+      indices[l++] = static_cast<int>(i);
     }
   }
   indices.resize (l);
@@ -210,7 +210,7 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Eigen::Vector4f
       dist = (pivot_pt3 - pt).norm ();
       if (dist > max_dist)
       {
-        max_idx = int (i);
+        max_idx = static_cast<int>(i);
         max_dist = dist;
       }
     }
@@ -227,7 +227,7 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Eigen::Vector4f
       dist = (pivot_pt3 - pt).norm ();
       if (dist > max_dist)
       {
-        max_idx = int (i);
+        max_idx = static_cast<int>(i);
         max_dist = dist;
       }
     }

@@ -176,7 +176,7 @@ public:
     const Eigen::Vector2d p_xy(transformed_pt.x, transformed_pt.y);
     const Eigen::Vector2d q = p_xy - mean_;
     const Eigen::RowVector2d qt_cvi(q.transpose() * covar_inv_);
-    const double exp_qt_cvi_q = std::exp(-0.5 * double(qt_cvi * q));
+    const double exp_qt_cvi_q = std::exp(-0.5 * static_cast<double>(qt_cvi * q));
     r.value = -exp_qt_cvi_q;
 
     Eigen::Matrix<double, 2, 3> jacobian;
@@ -184,7 +184,7 @@ public:
         x * cos_theta - y * sin_theta;
 
     for (std::size_t i = 0; i < 3; i++)
-      r.grad[i] = double(qt_cvi * jacobian.col(i)) * exp_qt_cvi_q;
+      r.grad[i] = static_cast<double>(qt_cvi * jacobian.col(i)) * exp_qt_cvi_q;
 
     // second derivative only for i == j == 2:
     const Eigen::Vector2d d2q_didj(y * sin_theta - x * cos_theta,
@@ -194,7 +194,8 @@ public:
       for (std::size_t j = 0; j < 3; j++)
         r.hessian(i, j) =
             -exp_qt_cvi_q *
-            (double(-qt_cvi * jacobian.col(i)) * double(-qt_cvi * jacobian.col(j)) +
+            (static_cast<double>(-qt_cvi * jacobian.col(i)) *
+                 static_cast<double>(-qt_cvi * jacobian.col(j)) +
              (-qt_cvi * ((i == 2 && j == 2) ? d2q_didj : Eigen::Vector2d::Zero())) +
              (-jacobian.col(j).transpose() * covar_inv_ * jacobian.col(i)));
 
