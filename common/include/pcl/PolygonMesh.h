@@ -32,7 +32,7 @@ namespace pcl
       const auto point_offset = mesh1.cloud.width * mesh1.cloud.height;
       
       bool success = pcl::PCLPointCloud2::concatenate(mesh1.cloud, mesh2.cloud);
-      if (success == false) {
+      if (!success) {
         return false;
       }
       // Make the resultant polygon mesh take the newest stamp

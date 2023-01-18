@@ -624,7 +624,7 @@ pcl::ConditionalRemoval<PointT>::setCondition (ConditionBasePtr condition)
 template <typename PointT> void
 pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
 {
-  if (capable_ == false)
+  if (!capable_)
   {
     PCL_WARN ("[pcl::%s::applyFilter] not capable!\n", getClassName ().c_str ());
     return;

@@ -454,7 +454,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
   {
     for (const auto &element_ptr: elements)
     {
-      auto& element = *(element_ptr.get ());
+      auto& element = *(element_ptr);
       for (std::size_t element_index = 0; element_index < element.count; ++element_index)
       {
         if (element.begin_element_callback)
@@ -472,7 +472,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
 
         for (const auto &property_ptr: element.properties)
         {
-          auto& property = *(property_ptr.get ());
+          auto& property = *(property_ptr);
           if (!property.parse (*this, format, stringstream))
           {
             error_callback_ (line_number_, "parse error: element property count doesn't match the declaration in the header");
@@ -508,14 +508,14 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
 
   for (const auto &element_ptr: elements)
   {
-    auto& element = *(element_ptr.get ());
+    auto& element = *(element_ptr);
     for (std::size_t element_index = 0; element_index < element.count; ++element_index)
     {
       if (element.begin_element_callback)
         element.begin_element_callback ();
       for (const auto &property_ptr: element.properties)
       {
-        auto& property = *(property_ptr.get ());
+        auto& property = *(property_ptr);
         if (!property.parse (*this, format, istream))
         {
           return false;

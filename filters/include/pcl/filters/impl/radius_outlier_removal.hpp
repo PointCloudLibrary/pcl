@@ -109,10 +109,7 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
       }
       else
       {
-        if (negative_)
-          chk_neighbors = true;
-        else
-          chk_neighbors = false;
+        chk_neighbors = negative_;
       }
 
       // Points having too few neighbors are outliers and are passed to removed indices

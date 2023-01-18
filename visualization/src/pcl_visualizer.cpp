@@ -92,10 +92,10 @@
 #include <vtkEDLShading.h>
 #endif
 
+#include <pcl/common/time.h>
 #include <pcl/visualization/common/shapes.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/common/common.h>
-#include <pcl/common/time.h>
+
 #include <boost/version.hpp> // for BOOST_VERSION
 #if (BOOST_VERSION >= 106600)
 #include <boost/uuid/detail/sha1.hpp>
