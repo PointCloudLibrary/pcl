@@ -26,6 +26,8 @@ endif()
 project(PCL VERSION 1.13.0)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
+include(${CMAKE_BINARY_DIR}/conan_paths.cmake)
+
 ### ---[ Find universal dependencies
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/" ${CMAKE_MODULE_PATH})
 
@@ -141,7 +143,7 @@ endif()
 
 if(CMAKE_COMPILER_IS_MSVC)
   add_definitions("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -DPCL_ONLY_CORE_POINT_TYPES ${SSE_DEFINITIONS}")
-  
+
   if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
     string(APPEND CMAKE_CXX_FLAGS " /fp:precise ${SSE_FLAGS} ${AVX_FLAGS} /bigobj")
 
@@ -152,7 +154,7 @@ if(CMAKE_COMPILER_IS_MSVC)
       string(APPEND CMAKE_EXE_LINKER_FLAGS_RELEASE " /LTCG")
     else()
       set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcompiler=/bigobj")
-      
+
       message("Global optimizations /GL has been turned off, as it doesn't work with nvcc/thrust")
     endif()
     # /MANIFEST:NO") # please, don't disable manifest generation, otherwise crash at start for vs2008
@@ -187,8 +189,8 @@ if(CMAKE_COMPILER_IS_MSVC)
       elseif(MSVC_MP GREATER 1)
         string(APPEND CMAKE_C_FLAGS " /MP${MSVC_MP}")
         string(APPEND CMAKE_CXX_FLAGS " /MP${MSVC_MP}")
-      endif()      
-    else()      
+      endif()
+    else()
       if(MSVC_MP EQUAL 0)
         # MSVC_MP is 0 in case the information cannot be determined by ProcessorCount => fallback
         # Generator expression is necessary to limit /MP flag to C/CXX, so flag will be not set to e.g. CUDA (see https://gitlab.kitware.com/cmake/cmake/issues/17535)
@@ -314,8 +316,7 @@ endif()
 find_package(Threads REQUIRED)
 
 # Eigen (required)
-find_package(Eigen 3.3 REQUIRED)
-include_directories(SYSTEM ${EIGEN_INCLUDE_DIRS})
+find_package(Eigen3 REQUIRED CONFIG)
 
 # FLANN (required)
 find_package(FLANN 1.9.1 REQUIRED)
