@@ -41,7 +41,7 @@ if(TARGET FLANN::FLANN)
 endif()
 
 # First try to locate FLANN using modern config
-find_package(flann NO_MODULE ${FLANN_FIND_VERSION} QUIET)
+find_package(flann REQUIRED CONFIG)
 
 if(flann_FOUND)
   unset(flann_FOUND)

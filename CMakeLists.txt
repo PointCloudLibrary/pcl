@@ -319,7 +319,7 @@ find_package(Threads REQUIRED)
 find_package(Eigen3 REQUIRED CONFIG)
 
 # FLANN (required)
-find_package(FLANN 1.9.1 REQUIRED)
+find_package(FLANN 1.9.2 REQUIRED)
 if(NOT (${FLANN_LIBRARY_TYPE} MATCHES ${PCL_FLANN_REQUIRED_TYPE}) AND NOT (${PCL_FLANN_REQUIRED_TYPE} MATCHES "DONTCARE"))
   message(FATAL_ERROR "Flann was selected with ${PCL_FLANN_REQUIRED_TYPE} but found as ${FLANN_LIBRARY_TYPE}")
 endif()
