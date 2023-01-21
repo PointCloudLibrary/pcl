@@ -564,6 +564,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
     int* pvalues = values;
     const float& x = (kp.x);
     const float& y = (kp.y);
+    // NOLINTNEXTLINE(readability-simplify-boolean-expr)
     if (true) // kp.angle==-1
     {
       if (!rotation_invariance_enabled_)

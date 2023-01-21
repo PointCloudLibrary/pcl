@@ -201,7 +201,7 @@ openni_wrapper::OpenNIDriver::updateDeviceList ()
     }
     else
 #endif
-    if (vendor_id == 0x1d27 && device.image_node.get () == nullptr)
+    if (vendor_id == 0x1d27 && device.image_node == nullptr)
     {
       strcpy (const_cast<char*> (device.device_node.GetDescription ().strVendor), "ASUS");
       strcpy (const_cast<char*> (device.device_node.GetDescription ().strName), "Xtion Pro");

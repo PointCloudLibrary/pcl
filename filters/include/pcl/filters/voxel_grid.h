@@ -202,7 +202,7 @@ namespace pcl
         max_b_ (Eigen::Vector4i::Zero ()),
         div_b_ (Eigen::Vector4i::Zero ()),
         divb_mul_ (Eigen::Vector4i::Zero ()),
-        filter_field_name_ (""),
+        
         filter_limit_min_ (std::numeric_limits<float>::lowest()),
         filter_limit_max_ (std::numeric_limits<float>::max()),
         filter_limit_negative_ (false),
@@ -528,7 +528,7 @@ namespace pcl
         max_b_ (Eigen::Vector4i::Zero ()),
         div_b_ (Eigen::Vector4i::Zero ()),
         divb_mul_ (Eigen::Vector4i::Zero ()),
-        filter_field_name_ (""),
+        
         filter_limit_min_ (std::numeric_limits<float>::lowest()),
         filter_limit_max_ (std::numeric_limits<float>::max()),
         filter_limit_negative_ (false),

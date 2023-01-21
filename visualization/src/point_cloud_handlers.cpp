@@ -419,10 +419,7 @@ pcl::visualization::PointCloudColorHandlerGenericField<pcl::PCLPointCloud2>::Poi
   field_name_ (field_name)
 {
   field_idx_  = pcl::getFieldIndex (*cloud, field_name);
-  if (field_idx_ != -1)
-    capable_ = true;
-  else
-    capable_ = false;
+  capable_ = field_idx_ != -1;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -494,10 +491,7 @@ pcl::visualization::PointCloudColorHandlerRGBAField<pcl::PCLPointCloud2>::PointC
 {
   // Handle the 24-bit packed RGBA values
   field_idx_ = pcl::getFieldIndex (*cloud, "rgba");
-  if (field_idx_ != -1)
-    capable_ = true;
-  else
-    capable_ = false;
+  capable_ = field_idx_ != -1;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -579,10 +573,7 @@ pcl::visualization::PointCloudColorHandlerLabelField<pcl::PCLPointCloud2>::Point
 : pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloudColorHandler (cloud)
 {
   field_idx_ = pcl::getFieldIndex (*cloud, "label");
-  if (field_idx_ != -1)
-    capable_ = true;
-  else
-    capable_ = false;
+  capable_ = field_idx_ != -1;
   static_mapping_ = static_mapping;
 }
 

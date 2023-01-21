@@ -169,12 +169,9 @@ void
 pcl::io::OpenNI2Grabber::checkImageAndDepthSynchronizationRequired ()
 {
   // do we have anyone listening to images or color point clouds?
-  if (num_slots<sig_cb_openni_point_cloud_rgb>   () > 0 ||
+  sync_required_ = (num_slots<sig_cb_openni_point_cloud_rgb>   () > 0 ||
     num_slots<sig_cb_openni_point_cloud_rgba>  () > 0 ||
-    num_slots<sig_cb_openni_image_depth_image> () > 0)
-    sync_required_ = true;
-  else
-    sync_required_ = false;
+    num_slots<sig_cb_openni_image_depth_image> () > 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -182,13 +179,10 @@ void
 pcl::io::OpenNI2Grabber::checkImageStreamRequired ()
 {
   // do we have anyone listening to images or color point clouds?
-  if (num_slots<sig_cb_openni_image>             () > 0 ||
+  image_required_ = (num_slots<sig_cb_openni_image>             () > 0 ||
     num_slots<sig_cb_openni_image_depth_image> () > 0 ||
     num_slots<sig_cb_openni_point_cloud_rgba>  () > 0 ||
-    num_slots<sig_cb_openni_point_cloud_rgb>   () > 0)
-    image_required_ = true;
-  else
-    image_required_ = false;
+    num_slots<sig_cb_openni_point_cloud_rgb>   () > 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -196,28 +190,22 @@ void
 pcl::io::OpenNI2Grabber::checkDepthStreamRequired ()
 {
   // do we have anyone listening to depth images or (color) point clouds?
-  if (num_slots<sig_cb_openni_depth_image>       () > 0 ||
+  depth_required_ = (num_slots<sig_cb_openni_depth_image>       () > 0 ||
     num_slots<sig_cb_openni_image_depth_image> () > 0 ||
     num_slots<sig_cb_openni_ir_depth_image>    () > 0 ||
     num_slots<sig_cb_openni_point_cloud_rgb>   () > 0 ||
     num_slots<sig_cb_openni_point_cloud_rgba>  () > 0 ||
     num_slots<sig_cb_openni_point_cloud>       () > 0 ||
-    num_slots<sig_cb_openni_point_cloud_i>     () > 0 )
-    depth_required_ = true;
-  else
-    depth_required_ = false;
+    num_slots<sig_cb_openni_point_cloud_i>     () > 0 );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::io::OpenNI2Grabber::checkIRStreamRequired ()
 {
-  if (num_slots<sig_cb_openni_ir_image>       () > 0 ||
+  ir_required_ = (num_slots<sig_cb_openni_ir_image>       () > 0 ||
     num_slots<sig_cb_openni_point_cloud_i>  () > 0 ||
-    num_slots<sig_cb_openni_ir_depth_image> () > 0)
-    ir_required_ = true;
-  else
-    ir_required_ = false;
+    num_slots<sig_cb_openni_ir_depth_image> () > 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
