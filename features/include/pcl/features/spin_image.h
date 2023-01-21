@@ -135,11 +135,13 @@ namespace pcl
       {
         const unsigned int necessary_desc_size = (bin_count+1)*(2*bin_count+1);
         if (necessary_desc_size > static_cast<unsigned int>(PointOutT::descriptorSize())) {
-          for(int i=0; ; ++i) // Find the biggest possible image_width_
-            if(((i+1)*(2*i+1)) <= PointOutT::descriptorSize())
+          for(int i=0; ; ++i) { // Find the biggest possible image_width_
+            if(((i+1)*(2*i+1)) <= PointOutT::descriptorSize()) {
               image_width_ = i;
-            else
+            } else {
               break;
+            }
+          }
           PCL_ERROR("[pcl::SpinImageEstimation] The chosen image width is too large, setting it to %u instead. "
             "Consider using pcl::Histogram<%u> as output type of SpinImageEstimation "
             "(possibly with `#define PCL_NO_PRECOMPILE 1`).\n", image_width_, ((bin_count+1)*(2*bin_count+1)));
