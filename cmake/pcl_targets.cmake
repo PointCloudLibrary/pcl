@@ -219,11 +219,12 @@ function(PCL_ADD_LIBRARY _name)
     DEFINE_SYMBOL "PCLAPI_EXPORTS")
   set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
 
-  install(TARGETS ${_name}
+  install(TARGETS ${_name} EXPORT PCL
           RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
           LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
           ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT})
 
+  install(EXPORT PCL NAMESPACE pcl:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${CMAKE_PROJECT_NAME} FILE PCLModules.cmake)
   # Copy PDB if available
   if(MSVC AND ${PCL_LIB_TYPE} EQUAL "SHARED")
     install(FILES $<TARGET_PDB_FILE:${_name}> DESTINATION ${BIN_INSTALL_DIR} OPTIONAL)
@@ -269,10 +270,11 @@ function(PCL_CUDA_ADD_LIBRARY _name)
     DEFINE_SYMBOL "PCLAPI_EXPORTS")
   set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
 
-  install(TARGETS ${_name}
+  install(TARGETS ${_name} EXPORT PCL
           RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
           LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
           ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT})
+  install(EXPORT PCL NAMESPACE pcl:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${CMAKE_PROJECT_NAME} FILE PCLModules.cmake)
 endfunction()
 
 ###############################################################################
@@ -925,8 +927,8 @@ macro(PCL_SET_TEST_DEPENDENCIES _var _module)
 endmacro()
 
 ###############################################################################
-# Add two test targets for both values of PCL_RUN_TESTS_AT_COMPILE_TIME 
-# boolean flag, binaries produced are named with "_runtime" and "_compiletime" 
+# Add two test targets for both values of PCL_RUN_TESTS_AT_COMPILE_TIME
+# boolean flag, binaries produced are named with "_runtime" and "_compiletime"
 # for false and true values accordingly.
 # _name The test name.
 # _exename The exe name.

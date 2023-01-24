@@ -88,19 +88,13 @@ endmacro()
 
 ### ---[ 3rd party libraries
 macro(find_boost)
-  if(PCL_ALL_IN_ONE_INSTALLER)
-    set(BOOST_ROOT "${PCL_ROOT}/3rdParty/Boost")
-  elseif(NOT BOOST_INCLUDEDIR)
-    set(BOOST_INCLUDEDIR "@Boost_INCLUDE_DIR@")
-  endif()
-  
   set(Boost_ADDITIONAL_VERSIONS
     "@Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@.@Boost_SUBMINOR_VERSION@" "@Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@"
     "1.80.0" "1.80"
-    "1.79.0" "1.79" "1.78.0" "1.78" "1.77.0" "1.77" "1.76.0" "1.76" "1.75.0" "1.75" 
+    "1.79.0" "1.79" "1.78.0" "1.78" "1.77.0" "1.77" "1.76.0" "1.76" "1.75.0" "1.75"
     "1.74.0" "1.74" "1.73.0" "1.73" "1.72.0" "1.72" "1.71.0" "1.71" "1.70.0" "1.70"
     "1.69.0" "1.69" "1.68.0" "1.68" "1.67.0" "1.67" "1.66.0" "1.66" "1.65.1" "1.65.0" "1.65")
-  
+
   find_package(Boost 1.65.0 ${QUIET_} COMPONENTS @PCLCONFIG_AVAILABLE_BOOST_MODULES@)
 
   set(BOOST_FOUND ${Boost_FOUND})
@@ -114,12 +108,7 @@ endmacro()
 
 #remove this as soon as eigen is shipped with FindEigen.cmake
 macro(find_eigen)
-  if(PCL_ALL_IN_ONE_INSTALLER)
-    set(EIGEN_ROOT "${PCL_ROOT}/3rdParty/Eigen")
-  elseif(NOT EIGEN_ROOT)
-    get_filename_component(EIGEN_ROOT "@EIGEN_INCLUDE_DIRS@" ABSOLUTE)
-  endif()
-  find_package(Eigen 3.3)
+  find_package(Eigen3 REQUIRED CONFIG)
 endmacro()
 
 #remove this as soon as qhull is shipped with FindQhull.cmake
@@ -271,7 +260,7 @@ endmacro()
 macro(find_external_library _component _lib _is_optional)
   if("${_lib}" STREQUAL "boost")
     find_boost()
-  elseif("${_lib}" STREQUAL "eigen")
+  elseif("${_lib}" STREQUAL "eigen3")
     find_eigen()
   elseif("${_lib}" STREQUAL "flann")
     find_flann()
@@ -306,13 +295,13 @@ macro(find_external_library _component _lib _is_optional)
   string(REGEX REPLACE "[.-]" "_" LIB ${LIB})
   if(${LIB}_FOUND)
     list(APPEND PCL_${COMPONENT}_INCLUDE_DIRS ${${LIB}_INCLUDE_DIRS})
-    
+
     if(${LIB} MATCHES "VTK")
       if(${${LIB}_VERSION_MAJOR} GREATER_EQUAL 9)
         set(ISVTK9ORGREATER TRUE)
       endif()
     endif()
-    
+
     if(${LIB}_USE_FILE AND NOT ISVTK9ORGREATER )
       include(${${LIB}_USE_FILE})
     else()
@@ -666,6 +655,8 @@ endif()
 if(TARGET QHULL::QHULL)
     list(APPEND PCL_LIBRARIES QHULL::QHULL)
 endif()
+
+include("${CMAKE_CURRENT_LIST_DIR}/PCLModules.cmake")
 
 find_package_handle_standard_args(PCL DEFAULT_MSG PCL_LIBRARIES PCL_INCLUDE_DIRS)
 mark_as_advanced(PCL_LIBRARIES PCL_INCLUDE_DIRS PCL_LIBRARY_DIRS)
