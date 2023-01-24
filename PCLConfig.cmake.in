@@ -400,7 +400,7 @@ elseif(EXISTS "${PCL_DIR}/include/pcl/pcl_config.h")
   set(PCL_CONF_INCLUDE_DIR "${PCL_DIR}/include") # for pcl_config.h
   set(PCL_LIBRARY_DIRS "${PCL_DIR}/@LIB_INSTALL_DIR@")
 else()
-  pcl_report_not_found("PCL can not be found on this machine")
+  #pcl_report_not_found("PCL can not be found on this machine")
 endif()
 
 set(PCL_INCLUDE_DIRS "${PCL_CONF_INCLUDE_DIR}")
