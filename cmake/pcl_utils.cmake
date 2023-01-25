@@ -94,21 +94,12 @@ macro(SET_INSTALL_DIRS)
   if(NOT DEFINED LIB_INSTALL_DIR)
     set(LIB_INSTALL_DIR "lib")
   endif()
-    if(NOT ANDROID)
-      set(INCLUDE_INSTALL_ROOT
-          "include/${PROJECT_NAME_LOWER}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
-    else()
-      set(INCLUDE_INSTALL_ROOT "include") # Android, don't put into subdir
-    endif()
+    set(INCLUDE_INSTALL_ROOT "include")
     set(INCLUDE_INSTALL_DIR "${INCLUDE_INSTALL_ROOT}/pcl")
     set(DOC_INSTALL_DIR "share/doc/${PROJECT_NAME_LOWER}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
     set(BIN_INSTALL_DIR "bin")
     set(PKGCFG_INSTALL_DIR "${LIB_INSTALL_DIR}/pkgconfig")
-    if(WIN32 AND NOT MINGW)
-        set(PCLCONFIG_INSTALL_DIR "cmake")
-      else()
-        set(PCLCONFIG_INSTALL_DIR "share/${PROJECT_NAME_LOWER}-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
-      endif()
+    set(PCLCONFIG_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${CMAKE_PROJECT_NAME})
 endmacro()
 
 
