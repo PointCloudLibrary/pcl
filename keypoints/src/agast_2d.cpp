@@ -81,7 +81,7 @@ pcl::keypoints::agast::AbstractAgastDetector::detectKeypoints (
     const std::vector<unsigned char> & intensity_data,
     pcl::PointCloud<pcl::PointUV> &output) const
 {
-  detect (&(intensity_data[0]), output.points);
+  detect (intensity_data.data(), output.points);
 
   output.height = 1;
   output.width = output.size ();
@@ -93,7 +93,7 @@ pcl::keypoints::agast::AbstractAgastDetector::detectKeypoints (
     const std::vector<float> & intensity_data,
     pcl::PointCloud<pcl::PointUV> &output) const
 {
-  detect (&(intensity_data[0]), output.points);
+  detect (intensity_data.data(), output.points);
 
   output.height = 1;
   output.width = output.size ();
@@ -244,7 +244,7 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
   pcl::PointCloud<pcl::PointUV> &output)
 {
   std::vector<ScoreIndex> scores;
-  computeCornerScores (&(intensity_data[0]), input.points, scores);
+  computeCornerScores (intensity_data.data(), input.points, scores);
 
   // If a threshold for the maximum number of keypoints is given
   if (nr_max_keypoints_ <= scores.size ()) //std::numeric_limits<unsigned int>::max ())
@@ -272,7 +272,7 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
   pcl::PointCloud<pcl::PointUV> &output)
 {
   std::vector<ScoreIndex> scores;
-  computeCornerScores (&(intensity_data[0]), input.points, scores);
+  computeCornerScores (intensity_data.data(), input.points, scores);
 
   // If a threshold for the maximum number of keypoints is given
   if (nr_max_keypoints_ <= scores.size ()) //std::numeric_limits<unsigned int>::max ())

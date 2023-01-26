@@ -249,7 +249,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
     const int r_y_1 = (1024 - r_y);
 
     //+const unsigned char* ptr = static_cast<const unsigned char*> (&image[0].r) + x + y * imagecols;
-    const unsigned char* ptr = static_cast<const unsigned char*>(&image[0]) + x + y * imagecols;
+    const unsigned char* ptr = static_cast<const unsigned char*>(image.data()) + x + y * imagecols;
 
     // just interpolate:
     ret_val = (r_x_1 * r_y_1 * static_cast<int>(*ptr));
@@ -312,7 +312,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
     // now the calculation:
 
     //+const unsigned char* ptr = static_cast<const unsigned char*> (&image[0].r) + x_left + imagecols * y_top;
-    const unsigned char* ptr = static_cast<const unsigned char*>(&image[0]) + x_left + imagecols * y_top;
+    const unsigned char* ptr = static_cast<const unsigned char*>(image.data()) + x_left + imagecols * y_top;
 
     // first the corners:
     ret_val = A * static_cast<int>(*ptr);
@@ -334,7 +334,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
 
     // next the edges:
     //+int* ptr_integral;// = static_cast<int*> (integral.data) + x_left + integralcols * y_top + 1;
-    const int* ptr_integral = static_cast<const int*> (&integral_image[0]) + x_left + integralcols * y_top + 1;
+    const int* ptr_integral = static_cast<const int*> (integral_image.data()) + x_left + integralcols * y_top + 1;
 
     // find a simple path through the different surface corners
     const int tmp1 = (*ptr_integral);
@@ -374,7 +374,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
   // now the calculation:
 
   //const unsigned char* ptr = static_cast<const unsigned char*> (&image[0].r) + x_left + imagecols * y_top;
-  const unsigned char* ptr = static_cast<const unsigned char*>(&image[0]) + x_left + imagecols * y_top;
+  const unsigned char* ptr = static_cast<const unsigned char*>(image.data()) + x_left + imagecols * y_top;
 
   // first row:
   ret_val = A * static_cast<int>(*ptr);

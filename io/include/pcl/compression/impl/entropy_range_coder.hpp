@@ -119,7 +119,7 @@ pcl::AdaptiveRangeCoder::encodeCharVectorToStream (const std::vector<char>& inpu
   }
 
   // write to stream
-  outputByteStream_arg.write (&outputCharVector_[0], outputCharVector_.size ());
+  outputByteStream_arg.write (outputCharVector_.data(), outputCharVector_.size ());
 
   return (static_cast<unsigned long> (outputCharVector_.size ()));
 }
@@ -340,7 +340,7 @@ pcl::StaticRangeCoder::encodeIntVectorToStream (std::vector<unsigned int>& input
   }
 
   // write encoded data to stream
-  outputByteStream_arg.write (&outputCharVector_[0], outputCharVector_.size ());
+  outputByteStream_arg.write (outputCharVector_.data(), outputCharVector_.size ());
 
   streamByteCount += static_cast<unsigned long> (outputCharVector_.size ());
 
@@ -528,7 +528,7 @@ pcl::StaticRangeCoder::encodeCharVectorToStream (const std::vector<char>& inputB
   }
 
   // write encoded data to stream
-  outputByteStream_arg.write (&outputCharVector_[0], outputCharVector_.size ());
+  outputByteStream_arg.write (outputCharVector_.data(), outputCharVector_.size ());
 
   streamByteCount += static_cast<unsigned long> (outputCharVector_.size ());
 

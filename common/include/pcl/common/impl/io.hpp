@@ -133,7 +133,7 @@ namespace detail
                         pcl::PointCloud<PointT> &cloud_out)
   {
     // Use std::copy directly, if the point types of two clouds are same
-    std::copy (&cloud_in[0], (&cloud_in[0]) + cloud_in.size (), &cloud_out[0]);
+    std::copy (cloud_in.data(), cloud_in.data() + cloud_in.size (), cloud_out.data());
   }
 
 } // namespace detail
@@ -360,8 +360,8 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<PointT>
 
     if (border_type == pcl::BORDER_TRANSPARENT)
     {
-      const PointT* in = &(cloud_in[0]);
-      PointT* out = &(cloud_out[0]);
+      const PointT* in = cloud_in.data();
+      PointT* out = cloud_out.data();
       PointT* out_inner = out + cloud_out.width*top + left;
       for (std::uint32_t i = 0; i < cloud_in.height; i++, out_inner += cloud_out.width, in += cloud_in.width)
       {
@@ -387,8 +387,8 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<PointT>
           for (int i = 0; i < right; i++)
             padding[i+left] = pcl::interpolatePointIndex (cloud_in.width+i, cloud_in.width, border_type);
 
-          const PointT* in = &(cloud_in[0]);
-          PointT* out = &(cloud_out[0]);
+          const PointT* in = cloud_in.data();
+          PointT* out = cloud_out.data();
           PointT* out_inner = out + cloud_out.width*top + left;
 
           for (std::uint32_t i = 0; i < cloud_in.height; i++, out_inner += cloud_out.width, in += cloud_in.width)
@@ -428,9 +428,9 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<PointT>
         int right = cloud_out.width - cloud_in.width - left;
         int bottom = cloud_out.height - cloud_in.height - top;
         std::vector<PointT> buff (cloud_out.width, value);
-        PointT* buff_ptr = &(buff[0]);
-        const PointT* in = &(cloud_in[0]);
-        PointT* out = &(cloud_out[0]);
+        PointT* buff_ptr = buff.data();
+        const PointT* in = cloud_in.data();
+        PointT* out = cloud_out.data();
         PointT* out_inner = out + cloud_out.width*top + left;
 
         for (std::uint32_t i = 0; i < cloud_in.height; i++, out_inner += cloud_out.width, in += cloud_in.width)

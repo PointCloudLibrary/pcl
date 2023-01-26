@@ -1280,7 +1280,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::computeKMe
   Eigen::MatrixXf old_centers (number_of_clusters, feature_dimension);
   std::vector<int> counters (number_of_clusters);
   std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > boxes (feature_dimension);
-  Eigen::Vector2f* box = &boxes[0];
+  Eigen::Vector2f* box = boxes.data();
 
   double best_compactness = std::numeric_limits<double>::max ();
   double compactness = 0.0;
@@ -1428,7 +1428,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::generateCe
   std::size_t dimension = data.cols ();
   auto number_of_points = static_cast<unsigned int> (data.rows ());
   std::vector<int> centers_vec (number_of_clusters);
-  int* centers = &centers_vec[0];
+  int* centers = centers_vec.data();
   std::vector<double> dist (number_of_points);
   std::vector<double> tdist (number_of_points);
   std::vector<double> tdist2 (number_of_points);

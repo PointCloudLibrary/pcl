@@ -295,7 +295,7 @@ TEST (PCL, PLYPolygonMeshSpecificFieldOrder)
   mesh.cloud.data.resize(28);
   constexpr float x = 0.0, y = 1.0, z = 2.0, normal_x = 1.0, normal_y = 0.0, normal_z = 0.0;
   constexpr std::uint32_t rgba = 0x326496;
-  memcpy(&mesh.cloud.data[0], &x, sizeof(float));
+  memcpy(&mesh.cloud.data[0], &x, sizeof(float)); // NOLINT(readability-container-data-pointer)
   memcpy(&mesh.cloud.data[4], &y, sizeof(float));
   memcpy(&mesh.cloud.data[8], &z, sizeof(float));
   memcpy(&mesh.cloud.data[12], &normal_x, sizeof(float));

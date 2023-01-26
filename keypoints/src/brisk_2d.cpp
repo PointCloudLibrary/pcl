@@ -374,7 +374,7 @@ pcl::keypoints::brisk::ScaleSpace::isMax2D (
 {
   const std::vector<unsigned char>& scores = pyramid_[layer].getScores ();
   const int scorescols = pyramid_[layer].getImageWidth ();
-  const unsigned char* data = &scores[0] + y_layer * scorescols + x_layer;
+  const unsigned char* data = scores.data() + y_layer * scorescols + x_layer;
 
   // decision tree:
   const unsigned char center = (*data);
@@ -456,7 +456,7 @@ pcl::keypoints::brisk::ScaleSpace::isMax2D (
     
     for (unsigned int i = 0; i < deltasize; i+= 2)
     {
-      data = &scores[0] + (y_layer - 1 + delta[i+1]) * scorescols + x_layer + delta[i] - 1;
+      data = scores.data() + (y_layer - 1 + delta[i+1]) * scorescols + x_layer + delta[i] - 1;
 
       int othercenter = *data;
       data++;
@@ -1347,7 +1347,7 @@ pcl::keypoints::brisk::Layer::getAgastPoints (
     std::uint8_t threshold, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &keypoints)
 {
   oast_detector_->setThreshold (threshold);
-  oast_detector_->detect (&img_[0], keypoints);
+  oast_detector_->detect (img_.data(), keypoints);
 
   // also write scores
   const int num = static_cast<int>(keypoints.size ());
@@ -1356,7 +1356,7 @@ pcl::keypoints::brisk::Layer::getAgastPoints (
   for (int i = 0; i < num; i++)
   {
     const int offs = static_cast<int>(keypoints[i].u + keypoints[i].v * static_cast<float>(imcols));
-    *(&scores_[0] + offs) = static_cast<unsigned char> (oast_detector_->computeCornerScore (&img_[0] + offs));
+    *((scores_).data() + offs) = static_cast<unsigned char> (oast_detector_->computeCornerScore (img_.data() + offs));
   }
 }
 
@@ -1372,13 +1372,13 @@ pcl::keypoints::brisk::Layer::getAgastScore (int x, int y, std::uint8_t threshol
   {
     return (0);
   }
-  std::uint8_t& score = *(&scores_[0] + x + y * img_width_);
+  std::uint8_t& score = *(scores_.data() + x + y * img_width_);
   if (score > 2) 
   {
     return (score);
   }
   oast_detector_->setThreshold (threshold - 1);
-  score = static_cast<std::uint8_t>(oast_detector_->computeCornerScore (&img_[0] + x + y * img_width_));
+  score = static_cast<std::uint8_t>(oast_detector_->computeCornerScore (img_.data() + x + y * img_width_));
   if (score < threshold) score = 0;
   return (score);
 }
@@ -1398,7 +1398,7 @@ pcl::keypoints::brisk::Layer::getAgastScore_5_8 (int x, int y, std::uint8_t thre
   }
 
   agast_detector_5_8_->setThreshold (threshold - 1);
-  auto score = static_cast<std::uint8_t>(agast_detector_5_8_->computeCornerScore (&img_[0] + x + y * img_width_));
+  auto score = static_cast<std::uint8_t>(agast_detector_5_8_->computeCornerScore (img_.data() + x + y * img_width_));
   if (score < threshold) score = 0;
   return (score);
 }
@@ -1465,7 +1465,7 @@ pcl::keypoints::brisk::Layer::getValue (
 		const int r_y   = static_cast<int> ((yf - static_cast<float>(y)) * 1024);
     const int r_x_1 = (1024 - r_x);
     const int r_y_1 = (1024 - r_y);
-    const unsigned char* ptr = &image[0] + x + y * imagecols;
+    const unsigned char* ptr = image.data() + x + y * imagecols;
 
     // just interpolate:
     ret_val = (r_x_1 * r_y_1 * static_cast<int>(*ptr));
@@ -1512,7 +1512,7 @@ pcl::keypoints::brisk::Layer::getValue (
   const int r_y1_i  = static_cast<int> (r_y1  * static_cast<float>(scaling));
 
   // now the calculation:
-  const unsigned char* ptr = &image[0] + x_left + imagecols * y_top;
+  const unsigned char* ptr = image.data() + x_left + imagecols * y_top;
   // first row:
   ret_val = A * static_cast<int>(*ptr);
   ptr++;
@@ -1571,9 +1571,9 @@ pcl::keypoints::brisk::Layer::halfsample (
   __m128i mask = _mm_set_epi32 (0x00FF00FF, 0x00FF00FF, 0x00FF00FF, 0x00FF00FF);
 
   // data pointers:
-  const auto* p1 = reinterpret_cast<const __m128i*> (&srcimg[0]);
-  const auto* p2 = reinterpret_cast<const __m128i*> (&srcimg[0] + srcwidth);
-  auto* p_dest = reinterpret_cast<__m128i*> (&dstimg[0]);
+  const auto* p1 = reinterpret_cast<const __m128i*> (srcimg.data());
+  const auto* p2 = reinterpret_cast<const __m128i*> (srcimg.data() + srcwidth);
+  auto* p_dest = reinterpret_cast<__m128i*> (dstimg.data());
   unsigned char* p_dest_char;//=(unsigned char*)p_dest;
 
   // size:
@@ -1675,8 +1675,8 @@ pcl::keypoints::brisk::Layer::halfsample (
     if (noleftover)
     {
       row++;
-      p_dest = reinterpret_cast<__m128i*> (&dstimg[0] + row * dstwidth);
-      p1 = reinterpret_cast<const __m128i*> (&srcimg[0] + 2 * row * srcwidth);
+      p_dest = reinterpret_cast<__m128i*> (dstimg.data() + row * dstwidth);
+      p1 = reinterpret_cast<const __m128i*> (srcimg.data() + 2 * row * srcwidth);
       //p2=(__m128i*)(srcimg.data+(2*row+1)*srcwidth);
       //p1+=hsize;
       p2 = p1 + hsize;
@@ -1692,9 +1692,9 @@ pcl::keypoints::brisk::Layer::halfsample (
       }
       // done with the two rows:
       row++;
-      p_dest = reinterpret_cast<__m128i*> (&dstimg[0] + row * dstwidth);
-      p1 = reinterpret_cast<const __m128i*> (&srcimg[0] + 2 * row * srcwidth);
-      p2 = reinterpret_cast<const __m128i*> (&srcimg[0] + (2 * row + 1) * srcwidth);
+      p_dest = reinterpret_cast<__m128i*> (dstimg.data() + row * dstwidth);
+      p1 = reinterpret_cast<const __m128i*> (srcimg.data() + 2 * row * srcwidth);
+      p2 = reinterpret_cast<const __m128i*> (srcimg.data() + (2 * row + 1) * srcwidth);
     }
   }
 #else
@@ -1726,10 +1726,10 @@ pcl::keypoints::brisk::Layer::twothirdsample (
   __m128i store_mask = _mm_set_epi8 (0x0,0x0,0x0,0x0,0x0,0x0,static_cast<char>(0x80),static_cast<char>(0x80),static_cast<char>(0x80),static_cast<char>(0x80),static_cast<char>(0x80),static_cast<char>(0x80),static_cast<char>(0x80),static_cast<char>(0x80),static_cast<char>(0x80),static_cast<char>(0x80));
 
   // data pointers:
-  const unsigned char* p1 = &srcimg[0];
+  const unsigned char* p1 = srcimg.data();
   const unsigned char* p2 = p1 + srcwidth;
   const unsigned char* p3 = p2 + srcwidth;
-  unsigned char* p_dest1 = &dstimg[0];
+  unsigned char* p_dest1 = dstimg.data();
   unsigned char* p_dest2 = p_dest1 + dstwidth;
   const unsigned char* p_end = p1 + (srcwidth * srcheight);
 
@@ -1801,10 +1801,10 @@ pcl::keypoints::brisk::Layer::twothirdsample (
     row_dest += 2;
 
     // reset pointers
-    p1 = &srcimg[0] + row * srcwidth;
+    p1 = srcimg.data() + row * srcwidth;
     p2 = p1 + srcwidth;
     p3 = p2 + srcwidth;
-    p_dest1 = &dstimg[0] + row_dest * dstwidth;
+    p_dest1 = dstimg.data() + row_dest * dstwidth;
     p_dest2 = p_dest1 + dstwidth;
   }
 #else

@@ -23,6 +23,7 @@ Checks: >
     performance-no-automatic-move,
     performance-noexcept-move-constructor,
     performance-type-promotion-in-math-fn,
+    readability-container-data-pointer,
     readability-container-size-empty,
     readability-delete-null-pointer,
     readability-duplicate-include,

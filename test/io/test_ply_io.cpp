@@ -590,7 +590,7 @@ TEST_F (PLYTest, Float64Cloud)
   }
   for (size_t pointIdx = 0; pointIdx < cloud.size(); ++pointIdx)
   {
-    unsigned char const * ptr = &cloud2.data[0] + pointIdx*cloud2.point_step;
+    unsigned char const * ptr = cloud2.data.data() + pointIdx*cloud2.point_step;
     double xValue, yValue, zValue;
     memcpy(
         reinterpret_cast<char*>(&xValue),

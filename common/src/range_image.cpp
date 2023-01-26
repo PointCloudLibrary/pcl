@@ -826,7 +826,7 @@ RangeImage::extractFarRanges (const pcl::PCLPointCloud2& point_cloud_data,
   }
   
   int point_step = point_cloud_data.point_step;
-  const unsigned char* data = &point_cloud_data.data[0];
+  const unsigned char* data = point_cloud_data.data.data();
   int x_offset = point_cloud_data.fields[x_idx].offset,
       y_offset = point_cloud_data.fields[y_idx].offset,
       z_offset = point_cloud_data.fields[z_idx].offset,

@@ -419,7 +419,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
 
   // choose random first point
   base_indices[0] = (*target_indices_)[rand() % nr_points];
-  auto* index1 = &base_indices[0];
+  auto* index1 = base_indices.data();
 
   // random search for 2 other points (as far away as overlap allows)
   for (int i = 0; i < ransac_iterations_; i++) {

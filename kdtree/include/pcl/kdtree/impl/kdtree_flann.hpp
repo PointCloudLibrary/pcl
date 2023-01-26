@@ -169,7 +169,7 @@ knn_search(A& index, B& query, C& k_indices, D& dists, unsigned int k, F& params
   std::vector<std::size_t> indices(k);
   k_indices.resize(k);
   // Wrap indices vector (no data allocation)
-  ::flann::Matrix<std::size_t> indices_mat(&indices[0], 1, k);
+  ::flann::Matrix<std::size_t> indices_mat(indices.data(), 1, k);
   auto ret = index.knnSearch(query, indices_mat, dists, k, params);
   // cast appropriately
   std::transform(indices.cbegin(),
@@ -253,10 +253,10 @@ pcl::KdTreeFLANN<PointT, Dist>::nearestKSearch (const PointT &point, unsigned in
   point_representation_->vectorize (static_cast<PointT> (point), query);
 
   // Wrap the k_distances vector (no data copy)
-  ::flann::Matrix<float> k_distances_mat (&k_distances[0], 1, k);
+  ::flann::Matrix<float> k_distances_mat (k_distances.data(), 1, k);
 
   knn_search(*flann_index_,
-             ::flann::Matrix<float>(&query[0], 1, dim_),
+             ::flann::Matrix<float>(query.data(), 1, dim_),
              k_indices,
              k_distances_mat,
              k,
@@ -392,7 +392,7 @@ pcl::KdTreeFLANN<PointT, Dist>::radiusSearch (const PointT &point, double radius
   else
     params.max_neighbors = max_nn;
 
-  auto query_mat = ::flann::Matrix<float>(&query[0], 1, dim_);
+  auto query_mat = ::flann::Matrix<float>(query.data(), 1, dim_);
   int neighbors_in_radius = radius_search(*flann_index_,
                                           query_mat,
                                           k_indices,

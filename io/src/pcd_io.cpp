@@ -559,7 +559,7 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
     auto data_size = static_cast<unsigned int> (cloud.data.size ());
     std::vector<char> buf (data_size);
     // The size of the uncompressed data better be the same as what we stored in the header
-    unsigned int tmp_size = pcl::lzfDecompress (&map[data_idx + 8], compressed_size, &buf[0], data_size);
+    unsigned int tmp_size = pcl::lzfDecompress (&map[data_idx + 8], compressed_size, buf.data(), data_size);
     if (tmp_size != uncompressed_size)
     {
       PCL_ERROR ("[pcl::PCDReader::read] Size of decompressed lzf data (%u) does not match value stored in PCD header (%u). Errno: %d\n", tmp_size, uncompressed_size, errno);
@@ -604,7 +604,7 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
   }
   else
     // Copy the data
-    memcpy (&cloud.data[0], &map[0] + data_idx, cloud.data.size ());
+    memcpy ((cloud.data).data(), &map[0] + data_idx, cloud.data.size ());
 
   // Extra checks (not needed for ASCII)
   int point_size = (cloud.width * cloud.height == 0) ? 0 : static_cast<int> (cloud.data.size () / (cloud.height * cloud.width));
@@ -1259,7 +1259,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCl
   memcpy (&map[0], oss.str().c_str (), static_cast<std::size_t> (data_idx));
 
   // Copy the data
-  memcpy (&map[0] + data_idx, &cloud.data[0], cloud.data.size ());
+  memcpy (&map[0] + data_idx, cloud.data.data(), cloud.data.size ());
 
 #ifndef _WIN32
   // If the user set the synchronization flag on, call msync
@@ -1387,11 +1387,11 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
     {
       return (-1);
     }
-    memcpy (&temp_buf[0], &compressed_size, 4);
+    memcpy (temp_buf.data(), &compressed_size, 4);
     memcpy (&temp_buf[4], &data_size, 4);
     temp_buf.resize (compressed_size + 8);
   } else {
-    auto *header = reinterpret_cast<std::uint32_t*>(&temp_buf[0]);
+    auto *header = reinterpret_cast<std::uint32_t*>(temp_buf.data());
     header[0] = 0; // compressed_size is 0
     header[1] = 0; // data_size is 0
   }
