@@ -845,7 +845,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
     // top and bottom borders
     // That sets the output density to false!
     output.is_dense = false;
-    auto border = static_cast<unsigned>(normal_smoothing_size_);
+    const auto border = static_cast<unsigned>(normal_smoothing_size_);
     PointOutT* vec1 = &output [0];
     PointOutT* vec2 = vec1 + input_->width * (input_->height - border);
 
@@ -895,7 +895,13 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
           if (smoothing > 2.0f)
           {
             setRectSize (static_cast<int> (smoothing), static_cast<int> (smoothing));
-            computePointNormal (ci, ri, index, output [index]);
+            // Since depth can be anything, we have no guarantee that the border is sufficient, so we need to check
+            if(ci>static_cast<unsigned>(rect_width_2_) && ri>static_cast<unsigned>(rect_height_2_) && (ci+rect_width_2_)<input_->width && (ri+rect_height_2_)<input_->height) {
+              computePointNormal (ci, ri, index, output [index]);
+            } else {
+              output[index].getNormalVector3fMap ().setConstant (bad_point);
+              output[index].curvature = bad_point;
+            }
           }
           else
           {
@@ -907,8 +913,6 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
     }
     else
     {
-      float smoothing_constant = normal_smoothing_size_;
-
       index = border + input_->width * border;
       unsigned skip = (border << 1);
       for (unsigned ri = border; ri < input_->height - border; ++ri, index += skip)
@@ -924,7 +928,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
             continue;
           }
 
-          float smoothing = (std::min)(distanceMap[index], smoothing_constant);
+          float smoothing = (std::min)(distanceMap[index], normal_smoothing_size_);
 
           if (smoothing > 2.0f)
           {
@@ -981,8 +985,6 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
     }
     else
     {
-      float smoothing_constant = normal_smoothing_size_;
-
       //index = border + input_->width * border;
       //unsigned skip = (border << 1);
       //for (unsigned ri = border; ri < input_->height - border; ++ri, index += skip)
@@ -1000,7 +1002,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
             continue;
           }
 
-          float smoothing = (std::min)(distanceMap[index], smoothing_constant);
+          float smoothing = (std::min)(distanceMap[index], normal_smoothing_size_);
 
           if (smoothing > 2.0f)
           {
@@ -1027,9 +1029,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
   if (border_policy_ == BORDER_POLICY_IGNORE)
   {
     output.is_dense = false;
-    auto border = static_cast<unsigned>(normal_smoothing_size_);
-    unsigned bottom = input_->height > border ? input_->height - border : 0;
-    unsigned right = input_->width > border ? input_->width - border : 0;
+    const auto border = static_cast<unsigned>(normal_smoothing_size_);
+    const unsigned bottom = input_->height > border ? input_->height - border : 0;
+    const unsigned right = input_->width > border ? input_->width - border : 0;
     if (use_depth_dependent_smoothing_)
     {
       // Iterating over the entire index vector
@@ -1075,7 +1077,6 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
     }
     else
     {
-      float smoothing_constant = normal_smoothing_size_;
       // Iterating over the entire index vector
       for (std::size_t idx = 0; idx < indices_->size (); ++idx)
       {
@@ -1103,7 +1104,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
           continue;
         }
 
-        float smoothing = (std::min)(distanceMap[pt_index], smoothing_constant);
+        float smoothing = (std::min)(distanceMap[pt_index], normal_smoothing_size_);
 
         if (smoothing > 2.0f)
         {
@@ -1154,7 +1155,6 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
     }
     else
     {
-      float smoothing_constant = normal_smoothing_size_;
       for (std::size_t idx = 0; idx < indices_->size (); ++idx)
       {
         unsigned pt_index = (*indices_)[idx];
@@ -1168,7 +1168,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
           continue;
         }
 
-        float smoothing = (std::min)(distanceMap[pt_index], smoothing_constant);
+        float smoothing = (std::min)(distanceMap[pt_index], normal_smoothing_size_);
 
         if (smoothing > 2.0f)
         {
