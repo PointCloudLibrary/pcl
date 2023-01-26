@@ -1,7 +1,7 @@
 # Find and set Boost flags
 
 # If we would like to compile against a dynamically linked Boost
-if(PCL_BUILD_WITH_BOOST_DYNAMIC_LINKING_WIN32 AND WIN32)
+if(PCL_SHARED_LIBS)
   set(Boost_USE_STATIC_LIBS OFF)
   set(Boost_USE_STATIC OFF)
   set(Boost_USE_MULTITHREAD ON)
@@ -15,7 +15,7 @@ endif()
 
 set(Boost_ADDITIONAL_VERSIONS
   "1.80.0" "1.80"
-  "1.79.0" "1.79" "1.78.0" "1.78" "1.77.0" "1.77" "1.76.0" "1.76" "1.75.0" "1.75" 
+  "1.79.0" "1.79" "1.78.0" "1.78" "1.77.0" "1.77" "1.76.0" "1.76" "1.75.0" "1.75"
   "1.74.0" "1.74" "1.73.0" "1.73" "1.72.0" "1.72" "1.71.0" "1.71" "1.70.0" "1.70"
   "1.69.0" "1.69" "1.68.0" "1.68" "1.67.0" "1.67" "1.66.0" "1.66" "1.65.1" "1.65.0" "1.65")
 
