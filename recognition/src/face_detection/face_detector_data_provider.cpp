@@ -282,16 +282,14 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
     if (USE_NORMALS_)
     {
       integral_image_normal_x.reset (new pcl::IntegralImage2D<float, 1> (false));
-      const float *data_nx = reinterpret_cast<const float*> (&(*normals)[0]);// NOLINT(readability-container-data-pointer)
-      integral_image_normal_x->setInput (data_nx, normals->width, normals->height, element_stride_normal, row_stride_normal);
+      const float *data = reinterpret_cast<const float*> (normals->data());
+      integral_image_normal_x->setInput (data + 0, normals->width, normals->height, element_stride_normal, row_stride_normal);
 
       integral_image_normal_y.reset (new pcl::IntegralImage2D<float, 1> (false));
-      const float *data_ny = reinterpret_cast<const float*> (&(*normals)[0]);// NOLINT(readability-container-data-pointer)
-      integral_image_normal_y->setInput (data_ny + 1, normals->width, normals->height, element_stride_normal, row_stride_normal);
+      integral_image_normal_y->setInput (data + 1, normals->width, normals->height, element_stride_normal, row_stride_normal);
 
       integral_image_normal_z.reset (new pcl::IntegralImage2D<float, 1> (false));
-      const float *data_nz = reinterpret_cast<const float*> (&(*normals)[0]);// NOLINT(readability-container-data-pointer)
-      integral_image_normal_z->setInput (data_nz + 2, normals->width, normals->height, element_stride_normal, row_stride_normal);
+      integral_image_normal_z->setInput (data + 2, normals->width, normals->height, element_stride_normal, row_stride_normal);
     }
 
     //Using cloud labels estimate a 2D window from where to extract positive samples
