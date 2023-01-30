@@ -220,7 +220,9 @@ main(int argc, char** argv)
   }
 
   std::string device_id = "";
-  if(pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 && argc > 1 && argv[1][0] != '-') device_id = argv[1];
+  if (pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 &&
+      argc > 1 && argv[1][0] != '-')
+    device_id = argv[1];
   /////////////////////////////////////////////////////////////////////
 
   pcl::OpenNIGrabber grabber(device_id);

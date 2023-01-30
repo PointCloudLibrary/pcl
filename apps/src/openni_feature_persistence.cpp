@@ -291,7 +291,9 @@ main(int argc, char** argv)
   std::vector<float> scales_vector(scales_vector_double.size());
   float alpha = default_alpha;
 
-  if(pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 && argc > 1 && argv[1][0] != '-') device_id = argv[1];
+  if (pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 &&
+      argc > 1 && argv[1][0] != '-')
+    device_id = argv[1];
   pcl::console::parse_argument(argc, argv, "-octree_leaf_size", subsampling_leaf_size);
   pcl::console::parse_argument(
       argc, argv, "-normal_search_radius", normal_search_radius);
