@@ -253,8 +253,7 @@ pcl::SVMTrain::trainClassifier()
     doCrossValidation();
   }
   else {
-    SVMModel* out;
-    out = static_cast<SVMModel*>(svm_train(&prob_, &param_));
+    auto* out = reinterpret_cast<SVMModel*>(svm_train(&prob_, &param_));
     if (out == nullptr) {
       PCL_ERROR("[pcl::%s::trainClassifier] Error taining the classifier model.\n",
                 getClassName().c_str());
@@ -499,8 +498,7 @@ pcl::SVM::saveProblemNorm(const char* filename,
 bool
 pcl::SVMClassify::loadClassifierModel(const char* filename)
 {
-  SVMModel* out;
-  out = static_cast<SVMModel*>(svm_load_model(filename));
+  auto* out = reinterpret_cast<SVMModel*>(svm_load_model(filename));
   if (out == nullptr) {
     PCL_ERROR("[pcl::%s::loadClassifierModel] Can't open classifier model %s.\n",
               getClassName().c_str(),
@@ -554,7 +552,7 @@ pcl::SVMClassify::classificationTest()
   if (predict_probability_) {
     if (svm_check_probability_model(&model_) == 0) {
       PCL_WARN("[pcl::%s::classificationTest] Classifier model does not support "
-               "probabiliy estimates. Automatically disabled.\n",
+               "probability estimates. Automatically disabled.\n",
                getClassName().c_str());
       predict_probability_ = false;
     }
@@ -669,9 +667,10 @@ pcl::SVMClassify::classification()
 
   if (predict_probability_) {
     if (svm_check_probability_model(&model_) == 0) {
-      PCL_WARN("[pcl::%s::classification] Classifier model does not support probabiliy "
-               "estimates. Automatically disabled.\n",
-               getClassName().c_str());
+      PCL_WARN(
+          "[pcl::%s::classification] Classifier model does not support probability "
+          "estimates. Automatically disabled.\n",
+          getClassName().c_str());
       predict_probability_ = false;
     }
   }
@@ -682,8 +681,6 @@ pcl::SVMClassify::classification()
                getClassName().c_str());
   }
 
-  // int correct = 0;
-  int total = 0;
   int svm_type = svm_get_svm_type(&model_);
   int nr_class = svm_get_nr_class(&model_);
 
@@ -726,8 +723,6 @@ pcl::SVMClassify::classification()
       prediction_[ii].push_back(predict_label);
     }
 
-    ++total;
-
     ii++;
   }
 
@@ -750,9 +745,10 @@ pcl::SVMClassify::classification(pcl::SVMData in)
 
   if (predict_probability_) {
     if (svm_check_probability_model(&model_) == 0) {
-      PCL_WARN("[pcl::%s::classification] Classifier model does not support probabiliy "
-               "estimates. Automatically disabled.\n",
-               getClassName().c_str());
+      PCL_WARN(
+          "[pcl::%s::classification] Classifier model does not support probability "
+          "estimates. Automatically disabled.\n",
+          getClassName().c_str());
       predict_probability_ = false;
     }
   }

@@ -368,7 +368,6 @@ namespace pcl
             std::vector < std::vector<ExampleIndex> > positive_examples;
             positive_examples.resize (num_of_branches + 1);
 
-            std::size_t pos = 0;
             for (std::size_t example_index = 0; example_index < num_of_examples; ++example_index)
             {
               unsigned char branch_index;
@@ -383,11 +382,10 @@ namespace pcl
 
                 positive_examples[branch_index].push_back (examples[example_index]);
                 positive_examples[num_of_branches].push_back (examples[example_index]);
-                pos++;
               }
             }
 
-            //compute covariance from offsets and angles for all branchs
+            //compute covariance from offsets and angles for all branches
             std::vector < Eigen::Matrix3d > offset_covariances;
             std::vector < Eigen::Matrix3d > angle_covariances;
 

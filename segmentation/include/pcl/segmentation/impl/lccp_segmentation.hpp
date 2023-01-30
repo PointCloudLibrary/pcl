@@ -177,7 +177,6 @@ pcl::LCCPSegmentation<PointT>::mergeSmallSegments ()
   while (continue_filtering)
   {
     continue_filtering = false;
-    unsigned int nr_filtered = 0;
 
     VertexIterator sv_itr, sv_itr_end;
     // Iterate through all supervoxels, check if they are in a "small" segment -> change label to largest neighborID
@@ -195,7 +194,6 @@ pcl::LCCPSegmentation<PointT>::mergeSmallSegments ()
       if (seg_label_to_sv_list_map_[current_seg_label].size () <= min_segment_size_)
       {
         continue_filtering = true;
-        nr_filtered++;
 
         // Find largest neighbor
         for (auto neighbors_itr = seg_label_to_neighbor_set_map_[current_seg_label].cbegin (); neighbors_itr != seg_label_to_neighbor_set_map_[current_seg_label].cend (); ++neighbors_itr)

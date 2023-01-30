@@ -136,7 +136,7 @@ TEST(PCL_OctreeGPU, hostRadiusSearch)
 
 int main (int argc, char** argv)
 {
-    const int device = 0;
+    constexpr int device = 0;
     pcl::gpu::setDevice(device);
     pcl::gpu::printShortCudaDeviceInfo(device);        
     testing::InitGoogleTest (&argc, argv);

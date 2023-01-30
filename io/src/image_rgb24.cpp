@@ -81,7 +81,7 @@ pcl::io::ImageRGB24::fillGrayscale (unsigned width, unsigned height, unsigned ch
     unsigned dst_skip = gray_line_step - width; // skip of padding values in bytes
 
     unsigned char* dst_line = gray_buffer;
-    const RGB888Pixel* src_line = (RGB888Pixel*) wrapper_->getData ();
+    const auto* src_line = reinterpret_cast<const RGB888Pixel*>(wrapper_->getData ());
 
     for (unsigned yIdx = 0; yIdx < height; ++yIdx, src_line += src_skip, dst_line += dst_skip)
     {

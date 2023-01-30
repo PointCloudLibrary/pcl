@@ -46,7 +46,7 @@ using namespace pcl;
 using namespace pcl::test;
 
 PointCloud<PointXYZ> cloud;
-const std::size_t size = 10 * 480;
+constexpr std::size_t size = 10 * 480;
 
 TEST (PointCloud, size)
 {

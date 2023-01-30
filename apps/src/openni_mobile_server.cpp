@@ -79,7 +79,7 @@ CopyPointCloudToBuffers(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& clou
         point.x > bounds_max.x || point.y > bounds_max.y || point.z > bounds_max.z)
       continue;
 
-    const int conversion_factor = 500;
+    constexpr int conversion_factor = 500;
 
     cloud_buffers.points[j * 3 + 0] = static_cast<short>(point.x * conversion_factor);
     cloud_buffers.points[j * 3 + 1] = static_cast<short>(point.y * conversion_factor);

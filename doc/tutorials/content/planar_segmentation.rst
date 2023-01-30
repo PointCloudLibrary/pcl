@@ -63,7 +63,7 @@ In this tutorial, we will use the RANSAC method (pcl::SAC_RANSAC) as the robust 
 Our decision is motivated by RANSAC's simplicity (other robust estimators use it as
 a base and add additional, more complicated concepts). For more information
 about RANSAC, check its `Wikipedia page
-<http://en.wikipedia.org/wiki/RANSAC>`_.
+<https://en.wikipedia.org/wiki/RANSAC>`_.
 
 Finally:
 

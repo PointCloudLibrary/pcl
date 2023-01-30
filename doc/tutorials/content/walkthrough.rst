@@ -69,7 +69,7 @@ Filters
 
 .. image:: images/statistical_removal_2.jpg
 
-**Documentation:** http://docs.pointclouds.org/trunk/group__filters.html
+**Documentation:** https://pointclouds.org/documentation/group__filters.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#filtering-tutorial
 
@@ -118,7 +118,7 @@ Features
 	
 	|
 	
-**Documentation:** http://docs.pointclouds.org/trunk/group__features.html
+**Documentation:** https://pointclouds.org/documentation/group__features.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#features-tutorial
 
@@ -154,7 +154,7 @@ Keypoints
 
 **Background**
 
-	The *keypoints* library contains implementations of two point cloud keypoint detection algorithms. Keypoints (also referred to as `interest points <http://en.wikipedia.org/wiki/Interest_point_detection>`_) are points in an image or point cloud that are stable, distinctive, and can be identified using a well-defined detection criterion. Typically, the number of interest points in a point cloud will be much smaller than the total number of points in the cloud, and when used in combination with local feature descriptors at each keypoint, the keypoints and descriptors can be used to form a compact—yet descriptive—representation of the original data.
+	The *keypoints* library contains implementations of two point cloud keypoint detection algorithms. Keypoints (also referred to as `interest points <https://en.wikipedia.org/wiki/Interest_point_detection>`_) are points in an image or point cloud that are stable, distinctive, and can be identified using a well-defined detection criterion. Typically, the number of interest points in a point cloud will be much smaller than the total number of points in the cloud, and when used in combination with local feature descriptors at each keypoint, the keypoints and descriptors can be used to form a compact—yet descriptive—representation of the original data.
 	
 	The figure below shows the output of NARF keypoints extraction from a range image:
 	
@@ -162,7 +162,7 @@ Keypoints
 
 |
 	
-**Documentation:** http://docs.pointclouds.org/trunk/group__keypoints.html
+**Documentation:** https://pointclouds.org/documentation/group__keypoints.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#keypoints-tutorial
 
@@ -212,7 +212,7 @@ Registration
 
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/group__registration.html
+**Documentation:** https://pointclouds.org/documentation/group__registration.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#registration-tutorial
 
@@ -249,9 +249,9 @@ Kd-tree
 
 	A theoretical primer explaining how Kd-trees work can be found in the `Kd-tree tutorial <http://pointclouds.org/documentation/tutorials/kdtree_search.php#kdtree-search>`_.
 
-	The *kdtree* library provides the kd-tree data-structure, using `FLANN <http://www.cs.ubc.ca/~mariusm/index.php/FLANN/FLANN>`_, that allows for fast `nearest neighbor searches <http://en.wikipedia.org/wiki/Nearest_neighbor_search>`_.
+	The *kdtree* library provides the kd-tree data-structure, using `FLANN <http://www.cs.ubc.ca/~mariusm/index.php/FLANN/FLANN>`_, that allows for fast `nearest neighbor searches <https://en.wikipedia.org/wiki/Nearest_neighbor_search>`_.
 
-	A `Kd-tree <http://en.wikipedia.org/wiki/Kd-tree>`_ (k-dimensional tree) is a space-partitioning data structure that stores a set of k-dimensional points in a tree structure that enables efficient range searches and nearest neighbor searches. Nearest neighbor searches are a core operation when working with point cloud data and can be used to find correspondences between groups of points or feature descriptors or to define the local neighborhood around a point or points.
+	A `Kd-tree <https://en.wikipedia.org/wiki/Kd-tree>`_ (k-dimensional tree) is a space-partitioning data structure that stores a set of k-dimensional points in a tree structure that enables efficient range searches and nearest neighbor searches. Nearest neighbor searches are a core operation when working with point cloud data and can be used to find correspondences between groups of points or feature descriptors or to define the local neighborhood around a point or points.
 
 	.. image:: images/3dtree.png
 	
@@ -259,7 +259,7 @@ Kd-tree
 
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/group__kdtree.html
+**Documentation:** https://pointclouds.org/documentation/group__kdtree.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#kdtree-tutorial
 
@@ -299,7 +299,7 @@ Octree
 
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/group__octree.html
+**Documentation:** https://pointclouds.org/documentation/group__octree.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#octree-tutorial
 
@@ -340,7 +340,7 @@ Segmentation
 	
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/group__segmentation.html
+**Documentation:** https://pointclouds.org/documentation/group__segmentation.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#segmentation-tutorial
 
@@ -386,7 +386,7 @@ Sample Consensus
 
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/group__sample__consensus.html
+**Documentation:** https://pointclouds.org/documentation/group__sample__consensus.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#sample-consensus
 
@@ -432,7 +432,7 @@ Surface
 
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/group__surface.html
+**Documentation:** https://pointclouds.org/documentation/group__surface.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#surface-tutorial
 
@@ -513,7 +513,7 @@ I/O
 
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/group__io.html
+**Documentation:** https://pointclouds.org/documentation/group__io.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#i-o
 
@@ -580,7 +580,7 @@ Visualization
 
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/group__visualization.html
+**Documentation:** https://pointclouds.org/documentation/group__visualization.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#visualization-tutorial
 
@@ -730,7 +730,7 @@ This section provides a quick reference for some of the common tools in PCL.
 		
 		``pcl_pcd_convert_NaN_nan input.pcd output.pcd``
 	
-	* ``pcl_convert_pcd_ascii_binary``: converts PCD (Point Cloud Data) files from ASCII to binary and viceversa. 
+	* ``pcl_convert_pcd_ascii_binary``: converts PCD (Point Cloud Data) files from ASCII to binary and vice-versa. 
 	
 	 	**Usage example:**
 		
@@ -751,7 +751,7 @@ This section provides a quick reference for some of the common tools in PCL.
 		
 		``pcl_pcd2vtk input.pcd output.vtk`` 	
 
-	* ``pcl_pcd2ply``: converts PCD (Point Cloud Data) files to the `PLY format <http://en.wikipedia.org/wiki/PLY_%28file_format%29>`_. 
+	* ``pcl_pcd2ply``: converts PCD (Point Cloud Data) files to the `PLY format <https://en.wikipedia.org/wiki/PLY_%28file_format%29>`_. 
 
 		**Usage example:**
 

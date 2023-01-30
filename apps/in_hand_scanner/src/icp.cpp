@@ -161,7 +161,7 @@ pcl::ihs::ICP::findTransformation(const MeshConstPtr& mesh_model,
 {
   // Check the input
   // TODO: Double check the minimum number of points necessary for icp
-  const std::size_t n_min = 4;
+  constexpr std::size_t n_min = 4;
 
   if (mesh_model->sizeVertices() < n_min || cloud_data->size() < n_min) {
     std::cerr << "ERROR in icp.cpp: Not enough input points!\n";

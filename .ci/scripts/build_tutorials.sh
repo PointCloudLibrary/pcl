@@ -8,7 +8,7 @@ This script builds source code projects of PCL tutorials.
 
 Options:
 
-  -h             Dispaly this help and exit.
+  -h             Display this help and exit.
   -k             Keep going after a configuration/build error.
   -s             Print summary in the end.
   -e NAMES       Exclude tutorials from the build.

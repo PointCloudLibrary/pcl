@@ -68,7 +68,7 @@ end
 end
 
 function R=q2rot(q)
-% conversion code from http://en.wikipedia.org/wiki/Rotation_matrix%Quaternion	
+% conversion code from https://en.wikipedia.org/wiki/Rotation_matrix%Quaternion	
 Nq = q(1)^2 + q(2)^2 + q(3)^2 + q(4)^2;
 if Nq>0; s=2/Nq; else s=0; end
 X = q(2)*s; Y = q(3)*s; Z = q(4)*s;

@@ -499,7 +499,7 @@ public:
 
   /** Read in a normalized classification problem (in svmlight format).
    *
-   *  The data are kept whitout normalizing.
+   *  The data is kept without normalizing.
    *
    * \return false if fails
    */

@@ -35,6 +35,7 @@
  *
  */
 
+#include <pcl/common/io.h>  // for getFieldSize
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/io/ascii_io.h>
 #include <istream>
@@ -193,49 +194,27 @@ pcl::ASCIIReader::parse (
     const pcl::PCLPointField& field,
     std::uint8_t* data_target)
 {
+#define ASSIGN_TOKEN(CASE_LABEL)                                                       \
+  case CASE_LABEL: {                                                                   \
+    *(reinterpret_cast<pcl::traits::asType_t<CASE_LABEL>*>(data_target)) =             \
+        boost::lexical_cast<pcl::traits::asType_t<CASE_LABEL>>(token);                 \
+    return sizeof(pcl::traits::asType_t<CASE_LABEL>);                                  \
+  }
   switch (field.datatype)
   {
-    case pcl::PCLPointField::INT8:
-    {
-      *(reinterpret_cast<std::int8_t*>(data_target)) = boost::lexical_cast<std::int8_t> (token);
-      return (1);
-    }
-    case pcl::PCLPointField::UINT8:
-    {
-      *(reinterpret_cast<std::uint8_t*>(data_target)) = boost::lexical_cast<std::uint8_t> (token);
-      return 1;
-    }
-    case pcl::PCLPointField::INT16:
-    {
-      *(reinterpret_cast<std::int16_t*>(data_target)) = boost::lexical_cast<std::int16_t> (token);
-      return 2;
-    }
-    case pcl::PCLPointField::UINT16:
-    {
-      *(reinterpret_cast<std::uint16_t*>(data_target)) = boost::lexical_cast<std::uint16_t> (token);
-      return 2;
-    }
-    case pcl::PCLPointField::INT32:
-    {
-      *(reinterpret_cast<std::int32_t*>(data_target)) = boost::lexical_cast<std::int32_t> (token);
-      return 4;
-    }
-    case pcl::PCLPointField::UINT32:
-    {
-      *(reinterpret_cast<std::uint32_t*>(data_target)) = boost::lexical_cast<std::uint32_t> (token);
-      return 4;
-    }
-    case pcl::PCLPointField::FLOAT32:
-    {
-      *(reinterpret_cast<float*>(data_target)) = boost::lexical_cast<float> (token);
-      return 4;
-    }
-    case pcl::PCLPointField::FLOAT64:
-    {
-      *(reinterpret_cast<double*>(data_target)) = boost::lexical_cast<double> (token);
-      return 8;
-    }
+    ASSIGN_TOKEN(pcl::PCLPointField::BOOL)
+    ASSIGN_TOKEN(pcl::PCLPointField::INT8)
+    ASSIGN_TOKEN(pcl::PCLPointField::UINT8)
+    ASSIGN_TOKEN(pcl::PCLPointField::INT16)
+    ASSIGN_TOKEN(pcl::PCLPointField::UINT16)
+    ASSIGN_TOKEN(pcl::PCLPointField::INT32)
+    ASSIGN_TOKEN(pcl::PCLPointField::UINT32)
+    ASSIGN_TOKEN(pcl::PCLPointField::INT64)
+    ASSIGN_TOKEN(pcl::PCLPointField::UINT64)
+    ASSIGN_TOKEN(pcl::PCLPointField::FLOAT32)
+    ASSIGN_TOKEN(pcl::PCLPointField::FLOAT64)
   }
+#undef ASSIGN_TOKEN
   return 0;
 }
 
@@ -243,25 +222,6 @@ pcl::ASCIIReader::parse (
 std::uint32_t
 pcl::ASCIIReader::typeSize (int type)
 {
-  switch (type)
-  {
-    case pcl::PCLPointField::INT8:
-      return 1;
-    case pcl::PCLPointField::UINT8:
-      return 1;
-    case pcl::PCLPointField::INT16:
-      return 2;
-    case pcl::PCLPointField::UINT16:
-      return 2;
-    case pcl::PCLPointField::INT32:
-      return 4;
-    case pcl::PCLPointField::UINT32:
-      return 4;
-    case pcl::PCLPointField::FLOAT32:
-      return 4;
-    case pcl::PCLPointField::FLOAT64:
-      return 8;
-  }
-  return (0);
+  return getFieldSize(type);
 }
 

@@ -7,4 +7,4 @@
  *  All rights reserved
  */
 
-PCL_DEPRECATED_HEADER(1, 14, "Use required vtk includes instead.")
+PCL_DEPRECATED_HEADER(1, 15, "Use required vtk includes instead.")

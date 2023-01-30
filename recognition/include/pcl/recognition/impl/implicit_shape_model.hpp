@@ -140,7 +140,7 @@ pcl::features::ISMVoteList<PointT>::findStrongestPeaks (
 
   // heuristic: start from NUM_INIT_PTS different locations selected uniformly
   // on the votes. Intuitively, it is likely to get a good location in dense regions.
-  const int NUM_INIT_PTS = 100;
+  constexpr int NUM_INIT_PTS = 100;
   double SIGMA_DIST = in_sigma;// rule of thumb: 10% of the object radius
   const double FINAL_EPS = SIGMA_DIST / 100;// another heuristic
 
@@ -1128,7 +1128,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::simplifyCl
   grid.filter (temp_cloud);
 
   //extract indices of points from source cloud which are closest to grid points
-  const float max_value = std::numeric_limits<float>::max ();
+  constexpr float max_value = std::numeric_limits<float>::max ();
 
   const auto num_source_points = in_point_cloud->size ();
   const auto num_sample_points = temp_cloud.size ();
@@ -1262,7 +1262,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::computeKMe
   int flags,
   Eigen::MatrixXf& cluster_centers)
 {
-  const int spp_trials = 3;
+  constexpr int spp_trials = 3;
   std::size_t number_of_points = points_to_cluster.rows () > 1 ? points_to_cluster.rows () : points_to_cluster.cols ();
   int feature_dimension = points_to_cluster.rows () > 1 ? FeatureSize : 1;
 

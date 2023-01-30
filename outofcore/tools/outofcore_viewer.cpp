@@ -112,7 +112,6 @@ using AlignedPointT = Eigen::aligned_allocator<PointT>;
 #include <vtkLODActor.h>
 #include <vtkMath.h>
 #include <vtkMatrix4x4.h>
-#include <vtkMutexLock.h>
 #include <vtkObjectFactory.h>
 #include <vtkPolyData.h>
 #include <vtkProperty.h>
@@ -159,7 +158,7 @@ public:
     std::cout << "Key Pressed: " << key << std::endl;
 
     Scene *scene = Scene::instance ();
-    OutofcoreCloud *cloud = static_cast<OutofcoreCloud*> (scene->getObjectByName ("my_octree"));
+    OutofcoreCloud *cloud = dynamic_cast<OutofcoreCloud*> (scene->getObjectByName ("my_octree"));
 
     if (key == "Up" || key == "Down")
     {

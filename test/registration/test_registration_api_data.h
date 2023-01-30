@@ -1,6 +1,6 @@
 #pragma once
 
-const int nr_original_correspondences = 397;
+constexpr int nr_original_correspondences = 397;
 const int correspondences_original[397][2] = {
   { 0, 61 },
   { 1, 50 },
@@ -401,7 +401,7 @@ const int correspondences_original[397][2] = {
   { 396, 353 },
 };
 
-const int nr_reciprocal_correspondences = 53;
+constexpr int nr_reciprocal_correspondences = 53;
 const int correspondences_reciprocal[53][2] = {
   { 1, 50 },
   { 2, 51 },
@@ -458,8 +458,8 @@ const int correspondences_reciprocal[53][2] = {
   { 366, 334 },
 };
 
-const int nr_correspondences_result_rej_dist = 97;
-const float rej_dist_max_dist = 0.01f;
+constexpr int nr_correspondences_result_rej_dist = 97;
+constexpr float rej_dist_max_dist = 0.01f;
 const int correspondences_dist[97][2] = {
   { 1, 50 },
   { 2, 51 },
@@ -560,9 +560,9 @@ const int correspondences_dist[97][2] = {
   { 367, 334 },
 };
 
-const int nr_correspondences_result_rej_median_dist = 139;
-const float rej_median_factor = 0.5f;
-const float rej_median_distance = 0.000465391f;
+constexpr int nr_correspondences_result_rej_median_dist = 139;
+constexpr float rej_median_factor = 0.5f;
+constexpr float rej_median_distance = 0.000465391f;
 const int correspondences_median_dist[139][2] = {
   { 0, 61 },
   { 1, 50 },
@@ -705,7 +705,7 @@ const int correspondences_median_dist[139][2] = {
   { 368, 335 },
 };
 
-const int nr_correspondences_result_rej_one_to_one = 103;
+constexpr int nr_correspondences_result_rej_one_to_one = 103;
 const int correspondences_one_to_one[103][2] = {
   { 177, 27 },
   { 180, 32 },
@@ -812,9 +812,9 @@ const int correspondences_one_to_one[103][2] = {
   { 327, 360 },
 };
 
-const int nr_correspondences_result_rej_sac = 97;
-const double rej_sac_max_dist = 0.01;
-const int rej_sac_max_iter = 1000;
+constexpr int nr_correspondences_result_rej_sac = 97;
+constexpr double rej_sac_max_dist = 0.01;
+constexpr int rej_sac_max_iter = 1000;
 const int correspondences_sac[97][2] = {
   { 1, 50 },
   { 2, 51 },
@@ -915,8 +915,8 @@ const int correspondences_sac[97][2] = {
   { 390, 334 },
 };
 
-const int nr_correspondences_result_rej_trimmed = 198;
-const float rej_trimmed_overlap = 0.5;
+constexpr int nr_correspondences_result_rej_trimmed = 198;
+constexpr float rej_trimmed_overlap = 0.5;
 const int correspondences_trimmed[198][2] = {
   { 260, 286 },
   { 271, 299 },

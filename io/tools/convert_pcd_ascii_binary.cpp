@@ -39,7 +39,7 @@
 
 \author Radu Bogdan Rusu
 
-@b convert_pcd_ascii_binary converts PCD (Point Cloud Data) files from ascii to binary and viceversa.
+@b convert_pcd_ascii_binary converts PCD (Point Cloud Data) files from ascii to binary and vice-versa.
 
  **/
 

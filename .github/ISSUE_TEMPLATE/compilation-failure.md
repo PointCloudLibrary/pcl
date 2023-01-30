@@ -15,9 +15,9 @@ Please paste the compilation results/errors.
 **To Reproduce**
 
 Provide a link to a live example, or an unambiguous set of steps to reproduce this bug. A reproducible example helps to provide faster answers. Custom OS, custom PCL configs or custom build systems make the issue difficult to reproduce.
-* Best reproducability: A docker image + code snippets provided here
-* Good reproducability: Common Linux OS + default PCL config + code snippets provided here
-* Poor reproducability: code snippets
+* Best reproducibility: A docker image + code snippets provided here
+* Good reproducibility: Common Linux OS + default PCL config + code snippets provided here
+* Poor reproducibility: code snippets
 
 Remember to reproduce the error in a clean rebuild (removing all build objects and starting build from scratch)
 

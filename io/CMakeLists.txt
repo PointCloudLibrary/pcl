@@ -347,6 +347,7 @@ target_link_libraries("${LIB_NAME}" Boost::boost Boost::filesystem Boost::iostre
 if(VTK_FOUND)
   if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
     target_link_libraries("${LIB_NAME}" 
+                          VTK::FiltersGeneral
                           VTK::IOImage
                           VTK::IOGeometry
                           VTK::IOPLY)

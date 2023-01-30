@@ -40,7 +40,7 @@
 
 #pragma once
 
-#include <qgl.h>
+#include <qopengl.h>
 #include <pcl/apps/point_cloud_editor/toolInterface.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 

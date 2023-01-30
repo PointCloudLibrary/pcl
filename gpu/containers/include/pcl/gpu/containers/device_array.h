@@ -100,7 +100,7 @@ public:
   copyTo(DeviceArray& other) const;
 
   /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to
-   * ensure that intenal buffer size is enough.
+   * ensure that internal buffer size is enough.
    * \param host_ptr pointer to buffer to upload
    * \param size elements number
    * */
@@ -136,7 +136,7 @@ public:
            std::size_t num_elements) const;
 
   /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to
-   * ensure that intenal buffer size is enough.
+   * ensure that internal buffer size is enough.
    * \param data host vector to upload from
    * */
   template <class A>
@@ -238,7 +238,7 @@ public:
   copyTo(DeviceArray2D& other) const;
 
   /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to
-   * ensure that intenal buffer size is enough.
+   * ensure that internal buffer size is enough.
    * \param host_ptr pointer to host buffer to upload
    * \param host_step stride between two consecutive rows in bytes for host buffer
    * \param rows number of rows to upload
@@ -262,7 +262,7 @@ public:
   swap(DeviceArray2D& other_arg);
 
   /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to
-   * ensure that intenal buffer size is enough.
+   * ensure that internal buffer size is enough.
    * \param data host vector to upload from
    * \param cols stride in elements between two consecutive rows for host buffer
    * */

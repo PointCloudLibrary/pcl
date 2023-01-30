@@ -12,7 +12,7 @@ recognize objects in the world based on their geometric appearance, and create
 surfaces from point clouds and visualize them -- to name a few.
 
 PCL is released under the terms of the <a
-href="http://en.wikipedia.org/wiki/BSD_licenses#3-clause_license_.28.22New_BSD_License.22_or_.22Modified_BSD_License.22.29">
+href="https://en.wikipedia.org/wiki/BSD_licenses#3-clause_license_.28.22New_BSD_License.22_or_.22Modified_BSD_License.22.29">
 BSD license</a> and is open source software.  <b>It is free for commercial and
 research use.</b>
 

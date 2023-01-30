@@ -142,7 +142,7 @@ namespace pcl
 
     ////////////////////////////////////////////////////////////////////////////////
 
-  }//namesapce pcl
+  }//namespace pcl
 }//namespace outofcore
 
 #endif //PCL_OUTOFCORE_DEPTH_FIRST_ITERATOR_IMPL_H_

@@ -327,7 +327,7 @@ protected:
    * \param[out] base_indices indices of base B
    * \return
    * * < 0 no triangle with large enough base lines could be selected
-   * * = 0 base triangle succesully selected
+   * * = 0 base triangle successfully selected
    */
   int
   selectBaseTriangle(pcl::Indices& base_indices);
@@ -504,7 +504,7 @@ protected:
   /** \brief Resulting fitness score of the best match. */
   float fitness_score_;
 
-  /** \brief Estimated diamter of the target point cloud. */
+  /** \brief Estimated diameter of the target point cloud. */
   float diameter_;
 
   /** \brief Estimated squared metric overlap between source and target.

@@ -1,9 +1,9 @@
 #pragma once
 
-const int nr_threads = 1;
-const float approx_overlap = 0.9f;
-const float delta = 1.f;
-const int nr_samples = 100;
+constexpr int nr_threads = 1;
+constexpr float approx_overlap = 0.9f;
+constexpr float delta = 1.f;
+constexpr int nr_samples = 100;
 
 const float transform_from_fpcs [4][4] = {
   { -0.0019f, 0.8266f, -0.5628f, -0.0378f },

@@ -69,7 +69,7 @@ public:
                                      *this);
     viewer->resetCameraViewpoint("cloud");
 
-    const int point_size = 2;
+    constexpr int point_size = 2;
     viewer->addPointCloud<PointT>(cloud, "nan boundary edges");
     viewer->setPointCloudRenderingProperties(
         pcl::visualization::PCL_VISUALIZER_POINT_SIZE,

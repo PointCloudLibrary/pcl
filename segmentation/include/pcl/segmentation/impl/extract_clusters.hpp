@@ -122,7 +122,6 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** @todo: fix the return value, make sure the exit is not needed anymore*/
 template <typename PointT> void
 pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
                                const Indices &indices,
@@ -174,7 +173,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
       if( ret == -1)
       {
         PCL_ERROR("[pcl::extractEuclideanClusters] Received error code -1 from radiusSearch\n");
-        exit(0);
+        return;
       }
       if (!ret)
       {

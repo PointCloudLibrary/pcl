@@ -54,7 +54,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
-  : mouse_command_ (vtkSmartPointer<vtkCallbackCommand>::New ())
+  : interactor_ (vtkSmartPointer <vtkRenderWindowInteractor>::Take (vtkRenderWindowInteractorFixNew ()))
+  , mouse_command_ (vtkSmartPointer<vtkCallbackCommand>::New ())
   , keyboard_command_ (vtkSmartPointer<vtkCallbackCommand>::New ())
   , win_ (vtkSmartPointer<vtkRenderWindow>::New ())
   , ren_ (vtkSmartPointer<vtkRenderer>::New ())
@@ -65,8 +66,6 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   , timer_id_ ()
   , algo_ (vtkSmartPointer<vtkImageFlip>::New ())
 {
-  interactor_ = vtkSmartPointer <vtkRenderWindowInteractor>::Take (vtkRenderWindowInteractorFixNew ());
-
   // Prepare for image flip
   algo_->SetInterpolationModeToCubic ();
   algo_->PreserveImageExtentOn ();

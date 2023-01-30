@@ -225,7 +225,7 @@ IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformation(
 
     ++nr_iterations_;
 
-    // Update the vizualization of icp convergence
+    // Update the visualization of icp convergence
     if (update_visualizer_ != nullptr) {
       pcl::Indices source_indices_good, target_indices_good;
       for (const Correspondence& corr : *correspondences_) {

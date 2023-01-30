@@ -84,13 +84,13 @@ Estimating FPFH features
 ------------------------
 
 Fast Point Feature Histograms are implemented in PCL as part of the
-`pcl_features <http://docs.pointclouds.org/trunk/a02944.html>`_
+`pcl_features <https://pointclouds.org/documentation/group__features.html>`_
 library. 
 
 The default FPFH implementation uses 11 binning subdivisions (e.g., each of the
 four feature values will use this many bins from its value interval), and a
 decorrelated scheme (see above: the feature histograms are computed separately
-and concantenated) which results in a 33-byte array of float values. These are
+and concatenated) which results in a 33-byte array of float values. These are
 stored in a **pcl::FPFHSignature33** point type.
 
 The following code snippet will estimate a set of FPFH features for all the

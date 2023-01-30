@@ -293,6 +293,8 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
         oh.feature_distances_ = feat_dist;
         object_hypotheses[oh.model_.id_] = oh;
       }
+      delete[] indices.ptr();
+      delete[] distances.ptr();
     }
   }
 

@@ -113,7 +113,7 @@ TEST (PCL, IntensityGradientEstimation)
     float gz = (-nz * nx) * tmpx + (-nz * ny) * tmpy + (1 - nz * nz) * tmpz;
 
     // Compare the estimates to the derived values.
-    const float tolerance = 0.11f;
+    constexpr float tolerance = 0.11f;
     EXPECT_NEAR (g_est[0], gx, tolerance);
     EXPECT_NEAR (g_est[1], gy, tolerance);
     EXPECT_NEAR (g_est[2], gz, tolerance);

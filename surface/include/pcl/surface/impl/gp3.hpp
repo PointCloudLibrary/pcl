@@ -134,7 +134,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
   }
 
   // Initializing
-  int is_free=0, nr_parts=0, increase_nnn4fn=0, increase_nnn4s=0, increase_dist=0, nr_touched = 0;
+  int is_free=0, nr_parts=0, increase_nnn4fn=0, increase_nnn4s=0, increase_dist=0;
   angles_.resize(nnn_);
   std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > uvn_nn (nnn_);
   Eigen::Vector2f uvn_s;
@@ -909,10 +909,6 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
           prev_is_sfn_ = (sfn_[current_index_] == angles_[*(it-1)].index) && (!gaps[*(it-1)]);
           next_is_ffn_ = (ffn_[current_index_] == angles_[*(it+1)].index) && (!gaps[*it]);
           next_is_sfn_ = (sfn_[current_index_] == angles_[*(it+1)].index) && (!gaps[*it]);
-          if (!prev_is_ffn_ && !next_is_sfn_ && !prev_is_sfn_ && !next_is_ffn_)
-          {
-            nr_touched++;
-          }
         }
                                    
         if (gaps[*it])

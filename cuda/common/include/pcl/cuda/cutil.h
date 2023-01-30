@@ -595,7 +595,7 @@ extern "C" {
                  const unsigned int len, const float epsilon, const float threshold );
 
     ////////////////////////////////////////////////////////////////////////////////
-    //! Compare two integer arrays witha n epsilon tolerance for equality
+    //! Compare two integer arrays with an epsilon tolerance for equality
     //! @return  CUTTrue if \a reference and \a data are identical, 
     //!          otherwise CUTFalse
     //! @param reference  handle to the reference data / gold image

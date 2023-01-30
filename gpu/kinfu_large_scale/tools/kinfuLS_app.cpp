@@ -790,7 +790,7 @@ struct KinFuLSApp
   {
     if(registration_)
     {
-      const int max_color_integration_weight = 2;
+      constexpr int max_color_integration_weight = 2;
       kinfu_->initColorIntegration(max_color_integration_weight);
       integrate_colors_ = true;      
     }    
@@ -1143,8 +1143,8 @@ struct KinFuLSApp
     std::cout << "   Esc   : exit" << std::endl;
     std::cout << "    T    : take cloud" << std::endl;
     std::cout << "    A    : take mesh" << std::endl;
-    std::cout << "    M    : toggle cloud exctraction mode" << std::endl;
-    std::cout << "    N    : toggle normals exctraction" << std::endl;
+    std::cout << "    M    : toggle cloud extraction mode" << std::endl;
+    std::cout << "    N    : toggle normals extraction" << std::endl;
     std::cout << "    I    : toggle independent camera mode" << std::endl;
     std::cout << "    B    : toggle volume bounds" << std::endl;
     std::cout << "    *    : toggle scene view painting ( requires registration mode )" << std::endl;

@@ -64,7 +64,7 @@ namespace pcl
 
       /** \brief computes the transformation to the z-axis
         * \param[in] centroid
-        * \param[out] trasnformation to z-axis
+        * \param[out] transformation to z-axis
         */
       void
       computeTransformToZAxes (Eigen::Vector3f & centroid, Eigen::Affine3f & transform)
