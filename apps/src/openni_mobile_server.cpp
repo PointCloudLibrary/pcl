@@ -242,7 +242,9 @@ main(int argc, char** argv)
   int port = 11111;
   float leaf_x = 0.01f, leaf_y = 0.01f, leaf_z = 0.01f;
 
-  pcl::console::parse_argument(argc, argv, "-device_id", device_id);
+  if (pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 &&
+      argc > 1 && argv[1][0] != '-')
+    device_id = argv[1];
   pcl::console::parse_argument(argc, argv, "-port", port);
   pcl::console::parse_3x_arguments(argc, argv, "-leaf", leaf_x, leaf_y, leaf_z, false);
   /////////////////////////////////////////////////////////////////////

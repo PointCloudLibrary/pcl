@@ -191,7 +191,9 @@ main(int argc, char** argv)
   std::string device_id = "";
   float leaf_res = 0.05f;
 
-  pcl::console::parse_argument(argc, argv, "-device_id", device_id);
+  if (pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 &&
+      argc > 1 && argv[1][0] != '-')
+    device_id = argv[1];
   pcl::console::parse_argument(argc, argv, "-leaf", leaf_res);
   PCL_INFO("Using %f as a leaf size for UniformSampling.\n", leaf_res);
   /////////////////////////////////////////////////////////////////////

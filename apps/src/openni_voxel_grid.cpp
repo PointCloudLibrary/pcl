@@ -192,7 +192,9 @@ main(int argc, char** argv)
   std::string field_name = "z";
   float leaf_x = 0.01f, leaf_y = 0.01f, leaf_z = 0.01f;
 
-  pcl::console::parse_argument(argc, argv, "-device_id", device_id);
+  if (pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 &&
+      argc > 1 && argv[1][0] != '-')
+    device_id = argv[1];
 
   pcl::console::parse_2x_arguments(argc, argv, "-minmax", min_v, max_v);
   pcl::console::parse_argument(argc, argv, "-field", field_name);

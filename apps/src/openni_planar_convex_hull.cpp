@@ -195,7 +195,9 @@ main(int argc, char** argv)
   std::string device_id = "";
   double threshold = 0.05;
 
-  pcl::console::parse_argument(argc, argv, "-device_id", device_id);
+  if (pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 &&
+      argc > 1 && argv[1][0] != '-')
+    device_id = argv[1];
   pcl::console::parse_argument(argc, argv, "-thresh", threshold);
   /////////////////////////////////////////////////////////////////////
 
