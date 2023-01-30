@@ -459,9 +459,9 @@ float*
 RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int pixel_size, float world_size) const
 {
   float max_dist = 0.5f*world_size,
-        cell_size = world_size/float (pixel_size);
+        cell_size = world_size/static_cast<float>(pixel_size);
   float world2cell_factor = 1.0f/cell_size,
-        world2cell_offset = 0.5f*float (pixel_size)-0.5f;
+        world2cell_offset = 0.5f*static_cast<float>(pixel_size)-0.5f;
   float cell2world_factor = cell_size,
         cell2world_offset = -max_dist + 0.5f*cell_size;
   Eigen::Affine3f inverse_pose = pose.inverse (Eigen::Isometry);
@@ -537,11 +537,11 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
               cell3_y = world2cell_factor*point3[1] + world2cell_offset,
               cell3_z = point3[2];
         
-        int min_cell_x = (std::max) (0, int (pcl_lrint (std::ceil ( (std::min) (cell1_x, (std::min) (cell2_x, cell3_x)))))),
-            max_cell_x = (std::min) (pixel_size-1, int (pcl_lrint (std::floor ( (std::max) (cell1_x,
+        int min_cell_x = (std::max) (0, static_cast<int>(pcl_lrint (std::ceil ( (std::min) (cell1_x, (std::min) (cell2_x, cell3_x)))))),
+            max_cell_x = (std::min) (pixel_size-1, static_cast<int>(pcl_lrint (std::floor ( (std::max) (cell1_x,
                                                                        (std::max) (cell2_x, cell3_x)))))),
-            min_cell_y = (std::max) (0, int (pcl_lrint (std::ceil ( (std::min) (cell1_y, (std::min) (cell2_y, cell3_y)))))),
-            max_cell_y = (std::min) (pixel_size-1, int (pcl_lrint (std::floor ( (std::max) (cell1_y,
+            min_cell_y = (std::max) (0, static_cast<int>(pcl_lrint (std::ceil ( (std::min) (cell1_y, (std::min) (cell2_y, cell3_y)))))),
+            max_cell_y = (std::min) (pixel_size-1, static_cast<int>(pcl_lrint (std::floor ( (std::max) (cell1_y,
                                                                        (std::max) (cell2_y, cell3_y))))));
         if (max_cell_x<min_cell_x || max_cell_y<min_cell_y)
           continue;
@@ -720,9 +720,9 @@ RangeImage::getSurfaceAngleChangeImages (int radius, float*& angle_change_image_
   int size = width*height;
   angle_change_image_x = new float[size];
   angle_change_image_y = new float[size];
-  for (int y=0; y<int (height); ++y)
+  for (int y=0; y<static_cast<int>(height); ++y)
   {
-    for (int x=0; x<int (width); ++x)
+    for (int x=0; x<static_cast<int>(width); ++x)
     {
       int index = y*width+x;
       getSurfaceAngleChange (x, y, radius, angle_change_image_x[index], angle_change_image_y[index]);
@@ -739,9 +739,9 @@ RangeImage::getAcutenessValueImages (int pixel_distance, float*& acuteness_value
   int size = width*height;
   acuteness_value_image_x = new float[size];
   acuteness_value_image_y = new float[size];
-  for (int y=0; y<int (height); ++y)
+  for (int y=0; y<static_cast<int>(height); ++y)
   {
-    for (int x=0; x<int (width); ++x)
+    for (int x=0; x<static_cast<int>(width); ++x)
     {
       int index = y*width+x;
       acuteness_value_image_x[index] = getAcutenessValue (x, y, x+pixel_distance, y);
@@ -757,9 +757,9 @@ RangeImage::getImpactAngleImageBasedOnLocalNormals (int radius) const
   MEASURE_FUNCTION_TIME;
   int size = width*height;
   float* impact_angle_image = new float[size];
-  for (int y=0; y<int (height); ++y)
+  for (int y=0; y<static_cast<int>(height); ++y)
   {
-    for (int x=0; x<int (width); ++x)
+    for (int x=0; x<static_cast<int>(width); ++x)
     {
       impact_angle_image[y*width+x] = getImpactAngleBasedOnLocalNormal (x, y, radius);
     }
@@ -776,9 +776,9 @@ RangeImage::getRangeImageWithSmoothedSurface (int radius, RangeImage& smoothed_r
   
   smoothed_range_image = *this;
   Eigen::Vector3f sensor_pos = getSensorPos ();
-  for (int y=0; y<int (height); ++y)
+  for (int y=0; y<static_cast<int>(height); ++y)
   {
-    for (int x=0; x<int (width); ++x)
+    for (int x=0; x<static_cast<int>(width); ++x)
     {
       PointWithRange& point = smoothed_range_image.getPoint (x, y);
       if (std::isinf (point.range))
@@ -874,9 +874,9 @@ RangeImage::getOverlap (const RangeImage& other_range_image, const Eigen::Affine
   reduction(+ : valid_points_counter) \
   reduction(+ : hits_counter) \
   num_threads(max_no_of_threads)
-  for (int other_y=0; other_y<int (other_range_image.height); other_y+=pixel_step)
+  for (int other_y=0; other_y<static_cast<int>(other_range_image.height); other_y+=pixel_step)
   {
-    for (int other_x=0; other_x<int (other_range_image.width); other_x+=pixel_step)
+    for (int other_x=0; other_x<static_cast<int>(other_range_image.width); other_x+=pixel_step)
     {
       const PointWithRange& point = other_range_image.getPoint (other_x, other_y);
       if (!std::isfinite (point.range))
@@ -920,9 +920,9 @@ RangeImage::getBlurredImageUsingIntegralImage (int blur_radius, float* integral_
                                                RangeImage& blurred_image) const
 {
   this->copyTo(blurred_image);
-  for (int y=0; y<int (height); ++y)
+  for (int y=0; y<static_cast<int>(height); ++y)
   {
-    for (int x=0; x<int (width); ++x)
+    for (int x=0; x<static_cast<int>(width); ++x)
     {
       const PointWithRange& old_point = getPoint (x, y);
       PointWithRange& new_point = blurred_image.getPoint (x, y);

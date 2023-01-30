@@ -638,7 +638,7 @@ main(int argc, char** argv)
     // Create the PCLVisualizer object here on the first encountered XYZ file
     if (!p) {
       p.reset(new pcl::visualization::PCLVisualizer(argc, argv, "PCD viewer"));
-      p->registerPointPickingCallback(&pp_callback, (void*)&cloud);
+      p->registerPointPickingCallback(&pp_callback, reinterpret_cast<void*>(&cloud));
       Eigen::Matrix3f rotation;
       rotation = orientation;
       p->setCameraPosition(origin[0],
@@ -670,7 +670,7 @@ main(int argc, char** argv)
     print_info("[done, ");
     print_value("%g", tt.toc());
     print_info(" ms : ");
-    print_value("%d", (int)cloud->width * cloud->height);
+    print_value("%d", static_cast<int>(cloud->width * cloud->height));
     print_info(" points]\n");
     print_info("Available dimensions: ");
     print_value("%s\n", pcl::getFieldsList(*cloud).c_str());
@@ -827,7 +827,7 @@ main(int argc, char** argv)
   ////////////////////////////////////////////////////////////////
   // Key binding for saving simulated point cloud:
   if (p)
-    p->registerKeyboardCallback(simulate_callback, (void*)&p);
+    p->registerKeyboardCallback(simulate_callback, reinterpret_cast<void*>(&p));
 
   int width = 640;
   int height = 480;

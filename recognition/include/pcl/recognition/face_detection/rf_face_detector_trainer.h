@@ -28,7 +28,7 @@ namespace pcl
       std::size_t min_votes_size_;
       int used_for_pose_ {std::numeric_limits<int>::max ()};
       bool use_normals_ {false};
-      std::string directory_ {""};
+      std::string directory_;
       float HEAD_ST_DIAMETER_ {0.2364f};
       float larger_radius_ratio_ {1.5f};
       std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > head_center_votes_{};

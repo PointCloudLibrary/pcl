@@ -301,7 +301,7 @@ pcl::visualization::Window::emitMouseEvent (unsigned long event_id)
 void 
 pcl::visualization::Window::emitKeyboardEvent (unsigned long event_id)
 {
-  KeyboardEvent event (bool(event_id == vtkCommand::KeyPressEvent), interactor_->GetKeySym (), interactor_->GetKeyCode (), interactor_->GetAltKey (), interactor_->GetControlKey (), interactor_->GetShiftKey ());
+  KeyboardEvent event ((event_id == vtkCommand::KeyPressEvent), interactor_->GetKeySym (), interactor_->GetKeyCode (), interactor_->GetAltKey (), interactor_->GetControlKey (), interactor_->GetShiftKey ());
   keyboard_signal_ (event);
 }
 

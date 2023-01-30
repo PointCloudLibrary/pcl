@@ -70,8 +70,8 @@ TEST (PCL, BRISK_2D)
 
   //io::savePCDFileBinary ("brisk_keypoints.pcd", *cloud_keypoints);
 
-  const int num_of_keypoints = int (cloud_keypoints->size ());
-  const int num_of_keypoints_gt = int (cloud_keypoints_gt->size ());
+  const int num_of_keypoints = static_cast<int>(cloud_keypoints->size ());
+  const int num_of_keypoints_gt = static_cast<int>(cloud_keypoints_gt->size ());
   EXPECT_EQ (num_of_keypoints_gt, num_of_keypoints);
 
 
@@ -96,8 +96,8 @@ TEST (PCL, BRISK_2D)
   cloud_descriptors.reset (new PointCloud<BRISKSignature512>);
   brisk_descriptor_estimation.compute (*cloud_descriptors);
 
-  const int num_of_descriptors = int (cloud_descriptors->size ());
-  const int num_of_descriptors_gt = int (cloud_descriptors_gt->size ());
+  const int num_of_descriptors = static_cast<int>(cloud_descriptors->size ());
+  const int num_of_descriptors_gt = static_cast<int>(cloud_descriptors_gt->size ());
   EXPECT_EQ (num_of_descriptors_gt, num_of_descriptors);
 
 
@@ -111,7 +111,7 @@ TEST (PCL, BRISK_2D)
     float sqr_dist = 0.0f;
     for (std::size_t index = 0; index < 33; ++index)
     {
-      const float dist = float (descriptor.descriptor[index] - descriptor_gt.descriptor[index]);
+      const float dist = static_cast<float>(descriptor.descriptor[index] - descriptor_gt.descriptor[index]);
       sqr_dist += dist * dist;
     }
 

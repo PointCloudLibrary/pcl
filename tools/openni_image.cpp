@@ -72,14 +72,14 @@ getTotalSystemMemory ()
   std::uint64_t pages = sysconf (_SC_AVPHYS_PAGES);
   std::uint64_t page_size = sysconf (_SC_PAGE_SIZE);
   print_info ("Total available memory size: %lluMB.\n", (pages * page_size) / 1048576);
-  if (pages * page_size > std::uint64_t (std::numeric_limits<std::size_t>::max ()))
+  if (pages * page_size > static_cast<std::uint64_t>(std::numeric_limits<std::size_t>::max ()))
   {
     return std::numeric_limits<std::size_t>::max ();
   }
-  return std::size_t (pages * page_size);
+  return static_cast<std::size_t>(pages * page_size);
 }
 
-const int BUFFER_SIZE = int (getTotalSystemMemory () / (640 * 480) / 2);
+const int BUFFER_SIZE = static_cast<int>(getTotalSystemMemory () / (640 * 480) / 2);
 #else
 
 constexpr int BUFFER_SIZE = 200;
@@ -223,13 +223,13 @@ class Buffer
     getSize ()
     {
       std::lock_guard<std::mutex> buff_lock (bmutex_);
-      return (int (buffer_.size ()));
+      return (static_cast<int>(buffer_.size ()));
     }
 		
     inline int 
     getCapacity ()
     {
-	    return (int (buffer_.capacity ()));
+	    return (static_cast<int>(buffer_.capacity ()));
     }
 		
     inline void 

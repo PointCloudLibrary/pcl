@@ -116,7 +116,7 @@ batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir
 #pragma omp parallel for \
   default(none) \
   shared(output_dir, pcd_files, sigma_r, sigma_s)
-  for (int i = 0; i < int (pcd_files.size ()); ++i)
+  for (int i = 0; i < static_cast<int>(pcd_files.size ()); ++i)
   {
     // Load the first file
     Eigen::Vector4f translation;

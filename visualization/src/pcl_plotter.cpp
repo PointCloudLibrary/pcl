@@ -262,7 +262,7 @@ pcl::visualization::PCLPlotter::addPlotData (
   while (ss >> temp)
     pnames.push_back(temp);
     
-  int nop = int (pnames.size ());// number of plots (y coordinate vectors)  
+  int nop = static_cast<int>(pnames.size ());// number of plots (y coordinate vectors)  
   
   std::vector<double> xarray;      //array of X coordinates
   std::vector< std::vector<double> > yarrays (nop); //a set of array of Y coordinates
@@ -612,8 +612,8 @@ pcl::visualization::PCLPlotter::computeHistogram (
   {
     if (std::isfinite (value))
     {
-      auto index = (unsigned int) (std::floor ((value - min) / size));
-      if (index == (unsigned int) nbins) index = nbins - 1; //including right boundary
+      auto index = static_cast<unsigned int>(std::floor ((value - min) / size));
+      if (index == static_cast<unsigned int>(nbins)) index = nbins - 1; //including right boundary
       histogram[index].second++;
     }
   }

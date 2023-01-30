@@ -160,25 +160,25 @@ struct PLYColorTest : public PLYTest
           "property list uchar int vertex_indices\n"
           "end_header\n"
           "4.23607 0 1.61803 "
-            << unsigned (clr_1_.r) << ' '
-            << unsigned (clr_1_.g) << ' '
-            << unsigned (clr_1_.b) << ' '
-            << unsigned (clr_1_.a) << "\n"
+            << static_cast<unsigned>(clr_1_.r) << ' '
+            << static_cast<unsigned>(clr_1_.g) << ' '
+            << static_cast<unsigned>(clr_1_.b) << ' '
+            << static_cast<unsigned>(clr_1_.a) << "\n"
           "2.61803 2.61803 2.61803 "
-            << unsigned (clr_2_.r) << ' '
-            << unsigned (clr_2_.g) << ' '
-            << unsigned (clr_2_.b) << ' '
-            << unsigned (clr_2_.a) << "\n"
+            << static_cast<unsigned>(clr_2_.r) << ' '
+            << static_cast<unsigned>(clr_2_.g) << ' '
+            << static_cast<unsigned>(clr_2_.b) << ' '
+            << static_cast<unsigned>(clr_2_.a) << "\n"
           "0 1.61803 4.23607 "
-            << unsigned (clr_3_.r) << ' '
-            << unsigned (clr_3_.g) << ' '
-            << unsigned (clr_3_.b) << ' '
-            << unsigned (clr_3_.a) << "\n"
+            << static_cast<unsigned>(clr_3_.r) << ' '
+            << static_cast<unsigned>(clr_3_.g) << ' '
+            << static_cast<unsigned>(clr_3_.b) << ' '
+            << static_cast<unsigned>(clr_3_.a) << "\n"
           "0 -1.61803 4.23607 "
-            << unsigned (clr_4_.r) << ' '
-            << unsigned (clr_4_.g) << ' '
-            << unsigned (clr_4_.b) << ' '
-            << unsigned (clr_4_.a) << "\n"
+            << static_cast<unsigned>(clr_4_.r) << ' '
+            << static_cast<unsigned>(clr_4_.g) << ' '
+            << static_cast<unsigned>(clr_4_.b) << ' '
+            << static_cast<unsigned>(clr_4_.a) << "\n"
           "3 0 1 2\n"
           "3 1 2 3\n";
     fs.close ();

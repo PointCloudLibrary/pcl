@@ -69,8 +69,8 @@ template <typename PointInT, typename PointOutT, typename IntensityT> void
 BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCloudOut &output)
 {
   // image size
-  const int width = int (input_->width);
-  const int height = int (input_->height);
+  const int width = static_cast<int>(input_->width);
+  const int height = static_cast<int>(input_->height);
 
   // destination for intensity data; will be forwarded to BRISK
   std::vector<unsigned char> image_data (width*height);

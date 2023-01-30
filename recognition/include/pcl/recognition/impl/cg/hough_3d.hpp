@@ -366,7 +366,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::re
   //}
 
   this->deinitCompute ();
-  return (transformations.size ());
+  return (!transformations.empty());
 }
 
 

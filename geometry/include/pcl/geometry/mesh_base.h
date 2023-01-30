@@ -183,7 +183,7 @@ public:
   {
     vertices_.push_back(Vertex());
     this->addData(vertex_data_cloud_, vertex_data, HasVertexData());
-    return (VertexIndex(static_cast<int>(this->sizeVertices() - 1)));
+    return (static_cast<VertexIndex>(this->sizeVertices() - 1));
   }
 
   /**
@@ -637,29 +637,32 @@ public:
   inline bool
   isValid(const VertexIndex& idx_vertex) const
   {
-    return (idx_vertex >= VertexIndex(0) &&
-            idx_vertex < VertexIndex(int(vertices_.size())));
+    return (idx_vertex >= static_cast<VertexIndex>(0) &&
+            idx_vertex < static_cast<VertexIndex>(vertices_.size()));
   }
 
   /** \brief Check if the given half-edge index is a valid index into the mesh.  */
   inline bool
   isValid(const HalfEdgeIndex& idx_he) const
   {
-    return (idx_he >= HalfEdgeIndex(0) && idx_he < HalfEdgeIndex(half_edges_.size()));
+    return (idx_he >= static_cast<HalfEdgeIndex>(0) &&
+            idx_he < static_cast<HalfEdgeIndex>(half_edges_.size()));
   }
 
   /** \brief Check if the given edge index is a valid index into the mesh. */
   inline bool
   isValid(const EdgeIndex& idx_edge) const
   {
-    return (idx_edge >= EdgeIndex(0) && idx_edge < EdgeIndex(half_edges_.size() / 2));
+    return (idx_edge >= static_cast<EdgeIndex>(0) &&
+            idx_edge < static_cast<EdgeIndex>(half_edges_.size() / 2));
   }
 
   /** \brief Check if the given face index is a valid index into the mesh.  */
   inline bool
   isValid(const FaceIndex& idx_face) const
   {
-    return (idx_face >= FaceIndex(0) && idx_face < FaceIndex(faces_.size()));
+    return (idx_face >= static_cast<FaceIndex>(0) &&
+            idx_face < static_cast<FaceIndex>(faces_.size()));
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -1248,7 +1251,7 @@ protected:
     this->addData(half_edge_data_cloud_, he_data, HasHalfEdgeData());
     this->addData(edge_data_cloud_, edge_data, HasEdgeData());
 
-    return (HalfEdgeIndex(static_cast<int>(half_edges_.size() - 2)));
+    return (static_cast<HalfEdgeIndex>(half_edges_.size() - 2));
   }
 
   ////////////////////////////////////////////////////////////////////////

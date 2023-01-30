@@ -82,16 +82,16 @@ getTotalSystemMemory ()
   }
 #endif
 
-  if (memory > std::uint64_t (std::numeric_limits<std::size_t>::max ()))
+  if (memory > static_cast<std::uint64_t>(std::numeric_limits<std::size_t>::max ()))
   {
     memory = std::numeric_limits<std::size_t>::max ();
   }
   
   print_info ("Total available memory size: %lluMB.\n", memory / 1048576ull);
-  return std::size_t (memory);
+  return static_cast<std::size_t>(memory);
 }
 
-const std::size_t BUFFER_SIZE = std::size_t (getTotalSystemMemory () / (640 * 480 * sizeof (pcl::PointXYZRGBA)));
+const std::size_t BUFFER_SIZE = static_cast<std::size_t>(getTotalSystemMemory () / (640 * 480 * sizeof (pcl::PointXYZRGBA)));
 #else
 
 constexpr std::size_t BUFFER_SIZE = 200;
@@ -130,7 +130,7 @@ class PCDBuffer
     getSize ()
     {
       std::lock_guard<std::mutex> buff_lock (bmutex_);
-      return (int (buffer_.size ()));
+      return (static_cast<int>(buffer_.size ()));
     }
 
     inline int 

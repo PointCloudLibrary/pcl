@@ -323,7 +323,7 @@ main (int argc, char** argv)
     print_highlight ("Multi-viewport rendering enabled.\n");
 
     int y_s = static_cast<int>(std::floor (std::sqrt (static_cast<float>(p_file_indices.size () + vtk_file_indices.size ()))));
-    x_s = y_s + static_cast<int>(std::ceil (double (p_file_indices.size () + vtk_file_indices.size ()) / double (y_s) - y_s));
+    x_s = y_s + static_cast<int>(std::ceil (static_cast<double>(p_file_indices.size () + vtk_file_indices.size ()) / static_cast<double>(y_s) - y_s));
 
     if (!p_file_indices.empty ())
     {

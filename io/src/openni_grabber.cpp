@@ -163,12 +163,9 @@ void
 pcl::OpenNIGrabber::checkImageAndDepthSynchronizationRequired ()
 {
   // do we have anyone listening to images or color point clouds?
-  if (num_slots<sig_cb_openni_point_cloud_rgb>   () > 0 ||
+  sync_required_ = num_slots<sig_cb_openni_point_cloud_rgb>   () > 0 ||
       num_slots<sig_cb_openni_point_cloud_rgba>  () > 0 ||
-      num_slots<sig_cb_openni_image_depth_image> () > 0)
-    sync_required_ = true;
-  else
-    sync_required_ = false;
+      num_slots<sig_cb_openni_image_depth_image> () > 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -176,13 +173,10 @@ void
 pcl::OpenNIGrabber::checkImageStreamRequired ()
 {
   // do we have anyone listening to images or color point clouds?
-  if (num_slots<sig_cb_openni_image>             () > 0 ||
+  image_required_ = num_slots<sig_cb_openni_image>             () > 0 ||
       num_slots<sig_cb_openni_image_depth_image> () > 0 ||
       num_slots<sig_cb_openni_point_cloud_rgba>  () > 0 ||
-      num_slots<sig_cb_openni_point_cloud_rgb>   () > 0)
-    image_required_ = true;
-  else
-    image_required_ = false;
+      num_slots<sig_cb_openni_point_cloud_rgb>   () > 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -190,28 +184,22 @@ void
 pcl::OpenNIGrabber::checkDepthStreamRequired ()
 {
   // do we have anyone listening to depth images or (color) point clouds?
-  if (num_slots<sig_cb_openni_depth_image>       () > 0 ||
+  depth_required_ = num_slots<sig_cb_openni_depth_image>       () > 0 ||
       num_slots<sig_cb_openni_image_depth_image> () > 0 ||
       num_slots<sig_cb_openni_ir_depth_image>    () > 0 ||
       num_slots<sig_cb_openni_point_cloud_rgb>   () > 0 ||
       num_slots<sig_cb_openni_point_cloud_rgba>  () > 0 ||
       num_slots<sig_cb_openni_point_cloud>       () > 0 ||
-      num_slots<sig_cb_openni_point_cloud_i>     () > 0 )
-    depth_required_ = true;
-  else
-    depth_required_ = false;
+      num_slots<sig_cb_openni_point_cloud_i>     () > 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::OpenNIGrabber::checkIRStreamRequired ()
 {
-  if (num_slots<sig_cb_openni_ir_image>       () > 0 ||
+  ir_required_ = num_slots<sig_cb_openni_ir_image>       () > 0 ||
       num_slots<sig_cb_openni_point_cloud_i>  () > 0 ||
-      num_slots<sig_cb_openni_ir_depth_image> () > 0)
-    ir_required_ = true;
-  else
-    ir_required_ = false;
+      num_slots<sig_cb_openni_ir_depth_image> () > 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -551,8 +539,8 @@ pcl::OpenNIGrabber::convertToXYZPointCloud (const openni_wrapper::DepthImage::Pt
 
   float constant_x = 1.0f / device_->getDepthFocalLength (depth_width_);
   float constant_y = 1.0f / device_->getDepthFocalLength (depth_width_);
-  float centerX = ((float)cloud->width - 1.f) / 2.f;
-  float centerY = ((float)cloud->height - 1.f) / 2.f;
+  float centerX = (static_cast<float>(cloud->width) - 1.f) / 2.f;
+  float centerY = (static_cast<float>(cloud->height) - 1.f) / 2.f;
 
   if (std::isfinite (depth_focal_length_x_))
     constant_x =  1.0f / static_cast<float> (depth_focal_length_x_);
@@ -628,8 +616,8 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const openni_wrapper::Image::Ptr 
   //float constant = 1.0f / device_->getImageFocalLength (depth_width_);
   float constant_x = 1.0f / device_->getDepthFocalLength (depth_width_);
   float constant_y = 1.0f / device_->getDepthFocalLength (depth_width_);
-  float centerX = ((float)cloud->width - 1.f) / 2.f;
-  float centerY = ((float)cloud->height - 1.f) / 2.f;
+  float centerX = (static_cast<float>(cloud->width) - 1.f) / 2.f;
+  float centerY = (static_cast<float>(cloud->height) - 1.f) / 2.f;
 
   if (std::isfinite (depth_focal_length_x_))
     constant_x =  1.0f / static_cast<float> (depth_focal_length_x_);
@@ -743,8 +731,8 @@ pcl::OpenNIGrabber::convertToXYZIPointCloud (const openni_wrapper::IRImage::Ptr 
   //float constant = 1.0f / device_->getImageFocalLength (cloud->width);
   float constant_x = 1.0f / device_->getImageFocalLength (cloud->width);
   float constant_y = 1.0f / device_->getImageFocalLength (cloud->width);
-  float centerX = ((float)cloud->width - 1.f) / 2.f;
-  float centerY = ((float)cloud->height - 1.f) / 2.f;
+  float centerX = (static_cast<float>(cloud->width) - 1.f) / 2.f;
+  float centerY = (static_cast<float>(cloud->height) - 1.f) / 2.f;
 
   if (std::isfinite (rgb_focal_length_x_))
     constant_x =  1.0f / static_cast<float> (rgb_focal_length_x_);

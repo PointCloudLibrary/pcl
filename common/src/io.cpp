@@ -201,10 +201,7 @@ pcl::concatenateFields (const pcl::PCLPointCloud2 &cloud1,
     point_offset += field_offset;
   }
 
-  if (!cloud1.is_dense || !cloud2.is_dense)
-    cloud_out.is_dense = false;
-  else
-    cloud_out.is_dense = true;
+  cloud_out.is_dense = cloud1.is_dense && cloud2.is_dense;
 
   return (true);
 }

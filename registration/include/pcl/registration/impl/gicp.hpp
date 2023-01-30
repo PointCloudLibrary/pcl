@@ -53,7 +53,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeCovar
     const typename pcl::search::KdTree<PointT>::Ptr kdtree,
     MatricesVector& cloud_covariances)
 {
-  if (k_correspondences_ > int(cloud->size())) {
+  if (k_correspondences_ > static_cast<int>(cloud->size())) {
     PCL_ERROR("[pcl::GeneralizedIterativeClosestPoint::computeCovariances] Number or "
               "points in cloud (%lu) is less than k_correspondences_ (%lu)!\n",
               cloud->size(),
@@ -284,7 +284,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     Eigen::Vector3d Md(gicp_->mahalanobis((*gicp_->tmp_idx_src_)[i]) * d);
     // increment= d'*Md/num_matches = d'*M*d/num_matches (we postpone
     // 1/num_matches after the loop closes)
-    f += double(d.transpose() * Md);
+    f += static_cast<double>(d.transpose() * Md);
   }
   return f / m;
 }
@@ -360,7 +360,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     // Md = M*d
     Eigen::Vector3d Md(gicp_->mahalanobis((*gicp_->tmp_idx_src_)[i]) * d);
     // Increment total error
-    f += double(d.transpose() * Md);
+    f += static_cast<double>(d.transpose() * Md);
     // Increment translation gradient
     // g.head<3> ()+= 2*M*d/num_matches (we postpone 2/num_matches after the loop
     // closes)
@@ -370,8 +370,8 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     // Increment rotation gradient
     dCost_dR_T += p_base_src * Md.transpose();
   }
-  f /= double(m);
-  g.head<3>() *= double(2.0 / m);
+  f /= static_cast<double>(m);
+  g.head<3>() *= (2.0 / m);
   dCost_dR_T *= 2.0 / m;
   gicp_->computeRDerivative(x, dCost_dR_T, g);
 }
@@ -441,7 +441,8 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     for (std::size_t i = 0; i < 4; i++)
       for (std::size_t j = 0; j < 4; j++)
         for (std::size_t k = 0; k < 4; k++)
-          transform_R(i, j) += double(transformation_(i, k)) * double(guess(k, j));
+          transform_R(i, j) += static_cast<double>(transformation_(i, k)) *
+                               static_cast<double>(guess(k, j));
 
     Eigen::Matrix3d R = transform_R.topLeftCorner<3, 3>();
 

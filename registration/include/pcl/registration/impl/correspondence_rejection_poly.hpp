@@ -167,7 +167,7 @@ CorrespondenceRejectorPoly<SourceT, TargetT>::computeHistogram(
 
   // Accumulate
   for (const float& value : data)
-    ++result[std::min(last_idx, int(value * idx_per_val))];
+    ++result[std::min(last_idx, static_cast<int>(value * idx_per_val))];
 
   return (result);
 }
