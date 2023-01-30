@@ -661,7 +661,7 @@ RangeImage::getAcutenessValue (const PointWithRange& point1, const PointWithRang
   float impact_angle = getImpactAngle (point1, point2);
   if (std::isinf (impact_angle))
     return -std::numeric_limits<float>::infinity ();
-  float ret = 1.0f - float (std::fabs (impact_angle)/ (0.5f*M_PI));
+  float ret = 1.0f - static_cast<float>(std::fabs (impact_angle)/ (0.5f*M_PI));
   if (impact_angle < 0.0f)
     ret = -ret;
   //if (std::abs (ret)>1)

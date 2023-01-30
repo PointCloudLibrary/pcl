@@ -69,7 +69,7 @@ KLDAdaptiveParticleFilterTracker<PointInT, StateT>::resample()
     x_t.sample(zero_mean, step_noise_covariance_);
 
     // motion
-    if (rand() / double(RAND_MAX) < motion_ratio_)
+    if (rand() / static_cast<double>(RAND_MAX) < motion_ratio_)
       x_t = x_t + motion_;
 
     S->points.push_back(x_t);

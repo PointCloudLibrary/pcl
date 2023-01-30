@@ -390,7 +390,7 @@ private:
       cloudVoxel->points.push_back (pt_voxel_center);
 
       // If the asked depth is the depth of the octree, retrieve the centroid at this LeafNode
-      if (octree.getTreeDepth () == (unsigned int) depth)
+      if (octree.getTreeDepth () == static_cast<unsigned int>(depth))
       {
         auto* container = dynamic_cast<pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::LeafNode*> (tree_it.getCurrentOctreeNode ());
 

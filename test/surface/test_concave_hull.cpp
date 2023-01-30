@@ -213,8 +213,8 @@ TEST (PCL, ConcaveHull_LTable)
   {
     for (std::size_t j = 0; j <= 2; j++)
     {
-      cloud_out_ltable[npoints].x = float (i) * 0.5f;
-      cloud_out_ltable[npoints].y = -float (j) * 0.5f;
+      cloud_out_ltable[npoints].x = static_cast<float>(i) * 0.5f;
+      cloud_out_ltable[npoints].y = -static_cast<float>(j) * 0.5f;
       cloud_out_ltable[npoints].z = 0.f;
       npoints++;
     }
@@ -224,8 +224,8 @@ TEST (PCL, ConcaveHull_LTable)
   {
     for(std::size_t j = 3; j < 8; j++)
     {
-      cloud_out_ltable[npoints].x = float (i) * 0.5f;
-      cloud_out_ltable[npoints].y = -float (j) * 0.5f;
+      cloud_out_ltable[npoints].x = static_cast<float>(i) * 0.5f;
+      cloud_out_ltable[npoints].y = -static_cast<float>(j) * 0.5f;
       cloud_out_ltable[npoints].z = 0.f;
       npoints++;
     }

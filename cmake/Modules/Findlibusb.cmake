@@ -36,6 +36,8 @@
 # Early return if libusb target is already defined. This makes it safe to run
 # this script multiple times.
 if(TARGET libusb::libusb)
+  set(libusb_FOUND ON)
+  set(LIBUSB_FOUND ON)
   return()
 endif()
 
@@ -67,6 +69,7 @@ find_package_handle_standard_args(libusb DEFAULT_MSG libusb_LIBRARIES libusb_INC
 mark_as_advanced(libusb_INCLUDE_DIRS libusb_LIBRARIES)
 
 if(libusb_FOUND)
+  set(LIBUSB_FOUND ON)
   add_library(libusb::libusb UNKNOWN IMPORTED)
   set_target_properties(libusb::libusb PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${libusb_INCLUDE_DIR}")
   set_target_properties(libusb::libusb PROPERTIES IMPORTED_LOCATION "${libusb_LIBRARIES}")

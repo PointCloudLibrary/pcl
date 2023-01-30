@@ -294,7 +294,7 @@ pcl::ColorGradientModality<PointInT>::
 computeGaussianKernel (const std::size_t kernel_size, const float sigma, std::vector <float> & kernel_values)
 {
   // code taken from OpenCV
-  const int n = int (kernel_size);
+  const int n = static_cast<int>(kernel_size);
   constexpr int SMALL_GAUSSIAN_SIZE = 7;
   static const float small_gaussian_tab[][SMALL_GAUSSIAN_SIZE] =
   {
@@ -320,16 +320,16 @@ computeGaussianKernel (const std::size_t kernel_size, const float sigma, std::ve
   for( int i = 0; i < n; i++ )
   {
     double x = i - (n-1)*0.5;
-    double t = fixed_kernel ? double (fixed_kernel[i]) : std::exp (scale2X*x*x);
+    double t = fixed_kernel ? static_cast<double>(fixed_kernel[i]) : std::exp (scale2X*x*x);
 
-    cf[i] = float (t);
+    cf[i] = static_cast<float>(t);
     sum += cf[i];
   }
 
   sum = 1./sum;
   for ( int i = 0; i < n; i++ )
   {
-    cf[i] = float (cf[i]*sum);
+    cf[i] = static_cast<float>(cf[i]*sum);
   }
 }
 

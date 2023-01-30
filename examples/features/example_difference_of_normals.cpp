@@ -99,7 +99,7 @@ int main (int argc, char *argv[])
 
     // Create downsampled point cloud for DoN NN search with large scale
     large_cloud_downsampled = PointCloud<PointT>::Ptr(new pcl::PointCloud<PointT>);
-    constexpr float largedownsample = float(scale2 / decimation);
+    constexpr float largedownsample = static_cast<float>(scale2/decimation);
     sor.setLeafSize (largedownsample, largedownsample, largedownsample);
     sor.filter (*large_cloud_downsampled);
     std::cout << "Using leaf size of " << largedownsample << " for large scale, " << large_cloud_downsampled->size() << " points" << std::endl;

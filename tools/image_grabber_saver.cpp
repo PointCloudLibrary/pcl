@@ -126,7 +126,7 @@ main (int argc, char** argv)
     printHelp (argc, argv);
     return (-1);
   }
-  grabber->setDepthImageUnits (float (1E-3));
+  grabber->setDepthImageUnits (static_cast<float>(1E-3));
   //grabber->setFocalLength(focal_length); // FIXME
 
   EventHelper h;

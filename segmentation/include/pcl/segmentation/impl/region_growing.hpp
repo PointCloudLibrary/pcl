@@ -140,7 +140,7 @@ pcl::RegionGrowing<PointT, NormalT>::setCurvatureTestFlag (bool value)
 {
   curvature_flag_ = value;
 
-  if (curvature_flag_ == false && residual_flag_ == false)
+  if (!curvature_flag_ && !residual_flag_)
     residual_flag_ = true;
 }
 
@@ -157,7 +157,7 @@ pcl::RegionGrowing<PointT, NormalT>::setResidualTestFlag (bool value)
 {
   residual_flag_ = value;
 
-  if (curvature_flag_ == false && residual_flag_ == false)
+  if (!curvature_flag_ && !residual_flag_)
     curvature_flag_ = true;
 }
 
@@ -382,7 +382,7 @@ pcl::RegionGrowing<PointT, NormalT>::applySmoothRegionGrowingAlgorithm ()
   std::pair<float, int> pair;
   point_residual.resize (num_of_pts, pair);
 
-  if (normal_flag_ == true)
+  if (normal_flag_)
   {
     for (int i_point = 0; i_point < num_of_pts; i_point++)
     {
@@ -495,7 +495,7 @@ pcl::RegionGrowing<PointT, NormalT>::validatePoint (pcl::index_t initial_seed, p
   Eigen::Map<Eigen::Vector3f> initial_normal (static_cast<float*> ((*normals_)[point].normal));
 
   //check the angle between normals
-  if (smooth_mode_flag_ == true)
+  if (smooth_mode_flag_)
   {
     Eigen::Map<Eigen::Vector3f> nghbr_normal (static_cast<float*> ((*normals_)[nghbr].normal));
     float dot_product = std::abs (nghbr_normal.dot (initial_normal));

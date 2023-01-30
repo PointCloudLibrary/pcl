@@ -94,7 +94,7 @@ TYPED_TEST (OctreeDeCompressionTest, RandomClouds)
     for (int compression_profile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
       compression_profile != pcl::io::COMPRESSION_PROFILE_COUNT; ++compression_profile) {
       // instantiate point cloud compression encoder/decoder
-      pcl::io::OctreePointCloudCompression<TypeParam> pointcloud_encoder((pcl::io::compression_Profiles_e) compression_profile, false);
+      pcl::io::OctreePointCloudCompression<TypeParam> pointcloud_encoder(static_cast<pcl::io::compression_Profiles_e>(compression_profile), false);
       pcl::io::OctreePointCloudCompression<TypeParam> pointcloud_decoder;
       typename pcl::PointCloud<TypeParam>::Ptr cloud_out(new pcl::PointCloud<TypeParam>());
       // iterate over runs
@@ -130,7 +130,7 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZRGBASameCloud)
   for (int compression_profile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
     compression_profile != pcl::io::COMPRESSION_PROFILE_COUNT; ++compression_profile) {
     // instantiate point cloud compression encoder/decoder
-    pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA> pointcloud_encoder((pcl::io::compression_Profiles_e) compression_profile, false);
+    pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA> pointcloud_encoder(static_cast<pcl::io::compression_Profiles_e>(compression_profile), false);
     pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA> pointcloud_decoder;
 
     auto cloud = generateRandomCloud<pcl::PointXYZRGBA>(MAX_XYZ);
@@ -173,7 +173,7 @@ TEST(PCL, OctreeDeCompressionFile)
   for (int compression_profile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
        compression_profile != pcl::io::COMPRESSION_PROFILE_COUNT; ++compression_profile) {
     // instantiate point cloud compression encoder/decoder
-    pcl::io::OctreePointCloudCompression<pcl::PointXYZRGB> PointCloudEncoder((pcl::io::compression_Profiles_e) compression_profile, false);
+    pcl::io::OctreePointCloudCompression<pcl::PointXYZRGB> PointCloudEncoder(static_cast<pcl::io::compression_Profiles_e>(compression_profile), false);
     pcl::io::OctreePointCloudCompression<pcl::PointXYZRGB> PointCloudDecoder;
 
     // iterate over various voxel sizes

@@ -530,7 +530,7 @@ pcl::Permutohedral::computeOLD(std::vector<float>& out,
   }
   // Alpha is a magic scaling constant (write Andrew if you really wanna understand
   // this)
-  float alpha = 1.0f / (1.0f + powf(2.0f, -float(d_)));
+  float alpha = 1.0f / (1.0f + powf(2.0f, -static_cast<float>(d_)));
 
   // Slicing
   for (int i = 0; i < out_size; i++) {

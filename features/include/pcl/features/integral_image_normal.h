@@ -189,9 +189,9 @@ namespace pcl
       void
       setNormalSmoothingSize (float normal_smoothing_size)
       {
-        if (normal_smoothing_size <= 0)
+        if (normal_smoothing_size < 2.0f)
         {
-          PCL_ERROR ("[pcl::%s::setNormalSmoothingSize] Invalid normal smoothing size given! (%f). Allowed ranges are: 0 < N. Defaulting to %f.\n", 
+          PCL_ERROR ("[pcl::%s::setNormalSmoothingSize] Invalid normal smoothing size given! (%g). Must be at least 2. Defaulting to %g.\n",
                       feature_name_.c_str (), normal_smoothing_size, normal_smoothing_size_);
           return;
         }

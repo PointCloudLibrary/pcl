@@ -388,7 +388,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performUpsampling (PointCloudOut &
 
       // If the closest point did not have a valid MLS fitting result
       // OR if it is too far away from the sampled point
-      if (mls_results_[input_index].valid == false)
+      if (!mls_results_[input_index].valid)
         continue;
 
       Eigen::Vector3d add_point = (*distinct_cloud_)[dp_i].getVector3fMap ().template cast<double> ();
@@ -425,7 +425,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performUpsampling (PointCloudOut &
 
       // If the closest point did not have a valid MLS fitting result
       // OR if it is too far away from the sampled point
-      if (mls_results_[input_index].valid == false)
+      if (!mls_results_[input_index].valid)
         continue;
 
       Eigen::Vector3d add_point = p.getVector3fMap ().template cast<double> ();

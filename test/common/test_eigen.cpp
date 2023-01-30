@@ -72,7 +72,7 @@ TEST (PCL, InverseGeneral3x3f)
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
     for (unsigned elIdx = 0; elIdx < 9; ++elIdx)
-      r_matrix.coeffRef (elIdx) = Scalar(rand_double (rng));
+      r_matrix.coeffRef (elIdx) = static_cast<Scalar>(rand_double (rng));
 
     c_matrix = r_matrix;
 
@@ -132,7 +132,7 @@ TEST (PCL, InverseGeneral3x3d)
   {
     for (unsigned elIdx = 0; elIdx < 9; ++elIdx)
     {
-      r_matrix.coeffRef (elIdx) = Scalar(rand_double (rng));
+      r_matrix.coeffRef (elIdx) = static_cast<Scalar>(rand_double (rng));
     }
     c_matrix = r_matrix;
     // test row-major -> row-major
@@ -190,7 +190,7 @@ TEST (PCL, InverseSymmetric3x3f)
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
     for (unsigned elIdx = 0; elIdx < 9; ++elIdx)
-      r_matrix.coeffRef (elIdx) = Scalar(rand_double (rng));
+      r_matrix.coeffRef (elIdx) = static_cast<Scalar>(rand_double (rng));
 
     r_matrix.coeffRef (3) = r_matrix.coeffRef (1);
     r_matrix.coeffRef (6) = r_matrix.coeffRef (2);
@@ -255,7 +255,7 @@ TEST (PCL, InverseSymmetric3x3d)
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
     for (unsigned elIdx = 0; elIdx < 9; ++elIdx)
-      r_matrix.coeffRef (elIdx) = Scalar(rand_double (rng));
+      r_matrix.coeffRef (elIdx) = static_cast<Scalar>(rand_double (rng));
 
     r_matrix.coeffRef (3) = r_matrix.coeffRef (1);
     r_matrix.coeffRef (6) = r_matrix.coeffRef (2);
@@ -321,7 +321,7 @@ TEST (PCL, Inverse2x2f)
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
     for (unsigned elIdx = 0; elIdx < 4; ++elIdx)
-      r_matrix.coeffRef (elIdx) = Scalar(rand_double (rng));
+      r_matrix.coeffRef (elIdx) = static_cast<Scalar>(rand_double (rng));
 
     c_matrix = r_matrix;
     // test row-major -> row-major
@@ -379,7 +379,7 @@ TEST (PCL, Inverse2x2d)
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
     for (unsigned elIdx = 0; elIdx < 4; ++elIdx)
-      r_matrix.coeffRef (elIdx) = Scalar(rand_double (rng));
+      r_matrix.coeffRef (elIdx) = static_cast<Scalar>(rand_double (rng));
 
     c_matrix = r_matrix;
     // test row-major -> row-major
@@ -425,8 +425,8 @@ inline void generateSymPosMatrix2x2 (Matrix& matrix)
 
   unsigned test_case = rand_uint (rng) % 10;
 
-  Scalar val1 = Scalar (rand_double (rng));
-  Scalar val2 = Scalar (rand_double (rng));
+  Scalar val1 = static_cast<Scalar> (rand_double (rng));
+  Scalar val2 = static_cast<Scalar> (rand_double (rng));
 
   // 10% of test cases include equal eigenvalues
   if (test_case == 0)
@@ -446,8 +446,8 @@ inline void generateSymPosMatrix2x2 (Matrix& matrix)
   {
     do
     {
-      eigenvectors.col (0)[0] = Scalar (rand_double (rng));
-      eigenvectors.col (0)[1] = Scalar (rand_double (rng));
+      eigenvectors.col (0)[0] = static_cast<Scalar> (rand_double (rng));
+      eigenvectors.col (0)[1] = static_cast<Scalar> (rand_double (rng));
       sqrNorm = eigenvectors.col (0).squaredNorm ();
     } while (sqrNorm == 0);
     eigenvectors.col (0) /= sqrt (sqrNorm);
@@ -592,9 +592,9 @@ inline void generateSymPosMatrix3x3 (Matrix& matrix)
 
   unsigned test_case = rand_uint (rng);
 
-  Scalar val1 = Scalar (rand_double (rng));
-  Scalar val2 = Scalar (rand_double (rng));
-  Scalar val3 = Scalar (rand_double (rng));
+  Scalar val1 = static_cast<Scalar> (rand_double (rng));
+  Scalar val2 = static_cast<Scalar> (rand_double (rng));
+  Scalar val3 = static_cast<Scalar> (rand_double (rng));
 
   // 1%: all three values are equal and non-zero
   if (test_case == 0)
@@ -635,12 +635,12 @@ inline void generateSymPosMatrix3x3 (Matrix& matrix)
 
   do
   {
-    eigenvectors.col (0)[0] = Scalar (rand_double (rng));
-    eigenvectors.col (0)[1] = Scalar (rand_double (rng));
-    eigenvectors.col (0)[2] = Scalar (rand_double (rng));
-    eigenvectors.col (1)[0] = Scalar (rand_double (rng));
-    eigenvectors.col (1)[1] = Scalar (rand_double (rng));
-    eigenvectors.col (1)[2] = Scalar (rand_double (rng));
+    eigenvectors.col (0)[0] = static_cast<Scalar> (rand_double (rng));
+    eigenvectors.col (0)[1] = static_cast<Scalar> (rand_double (rng));
+    eigenvectors.col (0)[2] = static_cast<Scalar> (rand_double (rng));
+    eigenvectors.col (1)[0] = static_cast<Scalar> (rand_double (rng));
+    eigenvectors.col (1)[1] = static_cast<Scalar> (rand_double (rng));
+    eigenvectors.col (1)[2] = static_cast<Scalar> (rand_double (rng));
     eigenvectors.col (2) = eigenvectors.col (0).cross (eigenvectors.col (1));
 
     sqrNorm = eigenvectors.col (2).squaredNorm ();
@@ -828,8 +828,8 @@ TEST (PCL, transformLine)
   // Simple rotation
   transformation = Eigen::Affine3f::Identity ();
   transformationd = Eigen::Affine3d::Identity ();
-  transformation.linear() = (Eigen::Matrix3f) Eigen::AngleAxisf(M_PI/2, Eigen::Vector3f::UnitZ());
-  transformationd.linear() = (Eigen::Matrix3d) Eigen::AngleAxisd(M_PI/2, Eigen::Vector3d::UnitZ());
+  transformation.linear() = Eigen::Matrix3f(Eigen::AngleAxisf(M_PI/2, Eigen::Vector3f::UnitZ()));
+  transformationd.linear() = Eigen::Matrix3d(Eigen::AngleAxisd(M_PI/2, Eigen::Vector3d::UnitZ()));
 
   line << 1, 2, 3, 0, 1, 0;
   lined << 1, 2, 3, 0, 1, 0;
@@ -849,9 +849,9 @@ TEST (PCL, transformLine)
   transformationd = Eigen::Affine3d::Identity ();
   transformation.translation() << 25.97, -2.45, 0.48941;
   transformationd.translation() << 25.97, -2.45, 0.48941;
-  transformation.linear() = (Eigen::Matrix3f) Eigen::AngleAxisf(M_PI/5, Eigen::Vector3f::UnitX())
+  transformation.linear() = Eigen::Matrix3f(Eigen::AngleAxisf(M_PI/5, Eigen::Vector3f::UnitX()))
   * Eigen::AngleAxisf(M_PI/3, Eigen::Vector3f::UnitY());
-  transformationd.linear() = (Eigen::Matrix3d) Eigen::AngleAxisd(M_PI/5, Eigen::Vector3d::UnitX())
+  transformationd.linear() = Eigen::Matrix3d(Eigen::AngleAxisd(M_PI/5, Eigen::Vector3d::UnitX()))
   * Eigen::AngleAxisd(M_PI/3, Eigen::Vector3d::UnitY());
 
   line << -1, 9, 3, 1.5, 2.0, 0.2;
@@ -901,8 +901,8 @@ TEST (PCL, transformPlane)
   // Simple rotation
   transformation.translation() << 0, 0, 0;
   transformationd.translation() << 0, 0, 0;
-  transformation.linear() = (Eigen::Matrix3f) Eigen::AngleAxisf(M_PI/2, Eigen::Vector3f::UnitZ());
-  transformationd.linear() = (Eigen::Matrix3d) Eigen::AngleAxisd(M_PI/2, Eigen::Vector3d::UnitZ());
+  transformation.linear() = Eigen::Matrix3f(Eigen::AngleAxisf(M_PI/2, Eigen::Vector3f::UnitZ()));
+  transformationd.linear() = Eigen::Matrix3d(Eigen::AngleAxisd(M_PI/2, Eigen::Vector3d::UnitZ()));
   test << 0, 1, 0, -2;
   tolerance = 1e-6;
 
@@ -925,9 +925,9 @@ TEST (PCL, transformPlane)
   // Random transformation
   transformation.translation() << 12.5, -5.4, 0.1;
   transformationd.translation() << 12.5, -5.4, 0.1;
-  transformation.linear() = (Eigen::Matrix3f) Eigen::AngleAxisf(M_PI/7, Eigen::Vector3f::UnitY())
+  transformation.linear() = Eigen::Matrix3f(Eigen::AngleAxisf(M_PI/7, Eigen::Vector3f::UnitY()))
   * Eigen::AngleAxisf(M_PI/4, Eigen::Vector3f::UnitZ());
-  transformationd.linear() = (Eigen::Matrix3d) Eigen::AngleAxisd(M_PI/7, Eigen::Vector3d::UnitY())
+  transformationd.linear() = Eigen::Matrix3d(Eigen::AngleAxisd(M_PI/7, Eigen::Vector3d::UnitY()))
   * Eigen::AngleAxisd(M_PI/4, Eigen::Vector3d::UnitZ());
   test << 5.35315, 2.89914, 0.196848, -49.2788;
   test /= test.head<3> ().norm ();
