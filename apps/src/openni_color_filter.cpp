@@ -206,9 +206,7 @@ main(int argc, char** argv)
   int rr, gg, bb;
   unsigned char radius = 442; // all colors!
 
-  if(pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 && 
-  argc > 1 && 
-  argv[1][0] != '-') device_id = argv[1];
+  if(pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 && argc > 1 && argv[1][0] != '-') device_id = argv[1];
   if (pcl::console::parse_3x_arguments(argc, argv, "-rgb", rr, gg, bb, true) != -1) {
     std::cout << "-rgb present" << std::endl;
     int rad;
