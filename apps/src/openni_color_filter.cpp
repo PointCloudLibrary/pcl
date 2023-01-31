@@ -159,21 +159,33 @@ public:
 void
 usage(char** argv)
 {
-  std::cout << "usage: " << argv[0]
-            << " <device_id> [-rgb <red> <green> <blue> [-radius <radius>] ]\n\n"
-            << std::endl;
+  std::cout << "usage: " << argv[0] << " [options]\n\n"
+            << "where options are:\n"
+            << "    -device_id X: specify the device id (default: \"#1\").\n"
+            << "    -rgb R G B: -- (default: 0 0 0)\n"
+            << "    -radius X: -- (default: 442)\n\n";
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
   if (driver.getNumberDevices() > 0) {
     for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices(); ++deviceIdx) {
       // clang-format off
-      std::cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx) << ", product: " << driver.getProductName (deviceIdx)
-              << ", connected: " << (int)driver.getBus (deviceIdx) << " @ " << (int)driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << std::endl;
-      std::cout << "device_id may be #1, #2, ... for the first second etc device in the list or" << std::endl
-           << "                 bus@address for the device connected to a specific usb-bus / address combination (works only in Linux) or" << std::endl
-           << "                 <serial-number> (only in Linux and for devices which provide serial numbers)"  << std::endl;
+      std::cout << "Device: " << deviceIdx + 1 
+                << ", vendor: " << driver.getVendorName (deviceIdx) 
+                << ", product: " << driver.getProductName (deviceIdx)
+                << ", connected: " << driver.getBus (deviceIdx) << " @ " << driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" 
+                << std::endl;
       // clang-format on
     }
+
+    std::cout << "\ndevice_id may be:" << std::endl
+              << "    #1, #2, ... for the first second etc device in the list or"
+              << std::endl
+
+              << "    bus@address for the device connected to a specific "
+                 "usb-bus/address combination (works only in Linux) or"
+
+              << "    <serial-number> (only in Linux and for devices which provide "
+                 "serial numbers)";
   }
   else
     std::cout << "No devices connected." << std::endl;
@@ -182,22 +194,21 @@ usage(char** argv)
 int
 main(int argc, char** argv)
 {
-  if (argc < 2) {
+  /////////////////////////////////////////////////////////////////////
+  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
+      pcl::console::find_argument(argc, argv, "--help") != -1) {
     usage(argv);
     return 1;
   }
 
-  std::string arg(argv[1]);
-
-  if (arg == "--help" || arg == "-h") {
-    usage(argv);
-    return 1;
-  }
-
+  std::string device_id = "";
   unsigned char red = 0, green = 0, blue = 0;
   int rr, gg, bb;
   unsigned char radius = 442; // all colors!
 
+  if (pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 &&
+      argc > 1 && argv[1][0] != '-')
+    device_id = argv[1];
   if (pcl::console::parse_3x_arguments(argc, argv, "-rgb", rr, gg, bb, true) != -1) {
     std::cout << "-rgb present" << std::endl;
     int rad;
@@ -213,8 +224,9 @@ main(int argc, char** argv)
     if (bb >= 0 && bb < 256)
       blue = (unsigned char)bb;
   }
+  /////////////////////////////////////////////////////////////////////
 
-  pcl::OpenNIGrabber grabber(arg);
+  pcl::OpenNIGrabber grabber(device_id);
 
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {
     OpenNIPassthrough<pcl::PointXYZRGBA> v(grabber, red, green, blue, radius);

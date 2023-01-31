@@ -360,13 +360,15 @@ main(int argc, char** argv)
   std::string device_id("");
   pcl::OpenNIGrabber::Mode image_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
 
+  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
+      pcl::console::find_argument(argc, argv, "--help") != -1) {
+    usage(argv);
+    return 1;
+  }
+
   if (argc >= 2) {
     device_id = argv[1];
-    if (device_id == "--help" || device_id == "-h") {
-      usage(argv);
-      return 0;
-    }
-    else if (device_id == "-l") {
+    if (device_id == "-l") {
       if (argc >= 3) {
         pcl::OpenNIGrabber grabber(argv[2]);
         auto device = grabber.getDevice();
