@@ -236,7 +236,7 @@ LZFRGB24ImageReader::read (
   cloud.resize (getWidth () * getHeight ());
 
   int rgb_idx = 0;
-  auto *color_r = reinterpret_cast<unsigned char*> (&uncompressed_data[0]);
+  auto *color_r = reinterpret_cast<unsigned char*> (uncompressed_data.data());
   auto *color_g = reinterpret_cast<unsigned char*> (&uncompressed_data[getWidth () * getHeight ()]);
   auto *color_b = reinterpret_cast<unsigned char*> (&uncompressed_data[2 * getWidth () * getHeight ()]);
 
@@ -284,7 +284,7 @@ LZFRGB24ImageReader::readOMP (
   cloud.height = getHeight ();
   cloud.resize (getWidth () * getHeight ());
 
-  auto *color_r = reinterpret_cast<unsigned char*> (&uncompressed_data[0]);
+  auto *color_r = reinterpret_cast<unsigned char*> (uncompressed_data.data());
   auto *color_g = reinterpret_cast<unsigned char*> (&uncompressed_data[getWidth () * getHeight ()]);
   auto *color_b = reinterpret_cast<unsigned char*> (&uncompressed_data[2 * getWidth () * getHeight ()]);
 
@@ -341,7 +341,7 @@ LZFYUV422ImageReader::read (
   cloud.resize (getWidth () * getHeight ());
 
   int wh2 = getWidth () * getHeight () / 2;
-  auto *color_u = reinterpret_cast<unsigned char*> (&uncompressed_data[0]);
+  auto *color_u = reinterpret_cast<unsigned char*> (uncompressed_data.data());
   auto *color_y = reinterpret_cast<unsigned char*> (&uncompressed_data[wh2]);
   auto *color_v = reinterpret_cast<unsigned char*> (&uncompressed_data[wh2 + getWidth () * getHeight ()]);
 
@@ -399,7 +399,7 @@ LZFYUV422ImageReader::readOMP (
   cloud.resize (getWidth () * getHeight ());
 
   int wh2 = getWidth () * getHeight () / 2;
-  auto *color_u = reinterpret_cast<unsigned char*> (&uncompressed_data[0]);
+  auto *color_u = reinterpret_cast<unsigned char*> (uncompressed_data.data());
   auto *color_y = reinterpret_cast<unsigned char*> (&uncompressed_data[wh2]);
   auto *color_v = reinterpret_cast<unsigned char*> (&uncompressed_data[wh2 + getWidth () * getHeight ()]);
 
@@ -462,8 +462,8 @@ LZFBayer8ImageReader::read (
   // Convert Bayer8 to RGB24
   std::vector<unsigned char> rgb_buffer (getWidth () * getHeight () * 3);
   DeBayer i;
-  i.debayerEdgeAware (reinterpret_cast<unsigned char*> (&uncompressed_data[0]),
-                     static_cast<unsigned char*> (&rgb_buffer[0]),
+  i.debayerEdgeAware (reinterpret_cast<unsigned char*> (uncompressed_data.data()),
+                     static_cast<unsigned char*> (rgb_buffer.data()),
                      getWidth (), getHeight ());
   // Copy to PointT
   cloud.width  = getWidth ();
@@ -512,8 +512,8 @@ LZFBayer8ImageReader::readOMP (
   // Convert Bayer8 to RGB24
   std::vector<unsigned char> rgb_buffer (getWidth () * getHeight () * 3);
   DeBayer i;
-  i.debayerEdgeAware (reinterpret_cast<unsigned char*> (&uncompressed_data[0]),
-                     static_cast<unsigned char*> (&rgb_buffer[0]),
+  i.debayerEdgeAware (reinterpret_cast<unsigned char*> (uncompressed_data.data()),
+                     static_cast<unsigned char*> (rgb_buffer.data()),
                      getWidth (), getHeight ());
   // Copy to PointT
   cloud.width  = getWidth ();

@@ -169,8 +169,8 @@ TEST (PCL, lineWithLineIntersection)
   Eigen::Vector4f point_mod_case_2;
   double sqr_mod_case_2 = 1e-1;
 
-  Eigen::VectorXf coeff1 = Eigen::VectorXf::Map (&line_a_mod_2.values[0], line_a_mod_2.values.size ());
-  Eigen::VectorXf coeff2 = Eigen::VectorXf::Map (&line_b_mod_2.values[0], line_b_mod_2.values.size ());
+  Eigen::VectorXf coeff1 = Eigen::VectorXf::Map (line_a_mod_2.values.data(), line_a_mod_2.values.size ());
+  Eigen::VectorXf coeff2 = Eigen::VectorXf::Map (line_b_mod_2.values.data(), line_b_mod_2.values.size ());
 
   Eigen::Vector4f p1_mod, p2_mod;
   lineToLineSegment (coeff1, coeff2, p1_mod, p2_mod);

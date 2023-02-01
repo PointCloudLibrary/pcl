@@ -501,14 +501,14 @@ class Viewer
             {
               frame->image->fillRGB (frame->image->getWidth (), 
                                      frame->image->getHeight (), 
-                                     &rgb_data[0]);
+                                     rgb_data.data());
             }
             else
-              memcpy (&rgb_data[0],
+              memcpy (rgb_data.data(),
                       frame->image->getMetaData ().Data (),
                       rgb_data.size ());
 
-            image_viewer_->addRGBImage (reinterpret_cast<unsigned char*> (&rgb_data[0]), 
+            image_viewer_->addRGBImage (reinterpret_cast<unsigned char*> (rgb_data.data()), 
                                         frame->image->getWidth (),
                                         frame->image->getHeight (),
                                         "rgb_image");

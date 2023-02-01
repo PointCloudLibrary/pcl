@@ -126,7 +126,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::nearestKSearch (const PointT &p
     indices.resize (k,-1);
   if (dists.size() != static_cast<unsigned int> (k))
     dists.resize (k);
-  flann::Matrix<float> d (&dists[0],1,k);
+  flann::Matrix<float> d (dists.data(),1,k);
   int result = knn_search(*index_, m, indices, d, k, p);
 
   delete [] data;

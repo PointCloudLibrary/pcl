@@ -310,7 +310,7 @@ computeGaussianKernel (const std::size_t kernel_size, const float sigma, std::ve
   //CV_Assert( ktype == CV_32F || ktype == CV_64F );
   /*Mat kernel(n, 1, ktype);*/
   kernel_values.resize (n);
-  float* cf = &(kernel_values[0]);
+  float* cf = kernel_values.data();
   //double* cd = (double*)kernel.data;
 
   double sigmaX = sigma > 0 ? sigma : ((n-1)*0.5 - 1)*0.3 + 0.8;

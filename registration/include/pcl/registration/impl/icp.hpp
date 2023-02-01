@@ -44,6 +44,7 @@
 #include <pcl/correspondence.h>
 
 namespace pcl {
+// NOLINTBEGIN(readability-container-data-pointer)
 
 template <typename PointSource, typename PointTarget, typename Scalar>
 void
@@ -317,6 +318,7 @@ IterativeClosestPointWithNormals<PointSource, PointTarget, Scalar>::transformClo
 {
   pcl::transformPointCloudWithNormals(input, output, transform);
 }
+// NOLINTEND(readability-container-data-pointer)
 
 } // namespace pcl
 
