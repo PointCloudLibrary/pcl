@@ -115,7 +115,7 @@ pcl::visualization::worldToView (const Eigen::Vector4d &world_pt, const Eigen::M
   // Calculate -world_pt.y () because the screen Y axis is oriented top->down, ie 0 is top-left
   //int winY = (int) std::floor ( (double) (((1 - world_pt.y ()) / 2.0) * height) + 0.5); // top left
 
-  return (Eigen::Vector2i (screen_x, screen_y));
+  return {screen_x, screen_y};
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

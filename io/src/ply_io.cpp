@@ -70,16 +70,12 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
     cloud_->point_step = 0;
     cloud_->row_step = 0;
     vertex_count_ = 0;
-    return (std::tuple<std::function<void ()>, std::function<void ()> > (
-              [this] { vertexBeginCallback (); },
-              [this] { vertexEndCallback (); }));
+    return {[this] { vertexBeginCallback(); }, [this] { vertexEndCallback(); }};
   }
   if ((element_name == "face") && polygons_)
   {
     polygons_->reserve (count);
-    return (std::tuple<std::function<void ()>, std::function<void ()> > (
-            [this] { faceBeginCallback (); },
-            [this] { faceEndCallback (); }));
+    return {[this] { faceBeginCallback(); }, [this] { faceEndCallback(); }};
   }
   if (element_name == "camera")
   {
@@ -89,9 +85,7 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
   if (element_name == "range_grid")
   {
     range_grid_->reserve (count);
-    return (std::tuple<std::function<void ()>, std::function<void ()> > (
-              [this] { rangeGridBeginCallback (); },
-              [this] { rangeGridEndCallback (); }));
+    return {[this] { rangeGridBeginCallback(); }, [this] { rangeGridEndCallback(); }};
   }
   return {};
 }
@@ -100,7 +94,7 @@ bool
 pcl::PLYReader::endHeaderCallback ()
 {
   cloud_->data.resize (static_cast<std::size_t>(cloud_->point_step) * cloud_->width * cloud_->height);
-  return (true);
+  return true;
 }
 
 template<typename Scalar> void

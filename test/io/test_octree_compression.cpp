@@ -53,19 +53,19 @@ char* pcd_file;
 template<typename PointT> inline PointT generateRandomPoint(const float MAX_XYZ);
 
 template<> inline pcl::PointXYZRGBA generateRandomPoint(const float MAX_XYZ) {
-  return pcl::PointXYZRGBA(static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
+  return {static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
                            static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
                            static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
-                           static_cast<int> (MAX_COLOR * rand() / RAND_MAX),
-                           static_cast<int> (MAX_COLOR * rand() / RAND_MAX),
-                           static_cast<int> (MAX_COLOR * rand() / RAND_MAX),
-                           static_cast<int> (MAX_COLOR * rand() / RAND_MAX));
+                           static_cast<std::uint8_t> (MAX_COLOR * rand() / RAND_MAX),
+                           static_cast<std::uint8_t> (MAX_COLOR * rand() / RAND_MAX),
+                           static_cast<std::uint8_t> (MAX_COLOR * rand() / RAND_MAX),
+                           static_cast<std::uint8_t> (MAX_COLOR * rand() / RAND_MAX)};
 }
 
 template<> inline pcl::PointXYZ generateRandomPoint(const float MAX_XYZ) {
-  return pcl::PointXYZ(static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
+  return {static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
                        static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
-                       static_cast<float> (MAX_XYZ * rand() / RAND_MAX));
+                       static_cast<float> (MAX_XYZ * rand() / RAND_MAX)};
 }
 
 template<typename PointT> inline

@@ -97,6 +97,7 @@ public:
   Eigen::Matrix4d
   getViewProjectionMatrix ()
   {
+    // NOLINTNEXTLINE(modernize-return-braced-init-list)
     return Eigen::Matrix4d (projection_matrix_ * model_view_matrix_);
   }
 

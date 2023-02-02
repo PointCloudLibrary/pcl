@@ -254,7 +254,7 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
 
     int element_stride = sizeof(pcl::PointXYZ) / sizeof(float);
     int row_stride = element_stride * cloud->width;
-    const float *data = reinterpret_cast<const float*> (&(*cloud)[0]); // NOLINT(readability-container-data-pointer)
+    const float *data = reinterpret_cast<const float*> (cloud->data());
     integral_image_depth->setInput (data + 2, cloud->width, cloud->height, element_stride, row_stride);
 
     //Compute normals and normal integral images
