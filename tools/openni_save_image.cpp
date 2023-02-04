@@ -46,10 +46,10 @@
 #include <vtkTIFFWriter.h>
 #include <vtkImageFlip.h>
 
+#include <chrono>
 #include <mutex>
 #include <string>
 #include <vector>
-#include <boost/date_time/posix_time/posix_time.hpp> // for to_iso_string, local_time
 
 
 #define SHOW_FPS 1
@@ -125,7 +125,11 @@ class SimpleOpenNIViewer
       {
         std::lock_guard<std::mutex> lock (image_mutex_);
 
-        std::string time = boost::posix_time::to_iso_string (boost::posix_time::microsec_clock::local_time ());
+        auto now = std::chrono::system_clock::now();
+        auto UTC =
+            std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch())
+                .count();
+
         if (image_)
         {
           FPS_CALC ("writer callback");
@@ -151,7 +155,7 @@ class SimpleOpenNIViewer
             data = reinterpret_cast<const void*> (rgb_data);
           }
 
-          const std::string filename = "frame_" + time + "_rgb.tiff";
+          const std::string filename = "frame_" + std::to_string(UTC) + "_rgb.tiff";
           importer_->SetImportVoidPointer (const_cast<void*>(data), 1);
           importer_->Update ();
           flipper_->SetInputConnection (importer_->GetOutputPort ());
@@ -166,7 +170,7 @@ class SimpleOpenNIViewer
           openni_wrapper::DepthImage::Ptr depth_image;
           depth_image.swap (depth_image_);
 
-          const std::string filename = "frame_" + time + "_depth.tiff";
+          const std::string filename = "frame_" + std::to_string(UTC) + "_depth.tiff";
 
           depth_importer_->SetWholeExtent (0, depth_image->getWidth () - 1, 0, depth_image->getHeight () - 1, 0, 0);
           depth_importer_->SetDataExtentToWholeExtent ();

@@ -37,12 +37,12 @@
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
 #include <boost/circular_buffer.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp> // for to_iso_string, local_time
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h> //fps calculations
 
+#include <chrono>
 #include <csignal>
 #include <limits>
 #include <memory>
@@ -282,10 +282,13 @@ class Consumer
     void 
     writeToDisk (const typename PointCloud<PointT>::ConstPtr& cloud)
     {
-      std::stringstream ss;
-      std::string time = boost::posix_time::to_iso_string (boost::posix_time::microsec_clock::local_time ());
-      ss << "frame-" << time << ".pcd";
-      writer_.writeBinaryCompressed (ss.str (), *cloud);
+      auto now = std::chrono::system_clock::now();
+      auto UTC =
+          std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch())
+              .count();
+
+      const std::string file_name = "frame-" + std::to_string(UTC) + ".pcd";
+      writer_.writeBinaryCompressed(file_name, *cloud);
       FPS_CALC ("cloud write.", buf_);
     }
 

@@ -46,13 +46,13 @@
 #include <pcl/visualization/mouse_event.h>
 
 #include <boost/circular_buffer.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp> // for ptime, to_iso_string, ...
 
+#include <chrono>
 #include <csignal>
 #include <limits>
+#include <memory>
 #include <mutex>
 #include <thread>
-#include <memory>
 
 using namespace std::chrono_literals;
 using namespace pcl;
@@ -145,7 +145,7 @@ struct Frame
          const openni_wrapper::DepthImage::Ptr &_depth_image,
          const io::CameraParameters &_parameters_rgb,
          const io::CameraParameters &_parameters_depth,
-         const boost::posix_time::ptime &_time)
+         const std::chrono::time_point<std::chrono::system_clock>& _time)
     : image (_image)
     , depth_image (_depth_image)
     , parameters_rgb (_parameters_rgb)
@@ -158,7 +158,7 @@ struct Frame
         
   io::CameraParameters parameters_rgb, parameters_depth;
 
-  boost::posix_time::ptime time;
+  std::chrono::time_point<std::chrono::system_clock> time;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -265,8 +265,11 @@ class Writer
 
       FPS_CALC_WRITER ("data write   ", buf_);
       nr_frames_total++;
-      
-      std::string time_string = boost::posix_time::to_iso_string (frame->time);
+
+      const auto UTC = std::chrono::duration_cast<std::chrono::seconds>(
+                     frame->time.time_since_epoch())
+                     .count();
+      const std::string time_string = std::to_string(UTC);
       // Save RGB data
       const std::string rgb_filename = "frame_" + time_string + "_rgb.pclzf";
       switch (frame->image->getEncoding ())
@@ -371,7 +374,8 @@ class Driver
                     const openni_wrapper::DepthImage::Ptr &depth_image, 
                     float)
     {
-      boost::posix_time::ptime time = boost::posix_time::microsec_clock::local_time ();
+      const auto time = std::chrono::system_clock::now();
+
       FPS_CALC_DRIVER ("driver       ", buf_write_, buf_vis_);
 
       // Extract camera parameters
