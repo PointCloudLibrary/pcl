@@ -1175,7 +1175,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PCLPointClo
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCloud2 &cloud,
+pcl::PCDWriter::writeBinary (std::ostream &os, const pcl::PCLPointCloud2 &cloud,
                              const Eigen::Vector4f &origin, const Eigen::Quaternionf &orientation)
 {
   if (cloud.data.empty ())
@@ -1188,13 +1188,26 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCl
     return (-1);
   }
 
-  std::streamoff data_idx = 0;
-  std::ostringstream oss;
-  oss.imbue (std::locale::classic ());
+  os.imbue (std::locale::classic ());
+  os << generateHeaderBinary (cloud, origin, orientation) << "DATA binary\n";
+  std::copy (cloud.data.cbegin(), cloud.data.cend(), std::ostream_iterator<char> (os));
+  os.flush ();
 
-  oss << generateHeaderBinary (cloud, origin, orientation) << "DATA binary\n";
-  oss.flush();
-  data_idx = static_cast<unsigned int> (oss.tellp ());
+  return (os ? 0 : -1);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCloud2 &cloud,
+                             const Eigen::Vector4f &origin, const Eigen::Quaternionf &orientation)
+{
+  std::ostringstream oss;
+  int status = writeBinary (oss, cloud, origin, orientation);
+  if (status)
+  {
+    return status;
+  }
+  std::string ostr = oss.str ();
 
 #ifdef _WIN32
   HANDLE h_native_file = CreateFile (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -1240,12 +1253,12 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCl
 #endif
   // Prepare the map
 #ifdef _WIN32
-  HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, (DWORD) (data_idx + cloud.data.size ()), NULL);
-  char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_idx + cloud.data.size ()));
+  HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, ostr.size (), NULL);
+  char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, ostr.size()));
   CloseHandle (fm);
 
 #else
-  char *map = static_cast<char*> (mmap (nullptr, static_cast<std::size_t> (data_idx + cloud.data.size ()), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0));
+  char *map = static_cast<char*> (mmap (nullptr, ostr.size(), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0));
   if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
   {
     io::raw_close (fd);
@@ -1255,23 +1268,20 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCl
   }
 #endif
 
-  // copy header
-  memcpy (&map[0], oss.str().c_str (), static_cast<std::size_t> (data_idx));
-
-  // Copy the data
-  memcpy (&map[0] + data_idx, cloud.data.data(), cloud.data.size ());
+  // copy header + data
+  memcpy (&map[0], ostr.data (), ostr.size ());
 
 #ifndef _WIN32
   // If the user set the synchronization flag on, call msync
   if (map_synchronization_)
-    msync (map, static_cast<std::size_t> (data_idx + cloud.data.size ()), MS_SYNC);
+    msync (map, ostr.size (), MS_SYNC);
 #endif
 
   // Unmap the pages of memory
 #ifdef _WIN32
     UnmapViewOfFile (map);
 #else
-  if (::munmap (map, static_cast<std::size_t> (data_idx + cloud.data.size ())) == -1)
+  if (::munmap (map, ostr.size()) == -1)
   {
     io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
