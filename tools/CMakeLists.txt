@@ -333,15 +333,6 @@ target_link_libraries (pcl_transform_point_cloud pcl_common pcl_io pcl_registrat
 PCL_ADD_EXECUTABLE(pcl_transform_from_viewpoint COMPONENT ${SUBSYS_NAME} SOURCES transform_from_viewpoint.cpp)
 target_link_libraries (pcl_transform_from_viewpoint pcl_common pcl_io pcl_registration)
 
-find_package(tide QUIET)
-if(Tide_FOUND)
-  include_directories(SYSTEM ${Tide_INCLUDE_DIRS})
-  add_definitions(${Tide_DEFINITIONS})
-  PCL_ADD_EXECUTABLE(pcl_video COMPONENT ${SUBSYS_NAME} SOURCES pcl_video.cpp)
-  target_link_libraries(pcl_video pcl_common pcl_io pcl_visualization
-    ${Tide_LIBRARIES})
-endif()
-
 if(CMAKE_GENERATOR_IS_IDE)
   set(SUBSYS_TARGET_NAME TOOLS_BUILD)
 else()
