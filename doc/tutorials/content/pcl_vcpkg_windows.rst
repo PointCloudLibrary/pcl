@@ -141,5 +141,5 @@ Remember to omit the *--clean-after-build*, as this removes the source code of t
 
 To build PCL, you would have to get the `source <https://github.com/PointCloudLibrary/pcl>`_, preferably clone it using git.
 
-Use `CMake <https://cmake.org/download>`_ to configure what to build of PCL.
+Use `CMake <https://cmake.org/download>`_ to configure PCL.
 
