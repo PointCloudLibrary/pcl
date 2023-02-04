@@ -80,8 +80,6 @@ will install PCL with default options as well as default triplet type (ie. x86).
   If there are new features or bugfixes that are not yet part of a release,
   you can try to use --head, which downloads the master of PCL.
   
-  - 2021-06-25 PCL 11(.1) doesn't support VTK 9, so if you need visualization module, use --head
-
 You can see the available PCL version and options in VCPKG `here <https://github.com/microsoft/vcpkg/blob/master/ports/pcl/vcpkg.json>`_.
 
 To enable specific features, you need to write:
