@@ -64,8 +64,11 @@ namespace pcl
       PCL_ERROR("[pcl::assignNormalWeights] inequal size of neighbor indices and distances!\n");
     
     // TODO: For now we use uniform weights
-    std::vector<float> oneWeight(k_indices.size (), 1.0f);
-    return oneWeight;
+    // Disable check for braced-initialization,
+    // since the compiler doesn't seem to recognize that
+    // {k_indices.size (), 1.0f} is selecting the vector(size_type count, const T&) constructor
+    // NOLINTNEXTLINE(modernize-return-braced-init-list)
+    return std::vector<float> (k_indices.size (), 1.0f);
   }
   
   /** \brief Refine an indexed point based on its neighbors, this function only writes to the normal_* fields
