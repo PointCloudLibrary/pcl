@@ -36,6 +36,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
+#include <pcl/io/timestamp_generator.h>
 #include <boost/circular_buffer.hpp>
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
@@ -282,12 +283,7 @@ class Consumer
     void 
     writeToDisk (const typename PointCloud<PointT>::ConstPtr& cloud)
     {
-      auto now = std::chrono::system_clock::now();
-      auto UTC =
-          std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch())
-              .count();
-
-      const std::string file_name = "frame-" + std::to_string(UTC) + ".pcd";
+      const std::string file_name = "frame-" + pcl::getTimestamp() + ".pcd";
       writer_.writeBinaryCompressed(file_name, *cloud);
       FPS_CALC ("cloud write.", buf_);
     }

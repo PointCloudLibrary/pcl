@@ -37,11 +37,12 @@
 
 #include <pcl/point_types.h>
 #include <pcl/common/time.h> //fps calculations
-#include <pcl/io/openni_grabber.h>
 #include <pcl/io/lzf_image_io.h>
+#include <pcl/io/openni_camera/openni_driver.h>
+#include <pcl/io/openni_grabber.h>
+#include <pcl/io/timestamp_generator.h>
 #include <pcl/visualization/common/float_image_utils.h>
 #include <pcl/visualization/image_viewer.h>
-#include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
 #include <pcl/visualization/mouse_event.h>
 
@@ -266,12 +267,8 @@ class Writer
       FPS_CALC_WRITER ("data write   ", buf_);
       nr_frames_total++;
 
-      const auto UTC = std::chrono::duration_cast<std::chrono::seconds>(
-                     frame->time.time_since_epoch())
-                     .count();
-      const std::string time_string = std::to_string(UTC);
       // Save RGB data
-      const std::string rgb_filename = "frame_" + time_string + "_rgb.pclzf";
+      const std::string rgb_filename = "frame_" + getTimestamp() + "_rgb.pclzf";
       switch (frame->image->getEncoding ())
       {
         case openni_wrapper::Image::YUV422:
@@ -295,13 +292,13 @@ class Writer
       }
 
       // Save depth data
-      const std::string depth_filename = "frame_" + time_string + "_depth.pclzf";
+      const std::string depth_filename = "frame_" + getTimestamp() + "_depth.pclzf";
       io::LZFDepth16ImageWriter ld;
       //io::LZFShift11ImageWriter ld;
       ld.write (reinterpret_cast<const char*> (&frame->depth_image->getDepthMetaData ().Data ()[0]), frame->depth_image->getWidth (), frame->depth_image->getHeight (), depth_filename);
       
       // Save depth data
-      const std::string xml_filename = "frame_" + time_string + ".xml";
+      const std::string xml_filename = "frame_" + getTimestamp() + ".xml";
          
       io::LZFRGB24ImageWriter lrgb;
       lrgb.writeParameters (frame->parameters_rgb, xml_filename);
