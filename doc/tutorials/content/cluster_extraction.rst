@@ -171,10 +171,10 @@ You will see something similar to::
   PointCloud representing the Cluster: 290 data points.
   PointCloud representing the Cluster: 120 data points.
 
-You can also look at your outputs cloud_cluster_0.pcd, cloud_cluster_1.pcd,
-cloud_cluster_2.pcd, cloud_cluster_3.pcd and cloud_cluster_4.pcd::
+You can also look at your outputs cloud_cluster_0000.pcd, cloud_cluster_0001.pcd,
+cloud_cluster_0002.pcd, cloud_cluster_0003.pcd and cloud_cluster_0004.pcd::
 
-	$ ./pcl_viewer cloud_cluster_0.pcd cloud_cluster_1.pcd cloud_cluster_2.pcd cloud_cluster_3.pcd cloud_cluster_4.pcd
+	$ ./pcl_viewer cloud_cluster_0000.pcd cloud_cluster_0001.pcd cloud_cluster_0002.pcd cloud_cluster_0003.pcd cloud_cluster_0004.pcd
 
 You are now able to see the different clusters in one viewer. You should see
 something similar to this:
