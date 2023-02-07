@@ -1175,6 +1175,29 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PCLPointClo
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
+pcl::PCDWriter::writeBinary (std::ostream &os, const pcl::PCLPointCloud2 &cloud,
+                             const Eigen::Vector4f &origin, const Eigen::Quaternionf &orientation)
+{
+  if (cloud.data.empty ())
+  {
+    PCL_WARN ("[pcl::PCDWriter::writeBinary] Input point cloud has no data!\n");
+  }
+  if (cloud.fields.empty())
+  {
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] Input point cloud has no field data!\n");
+    return (-1);
+  }
+
+  os.imbue (std::locale::classic ());
+  os << generateHeaderBinary (cloud, origin, orientation) << "DATA binary\n";
+  std::copy (cloud.data.cbegin(), cloud.data.cend(), std::ostream_iterator<char> (os));
+  os.flush ();
+
+  return (os ? 0 : -1);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int
 pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCloud2 &cloud,
                              const Eigen::Vector4f &origin, const Eigen::Quaternionf &orientation)
 {
