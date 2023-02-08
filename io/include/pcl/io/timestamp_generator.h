@@ -22,7 +22,7 @@ namespace pcl {
  * @return std::string containing the timestamp
 */
 PCL_EXPORTS inline std::string
-getTimestamp(std::chrono::time_point<std::chrono::system_clock> time =
+getTimestamp(const std::chrono::time_point<std::chrono::system_clock>& time =
                  std::chrono::system_clock::now())
 {
   const auto us =
@@ -37,7 +37,7 @@ getTimestamp(std::chrono::time_point<std::chrono::system_clock> time =
   ss << std::put_time(&tm, "%Y%m%dT%H%M%S");
 
   if (fractional_seconds > 0) {
-    ss << "." << fractional_seconds;
+    ss << "." << std::setw(6) << std::setfill('0') << fractional_seconds;
   }
 
   return ss.str();

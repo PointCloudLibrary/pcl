@@ -20,6 +20,16 @@ TEST(PCL, TestTimestampGeneratorWithFraction)
   EXPECT_EQ(filename, "19700101T000000.123456");
 }
 
+TEST(PCL, TestTimestampGeneratorWithSmallFraction)
+{
+  const std::chrono::microseconds dur(123);
+  const std::chrono::time_point<std::chrono::system_clock> dt(dur);
+
+  const auto filename = pcl::getTimestamp(dt);
+
+  EXPECT_EQ(filename, "19700101T000000.000123");
+}
+
 /* ---[ */
 int
 main(int argc, char** argv)
