@@ -91,7 +91,7 @@ configure_file("${PCL_SOURCE_DIR}/PCLConfig.cmake.in"
 configure_file("${PCL_SOURCE_DIR}/PCLConfigVersion.cmake.in"
                "${PCL_BINARY_DIR}/PCLConfigVersion.cmake" @ONLY)
 install(FILES
-        "${PCL_BINARY_DIR}/PCLConfig.cmake"
+        "${PCL_BINARY_DIR}/pclConfig.cmake"
         "${PCL_BINARY_DIR}/PCLConfigVersion.cmake"
         COMPONENT pclconfig
         DESTINATION ${PCLCONFIG_INSTALL_DIR})
