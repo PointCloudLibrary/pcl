@@ -5,9 +5,9 @@ TEST(PCL, TestTimestampGeneratorZeroFraction)
 {
   const std::chrono::time_point<std::chrono::system_clock> time;
 
-  const auto filename = pcl::getTimestamp(time);
+  const auto timestamp = pcl::getTimestamp(time);
 
-  EXPECT_EQ(filename, "19700101T000000");
+  EXPECT_EQ(timestamp, "19700101T000000");
 }
 
 TEST(PCL, TestTimestampGeneratorWithFraction)
@@ -15,9 +15,9 @@ TEST(PCL, TestTimestampGeneratorWithFraction)
   const std::chrono::microseconds dur(123456);
   const std::chrono::time_point<std::chrono::system_clock> dt(dur);
 
-  const auto filename = pcl::getTimestamp(dt);
+  const auto timestamp = pcl::getTimestamp(dt);
 
-  EXPECT_EQ(filename, "19700101T000000.123456");
+  EXPECT_EQ(timestamp, "19700101T000000.123456");
 }
 
 TEST(PCL, TestTimestampGeneratorWithSmallFraction)
@@ -25,9 +25,9 @@ TEST(PCL, TestTimestampGeneratorWithSmallFraction)
   const std::chrono::microseconds dur(123);
   const std::chrono::time_point<std::chrono::system_clock> dt(dur);
 
-  const auto filename = pcl::getTimestamp(dt);
+  const auto timestamp = pcl::getTimestamp(dt);
 
-  EXPECT_EQ(filename, "19700101T000000.000123");
+  EXPECT_EQ(timestamp, "19700101T000000.000123");
 }
 
 /* ---[ */
