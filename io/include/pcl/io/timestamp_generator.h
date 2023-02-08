@@ -17,7 +17,7 @@
 namespace pcl {
 /**
  * @brief Returns a timestamp as string formatted like boosts to_iso_string see https://www.boost.org/doc/libs/1_81_0/doc/html/date_time/posix_time.html#ptime_to_string
- * Example: 19700101T246060.123456
+ * Example: 19750101T235959.123456
  * @param time std::chrono::timepoint to convert, defaults to now
  * @return std::string containing the timestamp
 */
