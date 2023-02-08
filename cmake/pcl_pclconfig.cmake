@@ -87,7 +87,7 @@ if(Boost_CHRONO_FOUND)
 endif()
 
 configure_file("${PCL_SOURCE_DIR}/PCLConfig.cmake.in"
-               "${PCL_BINARY_DIR}/PCLConfig.cmake" @ONLY)
+               "${PCL_BINARY_DIR}/pclConfig.cmake" @ONLY)
 configure_file("${PCL_SOURCE_DIR}/PCLConfigVersion.cmake.in"
                "${PCL_BINARY_DIR}/PCLConfigVersion.cmake" @ONLY)
 install(FILES
