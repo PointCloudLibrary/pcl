@@ -435,7 +435,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getTimestampFromFilepath (
   if (result > 0)
   {
     // Convert to std::uint64_t, microseconds since 1970-01-01
-    timestamp = pcl::parseTimestamp(timestamp_str).time_since_epoch().count();
+    timestamp = std::chrono::duration<double,std::micro>(pcl::parseTimestamp(timestamp_str).time_since_epoch()).count();
     return (true);
   }
   return (false);
