@@ -36,6 +36,7 @@
  */
 // Looking for PCL_BUILT_WITH_VTK
 #include <pcl/for_each_type.h>
+#include <pcl/io/timestamp.h>
 #include <pcl/io/image_grabber.h>
 #include <pcl/io/lzf_image_io.h>
 #include <pcl/memory.h>
@@ -43,7 +44,6 @@
 #include <pcl/point_types.h>
 #include <boost/filesystem.hpp> // for exists, basename, is_directory, ...
 #include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
-#include <boost/date_time/posix_time/posix_time.hpp> // for posix_time
 
 #ifdef PCL_BUILT_WITH_VTK
   #include <vtkImageReader2.h>
@@ -435,10 +435,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getTimestampFromFilepath (
   if (result > 0)
   {
     // Convert to std::uint64_t, microseconds since 1970-01-01
-    boost::posix_time::ptime cur_date = boost::posix_time::from_iso_string (timestamp_str);
-    boost::posix_time::ptime zero_date (
-        boost::gregorian::date (1970,boost::gregorian::Jan,1));
-    timestamp = (cur_date - zero_date).total_microseconds ();
+    timestamp = pcl::parseTimestamp(timestamp_str).time_since_epoch().count();
     return (true);
   }
   return (false);

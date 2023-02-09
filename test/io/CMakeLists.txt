@@ -12,8 +12,8 @@ if(NOT build)
   return()
 endif()
 
-PCL_ADD_TEST(Timestamp_generator test_timestamp_generator
-              FILES test_timestamp_generator.cpp
+PCL_ADD_TEST(Timestamp test_timestamp
+              FILES test_timestamp.cpp
               LINK_WITH pcl_gtest pcl_io)
 
 PCL_ADD_TEST(io_io test_io

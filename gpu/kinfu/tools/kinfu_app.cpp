@@ -44,7 +44,6 @@
 #include <pcl/console/parse.h>
 
 #include <boost/filesystem.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp> // for microsec_clock::local_time
 
 #include <pcl/gpu/kinfu/kinfu.h>
 #include <pcl/gpu/kinfu/raycaster.h>
@@ -205,13 +204,13 @@ struct SampledScopeTime : public StopWatch
   ~SampledScopeTime()
   {
     static int i_ = 0;
-    static boost::posix_time::ptime starttime_ = boost::posix_time::microsec_clock::local_time();
+    static double starttime_ = pcl::getTime();
     time_ms_ += getTime ();
     if (i_ % EACH == 0 && i_)
     {
-      boost::posix_time::ptime endtime_ = boost::posix_time::microsec_clock::local_time();
+      const auto endtime_ = pcl::getTime();
       std::cout << "Average frame time = " << time_ms_ / EACH << "ms ( " << 1000.f * EACH / time_ms_ << "fps )"
-           << "( real: " << 1000.f * EACH / (endtime_-starttime_).total_milliseconds() << "fps )"  << std::endl;
+           << "( real: " << 1000.f * EACH / (endtime_-starttime_) << "fps )"  << std::endl;
       time_ms_ = 0;
       starttime_ = endtime_;
     }

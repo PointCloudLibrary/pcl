@@ -16,7 +16,7 @@
 
 namespace pcl {
 /**
- * @brief Returns a timestamp as string formatted like boosts to_iso_string see https://www.boost.org/doc/libs/1_81_0/doc/html/date_time/posix_time.html#ptime_to_string
+ * @brief Returns a timestamp in local time as string formatted like boosts to_iso_string see https://www.boost.org/doc/libs/1_81_0/doc/html/date_time/posix_time.html#ptime_to_string
  * Example: 19750101T235959.123456
  * @param time std::chrono::timepoint to convert, defaults to now
  * @return std::string containing the timestamp
@@ -32,7 +32,7 @@ getTimestamp(const std::chrono::time_point<std::chrono::system_clock>& time =
   std::time_t tt = s.count();
   std::size_t fractional_seconds = us.count() % 1000000;
 
-  std::tm tm = *std::gmtime(&tt); // GMT (UTC)
+  std::tm tm = *std::localtime(&tt); // local time
   std::stringstream ss;
   ss << std::put_time(&tm, "%Y%m%dT%H%M%S");
 
@@ -42,4 +42,31 @@ getTimestamp(const std::chrono::time_point<std::chrono::system_clock>& time =
 
   return ss.str();
 }
+
+PCL_EXPORTS inline std::chrono::time_point<std::chrono::system_clock>
+parseTimestamp(std::string timestamp)
+{
+  std::istringstream ss;
+
+  std::tm tm = {};
+
+  std::size_t fractional_seconds = 0;
+
+  ss.str(timestamp);
+  ss >> std::get_time(&tm, "%Y%m%dT%H%M%S");
+
+  auto timepoint = std::chrono::system_clock::from_time_t(std::mktime(&tm));
+
+  const auto pos = timestamp.find(".");
+
+  if (pos > 0) {
+    const auto frac_text = timestamp.substr(pos+1);  
+    ss.str(frac_text);
+    ss >> fractional_seconds;
+    timepoint += std::chrono::microseconds(fractional_seconds);
+  }
+
+  return timepoint;
+}
+
 } // namespace pcl

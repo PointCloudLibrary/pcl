@@ -40,7 +40,7 @@
 #include <pcl/io/lzf_image_io.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_grabber.h>
-#include <pcl/io/timestamp_generator.h>
+#include <pcl/io/timestamp.h>
 #include <pcl/visualization/common/float_image_utils.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/console/parse.h>

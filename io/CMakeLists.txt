@@ -269,7 +269,7 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/io.h"
   "include/pcl/${SUBSYS_NAME}/grabber.h"
   "include/pcl/${SUBSYS_NAME}/file_grabber.h"
-  "include/pcl/${SUBSYS_NAME}/timestamp_generator.h"
+  "include/pcl/${SUBSYS_NAME}/timestamp.h"
   "include/pcl/${SUBSYS_NAME}/pcd_grabber.h"
   "include/pcl/${SUBSYS_NAME}/pcd_io.h"
   "include/pcl/${SUBSYS_NAME}/vtk_io.h"

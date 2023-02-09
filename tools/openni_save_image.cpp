@@ -36,7 +36,7 @@
  */
 
 #include <pcl/common/time.h> //fps calculations
-#include <pcl/io/timestamp_generator.h>
+#include <pcl/io/timestamp.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>

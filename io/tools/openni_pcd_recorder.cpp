@@ -36,7 +36,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
-#include <pcl/io/timestamp_generator.h>
+#include <pcl/io/timestamp.h>
 #include <boost/circular_buffer.hpp>
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
