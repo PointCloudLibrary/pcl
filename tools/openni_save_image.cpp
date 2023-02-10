@@ -126,7 +126,7 @@ class SimpleOpenNIViewer
       {
         std::lock_guard<std::mutex> lock (image_mutex_);
 
-        auto now = std::chrono::system_clock::now();
+        const auto timestamp = pcl::getTimestamp();
 
         if (image_)
         {
@@ -153,7 +153,7 @@ class SimpleOpenNIViewer
             data = reinterpret_cast<const void*> (rgb_data);
           }
 
-          const std::string filename = "frame_" + pcl::getTimestamp(now) + "_rgb.tiff";
+          const std::string filename = "frame_" + timestamp + "_rgb.tiff";
           importer_->SetImportVoidPointer (const_cast<void*>(data), 1);
           importer_->Update ();
           flipper_->SetInputConnection (importer_->GetOutputPort ());
@@ -168,7 +168,7 @@ class SimpleOpenNIViewer
           openni_wrapper::DepthImage::Ptr depth_image;
           depth_image.swap (depth_image_);
 
-          const std::string filename = "frame_" + pcl::getTimestamp(now) + "_depth.tiff";
+          const std::string filename = "frame_" + timestamp + "_depth.tiff";
 
           depth_importer_->SetWholeExtent (0, depth_image->getWidth () - 1, 0, depth_image->getHeight () - 1, 0, 0);
           depth_importer_->SetDataExtentToWholeExtent ();
