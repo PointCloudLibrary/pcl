@@ -43,6 +43,11 @@ getTimestamp(const std::chrono::time_point<std::chrono::system_clock>& time =
   return ss.str();
 }
 
+/**
+ * @brief Parses a iso timestring (see https://www.boost.org/doc/libs/1_81_0/doc/html/date_time/posix_time.html#ptime_to_string) and returns a timepoint
+ * @param timestamp as string formatted like boost iso date
+ * @return std::chrono::time_point with system_clock
+*/
 PCL_EXPORTS inline std::chrono::time_point<std::chrono::system_clock>
 parseTimestamp(std::string timestamp)
 {
@@ -57,7 +62,7 @@ parseTimestamp(std::string timestamp)
 
   auto timepoint = std::chrono::system_clock::from_time_t(std::mktime(&tm));
 
-  const auto pos = timestamp.find(".");
+  const auto pos = timestamp.find('.');
 
   if (pos > 0) {
     const auto frac_text = timestamp.substr(pos+1);  
