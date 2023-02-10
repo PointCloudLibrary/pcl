@@ -64,7 +64,7 @@ parseTimestamp(std::string timestamp)
 
   const auto pos = timestamp.find('.');
 
-  if (pos > 0) {
+  if (pos != std::string::npos) {
     const auto frac_text = timestamp.substr(pos+1);  
     ss.str(frac_text);
     ss >> fractional_seconds;
