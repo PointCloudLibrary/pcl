@@ -285,8 +285,7 @@ getLargest3x3Eigenvector (const Matrix scaledMatrix)
 
   Index index;
   const Scalar length = len.maxCoeff (&index);  // <- first evaluation
-  return EigenVector<Vector, Scalar> {crossProduct.row (index) / length,
-                                      length};
+  return {crossProduct.row (index) / length, length};
 }
 
 }  // namespace detail

@@ -362,9 +362,9 @@ namespace pcl
       inline Eigen::Vector3i
       getGridCoordinates (float x, float y, float z) const
       {
-        return (Eigen::Vector3i (static_cast<int> (std::floor (x * inverse_leaf_size_[0])),
+        return {static_cast<int> (std::floor (x * inverse_leaf_size_[0])),
                                  static_cast<int> (std::floor (y * inverse_leaf_size_[1])),
-                                 static_cast<int> (std::floor (z * inverse_leaf_size_[2]))));
+                                 static_cast<int> (std::floor (z * inverse_leaf_size_[2]))};
       }
 
       /** \brief Returns the index in the downsampled cloud corresponding to a given set of coordinates.
@@ -710,9 +710,9 @@ namespace pcl
       inline Eigen::Vector3i
       getGridCoordinates (float x, float y, float z) const
       {
-        return (Eigen::Vector3i (static_cast<int> (std::floor (x * inverse_leaf_size_[0])),
+        return {static_cast<int> (std::floor (x * inverse_leaf_size_[0])),
                                  static_cast<int> (std::floor (y * inverse_leaf_size_[1])),
-                                 static_cast<int> (std::floor (z * inverse_leaf_size_[2]))));
+                                 static_cast<int> (std::floor (z * inverse_leaf_size_[2]))};
       }
 
       /** \brief Returns the index in the downsampled cloud corresponding to a given set of coordinates.

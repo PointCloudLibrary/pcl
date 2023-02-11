@@ -215,7 +215,7 @@ pcl::TimGrabber::isRunning () const
 std::string
 pcl::TimGrabber::getName () const
 {
-  return (std::string ("Sick Tim Grabber"));
+  return {"Sick Tim Grabber"};
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

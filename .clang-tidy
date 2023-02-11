@@ -7,6 +7,7 @@ Checks: >
     modernize-deprecated-headers,
     modernize-redundant-void-arg,
     modernize-replace-random-shuffle,
+    modernize-return-braced-init-list,
     modernize-use-auto,
     modernize-use-equals-default,
     modernize-use-equals-delete,

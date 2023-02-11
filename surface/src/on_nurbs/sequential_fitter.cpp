@@ -177,7 +177,7 @@ SequentialFitter::project (const Eigen::Vector3d &pt)
     pr (0) = -pr (0);
     pr (1) = -pr (1);
   }
-  return Eigen::Vector2d (pr (0), pr (1));
+  return {pr(0), pr(1)};
 }
 
 bool

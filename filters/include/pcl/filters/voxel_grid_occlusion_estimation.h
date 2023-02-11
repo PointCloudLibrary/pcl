@@ -227,9 +227,9 @@ namespace pcl
       inline Eigen::Vector3i
       getGridCoordinatesRound (float x, float y, float z) 
       {
-        return Eigen::Vector3i (static_cast<int> (round (x * inverse_leaf_size_[0])), 
-                                static_cast<int> (round (y * inverse_leaf_size_[1])), 
-                                static_cast<int> (round (z * inverse_leaf_size_[2])));
+        return {static_cast<int> (round (x * inverse_leaf_size_[0])),
+                                static_cast<int> (round (y * inverse_leaf_size_[1])),
+                                static_cast<int> (round (z * inverse_leaf_size_[2]))};
       }
 
       // initialization flag

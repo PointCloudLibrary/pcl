@@ -204,7 +204,7 @@ pcl::DinastGrabber::getDeviceVersion ()
      PCL_THROW_EXCEPTION (pcl::IOException, "[pcl::DinastGrabber::getDeviceVersion] Error trying to get device version");
  
   //data[21] = 0;
-  return (std::string (reinterpret_cast<const char*> (data)));
+  return {reinterpret_cast<const char*>(data)};
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -305,7 +305,7 @@ pcl::OpenNIGrabber::signalsChanged ()
 std::string
 pcl::OpenNIGrabber::getName () const
 {
-  return std::string ("OpenNIGrabber");
+  return {"OpenNIGrabber"};
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

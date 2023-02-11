@@ -682,7 +682,7 @@ RangeImage::getAcutenessValue (int x1, int y1, int x2, int y2) const
 const Eigen::Vector3f 
 RangeImage::getSensorPos () const
 {
-  return Eigen::Vector3f (to_world_system_ (0,3), to_world_system_ (1,3), to_world_system_ (2,3));
+  return {to_world_system_ (0,3), to_world_system_ (1,3), to_world_system_ (2,3)};
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -801,7 +801,7 @@ RangeImage::getMaxAngleSize (const Eigen::Affine3f& viewer_pose, const Eigen::Ve
 Eigen::Vector3f 
 RangeImage::getEigenVector3f (const PointWithRange& point)
 {
-  return Eigen::Vector3f (point.x, point.y, point.z);
+  return {point.x, point.y, point.z};
 }
 
 /////////////////////////////////////////////////////////////////////////

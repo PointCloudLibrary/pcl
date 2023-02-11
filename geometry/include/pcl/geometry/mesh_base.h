@@ -1091,7 +1091,7 @@ public:
              &vertex_data <= &vertex_data_cloud_.back());
       return (VertexIndex(std::distance(&vertex_data_cloud_.front(), &vertex_data)));
     }
-    return (VertexIndex());
+    return {};
   }
 
   /** \brief Get the index associated to the given half-edge data. */
@@ -1104,7 +1104,7 @@ public:
       return (HalfEdgeIndex(
           std::distance(&half_edge_data_cloud_.front(), &half_edge_data)));
     }
-    return (HalfEdgeIndex());
+    return {};
   }
 
   /** \brief Get the index associated to the given edge data. */
@@ -1116,7 +1116,7 @@ public:
              &edge_data <= &edge_data_cloud_.back());
       return (EdgeIndex(std::distance(&edge_data_cloud_.front(), &edge_data)));
     }
-    return (EdgeIndex());
+    return {};
   }
 
   /** \brief Get the index associated to the given face data. */
@@ -1128,7 +1128,7 @@ public:
              &face_data <= &face_data_cloud_.back());
       return (FaceIndex(std::distance(&face_data_cloud_.front(), &face_data)));
     }
-    return (FaceIndex());
+    return {};
   }
 
 protected:
@@ -1162,7 +1162,7 @@ protected:
   {
     const int n = static_cast<int>(vertices.size());
     if (n < 3)
-      return (FaceIndex());
+      return {};
 
     // Check for topological errors
     inner_he_.resize(n);
@@ -1175,7 +1175,7 @@ protected:
                                 inner_he_[i],
                                 is_new_[i],
                                 IsManifold())) {
-        return (FaceIndex());
+        return {};
       }
     }
     for (int i = 0; i < n; ++i) {
@@ -1188,7 +1188,7 @@ protected:
                                 make_adjacent_[i],
                                 free_he_[i],
                                 IsManifold())) {
-        return (FaceIndex());
+        return {};
       }
     }
 

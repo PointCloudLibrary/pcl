@@ -74,7 +74,7 @@ pcl::RobotEyeGrabber::~RobotEyeGrabber () noexcept
 std::string
 pcl::RobotEyeGrabber::getName () const
 {
-  return (std::string ("Ocular Robotics RobotEye Grabber"));
+  return {"Ocular Robotics RobotEye Grabber"};
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

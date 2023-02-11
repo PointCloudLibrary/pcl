@@ -298,7 +298,7 @@ pcl::io::OpenNI2Grabber::signalsChanged ()
 std::string
 pcl::io::OpenNI2Grabber::getName () const
 {
-  return (std::string ("OpenNI2Grabber"));
+  return {"OpenNI2Grabber"};
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
