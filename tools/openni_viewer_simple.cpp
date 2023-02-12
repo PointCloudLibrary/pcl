@@ -121,7 +121,7 @@ class SimpleOpenNIViewer
     void 
     keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* cookie)
     {
-      string* message = (string*)cookie;
+      std::string* message = (std::string*)cookie;
       std::cout << (*message) << " :: ";
       if (event.getKeyCode())
         std::cout << "the key \'" << event.getKeyCode() << "\' (" << (int)event.getKeyCode() << ") was";
@@ -135,7 +135,7 @@ class SimpleOpenNIViewer
     
     void mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
     {
-      string* message = (string*) cookie;
+      std::string* message = (std::string*)cookie;
       if (mouse_event.getType() == pcl::visualization::MouseEvent::MouseButtonPress && mouse_event.getButton() == pcl::visualization::MouseEvent::LeftButton)
       {
         std::cout << (*message) << " :: " << mouse_event.getX () << " , " << mouse_event.getY () << std::endl;
