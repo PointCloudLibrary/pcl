@@ -40,16 +40,34 @@
 #pragma once
 
 #include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
 
 namespace pcl {
 namespace tracking {
 /* state definition */
 struct ParticleXYZRPY;
+struct ParticleXYRPY;
+struct ParticleXYRP;
 struct ParticleXYR;
+struct ParticleXYZR;
 
 /* \brief return the value of normal distribution */
 PCL_EXPORTS double
 sampleNormal(double mean, double sigma);
+
+/* \brief return the weighted average of a collection of particles */
+template <typename StateT>
+StateT weightedAverage(typename PointCloud<StateT>::iterator begin, typename PointCloud<StateT>::iterator end);//typename PointCloud<StateT>::iterator begin, typename PointCloud<StateT>::iterator end);
+template <>
+ParticleXYZRPY weightedAverage<ParticleXYZRPY>(PointCloud<ParticleXYZRPY>::iterator begin, PointCloud<ParticleXYZRPY>::iterator end);
+template <>
+ParticleXYRPY weightedAverage<ParticleXYRPY>(PointCloud<ParticleXYRPY>::iterator begin, PointCloud<ParticleXYRPY>::iterator end);
+template <>
+ParticleXYRP weightedAverage<ParticleXYRP>(PointCloud<ParticleXYRP>::iterator begin, PointCloud<ParticleXYRP>::iterator end);
+template <>
+ParticleXYR weightedAverage<ParticleXYR>(PointCloud<ParticleXYR>::iterator begin, PointCloud<ParticleXYR>::iterator end);
+template <>
+ParticleXYZR weightedAverage<ParticleXYZR>(PointCloud<ParticleXYZR>::iterator begin, PointCloud<ParticleXYZR>::iterator end);
 } // namespace tracking
 } // namespace pcl
 

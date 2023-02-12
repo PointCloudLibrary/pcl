@@ -365,30 +365,11 @@ template <typename PointInT, typename StateT>
 void
 ParticleFilterTracker<PointInT, StateT>::update()
 {
-
+  
   StateT orig_representative = representative_state_;
   representative_state_.zero();
   representative_state_.weight = 0.0;
-  float roll_x = 0.0;
-  float roll_y = 0.0;
-  float pitch_x = 0.0;
-  float pitch_y = 0.0;
-  float yaw_x = 0.0;
-  float yaw_y = 0.0;
-  for (const auto& p : *particles_) {
-    representative_state_.x = representative_state_.x + p.x * p.weight;
-    representative_state_.y = representative_state_.y + p.y * p.weight;
-    representative_state_.z = representative_state_.z + p.z * p.weight;
-    roll_x = roll_x + std::cos(p.roll + M_PI) * p.weight;
-    roll_y = roll_y + std::sin(p.roll + M_PI) * p.weight;
-    pitch_x = pitch_x + std::cos(p.pitch + M_PI) * p.weight;
-    pitch_y = pitch_y + std::sin(p.pitch + M_PI) * p.weight;
-    yaw_x = yaw_x + std::cos(p.yaw + M_PI) * p.weight;
-    yaw_y = yaw_y + std::sin(p.yaw + M_PI) * p.weight;
-  }
-  representative_state_.roll = std::atan2(roll_y, roll_x) - M_PI;
-  representative_state_.pitch = std::atan2(pitch_y, pitch_x) - M_PI;
-  representative_state_.yaw = std::atan2(yaw_y, yaw_x) - M_PI;
+  representative_state_ = pcl::tracking::weightedAverage<StateT>(particles_->points.begin(), particles_->points.end());
   representative_state_.weight = 1.0f / static_cast<float>(particles_->size());
   motion_ = representative_state_ - orig_representative;
 }
