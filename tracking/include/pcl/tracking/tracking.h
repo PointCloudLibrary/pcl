@@ -57,27 +57,27 @@ sampleNormal(double mean, double sigma);
 
 /* \brief return the weighted average of a collection of particles */
 template <typename StateT>
-StateT 
+StateT
 weightedAverage(typename PointCloud<StateT>::iterator begin,
                 typename PointCloud<StateT>::iterator end);
 template <>
-ParticleXYZRPY 
+ParticleXYZRPY
 weightedAverage<ParticleXYZRPY>(PointCloud<ParticleXYZRPY>::iterator begin,
                                 PointCloud<ParticleXYZRPY>::iterator end);
 template <>
-ParticleXYRPY 
+ParticleXYRPY
 weightedAverage<ParticleXYRPY>(PointCloud<ParticleXYRPY>::iterator begin,
-                                PointCloud<ParticleXYRPY>::iterator end);
+                              PointCloud<ParticleXYRPY>::iterator end);
 template <>
-ParticleXYRP 
+ParticleXYRP
 weightedAverage<ParticleXYRP>(PointCloud<ParticleXYRP>::iterator begin,
                               PointCloud<ParticleXYRP>::iterator end);
 template <>
-ParticleXYR 
+ParticleXYR
 weightedAverage<ParticleXYR>(PointCloud<ParticleXYR>::iterator begin,
-                              PointCloud<ParticleXYR>::iterator end);
+                            PointCloud<ParticleXYR>::iterator end);
 template <>
-ParticleXYZR 
+ParticleXYZR
 weightedAverage<ParticleXYZR>(PointCloud<ParticleXYZR>::iterator begin,
                               PointCloud<ParticleXYZR>::iterator end);
 } // namespace tracking
