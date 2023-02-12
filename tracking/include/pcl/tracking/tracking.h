@@ -67,7 +67,7 @@ weightedAverage<ParticleXYZRPY>(PointCloud<ParticleXYZRPY>::iterator begin,
 template <>
 ParticleXYRPY
 weightedAverage<ParticleXYRPY>(PointCloud<ParticleXYRPY>::iterator begin,
-                              PointCloud<ParticleXYRPY>::iterator end);
+                                PointCloud<ParticleXYRPY>::iterator end);
 template <>
 ParticleXYRP
 weightedAverage<ParticleXYRP>(PointCloud<ParticleXYRP>::iterator begin,
@@ -75,7 +75,7 @@ weightedAverage<ParticleXYRP>(PointCloud<ParticleXYRP>::iterator begin,
 template <>
 ParticleXYR
 weightedAverage<ParticleXYR>(PointCloud<ParticleXYR>::iterator begin,
-                            PointCloud<ParticleXYR>::iterator end);
+                              PointCloud<ParticleXYR>::iterator end);
 template <>
 ParticleXYZR
 weightedAverage<ParticleXYZR>(PointCloud<ParticleXYZR>::iterator begin,

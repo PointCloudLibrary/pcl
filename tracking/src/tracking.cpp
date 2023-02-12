@@ -51,18 +51,18 @@ pcl::tracking::sampleNormal(double mean, double sigma)
   return (nd(rng));
 }
 
-template<typename StateT>
+template <typename StateT>
 StateT
 pcl::tracking::weightedAverage(typename PointCloud<StateT>::iterator begin,
-                                typename PointCloud<StateT>::iterator end)
+                               typename PointCloud<StateT>::iterator end)
 {
   StateT wa;
   float wa_roll_sin = 0.0, wa_roll_cos = 0.0, wa_pitch_sin = 0.0, wa_yaw_sin = 0.0,
         wa_yaw_cos = 0.0;
   for (auto point = begin; point != end; point++) {
-	  wa.x += point->x * point->weight;
-	  wa.y += point->y * point->weight;
-	  wa.z += point->z * point->weight;
+    wa.x += point->x * point->weight;
+    wa.y += point->y * point->weight;
+    wa.z += point->z * point->weight;
     if (std::cos(point->pitch) > 0) {
       wa_roll_sin += std::sin(point->roll) * point->weight;
       wa_roll_cos += std::cos(point->roll) * point->weight;
@@ -87,7 +87,7 @@ pcl::tracking::weightedAverage(typename PointCloud<StateT>::iterator begin,
   return wa;
 };
 
-template<>
+template <>
 pcl::tracking::ParticleXYZRPY
 pcl::tracking::weightedAverage<pcl::tracking::ParticleXYZRPY>(
     PointCloud<pcl::tracking::ParticleXYZRPY>::iterator begin,
@@ -124,7 +124,7 @@ pcl::tracking::weightedAverage<pcl::tracking::ParticleXYZRPY>(
   return wa;
 }
 
-template<>
+template <>
 pcl::tracking::ParticleXYRPY
 pcl::tracking::weightedAverage<pcl::tracking::ParticleXYRPY>(
     PointCloud<pcl::tracking::ParticleXYRPY>::iterator begin,
@@ -161,7 +161,7 @@ pcl::tracking::weightedAverage<pcl::tracking::ParticleXYRPY>(
   return wa;
 }
 
-template<>
+template <>
 pcl::tracking::ParticleXYRP
 pcl::tracking::weightedAverage<pcl::tracking::ParticleXYRP>(
     PointCloud<pcl::tracking::ParticleXYRP>::iterator begin,
@@ -193,7 +193,7 @@ pcl::tracking::weightedAverage<pcl::tracking::ParticleXYRP>(
   return wa;
 }
 
-template<>
+template <>
 pcl::tracking::ParticleXYR
 pcl::tracking::weightedAverage<pcl::tracking::ParticleXYR>(
     PointCloud<pcl::tracking::ParticleXYR>::iterator begin,
@@ -222,7 +222,7 @@ pcl::tracking::weightedAverage<pcl::tracking::ParticleXYR>(
   return wa;
 }
 
-template<>
+template <>
 pcl::tracking::ParticleXYZR
 pcl::tracking::weightedAverage<pcl::tracking::ParticleXYZR>(
     PointCloud<pcl::tracking::ParticleXYZR>::iterator begin,
