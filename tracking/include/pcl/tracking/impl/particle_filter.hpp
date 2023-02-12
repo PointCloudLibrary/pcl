@@ -369,7 +369,7 @@ ParticleFilterTracker<PointInT, StateT>::update()
   representative_state_.zero();
   representative_state_.weight = 0.0;
   representative_state_ = pcl::tracking::weightedAverage<StateT>(
-    particles_->points.begin(), particles_->points.end());
+      particles_->points.begin(), particles_->points.end());
   representative_state_.weight = 1.0f / static_cast<float>(particles_->size());
   motion_ = representative_state_ - orig_representative;
 }
