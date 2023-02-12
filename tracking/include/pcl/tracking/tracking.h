@@ -39,8 +39,8 @@
 
 #pragma once
 
-#include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 
 namespace pcl {
 namespace tracking {
@@ -57,17 +57,29 @@ sampleNormal(double mean, double sigma);
 
 /* \brief return the weighted average of a collection of particles */
 template <typename StateT>
-StateT weightedAverage(typename PointCloud<StateT>::iterator begin, typename PointCloud<StateT>::iterator end);//typename PointCloud<StateT>::iterator begin, typename PointCloud<StateT>::iterator end);
+StateT 
+weightedAverage(typename PointCloud<StateT>::iterator begin, 
+                typename PointCloud<StateT>::iterator end);
 template <>
-ParticleXYZRPY weightedAverage<ParticleXYZRPY>(PointCloud<ParticleXYZRPY>::iterator begin, PointCloud<ParticleXYZRPY>::iterator end);
+ParticleXYZRPY 
+weightedAverage<ParticleXYZRPY>(PointCloud<ParticleXYZRPY>::iterator begin, 
+                                PointCloud<ParticleXYZRPY>::iterator end);
 template <>
-ParticleXYRPY weightedAverage<ParticleXYRPY>(PointCloud<ParticleXYRPY>::iterator begin, PointCloud<ParticleXYRPY>::iterator end);
+ParticleXYRPY 
+weightedAverage<ParticleXYRPY>(PointCloud<ParticleXYRPY>::iterator begin, 
+                                PointCloud<ParticleXYRPY>::iterator end);
 template <>
-ParticleXYRP weightedAverage<ParticleXYRP>(PointCloud<ParticleXYRP>::iterator begin, PointCloud<ParticleXYRP>::iterator end);
+ParticleXYRP 
+weightedAverage<ParticleXYRP>(PointCloud<ParticleXYRP>::iterator begin, 
+                              PointCloud<ParticleXYRP>::iterator end);
 template <>
-ParticleXYR weightedAverage<ParticleXYR>(PointCloud<ParticleXYR>::iterator begin, PointCloud<ParticleXYR>::iterator end);
+ParticleXYR 
+weightedAverage<ParticleXYR>(PointCloud<ParticleXYR>::iterator begin, 
+                              PointCloud<ParticleXYR>::iterator end);
 template <>
-ParticleXYZR weightedAverage<ParticleXYZR>(PointCloud<ParticleXYZR>::iterator begin, PointCloud<ParticleXYZR>::iterator end);
+ParticleXYZR 
+weightedAverage<ParticleXYZR>(PointCloud<ParticleXYZR>::iterator begin, 
+                              PointCloud<ParticleXYZR>::iterator end);
 } // namespace tracking
 } // namespace pcl
 
