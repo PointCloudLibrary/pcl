@@ -365,7 +365,6 @@ template <typename PointInT, typename StateT>
 void
 ParticleFilterTracker<PointInT, StateT>::update()
 {
-  
   StateT orig_representative = representative_state_;
   representative_state_.zero();
   representative_state_.weight = 0.0;

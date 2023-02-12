@@ -57,13 +57,11 @@ pcl::tracking::weightedAverage(typename PointCloud<StateT>::iterator begin, type
 {
 	StateT wa;
   float wa_roll_sin = 0.0, wa_roll_cos = 0.0, wa_pitch_sin = 0.0, wa_yaw_sin = 0.0, wa_yaw_cos = 0.0;
-
 	for(auto point = begin; point != end; point++)
 	{
 		wa.x += point->x * point->weight;
 		wa.y += point->y * point->weight;
 		wa.z += point->z * point->weight;
-
 		if(std::cos(point->pitch) > 0)
 		{
 			wa_roll_sin += std::sin(point->roll) * point->weight;
@@ -85,13 +83,11 @@ pcl::tracking::weightedAverage(typename PointCloud<StateT>::iterator begin, type
 			wa_pitch_sin += point->weight;
 		}
   }
-
   wa.roll += std::atan2(wa_roll_sin, wa_roll_cos);
   wa.pitch += std::asin(wa_pitch_sin);
   wa.yaw += std::atan2(wa_yaw_sin, wa_yaw_cos);
   return wa;
 };
-
 
 template<>
 pcl::tracking::ParticleXYZRPY 
@@ -99,13 +95,11 @@ pcl::tracking::weightedAverage<pcl::tracking::ParticleXYZRPY>(PointCloud<pcl::tr
 {
 	pcl::tracking::ParticleXYZRPY wa;
   float wa_roll_sin = 0.0, wa_roll_cos = 0.0, wa_pitch_sin = 0.0, wa_yaw_sin = 0.0, wa_yaw_cos = 0.0;
-
 	for(auto point = begin; point != end; point++)
 	{
 		wa.x += point->x * point->weight;
 		wa.y += point->y * point->weight;
 		wa.z += point->z * point->weight;
-
 		if(std::cos(point->pitch) > 0)
 		{
 			wa_roll_sin += std::sin(point->roll) * point->weight;
@@ -127,13 +121,11 @@ pcl::tracking::weightedAverage<pcl::tracking::ParticleXYZRPY>(PointCloud<pcl::tr
 			wa_pitch_sin += point->weight;
 		}
   }
-
   wa.roll += std::atan2(wa_roll_sin, wa_roll_cos);
   wa.pitch += std::asin(wa_pitch_sin);
   wa.yaw += std::atan2(wa_yaw_sin, wa_yaw_cos);
   return wa;
 }
-
 
 template<>
 pcl::tracking::ParticleXYRPY 
@@ -141,12 +133,10 @@ pcl::tracking::weightedAverage<pcl::tracking::ParticleXYRPY>(PointCloud<pcl::tra
 {
 	pcl::tracking::ParticleXYRPY wa;
   float wa_roll_sin = 0.0, wa_roll_cos = 0.0, wa_pitch_sin = 0.0, wa_yaw_sin = 0.0, wa_yaw_cos = 0.0;
-
 	for(auto point = begin; point != end; point++)
 	{
 		wa.x += point->x * point->weight;
 		wa.y += point->y * point->weight;
-
 		if(std::cos(point->pitch) > 0)
 		{
 			wa_roll_sin += std::sin(point->roll) * point->weight;
@@ -168,7 +158,6 @@ pcl::tracking::weightedAverage<pcl::tracking::ParticleXYRPY>(PointCloud<pcl::tra
 			wa_pitch_sin += point->weight;
 		}
   }
-
   wa.z = 0.0;
   wa.roll += std::atan2(wa_roll_sin, wa_roll_cos);
   wa.pitch += std::asin(wa_pitch_sin);
@@ -182,12 +171,10 @@ pcl::tracking::weightedAverage<pcl::tracking::ParticleXYRP>(PointCloud<pcl::trac
 {
 	pcl::tracking::ParticleXYRP wa;
   float wa_roll_sin = 0.0, wa_roll_cos = 0.0, wa_pitch_sin = 0.0;
-
 	for(auto point = begin; point != end; point++)
 	{
 		wa.x += point->x * point->weight;
 		wa.y += point->y * point->weight;
-
 		if(std::cos(point->pitch) > 0)
 		{
 			wa_roll_sin += std::sin(point->roll) * point->weight;
@@ -205,7 +192,6 @@ pcl::tracking::weightedAverage<pcl::tracking::ParticleXYRP>(PointCloud<pcl::trac
 			wa_pitch_sin += point->weight;
 		}
   }
-
   wa.z = 0.0;
   wa.roll += std::atan2(wa_roll_sin, wa_roll_cos);
   wa.pitch += std::asin(wa_pitch_sin);
@@ -219,12 +205,10 @@ pcl::tracking::weightedAverage<pcl::tracking::ParticleXYR>(PointCloud<pcl::track
 {
 	pcl::tracking::ParticleXYR wa;
   float wa_roll_sin = 0.0, wa_roll_cos = 0.0;
-
 	for(auto point = begin; point != end; point++)
 	{
 		wa.x += point->x * point->weight;
 		wa.y += point->y * point->weight;
-
 		if(std::cos(point->pitch) > 0)
 		{
 			wa_roll_sin += std::sin(point->roll) * point->weight;
@@ -239,7 +223,6 @@ pcl::tracking::weightedAverage<pcl::tracking::ParticleXYR>(PointCloud<pcl::track
 		{
 		}
   }
-
   wa.z = 0.0;
   wa.roll += std::atan2(wa_roll_sin, wa_roll_cos);
   wa.pitch = 0.0;
@@ -253,13 +236,11 @@ pcl::tracking::weightedAverage<pcl::tracking::ParticleXYZR>(PointCloud<pcl::trac
 {
 	pcl::tracking::ParticleXYZR wa;
   float wa_roll_sin = 0.0, wa_roll_cos = 0.0;
-
 	for(auto point = begin; point != end; point++)
 	{
 		wa.x += point->x * point->weight;
 		wa.y += point->y * point->weight;
 		wa.z += point->z * point->weight;
-
 		if(std::cos(point->pitch) > 0)
 		{
 			wa_roll_sin += std::sin(point->roll) * point->weight;
@@ -274,7 +255,6 @@ pcl::tracking::weightedAverage<pcl::tracking::ParticleXYZR>(PointCloud<pcl::trac
 		{
 		}
   }
-
   wa.roll += std::atan2(wa_roll_sin, wa_roll_cos);
   wa.pitch = 0.0;
   wa.yaw = 0.0;
