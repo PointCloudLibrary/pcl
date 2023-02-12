@@ -107,7 +107,7 @@ pcl::tracking::weightedAverage<pcl::tracking::ParticleXYZRPY>(
       wa_yaw_cos += std::cos(point->yaw) * point->weight;
       wa_pitch_sin += std::sin(point->pitch) * point->weight;
     }
-    else if (std::cos(point->pitch) < 0)	{
+    else if (std::cos(point->pitch) < 0) {
       wa_roll_sin -= std::sin(point->roll) * point->weight;
       wa_roll_cos -= std::cos(point->roll) * point->weight;
       wa_yaw_sin -= std::sin(point->yaw) * point->weight;
