@@ -1,11 +1,12 @@
 set(SUBSYS_NAME tools)
 set(SUBSYS_DESC "Useful PCL-based command line tools")
-set(SUBSYS_OPT_DEPS common io filters sample_consensus segmentation search kdtree features surface octree registration recognition geometry keypoints ml visualization vtk)
+set(SUBSYS_DEPS io)
+set(SUBSYS_OPT_DEPS filters sample_consensus segmentation search kdtree features surface octree registration recognition geometry keypoints ml visualization vtk)
 set(DEFAULT ON)
 set(REASON "")
 
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
-PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} OPT_DEPS ${SUBSYS_OPT_DEPS})
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS ${SUBSYS_OPT_DEPS})
 
 if(NOT build)
   return()
