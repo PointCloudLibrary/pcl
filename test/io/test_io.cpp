@@ -1380,6 +1380,74 @@ TEST (PCL, LZFExtended)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, WriteBinaryToOStream)
+{
+  PointCloud<PointXYZRGBNormal> cloud;
+  cloud.width  = 640;
+  cloud.height = 480;
+  cloud.resize (cloud.width * cloud.height);
+  cloud.is_dense = true;
+
+  srand (static_cast<unsigned int> (time (nullptr)));
+  const auto nr_p = cloud.size ();
+  // Randomly create a new point cloud
+  for (std::size_t i = 0; i < nr_p; ++i)
+  {
+    cloud[i].x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud[i].y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud[i].z = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud[i].normal_x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud[i].normal_y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud[i].normal_z = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud[i].rgb = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+  }
+
+  pcl::PCLPointCloud2 blob;
+  pcl::toPCLPointCloud2 (cloud, blob);
+
+  std::ostringstream oss;
+  PCDWriter writer;
+  int res = writer.writeBinary (oss, blob);
+  EXPECT_EQ (res, 0);
+  std::string pcd_str = oss.str ();
+
+  Eigen::Vector4f origin;
+  Eigen::Quaternionf orientation;
+  int pcd_version = -1;
+  int data_type = -1;
+  unsigned int data_idx = 0;
+  std::istringstream iss (pcd_str, std::ios::binary);
+  PCDReader reader;
+  pcl::PCLPointCloud2 blob2;
+  res = reader.readHeader (iss, blob2, origin, orientation, pcd_version, data_type, data_idx);
+  EXPECT_EQ (res, 0);
+  EXPECT_EQ (blob2.width, blob.width);
+  EXPECT_EQ (blob2.height, blob.height);
+  EXPECT_EQ (data_type, 1); // since it was written by writeBinary (), it should be uncompressed.
+
+  const auto *data = reinterpret_cast<const unsigned char *> (pcd_str.data ());
+  res = reader.readBodyBinary (data, blob2, pcd_version, data_type == 2, data_idx);
+  PointCloud<PointXYZRGBNormal> cloud2;
+  pcl::fromPCLPointCloud2 (blob2, cloud2);
+  EXPECT_EQ (res, 0);
+  EXPECT_EQ (cloud2.width, blob.width);
+  EXPECT_EQ (cloud2.height, blob.height);
+  EXPECT_EQ (cloud2.is_dense, cloud.is_dense);
+  EXPECT_EQ (cloud2.size (), cloud.size ());
+
+  for (std::size_t i = 0; i < cloud2.size (); ++i)
+  {
+    EXPECT_EQ (cloud2[i].x, cloud[i].x);
+    EXPECT_EQ (cloud2[i].y, cloud[i].y);
+    EXPECT_EQ (cloud2[i].z, cloud[i].z);
+    EXPECT_EQ (cloud2[i].normal_x, cloud[i].normal_x);
+    EXPECT_EQ (cloud2[i].normal_y, cloud[i].normal_y);
+    EXPECT_EQ (cloud2[i].normal_z, cloud[i].normal_z);
+    EXPECT_EQ (cloud2[i].rgb, cloud[i].rgb);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, LZFInMem)
 {
   PointCloud<PointXYZRGBNormal> cloud;

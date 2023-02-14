@@ -930,9 +930,15 @@ pcl::PCDWriter::generateHeaderBinary (const pcl::PCLPointCloud2 &cloud,
          "\nVERSION 0.7"
          "\nFIELDS";
 
+  auto fields = cloud.fields;
+  std::sort(fields.begin(), fields.end(), [](const auto& field_a, const auto& field_b)
+                                          {
+                                            return field_a.offset < field_b.offset;
+                                          });
+
   // Compute the total size of the fields
   unsigned int fsize = 0;
-  for (const auto &field : cloud.fields)
+  for (const auto &field : fields)
     fsize += field.count * getFieldSize (field.datatype);
 
   // The size of the fields cannot be larger than point_step
@@ -945,20 +951,20 @@ pcl::PCDWriter::generateHeaderBinary (const pcl::PCLPointCloud2 &cloud,
   std::stringstream field_names, field_types, field_sizes, field_counts;
   // Check if the size of the fields is smaller than the size of the point step
   std::size_t toffset = 0;
-  for (std::size_t i = 0; i < cloud.fields.size (); ++i)
+  for (std::size_t i = 0; i < fields.size (); ++i)
   {
     // If field offsets do not match, then we need to create fake fields
-    if (toffset != cloud.fields[i].offset)
+    if (toffset != fields[i].offset)
     {
       // If we're at the last "valid" field
       int fake_offset = (i == 0) ?
         // Use the current_field offset
-        (cloud.fields[i].offset)
+        (fields[i].offset)
         :
         // Else, do cur_field.offset - prev_field.offset + sizeof (prev_field)
-        (cloud.fields[i].offset -
-        (cloud.fields[i-1].offset +
-         cloud.fields[i-1].count * getFieldSize (cloud.fields[i-1].datatype)));
+        (fields[i].offset -
+        (fields[i-1].offset +
+         fields[i-1].count * getFieldSize (fields[i-1].datatype)));
 
       toffset += fake_offset;
 
@@ -969,11 +975,11 @@ pcl::PCDWriter::generateHeaderBinary (const pcl::PCLPointCloud2 &cloud,
     }
 
     // Add the regular dimension
-    toffset += cloud.fields[i].count * getFieldSize (cloud.fields[i].datatype);
-    field_names << " " << cloud.fields[i].name;
-    field_sizes << " " << pcl::getFieldSize (cloud.fields[i].datatype);
-    field_types << " " << pcl::getFieldType (cloud.fields[i].datatype);
-    int count = std::abs (static_cast<int> (cloud.fields[i].count));
+    toffset += fields[i].count * getFieldSize (fields[i].datatype);
+    field_names << " " << fields[i].name;
+    field_sizes << " " << pcl::getFieldSize (fields[i].datatype);
+    field_types << " " << pcl::getFieldType (fields[i].datatype);
+    int count = std::abs (static_cast<int> (fields[i].count));
     if (count == 0) count = 1;  // check for 0 counts (coming from older converter code)
     field_counts << " " << count;
   }
@@ -1171,6 +1177,29 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PCLPointClo
   fs.close ();              // Close file
   resetLockingPermissions (file_name, file_lock);
   return (0);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::PCDWriter::writeBinary (std::ostream &os, const pcl::PCLPointCloud2 &cloud,
+                             const Eigen::Vector4f &origin, const Eigen::Quaternionf &orientation)
+{
+  if (cloud.data.empty ())
+  {
+    PCL_WARN ("[pcl::PCDWriter::writeBinary] Input point cloud has no data!\n");
+  }
+  if (cloud.fields.empty())
+  {
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] Input point cloud has no field data!\n");
+    return (-1);
+  }
+
+  os.imbue (std::locale::classic ());
+  os << generateHeaderBinary (cloud, origin, orientation) << "DATA binary\n";
+  std::copy (cloud.data.cbegin(), cloud.data.cend(), std::ostream_iterator<char> (os));
+  os.flush ();
+
+  return (os ? 0 : -1);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
