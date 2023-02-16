@@ -12,7 +12,7 @@ if(NOT build)
   return()
 endif()
 
-PCL_ADD_TEST(Timestamp test_timestamp
+PCL_ADD_TEST(timestamp test_timestamp
               FILES test_timestamp.cpp
               LINK_WITH pcl_gtest pcl_io)
 

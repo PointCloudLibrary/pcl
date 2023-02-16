@@ -267,8 +267,10 @@ class Writer
       FPS_CALC_WRITER ("data write   ", buf_);
       nr_frames_total++;
 
+      const std::string time_string = getTimestamp(frame->time);
+
       // Save RGB data
-      const std::string rgb_filename = "frame_" + getTimestamp(frame->time) + "_rgb.pclzf";
+      const std::string rgb_filename = "frame_" + time_string + "_rgb.pclzf";
       switch (frame->image->getEncoding ())
       {
         case openni_wrapper::Image::YUV422:
@@ -292,15 +294,14 @@ class Writer
       }
 
       // Save depth data
-      const std::string depth_filename =
-          "frame_" + getTimestamp(frame->time) + "_depth.pclzf";
+      const std::string depth_filename = "frame_" + time_string + "_depth.pclzf";
 
       io::LZFDepth16ImageWriter ld;
       //io::LZFShift11ImageWriter ld;
       ld.write (reinterpret_cast<const char*> (&frame->depth_image->getDepthMetaData ().Data ()[0]), frame->depth_image->getWidth (), frame->depth_image->getHeight (), depth_filename);
       
       // Save depth data
-      const std::string xml_filename = "frame_" + getTimestamp(frame->time) + ".xml";
+      const std::string xml_filename = "frame_" + time_string + ".xml";
          
       io::LZFRGB24ImageWriter lrgb;
       lrgb.writeParameters (frame->parameters_rgb, xml_filename);
