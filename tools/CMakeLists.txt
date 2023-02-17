@@ -17,128 +17,112 @@ set(PCL_TOOLS_ALL_TARGETS)
 
 PCL_ADD_EXECUTABLE(pcl_pcd_convert_NaN_nan COMPONENT ${SUBSYS_NAME} SOURCES pcd_convert_NaN_nan.cpp)
 
+PCL_ADD_EXECUTABLE(pcl_pcd2ply COMPONENT ${SUBSYS_NAME} SOURCES pcd2ply.cpp)
+target_link_libraries (pcl_pcd2ply pcl_common pcl_io)
+
+PCL_ADD_EXECUTABLE(pcl_ply2pcd COMPONENT ${SUBSYS_NAME} SOURCES ply2pcd.cpp)
+target_link_libraries (pcl_ply2pcd pcl_common pcl_io)
+
+PCL_ADD_EXECUTABLE(pcl_xyz2pcd COMPONENT ${SUBSYS_NAME} SOURCES xyz2pcd.cpp)
+target_link_libraries (pcl_xyz2pcd pcl_common pcl_io)
+
+PCL_ADD_EXECUTABLE(pcl_pclzf2pcd COMPONENT ${SUBSYS_NAME} SOURCES pclzf2pcd.cpp)
+target_link_libraries (pcl_pclzf2pcd pcl_common pcl_io)
+
+PCL_ADD_EXECUTABLE(pcl_pcd2vtk COMPONENT ${SUBSYS_NAME} SOURCES pcd2vtk.cpp)
+target_link_libraries (pcl_pcd2vtk pcl_common pcl_io)
+
+PCL_ADD_EXECUTABLE(pcl_add_gaussian_noise COMPONENT ${SUBSYS_NAME} SOURCES add_gaussian_noise.cpp)
+target_link_libraries (pcl_add_gaussian_noise pcl_common pcl_io)
+
+PCL_ADD_EXECUTABLE(pcl_pcd_change_viewpoint COMPONENT ${SUBSYS_NAME} SOURCES pcd_change_viewpoint.cpp)
+target_link_libraries(pcl_pcd_change_viewpoint pcl_common pcl_io)
+
+PCL_ADD_EXECUTABLE(pcl_concatenate_points_pcd COMPONENT ${SUBSYS_NAME} SOURCES concatenate_points_pcd.cpp)
+target_link_libraries(pcl_concatenate_points_pcd pcl_common pcl_io)
+
+PCL_ADD_EXECUTABLE(pcl_demean_cloud COMPONENT ${SUBSYS_NAME} SOURCES demean_cloud.cpp)
+target_link_libraries(pcl_demean_cloud pcl_common pcl_io)
+
+PCL_ADD_EXECUTABLE(pcl_generate COMPONENT ${SUBSYS_NAME} SOURCES generate.cpp)
+target_link_libraries(pcl_generate pcl_common pcl_io)
+
+PCL_ADD_EXECUTABLE(pcl_convert_pcd_ascii_binary COMPONENT ${SUBSYS_NAME} SOURCES convert_pcd_ascii_binary.cpp)
+target_link_libraries(pcl_convert_pcd_ascii_binary pcl_common pcl_io)
+
+PCL_ADD_EXECUTABLE(pcl_pcd_introduce_nan COMPONENT ${SUBSYS_NAME} SOURCES pcd_introduce_nan.cpp)
+target_link_libraries(pcl_pcd_introduce_nan pcl_common pcl_io)
+
+PCL_ADD_EXECUTABLE(pcl_hdl_grabber COMPONENT ${SUBSYS_NAME} SOURCES hdl_grabber_example.cpp)
+target_link_libraries(pcl_hdl_grabber pcl_common pcl_io)
+
+if(WITH_OPENNI)
+  PCL_ADD_EXECUTABLE(pcl_oni2pcd COMPONENT ${SUBSYS_NAME} SOURCES oni2pcd.cpp)
+  target_link_libraries(pcl_oni2pcd pcl_common pcl_io)
+  
+  PCL_ADD_EXECUTABLE(pcl_openni_grabber_example COMPONENT ${SUBSYS_NAME} SOURCES openni_grabber_example.cpp)
+  target_link_libraries(pcl_openni_grabber_example pcl_common pcl_io)
+
+  PCL_ADD_EXECUTABLE(pcl_openni_grabber_depth_example COMPONENT ${SUBSYS_NAME} SOURCES openni_grabber_depth_example.cpp)
+  target_link_libraries(pcl_openni_grabber_depth_example pcl_common pcl_io)
+
+  PCL_ADD_EXECUTABLE(pcl_openni_pcd_recorder COMPONENT ${SUBSYS_NAME} SOURCES openni_pcd_recorder.cpp)
+  target_link_libraries(pcl_openni_pcd_recorder pcl_common pcl_io Boost::date_time)
+endif()
+
+if(VTK_FOUND)
+  PCL_ADD_EXECUTABLE(pcl_png2pcd COMPONENT ${SUBSYS_NAME} SOURCES png2pcd.cpp)
+  target_link_libraries(pcl_png2pcd pcl_common pcl_io)
+
+  PCL_ADD_EXECUTABLE(pcl_pcd2png COMPONENT ${SUBSYS_NAME} SOURCES pcd2png.cpp)
+  target_link_libraries(pcl_pcd2png pcl_common pcl_io)
+
+  PCL_ADD_EXECUTABLE(pcl_tiff2pcd COMPONENT ${SUBSYS_NAME} SOURCES tiff2pcd.cpp)
+  target_link_libraries(pcl_tiff2pcd pcl_common pcl_io)
+
+  PCL_ADD_EXECUTABLE(pcl_ply2vtk COMPONENT ${SUBSYS_NAME} SOURCES ply2vtk.cpp)
+  target_link_libraries(pcl_ply2vtk pcl_common pcl_io)
+
+  PCL_ADD_EXECUTABLE(pcl_vtk2ply COMPONENT ${SUBSYS_NAME} SOURCES vtk2ply.cpp)
+  target_link_libraries(pcl_vtk2ply pcl_common pcl_io)
+
+  PCL_ADD_EXECUTABLE(pcl_vtk2obj COMPONENT ${SUBSYS_NAME} SOURCES vtk2obj.cpp)
+  target_link_libraries(pcl_vtk2obj pcl_common pcl_io)
+
+  PCL_ADD_EXECUTABLE(pcl_obj2vtk COMPONENT ${SUBSYS_NAME} SOURCES obj2vtk.cpp)
+  target_link_libraries(pcl_obj2vtk pcl_common pcl_io)
+
+  PCL_ADD_EXECUTABLE(pcl_obj2pcd COMPONENT ${SUBSYS_NAME} SOURCES obj2pcd.cpp)
+  target_link_libraries(pcl_obj2pcd pcl_common pcl_io)
+
+  if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
+    target_link_libraries(pcl_obj2pcd VTK::FiltersCore)
+  elseif(${VTK_VERSION} VERSION_GREATER_EQUAL 8.0)
+    target_link_libraries(pcl_obj2pcd vtkFiltersCore)
+  endif()
+
+  PCL_ADD_EXECUTABLE(pcl_obj2ply COMPONENT ${SUBSYS_NAME} SOURCES obj2ply.cpp)
+  target_link_libraries(pcl_obj2ply pcl_common pcl_io)
+
+  PCL_ADD_EXECUTABLE(pcl_vtk2pcd COMPONENT ${SUBSYS_NAME} SOURCES vtk2pcd.cpp)
+  target_link_libraries(pcl_vtk2pcd pcl_common pcl_io)
+
+  if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
+    target_link_libraries(pcl_vtk2pcd VTK::FiltersCore)
+  elseif(${VTK_VERSION} VERSION_GREATER_EQUAL 8.0)
+    target_link_libraries(pcl_vtk2pcd vtkFiltersCore)
+  endif()
+
+  PCL_ADD_EXECUTABLE(pcl_converter COMPONENT ${SUBSYS_NAME} SOURCES converter.cpp)
+  target_link_libraries(pcl_converter pcl_common pcl_io)
+endif()
+
 if(TARGET pcl_sample_consensus)
   PCL_ADD_EXECUTABLE(pcl_plane_projection COMPONENT ${SUBSYS_NAME} SOURCES plane_projection.cpp)
   target_link_libraries (pcl_plane_projection pcl_common pcl_io pcl_sample_consensus)
 endif()
 
-if(TARGET pcl_io)
-  PCL_ADD_EXECUTABLE(pcl_pcd2ply COMPONENT ${SUBSYS_NAME} SOURCES pcd2ply.cpp)
-  target_link_libraries (pcl_pcd2ply pcl_common pcl_io)
-
-  PCL_ADD_EXECUTABLE(pcl_ply2pcd COMPONENT ${SUBSYS_NAME} SOURCES ply2pcd.cpp)
-  target_link_libraries (pcl_ply2pcd pcl_common pcl_io)
-
-  PCL_ADD_EXECUTABLE(pcl_xyz2pcd COMPONENT ${SUBSYS_NAME} SOURCES xyz2pcd.cpp)
-  target_link_libraries (pcl_xyz2pcd pcl_common pcl_io)
-
-  PCL_ADD_EXECUTABLE(pcl_pclzf2pcd COMPONENT ${SUBSYS_NAME} SOURCES pclzf2pcd.cpp)
-  target_link_libraries (pcl_pclzf2pcd pcl_common pcl_io)
-
-  PCL_ADD_EXECUTABLE(pcl_pcd2vtk COMPONENT ${SUBSYS_NAME} SOURCES pcd2vtk.cpp)
-  target_link_libraries (pcl_pcd2vtk pcl_common pcl_io)
-
-  PCL_ADD_EXECUTABLE(pcl_add_gaussian_noise COMPONENT ${SUBSYS_NAME} SOURCES add_gaussian_noise.cpp)
-  target_link_libraries (pcl_add_gaussian_noise pcl_common pcl_io)
-
-  PCL_ADD_EXECUTABLE(pcl_pcd_change_viewpoint COMPONENT ${SUBSYS_NAME} SOURCES pcd_change_viewpoint.cpp)
-  target_link_libraries(pcl_pcd_change_viewpoint pcl_common pcl_io)
-
-  PCL_ADD_EXECUTABLE(pcl_concatenate_points_pcd COMPONENT ${SUBSYS_NAME} SOURCES concatenate_points_pcd.cpp)
-  target_link_libraries(pcl_concatenate_points_pcd pcl_common pcl_io)
-
-  PCL_ADD_EXECUTABLE(pcl_demean_cloud COMPONENT ${SUBSYS_NAME} SOURCES demean_cloud.cpp)
-  target_link_libraries(pcl_demean_cloud pcl_common pcl_io)
-
-  PCL_ADD_EXECUTABLE(pcl_generate COMPONENT ${SUBSYS_NAME} SOURCES generate.cpp)
-  target_link_libraries(pcl_generate pcl_common pcl_io)
-
-  PCL_ADD_EXECUTABLE(pcl_convert_pcd_ascii_binary COMPONENT ${SUBSYS_NAME} SOURCES convert_pcd_ascii_binary.cpp)
-  target_link_libraries(pcl_convert_pcd_ascii_binary pcl_common pcl_io)
-
-  PCL_ADD_EXECUTABLE(pcl_pcd_introduce_nan COMPONENT ${SUBSYS_NAME} SOURCES pcd_introduce_nan.cpp)
-  target_link_libraries(pcl_pcd_introduce_nan pcl_common pcl_io)
-
-  PCL_ADD_EXECUTABLE(pcl_hdl_grabber COMPONENT ${SUBSYS_NAME} SOURCES hdl_grabber_example.cpp)
-  target_link_libraries(pcl_hdl_grabber pcl_common pcl_io)
-
-  if(WITH_OPENNI)
-    PCL_ADD_EXECUTABLE(pcl_oni2pcd COMPONENT ${SUBSYS_NAME} SOURCES oni2pcd.cpp)
-    target_link_libraries(pcl_oni2pcd pcl_common pcl_io)
-  
-    PCL_ADD_EXECUTABLE(pcl_openni_grabber_example COMPONENT ${SUBSYS_NAME} SOURCES openni_grabber_example.cpp)
-    target_link_libraries(pcl_openni_grabber_example pcl_common pcl_io)
-
-    PCL_ADD_EXECUTABLE(pcl_openni_grabber_depth_example COMPONENT ${SUBSYS_NAME} SOURCES openni_grabber_depth_example.cpp)
-    target_link_libraries(pcl_openni_grabber_depth_example pcl_common pcl_io)
-
-    PCL_ADD_EXECUTABLE(pcl_openni_pcd_recorder COMPONENT ${SUBSYS_NAME} SOURCES openni_pcd_recorder.cpp)
-    target_link_libraries(pcl_openni_pcd_recorder pcl_common pcl_io Boost::date_time)
-  endif()
-
-  if(VTK_FOUND)
-    PCL_ADD_EXECUTABLE(pcl_png2pcd COMPONENT ${SUBSYS_NAME} SOURCES png2pcd.cpp)
-    target_link_libraries(pcl_png2pcd pcl_common pcl_io)
-
-    PCL_ADD_EXECUTABLE(pcl_pcd2png COMPONENT ${SUBSYS_NAME} SOURCES pcd2png.cpp)
-    target_link_libraries(pcl_pcd2png pcl_common pcl_io)
-
-    PCL_ADD_EXECUTABLE(pcl_tiff2pcd COMPONENT ${SUBSYS_NAME} SOURCES tiff2pcd.cpp)
-    target_link_libraries(pcl_tiff2pcd pcl_common pcl_io)
-
-    PCL_ADD_EXECUTABLE(pcl_ply2vtk COMPONENT ${SUBSYS_NAME} SOURCES ply2vtk.cpp)
-    target_link_libraries(pcl_ply2vtk pcl_common pcl_io)
-
-    PCL_ADD_EXECUTABLE(pcl_vtk2ply COMPONENT ${SUBSYS_NAME} SOURCES vtk2ply.cpp)
-    target_link_libraries(pcl_vtk2ply pcl_common pcl_io)
-
-    PCL_ADD_EXECUTABLE(pcl_vtk2obj COMPONENT ${SUBSYS_NAME} SOURCES vtk2obj.cpp)
-    target_link_libraries(pcl_vtk2obj pcl_common pcl_io)
-
-    PCL_ADD_EXECUTABLE(pcl_obj2vtk COMPONENT ${SUBSYS_NAME} SOURCES obj2vtk.cpp)
-    target_link_libraries(pcl_obj2vtk pcl_common pcl_io)
-
-    PCL_ADD_EXECUTABLE(pcl_obj2pcd COMPONENT ${SUBSYS_NAME} SOURCES obj2pcd.cpp)
-    target_link_libraries(pcl_obj2pcd pcl_common pcl_io)
-
-    if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
-      target_link_libraries(pcl_obj2pcd VTK::FiltersCore)
-    elseif(${VTK_VERSION} VERSION_GREATER_EQUAL 8.0)
-      target_link_libraries(pcl_obj2pcd vtkFiltersCore)
-    endif()
-
-    PCL_ADD_EXECUTABLE(pcl_obj2ply COMPONENT ${SUBSYS_NAME} SOURCES obj2ply.cpp)
-    target_link_libraries(pcl_obj2ply pcl_common pcl_io)
-
-    PCL_ADD_EXECUTABLE(pcl_vtk2pcd COMPONENT ${SUBSYS_NAME} SOURCES vtk2pcd.cpp)
-    target_link_libraries(pcl_vtk2pcd pcl_common pcl_io)
-
-    if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
-      target_link_libraries(pcl_vtk2pcd VTK::FiltersCore)
-    elseif(${VTK_VERSION} VERSION_GREATER_EQUAL 8.0)
-      target_link_libraries(pcl_vtk2pcd vtkFiltersCore)
-    endif()
-
-    PCL_ADD_EXECUTABLE(pcl_converter COMPONENT ${SUBSYS_NAME} SOURCES converter.cpp)
-    target_link_libraries(pcl_converter pcl_common pcl_io)
-  endif()
-endif()
-
-if(TARGET pcl_io_ply)
-  PCL_ADD_EXECUTABLE(pcl_ply2obj COMPONENT ${SUBSYS_NAME} SOURCES ply2obj.cpp)
-  target_link_libraries(pcl_ply2obj pcl_io_ply)
-
-  PCL_ADD_EXECUTABLE(pcl_ply2ply COMPONENT ${SUBSYS_NAME} SOURCES ply2ply.cpp)
-  target_link_libraries(pcl_ply2ply pcl_io_ply)
-
-  PCL_ADD_EXECUTABLE(pcl_ply2raw COMPONENT ${SUBSYS_NAME} SOURCES ply2raw.cpp)
-  target_link_libraries(pcl_ply2raw pcl_io_ply)
-
-  PCL_ADD_EXECUTABLE(pcl_plyheader COMPONENT ${SUBSYS_NAME} SOURCES plyheader.cpp)
-  target_link_libraries(pcl_plyheader pcl_io_ply)
-endif()
-
-if(TARGET pcl_search AND TARGET pcl_io)
+if(TARGET pcl_search)
   PCL_ADD_EXECUTABLE(pcl_compute_hausdorff COMPONENT ${SUBSYS_NAME} SOURCES compute_hausdorff.cpp)
   target_link_libraries(pcl_compute_hausdorff pcl_common pcl_io pcl_search)
 
@@ -146,7 +130,7 @@ if(TARGET pcl_search AND TARGET pcl_io)
   target_link_libraries (pcl_compute_cloud_error pcl_common pcl_io pcl_kdtree pcl_search)
 endif()
 
-if(TARGET pcl_io AND TARGET pcl_filters)
+if(TARGET pcl_filters)
   PCL_ADD_EXECUTABLE(pcl_voxel_grid COMPONENT ${SUBSYS_NAME} SOURCES voxel_grid.cpp)
   target_link_libraries (pcl_voxel_grid pcl_common pcl_io pcl_filters)
 
@@ -170,6 +154,31 @@ if(TARGET pcl_io AND TARGET pcl_filters)
 
   PCL_ADD_EXECUTABLE(pcl_grid_min COMPONENT ${SUBSYS_NAME} SOURCES grid_min.cpp)
   target_link_libraries(pcl_grid_min pcl_common pcl_io pcl_filters)
+
+  if(TARGET pcl_surface)
+    PCL_ADD_EXECUTABLE(pcl_mls_smoothing COMPONENT ${SUBSYS_NAME} SOURCES mls_smoothing.cpp)
+    target_link_libraries (pcl_mls_smoothing pcl_common pcl_io pcl_surface pcl_filters)
+
+  endif()
+
+  if(TARGET pcl_keypoints)
+    PCL_ADD_EXECUTABLE(pcl_uniform_sampling COMPONENT ${SUBSYS_NAME} SOURCES uniform_sampling.cpp)
+    target_link_libraries (pcl_uniform_sampling pcl_common pcl_io pcl_kdtree pcl_filters pcl_keypoints)
+  endif()
+endif()
+
+if(TARGET pcl_io_ply)
+  PCL_ADD_EXECUTABLE(pcl_ply2obj COMPONENT ${SUBSYS_NAME} SOURCES ply2obj.cpp)
+  target_link_libraries(pcl_ply2obj pcl_io_ply)
+
+  PCL_ADD_EXECUTABLE(pcl_ply2ply COMPONENT ${SUBSYS_NAME} SOURCES ply2ply.cpp)
+  target_link_libraries(pcl_ply2ply pcl_io_ply)
+
+  PCL_ADD_EXECUTABLE(pcl_ply2raw COMPONENT ${SUBSYS_NAME} SOURCES ply2raw.cpp)
+  target_link_libraries(pcl_ply2raw pcl_io_ply)
+
+  PCL_ADD_EXECUTABLE(pcl_plyheader COMPONENT ${SUBSYS_NAME} SOURCES plyheader.cpp)
+  target_link_libraries(pcl_plyheader pcl_io_ply)
 endif()
 
 if(TARGET pcl_segmentation)
@@ -184,14 +193,14 @@ if(TARGET pcl_segmentation)
 
   PCL_ADD_EXECUTABLE(pcl_crf_segmentation COMPONENT ${SUBSYS_NAME} SOURCES crf_segmentation.cpp)
   target_link_libraries (pcl_crf_segmentation pcl_common pcl_io pcl_segmentation)
-endif()
 
-if(TARGET pcl_filters AND TARGET pcl_segmentation)
-  PCL_ADD_EXECUTABLE(pcl_cluster_extraction COMPONENT ${SUBSYS_NAME} SOURCES cluster_extraction.cpp)
-  target_link_libraries (pcl_cluster_extraction pcl_common pcl_io pcl_kdtree pcl_filters pcl_segmentation)
+  if(TARGET pcl_filters)
+    PCL_ADD_EXECUTABLE(pcl_cluster_extraction COMPONENT ${SUBSYS_NAME} SOURCES cluster_extraction.cpp)
+    target_link_libraries (pcl_cluster_extraction pcl_common pcl_io pcl_kdtree pcl_filters pcl_segmentation)
 
-  PCL_ADD_EXECUTABLE(pcl_progressive_morphological_filter COMPONENT ${SUBSYS_NAME} SOURCES progressive_morphological_filter.cpp)
-  target_link_libraries(pcl_progressive_morphological_filter pcl_common pcl_io pcl_filters pcl_segmentation)
+    PCL_ADD_EXECUTABLE(pcl_progressive_morphological_filter COMPONENT ${SUBSYS_NAME} SOURCES progressive_morphological_filter.cpp)
+    target_link_libraries(pcl_progressive_morphological_filter pcl_common pcl_io pcl_filters pcl_segmentation)
+  endif()
 endif()
 
 if(TARGET pcl_features)
@@ -231,17 +240,6 @@ if(TARGET pcl_surface)
     PCL_ADD_EXECUTABLE(pcl_compute_hull COMPONENT ${SUBSYS_NAME} SOURCES compute_hull.cpp)
     target_link_libraries(pcl_compute_hull pcl_common pcl_io pcl_surface)
   endif()
-endif()
-
-if(TARGET pcl_surface AND pcl_filters)
-  PCL_ADD_EXECUTABLE(pcl_mls_smoothing COMPONENT ${SUBSYS_NAME} SOURCES mls_smoothing.cpp)
-  target_link_libraries (pcl_mls_smoothing pcl_common pcl_io pcl_surface pcl_filters)
-
-endif()
-
-if(TARGET pcl_filters AND TARGET pcl_keypoints)
-  PCL_ADD_EXECUTABLE(pcl_uniform_sampling COMPONENT ${SUBSYS_NAME} SOURCES uniform_sampling.cpp)
-  target_link_libraries (pcl_uniform_sampling pcl_common pcl_io pcl_kdtree pcl_filters pcl_keypoints)
 endif()
 
 if(TARGET pcl_registration)
@@ -285,27 +283,6 @@ endif()
 
 
 if(TARGET pcl_visualization)
-  PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_model_opps COMPONENT ${SUBSYS_NAME} SOURCES obj_rec_ransac_model_opps.cpp)
-  target_link_libraries(pcl_obj_rec_ransac_model_opps pcl_common pcl_visualization pcl_recognition)
-
-  PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_hash_table COMPONENT ${SUBSYS_NAME} SOURCES obj_rec_ransac_hash_table.cpp)
-  target_link_libraries(pcl_obj_rec_ransac_hash_table pcl_common pcl_visualization pcl_io pcl_recognition)
-
-  PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_scene_opps COMPONENT ${SUBSYS_NAME} SOURCES obj_rec_ransac_scene_opps.cpp)
-  target_link_libraries(pcl_obj_rec_ransac_scene_opps pcl_common pcl_visualization pcl_io pcl_recognition)
-
-  PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_accepted_hypotheses COMPONENT ${SUBSYS_NAME} SOURCES obj_rec_ransac_accepted_hypotheses.cpp)
-  target_link_libraries(pcl_obj_rec_ransac_accepted_hypotheses pcl_common pcl_visualization pcl_io pcl_recognition)
-
-  PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_orr_octree COMPONENT ${SUBSYS_NAME} SOURCES obj_rec_ransac_orr_octree.cpp)
-  target_link_libraries(pcl_obj_rec_ransac_orr_octree pcl_common pcl_visualization pcl_io pcl_recognition)
-
-  PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_orr_octree_zprojection COMPONENT ${SUBSYS_NAME} SOURCES obj_rec_ransac_orr_octree_zprojection.cpp)
-  target_link_libraries(pcl_obj_rec_ransac_orr_octree_zprojection pcl_common pcl_visualization pcl_io pcl_recognition)
-
-  PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_result COMPONENT ${SUBSYS_NAME} SOURCES obj_rec_ransac_result.cpp)
-  target_link_libraries(pcl_obj_rec_ransac_result pcl_common pcl_visualization pcl_io pcl_segmentation pcl_recognition)
-
   PCL_ADD_EXECUTABLE(pcl_registration_visualizer COMPONENT ${SUBSYS_NAME} SOURCES registration_visualizer.cpp)
   target_link_libraries(pcl_registration_visualizer pcl_common pcl_io pcl_kdtree pcl_filters pcl_registration pcl_visualization)
 
@@ -388,6 +365,29 @@ if(TARGET pcl_visualization)
   if(WITH_RSSDK)
     PCL_ADD_EXECUTABLE(pcl_real_sense_viewer COMPONENT ${SUBSYS_NAME} SOURCES real_sense_viewer.cpp BUNDLE)
     target_link_libraries(pcl_real_sense_viewer pcl_common pcl_io pcl_visualization)
+  endif()
+
+  if(TARGET pcl_recognition)
+    PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_model_opps COMPONENT ${SUBSYS_NAME} SOURCES obj_rec_ransac_model_opps.cpp)
+    target_link_libraries(pcl_obj_rec_ransac_model_opps pcl_common pcl_visualization pcl_recognition)
+
+    PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_hash_table COMPONENT ${SUBSYS_NAME} SOURCES obj_rec_ransac_hash_table.cpp)
+    target_link_libraries(pcl_obj_rec_ransac_hash_table pcl_common pcl_visualization pcl_io pcl_recognition)
+
+    PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_scene_opps COMPONENT ${SUBSYS_NAME} SOURCES obj_rec_ransac_scene_opps.cpp)
+    target_link_libraries(pcl_obj_rec_ransac_scene_opps pcl_common pcl_visualization pcl_io pcl_recognition)
+
+    PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_accepted_hypotheses COMPONENT ${SUBSYS_NAME} SOURCES obj_rec_ransac_accepted_hypotheses.cpp)
+    target_link_libraries(pcl_obj_rec_ransac_accepted_hypotheses pcl_common pcl_visualization pcl_io pcl_recognition)
+
+    PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_orr_octree COMPONENT ${SUBSYS_NAME} SOURCES obj_rec_ransac_orr_octree.cpp)
+    target_link_libraries(pcl_obj_rec_ransac_orr_octree pcl_common pcl_visualization pcl_io pcl_recognition)
+
+    PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_orr_octree_zprojection COMPONENT ${SUBSYS_NAME} SOURCES obj_rec_ransac_orr_octree_zprojection.cpp)
+    target_link_libraries(pcl_obj_rec_ransac_orr_octree_zprojection pcl_common pcl_visualization pcl_io pcl_recognition)
+
+    PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_result COMPONENT ${SUBSYS_NAME} SOURCES obj_rec_ransac_result.cpp)
+    target_link_libraries(pcl_obj_rec_ransac_result pcl_common pcl_visualization pcl_io pcl_segmentation pcl_recognition)
   endif()
 endif()
 
