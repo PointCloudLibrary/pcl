@@ -112,14 +112,11 @@ macro(find_boost)
   endif()
 endmacro()
 
-#remove this as soon as eigen is shipped with FindEigen.cmake
 macro(find_eigen)
   if(PCL_ALL_IN_ONE_INSTALLER)
-    set(EIGEN_ROOT "${PCL_ROOT}/3rdParty/Eigen")
-  elseif(NOT EIGEN_ROOT)
-    get_filename_component(EIGEN_ROOT "@EIGEN_INCLUDE_DIRS@" ABSOLUTE)
+    set(Eigen3_DIR "${PCL_ROOT}/3rdParty/Eigen3/share/eigen3/cmake/")
   endif()
-  find_package(Eigen 3.3)
+  find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 endmacro()
 
 #remove this as soon as qhull is shipped with FindQhull.cmake

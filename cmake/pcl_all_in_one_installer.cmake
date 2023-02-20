@@ -10,7 +10,6 @@ endif()
 # get root directory of each dependency libraries to be copied to PCL/3rdParty
 get_filename_component(BOOST_ROOT "${Boost_INCLUDE_DIR}" PATH)  # ../Boost/include/boost-x_x/ -> ../Boost/include/
 get_filename_component(BOOST_ROOT "${BOOST_ROOT}" PATH)         # ../Boost/include/           -> ../Boost/
-get_filename_component(EIGEN_ROOT "${EIGEN_INCLUDE_DIRS}" PATH) # ../Eigen3/include/          -> ../Eigen3/
 get_filename_component(QHULL_ROOT "${Qhull_DIR}" PATH)          # ../qhull/lib/cmake/Qhull/   -> ../qhull/lib/cmake
 get_filename_component(QHULL_ROOT "${QHULL_ROOT}" PATH)         # ../qhull/lib/cmake/         -> ../qhull/lib/
 get_filename_component(QHULL_ROOT "${QHULL_ROOT}" PATH)         # ../qhull/lib/               -> ../qhull/
@@ -19,7 +18,7 @@ get_filename_component(VTK_ROOT "${VTK_ROOT}" PATH)             # ../VTK/lib/cma
 get_filename_component(VTK_ROOT "${VTK_ROOT}" PATH)             # ../VTK/lib/                 -> ../VTK/
 
 set(PCL_3RDPARTY_COMPONENTS)
-foreach(dep Eigen Boost Qhull FLANN VTK)
+foreach(dep Boost Qhull FLANN VTK)
   string(TOUPPER ${dep} DEP)
   install(
     DIRECTORY "${${DEP}_ROOT}/"
@@ -29,6 +28,19 @@ foreach(dep Eigen Boost Qhull FLANN VTK)
   )
   list(APPEND PCL_3RDPARTY_COMPONENTS ${dep})
 endforeach()
+
+set(dep_Eigen3 Eigen3)
+install(
+  DIRECTORY "${Eigen3_DIR}/"
+  DESTINATION 3rdParty/${dep_Eigen3}/share/eigen3/cmake
+  COMPONENT ${dep_Eigen3}
+)
+install(
+  DIRECTORY "${Eigen3_INCLUDE_DIR}/"
+  DESTINATION 3rdParty/${dep_Eigen3}/include/eigen3
+  COMPONENT ${dep_Eigen3}
+)
+list(APPEND PCL_3RDPARTY_COMPONENTS ${dep_Eigen3})
 
 if(WITH_RSSDK2)
   get_filename_component(RSSDK2_ROOT "${RSSDK2_INCLUDE_DIRS}" PATH)
