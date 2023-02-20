@@ -143,7 +143,7 @@ if(TARGET pcl_search)
   PCL_ADD_EXECUTABLE(pcl_compute_cloud_error COMPONENT ${SUBSYS_NAME} SOURCES compute_cloud_error.cpp)
   target_link_libraries (pcl_compute_cloud_error pcl_common pcl_io pcl_kdtree pcl_search)
 
-  if(pcl_visualization)
+  if(TARGET pcl_visualization)
     PCL_ADD_EXECUTABLE(pcl_viewer COMPONENT ${SUBSYS_NAME} SOURCES pcd_viewer.cpp BUNDLE)
     target_link_libraries(pcl_viewer pcl_common pcl_io pcl_kdtree pcl_search pcl_visualization )
   endif()
