@@ -30,7 +30,7 @@ RUN apt-get update \
       clang-tidy \
       libbenchmark-dev \
       libblas-dev \
-      libboost-date-time-dev \
+      libboost-serialization-dev \
       libboost-filesystem-dev \
       libboost-iostreams-dev \
       libflann-dev \

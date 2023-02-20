@@ -51,5 +51,4 @@ PCL_DEPRECATED_HEADER(1, 16, "Please include the needed boost headers directly."
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/foreach.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/filesystem.hpp>
