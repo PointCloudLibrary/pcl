@@ -177,8 +177,8 @@ TEST(PCL, OctreeDeCompressionFile)
     pcl::io::OctreePointCloudCompression<pcl::PointXYZRGB> PointCloudDecoder;
 
     // iterate over various voxel sizes
-    for (std::size_t i = 0; i < sizeof(voxel_sizes)/sizeof(voxel_sizes[0]); i++) {
-      pcl::octree::OctreePointCloud<pcl::PointXYZRGB> octree(voxel_sizes[i]);
+    for (const float& voxel_size : voxel_sizes) {
+      pcl::octree::OctreePointCloud<pcl::PointXYZRGB> octree(voxel_size);
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZRGB>());
       octree.setInputCloud((*input_cloud_ptr).makeShared());
       octree.addPointsFromInputCloud();

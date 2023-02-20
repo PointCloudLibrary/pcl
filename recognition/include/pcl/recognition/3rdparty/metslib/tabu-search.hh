@@ -497,7 +497,9 @@ mets::tabu_list_chain::is_tabu(feasible_solution& sol, /* const */ move& mov) co
 
 inline mets::simple_tabu_list::~simple_tabu_list()
 { 
-  for(move_map_type::iterator m = tabu_hash_m.begin(); 
+  // Disable lint for third-party code
+  // NOLINTNEXTLINE(modernize-loop-convert)
+  for(move_map_type::iterator m = tabu_hash_m.begin();
       m!=tabu_hash_m.end(); ++m)
     delete m->first;
 }

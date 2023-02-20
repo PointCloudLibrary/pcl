@@ -121,8 +121,8 @@ public:
     Eigen::Vector2d sx = Eigen::Vector2d::Zero();
     Eigen::Matrix2d sxx = Eigen::Matrix2d::Zero();
 
-    for (auto i = pt_indices_.cbegin(); i != pt_indices_.cend(); i++) {
-      Eigen::Vector2d p(cloud[*i].x, cloud[*i].y);
+    for (const auto& pt_index : pt_indices_) {
+      Eigen::Vector2d p(cloud[pt_index].x, cloud[pt_index].y);
       sx += p;
       sxx += p * p.transpose();
     }
