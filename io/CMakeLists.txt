@@ -440,7 +440,3 @@ PCL_ADD_INCLUDES("${SUBSYS_NAME}" compression ${compression_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/openni_camera" ${OPENNI_INCLUDES})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/openni2" ${OPENNI2_INCLUDES})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
-
-if(BUILD_tools)
-  add_subdirectory(tools)
-endif()
