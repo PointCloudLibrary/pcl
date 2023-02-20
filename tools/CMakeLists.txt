@@ -67,7 +67,7 @@ if(WITH_OPENNI)
   target_link_libraries(pcl_openni_grabber_depth_example pcl_common pcl_io)
 
   PCL_ADD_EXECUTABLE(pcl_openni_pcd_recorder COMPONENT ${SUBSYS_NAME} SOURCES openni_pcd_recorder.cpp)
-  target_link_libraries(pcl_openni_pcd_recorder pcl_common pcl_io Boost::date_time)
+  target_link_libraries(pcl_openni_pcd_recorder pcl_common pcl_io)
 endif()
 
 if(VTK_FOUND)
