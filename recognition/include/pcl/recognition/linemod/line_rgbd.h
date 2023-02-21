@@ -280,6 +280,10 @@ namespace pcl
       bool 
       readLTMHeader (int fd, pcl::io::TARHeader &header);
 
+      /** \brief Compute bounding box from PCD masks **/
+      BoundingBoxXYZ 
+      computeBoundingBoxAndCenterTemplatePointCloud (PointCloud<PointXYZRGBA> & template_point_cloud);
+
       /** \brief Intersection volume threshold. */
       float intersection_volume_threshold_;
 
