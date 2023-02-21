@@ -257,5 +257,3 @@ then a sample value is given for reference.
 +====================+=================================+===============================+ 
 | Eigen3_DIR         | path to eigen cmake directory   | /usr/local/share/eigen3/cmake |
 +--------------------+---------------------------------+-------------------------------+
-| Eigen3_INCLUDE_DIR | path to eigen headers directory | /usr/local/include/eigen3     |
-+--------------------+---------------------------------+-------------------------------+

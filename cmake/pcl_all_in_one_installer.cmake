@@ -36,7 +36,7 @@ install(
   COMPONENT ${dep_Eigen3}
 )
 install(
-  DIRECTORY "${Eigen3_INCLUDE_DIR}/"
+  DIRECTORY "${Eigen3_DIR}/../../../include/eigen3/"
   DESTINATION 3rdParty/${dep_Eigen3}/include/eigen3
   COMPONENT ${dep_Eigen3}
 )
