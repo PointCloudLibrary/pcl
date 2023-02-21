@@ -211,7 +211,7 @@ if(MINGW)
 endif()
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/ply" ${PLY_INCLUDES})
 target_include_directories(pcl_io_ply PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_link_libraries(pcl_io_ply Boost::boost)
+target_link_libraries(pcl_io_ply pcl_common Boost::boost)
 
 set(srcs
   src/debayer.cpp
@@ -440,7 +440,3 @@ PCL_ADD_INCLUDES("${SUBSYS_NAME}" compression ${compression_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/openni_camera" ${OPENNI_INCLUDES})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/openni2" ${OPENNI2_INCLUDES})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
-
-if(BUILD_tools)
-  add_subdirectory(tools)
-endif()
