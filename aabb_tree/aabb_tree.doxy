@@ -1,0 +1,13 @@
+/**
+  \addtogroup aabb_tree Module aabb_tree
+
+  \section secAABBTreePresentation Overview 
+
+  The <b>pcl_aabb_tree</b> library provides the AABB tree data structure, using
+  <a href="https://doc.cgal.org/latest/AABB_tree/index.html">CGAL</a>,
+  that allows for fast <a href="https://en.wikipedia.org/wiki/Bounding_volume_hierarchy">ray intersection testing</a>.
+	
+	\section secAABBTreeRequirements Requirements
+	- \ref common "common"
+
+*/

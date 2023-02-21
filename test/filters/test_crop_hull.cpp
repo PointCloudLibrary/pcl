@@ -314,6 +314,48 @@ TYPED_TEST (PCLCropHullTestFixture, simple_test)
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TYPED_TEST (PCLCropHullTestFixture, build_tree)
+{
+  for (auto & entry : this->data_)
+  {
+    auto & crop_hull_filter = entry.first;
+    for (TestData const & test_data : entry.second)
+    {
+      crop_hull_filter.setInputCloud(test_data.input_cloud_);
+      crop_hull_filter.buildTree();
+      pcl::Indices filtered_indices;
+      crop_hull_filter.filter(filtered_indices);
+      ASSERT_EQ(test_data.inside_indices_.size(), filtered_indices.size());
+      pcl::test::EXPECT_EQ_VECTORS(test_data.inside_indices_, filtered_indices);
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TYPED_TEST (PCLCropHullTestFixture, build_tree_change_hull_cloud_and_indices)
+{
+  auto & entry = this->data_[0];
+  auto & crop_hull_filter = entry.first;
+  
+  auto crop_hull_filter_copy = crop_hull_filter;
+  auto empty_hull_cloud = std::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
+  std::vector<pcl::Vertices> empty_hull_indices;
+  
+  {
+    crop_hull_filter.setHullCloud(empty_hull_cloud);
+    pcl::Indices filtered_indices;
+    crop_hull_filter.filter(filtered_indices);
+    ASSERT_EQ(filtered_indices.size(), 0);
+  }
+
+  {
+    crop_hull_filter_copy.setHullIndices(empty_hull_indices);
+    pcl::Indices filtered_indices;
+    crop_hull_filter_copy.filter(filtered_indices);
+    ASSERT_EQ(filtered_indices.size(), 0);
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // checking that the result is independent of the original state of the output_indices
