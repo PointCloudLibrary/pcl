@@ -167,10 +167,8 @@ LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, con
     float max_y = -std::numeric_limits<float>::max ();
     float max_z = -std::numeric_limits<float>::max ();
     std::size_t counter = 0;
-    for (std::size_t j = 0; j < template_point_cloud.size (); ++j)
+    for (const auto & p : template_point_cloud)
     {
-      const PointXYZRGBA & p = template_point_cloud[j];
-
       if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
 
@@ -200,9 +198,9 @@ LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, con
     bb.y = (min_y + bb.height / 2.0f) - center_y - bb.height / 2.0f;
     bb.z = (min_z + bb.depth / 2.0f) - center_z - bb.depth / 2.0f;
 
-    for (std::size_t j = 0; j < template_point_cloud.size (); ++j)
+    for (auto & j : template_point_cloud)
     {
-      PointXYZRGBA p = template_point_cloud[j];
+      PointXYZRGBA p = j;
 
       if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
@@ -211,7 +209,7 @@ LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, con
       p.y -= center_y;
       p.z -= center_z;
 
-      template_point_cloud[j] = p;
+      j = p;
     }
   }
 
@@ -254,10 +252,8 @@ LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
     float max_y = -std::numeric_limits<float>::max ();
     float max_z = -std::numeric_limits<float>::max ();
     std::size_t counter = 0;
-    for (std::size_t j = 0; j < template_point_cloud.size (); ++j)
+    for (const auto & p : template_point_cloud)
     {
-      const PointXYZRGBA & p = template_point_cloud[j];
-
       if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
 
@@ -287,9 +283,9 @@ LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
     bb.y = (min_y + bb.height / 2.0f) - center_y - bb.height / 2.0f;
     bb.z = (min_z + bb.depth / 2.0f) - center_z - bb.depth / 2.0f;
 
-    for (std::size_t j = 0; j < template_point_cloud.size (); ++j)
+    for (auto & j : template_point_cloud)
     {
-      PointXYZRGBA p = template_point_cloud[j];
+      PointXYZRGBA p = j;
 
       if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
@@ -298,7 +294,7 @@ LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
       p.y -= center_y;
       p.z -= center_z;
 
-      template_point_cloud[j] = p;
+      j = p;
     }
   }
 
@@ -345,10 +341,8 @@ LineRGBD<PointXYZT, PointRGBT>::addTemplate (const SparseQuantizedMultiModTempla
     float max_y = -std::numeric_limits<float>::max ();
     float max_z = -std::numeric_limits<float>::max ();
     std::size_t counter = 0;
-    for (std::size_t j = 0; j < template_point_cloud.size (); ++j)
+    for (const auto & p : template_point_cloud)
     {
-      const PointXYZRGBA & p = template_point_cloud[j];
-
       if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
 
@@ -378,9 +372,9 @@ LineRGBD<PointXYZT, PointRGBT>::addTemplate (const SparseQuantizedMultiModTempla
     bb.y = (min_y + bb.height / 2.0f) - center_y - bb.height / 2.0f;
     bb.z = (min_z + bb.depth / 2.0f) - center_z - bb.depth / 2.0f;
 
-    for (std::size_t j = 0; j < template_point_cloud.size (); ++j)
+    for (auto & j : template_point_cloud)
     {
-      PointXYZRGBA p = template_point_cloud[j];
+      PointXYZRGBA p = j;
 
       if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
@@ -389,7 +383,7 @@ LineRGBD<PointXYZT, PointRGBT>::addTemplate (const SparseQuantizedMultiModTempla
       p.y -= center_y;
       p.z -= center_z;
 
-      template_point_cloud[j] = p;
+      j = p;
     }
   }
 

@@ -191,10 +191,10 @@ TEST (PCL, TranslatedNormalEstimation)
   NormalEstimation<PointXYZ, Normal> n;
 
   PointCloud<PointXYZ> translatedCloud(cloud);
-  for(size_t i = 0; i < translatedCloud.size(); ++i) {
-    translatedCloud[i].x += 100;
-    translatedCloud[i].y += 100;
-    translatedCloud[i].z += 100;
+  for(auto & i : translatedCloud) {
+    i.x += 100;
+    i.y += 100;
+    i.z += 100;
   }
 
   // computePointNormal (indices, Vector)

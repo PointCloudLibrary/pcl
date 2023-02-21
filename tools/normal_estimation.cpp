@@ -135,13 +135,15 @@ batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir
 #pragma omp parallel for \
   default(none) \
   shared(k, output_dir, pcd_files, radius)
+  // Disable lint since this 'for' is part of the pragma
+  // NOLINTNEXTLINE(modernize-loop-convert)
   for (int i = 0; i < static_cast<int>(pcd_files.size ()); ++i)
   {
     // Load the first file
     Eigen::Vector4f translation;
     Eigen::Quaternionf rotation;
     pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
-    if (!loadCloud (pcd_files[i], *cloud, translation, rotation)) 
+    if (!loadCloud (pcd_files[i], *cloud, translation, rotation))
       continue;
 
     // Perform the feature estimation
