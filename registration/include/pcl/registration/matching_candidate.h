@@ -61,7 +61,7 @@ struct MatchingCandidate {
   , transformation(Eigen::Matrix4f::Identity()){};
 
   /** \brief Value constructor. */
-  MatchingCandidate(float s, pcl::Correspondences c, Eigen::Matrix4f  m)
+  MatchingCandidate(float s, pcl::Correspondences c, Eigen::Matrix4f m)
   : fitness_score(s), correspondences(std::move(c)), transformation(std::move(m)){};
 
   /** \brief Destructor. */
