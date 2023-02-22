@@ -63,7 +63,7 @@ namespace pcl
     * \param[in] file_name_or_serial_number used for either loading bag file or specific device by serial number
     * \param[in] repeat_playback whether to repeat playback when reading from file
     */
-    RealSense2Grabber ( const std::string& file_name_or_serial_number = "", const bool repeat_playback = true );
+    RealSense2Grabber ( std::string file_name_or_serial_number = "", const bool repeat_playback = true );
 
     /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
     ~RealSense2Grabber () override;
