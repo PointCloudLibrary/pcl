@@ -226,7 +226,7 @@ public:
   NDTSingleGrid(PointCloudConstPtr cloud,
                 const Eigen::Vector2f& about,
                 const Eigen::Vector2f& extent,
-                Eigen::Vector2f  step)
+                Eigen::Vector2f step)
   : min_(about - extent)
   , max_(min_ + 2 * extent)
   , step_(std::move(step))

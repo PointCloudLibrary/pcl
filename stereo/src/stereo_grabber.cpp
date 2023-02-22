@@ -48,7 +48,7 @@ struct pcl::StereoGrabberBase::StereoGrabberImpl {
                     float frames_per_second,
                     bool repeat);
   StereoGrabberImpl(pcl::StereoGrabberBase& grabber,
-                    std::vector<std::pair<std::string, std::string>>  files,
+                    std::vector<std::pair<std::string, std::string>> files,
                     float frames_per_second,
                     bool repeat);
   void
@@ -91,7 +91,7 @@ pcl::StereoGrabberBase::StereoGrabberImpl::StereoGrabberImpl(
 ///////////////////////////////////////////////////////////////////////////////////////////
 pcl::StereoGrabberBase::StereoGrabberImpl::StereoGrabberImpl(
     pcl::StereoGrabberBase& grabber,
-    std::vector<std::pair<std::string, std::string>>  files,
+    std::vector<std::pair<std::string, std::string>> files,
     float frames_per_second,
     bool repeat)
 : grabber_(grabber)

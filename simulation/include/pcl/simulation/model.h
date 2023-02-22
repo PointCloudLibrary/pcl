@@ -38,7 +38,8 @@ struct SinglePoly {
 struct Vertex {
   Vertex() = default;
   // Vertex(Eigen::Vector3f pos, Eigen::Vector3f norm) : pos(pos), norm(norm) {}
-  Vertex(Eigen::Vector3f pos, Eigen::Vector3f rgb) : pos(std::move(pos)), rgb(std::move(rgb)) {}
+  Vertex(Eigen::Vector3f pos, Eigen::Vector3f rgb)
+  : pos(std::move(pos)), rgb(std::move(rgb)) {}
   Eigen::Vector3f pos;
   Eigen::Vector3f rgb;
   // Eigen::Vector3f norm;
