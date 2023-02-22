@@ -49,12 +49,12 @@ namespace pcl
 {
   using namespace io;
 
-  RealSense2Grabber::RealSense2Grabber ( const std::string& file_name_or_serial_number, const bool repeat_playback )
+  RealSense2Grabber::RealSense2Grabber ( std::string file_name_or_serial_number, const bool repeat_playback )
     : signal_PointXYZ ( createSignal<signal_librealsense_PointXYZ> () )
     , signal_PointXYZI ( createSignal<signal_librealsense_PointXYZI> () )
     , signal_PointXYZRGB ( createSignal<signal_librealsense_PointXYZRGB> () )
     , signal_PointXYZRGBA ( createSignal<signal_librealsense_PointXYZRGBA> () )
-    , file_name_or_serial_number_ ( file_name_or_serial_number )
+    , file_name_or_serial_number_ ( std::move(file_name_or_serial_number) )
     , repeat_playback_ ( repeat_playback )
     , quit_ ( false )
     , running_ ( false )
