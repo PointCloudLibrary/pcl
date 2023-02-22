@@ -25,6 +25,7 @@ get_filename_component(UTILS_INC "${CMAKE_CURRENT_SOURCE_DIR}/../utils/include" 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" ${UTILS_INC})
 PCL_CUDA_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs})
+target_link_libraries(${LIB_NAME} pcl_common)
 
 #Ensures that CUDA is added and the project can compile as it uses cuda calls.
 set_source_files_properties(src/device_memory.cpp PROPERTIES LANGUAGE CUDA)
