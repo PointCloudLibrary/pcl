@@ -9,7 +9,7 @@ jobs:
       image: pointcloudlibrary/env:22.04
     
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Run clang-tidy
       run: |
