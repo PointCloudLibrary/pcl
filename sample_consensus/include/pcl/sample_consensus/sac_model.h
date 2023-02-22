@@ -40,21 +40,22 @@
 
 #pragma once
 
-#include <ctime>
-#include <limits>
-#include <memory>
-#include <set>
+#include <pcl/console/print.h>
+#include <pcl/sample_consensus/model_types.h>
+#include <pcl/search/search.h>
+#include <pcl/memory.h>
+#include <pcl/point_cloud.h>
+#include <pcl/types.h> // for index_t, Indices
+
 #include <boost/random/mersenne_twister.hpp> // for mt19937
 #include <boost/random/uniform_int.hpp> // for uniform_int
 #include <boost/random/variate_generator.hpp> // for variate_generator
 
-#include <pcl/memory.h>
-#include <pcl/console/print.h>
-#include <pcl/point_cloud.h>
-#include <pcl/types.h> // for index_t, Indices
-#include <pcl/sample_consensus/model_types.h>
-
-#include <pcl/search/search.h>
+#include <ctime>
+#include <limits>
+#include <memory>
+#include <set>
+#include <utility>
 
 namespace pcl
 {
@@ -130,10 +131,10 @@ namespace pcl
         * \param[in] indices a vector of point indices to be used from \a cloud
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModel (const PointCloudConstPtr &cloud, 
+      SampleConsensusModel (PointCloudConstPtr cloud, 
                             const Indices &indices,
                             bool random = false) 
-        : input_ (cloud)
+        : input_ (std::move(cloud))
         , indices_ (new Indices (indices))
         , radius_min_ (-std::numeric_limits<double>::max ())
         , radius_max_ (std::numeric_limits<double>::max ())

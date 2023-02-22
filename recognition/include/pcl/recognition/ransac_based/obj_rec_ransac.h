@@ -38,22 +38,24 @@
 
 #pragma once
 
-#include <pcl/recognition/ransac_based/hypothesis.h>
-#include <pcl/recognition/ransac_based/model_library.h>
-#include <pcl/recognition/ransac_based/rigid_transform_space.h>
-#include <pcl/recognition/ransac_based/orr_octree.h>
-#include <pcl/recognition/ransac_based/orr_octree_zprojection.h>
-#include <pcl/recognition/ransac_based/simple_octree.h>
-#include <pcl/recognition/ransac_based/trimmed_icp.h>
-#include <pcl/recognition/ransac_based/orr_graph.h>
 #include <pcl/recognition/ransac_based/auxiliary.h>
 #include <pcl/recognition/ransac_based/bvh.h>
+#include <pcl/recognition/ransac_based/hypothesis.h>
+#include <pcl/recognition/ransac_based/model_library.h>
+#include <pcl/recognition/ransac_based/orr_graph.h>
+#include <pcl/recognition/ransac_based/orr_octree.h>
+#include <pcl/recognition/ransac_based/orr_octree_zprojection.h>
+#include <pcl/recognition/ransac_based/rigid_transform_space.h>
+#include <pcl/recognition/ransac_based/simple_octree.h>
+#include <pcl/recognition/ransac_based/trimmed_icp.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/point_cloud.h>
+
 #include <cmath>
-#include <string>
-#include <vector>
 #include <list>
+#include <string>
+#include <utility>
+#include <vector>
 
 #define OBJ_REC_RANSAC_VERBOSE
 
@@ -97,8 +99,8 @@ namespace pcl
         class Output
         {
           public:
-            Output (const std::string& object_name, const float rigid_transform[12], float match_confidence, void* user_data) :
-              object_name_ (object_name),
+            Output (std::string  object_name, const float rigid_transform[12], float match_confidence, void* user_data) :
+              object_name_ (std::move(object_name)),
               match_confidence_ (match_confidence),
               user_data_ (user_data)
             {

@@ -35,15 +35,18 @@
  *
  */
 // Looking for PCL_BUILT_WITH_VTK
-#include <pcl/for_each_type.h>
-#include <pcl/io/timestamp.h>
 #include <pcl/io/image_grabber.h>
 #include <pcl/io/lzf_image_io.h>
+#include <pcl/io/timestamp.h>
+#include <pcl/for_each_type.h>
 #include <pcl/memory.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <boost/filesystem.hpp> // for exists, basename, is_directory, ...
+
 #include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
+#include <boost/filesystem.hpp> // for exists, basename, is_directory, ...
+
+#include <utility>
 
 #ifdef PCL_BUILT_WITH_VTK
   #include <vtkImageReader2.h>
@@ -73,7 +76,7 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
                     float frames_per_second,
                     bool repeat);
   ImageGrabberImpl (pcl::ImageGrabberBase& grabber,
-                    const std::vector<std::string>& depth_image_files,
+                    std::vector<std::string>  depth_image_files,
                     float frames_per_second,
                     bool repeat);
 
@@ -209,13 +212,13 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase& grabber,
-                                                           const std::vector<std::string>& depth_image_files,
+                                                           std::vector<std::string>  depth_image_files,
                                                            float frames_per_second,
                                                            bool repeat)
   : grabber_ (grabber)
   , frames_per_second_ (frames_per_second)
   , repeat_ (repeat)
-  , depth_image_files_ (depth_image_files)
+  , depth_image_files_ (std::move(depth_image_files))
   , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), [this] { trigger (); })
 {
 }

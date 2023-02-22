@@ -38,17 +38,20 @@
 
 #pragma once
 
-#include "auxiliary.h"
-#include <pcl/recognition/ransac_based/voxel_structure.h>
-#include <pcl/recognition/ransac_based/orr_octree.h>
 #include <pcl/common/random.h>
+#include <pcl/recognition/ransac_based/orr_octree.h>
+#include <pcl/recognition/ransac_based/voxel_structure.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+
+#include "auxiliary.h"
+
 #include <ctime>
-#include <string>
 #include <list>
 #include <map>
+#include <string>
+#include <utility>
 
 namespace pcl
 {
@@ -64,9 +67,9 @@ namespace pcl
         class Model
         {
           public:
-            Model (const PointCloudIn& points, const PointCloudN& normals, float voxel_size, const std::string& object_name,
+            Model (const PointCloudIn& points, const PointCloudN& normals, float voxel_size, std::string  object_name,
                    float frac_of_points_for_registration, void* user_data = nullptr)
-            : obj_name_(object_name),
+            : obj_name_(std::move(object_name)),
               user_data_ (user_data)
             {
               octree_.build (points, voxel_size, &normals);

@@ -75,7 +75,7 @@ namespace openni_wrapper
      * @param[in] line_number the line number where this exception was created.
      * @param[in] message the message of the exception
      */
-    OpenNIException (const std::string& function_name, const std::string& file_name, unsigned line_number, const std::string& message) noexcept;
+    OpenNIException (std::string  function_name, std::string  file_name, unsigned line_number, std::string  message) noexcept;
 
     /**
      * @brief virtual Destructor that never throws an exception

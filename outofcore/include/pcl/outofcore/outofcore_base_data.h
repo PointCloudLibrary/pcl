@@ -103,7 +103,7 @@ namespace pcl
          *
          *  \param[in] path_arg Location of JSON metadata file to load from disk
          */
-        OutofcoreOctreeBaseMetadata (const boost::filesystem::path& path_arg);
+        OutofcoreOctreeBaseMetadata (boost::filesystem::path  path_arg);
         /** \brief Default destructor*/
         ~OutofcoreOctreeBaseMetadata () override;
 

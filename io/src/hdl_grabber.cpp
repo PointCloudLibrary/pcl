@@ -36,16 +36,18 @@
  *
  */
 
-#include <thread>
-
 #include <pcl/console/print.h>
 #include <pcl/io/hdl_grabber.h>
-#include <boost/version.hpp>
+
+#include <boost/array.hpp>
 #include <boost/foreach.hpp>
+#include <boost/math/special_functions.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
-#include <boost/array.hpp>
-#include <boost/math/special_functions.hpp>
+#include <boost/version.hpp>
+
+#include <thread>
+#include <utility>
 #ifdef HAVE_PCAP
 #include <pcap.h>
 #endif // #ifdef HAVE_PCAP
@@ -57,7 +59,7 @@ using boost::asio::ip::udp;
 
 /////////////////////////////////////////////////////////////////////////////
 pcl::HDLGrabber::HDLGrabber (const std::string& correctionsFile,
-                             const std::string& pcapFile) :
+                             std::string  pcapFile) :
     last_azimuth_ (65000),
     current_scan_xyz_ (new pcl::PointCloud<pcl::PointXYZ> ()),
     current_sweep_xyz_ (new pcl::PointCloud<pcl::PointXYZ> ()),
@@ -75,7 +77,7 @@ pcl::HDLGrabber::HDLGrabber (const std::string& correctionsFile,
     source_port_filter_ (443),
     hdl_read_socket_service_ (),
     hdl_read_socket_ (nullptr),
-    pcap_file_name_ (pcapFile),
+    pcap_file_name_ (std::move(pcapFile)),
     queue_consumer_thread_ (nullptr),
     hdl_read_packet_thread_ (nullptr),
     min_distance_threshold_ (0.0),

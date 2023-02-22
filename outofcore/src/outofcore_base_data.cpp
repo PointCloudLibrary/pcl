@@ -38,15 +38,15 @@
  */
 
 
-#include <pcl/outofcore/outofcore_base_data.h>
-
-#include <pcl/pcl_macros.h>
-#include <pcl/exceptions.h>
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/console/print.h>
+#include <pcl/outofcore/outofcore_base_data.h>
+#include <pcl/exceptions.h>
+#include <pcl/pcl_macros.h>
 
 #include <fstream>
 #include <memory>
+#include <utility>
 
 #define __PCL_OUTOFCORE_VERSION__ 3
 
@@ -63,8 +63,8 @@ namespace pcl
       
     ////////////////////////////////////////////////////////////////////////////////
 
-    OutofcoreOctreeBaseMetadata::OutofcoreOctreeBaseMetadata (const boost::filesystem::path& metadata_filename) 
-      : metadata_filename_ (metadata_filename)
+    OutofcoreOctreeBaseMetadata::OutofcoreOctreeBaseMetadata (boost::filesystem::path  metadata_filename) 
+      : metadata_filename_ (std::move(metadata_filename))
       , outofcore_version_ ()
       , point_type_ ("urp")
       , levels_of_depth_ ()

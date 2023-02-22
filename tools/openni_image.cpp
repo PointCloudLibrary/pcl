@@ -35,16 +35,16 @@
  *	
  */
 
-#include <pcl/point_types.h>
 #include <pcl/common/time.h> //fps calculations
+#include <pcl/console/parse.h>
 #include <pcl/io/lzf_image_io.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/timestamp.h>
 #include <pcl/visualization/common/float_image_utils.h>
 #include <pcl/visualization/image_viewer.h>
-#include <pcl/console/parse.h>
 #include <pcl/visualization/mouse_event.h>
+#include <pcl/point_types.h>
 
 #include <boost/circular_buffer.hpp>
 
@@ -54,6 +54,7 @@
 #include <memory>
 #include <mutex>
 #include <thread>
+#include <utility>
 
 using namespace std::chrono_literals;
 using namespace pcl;
@@ -142,13 +143,13 @@ struct Frame
   using Ptr = std::shared_ptr<Frame>;
   using ConstPtr = std::shared_ptr<const Frame>;
 
-  Frame (const openni_wrapper::Image::Ptr &_image,
-         const openni_wrapper::DepthImage::Ptr &_depth_image,
+  Frame (openni_wrapper::Image::Ptr _image,
+         openni_wrapper::DepthImage::Ptr _depth_image,
          const io::CameraParameters &_parameters_rgb,
          const io::CameraParameters &_parameters_depth,
          const std::chrono::time_point<std::chrono::system_clock>& _time)
-    : image (_image)
-    , depth_image (_depth_image)
+    : image (std::move(_image))
+    , depth_image (std::move(_depth_image))
     , parameters_rgb (_parameters_rgb)
     , parameters_depth (_parameters_depth)
     , time (_time) 

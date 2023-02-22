@@ -7,17 +7,17 @@
  *
  */
 
-#include <random>
-#include <algorithm>
-#include <array>
-#include <tuple>
-
-#include <pcl/test/gtest.h>
-#include <pcl/pcl_tests.h>
-
-#include <pcl/point_types.h>
 #include <pcl/common/common.h>
 #include <pcl/filters/crop_hull.h>
+#include <pcl/test/gtest.h>
+#include <pcl/pcl_tests.h>
+#include <pcl/point_types.h>
+
+#include <algorithm>
+#include <array>
+#include <random>
+#include <tuple>
+#include <utility>
 
 
 namespace
@@ -26,10 +26,10 @@ namespace
 
 struct TestData
 {
-  TestData(pcl::Indices const & insideIndices, pcl::PointCloud<pcl::PointXYZ>::ConstPtr input_cloud)
-    : input_cloud_(input_cloud),
+  TestData(pcl::Indices  insideIndices, pcl::PointCloud<pcl::PointXYZ>::ConstPtr input_cloud)
+    : input_cloud_(std::move(input_cloud)),
       inside_mask_(input_cloud_->size(), false),
-      inside_indices_(insideIndices),
+      inside_indices_(std::move(insideIndices)),
       inside_cloud_(new pcl::PointCloud<pcl::PointXYZ>),
       outside_cloud_(new pcl::PointCloud<pcl::PointXYZ>)
   {

@@ -39,6 +39,7 @@
 #pragma once
 
 #include <string>
+#include <utility>
 
 namespace pcl
 {
@@ -63,7 +64,7 @@ namespace pcl
           * \param[in] ctrl      whether the ctrl was pressed at the time where this event was triggered
           * \param[in] shift     whether the shift was pressed at the time where this event was triggered
           */
-        inline KeyboardEvent (bool action, const std::string& key_sym, unsigned char key, 
+        inline KeyboardEvent (bool action, std::string  key_sym, unsigned char key, 
                               bool alt, bool ctrl, bool shift);
 
         /**
@@ -116,12 +117,12 @@ namespace pcl
         std::string key_sym_;
     };
 
-    KeyboardEvent::KeyboardEvent (bool action, const std::string& key_sym, unsigned char key, 
+    KeyboardEvent::KeyboardEvent (bool action, std::string  key_sym, unsigned char key, 
                                   bool alt, bool ctrl, bool shift)
       : action_ (action)
       , modifiers_ (0)
       , key_code_(key)
-      , key_sym_ (key_sym)
+      , key_sym_ (std::move(key_sym))
     {
       if (alt)
         modifiers_ = Alt;

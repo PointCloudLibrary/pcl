@@ -92,12 +92,12 @@ namespace pcl
     MLSResult () : num_neighbors (0), curvature (0.0f), order (0), valid (false) {}
 
     inline
-    MLSResult (const Eigen::Vector3d &a_query_point,
-               const Eigen::Vector3d &a_mean,
-               const Eigen::Vector3d &a_plane_normal,
-               const Eigen::Vector3d &a_u,
-               const Eigen::Vector3d &a_v,
-               const Eigen::VectorXd &a_c_vec,
+    MLSResult (Eigen::Vector3d a_query_point,
+               Eigen::Vector3d a_mean,
+               Eigen::Vector3d a_plane_normal,
+               Eigen::Vector3d a_u,
+               Eigen::Vector3d a_v,
+               Eigen::VectorXd a_c_vec,
                const int a_num_neighbors,
                const float a_curvature,
                const int a_order);

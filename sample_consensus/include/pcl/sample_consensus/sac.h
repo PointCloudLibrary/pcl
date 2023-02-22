@@ -49,6 +49,7 @@
 #include <ctime>
 #include <memory>
 #include <set>
+#include <utility>
 
 namespace pcl
 {
@@ -74,8 +75,8 @@ namespace pcl
         * \param[in] model a Sample Consensus model
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensus (const SampleConsensusModelPtr &model, bool random = false) 
-        : sac_model_ (model)
+      SampleConsensus (SampleConsensusModelPtr model, bool random = false) 
+        : sac_model_ (std::move(model))
         , probability_ (0.99)
         , iterations_ (0)
         , threshold_ (std::numeric_limits<double>::max ())
@@ -95,10 +96,10 @@ namespace pcl
         * \param[in] threshold distance to model threshold
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensus (const SampleConsensusModelPtr &model, 
+      SampleConsensus (SampleConsensusModelPtr model, 
                        double threshold, 
                        bool random = false)
-        : sac_model_ (model)
+        : sac_model_ (std::move(model))
         , probability_ (0.99)
         , iterations_ (0)
         , threshold_ (threshold)

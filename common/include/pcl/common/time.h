@@ -42,6 +42,7 @@
 #include <iostream>
 #include <queue>
 #include <string>
+#include <utility>
 
 /**
   * \file pcl/common/time.h
@@ -105,8 +106,8 @@ namespace pcl
   class ScopeTime : public StopWatch
   {
     public:
-      inline ScopeTime (const std::string &title = "") : 
-        title_ (title)
+      inline ScopeTime (std::string title = "") : 
+        title_ (std::move(title))
       {
       }
 

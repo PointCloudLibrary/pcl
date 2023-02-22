@@ -38,16 +38,18 @@
 #ifdef HAVE_OPENNI
 
 #include <pcl/io/openni_camera/openni_exception.h>
+
 #include <sstream>
+#include <utility>
 
 namespace openni_wrapper
 {
 
-OpenNIException::OpenNIException (const std::string& function_name, const std::string& file_name, unsigned line_number, const std::string& message) noexcept
-: function_name_ (function_name)
-, file_name_ (file_name)
+OpenNIException::OpenNIException (std::string  function_name, std::string  file_name, unsigned line_number, std::string  message) noexcept
+: function_name_ (std::move(function_name))
+, file_name_ (std::move(file_name))
 , line_number_ (line_number)
-, message_ (message)
+, message_ (std::move(message))
 {
   std::stringstream sstream;
   sstream << function_name_ << " @ " << file_name_ << " @ " << line_number_ << " : " << message_;

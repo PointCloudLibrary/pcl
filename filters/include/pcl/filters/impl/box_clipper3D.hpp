@@ -38,8 +38,8 @@
 #include <pcl/filters/box_clipper3D.h>
 
 template<typename PointT>
-pcl::BoxClipper3D<PointT>::BoxClipper3D (const Eigen::Affine3f& transformation)
-: transformation_ (transformation)
+pcl::BoxClipper3D<PointT>::BoxClipper3D (Eigen::Affine3f  transformation)
+: transformation_ (std::move(transformation))
 {
   //inverse_transformation_ = transformation_.inverse ();
 }

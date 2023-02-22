@@ -102,12 +102,14 @@
 #else
 #include <boost/uuid/sha1.hpp>
 #endif
-#include <boost/filesystem.hpp>
-#include <boost/algorithm/string.hpp> // for split
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/console/parse.h>
 
+#include <boost/algorithm/string.hpp> // for split
+#include <boost/filesystem.hpp>
+
 #include <thread>
+#include <utility>
 
 // Support for VTK 7.1 upwards
 #ifdef vtkGenericDataArray_h
@@ -242,7 +244,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (vtkSmartPointer<vtkRenderer> r
   , stopped_ ()
   , timer_id_ ()
   , rens_ (vtkSmartPointer<vtkRendererCollection>::New ())
-  , win_ (wind)
+  , win_ (std::move(wind))
   , style_ (vtkSmartPointer<pcl::visualization::PCLVisualizerInteractorStyle>::New ())
   , cloud_actor_map_ (new CloudActorMap)
   , shape_actor_map_ (new ShapeActorMap)
@@ -267,7 +269,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, vtkSma
   , stopped_ ()
   , timer_id_ ()
   , rens_ (vtkSmartPointer<vtkRendererCollection>::New ())
-  , win_ (wind)
+  , win_ (std::move(wind))
   , style_ (style)
   , cloud_actor_map_ (new CloudActorMap)
   , shape_actor_map_ (new ShapeActorMap)

@@ -34,13 +34,15 @@
  *
  */
 #include "pcl/io/io_exception.h"
-#include <sstream>
 
-pcl::io::IOException::IOException (const std::string& function_name, const std::string& file_name, unsigned line_number, const std::string& message)
-  : function_name_ (function_name)
-  , file_name_ (file_name)
+#include <sstream>
+#include <utility>
+
+pcl::io::IOException::IOException (std::string  function_name, std::string  file_name, unsigned line_number, std::string  message)
+  : function_name_ (std::move(function_name))
+  , file_name_ (std::move(file_name))
   , line_number_ (line_number)
-  , message_ (message)
+  , message_ (std::move(message))
 {
   std::stringstream sstream;
   sstream << function_name_ << " @ " << file_name_ << " @ " << line_number_ << " : " << message_;

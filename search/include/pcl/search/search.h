@@ -85,7 +85,7 @@ namespace pcl
         using IndicesConstPtr = pcl::IndicesConstPtr;
 
         /** Constructor. */
-        Search (const std::string& name = "", bool sorted = false);
+        Search (std::string  name = "", bool sorted = false);
 
         /** Destructor. */
         virtual

@@ -2,9 +2,11 @@
 #include <pcl/outofcore/visualization/object.h>
 #include <pcl/outofcore/visualization/scene.h>
 
+#include <utility>
+
 // Operators
 // -----------------------------------------------------------------------------
-Object::Object (std::string name): actors_(vtkSmartPointer<vtkActorCollection>::New ()), name_(name)
+Object::Object (std::string name): actors_(vtkSmartPointer<vtkActorCollection>::New ()), name_(std::move(name))
 {
 }
 

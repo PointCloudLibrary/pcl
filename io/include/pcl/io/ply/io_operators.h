@@ -38,6 +38,7 @@
  */
 
 #pragma once
+#include <pcl/io/ply/ply.h>
 
 #include <istream>
 #include <limits>

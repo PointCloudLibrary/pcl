@@ -15,6 +15,7 @@
 #endif
 
 #include <random>
+#include <utility>
 
 // For adding noise:
 static std::minstd_rand rng(std::random_device{}());
@@ -274,7 +275,7 @@ display_tic_toc(std::vector<double>& tic_toc, const std::string& fun_name)
 
 pcl::simulation::RangeLikelihood::RangeLikelihood(
     int rows, int cols, int row_height, int col_width, Scene::Ptr scene)
-: scene_(scene)
+: scene_(std::move(scene))
 , rows_(rows)
 , cols_(cols)
 , row_height_(row_height)

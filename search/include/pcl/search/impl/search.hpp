@@ -40,12 +40,14 @@
 
 #include <pcl/search/search.h>
 
+#include <utility>
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::search::Search<PointT>::Search (const std::string& name, bool sorted)
+pcl::search::Search<PointT>::Search (std::string  name, bool sorted)
   : input_ () 
   , sorted_results_ (sorted)
-  , name_ (name)
+  , name_ (std::move(name))
 {
 }
 

@@ -99,7 +99,7 @@ namespace pcl
        * \param[in] pcapFile Path to a file which contains previously captured data packets.  This parameter is optional
        */
       HDLGrabber (const std::string& correctionsFile = "",
-                  const std::string& pcapFile = "");
+                  std::string  pcapFile = "");
 
       /** \brief Constructor taking a specified IP/port and an optional path to an HDL corrections file.
        * \param[in] ipAddress IP Address that should be used to listen for HDL packets

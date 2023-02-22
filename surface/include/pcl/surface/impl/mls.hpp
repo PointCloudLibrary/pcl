@@ -40,17 +40,19 @@
 #ifndef PCL_SURFACE_IMPL_MLS_H_
 #define PCL_SURFACE_IMPL_MLS_H_
 
-#include <pcl/type_traits.h>
-#include <pcl/surface/mls.h>
+#include <pcl/common/centroid.h>
 #include <pcl/common/common.h> // for getMinMax3D
 #include <pcl/common/copy_point.h>
-#include <pcl/common/centroid.h>
 #include <pcl/common/eigen.h>
 #include <pcl/search/kdtree.h> // for KdTree
 #include <pcl/search/organized.h> // for OrganizedNeighbor
+#include <pcl/surface/mls.h>
+#include <pcl/type_traits.h>
 
 #include <Eigen/Geometry> // for cross
 #include <Eigen/LU> // for inverse
+
+#include <utility>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -436,16 +438,16 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performUpsampling (PointCloudOut &
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::MLSResult::MLSResult (const Eigen::Vector3d &a_query_point,
-                           const Eigen::Vector3d &a_mean,
-                           const Eigen::Vector3d &a_plane_normal,
-                           const Eigen::Vector3d &a_u,
-                           const Eigen::Vector3d &a_v,
-                           const Eigen::VectorXd &a_c_vec,
+pcl::MLSResult::MLSResult (Eigen::Vector3d a_query_point,
+                           Eigen::Vector3d a_mean,
+                           Eigen::Vector3d a_plane_normal,
+                           Eigen::Vector3d a_u,
+                           Eigen::Vector3d a_v,
+                           Eigen::VectorXd a_c_vec,
                            const int a_num_neighbors,
                            const float a_curvature,
                            const int a_order) :
-  query_point (a_query_point), mean (a_mean), plane_normal (a_plane_normal), u_axis (a_u), v_axis (a_v), c_vec (a_c_vec), num_neighbors (a_num_neighbors),
+  query_point (std::move(a_query_point)), mean (std::move(a_mean)), plane_normal (std::move(a_plane_normal)), u_axis (std::move(a_u)), v_axis (std::move(a_v)), c_vec (std::move(a_c_vec)), num_neighbors (a_num_neighbors),
   curvature (a_curvature), order (a_order), valid (true)
 {}
 

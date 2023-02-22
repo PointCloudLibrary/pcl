@@ -43,6 +43,7 @@
 #include <pcl/pcl_macros.h>
 
 #include <limits>
+#include <utility>
 
 namespace pcl {
 namespace registration {
@@ -60,8 +61,8 @@ struct MatchingCandidate {
   , transformation(Eigen::Matrix4f::Identity()){};
 
   /** \brief Value constructor. */
-  MatchingCandidate(float s, const pcl::Correspondences& c, const Eigen::Matrix4f& m)
-  : fitness_score(s), correspondences(c), transformation(m){};
+  MatchingCandidate(float s, pcl::Correspondences  c, Eigen::Matrix4f  m)
+  : fitness_score(s), correspondences(std::move(c)), transformation(std::move(m)){};
 
   /** \brief Destructor. */
   ~MatchingCandidate() = default;

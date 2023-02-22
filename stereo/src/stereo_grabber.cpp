@@ -38,6 +38,8 @@
 #include <pcl/stereo/stereo_grabber.h>
 #include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
 
+#include <utility>
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////// GrabberImplementation //////////////////////
 struct pcl::StereoGrabberBase::StereoGrabberImpl {
@@ -46,7 +48,7 @@ struct pcl::StereoGrabberBase::StereoGrabberImpl {
                     float frames_per_second,
                     bool repeat);
   StereoGrabberImpl(pcl::StereoGrabberBase& grabber,
-                    const std::vector<std::pair<std::string, std::string>>& files,
+                    std::vector<std::pair<std::string, std::string>>  files,
                     float frames_per_second,
                     bool repeat);
   void
@@ -89,14 +91,14 @@ pcl::StereoGrabberBase::StereoGrabberImpl::StereoGrabberImpl(
 ///////////////////////////////////////////////////////////////////////////////////////////
 pcl::StereoGrabberBase::StereoGrabberImpl::StereoGrabberImpl(
     pcl::StereoGrabberBase& grabber,
-    const std::vector<std::pair<std::string, std::string>>& files,
+    std::vector<std::pair<std::string, std::string>>  files,
     float frames_per_second,
     bool repeat)
 : grabber_(grabber)
 , frames_per_second_(frames_per_second)
 , repeat_(repeat)
 , running_(false)
-, pair_files_(files)
+, pair_files_(std::move(files))
 , time_trigger_(1.0 / static_cast<double>(std::max(frames_per_second, 0.001f)),
                 [this] { trigger(); })
 , valid_(false)

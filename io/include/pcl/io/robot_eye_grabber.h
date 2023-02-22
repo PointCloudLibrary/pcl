@@ -70,7 +70,7 @@ namespace pcl
       RobotEyeGrabber ();
 
       /** \brief RobotEyeGrabber constructor taking a specified IP address and data port. */
-      RobotEyeGrabber (const boost::asio::ip::address& ipAddress, unsigned short port=443);
+      RobotEyeGrabber (boost::asio::ip::address  ipAddress, unsigned short port=443);
 
       /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
       ~RobotEyeGrabber () noexcept override;

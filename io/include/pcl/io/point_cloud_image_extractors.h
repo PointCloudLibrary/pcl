@@ -151,16 +151,16 @@ namespace pcl
         };
 
         /** \brief Constructor. */
-        PointCloudImageExtractorWithScaling (const std::string& field_name, const ScalingMethod scaling_method)
-          : field_name_ (field_name)
+        PointCloudImageExtractorWithScaling (std::string  field_name, const ScalingMethod scaling_method)
+          : field_name_ (std::move(field_name))
           , scaling_method_ (scaling_method)
           , scaling_factor_ (1.0f)
         {
         }
 
         /** \brief Constructor. */
-        PointCloudImageExtractorWithScaling (const std::string& field_name, const float scaling_factor)
-          : field_name_ (field_name)
+        PointCloudImageExtractorWithScaling (std::string  field_name, const float scaling_factor)
+          : field_name_ (std::move(field_name))
           , scaling_method_ (SCALING_FIXED_FACTOR)
           , scaling_factor_ (scaling_factor)
         {
@@ -436,3 +436,5 @@ namespace pcl
 }
 
 #include <pcl/io/impl/point_cloud_image_extractors.hpp>
+
+#include <utility>

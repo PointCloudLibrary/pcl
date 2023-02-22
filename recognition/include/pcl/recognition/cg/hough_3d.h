@@ -69,7 +69,7 @@ namespace pcl
           * \param[in] bin_size  size of each bing of the Hough space.
           * \param[in] max_coord maximum (x,y,z) coordinates of the Hough space.
           */
-        HoughSpace3D (const Eigen::Vector3d &min_coord, const Eigen::Vector3d &bin_size, const Eigen::Vector3d &max_coord);
+        HoughSpace3D (Eigen::Vector3d min_coord, Eigen::Vector3d bin_size, const Eigen::Vector3d &max_coord);
 
         /** \brief Reset all cast votes. */
         void

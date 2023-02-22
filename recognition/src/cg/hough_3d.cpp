@@ -37,19 +37,22 @@
  *
  */
 
-#include "pcl/point_types.h"
-#include "pcl/impl/instantiate.hpp"
 #include "pcl/recognition/cg/hough_3d.h"
+
+#include "pcl/impl/instantiate.hpp"
+#include "pcl/point_types.h"
 #include "pcl/recognition/impl/cg/hough_3d.hpp"
+
+#include <utility>
 
 PCL_INSTANTIATE_PRODUCT(Hough3DGrouping, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))
                                          ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))
                                          ((pcl::ReferenceFrame))((pcl::ReferenceFrame)))
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::recognition::HoughSpace3D::HoughSpace3D (const Eigen::Vector3d &min_coord, const Eigen::Vector3d &bin_size, const Eigen::Vector3d &max_coord)
-  : min_coord_ (min_coord)
-  , bin_size_ (bin_size)
+pcl::recognition::HoughSpace3D::HoughSpace3D (Eigen::Vector3d min_coord, Eigen::Vector3d bin_size, const Eigen::Vector3d &max_coord)
+  : min_coord_ (std::move(min_coord))
+  , bin_size_ (std::move(bin_size))
 {
   for (int i = 0; i < 3; ++i)
   {

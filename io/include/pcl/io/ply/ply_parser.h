@@ -40,15 +40,10 @@
 
 #pragma once
 
-#include <pcl/io/ply/ply.h>
 #include <pcl/io/ply/io_operators.h>
+#include <pcl/io/ply/ply.h>
 #include <pcl/pcl_macros.h>
 
-#include <istream>
-#include <memory>
-#include <string>
-#include <tuple>
-#include <vector>
 #include <boost/lexical_cast.hpp> // for lexical_cast
 #include <boost/mpl/fold.hpp> // for fold
 #include <boost/mpl/inherit.hpp> // for inherit
@@ -56,6 +51,13 @@
 #include <boost/mpl/joint_view.hpp> // for joint_view
 #include <boost/mpl/transform.hpp> // for transform
 #include <boost/mpl/vector.hpp> // for vector
+
+#include <istream>
+#include <memory>
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
 
 namespace pcl
 {
@@ -304,7 +306,7 @@ namespace pcl
             
           struct property
           {
-            property (const std::string& name) : name (name) {}
+            property (std::string  name) : name (std::move(name)) {}
             virtual ~property () = default;
             virtual bool parse (class ply_parser& ply_parser, format_type format, std::istream& istream) = 0;
             std::string name;
@@ -317,7 +319,7 @@ namespace pcl
             using callback_type = typename scalar_property_callback_type<scalar_type>::type;
             scalar_property (const std::string& name, callback_type callback)
               : property (name)
-              , callback (callback)
+              , callback (std::move(callback))
             {}
             bool parse (class ply_parser& ply_parser, 
                         format_type format, 
@@ -341,9 +343,9 @@ namespace pcl
                            element_callback_type element_callback, 
                            end_callback_type end_callback)
               : property (name)
-              , begin_callback (begin_callback)
-              , element_callback (element_callback)
-              , end_callback (end_callback)
+              , begin_callback (std::move(begin_callback))
+              , element_callback (std::move(element_callback))
+              , end_callback (std::move(end_callback))
             {}
             bool parse (class ply_parser& ply_parser, 
                         format_type format, 
@@ -362,14 +364,14 @@ namespace pcl
         
           struct element
           {
-            element (const std::string& name, 
+            element (std::string  name, 
                     std::size_t count, 
-                    const begin_element_callback_type& begin_element_callback, 
-                    const end_element_callback_type& end_element_callback)
-              : name (name)
+                    begin_element_callback_type  begin_element_callback, 
+                    end_element_callback_type  end_element_callback)
+              : name (std::move(name))
               , count (count)
-              , begin_element_callback (begin_element_callback)
-              , end_element_callback (end_element_callback)
+              , begin_element_callback (std::move(begin_element_callback))
+              , end_element_callback (std::move(end_element_callback))
             {}
             std::string name;
             std::size_t count;

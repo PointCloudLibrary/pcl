@@ -47,6 +47,7 @@
 
 #include <cmath>
 #include <memory>
+#include <utility>
 
 namespace pcl {
 
@@ -225,10 +226,10 @@ public:
   NDTSingleGrid(PointCloudConstPtr cloud,
                 const Eigen::Vector2f& about,
                 const Eigen::Vector2f& extent,
-                const Eigen::Vector2f& step)
+                Eigen::Vector2f  step)
   : min_(about - extent)
   , max_(min_ + 2 * extent)
-  , step_(step)
+  , step_(std::move(step))
   , cells_((max_[0] - min_[0]) / step_[0], (max_[1] - min_[1]) / step_[1])
   , normal_distributions_(cells_[0], cells_[1])
   {

@@ -41,6 +41,8 @@
 
 #include <pcl/cloud_iterator.h>
 
+#include <utility>
+
 namespace pcl
 {
   /** \brief
@@ -114,9 +116,9 @@ namespace pcl
   class IteratorIdx : public CloudIterator<PointT>::Iterator
   {
     public:
-      IteratorIdx (PointCloud<PointT>& cloud, const Indices& indices)
+      IteratorIdx (PointCloud<PointT>& cloud, Indices  indices)
         : cloud_ (cloud)
-        , indices_ (indices)
+        , indices_ (std::move(indices))
         , iterator_ (indices_.begin ())
       {
       }
@@ -253,9 +255,9 @@ namespace pcl
   {
     public:
       ConstIteratorIdx (const PointCloud<PointT>& cloud,
-                        const Indices& indices)
+                        Indices  indices)
         : cloud_ (cloud)
-        , indices_ (indices)
+        , indices_ (std::move(indices))
         , iterator_ (indices_.begin ())
       {
       }

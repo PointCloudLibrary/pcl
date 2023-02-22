@@ -40,6 +40,8 @@
 
 #include <pcl/features/feature.h>
 
+#include <utility>
+
 namespace pcl
 {
   /// Different histogram interpolation methods
@@ -85,11 +87,11 @@ namespace pcl
        * \param[in] shape_hists_size shape histograms size
        * \param[in] shape_interp shape histograms interpolation method
        */
-      GASDEstimation (const Eigen::Vector3f &view_direction = Eigen::Vector3f (0.0f, 0.0f, 1.0f),
+      GASDEstimation (Eigen::Vector3f view_direction = Eigen::Vector3f (0.0f, 0.0f, 1.0f),
                       const std::size_t shape_half_grid_size = 4,
                       const std::size_t shape_hists_size = 1,
                       const HistogramInterpolationMethod shape_interp = INTERP_TRILINEAR) :
-          view_direction_ (view_direction),
+          view_direction_ (std::move(view_direction)),
           shape_half_grid_size_ (shape_half_grid_size),
           shape_hists_size_ (shape_hists_size),
           shape_interp_ (shape_interp)

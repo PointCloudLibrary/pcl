@@ -35,11 +35,12 @@
  *
  */
 
-#include <pcl/io/robot_eye_grabber.h>
 #include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/console/print.h>
+#include <pcl/io/robot_eye_grabber.h>
 
 #include <string>
+#include <utility>
 
 /////////////////////////////////////////////////////////////////////////////
 pcl::RobotEyeGrabber::RobotEyeGrabber ()
@@ -53,11 +54,11 @@ pcl::RobotEyeGrabber::RobotEyeGrabber ()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-pcl::RobotEyeGrabber::RobotEyeGrabber (const boost::asio::ip::address& ipAddress, unsigned short port)
+pcl::RobotEyeGrabber::RobotEyeGrabber (boost::asio::ip::address  ipAddress, unsigned short port)
   : terminate_thread_ (false)
   , signal_point_cloud_size_ (1000)
   , data_port_ (port)
-  , sensor_address_ (ipAddress)
+  , sensor_address_ (std::move(ipAddress))
 {
   point_cloud_signal_ = createSignal<sig_cb_robot_eye_point_cloud_xyzi> ();
   resetPointCloud ();

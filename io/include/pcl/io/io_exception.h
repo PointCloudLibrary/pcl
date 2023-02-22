@@ -62,10 +62,10 @@ namespace pcl
     class IOException : public std::exception
     {
       public:
-        IOException (const std::string& function_name,
-          const std::string& file_name,
+        IOException (std::string  function_name,
+          std::string  file_name,
           unsigned line_number,
-          const std::string& message);
+          std::string  message);
 
         ~IOException () noexcept override;
 

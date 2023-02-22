@@ -1,6 +1,7 @@
 // C++
 #include <iostream>
 #include <string>
+#include <utility>
 
 // PCL - visualziation
 #include <pcl/visualization/common/common.h>
@@ -46,7 +47,7 @@ Camera::Camera (std::string name)
 
 Camera::Camera (std::string name, vtkSmartPointer<vtkCamera> camera)
   : Object (name)
-  , camera_ (camera)
+  , camera_ (std::move(camera))
   , display_ (false)
 {
   camera_->SetClippingRange(0.0001, 100000);

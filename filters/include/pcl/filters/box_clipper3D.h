@@ -63,7 +63,7 @@ namespace pcl
         * \brief Constructor taking an affine transformation matrix, which allows also shearing of the clipping area
         * \param[in] transformation the 3x3 affine transformation matrix that is used to describe the unit cube
         */
-      BoxClipper3D (const Eigen::Affine3f& transformation);
+      BoxClipper3D (Eigen::Affine3f  transformation);
 
       /**
         * \brief creates a BoxClipper object with a scaled box in general pose

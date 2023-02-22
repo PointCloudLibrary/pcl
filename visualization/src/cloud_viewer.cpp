@@ -41,6 +41,7 @@
 
 #include <mutex>
 #include <thread>
+#include <utility>
 
 namespace pcl
 {
@@ -59,9 +60,9 @@ namespace pcl
     using Ptr = shared_ptr<cloud_show>;
     using ConstPtr = shared_ptr<const cloud_show>;
 
-    cloud_show (const std::string &cloud_name, typename CloudT::ConstPtr cloud,
+    cloud_show (std::string cloud_name, typename CloudT::ConstPtr cloud,
       pcl::visualization::PCLVisualizer::Ptr viewer) :
-      cloud_name (cloud_name), cloud (cloud), viewer (viewer),popped_ (false)
+      cloud_name (std::move(cloud_name)), cloud (std::move(cloud)), viewer (std::move(viewer)),popped_ (false)
     {}
 
     template <typename Handler> void
@@ -136,8 +137,8 @@ namespace pcl
 struct pcl::visualization::CloudViewer::CloudViewer_impl
 {
   ////////////////////////////////////////////////////////////////////////////////////////////
-  CloudViewer_impl (const std::string& window_name) :
-    window_name_ (window_name), has_cloud_ (false), quit_ (false)
+  CloudViewer_impl (std::string  window_name) :
+    window_name_ (std::move(window_name)), has_cloud_ (false), quit_ (false)
   {
     viewer_thread_ = std::thread (&CloudViewer_impl::operator(), this);
     while (!viewer_)

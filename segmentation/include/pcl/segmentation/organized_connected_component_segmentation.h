@@ -39,9 +39,11 @@
 
 #pragma once
 
-#include <pcl/pcl_base.h>
-#include <pcl/PointIndices.h>
 #include <pcl/segmentation/comparator.h>
+#include <pcl/PointIndices.h>
+#include <pcl/pcl_base.h>
+
+#include <utility>
 
 namespace pcl
 {
@@ -78,8 +80,8 @@ namespace pcl
       /** \brief Constructor for OrganizedConnectedComponentSegmentation
         * \param[in] compare A pointer to the comparator to be used for segmentation.  Must be an instance of pcl::Comparator.
         */
-      OrganizedConnectedComponentSegmentation (const ComparatorConstPtr& compare)
-        : compare_ (compare)
+      OrganizedConnectedComponentSegmentation (ComparatorConstPtr  compare)
+        : compare_ (std::move(compare))
       {
       }
 
