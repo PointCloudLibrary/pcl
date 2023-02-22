@@ -320,20 +320,13 @@ find_package(Threads REQUIRED)
 # Eigen3 (required)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
-# Get all propreties that cmake supports
-if(NOT CMAKE_PROPERTY_LIST)
-    execute_process(COMMAND cmake --help-property-list OUTPUT_VARIABLE CMAKE_PROPERTY_LIST)
-    
-    # Convert command output into a CMake list
-    string(REGEX REPLACE ";" "\\\\;" CMAKE_PROPERTY_LIST "${CMAKE_PROPERTY_LIST}")
-    string(REGEX REPLACE "\n" ";" CMAKE_PROPERTY_LIST "${CMAKE_PROPERTY_LIST}")
-endif()
-
 function(print_target_properties tgt)
     if(NOT TARGET ${tgt})
       message("There is no target named '${tgt}'")
       return()
     endif()
+
+    set (CMAKE_PROPERTY_LIST BINARY_DIR IMPORTED INTERFACE_INCLUDE_DIRECTORIES NAME SOURCE_DIR SYSTEM TYPE)
 
     foreach (prop ${CMAKE_PROPERTY_LIST})
         string(REPLACE "<CONFIG>" "${CMAKE_BUILD_TYPE}" prop ${prop})
