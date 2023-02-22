@@ -320,42 +320,6 @@ find_package(Threads REQUIRED)
 # Eigen3 (required)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
-# Get all propreties that cmake supports
-if(NOT CMAKE_PROPERTY_LIST)
-    execute_process(COMMAND cmake --help-property-list OUTPUT_VARIABLE CMAKE_PROPERTY_LIST)
-    
-    # Convert command output into a CMake list
-    string(REGEX REPLACE ";" "\\\\;" CMAKE_PROPERTY_LIST "${CMAKE_PROPERTY_LIST}")
-    string(REGEX REPLACE "\n" ";" CMAKE_PROPERTY_LIST "${CMAKE_PROPERTY_LIST}")
-endif()
-
-function(print_target_properties tgt)
-    if(NOT TARGET ${tgt})
-      message("There is no target named '${tgt}'")
-      return()
-    endif()
-
-    foreach (prop ${CMAKE_PROPERTY_LIST})
-        string(REPLACE "<CONFIG>" "${CMAKE_BUILD_TYPE}" prop ${prop})
-
-        if(property STREQUAL "LOCATION" OR property MATCHES "^LOCATION_" OR property MATCHES "_LOCATION$")
-          continue()
-        endif()
-
-        get_target_property(propval ${tgt} ${prop})
-        if (propval)
-            message ("${tgt} ${prop} = ${propval}")
-        endif()
-    endforeach(prop)
-endfunction(print_target_properties)
-
-if(TARGET Eigen3::Eigen)
-  print_target_properties(Eigen3::Eigen)
-  message("Found Eigen")
-else()
-  message(WARNING "Eigen not found")
-endif()
-
 # FLANN (required)
 find_package(FLANN 1.9.1 REQUIRED)
 if(NOT (${FLANN_LIBRARY_TYPE} MATCHES ${PCL_FLANN_REQUIRED_TYPE}) AND NOT (${PCL_FLANN_REQUIRED_TYPE} MATCHES "DONTCARE"))
