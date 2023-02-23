@@ -43,6 +43,8 @@
 #include <pcl/octree/impl/octree_base.hpp>
 #include <pcl/types.h>
 
+#include <cassert>
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT,
           typename LeafContainerT,
@@ -123,11 +125,7 @@ void
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::
     addPointToCloud(const PointT& point_arg, PointCloudPtr cloud_arg)
 {
-  if (cloud_arg != input_) {
-    PCL_ERROR("[pcl::octree::OctreePointCloud::addPointToCloud] Input cloud argument "
-              "must be equal to input cloud!\n");
-    return;
-  }
+  assert(cloud_arg == input_);
 
   cloud_arg->push_back(point_arg);
 
@@ -145,16 +143,8 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
                     PointCloudPtr cloud_arg,
                     IndicesPtr indices_arg)
 {
-  if (cloud_arg != input_) {
-    PCL_ERROR("[pcl::octree::OctreePointCloud::addPointToCloud] Input cloud argument "
-              "must be equal to input cloud!\n");
-    return;
-  }
-  if (indices_arg != indices_) {
-    PCL_ERROR("[pcl::octree::OctreePointCloud::addPointToCloud] Input indices argument "
-              "must be equal to input point indices!\n");
-    return;
-  }
+  assert(cloud_arg == input_);
+  assert(indices_arg == indices_);
 
   cloud_arg->push_back(point_arg);
 
@@ -745,27 +735,9 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     octree_oversize_y = (octree_side_len - (max_y_ - min_y_)) / 2.0;
     octree_oversize_z = (octree_side_len - (max_z_ - min_z_)) / 2.0;
 
-    if (octree_oversize_x <= -minValue) {
-      PCL_ERROR("[pcl::octree::OctreePointCloud::getKeyBitSize] Octree oversize x (%f) "
-                "must be <= negative of min value (%f)\n",
-                octree_oversize_x,
-                -minValue);
-      return;
-    }
-    if (octree_oversize_y <= -minValue) {
-      PCL_ERROR("[pcl::octree::OctreePointCloud::getKeyBitSize] Octree oversize y (%f) "
-                "must be <= negative of min value (%f)\n",
-                octree_oversize_y,
-                -minValue);
-      return;
-    }
-    if (octree_oversize_z <= -minValue) {
-      PCL_ERROR("[pcl::octree::OctreePointCloud::getKeyBitSize] Octree oversize z (%f) "
-                "must be <= negative of min value (%f)\n",
-                octree_oversize_z,
-                -minValue);
-      return;
-    }
+    assert(octree_oversize_x > -minValue);
+    assert(octree_oversize_y > -minValue);
+    assert(octree_oversize_z > -minValue);
 
     if (octree_oversize_x > minValue) {
       min_x_ -= octree_oversize_x;
@@ -804,18 +776,9 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   key_arg.y = static_cast<uindex_t>((point_arg.y - this->min_y_) / this->resolution_);
   key_arg.z = static_cast<uindex_t>((point_arg.z - this->min_z_) / this->resolution_);
 
-  if (key_arg.x > this->max_key_.x || key_arg.y > this->max_key_.y ||
-      key_arg.z > this->max_key_.z) {
-    PCL_ERROR("[pcl::octree::OctreePointCloud::genOctreeKeyforPoint] The key for the "
-              "input point (%ul, %ul, %ul) must be <= the max key (%ul, %ul, %ul)\n",
-              key_arg.x,
-              key_arg.y,
-              key_arg.z,
-              this->max_key_.x,
-              this->max_key_.y,
-              this->max_key_.z);
-    return;
-  }
+  assert(key_arg.x <= this->max_key_.x);
+  assert(key_arg.y <= this->max_key_.y);
+  assert(key_arg.z <= this->max_key_.z);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
