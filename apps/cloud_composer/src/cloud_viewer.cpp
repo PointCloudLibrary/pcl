@@ -12,11 +12,6 @@ pcl::cloud_composer::CloudViewer::CloudViewer (QWidget* parent)
            this, SLOT (modelChanged (int)));
 }
 
-pcl::cloud_composer::CloudViewer::~CloudViewer ()
-{
-  
-}
-
 void
 pcl::cloud_composer::CloudViewer::addModel (ProjectModel* new_model)
 {

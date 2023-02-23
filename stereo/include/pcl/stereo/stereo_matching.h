@@ -452,7 +452,7 @@ private:
  * This class implements an adaptive-cost stereo matching algorithm based on 2-pass
  * Scanline Optimization. The algorithm is inspired by the paper: [1] L. Wang et al.,
  * "High Quality Real-time Stereo using Adaptive Cost Aggregation and Dynamic
- * Programming", 3DPVT 2006 Cost aggregation is performed using adaptive weigths
+ * Programming", 3DPVT 2006 Cost aggregation is performed using adaptive weights
  * computed on a single column as proposed in [1]. Instead of using Dynamic Programming
  * as in [1], the optimization is performed via 2-pass Scanline Optimization. The
  * algorithm is based on the Sum of Absolute Differences (SAD) matching function Only

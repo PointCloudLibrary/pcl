@@ -135,7 +135,7 @@ pcl::MTLReader::fillRGBfromRGB (const std::vector<std::string>& split_line,
 std::vector<pcl::TexMaterial>::const_iterator
 pcl::MTLReader::getMaterial (const std::string& material_name) const
 {
-  std::vector<pcl::TexMaterial>::const_iterator mat_it = materials_.begin ();
+  auto mat_it = materials_.begin ();
   for (; mat_it != materials_.end (); ++mat_it)
     if (mat_it->tex_name == material_name)
       break;
@@ -380,7 +380,7 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
         continue;
 
       // Trim the line
-      //TOOD: we can easily do this without boost
+      //TODO: we can easily do this without boost
       boost::trim (line);
       
       // Ignore comments
@@ -678,7 +678,6 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
   try
   {
     std::size_t vn_idx = 0;
-    std::size_t vt_idx = 0;
 
     while (!fs.eof ())
     {
@@ -747,7 +746,6 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
             coordinates.emplace_back(c[0], c[1]);
           else
             coordinates.emplace_back(c[0]/c[2], c[1]/c[2]);
-          ++vt_idx;
         }
         catch (const boost::bad_lexical_cast&)
         {
@@ -812,9 +810,9 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
   }
 
   double total_time = tt.toc ();
-  PCL_DEBUG ("[pcl::OBJReader::read] Loaded %s as a TextureMesh in %g ms with %g points, %g texture materials, %g polygons.\n",
+  PCL_DEBUG ("[pcl::OBJReader::read] Loaded %s as a TextureMesh in %g ms with %zu points, %zu texture materials, %zu polygons.\n",
              file_name.c_str (), total_time,
-             v_idx -1, mesh.tex_materials.size (), f_idx -1);
+             v_idx, mesh.tex_materials.size (), f_idx);
   fs.close ();
   return (0);
 }
@@ -956,9 +954,9 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
   }
 
   double total_time = tt.toc ();
-  PCL_DEBUG ("[pcl::OBJReader::read] Loaded %s as a PolygonMesh in %g ms with %g points and %g polygons.\n",
+  PCL_DEBUG ("[pcl::OBJReader::read] Loaded %s as a PolygonMesh in %g ms with %zu points and %zu polygons.\n",
              file_name.c_str (), total_time,
-             mesh.cloud.width * mesh.cloud.height, mesh.polygons.size ());
+             static_cast<std::size_t> (mesh.cloud.width * mesh.cloud.height), mesh.polygons.size ());
   fs.close ();
   return (0);
 }
@@ -986,10 +984,10 @@ pcl::io::saveOBJFile (const std::string &file_name,
   /* Write 3D information */
   // number of points
   unsigned nr_points  = tex_mesh.cloud.width * tex_mesh.cloud.height;
-  unsigned point_size = static_cast<unsigned> (tex_mesh.cloud.data.size () / nr_points);
+  auto point_size = static_cast<unsigned> (tex_mesh.cloud.data.size () / nr_points);
 
   // mesh size
-  unsigned nr_meshes = static_cast<unsigned> (tex_mesh.tex_polygons.size ());
+  auto nr_meshes = static_cast<unsigned> (tex_mesh.tex_polygons.size ());
   // number of faces for header
   unsigned nr_faces = 0;
   for (unsigned m = 0; m < nr_meshes; ++m)
@@ -1165,9 +1163,9 @@ pcl::io::saveOBJFile (const std::string &file_name,
   // number of points
   int nr_points  = mesh.cloud.width * mesh.cloud.height;
   // point size
-  unsigned point_size = static_cast<unsigned> (mesh.cloud.data.size () / nr_points);
+  auto point_size = static_cast<unsigned> (mesh.cloud.data.size () / nr_points);
   // number of faces for header
-  unsigned nr_faces = static_cast<unsigned> (mesh.polygons.size ());
+  auto nr_faces = static_cast<unsigned> (mesh.polygons.size ());
   // Do we have vertices normals?
   int normal_index = getFieldIndex (mesh.cloud, "normal_x");
 

@@ -509,7 +509,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     adoptBoundingBoxToPoint(const PointT& point_arg)
 {
 
-  const float minValue = std::numeric_limits<float>::epsilon();
+  constexpr float minValue = std::numeric_limits<float>::epsilon();
 
   // increase octree size until point fits into bounding box
   while (true) {
@@ -713,7 +713,7 @@ void
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::
     getKeyBitSize()
 {
-  const float minValue = std::numeric_limits<float>::epsilon();
+  constexpr float minValue = std::numeric_limits<float>::epsilon();
 
   // find maximum key values for x, y, z
   const auto max_key_x =

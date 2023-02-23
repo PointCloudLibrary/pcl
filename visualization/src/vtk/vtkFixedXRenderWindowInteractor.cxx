@@ -511,7 +511,7 @@ void vtkXRenderWindowInteractor::DispatchEvent(XEvent* event)
         // just getting the expose configure event
         event = &result;
       }
-      XExposeEvent* exposeEvent = reinterpret_cast<XExposeEvent*>(event);
+      auto* exposeEvent = reinterpret_cast<XExposeEvent*>(event);
       this->SetEventSize(exposeEvent->width, exposeEvent->height);
       xp = exposeEvent->x;
       yp = exposeEvent->y;
@@ -660,7 +660,7 @@ void vtkXRenderWindowInteractor::DispatchEvent(XEvent* event)
       XSetInputFocus(this->DisplayId, this->WindowId, RevertToPointerRoot, CurrentTime);
       if (this->Enabled)
       {
-        XEnterWindowEvent* e = reinterpret_cast<XEnterWindowEvent*>(event);
+        auto* e = reinterpret_cast<XEnterWindowEvent*>(event);
         this->SetEventInformationFlipY(
           e->x, e->y, (e->state & ControlMask) != 0, (e->state & ShiftMask) != 0);
         this->SetAltKey(((reinterpret_cast<XButtonEvent*>(event))->state & Mod1Mask) ? 1 : 0);
@@ -673,7 +673,7 @@ void vtkXRenderWindowInteractor::DispatchEvent(XEvent* event)
     {
       if (this->Enabled)
       {
-        XLeaveWindowEvent* e = reinterpret_cast<XLeaveWindowEvent*>(event);
+        auto* e = reinterpret_cast<XLeaveWindowEvent*>(event);
         this->SetEventInformationFlipY(
           e->x, e->y, (e->state & ControlMask) != 0, (e->state & ShiftMask) != 0);
         this->SetAltKey(((reinterpret_cast<XButtonEvent*>(event))->state & Mod1Mask) ? 1 : 0);
@@ -794,7 +794,7 @@ void vtkXRenderWindowInteractor::DispatchEvent(XEvent* event)
       this->InvokeEvent(vtkCommand::DropFilesEvent, filePaths);
       XFree(data);
 
-      // Inform the source the the drag and drop operation was sucessfull
+      // Inform the source the the drag and drop operation was successful
       XEvent reply;
       memset(&reply, 0, sizeof(reply));
 

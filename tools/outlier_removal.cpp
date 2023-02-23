@@ -96,7 +96,7 @@ loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud,
 
 void
 compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output,
-         std::string method,
+         const std::string& method,
          int min_pts, double radius,
          int mean_k, double std_dev_mul, bool negative, bool keep_organized)
 {
@@ -111,7 +111,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   if (keep_organized)
   {
     xyz_cloud = xyz_cloud_pre;
-    for (int i = 0; i < int (xyz_cloud->size ()); ++i)
+    for (int i = 0; i < static_cast<int>(xyz_cloud->size ()); ++i)
       valid_indices.push_back (i);
   }
   else

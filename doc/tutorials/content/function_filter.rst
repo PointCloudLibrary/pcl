@@ -4,7 +4,7 @@ Removing outliers using a custom non-destructive condition
 ----------------------------------------------------------
 
 This document demonstrates how to use the FunctionFilter class to remove points from a PointCloud that do not satisfy a custom criteria. This is a cleaner
-and faster appraoch compared to ConditionalRemoval filter or a `custom Condition class <https://cpp-optimizations.netlify.app/pcl_filter/>`_.
+and faster approach compared to ConditionalRemoval filter or a `custom Condition class <https://cpp-optimizations.netlify.app/pcl_filter/>`_.
 
 .. note::
    Advanced users can use the FunctorFilter class that can provide a small but measurable speedup when used with a `lambda <https://en.cppreference.com/w/cpp/language/lambda>`_.

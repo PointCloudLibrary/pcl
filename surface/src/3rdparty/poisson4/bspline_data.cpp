@@ -44,7 +44,7 @@ BSplineElements<1>::upSample(BSplineElements<1>& high) const
 {
   high.resize(size() * 2);
   high.assign(high.size(), BSplineElementCoefficients<1>());
-  for (int i = 0; i < int(size()); i++) {
+  for (int i = 0; i < static_cast<int>(size()); i++) {
     high[2 * i + 0][0] += 1 * (*this)[i][0];
     high[2 * i + 0][1] += 0 * (*this)[i][0];
     high[2 * i + 1][0] += 2 * (*this)[i][0];
@@ -71,7 +71,7 @@ BSplineElements<2>::upSample(BSplineElements<2>& high) const
 
   high.resize(size() * 2);
   high.assign(high.size(), BSplineElementCoefficients<2>());
-  for (int i = 0; i < int(size()); i++) {
+  for (int i = 0; i < static_cast<int>(size()); i++) {
     high[2 * i + 0][0] += 1 * (*this)[i][0];
     high[2 * i + 0][1] += 0 * (*this)[i][0];
     high[2 * i + 0][2] += 0 * (*this)[i][0];

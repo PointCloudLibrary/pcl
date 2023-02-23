@@ -62,10 +62,10 @@ main ()
 
   // Output points
   std::cout << "Output from getPointIndicesFromNewVoxels:" << std::endl;
-  for (std::size_t i = 0; i < newPointIdxVector.size (); ++i)
+  for (std::size_t i = 0; i < newPointIdxVector.size (); ++i){
     std::cout << i << "# Index:" << newPointIdxVector[i]
               << "  Point:" << (*cloudB)[newPointIdxVector[i]].x << " "
               << (*cloudB)[newPointIdxVector[i]].y << " "
               << (*cloudB)[newPointIdxVector[i]].z << std::endl;
-
+  }
 }

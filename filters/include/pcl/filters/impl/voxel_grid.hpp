@@ -59,6 +59,11 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
   // Get the fields list and the distance field index
   std::vector<pcl::PCLPointField> fields;
   int distance_idx = pcl::getFieldIndex<PointT> (distance_field_name, fields);
+  if (distance_idx < 0 || fields.empty()) {
+    PCL_ERROR ("[pcl::getMinMax3D] Could not find field with name '%s'!\n", distance_field_name.c_str());
+    return;
+  }
+  const auto field_offset = fields[distance_idx].offset;
 
   float distance_value;
   // If dense, no need to check for NaNs
@@ -67,8 +72,8 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
     for (const auto& point: *cloud)
     {
       // Get the distance value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
-      memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
+      const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
+      memcpy (&distance_value, pt_data + field_offset, sizeof (float));
 
       if (limit_negative)
       {
@@ -93,8 +98,8 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
     for (const auto& point: *cloud)
     {
       // Get the distance value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
-      memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
+      const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
+      memcpy (&distance_value, pt_data + field_offset, sizeof (float));
 
       if (limit_negative)
       {
@@ -136,6 +141,11 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
   // Get the fields list and the distance field index
   std::vector<pcl::PCLPointField> fields;
   int distance_idx = pcl::getFieldIndex<PointT> (distance_field_name, fields);
+  if (distance_idx < 0 || fields.empty()) {
+    PCL_ERROR ("[pcl::getMinMax3D] Could not find field with name '%s'!\n", distance_field_name.c_str());
+    return;
+  }
+  const auto field_offset = fields[distance_idx].offset;
 
   float distance_value;
   // If dense, no need to check for NaNs
@@ -144,8 +154,8 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
     for (const auto &index : indices)
     {
       // Get the distance value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&(*cloud)[index]);
-      memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
+      const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&(*cloud)[index]);
+      memcpy (&distance_value, pt_data + field_offset, sizeof (float));
 
       if (limit_negative)
       {
@@ -170,8 +180,8 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
     for (const auto &index : indices)
     {
       // Get the distance value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&(*cloud)[index]);
-      memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
+      const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&(*cloud)[index]);
+      memcpy (&distance_value, pt_data + field_offset, sizeof (float));
 
       if (limit_negative)
       {
@@ -272,8 +282,11 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     // Get the distance field index
     std::vector<pcl::PCLPointField> fields;
     int distance_idx = pcl::getFieldIndex<PointT> (filter_field_name_, fields);
-    if (distance_idx == -1)
-      PCL_WARN ("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.\n", getClassName ().c_str (), distance_idx);
+    if (distance_idx == -1) {
+      PCL_ERROR ("[pcl::%s::applyFilter] Invalid filter field name (%s).\n", getClassName ().c_str (), filter_field_name_.c_str());
+      return;
+    }
+    const auto field_offset = fields[distance_idx].offset;
 
     // First pass: go over all points and insert them into the index_vector vector
     // with calculated idx. Points with the same idx value will contribute to the
@@ -286,9 +299,9 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
           continue;
 
       // Get the distance value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&(*input_)[index]);
+      const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&(*input_)[index]);
       float distance_value = 0;
-      memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
+      memcpy (&distance_value, pt_data + field_offset, sizeof (float));
 
       if (filter_limit_negative_)
       {

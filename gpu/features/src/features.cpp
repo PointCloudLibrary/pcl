@@ -209,9 +209,6 @@ pcl::gpu::FPFHEstimation::FPFHEstimation()
     static_assert(sizeof(FPFHEstimation::NormalType) == sizeof(device::NormalType), "Normal sizes do not match");
 }
 
-pcl::gpu::FPFHEstimation::~FPFHEstimation() {}
-
-
 void pcl::gpu::FPFHEstimation::compute(const PointCloud& cloud, const Normals& normals, const NeighborIndices& neighbours, DeviceArray2D<FPFHSignature33>& features)
 {   
     assert( cloud.size() == normals.size() );    

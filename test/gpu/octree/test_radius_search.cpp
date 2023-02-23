@@ -68,7 +68,7 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
     data.shared_radius = data.cube_size/30.f;
     data.printParams();
 
-    const int max_answers = 333;
+    constexpr int max_answers = 333;
 
     //generate
     data();

@@ -204,7 +204,7 @@ namespace pcl
         * \param[out] cloud the resultant point cloud dataset to be filled.
         * \param[in] pcd_version the PCD version of the stream (from readHeader()).
         * \param[in] compressed indicates whether the PCD block contains compressed
-        * data.  This should be true if the data_type returne by readHeader() == 2.
+        * data.  This should be true if the data_type returned by readHeader() == 2.
         * \param[in] data_idx the offset of the body, as reported by readHeader().
         *
         * \return
@@ -399,6 +399,17 @@ namespace pcl
         */
       int
       writeBinary (const std::string &file_name, const pcl::PCLPointCloud2 &cloud,
+                   const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (),
+                   const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity ());
+
+      /** \brief Save point cloud data to a std::ostream containing n-D points, in BINARY format
+        * \param[out] os the stream into which to write the data
+        * \param[in] cloud the point cloud data message
+        * \param[in] origin the sensor acquisition origin
+        * \param[in] orientation the sensor acquisition orientation
+        */
+      int
+      writeBinary (std::ostream &os, const pcl::PCLPointCloud2 &cloud,
                    const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (),
                    const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity ());
 

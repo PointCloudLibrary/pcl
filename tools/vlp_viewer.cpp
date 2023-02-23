@@ -224,7 +224,7 @@ main (int argc,
 
   VLPGrabber grabber (pcapFile);
 
-  PointCloudColorHandlerGenericField<PointXYZI> *color_handler = new PointCloudColorHandlerGenericField<PointXYZI> ("intensity");
+  auto *color_handler = new PointCloudColorHandlerGenericField<PointXYZI> ("intensity");
 
   SimpleVLPViewer<PointXYZI> v (grabber, color_handler);
   v.run ();

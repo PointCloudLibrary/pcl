@@ -48,6 +48,9 @@
 #include <pcl/io/openni_camera/openni_device_primesense.h>
 #include <pcl/io/openni_camera/openni_device_xtion.h>
 #include <pcl/io/openni_camera/openni_device_oni.h>
+
+#include <boost/tokenizer.hpp>
+
 #include <sstream>
 #include <iostream>
 #include <algorithm>
@@ -193,12 +196,12 @@ openni_wrapper::OpenNIDriver::updateDeviceList ()
 #ifdef _WIN32
     if (vendor_id == 0x45e)
     {
-      strcpy (const_cast<char*> (device_context_[device].device_node.GetDescription ().strVendor), "Microsoft");
-      strcpy (const_cast<char*> (device_context_[device].device_node.GetDescription ().strName), "Xbox NUI Camera");
+      strcpy (const_cast<char*> (device.device_node.GetDescription ().strVendor), "Microsoft");
+      strcpy (const_cast<char*> (device.device_node.GetDescription ().strName), "Xbox NUI Camera");
     }
     else
 #endif
-    if (vendor_id == 0x1d27 && device.image_node.get () == nullptr)
+    if (vendor_id == 0x1d27 && device.image_node == nullptr)
     {
       strcpy (const_cast<char*> (device.device_node.GetDescription ().strVendor), "ASUS");
       strcpy (const_cast<char*> (device.device_node.GetDescription ().strName), "Xtion Pro");
@@ -218,7 +221,7 @@ openni_wrapper::OpenNIDriver::stopAll ()
 
 openni_wrapper::OpenNIDriver::~OpenNIDriver () noexcept
 {
-  // no exception during destuctor
+  // no exception during destructor
   try
   {
     stopAll ();
@@ -291,7 +294,7 @@ openni_wrapper::OpenNIDriver::getDeviceByIndex (unsigned index) const
 openni_wrapper::OpenNIDevice::Ptr
 openni_wrapper::OpenNIDriver::getDeviceBySerialNumber (const std::string& serial_number) const
 {
-  std::map<std::string, unsigned>::const_iterator it = serial_map_.find (serial_number);
+  auto it = serial_map_.find (serial_number);
 
   if (it != serial_map_.end ())
   {
@@ -309,10 +312,10 @@ openni_wrapper::OpenNIDriver::getDeviceBySerialNumber (const std::string& serial
 openni_wrapper::OpenNIDevice::Ptr
 openni_wrapper::OpenNIDriver::getDeviceByAddress (unsigned char bus, unsigned char address) const
 {
-  std::map<unsigned char, std::map<unsigned char, unsigned> >::const_iterator busIt = bus_map_.find (bus);
+  auto busIt = bus_map_.find (bus);
   if (busIt != bus_map_.end ())
   {
-    std::map<unsigned char, unsigned>::const_iterator devIt = busIt->second.find (address);
+    auto devIt = busIt->second.find (address);
     if (devIt != busIt->second.end ())
     {
       return getDeviceByIndex (devIt->second);
@@ -350,13 +353,13 @@ openni_wrapper::OpenNIDriver::getDeviceInfos () noexcept
       continue;
 
     std::uint8_t address = libusb_get_device_address (device);
-    std::map<unsigned char, unsigned>::const_iterator addressIt = busIt->second.find (address);
+    auto addressIt = busIt->second.find (address);
     if (addressIt == busIt->second.end ())
       continue;
 
     unsigned nodeIdx = addressIt->second;
     xn::NodeInfo& current_node = device_context_[nodeIdx].device_node;
-    XnProductionNodeDescription& description = const_cast<XnProductionNodeDescription&>(current_node.GetDescription ());
+    auto& description = const_cast<XnProductionNodeDescription&>(current_node.GetDescription ());
 
     libusb_device_descriptor descriptor;
     result = libusb_get_device_descriptor (devices[devIdx], &descriptor);

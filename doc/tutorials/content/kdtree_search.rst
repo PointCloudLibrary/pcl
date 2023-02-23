@@ -146,4 +146,4 @@ Once you have run it you should see something similar to this::
     356.962 247.285 514.959 (squared distance: 50423.7)
     282.065 509.488 516.216 (squared distance: 50730.4)
 
-.. [Wikipedia] http://en.wikipedia.org/wiki/K-d_tree
+.. [Wikipedia] https://en.wikipedia.org/wiki/K-d_tree

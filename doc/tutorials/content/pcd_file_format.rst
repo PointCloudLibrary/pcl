@@ -22,15 +22,15 @@ graphics and computational geometry communities in particular, have created
 numerous formats to describe arbitrary polygons and point clouds acquired using
 laser scanners. Some of these formats include:
 
-* `PLY <http://en.wikipedia.org/wiki/PLY_(file_format)>`_ - a polygon file format, developed at Stanford University by Turk et al
+* `PLY <https://en.wikipedia.org/wiki/PLY_(file_format)>`_ - a polygon file format, developed at Stanford University by Turk et al
 
-* `STL <http://en.wikipedia.org/wiki/STL_(file_format)>`_ - a file format native to the stereolithography CAD software created by 3D Systems
+* `STL <https://en.wikipedia.org/wiki/STL_(file_format)>`_ - a file format native to the stereolithography CAD software created by 3D Systems
 
-* `OBJ <http://en.wikipedia.org/wiki/Wavefront_.obj_file>`_ - a geometry definition file format first developed by Wavefront Technologies 
+* `OBJ <https://en.wikipedia.org/wiki/Wavefront_.obj_file>`_ - a geometry definition file format first developed by Wavefront Technologies
 
-* `X3D <http://en.wikipedia.org/wiki/X3D>`_ - the ISO standard XML-based file format for representing 3D computer graphics data
+* `X3D <https://en.wikipedia.org/wiki/X3D>`_ - the ISO standard XML-based file format for representing 3D computer graphics data
 
-* `and many others <http://en.wikipedia.org/wiki/Category:Graphics_file_formats>`_
+* `and many others <https://en.wikipedia.org/wiki/Category:Graphics_file_formats>`_
 
 All the above file formats suffer from several shortcomings, as explained in
 the next sections -- which is natural, as they were created for a different

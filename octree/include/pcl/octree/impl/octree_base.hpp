@@ -321,7 +321,7 @@ OctreeBase<LeafContainerT, BranchContainerT>::createLeafRecursive(
 
       // recursively proceed with indexed child branch
       return createLeafRecursive(key_arg,
-                                 depth_mask_arg / 2,
+                                 depth_mask_arg >> 1,
                                  childBranch,
                                  return_leaf_arg,
                                  parent_of_leaf_arg);
@@ -338,7 +338,7 @@ OctreeBase<LeafContainerT, BranchContainerT>::createLeafRecursive(
     case BRANCH_NODE:
       // recursively proceed with indexed child branch
       return createLeafRecursive(key_arg,
-                                 depth_mask_arg / 2,
+                                 depth_mask_arg >> 1,
                                  static_cast<BranchNode*>(child_node),
                                  return_leaf_arg,
                                  parent_of_leaf_arg);
@@ -378,7 +378,7 @@ OctreeBase<LeafContainerT, BranchContainerT>::findLeafRecursive(
       BranchNode* child_branch;
       child_branch = static_cast<BranchNode*>(child_node);
 
-      findLeafRecursive(key_arg, depth_mask_arg / 2, child_branch, result_arg);
+      findLeafRecursive(key_arg, depth_mask_arg >> 1, child_branch, result_arg);
       break;
 
     case LEAF_NODE:
@@ -416,7 +416,7 @@ OctreeBase<LeafContainerT, BranchContainerT>::deleteLeafRecursive(
       child_branch = static_cast<BranchNode*>(child_node);
 
       // recursively explore the indexed child branch
-      b_has_children = deleteLeafRecursive(key_arg, depth_mask_arg / 2, child_branch);
+      b_has_children = deleteLeafRecursive(key_arg, depth_mask_arg >> 1, child_branch);
 
       if (!b_has_children) {
         // child branch does not own any sub-child nodes anymore -> delete child branch
@@ -482,7 +482,7 @@ OctreeBase<LeafContainerT, BranchContainerT>::serializeTreeRecursive(
         break;
       }
       case LEAF_NODE: {
-        LeafNode* child_leaf = static_cast<LeafNode*>(childNode);
+        auto* child_leaf = static_cast<LeafNode*>(childNode);
 
         if (leaf_container_vector_arg)
           leaf_container_vector_arg->push_back(child_leaf->getContainerPtr());
@@ -535,7 +535,7 @@ OctreeBase<LeafContainerT, BranchContainerT>::deserializeTreeRecursive(
 
           // recursively proceed with new child branch
           deserializeTreeRecursive(newBranch,
-                                   depth_mask_arg / 2,
+                                   depth_mask_arg >> 1,
                                    key_arg,
                                    binary_tree_input_it_arg,
                                    binary_tree_input_it_end_arg,

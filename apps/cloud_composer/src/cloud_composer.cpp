@@ -10,6 +10,7 @@
 #include <pcl/apps/cloud_composer/signal_multiplexer.h>
 #include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
 
+#include <QActionGroup>
 #include <QMessageBox>
 #include <QPluginLoader>
 #include <QUndoGroup>

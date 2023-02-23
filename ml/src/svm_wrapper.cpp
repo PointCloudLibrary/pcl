@@ -56,7 +56,7 @@ pcl::SVM::readline(FILE* input)
   while (strrchr(line_, '\n') == nullptr) {
     max_line_len_ *= 2;
     line_ = static_cast<char*>(realloc(line_, max_line_len_));
-    int len = int(strlen(line_));
+    int len = static_cast<int>(strlen(line_));
 
     // if the new read part of the string is unavailable, break the while
     if (fgets(line_ + len, max_line_len_ - len, input) == nullptr)
@@ -71,7 +71,7 @@ pcl::SVMTrain::doCrossValidation()
 {
   int total_correct = 0;
   double sumv = 0, sumy = 0, sumvv = 0, sumyy = 0, sumvy = 0;
-  double* target = Malloc(double, prob_.l);
+  double* target;
 
   // number of fold for the cross validation (n of folds = number of splitting of the
   // input dataset)
@@ -79,6 +79,7 @@ pcl::SVMTrain::doCrossValidation()
     fprintf(stderr, "n-fold cross validation: n must >= 2\n");
     return;
   }
+  target = Malloc(double, prob_.l);
 
   svm_cross_validation(&prob_, &param_, nr_fold_, target); // perform cross validation
 
@@ -165,7 +166,7 @@ pcl::SVM::adaptLibSVMToInput(std::vector<SVMData>& training_set, svm_problem pro
 
       if (std::isfinite(prob.x[i][j].value)) {
         seed.idx = prob.x[i][j].index;
-        seed.value = float(prob.x[i][j].value);
+        seed.value = static_cast<float>(prob.x[i][j].value);
         parent.SV.push_back(seed);
       }
 
@@ -189,7 +190,7 @@ pcl::SVM::adaptInputToLibSVM(std::vector<SVMData> training_set, svm_problem& pro
     return;
   }
 
-  prob.l = int(training_set.size()); // n of elements/points
+  prob.l = static_cast<int>(training_set.size()); // n of elements/points
   prob.y = Malloc(double, prob.l);
   prob.x = Malloc(struct svm_node*, prob.l);
 
@@ -205,17 +206,16 @@ pcl::SVM::adaptInputToLibSVM(std::vector<SVMData> training_set, svm_problem& pro
 
     int k = 0;
 
-    for (std::size_t j = 0; j < training_set[i].SV.size(); j++)
-      if (training_set[i].SV[j].idx != -1 &&
-          std::isfinite(training_set[i].SV[j].value)) {
-        prob.x[i][k].index = training_set[i].SV[j].idx;
-        if (training_set[i].SV[j].idx < scaling_.max &&
-            scaling_.obj[training_set[i].SV[j].idx].index == 1)
-          prob.x[i][k].value = training_set[i].SV[j].value /
-                               scaling_.obj[training_set[i].SV[j].idx].value;
-        else
-          prob.x[i][k].value = training_set[i].SV[j].value;
-        k++;
+    for (const auto& train_SV : training_set[i].SV)
+      if (train_SV.idx != -1 && std::isfinite(train_SV.value)) {
+        prob.x[i][k].index = train_SV.idx;
+        if (train_SV.idx < scaling_.max && scaling_.obj[train_SV.idx].index == 1) {
+          prob.x[i][k].value = train_SV.value / scaling_.obj[train_SV.idx].value;
+        }
+        else {
+          prob.x[i][k].value = train_SV.value;
+        }
+        ++k;
       }
 
     prob.x[i][k].index = -1;
@@ -253,8 +253,7 @@ pcl::SVMTrain::trainClassifier()
     doCrossValidation();
   }
   else {
-    SVMModel* out;
-    out = static_cast<SVMModel*>(svm_train(&prob_, &param_));
+    auto* out = reinterpret_cast<SVMModel*>(svm_train(&prob_, &param_));
     if (out == nullptr) {
       PCL_ERROR("[pcl::%s::trainClassifier] Error taining the classifier model.\n",
                 getClassName().c_str());
@@ -372,7 +371,7 @@ pcl::SVM::loadProblem(const char* filename, svm_problem& prob)
       // std::cout << idx << ":" << val<< " ";
       errno = 0;
 
-      x_space_[j].index = int(strtol(idx, &endptr, 10));
+      x_space_[j].index = static_cast<int>(strtol(idx, &endptr, 10));
 
       if (endptr == idx || errno != 0 || *endptr != '\0' ||
           x_space_[j].index <= inst_max_index)
@@ -409,7 +408,8 @@ pcl::SVM::loadProblem(const char* filename, svm_problem& prob)
         return false;
       }
 
-      if (int(prob.x[i][0].value) <= 0 || int(prob.x[i][0].value) > max_index) {
+      if (static_cast<int>(prob.x[i][0].value) <= 0 ||
+          static_cast<int>(prob.x[i][0].value) > max_index) {
         PCL_ERROR("[pcl::%s] Wrong input format: sample_serial_number out of range.\n",
                   getClassName().c_str());
         return false;
@@ -499,8 +499,7 @@ pcl::SVM::saveProblemNorm(const char* filename,
 bool
 pcl::SVMClassify::loadClassifierModel(const char* filename)
 {
-  SVMModel* out;
-  out = static_cast<SVMModel*>(svm_load_model(filename));
+  auto* out = reinterpret_cast<SVMModel*>(svm_load_model(filename));
   if (out == nullptr) {
     PCL_ERROR("[pcl::%s::loadClassifierModel] Can't open classifier model %s.\n",
               getClassName().c_str(),
@@ -554,7 +553,7 @@ pcl::SVMClassify::classificationTest()
   if (predict_probability_) {
     if (svm_check_probability_model(&model_) == 0) {
       PCL_WARN("[pcl::%s::classificationTest] Classifier model does not support "
-               "probabiliy estimates. Automatically disabled.\n",
+               "probability estimates. Automatically disabled.\n",
                getClassName().c_str());
       predict_probability_ = false;
     }
@@ -643,7 +642,7 @@ pcl::SVMClassify::classificationTest()
   else {
     pcl::console::print_info(" - Accuracy (classification) = ");
     pcl::console::print_value(
-        "%g%% (%d/%d)\n", double(correct) / total * 100, correct, total);
+        "%g%% (%d/%d)\n", static_cast<double>(correct) / total * 100, correct, total);
   }
 
   if (predict_probability_)
@@ -669,9 +668,10 @@ pcl::SVMClassify::classification()
 
   if (predict_probability_) {
     if (svm_check_probability_model(&model_) == 0) {
-      PCL_WARN("[pcl::%s::classification] Classifier model does not support probabiliy "
-               "estimates. Automatically disabled.\n",
-               getClassName().c_str());
+      PCL_WARN(
+          "[pcl::%s::classification] Classifier model does not support probability "
+          "estimates. Automatically disabled.\n",
+          getClassName().c_str());
       predict_probability_ = false;
     }
   }
@@ -682,8 +682,6 @@ pcl::SVMClassify::classification()
                getClassName().c_str());
   }
 
-  // int correct = 0;
-  int total = 0;
   int svm_type = svm_get_svm_type(&model_);
   int nr_class = svm_get_nr_class(&model_);
 
@@ -726,8 +724,6 @@ pcl::SVMClassify::classification()
       prediction_[ii].push_back(predict_label);
     }
 
-    ++total;
-
     ii++;
   }
 
@@ -750,9 +746,10 @@ pcl::SVMClassify::classification(pcl::SVMData in)
 
   if (predict_probability_) {
     if (svm_check_probability_model(&model_) == 0) {
-      PCL_WARN("[pcl::%s::classification] Classifier model does not support probabiliy "
-               "estimates. Automatically disabled.\n",
-               getClassName().c_str());
+      PCL_WARN(
+          "[pcl::%s::classification] Classifier model does not support probability "
+          "estimates. Automatically disabled.\n",
+          getClassName().c_str());
       predict_probability_ = false;
     }
   }

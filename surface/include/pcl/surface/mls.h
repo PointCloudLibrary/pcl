@@ -648,7 +648,7 @@ namespace pcl
       /** \brief Number of coefficients, to be computed from the requested order.*/
       int nr_coeff_;
 
-      /** \brief Collects for each point in output the corrseponding point in the input. */
+      /** \brief Collects for each point in output the corresponding point in the input. */
       PointIndicesPtr corresponding_input_indices_;
 
       /** \brief Search for the nearest neighbors of a given point using a radius search

@@ -136,11 +136,9 @@ namespace pcl
 
             result->reserve (device_set_.size ());
 
-            std::set<OpenNI2DeviceInfo, OpenNI2DeviceInfoComparator>::const_iterator it;
-            std::set<OpenNI2DeviceInfo, OpenNI2DeviceInfoComparator>::const_iterator it_end = device_set_.end ();
-
-            for (it = device_set_.begin (); it != it_end; ++it)
-              result->push_back (it->uri_);
+            for (const auto& device : device_set_) {
+              result->push_back(device.uri_);
+            }
 
             return result;
           }

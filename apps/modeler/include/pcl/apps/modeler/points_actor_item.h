@@ -49,7 +49,6 @@ public:
   PointsActorItem(QTreeWidgetItem* parent,
                   const CloudMesh::Ptr& cloud_mesh,
                   const vtkSmartPointer<vtkRenderWindow>& render_window);
-  ~PointsActorItem();
 
   std::string
   getItemName() const override

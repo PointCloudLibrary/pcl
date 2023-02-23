@@ -1,3 +1,43 @@
 ---
-Checks: '-*,modernize-deprecated-headers,modernize-redundant-void-arg,modernize-replace-random-shuffle,modernize-use-equals-default,modernize-use-equals-delete,modernize-use-nullptr,modernize-use-override,modernize-use-using,performance-faster-string-find,performance-for-range-copy,performance-implicit-conversion-in-loop,performance-inefficient-algorithm,performance-inefficient-vector-operation,performance-move-const-arg,performance-move-constructor-init,performance-no-automatic-move,performance-noexcept-move-constructor,performance-type-promotion-in-math-fn'
-WarningsAsErrors: '-*,modernize-deprecated-headers,modernize-redundant-void-arg,modernize-replace-random-shuffle,modernize-use-equals-default,modernize-use-equals-delete,modernize-use-nullptr,modernize-use-override,modernize-use-using,performance-faster-string-find,performance-for-range-copy,performance-implicit-conversion-in-loop,performance-inefficient-algorithm,performance-inefficient-vector-operation,performance-move-const-arg,performance-move-constructor-init,performance-no-automatic-move,performance-noexcept-move-constructor,performance-type-promotion-in-math-fn'
+Checks: >
+    -*,
+    cppcoreguidelines-pro-type-cstyle-cast,
+    cppcoreguidelines-pro-type-static-cast-downcast,
+    google-readability-casting,
+    modernize-deprecated-headers,
+    modernize-loop-convert,
+    modernize-redundant-void-arg,
+    modernize-replace-random-shuffle,
+    modernize-return-braced-init-list,
+    modernize-shrink-to-fit,
+    modernize-use-auto,
+    modernize-use-emplace,
+    modernize-use-equals-default,
+    modernize-use-equals-delete,
+    modernize-use-nullptr,
+    modernize-use-override,
+    modernize-use-using,
+    performance-faster-string-find,
+    performance-for-range-copy,
+    performance-implicit-conversion-in-loop,
+    performance-inefficient-algorithm,
+    performance-inefficient-vector-operation,
+    performance-move-const-arg,
+    performance-move-constructor-init,
+    performance-no-automatic-move,
+    performance-noexcept-move-constructor,
+    performance-type-promotion-in-math-fn,
+    readability-container-data-pointer,
+    readability-container-size-empty,
+    readability-delete-null-pointer,
+    readability-duplicate-include,
+    readability-redundant-declaration,
+    readability-redundant-smartptr-get,
+    readability-redundant-string-cstr,
+    readability-redundant-string-init,
+    readability-simplify-boolean-expr,
+    readability-simplify-subscript-expr,
+WarningsAsErrors: '*'
+CheckOptions:
+- {key: modernize-use-auto.MinTypeNameLength, value: 7}
+UseColor: true

@@ -25,7 +25,7 @@ if(NOT WITH_QT_STR MATCHES "^(AUTO|YES|QT6|QT5)$")
 endif()
 
 if(WITH_QT_STR MATCHES "^(AUTO|YES|QT6)$")
-  find_package(Qt6 QUIET COMPONENTS Concurrent OpenGL Widgets)
+  find_package(Qt6 QUIET COMPONENTS Concurrent OpenGL Widgets OpenGLWidgets)
   set(QT6_FOUND ${Qt6_FOUND})
   set(QT_FOUND ${QT6_FOUND})
   if (QT6_FOUND)

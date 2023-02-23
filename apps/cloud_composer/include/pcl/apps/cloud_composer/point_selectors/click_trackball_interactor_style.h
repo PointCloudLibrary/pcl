@@ -53,8 +53,6 @@ namespace pcl
         vtkTypeMacro(ClickTrackballStyleInteractor,vtkInteractorStyleTrackballActor);
         
         ClickTrackballStyleInteractor ();
-        
-        ~ClickTrackballStyleInteractor ();
                
         /** \brief Pass a pointer to the actor map
           * \param[in] actors the actor map that will be used with this style

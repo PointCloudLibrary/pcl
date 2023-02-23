@@ -57,7 +57,7 @@ public:
             const boost::any& value)
   : name_(name), description_(description), default_value_(value), current_value_(value)
   {}
-  ~Parameter() {}
+  virtual ~Parameter() = default;
 
   const std::string&
   getName() const
@@ -113,7 +113,6 @@ public:
   BoolParameter(const std::string& name, const std::string& description, bool value)
   : Parameter(name, description, value)
   {}
-  ~BoolParameter() {}
 
   operator bool() const { return boost::any_cast<bool>(current_value_); }
 
@@ -144,7 +143,6 @@ public:
                int step = 1)
   : Parameter(name, description, value), low_(low), high_(high), step_(step)
   {}
-  virtual ~IntParameter() {}
 
   operator int() const { return boost::any_cast<int>(current_value_); }
 
@@ -196,7 +194,6 @@ public:
                 const std::map<T, std::string>& candidates)
   : Parameter(name, description, value), candidates_(candidates)
   {}
-  ~EnumParameter() {}
 
   operator T() const { return boost::any_cast<T>(current_value_); }
 
@@ -229,7 +226,6 @@ public:
                   double step = 0.01)
   : Parameter(name, description, value), low_(low), high_(high), step_(step)
   {}
-  virtual ~DoubleParameter() {}
 
   operator double() const { return boost::any_cast<double>(current_value_); }
 
@@ -279,7 +275,6 @@ public:
                  const QColor& value)
   : Parameter(name, description, value)
   {}
-  ~ColorParameter() {}
 
   operator QColor() const { return boost::any_cast<QColor>(current_value_); }
 

@@ -36,6 +36,8 @@
 #define METS_MODEL_HH_
 
 namespace mets {
+// Exempt third-party code from clang-tidy
+// NOLINTBEGIN
 
   /// @brief Type of the objective/cost function.
   ///
@@ -363,7 +365,7 @@ namespace mets {
     /// (if we moved a to b we can declare tabu moving b to a).
     virtual mana_move*
     opposite_of() const 
-    { return static_cast<mana_move*>(clone()); }
+    { return dynamic_cast<mana_move*>(clone()); }
     
     /// @brief Tell if this move equals another w.r.t. the tabu list
     /// management (for mets::simple_tabu_list)
@@ -393,14 +395,14 @@ namespace mets {
     /// @brief Virtual method that applies the move on a point
     gol_type
     evaluate(const mets::feasible_solution& s) const override
-    { const permutation_problem& sol = 
-	static_cast<const permutation_problem&>(s);
+    { const auto& sol = 
+	dynamic_cast<const permutation_problem&>(s);
       return sol.cost_function() + sol.evaluate_swap(p1, p2); }
     
     /// @brief Virtual method that applies the move on a point
     void
     apply(mets::feasible_solution& s) const override
-    { permutation_problem& sol = static_cast<permutation_problem&>(s);
+    { auto& sol = dynamic_cast<permutation_problem&>(s);
       sol.apply_swap(p1, p2); }
             
     /// @brief Clones this move (so that the tabu list can store it)
@@ -602,7 +604,7 @@ namespace mets {
   mets::swap_neighborhood<random_generator>::~swap_neighborhood()
   {
     // delete all moves
-    for(iterator ii = begin(); ii != end(); ++ii)
+    for(auto ii = begin(); ii != end(); ++ii)
       delete (*ii);
   }
 
@@ -610,13 +612,13 @@ namespace mets {
   void
   mets::swap_neighborhood<random_generator>::refresh(mets::feasible_solution& s)
   {
-    permutation_problem& sol = dynamic_cast<permutation_problem&>(s);
-    iterator ii = begin();
+    auto& sol = dynamic_cast<permutation_problem&>(s);
+    auto ii = begin();
     
     // the first n are simple qap_moveS
     for(unsigned int cnt = 0; cnt != n; ++cnt)
       {
-	swap_elements* m = static_cast<swap_elements*>(*ii);
+	auto* m = static_cast<swap_elements*>(*ii);
 	randomize_move(*m, sol.size());
 	++ii;
       }
@@ -656,7 +658,7 @@ namespace mets {
 
     /// @brief Dtor.
     ~swap_full_neighborhood() override { 
-      for(move_manager::iterator it = moves_m.begin(); 
+      for(auto it = moves_m.begin();
 	  it != moves_m.end(); ++it)
 	delete *it;
     }
@@ -681,7 +683,7 @@ namespace mets {
 
     /// @brief Dtor.
     ~invert_full_neighborhood() override { 
-      for(std::deque<move*>::iterator it = moves_m.begin(); 
+      for(auto it = moves_m.begin();
 	  it != moves_m.end(); ++it)
 	delete *it;
     }
@@ -711,14 +713,14 @@ namespace mets {
 		    const Tp r) const 
     { return l->operator==(*r); }
   };
-
+// NOLINTEND
 }
 
 //________________________________________________________________________
 inline void
 mets::permutation_problem::copy_from(const mets::copyable& other)
 {
-  const mets::permutation_problem& o = 
+  const auto& o = 
     dynamic_cast<const mets::permutation_problem&>(other);
   pi_m = o.pi_m;
   cost_m = o.cost_m;
@@ -729,7 +731,7 @@ inline bool
 mets::swap_elements::operator==(const mets::mana_move& o) const
 {
   try {
-    const mets::swap_elements& other = 
+    const auto& other = 
       dynamic_cast<const mets::swap_elements&>(o);
     return (this->p1 == other.p1 && this->p2 == other.p2);
   } catch (std::bad_cast& e) {
@@ -742,8 +744,8 @@ mets::swap_elements::operator==(const mets::mana_move& o) const
 inline void
 mets::invert_subsequence::apply(mets::feasible_solution& s) const
 { 
-  mets::permutation_problem& sol = 
-    static_cast<mets::permutation_problem&>(s);
+  auto& sol = 
+    dynamic_cast<mets::permutation_problem&>(s);
   int size = static_cast<int>(sol.size());
   int top = p1 < p2 ? (p2-p1+1) : (size+p2-p1+1);
   for(int ii(0); ii!=top/2; ++ii)
@@ -759,8 +761,8 @@ mets::invert_subsequence::apply(mets::feasible_solution& s) const
 inline mets::gol_type
 mets::invert_subsequence::evaluate(const mets::feasible_solution& s) const
 { 
-  const mets::permutation_problem& sol = 
-    static_cast<const mets::permutation_problem&>(s);
+  const auto& sol = 
+    dynamic_cast<const mets::permutation_problem&>(s);
   int size = static_cast<int>(sol.size());
   int top = p1 < p2 ? (p2-p1+1) : (size+p2-p1+1);
   mets::gol_type eval = 0.0;
@@ -779,7 +781,7 @@ inline bool
 mets::invert_subsequence::operator==(const mets::mana_move& o) const
 {
   try {
-    const mets::invert_subsequence& other = 
+    const auto& other = 
       dynamic_cast<const mets::invert_subsequence&>(o);
     return (this->p1 == other.p1 && this->p2 == other.p2);
   } catch (std::bad_cast& e) {

@@ -53,19 +53,19 @@ char* pcd_file;
 template<typename PointT> inline PointT generateRandomPoint(const float MAX_XYZ);
 
 template<> inline pcl::PointXYZRGBA generateRandomPoint(const float MAX_XYZ) {
-  return pcl::PointXYZRGBA(static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
+  return {static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
                            static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
                            static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
-                           static_cast<int> (MAX_COLOR * rand() / RAND_MAX),
-                           static_cast<int> (MAX_COLOR * rand() / RAND_MAX),
-                           static_cast<int> (MAX_COLOR * rand() / RAND_MAX),
-                           static_cast<int> (MAX_COLOR * rand() / RAND_MAX));
+                           static_cast<std::uint8_t> (MAX_COLOR * rand() / RAND_MAX),
+                           static_cast<std::uint8_t> (MAX_COLOR * rand() / RAND_MAX),
+                           static_cast<std::uint8_t> (MAX_COLOR * rand() / RAND_MAX),
+                           static_cast<std::uint8_t> (MAX_COLOR * rand() / RAND_MAX)};
 }
 
 template<> inline pcl::PointXYZ generateRandomPoint(const float MAX_XYZ) {
-  return pcl::PointXYZ(static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
+  return {static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
                        static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
-                       static_cast<float> (MAX_XYZ * rand() / RAND_MAX));
+                       static_cast<float> (MAX_XYZ * rand() / RAND_MAX)};
 }
 
 template<typename PointT> inline
@@ -94,7 +94,7 @@ TYPED_TEST (OctreeDeCompressionTest, RandomClouds)
     for (int compression_profile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
       compression_profile != pcl::io::COMPRESSION_PROFILE_COUNT; ++compression_profile) {
       // instantiate point cloud compression encoder/decoder
-      pcl::io::OctreePointCloudCompression<TypeParam> pointcloud_encoder((pcl::io::compression_Profiles_e) compression_profile, false);
+      pcl::io::OctreePointCloudCompression<TypeParam> pointcloud_encoder(static_cast<pcl::io::compression_Profiles_e>(compression_profile), false);
       pcl::io::OctreePointCloudCompression<TypeParam> pointcloud_decoder;
       typename pcl::PointCloud<TypeParam>::Ptr cloud_out(new pcl::PointCloud<TypeParam>());
       // iterate over runs
@@ -124,13 +124,13 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZRGBASameCloud)
 {
   // Generate a random cloud. Put it into the encoder several times and make
   // sure that the decoded cloud has correct width and height each time.
-  const double MAX_XYZ = 1.0;
+  constexpr double MAX_XYZ = 1.0;
   srand(static_cast<unsigned int> (time(nullptr)));
   // iterate over all pre-defined compression profiles
   for (int compression_profile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
     compression_profile != pcl::io::COMPRESSION_PROFILE_COUNT; ++compression_profile) {
     // instantiate point cloud compression encoder/decoder
-    pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA> pointcloud_encoder((pcl::io::compression_Profiles_e) compression_profile, false);
+    pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA> pointcloud_encoder(static_cast<pcl::io::compression_Profiles_e>(compression_profile), false);
     pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA> pointcloud_decoder;
 
     auto cloud = generateRandomCloud<pcl::PointXYZRGBA>(MAX_XYZ);
@@ -173,12 +173,12 @@ TEST(PCL, OctreeDeCompressionFile)
   for (int compression_profile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
        compression_profile != pcl::io::COMPRESSION_PROFILE_COUNT; ++compression_profile) {
     // instantiate point cloud compression encoder/decoder
-    pcl::io::OctreePointCloudCompression<pcl::PointXYZRGB> PointCloudEncoder((pcl::io::compression_Profiles_e) compression_profile, false);
+    pcl::io::OctreePointCloudCompression<pcl::PointXYZRGB> PointCloudEncoder(static_cast<pcl::io::compression_Profiles_e>(compression_profile), false);
     pcl::io::OctreePointCloudCompression<pcl::PointXYZRGB> PointCloudDecoder;
 
     // iterate over various voxel sizes
-    for (std::size_t i = 0; i < sizeof(voxel_sizes)/sizeof(voxel_sizes[0]); i++) {
-      pcl::octree::OctreePointCloud<pcl::PointXYZRGB> octree(voxel_sizes[i]);
+    for (const float& voxel_size : voxel_sizes) {
+      pcl::octree::OctreePointCloud<pcl::PointXYZRGB> octree(voxel_size);
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZRGB>());
       octree.setInputCloud((*input_cloud_ptr).makeShared());
       octree.addPointsFromInputCloud();

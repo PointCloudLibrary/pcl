@@ -50,7 +50,6 @@
        Q_OBJECT
      public:
        SupervoxelsTool (PropertiesModel* parameter_model, QObject* parent);
-       ~SupervoxelsTool ();
        
        QList <CloudComposerItem*>
        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) override;

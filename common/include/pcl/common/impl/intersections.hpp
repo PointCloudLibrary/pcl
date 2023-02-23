@@ -70,8 +70,8 @@ lineWithLineIntersection (const pcl::ModelCoefficients &line_a,
                           const pcl::ModelCoefficients &line_b,
                           Eigen::Vector4f &point, double sqr_eps)
 {
-  Eigen::VectorXf coeff1 = Eigen::VectorXf::Map (&line_a.values[0], line_a.values.size ());
-  Eigen::VectorXf coeff2 = Eigen::VectorXf::Map (&line_b.values[0], line_b.values.size ());
+  Eigen::VectorXf coeff1 = Eigen::VectorXf::Map (line_a.values.data(), line_a.values.size ());
+  Eigen::VectorXf coeff2 = Eigen::VectorXf::Map (line_b.values.data(), line_b.values.size ());
   return (lineWithLineIntersection (coeff1, coeff2, point, sqr_eps));
 }
 

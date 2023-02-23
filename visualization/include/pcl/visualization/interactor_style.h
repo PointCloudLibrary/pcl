@@ -116,7 +116,7 @@ namespace pcl
           init_ (), win_height_ (), win_width_ (), win_pos_x_ (), win_pos_y_ (),
           max_win_height_ (), max_win_width_ (), use_vbos_ (false), grid_enabled_ (), lut_enabled_ (),
           stereo_anaglyph_mask_default_ (),
-          modifier_ (), camera_saved_ (), lut_actor_id_ ("")
+          modifier_ (), camera_saved_ ()
         {}
       
         /** \brief Empty destructor */
@@ -233,7 +233,7 @@ namespace pcl
           * \param[in] file the name of the camera parameter file
           */
         void
-        setCameraFile (const std::string file)
+        setCameraFile (const std::string& file)
         {
           camera_file_ = file;
         }

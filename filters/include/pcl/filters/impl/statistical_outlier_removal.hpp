@@ -59,8 +59,9 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
   searcher_->setInputCloud (input_);
 
   // The arrays to be used
-  Indices nn_indices (mean_k_);
-  std::vector<float> nn_dists (mean_k_);
+  const int searcher_k = mean_k_ + 1;  // Find one more, since results include the query point.
+  Indices nn_indices (searcher_k);
+  std::vector<float> nn_dists (searcher_k);
   std::vector<float> distances (indices_->size ());
   indices.resize (indices_->size ());
   removed_indices_->resize (indices_->size ());
@@ -79,7 +80,7 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
     }
 
     // Perform the nearest k search
-    if (searcher_->nearestKSearch ((*indices_)[iii], mean_k_ + 1, nn_indices, nn_dists) == 0)
+    if (searcher_->nearestKSearch ((*indices_)[iii], searcher_k, nn_indices, nn_dists) == 0)
     {
       distances[iii] = 0.0;
       PCL_WARN ("[pcl::%s::applyFilter] Searching for the closest %d neighbors failed.\n", getClassName ().c_str (), mean_k_);
@@ -88,7 +89,7 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
 
     // Calculate the mean distance to its neighbors
     double dist_sum = 0.0;
-    for (int k = 1; k < mean_k_ + 1; ++k)  // k = 0 is the query point
+    for (int k = 1; k < searcher_k; ++k)  // k = 0 is the query point
       dist_sum += sqrt (nn_dists[k]);
     distances[iii] = static_cast<float> (dist_sum / mean_k_);
     valid_distances++;

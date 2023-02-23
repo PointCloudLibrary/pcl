@@ -168,7 +168,7 @@ pcl::getPointsInBox (const pcl::PointCloud<PointT> &cloud,
         continue;
       if (cloud[i].x > max_pt[0] || cloud[i].y > max_pt[1] || cloud[i].z > max_pt[2])
         continue;
-      indices[l++] = int (i);
+      indices[l++] = static_cast<int>(i);
     }
   }
   // NaN or Inf values could exist => check for them
@@ -186,7 +186,7 @@ pcl::getPointsInBox (const pcl::PointCloud<PointT> &cloud,
         continue;
       if (cloud[i].x > max_pt[0] || cloud[i].y > max_pt[1] || cloud[i].z > max_pt[2])
         continue;
-      indices[l++] = int (i);
+      indices[l++] = static_cast<int>(i);
     }
   }
   indices.resize (l);
@@ -210,7 +210,7 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Eigen::Vector4f
       dist = (pivot_pt3 - pt).norm ();
       if (dist > max_dist)
       {
-        max_idx = int (i);
+        max_idx = static_cast<int>(i);
         max_dist = dist;
       }
     }
@@ -227,7 +227,7 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Eigen::Vector4f
       dist = (pivot_pt3 - pt).norm ();
       if (dist > max_dist)
       {
-        max_idx = int (i);
+        max_idx = static_cast<int>(i);
         max_dist = dist;
       }
     }
@@ -388,7 +388,7 @@ pcl::getCircumcircleRadius (const PointT &pa, const PointT &pb, const PointT &pc
 
   double p2p1 = (p2 - p1).norm (), p3p2 = (p3 - p2).norm (), p1p3 = (p1 - p3).norm ();
   // Calculate the area of the triangle using Heron's formula 
-  // (http://en.wikipedia.org/wiki/Heron's_formula)
+  // (https://en.wikipedia.org/wiki/Heron's_formula)
   double semiperimeter = (p2p1 + p3p2 + p1p3) / 2.0;
   double area = sqrt (semiperimeter * (semiperimeter - p2p1) * (semiperimeter - p3p2) * (semiperimeter - p1p3));
   // Compute the radius of the circumscribed circle

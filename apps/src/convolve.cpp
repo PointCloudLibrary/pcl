@@ -92,21 +92,24 @@ main(int argc, char** argv)
 
   // user don't need help find convolving direction
   // convolve row
-  if (pcl::console::find_switch(argc, argv, "-r"))
+  if (pcl::console::find_switch(argc, argv, "-r")) {
     direction = 0;
+  }
   else {
     // convolve column
-    if (pcl::console::find_switch(argc, argv, "-c"))
+    if (pcl::console::find_switch(argc, argv, "-c")) {
       direction = 1;
-    else
-        // convolve both
-        if (pcl::console::find_switch(argc, argv, "-s"))
-      direction = 2;
-    else {
-      // wrong direction given print usage
-      usage(argv);
-      return 1;
     }
+    else
+      // convolve both
+      if (pcl::console::find_switch(argc, argv, "-s")) {
+        direction = 2;
+      }
+      else {
+        // wrong direction given print usage
+        usage(argv);
+        return 1;
+      }
   }
 
   // number of threads if any

@@ -69,11 +69,11 @@ using namespace std::chrono_literals;
   } while (false)
 // clang-format on
 
-const float default_subsampling_leaf_size = 0.02f;
-const float default_normal_search_radius = 0.041f;
+constexpr float default_subsampling_leaf_size = 0.02f;
+constexpr float default_normal_search_radius = 0.041f;
 const double aux[] = {0.21, 0.32};
 const std::vector<double> default_scales_vector(aux, aux + 2);
-const float default_alpha = 1.2f;
+constexpr float default_alpha = 1.2f;
 
 template <typename PointType>
 class OpenNIFeaturePersistence {
@@ -188,7 +188,7 @@ public:
   void
   run()
   {
-    pcl::OpenNIGrabber interface{device_id_};
+    pcl::OpenNIGrabber interface(device_id_);
 
     std::function<void(const CloudConstPtr&)> f = [this](const CloudConstPtr& cloud) {
       cloud_cb(cloud);
@@ -232,12 +232,13 @@ void
 usage(char** argv)
 {
   // clang-format off
-  std::cout << "usage: " << argv[0] << " <device_id> <options>\n\n"
+  std::cout << "usage: " << argv[0] << " [options]\n\n"
             << "where options are:\n"
-            << "         -octree_leaf_size X = size of the leaf for the octree-based subsampling filter (default: " << default_subsampling_leaf_size << "\n"
-            << "         -normal_search_radius X = size of the neighborhood to consider for calculating the local plane and extracting the normals (default: " << default_normal_search_radius << "\n"
-            << "         -persistence_alpha X = value of alpha for the multiscale feature persistence (default: " << default_alpha << "\n"
-            << "         -scales X1 X2 ... = values for the multiple scales for extracting features (default: ";
+            << "    -device_id X: specify the device id (default: \"#1\").\n"
+            << "    -octree_leaf_size X: size of the leaf for the octree-based subsampling filter (default: " << default_subsampling_leaf_size << "\n"
+            << "    -normal_search_radius X: size of the neighborhood to consider for calculating the local plane and extracting the normals (default: " << default_normal_search_radius << "\n"
+            << "    -persistence_alpha X: value of alpha for the multiscale feature persistence (default: " << default_alpha << "\n"
+            << "    -scales X1 X2 ...: values for the multiple scales for extracting features (default: ";
   // clang-format on
   for (const double& i : default_scales_vector)
     std::cout << i << " ";
@@ -247,13 +248,23 @@ usage(char** argv)
   if (driver.getNumberDevices() > 0) {
     for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices(); ++deviceIdx) {
       // clang-format off
-      std::cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx) << ", product: " << driver.getProductName (deviceIdx)
-              << ", connected: " << driver.getBus (deviceIdx) << " @ " << driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << std::endl;
-      std::cout << "device_id may be #1, #2, ... for the first second etc device in the list or" << std::endl
-           << "                 bus@address for the device connected to a specific usb-bus / address combination (works only in Linux) or" << std::endl
-           << "                 <serial-number> (only in Linux and for devices which provide serial numbers)"  << std::endl;
+      std::cout << "Device: " << deviceIdx + 1 
+                << ", vendor: " << driver.getVendorName (deviceIdx) 
+                << ", product: " << driver.getProductName (deviceIdx)
+                << ", connected: " << driver.getBus (deviceIdx) << " @ " << driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" 
+                << std::endl;
       // clang-format on
     }
+
+    std::cout << "\ndevice_id may be:" << std::endl
+              << "    #1, #2, ... for the first second etc device in the list or"
+              << std::endl
+
+              << "    bus@address for the device connected to a specific "
+                 "usb-bus/address combination (works only in Linux) or"
+
+              << "    <serial-number> (only in Linux and for devices which provide "
+                 "serial numbers)";
   }
   else
     std::cout << "No devices connected." << std::endl;
@@ -266,37 +277,43 @@ main(int argc, char** argv)
                "MultiscaleFeaturePersistence class using the FPFH features\n"
             << "Use \"-h\" to get more info about the available options.\n";
 
-  if (pcl::console::find_argument(argc, argv, "-h") == -1) {
+  /////////////////////////////////////////////////////////////////////
+  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
+      pcl::console::find_argument(argc, argv, "--help") != -1) {
     usage(argv);
     return 1;
   }
 
-  // Parse arguments
+  std::string device_id = "";
   float subsampling_leaf_size = default_subsampling_leaf_size;
-  pcl::console::parse_argument(argc, argv, "-octree_leaf_size", subsampling_leaf_size);
   double normal_search_radius = default_normal_search_radius;
+  std::vector<double> scales_vector_double = default_scales_vector;
+  std::vector<float> scales_vector(scales_vector_double.size());
+  float alpha = default_alpha;
+
+  if (pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 &&
+      argc > 1 && argv[1][0] != '-')
+    device_id = argv[1];
+  pcl::console::parse_argument(argc, argv, "-octree_leaf_size", subsampling_leaf_size);
   pcl::console::parse_argument(
       argc, argv, "-normal_search_radius", normal_search_radius);
-  std::vector<double> scales_vector_double = default_scales_vector;
   pcl::console::parse_multiple_arguments(argc, argv, "-scales", scales_vector_double);
-  std::vector<float> scales_vector(scales_vector_double.size());
   for (std::size_t i = 0; i < scales_vector_double.size(); ++i)
     scales_vector[i] = float(scales_vector_double[i]);
-
-  float alpha = default_alpha;
   pcl::console::parse_argument(argc, argv, "-persistence_alpha", alpha);
+  /////////////////////////////////////////////////////////////////////
 
-  pcl::OpenNIGrabber grabber("");
+  pcl::OpenNIGrabber grabber(device_id);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {
     PCL_INFO("PointXYZRGBA mode enabled.\n");
     OpenNIFeaturePersistence<pcl::PointXYZRGBA> v(
-        subsampling_leaf_size, normal_search_radius, scales_vector, alpha, "");
+        subsampling_leaf_size, normal_search_radius, scales_vector, alpha, device_id);
     v.run();
   }
   else {
     PCL_INFO("PointXYZ mode enabled.\n");
     OpenNIFeaturePersistence<pcl::PointXYZ> v(
-        subsampling_leaf_size, normal_search_radius, scales_vector, alpha, "");
+        subsampling_leaf_size, normal_search_radius, scales_vector, alpha, device_id);
     v.run();
   }
 

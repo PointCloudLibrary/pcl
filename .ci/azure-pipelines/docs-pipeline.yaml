@@ -16,12 +16,10 @@ resources:
         stages:
         - build_gcc
   containers:
-    - container: fmt # for formatting.yaml
-      image: pointcloudlibrary/fmt
     - container: doc # for documentation.yaml
       image: pointcloudlibrary/doc
-    - container: env1804 # for tutorials.yaml
-      image: pointcloudlibrary/env:18.04
+    - container: env2204 # for tutorials.yaml
+      image: pointcloudlibrary/env:22.04
 
 stages:
   - stage: formatting

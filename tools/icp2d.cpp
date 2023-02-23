@@ -103,7 +103,7 @@ main (int argc, char **argv)
     pcl::registration::TransformationEstimationLM<PointType, PointType>::Ptr te (new pcl::registration::TransformationEstimationLM<PointType, PointType>);
     te->setWarpFunction (warp_fcn);
 
-    // Pass the TransformationEstimation objec to the ICP algorithm
+    // Pass the TransformationEstimation object to the ICP algorithm
     icp.setTransformationEstimation (te);
 
     icp.setMaximumIterations (iter);

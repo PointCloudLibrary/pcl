@@ -173,7 +173,7 @@ public:
 
     }
 
-    const uindex_t len = static_cast<uindex_t> (indexVector_arg.size());
+    const auto len = static_cast<uindex_t> (indexVector_arg.size());
     // calculated average color information
     if (len > 1)
     {
@@ -222,7 +222,7 @@ public:
 
     }
 
-    const uindex_t len = static_cast<uindex_t> (indexVector_arg.size());
+    const auto len = static_cast<uindex_t> (indexVector_arg.size());
     if (len > 1)
     {
       unsigned char diffRed;
@@ -339,7 +339,7 @@ public:
     assert (beginIdx_arg <= endIdx_arg);
 
     // amount of points to be decoded
-    unsigned int pointCount = static_cast<unsigned int> (endIdx_arg - beginIdx_arg);
+    auto pointCount = static_cast<unsigned int> (endIdx_arg - beginIdx_arg);
 
     // iterate over points
     for (std::size_t i = 0; i < pointCount; i++)

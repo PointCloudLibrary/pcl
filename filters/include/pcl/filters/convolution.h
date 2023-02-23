@@ -48,7 +48,7 @@ namespace pcl
     /** Convolution is a mathematical operation on two functions f and g,
       * producing a third function that is typically viewed as a modified
       * version of one of the original functions.
-      * see http://en.wikipedia.org/wiki/Convolution.
+      * see https://en.wikipedia.org/wiki/Convolution.
       *
       * The class provides rows, column and separate convolving operations
       * of a point cloud.

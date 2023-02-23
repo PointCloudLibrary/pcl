@@ -111,7 +111,7 @@ public:
   void
   run()
   {
-    pcl::OpenNIGrabber interface{device_id_};
+    pcl::OpenNIGrabber interface(device_id_);
 
     std::function<void(const CloudConstPtr&)> f = [this](const CloudConstPtr& cloud) {
       cloud_cb_(cloud);
@@ -141,26 +141,37 @@ public:
 void
 usage(char** argv)
 {
-  std::cout << "usage: " << argv[0] << " <device_id> <options>\n\n"
-            << "where options are:\n         -minmax min-max  :: set the "
-               "ApproximateVoxelGrid min-max cutting values (default: 0-5.0)\n"
-            << "         -field  X        :: use field/dimension 'X' to filter data on "
-               "(default: 'z')\n"
-
-            << "                             -leaf x, y, z    :: set the "
-               "ApproximateVoxelGrid leaf size (default: 0.01)\n";
+  std::cout
+      << "usage: " << argv[0] << " [options]\n\n"
+      << "where options are:\n"
+      << "    -device_id X: specify the device id (default: \"#1\").\n"
+      << "    -minmax min-max: set the ApproximateVoxelGrid min-max cutting values "
+         "(default: 0-5.0)\n"
+      << "    -field X: use field/dimension 'X' to filter data on (default: 'z')\n"
+      << "    -leaf x, y, z: set the ApproximateVoxelGrid leaf size (default: "
+         "0.01)\n\n";
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
   if (driver.getNumberDevices() > 0) {
     for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices(); ++deviceIdx) {
       // clang-format off
-      std::cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx) << ", product: " << driver.getProductName (deviceIdx)
-              << ", connected: " << driver.getBus (deviceIdx) << " @ " << driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << std::endl;
-      std::cout << "device_id may be #1, #2, ... for the first second etc device in the list or" << std::endl
-           << "                 bus@address for the device connected to a specific usb-bus / address combination (works only in Linux) or" << std::endl
-           << "                 <serial-number> (only in Linux and for devices which provide serial numbers)"  << std::endl;
+      std::cout << "Device: " << deviceIdx + 1 
+                << ", vendor: " << driver.getVendorName (deviceIdx) 
+                << ", product: " << driver.getProductName (deviceIdx)
+                << ", connected: " << driver.getBus (deviceIdx) << " @ " << driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" 
+                << std::endl;
       // clang-format on
     }
+
+    std::cout << "\ndevice_id may be:" << std::endl
+              << "    #1, #2, ... for the first second etc device in the list or"
+              << std::endl
+
+              << "    bus@address for the device connected to a specific "
+                 "usb-bus/address combination (works only in Linux) or"
+
+              << "    <serial-number> (only in Linux and for devices which provide "
+                 "serial numbers)";
   }
   else
     std::cout << "No devices connected." << std::endl;
@@ -169,28 +180,40 @@ usage(char** argv)
 int
 main(int argc, char** argv)
 {
-  if (pcl::console::find_argument(argc, argv, "-h") != -1)
+  /////////////////////////////////////////////////////////////////////
+  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
+      pcl::console::find_argument(argc, argv, "--help") != -1) {
     usage(argv);
+    return 1;
+  }
 
+  std::string device_id = "";
   float min_v = 0.0f, max_v = 5.0f;
+  std::string field_name = "z";
+  float leaf_x = 0.01f, leaf_y = 0.01f, leaf_z = 0.01f;
+
+  if (pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 &&
+      argc > 1 && argv[1][0] != '-')
+    device_id = argv[1];
+
   pcl::console::parse_2x_arguments(argc, argv, "-minmax", min_v, max_v);
-  std::string field_name("z");
   pcl::console::parse_argument(argc, argv, "-field", field_name);
   PCL_INFO(
       "Filtering data on %s between %f -> %f.\n", field_name.c_str(), min_v, max_v);
-  float leaf_x = 0.01f, leaf_y = 0.01f, leaf_z = 0.01f;
+
   pcl::console::parse_3x_arguments(argc, argv, "-leaf", leaf_x, leaf_y, leaf_z);
   PCL_INFO("Using %f, %f, %f as a leaf size for VoxelGrid.\n", leaf_x, leaf_y, leaf_z);
+  /////////////////////////////////////////////////////////////////////
 
-  pcl::OpenNIGrabber grabber("");
+  pcl::OpenNIGrabber grabber(device_id);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {
     OpenNIVoxelGrid<pcl::PointXYZRGBA> v(
-        "", field_name, min_v, max_v, leaf_x, leaf_y, leaf_z);
+        device_id, field_name, min_v, max_v, leaf_x, leaf_y, leaf_z);
     v.run();
   }
   else {
     OpenNIVoxelGrid<pcl::PointXYZ> v(
-        "", field_name, min_v, max_v, leaf_x, leaf_y, leaf_z);
+        device_id, field_name, min_v, max_v, leaf_x, leaf_y, leaf_z);
     v.run();
   }
 

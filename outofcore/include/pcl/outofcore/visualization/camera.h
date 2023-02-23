@@ -97,6 +97,10 @@ public:
   Eigen::Matrix4d
   getViewProjectionMatrix ()
   {
+    // Disable check for braced-initialization,
+    // since the compiler complains that the constructor selected
+    // with {projection_matrix_ * model_view_matrix_} is explicit
+    // NOLINTNEXTLINE(modernize-return-braced-init-list)
     return Eigen::Matrix4d (projection_matrix_ * model_view_matrix_);
   }
 

@@ -57,8 +57,8 @@ printHelp (int, char **argv)
 {
   pcl::console::print_error ("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
   pcl::console::print_info ("  where options are:\n");
-  pcl::console::print_info ("                     -radius X = Radius of the spere to filter (default: ");
-  pcl::console::print_value ("%s", default_radius); pcl::console::print_info (")\n");
+  pcl::console::print_info ("                     -radius X = Radius of the sphere to filter (default: ");
+  pcl::console::print_value ("%f", default_radius); pcl::console::print_info (")\n");
   pcl::console::print_info ("                     -inside X = keep the points inside the [min, max] interval or not (default: ");
   pcl::console::print_value ("%d", default_inside); pcl::console::print_info (")\n");
   pcl::console::print_info ("                     -keep 0/1 = keep the points organized (1) or not (default: ");
@@ -119,7 +119,6 @@ int
 batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir,
               float radius, bool inside, bool keep_organized)
 {
-  std::vector<std::string> st;
   for (const auto &pcd_file : pcd_files)
   {
     // Load the first file
@@ -133,7 +132,7 @@ batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir
 
     // Prepare output file name
     std::string filename = boost::filesystem::path(pcd_file).filename().string();
-    
+
     // Save into the second file
     const std::string filepath = output_dir + '/' + filename;
     saveCloud (filepath, output);

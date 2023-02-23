@@ -83,7 +83,7 @@ namespace pcl
 
       ColorModality ();
   
-      virtual ~ColorModality ();
+      virtual ~ColorModality () = default;
   
       inline QuantizedMap &
       getQuantizedMap () 
@@ -144,12 +144,6 @@ namespace pcl
 template <typename PointInT>
 pcl::ColorModality<PointInT>::ColorModality ()
   : feature_distance_threshold_ (1.0f), quantized_colors_ (), filtered_quantized_colors_ (), spreaded_filtered_quantized_colors_ ()
-{
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT>
-pcl::ColorModality<PointInT>::~ColorModality ()
 {
 }
 

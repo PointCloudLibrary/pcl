@@ -56,6 +56,7 @@
 #include <pcl/common/centroid.h>
 #include <pcl/common/impl/centroid.hpp> // TODO: PointIHS is not registered
 
+#include <QApplication>
 #include <QtOpenGL>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -101,7 +102,7 @@ pcl::ihs::detail::FaceVertexMesh::FaceVertexMesh(const Mesh& mesh,
 ////////////////////////////////////////////////////////////////////////////////
 
 pcl::ihs::OpenGLViewer::OpenGLViewer(QWidget* parent)
-: QGLWidget(parent)
+: QOpenGLWidget(parent)
 , timer_vis_(new QTimer(this))
 , colormap_(Colormap::Constant(255))
 , vis_conf_norm_(1)
@@ -484,7 +485,7 @@ pcl::ihs::OpenGLViewer::addMesh(const CloudXYZRGBNormalConstPtr& cloud,
   const int h = cloud->height;
   const int offset_1 = -w;
   const int offset_2 = -w - 1;
-  const int offset_3 = -1;
+  constexpr int offset_3 = -1;
 
   FaceVertexMeshPtr mesh(new FaceVertexMesh());
   mesh->transformation = T;
@@ -949,11 +950,9 @@ pcl::ihs::OpenGLViewer::drawMeshes()
     exit(EXIT_FAILURE);
   }
 
-  for (FaceVertexMeshMap::const_iterator it = drawn_meshes_.begin();
-       it != drawn_meshes_.end();
-       ++it) {
-    if (it->second && !it->second->vertices.empty()) {
-      const FaceVertexMesh& mesh = *it->second;
+  for (const auto& drawn_mesh : drawn_meshes_) {
+    if (drawn_mesh.second && !drawn_mesh.second->vertices.empty()) {
+      const FaceVertexMesh& mesh = *drawn_mesh.second;
 
       glVertexPointer(3, GL_FLOAT, sizeof(PointIHS), &(mesh.vertices[0].x));
       glNormalPointer(GL_FLOAT, sizeof(PointIHS), &(mesh.vertices[0].normal_x));
@@ -1085,7 +1084,7 @@ pcl::ihs::OpenGLViewer::initializeGL()
 void
 pcl::ihs::OpenGLViewer::setupViewport(const int w, const int h)
 {
-  const float aspect_ratio = 4. / 3.;
+  constexpr float aspect_ratio = 4. / 3.;
 
   // Use the biggest possible area of the window to draw to
   //    case 1 (w < w_scaled):        case 2 (w >= w_scaled):
@@ -1197,8 +1196,8 @@ pcl::ihs::OpenGLViewer::wheelEvent(QWheelEvent* event)
         std::max((cam_pivot_ - R_cam_ * o - t_cam_).norm(), .1 / scaling_factor_) / d;
 
     // http://doc.qt.digia.com/qt/qwheelevent.html#delta
-    t_cam_ +=
-        scale * Eigen::Vector3d(R_cam_ * (ez * static_cast<double>(event->delta())));
+    t_cam_ += scale * Eigen::Vector3d(
+                          R_cam_ * (ez * static_cast<double>(event->angleDelta().y())));
   }
 }
 

@@ -39,6 +39,8 @@
 #include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/console/print.h>
 
+#include <string>
+
 /////////////////////////////////////////////////////////////////////////////
 pcl::RobotEyeGrabber::RobotEyeGrabber ()
   : terminate_thread_ (false)
@@ -72,7 +74,7 @@ pcl::RobotEyeGrabber::~RobotEyeGrabber () noexcept
 std::string
 pcl::RobotEyeGrabber::getName () const
 {
-  return (std::string ("Ocular Robotics RobotEye Grabber"));
+  return {"Ocular Robotics RobotEye Grabber"};
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -176,13 +178,15 @@ pcl::RobotEyeGrabber::convertPacketData (unsigned char *data_packet, std::size_t
     //The new packet data format contains this as a header
     //char[6]  "EBRBEP"
     //std::uint32_t Timestamp // counts of a 66 MHz clock since power-on of eye.
-    std::size_t response_size = 6; //"EBRBEP"
-    if( !strncmp((char*)(data_packet), "EBRBEP", response_size) )
+    const std::string PACKET_HEADER("EBRBEP");
+    constexpr std::size_t RESPONSE_SIZE = 6; //"EBRBEP"
+    std::string packet(reinterpret_cast<const char*>(data_packet), RESPONSE_SIZE);
+    if(packet == PACKET_HEADER)
     {
       std::uint32_t timestamp; // counts of a 66 MHz clock since power-on of eye.
-      computeTimestamp(timestamp, data_packet + response_size);
+      computeTimestamp(timestamp, data_packet + RESPONSE_SIZE);
       //std::cout << "Timestamp: " << timestamp << std::endl;
-      offset = (response_size + sizeof(timestamp));
+      offset = (RESPONSE_SIZE + sizeof(timestamp));
     }
     else
     {
@@ -230,11 +234,11 @@ pcl::RobotEyeGrabber::computeXYZI (pcl::PointXYZI& point, unsigned char* point_d
 
   buffer =  point_data[2] << 8;
   buffer |= point_data[3]; // Second 2-byte read will be Elevation
-  el = (signed short int)buffer / 100.0;
+  el = static_cast<signed short int>(buffer) / 100.0;
 
   buffer =  point_data[4] << 8;
   buffer |= point_data[5]; // Third 2-byte read will be Range
-  range = (signed short int)buffer / 100.0;
+  range = static_cast<signed short int>(buffer) / 100.0;
 
   buffer =  point_data[6] << 8;
   buffer |= point_data[7]; // Fourth 2-byte read will be Intensity
@@ -291,7 +295,7 @@ pcl::RobotEyeGrabber::socketCallback (const boost::system::error_code&, std::siz
     || sensor_address_ == sender_endpoint_.address ())
   {
     data_size_ = number_of_bytes;
-    unsigned char *dup = new unsigned char[number_of_bytes];
+    auto *dup = new unsigned char[number_of_bytes];
     memcpy (dup, receive_buffer_, number_of_bytes);
     packet_queue_.enqueue (boost::shared_array<unsigned char>(dup));
   }

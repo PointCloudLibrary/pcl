@@ -167,10 +167,8 @@ LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, con
     float max_y = -std::numeric_limits<float>::max ();
     float max_z = -std::numeric_limits<float>::max ();
     std::size_t counter = 0;
-    for (std::size_t j = 0; j < template_point_cloud.size (); ++j)
+    for (const auto & p : template_point_cloud)
     {
-      const PointXYZRGBA & p = template_point_cloud[j];
-
       if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
 
@@ -200,9 +198,9 @@ LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, con
     bb.y = (min_y + bb.height / 2.0f) - center_y - bb.height / 2.0f;
     bb.z = (min_z + bb.depth / 2.0f) - center_z - bb.depth / 2.0f;
 
-    for (std::size_t j = 0; j < template_point_cloud.size (); ++j)
+    for (auto & j : template_point_cloud)
     {
-      PointXYZRGBA p = template_point_cloud[j];
+      PointXYZRGBA p = j;
 
       if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
@@ -211,7 +209,7 @@ LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, con
       p.y -= center_y;
       p.z -= center_z;
 
-      template_point_cloud[j] = p;
+      j = p;
     }
   }
 
@@ -254,10 +252,8 @@ LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
     float max_y = -std::numeric_limits<float>::max ();
     float max_z = -std::numeric_limits<float>::max ();
     std::size_t counter = 0;
-    for (std::size_t j = 0; j < template_point_cloud.size (); ++j)
+    for (const auto & p : template_point_cloud)
     {
-      const PointXYZRGBA & p = template_point_cloud[j];
-
       if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
 
@@ -287,9 +283,9 @@ LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
     bb.y = (min_y + bb.height / 2.0f) - center_y - bb.height / 2.0f;
     bb.z = (min_z + bb.depth / 2.0f) - center_z - bb.depth / 2.0f;
 
-    for (std::size_t j = 0; j < template_point_cloud.size (); ++j)
+    for (auto & j : template_point_cloud)
     {
-      PointXYZRGBA p = template_point_cloud[j];
+      PointXYZRGBA p = j;
 
       if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
@@ -298,7 +294,7 @@ LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
       p.y -= center_y;
       p.z -= center_z;
 
-      template_point_cloud[j] = p;
+      j = p;
     }
   }
 
@@ -345,10 +341,8 @@ LineRGBD<PointXYZT, PointRGBT>::addTemplate (const SparseQuantizedMultiModTempla
     float max_y = -std::numeric_limits<float>::max ();
     float max_z = -std::numeric_limits<float>::max ();
     std::size_t counter = 0;
-    for (std::size_t j = 0; j < template_point_cloud.size (); ++j)
+    for (const auto & p : template_point_cloud)
     {
-      const PointXYZRGBA & p = template_point_cloud[j];
-
       if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
 
@@ -378,9 +372,9 @@ LineRGBD<PointXYZT, PointRGBT>::addTemplate (const SparseQuantizedMultiModTempla
     bb.y = (min_y + bb.height / 2.0f) - center_y - bb.height / 2.0f;
     bb.z = (min_z + bb.depth / 2.0f) - center_z - bb.depth / 2.0f;
 
-    for (std::size_t j = 0; j < template_point_cloud.size (); ++j)
+    for (auto & j : template_point_cloud)
     {
-      PointXYZRGBA p = template_point_cloud[j];
+      PointXYZRGBA p = j;
 
       if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
@@ -389,7 +383,7 @@ LineRGBD<PointXYZT, PointRGBT>::addTemplate (const SparseQuantizedMultiModTempla
       p.y -= center_y;
       p.z -= center_z;
 
-      template_point_cloud[j] = p;
+      j = p;
     }
   }
 
@@ -676,7 +670,7 @@ LineRGBD<PointXYZT, PointRGBT>::refineDetectionsAlongDepth ()
       }
     }
 
-    const std::size_t nr_bins = 1000;
+    constexpr std::size_t nr_bins = 1000;
     const float step_size = (max_depth - min_depth) / static_cast<float> (nr_bins-1);
     std::vector<std::size_t> depth_bins (nr_bins, 0);
     for (std::size_t row_index = start_y; row_index < end_y; ++row_index)
@@ -687,7 +681,7 @@ LineRGBD<PointXYZT, PointRGBT>::refineDetectionsAlongDepth ()
 
         if (/*std::isfinite (point.x) && std::isfinite (point.y) && */std::isfinite (point.z))
         {
-          const std::size_t bin_index = static_cast<std::size_t> ((point.z - min_depth) / step_size);
+          const auto bin_index = static_cast<std::size_t> ((point.z - min_depth) / step_size);
           ++depth_bins[bin_index];
         }
       }
@@ -701,7 +695,7 @@ LineRGBD<PointXYZT, PointRGBT>::refineDetectionsAlongDepth ()
       integral_depth_bins[bin_index] = depth_bins[bin_index] + integral_depth_bins[bin_index-1];
     }
 
-    const std::size_t bb_depth_range = static_cast<std::size_t> (detection.bounding_box.depth / step_size);
+    const auto bb_depth_range = static_cast<std::size_t> (detection.bounding_box.depth / step_size);
 
     std::size_t max_nr_points = 0;
     std::size_t max_index = 0;
@@ -904,8 +898,8 @@ LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
       average_center_z += p_center_z * weight;
       weight_sum += weight;
 
-      average_region_x += float (detections_[detection_id].region.x) * weight;
-      average_region_y += float (detections_[detection_id].region.y) * weight;
+      average_region_x += static_cast<float>(detections_[detection_id].region.x) * weight;
+      average_region_y += static_cast<float>(detections_[detection_id].region.y) * weight;
     }
 
     typename LineRGBD<PointXYZT, PointRGBT>::Detection detection;
@@ -926,8 +920,8 @@ LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
     detection.bounding_box.height = best_detection_bb_height;
     detection.bounding_box.depth  = best_detection_bb_depth;
 
-    detection.region.x = int (average_region_x * inv_weight_sum);
-    detection.region.y = int (average_region_y * inv_weight_sum);
+    detection.region.x = static_cast<int>(average_region_x * inv_weight_sum);
+    detection.region.y = static_cast<int>(average_region_y * inv_weight_sum);
     detection.region.width = detections_[best_detection_id].region.width;
     detection.region.height = detections_[best_detection_id].region.height;
 

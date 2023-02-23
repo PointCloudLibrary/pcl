@@ -217,7 +217,7 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
         }
 
         // Unoptimized memcpys: assume fields x, y, z are in random order
-        memcpy (&pt[0], &input_->data[xyz_offset[0]], sizeof(float));
+        memcpy (&pt[0], &input_->data[xyz_offset[0]], sizeof(float)); // NOLINT(readability-container-data-pointer)
         memcpy (&pt[1], &input_->data[xyz_offset[1]], sizeof(float));
         memcpy (&pt[2], &input_->data[xyz_offset[2]], sizeof(float));
 
@@ -245,7 +245,7 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     for (int cp = 0; cp < nr_points; ++cp, xyz_offset += input_->point_step)
     {
       // Unoptimized memcpys: assume fields x, y, z are in random order
-      memcpy (&pt[0], &input_->data[xyz_offset[0]], sizeof(float));
+      memcpy (&pt[0], &input_->data[xyz_offset[0]], sizeof(float)); // NOLINT(readability-container-data-pointer)
       memcpy (&pt[1], &input_->data[xyz_offset[1]], sizeof(float));
       memcpy (&pt[2], &input_->data[xyz_offset[2]], sizeof(float));
 
@@ -355,7 +355,7 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (Indices &indices)
       }
 
       // Get the field's value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&input_->data[ii * input_->point_step]);
+      const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&input_->data[ii * input_->point_step]);
       float field_value = 0;
       memcpy (&field_value, pt_data + input_->fields[distance_idx].offset, sizeof (float));
 

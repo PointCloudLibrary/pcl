@@ -79,7 +79,7 @@ loadCloud (const std::string &filename, PointCloud<PointXYZ> &cloud)
     if (st.size () != 3)
       continue;
 
-    cloud.push_back (PointXYZ (float (atof (st[0].c_str ())), float (atof (st[1].c_str ())), float (atof (st[2].c_str ()))));
+    cloud.push_back (PointXYZ (static_cast<float>(atof (st[0].c_str ())), static_cast<float>(atof (st[1].c_str ())), static_cast<float>(atof (st[2].c_str ()))));
   }
   fs.close ();
 

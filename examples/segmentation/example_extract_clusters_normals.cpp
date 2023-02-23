@@ -79,9 +79,9 @@ main (int argc, char **argv)
   
   // Extracting Euclidean clusters using cloud and its normals
   std::vector<pcl::PointIndices> cluster_indices;
-  const float tolerance = 0.5f; // 50cm tolerance in (x, y, z) coordinate system
-  const double eps_angle = 5 * (M_PI / 180.0); // 5degree tolerance in normals
-  const unsigned int min_cluster_size = 50;
+  constexpr float tolerance = 0.5f; // 50cm tolerance in (x, y, z) coordinate system
+  constexpr double eps_angle = 5 * (M_PI / 180.0); // 5degree tolerance in normals
+  constexpr unsigned int min_cluster_size = 50;
  
   pcl::extractEuclideanClusters (*cloud_ptr, *cloud_normals, tolerance, tree_ec, cluster_indices, eps_angle, min_cluster_size);
 
@@ -89,11 +89,12 @@ main (int argc, char **argv)
 
   // Saving the clusters in separate pcd files
   int j = 0;
-  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
+  for (const auto& cluster : cluster_indices)
   {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
-    for (const auto &index : it->indices)
-      cloud_cluster->push_back ((*cloud_ptr)[index]); 
+    for (const auto &index : cluster.indices) {
+      cloud_cluster->push_back((*cloud_ptr)[index]);
+    }
     cloud_cluster->width = cloud_cluster->size ();
     cloud_cluster->height = 1;
     cloud_cluster->is_dense = true;
@@ -102,7 +103,7 @@ main (int argc, char **argv)
     std::stringstream ss;
     ss << "./cloud_cluster_" << j << ".pcd";
     writer.write<pcl::PointXYZ> (ss.str (), *cloud_cluster, false); 
-    j++;
+    ++j;
   }
 
   return (0);

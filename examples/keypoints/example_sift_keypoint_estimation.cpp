@@ -57,10 +57,10 @@ main(int, char** argv)
   std::cout << "points: " << cloud->size () <<std::endl;
   
   // Parameters for sift computation
-  const float min_scale = 0.1f;
-  const int n_octaves = 6;
-  const int n_scales_per_octave = 10;
-  const float min_contrast = 0.5f;
+  constexpr float min_scale = 0.1f;
+  constexpr int n_octaves = 6;
+  constexpr int n_scales_per_octave = 10;
+  constexpr float min_contrast = 0.5f;
   
   
   // Estimate the sift interest points using Intensity values from RGB values

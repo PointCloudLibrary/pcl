@@ -140,7 +140,7 @@ public:
   Eigen::Vector3d
   getYPR() const
   {
-    return Eigen::Vector3d(yaw_, pitch_, roll_);
+    return {yaw_, pitch_, roll_};
   }
 
 private:

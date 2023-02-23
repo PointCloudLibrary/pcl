@@ -15,7 +15,7 @@ RUN sed -i 's/^deb \(.*\)$/deb \1\ndeb-src \1/' /etc/apt/sources.list \
     dpkg-dev \
     git \
     g++ \
-    libboost-date-time-dev \
+    libboost-serialization-dev \
     libboost-filesystem-dev \
     libboost-iostreams-dev \
     libeigen3-dev \

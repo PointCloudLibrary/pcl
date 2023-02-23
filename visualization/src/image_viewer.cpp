@@ -54,7 +54,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
-  : mouse_command_ (vtkSmartPointer<vtkCallbackCommand>::New ())
+  : interactor_ (vtkSmartPointer <vtkRenderWindowInteractor>::Take (vtkRenderWindowInteractorFixNew ()))
+  , mouse_command_ (vtkSmartPointer<vtkCallbackCommand>::New ())
   , keyboard_command_ (vtkSmartPointer<vtkCallbackCommand>::New ())
   , win_ (vtkSmartPointer<vtkRenderWindow>::New ())
   , ren_ (vtkSmartPointer<vtkRenderer>::New ())
@@ -65,8 +66,6 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   , timer_id_ ()
   , algo_ (vtkSmartPointer<vtkImageFlip>::New ())
 {
-  interactor_ = vtkSmartPointer <vtkRenderWindowInteractor>::Take (vtkRenderWindowInteractorFixNew ());
-
   // Prepare for image flip
   algo_->SetInterpolationModeToCubic ();
   algo_->PreserveImageExtentOn ();
@@ -130,12 +129,12 @@ pcl::visualization::ImageViewer::addRGBImage (
     const std::string &layer_id, double opacity, bool autoresize)
 {
   if (autoresize &&
-      (unsigned (getSize ()[0]) != width ||
-      unsigned (getSize ()[1]) != height))
+      (static_cast<unsigned>(getSize ()[0]) != width ||
+      static_cast<unsigned>(getSize ()[1]) != height))
     setSize (width, height);
 
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  auto am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addRGBImage] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
@@ -171,12 +170,12 @@ pcl::visualization::ImageViewer::addMonoImage (
     const unsigned char* rgb_data, unsigned width, unsigned height,
     const std::string &layer_id, double opacity)
 {
-  if (unsigned (getSize ()[0]) != width ||
-      unsigned (getSize ()[1]) != height)
+  if (static_cast<unsigned>(getSize ()[0]) != width ||
+      static_cast<unsigned>(getSize ()[1]) != height)
     setSize (width, height);
 
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  auto am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::showMonoImage] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
@@ -505,7 +504,7 @@ pcl::visualization::ImageViewer::emitMouseEvent (unsigned long event_id)
 void
 pcl::visualization::ImageViewer::emitKeyboardEvent (unsigned long event_id)
 {
-  KeyboardEvent event (bool(event_id == vtkCommand::KeyPressEvent), interactor_->GetKeySym (),  interactor_->GetKeyCode (), interactor_->GetAltKey (), interactor_->GetControlKey (), interactor_->GetShiftKey ());
+  KeyboardEvent event ((event_id == vtkCommand::KeyPressEvent), interactor_->GetKeySym (),  interactor_->GetKeyCode (), interactor_->GetAltKey (), interactor_->GetControlKey (), interactor_->GetShiftKey ());
   keyboard_signal_ (event);
 }
 
@@ -513,7 +512,7 @@ pcl::visualization::ImageViewer::emitKeyboardEvent (unsigned long event_id)
 void
 pcl::visualization::ImageViewer::MouseCallback (vtkObject*, unsigned long eid, void* clientdata, void*)
 {
-  ImageViewer* window = reinterpret_cast<ImageViewer*> (clientdata);
+  auto* window = reinterpret_cast<ImageViewer*> (clientdata);
   window->emitMouseEvent (eid);
 }
 
@@ -521,7 +520,7 @@ pcl::visualization::ImageViewer::MouseCallback (vtkObject*, unsigned long eid, v
 void
 pcl::visualization::ImageViewer::KeyboardCallback (vtkObject*, unsigned long eid, void* clientdata, void*)
 {
-  ImageViewer* window = reinterpret_cast<ImageViewer*> (clientdata);
+  auto* window = reinterpret_cast<ImageViewer*> (clientdata);
   window->emitKeyboardEvent (eid);
 }
 
@@ -557,7 +556,7 @@ pcl::visualization::ImageViewer::addLayer (
     const std::string &layer_id, int width, int height, double opacity)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  auto am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it != layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addLayer] Layer with ID='%s' already exists!\n", layer_id.c_str ());
@@ -574,7 +573,7 @@ void
 pcl::visualization::ImageViewer::removeLayer (const std::string &layer_id)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  auto am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::removeLayer] No layer with ID='%s' found.\n", layer_id.c_str ());
@@ -591,7 +590,7 @@ pcl::visualization::ImageViewer::addCircle (
     const std::string &layer_id, double opacity)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  auto am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addCircle] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
@@ -624,7 +623,7 @@ pcl::visualization::ImageViewer::addFilledRectangle (
     double r, double g, double b, const std::string &layer_id, double opacity)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  auto am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addFilledRectangle] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
@@ -659,7 +658,7 @@ pcl::visualization::ImageViewer::addRectangle (
     double r, double g, double b, const std::string &layer_id, double opacity)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  auto am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addRectangle] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
@@ -694,7 +693,7 @@ pcl::visualization::ImageViewer::addRectangle (
     double r, double g, double b, const std::string &layer_id, double opacity)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  auto am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addRectangle] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
@@ -729,7 +728,7 @@ pcl::visualization::ImageViewer::addLine (unsigned int x_min, unsigned int y_min
                                           const std::string &layer_id, double opacity)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  auto am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addLine] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
@@ -765,7 +764,7 @@ pcl::visualization::ImageViewer::addText (unsigned int x, unsigned int y,
                                           const std::string &layer_id, double opacity)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  auto am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addText] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
@@ -798,7 +797,7 @@ pcl::visualization::ImageViewer::markPoint (
     const std::string &layer_id, double opacity)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  auto am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::markPoint] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
@@ -845,7 +844,7 @@ pcl::visualization::ImageViewer::markPoints (
     return;
 
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  auto am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::markPoint] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());

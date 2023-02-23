@@ -117,7 +117,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input,
 //  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, PointNormal>::RANDOM_UNIFORM_DENSITY);
 //  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, PointNormal>::VOXEL_GRID_DILATION);
   mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, PointNormal>::NONE);
-  mls.setPointDensity (60000 * int (search_radius)); // 300 points in a 5 cm radius
+  mls.setPointDensity (60000 * static_cast<int>(search_radius)); // 300 points in a 5 cm radius
   mls.setUpsamplingRadius (0.025);
   mls.setUpsamplingStepSize (0.015);
   mls.setDilationIterations (2);

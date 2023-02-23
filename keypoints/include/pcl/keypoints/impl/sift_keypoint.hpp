@@ -128,7 +128,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
     cloud = temp;
 
     // Make sure the downsampled cloud still has enough points
-    const std::size_t min_nr_points = 25;
+    constexpr std::size_t min_nr_points = 25;
     if (cloud->size () < min_nr_points)
       break;
 
@@ -261,7 +261,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::findScaleSpaceExtrema (
     const PointCloudIn &input, KdTree &tree, const Eigen::MatrixXf &diff_of_gauss, 
     pcl::Indices &extrema_indices, std::vector<int> &extrema_scales)
 {
-  const int k = 25;
+  constexpr int k = 25;
   pcl::Indices nn_indices (k);
   std::vector<float> nn_dist (k);
 

@@ -37,22 +37,23 @@
 
 #include <pcl/point_types.h>
 #include <pcl/common/time.h> //fps calculations
-#include <pcl/io/openni_grabber.h>
 #include <pcl/io/lzf_image_io.h>
+#include <pcl/io/openni_camera/openni_driver.h>
+#include <pcl/io/openni_grabber.h>
+#include <pcl/io/timestamp.h>
 #include <pcl/visualization/common/float_image_utils.h>
 #include <pcl/visualization/image_viewer.h>
-#include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
 #include <pcl/visualization/mouse_event.h>
 
 #include <boost/circular_buffer.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp> // for ptime, to_iso_string, ...
 
+#include <chrono>
 #include <csignal>
 #include <limits>
+#include <memory>
 #include <mutex>
 #include <thread>
-#include <memory>
 
 using namespace std::chrono_literals;
 using namespace pcl;
@@ -72,17 +73,17 @@ getTotalSystemMemory ()
   std::uint64_t pages = sysconf (_SC_AVPHYS_PAGES);
   std::uint64_t page_size = sysconf (_SC_PAGE_SIZE);
   print_info ("Total available memory size: %lluMB.\n", (pages * page_size) / 1048576);
-  if (pages * page_size > std::uint64_t (std::numeric_limits<std::size_t>::max ()))
+  if (pages * page_size > static_cast<std::uint64_t>(std::numeric_limits<std::size_t>::max ()))
   {
     return std::numeric_limits<std::size_t>::max ();
   }
-  return std::size_t (pages * page_size);
+  return static_cast<std::size_t>(pages * page_size);
 }
 
-const int BUFFER_SIZE = int (getTotalSystemMemory () / (640 * 480) / 2);
+const int BUFFER_SIZE = static_cast<int>(getTotalSystemMemory () / (640 * 480) / 2);
 #else
 
-const int BUFFER_SIZE = 200;
+constexpr int BUFFER_SIZE = 200;
 #endif
 
 int buff_size = BUFFER_SIZE;
@@ -145,7 +146,7 @@ struct Frame
          const openni_wrapper::DepthImage::Ptr &_depth_image,
          const io::CameraParameters &_parameters_rgb,
          const io::CameraParameters &_parameters_depth,
-         const boost::posix_time::ptime &_time)
+         const std::chrono::time_point<std::chrono::system_clock>& _time)
     : image (_image)
     , depth_image (_depth_image)
     , parameters_rgb (_parameters_rgb)
@@ -158,7 +159,7 @@ struct Frame
         
   io::CameraParameters parameters_rgb, parameters_depth;
 
-  boost::posix_time::ptime time;
+  std::chrono::time_point<std::chrono::system_clock> time;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -223,13 +224,13 @@ class Buffer
     getSize ()
     {
       std::lock_guard<std::mutex> buff_lock (bmutex_);
-      return (int (buffer_.size ()));
+      return (static_cast<int>(buffer_.size ()));
     }
 		
     inline int 
     getCapacity ()
     {
-	    return (int (buffer_.capacity ()));
+	    return (static_cast<int>(buffer_.capacity ()));
     }
 		
     inline void 
@@ -265,8 +266,9 @@ class Writer
 
       FPS_CALC_WRITER ("data write   ", buf_);
       nr_frames_total++;
-      
-      std::string time_string = boost::posix_time::to_iso_string (frame->time);
+
+      const std::string time_string = getTimestamp(frame->time);
+
       // Save RGB data
       const std::string rgb_filename = "frame_" + time_string + "_rgb.pclzf";
       switch (frame->image->getEncoding ())
@@ -293,6 +295,7 @@ class Writer
 
       // Save depth data
       const std::string depth_filename = "frame_" + time_string + "_depth.pclzf";
+
       io::LZFDepth16ImageWriter ld;
       //io::LZFShift11ImageWriter ld;
       ld.write (reinterpret_cast<const char*> (&frame->depth_image->getDepthMetaData ().Data ()[0]), frame->depth_image->getWidth (), frame->depth_image->getHeight (), depth_filename);
@@ -371,7 +374,8 @@ class Driver
                     const openni_wrapper::DepthImage::Ptr &depth_image, 
                     float)
     {
-      boost::posix_time::ptime time = boost::posix_time::microsec_clock::local_time ();
+      const auto time = std::chrono::system_clock::now();
+
       FPS_CALC_DRIVER ("driver       ", buf_write_, buf_vis_);
 
       // Extract camera parameters
@@ -501,14 +505,14 @@ class Viewer
             {
               frame->image->fillRGB (frame->image->getWidth (), 
                                      frame->image->getHeight (), 
-                                     &rgb_data[0]);
+                                     rgb_data.data());
             }
             else
-              memcpy (&rgb_data[0],
+              memcpy (rgb_data.data(),
                       frame->image->getMetaData ().Data (),
                       rgb_data.size ());
 
-            image_viewer_->addRGBImage (reinterpret_cast<unsigned char*> (&rgb_data[0]), 
+            image_viewer_->addRGBImage (reinterpret_cast<unsigned char*> (rgb_data.data()), 
                                         frame->image->getWidth (),
                                         frame->image->getHeight (),
                                         "rgb_image");
@@ -700,17 +704,17 @@ main (int argc, char ** argv)
         {
           std::cout << std::endl << "Supported image modes for device: " << device->getVendorName () << " , " << device->getProductName () << std::endl;
           modes = grabber.getAvailableImageModes ();
-          for (std::vector<std::pair<int, XnMapOutputMode> >::const_iterator it = modes.begin (); it != modes.end (); ++it)
+          for (const auto& mode : modes)
           {
-            std::cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << std::endl;
+            std::cout << mode.first << " = " << mode.second.nXRes << " x " << mode.second.nYRes << " @ " << mode.second.nFPS << std::endl;
           }
         if (device->hasDepthStream ())
         {
           std::cout << std::endl << "Supported depth modes for device: " << device->getVendorName () << " , " << device->getProductName () << std::endl;
           modes = grabber.getAvailableDepthModes ();
-          for (std::vector<std::pair<int, XnMapOutputMode> >::const_iterator it = modes.begin (); it != modes.end (); ++it)
+          for (const auto& mode : modes)
           {
-            std::cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << std::endl;
+            std::cout << mode.first << " = " << mode.second.nXRes << " x " << mode.second.nYRes << " @ " << mode.second.nFPS << std::endl;
           }
         }
         }

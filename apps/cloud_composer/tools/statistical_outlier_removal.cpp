@@ -13,11 +13,6 @@ pcl::cloud_composer::StatisticalOutlierRemovalTool::StatisticalOutlierRemovalToo
   
 }
 
-pcl::cloud_composer::StatisticalOutlierRemovalTool::~StatisticalOutlierRemovalTool ()
-{
-  
-}
-
 QList <pcl::cloud_composer::CloudComposerItem*>
 pcl::cloud_composer::StatisticalOutlierRemovalTool::performAction (ConstItemList input_data, PointTypeFlags::PointType)
 {

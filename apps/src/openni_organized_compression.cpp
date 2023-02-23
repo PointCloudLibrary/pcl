@@ -147,7 +147,7 @@ public:
 
     if (!bRawImageEncoding_) {
       // create a new grabber for OpenNI devices
-      pcl::OpenNIGrabber interface{};
+      pcl::OpenNIGrabber interface;
 
       // make callback function from member function
       std::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
@@ -253,7 +253,7 @@ struct EventHelper {
   {
     if (!bRawImageEncoding_) {
       // create a new grabber for OpenNI devices
-      pcl::OpenNIGrabber interface{};
+      pcl::OpenNIGrabber interface;
 
       // make callback function from member function
       std::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =

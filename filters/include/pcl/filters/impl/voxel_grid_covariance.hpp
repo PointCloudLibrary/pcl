@@ -140,7 +140,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
           continue;
 
       // Get the distance value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
+      const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
       float distance_value = 0;
       memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
@@ -267,7 +267,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   if (save_leaf_layout_)
     leaf_layout_.resize (div_b_[0] * div_b_[1] * div_b_[2], -1);
 
-  // Eigen values and vectors calculated to prevent near singluar matrices
+  // Eigen values and vectors calculated to prevent near singular matrices
   Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> eigensolver;
   Eigen::Matrix3d eigen_val;
   Eigen::Vector3d pt_sum;
@@ -275,7 +275,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   // Eigen values less than a threshold of max eigen value are inflated to a set fraction of the max eigen value.
   double min_covar_eigvalue;
 
-  for (typename std::map<std::size_t, Leaf>::iterator it = leaves_.begin (); it != leaves_.end (); ++it)
+  for (auto it = leaves_.begin (); it != leaves_.end (); ++it)
   {
 
     // Normalize the centroid
@@ -289,7 +289,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
     leaf.mean_ /= leaf.nr_points;
 
     // If the voxel contains sufficient points, its covariance is calculated and is added to the voxel centroids and output clouds.
-    // Points with less than the minimum points will have a can not be accuratly approximated using a normal distribution.
+    // Points with less than the minimum points will have a can not be accurately approximated using a normal distribution.
     if (leaf.nr_points >= min_points_per_voxel_)
     {
       if (save_leaf_layout_)
@@ -461,7 +461,7 @@ pcl::VoxelGridCovariance<PointT>::getDisplayCloud (pcl::PointCloud<PointXYZ>& ce
       [this] (auto& l) { return (l.second.nr_points >= min_points_per_voxel_); }));
 
   // Generate points for each occupied voxel with sufficient points.
-  for (typename std::map<std::size_t, Leaf>::iterator it = leaves_.begin (); it != leaves_.end (); ++it)
+  for (auto it = leaves_.begin (); it != leaves_.end (); ++it)
   {
     Leaf& leaf = it->second;
 

@@ -63,10 +63,10 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
   // Reset or initialize the collection of indices
   corresponding_input_indices_.reset (new PointIndices);
 
+  normals_.reset (new NormalCloud); // always init this since it is dereferenced in performUpsampling
   // Check if normals have to be computed/saved
   if (compute_normals_)
   {
-    normals_.reset (new NormalCloud);
     // Copy the header
     normals_->header = input_->header;
     // Clear the fields in case the method exits before computation
@@ -388,7 +388,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performUpsampling (PointCloudOut &
 
       // If the closest point did not have a valid MLS fitting result
       // OR if it is too far away from the sampled point
-      if (mls_results_[input_index].valid == false)
+      if (!mls_results_[input_index].valid)
         continue;
 
       Eigen::Vector3d add_point = (*distinct_cloud_)[dp_i].getVector3fMap ().template cast<double> ();
@@ -407,7 +407,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performUpsampling (PointCloudOut &
     for (int iteration = 0; iteration < dilation_iteration_num_; ++iteration)
       voxel_grid.dilate ();
 
-    for (typename MLSVoxelGrid::HashMap::iterator m_it = voxel_grid.voxel_grid_.begin (); m_it != voxel_grid.voxel_grid_.end (); ++m_it)
+    for (auto m_it = voxel_grid.voxel_grid_.begin (); m_it != voxel_grid.voxel_grid_.end (); ++m_it)
     {
       // Get 3D position of point
       Eigen::Vector3f pos;
@@ -425,7 +425,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performUpsampling (PointCloudOut &
 
       // If the closest point did not have a valid MLS fitting result
       // OR if it is too far away from the sampled point
-      if (mls_results_[input_index].valid == false)
+      if (!mls_results_[input_index].valid)
         continue;
 
       Eigen::Vector3d add_point = p.getVector3fMap ().template cast<double> ();
@@ -835,7 +835,7 @@ template <typename PointInT, typename PointOutT> void
 pcl::MovingLeastSquares<PointInT, PointOutT>::MLSVoxelGrid::dilate ()
 {
   HashMap new_voxel_grid = voxel_grid_;
-  for (typename MLSVoxelGrid::HashMap::iterator m_it = voxel_grid_.begin (); m_it != voxel_grid_.end (); ++m_it)
+  for (auto m_it = voxel_grid_.begin (); m_it != voxel_grid_.end (); ++m_it)
   {
     Eigen::Vector3i index;
     getIndexIn3D (m_it->first, index);

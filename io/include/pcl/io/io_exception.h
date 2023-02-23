@@ -43,7 +43,7 @@
 #include <string>
 
 
-//fom <pcl/pcl_macros.h>
+//from <pcl/pcl_macros.h>
 #if defined _WIN32 && defined _MSC_VER && !defined __PRETTY_FUNCTION__
   #define __PRETTY_FUNCTION__ __FUNCTION__
 #endif
@@ -99,6 +99,7 @@ namespace pcl
       va_list args;
       va_start (args, format);
       vsnprintf (msg, 1024, format, args);
+      va_end (args);
       throw IOException (function, file, line, msg);
     }
   } // namespace

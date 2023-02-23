@@ -97,7 +97,7 @@ public:
   copyTo(DeviceMemory& other) const;
 
   /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to
-   * ensure that intenal buffer size is enough.
+   * ensure that internal buffer size is enough.
    * \param host_ptr_arg pointer to buffer to upload
    * \param sizeBytes_arg buffer size
    * */
@@ -230,7 +230,7 @@ public:
   copyTo(DeviceMemory2D& other) const;
 
   /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to
-   * ensure that intenal buffer size is enough.
+   * ensure that internal buffer size is enough.
    * \param host_ptr_arg pointer to host buffer to upload
    * \param host_step_arg stride between two consecutive rows in bytes for host buffer
    * \param rows_arg number of rows to upload

@@ -33,6 +33,11 @@ PCL_ADD_TEST(filters_uniform_sampling test_uniform_sampling
              FILES test_uniform_sampling.cpp
              LINK_WITH pcl_gtest pcl_common pcl_filters)
 
+PCL_ADD_TEST(filters_farthest_point_sampling test_farthest_point_sampling
+             FILES test_farthest_point_sampling.cpp
+             LINK_WITH pcl_gtest pcl_filters pcl_io
+             ARGUMENTS "${PCL_SOURCE_DIR}/test/bunny.pcd")
+
 PCL_ADD_TEST(filters_convolution test_convolution
              FILES test_convolution.cpp
              LINK_WITH pcl_gtest pcl_filters)

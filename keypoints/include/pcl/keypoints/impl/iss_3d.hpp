@@ -132,7 +132,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getBoundaryPoints (PointCloudI
   shared(angle_threshold, boundary_estimator, border_radius, edge_points, input) \
   firstprivate(u, v) \
   num_threads(threads_)
-  for (int index = 0; index < int (input.size ()); index++)
+  for (int index = 0; index < static_cast<int>(input.size ()); index++)
   {
     edge_points[index] = false;
     PointInT current_point = input[index];
@@ -314,7 +314,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
   default(none) \
   shared(borders) \
   num_threads(threads_)
-  for (int index = 0; index < int (input_->size ()); index++)
+  for (int index = 0; index < static_cast<int>(input_->size ()); index++)
   {
     borders[index] = false;
     PointInT current_point = (*input_)[index];
@@ -343,7 +343,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
   for (std::size_t i = 0; i < threads_; i++)
     omp_mem[i].setZero (3);
 #else
-  Eigen::Vector3d *omp_mem = new Eigen::Vector3d[1];
+  auto *omp_mem = new Eigen::Vector3d[1];
 
   omp_mem[0].setZero (3);
 #endif
@@ -398,7 +398,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
         prg_mem[index][d] = omp_mem[tid][d];
   }
 
-  for (int index = 0; index < int (input_->size ()); index++)
+  for (int index = 0; index < static_cast<int>(input_->size ()); index++)
   {
    if (!borders[index])
     {
@@ -413,7 +413,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
   default(none) \
   shared(feat_max) \
   num_threads(threads_)
-  for (int index = 0; index < int (input_->size ()); index++)
+  for (int index = 0; index < static_cast<int>(input_->size ()); index++)
   {
     feat_max [index] = false;
     PointInT current_point = (*input_)[index];
@@ -445,7 +445,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
   default(none) \
   shared(feat_max, output) \
   num_threads(threads_)
-  for (int index = 0; index < int (input_->size ()); index++)
+  for (int index = 0; index < static_cast<int>(input_->size ()); index++)
   {
     if (feat_max[index])
 #pragma omp critical

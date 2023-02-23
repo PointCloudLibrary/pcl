@@ -279,7 +279,7 @@ namespace mets {
       if(as->step() == mets::abstract_search<neighborhood_t>::MOVE_MADE)
 	{
 	  os << iteration++ << "\t" 
-	     << static_cast<const mets::evaluable_solution&>(p).cost_function()
+	     << dynamic_cast<const mets::evaluable_solution&>(p).cost_function()
 	     << "\n";
 	}
     }
@@ -309,7 +309,7 @@ namespace mets {
       if(as->step() == mets::abstract_search<neighborhood_t>::MOVE_MADE)
 	{
 	  iteration_m++;
-	  double val = static_cast<const mets::evaluable_solution&>(p)
+	  double val = dynamic_cast<const mets::evaluable_solution&>(p)
 	    .cost_function();
 	  if(val < best_m - epsilon_m) 
 	    {	     
@@ -338,7 +338,7 @@ inline mets::solution_recorder::~solution_recorder()  = default;
 inline bool
 mets::best_ever_solution::accept(const mets::feasible_solution& sol)
 {
-  const evaluable_solution& s = dynamic_cast<const mets::evaluable_solution&>(sol);
+  const auto& s = dynamic_cast<const mets::evaluable_solution&>(sol);
   if(s.cost_function() < best_ever_m.cost_function())
     {
       best_ever_m.copy_from(s);

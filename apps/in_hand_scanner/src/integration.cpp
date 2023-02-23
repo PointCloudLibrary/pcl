@@ -106,11 +106,11 @@ pcl::ihs::Integration::reconstructMesh(const CloudXYZRGBNormalConstPtr& cloud_da
   }
   for (int r = 1; r < height; ++r) {
     for (int c = 0; c < 2; ++c) {
-      const PointXYZRGBNormal& pt_d = cloud_data->operator[](r* width + c);
+      const PointXYZRGBNormal& pt_d = cloud_data->operator[](r * width + c);
       const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
 
       if (!std::isnan(pt_d.x) && weight > min_weight_) {
-        cloud_model->operator[](r* width + c) = PointIHS(pt_d, weight);
+        cloud_model->operator[](r * width + c) = PointIHS(pt_d, weight);
       }
     }
   }
@@ -124,7 +124,7 @@ pcl::ihs::Integration::reconstructMesh(const CloudXYZRGBNormalConstPtr& cloud_da
   // *   3 - 0  //
   const int offset_1 = -width;
   const int offset_2 = -width - 1;
-  const int offset_3 = -1;
+  constexpr int offset_3 = -1;
   const int offset_4 = -width - 2;
 
   for (int r = 1; r < height; ++r) {
@@ -241,11 +241,11 @@ pcl::ihs::Integration::merge(const CloudXYZRGBNormalConstPtr& cloud_data,
   }
   for (int r = 1; r < height; ++r) {
     for (int c = 0; c < 2; ++c) {
-      const PointXYZRGBNormal& pt_d = cloud_data->operator[](r* width + c);
+      const PointXYZRGBNormal& pt_d = cloud_data->operator[](r * width + c);
       const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
 
       if (!std::isnan(pt_d.x) && weight > min_weight_) {
-        PointIHS& pt_d_t = cloud_data_transformed->operator[](r* width + c);
+        PointIHS& pt_d_t = cloud_data_transformed->operator[](r * width + c);
         pt_d_t = PointIHS(pt_d, weight);
         pt_d_t.getVector4fMap() = T * pt_d_t.getVector4fMap();
         pt_d_t.getNormalVector4fMap() = T * pt_d_t.getNormalVector4fMap();
@@ -262,7 +262,7 @@ pcl::ihs::Integration::merge(const CloudXYZRGBNormalConstPtr& cloud_data,
   // *   3 - 0  //
   const int offset_1 = -width;
   const int offset_2 = -width - 1;
-  const int offset_3 = -1;
+  constexpr int offset_3 = -1;
   const int offset_4 = -width - 2;
 
   const float dot_min = std::cos(max_angle_ * 17.45329252e-3); // deg to rad

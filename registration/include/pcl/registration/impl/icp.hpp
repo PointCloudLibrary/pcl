@@ -44,6 +44,7 @@
 #include <pcl/correspondence.h>
 
 namespace pcl {
+// NOLINTBEGIN(readability-container-data-pointer)
 
 template <typename PointSource, typename PointTarget, typename Scalar>
 void
@@ -60,8 +61,8 @@ IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformCloud(
     Eigen::Matrix3f rot = tr.block<3, 3>(0, 0);
 
     for (std::size_t i = 0; i < input.size(); ++i) {
-      const std::uint8_t* data_in = reinterpret_cast<const std::uint8_t*>(&input[i]);
-      std::uint8_t* data_out = reinterpret_cast<std::uint8_t*>(&output[i]);
+      const auto* data_in = reinterpret_cast<const std::uint8_t*>(&input[i]);
+      auto* data_out = reinterpret_cast<std::uint8_t*>(&output[i]);
       memcpy(&pt[0], data_in + x_idx_offset_, sizeof(float));
       memcpy(&pt[1], data_in + y_idx_offset_, sizeof(float));
       memcpy(&pt[2], data_in + z_idx_offset_, sizeof(float));
@@ -91,8 +92,8 @@ IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformCloud(
   }
   else {
     for (std::size_t i = 0; i < input.size(); ++i) {
-      const std::uint8_t* data_in = reinterpret_cast<const std::uint8_t*>(&input[i]);
-      std::uint8_t* data_out = reinterpret_cast<std::uint8_t*>(&output[i]);
+      const auto* data_in = reinterpret_cast<const std::uint8_t*>(&input[i]);
+      auto* data_out = reinterpret_cast<std::uint8_t*>(&output[i]);
       memcpy(&pt[0], data_in + x_idx_offset_, sizeof(float));
       memcpy(&pt[1], data_in + y_idx_offset_, sizeof(float));
       memcpy(&pt[2], data_in + z_idx_offset_, sizeof(float));
@@ -225,7 +226,7 @@ IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformation(
 
     ++nr_iterations_;
 
-    // Update the vizualization of icp convergence
+    // Update the visualization of icp convergence
     if (update_visualizer_ != nullptr) {
       pcl::Indices source_indices_good, target_indices_good;
       for (const Correspondence& corr : *correspondences_) {
@@ -317,6 +318,7 @@ IterativeClosestPointWithNormals<PointSource, PointTarget, Scalar>::transformClo
 {
   pcl::transformPointCloudWithNormals(input, output, transform);
 }
+// NOLINTEND(readability-container-data-pointer)
 
 } // namespace pcl
 

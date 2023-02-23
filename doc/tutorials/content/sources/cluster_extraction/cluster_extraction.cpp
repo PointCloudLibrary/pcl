@@ -82,19 +82,20 @@ main ()
   ec.extract (cluster_indices);
 
   int j = 0;
-  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
+  for (const auto& cluster : cluster_indices)
   {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
-    for (const auto& idx : it->indices)
-      cloud_cluster->push_back ((*cloud_filtered)[idx]); //*
+    for (const auto& idx : cluster.indices) {
+      cloud_cluster->push_back((*cloud_filtered)[idx]);
+    } //*
     cloud_cluster->width = cloud_cluster->size ();
     cloud_cluster->height = 1;
     cloud_cluster->is_dense = true;
 
     std::cout << "PointCloud representing the Cluster: " << cloud_cluster->size () << " data points." << std::endl;
     std::stringstream ss;
-    ss << "cloud_cluster_" << j << ".pcd";
-    writer.write<pcl::PointXYZ> (ss.str (), *cloud_cluster, false); //*
+    ss << std::setw(4) << std::setfill('0') << j;
+    writer.write<pcl::PointXYZ> ("cloud_cluster_" + ss.str () + ".pcd", *cloud_cluster, false); //*
     j++;
   }
 

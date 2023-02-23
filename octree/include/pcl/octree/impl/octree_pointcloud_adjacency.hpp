@@ -243,8 +243,7 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   }
 
   // Iterate through and add edges to adjacency graph
-  for (typename std::vector<LeafContainerT*>::iterator leaf_itr = leaf_vector_.begin();
-       leaf_itr != leaf_vector_.end();
+  for (auto leaf_itr = leaf_vector_.begin(); leaf_itr != leaf_vector_.end();
        ++leaf_itr) {
     VoxelID u = (leaf_vertex_id_map.find(*leaf_itr))->second;
     PointT p_u = voxel_adjacency_graph[u];

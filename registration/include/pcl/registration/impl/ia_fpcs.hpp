@@ -55,7 +55,7 @@ pcl::getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud
                          int nr_threads)
 {
   const float max_dist_sqr = max_dist * max_dist;
-  const std::size_t s = cloud.size();
+  const std::size_t s = cloud->size();
 
   pcl::search::KdTree<PointT> tree;
   tree.setInputCloud(cloud);
@@ -264,7 +264,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
     target_cloud_updated_ = true;
   }
 
-  // if a sample size for the point clouds is given; prefarably no sampling of target
+  // if a sample size for the point clouds is given; preferably no sampling of target
   // cloud
   if (nr_samples_ != 0) {
     const int ss = static_cast<int>(indices_->size());
@@ -290,8 +290,8 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   }
 
   // set predefined variables
-  const int min_iterations = 4;
-  const float diameter_fraction = 0.3f;
+  constexpr int min_iterations = 4;
+  constexpr float diameter_fraction = 0.3f;
 
   // get diameter of input cloud (distance between farthest points)
   Eigen::Vector4f pt_min, pt_max;
@@ -312,9 +312,9 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   // heuristic determination of number of trials to have high probability of finding a
   // good solution
   if (max_iterations_ == 0) {
-    float first_est =
-        std::log(small_error_) /
-        std::log(1.0 - std::pow((double)approx_overlap_, (double)min_iterations));
+    float first_est = std::log(small_error_) /
+                      std::log(1.0 - std::pow(static_cast<double>(approx_overlap_),
+                                              static_cast<double>(min_iterations)));
     max_iterations_ =
         static_cast<int>(first_est / (diameter_fraction * approx_overlap_ * 2.f));
   }
@@ -397,7 +397,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
 
     // check if at least one point fulfilled the conditions
     if (nearest_to_plane != std::numeric_limits<float>::max()) {
-      // order points to build largest quadrangle and calcuate intersection ratios of
+      // order points to build largest quadrangle and calculate intersection ratios of
       // diagonals
       setupBase(base_indices, ratio);
       return (0);
@@ -419,7 +419,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
 
   // choose random first point
   base_indices[0] = (*target_indices_)[rand() % nr_points];
-  auto* index1 = &base_indices[0];
+  auto* index1 = base_indices.data();
 
   // random search for 2 other points (as far away as overlap allows)
   for (int i = 0; i < ransac_iterations_; i++) {
@@ -653,7 +653,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   // point cloud
   PointCloudSourcePtr cloud_e(new PointCloudSource);
   cloud_e->resize(pairs_a.size() * 2);
-  PointCloudSourceIterator it_pt = cloud_e->begin();
+  auto it_pt = cloud_e->begin();
   for (const auto& pair : pairs_a) {
     const PointSource* pt1 = &((*input_)[pair.index_match]);
     const PointSource* pt2 = &((*input_)[pair.index_query]);
@@ -691,9 +691,9 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
         pcl::Indices match_indices(4);
 
         match_indices[0] =
-            pairs_a[static_cast<int>(std::floor((float)(id / 2.f)))].index_match;
+            pairs_a[static_cast<int>(std::floor((id / 2.f)))].index_match;
         match_indices[1] =
-            pairs_a[static_cast<int>(std::floor((float)(id / 2.f)))].index_query;
+            pairs_a[static_cast<int>(std::floor((id / 2.f)))].index_query;
         match_indices[2] = pair.index_match;
         match_indices[3] = pair.index_query;
 
@@ -834,7 +834,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
                   const pcl::Correspondences& correspondences,
                   Eigen::Matrix4f& transformation)
 {
-  // only use triplet of points to simlify process (possible due to planar case)
+  // only use triplet of points to simplify process (possible due to planar case)
   pcl::Correspondences correspondences_temp = correspondences;
   correspondences_temp.erase(correspondences_temp.end() - 1);
 
@@ -876,7 +876,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   float inlier_score_temp = 0;
   pcl::Indices ids;
   std::vector<float> dists_sqr;
-  PointCloudSourceIterator it = source_transformed.begin();
+  auto it = source_transformed.begin();
 
   for (std::size_t i = 0; i < nr_points; it++, i++) {
     // search for nearest point using kd tree search

@@ -58,9 +58,6 @@ public:
   /** Constructor. */
   FernEvaluator();
 
-  /** Destructor. */
-  virtual ~FernEvaluator();
-
   /** Evaluates the specified examples using the supplied tree.
    *
    * \param[in] fern the decision tree

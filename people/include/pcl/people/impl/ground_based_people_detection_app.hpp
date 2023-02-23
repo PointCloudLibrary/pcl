@@ -148,8 +148,8 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::setSensorPortraitOrientation
 template<typename PointT>
 void pcl::people::GroundBasedPeopleDetectionApp<PointT>::updateMinMaxPoints ()
 {
-  min_points_ = (int) (min_height_ * min_width_ / voxel_size_ / voxel_size_);
-  max_points_ = (int) (max_height_ * max_width_ / voxel_size_ / voxel_size_);
+  min_points_ = static_cast<int> (min_height_ * min_width_ / voxel_size_ / voxel_size_);
+  max_points_ = static_cast<int> (max_height_ * max_width_ / voxel_size_ / voxel_size_);
 }
 
 template <typename PointT> void
@@ -400,7 +400,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
   {
     swapDimensions(rgb_image_);
   }
-  for(typename std::vector<pcl::people::PersonCluster<PointT> >::iterator it = clusters.begin(); it != clusters.end(); ++it)
+  for(auto it = clusters.begin(); it != clusters.end(); ++it)
   {
     //Evaluate confidence for the current PersonCluster:
     Eigen::Vector3f centroid = intrinsics_matrix_transformed_ * (it->getTCenter());

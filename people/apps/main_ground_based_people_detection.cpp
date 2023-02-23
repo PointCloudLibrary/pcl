@@ -101,7 +101,7 @@ struct callback_args{
 void
 pp_callback (const pcl::visualization::PointPickingEvent& event, void* args)
 {
-  struct callback_args* data = (struct callback_args *)args;
+  auto* data = reinterpret_cast<struct callback_args *>(args);
   if (event.getPointIndex () == -1)
     return;
   PointT current_point;
@@ -167,7 +167,7 @@ int main (int argc, char** argv)
   PointCloudT::Ptr clicked_points_3d (new PointCloudT);
   cb_args.clicked_points_3d = clicked_points_3d;
   cb_args.viewerPtr = pcl::visualization::PCLVisualizer::Ptr(&viewer);
-  viewer.registerPointPickingCallback (pp_callback, (void*)&cb_args);
+  viewer.registerPointPickingCallback (pp_callback, reinterpret_cast<void*>(&cb_args));
   std::cout << "Shift+click on three floor points, then press 'Q'..." << std::endl;
 
   // Spin until 'Q' is pressed:
@@ -244,7 +244,7 @@ int main (int argc, char** argv)
       if (++count == 30)
       {
         double now = pcl::getTime ();
-        std::cout << "Average framerate: " << double(count)/double(now - last) << " Hz" <<  std::endl;
+        std::cout << "Average framerate: " << static_cast<double>(count)/(now - last) << " Hz" <<  std::endl;
         count = 0;
         last = now;
       }

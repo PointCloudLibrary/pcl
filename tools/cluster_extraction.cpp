@@ -116,11 +116,11 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, std::vector<pcl::PCLPointCl
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cluster_indices.size ()); print_info (" clusters]\n");
 
   output.reserve (cluster_indices.size ());
-  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
+  for (const auto& cluster : cluster_indices)
   {
     pcl::ExtractIndices<pcl::PCLPointCloud2> extract;
     extract.setInputCloud (input);
-    extract.setIndices (pcl::make_shared<const pcl::PointIndices> (*it));
+    extract.setIndices (pcl::make_shared<const pcl::PointIndices> (cluster));
     pcl::PCLPointCloud2::Ptr out (new pcl::PCLPointCloud2);
     extract.filter (*out);
     output.push_back (out);

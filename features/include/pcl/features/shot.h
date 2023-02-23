@@ -169,9 +169,6 @@ namespace pcl
       /** \brief The number of bins in each shape histogram. */
       int nr_shape_bins_;
 
-      /** \brief Placeholder for a point's SHOT. */
-      Eigen::VectorXf shot_;
-
       /** \brief The radius used for the LRF computation */
       float lrf_radius_;
 
@@ -240,7 +237,6 @@ namespace pcl
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::radius1_2_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::maxAngularSectors_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::interpolateSingleChannel;
-      using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::shot_;
       using FeatureWithLocalReferenceFrames<PointInT, PointRFT>::frames_;
 
       using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
@@ -318,7 +314,6 @@ namespace pcl
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::radius1_2_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::maxAngularSectors_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::interpolateSingleChannel;
-      using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::shot_;
       using FeatureWithLocalReferenceFrames<PointInT, PointRFT>::frames_;
 
       using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;

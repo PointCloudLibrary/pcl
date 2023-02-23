@@ -49,7 +49,7 @@
 
 #if defined _MSC_VER
   // 4244 : conversion from 'type1' to 'type2', possible loss of data
-  // 4661 : no suitable definition provided for explicit template instantiation reques
+  // 4661 : no suitable definition provided for explicit template instantiation request
   // 4503 : decorated name length exceeded, name was truncated
   // 4146 : unary minus operator applied to unsigned type, result still unsigned
   #pragma warning (disable: 4018 4244 4267 4521 4251 4661 4305 4503 4146)
@@ -108,7 +108,7 @@
 
 // Macro for emitting pragma warning for deprecated headers
 #if (defined (__GNUC__) || defined(__clang__))
-  #define _PCL_DEPRECATED_HEADER_IMPL(Message) PCL_PRAGMA (GCC warning Message)
+  #define _PCL_DEPRECATED_HEADER_IMPL(Message) PCL_PRAGMA (message Message)
 #elif _MSC_VER
   #define _PCL_DEPRECATED_HEADER_IMPL(Message) PCL_PRAGMA (warning (Message))
 #else

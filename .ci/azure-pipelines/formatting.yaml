@@ -2,8 +2,7 @@ jobs:
   - job: formatting
     displayName: Check code formatting
     pool:
-      vmImage: 'Ubuntu 20.04'
-    container: fmt
+      vmImage: 'ubuntu-22.04'
     steps:
       - checkout: self
         # find the commit hash on a quick non-forced update too

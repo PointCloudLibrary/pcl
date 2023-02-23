@@ -97,8 +97,8 @@ public:
   using Matrix4 = typename Registration<PointSource, PointTarget, Scalar>::Matrix4;
   using Affine3 = typename Eigen::Transform<Scalar, 3, Eigen::Affine>;
 
-  /** \brief Constructor.  Sets \ref outlier_ratio_ to 0.35, \ref step_size_ to
-   * 0.05 and \ref resolution_ to 1.0
+  /** \brief Constructor.  Sets \ref outlier_ratio_ to 0.55, \ref step_size_ to
+   * 0.1 and \ref resolution_ to 1.0
    */
   NormalDistributionsTransform();
 
@@ -122,13 +122,25 @@ public:
   inline void
   setResolution(float resolution)
   {
-    // Prevents unnessary voxel initiations
+    // Prevents unnecessary voxel initiations
     if (resolution_ != resolution) {
       resolution_ = resolution;
       if (input_) {
         init();
       }
     }
+  }
+
+  /** \brief Set the minimum number of points required for a cell to be used (must be 3
+   * or greater for covariance calculation). Calls the function of the underlying
+   * VoxelGridCovariance. This function must be called before `setInputTarget` and
+   * `setResolution`. \param[in] min_points_per_voxel the minimum number of points
+   * required for a voxel to be used
+   */
+  inline void
+  setMinPointPerVoxel(unsigned int min_points_per_voxel)
+  {
+    target_cells_.setMinPointPerVoxel(min_points_per_voxel);
   }
 
   /** \brief Get voxel grid resolution.
@@ -216,9 +228,9 @@ public:
   convertTransform(const Eigen::Matrix<double, 6, 1>& x, Affine3& trans)
   {
     trans = Eigen::Translation<Scalar, 3>(x.head<3>().cast<Scalar>()) *
-            Eigen::AngleAxis<Scalar>(Scalar(x(3)), Vector3::UnitX()) *
-            Eigen::AngleAxis<Scalar>(Scalar(x(4)), Vector3::UnitY()) *
-            Eigen::AngleAxis<Scalar>(Scalar(x(5)), Vector3::UnitZ());
+            Eigen::AngleAxis<Scalar>(static_cast<Scalar>(x(3)), Vector3::UnitX()) *
+            Eigen::AngleAxis<Scalar>(static_cast<Scalar>(x(4)), Vector3::UnitY()) *
+            Eigen::AngleAxis<Scalar>(static_cast<Scalar>(x(5)), Vector3::UnitZ());
   }
 
   /** \brief Convert 6 element transformation vector to transformation matrix.
@@ -392,7 +404,7 @@ protected:
    * Thuente 1994) and \f$ \delta \vec{p} \f$ normalized in Algorithm 2
    * [Magnusson 2009]
    * \param[in] step_init initial step length estimate, \f$ \alpha_0 \f$ in
-   * Moore-Thuente (1994) and the noramal of \f$ \delta \vec{p} \f$ in Algorithm
+   * Moore-Thuente (1994) and the normal of \f$ \delta \vec{p} \f$ in Algorithm
    * 2 [Magnusson 2009]
    * \param[in] step_max maximum step length, \f$ \alpha_max \f$ in
    * Moore-Thuente (1994)

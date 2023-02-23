@@ -131,7 +131,7 @@ TEST(PCL_OctreeGPU, performance)
     // build opencv octree
 #ifdef HAVE_OPENCV
     cv::Octree octree_opencv;
-    const static int opencv_octree_points_per_leaf = 32;    
+    constexpr int opencv_octree_points_per_leaf = 32;    
     std::vector<cv::Point3f> opencv_points(data.size());
     std::transform(data.cbegin(), data.cend(), opencv_points.begin(), DataGenerator::ConvPoint<cv::Point3f>());
         
@@ -143,7 +143,7 @@ TEST(PCL_OctreeGPU, performance)
     
     //// Radius search performance ///
 
-    const int max_answers = 500;
+    constexpr int max_answers = 500;
     float dist;
 
     //host buffers

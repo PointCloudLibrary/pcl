@@ -140,7 +140,7 @@ pcl::features::ISMVoteList<PointT>::findStrongestPeaks (
 
   // heuristic: start from NUM_INIT_PTS different locations selected uniformly
   // on the votes. Intuitively, it is likely to get a good location in dense regions.
-  const int NUM_INIT_PTS = 100;
+  constexpr int NUM_INIT_PTS = 100;
   double SIGMA_DIST = in_sigma;// rule of thumb: 10% of the object radius
   const double FINAL_EPS = SIGMA_DIST / 100;// another heuristic
 
@@ -770,7 +770,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::findObject
   estimateFeatures (sampled_point_cloud, sampled_normal_cloud, feature_cloud);
 
   //find nearest cluster
-  const unsigned int n_key_points = static_cast<unsigned int> (sampled_point_cloud->size ());
+  const auto n_key_points = static_cast<unsigned int> (sampled_point_cloud->size ());
   std::vector<int> min_dist_inds (n_key_points, -1);
   for (unsigned int i_point = 0; i_point < n_key_points; i_point++)
   {
@@ -808,7 +808,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::findObject
     if (min_dist_idx == -1)
       continue;
 
-    const unsigned int n_words = static_cast<unsigned int> (model->clusters_[min_dist_idx].size ());
+    const auto n_words = static_cast<unsigned int> (model->clusters_[min_dist_idx].size ());
     //compute coord system transform
     Eigen::Matrix3f transform = alignYCoordWithNormal ((*sampled_normal_cloud)[i_point]);
     for (unsigned int i_word = 0; i_word < n_words; i_word++)
@@ -949,7 +949,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::calculateS
   std::vector<std::vector<float> > objects_sigmas;
   objects_sigmas.resize (number_of_classes, vec);
 
-  unsigned int number_of_objects = static_cast<unsigned int> (training_clouds_.size ());
+  auto number_of_objects = static_cast<unsigned int> (training_clouds_.size ());
   for (unsigned int i_object = 0; i_object < number_of_objects; i_object++)
   {
     float max_distance = 0.0f;
@@ -972,7 +972,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::calculateS
   for (unsigned int i_class = 0; i_class < number_of_classes; i_class++)
   {
     float sig = 0.0f;
-    unsigned int number_of_objects_in_class = static_cast<unsigned int> (objects_sigmas[i_class].size ());
+    auto number_of_objects_in_class = static_cast<unsigned int> (objects_sigmas[i_class].size ());
     for (unsigned int i_object = 0; i_object < number_of_objects_in_class; i_object++)
       sig += objects_sigmas[i_class][i_object];
     sig /= (static_cast<float> (number_of_objects_in_class) * 10.0f);
@@ -1037,7 +1037,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::calculateW
   learned_weights.resize (locations.size (), 0.0);
   for (unsigned int i_cluster = 0; i_cluster < number_of_clusters_; i_cluster++)
   {
-    unsigned int number_of_words_in_cluster = static_cast<unsigned int> (clusters[i_cluster].size ());
+    auto number_of_words_in_cluster = static_cast<unsigned int> (clusters[i_cluster].size ());
     for (unsigned int i_visual_word = 0; i_visual_word < number_of_words_in_cluster; i_visual_word++)
     {
       unsigned int i_index = clusters[i_cluster][i_visual_word];
@@ -1128,7 +1128,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::simplifyCl
   grid.filter (temp_cloud);
 
   //extract indices of points from source cloud which are closest to grid points
-  const float max_value = std::numeric_limits<float>::max ();
+  constexpr float max_value = std::numeric_limits<float>::max ();
 
   const auto num_source_points = in_point_cloud->size ();
   const auto num_sample_points = temp_cloud.size ();
@@ -1262,7 +1262,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::computeKMe
   int flags,
   Eigen::MatrixXf& cluster_centers)
 {
-  const int spp_trials = 3;
+  constexpr int spp_trials = 3;
   std::size_t number_of_points = points_to_cluster.rows () > 1 ? points_to_cluster.rows () : points_to_cluster.cols ();
   int feature_dimension = points_to_cluster.rows () > 1 ? FeatureSize : 1;
 
@@ -1280,7 +1280,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::computeKMe
   Eigen::MatrixXf old_centers (number_of_clusters, feature_dimension);
   std::vector<int> counters (number_of_clusters);
   std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > boxes (feature_dimension);
-  Eigen::Vector2f* box = &boxes[0];
+  Eigen::Vector2f* box = boxes.data();
 
   double best_compactness = std::numeric_limits<double>::max ();
   double compactness = 0.0;
@@ -1426,9 +1426,9 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::generateCe
   int trials)
 {
   std::size_t dimension = data.cols ();
-  unsigned int number_of_points = static_cast<unsigned int> (data.rows ());
+  auto number_of_points = static_cast<unsigned int> (data.rows ());
   std::vector<int> centers_vec (number_of_clusters);
-  int* centers = &centers_vec[0];
+  int* centers = centers_vec.data();
   std::vector<double> dist (number_of_points);
   std::vector<double> tdist (number_of_points);
   std::vector<double> tdist2 (number_of_points);

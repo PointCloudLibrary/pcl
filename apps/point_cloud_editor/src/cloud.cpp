@@ -38,7 +38,6 @@
 /// @author  Yue Li and Matthew Hielsberg
 
 #include <algorithm>
-#include <qgl.h>
 #include <pcl/apps/point_cloud_editor/cloud.h>
 #include <pcl/apps/point_cloud_editor/selection.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>

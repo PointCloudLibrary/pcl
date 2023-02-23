@@ -310,7 +310,7 @@ function(PCL_ADD_EXECUTABLE _name)
   endif()
 
   # Some app targets report are defined with subsys other than apps
-  # It's simpler check for tools and assume everythin else as an app
+  # It's simpler check for tools and assume everything else as an app
   if(${ARGS_COMPONENT} STREQUAL "tools")
     set_target_properties(${_name} PROPERTIES FOLDER "Tools")
   else()
@@ -440,6 +440,11 @@ function(PCL_ADD_BENCHMARK _name)
   set_target_properties(benchmark_${_name} PROPERTIES FOLDER "Benchmarks")
   target_link_libraries(benchmark_${_name} benchmark::benchmark ${ARGS_LINK_WITH})
   set_target_properties(benchmark_${_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+  # See https://github.com/google/benchmark/issues/1457
+  if(BenchmarkBuildType STREQUAL "STATIC_LIBRARY" AND benchmark_VERSION STREQUAL "1.7.0")
+    target_compile_definitions(benchmark_${_name} PUBLIC -DBENCHMARK_STATIC_DEFINE)
+  endif()
 
   #Only applies to MSVC
   if(MSVC)

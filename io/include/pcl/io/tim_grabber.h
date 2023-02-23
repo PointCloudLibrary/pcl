@@ -17,7 +17,7 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <boost/asio.hpp>
-#include <boost/thread.hpp>
+#include <mutex>
 #include <vector>
 #include <string>
 #include <thread>
@@ -25,7 +25,7 @@
 namespace pcl
 {
 
-//// note: Protcol named CoLaA (used by SICK) has some information.
+//// note: Protocol named CoLaA (used by SICK) has some information.
 ////       In this Grabber, only the amount_of_data is used, so other information is truncated.
 ////       Details of the protocol can be found at the following URL.
 
@@ -134,7 +134,7 @@ class PCL_EXPORTS TimGrabber : public Grabber
     unsigned int wait_time_milliseconds_ = 0;
 
     pcl::EventFrequency frequency_;
-    mutable boost::mutex frequency_mutex_;
+    mutable std::mutex frequency_mutex_;
 
     std::thread grabber_thread_;
     bool is_running_ = false;

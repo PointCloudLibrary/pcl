@@ -61,7 +61,7 @@ init ()
   cloud.width = cloud.size ();
   cloud.height = 1;
 
-  srand (int (time (nullptr)));
+  srand (static_cast<int>(time (nullptr)));
   // Randomly create a new point cloud, use points.emplace_back
   cloud_big.width = 640;
   cloud_big.height = 480;
@@ -83,11 +83,11 @@ TEST (PCL, FlannSearch_nearestKSearch)
   for (std::size_t i = 0; i < cloud.size (); ++i)
   {
     float distance = euclideanDistance (cloud[i], test_point);
-    sorted_brute_force_result.insert (std::make_pair (distance, int (i)));
+    sorted_brute_force_result.insert (std::make_pair (distance, static_cast<int>(i)));
   }
   float max_dist = 0.0f;
   unsigned int counter = 0;
-  for (std::multimap<float, int>::iterator it = sorted_brute_force_result.begin (); it != sorted_brute_force_result.end ()
+  for (auto it = sorted_brute_force_result.begin (); it != sorted_brute_force_result.end ()
       && counter < no_of_neighbors; ++it)
   {
     max_dist = std::max (max_dist, it->first);
@@ -221,7 +221,7 @@ TEST (PCL, FlannSearch_knnByIndex)
   pcl::Indices query_indices;
   for (std::size_t i = 0; i<cloud_big.size (); i+=2)
   {
-    query_indices.push_back (int (i));
+    query_indices.push_back (static_cast<int>(i));
   }
   flann_search.nearestKSearch (cloud_big, query_indices,no_of_neighbors,indices,dists);
 
@@ -334,7 +334,7 @@ TEST (PCL, FlannSearch_compareToKdTreeFlann)
 
   pcl::Indices query_indices;
   for (std::size_t i = 0; i<cloud_big.size (); i+=2)
-    query_indices.push_back (int (i));
+    query_indices.push_back (static_cast<int>(i));
 
   {
     ScopeTime scopeTime ("FLANN multi nearestKSearch with indices");

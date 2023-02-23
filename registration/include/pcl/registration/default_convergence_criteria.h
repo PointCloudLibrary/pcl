@@ -275,7 +275,7 @@ protected:
     double mse = 0;
     for (const auto& correspondence : correspondences)
       mse += correspondence.distance;
-    mse /= double(correspondences.size());
+    mse /= static_cast<double>(correspondences.size());
     return (mse);
   }
 

@@ -142,11 +142,11 @@ pcl::LINEMOD::matchTemplates (const std::vector<QuantizableModality*> & modaliti
       //energy_maps[bin_index] = new unsigned char[width*height];
       //memset (energy_maps[bin_index], 0, width*height);
 
-      const unsigned char base_bit = static_cast<unsigned char> (0x1);
-      unsigned char val0 = static_cast<unsigned char> (base_bit << bin_index); // e.g. 00100000
-      unsigned char val1 = static_cast<unsigned char> (val0 | (base_bit << (bin_index+1)&7) | (base_bit << (bin_index+7)&7)); // e.g. 01110000
-      unsigned char val2 = static_cast<unsigned char> (val1 | (base_bit << (bin_index+2)&7) | (base_bit << (bin_index+6)&7)); // e.g. 11111000
-      unsigned char val3 = static_cast<unsigned char> (val2 | (base_bit << (bin_index+3)&7) | (base_bit << (bin_index+5)&7)); // e.g. 11111101
+      const auto base_bit = static_cast<unsigned char> (0x1);
+      auto val0 = static_cast<unsigned char> (base_bit << bin_index); // e.g. 00100000
+      auto val1 = static_cast<unsigned char> (val0 | (base_bit << (bin_index+1)&7) | (base_bit << (bin_index+7)&7)); // e.g. 01110000
+      auto val2 = static_cast<unsigned char> (val1 | (base_bit << (bin_index+2)&7) | (base_bit << (bin_index+6)&7)); // e.g. 11111000
+      auto val3 = static_cast<unsigned char> (val2 | (base_bit << (bin_index+3)&7) | (base_bit << (bin_index+5)&7)); // e.g. 11111101
       for (std::size_t index = 0; index < width*height; ++index)
       {
         if ((val0 & quantized_data[index]) != 0)
@@ -217,13 +217,13 @@ pcl::LINEMOD::matchTemplates (const std::vector<QuantizableModality*> & modaliti
     const std::size_t mem_size = mem_width * mem_height;
 
 #ifdef __SSE2__
-    unsigned short * score_sums = reinterpret_cast<unsigned short*> (aligned_malloc (mem_size*sizeof(unsigned short)));
-    unsigned char * tmp_score_sums = reinterpret_cast<unsigned char*> (aligned_malloc (mem_size*sizeof(unsigned char)));
+    auto * score_sums = reinterpret_cast<unsigned short*> (aligned_malloc (mem_size*sizeof(unsigned short)));
+    auto * tmp_score_sums = reinterpret_cast<unsigned char*> (aligned_malloc (mem_size*sizeof(unsigned char)));
     std::fill_n(score_sums, mem_size, 0);
     std::fill_n(tmp_score_sums, mem_size, 0);
 
     //__m128i * score_sums_m128i = reinterpret_cast<__m128i*> (score_sums);
-    __m128i * tmp_score_sums_m128i = reinterpret_cast<__m128i*> (tmp_score_sums);
+    auto * tmp_score_sums_m128i = reinterpret_cast<__m128i*> (tmp_score_sums);
 
     const std::size_t mem_size_16 = mem_size / 16;
     //const std::size_t mem_size_mod_16 = mem_size & 15;
@@ -240,7 +240,7 @@ pcl::LINEMOD::matchTemplates (const std::vector<QuantizableModality*> & modaliti
           max_score += 4;
 
           unsigned char * data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (feature.x, feature.y);
-          __m128i * data_m128i = reinterpret_cast<__m128i*> (data);
+          auto * data_m128i = reinterpret_cast<__m128i*> (data);
 
           for (std::size_t mem_index = 0; mem_index < mem_size_16; ++mem_index)
           {
@@ -323,7 +323,7 @@ pcl::LINEMOD::matchTemplates (const std::vector<QuantizableModality*> & modaliti
     }
 #endif
 
-    const float inv_max_score = 1.0f / float (max_score);
+    const float inv_max_score = 1.0f / static_cast<float>(max_score);
     
     std::size_t max_value = 0;
     std::size_t max_index = 0;
@@ -402,11 +402,11 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
       //energy_maps[bin_index] = new unsigned char[width*height];
       //memset (energy_maps[bin_index], 0, width*height);
 
-      const unsigned char base_bit = static_cast<unsigned char> (0x1);
-      unsigned char val0 = static_cast<unsigned char> (base_bit << bin_index); // e.g. 00100000
-      unsigned char val1 = static_cast<unsigned char> (val0 | (base_bit << ((bin_index+1)%8)) | (base_bit << ((bin_index+7)%8))); // e.g. 01110000
-      unsigned char val2 = static_cast<unsigned char> (val1 | (base_bit << ((bin_index+2)%8)) | (base_bit << ((bin_index+6)%8))); // e.g. 11111000
-      unsigned char val3 = static_cast<unsigned char> (val2 | (base_bit << ((bin_index+3)%8)) | (base_bit << ((bin_index+5)%8))); // e.g. 11111101
+      const auto base_bit = static_cast<unsigned char> (0x1);
+      auto val0 = static_cast<unsigned char> (base_bit << bin_index); // e.g. 00100000
+      auto val1 = static_cast<unsigned char> (val0 | (base_bit << ((bin_index+1)%8)) | (base_bit << ((bin_index+7)%8))); // e.g. 01110000
+      auto val2 = static_cast<unsigned char> (val1 | (base_bit << ((bin_index+2)%8)) | (base_bit << ((bin_index+6)%8))); // e.g. 11111000
+      auto val3 = static_cast<unsigned char> (val2 | (base_bit << ((bin_index+3)%8)) | (base_bit << ((bin_index+5)%8))); // e.g. 11111101
       for (std::size_t index = 0; index < width*height; ++index)
       {
         if ((val0 & quantized_data[index]) != 0)
@@ -534,13 +534,13 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
     const std::size_t mem_size = mem_width * mem_height;
 
 #ifdef __SSE2__
-    unsigned short * score_sums = reinterpret_cast<unsigned short*> (aligned_malloc (mem_size*sizeof(unsigned short)));
-    unsigned char * tmp_score_sums = reinterpret_cast<unsigned char*> (aligned_malloc (mem_size*sizeof(unsigned char)));
+    auto * score_sums = reinterpret_cast<unsigned short*> (aligned_malloc (mem_size*sizeof(unsigned short)));
+    auto * tmp_score_sums = reinterpret_cast<unsigned char*> (aligned_malloc (mem_size*sizeof(unsigned char)));
     std::fill_n(score_sums, mem_size, 0);
     std::fill_n(tmp_score_sums, mem_size, 0);
 
     //__m128i * score_sums_m128i = reinterpret_cast<__m128i*> (score_sums);
-    __m128i * tmp_score_sums_m128i = reinterpret_cast<__m128i*> (tmp_score_sums);
+    auto * tmp_score_sums_m128i = reinterpret_cast<__m128i*> (tmp_score_sums);
 
     const std::size_t mem_size_16 = mem_size / 16;
     //const std::size_t mem_size_mod_16 = mem_size & 15;
@@ -557,7 +557,7 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
           max_score += 4;
 
           unsigned char * data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (feature.x, feature.y);
-          __m128i * data_m128i = reinterpret_cast<__m128i*> (data);
+          auto * data_m128i = reinterpret_cast<__m128i*> (data);
 
           for (std::size_t mem_index = 0; mem_index < mem_size_16; ++mem_index)
           {
@@ -662,14 +662,14 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
     }
 #endif
 
-    const float inv_max_score = 1.0f / float (max_score);
+    const float inv_max_score = 1.0f / static_cast<float>(max_score);
 
     // we compute a new threshold based on the threshold supplied by the user;
     // this is due to the use of the cosine approx. in the response computation;
 #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
     const float raw_threshold = (4.0f * float (max_score) / 2.0f + template_threshold_ * (4.0f * float (max_score) / 2.0f));
 #else
-    const float raw_threshold = (float (max_score) / 2.0f + template_threshold_ * (float (max_score) / 2.0f));
+    const float raw_threshold = (static_cast<float>(max_score) / 2.0f + template_threshold_ * (static_cast<float>(max_score) / 2.0f));
 #endif
 
     //int max_value = 0;
@@ -741,7 +741,7 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
               if (sup_col_index >= mem_width)
                 continue;
 
-              const std::size_t weight = static_cast<std::size_t> (score_sums[sup_row_index*mem_width + sup_col_index]);
+              const auto weight = static_cast<std::size_t> (score_sums[sup_row_index*mem_width + sup_col_index]);
               average_col += sup_col_index * weight;
               average_row += sup_row_index * weight;
               sum += weight;
@@ -866,11 +866,11 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
       //energy_maps[bin_index] = new unsigned char[width*height];
       //memset (energy_maps[bin_index], 0, width*height);
 
-      const unsigned char base_bit = static_cast<unsigned char> (0x1);
-      unsigned char val0 = static_cast<unsigned char> (base_bit << bin_index); // e.g. 00100000
-      unsigned char val1 = static_cast<unsigned char> (val0 | (base_bit << ((bin_index+1)%8)) | (base_bit << ((bin_index+7)%8))); // e.g. 01110000
-      unsigned char val2 = static_cast<unsigned char> (val1 | (base_bit << ((bin_index+2)%8)) | (base_bit << ((bin_index+6)%8))); // e.g. 11111000
-      unsigned char val3 = static_cast<unsigned char> (val2 | (base_bit << ((bin_index+3)%8)) | (base_bit << ((bin_index+5)%8))); // e.g. 11111101
+      const auto base_bit = static_cast<unsigned char> (0x1);
+      auto val0 = static_cast<unsigned char> (base_bit << bin_index); // e.g. 00100000
+      auto val1 = static_cast<unsigned char> (val0 | (base_bit << ((bin_index+1)%8)) | (base_bit << ((bin_index+7)%8))); // e.g. 01110000
+      auto val2 = static_cast<unsigned char> (val1 | (base_bit << ((bin_index+2)%8)) | (base_bit << ((bin_index+6)%8))); // e.g. 11111000
+      auto val3 = static_cast<unsigned char> (val2 | (base_bit << ((bin_index+3)%8)) | (base_bit << ((bin_index+5)%8))); // e.g. 11111101
       for (std::size_t index = 0; index < width*height; ++index)
       {
         if ((val0 & quantized_data[index]) != 0)
@@ -1000,13 +1000,13 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
     for (float scale = min_scale; scale <= max_scale; scale *= scale_multiplier)
     {
 #ifdef __SSE2__
-      unsigned short * score_sums = reinterpret_cast<unsigned short*> (aligned_malloc (mem_size*sizeof(unsigned short)));
-      unsigned char * tmp_score_sums = reinterpret_cast<unsigned char*> (aligned_malloc (mem_size*sizeof(unsigned char)));
+      auto * score_sums = reinterpret_cast<unsigned short*> (aligned_malloc (mem_size*sizeof(unsigned short)));
+      auto * tmp_score_sums = reinterpret_cast<unsigned char*> (aligned_malloc (mem_size*sizeof(unsigned char)));
       std::fill_n(score_sums, mem_size, 0);
       std::fill_n(tmp_score_sums, mem_size, 0);
 
       //__m128i * score_sums_m128i = reinterpret_cast<__m128i*> (score_sums);
-      __m128i * tmp_score_sums_m128i = reinterpret_cast<__m128i*> (tmp_score_sums);
+      auto * tmp_score_sums_m128i = reinterpret_cast<__m128i*> (tmp_score_sums);
 
       const std::size_t mem_size_16 = mem_size / 16;
       //const std::size_t mem_size_mod_16 = mem_size & 15;
@@ -1023,8 +1023,8 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
             max_score += 4;
 
             unsigned char *data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (
-                std::size_t (float (feature.x) * scale), std::size_t (float (feature.y) * scale));
-            __m128i * data_m128i = reinterpret_cast<__m128i*> (data);
+                static_cast<std::size_t>(static_cast<float>(feature.x) * scale), static_cast<std::size_t>(static_cast<float>(feature.y) * scale));
+            auto * data_m128i = reinterpret_cast<__m128i*> (data);
 
             for (std::size_t mem_index = 0; mem_index < mem_size_16; ++mem_index)
             {
@@ -1129,14 +1129,14 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
       }
 #endif
 
-      const float inv_max_score = 1.0f / float (max_score);
+      const float inv_max_score = 1.0f / static_cast<float>(max_score);
 
       // we compute a new threshold based on the threshold supplied by the user;
       // this is due to the use of the cosine approx. in the response computation;
 #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
       const float raw_threshold = (4.0f * float (max_score) / 2.0f + template_threshold_ * (4.0f * float (max_score) / 2.0f));
 #else
-      const float raw_threshold = (float (max_score) / 2.0f + template_threshold_ * (float (max_score) / 2.0f));
+      const float raw_threshold = (static_cast<float>(max_score) / 2.0f + template_threshold_ * (static_cast<float>(max_score) / 2.0f));
 #endif
 
       //int max_value = 0;
@@ -1208,7 +1208,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
                 if (sup_col_index >= mem_width)
                   continue;
 
-                const std::size_t weight = static_cast<std::size_t> (score_sums[sup_row_index*mem_width + sup_col_index]);
+                const auto weight = static_cast<std::size_t> (score_sums[sup_row_index*mem_width + sup_col_index]);
                 average_col += sup_col_index * weight;
                 average_row += sup_row_index * weight;
                 sum += weight;

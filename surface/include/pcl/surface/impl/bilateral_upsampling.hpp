@@ -111,7 +111,7 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::performProcessing (PointCloudOut 
             float val_exp_depth = val_exp_depth_matrix (static_cast<Eigen::MatrixXf::Index> (x - x_w + window_size_),
                                                         static_cast<Eigen::MatrixXf::Index> (y - y_w + window_size_));
 
-            Eigen::VectorXf::Index d_color = static_cast<Eigen::VectorXf::Index> (
+            auto d_color = static_cast<Eigen::VectorXf::Index> (
                 std::abs ((*input_)[y_w * input_->width + x_w].r - (*input_)[y * input_->width + x].r) +
                 std::abs ((*input_)[y_w * input_->width + x_w].g - (*input_)[y * input_->width + x].g) +
                 std::abs ((*input_)[y_w * input_->width + x_w].b - (*input_)[y * input_->width + x].b));

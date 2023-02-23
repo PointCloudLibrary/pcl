@@ -57,9 +57,12 @@ pcl::registration::CorrespondenceRejectorVarTrimmed::getRemainingCorrespondences
     }
   }
   factor_ = optimizeInlierRatio(dists);
-  nth_element(
-      dists.begin(), dists.begin() + int(double(dists.size()) * factor_), dists.end());
-  trimmed_distance_ = dists[int(double(dists.size()) * factor_)];
+  nth_element(dists.begin(),
+              dists.begin() +
+                  static_cast<int>(static_cast<double>(dists.size()) * factor_),
+              dists.end());
+  trimmed_distance_ =
+      dists[static_cast<int>(static_cast<double>(dists.size()) * factor_)];
 
   unsigned int number_valid_correspondences = 0;
   remaining_correspondences.resize(original_correspondences.size());
@@ -79,14 +82,14 @@ float
 pcl::registration::CorrespondenceRejectorVarTrimmed::optimizeInlierRatio(
     std::vector<double>& dists) const
 {
-  unsigned int points_nbr = static_cast<unsigned int>(dists.size());
+  auto points_nbr = static_cast<unsigned int>(dists.size());
   std::sort(dists.begin(), dists.end());
 
-  const int min_el = int(std::floor(min_ratio_ * points_nbr));
-  const int max_el = int(std::floor(max_ratio_ * points_nbr));
+  const int min_el = static_cast<int>(std::floor(min_ratio_ * points_nbr));
+  const int max_el = static_cast<int>(std::floor(max_ratio_ * points_nbr));
 
   using LineArray = Eigen::Array<double, Eigen::Dynamic, 1>;
-  Eigen::Map<LineArray> sorted_dist(&dists[0], points_nbr);
+  Eigen::Map<LineArray> sorted_dist(dists.data(), points_nbr);
 
   const LineArray trunk_sorted_dist = sorted_dist.segment(min_el, max_el - min_el);
   const double lower_sum = sorted_dist.head(min_el).sum();
@@ -99,6 +102,7 @@ pcl::registration::CorrespondenceRejectorVarTrimmed::optimizeInlierRatio(
   int min_index(0);
   FRMS.minCoeff(&min_index);
 
-  const float opt_ratio = float(min_index + min_el) / float(points_nbr);
+  const float opt_ratio =
+      static_cast<float>(min_index + min_el) / static_cast<float>(points_nbr);
   return (opt_ratio);
 }

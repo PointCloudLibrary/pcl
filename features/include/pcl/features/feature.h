@@ -135,9 +135,6 @@ namespace pcl
         fake_surface_(false)
       {}
 
-      /** \brief Empty destructor */
-      virtual ~Feature () {}
-
       /** \brief Provide a pointer to a dataset to add additional information
         * to estimate the features for every point in the input dataset.  This
         * is optional, if this is not set, it will only use the data in the
@@ -331,9 +328,6 @@ namespace pcl
       /** \brief Empty constructor. */
       FeatureFromNormals () : normals_ () {}
 
-      /** \brief Empty destructor */
-      virtual ~FeatureFromNormals () {}
-
       /** \brief Provide a pointer to the input dataset that contains the point normals of
         * the XYZ dataset.
         * In case of search surface is set to be different from the input cloud,
@@ -394,9 +388,6 @@ namespace pcl
         k_ = 1; // Search tree is not always used here.
       }
 
-      /** \brief Empty destructor */
-      virtual ~FeatureFromLabels () {}
-
       /** \brief Provide a pointer to the input dataset that contains the point labels of
         * the XYZ dataset.
         * In case of search surface is set to be different from the input cloud,
@@ -455,8 +446,9 @@ namespace pcl
       /** \brief Empty constructor. */
       FeatureWithLocalReferenceFrames () : frames_ (), frames_never_defined_ (true) {}
 
-       /** \brief Empty destructor. */
-      virtual ~FeatureWithLocalReferenceFrames () {}
+      /** \brief Default virtual destructor. */
+      virtual
+      ~FeatureWithLocalReferenceFrames() = default;
 
       /** \brief Provide a pointer to the input dataset that contains the local
         * reference frames of the XYZ dataset.

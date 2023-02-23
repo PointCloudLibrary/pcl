@@ -1259,12 +1259,12 @@ struct OctreePointCloudAdjacencyBeginEndIteratorsTest
 
     // Generate Point Cloud
     typename PointCloudT::Ptr cloud (new PointCloudT (100, 1));
-    const float max_inv = 1.f / float (RAND_MAX);
+    constexpr float max_inv = 1.f / static_cast<float>(RAND_MAX);
     for (std::size_t i = 0; i < 100; ++i)
     {
-      const PointT pt (10.f * (float (std::rand ()) * max_inv - .5f),
-                       10.f * (float (std::rand ()) * max_inv - .5f),
-                       10.f * (float (std::rand ()) * max_inv - .5f));
+      const PointT pt (10.f * (static_cast<float>(std::rand ()) * max_inv - .5f),
+                       10.f * (static_cast<float>(std::rand ()) * max_inv - .5f),
+                       10.f * (static_cast<float>(std::rand ()) * max_inv - .5f));
       (*cloud)[i] = pt;
     }
 
@@ -1484,30 +1484,28 @@ struct OctreePointCloudSierpinskiTest
     std::vector<std::pair<Eigen::Vector3f, Eigen::Vector3f> > voxels (generateSierpinskiVoxelExtremities (v_min, v_max, depth_));
 
     // The number of points in each voxel
-    unsigned int total_nb_pt = 100000;
+    constexpr unsigned int total_nb_pt = 100000;
     unsigned int nb_pt_in_voxel = total_nb_pt / pow (4, depth_);
 
     // Replicable results
     std::srand (42);
 
     // Fill the point cloud
-    for (std::vector<std::pair<Eigen::Vector3f, Eigen::Vector3f> >::const_iterator it = voxels.begin ();
-        it != voxels.end ();
-        ++it)
+    for (const auto& voxel : voxels)
     {
-      const static float eps = std::numeric_limits<float>::epsilon ();
-      double x_min = it->first.x () + eps;
-      double y_min = it->first.y () + eps;
-      double z_min = it->first.z () + eps;
-      double x_max = it->second.x () - eps;
-      double y_max = it->second.y () - eps;
-      double z_max = it->second.z () - eps;
+      constexpr float eps = std::numeric_limits<float>::epsilon ();
+      double x_min = voxel.first.x () + eps;
+      double y_min = voxel.first.y () + eps;
+      double z_min = voxel.first.z () + eps;
+      double x_max = voxel.second.x () - eps;
+      double y_max = voxel.second.y () - eps;
+      double z_max = voxel.second.z () - eps;
 
       for (unsigned int i = 0; i < nb_pt_in_voxel; ++i)
       {
-        float x = x_min + (rand () / ((float)(RAND_MAX) + 1)) * (x_max - x_min);
-        float y = y_min + (rand () / ((float)(RAND_MAX) + 1)) * (y_max - y_min);
-        float z = z_min + (rand () / ((float)(RAND_MAX) + 1)) * (z_max - z_min);
+        float x = x_min + (rand () / (static_cast<float>(RAND_MAX) + 1)) * (x_max - x_min);
+        float y = y_min + (rand () / (static_cast<float>(RAND_MAX) + 1)) * (y_max - y_min);
+        float z = z_min + (rand () / (static_cast<float>(RAND_MAX) + 1)) * (z_max - z_min);
 
         cloud->points.emplace_back(x, y, z);
       }
@@ -1583,7 +1581,7 @@ struct OctreePointCloudSierpinskiTest
   /** \brief Computes the total number of parent nodes at the specified depth
     *
     * The octree is built such that the number of the leaf nodes is equal to
-    * 4^depth and the number of branch nodes is egal to (4^depth -1)/(4 - 1),
+    * 4^depth and the number of branch nodes is equal to (4^depth -1)/(4 - 1),
     * where depth is the detph of the octree. The details of the expression
     * provided for the number of branch nodes could be found at:
     * https://en.wikipedia.org/wiki/Geometric_progression#Geometric_series

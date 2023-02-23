@@ -173,8 +173,8 @@ TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar>::
     c2[6] += a.x + b.x;
     c2[7] += a.y - b.y;
     c2[11] += a.z - b.z;
-    source_it++;
-    target_it++;
+    ++source_it;
+    ++target_it;
   }
 
   c1[4] = c1[1];
@@ -194,14 +194,15 @@ TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar>::
   C2 *= 2.0;
 
   const Eigen::Matrix<double, 4, 4> A =
-      (0.25 / double(npts)) * C2.transpose() * C2 - C1;
+      (0.25 / static_cast<double>(npts)) * C2.transpose() * C2 - C1;
 
   const Eigen::EigenSolver<Eigen::Matrix<double, 4, 4>> es(A);
 
   ptrdiff_t i;
   es.eigenvalues().real().maxCoeff(&i);
   const Eigen::Matrix<double, 4, 1> qmat = es.eigenvectors().col(i).real();
-  const Eigen::Matrix<double, 4, 1> smat = -(0.5 / double(npts)) * C2 * qmat;
+  const Eigen::Matrix<double, 4, 1> smat =
+      -(0.5 / static_cast<double>(npts)) * C2 * qmat;
 
   const Eigen::Quaternion<double> q(qmat(3), qmat(0), qmat(1), qmat(2));
   const Eigen::Quaternion<double> s(smat(3), smat(0), smat(1), smat(2));

@@ -472,7 +472,7 @@ pcl::HDLGrabber::enqueueHDLPacket (const std::uint8_t *data,
 {
   if (bytesReceived == 1206)
   {
-    std::uint8_t *dup = static_cast<std::uint8_t *> (malloc (bytesReceived * sizeof(std::uint8_t)));
+    auto *dup = static_cast<std::uint8_t *> (malloc (bytesReceived * sizeof(std::uint8_t)));
     std::copy(data, data + bytesReceived, dup);
 
     hdl_data_.enqueue (dup);
@@ -564,7 +564,7 @@ pcl::HDLGrabber::isRunning () const
 std::string
 pcl::HDLGrabber::getName () const
 {
-  return (std::string ("Velodyne High Definition Laser (HDL) Grabber"));
+  return {"Velodyne High Definition Laser (HDL) Grabber"};
 }
 
 /////////////////////////////////////////////////////////////////////////////

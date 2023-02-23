@@ -24,12 +24,6 @@ pcl::cloud_composer::RectangularFrustumSelector::RectangularFrustumSelector ()
   selection_complete_event_ = interactor_events::SELECTION_COMPLETE_EVENT;
 }
 
-pcl::cloud_composer::RectangularFrustumSelector::~RectangularFrustumSelector ()
-{
-  
-}
-
-
 void
 pcl::cloud_composer::RectangularFrustumSelector::OnLeftButtonUp ()
 {

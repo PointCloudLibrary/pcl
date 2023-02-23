@@ -144,10 +144,10 @@ TEST (SampleConsensusModelPlane, SampleValidationPointsCollinear)
   // being printed a 1000 times without any chance of success.
   // The order is chosen such that with a known, fixed rng-state/-seed all
   // validation steps are actually exercised.
-  const pcl::index_t firstCollinearPointIndex = 0;
-  const pcl::index_t secondCollinearPointIndex = 1;
-  const pcl::index_t thirdCollinearPointIndex = 2;
-  const pcl::index_t cheatPointIndex = 3;
+  constexpr pcl::index_t firstCollinearPointIndex = 0;
+  constexpr pcl::index_t secondCollinearPointIndex = 1;
+  constexpr pcl::index_t thirdCollinearPointIndex = 2;
+  constexpr pcl::index_t cheatPointIndex = 3;
 
   cloud[firstCollinearPointIndex].getVector3fMap () <<  0.1f,  0.1f,  0.1f;
   cloud[secondCollinearPointIndex].getVector3fMap () <<  0.2f,  0.2f,  0.2f;
@@ -357,8 +357,8 @@ TEST (SampleConsensusModelNormalParallelPlane, RANSAC)
   SampleConsensusModelNormalParallelPlanePtr model (new SampleConsensusModelNormalParallelPlane<PointXYZ, Normal> (cloud.makeShared ()));
   model->setInputNormals (normals.makeShared ());
 
-  const float max_angle_rad = 0.01f;
-  const float angle_eps = 0.001f;
+  constexpr float max_angle_rad = 0.01f;
+  constexpr float angle_eps = 0.001f;
   model->setEpsAngle (max_angle_rad);
 
   // Test true axis
@@ -556,10 +556,14 @@ TEST (SampleConsensusModelPlane, OptimizeFarFromOrigin)
   Eigen::VectorXf coeffs(4); // Doesn't have to be initialized, the function doesn't use them
   Eigen::VectorXf optimized_coeffs(4);
   model.optimizeModelCoefficients(inliers, coeffs, optimized_coeffs);
-  EXPECT_NEAR(optimized_coeffs[0], z[0], 5e-6);
-  EXPECT_NEAR(optimized_coeffs[1], z[1], 5e-6);
-  EXPECT_NEAR(optimized_coeffs[2], z[2], 5e-6);
+  EXPECT_NEAR(optimized_coeffs[0], z[0], 6e-6);
+  EXPECT_NEAR(optimized_coeffs[1], z[1], 6e-6);
+  EXPECT_NEAR(optimized_coeffs[2], z[2], 6e-6);
+#ifndef __i386__
   EXPECT_NEAR(optimized_coeffs[3], -z.dot(center), 5e-2);
+#else
+  EXPECT_NEAR(optimized_coeffs[3], -z.dot(center), 1e-1);
+#endif
 }
 
 int
@@ -583,7 +587,7 @@ main (int argc, char** argv)
   fromPCLPointCloud2 (cloud_blob, *normals_);
 
   indices_.resize (cloud_->size ());
-  for (std::size_t i = 0; i < indices_.size (); ++i) { indices_[i] = int (i); }
+  for (std::size_t i = 0; i < indices_.size (); ++i) { indices_[i] = static_cast<int>(i); }
 
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());

@@ -58,16 +58,14 @@ TEST (UniformCloudGenerator, PointXYZ)
   EXPECT_EQ (output.height, 640);
   EXPECT_EQ (output.width, 480);
   EXPECT_EQ (output.size (), 480*640);
-  for(pcl::PointCloud<pcl::PointXYZ>::const_iterator points_it = output.begin ();
-      points_it != output.end ();
-      ++points_it)
+  for(const auto& point_out : output)
   {
-    EXPECT_GE (points_it->x, 0);
-    EXPECT_LT (points_it->x, 1);
-    EXPECT_GE (points_it->y, -1);
-    EXPECT_LT (points_it->y, 1);
-    EXPECT_GE (points_it->z, -2.5);
-    EXPECT_LT (points_it->z, 1.5);
+    EXPECT_GE (point_out.x, 0);
+    EXPECT_LT (point_out.x, 1);
+    EXPECT_GE (point_out.y, -1);
+    EXPECT_LT (point_out.y, 1);
+    EXPECT_GE (point_out.z, -2.5);
+    EXPECT_LT (point_out.z, 1.5);
   }
 }
 
@@ -86,14 +84,12 @@ TEST (UniformCloudGenerator, PointXY)
   EXPECT_EQ (output.height, 640);
   EXPECT_EQ (output.width, 480);
   EXPECT_EQ (output.size (), 480*640);
-  for(pcl::PointCloud<pcl::PointXY>::const_iterator points_it = output.begin ();
-      points_it != output.end ();
-      ++points_it)
+  for(const auto& point_out : output)
   {
-    EXPECT_GE (points_it->x, 0);
-    EXPECT_LT (points_it->x, 1);
-    EXPECT_GE (points_it->y, -1);
-    EXPECT_LT (points_it->y, 1);
+    EXPECT_GE (point_out.x, 0);
+    EXPECT_LT (point_out.x, 1);
+    EXPECT_GE (point_out.y, -1);
+    EXPECT_LT (point_out.y, 1);
   }
 }
 
@@ -110,16 +106,14 @@ TEST (UniformCloudGenerator, Cube)
   EXPECT_EQ (output.height, 640);
   EXPECT_EQ (output.width, 480);
   EXPECT_EQ (output.size (), 480*640);
-  for(pcl::PointCloud<pcl::PointXYZ>::const_iterator points_it = output.begin ();
-      points_it != output.end ();
-      ++points_it)
+  for(const auto& point_out : output)
   {
-    EXPECT_GE (points_it->x, -3);
-    EXPECT_LT (points_it->x, 3);
-    EXPECT_GE (points_it->y, -3);
-    EXPECT_LT (points_it->y, 3);
-    EXPECT_GE (points_it->z, -3);
-    EXPECT_LT (points_it->z, 3);
+    EXPECT_GE (point_out.x, -3);
+    EXPECT_LT (point_out.x, 3);
+    EXPECT_GE (point_out.y, -3);
+    EXPECT_LT (point_out.y, 3);
+    EXPECT_GE (point_out.z, -3);
+    EXPECT_LT (point_out.z, 3);
   }
 }
 
@@ -136,14 +130,12 @@ TEST (UniformCloudGenerator, Square)
   EXPECT_EQ (output.height, 640);
   EXPECT_EQ (output.width, 480);
   EXPECT_EQ (output.size (), 480*640);
-  for(pcl::PointCloud<pcl::PointXY>::const_iterator points_it = output.begin ();
-      points_it != output.end ();
-      ++points_it)
+  for(const auto& point_out : output)
   {
-    EXPECT_GE (points_it->x, -3);
-    EXPECT_LT (points_it->x, 3);
-    EXPECT_GE (points_it->y, -3);
-    EXPECT_LT (points_it->y, 3);
+    EXPECT_GE (point_out.x, -3);
+    EXPECT_LT (point_out.x, 3);
+    EXPECT_GE (point_out.y, -3);
+    EXPECT_LT (point_out.y, 3);
   }
 }
 

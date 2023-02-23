@@ -46,7 +46,7 @@
 //#include <pcl/pcl_macros.h> <-- because current header is included in NVCC-compiled code and contains <Eigen/Core>. Consider <pcl/pcl_exports.h>
 
 
-//fom <pcl/pcl_macros.h>
+//from <pcl/pcl_macros.h>
 #if defined _WIN32 && defined _MSC_VER && !defined __PRETTY_FUNCTION__
   #define __PRETTY_FUNCTION__ __FUNCTION__  
 #endif
@@ -132,6 +132,7 @@ namespace openni_wrapper
     va_list args;
     va_start (args, format);
     vsprintf (msg, format, args);
+    va_end (args);
     throw OpenNIException (function_name, file_name, line_number, msg);
   }
 } // namespace openni_camera

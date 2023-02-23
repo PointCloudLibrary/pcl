@@ -167,7 +167,7 @@ CorrespondenceRejectorPoly<SourceT, TargetT>::computeHistogram(
 
   // Accumulate
   for (const float& value : data)
-    ++result[std::min(last_idx, int(value * idx_per_val))];
+    ++result[std::min(last_idx, static_cast<int>(value * idx_per_val))];
 
   return (result);
 }
@@ -178,7 +178,7 @@ CorrespondenceRejectorPoly<SourceT, TargetT>::findThresholdOtsu(
     const std::vector<int>& histogram)
 {
   // Precision
-  const double eps = std::numeric_limits<double>::epsilon();
+  constexpr double eps = std::numeric_limits<double>::epsilon();
 
   // Histogram dimension
   const int nbins = static_cast<int>(histogram.size());

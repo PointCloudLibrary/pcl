@@ -293,9 +293,9 @@ TEST (PCL, PLYPolygonMeshSpecificFieldOrder)
   add_field(mesh.cloud.fields, "rgba", 24, pcl::PCLPointField::PointFieldTypes::UINT32);
   mesh.cloud.height = mesh.cloud.width = 1;
   mesh.cloud.data.resize(28);
-  const float x = 0.0, y = 1.0, z = 2.0, normal_x = 1.0, normal_y = 0.0, normal_z = 0.0;
-  const std::uint32_t rgba = 0x326496;
-  memcpy(&mesh.cloud.data[0], &x, sizeof(float));
+  constexpr float x = 0.0, y = 1.0, z = 2.0, normal_x = 1.0, normal_y = 0.0, normal_z = 0.0;
+  constexpr std::uint32_t rgba = 0x326496;
+  memcpy(&mesh.cloud.data[0], &x, sizeof(float)); // NOLINT(readability-container-data-pointer)
   memcpy(&mesh.cloud.data[4], &y, sizeof(float));
   memcpy(&mesh.cloud.data[8], &z, sizeof(float));
   memcpy(&mesh.cloud.data[12], &normal_x, sizeof(float));

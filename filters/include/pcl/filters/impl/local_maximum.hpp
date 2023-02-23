@@ -121,6 +121,14 @@ pcl::LocalMaximum<PointT>::applyFilterIndices (Indices &indices)
     // not be maximal in their own neighborhood
     if (point_is_visited[iii] && !point_is_max[iii])
     {
+      if (negative_) {
+        if (extract_removed_indices_) {
+          (*removed_indices_)[rii++] = iii;
+        }
+      }
+      else {
+        indices[oii++] = iii;
+      }
       continue;
     }
 
@@ -146,9 +154,9 @@ pcl::LocalMaximum<PointT>::applyFilterIndices (Indices &indices)
 
     // Check to see if a neighbor is higher than the query point
     float query_z = (*input_)[iii].z;
-    for (std::size_t k = 1; k < radius_indices.size (); ++k)  // k = 1 is the first neighbor
+    for (const auto& radius_index : radius_indices) // the query point itself is in the (unsorted) radius_indices, but that is okay since we compare with ">"
     {
-      if ((*input_)[radius_indices[k]].z > query_z)
+      if ((*input_)[radius_index].z > query_z)
       {
         // Query point is not the local max, no need to check others
         point_is_max[iii] = false;
@@ -160,9 +168,9 @@ pcl::LocalMaximum<PointT>::applyFilterIndices (Indices &indices)
     // visited, excluding them from future consideration as local maxima
     if (point_is_max[iii])
     {
-      for (std::size_t k = 1; k < radius_indices.size (); ++k)  // k = 1 is the first neighbor
+      for (const auto& radius_index : radius_indices) // the query point itself is in the (unsorted) radius_indices, but it must also be marked as visited
       {
-        point_is_visited[radius_indices[k]] = true;
+        point_is_visited[radius_index] = true;
       }
     }
 

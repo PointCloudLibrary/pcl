@@ -114,9 +114,9 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::RGB2CIELAB (un
   float vy = y;
   float vz = z / 1.08883f;
 
-  vx = sXYZ_LUT[int(vx*4000)];
-  vy = sXYZ_LUT[int(vy*4000)];
-  vz = sXYZ_LUT[int(vz*4000)];
+  vx = sXYZ_LUT[static_cast<int>(vx*4000)];
+  vy = sXYZ_LUT[static_cast<int>(vy*4000)];
+  vz = sXYZ_LUT[static_cast<int>(vz*4000)];
 
   L = 116.0f * vy - 16.0f;
   if (L > 100)
@@ -277,7 +277,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::interpolateSing
 
 
     unsigned char bit4 = ((yInFeatRef > 0) || ((yInFeatRef == 0.0) && (xInFeatRef < 0))) ? 1 : 0;
-    unsigned char bit3 = static_cast<unsigned char> (((xInFeatRef > 0) || ((xInFeatRef == 0.0) && (yInFeatRef > 0))) ? !bit4 : bit4);
+    auto bit3 = static_cast<unsigned char> (((xInFeatRef > 0) || ((xInFeatRef == 0.0) && (yInFeatRef > 0))) ? !bit4 : bit4);
 
     assert (bit3 == 0 || bit3 == 1);
 
@@ -455,7 +455,7 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::interpolateDou
       zInFeatRef  = 0;
 
     unsigned char bit4 = ((yInFeatRef > 0) || ((yInFeatRef == 0.0) && (xInFeatRef < 0))) ? 1 : 0;
-    unsigned char bit3 = static_cast<unsigned char> (((xInFeatRef > 0) || ((xInFeatRef == 0.0) && (yInFeatRef > 0))) ? !bit4 : bit4);
+    auto bit3 = static_cast<unsigned char> (((xInFeatRef > 0) || ((xInFeatRef == 0.0) && (yInFeatRef > 0))) ? !bit4 : bit4);
 
     assert (bit3 == 0 || bit3 == 1);
 
@@ -751,7 +751,8 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (pcl
 
   assert(descLength_ == 352);
 
-  shot_.setZero (descLength_);
+  Eigen::VectorXf shot;
+  shot.setZero (descLength_);
 
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
@@ -788,11 +789,11 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (pcl
     }
 
     // Estimate the SHOT descriptor at each patch
-    computePointSHOT (static_cast<int> (idx), nn_indices, nn_dists, shot_);
+    computePointSHOT (static_cast<int> (idx), nn_indices, nn_dists, shot);
 
     // Copy into the resultant cloud
     for (int d = 0; d < descLength_; ++d)
-      output[idx].descriptor[d] = shot_[d];
+      output[idx].descriptor[d] = shot[d];
     for (int d = 0; d < 3; ++d)
     {
       output[idx].rf[d + 0] = (*frames_)[idx].x_axis[d];
@@ -823,7 +824,8 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature
   radius1_4_ = search_radius_ / 4;
   radius1_2_ = search_radius_ / 2;
 
-  shot_.setZero (descLength_);
+  Eigen::VectorXf shot;
+  shot.setZero (descLength_);
 
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
@@ -860,11 +862,11 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature
     }
 
     // Compute the SHOT descriptor for the current 3D feature
-    computePointSHOT (static_cast<int> (idx), nn_indices, nn_dists, shot_);
+    computePointSHOT (static_cast<int> (idx), nn_indices, nn_dists, shot);
 
     // Copy into the resultant cloud
     for (int d = 0; d < descLength_; ++d)
-      output[idx].descriptor[d] = shot_[d];
+      output[idx].descriptor[d] = shot[d];
     for (int d = 0; d < 3; ++d)
     {
       output[idx].rf[d + 0] = (*frames_)[idx].x_axis[d];

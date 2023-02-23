@@ -209,7 +209,7 @@ namespace pcl
     {
       std::unique_lock < std::shared_timed_mutex > lock (read_write_mutex_);
 
-      const bool _FORCE_BB_CHECK = true;
+      constexpr bool _FORCE_BB_CHECK = true;
       
       std::uint64_t pt_added = root_node_->addDataToLeaf (p, _FORCE_BB_CHECK);
 
@@ -430,7 +430,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBase<ContainerT, PointT>::writeVPythonVisual (const boost::filesystem::path filename)
+    OutofcoreOctreeBase<ContainerT, PointT>::writeVPythonVisual (const boost::filesystem::path& filename)
     {
       std::ofstream f (filename.c_str ());
 
@@ -569,7 +569,7 @@ namespace pcl
 
       std::unique_lock < std::shared_timed_mutex > lock (read_write_mutex_);
 
-      const int number_of_nodes = 1;
+      constexpr int number_of_nodes = 1;
 
       std::vector<BranchNode*> current_branch (number_of_nodes, static_cast<BranchNode*>(nullptr));
       current_branch[0] = root_node_;
@@ -612,7 +612,7 @@ namespace pcl
         assert (leaf_input_cloud->width*leaf_input_cloud->height > 0);
         
         //go up the tree, re-downsampling the full resolution leaf cloud at lower and lower resolution
-        for (std::int64_t level = static_cast<std::int64_t>(current_branch.size ()-1); level >= 1; level--)
+        for (auto level = static_cast<std::int64_t>(current_branch.size ()-1); level >= 1; level--)
         {
           BranchNode* target_parent = current_branch[level-1];
           assert (target_parent != nullptr);
@@ -629,7 +629,7 @@ namespace pcl
           lod_filter_ptr_->setInputCloud (leaf_input_cloud);
 
           //set sample size to 1/8 of total points (12.5%)
-          std::uint64_t sample_size = static_cast<std::uint64_t> (static_cast<double> (leaf_input_cloud->width*leaf_input_cloud->height) * current_depth_sample_percent);
+          auto sample_size = static_cast<std::uint64_t> (static_cast<double> (leaf_input_cloud->width*leaf_input_cloud->height) * current_depth_sample_percent);
 
           if (sample_size == 0)
             sample_size = 1;
@@ -736,7 +736,7 @@ namespace pcl
       if (side_length < leaf_resolution)
           return (0);
           
-      std::uint64_t res = static_cast<std::uint64_t> (std::ceil (std::log2 (side_length / leaf_resolution)));
+      auto res = static_cast<std::uint64_t> (std::ceil (std::log2 (side_length / leaf_resolution)));
       
       PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBase::calculateDepth] Setting depth to %d\n",res);
       return (res);

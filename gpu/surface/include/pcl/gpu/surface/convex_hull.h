@@ -56,7 +56,6 @@ namespace pcl
       
 
 	  PseudoConvexHull3D(std::size_t buffer_size);
-      ~PseudoConvexHull3D();
 	        
 	  void
       reconstruct (const Cloud &points, Cloud &output);

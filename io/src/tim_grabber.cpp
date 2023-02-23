@@ -49,7 +49,7 @@ pcl::TimGrabber::initialize ()
 float
 pcl::TimGrabber::getFramesPerSecond () const
 {
-  boost::mutex::scoped_lock lock (frequency_mutex_);
+  std::lock_guard<std::mutex> lock (frequency_mutex_);
   return (frequency_.getFrequency ());
 }
 
@@ -83,7 +83,7 @@ pcl::TimGrabber::updateLookupTables () {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::TimGrabber::isValidPacket () const {
-  return received_packet_.data ()[length_-1] == '\03';
+  return received_packet_[length_-1] == '\03';
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -215,7 +215,7 @@ pcl::TimGrabber::isRunning () const
 std::string
 pcl::TimGrabber::getName () const
 {
-  return (std::string ("Sick Tim Grabber"));
+  return {"Sick Tim Grabber"};
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

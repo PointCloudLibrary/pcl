@@ -9,7 +9,7 @@ ARG workspace="/root/catkin_ws"
 COPY ${flavor}_rosinstall.yaml ${workspace}/src/.rosinstall
 
 # Be careful:
-# * source ROS setup file in evey RUN snippet
+# * source ROS setup file in every RUN snippet
 #
 # TODO: The dependencies of PCL can be reduced since
 # * we don't need to build visualization or docs

@@ -52,7 +52,7 @@ template<typename PointT, typename PointLT> void
 pcl::OrganizedEdgeBase<PointT, PointLT>::compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const
 {
   pcl::Label invalid_pt;
-  invalid_pt.label = unsigned (0);
+  invalid_pt.label = static_cast<unsigned>(0);
   labels.resize (input_->size (), invalid_pt);
   labels.width = input_->width;
   labels.height = input_->height;
@@ -66,7 +66,7 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::compute (pcl::PointCloud<PointLT>& labe
 template<typename PointT, typename PointLT> void
 pcl::OrganizedEdgeBase<PointT, PointLT>::assignLabelIndices (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const
 {
-  const unsigned invalid_label = unsigned (0);
+  const auto invalid_label = static_cast<unsigned>(0);
   label_indices.resize (num_of_edgetype_);
   for (std::size_t idx = 0; idx < input_->size (); idx++)
   {
@@ -98,11 +98,11 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
       Neighbor( 0,  1,  labels.width    ),
       Neighbor(-1,  1,  labels.width - 1)};
 
-    for (int row = 1; row < int(input_->height) - 1; row++)
+    for (int row = 1; row < static_cast<int>(input_->height) - 1; row++)
     {
-      for (int col = 1; col < int(input_->width) - 1; col++)
+      for (int col = 1; col < static_cast<int>(input_->width) - 1; col++)
       {
-        int curr_idx = row*int(input_->width) + col;
+        int curr_idx = row*static_cast<int>(input_->width) + col;
         if (!std::isfinite ((*input_)[curr_idx].z))
           continue;
 
@@ -179,12 +179,12 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
             int s_row = row + static_cast<int> (std::floor (f_dy*static_cast<float> (s_idx)));
             int s_col = col + static_cast<int> (std::floor (f_dx*static_cast<float> (s_idx)));
 
-            if (s_row < 0 || s_row >= int(input_->height) || s_col < 0 || s_col >= int(input_->width))
+            if (s_row < 0 || s_row >= static_cast<int>(input_->height) || s_col < 0 || s_col >= static_cast<int>(input_->width))
               break;
 
-            if (std::isfinite ((*input_)[s_row*int(input_->width)+s_col].z))
+            if (std::isfinite ((*input_)[s_row*static_cast<int>(input_->width)+s_col].z))
             {
-              corr_depth = std::abs ((*input_)[s_row*int(input_->width)+s_col].z);
+              corr_depth = std::abs ((*input_)[s_row*static_cast<int>(input_->width)+s_col].z);
               break;
             }
           }
@@ -226,7 +226,7 @@ template<typename PointT, typename PointLT> void
 pcl::OrganizedEdgeFromRGB<PointT, PointLT>::compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const
 {
   pcl::Label invalid_pt;
-  invalid_pt.label = unsigned (0);
+  invalid_pt.label = static_cast<unsigned>(0);
   labels.resize (input_->size (), invalid_pt);
   labels.width = input_->width;
   labels.height = input_->height;
@@ -249,7 +249,7 @@ pcl::OrganizedEdgeFromRGB<PointT, PointLT>::extractEdges (pcl::PointCloud<PointL
     gray->resize (input_->height*input_->width);
 
     for (std::size_t i = 0; i < input_->size (); ++i)
-      (*gray)[i].intensity = float (((*input_)[i].r + (*input_)[i].g + (*input_)[i].b) / 3);
+      (*gray)[i].intensity = static_cast<float>(((*input_)[i].r + (*input_)[i].g + (*input_)[i].b) / 3);
 
     pcl::PointCloud<pcl::PointXYZIEdge> img_edge_rgb;
     pcl::Edge<PointXYZI, pcl::PointXYZIEdge> edge;
@@ -274,7 +274,7 @@ template<typename PointT, typename PointNT, typename PointLT> void
 pcl::OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const
 {
   pcl::Label invalid_pt;
-  invalid_pt.label = unsigned (0);
+  invalid_pt.label = static_cast<unsigned>(0);
   labels.resize (input_->size (), invalid_pt);
   labels.width = input_->width;
   labels.height = input_->height;
@@ -332,7 +332,7 @@ template<typename PointT, typename PointNT, typename PointLT> void
 pcl::OrganizedEdgeFromRGBNormals<PointT, PointNT, PointLT>::compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const
 {
   pcl::Label invalid_pt;
-  invalid_pt.label = unsigned (0);
+  invalid_pt.label = static_cast<unsigned>(0);
   labels.resize (input_->size (), invalid_pt);
   labels.width = input_->width;
   labels.height = input_->height;

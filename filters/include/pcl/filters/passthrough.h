@@ -97,7 +97,7 @@ namespace pcl
         */
       PassThrough (bool extract_removed_indices = false) :
         FilterIndices<PointT> (extract_removed_indices),
-        filter_field_name_ (""),
+        
         filter_limit_min_ (std::numeric_limits<float>::lowest()),
         filter_limit_max_ (std::numeric_limits<float>::max())
       {
@@ -144,29 +144,6 @@ namespace pcl
       {
         limit_min = filter_limit_min_;
         limit_max = filter_limit_max_;
-      }
-
-      /** \brief Set to true if we want to return the data outside the interval specified by setFilterLimits (min, max)
-        * Default: false.
-        * \warning This method will be removed in the future. Use setNegative() instead.
-        * \param[in] limit_negative return data inside the interval (false) or outside (true)
-        */
-      PCL_DEPRECATED(1, 13, "use inherited FilterIndices::setNegative() instead")
-      inline void
-      setFilterLimitsNegative (const bool limit_negative)
-      {
-        negative_ = limit_negative;
-      }
-
-      /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
-        * \warning This method will be removed in the future. Use getNegative() instead.
-        * \param[out] limit_negative true if data \b outside the interval [min; max] is to be returned, false otherwise
-        */
-      PCL_DEPRECATED(1, 13, "use inherited FilterIndices::getNegative() instead")
-      inline void
-      getFilterLimitsNegative (bool &limit_negative) const
-      {
-        limit_negative = negative_;
       }
 
       /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
@@ -235,8 +212,8 @@ namespace pcl
     public:
       /** \brief Constructor. */
       PassThrough (bool extract_removed_indices = false) :
-        FilterIndices<pcl::PCLPointCloud2>::FilterIndices (extract_removed_indices), filter_field_name_("")
-      , filter_limit_min_(std::numeric_limits<float>::lowest())
+        FilterIndices<pcl::PCLPointCloud2>::FilterIndices (extract_removed_indices), 
+       filter_limit_min_(std::numeric_limits<float>::lowest())
       , filter_limit_max_(std::numeric_limits<float>::max())
       {
         filter_name_ = "PassThrough";

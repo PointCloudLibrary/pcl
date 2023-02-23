@@ -23,8 +23,12 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "")
   set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "build type default to RelWithDebInfo, set to Release to improve performance" FORCE)
 endif()
 
-project(PCL VERSION 1.12.1.99)
+project(PCL VERSION 1.13.0.99)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
+
+if(MSVC AND ("${MSVC_VERSION}" LESS 1910))
+  message(FATAL_ERROR "The compiler versions prior to Visual Studio version 2017 are not supported. Please upgrade to a newer version or another compiler!")
+endif()
 
 ### ---[ Find universal dependencies
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/" ${CMAKE_MODULE_PATH})
@@ -143,7 +147,7 @@ if(CMAKE_COMPILER_IS_MSVC)
   add_definitions("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -DPCL_ONLY_CORE_POINT_TYPES ${SSE_DEFINITIONS}")
   
   if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
-    string(APPEND CMAKE_CXX_FLAGS " /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS} ${AVX_FLAGS} /bigobj")
+    string(APPEND CMAKE_CXX_FLAGS " /fp:precise ${SSE_FLAGS} ${AVX_FLAGS} /bigobj")
 
     # Add extra code generation/link optimizations
     if(CMAKE_MSVC_CODE_LINK_OPTIMIZATION AND (NOT BUILD_CUDA) AND (NOT BUILD_GPU))
@@ -157,7 +161,21 @@ if(CMAKE_COMPILER_IS_MSVC)
     endif()
     # /MANIFEST:NO") # please, don't disable manifest generation, otherwise crash at start for vs2008
 
+    # Disable some warnings
+    string(APPEND CMAKE_CXX_FLAGS " /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355")
+
+    # Enable warnings, which are disabled by default (see https://learn.microsoft.com/de-de/cpp/preprocessor/compiler-warnings-that-are-off-by-default)
+    string(APPEND CMAKE_CXX_FLAGS " /w34265")
+
     if(PCL_WARNINGS_ARE_ERRORS)
+      # MSVC supports external includes only since Visual Studio 2019 version 16.10.0.
+      # CMake supports external includes since 3.22.0 using the Ninja generator or NMake files (see https://gitlab.kitware.com/cmake/cmake/-/merge_requests/4766)
+      # CMake supports external includes for Visual Studio also since 3.24.0 (see https://gitlab.kitware.com/cmake/cmake/-/merge_requests/7238)
+      if(CMAKE_C_COMPILER_VERSION VERSION_LESS "19.29.30036.3" OR CMAKE_VERSION VERSION_LESS 3.22.0 OR (CMAKE_VERSION VERSION_LESS 3.24.0 AND CMAKE_GENERATOR MATCHES "Visual Studio"))
+        message(WARNING "With the used combination of compiler and CMake version it is not recommended to activate PCL_WARNINGS_ARE_ERRORS, "
+                        "because also warnings from 3rd party components are marked as errors. It is recommended to upgrade to "
+                        "Visual Studio 2019 version 16.10.0 and CMake 3.24.0 (or CMake 3.22.0 if using Ninja or NMake files).")
+      endif()
       string(APPEND CMAKE_CXX_FLAGS " /WX")
     endif()
 
@@ -288,22 +306,9 @@ if(OpenMP_FOUND)
   # so we use always OpenMP_CXX_SPEC_DATE, which is available since CMake 3.7.
   message(STATUS "Found OpenMP, spec date ${OpenMP_CXX_SPEC_DATE}")
 
-  if(MSVC)
-    if(MSVC_VERSION EQUAL 1900)
-      set(OPENMP_DLL VCOMP140)
-    elseif(MSVC_VERSION MATCHES "^191[0-9]$")
-      set(OPENMP_DLL VCOMP140)
-    elseif(MSVC_VERSION MATCHES "^192[0-9]$")
-      set(OPENMP_DLL VCOMP140)
-    elseif(MSVC_VERSION MATCHES "^193[0-9]$")
-      set(OPENMP_DLL VCOMP140)
-    endif()
-    if(OPENMP_DLL)
-      string(APPEND CMAKE_SHARED_LINKER_FLAGS_DEBUG " /DELAYLOAD:${OPENMP_DLL}D.dll")
-      string(APPEND CMAKE_SHARED_LINKER_FLAGS_RELEASE " /DELAYLOAD:${OPENMP_DLL}.dll")
-    else()
-      message(WARNING "Delay loading flag for OpenMP DLL is invalid.")
-    endif()
+  if((MSVC_VERSION EQUAL 1900) OR (MSVC_VERSION MATCHES "^191[0-9]$"))
+    string(APPEND CMAKE_SHARED_LINKER_FLAGS_DEBUG " /DELAYLOAD:VCOMP140D.dll")
+    string(APPEND CMAKE_SHARED_LINKER_FLAGS_RELEASE " /DELAYLOAD:VCOMP140.dll")
   endif()
 else()
   message(STATUS "Not found OpenMP")

@@ -1972,9 +1972,9 @@ TEST (FrustumCulling, Filters)
       for (int k = 0; k < 5; k++)
       {
         pcl::PointXYZ pt;
-        pt.x = float (i);
-        pt.y = float (j);
-        pt.z = float (k);
+        pt.x = static_cast<float>(i);
+        pt.y = static_cast<float>(j);
+        pt.z = static_cast<float>(k);
         input->push_back (pt);
       }
     }
@@ -2061,10 +2061,20 @@ TEST (FrustumCulling, Filters)
   fc.setRegionOfInterest (0.44f, 0.30f, 0.16f, 0.38f);
   fc.setCameraPose (cam2robot);
   fc.filter (*output);
-  // Should extract object; number of points based on milk.pcd
+  // Should extract milk cartoon with 13541 points
   EXPECT_EQ (output->size (), 13541); 
   removed = fc.getRemovedIndices ();
-  EXPECT_EQ (removed->size (), model->size () - output->size ()); 
+  EXPECT_EQ (removed->size (), model->size () - output->size ());
+
+  // Cut out object based on field of view
+  fc.setRegionOfInterest (0.5f, 0.5f, 1.0f, 1.0f); // reset ROI
+  fc.setVerticalFOV (-22, 6);
+  fc.setHorizontalFOV (-22.5, -13.5);
+  fc.filter (*output);
+  // Should extract "all" laundry detergent with 10689 points
+  EXPECT_EQ (output->size (), 10689);
+  removed = fc.getRemovedIndices ();
+  EXPECT_EQ (removed->size (), model->size () - output->size ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -2116,7 +2126,7 @@ TEST (ConditionalRemovalTfQuadraticXYZComparison, Filters)
   EXPECT_EQ ((*input)[9].z, output[9].z);
 
   // rotate cylinder comparison along z-axis by PI/2
-  cyl_comp->transformComparison (getTransformation (0.0f, 0.0f, 0.0f, 0.0f, 0.0f, float (M_PI) / 2.0f).inverse ());
+  cyl_comp->transformComparison (getTransformation (0.0f, 0.0f, 0.0f, 0.0f, 0.0f, static_cast<float>(M_PI) / 2.0f).inverse ());
 
   condrem.filter (output);
 
@@ -2292,7 +2302,7 @@ TEST (NormalRefinement, Filters)
   const float vp_z = cloud_organized_nonan.sensor_origin_[2];
 
   // Search parameters
-  const int k = 5;
+  constexpr int k = 5;
   std::vector<pcl::Indices> k_indices;
   std::vector<std::vector<float> > k_sqr_distances;
 

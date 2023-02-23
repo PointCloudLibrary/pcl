@@ -52,7 +52,7 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::addSmoothedPointCloud (const Poi
   clouds_.push_back (cloud);
   cloud_normals_.push_back (normals);
   cloud_trees_.push_back (kdtree);
-  scales_.push_back (std::pair<float, std::size_t> (scale, scales_.size ()));
+  scales_.emplace_back(scale, scales_.size ());
 }
 
 
@@ -115,15 +115,15 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::detectKeypoints (PointCloudT &ou
     if (is_min || is_max)
     {
       bool passed_min = true, passed_max = true;
-      for (std::size_t scale_i = 0; scale_i < scales_.size (); ++scale_i)
+      for (const auto & scale : scales_)
       {
-        std::size_t cloud_i = scales_[scale_i].second;
+        std::size_t cloud_i = scale.second;
         // skip input cloud
         if (cloud_i == clouds_.size () - 1)
           continue;
 
         nn_indices.clear (); nn_distances.clear ();
-        cloud_trees_[cloud_i]->radiusSearch (point_i, scales_[scale_i].first * neighborhood_constant_, nn_indices, nn_distances);
+        cloud_trees_[cloud_i]->radiusSearch (point_i, scale.first * neighborhood_constant_, nn_indices, nn_distances);
 
         bool is_min_other_scale = true, is_max_other_scale = true;
         for (const auto &nn_index : nn_indices)
@@ -225,7 +225,7 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::initCompute ()
   }
 
   // Add the input cloud as the last index
-  scales_.push_back (std::pair<float, std::size_t> (input_scale_, scales_.size ()));
+  scales_.emplace_back(input_scale_, scales_.size ());
   clouds_.push_back (input_);
   cloud_normals_.push_back (normals_);
   cloud_trees_.push_back (tree_);
@@ -241,7 +241,7 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::initCompute ()
     }
 
   PCL_INFO ("Scales: ");
-  for (std::size_t i = 0; i < scales_.size (); ++i) PCL_INFO ("(%d %f), ", scales_[i].second, scales_[i].first);
+  for (const auto & scale : scales_) PCL_INFO ("(%d %f), ", scale.second, scale.first);
   PCL_INFO ("\n");
 
   return (true);

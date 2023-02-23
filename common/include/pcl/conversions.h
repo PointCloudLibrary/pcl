@@ -151,21 +151,17 @@ namespace pcl
   }
 
   /** \brief Convert a PCLPointCloud2 binary data blob into a pcl::PointCloud<T> object using a field_map.
-    * \param[in] msg the PCLPointCloud2 binary blob
+    * \param[in] msg the PCLPointCloud2 binary blob (note that the binary point data in msg.data will not be used!)
     * \param[out] cloud the resultant pcl::PointCloud<T>
     * \param[in] field_map a MsgFieldMap object
+    * \param[in] msg_data pointer to binary blob data, used instead of msg.data
     *
-    * \note Use fromPCLPointCloud2 (PCLPointCloud2, PointCloud<T>) directly or create you
-    * own MsgFieldMap using:
-    *
-    * \code
-    * MsgFieldMap field_map;
-    * createMapping<PointT> (msg.fields, field_map);
-    * \endcode
+    * \note Use fromPCLPointCloud2 (PCLPointCloud2, PointCloud<T>) instead, except if you have a binary blob of
+    * point data that you do not want to copy into a pcl::PCLPointCloud2 in order to use fromPCLPointCloud2.
     */
   template <typename PointT> void
   fromPCLPointCloud2 (const pcl::PCLPointCloud2& msg, pcl::PointCloud<PointT>& cloud,
-              const MsgFieldMap& field_map)
+              const MsgFieldMap& field_map, const std::uint8_t* msg_data)
   {
     // Copy info fields
     cloud.header   = msg.header;
@@ -187,11 +183,10 @@ namespace pcl
         field_map[0].size == sizeof(PointT))
     {
       const auto cloud_row_step = (sizeof (PointT) * cloud.width);
-      const std::uint8_t* msg_data = &msg.data[0];
       // Should usually be able to copy all rows at once
       if (msg.row_step == cloud_row_step)
       {
-        std::copy(msg.data.cbegin(), msg.data.cend(), cloud_data);
+        memcpy (cloud_data, msg_data, msg.width * msg.height * sizeof(PointT));
       }
       else
       {
@@ -205,7 +200,7 @@ namespace pcl
       // If not, memcpy each group of contiguous fields separately
       for (uindex_t row = 0; row < msg.height; ++row)
       {
-        const std::uint8_t* row_data = &msg.data[row * msg.row_step];
+        const std::uint8_t* row_data = msg_data + row * msg.row_step;
         for (uindex_t col = 0; col < msg.width; ++col)
         {
           const std::uint8_t* msg_data = row_data + col * msg.point_step;
@@ -218,6 +213,26 @@ namespace pcl
         }
       }
     }
+  }
+
+  /** \brief Convert a PCLPointCloud2 binary data blob into a pcl::PointCloud<T> object using a field_map.
+    * \param[in] msg the PCLPointCloud2 binary blob
+    * \param[out] cloud the resultant pcl::PointCloud<T>
+    * \param[in] field_map a MsgFieldMap object
+    *
+    * \note Use fromPCLPointCloud2 (PCLPointCloud2, PointCloud<T>) directly or create you
+    * own MsgFieldMap using:
+    *
+    * \code
+    * MsgFieldMap field_map;
+    * createMapping<PointT> (msg.fields, field_map);
+    * \endcode
+    */
+  template <typename PointT> void
+  fromPCLPointCloud2 (const pcl::PCLPointCloud2& msg, pcl::PointCloud<PointT>& cloud,
+              const MsgFieldMap& field_map)
+  {
+    fromPCLPointCloud2 (msg, cloud, field_map, msg.data.data());
   }
 
   /** \brief Convert a PCLPointCloud2 binary data blob into a pcl::PointCloud<T> object.

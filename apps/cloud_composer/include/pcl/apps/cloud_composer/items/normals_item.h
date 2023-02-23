@@ -55,7 +55,6 @@ namespace pcl
                      const pcl::PointCloud<pcl::Normal>::Ptr& normals_ptr,
                      double radius);
         NormalsItem (const NormalsItem& to_copy);
-        ~NormalsItem ();
         
         inline int 
         type () const override { return NORMALS_ITEM; }

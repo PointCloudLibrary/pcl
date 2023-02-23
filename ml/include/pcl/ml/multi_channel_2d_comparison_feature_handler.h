@@ -66,9 +66,6 @@ public:
   , feature_window_height_(feature_window_height)
   {}
 
-  /** Destructor. */
-  virtual ~MultiChannel2DComparisonFeatureHandler() {}
-
   /** Sets the feature window size.
    *
    * \param[in] width the width of the feature window
@@ -217,9 +214,6 @@ public:
   : feature_window_width_(feature_window_width)
   , feature_window_height_(feature_window_height)
   {}
-
-  /** Destructor. */
-  virtual ~ScaledMultiChannel2DComparisonFeatureHandler() {}
 
   /** Sets the feature window size.
    *
@@ -379,7 +373,6 @@ class PCL_EXPORTS ScaledMultiChannel2DComparisonFeatureHandlerCCodeGenerator
       pcl::MultipleData2DExampleIndex> {
 public:
   ScaledMultiChannel2DComparisonFeatureHandlerCCodeGenerator() {}
-  virtual ~ScaledMultiChannel2DComparisonFeatureHandlerCCodeGenerator() {}
 
   void
   generateEvalFunctionCode(std::ostream& stream) const;

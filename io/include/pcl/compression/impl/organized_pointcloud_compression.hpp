@@ -109,7 +109,7 @@ namespace pcl
       // Encode size of compressed disparity image data
       compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedDisparitySize), sizeof (compressedDisparitySize));
       // Output compressed disparity to ostream
-      compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedDisparity[0]), compressedDisparity.size () * sizeof(std::uint8_t));
+      compressedDataOut_arg.write (reinterpret_cast<const char*> (compressedDisparity.data()), compressedDisparity.size () * sizeof(std::uint8_t));
 
       // Compress color information
       if (CompressionPointTraits<PointT>::hasColor && doColorEncoding)
@@ -127,7 +127,7 @@ namespace pcl
       // Encode size of compressed Color image data
       compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedColorSize), sizeof (compressedColorSize));
       // Output compressed disparity to ostream
-      compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedColor[0]), compressedColor.size () * sizeof(std::uint8_t));
+      compressedDataOut_arg.write (reinterpret_cast<const char*> (compressedColor.data()), compressedColor.size () * sizeof(std::uint8_t));
 
       if (bShowStatistics_arg)
       {
@@ -194,8 +194,8 @@ namespace pcl
        std::uint32_t compressedColorSize = 0;
 
        // Remove color information of invalid points
-       std::uint16_t* depth_ptr = &disparityMap_arg[0];
-       std::uint8_t* color_ptr = &colorImage_arg[0];
+       std::uint16_t* depth_ptr = disparityMap_arg.data();
+       std::uint8_t* color_ptr = colorImage_arg.data();
 
        for (std::size_t i = 0; i < cloud_size; ++i, ++depth_ptr, color_ptr += sizeof(std::uint8_t) * 3)
        {
@@ -211,7 +211,7 @@ namespace pcl
        // Encode size of compressed disparity image data
        compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedDisparitySize), sizeof (compressedDisparitySize));
        // Output compressed disparity to ostream
-       compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedDisparity[0]), compressedDisparity.size () * sizeof(std::uint8_t));
+       compressedDataOut_arg.write (reinterpret_cast<const char*> (compressedDisparity.data()), compressedDisparity.size () * sizeof(std::uint8_t));
 
        // Compress color information
        if (!colorImage_arg.empty () && doColorEncoding)
@@ -226,7 +226,7 @@ namespace pcl
            // grayscale conversion
            for (std::size_t i = 0; i < size; ++i)
            {
-             std::uint8_t grayvalue = static_cast<std::uint8_t>(0.2989 * static_cast<float>(colorImage_arg[i*3+0]) +
+             auto grayvalue = static_cast<std::uint8_t>(0.2989 * static_cast<float>(colorImage_arg[i*3+0]) +
                                                       0.5870 * static_cast<float>(colorImage_arg[i*3+1]) +
                                                       0.1140 * static_cast<float>(colorImage_arg[i*3+2]));
              monoImage.push_back(grayvalue);
@@ -244,7 +244,7 @@ namespace pcl
        // Encode size of compressed Color image data
        compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedColorSize), sizeof (compressedColorSize));
        // Output compressed disparity to ostream
-       compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedColor[0]), compressedColor.size () * sizeof(std::uint8_t));
+       compressedDataOut_arg.write (reinterpret_cast<const char*> (compressedColor.data()), compressedColor.size () * sizeof(std::uint8_t));
 
        if (bShowStatistics_arg)
        {
@@ -320,12 +320,12 @@ namespace pcl
         // reading compressed disparity data
         compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedDisparitySize), sizeof (compressedDisparitySize));
         compressedDisparity.resize (compressedDisparitySize);
-        compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedDisparity[0]), compressedDisparitySize * sizeof(std::uint8_t));
+        compressedDataIn_arg.read (reinterpret_cast<char*> (compressedDisparity.data()), compressedDisparitySize * sizeof(std::uint8_t));
 
         // reading compressed rgb data
         compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedColorSize), sizeof (compressedColorSize));
         compressedColor.resize (compressedColorSize);
-        compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedColor[0]), compressedColorSize * sizeof(std::uint8_t));
+        compressedDataIn_arg.read (reinterpret_cast<char*> (compressedColor.data()), compressedColorSize * sizeof(std::uint8_t));
 
         std::size_t png_width = 0;
         std::size_t png_height = 0;
@@ -335,6 +335,9 @@ namespace pcl
 
         // decode PNG compressed rgb data
         decodePNGToImage (compressedColor, colorData, png_width, png_height, png_channels);
+      } else {
+        PCL_ERROR("[OrganizedPointCloudCompression::decodePointCloud] Unable to find an encoded point cloud in the input stream!\n");
+        return false;
       }
 
       if (disparityShift==0.0f)

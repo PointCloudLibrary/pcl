@@ -309,7 +309,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
       // we reached leaf node level
       Indices decoded_point_vector;
 
-      const LeafNode* child_leaf = static_cast<const LeafNode*>(child_node);
+      const auto* child_leaf = static_cast<const LeafNode*>(child_node);
 
       // decode leaf node into decoded_point_vector
       (*child_leaf)->getPointIndices(decoded_point_vector);
@@ -405,7 +405,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
       }
       else {
         // we reached leaf node level
-        const LeafNode* child_leaf = static_cast<const LeafNode*>(child_node);
+        const auto* child_leaf = static_cast<const LeafNode*>(child_node);
         Indices decoded_point_vector;
 
         // decode leaf node into decoded_point_vector
@@ -498,7 +498,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
     // we reached leaf node level
     Indices decoded_point_vector;
 
-    const LeafNode* child_leaf = static_cast<const LeafNode*>(child_node);
+    const auto* child_leaf = static_cast<const LeafNode*>(child_node);
 
     float smallest_squared_dist = std::numeric_limits<float>::max();
 
@@ -582,7 +582,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::boxSearchRecur
         // we reached leaf node level
         Indices decoded_point_vector;
 
-        const LeafNode* child_leaf = static_cast<const LeafNode*>(child_node);
+        const auto* child_leaf = static_cast<const LeafNode*>(child_node);
 
         // decode leaf node into decoded_point_vector
         (**child_leaf).getPointIndices(decoded_point_vector);
@@ -892,7 +892,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
 
   // If leaf node, get voxel center and increment intersection count
   if (node->getNodeType() == LEAF_NODE) {
-    const LeafNode* leaf = static_cast<const LeafNode*>(node);
+    const auto* leaf = static_cast<const LeafNode*>(node);
 
     // decode leaf node into k_indices
     (*leaf)->getPointIndices(k_indices);

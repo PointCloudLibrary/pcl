@@ -36,13 +36,20 @@ the OpenNI Grabber.
   
   <iframe title="PCL OpenNI Viewer example" width="480" height="390" src="https://www.youtube.com/embed/x3SaWQkPsPI?rel=0" frameborder="0" allowfullscreen></iframe>
 
-So let's look at the code. From *visualization/tools/openni_viewer_simple.cpp*
+So let's look at the code. From *tools/openni_viewer_simple.cpp*
 
 .. code-block:: cpp
    :linenos:
 
     #include <pcl/io/openni_grabber.h>
     #include <pcl/visualization/cloud_viewer.h>
+
+
+    #include <chrono>
+    #include <thread>
+
+    using namespace std::chrono_literals;
+
     
     class SimpleOpenNIViewer
     {
@@ -68,7 +75,7 @@ So let's look at the code. From *visualization/tools/openni_viewer_simple.cpp*
               
           while (!viewer.wasStopped())
           {   
-            boost::this_thread::sleep (boost::posix_time::seconds (1));
+            std::this_thread::sleep_for(1s);
           }   
 
           interface->stop (); 

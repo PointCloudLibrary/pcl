@@ -59,10 +59,10 @@ namespace pcl
       getHeight () const { return (height_); }
       
       inline unsigned char*
-      getData () { return (&data_[0]); }
+      getData () { return (data_.data()); }
 
       inline const unsigned char*
-      getData () const { return (&data_[0]); }
+      getData () const { return (data_.data()); }
 
       inline QuantizedMap
       getSubMap (std::size_t x,

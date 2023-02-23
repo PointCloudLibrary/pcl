@@ -53,10 +53,6 @@ Kmeans<PointT>::Kmeans() : cluster_field_name_("")
 {}
 
 template <typename PointT>
-Kmeans<PointT>::~Kmeans()
-{}
-
-template <typename PointT>
 void
 Kmeans<PointT>::cluster(std::vector<PointIndices>& clusters)
 {

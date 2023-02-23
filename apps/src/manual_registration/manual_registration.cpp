@@ -45,6 +45,12 @@
 #include <QEvent>
 #include <QMutexLocker>
 #include <QObject>
+
+#include <vtkVersion.h>
+#if VTK_MAJOR_VERSION >= 9 || (VTK_MAJOR_VERSION == 8 && VTK_MINOR_VERSION >= 2)
+#define HAS_QVTKOPENGLWINDOW_H
+#include <QVTKOpenGLWindow.h>
+#endif
 #include <ui_manual_registration.h>
 
 #include <vtkCamera.h>
@@ -318,6 +324,9 @@ print_usage()
 int
 main(int argc, char** argv)
 {
+#ifdef HAS_QVTKOPENGLWINDOW_H
+  QSurfaceFormat::setDefaultFormat(QVTKOpenGLWindow::defaultFormat());
+#endif
   QApplication app(argc, argv);
 
   pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_src(

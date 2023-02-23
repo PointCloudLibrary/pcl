@@ -50,7 +50,7 @@ template <typename PointT>
 pcl::people::PersonClassifier<PointT>::~PersonClassifier () = default;
 
 template <typename PointT> bool
-pcl::people::PersonClassifier<PointT>::loadSVMFromFile (std::string svm_filename)
+pcl::people::PersonClassifier<PointT>::loadSVMFromFile (const std::string& svm_filename)
 {
   std::string line;
   std::ifstream SVM_file;
@@ -122,8 +122,8 @@ pcl::people::PersonClassifier<PointT>::resize (PointCloudPtr& input_image,
   output_image->width = width;
 
   // Compute scale factor:
-  float scale1 = float(height) / float(input_image->height);
-  float scale2 = float(width) / float(input_image->width);
+  float scale1 = static_cast<float>(height) / static_cast<float>(input_image->height);
+  float scale2 = static_cast<float>(width) / static_cast<float>(input_image->width);
 
   Eigen::Matrix3f T_inv;
   T_inv << 1/scale1, 0, 0,
@@ -163,9 +163,9 @@ pcl::people::PersonClassifier<PointT>::resize (PointCloudPtr& input_image,
 
     w1 = (A(0) - f1);
     w2 = (A(1) - f2);
-    new_point.r = int((1 - w1) * ((1 - w2) * g1.r + w2 * g4.r) + w1 * ((1 - w2) * g3.r + w2 * g4.r));
-    new_point.g = int((1 - w1) * ((1 - w2) * g1.g + w2 * g4.g) + w1 * ((1 - w2) * g3.g + w2 * g4.g));
-    new_point.b = int((1 - w1) * ((1 - w2) * g1.b + w2 * g4.b) + w1 * ((1 - w2) * g3.b + w2 * g4.b));
+    new_point.r = static_cast<int>((1 - w1) * ((1 - w2) * g1.r + w2 * g4.r) + w1 * ((1 - w2) * g3.r + w2 * g4.r));
+    new_point.g = static_cast<int>((1 - w1) * ((1 - w2) * g1.g + w2 * g4.g) + w1 * ((1 - w2) * g3.g + w2 * g4.g));
+    new_point.b = static_cast<int>((1 - w1) * ((1 - w2) * g1.b + w2 * g4.b) + w1 * ((1 - w2) * g3.b + w2 * g4.b));
 
     // Insert the point in the output image:
     (*output_image)(j,i) = new_point;
@@ -190,9 +190,9 @@ pcl::people::PersonClassifier<PointT>::copyMakeBorder (PointCloudPtr& input_imag
   output_image->height = height;
 
   int x_start_in = std::max(0, xmin);
-  int x_end_in = std::min(int(input_image->width-1), xmin+width-1);
+  int x_end_in = std::min(static_cast<int>(input_image->width-1), xmin+width-1);
   int y_start_in = std::max(0, ymin);
-  int y_end_in = std::min(int(input_image->height-1), ymin+height-1);
+  int y_end_in = std::min(static_cast<int>(input_image->height-1), ymin+height-1);
 
   int x_start_out = std::max(0, -xmin);
   //int x_end_out = x_start_out + (x_end_in - x_start_in);
@@ -243,9 +243,9 @@ pcl::people::PersonClassifier<PointT>::evaluate (float height_person,
     {
       for (std::uint32_t col = 0; col < sample->width; col++)
       {
-        sample_float[row + sample->height * col] = ((float) ((*sample)(col, row).r))/255; //ptr[col * 3 + 2];
-        sample_float[row + sample->height * col + delta] = ((float) ((*sample)(col, row).g))/255; //ptr[col * 3 + 1];
-        sample_float[row + sample->height * col + delta * 2] = (float) (((*sample)(col, row).b))/255; //ptr[col * 3];
+        sample_float[row + sample->height * col] = (static_cast<float> ((*sample)(col, row).r))/255; //ptr[col * 3 + 2];
+        sample_float[row + sample->height * col + delta] = (static_cast<float> ((*sample)(col, row).g))/255; //ptr[col * 3 + 1];
+        sample_float[row + sample->height * col + delta * 2] = static_cast<float> (((*sample)(col, row).b))/255; //ptr[col * 3];
       }
     }
 

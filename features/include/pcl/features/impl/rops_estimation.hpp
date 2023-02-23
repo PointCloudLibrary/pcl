@@ -481,11 +481,11 @@ pcl::ROPSEstimation <PointInT, PointOutT>::getDistributionMatrix (const unsigned
     const float v_length = point (coord[projection][1]) - min[coord[projection][1]];
 
     const float u_ratio = u_length / u_bin_length;
-    unsigned int row = static_cast <unsigned int> (u_ratio);
+    auto row = static_cast <unsigned int> (u_ratio);
     if (row == number_of_bins_) row--;
 
     const float v_ratio = v_length / v_bin_length;
-    unsigned int col = static_cast <unsigned int> (v_ratio);
+    auto col = static_cast <unsigned int> (v_ratio);
     if (col == number_of_bins_) col--;
 
     matrix (row, col) += 1.0f;

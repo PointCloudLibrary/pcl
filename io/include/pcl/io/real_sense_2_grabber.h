@@ -101,7 +101,8 @@ namespace pcl
 
     /** \brief defined grabber name*/
     std::string
-    getName () const override { return std::string ( "RealSense2Grabber" ); }
+    getName () const override {
+      return {"RealSense2Grabber"}; }
 
     //define callback signature typedefs
     using signal_librealsense_PointXYZ = void( const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& );

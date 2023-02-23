@@ -42,16 +42,6 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT>
-PCL_DEPRECATED(1, 13, "This is a trivial call to base class method")
-void
-pcl::CropHull<PointT>::applyFilter (PointCloud &output)
-{
-  FilterIndices<PointT>::applyFilter(output);
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
 pcl::CropHull<PointT>::applyFilter (Indices &indices)
 {
@@ -163,10 +153,10 @@ pcl::CropHull<PointT>::applyFilter3D (Indices &indices)
       Eigen::Vector3f(0.856514f,  0.508771f, 0.0868081f)
     };
 
-    for (std::size_t poly = 0; poly < hull_polygons_.size (); poly++)
+    for (const auto & hull_polygon : hull_polygons_)
       for (std::size_t ray = 0; ray < 3; ray++)
         crossings[ray] += rayTriangleIntersect
-          ((*input_)[(*indices_)[index]], rays[ray], hull_polygons_[poly], *hull_cloud_);
+          ((*input_)[(*indices_)[index]], rays[ray], hull_polygon, *hull_cloud_);
 
     bool crosses = (crossings[0]&1) + (crossings[1]&1) + (crossings[2]&1) > 1;
     if ((crop_outside_ && crosses) || (!crop_outside_ && !crosses))

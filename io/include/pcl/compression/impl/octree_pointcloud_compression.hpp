@@ -55,7 +55,7 @@ namespace pcl
         const PointCloudConstPtr &cloud_arg,
         std::ostream& compressed_tree_data_out_arg)
     {
-      unsigned char recent_tree_depth =
+      auto recent_tree_depth =
           static_cast<unsigned char> (this->getTreeDepth ());
 
       // initialize octree

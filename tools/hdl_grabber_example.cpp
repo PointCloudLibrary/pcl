@@ -35,7 +35,7 @@ class SimpleHDLGrabber
       if (++count == 30) 
       {
         double now = pcl::getTime();
-        std::cout << "got sector scan.  Avg Framerate " << double(count) / double(now - last) << " Hz" << std::endl;
+        std::cout << "got sector scan.  Avg Framerate " << static_cast<double>(count) / (now - last) << " Hz" << std::endl;
         count = 0;
         last = now;
       }
@@ -51,14 +51,14 @@ class SimpleHDLGrabber
         std::uint64_t stamp;
         stamp = sweep->header.stamp;
         time_t systemTime = static_cast<time_t>(((stamp & 0xffffffff00000000l) >> 32) & 0x00000000ffffffff);
-        std::uint32_t usec = static_cast<std::uint32_t>(stamp & 0x00000000ffffffff);
+        auto usec = static_cast<std::uint32_t>(stamp & 0x00000000ffffffff);
         std::cout << std::hex << stamp << "  " << ctime(&systemTime) << " usec: " << usec << std::endl;
       }
 
       if (++count == 30) 
       {
         double now = pcl::getTime ();
-        std::cout << "got sweep.  Avg Framerate " << double(count) / double(now - last) << " Hz" << std::endl;
+        std::cout << "got sweep.  Avg Framerate " << static_cast<double>(count) / (now - last) << " Hz" << std::endl;
         count = 0;
         last = now;
       }

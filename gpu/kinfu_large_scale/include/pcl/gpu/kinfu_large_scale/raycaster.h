@@ -79,8 +79,6 @@ namespace pcl
           * \param[in] cy principal point y
           */
         RayCaster(int rows = 480, int cols = 640, float fx = 525.f, float fy = 525.f, float cx = -1, float cy = -1);
-        
-        ~RayCaster();
 
         /** \brief Sets camera intrinsics */ 
         void

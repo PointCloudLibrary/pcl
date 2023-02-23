@@ -74,9 +74,6 @@ public:
   /** Constructor for Permutohedral class. */
   Permutohedral();
 
-  /** Deconstructor for Permutohedral class. */
-  ~Permutohedral(){};
-
   /** Initialization. */
   void
   init(const std::vector<float>& feature, const int feature_dimension, const int N);
@@ -105,7 +102,7 @@ public:
   void
   debug();
 
-  /** Pseudo radnom generator. */
+  /** Pseudo random generator. */
   inline std::size_t
   generateHashKey(const std::vector<short>& k)
   {

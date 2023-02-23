@@ -183,7 +183,7 @@ TEST(PCL, ICP_translated)
   pcl::PointCloud<pcl::PointXYZ> Final;
   icp.align(Final);
 
-  // Check that we have sucessfully converged
+  // Check that we have successfully converged
   ASSERT_TRUE(icp.hasConverged());
 
   // Test that the fitness score is below acceptable threshold
@@ -249,10 +249,10 @@ sampleRandomTransform (Eigen::Affine3f &trans, float max_angle, float max_trans)
 {
     srand(0);
     // Sample random transform
-    Eigen::Vector3f axis((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX);
+    Eigen::Vector3f axis(static_cast<float>(rand()) / RAND_MAX, static_cast<float>(rand()) / RAND_MAX, static_cast<float>(rand()) / RAND_MAX);
     axis.normalize();
-    float angle = (float)rand() / RAND_MAX * max_angle;
-    Eigen::Vector3f translation((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX);
+    float angle = static_cast<float>(rand()) / RAND_MAX * max_angle;
+    Eigen::Vector3f translation(static_cast<float>(rand()) / RAND_MAX, static_cast<float>(rand()) / RAND_MAX, static_cast<float>(rand()) / RAND_MAX);
     translation *= max_trans;
     Eigen::Affine3f rotation(Eigen::AngleAxis<float>(angle, axis));
     trans = Eigen::Translation3f(translation) * rotation;

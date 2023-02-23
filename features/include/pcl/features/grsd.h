@@ -88,9 +88,9 @@ namespace pcl
 
       /** \brief Constructor. */
       GRSDEstimation ()
+        : relative_coordinates_all_(getAllNeighborCellIndices())
       {
         feature_name_ = "GRSDEstimation";
-        relative_coordinates_all_ = getAllNeighborCellIndices ();
       };
 
       /** \brief Set the sphere radius that is to be used for determining the nearest neighbors used for the feature

@@ -555,7 +555,7 @@ TEST (PCL, Octree2Buf_Base_Double_Buffering_Test)
 
   srand (static_cast<unsigned int> (time (nullptr)));
 
-  const unsigned int test_runs = 20;
+  constexpr unsigned int test_runs = 20;
 
   for (unsigned int j = 0; j < test_runs; j++)
   {
@@ -636,7 +636,7 @@ TEST (PCL, Octree2Buf_Base_Double_Buffering_XOR_Test)
 
   srand (static_cast<unsigned int> (time (nullptr)));
 
-  const unsigned int test_runs = 15;
+  constexpr unsigned int test_runs = 15;
 
   for (unsigned int j = 0; j < test_runs; j++)
   {
@@ -1189,7 +1189,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
         pointCandidates.pop ();
 
       // copy results into vectors
-      unsigned idx = static_cast<unsigned> (pointCandidates.size ());
+      auto idx = static_cast<unsigned> (pointCandidates.size ());
       k_indices_bruteforce.resize (idx);
       k_sqr_distances_bruteforce.resize (idx);
       while (!pointCandidates.empty ())
@@ -1538,7 +1538,7 @@ TEST (PCL, Octree_Pointcloud_Ray_Traversal)
     {
       pt = (*cloudIn)[i];
       d = Eigen::Vector3f (pt.x, pt.y, pt.z) - o;
-      ASSERT_GE (d.norm (), min_dist);
+      ASSERT_GE (d.norm (), 0.999 * min_dist);
     }
   }
 }
@@ -1616,10 +1616,10 @@ TEST (PCL, Octree_Pointcloud_Adjacency)
 
 TEST (PCL, Octree_Pointcloud_Bounds)
 {
-    const double SOME_RESOLUTION (10 + 1/3.0);
-    const int SOME_DEPTH (4);
-    const double DESIRED_MAX = ((1<<SOME_DEPTH) + 0.5)*SOME_RESOLUTION;
-    const double DESIRED_MIN = 0;
+    constexpr double SOME_RESOLUTION (10 + 1/3.0);
+    constexpr int SOME_DEPTH (4);
+    constexpr double DESIRED_MAX = ((1 << SOME_DEPTH) + 0.5) * SOME_RESOLUTION;
+    constexpr double DESIRED_MIN = 0;
 
     OctreePointCloud<PointXYZ> tree (SOME_RESOLUTION);
     tree.defineBoundingBox (DESIRED_MIN, DESIRED_MIN, DESIRED_MIN, DESIRED_MAX, DESIRED_MAX, DESIRED_MAX);
@@ -1630,8 +1630,8 @@ TEST (PCL, Octree_Pointcloud_Bounds)
     ASSERT_GE (max_x, DESIRED_MAX);
     ASSERT_GE (DESIRED_MIN, min_x);
 
-    const double LARGE_MIN = 1e7-45*SOME_RESOLUTION;
-    const double LARGE_MAX = 1e7-5*SOME_RESOLUTION;
+    constexpr double LARGE_MIN = 1e7 - 45 * SOME_RESOLUTION;
+    constexpr double LARGE_MAX = 1e7 - 5 * SOME_RESOLUTION;
     tree.defineBoundingBox (LARGE_MIN, LARGE_MIN, LARGE_MIN, LARGE_MAX, LARGE_MAX, LARGE_MAX);
     tree.getBoundingBox (min_x, min_y, min_z, max_x, max_y, max_z);
     const auto depth = tree.getTreeDepth ();

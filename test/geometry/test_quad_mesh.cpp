@@ -221,7 +221,7 @@ TYPED_TEST (TestQuadMesh, OneQuad)
 TYPED_TEST (TestQuadMesh, NineQuads)
 {
   using Mesh = typename TestFixture::Mesh;
-  const int int_max = std::numeric_limits <int>::max ();
+  constexpr int int_max = std::numeric_limits<int>::max();
 
   // Order
   //    -   -   -   //

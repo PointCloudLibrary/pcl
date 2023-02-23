@@ -493,7 +493,7 @@ RangeImageBorderExtractor::calculateBorderDirections ()
     }
   }
 
-  Eigen::Vector3f** average_border_directions = new Eigen::Vector3f*[size];
+  auto** average_border_directions = new Eigen::Vector3f*[size];
   int radius = parameters_.pixel_radius_border_direction;
   int minimum_weight = radius+1;
   float min_cos_angle=std::cos(deg2rad(120.0f));
@@ -614,11 +614,11 @@ RangeImageBorderExtractor::blurSurfaceChanges ()
 
   const RangeImage& range_image = *range_image_;
 
-  Eigen::Vector3f* blurred_directions = new Eigen::Vector3f[range_image.width*range_image.height];
+  auto* blurred_directions = new Eigen::Vector3f[range_image.width*range_image.height];
   float* blurred_scores = new float[range_image.width*range_image.height];
-  for (int y=0; y<int(range_image.height); ++y)
+  for (int y=0; y<static_cast<int>(range_image.height); ++y)
   {
-    for (int x=0; x<int(range_image.width); ++x)
+    for (int x=0; x<static_cast<int>(range_image.width); ++x)
     {
       int index = y*range_image.width + x;
       Eigen::Vector3f& new_point = blurred_directions[index];

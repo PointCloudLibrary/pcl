@@ -106,7 +106,7 @@ main (int argc, char** argv)
 {
   printf ("\nUsage: ./pcl_obj_rec_ransac_scene_opps <pair_width> <voxel_size> <max_coplanarity_angle>\n\n");
 
-  const int num_params = 3;
+  constexpr int num_params = 3;
   float parameters[num_params] = {40.0f/*pair width*/, 5.0f/*voxel size*/, 15.0f/*max co-planarity angle*/};
   std::string parameter_names[num_params] = {"pair_width", "voxel_size", "max_coplanarity_angle"};
 
@@ -254,7 +254,7 @@ update (CallbackParameters* params)
   int i = 0;
 
   // Show the hypotheses
-  for ( std::list<ObjRecRANSAC::Output>::iterator it = rec_output.begin () ; it != rec_output.end () ; ++it, ++i )
+  for ( auto it = rec_output.begin () ; it != rec_output.end () ; ++it, ++i )
   {
     std::cout << it->object_name_ << " has a confidence value of " << it->match_confidence_ << std::endl;
 

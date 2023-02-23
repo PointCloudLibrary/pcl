@@ -37,8 +37,8 @@ Compile and install PCL.
 Using the example
 =================
 
-The `pcl_ensenso_viewer <https://github.com/PointCloudLibrary/pcl/blob/master/visualization/tools/ensenso_viewer.cpp>`_ example shows how to
-display a point cloud grabbed from an Ensenso device using the `EnsensoGrabber <http://docs.pointclouds.org/trunk/classpcl_1_1_ensenso_grabber.html>`_ class.
+The `pcl_ensenso_viewer <https://github.com/PointCloudLibrary/pcl/blob/master/tools/ensenso_viewer.cpp>`_ example shows how to
+display a point cloud grabbed from an Ensenso device using the `EnsensoGrabber <https://pointclouds.org/documentation/classpcl_1_1_ensenso_grabber.html>`_ class.
 
 Note that this program opens the TCP port of the nxLib tree, this allows you to open the nxLib tree with the nxTreeEdit program (port 24000).
 The capture parameters (exposure, gain etc..) are set to default values.

@@ -48,10 +48,9 @@ PCL_INSTANTIATE_PRODUCT(Hough3DGrouping, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::P
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::recognition::HoughSpace3D::HoughSpace3D (const Eigen::Vector3d &min_coord, const Eigen::Vector3d &bin_size, const Eigen::Vector3d &max_coord)
+  : min_coord_ (min_coord)
+  , bin_size_ (bin_size)
 {
-  min_coord_ = min_coord;
-  bin_size_ = bin_size;
-
   for (int i = 0; i < 3; ++i)
   {
     bin_count_[i] = static_cast<int> (std::ceil ((max_coord[i] - min_coord_[i]) / bin_size_[i]));
