@@ -93,22 +93,22 @@ namespace openni_wrapper
      * @brief virtual method, derived from std::exception
      * @return the message of the exception.
      */
-    const char* what () const throw () override;
+    const char* what () const noexcept override;
 
     /**
      * @return the function name in which the exception was created.
      */
-    const std::string& getFunctionName () const throw ();
+    const std::string& getFunctionName () const noexcept;
 
     /**
      * @return the filename in which the exception was created.
      */
-    const std::string& getFileName () const throw ();
+    const std::string& getFileName () const noexcept;
 
     /**
      * @return the line number where the exception was created.
      */
-    unsigned getLineNumber () const throw ();
+    unsigned getLineNumber () const noexcept;
   protected:
     std::string function_name_;
     std::string file_name_;
