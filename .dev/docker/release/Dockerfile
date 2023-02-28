@@ -18,6 +18,7 @@ RUN sed -i 's/^deb \(.*\)$/deb \1\ndeb-src \1/' /etc/apt/sources.list \
     libboost-serialization-dev \
     libboost-filesystem-dev \
     libboost-iostreams-dev \
+    libboost-system-dev \
     libeigen3-dev \
     libflann-dev \
     libglew-dev \
