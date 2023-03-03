@@ -459,8 +459,8 @@ int main(int argc, char ** argv)
 {
   if (argc != 3)
   {
-    std::cerr << "ERROR: Syntax is octreeVisu <pcd file> <resolution>" << std::endl;
-    std::cerr << "EXAMPLE: ./octreeVisu bun0.pcd 0.001" << std::endl;
+    std::cerr << "ERROR: Syntax is " << argv[0] << " <pcd file> <resolution>" << std::endl;
+    std::cerr << "EXAMPLE: ./" << argv[0] << " bun0.pcd 0.001" << std::endl;
     return -1;
   }
 

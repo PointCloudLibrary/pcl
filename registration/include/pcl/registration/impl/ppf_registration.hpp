@@ -83,9 +83,9 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation(
   const std::vector<unsigned int> tmp_vec(aux_size, 0);
   std::vector<std::vector<unsigned int>> accumulator_array(input_->size(), tmp_vec);
 
-  PCL_INFO("Accumulator array size: %u x %u.\n",
-           accumulator_array.size(),
-           accumulator_array.back().size());
+  PCL_DEBUG("Accumulator array size: %u x %u.\n",
+            accumulator_array.size(),
+            accumulator_array.back().size());
 
   PoseWithVotesList voted_poses;
   // Consider every <scene_reference_point_sampling_rate>-th point as the reference
@@ -232,7 +232,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::clusterPoses(
     typename pcl::PPFRegistration<PointSource, PointTarget>::PoseWithVotesList& poses,
     typename pcl::PPFRegistration<PointSource, PointTarget>::PoseWithVotesList& result)
 {
-  PCL_INFO("Clustering poses ...\n");
+  PCL_DEBUG("Clustering poses ...\n");
   // Start off by sorting the poses by the number of votes
   sort(poses.begin(), poses.end(), poseWithVotesCompareFunction);
 
@@ -268,9 +268,9 @@ pcl::PPFRegistration<PointSource, PointTarget>::clusterPoses(
   result.clear();
   std::size_t max_clusters = (clusters.size() < 3) ? clusters.size() : 3;
   for (std::size_t cluster_i = 0; cluster_i < max_clusters; ++cluster_i) {
-    PCL_INFO("Winning cluster has #votes: %d and #poses voted: %d.\n",
-             cluster_votes[cluster_i].second,
-             clusters[cluster_votes[cluster_i].first].size());
+    PCL_DEBUG("Winning cluster has #votes: %d and #poses voted: %d.\n",
+              cluster_votes[cluster_i].second,
+              clusters[cluster_votes[cluster_i].first].size());
     Eigen::Vector3f translation_average(0.0, 0.0, 0.0);
     Eigen::Vector4f rotation_average(0.0, 0.0, 0.0, 0.0);
     for (typename PoseWithVotesList::iterator v_it =
