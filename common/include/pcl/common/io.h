@@ -54,6 +54,7 @@ namespace pcl
   /** \brief Get the index of a specified field (i.e., dimension/channel)
     * \param[in] cloud the point cloud message
     * \param[in] field_name the string defining the field name
+    * \return the index of the field or a negative integer if no field with the given name exists
     * \ingroup common
     */
   inline int
@@ -71,6 +72,7 @@ namespace pcl
     * \tparam PointT datatype for which fields is being queries
     * \param[in] field_name the string defining the field name
     * \param[out] fields a vector to the original \a PCLPointField vector that the raw PointCloud message contains
+    * \return the index of the field or a negative integer if no field with the given name exists
     * \ingroup common
     */
   template <typename PointT> inline int

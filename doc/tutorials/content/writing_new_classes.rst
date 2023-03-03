@@ -909,7 +909,7 @@ file, as follows:
    *  All rights reserved
    */
 
-An additional like can be inserted if additional copyright is needed (or the
+An additional line can be inserted if additional copyright is needed (or the
 original copyright can be changed):
 
 .. code-block:: cpp

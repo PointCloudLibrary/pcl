@@ -37,7 +37,7 @@ customRegionGrowing (const PointTypeFull& point_a, const PointTypeFull& point_b,
   {
     if (std::abs (point_a.intensity - point_b.intensity) < 8.0f)
       return (true);
-    if (std::abs (point_a_normal.dot (point_b_normal)) < 0.06)
+    if (std::abs (point_a_normal.dot (point_b_normal)) > std::cos (30.0f / 180.0f * static_cast<float> (M_PI)))
       return (true);
   }
   else
