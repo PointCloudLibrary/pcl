@@ -71,7 +71,12 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::setMaxVoxelIndex(
 {
   uindex_t treeDepth;
 
-  assert(max_voxel_index_arg > 0);
+  if (max_voxel_index_arg <= 0) {
+    PCL_ERROR("[pcl::octree::Octree2BufBase::setMaxVoxelIndex] Max voxel index (%lu) "
+              "must be > 0!\n",
+              max_voxel_index_arg);
+    return;
+  }
 
   // tree depth == amount of bits of maxVoxels
   treeDepth =
@@ -88,7 +93,12 @@ template <typename LeafContainerT, typename BranchContainerT>
 void
 Octree2BufBase<LeafContainerT, BranchContainerT>::setTreeDepth(uindex_t depth_arg)
 {
-  assert(depth_arg > 0);
+  if (depth_arg <= 0) {
+    PCL_ERROR(
+        "[pcl::octree::Octree2BufBase::setTreeDepth] Tree depth (%lu) must be > 0!\n",
+        depth_arg);
+    return;
+  }
 
   // set octree depth
   octree_depth_ = depth_arg;
