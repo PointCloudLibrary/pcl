@@ -108,7 +108,7 @@ pcl::gpu::kinfuLS::CyclicalBuffer::performShift (const TsdfVolume::Ptr volume, c
 
   // Retrieving intensities
   // TODO change this mechanism by using PointIntensity directly (in spite of float)
-  // when tried, this lead to wrong intenisty values being extracted by fetchSliceAsCloud () (padding pbls?)
+  // when tried, this lead to wrong intensity values being extracted by fetchSliceAsCloud () (padding pbls?)
   std::vector<float , Eigen::aligned_allocator<float> > intensities_vector;
   intensities.download (intensities_vector);
   current_slice_intensities->resize (current_slice_xyz->size ());

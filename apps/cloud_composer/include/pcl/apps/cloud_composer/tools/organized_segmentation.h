@@ -58,7 +58,7 @@
        performTemplatedAction (const QList <const CloudComposerItem*>& input_data);
        
        inline QString
-       getToolName () const override { return "Organized Segmenation Tool";}
+       getToolName () const override { return "Organized Segmentation Tool";}
      };
      
      

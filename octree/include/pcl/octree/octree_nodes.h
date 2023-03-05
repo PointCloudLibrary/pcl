@@ -84,10 +84,9 @@ public:
   OctreeLeafNode() : OctreeNode() {}
 
   /** \brief Copy constructor. */
-  OctreeLeafNode(const OctreeLeafNode& source) : OctreeNode()
-  {
-    container_ = source.container_;
-  }
+  OctreeLeafNode(const OctreeLeafNode& source)
+  : OctreeNode(), container_(source.container_)
+  {}
 
   /** \brief Empty deconstructor. */
 
@@ -180,17 +179,11 @@ template <typename ContainerT>
 class OctreeBranchNode : public OctreeNode {
 public:
   /** \brief Empty constructor. */
-  OctreeBranchNode() : OctreeNode()
-  {
-    // reset pointer to child node vectors
-    child_node_array_ = {};
-  }
+  OctreeBranchNode() : OctreeNode() {}
 
-  /** \brief Empty constructor. */
+  /** \brief Copy constructor. */
   OctreeBranchNode(const OctreeBranchNode& source) : OctreeNode()
   {
-    child_node_array_ = {};
-
     for (unsigned char i = 0; i < 8; ++i)
       if (source.child_node_array_[i]) {
         child_node_array_[i] = source.child_node_array_[i]->deepCopy();
@@ -223,7 +216,7 @@ public:
   ~OctreeBranchNode() override = default;
 
   /** \brief Access operator.
-   *  \param child_idx_arg: index to child node
+   *  \param child_idx_arg: index to child node, must be less than 8
    *  \return OctreeNode pointer
    * */
   inline OctreeNode*&
@@ -234,7 +227,7 @@ public:
   }
 
   /** \brief Get pointer to child
-   *  \param child_idx_arg: index to child node
+   *  \param child_idx_arg: index to child node, must be less than 8
    *  \return OctreeNode pointer
    * */
   inline OctreeNode*
@@ -245,6 +238,7 @@ public:
   }
 
   /** \brief Get pointer to child
+   *  \param index: index to child node, must be less than 8
    *  \return OctreeNode pointer
    * */
   inline void
@@ -255,7 +249,7 @@ public:
   }
 
   /** \brief Check if branch is pointing to a particular child node
-   *  \param child_idx_arg: index to child node
+   *  \param child_idx_arg: index to child node, must be less than 8
    *  \return "true" if pointer to child node exists; "false" otherwise
    * */
   inline bool

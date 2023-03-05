@@ -38,10 +38,18 @@
 
 #pragma once
 
+#include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/types.h> // for pcl::Indices
+#include <pcl/visualization/common/actor_map.h>
 
 #include <vtkCommand.h>
+#include <vtkActor.h>
+
+#include <map>
+#include <vector>
+
+
 class vtkRenderWindowInteractor;
 
 namespace pcl
@@ -55,8 +63,6 @@ namespace pcl
         { 
           return (new PointPickingCallback); 
         }
-
-        PointPickingCallback () : x_ (0), y_ (0), z_ (0), idx_ (-1), pick_first_ (false) {}
       
         /** \brief Empty destructor */
         ~PointPickingCallback () override = default;
@@ -64,29 +70,32 @@ namespace pcl
         void
         Execute (vtkObject *caller, unsigned long eventid, void*) override;
 
-        int
+        pcl::index_t
         performSinglePick (vtkRenderWindowInteractor *iren);
 
-        int
+        pcl::index_t
         performSinglePick (vtkRenderWindowInteractor *iren, float &x, float &y, float &z);
 
-        int
-        performAreaPick (vtkRenderWindowInteractor *iren, pcl::Indices &indices) const;
+        pcl::index_t
+        performAreaPick (vtkRenderWindowInteractor *iren,
+                         CloudActorMapPtr cam_ptr,
+                         std::map<std::string, pcl::Indices>& cloud_indices) const;
+
 
       private:
-        float x_, y_, z_;
-        int idx_;
-        bool pick_first_;
+        float x_{0}, y_{0}, z_{0};
+        pcl::index_t idx_{pcl::UNAVAILABLE};
+        bool pick_first_{false};
+        const vtkActor* actor_{nullptr};
      };
 
     /** /brief Class representing 3D point picking events. */
     class PCL_EXPORTS PointPickingEvent
     {
       public:
-        PointPickingEvent (int idx) : idx_ (idx), idx2_ (-1), x_ (), y_ (), z_ (), x2_ (), y2_ (), z2_ () {}
-        PointPickingEvent (int idx, float x, float y, float z) : idx_ (idx), idx2_ (-1), x_ (x), y_ (y), z_ (z), x2_ (), y2_ (), z2_ () {}
-
-        PointPickingEvent (int idx1, int idx2, float x1, float y1, float z1, float x2, float y2, float z2) :
+        PointPickingEvent (pcl::index_t idx) : PointPickingEvent ( idx, -1,-1, -1) {}
+        PointPickingEvent (pcl::index_t idx, float x, float y, float z, const std::string& name = "") : idx_ (idx), idx2_ (-1), x_ (x), y_ (y), z_ (z), x2_ (), y2_ (), z2_ (), name_ (name) {}
+        PointPickingEvent (pcl::index_t idx1, pcl::index_t idx2, float x1, float y1, float z1, float x2, float y2, float z2) :
           idx_ (idx1), idx2_ (idx2), x_ (x1), y_ (y1), z_ (z1), x2_ (x2), y2_ (y2), z2_ (z2) 
         {}
 
@@ -97,7 +106,7 @@ namespace pcl
           * cloud for the correct index. An example of how to do this can be found in the pp_callback function in
           * visualization/tools/pcd_viewer.cpp
           */
-        inline int
+        inline pcl::index_t
         getPointIndex () const
         {
           return (idx_);
@@ -126,7 +135,7 @@ namespace pcl
         inline bool
         getPoints (float &x1, float &y1, float &z1, float &x2, float &y2, float &z2) const
         {
-          if (idx2_ == -1)
+          if (idx2_ == pcl::UNAVAILABLE)
             return (false);
           x1 = x_; y1 = y_; z1 = z_;
           x2 = x2_; y2 = y2_; z2 = z2_;
@@ -144,20 +153,27 @@ namespace pcl
           * visualization/tools/pcd_viewer.cpp
           */
         inline bool
-        getPointIndices (int &index_1, int &index_2) const
+        getPointIndices(pcl::index_t& index_1, pcl::index_t& index_2) const
         {
-          if (idx2_ == -1)
+          if (idx2_ == pcl::UNAVAILABLE)
             return (false);
           index_1 = idx_;
           index_2 = idx2_;
           return (true);
         }
 
+        /** \brief Get name of selected cloud.
+          * \return name of the cloud selected by the user
+          */
+        inline const std::string&
+        getCloudName () const { return name_; }
+
       private:
-        int idx_, idx2_;
+        pcl::index_t idx_, idx2_;
 
         float x_, y_, z_;
         float x2_, y2_, z2_;
+        std::string name_;
     };
   } //namespace visualization
 } //namespace pcl

@@ -60,6 +60,7 @@ set(incs
   include/pcl/types.h
   include/pcl/point_cloud.h
   include/pcl/point_struct_traits.h
+  include/pcl/point_traits.h
   include/pcl/type_traits.h
   include/pcl/point_types_conversion.h
   include/pcl/point_representation.h
@@ -79,6 +80,7 @@ set(incs
   include/pcl/PointIndices.h
   include/pcl/register_point_struct.h
   include/pcl/conversions.h
+  include/pcl/make_shared.h
 )
 
 set(common_incs
@@ -170,8 +172,12 @@ set(kissfft_srcs
 )
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${kissfft_srcs} ${incs} ${common_incs} ${impl_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${range_image_incs} ${range_image_incs_impl})
+
+target_include_directories(${LIB_NAME} PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include> 
+)
 
 target_link_libraries(${LIB_NAME} Boost::boost)
 

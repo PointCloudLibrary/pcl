@@ -52,7 +52,7 @@
 
 #include <pcl/registration/icp.h>
 #include <pcl/registration/icp_nl.h>
-#include <pcl/registration/transforms.h>
+#include <pcl/common/transforms.h>
 
 #include <pcl/visualization/pcl_visualizer.h>
 

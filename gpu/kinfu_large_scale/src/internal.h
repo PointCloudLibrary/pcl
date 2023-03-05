@@ -240,7 +240,7 @@ namespace pcl
       PCL_EXPORTS void 
       clearTSDFSlice (PtrStep<short2> volume, pcl::gpu::kinfuLS::tsdf_buffer* buffer, int shiftX, int shiftY, int shiftZ);
       
-      /** \brief Initialzied color volume
+      /** \brief Initialized color volume
         * \param[out] color_volume color volume for initialization
         */
       void 
@@ -366,7 +366,7 @@ namespace pcl
       void 
       extractNormals (const PtrStep<short2>& volume, const float3& volume_size, const PtrSz<PointType>& input, NormalType* output);
 
-      /** \brief Performs colors exctraction from color volume
+      /** \brief Performs colors extraction from color volume
         * \param[in] color_volume color volume
         * \param[in] volume_size volume size
         * \param[in] points points for which color are computed

@@ -294,8 +294,8 @@ pcl::ColorGradientModality<PointInT>::
 computeGaussianKernel (const std::size_t kernel_size, const float sigma, std::vector <float> & kernel_values)
 {
   // code taken from OpenCV
-  const int n = int (kernel_size);
-  const int SMALL_GAUSSIAN_SIZE = 7;
+  const int n = static_cast<int>(kernel_size);
+  constexpr int SMALL_GAUSSIAN_SIZE = 7;
   static const float small_gaussian_tab[][SMALL_GAUSSIAN_SIZE] =
   {
       {1.f},
@@ -310,7 +310,7 @@ computeGaussianKernel (const std::size_t kernel_size, const float sigma, std::ve
   //CV_Assert( ktype == CV_32F || ktype == CV_64F );
   /*Mat kernel(n, 1, ktype);*/
   kernel_values.resize (n);
-  float* cf = &(kernel_values[0]);
+  float* cf = kernel_values.data();
   //double* cd = (double*)kernel.data;
 
   double sigmaX = sigma > 0 ? sigma : ((n-1)*0.5 - 1)*0.3 + 0.8;
@@ -320,16 +320,16 @@ computeGaussianKernel (const std::size_t kernel_size, const float sigma, std::ve
   for( int i = 0; i < n; i++ )
   {
     double x = i - (n-1)*0.5;
-    double t = fixed_kernel ? double (fixed_kernel[i]) : std::exp (scale2X*x*x);
+    double t = fixed_kernel ? static_cast<double>(fixed_kernel[i]) : std::exp (scale2X*x*x);
 
-    cf[i] = float (t);
+    cf[i] = static_cast<float>(t);
     sum += cf[i];
   }
 
   sum = 1./sum;
   for ( int i = 0; i < n; i++ )
   {
-    cf[i] = float (cf[i]*sum);
+    cf[i] = static_cast<float>(cf[i]*sum);
   }
 }
 
@@ -340,7 +340,7 @@ pcl::ColorGradientModality<PointInT>::
 processInputData ()
 {
   // compute gaussian kernel values
-  const std::size_t kernel_size = 7;
+  constexpr std::size_t kernel_size = 7;
   std::vector<float> kernel_values;
   computeGaussianKernel (kernel_size, 0.0f, kernel_values);
 
@@ -971,7 +971,7 @@ quantizeColorGradients ()
 
   quantized_color_gradients_.resize (width, height);
 
-  const float angleScale = 16.0f/360.0f;
+  constexpr float angleScale = 16.0f / 360.0f;
 
   //float min_angle = std::numeric_limits<float>::max ();
   //float max_angle = -std::numeric_limits<float>::max ();

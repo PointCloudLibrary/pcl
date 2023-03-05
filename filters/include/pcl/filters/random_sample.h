@@ -135,7 +135,7 @@ namespace pcl
       inline float
       unifRand ()
       {
-        return (static_cast<float>(rand () / double (RAND_MAX)));
+        return (static_cast<float>(rand () / static_cast<double>(RAND_MAX)));
         //return (((214013 * seed_ + 2531011) >> 16) & 0x7FFF);
       }
   };
@@ -226,7 +226,7 @@ namespace pcl
       inline float
       unifRand ()
       {
-        return (static_cast<float> (rand () / double (RAND_MAX)));
+        return (static_cast<float> (rand () / static_cast<double>(RAND_MAX)));
       }
    };
 }

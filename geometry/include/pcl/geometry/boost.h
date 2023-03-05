@@ -43,6 +43,7 @@
 #ifdef __GNUC__
 #pragma GCC system_header
 #endif
+PCL_DEPRECATED_HEADER(1, 16, "Please include the needed boost headers directly.")
 
 #include <boost/operators.hpp>
 #include <boost/version.hpp>

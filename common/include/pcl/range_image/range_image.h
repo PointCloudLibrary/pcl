@@ -397,7 +397,7 @@ namespace pcl
       inline PointWithRange&
       getPoint (float image_x, float image_y);
 
-      /** \brief Return the 3D point with range at the given image position.  This methd performs no error checking
+      /** \brief Return the 3D point with range at the given image position.  This method performs no error checking
         * to make sure the specified image position is inside of the image!
         * \param image_x the x coordinate
         * \param image_y the y coordinate
@@ -590,13 +590,13 @@ namespace pcl
       getAcutenessValueImages (int pixel_distance, float*& acuteness_value_image_x,
                                float*& acuteness_value_image_y) const;
 
-      /** Calculates, how much the surface changes at a point. Pi meaning a flat suface and 0.0f
+      /** Calculates, how much the surface changes at a point. Pi meaning a flat surface and 0.0f
        *  would be a needle point */
       //inline float
       //  getSurfaceChange (const PointWithRange& point, const PointWithRange& neighbor1,
       //                   const PointWithRange& neighbor2) const;
 
-      /** Calculates, how much the surface changes at a point. 1 meaning a 90deg angle and 0 a flat suface */
+      /** Calculates, how much the surface changes at a point. 1 meaning a 90deg angle and 0 a flat surface */
       PCL_EXPORTS float
       getSurfaceChange (int x, int y, int radius) const;
 

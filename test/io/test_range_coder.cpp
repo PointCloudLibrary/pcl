@@ -58,7 +58,7 @@ TEST (PCL, Adaptive_Range_Coder_Test)
   unsigned long readByteLen;
 
   // vector size
-  const unsigned int vectorSize = 10000;
+  constexpr unsigned int vectorSize = 10000;
 
   inputData.resize(vectorSize);
   outputData.resize(vectorSize);

@@ -247,7 +247,7 @@ public:
         }
 
         if (image->getEncoding () == pcl::io::openni2::Image::RGB)
-          image_viewer_->addRGBImage ( (const unsigned char*)image->getData (), image->getWidth (), image->getHeight ());
+          image_viewer_->addRGBImage ( reinterpret_cast<const unsigned char*>(image->getData ()), image->getWidth (), image->getHeight ());
         else
           image_viewer_->addRGBImage (rgb_data_, image->getWidth (), image->getHeight ());
         image_viewer_->spinOnce ();
@@ -336,10 +336,10 @@ main (int argc, char** argv)
 
   unsigned mode;
   if (pcl::console::parse (argc, argv, "-depthmode", mode) != -1)
-    depth_mode = pcl::io::OpenNI2Grabber::Mode (mode);
+    depth_mode = static_cast<pcl::io::OpenNI2Grabber::Mode> (mode);
 
   if (pcl::console::parse (argc, argv, "-imagemode", mode) != -1)
-    image_mode = pcl::io::OpenNI2Grabber::Mode (mode);
+    image_mode = static_cast<pcl::io::OpenNI2Grabber::Mode> (mode);
 
   if (pcl::console::find_argument (argc, argv, "-xyz") != -1)
     xyz = true;

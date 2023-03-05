@@ -73,7 +73,7 @@ TEST (PCL, KFPCSInitialAlignment)
   kfpcs_ia.setScoreThreshold (abort_score);
 
   // repeat alignment 2 times to increase probability to ~99.99%
-  const float max_angle3d = 0.1745f, max_translation3d = 1.f;
+  constexpr float max_angle3d = 0.1745f, max_translation3d = 1.f;
   float angle3d = std::numeric_limits<float>::max(), translation3d = std::numeric_limits<float>::max();
   for (int i = 0; i < 2; i++)
   {

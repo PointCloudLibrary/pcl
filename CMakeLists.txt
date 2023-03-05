@@ -23,8 +23,12 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "")
   set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "build type default to RelWithDebInfo, set to Release to improve performance" FORCE)
 endif()
 
-project(PCL VERSION 1.12.1.99)
+project(PCL VERSION 1.13.0.99)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
+
+if(MSVC AND ("${MSVC_VERSION}" LESS 1910))
+  message(FATAL_ERROR "The compiler versions prior to Visual Studio version 2017 are not supported. Please upgrade to a newer version or another compiler!")
+endif()
 
 ### ---[ Find universal dependencies
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/" ${CMAKE_MODULE_PATH})

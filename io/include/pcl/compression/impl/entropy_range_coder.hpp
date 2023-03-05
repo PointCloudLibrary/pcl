@@ -54,9 +54,9 @@ pcl::AdaptiveRangeCoder::encodeCharVectorToStream (const std::vector<char>& inpu
   DWord freq[257];
 
   // define limits
-  const DWord top = static_cast<DWord> (1) << 24;
-  const DWord bottom = static_cast<DWord> (1) << 16;
-  const DWord maxRange = static_cast<DWord> (1) << 16;
+  constexpr DWord top = static_cast<DWord>(1) << 24;
+  constexpr DWord bottom = static_cast<DWord>(1) << 16;
+  constexpr DWord maxRange = static_cast<DWord>(1) << 16;
 
   auto input_size = static_cast<unsigned> (inputByteVector_arg.size ());
 
@@ -84,7 +84,7 @@ pcl::AdaptiveRangeCoder::encodeCharVectorToStream (const std::vector<char>& inpu
     range *= freq[ch + 1] - freq[ch];
 
     // check range limits
-    while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -int (low) & (bottom - 1)), 1)))
+    while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -static_cast<int>(low) & (bottom - 1)), 1)))
     {
       char out = static_cast<char> (low >> 24);
       range <<= 8;
@@ -119,7 +119,7 @@ pcl::AdaptiveRangeCoder::encodeCharVectorToStream (const std::vector<char>& inpu
   }
 
   // write to stream
-  outputByteStream_arg.write (&outputCharVector_[0], outputCharVector_.size ());
+  outputByteStream_arg.write (outputCharVector_.data(), outputCharVector_.size ());
 
   return (static_cast<unsigned long> (outputCharVector_.size ()));
 }
@@ -132,9 +132,9 @@ pcl::AdaptiveRangeCoder::decodeStreamToCharVector (std::istream& inputByteStream
   DWord freq[257];
 
   // define limits
-  const DWord top = static_cast<DWord> (1) << 24;
-  const DWord bottom = static_cast<DWord> (1) << 16;
-  const DWord maxRange = static_cast<DWord> (1) << 16;
+  constexpr DWord top = static_cast<DWord>(1) << 24;
+  constexpr DWord bottom = static_cast<DWord>(1) << 16;
+  constexpr DWord maxRange = static_cast<DWord>(1) << 16;
 
   auto output_size = static_cast<unsigned> (outputByteVector_arg.size ());
 
@@ -186,7 +186,7 @@ pcl::AdaptiveRangeCoder::decodeStreamToCharVector (std::istream& inputByteStream
     range *= freq[symbol + 1] - freq[symbol];
 
     // decode range limits
-    while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -int (low) & (bottom - 1)), 1)))
+    while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -static_cast<int>(low) & (bottom - 1)), 1)))
     {
       std::uint8_t ch;
       inputByteStream_arg.read (reinterpret_cast<char*> (&ch), sizeof(char));
@@ -222,9 +222,9 @@ pcl::StaticRangeCoder::encodeIntVectorToStream (std::vector<unsigned int>& input
                                                 std::ostream& outputByteStream_arg)
 {
   // define numerical limits
-  const std::uint64_t top = static_cast<std::uint64_t> (1) << 56;
-  const std::uint64_t bottom = static_cast<std::uint64_t> (1) << 48;
-  const std::uint64_t maxRange = static_cast<std::uint64_t> (1) << 48;
+  constexpr std::uint64_t top = static_cast<std::uint64_t>(1) << 56;
+  constexpr std::uint64_t bottom = static_cast<std::uint64_t>(1) << 48;
+  constexpr std::uint64_t maxRange = static_cast<std::uint64_t>(1) << 48;
 
   auto input_size = static_cast<unsigned long> (inputIntVector_arg.size ());
 
@@ -313,7 +313,7 @@ pcl::StaticRangeCoder::encodeIntVectorToStream (std::vector<unsigned int>& input
   while (readPos < input_size)
   {
 
-    // read symol
+    // read symbol
     unsigned int inputsymbol = inputIntVector_arg[readPos++];
 
     // map to range
@@ -340,7 +340,7 @@ pcl::StaticRangeCoder::encodeIntVectorToStream (std::vector<unsigned int>& input
   }
 
   // write encoded data to stream
-  outputByteStream_arg.write (&outputCharVector_[0], outputCharVector_.size ());
+  outputByteStream_arg.write (outputCharVector_.data(), outputCharVector_.size ());
 
   streamByteCount += static_cast<unsigned long> (outputCharVector_.size ());
 
@@ -353,8 +353,8 @@ pcl::StaticRangeCoder::decodeStreamToIntVector (std::istream& inputByteStream_ar
                                                 std::vector<unsigned int>& outputIntVector_arg)
 {
   // define range limits
-  const std::uint64_t top = static_cast<std::uint64_t> (1) << 56;
-  const std::uint64_t bottom = static_cast<std::uint64_t> (1) << 48;
+  constexpr std::uint64_t top = static_cast<std::uint64_t>(1) << 56;
+  constexpr std::uint64_t bottom = static_cast<std::uint64_t>(1) << 48;
 
   std::uint64_t frequencyTableSize;
   unsigned char frequencyTableByteSize;
@@ -445,9 +445,9 @@ pcl::StaticRangeCoder::encodeCharVectorToStream (const std::vector<char>& inputB
   DWord freq[257];
 
   // define numerical limits
-  const DWord top = static_cast<DWord> (1) << 24;
-  const DWord bottom = static_cast<DWord> (1) << 16;
-  const DWord maxRange = static_cast<DWord> (1) << 16;
+  constexpr DWord top = static_cast<DWord>(1) << 24;
+  constexpr DWord bottom = static_cast<DWord>(1) << 16;
+  constexpr DWord maxRange = static_cast<DWord>(1) << 16;
 
   DWord low, range;
 
@@ -501,7 +501,7 @@ pcl::StaticRangeCoder::encodeCharVectorToStream (const std::vector<char>& inputB
   // start encoding
   while (readPos < input_size)
   {
-    // read symol
+    // read symbol
     std::uint8_t ch = inputByteVector_arg[readPos++];
 
     // map to range
@@ -509,7 +509,7 @@ pcl::StaticRangeCoder::encodeCharVectorToStream (const std::vector<char>& inputB
     range *= freq[ch + 1] - freq[ch];
 
     // check range limits
-    while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -int (low) & (bottom - 1)), 1)))
+    while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -static_cast<int>(low) & (bottom - 1)), 1)))
     {
       char out = static_cast<char> (low >> 24);
       range <<= 8;
@@ -528,7 +528,7 @@ pcl::StaticRangeCoder::encodeCharVectorToStream (const std::vector<char>& inputB
   }
 
   // write encoded data to stream
-  outputByteStream_arg.write (&outputCharVector_[0], outputCharVector_.size ());
+  outputByteStream_arg.write (outputCharVector_.data(), outputCharVector_.size ());
 
   streamByteCount += static_cast<unsigned long> (outputCharVector_.size ());
 
@@ -543,8 +543,8 @@ pcl::StaticRangeCoder::decodeStreamToCharVector (std::istream& inputByteStream_a
   DWord freq[257];
 
   // define range limits
-  const DWord top = static_cast<DWord> (1) << 24;
-  const DWord bottom = static_cast<DWord> (1) << 16;
+  constexpr DWord top = static_cast<DWord>(1) << 24;
+  constexpr DWord bottom = static_cast<DWord>(1) << 16;
 
   DWord low, range;
   DWord code;
@@ -602,7 +602,7 @@ pcl::StaticRangeCoder::decodeStreamToCharVector (std::istream& inputByteStream_a
     range *= freq[symbol + 1] - freq[symbol];
 
     // check range limits
-    while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -int (low) & (bottom - 1)), 1)))
+    while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -static_cast<int>(low) & (bottom - 1)), 1)))
     {
       std::uint8_t ch;
       inputByteStream_arg.read (reinterpret_cast<char*> (&ch), sizeof(char));

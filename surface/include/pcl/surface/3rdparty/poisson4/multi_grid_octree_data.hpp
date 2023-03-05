@@ -48,9 +48,9 @@ namespace pcl
   namespace poisson
   {
 
-    const Real MATRIX_ENTRY_EPSILON = Real(0);
-    const Real EPSILON=Real(1e-6);
-    const Real ROUND_EPS=Real(1e-5);
+    constexpr Real MATRIX_ENTRY_EPSILON = Real(0);
+    constexpr Real EPSILON=Real(1e-6);
+    constexpr Real ROUND_EPS = Real(1e-5);
 
     void atomicOr(volatile int& dest, int value)
     {
@@ -736,7 +736,7 @@ namespace pcl
       Real w;
       node->centerAndWidth( center , w );
       width=w;
-      const double SAMPLE_SCALE = 1. / ( 0.125 * 0.125 + 0.75 * 0.75 + 0.125 * 0.125 );
+      constexpr double SAMPLE_SCALE = 1. / ( 0.125 * 0.125 + 0.75 * 0.75 + 0.125 * 0.125 );
 
       for( int i=0 ; i<DIMENSION ; i++ )
       {

@@ -87,6 +87,9 @@ PCL_ADD_EXECUTABLE(
     ${INCS})
 
 target_link_libraries("${EXE_NAME}" ${QTX}::Widgets ${QTX}::OpenGL ${OPENGL_LIBRARIES} ${BOOST_LIBRARIES} pcl_common pcl_io pcl_filters)
+if (${QTX} MATCHES "Qt6")
+  target_link_libraries("${EXE_NAME}" ${QTX}::OpenGLWidgets)
+endif()
 
 PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSYS_NAME}/${SUBSUBSYS_NAME}" ${INCS})
 PCL_MAKE_PKGCONFIG(${EXE_NAME} COMPONENT ${SUBSUBSYS_NAME} DESC ${SUBSUBSYS_DESC})

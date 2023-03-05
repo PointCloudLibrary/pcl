@@ -1,6 +1,6 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <iostream>
-#include <pcl/io/io.h>
+#include <pcl/common/io.h>
 #include <pcl/io/pcd_io.h>
     
 int user_data;

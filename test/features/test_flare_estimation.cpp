@@ -62,7 +62,7 @@ TEST (PCL, FLARELocalReferenceFrameEstimation)
   pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal> ());
   pcl::PointCloud<pcl::ReferenceFrame> bunny_LRF;
 
-  const float mesh_res = 0.005f;
+  constexpr float mesh_res = 0.005f;
 
   // Compute normals
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
@@ -159,13 +159,13 @@ main (int argc, char** argv)
   tree->setInputCloud (cloud);
 
   //create and set sampled point cloud for computation of X axis
-  const float sampling_perc = 0.2f;
-  const float sampling_incr = 1.0f / sampling_perc;
+  constexpr float sampling_perc = 0.2f;
+  constexpr float sampling_incr = 1.0f / sampling_perc;
 
   sampled_cloud.reset (new pcl::PointCloud<pcl::PointXYZ> ());
 
   pcl::Indices sampled_indices;
-  for (float sa = 0.0f; sa < (float)cloud->size (); sa += sampling_incr)
+  for (float sa = 0.0f; sa < static_cast<float>(cloud->size ()); sa += sampling_incr)
     sampled_indices.push_back (static_cast<int> (sa));
   copyPointCloud (*cloud, sampled_indices, *sampled_cloud);
 

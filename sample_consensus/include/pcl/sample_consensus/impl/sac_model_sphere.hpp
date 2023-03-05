@@ -399,20 +399,20 @@ pcl::SampleConsensusModelSphere<PointT>::projectPoints (
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the sphere
-    for (std::size_t i = 0; i < inliers.size (); ++i)
+    for (const auto& inlier : inliers)
     {
       // what i have:
       // P : Sample Point
-      const Eigen::Vector3d P (input_->points[inliers[i]].x, input_->points[inliers[i]].y, input_->points[inliers[i]].z);
+      const Eigen::Vector3d P (input_->points[inlier].x, input_->points[inlier].y, input_->points[inlier].z);
 
       const Eigen::Vector3d direction = (P - C).normalized();
 
       // K : Point on Sphere
       const Eigen::Vector3d K = C + r * direction;
 
-      projected_points.points[inliers[i]].x = static_cast<float> (K[0]);
-      projected_points.points[inliers[i]].y = static_cast<float> (K[1]);
-      projected_points.points[inliers[i]].z = static_cast<float> (K[2]);
+      projected_points.points[inlier].x = static_cast<float> (K[0]);
+      projected_points.points[inlier].y = static_cast<float> (K[1]);
+      projected_points.points[inlier].z = static_cast<float> (K[2]);
     }
   }
   else

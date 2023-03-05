@@ -112,7 +112,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::calculateCombinedCovar (con
   }
   if (count > 0)
   {
-    float norm = 1.0 / float (count);
+    float norm = 1.0 / static_cast<float>(count);
     coefficients[ 0] *= norm;
     coefficients[ 1] *= norm;
     coefficients[ 2] *= norm;

@@ -148,12 +148,12 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::calculateNormalCovar (const
   }
   if (count > 0)
   {
-    norm2 = _mm_set1_ps (float(count));
+    norm2 = _mm_set1_ps (static_cast<float>(count));
     vec1 = _mm_div_ps (vec1, norm2);
     vec2 = _mm_div_ps (vec2, norm2);
     _mm_store_ps (coefficients, vec1);
     _mm_store_ps (coefficients + 4, vec2);
-    coefficients [7] = zz / float(count);
+    coefficients [7] = zz / static_cast<float>(count);
   }
   else
     std::fill_n(coefficients, 8, 0);
@@ -504,7 +504,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
   Eigen::Matrix3f nnT;
   Eigen::Matrix3f NNT;
   Eigen::Vector3f NNTp;
-  const unsigned max_iterations = 10;
+  constexpr unsigned max_iterations = 10;
 #pragma omp parallel for \
   default(none) \
   shared(corners) \

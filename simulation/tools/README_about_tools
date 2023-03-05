@@ -18,6 +18,6 @@ status : reads obj, creates window, use keyboard to drive around environment
 was    : range_performance_test.cpp
 
 4. sim_test_simple
-purpose: similar code to #3 but has a 2x2 grid each containing 640x480 windows, but operates as #1. press 'v' to capture a cloud to file (only works properly if 2x2 canged to 1x1)
+purpose: similar code to #3 but has a 2x2 grid each containing 640x480 windows, but operates as #1. press 'v' to capture a cloud to file (only works properly if 2x2 changed to 1x1)
 status : reads obj, creates window, use keyboard to drive around environment
 was    : range_test_v2.cpp

@@ -505,7 +505,7 @@ pcl::SupervoxelClustering<PointT>::getSupervoxelAdjacencyList (VoxelAdjacencyLis
       if (edge_added)
       {
         VoxelData centroid_data = (sv_itr)->getCentroid ();
-        //Find the neighbhor with this label
+        //Find the neighbor with this label
         VoxelData neighb_centroid_data;
         
         for (typename HelperListT::const_iterator neighb_itr = supervoxel_helpers_.cbegin (); neighb_itr != supervoxel_helpers_.cend (); ++neighb_itr)

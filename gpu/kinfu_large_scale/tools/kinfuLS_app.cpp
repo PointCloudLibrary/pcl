@@ -56,7 +56,6 @@ Work in progress: patch by Marco (AUG,19th 2012)
 #include <pcl/console/parse.h>
 
 #include <boost/filesystem.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp> // for microsec_clock::local_time
 
 #include <pcl/gpu/kinfu_large_scale/kinfu.h>
 #include <pcl/gpu/kinfu_large_scale/raycaster.h>
@@ -151,24 +150,24 @@ std::vector<std::string> getPcdFilesInDir(const std::string& directory)
 struct SampledScopeTime : public StopWatch
 {          
   enum { EACH = 33 };
-  SampledScopeTime(int& time_ms) : time_ms_(time_ms) {}
+  SampledScopeTime(double& time_s) : time_s_(time_s) {}
   ~SampledScopeTime()
   {
     static int i_ = 0;
-    static boost::posix_time::ptime starttime_ = boost::posix_time::microsec_clock::local_time();
-    time_ms_ += getTime ();
+    static double starttime_ = pcl::getTime();
+    time_s_ += getTime ();
     if (i_ % EACH == 0 && i_)
     {
-      boost::posix_time::ptime endtime_ = boost::posix_time::microsec_clock::local_time();
-      std::cout << "Average frame time = " << time_ms_ / EACH << "ms ( " << 1000.f * EACH / time_ms_ << "fps )"
-           << "( real: " << 1000.f * EACH / (endtime_-starttime_).total_milliseconds() << "fps )"  << std::endl;
-      time_ms_ = 0;
+      const auto endtime_ = pcl::getTime();
+      std::cout << "Average frame time = " << time_s_ / EACH << "ms ( " << EACH / time_s_ << "fps )"
+           << "( real: " << EACH / (endtime_-starttime_) << "fps )"  << std::endl;
+      time_s_ = 0;
       starttime_ = endtime_;
     }
     ++i_;
   }
 private:    
-  int& time_ms_;    
+  double& time_s_;    
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -701,7 +700,7 @@ struct KinFuLSApp
   enum { PCD_BIN = 1, PCD_ASCII = 2, PLY = 3, MESH_PLY = 7, MESH_VTK = 8 };
 
   KinFuLSApp(pcl::Grabber& source, float vsz, float shiftDistance, int snapshotRate) : exit_ (false), scan_ (false), scan_mesh_(false), scan_volume_ (false), independent_camera_ (false),
-          registration_ (false), integrate_colors_ (false), pcd_source_ (false), focal_length_(-1.f), capture_ (source), was_lost_(false), time_ms_ (0)
+          registration_ (false), integrate_colors_ (false), pcd_source_ (false), focal_length_(-1.f), capture_ (source), was_lost_(false), time_s_ (0)
   {    
     //Init Kinfu Tracker
     Eigen::Vector3f volume_size = Vector3f::Constant (vsz/*meters*/);    
@@ -790,7 +789,7 @@ struct KinFuLSApp
   {
     if(registration_)
     {
-      const int max_color_integration_weight = 2;
+      constexpr int max_color_integration_weight = 2;
       kinfu_->initColorIntegration(max_color_integration_weight);
       integrate_colors_ = true;      
     }    
@@ -829,7 +828,7 @@ struct KinFuLSApp
         image_view_.colors_device_.upload (rgb24.data, rgb24.step, rgb24.rows, rgb24.cols);
 
       {
-        SampledScopeTime fps(time_ms_);
+        SampledScopeTime fps(time_s_);
 
         //run kinfu algorithm
         if (integrate_colors_)
@@ -1143,8 +1142,8 @@ struct KinFuLSApp
     std::cout << "   Esc   : exit" << std::endl;
     std::cout << "    T    : take cloud" << std::endl;
     std::cout << "    A    : take mesh" << std::endl;
-    std::cout << "    M    : toggle cloud exctraction mode" << std::endl;
-    std::cout << "    N    : toggle normals exctraction" << std::endl;
+    std::cout << "    M    : toggle cloud extraction mode" << std::endl;
+    std::cout << "    N    : toggle normals extraction" << std::endl;
     std::cout << "    I    : toggle independent camera mode" << std::endl;
     std::cout << "    B    : toggle volume bounds" << std::endl;
     std::cout << "    *    : toggle scene view painting ( requires registration mode )" << std::endl;
@@ -1198,7 +1197,7 @@ struct KinFuLSApp
   
   bool was_lost_;
 
-  int time_ms_;
+  double time_s_;
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   static void

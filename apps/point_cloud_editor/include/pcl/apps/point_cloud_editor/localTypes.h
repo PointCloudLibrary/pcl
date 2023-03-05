@@ -167,25 +167,25 @@ struct IncIndex
 /// A helpful const representing the number of elements in our vectors.
 /// This is used for all operations that require the copying of the vector.
 /// Although this is used in a fairly generic way, the display requires 3D.
-const unsigned int XYZ_SIZE = 3;
+constexpr unsigned int XYZ_SIZE = 3;
 
 /// A helpful const representing the number of elements in each row/col in
 /// our matrices. This is used for all operations that require the copying of
 /// the matrix.
-const unsigned int MATRIX_SIZE_DIM = 4;
+constexpr unsigned int MATRIX_SIZE_DIM = 4;
 
 /// A helpful const representing the number of elements in our matrices.
 /// This is used for all operations that require the copying of the matrix.
-const unsigned int MATRIX_SIZE = MATRIX_SIZE_DIM * MATRIX_SIZE_DIM;
+constexpr unsigned int MATRIX_SIZE = MATRIX_SIZE_DIM * MATRIX_SIZE_DIM;
 
 /// The default window width
-const unsigned int WINDOW_WIDTH = 1200;
+constexpr unsigned int WINDOW_WIDTH = 1200;
 /// The default window height
-const unsigned int WINDOW_HEIGHT = 1000;
+constexpr unsigned int WINDOW_HEIGHT = 1000;
 
 /// The default z translation used to push the world origin in front of the
 /// display
-const float DISPLAY_Z_TRANSLATION = -2.0f;
+constexpr float DISPLAY_Z_TRANSLATION = -2.0f;
 
 /// The radius of the trackball given as a percentage of the screen width
-const float TRACKBALL_RADIUS_SCALE = 0.4f;
+constexpr float TRACKBALL_RADIUS_SCALE = 0.4f;

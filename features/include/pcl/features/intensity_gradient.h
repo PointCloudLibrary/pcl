@@ -90,7 +90,7 @@ namespace pcl
 
       /** \brief Estimate the intensity gradient around a given point based on its spatial neighborhood of points
         * \param cloud a point cloud dataset containing XYZI coordinates (Cartesian coordinates + intensity)
-        * \param indices the indices of the neighoring points in the dataset
+        * \param indices the indices of the neighboring points in the dataset
         * \param point the 3D Cartesian coordinates of the point at which to estimate the gradient
         * \param mean_intensity
         * \param normal the 3D surface normal of the given point

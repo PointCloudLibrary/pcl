@@ -71,7 +71,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::initCompute()
   pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
       initCompute();
 
-  // set the threshold values with respect to keypoint charactersitics
+  // set the threshold values with respect to keypoint characteristics
   max_pair_diff_ = delta_ * 1.414f;      // diff between 2 points of delta_ accuracy
   coincidation_limit_ = delta_ * 2.828f; // diff between diff of 2 points
   max_edge_diff_ =
@@ -95,7 +95,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::initCompute()
   // generate a subset of indices of size ransac_iterations_ on which to evaluate
   // candidates on
   std::size_t nr_indices = indices_->size();
-  if (nr_indices < std::size_t(ransac_iterations_))
+  if (nr_indices < static_cast<std::size_t>(ransac_iterations_))
     indices_validation_ = indices_;
   else
     for (int i = 0; i < ransac_iterations_; i++)

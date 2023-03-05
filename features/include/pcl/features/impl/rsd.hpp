@@ -124,8 +124,8 @@ pcl::computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud
       Amaxt_d += p_max * f;
     }
   }
-  float min_radius = Amint_Amin == 0.0f ? float (plane_radius) : float (std::min (Amint_d/Amint_Amin, plane_radius));
-  float max_radius = Amaxt_Amax == 0.0f ? float (plane_radius) : float (std::min (Amaxt_d/Amaxt_Amax, plane_radius));
+  float min_radius = Amint_Amin == 0.0f ? static_cast<float>(plane_radius) : static_cast<float>(std::min (Amint_d/Amint_Amin, plane_radius));
+  float max_radius = Amaxt_Amax == 0.0f ? static_cast<float>(plane_radius) : static_cast<float>(std::min (Amaxt_d/Amaxt_Amax, plane_radius));
 
   // Small correction of the systematic error of the estimation (based on analysis with nr_subdiv_ = 5)
   min_radius *= 1.1f;
@@ -223,8 +223,8 @@ pcl::computeRSD (const pcl::PointCloud<PointNT> &normals,
       Amaxt_d += p_max * f;
     }
   }
-  float min_radius = Amint_Amin == 0.0f ? float (plane_radius) : float (std::min (Amint_d/Amint_Amin, plane_radius));
-  float max_radius = Amaxt_Amax == 0.0f ? float (plane_radius) : float (std::min (Amaxt_d/Amaxt_Amax, plane_radius));
+  float min_radius = Amint_Amin == 0.0f ? static_cast<float>(plane_radius) : static_cast<float>(std::min (Amint_d/Amint_Amin, plane_radius));
+  float max_radius = Amaxt_Amax == 0.0f ? static_cast<float>(plane_radius) : static_cast<float>(std::min (Amaxt_d/Amaxt_Amax, plane_radius));
 
   // Small correction of the systematic error of the estimation (based on analysis with nr_subdiv_ = 5)
   min_radius *= 1.1f;

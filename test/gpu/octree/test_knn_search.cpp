@@ -81,8 +81,8 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
     data.shared_radius = data.cube_size/30.f;
     data.printParams();
 
-    const float host_octree_resolution = 25.f;
-    const int k = 1; // only this is supported
+    constexpr float host_octree_resolution = 25.f;
+    constexpr int k = 1; // only this is supported
 
     //generate
     data();

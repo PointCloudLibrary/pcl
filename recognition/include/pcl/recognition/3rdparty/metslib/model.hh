@@ -36,6 +36,8 @@
 #define METS_MODEL_HH_
 
 namespace mets {
+// Exempt third-party code from clang-tidy
+// NOLINTBEGIN
 
   /// @brief Type of the objective/cost function.
   ///
@@ -363,7 +365,7 @@ namespace mets {
     /// (if we moved a to b we can declare tabu moving b to a).
     virtual mana_move*
     opposite_of() const 
-    { return static_cast<mana_move*>(clone()); }
+    { return dynamic_cast<mana_move*>(clone()); }
     
     /// @brief Tell if this move equals another w.r.t. the tabu list
     /// management (for mets::simple_tabu_list)
@@ -394,13 +396,13 @@ namespace mets {
     gol_type
     evaluate(const mets::feasible_solution& s) const override
     { const auto& sol = 
-	static_cast<const permutation_problem&>(s);
+	dynamic_cast<const permutation_problem&>(s);
       return sol.cost_function() + sol.evaluate_swap(p1, p2); }
     
     /// @brief Virtual method that applies the move on a point
     void
     apply(mets::feasible_solution& s) const override
-    { auto& sol = static_cast<permutation_problem&>(s);
+    { auto& sol = dynamic_cast<permutation_problem&>(s);
       sol.apply_swap(p1, p2); }
             
     /// @brief Clones this move (so that the tabu list can store it)
@@ -656,7 +658,7 @@ namespace mets {
 
     /// @brief Dtor.
     ~swap_full_neighborhood() override { 
-      for(auto it = moves_m.begin(); 
+      for(auto it = moves_m.begin();
 	  it != moves_m.end(); ++it)
 	delete *it;
     }
@@ -681,7 +683,7 @@ namespace mets {
 
     /// @brief Dtor.
     ~invert_full_neighborhood() override { 
-      for(auto it = moves_m.begin(); 
+      for(auto it = moves_m.begin();
 	  it != moves_m.end(); ++it)
 	delete *it;
     }
@@ -711,7 +713,7 @@ namespace mets {
 		    const Tp r) const 
     { return l->operator==(*r); }
   };
-
+// NOLINTEND
 }
 
 //________________________________________________________________________
@@ -743,7 +745,7 @@ inline void
 mets::invert_subsequence::apply(mets::feasible_solution& s) const
 { 
   auto& sol = 
-    static_cast<mets::permutation_problem&>(s);
+    dynamic_cast<mets::permutation_problem&>(s);
   int size = static_cast<int>(sol.size());
   int top = p1 < p2 ? (p2-p1+1) : (size+p2-p1+1);
   for(int ii(0); ii!=top/2; ++ii)
@@ -760,7 +762,7 @@ inline mets::gol_type
 mets::invert_subsequence::evaluate(const mets::feasible_solution& s) const
 { 
   const auto& sol = 
-    static_cast<const mets::permutation_problem&>(s);
+    dynamic_cast<const mets::permutation_problem&>(s);
   int size = static_cast<int>(sol.size());
   int top = p1 < p2 ? (p2-p1+1) : (size+p2-p1+1);
   mets::gol_type eval = 0.0;

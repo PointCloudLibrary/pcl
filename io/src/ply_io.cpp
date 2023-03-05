@@ -70,16 +70,12 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
     cloud_->point_step = 0;
     cloud_->row_step = 0;
     vertex_count_ = 0;
-    return (std::tuple<std::function<void ()>, std::function<void ()> > (
-              [this] { vertexBeginCallback (); },
-              [this] { vertexEndCallback (); }));
+    return {[this] { vertexBeginCallback(); }, [this] { vertexEndCallback(); }};
   }
   if ((element_name == "face") && polygons_)
   {
     polygons_->reserve (count);
-    return (std::tuple<std::function<void ()>, std::function<void ()> > (
-            [this] { faceBeginCallback (); },
-            [this] { faceEndCallback (); }));
+    return {[this] { faceBeginCallback(); }, [this] { faceEndCallback(); }};
   }
   if (element_name == "camera")
   {
@@ -89,9 +85,7 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
   if (element_name == "range_grid")
   {
     range_grid_->reserve (count);
-    return (std::tuple<std::function<void ()>, std::function<void ()> > (
-              [this] { rangeGridBeginCallback (); },
-              [this] { rangeGridEndCallback (); }));
+    return {[this] { rangeGridBeginCallback(); }, [this] { rangeGridEndCallback(); }};
   }
   return {};
 }
@@ -100,7 +94,7 @@ bool
 pcl::PLYReader::endHeaderCallback ()
 {
   cloud_->data.resize (static_cast<std::size_t>(cloud_->point_step) * cloud_->width * cloud_->height);
-  return (true);
+  return true;
 }
 
 template<typename Scalar> void
@@ -115,23 +109,22 @@ pcl::PLYReader::appendScalarProperty (const std::string& name, const std::size_t
   cloud_->point_step += static_cast<std::uint32_t> (pcl::getFieldSize (pcl::traits::asEnum<Scalar>::value) * size);
 }
 
-void
+bool
 pcl::PLYReader::amendProperty (const std::string& old_name, const std::string& new_name, std::uint8_t new_datatype)
 {
-  auto finder = cloud_->fields.rbegin ();
-  for (; finder != cloud_->fields.rend (); ++finder)
-    if (finder->name == old_name)
-      break;
-  if (finder == cloud_->fields.rend ())
-  {
-      PCL_ERROR("[pcl::PLYReader::amendProperty] old_name '%s' was not found in cloud_->fields!\n",
-          old_name.c_str());
-      assert (false);
-      return;
+  const auto fieldIndex = pcl::getFieldIndex(*cloud_, old_name);
+  if (fieldIndex == -1) {
+    return false;
   }
-  finder->name = new_name;
-  if (new_datatype > 0 && new_datatype != finder->datatype)
-    finder->datatype = new_datatype;
+
+  auto& field = cloud_->fields[fieldIndex];
+
+  field.name = new_name;
+  
+  if (new_datatype > 0 && new_datatype != field.datatype)
+    field.datatype = new_datatype;
+
+  return true;
 }
 
 namespace pcl
@@ -213,7 +206,15 @@ namespace pcl
       }
       if (property_name == "alpha")
       {
-        amendProperty ("rgb", "rgba", pcl::PCLPointField::UINT32);
+        if (!amendProperty("rgb", "rgba", pcl::PCLPointField::UINT32))
+        {
+          PCL_ERROR("[pcl::PLYReader::scalarPropertyDefinitionCallback] 'rgb' was not "
+                    "found in cloud_->fields!,"
+                    " can't amend property '%s' to get new type 'rgba' \n",
+                    property_name.c_str());
+          return {};
+        }
+        
         return [this] (pcl::io::ply::uint8 alpha) { vertexAlphaCallback (alpha); };
       }
       if (property_name == "intensity")
@@ -372,16 +373,16 @@ pcl::PLYReader::vertexColorCallback (const std::string& color_name, pcl::io::ply
 {
   if ((color_name == "red") || (color_name == "diffuse_red"))
   {
-    r_ = std::int32_t (color);
+    r_ = static_cast<std::int32_t>(color);
     rgb_offset_before_ = vertex_offset_before_;
   }
   if ((color_name == "green") || (color_name == "diffuse_green"))
   {
-    g_ = std::int32_t (color);
+    g_ = static_cast<std::int32_t>(color);
   }
   if ((color_name == "blue") || (color_name == "diffuse_blue"))
   {
-    b_ = std::int32_t (color);
+    b_ = static_cast<std::int32_t>(color);
     std::int32_t rgb = r_ << 16 | g_ << 8 | b_;
     try
     {
@@ -402,7 +403,7 @@ pcl::PLYReader::vertexAlphaCallback (pcl::io::ply::uint8 alpha)
   // get anscient rgb value and store it in rgba
   rgba_ = cloud_->at<std::uint32_t>(vertex_count_, rgb_offset_before_);
   // append alpha
-  a_ = std::uint32_t (alpha);
+  a_ = static_cast<std::uint32_t>(alpha);
   rgba_ |= a_ << 24;
   // put rgba back
   cloud_->at<std::uint32_t>(vertex_count_, rgb_offset_before_) = rgba_;
@@ -640,7 +641,7 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
       }
       else
       {
-        const auto srcIdx = (*range_grid_)[r][0] * cloud_->point_step;
+        const std::size_t srcIdx = (*range_grid_)[r][0] * cloud_->point_step;
         if (srcIdx + cloud_->point_step > cloud_->data.size())
         {
           PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", srcIdx);
@@ -739,7 +740,7 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
       }
       else
       {
-        const auto srcIdx = (*range_grid_)[r][0] * cloud_->point_step;
+        const std::size_t srcIdx = (*range_grid_)[r][0] * cloud_->point_step;
         if (srcIdx + cloud_->point_step > cloud_->data.size())
         {
           PCL_ERROR ("[pcl::PLYReader::read] invalid data index (%lu)!\n", srcIdx);
@@ -1529,13 +1530,13 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
 
       {
         const auto& color = mesh.cloud.at<RGB>(i, mesh.cloud.fields[d].offset);
-        fs << int (color.r) << " " << int (color.g) << " " << int (color.b) << " ";
+        fs << static_cast<int>(color.r) << " " << static_cast<int>(color.g) << " " << static_cast<int>(color.b) << " ";
       }
       else if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::UINT32) &&
                (mesh.cloud.fields[d].name == "rgba"))
       {
         const auto& color = mesh.cloud.at<RGB>(i, mesh.cloud.fields[d].offset);
-        fs << int (color.r) << " " << int (color.g) << " " << int (color.b) << " " << int (color.a) << " ";
+        fs << static_cast<int>(color.r) << " " << static_cast<int>(color.g) << " " << static_cast<int>(color.b) << " " << static_cast<int>(color.a) << " ";
       }
       else if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
                 mesh.cloud.fields[d].name == "normal_x" ||

@@ -66,7 +66,11 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 , bounding_box_defined_(false)
 , max_objs_per_leaf_(0)
 {
-  assert(resolution > 0.0f);
+  if (resolution <= 0.0) {
+    PCL_THROW_EXCEPTION(InitFailedException,
+                        "[pcl::octree::OctreePointCloud::OctreePointCloud] Resolution "
+                            << resolution << " must be > 0!");
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -339,7 +343,12 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   PointT max_pt;
 
   // bounding box cannot be changed once the octree contains elements
-  assert(this->leaf_count_ == 0);
+  if (this->leaf_count_ != 0) {
+    PCL_ERROR("[pcl::octree::OctreePointCloud::defineBoundingBox] Leaf count (%lu) "
+              "must be 0\n",
+              this->leaf_count_);
+    return;
+  }
 
   pcl::getMinMax3D(*input_, min_pt, max_pt);
 
@@ -372,7 +381,12 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
                       const double max_z_arg)
 {
   // bounding box cannot be changed once the octree contains elements
-  assert(this->leaf_count_ == 0);
+  if (this->leaf_count_ != 0) {
+    PCL_ERROR("[pcl::octree::OctreePointCloud::defineBoundingBox] Leaf count (%lu) "
+              "must be 0\n",
+              this->leaf_count_);
+    return;
+  }
 
   min_x_ = std::min(min_x_arg, max_x_arg);
   min_y_ = std::min(min_y_arg, max_y_arg);
@@ -400,7 +414,12 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
                       const double max_z_arg)
 {
   // bounding box cannot be changed once the octree contains elements
-  assert(this->leaf_count_ == 0);
+  if (this->leaf_count_ != 0) {
+    PCL_ERROR("[pcl::octree::OctreePointCloud::defineBoundingBox] Leaf count (%lu) "
+              "must be 0\n",
+              this->leaf_count_);
+    return;
+  }
 
   min_x_ = std::min(0.0, max_x_arg);
   min_y_ = std::min(0.0, max_y_arg);
@@ -426,7 +445,12 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     defineBoundingBox(const double cubeLen_arg)
 {
   // bounding box cannot be changed once the octree contains elements
-  assert(this->leaf_count_ == 0);
+  if (this->leaf_count_ != 0) {
+    PCL_ERROR("[pcl::octree::OctreePointCloud::defineBoundingBox] Leaf count (%lu) "
+              "must be 0\n",
+              this->leaf_count_);
+    return;
+  }
 
   min_x_ = std::min(0.0, cubeLen_arg);
   min_y_ = std::min(0.0, cubeLen_arg);
@@ -475,7 +499,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     adoptBoundingBoxToPoint(const PointT& point_arg)
 {
 
-  const float minValue = std::numeric_limits<float>::epsilon();
+  constexpr float minValue = std::numeric_limits<float>::epsilon();
 
   // increase octree size until point fits into bounding box
   while (true) {
@@ -679,7 +703,7 @@ void
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::
     getKeyBitSize()
 {
-  const float minValue = std::numeric_limits<float>::epsilon();
+  constexpr float minValue = std::numeric_limits<float>::epsilon();
 
   // find maximum key values for x, y, z
   const auto max_key_x =

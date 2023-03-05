@@ -249,7 +249,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   int max_vertex_id = 0;
   FORALLvertices
   {
-    if (vertex->id + 1 > unsigned (max_vertex_id))
+    if (vertex->id + 1 > static_cast<unsigned>(max_vertex_id))
       max_vertex_id = vertex->id + 1;
   }
 

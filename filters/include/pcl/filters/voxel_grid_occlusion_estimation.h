@@ -179,7 +179,7 @@ namespace pcl
                           const Eigen::Vector4f& direction);
 
       /** \brief Returns the state of the target voxel (0 = visible, 1 = occupied)
-        * unsing a ray traversal algorithm.
+        * using a ray traversal algorithm.
         * \param[in] target_voxel The target voxel in the voxel grid with coordinate (i, j, k).
         * \param[in] origin The sensor origin.
         * \param[in] direction The sensor orientation
@@ -193,7 +193,7 @@ namespace pcl
                     const float t_min);
 
       /** \brief Returns the state of the target voxel (0 = visible, 1 = occupied) and
-        * the voxels penetrated by the ray unsing a ray traversal algorithm.
+        * the voxels penetrated by the ray using a ray traversal algorithm.
         * \param[out] out_ray The voxels penetrated by the ray in (i, j, k) coordinates
         * \param[in] target_voxel The target voxel in the voxel grid with coordinate (i, j, k).
         * \param[in] origin The sensor origin.
@@ -227,9 +227,9 @@ namespace pcl
       inline Eigen::Vector3i
       getGridCoordinatesRound (float x, float y, float z) 
       {
-        return Eigen::Vector3i (static_cast<int> (round (x * inverse_leaf_size_[0])), 
-                                static_cast<int> (round (y * inverse_leaf_size_[1])), 
-                                static_cast<int> (round (z * inverse_leaf_size_[2])));
+        return {static_cast<int> (round (x * inverse_leaf_size_[0])),
+                                static_cast<int> (round (y * inverse_leaf_size_[1])),
+                                static_cast<int> (round (z * inverse_leaf_size_[2]))};
       }
 
       // initialization flag

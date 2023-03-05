@@ -476,7 +476,7 @@ TEST (PCL, GFPFH)
 
   PointCloud<PointXYZL>::Ptr cloud (new PointCloud<PointXYZL>());
 
-  const unsigned num_classes = 3;
+  constexpr unsigned num_classes = 3;
 
   // Build a cubic shape with a hole and changing labels.
   for (int z = -10; z < 10; ++z)
@@ -507,7 +507,7 @@ TEST (PCL, GFPFH)
   const float ref_values[] = { 1877, 6375, 5361, 14393, 6674, 2471, 2248, 2753, 3117, 4585, 14388, 32407, 15122, 3061, 3202, 794 };
 
   EXPECT_EQ (descriptor.size (), 1);
-  for (std::size_t i = 0; i < std::size_t (descriptor[0].descriptorSize ()); ++i)
+  for (std::size_t i = 0; i < static_cast<std::size_t>(descriptor[0].descriptorSize ()); ++i)
   {
     EXPECT_EQ (descriptor[0].histogram[i], ref_values[i]);
   }

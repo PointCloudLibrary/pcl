@@ -45,7 +45,7 @@
 #include <array>
 
 using Array4size_t = Eigen::Array<std::size_t, 4, 1>;
-
+// NOLINTBEGIN(readability-container-data-pointer)
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
@@ -406,7 +406,7 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   }
 
   // Fourth pass: compute centroids, insert them into their final position
-  output.width = std::uint32_t (total);
+  output.width = static_cast<std::uint32_t>(total);
   output.row_step = output.point_step * output.width;
   output.data.resize (output.width * output.point_step);
 
@@ -525,7 +525,7 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     ++index;
   }
 }
-
+// NOLINTEND(readability-container-data-pointer)
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>

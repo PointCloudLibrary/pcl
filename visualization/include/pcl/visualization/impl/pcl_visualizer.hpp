@@ -243,7 +243,7 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
   points->SetNumberOfPoints (nr_points);
 
   // Get a pointer to the beginning of the data array
-  float *data = (static_cast<vtkFloatArray*> (points->GetData ()))->GetPointer (0);
+  float *data = (dynamic_cast<vtkFloatArray*> (points->GetData ()))->GetPointer (0);
 
   // Set the points
   vtkIdType ptr = 0;
@@ -618,7 +618,7 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
 
   vtkSmartPointer<vtkSphereSource> data = vtkSmartPointer<vtkSphereSource>::New ();
   data->SetRadius (radius);
-  data->SetCenter (double (center.x), double (center.y), double (center.z));
+  data->SetCenter (static_cast<double>(center.x), static_cast<double>(center.y), static_cast<double>(center.z));
   data->SetPhiResolution (10);
   data->SetThetaResolution (10);
   data->LatLongTessellationOff ();
@@ -896,7 +896,7 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
   // If the cloud is organized, then distribute the normal step in both directions
   if (cloud->isOrganized () && normals->isOrganized ())
   {
-    auto point_step = static_cast<vtkIdType> (sqrt (double (level)));
+    auto point_step = static_cast<vtkIdType> (sqrt (static_cast<double>(level)));
     nr_normals = (static_cast<vtkIdType> ((cloud->width - 1)/ point_step) + 1) *
                  (static_cast<vtkIdType> ((cloud->height - 1) / point_step) + 1);
     pts = new float[2 * nr_normals * 3];
@@ -1216,7 +1216,7 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
     overwrite = false; // Correspondences doesn't exist, add them instead of updating them
   }
 
-  int n_corr = int (correspondences.size () / nth);
+  int n_corr = static_cast<int>(correspondences.size () / nth);
   vtkSmartPointer<vtkPolyData> line_data = vtkSmartPointer<vtkPolyData>::New ();
 
   // Prepare colors
@@ -1668,7 +1668,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
   vtkSmartPointer<vtkLODActor> actor;
 
   // Get a pointer to the beginning of the data array
-  float *data = static_cast<vtkFloatArray*> (points->GetData ())->GetPointer (0);
+  float *data = dynamic_cast<vtkFloatArray*> (points->GetData ())->GetPointer (0);
 
   vtkIdType ptr = 0;
   std::vector<int> lookup;
@@ -1787,7 +1787,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
     return (false);
 
   // Get the current poly data
-  vtkSmartPointer<vtkPolyData> polydata = static_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->GetInput ();
+  vtkSmartPointer<vtkPolyData> polydata = dynamic_cast<vtkPolyData*>(am_it->second.actor->GetMapper ()->GetInput ());
   if (!polydata)
     return (false);
   vtkSmartPointer<vtkCellArray> cells = polydata->GetPolys ();
@@ -1799,7 +1799,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   points->SetNumberOfPoints (nr_points);
 
   // Get a pointer to the beginning of the data array
-  float *data = (static_cast<vtkFloatArray*> (points->GetData ()))->GetPointer (0);
+  float *data = (dynamic_cast<vtkFloatArray*> (points->GetData ()))->GetPointer (0);
 
   int ptr = 0;
   std::vector<int> lookup;

@@ -55,13 +55,13 @@ PointT makeRandomPoint()
 template <>
 pcl::PointXYZ makeRandomPoint()
 {
-  return {float (rand()), float (rand()), float (rand())};
+  return {static_cast<float>(rand()), static_cast<float>(rand()), static_cast<float>(rand())};
 }
 
 template <>
 pcl::PointXYZI makeRandomPoint()
 {
-  return {float (rand()), float (rand()), float (rand()), float (rand())};
+  return {static_cast<float>(rand()), static_cast<float>(rand()), static_cast<float>(rand()), static_cast<float>(rand())};
 }
 
 template <typename PointT, typename... Args>
@@ -79,7 +79,7 @@ pcl::PointXYZ makePointWithParams(float x, float y, float z)
 template <>
 pcl::PointXYZI makePointWithParams(float x, float y, float z)
 {
-  return {x, y, z, float (rand())};
+  return {x, y, z, static_cast<float>(rand())};
 }
 
 }

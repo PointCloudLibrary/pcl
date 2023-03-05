@@ -48,6 +48,10 @@
 template <typename PointInT> void
 pcl::OrganizedFastMesh<PointInT>::performReconstruction (pcl::PolygonMesh &output)
 {
+  if (!input_->isOrganized()) {
+    PCL_ERROR("[OrganizedFastMesh::performReconstruction] Input point cloud must be organized but isn't!\n");
+    return;
+  }
   reconstructPolygons (output.polygons);
 
   // Get the field names
@@ -69,6 +73,10 @@ pcl::OrganizedFastMesh<PointInT>::performReconstruction (pcl::PolygonMesh &outpu
 template <typename PointInT> void
 pcl::OrganizedFastMesh<PointInT>::performReconstruction (std::vector<pcl::Vertices> &polygons)
 {
+  if (!input_->isOrganized()) {
+    PCL_ERROR("[OrganizedFastMesh::performReconstruction] Input point cloud must be organized but isn't!\n");
+    return;
+  }
   reconstructPolygons (polygons);
 }
 

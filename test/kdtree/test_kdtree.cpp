@@ -242,7 +242,7 @@ TEST (PCL, KdTreeFLANN_setPointRepresentation)
   MyPoint p (50.0f, 50.0f, 50.0f);
   
   // Find k nearest neighbors
-  const int k = 10;
+  constexpr int k = 10;
   pcl::Indices k_indices (k);
   std::vector<float> k_distances (k);
   kdtree.nearestKSearch (p, k, k_indices, k_distances);
@@ -310,7 +310,7 @@ TEST (PCL, KdTreeFLANN_32_vs_64_bit)
   for (std::size_t vec_i = 0; vec_i < nn_indices_vector.size (); ++vec_i)
   {
     char str[512];
-    sprintf (str, "point_%d", int (vec_i));
+    sprintf (str, "point_%d", static_cast<int>(vec_i));
     boost::optional<boost::property_tree::ptree&> tree = xml_property_tree.get_child_optional (str);
     if (!tree)
       FAIL ();
@@ -320,7 +320,7 @@ TEST (PCL, KdTreeFLANN_32_vs_64_bit)
 
     for (std::size_t n_i = 0; n_i < nn_indices_vector[vec_i].size (); ++n_i)
     {
-      sprintf (str, "nn_%d", int (n_i));
+      sprintf (str, "nn_%d", static_cast<int>(n_i));
       int neighbor_index = tree.get ().get<int> (str);
       EXPECT_EQ (neighbor_index, nn_indices_vector[vec_i][n_i]);
     }

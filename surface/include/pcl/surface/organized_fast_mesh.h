@@ -120,10 +120,7 @@ namespace pcl
         max_edge_length_a_ = a;
         max_edge_length_b_ = b;
         max_edge_length_c_ = c;
-        if ((max_edge_length_a_ + max_edge_length_b_ + max_edge_length_c_) > std::numeric_limits<float>::min())
-          max_edge_length_set_ = true;
-        else
-          max_edge_length_set_ = false;
+        max_edge_length_set_ = (max_edge_length_a_ + max_edge_length_b_ + max_edge_length_c_) > std::numeric_limits<float>::min();
       };
 
       inline void

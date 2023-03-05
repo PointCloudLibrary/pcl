@@ -118,8 +118,8 @@ maskForegroundPoints (const PointCloudXYZRGBA::ConstPtr & input,
   }
 
   // Find the dominant plane between the specified near/far thresholds
-  const float distance_threshold = 0.02f;
-  const int max_iterations = 500;
+  constexpr float distance_threshold = 0.02f;
+  constexpr int max_iterations = 500;
   pcl::SACSegmentation<pcl::PointXYZRGBA> seg;
   seg.setOptimizeCoefficients (true);
   seg.setModelType (pcl::SACMODEL_PLANE);

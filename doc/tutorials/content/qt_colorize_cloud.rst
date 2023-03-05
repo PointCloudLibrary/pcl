@@ -82,7 +82,7 @@ pclviewer.cpp
    :language: cpp
    :lines: 8-12
 
-We initialize the members of our class to default values (note that theses values should match with the UI buttons ticked)
+We initialize the members of our class to default values (note that these values should match with the UI buttons ticked)
 
 .. literalinclude:: sources/qt_colorize_cloud/pclviewer.cpp
    :language: cpp

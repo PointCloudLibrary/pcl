@@ -17,12 +17,15 @@ namespace pcl
     std::uint8_t datatype = 0;
     uindex_t count = 0;
 
-    enum PointFieldTypes { INT8 = traits::asEnum_v<std::int8_t>,
+    enum PointFieldTypes { BOOL = traits::asEnum_v<bool>,
+                           INT8 = traits::asEnum_v<std::int8_t>,
                            UINT8 = traits::asEnum_v<std::uint8_t>,
                            INT16 = traits::asEnum_v<std::int16_t>,
                            UINT16 = traits::asEnum_v<std::uint16_t>,
                            INT32 = traits::asEnum_v<std::int32_t>,
                            UINT32 = traits::asEnum_v<std::uint32_t>,
+                           INT64 = traits::asEnum_v<std::int64_t>,
+                           UINT64 = traits::asEnum_v<std::uint64_t>,
                            FLOAT32 = traits::asEnum_v<float>,
                            FLOAT64 = traits::asEnum_v<double>};
 

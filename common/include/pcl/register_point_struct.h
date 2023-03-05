@@ -100,7 +100,7 @@ namespace pcl
     plus (std::remove_const_t<T> &l, const T &r)
     {
       using type = std::remove_all_extents_t<T>;
-      static const std::uint32_t count = sizeof (T) / sizeof (type);
+      constexpr std::uint32_t count = sizeof(T) / sizeof(type);
       for (std::uint32_t i = 0; i < count; ++i)
         l[i] += r[i];
     }
@@ -117,7 +117,7 @@ namespace pcl
     plusscalar (T1 &p, const T2 &scalar)
     {
       using type = std::remove_all_extents_t<T1>;
-      static const std::uint32_t count = sizeof (T1) / sizeof (type);
+      constexpr std::uint32_t count = sizeof(T1) / sizeof(type);
       for (std::uint32_t i = 0; i < count; ++i)
         p[i] += scalar;
     }
@@ -134,7 +134,7 @@ namespace pcl
     minus (std::remove_const_t<T> &l, const T &r)
     {
       using type = std::remove_all_extents_t<T>;
-      static const std::uint32_t count = sizeof (T) / sizeof (type);
+      constexpr std::uint32_t count = sizeof(T) / sizeof(type);
       for (std::uint32_t i = 0; i < count; ++i)
         l[i] -= r[i];
     }
@@ -151,7 +151,7 @@ namespace pcl
     minusscalar (T1 &p, const T2 &scalar)
     {
       using type = std::remove_all_extents_t<T1>;
-      static const std::uint32_t count = sizeof (T1) / sizeof (type);
+      constexpr std::uint32_t count = sizeof(T1) / sizeof(type);
       for (std::uint32_t i = 0; i < count; ++i)
         p[i] -= scalar;
     }
@@ -168,7 +168,7 @@ namespace pcl
     mulscalar (T1 &p, const T2 &scalar)
     {
       using type = std::remove_all_extents_t<T1>;
-      static const std::uint32_t count = sizeof (T1) / sizeof (type);
+      constexpr std::uint32_t count = sizeof(T1) / sizeof(type);
       for (std::uint32_t i = 0; i < count; ++i)
         p[i] *= scalar;
     }
@@ -185,7 +185,7 @@ namespace pcl
     divscalar (T1 &p, const T2 &scalar)
     {
       using type = std::remove_all_extents_t<T1>;
-      static const std::uint32_t count = sizeof (T1) / sizeof (type);
+      constexpr std::uint32_t count = sizeof (T1) / sizeof (type);
       for (std::uint32_t i = 0; i < count; ++i)
         p[i] /= scalar;
     }
@@ -202,7 +202,7 @@ namespace pcl
     divscalar2 (ArrayT &p, const ScalarT &scalar)
     {
       using type = std::remove_all_extents_t<ArrayT>;
-      static const std::uint32_t count = sizeof (ArrayT) / sizeof (type);
+      constexpr std::uint32_t count = sizeof (ArrayT) / sizeof (type);
       for (std::uint32_t i = 0; i < count; ++i)
         p[i] = scalar / p[i];
     }

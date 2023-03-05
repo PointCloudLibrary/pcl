@@ -159,9 +159,9 @@ TEST (SampleConsensusModelLine, SampleValidationPointsEqual)
   // being printed a 1000 times without any chance of success.
   // The order is chosen such that with a known, fixed rng-state/-seed all
   // validation steps are actually exercised.
-  const pcl::index_t firstKnownEqualPoint = 0;
-  const pcl::index_t secondKnownEqualPoint = 1;
-  const pcl::index_t cheatPointIndex = 2;
+  constexpr pcl::index_t firstKnownEqualPoint = 0;
+  constexpr pcl::index_t secondKnownEqualPoint = 1;
+  constexpr pcl::index_t cheatPointIndex = 2;
 
   cloud[firstKnownEqualPoint].getVector3fMap () <<  0.1f,  0.0f,  0.0f;
   cloud[secondKnownEqualPoint].getVector3fMap () <<  0.1f,  0.0f,  0.0f;
@@ -258,7 +258,7 @@ TEST (SampleConsensusModelParallelLine, RANSAC)
   cloud[15].getVector3fMap () << -1.05f,  5.01f,  5.0f;
 
   // Create a shared line model pointer directly
-  const double eps = 0.1; //angle eps in radians
+  constexpr double eps = 0.1; // angle eps in radians
   const Eigen::Vector3f axis (0, 0, 1);
   SampleConsensusModelParallelLinePtr model (new SampleConsensusModelParallelLine<PointXYZ> (cloud.makeShared ()));
   model->setAxis (axis);

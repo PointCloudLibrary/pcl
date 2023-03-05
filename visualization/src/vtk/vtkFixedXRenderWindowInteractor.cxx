@@ -794,7 +794,7 @@ void vtkXRenderWindowInteractor::DispatchEvent(XEvent* event)
       this->InvokeEvent(vtkCommand::DropFilesEvent, filePaths);
       XFree(data);
 
-      // Inform the source the the drag and drop operation was sucessfull
+      // Inform the source the the drag and drop operation was successful
       XEvent reply;
       memset(&reply, 0, sizeof(reply));
 

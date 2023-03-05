@@ -54,7 +54,7 @@ template <typename PointT, typename FlannDistance>
 typename pcl::search::FlannSearch<PointT, FlannDistance>::IndexPtr
 pcl::search::FlannSearch<PointT, FlannDistance>::KdTreeIndexCreator::createIndex (MatrixConstPtr data)
 {
-  return (IndexPtr (new flann::KDTreeSingleIndex<FlannDistance> (*data,flann::KDTreeSingleIndexParams (max_leaf_size_))));
+  return (static_cast<IndexPtr> (new flann::KDTreeSingleIndex<FlannDistance> (*data,static_cast<flann::KDTreeSingleIndexParams> (max_leaf_size_))));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -62,7 +62,7 @@ template <typename PointT, typename FlannDistance>
 typename pcl::search::FlannSearch<PointT, FlannDistance>::IndexPtr
 pcl::search::FlannSearch<PointT, FlannDistance>::KMeansIndexCreator::createIndex (MatrixConstPtr data)
 {
-  return (IndexPtr (new flann::KMeansIndex<FlannDistance> (*data,flann::KMeansIndexParams ())));
+  return (static_cast<IndexPtr> (new flann::KMeansIndex<FlannDistance> (*data,flann::KMeansIndexParams ())));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -70,7 +70,7 @@ template <typename PointT, typename FlannDistance>
 typename pcl::search::FlannSearch<PointT, FlannDistance>::IndexPtr
 pcl::search::FlannSearch<PointT, FlannDistance>::KdTreeMultiIndexCreator::createIndex (MatrixConstPtr data)
 {
-  return (IndexPtr (new flann::KDTreeIndex<FlannDistance> (*data, flann::KDTreeIndexParams (trees_))));
+  return (static_cast<IndexPtr> (new flann::KDTreeIndex<FlannDistance> (*data, static_cast<flann::KDTreeIndexParams> (trees_))));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -126,7 +126,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::nearestKSearch (const PointT &p
     indices.resize (k,-1);
   if (dists.size() != static_cast<unsigned int> (k))
     dists.resize (k);
-  flann::Matrix<float> d (&dists[0],1,k);
+  flann::Matrix<float> d (dists.data(),1,k);
   int result = knn_search(*index_, m, indices, d, k, p);
 
   delete [] data;
@@ -383,12 +383,12 @@ pcl::search::FlannSearch<PointT, FlannDistance>::convertInputToFlannMatrix ()
     if (input_->is_dense && point_representation_->isTrivial ())
     {
       // const cast is evil, but flann won't change the data
-      input_flann_ = MatrixPtr (new flann::Matrix<float> (const_cast<float*>(reinterpret_cast<const float*>(&(*input_) [0])), original_no_of_points, point_representation_->getNumberOfDimensions (),sizeof (PointT)));
+      input_flann_ = static_cast<MatrixPtr> (new flann::Matrix<float> (const_cast<float*>(reinterpret_cast<const float*>(&(*input_) [0])), original_no_of_points, point_representation_->getNumberOfDimensions (),sizeof (PointT)));
       input_copied_for_flann_ = false;
     }
     else
     {
-      input_flann_ = MatrixPtr (new flann::Matrix<float> (new float[original_no_of_points*point_representation_->getNumberOfDimensions ()], original_no_of_points, point_representation_->getNumberOfDimensions ()));
+      input_flann_ = static_cast<MatrixPtr> (new flann::Matrix<float> (new float[original_no_of_points*point_representation_->getNumberOfDimensions ()], original_no_of_points, point_representation_->getNumberOfDimensions ()));
       float* cloud_ptr = input_flann_->ptr();
       for (std::size_t i = 0; i < original_no_of_points; ++i)
       {
@@ -410,7 +410,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::convertInputToFlannMatrix ()
   }
   else
   {
-    input_flann_ = MatrixPtr (new flann::Matrix<float> (new float[original_no_of_points*point_representation_->getNumberOfDimensions ()], original_no_of_points, point_representation_->getNumberOfDimensions ()));
+    input_flann_ = static_cast<MatrixPtr> (new flann::Matrix<float> (new float[original_no_of_points*point_representation_->getNumberOfDimensions ()], original_no_of_points, point_representation_->getNumberOfDimensions ()));
     float* cloud_ptr = input_flann_->ptr();
     for (std::size_t indices_index = 0; indices_index < original_no_of_points; ++indices_index)
     {

@@ -55,7 +55,7 @@ class SimpleOpenNIProcessor
       if (++count == 30)
       {
         double now = pcl::getTime ();
-        std::cout << "got depth-image. Average framerate: " << double(count)/double(now - last) << " Hz" <<  std::endl;
+        std::cout << "got depth-image. Average framerate: " << static_cast<double>(count)/(now - last) << " Hz" <<  std::endl;
         std::cout << "Depth baseline: " << d_img->getBaseline () << " and focal length: " << d_img->getFocalLength () << std::endl;
         count = 0;
         last = now;

@@ -69,7 +69,7 @@ namespace pcl
       inline float * 
       getData () 
       { 
-        return (&data_[0]); 
+        return (data_.data());
       }
 
       /** \brief Resizes the map to the specified size.
