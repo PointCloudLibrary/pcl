@@ -358,7 +358,7 @@ namespace pcl
         cloud_->point_step = static_cast<std::uint32_t> (std::numeric_limits<std::uint32_t>::max ());
       do_resize_ = true;
       return std::tuple<std::function<void (SizeType)>, std::function<void (ContentType)>, std::function<void ()> > (
-        [this, property_name](auto && PH1) { vertexListPropertyBeginCallback(property_name, std::forward<decltype(PH1)>(PH1)); },
+        [this, property_name](SizeType size) { this->vertexListPropertyBeginCallback(property_name, size); },
         [this] (ContentType value) { vertexListPropertyContentCallback (value); },
         [this] { vertexListPropertyEndCallback (); }
       );
