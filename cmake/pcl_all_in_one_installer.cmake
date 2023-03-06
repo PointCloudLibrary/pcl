@@ -29,15 +29,53 @@ foreach(dep Boost Qhull FLANN VTK)
   list(APPEND PCL_3RDPARTY_COMPONENTS ${dep})
 endforeach()
 
+# Try to set EIGEN3_INCLUDE_DIR in case it is
+# no longer exported by Eigen3 itself.
+if (NOT EXISTS ${EIGEN3_INCLUDE_DIR})
+  if (EXISTS ${EIGEN3_INCLUDE_DIRS})
+    set(EIGEN3_INCLUDE_DIR ${EIGEN3_INCLUDE_DIRS})
+  else()
+    set(EIGEN3_INCLUDE_DIR "${Eigen3_DIR}/../../../include/eigen3/")
+  endif()
+endif()
+if(NOT EXISTS ${EIGEN3_INCLUDE_DIR})
+  message(FATAL_ERROR "EIGEN3_INCLUDE_DIR is not existing: ${EIGEN3_INCLUDE_DIR}")
+endif
+
+# Try to find EIGEN3_COMMON_ROOT_PATH, which is meant to hold
+# the first common root folder of Eigen3_DIR and EIGEN3_INCLUDE_DIR.
+# E.g. Eigen3_DIR              = /usr/local/share/eigen3/cmake/
+#      EIGEN3_INCLUDE_DIR      = /usr/local/include/eigen3/
+#   => EIGEN3_COMMON_ROOT_PATH = /usr/local/
+file(TO_CMAKE_PATH ${Eigen3_DIR} Eigen3_DIR)
+file(TO_CMAKE_PATH ${EIGEN3_INCLUDE_DIR} EIGEN3_INCLUDE_DIR)
+set(EIGEN3_INCLUDE_PATH_LOOP ${EIGEN3_INCLUDE_DIR})
+set(PREVIOUS_EIGEN3_INCLUDE_PATH_LOOP "INVALID")
+while (NOT ${PREVIOUS_EIGEN3_INCLUDE_PATH_LOOP} STREQUAL ${EIGEN3_INCLUDE_PATH_LOOP})
+  if (${Eigen3_DIR} MATCHES ${EIGEN3_INCLUDE_PATH_LOOP})
+    set(EIGEN3_COMMON_ROOT_PATH ${EIGEN3_INCLUDE_PATH_LOOP})
+    break()
+  endif()
+  set(PREVIOUS_EIGEN3_INCLUDE_PATH_LOOP ${EIGEN3_INCLUDE_PATH_LOOP})
+  get_filename_component(EIGEN3_INCLUDE_PATH_LOOP ${EIGEN3_INCLUDE_PATH_LOOP} DIRECTORY)
+endwhile()
+if(NOT EXISTS ${EIGEN3_COMMON_ROOT_PATH})
+  message(FATAL_ERROR "Could not copy Eigen3.")
+endif
+
+# Install Eigen3 to 3rdParty directory
+string(LENGTH ${EIGEN3_COMMON_ROOT_PATH} LENGTH_OF_EIGEN3_COMMON_ROOT_PATH)
+string(SUBSTRING ${Eigen3_DIR} ${LENGTH_OF_EIGEN3_COMMON_ROOT_PATH} -1 DESTINATION_EIGEN3_DIR)
+string(SUBSTRING ${EIGEN3_INCLUDE_DIR} ${LENGTH_OF_EIGEN3_COMMON_ROOT_PATH} -1 DESTINATION_EIGEN3_INCLUDE_DIR)
 set(dep_Eigen3 Eigen3)
 install(
   DIRECTORY "${Eigen3_DIR}/"
-  DESTINATION 3rdParty/${dep_Eigen3}/share/eigen3/cmake
+  DESTINATION 3rdParty/${dep_Eigen3}${DESTINATION_EIGEN3_DIR}
   COMPONENT ${dep_Eigen3}
 )
 install(
-  DIRECTORY "${Eigen3_DIR}/../../../include/eigen3/"
-  DESTINATION 3rdParty/${dep_Eigen3}/include/eigen3
+  DIRECTORY "${EIGEN3_INCLUDE_DIR}/"
+  DESTINATION 3rdParty/${dep_Eigen3}${DESTINATION_EIGEN3_INCLUDE_DIR}
   COMPONENT ${dep_Eigen3}
 )
 list(APPEND PCL_3RDPARTY_COMPONENTS ${dep_Eigen3})
