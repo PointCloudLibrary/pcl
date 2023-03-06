@@ -246,6 +246,8 @@ TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClou
   shared(height, indices, occupency_map, output, width) \
   num_threads(threads_)
 #endif
+  // Disable lint since this 'for' is part of the pragma
+  // NOLINTNEXTLINE(modernize-loop-convert)
   for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t> (indices.size ()); ++i)
   {
     int idx = indices[i];

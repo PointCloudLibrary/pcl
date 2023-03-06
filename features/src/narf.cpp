@@ -376,6 +376,8 @@ Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<
   schedule(dynamic, 10) \
   num_threads(max_no_of_threads)
   //!!! nizar 20110408 : for OpenMP sake on MSVC this must be kept signed
+  // Disable lint since this 'for' is part of the pragma
+  // NOLINTNEXTLINE(modernize-loop-convert)
   for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t>(interest_points.size ()); ++idx)
   {
     const auto& interest_point = interest_points[idx];
@@ -389,7 +391,7 @@ Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<
     else {
       if (!rotation_invariant)
       {
-#       pragma omp critical
+#pragma omp critical
         {
           feature_list.push_back(feature);
         }
@@ -409,7 +411,7 @@ Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<
               delete feature2;
               continue;
             }
-#           pragma omp critical
+#pragma omp critical
             {
               feature_list.push_back(feature2);
             }

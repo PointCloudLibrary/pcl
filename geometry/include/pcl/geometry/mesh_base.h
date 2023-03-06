@@ -323,25 +323,28 @@ public:
     }
 
     // Adjust the indices
-    for (auto it = vertices_.begin(); it != vertices_.end(); ++it) {
-      if (it->idx_outgoing_half_edge_.isValid()) {
-        it->idx_outgoing_half_edge_ =
-            new_half_edge_indices[it->idx_outgoing_half_edge_.get()];
+    for (auto& vertex : vertices_) {
+      if (vertex.idx_outgoing_half_edge_.isValid()) {
+        vertex.idx_outgoing_half_edge_ =
+            new_half_edge_indices[vertex.idx_outgoing_half_edge_.get()];
       }
     }
 
-    for (auto it = half_edges_.begin(); it != half_edges_.end(); ++it) {
-      it->idx_terminating_vertex_ =
-          new_vertex_indices[it->idx_terminating_vertex_.get()];
-      it->idx_next_half_edge_ = new_half_edge_indices[it->idx_next_half_edge_.get()];
-      it->idx_prev_half_edge_ = new_half_edge_indices[it->idx_prev_half_edge_.get()];
-      if (it->idx_face_.isValid()) {
-        it->idx_face_ = new_face_indices[it->idx_face_.get()];
+    for (auto& half_edge : half_edges_) {
+      half_edge.idx_terminating_vertex_ =
+          new_vertex_indices[half_edge.idx_terminating_vertex_.get()];
+      half_edge.idx_next_half_edge_ =
+          new_half_edge_indices[half_edge.idx_next_half_edge_.get()];
+      half_edge.idx_prev_half_edge_ =
+          new_half_edge_indices[half_edge.idx_prev_half_edge_.get()];
+      if (half_edge.idx_face_.isValid()) {
+        half_edge.idx_face_ = new_face_indices[half_edge.idx_face_.get()];
       }
     }
 
-    for (auto it = faces_.begin(); it != faces_.end(); ++it) {
-      it->idx_inner_half_edge_ = new_half_edge_indices[it->idx_inner_half_edge_.get()];
+    for (auto& face : faces_) {
+      face.idx_inner_half_edge_ =
+          new_half_edge_indices[face.idx_inner_half_edge_.get()];
     }
   }
 

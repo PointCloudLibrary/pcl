@@ -303,9 +303,9 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
     // bruteforce radius search
     std::size_t cloudSearchBruteforce_size_lower = 0, cloudSearchBruteforce_size_upper = 0;
 
-    for (auto it = cloudIn->points.cbegin(); it != cloudIn->points.cend(); ++it)
+    for (const auto& point : cloudIn->points)
     {
-      const auto pointDist = pcl_tests::point_distance(*it, searchPoint);
+      const auto pointDist = pcl_tests::point_distance(point, searchPoint);
 
       if (pointDist <= (searchRadius+TOLERANCE)) {
         ++cloudSearchBruteforce_size_upper;
@@ -501,9 +501,9 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
     // bruteforce radius search
     std::size_t cloudSearchBruteforce_size_lower = 0, cloudSearchBruteforce_size_upper = 0;
 
-    for (auto it = cloudIn->points.cbegin(); it != cloudIn->points.cend(); ++it)
+    for (const auto& point : cloudIn->points)
     {
-      const auto pointDist = pcl_tests::point_distance(*it, searchPoint);
+      const auto pointDist = pcl_tests::point_distance(point, searchPoint);
 
       if (pointDist <= (searchRadius+TOLERANCE)) {
         ++cloudSearchBruteforce_size_upper;

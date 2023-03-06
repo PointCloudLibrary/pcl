@@ -75,8 +75,8 @@ pcl::CovarianceSampling<PointT, PointNT>::initCompute ()
   }
 
   average_norm /= static_cast<double>(scaled_points_.size ());
-  for (std::size_t p_i = 0; p_i < scaled_points_.size (); ++p_i)
-    scaled_points_[p_i] /= static_cast<float>(average_norm);
+  for (auto & scaled_point : scaled_points_)
+    scaled_point /= static_cast<float>(average_norm);
 
   return (true);
 }
