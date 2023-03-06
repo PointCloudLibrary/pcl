@@ -40,7 +40,7 @@ if (NOT EXISTS ${EIGEN3_INCLUDE_DIR})
 endif()
 if(NOT EXISTS ${EIGEN3_INCLUDE_DIR})
   message(FATAL_ERROR "EIGEN3_INCLUDE_DIR is not existing: ${EIGEN3_INCLUDE_DIR}")
-endif
+endif()
 
 # Try to find EIGEN3_COMMON_ROOT_PATH, which is meant to hold
 # the first common root folder of Eigen3_DIR and EIGEN3_INCLUDE_DIR.
@@ -61,7 +61,7 @@ while (NOT ${PREVIOUS_EIGEN3_INCLUDE_PATH_LOOP} STREQUAL ${EIGEN3_INCLUDE_PATH_L
 endwhile()
 if(NOT EXISTS ${EIGEN3_COMMON_ROOT_PATH})
   message(FATAL_ERROR "Could not copy Eigen3.")
-endif
+endif()
 
 # Install Eigen3 to 3rdParty directory
 string(LENGTH ${EIGEN3_COMMON_ROOT_PATH} LENGTH_OF_EIGEN3_COMMON_ROOT_PATH)
