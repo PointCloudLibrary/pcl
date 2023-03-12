@@ -233,6 +233,7 @@ set(srcs
   ${DSSDK_GRABBER_SOURCES}
   ${RSSDK_GRABBER_SOURCES}
   ${RSSDK2_GRABBER_SOURCES}
+  ${PLY_SOURCES}
 )
 
 if(PNG_FOUND)
@@ -286,6 +287,7 @@ set(incs
   ${DSSDK_GRABBER_INCLUDES}
   ${RSSDK_GRABBER_INCLUDES}
   ${RSSDK2_GRABBER_INCLUDES}
+  ${PLY_INCLUDES}
 )
 
 set(compression_incs
@@ -330,7 +332,7 @@ set(LIB_NAME "pcl_${SUBSYS_NAME}")
 
 add_definitions(${VTK_DEFINES})
 
-PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES} ${OPENNI2_INCLUDES} ${PLY_SOURCES} ${PLY_INCLUDES})
+PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES} ${OPENNI2_INCLUDES})
 
 target_include_directories(${LIB_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
