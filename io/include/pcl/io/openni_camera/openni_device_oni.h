@@ -77,11 +77,11 @@ namespace openni_wrapper
     void startIRStream () override;
     void stopIRStream () override;
 
-    bool isImageStreamRunning () const throw () override;
-    bool isDepthStreamRunning () const throw () override;
-    bool isIRStreamRunning () const throw () override;
+    bool isImageStreamRunning () const noexcept override;
+    bool isDepthStreamRunning () const noexcept override;
+    bool isIRStreamRunning () const noexcept override;
 
-    bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw () override;
+    bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const noexcept override;
 
     /** \brief Trigger a new frame in the ONI stream.
       * \param[in] relative_offset the relative offset in case we want to seek in the file
@@ -89,7 +89,7 @@ namespace openni_wrapper
     bool 
     trigger (int relative_offset = 0);
 
-    bool isStreaming () const throw ();
+    bool isStreaming () const noexcept;
 
     /** \brief Check if there is any data left in the ONI file to process. */
     inline bool
@@ -99,7 +99,7 @@ namespace openni_wrapper
     }
 
   protected:
-    Image::Ptr getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) const throw () override;
+    Image::Ptr getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) const noexcept override;
 
     void PlayerThreadFunction ();
     static void __stdcall NewONIDepthDataAvailable (xn::ProductionNode& node, void* cookie) noexcept;

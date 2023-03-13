@@ -102,7 +102,7 @@ openni_wrapper::DevicePrimesense::isImageResizeSupported (
     unsigned input_width, 
     unsigned input_height, 
     unsigned output_width, 
-    unsigned output_height) const throw ()
+    unsigned output_height) const noexcept
 {
   return (ImageYUV422::resizingSupported (input_width, input_height, output_width, output_height));
 }
@@ -170,7 +170,7 @@ openni_wrapper::DevicePrimesense::enumAvailableModes () noexcept
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::Image::Ptr 
-openni_wrapper::DevicePrimesense::getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_data) const throw ()
+openni_wrapper::DevicePrimesense::getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_data) const noexcept
 {
   return (openni_wrapper::Image::Ptr (new ImageYUV422 (image_data)));
 }

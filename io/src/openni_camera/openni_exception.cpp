@@ -62,22 +62,22 @@ OpenNIException& OpenNIException::operator = (const OpenNIException& exception) 
   return *this;
 }
 
-const char* OpenNIException::what () const throw ()
+const char* OpenNIException::what () const noexcept
 {
   return message_long_.c_str();
 }
 
-const std::string& OpenNIException::getFunctionName () const throw ()
+const std::string& OpenNIException::getFunctionName () const noexcept
 {
   return function_name_;
 }
 
-const std::string& OpenNIException::getFileName () const throw ()
+const std::string& OpenNIException::getFileName () const noexcept
 {
   return file_name_;
 }
 
-unsigned OpenNIException::getLineNumber () const throw ()
+unsigned OpenNIException::getLineNumber () const noexcept
 {
   return line_number_;
 }

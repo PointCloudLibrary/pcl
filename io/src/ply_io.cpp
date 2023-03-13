@@ -358,7 +358,7 @@ namespace pcl
         cloud_->point_step = static_cast<std::uint32_t> (std::numeric_limits<std::uint32_t>::max ());
       do_resize_ = true;
       return std::tuple<std::function<void (SizeType)>, std::function<void (ContentType)>, std::function<void ()> > (
-        std::bind (&pcl::PLYReader::vertexListPropertyBeginCallback<SizeType>, this, property_name, std::placeholders::_1),
+        [this, property_name](SizeType size) { this->vertexListPropertyBeginCallback(property_name, size); },
         [this] (ContentType value) { vertexListPropertyContentCallback (value); },
         [this] { vertexListPropertyEndCallback (); }
       );

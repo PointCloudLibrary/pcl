@@ -73,7 +73,7 @@ namespace pcl
         operator= (const IOException& exception);
 
         const char*
-        what () const throw () override;
+        what () const noexcept override;
 
         const std::string&
         getFunctionName () const;

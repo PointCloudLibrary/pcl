@@ -74,7 +74,7 @@ namespace openni_wrapper
       void fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step = 0) const override;
       bool isResizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const override;
       inline void setDebayeringMethod (const DebayeringMethod& method) noexcept;
-      inline DebayeringMethod getDebayeringMethod () const throw ();
+      inline DebayeringMethod getDebayeringMethod () const noexcept;
       inline static bool resizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height);
 
 
@@ -89,7 +89,7 @@ namespace openni_wrapper
   }
 
   ImageBayerGRBG::DebayeringMethod
-  ImageBayerGRBG::getDebayeringMethod () const throw ()
+  ImageBayerGRBG::getDebayeringMethod () const noexcept
   {
     return debayering_method_;
   }
