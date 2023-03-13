@@ -59,7 +59,7 @@ namespace pcl
       virtual ~RFFaceDetectorTrainer() = default;
 
       /*
-       * Common parameters
+       * Set name of the file in which RFFaceDetectorTrainer will store the forest.
        */
       void setForestFilename(std::string & ff)
       {
@@ -136,6 +136,9 @@ namespace pcl
         used_for_pose_ = n;
       }
 
+      /*
+       * This forest is used to detect faces.
+       */
       void setForest(pcl::DecisionForest<NodeType> & forest)
       {
         forest_ = forest;

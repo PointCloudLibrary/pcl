@@ -33,11 +33,13 @@ RUN apt-get update \
       libboost-serialization-dev \
       libboost-filesystem-dev \
       libboost-iostreams-dev \
+      libboost-system-dev \
       libflann-dev \
       libglew-dev \
       libgtest-dev \
       libopenni-dev \
       libopenni2-dev \
+      libpcap-dev \
       libproj-dev \
       libqhull-dev \
       libqt5opengl5-dev \

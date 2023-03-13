@@ -275,10 +275,6 @@ public:
   unsigned rgb_data_size_;
 };
 
-// Create the PCLVisualizer object
-pcl::visualization::PCLVisualizer::Ptr cld;
-pcl::visualization::ImageViewer::Ptr img;
-
 /* ---[ */
 int
 main (int argc, char** argv)

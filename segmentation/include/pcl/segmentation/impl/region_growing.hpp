@@ -351,7 +351,7 @@ pcl::RegionGrowing<PointT, NormalT>::findPointNeighbours ()
   {
     for (int i_point = 0; i_point < point_number; i_point++)
     {
-      int point_index = (*indices_)[i_point];
+      const auto point_index = (*indices_)[i_point];
       neighbours.clear ();
       search_->nearestKSearch (i_point, neighbour_number_, neighbours, distances);
       point_neighbours_[point_index].swap (neighbours);
@@ -362,7 +362,7 @@ pcl::RegionGrowing<PointT, NormalT>::findPointNeighbours ()
     for (int i_point = 0; i_point < point_number; i_point++)
     {
       neighbours.clear ();
-      int point_index = (*indices_)[i_point];
+      const auto point_index = (*indices_)[i_point];
       if (!pcl::isFinite ((*input_)[point_index]))
         continue;
       search_->nearestKSearch (i_point, neighbour_number_, neighbours, distances);
@@ -386,7 +386,7 @@ pcl::RegionGrowing<PointT, NormalT>::applySmoothRegionGrowingAlgorithm ()
   {
     for (int i_point = 0; i_point < num_of_pts; i_point++)
     {
-      int point_index = (*indices_)[i_point];
+      const auto point_index = (*indices_)[i_point];
       point_residual[i_point].first = (*normals_)[point_index].curvature;
       point_residual[i_point].second = point_index;
     }
@@ -396,7 +396,7 @@ pcl::RegionGrowing<PointT, NormalT>::applySmoothRegionGrowingAlgorithm ()
   {
     for (int i_point = 0; i_point < num_of_pts; i_point++)
     {
-      int point_index = (*indices_)[i_point];
+      const auto point_index = (*indices_)[i_point];
       point_residual[i_point].first = 0;
       point_residual[i_point].second = point_index;
     }
