@@ -179,8 +179,7 @@ target_include_directories(${LIB_NAME} PUBLIC
   $<INSTALL_INTERFACE:include> 
 )
 
-target_link_libraries(${LIB_NAME} Boost::boost)
-target_link_libraries(${LIB_NAME} Eigen3::Eigen)
+target_link_libraries(${LIB_NAME} Boost::boost Eigen3::Eigen)
 
 if(MSVC AND NOT (MSVC_VERSION LESS 1915))
   # MSVC resolved a byte alignment issue in compiler version 15.9
