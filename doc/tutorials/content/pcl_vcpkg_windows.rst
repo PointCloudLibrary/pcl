@@ -74,6 +74,16 @@ will install PCL with default options as well as default triplet type (ie. x86).
 
   ./vcpkg install pcl
   
+.. note::
+  This will build executables 2 times in release mode, as default host triplet is x64-windows
+  in various executables, but we use x86 by default. So to fix it you can provide default
+  host-triplet same as default triplet.
+
+    ./vckpgk install pcl --host-triplet -x86 
+
+  Or, you can use same custom triplet for both --triplet and --host-triplet
+
+    ./vckpgk install pcl --triplet <same_custom_triplet_type> --host-triplet <same_custom_triplet_type>
 
 .. note::
 
