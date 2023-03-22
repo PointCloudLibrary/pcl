@@ -231,24 +231,7 @@ ManualRegistration::calculatePressed()
   }
   pcl::registration::TransformationEstimationSVD<pcl::PointXYZ, pcl::PointXYZ> tfe;
   tfe.estimateRigidTransformation(src_pc_, dst_pc_, transform_);
-  PCL_INFO("Calculated tranform:\n%1.5f %1.5f %1.5f %1.5f\n%1.5f %1.5f %1.5f "
-           "%1.5f\n%1.5f %1.5f %1.5f %1.5f\n%1.5f %1.5f %1.5f %1.5f\n",
-           transform_(0, 0),
-           transform_(0, 1),
-           transform_(0, 2),
-           transform_(0, 3),
-           transform_(1, 0),
-           transform_(1, 1),
-           transform_(1, 2),
-           transform_(1, 3),
-           transform_(2, 0),
-           transform_(2, 1),
-           transform_(2, 2),
-           transform_(2, 3),
-           transform_(3, 0),
-           transform_(3, 1),
-           transform_(3, 2),
-           transform_(3, 3));
+  PCL_INFO_STREAM("Calculated transform:\n" <<  transform_ << std::endl);
 }
 
 void
@@ -349,24 +332,7 @@ ManualRegistration::refinePressed()
   icp->align(*aligned, transform_);
   transform_ = icp->getFinalTransformation();
 
-  PCL_INFO("Calculated tranform:\n%1.5f %1.5f %1.5f %1.5f\n%1.5f %1.5f %1.5f "
-           "%1.5f\n%1.5f %1.5f %1.5f %1.5f\n%1.5f %1.5f %1.5f %1.5f\n",
-           transform_(0, 0),
-           transform_(0, 1),
-           transform_(0, 2),
-           transform_(0, 3),
-           transform_(1, 0),
-           transform_(1, 1),
-           transform_(1, 2),
-           transform_(1, 3),
-           transform_(2, 0),
-           transform_(2, 1),
-           transform_(2, 2),
-           transform_(2, 3),
-           transform_(3, 0),
-           transform_(3, 1),
-           transform_(3, 2),
-           transform_(3, 3));
+  PCL_INFO_STREAM("Calculated transform:\n" <<  transform_ << std::endl);
 }
 
 void
