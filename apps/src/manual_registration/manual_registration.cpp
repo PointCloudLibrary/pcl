@@ -74,7 +74,6 @@ ManualRegistration::ManualRegistration(float voxel_size) : voxel_size_(voxel_siz
 
   this->setWindowTitle("PCL Manual Registration");
 
-
   // Set up the source window
 #if VTK_MAJOR_VERSION > 8
   auto renderer_src = vtkSmartPointer<vtkRenderer>::New();
@@ -231,7 +230,7 @@ ManualRegistration::calculatePressed()
   }
   pcl::registration::TransformationEstimationSVD<pcl::PointXYZ, pcl::PointXYZ> tfe;
   tfe.estimateRigidTransformation(src_pc_, dst_pc_, transform_);
-  PCL_INFO_STREAM("Calculated transform:\n" <<  transform_ << std::endl);
+  PCL_INFO_STREAM("Calculated transform:\n" << transform_ << std::endl);
 }
 
 void
@@ -332,7 +331,7 @@ ManualRegistration::refinePressed()
   icp->align(*aligned, transform_);
   transform_ = icp->getFinalTransformation();
 
-  PCL_INFO_STREAM("Calculated transform:\n" <<  transform_ << std::endl);
+  PCL_INFO_STREAM("Calculated transform:\n" << transform_ << std::endl);
 }
 
 void
