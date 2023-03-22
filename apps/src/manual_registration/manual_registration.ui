@@ -96,13 +96,6 @@
         </property>
        </widget>
       </item>
-      <!-- <item> -->
-      <!--  <widget class="QPushButton" name="undoButton"> -->
-      <!--   <property name="text"> -->
-      <!--    <string>Undo</string> -->
-      <!--   </property> -->
-      <!--  </widget> -->
-      <!-- </item> -->
       <item>
        <widget class="QCheckBox" name="orthoButton">
         <property name="text">
