@@ -61,7 +61,7 @@ public:
 
   PCL_MAKE_ALIGNED_OPERATOR_NEW;
 
-  ManualRegistration();
+  ManualRegistration(float voxel_size);
 
   ~ManualRegistration() override = default;
 
@@ -110,6 +110,8 @@ protected:
 
   std::set<std::string> annotations_src_;
   std::set<std::string> annotations_dst_;
+
+  const float voxel_size_;
 
 public Q_SLOTS:
   void

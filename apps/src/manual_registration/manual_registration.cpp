@@ -67,12 +67,13 @@ using std::string;
 using std::to_string;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-ManualRegistration::ManualRegistration()
+ManualRegistration::ManualRegistration(float voxel_size) : voxel_size_(voxel_size)
 {
   ui_ = new Ui::MainWindow;
   ui_->setupUi(this);
 
   this->setWindowTitle("PCL Manual Registration");
+
 
   // Set up the source window
 #if VTK_MAJOR_VERSION > 8
@@ -326,7 +327,7 @@ ManualRegistration::refinePressed()
 {
   PCL_INFO("Refining transform ...\n");
   VoxelGrid<PointT> grid_filter;
-  grid_filter.setLeafSize(0.05, 0.05, 0.05);
+  grid_filter.setLeafSize(voxel_size_, voxel_size_, voxel_size_);
   PointCloud<PointT>::Ptr src_copy{new PointCloud<PointT>(*cloud_src_)};
   PointCloud<PointT>::Ptr dst_copy{new PointCloud<PointT>(*cloud_dst_)};
   grid_filter.setInputCloud(src_copy);
@@ -386,6 +387,7 @@ print_usage()
   PCL_INFO("manual_registration cloud1.pcd cloud2.pcd\n");
   PCL_INFO("\t cloud1 \t source cloud\n");
   PCL_INFO("\t cloud2 \t destination cloud\n");
+  PCL_INFO("\t voxel_size \t voxel size for automatic refinement\n");
 }
 
 int
@@ -399,9 +401,10 @@ main(int argc, char** argv)
   pcl::PointCloud<PointT>::Ptr cloud_src(new pcl::PointCloud<PointT>);
   pcl::PointCloud<PointT>::Ptr cloud_dst(new pcl::PointCloud<PointT>);
 
-  if (argc < 3) {
+  if (argc < 4) {
     PCL_ERROR("Incorrect usage\n");
     print_usage();
+    return -1;
   }
 
   // TODO do this with PCL console
@@ -416,7 +419,9 @@ main(int argc, char** argv)
     return -1;
   }
 
-  ManualRegistration man_reg;
+  const float voxel_size = std::atof(argv[3]);
+
+  ManualRegistration man_reg(voxel_size);
 
   man_reg.setSrcCloud(cloud_src);
   man_reg.setDstCloud(cloud_dst);
