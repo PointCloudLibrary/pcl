@@ -111,7 +111,7 @@ public:
   /** \brief Set registration instance used to align clouds */
   inline void setRegistration(RegistrationPtr);
 
-  PCL_MAKE_ALIGNED_OPERATOR_NEW;
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 
 protected:
   /** \brief last registered point cloud */

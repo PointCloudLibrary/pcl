@@ -65,7 +65,7 @@ struct PoseEstimate {
   : pose(p), cloud(c)
   {}
 
-  PCL_MAKE_ALIGNED_OPERATOR_NEW;
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 };
 } // namespace registration
 } // namespace pcl

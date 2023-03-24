@@ -54,7 +54,7 @@ namespace pcl
       using Ptr = shared_ptr< PlaneClipper3D<PointT> >;
       using ConstPtr = shared_ptr< const PlaneClipper3D<PointT> >;
 
-      PCL_MAKE_ALIGNED_OPERATOR_NEW;
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
 
       /**
        * @author Suat Gedikli <gedikli@willowgarage.com>

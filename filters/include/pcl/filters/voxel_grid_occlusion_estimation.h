@@ -67,7 +67,7 @@ namespace pcl
 
     public:
 
-      PCL_MAKE_ALIGNED_OPERATOR_NEW;
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
 
       /** \brief Empty constructor. */
       VoxelGridOcclusionEstimation ()
