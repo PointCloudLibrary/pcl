@@ -113,7 +113,7 @@ public:
       typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::Matrix4;
   using AngleAxis = typename Eigen::AngleAxis<Scalar>;
 
-  PCL_MAKE_ALIGNED_OPERATOR_NEW;
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 
   /** \brief Empty constructor. */
   GeneralizedIterativeClosestPoint()
