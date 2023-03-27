@@ -1,12 +1,12 @@
 function(checkVTKComponents)
   cmake_parse_arguments(ARGS "" "MISSING_COMPONENTS" "COMPONENTS" ${ARGN})
-  
+
   if(ARGS_UNPARSED_ARGUMENTS)
     message(FATAL_ERROR "Unknown arguments given to checkVTKComponents: ${ARGS_UNPARSED_ARGUMENTS}")
   endif()
 
   set(vtkMissingComponents)
-  
+
   foreach(vtkComponent ${ARGS_COMPONENTS})
     if (VTK_VERSION VERSION_LESS 9.0)
       if (NOT TARGET ${vtkComponent})
@@ -18,7 +18,7 @@ function(checkVTKComponents)
       endif()
     endif()
   endforeach()
-  
+
   if(ARGS_MISSING_COMPONENTS)
     set(${ARGS_MISSING_COMPONENTS} ${vtkMissingComponents} PARENT_SCOPE)
   endif()
@@ -96,6 +96,18 @@ if (vtkMissingComponents)
   message(FATAL_ERROR "Missing vtk modules: ${vtkMissingComponents}")
 endif()
 
+if(MSVC AND PCL_SHARED_LIBS)
+  option(VTK_ENABLE_DELAYLOAD "Enable delayed loading of VTK DLLs" TRUE)
+  if(VTK_ENABLE_DELAYLOAD)
+    file(GLOB VTK_DLLS "${VTK_DIR}/../../../bin/*.dll")
+    foreach(d ${VTK_DLLS})
+      cmake_path(GET "d" FILENAME DLL_NAME)
+      set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /DELAYLOAD:${DLL_NAME}")
+    endforeach()
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /IGNORE:4199")
+  endif()
+endif()
+
 if("vtkGUISupportQt" IN_LIST VTK_MODULES_ENABLED)
   set(HAVE_QVTK TRUE)
   #PCL_VTK_COMPONENTS is used in the PCLConfig.cmake to refind the required modules.
@@ -118,7 +130,7 @@ if(PCL_SHARED_LIBS OR (NOT (PCL_SHARED_LIBS) AND NOT (VTK_BUILD_SHARED_LIBS)))
       include(${VTK_USE_FILE})
     endif()
   endif()
-  
+
   if(APPLE)
     option(VTK_USE_COCOA "Use Cocoa for VTK render windows" ON)
     mark_as_advanced(VTK_USE_COCOA)
