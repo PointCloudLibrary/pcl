@@ -7,14 +7,9 @@ if(POLICY CMP0074)
   cmake_policy(SET CMP0074 NEW)
 endif()
 
-# Set target C++ standard and required compiler features
-set(CMAKE_CXX_STANDARD 14 CACHE STRING "The target C++ standard. PCL requires C++14 or higher.")
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+# Set minimum required compiler features
 set(PCL_CXX_COMPILE_FEATURES cxx_std_14)
-
-set(CMAKE_CUDA_STANDARD 14 CACHE STRING "The target CUDA/C++ standard. PCL requires CUDA/C++ 14 or higher.")
-set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+set(PCL_CUDA_CXX_FEATURES 14)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "possible configurations" FORCE)
 

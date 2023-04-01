@@ -254,6 +254,9 @@ function(PCL_CUDA_ADD_LIBRARY _name)
   add_library(${_name} ${PCL_LIB_TYPE} ${ARGS_SOURCES})
 
   PCL_ADD_VERSION_INFO(${_name})
+  
+  target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
+  set_property(TARGET ${_name} PROPERTY CUDA_STANDARD ${PCL_CUDA_CXX_FEATURES})
 
   target_compile_options(${_name} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>: ${GEN_CODE} --expt-relaxed-constexpr>)
 
@@ -303,6 +306,8 @@ function(PCL_ADD_EXECUTABLE _name)
   PCL_ADD_VERSION_INFO(${_name})
 
   target_link_libraries(${_name} Threads::Threads)
+
+  target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
 
   if(WIN32 AND MSVC)
     set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
@@ -355,6 +360,8 @@ function(PCL_CUDA_ADD_EXECUTABLE _name)
   PCL_ADD_VERSION_INFO(${_name})
 
   target_compile_options(${_name} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>: ${GEN_CODE} --expt-relaxed-constexpr>)
+  target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
+  set_property(TARGET ${_name} PROPERTY CUDA_STANDARD ${PCL_CUDA_CXX_FEATURES})
 
   target_include_directories(${_name} PRIVATE ${CUDA_TOOLKIT_INCLUDE})
 
