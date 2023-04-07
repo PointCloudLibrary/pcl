@@ -97,23 +97,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="safeButton">
-        <property name="text">
-         <string>Safe Transform</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="undoButton">
-        <property name="text">
-         <string>Undo</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QCheckBox" name="orthoButton">
         <property name="text">
-         <string>OrthoGraphic</string>
+         <string>Orthographic</string>
         </property>
        </widget>
       </item>

@@ -496,7 +496,7 @@ pcl::MinCutSegmentation<PointT>::recalculateBinaryPotentials ()
   std::vector< std::set<VertexDescriptor> > edge_marker;
   std::set<VertexDescriptor> out_edges_marker;
   edge_marker.clear ();
-  edge_marker.resize (indices_->size () + 2, out_edges_marker);
+  edge_marker.resize (input_->size () + 2, out_edges_marker);
 
   for (boost::tie (vertex_iter, vertex_end) = boost::vertices (*graph_); vertex_iter != vertex_end; ++vertex_iter)
   {
