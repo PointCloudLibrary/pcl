@@ -4,7 +4,7 @@
   \section secIoPresentation Overview
   
   The \b pcl_io library contains classes and functions for reading and writing
-  point cloud data (PCD) files, as well as capturing point clouds from a
+  files, as well as capturing point clouds from a
   variety of sensing devices. An introduction to some of these capabilities can
   be found in the following tutorials:
 
@@ -13,6 +13,34 @@
 	- <a href="http://pointclouds.org/documentation/tutorials/writing_pcd.php#writing-pcd">Writing PointCloud data to PCD files</a>
 	- <a href="http://pointclouds.org/documentation/tutorials/openni_grabber.php#openni-grabber">The OpenNI Grabber Framework in PCL</a>
 	- <a href="http://pointclouds.org/documentation/tutorials/ensenso_cameras.php">Grabbing point clouds from Ensenso cameras</a>
+
+  <table>
+    <caption>Reading from files</caption>
+    <tr><td></td><td>pcl::PointCloud</td><td>pcl::PCLPointCloud2</td><td>pcl::PolygonMesh</td><td>pcl::TextureMesh</td></tr>
+    <tr><td>PCD (ASCII/BINARY/COMPRESSED)</td><td>\link pcl::io::loadPCDFile(const std::string&,pcl::PointCloud<PointT>&) loadPCDFile \endlink</td><td>\link pcl::io::loadPCDFile(const std::string&,pcl::PCLPointCloud2&) loadPCDFile \endlink</td><td></td><td></td></tr>
+    <tr><td>PLY (ASCII/BINARY)</td><td>\link pcl::io::loadPLYFile(const std::string&,pcl::PointCloud<PointT>&) loadPLYFile \endlink</td><td>\link pcl::io::loadPLYFile(const std::string&,pcl::PCLPointCloud2&) loadPLYFile \endlink</td><td>\link pcl::io::loadPLYFile(const std::string&,pcl::PolygonMesh&) loadPLYFile \endlink</td><td></td></tr>
+    <tr><td>OBJ (ASCII)</td><td>\link pcl::io::loadOBJFile(const std::string&,pcl::PointCloud<PointT>&) loadOBJFile \endlink</td><td>\link pcl::io::loadOBJFile(const std::string&,pcl::PCLPointCloud2&) loadOBJFile \endlink</td><td>\link pcl::io::loadOBJFile(const std::string&,pcl::PolygonMesh&) loadOBJFile \endlink</td><td>\link pcl::io::loadOBJFile(const std::string&,pcl::TextureMesh&) loadOBJFile \endlink</td></tr>
+    <tr><td>IFS</td><td>\link pcl::io::loadIFSFile(const std::string&,pcl::PointCloud<PointT>&) loadIFSFile \endlink</td><td>\link pcl::io::loadIFSFile(const std::string&,pcl::PCLPointCloud2&) loadIFSFile \endlink</td><td>\link pcl::io::loadIFSFile(const std::string&,pcl::PolygonMesh&) loadIFSFile \endlink</td><td></td></tr>
+    <tr><td>STL (ASCII/BINARY)</td><td></td><td></td><td>\link pcl::io::loadPolygonFileSTL(const std::string&,pcl::PolygonMesh&) loadPolygonFileSTL \endlink</td><td></td></tr>
+    <tr><td>VTK</td><td></td><td></td><td>\link pcl::io::loadPolygonFileVTK(const std::string&,pcl::PolygonMesh&) loadPolygonFileVTK \endlink</td><td></td></tr>
+    <tr><td>CSV/ASCII</td><td colspan="2">via pcl::ASCIIReader</td><td></td><td></td></tr>
+    <tr><td>Automatic format detection</td><td>\link pcl::io::load(const std::string&,pcl::PointCloud<PointT>&) load \endlink</td><td>\link pcl::io::load(const std::string&,pcl::PCLPointCloud2&) load \endlink</td><td>\link pcl::io::load(const std::string&,pcl::PolygonMesh&) load \endlink</td><td>\link pcl::io::load(const std::string&,pcl::TextureMesh&) load \endlink</td></tr>
+  </table>
+
+  <table>
+    <caption>Writing to files</caption>
+    <tr><td></td><td>pcl::PointCloud</td><td>pcl::PCLPointCloud2</td><td>pcl::PolygonMesh</td><td>pcl::TextureMesh</td></tr>
+    <tr><td>PCD ASCII</td><td>\link pcl::io::savePCDFile(const std::string&,const pcl::PointCloud<PointT>&,bool) savePCDFile \endlink</td><td>\link pcl::io::savePCDFile(const std::string&,const pcl::PCLPointCloud2&,const Eigen::Vector4f&,const Eigen::Quaternionf&,const bool) savePCDFile \endlink</td><td></td><td></td></tr>
+    <tr><td>PCD BINARY</td><td>\link pcl::io::savePCDFile(const std::string&,const pcl::PointCloud<PointT>&,bool) savePCDFile \endlink</td><td>\link pcl::io::savePCDFile(const std::string&,const pcl::PCLPointCloud2&,const Eigen::Vector4f&,const Eigen::Quaternionf&,const bool) savePCDFile \endlink</td><td></td><td></td></tr>
+    <tr><td>PCD COMPRESSED</td><td>\link pcl::io::savePCDFileBinaryCompressed(const std::string&,const pcl::PointCloud<PointT>&) savePCDFileBinaryCompressed \endlink</td><td>via pcl::PCDWriter</td><td></td><td></td></tr>
+    <tr><td>PLY ASCII</td><td>\link pcl::io::savePLYFile(const std::string&,const pcl::PointCloud<PointT>&,bool) savePLYFile \endlink</td><td>\link pcl::io::savePLYFile(const std::string&,const pcl::PCLPointCloud2&,const Eigen::Vector4f&,const Eigen::Quaternionf&,bool,bool) savePLYFile \endlink</td><td>\link pcl::io::savePLYFile(const std::string&,const pcl::PolygonMesh&,unsigned) savePLYFile \endlink</td><td></td></tr>
+    <tr><td>PLY BINARY</td><td>\link pcl::io::savePLYFile(const std::string&,const pcl::PointCloud<PointT>&,bool) savePLYFile \endlink</td><td>\link pcl::io::savePLYFile(const std::string&,const pcl::PCLPointCloud2&,const Eigen::Vector4f&,const Eigen::Quaternionf&,bool,bool) savePLYFile \endlink</td><td>\link pcl::io::savePLYFileBinary(const std::string&,const pcl::PolygonMesh&) savePLYFileBinary \endlink</td><td></td></tr>
+    <tr><td>OBJ (ASCII)</td><td></td><td></td><td>\link pcl::io::saveOBJFile(const std::string&,const pcl::PolygonMesh&,unsigned) saveOBJFile \endlink</td><td>\link pcl::io::saveOBJFile(const std::string&,const pcl::TextureMesh&,unsigned) saveOBJFile \endlink</td></tr>
+    <tr><td>IFS</td><td>\link pcl::io::saveIFSFile(const std::string&,const pcl::PointCloud<PointT>&) saveIFSFile \endlink</td><td>\link pcl::io::saveIFSFile(const std::string&,const pcl::PCLPointCloud2&) saveIFSFile \endlink</td><td></td><td></td></tr>
+    <tr><td>STL (ASCII/BINARY)</td><td></td><td></td><td>\link pcl::io::savePolygonFileSTL(const std::string&,const pcl::PolygonMesh&,const bool) savePolygonFileSTL \endlink</td><td></td></tr>
+    <tr><td>VTK</td><td></td><td>\link pcl::io::saveVTKFile(const std::string&,const pcl::PCLPointCloud2&,unsigned) saveVTKFile \endlink</td><td>\link pcl::io::saveVTKFile(const std::string&,const pcl::PolygonMesh&,unsigned) saveVTKFile \endlink or \link pcl::io::savePolygonFileVTK(const std::string&,const pcl::PolygonMesh&,const bool) savePolygonFileVTK \endlink</td><td></td></tr>
+    <tr><td>Automatic format detection</td><td>\link pcl::io::save(const std::string&,const pcl::PointCloud<PointT>&) save \endlink</td><td>\link pcl::io::save(const std::string&,const pcl::PCLPointCloud2&,unsigned) save \endlink</td><td>\link pcl::io::save(const std::string&,const pcl::PolygonMesh&,unsigned) save \endlink</td><td>\link pcl::io::save(const std::string&,const pcl::TextureMesh&,unsigned) save \endlink</td></tr>
+  </table>
 	
   PCL is agnostic with respect to the data sources that are used to generate 3D
   point clouds. While OpenNI-compatible cameras have recently been at the
