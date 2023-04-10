@@ -21,6 +21,7 @@ foreach(subdir
   kdtree_search
   min_cut_segmentation
   moment_of_inertia
+  regression
   #narf_descriptor_visualization
   narf_feature_extraction
   narf_keypoint_extraction

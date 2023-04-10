@@ -408,6 +408,21 @@ Features
      .. |fe_10| image:: images/gasd_estimation.png
                :height: 100px
 
+  * :ref:`regression`
+
+     ======  ======
+     |fe_11|  Title: **Statistical Regression based descriptors**
+
+             Author: *Alessio Stella*
+
+             Compatibility: > PCL 1.7
+
+             In this tutorial we will learn how to compute center of mass, regression vectors and bounding boxes of the cloud.
+     ======  ======
+
+     .. |fe_11| image:: images/moment_of_inertia.png
+               :height: 100px
+
 .. _filtering_tutorial:
 
 Filtering

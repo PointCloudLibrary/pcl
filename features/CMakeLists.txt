@@ -67,6 +67,7 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/usc.h"
   "include/pcl/${SUBSYS_NAME}/boundary.h"
   "include/pcl/${SUBSYS_NAME}/range_image_border_extractor.h"
+  "include/pcl/${SUBSYS_NAME}/regression_estimation.h"
 )
 
 set(impl_incs
@@ -117,6 +118,7 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/usc.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/boundary.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/range_image_border_extractor.hpp"
+  "include/pcl/${SUBSYS_NAME}/impl/regression_estimation.hpp"
 )
 
 set(srcs
@@ -160,6 +162,7 @@ set(srcs
   src/3dsc.cpp
   src/usc.cpp
   src/range_image_border_extractor.cpp
+  src/regression_estimation.cpp
 )
 
 if(MSVC)
