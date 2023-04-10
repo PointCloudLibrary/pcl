@@ -99,7 +99,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
     IntegralImageNormalEstimation<PointXYZ, Normal> ne;
     ne.setInputCloud (xyz);
     ne.setNormalEstimationMethod (IntegralImageNormalEstimation<PointXYZ, Normal>::COVARIANCE_MATRIX);
-    ne.setNormalSmoothingSize (float (radius));
+    ne.setNormalSmoothingSize (static_cast<float>(radius));
     ne.setDepthDependentSmoothing (true);
     ne.compute (normals);
   }
@@ -135,13 +135,15 @@ batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir
 #pragma omp parallel for \
   default(none) \
   shared(k, output_dir, pcd_files, radius)
-  for (int i = 0; i < int (pcd_files.size ()); ++i)
+  // Disable lint since this 'for' is part of the pragma
+  // NOLINTNEXTLINE(modernize-loop-convert)
+  for (int i = 0; i < static_cast<int>(pcd_files.size ()); ++i)
   {
     // Load the first file
     Eigen::Vector4f translation;
     Eigen::Quaternionf rotation;
     pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
-    if (!loadCloud (pcd_files[i], *cloud, translation, rotation)) 
+    if (!loadCloud (pcd_files[i], *cloud, translation, rotation))
       continue;
 
     // Perform the feature estimation

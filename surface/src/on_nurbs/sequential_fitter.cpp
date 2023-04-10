@@ -177,7 +177,7 @@ SequentialFitter::project (const Eigen::Vector3d &pt)
     pr (0) = -pr (0);
     pr (1) = -pr (1);
   }
-  return Eigen::Vector2d (pr (0), pr (1));
+  return {pr(0), pr(1)};
 }
 
 bool
@@ -493,7 +493,6 @@ SequentialFitter::grow (float max_dist, float max_angle, unsigned min_length, un
   }
 
   float angle = std::cos (max_angle);
-  unsigned bnd_moved (0);
 
   for (unsigned i = 0; i < num_bnd; i++)
   {
@@ -584,7 +583,6 @@ SequentialFitter::grow (float max_dist, float max_angle, unsigned min_length, un
       this->m_data.boundary[i] (0) = point.x;
       this->m_data.boundary[i] (1) = point.y;
       this->m_data.boundary[i] (2) = point.z;
-      bnd_moved++;
     }
 
   } // i

@@ -215,7 +215,7 @@ protected:
                         std::size_t max_depth,
                         NodeType& node);
 
-  /** Creates uniformely distrebuted thresholds over the range of the supplied
+  /** Creates uniformly distributed thresholds over the range of the supplied
    *  values.
    *
    * \param[in] num_of_thresholds the number of thresholds to create

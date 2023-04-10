@@ -6,7 +6,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/registration/transforms.h>
+#include <pcl/common/transforms.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
 /* A few functions to help load up the points */

@@ -129,10 +129,10 @@ printHelp (int, char **argv)
   print_info ("\n");
   print_info ("                     -immediate_rendering 0/1 = use immediate mode rendering to draw the data (default: "); print_value ("disabled"); print_info (")\n");
   print_info ("                                                Note: the use of immediate rendering will enable the visualization of larger datasets at the expense of extra RAM.\n");
-  print_info ("                                                See http://en.wikipedia.org/wiki/Immediate_mode for more information.\n");
+  print_info ("                                                See https://en.wikipedia.org/wiki/Immediate_mode for more information.\n");
   print_info ("                     -vbo_rendering 0/1       = use OpenGL 1.4+ Vertex Buffer Objects for rendering (default: "); print_value ("disabled"); print_info (")\n");
   print_info ("                                                Note: the use of VBOs will enable the visualization of larger datasets at the expense of extra RAM.\n");
-  print_info ("                                                See http://en.wikipedia.org/wiki/Vertex_Buffer_Object for more information.\n");
+  print_info ("                                                See https://en.wikipedia.org/wiki/Vertex_Buffer_Object for more information.\n");
   print_info ("\n");
   print_info ("                     -use_point_picking       = enable the usage of picking points on screen (default "); print_value ("disabled"); print_info (")\n");
   print_info ("\n");
@@ -323,7 +323,7 @@ main (int argc, char** argv)
     print_highlight ("Multi-viewport rendering enabled.\n");
 
     int y_s = static_cast<int>(std::floor (std::sqrt (static_cast<float>(p_file_indices.size () + vtk_file_indices.size ()))));
-    x_s = y_s + static_cast<int>(std::ceil (double (p_file_indices.size () + vtk_file_indices.size ()) / double (y_s) - y_s));
+    x_s = y_s + static_cast<int>(std::ceil (static_cast<double>(p_file_indices.size () + vtk_file_indices.size ()) / static_cast<double>(y_s) - y_s));
 
     if (!p_file_indices.empty ())
     {

@@ -43,7 +43,7 @@ namespace pcl
 {
   namespace visualization
   {
-    /** @b Provide some gerneral functionalities regarding 2d float arrays, e.g., for visualization purposes
+    /** @b Provide some general functionalities regarding 2d float arrays, e.g., for visualization purposes
       * \author Bastian Steder
       * \ingroup visualization
       */

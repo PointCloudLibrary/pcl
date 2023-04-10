@@ -310,7 +310,7 @@ pcl::PackedHSIComparison<PointT>::evaluate (const PointT &point) const
     g_ = static_cast <std::uint8_t> (rgb_val_ >> 8);
     b_ = static_cast <std::uint8_t> (rgb_val_);
 
-    // definitions taken from http://en.wikipedia.org/wiki/HSL_and_HSI
+    // definitions taken from https://en.wikipedia.org/wiki/HSL_and_HSI
     float hx = (2.0f * r_ - g_ - b_) / 4.0f;  // hue x component -127 to 127
     float hy = static_cast<float> (g_ - b_) * 111.0f / 255.0f; // hue y component -111 to 111
     h_ = static_cast<std::int8_t> (std::atan2(hy, hx) * 128.0f / M_PI);
@@ -624,7 +624,7 @@ pcl::ConditionalRemoval<PointT>::setCondition (ConditionBasePtr condition)
 template <typename PointT> void
 pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
 {
-  if (capable_ == false)
+  if (!capable_)
   {
     PCL_WARN ("[pcl::%s::applyFilter] not capable!\n", getClassName ().c_str ());
     return;

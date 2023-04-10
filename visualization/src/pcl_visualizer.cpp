@@ -92,10 +92,10 @@
 #include <vtkEDLShading.h>
 #endif
 
+#include <pcl/common/time.h>
 #include <pcl/visualization/common/shapes.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/common/common.h>
-#include <pcl/common/time.h>
+
 #include <boost/version.hpp> // for BOOST_VERSION
 #if (BOOST_VERSION >= 106600)
 #include <boost/uuid/detail/sha1.hpp>
@@ -1197,7 +1197,7 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
     }
   }
 
-  actor->SetNumberOfCloudPoints (int (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10)));
+  actor->SetNumberOfCloudPoints (static_cast<int>(std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10)));
   actor->GetProperty ()->SetInterpolationToFlat ();
 
   /// FIXME disabling backface culling due to known VTK bug: vtkTextActors are not
@@ -1527,7 +1527,7 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
   {
     case PCL_VISUALIZER_POINT_SIZE:
     {
-      actor->GetProperty ()->SetPointSize (float (value));
+      actor->GetProperty ()->SetPointSize (static_cast<float>(value));
       actor->Modified ();
       break;
     }
@@ -1549,7 +1549,7 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
     }
     case PCL_VISUALIZER_LINE_WIDTH:
     {
-      actor->GetProperty ()->SetLineWidth (float (value));
+      actor->GetProperty ()->SetLineWidth (static_cast<float>(value));
       actor->Modified ();
       break;
     }
@@ -1587,7 +1587,7 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
       if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
         break;
 
-      switch (int(value))
+      switch (static_cast<int>(value))
       {
         case PCL_VISUALIZER_LUT_RANGE_AUTO:
           double range[2];
@@ -1761,7 +1761,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
   {
     case PCL_VISUALIZER_POINT_SIZE:
     {
-      actor->GetProperty ()->SetPointSize (float (value));
+      actor->GetProperty ()->SetPointSize (static_cast<float>(value));
       actor->Modified ();
       break;
     }
@@ -1773,7 +1773,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
     }
     case PCL_VISUALIZER_LINE_WIDTH:
     {
-      actor->GetProperty ()->SetLineWidth (float (value));
+      actor->GetProperty ()->SetLineWidth (static_cast<float>(value));
       actor->Modified ();
       break;
     }
@@ -1783,13 +1783,13 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
       if (!text_actor)
         return (false);
       vtkSmartPointer<vtkTextProperty> tprop = text_actor->GetTextProperty ();
-      tprop->SetFontSize (int (value));
+      tprop->SetFontSize (static_cast<int>(value));
       text_actor->Modified ();
       break;
     }
     case PCL_VISUALIZER_REPRESENTATION:
     {
-      switch (int (value))
+      switch (static_cast<int>(value))
       {
         case PCL_VISUALIZER_REPRESENTATION_POINTS:
         {
@@ -1812,7 +1812,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
     }
     case PCL_VISUALIZER_SHADING:
     {
-      switch (int (value))
+      switch (static_cast<int>(value))
       {
         case PCL_VISUALIZER_SHADING_FLAT:
         {
@@ -1881,7 +1881,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
       if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
         break;
 
-      switch (int(value))
+      switch (static_cast<int>(value))
       {
         case PCL_VISUALIZER_LUT_RANGE_AUTO:
           double range[2];
@@ -2948,9 +2948,9 @@ pcl::visualization::PCLVisualizer::updateColorHandlerIndex (const std::string &i
   }
 
   std::size_t color_handler_size = am_it->second.color_handlers.size ();
-  if (!(std::size_t (index) < color_handler_size))
+  if (!(static_cast<std::size_t>(index) < color_handler_size))
   {
-    pcl::console::print_warn (stderr, "[updateColorHandlerIndex] Invalid index <%d> given! Index must be less than %d.\n", index, int (color_handler_size));
+    pcl::console::print_warn (stderr, "[updateColorHandlerIndex] Invalid index <%d> given! Index must be less than %d.\n", index, static_cast<int>(color_handler_size));
     return (false);
   }
   // Get the handler
@@ -3373,7 +3373,7 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
     return (false);
   // hardware always supports multitexturing of some degree
   int texture_units = tex_manager->GetNumberOfTextureUnits ();
-  if ((std::size_t) texture_units < mesh.tex_materials.size ())
+  if (static_cast<std::size_t>(texture_units) < mesh.tex_materials.size ())
     PCL_WARN ("[PCLVisualizer::addTextureMesh] GPU texture units %d < mesh textures %d!\n",
               texture_units, mesh.tex_materials.size ());
   // Load textures
@@ -3650,7 +3650,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
       sphere->GetPoint (ptIds_com[1], p2_com);
       sphere->GetPoint (ptIds_com[2], p3_com);
       vtkTriangle::TriangleCenter (p1_com, p2_com, p3_com, center);
-      cam_positions[i] = Eigen::Vector3f (float (center[0]), float (center[1]), float (center[2]));
+      cam_positions[i] = Eigen::Vector3f (static_cast<float>(center[0]), static_cast<float>(center[1]), static_cast<float>(center[2]));
       cam_positions[i].normalize ();
       i++;
     }
@@ -3663,7 +3663,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     {
       double cam_pos[3];
       sphere->GetPoint (i, cam_pos);
-      cam_positions[i] = Eigen::Vector3f (float (cam_pos[0]), float (cam_pos[1]), float (cam_pos[2]));
+      cam_positions[i] = Eigen::Vector3f (static_cast<float>(cam_pos[0]), static_cast<float>(cam_pos[1]), static_cast<float>(cam_pos[2]));
       cam_positions[i].normalize ();
     }
   }
@@ -3958,8 +3958,8 @@ pcl::visualization::PCLVisualizer::renderView (int xres, int yres, pcl::PointClo
   win_->SetSize (xres, yres);
   win_->Render ();
 
-  float dwidth = 2.0f / float (xres),
-        dheight = 2.0f / float (yres);
+  float dwidth = 2.0f / static_cast<float>(xres),
+        dheight = 2.0f / static_cast<float>(yres);
 
   cloud->points.resize (xres * yres);
   cloud->width = xres;
@@ -3997,8 +3997,8 @@ pcl::visualization::PCLVisualizer::renderView (int xres, int yres, pcl::PointClo
         continue;
       }
 
-      Eigen::Vector4f world_coords (dwidth  * float (x) - 1.0f,
-                                    dheight * float (y) - 1.0f,
+      Eigen::Vector4f world_coords (dwidth  * static_cast<float>(x) - 1.0f,
+                                    dheight * static_cast<float>(y) - 1.0f,
                                     depth[ptr],
                                     1.0f);
       world_coords = mat2 * mat1 * world_coords;

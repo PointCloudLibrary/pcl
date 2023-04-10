@@ -77,7 +77,7 @@ namespace openni_wrapper
         * \return the actual depth data of type xn::DepthMetaData.
         */
       inline const xn::DepthMetaData& 
-      getDepthMetaData () const throw ();
+      getDepthMetaData () const noexcept;
 
       /** \brief fills a user given block of memory with the disparity values with additional nearest-neighbor down-scaling.
         * \param[in] width the width of the desired disparity image.
@@ -113,46 +113,46 @@ namespace openni_wrapper
         * \return baseline in meters
         */
       inline float 
-      getBaseline () const throw ();
+      getBaseline () const noexcept;
 
       /** \brief method to access the focal length of the "stereo" frame that was used to retrieve the depth image.
         * \return focal length in pixels
         */
       inline float 
-      getFocalLength () const throw ();
+      getFocalLength () const noexcept;
 
       /** \brief method to access the shadow value, that indicates pixels lying in shadow in the depth image.
         * \return shadow value
         */
       inline XnUInt64 
-      getShadowValue () const throw ();
+      getShadowValue () const noexcept;
 
       /** \brief method to access the no-sample value, that indicates pixels where no disparity could be determined for the depth image.
         * \return no-sample value
         */
       inline XnUInt64 
-      getNoSampleValue () const throw ();
+      getNoSampleValue () const noexcept;
 
       /** \return the width of the depth image */
       inline unsigned 
-      getWidth () const throw ();
+      getWidth () const noexcept;
 
       /** \return the height of the depth image */
       inline unsigned 
-      getHeight () const throw ();
+      getHeight () const noexcept;
 
       /** \return an ascending id for the depth frame
         * \attention not necessarily synchronized with other streams
         */
       inline unsigned 
-      getFrameID () const throw ();
+      getFrameID () const noexcept;
 
       /** \return a ascending timestamp for the depth frame
         * \attention its not the system time, thus can not be used directly to synchronize different sensors.
         *            But definitely synchronized with other streams
         */
       inline unsigned long 
-      getTimeStamp () const throw ();
+      getTimeStamp () const noexcept;
 
     protected:
       pcl::shared_ptr<xn::DepthMetaData> depth_md_;
@@ -172,55 +172,55 @@ namespace openni_wrapper
   DepthImage::~DepthImage () noexcept = default;
 
   const xn::DepthMetaData&
-  DepthImage::getDepthMetaData () const throw ()
+  DepthImage::getDepthMetaData () const noexcept
   {
     return *depth_md_;
   }
 
   float
-  DepthImage::getBaseline () const throw ()
+  DepthImage::getBaseline () const noexcept
   {
     return baseline_;
   }
 
   float
-  DepthImage::getFocalLength () const throw ()
+  DepthImage::getFocalLength () const noexcept
   {
     return focal_length_;
   }
 
   XnUInt64
-  DepthImage::getShadowValue () const throw ()
+  DepthImage::getShadowValue () const noexcept
   {
     return shadow_value_;
   }
 
   XnUInt64
-  DepthImage::getNoSampleValue () const throw ()
+  DepthImage::getNoSampleValue () const noexcept
   {
     return no_sample_value_;
   }
 
   unsigned
-  DepthImage::getWidth () const throw ()
+  DepthImage::getWidth () const noexcept
   {
     return depth_md_->XRes ();
   }
 
   unsigned
-  DepthImage::getHeight () const throw ()
+  DepthImage::getHeight () const noexcept
   {
     return depth_md_->YRes ();
   }
 
   unsigned
-  DepthImage::getFrameID () const throw ()
+  DepthImage::getFrameID () const noexcept
   {
     return depth_md_->FrameID ();
   }
 
   unsigned long
-  DepthImage::getTimeStamp () const throw ()
+  DepthImage::getTimeStamp () const noexcept
   {
     return static_cast<unsigned long> (depth_md_->Timestamp ());
   }

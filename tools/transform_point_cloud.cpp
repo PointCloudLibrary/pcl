@@ -60,8 +60,8 @@ printHelp (int, char **argv)
   print_info ("           -quat x,y,z,w             = rotation as quaternion\n");
   print_info ("           -axisangle ax,ay,az,theta = rotation in axis-angle form\n"); 
   print_info ("           -scale x,y,z              = scale each dimension with these values\n"); 
-  print_info ("           -matrix v1,v2,...,v8,v9   = a 3x3 affine transform\n");
-  print_info ("           -matrix v1,v2,...,v15,v16 = a 4x4 transformation matrix\n");
+  print_info ("           -matrix v1,v2,...,v8,v9   = a 3x3 affine transform in column-major order\n");
+  print_info ("           -matrix v1,v2,...,v15,v16 = a 4x4 transformation matrix in column-major order\n");
   print_info ("   Note: If a rotation is not specified, it will default to no rotation.\n");
   print_info ("         If redundant or conflicting transforms are specified, then:\n");
   print_info ("           -axisangle will override -quat\n");

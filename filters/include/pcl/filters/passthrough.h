@@ -97,7 +97,7 @@ namespace pcl
         */
       PassThrough (bool extract_removed_indices = false) :
         FilterIndices<PointT> (extract_removed_indices),
-        filter_field_name_ (""),
+        
         filter_limit_min_ (std::numeric_limits<float>::lowest()),
         filter_limit_max_ (std::numeric_limits<float>::max())
       {
@@ -212,8 +212,8 @@ namespace pcl
     public:
       /** \brief Constructor. */
       PassThrough (bool extract_removed_indices = false) :
-        FilterIndices<pcl::PCLPointCloud2>::FilterIndices (extract_removed_indices), filter_field_name_("")
-      , filter_limit_min_(std::numeric_limits<float>::lowest())
+        FilterIndices<pcl::PCLPointCloud2>::FilterIndices (extract_removed_indices), 
+       filter_limit_min_(std::numeric_limits<float>::lowest())
       , filter_limit_max_(std::numeric_limits<float>::max())
       {
         filter_name_ = "PassThrough";

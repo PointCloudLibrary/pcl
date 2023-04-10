@@ -281,7 +281,7 @@ namespace pcl
           return (res);
         }
 
-        /** \brief Count loaded chilren */
+        /** \brief Count loaded children */
         virtual std::size_t
         getNumLoadedChildren ()  const
         {
@@ -346,8 +346,8 @@ namespace pcl
         virtual std::size_t
         countNumChildren () const;
 
-        /** \brief Counts the number of loaded chilren by testing the \c children_ array; 
-         *  used to update num_loaded_chilren_ internally 
+        /** \brief Counts the number of loaded children by testing the \c children_ array; 
+         *  used to update num_loaded_children_ internally 
          */
         virtual std::size_t
         countNumLoadedChildren () const;

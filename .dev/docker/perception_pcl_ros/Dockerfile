@@ -10,7 +10,7 @@ COPY ${flavor}_rosinstall.yaml ${workspace}/src/.rosinstall
 
 # Be careful:
 # * ROS uses Python2
-# * source ROS setup file in evey RUN snippet
+# * source ROS setup file in every RUN snippet
 #
 # The dependencies of PCL can be reduced since
 # * we don't need to build visualization or docs

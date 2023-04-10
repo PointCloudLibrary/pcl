@@ -36,6 +36,8 @@
 #define METS_MODEL_HH_
 
 namespace mets {
+// Exempt third-party code from clang-tidy
+// NOLINTBEGIN
 
   /// @brief Type of the objective/cost function.
   ///
@@ -656,7 +658,7 @@ namespace mets {
 
     /// @brief Dtor.
     ~swap_full_neighborhood() override { 
-      for(auto it = moves_m.begin(); 
+      for(auto it = moves_m.begin();
 	  it != moves_m.end(); ++it)
 	delete *it;
     }
@@ -681,7 +683,7 @@ namespace mets {
 
     /// @brief Dtor.
     ~invert_full_neighborhood() override { 
-      for(auto it = moves_m.begin(); 
+      for(auto it = moves_m.begin();
 	  it != moves_m.end(); ++it)
 	delete *it;
     }
@@ -711,7 +713,7 @@ namespace mets {
 		    const Tp r) const 
     { return l->operator==(*r); }
   };
-
+// NOLINTEND
 }
 
 //________________________________________________________________________

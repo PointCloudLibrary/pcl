@@ -640,7 +640,7 @@ pcl::GridProjection<PointNT>::reconstructPolygons (std::vector<pcl::Vertices> &p
       cell_data.data_indices.push_back (cp);
       getCellCenterFromIndex (index_3d, cell_data.pt_on_surface);
       cell_hash_map_[index_1d] = cell_data;
-      occupied_cell_list_[index_1d] = 1;
+      occupied_cell_list_[index_1d] = true;
     }
     else
     {
@@ -651,7 +651,6 @@ pcl::GridProjection<PointNT>::reconstructPolygons (std::vector<pcl::Vertices> &p
   }
 
   Eigen::Vector3i index;
-  int numOfFilledPad = 0;
 
   for (int i = 0; i < data_size_; ++i)
   {
@@ -665,7 +664,6 @@ pcl::GridProjection<PointNT>::reconstructPolygons (std::vector<pcl::Vertices> &p
         if (occupied_cell_list_[getIndexIn1D (index)])
         {
           fillPad (index);
-          numOfFilledPad++;
         }
       }
     }

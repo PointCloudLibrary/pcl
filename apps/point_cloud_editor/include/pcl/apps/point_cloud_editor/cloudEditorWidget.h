@@ -49,7 +49,7 @@
 
 #include <pcl/memory.h>  // for pcl::shared_ptr
 
-#include <QGLWidget>
+#include <QOpenGLWidget>
 
 #include <functional>
 
@@ -57,7 +57,7 @@ class Selection;
 
 /// @brief class declaration for the widget for editing and viewing
 /// point clouds.
-class CloudEditorWidget : public QGLWidget
+class CloudEditorWidget : public QOpenGLWidget
 {
   Q_OBJECT
   public:

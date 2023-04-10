@@ -93,9 +93,6 @@ pcl::concatenateFields (const pcl::PCLPointCloud2 &cloud1,
   cloud_out.height = cloud2.height;
   cloud_out.is_bigendian = cloud2.is_bigendian;
 
-  //We need to find how many fields overlap between the two clouds
-  std::size_t total_fields = cloud2.fields.size ();
-
   //for the non-matching fields in cloud1, we need to store the offset
   //from the beginning of the point
   std::vector<const pcl::PCLPointField*> cloud1_unique_fields;
@@ -142,8 +139,6 @@ pcl::concatenateFields (const pcl::PCLPointCloud2 &cloud1,
         size = cloud1.point_step - cloud1_fields_sorted[i]->offset;
 
       field_sizes.push_back (size);
-
-      total_fields++;
     }
   }
 
@@ -206,10 +201,7 @@ pcl::concatenateFields (const pcl::PCLPointCloud2 &cloud1,
     point_offset += field_offset;
   }
 
-  if (!cloud1.is_dense || !cloud2.is_dense)
-    cloud_out.is_dense = false;
-  else
-    cloud_out.is_dense = true;
+  cloud_out.is_dense = cloud1.is_dense && cloud2.is_dense;
 
   return (true);
 }

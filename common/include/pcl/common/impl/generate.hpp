@@ -111,21 +111,21 @@ CloudGenerator<PointT, GeneratorT>::setParametersForZ (const GeneratorParameters
 template <typename PointT, typename GeneratorT> const typename CloudGenerator<PointT, GeneratorT>::GeneratorParameters& 
 CloudGenerator<PointT, GeneratorT>::getParametersForX () const
 {
-  x_generator_.getParameters ();
+  return x_generator_.getParameters ();
 }
 
 
 template <typename PointT, typename GeneratorT> const typename CloudGenerator<PointT, GeneratorT>::GeneratorParameters& 
 CloudGenerator<PointT, GeneratorT>::getParametersForY () const
 {
-  y_generator_.getParameters ();
+  return y_generator_.getParameters ();
 }
 
 
 template <typename PointT, typename GeneratorT> const typename CloudGenerator<PointT, GeneratorT>::GeneratorParameters& 
 CloudGenerator<PointT, GeneratorT>::getParametersForZ () const
 {
-  z_generator_.getParameters ();
+  return z_generator_.getParameters ();
 }
 
 
@@ -230,14 +230,14 @@ CloudGenerator<pcl::PointXY, GeneratorT>::setParametersForY (const GeneratorPara
 template <typename GeneratorT> const typename CloudGenerator<pcl::PointXY, GeneratorT>::GeneratorParameters&
 CloudGenerator<pcl::PointXY, GeneratorT>::getParametersForX () const
 {
-  x_generator_.getParameters ();
+  return x_generator_.getParameters ();
 }
 
 
 template <typename GeneratorT> const typename CloudGenerator<pcl::PointXY, GeneratorT>::GeneratorParameters&
 CloudGenerator<pcl::PointXY, GeneratorT>::getParametersForY () const
 {
-  y_generator_.getParameters ();
+  return y_generator_.getParameters ();
 }
 
 

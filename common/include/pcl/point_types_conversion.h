@@ -173,12 +173,12 @@ namespace pcl
     f[2] /= 1.08883;
 
     // CIEXYZ -> CIELAB
-    for (int i = 0; i < 3; ++i) {
-      if (f[i] > 0.008856) {
-        f[i] = std::pow(f[i], 1.0 / 3.0);
+    for (float & xyz : f) {
+      if (xyz > 0.008856) {
+        xyz = std::pow(xyz, 1.0 / 3.0);
       }
       else {
-        f[i] = 7.787 * f[i] + 16.0 / 116.0;
+        xyz = 7.787 * xyz + 16.0 / 116.0;
       }
     }
 

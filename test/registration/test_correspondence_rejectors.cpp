@@ -92,7 +92,7 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
   // Transform the target
   pcl::PointCloud<pcl::PointXYZ>::Ptr target(new pcl::PointCloud<pcl::PointXYZ>);
   Eigen::Vector3f t(0.1f, 0.2f, 0.3f);
-  Eigen::Quaternionf q (float (std::cos (0.5*M_PI_4)), 0.0f, 0.0f, float (std::sin (0.5*M_PI_4)));
+  Eigen::Quaternionf q (static_cast<float>(std::cos (0.5*M_PI_4)), 0.0f, 0.0f, static_cast<float>(std::sin (0.5*M_PI_4)));
   pcl::transformPointCloud (*cloud, *target, t, q);
   
   // Noisify the target with a known seed and N(0, 0.005) using deterministic sampling
@@ -121,8 +121,8 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
   reject.getRemainingCorrespondences (corr, result);
   
   // Ground truth fraction of inliers and estimated fraction of inliers
-  const float ground_truth_frac = float (size-last) / float (size);
-  const float accepted_frac = float (result.size()) / float (size);
+  const float ground_truth_frac = static_cast<float>(size-last) / static_cast<float>(size);
+  const float accepted_frac = static_cast<float>(result.size()) / static_cast<float>(size);
 
   /*
    * Test criterion 1: verify that the method accepts at least 25 % of the input correspondences,
@@ -143,8 +143,8 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
       ++true_positives;
   const std::size_t false_positives = result.size() - true_positives;
 
-  const double precision = double(true_positives) / double(true_positives+false_positives);
-  const double recall = double(true_positives) / double(size-last);
+  const double precision = static_cast<double>(true_positives) / static_cast<double>(true_positives+false_positives);
+  const double recall = static_cast<double>(true_positives) / static_cast<double>(size-last);
   EXPECT_NEAR(precision, 1.0, 0.4);
   EXPECT_NEAR(recall, 1.0, 0.2);
 }

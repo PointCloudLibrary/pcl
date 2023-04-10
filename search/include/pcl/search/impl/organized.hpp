@@ -128,8 +128,8 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
   // project query point on the image plane
   //Eigen::Vector3f q = KR_ * query.getVector3fMap () + projection_matrix_.block <3, 1> (0, 3);
   Eigen::Vector3f q (KR_ * queryvec + projection_matrix_.block <3, 1> (0, 3));
-  int xBegin = int(q [0] / q [2] + 0.5f);
-  int yBegin = int(q [1] / q [2] + 0.5f);
+  int xBegin = static_cast<int>(q [0] / q [2] + 0.5f);
+  int yBegin = static_cast<int>(q [1] / q [2] + 0.5f);
   int xEnd   = xBegin + 1; // end is the pixel that is not used anymore, like in iterators
   int yEnd   = yBegin + 1;
 
@@ -340,8 +340,8 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
     return;
   }
   
-  const unsigned ySkip = (std::max) (input_->height >> pyramid_level_, unsigned (1));
-  const unsigned xSkip = (std::max) (input_->width >> pyramid_level_, unsigned (1));
+  const unsigned ySkip = (std::max) (input_->height >> pyramid_level_, static_cast<unsigned>(1));
+  const unsigned xSkip = (std::max) (input_->width >> pyramid_level_, static_cast<unsigned>(1));
 
   Indices indices;
   indices.reserve (input_->size () >> (pyramid_level_ << 1));
@@ -359,7 +359,7 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
 
   double residual_sqr = pcl::estimateProjectionMatrix<PointT> (input_, projection_matrix_, indices);
   
-  if (std::abs (residual_sqr) > eps_ * float (indices.size ()))
+  if (std::abs (residual_sqr) > eps_ * static_cast<float>(indices.size ()))
   {
     PCL_ERROR ("[pcl::%s::estimateProjectionMatrix] Input dataset is not from a projective device!\nResidual (MSE) %f, using %d valid points\n", this->getName ().c_str (), residual_sqr / double (indices.size()), indices.size ());
     return;

@@ -3,7 +3,7 @@
 #include <sstream>
 
 #include <pcl/io/pcd_io.h>
-#include <pcl/registration/transforms.h>
+#include <pcl/common/transforms.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/keypoints/sift_keypoint.h>
 

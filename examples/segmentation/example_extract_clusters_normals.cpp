@@ -79,9 +79,9 @@ main (int argc, char **argv)
   
   // Extracting Euclidean clusters using cloud and its normals
   std::vector<pcl::PointIndices> cluster_indices;
-  const float tolerance = 0.5f; // 50cm tolerance in (x, y, z) coordinate system
-  const double eps_angle = 5 * (M_PI / 180.0); // 5degree tolerance in normals
-  const unsigned int min_cluster_size = 50;
+  constexpr float tolerance = 0.5f; // 50cm tolerance in (x, y, z) coordinate system
+  constexpr double eps_angle = 5 * (M_PI / 180.0); // 5degree tolerance in normals
+  constexpr unsigned int min_cluster_size = 50;
  
   pcl::extractEuclideanClusters (*cloud_ptr, *cloud_normals, tolerance, tree_ec, cluster_indices, eps_angle, min_cluster_size);
 

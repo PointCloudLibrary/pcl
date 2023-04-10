@@ -198,31 +198,31 @@ then a sample value is given for reference.
 
 * Boost
 
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+ 
-| cache variable                   | meaning                                                       | sample value                             |
-+==================================+===============================================================+==========================================+
-| Boost_DATE_TIME_LIBRARY          | full path to boost_date-time.[so,lib,a]                       | /usr/local/lib/libboost_date_time.so     |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_DATE_TIME_LIBRARY_DEBUG    | full path to boost_date-time.[so,lib,a] (debug version)       | /usr/local/lib/libboost_date_time-gd.so  |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_DATE_TIME_LIBRARY_RELEASE  | full path to boost_date-time.[so,lib,a] (release version)     | /usr/local/lib/libboost_date_time.so     |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_FILESYSTEM_LIBRARY         | full path to boost_filesystem.[so,lib,a]                      | /usr/local/lib/libboost_filesystem.so    |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_FILESYSTEM_LIBRARY_DEBUG   | full path to boost_filesystem.[so,lib,a] (debug version)      | /usr/local/lib/libboost_filesystem-gd.so |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_FILESYSTEM_LIBRARY_RELEASE | full path to boost_filesystem.[so,lib,a] (release version)    | /usr/local/lib/libboost_filesystem.so    |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_INCLUDE_DIR                | path to boost headers directory                               | /usr/local/include                       |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_LIBRARY_DIRS               | path to boost libraries directory                             | /usr/local/lib                           |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_SYSTEM_LIBRARY             | full path to boost_system.[so,lib,a]                          | /usr/local/lib/libboost_system.so        |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_SYSTEM_LIBRARY_DEBUG       | full path to boost_system.[so,lib,a] (debug version)          | /usr/local/lib/libboost_system-gd.so     |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_SYSTEM_LIBRARY_RELEASE     | full path to boost_system.[so,lib,a] (release version)        | /usr/local/lib/libboost_system.so        |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+ 
+| cache variable                      | meaning                                                       | sample value                                |
++=====================================+===============================================================+=============================================+
+| Boost_SERIALIZATION_LIBRARY         | full path to boost_serialization.[so,lib,a]                   | /usr/local/lib/libboost_serialization.so    |
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+
+| Boost_SERIALIZATION_LIBRARY_DEBUG   | full path to boost_serialization.[so,lib,a] (debug version)   | /usr/local/lib/libboost_serialization-gd.so |
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+
+| Boost_SERIALIZATION_LIBRARY_RELEASE | full path to boost_serialization.[so,lib,a] (release version) | /usr/local/lib/libboost_serialization.so    |
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+
+| Boost_FILESYSTEM_LIBRARY            | full path to boost_filesystem.[so,lib,a]                      | /usr/local/lib/libboost_filesystem.so       |
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+
+| Boost_FILESYSTEM_LIBRARY_DEBUG      | full path to boost_filesystem.[so,lib,a] (debug version)      | /usr/local/lib/libboost_filesystem-gd.so    |
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+
+| Boost_FILESYSTEM_LIBRARY_RELEASE    | full path to boost_filesystem.[so,lib,a] (release version)    | /usr/local/lib/libboost_filesystem.so       |
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+
+| Boost_INCLUDE_DIR                   | path to boost headers directory                               | /usr/local/include                          |
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+
+| Boost_LIBRARY_DIRS                  | path to boost libraries directory                             | /usr/local/lib                              |
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+
+| Boost_SYSTEM_LIBRARY                | full path to boost_system.[so,lib,a]                          | /usr/local/lib/libboost_system.so           |
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+
+| Boost_SYSTEM_LIBRARY_DEBUG          | full path to boost_system.[so,lib,a] (debug version)          | /usr/local/lib/libboost_system-gd.so        |
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+
+| Boost_SYSTEM_LIBRARY_RELEASE        | full path to boost_system.[so,lib,a] (release version)        | /usr/local/lib/libboost_system.so           |
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+
 
 
 * CMinpack

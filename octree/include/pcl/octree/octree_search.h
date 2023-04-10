@@ -403,7 +403,7 @@ protected:
    * \param[in] key octree key addressing a leaf node.
    * \param[in] tree_depth current depth/level in the octree
    * \param[in] squared_search_radius squared search radius distance
-   * \param[out] point_candidates priority queue of nearest neigbor point candidates
+   * \param[out] point_candidates priority queue of nearest neighbor point candidates
    * \return squared search radius based on current point candidate set found
    */
   double
@@ -534,7 +534,7 @@ protected:
                        unsigned char& a) const
   {
     // Account for division by zero when direction vector is 0.0
-    const float epsilon = 1e-10f;
+    constexpr float epsilon = 1e-10f;
     if (direction.x() == 0.0)
       direction.x() = epsilon;
     if (direction.y() == 0.0)

@@ -516,8 +516,8 @@ on_passive_motion(int x, int y)
     return;
 
   // in window coordinates positive y-axis is down
-  double pitch = -(0.5 - (double)y / window_height_) * M_PI * 4;
-  double yaw = (0.5 - (double)x / window_width_) * M_PI * 2 * 4;
+  double pitch = -(0.5 - static_cast<double>(y) / window_height_) * M_PI * 4;
+  double yaw = (0.5 - static_cast<double>(x) / window_width_) * M_PI * 2 * 4;
 
   camera_->setPitch(pitch);
   camera_->setYaw(yaw);

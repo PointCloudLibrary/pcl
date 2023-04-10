@@ -51,7 +51,7 @@ namespace pcl
     namespace gpu
     {   
         /**
-         * \brief   Octree implementation on GPU. It suppors parallel building and parallel batch search as well .       
+         * \brief   Octree implementation on GPU. It supports parallel building and parallel batch search as well .       
          * \author  Anaoly Baksheev, Itseez, myname.mysurname@mycompany.com
          */
 

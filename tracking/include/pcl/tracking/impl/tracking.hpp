@@ -86,7 +86,7 @@ struct EIGEN_ALIGN16 ParticleXYZRPY : public _ParticleXYZRPY {
 
     // Scales 1.0 radians of variance in RPY sampling into equivalent units for
     // quaternion sampling.
-    const float scale_factor = 0.2862;
+    constexpr float scale_factor = 0.2862;
 
     float a = sampleNormal(0, scale_factor * cov[3]);
     float b = sampleNormal(0, scale_factor * cov[4]);
@@ -292,7 +292,7 @@ struct EIGEN_ALIGN16 ParticleXYZR : public _ParticleXYZR {
     float trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw;
     getTranslationAndEulerAngles(
         trans, trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw);
-    return (pcl::tracking::ParticleXYZR(trans_x, trans_y, trans_z, 0, trans_pitch, 0));
+    return {trans_x, trans_y, trans_z, 0, trans_pitch, 0};
   }
 
   // a[i]
@@ -458,8 +458,7 @@ struct EIGEN_ALIGN16 ParticleXYRPY : public _ParticleXYRPY {
     float trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw;
     getTranslationAndEulerAngles(
         trans, trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw);
-    return (pcl::tracking::ParticleXYRPY(
-        trans_x, 0, trans_z, trans_roll, trans_pitch, trans_yaw));
+    return {trans_x, 0, trans_z, trans_roll, trans_pitch, trans_yaw};
   }
 
   // a[i]
@@ -625,8 +624,7 @@ struct EIGEN_ALIGN16 ParticleXYRP : public _ParticleXYRP {
     float trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw;
     getTranslationAndEulerAngles(
         trans, trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw);
-    return (
-        pcl::tracking::ParticleXYRP(trans_x, 0, trans_z, 0, trans_pitch, trans_yaw));
+    return {trans_x, 0, trans_z, 0, trans_pitch, trans_yaw};
   }
 
   // a[i]
@@ -792,7 +790,7 @@ struct EIGEN_ALIGN16 ParticleXYR : public _ParticleXYR {
     float trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw;
     getTranslationAndEulerAngles(
         trans, trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw);
-    return (pcl::tracking::ParticleXYR(trans_x, 0, trans_z, 0, trans_pitch, 0));
+    return {trans_x, 0, trans_z, 0, trans_pitch, 0};
   }
 
   // a[i]

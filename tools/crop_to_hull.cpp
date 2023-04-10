@@ -52,7 +52,7 @@ using namespace pcl::console;
 using PointT = PointXYZ;
 using CloudT = PointCloud<PointT>;
 
-const static double default_alpha = 1e3f;
+constexpr double default_alpha = 1e3f;
 
 static void
 printHelp (int, char **argv)

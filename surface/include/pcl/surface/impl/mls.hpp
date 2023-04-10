@@ -40,17 +40,19 @@
 #ifndef PCL_SURFACE_IMPL_MLS_H_
 #define PCL_SURFACE_IMPL_MLS_H_
 
-#include <pcl/type_traits.h>
-#include <pcl/surface/mls.h>
+#include <pcl/common/centroid.h>
 #include <pcl/common/common.h> // for getMinMax3D
 #include <pcl/common/copy_point.h>
-#include <pcl/common/centroid.h>
 #include <pcl/common/eigen.h>
 #include <pcl/search/kdtree.h> // for KdTree
 #include <pcl/search/organized.h> // for OrganizedNeighbor
+#include <pcl/surface/mls.h>
+#include <pcl/type_traits.h>
 
 #include <Eigen/Geometry> // for cross
 #include <Eigen/LU> // for inverse
+
+#include <memory>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -117,7 +119,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
       std::random_device rd;
       rng_.seed (rd());
       const double tmp = search_radius_ / 2.0;
-      rng_uniform_distribution_.reset (new std::uniform_real_distribution<> (-tmp, tmp));
+      rng_uniform_distribution_ = std::make_unique<std::uniform_real_distribution<>> (-tmp, tmp);
 
       break;
     }
@@ -388,7 +390,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performUpsampling (PointCloudOut &
 
       // If the closest point did not have a valid MLS fitting result
       // OR if it is too far away from the sampled point
-      if (mls_results_[input_index].valid == false)
+      if (!mls_results_[input_index].valid)
         continue;
 
       Eigen::Vector3d add_point = (*distinct_cloud_)[dp_i].getVector3fMap ().template cast<double> ();
@@ -425,7 +427,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performUpsampling (PointCloudOut &
 
       // If the closest point did not have a valid MLS fitting result
       // OR if it is too far away from the sampled point
-      if (mls_results_[input_index].valid == false)
+      if (!mls_results_[input_index].valid)
         continue;
 
       Eigen::Vector3d add_point = p.getVector3fMap ().template cast<double> ();

@@ -172,16 +172,10 @@ std::tuple<std::function<void ()>, std::function<void ()> >
 ply_to_raw_converter::element_definition_callback (const std::string& element_name, std::size_t)
 {
   if (element_name == "vertex") {
-    return std::tuple<std::function<void ()>, std::function<void ()> > (
-      [this] { vertex_begin (); },
-      [this] { vertex_end (); }
-    );
+    return {[this] { vertex_begin(); }, [this] { vertex_end(); }};
   }
   if (element_name == "face") {
-    return std::tuple<std::function<void ()>, std::function<void ()> > (
-      [this] { face_begin (); },
-      [this] { face_end (); }
-    );
+    return {[this] { face_begin(); }, [this] { face_end(); }};
   }
   return {};
 }
@@ -210,13 +204,11 @@ ply_to_raw_converter::list_property_definition_callback (const std::string& elem
 {
   if ((element_name == "face") && (property_name == "vertex_indices")) 
   {
-    return std::tuple<std::function<void (pcl::io::ply::uint8)>, 
-      std::function<void (pcl::io::ply::int32)>, 
-      std::function<void ()> > (
-        [this] (pcl::io::ply::uint8 p){ face_vertex_indices_begin (p); },
-        [this] (pcl::io::ply::int32 vertex_index) { face_vertex_indices_element (vertex_index); },
-        [this] { face_vertex_indices_end (); }
-    );
+    return {[this](pcl::io::ply::uint8 p) { face_vertex_indices_begin(p); },
+            [this](pcl::io::ply::int32 vertex_index) {
+              face_vertex_indices_element(vertex_index);
+            },
+            [this] { face_vertex_indices_end(); }};
   }
   return {};
 }

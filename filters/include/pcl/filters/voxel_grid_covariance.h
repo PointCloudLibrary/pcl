@@ -44,7 +44,7 @@
 
 namespace pcl
 {
-  /** \brief A searchable voxel strucure containing the mean and covariance of the data.
+  /** \brief A searchable voxel structure containing the mean and covariance of the data.
     * \note For more information please see
     * <b>Magnusson, M. (2009). The Three-Dimensional Normal-Distributions Transform —
     * an Efﬁcient Representation for Registration, Surface Analysis, and Loop Detection.
@@ -464,7 +464,7 @@ namespace pcl
         }
 
         // Find k-nearest neighbors in the occupied voxel centroid cloud
-        Indices k_indices;
+        Indices k_indices (k);
         k = kdtree_.nearestKSearch (point, k, k_indices, k_sqr_distances);
 
         // Find leaves corresponding to neighbors
@@ -582,7 +582,7 @@ namespace pcl
       /** \brief Point cloud containing centroids of voxels containing atleast minimum number of points. */
       PointCloudPtr voxel_centroids_;
 
-      /** \brief Indices of leaf structurs associated with each point in \ref voxel_centroids_ (used for searching). */
+      /** \brief Indices of leaf structures associated with each point in \ref voxel_centroids_ (used for searching). */
       std::vector<int> voxel_centroids_leaf_indices_;
 
       /** \brief KdTree generated using \ref voxel_centroids_ (used for searching). */

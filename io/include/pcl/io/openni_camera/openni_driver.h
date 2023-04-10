@@ -89,7 +89,7 @@ namespace openni_wrapper
      * @author Suat Gedikli
      * @return the number of available devices.
      */
-    inline unsigned getNumberDevices () const throw ();
+    inline unsigned getNumberDevices () const noexcept;
 
     /**
      * @author Suat Gedikli
@@ -134,7 +134,7 @@ namespace openni_wrapper
      * @param[in] index the index of the device in the device list.
      * @return the serial number of the device.
      */
-    const char* getSerialNumber (unsigned index) const throw ();
+    const char* getSerialNumber (unsigned index) const noexcept;
 
     /**
      * @author Suat Gedikli
@@ -142,7 +142,7 @@ namespace openni_wrapper
      * @param[in] index the index of the device in the device list.
      * @return the connection string of the device.
      */
-    const char* getConnectionString (unsigned index) const throw ();
+    const char* getConnectionString (unsigned index) const noexcept;
 
     /**
      * @author Suat Gedikli
@@ -150,7 +150,7 @@ namespace openni_wrapper
      * @param[in] index the index of the device in the device list.
      * @return the vendor name of the USB device.
      */
-    const char* getVendorName (unsigned index) const throw ();
+    const char* getVendorName (unsigned index) const noexcept;
 
     /**
      * @author Suat Gedikli
@@ -158,7 +158,7 @@ namespace openni_wrapper
      * @param[in] index the index of the device in the device list.
      * @return the product name of the USB device.
      */
-    const char* getProductName (unsigned index) const throw ();
+    const char* getProductName (unsigned index) const noexcept;
 
     /**
      * @author Suat Gedikli
@@ -166,7 +166,7 @@ namespace openni_wrapper
      * @param[in] index the index of the device in the device list.
      * @return the vendor id of the USB device.
      */
-    unsigned short getVendorID (unsigned index) const throw ();
+    unsigned short getVendorID (unsigned index) const noexcept;
 
     /**
      * @author Suat Gedikli
@@ -174,7 +174,7 @@ namespace openni_wrapper
      * @param[in] index the index of the device in the device list.
      * @return the product id of the USB device.
      */
-    unsigned short getProductID (unsigned index) const throw ();
+    unsigned short getProductID (unsigned index) const noexcept;
 
     /**
      * @author Suat Gedikli
@@ -182,7 +182,7 @@ namespace openni_wrapper
      * @param[in] index the index of the device in the device list.
      * @return the bus id of the USB device.
      */
-    unsigned char  getBus (unsigned index) const throw ();
+    unsigned char  getBus (unsigned index) const noexcept;
 
     /**
      * @author Suat Gedikli
@@ -190,7 +190,7 @@ namespace openni_wrapper
      * @param[in] index the index of the device in the device list.
      * @return the address of the USB device.
      */
-    unsigned char  getAddress (unsigned index) const throw ();
+    unsigned char  getAddress (unsigned index) const noexcept;
 
     /**
      * @author Suat Gedikli
@@ -245,7 +245,7 @@ namespace openni_wrapper
   }
 
   unsigned
-  OpenNIDriver::getNumberDevices () const throw ()
+  OpenNIDriver::getNumberDevices () const noexcept
   {
     return static_cast<unsigned> (device_context_.size ());
   }

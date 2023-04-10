@@ -661,7 +661,7 @@ RangeImage::getAcutenessValue (const PointWithRange& point1, const PointWithRang
   float impact_angle = getImpactAngle (point1, point2);
   if (std::isinf (impact_angle))
     return -std::numeric_limits<float>::infinity ();
-  float ret = 1.0f - float (std::fabs (impact_angle)/ (0.5f*M_PI));
+  float ret = 1.0f - static_cast<float>(std::fabs (impact_angle)/ (0.5f*M_PI));
   if (impact_angle < 0.0f)
     ret = -ret;
   //if (std::abs (ret)>1)
@@ -682,7 +682,7 @@ RangeImage::getAcutenessValue (int x1, int y1, int x2, int y2) const
 const Eigen::Vector3f 
 RangeImage::getSensorPos () const
 {
-  return Eigen::Vector3f (to_world_system_ (0,3), to_world_system_ (1,3), to_world_system_ (2,3));
+  return {to_world_system_ (0,3), to_world_system_ (1,3), to_world_system_ (2,3)};
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -801,7 +801,7 @@ RangeImage::getMaxAngleSize (const Eigen::Affine3f& viewer_pose, const Eigen::Ve
 Eigen::Vector3f 
 RangeImage::getEigenVector3f (const PointWithRange& point)
 {
-  return Eigen::Vector3f (point.x, point.y, point.z);
+  return {point.x, point.y, point.z};
 }
 
 /////////////////////////////////////////////////////////////////////////

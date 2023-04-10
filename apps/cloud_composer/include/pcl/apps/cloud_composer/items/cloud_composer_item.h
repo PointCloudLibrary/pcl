@@ -111,15 +111,15 @@ namespace pcl
     //    CloudPtrT
     //    getCloudPtr () const;
         
-        /** \brief Paint View function - reimpliment in item subclass if it can be displayed in PCLVisualizer*/
+        /** \brief Paint View function - reimplement in item subclass if it can be displayed in PCLVisualizer*/
         virtual void
         paintView (pcl::visualization::PCLVisualizer::Ptr vis) const;
         
-        /** \brief Remove from View function - reimpliment in item subclass if it can be displayed in PCLVisualizer*/
+        /** \brief Remove from View function - reimplement in item subclass if it can be displayed in PCLVisualizer*/
         virtual void
         removeFromView (pcl::visualization::PCLVisualizer::Ptr vis) const;
         
-        /** \brief Inspector additional tabs paint function - reimpliment in item subclass if item has additional tabs to show in Inspector*/
+        /** \brief Inspector additional tabs paint function - reimplement in item subclass if item has additional tabs to show in Inspector*/
         virtual QMap <QString, QWidget*>
         getInspectorTabs ();
               

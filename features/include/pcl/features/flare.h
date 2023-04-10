@@ -213,7 +213,7 @@ namespace pcl
       inline void 
       setSearchMethodForSampledSurface (const KdTreePtr &tree) { sampled_tree_ = tree; }
 
-      /** \brief Get a pointer to the search method used for the extimation of x axis. */
+      /** \brief Get a pointer to the search method used for the estimation of x axis. */
       inline const KdTreePtr&  
       getSearchMethodForSampledSurface () const
       {

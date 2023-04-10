@@ -255,7 +255,7 @@ namespace pcl
           return (points_x.size ());
         }
   
-        /** \brief Check if the internal pooint data vectors are valid. */
+        /** \brief Check if the internal point data vectors are valid. */
         bool 
         sane () const
         {

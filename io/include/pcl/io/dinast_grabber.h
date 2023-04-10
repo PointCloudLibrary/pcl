@@ -81,7 +81,7 @@ namespace pcl
         */
       std::string
       getName () const override
-      { return (std::string ("DinastGrabber")); }
+      { return {"DinastGrabber"}; }
       
       /** \brief Start the data acquisition process.
         */

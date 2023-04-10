@@ -52,7 +52,6 @@ PCL_DEPRECATED_HEADER(1, 15, "Please include the needed boost headers directly."
 #include <boost/mpl/joint_view.hpp>
 #include <boost/mpl/transform.hpp>
 #include <boost/mpl/vector.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/foreach.hpp>
 #include <boost/shared_array.hpp>

@@ -201,7 +201,7 @@ namespace pcl
       // Setup Exception handling
       setjmp (png_jmpbuf(png_ptr));
 
-      std::uint8_t* input_pointer = &pngData_arg[0];
+      std::uint8_t* input_pointer = pngData_arg.data();
       png_set_read_fn (png_ptr, reinterpret_cast<void*> (&input_pointer), user_read_data);
 
       png_read_info (png_ptr, info_ptr);

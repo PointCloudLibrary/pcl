@@ -123,4 +123,4 @@ It will show you the result of applying RandomSampleConsensus to this data set w
    :align: center
    :height: 400px
 
-.. [WikipediaRANSAC] http://en.wikipedia.org/wiki/RANSAC
+.. [WikipediaRANSAC] https://en.wikipedia.org/wiki/RANSAC

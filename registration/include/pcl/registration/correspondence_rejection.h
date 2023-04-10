@@ -385,8 +385,9 @@ public:
            "Normals are not set for the input and target point clouds");
     const NormalT& src = (*input_normals_)[corr.index_query];
     const NormalT& tgt = (*target_normals_)[corr.index_match];
-    return (double((src.normal[0] * tgt.normal[0]) + (src.normal[1] * tgt.normal[1]) +
-                   (src.normal[2] * tgt.normal[2])));
+    return (static_cast<double>((src.normal[0] * tgt.normal[0]) +
+                                (src.normal[1] * tgt.normal[1]) +
+                                (src.normal[2] * tgt.normal[2])));
   }
 
 private:
@@ -396,7 +397,7 @@ private:
   /** \brief The input transformed point cloud dataset */
   PointCloudPtr input_transformed_;
 
-  /** \brief The target point cloud datase. */
+  /** \brief The target point cloud dataset. */
   PointCloudConstPtr target_;
 
   /** \brief Normals to the input point cloud */

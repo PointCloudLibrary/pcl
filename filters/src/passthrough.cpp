@@ -217,7 +217,7 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
         }
 
         // Unoptimized memcpys: assume fields x, y, z are in random order
-        memcpy (&pt[0], &input_->data[xyz_offset[0]], sizeof(float));
+        memcpy (&pt[0], &input_->data[xyz_offset[0]], sizeof(float)); // NOLINT(readability-container-data-pointer)
         memcpy (&pt[1], &input_->data[xyz_offset[1]], sizeof(float));
         memcpy (&pt[2], &input_->data[xyz_offset[2]], sizeof(float));
 
@@ -245,7 +245,7 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     for (int cp = 0; cp < nr_points; ++cp, xyz_offset += input_->point_step)
     {
       // Unoptimized memcpys: assume fields x, y, z are in random order
-      memcpy (&pt[0], &input_->data[xyz_offset[0]], sizeof(float));
+      memcpy (&pt[0], &input_->data[xyz_offset[0]], sizeof(float)); // NOLINT(readability-container-data-pointer)
       memcpy (&pt[1], &input_->data[xyz_offset[1]], sizeof(float));
       memcpy (&pt[2], &input_->data[xyz_offset[2]], sizeof(float));
 

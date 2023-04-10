@@ -56,7 +56,7 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2
 
   if (std_mul_ == 0.0)
   {
-    PCL_ERROR ("[pcl::%s::applyFilter] Standard deviation multipler not set!\n", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::applyFilter] Standard deviation multiplier not set!\n", getClassName ().c_str ());
     output.width = output.height = 0;
     output.data.clear ();
     return;
@@ -147,7 +147,7 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (Indices& indic
 
   if (std_mul_ == 0.0)
   {
-    PCL_ERROR ("[pcl::%s::applyFilter] Standard deviation multipler not set!\n", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::applyFilter] Standard deviation multiplier not set!\n", getClassName ().c_str ());
     indices.clear();
     return;
   }

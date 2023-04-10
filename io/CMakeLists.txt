@@ -211,7 +211,7 @@ if(MINGW)
 endif()
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/ply" ${PLY_INCLUDES})
 target_include_directories(pcl_io_ply PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_link_libraries(pcl_io_ply Boost::boost)
+target_link_libraries(pcl_io_ply pcl_common Boost::boost)
 
 set(srcs
   src/debayer.cpp
@@ -269,6 +269,7 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/io.h"
   "include/pcl/${SUBSYS_NAME}/grabber.h"
   "include/pcl/${SUBSYS_NAME}/file_grabber.h"
+  "include/pcl/${SUBSYS_NAME}/timestamp.h"
   "include/pcl/${SUBSYS_NAME}/pcd_grabber.h"
   "include/pcl/${SUBSYS_NAME}/pcd_io.h"
   "include/pcl/${SUBSYS_NAME}/vtk_io.h"
@@ -347,6 +348,7 @@ target_link_libraries("${LIB_NAME}" Boost::boost Boost::filesystem Boost::iostre
 if(VTK_FOUND)
   if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
     target_link_libraries("${LIB_NAME}" 
+                          VTK::FiltersGeneral
                           VTK::IOImage
                           VTK::IOGeometry
                           VTK::IOPLY)
@@ -438,7 +440,3 @@ PCL_ADD_INCLUDES("${SUBSYS_NAME}" compression ${compression_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/openni_camera" ${OPENNI_INCLUDES})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/openni2" ${OPENNI2_INCLUDES})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
-
-if(BUILD_tools)
-  add_subdirectory(tools)
-endif()

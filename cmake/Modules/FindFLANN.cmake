@@ -37,6 +37,7 @@
 # Early return if FLANN target is already defined. This makes it safe to run
 # this script multiple times.
 if(TARGET FLANN::FLANN)
+  set(FLANN_FOUND ON)
   return()
 endif()
 

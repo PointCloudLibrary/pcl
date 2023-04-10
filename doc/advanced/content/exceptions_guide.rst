@@ -102,6 +102,6 @@ rule that can be applied but here are some of the most used guidelines:
 
   * exit with some error if the exception is critical
   * modify the parameters for the function that threw the exception and recall it again
-  * throw an exception with a meaningful message saying that you encountred an exception
+  * throw an exception with a meaningful message saying that you encountered an exception
   * continue (really bad)
 

@@ -851,7 +851,7 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
                       // current neighbor is inside triangle and is closer => the corresponding face
                       visibility[indexes_uv_to_points[idxNeighbor].idx_face] = false;
                       cpt_invisible++;
-                      //TODO we could remove the projections of this face from the kd-tree cloud, but I fond it slower, and I need the point to keep ordered to querry UV coordinates later
+                      //TODO we could remove the projections of this face from the kd-tree cloud, but I found it slower, and I need the point to keep ordered to query UV coordinates later
                     }
                   }
                 }

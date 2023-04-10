@@ -128,8 +128,8 @@ TEST (PCL, MovingLeastSquares)
 //  EXPECT_NEAR ((*mls_normals)[10].curvature, 0.019003, 1e-3);
 //  EXPECT_EQ (mls_normals->size (), 457);
 
-  const float voxel_size = 0.005f;
-  const int num_dilations = 5;
+  constexpr float voxel_size = 0.005f;
+  constexpr int num_dilations = 5;
   mls_upsampling.setUpsamplingMethod (MovingLeastSquares<PointXYZ, PointNormal>::VOXEL_GRID_DILATION);
   mls_upsampling.setDilationIterations (num_dilations);
   mls_upsampling.setDilationVoxelSize (voxel_size);

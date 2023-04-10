@@ -43,7 +43,7 @@
 namespace pcl
 {
   /** \brief TrajkovicKeypoint2D implements Trajkovic and Hedley corner detector on
-    * organized pooint cloud using intensity information.
+    * organized point cloud using intensity information.
     * It uses first order statistics to find variation of intensities in horizontal
     * or vertical directions.
     *

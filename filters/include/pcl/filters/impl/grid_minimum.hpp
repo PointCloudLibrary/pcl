@@ -135,7 +135,7 @@ pcl::GridMinimum<PointT>::applyFilterIndices (Indices &indices)
   
   // Second pass: sort the index_vector vector using value representing target cell as index
   // in effect all points belonging to the same output cell will be next to each other
-  std::sort (index_vector.begin (), index_vector.end (), std::less<point_index_idx> ());
+  std::sort (index_vector.begin (), index_vector.end (), std::less<> ());
 
   // Third pass: count output cells
   // we need to skip all the same, adjacenent idx values

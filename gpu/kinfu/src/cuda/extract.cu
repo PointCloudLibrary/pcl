@@ -86,14 +86,9 @@ namespace pcl
         int x = threadIdx.x + blockIdx.x * CTA_SIZE_X;
         int y = threadIdx.y + blockIdx.y * CTA_SIZE_Y;
        
-#if CUDART_VERSION >= 9000
         if (__all_sync (__activemask (), x >= VOLUME_X)
             || __all_sync (__activemask (), y >= VOLUME_Y))
           return;
-#else 
-        if (__all (x >= VOLUME_X) || __all (y >= VOLUME_Y))
-          return;
-#endif
 
         float3 V;
         V.x = (x + 0.5f) * cell_size.x;
@@ -183,14 +178,9 @@ namespace pcl
             }              /* if (W != 0 && F != 1.f) */
           }            /* if (x < VOLUME_X && y < VOLUME_Y) */
 
-#if CUDART_VERSION >= 9000
           int total_warp = __popc (__ballot_sync (__activemask (), local_count > 0))
                          + __popc (__ballot_sync (__activemask (), local_count > 1))
                          + __popc (__ballot_sync (__activemask (), local_count > 2));
-#else
-          ///not we fulfilled points array at current iteration
-          int total_warp = __popc (__ballot (local_count > 0)) + __popc (__ballot (local_count > 1)) + __popc (__ballot (local_count > 2));
-#endif
 
           if (total_warp > 0)
           {

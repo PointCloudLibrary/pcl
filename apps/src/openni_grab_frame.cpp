@@ -40,6 +40,7 @@
 #include <pcl/console/print.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/io/timestamp.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -157,8 +158,7 @@ public:
   saveCloud()
   {
     FPS_CALC("I/O");
-    const std::string time = boost::posix_time::to_iso_string(
-        boost::posix_time::microsec_clock::local_time());
+    const std::string time = pcl::getTimestamp();
     const std::string filepath = dir_name_ + '/' + file_name_ + '_' + time + ".pcd";
 
     if (format_ & 1) {

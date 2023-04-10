@@ -143,7 +143,7 @@ pcl::ASCIIReader::read (
 
   int total=0;
 
-  std::uint8_t* data = &cloud.data[0];
+  std::uint8_t* data = cloud.data.data();
   while (std::getline (ifile, line))
   {
     boost::algorithm::trim (line);

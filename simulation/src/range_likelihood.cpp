@@ -470,7 +470,7 @@ pcl::simulation::RangeLikelihood::RangeLikelihood(
   glBindBuffer(GL_ARRAY_BUFFER, quad_vbo_);
   glBufferData(GL_ARRAY_BUFFER,
                sizeof(Eigen::Vector3f) * vertices_.size(),
-               &(vertices_[0]),
+               vertices_.data(),
                GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 

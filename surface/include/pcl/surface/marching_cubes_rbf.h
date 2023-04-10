@@ -49,6 +49,7 @@ namespace pcl
     *
     * \note This algorithm in its current implementation may not be suitable for very
     * large point clouds, due to high memory requirements.
+    * \tparam PointNT Use `pcl::PointNormal` or `pcl::PointXYZRGBNormal` or `pcl::PointXYZINormal`
     * \author Alexandru E. Ichim
     * \ingroup surface
     */

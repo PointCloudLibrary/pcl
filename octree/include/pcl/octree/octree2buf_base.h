@@ -89,8 +89,8 @@ public:
   }
 
   /** \brief Get child pointer in current branch node
-   *  \param buffer_arg: buffer selector
-   *  \param index_arg: index of child in node
+   *  \param buffer_arg: buffer selector, must be less than 2
+   *  \param index_arg: index of child in node, must be less than 8
    *  \return pointer to child node
    */
   inline OctreeNode*
@@ -101,8 +101,8 @@ public:
   }
 
   /** \brief Set child pointer in current branch node
-   *  \param buffer_arg: buffer selector
-   *  \param index_arg: index of child in node
+   *  \param buffer_arg: buffer selector, must be less than 2
+   *  \param index_arg: index of child in node, must be less than 8
    *  \param newNode_arg: pointer to new child node
    */
   inline void
@@ -115,8 +115,8 @@ public:
   }
 
   /** \brief Check if branch is pointing to a particular child node
-   *  \param buffer_arg: buffer selector
-   *  \param index_arg: index of child in node
+   *  \param buffer_arg: buffer selector, must be less than 2
+   *  \param index_arg: index of child in node, must be less than 8
    *  \return "true" if pointer to child node exists; "false" otherwise
    */
   inline bool
@@ -258,7 +258,7 @@ public:
   using LeafNodeIterator = OctreeLeafNodeDepthFirstIterator<OctreeT>;
   using ConstLeafNodeIterator = const OctreeLeafNodeDepthFirstIterator<OctreeT>;
 
-  // The currently valide names
+  // The currently valid names
   using LeafNodeDepthFirstIterator = OctreeLeafNodeDepthFirstIterator<OctreeT>;
   using ConstLeafNodeDepthFirstIterator =
       const OctreeLeafNodeDepthFirstIterator<OctreeT>;

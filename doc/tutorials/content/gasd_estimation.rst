@@ -69,7 +69,7 @@ Estimating GASD features
 ------------------------
 
 The Globally Aligned Spatial Distribution is implemented in PCL as part of the
-`pcl_features <http://docs.pointclouds.org/trunk/group__features.html>`_
+`pcl_features <https://pointclouds.org/documentation/group__features.html>`_
 library.
 
 The default values for color GASD parameters are: :math:`m_s=6` (half size of 3), :math:`l_s=1`, :math:`m_c=4` (half size of 2) and :math:`l_c=12` and no histogram interpolation (INTERP_NONE). This results in an array of 984 float values. These are stored in a **pcl::GASDSignature984** point type. The default values for shape only GASD parameters are: :math:`m_s=8` (half size of 4), :math:`l_s=1` and trilinear histogram interpolation (INTERP_TRILINEAR). This results in an array of 512 float values, which may be stored in a **pcl::GASDSignature512** point type. It is also possible to use quadrilinear histogram interpolation (INTERP_QUADRILINEAR).

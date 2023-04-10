@@ -140,7 +140,7 @@ pcl::RegionGrowing<PointT, NormalT>::setCurvatureTestFlag (bool value)
 {
   curvature_flag_ = value;
 
-  if (curvature_flag_ == false && residual_flag_ == false)
+  if (!curvature_flag_ && !residual_flag_)
     residual_flag_ = true;
 }
 
@@ -157,7 +157,7 @@ pcl::RegionGrowing<PointT, NormalT>::setResidualTestFlag (bool value)
 {
   residual_flag_ = value;
 
-  if (curvature_flag_ == false && residual_flag_ == false)
+  if (!curvature_flag_ && !residual_flag_)
     curvature_flag_ = true;
 }
 
@@ -351,7 +351,7 @@ pcl::RegionGrowing<PointT, NormalT>::findPointNeighbours ()
   {
     for (int i_point = 0; i_point < point_number; i_point++)
     {
-      int point_index = (*indices_)[i_point];
+      const auto point_index = (*indices_)[i_point];
       neighbours.clear ();
       search_->nearestKSearch (i_point, neighbour_number_, neighbours, distances);
       point_neighbours_[point_index].swap (neighbours);
@@ -362,7 +362,7 @@ pcl::RegionGrowing<PointT, NormalT>::findPointNeighbours ()
     for (int i_point = 0; i_point < point_number; i_point++)
     {
       neighbours.clear ();
-      int point_index = (*indices_)[i_point];
+      const auto point_index = (*indices_)[i_point];
       if (!pcl::isFinite ((*input_)[point_index]))
         continue;
       search_->nearestKSearch (i_point, neighbour_number_, neighbours, distances);
@@ -382,11 +382,11 @@ pcl::RegionGrowing<PointT, NormalT>::applySmoothRegionGrowingAlgorithm ()
   std::pair<float, int> pair;
   point_residual.resize (num_of_pts, pair);
 
-  if (normal_flag_ == true)
+  if (normal_flag_)
   {
     for (int i_point = 0; i_point < num_of_pts; i_point++)
     {
-      int point_index = (*indices_)[i_point];
+      const auto point_index = (*indices_)[i_point];
       point_residual[i_point].first = (*normals_)[point_index].curvature;
       point_residual[i_point].second = point_index;
     }
@@ -396,7 +396,7 @@ pcl::RegionGrowing<PointT, NormalT>::applySmoothRegionGrowingAlgorithm ()
   {
     for (int i_point = 0; i_point < num_of_pts; i_point++)
     {
-      int point_index = (*indices_)[i_point];
+      const auto point_index = (*indices_)[i_point];
       point_residual[i_point].first = 0;
       point_residual[i_point].second = point_index;
     }
@@ -495,7 +495,7 @@ pcl::RegionGrowing<PointT, NormalT>::validatePoint (pcl::index_t initial_seed, p
   Eigen::Map<Eigen::Vector3f> initial_normal (static_cast<float*> ((*normals_)[point].normal));
 
   //check the angle between normals
-  if (smooth_mode_flag_ == true)
+  if (smooth_mode_flag_)
   {
     Eigen::Map<Eigen::Vector3f> nghbr_normal (static_cast<float*> ((*normals_)[nghbr].normal));
     float dot_product = std::abs (nghbr_normal.dot (initial_normal));

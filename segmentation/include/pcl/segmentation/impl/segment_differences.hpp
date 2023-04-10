@@ -63,7 +63,7 @@ pcl::getPointCloudDifference (
   // Iterate through the source data set
   for (index_t i = 0; i < static_cast<index_t> (src.size ()); ++i)
   {
-    // Ignore invalid points in the inpout cloud
+    // Ignore invalid points in the input cloud
     if (!isFinite (src[i]))
       continue;
     // Search for the closest point in the target data set (number of neighbors to find = 1)

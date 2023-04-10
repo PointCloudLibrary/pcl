@@ -1972,9 +1972,9 @@ TEST (FrustumCulling, Filters)
       for (int k = 0; k < 5; k++)
       {
         pcl::PointXYZ pt;
-        pt.x = float (i);
-        pt.y = float (j);
-        pt.z = float (k);
+        pt.x = static_cast<float>(i);
+        pt.y = static_cast<float>(j);
+        pt.z = static_cast<float>(k);
         input->push_back (pt);
       }
     }
@@ -2126,7 +2126,7 @@ TEST (ConditionalRemovalTfQuadraticXYZComparison, Filters)
   EXPECT_EQ ((*input)[9].z, output[9].z);
 
   // rotate cylinder comparison along z-axis by PI/2
-  cyl_comp->transformComparison (getTransformation (0.0f, 0.0f, 0.0f, 0.0f, 0.0f, float (M_PI) / 2.0f).inverse ());
+  cyl_comp->transformComparison (getTransformation (0.0f, 0.0f, 0.0f, 0.0f, 0.0f, static_cast<float>(M_PI) / 2.0f).inverse ());
 
   condrem.filter (output);
 
@@ -2302,7 +2302,7 @@ TEST (NormalRefinement, Filters)
   const float vp_z = cloud_organized_nonan.sensor_origin_[2];
 
   // Search parameters
-  const int k = 5;
+  constexpr int k = 5;
   std::vector<pcl::Indices> k_indices;
   std::vector<std::vector<float> > k_sqr_distances;
 

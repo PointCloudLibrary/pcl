@@ -270,9 +270,9 @@ pcl::people::HeadBasedSubclustering<PointT>::subcluster (std::vector<pcl::people
   }
 
   // Person clusters creation from clusters indices:
-  for(std::vector<pcl::PointIndices>::const_iterator it = cluster_indices_.begin(); it != cluster_indices_.end(); ++it)
+  for(const auto & cluster_index : cluster_indices_)
   {
-    pcl::people::PersonCluster<PointT> cluster(cloud_, *it, ground_coeffs_, sqrt_ground_coeffs_, head_centroid_, vertical_);  // PersonCluster creation
+    pcl::people::PersonCluster<PointT> cluster(cloud_, cluster_index, ground_coeffs_, sqrt_ground_coeffs_, head_centroid_, vertical_);  // PersonCluster creation
     clusters.push_back(cluster);
   }
 
@@ -291,7 +291,7 @@ pcl::people::HeadBasedSubclustering<PointT>::subcluster (std::vector<pcl::people
   clusters = new_clusters;
 
   std::vector<pcl::people::PersonCluster<PointT> > subclusters;
-  int cluster_min_points_sub = int(float(min_points_) * 1.5);
+  int cluster_min_points_sub = static_cast<int>(static_cast<float>(min_points_) * 1.5);
   //  int cluster_max_points_sub = max_points_;
 
   // create HeightMap2D object:

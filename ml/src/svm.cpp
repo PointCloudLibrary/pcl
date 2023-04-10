@@ -971,7 +971,7 @@ Solver::select_working_set(int& out_i, int& out_j)
   // return i,j such that
   // i: maximizes -y_i * grad(f)_i, i in I_up(\alpha)
   // j: minimizes the decrease of obj value
-  //    (if quadratic coefficeint <= 0, replace it with tau)
+  //    (if quadratic coefficient <= 0, replace it with tau)
   //    -y_j*grad(f)_j < -y_i*grad(f)_i, j in I_low(\alpha)
 
   double Gmax = -INF;
@@ -1215,7 +1215,7 @@ Solver_NU::select_working_set(int& out_i, int& out_j)
   // return i,j such that y_i = y_j and
   // i: maximizes -y_i * grad(f)_i, i in I_up(\alpha)
   // j: minimizes the decrease of obj value
-  //    (if quadratic coefficeint <= 0, replace it with tau)
+  //    (if quadratic coefficient <= 0, replace it with tau)
   //    -y_j*grad(f)_j < -y_i*grad(f)_i, j in I_low(\alpha)
 
   double Gmaxp = -INF;
@@ -3365,8 +3365,6 @@ svm_load_model(const char* model_file_name)
       model->sv_coef[k][i] = strtod(p, nullptr);
     }
 
-    int jj = 0;
-
     while (true) {
       char* idx = strtok(nullptr, ":");
       char* val = strtok(nullptr, " \t");
@@ -3377,10 +3375,6 @@ svm_load_model(const char* model_file_name)
       x_space[j].index = static_cast<int>(strtol(idx, nullptr, 10));
 
       x_space[j].value = strtod(val, nullptr);
-
-      //             printf("i=%d, j=%d, %f ,%d e %f\n",i,j,model->sv_coef[0][i],
-      //                    model->SV[i][jj].index, model->SV[i][jj].value);
-      jj++;
 
       ++j;
     }

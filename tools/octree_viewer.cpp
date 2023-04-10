@@ -390,7 +390,7 @@ private:
       cloudVoxel->points.push_back (pt_voxel_center);
 
       // If the asked depth is the depth of the octree, retrieve the centroid at this LeafNode
-      if (octree.getTreeDepth () == (unsigned int) depth)
+      if (octree.getTreeDepth () == static_cast<unsigned int>(depth))
       {
         auto* container = dynamic_cast<pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::LeafNode*> (tree_it.getCurrentOctreeNode ());
 
@@ -459,8 +459,8 @@ int main(int argc, char ** argv)
 {
   if (argc != 3)
   {
-    std::cerr << "ERROR: Syntax is octreeVisu <pcd file> <resolution>" << std::endl;
-    std::cerr << "EXAMPLE: ./octreeVisu bun0.pcd 0.001" << std::endl;
+    std::cerr << "ERROR: Syntax is " << argv[0] << " <pcd file> <resolution>" << std::endl;
+    std::cerr << "EXAMPLE: ./" << argv[0] << " bun0.pcd 0.001" << std::endl;
     return -1;
   }
 

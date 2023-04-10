@@ -203,7 +203,7 @@ LUM<PointT>::getCorrespondences(const Vertex& source_vertex,
   if (source_vertex >= getNumVertices() || target_vertex >= getNumVertices()) {
     PCL_ERROR("[pcl::registration::LUM::getCorrespondences] You are attempting to get "
               "a set of correspondences between non-existing graph vertices.\n");
-    return (pcl::CorrespondencesPtr());
+    return {};
   }
   Edge e;
   bool present;
@@ -211,7 +211,7 @@ LUM<PointT>::getCorrespondences(const Vertex& source_vertex,
   if (!present) {
     PCL_ERROR("[pcl::registration::LUM::getCorrespondences] You are attempting to get "
               "a set of correspondences from a non-existing graph edge.\n");
-    return (pcl::CorrespondencesPtr());
+    return {};
   }
   return ((*slam_graph_)[e].corrs_);
 }

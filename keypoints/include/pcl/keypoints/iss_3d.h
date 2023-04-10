@@ -141,7 +141,7 @@ namespace pcl
       void
       setSalientRadius (double salient_radius);
 
-      /** \brief Set the radius for the application of the non maxima supression algorithm.
+      /** \brief Set the radius for the application of the non maxima suppression algorithm.
         * \param[in] non_max_radius the non maxima suppression radius
         */
       void

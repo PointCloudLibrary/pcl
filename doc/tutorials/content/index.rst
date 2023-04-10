@@ -97,6 +97,21 @@ Basic Usage
      .. |mi_3| image:: images/pcl_ccmake.png
                :height: 100px
 
+  * :ref:`pcl_vcpkg_windows`
+
+     ======  ======
+     |mi_4|  Title: **Install PCL using VCPKG**
+
+             Author: *Lars Glud*
+
+             Compatibility: PCL version available on VCPKG and Master, unless VCPKG updates a dependency before PCL is ready for it.
+
+             In this tutorial,it is explained how to install PCL or PCL dependencies.
+     ======  ======
+
+     .. |mi_4| image:: images/windows_logo.png
+               :height: 100px
+
   * :ref:`compiling_pcl_dependencies_windows`
 
      ======  ======

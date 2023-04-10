@@ -275,10 +275,6 @@ public:
   unsigned rgb_data_size_;
 };
 
-// Create the PCLVisualizer object
-pcl::visualization::PCLVisualizer::Ptr cld;
-pcl::visualization::ImageViewer::Ptr img;
-
 /* ---[ */
 int
 main (int argc, char** argv)
@@ -336,10 +332,10 @@ main (int argc, char** argv)
 
   unsigned mode;
   if (pcl::console::parse (argc, argv, "-depthmode", mode) != -1)
-    depth_mode = pcl::io::OpenNI2Grabber::Mode (mode);
+    depth_mode = static_cast<pcl::io::OpenNI2Grabber::Mode> (mode);
 
   if (pcl::console::parse (argc, argv, "-imagemode", mode) != -1)
-    image_mode = pcl::io::OpenNI2Grabber::Mode (mode);
+    image_mode = static_cast<pcl::io::OpenNI2Grabber::Mode> (mode);
 
   if (pcl::console::find_argument (argc, argv, "-xyz") != -1)
     xyz = true;

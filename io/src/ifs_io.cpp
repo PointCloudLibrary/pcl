@@ -213,7 +213,7 @@ pcl::IFSReader::read (const std::string &file_name,
   }
 
   // Copy the data
-  memcpy (&cloud.data[0], mapped_file.data () + data_idx, cloud.data.size ());
+  memcpy (cloud.data.data(), mapped_file.data () + data_idx, cloud.data.size ());
 
   mapped_file.close ();
 
@@ -264,7 +264,7 @@ pcl::IFSReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, int 
   }
 
   // Copy the data
-  memcpy (&mesh.cloud.data[0], mapped_file.data () + data_idx, mesh.cloud.data.size ());
+  memcpy (mesh.cloud.data.data(), mapped_file.data () + data_idx, mesh.cloud.data.size ());
 
   mapped_file.close ();
 
@@ -284,13 +284,14 @@ pcl::IFSReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, int 
   fs.read (reinterpret_cast<char*>(&length_of_keyword), sizeof (std::uint32_t));
   char *keyword = new char [length_of_keyword];
   fs.read (keyword, sizeof (char) * length_of_keyword);
-  if (strcmp (keyword, "TRIANGLES"))
+  const bool keyword_is_triangles = (strcmp (keyword, "TRIANGLES") == 0);
+  delete[] keyword;
+  if (!keyword_is_triangles)
   {
     PCL_ERROR ("[pcl::IFSReader::read] File %s is does not contain facets!\n", file_name.c_str ());
     fs.close ();
     return (-1);
   }
-  delete[] keyword;
   // Read the number of facets
   std::uint32_t nr_facets;
   fs.read (reinterpret_cast<char*>(&nr_facets), sizeof (std::uint32_t));
@@ -307,6 +308,7 @@ pcl::IFSReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, int 
   {
     pcl::Vertices &facet = mesh.polygons[i];
     facet.vertices.resize (3);
+    // NOLINTNEXTLINE(readability-container-data-pointer)
     fs.read (reinterpret_cast<char*>(&(facet.vertices[0])), sizeof (std::uint32_t));
     fs.read (reinterpret_cast<char*>(&(facet.vertices[1])), sizeof (std::uint32_t));
     fs.read (reinterpret_cast<char*>(&(facet.vertices[2])), sizeof (std::uint32_t));
@@ -344,7 +346,7 @@ pcl::IFSWriter::write (const std::string &file_name, const pcl::PCLPointCloud2 &
                             sizeof (std::uint32_t) + cloud_name.size () + 1 +
                             sizeof (std::uint32_t) + vertices.size () + 1 +
                             sizeof (std::uint32_t));
-  char* addr = &(header[0]);
+  char* addr = header.data();
   const std::uint32_t magic_size = static_cast<std::uint32_t> (magic.size ()) + 1;
   memcpy (addr, &magic_size, sizeof (std::uint32_t));
   addr+= sizeof (std::uint32_t);
@@ -395,10 +397,10 @@ pcl::IFSWriter::write (const std::string &file_name, const pcl::PCLPointCloud2 &
   }
 
   // copy header
-  memcpy (sink.data (), &header[0], data_idx);
+  memcpy (sink.data (), header.data(), data_idx);
 
   // Copy the data
-  memcpy (sink.data () + data_idx, &cloud.data[0], cloud.data.size ());
+  memcpy (sink.data () + data_idx, cloud.data.data(), cloud.data.size ());
 
   sink.close ();
 
