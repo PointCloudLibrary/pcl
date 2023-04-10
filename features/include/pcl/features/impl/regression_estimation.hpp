@@ -49,8 +49,8 @@
 template <typename PointT>
 pcl::RegressionEstimation<PointT>::RegressionEstimation()
 :
-  is_valid_ (false),
   essential_(false),
+  is_valid_(false),
   step_ (10.0f),
   mean_value_ (0.0f, 0.0f, 0.0f),
   major_axis_ (0.0f, 0.0f, 0.0f),
@@ -198,7 +198,7 @@ pcl::RegressionEstimation<PointT>::EvalRegressionLine(
   Xaverage = Yaverage = 0.;
   SumXY = SumX2 = SumY2 = 0.;
 
-  if (SamplesNr <= 0) {
+  if (SamplesNr == 0) {
       *Xav = *Yav = 0;
       *a = *c = 0;
       *b = 1;
@@ -217,7 +217,7 @@ pcl::RegressionEstimation<PointT>::EvalRegressionLine(
       return 1;
   }
 
-  for (int Idx = 0; Idx < SamplesNr; Idx++) {
+  for (unsigned int Idx = 0; Idx < SamplesNr; ++Idx) {
       double x, y;
 
       x = x_[Idx];
@@ -267,7 +267,7 @@ pcl::RegressionEstimation<PointT>::EvalRegressionLine(
   // going to check which of the two lines is a best fit with mean square(d) error
   double ex = 0;
   double ey = 0;
-  for (int i = 0; i < SamplesNr; ++i) {
+  for (unsigned int i = 0; i < SamplesNr; ++i) {
       double exx = (ax * x_[i] + bx * y_[i] - cx);
       double eyy = (ay * x_[i] + by * y_[i] - cy);
       ex += exx * exx;
@@ -324,7 +324,7 @@ pcl::RegressionEstimation<PointT>::compute()
   // the major axis
 
   auto number_of_points = static_cast<unsigned int>(indices_->size());
-  double size = (double)number_of_points;
+
 
   double* x;
   double* y;
