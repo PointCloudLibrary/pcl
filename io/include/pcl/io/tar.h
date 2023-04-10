@@ -44,7 +44,7 @@ namespace pcl
   namespace io
   {
     /** \brief A TAR file's header, as described on 
-      * http://en.wikipedia.org/wiki/Tar_%28file_format%29. 
+      * https://en.wikipedia.org/wiki/Tar_%28file_format%29.
       */
     struct TARHeader
     {

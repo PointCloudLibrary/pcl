@@ -195,13 +195,12 @@ class PCL_EXPORTS LocalRecognitionPipeline {
   }
 
 public:
-  LocalRecognitionPipeline()
+  LocalRecognitionPipeline() : search_model_("")
   {
     use_cache_ = false;
     threshold_accept_model_hypothesis_ = 0.2f;
     ICP_iterations_ = 30;
     kdtree_splits_ = 512;
-    search_model_ = "";
     VOXEL_SIZE_ICP_ = 0.0025f;
     compute_table_plane_ = false;
   }

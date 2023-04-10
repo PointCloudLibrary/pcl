@@ -64,14 +64,12 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLPlotter::PCLPlotter (char const *name)
+  : view_ (vtkSmartPointer<vtkContextView>::New ())
+  , chart_(vtkSmartPointer<vtkChartXY>::New())
+  , color_series_(vtkSmartPointer<vtkColorSeries>::New ())
+  , exit_loop_timer_(vtkSmartPointer<ExitMainLoopTimerCallback>::New ())
+  , exit_callback_(vtkSmartPointer<ExitCallback>::New ())
 {
-  //constructing
-  view_ = vtkSmartPointer<vtkContextView>::New ();
-  chart_=vtkSmartPointer<vtkChartXY>::New();
-  color_series_ = vtkSmartPointer<vtkColorSeries>::New ();
-  exit_loop_timer_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
-  exit_callback_ = vtkSmartPointer<ExitCallback>::New ();
-  
   //connecting and mandatory bookkeeping
   view_->GetScene ()->AddItem (chart_);
   view_->GetRenderWindow ()->SetWindowName (name);
@@ -147,7 +145,7 @@ pcl::visualization::PCLPlotter::addPlotData (
     int type /* = vtkChart::LINE */, 
     std::vector<char> const &color)
 {
-  this->addPlotData (&array_X[0], &array_Y[0], static_cast<unsigned long> (array_X.size ()), name, type, (color.empty ()) ? nullptr : &color[0]);
+  this->addPlotData (array_X.data(), array_Y.data(), static_cast<unsigned long> (array_X.size ()), name, type, (color.empty ()) ? nullptr : color.data());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -166,7 +164,7 @@ pcl::visualization::PCLPlotter::addPlotData (
     array_x[i] = plot_data[i].first;
     array_y[i] = plot_data[i].second;
   }
-  this->addPlotData (array_x, array_y, static_cast<unsigned long> (plot_data.size ()), name, type, (color.empty ()) ? nullptr : &color[0]);
+  this->addPlotData (array_x, array_y, static_cast<unsigned long> (plot_data.size ()), name, type, (color.empty ()) ? nullptr : color.data());
   delete[] array_x;
   delete[] array_y;
 }
@@ -264,7 +262,7 @@ pcl::visualization::PCLPlotter::addPlotData (
   while (ss >> temp)
     pnames.push_back(temp);
     
-  int nop = int (pnames.size ());// number of plots (y coordinate vectors)  
+  int nop = static_cast<int>(pnames.size ());// number of plots (y coordinate vectors)  
   
   std::vector<double> xarray;      //array of X coordinates
   std::vector< std::vector<double> > yarrays (nop); //a set of array of Y coordinates
@@ -614,8 +612,8 @@ pcl::visualization::PCLPlotter::computeHistogram (
   {
     if (std::isfinite (value))
     {
-      auto index = (unsigned int) (std::floor ((value - min) / size));
-      if (index == (unsigned int) nbins) index = nbins - 1; //including right boundary
+      auto index = static_cast<unsigned int>(std::floor ((value - min) / size));
+      if (index == static_cast<unsigned int>(nbins)) index = nbins - 1; //including right boundary
       histogram[index].second++;
     }
   }

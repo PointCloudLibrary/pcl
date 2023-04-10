@@ -77,9 +77,9 @@ pcl::visualization::getRandomColors (pcl::RGB &rgb, double min, double max)
     sum = r + g + b;
   }
   while (sum <= min || sum >= max);
-  rgb.r = std::uint8_t (r * 255.0);
-  rgb.g = std::uint8_t (g * 255.0);
-  rgb.b = std::uint8_t (b * 255.0);
+  rgb.r = static_cast<std::uint8_t>(r * 255.0);
+  rgb.g = static_cast<std::uint8_t>(g * 255.0);
+  rgb.b = static_cast<std::uint8_t>(b * 255.0);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -109,13 +109,13 @@ pcl::visualization::worldToView (const Eigen::Vector4d &world_pt, const Eigen::M
   world /= world.w ();
 
   // X/Y screen space coordinate
-  int screen_x = int (std::floor (double (((world.x () + 1) / 2.0) * width) + 0.5));
-  int screen_y = int (std::floor (double (((world.y () + 1) / 2.0) * height) + 0.5));
+  int screen_x = static_cast<int>(std::floor ((((world.x () + 1) / 2.0) * width) + 0.5));
+  int screen_y = static_cast<int>(std::floor ((((world.y () + 1) / 2.0) * height) + 0.5));
 
   // Calculate -world_pt.y () because the screen Y axis is oriented top->down, ie 0 is top-left
   //int winY = (int) std::floor ( (double) (((1 - world_pt.y ()) / 2.0) * height) + 0.5); // top left
 
-  return (Eigen::Vector2i (screen_x, screen_y));
+  return {screen_x, screen_y};
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -288,7 +288,7 @@ pcl::visualization::viewScreenArea (
   int num = hull_vertex_table[pos][6];
   if (num == 0)
   {
-    return (float (width * height));
+    return (static_cast<float>(width * height));
   }
     //return 0.0;
 
@@ -359,7 +359,7 @@ pcl::visualization::viewScreenArea (
     sum += (dst[i].x () - dst[(i+1) % num].x ()) * (dst[i].y () + dst[(i+1) % num].y ());
   }
 
-  return (std::abs (float (sum * 0.5f)));
+  return (std::abs (static_cast<float>(sum * 0.5f)));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

@@ -349,7 +349,7 @@ protected:
   convolveRows(const FloatImageConstPtr& input, FloatImage& output) const;
 
   /** \brief extract the patch from the previous image, previous image gradients
-   * surrounding pixel alocation while interpolating image and gradients data
+   * surrounding pixel allocation while interpolating image and gradients data
    * and compute covariation matrix of derivatives.
    * \param[in] img original image
    * \param[in] grad_x original image gradient along X direction

@@ -64,7 +64,7 @@ pcl::CovarianceSampling<PointT, PointNT>::initCompute ()
   Eigen::Vector3f centroid (0.f, 0.f, 0.f);
   for (std::size_t p_i = 0; p_i < indices_->size (); ++p_i)
     centroid += (*input_)[(*indices_)[p_i]].getVector3fMap ();
-  centroid /= float (indices_->size ());
+  centroid /= static_cast<float>(indices_->size ());
 
   scaled_points_.resize (indices_->size ());
   double average_norm = 0.0;
@@ -74,9 +74,9 @@ pcl::CovarianceSampling<PointT, PointNT>::initCompute ()
     average_norm += scaled_points_[p_i].norm ();
   }
 
-  average_norm /= double (scaled_points_.size ());
-  for (std::size_t p_i = 0; p_i < scaled_points_.size (); ++p_i)
-    scaled_points_[p_i] /= float (average_norm);
+  average_norm /= static_cast<double>(scaled_points_.size ());
+  for (auto & scaled_point : scaled_points_)
+    scaled_point /= static_cast<float>(average_norm);
 
   return (true);
 }

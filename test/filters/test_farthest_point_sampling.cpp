@@ -19,8 +19,8 @@
 
 using namespace pcl;
 PointCloud<PointXYZ>::Ptr cloud_in (new PointCloud<PointXYZ>);
-const static int CLOUD_SIZE = 10;
-const static int SAMPLE_SIZE = CLOUD_SIZE -1;
+constexpr int CLOUD_SIZE = 10;
+constexpr int SAMPLE_SIZE = CLOUD_SIZE - 1;
 std::vector<float> x_values;
 
 TEST (FarthestPointSampling, farthest_point_sampling)

@@ -74,7 +74,7 @@ pcl::RobotEyeGrabber::~RobotEyeGrabber () noexcept
 std::string
 pcl::RobotEyeGrabber::getName () const
 {
-  return (std::string ("Ocular Robotics RobotEye Grabber"));
+  return {"Ocular Robotics RobotEye Grabber"};
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -234,11 +234,11 @@ pcl::RobotEyeGrabber::computeXYZI (pcl::PointXYZI& point, unsigned char* point_d
 
   buffer =  point_data[2] << 8;
   buffer |= point_data[3]; // Second 2-byte read will be Elevation
-  el = (signed short int)buffer / 100.0;
+  el = static_cast<signed short int>(buffer) / 100.0;
 
   buffer =  point_data[4] << 8;
   buffer |= point_data[5]; // Third 2-byte read will be Range
-  range = (signed short int)buffer / 100.0;
+  range = static_cast<signed short int>(buffer) / 100.0;
 
   buffer =  point_data[6] << 8;
   buffer |= point_data[7]; // Fourth 2-byte read will be Intensity

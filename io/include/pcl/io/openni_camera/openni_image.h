@@ -116,7 +116,7 @@ namespace openni_wrapper
      * @param[in,out] rgb_buffer
      */
     inline void
-    fillRaw (unsigned char* rgb_buffer) const throw ()
+    fillRaw (unsigned char* rgb_buffer) const noexcept
     {
       memcpy (rgb_buffer, image_md_->Data (), image_md_->DataSize ());
     }
@@ -136,33 +136,33 @@ namespace openni_wrapper
      * @author Suat Gedikli
      * @return width of the image
      */
-    inline unsigned getWidth () const throw ();
+    inline unsigned getWidth () const noexcept;
 
     /**
      * @author Suat Gedikli
      * @return height of the image
      */
-    inline unsigned getHeight () const throw ();
+    inline unsigned getHeight () const noexcept;
 
     /**
      * @author Suat Gedikli
      * @return frame id of the image.
      * @note frame ids are ascending, but not necessarily synch'ed with other streams
      */
-    inline unsigned getFrameID () const throw ();
+    inline unsigned getFrameID () const noexcept;
 
     /**
      * @author Suat Gedikli
      * @return the time stamp of the image
      * @note the time value is not synche'ed with the system time
      */
-    inline unsigned long getTimeStamp () const throw ();
+    inline unsigned long getTimeStamp () const noexcept;
 
     /**
      * @author Suat Gedikli
      * @return the actual data in native OpenNI format.
      */
-    inline const xn::ImageMetaData& getMetaData () const throw ();
+    inline const xn::ImageMetaData& getMetaData () const noexcept;
 
   protected:
     pcl::shared_ptr<xn::ImageMetaData> image_md_;
@@ -176,31 +176,31 @@ namespace openni_wrapper
   Image::~Image () noexcept = default;
 
   unsigned
-  Image::getWidth () const throw ()
+  Image::getWidth () const noexcept
   {
     return image_md_->XRes ();
   }
 
   unsigned
-  Image::getHeight () const throw ()
+  Image::getHeight () const noexcept
   {
     return image_md_->YRes ();
   }
 
   unsigned
-  Image::getFrameID () const throw ()
+  Image::getFrameID () const noexcept
   {
     return image_md_->FrameID ();
   }
 
   unsigned long
-  Image::getTimeStamp () const throw ()
+  Image::getTimeStamp () const noexcept
   {
     return static_cast<unsigned long> (image_md_->Timestamp ());
   }
 
   const xn::ImageMetaData&
-  Image::getMetaData () const throw ()
+  Image::getMetaData () const noexcept
   {
     return *image_md_;
   }

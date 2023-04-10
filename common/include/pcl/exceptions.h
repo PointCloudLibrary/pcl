@@ -78,25 +78,25 @@ namespace pcl
       {}
       
       const char*
-      getFileName () const throw ()
+      getFileName () const noexcept
       {
         return (file_name_);
       }
 
       const char*
-      getFunctionName () const throw ()
+      getFunctionName () const noexcept
       {
         return (function_name_);
       }
 
       unsigned
-      getLineNumber () const throw ()
+      getLineNumber () const noexcept
       {
         return (line_number_);
       }
 
       const char*
-      detailedMessage () const throw ()
+      detailedMessage () const noexcept
       {
         return (what ());
       }

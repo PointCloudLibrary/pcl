@@ -201,7 +201,7 @@ openni_wrapper::OpenNIDriver::updateDeviceList ()
     }
     else
 #endif
-    if (vendor_id == 0x1d27 && device.image_node.get () == nullptr)
+    if (vendor_id == 0x1d27 && device.image_node == nullptr)
     {
       strcpy (const_cast<char*> (device.device_node.GetDescription ().strVendor), "ASUS");
       strcpy (const_cast<char*> (device.device_node.GetDescription ().strName), "Xtion Pro");
@@ -221,7 +221,7 @@ openni_wrapper::OpenNIDriver::stopAll ()
 
 openni_wrapper::OpenNIDriver::~OpenNIDriver () noexcept
 {
-  // no exception during destuctor
+  // no exception during destructor
   try
   {
     stopAll ();
@@ -406,7 +406,7 @@ openni_wrapper::OpenNIDriver::getDeviceInfos () noexcept
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const char* 
-openni_wrapper::OpenNIDriver::getSerialNumber (unsigned index) const throw ()
+openni_wrapper::OpenNIDriver::getSerialNumber (unsigned index) const noexcept
 {
 #ifndef _WIN32
   return (device_context_[index].device_node.GetInstanceName ());
@@ -457,28 +457,28 @@ openni_wrapper::OpenNIDriver::getDeviceType (const std::string& connectionString
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const char* 
-openni_wrapper::OpenNIDriver::getConnectionString (unsigned index) const throw ()
+openni_wrapper::OpenNIDriver::getConnectionString (unsigned index) const noexcept
 {
   return (device_context_[index].device_node.GetCreationInfo ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const char* 
-openni_wrapper::OpenNIDriver::getVendorName (unsigned index) const throw ()
+openni_wrapper::OpenNIDriver::getVendorName (unsigned index) const noexcept
 {
   return (device_context_[index].device_node.GetDescription ().strVendor);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const char* 
-openni_wrapper::OpenNIDriver::getProductName (unsigned index) const throw ()
+openni_wrapper::OpenNIDriver::getProductName (unsigned index) const noexcept
 {
   return (device_context_[index].device_node.GetDescription ().strName);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 unsigned short 
-openni_wrapper::OpenNIDriver::getVendorID (unsigned index) const throw ()
+openni_wrapper::OpenNIDriver::getVendorID (unsigned index) const noexcept
 {
   unsigned short vendor_id;
   unsigned short product_id;
@@ -495,7 +495,7 @@ openni_wrapper::OpenNIDriver::getVendorID (unsigned index) const throw ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 unsigned short 
-openni_wrapper::OpenNIDriver::getProductID (unsigned index) const throw ()
+openni_wrapper::OpenNIDriver::getProductID (unsigned index) const noexcept
 {
   unsigned short vendor_id;
   unsigned short product_id;
@@ -512,7 +512,7 @@ openni_wrapper::OpenNIDriver::getProductID (unsigned index) const throw ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 unsigned char 
-openni_wrapper::OpenNIDriver::getBus (unsigned index) const throw ()
+openni_wrapper::OpenNIDriver::getBus (unsigned index) const noexcept
 {
   unsigned char bus = 0;
 #ifndef _WIN32
@@ -526,7 +526,7 @@ openni_wrapper::OpenNIDriver::getBus (unsigned index) const throw ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 unsigned char 
-openni_wrapper::OpenNIDriver::getAddress (unsigned index) const throw ()
+openni_wrapper::OpenNIDriver::getAddress (unsigned index) const noexcept
 {
   unsigned char address = 0;
 #ifndef _WIN32

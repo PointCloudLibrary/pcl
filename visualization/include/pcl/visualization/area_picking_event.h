@@ -95,7 +95,7 @@ namespace pcl
         {
           const auto cloud = cloud_indices_.find (name);
           if(cloud == cloud_indices_.cend ())
-            return Indices ();
+            return {};
 
           return cloud->second;
         }

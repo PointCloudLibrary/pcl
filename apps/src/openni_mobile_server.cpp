@@ -79,7 +79,7 @@ CopyPointCloudToBuffers(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& clou
         point.x > bounds_max.x || point.y > bounds_max.y || point.z > bounds_max.z)
       continue;
 
-    const int conversion_factor = 500;
+    constexpr int conversion_factor = 500;
 
     cloud_buffers.points[j * 3 + 0] = static_cast<short>(point.x * conversion_factor);
     cloud_buffers.points[j * 3 + 1] = static_cast<short>(point.y * conversion_factor);
@@ -221,29 +221,33 @@ public:
 void
 usage(char** argv)
 {
-  std::cout << "usage: " << argv[0] << " <device_id> <options>\n"
+  std::cout << "usage: " << argv[0] << " [options]\n\n"
             << "where options are:\n"
-            << "  -port p :: set the server port (default: 11111)\n"
-            << "  -leaf x, y, z  :: set the voxel grid leaf size (default: 0.01)\n";
+            << "    -device_id X: specify the device id (default: \"#1\").\n"
+            << "    -port p: set the server port (default: 11111)\n"
+            << "    -leaf x, y, z: set the voxel grid leaf size (default: 0.01)\n";
 }
 
 int
 main(int argc, char** argv)
 {
-  std::string device_id = "";
-  if ((argc > 1) && (argv[1][0] != '-'))
-    device_id = std::string(argv[1]);
-
-  if (pcl::console::find_argument(argc, argv, "-h") != -1) {
+  /////////////////////////////////////////////////////////////////////
+  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
+      pcl::console::find_argument(argc, argv, "--help") != -1) {
     usage(argv);
-    return 0;
+    return 1;
   }
 
+  std::string device_id = "";
   int port = 11111;
   float leaf_x = 0.01f, leaf_y = 0.01f, leaf_z = 0.01f;
 
+  if (pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 &&
+      argc > 1 && argv[1][0] != '-')
+    device_id = argv[1];
   pcl::console::parse_argument(argc, argv, "-port", port);
   pcl::console::parse_3x_arguments(argc, argv, "-leaf", leaf_x, leaf_y, leaf_z, false);
+  /////////////////////////////////////////////////////////////////////
 
   pcl::OpenNIGrabber grabber(device_id);
   if (!grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {

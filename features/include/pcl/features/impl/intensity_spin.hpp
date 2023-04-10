@@ -147,7 +147,7 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut
   for (std::size_t idx = 0; idx < indices_->size (); ++idx)
   {
     // Find neighbors within the search radius
-    // TODO: do we want to use searchForNeigbors instead?
+    // TODO: do we want to use searchForNeighbors instead?
     int k = tree_->radiusSearch ((*indices_)[idx], search_radius_, nn_indices, nn_dist_sqr);
     if (k == 0)
     {

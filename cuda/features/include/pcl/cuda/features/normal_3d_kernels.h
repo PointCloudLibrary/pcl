@@ -80,7 +80,7 @@ namespace pcl
         float curvature = evals.x / (query_pt.z * (0.2f / 4.0f) * query_pt.z * (0.2f / 4.0f));
   
         float3 mc = normalize (evecs.data[0]);
-        // TODO: this should be an optional step, as it slows down eveything
+        // TODO: this should be an optional step, as it slows down everything
         // btw, this flips the normals to face the origin (assumed to be the view point)
         if ( dot (query_pt, mc) > 0 )
           mc = -mc;

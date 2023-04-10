@@ -61,14 +61,14 @@ namespace openni_wrapper
     ~DeviceKinect () noexcept override;
 
     inline void setDebayeringMethod (const ImageBayerGRBG::DebayeringMethod& debayering_method) noexcept;
-    inline const ImageBayerGRBG::DebayeringMethod& getDebayeringMethod () const throw ();
+    inline const ImageBayerGRBG::DebayeringMethod& getDebayeringMethod () const noexcept;
 
-    bool isSynchronizationSupported () const throw () override;
+    bool isSynchronizationSupported () const noexcept override;
 
   protected:
-    Image::Ptr getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) const throw () override;
+    Image::Ptr getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) const noexcept override;
     void enumAvailableModes () noexcept;
-    bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw () override;
+    bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const noexcept override;
     ImageBayerGRBG::DebayeringMethod debayering_method_;
   } ;
 
@@ -79,7 +79,7 @@ namespace openni_wrapper
   }
 
   const ImageBayerGRBG::DebayeringMethod&
-  DeviceKinect::getDebayeringMethod () const throw ()
+  DeviceKinect::getDebayeringMethod () const noexcept
   {
     return debayering_method_;
   }

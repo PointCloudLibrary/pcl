@@ -15,7 +15,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update
 RUN apt install -y git cmake ${COMPILER_PACKAGE}
 RUN apt install -y libeigen3-dev libflann-dev
-RUN apt install -y libboost-filesystem-dev libboost-date-time-dev libboost-iostreams-dev
+RUN apt install -y libboost-filesystem-dev libboost-serialization-dev libboost-iostreams-dev
 RUN apt install -y libgtest-dev libbenchmark-dev
 RUN apt install -y qtbase5-dev libvtk${VTK_VERSION}-dev libvtk${VTK_VERSION}-qt-dev
 

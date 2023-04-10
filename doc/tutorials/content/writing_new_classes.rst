@@ -770,7 +770,7 @@ defines a way to define a region of interest / *list of point indices* that the
 algorithm should operate on, rather than the entire cloud, via
 :pcl:`setIndices<pcl::PCLBase::setIndices>`.
 
-All classes inheriting from :pcl:`PCLBase<pcl::PCLBase>` exhbit the following
+All classes inheriting from :pcl:`PCLBase<pcl::PCLBase>` exhibit the following
 behavior: in case no set of indices is given by the user, a fake one is created
 once and used for the duration of the algorithm. This means that we could
 easily change the implementation code above to operate on a *<cloud, indices>*
@@ -909,7 +909,7 @@ file, as follows:
    *  All rights reserved
    */
 
-An additional like can be inserted if additional copyright is needed (or the
+An additional line can be inserted if additional copyright is needed (or the
 original copyright can be changed):
 
 .. code-block:: cpp
@@ -986,7 +986,7 @@ class look like:
 
           /** \brief Compute the intensity average for a single point
             * \param[in] pid the point index to compute the weight for
-            * \param[in] indices the set of nearest neighor indices 
+            * \param[in] indices the set of nearest neighbor indices 
             * \param[in] distances the set of nearest neighbor distances
             * \return the intensity average at a given point index
             */

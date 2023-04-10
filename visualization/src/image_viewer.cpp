@@ -54,7 +54,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
-  : mouse_command_ (vtkSmartPointer<vtkCallbackCommand>::New ())
+  : interactor_ (vtkSmartPointer <vtkRenderWindowInteractor>::Take (vtkRenderWindowInteractorFixNew ()))
+  , mouse_command_ (vtkSmartPointer<vtkCallbackCommand>::New ())
   , keyboard_command_ (vtkSmartPointer<vtkCallbackCommand>::New ())
   , win_ (vtkSmartPointer<vtkRenderWindow>::New ())
   , ren_ (vtkSmartPointer<vtkRenderer>::New ())
@@ -65,8 +66,6 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   , timer_id_ ()
   , algo_ (vtkSmartPointer<vtkImageFlip>::New ())
 {
-  interactor_ = vtkSmartPointer <vtkRenderWindowInteractor>::Take (vtkRenderWindowInteractorFixNew ());
-
   // Prepare for image flip
   algo_->SetInterpolationModeToCubic ();
   algo_->PreserveImageExtentOn ();
@@ -130,8 +129,8 @@ pcl::visualization::ImageViewer::addRGBImage (
     const std::string &layer_id, double opacity, bool autoresize)
 {
   if (autoresize &&
-      (unsigned (getSize ()[0]) != width ||
-      unsigned (getSize ()[1]) != height))
+      (static_cast<unsigned>(getSize ()[0]) != width ||
+      static_cast<unsigned>(getSize ()[1]) != height))
     setSize (width, height);
 
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
@@ -171,8 +170,8 @@ pcl::visualization::ImageViewer::addMonoImage (
     const unsigned char* rgb_data, unsigned width, unsigned height,
     const std::string &layer_id, double opacity)
 {
-  if (unsigned (getSize ()[0]) != width ||
-      unsigned (getSize ()[1]) != height)
+  if (static_cast<unsigned>(getSize ()[0]) != width ||
+      static_cast<unsigned>(getSize ()[1]) != height)
     setSize (width, height);
 
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
@@ -505,7 +504,7 @@ pcl::visualization::ImageViewer::emitMouseEvent (unsigned long event_id)
 void
 pcl::visualization::ImageViewer::emitKeyboardEvent (unsigned long event_id)
 {
-  KeyboardEvent event (bool(event_id == vtkCommand::KeyPressEvent), interactor_->GetKeySym (),  interactor_->GetKeyCode (), interactor_->GetAltKey (), interactor_->GetControlKey (), interactor_->GetShiftKey ());
+  KeyboardEvent event ((event_id == vtkCommand::KeyPressEvent), interactor_->GetKeySym (),  interactor_->GetKeyCode (), interactor_->GetAltKey (), interactor_->GetControlKey (), interactor_->GetShiftKey ());
   keyboard_signal_ (event);
 }
 

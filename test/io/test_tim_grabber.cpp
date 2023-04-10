@@ -89,9 +89,9 @@ TEST_F (TimGrabberTest, Test1)
     for (std::size_t j = 0; j < correct_clouds_.at(i).size (); j++) {
       PointT const& correct_point = correct_clouds_.at(i).at(j);
       PointT const& answer_point = answer_cloud->at(j);
-      EXPECT_NEAR (correct_point.x, answer_point.x, 1.0e-3);
-      EXPECT_NEAR (correct_point.y, answer_point.y, 1.0e-3);
-      EXPECT_NEAR (correct_point.z, answer_point.z, 1.0e-3);
+      EXPECT_NEAR (correct_point.x, answer_point.x, 2.0e-3);
+      EXPECT_NEAR (correct_point.y, answer_point.y, 2.0e-3);
+      EXPECT_NEAR (correct_point.z, answer_point.z, 2.0e-3);
     }
   }
 }

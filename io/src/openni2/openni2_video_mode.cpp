@@ -41,7 +41,7 @@ namespace pcl
       std::ostream&
       operator<< (std::ostream& stream, const OpenNI2VideoMode& video_mode)
       {
-        stream << "Resolution: " << (int)video_mode.x_resolution_ << "x" << (int)video_mode.y_resolution_ <<
+        stream << "Resolution: " << static_cast<int>(video_mode.x_resolution_) << "x" << static_cast<int>(video_mode.y_resolution_) <<
           "@" << video_mode.frame_rate_ <<
           "Hz Format: ";
 

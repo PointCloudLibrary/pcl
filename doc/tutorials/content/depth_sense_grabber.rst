@@ -71,7 +71,7 @@ DepthSense Viewer
 
 The grabber is accompanied by an example tool `pcl_depth_sense_viewer <https://github.com/PointCloudLibrary/pcl/blob/master/visualization/tools/depth_sense_viewer.cpp>`_
 which can be used to view and save point clouds coming from a DepthSense device.
-Internally it uses the `DepthSenseGrabber <http://docs.pointclouds.org/trunk/classpcl_1_1_depth_sense_grabber.html>`_
+Internally it uses the `DepthSenseGrabber <https://pointclouds.org/documentation/classpcl_1_1_depth_sense_grabber.html>`_
 class that implements the standard PCL grabber interface.
 
 You can run the tool with `--help` option to view the usage guide.

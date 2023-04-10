@@ -214,10 +214,7 @@ ply_to_ply_converter::element_end_callback()
 std::tuple<std::function<void()>, std::function<void()> > ply_to_ply_converter::element_definition_callback(const std::string& element_name, std::size_t count)
 {
   (*ostream_) << "element " << element_name << " " << count << "\n";
-  return std::tuple<std::function<void()>, std::function<void()> >(
-    [this] { element_begin_callback (); },
-    [this] { element_end_callback (); }
-  );
+  return {[this] { element_begin_callback(); }, [this] { element_end_callback(); }};
 }
 
 template <typename ScalarType>

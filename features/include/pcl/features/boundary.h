@@ -121,7 +121,7 @@ namespace pcl
       /** \brief Check whether a point is a boundary point in a planar patch of projected points given by indices.
         * \note A coordinate system u-v-n must be computed a-priori using \a getCoordinateSystemOnPlane
         * \param[in] cloud a pointer to the input point cloud
-        * \param[in] q_point a pointer to the querry point
+        * \param[in] q_point a pointer to the query point
         * \param[in] indices the estimated point neighbors of the query point
         * \param[in] u the u direction
         * \param[in] v the v direction

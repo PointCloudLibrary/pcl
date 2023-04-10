@@ -564,7 +564,7 @@ pcl::HDLGrabber::isRunning () const
 std::string
 pcl::HDLGrabber::getName () const
 {
-  return (std::string ("Velodyne High Definition Laser (HDL) Grabber"));
+  return {"Velodyne High Definition Laser (HDL) Grabber"};
 }
 
 /////////////////////////////////////////////////////////////////////////////

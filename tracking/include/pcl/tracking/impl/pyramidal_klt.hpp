@@ -225,6 +225,8 @@ PyramidalKLTTracker<PointInT, IntensityT>::derivatives(const FloatImage& src,
       grad_y_row[x] = (trow1[x + 1] + trow1[x - 1]) * 3 + trow1[x] * 10;
     }
   }
+  delete[] row0;
+  delete[] row1;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////

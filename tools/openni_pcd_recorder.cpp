@@ -36,13 +36,14 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
+#include <pcl/io/timestamp.h>
 #include <boost/circular_buffer.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp> // for to_iso_string, local_time
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h> //fps calculations
 
+#include <chrono>
 #include <csignal>
 #include <limits>
 #include <memory>
@@ -82,19 +83,19 @@ getTotalSystemMemory ()
   }
 #endif
 
-  if (memory > std::uint64_t (std::numeric_limits<std::size_t>::max ()))
+  if (memory > static_cast<std::uint64_t>(std::numeric_limits<std::size_t>::max ()))
   {
     memory = std::numeric_limits<std::size_t>::max ();
   }
   
   print_info ("Total available memory size: %lluMB.\n", memory / 1048576ull);
-  return std::size_t (memory);
+  return static_cast<std::size_t>(memory);
 }
 
-const std::size_t BUFFER_SIZE = std::size_t (getTotalSystemMemory () / (640 * 480 * sizeof (pcl::PointXYZRGBA)));
+const std::size_t BUFFER_SIZE = static_cast<std::size_t>(getTotalSystemMemory () / (640 * 480 * sizeof (pcl::PointXYZRGBA)));
 #else
 
-const std::size_t BUFFER_SIZE = 200;
+constexpr std::size_t BUFFER_SIZE = 200;
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -130,7 +131,7 @@ class PCDBuffer
     getSize ()
     {
       std::lock_guard<std::mutex> buff_lock (bmutex_);
-      return (int (buffer_.size ()));
+      return (static_cast<int>(buffer_.size ()));
     }
 
     inline int 
@@ -282,10 +283,8 @@ class Consumer
     void 
     writeToDisk (const typename PointCloud<PointT>::ConstPtr& cloud)
     {
-      std::stringstream ss;
-      std::string time = boost::posix_time::to_iso_string (boost::posix_time::microsec_clock::local_time ());
-      ss << "frame-" << time << ".pcd";
-      writer_.writeBinaryCompressed (ss.str (), *cloud);
+      const std::string file_name = "frame-" + pcl::getTimestamp() + ".pcd";
+      writer_.writeBinaryCompressed(file_name, *cloud);
       FPS_CALC ("cloud write.", buf_);
     }
 

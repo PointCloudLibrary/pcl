@@ -228,9 +228,9 @@ public:
   convertTransform(const Eigen::Matrix<double, 6, 1>& x, Affine3& trans)
   {
     trans = Eigen::Translation<Scalar, 3>(x.head<3>().cast<Scalar>()) *
-            Eigen::AngleAxis<Scalar>(Scalar(x(3)), Vector3::UnitX()) *
-            Eigen::AngleAxis<Scalar>(Scalar(x(4)), Vector3::UnitY()) *
-            Eigen::AngleAxis<Scalar>(Scalar(x(5)), Vector3::UnitZ());
+            Eigen::AngleAxis<Scalar>(static_cast<Scalar>(x(3)), Vector3::UnitX()) *
+            Eigen::AngleAxis<Scalar>(static_cast<Scalar>(x(4)), Vector3::UnitY()) *
+            Eigen::AngleAxis<Scalar>(static_cast<Scalar>(x(5)), Vector3::UnitZ());
   }
 
   /** \brief Convert 6 element transformation vector to transformation matrix.
@@ -404,7 +404,7 @@ protected:
    * Thuente 1994) and \f$ \delta \vec{p} \f$ normalized in Algorithm 2
    * [Magnusson 2009]
    * \param[in] step_init initial step length estimate, \f$ \alpha_0 \f$ in
-   * Moore-Thuente (1994) and the noramal of \f$ \delta \vec{p} \f$ in Algorithm
+   * Moore-Thuente (1994) and the normal of \f$ \delta \vec{p} \f$ in Algorithm
    * 2 [Magnusson 2009]
    * \param[in] step_max maximum step length, \f$ \alpha_max \f$ in
    * Moore-Thuente (1994)

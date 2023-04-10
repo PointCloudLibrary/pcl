@@ -141,12 +141,12 @@ template<typename ModelT, typename SceneT>
       typename boost::graph_traits<Graph>::adjacency_iterator ai;
       typename boost::graph_traits<Graph>::adjacency_iterator ai_end;
 
-      auto current = std::static_pointer_cast<RecognitionModel> (graph_id_model_map_[int (v)]);
+      auto current = std::static_pointer_cast<RecognitionModel> (graph_id_model_map_[static_cast<int>(v)]);
 
       bool a_better_one = false;
       for (boost::tie (ai, ai_end) = boost::adjacent_vertices (v, conflict_graph_); (ai != ai_end) && !a_better_one; ++ai)
       {
-        auto neighbour = std::static_pointer_cast<RecognitionModel> (graph_id_model_map_[int (*ai)]);
+        auto neighbour = std::static_pointer_cast<RecognitionModel> (graph_id_model_map_[static_cast<int>(*ai)]);
         if ((neighbour->explained_.size () >= current->explained_.size ()) && mask_[neighbour->id_])
         {
           a_better_one = true;
@@ -169,7 +169,7 @@ template<typename ModelT, typename SceneT>
     for (std::size_t i = 0; i < (recognition_models_.size ()); i++)
     {
       const typename Graph::vertex_descriptor v = boost::add_vertex (recognition_models_[i], conflict_graph_);
-      graph_id_model_map_[int (v)] = std::static_pointer_cast<RecognitionModel> (recognition_models_[i]);
+      graph_id_model_map_[static_cast<int>(v)] = std::static_pointer_cast<RecognitionModel> (recognition_models_[i]);
     }
 
     // iterate over the remaining models and check for each one if there is a conflict with another one

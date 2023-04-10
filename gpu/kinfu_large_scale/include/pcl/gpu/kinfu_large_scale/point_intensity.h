@@ -47,7 +47,7 @@
 struct EIGEN_ALIGN16 PointIntensity
 {
 
-  PCL_MAKE_ALIGNED_OPERATOR_NEW;
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
   union
   {
     struct

@@ -53,7 +53,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeCovar
     const typename pcl::search::KdTree<PointT>::Ptr kdtree,
     MatricesVector& cloud_covariances)
 {
-  if (k_correspondences_ > int(cloud->size())) {
+  if (k_correspondences_ > static_cast<int>(cloud->size())) {
     PCL_ERROR("[pcl::GeneralizedIterativeClosestPoint::computeCovariances] Number or "
               "points in cloud (%lu) is less than k_correspondences_ (%lu)!\n",
               cloud->size(),
@@ -62,10 +62,8 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeCovar
   }
 
   Eigen::Vector3d mean;
-  pcl::Indices nn_indices;
-  nn_indices.reserve(k_correspondences_);
-  std::vector<float> nn_dist_sq;
-  nn_dist_sq.reserve(k_correspondences_);
+  pcl::Indices nn_indices(k_correspondences_);
+  std::vector<float> nn_dist_sq(k_correspondences_);
 
   // We should never get there but who knows
   if (cloud_covariances.size() < cloud->size())
@@ -85,20 +83,23 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeCovar
 
     // Find the covariance matrix
     for (int j = 0; j < k_correspondences_; j++) {
-      const PointT& pt = (*cloud)[nn_indices[j]];
+      // de-mean neighbourhood to avoid inaccuracies when far away from origin
+      const double ptx = (*cloud)[nn_indices[j]].x - query_point.x,
+                   pty = (*cloud)[nn_indices[j]].y - query_point.y,
+                   ptz = (*cloud)[nn_indices[j]].z - query_point.z;
 
-      mean[0] += pt.x;
-      mean[1] += pt.y;
-      mean[2] += pt.z;
+      mean[0] += ptx;
+      mean[1] += pty;
+      mean[2] += ptz;
 
-      cov(0, 0) += pt.x * pt.x;
+      cov(0, 0) += ptx * ptx;
 
-      cov(1, 0) += pt.y * pt.x;
-      cov(1, 1) += pt.y * pt.y;
+      cov(1, 0) += pty * ptx;
+      cov(1, 1) += pty * pty;
 
-      cov(2, 0) += pt.z * pt.x;
-      cov(2, 1) += pt.z * pt.y;
-      cov(2, 2) += pt.z * pt.z;
+      cov(2, 0) += ptz * ptx;
+      cov(2, 1) += ptz * pty;
+      cov(2, 2) += ptz * ptz;
     }
 
     mean /= static_cast<double>(k_correspondences_);
@@ -284,7 +285,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     Eigen::Vector3d Md(gicp_->mahalanobis((*gicp_->tmp_idx_src_)[i]) * d);
     // increment= d'*Md/num_matches = d'*M*d/num_matches (we postpone
     // 1/num_matches after the loop closes)
-    f += double(d.transpose() * Md);
+    f += static_cast<double>(d.transpose() * Md);
   }
   return f / m;
 }
@@ -360,7 +361,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     // Md = M*d
     Eigen::Vector3d Md(gicp_->mahalanobis((*gicp_->tmp_idx_src_)[i]) * d);
     // Increment total error
-    f += double(d.transpose() * Md);
+    f += static_cast<double>(d.transpose() * Md);
     // Increment translation gradient
     // g.head<3> ()+= 2*M*d/num_matches (we postpone 2/num_matches after the loop
     // closes)
@@ -370,8 +371,8 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     // Increment rotation gradient
     dCost_dR_T += p_base_src * Md.transpose();
   }
-  f /= double(m);
-  g.head<3>() *= double(2.0 / m);
+  f /= static_cast<double>(m);
+  g.head<3>() *= (2.0 / m);
   dCost_dR_T *= 2.0 / m;
   gicp_->computeRDerivative(x, dCost_dR_T, g);
 }
@@ -441,7 +442,8 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     for (std::size_t i = 0; i < 4; i++)
       for (std::size_t j = 0; j < 4; j++)
         for (std::size_t k = 0; k < 4; k++)
-          transform_R(i, j) += double(transformation_(i, k)) * double(guess(k, j));
+          transform_R(i, j) += static_cast<double>(transformation_(i, k)) *
+                               static_cast<double>(guess(k, j));
 
     Eigen::Matrix3d R = transform_R.topLeftCorner<3, 3>();
 

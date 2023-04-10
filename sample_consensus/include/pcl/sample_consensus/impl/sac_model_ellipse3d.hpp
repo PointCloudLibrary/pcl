@@ -223,7 +223,7 @@ pcl::SampleConsensusModelEllipse3D<PointT>::computeModelCoefficients (const Indi
   model_coefficients[6] = static_cast<float>(ellipse_normal[1]);
   model_coefficients[7] = static_cast<float>(ellipse_normal[2]);
 
-  // Retrive the ellipse point at the tilt angle t (par_t), along the local x-axis
+  // Retrieve the ellipse point at the tilt angle t (par_t), along the local x-axis
   const Eigen::VectorXf params = (Eigen::VectorXf(5) << par_a, par_b, par_h, par_k, par_t).finished();
   Eigen::Vector3f p_th_(0.0, 0.0, 0.0);
   get_ellipse_point(params, par_t, p_th_(0), p_th_(1));
@@ -551,7 +551,7 @@ pcl::SampleConsensusModelEllipse3D<PointT>::projectPoints (
       float th_opt;
       dvec2ellipse(params, p_(0), p_(1), th_opt);
 
-      // Retrive the ellipse point at the tilt angle t, along the local x-axis
+      // Retrieve the ellipse point at the tilt angle t, along the local x-axis
       Eigen::Vector3f k_(0.0, 0.0, 0.0);
       get_ellipse_point(params, th_opt, k_[0], k_[1]);
 
@@ -613,7 +613,7 @@ pcl::SampleConsensusModelEllipse3D<PointT>::projectPoints (
       float th_opt;
       dvec2ellipse(params, p_(0), p_(1), th_opt);
 
-      // Retrive the ellipse point at the tilt angle t, along the local x-axis
+      // Retrieve the ellipse point at the tilt angle t, along the local x-axis
       //// model_coefficients[5] = static_cast<float>(par_t);
       Eigen::Vector3f k_(0.0, 0.0, 0.0);
       get_ellipse_point(params, th_opt, k_[0], k_[1]);

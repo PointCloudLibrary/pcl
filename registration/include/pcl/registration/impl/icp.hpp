@@ -44,6 +44,7 @@
 #include <pcl/correspondence.h>
 
 namespace pcl {
+// NOLINTBEGIN(readability-container-data-pointer)
 
 template <typename PointSource, typename PointTarget, typename Scalar>
 void
@@ -225,7 +226,7 @@ IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformation(
 
     ++nr_iterations_;
 
-    // Update the vizualization of icp convergence
+    // Update the visualization of icp convergence
     if (update_visualizer_ != nullptr) {
       pcl::Indices source_indices_good, target_indices_good;
       for (const Correspondence& corr : *correspondences_) {
@@ -317,6 +318,7 @@ IterativeClosestPointWithNormals<PointSource, PointTarget, Scalar>::transformClo
 {
   pcl::transformPointCloudWithNormals(input, output, transform);
 }
+// NOLINTEND(readability-container-data-pointer)
 
 } // namespace pcl
 

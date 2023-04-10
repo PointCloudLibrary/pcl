@@ -410,9 +410,9 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::SAOptimize(std::vector<i
   }
 
   int occupied_multiple = 0;
-  for(std::size_t i=0; i < complete_cloud_occupancy_by_RM_.size(); i++) {
-    if(complete_cloud_occupancy_by_RM_[i] > 1) {
-      occupied_multiple+=complete_cloud_occupancy_by_RM_[i];
+  for(const auto& i : complete_cloud_occupancy_by_RM_) {
+    if(i > 1) {
+      occupied_multiple+=i;
     }
   }
 

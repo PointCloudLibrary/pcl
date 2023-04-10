@@ -160,7 +160,7 @@ detectTemplates (const std::vector<DOTModality*> & modalities,
         const unsigned char * image_data = map.getData ();
         for (std::size_t template_index = 0; template_index < nr_templates; ++template_index)
         {
-          const unsigned char * template_data = &(templates_[template_index].modalities[modality_index].features[0]);
+          const unsigned char * template_data = templates_[template_index].modalities[modality_index].features.data();
           for (std::size_t data_index = 0; data_index < (nr_template_horizontal_bins*nr_template_vertical_bins); ++data_index)
           {
             if ((image_data[data_index] & template_data[data_index]) != 0)
@@ -170,7 +170,7 @@ detectTemplates (const std::vector<DOTModality*> & modalities,
       }
 
       // find templates with response over threshold
-      const float scaling_factor = 1.0f / float (nr_template_horizontal_bins * nr_template_vertical_bins);
+      const float scaling_factor = 1.0f / static_cast<float>(nr_template_horizontal_bins * nr_template_vertical_bins);
       for (std::size_t template_index = 0; template_index < nr_templates; ++template_index)
       {
         const float response = responses[template_index] * scaling_factor;

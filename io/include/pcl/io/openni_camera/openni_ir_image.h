@@ -59,11 +59,11 @@ public:
 
   void fillRaw (unsigned width, unsigned height, unsigned short* ir_buffer, unsigned line_step = 0) const;
 
-  inline unsigned getWidth () const throw ();
-  inline unsigned getHeight () const throw ();
-  inline unsigned getFrameID () const throw ();
-  inline unsigned long getTimeStamp () const throw ();
-  inline const xn::IRMetaData& getMetaData () const throw ();
+  inline unsigned getWidth () const noexcept;
+  inline unsigned getHeight () const noexcept;
+  inline unsigned getFrameID () const noexcept;
+  inline unsigned long getTimeStamp () const noexcept;
+  inline const xn::IRMetaData& getMetaData () const noexcept;
 
 protected:
   pcl::shared_ptr<xn::IRMetaData> ir_md_;
@@ -76,27 +76,27 @@ IRImage::IRImage (pcl::shared_ptr<xn::IRMetaData> ir_meta_data) noexcept
 
 IRImage::~IRImage () noexcept = default;
 
-unsigned IRImage::getWidth () const throw ()
+unsigned IRImage::getWidth () const noexcept
 {
   return ir_md_->XRes ();
 }
 
-unsigned IRImage::getHeight () const throw ()
+unsigned IRImage::getHeight () const noexcept
 {
   return ir_md_->YRes ();
 }
 
-unsigned IRImage::getFrameID () const throw ()
+unsigned IRImage::getFrameID () const noexcept
 {
   return ir_md_->FrameID ();
 }
 
-unsigned long IRImage::getTimeStamp () const throw ()
+unsigned long IRImage::getTimeStamp () const noexcept
 {
   return static_cast<unsigned long> (ir_md_->Timestamp ());
 }
 
-const xn::IRMetaData& IRImage::getMetaData () const throw ()
+const xn::IRMetaData& IRImage::getMetaData () const noexcept
 {
 	return *ir_md_;
 }

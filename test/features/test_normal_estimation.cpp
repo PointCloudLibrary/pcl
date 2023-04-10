@@ -166,7 +166,7 @@ TEST (PCL, NormalEstimation)
   n.setSearchSurface (surfaceptr);
   EXPECT_EQ (n.getSearchSurface (), surfaceptr);
 
-  // Additional test for searchForNeigbhors
+  // Additional test for searchForNeighbors
   surfaceptr.reset (new PointCloud<PointXYZ>);
   *surfaceptr = *cloudptr;
   surfaceptr->points.resize (640 * 480);
@@ -191,10 +191,10 @@ TEST (PCL, TranslatedNormalEstimation)
   NormalEstimation<PointXYZ, Normal> n;
 
   PointCloud<PointXYZ> translatedCloud(cloud);
-  for(size_t i = 0; i < translatedCloud.size(); ++i) {
-    translatedCloud[i].x += 100;
-    translatedCloud[i].y += 100;
-    translatedCloud[i].z += 100;
+  for(auto & i : translatedCloud) {
+    i.x += 100;
+    i.y += 100;
+    i.z += 100;
   }
 
   // computePointNormal (indices, Vector)
@@ -267,7 +267,7 @@ TEST (PCL, TranslatedNormalEstimation)
   n.setSearchSurface (surfaceptr);
   EXPECT_EQ (n.getSearchSurface (), surfaceptr);
 
-  // Additional test for searchForNeigbhors
+  // Additional test for searchForNeighbors
   surfaceptr.reset (new PointCloud<PointXYZ>);
   *surfaceptr = *cloudptr;
   surfaceptr->points.resize (640 * 480);
@@ -430,7 +430,7 @@ TEST (PCL, IntegralImageNormalEstimationIndexingIssue)
       double y = ypos;
       double x = xpos;
 
-      (*cloudptr)[idx++] = PointXYZ(float(x), float(y), float(z));
+      (*cloudptr)[idx++] = PointXYZ(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
     }
   }
 

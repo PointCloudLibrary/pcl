@@ -159,21 +159,15 @@ DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
     if (!thresholds_.empty()) {
       // compute information gain for each threshold and store threshold with highest
       // information gain
-      for (std::size_t threshold_index = 0; threshold_index < thresholds_.size();
-           ++threshold_index) {
+      for (const float& threshold : thresholds_) {
 
-        const float information_gain =
-            stats_estimator_->computeInformationGain(data_set_,
-                                                     examples,
-                                                     label_data,
-                                                     feature_results,
-                                                     flags,
-                                                     thresholds_[threshold_index]);
+        const float information_gain = stats_estimator_->computeInformationGain(
+            data_set_, examples, label_data, feature_results, flags, threshold);
 
         if (information_gain > best_feature_information_gain) {
           best_feature_information_gain = information_gain;
           best_feature_index = static_cast<int>(feature_index);
-          best_feature_threshold = thresholds_[threshold_index];
+          best_feature_threshold = threshold;
         }
       }
     }

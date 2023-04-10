@@ -3,12 +3,10 @@
 using namespace pcl::simulation;
 
 pcl::simulation::SumReduce::SumReduce(int width, int height, int levels)
-: levels_(levels), width_(width), height_(height)
+: levels_(levels), width_(width), height_(height), sum_program_(new gllib::Program())
 {
   std::cout << "SumReduce: levels: " << levels_ << std::endl;
 
-  // Load shader
-  sum_program_ = gllib::Program::Ptr(new gllib::Program());
   // TODO: to remove file dependency include the shader source in the binary
   if (!sum_program_->addShaderFile("sum_score.vert", gllib::VERTEX)) {
     std::cout << "Failed loading vertex shader" << std::endl;
@@ -93,8 +91,8 @@ pcl::simulation::SumReduce::sum(GLuint input_array, float* output_array)
 
     glViewport(0, 0, width / 2, height / 2);
 
-    float step_x = 1.0f / float(width);
-    float step_y = 1.0f / float(height);
+    float step_x = 1.0f / static_cast<float>(width);
+    float step_y = 1.0f / static_cast<float>(height);
     sum_program_->setUniform("step_x", step_x);
     sum_program_->setUniform("step_y", step_y);
     // float step_x = 1.0f / static_cast<float> (width);

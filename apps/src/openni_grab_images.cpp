@@ -117,8 +117,7 @@ public:
   void
   saveImages()
   {
-    std::string time = boost::posix_time::to_iso_string(
-        boost::posix_time::microsec_clock::local_time());
+    const std::string time = pcl::getTimestamp();
     openni_wrapper::Image::Ptr image;
     openni_wrapper::DepthImage::Ptr depth_image;
 
@@ -204,8 +203,7 @@ public:
 
     // wait until user quits program with Ctrl-C, but no busy-waiting -> sleep (1);
     while (!image_viewer_.wasStopped() && !quit_) {
-      std::string time = boost::posix_time::to_iso_string(
-          boost::posix_time::microsec_clock::local_time());
+      const std::string time = pcl::getTimestamp();
       openni_wrapper::Image::Ptr image;
       openni_wrapper::DepthImage::Ptr depth_image;
 
@@ -360,13 +358,15 @@ main(int argc, char** argv)
   std::string device_id("");
   pcl::OpenNIGrabber::Mode image_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
 
+  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
+      pcl::console::find_argument(argc, argv, "--help") != -1) {
+    usage(argv);
+    return 1;
+  }
+
   if (argc >= 2) {
     device_id = argv[1];
-    if (device_id == "--help" || device_id == "-h") {
-      usage(argv);
-      return 0;
-    }
-    else if (device_id == "-l") {
+    if (device_id == "-l") {
       if (argc >= 3) {
         pcl::OpenNIGrabber grabber(argv[2]);
         auto device = grabber.getDevice();

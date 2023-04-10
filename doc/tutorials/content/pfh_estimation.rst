@@ -116,7 +116,7 @@ Estimating PFH features
 -----------------------
 
 Point Feature Histograms are implemented in PCL as part of the `pcl_features
-<http://docs.pointclouds.org/trunk/a02944.html>`_ library. 
+<https://pointclouds.org/documentation/group__features.html>`_ library. 
 
 The default PFH implementation uses 5 binning subdivisions (e.g., each of the
 four feature values will use this many bins from its value interval), and does

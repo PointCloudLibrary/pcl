@@ -323,7 +323,7 @@ pcl::LINEMOD::matchTemplates (const std::vector<QuantizableModality*> & modaliti
     }
 #endif
 
-    const float inv_max_score = 1.0f / float (max_score);
+    const float inv_max_score = 1.0f / static_cast<float>(max_score);
     
     std::size_t max_value = 0;
     std::size_t max_index = 0;
@@ -662,14 +662,14 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
     }
 #endif
 
-    const float inv_max_score = 1.0f / float (max_score);
+    const float inv_max_score = 1.0f / static_cast<float>(max_score);
 
     // we compute a new threshold based on the threshold supplied by the user;
     // this is due to the use of the cosine approx. in the response computation;
 #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
     const float raw_threshold = (4.0f * float (max_score) / 2.0f + template_threshold_ * (4.0f * float (max_score) / 2.0f));
 #else
-    const float raw_threshold = (float (max_score) / 2.0f + template_threshold_ * (float (max_score) / 2.0f));
+    const float raw_threshold = (static_cast<float>(max_score) / 2.0f + template_threshold_ * (static_cast<float>(max_score) / 2.0f));
 #endif
 
     //int max_value = 0;
@@ -1023,7 +1023,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
             max_score += 4;
 
             unsigned char *data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (
-                std::size_t (float (feature.x) * scale), std::size_t (float (feature.y) * scale));
+                static_cast<std::size_t>(static_cast<float>(feature.x) * scale), static_cast<std::size_t>(static_cast<float>(feature.y) * scale));
             auto * data_m128i = reinterpret_cast<__m128i*> (data);
 
             for (std::size_t mem_index = 0; mem_index < mem_size_16; ++mem_index)
@@ -1129,14 +1129,14 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
       }
 #endif
 
-      const float inv_max_score = 1.0f / float (max_score);
+      const float inv_max_score = 1.0f / static_cast<float>(max_score);
 
       // we compute a new threshold based on the threshold supplied by the user;
       // this is due to the use of the cosine approx. in the response computation;
 #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
       const float raw_threshold = (4.0f * float (max_score) / 2.0f + template_threshold_ * (4.0f * float (max_score) / 2.0f));
 #else
-      const float raw_threshold = (float (max_score) / 2.0f + template_threshold_ * (float (max_score) / 2.0f));
+      const float raw_threshold = (static_cast<float>(max_score) / 2.0f + template_threshold_ * (static_cast<float>(max_score) / 2.0f));
 #endif
 
       //int max_value = 0;

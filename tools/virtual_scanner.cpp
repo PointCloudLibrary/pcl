@@ -255,7 +255,6 @@ main (int argc, char** argv)
   if (single_view)
     number_of_points = 1;
 
-  int sid = -1;
   for (int i = 0; i < number_of_points; i++)
   {
     // Clear cloud for next view scan
@@ -334,18 +333,13 @@ main (int argc, char** argv)
     // Sweep vertically
     for (double vert = vert_start; vert <= vert_end; vert += sp.vert_res)
     {
-      sid++;
-
       tr1->Identity ();
       tr1->RotateWXYZ (vert, right);
       tr1->InternalTransformPoint (viewray, temp_beam);
 
       // Sweep horizontally
-      int pid = -1;
       for (double hor = hor_start; hor <= hor_end; hor += sp.hor_res)
       {
-        pid ++;
-
         // Create a beam vector with (lat,long) angles (vert, hor) with the viewray
         tr2->Identity ();
         tr2->RotateWXYZ (hor, up);

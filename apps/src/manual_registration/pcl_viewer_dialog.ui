@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <class>PCLViewerDialogUi</class>
+    <widget class="PCLViewerDialog" name="dialog">
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+            <property name="spacing">
+                <number>0</number>
+            </property>
+            <item>
+                <widget class="PCLQVTKWidget" name="qvtk_widget">
+                    <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                            <!-- <horstretch>255</horstretch> -->
+                            <!-- <verstretch>255</verstretch> -->
+                        </sizepolicy>
+                    </property>
+                    <property name="styleSheet">
+                        <string notr="true">background-color: rgb(0, 0, 0);</string>
+                    </property>
+                </widget>
+            </item>
+        </layout>
+    </widget>
+    <customwidgets>
+        <customwidget>
+            <class>PCLQVTKWidget</class>
+            <extends>QOpenGLWidget</extends>
+            <header location="global">pcl/visualization/qvtk_compatibility.h</header>
+        </customwidget>
+        <customwidget>
+            <class>PCLViewerDialog</class>
+            <extends>QDialog</extends>
+            <header location="global">pcl/apps/pcl_viewer_dialog.h</header>
+        </customwidget>
+    </customwidgets>
+    <resources/>
+    <connections/>
+</ui>

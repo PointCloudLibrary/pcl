@@ -65,14 +65,14 @@ TEST (PCL, InverseGeneral3x3f)
   CMatrix c_inverse = CMatrix::Zero ();
   Eigen::Matrix<Scalar, 3, 3> result = Eigen::Matrix<Scalar, 3, 3>::Zero ();
   Eigen::Matrix<Scalar, 3, 3> error = Eigen::Matrix<Scalar, 3, 3>::Zero ();
-  const Scalar epsilon = 1e-5f;
-  const unsigned iterations = 1000000;
+  constexpr Scalar epsilon = 1e-5f;
+  constexpr unsigned iterations = 1000000;
 
   // test floating point row-major : row-major
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
     for (unsigned elIdx = 0; elIdx < 9; ++elIdx)
-      r_matrix.coeffRef (elIdx) = Scalar(rand_double (rng));
+      r_matrix.coeffRef (elIdx) = static_cast<Scalar>(rand_double (rng));
 
     c_matrix = r_matrix;
 
@@ -124,15 +124,15 @@ TEST (PCL, InverseGeneral3x3d)
   CMatrix c_inverse = CMatrix::Zero ();
   Eigen::Matrix<Scalar, 3, 3> result = Eigen::Matrix<Scalar, 3, 3>::Zero ();
   Eigen::Matrix<Scalar, 3, 3> error = Eigen::Matrix<Scalar, 3, 3>::Zero ();
-  const Scalar epsilon = 1e-13;
-  const unsigned iterations = 1000000;
+  constexpr Scalar epsilon = 1e-13;
+  constexpr unsigned iterations = 1000000;
 
   // test floating point row-major : row-major
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
     for (unsigned elIdx = 0; elIdx < 9; ++elIdx)
     {
-      r_matrix.coeffRef (elIdx) = Scalar(rand_double (rng));
+      r_matrix.coeffRef (elIdx) = static_cast<Scalar>(rand_double (rng));
     }
     c_matrix = r_matrix;
     // test row-major -> row-major
@@ -183,14 +183,14 @@ TEST (PCL, InverseSymmetric3x3f)
   CMatrix c_inverse = CMatrix::Zero ();
   Eigen::Matrix<Scalar, 3, 3> result = Eigen::Matrix<Scalar, 3, 3>::Zero ();
   Eigen::Matrix<Scalar, 3, 3> error = Eigen::Matrix<Scalar, 3, 3>::Zero ();
-  const Scalar epsilon = 1e-5f;
-  const unsigned iterations = 1000000;
+  constexpr Scalar epsilon = 1e-5f;
+  constexpr unsigned iterations = 1000000;
 
   // test floating point row-major : row-major
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
     for (unsigned elIdx = 0; elIdx < 9; ++elIdx)
-      r_matrix.coeffRef (elIdx) = Scalar(rand_double (rng));
+      r_matrix.coeffRef (elIdx) = static_cast<Scalar>(rand_double (rng));
 
     r_matrix.coeffRef (3) = r_matrix.coeffRef (1);
     r_matrix.coeffRef (6) = r_matrix.coeffRef (2);
@@ -248,14 +248,14 @@ TEST (PCL, InverseSymmetric3x3d)
   CMatrix c_inverse = CMatrix::Zero ();
   Eigen::Matrix<Scalar, 3, 3> result = Eigen::Matrix<Scalar, 3, 3>::Zero ();
   Eigen::Matrix<Scalar, 3, 3> error = Eigen::Matrix<Scalar, 3, 3>::Zero ();
-  const Scalar epsilon = 1e-13;
-  const unsigned iterations = 1000000;
+  constexpr Scalar epsilon = 1e-13;
+  constexpr unsigned iterations = 1000000;
 
   // test floating point row-major : row-major
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
     for (unsigned elIdx = 0; elIdx < 9; ++elIdx)
-      r_matrix.coeffRef (elIdx) = Scalar(rand_double (rng));
+      r_matrix.coeffRef (elIdx) = static_cast<Scalar>(rand_double (rng));
 
     r_matrix.coeffRef (3) = r_matrix.coeffRef (1);
     r_matrix.coeffRef (6) = r_matrix.coeffRef (2);
@@ -314,14 +314,14 @@ TEST (PCL, Inverse2x2f)
   CMatrix c_inverse = CMatrix::Zero ();
   Eigen::Matrix<Scalar, 2, 2> result = Eigen::Matrix<Scalar, 2, 2>::Zero ();
   Eigen::Matrix<Scalar, 2, 2> error = Eigen::Matrix<Scalar, 2, 2>::Zero ();
-  const Scalar epsilon = 1e-6f;
-  const unsigned iterations = 1000000;
+  constexpr Scalar epsilon = 1e-6f;
+  constexpr unsigned iterations = 1000000;
 
   // test floating point row-major : row-major
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
     for (unsigned elIdx = 0; elIdx < 4; ++elIdx)
-      r_matrix.coeffRef (elIdx) = Scalar(rand_double (rng));
+      r_matrix.coeffRef (elIdx) = static_cast<Scalar>(rand_double (rng));
 
     c_matrix = r_matrix;
     // test row-major -> row-major
@@ -372,14 +372,14 @@ TEST (PCL, Inverse2x2d)
   CMatrix c_inverse = CMatrix::Zero ();
   Eigen::Matrix<Scalar, 2, 2> result;
   Eigen::Matrix<Scalar, 2, 2> error;
-  const Scalar epsilon = 1e-15;
-  const unsigned iterations = 1000000;
+  constexpr Scalar epsilon = 1e-15;
+  constexpr unsigned iterations = 1000000;
 
   // test floating point row-major : row-major
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
     for (unsigned elIdx = 0; elIdx < 4; ++elIdx)
-      r_matrix.coeffRef (elIdx) = Scalar(rand_double (rng));
+      r_matrix.coeffRef (elIdx) = static_cast<Scalar>(rand_double (rng));
 
     c_matrix = r_matrix;
     // test row-major -> row-major
@@ -425,8 +425,8 @@ inline void generateSymPosMatrix2x2 (Matrix& matrix)
 
   unsigned test_case = rand_uint (rng) % 10;
 
-  Scalar val1 = Scalar (rand_double (rng));
-  Scalar val2 = Scalar (rand_double (rng));
+  Scalar val1 = static_cast<Scalar> (rand_double (rng));
+  Scalar val2 = static_cast<Scalar> (rand_double (rng));
 
   // 10% of test cases include equal eigenvalues
   if (test_case == 0)
@@ -446,8 +446,8 @@ inline void generateSymPosMatrix2x2 (Matrix& matrix)
   {
     do
     {
-      eigenvectors.col (0)[0] = Scalar (rand_double (rng));
-      eigenvectors.col (0)[1] = Scalar (rand_double (rng));
+      eigenvectors.col (0)[0] = static_cast<Scalar> (rand_double (rng));
+      eigenvectors.col (0)[1] = static_cast<Scalar> (rand_double (rng));
       sqrNorm = eigenvectors.col (0).squaredNorm ();
     } while (sqrNorm == 0);
     eigenvectors.col (0) /= sqrt (sqrNorm);
@@ -479,8 +479,8 @@ TEST (PCL, eigen22d)
   Eigen::Matrix<Scalar, 2, 2> c_result;
   Eigen::Matrix<Scalar, 2, 2> c_error;
 
-  const Scalar epsilon = 1.25e-14;
-  const unsigned iterations = 1000000;
+  constexpr Scalar epsilon = 1.25e-14;
+  constexpr unsigned iterations = 1000000;
 
   // test floating point row-major : row-major
   for (unsigned idx = 0; idx < iterations; ++idx)
@@ -537,8 +537,8 @@ TEST (PCL, eigen22f)
   Eigen::Matrix<Scalar, 2, 2> c_result;
   Eigen::Matrix<Scalar, 2, 2> c_error;
 
-  const Scalar epsilon = 3.1e-5f;
-  const unsigned iterations = 1000000;
+  constexpr Scalar epsilon = 3.1e-5f;
+  constexpr unsigned iterations = 1000000;
 
   // test floating point row-major : row-major
   for (unsigned idx = 0; idx < iterations; ++idx)
@@ -592,9 +592,9 @@ inline void generateSymPosMatrix3x3 (Matrix& matrix)
 
   unsigned test_case = rand_uint (rng);
 
-  Scalar val1 = Scalar (rand_double (rng));
-  Scalar val2 = Scalar (rand_double (rng));
-  Scalar val3 = Scalar (rand_double (rng));
+  Scalar val1 = static_cast<Scalar> (rand_double (rng));
+  Scalar val2 = static_cast<Scalar> (rand_double (rng));
+  Scalar val3 = static_cast<Scalar> (rand_double (rng));
 
   // 1%: all three values are equal and non-zero
   if (test_case == 0)
@@ -635,12 +635,12 @@ inline void generateSymPosMatrix3x3 (Matrix& matrix)
 
   do
   {
-    eigenvectors.col (0)[0] = Scalar (rand_double (rng));
-    eigenvectors.col (0)[1] = Scalar (rand_double (rng));
-    eigenvectors.col (0)[2] = Scalar (rand_double (rng));
-    eigenvectors.col (1)[0] = Scalar (rand_double (rng));
-    eigenvectors.col (1)[1] = Scalar (rand_double (rng));
-    eigenvectors.col (1)[2] = Scalar (rand_double (rng));
+    eigenvectors.col (0)[0] = static_cast<Scalar> (rand_double (rng));
+    eigenvectors.col (0)[1] = static_cast<Scalar> (rand_double (rng));
+    eigenvectors.col (0)[2] = static_cast<Scalar> (rand_double (rng));
+    eigenvectors.col (1)[0] = static_cast<Scalar> (rand_double (rng));
+    eigenvectors.col (1)[1] = static_cast<Scalar> (rand_double (rng));
+    eigenvectors.col (1)[2] = static_cast<Scalar> (rand_double (rng));
     eigenvectors.col (2) = eigenvectors.col (0).cross (eigenvectors.col (1));
 
     sqrNorm = eigenvectors.col (2).squaredNorm ();
@@ -676,8 +676,8 @@ TEST (PCL, eigen33d)
   Eigen::Matrix<Scalar, 3, 3> c_result;
   Eigen::Matrix<Scalar, 3, 3> c_error;
 
-  const Scalar epsilon = 2e-5;
-  const unsigned iterations = 1000000;
+  constexpr Scalar epsilon = 2e-5;
+  constexpr unsigned iterations = 1000000;
 
   // special case
   r_matrix = Eigen::Matrix<Scalar, 3, 1>(3, 2, 1).asDiagonal();
@@ -751,7 +751,7 @@ TEST (PCL, eigen33f)
   Eigen::Matrix<Scalar, 3, 3> c_result;
   Eigen::Matrix<Scalar, 3, 3> c_error;
 
-  const Scalar epsilon = 1e-3f;
+  constexpr Scalar epsilon = 1e-3f;
   constexpr unsigned iterations = 1000000;
   unsigned r_fail_count = 0;
 
@@ -828,8 +828,8 @@ TEST (PCL, transformLine)
   // Simple rotation
   transformation = Eigen::Affine3f::Identity ();
   transformationd = Eigen::Affine3d::Identity ();
-  transformation.linear() = (Eigen::Matrix3f) Eigen::AngleAxisf(M_PI/2, Eigen::Vector3f::UnitZ());
-  transformationd.linear() = (Eigen::Matrix3d) Eigen::AngleAxisd(M_PI/2, Eigen::Vector3d::UnitZ());
+  transformation.linear() = Eigen::Matrix3f(Eigen::AngleAxisf(M_PI/2, Eigen::Vector3f::UnitZ()));
+  transformationd.linear() = Eigen::Matrix3d(Eigen::AngleAxisd(M_PI/2, Eigen::Vector3d::UnitZ()));
 
   line << 1, 2, 3, 0, 1, 0;
   lined << 1, 2, 3, 0, 1, 0;
@@ -849,9 +849,9 @@ TEST (PCL, transformLine)
   transformationd = Eigen::Affine3d::Identity ();
   transformation.translation() << 25.97, -2.45, 0.48941;
   transformationd.translation() << 25.97, -2.45, 0.48941;
-  transformation.linear() = (Eigen::Matrix3f) Eigen::AngleAxisf(M_PI/5, Eigen::Vector3f::UnitX())
+  transformation.linear() = Eigen::Matrix3f(Eigen::AngleAxisf(M_PI/5, Eigen::Vector3f::UnitX()))
   * Eigen::AngleAxisf(M_PI/3, Eigen::Vector3f::UnitY());
-  transformationd.linear() = (Eigen::Matrix3d) Eigen::AngleAxisd(M_PI/5, Eigen::Vector3d::UnitX())
+  transformationd.linear() = Eigen::Matrix3d(Eigen::AngleAxisd(M_PI/5, Eigen::Vector3d::UnitX()))
   * Eigen::AngleAxisd(M_PI/3, Eigen::Vector3d::UnitY());
 
   line << -1, 9, 3, 1.5, 2.0, 0.2;
@@ -901,8 +901,8 @@ TEST (PCL, transformPlane)
   // Simple rotation
   transformation.translation() << 0, 0, 0;
   transformationd.translation() << 0, 0, 0;
-  transformation.linear() = (Eigen::Matrix3f) Eigen::AngleAxisf(M_PI/2, Eigen::Vector3f::UnitZ());
-  transformationd.linear() = (Eigen::Matrix3d) Eigen::AngleAxisd(M_PI/2, Eigen::Vector3d::UnitZ());
+  transformation.linear() = Eigen::Matrix3f(Eigen::AngleAxisf(M_PI/2, Eigen::Vector3f::UnitZ()));
+  transformationd.linear() = Eigen::Matrix3d(Eigen::AngleAxisd(M_PI/2, Eigen::Vector3d::UnitZ()));
   test << 0, 1, 0, -2;
   tolerance = 1e-6;
 
@@ -925,9 +925,9 @@ TEST (PCL, transformPlane)
   // Random transformation
   transformation.translation() << 12.5, -5.4, 0.1;
   transformationd.translation() << 12.5, -5.4, 0.1;
-  transformation.linear() = (Eigen::Matrix3f) Eigen::AngleAxisf(M_PI/7, Eigen::Vector3f::UnitY())
+  transformation.linear() = Eigen::Matrix3f(Eigen::AngleAxisf(M_PI/7, Eigen::Vector3f::UnitY()))
   * Eigen::AngleAxisf(M_PI/4, Eigen::Vector3f::UnitZ());
-  transformationd.linear() = (Eigen::Matrix3d) Eigen::AngleAxisd(M_PI/7, Eigen::Vector3d::UnitY())
+  transformationd.linear() = Eigen::Matrix3d(Eigen::AngleAxisd(M_PI/7, Eigen::Vector3d::UnitY()))
   * Eigen::AngleAxisd(M_PI/4, Eigen::Vector3d::UnitZ());
   test << 5.35315, 2.89914, 0.196848, -49.2788;
   test /= test.head<3> ().norm ();
@@ -1128,9 +1128,9 @@ TEST (PCL, getTransFromUnitVectors)
 
 TEST (PCL, getTransformation)
 {
-  const float rot_x = 2.8827f;
-  const float rot_y = -0.31190f;
-  const float rot_z = -0.93058f;
+  constexpr float rot_x = 2.8827f;
+  constexpr float rot_y = -0.31190f;
+  constexpr float rot_z = -0.93058f;
 
   Eigen::Affine3f affine;
   pcl::getTransformation (0, 0, 0, rot_x, rot_y, rot_z, affine);
@@ -1142,12 +1142,12 @@ TEST (PCL, getTransformation)
 
 TEST (PCL, getTranslationAndEulerAngles)
 {
-  const float trans_x = 0.1f;
-  const float trans_y = 0.2f;
-  const float trans_z = 0.3f;
-  const float rot_x = 2.8827f;
-  const float rot_y = -0.31190f;
-  const float rot_z = -0.93058f;
+  constexpr float trans_x = 0.1f;
+  constexpr float trans_y = 0.2f;
+  constexpr float trans_z = 0.3f;
+  constexpr float rot_x = 2.8827f;
+  constexpr float rot_y = -0.31190f;
+  constexpr float rot_z = -0.93058f;
 
   Eigen::Affine3f affine;
   pcl::getTransformation (trans_x, trans_y, trans_z, rot_x, rot_y, rot_z, affine);

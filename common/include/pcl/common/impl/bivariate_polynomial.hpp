@@ -208,19 +208,19 @@ BivariatePolynomialT<real>::findCriticalPoints (std::vector<real>& x_values, std
 
   if (degree == 2)
   {
-    real x = (real(2)*parameters[2]*parameters[3] - parameters[1]*parameters[4]) /
-             (parameters[1]*parameters[1] - real(4)*parameters[0]*parameters[3]),
-         y = (real(-2)*parameters[0]*x - parameters[2]) / parameters[1];
+    real x = (static_cast<real>(2)*parameters[2]*parameters[3] - parameters[1]*parameters[4]) /
+             (parameters[1]*parameters[1] - static_cast<real>(4)*parameters[0]*parameters[3]),
+         y = (static_cast<real>(-2)*parameters[0]*x - parameters[2]) / parameters[1];
 
     if (!std::isfinite(x) || !std::isfinite(y))
       return;
 
     int type = 2;
-    real det_H = real(4)*parameters[0]*parameters[3] - parameters[1]*parameters[1];
+    real det_H = static_cast<real>(4)*parameters[0]*parameters[3] - parameters[1]*parameters[1];
     //std::cout << "det(H) = "<<det_H<<"\n";
-    if (det_H > real(0))  // Check Hessian determinant
+    if (det_H > static_cast<real>(0))  // Check Hessian determinant
     {
-      if (parameters[0]+parameters[3] < real(0))  // Check Hessian trace
+      if (parameters[0]+parameters[3] < static_cast<real>(0))  // Check Hessian trace
         type = 0;
       else
         type = 1;

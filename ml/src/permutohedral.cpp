@@ -106,7 +106,7 @@ pcl::Permutohedral::init(const std::vector<float>& feature,
 
     // Elevate the feature  (y = Ep, see p.5 in [Adams etal 2010])
     int index = k * feature_dimension;
-    // sm contains the sum of 1..n of our faeture vector
+    // sm contains the sum of 1..n of our feature vector
     float sm = 0;
     for (int j = d_; j > 0; j--) {
       float cf = feature[index + j - 1] * scale_factor(j - 1);
@@ -367,7 +367,7 @@ pcl::Permutohedral::initOLD(const std::vector<float>& feature,
     // const float * f = feature + k*feature_size;
     int index = k * feature_dimension;
 
-    // sm contains the sum of 1..n of our faeture vector
+    // sm contains the sum of 1..n of our feature vector
     float sm = 0;
     for (int j = d_; j > 0; j--) {
       // float cf = f[j-1]*scale_factor[j-1];
@@ -388,7 +388,7 @@ pcl::Permutohedral::initOLD(const std::vector<float>& feature,
     }
 
     // Find the simplex we are in and store it in rank (where rank describes what
-    // position coorinate i has in the sorted order of the features values)
+    // position coordinate i has in the sorted order of the features values)
     for (int i = 0; i <= d_; i++)
       rank[i] = 0;
     for (int i = 0; i < d_; i++) {
@@ -530,7 +530,7 @@ pcl::Permutohedral::computeOLD(std::vector<float>& out,
   }
   // Alpha is a magic scaling constant (write Andrew if you really wanna understand
   // this)
-  float alpha = 1.0f / (1.0f + powf(2.0f, -float(d_)));
+  float alpha = 1.0f / (1.0f + powf(2.0f, -static_cast<float>(d_)));
 
   // Slicing
   for (int i = 0; i < out_size; i++) {

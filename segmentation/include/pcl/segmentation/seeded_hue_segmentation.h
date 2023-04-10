@@ -130,7 +130,7 @@ namespace pcl
       inline double 
       getClusterTolerance () const { return (cluster_tolerance_); }
 
-      /** \brief Set the tollerance on the hue
+      /** \brief Set the tolerance on the hue
         * \param[in] delta_hue the new delta hue
         */
       inline void 

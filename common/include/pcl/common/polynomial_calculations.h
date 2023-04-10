@@ -64,17 +64,17 @@ namespace pcl
       
       // =====PUBLIC METHODS=====
       /** Solves an equation of the form ax^4 + bx^3 + cx^2 +dx + e = 0
-       *  See http://en.wikipedia.org/wiki/Quartic_equation#Summary_of_Ferrari.27s_method */
+       *  See https://en.wikipedia.org/wiki/Quartic_equation#Summary_of_Ferrari.27s_method */
       inline void
       solveQuarticEquation (real a, real b, real c, real d, real e, std::vector<real>& roots) const;
 
       /** Solves an equation of the form ax^3 + bx^2 + cx + d = 0
-       *  See http://en.wikipedia.org/wiki/Cubic_equation */
+       *  See https://en.wikipedia.org/wiki/Cubic_equation */
       inline void
       solveCubicEquation (real a, real b, real c, real d, std::vector<real>& roots) const;
 
       /** Solves an equation of the form ax^2 + bx + c = 0
-       *  See http://en.wikipedia.org/wiki/Quadratic_equation */
+       *  See https://en.wikipedia.org/wiki/Quadratic_equation */
       inline void
       solveQuadraticEquation (real a, real b, real c, std::vector<real>& roots) const;
 

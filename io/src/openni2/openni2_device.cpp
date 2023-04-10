@@ -163,7 +163,7 @@ pcl::io::openni2::OpenNI2Device::getStringID () const
 bool
 pcl::io::openni2::OpenNI2Device::isValid () const
 {
-  return (openni_device_.get () != nullptr) && openni_device_->isValid ();
+  return (openni_device_ != nullptr) && openni_device_->isValid ();
 }
 
 float
@@ -332,7 +332,7 @@ pcl::io::openni2::OpenNI2Device::stopAllStreams ()
 void
 pcl::io::openni2::OpenNI2Device::stopIRStream ()
 {
-  if (ir_video_stream_.get () != nullptr)
+  if (ir_video_stream_ != nullptr)
   {
     ir_video_stream_->stop ();
     ir_video_started_ = false;
@@ -341,7 +341,7 @@ pcl::io::openni2::OpenNI2Device::stopIRStream ()
 void
 pcl::io::openni2::OpenNI2Device::stopColorStream ()
 {
-  if (color_video_stream_.get () != nullptr)
+  if (color_video_stream_ != nullptr)
   {
     color_video_stream_->stop ();
     color_video_started_ = false;
@@ -350,7 +350,7 @@ pcl::io::openni2::OpenNI2Device::stopColorStream ()
 void
 pcl::io::openni2::OpenNI2Device::stopDepthStream ()
 {
-  if (depth_video_stream_.get () != nullptr)
+  if (depth_video_stream_ != nullptr)
   {
     depth_video_stream_->stop ();
     depth_video_started_ = false;
@@ -360,13 +360,13 @@ pcl::io::openni2::OpenNI2Device::stopDepthStream ()
 void
 pcl::io::openni2::OpenNI2Device::shutdown ()
 {
-  if (ir_video_stream_.get () != nullptr)
+  if (ir_video_stream_ != nullptr)
     ir_video_stream_->destroy ();
 
-  if (color_video_stream_.get () != nullptr)
+  if (color_video_stream_ != nullptr)
     color_video_stream_->destroy ();
 
-  if (depth_video_stream_.get () != nullptr)
+  if (depth_video_stream_ != nullptr)
     depth_video_stream_->destroy ();
 
 }
@@ -747,7 +747,7 @@ bool OpenNI2Device::setPlaybackSpeed (double speed)
 std::shared_ptr<openni::VideoStream>
 pcl::io::openni2::OpenNI2Device::getIRVideoStream () const
 {
-  if (ir_video_stream_.get () == nullptr)
+  if (ir_video_stream_ == nullptr)
   {
     if (hasIRSensor ())
     {
@@ -764,7 +764,7 @@ pcl::io::openni2::OpenNI2Device::getIRVideoStream () const
 std::shared_ptr<openni::VideoStream>
 pcl::io::openni2::OpenNI2Device::getColorVideoStream () const
 {
-  if (color_video_stream_.get () == nullptr)
+  if (color_video_stream_ == nullptr)
   {
     if (hasColorSensor ())
     {
@@ -781,7 +781,7 @@ pcl::io::openni2::OpenNI2Device::getColorVideoStream () const
 std::shared_ptr<openni::VideoStream>
 pcl::io::openni2::OpenNI2Device::getDepthVideoStream () const
 {
-  if (depth_video_stream_.get () == nullptr)
+  if (depth_video_stream_ == nullptr)
   {
     if (hasDepthSensor ())
     {

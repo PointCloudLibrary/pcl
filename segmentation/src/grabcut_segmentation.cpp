@@ -83,7 +83,7 @@ pcl::segmentation::grabcut::BoykovKolmogorov::getTargetEdgeCapacity (int u) cons
 void
 pcl::segmentation::grabcut::BoykovKolmogorov::preAugmentPaths ()
 {
-  for (int u = 0; u < (int)nodes_.size (); u++)
+  for (int u = 0; u < static_cast<int>(nodes_.size ()); u++)
   {
     // augment s-u-t paths
     if ((source_edges_[u] > 0.0) && (target_edges_[u] > 0.0))
@@ -115,7 +115,7 @@ pcl::segmentation::grabcut::BoykovKolmogorov::preAugmentPaths ()
 int
 pcl::segmentation::grabcut::BoykovKolmogorov::addNodes (std::size_t n)
 {
-  int node_id = (int)nodes_.size ();
+  int node_id = static_cast<int>(nodes_.size ());
   nodes_.resize (nodes_.size () + n);
   source_edges_.resize (nodes_.size (), 0.0);
   target_edges_.resize (nodes_.size (), 0.0);
@@ -283,7 +283,7 @@ void
 pcl::segmentation::grabcut::BoykovKolmogorov::initializeTrees ()
 {
   // initialize search tree
-  for (int u = 0; u < (int)nodes_.size (); u++)
+  for (int u = 0; u < static_cast<int>(nodes_.size ()); u++)
   {
     if (source_edges_[u] > 0.0)
     {

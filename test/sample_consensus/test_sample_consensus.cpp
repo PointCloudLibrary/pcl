@@ -97,7 +97,7 @@ TYPED_TEST(SacTest, InfiniteLoop)
 {
   using namespace std::chrono_literals;
 
-  const unsigned point_count = 100;
+  constexpr unsigned point_count = 100;
   PointCloud<PointXYZ> cloud;
   cloud.resize (point_count);
   for (unsigned idx = 0; idx < point_count; ++idx)

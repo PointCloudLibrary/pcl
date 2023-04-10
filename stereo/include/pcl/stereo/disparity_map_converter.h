@@ -221,7 +221,7 @@ protected:
    * \param[in] row
    * \param[in] column
    * \param[in] disparity
-   * \return the 3D point, that corresponds to the input parametres and the camera
+   * \return the 3D point, that corresponds to the input parameters and the camera
    * calibration.
    */
   PointXYZ
