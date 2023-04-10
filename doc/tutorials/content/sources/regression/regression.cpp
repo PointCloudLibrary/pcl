@@ -28,9 +28,6 @@ int main (int argc, char** argv)
   pcl::PointXYZ max_point_OBB;
   pcl::PointXYZ position_OBB;
   Eigen::Matrix3f rotational_matrix_OBB;
-  float major_value = 2.0;
-  float middle_value = 1.5;
-  float minor_value = 1.0;
   Eigen::Vector3f major_vector, middle_vector, minor_vector;
   Eigen::Vector3f mass_center;
 

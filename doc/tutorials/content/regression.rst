@@ -19,7 +19,7 @@ They form the right-handed coordinate system applied to the center of mass
 (major vector represents X-axis and the minor vector represents Z-axis) with the minor vector normal to the best fit plane
 and the other two vectors on the plane.
 
-.. image:: images/eigen_vectors.png
+.. image:: images/regression_vectors.png
    :height: 360px
 
 
@@ -29,7 +29,7 @@ The code
 --------
 
 First of all you will need the point cloud for this tutorial.
-`This <https://github.com/PointCloudLibrary/data/blob/master/tutorials/min_cut_segmentation_tutorial.pcd>`_ is the one presented on the screenshots.
+`This <https://github.com/PointCloudLibrary/data/blob/master/tutorials/lamppost.pcd>`_ is the one presented on the screenshots.
 Next what you need to do is to create a file ``regression.cpp`` in any editor you prefer and copy the following code inside of it:
 
 .. literalinclude:: sources/regression/regression.cpp
@@ -62,13 +62,13 @@ This is were we declare all necessary variables needed to store descriptors and 
 
 .. literalinclude:: sources/regression/regression.cpp
    :language: cpp
-   :lines: 36-42
+   :lines: 35-38
 
 These lines show how to access computed descriptors and other features.
 
 .. literalinclude:: sources/regression/regression.cpp
    :language: cpp
-   :lines: 44-50
+   :lines: 40-46
 
 These lines simply create the instance of ``PCLVisualizer`` class for result
 visualization. Here we also add the cloud and the AABB for visualization. We
@@ -77,14 +77,14 @@ because the default is to use a solid cube.
 
 .. literalinclude:: sources/regression/regression.cpp
    :language: cpp
-   :lines: 52-55
+   :lines: 48-51
 
 Visualization of the OBB is little more complex. So here we create a quaternion from the rotational matrix, set OBBs position
 and pass it to the visualizer.
 
 .. literalinclude:: sources/regression/regression.cpp
    :language: cpp
-   :lines: 57-63
+   :lines: 53-59
 
 These lines are responsible for vectors visualization. The few lines that
 are left simply launch the visualization process.
@@ -100,7 +100,7 @@ Add the following lines to your CMakeLists.txt file:
 
 After you have made the executable, you can run it. Simply do::
 
-  $ ./moment_of_inertia lamppost.pcd
+  $ ./regression lamppost.pcd
 
 You should see something similar to this image. Here AABB is yellow, OBB is red. You can also see the vectors.
 
