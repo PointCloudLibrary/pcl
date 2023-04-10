@@ -339,7 +339,7 @@ pcl::RegressionEstimation<PointT>::compute()
     z_m.clear();
   }
 
-  for (unsigned int i = 0; i < number_of_points; i++) {
+  for (unsigned int i = 0; i < number_of_points; ++i) {
     auto p = ((*input_)[(*indices_)[i]]); 
     // vector applied on the mass center
     if (essential_) {
@@ -362,8 +362,6 @@ pcl::RegressionEstimation<PointT>::compute()
     y[i] = x1 * middle_axis_(0) +
            y1 * middle_axis_(1) +
            z1 * middle_axis_(2);
-
-    ++i;
 
   }
 
