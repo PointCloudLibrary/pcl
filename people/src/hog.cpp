@@ -233,13 +233,35 @@ pcl::people::HOG::gradHist( float *M, float *O, int h, int w, int bin_size, int 
       }
       // main rows, has top and bottom bins, use SSE for minor speedup
       for( ; ; y++ ) {
-        yb0 = static_cast<int>(yb); if(yb0>=hb-1) break; GHinit();
+        // We must stop at hb-3, otherwise the SSE functions access memory outside the valid regions
+        yb0 = static_cast<int>(yb); if(yb0>=(hb-3)) break; GHinit();
         _m0=pcl::sse_set(M0[y]); _m1=pcl::sse_set(M1[y]);
         if(hasLf) { _m=pcl::sse_set(0,0,ms[1],ms[0]);
         GH(H0+O0[y],_m,_m0); GH(H0+O1[y],_m,_m1); }
         if(hasRt) { _m=pcl::sse_set(0,0,ms[3],ms[2]);
         GH(H0+O0[y]+hb,_m,_m0); GH(H0+O1[y]+hb,_m,_m1); }
       }      
+      for( ; ; y++ ) { // Do the two remaining steps without SSE, just like in the #else case below
+        yb0 = static_cast<int>(yb);
+        if(yb0>=hb-1)
+          break;
+        GHinit();
+
+        if(hasLf)
+        {
+          H0[O0[y]+1]+=ms[1]*M0[y];
+          H0[O1[y]+1]+=ms[1]*M1[y];
+          H0[O0[y]]+=ms[0]*M0[y];
+          H0[O1[y]]+=ms[0]*M1[y];
+        }
+        if(hasRt)
+        {
+          H0[O0[y]+hb+1]+=ms[3]*M0[y];
+          H0[O1[y]+hb+1]+=ms[3]*M1[y];
+          H0[O0[y]+hb]+=ms[2]*M0[y];
+          H0[O1[y]+hb]+=ms[2]*M1[y];
+        }
+      }
       // final rows, no bottom bin_size
       for( ; y<h0; y++ ) {
         yb0 = static_cast<int>(yb); GHinit();
