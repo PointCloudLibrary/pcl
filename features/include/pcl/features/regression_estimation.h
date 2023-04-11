@@ -141,7 +141,14 @@ namespace pcl
         * corresponding get method.
         */
       void
-      compute ();
+      compute();
+
+      /** \brief Alternative to compute() This method launches the computation of all features. After execution
+       * it sets is_valid_ flag to true and each feature can be accessed with the
+       * corresponding get method.
+       */
+      void
+      computeByPCA();
 
       /** \brief This method gives access to the computed axis aligned bounding box. It returns true
         * if the current values are valid and false otherwise.
@@ -201,16 +208,6 @@ namespace pcl
       void
       PlaneFittingCloud(double& a, double& b, double& c);
 
-
-       /** \brief This method calculates the mass center and calculates the best fit
-       * line according to a statistical regression algorithm for a planar (2D) point cloud
-       * \param[in] x_, y_ planar point cloud points coords
-       * \param[in] SamplesNr number of point cloud points 
-       * \param[out] Xav, Yav mass center
-       * \param[out] a, b, c coefficients of the regression best fit line of equation a*x+b*y+c=0
-       */
-      int
-      EvalRegressionLine(double* x_, double* y_, unsigned int SamplesNr, double* Xav, double* Yav, double* a, double* b, double* c);
 
       /** \brief This method computes the oriented bounding box. */
       void

@@ -44,6 +44,8 @@
 
 #include <pcl/features/regression_estimation.h>
 #include <pcl/features/feature.h>
+#include <pcl/common/centroid.h>
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
@@ -102,18 +104,16 @@ void
 pcl::RegressionEstimation<PointT>::PlaneFittingCloud(double& a, double& b, double& c)
 {
 
-  mean_value_(0) = 0.0f;
-  mean_value_(1) = 0.0f;
-  mean_value_(2) = 0.0f;
+  mean_value_(0) = mean_value_(1) = mean_value_(2) = 0.0f;
 
   if (!essential_) {
-    aabb_min_point_.x = std::numeric_limits<float>::max();
-    aabb_min_point_.y = std::numeric_limits<float>::max();
-    aabb_min_point_.z = std::numeric_limits<float>::max();
+    aabb_min_point_.x = aabb_min_point_.y = aabb_min_point_.z =
+        std::numeric_limits<float>::max();
 
-    aabb_max_point_.x = -std::numeric_limits<float>::max();
-    aabb_max_point_.y = -std::numeric_limits<float>::max();
-    aabb_max_point_.z = -std::numeric_limits<float>::max();
+
+    aabb_max_point_.x = aabb_max_point_.y = aabb_max_point_.z =
+        -std::numeric_limits<float>::max();
+
   }
 
   a = b = c = 0.0;
@@ -183,136 +183,30 @@ pcl::RegressionEstimation<PointT>::PlaneFittingCloud(double& a, double& b, doubl
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT>
-int
-pcl::RegressionEstimation<PointT>::EvalRegressionLine(
-    double* x_, double* y_, unsigned int SamplesNr,
-    double* Xav, double* Yav, double* a, double* b, double* c   
-)
-{
-  double Xaverage, Yaverage, SumXY, SumX2, DevX, DevY, CodevXY; 
-  double SumY2; 
-  double ax, bx, cx, normx; // those found considering y the dependent var and x the independent var
-  double ay, by, cy, normy; // those found considering x the dependent var and y the independent var
-
-  Xaverage = Yaverage = 0.;
-  SumXY = SumX2 = SumY2 = 0.;
-
-  if (SamplesNr == 0) {
-      *Xav = *Yav = 0;
-      *a = *c = 0;
-      *b = 1;
-      return 0;
-  }
-
-  // special case
-  if (SamplesNr == 1) {
-      *Xav = x_[0];
-      *Yav = y_[0];
-
-      *a = 0;
-      *b = -1;
-      *c = y_[0];
-
-      return 1;
-  }
-
-  for (unsigned int Idx = 0; Idx < SamplesNr; ++Idx) {
-      double x, y;
-
-      x = x_[Idx];
-      y = y_[Idx];
-
-      Xaverage += x;
-      Yaverage += y;
-
-      SumXY += x * y;
-      SumX2 += x * x;
-      SumY2 += y * y;
-  }
-
-  Xaverage = Xaverage / (double)SamplesNr;
-  Yaverage = Yaverage / (double)SamplesNr;
-
-  *Xav = Xaverage;
-  *Yav = Yaverage;
-
-  DevX = SumX2 - Xaverage * Xaverage * (double)SamplesNr; // Deviance(x) //(E[(x-E[x])^2]=E[x^2]-E[x]^2)*SamplesNr
-  DevY = SumY2 - Yaverage * Yaverage * (double)SamplesNr;
-
-  CodevXY = SumXY - Xaverage * Yaverage *(double)SamplesNr; //Codeviance(xy) // (E[x*y]-E[x]E[y])*SamplesNr
-
-  ax = ay = CodevXY;
-
-  bx = -DevX;
-  cx = Yaverage * DevX - Xaverage * CodevXY;
-
-  by = -DevY;
-  cy = Xaverage * DevY - Yaverage * CodevXY;
-
-  normx = sqrt(ax * ax + bx * bx);
-  normy = sqrt(ay * ay + by * by);
-
-  if (normx > 0) {
-      ax /= normx;
-      bx /= normx;
-      cx /= normx;
-  }
-  if (normy > 0) {
-      ay /= normy;
-      by /= normy;
-      cy /= normy;
-  }
-
-  // going to check which of the two lines is a best fit with mean square(d) error
-  double ex = 0;
-  double ey = 0;
-  for (unsigned int i = 0; i < SamplesNr; ++i) {
-      double exx = (ax * x_[i] + bx * y_[i] - cx);
-      double eyy = (ay * x_[i] + by * y_[i] - cy);
-      ex += exx * exx;
-      ey += eyy * eyy;
-  }
-
-  if (ex < ey) {
-      *a = ax;
-      *b = bx;
-      *c = cx;
-      return 1;
-  }
-  else {
-      *a = ay;
-      *b = by;
-      *c = cy;
-      return 2;
-  }
-
-}
-
-
-
-template <typename PointT> void
+void
 pcl::RegressionEstimation<PointT>::compute()
 {
 
-  if (!initCompute ())
-  {
-    deinitCompute ();
+  if (!initCompute()) {
+    deinitCompute();
     return;
   }
- 
+
   double a, b, c;
-  PlaneFittingCloud( a, b, c);
+  PlaneFittingCloud(a, b, c);
 
   double sqrt_ = sqrt(a * a + b * b + 1);
   minor_axis_(0) = -a / sqrt_;
   minor_axis_(1) = -b / sqrt_;
   minor_axis_(2) = 1.0 / sqrt_;
 
-  //here fix the other two in an arbitrary but temporary way (on the plane orthogonal to minor_axis_)
-  major_axis_(0) =  0; 
-  major_axis_(1) = -1.0 / sqrt(b * b + 1); 
-  major_axis_(2) = -b / sqrt(b * b + 1); 
+  // here fix the other two in an arbitrary but temporary way (on the plane orthogonal
+  // to minor_axis_)
+  major_axis_(0) = 0;
+  major_axis_(1) = -1.0 / sqrt(b * b + 1);
+  major_axis_(2) = -b / sqrt(b * b + 1);
 
   // cross product of the previous two: middle=minor X major  (( versy= versz X versx ))
   middle_axis_(0) = minor_axis_(1) * major_axis_(2) - minor_axis_(2) * major_axis_(1);
@@ -325,99 +219,245 @@ pcl::RegressionEstimation<PointT>::compute()
 
   auto number_of_points = static_cast<unsigned int>(indices_->size());
 
+  pcl::PointCloud<PointXY> demean2D;
+  demean2D.width = number_of_points;
+  demean2D.height = 1;
+  demean2D.resize(number_of_points);
 
-  double* x;
-  double* y;
-  
-  x = new double[number_of_points];
-  y = new double[number_of_points];
   double x1, y1, z1;
 
+
   if (!essential_) {
-    x_m.clear();
-    y_m.clear();
-    z_m.clear();
+    x_m.resize(number_of_points);
+    y_m.resize(number_of_points);
+    z_m.resize(number_of_points);
   }
 
   for (unsigned int i = 0; i < number_of_points; ++i) {
-    auto p = ((*input_)[(*indices_)[i]]); 
-    // vector applied on the mass center
+    auto p = ((*input_)[(*indices_)[i]]);
+//     vector applied on the mass center
     if (essential_) {
       x1 = p.x - mean_value_(0);
       y1 = p.y - mean_value_(1);
       z1 = p.z - mean_value_(2);
     }
-    else {
-      x_m.push_back(x1 = p.x - mean_value_(0));
-      y_m.push_back(y1 = p.y - mean_value_(1));
-      z_m.push_back(z1 = p.z - mean_value_(2));
+   else {
+      x_m[i] = (x1 = p.x - mean_value_(0));
+      y_m[i] = (y1 = p.y - mean_value_(1));
+      z_m[i] = (z1 = p.z - mean_value_(2));
     }
 
     // major component
-    x[i] = x1 * major_axis_(0) +
-           y1 * major_axis_(1) +
-           z1 * major_axis_(2);
+    demean2D[i].x= x1 * major_axis_(0) + y1 * major_axis_(1) + z1 * major_axis_(2);
 
     // middle component
-    y[i] = x1 * middle_axis_(0) +
-           y1 * middle_axis_(1) +
-           z1 * middle_axis_(2);
-
+    demean2D[i].y= x1 * middle_axis_(0) + y1 * middle_axis_(1) + z1 * middle_axis_(2);
   }
 
-  double Xav, Yav, al, bl, cl;
-
-  EvalRegressionLine(
-      // INPUT
-      x, y, number_of_points,
-      // OUTPUT
-      &Xav, &Yav, &al, &bl, &cl);
-  // here Xav and Yav and cl will be very close to zero
-  //  next step I won't even calculate them in non detailed mode
-
-  delete[] x;
-  delete[] y;
-
-  // al bl need to be renormalized to a unitary versor
-  double norm = sqrt(al * al + bl * bl);
-  if (norm == 0) {
-    norm = 1;
-    al = 1;
-    bl = 0;
+  //2D PCA :
+  // Compute the product cloud_demean2D * cloud_demean2D^T
+  Eigen::Matrix2f alpha = Eigen::Matrix2f::Zero();
+  for(unsigned int i=0;i<number_of_points;++i)
+    {
+    alpha(0,0) += demean2D[i].x * demean2D[i].x;
+    alpha(1,0) += demean2D[i].x * demean2D[i].y;
+    alpha(1,1) += demean2D[i].y * demean2D[i].y;
+    }
+  //std::cout << "alpha" << alpha << std::endl;
+  if (static_cast<float>(number_of_points)) {
+    alpha(0, 1) = alpha(1, 0) / (static_cast<float>(number_of_points));
+    alpha(0, 0) /= (static_cast<float>(number_of_points));
+    alpha(1, 0) /= (static_cast<float>(number_of_points));
+    alpha(1, 1) /= (static_cast<float>(number_of_points));
   }
-  else {
-    al = al / norm;
-    bl = bl / norm;
-  }
+  else
+    alpha(0, 1) = alpha(1, 0);
 
-  double MiddleVectorX =
-      major_axis_(0) * al + middle_axis_(0) * bl;
-  double MiddleVectorY =
-      major_axis_(1) * al + middle_axis_(1) * bl;
-  double MiddleVectorZ =
-      major_axis_(2) * al + middle_axis_(2) * bl;
+  // Compute eigen vectors and values
+  Eigen::SelfAdjointEigenSolver<Eigen::Matrix2f> evd(alpha);
+  //Eigen::Vector2f eigenvalues_;
+  Eigen::Matrix2f eigenvectors_;
+
+
+  //for (int i = 0; i < 2; ++i) {
+    //eigenvalues_[i] = evd.eigenvalues()[ i];
+   // eigenvectors_.col(i) = evd.eigenvectors().col( i);
+ // }
+
+  eigenvectors_ = evd.eigenvectors();
+
+  double MiddleVectorX = major_axis_(0) * eigenvectors_.col(0)(0) +  middle_axis_(0) * eigenvectors_.col(0)(1);
+  double MiddleVectorY = major_axis_(1) * eigenvectors_.col(0)(0) +  middle_axis_(1) * eigenvectors_.col(0)(1);
+  double MiddleVectorZ = major_axis_(2) * eigenvectors_.col(0)(0) +  middle_axis_(2) * eigenvectors_.col(0)(1);
 
   middle_axis_(0) = MiddleVectorX;
   middle_axis_(1) = MiddleVectorY;
   middle_axis_(2) = MiddleVectorZ;
 
   // cross product of the other two: x = y X z   major = middle X minor
-  major_axis_(0) =middle_axis_(1) *minor_axis_(2) -middle_axis_(2) *minor_axis_(1);
-  major_axis_(1) =middle_axis_(2) *minor_axis_(0) -middle_axis_(0) *minor_axis_(2);
-  major_axis_(2) =middle_axis_(0) *minor_axis_(1) -middle_axis_(1) *minor_axis_(0);
+  major_axis_(0) = middle_axis_(1) * minor_axis_(2) - middle_axis_(2) * minor_axis_(1);
+  major_axis_(1) = middle_axis_(2) * minor_axis_(0) - middle_axis_(0) * minor_axis_(2);
+  major_axis_(2) = middle_axis_(0) * minor_axis_(1) - middle_axis_(1) * minor_axis_(0);
 
   // arbitrary
-  //to be done: take an estimate from quadratic mean errors 
+  // to be done: take an estimate from the two eigen values
   major_value_ = 2.0;
   middle_value_ = 1.5;
   minor_value_ = 1.0;
 
   if (!essential_)
-    computeOBB (); 
+    computeOBB();
 
   is_valid_ = true;
 
-  deinitCompute ();
+  deinitCompute();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename PointT>
+void
+pcl::RegressionEstimation<PointT>::computeByPCA()
+{
+
+  if (!initCompute()) {
+    deinitCompute();
+    return;
+  }
+
+  auto number_of_points = static_cast<unsigned int>(indices_->size());
+
+  
+  mean_value_(0) = mean_value_(1) = mean_value_(2) = 0.0f;
+
+  if (!essential_) {
+    aabb_min_point_.x = aabb_min_point_.y = aabb_min_point_.z =
+        std::numeric_limits<float>::max();
+
+    aabb_max_point_.x = aabb_max_point_.y = aabb_max_point_.z =
+        -std::numeric_limits<float>::max();
+  }
+
+  
+  double SX, SY, SZ;
+  SX = SY = SZ= 0;
+
+  double size = (double)number_of_points;
+
+  for (unsigned int i_point = 0; i_point < number_of_points; i_point++) {
+    auto point = ((*input_)[(*indices_)[i_point]]);
+
+    SX += point.x;
+    SY += point.y;
+    SZ += point.z;
+    
+
+    if (!essential_) {
+      if (point.x <= aabb_min_point_.x)
+        aabb_min_point_.x = point.x;
+      if (point.y <= aabb_min_point_.y)
+        aabb_min_point_.y = point.y;
+      if (point.z <= aabb_min_point_.z)
+        aabb_min_point_.z = point.z;
+
+      if (point.x >= aabb_max_point_.x)
+        aabb_max_point_.x = point.x;
+      if (point.y >= aabb_max_point_.y)
+        aabb_max_point_.y = point.y;
+      if (point.z >= aabb_max_point_.z)
+        aabb_max_point_.z = point.z;
+    }
+  }
+
+  if (size <= 0.0)
+    size = 1;
+
+  mean_value_(0) = SX / size;
+  mean_value_(1) = SY / size;
+  mean_value_(2) = SZ / size;
+
+  pcl::PointCloud<PointXYZ> demean;
+  demean.width = number_of_points;
+  demean.height = 1;
+  demean.resize(number_of_points);
+
+
+  if (!essential_) {
+    x_m.resize(number_of_points);
+    y_m.resize(number_of_points);
+    z_m.resize(number_of_points);
+  }
+
+  for (unsigned int i = 0; i < number_of_points; ++i) {
+    auto p = ((*input_)[(*indices_)[i]]);
+    //     vector applied on the mass center
+    if (essential_) {
+      demean[i].x =  p.x - mean_value_(0);
+      demean[i].y =  p.y - mean_value_(1);
+      demean[i].z =  p.z - mean_value_(2);
+    }
+    else {
+      demean[i].x = x_m[i] =  p.x - mean_value_(0);
+      demean[i].y = y_m[i] =  p.y - mean_value_(1);
+      demean[i].z = z_m[i] =  p.z - mean_value_(2);
+    }
+
+  }
+
+  // PCA :
+  //  Compute the product cloud_demean * cloud_demean^T
+  Eigen::Matrix3f alpha = Eigen::Matrix3f::Zero();
+  for (unsigned int i = 0; i < number_of_points; ++i) {
+    alpha(0, 0) += demean[i].x * demean[i].x;
+    alpha(1, 1) += demean[i].y * demean[i].y;
+    alpha(2, 2) += demean[i].z * demean[i].z;
+    alpha(1, 0) += demean[i].x * demean[i].y;
+    alpha(2, 0) += demean[i].x * demean[i].z;
+    alpha(2, 1) += demean[i].y * demean[i].z;
+  }
+
+  if (static_cast<float>(number_of_points)) {
+    alpha(0, 0) /= (static_cast<float>(number_of_points));
+    alpha(1, 1) /= (static_cast<float>(number_of_points));
+    alpha(2, 2) /= (static_cast<float>(number_of_points));
+    alpha(1, 0) /= (static_cast<float>(number_of_points));
+    alpha(2, 0) /= (static_cast<float>(number_of_points));
+    alpha(2, 1) /= (static_cast<float>(number_of_points));
+  }
+
+    alpha(0, 1) = alpha(1, 0);
+    alpha(0, 2) = alpha(2, 0);
+    alpha(0, 3) = alpha(3, 0);
+
+
+  // Compute eigen vectors and values
+  Eigen::SelfAdjointEigenSolver<Eigen::Matrix3f> evd(alpha);
+  // Eigen::Vector3f eigenvalues_;
+  Eigen::Matrix3f eigenvectors_;
+
+  eigenvectors_ = evd.eigenvectors();
+
+  minor_axis_ = eigenvectors_.col(0);
+  middle_axis_ = eigenvectors_.col(1);
+
+  // cross product of the other two: x = y X z   major = middle X minor
+  major_axis_(0) = middle_axis_(1) * minor_axis_(2) - middle_axis_(2) * minor_axis_(1);
+  major_axis_(1) = middle_axis_(2) * minor_axis_(0) - middle_axis_(0) * minor_axis_(2);
+  major_axis_(2) = middle_axis_(0) * minor_axis_(1) - middle_axis_(1) * minor_axis_(0);
+
+  // arbitrary
+  // to be done: take an estimate from the two eigen values
+  major_value_ = 2.0;
+  middle_value_ = 1.5;
+  minor_value_ = 1.0;
+
+  if (!essential_)
+    computeOBB();
+
+  is_valid_ = true;
+
+  deinitCompute();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -453,7 +493,6 @@ pcl::RegressionEstimation<PointT>::getOBB(PointT& min_point,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 template <typename PointT>
 void
 pcl::RegressionEstimation<PointT>::computeOBB()
