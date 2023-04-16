@@ -589,6 +589,275 @@ namespace pcl
     return (computeCovarianceMatrix<PointT, double> (cloud, indices, covariance_matrix));
   }
 
+
+  /** \brief Compute centroid, normalized 3x3 covariance matrix, AABB, OBB, PCA axes and associated eigen values, of a given set of points.
+  * OBB is oriented like the three major, middle and minor axes
+  * one way to visualize it:
+  * Eigen::Vector3f position(obb_position.x, obb_position.y, obb_position.z);
+  * Eigen::Quaternionf quat(obb_rotational_matrix);
+  * viewer->addCube(position, quat, obb_max_point.x - obb_min_point.x, obb_max_point.y - obb_min_point.y, obb_max_point.z - obb_min_point.z, .....);          
+  * \param[in] cloud the input point cloud
+  * \param[out] covariance_matrix the 3x3 covariance matrix
+  * \param[out] centroid the centroid of the set of points in the cloud
+  * \param[out] aabb_min_point Min point of the axis aligned bounding box
+  * \param[out] aabb_max_point Max point of the axis aligned bounding box
+  * \param[out] major_value major eigen value
+  * \param[out] middle_value middle eigen value
+  * \param[out] minor_value minor eigen value
+  * \param[out] major_axis major eigen vector
+  * \param[out] middle_axis middle eigen vector
+  * \param[out] minor_axis minor eigen vector
+  * \param[out] obb_min_point Min point of the oriented bounding box
+  * \param[out] obb_max_point Max point of the oriented bounding box
+  * \param[out] obb_position position of the oriented bounding box
+  * \param[out] obb_rotational_matrix rotational matrix of the oriented bounding box
+  * \return number of valid points used to determine the output.
+  * In case of dense point clouds, this is the same as the size of the input cloud.
+  * \ingroup common
+  */
+
+  template <typename PointT, typename Scalar> inline unsigned int
+    computePCAandBB(const pcl::PointCloud<PointT>& cloud,
+                    Eigen::Matrix<Scalar, 3, 3> &covariance_matrix,
+                    Eigen::Matrix<Scalar, 3, 1> &centroid,
+                    PointT &aabb_min_point,
+                    PointT &aabb_max_point,
+                    Scalar &major_value,
+                    Scalar &middle_value,
+                    Scalar &minor_value,
+                    Eigen::Vector<Scalar, 3> &major_axis,
+                    Eigen::Vector<Scalar, 3> &middle_axis,
+                    Eigen::Vector<Scalar, 3> &minor_axis,
+                    PointT &obb_min_point,
+                    PointT &obb_max_point,
+                    PointT &obb_position,
+                    Eigen::Matrix<Scalar, 3, 3> &obb_rotational_matrix);
+
+  template <typename PointT> inline unsigned int
+    computePCAandBB(const pcl::PointCloud<PointT>& cloud,
+                    Eigen::Matrix3f &covariance_matrix,
+                    Eigen::Vector3f &centroid,
+                    PointT &aabb_min_point,
+                    PointT &aabb_max_point,
+                    float &major_value,
+                    float &middle_value,
+                    float &minor_value,
+                    Eigen::Vector3f &major_axis,
+                    Eigen::Vector3f &middle_axis,
+                    Eigen::Vector3f &minor_axis,
+                    PointT &obb_min_point,
+                    PointT &obb_max_point,
+                    PointT &obb_position,
+                    Eigen::Matrix3f &obb_rotational_matrix)
+  {
+    return(
+            computePCAandBB<PointT,float>(cloud, covariance_matrix, centroid, aabb_min_point, aabb_max_point,
+                                          major_value, middle_value, minor_value, major_axis, middle_axis, minor_axis,
+                                          obb_min_point, obb_max_point, obb_position, obb_rotational_matrix)
+            );
+  }
+
+  template <typename PointT> inline unsigned int
+    computePCAandBB(const pcl::PointCloud<PointT>& cloud,
+                    Eigen::Matrix3d &covariance_matrix,
+                    Eigen::Vector3d &centroid,
+                    PointT &aabb_min_point,
+                    PointT &aabb_max_point,
+                    double &major_value,
+                    double &middle_value,
+                    double &minor_value,
+                    Eigen::Vector3d &major_axis,
+                    Eigen::Vector3d &middle_axis,
+                    Eigen::Vector3d &minor_axis,
+                    PointT &obb_min_point,
+                    PointT &obb_max_point,
+                    PointT &obb_position,
+                    Eigen::Matrix3d &obb_rotational_matrix)
+  {
+    return(
+            computePCAandBB<PointT,double>(cloud, covariance_matrix, centroid, aabb_min_point, aabb_max_point,
+                                           major_value, middle_value, minor_value, major_axis, middle_axis, minor_axis,
+                                           obb_min_point, obb_max_point, obb_position, obb_rotational_matrix)
+           );
+  }
+
+
+
+
+
+    /** \brief Compute centroid, normalized 3x3 covariance matrix, AABB, OBB, PCA axes and associated eigen values, of a given set of points.
+    * OBB is oriented like the three major, middle and minor axes
+    * one way to visualize it:
+    * Eigen::Vector3f position(obb_position.x, obb_position.y, obb_position.z);
+    * Eigen::Quaternionf quat(obb_rotational_matrix);
+    * viewer->addCube(position, quat, obb_max_point.x - obb_min_point.x, obb_max_point.y - obb_min_point.y, obb_max_point.z - obb_min_point.z, .....);
+    * \param[in] cloud the input point cloud
+    * \param[in] indices subset of points given by their indices* 
+    * \param[out] covariance_matrix the 3x3 covariance matrix
+    * \param[out] centroid the centroid of the set of points in the cloud
+    * \param[out] aabb_min_point Min point of the axis aligned bounding box
+    * \param[out] aabb_max_point Max point of the axis aligned bounding box
+    * \param[out] major_value major eigen value
+    * \param[out] middle_value middle eigen value
+    * \param[out] minor_value minor eigen value 
+    * \param[out] obb_min_point Min point of the oriented bounding box
+    * \param[out] obb_max_point Max point of the oriented bounding box
+    * \param[out] obb_position position of the oriented bounding box
+    * \param[out] obb_rotational_matrix rotational matrix of the oriented bounding box
+    * \return number of valid points used to determine the covariance matrix.
+    * In case of dense point clouds, this is the same as the size of input cloud.
+    * \ingroup common
+    */
+
+  template <typename PointT, typename Scalar> inline unsigned int
+    computePCAandBB(const pcl::PointCloud<PointT>& cloud,
+                    const Indices &indices,
+                    Eigen::Matrix<Scalar, 3, 3> &covariance_matrix,
+                    Eigen::Matrix<Scalar, 3, 1> &centroid,
+                    PointT &aabb_min_point,
+                    PointT &aabb_max_point,
+                    Scalar &major_value,
+                    Scalar &middle_value,
+                    Scalar &minor_value,
+                    Eigen::Vector<Scalar, 3> &major_axis,
+                    Eigen::Vector<Scalar, 3> &middle_axis,
+                    Eigen::Vector<Scalar, 3> &minor_axis,
+                    PointT &obb_min_point,
+                    PointT &obb_max_point,
+                    PointT &obb_position,
+                    Eigen::Matrix<Scalar, 3, 3> &obb_rotational_matrix);
+
+
+
+  template <typename PointT> inline unsigned int
+    computePCAandBB(const pcl::PointCloud<PointT>& cloud,
+                    const Indices &indices,
+                    Eigen::Matrix3f &covariance_matrix,
+                    Eigen::Vector3f &centroid,
+                    PointT &aabb_min_point,
+                    PointT &aabb_max_point,
+                    float &major_value,
+                    float &middle_value,
+                    float &minor_value,
+                    Eigen::Vector3f &major_axis,
+                    Eigen::Vector3f &middle_axis,
+                    Eigen::Vector3f &minor_axis,
+                    PointT &obb_min_point,
+                    PointT &obb_max_point,
+                    PointT &obb_position,
+                    Eigen::Matrix3f &obb_rotational_matrix)
+  {
+    return(
+          computePCAandBB<PointT,float>(cloud, indices, covariance_matrix, centroid, aabb_min_point, aabb_max_point,
+                                        major_value, middle_value, minor_value, major_axis, middle_axis, minor_axis,
+                                        obb_min_point, obb_max_point, obb_position, obb_rotational_matrix)
+      );
+  }
+
+  template <typename PointT> inline unsigned int
+    computePCAandBB(const pcl::PointCloud<PointT>& cloud,
+                    const Indices &indices,
+                    Eigen::Matrix3d &covariance_matrix,
+                    Eigen::Vector3d &centroid,
+                    PointT &aabb_min_point,
+                    PointT &aabb_max_point,
+                    double &major_value,
+                    double &middle_value,
+                    double &minor_value,
+                    Eigen::Vector3d &major_axis,
+                    Eigen::Vector3d &middle_axis,
+                    Eigen::Vector3d &minor_axis,
+                    PointT &obb_min_point,
+                    PointT &obb_max_point,
+                    PointT &obb_position,
+                    Eigen::Matrix3d &obb_rotational_matrix)
+  {
+    return(
+            computePCAandBB<PointT,double>(cloud, indices, covariance_matrix, centroid, aabb_min_point, aabb_max_point,
+                                            major_value, middle_value, minor_value, major_axis, middle_axis, minor_axis,
+                                            obb_min_point, obb_max_point, obb_position, obb_rotational_matrix)
+      );
+  }
+
+  template <typename PointT, typename Scalar> inline unsigned int
+    computePCAandBB(const pcl::PointCloud<PointT>& cloud,
+                    const pcl::PointIndices& indices,
+                    Eigen::Matrix<Scalar, 3, 3> &covariance_matrix,
+                    Eigen::Matrix<Scalar, 3, 1> &centroid,
+                    PointT &aabb_min_point,
+                    PointT &aabb_max_point,
+                    Scalar &major_value,
+                    Scalar &middle_value,
+                    Scalar &minor_value,
+                    Eigen::Vector<Scalar, 3> &major_axis,
+                    Eigen::Vector<Scalar, 3> &middle_axis,
+                    Eigen::Vector<Scalar, 3> &minor_axis,
+                    PointT &obb_min_point,
+                    PointT &obb_max_point,
+                    PointT &obb_position,
+                    Eigen::Matrix<Scalar, 3, 3> &obb_rotational_matrix)
+  {
+    return(
+            computePCAandBB(cloud, indices.indices, covariance_matrix, centroid, aabb_min_point, aabb_max_point,
+                            major_value, middle_value, minor_value, major_axis, middle_axis, minor_axis,
+                            obb_min_point, obb_max_point,obb_position,obb_rotational_matrix)
+      );
+  }
+
+
+
+
+  template <typename PointT> inline unsigned int
+    computePCAandBB(const pcl::PointCloud<PointT>& cloud,
+                    const pcl::PointIndices& indices,
+                    Eigen::Matrix3f &covariance_matrix,
+                    Eigen::Vector3f &centroid,
+                    PointT &aabb_min_point,
+                    PointT &aabb_max_point,
+                    float &major_value,
+                    float &middle_value,
+                    float &minor_value,
+                    Eigen::Vector3f &major_axis,
+                    Eigen::Vector3f &middle_axis,
+                    Eigen::Vector3f &minor_axis,
+                    PointT &obb_min_point,
+                    PointT &obb_max_point,
+                    PointT &obb_position,
+                    Eigen::Matrix3f &obb_rotational_matrix)
+  {
+    return(
+            computePCAandBB<PointT,float>(cloud, indices, covariance_matrix, centroid, aabb_min_point, aabb_max_point,
+                                          major_value, middle_value, minor_value, major_axis, middle_axis, minor_axis,
+                                          obb_min_point, obb_max_point, obb_position, obb_rotational_matrix)
+      );
+  }
+
+  template <typename PointT> inline unsigned int
+    computePCAandBB(const pcl::PointCloud<PointT>& cloud,
+                    const pcl::PointIndices& indices,
+                    Eigen::Matrix3d &covariance_matrix,
+                    Eigen::Vector3d &centroid,
+                    PointT &aabb_min_point,
+                    PointT &aabb_max_point,
+                    double &major_value,
+                    double &middle_value,
+                    double &minor_value,
+                    Eigen::Vector3d &major_axis,
+                    Eigen::Vector3d &middle_axis,
+                    Eigen::Vector3d &minor_axis,
+                    PointT &obb_min_point,
+                    PointT &obb_max_point,
+                    PointT &obb_position,
+                    Eigen::Matrix3d &obb_rotational_matrix)
+  {
+    return(
+            computePCAandBB<PointT,double>(cloud, indices, covariance_matrix, centroid, aabb_min_point, aabb_max_point,
+                                            major_value, middle_value, minor_value, major_axis, middle_axis, minor_axis,
+                                            obb_min_point, obb_max_point, obb_position, obb_rotational_matrix)
+      );
+  }
+
+
   /** \brief Subtract a centroid from a point cloud and return the de-meaned representation
     * \param[in] cloud_iterator an iterator over the input point cloud
     * \param[in] centroid the centroid of the point cloud
@@ -949,6 +1218,7 @@ namespace pcl
   {
     return (computeNDCentroid<PointT, double> (cloud, indices, centroid));
   }
+
 
 }
 
