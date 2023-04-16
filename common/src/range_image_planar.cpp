@@ -43,11 +43,7 @@ using std::cerr;
 namespace pcl 
 {
   /////////////////////////////////////////////////////////////////////////
-  RangeImagePlanar::RangeImagePlanar () : focal_length_x_ (0.0f), focal_length_y_ (0.0f),
-                                          focal_length_x_reciprocal_ (0.0f), focal_length_y_reciprocal_ (0.0f),
-                                          center_x_ (0.0f), center_y_ (0.0f)
-  {
-  }
+  RangeImagePlanar::RangeImagePlanar () = default;
 
   /////////////////////////////////////////////////////////////////////////
   RangeImagePlanar::~RangeImagePlanar () = default;

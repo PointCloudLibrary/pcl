@@ -740,26 +740,28 @@ namespace pcl
   /** \brief A 2D point structure representing Euclidean xy coordinates.
     * \ingroup common
     */
+  // NOLINTBEGIN(modernize-use-default-member-init)
   struct PointXY
   {
     union 
     { 
       float data[2]; 
       struct 
-      { 
-        float x; 
-        float y; 
+      {
+        float x;
+        float y;
       };
     };
 
     inline constexpr PointXY(float _x, float _y): x(_x), y(_y) {}
-    inline constexpr PointXY(): x(0.0f), y(0.0f) {}
-    
+    inline constexpr PointXY(): x(0.0), y(0.0) {}
+
     inline pcl::Vector2fMap getVector2fMap () { return (pcl::Vector2fMap (data)); }
     inline pcl::Vector2fMapConst getVector2fMap () const { return (pcl::Vector2fMapConst (data)); }
     
     friend std::ostream& operator << (std::ostream& os, const PointXY& p);
   };
+  // NOLINTEND(modernize-use-default-member-init)
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointUV& p);
   /** \brief A 2D point structure representing pixel image coordinates.

@@ -767,13 +767,13 @@ namespace pcl
       // =====PROTECTED MEMBER VARIABLES=====
       Eigen::Affine3f to_range_image_system_;  /**< Inverse of to_world_system_ */
       Eigen::Affine3f to_world_system_;        /**< Inverse of to_range_image_system_ */
-      float angular_resolution_x_;             /**< Angular resolution of the range image in x direction in radians per pixel */
-      float angular_resolution_y_;             /**< Angular resolution of the range image in y direction in radians per pixel */
-      float angular_resolution_x_reciprocal_;  /**< 1.0/angular_resolution_x_ - provided for better performance of
+      float angular_resolution_x_{0};             /**< Angular resolution of the range image in x direction in radians per pixel */
+      float angular_resolution_y_{0};             /**< Angular resolution of the range image in y direction in radians per pixel */
+      float angular_resolution_x_reciprocal_{0};  /**< 1.0/angular_resolution_x_ - provided for better performance of
                                                 *   multiplication compared to division */
-      float angular_resolution_y_reciprocal_;  /**< 1.0/angular_resolution_y_ - provided for better performance of
+      float angular_resolution_y_reciprocal_{0};  /**< 1.0/angular_resolution_y_ - provided for better performance of
                                                 *   multiplication compared to division */
-      int image_offset_x_, image_offset_y_;    /**< Position of the top left corner of the range image compared to
+      int image_offset_x_{0}, image_offset_y_{0};    /**< Position of the top left corner of the range image compared to
                                                 *   an image of full size (360x180 degrees) */
       PointWithRange unobserved_point;         /**< This point is used to be able to return
                                                 *   a reference to a non-existing point */

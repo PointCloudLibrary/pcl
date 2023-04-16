@@ -53,7 +53,7 @@ namespace pcl
 
 template<typename real>
 BivariatePolynomialT<real>::BivariatePolynomialT (int new_degree) :
-  degree(0), parameters(nullptr), gradient_x(nullptr), gradient_y(nullptr)
+   parameters(nullptr), gradient_x(nullptr), gradient_y(nullptr)
 {
   setDegree(new_degree);
 }
@@ -61,7 +61,7 @@ BivariatePolynomialT<real>::BivariatePolynomialT (int new_degree) :
 
 template<typename real>
 BivariatePolynomialT<real>::BivariatePolynomialT (const BivariatePolynomialT& other) :
-  degree(0), parameters(NULL), gradient_x(NULL), gradient_y(NULL)
+   parameters(nullptr), gradient_x(nullptr), gradient_y(nullptr)
 {
   deepCopy (other);
 }
@@ -140,11 +140,11 @@ BivariatePolynomialT<real>::deepCopy (const pcl::BivariatePolynomialT<real>& oth
 template<typename real> void
 BivariatePolynomialT<real>::calculateGradient (bool forceRecalc)
 {
-  if (gradient_x!=NULL && !forceRecalc) return;
+  if (gradient_x!=nullptr && !forceRecalc) return;
 
-  if (gradient_x == NULL)
+  if (gradient_x == nullptr)
     gradient_x = new pcl::BivariatePolynomialT<real> (degree-1);
-  if (gradient_y == NULL)
+  if (gradient_y == nullptr)
     gradient_y = new pcl::BivariatePolynomialT<real> (degree-1);
 
   unsigned int parameterPosDx=0, parameterPosDy=0;
