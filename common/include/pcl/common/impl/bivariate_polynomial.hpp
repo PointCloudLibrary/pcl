@@ -52,16 +52,14 @@ namespace pcl
 {
 
 template<typename real>
-BivariatePolynomialT<real>::BivariatePolynomialT (int new_degree) :
-   parameters(nullptr), gradient_x(nullptr), gradient_y(nullptr)
+BivariatePolynomialT<real>::BivariatePolynomialT (int new_degree)
 {
   setDegree(new_degree);
 }
 
 
 template<typename real>
-BivariatePolynomialT<real>::BivariatePolynomialT (const BivariatePolynomialT& other) :
-   parameters(nullptr), gradient_x(nullptr), gradient_y(nullptr)
+BivariatePolynomialT<real>::BivariatePolynomialT (const BivariatePolynomialT& other)
 {
   deepCopy (other);
 }

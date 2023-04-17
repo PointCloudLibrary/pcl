@@ -115,8 +115,9 @@ namespace pcl
 
       //-----VARIABLES-----
       int degree{0};
-      real* parameters;
-      BivariatePolynomialT<real>* gradient_x, * gradient_y;
+      real* parameters{nullptr};
+      BivariatePolynomialT<real>* gradient_x{nullptr};
+      BivariatePolynomialT<real>* gradient_y{nullptr};
 
     protected:
       //-----METHODS-----

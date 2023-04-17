@@ -754,7 +754,7 @@ namespace pcl
     };
 
     inline constexpr PointXY(float _x, float _y): x(_x), y(_y) {}
-    inline constexpr PointXY(): x(0.0), y(0.0) {}
+    inline constexpr PointXY(): x(0.0f), y(0.0f) {}
 
     inline pcl::Vector2fMap getVector2fMap () { return (pcl::Vector2fMap (data)); }
     inline pcl::Vector2fMapConst getVector2fMap () const { return (pcl::Vector2fMapConst (data)); }
