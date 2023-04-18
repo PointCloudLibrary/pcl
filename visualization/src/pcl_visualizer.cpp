@@ -596,10 +596,21 @@ pcl::visualization::PCLVisualizer::spinOnce (int time, bool force_redraw)
   if (interactor_->IsA("vtkXRenderWindowInteractor") || interactor_->IsA("vtkWin32RenderWindowInteractor")) {
     const auto start_time = std::chrono::steady_clock::now();
     const auto stop_time = start_time + std::chrono::milliseconds(time);
-    do {
+
+    // Older versions of VTK 9 block for up to 1s or more on X11 when there are no events.
+    // So add a one-shot timer to guarantee an event will happen roughly by the time the user expects this function to return
+    // https://gitlab.kitware.com/vtk/vtk/-/issues/18951#note_1351387
+    interactor_->CreateOneShotTimer(time);
+
+    // Process any pending events at least once, this could take a while due to a long running render event
+    interactor_->ProcessEvents();
+
+    // Wait for the requested amount of time to have elapsed or exit immediately via GetDone being true when terminateApp is called
+    while(std::chrono::steady_clock::now() < stop_time && !interactor_->GetDone() )
+    {
       interactor_->ProcessEvents();
-      // Exit immediately via GetDone being true when terminateApp is called
-    } while (std::chrono::steady_clock::now() < stop_time && !interactor_->GetDone());
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
   }
   else
 #endif
