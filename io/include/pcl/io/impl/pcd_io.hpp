@@ -115,11 +115,10 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
   {
     PCL_WARN ("[pcl::PCDWriter::writeBinary] Input point cloud has no data!\n");
   }
-  int data_idx = 0;
   std::ostringstream oss;
   oss << generateHeader<PointT> (cloud) << "DATA binary\n";
   oss.flush ();
-  data_idx = static_cast<int> (oss.tellp ());
+  const auto data_idx = static_cast<unsigned int> (oss.tellp ());
 
 #ifdef _WIN32
   HANDLE h_native_file = CreateFileA (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -162,13 +161,19 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 
   // Prepare the map
 #ifdef _WIN32
-  HANDLE fm = CreateFileMappingA (h_native_file, NULL, PAGE_READWRITE, 0, (DWORD) (data_idx + data_size), NULL);
+  HANDLE fm = CreateFileMappingA (h_native_file, NULL, PAGE_READWRITE, (DWORD) ((data_idx + data_size) >> 32), (DWORD) (data_idx + data_size), NULL);
   if (fm == NULL)
   {
       throw pcl::IOException("[pcl::PCDWriter::writeBinary] Error during memory map creation ()!");
       return (-1);
   }
   char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_idx + data_size));
+  if (map == NULL)
+  {
+      CloseHandle (fm);
+      throw pcl::IOException("[pcl::PCDWriter::writeBinary] Error mapping view of file!");
+      return (-1);
+  }
   CloseHandle (fm);
 
 #else
@@ -247,11 +252,10 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
   {
     PCL_WARN ("[pcl::PCDWriter::writeBinaryCompressed] Input point cloud has no data!\n");
   }
-  int data_idx = 0;
   std::ostringstream oss;
   oss << generateHeader<PointT> (cloud) << "DATA binary_compressed\n";
   oss.flush ();
-  data_idx = static_cast<int> (oss.tellp ());
+  const auto data_idx = static_cast<unsigned int> (oss.tellp ());
 
 #ifdef _WIN32
   HANDLE h_native_file = CreateFileA (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -625,11 +629,10 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
   {
     PCL_WARN ("[pcl::PCDWriter::writeBinary] Input point cloud has no data or empty indices given!\n");
   }
-  int data_idx = 0;
   std::ostringstream oss;
   oss << generateHeader<PointT> (cloud, static_cast<int> (indices.size ())) << "DATA binary\n";
   oss.flush ();
-  data_idx = static_cast<int> (oss.tellp ());
+  const auto data_idx = static_cast<unsigned int> (oss.tellp ());
 
 #ifdef _WIN32
   HANDLE h_native_file = CreateFileA (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -672,7 +675,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 
   // Prepare the map
 #ifdef _WIN32
-  HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, data_idx + data_size, NULL);
+  HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, (DWORD) ((data_idx + data_size) >> 32), (DWORD) (data_idx + data_size), NULL);
   char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_idx + data_size));
   CloseHandle (fm);
 
