@@ -593,11 +593,24 @@ pcl::visualization::PCLVisualizer::spinOnce (int time, bool force_redraw)
 
 #if VTK_MAJOR_VERSION >= 9 && (VTK_MINOR_VERSION != 0 || VTK_BUILD_VERSION != 0) && (VTK_MINOR_VERSION != 0 || VTK_BUILD_VERSION != 1)
 // All VTK 9 versions, except 9.0.0 and 9.0.1
-  if(interactor_->IsA("vtkXRenderWindowInteractor")) {
-    DO_EVERY (1.0 / interactor_->GetDesiredUpdateRate (),
-      interactor_->ProcessEvents ();
-      std::this_thread::sleep_for (std::chrono::milliseconds (time));
-    );
+  if (interactor_->IsA("vtkXRenderWindowInteractor") || interactor_->IsA("vtkWin32RenderWindowInteractor")) {
+    const auto start_time = std::chrono::steady_clock::now();
+    const auto stop_time = start_time + std::chrono::milliseconds(time);
+
+    // Older versions of VTK 9 block for up to 1s or more on X11 when there are no events.
+    // So add a one-shot timer to guarantee an event will happen roughly by the time the user expects this function to return
+    // https://gitlab.kitware.com/vtk/vtk/-/issues/18951#note_1351387
+    interactor_->CreateOneShotTimer(time);
+
+    // Process any pending events at least once, this could take a while due to a long running render event
+    interactor_->ProcessEvents();
+
+    // Wait for the requested amount of time to have elapsed or exit immediately via GetDone being true when terminateApp is called
+    while(std::chrono::steady_clock::now() < stop_time && !interactor_->GetDone() )
+    {
+      interactor_->ProcessEvents();
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
   }
   else
 #endif
