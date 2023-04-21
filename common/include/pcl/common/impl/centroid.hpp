@@ -798,8 +798,6 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
                   Eigen::Matrix<Scalar, 3, 1> &obb_dimensions,
                   Eigen::Matrix<Scalar, 3, 3> &obb_rotational_matrix)
 {
-  if ( indices.size ()<=0)
-    return 0;
 
   Eigen::Matrix<Scalar, 3, 3> covariance_matrix;
   Eigen::Matrix<Scalar, 4, 1> centroid4;
