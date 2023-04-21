@@ -884,7 +884,7 @@ TEST (PCL, computeCentroidAndOBB)
 
   cloud.clear ();
   indices.clear ();
-
+  // -1 -1 -1 / -1 -1 1 / -1 1 -1 / -1 1 1 / 1 -1 -1 / 1 -1 1 / 1 1 -1 / 1 1 1
   for (point.x = -1; point.x < 2; point.x += 2)
   {
     for (point.y = -1; point.y < 2; point.y += 2)
@@ -931,8 +931,8 @@ TEST (PCL, computeCentroidAndOBB)
   EXPECT_NEAR (obb_position(1), 1, 0.01);
   EXPECT_NEAR (obb_position(2), 0, 0.01);
   EXPECT_NEAR (obb_dimensions(0), 2, 0.01);
-  EXPECT_NEAR (obb_dimensions(1), 0, 0.01);
-  EXPECT_NEAR (obb_dimensions(2), 2, 0.01);
+  EXPECT_NEAR (obb_dimensions(1), 2, 0.01);
+  EXPECT_NEAR (obb_dimensions(2), 0, 0.01);
 
 
   point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
@@ -966,8 +966,8 @@ TEST (PCL, computeCentroidAndOBB)
   EXPECT_NEAR (obb_position(1), 1, 0.01);
   EXPECT_NEAR (obb_position(2), 0, 0.01);
   EXPECT_NEAR (obb_dimensions(0), 2, 0.01);
-  EXPECT_NEAR (obb_dimensions(1), 0, 0.01);
-  EXPECT_NEAR (obb_dimensions(2), 2, 0.01);
+  EXPECT_NEAR (obb_dimensions(1), 2, 0.01);
+  EXPECT_NEAR (obb_dimensions(2), 0, 0.01);
 
 }
 
