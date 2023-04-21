@@ -561,17 +561,17 @@ computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   if (point_count != 0)
   {
     accu /= static_cast<Scalar> (point_count);
-    centroid[0] = accu[6] + K.x(); centroid[1] = accu[7] + K.y(); centroid[2] = accu[8] + K.z();
+    centroid[0] = accu[6] + K.x(); centroid[1] = accu[7] + K.y(); centroid[2] = accu[8] + K.z();//effective mean E[P=(x,y,z)]
     centroid[3] = 1;
-    covariance_matrix.coeffRef (0) = accu [0] - accu [6] * accu [6];
-    covariance_matrix.coeffRef (1) = accu [1] - accu [6] * accu [7];
-    covariance_matrix.coeffRef (2) = accu [2] - accu [6] * accu [8];
-    covariance_matrix.coeffRef (4) = accu [3] - accu [7] * accu [7];
-    covariance_matrix.coeffRef (5) = accu [4] - accu [7] * accu [8];
-    covariance_matrix.coeffRef (8) = accu [5] - accu [8] * accu [8];
-    covariance_matrix.coeffRef (3) = covariance_matrix.coeff (1);
-    covariance_matrix.coeffRef (6) = covariance_matrix.coeff (2);
-    covariance_matrix.coeffRef (7) = covariance_matrix.coeff (5);
+    covariance_matrix.coeffRef (0) = accu [0] - accu [6] * accu [6];//(0,0)xx : E[(x-E[x])^2]=E[x^2]-E[x]^2=E[(x-Kx)^2]-E[x-Kx]^2
+    covariance_matrix.coeffRef (1) = accu [1] - accu [6] * accu [7];//(0,1)xy : E[(x-E[x])(y-E[y])]=E[xy]-E[x]E[y]=E[(x-Kx)(y-Ky)]-E[x-Kx]E[y-Ky]
+    covariance_matrix.coeffRef (2) = accu [2] - accu [6] * accu [8];//(0,2)xz
+    covariance_matrix.coeffRef (4) = accu [3] - accu [7] * accu [7];//(1,1)yy
+    covariance_matrix.coeffRef (5) = accu [4] - accu [7] * accu [8];//(1,2)yz
+    covariance_matrix.coeffRef (8) = accu [5] - accu [8] * accu [8];//(2,2)zz
+    covariance_matrix.coeffRef (3) = covariance_matrix.coeff (1);   //(1,0)yx
+    covariance_matrix.coeffRef (6) = covariance_matrix.coeff (2);   //(2,0)zx
+    covariance_matrix.coeffRef (7) = covariance_matrix.coeff (5);   //(2,1)zy
   }
   return (static_cast<unsigned int> (point_count));
 }
@@ -634,17 +634,17 @@ computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   if (point_count != 0)
   {
     accu /= static_cast<Scalar> (point_count);
-    centroid[0] = accu[6] + K.x(); centroid[1] = accu[7] + K.y(); centroid[2] = accu[8] + K.z();
+    centroid[0] = accu[6] + K.x(); centroid[1] = accu[7] + K.y(); centroid[2] = accu[8] + K.z();//effective mean E[P=(x,y,z)]
     centroid[3] = 1;
-    covariance_matrix.coeffRef (0) = accu [0] - accu [6] * accu [6];
-    covariance_matrix.coeffRef (1) = accu [1] - accu [6] * accu [7];
-    covariance_matrix.coeffRef (2) = accu [2] - accu [6] * accu [8];
-    covariance_matrix.coeffRef (4) = accu [3] - accu [7] * accu [7];
-    covariance_matrix.coeffRef (5) = accu [4] - accu [7] * accu [8];
-    covariance_matrix.coeffRef (8) = accu [5] - accu [8] * accu [8];
-    covariance_matrix.coeffRef (3) = covariance_matrix.coeff (1);
-    covariance_matrix.coeffRef (6) = covariance_matrix.coeff (2);
-    covariance_matrix.coeffRef (7) = covariance_matrix.coeff (5);
+    covariance_matrix.coeffRef (0) = accu [0] - accu [6] * accu [6];//(0,0)xx : E[(x-E[x])^2]=E[x^2]-E[x]^2=E[(x-Kx)^2]-E[x-Kx]^2
+    covariance_matrix.coeffRef (1) = accu [1] - accu [6] * accu [7];//(0,1)xy : E[(x-E[x])(y-E[y])]=E[xy]-E[x]E[y]=E[(x-Kx)(y-Ky)]-E[x-Kx]E[y-Ky]
+    covariance_matrix.coeffRef (2) = accu [2] - accu [6] * accu [8];//(0,2)xz
+    covariance_matrix.coeffRef (4) = accu [3] - accu [7] * accu [7];//(1,1)yy
+    covariance_matrix.coeffRef (5) = accu [4] - accu [7] * accu [8];//(1,2)yz
+    covariance_matrix.coeffRef (8) = accu [5] - accu [8] * accu [8];//(2,2)zz
+    covariance_matrix.coeffRef (3) = covariance_matrix.coeff (1);   //(1,0)yx
+    covariance_matrix.coeffRef (6) = covariance_matrix.coeff (2);   //(2,0)zx
+    covariance_matrix.coeffRef (7) = covariance_matrix.coeff (5);   //(2,1)zy
   }
   return (static_cast<unsigned int> (point_count));
 }
@@ -662,392 +662,163 @@ computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
 
 
 
+
 template <typename PointT, typename Scalar> inline unsigned int
-computePCAandBB (const pcl::PointCloud<PointT> &cloud,
-                  Eigen::Matrix<Scalar, 3, 3> &covariance_matrix,
+computePCAandOBB (const pcl::PointCloud<PointT> &cloud,
                   Eigen::Matrix<Scalar, 3, 1> &centroid,
-                  PointT &aabb_min_point,
-                  PointT &aabb_max_point,
-                  Scalar &major_value,
-                  Scalar &middle_value,
-                  Scalar &minor_value,
-                  Eigen::Vector<Scalar, 3> &major_axis,
-                  Eigen::Vector<Scalar, 3> &middle_axis,
-                  Eigen::Vector<Scalar, 3> &minor_axis,
-                  PointT &obb_min_point,
-                  PointT &obb_max_point,
-                  PointT &obb_position,
+                  Eigen::Matrix<Scalar, 3, 1> &obb_position,
+                  Eigen::Matrix<Scalar, 3, 1> &obb_dimensions,
                   Eigen::Matrix<Scalar, 3, 3> &obb_rotational_matrix)
 {
-  // Shifted data/with estimate of mean. This gives very good accuracy and good performance.
-  // create the buffer on the stack which is much faster than using cloud[indices[i]] and centroid as a buffer
-  Eigen::Matrix<Scalar, 1, 9, Eigen::RowMajor> accu = Eigen::Matrix<Scalar, 1, 9, Eigen::RowMajor>::Zero ();
-  Eigen::Matrix<Scalar, 3, 1> K(0.0, 0.0, 0.0);
+    Eigen::Matrix<Scalar, 3, 3> covariance_matrix;
+    Eigen::Matrix<Scalar, 4, 1> centroid4;
+    unsigned int point_count= computeMeanAndCovarianceMatrix(cloud, covariance_matrix, centroid4);
+    if (!point_count)
+      return (0);
+    centroid = centroid4.topRows<3>();
 
-  //no needed if I handle no finite points by returning 0 as below
- // aabb_min_point.x = aabb_min_point.y = aabb_min_point.z =
- //   obb_min_point.x = obb_min_point.y = obb_min_point.z = std::numeric_limits<float>::max();
- // aabb_max_point.x = aabb_max_point.y = aabb_max_point.z =
- //   obb_max_point.x = obb_max_point.y = obb_max_point.z =-std::numeric_limits<float>::max();
-
-  std::size_t point_count=0;
-  std::size_t temp_point_count=0;
-
-  for (const auto& point : cloud)
-  {
-    if (isFinite(point))
-    {
-      //K will be a temporary mean
-      K.x() = aabb_min_point.x = obb_min_point.x = aabb_max_point.x = obb_max_point.x = point.x;
-      K.y() = aabb_min_point.y = obb_min_point.y = aabb_max_point.y = obb_max_point.y = point.y;
-      K.z() = aabb_min_point.z = obb_min_point.z = aabb_max_point.z = obb_max_point.z = point.z;
-      //with this min max initialization I reduce the number of executed < below
-      break;
-    }
-    ++temp_point_count;
-  }
-
-  if (temp_point_count >= cloud.size())
-    return 0;
-
-  if (cloud.is_dense)
-  {
-    point_count = cloud.size ();
-    for (const auto& point: cloud)
-    {
-      if (point.x <= aabb_min_point.x)
-        aabb_min_point.x = point.x;
-      else if (point.x >= aabb_max_point.x)
-        aabb_max_point.x = point.x;
-      if (point.y <= aabb_min_point.y)
-        aabb_min_point.y = point.y;
-      else if (point.y >= aabb_max_point.y)
-        aabb_max_point.y = point.y;
-      if (point.z <= aabb_min_point.z)
-        aabb_min_point.z = point.z;
-      else if (point.z >= aabb_max_point.z)
-        aabb_max_point.z = point.z;
-
-      Scalar x = point.x - K.x(), y = point.y - K.y(), z = point.z - K.z();
-      accu [0] += x * x;//(0,0)
-      accu [1] += x * y;//(0,1)
-      accu [2] += x * z;//(0,2)
-      accu [3] += y * y;//(1,1)
-      accu [4] += y * z;//(1,2)
-      accu [5] += z * z;//(2,2)
-      accu [6] += x;
-      accu [7] += y;
-      accu [8] += z;
-    }
-  }
-  else
-  {
-    for (const auto& point: cloud)
-    {
-      if (!isFinite (point))
-        continue;
-
-      if (point.x <= aabb_min_point.x)
-        aabb_min_point.x = point.x;
-      else if (point.x >= aabb_max_point.x)
-        aabb_max_point.x = point.x;
-      if (point.y <= aabb_min_point.y)
-        aabb_min_point.y = point.y;
-      else if (point.y >= aabb_max_point.y)
-        aabb_max_point.y = point.y;
-      if (point.z <= aabb_min_point.z)
-        aabb_min_point.z = point.z;
-      else if (point.z >= aabb_max_point.z)
-        aabb_max_point.z = point.z;
-
-      Scalar x = point.x - K.x(), y = point.y - K.y(), z = point.z - K.z();
-      accu [0] += x * x;
-      accu [1] += x * y;
-      accu [2] += x * z;
-      accu [3] += y * y;
-      accu [4] += y * z;
-      accu [5] += z * z;
-      accu [6] += x;
-      accu [7] += y;
-      accu [8] += z;
-      ++point_count;
-    }
-  }
-
-  if (!point_count)
-    return 0;
-
-  accu /= static_cast<Scalar> (point_count);
-  centroid[0] = accu[6] + K.x(); centroid[1] = accu[7] + K.y(); centroid[2] = accu[8] + K.z();//effective mean E[P=(x,y,z)]
-    
-  covariance_matrix.coeffRef (0) = accu [0] - accu [6] * accu [6];//(0,0)xx : E[(x-E[x])^2]=E[x^2]-E[x]^2=E[(x-Kx)^2]-E[x-Kx]^2
-  covariance_matrix.coeffRef (1) = accu [1] - accu [6] * accu [7];//(0,1)xy : E[(x-E[x])(y-E[y])]=E[xy]-E[x]E[y]=E[(x-Kx)(y-Ky)]-E[x-Kx]E[y-Ky]
-  covariance_matrix.coeffRef (2) = accu [2] - accu [6] * accu [8];//(0,2)xz
-  covariance_matrix.coeffRef (4) = accu [3] - accu [7] * accu [7];//(1,1)yy
-  covariance_matrix.coeffRef (5) = accu [4] - accu [7] * accu [8];//(1,2)yz
-  covariance_matrix.coeffRef (8) = accu [5] - accu [8] * accu [8];//(2,2)zz
-  covariance_matrix.coeffRef (3) = covariance_matrix.coeff (1);   //(1,0)yx
-  covariance_matrix.coeffRef (6) = covariance_matrix.coeff (2);   //(2,0)zx
-  covariance_matrix.coeffRef (7) = covariance_matrix.coeff (5);   //(2,1)zy
-
-
-  //if (useEigen33)
-    //eigen33(covariance_matrix, eigenvectors_, eigenvalues_);
-  //else
-  //{
-    // Compute eigen vectors and values
     Eigen::SelfAdjointEigenSolver<Eigen::Matrix<Scalar, 3, 3>> evd(covariance_matrix);
-    Eigen::Vector<Scalar, 3> eigenvalues_ = evd.eigenvalues();
+
+    //Eigen::Vector<Scalar, 3> eigenvalues_ = evd.eigenvalues();
+    //major_value =    eigenvalues_(2); //promem order
+    //middle_value =   eigenvalues_(1);
+    //minor_value =    eigenvalues_(0);
+
     Eigen::Matrix<Scalar, 3, 3> eigenvectors_ = evd.eigenvectors();
-  //}
+    Eigen::Vector<Scalar, 3> major_axis;
+    Eigen::Vector<Scalar, 3> middle_axis;
+    Eigen::Vector<Scalar, 3> minor_axis;
 
+    minor_axis = eigenvectors_.col(0);//the eigenvectors do not need to be normalized (they are already)
+    middle_axis = eigenvectors_.col(1);
 
+    // cross product of the other two: ux = uy X uz   major = middle X minor
+    major_axis(0) = middle_axis(1) * minor_axis(2) - middle_axis(2) * minor_axis(1);
+    major_axis(1) = middle_axis(2) * minor_axis(0) - middle_axis(0) * minor_axis(2);
+    major_axis(2) = middle_axis(0) * minor_axis(1) - middle_axis(1) * minor_axis(0);
 
-  major_value =    eigenvalues_(2);
-  middle_value =   eigenvalues_(1);
-  minor_value =    eigenvalues_(0);
+    //when Scalar==double on a Windows 10 machine and MSVS:
+    //if you substitute the following Scalars with floats you get a 20% worse processing time, if with 2 PointT 55% worse
+    Scalar obb_min_pointx, obb_min_pointy, obb_min_pointz;
+    Scalar obb_max_pointx, obb_max_pointy, obb_max_pointz;
+    obb_min_pointx = obb_min_pointy = obb_min_pointz = std::numeric_limits<Scalar>::max();
+    obb_max_pointx = obb_max_pointy = obb_max_pointz = std::numeric_limits<Scalar>::min();
 
-  minor_axis = eigenvectors_.col(0);//the eigenvectors do not need to be normalized
-  middle_axis = eigenvectors_.col(1);
-
-  // cross product of the other two: ux = uy X uz   major = middle X minor
-  major_axis(0) = middle_axis(1) * minor_axis(2) - middle_axis(2) * minor_axis(1);
-  major_axis(1) = middle_axis(2) * minor_axis(0) - middle_axis(0) * minor_axis(2);
-  major_axis(2) = middle_axis(0) * minor_axis(1) - middle_axis(1) * minor_axis(0);
-
-  obb_min_point.x = obb_min_point.y = obb_min_point.z = std::numeric_limits<Scalar>::max();
-  obb_max_point.x = obb_max_point.y = obb_max_point.z = std::numeric_limits<Scalar>::min();
-
-
-  if (cloud.is_dense)
-  {
-    for (const auto& point : cloud)
+    if (cloud.is_dense)
     {
-      Scalar xd = point.x - centroid[0], yd = point.y - centroid[1], zd = point.z - centroid[2];
+      for (const auto& point : cloud)
+      {
+        Scalar xd = point.x - centroid[0], yd = point.y - centroid[1], zd = point.z - centroid[2];
 
-      Scalar x = xd * major_axis(0) + yd * major_axis(1) + zd * major_axis(2);
-      Scalar y = xd * middle_axis(0) + yd * middle_axis(1) + zd * middle_axis(2);
-      Scalar z = xd * minor_axis(0) + yd * minor_axis(1) + zd * minor_axis(2);
+        Scalar x = xd * major_axis(0) + yd * major_axis(1) + zd * major_axis(2);
+        Scalar y = xd * middle_axis(0) + yd * middle_axis(1) + zd * middle_axis(2);
+        Scalar z = xd * minor_axis(0) + yd * minor_axis(1) + zd * minor_axis(2);
 
-      if (x <= obb_min_point.x)
-        obb_min_point.x = x;
-      if (y <= obb_min_point.y)
-        obb_min_point.y = y;
-      if (z <= obb_min_point.z)
-        obb_min_point.z = z;
+        if (x <= obb_min_pointx)
+          obb_min_pointx = x;
+        if (y <= obb_min_pointy)
+          obb_min_pointy = y;
+        if (z <= obb_min_pointz)
+          obb_min_pointz = z;
 
-      if (x >= obb_max_point.x)
-        obb_max_point.x = x;
-      if (y >= obb_max_point.y)
-        obb_max_point.y = y;
-      if (z >= obb_max_point.z)
-        obb_max_point.z = z;
+        if (x >= obb_max_pointx)
+          obb_max_pointx = x;
+        if (y >= obb_max_pointy)
+          obb_max_pointy = y;
+        if (z >= obb_max_pointz)
+          obb_max_pointz = z;
+      }
     }
-  }
-  else
-  {
-    for (const auto& point: cloud)
+    else
     {
-      if (!isFinite (point))
-        continue;
+      for (const auto& point: cloud)
+      {
+        if (!isFinite (point))
+          continue;
 
-      Scalar xd = point.x - centroid[0], yd = point.y - centroid[1], zd = point.z - centroid[2];
+        Scalar xd = point.x - centroid[0], yd = point.y - centroid[1], zd = point.z - centroid[2];
 
-      Scalar x = xd * major_axis(0) + yd * major_axis(1) + zd * major_axis(2);
-      Scalar y = xd * middle_axis(0) + yd * middle_axis(1) + zd * middle_axis(2);
-      Scalar z = xd * minor_axis(0) + yd * minor_axis(1) + zd * minor_axis(2);
+        Scalar x = xd * major_axis(0) + yd * major_axis(1) + zd * major_axis(2);
+        Scalar y = xd * middle_axis(0) + yd * middle_axis(1) + zd * middle_axis(2);
+        Scalar z = xd * minor_axis(0) + yd * minor_axis(1) + zd * minor_axis(2);
 
-      if (x <= obb_min_point.x)
-        obb_min_point.x = x;
-      if (y <= obb_min_point.y)
-        obb_min_point.y = y;
-      if (z <= obb_min_point.z)
-        obb_min_point.z = z;
+        if (x <= obb_min_pointx)
+          obb_min_pointx = x;
+        if (y <= obb_min_pointy)
+          obb_min_pointy = y;
+        if (z <= obb_min_pointz)
+          obb_min_pointz = z;
 
-      if (x >= obb_max_point.x)
-        obb_max_point.x = x;
-      if (y >= obb_max_point.y)
-        obb_max_point.y = y;
-      if (z >= obb_max_point.z)
-        obb_max_point.z = z;
+        if (x >= obb_max_pointx)
+          obb_max_pointx = x;
+        if (y >= obb_max_pointy)
+          obb_max_pointy = y;
+        if (z >= obb_max_pointz)
+          obb_max_pointz = z;
+      }
     }
-  }
 
-    obb_rotational_matrix << major_axis(0), middle_axis(0), minor_axis(0),
-    major_axis(1), middle_axis(1), minor_axis(1), major_axis(2), middle_axis(2),
-    minor_axis(2);
+    obb_rotational_matrix <<
+      major_axis(0), middle_axis(0), minor_axis(0),
+      major_axis(1), middle_axis(1), minor_axis(1),
+      major_axis(2), middle_axis(2), minor_axis(2);
+    //obb_rotational_matrix.col(0)==major_axis
+    //obb_rotational_matrix.col(1)==middle_axis
+    //obb_rotational_matrix.col(2)==minor_axis
 
-  Eigen::Vector<Scalar, 3>
-    shift((obb_max_point.x + obb_min_point.x) / 2.0f,
-    (obb_max_point.y + obb_min_point.y) / 2.0f,
-    (obb_max_point.z + obb_min_point.z) / 2.0f);
+    Eigen::Vector<Scalar, 3>  //shift between point cloud centroid and OBB centroid (position of the OBB centroid relative to (p.c.centroid, major_axis, middle_axis, minor_axis))
+      shift((obb_max_pointx + obb_min_pointx) / 2.0f,
+      (obb_max_pointy + obb_min_pointy) / 2.0f,
+      (obb_max_pointz + obb_min_pointz) / 2.0f);
 
-  obb_min_point.x -= shift(0);
-  obb_min_point.y -= shift(1);
-  obb_min_point.z -= shift(2);
+    //obb_min_point.x -= shift(0);//position of the min OBB vertix relative to (OBB centroid, major_axis, middle_axis, minor_axis)
+    //obb_min_point.y -= shift(1);
+    //obb_min_point.z -= shift(2);
 
-  obb_max_point.x -= shift(0);
-  obb_max_point.y -= shift(1);
-  obb_max_point.z -= shift(2);
+    //obb_max_point.x -= shift(0);//position of the max OBB vertix relative to (OBB centroid, major_axis, middle_axis, minor_axis)
+    //obb_max_point.y -= shift(1);
+    //obb_max_point.z -= shift(2);
 
-  Eigen::Vector<Scalar, 3> ob_position_ = centroid+ obb_rotational_matrix * shift;
-  obb_position.x = ob_position_ (0);
-  obb_position.y = ob_position_ (1);
-  obb_position.z = ob_position_ (2);
+    obb_dimensions(0) = obb_max_pointx - obb_min_pointx;
+    obb_dimensions(1) = obb_max_pointy - obb_min_pointy;
+    obb_dimensions(2) = obb_max_pointz - obb_min_pointz;
 
-  return (static_cast<unsigned int> (point_count));
+    obb_position = centroid+ obb_rotational_matrix * shift;//position of the OBB centroid in the same reference Oxyz of the point cloud
+
+    return ( point_count);
 }
 
-
-
-
-
 template <typename PointT, typename Scalar> inline unsigned int
-computePCAandBB (const pcl::PointCloud<PointT> &cloud,
+computePCAandOBB (const pcl::PointCloud<PointT> &cloud,
                   const Indices &indices,
-                  Eigen::Matrix<Scalar, 3, 3> &covariance_matrix,
                   Eigen::Matrix<Scalar, 3, 1> &centroid,
-                  PointT &aabb_min_point,
-                  PointT &aabb_max_point,
-                  Scalar &major_value,
-                  Scalar &middle_value,
-                  Scalar &minor_value,
-                  Eigen::Vector<Scalar, 3> &major_axis,
-                  Eigen::Vector<Scalar, 3> &middle_axis,
-                  Eigen::Vector<Scalar, 3> &minor_axis,
-                  PointT &obb_min_point,
-                  PointT &obb_max_point,
-                  PointT &obb_position,
+                  Eigen::Matrix<Scalar, 3, 1> &obb_position,
+                  Eigen::Matrix<Scalar, 3, 1> &obb_dimensions,
                   Eigen::Matrix<Scalar, 3, 3> &obb_rotational_matrix)
 {
   if ( indices.size ()<=0)
     return 0;
 
-
-  Eigen::Matrix<Scalar, 1, 9, Eigen::RowMajor> accu = Eigen::Matrix<Scalar, 1, 9, Eigen::RowMajor>::Zero ();
-  Eigen::Matrix<Scalar, 3, 1> K(0.0, 0.0, 0.0);
-
-  //this initialization is not needed if I handle the case of no finite points by returning 0 as below
-  // aabb_min_point.x = aabb_min_point.y = aabb_min_point.z =
-  //   obb_min_point.x = obb_min_point.y = obb_min_point.z = std::numeric_limits<float>::max();
-  // aabb_max_point.x = aabb_max_point.y = aabb_max_point.z =
-  //   obb_max_point.x = obb_max_point.y = obb_max_point.z =-std::numeric_limits<float>::max();
-
-  std::size_t point_count=0;
-  std::size_t temp_point_count=0;
-
-  for(const auto& index : indices)
-  {
-    if (isFinite(cloud[index]))
-    {
-      //K will be a temporary mean
-      K.x() = aabb_min_point.x = obb_min_point.x = aabb_max_point.x = obb_max_point.x = cloud[index].x;
-      K.y() = aabb_min_point.y = obb_min_point.y = aabb_max_point.y = obb_max_point.y = cloud[index].y;
-      K.z() = aabb_min_point.z = obb_min_point.z = aabb_max_point.z = obb_max_point.z = cloud[index].z;
-      //with this min max initialization I reduce a little the number of executed < below
-      break;
-    }
-    ++temp_point_count;
-  }
-
-  if (temp_point_count >= indices.size ())
-    return 0;
-
-  if (cloud.is_dense)
-  {
-    point_count = indices.size ();
-
-    for (const auto &index : indices)
-    {
-      auto point = cloud[index];
-      if (point.x <= aabb_min_point.x)
-        aabb_min_point.x = point.x;
-      else if (point.x >= aabb_max_point.x)
-        aabb_max_point.x = point.x;
-      if (point.y <= aabb_min_point.y)
-        aabb_min_point.y = point.y;
-      else if (point.y >= aabb_max_point.y)
-        aabb_max_point.y = point.y;
-      if (point.z <= aabb_min_point.z)
-        aabb_min_point.z = point.z;
-      else if (point.z >= aabb_max_point.z)
-        aabb_max_point.z = point.z;
-
-      Scalar x = point.x - K.x(), y = point.y - K.y(), z = point.z - K.z();
-      accu [0] += x * x;//(0,0)
-      accu [1] += x * y;//(0,1)
-      accu [2] += x * z;//(0,2)
-      accu [3] += y * y;//(1,1)
-      accu [4] += y * z;//(1,2)
-      accu [5] += z * z;//(2,2)
-      accu [6] += x;
-      accu [7] += y;
-      accu [8] += z;
-    }
-  }
-  else
-  {
-    for (const auto &index : indices)
-    {
-      auto point = cloud[index];
-      if (!isFinite (point))
-        continue;
-
-      if (point.x <= aabb_min_point.x)
-        aabb_min_point.x = point.x;
-      else if (point.x >= aabb_max_point.x)
-        aabb_max_point.x = point.x;
-      if (point.y <= aabb_min_point.y)
-        aabb_min_point.y = point.y;
-      else if (point.y >= aabb_max_point.y)
-        aabb_max_point.y = point.y;
-      if (point.z <= aabb_min_point.z)
-        aabb_min_point.z = point.z;
-      else if (point.z >= aabb_max_point.z)
-        aabb_max_point.z = point.z;
-
-      Scalar x = point.x - K.x(), y = point.y - K.y(), z = point.z - K.z();
-      accu [0] += x * x;
-      accu [1] += x * y;
-      accu [2] += x * z;
-      accu [3] += y * y;
-      accu [4] += y * z;
-      accu [5] += z * z;
-      accu [6] += x;
-      accu [7] += y;
-      accu [8] += z;
-      ++point_count;
-    }
-  }
-
+  Eigen::Matrix<Scalar, 3, 3> covariance_matrix;
+  Eigen::Matrix<Scalar, 4, 1> centroid4;
+  unsigned int point_count= computeMeanAndCovarianceMatrix(cloud, indices, covariance_matrix, centroid4);
   if (!point_count)
-    return 0;
+    return (0);
+  centroid = centroid4.topRows<3>();
 
-
-  accu /= static_cast<Scalar> (point_count);
-  centroid[0] = accu[6] + K.x(); centroid[1] = accu[7] + K.y(); centroid[2] = accu[8] + K.z();//effective mean E[P=(x,y,z)]
-    
-  covariance_matrix.coeffRef (0) = accu [0] - accu [6] * accu [6];//(0,0)xx : E[(x-E[x])^2]=E[x^2]-E[x]^2=E[(x-Kx)^2]-E[x-Kx]^2
-  covariance_matrix.coeffRef (1) = accu [1] - accu [6] * accu [7];//(0,1)xy : E[(x-E[x])(y-E[y])]=E[xy]-E[x]E[y]=E[(x-Kx)(y-Ky)]-E[x-Kx]E[y-Ky]
-  covariance_matrix.coeffRef (2) = accu [2] - accu [6] * accu [8];//(0,2)xz
-  covariance_matrix.coeffRef (4) = accu [3] - accu [7] * accu [7];//(1,1)yy
-  covariance_matrix.coeffRef (5) = accu [4] - accu [7] * accu [8];//(1,2)yz
-  covariance_matrix.coeffRef (8) = accu [5] - accu [8] * accu [8];//(2,2)zz
-  covariance_matrix.coeffRef (3) = covariance_matrix.coeff (1);   //(1,0)yx
-  covariance_matrix.coeffRef (6) = covariance_matrix.coeff (2);   //(2,0)zx
-  covariance_matrix.coeffRef (7) = covariance_matrix.coeff (5);   //(2,1)zy
-
-
-  // Compute eigen vectors and values
   Eigen::SelfAdjointEigenSolver<Eigen::Matrix<Scalar, 3, 3>> evd(covariance_matrix);
-  Eigen::Vector<Scalar, 3> eigenvalues_ = evd.eigenvalues();
+
+  //Eigen::Vector<Scalar, 3> eigenvalues_ = evd.eigenvalues();
+  //major_value =    eigenvalues_(2); //promem order
+  //middle_value =   eigenvalues_(1);
+  //minor_value =    eigenvalues_(0);
+
   Eigen::Matrix<Scalar, 3, 3> eigenvectors_ = evd.eigenvectors();
+  Eigen::Vector<Scalar, 3> major_axis;
+  Eigen::Vector<Scalar, 3> middle_axis;
+  Eigen::Vector<Scalar, 3> minor_axis;
 
-  major_value =    eigenvalues_(2);
-  middle_value =   eigenvalues_(1);
-  minor_value =    eigenvalues_(0);
-
-  minor_axis = eigenvectors_.col(0);//the eigenvectors do not need to be normalized
+  minor_axis = eigenvectors_.col(0);//the eigenvectors do not need to be normalized (they already are)
   middle_axis = eigenvectors_.col(1);
 
   // cross product of the other two: ux = uy X uz   major = middle X minor
@@ -1055,8 +826,12 @@ computePCAandBB (const pcl::PointCloud<PointT> &cloud,
   major_axis(1) = middle_axis(2) * minor_axis(0) - middle_axis(0) * minor_axis(2);
   major_axis(2) = middle_axis(0) * minor_axis(1) - middle_axis(1) * minor_axis(0);
 
-  obb_min_point.x = obb_min_point.y = obb_min_point.z = std::numeric_limits<Scalar>::max();
-  obb_max_point.x = obb_max_point.y = obb_max_point.z = std::numeric_limits<Scalar>::min();
+  //when Scalar==double on a Windows 10 machine and MSVS:
+  //if you substitute the following Scalars with floats you get a 20% worse processing time, if with 2 PointT 55% worse
+  Scalar obb_min_pointx, obb_min_pointy, obb_min_pointz;
+  Scalar obb_max_pointx, obb_max_pointy, obb_max_pointz;
+  obb_min_pointx = obb_min_pointy = obb_min_pointz = std::numeric_limits<Scalar>::max();
+  obb_max_pointx = obb_max_pointy = obb_max_pointz = std::numeric_limits<Scalar>::min();
 
   if (cloud.is_dense)
   {
@@ -1069,19 +844,19 @@ computePCAandBB (const pcl::PointCloud<PointT> &cloud,
       Scalar y = xd * middle_axis(0) + yd * middle_axis(1) + zd * middle_axis(2);
       Scalar z = xd * minor_axis(0) + yd * minor_axis(1) + zd * minor_axis(2);
 
-      if (x <= obb_min_point.x)
-        obb_min_point.x = x;
-      if (y <= obb_min_point.y)
-        obb_min_point.y = y;
-      if (z <= obb_min_point.z)
-        obb_min_point.z = z;
+      if (x <= obb_min_pointx)
+        obb_min_pointx = x;
+      if (y <= obb_min_pointy)
+        obb_min_pointy = y;
+      if (z <= obb_min_pointz)
+        obb_min_pointz = z;
 
-      if (x >= obb_max_point.x)
-        obb_max_point.x = x;
-      if (y >= obb_max_point.y)
-        obb_max_point.y = y;
-      if (z >= obb_max_point.z)
-        obb_max_point.z = z;
+      if (x >= obb_max_pointx)
+        obb_max_pointx = x;
+      if (y >= obb_max_pointy)
+        obb_max_pointy = y;
+      if (z >= obb_max_pointz)
+        obb_max_pointz = z;
     }
   }
   else
@@ -1098,47 +873,52 @@ computePCAandBB (const pcl::PointCloud<PointT> &cloud,
       Scalar y = xd * middle_axis(0) + yd * middle_axis(1) + zd * middle_axis(2);
       Scalar z = xd * minor_axis(0) + yd * minor_axis(1) + zd * minor_axis(2);
 
-      if (x <= obb_min_point.x)
-        obb_min_point.x = x;
-      if (y <= obb_min_point.y)
-        obb_min_point.y = y;
-      if (z <= obb_min_point.z)
-        obb_min_point.z = z;
+      if (x <= obb_min_pointx)
+        obb_min_pointx = x;
+      if (y <= obb_min_pointy)
+        obb_min_pointy = y;
+      if (z <= obb_min_pointz)
+        obb_min_pointz = z;
 
-      if (x >= obb_max_point.x)
-        obb_max_point.x = x;
-      if (y >= obb_max_point.y)
-        obb_max_point.y = y;
-      if (z >= obb_max_point.z)
-        obb_max_point.z = z;
+      if (x >= obb_max_pointx)
+        obb_max_pointx = x;
+      if (y >= obb_max_pointy)
+        obb_max_pointy = y;
+      if (z >= obb_max_pointz)
+        obb_max_pointz = z;
     }
   }
 
+  obb_rotational_matrix <<
+    major_axis(0), middle_axis(0), minor_axis(0),
+    major_axis(1), middle_axis(1), minor_axis(1),
+    major_axis(2), middle_axis(2), minor_axis(2);
+  //obb_rotational_matrix.col(0)==major_axis
+  //obb_rotational_matrix.col(1)==middle_axis
+  //obb_rotational_matrix.col(2)==minor_axis
 
-   obb_rotational_matrix << major_axis(0), middle_axis(0), minor_axis(0),
-    major_axis(1), middle_axis(1), minor_axis(1), major_axis(2), middle_axis(2),
-    minor_axis(2);
+  Eigen::Vector<Scalar, 3>  //shift between point cloud centroid and OBB centroid (position of the OBB centroid relative to (p.c.centroid, major_axis, middle_axis, minor_axis))
+    shift((obb_max_pointx + obb_min_pointx) / 2.0f,
+      (obb_max_pointy + obb_min_pointy) / 2.0f,
+      (obb_max_pointz + obb_min_pointz) / 2.0f);
 
-  Eigen::Vector<Scalar, 3>
-    shift((obb_max_point.x + obb_min_point.x) / 2.0f,
-    (obb_max_point.y + obb_min_point.y) / 2.0f,
-    (obb_max_point.z + obb_min_point.z) / 2.0f);
+  //obb_min_point.x -= shift(0);//position of the min OBB vertix relative to (OBB centroid, major_axis, middle_axis, minor_axis)
+  //obb_min_point.y -= shift(1);
+  //obb_min_point.z -= shift(2);
 
-  obb_min_point.x -= shift(0);
-  obb_min_point.y -= shift(1);
-  obb_min_point.z -= shift(2);
+  //obb_max_point.x -= shift(0);//position of the max OBB vertix relative to (OBB centroid, major_axis, middle_axis, minor_axis)
+  //obb_max_point.y -= shift(1);
+  //obb_max_point.z -= shift(2);
 
-  obb_max_point.x -= shift(0);
-  obb_max_point.y -= shift(1);
-  obb_max_point.z -= shift(2);
+  obb_dimensions(0) = obb_max_pointx - obb_min_pointx;
+  obb_dimensions(1) = obb_max_pointy - obb_min_pointy;
+  obb_dimensions(2) = obb_max_pointz - obb_min_pointz;
 
-  Eigen::Vector<Scalar, 3> ob_position_ = centroid + obb_rotational_matrix * shift;
-  obb_position.x = ob_position_ (0);
-  obb_position.y = ob_position_ (1);
-  obb_position.z = ob_position_ (2);
+  obb_position = centroid+ obb_rotational_matrix * shift;//position of the OBB centroid in the same reference Oxyz of the point cloud
 
-  return (static_cast<unsigned int> (point_count));
+  return ( point_count);
 }
+
 
 
 

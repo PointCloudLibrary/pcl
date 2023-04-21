@@ -839,55 +839,48 @@ TEST (PCL, computeMeanAndCovariance)
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, computePCAandBB)
+TEST (PCL, computePCAandOBB)
 {
   PointCloud<PointXYZ> cloud;
   PointXYZ point;
   Indices indices;
-  Eigen::Matrix3f covariance_matrix = Eigen::Matrix3f::Random();
   Eigen::Vector3f centroid = Eigen::Vector3f::Random();
-  PointXYZ aabb_min_point;
-  PointXYZ aabb_max_point;
-  float major_value;
-  float middle_value;
-  float minor_value;
   Eigen::Vector3f major_axis;
   Eigen::Vector3f middle_axis;
   Eigen::Vector3f minor_axis;
-  PointXYZ obb_min_point;
-  PointXYZ obb_max_point;
-  PointXYZ obb_position;
-  Eigen::Matrix3f obb_rotational_matrix;
+  Eigen::Matrix<float, 3, 1> obb_position;
+  Eigen::Matrix<float, 3, 1> obb_dimensions;
+  Eigen::Matrix3f obb_rotational_matrix= Eigen::Matrix3f::Random();
 
-  const Eigen::Matrix3f old_covariance_matrix = covariance_matrix;
   const Eigen::Vector3f old_centroid = centroid;
+  const Eigen::Matrix3f old_obb_rotational_matrix= obb_rotational_matrix;
 
   // test empty cloud which is dense
   cloud.is_dense = true;
-  EXPECT_EQ (computePCAandBB (cloud, covariance_matrix, centroid, aabb_min_point, aabb_max_point, major_value, middle_value, minor_value, major_axis, middle_axis, minor_axis, obb_min_point, obb_max_point, obb_position, obb_rotational_matrix), 0);
-  EXPECT_EQ (old_covariance_matrix, covariance_matrix); // cov. matrix remains unchanged
+  EXPECT_EQ (computePCAandOBB (cloud, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 0);
   EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
+  EXPECT_EQ (old_obb_rotational_matrix, obb_rotational_matrix); // obb_rotational_matrix remains unchanged
 
   // test empty cloud non_dense
   cloud.is_dense = false;
-  EXPECT_EQ (computePCAandBB (cloud, covariance_matrix, centroid, aabb_min_point, aabb_max_point, major_value, middle_value, minor_value, major_axis, middle_axis, minor_axis, obb_min_point, obb_max_point, obb_position, obb_rotational_matrix), 0);
-  EXPECT_EQ (old_covariance_matrix, covariance_matrix); // cov. matrix remains unchanged
+  EXPECT_EQ (computePCAandOBB (cloud, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 0);
   EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
+  EXPECT_EQ (old_obb_rotational_matrix, obb_rotational_matrix); // obb_rotational_matrix remains unchanged
 
   // test non-empty cloud non_dense with no valid points
   point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
   cloud.push_back (point);
-  EXPECT_EQ (computePCAandBB (cloud, covariance_matrix, centroid, aabb_min_point, aabb_max_point, major_value, middle_value, minor_value, major_axis, middle_axis, minor_axis, obb_min_point, obb_max_point, obb_position, obb_rotational_matrix), 0);
-  EXPECT_EQ (old_covariance_matrix, covariance_matrix); // cov. matrix remains unchanged
+  EXPECT_EQ (computePCAandOBB (cloud, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 0);
   EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
+  EXPECT_EQ (old_obb_rotational_matrix, obb_rotational_matrix); // obb_rotational_matrix remains unchanged
 
   // test non-empty cloud non_dense with no valid points
   point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
   cloud.push_back (point);
   indices.push_back (1);
-  EXPECT_EQ (computePCAandBB (cloud, indices, covariance_matrix, centroid, aabb_min_point, aabb_max_point, major_value, middle_value, minor_value, major_axis, middle_axis, minor_axis, obb_min_point, obb_max_point, obb_position, obb_rotational_matrix), 0);
-  EXPECT_EQ (old_covariance_matrix, covariance_matrix); // cov. matrix remains unchanged
+  EXPECT_EQ (computePCAandOBB (cloud, indices, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 0);
   EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
+  EXPECT_EQ (old_obb_rotational_matrix, obb_rotational_matrix); // obb_rotational_matrix remains unchanged
 
   cloud.clear ();
   indices.clear ();
@@ -904,139 +897,78 @@ TEST (PCL, computePCAandBB)
   }
   cloud.is_dense = true;
 
-  // eight points with (0, 0, 0) as centroid and covarmat (1, 0, 0, 0, 1, 0, 0, 0, 1)
+  // eight points with (0, 0, 0) as centroid
 
-  covariance_matrix << -100, -101, -102, -110, -111, -112, -120, -121, -122;
   centroid [0] = -100;
   centroid [1] = -101;
   centroid [2] = -102;
-  EXPECT_EQ (computePCAandBB (cloud, covariance_matrix, centroid, aabb_min_point, aabb_max_point, major_value, middle_value, minor_value, major_axis, middle_axis, minor_axis, obb_min_point, obb_max_point, obb_position, obb_rotational_matrix), 8);
+  EXPECT_EQ (computePCAandOBB (cloud, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 8);
   EXPECT_EQ (centroid [0], 0);
   EXPECT_EQ (centroid [1], 0);
   EXPECT_EQ (centroid [2], 0);
-  EXPECT_EQ (covariance_matrix (0, 0), 1);
-  EXPECT_EQ (covariance_matrix (0, 1), 0);
-  EXPECT_EQ (covariance_matrix (0, 2), 0);
-  EXPECT_EQ (covariance_matrix (1, 0), 0);
-  EXPECT_EQ (covariance_matrix (1, 1), 1);
-  EXPECT_EQ (covariance_matrix (1, 2), 0);
-  EXPECT_EQ (covariance_matrix (2, 0), 0);
-  EXPECT_EQ (covariance_matrix (2, 1), 0);
-  EXPECT_EQ (covariance_matrix (2, 2), 1);
-  EXPECT_EQ (aabb_min_point.x, -1);
-  EXPECT_EQ (aabb_max_point.x, 1);
-  EXPECT_EQ (aabb_min_point.y, -1);
-  EXPECT_EQ (aabb_max_point.y, 1);
-  EXPECT_EQ (aabb_min_point.z, -1);
-  EXPECT_EQ (aabb_max_point.z, 1);
-  EXPECT_NEAR (obb_min_point.x, -1, 0.01);
-  EXPECT_NEAR (obb_max_point.x, 1, 0.01);
-  EXPECT_NEAR (obb_min_point.y, -1, 0.01);
-  EXPECT_NEAR (obb_max_point.y, 1, 0.01);
-  EXPECT_NEAR (obb_min_point.z, -1, 0.01);
-  EXPECT_NEAR (obb_max_point.z, 1, 0.01);
+  EXPECT_NEAR (obb_position(0), 0, 0.01);
+  EXPECT_NEAR (obb_position(1), 0, 0.01);
+  EXPECT_NEAR (obb_position(2), 0, 0.01);
+  EXPECT_NEAR (obb_dimensions(0), 2, 0.01);
+  EXPECT_NEAR (obb_dimensions(1), 2, 0.01);
+  EXPECT_NEAR (obb_dimensions(2), 2, 0.01);
+
 
   indices.resize (4); // only positive y values
   indices [0] = 2;
   indices [1] = 3;
   indices [2] = 6;
   indices [3] = 7;
-  covariance_matrix << -100, -101, -102, -110, -111, -112, -120, -121, -122;
   centroid [0] = -100;
   centroid [1] = -101;
   centroid [2] = -102;
 
-  EXPECT_EQ (computePCAandBB (cloud, indices, covariance_matrix, centroid, aabb_min_point, aabb_max_point, major_value, middle_value, minor_value, major_axis, middle_axis, minor_axis, obb_min_point, obb_max_point, obb_position, obb_rotational_matrix), 4);
+  EXPECT_EQ (computePCAandOBB (cloud, indices, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 4);
   EXPECT_EQ (centroid [0], 0);
-  EXPECT_EQ (centroid [1], 1);
+  EXPECT_NEAR (centroid [1], 1, 0.001);
   EXPECT_EQ (centroid [2], 0);
-  EXPECT_EQ (covariance_matrix (0, 0), 1);
-  EXPECT_EQ (covariance_matrix (0, 1), 0);
-  EXPECT_EQ (covariance_matrix (0, 2), 0);
-  EXPECT_EQ (covariance_matrix (1, 0), 0);
-  EXPECT_EQ (covariance_matrix (1, 1), 0);
-  EXPECT_EQ (covariance_matrix (1, 2), 0);
-  EXPECT_EQ (covariance_matrix (2, 0), 0);
-  EXPECT_EQ (covariance_matrix (2, 1), 0);
-  EXPECT_EQ (covariance_matrix (2, 2), 1);
-  EXPECT_EQ (aabb_min_point.x, -1);
-  EXPECT_EQ (aabb_max_point.x, 1);
-  EXPECT_EQ (aabb_min_point.y, 1);
-  EXPECT_EQ (aabb_max_point.y, 1);
-  EXPECT_EQ (aabb_min_point.z, -1);
-  EXPECT_EQ (aabb_max_point.z, 1);
-  EXPECT_NEAR (obb_min_point.x, -1, 0.01);
-  EXPECT_NEAR (obb_max_point.x, 1, 0.01);
-  EXPECT_NEAR (obb_min_point.y, 1, 0.01);
-  EXPECT_NEAR (obb_max_point.y, 1, 0.01);
-  EXPECT_NEAR (obb_min_point.z, -1, 0.01);
-  EXPECT_NEAR (obb_max_point.z, 1, 0.01);
+  EXPECT_NEAR (obb_position(0), 0, 0.01);
+  EXPECT_NEAR (obb_position(1), 1, 0.01);
+  EXPECT_NEAR (obb_position(2), 0, 0.01);
+  EXPECT_NEAR (obb_dimensions(0), 2, 0.01);
+  EXPECT_NEAR (obb_dimensions(1), 0, 0.01);
+  EXPECT_NEAR (obb_dimensions(2), 2, 0.01);
+
 
   point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
   cloud.push_back (point);
   cloud.is_dense = false;
-  covariance_matrix << -100, -101, -102, -110, -111, -112, -120, -121, -122;
   centroid [0] = -100;
   centroid [1] = -101;
   centroid [2] = -102;
-
-  EXPECT_EQ (computePCAandBB (cloud, covariance_matrix, centroid, aabb_min_point, aabb_max_point, major_value, middle_value, minor_value, major_axis, middle_axis, minor_axis, obb_min_point, obb_max_point, obb_position, obb_rotational_matrix), 8);
+  EXPECT_EQ (computePCAandOBB (cloud, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 8);
   EXPECT_EQ (centroid [0], 0);
   EXPECT_EQ (centroid [1], 0);
   EXPECT_EQ (centroid [2], 0);
-  EXPECT_EQ (covariance_matrix (0, 0), 1);
-  EXPECT_EQ (covariance_matrix (0, 1), 0);
-  EXPECT_EQ (covariance_matrix (0, 2), 0);
-  EXPECT_EQ (covariance_matrix (1, 0), 0);
-  EXPECT_EQ (covariance_matrix (1, 1), 1);
-  EXPECT_EQ (covariance_matrix (1, 2), 0);
-  EXPECT_EQ (covariance_matrix (2, 0), 0);
-  EXPECT_EQ (covariance_matrix (2, 1), 0);
-  EXPECT_EQ (covariance_matrix (2, 2), 1);
-  EXPECT_EQ (aabb_min_point.x, -1);
-  EXPECT_EQ (aabb_max_point.x, 1);
-  EXPECT_EQ (aabb_min_point.y, -1);
-  EXPECT_EQ (aabb_max_point.y, 1);
-  EXPECT_EQ (aabb_min_point.z, -1);
-  EXPECT_EQ (aabb_max_point.z, 1);
-  EXPECT_NEAR (obb_min_point.x, -1, 0.01);
-  EXPECT_NEAR (obb_max_point.x, 1, 0.01);
-  EXPECT_NEAR (obb_min_point.y, -1, 0.01);
-  EXPECT_NEAR (obb_max_point.y, 1, 0.01);
-  EXPECT_NEAR (obb_min_point.z, -1, 0.01);
-  EXPECT_NEAR (obb_max_point.z, 1, 0.01);
+  EXPECT_NEAR (obb_position(0), 0, 0.01);
+  EXPECT_NEAR (obb_position(1), 0, 0.01);
+  EXPECT_NEAR (obb_position(2), 0, 0.01);
+  EXPECT_NEAR (obb_dimensions(0), 2, 0.01);
+  EXPECT_NEAR (obb_dimensions(1), 2, 0.01);
+  EXPECT_NEAR (obb_dimensions(2), 2, 0.01);
+
 
   indices.push_back (8); // add the NaN
-  covariance_matrix << -100, -101, -102, -110, -111, -112, -120, -121, -122;
   centroid [0] = -100;
   centroid [1] = -101;
   centroid [2] = -102;
 
-  EXPECT_EQ (computePCAandBB (cloud, indices, covariance_matrix, centroid, aabb_min_point, aabb_max_point, major_value, middle_value, minor_value, major_axis, middle_axis, minor_axis, obb_min_point, obb_max_point, obb_position, obb_rotational_matrix), 4);
+  EXPECT_EQ (computePCAandOBB (cloud, indices, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 4);
   EXPECT_EQ (centroid [0], 0);
-  EXPECT_EQ (centroid [1], 1);
+  EXPECT_NEAR (centroid [1], 1, 0.001);
   EXPECT_EQ (centroid [2], 0);
-  EXPECT_EQ (covariance_matrix (0, 0), 1);
-  EXPECT_EQ (covariance_matrix (0, 1), 0);
-  EXPECT_EQ (covariance_matrix (0, 2), 0);
-  EXPECT_EQ (covariance_matrix (1, 0), 0);
-  EXPECT_EQ (covariance_matrix (1, 1), 0);
-  EXPECT_EQ (covariance_matrix (1, 2), 0);
-  EXPECT_EQ (covariance_matrix (2, 0), 0);
-  EXPECT_EQ (covariance_matrix (2, 1), 0);
-  EXPECT_EQ (covariance_matrix (2, 2), 1);
-  EXPECT_EQ (aabb_min_point.x, -1);
-  EXPECT_EQ (aabb_max_point.x, 1);
-  EXPECT_EQ (aabb_min_point.y, 1);
-  EXPECT_EQ (aabb_max_point.y, 1);
-  EXPECT_EQ (aabb_min_point.z, -1);
-  EXPECT_EQ (aabb_max_point.z, 1);
-  EXPECT_NEAR (obb_min_point.x, -1, 0.01);
-  EXPECT_NEAR (obb_max_point.x, 1, 0.01);
-  EXPECT_NEAR (obb_min_point.y, 1, 0.01);
-  EXPECT_NEAR (obb_max_point.y, 1, 0.01);
-  EXPECT_NEAR (obb_min_point.z, -1, 0.01);
-  EXPECT_NEAR (obb_max_point.z, 1, 0.01);
+  EXPECT_NEAR (obb_position(0), 0, 0.01);
+  EXPECT_NEAR (obb_position(1), 1, 0.01);
+  EXPECT_NEAR (obb_position(2), 0, 0.01);
+  EXPECT_NEAR (obb_dimensions(0), 2, 0.01);
+  EXPECT_NEAR (obb_dimensions(1), 0, 0.01);
+  EXPECT_NEAR (obb_dimensions(2), 2, 0.01);
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
