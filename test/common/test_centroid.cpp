@@ -839,7 +839,7 @@ TEST (PCL, computeMeanAndCovariance)
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, computePCAandOBB)
+TEST (PCL, computeCentroidAndOBB)
 {
   PointCloud<PointXYZ> cloud;
   PointXYZ point;
@@ -857,20 +857,20 @@ TEST (PCL, computePCAandOBB)
 
   // test empty cloud which is dense
   cloud.is_dense = true;
-  EXPECT_EQ (computePCAandOBB (cloud, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 0);
+  EXPECT_EQ (computeCentroidAndOBB (cloud, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 0);
   EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
   EXPECT_EQ (old_obb_rotational_matrix, obb_rotational_matrix); // obb_rotational_matrix remains unchanged
 
   // test empty cloud non_dense
   cloud.is_dense = false;
-  EXPECT_EQ (computePCAandOBB (cloud, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 0);
+  EXPECT_EQ (computeCentroidAndOBB (cloud, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 0);
   EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
   EXPECT_EQ (old_obb_rotational_matrix, obb_rotational_matrix); // obb_rotational_matrix remains unchanged
 
   // test non-empty cloud non_dense with no valid points
   point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
   cloud.push_back (point);
-  EXPECT_EQ (computePCAandOBB (cloud, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 0);
+  EXPECT_EQ (computeCentroidAndOBB (cloud, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 0);
   EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
   EXPECT_EQ (old_obb_rotational_matrix, obb_rotational_matrix); // obb_rotational_matrix remains unchanged
 
@@ -878,7 +878,7 @@ TEST (PCL, computePCAandOBB)
   point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
   cloud.push_back (point);
   indices.push_back (1);
-  EXPECT_EQ (computePCAandOBB (cloud, indices, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 0);
+  EXPECT_EQ (computeCentroidAndOBB (cloud, indices, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 0);
   EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
   EXPECT_EQ (old_obb_rotational_matrix, obb_rotational_matrix); // obb_rotational_matrix remains unchanged
 
@@ -902,7 +902,7 @@ TEST (PCL, computePCAandOBB)
   centroid [0] = -100;
   centroid [1] = -101;
   centroid [2] = -102;
-  EXPECT_EQ (computePCAandOBB (cloud, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 8);
+  EXPECT_EQ (computeCentroidAndOBB (cloud, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 8);
   EXPECT_EQ (centroid [0], 0);
   EXPECT_EQ (centroid [1], 0);
   EXPECT_EQ (centroid [2], 0);
@@ -923,7 +923,7 @@ TEST (PCL, computePCAandOBB)
   centroid [1] = -101;
   centroid [2] = -102;
 
-  EXPECT_EQ (computePCAandOBB (cloud, indices, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 4);
+  EXPECT_EQ (computeCentroidAndOBB (cloud, indices, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 4);
   EXPECT_EQ (centroid [0], 0);
   EXPECT_NEAR (centroid [1], 1, 0.001);
   EXPECT_EQ (centroid [2], 0);
@@ -941,7 +941,7 @@ TEST (PCL, computePCAandOBB)
   centroid [0] = -100;
   centroid [1] = -101;
   centroid [2] = -102;
-  EXPECT_EQ (computePCAandOBB (cloud, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 8);
+  EXPECT_EQ (computeCentroidAndOBB (cloud, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 8);
   EXPECT_EQ (centroid [0], 0);
   EXPECT_EQ (centroid [1], 0);
   EXPECT_EQ (centroid [2], 0);
@@ -958,7 +958,7 @@ TEST (PCL, computePCAandOBB)
   centroid [1] = -101;
   centroid [2] = -102;
 
-  EXPECT_EQ (computePCAandOBB (cloud, indices, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 4);
+  EXPECT_EQ (computeCentroidAndOBB (cloud, indices, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 4);
   EXPECT_EQ (centroid [0], 0);
   EXPECT_NEAR (centroid [1], 1, 0.001);
   EXPECT_EQ (centroid [2], 0);

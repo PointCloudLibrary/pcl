@@ -611,7 +611,7 @@ namespace pcl
 
 
   template <typename PointT, typename Scalar> inline unsigned int
-    computePCAandOBB(const pcl::PointCloud<PointT>& cloud,
+    computeCentroidAndOBB(const pcl::PointCloud<PointT>& cloud,
                     Eigen::Matrix<Scalar, 3, 1>& centroid,
                     Eigen::Matrix<Scalar, 3, 1>& obb_position,
                     Eigen::Matrix<Scalar, 3, 1>& obb_dimensions,
@@ -641,7 +641,7 @@ namespace pcl
     */
 
   template <typename PointT, typename Scalar> inline unsigned int
-    computePCAandOBB(const pcl::PointCloud<PointT>& cloud,
+    computeCentroidAndOBB(const pcl::PointCloud<PointT>& cloud,
                     const Indices &indices,
                     Eigen::Matrix<Scalar, 3, 1>& centroid,
                     Eigen::Matrix<Scalar, 3, 1>& obb_position,
