@@ -79,11 +79,11 @@ will install PCL with default options as well as default triplet type (ie. x86).
   on most modern PC systems, but vcpkg install x86 by default. So to fix it you can set
   host-triplet same as default triplet.
 
-    ./vckpgk install pcl --host-triplet x86-windows 
+    ./vcpkg install pcl --host-triplet x86-windows 
 
   Or, you can use same custom triplet for both --triplet and --host-triplet
 
-    ./vckpgk install pcl --triplet <same_custom_triplet_type> --host-triplet <same_custom_triplet_type>
+    ./vcpkg install pcl --triplet <same_custom_triplet_type> --host-triplet <same_custom_triplet_type>
 
 .. note::
 
