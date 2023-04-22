@@ -37,4 +37,15 @@
  *
  */
 
-#include <pcl/registration/icp.h>
+#include <pcl/registration/impl/icp.hpp>
+
+#ifndef PCL_NO_PRECOMPILE
+#include <pcl/point_types.h>
+#include <pcl/impl/instantiate.hpp>
+// Instantiations of specific point types
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+  PCL_INSTANTIATE(IterativeClosestPoint, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB))
+#else
+  PCL_INSTANTIATE(IterativeClosestPoint, PCL_XYZ_POINT_TYPES)
+#endif
+#endif    // PCL_NO_PRECOMPILE

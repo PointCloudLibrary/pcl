@@ -42,6 +42,7 @@
 #define PCL_REGISTRATION_IMPL_ICP_HPP_
 
 #include <pcl/correspondence.h>
+#include <pcl/registration/icp.h>
 
 namespace pcl {
 // NOLINTBEGIN(readability-container-data-pointer)
@@ -321,5 +322,7 @@ IterativeClosestPointWithNormals<PointSource, PointTarget, Scalar>::transformClo
 // NOLINTEND(readability-container-data-pointer)
 
 } // namespace pcl
+
+#define PCL_INSTANTIATE_IterativeClosestPoint(T1) template class PCL_EXPORTS pcl::IterativeClosestPoint<T1,T1>;
 
 #endif /* PCL_REGISTRATION_IMPL_ICP_HPP_ */

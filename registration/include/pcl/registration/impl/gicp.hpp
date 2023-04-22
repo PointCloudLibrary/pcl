@@ -42,6 +42,7 @@
 #define PCL_REGISTRATION_IMPL_GICP_HPP_
 
 #include <pcl/registration/exceptions.h>
+#include <pcl/registration/impl/icp.hpp>
 
 namespace pcl {
 

@@ -455,4 +455,6 @@ protected:
 
 } // namespace pcl
 
+#ifdef PCL_NO_PRECOMPILE
 #include <pcl/registration/impl/icp.hpp>
+#endif
