@@ -319,5 +319,9 @@ class CloudEditorWidget : public QOpenGLWidget
     /// a dialog displaying the statistics of the cloud editor
     StatisticsDialog stat_dialog_;
 
+    /// the viewport, set by resizeGL
+    std::array<GLint, 4> viewport_;
 
+    /// the projection matrix, set by resizeGL
+    std::array<GLfloat, 16> projection_matrix_;
 };

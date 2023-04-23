@@ -201,7 +201,7 @@ CloudEditorWidget::select2D ()
   if (!cloud_ptr_)
     return;
   tool_ptr_ = std::shared_ptr<Select2DTool>(new Select2DTool(selection_ptr_,
-                                                               cloud_ptr_));
+                                                               cloud_ptr_, [this](GLint * viewport, GLfloat * projection_matrix){ std::copy_n(this->viewport_.begin(), 4, viewport); std::copy_n(this->projection_matrix_.begin(), 16, projection_matrix); }));
   update();
 }
 
@@ -473,10 +473,12 @@ void
 CloudEditorWidget::resizeGL (int width, int height)
 {
   glViewport(0, 0, width, height);
+  viewport_ = {0, 0, width, height};
   cam_aspect_ = double(width) / double(height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(cam_fov_, cam_aspect_, cam_near_, cam_far_);
+  glGetFloatv(GL_PROJECTION_MATRIX, projection_matrix_.data());
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 }
