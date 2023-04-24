@@ -1,5 +1,106 @@
 # ChangeList
 
+## = 1.13.1 (24 April 2023) =
+
+### Notable changes
+
+**New features** *added to PCL*
+
+* **[common]** Add overload to fromPCLPointCloud2 to avoid copying data [[#5608](https://github.com/PointCloudLibrary/pcl/pull/5608)]
+* **[io]** Add writeBinary to ostream for PCDWriter [[#5598](https://github.com/PointCloudLibrary/pcl/pull/5598)]
+* **[docs][io]** io/doc: add overview of file reading and writing functions [[#5657](https://github.com/PointCloudLibrary/pcl/pull/5657)]
+
+**Removal** *of the public APIs deprecated in previous releases*
+
+* **[gpu]** Remove CUDA code for already unsupported CUDA versions [[#5535](https://github.com/PointCloudLibrary/pcl/pull/5535)]
+* **[tools]** Remove pcl_video.cpp [[#5595](https://github.com/PointCloudLibrary/pcl/pull/5595)]
+* **[io][tools]** Remove last usage of boost::date_time and replace it with std::chrono [[#5596](https://github.com/PointCloudLibrary/pcl/pull/5596)]
+
+**Behavior changes** *in classes, apps, or tools*
+
+* **[cmake]** Require at least MSVC 2017 [[#5562](https://github.com/PointCloudLibrary/pcl/pull/5562)]
+
+### Changes grouped by module
+
+#### CMake:
+
+* Link to VTK::FiltersGeneral [[#5547](https://github.com/PointCloudLibrary/pcl/pull/5547)]
+* Add support for Boost 1.81 [[#5558](https://github.com/PointCloudLibrary/pcl/pull/5558)]
+* **[behavior change]** Require at least MSVC 2017 [[#5562](https://github.com/PointCloudLibrary/pcl/pull/5562)]
+* Make sure that find_package(PCL) does not leak internals or overwrite variables [[#5582](https://github.com/PointCloudLibrary/pcl/pull/5582)]
+* Misc small fixes and improvements [[#5624](https://github.com/PointCloudLibrary/pcl/pull/5624)]
+* Allow compilation with Boost 1.82 [[#5668](https://github.com/PointCloudLibrary/pcl/pull/5668)]
+
+#### libpcl_common:
+
+* **[new feature]** Add overload to fromPCLPointCloud2 to avoid copying data [[#5608](https://github.com/PointCloudLibrary/pcl/pull/5608)]
+
+#### libpcl_features:
+
+* Fix crash in SpinImageEstimation [[#5586](https://github.com/PointCloudLibrary/pcl/pull/5586)]
+* Fix access violation in IntegralImageNormalEstimation when using dept… [[#5585](https://github.com/PointCloudLibrary/pcl/pull/5585)]
+
+#### libpcl_filters:
+
+* Fix bug in LocalMaximum [[#5572](https://github.com/PointCloudLibrary/pcl/pull/5572)]
+
+#### libpcl_gpu:
+
+* **[removal]** Remove CUDA code for already unsupported CUDA versions [[#5535](https://github.com/PointCloudLibrary/pcl/pull/5535)]
+
+#### libpcl_io:
+
+* Link to VTK::FiltersGeneral [[#5547](https://github.com/PointCloudLibrary/pcl/pull/5547)]
+* Fix pcl:ply_reader_fuzzer: Crash in pcl::PLYReader::read [[#5552](https://github.com/PointCloudLibrary/pcl/pull/5552)]
+* **[new feature]** Add writeBinary to ostream for PCDWriter [[#5598](https://github.com/PointCloudLibrary/pcl/pull/5598)]
+* **[removal]** Remove last usage of boost::date_time and replace it with std::chrono [[#5596](https://github.com/PointCloudLibrary/pcl/pull/5596)]
+* **[new feature]** io/doc: add overview of file reading and writing functions [[#5657](https://github.com/PointCloudLibrary/pcl/pull/5657)]
+* fix MSVS not supporting unsigned int in for loop with openMP [[#5666](https://github.com/PointCloudLibrary/pcl/pull/5666)]
+
+#### libpcl_octree:
+
+* use PCL_ERROR instead of assert [[#5321](https://github.com/PointCloudLibrary/pcl/pull/5321)]
+
+#### libpcl_people:
+
+* People: fix segfault in SSE HoG computation [[#5658](https://github.com/PointCloudLibrary/pcl/pull/5658)]
+
+#### libpcl_registration:
+
+* Fix potential memory problems in GICP and IncrementalRegistration [[#5557](https://github.com/PointCloudLibrary/pcl/pull/5557)]
+
+#### libpcl_segmentation:
+
+* MinCutSegmentation: use correct allocation size, fix segfault [[#5651](https://github.com/PointCloudLibrary/pcl/pull/5651)]
+
+#### libpcl_visualization:
+
+* Fix Linux and Windows spinOnce behaviour [[#5542](https://github.com/PointCloudLibrary/pcl/pull/5542)]
+
+#### PCL Apps:
+
+* Make apps Qt6 compatible [[#5570](https://github.com/PointCloudLibrary/pcl/pull/5570)]
+* OpenNI apps: Improve handling of command line arguments [[#5494](https://github.com/PointCloudLibrary/pcl/pull/5494)]
+* Improved manual registration [[#5530](https://github.com/PointCloudLibrary/pcl/pull/5530)]
+* Improve pcl_openni_face_detector [[#5669](https://github.com/PointCloudLibrary/pcl/pull/5669)]
+
+#### PCL Docs:
+
+* Add tutorial for using VCPKG on Windows [[#4814](https://github.com/PointCloudLibrary/pcl/pull/4814)]
+* **[new feature]** io/doc: add overview of file reading and writing functions [[#5657](https://github.com/PointCloudLibrary/pcl/pull/5657)]
+
+#### PCL Tools:
+
+* radius filter: fix incorrect printf format specifier and typo [[#5536](https://github.com/PointCloudLibrary/pcl/pull/5536)]
+* Remove NaNs from clouds after loading in icp tool [[#5568](https://github.com/PointCloudLibrary/pcl/pull/5568)]
+* **[removal]** Remove pcl_video.cpp [[#5595](https://github.com/PointCloudLibrary/pcl/pull/5595)]
+* **[removal]** Remove last usage of boost::date_time and replace it with std::chrono [[#5596](https://github.com/PointCloudLibrary/pcl/pull/5596)]
+
+#### CI:
+
+* vcpkg: build only release for host-triplet [[#5614](https://github.com/PointCloudLibrary/pcl/pull/5614)]
+* Misc small fixes and improvements [[#5624](https://github.com/PointCloudLibrary/pcl/pull/5624)]
+
 ## = 1.13.0 (10 December 2022) =
 
 ### Notable changes
