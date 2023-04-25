@@ -1,14 +1,12 @@
 FROM debian:testing
 
-ARG VTK_VERSION=7
+ARG VTK_VERSION=9
 ENV DEBIAN_FRONTEND=noninteractive
 
 ARG PCL_INDEX_SIGNED=true
 ARG PCL_INDEX_SIZE=32
 
-# Add sources so we can just install build-dependencies of PCL
-RUN sed -i 's/^deb \(.*\)$/deb \1\ndeb-src \1/' /etc/apt/sources.list \
- && apt update \
+RUN apt update \
  && apt install -y \
     bash \
     cmake \
