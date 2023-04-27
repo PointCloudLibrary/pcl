@@ -475,6 +475,9 @@ CloudEditorWidget::paintGL ()
 void
 CloudEditorWidget::resizeGL (int width, int height)
 {
+  const auto ratio = this->devicePixelRatio();
+  width = static_cast<int>(width*ratio);
+  height = static_cast<int>(height*ratio);
   glViewport(0, 0, width, height);
   viewport_ = {0, 0, width, height};
   cam_aspect_ = double(width) / double(height);
