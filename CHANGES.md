@@ -1,6 +1,6 @@
 # ChangeList
 
-## = 1.13.1 (24 April 2023) =
+## = 1.13.1 (28 April 2023) =
 
 ### Notable changes
 
@@ -83,6 +83,7 @@
 * OpenNI apps: Improve handling of command line arguments [[#5494](https://github.com/PointCloudLibrary/pcl/pull/5494)]
 * Improved manual registration [[#5530](https://github.com/PointCloudLibrary/pcl/pull/5530)]
 * Improve pcl_openni_face_detector [[#5669](https://github.com/PointCloudLibrary/pcl/pull/5669)]
+* Point Cloud Editor: fix select2D after switch to QOpenGLWidget [[#5685](https://github.com/PointCloudLibrary/pcl/pull/5685)]
 
 #### PCL Docs:
 
