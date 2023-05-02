@@ -1519,27 +1519,29 @@ TEST (PCL, LZFInMem)
 TEST (PCL, Locale)
 {
 #ifndef __APPLE__
+  PointCloud<PointXYZ> cloud, cloud2, cloud3;
+  cloud.width  = 640;
+  cloud.height = 480;
+  cloud.resize (cloud.width * cloud.height);
+  cloud.is_dense = true;
+
+  srand (static_cast<unsigned int> (time (nullptr)));
+  const auto nr_p = cloud.size ();
+  // Randomly create a new point cloud
+  cloud[0].x = std::numeric_limits<float>::quiet_NaN ();
+  cloud[0].y = std::numeric_limits<float>::quiet_NaN ();
+  cloud[0].z = std::numeric_limits<float>::quiet_NaN ();
+
+  for (std::size_t i = 1; i < nr_p; ++i)
+  {
+    cloud[i].x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud[i].y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud[i].z = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+  }
+
+  // First write with German locale, then read with English locale
   try
   {
-    PointCloud<PointXYZ> cloud, cloud2;
-    cloud.width  = 640;
-    cloud.height = 480;
-    cloud.resize (cloud.width * cloud.height);
-    cloud.is_dense = true;
-
-    srand (static_cast<unsigned int> (time (nullptr)));
-    const auto nr_p = cloud.size ();
-    // Randomly create a new point cloud
-    cloud[0].x = std::numeric_limits<float>::quiet_NaN ();
-    cloud[0].y = std::numeric_limits<float>::quiet_NaN ();
-    cloud[0].z = std::numeric_limits<float>::quiet_NaN ();
-  
-    for (std::size_t i = 1; i < nr_p; ++i)
-    {
-      cloud[i].x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
-      cloud[i].y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
-      cloud[i].z = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
-    }
     PCDWriter writer;
     try
     {
@@ -1589,6 +1591,56 @@ TEST (PCL, Locale)
   }
   catch (const std::exception&)
   {
+  }
+
+  remove ("test_pcl_io_ascii_locale.pcd");
+
+  // Now write with English locale, then read with German locale
+  try
+  {
+#ifdef _WIN32
+    std::locale::global (std::locale ("English_US"));
+#else
+    std::locale::global (std::locale ("en_US.UTF-8"));
+#endif
+  }
+  catch (const std::runtime_error&)
+  {
+    PCL_WARN ("Failed to set locale, skipping test.\n");
+  }
+  PCDWriter writer;
+  int res = writer.writeASCII<PointXYZ> ("test_pcl_io_ascii_locale.pcd", cloud);
+  EXPECT_EQ (res, 0);
+
+  PCDReader reader;
+  try
+  {
+#ifdef _WIN32
+    std::locale::global (std::locale ("German_germany"));
+#else
+    std::locale::global (std::locale ("de_DE.UTF-8"));
+#endif
+  }
+  catch (const std::runtime_error&)
+  {
+    PCL_WARN ("Failed to set locale, skipping test.\n");
+  }
+  reader.read<PointXYZ> ("test_pcl_io_ascii_locale.pcd", cloud3);
+  std::locale::global (std::locale::classic ());
+
+  EXPECT_EQ (cloud3.width, cloud.width);
+  EXPECT_EQ (cloud3.height, cloud.height);
+  EXPECT_FALSE (cloud3.is_dense);
+  EXPECT_EQ (cloud3.size (), cloud.size ());
+
+  EXPECT_TRUE (std::isnan(cloud3[0].x));
+  EXPECT_TRUE (std::isnan(cloud3[0].y));
+  EXPECT_TRUE (std::isnan(cloud3[0].z));
+  for (std::size_t i = 1; i < cloud3.size (); ++i)
+  {
+    ASSERT_FLOAT_EQ (cloud3[i].x, cloud[i].x);
+    ASSERT_FLOAT_EQ (cloud3[i].y, cloud[i].y);
+    ASSERT_FLOAT_EQ (cloud3[i].z, cloud[i].z);
   }
 
   remove ("test_pcl_io_ascii_locale.pcd");

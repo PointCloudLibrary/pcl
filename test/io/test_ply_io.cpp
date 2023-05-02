@@ -105,6 +105,7 @@ TEST (PCL, PLYReaderWriter)
     EXPECT_FLOAT_EQ (cloud[counter].z, cloud2[counter].z);     // test for fromPCLPointCloud2 ()
     EXPECT_FLOAT_EQ (cloud[counter].intensity, cloud2[counter].intensity);  // test for fromPCLPointCloud2 ()
   }
+  remove ("test_pcl_io.ply");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -567,6 +568,7 @@ TEST_F (PLYTest, Float64Cloud)
 
   // create file
   std::ofstream fs;
+  fs.imbue (std::locale::classic ()); // make sure that floats are printed with decimal point
   fs.open (mesh_file_ply_.c_str ());
   fs << "ply\n"
         "format ascii 1.0\n"

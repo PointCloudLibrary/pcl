@@ -342,6 +342,7 @@ namespace pcl
     }
     else {
       is.str(st);
+      is.clear(); // clear error state flags
       if (!(is >> value))
         value = static_cast<Type>(atof(st.c_str()));
     }
@@ -364,6 +365,7 @@ namespace pcl
     std::int8_t value;
     int val;
     is.str(st);
+    is.clear(); // clear error state flags
     // is >> val;  -- unfortunately this fails on older GCC versions and CLANG on MacOS
     if (!(is >> val)) {
       val = static_cast<int>(atof(st.c_str()));
@@ -388,6 +390,7 @@ namespace pcl
     std::uint8_t value;
     int val;
     is.str(st);
+    is.clear(); // clear error state flags
     // is >> val;  -- unfortunately this fails on older GCC versions and CLANG on
     // MacOS
     if (!(is >> val)) {
