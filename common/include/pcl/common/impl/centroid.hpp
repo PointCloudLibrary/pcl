@@ -43,7 +43,6 @@
 #include <pcl/common/centroid.h>
 #include <pcl/conversions.h>
 #include <pcl/common/point_tests.h> // for pcl::isFinite
-#include <pcl/common/transforms.h>
 #include <Eigen/Eigenvalues> // for EigenSolver
 
 #include <boost/fusion/algorithm/transformation/filter_if.hpp> // for boost::fusion::filter_if
@@ -787,14 +786,6 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
       (obb_max_pointy + obb_min_pointy) / 2.0f,
       (obb_max_pointz + obb_min_pointz) / 2.0f);
 
-  //obb_min_point.x -= shift(0);//position of the min OBB vertix relative to (OBB centroid, major_axis, middle_axis, minor_axis)
-  //obb_min_point.y -= shift(1);
-  //obb_min_point.z -= shift(2);
-
-  //obb_max_point.x -= shift(0);//position of the max OBB vertix relative to (OBB centroid, major_axis, middle_axis, minor_axis)
-  //obb_max_point.y -= shift(1);
-  //obb_max_point.z -= shift(2);
-
   obb_dimensions(0) = obb_max_pointx - obb_min_pointx;
   obb_dimensions(1) = obb_max_pointy - obb_min_pointy;
   obb_dimensions(2) = obb_max_pointz - obb_min_pointz;
@@ -933,14 +924,6 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
     shift((obb_max_pointx + obb_min_pointx) / 2.0f,
       (obb_max_pointy + obb_min_pointy) / 2.0f,
       (obb_max_pointz + obb_min_pointz) / 2.0f);
-
-  //obb_min_point.x -= shift(0);//position of the min OBB vertix relative to (OBB centroid, major_axis, middle_axis, minor_axis)
-  //obb_min_point.y -= shift(1);
-  //obb_min_point.z -= shift(2);
-
-  //obb_max_point.x -= shift(0);//position of the max OBB vertix relative to (OBB centroid, major_axis, middle_axis, minor_axis)
-  //obb_max_point.y -= shift(1);
-  //obb_max_point.z -= shift(2);
 
   obb_dimensions(0) = obb_max_pointx - obb_min_pointx;
   obb_dimensions(1) = obb_max_pointy - obb_min_pointy;
