@@ -709,6 +709,8 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
   //if you substitute the following Scalars with floats you get a 20% worse processing time, if with 2 PointT 55% worse
   Scalar obb_min_pointx, obb_min_pointy, obb_min_pointz;
   Scalar obb_max_pointx, obb_max_pointy, obb_max_pointz;
+  obb_min_pointx = obb_min_pointy = obb_min_pointz = std::numeric_limits<Scalar>::max();
+  obb_max_pointx = obb_max_pointy = obb_max_pointz = std::numeric_limits<Scalar>::min();
 
   if (cloud.is_dense)
   {
@@ -852,6 +854,8 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
   //if you substitute the following Scalars with floats you get a 20% worse processing time, if with 2 PointT 55% worse
   Scalar obb_min_pointx, obb_min_pointy, obb_min_pointz;
   Scalar obb_max_pointx, obb_max_pointy, obb_max_pointz;
+  obb_min_pointx = obb_min_pointy = obb_min_pointz = std::numeric_limits<Scalar>::max();
+  obb_max_pointx = obb_max_pointy = obb_max_pointz = std::numeric_limits<Scalar>::min();
 
   if (cloud.is_dense)
   {
