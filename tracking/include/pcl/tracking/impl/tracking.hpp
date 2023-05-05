@@ -140,23 +140,11 @@ struct EIGEN_ALIGN16 ParticleXYZRPY : public _ParticleXYZRPY {
       wa.x += point->x * point->weight;
       wa.y += point->y * point->weight;
       wa.z += point->z * point->weight;
-      if (std::cos(point->pitch) > 0) {
-        wa_roll_sin += std::sin(point->roll) * point->weight;
-        wa_roll_cos += std::cos(point->roll) * point->weight;
-        wa_yaw_sin += std::sin(point->yaw) * point->weight;
-        wa_yaw_cos += std::cos(point->yaw) * point->weight;
-        wa_pitch_sin += std::sin(point->pitch) * point->weight;
-      }
-      else if (std::cos(point->pitch) < 0) {
-        wa_roll_sin -= std::sin(point->roll) * point->weight;
-        wa_roll_cos -= std::cos(point->roll) * point->weight;
-        wa_yaw_sin -= std::sin(point->yaw) * point->weight;
-        wa_yaw_cos -= std::cos(point->yaw) * point->weight;
-        wa_pitch_sin += std::sin(point->pitch) * point->weight;
-      }
-      else {
-        wa_pitch_sin += point->weight;
-      }
+      wa_roll_sin += std::cos(point->pitch) * std::sin(point->roll) * point->weight;
+      wa_roll_cos += std::cos(point->pitch) * std::cos(point->roll) * point->weight;
+      wa_pitch_sin += std::sin(point->pitch) * point->weight;
+      wa_yaw_sin += std::cos(point->pitch) * std::sin(point->yaw) * point->weight;
+      wa_yaw_cos += std::cos(point->pitch) * std::cos(point->yaw) * point->weight;
     }
     wa.roll += std::atan2(wa_roll_sin, wa_roll_cos);
     wa.pitch += std::asin(wa_pitch_sin);
@@ -335,24 +323,15 @@ struct EIGEN_ALIGN16 ParticleXYZR : public _ParticleXYZR {
   weightedAverage(InputIterator first, InputIterator last)
   {
     ParticleXYZR wa;
-    float wa_roll_sin = 0.0, wa_roll_cos = 0.0;
+    float wa_pitch_sin = 0.0;
     for (auto point = first; point != last; point++) {
       wa.x += point->x * point->weight;
       wa.y += point->y * point->weight;
       wa.z += point->z * point->weight;
-      if (std::cos(point->pitch) > 0) {
-        wa_roll_sin += std::sin(point->roll) * point->weight;
-        wa_roll_cos += std::cos(point->roll) * point->weight;
-      }
-      else if (std::cos(point->pitch) < 0) {
-        wa_roll_sin -= std::sin(point->roll) * point->weight;
-        wa_roll_cos -= std::cos(point->roll) * point->weight;
-      }
-      else {
-      }
+      wa_pitch_sin += std::sin(point->pitch) * point->weight;
     }
-    wa.roll += std::atan2(wa_roll_sin, wa_roll_cos);
-    wa.pitch = 0.0;
+    wa.roll = 0.0;
+    wa.pitch += std::asin(wa_pitch_sin);
     wa.yaw = 0.0;
     return wa;
   }
@@ -534,23 +513,11 @@ struct EIGEN_ALIGN16 ParticleXYRPY : public _ParticleXYRPY {
     for (auto point = first; point != last; point++) {
       wa.x += point->x * point->weight;
       wa.y += point->y * point->weight;
-      if (std::cos(point->pitch) > 0) {
-        wa_roll_sin += std::sin(point->roll) * point->weight;
-        wa_roll_cos += std::cos(point->roll) * point->weight;
-        wa_yaw_sin += std::sin(point->yaw) * point->weight;
-        wa_yaw_cos += std::cos(point->yaw) * point->weight;
-        wa_pitch_sin += std::sin(point->pitch) * point->weight;
-      }
-      else if (std::cos(point->pitch) < 0) {
-        wa_roll_sin -= std::sin(point->roll) * point->weight;
-        wa_roll_cos -= std::cos(point->roll) * point->weight;
-        wa_yaw_sin -= std::sin(point->yaw) * point->weight;
-        wa_yaw_cos -= std::cos(point->yaw) * point->weight;
-        wa_pitch_sin += std::sin(point->pitch) * point->weight;
-      }
-      else {
-        wa_pitch_sin += point->weight;
-      }
+      wa_roll_sin += std::cos(point->pitch) * std::sin(point->roll) * point->weight;
+      wa_roll_cos += std::cos(point->pitch) * std::cos(point->roll) * point->weight;
+      wa_pitch_sin += std::sin(point->pitch) * point->weight;
+      wa_yaw_sin += std::cos(point->pitch) * std::sin(point->yaw) * point->weight;
+      wa_yaw_cos += std::cos(point->pitch) * std::cos(point->yaw) * point->weight;
     }
     wa.z = 0;
     wa.roll += std::atan2(wa_roll_sin, wa_roll_cos);
@@ -731,28 +698,18 @@ struct EIGEN_ALIGN16 ParticleXYRP : public _ParticleXYRP {
   weightedAverage(InputIterator first, InputIterator last)
   {
     ParticleXYRP wa;
-    float wa_roll_sin = 0.0, wa_roll_cos = 0.0, wa_pitch_sin = 0.0;
+    float wa_yaw_sin = 0.0, wa_yaw_cos = 0.0, wa_pitch_sin = 0.0;
     for (auto point = first; point != last; point++) {
       wa.x += point->x * point->weight;
       wa.y += point->y * point->weight;
-      if (std::cos(point->pitch) > 0) {
-        wa_roll_sin += std::sin(point->roll) * point->weight;
-        wa_roll_cos += std::cos(point->roll) * point->weight;
-        wa_pitch_sin += std::sin(point->pitch) * point->weight;
-      }
-      else if (std::cos(point->pitch) < 0) {
-        wa_roll_sin -= std::sin(point->roll) * point->weight;
-        wa_roll_cos -= std::cos(point->roll) * point->weight;
-        wa_pitch_sin += std::sin(point->pitch) * point->weight;
-      }
-      else {
-        wa_pitch_sin += point->weight;
-      }
+      wa_pitch_sin += std::sin(point->pitch) * point->weight;
+      wa_yaw_sin += std::cos(point->pitch) * std::sin(point->yaw) * point->weight;
+      wa_yaw_cos += std::cos(point->pitch) * std::cos(point->yaw) * point->weight;
     }
     wa.z = 0.0;
-    wa.roll += std::atan2(wa_roll_sin, wa_roll_cos);
+    wa.roll = 0.0;
     wa.pitch += std::asin(wa_pitch_sin);
-    wa.yaw = 0.0;
+    wa.yaw += std::atan2(wa_yaw_sin, wa_yaw_cos);
     return wa;
   }
 
@@ -927,24 +884,15 @@ struct EIGEN_ALIGN16 ParticleXYR : public _ParticleXYR {
   weightedAverage(InputIterator first, InputIterator last)
   {
     ParticleXYR wa;
-    float wa_roll_sin = 0.0, wa_roll_cos = 0.0;
+    float wa_pitch_sin = 0.0;
     for (auto point = first; point != last; point++) {
       wa.x += point->x * point->weight;
       wa.y += point->y * point->weight;
-      if (std::cos(point->pitch) > 0) {
-        wa_roll_sin += std::sin(point->roll) * point->weight;
-        wa_roll_cos += std::cos(point->roll) * point->weight;
-      }
-      else if (std::cos(point->pitch) < 0) {
-        wa_roll_sin -= std::sin(point->roll) * point->weight;
-        wa_roll_cos -= std::cos(point->roll) * point->weight;
-      }
-      else {
-      }
+      wa_pitch_sin += std::sin(point->pitch) * point->weight;
     }
     wa.z = 0.0;
-    wa.roll += std::atan2(wa_roll_sin, wa_roll_cos);
-    wa.pitch = 0.0;
+    wa.roll = 0.0;
+    wa.pitch += std::asin(wa_pitch_sin);
     wa.yaw = 0.0;
     return wa;
   }
