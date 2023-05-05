@@ -661,11 +661,6 @@ computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   return (computeMeanAndCovarianceMatrix (cloud, indices.indices, covariance_matrix, centroid));
 }
 
-
-
-
-
-
 template <typename PointT, typename Scalar> inline unsigned int
 computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
   Eigen::Matrix<Scalar, 3, 1> &centroid,
@@ -678,7 +673,9 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
   unsigned int point_count= computeMeanAndCovarianceMatrix(cloud, covariance_matrix, centroid4);
   if (!point_count)
     return (0);
-  centroid = centroid4.head<3>();
+  centroid(0) = centroid4(0);
+  centroid(1) = centroid4(1);
+  centroid(2) = centroid4(2);
 
   Eigen::SelfAdjointEigenSolver<Eigen::Matrix<Scalar, 3, 3>> evd(covariance_matrix);
 
@@ -701,7 +698,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
   //obb_rotational_matrix.col(2)==minor_axis
 
   //Trasforming the point cloud in the (Centroid, ma-mi-mi_axis) reference
-  //with homogenoeus matrix
+  //with homogeneous matrix
   //[R^t  , -R^t*Centroid ]
   //[0    , 1             ]
   Eigen::Matrix<Scalar, 4, 4> transform = Eigen::Matrix<Scalar, 4, 4>::Identity();
@@ -715,7 +712,6 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
 
   if (cloud.is_dense)
   {
-
     auto point = cloud.points[0];
     Eigen::Matrix<Scalar, 4, 1> P0((Scalar)(point.x),(Scalar)(point.y) , (Scalar)(point.z), 1.0);
     Eigen::Matrix<Scalar, 4, 1> P = transform * P0;
@@ -784,8 +780,6 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
 
   }
 
-
-
   Eigen::Matrix<Scalar, 3, 1>  //shift between point cloud centroid and OBB centroid (position of the OBB centroid relative to (p.c.centroid, major_axis, middle_axis, minor_axis))
     shift((obb_max_pointx + obb_min_pointx) / 2.0f,
       (obb_max_pointy + obb_min_pointy) / 2.0f,
@@ -809,7 +803,6 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
 }
 
 
-
 template <typename PointT, typename Scalar> inline unsigned int
 computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
   const Indices &indices,
@@ -823,7 +816,9 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
   unsigned int point_count= computeMeanAndCovarianceMatrix(cloud, indices, covariance_matrix, centroid4);
   if (!point_count)
     return (0);
-  centroid = centroid4.head<3>();
+  centroid(0) = centroid4(0);
+  centroid(1) = centroid4(1);
+  centroid(2) = centroid4(2);
 
   Eigen::SelfAdjointEigenSolver<Eigen::Matrix<Scalar, 3, 3>> evd(covariance_matrix);
 
@@ -846,7 +841,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
   //obb_rotational_matrix.col(2)==minor_axis
 
   //Trasforming the point cloud in the (Centroid, ma-mi-mi_axis) reference
-  //with homogenoeus matrix
+  //with homogeneous matrix
   //[R^t  , -R^t*Centroid ]
   //[0    , 1             ]
   Eigen::Matrix<Scalar, 4, 4> transform = Eigen::Matrix<Scalar, 4, 4>::Identity();
@@ -860,7 +855,6 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
 
   if (cloud.is_dense)
   {
-
     auto point = cloud.points[indices[0]];
     Eigen::Matrix<Scalar, 4, 1> P0((Scalar)(point.x), (Scalar)(point.y), (Scalar)(point.z), 1.0);
     Eigen::Matrix<Scalar, 4, 1> P = transform * P0;
@@ -931,8 +925,6 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
 
   }
 
-
-
   Eigen::Matrix<Scalar, 3, 1>  //shift between point cloud centroid and OBB centroid (position of the OBB centroid relative to (p.c.centroid, major_axis, middle_axis, minor_axis))
     shift((obb_max_pointx + obb_min_pointx) / 2.0f,
       (obb_max_pointy + obb_min_pointy) / 2.0f,
@@ -954,7 +946,6 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
 
   return ( point_count);
 }
-
 
 
 
