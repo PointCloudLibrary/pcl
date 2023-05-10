@@ -136,7 +136,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   // output from qh_produce_output(), use NULL to skip qh_produce_output()
   FILE *outfile = nullptr;
 
-  if (compute_area_)
+  if (compute_area_ && pcl::console::isVerbosityLevelEnabled(pcl::console::L_DEBUG))
     outfile = stderr;
 
   // option flags for qhull, see qh_opt.htm
@@ -299,7 +299,7 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   // output from qh_produce_output(), use NULL to skip qh_produce_output()
   FILE *outfile = nullptr;
 
-  if (compute_area_)
+  if (compute_area_ && pcl::console::isVerbosityLevelEnabled(pcl::console::L_DEBUG))
     outfile = stderr;
 
   // option flags for qhull, see qh_opt.htm
