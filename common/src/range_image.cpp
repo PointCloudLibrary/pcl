@@ -105,10 +105,7 @@ RangeImage::getCoordinateFrameTransformation (RangeImage::CoordinateFrame coordi
 /////////////////////////////////////////////////////////////////////////
 RangeImage::RangeImage () : 
   to_range_image_system_ (Eigen::Affine3f::Identity ()),
-  to_world_system_ (Eigen::Affine3f::Identity ()),
-  angular_resolution_x_ (0), angular_resolution_y_ (0),
-  angular_resolution_x_reciprocal_ (0), angular_resolution_y_reciprocal_ (0),
-  image_offset_x_ (0), image_offset_y_ (0)
+  to_world_system_ (Eigen::Affine3f::Identity ())
 {
   createLookupTables ();
   reset ();

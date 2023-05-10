@@ -114,9 +114,10 @@ namespace pcl
       getNoOfParametersFromDegree (int n) { return ((n+2)* (n+1))/2;}
 
       //-----VARIABLES-----
-      int degree;
-      real* parameters;
-      BivariatePolynomialT<real>* gradient_x, * gradient_y;
+      int degree{0};
+      real* parameters{nullptr};
+      BivariatePolynomialT<real>* gradient_x{nullptr};
+      BivariatePolynomialT<real>* gradient_y{nullptr};
 
     protected:
       //-----METHODS-----

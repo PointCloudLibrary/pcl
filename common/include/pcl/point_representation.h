@@ -245,7 +245,7 @@ namespace pcl
       using Pod = typename traits::POD<PointDefault>::type;
 
       NdCopyPointFunctor (const PointDefault &p1, float * p2)
-        : p1_ (reinterpret_cast<const Pod&>(p1)), p2_ (p2), f_idx_ (0) { }
+        : p1_ (reinterpret_cast<const Pod&>(p1)), p2_ (p2) {}
 
       template<typename Key> inline void operator() ()
       {
@@ -285,7 +285,7 @@ namespace pcl
     private:
       const Pod &p1_;
       float * p2_;
-      int f_idx_;
+      int f_idx_{0};
     };
 
     public:

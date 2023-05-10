@@ -206,9 +206,9 @@ namespace pcl
 
 
     protected:
-      float focal_length_x_, focal_length_y_; //!< The focal length of the image in pixels
-      float focal_length_x_reciprocal_, focal_length_y_reciprocal_;  //!< 1/focal_length -> for internal use
-      float center_x_, center_y_;      //!< The principle point of the image
+      float focal_length_x_{0.0f}, focal_length_y_{0.0f}; //!< The focal length of the image in pixels
+      float focal_length_x_reciprocal_{0.0f}, focal_length_y_reciprocal_{0.0f};  //!< 1/focal_length -> for internal use
+      float center_x_{0.0f}, center_y_{0.0f};      //!< The principle point of the image
   };
 }  // namespace end
 

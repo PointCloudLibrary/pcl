@@ -89,18 +89,18 @@ namespace pcl
     * \ingroup common
     */
   template <typename PointT, typename Scalar> inline unsigned int
-  compute3DCentroid (const pcl::PointCloud<PointT> &cloud, 
+  compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
                      Eigen::Matrix<Scalar, 4, 1> &centroid);
 
   template <typename PointT> inline unsigned int
-  compute3DCentroid (const pcl::PointCloud<PointT> &cloud, 
+  compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
                      Eigen::Vector4f &centroid)
   {
     return (compute3DCentroid <PointT, float> (cloud, centroid));
   }
 
   template <typename PointT> inline unsigned int
-  compute3DCentroid (const pcl::PointCloud<PointT> &cloud, 
+  compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
                      Eigen::Vector4d &centroid)
   {
     return (compute3DCentroid <PointT, double> (cloud, centroid));
@@ -844,8 +844,7 @@ namespace pcl
     using Pod = typename traits::POD<PointT>::type;
 
     NdCentroidFunctor (const PointT &p, Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &centroid)
-      : f_idx_ (0),
-        centroid_ (centroid),
+      : centroid_ (centroid),
         p_ (reinterpret_cast<const Pod&>(p)) { }
 
     template<typename Key> inline void operator() ()
@@ -865,7 +864,7 @@ namespace pcl
     }
 
     private:
-      int f_idx_;
+      int f_idx_{0};
       Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &centroid_;
       const Pod &p_;
   };
@@ -877,18 +876,18 @@ namespace pcl
     * \ingroup common
     */
   template <typename PointT, typename Scalar> inline void
-  computeNDCentroid (const pcl::PointCloud<PointT> &cloud, 
+  computeNDCentroid (const pcl::PointCloud<PointT> &cloud,
                      Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &centroid);
 
   template <typename PointT> inline void
-  computeNDCentroid (const pcl::PointCloud<PointT> &cloud, 
+  computeNDCentroid (const pcl::PointCloud<PointT> &cloud,
                      Eigen::VectorXf &centroid)
   {
     return (computeNDCentroid<PointT, float> (cloud, centroid));
   }
 
   template <typename PointT> inline void
-  computeNDCentroid (const pcl::PointCloud<PointT> &cloud, 
+  computeNDCentroid (const pcl::PointCloud<PointT> &cloud,
                      Eigen::VectorXd &centroid)
   {
     return (computeNDCentroid<PointT, double> (cloud, centroid));
@@ -907,7 +906,7 @@ namespace pcl
                      Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &centroid);
 
   template <typename PointT> inline void
-  computeNDCentroid (const pcl::PointCloud<PointT> &cloud, 
+  computeNDCentroid (const pcl::PointCloud<PointT> &cloud,
                      const Indices &indices,
                      Eigen::VectorXf &centroid)
   {
@@ -915,7 +914,7 @@ namespace pcl
   }
 
   template <typename PointT> inline void
-  computeNDCentroid (const pcl::PointCloud<PointT> &cloud, 
+  computeNDCentroid (const pcl::PointCloud<PointT> &cloud,
                      const Indices &indices,
                      Eigen::VectorXd &centroid)
   {
@@ -935,7 +934,7 @@ namespace pcl
                      Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &centroid);
 
   template <typename PointT> inline void
-  computeNDCentroid (const pcl::PointCloud<PointT> &cloud, 
+  computeNDCentroid (const pcl::PointCloud<PointT> &cloud,
                      const pcl::PointIndices &indices,
                      Eigen::VectorXf &centroid)
   {
@@ -943,7 +942,7 @@ namespace pcl
   }
 
   template <typename PointT> inline void
-  computeNDCentroid (const pcl::PointCloud<PointT> &cloud, 
+  computeNDCentroid (const pcl::PointCloud<PointT> &cloud,
                      const pcl::PointIndices &indices,
                      Eigen::VectorXd &centroid)
   {
