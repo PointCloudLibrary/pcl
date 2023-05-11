@@ -282,7 +282,7 @@ namespace pcl
                         pcd_version, offset);
 
         // If no error, convert the data if there is data
-        if (res == 0 && blob.data.size() > 0)
+        if (res == 0 && !blob.data.empty())
         {
           pcl::fromPCLPointCloud2(blob, cloud);
         }
