@@ -281,9 +281,20 @@ namespace pcl
         int res = read (file_name, blob, cloud.sensor_origin_, cloud.sensor_orientation_,
                         pcd_version, offset);
 
-        // If no error, convert the data
-        if (res == 0)
-          pcl::fromPCLPointCloud2 (blob, cloud);
+        // If no error, convert the data if there is data
+        if (res == 0 && blob.data.size() > 0)
+        {
+          pcl::fromPCLPointCloud2(blob, cloud);
+        }
+        else
+        {
+          // Copy info fields
+          cloud.header = blob.header;
+          cloud.width = blob.width;
+          cloud.height = blob.height;
+          cloud.is_dense = blob.is_dense == 1;
+        }
+          
         return (res);
       }
 

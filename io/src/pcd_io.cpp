@@ -342,6 +342,9 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
   if (nr_points == 0)
   {
     PCL_WARN ("[pcl::PCDReader::readHeader] No points to read\n");
+    cloud.width = 0;
+    cloud.data.clear();
+    return 0;
   }
   
   // Compatibility with older PCD file versions
@@ -557,6 +560,11 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
     }
 
     auto data_size = static_cast<unsigned int> (cloud.data.size ());
+    if (data_size == 0)
+    {
+      PCL_WARN("[pcl::PCDReader::read] Binary compressed file has data size of zero.\n");
+      return 0;
+    }
     std::vector<char> buf (data_size);
     // The size of the uncompressed data better be the same as what we stored in the header
     unsigned int tmp_size = pcl::lzfDecompress (&map[data_idx + 8], compressed_size, buf.data(), data_size);
@@ -1369,42 +1377,43 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
     return (-2);
   }
 
-  //////////////////////////////////////////////////////////////////////
-  // Empty array holding only the valid data
-  // data_size = nr_points * point_size 
-  //           = nr_points * (sizeof_field_1 + sizeof_field_2 + ... sizeof_field_n)
-  //           = sizeof_field_1 * nr_points + sizeof_field_2 * nr_points + ... sizeof_field_n * nr_points
-  std::vector<char> only_valid_data (data_size);
-
-  // Convert the XYZRGBXYZRGB structure to XXYYZZRGBRGB to aid compression. For
-  // this, we need a vector of fields.size () (4 in this case), which points to
-  // each individual plane:
-  //   pters[0] = &only_valid_data[offset_of_plane_x];
-  //   pters[1] = &only_valid_data[offset_of_plane_y];
-  //   pters[2] = &only_valid_data[offset_of_plane_z];
-  //   pters[3] = &only_valid_data[offset_of_plane_RGB];
-  //
-  std::vector<char*> pters (fields.size ());
-  std::size_t toff = 0;
-  for (std::size_t i = 0; i < pters.size (); ++i)
-  {
-    pters[i] = &only_valid_data[toff];
-    toff += fields_sizes[i] * cloud.width * cloud.height;
-  }
-
-  // Go over all the points, and copy the data in the appropriate places
-  for (uindex_t i = 0; i < cloud.width * cloud.height; ++i)
-  {
-    for (std::size_t j = 0; j < pters.size (); ++j)
-    {
-      memcpy (pters[j], &cloud.data[i * cloud.point_step + fields[j].offset], fields_sizes[j]);
-      // Increment the pointer
-      pters[j] += fields_sizes[j];
-    }
-  }
-
   std::vector<char> temp_buf (data_size * 3 / 2 + 8);
   if (data_size != 0) {
+
+    //////////////////////////////////////////////////////////////////////
+    // Empty array holding only the valid data
+    // data_size = nr_points * point_size
+    //           = nr_points * (sizeof_field_1 + sizeof_field_2 + ... sizeof_field_n)
+    //           = sizeof_field_1 * nr_points + sizeof_field_2 * nr_points + ...
+    //           sizeof_field_n * nr_points
+    std::vector<char> only_valid_data(data_size);
+
+    // Convert the XYZRGBXYZRGB structure to XXYYZZRGBRGB to aid compression. For
+    // this, we need a vector of fields.size () (4 in this case), which points to
+    // each individual plane:
+    //   pters[0] = &only_valid_data[offset_of_plane_x];
+    //   pters[1] = &only_valid_data[offset_of_plane_y];
+    //   pters[2] = &only_valid_data[offset_of_plane_z];
+    //   pters[3] = &only_valid_data[offset_of_plane_RGB];
+    //
+    std::vector<char*> pters(fields.size());
+    std::size_t toff = 0;
+    for (std::size_t i = 0; i < pters.size(); ++i) {
+      pters[i] = &only_valid_data[toff];
+      toff += fields_sizes[i] * cloud.width * cloud.height;
+    }
+
+    // Go over all the points, and copy the data in the appropriate places
+    for (uindex_t i = 0; i < cloud.width * cloud.height; ++i) {
+      for (std::size_t j = 0; j < pters.size(); ++j) {
+        memcpy(pters[j],
+               &cloud.data[i * cloud.point_step + fields[j].offset],
+               fields_sizes[j]);
+        // Increment the pointer
+        pters[j] += fields_sizes[j];
+      }
+    }
+
     // Compress the valid data
     unsigned int compressed_size = pcl::lzfCompress (&only_valid_data.front (),
                                                     static_cast<unsigned int> (data_size),
