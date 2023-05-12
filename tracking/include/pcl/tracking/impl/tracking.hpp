@@ -136,7 +136,7 @@ struct EIGEN_ALIGN16 ParticleXYZRPY : public _ParticleXYZRPY {
     ParticleXYZRPY wa;
     float wa_roll_sin = 0.0, wa_roll_cos = 0.0, wa_pitch_sin = 0.0, wa_pitch_cos = 0.0,
           wa_yaw_sin = 0.0, wa_yaw_cos = 0.0;
-    for (auto point = first; point != last; point++) {
+    for (auto point = first; point != last; ++point) {
       wa.x += point->x * point->weight;
       wa.y += point->y * point->weight;
       wa.z += point->z * point->weight;
@@ -147,9 +147,9 @@ struct EIGEN_ALIGN16 ParticleXYZRPY : public _ParticleXYZRPY {
       wa_yaw_sin += wa_pitch_cos * std::sin(point->yaw) * point->weight;
       wa_yaw_cos += wa_pitch_cos * std::cos(point->yaw) * point->weight;
     }
-    wa.roll += std::atan2(wa_roll_sin, wa_roll_cos);
-    wa.pitch += std::asin(wa_pitch_sin);
-    wa.yaw += std::atan2(wa_yaw_sin, wa_yaw_cos);
+    wa.roll = std::atan2(wa_roll_sin, wa_roll_cos);
+    wa.pitch = std::asin(wa_pitch_sin);
+    wa.yaw = std::atan2(wa_yaw_sin, wa_yaw_cos);
     return wa;
   }
 
@@ -325,14 +325,14 @@ struct EIGEN_ALIGN16 ParticleXYZR : public _ParticleXYZR {
   {
     ParticleXYZR wa;
     float wa_pitch_sin = 0.0;
-    for (auto point = first; point != last; point++) {
+    for (auto point = first; point != last; ++point) {
       wa.x += point->x * point->weight;
       wa.y += point->y * point->weight;
       wa.z += point->z * point->weight;
       wa_pitch_sin += std::sin(point->pitch) * point->weight;
     }
     wa.roll = 0.0;
-    wa.pitch += std::asin(wa_pitch_sin);
+    wa.pitch = std::asin(wa_pitch_sin);
     wa.yaw = 0.0;
     return wa;
   }
@@ -511,7 +511,7 @@ struct EIGEN_ALIGN16 ParticleXYRPY : public _ParticleXYRPY {
     ParticleXYRPY wa;
     float wa_roll_sin = 0.0, wa_roll_cos = 0.0, wa_pitch_sin = 0.0, wa_pitch_cos = 0.0,
           wa_yaw_sin = 0.0, wa_yaw_cos = 0.0;
-    for (auto point = first; point != last; point++) {
+    for (auto point = first; point != last; ++point) {
       wa.x += point->x * point->weight;
       wa.y += point->y * point->weight;
       wa_pitch_cos = std::cos(point->pitch);
@@ -522,9 +522,9 @@ struct EIGEN_ALIGN16 ParticleXYRPY : public _ParticleXYRPY {
       wa_yaw_cos += wa_pitch_cos * std::cos(point->yaw) * point->weight;
     }
     wa.z = 0;
-    wa.roll += std::atan2(wa_roll_sin, wa_roll_cos);
-    wa.pitch += std::asin(wa_pitch_sin);
-    wa.yaw += std::atan2(wa_yaw_sin, wa_yaw_cos);
+    wa.roll = std::atan2(wa_roll_sin, wa_roll_cos);
+    wa.pitch = std::asin(wa_pitch_sin);
+    wa.yaw = std::atan2(wa_yaw_sin, wa_yaw_cos);
     return wa;
   }
 
@@ -701,7 +701,7 @@ struct EIGEN_ALIGN16 ParticleXYRP : public _ParticleXYRP {
   {
     ParticleXYRP wa;
     float wa_yaw_sin = 0.0, wa_yaw_cos = 0.0, wa_pitch_sin = 0.0, wa_pitch_cos = 0.0;
-    for (auto point = first; point != last; point++) {
+    for (auto point = first; point != last; ++point) {
       wa.x += point->x * point->weight;
       wa.y += point->y * point->weight;
       wa_pitch_cos = std::cos(point->pitch);
@@ -711,8 +711,8 @@ struct EIGEN_ALIGN16 ParticleXYRP : public _ParticleXYRP {
     }
     wa.z = 0.0;
     wa.roll = 0.0;
-    wa.pitch += std::asin(wa_pitch_sin);
-    wa.yaw += std::atan2(wa_yaw_sin, wa_yaw_cos);
+    wa.pitch = std::asin(wa_pitch_sin);
+    wa.yaw = std::atan2(wa_yaw_sin, wa_yaw_cos);
     return wa;
   }
 
@@ -888,14 +888,14 @@ struct EIGEN_ALIGN16 ParticleXYR : public _ParticleXYR {
   {
     ParticleXYR wa;
     float wa_pitch_sin = 0.0;
-    for (auto point = first; point != last; point++) {
+    for (auto point = first; point != last; ++point) {
       wa.x += point->x * point->weight;
       wa.y += point->y * point->weight;
       wa_pitch_sin += std::sin(point->pitch) * point->weight;
     }
     wa.z = 0.0;
     wa.roll = 0.0;
-    wa.pitch += std::asin(wa_pitch_sin);
+    wa.pitch = std::asin(wa_pitch_sin);
     wa.yaw = 0.0;
     return wa;
   }
