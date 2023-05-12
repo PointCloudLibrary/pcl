@@ -169,6 +169,13 @@ namespace pcl
     cloud.height   = msg.height;
     cloud.is_dense = msg.is_dense == 1;
 
+    // check if there is data to copy
+    if (msg.data.empty())
+    {
+      PCL_WARN("[pcl::fromPCLPointCloud2] No data to copy.\n");
+      return;
+    }
+
     // Copy point data
     cloud.resize (msg.width * msg.height);
     std::uint8_t* cloud_data = reinterpret_cast<std::uint8_t*>(&cloud[0]);
