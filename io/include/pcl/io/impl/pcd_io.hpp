@@ -125,14 +125,12 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
   if (h_native_file == INVALID_HANDLE_VALUE)
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during CreateFile!");
-    return (-1);
   }
 #else
   int fd = io::raw_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
   if (fd < 0)
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during open!");
-    return (-1);
   }
 #endif
   // Mandatory lock file
@@ -165,14 +163,12 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
   if (fm == NULL)
   {
       throw pcl::IOException("[pcl::PCDWriter::writeBinary] Error during memory map creation ()!");
-      return (-1);
   }
   char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_idx + data_size));
   if (map == NULL)
   {
       CloseHandle (fm);
       throw pcl::IOException("[pcl::PCDWriter::writeBinary] Error mapping view of file!");
-      return (-1);
   }
   CloseHandle (fm);
 
@@ -187,7 +183,6 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
                data_idx + data_size, allocate_res, errno, strerror (errno));
 
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during raw_fallocate ()!");
-    return (-1);
   }
 
   char *map = static_cast<char*> (::mmap (nullptr, data_idx + data_size, PROT_WRITE, MAP_SHARED, fd, 0));
@@ -196,7 +191,6 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
     io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during mmap ()!");
-    return (-1);
   }
 #endif
 
@@ -230,7 +224,6 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
     io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during munmap ()!");
-    return (-1);
   }
 #endif
   // Close file
@@ -262,14 +255,12 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
   if (h_native_file == INVALID_HANDLE_VALUE)
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during CreateFile!");
-    return (-1);
   }
 #else
   int fd = io::raw_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
   if (fd < 0)
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during open!");
-    return (-1);
   }
 #endif
 
@@ -396,7 +387,6 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
                compressed_final_size, allocate_res, errno, strerror (errno));
 
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during raw_fallocate ()!");
-    return (-1);
   }
 
   char *map = static_cast<char*> (::mmap (nullptr, compressed_final_size, PROT_WRITE, MAP_SHARED, fd, 0));
@@ -405,7 +395,6 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
     io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during mmap ()!");
-    return (-1);
   }
 #endif
 
@@ -429,7 +418,6 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
     io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during munmap ()!");
-    return (-1);
   }
 #endif
 
@@ -459,7 +447,6 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
   if (cloud.width * cloud.height != cloud.size ())
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Number of points different than width * height!");
-    return (-1);
   }
 
   std::ofstream fs;
@@ -468,7 +455,6 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
   if (!fs.is_open () || fs.fail ())
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Could not open file for writing!");
-    return (-1);
   }
   
   // Mandatory lock file
@@ -639,14 +625,12 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
   if (h_native_file == INVALID_HANDLE_VALUE)
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during CreateFile!");
-    return (-1);
   }
 #else
   int fd = io::raw_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
   if (fd < 0)
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during open!");
-    return (-1);
   }
 #endif
   // Mandatory lock file
@@ -690,7 +674,6 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
                data_idx + data_size, allocate_res, errno, strerror (errno));
 
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during raw_fallocate ()!");
-    return (-1);
   }
 
   char *map = static_cast<char*> (::mmap (nullptr, data_idx + data_size, PROT_WRITE, MAP_SHARED, fd, 0));
@@ -699,7 +682,6 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
     io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during mmap ()!");
-    return (-1);
   }
 #endif
 
@@ -733,7 +715,6 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
     io::raw_close (fd);
     resetLockingPermissions (file_name, file_lock);
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during munmap ()!");
-    return (-1);
   }
 #endif
   // Close file
@@ -762,7 +743,6 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
   if (cloud.width * cloud.height != cloud.size ())
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Number of points different than width * height!");
-    return (-1);
   }
 
   std::ofstream fs;
@@ -770,7 +750,6 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
   if (!fs.is_open () || fs.fail ())
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Could not open file for writing!");
-    return (-1);
   }
 
   // Mandatory lock file
