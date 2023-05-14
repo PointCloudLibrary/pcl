@@ -49,11 +49,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
 pcl::ROPSEstimation <PointInT, PointOutT>::ROPSEstimation () :
-  number_of_bins_ (5),
-  number_of_rotations_ (3),
-  support_radius_ (1.0f),
-  sqr_support_radius_ (1.0f),
-  step_ (22.5f),
+  
   triangles_ (0),
   triangles_of_the_point_ (0)
 {

@@ -48,17 +48,12 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 pcl::MomentOfInertiaEstimation<PointT>::MomentOfInertiaEstimation () :
-  is_valid_ (false),
-  step_ (10.0f),
-  point_mass_ (0.0001f),
-  normalize_ (true),
+  
   mean_value_ (0.0f, 0.0f, 0.0f),
   major_axis_ (0.0f, 0.0f, 0.0f),
   middle_axis_ (0.0f, 0.0f, 0.0f),
   minor_axis_ (0.0f, 0.0f, 0.0f),
-  major_value_ (0.0f),
-  middle_value_ (0.0f),
-  minor_value_ (0.0f),
+  
   aabb_min_point_ (),
   aabb_max_point_ (),
   obb_min_point_ (),

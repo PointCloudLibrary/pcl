@@ -80,7 +80,7 @@ namespace pcl
 
 
       /** \brief Empty constructor. */
-      RIFTEstimation () : gradient_ (), nr_distance_bins_ (4), nr_gradient_bins_ (8)
+      RIFTEstimation () : gradient_ ()
       {
         feature_name_ = "RIFTEstimation";
       };
@@ -144,10 +144,10 @@ namespace pcl
       PointCloudGradientConstPtr gradient_;
 
       /** \brief The number of distance bins in the descriptor. */
-      int nr_distance_bins_;
+      int nr_distance_bins_{4};
 
       /** \brief The number of gradient orientation bins in the descriptor. */
-      int nr_gradient_bins_;
+      int nr_gradient_bins_{8};
   };
 }
 

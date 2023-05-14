@@ -94,7 +94,7 @@ namespace pcl
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param[in] nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
-      FPFHEstimationOMP (unsigned int nr_threads = 0) : nr_bins_f1_ (11), nr_bins_f2_ (11), nr_bins_f3_ (11)
+      FPFHEstimationOMP (unsigned int nr_threads = 0)
       {
         feature_name_ = "FPFHEstimationOMP";
 
@@ -118,7 +118,7 @@ namespace pcl
 
     public:
       /** \brief The number of subdivisions for each angular feature interval. */
-      int nr_bins_f1_, nr_bins_f2_, nr_bins_f3_;
+      int nr_bins_f1_{11}, nr_bins_f2_{11}, nr_bins_f3_{11};
     private:
       /** \brief The number of threads the scheduler should use. */
       unsigned int threads_;

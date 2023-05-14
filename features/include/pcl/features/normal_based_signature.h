@@ -75,12 +75,7 @@ namespace pcl
       /** \brief Empty constructor, initializes the internal parameters to the default values
         */
       NormalBasedSignatureEstimation ()
-        : FeatureFromNormals<PointT, PointNT, PointFeature> (),
-          scale_h_ (),
-          N_ (36),
-          M_ (8),
-          N_prime_ (4),
-          M_prime_ (3)
+        : FeatureFromNormals<PointT, PointNT, PointFeature> ()
       {
       }
 
@@ -152,8 +147,8 @@ namespace pcl
       computeFeature (FeatureCloud &output) override;
 
     private:
-      float scale_h_;
-      std::size_t N_, M_, N_prime_, M_prime_;
+      float scale_h_{};
+      std::size_t N_{36}, M_{8}, N_prime_{4}, M_prime_{3};
   };
 }
 

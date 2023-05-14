@@ -82,8 +82,7 @@ namespace pcl
 
       /** \brief Empty constructor. */
       GFPFHEstimation () : 
-        octree_leaf_size_ (0.01),
-        number_of_classes_ (16),
+        
         descriptor_size_ (PointOutT::descriptorSize ())
       {
         feature_name_ = "GFPFHEstimation";
@@ -162,10 +161,10 @@ namespace pcl
 
     private:
       /** \brief Size of octree leaves. */
-      double octree_leaf_size_;
+      double octree_leaf_size_{0.01};
 
       /** \brief Number of possible classes/labels. */
-      std::uint32_t number_of_classes_;
+      std::uint32_t number_of_classes_{16};
 
       /** \brief Dimension of the descriptors. */
       int descriptor_size_;

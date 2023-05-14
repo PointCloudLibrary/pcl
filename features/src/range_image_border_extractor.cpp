@@ -49,10 +49,7 @@ namespace pcl
 {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-RangeImageBorderExtractor::RangeImageBorderExtractor(const RangeImage* range_image) :
-  range_image_(range_image), range_image_size_during_extraction_(0),
-  surface_structure_(nullptr), border_descriptions_(nullptr), shadow_border_informations_(nullptr), border_directions_(nullptr),
-  surface_change_scores_(nullptr), surface_change_directions_(nullptr)
+RangeImageBorderExtractor::RangeImageBorderExtractor(const RangeImage* range_image) : range_image_(range_image)
 {
 }
 

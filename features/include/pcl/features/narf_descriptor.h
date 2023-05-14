@@ -63,9 +63,9 @@ namespace pcl
       // =====STRUCTS/CLASSES=====
       struct Parameters
       {
-        Parameters() : support_size(-1.0f), rotation_invariant(true) {}
-        float support_size;
-        bool rotation_invariant;
+        Parameters() = default;
+        float support_size{-1.0f};
+        bool rotation_invariant{true};
       };
       
       // =====CONSTRUCTOR & DESTRUCTOR=====
@@ -90,7 +90,7 @@ namespace pcl
       
     protected:
       // =====PROTECTED MEMBER VARIABLES=====
-      const RangeImage* range_image_;
+      const RangeImage* range_image_{};
       Parameters parameters_;
       
       // =====PROTECTED METHODS=====

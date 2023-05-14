@@ -99,12 +99,11 @@ namespace pcl
         * Sets \a use_cache_ to false, \a nr_subdiv_ to 5, and the internal maximum cache size to 1GB.
         */
       PFHEstimation () : 
-        nr_subdiv_ (5), 
+         
         d_pi_ (1.0f / (2.0f * static_cast<float> (M_PI))), 
         key_list_ (),
         // Default 1GB memory size. Need to set it to something more conservative.
-        max_cache_size_ ((1ul*1024ul*1024ul*1024ul) / sizeof (std::pair<std::pair<int, int>, Eigen::Vector4f>)),
-        use_cache_ (false)
+        max_cache_size_ ((1ul*1024ul*1024ul*1024ul) / sizeof (std::pair<std::pair<int, int>, Eigen::Vector4f>))
       {
         feature_name_ = "PFHEstimation";
       };
@@ -189,7 +188,7 @@ namespace pcl
       computeFeature (PointCloudOut &output) override;
 
       /** \brief The number of subdivisions for each angular feature interval. */
-      int nr_subdiv_;
+      int nr_subdiv_{5};
 
       /** \brief Placeholder for a point's PFH signature. */
       Eigen::VectorXf pfh_histogram_;
@@ -213,7 +212,7 @@ namespace pcl
       unsigned int max_cache_size_;
 
       /** \brief Set to true to use the internal cache for removing redundant computations. */
-      bool use_cache_;
+      bool use_cache_{false};
   };
 }
 
