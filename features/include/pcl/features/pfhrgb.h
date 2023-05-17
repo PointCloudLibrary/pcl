@@ -59,7 +59,7 @@ namespace pcl
 
 
       PFHRGBEstimation ()
-        : nr_subdiv_ (5), d_pi_ (1.0f / (2.0f * static_cast<float> (M_PI)))
+        :  d_pi_ (1.0f / (2.0f * static_cast<float> (M_PI)))
       {
         feature_name_ = "PFHRGBEstimation";
       }
@@ -79,7 +79,7 @@ namespace pcl
 
     private:
       /** \brief The number of subdivisions for each angular feature interval. */
-      int nr_subdiv_;
+      int nr_subdiv_{5};
 
       /** \brief Placeholder for a point's PFHRGB signature. */
       Eigen::VectorXf pfhrgb_histogram_;

@@ -91,12 +91,7 @@ namespace pcl
         * \param[in] nr_shape_bins the number of bins in the shape histogram
         */
       SHOTEstimationBase (int nr_shape_bins = 10) :
-        nr_shape_bins_ (nr_shape_bins),
-        lrf_radius_ (0),
-        sqradius_ (0), radius3_4_ (0), radius1_4_ (0), radius1_2_ (0),
-        nr_grid_sector_ (32),
-        maxAngularSectors_ (32),
-        descLength_ (0)
+        nr_shape_bins_ (nr_shape_bins)
       {
         feature_name_ = "SHOTEstimation";
       };
@@ -170,28 +165,28 @@ namespace pcl
       int nr_shape_bins_;
 
       /** \brief The radius used for the LRF computation */
-      float lrf_radius_;
+      float lrf_radius_{0};
 
       /** \brief The squared search radius. */
-      double sqradius_;
+      double sqradius_{0};
 
       /** \brief 3/4 of the search radius. */
-      double radius3_4_;
+      double radius3_4_{0};
 
       /** \brief 1/4 of the search radius. */
-      double radius1_4_;
+      double radius1_4_{0};
 
       /** \brief 1/2 of the search radius. */
-      double radius1_2_;
+      double radius1_2_{0};
 
       /** \brief Number of azimuthal sectors. */
-      const int nr_grid_sector_;
+      const int nr_grid_sector_{32};
 
       /** \brief ... */
-      const int maxAngularSectors_;
+      const int maxAngularSectors_{32};
 
       /** \brief One SHOT length. */
-      int descLength_;
+      int descLength_{0};
   };
 
   /** \brief SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for
@@ -326,8 +321,7 @@ namespace pcl
                            bool describe_color = true)
         : SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT> (10),
           b_describe_shape_ (describe_shape),
-          b_describe_color_ (describe_color),
-          nr_color_bins_ (30)
+          b_describe_color_ (describe_color)
       {
         feature_name_ = "SHOTColorEstimation";
       };
@@ -382,7 +376,7 @@ namespace pcl
       bool b_describe_color_;
 
       /** \brief The number of bins in each color histogram. */
-      int nr_color_bins_;
+      int nr_color_bins_{30};
 
     public:
       /** \brief Converts RGB triplets to CIELab space.

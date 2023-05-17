@@ -93,7 +93,7 @@ namespace pcl
 
       /** \brief Empty constructor. */
       FPFHEstimation () : 
-        nr_bins_f1_ (11), nr_bins_f2_ (11), nr_bins_f3_ (11), 
+         
         d_pi_ (1.0f / (2.0f * static_cast<float> (M_PI)))
       {
         feature_name_ = "FPFHEstimation";
@@ -197,7 +197,7 @@ namespace pcl
       computeFeature (PointCloudOut &output) override;
 
       /** \brief The number of subdivisions for each angular feature interval. */
-      int nr_bins_f1_, nr_bins_f2_, nr_bins_f3_;
+      int nr_bins_f1_{11}, nr_bins_f2_{11}, nr_bins_f3_{11};
 
       /** \brief Placeholder for the f1 histogram. */
       Eigen::MatrixXf hist_f1_;

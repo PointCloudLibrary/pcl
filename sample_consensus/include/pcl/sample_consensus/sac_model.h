@@ -618,7 +618,7 @@ namespace pcl
       using ConstPtr = shared_ptr<const SampleConsensusModelFromNormals<PointT, PointNT> >;
 
       /** \brief Empty constructor for base SampleConsensusModelFromNormals. */
-      SampleConsensusModelFromNormals () : normal_distance_weight_ (0.0), normals_ () {};
+      SampleConsensusModelFromNormals () :  normals_ () {};
 
       /** \brief Destructor. */
       virtual ~SampleConsensusModelFromNormals () = default;
@@ -662,7 +662,7 @@ namespace pcl
       /** \brief The relative weight (between 0 and 1) to give to the angular
         * distance (0 to pi/2) between point normals and the plane normal. 
         */
-      double normal_distance_weight_;
+      double normal_distance_weight_{0.0};
 
       /** \brief A pointer to the input dataset that contains the point normals
         * of the XYZ dataset. 

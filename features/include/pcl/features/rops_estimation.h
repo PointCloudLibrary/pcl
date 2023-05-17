@@ -202,19 +202,19 @@ namespace pcl
     private:
 
       /** \brief Stores the number of partition bins that is used for distribution matrix calculation. */
-      unsigned int number_of_bins_;
+      unsigned int number_of_bins_{5};
 
       /** \brief Stores number of rotations. Central moments are calculated for every rotation. */
-      unsigned int number_of_rotations_;
+      unsigned int number_of_rotations_{3};
 
       /** \brief Support radius that is used to crop the local surface of the point. */
-      float support_radius_;
+      float support_radius_{1.0f};
 
       /** \brief Stores the squared support radius. Used to improve performance. */
-      float sqr_support_radius_;
+      float sqr_support_radius_{1.0f};
 
       /** \brief Stores the angle step. Step is calculated with respect to number of rotations. */
-      float step_;
+      float step_{22.5f};
 
       /** \brief Stores the set of triangles representing the mesh. */
       std::vector <pcl::Vertices> triangles_;

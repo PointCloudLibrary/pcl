@@ -74,9 +74,8 @@ namespace pcl
 
       /** \brief Constructor for OrganizedEdgeBase */
       OrganizedEdgeBase ()
-        : th_depth_discon_ (0.02f)
-        , max_search_neighbors_ (50)
-        , detecting_edge_types_ (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED)
+        : 
+         detecting_edge_types_ (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED)
       {
       }
 
@@ -168,10 +167,10 @@ namespace pcl
       /** \brief The tolerance in meters for the relative difference in depth values between neighboring points
         * (The default value is set for .02 meters and is adapted with respect to depth value linearly.
         * e.g. If a point has a depth (z) value of 2.0 meters, a neighboring point is discontinuous if its depth differs by > 2.0 * th. */
-      float th_depth_discon_;
+      float th_depth_discon_{0.02f};
 
       /** \brief The max search distance for deciding occluding and occluded edges */
-      int max_search_neighbors_;
+      int max_search_neighbors_{50};
 
       /** \brief The bit encoded value that represents edge types to detect */
       int detecting_edge_types_;
@@ -202,8 +201,6 @@ namespace pcl
       /** \brief Constructor for OrganizedEdgeFromRGB */
       OrganizedEdgeFromRGB ()
         : OrganizedEdgeBase<PointT, PointLT> ()
-        , th_rgb_canny_low_ (40.0)
-        , th_rgb_canny_high_ (100.0)
       {
         this->setEdgeType (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED | EDGELABEL_RGB_CANNY);
       }
@@ -255,10 +252,10 @@ namespace pcl
       extractEdges (pcl::PointCloud<PointLT>& labels) const;
 
       /** \brief The low threshold value for RGB Canny edge detection (default: 40.0) */
-      float th_rgb_canny_low_;
+      float th_rgb_canny_low_{40.0};
 
       /** \brief The high threshold value for RGB Canny edge detection (default: 100.0) */
-      float th_rgb_canny_high_;
+      float th_rgb_canny_high_{100.0};
   };
 
   template <typename PointT, typename PointNT, typename PointLT>
@@ -291,9 +288,7 @@ namespace pcl
       OrganizedEdgeFromNormals ()
         : OrganizedEdgeBase<PointT, PointLT> ()
         , normals_ ()
-        , th_hc_canny_low_ (0.4f)
-        , th_hc_canny_high_ (1.1f)
-      {
+       {
         this->setEdgeType (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED | EDGELABEL_HIGH_CURVATURE);
       }
 
@@ -363,10 +358,10 @@ namespace pcl
       PointCloudNConstPtr normals_;
 
       /** \brief The low threshold value for high curvature Canny edge detection (default: 0.4) */
-      float th_hc_canny_low_;
+      float th_hc_canny_low_{0.4f};
 
       /** \brief The high threshold value for high curvature Canny edge detection (default: 1.1) */
-      float th_hc_canny_high_;
+      float th_hc_canny_high_{1.1f};
   };
 
   template <typename PointT, typename PointNT, typename PointLT>

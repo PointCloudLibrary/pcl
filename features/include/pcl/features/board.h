@@ -62,13 +62,7 @@ namespace pcl
       using ConstPtr = shared_ptr<const BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT> >;
 
       /** \brief Constructor. */
-      BOARDLocalReferenceFrameEstimation () :
-        tangent_radius_ (0.0f),
-        find_holes_ (false),
-        margin_thresh_ (0.85f),
-        check_margin_array_size_ (24),
-        hole_size_prob_thresh_ (0.2f),
-        steep_thresh_ (0.1f)
+      BOARDLocalReferenceFrameEstimation ()
       {
         feature_name_ = "BOARDLocalReferenceFrameEstimation";
         setCheckMarginArraySize (check_margin_array_size_);
@@ -331,22 +325,22 @@ namespace pcl
 
     private:
       /** \brief Radius used to find tangent axis. */
-      float tangent_radius_;
+      float tangent_radius_{0.0f};
 
       /** \brief If true, check if support is complete or has missing regions because it is too near to mesh borders. */
-      bool find_holes_;
+      bool find_holes_{false};
 
       /** \brief Threshold that define if a support point is near the margins. */
-      float margin_thresh_; 
+      float margin_thresh_{0.85f}; 
 
       /** \brief Number of slices that divide the support in order to determine if a missing region is present. */
-      int check_margin_array_size_; 
+      int check_margin_array_size_{24}; 
 
       /** \brief Threshold used to determine a missing region */
-      float hole_size_prob_thresh_; 
+      float hole_size_prob_thresh_{0.2f}; 
 
       /** \brief Threshold that defines if a missing region contains a point with the most different normal. */
-      float steep_thresh_; 
+      float steep_thresh_{0.1f}; 
 
       std::vector<bool> check_margin_array_;
       std::vector<float> margin_array_min_angle_;

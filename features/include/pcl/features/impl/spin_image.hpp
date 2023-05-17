@@ -52,8 +52,7 @@ template <typename PointInT, typename PointNT, typename PointOutT>
 pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::SpinImageEstimation (
   unsigned int image_width, double support_angle_cos, unsigned int min_pts_neighb) :
   input_normals_ (), rotation_axes_cloud_ (), 
-  is_angular_ (false), rotation_axis_ (), use_custom_axis_(false), use_custom_axes_cloud_ (false), 
-  is_radial_ (false), support_angle_cos_ (support_angle_cos),
+   rotation_axis_ (),  support_angle_cos_ (support_angle_cos),
   min_pts_neighb_ (min_pts_neighb)
 {
   if (0.0 > support_angle_cos || support_angle_cos > 1.0) { // may be permit negative cosine?

@@ -277,12 +277,12 @@ namespace pcl
       // =====PROTECTED MEMBER VARIABLES=====
       Eigen::Vector3f position_;
       Eigen::Affine3f transformation_;
-      float* surface_patch_;
-      int surface_patch_pixel_size_;
-      float surface_patch_world_size_;
-      float surface_patch_rotation_;
-      float* descriptor_;
-      int descriptor_size_;
+      float* surface_patch_{nullptr};
+      int surface_patch_pixel_size_{0};
+      float surface_patch_world_size_{};
+      float surface_patch_rotation_{};
+      float* descriptor_{nullptr};
+      int descriptor_size_{0};
 
       // =====STATIC PROTECTED=====
       

@@ -258,11 +258,7 @@ namespace pcl
       using PointCloudConstPtr = typename Feature<PointInT, PointOutT>::PointCloudConstPtr;
       
       /** \brief Empty constructor. */
-      NormalEstimation () 
-      : vpx_ (0)
-      , vpy_ (0)
-      , vpz_ (0)
-      , use_sensor_origin_ (true)
+      NormalEstimation ()
       {
         feature_name_ = "NormalEstimation";
       };
@@ -403,7 +399,7 @@ namespace pcl
 
       /** \brief Values describing the viewpoint ("pinhole" camera model assumed). For per point viewpoints, inherit
         * from NormalEstimation and provide your own computeFeature (). By default, the viewpoint is set to 0,0,0. */
-      float vpx_, vpy_, vpz_;
+      float vpx_{0}, vpy_{0}, vpz_{0};
 
       /** \brief Placeholder for the 3x3 covariance matrix at each surface patch. */
       EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix_;
@@ -412,7 +408,7 @@ namespace pcl
       Eigen::Vector4f xyz_centroid_;
       
       /** whether the sensor origin of the input cloud or a user given viewpoint should be used.*/
-      bool use_sensor_origin_;
+      bool use_sensor_origin_{true};
 
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW

@@ -69,7 +69,7 @@ namespace pcl
       using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
 
       /** \brief Empty constructor. */
-      IntensityGradientEstimation () : intensity_ (), threads_ (0)
+      IntensityGradientEstimation () : intensity_ ()
       {
         feature_name_ = "IntensityGradientEstimation";
       };
@@ -108,7 +108,7 @@ namespace pcl
       ///intensity field accessor structure
       IntensitySelectorT intensity_;
       ///number of threads to be used, default 0 (auto)
-      unsigned int threads_;
+      unsigned int threads_{0};
   };
 }
 
