@@ -288,6 +288,8 @@ namespace pcl
           *  \param[in] time - How long (in ms) should the visualization loop be allowed to run.
           *  \param[in] force_redraw - if false it might return without doing anything if the
           *  interactor's framerate does not require a redraw yet.
+          *  \note This function may not return immediately after the specified time has elapsed, for example if
+          *  the user continues to interact with the visualizer, meaning that there are still events to process.
           */
         void
         spinOnce (int time = 1, bool force_redraw = false);
