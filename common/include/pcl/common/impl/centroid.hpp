@@ -713,7 +713,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
 
   if (cloud.is_dense)
   {
-    auto point = cloud.points[0];
+    auto point = cloud[0];
     Eigen::Matrix<Scalar, 4, 1> P0(static_cast<Scalar>(point.x), static_cast<Scalar>(point.y) , static_cast<Scalar>(point.z), 1.0);
     Eigen::Matrix<Scalar, 4, 1> P = transform * P0;
 
@@ -723,21 +723,21 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
 
     for (size_t i=1; i<cloud.points.size();++i)
     {
-      auto point = cloud.points[i];
+      auto point = cloud[i];
       Eigen::Matrix<Scalar, 4, 1> P0(static_cast<Scalar>(point.x), static_cast<Scalar>(point.y) , static_cast<Scalar>(point.z), 1.0);
       Eigen::Matrix<Scalar, 4, 1> P = transform * P0;
 
-      if (P(0) <= obb_min_pointx)
+      if (P(0) < obb_min_pointx)
         obb_min_pointx = P(0);
-      else if (P(0) >= obb_max_pointx)
+      else if (P(0) > obb_max_pointx)
         obb_max_pointx = P(0);
-      if (P(1) <= obb_min_pointy)
+      if (P(1) < obb_min_pointy)
         obb_min_pointy = P(1);
-      else if (P(1) >= obb_max_pointy)
+      else if (P(1) > obb_max_pointy)
         obb_max_pointy = P(1);
-      if (P(2) <= obb_min_pointz)
+      if (P(2) < obb_min_pointz)
         obb_min_pointz = P(2);
-      else if (P(2) >= obb_max_pointz)
+      else if (P(2) > obb_max_pointz)
         obb_max_pointz = P(2);
     }
   }
@@ -746,7 +746,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
     size_t i = 0;
     for (; i < cloud.points.size(); ++i)
     {
-      auto point = cloud.points[i];
+      auto point = cloud[i];
       if (!isFinite(point))
         continue;
       Eigen::Matrix<Scalar, 4, 1> P0(static_cast<Scalar>(point.x), static_cast<Scalar>(point.y) , static_cast<Scalar>(point.z), 1.0);
@@ -761,21 +761,23 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
 
     for (; i<cloud.points.size();++i)
     {
-      auto point = cloud.points[i];
+      auto point = cloud[i];
+      if (!isFinite(point))
+        continue;
       Eigen::Matrix<Scalar, 4, 1> P0(static_cast<Scalar>(point.x), static_cast<Scalar>(point.y) , static_cast<Scalar>(point.z), 1.0);
       Eigen::Matrix<Scalar, 4, 1> P = transform * P0;
 
-      if (P(0) <= obb_min_pointx)
+      if (P(0) < obb_min_pointx)
         obb_min_pointx = P(0);
-      else if (P(0) >= obb_max_pointx)
+      else if (P(0) > obb_max_pointx)
         obb_max_pointx = P(0);
-      if (P(1) <= obb_min_pointy)
+      if (P(1) < obb_min_pointy)
         obb_min_pointy = P(1);
-      else if (P(1) >= obb_max_pointy)
+      else if (P(1) > obb_max_pointy)
         obb_max_pointy = P(1);
-      if (P(2) <= obb_min_pointz)
+      if (P(2) < obb_min_pointz)
         obb_min_pointz = P(2);
-      else if (P(2) >= obb_max_pointz)
+      else if (P(2) > obb_max_pointz)
         obb_max_pointz = P(2);
     }
 
@@ -850,7 +852,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
 
   if (cloud.is_dense)
   {
-    auto point = cloud.points[indices[0]];
+    auto point = cloud[indices[0]];
     Eigen::Matrix<Scalar, 4, 1> P0(static_cast<Scalar>(point.x), static_cast<Scalar>(point.y) , static_cast<Scalar>(point.z), 1.0);
     Eigen::Matrix<Scalar, 4, 1> P = transform * P0;
 
@@ -860,22 +862,22 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
 
     for (size_t i=1; i<indices.size();++i)
     {
-      auto point = cloud.points[indices[i]];
+      auto point = cloud[indices[i]];
 
       Eigen::Matrix<Scalar, 4, 1> P0(static_cast<Scalar>(point.x), static_cast<Scalar>(point.y) , static_cast<Scalar>(point.z), 1.0);
       Eigen::Matrix<Scalar, 4, 1> P = transform * P0;
 
-      if (P(0) <= obb_min_pointx)
+      if (P(0) < obb_min_pointx)
         obb_min_pointx = P(0);
-      else if (P(0) >= obb_max_pointx)
+      else if (P(0) > obb_max_pointx)
         obb_max_pointx = P(0);
-      if (P(1) <= obb_min_pointy)
+      if (P(1) < obb_min_pointy)
         obb_min_pointy = P(1);
-      else if (P(1) >= obb_max_pointy)
+      else if (P(1) > obb_max_pointy)
         obb_max_pointy = P(1);
-      if (P(2) <= obb_min_pointz)
+      if (P(2) < obb_min_pointz)
         obb_min_pointz = P(2);
-      else if (P(2) >= obb_max_pointz)
+      else if (P(2) > obb_max_pointz)
         obb_max_pointz = P(2);
     }
   }
@@ -884,7 +886,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
     size_t i = 0;
     for (; i<indices.size();++i)
     {
-      auto point = cloud.points[indices[i]];
+      auto point = cloud[indices[i]];
       if (!isFinite(point))
         continue;
       Eigen::Matrix<Scalar, 4, 1> P0(static_cast<Scalar>(point.x), static_cast<Scalar>(point.y) , static_cast<Scalar>(point.z), 1.0);
@@ -899,22 +901,24 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
 
     for (; i<indices.size();++i)
     {
-      auto point = cloud.points[indices[i]];
+      auto point = cloud[indices[i]];
+      if (!isFinite(point))
+        continue;
 
       Eigen::Matrix<Scalar, 4, 1> P0(static_cast<Scalar>(point.x), static_cast<Scalar>(point.y) , static_cast<Scalar>(point.z), 1.0);
       Eigen::Matrix<Scalar, 4, 1> P = transform * P0;
 
-      if (P(0) <= obb_min_pointx)
+      if (P(0) < obb_min_pointx)
         obb_min_pointx = P(0);
-      else if (P(0) >= obb_max_pointx)
+      else if (P(0) > obb_max_pointx)
         obb_max_pointx = P(0);
-      if (P(1) <= obb_min_pointy)
+      if (P(1) < obb_min_pointy)
         obb_min_pointy = P(1);
-      else if (P(1) >= obb_max_pointy)
+      else if (P(1) > obb_max_pointy)
         obb_max_pointy = P(1);
-      if (P(2) <= obb_min_pointz)
+      if (P(2) < obb_min_pointz)
         obb_min_pointz = P(2);
-      else if (P(2) >= obb_max_pointz)
+      else if (P(2) > obb_max_pointz)
         obb_max_pointz = P(2);
     }
 
