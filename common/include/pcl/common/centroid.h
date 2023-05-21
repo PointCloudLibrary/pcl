@@ -601,7 +601,7 @@ namespace pcl
   * viewer->addCube(position, quat, obb_dimensions(0), obb_dimensions(1), obb_dimensions(2), .....);
   * \param[in] cloud the input point cloud
   * \param[out] centroid the centroid (mean value of the XYZ coordinates) of the set of points in the cloud
-  * \param[out] obb_center position of the centre of the OBB (it is the same as centroid if the cloud is centrally symmetric)
+  * \param[out] obb_center position of the center of the OBB (it is the same as centroid if the cloud is centrally symmetric)
   * \param[out] obb_dimensions (width, height and depth) of the OBB 
   * \param[out] obb_rotational_matrix rotational matrix of the OBB 
   * \return number of valid points used to determine the output.
@@ -628,7 +628,7 @@ namespace pcl
   * \param[in] cloud the input point cloud
   * \param[in] indices subset of points given by their indices 
   * \param[out] centroid the centroid (mean value of the XYZ coordinates) of the set of points in the cloud
-  * \param[out] obb_center position of the centre of the OBB (it is the same as centroid if the cloud is centrally symmetric)
+  * \param[out] obb_center position of the center of the OBB (it is the same as centroid if the cloud is centrally symmetric)
   * \param[out] obb_dimensions (width, height and depth) of the OBB 
   * \param[out] obb_rotational_matrix rotational matrix of the OBB 
   * \return number of valid points used to determine the output.

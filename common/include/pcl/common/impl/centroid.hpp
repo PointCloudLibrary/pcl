@@ -721,7 +721,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
     obb_min_pointy = obb_max_pointy = P(1);
     obb_min_pointz = obb_max_pointz = P(2);
 
-    for (size_t i=1; i<cloud.points.size();++i)
+    for (size_t i=1; i<cloud.size();++i)
     {
       auto point = cloud[i];
       Eigen::Matrix<Scalar, 4, 1> P0(static_cast<Scalar>(point.x), static_cast<Scalar>(point.y) , static_cast<Scalar>(point.z), 1.0);
@@ -744,7 +744,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
   else
   {
     size_t i = 0;
-    for (; i < cloud.points.size(); ++i)
+    for (; i < cloud.size(); ++i)
     {
       auto point = cloud[i];
       if (!isFinite(point))
@@ -759,7 +759,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
       break;
     }
 
-    for (; i<cloud.points.size();++i)
+    for (; i<cloud.size();++i)
     {
       auto point = cloud[i];
       if (!isFinite(point))
@@ -783,7 +783,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
 
   }
 
-  Eigen::Matrix<Scalar, 3, 1>  //shift between point cloud centroid and OBB centroid (position of the OBB centroid relative to (p.c.centroid, major_axis, middle_axis, minor_axis))
+  Eigen::Matrix<Scalar, 3, 1>  //shift between point cloud centroid and OBB center (position of the OBB center relative to (p.c.centroid, major_axis, middle_axis, minor_axis))
     shift((obb_max_pointx + obb_min_pointx) / 2.0f,
       (obb_max_pointy + obb_min_pointy) / 2.0f,
       (obb_max_pointz + obb_min_pointz) / 2.0f);
@@ -792,7 +792,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
   obb_dimensions(1) = obb_max_pointy - obb_min_pointy;
   obb_dimensions(2) = obb_max_pointz - obb_min_pointz;
 
-  obb_center = centroid+ obb_rotational_matrix * shift;//position of the OBB centroid in the same reference Oxyz of the point cloud
+  obb_center = centroid+ obb_rotational_matrix * shift;//position of the OBB center in the same reference Oxyz of the point cloud
 
   return ( point_count);
 }
@@ -924,7 +924,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
 
   }
 
-  Eigen::Matrix<Scalar, 3, 1>  //shift between point cloud centroid and OBB centroid (position of the OBB centroid relative to (p.c.centroid, major_axis, middle_axis, minor_axis))
+  Eigen::Matrix<Scalar, 3, 1>  //shift between point cloud centroid and OBB center (position of the OBB center relative to (p.c.centroid, major_axis, middle_axis, minor_axis))
     shift((obb_max_pointx + obb_min_pointx) / 2.0f,
       (obb_max_pointy + obb_min_pointy) / 2.0f,
       (obb_max_pointz + obb_min_pointz) / 2.0f);
@@ -933,7 +933,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
   obb_dimensions(1) = obb_max_pointy - obb_min_pointy;
   obb_dimensions(2) = obb_max_pointz - obb_min_pointz;
 
-  obb_center = centroid+ obb_rotational_matrix * shift;//position of the OBB centroid in the same reference Oxyz of the point cloud
+  obb_center = centroid+ obb_rotational_matrix * shift;//position of the OBB center in the same reference Oxyz of the point cloud
 
   return ( point_count);
 }
