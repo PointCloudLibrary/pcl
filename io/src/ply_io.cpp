@@ -787,6 +787,7 @@ pcl::PLYWriter::generateHeader (const pcl::PCLPointCloud2 &cloud,
                                 int valid_points)
 {
   std::ostringstream oss;
+  oss.imbue (std::locale::classic ()); // mostly to make sure that no thousands separator is printed
   // Begin header
   oss << "ply";
   if (!binary)
