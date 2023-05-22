@@ -339,6 +339,11 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
                                     [](const pcl::PCLPointField& field)->bool { return field.count < 1; }),
                      cloud.fields.end());
 
+  if (nr_points == 0)
+  {
+    PCL_WARN("[pcl::PCDReader::readHeader] number of points is zero.\n");
+  }
+
   // Compatibility with older PCD file versions
   if (!width_read && !height_read)
   {
