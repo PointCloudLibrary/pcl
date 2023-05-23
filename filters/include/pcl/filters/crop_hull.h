@@ -66,9 +66,7 @@ namespace pcl
 
       /** \brief Empty Constructor. */
       CropHull () :
-        hull_cloud_(),
-        dim_(3),
-        crop_outside_(true)
+        hull_cloud_()
       {
         filter_name_ = "CropHull";
       }
@@ -199,12 +197,12 @@ namespace pcl
       PointCloudPtr hull_cloud_;
 
       /** \brief The dimensionality of the hull to be used. */
-      int dim_;
+      int dim_{3};
 
       /** \brief If true, the filter will remove points outside the hull. If
        * false, those inside will be removed.
        */
-      bool crop_outside_;
+      bool crop_outside_{true};
   };
 
 } // namespace pcl

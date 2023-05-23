@@ -79,7 +79,6 @@ namespace pcl
         k_ = 1;
         feature_name_ = "CRHEstimation";
       }
-      ;
 
       /** \brief Set the viewpoint.
        * \param[in] vpx the X coordinate of the viewpoint

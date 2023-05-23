@@ -94,7 +94,7 @@ namespace pcl
         nr_shape_bins_ (nr_shape_bins)
       {
         feature_name_ = "SHOTEstimation";
-      };
+      }
 
     public:
 
@@ -324,7 +324,7 @@ namespace pcl
           b_describe_color_ (describe_color)
       {
         feature_name_ = "SHOTColorEstimation";
-      };
+      }
       
       /** \brief Empty destructor */
       ~SHOTColorEstimation () override = default;

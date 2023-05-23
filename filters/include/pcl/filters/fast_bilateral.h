@@ -65,11 +65,7 @@ namespace pcl
       using ConstPtr = shared_ptr<const FastBilateralFilter<PointT> >;
 
       /** \brief Empty constructor. */
-      FastBilateralFilter ()
-        : sigma_s_ (15.0f)
-        , sigma_r_ (0.05f)
-        , early_division_ (false)
-      { }
+      FastBilateralFilter () = default;
       
       /** \brief Empty destructor */
       ~FastBilateralFilter () override = default;
@@ -108,9 +104,9 @@ namespace pcl
       applyFilter (PointCloud &output) override;
 
     protected:
-      float sigma_s_;
-      float sigma_r_;
-      bool early_division_;
+      float sigma_s_{15.0f};
+      float sigma_r_{0.05f};
+      bool early_division_{false};
 
       class Array3D
       {

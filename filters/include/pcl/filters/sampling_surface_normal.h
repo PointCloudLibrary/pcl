@@ -70,7 +70,7 @@ namespace pcl
 
       /** \brief Empty constructor. */
       SamplingSurfaceNormal () : 
-        sample_ (10), seed_ (static_cast<unsigned int> (time (nullptr))), ratio_ ()
+         seed_ (static_cast<unsigned int> (time (nullptr)))
       {
         filter_name_ = "SamplingSurfaceNormal";
         srand (seed_);
@@ -128,11 +128,11 @@ namespace pcl
     protected:
 
       /** \brief Maximum number of samples in each grid. */
-      unsigned int sample_;
+      unsigned int sample_{10};
       /** \brief Random number seed. */
       unsigned int seed_;
       /** \brief Ratio of points to be sampled in each grid */
-      float ratio_;
+      float ratio_{};
 
       /** \brief Sample of point indices into a separate PointCloud
         * \param[out] output the resultant point cloud

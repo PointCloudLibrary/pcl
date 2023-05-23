@@ -87,9 +87,7 @@ namespace pcl
         */
       RadiusOutlierRemoval (bool extract_removed_indices = false) :
         FilterIndices<PointT> (extract_removed_indices),
-        searcher_ (),
-        search_radius_ (0.0),
-        min_pts_radius_ (1)
+        searcher_ ()
       {
         filter_name_ = "RadiusOutlierRemoval";
       }
@@ -169,10 +167,10 @@ namespace pcl
       SearcherPtr searcher_;
 
       /** \brief The nearest neighbors search radius for each point. */
-      double search_radius_;
+      double search_radius_{0.0};
 
       /** \brief The minimum number of neighbors that a point needs to have in the given search radius to be considered an inlier. */
-      int min_pts_radius_;
+      int min_pts_radius_{1};
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -200,8 +198,7 @@ namespace pcl
     public:
       /** \brief Empty constructor. */
       RadiusOutlierRemoval (bool extract_removed_indices = false) :
-        FilterIndices<pcl::PCLPointCloud2>::FilterIndices (extract_removed_indices),
-        search_radius_ (0.0), min_pts_radius_ (1)
+        FilterIndices<pcl::PCLPointCloud2>::FilterIndices (extract_removed_indices)
       {
         filter_name_ = "RadiusOutlierRemoval";
       }
@@ -243,12 +240,12 @@ namespace pcl
 
     protected:
       /** \brief The nearest neighbors search radius for each point. */
-      double search_radius_;
+      double search_radius_{0.0};
 
       /** \brief The minimum number of neighbors that a point needs to have in the given search radius to be considered
         * an inlier.
         */
-      int min_pts_radius_;
+      int min_pts_radius_{1};
 
       /** \brief A pointer to the spatial search object. */
       KdTreePtr searcher_;

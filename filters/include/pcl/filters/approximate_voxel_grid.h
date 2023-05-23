@@ -49,8 +49,8 @@ namespace pcl
     
     xNdCopyEigenPointFunctor (const Eigen::VectorXf &p1, PointT &p2)
       : p1_ (p1),
-        p2_ (reinterpret_cast<Pod&>(p2)),
-        f_idx_ (0) { }
+        p2_ (reinterpret_cast<Pod&>(p2))
+        { }
 
     template<typename Key> inline void operator() ()
     {
@@ -63,7 +63,7 @@ namespace pcl
     private:
       const Eigen::VectorXf &p1_;
       Pod &p2_;
-      int f_idx_;
+      int f_idx_{0};
   };
 
   /** \brief Helper functor structure for copying data between an Eigen::VectorXf and a PointT. */
@@ -73,7 +73,7 @@ namespace pcl
     using Pod = typename traits::POD<PointT>::type;
     
     xNdCopyPointEigenFunctor (const PointT &p1, Eigen::VectorXf &p2)
-      : p1_ (reinterpret_cast<const Pod&>(p1)), p2_ (p2), f_idx_ (0) { }
+      : p1_ (reinterpret_cast<const Pod&>(p1)), p2_ (p2) { }
 
     template<typename Key> inline void operator() ()
     {
@@ -86,7 +86,7 @@ namespace pcl
     private:
       const Pod &p1_;
       Eigen::VectorXf &p2_;
-      int f_idx_;
+      int f_idx_{0};
   };
 
   /** \brief ApproximateVoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
@@ -109,9 +109,9 @@ namespace pcl
     private:
       struct he
       {
-        he () : ix (), iy (), iz (), count (0) {}
-        int ix, iy, iz;
-        int count;
+        he () = default;
+        int ix{}, iy{}, iz{};
+        int count{0};
         Eigen::VectorXf centroid;
       };
 
@@ -126,7 +126,7 @@ namespace pcl
         pcl::Filter<PointT> (),
         leaf_size_ (Eigen::Vector3f::Ones ()),
         inverse_leaf_size_ (Eigen::Array3f::Ones ()),
-        downsample_all_data_ (true), histsize_ (512),
+        
         history_ (new he[histsize_])
       {
         filter_name_ = "ApproximateVoxelGrid";
@@ -218,10 +218,10 @@ namespace pcl
       Eigen::Array3f inverse_leaf_size_;
 
       /** \brief Set to true if all fields need to be downsampled, or false if just XYZ. */
-      bool downsample_all_data_;
+      bool downsample_all_data_{true};
 
       /** \brief history buffer size, power of 2 */
-      std::size_t histsize_;
+      std::size_t histsize_{512};
 
       /** \brief history buffer */
       struct he* history_;

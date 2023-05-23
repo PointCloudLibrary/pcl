@@ -98,7 +98,7 @@ namespace pcl
       /** \brief Empty constructor. 
         * Sets \a use_cache_ to false, \a nr_subdiv_ to 5, and the internal maximum cache size to 1GB.
         */
-      PFHEstimation () : 
+      PFHEstimation () :
          
         d_pi_ (1.0f / (2.0f * static_cast<float> (M_PI))), 
         key_list_ (),
@@ -106,7 +106,7 @@ namespace pcl
         max_cache_size_ ((1ul*1024ul*1024ul*1024ul) / sizeof (std::pair<std::pair<int, int>, Eigen::Vector4f>))
       {
         feature_name_ = "PFHEstimation";
-      };
+      }
 
       /** \brief Set the maximum internal cache size. Defaults to 2GB worth of entries.
         * \param[in] cache_size maximum cache size 

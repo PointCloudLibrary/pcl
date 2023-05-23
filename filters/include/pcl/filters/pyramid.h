@@ -69,10 +69,7 @@ namespace pcl
  
         Pyramid (int levels = 4)
           : levels_ (levels)
-          , large_ (false)
           , name_ ("Pyramid")
-          , threshold_ (0.01)
-          , threads_ (0)
         {
         }
       
@@ -150,15 +147,15 @@ namespace pcl
         /// \brief number of pyramid levels
         int levels_;
         /// \brief use large smoothing kernel
-        bool large_;
+        bool large_{false};
         /// \brief filter name
         std::string name_;
         /// \brief smoothing kernel
         Eigen::MatrixXf kernel_;
         /// Threshold distance between adjacent points
-        float threshold_;
+        float threshold_{0.01};
         /// \brief number of threads
-        unsigned int threads_;
+        unsigned int threads_{0};
 
       public:
         PCL_MAKE_ALIGNED_OPERATOR_NEW

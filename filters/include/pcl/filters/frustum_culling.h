@@ -90,16 +90,6 @@ namespace pcl
       FrustumCulling (bool extract_removed_indices = false) 
         : FilterIndices<PointT> (extract_removed_indices)
         , camera_pose_ (Eigen::Matrix4f::Identity ())
-        , fov_left_bound_ (-30.0f)
-        , fov_right_bound_ (30.0f)
-        , fov_lower_bound_ (-30.0f)
-        , fov_upper_bound_ (30.0f)
-        , np_dist_ (0.1f)
-        , fp_dist_ (5.0f)
-        , roi_x_ (0.5f)
-        , roi_y_ (0.5f)
-        , roi_w_ (1.0f)
-        , roi_h_ (1.0f)
       {
         filter_name_ = "FrustumCulling";
       }
@@ -363,25 +353,25 @@ namespace pcl
       /** \brief The camera pose */
       Eigen::Matrix4f camera_pose_;
       /** \brief The left bound of horizontal field of view */
-      float fov_left_bound_;
+      float fov_left_bound_{-30.0f};
       /** \brief The right bound of horizontal field of view */
-      float fov_right_bound_;
+      float fov_right_bound_{30.0f};
       /** \brief The lower bound of vertical field of view */
-      float fov_lower_bound_;
+      float fov_lower_bound_{-30.0f};
       /** \brief The upper bound of vertical field of view */
-      float fov_upper_bound_;
+      float fov_upper_bound_{30.0f};
       /** \brief Near plane distance */
-      float np_dist_;
+      float np_dist_{0.1f};
       /** \brief Far plane distance */
-      float fp_dist_;
+      float fp_dist_{5.0f};
       /** \brief Region of interest x center position (normalized)*/
-      float roi_x_;
+      float roi_x_{0.5f};
       /** \brief Region of interest y center position (normalized)*/
-      float roi_y_;
+      float roi_y_{0.5f};
       /** \brief Region of interest width (normalized)*/
-      float roi_w_;
+      float roi_w_{1.0f};
       /** \brief Region of interest height (normalized)*/
-      float roi_h_;
+      float roi_h_{1.0f};
 
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW

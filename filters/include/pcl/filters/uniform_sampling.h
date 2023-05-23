@@ -82,8 +82,7 @@ namespace pcl
         min_b_ (Eigen::Vector4i::Zero ()),
         max_b_ (Eigen::Vector4i::Zero ()),
         div_b_ (Eigen::Vector4i::Zero ()),
-        divb_mul_ (Eigen::Vector4i::Zero ()),
-        search_radius_ (0)
+        divb_mul_ (Eigen::Vector4i::Zero ())
       {
         filter_name_ = "UniformSampling";
       }
@@ -113,8 +112,8 @@ namespace pcl
       /** \brief Simple structure to hold an nD centroid and the number of points in a leaf. */
       struct Leaf
       {
-        Leaf () : idx (-1) { }
-        int idx;
+        Leaf () = default;
+        int idx{-1};
       };
 
       /** \brief The 3D grid leaves. */
@@ -130,7 +129,7 @@ namespace pcl
       Eigen::Vector4i min_b_, max_b_, div_b_, divb_mul_;
 
       /** \brief The nearest neighbors search radius for each point. */
-      double search_radius_;
+      double search_radius_{0};
 
       /** \brief Downsample a Point Cloud using a voxelized grid approach
         * \param[out] output the resultant point cloud message

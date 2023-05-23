@@ -64,7 +64,7 @@ namespace pcl
           feature_name_ = "LinearLeastSquaresNormalEstimation";
           tree_.reset ();
           k_ = 1;
-      };
+      }
 
       /** \brief Destructor */
       ~LinearLeastSquaresNormalEstimation () override;
