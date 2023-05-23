@@ -45,7 +45,10 @@ namespace pcl {
 namespace tracking {
 /* state definition */
 struct ParticleXYZRPY;
+struct ParticleXYRPY;
+struct ParticleXYRP;
 struct ParticleXYR;
+struct ParticleXYZR;
 
 /* \brief return the value of normal distribution */
 PCL_EXPORTS double

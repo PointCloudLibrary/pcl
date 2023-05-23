@@ -365,13 +365,11 @@ template <typename PointInT, typename StateT>
 void
 ParticleFilterTracker<PointInT, StateT>::update()
 {
-
   StateT orig_representative = representative_state_;
   representative_state_.zero();
   representative_state_.weight = 0.0;
-  for (const auto& p : *particles_) {
-    representative_state_ = representative_state_ + p * p.weight;
-  }
+  representative_state_ =
+      StateT::weightedAverage(particles_->begin(), particles_->end());
   representative_state_.weight = 1.0f / static_cast<float>(particles_->size());
   motion_ = representative_state_ - orig_representative;
 }

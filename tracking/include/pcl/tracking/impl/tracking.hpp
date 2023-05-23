@@ -129,6 +129,30 @@ struct EIGEN_ALIGN16 ParticleXYZRPY : public _ParticleXYZRPY {
     return {trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw};
   }
 
+  template <class InputIterator>
+  static ParticleXYZRPY
+  weightedAverage(InputIterator first, InputIterator last)
+  {
+    ParticleXYZRPY wa;
+    float wa_roll_sin = 0.0, wa_roll_cos = 0.0, wa_pitch_sin = 0.0, wa_pitch_cos = 0.0,
+          wa_yaw_sin = 0.0, wa_yaw_cos = 0.0;
+    for (auto point = first; point != last; ++point) {
+      wa.x += point->x * point->weight;
+      wa.y += point->y * point->weight;
+      wa.z += point->z * point->weight;
+      wa_pitch_cos = std::cos(point->pitch);
+      wa_roll_sin += wa_pitch_cos * std::sin(point->roll) * point->weight;
+      wa_roll_cos += wa_pitch_cos * std::cos(point->roll) * point->weight;
+      wa_pitch_sin += std::sin(point->pitch) * point->weight;
+      wa_yaw_sin += wa_pitch_cos * std::sin(point->yaw) * point->weight;
+      wa_yaw_cos += wa_pitch_cos * std::cos(point->yaw) * point->weight;
+    }
+    wa.roll = std::atan2(wa_roll_sin, wa_roll_cos);
+    wa.pitch = std::asin(wa_pitch_sin);
+    wa.yaw = std::atan2(wa_yaw_sin, wa_yaw_cos);
+    return wa;
+  }
+
   // a[i]
   inline float
   operator[](unsigned int i)
@@ -293,6 +317,24 @@ struct EIGEN_ALIGN16 ParticleXYZR : public _ParticleXYZR {
     getTranslationAndEulerAngles(
         trans, trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw);
     return {trans_x, trans_y, trans_z, 0, trans_pitch, 0};
+  }
+
+  template <class InputIterator>
+  static ParticleXYZR
+  weightedAverage(InputIterator first, InputIterator last)
+  {
+    ParticleXYZR wa;
+    float wa_pitch_sin = 0.0;
+    for (auto point = first; point != last; ++point) {
+      wa.x += point->x * point->weight;
+      wa.y += point->y * point->weight;
+      wa.z += point->z * point->weight;
+      wa_pitch_sin += std::sin(point->pitch) * point->weight;
+    }
+    wa.roll = 0.0;
+    wa.pitch = std::asin(wa_pitch_sin);
+    wa.yaw = 0.0;
+    return wa;
   }
 
   // a[i]
@@ -461,6 +503,30 @@ struct EIGEN_ALIGN16 ParticleXYRPY : public _ParticleXYRPY {
     return {trans_x, 0, trans_z, trans_roll, trans_pitch, trans_yaw};
   }
 
+  template <class InputIterator>
+  static ParticleXYRPY
+  weightedAverage(InputIterator first, InputIterator last)
+  {
+    ParticleXYRPY wa;
+    float wa_roll_sin = 0.0, wa_roll_cos = 0.0, wa_pitch_sin = 0.0, wa_pitch_cos = 0.0,
+          wa_yaw_sin = 0.0, wa_yaw_cos = 0.0;
+    for (auto point = first; point != last; ++point) {
+      wa.x += point->x * point->weight;
+      wa.z += point->z * point->weight;
+      wa_pitch_cos = std::cos(point->pitch);
+      wa_roll_sin += wa_pitch_cos * std::sin(point->roll) * point->weight;
+      wa_roll_cos += wa_pitch_cos * std::cos(point->roll) * point->weight;
+      wa_pitch_sin += std::sin(point->pitch) * point->weight;
+      wa_yaw_sin += wa_pitch_cos * std::sin(point->yaw) * point->weight;
+      wa_yaw_cos += wa_pitch_cos * std::cos(point->yaw) * point->weight;
+    }
+    wa.y = 0;
+    wa.roll = std::atan2(wa_roll_sin, wa_roll_cos);
+    wa.pitch = std::asin(wa_pitch_sin);
+    wa.yaw = std::atan2(wa_yaw_sin, wa_yaw_cos);
+    return wa;
+  }
+
   // a[i]
   inline float
   operator[](unsigned int i)
@@ -627,6 +693,27 @@ struct EIGEN_ALIGN16 ParticleXYRP : public _ParticleXYRP {
     return {trans_x, 0, trans_z, 0, trans_pitch, trans_yaw};
   }
 
+  template <class InputIterator>
+  static ParticleXYRP
+  weightedAverage(InputIterator first, InputIterator last)
+  {
+    ParticleXYRP wa;
+    float wa_yaw_sin = 0.0, wa_yaw_cos = 0.0, wa_pitch_sin = 0.0, wa_pitch_cos = 0.0;
+    for (auto point = first; point != last; ++point) {
+      wa.x += point->x * point->weight;
+      wa.z += point->z * point->weight;
+      wa_pitch_cos = std::cos(point->pitch);
+      wa_pitch_sin += std::sin(point->pitch) * point->weight;
+      wa_yaw_sin += wa_pitch_cos * std::sin(point->yaw) * point->weight;
+      wa_yaw_cos += wa_pitch_cos * std::cos(point->yaw) * point->weight;
+    }
+    wa.y = 0.0;
+    wa.roll = 0.0;
+    wa.pitch = std::asin(wa_pitch_sin);
+    wa.yaw = std::atan2(wa_yaw_sin, wa_yaw_cos);
+    return wa;
+  }
+
   // a[i]
   inline float
   operator[](unsigned int i)
@@ -791,6 +878,24 @@ struct EIGEN_ALIGN16 ParticleXYR : public _ParticleXYR {
     getTranslationAndEulerAngles(
         trans, trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw);
     return {trans_x, 0, trans_z, 0, trans_pitch, 0};
+  }
+
+  template <class InputIterator>
+  static ParticleXYR
+  weightedAverage(InputIterator first, InputIterator last)
+  {
+    ParticleXYR wa;
+    float wa_pitch_sin = 0.0;
+    for (auto point = first; point != last; ++point) {
+      wa.x += point->x * point->weight;
+      wa.z += point->z * point->weight;
+      wa_pitch_sin += std::sin(point->pitch) * point->weight;
+    }
+    wa.y = 0.0;
+    wa.roll = 0.0;
+    wa.pitch = std::asin(wa_pitch_sin);
+    wa.yaw = 0.0;
+    return wa;
   }
 
   // a[i]
