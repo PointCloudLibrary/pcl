@@ -284,6 +284,7 @@ namespace pcl
         // If no error, convert the data
         if (res == 0)
           pcl::fromPCLPointCloud2 (blob, cloud);
+
         return (res);
       }
 
