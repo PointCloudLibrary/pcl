@@ -169,6 +169,9 @@ namespace pcl
     cloud.height   = msg.height;
     cloud.is_dense = msg.is_dense == 1;
 
+    // Resize cloud
+    cloud.resize (msg.width * msg.height);
+
     // check if there is data to copy
     if (msg.width * msg.height == 0)
     {
@@ -177,8 +180,7 @@ namespace pcl
     }
 
     // Copy point data
-    cloud.resize (msg.width * msg.height);
-    std::uint8_t* cloud_data = reinterpret_cast<std::uint8_t*>(&cloud[0]);
+    std::uint8_t* cloud_data = reinterpret_cast<std::uint8_t*>(cloud.data());
 
     // Check if we can copy adjacent points in a single memcpy.  We can do so if there
     // is exactly one field to copy and it is the same size as the source and destination
@@ -279,7 +281,7 @@ namespace pcl
     msg.data.resize (data_size);
     if (data_size)
     {
-      memcpy(&msg.data[0], &cloud[0], data_size);
+      memcpy(msg.data.data(), cloud.data(), data_size);
     }
 
     // Fill fields metadata
