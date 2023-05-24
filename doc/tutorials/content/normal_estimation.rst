@@ -250,7 +250,7 @@ normal estimation which uses multi-core/multi-threaded paradigms using OpenMP
 to speed the computation. The name of the class is
 **pcl::NormalEstimationOMP**, and its API is 100% compatible to the
 single-threaded **pcl::NormalEstimation**, which makes it suitable as a drop-in
-replacement. On a system with n cores, you should get \frac{\n}{\m}
+replacement. On a system with n cores, you should get n/m
 times faster computation, with 1<=m<n/2 depending on several factors including CPU architecture, point cloud characteristics and 
 search parameters chosen.
 
