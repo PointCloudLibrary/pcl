@@ -504,7 +504,7 @@ TEST (PCL, GFPFH)
   PointCloud<GFPFHSignature16> descriptor;
   gfpfh.compute (descriptor);
 
-  const float ref_values[] = { 1877, 6375, 5361, 14393, 6674, 2471, 2248, 2753, 3117, 4585, 14388, 32407, 15122, 3061, 3202, 794 };
+  const float ref_values[] = { 1881, 6378, 5343, 14406, 6726, 2379, 2295, 2724, 3177, 4518, 14283, 32341, 15131, 3195, 3238, 813 };
 
   EXPECT_EQ (descriptor.size (), 1);
   for (std::size_t i = 0; i < static_cast<std::size_t>(descriptor[0].descriptorSize ()); ++i)
