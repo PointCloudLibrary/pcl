@@ -40,7 +40,8 @@
 
 #include <pcl/point_struct_traits.h>
 
-#include <type_traits>
+#include <cstring> // for std::memcpy
+#include <type_traits> // for std::is_same
 
 namespace pcl {
 /** \brief Helper functor structure for concatenate.
@@ -68,7 +69,7 @@ struct NdConcatenateFunctor {
     BOOST_MPL_ASSERT_MSG((std::is_same<InT, OutT>::value),
                          POINT_IN_AND_POINT_OUT_HAVE_DIFFERENT_TYPES_FOR_FIELD,
                          (Key, PointInT&, InT, PointOutT&, OutT));
-    memcpy(reinterpret_cast<std::uint8_t*>(&p2_) +
+    std::memcpy(reinterpret_cast<std::uint8_t*>(&p2_) +
                pcl::traits::offset<PointOutT, Key>::value,
            reinterpret_cast<const std::uint8_t*>(&p1_) +
                pcl::traits::offset<PointInT, Key>::value,
