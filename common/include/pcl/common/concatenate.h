@@ -38,6 +38,8 @@
 
 #pragma once
 
+#include <pcl/point_struct_traits.h>
+
 #include <type_traits>
 
 namespace pcl {
