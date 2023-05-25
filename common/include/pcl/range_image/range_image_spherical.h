@@ -56,8 +56,7 @@ public:
   // =====CONSTRUCTOR & DESTRUCTOR=====
   /** Constructor */
   PCL_EXPORTS
-  RangeImageSpherical()
-  {}
+  RangeImageSpherical() {}
   /** Destructor */
   PCL_EXPORTS virtual ~RangeImageSpherical() = default;
 

@@ -221,42 +221,27 @@ using Vector4cMapConst = const Eigen::Map<const Vector4c, Eigen::Aligned>;
   };
 
 #define PCL_ADD_EIGEN_MAPS_POINT4D                                                     \
-  inline pcl::Vector2fMap getVector2fMap()                                             \
-  {                                                                                    \
-    return (pcl::Vector2fMap(data));                                                   \
-  }                                                                                    \
+  inline pcl::Vector2fMap getVector2fMap() { return (pcl::Vector2fMap(data)); }        \
   inline pcl::Vector2fMapConst getVector2fMap() const                                  \
   {                                                                                    \
     return (pcl::Vector2fMapConst(data));                                              \
   }                                                                                    \
-  inline pcl::Vector3fMap getVector3fMap()                                             \
-  {                                                                                    \
-    return (pcl::Vector3fMap(data));                                                   \
-  }                                                                                    \
+  inline pcl::Vector3fMap getVector3fMap() { return (pcl::Vector3fMap(data)); }        \
   inline pcl::Vector3fMapConst getVector3fMap() const                                  \
   {                                                                                    \
     return (pcl::Vector3fMapConst(data));                                              \
   }                                                                                    \
-  inline pcl::Vector4fMap getVector4fMap()                                             \
-  {                                                                                    \
-    return (pcl::Vector4fMap(data));                                                   \
-  }                                                                                    \
+  inline pcl::Vector4fMap getVector4fMap() { return (pcl::Vector4fMap(data)); }        \
   inline pcl::Vector4fMapConst getVector4fMap() const                                  \
   {                                                                                    \
     return (pcl::Vector4fMapConst(data));                                              \
   }                                                                                    \
-  inline pcl::Array3fMap getArray3fMap()                                               \
-  {                                                                                    \
-    return (pcl::Array3fMap(data));                                                    \
-  }                                                                                    \
+  inline pcl::Array3fMap getArray3fMap() { return (pcl::Array3fMap(data)); }           \
   inline pcl::Array3fMapConst getArray3fMap() const                                    \
   {                                                                                    \
     return (pcl::Array3fMapConst(data));                                               \
   }                                                                                    \
-  inline pcl::Array4fMap getArray4fMap()                                               \
-  {                                                                                    \
-    return (pcl::Array4fMap(data));                                                    \
-  }                                                                                    \
+  inline pcl::Array4fMap getArray4fMap() { return (pcl::Array4fMap(data)); }           \
   inline pcl::Array4fMapConst getArray4fMap() const                                    \
   {                                                                                    \
     return (pcl::Array4fMapConst(data));                                               \
@@ -314,26 +299,17 @@ using Vector4cMapConst = const Eigen::Map<const Vector4c, Eigen::Aligned>;
   };
 
 #define PCL_ADD_EIGEN_MAPS_RGB                                                         \
-  inline Eigen::Vector3i getRGBVector3i()                                              \
-  {                                                                                    \
-    return (Eigen::Vector3i(r, g, b));                                                 \
-  }                                                                                    \
+  inline Eigen::Vector3i getRGBVector3i() { return (Eigen::Vector3i(r, g, b)); }       \
   inline const Eigen::Vector3i getRGBVector3i() const                                  \
   {                                                                                    \
     return (Eigen::Vector3i(r, g, b));                                                 \
   }                                                                                    \
-  inline Eigen::Vector4i getRGBVector4i()                                              \
-  {                                                                                    \
-    return (Eigen::Vector4i(r, g, b, a));                                              \
-  }                                                                                    \
+  inline Eigen::Vector4i getRGBVector4i() { return (Eigen::Vector4i(r, g, b, a)); }    \
   inline const Eigen::Vector4i getRGBVector4i() const                                  \
   {                                                                                    \
     return (Eigen::Vector4i(r, g, b, a));                                              \
   }                                                                                    \
-  inline Eigen::Vector4i getRGBAVector4i()                                             \
-  {                                                                                    \
-    return (Eigen::Vector4i(r, g, b, a));                                              \
-  }                                                                                    \
+  inline Eigen::Vector4i getRGBAVector4i() { return (Eigen::Vector4i(r, g, b, a)); }   \
   inline const Eigen::Vector4i getRGBAVector4i() const                                 \
   {                                                                                    \
     return (Eigen::Vector4i(r, g, b, a));                                              \

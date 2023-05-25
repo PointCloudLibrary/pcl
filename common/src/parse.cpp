@@ -145,9 +145,10 @@ parse_argument(int argc,
 
 namespace detail {
 template <typename T, typename U>
-constexpr auto legally_representable_v =
-    (std::numeric_limits<T>::max() >= std::numeric_limits<U>::max()) &&
-    (std::numeric_limits<T>::lowest() <= std::numeric_limits<U>::lowest());
+constexpr auto legally_representable_v = (std::numeric_limits<T>::max() >=
+                                          std::numeric_limits<U>::max()) &&
+                                         (std::numeric_limits<T>::lowest() <=
+                                          std::numeric_limits<U>::lowest());
 template <typename T, typename U>
 struct legally_representable {
   constexpr static bool value = legally_representable_v<T, U>;

@@ -844,16 +844,15 @@ public:
    * integral image*/
   PCL_EXPORTS void // Template necessary so that this function also works in derived
                    // classes
-                   getBlurredImageUsingIntegralImage(int blur_radius,
-                                                     float* integral_image,
-                                                     int* valid_points_num_image,
-                                                     RangeImage& range_image) const;
+  getBlurredImageUsingIntegralImage(int blur_radius,
+                                    float* integral_image,
+                                    int* valid_points_num_image,
+                                    RangeImage& range_image) const;
 
   /** Get a blurred version of the range image using box filters */
   PCL_EXPORTS virtual void // Template necessary so that this function also works in
                            // derived classes
-                           getBlurredImage(int blur_radius,
-                                           RangeImage& range_image) const;
+  getBlurredImage(int blur_radius, RangeImage& range_image) const;
 
   /** Get the squared euclidean distance between the two image points.
    *  Returns -INFINITY if one of the points was not observed */
