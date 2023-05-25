@@ -39,40 +39,38 @@
 
 #include <vector>
 
-namespace pcl 
-{
-  /**
-    * \brief This provides functionalities to efficiently return values for piecewise linear function
-    * \ingroup common
-    */
-  class PiecewiseLinearFunction
-  {
-    public:
-      // =====CONSTRUCTOR & DESTRUCTOR=====
-      //! Constructor
-      PiecewiseLinearFunction (float factor, float offset);
-      
-      // =====PUBLIC METHODS=====
-      //! Get the list of known data points
-      std::vector<float>& 
-      getDataPoints () 
-      { 
-        return data_points_;
-      }
-      
-      //! Get the value of the function at the given point
-      inline float 
-      getValue (float point) const;
-      
-      // =====PUBLIC MEMBER VARIABLES=====
-      
-    protected:
-      // =====PROTECTED MEMBER VARIABLES=====
-      std::vector<float> data_points_;
-      float factor_;
-      float offset_;
-  };
+namespace pcl {
+/**
+ * \brief This provides functionalities to efficiently return values for piecewise
+ * linear function \ingroup common
+ */
+class PiecewiseLinearFunction {
+public:
+  // =====CONSTRUCTOR & DESTRUCTOR=====
+  //! Constructor
+  PiecewiseLinearFunction(float factor, float offset);
 
-}  // end namespace pcl
+  // =====PUBLIC METHODS=====
+  //! Get the list of known data points
+  std::vector<float>&
+  getDataPoints()
+  {
+    return data_points_;
+  }
+
+  //! Get the value of the function at the given point
+  inline float
+  getValue(float point) const;
+
+  // =====PUBLIC MEMBER VARIABLES=====
+
+protected:
+  // =====PROTECTED MEMBER VARIABLES=====
+  std::vector<float> data_points_;
+  float factor_;
+  float offset_;
+};
+
+} // end namespace pcl
 
 #include <pcl/common/impl/piecewise_linear_function.hpp>

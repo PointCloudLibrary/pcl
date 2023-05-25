@@ -41,352 +41,335 @@
 #include <Eigen/Core>
 
 /** \file pcl_tests.h
-  * Helper macros for testing equality of various data fields in PCL points */
+ * Helper macros for testing equality of various data fields in PCL points */
 
-namespace pcl
+namespace pcl {
+
+/** test_macros.h provide helper macros for testing vectors, matrices etc.
+ * We took some liberty with upcasing names to make them look like googletest
+ * macros names so that reader is not confused.
+ *
+ * This file also provides a family of googletest-style macros for asserting
+ * equality or nearness of xyz, normal, and rgba fields.
+ *
+ * \author Nizar Sallem, Sergey Alexandrov
+ */
+
+namespace test {
+
+template <typename V1, typename V2>
+void
+EXPECT_EQ_VECTORS(const V1& v1, const V2& v2)
 {
-
-  /** test_macros.h provide helper macros for testing vectors, matrices etc.
-    * We took some liberty with upcasing names to make them look like googletest
-    * macros names so that reader is not confused.
-    *
-    * This file also provides a family of googletest-style macros for asserting
-    * equality or nearness of xyz, normal, and rgba fields.
-    *
-    * \author Nizar Sallem, Sergey Alexandrov
-    */
-
-  namespace test
-  {
-
-    template <typename V1, typename V2>
-    void EXPECT_EQ_VECTORS (const V1& v1, const V2& v2)
-    {
-      SCOPED_TRACE("EXPECT_EQ_VECTORS failed");
-      EXPECT_EQ (v1.size (), v2.size ());
-      std::size_t length = std::min<std::size_t> (v1.size (), v2.size ());
-      for (std::size_t i = 0; i < length; ++i)
-        EXPECT_EQ (v1[i], v2[i]);
-    }
-
-    template <typename V1, typename V2, typename Scalar>
-    void EXPECT_NEAR_VECTORS (const V1& v1, const V2& v2, const Scalar& epsilon)
-    {
-      SCOPED_TRACE("EXPECT_NEAR_VECTORS failed");
-      EXPECT_EQ (v1.size (), v2.size ());
-      std::size_t length = std::min<std::size_t> (v1.size (), v2.size());
-      for (std::size_t i = 0; i < length; ++i)
-        EXPECT_NEAR (v1[i], v2[i], epsilon);
-    }
-
-    namespace internal
-    {
-
-      template <typename Point1T, typename Point2T>
-      ::testing::AssertionResult XYZEQ (const char* expr1,
-                                        const char* expr2,
-                                        const Point1T& p1,
-                                        const Point2T& p2)
-      {
-        if ((p1).getVector3fMap ().cwiseEqual ((p2).getVector3fMap ()).all ())
-          return ::testing::AssertionSuccess ();
-        return ::testing::AssertionFailure ()
-               << "Value of: " << expr2 << ".getVector3fMap ()" << std::endl
-               << "  Actual: " << p2.getVector3fMap ().transpose () << std::endl
-               << "Expected: " << expr1 << ".getVector3fMap ()" << std::endl
-               << "Which is: " << p1.getVector3fMap ().transpose ();
-      }
-
-      template <typename Point1T, typename Point2T>
-      ::testing::AssertionResult XYZNear (const char* expr1,
-                                          const char* expr2,
-                                          const char* abs_error_expr,
-                                          const Point1T& p1,
-                                          const Point2T& p2,
-                                          double abs_error)
-      {
-        const Eigen::Vector3f diff = ((p1).getVector3fMap () -
-                                      (p2).getVector3fMap ()).cwiseAbs ();
-        if ((diff.array () < abs_error).all ())
-          return ::testing::AssertionSuccess ();
-        return ::testing::AssertionFailure ()
-               << "Some of the element-wise differences exceed " << abs_error_expr
-               << " (which evaluates to " << abs_error << ")" << std::endl
-               << "Difference: " << diff.transpose () << std::endl
-               << "  Value of: " << expr2 << ".getVector3fMap ()" << std::endl
-               << "    Actual: " << p2.getVector3fMap ().transpose () << std::endl
-               << "  Expected: " << expr1 << ".getVector3fMap ()" << std::endl
-               << "  Which is: " << p1.getVector3fMap ().transpose ();
-      }
-
-      template <typename Point1T, typename Point2T>
-      ::testing::AssertionResult NormalEQ (const char* expr1,
-                                           const char* expr2,
-                                           const Point1T& p1,
-                                           const Point2T& p2)
-      {
-        if ((p1).getNormalVector3fMap ().cwiseEqual ((p2).getNormalVector3fMap ()).all ())
-          return ::testing::AssertionSuccess ();
-        return ::testing::AssertionFailure ()
-               << "Value of: " << expr2 << ".getNormalVector3fMap ()" << std::endl
-               << "  Actual: " << p2.getNormalVector3fMap ().transpose () << std::endl
-               << "Expected: " << expr1 << ".getNormalVector3fMap ()" << std::endl
-               << "Which is: " << p1.getNormalVector3fMap ().transpose ();
-      }
-
-      template <typename Point1T, typename Point2T>
-      ::testing::AssertionResult NormalNear (const char* expr1,
-                                             const char* expr2,
-                                             const char* abs_error_expr,
-                                             const Point1T& p1,
-                                             const Point2T& p2,
-                                             double abs_error)
-      {
-        const Eigen::Vector3f diff = ((p1).getNormalVector3fMap () -
-                                      (p2).getNormalVector3fMap ()).cwiseAbs ();
-        if ((diff.array () < abs_error).all ())
-          return ::testing::AssertionSuccess ();
-        return ::testing::AssertionFailure ()
-               << "Some of the element-wise differences exceed " << abs_error_expr
-               << " (which evaluates to " << abs_error << ")" << std::endl
-               << "Difference: " << diff.transpose () << std::endl
-               << "  Value of: " << expr2 << ".getNormalVector3fMap ()" << std::endl
-               << "    Actual: " << p2.getNormalVector3fMap ().transpose () << std::endl
-               << "  Expected: " << expr1 << ".getNormalVector3fMap ()" << std::endl
-               << "  Which is: " << p1.getNormalVector3fMap ().transpose ();
-      }
-
-      template <typename Point1T, typename Point2T>
-      ::testing::AssertionResult RGBEQ (const char* expr1,
-                                         const char* expr2,
-                                         const Point1T& p1,
-                                         const Point2T& p2)
-      {
-        if ((p1).getRGBVector3i ().cwiseEqual ((p2).getRGBVector3i ()).all ())
-          return ::testing::AssertionSuccess ();
-        return ::testing::AssertionFailure ()
-               << "Value of: " << expr2 << ".getRGBVector3i ()" << std::endl
-               << "  Actual: " << p2.getRGBVector3i ().transpose () << std::endl
-               << "Expected: " << expr1 << ".getRGBVector3i ()" << std::endl
-               << "Which is: " << p1.getRGBVector3i ().transpose ();
-      }
-
-      template <typename Point1T, typename Point2T>
-      ::testing::AssertionResult RGBAEQ (const char* expr1,
-                                         const char* expr2,
-                                         const Point1T& p1,
-                                         const Point2T& p2)
-      {
-        if ((p1).getRGBAVector4i ().cwiseEqual ((p2).getRGBAVector4i ()).all ())
-          return ::testing::AssertionSuccess ();
-        return ::testing::AssertionFailure ()
-               << "Value of: " << expr2 << ".getRGBAVector4i ()" << std::endl
-               << "  Actual: " << p2.getRGBAVector4i ().transpose () << std::endl
-               << "Expected: " << expr1 << ".getRGBAVector4i ()" << std::endl
-               << "Which is: " << p1.getRGBAVector4i ().transpose ();
-      }
-
-      template <typename PointCloud1T, typename PointCloud2T>
-      ::testing::AssertionResult MetaDataEQ (const char* expr1,
-                                             const char* expr2,
-                                             const PointCloud1T& p1,
-                                             const PointCloud2T& p2)
-      {
-        if (!(p1.header == p2.header))
-          return ::testing::AssertionFailure () << "Headers are different";
-        if (p1.width != p2.width)
-          return ::testing::AssertionFailure ()
-                 << "Value of: " << expr2 << ".width" << std::endl
-                 << "  Actual: " << p2.width << std::endl
-                 << "Expected: " << expr1 << ".width" << std::endl
-                 << "Which is: " << p1.width << std::endl;
-        if (p1.height != p2.height)
-          return ::testing::AssertionFailure ()
-                 << "Value of: " << expr2 << ".height" << std::endl
-                 << "  Actual: " << p2.height << std::endl
-                 << "Expected: " << expr1 << ".height" << std::endl
-                 << "Which is: " << p1.height << std::endl;
-        if (p1.is_dense != p2.is_dense)
-          return ::testing::AssertionFailure ()
-                 << "Value of: " << expr2 << ".is_dense" << std::endl
-                 << "  Actual: " << p2.is_dense << std::endl
-                 << "Expected: " << expr1 << ".is_dense" << std::endl
-                 << "Which is: " << p1.is_dense << std::endl;
-        if (p1.sensor_origin_ != p2.sensor_origin_)
-          return ::testing::AssertionFailure () << "Sensor origins are different";
-        if (p1.sensor_orientation_.coeffs () != p2.sensor_orientation_.coeffs ())
-          return ::testing::AssertionFailure () << "Sensor orientations are different";
-        return ::testing::AssertionSuccess ();
-      }
-
-
-        template<typename V>
-        ::testing::AssertionResult VectorContainsAll(const char*  expr1, const char* expr2, const std::vector<V>& elements, const std::vector<V>& v) {
-            for(const V& item : elements) {
-                if(std::find(v.cbegin(), v.cend(), item)==v.cend()) {
-
-                    std::ostringstream vec_rep;
-                    std::copy(v.cbegin(), v.cend()-1, std::ostream_iterator<V>(vec_rep, ", "));
-                    vec_rep<<v.back();
-
-                    std::ostringstream elements_rep;
-                    std::copy(elements.cbegin(), elements.cend()-1, std::ostream_iterator<V>(elements_rep, ", "));
-                    elements_rep << elements.back();
-
-                    return ::testing::AssertionFailure ()
-                            << "Actual       : " << expr2 << std::endl
-                            << "contains     : " << vec_rep.str() << std::endl
-                            << "Target set   : " << expr1 << std::endl
-                            << "contains     : " << elements_rep.str() << std::endl;
-                }
-            }
-            return ::testing::AssertionSuccess ();
-        }
-
-        template<typename V>
-        ::testing::AssertionResult VectorDoesNotContain(const char*  expr1, const char*  expr2, const std::vector<V>& elements, const std::vector<V>& v) {
-            for(const V& item : elements) {
-                if(std::find(v.cbegin(), v.cend(), item)!=v.cend()) {
-                    std::ostringstream vec_rep;
-                    std::copy(v.cbegin(), v.cend()-1, std::ostream_iterator<V>(vec_rep, ", "));
-                    vec_rep<<v.back();
-
-                    std::ostringstream elements_rep;
-                    std::copy(elements.cbegin(), elements.cend()-1, std::ostream_iterator<V>(elements_rep, ", "));
-                    elements_rep << elements.back();
-
-                    return ::testing::AssertionFailure ()
-                            << "Actual       : " << expr2 << std::endl
-                            << "contains     : " << vec_rep.str() << std::endl
-                            << "Forbidden set: " << expr1 << std::endl
-                            << "contains     : " << elements_rep.str() << std::endl;
-                }
-            }
-            return ::testing::AssertionSuccess ();
-        }
-
-    }
-
-  }
-
+  SCOPED_TRACE("EXPECT_EQ_VECTORS failed");
+  EXPECT_EQ(v1.size(), v2.size());
+  std::size_t length = std::min<std::size_t>(v1.size(), v2.size());
+  for (std::size_t i = 0; i < length; ++i)
+    EXPECT_EQ(v1[i], v2[i]);
 }
+
+template <typename V1, typename V2, typename Scalar>
+void
+EXPECT_NEAR_VECTORS(const V1& v1, const V2& v2, const Scalar& epsilon)
+{
+  SCOPED_TRACE("EXPECT_NEAR_VECTORS failed");
+  EXPECT_EQ(v1.size(), v2.size());
+  std::size_t length = std::min<std::size_t>(v1.size(), v2.size());
+  for (std::size_t i = 0; i < length; ++i)
+    EXPECT_NEAR(v1[i], v2[i], epsilon);
+}
+
+namespace internal {
+
+template <typename Point1T, typename Point2T>
+::testing::AssertionResult
+XYZEQ(const char* expr1, const char* expr2, const Point1T& p1, const Point2T& p2)
+{
+  if ((p1).getVector3fMap().cwiseEqual((p2).getVector3fMap()).all())
+    return ::testing::AssertionSuccess();
+  return ::testing::AssertionFailure()
+         << "Value of: " << expr2 << ".getVector3fMap ()" << std::endl
+         << "  Actual: " << p2.getVector3fMap().transpose() << std::endl
+         << "Expected: " << expr1 << ".getVector3fMap ()" << std::endl
+         << "Which is: " << p1.getVector3fMap().transpose();
+}
+
+template <typename Point1T, typename Point2T>
+::testing::AssertionResult
+XYZNear(const char* expr1,
+        const char* expr2,
+        const char* abs_error_expr,
+        const Point1T& p1,
+        const Point2T& p2,
+        double abs_error)
+{
+  const Eigen::Vector3f diff =
+      ((p1).getVector3fMap() - (p2).getVector3fMap()).cwiseAbs();
+  if ((diff.array() < abs_error).all())
+    return ::testing::AssertionSuccess();
+  return ::testing::AssertionFailure()
+         << "Some of the element-wise differences exceed " << abs_error_expr
+         << " (which evaluates to " << abs_error << ")" << std::endl
+         << "Difference: " << diff.transpose() << std::endl
+         << "  Value of: " << expr2 << ".getVector3fMap ()" << std::endl
+         << "    Actual: " << p2.getVector3fMap().transpose() << std::endl
+         << "  Expected: " << expr1 << ".getVector3fMap ()" << std::endl
+         << "  Which is: " << p1.getVector3fMap().transpose();
+}
+
+template <typename Point1T, typename Point2T>
+::testing::AssertionResult
+NormalEQ(const char* expr1, const char* expr2, const Point1T& p1, const Point2T& p2)
+{
+  if ((p1).getNormalVector3fMap().cwiseEqual((p2).getNormalVector3fMap()).all())
+    return ::testing::AssertionSuccess();
+  return ::testing::AssertionFailure()
+         << "Value of: " << expr2 << ".getNormalVector3fMap ()" << std::endl
+         << "  Actual: " << p2.getNormalVector3fMap().transpose() << std::endl
+         << "Expected: " << expr1 << ".getNormalVector3fMap ()" << std::endl
+         << "Which is: " << p1.getNormalVector3fMap().transpose();
+}
+
+template <typename Point1T, typename Point2T>
+::testing::AssertionResult
+NormalNear(const char* expr1,
+           const char* expr2,
+           const char* abs_error_expr,
+           const Point1T& p1,
+           const Point2T& p2,
+           double abs_error)
+{
+  const Eigen::Vector3f diff =
+      ((p1).getNormalVector3fMap() - (p2).getNormalVector3fMap()).cwiseAbs();
+  if ((diff.array() < abs_error).all())
+    return ::testing::AssertionSuccess();
+  return ::testing::AssertionFailure()
+         << "Some of the element-wise differences exceed " << abs_error_expr
+         << " (which evaluates to " << abs_error << ")" << std::endl
+         << "Difference: " << diff.transpose() << std::endl
+         << "  Value of: " << expr2 << ".getNormalVector3fMap ()" << std::endl
+         << "    Actual: " << p2.getNormalVector3fMap().transpose() << std::endl
+         << "  Expected: " << expr1 << ".getNormalVector3fMap ()" << std::endl
+         << "  Which is: " << p1.getNormalVector3fMap().transpose();
+}
+
+template <typename Point1T, typename Point2T>
+::testing::AssertionResult
+RGBEQ(const char* expr1, const char* expr2, const Point1T& p1, const Point2T& p2)
+{
+  if ((p1).getRGBVector3i().cwiseEqual((p2).getRGBVector3i()).all())
+    return ::testing::AssertionSuccess();
+  return ::testing::AssertionFailure()
+         << "Value of: " << expr2 << ".getRGBVector3i ()" << std::endl
+         << "  Actual: " << p2.getRGBVector3i().transpose() << std::endl
+         << "Expected: " << expr1 << ".getRGBVector3i ()" << std::endl
+         << "Which is: " << p1.getRGBVector3i().transpose();
+}
+
+template <typename Point1T, typename Point2T>
+::testing::AssertionResult
+RGBAEQ(const char* expr1, const char* expr2, const Point1T& p1, const Point2T& p2)
+{
+  if ((p1).getRGBAVector4i().cwiseEqual((p2).getRGBAVector4i()).all())
+    return ::testing::AssertionSuccess();
+  return ::testing::AssertionFailure()
+         << "Value of: " << expr2 << ".getRGBAVector4i ()" << std::endl
+         << "  Actual: " << p2.getRGBAVector4i().transpose() << std::endl
+         << "Expected: " << expr1 << ".getRGBAVector4i ()" << std::endl
+         << "Which is: " << p1.getRGBAVector4i().transpose();
+}
+
+template <typename PointCloud1T, typename PointCloud2T>
+::testing::AssertionResult
+MetaDataEQ(const char* expr1,
+           const char* expr2,
+           const PointCloud1T& p1,
+           const PointCloud2T& p2)
+{
+  if (!(p1.header == p2.header))
+    return ::testing::AssertionFailure() << "Headers are different";
+  if (p1.width != p2.width)
+    return ::testing::AssertionFailure()
+           << "Value of: " << expr2 << ".width" << std::endl
+           << "  Actual: " << p2.width << std::endl
+           << "Expected: " << expr1 << ".width" << std::endl
+           << "Which is: " << p1.width << std::endl;
+  if (p1.height != p2.height)
+    return ::testing::AssertionFailure()
+           << "Value of: " << expr2 << ".height" << std::endl
+           << "  Actual: " << p2.height << std::endl
+           << "Expected: " << expr1 << ".height" << std::endl
+           << "Which is: " << p1.height << std::endl;
+  if (p1.is_dense != p2.is_dense)
+    return ::testing::AssertionFailure()
+           << "Value of: " << expr2 << ".is_dense" << std::endl
+           << "  Actual: " << p2.is_dense << std::endl
+           << "Expected: " << expr1 << ".is_dense" << std::endl
+           << "Which is: " << p1.is_dense << std::endl;
+  if (p1.sensor_origin_ != p2.sensor_origin_)
+    return ::testing::AssertionFailure() << "Sensor origins are different";
+  if (p1.sensor_orientation_.coeffs() != p2.sensor_orientation_.coeffs())
+    return ::testing::AssertionFailure() << "Sensor orientations are different";
+  return ::testing::AssertionSuccess();
+}
+
+template <typename V>
+::testing::AssertionResult
+VectorContainsAll(const char* expr1,
+                  const char* expr2,
+                  const std::vector<V>& elements,
+                  const std::vector<V>& v)
+{
+  for (const V& item : elements) {
+    if (std::find(v.cbegin(), v.cend(), item) == v.cend()) {
+
+      std::ostringstream vec_rep;
+      std::copy(v.cbegin(), v.cend() - 1, std::ostream_iterator<V>(vec_rep, ", "));
+      vec_rep << v.back();
+
+      std::ostringstream elements_rep;
+      std::copy(elements.cbegin(),
+                elements.cend() - 1,
+                std::ostream_iterator<V>(elements_rep, ", "));
+      elements_rep << elements.back();
+
+      return ::testing::AssertionFailure()
+             << "Actual       : " << expr2 << std::endl
+             << "contains     : " << vec_rep.str() << std::endl
+             << "Target set   : " << expr1 << std::endl
+             << "contains     : " << elements_rep.str() << std::endl;
+    }
+  }
+  return ::testing::AssertionSuccess();
+}
+
+template <typename V>
+::testing::AssertionResult
+VectorDoesNotContain(const char* expr1,
+                     const char* expr2,
+                     const std::vector<V>& elements,
+                     const std::vector<V>& v)
+{
+  for (const V& item : elements) {
+    if (std::find(v.cbegin(), v.cend(), item) != v.cend()) {
+      std::ostringstream vec_rep;
+      std::copy(v.cbegin(), v.cend() - 1, std::ostream_iterator<V>(vec_rep, ", "));
+      vec_rep << v.back();
+
+      std::ostringstream elements_rep;
+      std::copy(elements.cbegin(),
+                elements.cend() - 1,
+                std::ostream_iterator<V>(elements_rep, ", "));
+      elements_rep << elements.back();
+
+      return ::testing::AssertionFailure()
+             << "Actual       : " << expr2 << std::endl
+             << "contains     : " << vec_rep.str() << std::endl
+             << "Forbidden set: " << expr1 << std::endl
+             << "contains     : " << elements_rep.str() << std::endl;
+    }
+  }
+  return ::testing::AssertionSuccess();
+}
+
+} // namespace internal
+
+} // namespace test
+
+} // namespace pcl
 
 /// Expect that each of x, y, and z fields are equal in
 /// two points.
-#define EXPECT_XYZ_EQ(expected, actual)                  \
-  EXPECT_PRED_FORMAT2(::pcl::test::internal::XYZEQ,      \
-                      (expected), (actual))
+#define EXPECT_XYZ_EQ(expected, actual)                                                \
+  EXPECT_PRED_FORMAT2(::pcl::test::internal::XYZEQ, (expected), (actual))
 
 /// Assert that each of x, y, and z fields are equal in
 /// two points.
-#define ASSERT_XYZ_EQ(expected, actual)                  \
-  ASSERT_PRED_FORMAT2(::pcl::test::internal::XYZEQ,      \
-                      (expected), (actual))
+#define ASSERT_XYZ_EQ(expected, actual)                                                \
+  ASSERT_PRED_FORMAT2(::pcl::test::internal::XYZEQ, (expected), (actual))
 
 /// Expect that differences between x, y, and z fields in
 /// two points are each within abs_error.
-#define EXPECT_XYZ_NEAR(expected, actual, abs_error)     \
-  EXPECT_PRED_FORMAT3(::pcl::test::internal::XYZNear,    \
-                      (expected), (actual), abs_error)
+#define EXPECT_XYZ_NEAR(expected, actual, abs_error)                                   \
+  EXPECT_PRED_FORMAT3(::pcl::test::internal::XYZNear, (expected), (actual), abs_error)
 
 /// Assert that differences between x, y, and z fields in
 /// two points are each within abs_error.
-#define ASSERT_XYZ_NEAR(expected, actual, abs_error)     \
-  ASSERT_PRED_FORMAT3(::pcl::test::internal::XYZNear,    \
-                      (expected), (actual), abs_error)
+#define ASSERT_XYZ_NEAR(expected, actual, abs_error)                                   \
+  ASSERT_PRED_FORMAT3(::pcl::test::internal::XYZNear, (expected), (actual), abs_error)
 
 /// Expect that each of normal_x, normal_y, and normal_z
 /// fields are equal in two points.
-#define EXPECT_NORMAL_EQ(expected, actual)               \
-  EXPECT_PRED_FORMAT2(::pcl::test::internal::NormalEQ,   \
-                      (expected), (actual))
+#define EXPECT_NORMAL_EQ(expected, actual)                                             \
+  EXPECT_PRED_FORMAT2(::pcl::test::internal::NormalEQ, (expected), (actual))
 
 /// Assert that each of normal_x, normal_y, and normal_z
 /// fields are equal in two points.
-#define ASSERT_NORMAL_EQ(expected, actual)               \
-  ASSERT_PRED_FORMAT2(::pcl::test::internal::NormalEQ,   \
-                      (expected), (actual))
+#define ASSERT_NORMAL_EQ(expected, actual)                                             \
+  ASSERT_PRED_FORMAT2(::pcl::test::internal::NormalEQ, (expected), (actual))
 
 /// Expect that differences between normal_x, normal_y,
 /// and normal_z fields in two points are each within
 /// abs_error.
-#define EXPECT_NORMAL_NEAR(expected, actual, abs_error)  \
-  EXPECT_PRED_FORMAT3(::pcl::test::internal::NormalNear, \
-                      (expected), (actual), abs_error)
+#define EXPECT_NORMAL_NEAR(expected, actual, abs_error)                                \
+  EXPECT_PRED_FORMAT3(                                                                 \
+      ::pcl::test::internal::NormalNear, (expected), (actual), abs_error)
 
 /// Assert that differences between normal_x, normal_y,
 /// and normal_z fields in two points are each within
 /// abs_error.
-#define ASSERT_NORMAL_NEAR(expected, actual, abs_error)  \
-  ASSERT_PRED_FORMAT3(::pcl::test::internal::NormalNear, \
-                      (expected), (actual), abs_error)
+#define ASSERT_NORMAL_NEAR(expected, actual, abs_error)                                \
+  ASSERT_PRED_FORMAT3(                                                                 \
+      ::pcl::test::internal::NormalNear, (expected), (actual), abs_error)
 
 /// Expect that each of r, g, and b fields are equal in
 /// two points.
-#define EXPECT_RGB_EQ(expected, actual)                  \
-  EXPECT_PRED_FORMAT2(::pcl::test::internal::RGBEQ,      \
-                      (expected), (actual))
+#define EXPECT_RGB_EQ(expected, actual)                                                \
+  EXPECT_PRED_FORMAT2(::pcl::test::internal::RGBEQ, (expected), (actual))
 
 /// Assert that each of r, g, and b fields are equal in
 /// two points.
-#define ASSERT_RGB_EQ(expected, actual)                  \
-  ASSERT_PRED_FORMAT2(::pcl::test::internal::RGBEQ,      \
-                      (expected), (actual))
+#define ASSERT_RGB_EQ(expected, actual)                                                \
+  ASSERT_PRED_FORMAT2(::pcl::test::internal::RGBEQ, (expected), (actual))
 
 /// Expect that each of r, g, b, and a fields are equal
 /// in two points.
-#define EXPECT_RGBA_EQ(expected, actual)                 \
-  EXPECT_PRED_FORMAT2(::pcl::test::internal::RGBAEQ,     \
-                      (expected), (actual))
+#define EXPECT_RGBA_EQ(expected, actual)                                               \
+  EXPECT_PRED_FORMAT2(::pcl::test::internal::RGBAEQ, (expected), (actual))
 
 /// Assert that each of r, g, b, and a fields are equal
 /// in two points.
-#define ASSERT_RGBA_EQ(expected, actual)                 \
-  ASSERT_PRED_FORMAT2(::pcl::test::internal::RGBAEQ,     \
-                      (expected), (actual))
+#define ASSERT_RGBA_EQ(expected, actual)                                               \
+  ASSERT_PRED_FORMAT2(::pcl::test::internal::RGBAEQ, (expected), (actual))
 
 /// Assert that the metadata (header, width, height,
 /// is_dense, sensor origin and orientation) are equal
 /// in two point clouds.
-#define ASSERT_METADATA_EQ(expected, actual)             \
-  ASSERT_PRED_FORMAT2(::pcl::test::internal::MetaDataEQ, \
-                      expected, actual)
+#define ASSERT_METADATA_EQ(expected, actual)                                           \
+  ASSERT_PRED_FORMAT2(::pcl::test::internal::MetaDataEQ, expected, actual)
 
 /// Expect that the metadata (header, width, height,
 /// is_dense, sensor origin and orientation) are equal
 /// in two point clouds.
-#define EXPECT_METADATA_EQ(expected, actual)             \
-  EXPECT_PRED_FORMAT2(::pcl::test::internal::MetaDataEQ, \
-                      expected, actual)
-
+#define EXPECT_METADATA_EQ(expected, actual)                                           \
+  EXPECT_PRED_FORMAT2(::pcl::test::internal::MetaDataEQ, expected, actual)
 
 /// Expect that the vector contains all elements
 /// from the expected vector.
-#define EXPECT_VECTOR_CONTAINS_ALL(expected, actual)            \
-    EXPECT_PRED_FORMAT2(::pcl::test::internal::VectorContainsAll, \
-                        expected, actual)
-
+#define EXPECT_VECTOR_CONTAINS_ALL(expected, actual)                                   \
+  EXPECT_PRED_FORMAT2(::pcl::test::internal::VectorContainsAll, expected, actual)
 
 /// Expect that the vector does not contain any element
 /// from the expected vector.
-#define EXPECT_VECTOR_DOES_NOT_CONTAIN(expected, actual)           \
-    EXPECT_PRED_FORMAT2(::pcl::test::internal::VectorDoesNotContain, \
-                        expected, actual)
-
-
+#define EXPECT_VECTOR_DOES_NOT_CONTAIN(expected, actual)                               \
+  EXPECT_PRED_FORMAT2(::pcl::test::internal::VectorDoesNotContain, expected, actual)
 
 /// Assert that the vector contains all elements
 /// from the expected vector.
-#define ASSERT_VECTOR_CONTAINS_ALL(expected, actual)            \
-    ASSERT_PRED_FORMAT2(::pcl::test::internal::VectorContainsAll, \
-                        expected, actual)
-
+#define ASSERT_VECTOR_CONTAINS_ALL(expected, actual)                                   \
+  ASSERT_PRED_FORMAT2(::pcl::test::internal::VectorContainsAll, expected, actual)
 
 /// Assert that the vector does not contain any element
 /// from the expected vector.
-#define ASSERT_VECTOR_DOES_NOT_CONTAIN(expected, actual)           \
-    ASSERT_PRED_FORMAT2(::pcl::test::internal::VectorDoesNotContain, \
-                        expected, actual)
-
-
-
+#define ASSERT_VECTOR_DOES_NOT_CONTAIN(expected, actual)                               \
+  ASSERT_PRED_FORMAT2(::pcl::test::internal::VectorDoesNotContain, expected, actual)

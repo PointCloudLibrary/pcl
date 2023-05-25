@@ -37,18 +37,15 @@
 
 #pragma once
 
-#include <pcl/point_types.h>
-#include <pcl/type_traits.h>
-#include <pcl/for_each_type.h>
 #include <pcl/common/concatenate.h>
 #include <pcl/common/copy_point.h>
+#include <pcl/for_each_type.h>
+#include <pcl/point_types.h>
+#include <pcl/type_traits.h>
 
+namespace pcl {
 
-namespace pcl
-{
-
-namespace detail
-{
+namespace detail {
 
 /* CopyPointHelper and its specializations copy the contents of a source
  * point to a target point. There are three cases:
@@ -75,70 +72,86 @@ namespace detail
  * overhead. */
 
 template <typename PointInT, typename PointOutT, typename Enable = void>
-struct CopyPointHelper { };
+struct CopyPointHelper {};
 
 template <typename PointInT, typename PointOutT>
-struct CopyPointHelper<PointInT, PointOutT, std::enable_if_t<std::is_same<PointInT, PointOutT>::value>>
-{
-  void operator () (const PointInT& point_in, PointOutT& point_out) const
+struct CopyPointHelper<PointInT,
+                       PointOutT,
+                       std::enable_if_t<std::is_same<PointInT, PointOutT>::value>> {
+  void
+  operator()(const PointInT& point_in, PointOutT& point_out) const
   {
-    memcpy (&point_out, &point_in, sizeof (PointInT));
+    memcpy(&point_out, &point_in, sizeof(PointInT));
   }
 };
 
 template <typename PointInT, typename PointOutT>
-struct CopyPointHelper<PointInT, PointOutT,
-                       std::enable_if_t<boost::mpl::and_<boost::mpl::not_<std::is_same<PointInT, PointOutT>>,
-                                                         boost::mpl::or_<boost::mpl::not_<pcl::traits::has_color<PointInT>>,
-                                                                         boost::mpl::not_<pcl::traits::has_color<PointOutT>>,
-                                                                         boost::mpl::and_<pcl::traits::has_field<PointInT, pcl::fields::rgb>,
-                                                                                          pcl::traits::has_field<PointOutT, pcl::fields::rgb>>,
-                                                                         boost::mpl::and_<pcl::traits::has_field<PointInT, pcl::fields::rgba>,
-                                                                                          pcl::traits::has_field<PointOutT, pcl::fields::rgba>>>>::value>>
-{
-  void operator () (const PointInT& point_in, PointOutT& point_out) const
+struct CopyPointHelper<
+    PointInT,
+    PointOutT,
+    std::enable_if_t<boost::mpl::and_<
+        boost::mpl::not_<std::is_same<PointInT, PointOutT>>,
+        boost::mpl::or_<
+            boost::mpl::not_<pcl::traits::has_color<PointInT>>,
+            boost::mpl::not_<pcl::traits::has_color<PointOutT>>,
+            boost::mpl::and_<pcl::traits::has_field<PointInT, pcl::fields::rgb>,
+                             pcl::traits::has_field<PointOutT, pcl::fields::rgb>>,
+            boost::mpl::and_<pcl::traits::has_field<PointInT, pcl::fields::rgba>,
+                             pcl::traits::has_field<PointOutT, pcl::fields::rgba>>>>::
+                         value>> {
+  void
+  operator()(const PointInT& point_in, PointOutT& point_out) const
   {
     using FieldListInT = typename pcl::traits::fieldList<PointInT>::type;
     using FieldListOutT = typename pcl::traits::fieldList<PointOutT>::type;
     using FieldList = typename pcl::intersect<FieldListInT, FieldListOutT>::type;
-    pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointInT, PointOutT> (point_in, point_out));
+    pcl::for_each_type<FieldList>(
+        pcl::NdConcatenateFunctor<PointInT, PointOutT>(point_in, point_out));
   }
 };
 
 template <typename PointInT, typename PointOutT>
-struct CopyPointHelper<PointInT, PointOutT,
-                       std::enable_if_t<boost::mpl::and_<boost::mpl::not_<std::is_same<PointInT, PointOutT>>,
-                                        boost::mpl::or_<boost::mpl::and_<pcl::traits::has_field<PointInT, pcl::fields::rgb>,
-                                                                         pcl::traits::has_field<PointOutT, pcl::fields::rgba>>,
-                                                        boost::mpl::and_<pcl::traits::has_field<PointInT, pcl::fields::rgba>,
-                                                                         pcl::traits::has_field<PointOutT, pcl::fields::rgb>>>>::value>>
-{
-  void operator () (const PointInT& point_in, PointOutT& point_out) const
+struct CopyPointHelper<
+    PointInT,
+    PointOutT,
+    std::enable_if_t<boost::mpl::and_<
+        boost::mpl::not_<std::is_same<PointInT, PointOutT>>,
+        boost::mpl::or_<
+            boost::mpl::and_<pcl::traits::has_field<PointInT, pcl::fields::rgb>,
+                             pcl::traits::has_field<PointOutT, pcl::fields::rgba>>,
+            boost::mpl::and_<pcl::traits::has_field<PointInT, pcl::fields::rgba>,
+                             pcl::traits::has_field<PointOutT, pcl::fields::rgb>>>>::
+                         value>> {
+  void
+  operator()(const PointInT& point_in, PointOutT& point_out) const
   {
     using FieldListInT = typename pcl::traits::fieldList<PointInT>::type;
     using FieldListOutT = typename pcl::traits::fieldList<PointOutT>::type;
     using FieldList = typename pcl::intersect<FieldListInT, FieldListOutT>::type;
-    constexpr std::uint32_t offset_in  = boost::mpl::if_<pcl::traits::has_field<PointInT, pcl::fields::rgb>,
-                                                pcl::traits::offset<PointInT, pcl::fields::rgb>,
-                                                pcl::traits::offset<PointInT, pcl::fields::rgba> >::type::value;
-    constexpr std::uint32_t offset_out = boost::mpl::if_<pcl::traits::has_field<PointOutT, pcl::fields::rgb>,
-                                                pcl::traits::offset<PointOutT, pcl::fields::rgb>,
-                                                pcl::traits::offset<PointOutT, pcl::fields::rgba> >::type::value;
-    pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointInT, PointOutT> (point_in, point_out));
-    memcpy (reinterpret_cast<char*> (&point_out) + offset_out,
-            reinterpret_cast<const char*> (&point_in) + offset_in,
-            4);
+    constexpr std::uint32_t offset_in =
+        boost::mpl::if_<pcl::traits::has_field<PointInT, pcl::fields::rgb>,
+                        pcl::traits::offset<PointInT, pcl::fields::rgb>,
+                        pcl::traits::offset<PointInT, pcl::fields::rgba>>::type::value;
+    constexpr std::uint32_t offset_out =
+        boost::mpl::if_<pcl::traits::has_field<PointOutT, pcl::fields::rgb>,
+                        pcl::traits::offset<PointOutT, pcl::fields::rgb>,
+                        pcl::traits::offset<PointOutT, pcl::fields::rgba>>::type::value;
+    pcl::for_each_type<FieldList>(
+        pcl::NdConcatenateFunctor<PointInT, PointOutT>(point_in, point_out));
+    memcpy(reinterpret_cast<char*>(&point_out) + offset_out,
+           reinterpret_cast<const char*>(&point_in) + offset_in,
+           4);
   }
 };
 
 } // namespace detail
 
-template <typename PointInT, typename PointOutT> void
-copyPoint (const PointInT& point_in, PointOutT& point_out)
+template <typename PointInT, typename PointOutT>
+void
+copyPoint(const PointInT& point_in, PointOutT& point_out)
 {
   detail::CopyPointHelper<PointInT, PointOutT> copy;
-  copy (point_in, point_out);
+  copy(point_in, point_out);
 }
 
 } // namespace pcl
-

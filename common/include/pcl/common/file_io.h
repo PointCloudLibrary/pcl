@@ -38,48 +38,46 @@
 
 #pragma once
 
+#include <algorithm>
 #include <iostream>
 #include <vector>
-#include <algorithm>
 
-/** 
-  * \file pcl/common/file_io.h
-  * Define some helper functions for reading and writing files
-  * \ingroup common
-  * \todo move this to pcl::console
-  */
+/**
+ * \file pcl/common/file_io.h
+ * Define some helper functions for reading and writing files
+ * \ingroup common
+ * \todo move this to pcl::console
+ */
 
 /*@{*/
-namespace pcl
-{
-  /** \brief Find all *.pcd files in the directory and return them sorted
-    * \param directory the directory to be searched
-    * \param file_names the resulting (sorted) list of .pcd files
-    */
-  inline void 
-  getAllPcdFilesInDirectory (const std::string& directory, std::vector<std::string>& file_names);
-  
-  /** \brief Remove the path from the given string and return only the filename (the remaining string after the 
-    * last '/')
-    * \param input the input filename (with full path)
-    * \return the resulting filename, stripped of the path
-    */
-  inline std::string 
-  getFilenameWithoutPath (const std::string& input);
+namespace pcl {
+/** \brief Find all *.pcd files in the directory and return them sorted
+ * \param directory the directory to be searched
+ * \param file_names the resulting (sorted) list of .pcd files
+ */
+inline void
+getAllPcdFilesInDirectory(const std::string& directory,
+                          std::vector<std::string>& file_names);
 
-  /** \brief Remove the extension from the given string and return only the filename (everything before the last '.')
-    * \param input the input filename (with the file extension)
-    * \return the resulting filename, stripped of its extension
-    */
-  inline std::string 
-  getFilenameWithoutExtension (const std::string& input);
+/** \brief Remove the path from the given string and return only the filename (the
+ * remaining string after the last '/') \param input the input filename (with full path)
+ * \return the resulting filename, stripped of the path
+ */
+inline std::string
+getFilenameWithoutPath(const std::string& input);
 
-  /** \brief Get the file extension from the given string (the remaining string after the last '.')
-    * \param input the input filename
-    * \return \a input 's file extension
-    */
-  inline std::string 
-  getFileExtension (const std::string& input);
-}  // namespace end
+/** \brief Remove the extension from the given string and return only the filename
+ * (everything before the last '.') \param input the input filename (with the file
+ * extension) \return the resulting filename, stripped of its extension
+ */
+inline std::string
+getFilenameWithoutExtension(const std::string& input);
+
+/** \brief Get the file extension from the given string (the remaining string after the
+ * last '.') \param input the input filename \return \a input 's file extension
+ */
+inline std::string
+getFileExtension(const std::string& input);
+} // namespace pcl
 /*@}*/
 #include <pcl/common/impl/file_io.hpp>

@@ -37,85 +37,95 @@
 
 #pragma once
 
-#include <Eigen/Core> // for Matrix
-
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
-namespace pcl 
-{
-  /** \brief Calculates the weighted average and the covariance matrix
-    *
-    * A class to calculate the weighted average and the covariance matrix of a set of vectors with given weights.
-    * The original data is not saved. Mean and covariance are calculated iteratively.
-    * \author Bastian Steder
-    * \ingroup common
-    */
-  template <typename real, int dimension>
-  class VectorAverage
+#include <Eigen/Core> // for Matrix
+
+namespace pcl {
+/** \brief Calculates the weighted average and the covariance matrix
+ *
+ * A class to calculate the weighted average and the covariance matrix of a set of
+ * vectors with given weights. The original data is not saved. Mean and covariance are
+ * calculated iteratively. \author Bastian Steder \ingroup common
+ */
+template <typename real, int dimension>
+class VectorAverage {
+public:
+  using VectorType = Eigen::Matrix<real, dimension, 1>;
+  using MatrixType = Eigen::Matrix<real, dimension, dimension>;
+  //-----CONSTRUCTOR&DESTRUCTOR-----
+  /** Constructor - dimension gives the size of the vectors to work with. */
+  VectorAverage();
+
+  //-----METHODS-----
+  /** Reset the object to work with a new data set */
+  inline void
+  reset();
+
+  /** Get the mean of the added vectors */
+  inline const VectorType&
+  getMean() const
   {
-     public:
-         using VectorType = Eigen::Matrix<real, dimension, 1>;
-         using MatrixType = Eigen::Matrix<real, dimension, dimension>;
-        //-----CONSTRUCTOR&DESTRUCTOR-----
-        /** Constructor - dimension gives the size of the vectors to work with. */
-        VectorAverage ();
+    return mean_;
+  }
 
-        //-----METHODS-----
-        /** Reset the object to work with a new data set */
-        inline void 
-        reset ();
-        
-        /** Get the mean of the added vectors */
-        inline const
-        VectorType& getMean () const { return mean_;}
-        
-        /** Get the covariance matrix of the added vectors */
-        inline const
-        MatrixType& getCovariance () const { return covariance_;}
-        
-        /** Get the summed up weight of all added vectors */
-        inline real
-        getAccumulatedWeight () const { return accumulatedWeight_;}
-        
-        /** Get the number of added vectors */
-        inline unsigned int
-        getNoOfSamples () { return noOfSamples_;}
-        
-        /** Add a new sample */
-        inline void
-        add (const VectorType& sample, real weight=1.0);
+  /** Get the covariance matrix of the added vectors */
+  inline const MatrixType&
+  getCovariance() const
+  {
+    return covariance_;
+  }
 
-        /** Do Principal component analysis */
-        inline void
-        doPCA (VectorType& eigen_values, VectorType& eigen_vector1,
-               VectorType& eigen_vector2, VectorType& eigen_vector3) const;
-        
-        /** Do Principal component analysis */
-        inline void
-        doPCA (VectorType& eigen_values) const;
-        
-        /** Get the eigenvector corresponding to the smallest eigenvalue */
-        inline void
-        getEigenVector1 (VectorType& eigen_vector1) const;
+  /** Get the summed up weight of all added vectors */
+  inline real
+  getAccumulatedWeight() const
+  {
+    return accumulatedWeight_;
+  }
 
-        PCL_MAKE_ALIGNED_OPERATOR_NEW
-        
-        //-----VARIABLES-----
+  /** Get the number of added vectors */
+  inline unsigned int
+  getNoOfSamples()
+  {
+    return noOfSamples_;
+  }
 
-        
-     protected:
-        //-----METHODS-----
-        //-----VARIABLES-----
-        unsigned int noOfSamples_ = 0;
-        real accumulatedWeight_ = 0;
-        VectorType mean_ = VectorType::Identity ();
-        MatrixType covariance_ = MatrixType::Identity ();
-  };
+  /** Add a new sample */
+  inline void
+  add(const VectorType& sample, real weight = 1.0);
 
-  using VectorAverage2f = VectorAverage<float, 2>;
-  using VectorAverage3f = VectorAverage<float, 3>;
-  using VectorAverage4f = VectorAverage<float, 4>;
-}  // END namespace
+  /** Do Principal component analysis */
+  inline void
+  doPCA(VectorType& eigen_values,
+        VectorType& eigen_vector1,
+        VectorType& eigen_vector2,
+        VectorType& eigen_vector3) const;
+
+  /** Do Principal component analysis */
+  inline void
+  doPCA(VectorType& eigen_values) const;
+
+  /** Get the eigenvector corresponding to the smallest eigenvalue */
+  inline void
+  getEigenVector1(VectorType& eigen_vector1) const;
+
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
+
+  //-----VARIABLES-----
+
+protected:
+  //-----METHODS-----
+  //-----VARIABLES-----
+  unsigned int noOfSamples_ = 0;
+  real accumulatedWeight_ = 0;
+  VectorType mean_ = VectorType::Identity();
+  MatrixType covariance_ = MatrixType::Identity();
+};
+
+using VectorAverage2f = VectorAverage<float, 2>;
+using VectorAverage3f = VectorAverage<float, 3>;
+using VectorAverage4f = VectorAverage<float, 4>;
+} // namespace pcl
 
 #include <pcl/common/impl/vector_average.hpp>

@@ -37,146 +37,148 @@
 #ifndef PCL_PCL_IMPL_BASE_HPP_
 #define PCL_PCL_IMPL_BASE_HPP_
 
-#include <pcl/pcl_base.h>
 #include <pcl/console/print.h>
+#include <pcl/pcl_base.h>
+
 #include <cstddef>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::PCLBase<PointT>::PCLBase ()
-  : input_ ()
-  , use_indices_ (false)
-  , fake_indices_ (false)
+pcl::PCLBase<PointT>::PCLBase() : input_(), use_indices_(false), fake_indices_(false)
+{}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+pcl::PCLBase<PointT>::PCLBase(const PCLBase& base)
+: input_(base.input_)
+, indices_(base.indices_)
+, use_indices_(base.use_indices_)
+, fake_indices_(base.fake_indices_)
+{}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+void
+pcl::PCLBase<PointT>::setInputCloud(const PointCloudConstPtr& cloud)
 {
+  input_ = cloud;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::PCLBase<PointT>::PCLBase (const PCLBase& base)
-  : input_ (base.input_)
-  , indices_ (base.indices_)
-  , use_indices_ (base.use_indices_)
-  , fake_indices_ (base.fake_indices_)
-{
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::PCLBase<PointT>::setInputCloud (const PointCloudConstPtr &cloud)
-{ 
-  input_ = cloud; 
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::PCLBase<PointT>::setIndices (const IndicesPtr &indices)
+void
+pcl::PCLBase<PointT>::setIndices(const IndicesPtr& indices)
 {
   indices_ = indices;
   fake_indices_ = false;
-  use_indices_  = true;
+  use_indices_ = true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::PCLBase<PointT>::setIndices (const IndicesConstPtr &indices)
+template <typename PointT>
+void
+pcl::PCLBase<PointT>::setIndices(const IndicesConstPtr& indices)
 {
-  indices_.reset (new Indices (*indices));
+  indices_.reset(new Indices(*indices));
   fake_indices_ = false;
-  use_indices_  = true;
+  use_indices_ = true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::PCLBase<PointT>::setIndices (const PointIndicesConstPtr &indices)
+template <typename PointT>
+void
+pcl::PCLBase<PointT>::setIndices(const PointIndicesConstPtr& indices)
 {
-  indices_.reset (new Indices (indices->indices));
+  indices_.reset(new Indices(indices->indices));
   fake_indices_ = false;
-  use_indices_  = true;
+  use_indices_ = true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::PCLBase<PointT>::setIndices (std::size_t row_start, std::size_t col_start, std::size_t nb_rows, std::size_t nb_cols)
+template <typename PointT>
+void
+pcl::PCLBase<PointT>::setIndices(std::size_t row_start,
+                                 std::size_t col_start,
+                                 std::size_t nb_rows,
+                                 std::size_t nb_cols)
 {
-  if ((nb_rows > input_->height) || (row_start > input_->height))
-  {
-    PCL_ERROR ("[PCLBase::setIndices] cloud is only %d height\n", input_->height);
+  if ((nb_rows > input_->height) || (row_start > input_->height)) {
+    PCL_ERROR("[PCLBase::setIndices] cloud is only %d height\n", input_->height);
     return;
   }
 
-  if ((nb_cols > input_->width) || (col_start > input_->width))
-  {
-    PCL_ERROR ("[PCLBase::setIndices] cloud is only %d width\n", input_->width);
+  if ((nb_cols > input_->width) || (col_start > input_->width)) {
+    PCL_ERROR("[PCLBase::setIndices] cloud is only %d width\n", input_->width);
     return;
   }
 
   std::size_t row_end = row_start + nb_rows;
-  if (row_end > input_->height)
-  {
-    PCL_ERROR ("[PCLBase::setIndices] %d is out of rows range %d\n", row_end, input_->height);
+  if (row_end > input_->height) {
+    PCL_ERROR(
+        "[PCLBase::setIndices] %d is out of rows range %d\n", row_end, input_->height);
     return;
   }
 
   std::size_t col_end = col_start + nb_cols;
-  if (col_end > input_->width)
-  {
-    PCL_ERROR ("[PCLBase::setIndices] %d is out of columns range %d\n", col_end, input_->width);
+  if (col_end > input_->width) {
+    PCL_ERROR("[PCLBase::setIndices] %d is out of columns range %d\n",
+              col_end,
+              input_->width);
     return;
   }
 
-  indices_.reset (new Indices);
-  indices_->reserve (nb_cols * nb_rows);
-  for(std::size_t i = row_start; i < row_end; i++)
-    for(std::size_t j = col_start; j < col_end; j++)
-      indices_->push_back (static_cast<int> ((i * input_->width) + j));
+  indices_.reset(new Indices);
+  indices_->reserve(nb_cols * nb_rows);
+  for (std::size_t i = row_start; i < row_end; i++)
+    for (std::size_t j = col_start; j < col_end; j++)
+      indices_->push_back(static_cast<int>((i * input_->width) + j));
   fake_indices_ = false;
-  use_indices_  = true;
+  use_indices_ = true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> bool
-pcl::PCLBase<PointT>::initCompute ()
+template <typename PointT>
+bool
+pcl::PCLBase<PointT>::initCompute()
 {
   // Check if input was set
-  if (!input_)
-  {
-    PCL_ERROR ("[initCompute] No input set.\n");
+  if (!input_) {
+    PCL_ERROR("[initCompute] No input set.\n");
     return (false);
   }
 
-  // If no point indices have been given, construct a set of indices for the entire input point cloud
-  if (!indices_)
-  {
+  // If no point indices have been given, construct a set of indices for the entire
+  // input point cloud
+  if (!indices_) {
     fake_indices_ = true;
-    indices_.reset (new Indices);
+    indices_.reset(new Indices);
   }
 
-  // If we have a set of fake indices, but they do not match the number of points in the cloud, update them
-  if (fake_indices_ && indices_->size () != input_->size ())
-  {
-    const auto indices_size = indices_->size ();
-    try
-    {
-      indices_->resize (input_->size ());
+  // If we have a set of fake indices, but they do not match the number of points in the
+  // cloud, update them
+  if (fake_indices_ && indices_->size() != input_->size()) {
+    const auto indices_size = indices_->size();
+    try {
+      indices_->resize(input_->size());
+    } catch (const std::bad_alloc&) {
+      PCL_ERROR("[initCompute] Failed to allocate %lu indices.\n", input_->size());
     }
-    catch (const std::bad_alloc&)
-    {
-      PCL_ERROR ("[initCompute] Failed to allocate %lu indices.\n", input_->size ());
+    for (auto i = indices_size; i < indices_->size(); ++i) {
+      (*indices_)[i] = static_cast<int>(i);
     }
-    for (auto i = indices_size; i < indices_->size (); ++i) { (*indices_)[i] = static_cast<int>(i); }
   }
 
   return (true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> bool
-pcl::PCLBase<PointT>::deinitCompute ()
+template <typename PointT>
+bool
+pcl::PCLBase<PointT>::deinitCompute()
 {
   return (true);
 }
 
 #define PCL_INSTANTIATE_PCLBase(T) template class PCL_EXPORTS pcl::PCLBase<T>;
 
-#endif  //#ifndef PCL_PCL_IMPL_BASE_HPP_
-
+#endif // #ifndef PCL_PCL_IMPL_BASE_HPP_

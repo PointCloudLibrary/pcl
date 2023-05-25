@@ -36,57 +36,63 @@
 
 #pragma once
 
-#include <Eigen/Core> // for Vector3f, Matrix
+#include <Eigen/Core>     // for Vector3f, Matrix
 #include <Eigen/Geometry> // for Affine3f
 
-namespace pcl 
-{
-  /**
-    * \brief Calculates a transformation based on corresponding 3D points
-    * \author Bastian Steder
-    * \ingroup common
-    */
-  class TransformationFromCorrespondences 
+namespace pcl {
+/**
+ * \brief Calculates a transformation based on corresponding 3D points
+ * \author Bastian Steder
+ * \ingroup common
+ */
+class TransformationFromCorrespondences {
+public:
+  //-----CONSTRUCTOR&DESTRUCTOR-----
+  /** Constructor - dimension gives the size of the vectors to work with. */
+  TransformationFromCorrespondences() { reset(); }
+
+  //-----METHODS-----
+  /** Reset the object to work with a new data set */
+  inline void
+  reset();
+
+  /** Get the summed up weight of all added vectors */
+  inline float
+  getAccumulatedWeight() const
   {
-     public:
-        //-----CONSTRUCTOR&DESTRUCTOR-----
-        /** Constructor - dimension gives the size of the vectors to work with. */
-        TransformationFromCorrespondences () 
-        { reset (); }
+    return accumulated_weight_;
+  }
 
-        //-----METHODS-----
-        /** Reset the object to work with a new data set */
-        inline void 
-        reset ();
-        
-        /** Get the summed up weight of all added vectors */
-        inline float 
-        getAccumulatedWeight () const { return accumulated_weight_;}
-        
-        /** Get the number of added vectors */
-        inline unsigned int 
-        getNoOfSamples () const { return no_of_samples_;}
-        
-        /** Add a new sample */
-        inline void 
-        add (const Eigen::Vector3f& point, const Eigen::Vector3f& corresponding_point, float weight=1.0);
-        
-        /** Calculate the transformation that will best transform the points into their correspondences */
-        inline Eigen::Affine3f 
-        getTransformation ();
-        
-        //-----VARIABLES-----
-        
-     protected:
-        //-----METHODS-----
-        //-----VARIABLES-----
-        unsigned int no_of_samples_ = 0;
-        float accumulated_weight_ = 0;
-        Eigen::Vector3f mean1_ = Eigen::Vector3f::Identity ();
-        Eigen::Vector3f mean2_ = Eigen::Vector3f::Identity ();
-        Eigen::Matrix<float, 3, 3> covariance_ = Eigen::Matrix<float, 3, 3>::Identity ();
-  };
+  /** Get the number of added vectors */
+  inline unsigned int
+  getNoOfSamples() const
+  {
+    return no_of_samples_;
+  }
 
-}  // END namespace
+  /** Add a new sample */
+  inline void
+  add(const Eigen::Vector3f& point,
+      const Eigen::Vector3f& corresponding_point,
+      float weight = 1.0);
+
+  /** Calculate the transformation that will best transform the points into their
+   * correspondences */
+  inline Eigen::Affine3f
+  getTransformation();
+
+  //-----VARIABLES-----
+
+protected:
+  //-----METHODS-----
+  //-----VARIABLES-----
+  unsigned int no_of_samples_ = 0;
+  float accumulated_weight_ = 0;
+  Eigen::Vector3f mean1_ = Eigen::Vector3f::Identity();
+  Eigen::Vector3f mean2_ = Eigen::Vector3f::Identity();
+  Eigen::Matrix<float, 3, 3> covariance_ = Eigen::Matrix<float, 3, 3>::Identity();
+};
+
+} // namespace pcl
 
 #include <pcl/common/impl/transformation_from_correspondences.hpp>

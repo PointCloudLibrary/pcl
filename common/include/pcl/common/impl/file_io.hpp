@@ -48,49 +48,51 @@
 #include <string>
 #include <vector>
 
-namespace pcl
-{
+namespace pcl {
 
-void getAllPcdFilesInDirectory(const std::string& directory, std::vector<std::string>& file_names)
+void
+getAllPcdFilesInDirectory(const std::string& directory,
+                          std::vector<std::string>& file_names)
 {
   boost::filesystem::path p(directory);
-  if(boost::filesystem::is_directory(p))
-  {
-    for(const auto& entry : boost::make_iterator_range(boost::filesystem::directory_iterator(p), {}))
-    {
-      if (boost::filesystem::is_regular_file(entry))
-      {
+  if (boost::filesystem::is_directory(p)) {
+    for (const auto& entry :
+         boost::make_iterator_range(boost::filesystem::directory_iterator(p), {})) {
+      if (boost::filesystem::is_regular_file(entry)) {
         if (entry.path().extension() == ".pcd")
           file_names.emplace_back(entry.path().filename().string());
       }
     }
   }
-  else
-  {
+  else {
     std::cerr << "Given path is not a directory\n";
     return;
   }
   std::sort(file_names.begin(), file_names.end());
 }
 
-std::string getFilenameWithoutPath(const std::string& input)
+std::string
+getFilenameWithoutPath(const std::string& input)
 {
-  std::size_t filename_start = input.find_last_of('/', static_cast<std::size_t>(-1)) + 1;
-  return input.substr(filename_start, input.size()-filename_start);
+  std::size_t filename_start =
+      input.find_last_of('/', static_cast<std::size_t>(-1)) + 1;
+  return input.substr(filename_start, input.size() - filename_start);
 }
 
-std::string getFilenameWithoutExtension(const std::string& input)
+std::string
+getFilenameWithoutExtension(const std::string& input)
 {
   std::size_t dot_position = input.find_last_of('.', input.size());
   return input.substr(0, dot_position);
 }
 
-std::string getFileExtension(const std::string& input)
+std::string
+getFileExtension(const std::string& input)
 {
   std::size_t dot_position = input.find_last_of('.', input.size());
-  return input.substr(dot_position+1, input.size());
+  return input.substr(dot_position + 1, input.size());
 }
 
-}  // namespace end
+} // namespace pcl
 
 #endif

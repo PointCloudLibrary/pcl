@@ -39,13 +39,13 @@
 #define PCL_IMPL_INSTANTIATE_H_
 
 #ifdef __GNUC__
-#pragma GCC system_header 
+#pragma GCC system_header
 #endif
 
 #include <pcl/pcl_config.h>
 
-//#define PCL_POINT_TYPES (bool)(int)(float)(double)
-//#define PCL_TEMPLATES (Type)(Othertype)
+// #define PCL_POINT_TYPES (bool)(int)(float)(double)
+// #define PCL_TEMPLATES (Type)(Othertype)
 
 //
 // PCL_INSTANTIATE: call to instantiate template TEMPLATE for all
@@ -54,25 +54,24 @@
 
 #ifdef PCL_NO_PRECOMPILE
 
-#define PCL_INSTANTIATE_IMPL(r, TEMPLATE, POINT_TYPE) 
+#define PCL_INSTANTIATE_IMPL(r, TEMPLATE, POINT_TYPE)
 #define PCL_INSTANTIATE(TEMPLATE, POINT_TYPES)
 #define PCL_INSTANTIATE_PRODUCT_IMPL(r, product)
 #define PCL_INSTANTIATE_PRODUCT(TEMPLATE, PRODUCT)
 
 #else
 
+#include <boost/preprocessor/cat.hpp>
+#include <boost/preprocessor/expand.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/seq/for_each_product.hpp>
 #include <boost/preprocessor/seq/to_tuple.hpp>
-#include <boost/preprocessor/cat.hpp>
-#include <boost/preprocessor/expand.hpp>
 
-#define PCL_INSTANTIATE_IMPL(r, TEMPLATE, POINT_TYPE) \
+#define PCL_INSTANTIATE_IMPL(r, TEMPLATE, POINT_TYPE)                                  \
   BOOST_PP_CAT(PCL_INSTANTIATE_, TEMPLATE)(POINT_TYPE)
 
-#define PCL_INSTANTIATE(TEMPLATE, POINT_TYPES)        \
+#define PCL_INSTANTIATE(TEMPLATE, POINT_TYPES)                                         \
   BOOST_PP_SEQ_FOR_EACH(PCL_INSTANTIATE_IMPL, TEMPLATE, POINT_TYPES)
-
 
 //
 // PCL_INSTANTIATE_PRODUCT(templatename, (seq1)(seq2)...(seqN))
@@ -81,12 +80,13 @@
 //
 // A call to PCL_INSTANTIATE_PRODUCT(T, ((a)(b)) ((d)(e)) ) results in calls
 //
-//   PCL_INSTANTIATE_T(a, d) 
-//   PCL_INSTANTIATE_T(a, e) 
-//   PCL_INSTANTIATE_T(b, d) 
-//   PCL_INSTANTIATE_T(b, e) 
+//   PCL_INSTANTIATE_T(a, d)
+//   PCL_INSTANTIATE_T(a, e)
+//   PCL_INSTANTIATE_T(b, d)
+//   PCL_INSTANTIATE_T(b, e)
 //
-// That is, PCL_INSTANTIATE_T is called for the cartesian product of the sequences seq1 ... seqN
+// That is, PCL_INSTANTIATE_T is called for the cartesian product of the sequences seq1
+// ... seqN
 //
 // BE CAREFUL WITH YOUR PARENTHESIS!  The argument PRODUCT is a
 // sequence of sequences.  e.g. if it were three sequences of,
@@ -96,17 +96,16 @@
 //    ((x)(y)(z))((1)(2)(3))((dracula)(radu))
 //
 #ifdef _MSC_VER
-#define PCL_INSTANTIATE_PRODUCT_IMPL(r, product) \
-  BOOST_PP_CAT(PCL_INSTANTIATE_, BOOST_PP_SEQ_HEAD(product)) \
-          BOOST_PP_EXPAND(BOOST_PP_SEQ_TO_TUPLE(BOOST_PP_SEQ_TAIL(product))) 
+#define PCL_INSTANTIATE_PRODUCT_IMPL(r, product)                                       \
+  BOOST_PP_CAT(PCL_INSTANTIATE_, BOOST_PP_SEQ_HEAD(product))                           \
+  BOOST_PP_EXPAND(BOOST_PP_SEQ_TO_TUPLE(BOOST_PP_SEQ_TAIL(product)))
 #else
-#define PCL_INSTANTIATE_PRODUCT_IMPL(r, product) \
-  BOOST_PP_EXPAND(BOOST_PP_CAT(PCL_INSTANTIATE_, BOOST_PP_SEQ_HEAD(product)) \
-		  BOOST_PP_SEQ_TO_TUPLE(BOOST_PP_SEQ_TAIL(product)))
+#define PCL_INSTANTIATE_PRODUCT_IMPL(r, product)                                       \
+  BOOST_PP_EXPAND(BOOST_PP_CAT(PCL_INSTANTIATE_, BOOST_PP_SEQ_HEAD(product))           \
+                      BOOST_PP_SEQ_TO_TUPLE(BOOST_PP_SEQ_TAIL(product)))
 #endif
 
-
-#define PCL_INSTANTIATE_PRODUCT(TEMPLATE, PRODUCT) \
+#define PCL_INSTANTIATE_PRODUCT(TEMPLATE, PRODUCT)                                     \
   BOOST_PP_SEQ_FOR_EACH_PRODUCT(PCL_INSTANTIATE_PRODUCT_IMPL, ((TEMPLATE))PRODUCT)
 
 #endif

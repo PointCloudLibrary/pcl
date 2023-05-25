@@ -41,513 +41,540 @@
 
 #include <pcl/cloud_iterator.h>
 
-namespace pcl
-{
-  /** \brief
-    * \author Suat Gedikli
-    */
-  template <class PointT>
-  class DefaultIterator : public CloudIterator<PointT>::Iterator
+namespace pcl {
+/** \brief
+ * \author Suat Gedikli
+ */
+template <class PointT>
+class DefaultIterator : public CloudIterator<PointT>::Iterator {
+public:
+  DefaultIterator(PointCloud<PointT>& cloud) : cloud_(cloud), iterator_(cloud.begin())
+  {}
+
+  ~DefaultIterator() = default;
+
+  void
+  operator++()
   {
-    public:
-      DefaultIterator (PointCloud<PointT>& cloud)
-      : cloud_ (cloud)
-      , iterator_ (cloud.begin ())
-      {
-      }
+    ++iterator_;
+  }
 
-      ~DefaultIterator () = default;
-
-      void operator ++ ()
-      {
-        ++iterator_;
-      }
-
-      void operator ++ (int)
-      {
-        iterator_++;
-      }
-
-      PointT& operator* () const
-      {
-        return (*iterator_);
-      }
-
-      PointT* operator-> ()
-      {
-        return (&(*iterator_));
-      }
-
-      unsigned getCurrentPointIndex () const
-      {
-        return (iterator_ - cloud_.begin ());
-      }
-
-      unsigned getCurrentIndex () const
-      {
-        return (iterator_ - cloud_.begin ());
-      }
-
-      std::size_t size () const
-      {
-        return cloud_.size ();
-      }
-
-      void reset ()
-      {
-        iterator_ = cloud_.begin ();
-      }
-
-      bool isValid () const
-      {
-        return (iterator_ != cloud_.end ());
-      }
-    private:
-      PointCloud<PointT>& cloud_;
-      typename PointCloud<PointT>::iterator iterator_;
-  };
-
-  /** \brief
-    * \author Suat Gedikli
-    */
-  template <class PointT>
-  class IteratorIdx : public CloudIterator<PointT>::Iterator
+  void
+  operator++(int)
   {
-    public:
-      IteratorIdx (PointCloud<PointT>& cloud, const Indices& indices)
-        : cloud_ (cloud)
-        , indices_ (indices)
-        , iterator_ (indices_.begin ())
-      {
-      }
+    iterator_++;
+  }
 
-      IteratorIdx (PointCloud<PointT>& cloud, const PointIndices& indices)
-        : cloud_ (cloud)
-        , indices_ (indices.indices)
-        , iterator_ (indices_.begin ())
-      {
-      }
-
-      virtual ~IteratorIdx () = default;
-
-      void operator ++ ()
-      {
-        ++iterator_;
-      }
-
-      void operator ++ (int)
-      {
-        iterator_++;
-      }
-
-      PointT& operator* () const
-      {
-        return (cloud_.points [*iterator_]);
-      }
-
-      PointT* operator-> ()
-      {
-        return (&(cloud_.points [*iterator_]));
-      }
-
-      unsigned getCurrentPointIndex () const
-      {
-        return (*iterator_);
-      }
-
-      unsigned getCurrentIndex () const
-      {
-        return (iterator_ - indices_.begin ());
-      }
-
-      std::size_t size () const
-      {
-        return indices_.size ();
-      }
-
-      void reset ()
-      {
-        iterator_ = indices_.begin ();
-      }
-
-      bool isValid () const
-      {
-        return (iterator_ != indices_.end ());
-      }
-
-      private:
-        PointCloud<PointT>& cloud_;
-        Indices indices_;
-        Indices::iterator iterator_;
-  };
-
-  /** \brief
-    * \author Suat Gedikli
-    */
-  template <class PointT>
-  class ConstCloudIterator<PointT>::DefaultConstIterator : public ConstCloudIterator<PointT>::Iterator
+  PointT&
+  operator*() const
   {
-    public:
-      DefaultConstIterator (const PointCloud<PointT>& cloud)
-        : cloud_ (cloud)
-        , iterator_ (cloud.begin ())
-      {
-      }
+    return (*iterator_);
+  }
 
-      ~DefaultConstIterator () override = default;
-
-      void operator ++ () override
-      {
-        ++iterator_;
-      }
-
-      void operator ++ (int) override
-      {
-        iterator_++;
-      }
-
-      const PointT& operator* () const override
-      {
-        return (*iterator_);
-      }
-
-      const PointT* operator-> () const override
-      {
-        return (&(*iterator_));
-      }
-
-      unsigned getCurrentPointIndex () const override
-      {
-        return (static_cast<unsigned>(iterator_ - cloud_.begin ()));
-      }
-
-      unsigned getCurrentIndex () const override
-      {
-        return (static_cast<unsigned>(iterator_ - cloud_.begin ()));
-      }
-
-      std::size_t size () const override
-      {
-        return cloud_.size ();
-      }
-
-      void reset () override
-      {
-        iterator_ = cloud_.begin ();
-      }
-
-      bool isValid () const override
-      {
-        return (iterator_ != cloud_.end ());
-      }
-    private:
-      const PointCloud<PointT>& cloud_;
-      typename PointCloud<PointT>::const_iterator iterator_;
-  };
-
-  /** \brief
-    * \author Suat Gedikli
-    */
-  template <class PointT>
-  class ConstCloudIterator<PointT>::ConstIteratorIdx : public ConstCloudIterator<PointT>::Iterator
+  PointT*
+  operator->()
   {
-    public:
-      ConstIteratorIdx (const PointCloud<PointT>& cloud,
-                        const Indices& indices)
-        : cloud_ (cloud)
-        , indices_ (indices)
-        , iterator_ (indices_.begin ())
-      {
-      }
+    return (&(*iterator_));
+  }
 
-      ConstIteratorIdx (const PointCloud<PointT>& cloud,
-                        const PointIndices& indices)
-        : cloud_ (cloud)
-        , indices_ (indices.indices)
-        , iterator_ (indices_.begin ())
-      {
-      }
+  unsigned
+  getCurrentPointIndex() const
+  {
+    return (iterator_ - cloud_.begin());
+  }
 
-      ~ConstIteratorIdx () override = default;
+  unsigned
+  getCurrentIndex() const
+  {
+    return (iterator_ - cloud_.begin());
+  }
 
-      void operator ++ () override
-      {
-        ++iterator_;
-      }
+  std::size_t
+  size() const
+  {
+    return cloud_.size();
+  }
 
-      void operator ++ (int) override
-      {
-        iterator_++;
-      }
+  void
+  reset()
+  {
+    iterator_ = cloud_.begin();
+  }
 
-      const PointT& operator* () const override
-      {
-        return (cloud_[*iterator_]);
-      }
+  bool
+  isValid() const
+  {
+    return (iterator_ != cloud_.end());
+  }
 
-      const PointT* operator-> () const override
-      {
-        return (&(cloud_.points [*iterator_]));
-      }
+private:
+  PointCloud<PointT>& cloud_;
+  typename PointCloud<PointT>::iterator iterator_;
+};
 
-      unsigned getCurrentPointIndex () const override
-      {
-        return (static_cast<unsigned>(*iterator_));
-      }
+/** \brief
+ * \author Suat Gedikli
+ */
+template <class PointT>
+class IteratorIdx : public CloudIterator<PointT>::Iterator {
+public:
+  IteratorIdx(PointCloud<PointT>& cloud, const Indices& indices)
+  : cloud_(cloud), indices_(indices), iterator_(indices_.begin())
+  {}
 
-      unsigned getCurrentIndex () const override
-      {
-        return (static_cast<unsigned>(iterator_ - indices_.begin ()));
-      }
+  IteratorIdx(PointCloud<PointT>& cloud, const PointIndices& indices)
+  : cloud_(cloud), indices_(indices.indices), iterator_(indices_.begin())
+  {}
 
-      std::size_t size () const override
-      {
-        return indices_.size ();
-      }
+  virtual ~IteratorIdx() = default;
 
-      void reset () override
-      {
-        iterator_ = indices_.begin ();
-      }
+  void
+  operator++()
+  {
+    ++iterator_;
+  }
 
-      bool isValid () const override
-      {
-        return (iterator_ != indices_.end ());
-      }
+  void
+  operator++(int)
+  {
+    iterator_++;
+  }
 
-      private:
-        const PointCloud<PointT>& cloud_;
-        Indices indices_;
-        Indices::iterator iterator_;
-  };
+  PointT&
+  operator*() const
+  {
+    return (cloud_.points[*iterator_]);
+  }
+
+  PointT*
+  operator->()
+  {
+    return (&(cloud_.points[*iterator_]));
+  }
+
+  unsigned
+  getCurrentPointIndex() const
+  {
+    return (*iterator_);
+  }
+
+  unsigned
+  getCurrentIndex() const
+  {
+    return (iterator_ - indices_.begin());
+  }
+
+  std::size_t
+  size() const
+  {
+    return indices_.size();
+  }
+
+  void
+  reset()
+  {
+    iterator_ = indices_.begin();
+  }
+
+  bool
+  isValid() const
+  {
+    return (iterator_ != indices_.end());
+  }
+
+private:
+  PointCloud<PointT>& cloud_;
+  Indices indices_;
+  Indices::iterator iterator_;
+};
+
+/** \brief
+ * \author Suat Gedikli
+ */
+template <class PointT>
+class ConstCloudIterator<PointT>::DefaultConstIterator
+: public ConstCloudIterator<PointT>::Iterator {
+public:
+  DefaultConstIterator(const PointCloud<PointT>& cloud)
+  : cloud_(cloud), iterator_(cloud.begin())
+  {}
+
+  ~DefaultConstIterator() override = default;
+
+  void
+  operator++() override
+  {
+    ++iterator_;
+  }
+
+  void
+  operator++(int) override
+  {
+    iterator_++;
+  }
+
+  const PointT&
+  operator*() const override
+  {
+    return (*iterator_);
+  }
+
+  const PointT*
+  operator->() const override
+  {
+    return (&(*iterator_));
+  }
+
+  unsigned
+  getCurrentPointIndex() const override
+  {
+    return (static_cast<unsigned>(iterator_ - cloud_.begin()));
+  }
+
+  unsigned
+  getCurrentIndex() const override
+  {
+    return (static_cast<unsigned>(iterator_ - cloud_.begin()));
+  }
+
+  std::size_t
+  size() const override
+  {
+    return cloud_.size();
+  }
+
+  void
+  reset() override
+  {
+    iterator_ = cloud_.begin();
+  }
+
+  bool
+  isValid() const override
+  {
+    return (iterator_ != cloud_.end());
+  }
+
+private:
+  const PointCloud<PointT>& cloud_;
+  typename PointCloud<PointT>::const_iterator iterator_;
+};
+
+/** \brief
+ * \author Suat Gedikli
+ */
+template <class PointT>
+class ConstCloudIterator<PointT>::ConstIteratorIdx
+: public ConstCloudIterator<PointT>::Iterator {
+public:
+  ConstIteratorIdx(const PointCloud<PointT>& cloud, const Indices& indices)
+  : cloud_(cloud), indices_(indices), iterator_(indices_.begin())
+  {}
+
+  ConstIteratorIdx(const PointCloud<PointT>& cloud, const PointIndices& indices)
+  : cloud_(cloud), indices_(indices.indices), iterator_(indices_.begin())
+  {}
+
+  ~ConstIteratorIdx() override = default;
+
+  void
+  operator++() override
+  {
+    ++iterator_;
+  }
+
+  void
+  operator++(int) override
+  {
+    iterator_++;
+  }
+
+  const PointT&
+  operator*() const override
+  {
+    return (cloud_[*iterator_]);
+  }
+
+  const PointT*
+  operator->() const override
+  {
+    return (&(cloud_.points[*iterator_]));
+  }
+
+  unsigned
+  getCurrentPointIndex() const override
+  {
+    return (static_cast<unsigned>(*iterator_));
+  }
+
+  unsigned
+  getCurrentIndex() const override
+  {
+    return (static_cast<unsigned>(iterator_ - indices_.begin()));
+  }
+
+  std::size_t
+  size() const override
+  {
+    return indices_.size();
+  }
+
+  void
+  reset() override
+  {
+    iterator_ = indices_.begin();
+  }
+
+  bool
+  isValid() const override
+  {
+    return (iterator_ != indices_.end());
+  }
+
+private:
+  const PointCloud<PointT>& cloud_;
+  Indices indices_;
+  Indices::iterator iterator_;
+};
 } // namespace pcl
 
 //////////////////////////////////////////////////////////////////////////////
 template <class PointT>
-pcl::CloudIterator<PointT>::CloudIterator (PointCloud<PointT>& cloud)
-  : iterator_ (new DefaultIterator<PointT> (cloud))
-{
-}
+pcl::CloudIterator<PointT>::CloudIterator(PointCloud<PointT>& cloud)
+: iterator_(new DefaultIterator<PointT>(cloud))
+{}
 
 //////////////////////////////////////////////////////////////////////////////
 template <class PointT>
-pcl::CloudIterator<PointT>::CloudIterator (
-    PointCloud<PointT>& cloud, const Indices& indices)
-  : iterator_ (new IteratorIdx<PointT> (cloud, indices))
-{
-}
+pcl::CloudIterator<PointT>::CloudIterator(PointCloud<PointT>& cloud,
+                                          const Indices& indices)
+: iterator_(new IteratorIdx<PointT>(cloud, indices))
+{}
 
 //////////////////////////////////////////////////////////////////////////////
 template <class PointT>
-pcl::CloudIterator<PointT>::CloudIterator (
-    PointCloud<PointT>& cloud, const PointIndices& indices)
-  : iterator_ (new IteratorIdx<PointT> (cloud, indices))
-{
-}
+pcl::CloudIterator<PointT>::CloudIterator(PointCloud<PointT>& cloud,
+                                          const PointIndices& indices)
+: iterator_(new IteratorIdx<PointT>(cloud, indices))
+{}
 
 //////////////////////////////////////////////////////////////////////////////
 template <class PointT>
-pcl::CloudIterator<PointT>::CloudIterator (
-    PointCloud<PointT>& cloud, const Correspondences& corrs, bool source)
+pcl::CloudIterator<PointT>::CloudIterator(PointCloud<PointT>& cloud,
+                                          const Correspondences& corrs,
+                                          bool source)
 {
   Indices indices;
-  indices.reserve (corrs.size ());
-  if (source)
-  {
-    for (const auto &corr : corrs)
-      indices.push_back (corr.index_query);
+  indices.reserve(corrs.size());
+  if (source) {
+    for (const auto& corr : corrs)
+      indices.push_back(corr.index_query);
   }
-  else
-  {
-    for (const auto &corr : corrs)
-      indices.push_back (corr.index_match);
+  else {
+    for (const auto& corr : corrs)
+      indices.push_back(corr.index_match);
   }
-  iterator_ = new IteratorIdx<PointT> (cloud, indices);
+  iterator_ = new IteratorIdx<PointT>(cloud, indices);
 }
 
 //////////////////////////////////////////////////////////////////////////////
 template <class PointT>
-pcl::CloudIterator<PointT>::~CloudIterator ()
+pcl::CloudIterator<PointT>::~CloudIterator()
 {
   delete iterator_;
 }
 
 //////////////////////////////////////////////////////////////////////////////
-template <class PointT> void
-pcl::CloudIterator<PointT>::operator ++ ()
-{
-  iterator_->operator++ ();
-}
-
-//////////////////////////////////////////////////////////////////////////////
-template <class PointT> void
-pcl::CloudIterator<PointT>::operator ++ (int)
-{
-  iterator_->operator++ (0);
-}
-
-//////////////////////////////////////////////////////////////////////////////
-template <class PointT> PointT&
-pcl::CloudIterator<PointT>::operator* () const
-{
-  return (iterator_->operator * ());
-}
-
-//////////////////////////////////////////////////////////////////////////////
-template <class PointT> PointT*
-pcl::CloudIterator<PointT>::operator-> () const
-{
-  return (iterator_->operator-> ());
-}
-
-//////////////////////////////////////////////////////////////////////////////
-template <class PointT> unsigned
-pcl::CloudIterator<PointT>::getCurrentPointIndex () const
-{
-  return (iterator_->getCurrentPointIndex ());
-}
-
-//////////////////////////////////////////////////////////////////////////////
-template <class PointT> unsigned
-pcl::CloudIterator<PointT>::getCurrentIndex () const
-{
-  return (iterator_->getCurrentIndex ());
-}
-
-//////////////////////////////////////////////////////////////////////////////
-template <class PointT> std::size_t
-pcl::CloudIterator<PointT>::size () const
-{
-  return (iterator_->size ());
-}
-
-//////////////////////////////////////////////////////////////////////////////
-template <class PointT> void
-pcl::CloudIterator<PointT>::reset ()
-{
-  iterator_->reset ();
-}
-
-//////////////////////////////////////////////////////////////////////////////
-template <class PointT> bool
-pcl::CloudIterator<PointT>::isValid () const
-{
-  return (iterator_->isValid ());
-}
-
-
-//////////////////////////////////////////////////////////////////////////////
 template <class PointT>
-pcl::ConstCloudIterator<PointT>::ConstCloudIterator (const PointCloud<PointT>& cloud)
-  : iterator_ (new typename pcl::ConstCloudIterator<PointT>::DefaultConstIterator (cloud))
+void
+pcl::CloudIterator<PointT>::operator++()
 {
+  iterator_->operator++();
 }
 
 //////////////////////////////////////////////////////////////////////////////
 template <class PointT>
-pcl::ConstCloudIterator<PointT>::ConstCloudIterator (
-    const PointCloud<PointT>& cloud, const Indices& indices)
-  : iterator_ (new typename pcl::ConstCloudIterator<PointT>::ConstIteratorIdx (cloud, indices))
+void
+pcl::CloudIterator<PointT>::operator++(int)
 {
+  iterator_->operator++(0);
 }
 
 //////////////////////////////////////////////////////////////////////////////
 template <class PointT>
-pcl::ConstCloudIterator<PointT>::ConstCloudIterator (
-    const PointCloud<PointT>& cloud, const PointIndices& indices)
-  : iterator_ (new typename pcl::ConstCloudIterator<PointT>::ConstIteratorIdx (cloud, indices))
+PointT&
+pcl::CloudIterator<PointT>::operator*() const
 {
+  return (iterator_->operator*());
 }
 
 //////////////////////////////////////////////////////////////////////////////
 template <class PointT>
-pcl::ConstCloudIterator<PointT>::ConstCloudIterator (
-    const PointCloud<PointT>& cloud, const Correspondences& corrs, bool source)
+PointT*
+pcl::CloudIterator<PointT>::operator->() const
+{
+  return (iterator_->operator->());
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <class PointT>
+unsigned
+pcl::CloudIterator<PointT>::getCurrentPointIndex() const
+{
+  return (iterator_->getCurrentPointIndex());
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <class PointT>
+unsigned
+pcl::CloudIterator<PointT>::getCurrentIndex() const
+{
+  return (iterator_->getCurrentIndex());
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <class PointT>
+std::size_t
+pcl::CloudIterator<PointT>::size() const
+{
+  return (iterator_->size());
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <class PointT>
+void
+pcl::CloudIterator<PointT>::reset()
+{
+  iterator_->reset();
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <class PointT>
+bool
+pcl::CloudIterator<PointT>::isValid() const
+{
+  return (iterator_->isValid());
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <class PointT>
+pcl::ConstCloudIterator<PointT>::ConstCloudIterator(const PointCloud<PointT>& cloud)
+: iterator_(new typename pcl::ConstCloudIterator<PointT>::DefaultConstIterator(cloud))
+{}
+
+//////////////////////////////////////////////////////////////////////////////
+template <class PointT>
+pcl::ConstCloudIterator<PointT>::ConstCloudIterator(const PointCloud<PointT>& cloud,
+                                                    const Indices& indices)
+: iterator_(new
+            typename pcl::ConstCloudIterator<PointT>::ConstIteratorIdx(cloud, indices))
+{}
+
+//////////////////////////////////////////////////////////////////////////////
+template <class PointT>
+pcl::ConstCloudIterator<PointT>::ConstCloudIterator(const PointCloud<PointT>& cloud,
+                                                    const PointIndices& indices)
+: iterator_(new
+            typename pcl::ConstCloudIterator<PointT>::ConstIteratorIdx(cloud, indices))
+{}
+
+//////////////////////////////////////////////////////////////////////////////
+template <class PointT>
+pcl::ConstCloudIterator<PointT>::ConstCloudIterator(const PointCloud<PointT>& cloud,
+                                                    const Correspondences& corrs,
+                                                    bool source)
 {
   Indices indices;
-  indices.reserve (corrs.size ());
-  if (source)
-  {
-    for (const auto &corr : corrs)
-      indices.push_back (corr.index_query);
+  indices.reserve(corrs.size());
+  if (source) {
+    for (const auto& corr : corrs)
+      indices.push_back(corr.index_query);
   }
-  else
-  {
-    for (const auto &corr : corrs)
-      indices.push_back (corr.index_match);
+  else {
+    for (const auto& corr : corrs)
+      indices.push_back(corr.index_match);
   }
-  iterator_ = new typename pcl::ConstCloudIterator<PointT>::ConstIteratorIdx (cloud, indices);
+  iterator_ =
+      new typename pcl::ConstCloudIterator<PointT>::ConstIteratorIdx(cloud, indices);
 }
 
 //////////////////////////////////////////////////////////////////////////////
 template <class PointT>
-pcl::ConstCloudIterator<PointT>::~ConstCloudIterator ()
+pcl::ConstCloudIterator<PointT>::~ConstCloudIterator()
 {
   delete iterator_;
 }
 
 //////////////////////////////////////////////////////////////////////////////
-template <class PointT> void
-pcl::ConstCloudIterator<PointT>::operator ++ ()
+template <class PointT>
+void
+pcl::ConstCloudIterator<PointT>::operator++()
 {
-  iterator_->operator++ ();
+  iterator_->operator++();
 }
 
 //////////////////////////////////////////////////////////////////////////////
-template <class PointT> void
-pcl::ConstCloudIterator<PointT>::operator ++ (int)
+template <class PointT>
+void
+pcl::ConstCloudIterator<PointT>::operator++(int)
 {
-  iterator_->operator++ (0);
+  iterator_->operator++(0);
 }
 
 //////////////////////////////////////////////////////////////////////////////
-template <class PointT> const PointT&
-pcl::ConstCloudIterator<PointT>::operator* () const
+template <class PointT>
+const PointT&
+pcl::ConstCloudIterator<PointT>::operator*() const
 {
-  return (iterator_->operator * ());
+  return (iterator_->operator*());
 }
 
 //////////////////////////////////////////////////////////////////////////////
-template <class PointT> const PointT*
-pcl::ConstCloudIterator<PointT>::operator-> () const
+template <class PointT>
+const PointT*
+pcl::ConstCloudIterator<PointT>::operator->() const
 {
-  return (iterator_->operator-> ());
+  return (iterator_->operator->());
 }
 
 //////////////////////////////////////////////////////////////////////////////
-template <class PointT> unsigned
-pcl::ConstCloudIterator<PointT>::getCurrentPointIndex () const
+template <class PointT>
+unsigned
+pcl::ConstCloudIterator<PointT>::getCurrentPointIndex() const
 {
-  return (iterator_->getCurrentPointIndex ());
+  return (iterator_->getCurrentPointIndex());
 }
 
 //////////////////////////////////////////////////////////////////////////////
-template <class PointT> unsigned
-pcl::ConstCloudIterator<PointT>::getCurrentIndex () const
+template <class PointT>
+unsigned
+pcl::ConstCloudIterator<PointT>::getCurrentIndex() const
 {
-  return (iterator_->getCurrentIndex ());
+  return (iterator_->getCurrentIndex());
 }
 
 //////////////////////////////////////////////////////////////////////////////
-template <class PointT> std::size_t
-pcl::ConstCloudIterator<PointT>::size () const
+template <class PointT>
+std::size_t
+pcl::ConstCloudIterator<PointT>::size() const
 {
-  return (iterator_->size ());
+  return (iterator_->size());
 }
 
 //////////////////////////////////////////////////////////////////////////////
-template <class PointT> void
-pcl::ConstCloudIterator<PointT>::reset ()
+template <class PointT>
+void
+pcl::ConstCloudIterator<PointT>::reset()
 {
-  iterator_->reset ();
+  iterator_->reset();
 }
 
 //////////////////////////////////////////////////////////////////////////////
-template <class PointT> bool
-pcl::ConstCloudIterator<PointT>::isValid () const
+template <class PointT>
+bool
+pcl::ConstCloudIterator<PointT>::isValid() const
 {
-  return (iterator_->isValid ());
+  return (iterator_->isValid());
 }
 
-#endif    // PCL_POINT_CLOUD_ITERATOR_HPP_
-
+#endif // PCL_POINT_CLOUD_ITERATOR_HPP_

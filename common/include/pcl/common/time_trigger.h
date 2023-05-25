@@ -47,61 +47,64 @@
 #include <mutex>
 #include <thread>
 
-namespace pcl
-{
-  /** \brief Timer class that invokes registered callback methods periodically.
-    * \ingroup common
-    */
-  class PCL_EXPORTS TimeTrigger
-  {
-    public:
-      using callback_type = std::function<void ()>;
+namespace pcl {
+/** \brief Timer class that invokes registered callback methods periodically.
+ * \ingroup common
+ */
+class PCL_EXPORTS TimeTrigger {
+public:
+  using callback_type = std::function<void()>;
 
-      /** \brief Timer class that calls a callback method periodically. Due to possible blocking calls, only one callback method can be registered per instance.
-        * \param[in] interval_seconds interval in seconds
-        * \param[in] callback callback to be invoked periodically
-        */
-      TimeTrigger (double interval_seconds, const callback_type& callback);
+  /** \brief Timer class that calls a callback method periodically. Due to possible
+   * blocking calls, only one callback method can be registered per instance. \param[in]
+   * interval_seconds interval in seconds \param[in] callback callback to be invoked
+   * periodically
+   */
+  TimeTrigger(double interval_seconds, const callback_type& callback);
 
-      /** \brief Timer class that calls a callback method periodically. Due to possible blocking calls, only one callback method can be registered per instance.
-        * \param[in] interval_seconds interval in seconds
-        */
-      TimeTrigger (double interval_seconds = 1.0);
+  /** \brief Timer class that calls a callback method periodically. Due to possible
+   * blocking calls, only one callback method can be registered per instance. \param[in]
+   * interval_seconds interval in seconds
+   */
+  TimeTrigger(double interval_seconds = 1.0);
 
-      /** \brief Destructor. */
-      ~TimeTrigger ();
+  /** \brief Destructor. */
+  ~TimeTrigger();
 
-      /** \brief registers a callback
-        * \param[in] callback callback function to the list of callbacks. signature has to be std::function<void()>
-        * \return connection the connection, which can be used to disable/enable and remove callback from list
-        */
-      boost::signals2::connection registerCallback (const callback_type& callback);
+  /** \brief registers a callback
+   * \param[in] callback callback function to the list of callbacks. signature has to be
+   * std::function<void()> \return connection the connection, which can be used to
+   * disable/enable and remove callback from list
+   */
+  boost::signals2::connection
+  registerCallback(const callback_type& callback);
 
-      /** \brief Resets the timer interval
-        * \param[in] interval_seconds interval in seconds
-        */
-      void 
-      setInterval (double interval_seconds);
+  /** \brief Resets the timer interval
+   * \param[in] interval_seconds interval in seconds
+   */
+  void
+  setInterval(double interval_seconds);
 
-      /** \brief Start the Trigger. */
-      void 
-      start ();
+  /** \brief Start the Trigger. */
+  void
+  start();
 
-      /** \brief Stop the Trigger. */
-      void 
-      stop ();
-    private:
-      void 
-      thread_function ();
-      boost::signals2::signal <void() > callbacks_;
+  /** \brief Stop the Trigger. */
+  void
+  stop();
 
-      double interval_;
+private:
+  void
+  thread_function();
+  boost::signals2::signal<void()> callbacks_;
 
-      bool quit_;
-      bool running_;
+  double interval_;
 
-      std::thread timer_thread_;
-      std::condition_variable condition_;
-      std::mutex condition_mutex_;
-  };
-}
+  bool quit_;
+  bool running_;
+
+  std::thread timer_thread_;
+  std::condition_variable condition_;
+  std::mutex condition_mutex_;
+};
+} // namespace pcl
