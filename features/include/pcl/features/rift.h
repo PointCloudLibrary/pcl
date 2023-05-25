@@ -80,7 +80,7 @@ namespace pcl
 
 
       /** \brief Empty constructor. */
-      RIFTEstimation () : gradient_ (), nr_distance_bins_ (4), nr_gradient_bins_ (8)
+      RIFTEstimation ()
       {
         feature_name_ = "RIFTEstimation";
       }

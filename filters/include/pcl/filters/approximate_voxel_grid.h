@@ -110,7 +110,7 @@ namespace pcl
       struct he
       {
         he () = default;
-        int ix{}, iy{}, iz{};
+        int ix{0}, iy{0}, iz{0};
         int count{0};
         Eigen::VectorXf centroid;
       };

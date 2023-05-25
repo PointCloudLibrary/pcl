@@ -50,7 +50,6 @@ namespace pcl
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 RangeImageBorderExtractor::RangeImageBorderExtractor(const RangeImage* range_image) : range_image_(range_image)
-  , range_image_size_during_extraction_(0)
 {
 }
 
