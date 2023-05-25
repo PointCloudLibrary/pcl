@@ -36,442 +36,442 @@
  */
 #include <pcl/point_types.h>
 
-namespace pcl
+namespace pcl {
+std::ostream&
+operator<<(std::ostream& os, const PointXYZ& p)
 {
-  std::ostream& 
-  operator << (std::ostream& os, const PointXYZ& p)
-  {
-    os << "(" << p.x << "," << p.y << "," << p.z << ")";
-    return (os);
-  }
-
-  std::ostream&
-  operator << (std::ostream& os, const RGB& p)
-  {
-    os << "("
-      << static_cast<int>(p.r) << ","
-      << static_cast<int>(p.g) << ","
-      << static_cast<int>(p.b) << ","
-      << static_cast<int>(p.a) << ")";
-    return (os);
-  }
-
-  std::ostream&
-  operator << (std::ostream& os, const Intensity& p)
-  {
-    os << "( " << static_cast<int>(p.intensity) << " )";
-    return (os);
-  }
-
-  std::ostream&
-  operator << (std::ostream& os, const Intensity8u& p)
-  {
-    os << "( " << static_cast<int>(p.intensity) << " )";
-    return (os);
-  }
-
-  std::ostream&
-  operator << (std::ostream& os, const Intensity32u& p)
-  {
-    os << "( " << p.intensity << " )";
-    return (os);
-  }
-
-  std::ostream&
-  operator << (std::ostream& os, const PointXYZI& p)
-  {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.intensity << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const PointXYZL& p)
-  {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.label << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const Label& p)
-  {
-    os << "(" << p.label << ")";
-    return (os);
-  }
-
-  std::ostream&
-  operator << (std::ostream& os, const PointXYZRGBA& p)
-  {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - "
-      << static_cast<int>(p.r) << ","
-      << static_cast<int>(p.g) << ","
-      << static_cast<int>(p.b) << ","
-      << static_cast<int>(p.a) << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const PointXYZRGB& p)
-  {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - "
-      << static_cast<int>(p.r) << ","
-      << static_cast<int>(p.g) << ","
-      << static_cast<int>(p.b) << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const PointXYZRGBL& p)
-  {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - "
-      << static_cast<int>(p.r) << ","
-      << static_cast<int>(p.g) << ","
-      << static_cast<int>(p.b) << " - "
-      << p.label << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const PointXYZLAB& p)
-  {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.L << " , " <<  p.a << " , " << p.b << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const PointXYZHSV& p)
-  {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.h << " , " <<  p.s << " , " << p.v << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const PointXY& p)
-  {
-    os << "(" << p.x << "," << p.y << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const PointUV& p)
-  {
-    os << "(" << p.u << "," << p.v << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const InterestPoint& p)
-  {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.strength << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const Normal& p)
-  {
-    os << "(" << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << " - " << p.curvature << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const Axis& p)
-  {
-    os << "(" << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << ")";
-    return os;
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const _Axis& p)
-  {
-    os << "(" << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << ")";
-    return os;
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const PointNormal& p)
-  {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << " - " << p.curvature << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const PointXYZRGBNormal& p)
-  {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - "<< p.rgb << " - " << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << " - "
-      << static_cast<int>(p.r) << ","
-      << static_cast<int>(p.g) << ","
-      << static_cast<int>(p.b) << " - "
-      << p.curvature << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const PointXYZINormal& p)
-  {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.intensity << " - " << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << " - " << p.curvature << ")";
-    return (os);
-  }
-
-  std::ostream&
-  operator << (std::ostream& os, const PointXYZLNormal& p)
-  {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.label << " - " << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << " - " << p.curvature << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const PointWithRange& p)
-  {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.range << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const PointWithViewpoint& p)
-  {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.vp_x << "," << p.vp_y << "," << p.vp_z << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const MomentInvariants& p)
-  {
-    os << "(" << p.j1 << "," << p.j2 << "," << p.j3 << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const PrincipalRadiiRSD& p)
-  {
-    os << "(" << p.r_min << "," << p.r_max << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const Boundary& p)
-  {
-    os << p.boundary_point;
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const PrincipalCurvatures& p)
-  {
-    os << "(" << p.principal_curvature[0] << "," << p.principal_curvature[1] << "," << p.principal_curvature[2] << " - " << p.pc1 << "," << p.pc2 << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const PFHSignature125& p)
-  {
-    for (int i = 0; i < 125; ++i)
-    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 124 ? ", " : ")");
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const PFHRGBSignature250& p)
-  {
-    for (int i = 0; i < 250; ++i)
-    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 249 ? ", " : ")");
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const PPFSignature& p)
-  {
-    os << "(" << p.f1 << ", " << p.f2 << ", " << p.f3 << ", " << p.f4 << ", " << p.alpha_m << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const CPPFSignature& p)
-  {
-    os << "(" << p.f1 << ", " << p.f2 << ", " << p.f3 << ", " << p.f4 << ", " << p.f5 << ", " << p.f6 << ", " << p.f7 << ", " << p.f8 << ", " << p.f9 << ", " << p.f10 << ", " << p.alpha_m << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const PPFRGBSignature& p)
-   {
-     os << "(" << p.f1 << ", " << p.f2 << ", " << p.f3 << ", " << p.f4 << ", " <<
-         p.r_ratio << ", " << p.g_ratio << ", " << p.b_ratio << ", " << p.alpha_m << ")";
-     return (os);
-   }
-
-  std::ostream& 
-  operator << (std::ostream& os, const NormalBasedSignature12& p)
-  {
-    for (int i = 0; i < 12; ++i)
-    os << (i == 0 ? "(" : "") << p.values[i] << (i < 11 ? ", " : ")");
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const ShapeContext1980& p)
-  {
-    for (int i = 0; i < 9; ++i)
-    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
-    for (std::size_t i = 0; i < 1980; ++i)
-      os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 1979 ? ", " : ")");
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const UniqueShapeContext1960& p)
-  {
-    for (int i = 0; i < 9; ++i)
-    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
-    for (std::size_t i = 0; i < 1960; ++i)
-      os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 1959 ? ", " : ")");
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const SHOT352& p)
-  {
-    for (int i = 0; i < 9; ++i)
-    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
-    for (std::size_t i = 0; i < 352; ++i)
-    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 351 ? ", " : ")");
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const SHOT1344& p)
-  {
-    for (int i = 0; i < 9; ++i)
-    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
-    for (std::size_t i = 0; i < 1344; ++i)
-    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 1343 ? ", " : ")");
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const ReferenceFrame& p)
-  {
-    os << "("
-       << p.x_axis[0] << " " << p.x_axis[1] << " " << p.x_axis[2] << ","
-       << p.y_axis[0] << " " << p.y_axis[1] << " " << p.y_axis[2] << ","
-       << p.z_axis[0] << " " << p.z_axis[1] << " " << p.z_axis[2] << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const FPFHSignature33& p)
-  {
-    for (int i = 0; i < 33; ++i)
-    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 32 ? ", " : ")");
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const VFHSignature308& p)
-  {
-    for (int i = 0; i < 308; ++i)
-    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 307 ? ", " : ")");
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const BRISKSignature512& p)
-  {
-    os << p.scale << " " << p.orientation << " ";
-    for (int i = 0; i < 64; ++i)
-    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 63 ? ", " : ")");
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const ESFSignature640& p)
-  {
-    for (int i = 0; i < 640; ++i)
-    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 639 ? ", " : ")");
-    return (os);
-  }
-
-  std::ostream&
-  operator << (std::ostream& os, const GASDSignature512& p)
-  {
-    for (int i = 0; i < 512; ++i)
-      os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 511 ? ", " : ")");
-    return (os);
-  }
-
-  std::ostream&
-  operator << (std::ostream& os, const GASDSignature984& p)
-  {
-    for (int i = 0; i < 984; ++i)
-      os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 983 ? ", " : ")");
-    return (os);
-  }
-
-  std::ostream&
-  operator << (std::ostream& os, const GASDSignature7992& p)
-  {
-    for (int i = 0; i < 7992; ++i)
-      os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 7991 ? ", " : ")");
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const GFPFHSignature16& p)
-  {
-    for (int i = 0; i < pcl::GFPFHSignature16::descriptorSize (); ++i)
-    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < (pcl::GFPFHSignature16::descriptorSize () - 1) ? ", " : ")");
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const Narf36& p)
-  {
-    os << p.x<<","<<p.y<<","<<p.z<<" - "<<p.roll*360.0/M_PI<<"deg,"<<p.pitch*360.0/M_PI<<"deg,"<<p.yaw*360.0/M_PI<<"deg - ";
-    for (int i = 0; i < 36; ++i)
-    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 35 ? ", " : ")");
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const BorderDescription& p)
-  {
-    os << "(" << p.x << "," << p.y << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const IntensityGradient& p)
-  {
-    os << "(" << p.gradient[0] << "," << p.gradient[1] << "," << p.gradient[2] << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const PointWithScale& p)
-  {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.scale << "," << p.angle << "," << p.response << "," << p.octave << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const PointSurfel& p)
-  {
-    os <<
-    "(" << p.x << "," << p.y << "," << p.z << " - " <<
-    p.normal_x << "," << p.normal_y << "," << p.normal_z << " - "
-    << static_cast<int>(p.r) << ","
-    << static_cast<int>(p.g) << ","
-    << static_cast<int>(p.b) << ","
-    << static_cast<int>(p.a) << " - " <<
-    p.radius << " - " << p.confidence << " - " << p.curvature << ")";
-    return (os);
-  }
-
-  std::ostream& 
-  operator << (std::ostream& os, const PointDEM& p)
-  {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " 
-       << p.intensity << " - " << p.intensity_variance << " - " 
-       << p.height_variance << ")";
-    return (os);
-  }
-
+  os << "(" << p.x << "," << p.y << "," << p.z << ")";
+  return (os);
 }
+
+std::ostream&
+operator<<(std::ostream& os, const RGB& p)
+{
+  os << "(" << static_cast<int>(p.r) << "," << static_cast<int>(p.g) << ","
+     << static_cast<int>(p.b) << "," << static_cast<int>(p.a) << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Intensity& p)
+{
+  os << "( " << static_cast<int>(p.intensity) << " )";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Intensity8u& p)
+{
+  os << "( " << static_cast<int>(p.intensity) << " )";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Intensity32u& p)
+{
+  os << "( " << p.intensity << " )";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PointXYZI& p)
+{
+  os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.intensity << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PointXYZL& p)
+{
+  os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.label << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Label& p)
+{
+  os << "(" << p.label << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PointXYZRGBA& p)
+{
+  os << "(" << p.x << "," << p.y << "," << p.z << " - " << static_cast<int>(p.r) << ","
+     << static_cast<int>(p.g) << "," << static_cast<int>(p.b) << ","
+     << static_cast<int>(p.a) << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PointXYZRGB& p)
+{
+  os << "(" << p.x << "," << p.y << "," << p.z << " - " << static_cast<int>(p.r) << ","
+     << static_cast<int>(p.g) << "," << static_cast<int>(p.b) << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PointXYZRGBL& p)
+{
+  os << "(" << p.x << "," << p.y << "," << p.z << " - " << static_cast<int>(p.r) << ","
+     << static_cast<int>(p.g) << "," << static_cast<int>(p.b) << " - " << p.label
+     << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PointXYZLAB& p)
+{
+  os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.L << " , " << p.a << " , "
+     << p.b << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PointXYZHSV& p)
+{
+  os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.h << " , " << p.s << " , "
+     << p.v << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PointXY& p)
+{
+  os << "(" << p.x << "," << p.y << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PointUV& p)
+{
+  os << "(" << p.u << "," << p.v << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const InterestPoint& p)
+{
+  os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.strength << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Normal& p)
+{
+  os << "(" << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << " - "
+     << p.curvature << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Axis& p)
+{
+  os << "(" << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << ")";
+  return os;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const _Axis& p)
+{
+  os << "(" << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << ")";
+  return os;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PointNormal& p)
+{
+  os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.normal[0] << ","
+     << p.normal[1] << "," << p.normal[2] << " - " << p.curvature << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PointXYZRGBNormal& p)
+{
+  os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.rgb << " - " << p.normal[0]
+     << "," << p.normal[1] << "," << p.normal[2] << " - " << static_cast<int>(p.r)
+     << "," << static_cast<int>(p.g) << "," << static_cast<int>(p.b) << " - "
+     << p.curvature << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PointXYZINormal& p)
+{
+  os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.intensity << " - "
+     << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << " - " << p.curvature
+     << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PointXYZLNormal& p)
+{
+  os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.label << " - "
+     << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << " - " << p.curvature
+     << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PointWithRange& p)
+{
+  os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.range << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PointWithViewpoint& p)
+{
+  os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.vp_x << "," << p.vp_y
+     << "," << p.vp_z << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const MomentInvariants& p)
+{
+  os << "(" << p.j1 << "," << p.j2 << "," << p.j3 << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PrincipalRadiiRSD& p)
+{
+  os << "(" << p.r_min << "," << p.r_max << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Boundary& p)
+{
+  os << p.boundary_point;
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PrincipalCurvatures& p)
+{
+  os << "(" << p.principal_curvature[0] << "," << p.principal_curvature[1] << ","
+     << p.principal_curvature[2] << " - " << p.pc1 << "," << p.pc2 << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PFHSignature125& p)
+{
+  for (int i = 0; i < 125; ++i)
+    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 124 ? ", " : ")");
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PFHRGBSignature250& p)
+{
+  for (int i = 0; i < 250; ++i)
+    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 249 ? ", " : ")");
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PPFSignature& p)
+{
+  os << "(" << p.f1 << ", " << p.f2 << ", " << p.f3 << ", " << p.f4 << ", " << p.alpha_m
+     << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const CPPFSignature& p)
+{
+  os << "(" << p.f1 << ", " << p.f2 << ", " << p.f3 << ", " << p.f4 << ", " << p.f5
+     << ", " << p.f6 << ", " << p.f7 << ", " << p.f8 << ", " << p.f9 << ", " << p.f10
+     << ", " << p.alpha_m << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PPFRGBSignature& p)
+{
+  os << "(" << p.f1 << ", " << p.f2 << ", " << p.f3 << ", " << p.f4 << ", " << p.r_ratio
+     << ", " << p.g_ratio << ", " << p.b_ratio << ", " << p.alpha_m << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const NormalBasedSignature12& p)
+{
+  for (int i = 0; i < 12; ++i)
+    os << (i == 0 ? "(" : "") << p.values[i] << (i < 11 ? ", " : ")");
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const ShapeContext1980& p)
+{
+  for (int i = 0; i < 9; ++i)
+    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
+  for (std::size_t i = 0; i < 1980; ++i)
+    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 1979 ? ", " : ")");
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const UniqueShapeContext1960& p)
+{
+  for (int i = 0; i < 9; ++i)
+    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
+  for (std::size_t i = 0; i < 1960; ++i)
+    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 1959 ? ", " : ")");
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const SHOT352& p)
+{
+  for (int i = 0; i < 9; ++i)
+    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
+  for (std::size_t i = 0; i < 352; ++i)
+    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 351 ? ", " : ")");
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const SHOT1344& p)
+{
+  for (int i = 0; i < 9; ++i)
+    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
+  for (std::size_t i = 0; i < 1344; ++i)
+    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 1343 ? ", " : ")");
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const ReferenceFrame& p)
+{
+  os << "(" << p.x_axis[0] << " " << p.x_axis[1] << " " << p.x_axis[2] << ","
+     << p.y_axis[0] << " " << p.y_axis[1] << " " << p.y_axis[2] << "," << p.z_axis[0]
+     << " " << p.z_axis[1] << " " << p.z_axis[2] << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const FPFHSignature33& p)
+{
+  for (int i = 0; i < 33; ++i)
+    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 32 ? ", " : ")");
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const VFHSignature308& p)
+{
+  for (int i = 0; i < 308; ++i)
+    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 307 ? ", " : ")");
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const BRISKSignature512& p)
+{
+  os << p.scale << " " << p.orientation << " ";
+  for (int i = 0; i < 64; ++i)
+    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 63 ? ", " : ")");
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const ESFSignature640& p)
+{
+  for (int i = 0; i < 640; ++i)
+    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 639 ? ", " : ")");
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const GASDSignature512& p)
+{
+  for (int i = 0; i < 512; ++i)
+    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 511 ? ", " : ")");
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const GASDSignature984& p)
+{
+  for (int i = 0; i < 984; ++i)
+    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 983 ? ", " : ")");
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const GASDSignature7992& p)
+{
+  for (int i = 0; i < 7992; ++i)
+    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 7991 ? ", " : ")");
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const GFPFHSignature16& p)
+{
+  for (int i = 0; i < pcl::GFPFHSignature16::descriptorSize(); ++i)
+    os << (i == 0 ? "(" : "") << p.histogram[i]
+       << (i < (pcl::GFPFHSignature16::descriptorSize() - 1) ? ", " : ")");
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Narf36& p)
+{
+  os << p.x << "," << p.y << "," << p.z << " - " << p.roll * 360.0 / M_PI << "deg,"
+     << p.pitch * 360.0 / M_PI << "deg," << p.yaw * 360.0 / M_PI << "deg - ";
+  for (int i = 0; i < 36; ++i)
+    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 35 ? ", " : ")");
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const BorderDescription& p)
+{
+  os << "(" << p.x << "," << p.y << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const IntensityGradient& p)
+{
+  os << "(" << p.gradient[0] << "," << p.gradient[1] << "," << p.gradient[2] << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PointWithScale& p)
+{
+  os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.scale << "," << p.angle
+     << "," << p.response << "," << p.octave << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PointSurfel& p)
+{
+  os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.normal_x << ","
+     << p.normal_y << "," << p.normal_z << " - " << static_cast<int>(p.r) << ","
+     << static_cast<int>(p.g) << "," << static_cast<int>(p.b) << ","
+     << static_cast<int>(p.a) << " - " << p.radius << " - " << p.confidence << " - "
+     << p.curvature << ")";
+  return (os);
+}
+
+std::ostream&
+operator<<(std::ostream& os, const PointDEM& p)
+{
+  os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.intensity << " - "
+     << p.intensity_variance << " - " << p.height_variance << ")";
+  return (os);
+}
+
+} // namespace pcl

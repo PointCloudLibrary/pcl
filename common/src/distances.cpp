@@ -37,23 +37,25 @@
 #include <pcl/common/distances.h>
 
 void
-pcl::lineToLineSegment (const Eigen::VectorXf &line_a, const Eigen::VectorXf &line_b, 
-                        Eigen::Vector4f &pt1_seg, Eigen::Vector4f &pt2_seg)
+pcl::lineToLineSegment(const Eigen::VectorXf& line_a,
+                       const Eigen::VectorXf& line_b,
+                       Eigen::Vector4f& pt1_seg,
+                       Eigen::Vector4f& pt2_seg)
 {
   // point + direction = 2nd point
-  Eigen::Vector4f p1 = Eigen::Vector4f::Zero ();
-  Eigen::Vector4f p2 = Eigen::Vector4f::Zero ();
-  Eigen::Vector4f dir1 = Eigen::Vector4f::Zero ();
-  p1.head<3> () = line_a.head<3> ();
-  dir1.head<3> () = line_a.segment<3> (3);
+  Eigen::Vector4f p1 = Eigen::Vector4f::Zero();
+  Eigen::Vector4f p2 = Eigen::Vector4f::Zero();
+  Eigen::Vector4f dir1 = Eigen::Vector4f::Zero();
+  p1.head<3>() = line_a.head<3>();
+  dir1.head<3>() = line_a.segment<3>(3);
   p2 = p1 + dir1;
 
   // point + direction = 2nd point
-  Eigen::Vector4f q1 = Eigen::Vector4f::Zero ();
-  Eigen::Vector4f q2 = Eigen::Vector4f::Zero ();
-  Eigen::Vector4f dir2 = Eigen::Vector4f::Zero ();
-  q1.head<3> () = line_b.head<3> ();
-  dir2.head<3> () = line_b.segment<3> (3);
+  Eigen::Vector4f q1 = Eigen::Vector4f::Zero();
+  Eigen::Vector4f q2 = Eigen::Vector4f::Zero();
+  Eigen::Vector4f dir2 = Eigen::Vector4f::Zero();
+  q1.head<3>() = line_b.head<3>();
+  dir2.head<3>() = line_b.segment<3>(3);
   q2 = q1 + dir2;
 
   // a = x2 - x1 = line_a[1] - line_a[0]
@@ -63,29 +65,27 @@ pcl::lineToLineSegment (const Eigen::VectorXf &line_a, const Eigen::VectorXf &li
   // c = x2 - x3 = line_a[1] - line_b[0]
   Eigen::Vector4f w = p2 - q1;
 
-  float a = u.dot (u);
-  float b = u.dot (v);
-  float c = v.dot (v);
-  float d = u.dot (w);
-  float e = v.dot (w);
-  float denominator = a*c - b*b;
+  float a = u.dot(u);
+  float b = u.dot(v);
+  float c = v.dot(v);
+  float d = u.dot(w);
+  float e = v.dot(w);
+  float denominator = a * c - b * b;
   float sc, tc;
   // Compute the line parameters of the two closest points
-  if (denominator < 1e-5)          // The lines are almost parallel
+  if (denominator < 1e-5) // The lines are almost parallel
   {
     sc = 0.0;
-    tc = (b > c ? d / b : e / c);  // Use the largest denominator
+    tc = (b > c ? d / b : e / c); // Use the largest denominator
   }
-  else
-  {
-    sc = (b*e - c*d) / denominator;
-    tc = (a*e - b*d) / denominator;
+  else {
+    sc = (b * e - c * d) / denominator;
+    tc = (a * e - b * d) / denominator;
   }
   // Get the closest points
-  pt1_seg = Eigen::Vector4f::Zero ();
+  pt1_seg = Eigen::Vector4f::Zero();
   pt1_seg = p2 + sc * u;
 
-  pt2_seg = Eigen::Vector4f::Zero ();
+  pt2_seg = Eigen::Vector4f::Zero();
   pt2_seg = q1 + tc * v;
 }
-

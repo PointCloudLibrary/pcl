@@ -36,60 +36,58 @@
  *
  */
 
-#include <pcl/types.h>
 #include <pcl/correspondence.h>
+#include <pcl/types.h>
+
 #include <algorithm>
 #include <iterator>
 
 //////////////////////////////////////////////////////////////////////////////
 void
-pcl::getRejectedQueryIndices (const pcl::Correspondences &correspondences_before,
-                              const pcl::Correspondences &correspondences_after,
-                              Indices& indices,
-                              bool presorting_required)
+pcl::getRejectedQueryIndices(const pcl::Correspondences& correspondences_before,
+                             const pcl::Correspondences& correspondences_after,
+                             Indices& indices,
+                             bool presorting_required)
 {
   indices.clear();
 
-  const auto nr_correspondences_before = correspondences_before.size ();
-  const auto nr_correspondences_after = correspondences_after.size ();
+  const auto nr_correspondences_before = correspondences_before.size();
+  const auto nr_correspondences_after = correspondences_after.size();
 
   if (nr_correspondences_before == 0)
     return;
-  if (nr_correspondences_after == 0)
-  {
+  if (nr_correspondences_after == 0) {
     indices.resize(nr_correspondences_before);
     for (std::size_t i = 0; i < nr_correspondences_before; ++i)
       indices[i] = correspondences_before[i].index_query;
     return;
   }
 
-  Indices indices_before (nr_correspondences_before);
+  Indices indices_before(nr_correspondences_before);
   for (std::size_t i = 0; i < nr_correspondences_before; ++i)
     indices_before[i] = correspondences_before[i].index_query;
 
-  Indices indices_after (nr_correspondences_after);
+  Indices indices_after(nr_correspondences_after);
   for (std::size_t i = 0; i < nr_correspondences_after; ++i)
     indices_after[i] = correspondences_after[i].index_query;
 
-  if (presorting_required)
-  {
-    std::sort (indices_before.begin (), indices_before.end ());
-    std::sort (indices_after.begin (), indices_after.end ());
+  if (presorting_required) {
+    std::sort(indices_before.begin(), indices_before.end());
+    std::sort(indices_after.begin(), indices_after.end());
   }
 
-  set_difference (
-      indices_before.begin (), indices_before.end (),
-      indices_after.begin (),  indices_after.end (),
-      inserter (indices, indices.begin ()));
+  set_difference(indices_before.begin(),
+                 indices_before.end(),
+                 indices_after.begin(),
+                 indices_after.end(),
+                 inserter(indices, indices.begin()));
 }
 
-namespace pcl
+namespace pcl {
+std::ostream&
+operator<<(std::ostream& os, const Correspondence& c)
 {
-  std::ostream&
-  operator << (std::ostream& os, const Correspondence& c)
-  {
-    os << c.index_query << " " << c.index_match << " " << c.distance;
-    return (os);
-  }
+  os << c.index_query << " " << c.index_match << " " << c.distance;
+  return (os);
 }
-
+} // namespace pcl

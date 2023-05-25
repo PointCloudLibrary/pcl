@@ -37,52 +37,56 @@
  *
  */
 
-#include <limits>
-
-#include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
 #include <pcl/common/common.h>
 #include <pcl/console/print.h>
+#include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
+
+#include <limits>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void 
-pcl::getMinMax (const pcl::PCLPointCloud2 &cloud, int,
-                const std::string &field_name, float &min_p, float &max_p)
+void
+pcl::getMinMax(const pcl::PCLPointCloud2& cloud,
+               int,
+               const std::string& field_name,
+               float& min_p,
+               float& max_p)
 {
   min_p = std::numeric_limits<float>::max();
   max_p = -std::numeric_limits<float>::max();
 
-  const auto result = std::find_if(cloud.fields.begin (), cloud.fields.end (),
-      [&field_name](const auto& field) { return field.name == field_name; });
-  if (result == cloud.fields.end ())
-  {
-    PCL_ERROR ("[getMinMax] Invalid field (%s) given!\n", field_name.c_str ());
+  const auto result = std::find_if(
+      cloud.fields.begin(), cloud.fields.end(), [&field_name](const auto& field) {
+        return field.name == field_name;
+      });
+  if (result == cloud.fields.end()) {
+    PCL_ERROR("[getMinMax] Invalid field (%s) given!\n", field_name.c_str());
     return;
   }
-  const auto field_idx = std::distance(cloud.fields.begin (), result);
+  const auto field_idx = std::distance(cloud.fields.begin(), result);
 
-  for (uindex_t i = 0; i < cloud.fields[field_idx].count; ++i)
-  {
+  for (uindex_t i = 0; i < cloud.fields[field_idx].count; ++i) {
     float data;
     // TODO: replace float with the real data type
-    memcpy (&data, &cloud.data[cloud.fields[field_idx].offset + i * sizeof (float)], sizeof (float));
-    min_p = (data > min_p) ? min_p : data; 
-    max_p = (data < max_p) ? max_p : data; 
+    memcpy(&data,
+           &cloud.data[cloud.fields[field_idx].offset + i * sizeof(float)],
+           sizeof(float));
+    min_p = (data > min_p) ? min_p : data;
+    max_p = (data < max_p) ? max_p : data;
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::getMeanStdDev (const std::vector<float> &values, double &mean, double &stddev)
+pcl::getMeanStdDev(const std::vector<float>& values, double& mean, double& stddev)
 {
   double sum = 0, sq_sum = 0;
 
-  for (const float &value : values)
-  {
+  for (const float& value : values) {
     sum += value;
     sq_sum += value * value;
   }
-  mean = sum / static_cast<double>(values.size ());
-  double variance = (sq_sum - sum * sum / static_cast<double>(values.size ())) / (static_cast<double>(values.size ()) - 1);
-  stddev = sqrt (variance);
+  mean = sum / static_cast<double>(values.size());
+  double variance = (sq_sum - sum * sum / static_cast<double>(values.size())) /
+                    (static_cast<double>(values.size()) - 1);
+  stddev = sqrt(variance);
 }
-
