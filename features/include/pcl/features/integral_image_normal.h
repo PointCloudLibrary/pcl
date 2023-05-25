@@ -377,7 +377,7 @@ namespace pcl
       int rect_height_4_{0};
 
       /** the threshold used to detect depth discontinuities */
-      float distance_threshold_{0};
+      float distance_threshold_{0.0f};
 
       /** integral image in x-direction */
       IntegralImage2D<float, 3> integral_image_DX_;

@@ -129,7 +129,7 @@ namespace pcl
       Eigen::Vector4i min_b_, max_b_, div_b_, divb_mul_;
 
       /** \brief The nearest neighbors search radius for each point. */
-      double search_radius_{0};
+      double search_radius_{0.0};
 
       /** \brief Downsample a Point Cloud using a voxelized grid approach
         * \param[out] output the resultant point cloud message

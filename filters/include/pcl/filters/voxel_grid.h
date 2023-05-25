@@ -196,14 +196,10 @@ namespace pcl
       VoxelGrid () :
         leaf_size_ (Eigen::Vector4f::Zero ()),
         inverse_leaf_size_ (Eigen::Array4f::Zero ()),
-        
         min_b_ (Eigen::Vector4i::Zero ()),
         max_b_ (Eigen::Vector4i::Zero ()),
         div_b_ (Eigen::Vector4i::Zero ()),
-        divb_mul_ (Eigen::Vector4i::Zero ()),
-        
-        filter_limit_min_ (std::numeric_limits<float>::lowest()),
-        filter_limit_max_ (std::numeric_limits<float>::max())
+        divb_mul_ (Eigen::Vector4i::Zero ())
       {
         filter_name_ = "VoxelGrid";
       }
@@ -472,10 +468,10 @@ namespace pcl
       std::string filter_field_name_;
 
       /** \brief The minimum allowed filter value a point will be considered from. */
-      double filter_limit_min_;
+      double filter_limit_min_{std::numeric_limits<float>::lowest()};
 
       /** \brief The maximum allowed filter value a point will be considered from. */
-      double filter_limit_max_;
+      double filter_limit_max_{std::numeric_limits<float>::max()};
 
       /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a filter_limit_max_). Default: false. */
       bool filter_limit_negative_{false};
@@ -523,10 +519,7 @@ namespace pcl
         min_b_ (Eigen::Vector4i::Zero ()),
         max_b_ (Eigen::Vector4i::Zero ()),
         div_b_ (Eigen::Vector4i::Zero ()),
-        divb_mul_ (Eigen::Vector4i::Zero ()),
-        
-        filter_limit_min_ (std::numeric_limits<float>::lowest()),
-        filter_limit_max_ (std::numeric_limits<float>::max())
+        divb_mul_ (Eigen::Vector4i::Zero ())
       {
         filter_name_ = "VoxelGrid";
       }
@@ -823,10 +816,10 @@ namespace pcl
       std::string filter_field_name_;
 
       /** \brief The minimum allowed filter value a point will be considered from. */
-      double filter_limit_min_;
+      double filter_limit_min_{std::numeric_limits<float>::lowest()};
 
       /** \brief The maximum allowed filter value a point will be considered from. */
-      double filter_limit_max_;
+      double filter_limit_max_{std::numeric_limits<float>::max()};
 
       /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a filter_limit_max_). Default: false. */
       bool filter_limit_negative_{false};
