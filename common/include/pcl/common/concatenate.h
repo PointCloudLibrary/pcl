@@ -40,7 +40,7 @@
 
 #include <pcl/point_struct_traits.h>
 
-#include <cstring> // for std::memcpy
+#include <cstring>     // for std::memcpy
 #include <type_traits> // for std::is_same
 
 namespace pcl {
@@ -70,10 +70,10 @@ struct NdConcatenateFunctor {
                          POINT_IN_AND_POINT_OUT_HAVE_DIFFERENT_TYPES_FOR_FIELD,
                          (Key, PointInT&, InT, PointOutT&, OutT));
     std::memcpy(reinterpret_cast<std::uint8_t*>(&p2_) +
-               pcl::traits::offset<PointOutT, Key>::value,
-           reinterpret_cast<const std::uint8_t*>(&p1_) +
-               pcl::traits::offset<PointInT, Key>::value,
-           sizeof(InT));
+                    pcl::traits::offset<PointOutT, Key>::value,
+                reinterpret_cast<const std::uint8_t*>(&p1_) +
+                    pcl::traits::offset<PointInT, Key>::value,
+                sizeof(InT));
   }
 
 private:
