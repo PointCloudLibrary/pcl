@@ -14,6 +14,7 @@ BraceWrapping:
 BreakBeforeBraces: Custom
 BreakConstructorInitializers: BeforeComma
 ColumnLimit: 88
+CommentPragmas: '( \| |\*-- |<li> |\ref |\p |\param |\returns |\warning |\ingroup |\author |\date |\related |\relates |\relatesalso |\deprecated |\image |\return |\brief |\attention |\copydoc |\addtogroup |\todo |\tparam |\see |\note |\skip |\skipline |\until |\line |\dontinclude |\include)'
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 ConstructorInitializerIndentWidth: 0
 Language: Cpp
