@@ -38,152 +38,179 @@
 
 #pragma once
 
-#include <pcl/point_cloud.h>
 #include <pcl/PointIndices.h>
 #include <pcl/correspondence.h>
+#include <pcl/point_cloud.h>
 
-namespace pcl
-{
-  /** \brief Iterator class for point clouds with or without given indices
-    * \author Suat Gedikli
-    */
-  template <typename PointT>
-  class CloudIterator
-  {
-    public:
-      CloudIterator (PointCloud<PointT>& cloud);
+namespace pcl {
+/** \brief Iterator class for point clouds with or without given indices
+ * \author Suat Gedikli
+ */
+template <typename PointT>
+class CloudIterator {
+public:
+  CloudIterator(PointCloud<PointT>& cloud);
 
-      CloudIterator (PointCloud<PointT>& cloud, const Indices& indices);
+  CloudIterator(PointCloud<PointT>& cloud, const Indices& indices);
 
-      CloudIterator (PointCloud<PointT>& cloud, const PointIndices& indices);
+  CloudIterator(PointCloud<PointT>& cloud, const PointIndices& indices);
 
-      CloudIterator (PointCloud<PointT>& cloud, const Correspondences& corrs, bool source);
+  CloudIterator(PointCloud<PointT>& cloud, const Correspondences& corrs, bool source);
 
-      ~CloudIterator ();
+  ~CloudIterator();
 
-      void operator ++ ();
+  void
+  operator++();
 
-      void operator ++ (int);
+  void
+  operator++(int);
 
-      PointT& operator* () const;
+  PointT&
+  operator*() const;
 
-      PointT* operator-> () const;
+  PointT*
+  operator->() const;
 
-      unsigned getCurrentPointIndex () const;
+  unsigned
+  getCurrentPointIndex() const;
 
-      unsigned getCurrentIndex () const;
+  unsigned
+  getCurrentIndex() const;
 
-      /** \brief Size of the range the iterator is going through. Depending on how the CloudIterator was constructed this is the size of the cloud or indices/correspondences. */
-      std::size_t size () const;
+  /** \brief Size of the range the iterator is going through. Depending on how the CloudIterator was constructed this is the size of the cloud or indices/correspondences. */
+  std::size_t
+  size() const;
 
-      void reset ();
+  void
+  reset();
 
-      bool isValid () const;
+  bool
+  isValid() const;
 
-      operator bool () const
-      {
-        return isValid ();
-      }
-    private:
+  operator bool() const { return isValid(); }
 
-      class Iterator
-      {
-        public:
-          virtual ~Iterator ()  = default;
+private:
+  class Iterator {
+  public:
+    virtual ~Iterator() = default;
 
-          virtual void operator ++ () = 0;
+    virtual void
+    operator++() = 0;
 
-          virtual void operator ++ (int) = 0;
+    virtual void
+    operator++(int) = 0;
 
-          virtual PointT& operator* () const = 0;
+    virtual PointT&
+    operator*() const = 0;
 
-          virtual PointT* operator-> () const = 0;
+    virtual PointT*
+    operator->() const = 0;
 
-          virtual unsigned getCurrentPointIndex () const = 0;
+    virtual unsigned
+    getCurrentPointIndex() const = 0;
 
-          virtual unsigned getCurrentIndex () const = 0;
+    virtual unsigned
+    getCurrentIndex() const = 0;
 
-          /** \brief Size of the range the iterator is going through. Depending on how the CloudIterator was constructed this is the size of the cloud or indices/correspondences. */
-          virtual std::size_t size () const = 0;
+    /** \brief Size of the range the iterator is going through. Depending on how the CloudIterator was constructed this is the size of the cloud or indices/correspondences. */
+    virtual std::size_t
+    size() const = 0;
 
-          virtual void reset () = 0;
+    virtual void
+    reset() = 0;
 
-          virtual bool isValid () const = 0;
-      };
-      Iterator* iterator_;
+    virtual bool
+    isValid() const = 0;
+  };
+  Iterator* iterator_;
+};
+
+/** \brief Iterator class for point clouds with or without given indices
+ * \author Suat Gedikli
+ */
+template <typename PointT>
+class ConstCloudIterator {
+public:
+  ConstCloudIterator(const PointCloud<PointT>& cloud);
+
+  ConstCloudIterator(const PointCloud<PointT>& cloud, const Indices& indices);
+
+  ConstCloudIterator(const PointCloud<PointT>& cloud, const PointIndices& indices);
+
+  ConstCloudIterator(const PointCloud<PointT>& cloud,
+                     const Correspondences& corrs,
+                     bool source);
+
+  ~ConstCloudIterator();
+
+  void
+  operator++();
+
+  void
+  operator++(int);
+
+  const PointT&
+  operator*() const;
+
+  const PointT*
+  operator->() const;
+
+  unsigned
+  getCurrentPointIndex() const;
+
+  unsigned
+  getCurrentIndex() const;
+
+  /** \brief Size of the range the iterator is going through. Depending on how the ConstCloudIterator was constructed this is the size of the cloud or indices/correspondences. */
+  std::size_t
+  size() const;
+
+  void
+  reset();
+
+  bool
+  isValid() const;
+
+  operator bool() const { return isValid(); }
+
+private:
+  class Iterator {
+  public:
+    virtual ~Iterator() = default;
+
+    virtual void
+    operator++() = 0;
+
+    virtual void
+    operator++(int) = 0;
+
+    virtual const PointT&
+    operator*() const = 0;
+
+    virtual const PointT*
+    operator->() const = 0;
+
+    virtual unsigned
+    getCurrentPointIndex() const = 0;
+
+    virtual unsigned
+    getCurrentIndex() const = 0;
+
+    /** \brief Size of the range the iterator is going through. Depending on how the ConstCloudIterator was constructed this is the size of the cloud or indices/correspondences. */
+    virtual std::size_t
+    size() const = 0;
+
+    virtual void
+    reset() = 0;
+
+    virtual bool
+    isValid() const = 0;
   };
 
-  /** \brief Iterator class for point clouds with or without given indices
-    * \author Suat Gedikli
-    */
-  template <typename PointT>
-  class ConstCloudIterator
-  {
-    public:
-      ConstCloudIterator (const PointCloud<PointT>& cloud);
-
-      ConstCloudIterator (const PointCloud<PointT>& cloud, const Indices& indices);
-
-      ConstCloudIterator (const PointCloud<PointT>& cloud, const PointIndices& indices);
-
-      ConstCloudIterator (const PointCloud<PointT>& cloud, const Correspondences& corrs, bool source);
-
-      ~ConstCloudIterator ();
-
-      void operator ++ ();
-
-      void operator ++ (int);
-
-      const PointT& operator* () const;
-
-      const PointT* operator-> () const;
-
-      unsigned getCurrentPointIndex () const;
-
-      unsigned getCurrentIndex () const;
-
-      /** \brief Size of the range the iterator is going through. Depending on how the ConstCloudIterator was constructed this is the size of the cloud or indices/correspondences. */
-      std::size_t size () const;
-
-      void reset ();
-
-      bool isValid () const;
-
-      operator bool () const
-      {
-        return isValid ();
-      }
-    private:
-
-      class Iterator
-      {
-        public:
-          virtual ~Iterator ()  = default;
-
-          virtual void operator ++ () = 0;
-
-          virtual void operator ++ (int) = 0;
-
-          virtual const PointT& operator* () const = 0;
-
-          virtual const PointT* operator-> () const = 0;
-
-          virtual unsigned getCurrentPointIndex () const = 0;
-
-          virtual unsigned getCurrentIndex () const = 0;
-
-          /** \brief Size of the range the iterator is going through. Depending on how the ConstCloudIterator was constructed this is the size of the cloud or indices/correspondences. */
-          virtual std::size_t size () const = 0;
-
-          virtual void reset () = 0;
-
-          virtual bool isValid () const = 0;
-      };
-
-      class DefaultConstIterator;
-      class ConstIteratorIdx;
-      Iterator* iterator_;
-  };
+  class DefaultConstIterator;
+  class ConstIteratorIdx;
+  Iterator* iterator_;
+};
 
 } // namespace pcl
 

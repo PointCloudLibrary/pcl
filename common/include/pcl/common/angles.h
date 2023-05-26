@@ -39,48 +39,47 @@
 #pragma once
 
 /**
-  * \file pcl/common/angles.h
-  * Define standard C methods to do angle calculations
-  * \ingroup common
-  */
+ * \file pcl/common/angles.h
+ * Define standard C methods to do angle calculations
+ * \ingroup common
+ */
 
 /*@{*/
-namespace pcl
-{
-  /** \brief Convert an angle from radians to degrees
-    * \param alpha the input angle (in radians)
-    * \ingroup common
-    */
-  inline float 
-  rad2deg (float alpha);
+namespace pcl {
+/** \brief Convert an angle from radians to degrees
+ * \param alpha the input angle (in radians)
+ * \ingroup common
+ */
+inline float
+rad2deg(float alpha);
 
-  /** \brief Convert an angle from degrees to radians
-    * \param alpha the input angle (in degrees)
-    * \ingroup common
-    */
-  inline float 
-  deg2rad (float alpha);
+/** \brief Convert an angle from degrees to radians
+ * \param alpha the input angle (in degrees)
+ * \ingroup common
+ */
+inline float
+deg2rad(float alpha);
 
-  /** \brief Convert an angle from radians to degrees
-    * \param alpha the input angle (in radians)
-    * \ingroup common
-    */
-  inline double 
-  rad2deg (double alpha);
+/** \brief Convert an angle from radians to degrees
+ * \param alpha the input angle (in radians)
+ * \ingroup common
+ */
+inline double
+rad2deg(double alpha);
 
-  /** \brief Convert an angle from degrees to radians
-    * \param alpha the input angle (in degrees)
-    * \ingroup common
-    */
-  inline double 
-  deg2rad (double alpha);
+/** \brief Convert an angle from degrees to radians
+ * \param alpha the input angle (in degrees)
+ * \ingroup common
+ */
+inline double
+deg2rad(double alpha);
 
-  /** \brief Normalize an angle to (-PI, PI]
-    * \param alpha the input angle (in radians)
-    * \ingroup common
-    */
-  inline float
-  normAngle (float alpha);
-}
+/** \brief Normalize an angle to (-PI, PI]
+ * \param alpha the input angle (in radians)
+ * \ingroup common
+ */
+inline float
+normAngle(float alpha);
+} // namespace pcl
 /*@}*/
 #include <pcl/common/impl/angles.hpp>
