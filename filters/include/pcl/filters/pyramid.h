@@ -145,7 +145,7 @@ namespace pcl
         /// \brief The input point cloud dataset.
         PointCloudConstPtr input_;
         /// \brief number of pyramid levels
-        int levels_;
+        int levels_{4};
         /// \brief use large smoothing kernel
         bool large_{false};
         /// \brief filter name
@@ -153,7 +153,7 @@ namespace pcl
         /// \brief smoothing kernel
         Eigen::MatrixXf kernel_;
         /// Threshold distance between adjacent points
-        float threshold_{0.01};
+        float threshold_{0.01f};
         /// \brief number of threads
         unsigned int threads_{0};
 

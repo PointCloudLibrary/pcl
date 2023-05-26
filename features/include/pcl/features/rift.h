@@ -141,7 +141,7 @@ namespace pcl
       computeFeature (PointCloudOut &output) override;
 
       /** \brief The intensity gradient of the input point cloud data*/
-      PointCloudGradientConstPtr gradient_{};
+      PointCloudGradientConstPtr gradient_{nullptr};
 
       /** \brief The number of distance bins in the descriptor. */
       int nr_distance_bins_{4};

@@ -247,7 +247,7 @@ namespace pcl
       }
     protected:
       /** \brief The type of model to use (user given parameter). */
-      int model_type_{};
+      int model_type_{0};
 
       /** \brief True if all data will be returned, false if only the projected inliers. Default: false. */
       bool copy_all_data_{false};

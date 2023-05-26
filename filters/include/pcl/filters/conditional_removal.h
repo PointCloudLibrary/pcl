@@ -117,10 +117,10 @@ namespace pcl
       std::string field_name_;
 
       /** \brief The data offset. */
-      std::uint32_t offset_{};
+      std::uint32_t offset_{0};
 
       /** \brief The comparison operator type. */
-      ComparisonOps::CompareOp op_{};
+      ComparisonOps::CompareOp op_{ComparisonOps::GT};
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////

@@ -94,7 +94,6 @@ namespace pcl
          * Sets \ref nr_points, \ref cov_, \ref icov_, \ref mean_ and \ref evals_ to 0 and \ref evecs_ to the identity matrix
          */
         Leaf () :
-          
           mean_ (Eigen::Vector3d::Zero ()),
           cov_ (Eigen::Matrix3d::Zero ()),
           icov_ (Eigen::Matrix3d::Zero ()),
@@ -196,7 +195,6 @@ namespace pcl
        * Sets \ref leaf_size_ to 0 and \ref searchable_ to false.
        */
       VoxelGridCovariance () :
-        
         leaves_ (),
         voxel_centroids_ (),
         kdtree_ ()

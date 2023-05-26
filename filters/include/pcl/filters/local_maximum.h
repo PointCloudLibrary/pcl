@@ -119,7 +119,7 @@ namespace pcl
       SearcherPtr searcher_;
 
       /** \brief The radius to use to determine if a point is the local max. */
-      float radius_{1};
+      float radius_{1.0f};
   };
 }
 
