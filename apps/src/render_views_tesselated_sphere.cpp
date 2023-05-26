@@ -20,8 +20,8 @@
 #include <vtkPointPicker.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkPropPicker.h>
-#include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
 #include <vtkSelection.h>
 #include <vtkSelectionNode.h>
 #include <vtkTransform.h>

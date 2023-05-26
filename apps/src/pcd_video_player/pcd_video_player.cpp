@@ -55,8 +55,8 @@
 
 #include <vtkCamera.h>
 #include <vtkGenericOpenGLRenderWindow.h>
-#include <vtkRenderWindow.h>
 #include <vtkRendererCollection.h>
+#include <vtkRenderWindow.h>
 
 #include <fstream>
 #include <iostream>
