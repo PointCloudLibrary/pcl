@@ -296,14 +296,14 @@ private:
   std::vector<int> index_mapping_;
 
   /** \brief whether the mapping between internal and external indices is identity */
-  bool identity_mapping_;
+  bool identity_mapping_{false};
 
   /** \brief Tree dimensionality (i.e. the number of dimensions per point). */
-  int dim_;
+  int dim_{0};
 
   /** \brief The total size of the data (either equal to the number of points in the
    * input cloud or to the number of indices - if passed). */
-  uindex_t total_nr_points_;
+  uindex_t total_nr_points_{0};
 
   /** \brief The KdTree search parameters for K-nearest neighbors. */
   ::flann::SearchParams param_k_;

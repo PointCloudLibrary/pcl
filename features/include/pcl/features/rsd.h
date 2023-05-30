@@ -151,7 +151,7 @@ namespace pcl
       RSDEstimation ()
       {
         feature_name_ = "RadiusSurfaceDescriptor";
-      };
+      }
 
       /** \brief Set the number of subdivisions for the considered distance interval.
         * \param[in] nr_subdiv the number of subdivisions

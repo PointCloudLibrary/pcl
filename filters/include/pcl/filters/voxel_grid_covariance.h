@@ -94,7 +94,6 @@ namespace pcl
          * Sets \ref nr_points, \ref cov_, \ref icov_, \ref mean_ and \ref evals_ to 0 and \ref evecs_ to the identity matrix
          */
         Leaf () :
-          nr_points (0),
           mean_ (Eigen::Vector3d::Zero ()),
           cov_ (Eigen::Matrix3d::Zero ()),
           icov_ (Eigen::Matrix3d::Zero ()),
@@ -160,7 +159,7 @@ namespace pcl
         }
 
         /** \brief Number of points contained by voxel */
-        int nr_points;
+        int nr_points{0};
 
         /** \brief 3D voxel centroid */
         Eigen::Vector3d mean_;
@@ -196,9 +195,6 @@ namespace pcl
        * Sets \ref leaf_size_ to 0 and \ref searchable_ to false.
        */
       VoxelGridCovariance () :
-        searchable_ (true),
-        min_points_per_voxel_ (6),
-        min_covar_eigvalue_mult_ (0.01),
         leaves_ (),
         voxel_centroids_ (),
         kdtree_ ()
@@ -568,13 +564,13 @@ namespace pcl
       void applyFilter (PointCloud &output) override;
 
       /** \brief Flag to determine if voxel structure is searchable. */
-      bool searchable_;
+      bool searchable_{true};
 
       /** \brief Minimum points contained with in a voxel to allow it to be usable. */
-      int min_points_per_voxel_;
+      int min_points_per_voxel_{6};
 
       /** \brief Minimum allowable ratio between eigenvalues to prevent singular covariance matrices. */
-      double min_covar_eigvalue_mult_;
+      double min_covar_eigvalue_mult_{0.01};
 
       /** \brief Voxel structure containing all leaf nodes (includes voxels with less than a sufficient number of points). */
       std::map<std::size_t, Leaf> leaves_;

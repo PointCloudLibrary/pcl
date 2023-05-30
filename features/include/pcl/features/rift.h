@@ -80,10 +80,10 @@ namespace pcl
 
 
       /** \brief Empty constructor. */
-      RIFTEstimation () : gradient_ ()
+      RIFTEstimation ()
       {
         feature_name_ = "RIFTEstimation";
-      };
+      }
 
       /** \brief Provide a pointer to the input gradient data
         * \param[in] gradient a pointer to the input gradient data
@@ -141,7 +141,7 @@ namespace pcl
       computeFeature (PointCloudOut &output) override;
 
       /** \brief The intensity gradient of the input point cloud data*/
-      PointCloudGradientConstPtr gradient_;
+      PointCloudGradientConstPtr gradient_{nullptr};
 
       /** \brief The number of distance bins in the descriptor. */
       int nr_distance_bins_{4};

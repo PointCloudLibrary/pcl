@@ -67,8 +67,7 @@ namespace pcl
       /** \brief Empty constructor. */
       LocalMaximum (bool extract_removed_indices = false) :
         FilterIndices<PointT>::FilterIndices (extract_removed_indices),
-        searcher_ (),
-        radius_ (1)
+        searcher_ ()
       {
         filter_name_ = "LocalMaximum";
       }
@@ -120,7 +119,7 @@ namespace pcl
       SearcherPtr searcher_;
 
       /** \brief The radius to use to determine if a point is the local max. */
-      float radius_;
+      float radius_{1.0f};
   };
 }
 

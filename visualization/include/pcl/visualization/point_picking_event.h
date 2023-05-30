@@ -83,7 +83,7 @@ namespace pcl
 
 
       private:
-        float x_{0}, y_{0}, z_{0};
+        float x_{0.0f}, y_{0.0f}, z_{0.0f};
         pcl::index_t idx_{pcl::UNAVAILABLE};
         bool pick_first_{false};
         const vtkActor* actor_{nullptr};

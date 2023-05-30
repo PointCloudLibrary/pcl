@@ -72,7 +72,7 @@ namespace pcl
       IntensityGradientEstimation () : intensity_ ()
       {
         feature_name_ = "IntensityGradientEstimation";
-      };
+      }
 
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)

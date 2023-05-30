@@ -196,17 +196,10 @@ namespace pcl
       VoxelGrid () :
         leaf_size_ (Eigen::Vector4f::Zero ()),
         inverse_leaf_size_ (Eigen::Array4f::Zero ()),
-        downsample_all_data_ (true),
-        save_leaf_layout_ (false),
         min_b_ (Eigen::Vector4i::Zero ()),
         max_b_ (Eigen::Vector4i::Zero ()),
         div_b_ (Eigen::Vector4i::Zero ()),
-        divb_mul_ (Eigen::Vector4i::Zero ()),
-        
-        filter_limit_min_ (std::numeric_limits<float>::lowest()),
-        filter_limit_max_ (std::numeric_limits<float>::max()),
-        filter_limit_negative_ (false),
-        min_points_per_voxel_ (0)
+        divb_mul_ (Eigen::Vector4i::Zero ())
       {
         filter_name_ = "VoxelGrid";
       }
@@ -460,10 +453,10 @@ namespace pcl
       Eigen::Array4f inverse_leaf_size_;
 
       /** \brief Set to true if all fields need to be downsampled, or false if just XYZ. */
-      bool downsample_all_data_;
+      bool downsample_all_data_{true};
 
       /** \brief Set to true if leaf layout information needs to be saved in \a leaf_layout_. */
-      bool save_leaf_layout_;
+      bool save_leaf_layout_{false};
 
       /** \brief The leaf layout information for fast access to cells relative to current position **/
       std::vector<int> leaf_layout_;
@@ -475,16 +468,16 @@ namespace pcl
       std::string filter_field_name_;
 
       /** \brief The minimum allowed filter value a point will be considered from. */
-      double filter_limit_min_;
+      double filter_limit_min_{std::numeric_limits<float>::lowest()};
 
       /** \brief The maximum allowed filter value a point will be considered from. */
-      double filter_limit_max_;
+      double filter_limit_max_{std::numeric_limits<float>::max()};
 
       /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a filter_limit_max_). Default: false. */
-      bool filter_limit_negative_;
+      bool filter_limit_negative_{false};
 
       /** \brief Minimum number of points per voxel for the centroid to be computed */
-      unsigned int min_points_per_voxel_;
+      unsigned int min_points_per_voxel_{0};
 
       using FieldList = typename pcl::traits::fieldList<PointT>::type;
 
@@ -522,17 +515,11 @@ namespace pcl
       VoxelGrid () :
         leaf_size_ (Eigen::Vector4f::Zero ()),
         inverse_leaf_size_ (Eigen::Array4f::Zero ()),
-        downsample_all_data_ (true),
-        save_leaf_layout_ (false),
+        
         min_b_ (Eigen::Vector4i::Zero ()),
         max_b_ (Eigen::Vector4i::Zero ()),
         div_b_ (Eigen::Vector4i::Zero ()),
-        divb_mul_ (Eigen::Vector4i::Zero ()),
-        
-        filter_limit_min_ (std::numeric_limits<float>::lowest()),
-        filter_limit_max_ (std::numeric_limits<float>::max()),
-        filter_limit_negative_ (false),
-        min_points_per_voxel_ (0)
+        divb_mul_ (Eigen::Vector4i::Zero ())
       {
         filter_name_ = "VoxelGrid";
       }
@@ -808,12 +795,12 @@ namespace pcl
       Eigen::Array4f inverse_leaf_size_;
 
       /** \brief Set to true if all fields need to be downsampled, or false if just XYZ. */
-      bool downsample_all_data_;
+      bool downsample_all_data_{true};
 
       /** \brief Set to true if leaf layout information needs to be saved in \a
         * leaf_layout.
         */
-      bool save_leaf_layout_;
+      bool save_leaf_layout_{false};
 
       /** \brief The leaf layout information for fast access to cells relative
         * to current position
@@ -829,16 +816,16 @@ namespace pcl
       std::string filter_field_name_;
 
       /** \brief The minimum allowed filter value a point will be considered from. */
-      double filter_limit_min_;
+      double filter_limit_min_{std::numeric_limits<float>::lowest()};
 
       /** \brief The maximum allowed filter value a point will be considered from. */
-      double filter_limit_max_;
+      double filter_limit_max_{std::numeric_limits<float>::max()};
 
       /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a filter_limit_max_). Default: false. */
-      bool filter_limit_negative_;
+      bool filter_limit_negative_{false};
 
       /** \brief Minimum number of points per voxel for the centroid to be computed */
-      unsigned int min_points_per_voxel_;
+      unsigned int min_points_per_voxel_{0};
 
       /** \brief Downsample a Point Cloud using a voxelized grid approach
         * \param[out] output the resultant point cloud

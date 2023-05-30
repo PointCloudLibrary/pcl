@@ -77,7 +77,7 @@ namespace pcl
       IntensitySpinEstimation ()
       {
         feature_name_ = "IntensitySpinEstimation";
-      };
+      }
 
       /** \brief Estimate the intensity-domain spin image descriptor for a given point based on its spatial
         * neighborhood of 3D points and their intensities. 

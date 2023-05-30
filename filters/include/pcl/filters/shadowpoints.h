@@ -72,8 +72,7 @@ namespace pcl
       /** \brief Empty constructor. */
       ShadowPoints (bool extract_removed_indices = false) : 
         FilterIndices<PointT> (extract_removed_indices),
-        input_normals_ (), 
-        threshold_ (0.1f) 
+        input_normals_ ()
       {
         filter_name_ = "ShadowPoints";
       }
@@ -119,7 +118,7 @@ namespace pcl
 
       /** \brief Threshold for shadow point rejection
         */
-      float threshold_;
+      float threshold_{0.1f};
   };
 }
 

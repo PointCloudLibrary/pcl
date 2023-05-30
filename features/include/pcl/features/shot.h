@@ -94,7 +94,7 @@ namespace pcl
         nr_shape_bins_ (nr_shape_bins)
       {
         feature_name_ = "SHOTEstimation";
-      };
+      }
 
     public:
 
@@ -165,19 +165,19 @@ namespace pcl
       int nr_shape_bins_;
 
       /** \brief The radius used for the LRF computation */
-      float lrf_radius_{0};
+      float lrf_radius_{0.0f};
 
       /** \brief The squared search radius. */
-      double sqradius_{0};
+      double sqradius_{0.0};
 
       /** \brief 3/4 of the search radius. */
-      double radius3_4_{0};
+      double radius3_4_{0.0};
 
       /** \brief 1/4 of the search radius. */
-      double radius1_4_{0};
+      double radius1_4_{0.0};
 
       /** \brief 1/2 of the search radius. */
-      double radius1_2_{0};
+      double radius1_2_{0.0};
 
       /** \brief Number of azimuthal sectors. */
       const int nr_grid_sector_{32};
@@ -324,7 +324,7 @@ namespace pcl
           b_describe_color_ (describe_color)
       {
         feature_name_ = "SHOTColorEstimation";
-      };
+      }
       
       /** \brief Empty destructor */
       ~SHOTColorEstimation () override = default;

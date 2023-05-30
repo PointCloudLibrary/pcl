@@ -79,7 +79,6 @@ namespace pcl
         k_ = 1;
         feature_name_ = "CRHEstimation";
       }
-      ;
 
       /** \brief Set the viewpoint.
        * \param[in] vpx the X coordinate of the viewpoint
@@ -117,7 +116,7 @@ namespace pcl
       /** \brief Values describing the viewpoint ("pinhole" camera model assumed). 
        * By default, the viewpoint is set to 0,0,0.
        */
-      float vpx_{0}, vpy_{0}, vpz_{0};
+      float vpx_{0.0f}, vpy_{0.0f}, vpz_{0.0f};
 
       /** \brief Number of bins, this should match the Output type */
       int nbins_{90};

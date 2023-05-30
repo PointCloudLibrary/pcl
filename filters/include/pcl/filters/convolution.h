@@ -213,12 +213,12 @@ namespace pcl
         /// convolution kernel
         Eigen::ArrayXf kernel_;
         /// half kernel size
-        int half_width_;
+        int half_width_{};
         /// kernel size - 1
-        int kernel_width_;
+        int kernel_width_{};
       protected:
         /** \brief The number of threads the scheduler should use. */
-        unsigned int threads_;
+        unsigned int threads_{1};
 
         void
         makeInfinite (PointOut& p)

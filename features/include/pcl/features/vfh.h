@@ -217,7 +217,7 @@ namespace pcl
       /** \brief Values describing the viewpoint ("pinhole" camera model assumed). For per point viewpoints, inherit
         * from VFHEstimation and provide your own computeFeature (). By default, the viewpoint is set to 0,0,0.
         */
-      float vpx_{0}, vpy_{0}, vpz_{0};
+      float vpx_{0.0f}, vpy_{0.0f}, vpz_{0.0f};
 
       /** \brief Estimate the Viewpoint Feature Histograms (VFH) descriptors at a set of points given by
         * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () and the spatial locator in
