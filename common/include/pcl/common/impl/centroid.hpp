@@ -668,7 +668,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
 {
   Eigen::Matrix<Scalar, 3, 3> covariance_matrix;
   Eigen::Matrix<Scalar, 4, 1> centroid4;
-  const auto point_count= computeMeanAndCovarianceMatrix(cloud, covariance_matrix, centroid4);
+  const auto point_count = computeMeanAndCovarianceMatrix(cloud, covariance_matrix, centroid4);
   if (!point_count)
     return (0);
   centroid(0) = centroid4(0);
@@ -707,7 +707,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
 
   if (cloud.is_dense)
   {
-    const auto & point = cloud[0];
+    const auto& point = cloud[0];
     Eigen::Matrix<Scalar, 4, 1> P0(static_cast<Scalar>(point.x), static_cast<Scalar>(point.y) , static_cast<Scalar>(point.z), 1.0);
     Eigen::Matrix<Scalar, 4, 1> P = transform * P0;
 
@@ -717,7 +717,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
 
     for (size_t i=1; i<cloud.size();++i)
     {
-      const auto &  point = cloud[i];
+      const auto&  point = cloud[i];
       Eigen::Matrix<Scalar, 4, 1> P0(static_cast<Scalar>(point.x), static_cast<Scalar>(point.y) , static_cast<Scalar>(point.z), 1.0);
       Eigen::Matrix<Scalar, 4, 1> P = transform * P0;
 
@@ -740,7 +740,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
     size_t i = 0;
     for (; i < cloud.size(); ++i)
     {
-      const auto &  point = cloud[i];
+      const auto&  point = cloud[i];
       if (!isFinite(point))
         continue;
       Eigen::Matrix<Scalar, 4, 1> P0(static_cast<Scalar>(point.x), static_cast<Scalar>(point.y) , static_cast<Scalar>(point.z), 1.0);
@@ -755,7 +755,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
 
     for (; i<cloud.size();++i)
     {
-      const auto &  point = cloud[i];
+      const auto&  point = cloud[i];
       if (!isFinite(point))
         continue;
       Eigen::Matrix<Scalar, 4, 1> P0(static_cast<Scalar>(point.x), static_cast<Scalar>(point.y) , static_cast<Scalar>(point.z), 1.0);
@@ -802,7 +802,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
 {
   Eigen::Matrix<Scalar, 3, 3> covariance_matrix;
   Eigen::Matrix<Scalar, 4, 1> centroid4;
-  const auto point_count= computeMeanAndCovarianceMatrix(cloud, indices, covariance_matrix, centroid4);
+  const auto point_count = computeMeanAndCovarianceMatrix(cloud, indices, covariance_matrix, centroid4);
   if (!point_count)
     return (0);
   centroid(0) = centroid4(0);
@@ -841,7 +841,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
 
   if (cloud.is_dense)
   {
-    const auto &  point = cloud[indices[0]];
+    const auto&  point = cloud[indices[0]];
     Eigen::Matrix<Scalar, 4, 1> P0(static_cast<Scalar>(point.x), static_cast<Scalar>(point.y) , static_cast<Scalar>(point.z), 1.0);
     Eigen::Matrix<Scalar, 4, 1> P = transform * P0;
 
@@ -875,7 +875,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
     size_t i = 0;
     for (; i<indices.size();++i)
     {
-      const auto &  point = cloud[indices[i]];
+      const auto&  point = cloud[indices[i]];
       if (!isFinite(point))
         continue;
       Eigen::Matrix<Scalar, 4, 1> P0(static_cast<Scalar>(point.x), static_cast<Scalar>(point.y) , static_cast<Scalar>(point.z), 1.0);
@@ -890,7 +890,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
 
     for (; i<indices.size();++i)
     {
-      const auto &  point = cloud[indices[i]];
+      const auto&  point = cloud[indices[i]];
       if (!isFinite(point))
         continue;
 
