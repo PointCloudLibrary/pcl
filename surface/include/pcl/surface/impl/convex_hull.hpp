@@ -93,13 +93,13 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
     p2 = (*input_)[(*indices_)[rand () % indices_->size ()]];
     dy1dy2 = (p1.getArray4fMap () - p0.getArray4fMap ()) / (p2.getArray4fMap () - p0.getArray4fMap ());
   }
-    
+
   pcl::PointCloud<PointInT> normal_calc_cloud;
   normal_calc_cloud.resize (3);
   normal_calc_cloud[0] = p0;
   normal_calc_cloud[1] = p1;
   normal_calc_cloud[2] = p2;
-    
+
   Eigen::Vector4d normal_calc_centroid;
   Eigen::Matrix3d normal_calc_covariance;
   pcl::compute3DCentroid (normal_calc_cloud, normal_calc_centroid);
@@ -135,14 +135,15 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   boolT ismalloc = True;
   // output from qh_produce_output(), use NULL to skip qh_produce_output()
   FILE *outfile = nullptr;
+  FILE *errfile = nullptr;
 
   if (compute_area_ && pcl::console::isVerbosityLevelEnabled(pcl::console::L_DEBUG))
     outfile = stderr;
+    errfile = stderr;
 
   // option flags for qhull, see qh_opt.htm
   const char* flags = qhull_flags.c_str ();
   // error messages from qhull code
-  FILE *errfile = stderr;
 
   // Array of coordinates for each point
   coordT *points = reinterpret_cast<coordT*> (calloc (indices_->size () * dimension, sizeof (coordT)));
@@ -156,7 +157,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
       points[j + 0] = static_cast<coordT> ((*input_)[(*indices_)[i]].x);
       points[j + 1] = static_cast<coordT> ((*input_)[(*indices_)[i]].y);
     }
-  } 
+  }
   else if (yz_proj_safe)
   {
     for (std::size_t i = 0; i < indices_->size (); ++i, j+=dimension)
@@ -183,14 +184,14 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   qhT* qh = &qh_qh;
   QHULL_LIB_CHECK
   qh_zero(qh, errfile);
-   
+
   // Compute convex hull
   int exitcode = qh_new_qhull (qh, dimension, static_cast<int> (indices_->size ()), points, ismalloc, const_cast<char*> (flags), outfile, errfile);
   if (compute_area_)
   {
     qh_prepare_output(qh);
   }
-    
+
   // 0 if no error from qhull or it doesn't find any vertices
   if (exitcode != 0 || qh->num_vertices == 0)
   {
@@ -259,7 +260,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
     }
   }
   std::sort (idx_points.begin (), idx_points.end (), comparePoints2D);
-    
+
   polygons.resize (1);
   polygons[0].vertices.resize (hull.size ());
 
@@ -273,7 +274,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
     hull[j] = (*input_)[(*indices_)[idx_points[j].first]];
     polygons[0].vertices[j] = static_cast<unsigned int> (j);
   }
-    
+
   qh_freeqhull (qh, !qh_ALL);
   int curlong, totlong;
   qh_memfreeshort (qh, &curlong, &totlong);
@@ -298,14 +299,15 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   boolT ismalloc = True;
   // output from qh_produce_output(), use NULL to skip qh_produce_output()
   FILE *outfile = nullptr;
+  FILE *errfile = nullptr;
 
   if (compute_area_ && pcl::console::isVerbosityLevelEnabled(pcl::console::L_DEBUG))
     outfile = stderr;
+    errfile = stderr;
 
   // option flags for qhull, see qh_opt.htm
   const char *flags = qhull_flags.c_str ();
   // error messages from qhull code
-  FILE *errfile = stderr;
 
   // Array of coordinates for each point
   coordT *points = reinterpret_cast<coordT*> (calloc (indices_->size () * dimension, sizeof (coordT)));
