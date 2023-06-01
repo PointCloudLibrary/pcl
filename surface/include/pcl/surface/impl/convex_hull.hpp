@@ -304,7 +304,7 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   FILE *errfile = nullptr;
 
   if (compute_area_ && pcl::console::isVerbosityLevelEnabled(pcl::console::L_DEBUG))
-{
+  {
     outfile = stderr;
     errfile = stderr;
 }
