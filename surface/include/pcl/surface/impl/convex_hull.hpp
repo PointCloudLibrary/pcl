@@ -138,7 +138,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   FILE *errfile = nullptr;
 
   if (compute_area_ && pcl::console::isVerbosityLevelEnabled(pcl::console::L_DEBUG))
-{
+  {
     outfile = stderr;
     errfile = stderr;
 }
