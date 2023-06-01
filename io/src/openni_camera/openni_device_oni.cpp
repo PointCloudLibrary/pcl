@@ -54,9 +54,6 @@ openni_wrapper::DeviceONI::DeviceONI (
     bool streaming)
   : OpenNIDevice (context)
   , streaming_  (streaming)
-  , depth_stream_running_ (false)
-  , image_stream_running_ (false)
-  , ir_stream_running_ (false)
 {
   XnStatus status;
 #if (XN_MINOR_VERSION >= 3)

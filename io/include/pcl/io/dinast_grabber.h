@@ -163,16 +163,16 @@ namespace pcl
       captureThreadFunction ();
       
       /** \brief Width of image */
-      int image_width_;
+      int image_width_{320};
       
       /** \brief Height of image */
-      int image_height_;
+      int image_height_{240};
       
       /** \brief Total size of image */
       int image_size_;
       
       /** \brief Length of a sync packet */
-      int sync_packet_size_;
+      int sync_packet_size_{512};
       
       double dist_max_2d_;
       
@@ -183,10 +183,10 @@ namespace pcl
       enum pixel_size { RAW8=1, RGB16=2, RGB24=3, RGB32=4 };
       
       /** \brief The libusb context*/
-      libusb_context *context_;
+      libusb_context *context_{nullptr};
       
       /** \brief the actual device_handle for the camera */
-      struct libusb_device_handle *device_handle_;
+      struct libusb_device_handle *device_handle_{nullptr};
       
       /** \brief Temporary USB read buffer, since we read two RGB16 images at a time size is the double of two images
         * plus a sync packet.
@@ -205,9 +205,9 @@ namespace pcl
       unsigned char *image_;
       
       /** \brief Since there is no header after the first image, we need to save the state */
-      bool second_image_;
+      bool second_image_{false};
       
-      bool running_;
+      bool running_{false};
       
       std::thread capture_thread_;
       

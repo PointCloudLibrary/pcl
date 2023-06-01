@@ -69,7 +69,7 @@ namespace openni_wrapper
     Image::Ptr getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) const noexcept override;
     void enumAvailableModes () noexcept;
     bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const noexcept override;
-    ImageBayerGRBG::DebayeringMethod debayering_method_;
+    ImageBayerGRBG::DebayeringMethod debayering_method_{ImageBayerGRBG::EdgeAwareWeighted};
   } ;
 
   void

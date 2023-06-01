@@ -70,9 +70,8 @@ template <typename PointT, typename Dist>
 pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (const KdTreeFLANN<PointT, Dist> &k)
   : pcl::KdTree<PointT> (false)
   , flann_index_ ()
-  , identity_mapping_ (false)
-  , dim_ (0), total_nr_points_ (0)
-  , param_k_ (::flann::SearchParams (-1 , epsilon_))
+  , 
+   param_k_ (::flann::SearchParams (-1 , epsilon_))
   , param_radius_ (::flann::SearchParams (-1, epsilon_, false))
 {
   *this = k;

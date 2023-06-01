@@ -67,10 +67,7 @@ Narf::~Narf()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Narf::Narf (const Narf& other) : 
-  surface_patch_ (nullptr), 
-  surface_patch_pixel_size_ (0), surface_patch_world_size_ (), 
-  surface_patch_rotation_ (), descriptor_ (nullptr), descriptor_size_ (0)
+Narf::Narf (const Narf& other)
 {
   deepCopy (other);
 }
