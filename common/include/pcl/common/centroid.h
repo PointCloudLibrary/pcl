@@ -589,6 +589,61 @@ namespace pcl
     return (computeCovarianceMatrix<PointT, double> (cloud, indices, covariance_matrix));
   }
 
+
+  /** \brief Compute centroid, OBB (Oriented Bounding Box), PCA axes of a given set of points.
+  * OBB is oriented like the three axes (major, middle and minor) with
+  * major_axis  = obb_rotational_matrix.col(0)
+  * middle_axis = obb_rotational_matrix.col(1)
+  * minor_axis  = obb_rotational_matrix.col(2)
+  * one way to visualize OBB when Scalar is float:
+  * Eigen::Vector3f position(obb_position(0), obb_position(1), obb_position(2));
+  * Eigen::Quaternionf quat(obb_rotational_matrix);
+  * viewer->addCube(position, quat, obb_dimensions(0), obb_dimensions(1), obb_dimensions(2), .....);
+  * \param[in] cloud the input point cloud
+  * \param[out] centroid the centroid (mean value of the XYZ coordinates) of the set of points in the cloud
+  * \param[out] obb_center position of the center of the OBB (it is the same as centroid if the cloud is centrally symmetric)
+  * \param[out] obb_dimensions (width, height and depth) of the OBB 
+  * \param[out] obb_rotational_matrix rotational matrix of the OBB 
+  * \return number of valid points used to determine the output.
+  * In case of dense point clouds, this is the same as the size of the input cloud.
+  * \ingroup common
+  */
+  template <typename PointT, typename Scalar> inline unsigned int
+    computeCentroidAndOBB(const pcl::PointCloud<PointT>& cloud,
+                    Eigen::Matrix<Scalar, 3, 1>& centroid,
+                    Eigen::Matrix<Scalar, 3, 1>& obb_center,
+                    Eigen::Matrix<Scalar, 3, 1>& obb_dimensions,
+                    Eigen::Matrix<Scalar, 3, 3>& obb_rotational_matrix);
+
+
+  /** \brief Compute centroid, OBB (Oriented Bounding Box), PCA axes of a given set of points.
+  * OBB is oriented like the three axes (major, middle and minor) with
+  * major_axis  = obb_rotational_matrix.col(0)
+  * middle_axis = obb_rotational_matrix.col(1)
+  * minor_axis  = obb_rotational_matrix.col(2)
+  * one way to visualize OBB when Scalar is float:
+  * Eigen::Vector3f position(obb_position(0), obb_position(1), obb_position(2));
+  * Eigen::Quaternionf quat(obb_rotational_matrix);
+  * viewer->addCube(position, quat, obb_dimensions(0), obb_dimensions(1), obb_dimensions(2), .....);
+  * \param[in] cloud the input point cloud
+  * \param[in] indices subset of points given by their indices 
+  * \param[out] centroid the centroid (mean value of the XYZ coordinates) of the set of points in the cloud
+  * \param[out] obb_center position of the center of the OBB (it is the same as centroid if the cloud is centrally symmetric)
+  * \param[out] obb_dimensions (width, height and depth) of the OBB 
+  * \param[out] obb_rotational_matrix rotational matrix of the OBB 
+  * \return number of valid points used to determine the output.
+  * In case of dense point clouds, this is the same as the size of the input cloud.
+  * \ingroup common
+  */
+  template <typename PointT, typename Scalar> inline unsigned int
+    computeCentroidAndOBB(const pcl::PointCloud<PointT>& cloud,
+                    const Indices &indices,
+                    Eigen::Matrix<Scalar, 3, 1>& centroid,
+                    Eigen::Matrix<Scalar, 3, 1>& obb_center,
+                    Eigen::Matrix<Scalar, 3, 1>& obb_dimensions,
+                    Eigen::Matrix<Scalar, 3, 3>& obb_rotational_matrix);
+
+
   /** \brief Subtract a centroid from a point cloud and return the de-meaned representation
     * \param[in] cloud_iterator an iterator over the input point cloud
     * \param[in] centroid the centroid of the point cloud

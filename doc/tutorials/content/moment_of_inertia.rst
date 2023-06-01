@@ -5,7 +5,8 @@ Moment of inertia and eccentricity based descriptors
 
 In this tutorial we will learn how to use the `pcl::MomentOfInertiaEstimation` class in order to obtain descriptors based on
 eccentricity and moment of inertia. This class also allows to extract axis aligned and oriented bounding boxes of the cloud.
-But keep in mind that extracted OBB is not the minimal possible bounding box.
+But keep in mind that extracted OBB is not the minimal possible bounding box. Users who only need the OBB or AABB, but not the descriptors,
+should use respectively computeCentroidAndOBB or getMinMax3D (faster).
 
 Theoretical Primer
 ------------------

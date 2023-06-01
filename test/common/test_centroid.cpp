@@ -837,6 +837,140 @@ TEST (PCL, computeMeanAndCovariance)
   EXPECT_EQ (covariance_matrix (2, 2), 1);
 }
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, computeCentroidAndOBB)
+{
+  PointCloud<PointXYZ> cloud;
+  PointXYZ point;
+  Indices indices;
+  Eigen::Vector3f centroid = Eigen::Vector3f::Random();
+  Eigen::Vector3f major_axis;
+  Eigen::Vector3f middle_axis;
+  Eigen::Vector3f minor_axis;
+  Eigen::Matrix<float, 3, 1> obb_position;
+  Eigen::Matrix<float, 3, 1> obb_dimensions;
+  Eigen::Matrix3f obb_rotational_matrix= Eigen::Matrix3f::Random();
+
+  const Eigen::Vector3f old_centroid = centroid;
+  const Eigen::Matrix3f old_obb_rotational_matrix= obb_rotational_matrix;
+
+  // test empty cloud which is dense
+  cloud.is_dense = true;
+  EXPECT_EQ (computeCentroidAndOBB (cloud, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 0);
+  EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
+  EXPECT_EQ (old_obb_rotational_matrix, obb_rotational_matrix); // obb_rotational_matrix remains unchanged
+
+  // test empty cloud non_dense
+  cloud.is_dense = false;
+  EXPECT_EQ (computeCentroidAndOBB (cloud, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 0);
+  EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
+  EXPECT_EQ (old_obb_rotational_matrix, obb_rotational_matrix); // obb_rotational_matrix remains unchanged
+
+  // test non-empty cloud non_dense with no valid points
+  point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
+  cloud.push_back (point);
+  EXPECT_EQ (computeCentroidAndOBB (cloud, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 0);
+  EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
+  EXPECT_EQ (old_obb_rotational_matrix, obb_rotational_matrix); // obb_rotational_matrix remains unchanged
+
+  // test non-empty cloud non_dense with no valid points
+  point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
+  cloud.push_back (point);
+  indices.push_back (1);
+  EXPECT_EQ (computeCentroidAndOBB (cloud, indices, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 0);
+  EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
+  EXPECT_EQ (old_obb_rotational_matrix, obb_rotational_matrix); // obb_rotational_matrix remains unchanged
+
+  cloud.clear ();
+  indices.clear ();
+  // -1 -1 -1 / -1 -1 1 / -1 1 -1 / -1 1 1 / 1 -1 -1 / 1 -1 1 / 1 1 -1 / 1 1 1
+  for (point.x = -1; point.x < 2; point.x += 2)
+  {
+    for (point.y = -1; point.y < 2; point.y += 2)
+    {
+      for (point.z = -1; point.z < 2; point.z += 2)
+      {
+        cloud.push_back (point);
+      }
+    }
+  }
+  cloud.is_dense = true;
+
+  // eight points with (0, 0, 0) as centroid
+
+  centroid [0] = -100;
+  centroid [1] = -101;
+  centroid [2] = -102;
+  EXPECT_EQ (computeCentroidAndOBB (cloud, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 8);
+  EXPECT_EQ (centroid [0], 0);
+  EXPECT_EQ (centroid [1], 0);
+  EXPECT_EQ (centroid [2], 0);
+  EXPECT_NEAR (obb_position(0), 0, 0.01);
+  EXPECT_NEAR (obb_position(1), 0, 0.01);
+  EXPECT_NEAR (obb_position(2), 0, 0.01);
+  EXPECT_NEAR (obb_dimensions(0), 2, 0.01);
+  EXPECT_NEAR (obb_dimensions(1), 2, 0.01);
+  EXPECT_NEAR (obb_dimensions(2), 2, 0.01);
+
+
+  indices.resize (4); // only positive y values
+  indices [0] = 2;
+  indices [1] = 3;
+  indices [2] = 6;
+  indices [3] = 7;
+  centroid [0] = -100;
+  centroid [1] = -101;
+  centroid [2] = -102;
+
+  EXPECT_EQ (computeCentroidAndOBB (cloud, indices, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 4);
+  EXPECT_EQ (centroid [0], 0);
+  EXPECT_NEAR (centroid [1], 1, 0.001);
+  EXPECT_EQ (centroid [2], 0);
+  EXPECT_NEAR (obb_position(0), 0, 0.01);
+  EXPECT_NEAR (obb_position(1), 1, 0.01);
+  EXPECT_NEAR (obb_position(2), 0, 0.01);
+  EXPECT_NEAR (obb_dimensions(0), 2, 0.01);
+  EXPECT_NEAR (obb_dimensions(1), 2, 0.01);
+  EXPECT_NEAR (obb_dimensions(2), 0, 0.01);
+
+
+  point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
+  cloud.push_back (point);
+  cloud.is_dense = false;
+  centroid [0] = -100;
+  centroid [1] = -101;
+  centroid [2] = -102;
+  EXPECT_EQ (computeCentroidAndOBB (cloud, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 8);
+  EXPECT_EQ (centroid [0], 0);
+  EXPECT_EQ (centroid [1], 0);
+  EXPECT_EQ (centroid [2], 0);
+  EXPECT_NEAR (obb_position(0), 0, 0.01);
+  EXPECT_NEAR (obb_position(1), 0, 0.01);
+  EXPECT_NEAR (obb_position(2), 0, 0.01);
+  EXPECT_NEAR (obb_dimensions(0), 2, 0.01);
+  EXPECT_NEAR (obb_dimensions(1), 2, 0.01);
+  EXPECT_NEAR (obb_dimensions(2), 2, 0.01);
+
+
+  indices.push_back (8); // add the NaN
+  centroid [0] = -100;
+  centroid [1] = -101;
+  centroid [2] = -102;
+
+  EXPECT_EQ (computeCentroidAndOBB (cloud, indices, centroid, obb_position, obb_dimensions, obb_rotational_matrix), 4);
+  EXPECT_EQ (centroid [0], 0);
+  EXPECT_NEAR (centroid [1], 1, 0.001);
+  EXPECT_EQ (centroid [2], 0);
+  EXPECT_NEAR (obb_position(0), 0, 0.01);
+  EXPECT_NEAR (obb_position(1), 1, 0.01);
+  EXPECT_NEAR (obb_position(2), 0, 0.01);
+  EXPECT_NEAR (obb_dimensions(0), 2, 0.01);
+  EXPECT_NEAR (obb_dimensions(1), 2, 0.01);
+  EXPECT_NEAR (obb_dimensions(2), 0, 0.01);
+
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, CentroidPoint)
 {
