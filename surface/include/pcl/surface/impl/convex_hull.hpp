@@ -307,7 +307,7 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   {
     outfile = stderr;
     errfile = stderr;
-}
+  }
 
   // option flags for qhull, see qh_opt.htm
   const char *flags = qhull_flags.c_str ();
