@@ -141,7 +141,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   {
     outfile = stderr;
     errfile = stderr;
-}
+  }
 
   // option flags for qhull, see qh_opt.htm
   const char* flags = qhull_flags.c_str ();
