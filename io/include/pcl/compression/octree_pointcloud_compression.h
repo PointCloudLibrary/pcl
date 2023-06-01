@@ -264,22 +264,22 @@ namespace pcl
         /** \brief Static range coder instance */
         StaticRangeCoder entropy_coder_;
 
-        bool do_voxel_grid_enDecoding_;
-        std::uint32_t i_frame_rate_;
+        bool do_voxel_grid_enDecoding_{false};
+        std::uint32_t i_frame_rate_{0};
         std::uint32_t i_frame_counter_{0};
         std::uint32_t frame_ID_{0};
         std::uint64_t point_count_{0};
         bool i_frame_{true};
 
-        bool do_color_encoding_;
+        bool do_color_encoding_{false};
         bool cloud_with_color_{false};
         bool data_with_color_{false};
         unsigned char point_color_offset_{0};
 
         //bool activating statistics
-        bool b_show_statistics_;
-        std::uint64_t compressed_point_data_len_{};
-        std::uint64_t compressed_color_data_len_{};
+        bool b_show_statistics_{false};
+        std::uint64_t compressed_point_data_len_{0};
+        std::uint64_t compressed_color_data_len_{0};
 
         // frame header identifier
         static const char* frame_header_identifier_;

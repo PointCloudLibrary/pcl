@@ -176,10 +176,10 @@ namespace pcl
       std::string rgb_frame_id_;
       std::string depth_frame_id_;
       bool running_{false};
-      unsigned image_width_{};
-      unsigned image_height_{};
-      unsigned depth_width_{};
-      unsigned depth_height_{};
+      unsigned image_width_{0};
+      unsigned image_height_{0};
+      unsigned depth_width_{0};
+      unsigned depth_height_{0};
       openni_wrapper::OpenNIDevice::CallbackHandle depth_callback_handle{};
       openni_wrapper::OpenNIDevice::CallbackHandle image_callback_handle{};
       openni_wrapper::OpenNIDevice::CallbackHandle ir_callback_handle{};

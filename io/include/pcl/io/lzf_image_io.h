@@ -161,10 +161,10 @@ namespace pcl
                     std::vector<char> &output); 
 
         /** \brief The image width, as read from the file. */
-        std::uint32_t width_{};
+        std::uint32_t width_{0};
 
         /** \brief The image height, as read from the file. */
-        std::uint32_t height_{};
+        std::uint32_t height_{0};
 
         /** \brief The image type string, as read from the file. */
         std::string image_type_identifier_;

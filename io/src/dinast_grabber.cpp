@@ -42,11 +42,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::DinastGrabber::DinastGrabber (const int device_position)
-  : fov_ (64. * M_PI / 180.)
-  , bulk_ep_ (std::numeric_limits<unsigned char>::max ())
 {
-  image_size_ = image_width_ * image_height_;
-  dist_max_2d_ = 1. / (image_width_ / 2.);
   onInit(device_position);
   
   point_cloud_signal_ = createSignal<sig_cb_dinast_point_cloud> ();

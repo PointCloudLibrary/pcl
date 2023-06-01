@@ -413,7 +413,7 @@ namespace pcl
                                const typename list_property_end_callback_type<SizeType, ScalarType>::type& list_property_end_callback);
             
           std::size_t line_number_{0};
-          element* current_element_{};
+          element* current_element_{nullptr};
       };
     } // namespace ply
   } // namespace io

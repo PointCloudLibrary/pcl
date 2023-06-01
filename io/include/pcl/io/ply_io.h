@@ -515,7 +515,7 @@ namespace pcl
       Eigen::Matrix3f orientation_;
 
       //vertex element artifacts
-      pcl::PCLPointCloud2 *cloud_{};
+      pcl::PCLPointCloud2 *cloud_{nullptr};
       std::size_t vertex_count_{0};
       int vertex_offset_before_{0};
       //range element artifacts

@@ -279,8 +279,8 @@ namespace pcl
       Eigen::Affine3f transformation_;
       float* surface_patch_{nullptr};
       int surface_patch_pixel_size_{0};
-      float surface_patch_world_size_{};
-      float surface_patch_rotation_{};
+      float surface_patch_world_size_{0.0f};
+      float surface_patch_rotation_{0.0f};
       float* descriptor_{nullptr};
       int descriptor_size_{0};
 

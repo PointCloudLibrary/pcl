@@ -422,10 +422,10 @@ namespace pcl
 
       std::string rgb_frame_id_;
       std::string depth_frame_id_;
-      unsigned image_width_{};
-      unsigned image_height_{};
-      unsigned depth_width_{};
-      unsigned depth_height_{};
+      unsigned image_width_{0};
+      unsigned image_height_{0};
+      unsigned depth_width_{0};
+      unsigned depth_height_{0};
 
       bool image_required_{false};
       bool depth_required_{false};
