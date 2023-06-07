@@ -358,10 +358,11 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
   }
 
   double residual_sqr = pcl::estimateProjectionMatrix<PointT> (input_, projection_matrix_, indices);
+  PCL_DEBUG_STREAM("[pcl::" << this->getName () << "::estimateProjectionMatrix] projection matrix=" << std::endl << projection_matrix_ << std::endl << "residual_sqr=" << residual_sqr << std::endl);
   
   if (std::abs (residual_sqr) > eps_ * static_cast<float>(indices.size ()))
   {
-    PCL_ERROR ("[pcl::%s::estimateProjectionMatrix] Input dataset is not from a projective device!\nResidual (MSE) %f, using %d valid points\n", this->getName ().c_str (), residual_sqr / double (indices.size()), indices.size ());
+    PCL_ERROR ("[pcl::%s::estimateProjectionMatrix] Input dataset is not from a projective device!\nResidual (MSE) %g, using %d valid points\n", this->getName ().c_str (), residual_sqr / double (indices.size()), indices.size ());
     return;
   }
 
@@ -371,6 +372,19 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
 
   // precalculate KR * KR^T needed by calculations during nn-search
   KR_KRT_ = KR_ * KR_.transpose ();
+
+  // final test: project a few points at known image coordinates and test if the projected coordinates are close
+  for(std::size_t i=0; i<11; ++i) {
+    const std::size_t test_index = input_->size()*i/11u;
+    if (!mask_[test_index])
+      continue;
+    const auto& test_point = (*input_)[test_index];
+    pcl::PointXY q;
+    if (!projectPoint(test_point, q) || std::abs(q.x-test_index%input_->width)>1 || std::abs(q.y-test_index/input_->width)>1) {
+      PCL_WARN ("[pcl::%s::estimateProjectionMatrix] Input dataset does not seem to be from a projective device! (point %zu (%g,%g,%g) projected to pixel coordinates (%g,%g), but actual pixel coordinates are (%zu,%zu))\n",
+                this->getName ().c_str (), test_index, test_point.x, test_point.y, test_point.z, q.x, q.y, static_cast<std::size_t>(test_index%input_->width), static_cast<std::size_t>(test_index/input_->width));
+    }
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
