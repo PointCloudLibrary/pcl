@@ -124,6 +124,7 @@ pcl::PCLBase<pcl::PCLPointCloud2>::initCompute ()
     catch (const std::bad_alloc&)
     {
       PCL_ERROR ("[initCompute] Failed to allocate %lu indices.\n", (input_->width * input_->height));
+      return (false);
     }
     if (indices_size < indices_->size ())
       std::iota(indices_->begin () + indices_size, indices_->end (), indices_size);

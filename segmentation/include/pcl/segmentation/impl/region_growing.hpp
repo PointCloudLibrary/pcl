@@ -342,30 +342,27 @@ pcl::RegionGrowing<PointT, NormalT>::prepareForSegmentation ()
 template <typename PointT, typename NormalT> void
 pcl::RegionGrowing<PointT, NormalT>::findPointNeighbours ()
 {
-  int point_number = static_cast<int> (indices_->size ());
   pcl::Indices neighbours;
   std::vector<float> distances;
 
   point_neighbours_.resize (input_->size (), neighbours);
   if (input_->is_dense)
   {
-    for (int i_point = 0; i_point < point_number; i_point++)
+    for (const auto& point_index: (*indices_))
     {
-      const auto point_index = (*indices_)[i_point];
       neighbours.clear ();
-      search_->nearestKSearch (i_point, neighbour_number_, neighbours, distances);
+      search_->nearestKSearch (point_index, neighbour_number_, neighbours, distances);
       point_neighbours_[point_index].swap (neighbours);
     }
   }
   else
   {
-    for (int i_point = 0; i_point < point_number; i_point++)
+    for (const auto& point_index: (*indices_))
     {
-      neighbours.clear ();
-      const auto point_index = (*indices_)[i_point];
       if (!pcl::isFinite ((*input_)[point_index]))
         continue;
-      search_->nearestKSearch (i_point, neighbour_number_, neighbours, distances);
+      neighbours.clear ();
+      search_->nearestKSearch (point_index, neighbour_number_, neighbours, distances);
       point_neighbours_[point_index].swap (neighbours);
     }
   }

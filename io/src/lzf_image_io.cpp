@@ -135,7 +135,7 @@ pcl::io::LZFImageWriter::compress (const char* input,
     if (itype.size () > 16)
     {
       PCL_WARN ("[pcl::io::LZFImageWriter::compress] Image type should be a string of maximum 16 characters! Cutting %s to %s.\n", image_type.c_str (), image_type.substr (0, 15).c_str ());
-      itype = itype.substr (0, 15);
+      itype.resize(16);
     }
     if (itype.size () < 16)
       itype.insert (itype.end (), 16 - itype.size (), ' ');
