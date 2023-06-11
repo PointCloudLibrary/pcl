@@ -89,14 +89,13 @@ The following code libraries are **required** for the compilation and usage of t
 +---------------------------------------------------------------+-----------------+-------------------------+-------------------+
 | Logo                                                          | Library         | Minimum version         | Mandatory         |
 +===============================================================+=================+=========================+===================+
-| .. image:: images/posix_building_pcl/boost_logo.png           | Boost           | | 1.40 (without OpenNI) | pcl_*             |
-|                                                               |                 | | 1.47 (with OpenNI)    |                   |
+| .. image:: images/posix_building_pcl/boost_logo.png           | Boost           | 1.65                    | pcl_*             |
 +---------------------------------------------------------------+-----------------+-------------------------+-------------------+
-| .. image:: images/posix_building_pcl/eigen_logo.png           | Eigen           | 3.0                     | pcl_*             |
+| .. image:: images/posix_building_pcl/eigen_logo.png           | Eigen           | 3.3                     | pcl_*             |
 +---------------------------------------------------------------+-----------------+-------------------------+-------------------+
-| .. image:: images/posix_building_pcl/flann_logo.png           | FLANN           | 1.7.1                   | pcl_*             |
+| .. image:: images/posix_building_pcl/flann_logo.png           | FLANN           | 1.9.1                   | pcl_*             |
 +---------------------------------------------------------------+-----------------+-------------------------+-------------------+
-| .. image:: images/posix_building_pcl/vtk_logo.png             | VTK             | 5.6                     | pcl_visualization |
+| .. image:: images/posix_building_pcl/vtk_logo.png             | VTK             | 6.2                     | pcl_visualization |
 +---------------------------------------------------------------+-----------------+-------------------------+-------------------+
 
 Optional

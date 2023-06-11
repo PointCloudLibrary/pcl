@@ -54,6 +54,7 @@ namespace pcl
     * The description can be found in the article:
     * "Min-Cut Based Segmentation of Point Clouds"
     * \author: Aleksey Golovinskiy and Thomas Funkhouser.
+    * \ingroup segmentation
     */
   template <typename PointT>
   class PCL_EXPORTS MinCutSegmentation : public pcl::PCLBase<PointT>

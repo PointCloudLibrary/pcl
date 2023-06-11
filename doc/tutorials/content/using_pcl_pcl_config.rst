@@ -23,7 +23,7 @@ CMakeLists.txt that contains:
    
    cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
    project(MY_GRAND_PROJECT)
-   find_package(PCL 1.3 REQUIRED COMPONENTS common io)
+   find_package(PCL 1.3 REQUIRED)
    include_directories(${PCL_INCLUDE_DIRS})
    link_directories(${PCL_LIBRARY_DIRS})
    add_definitions(${PCL_DEFINITIONS})
@@ -53,7 +53,7 @@ invoking cmake (MY_GRAND_PROJECT_BINARY_DIR).
 
 .. code-block:: cmake
 
-   find_package(PCL 1.3 REQUIRED COMPONENTS common io)
+   find_package(PCL 1.3 REQUIRED)
 
 We are requesting to find the PCL package at minimum version 1.3. We
 also say that it is ``REQUIRED`` meaning that cmake will fail
@@ -204,4 +204,4 @@ before this one:
 
 .. code-block:: cmake
 
-   find_package(PCL 1.3 REQUIRED COMPONENTS common io)
+   find_package(PCL 1.3 REQUIRED)
