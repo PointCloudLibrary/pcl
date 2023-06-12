@@ -303,6 +303,11 @@ function(find_external_library _component _lib _is_optional)
     find_package(Pcap)
   elseif("${_lib}" STREQUAL "png")
     find_package(PNG)
+  elseif("${_lib}" STREQUAL "OpenMP")
+    find_package(OpenMP COMPONENTS CXX)
+    # the previous find_package call sets OpenMP_CXX_LIBRARIES, but not OPENMP_LIBRARIES, which is used further down
+    # we can link to the CMake target OpenMP::OpenMP_CXX by setting the following:
+    set(OPENMP_LIBRARIES OpenMP::OpenMP_CXX)
   else()
     message(WARNING "${_lib} is not handled by find_external_library")
   endif()
