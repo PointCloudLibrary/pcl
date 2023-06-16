@@ -99,7 +99,7 @@ Take a look at the full pipeline:
    :lines: 245-374
    :emphasize-lines: 6,9
 
-For a full explanation of the above code see `3D Object Recognition based on Correspondence Grouping <http://pointclouds.org/documentation/tutorials/correspondence_grouping.php>`_.
+For a full explanation of the above code see `3D Object Recognition based on Correspondence Grouping <https://pcl.readthedocs.io/projects/tutorials/en/master/correspondence_grouping.html>`_.
 
 
 Model-in-Scene Projection

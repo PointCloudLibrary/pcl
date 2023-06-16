@@ -906,6 +906,8 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
       for (vtkIdType x = 0; x < normals->width; x += point_step)
       {
         PointT p = (*cloud)(x, y);
+        if (!pcl::isFinite(p) || !pcl::isNormalFinite((*normals)(x, y)))
+          continue;
         p.x += (*normals)(x, y).normal[0] * scale;
         p.y += (*normals)(x, y).normal[1] * scale;
         p.z += (*normals)(x, y).normal[2] * scale;
@@ -928,8 +930,10 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
     nr_normals = (cloud->size () - 1) / level + 1 ;
     pts = new float[2 * nr_normals * 3];
 
-    for (vtkIdType i = 0, j = 0; j < nr_normals; j++, i = j * level)
+    for (vtkIdType i = 0, j = 0; (j < nr_normals) && (i < static_cast<vtkIdType>(cloud->size())); i += level)
     {
+      if (!pcl::isFinite((*cloud)[i]) || !pcl::isNormalFinite((*normals)[i]))
+        continue;
       PointT p = (*cloud)[i];
       p.x += (*normals)[i].normal[0] * scale;
       p.y += (*normals)[i].normal[1] * scale;
@@ -945,6 +949,7 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
       lines->InsertNextCell (2);
       lines->InsertCellPoint (2 * j);
       lines->InsertCellPoint (2 * j + 1);
+      ++j;
     }
   }
 

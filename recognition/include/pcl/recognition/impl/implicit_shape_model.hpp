@@ -192,8 +192,8 @@ pcl::features::ISMVoteList<PointT>::findStrongestPeaks (
         best_density = peak_densities[i];
         strongest_peak = peaks[i];
         best_peak_ind = i;
+        ++peak_counter;
       }
-      ++peak_counter;
     }
 
     if( peak_counter == 0 )

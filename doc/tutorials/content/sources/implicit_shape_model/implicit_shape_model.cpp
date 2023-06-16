@@ -11,7 +11,7 @@
 int
 main (int argc, char** argv)
 {
-  if (argc == 0 || argc % 2 == 0)
+  if (argc < 5 || argc % 2 == 0) // needs at least one training cloud with class id, plus testing cloud with class id (plus name of executable)
     return (-1);
 
   unsigned int number_of_training_clouds = (argc - 3) / 2;

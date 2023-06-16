@@ -34,7 +34,7 @@ The code
 --------
 
 First of all you will need the point cloud for this tutorial.
-`This <https://github.com/PointCloudLibrary/data/blob/master/tutorials/min_cut_segmentation_tutorial.pcd>`_ is the one presented on the screenshots.
+`This <https://github.com/PointCloudLibrary/data/blob/master/tutorials/lamppost.pcd>`_ is the one presented on the screenshots.
 Next what you need to do is to create a file ``moment_of_inertia.cpp`` in any editor you prefer and copy the following code inside of it:
 
 .. literalinclude:: sources/moment_of_inertia/moment_of_inertia.cpp
