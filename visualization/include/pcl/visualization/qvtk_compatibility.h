@@ -13,6 +13,11 @@
 #include <vtkVersion.h>
 #include <vtkRenderWindow.h>
 
+#ifndef <QVTK_COMPATIBILITY.H>
+#define <QVTK_COMPATIBILITY.H>
+
+#endif
+
 #if VTK_MAJOR_VERSION > 8
   #include <QVTKOpenGLNativeWidget.h>
   using PCLQVTKWidget = QVTKOpenGLNativeWidget;
