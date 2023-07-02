@@ -41,6 +41,7 @@
 
 #include <pcl/common/common.h>
 #include <pcl/common/io.h>
+#include <pcl/common/point_tests.h> // for isFinite
 #include <pcl/filters/morphological_filter.h>
 #include <pcl/segmentation/approximate_progressive_morphological_filter.h>
 #include <pcl/point_cloud.h>
@@ -129,7 +130,9 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (Indices& ground
   for (int i = 0; i < static_cast<int>(input_->size ()); ++i)
   {
     // ...then test for lower points within the cell
-    PointT p = (*input_)[i];
+    const PointT& p = (*input_)[i];
+    if (!pcl::isFinite(p))
+      continue;
     int row = std::floor((p.y - global_min.y ()) / cell_size_);
     int col = std::floor((p.x - global_min.x ()) / cell_size_);
 
