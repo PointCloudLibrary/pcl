@@ -123,28 +123,51 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (Indices& ground
   Eigen::MatrixXf Zf (rows, cols);
   Zf.setConstant (std::numeric_limits<float>::quiet_NaN ());
 
+  if (input_->is_dense) {
 #pragma omp parallel for \
   default(none) \
   shared(A, global_min) \
   num_threads(threads_)
-  for (int i = 0; i < static_cast<int>(input_->size ()); ++i)
-  {
-    // ...then test for lower points within the cell
-    const PointT& p = (*input_)[i];
-    if (!pcl::isFinite(p))
-      continue;
-    int row = std::floor((p.y - global_min.y ()) / cell_size_);
-    int col = std::floor((p.x - global_min.x ()) / cell_size_);
+    for (int i = 0; i < static_cast<int>(input_->size ()); ++i) {
+      // ...then test for lower points within the cell
+      const PointT& p = (*input_)[i];
+      int row = std::floor((p.y - global_min.y ()) / cell_size_);
+      int col = std::floor((p.x - global_min.x ()) / cell_size_);
 
-    if (p.z < A (row, col) || std::isnan (A (row, col)))
-    {
-      A (row, col) = p.z;
+      if (p.z < A (row, col) || std::isnan (A (row, col)))
+        A (row, col) = p.z;
+    }
+  }
+  else {
+#pragma omp parallel for \
+  default(none) \
+  shared(A, global_min) \
+  num_threads(threads_)
+    for (int i = 0; i < static_cast<int>(input_->size ()); ++i) {
+      // ...then test for lower points within the cell
+      const PointT& p = (*input_)[i];
+      if (!pcl::isFinite(p))
+        continue;
+      int row = std::floor((p.y - global_min.y ()) / cell_size_);
+      int col = std::floor((p.x - global_min.x ()) / cell_size_);
+
+      if (p.z < A (row, col) || std::isnan (A (row, col)))
+        A (row, col) = p.z;
     }
   }
 
   // Ground indices are initially limited to those points in the input cloud we
   // wish to process
-  ground = *indices_;
+  if (input_->is_dense) {
+    ground = *indices_;
+  }
+  else {
+    ground.clear();
+    ground.reserve(indices_->size());
+    for (const auto& index: *indices_)
+      if (pcl::isFinite((*input_)[index]))
+        ground.push_back(index);
+  }
 
   // Progressively filter ground returns using morphological open
   for (std::size_t i = 0; i < window_sizes.size (); ++i)
@@ -232,7 +255,7 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (Indices& ground
     Indices pt_indices;
     for (std::size_t p_idx = 0; p_idx < ground.size (); ++p_idx)
     {
-      PointT p = (*cloud)[p_idx];
+      const PointT& p = (*cloud)[p_idx];
       int erow = static_cast<int> (std::floor ((p.y - global_min.y ()) / cell_size_));
       int ecol = static_cast<int> (std::floor ((p.x - global_min.x ()) / cell_size_));
 
