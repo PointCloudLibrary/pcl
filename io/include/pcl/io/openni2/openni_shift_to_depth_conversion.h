@@ -52,7 +52,7 @@ namespace openni_wrapper
   {
     public:
       /** \brief Constructor. */
-      ShiftToDepthConverter () : init_(false) {}
+      ShiftToDepthConverter () = default;
 
       /** \brief This method generates a look-up table to convert openni shift values to depth
         */
@@ -109,7 +109,7 @@ namespace openni_wrapper
 
     protected:
       std::vector<float> lookupTable_;
-      bool init_;
+      bool init_{false};
   } ;
 }
 #endif

@@ -111,9 +111,9 @@ namespace openni_wrapper
     mutable std::mutex player_mutex_;
     std::condition_variable player_condition_;
     bool streaming_;
-    bool depth_stream_running_;
-    bool image_stream_running_;
-    bool ir_stream_running_;
+    bool depth_stream_running_{false};
+    bool image_stream_running_{false};
+    bool ir_stream_running_{false};
   };
 } //namespace openni_wrapper
 #endif //HAVE_OPENNI

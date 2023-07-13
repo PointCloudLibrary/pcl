@@ -163,51 +163,51 @@ namespace pcl
       captureThreadFunction ();
       
       /** \brief Width of image */
-      int image_width_;
+      int image_width_{320};
       
       /** \brief Height of image */
-      int image_height_;
+      int image_height_{240};
       
       /** \brief Total size of image */
-      int image_size_;
+      int image_size_{image_width_ * image_height_};
       
       /** \brief Length of a sync packet */
-      int sync_packet_size_;
+      int sync_packet_size_{512};
       
-      double dist_max_2d_;
+      double dist_max_2d_{1. / (image_width_ / 2.)};
       
       /** \brief diagonal Field of View*/
-      double fov_;
+      double fov_{64. * M_PI / 180.};
       
       /** \brief Size of pixel */
       enum pixel_size { RAW8=1, RGB16=2, RGB24=3, RGB32=4 };
       
       /** \brief The libusb context*/
-      libusb_context *context_;
+      libusb_context *context_{nullptr};
       
       /** \brief the actual device_handle for the camera */
-      struct libusb_device_handle *device_handle_;
+      struct libusb_device_handle *device_handle_{nullptr};
       
       /** \brief Temporary USB read buffer, since we read two RGB16 images at a time size is the double of two images
         * plus a sync packet.
         */
-      unsigned char *raw_buffer_ ;
+      unsigned char *raw_buffer_{nullptr} ;
 
       /** \brief Global circular buffer */
       boost::circular_buffer<unsigned char> g_buffer_;
 
       /** \brief Bulk endpoint address value */
-      unsigned char bulk_ep_;
+      unsigned char bulk_ep_{std::numeric_limits<unsigned char>::max ()};
       
       /** \brief Device command values */
       enum { CMD_READ_START=0xC7, CMD_READ_STOP=0xC8, CMD_GET_VERSION=0xDC, CMD_SEND_DATA=0xDE };
 
-      unsigned char *image_;
+      unsigned char *image_{nullptr};
       
       /** \brief Since there is no header after the first image, we need to save the state */
-      bool second_image_;
+      bool second_image_{false};
       
-      bool running_;
+      bool running_{false};
       
       std::thread capture_thread_;
       

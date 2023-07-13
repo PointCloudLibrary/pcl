@@ -89,15 +89,6 @@ namespace pcl
       PLYReader ()
         : origin_ (Eigen::Vector4f::Zero ())
         , orientation_ (Eigen::Matrix3f::Zero ())
-        , cloud_ ()
-        , vertex_count_ (0)
-        , vertex_offset_before_ (0)
-        , range_grid_ (nullptr)
-        , rgb_offset_before_ (0)
-        , do_resize_ (false)
-        , polygons_ (nullptr)
-        , r_(0), g_(0), b_(0)
-        , a_(0), rgba_(0)
       {}
 
       PLYReader (const PLYReader &p)
@@ -524,23 +515,23 @@ namespace pcl
       Eigen::Matrix3f orientation_;
 
       //vertex element artifacts
-      pcl::PCLPointCloud2 *cloud_;
-      std::size_t vertex_count_;
-      int vertex_offset_before_;
+      pcl::PCLPointCloud2 *cloud_{nullptr};
+      std::size_t vertex_count_{0};
+      int vertex_offset_before_{0};
       //range element artifacts
-      std::vector<std::vector <int> > *range_grid_;
-      std::size_t rgb_offset_before_;
-      bool do_resize_;
+      std::vector<std::vector <int> > *range_grid_{nullptr};
+      std::size_t rgb_offset_before_{0};
+      bool do_resize_{false};
       //face element artifact
-      std::vector<pcl::Vertices> *polygons_;
+      std::vector<pcl::Vertices> *polygons_{nullptr};
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW
       
     private:
       // RGB values stored by vertexColorCallback()
-      std::int32_t r_, g_, b_;
+      std::int32_t r_{0}, g_{0}, b_{0};
       // Color values stored by vertexAlphaCallback()
-      std::uint32_t a_, rgba_;
+      std::uint32_t a_{0}, rgba_{0};
   };
 
   /** \brief Point Cloud Data (PLY) file format writer.
