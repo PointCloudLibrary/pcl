@@ -4,7 +4,7 @@ set(SUBSYS_DEPS)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
-PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS eigen boost)
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS eigen3 boost)
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
@@ -179,7 +179,7 @@ target_include_directories(${LIB_NAME} PUBLIC
   $<INSTALL_INTERFACE:include> 
 )
 
-target_link_libraries(${LIB_NAME} Boost::boost)
+target_link_libraries(${LIB_NAME} Boost::boost Eigen3::Eigen)
 
 if(MSVC AND NOT (MSVC_VERSION LESS 1915))
   # MSVC resolved a byte alignment issue in compiler version 15.9

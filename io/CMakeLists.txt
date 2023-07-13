@@ -1,7 +1,7 @@
 set(SUBSYS_NAME io)
 set(SUBSYS_DESC "Point cloud IO library")
 set(SUBSYS_DEPS common octree)
-set(SUBSYS_EXT_DEPS boost eigen)
+set(SUBSYS_EXT_DEPS boost eigen3)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)

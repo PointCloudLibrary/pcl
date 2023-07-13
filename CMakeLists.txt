@@ -318,9 +318,8 @@ endif()
 # Threads (required)
 find_package(Threads REQUIRED)
 
-# Eigen (required)
-find_package(Eigen 3.3 REQUIRED)
-include_directories(SYSTEM ${EIGEN_INCLUDE_DIRS})
+# Eigen3 (required)
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
 # FLANN (required)
 find_package(FLANN 1.9.1 REQUIRED)

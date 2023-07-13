@@ -176,7 +176,6 @@ The available ROOTs you can set are as follow:
 * **CMINPACK_ROOT**: for cminpack with value `C:/Program Files/CMINPACK 1.1.13` for instance
 * **QHULL_ROOT**: for qhull with value `C:/Program Files/qhull 6.2.0.1373` for instance
 * **FLANN_ROOT**: for flann with value `C:/Program Files/flann 1.6.8` for instance
-* **EIGEN_ROOT**: for eigen with value `C:/Program Files/Eigen 3.0.0` for instance
 
 To ensure that all the dependencies were correctly found, beside the
 message you get from CMake, you can check or edit each dependency specific
@@ -253,9 +252,8 @@ then a sample value is given for reference.
 
 * Eigen
 
-+------------------+---------------------------------+---------------------------+
-| cache variable   | meaning                         | sample value              |
-+==================+=================================+===========================+ 
-| EIGEN_INCLUDE_DIR| path to eigen headers directory | /usr/local/include/eigen3 |
-+------------------+---------------------------------+---------------------------+
-
++--------------------+---------------------------------+-------------------------------+
+| cache variable     | meaning                         | sample value                  |
++====================+=================================+===============================+ 
+| Eigen3_DIR         | path to eigen cmake directory   | /usr/local/share/eigen3/cmake |
++--------------------+---------------------------------+-------------------------------+
