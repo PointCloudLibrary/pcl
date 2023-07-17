@@ -129,7 +129,7 @@ class pointExtractor{
 };
 
 
-int main(int argc,char** argv){
+int main(){
 	
 	pointExtractor pe;
 	
