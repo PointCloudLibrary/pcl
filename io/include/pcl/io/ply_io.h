@@ -88,12 +88,12 @@ namespace pcl
       
       PLYReader ()
         : origin_ (Eigen::Vector4f::Zero ())
-        , orientation_ (Eigen::Matrix3f::Zero ())
+        , orientation_ (Eigen::Matrix3f::Identity ())
       {}
 
       PLYReader (const PLYReader &p)
         : origin_ (Eigen::Vector4f::Zero ())
-        , orientation_ (Eigen::Matrix3f::Zero ())
+        , orientation_ (Eigen::Matrix3f::Identity ())
         , cloud_ ()
         , vertex_count_ (0)
         , vertex_offset_before_ (0)

@@ -562,6 +562,8 @@ pcl::PLYReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   cloud_->width = cloud_->height = 0;
   origin = Eigen::Vector4f::Zero ();
   orientation = Eigen::Quaternionf::Identity ();
+  origin_ = Eigen::Vector4f::Zero ();
+  orientation_ = Eigen::Matrix3f::Identity ();
   if (!parse (file_name))
   {
     PCL_ERROR ("[pcl::PLYReader::read] problem parsing header!\n");
@@ -653,8 +655,8 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
     cloud_->data.swap (data);
   }
 
-  orientation_ = Eigen::Quaternionf (orientation);
-  origin_ = origin;
+  orientation = Eigen::Quaternionf (orientation_);
+  origin = origin_;
 
   for (auto &field : cloud_->fields)
   {
@@ -752,8 +754,8 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
     cloud_->data.swap (data);
   }
 
-  orientation_ = Eigen::Quaternionf (orientation);
-  origin_ = origin;
+  orientation = Eigen::Quaternionf (orientation_);
+  origin = origin_;
 
   for (auto &field : cloud_->fields)
   {
