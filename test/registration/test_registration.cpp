@@ -724,18 +724,21 @@ TEST (PCL, PyramidFeatureHistogram)
   EXPECT_NEAR (similarity_value3, 0.873699546, 1e-3);
 }
 
-// Suat G: disabled, since the transformation does not look correct.
-// ToDo: update transformation from the ground truth.
-#if 0
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PPFRegistration)
 {
-  // Transform the source cloud by a large amount
-  Eigen::Vector3f initial_offset (100, 0, 0);
-  float angle = M_PI/6;
-  Eigen::Quaternionf initial_rotation (std::cos (angle / 2), 0, 0, sin (angle / 2));
+  Eigen::Matrix4f bun0_to_bun4_groundtruth;
+  bun0_to_bun4_groundtruth <<
+    0.825336f, 0.000000f, -0.564642f, 0.037267f,
+    0.000000f, 1.000000f,  0.000000f, 0.000000f,
+    0.564642f, 0.000000f,  0.825336f, 0.038325f,
+    0.000000f, 0.000000f,  0.000000f, 1.000000f;
+
+  // apply some additional, random transformation to show that the initial point cloud poses do not matter
+  const Eigen::Affine3f additional_transformation = Eigen::Translation3f(-0.515f, 0.260f, -0.845f) *
+      Eigen::AngleAxisf(-1.627f, Eigen::Vector3f(0.354f, 0.878f, -0.806f).normalized());
   PointCloud<PointXYZ> cloud_source_transformed;
-  transformPointCloud (cloud_source, cloud_source_transformed, initial_offset, initial_rotation);
+  transformPointCloud (cloud_source, cloud_source_transformed, additional_transformation);
 
 
   // Create shared pointers
@@ -747,7 +750,7 @@ TEST (PCL, PPFRegistration)
   NormalEstimation<PointXYZ, Normal> normal_estimation;
   search::KdTree<PointXYZ>::Ptr search_tree (new search::KdTree<PointXYZ> ());
   normal_estimation.setSearchMethod (search_tree);
-  normal_estimation.setRadiusSearch (0.05);
+  normal_estimation.setKSearch(30); // nearest-k-search seems to work better than radius-search
   PointCloud<Normal>::Ptr normals_target (new PointCloud<Normal> ()),
       normals_source_transformed (new PointCloud<Normal> ());
   normal_estimation.setInputCloud (cloud_target_ptr);
@@ -769,41 +772,41 @@ TEST (PCL, PPFRegistration)
 
 
   // Train the source cloud - create the hash map search structure
-  PPFHashMapSearch::Ptr hash_map_search (new PPFHashMapSearch (15.0 / 180 * M_PI,
+  PPFHashMapSearch::Ptr hash_map_search (new PPFHashMapSearch (2.0 * M_PI / 36, // divide into 36 steps
                                                                0.05));
   hash_map_search->setInputFeatureCloud (features_source_transformed);
 
   // Finally, do the registration
   PPFRegistration<PointNormal, PointNormal> ppf_registration;
-  ppf_registration.setSceneReferencePointSamplingRate (20);
+  ppf_registration.setSceneReferencePointSamplingRate (5);
   ppf_registration.setPositionClusteringThreshold (0.15);
-  ppf_registration.setRotationClusteringThreshold (45.0 / 180 * M_PI);
+  ppf_registration.setRotationClusteringThreshold (25.0 / 180 * M_PI);
   ppf_registration.setSearchMethod (hash_map_search);
-  ppf_registration.setInputCloud (cloud_source_transformed_with_normals);
+  ppf_registration.setInputSource (cloud_source_transformed_with_normals);
   ppf_registration.setInputTarget (cloud_target_with_normals);
 
   PointCloud<PointNormal> cloud_output;
   ppf_registration.align (cloud_output);
   Eigen::Matrix4f transformation = ppf_registration.getFinalTransformation ();
 
-  EXPECT_NEAR (transformation(0, 0), -0.153768, 1e-4);
-  EXPECT_NEAR (transformation(0, 1), -0.628136, 1e-4);
-  EXPECT_NEAR (transformation(0, 2), 0.762759, 1e-4);
-  EXPECT_NEAR (transformation(0, 3), 15.472, 1e-4);
-  EXPECT_NEAR (transformation(1, 0), 0.967397, 1e-4);
-  EXPECT_NEAR (transformation(1, 1), -0.252918, 1e-4);
-  EXPECT_NEAR (transformation(1, 2), -0.0132578, 1e-4);
-  EXPECT_NEAR (transformation(1, 3), -96.6221, 1e-4);
-  EXPECT_NEAR (transformation(2, 0), 0.201243, 1e-4);
-  EXPECT_NEAR (transformation(2, 1), 0.735852, 1e-4);
-  EXPECT_NEAR (transformation(2, 2), 0.646547, 1e-4);
-  EXPECT_NEAR (transformation(2, 3), -20.134, 1e-4);
-  EXPECT_NEAR (transformation(3, 0), 0.000000, 1e-4);
-  EXPECT_NEAR (transformation(3, 1), 0.000000, 1e-4);
-  EXPECT_NEAR (transformation(3, 2), 0.000000, 1e-4);
-  EXPECT_NEAR (transformation(3, 3), 1.000000, 1e-4);
+  const Eigen::Matrix4f reference_transformation = bun0_to_bun4_groundtruth * additional_transformation.inverse().matrix();
+  EXPECT_NEAR (transformation(0, 0), reference_transformation(0, 0), 0.1);
+  EXPECT_NEAR (transformation(0, 1), reference_transformation(0, 1), 0.1);
+  EXPECT_NEAR (transformation(0, 2), reference_transformation(0, 2), 0.1);
+  EXPECT_NEAR (transformation(0, 3), reference_transformation(0, 3), 0.1);
+  EXPECT_NEAR (transformation(1, 0), reference_transformation(1, 0), 0.1);
+  EXPECT_NEAR (transformation(1, 1), reference_transformation(1, 1), 0.1);
+  EXPECT_NEAR (transformation(1, 2), reference_transformation(1, 2), 0.1);
+  EXPECT_NEAR (transformation(1, 3), reference_transformation(1, 3), 0.1);
+  EXPECT_NEAR (transformation(2, 0), reference_transformation(2, 0), 0.1);
+  EXPECT_NEAR (transformation(2, 1), reference_transformation(2, 1), 0.1);
+  EXPECT_NEAR (transformation(2, 2), reference_transformation(2, 2), 0.1);
+  EXPECT_NEAR (transformation(2, 3), reference_transformation(2, 3), 0.1);
+  EXPECT_NEAR (transformation(3, 0), 0.0f, 1e-6);
+  EXPECT_NEAR (transformation(3, 1), 0.0f, 1e-6);
+  EXPECT_NEAR (transformation(3, 2), 0.0f, 1e-6);
+  EXPECT_NEAR (transformation(3, 3), 1.0f, 1e-6);
 }
-#endif
 
 /* ---[ */
 int
