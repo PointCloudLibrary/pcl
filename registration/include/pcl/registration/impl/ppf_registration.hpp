@@ -312,7 +312,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::clusterPoses(
               clusters[cluster_votes[cluster_i].first].size());
     Eigen::Vector3f translation_average(0.0, 0.0, 0.0);
     Eigen::Vector4f rotation_average(0.0, 0.0, 0.0, 0.0);
-    for (const auto& vote: clusters[cluster_votes[cluster_i].first]) {
+    for (const auto& vote : clusters[cluster_votes[cluster_i].first]) {
       translation_average += vote.pose.translation();
       /// averaging rotations by just averaging the quaternions in 4D space - reference
       /// "On Averaging Rotations" by CLAUS GRAMKOW
