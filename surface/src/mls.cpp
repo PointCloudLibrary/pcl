@@ -80,6 +80,15 @@ pcl::MLSResult::calculatePrincipalCurvatures (const double u, const double v) co
   PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal)(pcl::PointNormal))
                                               ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal)(pcl::PointNormal)))
 #else
-  PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, (PCL_XYZ_POINT_TYPES)(PCL_XYZ_POINT_TYPES))
+  // PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, (PCL_XYZ_POINT_TYPES)(PCL_XYZ_POINT_TYPES))
+  // All instantiations that are available with PCL_ONLY_CORE_POINT_TYPES, plus instantiations for all XYZ types where PointInT and PointOutT are the same
+  #define PCL_INSTANTIATE_MovingLeastSquaresSameInAndOut(T) template class PCL_EXPORTS pcl::MovingLeastSquares<T,T>;
+  PCL_INSTANTIATE(MovingLeastSquaresSameInAndOut, PCL_XYZ_POINT_TYPES)
+  PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, ((pcl::PointXYZ))((pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal)(pcl::PointNormal)))
+  PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, ((pcl::PointXYZI))((pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal)(pcl::PointNormal)))
+  PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, ((pcl::PointXYZRGB))((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal)(pcl::PointNormal)))
+  PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, ((pcl::PointXYZRGBA))((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal)(pcl::PointNormal)))
+  PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, ((pcl::PointXYZRGBNormal))((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointNormal)))
+  PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, ((pcl::PointNormal))((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal)))
 #endif
 #endif    // PCL_NO_PRECOMPILE
