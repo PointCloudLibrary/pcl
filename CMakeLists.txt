@@ -321,10 +321,14 @@ find_package(Threads REQUIRED)
 # Eigen3 (required)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
-# FLANN (required)
-find_package(FLANN 1.9.1 REQUIRED)
-if(NOT (${FLANN_LIBRARY_TYPE} MATCHES ${PCL_FLANN_REQUIRED_TYPE}) AND NOT (${PCL_FLANN_REQUIRED_TYPE} MATCHES "DONTCARE"))
-  message(FATAL_ERROR "Flann was selected with ${PCL_FLANN_REQUIRED_TYPE} but found as ${FLANN_LIBRARY_TYPE}")
+# FLANN
+find_package(FLANN 1.9.1)
+if(NOT FLANN_FOUND)
+  message(WARNING "Flann was not found, so many PCL modules will not be built!")
+else()
+  if(NOT (${FLANN_LIBRARY_TYPE} MATCHES ${PCL_FLANN_REQUIRED_TYPE}) AND NOT (${PCL_FLANN_REQUIRED_TYPE} MATCHES "DONTCARE"))
+    message(FATAL_ERROR "Flann was selected with ${PCL_FLANN_REQUIRED_TYPE} but found as ${FLANN_LIBRARY_TYPE}")
+  endif()
 endif()
 
 # libusb
