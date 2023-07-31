@@ -80,10 +80,22 @@ TEST (PCL, PLYReaderWriter)
 
   // test for toPCLPointCloud2 ()
   pcl::PLYWriter writer;
-  writer.write ("test_pcl_io.ply", cloud_blob, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), true, true);
+  const Eigen::Vector4f origin (0.0f, 0.5f, -1.0f, 0.0f);
+  const Eigen::Quaternionf orientation(std::sqrt(0.5f), std::sqrt(0.5f), 0.0f, 0.0f);
+  writer.write ("test_pcl_io.ply", cloud_blob, origin, orientation, true, true);
 
   pcl::PLYReader reader;
-  reader.read ("test_pcl_io.ply", cloud_blob2);
+  Eigen::Vector4f origin2;
+  Eigen::Quaternionf orientation2;
+  int ply_version;
+  reader.read ("test_pcl_io.ply", cloud_blob2, origin2, orientation2, ply_version);
+  EXPECT_NEAR (origin.x(), origin2.x(), 1e-5);
+  EXPECT_NEAR (origin.y(), origin2.y(), 1e-5);
+  EXPECT_NEAR (origin.z(), origin2.z(), 1e-5);
+  EXPECT_NEAR (orientation.x(), orientation2.x(), 1e-5);
+  EXPECT_NEAR (orientation.y(), orientation2.y(), 1e-5);
+  EXPECT_NEAR (orientation.z(), orientation2.z(), 1e-5);
+  EXPECT_NEAR (orientation.w(), orientation2.w(), 1e-5);
   //PLY DOES preserve organiziation
   EXPECT_EQ (cloud_blob.width * cloud_blob.height, cloud_blob2.width * cloud_blob2.height);
   EXPECT_EQ (cloud_blob.is_dense, cloud.is_dense);

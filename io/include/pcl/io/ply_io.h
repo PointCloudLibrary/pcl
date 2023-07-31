@@ -88,12 +88,12 @@ namespace pcl
       
       PLYReader ()
         : origin_ (Eigen::Vector4f::Zero ())
-        , orientation_ (Eigen::Matrix3f::Zero ())
+        , orientation_ (Eigen::Matrix3f::Identity ())
       {}
 
       PLYReader (const PLYReader &p)
         : origin_ (Eigen::Vector4f::Zero ())
-        , orientation_ (Eigen::Matrix3f::Zero ())
+        , orientation_ (Eigen::Matrix3f::Identity ())
         , cloud_ ()
         , vertex_count_ (0)
         , vertex_offset_before_ (0)
@@ -129,8 +129,8 @@ namespace pcl
         *  * > 0 on success
         * \param[in] file_name the name of the file to load
         * \param[out] cloud the resultant point cloud dataset (only the header will be filled)
-        * \param[in] origin the sensor data acquisition origin (translation)
-        * \param[in] orientation the sensor data acquisition origin (rotation)
+        * \param[out] origin the sensor data acquisition origin (translation)
+        * \param[out] orientation the sensor data acquisition origin (rotation)
         * \param[out] ply_version the PLY version read from the file
         * \param[out] data_type the type of PLY data stored in the file
         * \param[out] data_idx the data index
@@ -148,8 +148,8 @@ namespace pcl
       /** \brief Read a point cloud data from a PLY file and store it into a pcl/PCLPointCloud2.
         * \param[in] file_name the name of the file containing the actual PointCloud data
         * \param[out] cloud the resultant PointCloud message read from disk
-        * \param[in] origin the sensor data acquisition origin (translation)
-        * \param[in] orientation the sensor data acquisition origin (rotation)
+        * \param[out] origin the sensor data acquisition origin (translation)
+        * \param[out] orientation the sensor data acquisition origin (rotation)
         * \param[out] ply_version the PLY version read from the file
         * \param[in] offset the offset in the file where to expect the true header to begin.
         * One usage example for setting the offset parameter is for reading
@@ -208,8 +208,8 @@ namespace pcl
         *
         * \param[in] file_name the name of the file containing the actual PointCloud data
         * \param[out] mesh the resultant PolygonMesh message read from disk
-        * \param[in] origin the sensor data acquisition origin (translation)
-        * \param[in] orientation the sensor data acquisition origin (rotation)
+        * \param[out] origin the sensor data acquisition origin (translation)
+        * \param[out] orientation the sensor data acquisition origin (rotation)
         * \param[out] ply_version the PLY version read from the file
         * \param[in] offset the offset in the file where to expect the true header to begin.
         * One usage example for setting the offset parameter is for reading
@@ -747,9 +747,9 @@ namespace pcl
 
     /** \brief Load any PLY file into a PCLPointCloud2 type.
       * \param[in] file_name the name of the file to load
-      * \param[in] cloud the resultant templated point cloud
-      * \param[in] origin the sensor acquisition origin (only for > PLY_V7 - null if not present)
-      * \param[in] orientation the sensor acquisition orientation if available, 
+      * \param[out] cloud the resultant templated point cloud
+      * \param[out] origin the sensor acquisition origin (only for > PLY_V7 - null if not present)
+      * \param[out] orientation the sensor acquisition orientation if available, 
       * identity if not present
       * \ingroup io
       */
