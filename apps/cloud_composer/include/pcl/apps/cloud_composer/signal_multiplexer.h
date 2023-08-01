@@ -42,6 +42,8 @@
 
 #pragma once
 
+#include <QList>
+#include <QObject>
 #include <QPointer>
 
 namespace pcl
