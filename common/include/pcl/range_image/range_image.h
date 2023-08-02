@@ -51,7 +51,11 @@ namespace pcl
     * \author Bastian Steder
     * \ingroup range_image
     */
+#if defined _WIN32 || defined WINCE || defined __MINGW32__
   class RangeImage : public pcl::PointCloud<PointWithRange>
+#else
+  class PCL_EXPORTS RangeImage : public pcl::PointCloud<PointWithRange>
+#endif
   {
     public:
       // =====TYPEDEFS=====

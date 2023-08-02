@@ -3,11 +3,12 @@
 // Ensure the compiler is meeting the minimum C++ standard
 // MSVC is not checked via __cplusplus due to
 // https://developercommunity.visualstudio.com/content/problem/120156/-cplusplus-macro-still-defined-as-pre-c11-value.html
-#if (!defined(_MSC_VER) && __cplusplus < 201402L) || (defined(_MSC_VER) && _MSC_VER < 1900)
+#if defined(__cplusplus) && ((!defined(_MSC_VER) && __cplusplus < 201402L) || (defined(_MSC_VER) && _MSC_VER < 1900))
   #error PCL requires C++14 or above
 #endif
 
 #define BUILD_@CMAKE_BUILD_TYPE@
+#cmakedefine PCL_SYMBOL_VISIBILITY_HIDDEN
 /* PCL version information */
 #define PCL_MAJOR_VERSION ${PCL_VERSION_MAJOR}
 #define PCL_MINOR_VERSION ${PCL_VERSION_MINOR}
