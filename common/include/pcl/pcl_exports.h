@@ -45,5 +45,5 @@
         #define PCL_EXPORTS
     #endif
 #else
-    #define PCL_EXPORTS
+    #define PCL_EXPORTS __attribute__ ((visibility ("default")))
 #endif

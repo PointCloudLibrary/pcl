@@ -40,6 +40,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <boost/current_function.hpp>
+#include <pcl/pcl_exports.h> // for PCL_EXPORTS
 
 /** PCL_THROW_EXCEPTION a helper macro to be used for throwing exceptions.
   * This is an example on how to use:
@@ -62,7 +63,7 @@ namespace pcl
     * \brief A base class for all pcl exceptions which inherits from std::runtime_error
     * \author Eitan Marder-Eppstein, Suat Gedikli, Nizar Sallem
     */
-  class PCLException : public std::runtime_error
+  class PCL_EXPORTS PCLException : public std::runtime_error
   {
     public:
 
@@ -134,7 +135,7 @@ namespace pcl
   /** \class InvalidConversionException
     * \brief An exception that is thrown when a PCLPointCloud2 message cannot be converted into a PCL type
     */
-  class InvalidConversionException : public PCLException
+  class PCL_EXPORTS InvalidConversionException : public PCLException
   {
     public:
 
@@ -148,7 +149,7 @@ namespace pcl
   /** \class IsNotDenseException
     * \brief An exception that is thrown when a PointCloud is not dense but is attempted to be used as dense
     */
-  class IsNotDenseException : public PCLException
+  class PCL_EXPORTS IsNotDenseException : public PCLException
   {
     public:
 
@@ -163,7 +164,7 @@ namespace pcl
     * \brief An exception that is thrown when a sample consensus model doesn't
     * have the correct number of samples defined in model_types.h
     */
-  class InvalidSACModelTypeException : public PCLException
+  class PCL_EXPORTS InvalidSACModelTypeException : public PCLException
   {
     public:
 
@@ -177,7 +178,7 @@ namespace pcl
   /** \class IOException
     * \brief An exception that is thrown during an IO error (typical read/write errors)
     */
-  class IOException : public PCLException
+  class PCL_EXPORTS IOException : public PCLException
   {
     public:
 
@@ -192,7 +193,7 @@ namespace pcl
     * \brief An exception thrown when init can not be performed should be used in all the
     * PCLBase class inheritants.
     */
-  class InitFailedException : public PCLException
+  class PCL_EXPORTS InitFailedException : public PCLException
   {
     public:
       InitFailedException (const std::string& error_description = "",
@@ -206,7 +207,7 @@ namespace pcl
     * \brief An exception that is thrown when an organized point cloud is needed
     * but not provided.
     */
-  class UnorganizedPointCloudException : public PCLException
+  class PCL_EXPORTS UnorganizedPointCloudException : public PCLException
   {
     public:
     
@@ -220,7 +221,7 @@ namespace pcl
   /** \class KernelWidthTooSmallException
     * \brief An exception that is thrown when the kernel size is too small
     */
-  class KernelWidthTooSmallException : public PCLException
+  class PCL_EXPORTS KernelWidthTooSmallException : public PCLException
   {
     public:
     
@@ -231,7 +232,7 @@ namespace pcl
       : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
 
-  class UnhandledPointTypeException : public PCLException
+  class PCL_EXPORTS UnhandledPointTypeException : public PCLException
   {
     public:
     UnhandledPointTypeException (const std::string& error_description,
@@ -241,7 +242,7 @@ namespace pcl
       : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   };
 
-  class ComputeFailedException : public PCLException
+  class PCL_EXPORTS ComputeFailedException : public PCLException
   {
     public:
     ComputeFailedException (const std::string& error_description,
@@ -254,7 +255,7 @@ namespace pcl
   /** \class BadArgumentException
     * \brief An exception that is thrown when the arguments number or type is wrong/unhandled.
     */
-  class BadArgumentException : public PCLException
+  class PCL_EXPORTS BadArgumentException : public PCLException
   {
     public:
     BadArgumentException (const std::string& error_description,
