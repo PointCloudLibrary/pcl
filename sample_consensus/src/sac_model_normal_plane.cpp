@@ -41,10 +41,17 @@
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
+
+// used to tell compiler that instantiations of SampleConsensusModelPlane are available from sac_model_plane.cpp
+#define PCL_EXTERN_TEMPLATE_IMPL(r, unused, POINT_TYPE) \
+  extern template class pcl::SampleConsensusModelPlane<POINT_TYPE>;
+
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
+  BOOST_PP_SEQ_FOR_EACH(PCL_EXTERN_TEMPLATE_IMPL, unused, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
   PCL_INSTANTIATE_PRODUCT(SampleConsensusModelNormalPlane, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))((pcl::Normal)))
 #else
+ BOOST_PP_SEQ_FOR_EACH(PCL_EXTERN_TEMPLATE_IMPL, unused, PCL_XYZ_POINT_TYPES)
  PCL_INSTANTIATE_PRODUCT(SampleConsensusModelNormalPlane, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
 #endif
 #endif    // PCL_NO_PRECOMPILE

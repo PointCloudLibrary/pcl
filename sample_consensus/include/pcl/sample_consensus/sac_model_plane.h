@@ -139,7 +139,7 @@ namespace pcl
     * \ingroup sample_consensus
     */
   template <typename PointT>
-  class SampleConsensusModelPlane : public SampleConsensusModel<PointT>
+  class PCL_EXPORTS SampleConsensusModelPlane : public SampleConsensusModel<PointT>
   {
     public:
       using SampleConsensusModel<PointT>::model_name_;

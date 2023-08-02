@@ -86,7 +86,7 @@ namespace pcl
     * \param[in] angular_tolerance tolerance in radians
     * \return true if succeeded/planes aren't parallel
     */
-  PCL_EXPORTS template <typename Scalar> bool
+  template <typename Scalar> PCL_EXPORTS bool
   planeWithPlaneIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a,
                               const Eigen::Matrix<Scalar, 4, 1> &plane_b,
                               Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line,
@@ -121,7 +121,7 @@ namespace pcl
     * \param[out] intersection_point the three coordinates x, y, z of the intersection point
     * \return true if succeeded/planes aren't parallel
     */
-  PCL_EXPORTS template <typename Scalar> bool
+  template <typename Scalar> PCL_EXPORTS bool
   threePlanesIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a,
                            const Eigen::Matrix<Scalar, 4, 1> &plane_b,
                            const Eigen::Matrix<Scalar, 4, 1> &plane_c,
