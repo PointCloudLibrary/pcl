@@ -400,7 +400,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::convertInputToFlannMatrix ()
           continue;
         }
 
-        index_mapping_.push_back (static_cast<index_t> (i));  // If the returned index should be for the indices vector
+        index_mapping_.push_back (static_cast<index_t> (i));  
 
         point_representation_->vectorize (point, cloud_ptr);
         cloud_ptr += dim_;
@@ -412,6 +412,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::convertInputToFlannMatrix ()
   {
     input_flann_ = static_cast<MatrixPtr> (new flann::Matrix<float> (new float[original_no_of_points*point_representation_->getNumberOfDimensions ()], original_no_of_points, point_representation_->getNumberOfDimensions ()));
     float* cloud_ptr = input_flann_->ptr();
+    identity_mapping_ = false;
     for (std::size_t indices_index = 0; indices_index < original_no_of_points; ++indices_index)
     {
       index_t cloud_index = (*indices_)[indices_index];
@@ -419,11 +420,10 @@ pcl::search::FlannSearch<PointT, FlannDistance>::convertInputToFlannMatrix ()
       // Check if the point is invalid
       if (!point_representation_->isValid (point))
       {
-        identity_mapping_ = false;
         continue;
       }
 
-      index_mapping_.push_back (static_cast<index_t> (indices_index));  // If the returned index should be for the indices vector
+      index_mapping_.push_back (static_cast<index_t> (cloud_index));  
 
       point_representation_->vectorize (point, cloud_ptr);
       cloud_ptr += dim_;
