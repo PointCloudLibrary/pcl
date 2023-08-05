@@ -47,8 +47,8 @@ namespace pcl
     template<typename PointT, typename ContainerT> 
     OutofcoreDepthFirstIterator<PointT, ContainerT>::OutofcoreDepthFirstIterator (OutofcoreOctreeBase<ContainerT, PointT>& octree_arg) 
     : OutofcoreIteratorBase<PointT, ContainerT> (octree_arg)
-    , currentChildIdx_ (0)
-    , stack_ (0)
+    , 
+     stack_ (0)
     {
       stack_.reserve (this->octree_.getTreeDepth ());
       OutofcoreIteratorBase<PointT,ContainerT>::reset ();

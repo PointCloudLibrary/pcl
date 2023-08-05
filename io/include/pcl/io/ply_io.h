@@ -94,15 +94,6 @@ namespace pcl
       PLYReader (const PLYReader &p)
         : origin_ (Eigen::Vector4f::Zero ())
         , orientation_ (Eigen::Matrix3f::Identity ())
-        , cloud_ ()
-        , vertex_count_ (0)
-        , vertex_offset_before_ (0)
-        , range_grid_ (nullptr)
-        , rgb_offset_before_ (0)
-        , do_resize_ (false)
-        , polygons_ (nullptr)
-        , r_(0), g_(0), b_(0)
-        , a_(0), rgba_(0)
       {
         *this = p;
       }

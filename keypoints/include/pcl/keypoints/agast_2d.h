@@ -570,10 +570,8 @@ namespace pcl
 
       /** \brief Constructor */
       AgastKeypoint2DBase ()
-        : threshold_ (10)
-        , apply_non_max_suppression_ (true)
-        , bmax_ (255)
-        , nr_max_keypoints_ (std::numeric_limits<unsigned int>::max ())
+        : 
+         nr_max_keypoints_ (std::numeric_limits<unsigned int>::max ())
       {
         k_ = 1;
       }
@@ -673,13 +671,13 @@ namespace pcl
       IntensityT intensity_;
       
       /** \brief Threshold for corner detection. */
-      double threshold_;
+      double threshold_{10};
 
       /** \brief Determines whether non-max-suppression is activated. */
-      bool apply_non_max_suppression_;
+      bool apply_non_max_suppression_{true};
 
       /** \brief Max image value. */
-      double bmax_;
+      double bmax_{255};
 
       /** \brief The Agast detector to use. */
       AgastDetectorPtr detector_;

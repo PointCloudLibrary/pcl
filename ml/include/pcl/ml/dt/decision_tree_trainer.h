@@ -229,11 +229,11 @@ protected:
 
 private:
   /** Maximum depth of the learned tree. */
-  std::size_t max_tree_depth_;
+  std::size_t max_tree_depth_{15};
   /** Number of features used to find optimal decision features. */
-  std::size_t num_of_features_;
+  std::size_t num_of_features_{1000};
   /** Number of thresholds. */
-  std::size_t num_of_thresholds_;
+  std::size_t num_of_thresholds_{10};
 
   /** FeatureHandler instance, responsible for creating and evaluating features. */
   pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>* feature_handler_;
@@ -261,7 +261,7 @@ private:
       decision_tree_trainer_data_provider_;
   /** If true, random features are generated at each node, otherwise, at start of
    *  training the tree */
-  bool random_features_at_split_node_;
+  bool random_features_at_split_node_{false};
 };
 
 } // namespace pcl

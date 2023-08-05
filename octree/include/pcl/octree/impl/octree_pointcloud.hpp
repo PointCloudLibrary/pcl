@@ -55,16 +55,10 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 : OctreeT()
 , input_(PointCloudConstPtr())
 , indices_(IndicesConstPtr())
-, epsilon_(0)
 , resolution_(resolution)
-, min_x_(0.0f)
 , max_x_(resolution)
-, min_y_(0.0f)
 , max_y_(resolution)
-, min_z_(0.0f)
 , max_z_(resolution)
-, bounding_box_defined_(false)
-, max_objs_per_leaf_(0)
 {
   if (resolution <= 0.0) {
     PCL_THROW_EXCEPTION(InitFailedException,

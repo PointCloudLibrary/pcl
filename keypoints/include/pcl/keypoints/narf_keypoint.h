@@ -72,46 +72,40 @@ class PCL_EXPORTS NarfKeypoint : public Keypoint<PointWithRange, int>
     //! Parameters used in this class
     struct Parameters
     {
-      Parameters() : support_size(-1.0f), max_no_of_interest_points(-1), min_distance_between_interest_points(0.25f),
-                     optimal_distance_to_high_surface_change(0.25), min_interest_value(0.45f),
-                     min_surface_change_score(0.2f), optimal_range_image_patch_size(10),
-                     distance_for_additional_points(0.0f), add_points_on_straight_edges(false),
-                     do_non_maximum_suppression(true), no_of_polynomial_approximations_per_point(false),
-                     max_no_of_threads(1), use_recursive_scale_reduction(false),
-                     calculate_sparse_interest_image(true) {}
+      Parameters() = default;
       
-      float support_size;  //!< This defines the area 'covered' by an interest point (in meters)
-      int max_no_of_interest_points;  //!< The maximum number of interest points that will be returned
-      float min_distance_between_interest_points;  /**< Minimum distance between maximas
+      float support_size{-1.0f};  //!< This defines the area 'covered' by an interest point (in meters)
+      int max_no_of_interest_points{-1};  //!< The maximum number of interest points that will be returned
+      float min_distance_between_interest_points{0.25f};  /**< Minimum distance between maximas
                                                      *  (this is a factor for support_size, i.e. the distance is
                                                      *  min_distance_between_interest_points*support_size) */
-      float optimal_distance_to_high_surface_change;  /**< The distance we want keep between keypoints and areas
+      float optimal_distance_to_high_surface_change{0.25};  /**< The distance we want keep between keypoints and areas
                                                         *  of high surface change
                                                         *  (this is a factor for support_size, i.e., the distance is
                                                         *  optimal_distance_to_high_surface_change*support_size) */
-      float min_interest_value;  //!< The minimum value to consider a point as an interest point
-      float min_surface_change_score;  //!< The minimum value  of the surface change score to consider a point
-      int optimal_range_image_patch_size;  /**< The size (in pixels) of the image patches from which the interest value
+      float min_interest_value{0.45f};  //!< The minimum value to consider a point as an interest point
+      float min_surface_change_score{0.2f};  //!< The minimum value  of the surface change score to consider a point
+      int optimal_range_image_patch_size{10};  /**< The size (in pixels) of the image patches from which the interest value
                                              *  should be computed. This influences, which range image is selected from
                                              *  the scale space to compute the interest value of a pixel at a certain
                                              *  distance. */
       // TODO:
-      float distance_for_additional_points;  /**< All points in this distance to a found maximum, that
+      float distance_for_additional_points{0.0f};  /**< All points in this distance to a found maximum, that
                                                *  are above min_interest_value are also added as interest points
                                                *  (this is a factor for support_size, i.e. the distance is
                                                *  distance_for_additional_points*support_size) */
-      bool add_points_on_straight_edges;  /**< If this is set to true, there will also be interest points on
+      bool add_points_on_straight_edges{false};  /**< If this is set to true, there will also be interest points on
                                             *   straight edges, e.g., just indicating an area of high surface change */
-      bool do_non_maximum_suppression;  /**< If this is set to false there will be much more points
+      bool do_non_maximum_suppression{true};  /**< If this is set to false there will be much more points
                                           *  (can be used to spread points over the whole scene
                                           *  (combined with a low min_interest_value)) */
-      bool no_of_polynomial_approximations_per_point; /**< If this is >0, the exact position of the interest point is
+      bool no_of_polynomial_approximations_per_point{false}; /**< If this is >0, the exact position of the interest point is
                                                            determined using bivariate polynomial approximations of the
                                                            interest values of the area. */
-      int max_no_of_threads;  //!< The maximum number of threads this code is allowed to use with OPNEMP
-      bool use_recursive_scale_reduction;  /**< Try to decrease runtime by extracting interest points at lower reolution
+      int max_no_of_threads{1};  //!< The maximum number of threads this code is allowed to use with OPNEMP
+      bool use_recursive_scale_reduction{false};  /**< Try to decrease runtime by extracting interest points at lower reolution
                                              *  in areas that contain enough points, i.e., have lower range. */
-      bool calculate_sparse_interest_image;  /**< Use some heuristics to decide which areas of the interest image
+      bool calculate_sparse_interest_image{true};  /**< Use some heuristics to decide which areas of the interest image
                                                   can be left out to improve the runtime. */
     };
     
@@ -182,8 +176,8 @@ class PCL_EXPORTS NarfKeypoint : public Keypoint<PointWithRange, int>
     using BaseClass::name_;
     RangeImageBorderExtractor* range_image_border_extractor_;
     Parameters parameters_;
-    float* interest_image_;
-    ::pcl::PointCloud<InterestPoint>* interest_points_;
+    float* interest_image_{nullptr};
+    ::pcl::PointCloud<InterestPoint>* interest_points_{nullptr};
     std::vector<bool> is_interest_point_image_;
     std::vector<RangeImage*> range_image_scale_space_;
     std::vector<RangeImageBorderExtractor*> border_extractor_scale_space_;

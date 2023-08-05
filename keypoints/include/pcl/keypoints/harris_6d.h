@@ -74,10 +74,8 @@ namespace pcl
        */
       HarrisKeypoint6D (float radius = 0.01, float threshold = 0.0)
       : threshold_ (threshold)
-      , refine_ (true)
-      , nonmax_ (true)
-      , threads_ (0)
-      , normals_ (new pcl::PointCloud<NormalT>)
+      , 
+       normals_ (new pcl::PointCloud<NormalT>)
       , intensity_gradients_ (new pcl::PointCloud<pcl::IntensityGradient>)
       {
         name_ = "HarrisKeypoint6D";
@@ -129,9 +127,9 @@ namespace pcl
       void calculateCombinedCovar (const pcl::Indices& neighbors, float* coefficients) const;
     private:
       float threshold_;
-      bool refine_;
-      bool nonmax_;
-      unsigned int threads_;    
+      bool refine_{true};
+      bool nonmax_{true};
+      unsigned int threads_{0};    
       typename pcl::PointCloud<NormalT>::Ptr normals_;
       pcl::PointCloud<pcl::IntensityGradient>::Ptr intensity_gradients_;
   } ;

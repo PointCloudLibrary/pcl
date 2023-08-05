@@ -75,22 +75,22 @@ protected:
   ///////////////////////////////////////////////////////////////////////
 
   /** \brief Amount of leaf nodes   **/
-  std::size_t leaf_count_;
+  std::size_t leaf_count_{0};
 
   /** \brief Amount of branch nodes   **/
-  std::size_t branch_count_;
+  std::size_t branch_count_{1};
 
   /** \brief Pointer to root branch node of octree   **/
   BranchNode* root_node_;
 
   /** \brief Depth mask based on octree depth   **/
-  uindex_t depth_mask_;
+  uindex_t depth_mask_{0};
 
   /** \brief Octree depth */
-  uindex_t octree_depth_;
+  uindex_t octree_depth_{0};
 
   /** \brief Enable dynamic_depth **/
-  bool dynamic_depth_enabled_;
+  bool dynamic_depth_enabled_{false};
 
   /** \brief key range */
   OctreeKey max_key_;

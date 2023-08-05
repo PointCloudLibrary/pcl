@@ -47,17 +47,10 @@ namespace pcl
 
 template <typename PointInT, typename PointOutT, typename KeypointT, typename IntensityT>
 BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::BRISK2DEstimation ()
-  : rotation_invariance_enabled_ (true)
-  , scale_invariance_enabled_ (true)
-  , pattern_scale_ (1.0f)
-  , input_cloud_ (), keypoints_ (), scale_range_ (), pattern_points_ (), points_ ()
-  , n_rot_ (1024), scale_list_ (nullptr), size_list_ (nullptr)
-  , scales_ (64)
-  , scalerange_ (30)
-  , basic_size_ (12.0)
-  , strings_ (0), d_max_ (0.0f), d_min_ (0.0f), short_pairs_ (), long_pairs_ ()
-  , no_short_pairs_ (0), no_long_pairs_ (0)
-  , intensity_ ()
+  : 
+   input_cloud_ (), keypoints_ (),  pattern_points_ (), 
+   short_pairs_ (), long_pairs_ ()
+  ,  intensity_ ()
   , name_ ("BRISK2Destimation")
 {
   // Since we do not assume pattern_scale_ should be changed by the user, we
