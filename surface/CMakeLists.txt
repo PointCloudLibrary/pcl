@@ -1,6 +1,7 @@
 set(SUBSYS_NAME surface)
 set(SUBSYS_DESC "Point cloud surface library")
 set(SUBSYS_DEPS common search kdtree octree)
+set(SUBSYS_EXT_DEPS "")
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
@@ -66,6 +67,16 @@ if(BUILD_surface_on_nurbs)
   
   include(src/3rdparty/opennurbs/openNURBS.cmake)
   include(src/on_nurbs/on_nurbs.cmake)
+  
+  if(WITH_SYSTEM_ZLIB)
+    find_package(ZLIB REQUIRED)
+    list(APPEND ON_NURBS_LIBRARIES ${ZLIB_LIBRARIES})
+    list(APPEND SUBSYS_EXT_DEPS zlib)
+  else()
+    include(src/3rdparty/opennurbs/zlib.cmake)
+    list(APPEND OPENNURBS_INCLUDES ${ZLIB_INCLUDES})
+    list(APPEND OPENNURBS_SOURCES ${ZLIB_SOURCES})
+  endif()
 endif()
 
 set(POISSON_INCLUDES
@@ -196,7 +207,7 @@ if(QHULL_FOUND)
   target_link_libraries("${LIB_NAME}" QHULL::QHULL)
 endif()
 
-PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS})
+PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS} EXT_DEPS ${SUBSYS_EXT_DEPS})
 
 # Install include files
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})

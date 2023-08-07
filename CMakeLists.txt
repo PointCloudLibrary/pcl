@@ -419,6 +419,15 @@ endif()
 # Boost (required)
 include("${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake")
 
+# System zlib (for nurbs on surface)
+option(WITH_SYSTEM_ZLIB "Use system zlib" TRUE)
+if(WITH_SYSTEM_ZLIB)
+  find_package(ZLIB)
+  if(ZLIB_FOUND)
+    set(HAVE_ZLIB ON)
+  endif()
+endif()
+
 ### ---[ Create the config.h file
 set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")
 set(pcl_config_h "${CMAKE_CURRENT_BINARY_DIR}/include/pcl/pcl_config.h")
