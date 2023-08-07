@@ -41,6 +41,8 @@
 #include <pcl/exceptions.h>
 #include <pcl/console/print.h>
 
+#include <cassert>
+
 using namespace pcl::device;
 
 /////////////////////////////////////////////////////////////////////////

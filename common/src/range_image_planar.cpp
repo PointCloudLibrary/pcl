@@ -34,6 +34,7 @@
 
 /** \author Bastian Steder */
 
+#include <cassert>
 #include <iostream>
 using std::cout;
 using std::cerr;

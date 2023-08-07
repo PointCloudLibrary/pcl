@@ -50,6 +50,7 @@
 
 #include <type_traits>
 #include <vector>
+#include <cassert>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Global variables used during testing

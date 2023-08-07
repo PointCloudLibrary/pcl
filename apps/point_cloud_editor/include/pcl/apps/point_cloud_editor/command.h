@@ -43,6 +43,8 @@
 
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 
+#include <cassert>
+
 /// @brief The abstract parent class of all the command classes. Commands are
 /// non-copyable.
 class Command
