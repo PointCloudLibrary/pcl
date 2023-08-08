@@ -52,6 +52,8 @@
 
 #cmakedefine HAVE_PNG
 
+#cmakedefine HAVE_ZLIB
+
 /* Precompile for a minimal set of point types instead of all. */
 #cmakedefine PCL_ONLY_CORE_POINT_TYPES
 

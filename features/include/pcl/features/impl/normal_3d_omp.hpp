@@ -77,7 +77,8 @@ pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
   default(none) \
   shared(output) \
   firstprivate(nn_indices, nn_dists) \
-  num_threads(threads_)
+  num_threads(threads_) \
+  schedule(dynamic, chunk_size_)
     // Iterating over the entire index vector
     for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
     {
@@ -106,7 +107,8 @@ pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
   default(none) \
   shared(output) \
   firstprivate(nn_indices, nn_dists) \
-  num_threads(threads_)
+  num_threads(threads_) \
+  schedule(dynamic, chunk_size_)
     // Iterating over the entire index vector
     for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
     {
