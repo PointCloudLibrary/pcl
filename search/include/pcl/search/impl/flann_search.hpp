@@ -118,6 +118,9 @@ pcl::search::FlannSearch<PointT, FlannDistance>::nearestKSearch (const PointT &p
   float* cdata = can_cast ? const_cast<float*> (reinterpret_cast<const float*> (&point)): data;
   const flann::Matrix<float> m (cdata ,1, point_representation_->getNumberOfDimensions ());
 
+  if (k > total_nr_points_)
+    k = total_nr_points_;
+
   flann::SearchParams p;
   p.eps = eps_;
   p.sorted = sorted_results_;
@@ -179,6 +182,9 @@ pcl::search::FlannSearch<PointT, FlannDistance>::nearestKSearch (
     // search won't change the matrix
     float* cdata = can_cast ? const_cast<float*> (reinterpret_cast<const float*> (&cloud[0])): data;
     const flann::Matrix<float> m (cdata ,cloud.size (), dim_, can_cast ? sizeof (PointT) : dim_ * sizeof (float) );
+
+    if (k > total_nr_points_)
+      k = total_nr_points_;
 
     flann::SearchParams p;
     p.sorted = sorted_results_;
@@ -385,6 +391,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::convertInputToFlannMatrix ()
       // const cast is evil, but flann won't change the data
       input_flann_ = static_cast<MatrixPtr> (new flann::Matrix<float> (const_cast<float*>(reinterpret_cast<const float*>(&(*input_) [0])), original_no_of_points, point_representation_->getNumberOfDimensions (),sizeof (PointT)));
       input_copied_for_flann_ = false;
+      total_nr_points_ = input_->points.size();
     }
     else
     {
@@ -405,6 +412,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::convertInputToFlannMatrix ()
         point_representation_->vectorize (point, cloud_ptr);
         cloud_ptr += dim_;
       }
+      total_nr_points_ = index_mapping_.size();
     }
 
   }
@@ -428,6 +436,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::convertInputToFlannMatrix ()
       point_representation_->vectorize (point, cloud_ptr);
       cloud_ptr += dim_;
     }
+    total_nr_points_ = index_mapping_.size();
   }
   if (input_copied_for_flann_)
     input_flann_->rows = index_mapping_.size ();

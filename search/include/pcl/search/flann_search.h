@@ -363,6 +363,8 @@ namespace pcl
         Indices index_mapping_;
         bool identity_mapping_;
 
+        int total_nr_points_;
+
     };
   }
 }
