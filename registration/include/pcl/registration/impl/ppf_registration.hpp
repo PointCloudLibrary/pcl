@@ -146,9 +146,9 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation(
           search_method_->nearestNeighborSearch(f1, f2, f3, f4, nearest_indices);
 
           // Compute alpha_s angle
-          Eigen::Vector3f scene_point = (*target_)[scene_point_index].getVector3fMap();
+          const Eigen::Vector3f scene_point = (*target_)[scene_point_index].getVector3fMap();
 
-          Eigen::Vector3f scene_point_transformed = transform_sg * scene_point;
+          const Eigen::Vector3f scene_point_transformed = transform_sg * scene_point;
           float alpha_s =
               std::atan2(-scene_point_transformed(2), scene_point_transformed(1));
           if (std::sin(alpha_s) * scene_point_transformed(2) < 0.0f)
@@ -197,22 +197,22 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation(
     for (std::size_t i = 0; i < size_i; ++i)
       for (std::size_t j = 0; j < size_j; ++j) {
         if (accumulator_array[i][j] >= max_votes) {
-          Eigen::Vector3f model_reference_point = (*input_)[i].getVector3fMap(),
-                          model_reference_normal = (*input_)[i].getNormalVector3fMap();
-          float rotation_angle_mg =
+          const Eigen::Vector3f model_reference_point = (*input_)[i].getVector3fMap(),
+                                model_reference_normal = (*input_)[i].getNormalVector3fMap();
+          const float rotation_angle_mg =
               std::acos(model_reference_normal.dot(Eigen::Vector3f::UnitX()));
-          bool parallel_to_x_mg = (model_reference_normal.y() == 0.0f &&
-                                   model_reference_normal.z() == 0.0f);
-          Eigen::Vector3f rotation_axis_mg =
+          const bool parallel_to_x_mg = (model_reference_normal.y() == 0.0f &&
+                                         model_reference_normal.z() == 0.0f);
+          const Eigen::Vector3f rotation_axis_mg =
               (parallel_to_x_mg)
                   ? (Eigen::Vector3f::UnitY())
                   : (model_reference_normal.cross(Eigen::Vector3f::UnitX())
                          .normalized());
-          Eigen::AngleAxisf rotation_mg(rotation_angle_mg, rotation_axis_mg);
-          Eigen::Affine3f transform_mg(
+          const Eigen::AngleAxisf rotation_mg(rotation_angle_mg, rotation_axis_mg);
+          const Eigen::Affine3f transform_mg(
               Eigen::Translation3f(rotation_mg * ((-1) * model_reference_point)) *
               rotation_mg);
-          Eigen::Affine3f max_transform =
+          const Eigen::Affine3f max_transform =
               transform_sg.inverse() *
               Eigen::AngleAxisf((static_cast<float>(j + 0.5) *
                                      search_method_->getAngleDiscretizationStep() -
