@@ -36,6 +36,7 @@
  */
 
 #include <pcl/common/gaussian.h>
+#include <cassert>
 
 void 
 pcl::GaussianKernel::compute (float sigma, 

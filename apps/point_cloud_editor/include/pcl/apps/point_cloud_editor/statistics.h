@@ -42,6 +42,7 @@
 
 #include <vector>
 #include <string>
+#include <cassert>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 
 class Statistics

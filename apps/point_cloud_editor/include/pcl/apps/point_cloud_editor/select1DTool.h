@@ -44,6 +44,8 @@
 
 #include <pcl/memory.h>  // for pcl::shared_ptr
 
+#include <cassert>
+
 class Selection;
 
 class Select1DTool : public ToolInterface

@@ -43,6 +43,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_representation.h>
 #include <pcl/common/copy_point.h>
+#include <cassert>
 
 namespace pcl
 {

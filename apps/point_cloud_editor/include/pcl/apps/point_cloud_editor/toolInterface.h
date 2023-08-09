@@ -43,6 +43,8 @@
 
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 
+#include <cassert>
+
 /// @brief the parent class of all the select and the transform tool classes
 class ToolInterface
 {

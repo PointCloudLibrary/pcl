@@ -117,6 +117,9 @@ macro(find_eigen3)
     set(Eigen3_DIR "${PCL_ROOT}/3rdParty/Eigen3/share/eigen3/cmake/")
   endif()
   find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+  if(NOT EIGEN3_FOUND AND Eigen3_FOUND)
+    set(EIGEN3_FOUND ${Eigen3_FOUND})
+  endif()
 endmacro()
 
 #remove this as soon as qhull is shipped with FindQhull.cmake

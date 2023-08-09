@@ -41,6 +41,7 @@
 
 #pragma once
 
+#include <cassert>
 #include <deque>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 

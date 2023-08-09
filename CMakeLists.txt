@@ -320,6 +320,9 @@ find_package(Threads REQUIRED)
 
 # Eigen3 (required)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+if(NOT EIGEN3_FOUND AND Eigen3_FOUND)
+    set(EIGEN3_FOUND ${Eigen3_FOUND})
+endif()
 
 # FLANN
 find_package(FLANN 1.9.1)
