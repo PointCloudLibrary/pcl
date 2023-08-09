@@ -146,7 +146,8 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation(
           search_method_->nearestNeighborSearch(f1, f2, f3, f4, nearest_indices);
 
           // Compute alpha_s angle
-          const Eigen::Vector3f scene_point = (*target_)[scene_point_index].getVector3fMap();
+          const Eigen::Vector3f scene_point =
+              (*target_)[scene_point_index].getVector3fMap();
 
           const Eigen::Vector3f scene_point_transformed = transform_sg * scene_point;
           float alpha_s =
@@ -198,7 +199,8 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation(
       for (std::size_t j = 0; j < size_j; ++j) {
         if (accumulator_array[i][j] >= max_votes) {
           const Eigen::Vector3f model_reference_point = (*input_)[i].getVector3fMap(),
-                                model_reference_normal = (*input_)[i].getNormalVector3fMap();
+                                model_reference_normal =
+                                    (*input_)[i].getNormalVector3fMap();
           const float rotation_angle_mg =
               std::acos(model_reference_normal.dot(Eigen::Vector3f::UnitX()));
           const bool parallel_to_x_mg = (model_reference_normal.y() == 0.0f &&
