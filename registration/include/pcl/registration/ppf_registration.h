@@ -181,7 +181,7 @@ public:
    * - std::pair does not have a custom allocator
    */
   struct PoseWithVotes {
-    PoseWithVotes(Eigen::Affine3f& a_pose, unsigned int& a_votes)
+    PoseWithVotes(const Eigen::Affine3f& a_pose, unsigned int& a_votes)
     : pose(a_pose), votes(a_votes)
     {}
 
