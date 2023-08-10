@@ -118,7 +118,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::nearestKSearch (const PointT &p
   float* cdata = can_cast ? const_cast<float*> (reinterpret_cast<const float*> (&point)): data;
   const flann::Matrix<float> m (cdata ,1, point_representation_->getNumberOfDimensions ());
 
-  if (k > total_nr_points_)
+  if (static_cast<unsigned int>(k) > total_nr_points_)
     k = total_nr_points_;
 
   flann::SearchParams p;
@@ -183,7 +183,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::nearestKSearch (
     float* cdata = can_cast ? const_cast<float*> (reinterpret_cast<const float*> (&cloud[0])): data;
     const flann::Matrix<float> m (cdata ,cloud.size (), dim_, can_cast ? sizeof (PointT) : dim_ * sizeof (float) );
 
-    if (k > total_nr_points_)
+    if (static_cast<unsigned int>(k) > total_nr_points_)
       k = total_nr_points_;
 
     flann::SearchParams p;
