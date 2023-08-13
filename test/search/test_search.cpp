@@ -41,6 +41,7 @@
 
 #include <pcl/search/brute_force.h>
 #include <pcl/search/kdtree.h>
+#include <pcl/search/flann_search.h>
 #include <pcl/search/organized.h>
 #include <pcl/search/octree.h>
 #include <pcl/io/pcd_io.h>
@@ -113,6 +114,9 @@ pcl::search::BruteForce<pcl::PointXYZ> brute_force;
 
 /** \brief instance of KDTree search method to be tested*/
 pcl::search::KdTree<pcl::PointXYZ> KDTree;
+
+/** \brief instance of FlannSearch search method to be tested*/
+pcl::search::FlannSearch<pcl::PointXYZ> FlannSearch;
 
 /** \brief instance of Octree search method to be tested*/
 pcl::search::Octree<pcl::PointXYZ> octree_search (0.1);
@@ -657,10 +661,12 @@ main (int argc, char** argv)
   
   unorganized_search_methods.push_back (&brute_force);
   unorganized_search_methods.push_back (&KDTree);
+  unorganized_search_methods.push_back (&FlannSearch);
   unorganized_search_methods.push_back (&octree_search);
   
   organized_search_methods.push_back (&brute_force);
   organized_search_methods.push_back (&KDTree);
+  organized_search_methods.push_back (&FlannSearch);
   organized_search_methods.push_back (&octree_search);
   organized_search_methods.push_back (&organized);
   
