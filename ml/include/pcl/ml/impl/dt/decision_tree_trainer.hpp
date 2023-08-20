@@ -46,8 +46,7 @@ template <class FeatureType,
           class NodeType>
 DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
     DecisionTreeTrainer()
-: 
- feature_handler_(nullptr)
+: feature_handler_(nullptr)
 , stats_estimator_(nullptr)
 , data_set_()
 , label_data_()

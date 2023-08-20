@@ -128,9 +128,9 @@ protected:
   SVMParam param_;      // it stores the training parameters
   std::string class_name_; // The SVM class name.
 
-  char* line_{nullptr};                 // buffer for line reading
+  char* line_{nullptr};               // buffer for line reading
   int max_line_len_{10000};           // max line length in the input file
-  bool labelled_training_set_{true}; // it stores whether the input set of samples is labelled
+  bool labelled_training_set_{true};  // it stores whether the input set of samples is labelled
 
   /** Set for output printings during classification. */
   static void
