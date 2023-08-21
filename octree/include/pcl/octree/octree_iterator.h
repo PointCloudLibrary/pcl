@@ -62,7 +62,8 @@ struct IteratorState {
   uindex_t depth_{0};
   IteratorState() = default;
   IteratorState(OctreeNode* node, const OctreeKey& key, uindex_t depth)
-  : node_(node), key_(key), depth_(depth) {}
+  : node_(node), key_(key), depth_(depth)
+  {}
 };
 
 /** \brief @b Abstract octree iterator class
