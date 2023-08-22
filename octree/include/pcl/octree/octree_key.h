@@ -54,7 +54,7 @@ namespace octree {
 class OctreeKey {
 public:
   /** \brief Empty constructor. */
-  OctreeKey() = default;
+  OctreeKey() : x(0), y(0), z(0) {}
 
   /** \brief Constructor for key initialization. */
   OctreeKey(uindex_t keyX, uindex_t keyY, uindex_t keyZ) : x(keyX), y(keyY), z(keyZ) {}
@@ -143,15 +143,16 @@ public:
       static_cast<unsigned char>(sizeof(uindex_t) * 8);
 
   // Indices addressing a voxel at (X, Y, Z)
-
+  // NOLINTBEGIN(modernize-use-default-member-init)
   union {
     struct {
-      uindex_t x{0};
-      uindex_t y{0};
-      uindex_t z{0};
+      uindex_t x;
+      uindex_t y;
+      uindex_t z;
     };
     uindex_t key_[3];
   };
+  // NOLINTEND(modernize-use-default-member-init)
 };
 } // namespace octree
 } // namespace pcl
