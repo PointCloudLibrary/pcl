@@ -60,12 +60,12 @@ int pcl::internal::optimizeModelCoefficientsCylinder (Eigen::VectorXf& coeff, co
     {
       Eigen::Vector3f line_dir(x[3], x[4], x[5]);
       line_dir.normalize();
-      Eigen::ArrayXf line_dir_x = Eigen::ArrayXf::Constant(pts_x.size(), line_dir.x());
-      Eigen::ArrayXf line_dir_y = Eigen::ArrayXf::Constant(pts_x.size(), line_dir.y());
-      Eigen::ArrayXf line_dir_z = Eigen::ArrayXf::Constant(pts_x.size(), line_dir.z());
-      Eigen::ArrayXf bx = Eigen::ArrayXf::Constant(pts_x.size(), x[0]) - pts_x;
-      Eigen::ArrayXf by = Eigen::ArrayXf::Constant(pts_x.size(), x[1]) - pts_y;
-      Eigen::ArrayXf bz = Eigen::ArrayXf::Constant(pts_x.size(), x[2]) - pts_z;
+      const Eigen::ArrayXf line_dir_x = Eigen::ArrayXf::Constant(pts_x.size(), line_dir.x());
+      const Eigen::ArrayXf line_dir_y = Eigen::ArrayXf::Constant(pts_x.size(), line_dir.y());
+      const Eigen::ArrayXf line_dir_z = Eigen::ArrayXf::Constant(pts_x.size(), line_dir.z());
+      const Eigen::ArrayXf bx = Eigen::ArrayXf::Constant(pts_x.size(), x[0]) - pts_x;
+      const Eigen::ArrayXf by = Eigen::ArrayXf::Constant(pts_x.size(), x[1]) - pts_y;
+      const Eigen::ArrayXf bz = Eigen::ArrayXf::Constant(pts_x.size(), x[2]) - pts_z;
       // compute the squared distance of point b to the line (cross product), then subtract the squared model radius
       fvec = ((line_dir_y * bz - line_dir_z * by).square()
              +(line_dir_z * bx - line_dir_x * bz).square()

@@ -60,13 +60,13 @@ int pcl::internal::optimizeModelCoefficientsCone (Eigen::VectorXf& coeff, const 
     {
       Eigen::Vector3f axis_dir(x[3], x[4], x[5]);
       axis_dir.normalize();
-      Eigen::ArrayXf axis_dir_x = Eigen::ArrayXf::Constant(pts_x.size(), axis_dir.x());
-      Eigen::ArrayXf axis_dir_y = Eigen::ArrayXf::Constant(pts_x.size(), axis_dir.y());
-      Eigen::ArrayXf axis_dir_z = Eigen::ArrayXf::Constant(pts_x.size(), axis_dir.z());
-      Eigen::ArrayXf bx = Eigen::ArrayXf::Constant(pts_x.size(), x[0]) - pts_x;
-      Eigen::ArrayXf by = Eigen::ArrayXf::Constant(pts_x.size(), x[1]) - pts_y;
-      Eigen::ArrayXf bz = Eigen::ArrayXf::Constant(pts_x.size(), x[2]) - pts_z;
-      Eigen::ArrayXf actual_cone_radius = std::tan(x[6]) *
+      const Eigen::ArrayXf axis_dir_x = Eigen::ArrayXf::Constant(pts_x.size(), axis_dir.x());
+      const Eigen::ArrayXf axis_dir_y = Eigen::ArrayXf::Constant(pts_x.size(), axis_dir.y());
+      const Eigen::ArrayXf axis_dir_z = Eigen::ArrayXf::Constant(pts_x.size(), axis_dir.z());
+      const Eigen::ArrayXf bx = Eigen::ArrayXf::Constant(pts_x.size(), x[0]) - pts_x;
+      const Eigen::ArrayXf by = Eigen::ArrayXf::Constant(pts_x.size(), x[1]) - pts_y;
+      const Eigen::ArrayXf bz = Eigen::ArrayXf::Constant(pts_x.size(), x[2]) - pts_z;
+      const Eigen::ArrayXf actual_cone_radius = std::tan(x[6]) *
           (bx*axis_dir_x+by*axis_dir_y+bz*axis_dir_z);
       // compute the squared distance of point b to the line (cross product), then subtract the actual cone radius (squared)
       fvec = ((axis_dir_y * bz - axis_dir_z * by).square()
