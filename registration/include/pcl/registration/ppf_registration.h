@@ -181,7 +181,7 @@ public:
    * - std::pair does not have a custom allocator
    */
   struct PoseWithVotes {
-    PoseWithVotes(Eigen::Affine3f& a_pose, unsigned int& a_votes)
+    PoseWithVotes(const Eigen::Affine3f& a_pose, unsigned int& a_votes)
     : pose(a_pose), votes(a_votes)
     {}
 
@@ -298,6 +298,18 @@ public:
   void
   setInputTarget(const PointCloudTargetConstPtr& cloud) override;
 
+  /** \brief Returns the most promising pose candidates, after clustering. The pose with
+   * the most votes is the result of the registration. It may make sense to check the
+   * next best pose candidates if the registration did not give the right result, or if
+   * there are more than one correct results. You need to call the align function before
+   * this one.
+   */
+  inline PoseWithVotesList
+  getBestPoseCandidates()
+  {
+    return best_pose_candidates;
+  }
+
 private:
   /** \brief Method that calculates the transformation between the input_ and target_
    * point clouds, based on the PPF features */
@@ -321,6 +333,10 @@ private:
    * through the point cloud */
   typename pcl::KdTreeFLANN<PointTarget>::Ptr scene_search_tree_;
 
+  /** \brief List with the most promising pose candidates, after clustering. The pose
+   * with the most votes is returned as the registration result. */
+  PoseWithVotesList best_pose_candidates;
+
   /** \brief static method used for the std::sort function to order two PoseWithVotes
    * instances by their number of votes*/
   static bool
@@ -341,7 +357,10 @@ private:
   /** \brief Method that checks whether two poses are close together - based on the
    * clustering threshold parameters of the class */
   bool
-  posesWithinErrorBounds(Eigen::Affine3f& pose1, Eigen::Affine3f& pose2);
+  posesWithinErrorBounds(Eigen::Affine3f& pose1,
+                         Eigen::Affine3f& pose2,
+                         float& position_diff,
+                         float& rotation_diff_angle);
 };
 } // namespace pcl
 

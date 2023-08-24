@@ -78,12 +78,21 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation(
   }
 
   const auto aux_size = static_cast<std::size_t>(
-      std::floor(2 * M_PI / search_method_->getAngleDiscretizationStep()));
+      std::ceil(2 * M_PI / search_method_->getAngleDiscretizationStep()));
+  if (std::abs(std::round(2 * M_PI / search_method_->getAngleDiscretizationStep()) -
+               2 * M_PI / search_method_->getAngleDiscretizationStep()) > 0.1) {
+    PCL_WARN("[pcl::PPFRegistration::computeTransformation] The chosen angle "
+             "discretization step (%g) does not result in a uniform discretization. "
+             "Consider using e.g. 2pi/%zu or 2pi/%zu\n",
+             search_method_->getAngleDiscretizationStep(),
+             aux_size - 1,
+             aux_size);
+  }
 
   const std::vector<unsigned int> tmp_vec(aux_size, 0);
   std::vector<std::vector<unsigned int>> accumulator_array(input_->size(), tmp_vec);
 
-  PCL_DEBUG("Accumulator array size: %u x %u.\n",
+  PCL_DEBUG("[PPFRegistration] Accumulator array size: %u x %u.\n",
             accumulator_array.size(),
             accumulator_array.back().size());
 
@@ -137,9 +146,10 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation(
           search_method_->nearestNeighborSearch(f1, f2, f3, f4, nearest_indices);
 
           // Compute alpha_s angle
-          Eigen::Vector3f scene_point = (*target_)[scene_point_index].getVector3fMap();
+          const Eigen::Vector3f scene_point =
+              (*target_)[scene_point_index].getVector3fMap();
 
-          Eigen::Vector3f scene_point_transformed = transform_sg * scene_point;
+          const Eigen::Vector3f scene_point_transformed = transform_sg * scene_point;
           float alpha_s =
               std::atan2(-scene_point_transformed(2), scene_point_transformed(1));
           if (std::sin(alpha_s) * scene_point_transformed(2) < 0.0f)
@@ -173,55 +183,60 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation(
       }
     }
 
-    std::size_t max_votes_i = 0, max_votes_j = 0;
+    // the paper says: "For stability reasons, all peaks that received a certain amount
+    // of votes relative to the maximum peak are used." No specific value is mentioned,
+    // but 90% seems good
     unsigned int max_votes = 0;
-
-    for (std::size_t i = 0; i < accumulator_array.size(); ++i)
-      for (std::size_t j = 0; j < accumulator_array.back().size(); ++j) {
-        if (accumulator_array[i][j] > max_votes) {
+    const std::size_t size_i = accumulator_array.size(),
+                      size_j = accumulator_array.back().size();
+    for (std::size_t i = 0; i < size_i; ++i)
+      for (std::size_t j = 0; j < size_j; ++j) {
+        if (accumulator_array[i][j] > max_votes)
           max_votes = accumulator_array[i][j];
-          max_votes_i = i;
-          max_votes_j = j;
+      }
+    max_votes *= 0.9;
+    for (std::size_t i = 0; i < size_i; ++i)
+      for (std::size_t j = 0; j < size_j; ++j) {
+        if (accumulator_array[i][j] >= max_votes) {
+          const Eigen::Vector3f model_reference_point = (*input_)[i].getVector3fMap(),
+                                model_reference_normal =
+                                    (*input_)[i].getNormalVector3fMap();
+          const float rotation_angle_mg =
+              std::acos(model_reference_normal.dot(Eigen::Vector3f::UnitX()));
+          const bool parallel_to_x_mg = (model_reference_normal.y() == 0.0f &&
+                                         model_reference_normal.z() == 0.0f);
+          const Eigen::Vector3f rotation_axis_mg =
+              (parallel_to_x_mg)
+                  ? (Eigen::Vector3f::UnitY())
+                  : (model_reference_normal.cross(Eigen::Vector3f::UnitX())
+                         .normalized());
+          const Eigen::AngleAxisf rotation_mg(rotation_angle_mg, rotation_axis_mg);
+          const Eigen::Affine3f transform_mg(
+              Eigen::Translation3f(rotation_mg * ((-1) * model_reference_point)) *
+              rotation_mg);
+          const Eigen::Affine3f max_transform =
+              transform_sg.inverse() *
+              Eigen::AngleAxisf((static_cast<float>(j + 0.5) *
+                                     search_method_->getAngleDiscretizationStep() -
+                                 M_PI),
+                                Eigen::Vector3f::UnitX()) *
+              transform_mg;
+
+          voted_poses.push_back(PoseWithVotes(max_transform, accumulator_array[i][j]));
         }
         // Reset accumulator_array for the next set of iterations with a new scene
         // reference point
         accumulator_array[i][j] = 0;
       }
-
-    Eigen::Vector3f model_reference_point = (*input_)[max_votes_i].getVector3fMap(),
-                    model_reference_normal =
-                        (*input_)[max_votes_i].getNormalVector3fMap();
-    float rotation_angle_mg =
-        std::acos(model_reference_normal.dot(Eigen::Vector3f::UnitX()));
-    bool parallel_to_x_mg =
-        (model_reference_normal.y() == 0.0f && model_reference_normal.z() == 0.0f);
-    Eigen::Vector3f rotation_axis_mg =
-        (parallel_to_x_mg)
-            ? (Eigen::Vector3f::UnitY())
-            : (model_reference_normal.cross(Eigen::Vector3f::UnitX()).normalized());
-    Eigen::AngleAxisf rotation_mg(rotation_angle_mg, rotation_axis_mg);
-    Eigen::Affine3f transform_mg(
-        Eigen::Translation3f(rotation_mg * ((-1) * model_reference_point)) *
-        rotation_mg);
-    Eigen::Affine3f max_transform =
-        transform_sg.inverse() *
-        Eigen::AngleAxisf((static_cast<float>(max_votes_j + 0.5) *
-                               search_method_->getAngleDiscretizationStep() -
-                           M_PI),
-                          Eigen::Vector3f::UnitX()) *
-        transform_mg;
-
-    voted_poses.push_back(PoseWithVotes(max_transform, max_votes));
   }
-  PCL_DEBUG("Done with the Hough Transform ...\n");
+  PCL_DEBUG("[PPFRegistration] Done with the Hough Transform ...\n");
 
   // Cluster poses for filtering out outliers and obtaining more precise results
-  PoseWithVotesList results;
-  clusterPoses(voted_poses, results);
+  clusterPoses(voted_poses, best_pose_candidates);
 
-  pcl::transformPointCloud(*input_, output, results.front().pose);
+  pcl::transformPointCloud(*input_, output, best_pose_candidates.front().pose);
 
-  transformation_ = final_transformation_ = results.front().pose.matrix();
+  transformation_ = final_transformation_ = best_pose_candidates.front().pose.matrix();
   converged_ = true;
 }
 
@@ -232,7 +247,8 @@ pcl::PPFRegistration<PointSource, PointTarget>::clusterPoses(
     typename pcl::PPFRegistration<PointSource, PointTarget>::PoseWithVotesList& poses,
     typename pcl::PPFRegistration<PointSource, PointTarget>::PoseWithVotesList& result)
 {
-  PCL_DEBUG("Clustering poses ...\n");
+  PCL_DEBUG("[PPFRegistration] Clustering poses (initially got %zu poses)\n",
+            poses.size());
   // Start off by sorting the poses by the number of votes
   sort(poses.begin(), poses.end(), poseWithVotesCompareFunction);
 
@@ -240,17 +256,37 @@ pcl::PPFRegistration<PointSource, PointTarget>::clusterPoses(
   std::vector<std::pair<std::size_t, unsigned int>> cluster_votes;
   for (std::size_t poses_i = 0; poses_i < poses.size(); ++poses_i) {
     bool found_cluster = false;
+    float lowest_position_diff = std::numeric_limits<float>::max(),
+          lowest_rotation_diff_angle = std::numeric_limits<float>::max();
+    std::size_t best_cluster = 0;
     for (std::size_t clusters_i = 0; clusters_i < clusters.size(); ++clusters_i) {
+      // if a pose can be added to more than one cluster (posesWithinErrorBounds returns
+      // true), then add it to the one where position and rotation difference are
+      // smallest
+      float position_diff, rotation_diff_angle;
       if (posesWithinErrorBounds(poses[poses_i].pose,
-                                 clusters[clusters_i].front().pose)) {
-        found_cluster = true;
-        clusters[clusters_i].push_back(poses[poses_i]);
-        cluster_votes[clusters_i].second += poses[poses_i].votes;
-        break;
+                                 clusters[clusters_i].front().pose,
+                                 position_diff,
+                                 rotation_diff_angle)) {
+        if (!found_cluster) {
+          found_cluster = true;
+          best_cluster = clusters_i;
+          lowest_position_diff = position_diff;
+          lowest_rotation_diff_angle = rotation_diff_angle;
+        }
+        else if (position_diff < lowest_position_diff &&
+                 rotation_diff_angle < lowest_rotation_diff_angle) {
+          best_cluster = clusters_i;
+          lowest_position_diff = position_diff;
+          lowest_rotation_diff_angle = rotation_diff_angle;
+        }
       }
     }
-
-    if (!found_cluster) {
+    if (found_cluster) {
+      clusters[best_cluster].push_back(poses[poses_i]);
+      cluster_votes[best_cluster].second += poses[poses_i].votes;
+    }
+    else {
       // Create a new cluster with the current pose
       PoseWithVotesList new_cluster;
       new_cluster.push_back(poses[poses_i]);
@@ -259,28 +295,30 @@ pcl::PPFRegistration<PointSource, PointTarget>::clusterPoses(
           clusters.size() - 1, poses[poses_i].votes));
     }
   }
+  PCL_DEBUG("[PPFRegistration] %zu poses remaining after clustering. Now averaging "
+            "each cluster and removing clusters with too few votes.\n",
+            clusters.size());
 
   // Sort clusters by total number of votes
   std::sort(cluster_votes.begin(), cluster_votes.end(), clusterVotesCompareFunction);
   // Compute pose average and put them in result vector
-  /// @todo some kind of threshold for determining whether a cluster has enough votes or
-  /// not... now just taking the first three clusters
   result.clear();
-  std::size_t max_clusters = (clusters.size() < 3) ? clusters.size() : 3;
-  for (std::size_t cluster_i = 0; cluster_i < max_clusters; ++cluster_i) {
+  for (std::size_t cluster_i = 0; cluster_i < clusters.size(); ++cluster_i) {
+    // Remove all clusters that have less than 10% of the votes of the peak cluster.
+    // This way, if there is e.g. one cluster with far more votes than all other
+    // clusters, only that one is kept.
+    if (cluster_votes[cluster_i].second < 0.1 * cluster_votes[0].second)
+      continue;
     PCL_DEBUG("Winning cluster has #votes: %d and #poses voted: %d.\n",
               cluster_votes[cluster_i].second,
               clusters[cluster_votes[cluster_i].first].size());
     Eigen::Vector3f translation_average(0.0, 0.0, 0.0);
     Eigen::Vector4f rotation_average(0.0, 0.0, 0.0, 0.0);
-    for (typename PoseWithVotesList::iterator v_it =
-             clusters[cluster_votes[cluster_i].first].begin();
-         v_it != clusters[cluster_votes[cluster_i].first].end();
-         ++v_it) {
-      translation_average += v_it->pose.translation();
+    for (const auto& vote : clusters[cluster_votes[cluster_i].first]) {
+      translation_average += vote.pose.translation();
       /// averaging rotations by just averaging the quaternions in 4D space - reference
       /// "On Averaging Rotations" by CLAUS GRAMKOW
-      rotation_average += Eigen::Quaternionf(v_it->pose.rotation()).coeffs();
+      rotation_average += Eigen::Quaternionf(vote.pose.rotation()).coeffs();
     }
 
     translation_average /=
@@ -301,13 +339,16 @@ pcl::PPFRegistration<PointSource, PointTarget>::clusterPoses(
 template <typename PointSource, typename PointTarget>
 bool
 pcl::PPFRegistration<PointSource, PointTarget>::posesWithinErrorBounds(
-    Eigen::Affine3f& pose1, Eigen::Affine3f& pose2)
+    Eigen::Affine3f& pose1,
+    Eigen::Affine3f& pose2,
+    float& position_diff,
+    float& rotation_diff_angle)
 {
-  float position_diff = (pose1.translation() - pose2.translation()).norm();
+  position_diff = (pose1.translation() - pose2.translation()).norm();
   Eigen::AngleAxisf rotation_diff_mat(
       (pose1.rotation().inverse().lazyProduct(pose2.rotation()).eval()));
 
-  float rotation_diff_angle = std::abs(rotation_diff_mat.angle());
+  rotation_diff_angle = std::abs(rotation_diff_mat.angle());
 
   return (position_diff < clustering_position_diff_threshold_ &&
           rotation_diff_angle < clustering_rotation_diff_threshold_);
