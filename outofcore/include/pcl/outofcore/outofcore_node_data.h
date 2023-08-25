@@ -176,7 +176,7 @@ namespace pcl
         /** \brief Metadata (JSON) file pathname (oct_idx extension JSON file) */
         boost::filesystem::path metadata_filename_;
         /** \brief Outofcore library version identifier */
-        int outofcore_version_{};
+        int outofcore_version_{0u};
 
         /** \brief Computes the midpoint; used when bounding box is changed */
         inline void 

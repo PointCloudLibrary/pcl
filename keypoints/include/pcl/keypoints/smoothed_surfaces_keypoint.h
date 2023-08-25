@@ -120,7 +120,7 @@ namespace pcl
       PointCloudNTConstPtr normals_;
       std::vector<std::pair<float, std::size_t> > scales_;
       float input_scale_{0.0f};
-      std::size_t input_index_{};
+      std::size_t input_index_{0u};
 
       static bool
       compareScalesFunction (const std::pair<float, std::size_t> &a,

@@ -176,7 +176,7 @@ namespace pcl
       KeypointPointCloudTPtr keypoints_;
 
       // TODO: set
-      float scale_range_{};
+      float scale_range_{0.0f};
 
       // Some helper structures for the Brisk pattern representation
       struct BriskPatternPoint
