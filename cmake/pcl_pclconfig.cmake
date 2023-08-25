@@ -16,6 +16,13 @@ set(PCLCONFIG_SSE_DEFINITIONS "${SSE_DEFINITIONS}")
 set(PCLCONFIG_SSE_COMPILE_OPTIONS ${SSE_FLAGS})
 set(PCLCONFIG_AVX_COMPILE_OPTIONS ${AVX_FLAGS})
 
+# Eigen has a custom mechanism to guarantee aligned memory (used for everything older than C++17, see Memory.h in the Eigen project)
+# If PCL is compiled with C++14 and the user project is compiled with C++17, this will lead to problems (e.g. memory allocated with the custom mechanism but freed without it)
+# Defining EIGEN_HAS_CXX17_OVERALIGN=0 forces Eigen in the user project to use Eigen's custom mechanism, even in C++17 and newer.
+if(${CMAKE_CXX_STANDARD} LESS 17)
+  string(APPEND PCLCONFIG_SSE_DEFINITIONS " -DEIGEN_HAS_CXX17_OVERALIGN=0")
+endif()
+
 foreach(_ss ${PCL_SUBSYSTEMS_MODULES})
   PCL_GET_SUBSYS_STATUS(_status ${_ss})
 
