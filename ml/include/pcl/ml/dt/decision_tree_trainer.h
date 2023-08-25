@@ -238,7 +238,8 @@ private:
   /** FeatureHandler instance, responsible for creating and evaluating features. */
   pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>* feature_handler_{nullptr};
   /** StatsEstimator instance, responsible for gathering stats about a node. */
-  pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>* stats_estimator_{nullptr};
+  pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>* stats_estimator_{
+      nullptr};
 
   /** The training data set. */
   DataSet data_set_;
