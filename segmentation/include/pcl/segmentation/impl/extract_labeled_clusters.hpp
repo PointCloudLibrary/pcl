@@ -129,9 +129,8 @@ pcl::extractLabeledEuclideanClusters(
       r.indices.resize(seed_queue.size());
       for (std::size_t j = 0; j < seed_queue.size(); ++j)
         r.indices[j] = seed_queue[j];
-
+      // After clustering, indices are out of order, so sort them
       std::sort(r.indices.begin(), r.indices.end());
-      r.indices.erase(std::unique(r.indices.begin(), r.indices.end()), r.indices.end());
 
       r.header = cloud.header;
       labeled_clusters[cloud[i].label].push_back(
