@@ -242,7 +242,7 @@ private:
       nullptr};
 
   /** The training data set. */
-  DataSet data_set_;
+  DataSet data_set_{};
   /** The label data. */
   std::vector<LabelType> label_data_{};
   /** The example data. */

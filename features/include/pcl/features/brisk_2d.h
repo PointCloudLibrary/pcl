@@ -214,7 +214,7 @@ namespace pcl
       BriskPatternPoint* pattern_points_;
       
       /** Total number of collocation points. */
-      unsigned int points_{};
+      unsigned int points_{0u};
       
       /** Discretization of the rotation look-up. */
 		  const unsigned int n_rot_{1024};

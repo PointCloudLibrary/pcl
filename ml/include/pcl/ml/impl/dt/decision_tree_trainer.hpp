@@ -45,9 +45,7 @@ template <class FeatureType,
           class ExampleIndex,
           class NodeType>
 DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    DecisionTreeTrainer()
-: data_set_(), decision_tree_trainer_data_provider_()
-{}
+    DecisionTreeTrainer() = default;
 
 template <class FeatureType,
           class DataSet,
