@@ -972,33 +972,33 @@ protected:
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /** \brief Amount of leaf nodes   **/
-  std::size_t leaf_count_;
+  std::size_t leaf_count_{0};
 
   /** \brief Amount of branch nodes   **/
-  std::size_t branch_count_;
+  std::size_t branch_count_{1};
 
   /** \brief Pointer to root branch node of octree   **/
   BranchNode* root_node_;
 
   /** \brief Depth mask based on octree depth   **/
-  uindex_t depth_mask_;
+  uindex_t depth_mask_{0};
 
   /** \brief key range */
   OctreeKey max_key_;
 
   /** \brief Currently active octree buffer  **/
-  unsigned char buffer_selector_;
+  unsigned char buffer_selector_{0};
 
   /** \brief flags indicating if unused branches and leafs might exist in previous
    * buffer  **/
-  bool tree_dirty_flag_;
+  bool tree_dirty_flag_{false};
 
   /** \brief Octree depth */
-  uindex_t octree_depth_;
+  uindex_t octree_depth_{0};
 
   /** \brief Enable dynamic_depth
    *  \note Note that this parameter is ignored in octree2buf! */
-  bool dynamic_depth_enabled_;
+  bool dynamic_depth_enabled_{false};
 };
 } // namespace octree
 } // namespace pcl

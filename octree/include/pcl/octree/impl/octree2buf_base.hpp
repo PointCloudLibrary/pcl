@@ -44,14 +44,7 @@ namespace octree {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 Octree2BufBase<LeafContainerT, BranchContainerT>::Octree2BufBase()
-: leaf_count_(0)
-, branch_count_(1)
-, root_node_(new BranchNode())
-, depth_mask_(0)
-, buffer_selector_(0)
-, tree_dirty_flag_(false)
-, octree_depth_(0)
-, dynamic_depth_enabled_(false)
+: root_node_(new BranchNode())
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////

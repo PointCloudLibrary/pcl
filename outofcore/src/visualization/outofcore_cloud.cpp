@@ -1,4 +1,3 @@
-// PCL
 #include <pcl/point_types.h>
 
 #include <pcl/io/pcd_io.h>
@@ -105,7 +104,7 @@ OutofcoreCloud::pcdReaderThread ()
 // Operators
 // -----------------------------------------------------------------------------
 OutofcoreCloud::OutofcoreCloud (std::string name, boost::filesystem::path& tree_root) :
-    Object (name), display_depth_ (1), points_loaded_ (0), data_loaded_(0), render_camera_(nullptr), lod_pixel_threshold_(10000)
+    Object (name)
 {
 
   // Create the pcd reader thread once for all outofcore nodes

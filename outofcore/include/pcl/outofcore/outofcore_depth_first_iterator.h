@@ -80,7 +80,7 @@ namespace pcl
         skipChildVoxels ();
       
       protected:
-        unsigned char currentChildIdx_;
+        unsigned char currentChildIdx_{0};
         std::vector<std::pair<OctreeDiskNode*, unsigned char> > stack_;
     };
   }

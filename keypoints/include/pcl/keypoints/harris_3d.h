@@ -84,10 +84,7 @@ namespace pcl
         */
       HarrisKeypoint3D (ResponseMethod method = HARRIS, float radius = 0.01f, float threshold = 0.0f)
       : threshold_ (threshold)
-      , refine_ (true)
-      , nonmax_ (true)
       , method_ (method)
-      , threads_ (0)
       {
         name_ = "HarrisKeypoint3D";
         search_radius_ = radius;
@@ -171,11 +168,11 @@ namespace pcl
       void calculateNormalCovar (const pcl::Indices& neighbors, float* coefficients) const;
     private:
       float threshold_;
-      bool refine_;
-      bool nonmax_;
+      bool refine_{true};
+      bool nonmax_{true};
       ResponseMethod method_;
       PointCloudNConstPtr normals_;
-      unsigned int threads_;
+      unsigned int threads_{0};
   };
 }
 

@@ -53,10 +53,7 @@ namespace pcl
   namespace outofcore
   {
     
-    OutofcoreOctreeNodeMetadata::OutofcoreOctreeNodeMetadata () 
-      : outofcore_version_ ()
-    {
-    }
+    OutofcoreOctreeNodeMetadata::OutofcoreOctreeNodeMetadata () = default;
 
     ////////////////////////////////////////////////////////////////////////////////
 

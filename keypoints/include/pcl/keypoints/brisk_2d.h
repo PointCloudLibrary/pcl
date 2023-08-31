@@ -90,7 +90,6 @@ namespace pcl
       BriskKeypoint2D (int octaves = 4, int threshold = 60)
         : threshold_ (threshold)
         , octaves_ (octaves)
-        , remove_invalid_3D_keypoints_ (false)
       {
         k_ = 1;
         name_ = "BriskKeypoint2D";
@@ -232,7 +231,7 @@ namespace pcl
       /** \brief Specify whether the keypoints that do not have a valid 3D position are
         * kept (false) or removed (true).
         */
-      bool remove_invalid_3D_keypoints_;
+      bool remove_invalid_3D_keypoints_{false};
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -473,8 +472,8 @@ namespace pcl
           std::uint8_t safe_threshold_;
 
           // some constant parameters
-          float safety_factor_;
-          float basic_size_;
+          float safety_factor_{1.0};
+          float basic_size_{12.0};
       };
     } // namespace brisk
   } // namespace keypoints

@@ -45,18 +45,7 @@ template <class FeatureType,
           class ExampleIndex,
           class NodeType>
 DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    DecisionTreeTrainer()
-: max_tree_depth_(15)
-, num_of_features_(1000)
-, num_of_thresholds_(10)
-, feature_handler_(nullptr)
-, stats_estimator_(nullptr)
-, data_set_()
-, label_data_()
-, examples_()
-, decision_tree_trainer_data_provider_()
-, random_features_at_split_node_(false)
-{}
+    DecisionTreeTrainer() = default;
 
 template <class FeatureType,
           class DataSet,

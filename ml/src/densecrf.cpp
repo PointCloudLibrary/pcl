@@ -39,8 +39,7 @@
 
 #include <pcl/ml/densecrf.h>
 
-pcl::DenseCrf::DenseCrf(int N, int m)
-: N_(N), M_(m), xyz_(false), rgb_(false), normal_(false)
+pcl::DenseCrf::DenseCrf(int N, int m) : N_(N), M_(m)
 {
   current_.resize(N_ * M_, 0.0f);
   next_.resize(N_ * M_, 0.0f);
