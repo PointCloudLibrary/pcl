@@ -25,7 +25,6 @@ set(srcs
   src/organized_multi_plane_segmentation.cpp
   src/planar_polygon_fusion.cpp
   src/crf_segmentation.cpp
-  src/crf_normal_segmentation.cpp
   src/unary_classifier.cpp
   src/conditional_euclidean_clustering.cpp
   src/supervoxel_clustering.cpp
