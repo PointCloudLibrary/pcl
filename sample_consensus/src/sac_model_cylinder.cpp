@@ -37,6 +37,55 @@
  */
 
 #include <pcl/sample_consensus/impl/sac_model_cylinder.hpp>
+#include <unsupported/Eigen/NonLinearOptimization> // for LevenbergMarquardt
+
+int pcl::internal::optimizeModelCoefficientsCylinder (Eigen::VectorXf& coeff, const Eigen::ArrayXf& pts_x, const Eigen::ArrayXf& pts_y, const Eigen::ArrayXf& pts_z)
+{
+  if(pts_x.size() != pts_y.size() || pts_y.size() != pts_z.size()) {
+    PCL_ERROR("[pcl::internal::optimizeModelCoefficientsCylinder] Sizes not equal!\n");
+    return Eigen::LevenbergMarquardtSpace::ImproperInputParameters;
+  }
+  if(coeff.size() != 7) {
+    PCL_ERROR("[pcl::internal::optimizeModelCoefficientsCylinder] Coefficients have wrong size\n");
+    return Eigen::LevenbergMarquardtSpace::ImproperInputParameters;
+  }
+  struct CylinderOptimizationFunctor : pcl::Functor<float>
+  {
+    CylinderOptimizationFunctor (const Eigen::ArrayXf& x, const Eigen::ArrayXf& y, const Eigen::ArrayXf& z) :
+      pcl::Functor<float>(x.size()), pts_x(x), pts_y(y), pts_z(z)
+      {}
+
+    int
+    operator() (const Eigen::VectorXf &x, Eigen::VectorXf &fvec) const
+    {
+      Eigen::Vector3f line_dir(x[3], x[4], x[5]);
+      line_dir.normalize();
+      const Eigen::ArrayXf line_dir_x = Eigen::ArrayXf::Constant(pts_x.size(), line_dir.x());
+      const Eigen::ArrayXf line_dir_y = Eigen::ArrayXf::Constant(pts_x.size(), line_dir.y());
+      const Eigen::ArrayXf line_dir_z = Eigen::ArrayXf::Constant(pts_x.size(), line_dir.z());
+      const Eigen::ArrayXf bx = Eigen::ArrayXf::Constant(pts_x.size(), x[0]) - pts_x;
+      const Eigen::ArrayXf by = Eigen::ArrayXf::Constant(pts_x.size(), x[1]) - pts_y;
+      const Eigen::ArrayXf bz = Eigen::ArrayXf::Constant(pts_x.size(), x[2]) - pts_z;
+      // compute the squared distance of point b to the line (cross product), then subtract the squared model radius
+      fvec = ((line_dir_y * bz - line_dir_z * by).square()
+             +(line_dir_z * bx - line_dir_x * bz).square()
+             +(line_dir_x * by - line_dir_y * bx).square())
+             -Eigen::ArrayXf::Constant(pts_x.size(), x[6]*x[6]);
+      return (0);
+    }
+
+    const Eigen::ArrayXf& pts_x, pts_y, pts_z;
+  };
+
+  CylinderOptimizationFunctor functor (pts_x, pts_y, pts_z);
+  Eigen::NumericalDiff<CylinderOptimizationFunctor> num_diff (functor);
+  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<CylinderOptimizationFunctor>, float> lm (num_diff);
+  const int info = lm.minimize (coeff);
+  coeff[6] = std::abs(coeff[6]);
+  PCL_DEBUG ("[pcl::internal::optimizeModelCoefficientsCylinder] LM solver finished with exit code %i, having a residual norm of %g.\n",
+             info, lm.fvec.norm ());
+  return info;
+}
 
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
