@@ -1,6 +1,6 @@
 # escape=`
 
-FROM mcr.microsoft.com/windows/servercore:ltsc2019
+FROM mcr.microsoft.com/dotnet/framework/runtime:4.8.1
 
 # Use "--build-arg platform=x64" for 64 bit or x86 for 32 bit.
 ARG PLATFORM
