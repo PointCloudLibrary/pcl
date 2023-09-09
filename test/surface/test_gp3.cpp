@@ -238,6 +238,36 @@ TEST (PCL, UpdateMesh_With_TextureMapping)
   }
 }
 
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST(PCL, computeTriangleMeshArea)
+{
+  // Init objects
+  PolygonMesh triangles;
+  GreedyProjectionTriangulation<PointNormal> gp3;
+
+  // Set parameters
+  gp3.setInputCloud(cloud_with_normals);
+  gp3.setSearchMethod(tree2);
+  gp3.setSearchRadius(0.025);
+  gp3.setMu(2.5);
+  gp3.setMaximumNearestNeighbors(100);
+  gp3.setMaximumSurfaceAngle(M_PI / 4); // 45 degrees
+  gp3.setMinimumAngle(M_PI / 18); // 10 degrees
+  gp3.setMaximumAngle(2 * M_PI / 3); // 120 degrees
+  gp3.setNormalConsistency(false);
+
+  // Reconstruct
+  gp3.reconstruct(triangles);
+
+  float functArea = pcl::computeTriangleMeshArea(cloud_with_normals, triangles.polygons);
+  EXPECT_NEAR((functArea), 0.0210945, 0.001);
+
+
+}
+
+
 /* ---[ */
 int
 main (int argc, char** argv)
