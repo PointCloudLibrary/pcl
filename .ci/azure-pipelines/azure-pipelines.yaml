@@ -102,7 +102,7 @@ stages:
               CONTAINER: env2204
               CC: clang
               CXX: clang++
-              BUILD_GPU: ON
+              BUILD_GPU: OFF # There are currently incompatibilities between GCC 11.2 and CUDA 11.5 (Ubuntu 22.04)
               CMAKE_ARGS: ''
         container: $[ variables['CONTAINER'] ]
         timeoutInMinutes: 0
