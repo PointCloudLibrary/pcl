@@ -53,7 +53,7 @@ stages:
               CONTAINER: env2304
               CC: gcc
               CXX: g++
-              BUILD_GPU: ON # There are currently incompatibilities between GCC 11.2 and CUDA 11.5 (Ubuntu 22.04)
+              BUILD_GPU: ON
         container: $[ variables['CONTAINER'] ]
         timeoutInMinutes: 0
         variables:
