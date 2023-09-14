@@ -40,9 +40,11 @@
 
 #include <pcl/search/search.h>
 
+namespace pcl{
+namespace search {
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::search::Search<PointT>::Search (const std::string& name, bool sorted)
+Search<PointT>::Search (const std::string& name, bool sorted)
   : input_ () 
   , sorted_results_ (sorted)
   , name_ (name)
@@ -51,28 +53,28 @@ pcl::search::Search<PointT>::Search (const std::string& name, bool sorted)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> const std::string& 
-pcl::search::Search<PointT>::getName () const
+Search<PointT>::getName () const
 {
   return (name_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::search::Search<PointT>::setSortedResults (bool sorted)
+Search<PointT>::setSortedResults (bool sorted)
 {
   sorted_results_ = sorted;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::search::Search<PointT>::getSortedResults ()
+Search<PointT>::getSortedResults () const
 {
   return (sorted_results_);
 }
  
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::search::Search<PointT>::setInputCloud (
+Search<PointT>::setInputCloud (
     const PointCloudConstPtr& cloud, const IndicesConstPtr &indices)
 {
   input_ = cloud;
@@ -82,7 +84,7 @@ pcl::search::Search<PointT>::setInputCloud (
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
-pcl::search::Search<PointT>::nearestKSearch (
+Search<PointT>::nearestKSearch (
     const PointCloud &cloud, index_t index, int k,
     Indices &k_indices, std::vector<float> &k_sqr_distances) const
 {
@@ -92,7 +94,7 @@ pcl::search::Search<PointT>::nearestKSearch (
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
-pcl::search::Search<PointT>::nearestKSearch (
+Search<PointT>::nearestKSearch (
     index_t index, int k,
     Indices &k_indices,
     std::vector<float> &k_sqr_distances) const
@@ -110,7 +112,7 @@ pcl::search::Search<PointT>::nearestKSearch (
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::search::Search<PointT>::nearestKSearch (
+Search<PointT>::nearestKSearch (
     const PointCloud& cloud, const Indices& indices,
     int k, std::vector<Indices>& k_indices,
     std::vector< std::vector<float> >& k_sqr_distances) const
@@ -133,7 +135,7 @@ pcl::search::Search<PointT>::nearestKSearch (
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
-pcl::search::Search<PointT>::radiusSearch (
+Search<PointT>::radiusSearch (
     const PointCloud &cloud, index_t index, double radius,
     Indices &k_indices, std::vector<float> &k_sqr_distances,
     unsigned int max_nn) const
@@ -144,7 +146,7 @@ pcl::search::Search<PointT>::radiusSearch (
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
-pcl::search::Search<PointT>::radiusSearch (
+Search<PointT>::radiusSearch (
     index_t index, double radius, Indices &k_indices,
     std::vector<float> &k_sqr_distances, unsigned int max_nn ) const
 {
@@ -159,7 +161,7 @@ pcl::search::Search<PointT>::radiusSearch (
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::search::Search<PointT>::radiusSearch (
+Search<PointT>::radiusSearch (
     const PointCloud& cloud,
     const Indices& indices,
     double radius,
@@ -185,7 +187,7 @@ pcl::search::Search<PointT>::radiusSearch (
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::search::Search<PointT>::sortResults (
+Search<PointT>::sortResults (
     Indices& indices, std::vector<float>& distances) const
 {
   Indices order (indices.size ());
@@ -204,6 +206,105 @@ pcl::search::Search<PointT>::sortResults (
   // sort  the according distances.
   sort (distances.begin (), distances.end ());
 }
+
+template <typename PointT>
+std::size_t
+Search<PointT>::makeNonTrivial(Indices& k_indices,
+                               std::vector<float>& k_sqr_distances) const
+{
+  assert(k_indices.size() == k_sqr_distances.size());
+  if (k_indices.empty()) {
+    return 0;
+  }
+
+  if (getSortedResults()) {
+    std::size_t num_zero_elements = 0;
+    // distances are sorted, so if we encounter a non-zero, we can bail early
+    for (const auto& distance : k_sqr_distances) {
+      if (distance) {
+        break;
+      }
+      ++num_zero_elements;
+    }
+    // We need to remove `num_zero_elements` initial elements
+    k_indices.erase(k_indices.begin(), k_indices.begin() + num_zero_elements);
+    k_sqr_distances.erase(k_sqr_distances.begin(),
+                          k_sqr_distances.begin() + num_zero_elements);
+  }
+  else {
+    const auto zero_distance_it =
+        std::find(k_sqr_distances.begin(), k_sqr_distances.end(), 0);
+    const auto zero_distance_idx =
+        std::distance(k_sqr_distances.begin(), zero_distance_it);
+    // From zero_distance_idx, we start removing elements
+    std::size_t last_good_idx = zero_distance_idx - 1;
+    for (std::size_t i = zero_distance_idx + 1; i < k_sqr_distances.size(); ++i) {
+      if (k_sqr_distances[i] == 0) {
+        continue;
+      }
+      ++last_good_idx;
+      k_sqr_distances[last_good_idx] = k_sqr_distances[i];
+      k_indices[last_good_idx] = k_indices[i];
+    }
+    // We need to remove elements after `last_good_idx`
+    const auto new_end = last_good_idx + 1;
+    k_indices.erase(k_indices.begin() + new_end, k_indices.end());
+    k_sqr_distances.erase(k_sqr_distances.begin() + new_end, k_sqr_distances.end());
+  }
+  assert(k_indices.size() == k_sqr_distances.size());
+  return k_indices.size();
+}
+
+template <typename PointT>
+std::size_t
+Search<PointT>::makeNonTrivial(index_t index,
+                               Indices& k_indices,
+                               std::vector<float>& k_sqr_distances) const
+{
+  assert(k_indices.size() == k_sqr_distances.size());
+  if (k_indices.empty()) {
+    return 0;
+  }
+
+  if (getSortedResults()) {
+    std::size_t same_idx_elements = 0;
+    // distances are sorted, so if we encounter a non-zero, we can bail early
+    for (const auto& idx : k_indices) {
+      if (idx != index) {
+        break;
+      }
+      ++same_idx_elements;
+    }
+    // We need to remove `same_idx_elements` initial elements
+    k_indices.erase(k_indices.begin(), k_indices.begin() + same_idx_elements);
+    k_sqr_distances.erase(k_sqr_distances.begin(),
+                          k_sqr_distances.begin() + same_idx_elements);
+  }
+  else {
+    const auto same_idx_it =
+        std::find(k_indices.begin(), k_indices.end(), index);
+    const auto same_idx = std::distance(k_indices.begin(), same_idx_it);
+    // From same_idx, we start removing elements
+    std::size_t last_good_idx = same_idx - 1;
+    for (std::size_t i = same_idx + 1; i < k_indices.size(); ++i) {
+      if (k_indices[i] == index) {
+        continue;
+      }
+      ++last_good_idx;
+      k_sqr_distances[last_good_idx] = k_sqr_distances[i];
+      k_indices[last_good_idx] = k_indices[i];
+    }
+    // We need to remove elements after `last_good_idx`
+    const auto new_end = last_good_idx + 1;
+    k_indices.erase(k_indices.begin() + new_end, k_indices.end());
+    k_sqr_distances.erase(k_sqr_distances.begin() + new_end, k_sqr_distances.end());
+  }
+
+  assert(k_indices.size() == k_sqr_distances.size());
+  return k_indices.size();
+}
+}  // namespace search
+}  // namespace pcl
 
 #define PCL_INSTANTIATE_Search(T) template class PCL_EXPORTS pcl::search::Search<T>;
 

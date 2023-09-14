@@ -107,7 +107,7 @@ namespace pcl
           * Otherwise the results may be returned in any order.
           */
         virtual bool 
-        getSortedResults ();
+        getSortedResults () const;
 
         
         /** \brief Pass the input dataset that the search will be performed on.
@@ -394,6 +394,97 @@ namespace pcl
           }
         }
 
+        /**
+         * \brief Removes indices and sqr distances, where sqr_distance == 0
+         * \param k_indices Indices returned from \a nearestKSearch{,T} or \a
+         * radiusSearch{,T}
+         * \param k_sqr_distances Distances returned from \a nearestKSearch{,T} or \a
+         * radiusSearch{,T}
+         * \return std::size_t number of non trivial neighbors found
+         * \details Example usage:
+         * \code {.cpp}
+         * // First populate the two vectors
+         * nearestKSearch(point, k + 1, k_indices, k_sqr_distances);
+         * const auto num_neighbors = makeNonTrivial(k_indices, k_sqr_distances);
+         * \endcode
+         */
+        std::size_t
+        makeNonTrivial(Indices& k_indices, std::vector<float>& k_sqr_distances) const;
+
+        /**
+         * \brief Removes indices and sqr distances, where sqr_distance == 0
+         * \param k_indices Indices returned from \a nearestKSearch{,T} or \a
+         * radiusSearch{,T}, k_indices[i] corresponds to the neighbors of the query
+         * point i
+         * \param k_sqr_distances Distances returned from \a nearestKSearch{,T} or \a
+         * radiusSearch{,T}, k_sqr_distances[i] corresponds to the neighbors of the
+         * query point i
+         * \details Example usage:
+         * \code {.cpp}
+         * // First populate the two vectors
+         * nearestKSearch(point, k + 1, k_indices, k_sqr_distances);
+         * makeNonTrivial(k_indices, k_sqr_distances);
+         * \endcode
+         */
+        void
+        makeNonTrivial(std::vector<Indices>& k_indices,
+                       std::vector<std::vector<float>>& k_sqr_distances) const
+        {
+          assert(k_indices.size() == k_sqr_distances.size ());
+          for (std::size_t i = 0; i < k_indices.size(); ++i) {
+            makeNonTrivial(k_indices[i], k_sqr_distances[i]);
+          }
+        }
+
+        /**
+         * \brief Removes indices and sqr distances, where k_indices[i] == index
+         * \param[in] index The index used in a previous search call
+         * \param k_indices Indices returned from \a nearestKSearch{,T} or \a
+         * radiusSearch{,T}
+         * \param k_sqr_distances Distances returned from \a nearestKSearch{,T} or \a
+         * radiusSearch{,T}
+         * \return std::size_t number of non trivial neighbors found
+         * \details Example usage:
+         * \code {.cpp}
+         * // First populate the two vectors
+         * nearestKSearch(point, k + 1, k_indices, k_sqr_distances);
+         * const auto num_neighbors = makeNonTrivial(k_indices, k_sqr_distances);
+         * \endcode
+         */
+        std::size_t
+        makeNonTrivial(index_t index,
+                       Indices& k_indices,
+                       std::vector<float>& k_sqr_distances) const;
+
+      /**
+         * \brief Removes indices and sqr distances, where k_indices[i][j] == indices[i]
+         * \param[in] indices a vector of point cloud indices to query for nearest neighbors
+         * \param k_indices Indices returned from \a nearestKSearch{,T} or \a
+         * radiusSearch{,T}, k_indices[i] corresponds to the neighbors of the query
+         * point i
+         * \param k_sqr_distances Distances returned from \a nearestKSearch{,T} or \a
+         * radiusSearch{,T}, k_sqr_distances[i] corresponds to the neighbors of the
+         * query point i
+         * \details Example usage:
+         * \code {.cpp}
+         * // First populate the two vectors
+         * nearestKSearch(point, k + 1, k_indices, k_sqr_distances);
+         * makeNonTrivial(k_indices, k_sqr_distances);
+         * \endcode
+         */
+        void
+        makeNonTrivial(const Indices& indices,
+                       std::vector<Indices>& k_indices,
+                       std::vector<std::vector<float>>& k_sqr_distances) const
+        {
+          assert(indices.size() == k_indices.size());
+          assert(k_indices.size() == k_sqr_distances.size());
+
+          for (std::size_t i = 0; i < k_indices.size(); ++i) {
+            makeNonTrivial(indices[i], k_indices[i], k_sqr_distances[i]);
+          }
+        }
+
       protected:
         void 
         sortResults (Indices& indices, std::vector<float>& distances) const;
@@ -419,7 +510,7 @@ namespace pcl
 
           const std::vector<float>& distances_;
         };
-    }; // class Search    
+    }; // class Search
   } // namespace search
 } // namespace pcl
 

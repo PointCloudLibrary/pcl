@@ -46,6 +46,7 @@
 #include <pcl/search/octree.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/point_tests.h> // for pcl::isFinite
+#include <pcl/pcl_tests.h> // for EXPECT_EQ_VECTOR
 
 
 using namespace pcl;
@@ -551,6 +552,96 @@ TEST (PCL, Organized_Sparse_View_Radius)
   testRadiusSearch (organized_sparse_cloud, organized_search_methods, organized_sparse_query_indices, organized_input_indices);
 }
 #endif
+
+class MakeNonTrivialTests : public ::testing::TestWithParam<bool> {
+  void
+  SetUp() override
+  {
+    search = pcl::make_shared<pcl::search::BruteForce<pcl::PointXYZ>>(GetParam());
+  }
+
+protected:
+  std::vector<Indices> test_indices = {{1, 2, 3, 4, 5, 6, 7, 8, 9},
+                                       {1, 1, 2, 3, 1, 1, 1, 4, 5}};
+  std::vector<std::vector<float>> test_distances = {{0, 0, 0.0001, 2, 5, 0, 0, 0, 10},
+                                                    {1, 0, 0.0001, 2, 5, 0, 0, 0, 10}};
+
+  Indices test_seeds = {1, 9};
+
+  pcl::shared_ptr<pcl::search::BruteForce<pcl::PointXYZ>> search;
+};
+
+TEST_P(MakeNonTrivialTests, distance)
+{
+  std::vector<std::size_t> expected_sorted_sizes = {7, 9},
+                           expected_unsorted_sizes = {4, 5};
+
+  auto& expected_sizes =
+      search->getSortedResults() ? expected_sorted_sizes : expected_unsorted_sizes;
+
+  for (unsigned int i = 0; i < test_distances.size(); i++) {
+    auto indices = test_indices[i];
+    auto distances = test_distances[i];
+    auto size = search->makeNonTrivial(indices, distances);
+
+    EXPECT_EQ(indices.size(), size);
+    EXPECT_EQ(distances.size(), size);
+
+    EXPECT_LE(distances.size(), test_distances[i].size());
+    EXPECT_EQ(size, expected_sizes[i]);
+
+    if (distances.empty()) {
+      continue;
+    }
+
+    if (search->getSortedResults()) {
+      EXPECT_TRUE(distances[0]);
+    }
+    else {
+      for (const auto& dist : distances) {
+        EXPECT_TRUE(dist);
+      }
+    }
+  }
+}
+
+TEST_P(MakeNonTrivialTests, index)
+{
+  // vector of vectors, per seed
+  std::vector<std::vector<std::size_t>> expected_sorted_sizes = {{8, 7}, {9, 9}},
+                                        expected_unsorted_sizes = {{8, 4}, {8, 9}};
+
+  auto& expected_sizes =
+      search->getSortedResults() ? expected_sorted_sizes : expected_unsorted_sizes;
+
+  for (unsigned int seed_idx = 0; seed_idx < test_seeds.size(); seed_idx++) {
+    for (unsigned int i = 0; i < test_distances.size(); i++) {
+      auto indices = test_indices[i];
+      auto distances = test_distances[i];
+      auto size = search->makeNonTrivial(test_seeds[seed_idx], indices, distances);
+
+      EXPECT_EQ(indices.size(), size);
+      EXPECT_EQ(distances.size(), size);
+
+      EXPECT_LE(indices.size(), test_indices[i].size());
+      EXPECT_EQ(size, expected_sizes[seed_idx][i]);
+
+      if (distances.empty()) {
+        continue;
+      }
+      if (search->getSortedResults()) {
+        EXPECT_NE(indices[0], test_seeds[seed_idx]);
+      }
+      else {
+        for (const auto& idx : indices) {
+          EXPECT_NE(idx, test_seeds[seed_idx]);
+        }
+      }
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(PCL, MakeNonTrivialTests, testing::Values(false, true));
 
 /** \brief create subset of point in cloud to use as query points
   * \param[out] query_indices resulting query indices - not guaranteed to have size of query_count but guaranteed not to exceed that value
