@@ -88,7 +88,8 @@ public:
   , tmp_tgt_(src.tmp_tgt_)
   , tmp_idx_src_(src.tmp_idx_src_)
   , tmp_idx_tgt_(src.tmp_idx_tgt_)
-  , warp_point_(src.warp_point_){};
+  , warp_point_(src.warp_point_)
+  , reg_coeff_(src.reg_coeff_){};
 
   /** \brief Copy operator.
    * \param[in] src the TransformationEstimationLM object to copy into this
@@ -168,6 +169,21 @@ public:
     warp_point_ = warp_fcn;
   }
 
+  /** \brief Set regularization coefficients. Defaults to all 0s (no regularization).
+   *  \param[in] regularization_coeffs the regularization coefficients (tx, ty, tz, qx,
+   * qy, qz for rigid 6-DoF transform)
+   */
+  void
+  setRegularizationCoefficients(const VectorX& regularization_coeffs)
+  {
+    if (regularization_coeffs.rows() != warp_point_.nr_dims()) {
+      PCL_WARN("Regularization coefficient vector must have same dimension as "
+               "transformation.\n");
+      return;
+    }
+    reg_coeff_ = regularization_coeffs;
+  }
+
 protected:
   /** \brief Compute the distance between a source point and its corresponding target
    * point \param[in] p_src The source point \param[in] p_tgt The target point \return
@@ -216,6 +232,9 @@ protected:
   /** \brief The parameterized function used to warp the source to the target. */
   typename pcl::registration::WarpPointRigid<PointSource, PointTarget, MatScalar>::Ptr
       warp_point_;
+
+  /** \brief L2 regularization coefficients. */
+  VectorX reg_coeff_;
 
   /** Base functor all the models that need non linear optimization must
    * define their own one and implement operator() (const Eigen::VectorXd& x,
