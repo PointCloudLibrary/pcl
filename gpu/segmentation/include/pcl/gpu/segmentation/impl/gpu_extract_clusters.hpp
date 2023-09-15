@@ -48,7 +48,16 @@ void
 economical_download(const pcl::gpu::NeighborIndices& source_indices,
                     const pcl::Indices& buffer_indices,
                     std::size_t buffer_size,
-                    pcl::Indices& downloaded_indices);
+                    pcl::Indices& downloaded_indices)
+{
+  std::vector<int> tmp;
+  for (std::size_t qp = 0; qp < buffer_indices.size(); qp++) {
+    std::size_t begin = qp * buffer_size;
+    tmp.resize(buffer_indices[qp]);
+    source_indices.data.download(&tmp[0], begin, buffer_indices[qp]);
+    downloaded_indices.insert(downloaded_indices.end(), tmp.begin(), tmp.end());
+  }
+}
 } // namespace detail
 } // namespace pcl
 
@@ -152,7 +161,7 @@ pcl::gpu::extractEuclideanClusters(
         continue;
 
       // Process the results
-      for (auto idx : data) {
+      for (const auto& idx : data) {
         if (processed[idx])
           continue;
         processed[idx] = true;

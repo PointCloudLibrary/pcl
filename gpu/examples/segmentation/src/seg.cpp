@@ -81,7 +81,7 @@ main (int argc, char** argv)
   octree_device->build();
 
   std::vector<pcl::PointIndices> cluster_indices_gpu;
-  pcl::gpu::EuclideanClusterExtraction gec;
+  pcl::gpu::EuclideanClusterExtraction<pcl::PointXYZ> gec;
   gec.setClusterTolerance (0.02); // 2cm
   gec.setMinClusterSize (100);
   gec.setMaxClusterSize (25000);
