@@ -28,6 +28,7 @@ set(srcs
   src/sac_model_registration.cpp
   src/sac_model_sphere.cpp
   src/sac_model_ellipse3d.cpp
+  src/sac_model_torus.cpp
 )
 
 set(incs
@@ -61,6 +62,7 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/sac_model_registration_2d.h"
   "include/pcl/${SUBSYS_NAME}/sac_model_sphere.h"
   "include/pcl/${SUBSYS_NAME}/sac_model_ellipse3d.h"
+  "include/pcl/${SUBSYS_NAME}/sac_model_ellipse3d.h"
 )
 
 set(impl_incs
@@ -88,6 +90,7 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/sac_model_registration_2d.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/sac_model_sphere.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/sac_model_ellipse3d.hpp"
+  "include/pcl/${SUBSYS_NAME}/impl/sac_model_torus.hpp"
 )
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
