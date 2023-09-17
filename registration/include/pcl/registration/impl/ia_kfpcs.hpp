@@ -46,11 +46,8 @@ namespace registration {
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
     KFPCSInitialAlignment()
-: lower_trl_boundary_(-1.f)
-, upper_trl_boundary_(-1.f)
-, lambda_(0.5f)
-, use_trl_score_(false)
-, indices_validation_(new pcl::Indices)
+: 
+ indices_validation_(new pcl::Indices)
 {
   reg_name_ = "pcl::registration::KFPCSInitialAlignment";
 }

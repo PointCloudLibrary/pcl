@@ -394,7 +394,7 @@ class OutofcoreTest : public testing::Test
 {
   protected:
 
-    OutofcoreTest () : smallest_voxel_dim () {}
+    OutofcoreTest () = default;
 
     void SetUp () override
     {
@@ -420,7 +420,7 @@ class OutofcoreTest : public testing::Test
 
     }
 
-    double smallest_voxel_dim;
+    double smallest_voxel_dim{};
 
 };
 

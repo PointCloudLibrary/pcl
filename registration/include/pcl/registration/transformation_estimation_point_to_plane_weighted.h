@@ -198,7 +198,7 @@ public:
   }
 
 protected:
-  bool use_correspondence_weights_;
+  bool use_correspondence_weights_{true};
   mutable std::vector<double> correspondence_weights_;
 
   /** \brief Temporary pointer to the source dataset. */
@@ -208,10 +208,10 @@ protected:
   mutable const PointCloudTarget* tmp_tgt_;
 
   /** \brief Temporary pointer to the source dataset indices. */
-  mutable const pcl::Indices* tmp_idx_src_;
+  mutable const pcl::Indices* tmp_idx_src_{};
 
   /** \brief Temporary pointer to the target dataset indices. */
-  mutable const pcl::Indices* tmp_idx_tgt_;
+  mutable const pcl::Indices* tmp_idx_tgt_{};
 
   /** \brief The parameterized function used to warp the source to the target. */
   typename pcl::registration::WarpPointRigid<PointSource, PointTarget, MatScalar>::Ptr

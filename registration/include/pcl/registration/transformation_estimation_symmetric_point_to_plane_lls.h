@@ -72,7 +72,7 @@ public:
   using Vector6 = Eigen::Matrix<Scalar, 6, 1>;
 
   TransformationEstimationSymmetricPointToPlaneLLS()
-  : enforce_same_direction_normals_(true){};
+   {};
   ~TransformationEstimationSymmetricPointToPlaneLLS() override = default;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
@@ -161,7 +161,7 @@ protected:
 
   /** \brief Whether or not to negate source and/or target normals such that they point
    * in the same direction */
-  bool enforce_same_direction_normals_;
+  bool enforce_same_direction_normals_{true};
 };
 } // namespace registration
 } // namespace pcl

@@ -131,7 +131,7 @@ namespace pcl
         pcl::PointCloud<pcl::InterestPoint>::Ptr votes_;
 
         /** \brief Signalizes if the tree is valid. */
-        bool tree_is_valid_;
+        bool tree_is_valid_{false};
 
         /** \brief Stores the origins of the votes. */
         typename pcl::PointCloud<PointT>::Ptr votes_origins_;
@@ -208,16 +208,16 @@ namespace pcl
       std::vector<std::vector<unsigned int> > clusters_;
 
       /** \brief Stores the number of classes. */
-      unsigned int number_of_classes_;
+      unsigned int number_of_classes_{0};
 
       /** \brief Stores the number of visual words. */
-      unsigned int number_of_visual_words_;
+      unsigned int number_of_visual_words_{0};
 
       /** \brief Stores the number of clusters. */
-      unsigned int number_of_clusters_;
+      unsigned int number_of_clusters_{0};
 
       /** \brief Stores descriptors dimension. */
-      unsigned int descriptors_dimension_;
+      unsigned int descriptors_dimension_{0};
 
       PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
@@ -316,15 +316,14 @@ namespace pcl
         {
           /** \brief Empty constructor with member variables initialization. */
           VisualWordStat () :
-            class_ (-1),
-            learned_weight_ (0.0f),
+            
             dir_to_center_ (0.0f, 0.0f, 0.0f) {};
 
           /** \brief Which class this vote belongs. */
-          int class_;
+          int class_{-1};
 
           /** \brief Weight of the vote. */
-          float learned_weight_;
+          float learned_weight_{0.0f};
 
           /** \brief Expected direction to center. */
           pcl::PointXYZ dir_to_center_;
@@ -597,16 +596,16 @@ namespace pcl
         std::vector<float> training_sigmas_;
 
         /** \brief This value is used for the simplification. It sets the size of grid bin. */
-        float sampling_size_;
+        float sampling_size_{0.1f};
 
         /** \brief Stores the feature estimator. */
         typename Feature::Ptr feature_estimator_;
 
         /** \brief Number of clusters, is used for clustering descriptors during the training. */
-        unsigned int number_of_clusters_;
+        unsigned int number_of_clusters_{184};
 
         /** \brief If set to false then Nvot coeff from [Knopp et al., 2010, (4)] is equal 1.0. */
-        bool n_vot_ON_;
+        bool n_vot_ON_{true};
 
         /** \brief This const value is used for indicating that for k-means clustering centers must
           * be generated as described in

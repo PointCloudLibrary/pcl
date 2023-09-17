@@ -199,7 +199,7 @@ namespace pcl
 
       protected:
         Scalar voxel_size_, bounds_[6];
-        int tree_levels_;
+        int tree_levels_{0};
         Node* root_;
         std::vector<Node*> full_leaves_;
         NodeDataCreator* node_data_creator_;

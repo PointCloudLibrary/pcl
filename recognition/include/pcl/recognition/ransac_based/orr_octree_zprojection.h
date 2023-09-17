@@ -113,10 +113,8 @@ namespace pcl
         };
 
       public:
-        ORROctreeZProjection ()
-        : pixels_(nullptr),
-          sets_(nullptr)
-        {}
+        ORROctreeZProjection () = default;
+
         virtual ~ORROctreeZProjection (){ this->clear();}
 
         void
@@ -200,8 +198,8 @@ namespace pcl
       protected:
         float pixel_size_, inv_pixel_size_, bounds_[4], extent_x_, extent_y_;
         int num_pixels_x_, num_pixels_y_, num_pixels_;
-        Pixel ***pixels_;
-        Set ***sets_;
+        Pixel ***pixels_{nullptr};
+        Set ***sets_{nullptr};
         std::list<Set*> full_sets_;
         std::list<Pixel*> full_pixels_;
     };

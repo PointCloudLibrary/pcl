@@ -50,9 +50,8 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
     TransformationEstimationLM()
 : tmp_src_()
 , tmp_tgt_()
-, tmp_idx_src_()
-, tmp_idx_tgt_()
-, warp_point_(new WarpPointRigid6D<PointSource, PointTarget, MatScalar>){};
+, 
+ warp_point_(new WarpPointRigid6D<PointSource, PointTarget, MatScalar>){};
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename MatScalar>

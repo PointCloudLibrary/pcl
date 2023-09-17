@@ -90,8 +90,8 @@ public:
   , loop_start_(0)
   , loop_end_(0)
   , reg_(new pcl::IterativeClosestPoint<PointT, PointT>)
-  , compute_loop_(true)
-  , vd_(){};
+  , 
+   vd_(){};
 
   /** \brief Empty destructor */
   ~ELCH() override = default;
@@ -239,7 +239,7 @@ private:
 
   /** \brief The transformation between that start and end of the loop. */
   Eigen::Matrix4f loop_transform_;
-  bool compute_loop_;
+  bool compute_loop_{true};
 
   /** \brief previously added node in the loop_graph_. */
   typename boost::graph_traits<LoopGraph>::vertex_descriptor vd_;

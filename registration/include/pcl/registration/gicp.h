@@ -116,14 +116,7 @@ public:
   PCL_MAKE_ALIGNED_OPERATOR_NEW
 
   /** \brief Empty constructor. */
-  GeneralizedIterativeClosestPoint()
-  : k_correspondences_(20)
-  , gicp_epsilon_(0.001)
-  , rotation_epsilon_(2e-3)
-  , mahalanobis_(0)
-  , max_inner_iterations_(20)
-  , translation_gradient_tolerance_(1e-2)
-  , rotation_gradient_tolerance_(1e-2)
+  GeneralizedIterativeClosestPoint() : mahalanobis_(0)
   {
     min_number_correspondences_ = 4;
     reg_name_ = "GeneralizedIterativeClosestPoint";
@@ -332,19 +325,19 @@ protected:
   /** \brief The number of neighbors used for covariances computation.
    * default: 20
    */
-  int k_correspondences_;
+  int k_correspondences_{20};
 
   /** \brief The epsilon constant for gicp paper; this is NOT the convergence
    * tolerance
    * default: 0.001
    */
-  double gicp_epsilon_;
+  double gicp_epsilon_{0.001};
 
   /** The epsilon constant for rotation error. (In GICP the transformation epsilon
    * is split in rotation part and translation part).
    * default: 2e-3
    */
-  double rotation_epsilon_;
+  double rotation_epsilon_{2e-3};
 
   /** \brief base transformation */
   Matrix4 base_transformation_;
@@ -371,13 +364,13 @@ protected:
   std::vector<Eigen::Matrix3d> mahalanobis_;
 
   /** \brief maximum number of optimizations */
-  int max_inner_iterations_;
+  int max_inner_iterations_{20};
 
   /** \brief minimal translation gradient for early optimization stop */
-  double translation_gradient_tolerance_;
+  double translation_gradient_tolerance_{1e-2};
 
   /** \brief minimal rotation gradient for early optimization stop */
-  double rotation_gradient_tolerance_;
+  double rotation_gradient_tolerance_{1e-2};
 
   /** \brief compute points covariances matrices according to the K nearest
    * neighbors. K is set via setCorrespondenceRandomness() method.

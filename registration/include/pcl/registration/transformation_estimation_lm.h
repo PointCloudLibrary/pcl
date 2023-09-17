@@ -208,10 +208,10 @@ protected:
   mutable const PointCloudTarget* tmp_tgt_;
 
   /** \brief Temporary pointer to the source dataset indices. */
-  mutable const pcl::Indices* tmp_idx_src_;
+  mutable const pcl::Indices* tmp_idx_src_{};
 
   /** \brief Temporary pointer to the target dataset indices. */
-  mutable const pcl::Indices* tmp_idx_tgt_;
+  mutable const pcl::Indices* tmp_idx_tgt_{};
 
   /** \brief The parameterized function used to warp the source to the target. */
   typename pcl::registration::WarpPointRigid<PointSource, PointTarget, MatScalar>::Ptr

@@ -99,15 +99,8 @@ public:
   , correspondences_(correspondences)
   , correspondences_prev_mse_(std::numeric_limits<double>::max())
   , correspondences_cur_mse_(std::numeric_limits<double>::max())
-  , max_iterations_(100) // 100 iterations
-  , failure_after_max_iter_(false)
-  , rotation_threshold_(0.99999)        // 0.256 degrees
-  , translation_threshold_(3e-4 * 3e-4) // 0.0003 meters
-  , mse_threshold_relative_(0.00001)    // 0.001% of the previous MSE (relative error)
-  , mse_threshold_absolute_(1e-12)      // MSE (absolute error)
-  , iterations_similar_transforms_(0)
-  , max_iterations_similar_transforms_(0)
-  , convergence_state_(CONVERGENCE_CRITERIA_NOT_CONVERGED)
+  ,  translation_threshold_(3e-4 * 3e-4) // 0.0003 meters
+  ,     convergence_state_(CONVERGENCE_CRITERIA_NOT_CONVERGED)
   {}
 
   /** \brief Empty destructor */
@@ -298,15 +291,15 @@ protected:
 
   /** \brief The maximum nuyyGmber of iterations that the registration loop is to be
    * executed. */
-  int max_iterations_;
+  int max_iterations_{100};
 
   /** \brief Specifys if the registration fails or converges when the maximum number of
    * iterations is reached. */
-  bool failure_after_max_iter_;
+  bool failure_after_max_iter_{false};
 
   /** \brief The rotation threshold is the relative rotation between two iterations (as
    * angle cosine). */
-  double rotation_threshold_;
+  double rotation_threshold_{0.99999};
 
   /** \brief The translation threshold is the relative translation between two
    * iterations (0 if no translation). */
@@ -314,19 +307,19 @@ protected:
 
   /** \brief The relative change from the previous MSE for the current set of
    * correspondences, e.g. .1 means 10% change. */
-  double mse_threshold_relative_;
+  double mse_threshold_relative_{0.00001};
 
   /** \brief The absolute change from the previous MSE for the current set of
    * correspondences. */
-  double mse_threshold_absolute_;
+  double mse_threshold_absolute_{1e-12};
 
   /** \brief Internal counter for the number of iterations that the internal
    * rotation, translation, and MSE differences are allowed to be similar. */
-  int iterations_similar_transforms_;
+  int iterations_similar_transforms_{0};
 
   /** \brief The maximum number of iterations that the internal rotation,
    * translation, and MSE differences are allowed to be similar. */
-  int max_iterations_similar_transforms_;
+  int max_iterations_similar_transforms_{0};
 
   /** \brief The state of the convergence (e.g., why did the registration converge). */
   ConvergenceState convergence_state_;

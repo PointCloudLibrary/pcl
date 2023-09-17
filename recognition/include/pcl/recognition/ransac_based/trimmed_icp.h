@@ -68,9 +68,7 @@ namespace pcl
         using Matrix4 = typename Eigen::Matrix<Scalar, 4, 4>;
 
       public:
-        TrimmedICP ()
-        : new_to_old_energy_ratio_ (0.99f)
-        {}
+        TrimmedICP () = default;
 
         ~TrimmedICP () override = default;
 
@@ -177,7 +175,7 @@ namespace pcl
       protected:
         PointCloudConstPtr target_points_;
         pcl::KdTreeFLANN<PointT> kdtree_;
-        float new_to_old_energy_ratio_;
+        float new_to_old_energy_ratio_{0.99f};
     };
   } // namespace recognition
 } // namespace pcl
