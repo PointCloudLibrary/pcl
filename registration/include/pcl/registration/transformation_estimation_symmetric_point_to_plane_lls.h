@@ -71,8 +71,7 @@ public:
       typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4;
   using Vector6 = Eigen::Matrix<Scalar, 6, 1>;
 
-  TransformationEstimationSymmetricPointToPlaneLLS()
-   {};
+  TransformationEstimationSymmetricPointToPlaneLLS() = default;
   ~TransformationEstimationSymmetricPointToPlaneLLS() override = default;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
