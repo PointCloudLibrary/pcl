@@ -63,10 +63,28 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename PointNT>
+void pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPointToPlane(const Eigen::Vector4f& p,
+                         const Eigen::Vector4d& plane_coefficientsd,
+                         Eigen::Vector4f& q) const {
+
+  Eigen::Vector4f plane_coefficients = plane_coefficientsd.cast<float>();
+  //TODO careful with Vector4f
+  // use normalized coefficients to calculate the scalar projection
+  float distance_to_plane = p.dot(plane_coefficients);
+  q = p - distance_to_plane * plane_coefficients;
+
+  assert(q[3] == 0.f);
+
+
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelTorus<PointT, PointNT>::getDistancesToModel (
       const Eigen::VectorXf &model_coefficients, std::vector<double> &distances) const
 {
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,12 +112,84 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::optimizeModelCoefficients (
   //TODO implement
 }
 
+Eigen::Matrix3d toRotationMatrix(double theta, double rho) {
+  Eigen::Matrix3d rx{
+      {1, 0, 0}, {0, cos(theta), -sin(theta)}, {0, sin(theta), cos(theta)}};
+
+  Eigen::Matrix3d ry{
+      {cos(rho), 0, sin(rho)}, {0, 1, 0}, {-sin(rho), 0, cos(rho)}};
+  return ry * rx;
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPoints (
       const Indices &inliers, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool copy_data_fields) const
 {
-  //TODO implement
+    // Needs a valid set of model coefficients
+    if (!isModelValid (model_coefficients))
+    {
+      PCL_ERROR ("[pcl::SampleConsensusModelCylinder::projectPoints] Given model is invalid!\n");
+      return;
+    }
+
+    projected_points.header = input_->header;
+    projected_points.is_dense = input_->is_dense;
+
+
+
+    // Fetch optimization parameters
+    const double& R = model_coefficients[0];
+    const double& r = model_coefficients[1];
+
+    const double& x0 = model_coefficients[2];
+    const double& y0 = model_coefficients[3];
+    const double& z0 = model_coefficients[4];
+
+    const double& theta = model_coefficients[5];
+    const double& rho = model_coefficients[6];
+
+    // Normal of the plane where the torus circle lies
+    Eigen::Matrix3f rot = toRotationMatrix(theta, rho).cast<float>();
+    Eigen::Vector4f n{0, 0, 1, 0};
+    Eigen::Vector4f pt0{x0, y0, z0, 0};
+
+    // Rotate the normal
+    n.head<3>() = rot * n.head<3>();
+    // Ax + By + Cz + D = 0
+    double D = - n.dot(pt0);
+    Eigen::Vector4d planeCoeffs{n[0], n[1], n[2], D};
+    planeCoeffs.normalized();
+
+    for (const auto &inlier : inliers)
+    {
+      Eigen::Vector4f p ((*input_)[inlier].x,
+                         (*input_)[inlier].y,
+                         (*input_)[inlier].z,
+                         0);
+
+
+      // Project to the torus circle plane
+      Eigen::Vector4f pt_proj;
+      projectPointToPlane(p, planeCoeffs, pt_proj);
+
+
+      // TODO expect singularities, mainly pt_proj_e == pt0 || pt_e ==
+      // Closest point from the inner circle to the current point
+      Eigen::Vector4f circle_closest;
+      circle_closest = (pt_proj - pt0).normalized() * R + pt0;
+
+
+
+      // From the that closest point we move towards the goal point until we
+      // meet the surface of the torus
+      Eigen::Vector4f torus_closest =
+          (p - circle_closest).normalized() * r + circle_closest;
+
+
+      pcl::Vector4fMap pp = projected_points[inlier].getVector4fMap ();
+
+      pp = Eigen::Vector4f{torus_closest[0], torus_closest[1], torus_closest[2], 0};
+   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
