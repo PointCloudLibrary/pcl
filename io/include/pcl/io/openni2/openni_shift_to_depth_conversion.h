@@ -41,6 +41,7 @@
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI2
 
+#include <cassert> // for assert
 #include <vector>
 #include <limits>
 

@@ -37,6 +37,46 @@
  */
 
 #include <pcl/sample_consensus/impl/sac_model_sphere.hpp>
+#include <unsupported/Eigen/NonLinearOptimization> // for LevenbergMarquardt
+
+int pcl::internal::optimizeModelCoefficientsSphere (Eigen::VectorXf& coeff, const Eigen::ArrayXf& pts_x, const Eigen::ArrayXf& pts_y, const Eigen::ArrayXf& pts_z)
+{
+  if(pts_x.size() != pts_y.size() || pts_y.size() != pts_z.size()) {
+    PCL_ERROR("[pcl::internal::optimizeModelCoefficientsSphere] Sizes not equal!\n");
+    return Eigen::LevenbergMarquardtSpace::ImproperInputParameters;
+  }
+  if(coeff.size() != 4) {
+    PCL_ERROR("[pcl::internal::optimizeModelCoefficientsSphere] Coefficients have wrong size\n");
+    return Eigen::LevenbergMarquardtSpace::ImproperInputParameters;
+  }
+  struct SphereOptimizationFunctor : pcl::Functor<float>
+  {
+    SphereOptimizationFunctor (const Eigen::ArrayXf& x, const Eigen::ArrayXf& y, const Eigen::ArrayXf& z) :
+      pcl::Functor<float>(x.size()), pts_x(x), pts_y(y), pts_z(z)
+      {}
+
+    int
+    operator() (const Eigen::VectorXf &x, Eigen::VectorXf &fvec) const
+    {
+      // Compute distance of all points to center, then subtract radius
+      fvec = ((Eigen::ArrayXf::Constant(pts_x.size(), x[0])-pts_x).square()
+             +(Eigen::ArrayXf::Constant(pts_x.size(), x[1])-pts_y).square()
+             +(Eigen::ArrayXf::Constant(pts_x.size(), x[2])-pts_z).square()).sqrt()
+             -Eigen::ArrayXf::Constant(pts_x.size(), x[3]);
+      return (0);
+    }
+
+    const Eigen::ArrayXf& pts_x, pts_y, pts_z;
+  };
+
+  SphereOptimizationFunctor functor (pts_x, pts_y, pts_z);
+  Eigen::NumericalDiff<SphereOptimizationFunctor> num_diff (functor);
+  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<SphereOptimizationFunctor>, float> lm (num_diff);
+  const int info = lm.minimize (coeff);
+  PCL_DEBUG ("[pcl::internal::optimizeModelCoefficientsSphere] LM solver finished with exit code %i, having a residual norm of %g.\n",
+             info, lm.fvec.norm ());
+  return info;
+}
 
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
