@@ -145,7 +145,7 @@ endif()
 
 if(CMAKE_COMPILER_IS_MSVC)
   add_definitions("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -DPCL_ONLY_CORE_POINT_TYPES ${SSE_DEFINITIONS}")
-  
+
   if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
     string(APPEND CMAKE_CXX_FLAGS " /fp:precise ${SSE_FLAGS} ${AVX_FLAGS}")
 
@@ -156,7 +156,7 @@ if(CMAKE_COMPILER_IS_MSVC)
       string(APPEND CMAKE_EXE_LINKER_FLAGS_RELEASE " /LTCG")
     else()
       set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcompiler=/bigobj")
-      
+
       message("Global optimizations /GL has been turned off, as it doesn't work with nvcc/thrust")
     endif()
     # /MANIFEST:NO") # please, don't disable manifest generation, otherwise crash at start for vs2008
@@ -191,8 +191,8 @@ if(CMAKE_COMPILER_IS_MSVC)
       elseif(MSVC_MP GREATER 1)
         string(APPEND CMAKE_C_FLAGS " /MP${MSVC_MP}")
         string(APPEND CMAKE_CXX_FLAGS " /MP${MSVC_MP}")
-      endif()      
-    else()      
+      endif()
+    else()
       if(MSVC_MP EQUAL 0)
         # MSVC_MP is 0 in case the information cannot be determined by ProcessorCount => fallback
         # Generator expression is necessary to limit /MP flag to C/CXX, so flag will be not set to e.g. CUDA (see https://gitlab.kitware.com/cmake/cmake/issues/17535)
@@ -445,7 +445,6 @@ sort_relative(PCL_MODULES_NAMES_UNSORTED PCL_MODULES_NAMES PCL_MODULES_DIRS)
 foreach(subdir ${PCL_MODULES_DIRS})
   add_subdirectory("${PCL_SOURCE_DIR}/${subdir}")
 endforeach()
-
 ### ---[ Documentation
 add_subdirectory(doc)
 
@@ -465,7 +464,6 @@ endif()
 ### ---[ Make a pretty picture of the dependency graph
 include("${PCL_SOURCE_DIR}/cmake/dep_graph.cmake")
 MAKE_DEP_GRAPH()
-
 ### ---[ Finish up
 PCL_WRITE_STATUS_REPORT()
 PCL_RESET_MAPS()

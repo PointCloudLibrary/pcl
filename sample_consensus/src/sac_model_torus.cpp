@@ -53,7 +53,9 @@ int pcl::internal::optimizeModelCoefficientsTorus (Eigen::VectorXf& coeff, const
   {
     TorusOptimizationFunctor (const Eigen::ArrayXf& x, const Eigen::ArrayXf& y, const Eigen::ArrayXf& z) :
       pcl::Functor<float>(x.size()), pts_x(x), pts_y(y), pts_z(z)
-      {}
+      {
+
+      }
 
     int
     operator() (const Eigen::VectorXf &x, Eigen::VectorXf &fvec) const

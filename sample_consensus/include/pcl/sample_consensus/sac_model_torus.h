@@ -44,6 +44,7 @@
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/common/distances.h>
 
+Eigen::Matrix3d toRotationMatrix(double theta, double rho);
 namespace pcl
 {
   namespace internal {
@@ -177,7 +178,6 @@ namespace pcl
                            const double threshold) const override;
 
       /** \brief Recompute the torus coefficients using the given inlier set and return them to the user.
-        * @note: these are the coefficients of the torus model after refinement (e.g. after SVD)
         * \param[in] inliers the data inliers found as supporting the model
         * \param[in] model_coefficients the initial guess for the optimization
         * \param[out] optimized_coefficients the resultant recomputed coefficients after non-linear optimization
@@ -226,9 +226,9 @@ namespace pcl
         * \param[out] pt_proj the resultant projected point
         */
       void
-      projectPointToTorus (const Eigen::Vector4f &pt,
-                              const Eigen::VectorXf &model_coefficients,
-                              Eigen::Vector4f &pt_proj) const;
+      projectPointToTorus (const Eigen::Vector3f &pt,
+                           const Eigen::VectorXf &model_coefficients,
+                           Eigen::Vector3f &pt_proj) const;
 
 
       /** \brief Check whether a model is valid given the user constraints.
@@ -244,17 +244,62 @@ namespace pcl
       bool
       isSampleGood (const Indices &samples) const override;
 
-      void projectPointToPlane(const Eigen::Vector4f& p,
-                               const Eigen::Vector4d& model_coefficients,
-                               Eigen::Vector4f& q) const;
-      void projectPoints (
-       const Eigen::Vector4f& p,
-       const Eigen::VectorXf& model_coefficients,
-       Eigen::Vector4f& q) const;
-
+      void projectPointToPlane(const Eigen::Vector3f& p,
+                               const Eigen::Vector4f& model_coefficients,
+                               Eigen::Vector3f& q) const;
 
     private:
       //TODuO
+      struct OptimizationFunctor : pcl::Functor<double>
+      {
+        /** Functor constructor
+          * \param[in] indices the indices of data points to evaluate
+          * \param[in] estimator pointer to the estimator object
+          */
+        OptimizationFunctor (const pcl::SampleConsensusModelTorus<PointT, PointNT> *model, const Indices& indices) :
+          pcl::Functor<double> (indices.size ()), model_ (model), indices_ (indices) {}
+
+       /** Cost function to be minimized
+         * \param[in] x the variables array
+         * \param[out] fvec the resultant functions evaluations
+         * \return 0
+         */
+        int operator() (const Eigen::VectorXd &xs, Eigen::VectorXd &fvec) const
+        {
+
+            assert(xs.size() == 7);
+            assert(fvec.size() == data->size());
+            for (const auto &i : indices_){
+              // Getting constants from state vector
+              const double& R = xs[0];
+              const double& r = xs[1];
+
+              const double& x0 = xs[2];
+              const double& y0 = xs[3];
+              const double& z0 = xs[4];
+
+              const double& theta = xs[5];
+              const double& rho = xs[6];
+
+              const PointT& pt  = (*model_->input_)[indices_[i]];
+
+              Eigen::Vector3d pte{pt.x - x0, pt.y - y0, pt.z - z0};
+
+              // Transposition is inversion
+              pte = toRotationMatrix(theta, rho).transpose() * pte;
+
+              const double& x = pte[0];
+              const double& y = pte[1];
+              const double& z = pte[2];
+
+              fvec[i] = std::pow(sqrt(x * x + y * y) - R, 2) + z * z - r * r;
+            }
+            return 0;
+        }
+
+        const pcl::SampleConsensusModelTorus<PointT, PointNT> *model_;
+        const Indices &indices_;
+      };
 
   };
 }

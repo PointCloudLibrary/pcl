@@ -19,21 +19,21 @@ namespace pcl
     * The model coefficients are defined as:
     *   - \b center.x : the X coordinate of the ellipse's center
     *   - \b center.y : the Y coordinate of the ellipse's center
-    *   - \b center.z : the Z coordinate of the ellipse's center 
+    *   - \b center.z : the Z coordinate of the ellipse's center
     *   - \b semi_axis.u : semi-major axis length along the local u-axis of the ellipse
     *   - \b semi_axis.v : semi-minor axis length along the local v-axis of the ellipse
-    *   - \b normal.x : the X coordinate of the normal's direction 
-    *   - \b normal.y : the Y coordinate of the normal's direction 
+    *   - \b normal.x : the X coordinate of the normal's direction
+    *   - \b normal.y : the Y coordinate of the normal's direction
     *   - \b normal.z : the Z coordinate of the normal's direction
-    *   - \b u.x : the X coordinate of the local u-axis of the ellipse 
-    *   - \b u.y : the Y coordinate of the local u-axis of the ellipse 
-    *   - \b u.z : the Z coordinate of the local u-axis of the ellipse 
+    *   - \b u.x : the X coordinate of the local u-axis of the ellipse
+    *   - \b u.y : the Y coordinate of the local u-axis of the ellipse
+    *   - \b u.z : the Z coordinate of the local u-axis of the ellipse
     *
     * For more details please refer to the following manuscript:
     * "Semi-autonomous Prosthesis Control Using Minimal Depth Information and Vibrotactile Feedback",
     * Miguel N. Castro & Strahinja Dosen. IEEE Transactions on Human-Machine Systems [under review]. arXiv:2210.00541.
     * (@ github.com/mnobrecastro/pcl-ellipse-fitting)
-    * 
+    *
     * \author Miguel Nobre Castro (mnobrecastro@gmail.com)
     * \ingroup sample_consensus
     */
@@ -58,7 +58,7 @@ namespace pcl
         * \param[in] cloud the input point cloud dataset
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModelEllipse3D (const PointCloudConstPtr &cloud, bool random = false) 
+      SampleConsensusModelEllipse3D (const PointCloudConstPtr &cloud, bool random = false)
         : SampleConsensusModel<PointT> (cloud, random)
       {
         model_name_ = "SampleConsensusModelEllipse3D";
@@ -71,16 +71,16 @@ namespace pcl
         * \param[in] indices a vector of point indices to be used from \a cloud
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModelEllipse3D (const PointCloudConstPtr &cloud, 
+      SampleConsensusModelEllipse3D (const PointCloudConstPtr &cloud,
                                     const Indices &indices,
-                                    bool random = false) 
+                                    bool random = false)
         : SampleConsensusModel<PointT> (cloud, indices, random)
       {
         model_name_ = "SampleConsensusModelEllipse3D";
         sample_size_ = 6;
         model_size_ = 11;
       }
-      
+
       /** \brief Empty destructor */
       ~SampleConsensusModelEllipse3D () override = default;
 

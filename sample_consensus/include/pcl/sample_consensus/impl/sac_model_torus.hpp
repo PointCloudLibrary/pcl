@@ -44,6 +44,7 @@
 #include <pcl/sample_consensus/sac_model_torus.h>
 #include <pcl/common/common.h> // for getAngle3D
 #include <pcl/common/concatenate.h>
+#include <unsupported/Eigen/NonLinearOptimization> // for LevenbergMarquardt
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> bool
@@ -64,17 +65,15 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients (
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT>
-void pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPointToPlane(const Eigen::Vector4f& p,
-                         const Eigen::Vector4d& plane_coefficientsd,
-                         Eigen::Vector4f& q) const {
+void pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPointToPlane(const Eigen::Vector3f& p,
+                         const Eigen::Vector4f& plane_coefficients,
+                         Eigen::Vector3f& q) const {
 
-  Eigen::Vector4f plane_coefficients = plane_coefficientsd.cast<float>();
   //TODO careful with Vector4f
   // use normalized coefficients to calculate the scalar projection
-  float distance_to_plane = p.dot(plane_coefficients);
-  q = p - distance_to_plane * plane_coefficients;
+  float distance_to_plane = p.dot(plane_coefficients.head<3>()) + plane_coefficients[3];
+  q = p - distance_to_plane * plane_coefficients.head<3>();
 
-  assert(q[3] == 0.f);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,9 +93,9 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::getDistancesToModel (
   // Iterate through the 3d points and calculate the distances to the closest torus point
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
-    Eigen::Vector4f pt ((*input_)[(*indices_)[i]].x, (*input_)[(*indices_)[i]].y, (*input_)[(*indices_)[i]].z, 0.0f);
+    Eigen::Vector3f pt = (*input_)[(*indices_)[i]].getVector3fMap();
 
-    Eigen::Vector4f torus_closest;
+    Eigen::Vector3f torus_closest;
     projectPointToTorus(pt, model_coefficients, torus_closest);
 
     assert(torus_closest[3] == 0.f);
@@ -123,11 +122,9 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::selectWithinDistance (
 
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
-    // Approximate the distance from the point to the cylinder as the difference between
-    // dist(point,cylinder_axis) and cylinder radius
-    Eigen::Vector4f pt ((*input_)[(*indices_)[i]].x, (*input_)[(*indices_)[i]].y, (*input_)[(*indices_)[i]].z, 0.0f);
+    Eigen::Vector3f pt = (*input_)[(*indices_)[i]].getVector3fMap();
 
-    Eigen::Vector4f torus_closest;
+    Eigen::Vector3f torus_closest;
     projectPointToTorus(pt, model_coefficients, torus_closest);
 
     float distance = (torus_closest - pt).norm();
@@ -153,11 +150,9 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::countWithinDistance (
 
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
-    // Approximate the distance from the point to the cylinder as the difference between
-    // dist(point,cylinder_axis) and cylinder radius
-    Eigen::Vector4f pt ((*input_)[(*indices_)[i]].x, (*input_)[(*indices_)[i]].y, (*input_)[(*indices_)[i]].z, 0.0f);
+    Eigen::Vector3f pt = (*input_)[(*indices_)[i]].getVector3fMap();
 
-    Eigen::Vector4f torus_closest;
+    Eigen::Vector3f torus_closest;
     projectPointToTorus(pt, model_coefficients, torus_closest);
 
     float distance = (torus_closest - pt).norm();
@@ -175,7 +170,30 @@ template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelTorus<PointT, PointNT>::optimizeModelCoefficients (
       const Indices &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients) const
 {
-  //TODO implement
+  optimized_coefficients = model_coefficients;
+
+  // Needs a set of valid model coefficients
+  if (!isModelValid (model_coefficients))
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelEllipse3D::optimizeModelCoefficients] Given model is invalid!\n");
+    return;
+  }
+
+  // Need more than the minimum sample size to make a difference
+  if (inliers.size () <= sample_size_)
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelEllipse3D::optimizeModelCoefficients] Not enough inliers to refine/optimize the model's coefficients (%lu)! Returning the same coefficients.\n", inliers.size ());
+    return;
+  }
+
+  OptimizationFunctor functor(this, inliers);
+  Eigen::NumericalDiff<OptimizationFunctor> num_diff(functor);
+  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, double> lm(num_diff);
+  Eigen::VectorXd coeff;
+  int info = lm.minimize(coeff);
+  for (Eigen::Index i = 0; i < coeff.size (); ++i)
+    optimized_coefficients[i] = static_cast<float> (coeff[i]);
+
 }
 
 Eigen::Matrix3d toRotationMatrix(double theta, double rho) {
@@ -189,10 +207,10 @@ Eigen::Matrix3d toRotationMatrix(double theta, double rho) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
-pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPoints (
-       const Eigen::Vector4f& p_in,
+pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPointToTorus(
+       const Eigen::Vector3f& p_in,
        const Eigen::VectorXf& model_coefficients,
-       Eigen::Vector4f& q) const
+       Eigen::Vector3f& q) const
 {
 
     // Fetch optimization parameters
@@ -208,34 +226,34 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPoints (
 
     // Normal of the plane where the torus circle lies
     Eigen::Matrix3f rot = toRotationMatrix(theta, rho).cast<float>();
-    Eigen::Vector4f n{0, 0, 1, 0};
-    Eigen::Vector4f pt0{x0, y0, z0, 0};
+    Eigen::Vector3f n{0, 0, 1};
+    Eigen::Vector3f pt0{x0, y0, z0};
 
     // Rotate the normal
-    n.head<3>() = rot * n.head<3>();
+    n = rot * n;
     // Ax + By + Cz + D = 0
     double D = - n.dot(pt0);
-    Eigen::Vector4d planeCoeffs{n[0], n[1], n[2], D};
+    Eigen::Vector4f planeCoeffs{n[0], n[1], n[2], D};
     planeCoeffs.normalized();
-    Eigen::Vector4f p (p_in);
+    Eigen::Vector3f p (p_in);
     p[3] = 0;
 
 
     // Project to the torus circle plane
-    Eigen::Vector4f pt_proj;
+    Eigen::Vector3f pt_proj;
     projectPointToPlane(p, planeCoeffs, pt_proj);
 
 
     // TODO expect singularities, mainly pt_proj_e == pt0 || pt_e ==
     // Closest point from the inner circle to the current point
-    Eigen::Vector4f circle_closest;
+    Eigen::Vector3f circle_closest;
     circle_closest = (pt_proj - pt0).normalized() * R + pt0;
 
 
 
     // From the that closest point we move towards the goal point until we
     // meet the surface of the torus
-    Eigen::Vector4f torus_closest =
+    Eigen::Vector3f torus_closest =
         (p - circle_closest).normalized() * r + circle_closest;
 
     q = torus_closest;
@@ -261,16 +279,10 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPoints (
 
     for (const auto &inlier : inliers)
     {
-      Eigen::Vector4f p ((*input_)[inlier].x,
-                         (*input_)[inlier].y,
-                         (*input_)[inlier].z,
-                         0);
 
-      pcl::Vector4fMap pp = projected_points[inlier].getVector4fMap ();
-      Eigen::Vector4f torus_closest;
-      projectPointToTorus(p, model_coefficients, torus_closest);
-
-      pp = Eigen::Vector4f{torus_closest[0], torus_closest[1], torus_closest[2], 1};
+      Eigen::Vector3f q;
+      projectPointToTorus((*input_)[inlier].getVector3fMap(), model_coefficients, q);
+      projected_points[inlier].getVector3fMap() = q;
     }
 }
 
@@ -282,14 +294,6 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::doSamplesVerifyModel (
   //TODO implement
 }
 
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> void
-pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPointToTorus (
-      const Eigen::Vector4f &pt, const Eigen::VectorXf &model_coefficients, Eigen::Vector4f &pt_proj) const
-{
-  //TODO implement
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> bool
