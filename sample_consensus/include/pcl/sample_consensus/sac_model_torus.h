@@ -247,6 +247,12 @@ namespace pcl
       void projectPointToPlane(const Eigen::Vector4f& p,
                                const Eigen::Vector4d& model_coefficients,
                                Eigen::Vector4f& q) const;
+      void projectPoints (
+       const Eigen::Vector4f& p,
+       const Eigen::VectorXf& model_coefficients,
+       Eigen::Vector4f& q) const;
+
+
     private:
       //TODuO
 
