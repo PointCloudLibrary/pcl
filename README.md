@@ -21,9 +21,9 @@ If you really need access to the old website, please use [the copy made by the i
 Continuous integration
 ----------------------
 [ci-latest-build]: https://dev.azure.com/PointCloudLibrary/pcl/_build/latest?definitionId=9&branchName=master
-[ci-ubuntu-18.04]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20GCC&jobName=Ubuntu&configuration=Ubuntu%2018.04%20GCC&label=Ubuntu%2018.04%20GCC
 [ci-ubuntu-20.04]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Clang&jobName=Ubuntu&configuration=Ubuntu%2020.04%20Clang&label=Ubuntu%2020.04%20Clang
 [ci-ubuntu-22.04]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20GCC&jobName=Ubuntu&configuration=Ubuntu%2022.04%20GCC&label=Ubuntu%2022.04%20GCC
+[ci-ubuntu-23.04]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20GCC&jobName=Ubuntu&configuration=Ubuntu%2022.04%20GCC&label=Ubuntu%2023.04%20GCC
 [ci-windows-x86]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20MSVC&jobName=Windows%20Build&configuration=Windows%20Build%20x86&label=Windows%20VS2019%20x86
 [ci-windows-x64]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20MSVC&jobName=Windows%20Build&configuration=Windows%20Build%20x64&label=Windows%20VS2019%20x64
 [ci-macos-11]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Clang&jobName=macOS&configuration=macOS%20Big%20Sur%2011&label=macOS%20Big%20Sur%2011
