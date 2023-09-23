@@ -452,7 +452,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPointToCylinder (
   Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0.0f);
   Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0.0f);
 
-  float k = (pt.dot (line_dir) - line_pt.dot (line_dir)) * line_dir.dot (line_dir);
+  float k = (pt.dot (line_dir) - line_pt.dot (line_dir)) / line_dir.dot (line_dir);
   pt_proj = line_pt + k * line_dir;
 
   Eigen::Vector4f dir = pt - pt_proj;
