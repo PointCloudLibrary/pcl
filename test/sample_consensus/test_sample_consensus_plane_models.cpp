@@ -328,7 +328,7 @@ TEST (SampleConsensusModelNormalPlane, RANSAC)
   // Create the RANSAC object
   RandomSampleConsensus<PointXYZ> sac (model, 0.03);
 
-  verifyPlaneSac (model, sac);
+  verifyPlaneSac (model, sac, 2000, 0.1f, 0.1f, 0.002f);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
