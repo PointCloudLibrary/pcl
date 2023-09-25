@@ -593,7 +593,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint6D)
   PointCloud<PointT>::Ptr src_full (new PointCloud<PointT>);
   copyPointCloud (cloud_with_color, *src_full);
   PointCloud<PointT>::Ptr tgt_full (new PointCloud<PointT>);
-  sampleRandomTransform (delta_transform, M_PI/0.1, .03);
+  sampleRandomTransform (delta_transform, 0.25*M_PI, .03);
   pcl::transformPointCloud (cloud_with_color, *tgt_full, delta_transform);
   PointCloud<PointT> output;
 
@@ -616,7 +616,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint6D)
   // Register
   reg.align (output);
   EXPECT_EQ (output.size (), src->size ());
-  EXPECT_LT (reg.getFitnessScore (), 0.003);
+  EXPECT_LT (reg.getFitnessScore (), 1e-4);
 
   // Check again, for all possible caching schemes
   for (int iter = 0; iter < 4; iter++)
@@ -637,7 +637,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint6D)
     // Register
     reg.align (output);
     EXPECT_EQ (output.size (), src->size ());
-    EXPECT_LT (reg.getFitnessScore (), 0.003);
+    EXPECT_LT (reg.getFitnessScore (), 1e-4);
   }
 }
 
