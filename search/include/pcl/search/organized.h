@@ -52,10 +52,14 @@ namespace pcl
 {
   namespace search
   {
-    /** \brief OrganizedNeighbor is a class for optimized nearest neighbor search in organized point clouds.
-      * \author Radu B. Rusu, Julius Kammerl, Suat Gedikli, Koen Buys
-      * \ingroup search
-      */
+    /** \brief OrganizedNeighbor is a class for optimized nearest neighbor search in
+     * organized projectable point clouds, for instance from Time-Of-Flight cameras or
+     * stereo cameras. Note that rotating LIDARs may output organized clouds, but are
+     * not projectable via a pinhole camera model into two dimensions and thus will
+     * generally not work with this class.
+     * \author Radu B. Rusu, Julius Kammerl, Suat Gedikli, Koen Buys
+     * \ingroup search
+     */
     template<typename PointT>
     class OrganizedNeighbor : public pcl::search::Search<PointT>
     {
