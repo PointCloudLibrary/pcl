@@ -26,6 +26,8 @@ main (int argc, char** argv)
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PCDWriter writer;
   reader.read (argv[1], *cloud_filtered);
+  pcl::Indices unused;
+  pcl::removeNaNFromPointCloud(*cloud_filtered, *cloud_filtered, unused);
 
 /////////////////////////////////////////////
 /// CPU VERSION
