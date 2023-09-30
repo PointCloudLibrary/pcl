@@ -152,7 +152,7 @@ pcl::gpu::extractEuclideanClusters(
         continue;
 
       // Process the results
-      for (auto idx : data) {
+      for (const auto& idx : data) {
         if (processed[idx])
           continue;
         processed[idx] = true;

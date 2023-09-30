@@ -46,7 +46,7 @@ PCL_INSTANTIATE(EuclideanClusterExtraction, PCL_XYZ_POINT_TYPES);
 PCL_INSTANTIATE(extractLabeledEuclideanClusters, PCL_XYZL_POINT_TYPES);
 PCL_INSTANTIATE(EuclideanLabeledClusterExtraction, PCL_XYZL_POINT_TYPES);
 
-void
+void PCL_EXPORTS
 pcl::detail::economical_download(const pcl::gpu::NeighborIndices& source_indices,
                                  const pcl::Indices& buffer_indices,
                                  std::size_t buffer_size,
