@@ -90,8 +90,7 @@ public:
   , loop_start_(0)
   , loop_end_(0)
   , reg_(new pcl::IterativeClosestPoint<PointT, PointT>)
-  , 
-   vd_(){};
+  , vd_(){};
 
   /** \brief Empty destructor */
   ~ELCH() override = default;

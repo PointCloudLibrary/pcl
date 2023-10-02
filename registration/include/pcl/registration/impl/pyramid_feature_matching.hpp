@@ -131,8 +131,7 @@ PyramidFeatureHistogram<PointFeature>::comparePyramidFeatureHistograms(
 
 template <typename PointFeature>
 PyramidFeatureHistogram<PointFeature>::PyramidFeatureHistogram()
-: feature_representation_(new DefaultPointRepresentation<PointFeature>)
-, hist_levels()
+: feature_representation_(new DefaultPointRepresentation<PointFeature>), hist_levels()
 {}
 
 template <typename PointFeature>

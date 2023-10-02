@@ -90,8 +90,7 @@ public:
   /** \brief Empty constructor that sets all the intrinsic calibration to the default
    * Kinect values. */
   CorrespondenceEstimationOrganizedProjection()
-  : 
-   src_to_tgt_transformation_(Eigen::Matrix4f::Identity())
+  : src_to_tgt_transformation_(Eigen::Matrix4f::Identity())
   , depth_threshold_(std::numeric_limits<float>::max())
   , projection_matrix_(Eigen::Matrix3f::Identity())
   {}
