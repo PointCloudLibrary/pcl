@@ -78,8 +78,7 @@ public:
   using PointCloudTargetConstPtr = typename PointCloudTarget::ConstPtr;
 
   /** \brief Empty constructor */
-  CorrespondenceRejectorPoly()
-  : similarity_threshold_squared_(0.75f * 0.75f)
+  CorrespondenceRejectorPoly() : similarity_threshold_squared_(0.75f * 0.75f)
   {
     rejection_name_ = "CorrespondenceRejectorPoly";
   }

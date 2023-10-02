@@ -46,8 +46,7 @@ namespace pcl {
 template <typename PointSource, typename PointTarget, typename Scalar>
 NormalDistributionsTransform<PointSource, PointTarget, Scalar>::
     NormalDistributionsTransform()
-: target_cells_()
-, trans_likelihood_()
+: target_cells_(), trans_likelihood_()
 {
   reg_name_ = "NormalDistributionsTransform";
 
