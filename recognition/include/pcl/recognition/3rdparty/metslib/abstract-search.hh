@@ -42,7 +42,7 @@ namespace mets {
 
   /// @brief The solution recorder is used by search algorithm, at the
   /// end of each iteration, to record the best seen solution.
-  ///
+  /// 
   /// The concept of best is externalized so that you can record the
   /// best ever solution met or the best solution that matches some
   /// other criteria (e.g. feasibility constraints relaxed in the
@@ -58,7 +58,7 @@ namespace mets {
     solution_recorder& operator=(const solution_recorder&);
 
     /// @brief A virtual dtor.
-    virtual
+    virtual 
     ~solution_recorder();
 
     /// @brief Accept is called at the end of each iteration for an
@@ -66,10 +66,10 @@ namespace mets {
     ///
     /// (this is a chain of responsibility)
     ///
-    virtual bool
+    virtual bool 
     accept(const feasible_solution& sol) = 0;
 
-    virtual gol_type
+    virtual gol_type 
     best_cost() const = 0;
   };
 
@@ -84,7 +84,7 @@ namespace mets {
     /// metaheuristics.
     ///
     /// @param working The starting point solution (this will be modified
-    /// during search as the working solution)
+    /// during search as the working solution) 
     ///
     /// @param recorder A solution recorder instance used to record
     /// the best solution found
@@ -95,26 +95,26 @@ namespace mets {
     abstract_search(feasible_solution& working,
 		    solution_recorder& recorder,
 		    move_manager_type& moveman)
-      : subject<abstract_search<move_manager_type> >(),
+      : subject<abstract_search<move_manager_type> >(), 
 	solution_recorder_m(recorder),
 	working_solution_m(working),
 	moves_m(moveman),
 	current_move_m(),
 	step_m()
     { }
-
+			 
     /// purposely not implemented (see Effective C++)
     abstract_search(const abstract_search<move_manager_type>&);
     /// purposely not implemented (see Effective C++)
     abstract_search& operator==(const abstract_search<move_manager_type>&);
 
     /// @brief Virtual destructor.
-
+    
     ~abstract_search() override = default;
 
     enum {
       /// @brief We just made a move.
-      MOVE_MADE = 0,
+      MOVE_MADE = 0,  
       /// @brief Our solution_recorder_chain object reported an improvement
       IMPROVEMENT_MADE,
       /// @brief We are about to start a new iteration
@@ -124,9 +124,9 @@ namespace mets {
       /// @brief Placeholer for next values
       LAST
     };
-
+     
     /// @brief This method starts the search.
-    ///
+    /// 
     /// Remember that this is a minimization.
     ///
     /// An exception mets::no_moves_error can be risen when no move is
@@ -136,48 +136,48 @@ namespace mets {
 
     /// @brief The solution recorder instance.
     const solution_recorder&
-    recorder() const
+    recorder() const 
     { return solution_recorder_m; };
-
+    
     /// @brief The current working solution.
     const feasible_solution&
-    working() const
+    working() const 
     { return working_solution_m; }
-
+    
     feasible_solution&
-    working()
+    working() 
     { return working_solution_m; }
 
     /// @brief The last move made
     const move&
-    current_move() const
+    current_move() const 
     { return **current_move_m; }
 
     /// @brief The last move made
     move&
-    current_move()
+    current_move() 
     { return **current_move_m; }
-
+ 
     /// @brief The move manager used by this search
-    const move_manager_type&
-    move_manager() const
+    const move_manager_type& 
+    move_manager() const 
     { return moves_m; }
 
     /// @brief The move manager used by this search
-    move_manager_type&
-    move_manager()
+    move_manager_type& 
+    move_manager() 
     { return moves_m; }
 
     /// @brief The current step of the algorithm (to be used by the
     ///        observers).
-    ///
+    ///        
     /// When you implement a new type of search you should set step_m
     /// protected variable to the status of the algorithm
     /// (0 = "MOVE_MADE", 1 = "IMPROVEMENT_MADE", etc.).
     int
-    step() const
+    step() const 
     { return step_m; }
-
+    
   protected:
     solution_recorder& solution_recorder_m;
     feasible_solution& working_solution_m;
@@ -194,8 +194,8 @@ namespace mets {
   /// @brief The best ever solution recorder can be used as a simple
   /// solution recorder that just records the best copyable solution
   /// found during its lifetime.
-  ///
-  class best_ever_solution : public solution_recorder
+  /// 
+  class best_ever_solution : public solution_recorder 
   {
   public:
     /// @brief The mets::evaluable_solution will be stored as a
@@ -204,9 +204,9 @@ namespace mets {
     ///
     /// @param best The instance used to store the best solution found
     /// (will be modified).
-    best_ever_solution(evaluable_solution& best) :
-      solution_recorder(),
-      best_ever_m(best)
+    best_ever_solution(evaluable_solution& best) : 
+      solution_recorder(), 
+      best_ever_m(best) 
     { }
 
     /// @brief Unimplemented default ctor.
@@ -222,17 +222,17 @@ namespace mets {
     bool accept(const feasible_solution& sol) override;
 
     /// @brief Returns the best solution found since the beginning.
-    const evaluable_solution& best_seen() const
+    const evaluable_solution& best_seen() const 
     { return best_ever_m; }
 
     /// @brief Best cost seen.
-    gol_type best_cost() const override
+    gol_type best_cost() const override 
     { return best_ever_m.cost_function(); }
   protected:
     /// @brief Records the best solution
     evaluable_solution& best_ever_m;
   };
-
+    
   /// @brief An object that is called back during the search progress.
   template<typename move_manager_type>
   class search_listener : public observer<abstract_search<move_manager_type> >
@@ -243,16 +243,16 @@ namespace mets {
     /// to attach the created object to the search process to be
     /// observed (mets::search_type::attach())
     explicit
-    search_listener() : observer<search_type>()
+    search_listener() : observer<search_type>() 
     { }
 
     /// purposely not implemented (see Effective C++)
     search_listener(const search_listener<search_type>& other);
-    search_listener<search_type>&
+    search_listener<search_type>& 
     operator=(const search_listener<search_type>& other);
 
     /// @brief Virtual destructor
-    virtual
+    virtual 
     ~search_listener() = default;
 
     /// @brief This is the callback method called by searches
@@ -266,24 +266,24 @@ namespace mets {
   struct iteration_logger : public mets::search_listener<neighborhood_t>
   {
     explicit
-    iteration_logger(std::ostream& o)
-      : mets::search_listener<neighborhood_t>(),
-	iteration(0),
-	os(o)
+    iteration_logger(std::ostream& o) 
+      : mets::search_listener<neighborhood_t>(), 
+	iteration(0), 
+	os(o) 
     { }
-
-    void
-    update(mets::abstract_search<neighborhood_t>* as)
+    
+    void 
+    update(mets::abstract_search<neighborhood_t>* as) 
     {
       const mets::feasible_solution& p = as->working();
       if(as->step() == mets::abstract_search<neighborhood_t>::MOVE_MADE)
 	{
-	  os << iteration++ << "\t"
+	  os << iteration++ << "\t" 
 	     << dynamic_cast<const mets::evaluable_solution&>(p).cost_function()
 	     << "\n";
 	}
     }
-
+    
   protected:
     int iteration;
     std::ostream& os;
@@ -293,16 +293,16 @@ namespace mets {
   struct improvement_logger : public mets::search_listener<neighborhood_t>
   {
     explicit
-    improvement_logger(std::ostream& o, gol_type epsilon = 1e-7)
-      : mets::search_listener<neighborhood_t>(),
-	iteration_m(0),
+    improvement_logger(std::ostream& o, gol_type epsilon = 1e-7) 
+      : mets::search_listener<neighborhood_t>(), 
+	iteration_m(0), 
 	best_m(std::numeric_limits<double>::max()),
 	os_m(o),
 	epsilon_m(epsilon)
     { }
-
-    void
-    update(mets::abstract_search<neighborhood_t>* as)
+    
+    void 
+    update(mets::abstract_search<neighborhood_t>* as) 
     {
       const mets::feasible_solution& p = as->working();
 
@@ -311,16 +311,16 @@ namespace mets {
 	  iteration_m++;
 	  double val = dynamic_cast<const mets::evaluable_solution&>(p)
 	    .cost_function();
-	  if(val < best_m - epsilon_m)
-	    {
+	  if(val < best_m - epsilon_m) 
+	    {	     
 	      best_m = val;
-	      os_m << iteration_m << "\t"
+	      os_m << iteration_m << "\t" 
 		   << best_m
 		   << " (*)\n";
 	    }
 	}
     }
-
+    
   protected:
     int iteration_m;
     double best_m;
