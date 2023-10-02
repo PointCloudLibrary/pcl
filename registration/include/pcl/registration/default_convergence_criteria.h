@@ -99,8 +99,8 @@ public:
   , correspondences_(correspondences)
   , correspondences_prev_mse_(std::numeric_limits<double>::max())
   , correspondences_cur_mse_(std::numeric_limits<double>::max())
-  ,  translation_threshold_(3e-4 * 3e-4) // 0.0003 meters
-  ,     convergence_state_(CONVERGENCE_CRITERIA_NOT_CONVERGED)
+  , translation_threshold_(3e-4 * 3e-4) // 0.0003 meters
+  , convergence_state_(CONVERGENCE_CRITERIA_NOT_CONVERGED)
   {}
 
   /** \brief Empty destructor */
@@ -322,7 +322,7 @@ protected:
   int max_iterations_similar_transforms_{0};
 
   /** \brief The state of the convergence (e.g., why did the registration converge). */
-  ConvergenceState convergence_state_;
+  ConvergenceState convergence_state_{CONVERGENCE_CRITERIA_NOT_CONVERGED};
 
 public:
   PCL_MAKE_ALIGNED_OPERATOR_NEW

@@ -109,20 +109,16 @@ public:
   Registration()
   : tree_(new KdTree)
   , tree_reciprocal_(new KdTreeReciprocal)
-  , 
-   target_()
+  , target_()
   , final_transformation_(Matrix4::Identity())
   , transformation_(Matrix4::Identity())
   , previous_transformation_(Matrix4::Identity())
-  , 
-   euclidean_fitness_epsilon_(-std::numeric_limits<double>::max())
+  , euclidean_fitness_epsilon_(-std::numeric_limits<double>::max())
   , corr_dist_threshold_(std::sqrt(std::numeric_limits<double>::max()))
-  , 
-   correspondences_(new Correspondences)
+  , correspondences_(new Correspondences)
   , transformation_estimation_()
   , correspondence_estimation_()
-  , 
-   point_representation_()
+  , point_representation_()
   {}
 
   /** \brief destructor. */

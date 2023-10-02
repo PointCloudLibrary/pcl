@@ -279,8 +279,7 @@ pcl::simulation::RangeLikelihood::RangeLikelihood(
 , cols_(cols)
 , row_height_(row_height)
 , col_width_(col_width)
-, 
- sum_reduce_(cols * col_width, rows * row_height, max_level(col_width, row_height))
+, sum_reduce_(cols * col_width, rows * row_height, max_level(col_width, row_height))
 {
   height_ = rows_ * row_height;
   width_ = cols_ * col_width;

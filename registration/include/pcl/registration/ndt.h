@@ -567,7 +567,7 @@ protected:
 
   /** \brief The normalization constants used fit the point distribution to a
    * normal distribution, Equation 6.8 [Magnusson 2009]. */
-  double gauss_d1_{}, gauss_d2_{};
+  double gauss_d1_{0.0}, gauss_d2_{0.0};
 
   /** \brief The likelihood score of the transform applied to the input cloud,
    * Equation 6.9 and 6.10 [Magnusson 2009]. */
@@ -575,7 +575,7 @@ protected:
     PCL_DEPRECATED(1,
                    16,
                    "`trans_probability_` has been renamed to `trans_likelihood_`.")
-    double trans_probability_;
+    double trans_probability_{0.0};
     double trans_likelihood_;
   };
 

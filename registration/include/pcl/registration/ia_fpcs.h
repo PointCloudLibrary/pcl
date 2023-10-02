@@ -505,14 +505,14 @@ protected:
   float fitness_score_;
 
   /** \brief Estimated diameter of the target point cloud. */
-  float diameter_{};
+  float diameter_{0.0f};
 
   /** \brief Estimated squared metric overlap between source and target.
    * \note Internally calculated using the estimated overlap and the extent of the
    * source cloud. It is used to derive the minimum sampling distance of the base points
    * as well as to calculated the number of tries to reliably find a correct match.
    */
-  float max_base_diameter_sqr_{};
+  float max_base_diameter_sqr_{0.0f};
 
   /** \brief Use normals flag. */
   bool use_normals_{false};
@@ -529,27 +529,27 @@ protected:
   /** \brief Maximal difference between corresponding point pairs in source and target.
    * \note Internally calculated using an estimation of the point density.
    */
-  float max_pair_diff_{};
+  float max_pair_diff_{0.0f};
 
   /** \brief Maximal difference between the length of the base edges and valid match
    * edges. \note Internally calculated using an estimation of the point density.
    */
-  float max_edge_diff_{};
+  float max_edge_diff_{0.0f};
 
   /** \brief Maximal distance between coinciding intersection points to find valid
    * matches. \note Internally calculated using an estimation of the point density.
    */
-  float coincidation_limit_{};
+  float coincidation_limit_{0.0f};
 
   /** \brief Maximal mean squared errors of a transformation calculated from a candidate
    * match. \note Internally calculated using an estimation of the point density.
    */
-  float max_mse_{};
+  float max_mse_{0.0f};
 
   /** \brief Maximal squared point distance between source and target points to count as
    * inlier. \note Internally calculated using an estimation of the point density.
    */
-  float max_inlier_dist_sqr_{};
+  float max_inlier_dist_sqr_{0.0f};
 
   /** \brief Definition of a small error. */
   const float small_error_{0.00001f};

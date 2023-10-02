@@ -503,11 +503,11 @@ protected:
   float local_rf_search_radius_{0.0f};
 
   /** \brief The Hough space. */
-  pcl::recognition::HoughSpace3D::Ptr hough_space_;
+  pcl::recognition::HoughSpace3D::Ptr hough_space_{nullptr};
 
   /** \brief Transformations found by clusterCorrespondences method. */
   std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>
-      found_transformations_;
+      found_transformations_{};
 
   /** \brief Whether the Hough space already contains the correct votes for the current
    * input parameters and so the cluster and recognize calls don't need to recompute

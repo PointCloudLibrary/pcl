@@ -128,7 +128,7 @@ namespace pcl
       protected:
 
         /** \brief Stores all votes. */
-        pcl::PointCloud<pcl::InterestPoint>::Ptr votes_;
+        pcl::PointCloud<pcl::InterestPoint>::Ptr votes_{nullptr};
 
         /** \brief Signalizes if the tree is valid. */
         bool tree_is_valid_{false};
@@ -137,16 +137,16 @@ namespace pcl
         typename pcl::PointCloud<PointT>::Ptr votes_origins_;
 
         /** \brief Stores classes for which every single vote was cast. */
-        std::vector<int> votes_class_;
+        std::vector<int> votes_class_{};
 
         /** \brief Stores the search tree. */
-        pcl::KdTreeFLANN<pcl::InterestPoint>::Ptr tree_;
+        pcl::KdTreeFLANN<pcl::InterestPoint>::Ptr tree_{nullptr};
 
         /** \brief Stores neighbours indices. */
-        pcl::Indices k_ind_;
+        pcl::Indices k_ind_{};
 
         /** \brief Stores square distances to the corresponding neighbours. */
-        std::vector<float> k_sqr_dist_;
+        std::vector<float> k_sqr_dist_{};
     };
 
     /** \brief The assignment of this structure is to store the statistical/learned weights and other information

@@ -420,7 +420,7 @@ class OutofcoreTest : public testing::Test
 
     }
 
-    double smallest_voxel_dim{};
+    double smallest_voxel_dim{3.0f};
 
 };
 

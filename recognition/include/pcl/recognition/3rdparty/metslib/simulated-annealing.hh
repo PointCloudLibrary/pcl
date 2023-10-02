@@ -143,7 +143,7 @@ namespace mets {
     abstract_cooling_schedule& cooling_schedule_m;
     double starting_temp_m;
     double stop_temp_m;
-    double current_temp_m{};
+    double current_temp_m;
     double K_m;
 
 #if defined (METSLIB_TR1_BOOST)
@@ -160,7 +160,7 @@ namespace mets {
     std::tr1::variate_generator< std::tr1::mt19937, std::tr1::uniform_real<double> > gen;
 #endif
 
-    bool apply_and_evaluate{false};
+    bool apply_and_evaluate;
   };
 
   /// @brief Original ECS proposed by Kirkpatrick
@@ -209,8 +209,8 @@ simulated_annealing(evaluable_solution& working,
   : abstract_search<move_manager_t>(working, recorder, moveman),
     termination_criteria_m(tc), cooling_schedule_m(cs),
     starting_temp_m(starting_temp), stop_temp_m(stop_temp),
-     K_m(K),
-    ureal(0.0,1.0), rng(), gen(rng, ureal)
+    current_temp_m(), K_m(K),
+    ureal(0.0,1.0), rng(), gen(rng, ureal), apply_and_evaluate(false)
 {
 }
 

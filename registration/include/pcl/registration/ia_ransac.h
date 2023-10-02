@@ -112,7 +112,7 @@ public:
     }
 
   protected:
-    float threshold_;
+    float threshold_{0.0f};
   };
 
   class TruncatedError : public ErrorFunctor {
@@ -132,7 +132,7 @@ public:
     }
 
   protected:
-    float threshold_;
+    float threshold_{0.0f};
   };
 
   using ErrorFunctorPtr = typename ErrorFunctor::Ptr;
@@ -142,8 +142,7 @@ public:
   SampleConsensusInitialAlignment()
   : input_features_()
   , target_features_()
-  , 
-   feature_tree_(new pcl::KdTreeFLANN<FeatureT>)
+  , feature_tree_(new pcl::KdTreeFLANN<FeatureT>)
   , error_functor_()
   {
     reg_name_ = "SampleConsensusInitialAlignment";

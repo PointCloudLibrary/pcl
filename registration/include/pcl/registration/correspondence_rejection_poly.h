@@ -379,7 +379,7 @@ protected:
   float similarity_threshold_{0.75f};
 
   /** \brief Squared value if \ref similarity_threshold_, only for internal use */
-  float similarity_threshold_squared_;
+  float similarity_threshold_squared_{0.0f};
 };
 } // namespace registration
 } // namespace pcl

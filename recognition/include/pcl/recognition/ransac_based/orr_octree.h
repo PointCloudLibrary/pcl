@@ -156,10 +156,10 @@ namespace pcl
                 getNeighbors () const { return (neighbors_);}
 
               protected:
-                float n_[3], p_[3];
-                int id_x_, id_y_, id_z_, lin_id_, num_points_{0};
+                float n_[3]{}, p_[3]{};
+                int id_x_{0}, id_y_{0}, id_z_{0}, lin_id_{0}, num_points_{0};
                 std::set<Node*> neighbors_;
-                void *user_data_;
+                void *user_data_{nullptr};
             };
 
             Node () = default;
@@ -261,7 +261,7 @@ namespace pcl
 
           protected:
             Node::Data *data_{nullptr};
-            float center_[3], bounds_[6], radius_;
+            float center_[3]{}, bounds_[6]{}, radius_{0.0f};
             Node *parent_{nullptr}, *children_{nullptr};
         };
 

@@ -45,110 +45,111 @@
 
 #pragma once
 
-#include <pcl/recognition/ransac_based/auxiliary.h>
 #include <pcl/recognition/ransac_based/model_library.h>
+#include <pcl/recognition/ransac_based/auxiliary.h>
 
-namespace pcl {
-namespace recognition {
-class HypothesisBase {
-public:
-  HypothesisBase(const ModelLibrary::Model* obj_model) : obj_model_(obj_model) {}
-
-  HypothesisBase(const ModelLibrary::Model* obj_model, const float* rigid_transform)
-  : obj_model_(obj_model)
+namespace pcl
+{
+  namespace recognition
   {
-    std::copy(rigid_transform, rigid_transform + 12, rigid_transform_);
-  }
+    class HypothesisBase
+    {
+      public:
+        HypothesisBase (const ModelLibrary::Model* obj_model)
+        : obj_model_ (obj_model)
+        {}
 
-  virtual ~HypothesisBase() = default;
+        HypothesisBase (const ModelLibrary::Model* obj_model, const float* rigid_transform)
+        : obj_model_ (obj_model)
+        {
+          std::copy(rigid_transform, rigid_transform + 12, rigid_transform_);
+        }
 
-  void
-  setModel(const ModelLibrary::Model* model)
-  {
-    obj_model_ = model;
-  }
+        virtual  ~HypothesisBase () = default;
 
-public:
-  float rigid_transform_[12];
-  const ModelLibrary::Model* obj_model_;
-};
+        void
+        setModel (const ModelLibrary::Model* model)
+        {
+          obj_model_ = model;
+        }
 
-class Hypothesis : public HypothesisBase {
-public:
-  Hypothesis(const ModelLibrary::Model* obj_model = nullptr) : HypothesisBase(obj_model)
-  {}
+      public:
+        float rigid_transform_[12]{};
+        const ModelLibrary::Model* obj_model_{nullptr};
+    };
 
-  Hypothesis(const Hypothesis& src)
-  : HypothesisBase(src.obj_model_, src.rigid_transform_)
-  , match_confidence_(src.match_confidence_)
-  , explained_pixels_(src.explained_pixels_)
-  {}
+    class Hypothesis: public HypothesisBase
+    {
+      public:
+        Hypothesis (const ModelLibrary::Model* obj_model = nullptr)
+         : HypothesisBase (obj_model)
+        {
+        }
 
-  ~Hypothesis() override = default;
+        Hypothesis (const Hypothesis& src)
+        : HypothesisBase (src.obj_model_, src.rigid_transform_),
+          match_confidence_  (src.match_confidence_),
+          explained_pixels_ (src.explained_pixels_)
+        {
+        }
 
-  const Hypothesis&
-  operator=(const Hypothesis& src)
-  {
-    std::copy(src.rigid_transform_, src.rigid_transform_ + 12, this->rigid_transform_);
-    this->obj_model_ = src.obj_model_;
-    this->match_confidence_ = src.match_confidence_;
-    this->explained_pixels_ = src.explained_pixels_;
+        ~Hypothesis () override = default;
 
-    return *this;
-  }
+        const Hypothesis&
+        operator =(const Hypothesis& src)
+        {
+          std::copy(src.rigid_transform_, src.rigid_transform_ + 12, this->rigid_transform_);
+          this->obj_model_  = src.obj_model_;
+          this->match_confidence_  = src.match_confidence_;
+          this->explained_pixels_ = src.explained_pixels_;
 
-  void
-  setLinearId(int id)
-  {
-    linear_id_ = id;
-  }
+          return *this;
+        }
 
-  int
-  getLinearId() const
-  {
-    return (linear_id_);
-  }
+        void
+        setLinearId (int id)
+        {
+          linear_id_ = id;
+        }
 
-  void
-  computeBounds(float bounds[6]) const
-  {
-    const float* b = obj_model_->getBoundsOfOctreePoints();
-    float p[3];
+        int
+        getLinearId () const
+        {
+          return (linear_id_);
+        }
 
-    // Initialize 'bounds'
-    aux::transform(rigid_transform_, b[0], b[2], b[4], p);
-    bounds[0] = bounds[1] = p[0];
-    bounds[2] = bounds[3] = p[1];
-    bounds[4] = bounds[5] = p[2];
+        void
+        computeBounds (float bounds[6]) const
+        {
+          const float *b = obj_model_->getBoundsOfOctreePoints ();
+          float p[3];
 
-    // Expand 'bounds' to contain the other 7 points of the octree bounding box
-    aux::transform(rigid_transform_, b[0], b[2], b[5], p);
-    aux::expandBoundingBoxToContainPoint(bounds, p);
-    aux::transform(rigid_transform_, b[0], b[3], b[4], p);
-    aux::expandBoundingBoxToContainPoint(bounds, p);
-    aux::transform(rigid_transform_, b[0], b[3], b[5], p);
-    aux::expandBoundingBoxToContainPoint(bounds, p);
-    aux::transform(rigid_transform_, b[1], b[2], b[4], p);
-    aux::expandBoundingBoxToContainPoint(bounds, p);
-    aux::transform(rigid_transform_, b[1], b[2], b[5], p);
-    aux::expandBoundingBoxToContainPoint(bounds, p);
-    aux::transform(rigid_transform_, b[1], b[3], b[4], p);
-    aux::expandBoundingBoxToContainPoint(bounds, p);
-    aux::transform(rigid_transform_, b[1], b[3], b[5], p);
-    aux::expandBoundingBoxToContainPoint(bounds, p);
-  }
+          // Initialize 'bounds'
+          aux::transform (rigid_transform_, b[0], b[2], b[4], p);
+          bounds[0] = bounds[1] = p[0];
+          bounds[2] = bounds[3] = p[1];
+          bounds[4] = bounds[5] = p[2];
 
-  void
-  computeCenterOfMass(float center_of_mass[3]) const
-  {
-    aux::transform(
-        rigid_transform_, obj_model_->getOctreeCenterOfMass(), center_of_mass);
-  }
+          // Expand 'bounds' to contain the other 7 points of the octree bounding box
+          aux::transform (rigid_transform_, b[0], b[2], b[5], p); aux::expandBoundingBoxToContainPoint (bounds, p);
+          aux::transform (rigid_transform_, b[0], b[3], b[4], p); aux::expandBoundingBoxToContainPoint (bounds, p);
+          aux::transform (rigid_transform_, b[0], b[3], b[5], p); aux::expandBoundingBoxToContainPoint (bounds, p);
+          aux::transform (rigid_transform_, b[1], b[2], b[4], p); aux::expandBoundingBoxToContainPoint (bounds, p);
+          aux::transform (rigid_transform_, b[1], b[2], b[5], p); aux::expandBoundingBoxToContainPoint (bounds, p);
+          aux::transform (rigid_transform_, b[1], b[3], b[4], p); aux::expandBoundingBoxToContainPoint (bounds, p);
+          aux::transform (rigid_transform_, b[1], b[3], b[5], p); aux::expandBoundingBoxToContainPoint (bounds, p);
+        }
 
-public:
-  float match_confidence_{-1.0f};
-  std::set<int> explained_pixels_;
-  int linear_id_{-1};
-};
-} // namespace recognition
+        void
+        computeCenterOfMass (float center_of_mass[3]) const
+        {
+          aux::transform (rigid_transform_, obj_model_->getOctreeCenterOfMass (), center_of_mass);
+        }
+
+      public:
+        float match_confidence_{-1.0f};
+        std::set<int> explained_pixels_;
+        int linear_id_{-1};
+    };
+  } // namespace recognition
 } // namespace pcl
