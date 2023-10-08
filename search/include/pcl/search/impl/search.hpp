@@ -71,12 +71,13 @@ pcl::search::Search<PointT>::getSortedResults ()
 }
  
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
+template <typename PointT> bool
 pcl::search::Search<PointT>::setInputCloud (
     const PointCloudConstPtr& cloud, const IndicesConstPtr &indices)
 {
   input_ = cloud;
   indices_ = indices;
+  return true;
 }
 
 
