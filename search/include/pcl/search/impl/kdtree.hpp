@@ -72,7 +72,7 @@ pcl::search::KdTree<PointT,Tree>::setEpsilon (float eps)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, class Tree> void
+template <typename PointT, class Tree> bool
 pcl::search::KdTree<PointT,Tree>::setInputCloud (
     const PointCloudConstPtr& cloud, 
     const IndicesConstPtr& indices)
@@ -80,6 +80,7 @@ pcl::search::KdTree<PointT,Tree>::setInputCloud (
   tree_->setInputCloud (cloud, indices);
   input_ = cloud;
   indices_ = indices;
+  return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

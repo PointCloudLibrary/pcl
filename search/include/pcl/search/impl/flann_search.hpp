@@ -91,7 +91,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::~FlannSearch()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename FlannDistance> void
+template <typename PointT, typename FlannDistance> bool
 pcl::search::FlannSearch<PointT, FlannDistance>::setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices)
 {
   input_ = cloud;
@@ -99,6 +99,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::setInputCloud (const PointCloud
   convertInputToFlannMatrix ();
   index_ = creator_->createIndex (input_flann_);
   index_->buildIndex ();
+  return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

@@ -125,7 +125,7 @@ namespace pcl
           * \param[in] cloud the const boost shared pointer to a PointCloud message
           * \param[in] indices the const boost shared pointer to PointIndices
           */
-        void
+        bool
         setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr &indices = IndicesConstPtr ()) override
         {
           input_ = cloud;
@@ -143,7 +143,7 @@ namespace pcl
           else
             mask_.assign (input_->size (), 1);
 
-          estimateProjectionMatrix ();
+          return estimateProjectionMatrix () && isValid ();
         }
 
         /** \brief Search for all neighbors of query point that are within a given radius.
@@ -164,7 +164,7 @@ namespace pcl
                       unsigned int max_nn = 0) const override;
 
         /** \brief estimated the projection matrix from the input cloud. */
-        void 
+        bool
         estimateProjectionMatrix ();
 
          /** \brief Search for the k-nearest neighbors for a given query point.
