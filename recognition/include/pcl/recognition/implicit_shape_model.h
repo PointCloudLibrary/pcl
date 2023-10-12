@@ -227,7 +227,7 @@ namespace pcl
   {
     /** \brief This class implements Implicit Shape Model algorithm described in
       * "Hough Transforms and 3D SURF for robust three dimensional classication"
-      * by Jan Knopp1, Mukta Prasad, Geert Willems1, Radu Timofte, and Luc Van Gool.
+      * by Jan Knopp, Mukta Prasad, Geert Willems, Radu Timofte, and Luc Van Gool.
       * It has two main member functions. One for training, using the data for which we know
       * which class it belongs to. And second for investigating a cloud for the presence
       * of the class of interest.

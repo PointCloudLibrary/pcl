@@ -60,6 +60,7 @@ namespace pcl {
  * Optimization Theory and Methods: Nonlinear Programming. 89-100
  * \note Math refactored by Todor Stoyanov.
  * \author Brian Okorn (Space and Naval Warfare Systems Center Pacific)
+ * \ingroup registration
  */
 template <typename PointSource, typename PointTarget, typename Scalar = float>
 class NormalDistributionsTransform

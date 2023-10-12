@@ -381,8 +381,8 @@ protected:
 
   /** \brief compute points covariances matrices according to the K nearest
    * neighbors. K is set via setCorrespondenceRandomness() method.
-   * \param cloud pointer to point cloud
-   * \param tree KD tree performer for nearest neighbors search
+   * \param[in] cloud pointer to point cloud
+   * \param[in] tree KD tree performer for nearest neighbors search
    * \param[out] cloud_covariances covariances matrices for each point in the cloud
    */
   template <typename PointT>

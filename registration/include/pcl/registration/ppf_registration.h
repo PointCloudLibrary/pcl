@@ -169,6 +169,7 @@ private:
  *    13-18 June 2010, San Francisco, CA
  *
  * \note This class works in tandem with the PPFEstimation class
+ * \ingroup registration
  *
  * \author Alexandru-Eugen Ichim
  */
