@@ -563,7 +563,7 @@ inline bool pcl::io::ply::ply_parser::parse_scalar_property (format_type format,
     if (!istream || !isspace (space))
     {
       if (error_callback_)
-        error_callback_ (line_number_, "parse error");
+        error_callback_ (line_number_, "error while parsing scalar property (file format: ascii)");
       return (false);
     }
     if (scalar_property_callback)
@@ -575,7 +575,7 @@ inline bool pcl::io::ply::ply_parser::parse_scalar_property (format_type format,
   if (!istream)
   {
     if (error_callback_)
-      error_callback_ (line_number_, "parse error");
+      error_callback_ (line_number_, "error while parsing scalar property (file format: binary)");
     return (false);
   }
   if (((format == binary_big_endian_format) && (host_byte_order == little_endian_byte_order)) ||
@@ -608,7 +608,7 @@ inline bool pcl::io::ply::ply_parser::parse_list_property (format_type format, s
     {
       if (error_callback_)
       {
-        error_callback_ (line_number_, "parse error");
+        error_callback_ (line_number_, "error while parsing list (file format: ascii)");
       }
       return (false);
     }
@@ -639,7 +639,7 @@ inline bool pcl::io::ply::ply_parser::parse_list_property (format_type format, s
       {
         if (error_callback_)
         {
-          error_callback_ (line_number_, "parse error");
+          error_callback_ (line_number_, "error while parsing list (file format: ascii)");
         }
         return (false);
       }
@@ -665,7 +665,7 @@ inline bool pcl::io::ply::ply_parser::parse_list_property (format_type format, s
   {
     if (error_callback_)
     {
-      error_callback_ (line_number_, "parse error");
+      error_callback_ (line_number_, "error while parsing list (file format: binary)");
     }
     return (false);
   }
@@ -678,7 +678,7 @@ inline bool pcl::io::ply::ply_parser::parse_list_property (format_type format, s
     istream.read (reinterpret_cast<char*> (&value), sizeof (scalar_type));
     if (!istream) {
       if (error_callback_) {
-        error_callback_ (line_number_, "parse error");
+        error_callback_ (line_number_, "error while parsing list (file format: binary)");
       }
       return (false);
     }
