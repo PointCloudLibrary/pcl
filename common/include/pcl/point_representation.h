@@ -158,6 +158,24 @@ namespace pcl
         delete [] temp;
       }
 
+      void
+      vectorize (const PointT &p, float* out) const
+      {
+        copyToFloatArray (p, out);
+        if (!alpha_.empty ())
+          for (int i = 0; i < nr_dimensions_; ++i)
+            out[i] *= alpha_[i];
+      }
+
+      void
+      vectorize (const PointT &p, std::vector<float> &out) const
+      {
+        copyToFloatArray (p, out.data());
+        if (!alpha_.empty ())
+          for (int i = 0; i < nr_dimensions_; ++i)
+            out[i] *= alpha_[i];
+      }
+
       /** \brief Set the rescale values to use when vectorizing points
         * \param[in] rescale_array The array/vector of rescale values.  Can be of any type that implements the [] operator.
         */
