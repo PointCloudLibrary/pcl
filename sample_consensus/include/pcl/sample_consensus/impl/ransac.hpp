@@ -188,21 +188,22 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
 #endif
       k_tmp = k;
 #if OPENMP_AVAILABLE_RANSAC
-      PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] Trial %d out of %f: %u inliers (best is: %u so far) (thread %d).\n", iterations_tmp, k_tmp, n_inliers_count, n_best_inliers_count_tmp, omp_get_thread_num());
+      PCL_INFO ("[pcl::RandomSampleConsensus::computeModel] Trial %d out of %f: %u inliers (best is: %u so far) (thread %d).\n", iterations_tmp, k_tmp, n_inliers_count, n_best_inliers_count_tmp, omp_get_thread_num());
 #else
-      PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] Trial %d out of %f: %u inliers (best is: %u so far).\n", iterations_tmp, k_tmp, n_inliers_count, n_best_inliers_count_tmp);
+      PCL_INFO ("[pcl::RandomSampleConsensus::computeModel] Trial %d out of %f: %u inliers (best is: %u so far).\n", iterations_tmp, k_tmp, n_inliers_count, n_best_inliers_count_tmp);
 #endif
       if (iterations_tmp > k_tmp)
         break;
       if (iterations_tmp > max_iterations_)
       {
-        PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] RANSAC reached the maximum number of trials.\n");
+        PCL_INFO ("[pcl::RandomSampleConsensus::computeModel] RANSAC reached the maximum number of trials.\n");
         break;
       }
     } // while
   } // omp parallel
 
-  PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] Model: %lu size, %u inliers.\n", model_.size (), n_best_inliers_count);
+  PCL_INFO ("[pcl::RandomSampleConsensus::computeModel] Model: %lu size, %u inliers.\n", model_.size (), n_best_inliers_count);
+  std::cout << typeid(model_).name() << std::endl;
 
   if (model_.empty ())
   {

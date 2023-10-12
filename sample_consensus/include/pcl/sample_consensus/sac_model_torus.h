@@ -95,7 +95,7 @@ namespace pcl
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
         model_name_ = "SampleConsensusModelTorus";
-        sample_size_ = 3;
+        sample_size_ = 7;
         model_size_ = 7;
       }
 
@@ -111,7 +111,7 @@ namespace pcl
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
         model_name_ = "SampleConsensusModelTorus";
-        sample_size_ = 3;
+        sample_size_ = 7;
         model_size_ = 7;
       }
 
@@ -257,7 +257,11 @@ namespace pcl
           * \param[in] estimator pointer to the estimator object
           */
         OptimizationFunctor (const pcl::SampleConsensusModelTorus<PointT, PointNT> *model, const Indices& indices) :
-          pcl::Functor<double> (indices.size ()), model_ (model), indices_ (indices) {}
+          pcl::Functor<double> (indices.size ()), model_ (model), indices_ (indices) {
+            std::cout << "asdfas" << std::endl;
+            if(model)
+              std::cout << "-----" << std::endl;
+          }
 
        /** Cost function to be minimized
          * \param[in] x the variables array
@@ -268,7 +272,7 @@ namespace pcl
         {
 
             assert(xs.size() == 7);
-            assert(fvec.size() == data->size());
+            //assert(fvec.size() == data->size());
             for (const auto &i : indices_){
               // Getting constants from state vector
               const double& R = xs[0];

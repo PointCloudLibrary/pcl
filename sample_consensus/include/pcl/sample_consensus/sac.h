@@ -5,7 +5,7 @@
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
  *  Copyright (c) 2012-, Open Perception, Inc.
  *
- *  All rights reserved. 
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -74,7 +74,7 @@ namespace pcl
         * \param[in] model a Sample Consensus model
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensus (const SampleConsensusModelPtr &model, bool random = false) 
+      SampleConsensus (const SampleConsensusModelPtr &model, bool random = false)
         : sac_model_ (model)
         , probability_ (0.99)
         , iterations_ (0)
@@ -95,8 +95,8 @@ namespace pcl
         * \param[in] threshold distance to model threshold
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensus (const SampleConsensusModelPtr &model, 
-                       double threshold, 
+      SampleConsensus (const SampleConsensusModelPtr &model,
+                       double threshold,
                        bool random = false)
         : sac_model_ (model)
         , probability_ (0.99)
@@ -106,6 +106,10 @@ namespace pcl
         , threads_ (-1)
         , rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
       {
+         if(!sac_model_)
+           std::cout << "nullptr sac model" << std::endl;
+         else
+           std::cout << "sac model" << std::endl;
          // Create a random number generator object
          if (random)
            rng_->base ().seed (static_cast<unsigned> (std::time (nullptr)));
@@ -135,32 +139,32 @@ namespace pcl
       /** \brief Set the distance to model threshold.
         * \param[in] threshold distance to model threshold
         */
-      inline void 
+      inline void
       setDistanceThreshold (double threshold)  { threshold_ = threshold; }
 
       /** \brief Get the distance to model threshold, as set by the user. */
-      inline double 
+      inline double
       getDistanceThreshold () const { return (threshold_); }
 
       /** \brief Set the maximum number of iterations.
         * \param[in] max_iterations maximum number of iterations
         */
-      inline void 
+      inline void
       setMaxIterations (int max_iterations) { max_iterations_ = max_iterations; }
 
       /** \brief Get the maximum number of iterations, as set by the user. */
-      inline int 
+      inline int
       getMaxIterations () const { return (max_iterations_); }
 
       /** \brief Set the desired probability of choosing at least one sample free from outliers.
         * \param[in] probability the desired probability of choosing at least one sample free from outliers
         * \note internally, the probability is set to 99% (0.99) by default.
         */
-      inline void 
+      inline void
       setProbability (double probability) { probability_ = probability; }
 
       /** \brief Obtain the probability of choosing at least one sample free from outliers, as set by the user. */
-      inline double 
+      inline double
       getProbability () const { return (probability_); }
 
       /** \brief Set the number of threads to use or turn off parallelization.
@@ -175,17 +179,17 @@ namespace pcl
       getNumberOfThreads () const { return (threads_); }
 
       /** \brief Compute the actual model. Pure virtual. */
-      virtual bool 
+      virtual bool
       computeModel (int debug_verbosity_level = 0) = 0;
 
       /** \brief Refine the model found.
         * This loops over the model coefficients and optimizes them together
         * with the set of inliers, until the change in the set of inliers is
         * minimal.
-        * \param[in] sigma standard deviation multiplier for considering a sample as inlier (Mahalanobis distance) 
+        * \param[in] sigma standard deviation multiplier for considering a sample as inlier (Mahalanobis distance)
         * \param[in] max_iterations the maxim number of iterations to try to refine in case the inliers keep on changing
         */
-      virtual bool 
+      virtual bool
       refineModel (const double sigma = 3.0, const unsigned int max_iterations = 1000)
       {
         if (!sac_model_)
@@ -194,7 +198,7 @@ namespace pcl
           return (false);
         }
 
-        double inlier_distance_threshold_sqr = threshold_ * threshold_, 
+        double inlier_distance_threshold_sqr = threshold_ * threshold_,
                error_threshold = threshold_;
         double sigma_sqr = sigma * sigma;
         unsigned int refine_iterations = 0;
@@ -211,7 +215,7 @@ namespace pcl
           // Select the new inliers based on the optimized coefficients and new threshold
           sac_model_->selectWithinDistance (new_model_coefficients, error_threshold, new_inliers);
           PCL_DEBUG ("[pcl::SampleConsensus::refineModel] Number of inliers found (before/after): %lu/%lu, with an error threshold of %g.\n", prev_inliers.size (), new_inliers.size (), error_threshold);
-        
+
           if (new_inliers.empty ())
           {
             refine_iterations++;
@@ -257,7 +261,7 @@ namespace pcl
           }
         }
         while (inlier_changed && ++refine_iterations < max_iterations);
-      
+
         // If the new set of inliers is empty, we didn't do a good job refining
         if (new_inliers.empty ())
         {
@@ -288,7 +292,7 @@ namespace pcl
         */
       inline void
       getRandomSamples (const IndicesPtr &indices,
-                        std::size_t nr_samples, 
+                        std::size_t nr_samples,
                         std::set<index_t> &indices_subset)
       {
         indices_subset.clear ();
@@ -297,22 +301,22 @@ namespace pcl
           indices_subset.insert ((*indices)[static_cast<index_t> (static_cast<double>(indices->size ()) * rnd ())]);
       }
 
-      /** \brief Return the best model found so far. 
+      /** \brief Return the best model found so far.
         * \param[out] model the resultant model
         */
-      inline void 
+      inline void
       getModel (Indices &model) const { model = model_; }
 
-      /** \brief Return the best set of inliers found so far for this model. 
+      /** \brief Return the best set of inliers found so far for this model.
         * \param[out] inliers the resultant set of inliers
         */
-      inline void 
+      inline void
       getInliers (Indices &inliers) const { inliers = inliers_; }
 
-      /** \brief Return the model coefficients of the best model found so far. 
+      /** \brief Return the model coefficients of the best model found so far.
         * \param[out] model_coefficients the resultant model coefficients, as documented in \ref sample_consensus
         */
-      inline void 
+      inline void
       getModelCoefficients (Eigen::VectorXf &model_coefficients) const { model_coefficients = model_coefficients_; }
 
     protected:
@@ -333,10 +337,10 @@ namespace pcl
 
       /** \brief Total number of internal loop iterations that we've done so far. */
       int iterations_;
-      
+
       /** \brief Distance to model threshold. */
       double threshold_;
-      
+
       /** \brief Maximum number of iterations before giving up. */
       int max_iterations_;
 

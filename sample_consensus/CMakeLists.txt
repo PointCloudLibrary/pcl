@@ -64,7 +64,7 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/sac_model_registration_2d.h"
   "include/pcl/${SUBSYS_NAME}/sac_model_sphere.h"
   "include/pcl/${SUBSYS_NAME}/sac_model_ellipse3d.h"
-  "include/pcl/${SUBSYS_NAME}/sac_model_ellipse3d.h"
+  "include/pcl/${SUBSYS_NAME}/sac_model_torus.h"
 )
 
 set(impl_incs

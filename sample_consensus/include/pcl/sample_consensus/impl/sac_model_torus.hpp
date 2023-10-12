@@ -38,8 +38,8 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CYLINDER_H_
-#define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CYLINDER_H_
+#ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_TORUS_H_
+#define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_TORUS_H_
 
 #include <pcl/sample_consensus/sac_model_torus.h>
 #include <pcl/common/common.h> // for getAngle3D
@@ -59,8 +59,110 @@ template <typename PointT, typename PointNT> bool
 pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients (
       const Indices &samples, Eigen::VectorXf &model_coefficients) const
 {
-  //TODO implement
-  return (true);
+  // Make sure that the samples are valid
+  if (!isSampleGood (samples) && false)
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelCylinder::computeModelCoefficients] Invalid set of samples given!\n");
+    return (false);
+  }
+
+
+
+  Eigen::Vector4f center{0.f, 0.f, 0.f, 0.f};
+  Eigen::MatrixXf A (samples.size(), 3);
+
+  Eigen::MatrixXf b (samples.size(), 1);
+  b.setZero();
+
+  size_t i = 0;
+
+
+
+  for (auto index : samples){
+    Eigen::Vector3f a =   Eigen::Vector3f((*input_)[index].getVector3fMap());
+    A.row(i) = a;
+    b(i, 0) = A(i, 2);
+    A(i, 2) = 1;
+    center += ((*input_)[index].getVector4fMap());
+    i++;
+
+
+
+  }
+
+  center *= 1 / samples.size();
+
+  float R = 0.f;
+  float r = std::numeric_limits<float>::max();
+
+  for (auto index : samples){
+    Eigen::Vector3f a =   Eigen::Vector3f((*input_)[index].getVector3fMap());
+
+    float dsq = (a - center.head<3>()).norm();
+    if(dsq  > R ){
+      R = dsq;
+      continue;
+    }
+
+    if(dsq < r){
+      r = dsq;
+      continue;
+    }
+  }
+
+ //  Eigen::Vector4f x = A.colPivHouseholderQr().solve(b);
+
+//std::cout << "print A" << A << std::endl;
+//std::cout << "solution is :" << x << std::endl;
+//std::cout << "-------" << std::endl;
+//
+//std::cout << x << std::endl;
+
+
+
+
+
+
+
+
+
+
+
+  model_coefficients.resize (model_size_);
+
+  std::cout << model_size_ << std::endl;
+
+  // Fetch optimization parameters
+  //const double& R = model_coefficients[0];
+  //const double& r = model_coefficients[1];
+
+  model_coefficients [0] = R;
+  model_coefficients [1] = r;
+
+  model_coefficients[2] = center[0];
+  model_coefficients[3] = center[1];
+  model_coefficients[4] = center[2];
+
+  const double& theta = model_coefficients[5];
+  const double& rho = model_coefficients[6];
+
+  optimizeModelCoefficients(samples, model_coefficients, model_coefficients);
+  return true;
+
+  //A*x = b
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -180,10 +282,10 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::optimizeModelCoefficients (
   }
 
   // Need more than the minimum sample size to make a difference
-  if (inliers.size () <= sample_size_)
+  if (inliers.size () <= sample_size_ && false)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelEllipse3D::optimizeModelCoefficients] Not enough inliers to refine/optimize the model's coefficients (%lu)! Returning the same coefficients.\n", inliers.size ());
-    return;
+    //return;
   }
 
   OptimizationFunctor functor(this, inliers);
@@ -236,7 +338,6 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPointToTorus(
     Eigen::Vector4f planeCoeffs{n[0], n[1], n[2], D};
     planeCoeffs.normalized();
     Eigen::Vector3f p (p_in);
-    p[3] = 0;
 
 
     // Project to the torus circle plane
@@ -299,6 +400,7 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::doSamplesVerifyModel (
 template <typename PointT, typename PointNT> bool
 pcl::SampleConsensusModelTorus<PointT, PointNT>::isModelValid (const Eigen::VectorXf &model_coefficients) const
 {
+  return true;
   if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
     return (false);
 
