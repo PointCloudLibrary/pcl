@@ -78,10 +78,7 @@ public:
   using PointCloudTargetConstPtr = typename PointCloudTarget::ConstPtr;
 
   /** \brief Empty constructor */
-  CorrespondenceRejectorPoly() : similarity_threshold_squared_(0.75f * 0.75f)
-  {
-    rejection_name_ = "CorrespondenceRejectorPoly";
-  }
+  CorrespondenceRejectorPoly() = default;
 
   /** \brief Get a list of valid correspondences after rejection from the original set
    * of correspondences.
@@ -377,7 +374,7 @@ protected:
   float similarity_threshold_{0.75f};
 
   /** \brief Squared value if \ref similarity_threshold_, only for internal use */
-  float similarity_threshold_squared_{0.0f};
+  float similarity_threshold_squared_{0.75f * 0.75f};
 };
 } // namespace registration
 } // namespace pcl

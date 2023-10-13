@@ -229,7 +229,7 @@ protected:
    * sorted based on the correspondence distances will be considered as inliers.
    * Remaining points are rejected. This factor is computed internally
    */
-  double factor_{};
+  double factor_{0.0};
 
   /** \brief The minimum overlap ratio between the input and target clouds
    */

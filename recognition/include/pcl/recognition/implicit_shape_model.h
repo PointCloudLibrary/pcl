@@ -582,18 +582,18 @@ namespace pcl
       protected:
 
         /** \brief Stores the clouds used for training. */
-        std::vector<typename pcl::PointCloud<PointT>::Ptr> training_clouds_;
+        std::vector<typename pcl::PointCloud<PointT>::Ptr> training_clouds_{};
 
         /** \brief Stores the class number for each cloud from training_clouds_. */
-        std::vector<unsigned int> training_classes_;
+        std::vector<unsigned int> training_classes_{};
 
         /** \brief Stores the normals for each training cloud. */
-        std::vector<typename pcl::PointCloud<NormalT>::Ptr> training_normals_;
+        std::vector<typename pcl::PointCloud<NormalT>::Ptr> training_normals_{};
 
         /** \brief This array stores the sigma values for each training class. If this array has a size equals 0, then
           * sigma values will be calculated automatically.
           */
-        std::vector<float> training_sigmas_;
+        std::vector<float> training_sigmas_{};
 
         /** \brief This value is used for the simplification. It sets the size of grid bin. */
         float sampling_size_{0.1f};
@@ -602,7 +602,7 @@ namespace pcl
         typename Feature::Ptr feature_estimator_;
 
         /** \brief Number of clusters, is used for clustering descriptors during the training. */
-        unsigned int number_of_clusters_{184};
+        unsigned int number_of_clusters_{0};
 
         /** \brief If set to false then Nvot coeff from [Knopp et al., 2010, (4)] is equal 1.0. */
         bool n_vot_ON_{true};

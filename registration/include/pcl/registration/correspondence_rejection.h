@@ -198,7 +198,7 @@ public:
 
 protected:
   /** \brief The name of the rejection method. */
-  std::string rejection_name_;
+  std::string rejection_name_{"CorrespondenceRejectorPoly"};
 
   /** \brief The input correspondences. */
   CorrespondencesConstPtr input_correspondences_;

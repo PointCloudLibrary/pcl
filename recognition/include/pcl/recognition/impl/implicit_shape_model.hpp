@@ -546,17 +546,7 @@ pcl::features::ISMModel::operator = (const pcl::features::ISMModel& other)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <int FeatureSize, typename PointT, typename NormalT>
-pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::ImplicitShapeModelEstimation () :
-  training_clouds_ (0),
-  training_classes_ (0),
-  training_normals_ (0),
-  training_sigmas_ (0),
-  sampling_size_ (0.1f),
-  feature_estimator_ (),
-  number_of_clusters_ (184),
-  n_vot_ON_ (true)
-{
-}
+pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::ImplicitShapeModelEstimation () = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <int FeatureSize, typename PointT, typename NormalT>

@@ -97,10 +97,6 @@ public:
   : iterations_(iterations)
   , transformation_(transform)
   , correspondences_(correspondences)
-  , correspondences_prev_mse_(std::numeric_limits<double>::max())
-  , correspondences_cur_mse_(std::numeric_limits<double>::max())
-  , translation_threshold_(3e-4 * 3e-4) // 0.0003 meters
-  , convergence_state_(CONVERGENCE_CRITERIA_NOT_CONVERGED)
   {}
 
   /** \brief Empty destructor */
@@ -284,10 +280,10 @@ protected:
   const pcl::Correspondences& correspondences_;
 
   /** \brief The MSE for the previous set of correspondences. */
-  double correspondences_prev_mse_;
+  double correspondences_prev_mse_{std::numeric_limits<double>::max()};
 
   /** \brief The MSE for the current set of correspondences. */
-  double correspondences_cur_mse_;
+  double correspondences_cur_mse_{std::numeric_limits<double>::max()};
 
   /** \brief The maximum nuyyGmber of iterations that the registration loop is to be
    * executed. */
@@ -303,7 +299,7 @@ protected:
 
   /** \brief The translation threshold is the relative translation between two
    * iterations (0 if no translation). */
-  double translation_threshold_;
+  double translation_threshold_{3e-4 * 3e-4}; // 0.0003 meters
 
   /** \brief The relative change from the previous MSE for the current set of
    * correspondences, e.g. .1 means 10% change. */
