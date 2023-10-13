@@ -95,7 +95,7 @@ namespace pcl
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
         model_name_ = "SampleConsensusModelTorus";
-        sample_size_ = 7;
+        sample_size_ = 20;
         model_size_ = 7;
       }
 
@@ -111,7 +111,7 @@ namespace pcl
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
         model_name_ = "SampleConsensusModelTorus";
-        sample_size_ = 7;
+        sample_size_ = 20;
         model_size_ = 7;
       }
 
@@ -250,17 +250,17 @@ namespace pcl
 
     private:
       //TODuO
-      struct OptimizationFunctor : pcl::Functor<double>
+      struct OptimizationFunctor2 : pcl::Functor<double>
       {
         /** Functor constructor
           * \param[in] indices the indices of data points to evaluate
           * \param[in] estimator pointer to the estimator object
           */
-        OptimizationFunctor (const pcl::SampleConsensusModelTorus<PointT, PointNT> *model, const Indices& indices) :
+        OptimizationFunctor2 (const pcl::SampleConsensusModelTorus<PointT, PointNT> *model, const Indices& indices) :
           pcl::Functor<double> (indices.size ()), model_ (model), indices_ (indices) {
-            std::cout << "asdfas" << std::endl;
+            std::cout << "functor constructor" << std::endl;
             if(model)
-              std::cout << "-----" << std::endl;
+              std::cout << "is this ?" << std::endl;
           }
 
        /** Cost function to be minimized
@@ -271,9 +271,13 @@ namespace pcl
         int operator() (const Eigen::VectorXd &xs, Eigen::VectorXd &fvec) const
         {
 
+          std::cout << "OPERATOR OPERATOR OPERATOR OPERATOR"  << indices_.size() << std::endl;
+
             assert(xs.size() == 7);
             //assert(fvec.size() == data->size());
+            size_t j = 0;
             for (const auto &i : indices_){
+
               // Getting constants from state vector
               const double& R = xs[0];
               const double& r = xs[1];
@@ -285,7 +289,7 @@ namespace pcl
               const double& theta = xs[5];
               const double& rho = xs[6];
 
-              const PointT& pt  = (*model_->input_)[indices_[i]];
+              const PointT& pt  = (*model_->input_)[i];
 
               Eigen::Vector3d pte{pt.x - x0, pt.y - y0, pt.z - z0};
 
@@ -296,7 +300,8 @@ namespace pcl
               const double& y = pte[1];
               const double& z = pte[2];
 
-              fvec[i] = std::pow(sqrt(x * x + y * y) - R, 2) + z * z - r * r;
+              fvec[j] = std::pow(sqrt(x * x + y * y) - R, 2) + z * z - r * r;
+              j++;
             }
             return 0;
         }
