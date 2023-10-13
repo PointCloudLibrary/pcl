@@ -187,16 +187,16 @@ namespace pcl
       ISMModel & operator = (const ISMModel& other);
 
       /** \brief Stores statistical weights. */
-      std::vector<std::vector<float> > statistical_weights_;
+      std::vector<std::vector<float> > statistical_weights_{};
 
       /** \brief Stores learned weights. */
-      std::vector<float> learned_weights_;
+      std::vector<float> learned_weights_{};
 
       /** \brief Stores the class label for every direction. */
-      std::vector<unsigned int> classes_;
+      std::vector<unsigned int> classes_{};
 
       /** \brief Stores the sigma value for each class. This values were used to compute the learned weights. */
-      std::vector<float> sigmas_;
+      std::vector<float> sigmas_{};
 
       /** \brief Stores the directions to objects center for each visual word. */
       Eigen::MatrixXf directions_to_center_;
@@ -205,7 +205,7 @@ namespace pcl
       Eigen::MatrixXf clusters_centers_;
 
       /** \brief This is an array of clusters. Each cluster stores the indices of the visual words that it contains. */
-      std::vector<std::vector<unsigned int> > clusters_;
+      std::vector<std::vector<unsigned int> > clusters_{};
 
       /** \brief Stores the number of classes. */
       unsigned int number_of_classes_{0};

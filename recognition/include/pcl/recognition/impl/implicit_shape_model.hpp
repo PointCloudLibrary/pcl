@@ -51,7 +51,7 @@
 template <typename PointT>
 pcl::features::ISMVoteList<PointT>::ISMVoteList () :
   votes_ (new pcl::PointCloud<pcl::InterestPoint> ()),
-  tree_is_valid_ (false),
+  
   votes_origins_ (new pcl::PointCloud<PointT> ()),
   votes_class_ (0),
   k_ind_ (0),
@@ -297,18 +297,7 @@ pcl::features::ISMVoteList<PointT>::getNumberOfVotes ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::features::ISMModel::ISMModel () :
-  statistical_weights_ (0),
-  learned_weights_ (0),
-  classes_ (0),
-  sigmas_ (0),
-  clusters_ (0),
-  number_of_classes_ (0),
-  number_of_visual_words_ (0),
-  number_of_clusters_ (0),
-  descriptors_dimension_ (0)
-{
-}
+pcl::features::ISMModel::ISMModel () = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::features::ISMModel::ISMModel (ISMModel const & copy)

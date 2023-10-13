@@ -462,7 +462,7 @@ namespace pcl
       /** states whether to return an averaged detection */
       bool average_detections_{false};
       /** template storage */
-      std::vector<SparseQuantizedMultiModTemplate> templates_;
+      std::vector<SparseQuantizedMultiModTemplate> templates_{};
   };
 
 }
