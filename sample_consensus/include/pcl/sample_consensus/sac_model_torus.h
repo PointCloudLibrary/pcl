@@ -96,7 +96,7 @@ namespace pcl
       {
         model_name_ = "SampleConsensusModelTorus";
         sample_size_ = 20;
-        model_size_ = 7;
+        model_size_ = 8;
       }
 
       /** \brief Constructor for base SampleConsensusModelTorus.
@@ -112,7 +112,7 @@ namespace pcl
       {
         model_name_ = "SampleConsensusModelTorus";
         sample_size_ = 20;
-        model_size_ = 7;
+        model_size_ = 8;
       }
 
       /** \brief Copy constructor.
@@ -258,9 +258,6 @@ namespace pcl
           */
         OptimizationFunctor2 (const pcl::SampleConsensusModelTorus<PointT, PointNT> *model, const Indices& indices) :
           pcl::Functor<double> (indices.size ()), model_ (model), indices_ (indices) {
-            std::cout << "functor constructor" << std::endl;
-            if(model)
-              std::cout << "is this ?" << std::endl;
           }
 
        /** Cost function to be minimized
@@ -270,10 +267,7 @@ namespace pcl
          */
         int operator() (const Eigen::VectorXd &xs, Eigen::VectorXd &fvec) const
         {
-
-          std::cout << "OPERATOR OPERATOR OPERATOR OPERATOR"  << indices_.size() << std::endl;
-
-            assert(xs.size() == 7);
+            assert(xs.size() == 8);
             //assert(fvec.size() == data->size());
             size_t j = 0;
             for (const auto &i : indices_){
@@ -286,22 +280,28 @@ namespace pcl
               const double& y0 = xs[3];
               const double& z0 = xs[4];
 
-              const double& theta = xs[5];
-              const double& rho = xs[6];
+              const double& nx = xs[5];
+              const double& ny = xs[6];
+              const double& nz = xs[7];
 
               const PointT& pt  = (*model_->input_)[i];
 
               Eigen::Vector3d pte{pt.x - x0, pt.y - y0, pt.z - z0};
+              Eigen::Vector3d n1 {0,0,1};
+              Eigen::Vector3d n2 {nx, ny, nz};
+              n2.normalize();
+
 
               // Transposition is inversion
-              pte = toRotationMatrix(theta, rho).transpose() * pte;
+              // Using Quaternions instead of Rodrigues
+              pte = Eigen::Quaterniond().setFromTwoVectors(n1,n2).toRotationMatrix().transpose() * pte;
 
               const double& x = pte[0];
               const double& y = pte[1];
               const double& z = pte[2];
 
               fvec[j] = std::pow(sqrt(x * x + y * y) - R, 2) + z * z - r * r;
-              j++;
+              j++; // TODO, maybe not range-for here
             }
             return 0;
         }

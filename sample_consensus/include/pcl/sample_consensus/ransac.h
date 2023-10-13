@@ -86,8 +86,6 @@ namespace pcl
       RandomSampleConsensus (const SampleConsensusModelPtr &model) 
         : SampleConsensus<PointT> (model)
       {
-        if(model)
-          std::cout << " no nullptr here" << std::endl;
         // Maximum number of trials before we give up.
         max_iterations_ = 10000;
       }
