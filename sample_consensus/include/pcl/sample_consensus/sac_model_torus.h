@@ -40,272 +40,281 @@
 
 #pragma once
 
-#include <pcl/sample_consensus/sac_model.h>
-#include <pcl/sample_consensus/model_types.h>
 #include <pcl/common/distances.h>
+#include <pcl/sample_consensus/model_types.h>
+#include <pcl/sample_consensus/sac_model.h>
 
-Eigen::Matrix3d toRotationMatrix(double theta, double rho);
-namespace pcl
-{
-  namespace internal {
-    int optimizeModelCoefficientsTorus (Eigen::VectorXf& coeff, const Eigen::ArrayXf& pts_x, const Eigen::ArrayXf& pts_y, const Eigen::ArrayXf& pts_z);
-  } // namespace internal
+Eigen::Matrix3d
+toRotationMatrix(double theta, double rho);
+namespace pcl {
+namespace internal {
+int
+optimizeModelCoefficientsTorus(Eigen::VectorXf& coeff,
+                               const Eigen::ArrayXf& pts_x,
+                               const Eigen::ArrayXf& pts_y,
+                               const Eigen::ArrayXf& pts_z);
+} // namespace internal
 
-  /** \brief @b SampleConsensusModelTorus defines a model for 3D torus segmentation.
-    * The model coefficients are defined as:
-    *   - \b radii.inner          : the torus's inner radius
-    *   - \b radii.outer          : the torus's outer radius
-    *   - \b torus_center_point.x  : the X coordinate of the center of the torus
-    *   - \b torus_center_point.y  : the Y coordinate of the center of the torus
-    *   - \b torus_center_point.z  : the Z coordinate of the center of the torus
-    *   - \b torus_normal.x  : the X coordinate of the normal of the torus
-    *   - \b torus_normal.y  : the Y coordinate of the normal of the torus
-    *   - \b torus_normal.z  : the Z coordinate of the normal of the torus
-    *
-    * \author David Serret, Radu Bogdan Rusu
-    * \ingroup sample_consensus
-    */
-  template <typename PointT>
-  class SampleConsensusModelTorus : public SampleConsensusModel<PointT>
+/** \brief @b SampleConsensusModelTorus defines a model for 3D torus segmentation.
+ * The model coefficients are defined as:
+ *   - \b radii.inner          : the torus's inner radius
+ *   - \b radii.outer          : the torus's outer radius
+ *   - \b torus_center_point.x  : the X coordinate of the center of the torus
+ *   - \b torus_center_point.y  : the Y coordinate of the center of the torus
+ *   - \b torus_center_point.z  : the Z coordinate of the center of the torus
+ *   - \b torus_normal.x  : the X coordinate of the normal of the torus
+ *   - \b torus_normal.y  : the Y coordinate of the normal of the torus
+ *   - \b torus_normal.z  : the Z coordinate of the normal of the torus
+ *
+ * \author David Serret, Radu Bogdan Rusu
+ * \ingroup sample_consensus
+ */
+template <typename PointT>
+class SampleConsensusModelTorus : public SampleConsensusModel<PointT> {
+public:
+  using SampleConsensusModel<PointT>::model_name_;
+  using SampleConsensusModel<PointT>::input_;
+  using SampleConsensusModel<PointT>::indices_;
+
+  // TODO not clear what is required here
+  using SampleConsensusModel<PointT>::radius_min_;
+  using SampleConsensusModel<PointT>::radius_max_;
+  using SampleConsensusModel<PointT>::error_sqr_dists_;
+
+  using PointCloud = typename SampleConsensusModel<PointT>::PointCloud;
+  using PointCloudPtr = typename SampleConsensusModel<PointT>::PointCloudPtr;
+  using PointCloudConstPtr = typename SampleConsensusModel<PointT>::PointCloudConstPtr;
+
+  using Ptr = shared_ptr<SampleConsensusModelTorus<PointT>>;
+  using ConstPtr = shared_ptr<const SampleConsensusModelTorus<PointT>>;
+
+  /** \brief Constructor for base SampleConsensusModelTorus.
+   * \param[in] cloud the input point cloud dataset
+   * \param[in] random if true set the random seed to the current time, else set to
+   * 12345 (default: false)
+   */
+  SampleConsensusModelTorus(const PointCloudConstPtr& cloud, bool random = false)
+  : SampleConsensusModel<PointT>(cloud, random)
   {
-    public:
-      using SampleConsensusModel<PointT>::model_name_;
-      using SampleConsensusModel<PointT>::input_;
-      using SampleConsensusModel<PointT>::indices_;
+    model_name_ = "SampleConsensusModelTorus";
+    sample_size_ = 20;
+    model_size_ = 8;
+  }
 
-// TODO
-      using SampleConsensusModel<PointT>::radius_min_;
-      using SampleConsensusModel<PointT>::radius_max_;
-      using SampleConsensusModel<PointT>::error_sqr_dists_;
+  /** \brief Constructor for base SampleConsensusModelTorus.
+   * \param[in] cloud the input point cloud dataset
+   * \param[in] indices a vector of point indices to be used from \a cloud
+   * \param[in] random if true set the random seed to the current time, else set to
+   * 12345 (default: false)
+   */
+  SampleConsensusModelTorus(const PointCloudConstPtr& cloud,
+                            const Indices& indices,
+                            bool random = false)
+  : SampleConsensusModel<PointT>(cloud, indices, random)
+  {
+    model_name_ = "SampleConsensusModelTorus";
+    sample_size_ = 20;
+    model_size_ = 8;
+  }
 
-      using PointCloud = typename SampleConsensusModel<PointT>::PointCloud;
-      using PointCloudPtr = typename SampleConsensusModel<PointT>::PointCloudPtr;
-      using PointCloudConstPtr = typename SampleConsensusModel<PointT>::PointCloudConstPtr;
+  /** \brief Copy constructor.
+   * \param[in] source the model to copy into this
+   */
+  SampleConsensusModelTorus(const SampleConsensusModelTorus& source)
+  : SampleConsensusModel<PointT>()
+  {
+    *this = source;
+    model_name_ = "SampleConsensusModelTorus";
+  }
 
-      using Ptr = shared_ptr<SampleConsensusModelTorus<PointT> >;
-      using ConstPtr = shared_ptr<const SampleConsensusModelTorus<PointT>>;
+  /** \brief Empty destructor */
+  ~SampleConsensusModelTorus() override = default;
 
-      /** \brief Constructor for base SampleConsensusModelTorus.
-        * \param[in] cloud the input point cloud dataset
-        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
-        */
-      SampleConsensusModelTorus (const PointCloudConstPtr &cloud, bool random = false)
-        : SampleConsensusModel<PointT> (cloud, random)
-      {
-        model_name_ = "SampleConsensusModelTorus";
-        sample_size_ = 20;
-        model_size_ = 8;
+  /** \brief Copy constructor.
+   * \param[in] source the model to copy into this
+   */
+  inline SampleConsensusModelTorus&
+  operator=(const SampleConsensusModelTorus& source)
+  {
+    SampleConsensusModel<PointT>::operator=(source);
+    return (*this);
+  }
+  /** \brief Check whether the given index samples can form a valid torus model, compute
+   * the model coefficients from these samples and store them in model_coefficients. The
+   * torus coefficients are: radii, torus_center_point, torus_normal \param[in] samples
+   * the point indices found as possible good candidates for creating a valid model
+   * \param[out] model_coefficients the resultant model coefficients
+   */
+  bool
+  computeModelCoefficients(const Indices& samples,
+                           Eigen::VectorXf& model_coefficients) const override;
+
+  /** \brief Compute all distances from the cloud data to a given torus model.
+   * \param[in] model_coefficients the coefficients of a torus model that we need to
+   * compute distances to \param[out] distances the resultant estimated distances
+   */
+  void
+  getDistancesToModel(const Eigen::VectorXf& model_coefficients,
+                      std::vector<double>& distances) const override;
+
+  /** \brief Select all the points which respect the given model coefficients as
+   * inliers. \param[in] model_coefficients the coefficients of a torus model that we
+   * need to compute distances to \param[in] threshold a maximum admissible distance
+   * threshold for determining the inliers from the outliers \param[out] inliers the
+   * resultant model inliers
+   */
+  void
+  selectWithinDistance(const Eigen::VectorXf& model_coefficients,
+                       const double threshold,
+                       Indices& inliers) override;
+
+  /** \brief Count all the points which respect the given model coefficients as inliers.
+   *
+   * \param[in] model_coefficients the coefficients of a model that we need to compute
+   * distances to \param[in] threshold maximum admissible distance threshold for
+   * determining the inliers from the outliers \return the resultant number of inliers
+   */
+  std::size_t
+  countWithinDistance(const Eigen::VectorXf& model_coefficients,
+                      const double threshold) const override;
+
+  /** \brief Recompute the torus coefficients using the given inlier set and return them
+   * to the user. \param[in] inliers the data inliers found as supporting the model
+   * \param[in] model_coefficients the initial guess for the optimization
+   * \param[out] optimized_coefficients the resultant recomputed coefficients after
+   * non-linear optimization
+   */
+  void
+  optimizeModelCoefficients(const Indices& inliers,
+                            const Eigen::VectorXf& model_coefficients,
+                            Eigen::VectorXf& optimized_coefficients) const override;
+
+  /** \brief Create a new point cloud with inliers projected onto the torus model.
+   * \param[in] inliers the data inliers that we want to project on the torus model
+   * \param[in] model_coefficients the coefficients of a torus model
+   * \param[out] projected_points the resultant projected points
+   * \param[in] copy_data_fields set to true if we need to copy the other data fields
+   */
+  void
+  projectPoints(const Indices& inliers,
+                const Eigen::VectorXf& model_coefficients,
+                PointCloud& projected_points,
+                bool copy_data_fields = true) const override;
+
+  /** \brief Verify whether a subset of indices verifies the given torus model
+   * coefficients. \param[in] indices the data indices that need to be tested against
+   * the torus model \param[in] model_coefficients the torus model coefficients
+   * \param[in] threshold a maximum admissible distance threshold for determining the
+   * inliers from the outliers
+   */
+  bool
+  doSamplesVerifyModel(const std::set<index_t>& indices,
+                       const Eigen::VectorXf& model_coefficients,
+                       const double threshold) const override;
+
+  /** \brief Return a unique id for this model (SACMODEL_TORUS). */
+  inline pcl::SacModel
+  getModelType() const override
+  {
+    return (SACMODEL_TORUS);
+  }
+
+protected:
+  using SampleConsensusModel<PointT>::sample_size_;
+  using SampleConsensusModel<PointT>::model_size_;
+
+  /** \brief Project a point onto a torus given by its model coefficients (radii,
+   * torus_center_point, torus_normal) \param[in] pt the input point to project
+   * \param[in] model_coefficients the coefficients of the torus (radii,
+   * torus_center_point, torus_normal) \param[out] pt_proj the resultant projected point
+   */
+  void
+  projectPointToTorus(const Eigen::Vector3f& pt,
+                      const Eigen::VectorXf& model_coefficients,
+                      Eigen::Vector3f& pt_proj) const;
+
+  /** \brief Check whether a model is valid given the user constraints.
+   * \param[in] model_coefficients the set of model coefficients
+   */
+  bool
+  isModelValid(const Eigen::VectorXf& model_coefficients) const override;
+
+  /** \brief Check if a sample of indices results in a good sample of points
+   * indices. Pure virtual.
+   * \param[in] samples the resultant index samples
+   */
+  bool
+  isSampleGood(const Indices& samples) const override;
+
+  void
+  projectPointToPlane(const Eigen::Vector3f& p,
+                      const Eigen::Vector4f& model_coefficients,
+                      Eigen::Vector3f& q) const;
+
+private:
+  struct OptimizationFunctor : pcl::Functor<double> {
+    /** Functor constructor
+     * \param[in] indices the indices of data points to evaluate
+     * \param[in] estimator pointer to the estimator object
+     */
+    OptimizationFunctor(const pcl::SampleConsensusModelTorus<PointT>* model,
+                        const Indices& indices)
+    : pcl::Functor<double>(indices.size()), model_(model), indices_(indices)
+    {}
+
+    /** Cost function to be minimized
+     * \param[in] x the variables array
+     * \param[out] fvec the resultant functions evaluations
+     * \return 0
+     */
+    int
+    operator()(const Eigen::VectorXd& xs, Eigen::VectorXd& fvec) const
+    {
+      size_t j = 0;
+      for (const auto& i : indices_) {
+
+        // Getting constants from state vector
+        const double& R = xs[0];
+        const double& r = xs[1];
+
+        const double& x0 = xs[2];
+        const double& y0 = xs[3];
+        const double& z0 = xs[4];
+
+        const double& nx = xs[5];
+        const double& ny = xs[6];
+        const double& nz = xs[7];
+
+        const PointT& pt = (*model_->input_)[i];
+
+        Eigen::Vector3d pte{pt.x - x0, pt.y - y0, pt.z - z0};
+        Eigen::Vector3d n1{0, 0, 1};
+        Eigen::Vector3d n2{nx, ny, nz};
+        n2.normalize();
+
+        // Transposition is inversion
+        // Using Quaternions instead of Rodrigues
+        pte = Eigen::Quaterniond()
+                  .setFromTwoVectors(n1, n2)
+                  .toRotationMatrix()
+                  .transpose() *
+              pte;
+
+        const double& x = pte[0];
+        const double& y = pte[1];
+        const double& z = pte[2];
+
+        fvec[j] = std::pow(sqrt(x * x + y * y) - R, 2) + z * z - r * r;
+        j++; // TODO, maybe not range-for here
       }
+      return 0;
+    }
 
-      /** \brief Constructor for base SampleConsensusModelTorus.
-        * \param[in] cloud the input point cloud dataset
-        * \param[in] indices a vector of point indices to be used from \a cloud
-        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
-        */
-      SampleConsensusModelTorus (const PointCloudConstPtr &cloud,
-                                    const Indices &indices,
-                                    bool random = false)
-        : SampleConsensusModel<PointT> (cloud, indices, random)
-      {
-        model_name_ = "SampleConsensusModelTorus";
-        sample_size_ = 20;
-        model_size_ = 8;
-      }
-
-      /** \brief Copy constructor.
-        * \param[in] source the model to copy into this
-        */
-      SampleConsensusModelTorus (const SampleConsensusModelTorus &source) :
-        SampleConsensusModel<PointT> ()
-      {
-        *this = source;
-        model_name_ = "SampleConsensusModelTorus";
-      }
-
-      /** \brief Empty destructor */
-      ~SampleConsensusModelTorus () override = default;
-
-      /** \brief Copy constructor.
-        * \param[in] source the model to copy into this
-        */
-      inline SampleConsensusModelTorus&
-      operator = (const SampleConsensusModelTorus &source)
-      {
-        SampleConsensusModel<PointT>::operator=(source);
-        return (*this);
-      }
-      /** \brief Check whether the given index samples can form a valid torus model, compute the model coefficients
-        * from these samples and store them in model_coefficients. The torus coefficients are: radii, torus_center_point,
-        * torus_normal
-        * \param[in] samples the point indices found as possible good candidates for creating a valid model
-        * \param[out] model_coefficients the resultant model coefficients
-        */
-      bool
-      computeModelCoefficients (const Indices &samples,
-                                Eigen::VectorXf &model_coefficients) const override;
-
-      /** \brief Compute all distances from the cloud data to a given torus model.
-        * \param[in] model_coefficients the coefficients of a torus model that we need to compute distances to
-        * \param[out] distances the resultant estimated distances
-        */
-      void
-      getDistancesToModel (const Eigen::VectorXf &model_coefficients,
-                           std::vector<double> &distances) const override;
-
-      /** \brief Select all the points which respect the given model coefficients as inliers.
-        * \param[in] model_coefficients the coefficients of a torus model that we need to compute distances to
-        * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
-        * \param[out] inliers the resultant model inliers
-        */
-      void
-      selectWithinDistance (const Eigen::VectorXf &model_coefficients,
-                            const double threshold,
-                            Indices &inliers) override;
-
-      /** \brief Count all the points which respect the given model coefficients as inliers.
-        *
-        * \param[in] model_coefficients the coefficients of a model that we need to compute distances to
-        * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
-        * \return the resultant number of inliers
-        */
-      std::size_t
-      countWithinDistance (const Eigen::VectorXf &model_coefficients,
-                           const double threshold) const override;
-
-      /** \brief Recompute the torus coefficients using the given inlier set and return them to the user.
-        * \param[in] inliers the data inliers found as supporting the model
-        * \param[in] model_coefficients the initial guess for the optimization
-        * \param[out] optimized_coefficients the resultant recomputed coefficients after non-linear optimization
-        */
-      void
-      optimizeModelCoefficients (const Indices &inliers,
-                                 const Eigen::VectorXf &model_coefficients,
-                                 Eigen::VectorXf &optimized_coefficients) const override;
-
-
-      /** \brief Create a new point cloud with inliers projected onto the torus model.
-        * \param[in] inliers the data inliers that we want to project on the torus model
-        * \param[in] model_coefficients the coefficients of a torus model
-        * \param[out] projected_points the resultant projected points
-        * \param[in] copy_data_fields set to true if we need to copy the other data fields
-        */
-      void
-      projectPoints (const Indices &inliers,
-                     const Eigen::VectorXf &model_coefficients,
-                     PointCloud &projected_points,
-                     bool copy_data_fields = true) const override;
-
-      /** \brief Verify whether a subset of indices verifies the given torus model coefficients.
-        * \param[in] indices the data indices that need to be tested against the torus model
-        * \param[in] model_coefficients the torus model coefficients
-        * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
-        */
-      bool
-      doSamplesVerifyModel (const std::set<index_t> &indices,
-                            const Eigen::VectorXf &model_coefficients,
-                            const double threshold) const override;
-
-      /** \brief Return a unique id for this model (SACMODEL_TORUS). */
-      inline pcl::SacModel
-      getModelType () const override { return (SACMODEL_TORUS); }
-
-    protected:
-      using SampleConsensusModel<PointT>::sample_size_;
-      using SampleConsensusModel<PointT>::model_size_;
-
-      /** \brief Project a point onto a torus given by its model coefficients (radii, torus_center_point,
-        * torus_normal)
-        * \param[in] pt the input point to project
-        * \param[in] model_coefficients the coefficients of the torus (radii, torus_center_point,
-        * torus_normal)
-        * \param[out] pt_proj the resultant projected point
-        */
-      void
-      projectPointToTorus (const Eigen::Vector3f &pt,
-                           const Eigen::VectorXf &model_coefficients,
-                           Eigen::Vector3f &pt_proj) const;
-
-
-      /** \brief Check whether a model is valid given the user constraints.
-        * \param[in] model_coefficients the set of model coefficients
-        */
-      bool
-      isModelValid (const Eigen::VectorXf &model_coefficients) const override;
-
-      /** \brief Check if a sample of indices results in a good sample of points
-        * indices. Pure virtual.
-        * \param[in] samples the resultant index samples
-        */
-      bool
-      isSampleGood (const Indices &samples) const override;
-
-      void projectPointToPlane(const Eigen::Vector3f& p,
-                               const Eigen::Vector4f& model_coefficients,
-                               Eigen::Vector3f& q) const;
-
-    private:
-      struct OptimizationFunctor : pcl::Functor<double>
-      {
-        /** Functor constructor
-          * \param[in] indices the indices of data points to evaluate
-          * \param[in] estimator pointer to the estimator object
-          */
-        OptimizationFunctor (const pcl::SampleConsensusModelTorus<PointT> *model, const Indices& indices) :
-          pcl::Functor<double> (indices.size ()), model_ (model), indices_ (indices) {
-          }
-
-       /** Cost function to be minimized
-         * \param[in] x the variables array
-         * \param[out] fvec the resultant functions evaluations
-         * \return 0
-         */
-        int operator() (const Eigen::VectorXd &xs, Eigen::VectorXd &fvec) const
-        {
-            assert(xs.size() == 8);
-            //assert(fvec.size() == data->size());
-            size_t j = 0;
-            for (const auto &i : indices_){
-
-              // Getting constants from state vector
-              const double& R = xs[0];
-              const double& r = xs[1];
-
-              const double& x0 = xs[2];
-              const double& y0 = xs[3];
-              const double& z0 = xs[4];
-
-              const double& nx = xs[5];
-              const double& ny = xs[6];
-              const double& nz = xs[7];
-
-              const PointT& pt  = (*model_->input_)[i];
-
-              Eigen::Vector3d pte{pt.x - x0, pt.y - y0, pt.z - z0};
-              Eigen::Vector3d n1 {0,0,1};
-              Eigen::Vector3d n2 {nx, ny, nz};
-              n2.normalize();
-
-
-              // Transposition is inversion
-              // Using Quaternions instead of Rodrigues
-              pte = Eigen::Quaterniond().setFromTwoVectors(n1,n2).toRotationMatrix().transpose() * pte;
-
-              const double& x = pte[0];
-              const double& y = pte[1];
-              const double& z = pte[2];
-
-              fvec[j] = std::pow(sqrt(x * x + y * y) - R, 2) + z * z - r * r;
-              j++; // TODO, maybe not range-for here
-            }
-            return 0;
-        }
-
-        const pcl::SampleConsensusModelTorus<PointT> *model_;
-        const Indices &indices_;
-      };
-
+    const pcl::SampleConsensusModelTorus<PointT>* model_;
+    const Indices& indices_;
   };
-}
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/sample_consensus/impl/sac_model_torus.hpp>
