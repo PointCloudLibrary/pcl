@@ -59,7 +59,7 @@ namespace pcl
     *   - \b axis_direction.y : the Y coordinate of the cylinder's axis direction
     *   - \b axis_direction.z : the Z coordinate of the cylinder's axis direction
     *   - \b radius           : the cylinder's radius
-    *
+    * 
     * \author Radu Bogdan Rusu
     * \ingroup sample_consensus
     */
@@ -87,7 +87,7 @@ namespace pcl
         * \param[in] cloud the input point cloud dataset
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModelCylinder (const PointCloudConstPtr &cloud, bool random = false)
+      SampleConsensusModelCylinder (const PointCloudConstPtr &cloud, bool random = false) 
         : SampleConsensusModel<PointT> (cloud, random)
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
         , axis_ (Eigen::Vector3f::Zero ())
@@ -103,9 +103,9 @@ namespace pcl
         * \param[in] indices a vector of point indices to be used from \a cloud
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModelCylinder (const PointCloudConstPtr &cloud,
+      SampleConsensusModelCylinder (const PointCloudConstPtr &cloud, 
                                     const Indices &indices,
-                                    bool random = false)
+                                    bool random = false) 
         : SampleConsensusModel<PointT> (cloud, indices, random)
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
         , axis_ (Eigen::Vector3f::Zero ())
@@ -121,14 +121,14 @@ namespace pcl
         */
       SampleConsensusModelCylinder (const SampleConsensusModelCylinder &source) :
         SampleConsensusModel<PointT> (),
-        SampleConsensusModelFromNormals<PointT, PointNT> (),
+        SampleConsensusModelFromNormals<PointT, PointNT> (), 
         axis_ (Eigen::Vector3f::Zero ()),
         eps_angle_ (0)
       {
         *this = source;
         model_name_ = "SampleConsensusModelCylinder";
       }
-
+      
       /** \brief Empty destructor */
       ~SampleConsensusModelCylinder () override = default;
 
@@ -148,21 +148,21 @@ namespace pcl
       /** \brief Set the angle epsilon (delta) threshold.
         * \param[in] ea the maximum allowed difference between the cylinder axis and the given axis.
         */
-      inline void
+      inline void 
       setEpsAngle (const double ea) { eps_angle_ = ea; }
 
       /** \brief Get the angle epsilon (delta) threshold. */
-      inline double
+      inline double 
       getEpsAngle () const { return (eps_angle_); }
 
       /** \brief Set the axis along which we need to search for a cylinder direction.
         * \param[in] ax the axis along which we need to search for a cylinder direction
         */
-      inline void
+      inline void 
       setAxis (const Eigen::Vector3f &ax) { axis_ = ax; }
 
       /** \brief Get the axis along which we need to search for a cylinder direction. */
-      inline Eigen::Vector3f
+      inline Eigen::Vector3f 
       getAxis () const { return (axis_); }
 
       /** \brief Check whether the given index samples can form a valid cylinder model, compute the model coefficients
@@ -188,13 +188,13 @@ namespace pcl
         * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
         * \param[out] inliers the resultant model inliers
         */
-      void
-      selectWithinDistance (const Eigen::VectorXf &model_coefficients,
-                            const double threshold,
+      void 
+      selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
+                            const double threshold, 
                             Indices &inliers) override;
 
-      /** \brief Count all the points which respect the given model coefficients as inliers.
-        *
+      /** \brief Count all the points which respect the given model coefficients as inliers. 
+        * 
         * \param[in] model_coefficients the coefficients of a model that we need to compute distances to
         * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
         * \return the resultant number of inliers
@@ -238,7 +238,7 @@ namespace pcl
                             const double threshold) const override;
 
       /** \brief Return a unique id for this model (SACMODEL_CYLINDER). */
-      inline pcl::SacModel
+      inline pcl::SacModel 
       getModelType () const override { return (SACMODEL_CYLINDER); }
 
     protected:
@@ -296,7 +296,7 @@ namespace pcl
     private:
       /** \brief The axis along which we need to search for a cylinder direction. */
       Eigen::Vector3f axis_;
-
+    
       /** \brief The maximum allowed difference between the cylinder direction and the given axis. */
       double eps_angle_;
   };
