@@ -99,8 +99,8 @@ main(int argc, char** av)
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = getTorus(400);
   pcl::PointCloud<pcl::PointXYZ>::Ptr final (new pcl::PointCloud<pcl::PointXYZ>);
   // created RandomSampleConsensus object and compute the appropriated model
-  pcl::SampleConsensusModelTorus<pcl::PointXYZ, pcl::PointNormal>::Ptr model_s(
-      new pcl::SampleConsensusModelTorus<pcl::PointXYZ, pcl::PointNormal>(cloud));
+  pcl::SampleConsensusModelTorus<pcl::PointXYZ>::Ptr model_s(
+      new pcl::SampleConsensusModelTorus<pcl::PointXYZ>(cloud));
 
   std::vector<int> inliers;
   pcl::RandomSampleConsensus<pcl::PointXYZ> ransac(model_s);

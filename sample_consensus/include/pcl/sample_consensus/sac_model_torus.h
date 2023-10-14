@@ -64,8 +64,8 @@ namespace pcl
     * \author David Serret, Radu Bogdan Rusu
     * \ingroup sample_consensus
     */
-  template <typename PointT, typename PointNT>
-  class SampleConsensusModelTorus : public SampleConsensusModel<PointT>, public SampleConsensusModelFromNormals<PointT, PointNT>
+  template <typename PointT>
+  class SampleConsensusModelTorus : public SampleConsensusModel<PointT>
   {
     public:
       using SampleConsensusModel<PointT>::model_name_;
@@ -75,16 +75,14 @@ namespace pcl
 // TODO
       using SampleConsensusModel<PointT>::radius_min_;
       using SampleConsensusModel<PointT>::radius_max_;
-      using SampleConsensusModelFromNormals<PointT, PointNT>::normals_;
-      using SampleConsensusModelFromNormals<PointT, PointNT>::normal_distance_weight_;
       using SampleConsensusModel<PointT>::error_sqr_dists_;
 
       using PointCloud = typename SampleConsensusModel<PointT>::PointCloud;
       using PointCloudPtr = typename SampleConsensusModel<PointT>::PointCloudPtr;
       using PointCloudConstPtr = typename SampleConsensusModel<PointT>::PointCloudConstPtr;
 
-      using Ptr = shared_ptr<SampleConsensusModelTorus<PointT, PointNT> >;
-      using ConstPtr = shared_ptr<const SampleConsensusModelTorus<PointT, PointNT>>;
+      using Ptr = shared_ptr<SampleConsensusModelTorus<PointT> >;
+      using ConstPtr = shared_ptr<const SampleConsensusModelTorus<PointT>>;
 
       /** \brief Constructor for base SampleConsensusModelTorus.
         * \param[in] cloud the input point cloud dataset
@@ -92,7 +90,6 @@ namespace pcl
         */
       SampleConsensusModelTorus (const PointCloudConstPtr &cloud, bool random = false)
         : SampleConsensusModel<PointT> (cloud, random)
-        , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
         model_name_ = "SampleConsensusModelTorus";
         sample_size_ = 20;
@@ -108,7 +105,6 @@ namespace pcl
                                     const Indices &indices,
                                     bool random = false)
         : SampleConsensusModel<PointT> (cloud, indices, random)
-        , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
         model_name_ = "SampleConsensusModelTorus";
         sample_size_ = 20;
@@ -119,8 +115,7 @@ namespace pcl
         * \param[in] source the model to copy into this
         */
       SampleConsensusModelTorus (const SampleConsensusModelTorus &source) :
-        SampleConsensusModel<PointT> (),
-        SampleConsensusModelFromNormals<PointT, PointNT> ()
+        SampleConsensusModel<PointT> ()
       {
         *this = source;
         model_name_ = "SampleConsensusModelTorus";
@@ -136,7 +131,6 @@ namespace pcl
       operator = (const SampleConsensusModelTorus &source)
       {
         SampleConsensusModel<PointT>::operator=(source);
-        SampleConsensusModelFromNormals<PointT, PointNT>::operator=(source);
         return (*this);
       }
       /** \brief Check whether the given index samples can form a valid torus model, compute the model coefficients
@@ -250,13 +244,13 @@ namespace pcl
 
     private:
       //TODuO
-      struct OptimizationFunctor2 : pcl::Functor<double>
+      struct OptimizationFunctor : pcl::Functor<double>
       {
         /** Functor constructor
           * \param[in] indices the indices of data points to evaluate
           * \param[in] estimator pointer to the estimator object
           */
-        OptimizationFunctor2 (const pcl::SampleConsensusModelTorus<PointT, PointNT> *model, const Indices& indices) :
+        OptimizationFunctor (const pcl::SampleConsensusModelTorus<PointT> *model, const Indices& indices) :
           pcl::Functor<double> (indices.size ()), model_ (model), indices_ (indices) {
           }
 
@@ -306,7 +300,7 @@ namespace pcl
             return 0;
         }
 
-        const pcl::SampleConsensusModelTorus<PointT, PointNT> *model_;
+        const pcl::SampleConsensusModelTorus<PointT> *model_;
         const Indices &indices_;
       };
 

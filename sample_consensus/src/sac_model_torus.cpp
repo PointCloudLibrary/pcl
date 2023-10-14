@@ -37,45 +37,6 @@
  */
 
 #include <pcl/sample_consensus/impl/sac_model_torus.hpp>
-#include <unsupported/Eigen/NonLinearOptimization> // for LevenbergMarquardt
-
-int pcl::internal::optimizeModelCoefficientsTorus (Eigen::VectorXf& coeff, const Eigen::ArrayXf& pts_x, const Eigen::ArrayXf& pts_y, const Eigen::ArrayXf& pts_z)
-{
-  if(pts_x.size() != pts_y.size() || pts_y.size() != pts_z.size()) {
-    PCL_ERROR("[pcl::internal::optimizeModelCoefficientsTorus] Sizes not equal!\n");
-    return Eigen::LevenbergMarquardtSpace::ImproperInputParameters;
-  }
-  if(coeff.size() != 7) {
-    PCL_ERROR("[pcl::internal::optimizeModelCoefficientsTorus] Coefficients have wrong size\n");
-    return Eigen::LevenbergMarquardtSpace::ImproperInputParameters;
-  }
-  struct TorusOptimizationFunctor : pcl::Functor<float>
-  {
-    TorusOptimizationFunctor (const Eigen::ArrayXf& x, const Eigen::ArrayXf& y, const Eigen::ArrayXf& z) :
-      pcl::Functor<float>(x.size()), pts_x(x), pts_y(y), pts_z(z)
-      {
-
-      }
-
-    int
-    operator() (const Eigen::VectorXf &x, Eigen::VectorXf &fvec) const
-    {
-      // TODO
-      return (0);
-    }
-
-    const Eigen::ArrayXf& pts_x, pts_y, pts_z;
-  };
-
-  TorusOptimizationFunctor functor (pts_x, pts_y, pts_z);
-  Eigen::NumericalDiff<TorusOptimizationFunctor> num_diff (functor);
-  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<TorusOptimizationFunctor>, float> lm (num_diff);
-  const int info = lm.minimize (coeff);
-  coeff[6] = std::abs(coeff[6]);
-  PCL_DEBUG ("[pcl::internal::optimizeModelCoefficientsTorus] LM solver finished with exit code %i, having a residual norm of %g.\n",
-             info, lm.fvec.norm ());
-  return info;
-}
 
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
@@ -84,7 +45,7 @@ int pcl::internal::optimizeModelCoefficientsTorus (Eigen::VectorXf& coeff, const
 #ifdef PCL_ONLY_CORE_POINT_TYPES
   PCL_INSTANTIATE_PRODUCT(SampleConsensusModelTorus, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))((pcl::Normal)))
 #else
- PCL_INSTANTIATE_PRODUCT(SampleConsensusModelTorus, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
+ PCL_INSTANTIATE_PRODUCT(SampleConsensusModelTorus, (PCL_XYZ_POINT_TYPES))
 #endif
 #endif    // PCL_NO_PRECOMPILE
 

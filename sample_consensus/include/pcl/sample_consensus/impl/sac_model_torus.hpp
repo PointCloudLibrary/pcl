@@ -47,16 +47,16 @@
 #include <unsupported/Eigen/NonLinearOptimization> // for LevenbergMarquardt
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> bool
-pcl::SampleConsensusModelTorus<PointT, PointNT>::isSampleGood (const Indices &samples) const
+template <typename PointT> bool
+pcl::SampleConsensusModelTorus<PointT>::isSampleGood (const Indices &samples) const
 {
   //TODO implement
   return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> bool
-pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients (
+template <typename PointT> bool
+pcl::SampleConsensusModelTorus<PointT>::computeModelCoefficients (
       const Indices &samples, Eigen::VectorXf &model_coefficients) const
 {
 
@@ -143,8 +143,8 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT>
-void pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPointToPlane(const Eigen::Vector3f& p,
+template <typename PointT>
+void pcl::SampleConsensusModelTorus<PointT>::projectPointToPlane(const Eigen::Vector3f& p,
                          const Eigen::Vector4f& plane_coefficients,
                          Eigen::Vector3f& q) const {
 
@@ -156,8 +156,8 @@ void pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPointToPlane(const 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> void
-pcl::SampleConsensusModelTorus<PointT, PointNT>::getDistancesToModel (
+template <typename PointT> void
+pcl::SampleConsensusModelTorus<PointT>::getDistancesToModel (
       const Eigen::VectorXf &model_coefficients, std::vector<double> &distances) const
 {
 
@@ -184,8 +184,8 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::getDistancesToModel (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> void
-pcl::SampleConsensusModelTorus<PointT, PointNT>::selectWithinDistance (
+template <typename PointT> void
+pcl::SampleConsensusModelTorus<PointT>::selectWithinDistance (
       const Eigen::VectorXf &model_coefficients, const double threshold, Indices &inliers)
 {
   // Check if the model is valid given the user constraints
@@ -218,8 +218,8 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::selectWithinDistance (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> std::size_t
-pcl::SampleConsensusModelTorus<PointT, PointNT>::countWithinDistance (
+template <typename PointT> std::size_t
+pcl::SampleConsensusModelTorus<PointT>::countWithinDistance (
       const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
   if (!isModelValid (model_coefficients))
@@ -245,8 +245,8 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::countWithinDistance (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> void
-pcl::SampleConsensusModelTorus<PointT, PointNT>::optimizeModelCoefficients (
+template <typename PointT> void
+pcl::SampleConsensusModelTorus<PointT>::optimizeModelCoefficients (
       const Indices &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients) const
 {
 
@@ -255,20 +255,20 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::optimizeModelCoefficients (
   // Needs a set of valid model coefficients
   if (!isModelValid (model_coefficients))
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelEllipse3D::optimizeModelCoefficients] Given model is invalid!\n");
+    PCL_ERROR ("[pcl::SampleConsensusModelTorus::optimizeModelCoefficients] Given model is invalid!\n");
     return;
   }
 
   // Need more than the minimum sample size to make a difference
   if (inliers.size () <= sample_size_ )
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelEllipse3D::optimizeModelCoefficients] Not enough inliers to refine/optimize the model's coefficients (%lu)! Returning the same coefficients.\n", inliers.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelTorus::optimizeModelCoefficients] Not enough inliers to refine/optimize the model's coefficients (%lu)! Returning the same coefficients.\n", inliers.size ());
     //return;
   }
 
-  OptimizationFunctor2 functor(this, inliers);
-  Eigen::NumericalDiff<OptimizationFunctor2> num_diff(functor);
-  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor2>, double> lm(num_diff);
+  OptimizationFunctor functor(this, inliers);
+  Eigen::NumericalDiff<OptimizationFunctor> num_diff(functor);
+  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, double> lm(num_diff);
   Eigen::VectorXd coeff(model_size_);
   int info = lm.minimize(coeff);
   for (Eigen::Index i = 0; i < coeff.size (); ++i)
@@ -276,18 +276,10 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::optimizeModelCoefficients (
 
 }
 
-Eigen::Matrix3d toRotationMatrix(double theta, double rho) {
-  Eigen::Matrix3d rx{
-      {1, 0, 0}, {0, cos(theta), -sin(theta)}, {0, sin(theta), cos(theta)}};
-
-  Eigen::Matrix3d ry{
-      {cos(rho), 0, sin(rho)}, {0, 1, 0}, {-sin(rho), 0, cos(rho)}};
-  return ry * rx;
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> void
-pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPointToTorus(
+template <typename PointT> void
+pcl::SampleConsensusModelTorus<PointT>::projectPointToTorus(
        const Eigen::Vector3f& p_in,
        const Eigen::VectorXf& model_coefficients,
        Eigen::Vector3f& q) const
@@ -340,8 +332,8 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPointToTorus(
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> void
-pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPoints (
+template <typename PointT> void
+pcl::SampleConsensusModelTorus<PointT>::projectPoints (
       const Indices &inliers, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool copy_data_fields) const
 {
     // Needs a valid set of model coefficients
@@ -366,8 +358,8 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPoints (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> bool
-pcl::SampleConsensusModelTorus<PointT, PointNT>::doSamplesVerifyModel (
+template <typename PointT> bool
+pcl::SampleConsensusModelTorus<PointT>::doSamplesVerifyModel (
       const std::set<index_t> &indices, const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
   return true;
@@ -376,8 +368,8 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::doSamplesVerifyModel (
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> bool
-pcl::SampleConsensusModelTorus<PointT, PointNT>::isModelValid (const Eigen::VectorXf &model_coefficients) const
+template <typename PointT> bool
+pcl::SampleConsensusModelTorus<PointT>::isModelValid (const Eigen::VectorXf &model_coefficients) const
 {
   return true;
   if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
@@ -385,7 +377,7 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::isModelValid (const Eigen::Vect
 
 }
 
-#define PCL_INSTANTIATE_SampleConsensusModelTorus(PointT, PointNT)	template class PCL_EXPORTS pcl::SampleConsensusModelTorus<PointT, PointNT>;
+#define PCL_INSTANTIATE_SampleConsensusModelTorus(PointT)	template class PCL_EXPORTS pcl::SampleConsensusModelTorus<PointT>;
 
 #endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CYLINDER_H_
 
