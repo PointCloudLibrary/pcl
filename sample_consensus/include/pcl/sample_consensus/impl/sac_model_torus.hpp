@@ -51,6 +51,7 @@ template <typename PointT> bool
 pcl::SampleConsensusModelTorus<PointT>::isSampleGood (const Indices &samples) const
 {
   //TODO implement
+  (void) samples;
   return (true);
 }
 
@@ -271,8 +272,15 @@ pcl::SampleConsensusModelTorus<PointT>::optimizeModelCoefficients (
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, double> lm(num_diff);
   Eigen::VectorXd coeff(model_size_);
   int info = lm.minimize(coeff);
-  for (Eigen::Index i = 0; i < coeff.size (); ++i)
-    optimized_coefficients[i] = static_cast<float> (coeff[i]);
+  
+  if(info){
+    PCL_ERROR ("[pcl::SampleConsensusModelTorus::optimizeModelCoefficients] Not enough inliers to refine/optimize the model's coefficients (%lu)! Returning the same coefficients.\n", inliers.size ());
+  }else{
+    for (Eigen::Index i = 0; i < coeff.size (); ++i)
+      optimized_coefficients[i] = static_cast<float> (coeff[i]);
+  }
+
+
 
 }
 
@@ -286,17 +294,17 @@ pcl::SampleConsensusModelTorus<PointT>::projectPointToTorus(
 {
 
     // Fetch optimization parameters
-    const double& R = model_coefficients[0];
-    const double& r = model_coefficients[1];
+    const float& R = model_coefficients[0];
+    const float& r = model_coefficients[1];
 
-    const double& x0 = model_coefficients[2];
-    const double& y0 = model_coefficients[3];
-    const double& z0 = model_coefficients[4];
+    const float& x0 = model_coefficients[2];
+    const float& y0 = model_coefficients[3];
+    const float& z0 = model_coefficients[4];
 
 
-    const double& nx = model_coefficients[5];
-    const double& ny = model_coefficients[6];
-    const double& nz = model_coefficients[7];
+    const float& nx = model_coefficients[5];
+    const float& ny = model_coefficients[6];
+    const float& nz = model_coefficients[7];
 
     // Normal of the plane where the torus circle lies
     Eigen::Vector3f n{nx, ny, nz};
@@ -305,7 +313,7 @@ pcl::SampleConsensusModelTorus<PointT>::projectPointToTorus(
     Eigen::Vector3f pt0{x0, y0, z0};
 
     // Ax + By + Cz + D = 0
-    double D = - n.dot(pt0);
+    float D = - n.dot(pt0);
     Eigen::Vector4f planeCoeffs{n[0], n[1], n[2], D};
     planeCoeffs.normalized();
     Eigen::Vector3f p (p_in);
@@ -343,6 +351,9 @@ pcl::SampleConsensusModelTorus<PointT>::projectPoints (
       return;
     }
 
+    //TODO this is not right, copy other implementations
+    (void) copy_data_fields;
+
     projected_points.header = input_->header;
     projected_points.is_dense = input_->is_dense;
 
@@ -364,6 +375,9 @@ pcl::SampleConsensusModelTorus<PointT>::doSamplesVerifyModel (
 {
   return true;
   //TODO implement
+  (void) indices;
+  (void) model_coefficients;
+  (void) threshold;
 }
 
 

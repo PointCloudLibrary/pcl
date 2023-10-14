@@ -243,7 +243,6 @@ namespace pcl
                                Eigen::Vector3f& q) const;
 
     private:
-      //TODuO
       struct OptimizationFunctor : pcl::Functor<double>
       {
         /** Functor constructor
