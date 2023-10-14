@@ -53,13 +53,14 @@ namespace pcl
 
   /** \brief @b SampleConsensusModelTorus defines a model for 3D torus segmentation.
     * The model coefficients are defined as:
+    *   - \b radii.inner          : the torus's inner radius
+    *   - \b radii.outer          : the torus's outer radius
     *   - \b torus_center_point.x  : the X coordinate of the center of the torus
     *   - \b torus_center_point.y  : the Y coordinate of the center of the torus
     *   - \b torus_center_point.z  : the Z coordinate of the center of the torus
-    *   - \b euler_angles.theta     : rotation of the torus in respect to the X axis
-    *   - \b euler_angles.phi       : rotation of the torus in respect to the Y axis
-    *   - \b radii.inner          : the torus's inner radius
-    *   - \b radii.outer          : the torus's outer radius
+    *   - \b torus_normal.x  : the X coordinate of the normal of the torus
+    *   - \b torus_normal.y  : the Y coordinate of the normal of the torus
+    *   - \b torus_normal.z  : the Z coordinate of the normal of the torus
     *
     * \author David Serret, Radu Bogdan Rusu
     * \ingroup sample_consensus
@@ -134,8 +135,8 @@ namespace pcl
         return (*this);
       }
       /** \brief Check whether the given index samples can form a valid torus model, compute the model coefficients
-        * from these samples and store them in model_coefficients. The torus coefficients are: torus_center_point,
-        * euler_angles, radii
+        * from these samples and store them in model_coefficients. The torus coefficients are: radii, torus_center_point,
+        * torus_normal
         * \param[in] samples the point indices found as possible good candidates for creating a valid model
         * \param[out] model_coefficients the resultant model coefficients
         */
@@ -212,11 +213,11 @@ namespace pcl
       using SampleConsensusModel<PointT>::sample_size_;
       using SampleConsensusModel<PointT>::model_size_;
 
-      /** \brief Project a point onto a torus given by its model coefficients (torus_center_point, euler_angles,
-        * radii)
+      /** \brief Project a point onto a torus given by its model coefficients (radii, torus_center_point,
+        * torus_normal)
         * \param[in] pt the input point to project
-        * \param[in] model_coefficients the coefficients of the torus (torus_center_point, euler_angles,
-        * radii)
+        * \param[in] model_coefficients the coefficients of the torus (radii, torus_center_point,
+        * torus_normal)
         * \param[out] pt_proj the resultant projected point
         */
       void
