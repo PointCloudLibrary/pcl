@@ -57,7 +57,7 @@ public:
   using ConstPtr = shared_ptr<const CorrespondenceRejector>;
 
   /** \brief Empty constructor. */
-  CorrespondenceRejector() = default;
+  CorrespondenceRejector() : rejection_name_("CorrespondenceRejectorPoly") {}
 
   /** \brief Empty destructor. */
   virtual ~CorrespondenceRejector() = default;
@@ -198,7 +198,7 @@ public:
 
 protected:
   /** \brief The name of the rejection method. */
-  std::string rejection_name_{"CorrespondenceRejectorPoly"};
+  std::string rejection_name_{};
 
   /** \brief The input correspondences. */
   CorrespondencesConstPtr input_correspondences_;

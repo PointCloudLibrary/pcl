@@ -602,7 +602,7 @@ namespace pcl
         typename Feature::Ptr feature_estimator_;
 
         /** \brief Number of clusters, is used for clustering descriptors during the training. */
-        unsigned int number_of_clusters_{0};
+        unsigned int number_of_clusters_{184};
 
         /** \brief If set to false then Nvot coeff from [Knopp et al., 2010, (4)] is equal 1.0. */
         bool n_vot_ON_{true};
