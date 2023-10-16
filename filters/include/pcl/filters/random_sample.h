@@ -76,7 +76,7 @@ namespace pcl
       /** \brief Empty constructor. */
       RandomSample (bool extract_removed_indices = false) : 
         FilterIndices<PointT> (extract_removed_indices),
-        sample_ (std::numeric_limits<unsigned int>::max()),
+        sample_size_ (std::numeric_limits<unsigned int>::max()),
         seed_ (static_cast<unsigned int> (time (nullptr)))
       {
         filter_name_ = "RandomSample";
@@ -88,7 +88,7 @@ namespace pcl
       inline void
       setSample (unsigned int sample)
       {
-        sample_ = sample;
+        sample_size_ = sample;
       }
 
       /** \brief Get the value of the internal \a sample parameter.
@@ -96,7 +96,7 @@ namespace pcl
       inline unsigned int
       getSample ()
       {
-        return (sample_);
+        return (sample_size_);
       }
 
       /** \brief Set seed of random function.
@@ -119,7 +119,7 @@ namespace pcl
     protected:
 
       /** \brief Number of indices that will be returned. */
-      unsigned int sample_;
+      unsigned int sample_size_;
       /** \brief Random number seed. */
       unsigned int seed_;
 
@@ -161,7 +161,7 @@ namespace pcl
   
       /** \brief Empty constructor. */
       RandomSample ():
-        sample_ (std::numeric_limits<unsigned int>::max()),
+        sample_size_ (std::numeric_limits<unsigned int>::max()),
         seed_ (static_cast<unsigned int>(time(nullptr)))
       {
         filter_name_ = "RandomSample";
@@ -173,7 +173,7 @@ namespace pcl
       inline void
       setSample (unsigned int sample)
       {
-        sample_ = sample;
+        sample_size_ = sample;
       }
 
       /** \brief Get the value of the internal \a sample parameter.
@@ -181,7 +181,7 @@ namespace pcl
       inline unsigned int
       getSample ()
       {
-        return (sample_);
+        return (sample_size_);
       }
 
       /** \brief Set seed of random function.
@@ -204,7 +204,7 @@ namespace pcl
     protected:
 
       /** \brief Number of indices that will be returned. */
-      unsigned int sample_;
+      unsigned int sample_size_;
       /** \brief Random number seed. */
       unsigned int seed_;
 

@@ -81,14 +81,14 @@ namespace pcl
       inline void
       setSample (unsigned int sample)
       {
-        sample_ = sample;
+        sample_size_ = sample;
       }
 
       /** \brief Get the value of the internal \a sample parameter. */
       inline unsigned int
       getSample () const
       {
-        return (sample_);
+        return (sample_size_);
       }
 
       /** \brief Set seed of random function.
@@ -127,7 +127,7 @@ namespace pcl
     protected:
 
       /** \brief Maximum number of samples in each grid. */
-      unsigned int sample_{10};
+      unsigned int sample_size_{10};
       /** \brief Random number seed. */
       unsigned int seed_{static_cast<unsigned int> (time (nullptr))};
       /** \brief Ratio of points to be sampled in each grid */

@@ -77,7 +77,7 @@ namespace pcl
         */
       explicit NormalSpaceSampling (bool extract_removed_indices)
         : FilterIndices<PointT> (extract_removed_indices)
-        , sample_ (std::numeric_limits<unsigned int>::max ())
+        , sample_size_ (std::numeric_limits<unsigned int>::max ())
         , seed_ (static_cast<unsigned int> (time (nullptr)))
         , binsx_ ()
         , binsy_ ()
@@ -92,12 +92,12 @@ namespace pcl
         */
       inline void
       setSample (unsigned int sample)
-      { sample_ = sample; }
+      { sample_size_ = sample; }
 
       /** \brief Get the value of the internal \a sample parameter. */
       inline unsigned int
       getSample () const
-      { return (sample_); }
+      { return (sample_size_); }
 
       /** \brief Set seed of random function.
         * \param[in] seed the input seed
@@ -149,7 +149,7 @@ namespace pcl
 
     protected:
       /** \brief Number of indices that will be returned. */
-      unsigned int sample_;
+      unsigned int sample_size_;
       /** \brief Random number seed. */
       unsigned int seed_;
 
