@@ -56,7 +56,13 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
     else
       searcher_.reset (new pcl::search::KdTree<PointT> (false));
   }
-  searcher_->setInputCloud (input_);
+  if (!searcher_->setInputCloud (input_))
+  {
+    PCL_ERROR ("[pcl::%s::applyFilter] Error when initializing search method!\n", getClassName ().c_str ());
+    indices.clear ();
+    removed_indices_->clear ();
+    return;
+  }
 
   // The arrays to be used
   const int searcher_k = mean_k_ + 1;  // Find one more, since results include the query point.

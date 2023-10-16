@@ -114,7 +114,7 @@ namespace pcl
           * \param[in] cloud the const boost shared pointer to a PointCloud message
           * \param[in] indices the point indices subset that is to be used from \a cloud 
           */
-        inline void
+        inline bool
         setInputCloud (const PointCloudConstPtr &cloud, const IndicesConstPtr& indices) override
         {
           tree_->deleteTree ();
@@ -122,6 +122,7 @@ namespace pcl
           tree_->addPointsFromInputCloud ();
           input_ = cloud;
           indices_ = indices;
+          return true;
         }
 
         /** \brief Search for the k-nearest neighbors for the given query point.
