@@ -108,7 +108,7 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
     // Iterate through the 3d points and calculate the distances from them to the model
     sac_model_->getDistancesToModel (model_coefficients, distances);
 
-    if (distances.empty)
+    if (distances.empty ())
     {
       ++ skipped_count;
       continue;
