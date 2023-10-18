@@ -51,6 +51,3 @@ RUN cd .\vcpkg;                                                `
     .\vcpkg install boost flann eigen3 qhull vtk[qt,opengl] gtest benchmark openni2 --triplet $Env:PLATFORM-windows-rel --host-triplet $Env:PLATFORM-windows-rel --clean-after-build --x-buildtrees-root=C:\b; `
     cat C:\b\qtdeclarative\install-$Env:PLATFORM-windows-rel-rel-out.log
 
-RUN echo %ERRORLEVEL% `
-    cmd.exe /C "cd /D C:\b\qtdeclarative\x86-windows-rel-rel\src\quick && C:\vcpkg\installed\x86-windows-rel\tools\Qt6\bin\qsb.exe --glsl 100es,120,150 --hlsl 50 --msl 12 -b -c -O -s -o C:/b/qtdeclarative/x86-windows-rel-rel/src/quick/.qsb/scenegraph/shaders_ng/flatcolor.vert.qsb C:/b/qtdeclarative/src/here-src-6-02b224fed5.clean/src/quick/scenegraph/shaders_ng/flatcolor.vert" `
-    echo %ERRORLEVEL%
