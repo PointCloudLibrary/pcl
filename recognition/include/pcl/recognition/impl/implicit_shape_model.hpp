@@ -49,15 +49,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::features::ISMVoteList<PointT>::ISMVoteList () :
-  votes_ (new pcl::PointCloud<pcl::InterestPoint> ()),
-  
-  votes_origins_ (new pcl::PointCloud<PointT> ()),
-  votes_class_ (0),
-  k_ind_ (0),
-  k_sqr_dist_ (0)
-{
-}
+pcl::features::ISMVoteList<PointT>::ISMVoteList() = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>

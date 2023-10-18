@@ -128,13 +128,13 @@ namespace pcl
       protected:
 
         /** \brief Stores all votes. */
-        pcl::PointCloud<pcl::InterestPoint>::Ptr votes_{nullptr};
+        pcl::PointCloud<pcl::InterestPoint>::Ptr votes_{new pcl::PointCloud<pcl::InterestPoint>};
 
         /** \brief Signalizes if the tree is valid. */
         bool tree_is_valid_{false};
 
         /** \brief Stores the origins of the votes. */
-        typename pcl::PointCloud<PointT>::Ptr votes_origins_;
+        typename pcl::PointCloud<PointT>::Ptr votes_origins_{new pcl::PointCloud<PointT>};
 
         /** \brief Stores classes for which every single vote was cast. */
         std::vector<int> votes_class_{};

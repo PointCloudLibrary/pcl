@@ -78,7 +78,10 @@ public:
   using PointCloudTargetConstPtr = typename PointCloudTarget::ConstPtr;
 
   /** \brief Empty constructor */
-  CorrespondenceRejectorPoly() = default;
+  CorrespondenceRejectorPoly()
+  {
+    rejection_name_ = "CorrespondenceRejectorPoly";
+  }
 
   /** \brief Get a list of valid correspondences after rejection from the original set
    * of correspondences.

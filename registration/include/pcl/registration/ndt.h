@@ -575,8 +575,8 @@ protected:
     PCL_DEPRECATED(1,
                    16,
                    "`trans_probability_` has been renamed to `trans_likelihood_`.")
-    double trans_probability_{0.0};
-    double trans_likelihood_;
+    double trans_probability_;
+    double trans_likelihood_{0.0};
   };
 
   /** \brief Precomputed Angular Gradient

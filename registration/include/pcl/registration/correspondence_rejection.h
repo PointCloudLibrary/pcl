@@ -57,7 +57,7 @@ public:
   using ConstPtr = shared_ptr<const CorrespondenceRejector>;
 
   /** \brief Empty constructor. */
-  CorrespondenceRejector() : rejection_name_("CorrespondenceRejectorPoly") {}
+  CorrespondenceRejector() = default;
 
   /** \brief Empty destructor. */
   virtual ~CorrespondenceRejector() = default;
