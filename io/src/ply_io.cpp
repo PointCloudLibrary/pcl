@@ -566,7 +566,7 @@ pcl::PLYReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   orientation_ = Eigen::Matrix3f::Identity ();
   if (!parse (file_name))
   {
-    PCL_ERROR ("[pcl::PLYReader::read] problem parsing header!\n");
+    PCL_ERROR ("[pcl::PLYReader::readHeader] problem parsing header!\n");
     return (-1);
   }
   cloud_->row_step = cloud_->point_step * cloud_->width;
@@ -676,6 +676,7 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
                       Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
                       int &ply_version, const int offset)
 {
+  PCL_DEBUG("[pcl::PLYReader::read] Reading PolygonMesh from file: %s.\n", file_name.c_str());
   // kept only for backward compatibility
   int data_type;
   unsigned int data_idx;

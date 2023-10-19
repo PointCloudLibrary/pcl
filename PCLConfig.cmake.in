@@ -120,6 +120,10 @@ macro(find_eigen3)
   if(NOT EIGEN3_FOUND AND Eigen3_FOUND)
     set(EIGEN3_FOUND ${Eigen3_FOUND})
   endif()
+  # In very new Eigen versions, EIGEN3_INCLUDE_DIR(S) is not defined any more, only the target:
+  if(TARGET Eigen3::Eigen)
+    set(EIGEN3_LIBRARIES Eigen3::Eigen)
+  endif()
 endmacro()
 
 #remove this as soon as qhull is shipped with FindQhull.cmake

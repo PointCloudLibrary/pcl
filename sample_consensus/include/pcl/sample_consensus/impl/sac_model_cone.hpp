@@ -69,7 +69,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::computeModelCoefficients (
 
   if (!normals_)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelCone::computeModelCoefficients] No input dataset containing normals was given!\n");
+    PCL_ERROR ("[pcl::SampleConsensusModelCone::computeModelCoefficients] No input dataset containing normals was given! Use setInputNormals\n");
     return (false);
   }
 

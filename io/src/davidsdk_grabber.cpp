@@ -281,12 +281,12 @@ pcl::DavidSDKGrabber::grabSingleCloud (pcl::PointCloud<pcl::PointXYZ> &cloud)
     pcl::PolygonMesh mesh;
     if (file_format_ == "obj")
     {
-      if (pcl::io::loadPolygonFileOBJ (local_path_ + "scan." + file_format_, mesh) == 0)
+      if (pcl::io::loadOBJFile (local_path_ + "scan." + file_format_, mesh) == 0)
         return (false);
     }
     else if (file_format_ == "ply")
     {
-      if (pcl::io::loadPolygonFilePLY (local_path_ + "scan." + file_format_, mesh) == 0)
+      if (pcl::io::loadPLYFile (local_path_ + "scan." + file_format_, mesh) == 0)
         return (false);
     }
     else if (file_format_ == "stl")
@@ -323,12 +323,12 @@ pcl::DavidSDKGrabber::grabSingleMesh (pcl::PolygonMesh &mesh)
 
     if (file_format_ == "obj")
     {
-      if (pcl::io::loadPolygonFileOBJ (local_path_ + "scan." + file_format_, mesh) == 0)
+      if (pcl::io::loadOBJFile (local_path_ + "scan." + file_format_, mesh) == 0)
         return (false);
     }
     else if (file_format_ == "ply")
     {
-      if (pcl::io::loadPolygonFilePLY (local_path_ + "scan." + file_format_, mesh) == 0)
+      if (pcl::io::loadPLYFile (local_path_ + "scan." + file_format_, mesh) == 0)
         return (false);
     }
     else if (file_format_ == "stl")
@@ -400,12 +400,12 @@ pcl::DavidSDKGrabber::processGrabbing ()
 
           if (file_format_ == "obj")
           {
-            if (pcl::io::loadPolygonFileOBJ (local_path_ + "scan." + file_format_, *mesh) == 0)
+            if (pcl::io::loadOBJFile (local_path_ + "scan." + file_format_, *mesh) == 0)
               return;
           }
           else if (file_format_ == "ply")
           {
-            if (pcl::io::loadPolygonFilePLY (local_path_ + "scan." + file_format_, *mesh) == 0)
+            if (pcl::io::loadPLYFile (local_path_ + "scan." + file_format_, *mesh) == 0)
               return;
           }
           else if (file_format_ == "stl")
