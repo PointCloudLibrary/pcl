@@ -38,6 +38,7 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/vtk/pcl_vtk_compatibility.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/io/ply_io.h>
 #include <pcl/io/vtk_lib_io.h>
 #include <vtkVersion.h>
 #include <vtkOBJReader.h>
@@ -244,7 +245,7 @@ main (int argc, char **argv)
   if (ply_file_indices.size () == 1)
   {
     pcl::PolygonMesh mesh;
-    pcl::io::loadPolygonFilePLY (argv[ply_file_indices[0]], mesh);
+    pcl::io::loadPLYFile (argv[ply_file_indices[0]], mesh);
     pcl::io::mesh2vtk (mesh, polydata1);
   }
   else if (obj_file_indices.size () == 1)

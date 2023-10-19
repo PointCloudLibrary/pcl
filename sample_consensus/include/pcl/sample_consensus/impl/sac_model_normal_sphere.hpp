@@ -51,7 +51,7 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::selectWithinDistance (
 {
   if (!normals_)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelNormalSphere::selectWithinDistance] No input dataset containing normals was given!\n");
+    PCL_ERROR ("[pcl::SampleConsensusModelNormalSphere::selectWithinDistance] No input dataset containing normals was given! Use setInputNormals\n");
     inliers.clear ();
     return;
   }
@@ -112,7 +112,7 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::countWithinDistance (
 {
   if (!normals_)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelNormalSphere::getDistancesToModel] No input dataset containing normals was given!\n");
+    PCL_ERROR ("[pcl::SampleConsensusModelNormalSphere::getDistancesToModel] No input dataset containing normals was given! Use setInputNormals\n");
     return (0);
   }
 
@@ -163,7 +163,7 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::getDistancesToModel (
 {
   if (!normals_)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelNormalSphere::getDistancesToModel] No input dataset containing normals was given!\n");
+    PCL_ERROR ("[pcl::SampleConsensusModelNormalSphere::getDistancesToModel] No input dataset containing normals was given! Use setInputNormals\n");
     return;
   }
 

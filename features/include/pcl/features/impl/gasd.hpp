@@ -76,11 +76,12 @@ pcl::GASDEstimation<PointInT, PointOutT>::computeAlignmentTransform ()
   Eigen::Vector4f centroid;
   Eigen::Matrix3f covariance_matrix;
 
-  // compute centroid of the object's partial view
-  pcl::compute3DCentroid (*surface_, *indices_, centroid);
-
-  // compute covariance matrix from points and centroid of the object's partial view
-  pcl::computeCovarianceMatrix (*surface_, *indices_, centroid, covariance_matrix);
+  // compute centroid of the object's partial view, then compute covariance matrix from points and centroid of the object's partial view
+  if (pcl::compute3DCentroid (*surface_, *indices_, centroid) == 0 ||
+      pcl::computeCovarianceMatrix (*surface_, *indices_, centroid, covariance_matrix) == 0) {
+    PCL_ERROR("[pcl::GASDEstimation::computeAlignmentTransform] Surface cloud or indices are empty!\n");
+    return;
+  }
 
   Eigen::Matrix3f eigenvectors;
   Eigen::Vector3f eigenvalues;
