@@ -1630,7 +1630,7 @@ pcl::visualization::PCLVisualizer::setPointCloudSelected (const bool selected, c
 
   if (am_it == cloud_actor_map_->end ())
   {
-    pcl::console::print_error ("[setPointCloudRenderingProperties] Could not find any PointCloud datasets with id <%s>!\n", id.c_str ());
+    pcl::console::print_error ("[setPointCloudSelected] Could not find any PointCloud datasets with id <%s>!\n", id.c_str ());
     return (false);
   }
   // Get the actor pointer

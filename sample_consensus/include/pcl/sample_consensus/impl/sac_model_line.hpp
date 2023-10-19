@@ -251,7 +251,10 @@ pcl::SampleConsensusModelLine<PointT>::projectPoints (
 {
   // Needs a valid model coefficients
   if (!isModelValid (model_coefficients))
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::projectPoints] Given model is invalid!\n");
     return;
+  }
 
   // Obtain the line point and direction
   Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0.0f);

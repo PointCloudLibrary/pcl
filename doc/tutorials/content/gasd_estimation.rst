@@ -98,7 +98,7 @@ The following code snippet will estimate a GASD shape + color descriptor for an 
      gasd.compute (descriptor);
 
      // Get the alignment transform
-     Eigen::Matrix4f trans = gasd.getTransform (trans);
+     Eigen::Matrix4f trans = gasd.getTransform ();
 
      // Unpack histogram bins
      for (std::size_t i = 0; i < std::size_t( descriptor[0].descriptorSize ()); ++i)
@@ -131,7 +131,7 @@ The following code snippet will estimate a GASD shape only descriptor for an inp
      gasd.compute (descriptor);
 
      // Get the alignment transform
-     Eigen::Matrix4f trans = gasd.getTransform (trans);
+     Eigen::Matrix4f trans = gasd.getTransform ();
 
      // Unpack histogram bins
      for (std::size_t i = 0; i < std::size_t( descriptor[0].descriptorSize ()); ++i)
