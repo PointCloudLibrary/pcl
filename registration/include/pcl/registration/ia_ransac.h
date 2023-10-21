@@ -112,7 +112,7 @@ public:
     }
 
   protected:
-    float threshold_;
+    float threshold_{0.0f};
   };
 
   class TruncatedError : public ErrorFunctor {
@@ -132,7 +132,7 @@ public:
     }
 
   protected:
-    float threshold_;
+    float threshold_{0.0f};
   };
 
   using ErrorFunctorPtr = typename ErrorFunctor::Ptr;
@@ -142,9 +142,6 @@ public:
   SampleConsensusInitialAlignment()
   : input_features_()
   , target_features_()
-  , nr_samples_(3)
-  , min_sample_distance_(0.0f)
-  , k_correspondences_(10)
   , feature_tree_(new pcl::KdTreeFLANN<FeatureT>)
   , error_functor_()
   {
@@ -313,14 +310,14 @@ protected:
   FeatureCloudConstPtr target_features_;
 
   /** \brief The number of samples to use during each iteration. */
-  int nr_samples_;
+  int nr_samples_{3};
 
   /** \brief The minimum distances between samples. */
-  float min_sample_distance_;
+  float min_sample_distance_{0.0f};
 
   /** \brief The number of neighbors to use when selecting a random feature
    * correspondence. */
-  int k_correspondences_;
+  int k_correspondences_{10};
 
   /** \brief The KdTree used to compare feature descriptors. */
   FeatureKdTreePtr feature_tree_;

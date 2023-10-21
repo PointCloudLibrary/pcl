@@ -153,10 +153,10 @@ public:
                                   const PyramidFeatureHistogramPtr& pyramid_b);
 
 private:
-  std::size_t nr_dimensions, nr_levels, nr_features;
+  std::size_t nr_dimensions{0}, nr_levels{0}, nr_features{0};
   std::vector<std::pair<float, float>> dimension_range_input_, dimension_range_target_;
   FeatureRepresentationConstPtr feature_representation_;
-  bool is_computed_;
+  bool is_computed_{false};
 
   /** \brief Checks for input inconsistencies and initializes the underlying data
    * structures */

@@ -198,7 +198,7 @@ public:
 
 protected:
   /** \brief The name of the rejection method. */
-  std::string rejection_name_;
+  std::string rejection_name_{};
 
   /** \brief The input correspondences. */
   CorrespondencesConstPtr input_correspondences_;
@@ -254,8 +254,6 @@ public:
   , tree_(new pcl::search::KdTree<PointT>)
   , class_name_("DataContainer")
   , needs_normals_(needs_normals)
-  , target_cloud_updated_(true)
-  , force_no_recompute_(false)
   {}
 
   /** \brief Empty destructor */
@@ -420,11 +418,11 @@ private:
 
   /** \brief Variable that stores whether we have a new target cloud, meaning we need to
    * pre-process it again. This way, we avoid rebuilding the kd-tree */
-  bool target_cloud_updated_;
+  bool target_cloud_updated_{true};
 
   /** \brief A flag which, if set, means the tree operating on the target cloud
    * will never be recomputed*/
-  bool force_no_recompute_;
+  bool force_no_recompute_{false};
 
   /** \brief Get a string representation of the name of this class. */
   inline const std::string&

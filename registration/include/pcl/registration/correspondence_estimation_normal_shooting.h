@@ -132,7 +132,7 @@ public:
    * Sets the number of neighbors to be considered in the target point cloud (k_) to 10.
    */
   CorrespondenceEstimationNormalShooting()
-  : source_normals_(), source_normals_transformed_(), k_(10)
+  : source_normals_(), source_normals_transformed_()
   {
     corr_name_ = "CorrespondenceEstimationNormalShooting";
   }
@@ -248,7 +248,7 @@ private:
   NormalsPtr source_normals_transformed_;
 
   /** \brief The number of neighbours to be considered in the target point cloud */
-  unsigned int k_;
+  unsigned int k_{10};
 };
 } // namespace registration
 } // namespace pcl

@@ -557,18 +557,18 @@ protected:
   TargetGrid target_cells_;
 
   /** \brief The side length of voxels. */
-  float resolution_;
+  float resolution_{1.0f};
 
   /** \brief The maximum step length. */
-  double step_size_;
+  double step_size_{0.1};
 
   /** \brief The ratio of outliers of points w.r.t. a normal distribution,
    * Equation 6.7 [Magnusson 2009]. */
-  double outlier_ratio_;
+  double outlier_ratio_{0.55};
 
   /** \brief The normalization constants used fit the point distribution to a
    * normal distribution, Equation 6.8 [Magnusson 2009]. */
-  double gauss_d1_, gauss_d2_;
+  double gauss_d1_{0.0}, gauss_d2_{0.0};
 
   /** \brief The likelihood score of the transform applied to the input cloud,
    * Equation 6.9 and 6.10 [Magnusson 2009]. */
@@ -577,7 +577,7 @@ protected:
                    16,
                    "`trans_probability_` has been renamed to `trans_likelihood_`.")
     double trans_probability_;
-    double trans_likelihood_;
+    double trans_likelihood_{0.0};
   };
 
   /** \brief Precomputed Angular Gradient

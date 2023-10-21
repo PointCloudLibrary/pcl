@@ -1467,7 +1467,6 @@ struct OctreePointCloudSierpinskiTest
   // Methods
   OctreePointCloudSierpinskiTest ()
     : oct_ (1)
-    , depth_ (7)
   {}
 
   void SetUp () override
@@ -1597,7 +1596,7 @@ struct OctreePointCloudSierpinskiTest
   // Members
   OctreeT oct_;
 
-  const unsigned depth_;
+  const unsigned depth_{7};
 };
 
 /** \brief Octree test based on a Sierpinski fractal

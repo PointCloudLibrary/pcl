@@ -50,8 +50,6 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
     TransformationEstimationLM()
 : tmp_src_()
 , tmp_tgt_()
-, tmp_idx_src_()
-, tmp_idx_tgt_()
 , warp_point_(new WarpPointRigid6D<PointSource, PointTarget, MatScalar>){};
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -294,7 +292,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
   return (0);
 }
 
-//#define PCL_INSTANTIATE_TransformationEstimationLM(T,U) template class PCL_EXPORTS
-// pcl::registration::TransformationEstimationLM<T,U>;
+// #define PCL_INSTANTIATE_TransformationEstimationLM(T,U) template class PCL_EXPORTS
+//  pcl::registration::TransformationEstimationLM<T,U>;
 
 #endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_HPP_ */

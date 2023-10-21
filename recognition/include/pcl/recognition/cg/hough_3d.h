@@ -118,10 +118,10 @@ namespace pcl
         Eigen::Vector3i bin_count_;
 
         /** \brief Used to access hough_space_ as if it was a matrix. */
-        int partial_bin_products_[4];
+        int partial_bin_products_[4]{};
 
         /** \brief Total number of bins in the Hough Space. */
-        int total_bins_count_;
+        int total_bins_count_{0};
 
         /** \brief The Hough Space. */
         std::vector<double> hough_space_;
@@ -166,14 +166,6 @@ namespace pcl
       Hough3DGrouping ()
         : input_rf_ ()
         , scene_rf_ ()
-        , needs_training_ (true)
-        ,hough_threshold_ (-1)
-        , hough_bin_size_ (1.0)
-        , use_interpolation_ (true)
-        , use_distance_weight_ (false)
-        , local_rf_normals_search_radius_ (0.0f)
-        , local_rf_search_radius_ (0.0f)
-        , hough_space_initialized_ (false)
       {}
 
       /** \brief Provide a pointer to the input dataset.
@@ -445,28 +437,28 @@ namespace pcl
       SceneRfCloudConstPtr scene_rf_;
 
       /** \brief If the training of the Hough space is needed; set on change of either the input cloud or the input_rf. */
-      bool needs_training_;
+      bool needs_training_{true};
 
       /** \brief The result of the training. The vector between each model point and the centroid of the model adjusted by its local reference frame.*/
       std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > model_votes_;
 
       /** \brief The minimum number of votes in the Hough space needed to infer the presence of a model instance into the scene cloud. */
-      double hough_threshold_;
+      double hough_threshold_{-1.0};
 
       /** \brief The size of each bin of the hough space. */
-      double hough_bin_size_;
+      double hough_bin_size_{1.0};
 
       /** \brief Use the interpolation between neighboring Hough bins when casting votes. */
-      bool use_interpolation_;
+      bool use_interpolation_{true};
 
       /** \brief Use the weighted correspondence distance when casting votes. */
-      bool use_distance_weight_;
+      bool use_distance_weight_{false};
 
       /** \brief Normals search radius for the potential Rf calculation. */
-      float local_rf_normals_search_radius_;
+      float local_rf_normals_search_radius_{0.0f};
 
       /** \brief Search radius for the potential Rf calculation. */
-      float local_rf_search_radius_;
+      float local_rf_search_radius_{0.0f};
 
       /** \brief The Hough space. */
       pcl::recognition::HoughSpace3D::Ptr hough_space_;
@@ -477,7 +469,7 @@ namespace pcl
       /** \brief Whether the Hough space already contains the correct votes for the current input parameters and so the cluster and recognize calls don't need to recompute each value.
         * Reset on the change of any parameter except the hough_threshold.
         */
-      bool hough_space_initialized_;
+      bool hough_space_initialized_{false};
 
       /** \brief Cluster the input correspondences in order to distinguish between different instances of the model into the scene.
         *

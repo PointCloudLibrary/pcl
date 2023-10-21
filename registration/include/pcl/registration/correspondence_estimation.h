@@ -98,10 +98,6 @@ public:
   , target_()
   , point_representation_()
   , input_transformed_()
-  , target_cloud_updated_(true)
-  , source_cloud_updated_(true)
-  , force_no_recompute_(false)
-  , force_no_recompute_reciprocal_(false)
   {}
 
   /** \brief Empty destructor */
@@ -354,18 +350,18 @@ protected:
   /** \brief Variable that stores whether we have a new target cloud, meaning we need to
    * pre-process it again. This way, we avoid rebuilding the kd-tree for the target
    * cloud every time the determineCorrespondences () method is called. */
-  bool target_cloud_updated_;
+  bool target_cloud_updated_{true};
   /** \brief Variable that stores whether we have a new source cloud, meaning we need to
    * pre-process it again. This way, we avoid rebuilding the reciprocal kd-tree for the
    * source cloud every time the determineCorrespondences () method is called. */
-  bool source_cloud_updated_;
+  bool source_cloud_updated_{true};
   /** \brief A flag which, if set, means the tree operating on the target cloud
    * will never be recomputed*/
-  bool force_no_recompute_;
+  bool force_no_recompute_{false};
 
   /** \brief A flag which, if set, means the tree operating on the source cloud
    * will never be recomputed*/
-  bool force_no_recompute_reciprocal_;
+  bool force_no_recompute_reciprocal_{false};
 };
 
 /** \brief @b CorrespondenceEstimation represents the base class for

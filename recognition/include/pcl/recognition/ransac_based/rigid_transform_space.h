@@ -62,7 +62,6 @@ namespace pcl
         {
           public:
             Entry ()
-            : num_transforms_ (0)
             {
               aux::set3 (axis_angle_, 0.0f);
               aux::set3 (translation_, 0.0f);
@@ -134,7 +133,7 @@ namespace pcl
 
           protected:
             float axis_angle_[3], translation_[3];
-            int num_transforms_;
+            int num_transforms_{0};
         };// class Entry
 
       public:
@@ -293,9 +292,7 @@ namespace pcl
     class RotationSpaceCreator
     {
       public:
-        RotationSpaceCreator()
-        : counter_ (0)
-        {}
+        RotationSpaceCreator() = default;
 
         virtual ~RotationSpaceCreator() = default;
 
@@ -331,7 +328,7 @@ namespace pcl
 
       protected:
         float discretization_;
-        int counter_;
+        int counter_{0};
         std::list<RotationSpace*> rotation_spaces_;
     };
 

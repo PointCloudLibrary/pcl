@@ -139,7 +139,7 @@ public:
 
   /** \brief Empty constructor.
    */
-  LUM() : slam_graph_(new SLAMGraph), max_iterations_(5), convergence_threshold_(0.0) {}
+  LUM() : slam_graph_(new SLAMGraph) {}
 
   /** \brief Set the internal SLAM graph structure.
    * \details All data used and produced by LUM is stored in this boost::adjacency_list.
@@ -343,10 +343,10 @@ private:
   SLAMGraphPtr slam_graph_;
 
   /** \brief The maximum number of iterations for the compute() method. */
-  int max_iterations_;
+  int max_iterations_{5};
 
   /** \brief The convergence threshold for the summed vector lengths of all poses. */
-  float convergence_threshold_;
+  float convergence_threshold_{0.0};
 };
 } // namespace registration
 } // namespace pcl
