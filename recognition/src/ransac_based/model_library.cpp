@@ -51,8 +51,7 @@ using namespace pcl::recognition;
 ModelLibrary::ModelLibrary (float pair_width, float voxel_size, float max_coplanarity_angle)
 : pair_width_ (pair_width),
   voxel_size_ (voxel_size),
-  max_coplanarity_angle_ (max_coplanarity_angle),
-  ignore_coplanar_opps_ (true)
+  max_coplanarity_angle_ (max_coplanarity_angle)
 {
   num_of_cells_[0] = 60;
   num_of_cells_[1] = 60;

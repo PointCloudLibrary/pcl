@@ -63,7 +63,7 @@ namespace pcl
   {
     public:
       /** \brief Constructor. */
-      inline LINEMOD_OrientationMap () : width_ (0), height_ (0) {}
+      inline LINEMOD_OrientationMap () = default;
       /** \brief Destructor. */
       inline ~LINEMOD_OrientationMap () = default;
 
@@ -118,9 +118,9 @@ namespace pcl
 
     private:
       /** \brief The width of the map. */
-      std::size_t width_;
+      std::size_t width_{0};
       /** \brief The height of the map. */
-      std::size_t height_;
+      std::size_t height_{0};
       /** \brief Storage for the data of the map. */
       std::vector<float> map_;
   
@@ -132,35 +132,31 @@ namespace pcl
   struct QuantizedNormalLookUpTable
   {
     /** \brief The range of the LUT in x-direction. */
-    int range_x;
+    int range_x{-1};
     /** \brief The range of the LUT in y-direction. */
-    int range_y;
+    int range_y{-1};
     /** \brief The range of the LUT in z-direction. */
-    int range_z;
+    int range_z{-1};
 
     /** \brief The offset in x-direction. */
-    int offset_x;
+    int offset_x{-1};
     /** \brief The offset in y-direction. */
-    int offset_y;
+    int offset_y{-1};
     /** \brief The offset in z-direction. */
-    int offset_z;
+    int offset_z{-1};
 
     /** \brief The size of the LUT in x-direction. */
-    int size_x;
+    int size_x{-1};
     /** \brief The size of the LUT in y-direction. */
-    int size_y;
+    int size_y{-1};
     /** \brief The size of the LUT in z-direction. */
-    int size_z;
+    int size_z{-1};
 
     /** \brief The LUT data. */
-    unsigned char * lut;
+    unsigned char * lut{nullptr};
 
     /** \brief Constructor. */
-    QuantizedNormalLookUpTable () : 
-      range_x (-1), range_y (-1), range_z (-1), 
-      offset_x (-1), offset_y (-1), offset_z (-1), 
-      size_x (-1), size_y (-1), size_z (-1), lut (nullptr) 
-    {}
+    QuantizedNormalLookUpTable () = default;
 
     /** \brief Destructor. */
     ~QuantizedNormalLookUpTable () 
@@ -306,20 +302,20 @@ namespace pcl
       struct Candidate
       {
         /** \brief Constructor. */
-        Candidate () : distance (0.0f), bin_index (0), x (0), y (0) {}
+        Candidate () = default;
 
         /** \brief Normal. */
         Normal normal;
         /** \brief Distance to the next different quantized value. */
-        float distance;
+        float distance{0.0f};
 
         /** \brief Quantized value. */
-        unsigned char bin_index;
+        unsigned char bin_index{0};
     
         /** \brief x-position of the feature. */
-        std::size_t x;
+        std::size_t x{0};
         /** \brief y-position of the feature. */
-        std::size_t y;	
+        std::size_t y{0};	
 
         /** \brief Compares two candidates based on their distance to the next different quantized value. 
           * \param[in] rhs the candidate to compare with. 
@@ -463,18 +459,18 @@ namespace pcl
     private:
 
       /** \brief Determines whether variable numbers of features are extracted or not. */
-      bool variable_feature_nr_;
+      bool variable_feature_nr_{false};
 
       /** \brief The feature distance threshold. */
-      float feature_distance_threshold_;
+      float feature_distance_threshold_{2.0f};
       /** \brief Minimum distance of a feature to a border. */
-      float min_distance_to_border_;
+      float min_distance_to_border_{2.0f};
 
       /** \brief Look-up-table for quantizing surface normals. */
       QuantizedNormalLookUpTable normal_lookup_;
 
       /** \brief The spreading size. */
-      std::size_t spreading_size_;
+      std::size_t spreading_size_{8};
 
       /** \brief Point cloud holding the computed surface normals. */
       pcl::PointCloud<pcl::Normal> surface_normals_;
@@ -495,13 +491,7 @@ namespace pcl
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 pcl::SurfaceNormalModality<PointInT>::
-SurfaceNormalModality ()
-  : variable_feature_nr_ (false)
-  , feature_distance_threshold_ (2.0f)
-  , min_distance_to_border_ (2.0f)
-  , spreading_size_ (8)
-{
-}
+SurfaceNormalModality () = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>

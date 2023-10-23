@@ -48,17 +48,8 @@ pcl::recognition::ObjRecRANSAC::ObjRecRANSAC (float pair_width, float voxel_size
   position_discretization_ (5.0f*voxel_size_),
   rotation_discretization_ (5.0f*AUX_DEG_TO_RADIANS),
   abs_zdist_thresh_ (1.5f*voxel_size_),
-  relative_obj_size_ (0.05f),
-  visibility_ (0.2f),
-  relative_num_of_illegal_pts_ (0.02f),
-  intersection_fraction_ (0.03f),
   max_coplanarity_angle_ (3.0f*AUX_DEG_TO_RADIANS),
-  scene_bounds_enlargement_factor_ (0.25f), // 25% enlargement
-  ignore_coplanar_opps_ (true),
-  frac_of_points_for_icp_refinement_ (0.3f),
-  do_icp_hypotheses_refinement_ (true),
-  model_library_ (pair_width, voxel_size, max_coplanarity_angle_),
-  rec_mode_ (ObjRecRANSAC::FULL_RECOGNITION)
+  model_library_ (pair_width, voxel_size, max_coplanarity_angle_)
 {
 }
 

@@ -61,10 +61,7 @@ class Transforms : public ::testing::Test
 {
  public:
   using Scalar = typename Transform::Scalar;
-
   Transforms ()
-  : ABS_ERROR (std::numeric_limits<Scalar>::epsilon () * 10)
-  , CLOUD_SIZE (100)
   {
     Eigen::Matrix<Scalar, 6, 1> r = Eigen::Matrix<Scalar, 6, 1>::Random ();
     Eigen::Transform<Scalar, 3, Eigen::Affine> transform;
@@ -93,9 +90,8 @@ class Transforms : public ::testing::Test
       indices[i] = i * 2;
   }
 
-  const Scalar ABS_ERROR;
-  const std::size_t CLOUD_SIZE;
-
+  const Scalar ABS_ERROR{std::numeric_limits<Scalar>::epsilon () * 10};
+  const std::size_t CLOUD_SIZE{100};
   Transform tf;
 
   // Random point clouds and their expected transformed versions

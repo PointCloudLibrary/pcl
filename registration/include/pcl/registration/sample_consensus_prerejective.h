@@ -121,11 +121,8 @@ public:
   SampleConsensusPrerejective()
   : input_features_()
   , target_features_()
-  , nr_samples_(3)
-  , k_correspondences_(2)
   , feature_tree_(new pcl::KdTreeFLANN<FeatureT>)
   , correspondence_rejector_poly_(new CorrespondenceRejectorPoly)
-  , inlier_fraction_(0.0f)
   {
     reg_name_ = "SampleConsensusPrerejective";
     correspondence_rejector_poly_->setSimilarityThreshold(0.6f);
@@ -305,11 +302,11 @@ protected:
   FeatureCloudConstPtr target_features_;
 
   /** \brief The number of samples to use during each iteration. */
-  int nr_samples_;
+  int nr_samples_{3};
 
   /** \brief The number of neighbors to use when selecting a random feature
    * correspondence. */
-  int k_correspondences_;
+  int k_correspondences_{2};
 
   /** \brief The KdTree used to compare feature descriptors. */
   FeatureKdTreePtr feature_tree_;
@@ -319,7 +316,7 @@ protected:
 
   /** \brief The fraction [0,1] of inlier points required for accepting a transformation
    */
-  float inlier_fraction_;
+  float inlier_fraction_{0.0f};
 
   /** \brief Inlier points of final transformation as indices into source */
   pcl::Indices inliers_;

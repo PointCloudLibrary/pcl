@@ -53,10 +53,8 @@ pcl::registration::TransformationEstimationPointToPlaneWeighted<
     MatScalar>::TransformationEstimationPointToPlaneWeighted()
 : tmp_src_()
 , tmp_tgt_()
-, tmp_idx_src_()
-, tmp_idx_tgt_()
 , warp_point_(new WarpPointRigid6D<PointSource, PointTarget, MatScalar>)
-, use_correspondence_weights_(true){};
+{}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename MatScalar>

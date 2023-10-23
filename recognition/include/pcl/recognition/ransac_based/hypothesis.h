@@ -74,17 +74,15 @@ namespace pcl
         }
 
       public:
-        float rigid_transform_[12];
-        const ModelLibrary::Model* obj_model_;
+        float rigid_transform_[12]{};
+        const ModelLibrary::Model* obj_model_{nullptr};
     };
 
     class Hypothesis: public HypothesisBase
     {
       public:
         Hypothesis (const ModelLibrary::Model* obj_model = nullptr)
-         : HypothesisBase (obj_model),
-           match_confidence_ (-1.0f),
-           linear_id_ (-1)
+         : HypothesisBase (obj_model)
         {
         }
 
@@ -149,9 +147,9 @@ namespace pcl
         }
 
       public:
-        float match_confidence_;
+        float match_confidence_{-1.0f};
         std::set<int> explained_pixels_;
-        int linear_id_;
+        int linear_id_{-1};
     };
   } // namespace recognition
 } // namespace pcl

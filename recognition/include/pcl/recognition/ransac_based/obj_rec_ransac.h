@@ -454,15 +454,15 @@ namespace pcl
         float position_discretization_;
         float rotation_discretization_;
         float abs_zdist_thresh_;
-        float relative_obj_size_;
-        float visibility_;
-        float relative_num_of_illegal_pts_;
-        float intersection_fraction_;
+        float relative_obj_size_{0.05f};
+        float visibility_{0.2f};
+        float relative_num_of_illegal_pts_{0.02f};
+        float intersection_fraction_{0.03f};
         float max_coplanarity_angle_;
-        float scene_bounds_enlargement_factor_;
-        bool ignore_coplanar_opps_;
-        float frac_of_points_for_icp_refinement_;
-        bool do_icp_hypotheses_refinement_;
+        float scene_bounds_enlargement_factor_{0.25f};
+        bool ignore_coplanar_opps_{true};
+        float frac_of_points_for_icp_refinement_{0.3f};
+        bool do_icp_hypotheses_refinement_{true};
 
         ModelLibrary model_library_;
         ORROctree scene_octree_;
@@ -473,7 +473,7 @@ namespace pcl
 
         std::list<OrientedPointPair> sampled_oriented_point_pairs_;
         std::vector<Hypothesis> accepted_hypotheses_;
-        Recognition_Mode rec_mode_;
+        Recognition_Mode rec_mode_{ObjRecRANSAC::FULL_RECOGNITION};
     };
   } // namespace recognition
 } // namespace pcl

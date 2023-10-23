@@ -59,9 +59,7 @@ class PCL_EXPORTS CorrespondenceRejectionOrganizedBoundary
 : public CorrespondenceRejector {
 public:
   /** @brief Empty constructor. */
-  CorrespondenceRejectionOrganizedBoundary()
-  : boundary_nans_threshold_(8), window_size_(5), depth_step_threshold_(0.025f)
-  {}
+  CorrespondenceRejectionOrganizedBoundary() = default;
 
   void
   getRemainingCorrespondences(const pcl::Correspondences& original_correspondences,
@@ -141,9 +139,9 @@ protected:
     getRemainingCorrespondences(*input_correspondences_, correspondences);
   }
 
-  int boundary_nans_threshold_;
-  int window_size_;
-  float depth_step_threshold_;
+  int boundary_nans_threshold_{8};
+  int window_size_{5};
+  float depth_step_threshold_{0.025f};
 
   using DataContainerPtr = DataContainerInterface::Ptr;
   DataContainerPtr data_container_;
