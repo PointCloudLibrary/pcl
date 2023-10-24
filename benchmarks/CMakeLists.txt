@@ -25,3 +25,9 @@ PCL_ADD_BENCHMARK(filters_voxel_grid FILES filters/voxel_grid.cpp
                   ARGUMENTS "${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd"
                             "${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd")
 
+PCL_ADD_BENCHMARK(filters_passthrough FILES filters/passthrough.cpp
+                  LINK_WITH pcl_filters)
+
+PCL_ADD_BENCHMARK(filters_crop_box FILES filters/crop_box.cpp
+                  LINK_WITH pcl_filters)
+

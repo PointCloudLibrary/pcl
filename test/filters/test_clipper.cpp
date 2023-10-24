@@ -134,14 +134,7 @@ TEST (CropBox, Filters)
   input->push_back (PointXYZ (-0.9f, -0.9f, -0.9f));
 
   // Create indices vector ( without 0 and 4)
-  pcl::IndicesPtr idx (new pcl::Indices (7));
-  (*idx)[0] = 1;
-  (*idx)[1] = 2;
-  (*idx)[2] = 3;
-  (*idx)[3] = 5;
-  (*idx)[4] = 6;
-  (*idx)[5] = 7;
-  (*idx)[6] = 8;
+  pcl::IndicesPtr idx(new pcl::Indices({1,2,3,5,6,7,8}));
 
   // Define cropBox limit
   Eigen::Vector4f min_pt (-1.0f, -1.0f, -1.0f, 1.0f);

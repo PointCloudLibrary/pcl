@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <pcl/common/point_tests.h> // for isXYZFinite
 #include <pcl/filters/filter_indices.h>
 #include <pcl/type_traits.h> // for is_invocable
 
@@ -94,13 +95,22 @@ public:
       removed_indices_->reserve(indices_->size());
     }
 
-    for (const auto index : *indices_) {
-      // function object returns true for points that should be selected
-      if (negative_ != functionObject_(*input_, index)) {
-        indices.push_back(index);
+    // function object returns true for points that should be selected
+    if (input_->is_dense) {
+      for (const auto index : *indices_) {
+        if (negative_ != functionObject_(*input_, index))
+          indices.push_back(index);
+        else if (extract_removed_indices_)
+          removed_indices_->push_back(index);
       }
-      else if (extract_removed_indices_) {
-        removed_indices_->push_back(index);
+    }
+    else {
+      for (const auto index : *indices_) {
+        if (isXYZFinite(input_->at(index)) &&
+            negative_ != functionObject_(*input_, index))
+          indices.push_back(index);
+        else if (extract_removed_indices_)
+          removed_indices_->push_back(index);
       }
     }
   }
@@ -124,7 +134,7 @@ protected:
    * filter out the indices for which it returns false
    */
   void
-  setFunctionObject(FunctionObjectT function_object) const noexcept
+  setFunctionObject(FunctionObjectT&& function_object) noexcept
   {
     functionObject_ = std::move(function_object);
   }
