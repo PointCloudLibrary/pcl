@@ -397,7 +397,14 @@ pcl::PCDReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   fs.open (file_name.c_str (), std::ios::binary);
   if (!fs.is_open () || fs.fail ())
   {
-    PCL_ERROR ("[pcl::PCDReader::readHeader] Could not open file '%s'! Error : %s\n", file_name.c_str (), strerror (errno)); 
+    PCL_ERROR ("[pcl::PCDReader::readHeader] Could not open file '%s'! Error : %s\n", file_name.c_str (), strerror (errno));
+    fs.close ();
+    return (-1);
+  }
+
+  if (fs.peek() ==  std::ifstream::traits_type::eof())
+  {
+    PCL_ERROR ("[pcl::PCDReader::readHeader] File '%s' is empty.\n", file_name.c_str (), strerror (errno));
     fs.close ();
     return (-1);
   }
