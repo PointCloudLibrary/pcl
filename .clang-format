@@ -44,7 +44,7 @@ IncludeCategories:
 # Major 3rd-Party components of apps
   - Regex:           '^<Q[^/]+>$'
     Priority:        300
-    CaseSensitive:   true
+    #CaseSensitive:   true
   - Regex:           '^<ui_[^/]+\.h>$'
     Priority:        300
   - Regex:           '^<vtk[^/]+\.h>$'

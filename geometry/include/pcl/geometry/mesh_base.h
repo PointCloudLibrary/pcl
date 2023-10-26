@@ -1993,15 +1993,10 @@ protected:
   }
 
   /** \brief Always manifold. */
-  inline bool
-  isManifold(std::true_type /*is_manifold*/) const
-  {
-    return (true);
-  }
+  inline bool isManifold(std::true_type /*is_manifold*/) const { return (true); }
 
   /** \brief Check if all vertices in the mesh are manifold. */
-  bool
-  isManifold(std::false_type /*is_manifold*/) const
+  bool isManifold(std::false_type /*is_manifold*/) const
   {
     for (std::size_t i = 0; i < this->sizeVertices(); ++i) {
       if (!this->isManifold(VertexIndex(i)))

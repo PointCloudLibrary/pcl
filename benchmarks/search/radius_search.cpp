@@ -1,10 +1,13 @@
+#include <pcl/io/pcd_io.h>
+#include <pcl/search/organized.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/search/organized.h>
-#include <pcl/io/pcd_io.h>
+
 #include <benchmark/benchmark.h>
 
-static void BM_OrganizedNeighborSearch(benchmark::State& state, const std::string& file) {
+static void
+BM_OrganizedNeighborSearch(benchmark::State& state, const std::string& file)
+{
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloudIn(new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PCDReader reader;
   reader.read(file, *cloudIn);
@@ -23,7 +26,8 @@ static void BM_OrganizedNeighborSearch(benchmark::State& state, const std::strin
     std::vector<float> k_sqr_distances;
 
     auto check_time = benchmark::Now();
-    organizedNeighborSearch.radiusSearch((*cloudIn)[randomIdx], searchRadius, k_indices, k_sqr_distances);
+    organizedNeighborSearch.radiusSearch(
+        (*cloudIn)[randomIdx], searchRadius, k_indices, k_sqr_distances);
     radiusSearchTime += benchmark::Now() - check_time;
   }
 
@@ -31,13 +35,17 @@ static void BM_OrganizedNeighborSearch(benchmark::State& state, const std::strin
   state.SetIterationTime(radiusSearchTime / state.iterations());
 }
 
-int main(int argc, char** argv) {
+int
+main(int argc, char** argv)
+{
   if (argc < 2) {
-    std::cerr << "No test file given. Please provide a PCD file for the benchmark." << std::endl;
+    std::cerr << "No test file given. Please provide a PCD file for the benchmark."
+              << std::endl;
     return -1;
   }
 
-  benchmark::RegisterBenchmark("BM_OrganizedNeighborSearch", &BM_OrganizedNeighborSearch, argv[1])
+  benchmark::RegisterBenchmark(
+      "BM_OrganizedNeighborSearch", &BM_OrganizedNeighborSearch, argv[1])
       ->Unit(benchmark::kMillisecond);
 
   benchmark::Initialize(&argc, argv);

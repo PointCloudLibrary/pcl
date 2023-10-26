@@ -90,9 +90,7 @@ public:
   /** \brief Empty addPointIndex implementation. This leaf node does not store any point
    * indices.
    */
-  virtual void
-  addPointIndex(index_t)
-  {}
+  virtual void addPointIndex(index_t) {}
 
   /** \brief Empty getPointIndex implementation as this leaf node does not store any
    * point indices.
@@ -152,9 +150,7 @@ public:
   /** \brief Empty addPointIndex implementation. This leaf node does not store any point
    * indices.
    */
-  void
-  addPointIndex(index_t) override
-  {}
+  void addPointIndex(index_t) override {}
 
   /** \brief Empty getPointIndex implementation as this leaf node does not store any
    * point indices.

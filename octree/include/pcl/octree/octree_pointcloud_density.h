@@ -76,11 +76,7 @@ public:
 
   /** \brief Read input data. Only an internal counter is increased.
    */
-  void
-  addPointIndex(index_t) override
-  {
-    point_counter_++;
-  }
+  void addPointIndex(index_t) override { point_counter_++; }
 
   /** \brief Return point counter.
    * \return Amount of points

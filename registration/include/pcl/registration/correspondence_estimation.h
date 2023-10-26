@@ -145,8 +145,7 @@ public:
   }
 
   /** \brief Abstract method for setting the source normals */
-  virtual void
-  setSourceNormals(pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
+  virtual void setSourceNormals(pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
   {
     PCL_WARN("[pcl::registration::%s::setSourceNormals] This class does not require "
              "input source normals\n",
@@ -161,8 +160,7 @@ public:
   }
 
   /** \brief Abstract method for setting the target normals */
-  virtual void
-  setTargetNormals(pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
+  virtual void setTargetNormals(pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
   {
     PCL_WARN("[pcl::registration::%s::setTargetNormals] This class does not require "
              "input target normals\n",
