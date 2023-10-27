@@ -85,9 +85,8 @@ class CallbackParameters
       viz_ (viz),
       points_ (points),
       normals_ (normals),
-      num_hypotheses_to_show_ (num_hypotheses_to_show),
-      show_models_ (true)
-    { }
+      num_hypotheses_to_show_ (num_hypotheses_to_show)
+    {}
 
     ObjRecRANSAC& objrec_;
     PCLVisualizer& viz_;
@@ -95,7 +94,7 @@ class CallbackParameters
     PointCloud<Normal>& normals_;
     int num_hypotheses_to_show_;
     std::list<vtkActor*> actors_, model_actors_;
-    bool show_models_;
+    bool show_models_{true};
 };
 
 //===============================================================================================================================

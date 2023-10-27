@@ -147,13 +147,13 @@ namespace pcl
       /** \brief Contains the input cloud */
       typename pcl::PointCloud<PointT>::Ptr input_cloud_;
       
-      bool label_field_;
+      bool label_field_{false};
       
       unsigned int cluster_size_;
 
-      float normal_radius_search_;
-      float fpfh_radius_search_;
-      float feature_threshold_;
+      float normal_radius_search_{0.01f};
+      float fpfh_radius_search_{0.05f};
+      float feature_threshold_{5.0};
       
       
       std::vector<pcl::PointCloud<pcl::FPFHSignature33>::Ptr> trained_features_;

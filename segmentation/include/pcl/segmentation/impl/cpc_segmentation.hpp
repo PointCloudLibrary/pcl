@@ -42,15 +42,7 @@
 #include <pcl/segmentation/cpc_segmentation.h>
 
 template <typename PointT>
-pcl::CPCSegmentation<PointT>::CPCSegmentation () :
-    max_cuts_ (20),
-    min_segment_size_for_cutting_ (400),
-    min_cut_score_ (0.16),
-    use_local_constrains_ (true),
-    use_directed_weights_ (true),
-    ransac_itrs_ (10000)
-{
-}
+pcl::CPCSegmentation<PointT>::CPCSegmentation () = default;
 
 template <typename PointT>
 pcl::CPCSegmentation<PointT>::~CPCSegmentation () = default;

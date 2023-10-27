@@ -261,31 +261,31 @@ namespace pcl
     protected:
 
       /** \brief Stores the sigma coefficient. It is used for finding smooth costs. More information can be found in the article. */
-      double inverse_sigma_;
+      double inverse_sigma_{16.0};
 
       /** \brief Signalizes if the binary potentials are valid. */
-      bool binary_potentials_are_valid_;
+      bool binary_potentials_are_valid_{false};
 
       /** \brief Used for comparison of the floating point numbers. */
-      double epsilon_;
+      double epsilon_{0.0001};
 
       /** \brief Stores the distance to the background. */
-      double radius_;
+      double radius_{16.0};
 
       /** \brief Signalizes if the unary potentials are valid. */
-      bool unary_potentials_are_valid_;
+      bool unary_potentials_are_valid_{false};
 
       /** \brief Stores the weight for every edge that comes from source point. */
-      double source_weight_;
+      double source_weight_{0.8};
 
       /** \brief Stores the search method that will be used for finding K nearest neighbors. Neighbours are used for building the graph. */
       KdTreePtr search_;
 
       /** \brief Stores the number of neighbors to find. */
-      unsigned int number_of_neighbours_;
+      unsigned int number_of_neighbours_{14};
 
       /** \brief Signalizes if the graph is valid. */
-      bool graph_is_valid_;
+      bool graph_is_valid_{false};
 
       /** \brief Stores the points that are known to be in the foreground. */
       std::vector<PointT, Eigen::aligned_allocator<PointT> > foreground_points_;
@@ -312,13 +312,13 @@ namespace pcl
       std::vector< std::set<int> > edge_marker_;
 
       /** \brief Stores the vertex that serves as source. */
-      VertexDescriptor source_;
+      VertexDescriptor source_{};
 
       /** \brief Stores the vertex that serves as sink. */
-      VertexDescriptor sink_;
+      VertexDescriptor sink_{};
 
       /** \brief Stores the maximum flow value that was calculated during the segmentation. */
-      double max_flow_;
+      double max_flow_{0.0};
 
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW

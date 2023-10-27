@@ -51,19 +51,7 @@
 
 
 template <typename PointT>
-pcl::LCCPSegmentation<PointT>::LCCPSegmentation () :
-  concavity_tolerance_threshold_ (10),
-  grouping_data_valid_ (false),
-  supervoxels_set_ (false),
-  use_smoothness_check_ (false),
-  smoothness_threshold_ (0.1),
-  use_sanity_check_ (false),  
-  seed_resolution_ (0),
-  voxel_resolution_ (0),
-  k_factor_ (0),
-  min_segment_size_ (0)
-{
-}
+pcl::LCCPSegmentation<PointT>::LCCPSegmentation () = default;
 
 template <typename PointT>
 pcl::LCCPSegmentation<PointT>::~LCCPSegmentation () = default;

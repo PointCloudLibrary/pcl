@@ -54,26 +54,16 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
-pcl::RegionGrowing<PointT, NormalT>::RegionGrowing () :
-  min_pts_per_cluster_ (1),
-  max_pts_per_cluster_ (std::numeric_limits<pcl::uindex_t>::max ()),
-  smooth_mode_flag_ (true),
-  curvature_flag_ (true),
-  residual_flag_ (false),
-  theta_threshold_ (30.0f / 180.0f * static_cast<float> (M_PI)),
-  residual_threshold_ (0.05f),
-  curvature_threshold_ (0.05f),
-  neighbour_number_ (30),
-  search_ (),
-  normals_ (),
-  point_neighbours_ (0),
-  point_labels_ (0),
-  normal_flag_ (true),
-  num_pts_in_segment_ (0),
-  clusters_ (0),
-  number_of_segments_ (0)
-{
-}
+pcl::RegionGrowing<PointT, NormalT>::RegionGrowing()
+: max_pts_per_cluster_(std::numeric_limits<pcl::uindex_t>::max())
+, theta_threshold_(30.0f / 180.0f * static_cast<float>(M_PI))
+, search_()
+, normals_()
+, point_neighbours_(0)
+, point_labels_(0)
+, num_pts_in_segment_(0)
+, clusters_(0)
+{}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>

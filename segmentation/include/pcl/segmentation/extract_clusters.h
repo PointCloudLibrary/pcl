@@ -338,8 +338,7 @@ namespace pcl
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Empty constructor. */
       EuclideanClusterExtraction () : tree_ (), 
-                                      cluster_tolerance_ (0),
-                                      min_pts_per_cluster_ (1), 
+                                       
                                       max_pts_per_cluster_ (std::numeric_limits<pcl::uindex_t>::max ())
       {};
 
@@ -426,10 +425,10 @@ namespace pcl
       KdTreePtr tree_;
 
       /** \brief The spatial cluster tolerance as a measure in the L2 Euclidean space. */
-      double cluster_tolerance_;
+      double cluster_tolerance_{0};
 
       /** \brief The minimum number of points that a cluster needs to contain in order to be considered valid (default = 1). */
-      pcl::uindex_t min_pts_per_cluster_;
+      pcl::uindex_t min_pts_per_cluster_{1};
 
       /** \brief The maximum number of points that a cluster needs to contain in order to be considered valid (default = MAXINT). */
       pcl::uindex_t max_pts_per_cluster_;

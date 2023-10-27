@@ -549,7 +549,6 @@ class Viewer
     ///////////////////////////////////////////////////////////////////////////////////////
     Viewer (Buffer &buf)
       : buf_ (buf)
-      , image_cld_init_ (false), depth_image_cld_init_ (false)
     {
       image_viewer_.reset (new visualization::ImageViewer ("PCL/OpenNI RGB image viewer"));
       depth_image_viewer_.reset (new visualization::ImageViewer ("PCL/OpenNI depth image viewer"));
@@ -620,7 +619,7 @@ class Viewer
     Buffer &buf_;
     visualization::ImageViewer::Ptr image_viewer_;
     visualization::ImageViewer::Ptr depth_image_viewer_;
-    bool image_cld_init_, depth_image_cld_init_;
+    bool image_cld_init_{false}, depth_image_cld_init_{false};
 };
 
 void

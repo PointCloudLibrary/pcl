@@ -48,23 +48,15 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 pcl::MinCutSegmentation<PointT>::MinCutSegmentation () :
-  inverse_sigma_ (16.0),
-  binary_potentials_are_valid_ (false),
-  epsilon_ (0.0001),
-  radius_ (16.0),
-  unary_potentials_are_valid_ (false),
-  source_weight_ (0.8),
+  
   search_ (),
-  number_of_neighbours_ (14),
-  graph_is_valid_ (false),
+  
   foreground_points_ (0),
   background_points_ (0),
   clusters_ (0),
   vertices_ (0),
-  edge_marker_ (0),
-  source_ (),/////////////////////////////////
-  sink_ (),///////////////////////////////////
-  max_flow_ (0.0)
+  edge_marker_ (0)
+  ///////////////////////////////////
 {
 }
 

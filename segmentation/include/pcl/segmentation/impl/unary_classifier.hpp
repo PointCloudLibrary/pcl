@@ -52,14 +52,9 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::UnaryClassifier<PointT>::UnaryClassifier () :
-  input_cloud_ (new pcl::PointCloud<PointT>),
-  label_field_ (false),
-  normal_radius_search_ (0.01f),
-  fpfh_radius_search_ (0.05f),
-  feature_threshold_ (5.0)
-{
-}
+pcl::UnaryClassifier<PointT>::UnaryClassifier()
+: input_cloud_(new pcl::PointCloud<PointT>)
+{}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>

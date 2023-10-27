@@ -157,7 +157,7 @@ namespace pcl
           /// nodes and their outgoing internal edges
           std::vector<capacitated_edge> nodes_;
           /// current flow value (includes constant)
-          double flow_value_;
+          double flow_value_{0.0};
           /// identifies which side of the cut a node falls
           std::vector<unsigned char> cut_;
 
@@ -259,8 +259,8 @@ namespace pcl
         GaussianFitter (float epsilon = 0.0001)
           : sum_ (Eigen::Vector3f::Zero ())
           , accumulator_ (Eigen::Matrix3f::Zero ())
-          , count_ (0)
-          , epsilon_ (epsilon)
+          , 
+           epsilon_ (epsilon)
         { }
 
         /// Add a color sample
@@ -285,7 +285,7 @@ namespace pcl
         /// matrix of products (i.e. r*r, r*g, r*b), some values are duplicated.
         Eigen::Matrix3f accumulator_;
         /// count of color samples added to the gaussian
-        std::uint32_t count_;
+        std::uint32_t count_{0};
         /// small value to add to covariance matrix diagonal to avoid singular values
         float epsilon_;
         PCL_MAKE_ALIGNED_OPERATOR_NEW
@@ -329,12 +329,8 @@ namespace pcl
       using PCLBase<PointT>::fake_indices_;
 
       /// Constructor
-      GrabCut (std::uint32_t K = 5, float lambda = 50.f)
-        : K_ (K)
-        , lambda_ (lambda)
-        , nb_neighbours_ (9)
-        , initialized_ (false)
-      {}
+      GrabCut(std::uint32_t K = 5, float lambda = 50.f) : K_(K), lambda_(lambda) {}
+
       /// Destructor
       ~GrabCut () override = default;
       // /// Set input cloud
@@ -399,9 +395,9 @@ namespace pcl
       // Storage for N-link weights, each pixel stores links to nb_neighbours
       struct NLinks
       {
-        NLinks () : nb_links (0), indices (0), dists (0), weights (0) {}
+        NLinks () :  indices (0), dists (0), weights (0) {}
 
-        int nb_links;
+        int nb_links{0};
         Indices indices;
         std::vector<float> dists;
         std::vector<float> weights;
@@ -460,9 +456,9 @@ namespace pcl
       /// Pointer to the spatial search object.
       KdTreePtr tree_;
       /// Number of neighbours
-      int nb_neighbours_;
+      int nb_neighbours_{9};
       /// is segmentation initialized
-      bool initialized_;
+      bool initialized_{false};
       /// Precomputed N-link weights
       std::vector<NLinks> n_links_;
       /// Converted input

@@ -38,9 +38,7 @@
 #include <pcl/console/print.h>
 #include <pcl/stereo/digital_elevation_map.h>
 
-pcl::DigitalElevationMapBuilder::DigitalElevationMapBuilder()
-: resolution_column_(64), resolution_disparity_(32), min_points_in_cell_(1)
-{}
+pcl::DigitalElevationMapBuilder::DigitalElevationMapBuilder() = default;
 
 pcl::DigitalElevationMapBuilder::~DigitalElevationMapBuilder() = default;
 

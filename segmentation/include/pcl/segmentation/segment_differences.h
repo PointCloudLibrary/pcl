@@ -86,7 +86,7 @@ namespace pcl
 
       /** \brief Empty constructor. */
       SegmentDifferences () : 
-        tree_ (), target_ (), distance_threshold_ (0)
+        tree_ (), target_ () 
       {};
 
       /** \brief Provide a pointer to the target dataset against which we
@@ -147,7 +147,7 @@ namespace pcl
       /** \brief The distance tolerance (squared) as a measure in the L2
         * Euclidean space between corresponding points. 
         */
-      double distance_threshold_;
+      double distance_threshold_{0};
 
       /** \brief Class getName method. */
       virtual std::string 

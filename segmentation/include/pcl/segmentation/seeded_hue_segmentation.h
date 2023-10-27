@@ -107,7 +107,7 @@ namespace pcl
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Empty constructor. */
-      SeededHueSegmentation () : cluster_tolerance_ (0), delta_hue_ (0.0)
+      SeededHueSegmentation ()  
       {};
 
       /** \brief Provide a pointer to the search object.
@@ -158,10 +158,10 @@ namespace pcl
       KdTreePtr tree_;
 
       /** \brief The spatial cluster tolerance as a measure in the L2 Euclidean space. */
-      double cluster_tolerance_;
+      double cluster_tolerance_{0};
 
       /** \brief The allowed difference on the hue*/
-      float delta_hue_;
+      float delta_hue_{0.0};
 
       /** \brief Class getName method. */
       virtual std::string getClassName () const { return ("seededHueSegmentation"); }
