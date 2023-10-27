@@ -109,7 +109,6 @@ namespace pcl
   inline std::string
   getFieldsList (const pcl::PCLPointCloud2 &cloud)
   {
-
     if (cloud.fields.empty())
     {
       return "";
