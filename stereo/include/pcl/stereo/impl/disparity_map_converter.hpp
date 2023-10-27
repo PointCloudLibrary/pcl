@@ -47,8 +47,7 @@
 
 template <typename PointT>
 pcl::DisparityMapConverter<PointT>::DisparityMapConverter()
-: 
- disparity_threshold_max_(std::numeric_limits<float>::max())
+: disparity_threshold_max_(std::numeric_limits<float>::max())
 {}
 
 template <typename PointT>

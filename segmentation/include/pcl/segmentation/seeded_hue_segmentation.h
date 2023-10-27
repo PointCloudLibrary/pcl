@@ -107,8 +107,7 @@ namespace pcl
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Empty constructor. */
-      SeededHueSegmentation ()  
-      {};
+      SeededHueSegmentation () = default;
 
       /** \brief Provide a pointer to the search object.
         * \param[in] tree a pointer to the spatial search object.
