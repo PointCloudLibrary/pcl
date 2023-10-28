@@ -81,20 +81,15 @@ namespace pcl
       /** \brief Empty constructor. 
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SACSegmentation (bool random = false) 
-        : model_ ()
-        , sac_ ()
-        , 
-         radius_min_ (-std::numeric_limits<double>::max ())
-        , radius_max_ (std::numeric_limits<double>::max ())
-        , 
-         samples_radius_search_ ()
-        , 
-         axis_ (Eigen::Vector3f::Zero ())
-        , 
-         random_ (random)
-      {
-      }
+      SACSegmentation(bool random = false)
+      : model_()
+      , sac_()
+      , radius_min_(-std::numeric_limits<double>::max())
+      , radius_max_(std::numeric_limits<double>::max())
+      , samples_radius_search_()
+      , axis_(Eigen::Vector3f::Zero())
+      , random_(random)
+      {}
 
       /** \brief Empty destructor. */
       ~SACSegmentation () override = default;
@@ -259,10 +254,10 @@ namespace pcl
       initSAC (const int method_type);
 
       /** \brief The model that needs to be segmented. */
-      SampleConsensusModelPtr model_;
+      SampleConsensusModelPtr model_{nullptr};
 
       /** \brief The sample consensus segmentation method. */
-      SampleConsensusPtr sac_;
+      SampleConsensusPtr sac_{nullptr};
 
       /** \brief The type of model to use (user given parameter). */
       int model_type_{-1};
@@ -277,19 +272,19 @@ namespace pcl
       bool optimize_coefficients_{true};
 
       /** \brief The minimum and maximum radius limits for the model. Applicable to all models that estimate a radius. */
-      double radius_min_, radius_max_;
+      double radius_min_{0.0}, radius_max_{0.0};
 
       /** \brief The maximum distance of subsequent samples from the first (radius search) */
       double samples_radius_{0.0};
 
       /** \brief The search object for picking subsequent samples using radius search */
-      SearchPtr samples_radius_search_;
+      SearchPtr samples_radius_search_{nullptr};
 
       /** \brief The maximum allowed difference between the model normal and the given axis. */
       double eps_angle_{0.0};
 
       /** \brief The axis along which we need to search for a model perpendicular to. */
-      Eigen::Vector3f axis_;
+      Eigen::Vector3f axis_{};
 
       /** \brief Maximum number of iterations before giving up (user given parameter). */
       int max_iterations_{50};
@@ -301,7 +296,7 @@ namespace pcl
       double probability_{0.99};
 
       /** \brief Set to true if we need a random seed. */
-      bool random_;
+      bool random_{false};
 
       /** \brief Class get name method. */
       virtual std::string 

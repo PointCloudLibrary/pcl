@@ -282,7 +282,7 @@ namespace pcl
       pcl::uindex_t min_pts_per_cluster_{1};
 
       /** \brief Stores the maximum number of points that a cluster needs to contain in order to be considered valid. */
-      pcl::uindex_t max_pts_per_cluster_;
+      pcl::uindex_t max_pts_per_cluster_{0};
 
       /** \brief Flag that signalizes if the smoothness constraint will be used. */
       bool smooth_mode_flag_{true};
@@ -294,7 +294,7 @@ namespace pcl
       bool residual_flag_{false};
 
       /** \brief Threshold used for testing the smoothness between points. */
-      float theta_threshold_;
+      float theta_threshold_{0.0f};
 
       /** \brief Threshold used in residual test. */
       float residual_threshold_{0.05f};
@@ -306,10 +306,10 @@ namespace pcl
       unsigned int neighbour_number_{30};
 
       /** \brief Search method that will be used for KNN. */
-      KdTreePtr search_;
+      KdTreePtr search_{nullptr};
 
       /** \brief Contains normals of the points that will be segmented. */
-      NormalPtr normals_;
+      NormalPtr normals_{nullptr};
 
       /** \brief Contains neighbours of each point. */
       std::vector<pcl::Indices> point_neighbours_;

@@ -50,7 +50,6 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
 pcl::RegionGrowingRGB<PointT, NormalT>::RegionGrowingRGB () :
-  
   point_distances_ (0),
   segment_neighbours_ (0),
   segment_distances_ (0),

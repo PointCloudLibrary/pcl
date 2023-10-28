@@ -236,7 +236,7 @@ namespace pcl
 
     private:
       /** \brief A pointer to the spatial search object */
-      SearcherPtr searcher_;
+      SearcherPtr searcher_{nullptr};
 
       /** \brief The condition function that needs to hold for clustering */
       std::function<bool (const PointT&, const PointT&, float)> condition_function_;
@@ -248,16 +248,16 @@ namespace pcl
       int min_cluster_size_{1};
 
       /** \brief The maximum cluster size (default = unlimited) */
-      int max_cluster_size_;
+      int max_cluster_size_{0};
 
       /** \brief Set to true if you want to be able to extract the clusters that are too large or too small (default = false) */
-      bool extract_removed_clusters_;
+      bool extract_removed_clusters_{false};
 
       /** \brief The resultant clusters that contain less than min_cluster_size points */
-      pcl::IndicesClustersPtr small_clusters_;
+      pcl::IndicesClustersPtr small_clusters_{nullptr};
 
       /** \brief The resultant clusters that contain more than max_cluster_size points */
-      pcl::IndicesClustersPtr large_clusters_;
+      pcl::IndicesClustersPtr large_clusters_{nullptr};
 
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW

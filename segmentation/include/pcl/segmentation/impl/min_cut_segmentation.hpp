@@ -48,9 +48,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 pcl::MinCutSegmentation<PointT>::MinCutSegmentation () :
-  
   search_ (),
-  
   foreground_points_ (0),
   background_points_ (0),
   clusters_ (0),

@@ -153,7 +153,7 @@ namespace pcl
       bool use_directed_weights_{true};
 
       /** \brief Use clean cutting */
-      bool use_clean_cutting_;
+      bool use_clean_cutting_{false};
 
       /** \brief Iterations for RANSAC */
       std::uint32_t ransac_itrs_{10000};

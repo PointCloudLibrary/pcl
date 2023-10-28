@@ -185,7 +185,7 @@ namespace pcl
 
     protected:
       /** \brief A pointer to the input planar hull dataset. */
-      PointCloudConstPtr planar_hull_;
+      PointCloudConstPtr planar_hull_{nullptr};
 
       /** \brief The minimum number of points needed on the convex hull. */
       int min_pts_hull_{3};
@@ -193,12 +193,12 @@ namespace pcl
       /** \brief The minimum allowed height (distance to the model) a point
         * will be considered from. 
         */
-      double height_limit_min_{0};
+      double height_limit_min_{0.0};
 
       /** \brief The maximum allowed height (distance to the model) a point
         * will be considered from. 
         */
-      double height_limit_max_;
+      double height_limit_max_{0.0};
 
       /** \brief Values describing the data acquisition viewpoint. Default: 0,0,0. */
       float vpx_{0}, vpy_{0}, vpz_{0};

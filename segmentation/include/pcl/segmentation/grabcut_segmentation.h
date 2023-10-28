@@ -259,9 +259,8 @@ namespace pcl
         GaussianFitter (float epsilon = 0.0001)
           : sum_ (Eigen::Vector3f::Zero ())
           , accumulator_ (Eigen::Matrix3f::Zero ())
-          , 
-           epsilon_ (epsilon)
-        { }
+          , epsilon_ (epsilon)
+        {}
 
         /// Add a color sample
         void
@@ -281,13 +280,13 @@ namespace pcl
 
         private:
         /// sum of r,g, and b
-        Eigen::Vector3f sum_;
+        Eigen::Vector3f sum_{};
         /// matrix of products (i.e. r*r, r*g, r*b), some values are duplicated.
-        Eigen::Matrix3f accumulator_;
+        Eigen::Matrix3f accumulator_{};
         /// count of color samples added to the gaussian
         std::uint32_t count_{0};
         /// small value to add to covariance matrix diagonal to avoid singular values
-        float epsilon_;
+        float epsilon_{0.0f};
         PCL_MAKE_ALIGNED_OPERATOR_NEW
       };
 
