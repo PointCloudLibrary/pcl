@@ -536,10 +536,19 @@ pcl::HDLGrabber::stop ()
   terminate_read_packet_thread_ = true;
   hdl_data_.stopQueue ();
 
-#ifdef _WIN32
   if (hdl_read_socket_ != nullptr)
+  {
+    try
+    {
+      hdl_read_socket_->shutdown (boost::asio::ip::tcp::socket::shutdown_both);
+    }
+    catch (const boost::system::system_error& e)
+    {
+      PCL_ERROR("[pcl::HDLGrabber::stop] Failed to shutdown the socket. %s\n", e.what ());
+    }
+
     hdl_read_socket_->close ();
-#endif
+  }
 
   if (hdl_read_packet_thread_ != nullptr)
   {
@@ -650,27 +659,21 @@ pcl::HDLGrabber::readPacketsFromSocket ()
 
   while (!terminate_read_packet_thread_ && hdl_read_socket_->is_open ())
   {
-    std::size_t length = 0;
-
-#ifdef _WIN32
     try
     {
-#endif
-      length = hdl_read_socket_->receive_from (boost::asio::buffer (data, 1500), sender_endpoint);
-#ifdef _WIN32
+      std::size_t length = hdl_read_socket_->receive_from (boost::asio::buffer (data, 1500), sender_endpoint);
+
+      if (isAddressUnspecified (source_address_filter_)
+          || (source_address_filter_ == sender_endpoint.address () && source_port_filter_ == sender_endpoint.port ()))
+      {
+        enqueueHDLPacket (data, length);
+      }
     }
     catch (const boost::system::system_error& e)
     {
-      // WSAEINTR (10024, socket cancellation) error code is triggered when stopping the grabber.
-      if (e.code () != std::error_code{WSAEINTR, std::system_category ()})
+      // We must ignore those errors triggered on socket close/shutdown request.
+      if (!(e.code () == boost::asio::error::interrupted || e.code () == boost::asio::error::operation_aborted))
         throw;
-    }
-#endif
-
-    if (isAddressUnspecified (source_address_filter_)
-        || (source_address_filter_ == sender_endpoint.address () && source_port_filter_ == sender_endpoint.port ()))
-    {
-      enqueueHDLPacket (data, length);
     }
   }
 }
