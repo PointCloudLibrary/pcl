@@ -115,11 +115,7 @@ public:
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Empty constructor. */
-  LabeledEuclideanClusterExtraction()
-  : tree_()
-  , 
-   max_pts_per_cluster_(std::numeric_limits<int>::max())
-  , max_label_(std::numeric_limits<int>::max()){};
+  LabeledEuclideanClusterExtraction() = default;
 
   /** \brief Provide a pointer to the search object.
    * \param[in] tree a pointer to the spatial search object.
@@ -221,7 +217,7 @@ protected:
   using BasePCLBase::input_;
 
   /** \brief A pointer to the spatial search object. */
-  KdTreePtr tree_;
+  KdTreePtr tree_{nullptr};
 
   /** \brief The spatial cluster tolerance as a measure in the L2 Euclidean space. */
   double cluster_tolerance_{0};
@@ -232,11 +228,11 @@ protected:
 
   /** \brief The maximum number of points that a cluster needs to contain in order to be
    * considered valid (default = MAXINT). */
-  int max_pts_per_cluster_;
+  int max_pts_per_cluster_{std::numeric_limits<int>::max()};
 
   /** \brief The maximum number of labels we can find in this pointcloud (default =
    * MAXINT)*/
-  unsigned int max_label_;
+  unsigned int max_label_{0};
 
   /** \brief Class getName method. */
   virtual std::string

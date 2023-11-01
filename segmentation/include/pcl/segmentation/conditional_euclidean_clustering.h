@@ -99,8 +99,6 @@ namespace pcl
       ConditionalEuclideanClustering (bool extract_removed_clusters = false) :
           searcher_ (),
           condition_function_ (),
-          
-          max_cluster_size_ (std::numeric_limits<int>::max ()),
           extract_removed_clusters_ (extract_removed_clusters),
           small_clusters_ (new pcl::IndicesClusters),
           large_clusters_ (new pcl::IndicesClusters)
@@ -248,10 +246,10 @@ namespace pcl
       int min_cluster_size_{1};
 
       /** \brief The maximum cluster size (default = unlimited) */
-      int max_cluster_size_{0};
+      int max_cluster_size_{std::numeric_limits<int>::max ()};
 
       /** \brief Set to true if you want to be able to extract the clusters that are too large or too small (default = false) */
-      bool extract_removed_clusters_{false};
+      bool extract_removed_clusters_;
 
       /** \brief The resultant clusters that contain less than min_cluster_size points */
       pcl::IndicesClustersPtr small_clusters_{nullptr};

@@ -84,10 +84,6 @@ namespace pcl
       SACSegmentation(bool random = false)
       : model_()
       , sac_()
-      , radius_min_(-std::numeric_limits<double>::max())
-      , radius_max_(std::numeric_limits<double>::max())
-      , samples_radius_search_()
-      , axis_(Eigen::Vector3f::Zero())
       , random_(random)
       {}
 
@@ -272,7 +268,7 @@ namespace pcl
       bool optimize_coefficients_{true};
 
       /** \brief The minimum and maximum radius limits for the model. Applicable to all models that estimate a radius. */
-      double radius_min_{0.0}, radius_max_{0.0};
+      double radius_min_{-std::numeric_limits<double>::max()}, radius_max_{std::numeric_limits<double>::max()};
 
       /** \brief The maximum distance of subsequent samples from the first (radius search) */
       double samples_radius_{0.0};
@@ -284,7 +280,7 @@ namespace pcl
       double eps_angle_{0.0};
 
       /** \brief The axis along which we need to search for a model perpendicular to. */
-      Eigen::Vector3f axis_{};
+      Eigen::Vector3f axis_{Eigen::Vector3f::Zero()};
 
       /** \brief Maximum number of iterations before giving up (user given parameter). */
       int max_iterations_{50};
@@ -296,7 +292,7 @@ namespace pcl
       double probability_{0.99};
 
       /** \brief Set to true if we need a random seed. */
-      bool random_{false};
+      bool random_;
 
       /** \brief Class get name method. */
       virtual std::string 

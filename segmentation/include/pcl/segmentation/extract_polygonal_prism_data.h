@@ -115,9 +115,7 @@ namespace pcl
       using PointIndicesConstPtr = PointIndices::ConstPtr;
 
       /** \brief Empty constructor. */
-      ExtractPolygonalPrismData () : planar_hull_ (), 
-                                     height_limit_max_(std::numeric_limits<float>::max()) 
-      {};
+      ExtractPolygonalPrismData () = default;
 
       /** \brief Provide a pointer to the input planar hull dataset.
         * \note Please see the example in the class description for how to obtain this.
@@ -198,7 +196,7 @@ namespace pcl
       /** \brief The maximum allowed height (distance to the model) a point
         * will be considered from. 
         */
-      double height_limit_max_{0.0};
+      double height_limit_max_{std::numeric_limits<float>::max()};
 
       /** \brief Values describing the data acquisition viewpoint. Default: 0,0,0. */
       float vpx_{0}, vpy_{0}, vpz_{0};

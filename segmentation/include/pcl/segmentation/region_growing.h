@@ -282,7 +282,7 @@ namespace pcl
       pcl::uindex_t min_pts_per_cluster_{1};
 
       /** \brief Stores the maximum number of points that a cluster needs to contain in order to be considered valid. */
-      pcl::uindex_t max_pts_per_cluster_{0};
+      pcl::uindex_t max_pts_per_cluster_{std::numeric_limits<pcl::uindex_t>::max()};
 
       /** \brief Flag that signalizes if the smoothness constraint will be used. */
       bool smooth_mode_flag_{true};
@@ -294,7 +294,7 @@ namespace pcl
       bool residual_flag_{false};
 
       /** \brief Threshold used for testing the smoothness between points. */
-      float theta_threshold_{0.0f};
+      float theta_threshold_{30.0f / 180.0f * static_cast<float>(M_PI)};
 
       /** \brief Threshold used in residual test. */
       float residual_threshold_{0.05f};
