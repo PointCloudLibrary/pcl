@@ -66,7 +66,7 @@ if(flann_FOUND)
     set(FLANN_LIBRARY_TYPE SHARED)
   endif()
 
-  if(FLANN_LIBRARY_TYPE EQUAL SHARED)
+  if(FLANN_LIBRARY_TYPE MATCHES SHARED)
     add_library(FLANN::FLANN ALIAS flann::flann_cpp)
   else()
     add_library(FLANN::FLANN ALIAS flann::flann_cpp_s)
