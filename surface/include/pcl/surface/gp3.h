@@ -123,6 +123,7 @@ namespace pcl
   /** \brief GreedyProjectionTriangulation is an implementation of a greedy triangulation algorithm for 3D points
     * based on local 2D projections. It assumes locally smooth surfaces and relatively smooth transitions between
     * areas with different point densities.
+    * \tparam PointInT Point type must have XYZ and normal information, for example `pcl::PointNormal` or `pcl::PointXYZRGBNormal` or `pcl::PointXYZINormal`
     * \author Zoltan Csaba Marton
     * \ingroup surface
     */
