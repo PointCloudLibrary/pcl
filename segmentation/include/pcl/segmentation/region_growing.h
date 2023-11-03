@@ -312,10 +312,10 @@ namespace pcl
       NormalPtr normals_{nullptr};
 
       /** \brief Contains neighbours of each point. */
-      std::vector<pcl::Indices> point_neighbours_;
+      std::vector<pcl::Indices> point_neighbours_{};
 
       /** \brief Point labels that tells to which segment each point belongs. */
-      std::vector<int> point_labels_;
+      std::vector<int> point_labels_{};
 
       /** \brief If set to true then normal/smoothness test will be done during segmentation.
         * It is always set to true for the usual region growing algorithm. It is used for turning on/off the test
@@ -323,10 +323,10 @@ namespace pcl
       bool normal_flag_{true};
 
       /** \brief Tells how much points each segment contains. Used for reserving memory. */
-      std::vector<pcl::uindex_t> num_pts_in_segment_;
+      std::vector<pcl::uindex_t> num_pts_in_segment_{};
 
       /** \brief After the segmentation it will contain the segments. */
-      std::vector <pcl::PointIndices> clusters_;
+      std::vector <pcl::PointIndices> clusters_{};
 
       /** \brief Stores the number of segments. */
       int number_of_segments_{0};
