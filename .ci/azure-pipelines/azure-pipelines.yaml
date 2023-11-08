@@ -73,9 +73,9 @@ stages:
           vmImage: '$(VMIMAGE)'
         strategy:
           matrix:
-            Big Sur 11:
-              VMIMAGE: 'macOS-11'
-              OSX_VERSION: '11'
+            Monterey 12:
+              VMIMAGE: 'macOS-12'
+              OSX_VERSION: '12'
             Ventura 13:
               VMIMAGE: 'macOS-13'
               OSX_VERSION: '13'
