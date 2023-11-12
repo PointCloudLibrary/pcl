@@ -144,13 +144,6 @@ namespace pcl
 
             /** \brief Batch approximate nearest search on GPU
               * \param[in] queries array of centers
-              * \param[out] result array of results ( one index for each query ) 
-              */
-            PCL_DEPRECATED(1, 14, "use approxNearestSearch() which returns square distances instead")
-            void approxNearestSearch(const Queries& queries, NeighborIndices& result) const;
-
-            /** \brief Batch approximate nearest search on GPU
-              * \param[in] queries array of centers
               * \param[out] result array of results ( one index for each query )
               * \param[out] sqr_distance corresponding square distances to results from query point
               */
