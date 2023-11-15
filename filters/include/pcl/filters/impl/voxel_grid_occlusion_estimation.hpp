@@ -62,6 +62,13 @@ pcl::VoxelGridOcclusionEstimation<PointT>::initializeVoxelGrid ()
   // set the sensor origin and sensor orientation
   sensor_origin_ = filtered_cloud_.sensor_origin_;
   sensor_orientation_ = filtered_cloud_.sensor_orientation_;
+
+  Eigen::Vector3i ijk = this->getGridCoordinates(sensor_origin_.x(), sensor_origin_.y(), sensor_origin_.z());
+  // first check whether the sensor origin is within the voxel grid bounding box, then whether it is occupied
+  if((ijk[0]>=min_b_[0] && ijk[1]>=min_b_[1] && ijk[2]>=min_b_[2] && ijk[0]<=max_b_[0] && ijk[1]<=max_b_[1] && ijk[2]<=max_b_[2]) && this->getCentroidIndexAt (ijk) != -1) {
+    PCL_WARN ("[VoxelGridOcclusionEstimation::initializeVoxelGrid] The voxel containing the sensor origin (%g, %g, %g) is marked as occupied. We will instead assume that it is free, to be able to perform the occlusion estimation.\n", sensor_origin_.x(), sensor_origin_.y(), sensor_origin_.z());
+    this->leaf_layout_[((Eigen::Vector4i() << ijk, 0).finished() - min_b_).dot (this->divb_mul_)] = -1;
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -233,8 +240,7 @@ pcl::VoxelGridOcclusionEstimation<PointT>::rayBoxIntersection (const Eigen::Vect
     tmin = tzmin;
   if (tzmax < tmax)
     tmax = tzmax;
-
-  return tmin;
+  return std::max<float>(tmin, 0.0f); // We only want to go in "positive" direction here, not in negative. This is relevant if the origin is inside the bounding box
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -47,7 +47,15 @@ namespace pcl
   /** \brief VoxelGrid to estimate occluded space in the scene.
     * The ray traversal algorithm is implemented by the work of 
     * 'John Amanatides and Andrew Woo, A Fast Voxel Traversal Algorithm for Ray Tracing'
-    *
+    * Example code:
+    * \code
+    * pcl::VoxelGridOcclusionEstimation<pcl::PointXYZ> vg;
+    * vg.setInputCloud (input_cloud);
+    * vg.setLeafSize (leaf_x, leaf_y, leaf_z);
+    * vg.initializeVoxelGrid ();
+    * std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> > occluded_voxels;
+    * vg.occlusionEstimationAll (occluded_voxels);
+    * \endcode
     * \author Christian Potthast
     * \ingroup filters
     */
