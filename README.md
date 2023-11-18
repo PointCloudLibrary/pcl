@@ -37,6 +37,7 @@ Ubuntu                   | [![Status][ci-ubuntu-20.04]][ci-latest-build] <br> [!
 Windows                  | [![Status][ci-windows-x86]][ci-latest-build]  <br> [![Status][ci-windows-x64]][ci-latest-build]   |
 macOS                    | [![Status][ci-macos-12]][ci-latest-build]  <br> [![Status][ci-macos-13]][ci-latest-build]   |
 Documentation            | [![Status][ci-docs]][ci-latest-docs] |
+Read the Docs            | [![Documentation Status](https://readthedocs.org/projects/pcl-tutorials/badge/?version=master)](https://pcl.readthedocs.io/projects/tutorials/en/master/?badge=master) |
 
 Community
 ---------
