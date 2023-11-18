@@ -101,15 +101,15 @@ main(int argc, char** argv)
       direction = 1;
     }
     else
-        // convolve both
-        if (pcl::console::find_switch(argc, argv, "-s")) {
-      direction = 2;
-    }
-    else {
-      // wrong direction given print usage
-      usage(argv);
-      return 1;
-    }
+      // convolve both
+      if (pcl::console::find_switch(argc, argv, "-s")) {
+        direction = 2;
+      }
+      else {
+        // wrong direction given print usage
+        usage(argv);
+        return 1;
+      }
   }
 
   // number of threads if any

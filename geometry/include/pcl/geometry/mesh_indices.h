@@ -160,7 +160,8 @@ private:
   /** \brief Stored index. */
   int index_;
 
-  friend std::istream& operator>><>(std::istream& is, MeshIndex<IndexTagT>& index);
+  friend std::istream&
+  operator>><>(std::istream& is, MeshIndex<IndexTagT>& index);
 };
 
 /** \brief ostream operator. */
