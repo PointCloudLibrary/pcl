@@ -1,2 +1,3 @@
 sphinx>=3
 sphinxcontrib-doxylink
+sphinx-rtd-theme
