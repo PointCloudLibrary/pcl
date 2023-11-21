@@ -23,7 +23,7 @@ BM_OrganizedNeighborSearch(benchmark::State& state, const std::string& file)
   int radiusSearchIdx = 0;
 
   for (auto _ : state) {
-    int searchIdx = indices[radiusSearchIdx++ % indices.size()]; 
+    int searchIdx = indices[radiusSearchIdx++ % indices.size()];
     double searchRadius = 0.1; // or any fixed radius like 0.05
 
     std::vector<int> k_indices;
