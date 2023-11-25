@@ -401,7 +401,7 @@ namespace pcl
 
   struct _Intensity
   {
-    PCL_ADD_INTENSITY;
+    PCL_ADD_INTENSITY
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const Intensity& p);
