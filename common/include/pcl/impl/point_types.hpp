@@ -904,7 +904,7 @@ namespace pcl
       };
       float data_c[4];
     };
-    PCL_ADD_EIGEN_MAPS_RGB;
+    PCL_ADD_EIGEN_MAPS_RGB
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -1686,7 +1686,7 @@ namespace pcl
       };
       float data_c[4];
     };
-    PCL_ADD_EIGEN_MAPS_RGB;
+    PCL_ADD_EIGEN_MAPS_RGB
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
