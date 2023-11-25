@@ -1616,7 +1616,6 @@ namespace pcl
     inline constexpr IntensityGradient (): IntensityGradient (0.f, 0.f, 0.f) {}
 
     inline constexpr IntensityGradient (float _x, float _y, float _z): gradient_x (_x), gradient_y (_y), gradient_z (_z) {}
-
     friend std::ostream& operator << (std::ostream& os, const IntensityGradient& p);
   };
 
