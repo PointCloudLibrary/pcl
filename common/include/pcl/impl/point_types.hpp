@@ -365,7 +365,7 @@ namespace pcl
 #endif
   struct _RGB
   {
-    PCL_ADD_RGB;
+    PCL_ADD_RGB
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const RGB& p);
@@ -528,7 +528,7 @@ namespace pcl
   struct EIGEN_ALIGN16 _PointXYZRGBA
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
-    PCL_ADD_RGB;
+    PCL_ADD_RGB
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -575,14 +575,14 @@ namespace pcl
   struct EIGEN_ALIGN16 _PointXYZRGB
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
-    PCL_ADD_RGB;
+    PCL_ADD_RGB
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   struct EIGEN_ALIGN16 _PointXYZRGBL
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
-    PCL_ADD_RGB;
+    PCL_ADD_RGB
     std::uint32_t label;
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
