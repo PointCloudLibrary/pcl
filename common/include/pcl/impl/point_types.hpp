@@ -338,7 +338,7 @@ namespace pcl
 
   struct _PointXYZ
   {
-    PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    PCL_ADD_POINT4D // This adds the members x,y,z which can also be accessed using the point (which is float[4])
 
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
@@ -469,7 +469,7 @@ namespace pcl
     */
   struct EIGEN_ALIGN16 _PointXYZI
   {
-    PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    PCL_ADD_POINT4D // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     union
     {
       struct
@@ -496,7 +496,7 @@ namespace pcl
 
   struct EIGEN_ALIGN16 _PointXYZL
   {
-    PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    PCL_ADD_POINT4D // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     std::uint32_t label;
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
@@ -527,7 +527,7 @@ namespace pcl
 
   struct EIGEN_ALIGN16 _PointXYZRGBA
   {
-    PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    PCL_ADD_POINT4D // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     PCL_ADD_RGB
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
@@ -574,14 +574,14 @@ namespace pcl
 
   struct EIGEN_ALIGN16 _PointXYZRGB
   {
-    PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    PCL_ADD_POINT4D // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     PCL_ADD_RGB
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   struct EIGEN_ALIGN16 _PointXYZRGBL
   {
-    PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    PCL_ADD_POINT4D // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     PCL_ADD_RGB
     std::uint32_t label;
     PCL_MAKE_ALIGNED_OPERATOR_NEW
@@ -666,7 +666,7 @@ namespace pcl
 
   struct EIGEN_ALIGN16 _PointXYZLAB
   {
-    PCL_ADD_POINT4D; // this adds the members x,y,z
+    PCL_ADD_POINT4D // this adds the members x,y,z
     union
     {
       struct
@@ -701,7 +701,7 @@ namespace pcl
 
   struct EIGEN_ALIGN16 _PointXYZHSV
   {
-    PCL_ADD_POINT4D;    // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    PCL_ADD_POINT4D    // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     union
     {
       struct
@@ -787,7 +787,7 @@ namespace pcl
   // @TODO: inheritance trick like on other PointTypes
   struct EIGEN_ALIGN16 InterestPoint
   {
-    PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    PCL_ADD_POINT4D // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     union
     {
       struct
@@ -858,7 +858,7 @@ namespace pcl
 
   struct EIGEN_ALIGN16 _PointNormal
   {
-    PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    PCL_ADD_POINT4D // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     PCL_ADD_NORMAL4D; // This adds the member normal[3] which can also be accessed using the point (which is float[4])
     union
     {
@@ -893,7 +893,7 @@ namespace pcl
 
   struct EIGEN_ALIGN16 _PointXYZRGBNormal
   {
-    PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    PCL_ADD_POINT4D // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     PCL_ADD_NORMAL4D; // This adds the member normal[3] which can also be accessed using the point (which is float[4])
     union
     {
@@ -979,7 +979,7 @@ namespace pcl
 
   struct EIGEN_ALIGN16 _PointXYZINormal
   {
-    PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    PCL_ADD_POINT4D // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     PCL_ADD_NORMAL4D; // This adds the member normal[3] which can also be accessed using the point (which is float[4])
     union
     {
@@ -1022,7 +1022,7 @@ namespace pcl
 //----
   struct EIGEN_ALIGN16 _PointXYZLNormal
   {
-    PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    PCL_ADD_POINT4D // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     PCL_ADD_NORMAL4D; // This adds the member normal[3] which can also be accessed using the point (which is float[4])
     union
     {
@@ -1067,7 +1067,7 @@ namespace pcl
 
   struct EIGEN_ALIGN16 _PointWithRange
   {
-    PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    PCL_ADD_POINT4D // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     union
     {
       struct
@@ -1098,7 +1098,7 @@ namespace pcl
 
   struct EIGEN_ALIGN16 _PointWithViewpoint
   {
-    PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    PCL_ADD_POINT4D // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     union
     {
       struct
@@ -1633,7 +1633,7 @@ namespace pcl
 
   struct EIGEN_ALIGN16 _PointWithScale
   {
-    PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    PCL_ADD_POINT4D // This adds the members x,y,z which can also be accessed using the point (which is float[4])
 
     union
     {
@@ -1673,7 +1673,7 @@ namespace pcl
 
   struct EIGEN_ALIGN16 _PointSurfel
   {
-    PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    PCL_ADD_POINT4D // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     PCL_ADD_NORMAL4D; // This adds the member normal[3] which can also be accessed using the point (which is float[4])
     union
     {
@@ -1717,7 +1717,7 @@ namespace pcl
 
   struct EIGEN_ALIGN16 _PointDEM
   {
-    PCL_ADD_POINT4D;
+    PCL_ADD_POINT4D
     float intensity;
     float intensity_variance;
     float height_variance;
