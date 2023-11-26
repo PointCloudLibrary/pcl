@@ -899,7 +899,7 @@ namespace pcl
     {
       struct
       {
-        PCL_ADD_UNION_RGB;
+        PCL_ADD_UNION_RGB
         float curvature;
       };
       float data_c[4];
@@ -1678,7 +1678,7 @@ namespace pcl
     {
       struct
       {
-        PCL_ADD_UNION_RGB;
+        PCL_ADD_UNION_RGB
         float radius;
         float confidence;
         float curvature;
