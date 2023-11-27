@@ -54,36 +54,32 @@ namespace pcl
    #include <pcl/filters/filter_indices.h>
 
 
-pcl::ModelCoefficients model_coeff;
-model_coeff.values.resize(4);
-model_coeff.values[0] = 0; 
-model_coeff.values[1] = 0; 
-model_coeff.values[2] = 1.5; 
-model_coeff.values[3] = 0.5;
+   * pcl::ModelCoefficients model_coeff;
+   *model_coeff.values.resize(4);
+   *model_coeff.values[0] = 0; 
+   *model_coeff.values[1] = 0; 
+   *model_coeff.values[2] = 1.5; 
+   *model_coeff.values[3] = 0.5;
 
-pcl::SACSegmentation<pcl::PointXYZ> seg; // Use SACSegmentation to segment the cloud
-pcl::PointIndices::Ptr inliers(new pcl::PointIndices);
-pcl::ModelOutlierRemoval<pcl::PointXYZ> filter;
+   *pcl::SACSegmentation<pcl::PointXYZ> seg; // Use SACSegmentation to segment the cloud
+   *pcl::PointIndices::Ptr inliers(new pcl::PointIndices);
+   *pcl::ModelOutlierRemoval<pcl::PointXYZ> filter;
 
-// Set the model coefficients and perform segmentation
-seg.setModelCoefficients(model_coeff);
-seg.setMethodType(pcl::SAC_RANSAC);
-seg.setOptimizeCoefficients(true);
-seg.setModelType(pcl::SACMODEL_PLANE);
-seg.setDistanceThreshold(0.1);
-seg.setInputCloud(cloud_in);
-seg.segment(*inliers, *coefficients);
+  *seg.setModelCoefficients(model_coeff);
+  *seg.setMethodType(pcl::SAC_RANSAC);
+  *seg.setOptimizeCoefficients(true);
+  *seg.setModelType(pcl::SACMODEL_PLANE);
+  *seg.setDistanceThreshold(0.1);
+  *seg.setInputCloud(cloud_in);
+  *seg.segment(*inliers, *coefficients);
 
-// Use FilterIndices to filter the cloud based on the obtained inliers
-pcl::ExtractIndices<pcl::PointXYZ> extract;
-extract.setInputCloud(cloud_in);
-extract.setIndices(inliers);
+  *pcl::ExtractIndices<pcl::PointXYZ> extract;
+  *extract.setInputCloud(cloud_in);
+  *extract.setIndices(inliers);
 
-pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZ>);
-
-// Set the negative parameter to filter out points that don't belong to the plane
-extract.setNegative(false);
-extract.filter(*cloud_out);
+  *pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZ>);
+  *extract.setNegative(false);
+  *extract.filter(*cloud_out);
 
    * \endcode
    */
