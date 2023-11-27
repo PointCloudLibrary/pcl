@@ -65,7 +65,7 @@ namespace pcl
    * filter.setThreshold (0.1);
    * filter.setModelType (pcl::SACMODEL_PLANE);
    * filter.setInputCloud (*cloud_in);
-   * filter.setFilterLimitsNegative (false);
+   * filter.setNegative (false);
    * filter.filter (*cloud_out);
 
    * \endcode
