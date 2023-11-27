@@ -54,7 +54,7 @@ namespace pcl
    #include <pcl/filters/filter_indices.h>
 
 
-    * pcl::ModelCoefficients model_coeff;
+   * pcl::ModelCoefficients model_coeff;
    * model_coeff.values.resize(4);
    * model_coeff.values[0] = 0; 
    * model_coeff.values[1] = 0; 
