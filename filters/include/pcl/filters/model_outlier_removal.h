@@ -48,20 +48,43 @@ namespace pcl
 {
   /** \brief @b ModelOutlierRemoval filters points in a cloud based on the distance between model and point.
    * \details Iterates through the entire input once, automatically filtering non-finite points and the points outside
-   * the model specified by setSampleConsensusModelPointer() and the threshold specified by setThreholdFunctionPointer().
    * <br><br>
    * Usage example:
    * \code
-   * pcl::ModelCoefficients model_coeff;
-   * model_coeff.values.resize(4);
-   * model_coeff.values[0] = 0; model_coeff.values[1] = 0; model_coeff.values[2] = 1.5; model_coeff.values[3] = 0.5;
-   * pcl::ModelOutlierRemoval<pcl::PointXYZ> filter;
-   * filter.setModelCoefficients (model_coeff);
-   * filter.setThreshold (0.1);
-   * filter.setModelType (pcl::SACMODEL_PLANE);
-   * filter.setInputCloud (*cloud_in);
-   * filter.setFilterLimitsNegative (false);
-   * filter.filter (*cloud_out);
+   #include <pcl/filters/filter_indices.h>
+
+
+pcl::ModelCoefficients model_coeff;
+model_coeff.values.resize(4);
+model_coeff.values[0] = 0; 
+model_coeff.values[1] = 0; 
+model_coeff.values[2] = 1.5; 
+model_coeff.values[3] = 0.5;
+
+pcl::SACSegmentation<pcl::PointXYZ> seg; // Use SACSegmentation to segment the cloud
+pcl::PointIndices::Ptr inliers(new pcl::PointIndices);
+pcl::ModelOutlierRemoval<pcl::PointXYZ> filter;
+
+// Set the model coefficients and perform segmentation
+seg.setModelCoefficients(model_coeff);
+seg.setMethodType(pcl::SAC_RANSAC);
+seg.setOptimizeCoefficients(true);
+seg.setModelType(pcl::SACMODEL_PLANE);
+seg.setDistanceThreshold(0.1);
+seg.setInputCloud(cloud_in);
+seg.segment(*inliers, *coefficients);
+
+// Use FilterIndices to filter the cloud based on the obtained inliers
+pcl::ExtractIndices<pcl::PointXYZ> extract;
+extract.setInputCloud(cloud_in);
+extract.setIndices(inliers);
+
+pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZ>);
+
+// Set the negative parameter to filter out points that don't belong to the plane
+extract.setNegative(false);
+extract.filter(*cloud_out);
+
    * \endcode
    */
   template <typename PointT>
