@@ -54,32 +54,19 @@ namespace pcl
    #include <pcl/filters/filter_indices.h>
 
 
-   * pcl::ModelCoefficients model_coeff;
+    * pcl::ModelCoefficients model_coeff;
    * model_coeff.values.resize(4);
    * model_coeff.values[0] = 0; 
    * model_coeff.values[1] = 0; 
    * model_coeff.values[2] = 1.5; 
    * model_coeff.values[3] = 0.5;
-
-   * pcl::SACSegmentation<pcl::PointXYZ> seg; 
-   * pcl::PointIndices::Ptr inliers(new pcl::PointIndices);
    * pcl::ModelOutlierRemoval<pcl::PointXYZ> filter;
-
-  * seg.setModelCoefficients(model_coeff);
-  * seg.setMethodType(pcl::SAC_RANSAC);
-  * seg.setOptimizeCoefficients(true);
-  * seg.setModelType(pcl::SACMODEL_PLANE);
-  * seg.setDistanceThreshold(0.1);
-  * seg.setInputCloud(cloud_in);
-  * seg.segment(*inliers, *coefficients);
-
-  * pcl::ExtractIndices<pcl::PointXYZ> extract;
-  * extract.setInputCloud(cloud_in);
-  * extract.setIndices(inliers);
-
-  * pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZ>);
-  * extract.setNegative(false);
-  * extract.filter(*cloud_out);
+   * filter.setModelCoefficients (model_coeff);
+   * filter.setThreshold (0.1);
+   * filter.setModelType (pcl::SACMODEL_PLANE);
+   * filter.setInputCloud (*cloud_in);
+   * filter.setFilterLimitsNegative (false);
+   * filter.filter (*cloud_out);
 
    * \endcode
    */
