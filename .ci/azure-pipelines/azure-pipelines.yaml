@@ -143,7 +143,7 @@ stages:
       - job: Windows
         displayName: Windows Build
         pool:
-          vmImage: 'windows-2019'
+          vmImage: 'windows-2022'
         strategy:
           matrix:
             x86:

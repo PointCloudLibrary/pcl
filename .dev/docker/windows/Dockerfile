@@ -1,6 +1,6 @@
 # escape=`
 
-FROM mcr.microsoft.com/windows/servercore:ltsc2019
+FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
 # Use "--build-arg platform=x64" for 64 bit or x86 for 32 bit.
 ARG PLATFORM
@@ -30,7 +30,7 @@ RUN wget $Env:CHANNEL_BASE_URL/vs_buildtools.exe -OutFile 'C:\TEMP\vs_buildtools
     "C:\TEMP\VisualStudio.chman",                                   `
     "--add",                                                        `
     "Microsoft.VisualStudio.Workload.VCTools",                      `
-    "Microsoft.Net.Component.4.7.2.SDK",                            `
+    "Microsoft.Net.Component.4.8.SDK",                            `
     "Microsoft.VisualStudio.Component.VC.ATLMFC",                   `
     "--includeRecommended"                                          `
     -Wait -PassThru;                                                `
@@ -48,4 +48,5 @@ COPY $PLATFORM'-windows-rel.cmake' 'c:\vcpkg\triplets\'$PLATFORM'-windows-rel.cm
 
 RUN cd .\vcpkg;                                                `
     .\bootstrap-vcpkg.bat;                                            `
-    .\vcpkg install boost flann eigen3 qhull vtk[qt,opengl] gtest benchmark openni2 --triplet $Env:PLATFORM-windows-rel --host-triplet $Env:PLATFORM-windows-rel --clean-after-build;
+    .\vcpkg install boost flann eigen3 qhull vtk[qt,opengl] gtest benchmark openni2 --triplet $Env:PLATFORM-windows-rel --host-triplet $Env:PLATFORM-windows-rel --clean-after-build --x-buildtrees-root=C:\b; `
+
