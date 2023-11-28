@@ -51,14 +51,12 @@ namespace pcl
    * <br><br>
    * Usage example:
    * \code
-   #include <pcl/filters/filter_indices.h>
-
-
+   * 
    * pcl::ModelCoefficients model_coeff;
    * model_coeff.values.resize(4);
    * model_coeff.values[0] = 0; 
    * model_coeff.values[1] = 0; 
-   * model_coeff.values[2] = 1.5; 
+   * model_coeff.values[2] = 1; 
    * model_coeff.values[3] = 0.5;
    * pcl::ModelOutlierRemoval<pcl::PointXYZ> filter;
    * filter.setModelCoefficients (model_coeff);
