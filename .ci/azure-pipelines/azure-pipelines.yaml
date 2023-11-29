@@ -17,9 +17,9 @@ pr:
 resources:
   containers:
     - container: winx86
-      image: pointcloudlibrary/env:winx86
+      image: pointcloudlibrary/env:windows2022-x86
     - container: winx64
-      image: pointcloudlibrary/env:winx64
+      image: pointcloudlibrary/env:windows2022-x64
     - container: env2004
       image: pointcloudlibrary/env:20.04
     - container: env2204
