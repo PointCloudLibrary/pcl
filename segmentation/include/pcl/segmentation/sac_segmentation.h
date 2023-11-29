@@ -82,9 +82,7 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SACSegmentation(bool random = false)
-      : model_()
-      , sac_()
-      , random_(random)
+      : random_(random)
       {}
 
       /** \brief Empty destructor. */
@@ -335,8 +333,6 @@ namespace pcl
         */
       SACSegmentationFromNormals (bool random = false) 
         : SACSegmentation<PointT> (random)
-        , normals_ ()
-         
       {};
 
       /** \brief Provide a pointer to the input dataset that contains the point normals of 
@@ -393,7 +389,7 @@ namespace pcl
 
     protected:
       /** \brief A pointer to the input dataset that contains the point normals of the XYZ dataset. */
-      PointCloudNConstPtr normals_;
+      PointCloudNConstPtr normals_{nullptr};
 
       /** \brief The relative weight (between 0 and 1) to give to the angular
         * distance (0 to pi/2) between point normals and the plane normal. 

@@ -127,7 +127,7 @@ class ply_to_ply_converter
 
     format_type format_;
     pcl::io::ply::format_type input_format_{}, output_format_{};
-    bool bol_{};
+    bool bol_{false};
     std::ostream* ostream_{};
 };
 

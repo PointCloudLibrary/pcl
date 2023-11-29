@@ -154,7 +154,7 @@ namespace pcl
       using BasePCLBase::deinitCompute;
 
       /** \brief A pointer to the spatial search object. */
-      KdTreePtr tree_;
+      KdTreePtr tree_{nullptr};
 
       /** \brief The spatial cluster tolerance as a measure in the L2 Euclidean space. */
       double cluster_tolerance_{0};

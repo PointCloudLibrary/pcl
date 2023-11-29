@@ -256,10 +256,8 @@ namespace pcl
       class GaussianFitter
       {
         public:
-        GaussianFitter (float epsilon = 0.0001)
-          : sum_ (Eigen::Vector3f::Zero ())
-          , accumulator_ (Eigen::Matrix3f::Zero ())
-          , epsilon_ (epsilon)
+        GaussianFitter (float epsilon = 0.0001f)
+          : epsilon_ (epsilon)
         {}
 
         /// Add a color sample
@@ -280,13 +278,13 @@ namespace pcl
 
         private:
         /// sum of r,g, and b
-        Eigen::Vector3f sum_{};
+        Eigen::Vector3f sum_{Eigen::Vector3f::Zero ()};
         /// matrix of products (i.e. r*r, r*g, r*b), some values are duplicated.
-        Eigen::Matrix3f accumulator_{};
+        Eigen::Matrix3f accumulator_{Eigen::Matrix3f::Zero ()};
         /// count of color samples added to the gaussian
         std::uint32_t count_{0};
         /// small value to add to covariance matrix diagonal to avoid singular values
-        float epsilon_{0.0f};
+        float epsilon_{0.001f};
         PCL_MAKE_ALIGNED_OPERATOR_NEW
       };
 
@@ -394,12 +392,12 @@ namespace pcl
       // Storage for N-link weights, each pixel stores links to nb_neighbours
       struct NLinks
       {
-        NLinks () :  indices (0), dists (0), weights (0) {}
+        NLinks () = default;
 
         int nb_links{0};
-        Indices indices;
-        std::vector<float> dists;
-        std::vector<float> weights;
+        Indices indices{};
+        std::vector<float> dists{};
+        std::vector<float> weights{};
       };
       bool
       initCompute ();

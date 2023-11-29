@@ -63,11 +63,7 @@ class ply_to_raw_converter
   public:
   ply_to_raw_converter() = default;
 
-  ply_to_raw_converter (const ply_to_raw_converter &f) :
-      ostream_ (), vertex_x_ (0), vertex_y_ (0), vertex_z_ (0), 
-      face_vertex_indices_element_index_ (),
-      face_vertex_indices_first_element_ (), 
-      face_vertex_indices_previous_element_ ()
+  ply_to_raw_converter (const ply_to_raw_converter &f)
     {
       *this = f;
     }
