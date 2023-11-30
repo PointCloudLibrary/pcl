@@ -145,7 +145,7 @@ namespace pcl
 
 
       /** \brief Contains the input cloud */
-      typename pcl::PointCloud<PointT>::Ptr input_cloud_{nullptr};
+      typename pcl::PointCloud<PointT>::Ptr input_cloud_{new pcl::PointCloud<PointT>};
       
       bool label_field_{false};
       

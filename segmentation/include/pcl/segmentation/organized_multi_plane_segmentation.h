@@ -288,10 +288,10 @@ namespace pcl
       bool project_points_{false};
 
       /** \brief A comparator for comparing neighboring pixels' plane equations. */
-      PlaneComparatorPtr compare_{new PlaneComparator};
+      PlaneComparatorPtr compare_{new PlaneComparator()};
 
       /** \brief A comparator for use on the refinement step.  Compares points to regions segmented in the first pass. */
-      PlaneRefinementComparatorPtr refinement_compare_{new PlaneRefinementComparatorPtr};
+      PlaneRefinementComparatorPtr refinement_compare_{new PlaneRefinementComparatorPtr()};
 
       /** \brief Class getName method. */
       virtual std::string
