@@ -284,7 +284,7 @@ namespace pcl
         /// count of color samples added to the gaussian
         std::uint32_t count_{0};
         /// small value to add to covariance matrix diagonal to avoid singular values
-        float epsilon_{0.001f};
+        float epsilon_;
         PCL_MAKE_ALIGNED_OPERATOR_NEW
       };
 
