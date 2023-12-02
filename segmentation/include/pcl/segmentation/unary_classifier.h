@@ -145,18 +145,18 @@ namespace pcl
 
 
       /** \brief Contains the input cloud */
-      typename pcl::PointCloud<PointT>::Ptr input_cloud_;
+      typename pcl::PointCloud<PointT>::Ptr input_cloud_{new pcl::PointCloud<PointT>};
       
-      bool label_field_;
+      bool label_field_{false};
       
-      unsigned int cluster_size_;
+      unsigned int cluster_size_{0};
 
-      float normal_radius_search_;
-      float fpfh_radius_search_;
-      float feature_threshold_;
+      float normal_radius_search_{0.01f};
+      float fpfh_radius_search_{0.05f};
+      float feature_threshold_{5.0};
       
       
-      std::vector<pcl::PointCloud<pcl::FPFHSignature33>::Ptr> trained_features_;
+      std::vector<pcl::PointCloud<pcl::FPFHSignature33>::Ptr> trained_features_{};
 
       /** \brief Contains normals of the points that will be segmented. */
       //typename pcl::PointCloud<pcl::Normal>::Ptr normals_;

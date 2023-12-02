@@ -50,10 +50,6 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
 pcl::RegionGrowingRGB<PointT, NormalT>::RegionGrowingRGB () :
-  color_p2p_threshold_ (1225.0f),
-  color_r2r_threshold_ (10.0f),
-  distance_threshold_ (0.05f),
-  region_neighbour_number_ (100),
   point_distances_ (0),
   segment_neighbours_ (0),
   segment_distances_ (0),

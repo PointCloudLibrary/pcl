@@ -65,10 +65,8 @@ class ply_to_ply_converter
       binary_big_endian_format,
       binary_little_endian_format
     };
-  
-    ply_to_ply_converter(format_type format) : 
-      format_(format), input_format_(), output_format_(), 
-      bol_ (), ostream_ () {}
+
+    ply_to_ply_converter(format_type format) : format_(format) {}
 
     bool 
     convert (const std::string &filename, std::istream& istream, std::ostream& ostream);
@@ -128,9 +126,9 @@ class ply_to_ply_converter
     end_header_callback();
 
     format_type format_;
-    pcl::io::ply::format_type input_format_, output_format_;
-    bool bol_;
-    std::ostream* ostream_;
+    pcl::io::ply::format_type input_format_{}, output_format_{};
+    bool bol_{false};
+    std::ostream* ostream_{};
 };
 
 void

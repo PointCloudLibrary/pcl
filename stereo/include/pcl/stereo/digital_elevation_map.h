@@ -129,11 +129,11 @@ public:
 
 protected:
   /** \brief Column resolution of the DEM. */
-  std::size_t resolution_column_;
+  std::size_t resolution_column_{64};
   /** \brief disparity resolution of the DEM. */
-  std::size_t resolution_disparity_;
+  std::size_t resolution_disparity_{32};
   /** \brief Minimum amount of points in a DEM's cell. */
-  std::size_t min_points_in_cell_;
+  std::size_t min_points_in_cell_{1};
 };
 
 } // namespace pcl

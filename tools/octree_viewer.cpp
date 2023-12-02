@@ -62,12 +62,7 @@ public:
     cloud (new pcl::PointCloud<pcl::PointXYZ>()),
     displayCloud (new pcl::PointCloud<pcl::PointXYZ>()),
     cloudVoxel (new pcl::PointCloud<pcl::PointXYZ>()),
-    octree (resolution),
-    wireframe (true),
-    show_cubes_ (true),
-    show_centroids_ (false),
-    show_original_points_ (false),
-    point_size_ (1.0)
+    octree (resolution)
   {
 
     //try to load the cloud
@@ -126,9 +121,9 @@ private:
   //level
   int displayedDepth;
   //bool to decide what should be display
-  bool wireframe;
-  bool show_cubes_, show_centroids_, show_original_points_;
-  float point_size_;
+  bool wireframe{true};
+  bool show_cubes_{true}, show_centroids_{false}, show_original_points_{false};
+  float point_size_{1.0};
   //========================================================
 
   /* \brief Callback to interact with the keyboard

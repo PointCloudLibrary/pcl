@@ -337,11 +337,7 @@ namespace pcl
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Empty constructor. */
-      EuclideanClusterExtraction () : tree_ (), 
-                                      cluster_tolerance_ (0),
-                                      min_pts_per_cluster_ (1), 
-                                      max_pts_per_cluster_ (std::numeric_limits<pcl::uindex_t>::max ())
-      {};
+      EuclideanClusterExtraction () = default;
 
       /** \brief Provide a pointer to the search object.
         * \param[in] tree a pointer to the spatial search object.
@@ -423,16 +419,16 @@ namespace pcl
       using BasePCLBase::deinitCompute;
 
       /** \brief A pointer to the spatial search object. */
-      KdTreePtr tree_;
+      KdTreePtr tree_{nullptr};
 
       /** \brief The spatial cluster tolerance as a measure in the L2 Euclidean space. */
-      double cluster_tolerance_;
+      double cluster_tolerance_{0.0};
 
       /** \brief The minimum number of points that a cluster needs to contain in order to be considered valid (default = 1). */
-      pcl::uindex_t min_pts_per_cluster_;
+      pcl::uindex_t min_pts_per_cluster_{1};
 
       /** \brief The maximum number of points that a cluster needs to contain in order to be considered valid (default = MAXINT). */
-      pcl::uindex_t max_pts_per_cluster_;
+      pcl::uindex_t max_pts_per_cluster_{std::numeric_limits<pcl::uindex_t>::max()};
 
       /** \brief Class getName method. */
       virtual std::string getClassName () const { return ("EuclideanClusterExtraction"); }
