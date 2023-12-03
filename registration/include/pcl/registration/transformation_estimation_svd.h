@@ -42,6 +42,7 @@
 
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/cloud_iterator.h>
+#include <pcl/pcl_config.h> // for PCL_NO_PRECOMPILE
 
 namespace pcl {
 namespace registration {
@@ -154,3 +155,13 @@ protected:
 } // namespace pcl
 
 #include <pcl/registration/impl/transformation_estimation_svd.hpp>
+
+#if !defined(PCL_NO_PRECOMPILE) &&                                                     \
+    !defined(PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_CPP_)
+extern template class pcl::registration::TransformationEstimationSVD<pcl::PointXYZ,
+                                                                     pcl::PointXYZ>;
+extern template class pcl::registration::TransformationEstimationSVD<pcl::PointXYZI,
+                                                                     pcl::PointXYZI>;
+extern template class pcl::registration::TransformationEstimationSVD<pcl::PointXYZRGB,
+                                                                     pcl::PointXYZRGB>;
+#endif // PCL_NO_PRECOMPILE
