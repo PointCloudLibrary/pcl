@@ -66,10 +66,21 @@ if(flann_FOUND)
     set(FLANN_LIBRARY_TYPE SHARED)
   endif()
 
-  if(FLANN_LIBRARY_TYPE MATCHES SHARED)
-    add_library(FLANN::FLANN ALIAS flann::flann_cpp)
+  if(CMAKE_VERSION VERSION_LESS 3.18.0)
+    # Create interface library that effectively becomes an alias for the appropriate (static/dynamic) imported FLANN target
+    add_library(FLANN::FLANN INTERFACE IMPORTED)
+
+    if(FLANN_LIBRARY_TYPE EQUAL SHARED)
+      set_property(TARGET FLANN::FLANN APPEND PROPERTY INTERFACE_LINK_LIBRARIES flann::flann_cpp)
+    else()
+      set_property(TARGET FLANN::FLANN APPEND PROPERTY INTERFACE_LINK_LIBRARIES flann::flann_cpp_s)
+    endif()
   else()
-    add_library(FLANN::FLANN ALIAS flann::flann_cpp_s)
+    if(FLANN_LIBRARY_TYPE EQUAL SHARED)
+      add_library(FLANN::FLANN ALIAS flann::flann_cpp)
+    else()
+      add_library(FLANN::FLANN ALIAS flann::flann_cpp_s)
+    endif()
   endif()
 
   # Determine FLANN installation root based on the path to the processed Config file
