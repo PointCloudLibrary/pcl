@@ -43,9 +43,9 @@
 #include <vtkBoundingBox.h>
 #include <vtkCubeAxesActor.h>
 #include <vtkProp.h>
-#include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
 #include <vtkRendererCollection.h>
+#include <vtkRenderWindow.h>
 #include <vtkSmartPointer.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
