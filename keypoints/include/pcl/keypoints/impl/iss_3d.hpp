@@ -124,12 +124,22 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getBoundaryPoints (PointCloudI
   Eigen::Vector4f u = Eigen::Vector4f::Zero ();
   Eigen::Vector4f v = Eigen::Vector4f::Zero ();
 
+  // configure search tree for searching input_
+  auto input_search_tree = this->getSearchMethod();
+
+  if (input_->size() != surface_->size()) {
+    typename pcl::search::KdTree<PointInT>::Ptr temp_kdtree(
+        new pcl::search::KdTree<PointInT>);
+    temp_kdtree->setInputCloud(input_);
+    input_search_tree = temp_kdtree;
+  }
+
   pcl::BoundaryEstimation<PointInT, NormalT, pcl::Boundary> boundary_estimator;
   boundary_estimator.setInputCloud (input_);
 
 #pragma omp parallel for \
   default(none) \
-  shared(angle_threshold, boundary_estimator, border_radius, edge_points, input) \
+  shared(angle_threshold, boundary_estimator, border_radius, edge_points, input, input_search_tree) \
   firstprivate(u, v) \
   num_threads(threads_)
   for (int index = 0; index < static_cast<int>(input.size ()); index++)
@@ -143,7 +153,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getBoundaryPoints (PointCloudI
       std::vector<float> nn_distances;
       int n_neighbors;
 
-      this->searchForNeighbors (index, border_radius, nn_indices, nn_distances);
+      input_search_tree->radiusSearch(index, border_radius, nn_indices, nn_distances);
 
       n_neighbors = static_cast<int> (nn_indices.size ());
 
@@ -189,7 +199,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getScatterMatrix (const int& c
 
   for (const auto& n_idx : nn_indices)
   {
-    const PointInT& n_point = (*input_)[n_idx];
+    const PointInT& n_point = (*surface_)[n_idx];
 
     double neigh_point[3]{};
 
@@ -305,6 +315,16 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
   // Make sure the output cloud is empty
   output.clear ();
 
+  // configure search tree for searching input_
+  auto input_search_tree = this->getSearchMethod();
+
+  if (input_->size() != surface_->size()) {
+    typename pcl::search::KdTree<PointInT>::Ptr temp_kdtree(
+        new pcl::search::KdTree<PointInT>);
+    temp_kdtree->setInputCloud(input_);
+    input_search_tree = temp_kdtree;
+  }
+
   if (border_radius_ > 0.0)
     edge_points_ = getBoundaryPoints (*(input_->makeShared ()), border_radius_, angle_threshold_);
 
@@ -312,7 +332,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 
 #pragma omp parallel for \
   default(none) \
-  shared(borders) \
+  shared(borders, input_search_tree) \
   num_threads(threads_)
   for (int index = 0; index < static_cast<int>(input_->size ()); index++)
   {
@@ -324,7 +344,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
       pcl::Indices nn_indices;
       std::vector<float> nn_distances;
 
-      this->searchForNeighbors (index, border_radius_, nn_indices, nn_distances);
+      input_search_tree->radiusSearch(index, border_radius_, nn_indices, nn_distances);
 
       for (const auto &nn_index : nn_indices)
       {
@@ -411,7 +431,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 
 #pragma omp parallel for \
   default(none) \
-  shared(feat_max) \
+  shared(feat_max, input_search_tree) \
   num_threads(threads_)
   for (int index = 0; index < static_cast<int>(input_->size ()); index++)
   {
@@ -424,7 +444,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
       std::vector<float> nn_distances;
       int n_neighbors;
 
-      this->searchForNeighbors (index, non_max_radius_, nn_indices, nn_distances);
+      input_search_tree->radiusSearch(index, non_max_radius_, nn_indices, nn_distances);
 
       n_neighbors = static_cast<int> (nn_indices.size ());
 

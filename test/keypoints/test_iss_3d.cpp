@@ -38,6 +38,7 @@
 #include <pcl/pcl_tests.h>
 
 #include <pcl/io/pcd_io.h>
+#include <pcl/filters/voxel_grid.h>
 #include <pcl/keypoints/iss_3d.h>
 
 using namespace pcl;
@@ -151,6 +152,132 @@ TEST (PCL, ISSKeypoint3D_BE)
   }
 
   tree.reset (new search::KdTree<PointXYZ> ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST(PCL, ISSKeypoint3D_HigherResolutionSearchSurface_WBE)
+{
+  PointCloud<PointXYZ>::Ptr input(new PointCloud<PointXYZ>);
+  PointCloud<PointXYZ> keypoints;
+
+  //
+  // Compute the ISS 3D keypoints using a search surface with more points than the input. 
+  // Does not use boundary estimation.
+  //
+
+  // Set input to subsampled cloud
+  VoxelGrid<PointXYZ> grid;
+  double new_resolution = cloud_resolution * 2;
+
+  grid.setInputCloud(cloud);
+  grid.setLeafSize(new_resolution, new_resolution, new_resolution);
+  grid.filter(*input);
+  ASSERT_GT(cloud->size(), input->size());
+
+  // Set ISSKeypoint detector
+  ISSKeypoint3D<PointXYZ, PointXYZ> iss_detector;
+
+  iss_detector.setSearchMethod(tree);
+  iss_detector.setSalientRadius(6 * new_resolution);
+  iss_detector.setNonMaxRadius(4 * new_resolution);
+
+  iss_detector.setNormalRadius(4 * new_resolution);
+
+  iss_detector.setThreshold21(0.975);
+  iss_detector.setThreshold32(0.975);
+  iss_detector.setMinNeighbors(5);
+  iss_detector.setAngleThreshold(static_cast<float>(M_PI) / 3.0);
+  iss_detector.setNumberOfThreads(1);
+
+  iss_detector.setInputCloud(input);
+  iss_detector.setSearchSurface(cloud);
+
+  iss_detector.compute(keypoints);
+
+  //
+  // Compare to previously validated output
+  //
+  const std::size_t correct_nr_keypoints = 2;
+  const float correct_keypoints[correct_nr_keypoints][3] = 
+  {
+      // { x,  y,  z}
+      {-0.001793f, 0.086848f, 0.056843f},
+      {-0.066208f, 0.121600f, 0.050804f}
+  };
+
+  ASSERT_EQ(keypoints.size(), correct_nr_keypoints);
+
+  for (std::size_t i = 0; i < correct_nr_keypoints; ++i) {
+    EXPECT_NEAR(keypoints[i].x, correct_keypoints[i][0], 1e-6);
+    EXPECT_NEAR(keypoints[i].y, correct_keypoints[i][1], 1e-6);
+    EXPECT_NEAR(keypoints[i].z, correct_keypoints[i][2], 1e-6);
+  }
+
+  tree.reset(new search::KdTree<PointXYZ>());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST(PCL, ISSKeypoint3D_HigherResolutionSearchSurface_BE)
+{
+  PointCloud<PointXYZ>::Ptr input(new PointCloud<PointXYZ>);
+  PointCloud<PointXYZ> keypoints;
+
+  //
+  // Compute the ISS 3D keypoints using a search surface with more points than the input.
+  // Uses not use boundary estimation.
+  //
+
+  // Set input to subsampled cloud
+  VoxelGrid<PointXYZ> grid;
+  double new_resolution = cloud_resolution*2;
+
+  grid.setInputCloud(cloud);
+  grid.setLeafSize(new_resolution, new_resolution, new_resolution);
+  grid.filter(*input);
+
+  ASSERT_GT(cloud->size(), input->size());
+
+  // Set ISSKeypoint detector
+  ISSKeypoint3D<PointXYZ, PointXYZ> iss_detector;
+
+  iss_detector.setSearchMethod(tree);
+  iss_detector.setSalientRadius(6 * new_resolution);
+  iss_detector.setNonMaxRadius(4 * new_resolution);
+
+  iss_detector.setNormalRadius(4 * new_resolution);
+  iss_detector.setBorderRadius(1 * new_resolution);
+
+  iss_detector.setThreshold21(0.975);
+  iss_detector.setThreshold32(0.975);
+  iss_detector.setMinNeighbors(5);
+  iss_detector.setAngleThreshold(static_cast<float>(M_PI) / 3.0);
+  iss_detector.setNumberOfThreads(1);
+
+  iss_detector.setInputCloud(input);
+  iss_detector.setSearchSurface(cloud);
+
+  iss_detector.compute(keypoints);
+
+  //
+  // Compare to previously validated output
+  //
+  const std::size_t correct_nr_keypoints = 2;
+  const float correct_keypoints[correct_nr_keypoints][3] =
+  {
+      // { x,  y,  z}
+      {-0.063726f, 0.145469f, 0.038629f},
+      {-0.016716f, 0.086721f, 0.055888f}
+  };
+
+  ASSERT_EQ(keypoints.size(), correct_nr_keypoints);
+
+  for (std::size_t i = 0; i < correct_nr_keypoints; ++i) {
+    EXPECT_NEAR(keypoints[i].x, correct_keypoints[i][0], 1e-6);
+    EXPECT_NEAR(keypoints[i].y, correct_keypoints[i][1], 1e-6);
+    EXPECT_NEAR(keypoints[i].z, correct_keypoints[i][2], 1e-6);
+  }
+
+  tree.reset(new search::KdTree<PointXYZ>());
 }
 
 //* ---[ */
