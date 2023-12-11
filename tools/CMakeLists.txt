@@ -200,6 +200,29 @@ if(TARGET pcl_filters)
     endif()
   endif()
 
+  if(TARGET pcl_outofcore)
+    # pcl_outofcore_process
+    PCL_ADD_EXECUTABLE(pcl_outofcore_process COMPONENT ${SUBSYS_NAME} SOURCES outofcore_process.cpp)
+    target_link_libraries(pcl_outofcore_process pcl_common pcl_io pcl_octree pcl_filters pcl_outofcore)
+
+    PCL_ADD_EXECUTABLE(pcl_outofcore_print COMPONENT ${SUBSYS_NAME} SOURCES outofcore_print.cpp)
+    target_link_libraries(pcl_outofcore_print pcl_common pcl_io pcl_octree pcl_filters pcl_outofcore)
+
+    if(TARGET pcl_visualization)
+      set(srcs outofcore_viewer.cpp
+        ../outofcore/src/visualization/camera.cpp
+        ../outofcore/src/visualization/common.cpp
+        ../outofcore/src/visualization/object.cpp
+        ../outofcore/src/visualization/grid.cpp
+        ../outofcore/src/visualization/outofcore_cloud.cpp
+        ../outofcore/src/visualization/scene.cpp
+        ../outofcore/src/visualization/viewport.cpp)
+      # pcl_outofcore_viewer
+      PCL_ADD_EXECUTABLE(pcl_outofcore_viewer COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} BUNDLE)
+      target_link_libraries(pcl_outofcore_viewer pcl_common pcl_io pcl_octree pcl_filters pcl_outofcore pcl_visualization)
+    endif()
+  endif()
+
   if(TARGET pcl_visualization)
     PCL_ADD_EXECUTABLE(pcl_octree_viewer COMPONENT ${SUBSYS_NAME} SOURCES octree_viewer.cpp)
     target_link_libraries(pcl_octree_viewer pcl_common pcl_io pcl_octree pcl_kdtree pcl_filters pcl_visualization)
