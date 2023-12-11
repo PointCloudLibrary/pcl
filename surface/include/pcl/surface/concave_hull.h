@@ -71,9 +71,7 @@ namespace pcl
       using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
       /** \brief Empty constructor. */
-      ConcaveHull () : alpha_ (0), keep_information_ (false), voronoi_centers_ (), dim_(0)
-      {
-      };
+      ConcaveHull () = default;
       
       /** \brief Empty destructor */
       ~ConcaveHull () override = default;
@@ -189,18 +187,18 @@ namespace pcl
       /** \brief The method accepts facets only if the distance from any vertex to the facet->center 
         * (center of the voronoi cell) is smaller than alpha 
         */
-      double alpha_;
+      double alpha_{0.0};
 
       /** \brief If set to true, the reconstructed point cloud describing the hull is obtained from 
         * the original input cloud by performing a nearest neighbor search from Qhull output. 
         */
-      bool keep_information_;
+      bool keep_information_{false};
 
       /** \brief the centers of the voronoi cells */
-      PointCloudPtr voronoi_centers_;
+      PointCloudPtr voronoi_centers_{nullptr};
       
       /** \brief the dimensionality of the concave hull */
-      int dim_;
+      int dim_{0};
 
       /** \brief vector containing the point cloud indices of the convex hull points. */
       pcl::PointIndices hull_indices_;

@@ -61,11 +61,9 @@ namespace pcl
       /** \brief Empty constructor. */
       RegistrationVisualizer () : 
         update_visualizer_ (),
-        first_update_flag_ (false),
         cloud_source_ (),
         cloud_target_ (),
-        cloud_intermediate_ (),
-        maximum_displayed_correspondences_ (0)
+        cloud_intermediate_ ()
       {}
 
       ~RegistrationVisualizer ()
@@ -180,7 +178,7 @@ namespace pcl
           PointTarget> &cloud_tgt, const pcl::Indices &indices_tgt)> update_visualizer_;
 
       /** \brief Updates source and target point clouds only for the first update call. */
-      bool first_update_flag_;
+      bool first_update_flag_{false};
 
       /** \brief The local buffer for source point cloud. */
       pcl::PointCloud<PointSource> cloud_source_;
@@ -201,7 +199,7 @@ namespace pcl
       pcl::Indices cloud_target_indices_;
 
       /** \brief The maximum number of displayed correspondences. */
-      std::size_t maximum_displayed_correspondences_;
+      std::size_t maximum_displayed_correspondences_{0};
 
     };
 }

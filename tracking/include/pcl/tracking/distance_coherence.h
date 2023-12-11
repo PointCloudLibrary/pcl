@@ -17,7 +17,7 @@ public:
   using ConstPtr = shared_ptr<const DistanceCoherence<PointInT>>;
 
   /** \brief initialize the weight to 1.0. */
-  DistanceCoherence() : PointCoherence<PointInT>(), weight_(1.0) {}
+  DistanceCoherence() : PointCoherence<PointInT>() {}
 
   /** \brief set the weight of coherence.
    * \param weight the value of the wehgit.
@@ -44,7 +44,7 @@ protected:
   computeCoherence(PointInT& source, PointInT& target) override;
 
   /** \brief the weight of coherence.*/
-  double weight_;
+  double weight_{1.0};
 };
 } // namespace tracking
 } // namespace pcl

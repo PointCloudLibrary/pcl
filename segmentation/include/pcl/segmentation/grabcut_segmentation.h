@@ -271,7 +271,7 @@ namespace pcl
         getEpsilon () { return (epsilon_); }
         /** set epsilon which will be added to the covariance matrix diagonal which avoids singular
           * covariance matrix
-          * \param[in] epsilon user defined epsilon
+          * \param[in] epsilon user defined epsilonT
           */
         void
         setEpsilon (float epsilon) { epsilon_ = epsilon; }
@@ -438,39 +438,39 @@ namespace pcl
       inline bool
       isSource (vertex_descriptor v) { return (graph_.inSourceTree (v)); }
       /// image width
-      std::uint32_t width_;
+      std::uint32_t width_{0};
       /// image height
-      std::uint32_t height_;
+      std::uint32_t height_{0};
       // Variables used in formulas from the paper.
       /// Number of GMM components
-      std::uint32_t K_;
+      std::uint32_t K_{0};
       /// lambda = 50. This value was suggested the GrabCut paper.
-      float lambda_;
+      float lambda_{0.0f};
       /// beta = 1/2 * average of the squared color distances between all pairs of 8-neighboring pixels.
-      float beta_;
+      float beta_{0.0f};
       /// L = a large value to force a pixel to be foreground or background
-      float L_;
+      float L_{0.0f};
       /// Pointer to the spatial search object.
-      KdTreePtr tree_;
+      KdTreePtr tree_{nullptr};
       /// Number of neighbours
       int nb_neighbours_{9};
       /// is segmentation initialized
       bool initialized_{false};
       /// Precomputed N-link weights
-      std::vector<NLinks> n_links_;
+      std::vector<NLinks> n_links_{};
       /// Converted input
       segmentation::grabcut::Image::Ptr image_;
-      std::vector<segmentation::grabcut::TrimapValue> trimap_;
-      std::vector<std::size_t> GMM_component_;
-      std::vector<segmentation::grabcut::SegmentationValue> hard_segmentation_;
+      std::vector<segmentation::grabcut::TrimapValue> trimap_{};
+      std::vector<std::size_t> GMM_component_{};
+      std::vector<segmentation::grabcut::SegmentationValue> hard_segmentation_{};
       // Not yet implemented (this would be interpreted as alpha)
-      std::vector<float> soft_segmentation_;
+      std::vector<float> soft_segmentation_{};
       segmentation::grabcut::GMM background_GMM_, foreground_GMM_;
       // Graph part
       /// Graph for Graphcut
       pcl::segmentation::grabcut::BoykovKolmogorov graph_;
       /// Graph nodes
-      std::vector<vertex_descriptor> graph_nodes_;
+      std::vector<vertex_descriptor> graph_nodes_{};
   };
 }
 

@@ -75,7 +75,7 @@ namespace pcl
       performProcessing (pcl::PolygonMesh &output) override;
 
     private:
-      float target_reduction_factor_;
+      float target_reduction_factor_{0.5f};
 
       vtkSmartPointer<vtkPolyData> vtk_polygons_;
   };

@@ -156,26 +156,12 @@ namespace pcl
     
       /** \brief Empty constructor. */
       GreedyProjectionTriangulation () : 
-        mu_ (0), 
-        search_radius_ (0), // must be set by user
-        nnn_ (100),
+        
         minimum_angle_ (M_PI/18), // 10 degrees
         maximum_angle_ (2*M_PI/3), // 120 degrees
-        eps_angle_(M_PI/4), //45 degrees,
-        consistent_(false), 
-        consistent_ordering_ (false),
-        angles_ (),
-        R_ (),
-        is_current_free_ (false),
-        current_index_ (),
-        prev_is_ffn_ (false),
-        prev_is_sfn_ (false),
-        next_is_ffn_ (false),
-        next_is_sfn_ (false),
-        changed_1st_fn_ (false),
-        changed_2nd_fn_ (false),
-        new2boundary_ (),
-        already_connected_ (false)
+        eps_angle_(M_PI/4), 
+        angles_ ()
+        
       {};
 
       /** \brief Set the multiplier of the nearest neighbor distance to obtain the final search radius for each point
@@ -288,13 +274,13 @@ namespace pcl
 
     protected:
       /** \brief The nearest neighbor distance multiplier to obtain the final search radius. */
-      double mu_;
+      double mu_{0};
 
       /** \brief The nearest neighbors search radius for each point and the maximum edge length. */
-      double search_radius_;
+      double search_radius_{0};
 
       /** \brief The maximum number of nearest neighbors accepted by searching. */
-      int nnn_;
+      int nnn_{100};
 
       /** \brief The preferred minimum angle for the triangles. */
       double minimum_angle_;
@@ -306,10 +292,10 @@ namespace pcl
       double eps_angle_;
 
       /** \brief Set this to true if the normals of the input are consistently oriented. */
-      bool consistent_;
+      bool consistent_{false};
       
       /** \brief Set this to true if the output triangle vertices should be consistently oriented. */
-      bool consistent_ordering_;
+      bool consistent_ordering_{false};
 
      private:
       /** \brief Struct for storing the angles to nearest neighbors **/
@@ -324,8 +310,8 @@ namespace pcl
       /** \brief Struct for storing the edges starting from a fringe point **/
       struct doubleEdge
       {
-        doubleEdge () : index (0) {}
-        int index;
+        doubleEdge () = default;
+        int index{0};
         Eigen::Vector2f first;
         Eigen::Vector2f second;
       };
@@ -340,7 +326,7 @@ namespace pcl
       /** \brief A list of angles to neighbors **/
       std::vector<nnAngle> angles_;
       /** \brief Index of the current query point **/
-      pcl::index_t R_;
+      pcl::index_t R_{};
       /** \brief List of point states **/
       std::vector<int> state_;
       /** \brief List of sources **/
@@ -355,28 +341,28 @@ namespace pcl
       std::vector<int> fringe_queue_;
 
       /** \brief Flag to set if the current point is free **/
-      bool is_current_free_;
+      bool is_current_free_{false};
       /** \brief Current point's index **/
-      pcl::index_t current_index_;
+      pcl::index_t current_index_{};
       /** \brief Flag to set if the previous point is the first fringe neighbor **/
-      bool prev_is_ffn_;
+      bool prev_is_ffn_{false};
       /** \brief Flag to set if the next point is the second fringe neighbor **/
-      bool prev_is_sfn_;
+      bool prev_is_sfn_{false};
       /** \brief Flag to set if the next point is the first fringe neighbor **/
-      bool next_is_ffn_;
+      bool next_is_ffn_{false};
       /** \brief Flag to set if the next point is the second fringe neighbor **/
-      bool next_is_sfn_;
+      bool next_is_sfn_{false};
       /** \brief Flag to set if the first fringe neighbor was changed **/
-      bool changed_1st_fn_;
+      bool changed_1st_fn_{false};
       /** \brief Flag to set if the second fringe neighbor was changed **/
-      bool changed_2nd_fn_;
+      bool changed_2nd_fn_{false};
       /** \brief New boundary point **/
-      pcl::index_t new2boundary_;
+      pcl::index_t new2boundary_{};
       
       /** \brief Flag to set if the next neighbor was already connected in the previous step.
         * To avoid inconsistency it should not be connected again.
         */
-      bool already_connected_; 
+      bool already_connected_{false}; 
 
       /** \brief Point coordinates projected onto the plane defined by the point normal **/
       Eigen::Vector3f proj_qp_;

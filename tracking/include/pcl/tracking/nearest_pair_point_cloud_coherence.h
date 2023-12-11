@@ -29,7 +29,7 @@ public:
 
   /** \brief empty constructor */
   NearestPairPointCloudCoherence()
-  : new_target_(false), search_(), maximum_distance_(std::numeric_limits<double>::max())
+  :  search_(), maximum_distance_(std::numeric_limits<double>::max())
   {
     coherence_name_ = "NearestPairPointCloudCoherence";
   }
@@ -82,7 +82,7 @@ protected:
   initCompute() override;
 
   /** \brief A flag which is true if target_input_ is updated */
-  bool new_target_;
+  bool new_target_{false};
 
   /** \brief A pointer to the spatial search object. */
   SearchPtr search_;

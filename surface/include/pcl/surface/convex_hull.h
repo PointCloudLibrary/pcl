@@ -88,12 +88,13 @@ namespace pcl
       using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
       /** \brief Empty constructor. */
-      ConvexHull () : compute_area_ (false), total_area_ (0), total_volume_ (0), dimension_ (0),
-                      projection_angle_thresh_ (std::cos (0.174532925) ), qhull_flags ("qhull "),
-                      x_axis_ (1.0, 0.0, 0.0), y_axis_ (0.0, 1.0, 0.0), z_axis_ (0.0, 0.0, 1.0)
-      {
-      }
-      
+      ConvexHull()
+      : qhull_flags("qhull ")
+      , x_axis_(1.0, 0.0, 0.0)
+      , y_axis_(0.0, 1.0, 0.0)
+      , z_axis_(0.0, 0.0, 1.0)
+      {}
+
       /** \brief Empty destructor */
       ~ConvexHull () override = default;
 
@@ -237,19 +238,19 @@ namespace pcl
       }
 
       /* \brief True if we should compute the area and volume of the convex hull. */
-      bool compute_area_;
+      bool compute_area_{false};
 
       /* \brief The area of the convex hull. */
-      double total_area_;
+      double total_area_{0};
 
       /* \brief The volume of the convex hull (only for 3D hulls, zero for 2D). */
-      double total_volume_;
+      double total_volume_{0};
       
       /** \brief The dimensionality of the concave hull (2D or 3D). */
-      int dimension_;
+      int dimension_{0};
 
       /** \brief How close can a 2D plane's normal be to an axis to make projection problematic. */
-      double projection_angle_thresh_;
+      double projection_angle_thresh_{std::cos (0.174532925)};
 
       /** \brief Option flag string to be used calling qhull. */
       std::string qhull_flags;

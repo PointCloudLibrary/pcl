@@ -809,7 +809,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::MLSVoxelGrid::MLSVoxelGrid (PointC
                                                                           IndicesPtr &indices,
                                                                           float voxel_size,
                                                                           int dilation_iteration_num) :
-  voxel_grid_ (), data_size_ (), voxel_size_ (voxel_size)
+  voxel_grid_ (),  voxel_size_ (voxel_size)
 {
   pcl::getMinMax3D (*cloud, *indices, bounding_min_, bounding_max_);
   bounding_min_ -= Eigen::Vector4f::Constant(voxel_size_ * (dilation_iteration_num + 1));
