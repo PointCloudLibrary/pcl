@@ -63,9 +63,7 @@ public:
 
   /** \brief Empty constructor. */
   KLDAdaptiveParticleFilterTracker()
-  : ParticleFilterTracker<PointInT, StateT>()
-  , 
-   bin_size_()
+  : ParticleFilterTracker<PointInT, StateT>(), bin_size_()
   {
     tracker_name_ = "KLDAdaptiveParticleFilterTracker";
   }

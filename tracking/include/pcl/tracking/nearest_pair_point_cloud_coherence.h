@@ -29,7 +29,7 @@ public:
 
   /** \brief empty constructor */
   NearestPairPointCloudCoherence()
-  :  search_(), maximum_distance_(std::numeric_limits<double>::max())
+  : search_(), maximum_distance_(std::numeric_limits<double>::max())
   {
     coherence_name_ = "NearestPairPointCloudCoherence";
   }
