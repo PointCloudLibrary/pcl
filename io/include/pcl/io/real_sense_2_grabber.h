@@ -197,19 +197,19 @@ namespace pcl
     /** \brief Defines either a file path to a bag file or a realsense device serial number. */
     std::string file_name_or_serial_number_;
     /** \brief Repeat playback when reading from file */
-    bool repeat_playback_;
+    bool repeat_playback_{false};
     /** \brief controlling the state of the thread. */
-    bool quit_;
+    bool quit_{false};
     /** \brief Is the grabber running. */
-    bool running_;
+    bool running_{false};
     /** \brief Calculated FPS for the grabber. */
-    float fps_;
+    float fps_{0.0f};
     /** \brief Width for the depth and color sensor. Default 424*/
-    std::uint32_t device_width_;
+    std::uint32_t device_width_{424};
     /** \brief Height for the depth and color sensor. Default 240 */
-    std::uint32_t device_height_;
+    std::uint32_t device_height_{240};
     /** \brief Target FPS for the device. Default 30. */
-    std::uint32_t target_fps_;
+    std::uint32_t target_fps_{30};
     /** \brief Declare pointcloud object, for calculating pointclouds and texture mappings */
     rs2::pointcloud pc_;
     /** \brief Declare RealSense pipeline, encapsulating the actual device and sensors */

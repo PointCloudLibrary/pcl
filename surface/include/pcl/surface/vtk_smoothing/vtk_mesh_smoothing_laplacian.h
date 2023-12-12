@@ -52,9 +52,7 @@ namespace pcl
   {
     public:
       /** \brief Empty constructor that sets the values of the algorithm parameters to the VTK defaults */
-      MeshSmoothingLaplacianVTK ()
-         
-      {};
+      MeshSmoothingLaplacianVTK () = default;
 
       /** \brief Set the number of iterations for the smoothing filter.
         * \param[in] num_iter the number of iterations

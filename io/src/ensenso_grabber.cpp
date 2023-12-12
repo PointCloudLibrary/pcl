@@ -62,10 +62,7 @@ ensensoExceptionHandling (const NxLibException& ex,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::EnsensoGrabber::EnsensoGrabber () :
-    device_open_ (false),
-    tcp_open_ (false),
-    running_ (false)
+pcl::EnsensoGrabber::EnsensoGrabber ()
 {
   point_cloud_signal_ = createSignal<sig_cb_ensenso_point_cloud> ();
   images_signal_ = createSignal<sig_cb_ensenso_images> ();

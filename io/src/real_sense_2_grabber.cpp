@@ -56,12 +56,6 @@ namespace pcl
     , signal_PointXYZRGBA ( createSignal<signal_librealsense_PointXYZRGBA> () )
     , file_name_or_serial_number_ ( file_name_or_serial_number )
     , repeat_playback_ ( repeat_playback )
-    , quit_ ( false )
-    , running_ ( false )
-    , fps_ ( 0 )
-    , device_width_ ( 424 )
-    , device_height_ ( 240 )
-    , target_fps_ ( 30 )
   {
   }
 

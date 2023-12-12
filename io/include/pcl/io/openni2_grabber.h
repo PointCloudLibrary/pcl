@@ -421,9 +421,9 @@ namespace pcl
         convertToXYZIPointCloud (const pcl::io::openni2::IRImage::Ptr &image,
           const pcl::io::openni2::DepthImage::Ptr &depth_image);
 
-        std::vector<std::uint8_t> color_resize_buffer_;
-        std::vector<std::uint16_t> depth_resize_buffer_;
-        std::vector<std::uint16_t> ir_resize_buffer_;
+        std::vector<std::uint8_t> color_resize_buffer_{};
+        std::vector<std::uint16_t> depth_resize_buffer_{};
+        std::vector<std::uint16_t> ir_resize_buffer_{};
 
         // Stream callbacks /////////////////////////////////////////////////////
         void
@@ -444,15 +444,15 @@ namespace pcl
 
         std::string rgb_frame_id_;
         std::string depth_frame_id_;
-        unsigned image_width_;
-        unsigned image_height_;
-        unsigned depth_width_;
-        unsigned depth_height_;
+        unsigned image_width_{0};
+        unsigned image_height_{0};
+        unsigned depth_width_{0};
+        unsigned depth_height_{0};
 
-        bool image_required_;
-        bool depth_required_;
-        bool ir_required_;
-        bool sync_required_;
+        bool image_required_{false};
+        bool depth_required_{false};
+        bool ir_required_{false};
+        bool sync_required_{false};
 
         boost::signals2::signal<sig_cb_openni_image>* image_signal_;
         boost::signals2::signal<sig_cb_openni_depth_image>* depth_image_signal_;
@@ -486,11 +486,10 @@ namespace pcl
         pcl::io::openni2::OpenNI2Device::CallbackHandle depth_callback_handle_;
         pcl::io::openni2::OpenNI2Device::CallbackHandle image_callback_handle_;
         pcl::io::openni2::OpenNI2Device::CallbackHandle ir_callback_handle_;
-        bool running_;
+        bool running_{false};
 
-
-        CameraParameters rgb_parameters_;
-        CameraParameters depth_parameters_;
+        CameraParameters rgb_parameters_{std::numeric_limits<double>::quiet_NaN ()};
+        CameraParameters depth_parameters_{std::numeric_limits<double>::quiet_NaN ()};
 
       public:
         PCL_MAKE_ALIGNED_OPERATOR_NEW
