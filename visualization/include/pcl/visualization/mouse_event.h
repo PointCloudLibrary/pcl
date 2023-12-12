@@ -128,12 +128,12 @@ namespace pcl
         getSelectionMode () const;
 
       protected:
-        Type type_;
-        MouseButton button_;
-        unsigned int pointer_x_;
-        unsigned int pointer_y_;
+        Type type_{};
+        MouseButton button_{};
+        unsigned int pointer_x_{0};
+        unsigned int pointer_y_{0};
         unsigned int key_state_{0};
-        bool selection_mode_;
+        bool selection_mode_{false};
     };
 
     MouseEvent::MouseEvent (const Type& type, const MouseButton& button,

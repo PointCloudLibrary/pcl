@@ -274,22 +274,22 @@ namespace pcl
 
     protected:
       /** \brief The nearest neighbor distance multiplier to obtain the final search radius. */
-      double mu_{0};
+      double mu_{0.0};
 
       /** \brief The nearest neighbors search radius for each point and the maximum edge length. */
-      double search_radius_{0};
+      double search_radius_{0.0};
 
       /** \brief The maximum number of nearest neighbors accepted by searching. */
       int nnn_{100};
 
       /** \brief The preferred minimum angle for the triangles. */
-      double minimum_angle_;
+      double minimum_angle_{0.0};
 
       /** \brief The maximum angle for the triangles. */
-      double maximum_angle_;
+      double maximum_angle_{0.0};
 
       /** \brief Maximum surface angle. */
-      double eps_angle_;
+      double eps_angle_{0.0};
 
       /** \brief Set this to true if the normals of the input are consistently oriented. */
       bool consistent_{false};

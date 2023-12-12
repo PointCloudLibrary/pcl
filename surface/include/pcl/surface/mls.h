@@ -512,16 +512,16 @@ namespace pcl
 
     protected:
       /** \brief The point cloud that will hold the estimated normals, if set. */
-      NormalCloudPtr normals_;
+      NormalCloudPtr normals_{nullptr};
 
       /** \brief The distinct point cloud that will be projected to the MLS surface. */
-      PointCloudInConstPtr distinct_cloud_;
+      PointCloudInConstPtr distinct_cloud_{nullptr};
 
       /** \brief The search method template for indices. */
       SearchMethod search_method_;
 
       /** \brief A pointer to the spatial search object. */
-      KdTreePtr tree_;
+      KdTreePtr tree_{nullptr};
 
       /** \brief The order of the polynomial to be fit. */
       int order_{2};
@@ -561,7 +561,7 @@ namespace pcl
       /** \brief Stores the MLS result for each point in the input cloud
         * \note Used only in the case of VOXEL_GRID_DILATION or DISTINCT_CLOUD upsampling
         */
-      std::vector<MLSResult> mls_results_;
+      std::vector<MLSResult> mls_results_{};
 
       /** \brief Parameter that specifies the projection method to be used. */
       MLSResult::ProjectionMethod projection_method_{MLSResult::SIMPLE};
@@ -622,8 +622,8 @@ namespace pcl
           using HashMap = std::map<std::uint64_t, Leaf>;
           HashMap voxel_grid_;
           Eigen::Vector4f bounding_min_, bounding_max_;
-          std::uint64_t data_size_{};
-          float voxel_size_;
+          std::uint64_t data_size_{0};
+          float voxel_size_{0.0f};
           PCL_MAKE_ALIGNED_OPERATOR_NEW
       };
 
@@ -635,10 +635,10 @@ namespace pcl
       int dilation_iteration_num_{0};
 
       /** \brief Number of coefficients, to be computed from the requested order.*/
-      int nr_coeff_{};
+      int nr_coeff_{0};
 
       /** \brief Collects for each point in output the corresponding point in the input. */
-      PointIndicesPtr corresponding_input_indices_;
+      PointIndicesPtr corresponding_input_indices_{nullptr};
 
       /** \brief Search for the nearest neighbors of a given point using a radius search
         * \param[in] index the index of the query point

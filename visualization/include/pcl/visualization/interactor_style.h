@@ -261,30 +261,30 @@ namespace pcl
         vtkSmartPointer<vtkRendererCollection> rens_;
 
         /** \brief Cloud actor map stored internally. */
-        CloudActorMapPtr cloud_actors_;
+        CloudActorMapPtr cloud_actors_{nullptr};
 
         /** \brief Shape map stored internally. */
-        ShapeActorMapPtr shape_actors_;
+        ShapeActorMapPtr shape_actors_{nullptr};
 
         /** \brief The current window width/height. */
-        int win_height_{}, win_width_{};
+        int win_height_{0}, win_width_{0};
 
         /** \brief The current window position x/y. */
-        int win_pos_x_{}, win_pos_y_{};
+        int win_pos_x_{0}, win_pos_y_{0};
 
         /** \brief The maximum resizeable window width/height. */
-        int max_win_height_{}, max_win_width_{};
+        int max_win_height_{0}, max_win_width_{0};
 
         /** \brief Boolean that holds whether or not to use the vtkVertexBufferObjectMapper*/
         bool use_vbos_{false};
 
         /** \brief Set to true if the grid actor is enabled. */
-        bool grid_enabled_{};
+        bool grid_enabled_{false};
         /** \brief Actor for 2D grid on screen. */
         vtkSmartPointer<vtkLegendScaleActor> grid_actor_;
 
         /** \brief Set to true if the LUT actor is enabled. */
-        bool lut_enabled_{};
+        bool lut_enabled_{false};
         /** \brief Actor for 2D lookup table on screen. */
         vtkSmartPointer<vtkScalarBarActor> lut_actor_;
 
@@ -359,7 +359,7 @@ namespace pcl
         }
 
         /** \brief True if we're using red-blue colors for anaglyphic stereo, false if magenta-green. */
-        bool stereo_anaglyph_mask_default_{};
+        bool stereo_anaglyph_mask_default_{false};
 
         /** \brief A VTK Mouse Callback object, used for point picking. */
         vtkSmartPointer<PointPickingCallback> mouse_callback_;
@@ -372,7 +372,7 @@ namespace pcl
         /** \brief A \ref pcl::visualization::Camera for camera parameter saving/restoring. */
         Camera camera_;
         /** \brief A \ref pcl::visualization::Camera is saved or not. */
-        bool camera_saved_{};
+        bool camera_saved_{false};
         /** \brief The render window.
           * Only used when interactor maybe not available
           */

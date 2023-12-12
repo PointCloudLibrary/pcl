@@ -66,13 +66,13 @@ namespace pcl
     {
       Camera () = default;
       Eigen::Affine3f pose;
-      double focal_length{};
+      double focal_length{0};
       double focal_length_w{-1};  // optional
       double focal_length_h{-1};  // optinoal
       double center_w{-1};  // optional
       double center_h{-1};  // optional
-      double height{};
-      double width{};
+      double height{0};
+      double width{0};
       std::string texture_file;
 
       PCL_MAKE_ALIGNED_OPERATOR_NEW
@@ -83,8 +83,8 @@ namespace pcl
     struct UvIndex
     {
       UvIndex () = default;
-      int idx_cloud{}; // Index of the PointXYZ in the camera's cloud
-      int idx_face{}; // Face corresponding to that projection
+      int idx_cloud{0}; // Index of the PointXYZ in the camera's cloud
+      int idx_face{0}; // Face corresponding to that projection
     };
     
     using CameraVector = std::vector<Camera, Eigen::aligned_allocator<Camera> >;
@@ -331,7 +331,7 @@ namespace pcl
 
     protected:
       /** \brief mesh scale control. */
-      float f_{};
+      float f_{0};
 
       /** \brief vector field */
       Eigen::Vector3f vector_field_;

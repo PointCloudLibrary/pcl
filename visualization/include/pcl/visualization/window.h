@@ -203,8 +203,8 @@ namespace pcl
           Window* window{nullptr};
         };
 
-        bool stopped_{};
-        int timer_id_{};
+        bool stopped_{false};
+        int timer_id_{0};
 
     protected: // member fields
         boost::signals2::signal<void (const pcl::visualization::MouseEvent&)> mouse_signal_;

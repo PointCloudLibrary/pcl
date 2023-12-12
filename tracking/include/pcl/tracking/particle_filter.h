@@ -548,22 +548,22 @@ protected:
   int iteration_num_{1};
 
   /** \brief The number of the particles. */
-  int particle_num_{};
+  int particle_num_{0};
 
   /** \brief The minimum number of points which the hypothesis should have. */
   int min_indices_{1};
 
   /** \brief Adjustment of the particle filter. */
-  double fit_ratio_;
+  double fit_ratio_{0.0};
 
   /** \brief A pointer to reference point cloud. */
-  PointCloudInConstPtr ref_;
+  PointCloudInConstPtr ref_{nullptr};
 
   /** \brief A pointer to the particles  */
-  PointCloudStatePtr particles_;
+  PointCloudStatePtr particles_{nullptr};
 
   /** \brief A pointer to PointCloudCoherence. */
-  CloudCoherencePtr coherence_;
+  CloudCoherencePtr coherence_{nullptr};
 
   /** \brief The diagonal elements of covariance matrix of the step noise. the
    * covariance matrix is used at every resample method.
@@ -582,7 +582,7 @@ protected:
   double resample_likelihood_thr_{0.0};
 
   /** \brief The threshold for the points to be considered as occluded. */
-  double occlusion_angle_thr_;
+  double occlusion_angle_thr_{0.0};
 
   /** \brief The weight to be used in normalization of the weights of the
    * particles. */
