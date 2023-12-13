@@ -454,15 +454,15 @@ namespace pcl
         bool ir_required_{false};
         bool sync_required_{false};
 
-        boost::signals2::signal<sig_cb_openni_image>* image_signal_;
-        boost::signals2::signal<sig_cb_openni_depth_image>* depth_image_signal_;
-        boost::signals2::signal<sig_cb_openni_ir_image>* ir_image_signal_;
-        boost::signals2::signal<sig_cb_openni_image_depth_image>* image_depth_image_signal_;
-        boost::signals2::signal<sig_cb_openni_ir_depth_image>* ir_depth_image_signal_;
-        boost::signals2::signal<sig_cb_openni_point_cloud>* point_cloud_signal_;
-        boost::signals2::signal<sig_cb_openni_point_cloud_i>* point_cloud_i_signal_;
-        boost::signals2::signal<sig_cb_openni_point_cloud_rgb>* point_cloud_rgb_signal_;
-        boost::signals2::signal<sig_cb_openni_point_cloud_rgba>* point_cloud_rgba_signal_;
+        boost::signals2::signal<sig_cb_openni_image>* image_signal_{};
+        boost::signals2::signal<sig_cb_openni_depth_image>* depth_image_signal_{};
+        boost::signals2::signal<sig_cb_openni_ir_image>* ir_image_signal_{};
+        boost::signals2::signal<sig_cb_openni_image_depth_image>* image_depth_image_signal_{};
+        boost::signals2::signal<sig_cb_openni_ir_depth_image>* ir_depth_image_signal_{};
+        boost::signals2::signal<sig_cb_openni_point_cloud>* point_cloud_signal_{};
+        boost::signals2::signal<sig_cb_openni_point_cloud_i>* point_cloud_i_signal_{};
+        boost::signals2::signal<sig_cb_openni_point_cloud_rgb>* point_cloud_rgb_signal_{};
+        boost::signals2::signal<sig_cb_openni_point_cloud_rgba>* point_cloud_rgba_signal_{};
 
         struct modeComp
         {
