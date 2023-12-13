@@ -73,10 +73,6 @@ namespace
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::io::OpenNI2Grabber::OpenNI2Grabber (const std::string& device_id, const Mode& depth_mode, const Mode& image_mode)
-  : image_signal_ (), depth_image_signal_ (), ir_image_signal_ (), image_depth_image_signal_ ()
-  , ir_depth_image_signal_ (), point_cloud_signal_ (), point_cloud_i_signal_ ()
-  , point_cloud_rgb_signal_ (), point_cloud_rgba_signal_ ()
-  , depth_callback_handle_ (), image_callback_handle_ (), ir_callback_handle_ ()
 {
   // initialize driver
   updateModeMaps (); // registering mapping from PCL enum modes to openni::VideoMode and vice versa

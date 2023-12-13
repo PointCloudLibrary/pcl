@@ -483,9 +483,9 @@ namespace pcl
         // Mapping from config (enum) modes to native OpenNI modes
         std::map<int, pcl::io::openni2::OpenNI2VideoMode> config2oni_map_;
 
-        pcl::io::openni2::OpenNI2Device::CallbackHandle depth_callback_handle_;
-        pcl::io::openni2::OpenNI2Device::CallbackHandle image_callback_handle_;
-        pcl::io::openni2::OpenNI2Device::CallbackHandle ir_callback_handle_;
+        pcl::io::openni2::OpenNI2Device::CallbackHandle depth_callback_handle_{};
+        pcl::io::openni2::OpenNI2Device::CallbackHandle image_callback_handle_{};
+        pcl::io::openni2::OpenNI2Device::CallbackHandle ir_callback_handle_{};
         bool running_{false};
 
         CameraParameters rgb_parameters_{std::numeric_limits<double>::quiet_NaN ()};
