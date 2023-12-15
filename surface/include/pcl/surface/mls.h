@@ -629,7 +629,7 @@ namespace pcl
 
 
       /** \brief Voxel size for the VOXEL_GRID_DILATION upsampling method */
-      float voxel_size_{1.0};
+      float voxel_size_{1.0f};
 
       /** \brief Number of dilation steps for the VOXEL_GRID_DILATION upsampling method */
       int dilation_iteration_num_{0};

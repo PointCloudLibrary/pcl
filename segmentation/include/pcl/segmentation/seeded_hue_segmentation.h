@@ -160,7 +160,7 @@ namespace pcl
       double cluster_tolerance_{0.0};
 
       /** \brief The allowed difference on the hue*/
-      float delta_hue_{0.0};
+      float delta_hue_{0.0f};
 
       /** \brief Class getName method. */
       virtual std::string getClassName () const { return ("seededHueSegmentation"); }

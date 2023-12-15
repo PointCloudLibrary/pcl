@@ -67,10 +67,10 @@ namespace pcl
       Camera () = default;
       Eigen::Affine3f pose;
       double focal_length{0.0};
-      double focal_length_w{-1};  // optional
-      double focal_length_h{-1};  // optinoal
-      double center_w{-1};  // optional
-      double center_h{-1};  // optional
+      double focal_length_w{-1.0};  // optional
+      double focal_length_h{-1.0};  // optinoal
+      double center_w{-1.0};  // optional
+      double center_h{-1.0};  // optional
       double height{0.0};
       double width{0.0};
       std::string texture_file;
