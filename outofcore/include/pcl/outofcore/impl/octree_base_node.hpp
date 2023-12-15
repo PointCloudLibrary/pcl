@@ -1937,7 +1937,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::convertToXYZRecursive ()
     {
-      std::string fname = boost::filesystem::path (node_metadata_->getPCDFilename ()).stem ().string () + std::string (".dat.xyz");
+      std::string fname = node_metadata_->getPCDFilename ().stem ().string () + std::string (".dat.xyz");
       boost::filesystem::path xyzfile = node_metadata_->getDirectoryPathname () / fname;
       payload_->convertToXYZ (xyzfile);
 
