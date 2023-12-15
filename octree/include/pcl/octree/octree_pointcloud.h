@@ -583,10 +583,10 @@ protected:
   IndicesConstPtr indices_;
 
   /** \brief Epsilon precision (error bound) for nearest neighbors searches. */
-  double epsilon_{0};
+  double epsilon_{0.0};
 
   /** \brief Octree resolution. */
-  double resolution_;
+  double resolution_{0.0};
 
   // Octree bounding box coordinates
   double min_x_{0.0f};

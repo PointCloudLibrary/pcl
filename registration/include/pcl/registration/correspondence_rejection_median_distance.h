@@ -193,7 +193,7 @@ protected:
   /** \brief The median distance threshold between two correspondent points in source
    * <-> target.
    */
-  double median_distance_{0};
+  double median_distance_{0.0};
 
   /** \brief The factor for correspondence rejection. Points with distance greater than
    * median times factor will be rejected

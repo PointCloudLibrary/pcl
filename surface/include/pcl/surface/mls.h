@@ -81,8 +81,8 @@ namespace pcl
     {
       MLSProjectionResults () = default;
 
-      double u{0};               /**< \brief The u-coordinate of the projected point in local MLS frame. */
-      double v{0};               /**< \brief The v-coordinate of the projected point in local MLS frame. */
+      double u{0.0};               /**< \brief The u-coordinate of the projected point in local MLS frame. */
+      double v{0.0};               /**< \brief The v-coordinate of the projected point in local MLS frame. */
       Eigen::Vector3d point;  /**< \brief The projected point. */
       Eigen::Vector3d normal; /**< \brief The projected point's normal. */
       PCL_MAKE_ALIGNED_OPERATOR_NEW

@@ -155,14 +155,7 @@ namespace pcl
       };
     
       /** \brief Empty constructor. */
-      GreedyProjectionTriangulation () : 
-        
-        minimum_angle_ (M_PI/18), // 10 degrees
-        maximum_angle_ (2*M_PI/3), // 120 degrees
-        eps_angle_(M_PI/4), 
-        angles_ ()
-        
-      {};
+      GreedyProjectionTriangulation () = default;
 
       /** \brief Set the multiplier of the nearest neighbor distance to obtain the final search radius for each point
        *  (this will make the algorithm adapt to different point densities in the cloud).
@@ -283,13 +276,13 @@ namespace pcl
       int nnn_{100};
 
       /** \brief The preferred minimum angle for the triangles. */
-      double minimum_angle_{0.0};
+      double minimum_angle_{M_PI/18};
 
       /** \brief The maximum angle for the triangles. */
-      double maximum_angle_{0.0};
+      double maximum_angle_{2*M_PI/3};
 
       /** \brief Maximum surface angle. */
-      double eps_angle_{0.0};
+      double eps_angle_{M_PI/4};
 
       /** \brief Set this to true if the normals of the input are consistently oriented. */
       bool consistent_{false};
@@ -319,26 +312,26 @@ namespace pcl
       // Variables made global to decrease the number of parameters to helper functions
 
       /** \brief Temporary variable to store a triangle (as a set of point indices) **/
-      pcl::Vertices triangle_;
+      pcl::Vertices triangle_{};
       /** \brief Temporary variable to store point coordinates **/
-      std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > coords_;
+      std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > coords_{};
 
       /** \brief A list of angles to neighbors **/
-      std::vector<nnAngle> angles_;
+      std::vector<nnAngle> angles_{};
       /** \brief Index of the current query point **/
       pcl::index_t R_{};
       /** \brief List of point states **/
-      std::vector<int> state_;
+      std::vector<int> state_{};
       /** \brief List of sources **/
-      pcl::Indices source_;
+      pcl::Indices source_{};
       /** \brief List of fringe neighbors in one direction **/
-      pcl::Indices ffn_;
+      pcl::Indices ffn_{};
       /** \brief List of fringe neighbors in other direction **/
-      pcl::Indices sfn_;
+      pcl::Indices sfn_{};
       /** \brief Connected component labels for each point **/
-      std::vector<int> part_;
+      std::vector<int> part_{};
       /** \brief Points on the outer edge from which the mesh has to be grown **/
-      std::vector<int> fringe_queue_;
+      std::vector<int> fringe_queue_{};
 
       /** \brief Flag to set if the current point is free **/
       bool is_current_free_{false};

@@ -88,12 +88,7 @@ namespace pcl
       using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
       /** \brief Empty constructor. */
-      ConvexHull()
-      : qhull_flags("qhull ")
-      , x_axis_(1.0, 0.0, 0.0)
-      , y_axis_(0.0, 1.0, 0.0)
-      , z_axis_(0.0, 0.0, 1.0)
-      {}
+      ConvexHull() = default;
 
       /** \brief Empty destructor */
       ~ConvexHull () override = default;
@@ -241,10 +236,10 @@ namespace pcl
       bool compute_area_{false};
 
       /* \brief The area of the convex hull. */
-      double total_area_{0};
+      double total_area_{0.0};
 
       /* \brief The volume of the convex hull (only for 3D hulls, zero for 2D). */
-      double total_volume_{0};
+      double total_volume_{0.0};
       
       /** \brief The dimensionality of the concave hull (2D or 3D). */
       int dimension_{0};
@@ -253,16 +248,16 @@ namespace pcl
       double projection_angle_thresh_{std::cos (0.174532925)};
 
       /** \brief Option flag string to be used calling qhull. */
-      std::string qhull_flags;
+      std::string qhull_flags{"qhull "};
 
       /* \brief x-axis - for checking valid projections. */
-      const Eigen::Vector3d x_axis_;
+      const Eigen::Vector3d x_axis_{1.0, 0.0, 0.0};
 
       /* \brief y-axis - for checking valid projections. */
-      const Eigen::Vector3d y_axis_;
+      const Eigen::Vector3d y_axis_{0.0, 1.0, 0.0};
 
       /* \brief z-axis - for checking valid projections. */
-      const Eigen::Vector3d z_axis_;
+      const Eigen::Vector3d z_axis_{0.0, 0.0, 1.0};
 
       /* \brief vector containing the point cloud indices of the convex hull points. */
       pcl::PointIndices hull_indices_;

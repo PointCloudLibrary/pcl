@@ -199,7 +199,7 @@ namespace pcl
       double height_limit_max_{std::numeric_limits<float>::max()};
 
       /** \brief Values describing the data acquisition viewpoint. Default: 0,0,0. */
-      float vpx_{0}, vpy_{0}, vpz_{0};
+      float vpx_{0.0f}, vpy_{0.0f}, vpz_{0.0f};
 
       /** \brief Class getName method. */
       virtual std::string 

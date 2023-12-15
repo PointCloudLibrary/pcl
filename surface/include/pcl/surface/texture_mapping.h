@@ -66,13 +66,13 @@ namespace pcl
     {
       Camera () = default;
       Eigen::Affine3f pose;
-      double focal_length{0};
+      double focal_length{0.0};
       double focal_length_w{-1};  // optional
       double focal_length_h{-1};  // optinoal
       double center_w{-1};  // optional
       double center_h{-1};  // optional
-      double height{0};
-      double width{0};
+      double height{0.0};
+      double width{0.0};
       std::string texture_file;
 
       PCL_MAKE_ALIGNED_OPERATOR_NEW
@@ -331,7 +331,7 @@ namespace pcl
 
     protected:
       /** \brief mesh scale control. */
-      float f_{0};
+      float f_{0.0f};
 
       /** \brief vector field */
       Eigen::Vector3f vector_field_;

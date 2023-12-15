@@ -29,7 +29,6 @@ public:
 
   /** \brief empty constructor */
   NearestPairPointCloudCoherence()
-  : search_(), maximum_distance_(std::numeric_limits<double>::max())
   {
     coherence_name_ = "NearestPairPointCloudCoherence";
   }
@@ -85,10 +84,10 @@ protected:
   bool new_target_{false};
 
   /** \brief A pointer to the spatial search object. */
-  SearchPtr search_;
+  SearchPtr search_{nullptr};
 
   /** \brief max of distance for points to be taken into account*/
-  double maximum_distance_;
+  double maximum_distance_{std::numeric_limits<double>::max()};
 
   /** \brief compute the nearest pairs and compute coherence using
    * point_coherences_ */

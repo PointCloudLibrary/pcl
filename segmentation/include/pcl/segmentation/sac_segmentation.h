@@ -260,7 +260,7 @@ namespace pcl
       int method_type_{0};
 
       /** \brief Distance to the model threshold (user given parameter). */
-      double threshold_{0};
+      double threshold_{0.0};
 
       /** \brief Set to true if a coefficient refinement is required. */
       bool optimize_coefficients_{true};
@@ -397,7 +397,7 @@ namespace pcl
       double distance_weight_{0.1};
 
       /** \brief The distance from the template plane to the origin. */
-      double distance_from_origin_{0};
+      double distance_from_origin_{0.0};
 
       /** \brief The minimum and maximum allowed opening angle of valid cone model. */
       double min_angle_{0.0};

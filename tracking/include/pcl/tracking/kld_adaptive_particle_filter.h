@@ -239,10 +239,10 @@ protected:
   resample() override;
 
   /** \brief the maximum number of the particles. */
-  unsigned int maximum_particle_number_{};
+  unsigned int maximum_particle_number_{0};
 
   /** \brief error between K-L distance and MLE*/
-  double epsilon_{0};
+  double epsilon_{0.0};
 
   /** \brief probability of distance between K-L distance and MLE is less than
    * epsilon_*/

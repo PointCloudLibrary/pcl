@@ -312,10 +312,10 @@ namespace pcl
       bool use_sanity_check_{false};
 
       /** \brief Seed resolution of the supervoxels (used only for smoothness check) */
-      float seed_resolution_{0};
+      float seed_resolution_{0.0f};
 
       /** \brief Voxel resolution used to build the supervoxels (used only for smoothness check)*/
-      float voxel_resolution_{0};
+      float voxel_resolution_{0.0f};
 
       /** \brief Factor used for k-convexity */
       std::uint32_t k_factor_{0};

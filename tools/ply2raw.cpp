@@ -136,7 +136,7 @@ class ply_to_raw_converter
     face_end ();
 
     std::ostream* ostream_{};
-    pcl::io::ply::float32 vertex_x_{0}, vertex_y_{0}, vertex_z_{0};
+    pcl::io::ply::float32 vertex_x_{0.0f}, vertex_y_{0.0f}, vertex_z_{0.0f};
     pcl::io::ply::int32 face_vertex_indices_element_index_{0}, face_vertex_indices_first_element_{0}, face_vertex_indices_previous_element_{0};
     std::vector<std::tuple<pcl::io::ply::float32, pcl::io::ply::float32, pcl::io::ply::float32> > vertices_{};
 };
