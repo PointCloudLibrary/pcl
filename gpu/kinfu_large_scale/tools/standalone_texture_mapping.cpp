@@ -440,7 +440,7 @@ main (int argc, char** argv)
     {
       pcl::TextureMapping<pcl::PointXYZ>::Camera cam;
       readCamPoseFile(it->path ().string (), cam);
-      cam.texture_file = boost::filesystem::basename (it->path ()) + ".png";
+      cam.texture_file = it->path ().stem ().string () + ".png";
       my_cams.push_back (cam);
     }
   }

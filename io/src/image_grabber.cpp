@@ -269,7 +269,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
   {
     extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ()));
     pathname = itr->path ().string ();
-    basename = boost::filesystem::basename (itr->path ());
+    basename = itr->path ().stem ().string ();
     if (!boost::filesystem::is_directory (itr->status ())
         && isValidExtension (extension))
     {
@@ -312,7 +312,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
   {
     extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ()));
     pathname = itr->path ().string ();
-    basename = boost::filesystem::basename (itr->path ());
+    basename = itr->path ().stem ().string ();
     if (!boost::filesystem::is_directory (itr->status ())
         && isValidExtension (extension))
     {
@@ -327,7 +327,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
   {
     extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ()));
     pathname = itr->path ().string ();
-    basename = boost::filesystem::basename (itr->path ());
+    basename = itr->path ().stem ().string ();
     if (!boost::filesystem::is_directory (itr->status ())
         && isValidExtension (extension))
     {
@@ -368,7 +368,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadPCLZFFiles (const std::string &dir)
   {
     extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ()));
     pathname = itr->path ().string ();
-    basename = boost::filesystem::basename (itr->path ());
+    basename = itr->path ().stem ().string ();
     if (!boost::filesystem::is_directory (itr->status ())
         && isValidExtension (extension))
     {
@@ -429,7 +429,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getTimestampFromFilepath (
 {
   // For now, we assume the file is of the form frame_[22-char POSIX timestamp]_*
   char timestamp_str[256];
-  int result = std::sscanf (boost::filesystem::basename (filepath).c_str (),
+  int result = std::sscanf (boost::filesystem::path (filepath).stem ().c_str (),
                             "frame_%22s_%*s",
                             timestamp_str);
   if (result > 0)
@@ -971,7 +971,7 @@ pcl::ImageGrabberBase::getCurrentDepthFileName () const
     pathname = impl_->depth_pclzf_files_[impl_->cur_frame_];
   else
     pathname = impl_->depth_image_files_[impl_->cur_frame_];
-  std::string basename = boost::filesystem::basename (pathname);
+  std::string basename = boost::filesystem::path (pathname).stem ().string ();
   return (basename);
 }
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -983,7 +983,7 @@ pcl::ImageGrabberBase::getPrevDepthFileName () const
     pathname = impl_->depth_pclzf_files_[impl_->cur_frame_-1];
   else
     pathname = impl_->depth_image_files_[impl_->cur_frame_-1];
-  std::string basename = boost::filesystem::basename (pathname);
+  std::string basename = boost::filesystem::path (pathname).stem ().string ();
   return (basename);
 }
 
@@ -996,7 +996,7 @@ pcl::ImageGrabberBase::getDepthFileNameAtIndex (std::size_t idx) const
     pathname = impl_->depth_pclzf_files_[idx];
   else
     pathname = impl_->depth_image_files_[idx];
-  std::string basename = boost::filesystem::basename (pathname);
+  std::string basename = boost::filesystem::path (pathname).stem ().string ();
   return (basename);
 }
 
