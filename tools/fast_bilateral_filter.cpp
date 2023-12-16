@@ -114,7 +114,6 @@ int
 batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir, float sigma_s, float sigma_r)
 {
 #pragma omp parallel for \
-  default(none) \
   shared(output_dir, pcd_files, sigma_r, sigma_s)
   // Disable lint since this 'for' is part of the pragma
   // NOLINTNEXTLINE(modernize-loop-convert)

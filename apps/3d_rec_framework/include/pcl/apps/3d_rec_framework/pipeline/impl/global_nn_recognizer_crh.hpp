@@ -297,7 +297,6 @@ pcl::rec_3d_framework::GlobalNNCRHRecognizer<Distance, PointInT, FeatureT>::reco
 
       // clang-format off
 #pragma omp parallel for \
-  default(none) \
   shared(VOXEL_SIZE_ICP_, cloud_voxelized_icp) \
   num_threads(omp_get_num_procs())
       // clang-format on
