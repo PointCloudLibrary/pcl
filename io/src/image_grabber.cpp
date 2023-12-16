@@ -429,7 +429,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getTimestampFromFilepath (
 {
   // For now, we assume the file is of the form frame_[22-char POSIX timestamp]_*
   char timestamp_str[256];
-  int result = std::sscanf (boost::filesystem::path (filepath).stem ().c_str (),
+  int result = std::sscanf (boost::filesystem::path (filepath).stem ().string ().c_str (),
                             "frame_%22s_%*s",
                             timestamp_str);
   if (result > 0)
