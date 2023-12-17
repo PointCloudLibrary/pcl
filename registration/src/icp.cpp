@@ -37,4 +37,15 @@
  *
  */
 
+#define PCL_REGISTRATION_ICP_CPP_
 #include <pcl/registration/icp.h>
+#include <pcl/pcl_config.h> // for PCL_NO_PRECOMPILE
+
+#ifndef PCL_NO_PRECOMPILE
+#include <pcl/pcl_exports.h> // for PCL_EXPORTS
+#include <pcl/point_types.h>
+template class PCL_EXPORTS pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ>;
+template class PCL_EXPORTS pcl::IterativeClosestPoint<pcl::PointXYZI, pcl::PointXYZI>;
+template class PCL_EXPORTS
+    pcl::IterativeClosestPoint<pcl::PointXYZRGB, pcl::PointXYZRGB>;
+#endif // PCL_NO_PRECOMPILE
