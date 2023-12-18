@@ -195,7 +195,7 @@ pcl::ihs::OfflineIntegration::getFilesFromDirectory(
   boost::filesystem::directory_iterator it_end;
   for (boost::filesystem::directory_iterator it(path_dir); it != it_end; ++it) {
     if (!is_directory(it->status()) &&
-        boost::algorithm::to_upper_copy(it->path().extension ().string ()) ==
+        boost::algorithm::to_upper_copy(it->path().extension().string()) ==
             boost::algorithm::to_upper_copy(extension)) {
       files.push_back(it->path().string());
     }
