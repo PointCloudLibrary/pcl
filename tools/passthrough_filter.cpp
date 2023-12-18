@@ -218,7 +218,7 @@ main (int argc, char** argv)
       for (boost::filesystem::directory_iterator itr (input_dir); itr != end_itr; ++itr)
       {
         // Only add PCD files
-        if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ())) == ".PCD" )
+        if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (itr->path ().extension ().string ()) == ".PCD" )
         {
           pcd_files.push_back (itr->path ().string ());
           PCL_INFO ("[Batch processing mode] Added %s for processing.\n", itr->path ().string ().c_str ());

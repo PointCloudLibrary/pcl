@@ -129,7 +129,7 @@ saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 
   PCDWriter w_pcd;
   PLYWriter w_ply;
-  std::string output_ext = boost::filesystem::extension (filename);
+  std::string output_ext = boost::filesystem::path (filename).extension ().string ();
   std::transform (output_ext.begin (), output_ext.end (), output_ext.begin (), ::tolower);
 
   if (output_ext == ".pcd")

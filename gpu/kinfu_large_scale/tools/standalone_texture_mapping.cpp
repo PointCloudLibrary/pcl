@@ -436,7 +436,7 @@ main (int argc, char** argv)
   std::string extension (".txt");
   for (boost::filesystem::directory_iterator it (base_dir); it != boost::filesystem::directory_iterator (); ++it)
   {
-    if(boost::filesystem::is_regular_file (it->status ()) && boost::filesystem::extension (it->path ()) == extension)
+    if(boost::filesystem::is_regular_file (it->status ()) && it->path ().extension ().string () == extension)
     {
       pcl::TextureMapping<pcl::PointXYZ>::Camera cam;
       readCamPoseFile(it->path ().string (), cam);

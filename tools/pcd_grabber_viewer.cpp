@@ -193,7 +193,7 @@ main (int argc, char** argv)
       boost::filesystem::directory_iterator end_itr;
       for (boost::filesystem::directory_iterator itr (path); itr != end_itr; ++itr)
       {
-        if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ())) == ".PCD" )
+        if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (itr->path ().extension ().string ()) == ".PCD" )
         {
           pcd_files.push_back (itr->path ().string ());
           std::cout << "added: " << itr->path ().string () << std::endl;

@@ -267,7 +267,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
   boost::filesystem::directory_iterator end_itr;
   for (boost::filesystem::directory_iterator itr (dir); itr != end_itr; ++itr)
   {
-    extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ()));
+    extension = boost::algorithm::to_upper_copy (itr->path ().extension ().string ());
     pathname = itr->path ().string ();
     basename = itr->path ().stem ().string ();
     if (!boost::filesystem::is_directory (itr->status ())
@@ -310,7 +310,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
   // First iterate over depth images
   for (boost::filesystem::directory_iterator itr (depth_dir); itr != end_itr; ++itr)
   {
-    extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ()));
+    extension = boost::algorithm::to_upper_copy (itr->path ().extension ().string ());
     pathname = itr->path ().string ();
     basename = itr->path ().stem ().string ();
     if (!boost::filesystem::is_directory (itr->status ())
@@ -325,7 +325,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
   // Then iterate over RGB images
   for (boost::filesystem::directory_iterator itr (rgb_dir); itr != end_itr; ++itr)
   {
-    extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ()));
+    extension = boost::algorithm::to_upper_copy (itr->path ().extension ().string ());
     pathname = itr->path ().string ();
     basename = itr->path ().stem ().string ();
     if (!boost::filesystem::is_directory (itr->status ())
@@ -366,7 +366,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadPCLZFFiles (const std::string &dir)
   boost::filesystem::directory_iterator end_itr;
   for (boost::filesystem::directory_iterator itr (dir); itr != end_itr; ++itr)
   {
-    extension = boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ()));
+    extension = boost::algorithm::to_upper_copy (itr->path ().extension ().string ());
     pathname = itr->path ().string ();
     basename = itr->path ().stem ().string ();
     if (!boost::filesystem::is_directory (itr->status ())
