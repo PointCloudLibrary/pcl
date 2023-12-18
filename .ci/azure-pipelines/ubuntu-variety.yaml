@@ -32,7 +32,7 @@ jobs:
       POSSIBLE_VTK_VERSION=("9") \
       POSSIBLE_CMAKE_CXX_STANDARD=("14" "17" "20") \
       POSSIBLE_CMAKE_BUILD_TYPE=("None" "Debug" "Release" "RelWithDebInfo" "MinSizeRel") \
-      POSSIBLE_COMPILER_PACKAGE=("g++" "g++-10" "g++-11" "g++-12" "g++-13" "clang" "clang-13" "clang-14" "clang-15" "clang-16" "clang-17") \
+      POSSIBLE_COMPILER_PACKAGE=("g++" "g++-10" "g++-11" "g++-12" "g++-13" "clang libomp-dev" "clang-13 libomp-13-dev" "clang-14 libomp-14-dev" "clang-15 libomp-15-dev" "clang-16 libomp-16-dev" "clang-17 libomp-17-dev") \
       POSSIBLE_CMAKE_C_COMPILER=("gcc" "gcc-10" "gcc-11" "gcc-12" "gcc-13" "clang" "clang-13" "clang-14" "clang-15" "clang-16" "clang-17") \
       POSSIBLE_CMAKE_CXX_COMPILER=("g++" "g++-10" "g++-11" "g++-12" "g++-13" "clang++" "clang++-13" "clang++-14" "clang++-15" "clang++-16" "clang++-17") \
       CHOSEN_COMPILER=$[RANDOM%${#POSSIBLE_COMPILER_PACKAGE[@]}] \

@@ -371,7 +371,6 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
 
     // clang-format off
 #pragma omp parallel for \
-  default(none) \
   shared(cloud_voxelized_icp) \
   schedule(dynamic,1) \
   num_threads(omp_get_num_procs())

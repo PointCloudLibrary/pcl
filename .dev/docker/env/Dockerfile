@@ -37,6 +37,7 @@ RUN apt-get update \
       libflann-dev \
       libglew-dev \
       libgtest-dev \
+      libomp-dev \
       libopenni-dev \
       libopenni2-dev \
       libpcap-dev \
