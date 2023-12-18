@@ -255,7 +255,7 @@ namespace pcl
 
        protected:
         /** \brief Set to true after initialization is complete. */
-        bool init_{};
+        bool init_{false};
 
         /** \brief Collection of vtkRenderers stored internally. */
         vtkSmartPointer<vtkRendererCollection> rens_;

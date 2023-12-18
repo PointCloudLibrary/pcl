@@ -50,17 +50,11 @@ public:
 
   /** \brief Empty constructor. */
   ParticleFilterTracker()
-  : ref_()
-  , particles_()
-  , coherence_()
-  , occlusion_angle_thr_(M_PI / 2.0)
-  , representative_state_()
+  : representative_state_()
   , motion_()
   , pass_x_()
   , pass_y_()
   , pass_z_()
-  , transed_reference_vector_()
-  , change_detector_()
   {
     tracker_name_ = "ParticleFilterTracker";
     pass_x_.setFilterFieldName("x");
@@ -568,21 +562,21 @@ protected:
   /** \brief The diagonal elements of covariance matrix of the step noise. the
    * covariance matrix is used at every resample method.
    */
-  std::vector<double> step_noise_covariance_;
+  std::vector<double> step_noise_covariance_{};
 
   /** \brief The diagonal elements of covariance matrix of the initial noise.
    * the covariance matrix is used when initialize the particles.
    */
-  std::vector<double> initial_noise_covariance_;
+  std::vector<double> initial_noise_covariance_{};
 
   /** \brief The mean values of initial noise. */
-  std::vector<double> initial_noise_mean_;
+  std::vector<double> initial_noise_mean_{};
 
   /** \brief The threshold for the particles to be re-initialized. */
   double resample_likelihood_thr_{0.0};
 
   /** \brief The threshold for the points to be considered as occluded. */
-  double occlusion_angle_thr_{0.0};
+  double occlusion_angle_thr_{M_PI / 2.0};
 
   /** \brief The weight to be used in normalization of the weights of the
    * particles. */
@@ -615,10 +609,10 @@ protected:
   pcl::PassThrough<PointInT> pass_z_;
 
   /** \brief A list of the pointers to pointclouds. */
-  std::vector<PointCloudInPtr> transed_reference_vector_;
+  std::vector<PointCloudInPtr> transed_reference_vector_{};
 
   /** \brief Change detector used as a trigger to track. */
-  typename pcl::octree::OctreePointCloudChangeDetector<PointInT>::Ptr change_detector_;
+  typename pcl::octree::OctreePointCloudChangeDetector<PointInT>::Ptr change_detector_{nullptr};
 
   /** \brief A flag to be true when change of pointclouds is detected. */
   bool changed_{false};

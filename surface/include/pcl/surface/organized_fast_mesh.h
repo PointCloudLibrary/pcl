@@ -86,9 +86,6 @@ namespace pcl
 
       /** \brief Constructor. Triangulation type defaults to \a QUAD_MESH. */
       OrganizedFastMesh ()
-      : triangulation_type_ (QUAD_MESH)
-      , viewpoint_ (Eigen::Vector3f::Zero ())
-      , cos_angle_tolerance_ (std::abs (std::cos (pcl::deg2rad (12.5f))))
       {
         check_tree_ = false;
       };
@@ -235,16 +232,16 @@ namespace pcl
       int triangle_pixel_size_columns_{1};
 
       /** \brief Type of meshing scheme (quads vs. triangles, left cut vs. right cut ... */
-      TriangulationType triangulation_type_;
+      TriangulationType triangulation_type_{QUAD_MESH};
 
       /** \brief Viewpoint from which the point cloud has been acquired (in the same coordinate frame as the data). */
-      Eigen::Vector3f viewpoint_;
+      Eigen::Vector3f viewpoint_{Eigen::Vector3f::Zero ()};
 
       /** \brief Whether or not shadowed faces are stored, e.g., for exploration */
       bool store_shadowed_faces_{false};
 
       /** \brief (Cosine of the) angle tolerance used when checking whether or not an edge between two points is shadowed. */
-      float cos_angle_tolerance_;
+      float cos_angle_tolerance_{std::abs (std::cos (pcl::deg2rad (12.5f)))};
 
       /** \brief distance tolerance for filtering out shadowed/occluded edges */
       float distance_tolerance_{-1.0f};
