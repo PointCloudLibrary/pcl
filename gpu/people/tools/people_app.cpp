@@ -78,7 +78,7 @@ std::vector<std::string> getPcdFilesInDir(const std::string& directory)
 
   for(; pos != end ; ++pos)
     if (fs::is_regular_file(pos->status()) )
-      if (fs::extension(*pos) == ".pcd")
+      if (pos->path().extension().string() == ".pcd")
         result.push_back(pos->path().string());
     
   return result;  
