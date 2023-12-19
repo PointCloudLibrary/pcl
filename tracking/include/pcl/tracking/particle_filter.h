@@ -608,7 +608,8 @@ protected:
   std::vector<PointCloudInPtr> transed_reference_vector_{};
 
   /** \brief Change detector used as a trigger to track. */
-  typename pcl::octree::OctreePointCloudChangeDetector<PointInT>::Ptr change_detector_{nullptr};
+  typename pcl::octree::OctreePointCloudChangeDetector<PointInT>::Ptr change_detector_{
+      nullptr};
 
   /** \brief A flag to be true when change of pointclouds is detected. */
   bool changed_{false};
