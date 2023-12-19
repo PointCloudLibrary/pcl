@@ -50,11 +50,7 @@ public:
 
   /** \brief Empty constructor. */
   ParticleFilterTracker()
-  : representative_state_()
-  , motion_()
-  , pass_x_()
-  , pass_y_()
-  , pass_z_()
+  : representative_state_(), motion_(), pass_x_(), pass_y_(), pass_z_()
   {
     tracker_name_ = "ParticleFilterTracker";
     pass_x_.setFilterFieldName("x");
