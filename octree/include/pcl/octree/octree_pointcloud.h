@@ -586,17 +586,17 @@ protected:
   double epsilon_{0.0};
 
   /** \brief Octree resolution. */
-  double resolution_{0.0};
+  double resolution_;
 
   // Octree bounding box coordinates
   double min_x_{0.0};
-  double max_x_{0.0};
+  double max_x_;
 
   double min_y_{0.0};
-  double max_y_{0.0};
+  double max_y_;
 
   double min_z_{0.0};
-  double max_z_{0.0};
+  double max_z_;
 
   /** \brief Flag indicating if octree has defined bounding box. */
   bool bounding_box_defined_{false};

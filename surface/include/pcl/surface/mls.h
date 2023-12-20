@@ -623,7 +623,7 @@ namespace pcl
           HashMap voxel_grid_;
           Eigen::Vector4f bounding_min_, bounding_max_;
           std::uint64_t data_size_{0};
-          float voxel_size_{0.0f};
+          float voxel_size_;
           PCL_MAKE_ALIGNED_OPERATOR_NEW
       };
 

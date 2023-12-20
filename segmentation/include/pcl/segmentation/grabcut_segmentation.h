@@ -271,7 +271,7 @@ namespace pcl
         getEpsilon () { return (epsilon_); }
         /** set epsilon which will be added to the covariance matrix diagonal which avoids singular
           * covariance matrix
-          * \param[in] epsilon user defined epsilonT
+          * \param[in] epsilon user defined epsilon
           */
         void
         setEpsilon (float epsilon) { epsilon_ = epsilon; }
@@ -445,7 +445,7 @@ namespace pcl
       /// Number of GMM components
       std::uint32_t K_{0};
       /// lambda = 50. This value was suggested the GrabCut paper.
-      float lambda_{0.0f};
+      float lambda_;
       /// beta = 1/2 * average of the squared color distances between all pairs of 8-neighboring pixels.
       float beta_{0.0f};
       /// L = a large value to force a pixel to be foreground or background

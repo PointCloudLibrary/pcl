@@ -197,7 +197,7 @@ namespace pcl
     /** \brief Defines either a file path to a bag file or a realsense device serial number. */
     std::string file_name_or_serial_number_;
     /** \brief Repeat playback when reading from file */
-    bool repeat_playback_{false};
+    bool repeat_playback_;
     /** \brief controlling the state of the thread. */
     bool quit_{false};
     /** \brief Is the grabber running. */
