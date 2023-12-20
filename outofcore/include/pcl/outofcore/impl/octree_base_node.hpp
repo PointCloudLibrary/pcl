@@ -151,7 +151,7 @@ namespace pcl
 
           if (!boost::filesystem::is_directory (file))
           {
-            if (boost::filesystem::extension (file) == node_index_extension)
+            if (file.extension ().string () == node_index_extension)
             {
               b_loaded = node_metadata_->loadMetadataFromDisk (file);
               break;
@@ -2050,7 +2050,7 @@ namespace pcl
           const boost::filesystem::path& file = *diter;
           if (!boost::filesystem::is_directory (file))
           {
-            if (boost::filesystem::extension (file) == OutofcoreOctreeBaseNode<ContainerT, PointT>::node_index_extension)
+            if (file.extension ().string () == OutofcoreOctreeBaseNode<ContainerT, PointT>::node_index_extension)
             {
               thisnode->thisnodeindex_ = file;
               loaded = true;

@@ -299,7 +299,7 @@ main (int argc, char* argv[])
       const boost::filesystem::path& file = *diter;
       if (!boost::filesystem::is_directory (file))
       {
-        if (boost::filesystem::extension (file) == OctreeDiskNode::node_index_extension)
+        if (file.extension ().string () == OctreeDiskNode::node_index_extension)
         {
           tree_root = file;
         }

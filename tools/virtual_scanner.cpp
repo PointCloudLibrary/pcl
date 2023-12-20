@@ -64,7 +64,7 @@
 #include <vtkMath.h>
 
 #include <boost/algorithm/string.hpp>  // for boost::is_any_of, boost::split, boost::token_compress_on, boost::trim
-#include <boost/filesystem.hpp>  // for boost::filesystem::create_directories, boost::filesystem::exists, boost::filesystem::extension, boost::filesystem::path
+#include <boost/filesystem.hpp>  // for boost::filesystem::create_directories, boost::filesystem::exists, boost::filesystem::path, boost::filesystem::path::extension
 
 using namespace pcl;
 
@@ -87,7 +87,7 @@ struct ScanParameters
 vtkPolyData*
 loadDataSet (const char* file_name)
 {
-  std::string extension = boost::filesystem::extension (file_name);
+  std::string extension = boost::filesystem::path (file_name).extension ().string ();
   if (extension == ".ply")
   {
     vtkPLYReader* reader = vtkPLYReader::New ();
