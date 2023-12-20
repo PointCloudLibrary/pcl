@@ -443,7 +443,7 @@ namespace pcl
       std::uint32_t height_{0};
       // Variables used in formulas from the paper.
       /// Number of GMM components
-      std::uint32_t K_{0};
+      std::uint32_t K_;
       /// lambda = 50. This value was suggested the GrabCut paper.
       float lambda_;
       /// beta = 1/2 * average of the squared color distances between all pairs of 8-neighboring pixels.
