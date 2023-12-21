@@ -45,7 +45,7 @@
 #include <pcl/filters/filter.h> // for removeNaNFromPointCloud
 
 #include <pcl/segmentation/unary_classifier.h>
-#include <boost/filesystem.hpp> // for path, exists, ...
+#include <boost/filesystem.hpp> // for path, directory_iterator, ...
 
 using namespace pcl;
 using namespace pcl::io;
@@ -78,7 +78,7 @@ bool
 loadTrainedFeatures (std::vector<FeatureT::Ptr> &out,
                      const boost::filesystem::path &base_dir)
 {
-  if (!boost::filesystem::exists (base_dir) && !boost::filesystem::is_directory (base_dir))
+  if (!std::ifstream (base_dir.string ()).good () && !boost::filesystem::is_directory (base_dir))
     return false;
 
   for (boost::filesystem::directory_iterator it (base_dir); it != boost::filesystem::directory_iterator (); ++it)

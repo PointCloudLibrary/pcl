@@ -44,7 +44,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <pcl/filters/local_maximum.h>
-#include <boost/filesystem.hpp> // for path, exists, ...
+#include <boost/filesystem.hpp> // for path, directory_iterator ...
 #include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 
 using namespace pcl;
@@ -196,7 +196,7 @@ main (int argc, char** argv)
   }
   else
   {
-    if (!input_dir.empty() && boost::filesystem::exists (input_dir))
+    if (!input_dir.empty() && std::ifstream (input_dir).good ())
     {
       std::vector<std::string> pcd_files;
       boost::filesystem::directory_iterator end_itr;

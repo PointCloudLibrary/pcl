@@ -114,7 +114,7 @@ namespace pcl
       : filelen_ (0)
       , writebuff_ (0)
     {
-      if (boost::filesystem::exists (path))
+      if (std::ifstream (path.string ()).good ())
       {
         if (boost::filesystem::is_directory (path))
         {
@@ -469,7 +469,7 @@ namespace pcl
       typename pcl::PointCloud<PointT>::Ptr tmp_cloud (new pcl::PointCloud<PointT> ());
       
       // If there's a pcd file with data          
-      if (boost::filesystem::exists (disk_storage_filename_))
+      if (std::ifstream (disk_storage_filename_).good ())
       {
         // Open the existing file
         pcl::PCDReader reader;
@@ -512,7 +512,7 @@ namespace pcl
       pcl::PCLPointCloud2::Ptr tmp_cloud (new pcl::PCLPointCloud2 ());
           
       //if there's a pcd file with data associated with this node, read the data, concatenate, and resave
-      if (boost::filesystem::exists (disk_storage_filename_))
+      if (std::ifstream (disk_storage_filename_).good ())
       {
         //open the existing file
         pcl::PCDReader reader;
@@ -555,7 +555,7 @@ namespace pcl
       Eigen::Vector4f  origin;
       Eigen::Quaternionf  orientation;
 
-      if (boost::filesystem::exists (disk_storage_filename_))
+      if (std::ifstream (disk_storage_filename_).good ())
       {
 //            PCL_INFO ("[pcl::outofcore::OutofcoreOctreeDiskContainer::%s] Reading points from disk from %s.\n", __FUNCTION__ , disk_storage_filename_->c_str ());
         int  pcd_version;
@@ -576,7 +576,7 @@ namespace pcl
     {
       pcl::PCLPointCloud2::Ptr temp_output_cloud (new pcl::PCLPointCloud2 ());
 
-      if (boost::filesystem::exists (disk_storage_filename_))
+      if (std::ifstream (disk_storage_filename_).good ())
       {
 //            PCL_INFO ("[pcl::outofcore::OutofcoreOctreeDiskContainer::%s] Reading points from disk from %s.\n", __FUNCTION__ , disk_storage_filename_->c_str ());
         int res = pcl::io::loadPCDFile (disk_storage_filename_, *temp_output_cloud);
@@ -629,7 +629,7 @@ namespace pcl
       typename pcl::PointCloud<PointT>::Ptr tmp_cloud (new pcl::PointCloud<PointT> ());
 
       // If there's a pcd file with data, read it in from disk for appending
-      if (boost::filesystem::exists (disk_storage_filename_))
+      if (std::ifstream (disk_storage_filename_).good ())
       {
         pcl::PCDReader reader;
         // Open it

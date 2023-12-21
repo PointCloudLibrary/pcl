@@ -151,7 +151,7 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
 
   print_info ("Writing: %s\n", octree_path_on_disk.c_str ());
   //make sure there isn't an octree there already
-  if (boost::filesystem::exists (octree_path_on_disk))
+  if (std::ifstream (octree_path_on_disk.string ()).good ())
   {
     if (overwrite)
     {
@@ -306,7 +306,7 @@ main (int argc, char* argv[])
   for (const int &file_arg_index : file_arg_indices)
   {
     boost::filesystem::path pcd_path (argv[file_arg_index]);
-    if (!boost::filesystem::exists (pcd_path))
+    if (!std::ifstream (pcd_path.string ()).good ())
     {
       PCL_WARN ("File %s doesn't exist\n", pcd_path.string ().c_str ());
       continue;

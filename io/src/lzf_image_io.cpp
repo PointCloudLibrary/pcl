@@ -40,7 +40,6 @@
 #include <pcl/console/print.h>
 #include <fcntl.h>
 #include <cstring>
-#include <boost/filesystem.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
@@ -357,7 +356,7 @@ pcl::io::LZFImageReader::loadImageBlob (const std::string &filename,
                                         std::vector<char> &data,
                                         std::uint32_t &uncompressed_size)
 {
-  if (filename.empty() || !boost::filesystem::exists (filename))
+  if (filename.empty() || !std::ifstream (filename).good ())
   {
     PCL_ERROR ("[pcl::io::LZFImageReader::loadImage] Could not find file '%s'.\n", filename.c_str ());
     return (false);

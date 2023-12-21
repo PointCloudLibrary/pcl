@@ -186,7 +186,7 @@ pcl::ihs::OfflineIntegration::getFilesFromDirectory(
     const std::string& extension,
     std::vector<std::string>& files) const
 {
-  if (path_dir.empty() || !boost::filesystem::exists(path_dir)) {
+  if (path_dir.empty() || !std::ifstream(path_dir).good()) {
     std::cerr << "ERROR in offline_integration.cpp: Invalid path\n  '" << path_dir
               << "'\n";
     return (false);

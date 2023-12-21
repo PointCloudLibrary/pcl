@@ -69,7 +69,6 @@
 
 #include <boost/algorithm/string/classification.hpp> // for is_any_of
 #include <boost/algorithm/string/split.hpp> // for split
-#include <boost/filesystem.hpp> // for exists
 
 #define ORIENT_MODE 0
 #define SELECT_MODE 1
@@ -610,7 +609,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     }
     else
     {
-      if (boost::filesystem::exists (camera_file_))
+      if (std::ifstream (camera_file_).good ())
       {
         if (loadCameraParameters (camera_file_))
         {

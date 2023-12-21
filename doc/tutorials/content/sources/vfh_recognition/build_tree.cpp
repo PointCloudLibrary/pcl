@@ -66,7 +66,7 @@ void
 loadFeatureModels (const boost::filesystem::path &base_dir, const std::string &extension, 
                    std::vector<vfh_model> &models)
 {
-  if (!boost::filesystem::exists (base_dir) && !boost::filesystem::is_directory (base_dir))
+  if (!std::ifstream (base_dir.string ()).good () && !boost::filesystem::is_directory (base_dir))
     return;
 
   for (boost::filesystem::directory_iterator it (base_dir); it != boost::filesystem::directory_iterator (); ++it)

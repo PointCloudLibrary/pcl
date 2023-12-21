@@ -222,7 +222,7 @@ namespace pcl
         void
         convertToXYZ (const boost::filesystem::path &path) override
         {
-          if (boost::filesystem::exists (disk_storage_filename_))
+          if (std::ifstream (disk_storage_filename_).good ())
           {
             FILE* fxyz = fopen (path.string ().c_str (), "we");
 

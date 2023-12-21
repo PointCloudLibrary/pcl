@@ -475,8 +475,8 @@ TEST_F (OutofcoreTest, Outofcore_ConstructorSafety)
   
   //(Case 3) Constructor Safety. These should throw OCT_CHILD_EXISTS exceptions and write an error
   //message of conflicting file path
-  ASSERT_TRUE (boost::filesystem::exists (filename_otreeA)) << "No tree detected on disk. This test will fail. Perhaps this test was run out of order.\n";
-  ASSERT_TRUE (boost::filesystem::exists (filename_otreeB)) << "No tree detected on disk. This test will fail. Perhaps this test was run out of order.\n";
+  ASSERT_TRUE (std::ifstream (filename_otreeA.string ()).good ()) << "No tree detected on disk. This test will fail. Perhaps this test was run out of order.\n";
+  ASSERT_TRUE (std::ifstream (filename_otreeB.string ()).good ()) << "No tree detected on disk. This test will fail. Perhaps this test was run out of order.\n";
 
   EXPECT_ANY_THROW ({ octree_disk octreeC (min, max, smallest_voxel_dim, filename_otreeA, "ECEF"); }) << "Failure to detect existing tree on disk with the same name. Data may be overwritten.\n";
   EXPECT_ANY_THROW ({ octree_disk octreeD (depth, min, max, filename_otreeB, "ECEF"); }) << "Failure to detect existing tree on disk with the same name. Data may be overwritten.\n";
@@ -494,10 +494,10 @@ TEST_F (OutofcoreTest, Outofcore_ConstructorBadPaths)
   boost::filesystem::path non_existent_path_name ("treeBogus/tree_bogus.oct_idx");
   boost::filesystem::path bad_extension_path ("treeBadExtension/tree_bogus.bad_extension");
 
-  EXPECT_FALSE (boost::filesystem::exists (non_existent_path_name));
+  EXPECT_FALSE (std::ifstream (non_existent_path_name.string ()).good ());
   EXPECT_ANY_THROW ({octree_disk octree_bogus_path (non_existent_path_name, true);});
 
-  EXPECT_FALSE (boost::filesystem::exists (bad_extension_path));
+  EXPECT_FALSE (std::ifstream (bad_extension_path.string ()).good ());
   EXPECT_ANY_THROW ({octree_disk octree_bad_extension (bad_extension_path, true);});
 
 }

@@ -41,7 +41,7 @@
 #include <pcl/console/print.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/image_viewer.h>
-#include <boost/filesystem.hpp> // for exists, extension, ...
+#include <boost/filesystem.hpp> // for directory_iterator, extension, ...
 #include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 #include <mutex>
 #include <thread>
@@ -179,7 +179,7 @@ main (int argc, char** argv)
   std::string path;
   pcl::console::parse_argument (argc, argv, "-file", path);
   std::cout << "path: " << path << std::endl;
-  if (!path.empty() && boost::filesystem::exists (path))
+  if (!path.empty() && std::ifstream (path).good ())
   {
     grabber.reset (new pcl::PCDGrabber<pcl::PointXYZRGBA> (path, frames_per_second, repeat));
   }
@@ -188,7 +188,7 @@ main (int argc, char** argv)
     std::vector<std::string> pcd_files;
     pcl::console::parse_argument (argc, argv, "-dir", path);
     std::cout << "path: " << path << std::endl;
-    if (!path.empty() && boost::filesystem::exists (path))
+    if (!path.empty() && std::ifstream (path).good ())
     {
       boost::filesystem::directory_iterator end_itr;
       for (boost::filesystem::directory_iterator itr (path); itr != end_itr; ++itr)

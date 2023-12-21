@@ -249,7 +249,7 @@ namespace pcl
       }
       
       //if the file to load doesn't exist, return failure
-      if (!boost::filesystem::exists (metadata_filename_))
+      if (!std::ifstream (metadata_filename_.string ()).good ())
       {
         PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeNodeMetadata] Can not find index metadata at %s.\n", metadata_filename_.c_str ());
         return (0);

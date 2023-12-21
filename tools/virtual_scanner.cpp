@@ -64,7 +64,7 @@
 #include <vtkMath.h>
 
 #include <boost/algorithm/string.hpp>  // for boost::is_any_of, boost::split, boost::token_compress_on, boost::trim
-#include <boost/filesystem.hpp>  // for boost::filesystem::create_directories, boost::filesystem::exists, boost::filesystem::path, boost::filesystem::path::extension
+#include <boost/filesystem.hpp>  // for boost::filesystem::create_directories, boost::filesystem::path, boost::filesystem::path::extension
 
 using namespace pcl;
 
@@ -414,7 +414,7 @@ main (int argc, char** argv)
     const std::string output_dir = st.at (st.size () - 1) + "_output";
 
     boost::filesystem::path outpath (output_dir);
-    if (!boost::filesystem::exists (outpath))
+    if (!std::ifstream (outpath.string ()).good ())
     {
       if (!boost::filesystem::create_directories (outpath))
       {
