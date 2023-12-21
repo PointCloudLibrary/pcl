@@ -179,10 +179,10 @@ namespace pcl
       KdTreePtr tree_;
 
       /** \brief The actual search parameter (casted from either \a search_radius_ or \a k_). */
-      double search_parameter_{0};
+      double search_parameter_{0.0};
 
       /** \brief The nearest neighbors search radius for each point. */
-      double search_radius_{0};
+      double search_radius_{0.0};
 
       /** \brief The number of K nearest neighbors to use for each point. */
       int k_{0};

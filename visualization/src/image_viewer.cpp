@@ -61,10 +61,8 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   , ren_ (vtkSmartPointer<vtkRenderer>::New ())
   , slice_ (vtkSmartPointer<vtkImageSlice>::New ())
   , interactor_style_ (vtkSmartPointer<ImageViewerInteractorStyle>::New ())
-  , data_size_ (0)
-  , stopped_ ()
-  , timer_id_ ()
-  , algo_ (vtkSmartPointer<vtkImageFlip>::New ())
+  , 
+   algo_ (vtkSmartPointer<vtkImageFlip>::New ())
 {
   // Prepare for image flip
   algo_->SetInterpolationModeToCubic ();

@@ -920,7 +920,7 @@ namespace pcl
       protected: // types
         struct ExitMainLoopTimerCallback : public vtkCommand
         {
-          ExitMainLoopTimerCallback () : right_timer_id (), window () {}
+          ExitMainLoopTimerCallback () = default;
 
           static ExitMainLoopTimerCallback* New ()
           {
@@ -936,12 +936,12 @@ namespace pcl
               return;
             window->interactor_->TerminateApp ();
           }
-          int right_timer_id;
-          ImageViewer* window;
+          int right_timer_id{0};
+          ImageViewer* window{nullptr};
         };
         struct ExitCallback : public vtkCommand
         {
-          ExitCallback () : window () {}
+          ExitCallback () = default;
 
           static ExitCallback* New ()
           {
@@ -955,7 +955,7 @@ namespace pcl
             window->stopped_ = true;
             window->interactor_->TerminateApp ();
           }
-          ImageViewer* window;
+          ImageViewer* window{nullptr};
         };
 
     private:
@@ -1009,13 +1009,13 @@ namespace pcl
         boost::shared_array<unsigned char> data_;
   
         /** \brief The data array (representing the image) size. Used internally. */
-        std::size_t data_size_;
+        std::size_t data_size_{0};
 
         /** \brief Set to false if the interaction loop is running. */
-        bool stopped_;
+        bool stopped_{false};
 
         /** \brief Global timer ID. Used in destructor only. */
-        int timer_id_;
+        int timer_id_{0};
 
         // /** \brief Internal blender used to overlay 2D geometry over the image. */
         // vtkSmartPointer<vtkImageBlend> blend_;
@@ -1029,7 +1029,7 @@ namespace pcl
         /** \brief Internal data array. Used everytime add***Image is called. 
           * Cleared, everytime the render loop is executed. 
           */
-        std::vector<unsigned char*> image_data_;
+        std::vector<unsigned char*> image_data_{};
 
         struct LayerComparator
         {

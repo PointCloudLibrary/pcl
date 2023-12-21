@@ -33,7 +33,7 @@
 
 #ifndef METS_SIMULATED_ANNEALING_HH_
 #define METS_SIMULATED_ANNEALING_HH_
-
+//NOLINTBEGIN
 namespace mets {
 
   /// @defgroup simulated_annealing Simulated Annealing
@@ -271,4 +271,5 @@ mets::simulated_annealing<move_manager_t>::search()
       cooling_schedule_m(current_temp_m, base_t::working_solution_m);
     }
 }
+//NOLINTEND
 #endif

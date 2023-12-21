@@ -236,28 +236,28 @@ namespace pcl
       getClassName () const override { return ("Poisson"); }
 
     private:
-      int depth_;
-      int min_depth_;
-      float point_weight_;
-      float scale_;
-      int solver_divide_;
-      int iso_divide_;
-      float samples_per_node_;
-      bool confidence_;
-      bool output_polygons_;
+      int depth_{8};
+      int min_depth_{5};
+      float point_weight_{4};
+      float scale_{1.1f};
+      int solver_divide_{8};
+      int iso_divide_{8};
+      float samples_per_node_{1.0};
+      bool confidence_{false};
+      bool output_polygons_{false};
 
-      bool no_reset_samples_;
-      bool no_clip_tree_;
-      bool manifold_;
+      bool no_reset_samples_{false};
+      bool no_clip_tree_{false};
+      bool manifold_{true};
 
-      int refine_;
-      int kernel_depth_;
-      int degree_;
-      bool non_adaptive_weights_;
-      bool show_residual_;
-      int min_iterations_;
-      float solver_accuracy_;
-      int threads_;
+      int refine_{3};
+      int kernel_depth_{8};
+      int degree_{2};
+      bool non_adaptive_weights_{false};
+      bool show_residual_{false};
+      int min_iterations_{8};
+      float solver_accuracy_{1e-3f};
+      int threads_{1};
 
       template<int Degree> void
       execute (poisson::CoredVectorMeshData &mesh,

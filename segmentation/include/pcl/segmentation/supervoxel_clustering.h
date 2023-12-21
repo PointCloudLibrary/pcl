@@ -159,7 +159,7 @@ namespace pcl
           Eigen::Vector3f rgb_;
           Eigen::Vector4f normal_;
           float curvature_{0.0f};
-          float distance_{0};
+          float distance_{0.0f};
           int idx_{0};
           SupervoxelHelper* owner_;
 

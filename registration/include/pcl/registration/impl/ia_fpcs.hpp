@@ -153,7 +153,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   {
 #ifdef _OPENMP
     const unsigned int seed =
-        static_cast<unsigned int>(std::time(NULL)) ^ omp_get_thread_num();
+        static_cast<unsigned int>(std::time(nullptr)) ^ omp_get_thread_num();
     std::srand(seed);
     PCL_DEBUG("[%s::computeTransformation] Using seed=%u\n", reg_name_.c_str(), seed);
 #pragma omp for schedule(dynamic)

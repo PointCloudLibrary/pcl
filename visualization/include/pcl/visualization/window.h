@@ -184,8 +184,8 @@ namespace pcl
           void 
           Execute (vtkObject*, unsigned long event_id, void* call_data) override;
 
-          int right_timer_id;
-          Window* window;
+          int right_timer_id{-1};
+          Window* window{nullptr};
         };
 
         struct ExitCallback : public vtkCommand
@@ -200,11 +200,11 @@ namespace pcl
           void 
           Execute (vtkObject*, unsigned long event_id, void*) override;
 
-          Window* window;
+          Window* window{nullptr};
         };
 
-        bool stopped_;
-        int timer_id_;
+        bool stopped_{false};
+        int timer_id_{0};
 
     protected: // member fields
         boost::signals2::signal<void (const pcl::visualization::MouseEvent&)> mouse_signal_;

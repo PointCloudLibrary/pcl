@@ -212,7 +212,7 @@ namespace pcl
       /** \brief Values describing the viewpoint ("pinhole" camera model assumed). 
         * By default, the viewpoint is set to 0,0,0.
         */
-      float vpx_{0}, vpy_{0}, vpz_{0};
+      float vpx_{0.0f}, vpy_{0.0f}, vpz_{0.0f};
 
       /** \brief Size of the voxels after voxel gridding. IMPORTANT: Must match the voxel 
         * size of the training data or the normalize_bins_ flag must be set to true.

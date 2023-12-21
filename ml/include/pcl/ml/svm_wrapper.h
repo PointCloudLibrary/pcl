@@ -100,7 +100,7 @@ struct SVMDataPoint {
   /// It's the feature index. It has to be an integer number greater or equal to zero
   int idx{-1};
   /// The value assigned to the correspondent feature.
-  float value{0};
+  float value{0.0f};
 
   SVMDataPoint() = default;
 };

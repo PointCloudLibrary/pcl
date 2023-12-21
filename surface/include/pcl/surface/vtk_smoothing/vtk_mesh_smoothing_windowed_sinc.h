@@ -52,15 +52,7 @@ namespace pcl
   {
     public:
       /** \brief Empty constructor that sets the values of the algorithm parameters to the VTK defaults */
-      MeshSmoothingWindowedSincVTK ()
-        : num_iter_ (20),
-          pass_band_ (0.1f),
-          feature_edge_smoothing_ (false),
-          feature_angle_ (45.f),
-          edge_angle_ (15.f),
-          boundary_smoothing_ (true),
-          normalize_coordinates_ (false)
-      {};
+      MeshSmoothingWindowedSincVTK () = default;
 
       /** \brief Set the number of iterations for the smoothing filter.
         * \param[in] num_iter the number of iterations
@@ -185,12 +177,12 @@ namespace pcl
 
     private:
       vtkSmartPointer<vtkPolyData> vtk_polygons_;
-      int num_iter_;
-      float pass_band_;
-      bool feature_edge_smoothing_;
-      float feature_angle_;
-      float edge_angle_;
-      bool boundary_smoothing_;
-      bool normalize_coordinates_;
+      int num_iter_{20};
+      float pass_band_{0.1f};
+      bool feature_edge_smoothing_{false};
+      float feature_angle_{45.f};
+      float edge_angle_{15.f};
+      bool boundary_smoothing_{true};
+      bool normalize_coordinates_{false};
   };
 }

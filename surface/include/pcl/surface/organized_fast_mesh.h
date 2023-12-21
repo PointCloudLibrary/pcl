@@ -86,20 +86,6 @@ namespace pcl
 
       /** \brief Constructor. Triangulation type defaults to \a QUAD_MESH. */
       OrganizedFastMesh ()
-      : max_edge_length_a_ (0.0f)
-      , max_edge_length_b_ (0.0f)
-      , max_edge_length_c_ (0.0f)
-      , max_edge_length_set_ (false)
-      , max_edge_length_dist_dependent_ (false)
-      , triangle_pixel_size_rows_ (1)
-      , triangle_pixel_size_columns_ (1)
-      , triangulation_type_ (QUAD_MESH)
-      , viewpoint_ (Eigen::Vector3f::Zero ())
-      , store_shadowed_faces_ (false)
-      , cos_angle_tolerance_ (std::abs (std::cos (pcl::deg2rad (12.5f))))
-      , distance_tolerance_ (-1.0f)
-      , distance_dependent_ (false)
-      , use_depth_as_distance_(false)
       {
         check_tree_ = false;
       };
@@ -228,44 +214,44 @@ namespace pcl
 
     protected:
       /** \brief max length of edge, scalar component */
-      float max_edge_length_a_;
+      float max_edge_length_a_{0.0f};
       /** \brief max length of edge, scalar component */
-      float max_edge_length_b_;
+      float max_edge_length_b_{0.0f};
       /** \brief max length of edge, scalar component */
-      float max_edge_length_c_;
+      float max_edge_length_c_{0.0f};
       /** \brief flag whether or not edges are limited in length */
-      bool max_edge_length_set_;
+      bool max_edge_length_set_{false};
 
       /** \brief flag whether or not max edge length is distance dependent. */
-      bool max_edge_length_dist_dependent_;
+      bool max_edge_length_dist_dependent_{false};
 
       /** \brief size of triangle edges (in pixels) for iterating over rows. */
-      int triangle_pixel_size_rows_;
+      int triangle_pixel_size_rows_{1};
 
       /** \brief size of triangle edges (in pixels) for iterating over columns*/
-      int triangle_pixel_size_columns_;
+      int triangle_pixel_size_columns_{1};
 
       /** \brief Type of meshing scheme (quads vs. triangles, left cut vs. right cut ... */
-      TriangulationType triangulation_type_;
+      TriangulationType triangulation_type_{QUAD_MESH};
 
       /** \brief Viewpoint from which the point cloud has been acquired (in the same coordinate frame as the data). */
-      Eigen::Vector3f viewpoint_;
+      Eigen::Vector3f viewpoint_{Eigen::Vector3f::Zero ()};
 
       /** \brief Whether or not shadowed faces are stored, e.g., for exploration */
-      bool store_shadowed_faces_;
+      bool store_shadowed_faces_{false};
 
       /** \brief (Cosine of the) angle tolerance used when checking whether or not an edge between two points is shadowed. */
-      float cos_angle_tolerance_;
+      float cos_angle_tolerance_{std::abs (std::cos (pcl::deg2rad (12.5f)))};
 
       /** \brief distance tolerance for filtering out shadowed/occluded edges */
-      float distance_tolerance_;
+      float distance_tolerance_{-1.0f};
 
       /** \brief flag whether or not \a distance_tolerance_ is distance dependent (multiplied by the squared distance to the point) or not. */
-      bool distance_dependent_;
+      bool distance_dependent_{false};
 
       /** \brief flag whether or not the points' depths are used instead of measured distances (points' distances to the viewpoint).
           This flag may be set using useDepthAsDistance(true) for (RGB-)Depth cameras to skip computations and gain additional speed up. */
-      bool use_depth_as_distance_;
+      bool use_depth_as_distance_{false};
 
 
       /** \brief Perform the actual polygonal reconstruction.

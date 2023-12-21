@@ -443,13 +443,13 @@ namespace pcl
       boost::signals2::signal<sig_cb_ensenso_point_cloud_images>* point_cloud_images_signal_;
 
       /** @brief Whether an Ensenso device is opened or not */
-      bool device_open_;
+      bool device_open_{false};
 
       /** @brief Whether an TCP port is opened or not */
-      bool tcp_open_;
+      bool tcp_open_{false};
 
       /** @brief Whether an Ensenso device is running or not */
-      bool running_;
+      bool running_{false};
 
       /** @brief Point cloud capture/processing frequency */
       pcl::EventFrequency frequency_;

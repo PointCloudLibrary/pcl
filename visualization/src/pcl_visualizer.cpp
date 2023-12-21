@@ -182,8 +182,6 @@ pcl::visualization::details::fillCells(std::vector<int>& lookup, const std::vect
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const bool create_interactor)
   : update_fps_ (vtkSmartPointer<FPSCallback>::New ())
-  , stopped_ ()
-  , timer_id_ ()
   , rens_ (vtkSmartPointer<vtkRendererCollection>::New ())
   , win_ (vtkSmartPointer<vtkRenderWindow>::New ())
   , style_ (vtkSmartPointer<pcl::visualization::PCLVisualizerInteractorStyle>::New ())
@@ -207,8 +205,6 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const std::string &name, PCLVisualizerInteractorStyle* style, const bool create_interactor)
   : update_fps_ (vtkSmartPointer<FPSCallback>::New ())
-  , stopped_ ()
-  , timer_id_ ()
   , rens_ (vtkSmartPointer<vtkRendererCollection>::New ())
   , win_ (vtkSmartPointer<vtkRenderWindow>::New ())
   , style_ (style)
@@ -239,8 +235,6 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
 pcl::visualization::PCLVisualizer::PCLVisualizer (vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind,
                                                   const std::string &name, const bool create_interactor)
   : update_fps_ (vtkSmartPointer<FPSCallback>::New ())
-  , stopped_ ()
-  , timer_id_ ()
   , rens_ (vtkSmartPointer<vtkRendererCollection>::New ())
   , win_ (wind)
   , style_ (vtkSmartPointer<pcl::visualization::PCLVisualizerInteractorStyle>::New ())
@@ -264,8 +258,6 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (vtkSmartPointer<vtkRenderer> r
 pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind,
                                                   const std::string &name, PCLVisualizerInteractorStyle* style, const bool create_interactor)
   : update_fps_ (vtkSmartPointer<FPSCallback>::New ())
-  , stopped_ ()
-  , timer_id_ ()
   , rens_ (vtkSmartPointer<vtkRendererCollection>::New ())
   , win_ (wind)
   , style_ (style)

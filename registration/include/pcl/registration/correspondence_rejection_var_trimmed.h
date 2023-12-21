@@ -223,7 +223,7 @@ protected:
   /** \brief The inlier distance threshold (based on the computed trim factor) between
    * two correspondent points in source <-> target.
    */
-  double trimmed_distance_{0};
+  double trimmed_distance_{0.0};
 
   /** \brief The factor for correspondence rejection. Only factor times the total points
    * sorted based on the correspondence distances will be considered as inliers.
