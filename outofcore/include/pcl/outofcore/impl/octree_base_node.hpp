@@ -128,7 +128,7 @@ namespace pcl
         root_node_ = this;
 
         //Check if the specified directory to load currently exists; if not, don't continue
-        if (!std::ifstream (node_metadata_->getDirectoryPathname ().string ()).good ())
+        if (!std::ifstream {node_metadata_->getDirectoryPathname ().string ()}.good ())
         {
           PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeBaseNode] Could not find dir %s\n", node_metadata_->getDirectoryPathname ().c_str ());
           PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeBaseNode] Outofcore Exception: missing directory");
@@ -222,7 +222,7 @@ namespace pcl
       node_metadata_->setOutofcoreVersion (3);
 
       // If the root directory doesn't exist create it
-      if (!std::ifstream (node_metadata_->getDirectoryPathname ().string ()).good ())
+      if (!std::ifstream {node_metadata_->getDirectoryPathname ().string ()}.good ())
       {
         boost::filesystem::create_directory (node_metadata_->getDirectoryPathname ());
       }
@@ -2021,7 +2021,7 @@ namespace pcl
       {
         thisnode->thisdir_ = path.parent_path ();
 
-        if (!std::ifstream (thisnode->thisdir_.string ()).good ())
+        if (!std::ifstream {thisnode->thisdir_.string ()}.good ())
         {
           PCL_ERROR ( "[pcl::outofcore::OutofcoreOctreeBaseNode] could not find dir %s\n",thisnode->thisdir_.c_str () );
           PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeBaseNode] Outofcore Octree Exception: Could not find directory");
