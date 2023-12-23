@@ -47,7 +47,6 @@ Work in progress: patch by Marco (AUG,19th 2012)
 
 #define _CRT_SECURE_NO_DEPRECATE
 
-#include <fstream>
 #include <functional>
 #include <iostream>
 #include <thread>

@@ -40,7 +40,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/io/pcd_io.h>
-#include <boost/filesysten.hpp> // for exists
+#include <boost/filesystem.hpp> // for exists
 
 using pcl::console::print_error;
 using pcl::console::print_info;
