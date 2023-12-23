@@ -56,7 +56,6 @@
 #include <pcl/io/png_io.h>
 #include <boost/filesystem.hpp>
 
-#include <fstream>
 #include <functional>
 #include <iostream>
 
@@ -70,7 +69,7 @@ std::vector<std::string> getPcdFilesInDir(const std::string& directory)
   namespace fs = boost::filesystem;
   fs::path dir(directory);
         
-  if (!std::ifstream(dir.string()).good() || !fs::is_directory(dir))
+  if (!fs::exists(dir) || !fs::is_directory(dir))
     PCL_THROW_EXCEPTION(pcl::IOException, "Wrong PCD directory");
     
   std::vector<std::string> result;

@@ -46,7 +46,7 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/segmentation/approximate_progressive_morphological_filter.h>
 #include <pcl/segmentation/progressive_morphological_filter.h>
-#include <boost/filesystem.hpp> // for path, directory_iterator, ...
+#include <boost/filesystem.hpp> // for path, exists, ...
 #include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 
 using namespace pcl;
@@ -297,7 +297,7 @@ main (int argc, char** argv)
   }
   else
   {
-    if (!input_dir.empty() && std::ifstream (input_dir).good ())
+    if (!input_dir.empty() && boost::filesystem::exists (input_dir))
     {
       std::vector<std::string> pcd_files;
       boost::filesystem::directory_iterator end_itr;

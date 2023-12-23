@@ -128,7 +128,7 @@ namespace pcl
         root_node_ = this;
 
         //Check if the specified directory to load currently exists; if not, don't continue
-        if (!std::ifstream {node_metadata_->getDirectoryPathname ().string ()}.good ())
+        if (!boost::filesystem::exists (node_metadata_->getDirectoryPathname ()))
         {
           PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeBaseNode] Could not find dir %s\n", node_metadata_->getDirectoryPathname ().c_str ());
           PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeBaseNode] Outofcore Exception: missing directory");
@@ -222,7 +222,7 @@ namespace pcl
       node_metadata_->setOutofcoreVersion (3);
 
       // If the root directory doesn't exist create it
-      if (!std::ifstream {node_metadata_->getDirectoryPathname ().string ()}.good ())
+      if (!boost::filesystem::exists (node_metadata_->getDirectoryPathname ()))
       {
         boost::filesystem::create_directory (node_metadata_->getDirectoryPathname ());
       }
@@ -271,7 +271,7 @@ namespace pcl
       for(std::size_t i=0; i<8; i++)
       {
         boost::filesystem::path child_path = this->node_metadata_->getDirectoryPathname () / boost::filesystem::path (std::to_string(i));
-        if (std::ifstream (child_path.string ()).good ())
+        if (boost::filesystem::exists (child_path))
           child_count++;
       }
       return (child_count);
@@ -314,7 +314,7 @@ namespace pcl
         {
           boost::filesystem::path child_dir = node_metadata_->getDirectoryPathname () / boost::filesystem::path (std::to_string(i));
           //if the directory exists and the child hasn't been created (set to 0 by this node's constructor)
-          if (std::ifstream (child_dir.string ()).good () && this->children_[i] == nullptr)
+          if (boost::filesystem::exists (child_dir) && this->children_[i] == nullptr)
           {
             //load the child node
             this->children_[i] = new OutofcoreOctreeBaseNode<ContainerT, PointT> (child_dir, this, recursive);
@@ -2021,7 +2021,7 @@ namespace pcl
       {
         thisnode->thisdir_ = path.parent_path ();
 
-        if (!std::ifstream {thisnode->thisdir_.string ()}.good ())
+        if (!boost::filesystem::exists (thisnode->thisdir_))
         {
           PCL_ERROR ( "[pcl::outofcore::OutofcoreOctreeBaseNode] could not find dir %s\n",thisnode->thisdir_.c_str () );
           PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeBaseNode] Outofcore Octree Exception: Could not find directory");
@@ -2121,7 +2121,7 @@ namespace pcl
         {
           boost::filesystem::path child_dir = root->thisdir_
           / boost::filesystem::path (boost::lexical_cast<std::string> (i));
-          if (std::ifstream (child_dir.string ()).good ())
+          if (boost::filesystem::exists (child_dir))
           {
             root->children_[i] = makenode_norec (child_dir, root);
             root->num_children_++;
@@ -2151,7 +2151,7 @@ namespace pcl
           for (int i = 0; i < 8; i++)
           {
             boost::filesystem::path child_dir = current->thisdir_ / boost::filesystem::path (boost::lexical_cast<std::string> (i));
-            if (std::ifstream (child_dir.string ()).good ())
+            if (boost::filesystem::exists (child_dir))
             {
               current->children_[i] = makenode_norec<ContainerT, PointT> (child_dir, current);
               current->num_children_++;

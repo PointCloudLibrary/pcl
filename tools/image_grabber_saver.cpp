@@ -40,6 +40,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/io/pcd_io.h>
+#include <boost/filesysten.hpp> // for exists
 
 using pcl::console::print_error;
 using pcl::console::print_info;
@@ -107,7 +108,7 @@ main (int argc, char** argv)
 
   pcl::console::parse_argument (argc, argv, "-out_dir", out_folder);
 
-  if (out_folder.empty() || !std::ifstream (out_folder).good ())
+  if (out_folder.empty() || !boost::filesystem::exists (out_folder))
   {
     PCL_INFO("No correct directory was given with the -out_dir flag. Setting to current dir\n");
     out_folder = "./";
@@ -115,7 +116,7 @@ main (int argc, char** argv)
   else
     PCL_INFO("Using %s as output dir", out_folder.c_str());
 
-  if (!rgb_path.empty() && !depth_path.empty() && std::ifstream (rgb_path).good () && std::ifstream (depth_path).good ())
+  if (!rgb_path.empty() && !depth_path.empty() && boost::filesystem::exists (rgb_path) && boost::filesystem::exists (depth_path))
   {
     grabber.reset (new pcl::ImageGrabber<pcl::PointXYZRGBA> (depth_path, rgb_path, frames_per_second, false));
   }

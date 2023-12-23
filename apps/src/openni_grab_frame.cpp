@@ -231,7 +231,7 @@ public:
     else {
       dir_name_ = path.parent_path().string();
 
-      if (!dir_name_.empty() && !std::ifstream(path.parent_path().string()).good()) {
+      if (!dir_name_.empty() && !boost::filesystem::exists(path.parent_path())) {
         std::cerr << "directory \"" << path.parent_path() << "\" does not exist!\n";
         exit(1);
       }

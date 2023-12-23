@@ -114,7 +114,7 @@ namespace pcl
       : filelen_ (0)
       , writebuff_ (0)
     {
-      if (std::ifstream (path.string ()).good ())
+      if (boost::filesystem::exists (path))
       {
         if (boost::filesystem::is_directory (path))
         {

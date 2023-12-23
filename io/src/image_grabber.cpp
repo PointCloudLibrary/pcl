@@ -42,7 +42,7 @@
 #include <pcl/memory.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <boost/filesystem.hpp> // for basename, is_directory, ...
+#include <boost/filesystem.hpp> // for exists, basename, is_directory, ...
 #include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 
 #ifdef PCL_BUILT_WITH_VTK
@@ -255,7 +255,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::trigger ()
 void
 pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string &dir)
 {
-  if (!std::ifstream (dir).good () || !boost::filesystem::is_directory (dir))
+  if (!boost::filesystem::exists (dir) || !boost::filesystem::is_directory (dir))
   {
     PCL_ERROR ("[pcl::ImageGrabber::loadDepthAndRGBFiles] Error: attempted to instantiate a pcl::ImageGrabber from a path which"
                " is not a directory: %s\n", dir.c_str ());
@@ -291,13 +291,13 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
 void
 pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string &depth_dir, const std::string &rgb_dir)
 {
-  if (!std::ifstream (depth_dir).good () || !boost::filesystem::is_directory (depth_dir))
+  if (!boost::filesystem::exists (depth_dir) || !boost::filesystem::is_directory (depth_dir))
   {
     PCL_ERROR ("[pcl::ImageGrabber::loadDepthAndRGBFiles] Error: attempted to instantiate a pcl::ImageGrabber from a path which"
                " is not a directory: %s\n", depth_dir.c_str ());
     return;
   }
-  if (!std::ifstream (rgb_dir).good () || !boost::filesystem::is_directory (rgb_dir))
+  if (!boost::filesystem::exists (rgb_dir) || !boost::filesystem::is_directory (rgb_dir))
   {
     PCL_ERROR ("[pcl::ImageGrabber::loadDepthAndRGBFiles] Error: attempted to instantiate a pcl::ImageGrabber from a path which"
                " is not a directory: %s\n", rgb_dir.c_str ());
@@ -354,7 +354,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
 void
 pcl::ImageGrabberBase::ImageGrabberImpl::loadPCLZFFiles (const std::string &dir)
 {
-  if (!std::ifstream (dir).good () || !boost::filesystem::is_directory (dir))
+  if (!boost::filesystem::exists (dir) || !boost::filesystem::is_directory (dir))
   {
     PCL_ERROR ("[pcl::ImageGrabber::loadPCLZFFiles] Error: attempted to instantiate a pcl::ImageGrabber from a path which"
                " is not a directory: %s\n", dir.c_str ());

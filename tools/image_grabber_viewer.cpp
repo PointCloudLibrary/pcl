@@ -45,6 +45,7 @@
 
 #include <mutex>
 #include <thread>
+#include <boost/filesystem.hpp> // for exists
 
 using namespace std::chrono_literals;
 using pcl::console::print_error;
@@ -196,7 +197,7 @@ main (int argc, char** argv)
   std::string path;
   pcl::console::parse_argument (argc, argv, "-dir", path);
   std::cout << "path: " << path << std::endl;
-  if (!path.empty() && std::ifstream (path).good ())
+  if (!path.empty() && boost::filesystem::exists (path))
   {
     grabber.reset (new pcl::ImageGrabber<pcl::PointXYZRGBA> (path, frames_per_second, repeat, use_pclzf));
   }

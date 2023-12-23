@@ -37,7 +37,6 @@
 
 #define _CRT_SECURE_NO_DEPRECATE
 
-#include <fstream>
 #include <functional>
 #include <iostream>
 #include <vector>
@@ -178,7 +177,7 @@ std::vector<std::string> getPcdFilesInDir(const std::string& directory)
   fs::path dir(directory);
  
   std::cout << "path: " << directory << std::endl;
-  if (directory.empty() || !std::ifstream(dir.string()).good() || !fs::is_directory(dir))
+  if (directory.empty() || !fs::exists(dir) || !fs::is_directory(dir))
     PCL_THROW_EXCEPTION (pcl::IOException, "No valid PCD directory given!\n");
     
   std::vector<std::string> result;

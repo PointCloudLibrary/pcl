@@ -146,7 +146,7 @@ namespace pcl
       }
 
       //Check to make sure that we are not overwriting existing data
-      if (std::ifstream (root_name.parent_path ().string ()).good ())
+      if (boost::filesystem::exists (root_name.parent_path ()))
       {
         PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeBase] A dir named %s already exists. Overwriting an existing tree is not supported.\n", root_name.parent_path ().c_str () );
         PCL_THROW_EXCEPTION ( PCLException, "[pcl::outofcore::OutofcoreOctreeBase] Directory exists; Overwriting an existing tree is not supported\n");
@@ -155,7 +155,7 @@ namespace pcl
       // Get fullpath and recreate directories
       boost::filesystem::path dir = root_name.parent_path ();
 
-      if (!std::ifstream (dir.string ()).good ())
+      if (!boost::filesystem::exists (dir))
       {
         boost::filesystem::create_directory (dir);
       }

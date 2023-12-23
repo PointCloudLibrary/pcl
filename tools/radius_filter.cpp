@@ -40,7 +40,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <pcl/filters/conditional_removal.h>
-#include <boost/filesystem.hpp> // for path, directory_iterator, ...
+#include <boost/filesystem.hpp> // for path, exists, ...
 #include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 
 
@@ -201,7 +201,7 @@ main (int argc, char** argv)
   }
   else
   {
-    if (!input_dir.empty() && std::ifstream (input_dir).good ())
+    if (!input_dir.empty() && boost::filesystem::exists (input_dir))
     {
       std::vector<std::string> pcd_files;
       boost::filesystem::directory_iterator end_itr;

@@ -4461,7 +4461,7 @@ pcl::visualization::PCLVisualizer::textureFromTexMaterial (const pcl::TexMateria
 
     try
     {
-      if (!std::ifstream (parent_dir.string ()).good ())
+      if (!boost::filesystem::exists (parent_dir))
       {
         PCL_WARN ("[PCLVisualizer::textureFromTexMaterial] Parent directory '%s' doesn't exist!\n",
                    parent_dir.string ().c_str ());
