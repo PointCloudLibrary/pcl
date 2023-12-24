@@ -32,7 +32,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  *
- * Implementation of the ISM algorithm described in "Hough Transforms and 3D SURF for robust three dimensional classication"
+ * Implementation of the ISM algorithm described in "Hough Transforms and 3D SURF for robust three dimensional classification"
  * by Jan Knopp, Mukta Prasad, Geert Willems, Radu Timofte, and Luc Van Gool
  *
  * Authors: Roman Shapovalov, Alexander Velizhev, Sergey Ushakov

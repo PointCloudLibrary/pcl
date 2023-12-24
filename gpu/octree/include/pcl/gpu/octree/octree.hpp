@@ -164,7 +164,7 @@ namespace pcl
               */
             void nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results, ResultSqrDists& sqr_distances) const;
 
-            /** \brief Desroys octree and release all resources */
+            /** \brief Destroys octree and release all resources */
             void clear();            
         private:
             void *impl;            

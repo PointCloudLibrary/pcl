@@ -3906,7 +3906,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
         trans_view (x, y) = static_cast<float> (view_transform->GetElement (x, y));
 
     //NOTE: vtk view coordinate system is different than the standard camera coordinates (z forward, y down, x right)
-    //thus, the fliping in y and z
+    //thus, the flipping in y and z
     for (auto &point : cloud->points)
     {
       point.getVector4fMap () = trans_view * point.getVector4fMap ();
@@ -3928,7 +3928,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     transOCtoCC->Concatenate (cam_tmp->GetViewTransformMatrix ());
 
     //NOTE: vtk view coordinate system is different than the standard camera coordinates (z forward, y down, x right)
-    //thus, the fliping in y and z
+    //thus, the flipping in y and z
     vtkSmartPointer<vtkMatrix4x4> cameraSTD = vtkSmartPointer<vtkMatrix4x4>::New ();
     cameraSTD->Identity ();
     cameraSTD->SetElement (0, 0, 1);
@@ -4010,7 +4010,7 @@ pcl::visualization::PCLVisualizer::renderView (int xres, int yres, pcl::PointClo
 
       float w3 = 1.0f / world_coords[3];
       world_coords[0] *= w3;
-      // vtk view coordinate system is different than the standard camera coordinates (z forward, y down, x right), thus, the fliping in y and z
+      // vtk view coordinate system is different than the standard camera coordinates (z forward, y down, x right), thus, the flipping in y and z
       world_coords[1] *= -w3;
       world_coords[2] *= -w3;
 

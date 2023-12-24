@@ -132,7 +132,7 @@ CMake window. Let's check also the `Advanced` checkbox to show some advanced CMa
 variable value, we can either browse the CMake variables to look for it, or we can use the `Search:` field to type the variable name.
 
 .. image:: images/windows/cmake_grouped_advanced.png
-    :alt: CMake groupped and advanced variables
+    :alt: CMake grouped and advanced variables
     :align: center
 	
 Let's check whether CMake did actually find the needed third party dependencies or not :

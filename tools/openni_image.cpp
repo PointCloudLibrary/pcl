@@ -524,7 +524,7 @@ class Viewer
                 reinterpret_cast<const unsigned short*> (&frame->depth_image->getDepthMetaData ().Data ()[0]),
                   frame->depth_image->getWidth (), frame->depth_image->getHeight (),
                   std::numeric_limits<unsigned short>::min (), 
-                  // Scale so that the colors look brigher on screen
+                  // Scale so that the colors look brighter on screen
                   std::numeric_limits<unsigned short>::max () / 10, 
                   true);
 

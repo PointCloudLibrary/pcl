@@ -67,7 +67,7 @@ printHelp (int, char **argv)
   print_value ("%d", default_min); print_info (")\n");
   print_info ("                     -max X      = use a maximum of X points peer cluster (default: ");
   print_value ("%d", default_max); print_info (")\n");
-  print_info ("                     -tolerance X = the spacial distance between clusters (default: ");
+  print_info ("                     -tolerance X = the spatial distance between clusters (default: ");
   print_value ("%lf", default_tolerance); print_info (")\n");
 }
 

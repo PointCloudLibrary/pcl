@@ -80,7 +80,7 @@ namespace pcl
 
         /** \brief Constructor
           * \param[in] sorted_results whether the results should be return sorted in ascending order on the distances or not.
-          *        This applies only for radius search, since knn always returns sorted resutls    
+          *        This applies only for radius search, since knn always returns sorted results    
           * \param[in] eps the threshold for the mean-squared-error of the estimation of the projection matrix.
           *            if the MSE is above this value, the point cloud is considered as not from a projective device,
           *            thus organized neighbor search can not be applied on that cloud.

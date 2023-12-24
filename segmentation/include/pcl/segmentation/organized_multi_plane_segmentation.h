@@ -206,7 +206,7 @@ namespace pcl
         * \param[out] model_coefficients a vector of model_coefficients for each plane found in the input cloud
         * \param[out] inlier_indices a vector of inliers for each detected plane
         * \param[out] centroids a vector of centroids for each plane
-        * \param[out] covariances a vector of covariance matricies for the inliers of each plane
+        * \param[out] covariances a vector of covariance matrices for the inliers of each plane
         * \param[out] labels a point cloud for the connected component labels of each pixel
         * \param[out] label_indices a vector of PointIndices for each labeled component
         */

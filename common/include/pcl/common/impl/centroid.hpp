@@ -690,7 +690,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
   //obb_rotational_matrix.col(1)==middle_axis
   //obb_rotational_matrix.col(2)==minor_axis
 
-  //Trasforming the point cloud in the (Centroid, ma-mi-mi_axis) reference
+  //Transforming the point cloud in the (Centroid, ma-mi-mi_axis) reference
   //with homogeneous matrix
   //[R^t  , -R^t*Centroid ]
   //[0    , 1             ]
@@ -824,7 +824,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
   //obb_rotational_matrix.col(1)==middle_axis
   //obb_rotational_matrix.col(2)==minor_axis
 
-  //Trasforming the point cloud in the (Centroid, ma-mi-mi_axis) reference
+  //Transforming the point cloud in the (Centroid, ma-mi-mi_axis) reference
   //with homogeneous matrix
   //[R^t  , -R^t*Centroid ]
   //[0    , 1             ]

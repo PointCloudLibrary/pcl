@@ -117,7 +117,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::handleMatches(
         std::numeric_limits<float>::max(); // reset to std::numeric_limits<float>::max()
                                            // to accept all candidates and not only best
 
-    // determine corresondences between base and match according to their distance to
+    // determine correspondences between base and match according to their distance to
     // centroid
     linkMatchWithBase(base_indices, match, correspondences_temp);
 

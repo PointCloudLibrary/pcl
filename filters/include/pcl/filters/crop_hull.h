@@ -109,7 +109,7 @@ namespace pcl
         * This should be set to correspond to the dimensionality of the
         * convex/concave hull produced by the pcl::ConvexHull and
         * pcl::ConcaveHull classes.
-        * \param[in] dim Dimensionailty of the hull used to filter points.
+        * \param[in] dim Dimensionality of the hull used to filter points.
         */
       inline void
       setDim (int dim)

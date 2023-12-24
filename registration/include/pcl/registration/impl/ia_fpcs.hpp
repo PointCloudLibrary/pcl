@@ -722,7 +722,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
     Eigen::Matrix4f transformation_temp;
     pcl::Correspondences correspondences_temp;
 
-    // determine corresondences between base and match according to their distance to
+    // determine correspondences between base and match according to their distance to
     // centroid
     linkMatchWithBase(base_indices, match, correspondences_temp);
 

@@ -135,7 +135,7 @@ class Select2DTool : public ToolInterface
 
     /// @brief highlight all the points in the rubber band.
     /// @detail draw the cloud using a stencil buffer. During this time, the
-    /// points that are highlighted will not be recorded by the selecion object.
+    /// points that are highlighted will not be recorded by the selection object.
     /// @param viewport the viewport obtained from GL
     void
     highlightPoints (GLint* viewport) const;

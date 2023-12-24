@@ -635,7 +635,7 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
     Eigen::Vector3f scene_p_normal = (*scene_normals_)[it->first].getNormalVector3fMap ();
     Eigen::Vector3f model_p_normal =
         (*recog_model->normals_)[it->second->at(closest).first].getNormalVector3fMap();
-    float dotp = scene_p_normal.dot (model_p_normal) * 1.f; //[-1,1] from antiparallel trough perpendicular to parallel
+    float dotp = scene_p_normal.dot (model_p_normal) * 1.f; //[-1,1] from antiparallel through perpendicular to parallel
 
     if (dotp < 0.f)
       dotp = 0.f;
@@ -725,7 +725,7 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::computeClutterCue(Recogn
           //using normals to weight clutter points
           Eigen::Vector3f scene_p_normal = (*scene_normals_)[neighborhood_index.first].getNormalVector3fMap ();
           Eigen::Vector3f model_p_normal = (*scene_normals_)[recog_model->explained_[neighborhood_index.second]].getNormalVector3fMap ();
-          float dotp = scene_p_normal.dot (model_p_normal); //[-1,1] from antiparallel trough perpendicular to parallel
+          float dotp = scene_p_normal.dot (model_p_normal); //[-1,1] from antiparallel through perpendicular to parallel
 
           if (dotp < 0)
             dotp = 0.f;
