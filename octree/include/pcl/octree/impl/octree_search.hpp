@@ -107,6 +107,8 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::nearestKSearch
   getKNearestNeighborRecursive(
       p_q, k, this->root_node_, key, 1, smallest_dist, point_candidates);
 
+  std::sort(point_candidates.begin(), point_candidates.end());
+
   const auto result_count = static_cast<uindex_t>(point_candidates.size());
 
   k_indices.resize(result_count);
@@ -307,21 +309,22 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
 
         // check if a closer match is found
         if (squared_dist < smallest_squared_dist) {
+          smallest_squared_dist = squared_dist;
+
           prioPointQueueEntry point_entry;
 
           point_entry.point_distance_ = squared_dist;
           point_entry.point_idx_ = point_index;
-          point_candidates.push_back(point_entry);
+
+          if (point_candidates.size() == K) {
+            *std::max_element(point_candidates.begin(), point_candidates.end()) =
+                point_entry;
+          }
+          else {
+            point_candidates.push_back(point_entry);
+          }
         }
       }
-
-      std::sort(point_candidates.begin(), point_candidates.end());
-
-      if (point_candidates.size() > K)
-        point_candidates.resize(K);
-
-      if (point_candidates.size() == K)
-        smallest_squared_dist = point_candidates.back().point_distance_;
     }
     // pop element from priority queue
     search_heap.pop_back();
