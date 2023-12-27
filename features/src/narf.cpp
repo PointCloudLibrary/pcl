@@ -38,9 +38,10 @@
 #include <pcl/features/narf.h>
 #include <pcl/features/narf_descriptor.h>
 
-#include <iostream>
-#include <fstream>
 #include <cmath>
+#include <cstddef>
+#include <fstream>
+#include <iostream>
 #include <map> // for std::multimap
 using std::cout;
 using std::cerr;
@@ -109,9 +110,9 @@ Narf::deepCopy (const Narf& other)
   {
     surface_patch_pixel_size_ = other.surface_patch_pixel_size_;
     delete[] surface_patch_;
-    surface_patch_ = new float[surface_patch_pixel_size_*surface_patch_pixel_size_];
+    surface_patch_ = new float[static_cast<unsigned long>(surface_patch_pixel_size_*surface_patch_pixel_size_)];
   }
-  std::copy(other.surface_patch_, other.surface_patch_ + surface_patch_pixel_size_*surface_patch_pixel_size_, surface_patch_);
+  std::copy(other.surface_patch_, other.surface_patch_ + static_cast<ptrdiff_t>(surface_patch_pixel_size_*surface_patch_pixel_size_), surface_patch_);
   surface_patch_world_size_ = other.surface_patch_world_size_;
   surface_patch_rotation_ = other.surface_patch_rotation_;
   
@@ -521,7 +522,7 @@ Narf::saveBinary (std::ostream& file) const
   pcl::saveBinary(transformation_.matrix(), file);
   file.write(reinterpret_cast<const char*>(&surface_patch_pixel_size_), sizeof(surface_patch_pixel_size_));
   file.write(reinterpret_cast<const char*>(surface_patch_),
-             surface_patch_pixel_size_*surface_patch_pixel_size_*sizeof(*surface_patch_));
+             static_cast<unsigned long>(surface_patch_pixel_size_*surface_patch_pixel_size_)*sizeof(*surface_patch_));
   file.write(reinterpret_cast<const char*>(&surface_patch_world_size_), sizeof(surface_patch_world_size_));
   file.write(reinterpret_cast<const char*>(&surface_patch_rotation_), sizeof(surface_patch_rotation_));
   file.write(reinterpret_cast<const char*>(&descriptor_size_), sizeof(descriptor_size_));
@@ -573,9 +574,9 @@ Narf::loadBinary (std::istream& file)
   pcl::loadBinary(position_.matrix(), file);
   pcl::loadBinary(transformation_.matrix(), file);
   file.read(reinterpret_cast<char*>(&surface_patch_pixel_size_), sizeof(surface_patch_pixel_size_));
-  surface_patch_ = new float[surface_patch_pixel_size_*surface_patch_pixel_size_];
+  surface_patch_ = new float[static_cast<unsigned long>(surface_patch_pixel_size_*surface_patch_pixel_size_)];
   file.read(reinterpret_cast<char*>(surface_patch_),
-            surface_patch_pixel_size_*surface_patch_pixel_size_*sizeof(*surface_patch_));
+            static_cast<unsigned long>(surface_patch_pixel_size_*surface_patch_pixel_size_)*sizeof(*surface_patch_));
   file.read(reinterpret_cast<char*>(&surface_patch_world_size_), sizeof(surface_patch_world_size_));
   file.read(reinterpret_cast<char*>(&surface_patch_rotation_), sizeof(surface_patch_rotation_));
   file.read(reinterpret_cast<char*>(&descriptor_size_), sizeof(descriptor_size_));

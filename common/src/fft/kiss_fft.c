@@ -14,6 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 #include "pcl/common/fft/_kiss_fft_guts.h"
+#include <stddef.h>
 /* The guts header contains all the multiplication and addition macros that are defined for
  fixed or floating point complex numbers.  It also declares the kf_ internal functions.
  */
@@ -150,9 +151,9 @@ static void kf_bfly5(
 
     Fout0=Fout;
     Fout1=Fout0+m;
-    Fout2=Fout0+2*m;
-    Fout3=Fout0+3*m;
-    Fout4=Fout0+4*m;
+    Fout2=Fout0+(ptrdiff_t)(2*m);
+    Fout3=Fout0+(ptrdiff_t)(3*m);
+    Fout4=Fout0+(ptrdiff_t)(4*m);
 
     tw=st->twiddles;
     for (int u=0; u<m; ++u ) {
@@ -160,9 +161,9 @@ static void kf_bfly5(
         scratch[0] = *Fout0;
 
         C_MUL(scratch[1] ,*Fout1, tw[u*fstride]);
-        C_MUL(scratch[2] ,*Fout2, tw[2*u*fstride]);
-        C_MUL(scratch[3] ,*Fout3, tw[3*u*fstride]);
-        C_MUL(scratch[4] ,*Fout4, tw[4*u*fstride]);
+        C_MUL(scratch[2] ,*Fout2, tw[(unsigned long)(2*u)*fstride]);
+        C_MUL(scratch[3] ,*Fout3, tw[(unsigned long)(3*u)*fstride]);
+        C_MUL(scratch[4] ,*Fout4, tw[(unsigned long)(4*u)*fstride]);
 
         C_ADD( scratch[7],scratch[1],scratch[4]);
         C_SUB( scratch[10],scratch[1],scratch[4]);
@@ -245,7 +246,7 @@ void kf_work(
     kiss_fft_cpx * Fout_beg=Fout;
     const int p=*factors++; /* the radix  */
     const int m=*factors++; /* stage's fft length/p */
-    const kiss_fft_cpx * Fout_end = Fout + p*m;
+    const kiss_fft_cpx * Fout_end = Fout + (ptrdiff_t)(p*m);
 
 #ifdef _OPENMP
     // use openmp extensions at the 

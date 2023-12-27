@@ -36,11 +36,12 @@
  *
  */
 
-#include <algorithm>
-#include <numeric>
-
-#include <pcl/impl/pcl_base.hpp>
 #include <pcl/common/io.h>  // for getFieldSize
+#include <pcl/impl/pcl_base.hpp>
+
+#include <algorithm>
+#include <cstddef>
+#include <numeric>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 pcl::PCLBase<pcl::PCLPointCloud2>::PCLBase ()
@@ -114,12 +115,12 @@ pcl::PCLBase<pcl::PCLPointCloud2>::initCompute ()
   }
 
   // If we have a set of fake indices, but they do not match the number of points in the cloud, update them
-  if (fake_indices_ && indices_->size () != (input_->width * input_->height))
+  if (fake_indices_ && indices_->size () != (static_cast<unsigned long>(input_->width * input_->height)))
   {
     const auto indices_size = indices_->size ();
     try
     {
-      indices_->resize (input_->width * input_->height);
+      indices_->resize (static_cast<uindex_t>(input_->width * input_->height));
     }
     catch (const std::bad_alloc&)
     {
@@ -127,7 +128,9 @@ pcl::PCLBase<pcl::PCLPointCloud2>::initCompute ()
       return (false);
     }
     if (indices_size < indices_->size ())
-      std::iota(indices_->begin () + indices_size, indices_->end (), indices_size);
+    {
+      std::iota(indices_->begin() + indices_size, indices_->end(), indices_size);
+    }
   }
 
   return (true);

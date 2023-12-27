@@ -35,6 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <cstddef>
 #include <iostream>
 using std::cout;
 using std::cerr;
@@ -201,7 +202,7 @@ RangeImageBorderExtractor::extractBorderScoreImages ()
 float*
 RangeImageBorderExtractor::updatedScoresAccordingToNeighborValues (const float* border_scores) const
 {
-  float* new_scores = new float[range_image_->width*range_image_->height];
+  float* new_scores = new float[static_cast<unsigned long>(range_image_->width*range_image_->height)];
   float* new_scores_ptr = new_scores;
   for (int y=0; y < static_cast<int> (range_image_->height); ++y)
     for (int x=0; x < static_cast<int> (range_image_->width); ++x)
@@ -213,7 +214,7 @@ std::vector<float>
 RangeImageBorderExtractor::updatedScoresAccordingToNeighborValues (const std::vector<float>& border_scores) const
 {
   std::vector<float> new_border_scores;
-  new_border_scores.reserve (range_image_->width*range_image_->height);
+  new_border_scores.reserve (static_cast<std::vector<float>::size_type>(range_image_->width*range_image_->height));
   for (int y=0; y < static_cast<int> (range_image_->height); ++y)
     for (int x=0; x < static_cast<int> (range_image_->width); ++x)
       new_border_scores.push_back (updatedScoreAccordingToNeighborValues(x, y, border_scores.data ()));
@@ -250,7 +251,7 @@ RangeImageBorderExtractor::findAndEvaluateShadowBorders ()
 
   int width  = range_image_->width,
       height = range_image_->height;
-  shadow_border_informations_ = new ShadowBorderIndices*[width*height];
+  shadow_border_informations_ = new ShadowBorderIndices*[static_cast<unsigned long>(width*height)];
   for (int y = 0; y < static_cast<int> (height); ++y)
   {
     for (int x = 0; x < static_cast<int> (width); ++x)
@@ -611,8 +612,8 @@ RangeImageBorderExtractor::blurSurfaceChanges ()
 
   const RangeImage& range_image = *range_image_;
 
-  auto* blurred_directions = new Eigen::Vector3f[range_image.width*range_image.height];
-  float* blurred_scores = new float[range_image.width*range_image.height];
+  auto* blurred_directions = new Eigen::Vector3f[static_cast<unsigned long>(range_image.width*range_image.height)];
+  float* blurred_scores = new float[static_cast<unsigned long>(range_image.width*range_image.height)];
   for (int y=0; y<static_cast<int>(range_image.height); ++y)
   {
     for (int x=0; x<static_cast<int>(range_image.width); ++x)

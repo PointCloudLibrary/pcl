@@ -38,12 +38,13 @@
 
 #pragma once
 
-#include <pcl/range_image/range_image.h>
-
-#include <pcl/pcl_macros.h>
 #include <pcl/common/distances.h>
 #include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/common/vector_average.h> // for VectorAverage3f
+#include <pcl/range_image/range_image.h>
+#include <pcl/pcl_macros.h>
+
+#include <cstddef>
 #include <vector>
 
 namespace pcl
@@ -193,8 +194,9 @@ RangeImage::createFromPointCloudWithKnownSize (const PointCloudType& point_cloud
   image_offset_x_ = (std::max) (0, center_pixel_x-pixel_radius_x);
   image_offset_y_ = (std::max) (0, center_pixel_y-pixel_radius_y);
 
+  using SizeType = decltype(points)::size_type;
   points.clear ();
-  points.resize (width*height, unobserved_point);
+  points.resize (static_cast<SizeType>(width*height), unobserved_point);
   
   int top=height, right=-1, bottom=-1, left=width;
   doZBuffer (point_cloud, noise_level, min_range, top, right, bottom, left);

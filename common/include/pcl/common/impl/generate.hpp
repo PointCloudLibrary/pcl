@@ -42,6 +42,8 @@
 #include <pcl/common/generate.h>
 #include <pcl/console/print.h>
 
+#include <cstddef>
+
 
 namespace pcl
 {
@@ -278,7 +280,7 @@ CloudGenerator<pcl::PointXY, GeneratorT>::fill (int width, int height, pcl::Poin
 
   cloud.width = width;
   cloud.height = height;
-  cloud.resize (cloud.width * cloud.height);
+  cloud.resize (static_cast<std::size_t>(cloud.width * cloud.height));
   cloud.is_dense = true;
 
   for (auto &point : cloud)

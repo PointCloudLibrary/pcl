@@ -35,14 +35,15 @@
  *
  */
 
-#include <pcl/point_types.h>
 #include <pcl/common/colors.h>
+#include <pcl/point_types.h>
 
-#include <cassert>
 #include <array>
+#include <cassert>
+#include <cstddef>
 
 /// Glasbey lookup table
-static constexpr std::array<unsigned char, 256 * 3> GLASBEY_LUT =
+static constexpr std::array<unsigned char, static_cast<std::size_t>(256 * 3)> GLASBEY_LUT =
 {
   77 , 175, 74 ,
   228, 26 , 28 ,
@@ -303,7 +304,7 @@ static constexpr std::array<unsigned char, 256 * 3> GLASBEY_LUT =
 };
 
 /// Viridis lookup table
-static constexpr std::array<unsigned char, 256 * 3> VIRIDIS_LUT =
+static constexpr std::array<unsigned char, static_cast<std::size_t>(256 * 3)> VIRIDIS_LUT =
 {
   68 , 1  , 84 ,
   68 , 2  , 85 ,
@@ -569,7 +570,7 @@ static constexpr std::size_t GLASBEY_LUT_SIZE = GLASBEY_LUT.size() / 3;
 /// Number of colors in Viridis lookup table
 static constexpr std::size_t VIRIDIS_LUT_SIZE = VIRIDIS_LUT.size() / 3;
 
-static constexpr std::array<const std::array<unsigned char, 256 * 3>*, 2> LUTS = { &GLASBEY_LUT, &VIRIDIS_LUT };
+static constexpr std::array<const std::array<unsigned char, static_cast<std::size_t>(256 * 3)>*, 2> LUTS = { &GLASBEY_LUT, &VIRIDIS_LUT };
 static constexpr std::array<std::size_t, 2> LUT_SIZES = { GLASBEY_LUT_SIZE, VIRIDIS_LUT_SIZE };
 
 template<typename pcl::ColorLUTName T> pcl::RGB

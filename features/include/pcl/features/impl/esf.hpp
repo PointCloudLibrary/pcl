@@ -41,11 +41,13 @@
 #ifndef PCL_FEATURES_IMPL_ESF_H_
 #define PCL_FEATURES_IMPL_ESF_H_
 
-#include <pcl/features/esf.h>
 #include <pcl/common/distances.h>
 #include <pcl/common/transforms.h>
-#include <vector>
+#include <pcl/features/esf.h>
+
+#include <cstddef>
 #include <ctime> // for time
+#include <vector>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
@@ -61,9 +63,9 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
   std::vector<float> d2v, d1v, d3v, wt_d3;
   std::vector<int> wt_d2;
   d1v.reserve (sample_size);
-  d2v.reserve (sample_size * 3);
+  d2v.reserve (static_cast<std::vector<float>::size_type>(sample_size * 3));
   d3v.reserve (sample_size);
-  wt_d2.reserve (sample_size * 3);
+  wt_d2.reserve (static_cast<std::vector<int>::size_type>(sample_size * 3));
   wt_d3.reserve (sample_size);
 
   float h_in[binsize] = {0.0f};
@@ -223,8 +225,8 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
       maxd2 = d2v[nn_idx];
     if (d2v[sample_size + nn_idx] > maxd2)
       maxd2 = d2v[sample_size + nn_idx];
-    if (d2v[sample_size*2 +nn_idx] > maxd2)
-      maxd2 = d2v[sample_size*2 +nn_idx];
+    if (d2v[static_cast<unsigned long>(sample_size*2) +nn_idx] > maxd2)
+      maxd2 = d2v[static_cast<unsigned long>(sample_size*2) +nn_idx];
     if (d3v[nn_idx] > maxd3)
       maxd3 = d3v[nn_idx];
   }
@@ -269,7 +271,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
   //float weights[10] = {1,  1,  1,  1,  1,  1,  1,  1 , 1 ,  1};
   float weights[10] = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 1.0f,  1.0f, 2.0f, 2.0f, 2.0f};
 
-  hist.reserve (binsize * 10);
+  hist.reserve (static_cast<std::vector<float>::size_type>(binsize * 10));
   for (const float &i : h_a3_in)
     hist.push_back (i * weights[0]);
   for (const float &i : h_a3_out)

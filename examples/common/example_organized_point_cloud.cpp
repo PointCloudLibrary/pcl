@@ -38,6 +38,7 @@
  */
 
 // STL
+#include <cstddef>
 #include <iostream>
 
 // PCL
@@ -56,7 +57,7 @@ main ()
   cloud->height = 10;
   cloud->width = 10;
   cloud->is_dense = true;
-  cloud->resize(cloud->height * cloud->width);
+  cloud->resize(static_cast<std::size_t>(cloud->height * cloud->width));
 
   // Output the (0,0) point
   std::cout << (*cloud)(0,0) << std::endl;

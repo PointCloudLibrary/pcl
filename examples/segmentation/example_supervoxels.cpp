@@ -1,16 +1,17 @@
-#include <thread>
-
 #include <pcl/console/parse.h>
-#include <pcl/io/png_io.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/io/png_io.h>
 #include <pcl/segmentation/supervoxel_clustering.h>
+#include <pcl/visualization/pcl_visualizer.h>
 
-#include <vtkImageReader2Factory.h>
-#include <vtkImageReader2.h>
 #include <vtkImageData.h>
 #include <vtkImageFlip.h>
+#include <vtkImageReader2.h>
+#include <vtkImageReader2Factory.h>
 #include <vtkPolyLine.h>
+
+#include <cstddef>
+#include <thread>
 
 using namespace std::chrono_literals;
 
@@ -193,8 +194,9 @@ main (int argc, char ** argv)
       std::cout << "Depth Image is of size "<<depth_dims[0] << " by "<<depth_dims[1];
       return (1);
     }
- 
-    cloud->points.reserve (depth_dims[0] * depth_dims[1]);
+
+    using SizeType = decltype(cloud->points)::size_type;
+    cloud->points.reserve (static_cast<SizeType>(depth_dims[0] * depth_dims[1]));
     cloud->width = depth_dims[0];
     cloud->height = depth_dims[1];
     cloud->is_dense = false;

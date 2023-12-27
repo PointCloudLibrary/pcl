@@ -38,12 +38,13 @@
  *
  */
 
-#include <vector>
-
 #include <pcl/common/io.h>
-#include <pcl/pcl_macros.h>
 #include <pcl/exceptions.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/PCLPointCloud2.h>
+
+#include <cstddef>
+#include <vector>
 
 bool
 pcl::PCLPointCloud2::concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPointCloud2 &cloud2)
@@ -154,9 +155,9 @@ pcl::PCLPointCloud2::concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPoi
       const auto& size = field_data.size;
       // Leave the data for the skip fields untouched in cloud1
       // Copy only the required data from cloud2 to the correct location for cloud1
-      memcpy (reinterpret_cast<char*> (&cloud1.data[data1_size + cp * cloud1.point_step + cloud1.fields[i].offset]),
+      memcpy (reinterpret_cast<char*> (&cloud1.data[data1_size + static_cast<unsigned long>(cp * cloud1.point_step) + cloud1.fields[i].offset]),
               reinterpret_cast<const char*> (&cloud2.data[cp * cloud2.point_step + cloud2.fields[j].offset]),
-              cloud2.fields[j].count * size);
+              static_cast<size_t>(cloud2.fields[j].count * size));
     }
   }
   return (true);
