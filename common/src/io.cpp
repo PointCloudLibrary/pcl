@@ -232,7 +232,7 @@ pcl::getPointCloudAsEigen (const pcl::PCLPointCloud2 &in, Eigen::MatrixXf &out)
     return (false);
   }
 
-  std::size_t npts = static_cast<std::size_t>(in.width * in.height);
+  auto npts = static_cast<std::size_t>(in.width * in.height);
   out = Eigen::MatrixXf::Ones (4, npts);
 
   Eigen::Array4i xyz_offset (in.fields[x_idx].offset, in.fields[y_idx].offset, in.fields[z_idx].offset, 0);
