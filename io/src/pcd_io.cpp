@@ -385,16 +385,17 @@ pcl::PCDReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
                             Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, 
                             int &pcd_version, int &data_type, unsigned int &data_idx, const int offset)
 {
-  if (file_name.empty() || !std::ifstream (file_name).good ())
+  // Open file in binary mode to avoid problem of
+  // std::getline() corrupting the result of ifstream::tellg()
+  std::ifstream fs;
+  fs.open (file_name.c_str (), std::ios::binary);
+
+  if (file_name.empty() || !fs.good ())
   {
     PCL_ERROR ("[pcl::PCDReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
     return (-1);
   }
 
-  // Open file in binary mode to avoid problem of
-  // std::getline() corrupting the result of ifstream::tellg()
-  std::ifstream fs;
-  fs.open (file_name.c_str (), std::ios::binary);
   if (!fs.is_open () || fs.fail ())
   {
     PCL_ERROR ("[pcl::PCDReader::readHeader] Could not open file '%s'! Error : %s\n", file_name.c_str (), strerror (errno));
@@ -664,7 +665,7 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
   pcl::console::TicToc tt;
   tt.tic ();
 
-  if (file_name.empty() || !std::ifstream (file_name).good ())
+  if (file_name.empty() || !boost::filesystem::exists (file_name))
   {
     PCL_ERROR ("[pcl::PCDReader::read] Could not find file '%s'.\n", file_name.c_str ());
     return (-1);

@@ -465,7 +465,7 @@ void pcl::visualization::PCLVisualizer::setupCamera (int argc, char **argv)
     std::string camera_file = getUniqueCameraFile (argc, argv);
     if (!camera_file.empty ())
     {
-      if (std::ifstream (camera_file).good () && style_->loadCameraParameters (camera_file))
+      if (boost::filesystem::exists (camera_file) && style_->loadCameraParameters (camera_file))
       {
         camera_file_loaded_ = true;
       }
@@ -4452,7 +4452,7 @@ pcl::visualization::PCLVisualizer::textureFromTexMaterial (const pcl::TexMateria
   }
 
   boost::filesystem::path full_path (tex_mat.tex_file.c_str ());
-  if (!std::ifstream (full_path.string ()).good ())
+  if (!boost::filesystem::exists (full_path))
   {
     boost::filesystem::path parent_dir = full_path.parent_path ();
     std::string upper_filename = tex_mat.tex_file;
@@ -4578,7 +4578,7 @@ pcl::visualization::PCLVisualizer::getUniqueCameraFile (int argc, char **argv)
     for (const int &p_file_index : p_file_indices)
     {
       boost::filesystem::path path (argv[p_file_index]);
-      if (std::ifstream (path.string ()).good ())
+      if (boost::filesystem::exists (path))
       {
         path = boost::filesystem::canonical (path);
         const auto pathStr = path.string ();

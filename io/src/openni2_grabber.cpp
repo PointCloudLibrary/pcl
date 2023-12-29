@@ -49,8 +49,8 @@
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
 #include <pcl/exceptions.h>
-#include <fstream>
 #include <iostream>
+#include <boost/filesystem.hpp> // for exists
 
 using namespace pcl::io::openni2;
 
@@ -292,7 +292,7 @@ pcl::io::OpenNI2Grabber::setupDevice (const std::string& device_id, const Mode& 
 
   try
   {
-    if (std::ifstream (device_id).good ())
+    if (boost::filesystem::exists (device_id))
     {
       device_ = deviceManager->getFileDevice (device_id);	// Treat as file path
     }

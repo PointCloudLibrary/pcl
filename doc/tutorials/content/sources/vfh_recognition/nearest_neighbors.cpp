@@ -152,7 +152,7 @@ main (int argc, char** argv)
   flann::Matrix<float> k_distances;
   flann::Matrix<float> data;
   // Check if the data has already been saved to disk
-  if (!std::ifstream ("training_data.h5").good () || !std::ifstream ("training_data.list").good ())
+  if (!boost::filesystem::exists ("training_data.h5") || !boost::filesystem::exists ("training_data.list"))
   {
     pcl::console::print_error ("Could not find training data models files %s and %s!\n", 
         training_data_h5_file_name.c_str (), training_data_list_file_name.c_str ());
@@ -167,7 +167,7 @@ main (int argc, char** argv)
   }
 
   // Check if the tree index has already been saved to disk
-  if (!std::ifstream (kdtree_idx_file_name).good ())
+  if (!boost::filesystem::exists (kdtree_idx_file_name))
   {
     pcl::console::print_error ("Could not find kd-tree index in file %s!", kdtree_idx_file_name.c_str ());
     return (-1);

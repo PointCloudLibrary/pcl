@@ -61,7 +61,8 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-#include <fstream>
+#include <boost/filesystem.hpp>
+
 #include <functional>
 #include <iostream>
 #include <mutex>
@@ -272,7 +273,7 @@ class MultiRansac
       //bool repeat = false;
 
       //std::string path = "./pcl_logo.pcd";
-      //if (path.empty() || !std::ifstream (path).good ())
+      //if (path.empty() || !boost::filesystem::exists (path))
       //{
       //  std::cerr << "did not find file" << std::endl;
       //}

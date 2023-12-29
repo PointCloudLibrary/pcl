@@ -42,7 +42,7 @@
 #include <pcl/io/split.h>
 
 #include <boost/lexical_cast.hpp> // for lexical_cast
-#include <boost/filesystem.hpp> // for path
+#include <boost/filesystem.hpp> // for exists
 #include <boost/algorithm/string.hpp> // for trim
 
 pcl::MTLReader::MTLReader ()
@@ -146,7 +146,7 @@ int
 pcl::MTLReader::read (const std::string& obj_file_name,
                       const std::string& mtl_file_name)
 {
-  if (obj_file_name.empty() || !std::ifstream (obj_file_name).good ())
+  if (obj_file_name.empty() || !boost::filesystem::exists (obj_file_name))
   {
     PCL_ERROR ("[pcl::MTLReader::read] Could not find file '%s'!\n",
                obj_file_name.c_str ());
@@ -168,7 +168,7 @@ pcl::MTLReader::read (const std::string& obj_file_name,
 int
 pcl::MTLReader::read (const std::string& mtl_file_path)
 {
-  if (mtl_file_path.empty() || !std::ifstream (mtl_file_path).good ())
+  if (mtl_file_path.empty() || !boost::filesystem::exists (mtl_file_path))
   {
     PCL_ERROR ("[pcl::MTLReader::read] Could not find file '%s'.\n", mtl_file_path.c_str ());
     return (-1);
@@ -342,16 +342,16 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
 
   std::ifstream fs;
   std::string line;
+  // Open file in binary mode to avoid problem of
+  // std::getline() corrupting the result of ifstream::tellg()
+  fs.open (file_name.c_str (), std::ios::binary);
 
-  if (file_name.empty() || !std::ifstream (file_name).good ())
+  if (file_name.empty() || !fs.good ())
   {
     PCL_ERROR ("[pcl::OBJReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
     return (-1);
   }
 
-  // Open file in binary mode to avoid problem of
-  // std::getline() corrupting the result of ifstream::tellg()
-  fs.open (file_name.c_str (), std::ios::binary);
   if (!fs.is_open () || fs.fail ())
   {
     PCL_ERROR ("[pcl::OBJReader::readHeader] Could not open file '%s'! Error : %s\n", file_name.c_str (), strerror(errno));

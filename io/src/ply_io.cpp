@@ -46,7 +46,12 @@
 #include <string>
 #include <tuple>
 
+// https://www.boost.org/doc/libs/1_70_0/libs/filesystem/doc/index.htm#Coding-guidelines
+#define BOOST_FILESYSTEM_NO_DEPRECATED
+#include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp> // for split
+
+namespace fs = boost::filesystem;
 
 std::tuple<std::function<void ()>, std::function<void ()> >
 pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std::size_t count)
@@ -577,7 +582,7 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
   int data_type;
   unsigned int data_idx;
 
-  if (!std::ifstream (file_name).good ())
+  if (!fs::exists (file_name))
   {
     PCL_ERROR ("[pcl::PLYReader::read] File (%s) not found!\n",file_name.c_str ());
     return (-1);
@@ -677,7 +682,7 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
   unsigned int data_idx;
   polygons_ = &(mesh.polygons);
 
-  if (!std::ifstream (file_name).good ())
+  if (!fs::exists (file_name))
   {
     PCL_ERROR ("[pcl::PLYReader::read] File (%s) not found!\n",file_name.c_str ());
     return (-1);

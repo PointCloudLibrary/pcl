@@ -45,9 +45,9 @@
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
 #include <pcl/exceptions.h>
-#include <fstream>
 #include <iostream>
 #include <thread>
+#include <boost/filesystem.hpp> // for exists
 
 using namespace std::chrono_literals;
 
@@ -303,7 +303,7 @@ pcl::OpenNIGrabber::setupDevice (const std::string& device_id, const Mode& depth
 
   try
   {
-    if (std::ifstream (device_id).good ())
+    if (boost::filesystem::exists (device_id))
     {
       device_ = driver.createVirtualDevice (device_id, true, true);
     }

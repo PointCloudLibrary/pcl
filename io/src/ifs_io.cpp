@@ -60,14 +60,14 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
 
   std::uint32_t nr_points = 0;
   std::ifstream fs;
+  fs.open (file_name.c_str (), std::ios::binary);
 
-  if (file_name.empty() || !std::ifstream (file_name).good ())
+  if (file_name.empty() || !fs.good ())
   {
     PCL_ERROR ("[pcl::IFSReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
     return (-1);
   }
 
-  fs.open (file_name.c_str (), std::ios::binary);
   if (!fs.is_open () || fs.fail ())
   {
     PCL_ERROR ("[pcl::IFSReader::readHeader] Could not open file '%s'! Error : %s\n", file_name.c_str (), strerror(errno));

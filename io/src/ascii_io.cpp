@@ -90,7 +90,7 @@ pcl::ASCIIReader::readHeader (const std::string& file_name,
 	
   boost::filesystem::path fpath = file_name;
 
-  if (!std::ifstream (fpath.string ()).good ())
+  if (!boost::filesystem::exists (fpath))
   {
     PCL_ERROR ("[%s] File %s does not exist.\n", name_.c_str (), file_name.c_str ());
     return (-1);
