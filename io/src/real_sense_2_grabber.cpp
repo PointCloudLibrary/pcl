@@ -100,27 +100,27 @@ namespace pcl
     {
       cfg.enable_device_from_file ( file_name_or_serial_number_, repeat_playback_ );
     }
+    // capture from camera
     else
     {
+      // find by serial number if provided
       if (!file_name_or_serial_number_.empty ())
         cfg.enable_device ( file_name_or_serial_number_ );
 
+      // enable camera streams as requested
       if (color_requested)
-      {
         cfg.enable_stream ( RS2_STREAM_COLOR, device_width_, device_height_, RS2_FORMAT_RGB8, target_fps_ );
-      }
 
       cfg.enable_stream ( RS2_STREAM_DEPTH, device_width_, device_height_, RS2_FORMAT_Z16, target_fps_ );
 
       if (ir_requested)
-      {
         cfg.enable_stream ( RS2_STREAM_INFRARED, device_width_, device_height_, RS2_FORMAT_Y8, target_fps_ );
-      }
 
     }
 
     rs2::pipeline_profile prof = pipe_.start ( cfg );
 
+    // check all requested streams started properly
     if ( (color_requested && prof.get_stream ( RS2_STREAM_COLOR ).format ( ) != RS2_FORMAT_RGB8) ||
       prof.get_stream ( RS2_STREAM_DEPTH ).format ( ) != RS2_FORMAT_Z16 ||
       (ir_requested && prof.get_stream (RS2_STREAM_INFRARED ).format ( ) != RS2_FORMAT_Y8) )
