@@ -86,6 +86,10 @@ namespace pcl
       signal_PointXYZRGBA->num_slots () == 0)
       return;
 
+    // cache stream options
+    const bool color_requested = signal_PointXYZRGB->num_slots () > 0 || signal_PointXYZRGBA->num_slots () > 0;
+    const bool ir_requested = signal_PointXYZI->num_slots () > 0;
+
     running_ = true;
     quit_ = false;
 
@@ -101,14 +105,14 @@ namespace pcl
       if (!file_name_or_serial_number_.empty ())
         cfg.enable_device ( file_name_or_serial_number_ );
 
-      if (signal_PointXYZRGB->num_slots () > 0 || signal_PointXYZRGBA->num_slots () > 0)
+      if (color_requested)
       {
         cfg.enable_stream ( RS2_STREAM_COLOR, device_width_, device_height_, RS2_FORMAT_RGB8, target_fps_ );
       }
 
       cfg.enable_stream ( RS2_STREAM_DEPTH, device_width_, device_height_, RS2_FORMAT_Z16, target_fps_ );
 
-      if (signal_PointXYZI->num_slots () > 0)
+      if (ir_requested)
       {
         cfg.enable_stream ( RS2_STREAM_INFRARED, device_width_, device_height_, RS2_FORMAT_Y8, target_fps_ );
       }
@@ -117,9 +121,9 @@ namespace pcl
 
     rs2::pipeline_profile prof = pipe_.start ( cfg );
 
-    if ( prof.get_stream ( RS2_STREAM_COLOR ).format ( ) != RS2_FORMAT_RGB8 ||
+    if ( (color_requested && prof.get_stream ( RS2_STREAM_COLOR ).format ( ) != RS2_FORMAT_RGB8) ||
       prof.get_stream ( RS2_STREAM_DEPTH ).format ( ) != RS2_FORMAT_Z16 ||
-      prof.get_stream ( RS2_STREAM_INFRARED ).format ( ) != RS2_FORMAT_Y8 )
+      (ir_requested && prof.get_stream (RS2_STREAM_INFRARED ).format ( ) != RS2_FORMAT_Y8) )
       THROW_IO_EXCEPTION ( "This stream type or format not supported." );
 
     thread_ = std::thread ( &RealSense2Grabber::threadFunction, this );
