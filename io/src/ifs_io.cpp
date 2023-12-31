@@ -59,10 +59,19 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   //cloud.is_dense = true;
 
   std::uint32_t nr_points = 0;
+
+  if (file_name.empty ())
+  {
+    PCL_ERROR ("[pcl::IFSReader::readHeader] No file name given!\n");
+    return (-1);
+  }
+
+  // Open file in binary mode to avoid problem of
+  // std::getline() corrupting the result of ifstream::tellg()
   std::ifstream fs;
   fs.open (file_name.c_str (), std::ios::binary);
 
-  if (file_name.empty() || !fs.good ())
+  if (!fs.good ())
   {
     PCL_ERROR ("[pcl::IFSReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
     return (-1);
