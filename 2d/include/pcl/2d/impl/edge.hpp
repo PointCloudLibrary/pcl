@@ -263,7 +263,8 @@ Edge<PointInT, PointOutT>::suppressNonMaxima(
 
   maxima.height = height;
   maxima.width = width;
-  maxima.resize(static_cast<std::size_t>(height * width));
+  std::size_t resize = static_cast<std::size_t>(height) * width;
+  maxima.resize(resize);
 
   for (auto& point : maxima)
     point.intensity = 0.0f;

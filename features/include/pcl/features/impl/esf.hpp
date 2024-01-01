@@ -63,9 +63,11 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
   std::vector<float> d2v, d1v, d3v, wt_d3;
   std::vector<int> wt_d2;
   d1v.reserve (sample_size);
-  d2v.reserve (static_cast<std::vector<float>::size_type>(sample_size * 3));
+  auto resizef = static_cast<std::vector<float>::size_type>(sample_size * 3);
+  d2v.reserve (resizef);
   d3v.reserve (sample_size);
-  wt_d2.reserve (static_cast<std::vector<int>::size_type>(sample_size * 3));
+  auto resizei = static_cast<std::vector<int>::size_type>(sample_size * 3);
+  wt_d2.reserve (resizei);
   wt_d3.reserve (sample_size);
 
   float h_in[binsize] = {0.0f};
@@ -225,8 +227,9 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
       maxd2 = d2v[nn_idx];
     if (d2v[sample_size + nn_idx] > maxd2)
       maxd2 = d2v[sample_size + nn_idx];
-    if (d2v[static_cast<unsigned long>(sample_size*2) +nn_idx] > maxd2)
-      maxd2 = d2v[static_cast<unsigned long>(sample_size*2) +nn_idx];
+    std::size_t resize = static_cast<std::size_t>(sample_size*2) + nn_idx;
+    if (d2v[resize] > maxd2)
+      maxd2 = d2v[resize];
     if (d3v[nn_idx] > maxd3)
       maxd3 = d3v[nn_idx];
   }

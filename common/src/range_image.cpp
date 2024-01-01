@@ -240,7 +240,8 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
   image_offset_x_ = left+oldRangeImage.image_offset_x_;
   image_offset_y_ = top+oldRangeImage.image_offset_y_;
   using SizeType = decltype(points)::size_type;
-  points.resize (static_cast<SizeType>(width*height));
+  SizeType resize = static_cast<SizeType>(width) * height;
+  points.resize (resize);
   
   //std::cout << oldRangeImage.width<<"x"<<oldRangeImage.height<<" -> "<<width<<"x"<<height<<"\n";
   
@@ -291,9 +292,10 @@ RangeImage::getRangesArray () const
 void 
 RangeImage::getIntegralImage (float*& integral_image, int*& valid_points_num_image) const
 {
-  integral_image = new float[static_cast<unsigned long>(width*height)];
+  std::size_t resize = static_cast<std::size_t>(width) * height;
+  integral_image = new float[resize];
   float* integral_image_ptr = integral_image;
-  valid_points_num_image = new int[static_cast<unsigned long>(width*height)];
+  valid_points_num_image = new int[resize];
   int* valid_points_num_image_ptr = valid_points_num_image;
   for (int y = 0; y < static_cast<int> (height); ++y)
   {
@@ -352,7 +354,8 @@ RangeImage::getHalfImage (RangeImage& half_image) const
   half_image.height = height/2;
   half_image.is_dense = is_dense;
   half_image.clear ();
-  half_image.resize (static_cast<std::size_t>(half_image.width*half_image.height));
+  std::size_t resize = static_cast<std::size_t>(half_image.width) * half_image.height;
+  half_image.resize (resize);
   
   int src_start_x = 2*half_image.image_offset_x_ - image_offset_x_,
       src_start_y = 2*half_image.image_offset_y_ - image_offset_y_;
@@ -396,7 +399,8 @@ RangeImage::getSubImage (int sub_image_image_offset_x, int sub_image_image_offse
   sub_image.height = sub_image_height;
   sub_image.is_dense = is_dense;
   sub_image.clear ();
-  sub_image.resize (static_cast<std::size_t>(sub_image.width*sub_image.height));
+  std::size_t resize = static_cast<std::size_t>(sub_image.width) * sub_image.height;
+  sub_image.resize (resize);
   
   int src_start_x = combine_pixels*sub_image.image_offset_x_ - image_offset_x_,
       src_start_y = combine_pixels*sub_image.image_offset_y_ - image_offset_y_;

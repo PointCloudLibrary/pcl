@@ -196,7 +196,8 @@ main (int argc, char ** argv)
     }
 
     using SizeType = decltype(cloud->points)::size_type;
-    cloud->points.reserve (static_cast<SizeType>(depth_dims[0] * depth_dims[1]));
+    SizeType resize = static_cast<SizeType>(depth_dims[0]) * depth_dims[1];
+    cloud->points.reserve (resize);
     cloud->width = depth_dims[0];
     cloud->height = depth_dims[1];
     cloud->is_dense = false;

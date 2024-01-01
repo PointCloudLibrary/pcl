@@ -196,7 +196,8 @@ RangeImage::createFromPointCloudWithKnownSize (const PointCloudType& point_cloud
 
   using SizeType = decltype(points)::size_type;
   points.clear ();
-  points.resize (static_cast<SizeType>(width*height), unobserved_point);
+  SizeType resize = static_cast<SizeType>(width) * height;
+  points.resize (resize, unobserved_point);
   
   int top=height, right=-1, bottom=-1, left=width;
   doZBuffer (point_cloud, noise_level, min_range, top, right, bottom, left);

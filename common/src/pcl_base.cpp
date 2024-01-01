@@ -115,12 +115,14 @@ pcl::PCLBase<pcl::PCLPointCloud2>::initCompute ()
   }
 
   // If we have a set of fake indices, but they do not match the number of points in the cloud, update them
-  if (fake_indices_ && indices_->size () != (static_cast<unsigned long>(input_->width * input_->height)))
+  std::size_t area = std::size_t(input_->width) * input_->height;
+  if (fake_indices_ && indices_->size () != area)
   {
     const auto indices_size = indices_->size ();
     try
     {
-      indices_->resize (static_cast<uindex_t>(input_->width * input_->height));
+      std::size_t resize = static_cast<std::size_t>(input_->width) * input_->height;
+      indices_->resize (resize);
     }
     catch (const std::bad_alloc&)
     {

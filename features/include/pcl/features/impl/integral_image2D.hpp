@@ -63,7 +63,8 @@ IntegralImage2D<DataType, Dimension>::setInput (const DataType * data, unsigned 
     height_ = height;
     first_order_integral_image_.resize ( (width_ + 1) * (height_ + 1) );
     using SizeType = typename decltype(finite_values_integral_image_)::size_type;
-    finite_values_integral_image_.resize ( static_cast<SizeType>((width_ + 1) * (height_ + 1)) );
+    SizeType resize = static_cast<SizeType>((width_ + 1)) * (height_ + 1);
+    finite_values_integral_image_.resize ( resize );
     if (compute_second_order_integral_images_)
       second_order_integral_image_.resize ( (width_ + 1) * (height_ + 1) );
   }
@@ -235,7 +236,8 @@ IntegralImage2D<DataType, 1>::setInput (const DataType * data, unsigned width,un
     height_ = height;
     first_order_integral_image_.resize ( (width_ + 1) * (height_ + 1) );
     using SizeType = typename decltype(finite_values_integral_image_)::size_type;
-    finite_values_integral_image_.resize ( static_cast<SizeType>((width_ + 1) * (height_ + 1)) );
+    SizeType resize = static_cast<SizeType>((width_ + 1)) * (height_ + 1);
+    finite_values_integral_image_.resize ( resize );
     if (compute_second_order_integral_images_)
       second_order_integral_image_.resize ( (width_ + 1) * (height_ + 1) );
   }

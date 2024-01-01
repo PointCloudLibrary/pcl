@@ -71,7 +71,8 @@ namespace pcl
     center_x_ = static_cast<float> (di_width)  / static_cast<float> (2 * skip);
     center_y_ = static_cast<float> (di_height) / static_cast<float> (2 * skip);
     using SizeType = decltype(points)::size_type;
-    points.resize (static_cast<SizeType>(width*height));
+    SizeType resize = static_cast<SizeType>(width) * height;
+    points.resize (resize);
     
     //std::cout << PVARN (*this);
     
@@ -133,7 +134,8 @@ namespace pcl
     center_x_ = static_cast<float> (di_center_x) / static_cast<float> (skip);
     center_y_ = static_cast<float> (di_center_y) / static_cast<float> (skip);
     using SizeType = decltype(points)::size_type;
-    points.resize (static_cast<SizeType>(width * height));
+    SizeType resize = static_cast<SizeType>(width) * height;
+    points.resize (resize);
     
     for (int y=0; y < static_cast<int> (height); ++y)
     {
@@ -180,7 +182,8 @@ namespace pcl
     center_x_ = static_cast<float> (di_center_x) / static_cast<float> (skip);
     center_y_ = static_cast<float> (di_center_y) / static_cast<float> (skip);
     using SizeType = decltype(points)::size_type;
-    points.resize (static_cast<SizeType>(width * height));
+    SizeType resize = static_cast<SizeType>(width) * height;
+    points.resize (resize);
 
     for (int y = 0; y < static_cast<int> (height); ++y)
     {

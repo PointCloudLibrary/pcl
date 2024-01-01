@@ -109,7 +109,8 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKernel (
     points_ += number;
 
   // set up the patterns
-  pattern_points_ = new BriskPatternPoint[static_cast<unsigned long>(points_*scales_*n_rot_)];
+  std::size_t resize = static_cast<std::size_t>(points_) * static_cast<std::size_t>(scales_) * n_rot_;
+  pattern_points_ = new BriskPatternPoint[resize];
   BriskPatternPoint* pattern_iterator = pattern_points_;
 
   // define the scale discretization:
@@ -244,7 +245,8 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
     const int r_y_1 = (1024 - r_y);
 
     //+const unsigned char* ptr = static_cast<const unsigned char*> (&image[0].r) + x + y * imagecols;
-    const unsigned char* ptr = static_cast<const unsigned char*>(image.data()) + x + static_cast<ptrdiff_t>(y * imagecols);
+    ptrdiff_t addr = static_cast<ptrdiff_t>(y) * imagecols;
+    const unsigned char* ptr = static_cast<const unsigned char*>(image.data()) + x + addr;
 
     // just interpolate:
     ret_val = (r_x_1 * r_y_1 * static_cast<int>(*ptr));
@@ -307,7 +309,8 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
     // now the calculation:
 
     //+const unsigned char* ptr = static_cast<const unsigned char*> (&image[0].r) + x_left + imagecols * y_top;
-    const unsigned char* ptr = static_cast<const unsigned char*>(image.data()) + x_left + static_cast<ptrdiff_t>(imagecols * y_top);
+    ptrdiff_t addr = static_cast<ptrdiff_t>(y_top) * imagecols;
+    const unsigned char* ptr = static_cast<const unsigned char*>(image.data()) + x_left + addr;
 
     // first the corners:
     ret_val = A * static_cast<int>(*ptr);
@@ -329,7 +332,8 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
 
     // next the edges:
     //+int* ptr_integral;// = static_cast<int*> (integral.data) + x_left + integralcols * y_top + 1;
-    const int* ptr_integral = static_cast<const int*> (integral_image.data()) + x_left + static_cast<ptrdiff_t>(integralcols * y_top + 1);
+    ptrdiff_t edgeaddr = static_cast<ptrdiff_t>(y_top + 1) * integralcols;
+    const int* ptr_integral = static_cast<const int*> (integral_image.data()) + x_left + edgeaddr;
 
     // find a simple path through the different surface corners
     const int tmp1 = (*ptr_integral);
@@ -339,7 +343,8 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
     const int tmp3 = (*ptr_integral);
     ptr_integral++;
     const int tmp4 = (*ptr_integral);
-    ptr_integral += static_cast<ptrdiff_t>(dy * integralcols);
+    ptrdiff_t icaddr = static_cast<ptrdiff_t>(dy) * integralcols;
+    ptr_integral += icaddr;
     const int tmp5 = (*ptr_integral);
     ptr_integral--;
     const int tmp6 = (*ptr_integral);
@@ -351,7 +356,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
     const int tmp9 = (*ptr_integral);
     ptr_integral--;
     const int tmp10 = (*ptr_integral);
-    ptr_integral -= static_cast<ptrdiff_t>(dy * integralcols);
+    ptr_integral -= icaddr;
     const int tmp11 = (*ptr_integral);
     ptr_integral++;
     const int tmp12 = (*ptr_integral);
@@ -369,7 +374,8 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
   // now the calculation:
 
   //const unsigned char* ptr = static_cast<const unsigned char*> (&image[0].r) + x_left + imagecols * y_top;
-  const unsigned char* ptr = static_cast<const unsigned char*>(image.data()) + x_left + static_cast<ptrdiff_t>(imagecols * y_top);
+  ptrdiff_t topaddr = static_cast<ptrdiff_t>(imagecols) * y_top;
+  const unsigned char* ptr = static_cast<const unsigned char*>(image.data()) + x_left + topaddr;
 
   // first row:
   ret_val = A * static_cast<int>(*ptr);
@@ -390,7 +396,8 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
   ptr += imagecols - dx - 1;
 
   //+const unsigned char* end_j = ptr + (dy * imagecols) * sizeof (PointInT);
-  const unsigned char* end_j = ptr + static_cast<ptrdiff_t>(dy * imagecols);
+  ptrdiff_t imgaddr = static_cast<ptrdiff_t>(dy) * imagecols;
+  const unsigned char* end_j = ptr + imgaddr;
 
   //+for (; ptr < end_j; ptr += (imagecols - dx - 1) * sizeof (PointInT))
   for (; ptr < end_j; ptr += imagecols - dx - 1)
@@ -452,7 +459,8 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
   const auto height = static_cast<index_t>(input_cloud_->height);
 
   // destination for intensity data; will be forwarded to BRISK
-  std::vector<unsigned char> image_data (static_cast<std::vector<unsigned char>::size_type>(width*height));
+  std::vector<unsigned char>::size_type datasize = static_cast<std::vector<unsigned char>::size_type>(width) * height;
+  std::vector<unsigned char> image_data (datasize);
 
   for (std::size_t i = 0; i < image_data.size (); ++i)
     image_data[i] = static_cast<unsigned char> (intensity_ ((*input_cloud_)[i]));
@@ -514,7 +522,8 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
 
   // first, calculate the integral image over the whole image:
   // current integral image
-  std::vector<int> integral (static_cast<std::vector<int>::size_type>((width+1)*(height+1)), 0);    // the integral image
+  std::vector<int>::size_type isize = static_cast<std::vector<int>::size_type>((width+1)) * (height+1);
+  std::vector<int> integral (isize, 0);    // the integral image
 
   for (index_t row_index = 1; row_index < height; ++row_index)
   {

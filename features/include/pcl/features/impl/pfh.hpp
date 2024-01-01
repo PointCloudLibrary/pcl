@@ -172,7 +172,8 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   std::queue<std::pair<int, int> > empty;
   std::swap (key_list_, empty);
 
-  pfh_histogram_.setZero (static_cast<Eigen::Index>(nr_subdiv_ * nr_subdiv_ * nr_subdiv_));
+  Eigen::Index dim = static_cast<Eigen::Index>(nr_subdiv_) * nr_subdiv_ * nr_subdiv_;
+  pfh_histogram_.setZero (dim);
 
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
