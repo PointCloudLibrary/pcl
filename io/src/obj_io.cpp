@@ -159,6 +159,12 @@ pcl::MTLReader::read (const std::string& obj_file_name,
     return (-1);
   }
 
+  if (mtl_file_name.empty ())
+  {
+    PCL_ERROR ("[pcl::MTLReader::read] MTL file name is empty!\n");
+    return (-1);
+  }
+
   boost::filesystem::path obj_file_path (obj_file_name.c_str ());
   boost::filesystem::path mtl_file_path = obj_file_path.parent_path ();
   mtl_file_path /=  mtl_file_name;

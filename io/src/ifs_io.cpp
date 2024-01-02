@@ -66,8 +66,6 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
     return (-1);
   }
 
-  // Open file in binary mode to avoid problem of
-  // std::getline() corrupting the result of ifstream::tellg()
   std::ifstream fs;
   fs.open (file_name.c_str (), std::ios::binary);
 
