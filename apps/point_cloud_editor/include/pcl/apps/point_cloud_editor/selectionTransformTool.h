@@ -87,7 +87,7 @@ class SelectionTransformTool : public ToolInterface
     /// mouse screen coordinates. Then depending on the passed modifiers, the
     /// transformation matrix is computed correspondingly. If CONTROL is pressed
     /// the selection will be translated (panned) parallel to the view plane. If
-    /// ALT is pressed the selection witll be translated along the z-axis
+    /// ALT is pressed the selection will be translated along the z-axis
     /// perpendicular to the view plane.  If no key modifiers is pressed the
     /// selection will be rotated.
     /// @param x the x value of the mouse screen coordinates.

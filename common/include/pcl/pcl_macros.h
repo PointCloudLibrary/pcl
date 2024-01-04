@@ -82,7 +82,7 @@
 // MSVC < 2019 have issues:
 // * can't short-circuiting logic in macros
 // * don't define standard macros
-// => this leads to annyoing C4067 warnings (see https://developercommunity.visualstudio.com/content/problem/327796/-has-cpp-attribute-emits-warning-is-wrong-highligh.html)
+// => this leads to annoying C4067 warnings (see https://developercommunity.visualstudio.com/content/problem/327796/-has-cpp-attribute-emits-warning-is-wrong-highligh.html)
 #if defined(_MSC_VER)
   // nvcc on msvc can't work with [[deprecated]]
   #if !defined(__CUDACC__)

@@ -254,7 +254,7 @@ public:
             depth_image->getWidth(),
             depth_image->getHeight(),
             std::numeric_limits<unsigned short>::min(),
-            // Scale so that the colors look brigher on screen
+            // Scale so that the colors look brighter on screen
             std::numeric_limits<unsigned short>::max() / 10,
             true);
 

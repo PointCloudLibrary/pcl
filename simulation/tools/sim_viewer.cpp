@@ -268,13 +268,13 @@ capture(Eigen::Isometry3d pose_in)
   // 27840 triangle faces
   // 13670 vertices
 
-  // 45.00Hz: simuation only
-  //  1.28Hz: simuation, addNoise?    , getPointCloud, writeASCII
-  // 33.33Hz: simuation, getPointCloud
-  // 23.81Hz: simuation, getPointCloud, writeBinary
-  // 14.28Hz: simuation, addNoise, getPointCloud, writeBinary
+  // 45.00Hz: simulation only
+  //  1.28Hz: simulation, addNoise?    , getPointCloud, writeASCII
+  // 33.33Hz: simulation, getPointCloud
+  // 23.81Hz: simulation, getPointCloud, writeBinary
+  // 14.28Hz: simulation, addNoise, getPointCloud, writeBinary
   // MODULE        TIME      FRACTION
-  // simuation     0.02222   31%
+  // simulation     0.02222   31%
   // addNoise      0.03	     41%
   // getPointCloud 0.008     11%
   // writeBinary   0.012     16%

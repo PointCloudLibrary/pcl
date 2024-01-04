@@ -81,7 +81,7 @@ namespace pcl
     * \note Described in: "Intersection of Two Planes, John Krumm, Microsoft Research, Redmond, WA, USA"
     * \param[in] plane_a coefficients of plane A and plane B in the form ax + by + cz + d = 0
     * \param[in] plane_b coefficients of line where line.tail<3>() = direction vector and
-    * line.head<3>() the point on the line clossest to (0, 0, 0)
+    * line.head<3>() the point on the line closest to (0, 0, 0)
     * \param[out] line the intersected line to be filled
     * \param[in] angular_tolerance tolerance in radians
     * \return true if succeeded/planes aren't parallel

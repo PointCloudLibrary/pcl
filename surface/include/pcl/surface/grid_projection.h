@@ -234,7 +234,7 @@ namespace pcl
 
       /** \brief When the input data points don't fill into the 1*1*1 box, 
         * scale them so that they can be filled in the unit box. Otherwise, 
-        * it will be some drawing problem when doing visulization
+        * it will be some drawing problem when doing visualization
         * \param scale_factor scale all the input data point by scale_factor
         */
       void 

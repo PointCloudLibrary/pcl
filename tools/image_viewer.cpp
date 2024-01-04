@@ -58,7 +58,7 @@ main (int, char ** argv)
   depth_image_viewer_.showFloatImage (img, 
                                       xyz.width, xyz.height,
                                       std::numeric_limits<float>::min (), 
-                                      // Scale so that the colors look brigher on screen
+                                      // Scale so that the colors look brighter on screen
                                       std::numeric_limits<float>::max () / 10, 
                                       true);
   depth_image_viewer_.spin ();

@@ -427,7 +427,7 @@ protected:
    *
    * \param[in] base_indices indices of base B
    * \param[in] match_indices indices of match M
-   * \param[in] correspondences corresondences between source and target
+   * \param[in] correspondences correspondences between source and target
    * \param[out] transformation resulting transformation matrix
    * \return
    * * < 0 MSE bigger than max_mse_

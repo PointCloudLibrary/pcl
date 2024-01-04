@@ -111,7 +111,7 @@ namespace pcl
         PCLVisualizer (const std::string &name = "", const bool create_interactor = true);
 
         /** \brief PCL Visualizer constructor. It looks through the passed argv arguments to find the "-cam *.cam" argument.
-          *        If the search failed, the name for cam file is calculated with boost uuid. If there is no such file, camera is not initilalized.
+          *        If the search failed, the name for cam file is calculated with boost uuid. If there is no such file, camera is not initialized.
           * \param[in] argc
           * \param[in] argv
           * \param[in] name the window name (empty by default)

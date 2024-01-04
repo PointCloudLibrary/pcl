@@ -900,7 +900,7 @@ main (int argc, char** argv)
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
 
-  // Tranpose the cloud_model
+  // Transpose the cloud_model
   /*for (std::size_t i = 0; i < cloud_model.size (); ++i)
   {
   //  cloud_model[i].z += 1;

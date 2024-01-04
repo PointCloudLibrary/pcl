@@ -226,12 +226,12 @@ namespace pcl
   namespace ism
   {
     /** \brief This class implements Implicit Shape Model algorithm described in
-      * "Hough Transforms and 3D SURF for robust three dimensional classication"
+      * "Hough Transforms and 3D SURF for robust three dimensional classification"
       * by Jan Knopp, Mukta Prasad, Geert Willems, Radu Timofte, and Luc Van Gool.
       * It has two main member functions. One for training, using the data for which we know
       * which class it belongs to. And second for investigating a cloud for the presence
       * of the class of interest.
-      * Implementation of the ISM algorithm described in "Hough Transforms and 3D SURF for robust three dimensional classication"
+      * Implementation of the ISM algorithm described in "Hough Transforms and 3D SURF for robust three dimensional classification"
       * by Jan Knopp, Mukta Prasad, Geert Willems, Radu Timofte, and Luc Van Gool
       *
       * Authors: Roman Shapovalov, Alexander Velizhev, Sergey Ushakov

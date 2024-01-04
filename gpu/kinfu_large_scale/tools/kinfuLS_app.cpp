@@ -1330,7 +1330,7 @@ main (int argc, char* argv[])
   pcl::gpu::printShortCudaDeviceInfo (device);
 
   //  if (checkIfPreFermiGPU(device))
-  //    return std::cout << std::endl << "Kinfu is supported only for Fermi and Kepler arhitectures. It is not even compiled for pre-Fermi by default. Exiting..." << std::endl, 1;
+  //    return std::cout << std::endl << "Kinfu is supported only for Fermi and Kepler architectures. It is not even compiled for pre-Fermi by default. Exiting..." << std::endl, 1;
 
   pcl::shared_ptr<pcl::Grabber> capture;
   bool triggered_capture = false;

@@ -369,7 +369,7 @@ CPCSegmentation Parameters: \n\
   std::multimap<std::uint32_t, std::uint32_t>supervoxel_adjacency;
   super.getSupervoxelAdjacency (supervoxel_adjacency);
 
-  /// Get the cloud of supervoxel centroid with normals and the colored cloud with supervoxel coloring (this is used for visulization)
+  /// Get the cloud of supervoxel centroid with normals and the colored cloud with supervoxel coloring (this is used for visualization)
   pcl::PointCloud<pcl::PointNormal>::Ptr sv_centroid_normal_cloud = pcl::SupervoxelClustering<PointT>::makeSupervoxelNormalCloud (supervoxel_clusters);
 
   /// Set parameters for LCCP preprocessing and CPC (CPC inherits from LCCP, thus it includes LCCP's functionality)

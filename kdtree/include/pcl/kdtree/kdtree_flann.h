@@ -70,7 +70,7 @@ using NotCompatWithFlann = std::enable_if_t<!compat_with_flann<IndexT>::value, b
 } // namespace detail
 
 /**
- * @brief Comaptibility template function to allow use of various types of indices with
+ * @brief Compatibility template function to allow use of various types of indices with
  * FLANN
  * @details Template is used for all params to not constrain any FLANN side capability
  * @param[in,out] index A index searcher, of type ::flann::Index<Dist> or similar, where
@@ -96,7 +96,7 @@ radius_search(const FlannIndex& index,
               const SearchParams& params);
 
 /**
- * @brief Comaptibility template function to allow use of various types of indices with
+ * @brief Compatibility template function to allow use of various types of indices with
  * FLANN
  * @details Template is used for all params to not constrain any FLANN side capability
  * @param[in,out] index A index searcher, of type ::flann::Index<Dist> or similar, where
