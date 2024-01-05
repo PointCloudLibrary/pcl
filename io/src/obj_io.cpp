@@ -146,14 +146,20 @@ int
 pcl::MTLReader::read (const std::string& obj_file_name,
                       const std::string& mtl_file_name)
 {
-  if (obj_file_name.empty() || !boost::filesystem::exists (obj_file_name))
+  if (obj_file_name.empty ())
+  {
+    PCL_ERROR ("[pcl::MTLReader::read] No OBJ file name given!\n");
+    return (-1);
+  }
+
+  if (!boost::filesystem::exists (obj_file_name))
   {
     PCL_ERROR ("[pcl::MTLReader::read] Could not find file '%s'!\n",
                obj_file_name.c_str ());
     return (-1);
   }
 
-  if (mtl_file_name.empty())
+  if (mtl_file_name.empty ())
   {
     PCL_ERROR ("[pcl::MTLReader::read] MTL file name is empty!\n");
     return (-1);
@@ -168,14 +174,23 @@ pcl::MTLReader::read (const std::string& obj_file_name,
 int
 pcl::MTLReader::read (const std::string& mtl_file_path)
 {
-  if (mtl_file_path.empty() || !boost::filesystem::exists (mtl_file_path))
+  if (mtl_file_path.empty ())
+  {
+    PCL_ERROR ("[pcl::MTLReader::read] No file name given!\n");
+    return (-1);
+  }
+
+  // Open file in binary mode to avoid problem of
+  // std::getline() corrupting the result of ifstream::tellg()
+  std::ifstream mtl_file;
+  mtl_file.open (mtl_file_path.c_str (), std::ios::binary);
+
+  if (!mtl_file.good ())
   {
     PCL_ERROR ("[pcl::MTLReader::read] Could not find file '%s'.\n", mtl_file_path.c_str ());
     return (-1);
   }
 
-  std::ifstream mtl_file;
-  mtl_file.open (mtl_file_path.c_str (), std::ios::binary);
   if (!mtl_file.is_open () || mtl_file.fail ())
   {
     PCL_ERROR ("[pcl::MTLReader::read] Could not open file '%s'! Error : %s\n",
@@ -340,18 +355,25 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   data_type = 0;
   data_idx = offset;
 
-  std::ifstream fs;
   std::string line;
 
-  if (file_name.empty() || !boost::filesystem::exists (file_name))
+  if (file_name.empty ())
   {
-    PCL_ERROR ("[pcl::OBJReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
+    PCL_ERROR ("[pcl::OBJReader::readHeader] No file name given!\n");
     return (-1);
   }
 
   // Open file in binary mode to avoid problem of
   // std::getline() corrupting the result of ifstream::tellg()
+  std::ifstream fs;
   fs.open (file_name.c_str (), std::ios::binary);
+
+  if (!fs.good ())
+  {
+    PCL_ERROR ("[pcl::OBJReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
+    return (-1);
+  }
+
   if (!fs.is_open () || fs.fail ())
   {
     PCL_ERROR ("[pcl::OBJReader::readHeader] Could not open file '%s'! Error : %s\n", file_name.c_str (), strerror(errno));
