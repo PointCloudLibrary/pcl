@@ -160,8 +160,8 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
   double max_dist_sqr = max_distance * max_distance;
 
 #pragma omp parallel for default(none)                                                 \
-  shared(max_dist_sqr, per_thread_correspondences) firstprivate(index, distance)       \
-  num_threads(num_threads_)
+    shared(max_dist_sqr, per_thread_correspondences) firstprivate(index, distance)     \
+        num_threads(num_threads_)
   // Iterate over the input set of source indices
   for (int i = 0; i < static_cast<int>(indices_->size()); i++) {
     const auto& idx = (*indices_)[i];
