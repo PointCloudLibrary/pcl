@@ -184,7 +184,7 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
     const int thread_num = 0;
 #endif
 
-    per_thread_correspondences[thread_num].emplace_back(std::move(corr));
+    per_thread_correspondences[thread_num].emplace_back(corr);
   }
 
   if (num_threads_ == 1) {
@@ -275,7 +275,7 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
     const int thread_num = 0;
 #endif
 
-    per_thread_correspondences[thread_num].emplace_back(std::move(corr));
+    per_thread_correspondences[thread_num].emplace_back(corr);
   }
 
   if (num_threads_ == 1) {
