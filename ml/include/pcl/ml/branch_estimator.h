@@ -41,16 +41,13 @@
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/ml/stats_estimator.h>
 
-#include <istream>
-#include <ostream>
-
 namespace pcl {
 
 /** Interface for branch estimators. */
 class PCL_EXPORTS BranchEstimator {
 public:
   /** Destructor. */
-  virtual ~BranchEstimator() {}
+  virtual ~BranchEstimator() = default;
 
   /** Returns the number of branches the corresponding tree has. */
   virtual std::size_t
@@ -75,9 +72,9 @@ public:
 class PCL_EXPORTS BinaryTreeThresholdBasedBranchEstimator : public BranchEstimator {
 public:
   /** Constructor. */
-  inline BinaryTreeThresholdBasedBranchEstimator() {}
+  inline BinaryTreeThresholdBasedBranchEstimator() = default;
   /** Destructor. */
-  inline ~BinaryTreeThresholdBasedBranchEstimator() {}
+  inline ~BinaryTreeThresholdBasedBranchEstimator() override = default;
 
   /** Returns the number of branches the corresponding tree has. */
   inline std::size_t
@@ -109,9 +106,9 @@ public:
 class PCL_EXPORTS TernaryTreeMissingDataBranchEstimator : public BranchEstimator {
 public:
   /** Constructor. */
-  inline TernaryTreeMissingDataBranchEstimator() {}
+  inline TernaryTreeMissingDataBranchEstimator() = default;
   /** Destructor. */
-  inline ~TernaryTreeMissingDataBranchEstimator() {}
+  inline ~TernaryTreeMissingDataBranchEstimator() override = default;
 
   /** \brief Returns the number of branches the corresponding tree has. */
   inline std::size_t

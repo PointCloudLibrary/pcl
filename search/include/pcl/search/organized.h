@@ -42,22 +42,24 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 #include <pcl/search/search.h>
 #include <pcl/common/eigen.h>
 
 #include <algorithm>
-#include <queue>
 #include <vector>
 
 namespace pcl
 {
   namespace search
   {
-    /** \brief OrganizedNeighbor is a class for optimized nearest neigbhor search in organized point clouds.
-      * \author Radu B. Rusu, Julius Kammerl, Suat Gedikli, Koen Buys
-      * \ingroup search
-      */
+    /** \brief OrganizedNeighbor is a class for optimized nearest neighbor search in
+     * organized projectable point clouds, for instance from Time-Of-Flight cameras or
+     * stereo cameras. Note that rotating LIDARs may output organized clouds, but are
+     * not projectable via a pinhole camera model into two dimensions and thus will
+     * generally not work with this class.
+     * \author Radu B. Rusu, Julius Kammerl, Suat Gedikli, Koen Buys
+     * \ingroup search
+     */
     template<typename PointT>
     class OrganizedNeighbor : public pcl::search::Search<PointT>
     {
@@ -78,7 +80,7 @@ namespace pcl
 
         /** \brief Constructor
           * \param[in] sorted_results whether the results should be return sorted in ascending order on the distances or not.
-          *        This applies only for radius search, since knn always returns sorted resutls    
+          *        This applies only for radius search, since knn always returns sorted results    
           * \param[in] eps the threshold for the mean-squared-error of the estimation of the projection matrix.
           *            if the MSE is above this value, the point cloud is considered as not from a projective device,
           *            thus organized neighbor search can not be applied on that cloud.
@@ -95,7 +97,7 @@ namespace pcl
         }
 
         /** \brief Empty deconstructor. */
-        ~OrganizedNeighbor () {}
+        ~OrganizedNeighbor () override = default;
 
         /** \brief Test whether this search-object is valid (input is organized AND from projective device)
           *        User should use this method after setting the input cloud, since setInput just prints an error 
@@ -123,7 +125,7 @@ namespace pcl
           * \param[in] cloud the const boost shared pointer to a PointCloud message
           * \param[in] indices the const boost shared pointer to PointIndices
           */
-        void
+        bool
         setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr &indices = IndicesConstPtr ()) override
         {
           input_ = cloud;
@@ -141,7 +143,7 @@ namespace pcl
           else
             mask_.assign (input_->size (), 1);
 
-          estimateProjectionMatrix ();
+          return estimateProjectionMatrix () && isValid ();
         }
 
         /** \brief Search for all neighbors of query point that are within a given radius.
@@ -162,7 +164,7 @@ namespace pcl
                       unsigned int max_nn = 0) const override;
 
         /** \brief estimated the projection matrix from the input cloud. */
-        void 
+        bool
         estimateProjectionMatrix ();
 
          /** \brief Search for the k-nearest neighbors for a given query point.
@@ -211,7 +213,7 @@ namespace pcl
           * \return whether the top element changed or not.
           */
         inline bool 
-        testPoint (const PointT& query, unsigned k, std::priority_queue<Entry>& queue, index_t index) const
+        testPoint (const PointT& query, unsigned k, std::vector<Entry>& queue, index_t index) const
         {
           const PointT& point = input_->points [index];
           if (mask_ [index] && std::isfinite (point.x))
@@ -221,15 +223,20 @@ namespace pcl
             float dist_y = point.y - query.y;
             float dist_z = point.z - query.z;
             float squared_distance = dist_x * dist_x + dist_y * dist_y + dist_z * dist_z;
-            if (queue.size () < k)
+            const auto queue_size = queue.size ();
+            const auto insert_into_queue = [&]{ queue.emplace (
+                                                std::upper_bound (queue.begin(), queue.end(), squared_distance,
+                                                [](float dist, const Entry& ent){ return dist<ent.distance; }),
+                                                               index, squared_distance); };
+            if (queue_size < k)
             {
-              queue.push (Entry (index, squared_distance));
-              return queue.size () == k;
+              insert_into_queue ();
+              return (queue_size + 1) == k;
             }
-            if (queue.top ().distance > squared_distance)
+            if (queue.back ().distance > squared_distance)
             {
-              queue.pop ();
-              queue.push (Entry (index, squared_distance));
+              queue.pop_back ();
+              insert_into_queue ();
               return true; // top element has changed!
             }
           }

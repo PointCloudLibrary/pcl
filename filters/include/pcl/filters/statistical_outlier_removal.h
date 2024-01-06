@@ -96,9 +96,7 @@ namespace pcl
         */
       StatisticalOutlierRemoval (bool extract_removed_indices = false) :
         FilterIndices<PointT> (extract_removed_indices),
-        searcher_ (),
-        mean_k_ (1),
-        std_mul_ (0.0)
+        searcher_ ()
       {
         filter_name_ = "StatisticalOutlierRemoval";
       }
@@ -142,6 +140,12 @@ namespace pcl
         return (std_mul_);
       }
 
+      /** \brief Provide a pointer to the search object.
+        * Calling this is optional. If not called, the search method will be chosen automatically.
+        * \param[in] searcher a pointer to the spatial search object.
+        */
+      inline void
+      setSearchMethod (const SearcherPtr &searcher) { searcher_ = searcher; }
     protected:
       using PCLBase<PointT>::input_;
       using PCLBase<PointT>::indices_;
@@ -173,11 +177,11 @@ namespace pcl
       SearcherPtr searcher_;
 
       /** \brief The number of points to use for mean distance estimation. */
-      int mean_k_;
+      int mean_k_{1};
 
       /** \brief Standard deviations threshold (i.e., points outside of 
         * \f$ \mu \pm \sigma \cdot std\_mul \f$ will be marked as outliers). */
-      double std_mul_;
+      double std_mul_{0.0};
   };
 
   /** \brief @b StatisticalOutlierRemoval uses point neighborhood statistics to filter outlier data. For more
@@ -186,7 +190,6 @@ namespace pcl
     *     Towards 3D Point Cloud Based Object Maps for Household Environments
     *     Robotics and Autonomous Systems Journal (Special Issue on Semantic Knowledge), 2008.
     *
-    * \note setFilterFieldName (), setFilterLimits (), and setFilterLimitNegative () are ignored.
     * \author Radu Bogdan Rusu
     * \ingroup filters
     */
@@ -209,8 +212,7 @@ namespace pcl
     public:
       /** \brief Empty constructor. */
       StatisticalOutlierRemoval (bool extract_removed_indices = false) :
-        FilterIndices<pcl::PCLPointCloud2>::FilterIndices (extract_removed_indices), mean_k_ (2),
-        std_mul_ (0.0)
+        FilterIndices<pcl::PCLPointCloud2>::FilterIndices (extract_removed_indices)
       {
         filter_name_ = "StatisticalOutlierRemoval";
       }
@@ -252,12 +254,12 @@ namespace pcl
 
     protected:
       /** \brief The number of points to use for mean distance estimation. */
-      int mean_k_;
+      int mean_k_{2};
 
       /** \brief Standard deviations threshold (i.e., points outside of 
         * \f$ \mu \pm \sigma \cdot std\_mul \f$ will be marked as outliers). 
         */
-      double std_mul_;
+      double std_mul_{0.0};
 
       /** \brief A pointer to the spatial search object. */
       KdTreePtr tree_;

@@ -62,7 +62,7 @@ namespace pcl
         /** \brief PCL histogram visualizer constructor. */
         PCLHistogramVisualizer ();
 
-        virtual ~PCLHistogramVisualizer () {}
+        virtual ~PCLHistogramVisualizer () = default;
         /** \brief Spin once method. Calls the interactor and updates the screen once. 
           *  \param[in] time - How long (in ms) should the visualization loop be allowed to run.
           */
@@ -116,7 +116,7 @@ namespace pcl
         template <typename PointT> bool 
         addFeatureHistogram (const pcl::PointCloud<PointT> &cloud, 
                              const std::string &field_name, 
-                             const int index,
+                             const pcl::index_t index,
                              const std::string &id = "cloud", int win_width = 640, int win_height = 200);
 
         /** \brief Add a histogram feature to screen as a separate window.
@@ -130,7 +130,7 @@ namespace pcl
         bool 
         addFeatureHistogram (const pcl::PCLPointCloud2 &cloud,
                              const std::string &field_name, 
-                             const int index,
+                             const pcl::index_t index,
                              const std::string &id = "cloud", int win_width = 640, int win_height = 200);
         
         /** \brief Update a histogram feature that is already on screen, with a cloud containing a single histogram.
@@ -161,7 +161,7 @@ namespace pcl
           */
         template <typename PointT> bool 
         updateFeatureHistogram (const pcl::PointCloud<PointT> &cloud, const std::string &field_name,
-        			                   const int index, const std::string &id = "cloud");
+        			                   const pcl::index_t index, const std::string &id = "cloud");
         
                              
         /** \brief Update a histogram feature that is already on screen, with a cloud containing a single histogram.
@@ -172,7 +172,7 @@ namespace pcl
           */
         bool 
         updateFeatureHistogram (const pcl::PCLPointCloud2 &cloud,
-                                const std::string &field_name, const int index,
+                                const std::string &field_name, const pcl::index_t index,
                                 const std::string &id = "cloud");         
 
 
@@ -229,7 +229,7 @@ namespace pcl
         
         struct ExitCallback : public vtkCommand
         {
-          ExitCallback () : his () {}
+          ExitCallback () = default;
 
           static ExitCallback* New ()
           {
@@ -239,14 +239,14 @@ namespace pcl
           void 
           Execute (vtkObject*, unsigned long event_id, void*) override;
 
-          PCLHistogramVisualizer *his;
+          PCLHistogramVisualizer *his{nullptr};
         };
 
         /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
         vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
         vtkSmartPointer<ExitCallback> exit_callback_;
         /** \brief Set to true when the histogram visualizer is ready to be terminated. */
-        bool stopped_;
+        bool stopped_{false};
     };
   }
 }

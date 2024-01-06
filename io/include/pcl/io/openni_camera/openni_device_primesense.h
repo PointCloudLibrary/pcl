@@ -59,13 +59,13 @@ class DevicePrimesense : public OpenNIDevice
   friend class OpenNIDriver;
 public:
   DevicePrimesense (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node);
-  ~DevicePrimesense () noexcept;
+  ~DevicePrimesense () noexcept override;
   //virtual void setImageOutputMode (const XnMapOutputMode& output_mode);
 
 protected:
-  Image::Ptr getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) const throw () override;
+  Image::Ptr getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) const noexcept override;
   void enumAvailableModes () noexcept;
-  bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw () override;
+  bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const noexcept override;
 
   void startImageStream () override;
   void startDepthStream () override;

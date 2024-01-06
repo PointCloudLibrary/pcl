@@ -37,7 +37,6 @@
 
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/boost.h>
 #include <pcl/memory.h>
 
 #include <mutex>
@@ -62,7 +61,7 @@ namespace pcl
 
     cloud_show (const std::string &cloud_name, typename CloudT::ConstPtr cloud,
       pcl::visualization::PCLVisualizer::Ptr viewer) :
-      cloud_name (cloud_name), cloud (cloud), viewer (viewer),popped_ (false)
+      cloud_name (cloud_name), cloud (cloud), viewer (viewer)
     {}
 
     template <typename Handler> void
@@ -97,7 +96,7 @@ namespace pcl
     std::string cloud_name;
     typename CloudT::ConstPtr cloud;
     pcl::visualization::PCLVisualizer::Ptr viewer;
-    bool popped_;
+    bool popped_{false};
   };
   
   using cca = pcl::PointCloud<pcl::PointXYZRGBA>;
@@ -138,7 +137,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
 {
   ////////////////////////////////////////////////////////////////////////////////////////////
   CloudViewer_impl (const std::string& window_name) :
-    window_name_ (window_name), has_cloud_ (false), quit_ (false)
+    window_name_ (window_name)
   {
     viewer_thread_ = std::thread (&CloudViewer_impl::operator(), this);
     while (!viewer_)
@@ -147,9 +146,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
     }
   }
 
-  ~CloudViewer_impl ()
-  {
-  }
+  ~CloudViewer_impl () = default;
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   template <typename T> void
@@ -254,8 +251,8 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   pcl::visualization::PCLVisualizer::Ptr viewer_;
   std::mutex mtx_, spin_mtx_, c_mtx, once_mtx;
   std::thread viewer_thread_;
-  bool has_cloud_;
-  bool quit_;
+  bool has_cloud_{false};
+  bool quit_{false};
   std::list<cloud_show_base::Ptr> cloud_shows_;
   using CallableMap = std::map<std::string, VizCallable>;
   CallableMap callables;

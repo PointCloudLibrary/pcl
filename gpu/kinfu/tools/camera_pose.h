@@ -57,7 +57,7 @@ class CameraPoseProcessor
     using Ptr = pcl::shared_ptr<CameraPoseProcessor>;
     using ConstPtr = pcl::shared_ptr<const CameraPoseProcessor>;
 
-    virtual ~CameraPoseProcessor () {}
+    virtual ~CameraPoseProcessor () = default;
 
     /// process the camera pose, this method is called at every frame.
     virtual void

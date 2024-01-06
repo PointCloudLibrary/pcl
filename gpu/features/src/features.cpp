@@ -36,11 +36,12 @@
 
 #include <pcl/gpu/containers/initialization.h>
 #include <pcl/gpu/features/features.hpp>
-#include <pcl/gpu/utils/device/static_check.hpp>
 #include "internal.hpp"
 
 #include <pcl/exceptions.h>
 #include <pcl/console/print.h>
+
+#include <cassert>
 
 using namespace pcl::device;
 
@@ -102,6 +103,10 @@ void pcl::gpu::NormalEstimation::getViewPoint (float &vpx, float &vpy, float &vp
 void pcl::gpu::NormalEstimation::compute(Normals& normals)
 {
     assert(!cloud_.empty());
+    if (radius_ <= 0.0f || max_results_ <= 0) {
+        pcl::gpu::error("radius and/or max_results is invalid. Set them appropriately with setRadiusSearch", __FILE__, __LINE__);
+        return;
+    }
 
     PointCloud& surface = surface_.empty() ? cloud_ : surface_;
 
@@ -144,6 +149,10 @@ void pcl::gpu::PFHEstimation::compute(const PointCloud& cloud, const Normals& no
 
 void pcl::gpu::PFHEstimation::compute(DeviceArray2D<PFHSignature125>& features)
 {
+    if (radius_ <= 0.0f || max_results_ <= 0) {
+        pcl::gpu::error("radius and/or max_results is invalid. Set them appropriately with setRadiusSearch", __FILE__, __LINE__);
+        return;
+    }
     PointCloud& surface = surface_.empty() ? cloud_ : surface_;
 
     octree_.setCloud(surface);
@@ -182,6 +191,10 @@ void pcl::gpu::PFHRGBEstimation::compute(const PointCloud& cloud, const Normals&
 
 void pcl::gpu::PFHRGBEstimation::compute(DeviceArray2D<PFHRGBSignature250>& features)
 {
+    if (radius_ <= 0.0f || max_results_ <= 0) {
+        pcl::gpu::error("radius and/or max_results is invalid. Set them appropriately with setRadiusSearch", __FILE__, __LINE__);
+        return;
+    }
     PointCloud& surface = surface_.empty() ? cloud_ : surface_;
 
     octree_.setCloud(surface);
@@ -206,12 +219,9 @@ void pcl::gpu::PFHRGBEstimation::compute(DeviceArray2D<PFHRGBSignature250>& feat
 
 pcl::gpu::FPFHEstimation::FPFHEstimation()
 {
-    Static<sizeof(FPFHEstimation:: PointType) == sizeof(device:: PointType)>::check();
-    Static<sizeof(FPFHEstimation::NormalType) == sizeof(device::NormalType)>::check();    
+    static_assert(sizeof(FPFHEstimation:: PointType) == sizeof(device:: PointType), "Point sizes do not match");
+    static_assert(sizeof(FPFHEstimation::NormalType) == sizeof(device::NormalType), "Normal sizes do not match");
 }
-
-pcl::gpu::FPFHEstimation::~FPFHEstimation() {}
-
 
 void pcl::gpu::FPFHEstimation::compute(const PointCloud& cloud, const Normals& normals, const NeighborIndices& neighbours, DeviceArray2D<FPFHSignature33>& features)
 {   
@@ -233,6 +243,10 @@ void pcl::gpu::FPFHEstimation::compute(const PointCloud& cloud, const Normals& n
 
 void pcl::gpu::FPFHEstimation::compute(DeviceArray2D<FPFHSignature33>& features)
 {   
+    if (radius_ <= 0.0f || max_results_ <= 0) {
+        pcl::gpu::error("radius and/or max_results is invalid. Set them appropriately with setRadiusSearch", __FILE__, __LINE__);
+        return;
+    }
     bool hasInds = !indices_.empty() && indices_.size() != cloud_.size();
     bool hasSurf = !surface_.empty();
 
@@ -280,8 +294,8 @@ void pcl::gpu::FPFHEstimation::compute(DeviceArray2D<FPFHSignature33>& features)
 
 void pcl::gpu::PPFEstimation::compute(DeviceArray<PPFSignature>& features)
 {
-    Static<sizeof(PPFEstimation:: PointType) == sizeof(device:: PointType)>::check();
-    Static<sizeof(PPFEstimation::NormalType) == sizeof(device::NormalType)>::check();    
+    static_assert(sizeof(PPFEstimation:: PointType) == sizeof(device:: PointType), "Point sizes do not match");
+    static_assert(sizeof(PPFEstimation::NormalType) == sizeof(device::NormalType), "Normal sizes do not match");
 
     assert(this->surface_.empty() && !indices_.empty() && !cloud_.empty() && normals_.size() == cloud_.size());
     features.create(indices_.size () * cloud_.size ());
@@ -298,8 +312,8 @@ void pcl::gpu::PPFEstimation::compute(DeviceArray<PPFSignature>& features)
 
 void pcl::gpu::PPFRGBEstimation::compute(DeviceArray<PPFRGBSignature>& features)
 {    
-    Static<sizeof(PPFEstimation:: PointType) == sizeof(device:: PointType)>::check();
-    Static<sizeof(PPFEstimation::NormalType) == sizeof(device::NormalType)>::check();    
+    static_assert(sizeof(PPFEstimation:: PointType) == sizeof(device:: PointType), "Point sizes do not match");
+    static_assert(sizeof(PPFEstimation::NormalType) == sizeof(device::NormalType), "Normal sizes do not match");
 
     assert(this->surface_.empty() && !indices_.empty() && !cloud_.empty() && normals_.size() == cloud_.size());
     features.create(indices_.size () * cloud_.size ());
@@ -316,8 +330,12 @@ void pcl::gpu::PPFRGBEstimation::compute(DeviceArray<PPFRGBSignature>& features)
 
 void pcl::gpu::PPFRGBRegionEstimation::compute(DeviceArray<PPFRGBSignature>& features)
 {
-    Static<sizeof(PPFRGBRegionEstimation:: PointType) == sizeof(device:: PointType)>::check();
-    Static<sizeof(PPFRGBRegionEstimation::NormalType) == sizeof(device::NormalType)>::check();    
+    if (radius_ <= 0.0f || max_results_ <= 0) {
+        pcl::gpu::error("radius and/or max_results is invalid. Set them appropriately with setRadiusSearch", __FILE__, __LINE__);
+        return;
+    }
+    static_assert(sizeof(PPFRGBRegionEstimation:: PointType) == sizeof(device:: PointType), "Point sizes do not match");
+    static_assert(sizeof(PPFRGBRegionEstimation::NormalType) == sizeof(device::NormalType), "Normal sizes do not match");
 
     assert(this->surface_.empty() && !indices_.empty() && !cloud_.empty() && normals_.size() == cloud_.size());
 
@@ -341,8 +359,8 @@ void pcl::gpu::PPFRGBRegionEstimation::compute(DeviceArray<PPFRGBSignature>& fea
 
 void pcl::gpu::PrincipalCurvaturesEstimation::compute(DeviceArray<PrincipalCurvatures>& features)
 {
-    Static<sizeof(PPFRGBRegionEstimation:: PointType) == sizeof(device:: PointType)>::check();
-    Static<sizeof(PPFRGBRegionEstimation::NormalType) == sizeof(device::NormalType)>::check();    
+    static_assert(sizeof(PPFRGBRegionEstimation:: PointType) == sizeof(device:: PointType), "Point sizes do not match");
+    static_assert(sizeof(PPFRGBRegionEstimation::NormalType) == sizeof(device::NormalType), "Normal sizes do not match");
 
     assert(/*!indices_.empty() && */!cloud_.empty() && max_results_ > 0 && radius_ > 0.f);
     assert(surface_.empty() ? normals_.size() == cloud_.size() : normals_.size() == surface_.size());
@@ -400,8 +418,8 @@ void pcl::gpu::VFHEstimation::compute(DeviceArray<VFHSignature308>& feature)
 {   
     assert(!surface_.empty() && normals_.size() == surface_.size() && cloud_.empty());    
 
-    Static<sizeof(VFHEstimation:: PointType) == sizeof(device:: PointType)>::check();
-    Static<sizeof(VFHEstimation::NormalType) == sizeof(device::NormalType)>::check();
+    static_assert(sizeof(VFHEstimation:: PointType) == sizeof(device:: PointType), "Point sizes do not match");
+    static_assert(sizeof(VFHEstimation::NormalType) == sizeof(device::NormalType), "Normal sizes do not match");
 
     feature.create(1);
 
@@ -504,8 +522,8 @@ void pcl::gpu::SpinImageEstimation::compute(DeviceArray2D<SpinImage>& features, 
 	if (image_width_ != 8)
 		pcl::gpu::error("Currently only image_width = 8 is supported (less is possible right now, more - need to allocate more memory)", __FILE__, __LINE__);
 	
-	Static<sizeof(SpinImageEstimation:: PointType) == sizeof(device:: PointType)>::check();
-    Static<sizeof(SpinImageEstimation::NormalType) == sizeof(device::NormalType)>::check();
+	static_assert(sizeof(SpinImageEstimation:: PointType) == sizeof(device:: PointType), "Point sizes do not match");
+    static_assert(sizeof(SpinImageEstimation::NormalType) == sizeof(device::NormalType), "Normal sizes do not match");
 
 	features.create (static_cast<int> (indices_.size ()), 1);
 	mask.create(indices_.size());

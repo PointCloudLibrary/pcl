@@ -71,7 +71,7 @@ public:
   }
 
   /** \brief Empty destructor. */
-  ~CorrespondenceRejectorFeatures() {}
+  ~CorrespondenceRejectorFeatures() override = default;
 
   /** \brief Get a list of valid correspondences after rejection from the original set
    * of correspondences \param[in] original_correspondences the set of initial
@@ -191,7 +191,7 @@ protected:
   public:
     using FeatureCloudConstPtr = typename pcl::PointCloud<FeatureT>::ConstPtr;
     using SearchMethod = std::function<int(
-        const pcl::PointCloud<FeatureT>&, int, std::vector<int>&, std::vector<float>&)>;
+        const pcl::PointCloud<FeatureT>&, int, pcl::Indices&, std::vector<float>&)>;
 
     using PointRepresentationConstPtr =
         typename pcl::PointRepresentation<FeatureT>::ConstPtr;
@@ -201,7 +201,7 @@ protected:
     {}
 
     /** \brief Empty destructor */
-    ~FeatureContainer() {}
+    ~FeatureContainer() override = default;
 
     inline void
     setSourceFeature(const FeatureCloudConstPtr& source_features)

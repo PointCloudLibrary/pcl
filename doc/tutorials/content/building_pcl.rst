@@ -176,7 +176,6 @@ The available ROOTs you can set are as follow:
 * **CMINPACK_ROOT**: for cminpack with value `C:/Program Files/CMINPACK 1.1.13` for instance
 * **QHULL_ROOT**: for qhull with value `C:/Program Files/qhull 6.2.0.1373` for instance
 * **FLANN_ROOT**: for flann with value `C:/Program Files/flann 1.6.8` for instance
-* **EIGEN_ROOT**: for eigen with value `C:/Program Files/Eigen 3.0.0` for instance
 
 To ensure that all the dependencies were correctly found, beside the
 message you get from CMake, you can check or edit each dependency specific
@@ -198,31 +197,31 @@ then a sample value is given for reference.
 
 * Boost
 
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+ 
-| cache variable                   | meaning                                                       | sample value                             |
-+==================================+===============================================================+==========================================+
-| Boost_DATE_TIME_LIBRARY          | full path to boost_date-time.[so,lib,a]                       | /usr/local/lib/libboost_date_time.so     |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_DATE_TIME_LIBRARY_DEBUG    | full path to boost_date-time.[so,lib,a] (debug version)       | /usr/local/lib/libboost_date_time-gd.so  |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_DATE_TIME_LIBRARY_RELEASE  | full path to boost_date-time.[so,lib,a] (release version)     | /usr/local/lib/libboost_date_time.so     |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_FILESYSTEM_LIBRARY         | full path to boost_filesystem.[so,lib,a]                      | /usr/local/lib/libboost_filesystem.so    |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_FILESYSTEM_LIBRARY_DEBUG   | full path to boost_filesystem.[so,lib,a] (debug version)      | /usr/local/lib/libboost_filesystem-gd.so |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_FILESYSTEM_LIBRARY_RELEASE | full path to boost_filesystem.[so,lib,a] (release version)    | /usr/local/lib/libboost_filesystem.so    |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_INCLUDE_DIR                | path to boost headers directory                               | /usr/local/include                       |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_LIBRARY_DIRS               | path to boost libraries directory                             | /usr/local/lib                           |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_SYSTEM_LIBRARY             | full path to boost_system.[so,lib,a]                          | /usr/local/lib/libboost_system.so        |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_SYSTEM_LIBRARY_DEBUG       | full path to boost_system.[so,lib,a] (debug version)          | /usr/local/lib/libboost_system-gd.so     |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_SYSTEM_LIBRARY_RELEASE     | full path to boost_system.[so,lib,a] (release version)        | /usr/local/lib/libboost_system.so        |
-+----------------------------------+---------------------------------------------------------------+------------------------------------------+
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+ 
+| cache variable                      | meaning                                                       | sample value                                |
++=====================================+===============================================================+=============================================+
+| Boost_SERIALIZATION_LIBRARY         | full path to boost_serialization.[so,lib,a]                   | /usr/local/lib/libboost_serialization.so    |
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+
+| Boost_SERIALIZATION_LIBRARY_DEBUG   | full path to boost_serialization.[so,lib,a] (debug version)   | /usr/local/lib/libboost_serialization-gd.so |
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+
+| Boost_SERIALIZATION_LIBRARY_RELEASE | full path to boost_serialization.[so,lib,a] (release version) | /usr/local/lib/libboost_serialization.so    |
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+
+| Boost_FILESYSTEM_LIBRARY            | full path to boost_filesystem.[so,lib,a]                      | /usr/local/lib/libboost_filesystem.so       |
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+
+| Boost_FILESYSTEM_LIBRARY_DEBUG      | full path to boost_filesystem.[so,lib,a] (debug version)      | /usr/local/lib/libboost_filesystem-gd.so    |
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+
+| Boost_FILESYSTEM_LIBRARY_RELEASE    | full path to boost_filesystem.[so,lib,a] (release version)    | /usr/local/lib/libboost_filesystem.so       |
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+
+| Boost_INCLUDE_DIR                   | path to boost headers directory                               | /usr/local/include                          |
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+
+| Boost_LIBRARY_DIRS                  | path to boost libraries directory                             | /usr/local/lib                              |
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+
+| Boost_SYSTEM_LIBRARY                | full path to boost_system.[so,lib,a]                          | /usr/local/lib/libboost_system.so           |
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+
+| Boost_SYSTEM_LIBRARY_DEBUG          | full path to boost_system.[so,lib,a] (debug version)          | /usr/local/lib/libboost_system-gd.so        |
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+
+| Boost_SYSTEM_LIBRARY_RELEASE        | full path to boost_system.[so,lib,a] (release version)        | /usr/local/lib/libboost_system.so           |
++-------------------------------------+---------------------------------------------------------------+---------------------------------------------+
 
 
 * CMinpack
@@ -253,9 +252,8 @@ then a sample value is given for reference.
 
 * Eigen
 
-+------------------+---------------------------------+---------------------------+
-| cache variable   | meaning                         | sample value              |
-+==================+=================================+===========================+ 
-| EIGEN_INCLUDE_DIR| path to eigen headers directory | /usr/local/include/eigen3 |
-+------------------+---------------------------------+---------------------------+
-
++--------------------+---------------------------------+-------------------------------+
+| cache variable     | meaning                         | sample value                  |
++====================+=================================+===============================+ 
+| Eigen3_DIR         | path to eigen cmake directory   | /usr/local/share/eigen3/cmake |
++--------------------+---------------------------------+-------------------------------+

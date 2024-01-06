@@ -6,6 +6,7 @@
  */
 
 #include <pcl/apps/render_views_tesselated_sphere.h>
+#include <pcl/visualization/vtk/pcl_vtk_compatibility.h>
 #include <pcl/point_types.h>
 
 #include <vtkActor.h>
@@ -13,13 +14,14 @@
 #include <vtkCellArray.h>
 #include <vtkCellData.h>
 #include <vtkHardwareSelector.h>
+#include <vtkIdTypeArray.h>
 #include <vtkLoopSubdivisionFilter.h>
 #include <vtkPlatonicSolidSource.h>
 #include <vtkPointPicker.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkPropPicker.h>
-#include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
 #include <vtkSelection.h>
 #include <vtkSelectionNode.h>
 #include <vtkTransform.h>
@@ -34,7 +36,8 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
 {
   // center object
   double CoM[3];
-  vtkIdType npts_com = 0, *ptIds_com = nullptr;
+  vtkIdType npts_com = 0;
+  vtkCellPtsPtr ptIds_com = nullptr;
   vtkSmartPointer<vtkCellArray> cells_com = polydata_->GetPolys();
 
   double center[3], p1_com[3], p2_com[3], p3_com[3], totalArea_com = 0;
@@ -90,20 +93,6 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
 
   mapper->SetInputConnection(trans_filter_scale->GetOutputPort());
   mapper->Update();
-
-  //////////////////////////////
-  // * Compute area of the mesh
-  //////////////////////////////
-  vtkSmartPointer<vtkCellArray> cells = mapper->GetInput()->GetPolys();
-  vtkIdType npts = 0, *ptIds = nullptr;
-
-  double p1[3], p2[3], p3[3], totalArea = 0;
-  for (cells->InitTraversal(); cells->GetNextCell(npts, ptIds);) {
-    polydata_->GetPoint(ptIds[0], p1);
-    polydata_->GetPoint(ptIds[1], p2);
-    polydata_->GetPoint(ptIds[2], p3);
-    totalArea += vtkTriangle::TriangleArea(p1, p2, p3);
-  }
 
   // create icosahedron
   vtkSmartPointer<vtkPlatonicSolidSource> ico =
@@ -363,7 +352,8 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
       polydata->BuildCells();
 
       vtkSmartPointer<vtkCellArray> cells = polydata->GetPolys();
-      vtkIdType npts = 0, *ptIds = nullptr;
+      vtkIdType npts = 0;
+      vtkCellPtsPtr ptIds = nullptr;
 
       double p1[3], p2[3], p3[3], area, totalArea = 0;
       for (cells->InitTraversal(); cells->GetNextCell(npts, ptIds);) {
@@ -419,7 +409,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
         trans_view(x, y) = float(view_transform->GetElement(x, y));
 
     // NOTE: vtk view coordinate system is different than the standard camera
-    // coordinates (z forward, y down, x right) thus, the fliping in y and z
+    // coordinates (z forward, y down, x right) thus, the flipping in y and z
     for (auto& point : cloud->points) {
       point.getVector4fMap() = trans_view * point.getVector4fMap();
       point.y *= -1.0f;
@@ -440,7 +430,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
     transOCtoCC->Concatenate(cam_tmp->GetViewTransformMatrix());
 
     // NOTE: vtk view coordinate system is different than the standard camera
-    // coordinates (z forward, y down, x right) thus, the fliping in y and z
+    // coordinates (z forward, y down, x right) thus, the flipping in y and z
     vtkSmartPointer<vtkMatrix4x4> cameraSTD = vtkSmartPointer<vtkMatrix4x4>::New();
     cameraSTD->Identity();
     cameraSTD->SetElement(0, 0, 1);

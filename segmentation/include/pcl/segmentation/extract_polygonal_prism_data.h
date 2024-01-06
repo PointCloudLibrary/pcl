@@ -37,10 +37,9 @@
 
 #pragma once
 
-#include <cfloat> // for FLT_MAX
+#include <limits>
 
 #include <pcl/pcl_base.h>
-#include <pcl/sample_consensus/sac_model_plane.h>
 
 namespace pcl
 {
@@ -116,10 +115,7 @@ namespace pcl
       using PointIndicesConstPtr = PointIndices::ConstPtr;
 
       /** \brief Empty constructor. */
-      ExtractPolygonalPrismData () : planar_hull_ (), min_pts_hull_ (3), 
-                                     height_limit_min_ (0), height_limit_max_ (FLT_MAX),
-                                     vpx_ (0), vpy_ (0), vpz_ (0)
-      {};
+      ExtractPolygonalPrismData () = default;
 
       /** \brief Provide a pointer to the input planar hull dataset.
         * \note Please see the example in the class description for how to obtain this.
@@ -146,7 +142,7 @@ namespace pcl
       }
 
       /** \brief Get the height limits (min/max) as set by the user. The
-        * default values are -FLT_MAX, FLT_MAX. 
+        * default values are 0, std::numeric_limits<float>::max().
         * \param[out] height_min the resultant min height limit
         * \param[out] height_max the resultant max height limit
         */
@@ -187,23 +183,23 @@ namespace pcl
 
     protected:
       /** \brief A pointer to the input planar hull dataset. */
-      PointCloudConstPtr planar_hull_;
+      PointCloudConstPtr planar_hull_{nullptr};
 
       /** \brief The minimum number of points needed on the convex hull. */
-      int min_pts_hull_;
+      int min_pts_hull_{3};
 
       /** \brief The minimum allowed height (distance to the model) a point
         * will be considered from. 
         */
-      double height_limit_min_;
+      double height_limit_min_{0.0};
 
       /** \brief The maximum allowed height (distance to the model) a point
         * will be considered from. 
         */
-      double height_limit_max_;
+      double height_limit_max_{std::numeric_limits<float>::max()};
 
       /** \brief Values describing the data acquisition viewpoint. Default: 0,0,0. */
-      float vpx_, vpy_, vpz_;
+      float vpx_{0.0f}, vpy_{0.0f}, vpz_{0.0f};
 
       /** \brief Class getName method. */
       virtual std::string 

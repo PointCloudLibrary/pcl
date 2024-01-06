@@ -58,9 +58,6 @@ pcl::Kmeans::Kmeans(unsigned int num_points, unsigned int num_dimensions)
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::Kmeans::~Kmeans() {}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::Kmeans::initialClusterPoints()
 {
@@ -96,6 +93,10 @@ pcl::Kmeans::computeCentroids()
   // For each centroid
   for (Centroids::value_type& centroid : centroids_) {
     PointId num_points_in_cluster = 0;
+
+    // Set zero
+    for (Point::value_type& c : centroid)
+      c = 0.0;
 
     // For each PointId in this set
     for (const auto& pid : clusters_to_points_[cid]) {

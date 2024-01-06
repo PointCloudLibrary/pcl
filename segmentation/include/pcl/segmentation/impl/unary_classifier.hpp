@@ -46,25 +46,17 @@
 #include <flann/algorithms/linear_index.h>  // for flann::LinearIndexParams
 #include <flann/util/matrix.h>              // for flann::Matrix
 
+#include <pcl/features/normal_3d.h> // for NormalEstimation
 #include <pcl/segmentation/unary_classifier.h>
 #include <pcl/common/io.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::UnaryClassifier<PointT>::UnaryClassifier () :
-  input_cloud_ (new pcl::PointCloud<PointT>),
-  label_field_ (false),
-  normal_radius_search_ (0.01f),
-  fpfh_radius_search_ (0.05f),
-  feature_threshold_ (5.0)
-{
-}
+pcl::UnaryClassifier<PointT>::UnaryClassifier() = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::UnaryClassifier<PointT>::~UnaryClassifier ()
-{
-}
+pcl::UnaryClassifier<PointT>::~UnaryClassifier () = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -137,16 +129,14 @@ pcl::UnaryClassifier<PointT>::findClusters (typename pcl::PointCloud<PointT>::Pt
 {
   // find the 'label' field index
   std::vector <pcl::PCLPointField> fields;
-  int label_idx = -1;
-  pcl::PointCloud <PointT> point;
-  label_idx = pcl::getFieldIndex<PointT> ("label", fields);
+  const int label_idx = pcl::getFieldIndex<PointT> ("label", fields);
 
   if (label_idx != -1)
   {
     for (const auto& point: *in)
     {
       // get the 'label' field                                                                       
-      std::uint32_t label;      
+      std::uint32_t label;
       memcpy (&label, reinterpret_cast<const char*> (&point) + fields[label_idx].offset, sizeof(std::uint32_t));
 
       // check if label exist
@@ -174,25 +164,24 @@ pcl::UnaryClassifier<PointT>::getCloudWithLabel (typename pcl::PointCloud<PointT
   // find the 'label' field index
   std::vector <pcl::PCLPointField> fields;
   int label_idx = -1;
-  pcl::PointCloud <PointT> point;
   label_idx = pcl::getFieldIndex<PointT> ("label", fields);
 
   if (label_idx != -1)
   {
-    for (std::size_t i = 0; i < in->size (); i++)
+    for (const auto& point : (*in))
     {
       // get the 'label' field                                                                       
       std::uint32_t label;
-      memcpy (&label, reinterpret_cast<char*> (&(*in)[i]) + fields[label_idx].offset, sizeof(std::uint32_t));
+      memcpy (&label, reinterpret_cast<const char*> (&point) + fields[label_idx].offset, sizeof(std::uint32_t));
 
       if (static_cast<int> (label) == label_num)
       {
-        pcl::PointXYZ point;
+        pcl::PointXYZ tmp;
         // X Y Z
-        point.x = (*in)[i].x;
-        point.y = (*in)[i].y;
-        point.z = (*in)[i].z;
-        out->points.push_back (point);
+        tmp.x = point.x;
+        tmp.y = point.y;
+        tmp.z = point.z;
+        out->push_back (tmp);
       }
     }
     out->width = out->size ();
@@ -273,7 +262,7 @@ pcl::UnaryClassifier<PointT>::kmeansClustering (pcl::PointCloud<pcl::FPFHSignatu
 template <typename PointT> void
 pcl::UnaryClassifier<PointT>::queryFeatureDistances (std::vector<pcl::PointCloud<pcl::FPFHSignature33>::Ptr> &trained_features,
                                                      pcl::PointCloud<pcl::FPFHSignature33>::Ptr query_features,
-                                                     std::vector<int> &indi,
+                                                     pcl::Indices &indi,
                                                      std::vector<float> &dist)
 {
   // estimate the total number of row's needed
@@ -309,7 +298,7 @@ pcl::UnaryClassifier<PointT>::queryFeatureDistances (std::vector<pcl::PointCloud
   {
     // Query point  
     flann::Matrix<float> p = flann::Matrix<float>(new float[n_col], 1, n_col);
-    memcpy (&p.ptr ()[0], (*query_features)[i].histogram, p.cols * p.rows * sizeof (float));
+    std::copy((*query_features)[i].histogram, (*query_features)[i].histogram + n_col, p.ptr());
 
     flann::Matrix<int> indices (new int[k], 1, k);
     flann::Matrix<float> distances (new float[k], 1, k);  
@@ -328,7 +317,7 @@ pcl::UnaryClassifier<PointT>::queryFeatureDistances (std::vector<pcl::PointCloud
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::UnaryClassifier<PointT>::assignLabels (std::vector<int> &indi,
+pcl::UnaryClassifier<PointT>::assignLabels (pcl::Indices &indi,
                                             std::vector<float> &dist,
                                             int n_feature_means,
                                             float feature_threshold,

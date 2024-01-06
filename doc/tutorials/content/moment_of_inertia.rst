@@ -5,7 +5,8 @@ Moment of inertia and eccentricity based descriptors
 
 In this tutorial we will learn how to use the `pcl::MomentOfInertiaEstimation` class in order to obtain descriptors based on
 eccentricity and moment of inertia. This class also allows to extract axis aligned and oriented bounding boxes of the cloud.
-But keep in mind that extracted OBB is not the minimal possible bounding box.
+But keep in mind that extracted OBB is not the minimal possible bounding box. Users who only need the OBB or AABB, but not the descriptors,
+should use respectively computeCentroidAndOBB or getMinMax3D (faster).
 
 Theoretical Primer
 ------------------
@@ -33,7 +34,7 @@ The code
 --------
 
 First of all you will need the point cloud for this tutorial.
-`This <https://github.com/PointCloudLibrary/data/blob/master/tutorials/min_cut_segmentation_tutorial.pcd>`_ is the one presented on the screenshots.
+`This <https://github.com/PointCloudLibrary/data/blob/master/tutorials/lamppost.pcd>`_ is the one presented on the screenshots.
 Next what you need to do is to create a file ``moment_of_inertia.cpp`` in any editor you prefer and copy the following code inside of it:
 
 .. literalinclude:: sources/moment_of_inertia/moment_of_inertia.cpp

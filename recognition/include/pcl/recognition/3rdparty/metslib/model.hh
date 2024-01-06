@@ -36,6 +36,8 @@
 #define METS_MODEL_HH_
 
 namespace mets {
+// Exempt third-party code from clang-tidy
+// NOLINTBEGIN
 
   /// @brief Type of the objective/cost function.
   ///
@@ -79,7 +81,7 @@ namespace mets {
   class clonable {
   public:
     virtual 
-    ~clonable() {};
+    ~clonable() = default;
     virtual clonable* 
     clone() const = 0;
   };
@@ -88,7 +90,7 @@ namespace mets {
   class hashable {
   public:
     virtual 
-    ~hashable() {};
+    ~hashable() = default;
     virtual std::size_t 
     hash() const = 0;
   };
@@ -97,7 +99,7 @@ namespace mets {
   class copyable {
   public:
     virtual 
-    ~copyable() {};
+    ~copyable() = default;
     virtual void 
     copy_from(const copyable&) = 0;
   };
@@ -106,7 +108,7 @@ namespace mets {
   class printable {
   public:
     virtual 
-    ~printable() {}
+    ~printable() = default;
     virtual void 
     print(std::ostream& /*os*/) const { };
   };
@@ -136,8 +138,7 @@ namespace mets {
   public:
     /// @brief Virtual dtor.
     virtual
-    ~feasible_solution() 
-    { }
+    ~feasible_solution() = default;
 
   };
 
@@ -195,7 +196,7 @@ namespace mets {
     /// permutation_problem::copy_from in the overriding code.
     ///
     /// @param other the problem to copy from
-    void copy_from(const copyable& other);
+    void copy_from(const copyable& other) override;
 
     /// @brief: Compute cost of the whole solution.
     ///
@@ -227,7 +228,7 @@ namespace mets {
     /// implementation provided returns the protected
     /// mets::permutation_problem::cost_m member variable. Do not
     /// override unless you know what you are doing.
-    gol_type cost_function() const 
+    gol_type cost_function() const override 
     { return cost_m; }
 
     /// @brief Updates the cost with the one computed by the subclass.
@@ -270,7 +271,7 @@ namespace mets {
     std::tr1::variate_generator<random_generator&, 
       std::tr1::uniform_int<std::size_t> >gen(rng, unigen);
 #endif
-    std::random_shuffle(p.pi_m.begin(), p.pi_m.end(), gen);
+    std::shuffle(p.pi_m.begin(), p.pi_m.end(), gen);
     p.update_cost();
   }
   
@@ -311,8 +312,7 @@ namespace mets {
   public:
 
     virtual 
-    ~move() 
-    { }; 
+    ~move() = default;
 
     ///
     /// @brief Evaluate the cost after the move.
@@ -365,7 +365,7 @@ namespace mets {
     /// (if we moved a to b we can declare tabu moving b to a).
     virtual mana_move*
     opposite_of() const 
-    { return static_cast<mana_move*>(clone()); }
+    { return dynamic_cast<mana_move*>(clone()); }
     
     /// @brief Tell if this move equals another w.r.t. the tabu list
     /// management (for mets::simple_tabu_list)
@@ -394,32 +394,32 @@ namespace mets {
     
     /// @brief Virtual method that applies the move on a point
     gol_type
-    evaluate(const mets::feasible_solution& s) const
-    { const permutation_problem& sol = 
-	static_cast<const permutation_problem&>(s);
+    evaluate(const mets::feasible_solution& s) const override
+    { const auto& sol = 
+	dynamic_cast<const permutation_problem&>(s);
       return sol.cost_function() + sol.evaluate_swap(p1, p2); }
     
     /// @brief Virtual method that applies the move on a point
     void
-    apply(mets::feasible_solution& s) const
-    { permutation_problem& sol = static_cast<permutation_problem&>(s);
+    apply(mets::feasible_solution& s) const override
+    { auto& sol = dynamic_cast<permutation_problem&>(s);
       sol.apply_swap(p1, p2); }
             
     /// @brief Clones this move (so that the tabu list can store it)
     clonable* 
-    clone() const
+    clone() const override
     { return new swap_elements(p1, p2); }
 
     /// @brief An hash function used by the tabu list (the hash value is
     /// used to insert the move in an hash set).
     std::size_t
-    hash() const
+    hash() const override
     { return (p1)<<16^(p2); }
     
     /// @brief Comparison operator used to tell if this move is equal to
     /// a move in the simple tabu list move set.
     bool 
-    operator==(const mets::mana_move& o) const;
+    operator==(const mets::mana_move& o) const override;
     
     /// @brief Modify this swap move.
     void change(int from, int to)
@@ -449,26 +449,26 @@ namespace mets {
     
     /// @brief Virtual method that applies the move on a point
     gol_type
-    evaluate(const mets::feasible_solution& s) const;
+    evaluate(const mets::feasible_solution& s) const override;
 
     /// @brief Virtual method that applies the move on a point
     void
-    apply(mets::feasible_solution& s) const;
+    apply(mets::feasible_solution& s) const override;
         
     clonable* 
-    clone() const
+    clone() const override
     { return new invert_subsequence(p1, p2); }
 
     /// @brief An hash function used by the tabu list (the hash value is
     /// used to insert the move in an hash set).
     std::size_t
-    hash() const
+    hash() const override
     { return (p1)<<16^(p2); }
     
     /// @brief Comparison operator used to tell if this move is equal to
     /// a move in the tabu list.
     bool 
-    operator==(const mets::mana_move& o) const;
+    operator==(const mets::mana_move& o) const override;
     
     void change(int from, int to)
     { p1 = from; p2 = to; }
@@ -514,8 +514,7 @@ namespace mets {
     { }
 
     /// @brief Virtual destructor
-    virtual ~move_manager() 
-    { }
+    virtual ~move_manager() = default;
 
     /// @brief Selects a different set of moves at each iteration.
     virtual void 
@@ -569,10 +568,10 @@ namespace mets {
 		      unsigned int moves);
 
     /// @brief Dtor.
-    ~swap_neighborhood();
+    ~swap_neighborhood() override;
 
     /// @brief Selects a different set of moves at each iteration.
-    void refresh(mets::feasible_solution& s);
+    void refresh(mets::feasible_solution& s) override;
     
   protected:
     random_generator& rng;
@@ -605,7 +604,7 @@ namespace mets {
   mets::swap_neighborhood<random_generator>::~swap_neighborhood()
   {
     // delete all moves
-    for(iterator ii = begin(); ii != end(); ++ii)
+    for(auto ii = begin(); ii != end(); ++ii)
       delete (*ii);
   }
 
@@ -613,13 +612,13 @@ namespace mets {
   void
   mets::swap_neighborhood<random_generator>::refresh(mets::feasible_solution& s)
   {
-    permutation_problem& sol = dynamic_cast<permutation_problem&>(s);
-    iterator ii = begin();
+    auto& sol = dynamic_cast<permutation_problem&>(s);
+    auto ii = begin();
     
     // the first n are simple qap_moveS
     for(unsigned int cnt = 0; cnt != n; ++cnt)
       {
-	swap_elements* m = static_cast<swap_elements*>(*ii);
+	auto* m = static_cast<swap_elements*>(*ii);
 	randomize_move(*m, sol.size());
 	++ii;
       }
@@ -658,14 +657,14 @@ namespace mets {
     } 
 
     /// @brief Dtor.
-    ~swap_full_neighborhood() { 
-      for(move_manager::iterator it = moves_m.begin(); 
+    ~swap_full_neighborhood() override { 
+      for(auto it = moves_m.begin();
 	  it != moves_m.end(); ++it)
 	delete *it;
     }
     
     /// @brief Use the same set set of moves at each iteration.
-    void refresh(mets::feasible_solution& /*s*/) { }
+    void refresh(mets::feasible_solution& /*s*/) override { }
     
   };
 
@@ -683,15 +682,15 @@ namespace mets {
     } 
 
     /// @brief Dtor.
-    ~invert_full_neighborhood() { 
-      for(std::deque<move*>::iterator it = moves_m.begin(); 
+    ~invert_full_neighborhood() override { 
+      for(auto it = moves_m.begin();
 	  it != moves_m.end(); ++it)
 	delete *it;
     }
 
     /// @brief This is a static neighborhood
     void 
-    refresh(mets::feasible_solution& /*s*/)
+    refresh(mets::feasible_solution& /*s*/) override
     { }
 
   };
@@ -714,14 +713,14 @@ namespace mets {
 		    const Tp r) const 
     { return l->operator==(*r); }
   };
-
+// NOLINTEND
 }
 
 //________________________________________________________________________
 inline void
 mets::permutation_problem::copy_from(const mets::copyable& other)
 {
-  const mets::permutation_problem& o = 
+  const auto& o = 
     dynamic_cast<const mets::permutation_problem&>(other);
   pi_m = o.pi_m;
   cost_m = o.cost_m;
@@ -732,7 +731,7 @@ inline bool
 mets::swap_elements::operator==(const mets::mana_move& o) const
 {
   try {
-    const mets::swap_elements& other = 
+    const auto& other = 
       dynamic_cast<const mets::swap_elements&>(o);
     return (this->p1 == other.p1 && this->p2 == other.p2);
   } catch (std::bad_cast& e) {
@@ -745,8 +744,8 @@ mets::swap_elements::operator==(const mets::mana_move& o) const
 inline void
 mets::invert_subsequence::apply(mets::feasible_solution& s) const
 { 
-  mets::permutation_problem& sol = 
-    static_cast<mets::permutation_problem&>(s);
+  auto& sol = 
+    dynamic_cast<mets::permutation_problem&>(s);
   int size = static_cast<int>(sol.size());
   int top = p1 < p2 ? (p2-p1+1) : (size+p2-p1+1);
   for(int ii(0); ii!=top/2; ++ii)
@@ -762,8 +761,8 @@ mets::invert_subsequence::apply(mets::feasible_solution& s) const
 inline mets::gol_type
 mets::invert_subsequence::evaluate(const mets::feasible_solution& s) const
 { 
-  const mets::permutation_problem& sol = 
-    static_cast<const mets::permutation_problem&>(s);
+  const auto& sol = 
+    dynamic_cast<const mets::permutation_problem&>(s);
   int size = static_cast<int>(sol.size());
   int top = p1 < p2 ? (p2-p1+1) : (size+p2-p1+1);
   mets::gol_type eval = 0.0;
@@ -782,7 +781,7 @@ inline bool
 mets::invert_subsequence::operator==(const mets::mana_move& o) const
 {
   try {
-    const mets::invert_subsequence& other = 
+    const auto& other = 
       dynamic_cast<const mets::invert_subsequence&>(o);
     return (this->p1 == other.p1 && this->p2 == other.p2);
   } catch (std::bad_cast& e) {

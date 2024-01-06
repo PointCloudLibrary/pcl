@@ -16,6 +16,8 @@
 
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
+#if !defined(HAVE_ZLIB)
+
 #if defined(ON_DLL_EXPORTS)
 // When compiling a Windows DLL opennurbs, we
 // statically link ./zlib/.../zlib....lib into
@@ -71,6 +73,8 @@
 #pragma comment(lib, "\"" OPENNURBS_ZLIB_OUTPUT_ROOT_DIR "/" OPENNURBS_CONFIGURATION_DIR "/" OPENNURBS_ZLIB_FILE_NAME "\"")
 
 #endif // ON_DLL_EXPORTS
+
+#endif // !HAVE_ZLIB
 
 
 bool ON_BinaryArchive::WriteCompressedBuffer(
@@ -641,7 +645,11 @@ struct ON_CompressedBufferHelper
     sizeof_x_buffer = 16384
   };
   unsigned char    buffer[sizeof_x_buffer];
+#if defined(HAVE_ZLIB)
+  z_stream         strm = []() { z_stream zs; zs.zalloc = pcl_zcalloc; zs.zfree = pcl_zcfree; return zs; } ();
+#else
   z_stream         strm;
+#endif
   std::size_t           m_buffer_compressed_capacity;
 };
 

@@ -42,13 +42,13 @@ keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
   if (event.keyUp ())    
     switch (key)
     {
-      case (int)'1': show_voxel_centroids = !show_voxel_centroids; break;
-      case (int)'2': show_supervoxels = !show_supervoxels; break;
-      case (int)'3': show_graph = !show_graph; break;
-      case (int)'4': show_normals = !show_normals; break;
-      case (int)'5': show_supervoxel_normals = !show_supervoxel_normals; break;
-      case (int)'0': show_refined = !show_refined; break;
-      case (int)'h': case (int)'H': show_help = !show_help; break;
+      case static_cast<int>('1'): show_voxel_centroids = !show_voxel_centroids; break;
+      case static_cast<int>('2'): show_supervoxels = !show_supervoxels; break;
+      case static_cast<int>('3'): show_graph = !show_graph; break;
+      case static_cast<int>('4'): show_normals = !show_normals; break;
+      case static_cast<int>('5'): show_supervoxel_normals = !show_supervoxel_normals; break;
+      case static_cast<int>('0'): show_refined = !show_refined; break;
+      case static_cast<int>('h'): case static_cast<int>('H'): show_help = !show_help; break;
       default: break;
     }
     

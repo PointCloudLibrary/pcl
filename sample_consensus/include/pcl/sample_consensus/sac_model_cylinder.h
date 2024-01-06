@@ -46,6 +46,10 @@
 
 namespace pcl
 {
+  namespace internal {
+    int optimizeModelCoefficientsCylinder (Eigen::VectorXf& coeff, const Eigen::ArrayXf& pts_x, const Eigen::ArrayXf& pts_y, const Eigen::ArrayXf& pts_z);
+  } // namespace internal
+
   /** \brief @b SampleConsensusModelCylinder defines a model for 3D cylinder segmentation.
     * The model coefficients are defined as:
     *   - \b point_on_axis.x  : the X coordinate of a point located on the cylinder axis
@@ -126,7 +130,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      ~SampleConsensusModelCylinder () {}
+      ~SampleConsensusModelCylinder () override = default;
 
       /** \brief Copy constructor.
         * \param[in] source the model to copy into this
@@ -295,42 +299,6 @@ namespace pcl
     
       /** \brief The maximum allowed difference between the cylinder direction and the given axis. */
       double eps_angle_;
-
-      /** \brief Functor for the optimization function */
-      struct OptimizationFunctor : pcl::Functor<float>
-      {
-        /** Functor constructor
-          * \param[in] indices the indices of data points to evaluate
-          * \param[in] estimator pointer to the estimator object
-          */
-        OptimizationFunctor (const pcl::SampleConsensusModelCylinder<PointT, PointNT> *model, const Indices& indices) :
-          pcl::Functor<float> (indices.size ()), model_ (model), indices_ (indices) {}
-
-        /** Cost function to be minimized
-          * \param[in] x variables array
-          * \param[out] fvec resultant functions evaluations
-          * \return 0
-          */
-        int 
-        operator() (const Eigen::VectorXf &x, Eigen::VectorXf &fvec) const
-        {
-          Eigen::Vector4f line_pt  (x[0], x[1], x[2], 0);
-          Eigen::Vector4f line_dir (x[3], x[4], x[5], 0);
-          
-          for (int i = 0; i < values (); ++i)
-          {
-            // dist = f - r
-            Eigen::Vector4f pt = (*model_->input_)[indices_[i]].getVector4fMap();
-            pt[3] = 0;
-
-            fvec[i] = static_cast<float> (pcl::sqrPointToLineDistance (pt, line_pt, line_dir) - x[6]*x[6]);
-          }
-          return (0);
-        }
-
-        const pcl::SampleConsensusModelCylinder<PointT, PointNT> *model_;
-        const Indices &indices_;
-      };
   };
 }
 

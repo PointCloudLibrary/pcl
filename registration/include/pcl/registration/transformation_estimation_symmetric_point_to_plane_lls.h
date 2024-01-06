@@ -38,7 +38,6 @@
 #pragma once
 
 #include <pcl/registration/transformation_estimation.h>
-#include <pcl/registration/warp_point_rigid.h>
 #include <pcl/cloud_iterator.h>
 
 namespace pcl {
@@ -72,9 +71,8 @@ public:
       typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4;
   using Vector6 = Eigen::Matrix<Scalar, 6, 1>;
 
-  TransformationEstimationSymmetricPointToPlaneLLS()
-  : enforce_same_direction_normals_(true){};
-  ~TransformationEstimationSymmetricPointToPlaneLLS(){};
+  TransformationEstimationSymmetricPointToPlaneLLS() = default;
+  ~TransformationEstimationSymmetricPointToPlaneLLS() override = default;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using SVD. \param[in] cloud_src the source point cloud dataset
@@ -89,28 +87,30 @@ public:
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using SVD. \param[in] cloud_src the source point cloud dataset
    * \param[in] indices_src the vector of indices describing the points of interest in
-   * \a cloud_src \param[in] cloud_tgt the target point cloud dataset \param[out]
-   * transformation_matrix the resultant transformation matrix
+   * \a cloud_src
+   * \param[in] cloud_tgt the target point cloud dataset
+   * \param[out] transformation_matrix the resultant transformation matrix
    */
   inline void
   estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const std::vector<int>& indices_src,
+                              const pcl::Indices& indices_src,
                               const pcl::PointCloud<PointTarget>& cloud_tgt,
                               Matrix4& transformation_matrix) const override;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using SVD. \param[in] cloud_src the source point cloud dataset
    * \param[in] indices_src the vector of indices describing the points of interest in
-   * \a cloud_src \param[in] cloud_tgt the target point cloud dataset \param[in]
-   * indices_tgt the vector of indices describing the correspondences of the interest
-   * points from \a indices_src \param[out] transformation_matrix the resultant
-   * transformation matrix
+   * \a cloud_src
+   * \param[in] cloud_tgt the target point cloud dataset
+   * \param[in] indices_tgt the vector of indices describing the correspondences of the
+   * interest points from \a indices_src
+   * \param[out] transformation_matrix the resultant transformation matrix
    */
   inline void
   estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const std::vector<int>& indices_src,
+                              const pcl::Indices& indices_src,
                               const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              const std::vector<int>& indices_tgt,
+                              const pcl::Indices& indices_tgt,
                               Matrix4& transformation_matrix) const override;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
@@ -160,7 +160,7 @@ protected:
 
   /** \brief Whether or not to negate source and/or target normals such that they point
    * in the same direction */
-  bool enforce_same_direction_normals_;
+  bool enforce_same_direction_normals_{true};
 };
 } // namespace registration
 } // namespace pcl

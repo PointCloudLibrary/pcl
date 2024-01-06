@@ -813,6 +813,10 @@ for any classes that you expose (from PCL our outside PCL).
 .. note::
    Starting with PCL-1.7 you need to define PCL_NO_PRECOMPILE before you include
    any PCL headers to include the templated algorithms as well.
+   
+.. note::
+   The invocation of `POINT_CLOUD_REGISTER_POINT_STRUCT` must be in the global 
+   namespace and the name of the new point type must be fully qualified.
 
 Example
 -------
@@ -830,12 +834,12 @@ data (SSE padded), together with a test float.
    #include <pcl/point_cloud.h>
    #include <pcl/io/pcd_io.h>
 
-   struct MyPointType
+   struct EIGEN_ALIGN16 MyPointType    // enforce SSE padding for correct memory alignment
    {
      PCL_ADD_POINT4D;                  // preferred way of adding a XYZ+padding
      float test;
      PCL_MAKE_ALIGNED_OPERATOR_NEW     // make sure our new allocators are aligned
-   } EIGEN_ALIGN16;                    // enforce SSE padding for correct memory alignment
+   };
 
    POINT_CLOUD_REGISTER_POINT_STRUCT (MyPointType,           // here we assume a XYZ + "test" (as fields)
                                       (float, x, x)

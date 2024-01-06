@@ -68,13 +68,10 @@ public:
   using ConstPtr = shared_ptr<const CorrespondenceRejectorTrimmed>;
 
   /** \brief Empty constructor. */
-  CorrespondenceRejectorTrimmed() : overlap_ratio_(0.5f), nr_min_correspondences_(0)
-  {
-    rejection_name_ = "CorrespondenceRejectorTrimmed";
-  }
+  CorrespondenceRejectorTrimmed() { rejection_name_ = "CorrespondenceRejectorTrimmed"; }
 
   /** \brief Destructor. */
-  ~CorrespondenceRejectorTrimmed() {}
+  ~CorrespondenceRejectorTrimmed() override = default;
 
   /** \brief Set the expected ratio of overlap between point clouds (in
    * terms of correspondences).
@@ -135,13 +132,11 @@ protected:
   }
 
   /** Overlap Ratio in [0..1] */
-  float overlap_ratio_;
+  float overlap_ratio_{0.5f};
 
   /** Minimum number of correspondences. */
-  unsigned int nr_min_correspondences_;
+  unsigned int nr_min_correspondences_{0};
 };
 
 } // namespace registration
 } // namespace pcl
-
-#include <pcl/registration/impl/correspondence_rejection_trimmed.hpp>

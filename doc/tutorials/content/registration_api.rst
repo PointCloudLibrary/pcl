@@ -84,7 +84,7 @@ keypoints as well. The problem with "feeding two kinect datasets into a correspo
 Feature descriptors
 ===================
 
-Based on the keypoints found we have to extract [features](http://www.pointclouds.org/documentation/tutorials/how_features_work.php), where we assemble the information and generate vectors to compare them with each other. Again there
+Based on the keypoints found we have to extract `features <https://pcl.readthedocs.io/projects/tutorials/en/master/how_features_work.html>`_, where we assemble the information and generate vectors to compare them with each other. Again there
 is a number of feature options to choose from, for example NARF, FPFH, BRIEF or
 SIFT.
 

@@ -65,7 +65,7 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       Indices indices = *indices_;
       std::sort (indices.begin (), indices.end ());
 
-      // Get the diference
+      // Get the difference
       Indices remaining_indices;
       set_difference (all_indices.begin (), all_indices.end (), indices.begin (), indices.end (),
                       inserter (remaining_indices, remaining_indices.begin ()));
@@ -89,7 +89,7 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       output = *input_;
     return;
   }
-  if (indices_->size () == static_cast<uindex_t>(input_->width * input_->height))
+  if (indices_->size () == (input_->width * input_->height))
   {
     // If negative, then return an empty cloud
     if (negative_)
@@ -120,7 +120,7 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     Indices indices = *indices_;
     std::sort (indices.begin (), indices.end ());
 
-    // Get the diference
+    // Get the difference
     Indices remaining_indices;
     set_difference (all_indices.begin (), all_indices.end (), indices.begin (), indices.end (),
                     inserter (remaining_indices, remaining_indices.begin ()));
@@ -146,7 +146,7 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 void
 pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (Indices &indices)
 {
-  if (indices_->size () > static_cast<uindex_t>(input_->width * input_->height))
+  if (indices_->size () > (input_->width * input_->height))
   {
     PCL_ERROR ("[pcl::%s::applyFilter] The indices size exceeds the size of the input.\n", getClassName ().c_str ());
     indices.clear ();

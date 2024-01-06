@@ -15,9 +15,6 @@
 // Boost
 #include <boost/math/special_functions/round.hpp>
 
-// Visualization Toolkit (VTK)
-#include <vtkRenderWindow.h>
-
 typedef pcl::PointXYZRGBA PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
 
@@ -56,6 +53,10 @@ class PCLViewer : public QMainWindow
     lookUpTableChosen ();
 
   protected:
+    /** @brief Rerender the view */
+    void
+    refreshView();
+    
     /** @brief The PCL visualizer object */
     pcl::visualization::PCLVisualizer::Ptr viewer_;
 

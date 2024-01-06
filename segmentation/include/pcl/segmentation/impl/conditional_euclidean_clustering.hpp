@@ -78,7 +78,7 @@ pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters &clus
   for (const auto& iindex : (*indices_)) // iindex = input index
   {
     // Has this point been processed before?
-    if (iindex == -1 || processed[iindex])
+    if (iindex == UNAVAILABLE || processed[iindex])
       continue;
 
     // Set up a new growing cluster
@@ -103,7 +103,7 @@ pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters &clus
       for (int nii = 1; nii < static_cast<int> (nn_indices.size ()); ++nii)  // nii = neighbor indices iterator
       {
         // Has this point been processed before?
-        if (nn_indices[nii] == -1 || processed[nn_indices[nii]])
+        if (nn_indices[nii] == UNAVAILABLE || processed[nn_indices[nii]])
           continue;
 
         // Validate if condition holds

@@ -65,14 +65,10 @@ namespace pcl
       using ConstPtr = shared_ptr<const FastBilateralFilter<PointT> >;
 
       /** \brief Empty constructor. */
-      FastBilateralFilter ()
-        : sigma_s_ (15.0f)
-        , sigma_r_ (0.05f)
-        , early_division_ (false)
-      { }
+      FastBilateralFilter () = default;
       
       /** \brief Empty destructor */
-      ~FastBilateralFilter () {}
+      ~FastBilateralFilter () override = default;
 
       /** \brief Set the standard deviation of the Gaussian used by the bilateral filter for
         * the spatial neighborhood/window.
@@ -108,19 +104,19 @@ namespace pcl
       applyFilter (PointCloud &output) override;
 
     protected:
-      float sigma_s_;
-      float sigma_r_;
-      bool early_division_;
+      float sigma_s_{15.0f};
+      float sigma_r_{0.05f};
+      bool early_division_{false};
 
       class Array3D
       {
         public:
           Array3D (const std::size_t width, const std::size_t height, const std::size_t depth)
+            : v_({(width*height*depth), Eigen::Vector2f (0.0f, 0.0f), Eigen::aligned_allocator<Eigen::Vector2f>()})
           {
             x_dim_ = width;
             y_dim_ = height;
             z_dim_ = depth;
-            v_ = std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > (width*height*depth, Eigen::Vector2f (0.0f, 0.0f));
           }
 
           inline Eigen::Vector2f&

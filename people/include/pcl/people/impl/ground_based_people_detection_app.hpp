@@ -148,8 +148,8 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::setSensorPortraitOrientation
 template<typename PointT>
 void pcl::people::GroundBasedPeopleDetectionApp<PointT>::updateMinMaxPoints ()
 {
-  min_points_ = (int) (min_height_ * min_width_ / voxel_size_ / voxel_size_);
-  max_points_ = (int) (max_height_ * max_width_ / voxel_size_ / voxel_size_);
+  min_points_ = static_cast<int> (min_height_ * min_width_ / voxel_size_ / voxel_size_);
+  max_points_ = static_cast<int> (max_height_ * max_width_ / voxel_size_ / voxel_size_);
 }
 
 template <typename PointT> void
@@ -359,7 +359,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
   filter();
 
   // Ground removal and update:
-  pcl::IndicesPtr inliers(new std::vector<int>);
+  pcl::IndicesPtr inliers(new pcl::Indices);
   typename pcl::SampleConsensusModelPlane<PointT>::Ptr ground_model (new pcl::SampleConsensusModelPlane<PointT> (cloud_filtered_));
   ground_model->selectWithinDistance(ground_coeffs_transformed_, 2 * voxel_size_, *inliers);
   no_ground_cloud_ = PointCloudPtr (new PointCloud);
@@ -400,7 +400,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
   {
     swapDimensions(rgb_image_);
   }
-  for(typename std::vector<pcl::people::PersonCluster<PointT> >::iterator it = clusters.begin(); it != clusters.end(); ++it)
+  for(auto it = clusters.begin(); it != clusters.end(); ++it)
   {
     //Evaluate confidence for the current PersonCluster:
     Eigen::Vector3f centroid = intrinsics_matrix_transformed_ * (it->getTCenter());
@@ -416,8 +416,5 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
 }
 
 template <typename PointT>
-pcl::people::GroundBasedPeopleDetectionApp<PointT>::~GroundBasedPeopleDetectionApp ()
-{
-  // TODO Auto-generated destructor stub
-}
+pcl::people::GroundBasedPeopleDetectionApp<PointT>::~GroundBasedPeopleDetectionApp () = default;
 #endif /* PCL_PEOPLE_GROUND_BASED_PEOPLE_DETECTION_APP_HPP_ */

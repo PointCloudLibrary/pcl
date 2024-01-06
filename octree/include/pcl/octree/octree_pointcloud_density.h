@@ -50,10 +50,10 @@ namespace octree {
 class OctreePointCloudDensityContainer : public OctreeContainerBase {
 public:
   /** \brief Class initialization. */
-  OctreePointCloudDensityContainer() : point_counter_(0) {}
+  OctreePointCloudDensityContainer() = default;
 
   /** \brief Empty class deconstructor. */
-  ~OctreePointCloudDensityContainer() {}
+  ~OctreePointCloudDensityContainer() override = default;
 
   /** \brief deep copy function */
   virtual OctreePointCloudDensityContainer*
@@ -68,7 +68,7 @@ public:
   bool
   operator==(const OctreeContainerBase& other) const override
   {
-    const OctreePointCloudDensityContainer* otherContainer =
+    const auto* otherContainer =
         dynamic_cast<const OctreePointCloudDensityContainer*>(&other);
 
     return (this->point_counter_ == otherContainer->point_counter_);
@@ -77,7 +77,7 @@ public:
   /** \brief Read input data. Only an internal counter is increased.
    */
   void
-  addPointIndex(int)
+  addPointIndex(index_t) override
   {
     point_counter_++;
   }
@@ -85,7 +85,7 @@ public:
   /** \brief Return point counter.
    * \return Amount of points
    */
-  unsigned int
+  uindex_t
   getPointCounter()
   {
     return (point_counter_);
@@ -99,7 +99,7 @@ public:
   }
 
 private:
-  unsigned int point_counter_;
+  uindex_t point_counter_{0};
 };
 
 /** \brief @b Octree pointcloud density class
@@ -126,17 +126,17 @@ public:
 
   /** \brief Empty class deconstructor. */
 
-  ~OctreePointCloudDensity() {}
+  ~OctreePointCloudDensity() override = default;
 
   /** \brief Get the amount of points within a leaf node voxel which is addressed by a
    * point
    * \param[in] point_arg: a point addressing a voxel \return amount of points
    * that fall within leaf node voxel
    */
-  unsigned int
+  uindex_t
   getVoxelDensityAtPoint(const PointT& point_arg) const
   {
-    unsigned int point_count = 0;
+    uindex_t point_count = 0;
 
     OctreePointCloudDensityContainer* leaf = this->findLeafAtPoint(point_arg);
 
@@ -148,6 +148,9 @@ public:
 };
 } // namespace octree
 } // namespace pcl
+
+// needed since OctreePointCloud is not instantiated with template parameters used above
+#include <pcl/octree/impl/octree_pointcloud.hpp>
 
 #define PCL_INSTANTIATE_OctreePointCloudDensity(T)                                     \
   template class PCL_EXPORTS pcl::octree::OctreePointCloudDensity<T>;

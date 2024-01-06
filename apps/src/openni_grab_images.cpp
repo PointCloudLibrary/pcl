@@ -42,7 +42,6 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/common/float_image_utils.h>
 #include <pcl/visualization/image_viewer.h>
-#include <pcl/visualization/vtk.h>
 #include <pcl/point_types.h>
 
 #include <boost/filesystem.hpp>
@@ -118,8 +117,7 @@ public:
   void
   saveImages()
   {
-    std::string time = boost::posix_time::to_iso_string(
-        boost::posix_time::microsec_clock::local_time());
+    const std::string time = pcl::getTimestamp();
     openni_wrapper::Image::Ptr image;
     openni_wrapper::DepthImage::Ptr depth_image;
 
@@ -149,19 +147,17 @@ public:
           0, image->getWidth() - 1, 0, image->getHeight() - 1, 0, 0);
       importer_->SetDataExtentToWholeExtent();
 
-      std::stringstream ss;
-      ss << "frame_" + time + "_rgb.tiff";
+      const std::string rgb_frame_filename = "frame_" + time + "_rgb.tiff";
       importer_->SetImportVoidPointer(const_cast<void*>(data), 1);
       importer_->Update();
       flipper_->SetInputConnection(importer_->GetOutputPort());
       flipper_->Update();
-      writer_->SetFileName(ss.str().c_str());
+      writer_->SetFileName(rgb_frame_filename.c_str());
       writer_->SetInputConnection(flipper_->GetOutputPort());
       writer_->Write();
     }
     if (depth_image) {
-      std::stringstream ss;
-      ss << "frame_" + time + "_depth.tiff";
+      const std::string depth_frame_filename = "frame_" + time + "_depth.tiff";
 
       depth_importer_->SetWholeExtent(
           0, depth_image->getWidth() - 1, 0, depth_image->getHeight() - 1, 0, 0);
@@ -173,7 +169,7 @@ public:
       depth_importer_->Update();
       flipper_->SetInputConnection(depth_importer_->GetOutputPort());
       flipper_->Update();
-      writer_->SetFileName(ss.str().c_str());
+      writer_->SetFileName(depth_frame_filename.c_str());
       writer_->SetInputConnection(flipper_->GetOutputPort());
       writer_->Write();
     }
@@ -207,8 +203,7 @@ public:
 
     // wait until user quits program with Ctrl-C, but no busy-waiting -> sleep (1);
     while (!image_viewer_.wasStopped() && !quit_) {
-      std::string time = boost::posix_time::to_iso_string(
-          boost::posix_time::microsec_clock::local_time());
+      const std::string time = pcl::getTimestamp();
       openni_wrapper::Image::Ptr image;
       openni_wrapper::DepthImage::Ptr depth_image;
 
@@ -239,16 +234,15 @@ public:
               0, image->getWidth() - 1, 0, image->getHeight() - 1, 0, 0);
           importer_->SetDataExtentToWholeExtent();
 
-          std::stringstream ss;
-          ss << "frame_" + time + "_rgb.tiff";
+          const std::string rgb_frame_filename = "frame_" + time + "_rgb.tiff";
           importer_->SetImportVoidPointer(const_cast<void*>(data), 1);
           importer_->Update();
           flipper_->SetInputConnection(importer_->GetOutputPort());
           flipper_->Update();
-          writer_->SetFileName(ss.str().c_str());
+          writer_->SetFileName(rgb_frame_filename.c_str());
           writer_->SetInputConnection(flipper_->GetOutputPort());
           writer_->Write();
-          std::cout << "writing rgb frame: " << ss.str() << std::endl;
+          std::cout << "writing rgb frame: " << rgb_frame_filename << std::endl;
         }
       }
 
@@ -260,15 +254,14 @@ public:
             depth_image->getWidth(),
             depth_image->getHeight(),
             std::numeric_limits<unsigned short>::min(),
-            // Scale so that the colors look brigher on screen
+            // Scale so that the colors look brighter on screen
             std::numeric_limits<unsigned short>::max() / 10,
             true);
 
         depth_image_viewer_.addRGBImage(
             depth_data, depth_image->getWidth(), depth_image->getHeight());
         if (continuous_ || trigger_) {
-          std::stringstream ss;
-          ss << "frame_" + time + "_depth.tiff";
+          const std::string depth_frame_filename = "frame_" + time + "_depth.tiff";
 
           depth_importer_->SetWholeExtent(
               0, depth_image->getWidth() - 1, 0, depth_image->getHeight() - 1, 0, 0);
@@ -280,10 +273,10 @@ public:
           depth_importer_->Update();
           flipper_->SetInputConnection(depth_importer_->GetOutputPort());
           flipper_->Update();
-          writer_->SetFileName(ss.str().c_str());
+          writer_->SetFileName(depth_frame_filename.c_str());
           writer_->SetInputConnection(flipper_->GetOutputPort());
           writer_->Write();
-          std::cout << "writing depth frame: " << ss.str() << std::endl;
+          std::cout << "writing depth frame: " << depth_frame_filename << std::endl;
         }
       }
       trigger_ = false;
@@ -365,13 +358,15 @@ main(int argc, char** argv)
   std::string device_id("");
   pcl::OpenNIGrabber::Mode image_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
 
+  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
+      pcl::console::find_argument(argc, argv, "--help") != -1) {
+    usage(argv);
+    return 1;
+  }
+
   if (argc >= 2) {
     device_id = argv[1];
-    if (device_id == "--help" || device_id == "-h") {
-      usage(argv);
-      return 0;
-    }
-    else if (device_id == "-l") {
+    if (device_id == "-l") {
       if (argc >= 3) {
         pcl::OpenNIGrabber grabber(argv[2]);
         auto device = grabber.getDevice();
@@ -382,12 +377,9 @@ main(int argc, char** argv)
                     << "Supported image modes for device: " << device->getVendorName()
                     << " , " << device->getProductName() << std::endl;
           modes = grabber.getAvailableImageModes();
-          for (std::vector<std::pair<int, XnMapOutputMode>>::const_iterator it =
-                   modes.begin();
-               it != modes.end();
-               ++it) {
-            std::cout << it->first << " = " << it->second.nXRes << " x "
-                      << it->second.nYRes << " @ " << it->second.nFPS << std::endl;
+          for (const auto& mode : modes) {
+            std::cout << mode.first << " = " << mode.second.nXRes << " x "
+                      << mode.second.nYRes << " @ " << mode.second.nFPS << std::endl;
           }
         }
       }

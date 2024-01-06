@@ -225,7 +225,7 @@ TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClou
   }
 
   // Non maximas suppression
-  std::vector<int> indices = *indices_;
+  pcl::Indices indices = *indices_;
   std::sort (indices.begin (), indices.end (), [this] (int p1, int p2) { return greaterCornernessAtIndices (p1, p2); });
 
   output.clear ();
@@ -246,7 +246,9 @@ TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClou
   shared(height, indices, occupency_map, output, width) \
   num_threads(threads_)
 #endif
-  for (std::size_t i = 0; i < indices.size (); ++i)
+  // Disable lint since this 'for' is part of the pragma
+  // NOLINTNEXTLINE(modernize-loop-convert)
+  for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t> (indices.size ()); ++i)
   {
     int idx = indices[i];
     if (((*response_)[idx] < second_threshold_) || occupency_map[idx])

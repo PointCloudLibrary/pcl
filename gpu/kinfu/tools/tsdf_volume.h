@@ -237,7 +237,7 @@ public:
   //  void
   //  convertToCloud (pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud) const;
 
-    /** \brief Crate Volume from Point Cloud */
+    /** \brief Create Volume from Point Cloud */
   //   template <typename PointT> void
   //   createFromCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, const Intr &intr);
 

@@ -265,15 +265,15 @@ class OutofcoreCloud : public Object
     // -----------------------------------------------------------------------------
     OctreeDiskPtr octree_;
 
-    std::uint64_t display_depth_;
-    std::uint64_t points_loaded_;
-    std::uint64_t data_loaded_;
+    std::uint64_t display_depth_{1};
+    std::uint64_t points_loaded_{0};
+    std::uint64_t data_loaded_{0};
 
     Eigen::Vector3d bbox_min_, bbox_max_;
 
-    Camera *render_camera_;
+    Camera *render_camera_{nullptr};
 
-    int lod_pixel_threshold_;
+    int lod_pixel_threshold_{10000};
 
     vtkSmartPointer<vtkActor> voxel_actor_;
 

@@ -156,7 +156,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (
                                 (*frames_)[index].z_axis[2]);
 
   // Find every point within specified search_radius_
-  std::vector<int> nn_indices;
+  pcl::Indices nn_indices;
   std::vector<float> nn_dists;
   const std::size_t neighb_cnt = searchForNeighbors ((*indices_)[index], search_radius_, nn_indices, nn_dists);
   // For each point within radius
@@ -201,7 +201,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (
     const auto l = std::distance(phi_divisions_.cbegin (), std::prev(phi_min));
 
     /// Local point density = number of points in a sphere of radius "point_density_radius_" around the current neighbour
-    std::vector<int> neighbour_indices;
+    pcl::Indices neighbour_indices;
     std::vector<float> neighbour_didtances;
     float point_density = static_cast<float> (searchForNeighbors (*surface_, nn_indices[ne], point_density_radius_, neighbour_indices, neighbour_didtances));
     /// point_density is always bigger than 0 because FindPointsWithinRadius returns at least the point itself
@@ -240,9 +240,9 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointClo
         !std::isfinite (current_frame.y_axis[0]) ||
         !std::isfinite (current_frame.z_axis[0])  )
     {
-      std::fill (output[point_index].descriptor, output[point_index].descriptor + descriptor_length_,
-                 std::numeric_limits<float>::quiet_NaN ());
-      std::fill (output[point_index].rf, output[point_index].rf + 9, 0);
+      std::fill_n (output[point_index].descriptor, descriptor_length_,
+                   std::numeric_limits<float>::quiet_NaN ());
+      std::fill_n (output[point_index].rf, 9, 0);
       output.is_dense = false;
       continue;
     }
@@ -256,7 +256,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointClo
 
     std::vector<float> descriptor (descriptor_length_);
     computePointDescriptor (point_index, descriptor);
-    std::copy (descriptor.begin (), descriptor.end (), output[point_index].descriptor);
+    std::copy (descriptor.cbegin (), descriptor.cend (), output[point_index].descriptor);
   }
 }
 

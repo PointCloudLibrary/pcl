@@ -53,7 +53,6 @@ class ParameterDialog;
 class AbstractItem {
 public:
   AbstractItem();
-  ~AbstractItem();
 
   void
   showContextMenu(const QPoint* position);

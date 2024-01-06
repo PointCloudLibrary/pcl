@@ -53,14 +53,15 @@
 #include <pcl/visualization/area_picking_event.h>
 #include <pcl/visualization/interactor_style.h>
 
+#include <vtkOrientationMarkerWidget.h>
+#include <vtkRenderWindowInteractor.h>
+
 // VTK includes
 class vtkPolyData;
 class vtkTextActor;
 class vtkRenderWindow;
-class vtkOrientationMarkerWidget;
 class vtkAppendPolyData;
 class vtkRenderWindow;
-class vtkRenderWindowInteractor;
 class vtkTransform;
 class vtkInteractorStyle;
 class vtkLODActor;
@@ -68,6 +69,7 @@ class vtkProp;
 class vtkActor;
 class vtkDataSet;
 class vtkUnstructuredGrid;
+class vtkCellArray;
 
 namespace pcl
 {
@@ -76,6 +78,11 @@ namespace pcl
 
   namespace visualization
   {
+    namespace details
+    {
+      PCL_EXPORTS vtkIdType fillCells(std::vector<int>& lookup, const std::vector<pcl::Vertices>& vertices, vtkSmartPointer<vtkCellArray> cell_array, int max_size_of_polygon);
+    }
+
     /** \brief PCL Visualizer main class.
       * \author Radu B. Rusu
       * \ingroup visualization
@@ -104,7 +111,7 @@ namespace pcl
         PCLVisualizer (const std::string &name = "", const bool create_interactor = true);
 
         /** \brief PCL Visualizer constructor. It looks through the passed argv arguments to find the "-cam *.cam" argument.
-          *        If the search failed, the name for cam file is calculated with boost uuid. If there is no such file, camera is not initilalized.
+          *        If the search failed, the name for cam file is calculated with boost uuid. If there is no such file, camera is not initialized.
           * \param[in] argc
           * \param[in] argv
           * \param[in] name the window name (empty by default)
@@ -281,6 +288,8 @@ namespace pcl
           *  \param[in] time - How long (in ms) should the visualization loop be allowed to run.
           *  \param[in] force_redraw - if false it might return without doing anything if the
           *  interactor's framerate does not require a redraw yet.
+          *  \note This function may not return immediately after the specified time has elapsed, for example if
+          *  the user continues to interact with the visualizer, meaning that there are still events to process.
           */
         void
         spinOnce (int time = 1, bool force_redraw = false);
@@ -1245,7 +1254,7 @@ namespace pcl
         void
         resetStoppedFlag ();
 
-        /** \brief Stop the interaction and close the visualizaton window. */
+        /** \brief Stop the interaction and close the visualization window. */
         void
         close ();
 
@@ -1687,6 +1696,29 @@ namespace pcl
         addCube (float x_min, float x_max, float y_min, float y_max, float z_min, float z_max,
                  double r = 1.0, double g = 1.0, double b = 1.0, const std::string &id = "cube", int viewport = 0);
 
+        /** \brief Add an ellipsoid from the given parameters
+          * \param[in] transform a transformation to apply to the ellipsoid from 0,0,0
+          * \param[in] radius_x the ellipsoid's radius along its local x-axis
+          * \param[in] radius_y the ellipsoid's radius along its local y-axis
+          * \param[in] radius_z the ellipsoid's radius along its local z-axis
+          * \param[in] id the ellipsoid id/name (default: "ellipsoid")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
+          */
+        bool
+        addEllipsoid (const Eigen::Isometry3d &transform,
+                      double radius_x, double radius_y, double radius_z,
+                      const std::string &id = "ellipsoid",
+                      int viewport = 0);
+
+        /**
+         * @brief Eye-Dome Lighting makes dark areas to improve depth perception
+         * See https://www.kitware.com/eye-dome-lighting-a-non-photorealistic-shading-technique/
+         * It is applied to all actors, including texts.
+         * @param viewport 
+        */
+        void
+        enableEDLRendering(int viewport = 0);
+
         /** \brief Changes the visual representation for all actors to surface representation. */
         void
         setRepresentationToSurfaceForAllActors ();
@@ -1787,8 +1819,9 @@ namespace pcl
         getCameraFile () const;
 
         /** \brief Update camera parameters and render. */
-        void
-        updateCamera ();
+        PCL_DEPRECATED(1,15,"updateCamera will be removed, as it does nothing.")
+        inline void
+        updateCamera () {};
 
         /** \brief Reset camera parameters and render. */
         void
@@ -1809,7 +1842,7 @@ namespace pcl
           * \param[in] view_z the z component of the view point of the camera
           * \param[in] up_x the x component of the view up direction of the camera
           * \param[in] up_y the y component of the view up direction of the camera
-          * \param[in] up_z the y component of the view up direction of the camera
+          * \param[in] up_z the z component of the view up direction of the camera
           * \param[in] viewport the viewport to modify camera of (0 modifies all cameras)
           */
         void
@@ -2037,27 +2070,27 @@ namespace pcl
         {
           static FPSCallback *New () { return (new FPSCallback); }
 
-          FPSCallback () : actor (), pcl_visualizer (), decimated (), last_fps(0.0f) {}
-          FPSCallback (const FPSCallback& src) : vtkCommand (src), actor (src.actor), pcl_visualizer (src.pcl_visualizer), decimated (src.decimated), last_fps (src.last_fps) {}
+          FPSCallback () = default;
+          FPSCallback (const FPSCallback& src)  = default;
           FPSCallback& operator = (const FPSCallback& src) { actor = src.actor; pcl_visualizer = src.pcl_visualizer; decimated = src.decimated; last_fps = src.last_fps; return (*this); }
 
           void
           Execute (vtkObject*, unsigned long event_id, void*) override;
 
-          vtkTextActor *actor;
-          PCLVisualizer* pcl_visualizer;
-          bool decimated;
-          float last_fps;
+          vtkTextActor *actor{nullptr};
+          PCLVisualizer* pcl_visualizer{nullptr};
+          bool decimated{false};
+          float last_fps{0.0f};
         };
 
         /** \brief The FPSCallback object for the current visualizer. */
         vtkSmartPointer<FPSCallback> update_fps_;
 
         /** \brief Set to false if the interaction loop is running. */
-        bool stopped_;
+        bool stopped_{false};
 
         /** \brief Global timer ID. Used in destructor only. */
-        int timer_id_;
+        int timer_id_{0};
 
         /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
         vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
@@ -2170,7 +2203,7 @@ namespace pcl
                                         vtkSmartPointer<vtkPolyData> &polydata,
                                         vtkSmartPointer<vtkIdTypeArray> &initcells);
 
-        /** \brief Converts a PCL templated PointCloud object to a vtk polydata object.
+        /** \brief Converts a PCL object to a vtk polydata object.
           * \param[in] geometry_handler the geometry handler object used to extract the XYZ data
           * \param[out] polydata the resultant polydata containing the cloud
           * \param[out] initcells a list of cell indices used for the conversion. This can be set once and then passed

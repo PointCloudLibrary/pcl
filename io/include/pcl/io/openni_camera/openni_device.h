@@ -98,49 +98,49 @@ namespace openni_wrapper
         * \return true, if a compatible mode could be found, false otherwise.
         */
       bool 
-      findCompatibleImageMode (const XnMapOutputMode& output_mode, XnMapOutputMode& mode ) const throw ();
+      findCompatibleImageMode (const XnMapOutputMode& output_mode, XnMapOutputMode& mode ) const noexcept;
 
       /** \brief finds a depth output mode that can be used to retrieve depth images in desired output mode.
-        *        e.g If device just supports VGA at 30Hz, then a desired mode of QVGA at 30Hz would be possbile by downsampling,
+        *        e.g If device just supports VGA at 30Hz, then a desired mode of QVGA at 30Hz would be possible by downsampling,
         *        but the modes VGA at 25Hz and SXGA at 30Hz would not be compatible.
         * \param[in] output_mode the desired output mode
         * \param[out] mode the compatible mode that the device natively supports.
         * \return true, if a compatible mode could be found, false otherwise.
         */
       bool 
-      findCompatibleDepthMode (const XnMapOutputMode& output_mode, XnMapOutputMode& mode ) const throw ();
+      findCompatibleDepthMode (const XnMapOutputMode& output_mode, XnMapOutputMode& mode ) const noexcept;
 
       /** \brief returns whether a given mode is natively supported by the device or not
         * \param[in] output_mode mode to be checked
         * \return true if mode natively available, false otherwise
         */
       bool 
-      isImageModeSupported (const XnMapOutputMode& output_mode) const throw ();
+      isImageModeSupported (const XnMapOutputMode& output_mode) const noexcept;
 
       /** \brief returns whether a given mode is natively supported by the device or not
         * \param[in] output_mode mode to be checked
         * \return true if mode natively available, false otherwise
         */
       bool 
-      isDepthModeSupported (const XnMapOutputMode& output_mode) const throw ();
+      isDepthModeSupported (const XnMapOutputMode& output_mode) const noexcept;
 
       /** \brief returns the default image mode, which is simply the first entry in the list of modes
         * \return the default image mode
         */
       const XnMapOutputMode& 
-      getDefaultImageMode () const throw ();
+      getDefaultImageMode () const noexcept;
 
       /** \brief  returns the default depth mode, which is simply the first entry in the list of modes
         * \return the default depth mode
         */
       const XnMapOutputMode& 
-      getDefaultDepthMode () const throw ();
+      getDefaultDepthMode () const noexcept;
 
       /** \brief  returns the default IR mode, which is simply the first entry in the list of modes
         * \return the default IR mode
         */
       const XnMapOutputMode& 
-      getDefaultIRMode () const throw ();
+      getDefaultIRMode () const noexcept;
 
       /** \brief sets the output mode of the image stream
         * \param[in] output_mode the desired output mode
@@ -178,13 +178,13 @@ namespace openni_wrapper
       void 
       setDepthRegistration (bool on_off);
 
-      /** \return whether the depth stream is registered to the RGB camera fram or not. */
+      /** \return whether the depth stream is registered to the RGB camera frame or not. */
       bool 
-      isDepthRegistered () const throw ();
+      isDepthRegistered () const noexcept;
 
       /** \return whether a registration of the depth stream to the RGB camera frame is supported or not. */
       bool 
-      isDepthRegistrationSupported () const throw ();
+      isDepthRegistrationSupported () const noexcept;
 
       /** \brief set the hardware synchronization between Depth and RGB stream on or off.
         * \param[in] on_off
@@ -194,11 +194,11 @@ namespace openni_wrapper
 
       /** \return true if Depth stream is synchronized to RGB stream, false otherwise. */
       bool 
-      isSynchronized () const throw ();
+      isSynchronized () const noexcept;
 
       /** \return true if the Device supports hardware synchronization between Depth and RGB streams or not. */ 
       virtual bool 
-      isSynchronizationSupported () const throw ();
+      isSynchronizationSupported () const noexcept;
 
       /** \return true if depth stream is a cropped version of the native depth stream, false otherwise. */
       bool 
@@ -215,23 +215,23 @@ namespace openni_wrapper
 
       /** \return true if cropping of the depth stream is supported, false otherwise. */
       bool 
-      isDepthCroppingSupported () const throw ();
+      isDepthCroppingSupported () const noexcept;
 
       /** \brief returns the focal length for the color camera in pixels. The pixels are assumed to be square.
         *        Result depends on the output resolution of the image.
         */
       inline float 
-      getImageFocalLength (int output_x_resolution = 0) const throw ();
+      getImageFocalLength (int output_x_resolution = 0) const noexcept;
 
       /** \brief returns the focal length for the IR camera in pixels. The pixels are assumed to be square.
         *        Result depends on the output resolution of the depth image.
         */
       inline float 
-      getDepthFocalLength (int output_x_resolution = 0) const throw ();
+      getDepthFocalLength (int output_x_resolution = 0) const noexcept;
 
       /** \return Baseline of the "stereo" frame. i.e. for PSDK compatible devices its the distance between the Projector and the IR camera. */
       inline float 
-      getBaseline () const throw ();
+      getBaseline () const noexcept;
 
       /** \brief starts the image stream. */
       virtual void 
@@ -259,27 +259,27 @@ namespace openni_wrapper
 
       /** \return true if the device supports an image stream, false otherwise. */
       bool 
-      hasImageStream () const throw ();
+      hasImageStream () const noexcept;
 
       /** \return true if the device supports a depth stream, false otherwise. */
       bool 
-      hasDepthStream () const throw ();
+      hasDepthStream () const noexcept;
 
       /** \return true if the device supports an IR stream, false otherwise. */
       bool 
-      hasIRStream () const throw ();
+      hasIRStream () const noexcept;
 
       /** \return true if the image stream is running / started, false otherwise. */
       virtual bool 
-      isImageStreamRunning () const throw ();
+      isImageStreamRunning () const noexcept;
 
       /** \return true if the depth stream is running / started, false otherwise. */
       virtual bool 
-      isDepthStreamRunning () const throw ();
+      isDepthStreamRunning () const noexcept;
 
       /** \return true if the IR stream is running / started, false otherwise. */
       virtual bool 
-      isIRStreamRunning () const throw ();
+      isIRStreamRunning () const noexcept;
 
       /** \brief registers a callback function of std::function type for the image stream with an optional user defined parameter.
         *        The callback will always be called with a new image and the user data "cookie".
@@ -367,35 +367,35 @@ namespace openni_wrapper
         * \attention This might be an empty string!!!
         */
       const char* 
-      getSerialNumber () const throw ();
+      getSerialNumber () const noexcept;
 
       /** \brief returns the connection string for current device, which has following format vendorID/productID\@BusID/DeviceID. */
       const char* 
-      getConnectionString () const throw ();
+      getConnectionString () const noexcept;
 
       /** \return the Vendor name of the USB device. */
       const char* 
-      getVendorName () const throw ();
+      getVendorName () const noexcept;
 
       /** \return the product name of the USB device. */
       const char* 
-      getProductName () const throw ();
+      getProductName () const noexcept;
 
       /** \return the vendor ID of the USB device. */
       unsigned short 
-      getVendorID () const throw ();
+      getVendorID () const noexcept;
 
       /** \return the product ID of the USB device. */
       unsigned short 
-      getProductID () const throw ();
+      getProductID () const noexcept;
 
       /** \return the USB bus on which the device is connected. */
       unsigned char  
-      getBus () const throw ();
+      getBus () const noexcept;
 
       /** \return the USB Address of the device. */
       unsigned char  
-      getAddress () const throw ();
+      getAddress () const noexcept;
 
       /** \brief Set the RGB image focal length.
         * \param[in] focal_length the RGB image focal length
@@ -469,13 +469,13 @@ namespace openni_wrapper
       IRDataThreadFunction ();
 
       virtual bool 
-      isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const  throw () = 0;
+      isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const  noexcept = 0;
 
       void 
       setRegistration (bool on_off);
 
       virtual Image::Ptr
-      getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_data) const throw () = 0;
+      getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_data) const noexcept = 0;
 
       void 
       Init ();
@@ -485,7 +485,7 @@ namespace openni_wrapper
 
       struct ShiftConversion
       {
-        ShiftConversion() : init_(false) {}
+        ShiftConversion() = default;
 
         XnUInt16 zero_plane_distance_;
         XnFloat zero_plane_pixel_size_;
@@ -498,7 +498,7 @@ namespace openni_wrapper
         XnUInt32 shift_scale_;
         XnUInt32 min_depth_;
         XnUInt32 max_depth_;
-        bool init_;
+        bool init_{false};
 
       } shift_conversion_parameters_;
 
@@ -560,7 +560,7 @@ namespace openni_wrapper
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   float
-  OpenNIDevice::getImageFocalLength (int output_x_resolution) const throw ()
+  OpenNIDevice::getImageFocalLength (int output_x_resolution) const noexcept
   {
     if (output_x_resolution == 0)
       output_x_resolution = getImageOutputMode ().nXRes;
@@ -571,7 +571,7 @@ namespace openni_wrapper
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   float
-  OpenNIDevice::getDepthFocalLength (int output_x_resolution) const throw ()
+  OpenNIDevice::getDepthFocalLength (int output_x_resolution) const noexcept
   {
     if (output_x_resolution == 0)
       output_x_resolution = getDepthOutputMode ().nXRes;
@@ -584,7 +584,7 @@ namespace openni_wrapper
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   float
-  OpenNIDevice::getBaseline () const throw ()
+  OpenNIDevice::getBaseline () const noexcept
   {
     return (baseline_);
   }

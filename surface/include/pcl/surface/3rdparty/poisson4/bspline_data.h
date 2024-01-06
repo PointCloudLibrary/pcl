@@ -52,7 +52,7 @@ namespace pcl
             Polynomial< Degree > polys[Degree+1];
             Polynomial< Degree >& operator[] ( int idx ) { return polys[idx]; }
             const Polynomial< Degree >& operator[] ( int idx ) const { return polys[idx]; }
-            void printnl( void ) const  { for( int d=0 ; d<=Degree ; d++ ) polys[d].printnl(); }
+            void printnl( ) const  { for( int d=0 ; d<=Degree ; d++ ) polys[d].printnl(); }
             BSplineComponents scale( double s ) const { BSplineComponents b ; for( int d=0 ; d<=Degree ; d++ ) b[d] = polys[d].scale(s) ; return b; }
             BSplineComponents shift( double s ) const { BSplineComponents b ; for( int d=0 ; d<=Degree ; d++ ) b[d] = polys[d].shift(s) ; return b; }
         };
@@ -71,15 +71,15 @@ namespace pcl
         PPolynomial<Degree>* baseFunctions;
         BSplineComponents* baseBSplines;
 
-        BSplineData(void);
-        ~BSplineData(void);
+        BSplineData();
+        virtual ~BSplineData();
 
         virtual void   setDotTables( int flags );
         virtual void clearDotTables( int flags );
 
         virtual void   setValueTables( int flags,double smooth=0);
         virtual void   setValueTables( int flags,double valueSmooth,double normalSmooth);
-        virtual void clearValueTables(void);
+        virtual void clearValueTables();
 
         void setSampleSpan( int idx , int& start , int& end , double smooth=0 ) const;
 
@@ -102,8 +102,8 @@ namespace pcl
     template< int Degree >
     struct BSplineElementCoefficients
     {
-        int coeffs[Degree+1];
-        BSplineElementCoefficients( void ) { memset( coeffs , 0 , sizeof( int ) * ( Degree+1 ) ); }
+        int coeffs[Degree+1] = {};
+        BSplineElementCoefficients( ) = default;
         int& operator[]( int idx ){ return coeffs[idx]; }
         const int& operator[]( int idx ) const { return coeffs[idx]; }
     };
@@ -123,7 +123,7 @@ namespace pcl
         // Coefficients are ordered as "/" "-" "\"
         int denominator;
 
-        BSplineElements( void ) { denominator = 1; }
+        BSplineElements( ) { denominator = 1; }
         BSplineElements( int res , int offset , int boundary=NONE );
 
         void upSample( BSplineElements& high ) const;

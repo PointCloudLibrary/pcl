@@ -37,6 +37,7 @@
  */
 
 #include <pcl/pcl_config.h>
+#define SAC_MODEL_STICK_DONT_WARN_DEPRECATED
 #include <pcl/sample_consensus/impl/sac_model_stick.hpp>
 
 #ifndef PCL_NO_PRECOMPILE

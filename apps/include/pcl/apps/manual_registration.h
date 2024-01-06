@@ -45,26 +45,8 @@
 #include <QMainWindow>
 #include <QMutex>
 #include <QTimer>
-#include <ui_manual_registration.h>
 
-using PointT = pcl::PointXYZRGBA;
-
-// Useful macros
-// clang-format off
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-    static unsigned count = 0;                                                         \
-    static double last = pcl::getTime();                                               \
-    double now = pcl::getTime();                                                       \
-    ++count;                                                                           \
-    if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
-                << double(count) / double(now - last) << " Hz" << std::endl;           \
-      count = 0;                                                                       \
-      last = now;                                                                      \
-    }                                                                                  \
-  } while (false)
-// clang-format on
+using PointT = pcl::PointXYZ;
 
 namespace Ui {
 class MainWindow;
@@ -77,47 +59,46 @@ public:
   using CloudPtr = Cloud::Ptr;
   using CloudConstPtr = Cloud::ConstPtr;
 
-  ManualRegistration();
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 
-  ~ManualRegistration() {}
+  ManualRegistration(float voxel_size);
+
+  ~ManualRegistration() override = default;
 
   void
-  setSrcCloud(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_src)
+  setSrcCloud(pcl::PointCloud<PointT>::Ptr cloud_src)
   {
     cloud_src_ = std::move(cloud_src);
-    cloud_src_present_ = true;
+    vis_src_->addPointCloud(cloud_src_, "cloud_src_");
   }
   void
-  setDstCloud(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_dst)
+  setDstCloud(pcl::PointCloud<PointT>::Ptr cloud_dst)
   {
     cloud_dst_ = std::move(cloud_dst);
-    cloud_dst_present_ = true;
+    vis_dst_->addPointCloud(cloud_dst_, "cloud_dst_");
   }
 
   void
-  SourcePointPickCallback(const pcl::visualization::PointPickingEvent& event, void*);
+  SrcPointPickCallback(const pcl::visualization::PointPickingEvent& event, void*);
   void
   DstPointPickCallback(const pcl::visualization::PointPickingEvent& event, void*);
 
 protected:
+  void
+  refreshView();
+
   pcl::visualization::PCLVisualizer::Ptr vis_src_;
   pcl::visualization::PCLVisualizer::Ptr vis_dst_;
 
-  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_src_;
-  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_dst_;
+  pcl::PointCloud<PointT>::Ptr cloud_src_;
+  pcl::PointCloud<PointT>::Ptr cloud_dst_;
 
   QMutex mtx_;
   QMutex vis_mtx_;
   Ui::MainWindow* ui_;
-  QTimer* vis_timer_;
 
-  bool cloud_src_present_;
-  bool cloud_src_modified_;
-  bool cloud_dst_present_;
-  bool cloud_dst_modified_;
-
-  bool src_point_selected_;
-  bool dst_point_selected_;
+  bool src_point_selected_{false};
+  bool dst_point_selected_{false};
 
   pcl::PointXYZ src_point_;
   pcl::PointXYZ dst_point_;
@@ -125,7 +106,12 @@ protected:
   pcl::PointCloud<pcl::PointXYZ> src_pc_;
   pcl::PointCloud<pcl::PointXYZ> dst_pc_;
 
-  Eigen::Matrix4f transform_;
+  Eigen::Matrix4f transform_ = Eigen::Affine3f::Identity().matrix();
+
+  std::set<std::string> annotations_src_;
+  std::set<std::string> annotations_dst_;
+
+  const float voxel_size_;
 
 public Q_SLOTS:
   void
@@ -142,12 +128,4 @@ public Q_SLOTS:
   applyTransformPressed();
   void
   refinePressed();
-  void
-  undoPressed();
-  void
-  safePressed();
-
-private Q_SLOTS:
-  void
-  timeoutSlot();
 };

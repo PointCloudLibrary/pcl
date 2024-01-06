@@ -50,7 +50,6 @@
        Q_OBJECT
      public:
        OrganizedSegmentationTool (PropertiesModel* parameter_model, QObject* parent);
-       ~OrganizedSegmentationTool ();
        
        QList <CloudComposerItem*>
        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) override;
@@ -59,7 +58,7 @@
        performTemplatedAction (const QList <const CloudComposerItem*>& input_data);
        
        inline QString
-       getToolName () const override { return "Organized Segmenation Tool";}
+       getToolName () const override { return "Organized Segmentation Tool";}
      };
      
      

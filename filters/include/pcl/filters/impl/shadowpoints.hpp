@@ -46,7 +46,7 @@
 template<typename PointT, typename NormalT> void
 pcl::ShadowPoints<PointT, NormalT>::applyFilter (PointCloud &output)
 {
-  assert (input_normals_ != NULL);
+  assert (input_normals_ != nullptr);
   output.resize (input_->size ());
   if (extract_removed_indices_)
     removed_indices_->resize (input_->size ());
@@ -83,7 +83,7 @@ pcl::ShadowPoints<PointT, NormalT>::applyFilter (PointCloud &output)
 template<typename PointT, typename NormalT> void
 pcl::ShadowPoints<PointT, NormalT>::applyFilter (Indices &indices)
 {
-  assert (input_normals_ != NULL);
+  assert (input_normals_ != nullptr);
   indices.resize (input_->size ());
   if (extract_removed_indices_)
     removed_indices_->resize (indices_->size ());

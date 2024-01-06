@@ -71,7 +71,7 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
 
   if( (dx*dy*dz) > static_cast<std::int64_t>(std::numeric_limits<std::int32_t>::max()) )
   {
-    PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.", getClassName().c_str());
+    PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.\n", getClassName().c_str());
     output.clear();
     return;
   }
@@ -136,7 +136,7 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
           continue;
 
       // Get the distance value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&(*input_)[cp]);
+      const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&(*input_)[cp]);
       float distance_value = 0;
       memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
@@ -189,7 +189,7 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
 
   // Second pass: sort the index_vector vector using value representing target cell as index
   // in effect all points belonging to the same output cell will be next to each other
-  std::sort (index_vector.begin (), index_vector.end (), std::less<cloud_point_index_idx> ());
+  std::sort (index_vector.begin (), index_vector.end (), std::less<> ());
 
   // Third pass: count output cells
   // we need to skip all the same, adjacenent idx values
@@ -265,7 +265,7 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
       {
         // store the label in a map data structure
         std::uint32_t label = (*input_)[index_vector[cp].cloud_point_index].label;
-        std::map<int, int>::iterator it = labels.find (label);
+        auto it = labels.find (label);
         if (it == labels.end ())
           labels.insert (labels.begin (), std::pair<int, int> (label, 1));
         else

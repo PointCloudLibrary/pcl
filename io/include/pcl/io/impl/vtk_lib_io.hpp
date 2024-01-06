@@ -41,7 +41,6 @@
 
 // PCL
 #include <pcl/common/point_tests.h> // for pcl::isFinite
-#include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/type_traits.h>
 
@@ -191,9 +190,9 @@ pcl::io::vtkStructuredGridToPointCloud (vtkStructuredGrid* const structured_grid
       {
         int queryPoint[3] = {i, j, 0};
         vtkIdType pointId = vtkStructuredData::ComputePointId (dimensions, queryPoint);
-        double coordinate[3];
         if (structured_grid->IsPointVisible (pointId))
         {
+          double coordinate[3];
           structured_grid->GetPoint (pointId, coordinate);
           pcl::setFieldValue<PointT, float> (cloud (i, j), x_idx, coordinate[0]);
           pcl::setFieldValue<PointT, float> (cloud (i, j), y_idx, coordinate[1]);
@@ -229,9 +228,9 @@ pcl::io::vtkStructuredGridToPointCloud (vtkStructuredGrid* const structured_grid
       {
         int queryPoint[3] = {i, j, 0};
         vtkIdType pointId = vtkStructuredData::ComputePointId (dimensions, queryPoint);
-        float normal[3];
         if (structured_grid->IsPointVisible (pointId))
         {
+          float normal[3];
           normals->GetTupleValue (i, normal);
           pcl::setFieldValue<PointT, float> (cloud (i, j), normal_x_idx, normal[0]);
           pcl::setFieldValue<PointT, float> (cloud (i, j), normal_y_idx, normal[1]);

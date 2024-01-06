@@ -158,6 +158,24 @@ namespace pcl
         delete [] temp;
       }
 
+      void
+      vectorize (const PointT &p, float* out) const
+      {
+        copyToFloatArray (p, out);
+        if (!alpha_.empty ())
+          for (int i = 0; i < nr_dimensions_; ++i)
+            out[i] *= alpha_[i];
+      }
+
+      void
+      vectorize (const PointT &p, std::vector<float> &out) const
+      {
+        copyToFloatArray (p, out.data());
+        if (!alpha_.empty ())
+          for (int i = 0; i < nr_dimensions_; ++i)
+            out[i] *= alpha_[i];
+      }
+
       /** \brief Set the rescale values to use when vectorizing points
         * \param[in] rescale_array The array/vector of rescale values.  Can be of any type that implements the [] operator.
         */
@@ -165,7 +183,7 @@ namespace pcl
       setRescaleValues (const float *rescale_array)
       {
         alpha_.resize (nr_dimensions_);
-        std::copy_n(rescale_array, nr_dimensions_, alpha_.begin());
+        std::copy(rescale_array, rescale_array + nr_dimensions_, alpha_.begin());
       }
 
       /** \brief Return the number of dimensions in the point's vector representation. */
@@ -196,7 +214,7 @@ namespace pcl
         trivial_ = true;
       }
 
-      ~DefaultPointRepresentation () {}
+      ~DefaultPointRepresentation () override = default;
 
       inline Ptr
       makeShared () const
@@ -209,7 +227,7 @@ namespace pcl
       {
         // If point type is unknown, treat it as a struct/array of floats
         const float* ptr = reinterpret_cast<const float*> (&p);
-        std::copy_n(ptr, nr_dimensions_, out);
+        std::copy(ptr, ptr + nr_dimensions_, out);
       }
   };
 
@@ -245,12 +263,12 @@ namespace pcl
       using Pod = typename traits::POD<PointDefault>::type;
 
       NdCopyPointFunctor (const PointDefault &p1, float * p2)
-        : p1_ (reinterpret_cast<const Pod&>(p1)), p2_ (p2), f_idx_ (0) { }
+        : p1_ (reinterpret_cast<const Pod&>(p1)), p2_ (p2) {}
 
       template<typename Key> inline void operator() ()
       {
         using FieldT = typename pcl::traits::datatype<PointDefault, Key>::type;
-        const int NrDims = pcl::traits::datatype<PointDefault, Key>::size;
+        constexpr int NrDims = pcl::traits::datatype<PointDefault, Key>::size;
         Helper<Key, FieldT, NrDims>::copyPoint (p1_, p2_, f_idx_);
       }
 
@@ -285,7 +303,7 @@ namespace pcl
     private:
       const Pod &p1_;
       float * p2_;
-      int f_idx_;
+      int f_idx_{0};
     };
 
     public:
@@ -563,12 +581,12 @@ namespace pcl
         * \param[in] p the input point
         * \param[out] out the resultant output array
         */
-      virtual void
-      copyToFloatArray (const PointDefault &p, float *out) const
+      void
+      copyToFloatArray (const PointDefault &p, float *out) const override
       {
         // If point type is unknown, treat it as a struct/array of floats
         const float *ptr = (reinterpret_cast<const float*> (&p)) + start_dim_;
-        std::copy_n(ptr, nr_dimensions_, out);
+        std::copy(ptr, ptr + nr_dimensions_, out);
       }
 
     protected:

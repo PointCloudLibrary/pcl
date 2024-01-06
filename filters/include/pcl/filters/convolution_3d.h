@@ -40,6 +40,7 @@
 #pragma once
 
 #include <pcl/pcl_base.h>
+#include <boost/optional.hpp>
 
 namespace pcl
 {
@@ -61,7 +62,7 @@ namespace pcl
         ConvolvingKernel () {}
 
         /// \brief empty destructor
-        virtual ~ConvolvingKernel () {}
+        virtual ~ConvolvingKernel() = default;
 
         /** \brief Set input cloud
           * \param[in] input source point cloud
@@ -126,8 +127,6 @@ namespace pcl
           , threshold_ (std::numeric_limits<float>::infinity ())
         {}
 
-        virtual ~GaussianKernel () {}
-
         /** Set the sigma parameter of the Gaussian
           * \param[in] sigma
           */
@@ -182,8 +181,6 @@ namespace pcl
           : GaussianKernel <PointInT, PointOutT> ()
         {}
 
-        ~GaussianKernelRGB () {}
-
         PointOutT
         operator() (const Indices& indices, const std::vector<float>& distances);
     };
@@ -210,9 +207,6 @@ namespace pcl
 
         /** \brief Constructor */
         Convolution3D ();
-
-        /** \brief Empty destructor */
-        ~Convolution3D () {}
 
         /** \brief Initialize the scheduler and set the number of threads to use.
           * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)

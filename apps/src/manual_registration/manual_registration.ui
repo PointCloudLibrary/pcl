@@ -37,7 +37,7 @@
    </property>
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="3">
-     <widget class="QVTKWidget" name="qvtk_widget_src">
+     <widget class="PCLQVTKWidget" name="qvtk_widget_src">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>255</horstretch>
@@ -97,23 +97,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="safeButton">
-        <property name="text">
-         <string>Safe Transform</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="undoButton">
-        <property name="text">
-         <string>Undo</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QCheckBox" name="orthoButton">
         <property name="text">
-         <string>OrthoGraphic</string>
+         <string>Orthographic</string>
         </property>
        </widget>
       </item>
@@ -133,7 +119,7 @@
      </layout>
     </item>
     <item row="0" column="7">
-     <widget class="QVTKWidget" name="qvtk_widget_dst">
+     <widget class="PCLQVTKWidget" name="qvtk_widget_dst">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>255</horstretch>
@@ -161,9 +147,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QVTKWidget</class>
-   <extends>QWidget</extends>
-   <header>QVTKWidget.h</header>
+   <class>PCLQVTKWidget</class>
+   <extends>QOpenGLWidget</extends>
+   <header location="global">pcl/visualization/qvtk_compatibility.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

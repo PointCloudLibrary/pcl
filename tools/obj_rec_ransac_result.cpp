@@ -46,7 +46,6 @@
 #include <pcl/recognition/ransac_based/obj_rec_ransac.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/console/print.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/point_cloud.h>
 #include <vtkVersion.h>
 #include <vtkPolyDataReader.h>
@@ -59,7 +58,6 @@
 #include <vtkRenderWindow.h>
 #include <vtkTransform.h>
 #include <cstdio>
-#include <vector>
 #include <list>
 #include <thread>
 
@@ -108,7 +106,7 @@ main (int argc, char** argv)
 {
   printf ("\nUsage: ./pcl_obj_rec_ransac_scene_opps <pair_width> <voxel_size> <max_coplanarity_angle>\n\n");
 
-  const int num_params = 3;
+  constexpr int num_params = 3;
   float parameters[num_params] = {40.0f/*pair width*/, 5.0f/*voxel size*/, 15.0f/*max co-planarity angle*/};
   std::string parameter_names[num_params] = {"pair_width", "voxel_size", "max_coplanarity_angle"};
 
@@ -256,7 +254,7 @@ update (CallbackParameters* params)
   int i = 0;
 
   // Show the hypotheses
-  for ( std::list<ObjRecRANSAC::Output>::iterator it = rec_output.begin () ; it != rec_output.end () ; ++it, ++i )
+  for ( auto it = rec_output.begin () ; it != rec_output.end () ; ++it, ++i )
   {
     std::cout << it->object_name_ << " has a confidence value of " << it->match_confidence_ << std::endl;
 
@@ -348,10 +346,10 @@ loadScene (const char* file_name, PointCloud<PointXYZ>& non_plane_points, PointC
 
   // Make sure that the ids are sorted
   sort (inliers->indices.begin (), inliers->indices.end ());
-  std::size_t j = 0;
-  for ( std::size_t i = 0, id = 0 ; i < inliers->indices.size () ; )
+  pcl::uindex_t j = 0, i = 0;
+  for ( pcl::index_t id = 0 ; i < inliers->indices.size () ; ++id)
   {
-    if ( static_cast<int> (id) == inliers->indices[i] )
+    if ( id == inliers->indices[i] )
     {
       plane_points[i] = (*all_points)[id];
       ++i;
@@ -362,7 +360,6 @@ loadScene (const char* file_name, PointCloud<PointXYZ>& non_plane_points, PointC
       non_plane_normals[j] = (*all_normals)[id];
       ++j;
     }
-    ++id;
   }
 
   // Just copy the rest of the non-plane points

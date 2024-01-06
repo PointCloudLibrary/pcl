@@ -38,6 +38,7 @@
  */
 
 #include <pcl/registration/correspondence_rejection_one_to_one.h>
+#include <pcl/pcl_base.h> // for UNAVAILABLE
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -53,7 +54,7 @@ pcl::registration::CorrespondenceRejectorOneToOne::getRemainingCorrespondences(
             pcl::registration::sortCorrespondencesByMatchIndexAndDistance());
 
   remaining_correspondences.resize(input.size());
-  int index_last = -1;
+  pcl::index_t index_last = UNAVAILABLE;
   unsigned int number_valid_correspondences = 0;
   for (const auto& i : input) {
     if (i.index_match < 0)

@@ -6,6 +6,9 @@
 
 #include <QDebug>
 
+#include <vtkCallbackCommand.h>
+#include <vtkObjectFactory.h>
+
 namespace pcl
 {
   namespace cloud_composer
@@ -33,11 +36,6 @@ pcl::cloud_composer::InteractorStyleSwitch::InteractorStyleSwitch ()
   
   current_style_ = nullptr;
   
-}
-
-pcl::cloud_composer::InteractorStyleSwitch::~InteractorStyleSwitch ()
-{
-    
 }
 
 void

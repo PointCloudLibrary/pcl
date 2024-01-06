@@ -76,11 +76,12 @@ pcl::GASDEstimation<PointInT, PointOutT>::computeAlignmentTransform ()
   Eigen::Vector4f centroid;
   Eigen::Matrix3f covariance_matrix;
 
-  // compute centroid of the object's partial view
-  pcl::compute3DCentroid (*surface_, *indices_, centroid);
-
-  // compute covariance matrix from points and centroid of the object's partial view
-  pcl::computeCovarianceMatrix (*surface_, *indices_, centroid, covariance_matrix);
+  // compute centroid of the object's partial view, then compute covariance matrix from points and centroid of the object's partial view
+  if (pcl::compute3DCentroid (*surface_, *indices_, centroid) == 0 ||
+      pcl::computeCovarianceMatrix (*surface_, *indices_, centroid, covariance_matrix) == 0) {
+    PCL_ERROR("[pcl::GASDEstimation::computeAlignmentTransform] Surface cloud or indices are empty!\n");
+    return;
+  }
 
   Eigen::Matrix3f eigenvectors;
   Eigen::Vector3f eigenvalues;
@@ -240,7 +241,7 @@ pcl::GASDEstimation<PointInT, PointOutT>::copyShapeHistogramsToOutput (const std
       {
         const std::size_t idx = ( (i + 1) * (grid_size + 2) + (j + 1)) * (grid_size + 2) + (k + 1);
 
-        std::copy (hists[idx].data () + 1, hists[idx].data () + hists_size + 1, output[0].histogram + pos);
+        std::copy (hists[idx].data () + 1, hists[idx].data () + 1 + hists_size, output[0].histogram + pos);
         pos += hists_size;
       }
     }
@@ -326,7 +327,7 @@ pcl::GASDColorEstimation<PointInT, PointOutT>::copyColorHistogramsToOutput (cons
         hists[idx][1] += hists[idx][hists_size + 1];
         hists[idx][hists_size] += hists[idx][0];
 
-        std::copy (hists[idx].data () + 1, hists[idx].data () + hists_size + 1, output[0].histogram + pos);
+        std::copy (hists[idx].data () + 1, hists[idx].data () + 1 + hists_size, output[0].histogram + pos);
         pos += hists_size;
       }
     }

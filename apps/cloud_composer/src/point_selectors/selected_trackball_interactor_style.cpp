@@ -4,6 +4,15 @@
 #include <QDebug>
 #include <QItemSelectionModel>
 
+#include <vtkSmartPointer.h>
+#include <vtkMatrix4x4.h>
+#include <vtkLODActor.h>
+#include <vtkInteractorStyleTrackballActor.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkTransform.h>
+#include <vtkObjectFactory.h>
+
+
 namespace pcl
 {
   namespace cloud_composer
@@ -15,11 +24,6 @@ namespace pcl
 pcl::cloud_composer::SelectedTrackballStyleInteractor::SelectedTrackballStyleInteractor ()
 {
   manipulation_complete_event_ = interactor_events::MANIPULATION_COMPLETE_EVENT;  
-}
-
-pcl::cloud_composer::SelectedTrackballStyleInteractor::~SelectedTrackballStyleInteractor ()
-{
-  
 }
 
 void

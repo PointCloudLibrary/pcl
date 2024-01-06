@@ -147,7 +147,7 @@ public:
 
     if (!bRawImageEncoding_) {
       // create a new grabber for OpenNI devices
-      pcl::OpenNIGrabber interface{};
+      pcl::OpenNIGrabber interface;
 
       // make callback function from member function
       std::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
@@ -253,7 +253,7 @@ struct EventHelper {
   {
     if (!bRawImageEncoding_) {
       // create a new grabber for OpenNI devices
-      pcl::OpenNIGrabber interface{};
+      pcl::OpenNIGrabber interface;
 
       // make callback function from member function
       std::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
@@ -396,7 +396,8 @@ main(int argc, char** argv)
     if (bEnDecode) {
       // ENCODING
       std::ofstream compressedPCFile;
-      compressedPCFile.open(fileName.c_str(), std::ios::out | std::ios::trunc | std::ios::binary);
+      compressedPCFile.open(fileName.c_str(),
+                            std::ios::out | std::ios::trunc | std::ios::binary);
 
       if (!bShowInputCloud) {
         EventHelper v(compressedPCFile,

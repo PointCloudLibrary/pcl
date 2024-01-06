@@ -4,7 +4,7 @@
 # -- General configuration -----------------------------------------------------
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.imgmath', 'sphinxcontrib.doxylink.doxylink']
+extensions = ['sphinx.ext.imgmath', 'sphinxcontrib.doxylink']
 imgmath_dvipng_args = ['-gamma', '1.5', '-D', '110', '-bg', 'Transparent']
 
 # Add any paths that contain templates here, relative to this directory.
@@ -128,4 +128,4 @@ file_insertion_enabled = True
 raw_enabled = True
 
 # Set up doxylink
-doxylink = {'pcl' : ('../../../build/doc/doxygen/pcl.tag', 'http://docs.pointclouds.org/trunk/')}
+doxylink = {'pcl' : ('../../../s/doc/doxygen/pcl.tag', 'https://pointclouds.org/documentation/')}

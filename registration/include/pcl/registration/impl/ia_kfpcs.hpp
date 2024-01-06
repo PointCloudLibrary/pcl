@@ -37,6 +37,8 @@
 #ifndef PCL_REGISTRATION_IMPL_IA_KFPCS_H_
 #define PCL_REGISTRATION_IMPL_IA_KFPCS_H_
 
+#include <limits>
+
 namespace pcl {
 
 namespace registration {
@@ -44,11 +46,7 @@ namespace registration {
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
     KFPCSInitialAlignment()
-: lower_trl_boundary_(-1.f)
-, upper_trl_boundary_(-1.f)
-, lambda_(0.5f)
-, use_trl_score_(false)
-, indices_validation_(new std::vector<int>)
+: indices_validation_(new pcl::Indices)
 {
   reg_name_ = "pcl::registration::KFPCSInitialAlignment";
 }
@@ -69,7 +67,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::initCompute()
   pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
       initCompute();
 
-  // set the threshold values with respect to keypoint charactersitics
+  // set the threshold values with respect to keypoint characteristics
   max_pair_diff_ = delta_ * 1.414f;      // diff between 2 points of delta_ accuracy
   coincidation_limit_ = delta_ * 2.828f; // diff between diff of 2 points
   max_edge_diff_ =
@@ -93,7 +91,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::initCompute()
   // generate a subset of indices of size ransac_iterations_ on which to evaluate
   // candidates on
   std::size_t nr_indices = indices_->size();
-  if (nr_indices < std::size_t(ransac_iterations_))
+  if (nr_indices < static_cast<std::size_t>(ransac_iterations_))
     indices_validation_ = indices_;
   else
     for (int i = 0; i < ransac_iterations_; i++)
@@ -105,8 +103,8 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::initCompute()
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 void
 KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::handleMatches(
-    const std::vector<int>& base_indices,
-    std::vector<std::vector<int>>& matches,
+    const pcl::Indices& base_indices,
+    std::vector<pcl::Indices>& matches,
     MatchingCandidates& candidates)
 {
   candidates.clear();
@@ -116,9 +114,10 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::handleMatches(
     Eigen::Matrix4f transformation_temp;
     pcl::Correspondences correspondences_temp;
     float fitness_score =
-        FLT_MAX; // reset to FLT_MAX to accept all candidates and not only best
+        std::numeric_limits<float>::max(); // reset to std::numeric_limits<float>::max()
+                                           // to accept all candidates and not only best
 
-    // determine corresondences between base and match according to their distance to
+    // determine correspondences between base and match according to their distance to
     // centroid
     linkMatchWithBase(base_indices, match, correspondences_temp);
 
@@ -151,14 +150,11 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
   float score_a = 0.f, score_b = 0.f;
 
   // residual costs based on mse
-  std::vector<int> ids;
+  pcl::Indices ids;
   std::vector<float> dists_sqr;
-  for (PointCloudSourceIterator it = source_transformed.begin(),
-                                it_e = source_transformed.end();
-       it != it_e;
-       ++it) {
+  for (const auto& source : source_transformed) {
     // search for nearest point using kd tree search
-    tree_->nearestKSearch(*it, 1, ids, dists_sqr);
+    tree_->nearestKSearch(source, 1, ids, dists_sqr);
     score_a += (dists_sqr[0] < max_inlier_dist_sqr_ ? dists_sqr[0]
                                                     : max_inlier_dist_sqr_); // MSAC
   }
@@ -211,8 +207,9 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::finalCompute(
   // sort according to score value
   std::sort(candidates_.begin(), candidates_.end(), by_score());
 
-  // return here if no score was valid, i.e. all scores are FLT_MAX
-  if (candidates_[0].fitness_score == FLT_MAX) {
+  // return here if no score was valid, i.e. all scores are
+  // std::numeric_limits<float>::max()
+  if (candidates_[0].fitness_score == std::numeric_limits<float>::max()) {
     converged_ = false;
     return;
   }
@@ -236,30 +233,28 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getNBestCandid
   candidates.clear();
 
   // loop over all candidates starting from the best one
-  for (MatchingCandidates::iterator it_candidate = candidates_.begin(),
-                                    it_e = candidates_.end();
-       it_candidate != it_e;
-       ++it_candidate) {
+  for (const auto& candidate : candidates_) {
     // stop if current candidate has no valid score
-    if (it_candidate->fitness_score == FLT_MAX)
+    if (candidate.fitness_score == std::numeric_limits<float>::max())
       return;
 
     // check if current candidate is a unique one compared to previous using the
     // min_diff threshold
     bool unique = true;
-    MatchingCandidates::iterator it = candidates.begin(), it_e2 = candidates.end();
-    while (unique && it != it_e2) {
+    for (const auto& c2 : candidates) {
       Eigen::Matrix4f diff =
-          it_candidate->transformation.colPivHouseholderQr().solve(it->transformation);
+          candidate.transformation.colPivHouseholderQr().solve(c2.transformation);
       const float angle3d = Eigen::AngleAxisf(diff.block<3, 3>(0, 0)).angle();
       const float translation3d = diff.block<3, 1>(0, 3).norm();
       unique = angle3d > min_angle3d && translation3d > min_translation3d;
-      ++it;
+      if (!unique) {
+        break;
+      }
     }
 
     // add candidate to best candidates
     if (unique)
-      candidates.push_back(*it_candidate);
+      candidates.push_back(candidate);
 
     // stop if n candidates are reached
     if (candidates.size() == n)
@@ -275,30 +270,28 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getTBestCandid
   candidates.clear();
 
   // loop over all candidates starting from the best one
-  for (MatchingCandidates::iterator it_candidate = candidates_.begin(),
-                                    it_e = candidates_.end();
-       it_candidate != it_e;
-       ++it_candidate) {
+  for (const auto& candidate : candidates_) {
     // stop if current candidate has score below threshold
-    if (it_candidate->fitness_score > t)
+    if (candidate.fitness_score > t)
       return;
 
     // check if current candidate is a unique one compared to previous using the
     // min_diff threshold
     bool unique = true;
-    MatchingCandidates::iterator it = candidates.begin(), it_e2 = candidates.end();
-    while (unique && it != it_e2) {
+    for (const auto& c2 : candidates) {
       Eigen::Matrix4f diff =
-          it_candidate->transformation.colPivHouseholderQr().solve(it->transformation);
+          candidate.transformation.colPivHouseholderQr().solve(c2.transformation);
       const float angle3d = Eigen::AngleAxisf(diff.block<3, 3>(0, 0)).angle();
       const float translation3d = diff.block<3, 1>(0, 3).norm();
       unique = angle3d > min_angle3d && translation3d > min_translation3d;
-      ++it;
+      if (!unique) {
+        break;
+      }
     }
 
     // add candidate to best candidates
     if (unique)
-      candidates.push_back(*it_candidate);
+      candidates.push_back(candidate);
   }
 }
 

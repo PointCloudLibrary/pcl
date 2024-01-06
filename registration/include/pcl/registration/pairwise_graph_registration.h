@@ -58,9 +58,6 @@ public:
   using RegistrationPtr = typename Registration<PointT, PointT>::Ptr;
   using GraphHandlerVertex = typename pcl::registration::GraphHandler<GraphT>::Vertex;
 
-  /** \brief Empty destructor */
-  virtual ~PairwiseGraphRegistration() {}
-
   /** \brief Empty constructor */
   PairwiseGraphRegistration() : registration_method_(), incremental_(true) {}
   /** \brief Constructor */

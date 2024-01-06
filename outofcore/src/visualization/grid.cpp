@@ -3,7 +3,6 @@
 #include <pcl/outofcore/visualization/grid.h>
 
 // VTK
-#include <vtkVersion.h>
 #include <vtkActor.h>
 #include <vtkRectilinearGrid.h>
 #include <vtkDoubleArray.h>
@@ -13,11 +12,8 @@
 // Operators
 // -----------------------------------------------------------------------------
 Grid::Grid (std::string name, int size/*=10*/, double spacing/*=1.0*/) :
-    Object (name)
+    Object (name), grid_ (vtkSmartPointer<vtkRectilinearGrid>::New ()), grid_actor_ (vtkSmartPointer<vtkActor>::New ())
 {
-  grid_ = vtkSmartPointer<vtkRectilinearGrid>::New ();
-  grid_actor_ = vtkSmartPointer<vtkActor>::New ();
-
   vtkSmartPointer<vtkDataSetMapper> grid_mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
 
   vtkSmartPointer<vtkDoubleArray> xz_array = vtkSmartPointer<vtkDoubleArray>::New ();
@@ -30,7 +26,7 @@ Grid::Grid (std::string name, int size/*=10*/, double spacing/*=1.0*/) :
 
   // Fill arrays
   for (int i = -size / 2; i <= size / 2; i++)
-    xz_array->InsertNextValue ((double)i * spacing);
+    xz_array->InsertNextValue (static_cast<double>(i) * spacing);
   y_array->InsertNextValue (0.0);
 
   grid_->SetXCoordinates (xz_array);

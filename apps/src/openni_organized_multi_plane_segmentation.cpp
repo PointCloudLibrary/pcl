@@ -53,8 +53,8 @@ private:
   std::mutex cloud_mutex;
 
 public:
-  OpenNIOrganizedMultiPlaneSegmentation() {}
-  ~OpenNIOrganizedMultiPlaneSegmentation() {}
+  OpenNIOrganizedMultiPlaneSegmentation() = default;
+  ~OpenNIOrganizedMultiPlaneSegmentation() = default;
 
   pcl::visualization::PCLVisualizer::Ptr
   cloudViewer(const pcl::PointCloud<PointT>::ConstPtr& cloud)
@@ -100,7 +100,7 @@ public:
   void
   run()
   {
-    pcl::OpenNIGrabber interface{};
+    pcl::OpenNIGrabber interface;
 
     std::function<void(const pcl::PointCloud<PointT>::ConstPtr&)> f =
         [this](const pcl::PointCloud<PointT>::ConstPtr& cloud) { cloud_cb_(cloud); };

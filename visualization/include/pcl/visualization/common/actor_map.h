@@ -37,11 +37,13 @@
 
 #pragma once
 
-#include <pcl/visualization/point_cloud_handlers.h>
+#include <pcl/visualization/point_cloud_geometry_handlers.h> // for PointCloudGeometryHandler
+#include <pcl/visualization/point_cloud_color_handlers.h> // for PointCloudColorHandler
 #include <pcl/PCLPointCloud2.h>
 
 #include <vtkLODActor.h>
 #include <vtkSmartPointer.h>
+#include <vtkIdTypeArray.h>
 
 #include <unordered_map>
 #include <vector>
@@ -65,13 +67,9 @@ namespace pcl
       using ColorHandlerConstPtr = ColorHandler::ConstPtr;
 
       public:
-        CloudActor () : color_handler_index_ (0), geometry_handler_index_ (0) {}
+        CloudActor () = default;
 
-        virtual ~CloudActor ()
-        {
-          geometry_handlers.clear ();
-          color_handlers.clear ();
-        }
+        virtual ~CloudActor () = default;
 
         /** \brief The actor holding the data to render. */
         vtkSmartPointer<vtkLODActor> actor;
@@ -83,10 +81,10 @@ namespace pcl
         std::vector<ColorHandlerConstPtr> color_handlers;
 
         /** \brief The active color handler. */
-        int color_handler_index_;
+        int color_handler_index_{0};
 
         /** \brief The active geometry handler. */
-        int geometry_handler_index_;
+        int geometry_handler_index_{0};
 
         /** \brief The viewpoint transformation matrix. */
         vtkSmartPointer<vtkMatrix4x4> viewpoint_transformation_;

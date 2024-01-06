@@ -78,7 +78,7 @@ TransformationValidationEuclidean<PointSource, PointTarget, Scalar>::
     tree_->setInputCloud(cloud_tgt);
   }
 
-  std::vector<int> nn_indices(1);
+  pcl::Indices nn_indices(1);
   std::vector<float> nn_dists(1);
 
   // For each point in the source dataset

@@ -121,15 +121,14 @@ namespace pcl
       IntegralImage2D (bool compute_second_order_integral_images) :
         first_order_integral_image_ (),
         second_order_integral_image_ (),
-        width_ (1), 
-        height_ (1), 
+         
         compute_second_order_integral_images_ (compute_second_order_integral_images)
       {
       }
 
       /** \brief Destructor */
       virtual
-      ~IntegralImage2D () { }
+      ~IntegralImage2D () = default;
 
       /** \brief sets the computation for second order integral images on or off.
         * \param compute_second_order_integral_images
@@ -218,9 +217,9 @@ namespace pcl
       std::vector<unsigned> finite_values_integral_image_;
 
       /** \brief The width of the 2d input data array */
-      unsigned width_;
+      unsigned width_{1};
       /** \brief The height of the 2d input data array */
-      unsigned height_;
+      unsigned height_{1};
 
       /** \brief Indicates whether second order integral images are available **/
       bool compute_second_order_integral_images_;
@@ -247,14 +246,14 @@ namespace pcl
         first_order_integral_image_ (),
         second_order_integral_image_ (),
         
-        width_ (1), height_ (1), 
+         
         compute_second_order_integral_images_ (compute_second_order_integral_images)
       {
       }
 
       /** \brief Destructor */
       virtual
-      ~IntegralImage2D () { }
+      ~IntegralImage2D () = default;
 
       /** \brief Set the input data to compute the integral image for
         * \param[in] data the input data
@@ -337,9 +336,9 @@ namespace pcl
       std::vector<unsigned> finite_values_integral_image_;
 
       /** \brief The width of the 2d input data array */
-      unsigned width_;
+      unsigned width_{1};
       /** \brief The height of the 2d input data array */
-      unsigned height_;
+      unsigned height_{1};
 
       /** \brief Indicates whether second order integral images are available **/
       bool compute_second_order_integral_images_;

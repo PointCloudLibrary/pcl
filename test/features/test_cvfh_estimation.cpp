@@ -51,7 +51,7 @@ using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 using CloudPtr = PointCloud<PointXYZ>::Ptr;
 
 PointCloud<PointXYZ> cloud;
-std::vector<int> indices;
+pcl::Indices indices;
 KdTreePtr tree;
 
 CloudPtr cloud_milk;

@@ -68,12 +68,9 @@ namespace pcl
         using Matrix4 = typename Eigen::Matrix<Scalar, 4, 4>;
 
       public:
-        TrimmedICP ()
-        : new_to_old_energy_ratio_ (0.99f)
-        {}
+        TrimmedICP () = default;
 
-        ~TrimmedICP ()
-        {}
+        ~TrimmedICP () override = default;
 
         /** \brief Call this method before calling align().
           *
@@ -113,7 +110,7 @@ namespace pcl
 
           // Some variables for the closest point search
           pcl::PointXYZ transformed_source_point;
-          std::vector<int> target_index (1);
+          pcl::Indices target_index (1);
           std::vector<float> sqr_dist_to_target (1);
           float old_energy, energy = std::numeric_limits<float>::max ();
 
@@ -178,7 +175,7 @@ namespace pcl
       protected:
         PointCloudConstPtr target_points_;
         pcl::KdTreeFLANN<PointT> kdtree_;
-        float new_to_old_energy_ratio_;
+        float new_to_old_energy_ratio_{0.99f};
     };
   } // namespace recognition
 } // namespace pcl

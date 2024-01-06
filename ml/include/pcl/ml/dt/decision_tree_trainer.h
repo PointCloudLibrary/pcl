@@ -215,7 +215,7 @@ protected:
                         std::size_t max_depth,
                         NodeType& node);
 
-  /** Creates uniformely distrebuted thresholds over the range of the supplied
+  /** Creates uniformly distributed thresholds over the range of the supplied
    *  values.
    *
    * \param[in] num_of_thresholds the number of thresholds to create
@@ -229,28 +229,29 @@ protected:
 
 private:
   /** Maximum depth of the learned tree. */
-  std::size_t max_tree_depth_;
+  std::size_t max_tree_depth_{15};
   /** Number of features used to find optimal decision features. */
-  std::size_t num_of_features_;
+  std::size_t num_of_features_{1000};
   /** Number of thresholds. */
-  std::size_t num_of_thresholds_;
+  std::size_t num_of_thresholds_{10};
 
   /** FeatureHandler instance, responsible for creating and evaluating features. */
-  pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>* feature_handler_;
+  pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>* feature_handler_{nullptr};
   /** StatsEstimator instance, responsible for gathering stats about a node. */
-  pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>* stats_estimator_;
+  pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>* stats_estimator_{
+      nullptr};
 
   /** The training data set. */
-  DataSet data_set_;
+  DataSet data_set_{};
   /** The label data. */
-  std::vector<LabelType> label_data_;
+  std::vector<LabelType> label_data_{};
   /** The example data. */
-  std::vector<ExampleIndex> examples_;
+  std::vector<ExampleIndex> examples_{};
 
   /** Minimum number of examples to split a node. */
-  std::size_t min_examples_for_split_;
+  std::size_t min_examples_for_split_{0u};
   /** Thresholds to be used instead of generating uniform distributed thresholds. */
-  std::vector<float> thresholds_;
+  std::vector<float> thresholds_{};
   /** The data provider which is called before training a specific tree, if pointer is
    *   NULL, then data_set_ is used. */
   typename pcl::DecisionTreeTrainerDataProvider<FeatureType,
@@ -258,10 +259,10 @@ private:
                                                 LabelType,
                                                 ExampleIndex,
                                                 NodeType>::Ptr
-      decision_tree_trainer_data_provider_;
+      decision_tree_trainer_data_provider_{nullptr};
   /** If true, random features are generated at each node, otherwise, at start of
    *  training the tree */
-  bool random_features_at_split_node_;
+  bool random_features_at_split_node_{false};
 };
 
 } // namespace pcl

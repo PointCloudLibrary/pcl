@@ -40,7 +40,6 @@
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/outofcore/boost.h>
 #include <pcl/outofcore/cJSON.h>
 
 #include <pcl/outofcore/metadata.h>
@@ -106,7 +105,7 @@ namespace pcl
          */
         OutofcoreOctreeBaseMetadata (const boost::filesystem::path& path_arg);
         /** \brief Default destructor*/
-        ~OutofcoreOctreeBaseMetadata ();
+        ~OutofcoreOctreeBaseMetadata () override;
 
         /** \brief Copy constructor */
         OutofcoreOctreeBaseMetadata (const OutofcoreOctreeBaseMetadata& orig);
@@ -177,7 +176,7 @@ namespace pcl
         virtual void
         setCoordinateSystem (const std::string& coordinate_system);
         /** \brief Get metadata information about the coordinate system */
-        virtual std::string
+        virtual const std::string&
         getCoordinateSystem () const;
 
         /** \brief Set the depth of the tree corresponding to JSON "lod:number". This should always be equal to LOD_num_points_.size()-1 */

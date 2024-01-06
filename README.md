@@ -5,7 +5,7 @@
 [![Release][release-image]][releases]
 [![License][license-image]][license]
 
-[release-image]: https://img.shields.io/badge/release-1.11.1-green.svg?style=flat
+[release-image]: https://img.shields.io/badge/release-1.14.0-green.svg?style=flat
 [releases]: https://github.com/PointCloudLibrary/pcl/releases
 
 [license-image]: https://img.shields.io/badge/license-BSD-green.svg?style=flat
@@ -21,19 +21,23 @@ If you really need access to the old website, please use [the copy made by the i
 Continuous integration
 ----------------------
 [ci-latest-build]: https://dev.azure.com/PointCloudLibrary/pcl/_build/latest?definitionId=9&branchName=master
-[ci-ubuntu-16.04]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20GCC&jobName=Ubuntu&configuration=Ubuntu%2016.04%20GCC&label=Ubuntu%2016.04%20GCC
-[ci-ubuntu-18.04]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Clang&jobName=Ubuntu&configuration=Ubuntu%2018.04%20Clang&label=Ubuntu%2018.04%20Clang
 [ci-ubuntu-20.04]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20GCC&jobName=Ubuntu&configuration=Ubuntu%2020.04%20GCC&label=Ubuntu%2020.04%20GCC
-[ci-windows-x86]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20MSVC&jobName=Windows%20VS2017%20Build&configuration=Windows%20VS2017%20Build%20x86&label=Windows%20VS2017%20x86
-[ci-windows-x64]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20MSVC&jobName=Windows%20VS2017%20Build&configuration=Windows%20VS2017%20Build%20x64&label=Windows%20VS2017%20x64
-[ci-macos-10.14]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Clang&jobName=macOS&configuration=macOS%20Mojave%2010.14&label=macOS%20Mojave%2010.14
-[ci-macos-10.15]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Clang&jobName=macOS&configuration=macOS%20Catalina%2010.15&label=macOS%20Catalina%2010.15
+[ci-ubuntu-22.04]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Clang&jobName=Ubuntu&configuration=Ubuntu%2022.04%20Clang&label=Ubuntu%2022.04%20Clang
+[ci-ubuntu-23.04]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20GCC&jobName=Ubuntu&configuration=Ubuntu%2023.04%20GCC&label=Ubuntu%2023.04%20GCC
+[ci-windows-x86]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20MSVC&jobName=Windows%20Build&configuration=Windows%20Build%20x86&label=Windows%20VS2019%20x86
+[ci-windows-x64]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20MSVC&jobName=Windows%20Build&configuration=Windows%20Build%20x64&label=Windows%20VS2019%20x64
+[ci-macos-12]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Clang&jobName=macOS&configuration=macOS%20Monterey%2012&label=macOS%20Monterey%2012
+[ci-macos-13]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Clang&jobName=macOS&configuration=macOS%20Ventura%2013&label=macOS%20Ventura%2013
+[ci-docs]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/Documentation?branchName=master
+[ci-latest-docs]: https://dev.azure.com/PointCloudLibrary/pcl/_build/latest?definitionId=14&branchName=master
 
 Build Platform           | Status
 ------------------------ | ------------------------------------------------------------------------------------------------- |
-Ubuntu                   | [![Status][ci-ubuntu-16.04]][ci-latest-build] <br> [![Status][ci-ubuntu-18.04]][ci-latest-build]                              <br> [![Status][ci-ubuntu-20.04]][ci-latest-build]                                                |
+Ubuntu                   | [![Status][ci-ubuntu-20.04]][ci-latest-build] <br> [![Status][ci-ubuntu-22.04]][ci-latest-build] <br> [![Status][ci-ubuntu-23.04]][ci-latest-build] |
 Windows                  | [![Status][ci-windows-x86]][ci-latest-build]  <br> [![Status][ci-windows-x64]][ci-latest-build]   |
-macOS                    | [![Status][ci-macos-10.14]][ci-latest-build]  <br> [![Status][ci-macos-10.15]][ci-latest-build]   |
+macOS                    | [![Status][ci-macos-12]][ci-latest-build]  <br> [![Status][ci-macos-13]][ci-latest-build]   |
+Documentation            | [![Status][ci-docs]][ci-latest-docs] |
+Read the Docs            | [![Documentation Status](https://readthedocs.org/projects/pcl-tutorials/badge/?version=master)](https://pcl.readthedocs.io/projects/tutorials/en/master/?badge=master) |
 
 Community
 ---------
@@ -97,3 +101,18 @@ for Q&A as well as support for troubleshooting, installation and debugging. Do
 remember to tag your questions with the tag `point-cloud-library`.
 * [Discord Server](https://discord.gg/JFFMAXS) for live chat with
 other members of the PCL community and casual discussions
+
+Citation
+--------
+We encourage other researchers to cite PCL if they use PCL or its components for their work or baselines. The bibtex entry for the same is
+```
+@InProceedings{Rusu_ICRA2011_PCL,
+  author    = {Radu Bogdan Rusu and Steve Cousins},
+  title     = {{3D is here: Point Cloud Library (PCL)}},
+  booktitle = {{IEEE International Conference on Robotics and Automation (ICRA)}},
+  month     = {May 9-13},
+  year      = {2011},
+  address   = {Shanghai, China},
+  publisher = {IEEE}
+}
+```

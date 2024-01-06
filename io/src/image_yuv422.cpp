@@ -39,9 +39,6 @@
 
 #include <pcl/io/io_exception.h>
 
-#include <sstream>
-#include <iostream>
-
 #define CLIP_CHAR(c) static_cast<unsigned char> ((c)>255?255:(c)<0?0:(c))
 
 using pcl::io::FrameWrapper;
@@ -57,8 +54,7 @@ pcl::io::ImageYUV422::ImageYUV422 (FrameWrapper::Ptr image_metadata, Timestamp t
 {}
 
 
-pcl::io::ImageYUV422::~ImageYUV422 () noexcept
-{}
+pcl::io::ImageYUV422::~ImageYUV422 () noexcept = default;
 
 bool
 pcl::io::ImageYUV422::isResizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const
@@ -83,7 +79,7 @@ pcl::io::ImageYUV422::fillRGB (unsigned width, unsigned height, unsigned char* r
       THROW_IO_EXCEPTION ("Downsampling only possible for power of two scale in both dimensions. Request was %d x %d -> %d x %d.", wrapper_->getWidth (), wrapper_->getHeight (), width, height);
   }
 
-  const std::uint8_t* yuv_buffer = (std::uint8_t*) wrapper_->getData ();
+  const auto* yuv_buffer = reinterpret_cast<const std::uint8_t*>(wrapper_->getData ());
 
   unsigned rgb_line_skip = 0;
   if (rgb_line_step != 0)
@@ -147,7 +143,7 @@ pcl::io::ImageYUV422::fillGrayscale (unsigned width, unsigned height, unsigned c
   unsigned yuv_step = wrapper_->getWidth () / width;
   unsigned yuv_x_step = yuv_step << 1;
   unsigned yuv_skip = (wrapper_->getHeight () / height - 1) * ( wrapper_->getWidth () << 1 );
-  const std::uint8_t* yuv_buffer = ( (std::uint8_t*) wrapper_->getData () + 1);
+  const std::uint8_t* yuv_buffer = ( reinterpret_cast<const std::uint8_t*>(wrapper_->getData ()) + 1);
 
   for (unsigned yIdx = 0; yIdx < wrapper_->getHeight (); yIdx += yuv_step, yuv_buffer += yuv_skip, gray_buffer += gray_line_skip)
   {

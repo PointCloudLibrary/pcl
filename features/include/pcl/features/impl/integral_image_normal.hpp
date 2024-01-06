@@ -35,11 +35,10 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_FEATURES_INTEGRALIMAGE_BASED_IMPL_NORMAL_ESTIMATOR_H_
-#define PCL_FEATURES_INTEGRALIMAGE_BASED_IMPL_NORMAL_ESTIMATOR_H_
-
+#pragma once
 #include <pcl/features/integral_image_normal.h>
+
+#include <algorithm>
 
 //////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
@@ -140,12 +139,11 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initCovarianceMatrixMet
 template <typename PointInT, typename PointOutT> void
 pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initAverage3DGradientMethod ()
 {
+  delete[] diff_x_;
+  delete[] diff_y_;
   std::size_t data_size = (input_->size () << 2);
-  diff_x_ = new float[data_size];
-  diff_y_ = new float[data_size];
-
-  memset (diff_x_, 0, sizeof(float) * data_size);
-  memset (diff_y_, 0, sizeof(float) * data_size);
+  diff_x_ = new float[data_size]{};
+  diff_y_ = new float[data_size]{};
 
   // x u x
   // l x r
@@ -513,9 +511,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     auto cb_xyz_sosse = [this] (unsigned p1, unsigned p2, unsigned p3, unsigned p4) { return integral_image_XYZ_.getSecondOrderSumSE (p1, p2, p3, p4); };
     sumArea<typename IntegralImage2D<float, 3>::SecondOrderType>(start_x, start_y, end_x, end_y, width, height, cb_xyz_sosse, so_elements);
 
-    center[0] = float (tmp_center[0]);
-    center[1] = float (tmp_center[1]);
-    center[2] = float (tmp_center[2]);
+    center[0] = static_cast<float>(tmp_center[0]);
+    center[1] = static_cast<float>(tmp_center[1]);
+    center[2] = static_cast<float>(tmp_center[2]);
 
     covariance_matrix.coeffRef (0) = static_cast<float> (so_elements [0]);
     covariance_matrix.coeffRef (1) = covariance_matrix.coeffRef (3) = static_cast<float> (so_elements [1]);
@@ -672,10 +670,10 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     sumArea<float>(start_x_U, start_y_U, end_x_U, end_y_U, width, height, cb_fosse, mean_U_z);
     sumArea<float>(start_x_D, start_y_D, end_x_D, end_y_D, width, height, cb_fosse, mean_D_z);
 
-    mean_L_z /= float (count_L_z);
-    mean_R_z /= float (count_R_z);
-    mean_U_z /= float (count_U_z);
-    mean_D_z /= float (count_D_z);
+    mean_L_z /= static_cast<float>(count_L_z);
+    mean_R_z /= static_cast<float>(count_R_z);
+    mean_U_z /= static_cast<float>(count_U_z);
+    mean_D_z /= static_cast<float>(count_D_z);
 
 
     PointInT pointL = (*input_)[point_index_L_y*width + point_index_L_x];
@@ -736,8 +734,8 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
   // compute depth-change map
-  unsigned char * depthChangeMap = new unsigned char[input_->size ()];
-  memset (depthChangeMap, 255, input_->size ());
+  auto depthChangeMap = new unsigned char[input_->size ()];
+  std::fill_n(depthChangeMap, input_->size(), 255);
 
   unsigned index = 0;
   for (unsigned int ri = 0; ri < input_->height-1; ++ri)
@@ -847,7 +845,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
     // top and bottom borders
     // That sets the output density to false!
     output.is_dense = false;
-    unsigned border = int(normal_smoothing_size_);
+    const auto border = static_cast<unsigned>(normal_smoothing_size_);
     PointOutT* vec1 = &output [0];
     PointOutT* vec2 = vec1 + input_->width * (input_->height - border);
 
@@ -897,7 +895,13 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
           if (smoothing > 2.0f)
           {
             setRectSize (static_cast<int> (smoothing), static_cast<int> (smoothing));
-            computePointNormal (ci, ri, index, output [index]);
+            // Since depth can be anything, we have no guarantee that the border is sufficient, so we need to check
+            if(ci>static_cast<unsigned>(rect_width_2_) && ri>static_cast<unsigned>(rect_height_2_) && (ci+rect_width_2_)<input_->width && (ri+rect_height_2_)<input_->height) {
+              computePointNormal (ci, ri, index, output [index]);
+            } else {
+              output[index].getNormalVector3fMap ().setConstant (bad_point);
+              output[index].curvature = bad_point;
+            }
           }
           else
           {
@@ -909,8 +913,6 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
     }
     else
     {
-      float smoothing_constant = normal_smoothing_size_;
-
       index = border + input_->width * border;
       unsigned skip = (border << 1);
       for (unsigned ri = border; ri < input_->height - border; ++ri, index += skip)
@@ -926,7 +928,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
             continue;
           }
 
-          float smoothing = (std::min)(distanceMap[index], smoothing_constant);
+          float smoothing = (std::min)(distanceMap[index], normal_smoothing_size_);
 
           if (smoothing > 2.0f)
           {
@@ -983,8 +985,6 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
     }
     else
     {
-      float smoothing_constant = normal_smoothing_size_;
-
       //index = border + input_->width * border;
       //unsigned skip = (border << 1);
       //for (unsigned ri = border; ri < input_->height - border; ++ri, index += skip)
@@ -1002,7 +1002,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
             continue;
           }
 
-          float smoothing = (std::min)(distanceMap[index], smoothing_constant);
+          float smoothing = (std::min)(distanceMap[index], normal_smoothing_size_);
 
           if (smoothing > 2.0f)
           {
@@ -1029,9 +1029,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
   if (border_policy_ == BORDER_POLICY_IGNORE)
   {
     output.is_dense = false;
-    unsigned border = int(normal_smoothing_size_);
-    unsigned bottom = input_->height > border ? input_->height - border : 0;
-    unsigned right = input_->width > border ? input_->width - border : 0;
+    const auto border = static_cast<unsigned>(normal_smoothing_size_);
+    const unsigned bottom = input_->height > border ? input_->height - border : 0;
+    const unsigned right = input_->width > border ? input_->width - border : 0;
     if (use_depth_dependent_smoothing_)
     {
       // Iterating over the entire index vector
@@ -1077,7 +1077,6 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
     }
     else
     {
-      float smoothing_constant = normal_smoothing_size_;
       // Iterating over the entire index vector
       for (std::size_t idx = 0; idx < indices_->size (); ++idx)
       {
@@ -1105,7 +1104,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
           continue;
         }
 
-        float smoothing = (std::min)(distanceMap[pt_index], smoothing_constant);
+        float smoothing = (std::min)(distanceMap[pt_index], normal_smoothing_size_);
 
         if (smoothing > 2.0f)
         {
@@ -1156,7 +1155,6 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
     }
     else
     {
-      float smoothing_constant = normal_smoothing_size_;
       for (std::size_t idx = 0; idx < indices_->size (); ++idx)
       {
         unsigned pt_index = (*indices_)[idx];
@@ -1170,7 +1168,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
           continue;
         }
 
-        float smoothing = (std::min)(distanceMap[pt_index], smoothing_constant);
+        float smoothing = (std::min)(distanceMap[pt_index], normal_smoothing_size_);
 
         if (smoothing > 2.0f)
         {
@@ -1200,6 +1198,4 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initCompute ()
 }
 
 #define PCL_INSTANTIATE_IntegralImageNormalEstimation(T,NT) template class PCL_EXPORTS pcl::IntegralImageNormalEstimation<T,NT>;
-
-#endif
 

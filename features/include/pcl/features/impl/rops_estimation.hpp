@@ -49,11 +49,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
 pcl::ROPSEstimation <PointInT, PointOutT>::ROPSEstimation () :
-  number_of_bins_ (5),
-  number_of_rotations_ (3),
-  support_radius_ (1.0f),
-  sqr_support_radius_ (1.0f),
-  step_ (22.5f),
+  
   triangles_ (0),
   triangles_of_the_point_ (0)
 {
@@ -153,7 +149,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeFeature (PointCloudOut &output
   for (const auto& idx: *indices_)
   {
     std::set <unsigned int> local_triangles;
-    std::vector <int> local_points;
+    pcl::Indices local_points;
     getLocalSurface ((*input_)[idx], local_triangles, local_points);
 
     Eigen::Matrix3f lrf_matrix;
@@ -228,7 +224,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::buildListOfPointsTriangles ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
-pcl::ROPSEstimation <PointInT, PointOutT>::getLocalSurface (const PointInT& point, std::set <unsigned int>& local_triangles, std::vector <int>& local_points) const
+pcl::ROPSEstimation <PointInT, PointOutT>::getLocalSurface (const PointInT& point, std::set <unsigned int>& local_triangles, pcl::Indices& local_points) const
 {
   std::vector <float> distances;
   tree_->radiusSearch (point, support_radius_, local_points, distances);
@@ -388,7 +384,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeEigenVectors (const Eigen::Mat
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
-pcl::ROPSEstimation <PointInT, PointOutT>::transformCloud (const PointInT& point, const Eigen::Matrix3f& matrix, const std::vector <int>& local_points, PointCloudIn& transformed_cloud) const
+pcl::ROPSEstimation <PointInT, PointOutT>::transformCloud (const PointInT& point, const Eigen::Matrix3f& matrix, const pcl::Indices& local_points, PointCloudIn& transformed_cloud) const
 {
   const auto number_of_points = local_points.size ();
   transformed_cloud.clear ();
@@ -481,11 +477,11 @@ pcl::ROPSEstimation <PointInT, PointOutT>::getDistributionMatrix (const unsigned
     const float v_length = point (coord[projection][1]) - min[coord[projection][1]];
 
     const float u_ratio = u_length / u_bin_length;
-    unsigned int row = static_cast <unsigned int> (u_ratio);
+    auto row = static_cast <unsigned int> (u_ratio);
     if (row == number_of_bins_) row--;
 
     const float v_ratio = v_length / v_bin_length;
-    unsigned int col = static_cast <unsigned int> (v_ratio);
+    auto col = static_cast <unsigned int> (v_ratio);
     if (col == number_of_bins_) col--;
 
     matrix (row, col) += 1.0f;

@@ -41,6 +41,8 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
+#include <boost/filesystem.hpp> // for path, exists, ...
+#include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 
 using namespace pcl;
 using namespace pcl::io;
@@ -112,15 +114,16 @@ int
 batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir, float sigma_s, float sigma_r)
 {
 #pragma omp parallel for \
-  default(none) \
   shared(output_dir, pcd_files, sigma_r, sigma_s)
-  for (int i = 0; i < int (pcd_files.size ()); ++i)
+  // Disable lint since this 'for' is part of the pragma
+  // NOLINTNEXTLINE(modernize-loop-convert)
+  for (int i = 0; i < static_cast<int>(pcd_files.size ()); ++i)
   {
     // Load the first file
     Eigen::Vector4f translation;
     Eigen::Quaternionf rotation;
     pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
-    if (!loadCloud (pcd_files[i], *cloud, translation, rotation)) 
+    if (!loadCloud (pcd_files[i], *cloud, translation, rotation))
       continue;
 
     // Perform the feature estimation
@@ -128,15 +131,11 @@ batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir
     compute (cloud, output, sigma_s, sigma_r);
 
     // Prepare output file name
-    std::string filename = pcd_files[i];
-    boost::trim (filename);
-    std::vector<std::string> st;
-    boost::split (st, filename, boost::is_any_of ("/\\"), boost::token_compress_on);
+    std::string filename = boost::filesystem::path(pcd_files[i]).filename().string();
     
     // Save into the second file
-    std::stringstream ss;
-    ss << output_dir << "/" << st.at (st.size () - 1);
-    saveCloud (ss.str (), output, translation, rotation);
+    const std::string filepath = output_dir + '/' + filename;
+    saveCloud (filepath, output, translation, rotation);
   }
   return (0);
 }
@@ -211,7 +210,7 @@ main (int argc, char** argv)
       for (boost::filesystem::directory_iterator itr (input_dir); itr != end_itr; ++itr)
       {
         // Only add PCD files
-        if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ())) == ".PCD" )
+        if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (itr->path ().extension ().string ()) == ".PCD" )
         {
           pcd_files.push_back (itr->path ().string ());
           PCL_INFO ("[Batch processing mode] Added %s for processing.\n", itr->path ().string ().c_str ());

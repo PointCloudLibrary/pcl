@@ -51,7 +51,7 @@
 #include <pcl/octree/octree_search.h>
 #include <pcl/octree/octree_pointcloud_adjacency.h>
 #include <pcl/search/search.h>
-#include <pcl/segmentation/boost.h>
+#include <boost/ptr_container/ptr_list.hpp> // for ptr_list
 
 
 
@@ -139,9 +139,7 @@ namespace pcl
             xyz_ (0.0f, 0.0f, 0.0f),
             rgb_ (0.0f, 0.0f, 0.0f),
             normal_ (0.0f, 0.0f, 0.0f, 0.0f),
-            curvature_ (0.0f),
-            distance_(0),
-            idx_(0),
+            
             owner_ (nullptr)
             {}
 
@@ -160,9 +158,9 @@ namespace pcl
           Eigen::Vector3f xyz_;
           Eigen::Vector3f rgb_;
           Eigen::Vector4f normal_;
-          float curvature_;
-          float distance_;
-          int idx_;
+          float curvature_{0.0f};
+          float distance_{0.0f};
+          int idx_{0};
           SupervoxelHelper* owner_;
 
         public:
@@ -199,7 +197,7 @@ namespace pcl
         * finding neighbors. In other words it frees memory.
         */
 
-      ~SupervoxelClustering ();
+      ~SupervoxelClustering () override;
 
       /** \brief Set the resolution of the octree voxels */
       void
@@ -275,14 +273,14 @@ namespace pcl
 
       /** \brief Returns labeled cloud
         * Points that belong to the same supervoxel have the same label.
-        * Labels for segments start from 1, unlabled points have label 0
+        * Labels for segments start from 1, unlabeled points have label 0
         */
       typename pcl::PointCloud<PointXYZL>::Ptr
       getLabeledCloud () const;
 
       /** \brief Returns labeled voxelized cloud
        * Points that belong to the same supervoxel have the same label.
-       * Labels for segments start from 1, unlabled points have label 0
+       * Labels for segments start from 1, unlabeled points have label 0
        */
       pcl::PointCloud<pcl::PointXYZL>::Ptr
       getLabeledVoxelCloud () const;
@@ -373,11 +371,11 @@ namespace pcl
       typename NormalCloudT::ConstPtr input_normals_;
 
       /** \brief Importance of color in clustering */
-      float color_importance_;
+      float color_importance_{0.1f};
       /** \brief Importance of distance from seed center in clustering */
-      float spatial_importance_;
+      float spatial_importance_{0.4f};
       /** \brief Importance of similarity in normals for clustering */
-      float normal_importance_;
+      float normal_importance_{1.0f};
 
       /** \brief Whether or not to use the transform compressing depth in Z
        *  This is only checked if it has been manually set by the user.
@@ -385,7 +383,7 @@ namespace pcl
        */
       bool use_single_camera_transform_;
       /** \brief Whether to use default transform behavior or not */
-      bool use_default_transform_behaviour_;
+      bool use_default_transform_behaviour_{true};
 
       /** \brief Internal storage class for supervoxels
        * \note Stores pointers to leaves of clustering internal octree,

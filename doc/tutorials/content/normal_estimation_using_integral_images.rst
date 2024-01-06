@@ -46,7 +46,8 @@ The following normal estimation methods are available:
      {
        COVARIANCE_MATRIX,
        AVERAGE_3D_GRADIENT,
-       AVERAGE_DEPTH_CHANGE
+       AVERAGE_DEPTH_CHANGE,
+       SIMPLE_3D_GRADIENT
      };
 	 
 The COVARIANCE_MATRIX mode creates 9 integral images to compute the normal for

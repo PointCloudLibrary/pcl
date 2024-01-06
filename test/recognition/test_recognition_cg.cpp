@@ -79,7 +79,7 @@ computeRmsE (const PointCloud<PointType>::ConstPtr &model, const PointCloud<Poin
   double sqr_norm_sum = 0;
   int found_points = 0;
 
-  std::vector<int> neigh_indices (1);
+  pcl::Indices neigh_indices (1);
   std::vector<float> neigh_sqr_dists (1);
   for (const auto &model : transformed_model)
   {
@@ -93,7 +93,7 @@ computeRmsE (const PointCloud<PointType>::ConstPtr &model, const PointCloud<Poin
   }
 
   if (found_points > 0)
-    return sqrt (sqr_norm_sum / double (transformed_model.size ()));
+    return sqrt (sqr_norm_sum / static_cast<double>(transformed_model.size ()));
 
   return std::numeric_limits<double>::max ();
 }
@@ -149,13 +149,13 @@ TEST (PCL, GeometricConsistencyGrouping)
   clusterer.setInputCloud (model_downsampled_);
   clusterer.setSceneCloud (scene_downsampled_);
   clusterer.setModelSceneCorrespondences (model_scene_corrs_);
-  clusterer.setGCSize (0.015);
+  clusterer.setGCSize (0.001);
   clusterer.setGCThreshold (25);
   EXPECT_TRUE (clusterer.recognize (rototranslations));
 
   //Assertions
   EXPECT_EQ (rototranslations.size (), 1);
-  EXPECT_LT (computeRmsE (model_, scene_, rototranslations[0]), 1E-4);
+  EXPECT_LT (computeRmsE (model_, scene_, rototranslations[0]), 1E-4) << std::endl << rototranslations[0] << std::endl << model_downsampled_->size() << std::endl << scene_downsampled_->size() << std::endl << model_scene_corrs_->size() << std::endl;
 }
 
 
@@ -221,7 +221,7 @@ main (int argc, char** argv)
   {
     if ( std::isfinite( scene_descriptors_->at (i).descriptor[0] ) )
     {
-      std::vector<int> neigh_indices (1);
+      pcl::Indices neigh_indices (1);
       std::vector<float> neigh_sqr_dists (1);
       int found_neighs = match_search.nearestKSearch (scene_descriptors_->at (i), 1, neigh_indices, neigh_sqr_dists);
       if(found_neighs == 1 && neigh_sqr_dists[0] < 0.25f)

@@ -66,18 +66,18 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
   wt_d2.reserve (sample_size * 3);
   wt_d3.reserve (sample_size);
 
-  float h_in[binsize] = {0};
-  float h_out[binsize] = {0};
-  float h_mix[binsize] = {0};
-  float h_mix_ratio[binsize] = {0};
+  float h_in[binsize] = {0.0f};
+  float h_out[binsize] = {0.0f};
+  float h_mix[binsize] = {0.0f};
+  float h_mix_ratio[binsize] = {0.0f};
 
-  float h_a3_in[binsize] = {0};
-  float h_a3_out[binsize] = {0};
-  float h_a3_mix[binsize] = {0};
+  float h_a3_in[binsize] = {0.0f};
+  float h_a3_out[binsize] = {0.0f};
+  float h_a3_mix[binsize] = {0.0f};
 
-  float h_d3_in[binsize] = {0};
-  float h_d3_out[binsize] = {0};
-  float h_d3_mix[binsize] = {0};
+  float h_d3_in[binsize] = {0.0f};
+  float h_d3_out[binsize] = {0.0f};
+  float h_d3_mix[binsize] = {0.0f};
 
   float ratio=0.0;
   float pih = static_cast<float>(M_PI) / 2.0f;
@@ -342,7 +342,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::lci (
     int err_2 = dz2 - l;
     for (int i = 1; i<l; i++)
     {
-      voxelcount++;;
+      voxelcount++;
       voxel_in +=  static_cast<int>(lut_[act_voxel[0]][act_voxel[1]][act_voxel[2]] == 1);
       if (err_1 > 0)
       {

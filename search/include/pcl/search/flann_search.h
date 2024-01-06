@@ -136,7 +136,7 @@ namespace pcl
 
           /** \brief destructor 
             */
-            virtual ~FlannIndexCreator () {}
+            virtual ~FlannIndexCreator () = default;
         };
         using FlannIndexCreatorPtr = shared_ptr<FlannIndexCreator>;
 
@@ -152,7 +152,7 @@ namespace pcl
             KdTreeIndexCreator (unsigned int max_leaf_size=15) : max_leaf_size_ (max_leaf_size){}
       
             /** \brief Empty destructor */
-            ~KdTreeIndexCreator () {}
+            ~KdTreeIndexCreator () override = default;
 
           /** \brief Create a FLANN Index from the input data.
             * \param[in] data The FLANN matrix containing the input.
@@ -172,10 +172,10 @@ namespace pcl
             * a maximum of max_leaf_size points per leaf node. Higher values make index creation
             * cheaper, but search more costly (and the other way around).
             */
-            KMeansIndexCreator (){}
+            KMeansIndexCreator () = default;
             
             /** \brief Empty destructor */
-            virtual ~KMeansIndexCreator () {}
+            virtual ~KMeansIndexCreator () = default;
 
           /** \brief Create a FLANN Index from the input data.
             * \param[in] data The FLANN matrix containing the input.
@@ -197,7 +197,7 @@ namespace pcl
             KdTreeMultiIndexCreator (int trees = 4) : trees_ (trees) {}
       
             /** \brief Empty destructor */
-            virtual ~KdTreeMultiIndexCreator () {}
+            virtual ~KdTreeMultiIndexCreator () = default;
 
           /** \brief Create a FLANN Index from the input data.
             * \param[in] data The FLANN matrix containing the input.
@@ -212,7 +212,7 @@ namespace pcl
 
         /** \brief Destructor for FlannSearch. */
         
-        ~FlannSearch ();
+        ~FlannSearch () override;
 
 
         //void
@@ -254,7 +254,7 @@ namespace pcl
           * \param[in] cloud the const boost shared pointer to a PointCloud message
           * \param[in] indices the point indices subset that is to be used from \a cloud
           */
-        void
+        bool
         setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices = IndicesConstPtr ()) override;
 
         using Search<PointT>::nearestKSearch;
@@ -348,23 +348,28 @@ namespace pcl
 
         /** Epsilon for approximate NN search.
           */
-        float eps_;
+        float eps_{0.0f};
         
         /** Number of checks to perform for approximate NN search using the multiple randomized tree index
          */
-        int checks_;
+        int checks_{32};
         
-        bool input_copied_for_flann_;
+        bool input_copied_for_flann_{false};
 
-        PointRepresentationConstPtr point_representation_;
+        PointRepresentationConstPtr point_representation_{nullptr};
 
-        int dim_;
+        int dim_{0};
 
         Indices index_mapping_;
-        bool identity_mapping_;
+        bool identity_mapping_{false};
+
+        std::size_t total_nr_points_{0};
 
     };
   }
 }
+
+// There is no cpp file containing template instantiations of FlannSearch
+#include <pcl/search/impl/flann_search.hpp>
 
 #define PCL_INSTANTIATE_FlannSearch(T) template class PCL_EXPORTS pcl::search::FlannSearch<T>;

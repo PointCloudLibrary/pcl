@@ -39,7 +39,6 @@
 #include <pcl/gpu/utils/safe_call.hpp>
 #include <pcl/point_types_conversion.h>
 
-#include <boost/foreach.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 
@@ -120,8 +119,6 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
 
   haar.bHasStumpsOnly = true;
   haar.bNeedsTiltedII = false;
-
-  Ncv32u cur_max_tree_depth;
 
   std::vector<HaarClassifierNode128> host_temp_classifier_not_root_nodes;
   haar_stages.resize(0);
@@ -259,7 +256,6 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
                     {
                         //root node
                         haarClassifierNodes.push_back(current_node);
-                        cur_max_tree_depth = 1;
                     }
                     else
                     {
@@ -267,7 +263,6 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
                         host_temp_classifier_not_root_nodes.push_back(current_node);
                         // TODO replace with PCL_DEBUG in the future
                         PCL_INFO("[pcl::gpu::people::FaceDetector::loadFromXML2] : (I) : Found non root node number %d", host_temp_classifier_not_root_nodes.size());
-                        cur_max_tree_depth++;
                     }
                     node_identifier++;
                   }

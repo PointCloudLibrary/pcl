@@ -69,7 +69,9 @@ namespace pcl
     *
     * With the default parameters, pcl::Histogram<153> is a good choice for PointOutT.
     * Of course the dimension of this descriptor must change to match the number
-    * of bins set by the parameters.
+    * of bins set by the parameters. If you use SpinImageEstimation with something
+    * other than pcl::Histogram<153>, you may need to put `#define PCL_NO_PRECOMPILE 1`
+    * before including `pcl/features/spin_image.h`.
     *
     * For further information please see:
     *
@@ -122,7 +124,7 @@ namespace pcl
                            unsigned int min_pts_neighb = 0);
       
       /** \brief Empty destructor */
-      ~SpinImageEstimation () {}
+      ~SpinImageEstimation () override = default;
 
       /** \brief Sets spin-image resolution.
         * 
@@ -131,7 +133,27 @@ namespace pcl
       void 
       setImageWidth (unsigned int bin_count)
       {
-        image_width_ = bin_count;
+        const unsigned int necessary_desc_size = (bin_count+1)*(2*bin_count+1);
+        if (necessary_desc_size > static_cast<unsigned int>(PointOutT::descriptorSize())) {
+          for(int i=0; ; ++i) { // Find the biggest possible image_width_
+            if(((i+1)*(2*i+1)) <= PointOutT::descriptorSize()) {
+              image_width_ = i;
+            } else {
+              break;
+            }
+          }
+          PCL_ERROR("[pcl::SpinImageEstimation] The chosen image width is too large, setting it to %u instead. "
+            "Consider using pcl::Histogram<%u> as output type of SpinImageEstimation "
+            "(possibly with `#define PCL_NO_PRECOMPILE 1`).\n", image_width_, ((bin_count+1)*(2*bin_count+1)));
+        } else if (necessary_desc_size < static_cast<unsigned int>(PointOutT::descriptorSize())) {
+          image_width_ = bin_count;
+          PCL_WARN("[pcl::SpinImageEstimation] The chosen image width is smaller than the output histogram allows. "
+            "This is not an error, but the last few histogram bins will not be set. "
+            "Consider using pcl::Histogram<%u> as output type of SpinImageEstimation "
+            "(possibly with `#define PCL_NO_PRECOMPILE 1`).\n", ((bin_count+1)*(2*bin_count+1)));
+        } else {
+          image_width_ = bin_count;
+        }
       }
 
       /** \brief Sets the maximum angle for the point normal to get to support region.
@@ -265,13 +287,13 @@ namespace pcl
       PointCloudNConstPtr input_normals_;
       PointCloudNConstPtr rotation_axes_cloud_;
       
-      bool is_angular_;
+      bool is_angular_{false};
 
       PointNT rotation_axis_;
-      bool use_custom_axis_;
-      bool use_custom_axes_cloud_;
+      bool use_custom_axis_{false};
+      bool use_custom_axes_cloud_{false};
 
-      bool is_radial_;
+      bool is_radial_{false};
 
       unsigned int image_width_;
       double support_angle_cos_;

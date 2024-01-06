@@ -91,7 +91,7 @@ namespace pcl
     * \ingroup features
     */
   template <typename PointT> inline bool
-  computePointNormal (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &indices,
+  computePointNormal (const pcl::PointCloud<PointT> &cloud, const pcl::Indices &indices,
                       Eigen::Vector4f &plane_parameters, float &curvature)
   {
     // Placeholder for the 3x3 covariance matrix at each surface patch
@@ -202,7 +202,7 @@ namespace pcl
     */
   template<typename PointNT> inline bool
   flipNormalTowardsNormalsMean ( pcl::PointCloud<PointNT> const &normal_cloud,
-                                 std::vector<int> const &normal_indices,
+                                 pcl::Indices const &normal_indices,
                                  Eigen::Vector3f &normal)
   {
     Eigen::Vector3f normal_mean = Eigen::Vector3f::Zero ();
@@ -258,17 +258,13 @@ namespace pcl
       using PointCloudConstPtr = typename Feature<PointInT, PointOutT>::PointCloudConstPtr;
       
       /** \brief Empty constructor. */
-      NormalEstimation () 
-      : vpx_ (0)
-      , vpy_ (0)
-      , vpz_ (0)
-      , use_sensor_origin_ (true)
+      NormalEstimation ()
       {
         feature_name_ = "NormalEstimation";
       };
       
       /** \brief Empty destructor */
-      ~NormalEstimation () {}
+      ~NormalEstimation () override = default;
 
       /** \brief Compute the Least-Squares plane fit for a given set of points, using their indices,
         * and return the estimated plane parameters together with the surface curvature.
@@ -281,7 +277,7 @@ namespace pcl
         * \f]
         */
       inline bool
-      computePointNormal (const pcl::PointCloud<PointInT> &cloud, const std::vector<int> &indices,
+      computePointNormal (const pcl::PointCloud<PointInT> &cloud, const pcl::Indices &indices,
                           Eigen::Vector4f &plane_parameters, float &curvature)
       {
         if (indices.size () < 3 ||
@@ -310,7 +306,7 @@ namespace pcl
         * \f]
         */
       inline bool
-      computePointNormal (const pcl::PointCloud<PointInT> &cloud, const std::vector<int> &indices,
+      computePointNormal (const pcl::PointCloud<PointInT> &cloud, const pcl::Indices &indices,
                           float &nx, float &ny, float &nz, float &curvature)
       {
         if (indices.size () < 3 ||
@@ -403,7 +399,7 @@ namespace pcl
 
       /** \brief Values describing the viewpoint ("pinhole" camera model assumed). For per point viewpoints, inherit
         * from NormalEstimation and provide your own computeFeature (). By default, the viewpoint is set to 0,0,0. */
-      float vpx_, vpy_, vpz_;
+      float vpx_{0.0f}, vpy_{0.0f}, vpz_{0.0f};
 
       /** \brief Placeholder for the 3x3 covariance matrix at each surface patch. */
       EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix_;
@@ -412,7 +408,7 @@ namespace pcl
       Eigen::Vector4f xyz_centroid_;
       
       /** whether the sensor origin of the input cloud or a user given viewpoint should be used.*/
-      bool use_sensor_origin_;
+      bool use_sensor_origin_{true};
 
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW

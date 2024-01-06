@@ -36,9 +36,9 @@
 
 #pragma once
 
-#include <pcl/Vertices.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/Vertices.h>
 
 #include <vtkSmartPointer.h>
 
@@ -59,7 +59,6 @@ public:
 
   CloudMesh();
   CloudMesh(PointCloudPtr cloud);
-  ~CloudMesh();
 
   PointCloudPtr&
   getCloud()

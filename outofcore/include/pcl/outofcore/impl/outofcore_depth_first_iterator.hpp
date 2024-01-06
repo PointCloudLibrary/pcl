@@ -47,8 +47,8 @@ namespace pcl
     template<typename PointT, typename ContainerT> 
     OutofcoreDepthFirstIterator<PointT, ContainerT>::OutofcoreDepthFirstIterator (OutofcoreOctreeBase<ContainerT, PointT>& octree_arg) 
     : OutofcoreIteratorBase<PointT, ContainerT> (octree_arg)
-    , currentChildIdx_ (0)
-    , stack_ (0)
+    , 
+     stack_ (0)
     {
       stack_.reserve (this->octree_.getTreeDepth ());
       OutofcoreIteratorBase<PointT,ContainerT>::reset ();
@@ -57,9 +57,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT, typename ContainerT> 
-    OutofcoreDepthFirstIterator<PointT, ContainerT>::~OutofcoreDepthFirstIterator ()
-    {
-    }
+    OutofcoreDepthFirstIterator<PointT, ContainerT>::~OutofcoreDepthFirstIterator () = default;
 
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -75,7 +73,7 @@ namespace pcl
 
         if (this->currentNode_->getNodeType () == pcl::octree::BRANCH_NODE)
         {
-          BranchNode* currentBranch = static_cast<BranchNode*> (this->currentNode_);
+          auto* currentBranch = static_cast<BranchNode*> (this->currentNode_);
           
           if (currentChildIdx_ < 8)
           {
@@ -144,7 +142,7 @@ namespace pcl
 
     ////////////////////////////////////////////////////////////////////////////////
 
-  }//namesapce pcl
+  }//namespace pcl
 }//namespace outofcore
 
 #endif //PCL_OUTOFCORE_DEPTH_FIRST_ITERATOR_IMPL_H_

@@ -1,0 +1,49 @@
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - .dev/docker/ubuntu-variety
+    - .ci/azure-pipelines/ubuntu-variety.yaml
+
+pr:
+  paths:
+    include:
+    - .dev/docker/ubuntu-variety
+    - .ci/azure-pipelines/ubuntu-variety.yaml
+
+schedules:
+- cron: "0 0 * * 6"
+  displayName: "Saturday midnight build"
+  branches:
+    include:
+    - master
+
+resources:
+- repo: self
+
+jobs:
+- job: BuildUbuntuVariety
+  timeoutInMinutes: 360
+  displayName: "BuildUbuntuVariety"
+  steps:
+  - script: |
+      POSSIBLE_VTK_VERSION=("9") \
+      POSSIBLE_CMAKE_CXX_STANDARD=("14" "17" "20") \
+      POSSIBLE_CMAKE_BUILD_TYPE=("None" "Debug" "Release" "RelWithDebInfo" "MinSizeRel") \
+      POSSIBLE_COMPILER_PACKAGE=("g++" "g++-10" "g++-11" "g++-12" "g++-13" "clang libomp-dev" "clang-13 libomp-13-dev" "clang-14 libomp-14-dev" "clang-15 libomp-15-dev" "clang-16 libomp-16-dev" "clang-17 libomp-17-dev") \
+      POSSIBLE_CMAKE_C_COMPILER=("gcc" "gcc-10" "gcc-11" "gcc-12" "gcc-13" "clang" "clang-13" "clang-14" "clang-15" "clang-16" "clang-17") \
+      POSSIBLE_CMAKE_CXX_COMPILER=("g++" "g++-10" "g++-11" "g++-12" "g++-13" "clang++" "clang++-13" "clang++-14" "clang++-15" "clang++-16" "clang++-17") \
+      CHOSEN_COMPILER=$[RANDOM%${#POSSIBLE_COMPILER_PACKAGE[@]}] \
+      dockerBuildArgs="--build-arg VTK_VERSION=${POSSIBLE_VTK_VERSION[$[RANDOM%${#POSSIBLE_VTK_VERSION[@]}]]} --build-arg CMAKE_CXX_STANDARD=${POSSIBLE_CMAKE_CXX_STANDARD[$[RANDOM%${#POSSIBLE_CMAKE_CXX_STANDARD[@]}]]} --build-arg CMAKE_BUILD_TYPE=${POSSIBLE_CMAKE_BUILD_TYPE[$[RANDOM%${#POSSIBLE_CMAKE_BUILD_TYPE[@]}]]} --build-arg COMPILER_PACKAGE=${POSSIBLE_COMPILER_PACKAGE[$CHOSEN_COMPILER]} --build-arg CMAKE_C_COMPILER=${POSSIBLE_CMAKE_C_COMPILER[$CHOSEN_COMPILER]} --build-arg CMAKE_CXX_COMPILER=${POSSIBLE_CMAKE_CXX_COMPILER[$CHOSEN_COMPILER]}" ; \
+      echo "##vso[task.setvariable variable=dockerBuildArgs]$dockerBuildArgs"
+    displayName: "Prepare docker build arguments"
+  - task: Docker@2
+    displayName: "Build docker image"
+    inputs:
+      command: build
+      arguments: |
+        --no-cache
+        $(dockerBuildArgs)
+      dockerfile: '$(Build.SourcesDirectory)/.dev/docker/ubuntu-variety/Dockerfile'

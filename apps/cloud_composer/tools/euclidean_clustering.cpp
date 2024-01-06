@@ -15,11 +15,6 @@ pcl::cloud_composer::EuclideanClusteringTool::EuclideanClusteringTool (Propertie
 
 }
 
-pcl::cloud_composer::EuclideanClusteringTool::~EuclideanClusteringTool ()
-{
-
-}
-
 QList <pcl::cloud_composer::CloudComposerItem*>
 pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input_data, PointTypeFlags::PointType)
 {
@@ -69,18 +64,18 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input
       Eigen::Vector4f source_origin = input_item->data (ItemDataRole::ORIGIN).value<Eigen::Vector4f> ();
       Eigen::Quaternionf source_orientation =  input_item->data (ItemDataRole::ORIENTATION).value<Eigen::Quaternionf> ();
       //Vector to accumulate the extracted indices
-      pcl::IndicesPtr extracted_indices (new std::vector<int> ());
+      pcl::IndicesPtr extracted_indices (new pcl::Indices ());
       //Put found clusters into new cloud_items!
       qDebug () << "Found "<<cluster_indices.size ()<<" clusters!";
       int cluster_count = 0;
       pcl::ExtractIndices<pcl::PCLPointCloud2> filter;
-      for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
+      for (const auto& cluster : cluster_indices)
       {
         filter.setInputCloud (input_cloud);
         // It's annoying that I have to do this, but Euclidean returns a PointIndices struct
-        pcl::PointIndices::ConstPtr indices_ptr = pcl::make_shared<pcl::PointIndices>(*it);
+        pcl::PointIndices::ConstPtr indices_ptr = pcl::make_shared<pcl::PointIndices>(cluster);
         filter.setIndices (indices_ptr);
-        extracted_indices->insert (extracted_indices->end (), it->indices.begin (), it->indices.end ());
+        extracted_indices->insert (extracted_indices->end (), cluster.indices.begin (), cluster.indices.end ());
         //This means remove the other points
         filter.setKeepOrganized (false);
         pcl::PCLPointCloud2::Ptr cloud_filtered (new pcl::PCLPointCloud2);

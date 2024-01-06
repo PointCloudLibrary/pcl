@@ -35,7 +35,6 @@
 *
 */
 
-#include <pcl/io/boost.h>
 #include <pcl/io/grabber.h>
 #include <pcl/io/io_exception.h>
 #include <pcl/point_cloud.h>
@@ -57,12 +56,6 @@ namespace pcl
     , signal_PointXYZRGBA ( createSignal<signal_librealsense_PointXYZRGBA> () )
     , file_name_or_serial_number_ ( file_name_or_serial_number )
     , repeat_playback_ ( repeat_playback )
-    , quit_ ( false )
-    , running_ ( false )
-    , fps_ ( 0 )
-    , device_width_ ( 424 )
-    , device_height_ ( 240 )
-    , target_fps_ ( 30 )
   {
   }
 
@@ -93,6 +86,10 @@ namespace pcl
       signal_PointXYZRGBA->num_slots () == 0)
       return;
 
+    // cache stream options
+    const bool color_requested = signal_PointXYZRGB->num_slots () > 0 || signal_PointXYZRGBA->num_slots () > 0;
+    const bool ir_requested = signal_PointXYZI->num_slots () > 0;
+
     running_ = true;
     quit_ = false;
 
@@ -103,30 +100,30 @@ namespace pcl
     {
       cfg.enable_device_from_file ( file_name_or_serial_number_, repeat_playback_ );
     }
+    // capture from camera
     else
     {
+      // find by serial number if provided
       if (!file_name_or_serial_number_.empty ())
         cfg.enable_device ( file_name_or_serial_number_ );
 
-      if (signal_PointXYZRGB->num_slots () > 0 || signal_PointXYZRGBA->num_slots () > 0)
-      {
+      // enable camera streams as requested
+      if (color_requested)
         cfg.enable_stream ( RS2_STREAM_COLOR, device_width_, device_height_, RS2_FORMAT_RGB8, target_fps_ );
-      }
 
       cfg.enable_stream ( RS2_STREAM_DEPTH, device_width_, device_height_, RS2_FORMAT_Z16, target_fps_ );
 
-      if (signal_PointXYZI->num_slots () > 0)
-      {
+      if (ir_requested)
         cfg.enable_stream ( RS2_STREAM_INFRARED, device_width_, device_height_, RS2_FORMAT_Y8, target_fps_ );
-      }
 
     }
 
     rs2::pipeline_profile prof = pipe_.start ( cfg );
 
-    if ( prof.get_stream ( RS2_STREAM_COLOR ).format ( ) != RS2_FORMAT_RGB8 ||
+    // check all requested streams started properly
+    if ( (color_requested && prof.get_stream ( RS2_STREAM_COLOR ).format ( ) != RS2_FORMAT_RGB8) ||
       prof.get_stream ( RS2_STREAM_DEPTH ).format ( ) != RS2_FORMAT_Z16 ||
-      prof.get_stream ( RS2_STREAM_INFRARED ).format ( ) != RS2_FORMAT_Y8 )
+      (ir_requested && prof.get_stream (RS2_STREAM_INFRARED ).format ( ) != RS2_FORMAT_Y8) )
       THROW_IO_EXCEPTION ( "This stream type or format not supported." );
 
     thread_ = std::thread ( &RealSense2Grabber::threadFunction, this );
@@ -227,7 +224,7 @@ namespace pcl
   pcl::PointCloud<pcl::PointXYZ>::Ptr
   RealSense2Grabber::convertDepthToPointXYZ ( const rs2::points& points )
   {
-    return convertRealsensePointsToPointCloud<pcl::PointXYZ> ( points, []( pcl::PointXYZ& p, const rs2::texture_coordinate* uvptr ) {} );
+    return convertRealsensePointsToPointCloud<pcl::PointXYZ> ( points, []( pcl::PointXYZ&, const rs2::texture_coordinate*) {} );
   }
 
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr
@@ -300,7 +297,7 @@ namespace pcl
   default(none) \
   shared(cloud, cloud_texture_ptr, cloud_vertices_ptr, mapColorFunc)
 #endif
-    for (std::size_t index = 0; index < cloud->size (); ++index)
+    for (std::ptrdiff_t index = 0; index < static_cast<std::ptrdiff_t>(cloud->size()); ++index)
     {
       const auto ptr = cloud_vertices_ptr + index;
       const auto uvptr = cloud_texture_ptr + index;
@@ -320,8 +317,8 @@ namespace pcl
   RealSense2Grabber::getTextureIdx (const rs2::video_frame & texture, float u, float v)
   {
     const int w = texture.get_width (), h = texture.get_height ();
-    int x = std::min (std::max (int (u*w + .5f), 0), w - 1);
-    int y = std::min (std::max (int (v*h + .5f), 0), h - 1);
+    int x = std::min (std::max (static_cast<int> (u*w + .5f), 0), w - 1);
+    int y = std::min (std::max (static_cast<int> (v*h + .5f), 0), h - 1);
     return x * texture.get_bytes_per_pixel () + y * texture.get_stride_in_bytes ();
   }
 

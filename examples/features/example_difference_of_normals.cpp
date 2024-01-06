@@ -99,7 +99,7 @@ int main (int argc, char *argv[])
 
     // Create downsampled point cloud for DoN NN search with large scale
     large_cloud_downsampled = PointCloud<PointT>::Ptr(new pcl::PointCloud<PointT>);
-    const float largedownsample = float (scale2/decimation);
+    constexpr float largedownsample = static_cast<float>(scale2/decimation);
     sor.setLeafSize (largedownsample, largedownsample, largedownsample);
     sor.filter (*large_cloud_downsampled);
     std::cout << "Using leaf size of " << largedownsample << " for large scale, " << large_cloud_downsampled->size() << " points" << std::endl;
@@ -209,10 +209,10 @@ int main (int argc, char *argv[])
   ec.extract (cluster_indices);
 
   int j = 0;
-  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it, j++)
+  for (const auto& cluster : cluster_indices)
   {
     pcl::PointCloud<PointOutT>::Ptr cloud_cluster_don (new pcl::PointCloud<PointOutT>);
-    for (const auto &index : it->indices){
+    for (const auto &index : cluster.indices){
       cloud_cluster_don->points.push_back ((*doncloud)[index]);
     }
 
@@ -224,6 +224,7 @@ int main (int argc, char *argv[])
     std::stringstream ss;
     ss << outfile.substr(0,outfile.length()-4) << "_threshold_"<< threshold << "_cluster_" << j << ".pcd";
     writer.write<PointOutT> (ss.str (), *cloud_cluster_don, false);
+    ++j;
   }
 }
 

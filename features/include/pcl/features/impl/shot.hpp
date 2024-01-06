@@ -43,6 +43,8 @@
 #include <pcl/features/shot.h>
 #include <pcl/features/shot_lrf.h>
 
+#include <pcl/common/colors.h>  // for RGB2sRGB_LUT, XYZ2LAB_LUT
+
 // Useful constants.
 #define PST_PI 3.1415926535897932384626433832795
 #define PST_RAD_45 0.78539816339744830961566084581988
@@ -84,12 +86,14 @@ areEquals (float val1, float val2, float zeroFloatEps = zeroFloatEps8)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> float
-pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::sRGB_LUT[256] = {- 1};
+template <typename PointInT, typename PointNT, typename PointOutT, typename PointRFT>
+std::array<float, 256>
+    pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::sRGB_LUT = pcl::RGB2sRGB_LUT<float, 8>();
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> float
-pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::sXYZ_LUT[4000] = {- 1};
+template <typename PointInT, typename PointNT, typename PointOutT, typename PointRFT>
+std::array<float, 4000>
+    pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::sXYZ_LUT = pcl::XYZ2LAB_LUT<float, 4000>();
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> void
@@ -97,28 +101,6 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::RGB2CIELAB (un
                                                                               unsigned char B, float &L, float &A,
                                                                               float &B2)
 {
-  // @TODO: C++17 supports constexpr lambda for compile time init
-  if (sRGB_LUT[0] < 0)
-  {
-    for (int i = 0; i < 256; i++)
-    {
-      float f = static_cast<float> (i) / 255.0f;
-      if (f > 0.04045)
-        sRGB_LUT[i] = powf ((f + 0.055f) / 1.055f, 2.4f);
-      else
-        sRGB_LUT[i] = f / 12.92f;
-    }
-
-    for (int i = 0; i < 4000; i++)
-    {
-      float f = static_cast<float> (i) / 4000.0f;
-      if (f > 0.008856)
-        sXYZ_LUT[i] = static_cast<float> (powf (f, 0.3333f));
-      else
-        sXYZ_LUT[i] = static_cast<float>((7.787 * f) + (16.0 / 116.0));
-    }
-  }
-
   float fr = sRGB_LUT[R];
   float fg = sRGB_LUT[G];
   float fb = sRGB_LUT[B];
@@ -132,9 +114,9 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::RGB2CIELAB (un
   float vy = y;
   float vz = z / 1.08883f;
 
-  vx = sXYZ_LUT[int(vx*4000)];
-  vy = sXYZ_LUT[int(vy*4000)];
-  vz = sXYZ_LUT[int(vz*4000)];
+  vx = sXYZ_LUT[static_cast<int>(vx*4000)];
+  vy = sXYZ_LUT[static_cast<int>(vy*4000)];
+  vz = sXYZ_LUT[static_cast<int>(vz*4000)];
 
   L = 116.0f * vy - 16.0f;
   if (L > 100)
@@ -193,7 +175,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::initCompute ()
 template <typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> void
 pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::createBinDistanceShape (
     int index,
-    const std::vector<int> &indices,
+    const pcl::Indices &indices,
     std::vector<double> &bin_distance_shape)
 {
   bin_distance_shape.resize (indices.size ());
@@ -253,7 +235,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::normalizeHistog
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> void
 pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::interpolateSingleChannel (
-    const std::vector<int> &indices,
+    const pcl::Indices &indices,
     const std::vector<float> &sqr_dists,
     const int index,
     std::vector<double> &binDistance,
@@ -295,7 +277,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::interpolateSing
 
 
     unsigned char bit4 = ((yInFeatRef > 0) || ((yInFeatRef == 0.0) && (xInFeatRef < 0))) ? 1 : 0;
-    unsigned char bit3 = static_cast<unsigned char> (((xInFeatRef > 0) || ((xInFeatRef == 0.0) && (yInFeatRef > 0))) ? !bit4 : bit4);
+    auto bit3 = static_cast<unsigned char> (((xInFeatRef > 0) || ((xInFeatRef == 0.0) && (yInFeatRef > 0))) ? !bit4 : bit4);
 
     assert (bit3 == 0 || bit3 == 1);
 
@@ -428,7 +410,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::interpolateSing
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> void
 pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::interpolateDoubleChannel (
-  const std::vector<int> &indices,
+  const pcl::Indices &indices,
   const std::vector<float> &sqr_dists,
   const int index,
   std::vector<double> &binDistanceShape,
@@ -473,7 +455,7 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::interpolateDou
       zInFeatRef  = 0;
 
     unsigned char bit4 = ((yInFeatRef > 0) || ((yInFeatRef == 0.0) && (xInFeatRef < 0))) ? 1 : 0;
-    unsigned char bit3 = static_cast<unsigned char> (((xInFeatRef > 0) || ((xInFeatRef == 0.0) && (yInFeatRef > 0))) ? !bit4 : bit4);
+    auto bit3 = static_cast<unsigned char> (((xInFeatRef > 0) || ((xInFeatRef == 0.0) && (yInFeatRef > 0))) ? !bit4 : bit4);
 
     assert (bit3 == 0 || bit3 == 1);
 
@@ -644,7 +626,7 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::interpolateDou
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> void
 pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computePointSHOT (
-  const int index, const std::vector<int> &indices, const std::vector<float> &sqr_dists, Eigen::VectorXf &shot)
+  const int index, const pcl::Indices &indices, const std::vector<float> &sqr_dists, Eigen::VectorXf &shot)
 {
   // Clear the resultant shot
   shot.setZero ();
@@ -729,7 +711,7 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computePointSH
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> void
 pcl::SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::computePointSHOT (
-  const int index, const std::vector<int> &indices, const std::vector<float> &sqr_dists, Eigen::VectorXf &shot)
+  const int index, const pcl::Indices &indices, const std::vector<float> &sqr_dists, Eigen::VectorXf &shot)
 {
   //Skip the current feature if the number of its neighbors is not sufficient for its description
   if (indices.size () < 5)
@@ -769,11 +751,12 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (pcl
 
   assert(descLength_ == 352);
 
-  shot_.setZero (descLength_);
+  Eigen::VectorXf shot;
+  shot.setZero (descLength_);
 
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices (k_);
+  pcl::Indices nn_indices (k_);
   std::vector<float> nn_dists (k_);
 
   output.is_dense = true;
@@ -806,11 +789,11 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (pcl
     }
 
     // Estimate the SHOT descriptor at each patch
-    computePointSHOT (static_cast<int> (idx), nn_indices, nn_dists, shot_);
+    computePointSHOT (static_cast<int> (idx), nn_indices, nn_dists, shot);
 
     // Copy into the resultant cloud
     for (int d = 0; d < descLength_; ++d)
-      output[idx].descriptor[d] = shot_[d];
+      output[idx].descriptor[d] = shot[d];
     for (int d = 0; d < 3; ++d)
     {
       output[idx].rf[d + 0] = (*frames_)[idx].x_axis[d];
@@ -841,11 +824,12 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature
   radius1_4_ = search_radius_ / 4;
   radius1_2_ = search_radius_ / 2;
 
-  shot_.setZero (descLength_);
+  Eigen::VectorXf shot;
+  shot.setZero (descLength_);
 
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices (k_);
+  pcl::Indices nn_indices (k_);
   std::vector<float> nn_dists (k_);
 
   output.is_dense = true;
@@ -878,11 +862,11 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature
     }
 
     // Compute the SHOT descriptor for the current 3D feature
-    computePointSHOT (static_cast<int> (idx), nn_indices, nn_dists, shot_);
+    computePointSHOT (static_cast<int> (idx), nn_indices, nn_dists, shot);
 
     // Copy into the resultant cloud
     for (int d = 0; d < descLength_; ++d)
-      output[idx].descriptor[d] = shot_[d];
+      output[idx].descriptor[d] = shot[d];
     for (int d = 0; d < 3; ++d)
     {
       output[idx].rf[d + 0] = (*frames_)[idx].x_axis[d];

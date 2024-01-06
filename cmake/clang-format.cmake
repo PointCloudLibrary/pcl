@@ -1,4 +1,4 @@
-find_package(ClangFormat 10)
+find_package(ClangFormat 14)
 # search for version number in clang-format without version number
 if(ClangFormat_FOUND)
   message(STATUS "Adding target 'format'")

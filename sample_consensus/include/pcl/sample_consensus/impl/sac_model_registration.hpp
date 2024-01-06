@@ -244,6 +244,7 @@ pcl::SampleConsensusModelRegistration<PointT>::countWithinDistance (
     if ((p_tr - pt_tgt).squaredNorm () < thresh)
       nr_p++;
   }
+  PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::countWithinDistance] %zu inliers of %zu total points, threshold=%g\n", nr_p, indices_->size(), threshold);
   return (nr_p);
 } 
 
@@ -310,6 +311,7 @@ pcl::SampleConsensusModelRegistration<PointT>::estimateRigidTransformationSVD (
   }
 
   // Call Umeyama directly from Eigen
+  PCL_DEBUG_STREAM("[pcl::SampleConsensusModelRegistration::estimateRigidTransformationSVD] src and tgt:" << std::endl << src << std::endl << std::endl << tgt << std::endl);
   Eigen::Matrix4d transformation_matrix = pcl::umeyama (src, tgt, false);
 
   // Return the correct transformation

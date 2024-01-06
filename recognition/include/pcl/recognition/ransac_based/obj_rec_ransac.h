@@ -48,7 +48,6 @@
 #include <pcl/recognition/ransac_based/orr_graph.h>
 #include <pcl/recognition/ransac_based/auxiliary.h>
 #include <pcl/recognition/ransac_based/bvh.h>
-#include <pcl/registration/transformation_estimation_svd.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/point_cloud.h>
 #include <cmath>
@@ -103,9 +102,9 @@ namespace pcl
               match_confidence_ (match_confidence),
               user_data_ (user_data)
             {
-              memcpy(this->rigid_transform_, rigid_transform, 12*sizeof (float));
+              std::copy(rigid_transform, rigid_transform + 12, this->rigid_transform_);
             }
-            virtual ~Output (){}
+            virtual ~Output () = default;
 
           public:
             std::string object_name_;
@@ -122,7 +121,7 @@ namespace pcl
               {
               }
 
-              virtual ~OrientedPointPair (){}
+              virtual ~OrientedPointPair () = default;
 
             public:
               const float *p1_, *n1_, *p2_, *n2_;
@@ -131,8 +130,8 @@ namespace pcl
         class HypothesisCreator
         {
           public:
-            HypothesisCreator (){}
-            virtual ~HypothesisCreator (){}
+            HypothesisCreator () = default;
+            virtual ~HypothesisCreator () = default;
 
             Hypothesis* create (const SimpleOctree<Hypothesis, HypothesisCreator, float>::Node* ) const { return new Hypothesis ();}
         };
@@ -330,9 +329,9 @@ namespace pcl
         {
           // 'p_obj' is the probability that given that the first sample point belongs to an object,
           // the second sample point will belong to the same object
-          const double p_obj = 0.25f;
+          constexpr double p_obj = 0.25f;
           // old version: p = p_obj*relative_obj_size_*fraction_of_pairs_in_hash_table_;
-          const double p = p_obj*relative_obj_size_;
+          const double p = p_obj * relative_obj_size_;
 
           if ( 1.0 - p <= 0.0 )
             return 1;
@@ -455,15 +454,15 @@ namespace pcl
         float position_discretization_;
         float rotation_discretization_;
         float abs_zdist_thresh_;
-        float relative_obj_size_;
-        float visibility_;
-        float relative_num_of_illegal_pts_;
-        float intersection_fraction_;
+        float relative_obj_size_{0.05f};
+        float visibility_{0.2f};
+        float relative_num_of_illegal_pts_{0.02f};
+        float intersection_fraction_{0.03f};
         float max_coplanarity_angle_;
-        float scene_bounds_enlargement_factor_;
-        bool ignore_coplanar_opps_;
-        float frac_of_points_for_icp_refinement_;
-        bool do_icp_hypotheses_refinement_;
+        float scene_bounds_enlargement_factor_{0.25f};
+        bool ignore_coplanar_opps_{true};
+        float frac_of_points_for_icp_refinement_{0.3f};
+        bool do_icp_hypotheses_refinement_{true};
 
         ModelLibrary model_library_;
         ORROctree scene_octree_;
@@ -474,7 +473,7 @@ namespace pcl
 
         std::list<OrientedPointPair> sampled_oriented_point_pairs_;
         std::vector<Hypothesis> accepted_hypotheses_;
-        Recognition_Mode rec_mode_;
+        Recognition_Mode rec_mode_{ObjRecRANSAC::FULL_RECOGNITION};
     };
   } // namespace recognition
 } // namespace pcl

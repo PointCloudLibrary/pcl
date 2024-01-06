@@ -40,98 +40,120 @@
 
 #pragma once
 
-#include <QMainWindow>
-
 #include <pcl/apps/in_hand_scanner/in_hand_scanner.h>
+
+#include <QMainWindow>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Forward declarations
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace Ui
-{
-  class MainWindow;
+namespace Ui {
+class MainWindow;
 }
 
-namespace pcl
-{
-  namespace ihs
-  {
-    class HelpWindow;
-  } // End namespace ihs
+namespace pcl {
+namespace ihs {
+class HelpWindow;
+} // End namespace ihs
 } // End namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 // MainWindow
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace pcl
-{
-  namespace ihs
-  {
-    class MainWindow : public QMainWindow
-    {
-      Q_OBJECT
+namespace pcl {
+namespace ihs {
+class MainWindow : public QMainWindow {
+  Q_OBJECT
 
-      public:
+public:
+  using InHandScanner = pcl::ihs::InHandScanner;
+  using HelpWindow = pcl::ihs::HelpWindow;
+  using RunningMode = InHandScanner::RunningMode;
 
-        using InHandScanner = pcl::ihs::InHandScanner;
-        using HelpWindow = pcl::ihs::HelpWindow;
-        using RunningMode = InHandScanner::RunningMode;
+  explicit MainWindow(QWidget* parent = nullptr);
+  ~MainWindow() override;
 
-        explicit MainWindow (QWidget* parent = nullptr);
-        ~MainWindow ();
+public Q_SLOTS:
 
-      public Q_SLOTS:
+  void
+  showHelp();
+  void
+  saveAs();
 
-        void showHelp ();
-        void saveAs ();
+  // In hand scanner
+  void
+  runningModeChanged(const RunningMode mode);
+  void
+  keyPressEvent(QKeyEvent* event) override;
 
-        // In hand scanner
-        void runningModeChanged (const RunningMode mode);
-        void keyPressEvent (QKeyEvent* event) override;
+  // Input data processing.
+  void
+  setXMin(const int x_min);
+  void
+  setXMax(const int x_max);
+  void
+  setYMin(const int y_min);
+  void
+  setYMax(const int y_max);
+  void
+  setZMin(const int z_min);
+  void
+  setZMax(const int z_max);
 
-        // Input data processing.
-        void setXMin (const int x_min);
-        void setXMax (const int x_max);
-        void setYMin (const int y_min);
-        void setYMax (const int y_max);
-        void setZMin (const int z_min);
-        void setZMax (const int z_max);
+  void
+  setHMin(const int h_min);
+  void
+  setHMax(const int h_max);
+  void
+  setSMin(const int s_min);
+  void
+  setSMax(const int s_max);
+  void
+  setVMin(const int v_min);
+  void
+  setVMax(const int v_max);
 
-        void setHMin (const int h_min);
-        void setHMax (const int h_max);
-        void setSMin (const int s_min);
-        void setSMax (const int s_max);
-        void setVMin (const int v_min);
-        void setVMax (const int v_max);
+  void
+  setColorSegmentationInverted(const bool is_inverted);
+  void
+  setColorSegmentationEnabled(const bool is_enabled);
 
-        void setColorSegmentationInverted (const bool is_inverted);
-        void setColorSegmentationEnabled (const bool is_enabled);
+  void
+  setXYZErodeSize(const int size);
+  void
+  setHSVDilateSize(const int size);
 
-        void setXYZErodeSize (const int size);
-        void setHSVDilateSize (const int size);
+  // Registration
+  void
+  setEpsilon();
+  void
+  setMaxIterations(const int iterations);
+  void
+  setMinOverlap(const int overlap);
+  void
+  setMaxFitness();
 
-        // Registration
-        void setEpsilon ();
-        void setMaxIterations (const int iterations);
-        void setMinOverlap (const int overlap);
-        void setMaxFitness ();
+  void
+  setCorrespondenceRejectionFactor(const double factor);
+  void
+  setCorrespondenceRejectionMaxAngle(const int angle);
 
-        void setCorrespondenceRejectionFactor (const double factor);
-        void setCorrespondenceRejectionMaxAngle (const int angle);
+  // Integration
+  void
+  setMaxSquaredDistance();
+  void
+  setAveragingMaxAngle(const int angle);
+  void
+  setMaxAge(const int age);
+  void
+  setMinDirections(const int directions);
 
-        // Integration
-        void setMaxSquaredDistance ();
-        void setAveragingMaxAngle (const int angle);
-        void setMaxAge (const int age);
-        void setMinDirections (const int directions);
-
-      private:
-
-        Ui::MainWindow* ui_;
-        HelpWindow*     help_window_;
-        InHandScanner*  ihs_;
-    };
-  } // End namespace ihs
+private:
+  Ui::MainWindow* ui_;
+  HelpWindow* help_window_;
+  InHandScanner* ihs_;
+};
+} // End namespace ihs
 } // End namespace pcl

@@ -56,7 +56,7 @@ namespace pcl
   {
     public:
       ASCIIReader ();
-      ~ASCIIReader ();
+      ~ASCIIReader () override;
       using FileReader::read;
 
       /* Load only the meta information (number of points, their types, etc),
@@ -128,10 +128,10 @@ namespace pcl
       setExtension (const std::string &ext) { extension_ = ext; }
 
     protected:
-      std::string sep_chars_;
-      std::string extension_;
+      std::string sep_chars_{", \n\r\t"};
+      std::string extension_{".txt"};
       std::vector<pcl::PCLPointField> fields_;
-      std::string name_;
+      std::string name_{"AsciiReader"};
 
 
       /** \brief Parses token based on field type.

@@ -40,7 +40,6 @@
 #define PCL_REGISTRATION_IMPL_JOINT_ICP_HPP_
 
 #include <pcl/console/print.h>
-#include <pcl/registration/boost.h>
 #include <pcl/correspondence.h>
 
 namespace pcl {
@@ -212,9 +211,8 @@ JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
         *temp_correspondences = *correspondences_;
     }
 
-    int cnt = correspondences_->size();
     // Check whether we have enough correspondences
-    if (cnt < min_number_correspondences_) {
+    if (correspondences_->size() < min_number_correspondences_) {
       PCL_ERROR("[pcl::%s::computeTransformation] Not enough correspondences found. "
                 "Relax your threshold parameters.\n",
                 getClassName().c_str());
@@ -246,7 +244,7 @@ JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
 
     ++nr_iterations_;
 
-    // Update the vizualization of icp convergence
+    // Update the visualization of icp convergence
     // if (update_visualizer_ != 0)
     //  update_visualizer_(output, source_indices_good, *target_, target_indices_good );
 

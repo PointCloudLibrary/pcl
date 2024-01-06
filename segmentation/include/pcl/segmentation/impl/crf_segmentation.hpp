@@ -40,11 +40,11 @@
 #ifndef PCL_CRF_SEGMENTATION_HPP_
 #define PCL_CRF_SEGMENTATION_HPP_
 
+#include <pcl/filters/voxel_grid_label.h> // for VoxelGridLabel
 #include <pcl/segmentation/crf_segmentation.h>
 
 #include <pcl/common/io.h>
 
-#include <cstdio>
 #include <cstdlib>
 #include <ctime>
 
@@ -63,9 +63,7 @@ pcl::CrfSegmentation<PointT>::CrfSegmentation () :
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::CrfSegmentation<PointT>::~CrfSegmentation ()
-{
-}
+pcl::CrfSegmentation<PointT>::~CrfSegmentation () = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -351,7 +349,7 @@ pcl::CrfSegmentation<PointT>::createUnaryPotentials (std::vector<float> &unary,
       }
     }
   
-    // set the engeries for the labels
+    // set the energies for the labels
     std::size_t u_idx = k * n_labels;
     if (label > 0)
     {

@@ -41,12 +41,13 @@
 #pragma once
 
 #include <ctime>
-#include <climits>
+#include <limits>
 #include <memory>
 #include <set>
 #include <boost/random/mersenne_twister.hpp> // for mt19937
 #include <boost/random/uniform_int.hpp> // for uniform_int
 #include <boost/random/variate_generator.hpp> // for variate_generator
+#include <random>
 
 #include <pcl/memory.h>
 #include <pcl/console/print.h>
@@ -92,7 +93,7 @@ namespace pcl
       {
         // Create a random number generator object
         if (random)
-          rng_alg_.seed (static_cast<unsigned> (std::time(nullptr)));
+          rng_alg_.seed (std::random_device()());
         else
           rng_alg_.seed (12345u);
 
@@ -114,7 +115,7 @@ namespace pcl
         , custom_model_constraints_ ([](auto){return true;})
       {
         if (random)
-          rng_alg_.seed (static_cast<unsigned> (std::time (nullptr)));
+          rng_alg_.seed (std::random_device()());
         else
           rng_alg_.seed (12345u);
 
@@ -143,7 +144,7 @@ namespace pcl
         , custom_model_constraints_ ([](auto){return true;})
       {
         if (random)
-          rng_alg_.seed (static_cast<unsigned> (std::time(nullptr)));
+          rng_alg_.seed (std::random_device()());
         else
           rng_alg_.seed (12345u);
 
@@ -162,7 +163,7 @@ namespace pcl
        };
 
       /** \brief Destructor for base SampleConsensusModel. */
-      virtual ~SampleConsensusModel () {};
+      virtual ~SampleConsensusModel () = default;
 
       /** \brief Get a set of random data samples and return them as point
         * indices.
@@ -179,7 +180,7 @@ namespace pcl
                      samples.size (), indices_->size ());
           // one of these will make it stop :)
           samples.clear ();
-          iterations = INT_MAX - 1;
+          iterations = std::numeric_limits<int>::max() - 1;
           return;
         }
 
@@ -472,7 +473,7 @@ namespace pcl
           // elements, that does not matter (and nowadays, random number generators are good)
           //std::swap (shuffled_indices_[i], shuffled_indices_[i + (rand () % (index_size - i))]);
           std::swap (shuffled_indices_[i], shuffled_indices_[i + (rnd () % (index_size - i))]);
-        std::copy (shuffled_indices_.begin (), shuffled_indices_.begin () + sample_size, sample.begin ());
+        std::copy (shuffled_indices_.cbegin (), shuffled_indices_.cbegin () + sample_size, sample.begin ());
       }
 
       /** \brief Fills a sample array with one random sample from the indices_ vector
@@ -513,7 +514,7 @@ namespace pcl
             shuffled_indices_[i] = indices[i-1];
         }
 
-        std::copy (shuffled_indices_.begin (), shuffled_indices_.begin () + sample_size, sample.begin ());
+        std::copy (shuffled_indices_.cbegin (), shuffled_indices_.cbegin () + sample_size, sample.begin ());
       }
 
       /** \brief Check whether a model is valid given the user constraints.
@@ -605,6 +606,7 @@ namespace pcl
 
   /** \brief @b SampleConsensusModelFromNormals represents the base model class
     * for models that require the use of surface normals for estimation.
+    * \ingroup sample_consensus
     */
   template <typename PointT, typename PointNT>
   class SampleConsensusModelFromNormals //: public SampleConsensusModel<PointT>
@@ -617,10 +619,10 @@ namespace pcl
       using ConstPtr = shared_ptr<const SampleConsensusModelFromNormals<PointT, PointNT> >;
 
       /** \brief Empty constructor for base SampleConsensusModelFromNormals. */
-      SampleConsensusModelFromNormals () : normal_distance_weight_ (0.0), normals_ () {};
+      SampleConsensusModelFromNormals () :  normals_ () {};
 
       /** \brief Destructor. */
-      virtual ~SampleConsensusModelFromNormals () {}
+      virtual ~SampleConsensusModelFromNormals () = default;
 
       /** \brief Set the normal angular distance weight.
         * \param[in] w the relative weight (between 0 and 1) to give to the angular
@@ -630,6 +632,11 @@ namespace pcl
       inline void 
       setNormalDistanceWeight (const double w) 
       { 
+        if (w < 0.0 || w > 1.0)
+        {
+          PCL_ERROR ("[pcl::SampleConsensusModel::setNormalDistanceWeight] w is %g, but should be in [0; 1]. Weight will not be set.", w);
+          return;
+        }
         normal_distance_weight_ = w; 
       }
 
@@ -656,7 +663,7 @@ namespace pcl
       /** \brief The relative weight (between 0 and 1) to give to the angular
         * distance (0 to pi/2) between point normals and the plane normal. 
         */
-      double normal_distance_weight_;
+      double normal_distance_weight_{0.0};
 
       /** \brief A pointer to the input dataset that contains the point normals
         * of the XYZ dataset. 
@@ -690,7 +697,7 @@ namespace pcl
       */
     Functor (int m_data_points) : m_data_points_ (m_data_points) {}
   
-    virtual ~Functor () {}
+    virtual ~Functor () = default;
 
     /** \brief Get the number of values. */ 
     int

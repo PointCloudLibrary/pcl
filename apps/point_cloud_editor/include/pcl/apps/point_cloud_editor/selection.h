@@ -35,7 +35,7 @@
 
 /// @file   selection.h
 /// @details A Selection object maintains the set of indices of points from a
-/// point cloud that have been identifed by the selection tools.
+/// point cloud that have been identified by the selection tools.
 /// @author  Yue Li and Matthew Hielsberg
 
 #pragma once
@@ -59,6 +59,11 @@ class Selection : public Statistics
       if (register_stats)
         registerStats();
     }
+
+    /// @brief Copy constructor.
+    /// @param selection a const reference to a selection object whose
+    /// properties will be copied.
+    Selection (const Selection& selection) = default;
 
     /// @brief Equal operator
     /// @param selection a const reference to a selection object whose

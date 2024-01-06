@@ -9,13 +9,6 @@ pcl::cloud_composer::WorkQueue::WorkQueue (QObject* parent)
     
 }
 
-
-pcl::cloud_composer::WorkQueue::~WorkQueue ( )
-{
-  
-  
-}
-
 void
 pcl::cloud_composer::WorkQueue::enqueueNewAction (AbstractTool* new_tool, ConstItemList input_data)
 {

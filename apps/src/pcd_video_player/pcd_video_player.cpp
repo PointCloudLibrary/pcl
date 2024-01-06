@@ -47,10 +47,16 @@
 #include <QMutexLocker>
 #include <QObject>
 #include <QRadioButton>
+#if VTK_MAJOR_VERSION >= 9 || (VTK_MAJOR_VERSION == 8 && VTK_MINOR_VERSION >= 2)
+#define HAS_QVTKOPENGLWINDOW_H
+#include <QVTKOpenGLWindow.h>
+#endif
+#include <ui_pcd_video_player.h>
 
 #include <vtkCamera.h>
-#include <vtkRenderWindow.h>
+#include <vtkGenericOpenGLRenderWindow.h>
 #include <vtkRendererCollection.h>
+#include <vtkRenderWindow.h>
 
 #include <fstream>
 #include <iostream>
@@ -80,14 +86,23 @@ PCDVideoPlayer::PCDVideoPlayer()
   // Setup the cloud pointer
   cloud_.reset(new pcl::PointCloud<pcl::PointXYZRGBA>);
 
-  // Set up the qvtk window
+  // Create the QVTKWidget
+#if VTK_MAJOR_VERSION > 8
+  auto renderer = vtkSmartPointer<vtkRenderer>::New();
+  auto renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
+  renderWindow->AddRenderer(renderer);
+  vis_.reset(new pcl::visualization::PCLVisualizer(renderer, renderWindow, "", false));
+#else
   vis_.reset(new pcl::visualization::PCLVisualizer("", false));
-  ui_->qvtkWidget->SetRenderWindow(vis_->getRenderWindow());
-  vis_->setupInteractor(ui_->qvtkWidget->GetInteractor(),
-                        ui_->qvtkWidget->GetRenderWindow());
+#endif // VTK_MAJOR_VERSION > 8
+  setRenderWindowCompat(*(ui_->qvtk_widget), *(vis_->getRenderWindow()));
+  vis_->setupInteractor(getInteractorCompat(*(ui_->qvtk_widget)),
+                        getRenderWindowCompat(*(ui_->qvtk_widget)));
+
   vis_->getInteractorStyle()->setKeyboardModifier(
       pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
-  ui_->qvtkWidget->update();
+
+  refreshView();
 
   // Connect all buttons
   connect(ui_->playButton, SIGNAL(clicked()), this, SLOT(playButtonPressed()));
@@ -258,7 +273,8 @@ PCDVideoPlayer::timeoutSlot()
     }
     cloud_modified_ = false;
   }
-  ui_->qvtkWidget->update();
+
+  refreshView();
 }
 
 void
@@ -267,6 +283,16 @@ PCDVideoPlayer::indexSliderValueChanged(int value)
   PCL_DEBUG("[PCDVideoPlayer::indexSliderValueChanged] : (I) : value %d\n", value);
   current_frame_ = value;
   cloud_modified_ = true;
+}
+
+void
+PCDVideoPlayer::refreshView()
+{
+#if VTK_MAJOR_VERSION > 8
+  ui_->qvtk_widget->renderWindow()->Render();
+#else
+  ui_->qvtk_widget->update();
+#endif // VTK_MAJOR_VERSION > 8
 }
 
 void
@@ -288,6 +314,9 @@ print_usage()
 int
 main(int argc, char** argv)
 {
+#ifdef HAS_QVTKOPENGLWINDOW_H
+  QSurfaceFormat::setDefaultFormat(QVTKOpenGLWindow::defaultFormat());
+#endif
   QApplication app(argc, argv);
 
   PCDVideoPlayer VideoPlayer;

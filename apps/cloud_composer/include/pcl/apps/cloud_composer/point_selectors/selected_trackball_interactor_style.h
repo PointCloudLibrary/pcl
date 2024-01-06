@@ -37,6 +37,10 @@
 
 #include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
 
+#include <vtkInteractorStyleTrackballActor.h>
+#include <vtkSmartPointer.h>
+#include <vtkMatrix4x4.h>
+
 namespace pcl
 {
   namespace cloud_composer
@@ -49,8 +53,6 @@ namespace pcl
         vtkTypeMacro(SelectedTrackballStyleInteractor,vtkInteractorStyleTrackballActor);
         
         SelectedTrackballStyleInteractor ();
-        
-        ~SelectedTrackballStyleInteractor ();
                
         /** \brief Pass a pointer to the actor map
           * \param[in] actors the actor map that will be used with this style

@@ -37,7 +37,7 @@
 
 #pragma once
 
-#include <float.h>
+#include <limits>
 #include <thrust/sequence.h>
 #include <thrust/count.h>
 #include <thrust/remove.h>
@@ -108,7 +108,9 @@ namespace pcl
 
       private:
         /** \brief Empty constructor for base SampleConsensusModel. */
-        SampleConsensusModel () : radius_min_ (-FLT_MAX), radius_max_ (FLT_MAX) 
+        SampleConsensusModel() :
+          radius_min_(std::numeric_limits<float>::lowest()),
+          radius_max_(std::numeric_limits<float>::max())
         {};
 
       public:
@@ -116,7 +118,8 @@ namespace pcl
           * \param cloud the input point cloud dataset
           */
         SampleConsensusModel (const PointCloudConstPtr &cloud) : 
-          radius_min_ (-FLT_MAX), radius_max_ (FLT_MAX)
+          radius_min_(std::numeric_limits<float>::lowest()),
+          radius_max_(std::numeric_limits<float>::max())
         {
           // Sets the input cloud and creates a vector of "fake" indices
           setInputCloud (cloud);
@@ -129,7 +132,8 @@ namespace pcl
   /*      SampleConsensusModel (const PointCloudConstPtr &cloud, const std::vector<int> &indices) :
                               input_ (cloud),
                               indices_ (boost::make_shared <std::vector<int> > (indices)),
-                              radius_min_ (-DBL_MAX), radius_max_ (DBL_MAX) 
+                              radius_min_ (std::numeric_limits<double>::lowest()),
+                              radius_max_ (std::numeric_limits<double>::max())
       
         {
           if (indices_->size () > input_->points.size ())
@@ -140,7 +144,7 @@ namespace pcl
         };*/
 
         /** \brief Destructor for base SampleConsensusModel. */
-        virtual ~SampleConsensusModel () {};
+        virtual ~SampleConsensusModel() = default;
 
         /** \brief Get a set of random data samples and return them as point
           * indices. Pure virtual.  

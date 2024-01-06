@@ -44,7 +44,6 @@
 #endif
 
 #include <pcl/io/openni_camera/openni_device_xtion.h>
-#include <pcl/io/boost.h>
 
 #include <mutex>
 #include <sstream>
@@ -74,7 +73,7 @@ openni_wrapper::DeviceXtionPro::~DeviceXtionPro () noexcept
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool 
-openni_wrapper::DeviceXtionPro::isImageResizeSupported (unsigned, unsigned, unsigned, unsigned) const throw ()
+openni_wrapper::DeviceXtionPro::isImageResizeSupported (unsigned, unsigned, unsigned, unsigned) const noexcept
 {
   return (false);
 }
@@ -116,7 +115,7 @@ openni_wrapper::DeviceXtionPro::enumAvailableModes () noexcept
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::Image::Ptr 
-openni_wrapper::DeviceXtionPro::getCurrentImage (pcl::shared_ptr<xn::ImageMetaData>) const throw ()
+openni_wrapper::DeviceXtionPro::getCurrentImage (pcl::shared_ptr<xn::ImageMetaData>) const noexcept
 {
   return (Image::Ptr (reinterpret_cast<Image*> (0)));
 }

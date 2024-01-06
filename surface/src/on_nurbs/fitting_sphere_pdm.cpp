@@ -35,6 +35,7 @@
  *
  */
 
+#include <limits>
 #include <stdexcept>
 #include <pcl/surface/on_nurbs/fitting_sphere_pdm.h>
 #include <pcl/pcl_macros.h>
@@ -168,8 +169,12 @@ FittingSphere::initNurbsSphere (int order, NurbsDataSurface *data, Eigen::Vector
 {
   Eigen::Vector3d mean = NurbsTools::computeMean (data->interior);
 
-  Eigen::Vector3d _min (DBL_MAX, DBL_MAX, DBL_MAX);
-  Eigen::Vector3d _max (-DBL_MAX, -DBL_MAX, -DBL_MAX);
+  Eigen::Vector3d _min(std::numeric_limits<double>::max(),
+                       std::numeric_limits<double>::max(),
+                       std::numeric_limits<double>::max());
+  Eigen::Vector3d _max(std::numeric_limits<double>::lowest(),
+                       std::numeric_limits<double>::lowest(),
+                       std::numeric_limits<double>::lowest());
   for (const auto &i : data->interior)
   {
     Eigen::Vector3d p = i - mean;

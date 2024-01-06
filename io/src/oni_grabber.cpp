@@ -42,7 +42,7 @@
 #include <pcl/point_types.h>
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
-#include <pcl/io/boost.h>  // for boost::shared_array
+#include <boost/shared_array.hpp> // for boost::shared_array
 #include <pcl/memory.h>  // for dynamic_pointer_cast
 #include <pcl/exceptions.h>
 
@@ -71,17 +71,6 @@ namespace pcl
 ONIGrabber::ONIGrabber (const std::string& file_name, bool repeat, bool stream)
   : rgb_frame_id_ ("/openni_rgb_optical_frame")
   , depth_frame_id_ ("/openni_depth_optical_frame")
-  , running_ (false)
-  , image_width_ ()
-  , image_height_ ()
-  , depth_width_ ()
-  , depth_height_ ()
-  , depth_callback_handle ()
-  , image_callback_handle ()
-  , ir_callback_handle ()
-  , image_signal_ (), depth_image_signal_ (), ir_image_signal_ (), image_depth_image_signal_ ()
-  , ir_depth_image_signal_ (), point_cloud_signal_ (), point_cloud_i_signal_ (), point_cloud_rgb_signal_ ()
-  , point_cloud_rgba_signal_ ()
 {
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
   device_ = dynamic_pointer_cast< openni_wrapper::DeviceONI> (driver.createVirtualDevice (file_name, repeat, stream));
@@ -243,7 +232,7 @@ ONIGrabber::isRunning() const
 std::string 
 ONIGrabber::getName () const
 {
-  return (std::string("ONIGrabber"));
+  return {"ONIGrabber"};
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -372,7 +361,7 @@ ONIGrabber::convertToXYZPointCloud(const openni_wrapper::DepthImage::Ptr& depth_
   if (depth_image->getWidth () != depth_width_ || depth_image->getHeight () != depth_height_)
   {
     static unsigned buffer_size = 0;
-    static boost::shared_array<unsigned short> depth_buffer ((unsigned short*)nullptr);
+    static boost::shared_array<unsigned short> depth_buffer (nullptr);
 
     if (buffer_size < depth_width_ * depth_height_)
     {
@@ -412,7 +401,7 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr ONIGrabber::convertToXYZRGBPointCloud (
     const openni_wrapper::DepthImage::Ptr &depth_image) const
 {
   static unsigned rgb_array_size = 0;
-  static boost::shared_array<unsigned char> rgb_array((unsigned char*)nullptr);
+  static boost::shared_array<unsigned char> rgb_array(nullptr);
   static unsigned char* rgb_buffer = nullptr;
 
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
@@ -432,7 +421,7 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr ONIGrabber::convertToXYZRGBPointCloud (
   if (depth_image->getWidth() != depth_width_ || depth_image->getHeight() != depth_height_)
   {
     static unsigned buffer_size = 0;
-    static boost::shared_array<unsigned short> depth_buffer((unsigned short*)nullptr);
+    static boost::shared_array<unsigned short> depth_buffer(nullptr);
 
     if (buffer_size < depth_width_ * depth_height_)
     {
@@ -496,7 +485,7 @@ pcl::PointCloud<pcl::PointXYZRGBA>::Ptr ONIGrabber::convertToXYZRGBAPointCloud (
     const openni_wrapper::DepthImage::Ptr &depth_image) const
 {
   static unsigned rgb_array_size = 0;
-  static boost::shared_array<unsigned char> rgb_array((unsigned char*)nullptr);
+  static boost::shared_array<unsigned char> rgb_array(nullptr);
   static unsigned char* rgb_buffer = nullptr;
 
   pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGBA>);
@@ -516,7 +505,7 @@ pcl::PointCloud<pcl::PointXYZRGBA>::Ptr ONIGrabber::convertToXYZRGBAPointCloud (
   if (depth_image->getWidth() != depth_width_ || depth_image->getHeight() != depth_height_)
   {
     static unsigned buffer_size = 0;
-    static boost::shared_array<unsigned short> depth_buffer((unsigned short*)nullptr);
+    static boost::shared_array<unsigned short> depth_buffer(nullptr);
 
     if (buffer_size < depth_width_ * depth_height_)
     {
@@ -597,8 +586,8 @@ pcl::PointCloud<pcl::PointXYZI>::Ptr ONIGrabber::convertToXYZIPointCloud(const o
   if (depth_image->getWidth() != depth_width_ || depth_image->getHeight() != depth_height_)
   {
     static unsigned buffer_size = 0;
-    static boost::shared_array<unsigned short> depth_buffer((unsigned short*)nullptr);
-    static boost::shared_array<unsigned short> ir_buffer((unsigned short*)nullptr);
+    static boost::shared_array<unsigned short> depth_buffer(nullptr);
+    static boost::shared_array<unsigned short> ir_buffer(nullptr);
 
     if (buffer_size < depth_width_ * depth_height_)
     {

@@ -168,12 +168,12 @@ main (int argc, char *argv[])
   ec.extract (cluster_indices);
 
   int j = 0;
-  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it, j++)
+  for (const auto& cluster : cluster_indices)
   {
     pcl::PointCloud<PointNormal>::Ptr cloud_cluster_don (new pcl::PointCloud<PointNormal>);
-    for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
+    for (const auto& idx : cluster.indices)
     {
-      cloud_cluster_don->points.push_back ((*doncloud)[*pit]);
+      cloud_cluster_don->points.push_back ((*doncloud)[idx]);
     }
 
     cloud_cluster_don->width = cloud_cluster_don->size ();
@@ -185,5 +185,6 @@ main (int argc, char *argv[])
     std::stringstream ss;
     ss << "don_cluster_" << j << ".pcd";
     writer.write<pcl::PointNormal> (ss.str (), *cloud_cluster_don, false);
+    ++j;
   }
 }

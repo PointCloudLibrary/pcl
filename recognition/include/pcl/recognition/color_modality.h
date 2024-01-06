@@ -83,7 +83,7 @@ namespace pcl
 
       ColorModality ();
   
-      virtual ~ColorModality ();
+      virtual ~ColorModality () = default;
   
       inline QuantizedMap &
       getQuantizedMap () 
@@ -149,12 +149,6 @@ pcl::ColorModality<PointInT>::ColorModality ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
-pcl::ColorModality<PointInT>::~ColorModality ()
-{
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT>
 void
 pcl::ColorModality<PointInT>::processInputData ()
 {
@@ -185,8 +179,7 @@ void pcl::ColorModality<PointInT>::extractFeatures (const MaskMap & mask,
   for (std::size_t map_index = 0; map_index < 8; ++map_index)
     mask_maps[map_index].resize (width, height);
 
-  unsigned char map[255];
-  memset(map, 0, 255);
+  unsigned char map[255]{};
 
   map[0x1<<0] = 0;
   map[0x1<<1] = 1;

@@ -10,9 +10,6 @@
 #include <pcl/point_types.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
-// Visualization Toolkit (VTK)
-#include <vtkRenderWindow.h>
-
 typedef pcl::PointXYZRGBA PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
 
@@ -49,6 +46,9 @@ public Q_SLOTS:
   blueSliderValueChanged (int value);
 
 protected:
+  void
+  refreshView();
+
   pcl::visualization::PCLVisualizer::Ptr viewer;
   PointCloudT::Ptr cloud;
 
@@ -58,5 +58,4 @@ protected:
 
 private:
   Ui::PCLViewer *ui;
-
 };

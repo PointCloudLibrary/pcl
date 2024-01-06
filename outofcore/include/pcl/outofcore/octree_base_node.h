@@ -46,7 +46,6 @@
 #include <pcl/common/io.h>
 #include <pcl/PCLPointCloud2.h>
 
-#include <pcl/outofcore/boost.h>
 #include <pcl/outofcore/octree_base.h>
 #include <pcl/outofcore/octree_disk_container.h>
 #include <pcl/outofcore/outofcore_node_data.h>
@@ -129,7 +128,7 @@ namespace pcl
 
         /** \brief Will recursively delete all children calling recFreeChildrein */
         
-        ~OutofcoreOctreeBaseNode ();
+        ~OutofcoreOctreeBaseNode () override;
 
         //query
         /** \brief gets the minimum and maximum corner of the bounding box represented by this node
@@ -282,7 +281,7 @@ namespace pcl
           return (res);
         }
 
-        /** \brief Count loaded chilren */
+        /** \brief Count loaded children */
         virtual std::size_t
         getNumLoadedChildren ()  const
         {
@@ -347,8 +346,8 @@ namespace pcl
         virtual std::size_t
         countNumChildren () const;
 
-        /** \brief Counts the number of loaded chilren by testing the \c children_ array; 
-         *  used to update num_loaded_chilren_ internally 
+        /** \brief Counts the number of loaded children by testing the \c children_ array; 
+         *  used to update num_loaded_children_ internally 
          */
         virtual std::size_t
         countNumLoadedChildren () const;
@@ -519,7 +518,7 @@ namespace pcl
          *  This could be overloaded with a parallelized implementation
          */
         void
-        sortOctantIndices (const pcl::PCLPointCloud2::Ptr &input_cloud, std::vector< std::vector<int> > &indices, const Eigen::Vector3d &mid_xyz);
+        sortOctantIndices (const pcl::PCLPointCloud2::Ptr &input_cloud, std::vector< pcl::Indices > &indices, const Eigen::Vector3d &mid_xyz);
 
         /** \brief Enlarges the shortest two sidelengths of the
          *  bounding box to a cubic shape; operation is done in

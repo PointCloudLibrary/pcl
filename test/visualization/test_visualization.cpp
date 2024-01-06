@@ -60,10 +60,29 @@ PointCloud<PointNormal>::Ptr cloud_with_normals1 (new PointCloud<PointNormal>);
 search::KdTree<PointXYZ>::Ptr tree3;
 search::KdTree<PointNormal>::Ptr tree4;
 
+// Test that updatepointcloud works when adding points.
+////////////////////////////////////////////////////////////////////////////////
+TEST(PCL, PCLVisualizer_updatePointCloudAddPoint)
+{
+  pcl::common::CloudGenerator<pcl::PointXYZ, pcl::common::UniformGenerator<float> > generator;
+
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>());
+  generator.fill(3, 1, *cloud);
+
+  // Setup a basic viewport window
+  pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("3D Viewer"));
+  viewer->addPointCloud<pcl::PointXYZ>(cloud);
+
+  cloud->push_back(pcl::PointXYZ());
+
+  viewer->updatePointCloud(cloud);
+  viewer->spinOnce(100);
+}
+
 // Test that updatepointcloud works when removing points. Ie. modifying vtk data structure to reflect modified pointcloud
 // See #4001 and #3452 for previously undetected error.
 ////////////////////////////////////////////////////////////////////////////////
-TEST(PCL, PCLVisualizer_updatePointCloud)
+TEST(PCL, PCLVisualizer_updatePointCloudRemovePoint)
 {
   pcl::common::CloudGenerator<pcl::PointXYZRGB, pcl::common::UniformGenerator<float> > generator;
 
@@ -95,9 +114,9 @@ TEST (PCL, PCLVisualizer_camera)
   given_intrinsics (0, 2) = 320.f;
   given_intrinsics (1, 2) = 240.f;
 
-  float M_PIf = static_cast<float> (M_PI);
+  float M_PI_f = static_cast<float> (M_PI);
   Eigen::Matrix4f given_extrinsics (Eigen::Matrix4f::Identity ());
-  given_extrinsics.block<3, 3> (0, 0) = Eigen::AngleAxisf (30.f * M_PIf / 180.f, Eigen::Vector3f (1.f, 0.f, 0.f)).matrix ();
+  given_extrinsics.block<3, 3> (0, 0) = Eigen::AngleAxisf (30.f * M_PI_f / 180.f, Eigen::Vector3f (1.f, 0.f, 0.f)).matrix ();
   given_extrinsics.block<3, 1> (0, 3) = Eigen::Vector3f (10.f, 15.f, 20.f);
 
   visualizer.setCameraParameters (given_intrinsics, given_extrinsics);
@@ -113,7 +132,7 @@ TEST (PCL, PCLVisualizer_camera)
   Eigen::Vector3f trans (10.f, 2.f, 20.f);
   visualizer.setCameraPosition (trans[0], trans[1], trans[2], trans[0] + 1., trans[1], trans[2], 0., 1., 0.);
   viewer_pose = visualizer.getViewerPose ().matrix ();
-  Eigen::Matrix3f expected_rotation = Eigen::AngleAxisf (M_PIf / 2.0f, Eigen::Vector3f (0.f, 1.f, 0.f)).matrix ();
+  Eigen::Matrix3f expected_rotation = Eigen::AngleAxisf (M_PI_f / 2.0f, Eigen::Vector3f (0.f, 1.f, 0.f)).matrix ();
   for (std::size_t i = 0; i < 3; ++i)
     for (std::size_t j = 0; j < 3; ++j)
       EXPECT_NEAR (viewer_pose (i, j), expected_rotation (i, j), 1e-6);
@@ -170,6 +189,36 @@ TEST (PCL, PCLVisualizer_getPointCloudRenderingProperties)
   EXPECT_EQ (r, 1.);
   EXPECT_EQ (g, 0.);
   EXPECT_EQ (b, 0.);
+}
+
+// This test was added to make sure the dynamic_cast in updateColorHandlerIndex works correctly
+// (see https://github.com/PointCloudLibrary/pcl/issues/5545)
+TEST(PCL, PCLVisualizer_updateColorHandlerIndex) {
+  // create
+  visualization::PCLVisualizer::Ptr viewer_ptr(
+      new visualization::PCLVisualizer);
+  // generates points
+  common::CloudGenerator<PointXYZRGB, common::UniformGenerator<float>>
+      generator;
+  PointCloud<PointXYZRGB>::Ptr rgb_cloud_ptr(new PointCloud<PointXYZRGB>());
+  generator.fill(3, 1, *rgb_cloud_ptr);
+
+  PCLPointCloud2::Ptr rgb_cloud2_ptr(new PCLPointCloud2());
+  toPCLPointCloud2(*rgb_cloud_ptr, *rgb_cloud2_ptr);
+
+  // add cloud
+  const std::string cloud_name = "RGB_cloud";
+  visualization::PointCloudColorHandlerRGBField<PCLPointCloud2>::Ptr
+      color_handler_ptr(
+          new visualization::PointCloudColorHandlerRGBField<PCLPointCloud2>(
+              rgb_cloud2_ptr));
+  viewer_ptr->addPointCloud(rgb_cloud2_ptr,
+                            color_handler_ptr,
+                            Eigen::Vector4f::Zero(),
+                            Eigen::Quaternionf(),
+                            cloud_name,
+                            0);
+  EXPECT_TRUE(viewer_ptr->updateColorHandlerIndex(cloud_name, 0));
 }
 
 /* ---[ */

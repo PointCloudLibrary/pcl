@@ -41,9 +41,8 @@
 #include <pcl/features/fpfh.h>
 
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
+#include <pcl/visualization/qvtk_compatibility.h>
 #include <pcl/visualization/pcl_plotter.h>
-
-class QVTKWidget;
 
 namespace pcl
 {
@@ -58,7 +57,6 @@ namespace pcl
                      const pcl::PointCloud<pcl::FPFHSignature33>::Ptr& fpfh_ptr,
                      double radius);
         FPFHItem (const FPFHItem& to_copy);
-        ~FPFHItem ();
         
         inline int 
         type () const override { return FPFH_ITEM; }
@@ -74,7 +72,7 @@ namespace pcl
         pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfh_ptr_;
         double radius_;
         pcl::visualization::PCLPlotter::Ptr plot_;
-        QVTKWidget *qvtk_;
+        PCLQVTKWidget* qvtk_;
         QWidget *hist_page_;
     };
 

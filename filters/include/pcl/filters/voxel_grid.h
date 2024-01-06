@@ -40,7 +40,7 @@
 #pragma once
 
 #include <pcl/filters/filter.h>
-#include <cfloat> // for FLT_MAX
+#include <limits>
 
 namespace pcl
 {
@@ -190,29 +190,22 @@ namespace pcl
       using Ptr = shared_ptr<VoxelGrid<PointT> >;
       using ConstPtr = shared_ptr<const VoxelGrid<PointT> >;
 
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
+
       /** \brief Empty constructor. */
       VoxelGrid () :
         leaf_size_ (Eigen::Vector4f::Zero ()),
         inverse_leaf_size_ (Eigen::Array4f::Zero ()),
-        downsample_all_data_ (true),
-        save_leaf_layout_ (false),
         min_b_ (Eigen::Vector4i::Zero ()),
         max_b_ (Eigen::Vector4i::Zero ()),
         div_b_ (Eigen::Vector4i::Zero ()),
-        divb_mul_ (Eigen::Vector4i::Zero ()),
-        filter_field_name_ (""),
-        filter_limit_min_ (-FLT_MAX),
-        filter_limit_max_ (FLT_MAX),
-        filter_limit_negative_ (false),
-        min_points_per_voxel_ (0)
+        divb_mul_ (Eigen::Vector4i::Zero ())
       {
         filter_name_ = "VoxelGrid";
       }
 
       /** \brief Destructor. */
-      ~VoxelGrid ()
-      {
-      }
+      ~VoxelGrid () override = default;
 
       /** \brief Set the voxel grid leaf size.
         * \param[in] leaf_size the voxel grid leaf size
@@ -362,9 +355,9 @@ namespace pcl
       inline Eigen::Vector3i
       getGridCoordinates (float x, float y, float z) const
       {
-        return (Eigen::Vector3i (static_cast<int> (std::floor (x * inverse_leaf_size_[0])),
+        return {static_cast<int> (std::floor (x * inverse_leaf_size_[0])),
                                  static_cast<int> (std::floor (y * inverse_leaf_size_[1])),
-                                 static_cast<int> (std::floor (z * inverse_leaf_size_[2]))));
+                                 static_cast<int> (std::floor (z * inverse_leaf_size_[2]))};
       }
 
       /** \brief Returns the index in the downsampled cloud corresponding to a given set of coordinates.
@@ -411,7 +404,8 @@ namespace pcl
         filter_limit_max_ = limit_max;
       }
 
-      /** \brief Get the field filter limits (min/max) set by the user. The default values are -FLT_MAX, FLT_MAX.
+      /** \brief Get the field filter limits (min/max) set by the user.
+                 The default values are std::numeric_limits<float>::lowest(), std::numeric_limits<float>::max().
         * \param[out] limit_min the minimum allowed field value
         * \param[out] limit_max the maximum allowed field value
         */
@@ -435,6 +429,7 @@ namespace pcl
       /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
         * \param[out] limit_negative true if data \b outside the interval [min; max] is to be returned, false otherwise
         */
+      PCL_DEPRECATED(1, 16, "use bool getFilterLimitsNegative() instead")
       inline void
       getFilterLimitsNegative (bool &limit_negative) const
       {
@@ -458,10 +453,10 @@ namespace pcl
       Eigen::Array4f inverse_leaf_size_;
 
       /** \brief Set to true if all fields need to be downsampled, or false if just XYZ. */
-      bool downsample_all_data_;
+      bool downsample_all_data_{true};
 
       /** \brief Set to true if leaf layout information needs to be saved in \a leaf_layout_. */
-      bool save_leaf_layout_;
+      bool save_leaf_layout_{false};
 
       /** \brief The leaf layout information for fast access to cells relative to current position **/
       std::vector<int> leaf_layout_;
@@ -473,16 +468,16 @@ namespace pcl
       std::string filter_field_name_;
 
       /** \brief The minimum allowed filter value a point will be considered from. */
-      double filter_limit_min_;
+      double filter_limit_min_{std::numeric_limits<float>::lowest()};
 
       /** \brief The maximum allowed filter value a point will be considered from. */
-      double filter_limit_max_;
+      double filter_limit_max_{std::numeric_limits<float>::max()};
 
       /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a filter_limit_max_). Default: false. */
-      bool filter_limit_negative_;
+      bool filter_limit_negative_{false};
 
       /** \brief Minimum number of points per voxel for the centroid to be computed */
-      unsigned int min_points_per_voxel_;
+      unsigned int min_points_per_voxel_{0};
 
       using FieldList = typename pcl::traits::fieldList<PointT>::type;
 
@@ -520,25 +515,17 @@ namespace pcl
       VoxelGrid () :
         leaf_size_ (Eigen::Vector4f::Zero ()),
         inverse_leaf_size_ (Eigen::Array4f::Zero ()),
-        downsample_all_data_ (true),
-        save_leaf_layout_ (false),
+        
         min_b_ (Eigen::Vector4i::Zero ()),
         max_b_ (Eigen::Vector4i::Zero ()),
         div_b_ (Eigen::Vector4i::Zero ()),
-        divb_mul_ (Eigen::Vector4i::Zero ()),
-        filter_field_name_ (""),
-        filter_limit_min_ (-FLT_MAX),
-        filter_limit_max_ (FLT_MAX),
-        filter_limit_negative_ (false),
-        min_points_per_voxel_ (0)
+        divb_mul_ (Eigen::Vector4i::Zero ())
       {
         filter_name_ = "VoxelGrid";
       }
 
       /** \brief Destructor. */
-      ~VoxelGrid ()
-      {
-      }
+      ~VoxelGrid () override = default;
 
       /** \brief Set the voxel grid leaf size.
         * \param[in] leaf_size the voxel grid leaf size
@@ -592,10 +579,10 @@ namespace pcl
       inline void
       setMinimumPointsNumberPerVoxel (unsigned int min_points_per_voxel) { min_points_per_voxel_ = min_points_per_voxel; }
 
-	  /** \brief Return the minimum number of points required for a voxel to be used.
-       */
-	  inline unsigned int
-	  getMinimumPointsNumberPerVoxel () const { return min_points_per_voxel_; }
+      /** \brief Return the minimum number of points required for a voxel to be used.
+        */
+      inline unsigned int
+      getMinimumPointsNumberPerVoxel () const { return min_points_per_voxel_; }
 
       /** \brief Set to true if leaf layout information needs to be saved for later access.
         * \param[in] save_leaf_layout the new value (true/false)
@@ -710,9 +697,9 @@ namespace pcl
       inline Eigen::Vector3i
       getGridCoordinates (float x, float y, float z) const
       {
-        return (Eigen::Vector3i (static_cast<int> (std::floor (x * inverse_leaf_size_[0])),
+        return {static_cast<int> (std::floor (x * inverse_leaf_size_[0])),
                                  static_cast<int> (std::floor (y * inverse_leaf_size_[1])),
-                                 static_cast<int> (std::floor (z * inverse_leaf_size_[2]))));
+                                 static_cast<int> (std::floor (z * inverse_leaf_size_[2]))};
       }
 
       /** \brief Returns the index in the downsampled cloud corresponding to a given set of coordinates.
@@ -759,7 +746,8 @@ namespace pcl
         filter_limit_max_ = limit_max;
       }
 
-      /** \brief Get the field filter limits (min/max) set by the user. The default values are -FLT_MAX, FLT_MAX.
+      /** \brief Get the field filter limits (min/max) set by the user.
+        *        The default values are std::numeric_limits<float>::lowest(), std::numeric_limits<float>::max().
         * \param[out] limit_min the minimum allowed field value
         * \param[out] limit_max the maximum allowed field value
         */
@@ -783,6 +771,7 @@ namespace pcl
       /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
         * \param[out] limit_negative true if data \b outside the interval [min; max] is to be returned, false otherwise
         */
+      PCL_DEPRECATED(1, 16, "use bool getFilterLimitsNegative() instead")
       inline void
       getFilterLimitsNegative (bool &limit_negative) const
       {
@@ -806,12 +795,12 @@ namespace pcl
       Eigen::Array4f inverse_leaf_size_;
 
       /** \brief Set to true if all fields need to be downsampled, or false if just XYZ. */
-      bool downsample_all_data_;
+      bool downsample_all_data_{true};
 
       /** \brief Set to true if leaf layout information needs to be saved in \a
         * leaf_layout.
         */
-      bool save_leaf_layout_;
+      bool save_leaf_layout_{false};
 
       /** \brief The leaf layout information for fast access to cells relative
         * to current position
@@ -827,16 +816,16 @@ namespace pcl
       std::string filter_field_name_;
 
       /** \brief The minimum allowed filter value a point will be considered from. */
-      double filter_limit_min_;
+      double filter_limit_min_{std::numeric_limits<float>::lowest()};
 
       /** \brief The maximum allowed filter value a point will be considered from. */
-      double filter_limit_max_;
+      double filter_limit_max_{std::numeric_limits<float>::max()};
 
       /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a filter_limit_max_). Default: false. */
-      bool filter_limit_negative_;
+      bool filter_limit_negative_{false};
 
       /** \brief Minimum number of points per voxel for the centroid to be computed */
-      unsigned int min_points_per_voxel_;
+      unsigned int min_points_per_voxel_{0};
 
       /** \brief Downsample a Point Cloud using a voxelized grid approach
         * \param[out] output the resultant point cloud

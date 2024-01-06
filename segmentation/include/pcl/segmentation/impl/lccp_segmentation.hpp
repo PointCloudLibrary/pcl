@@ -51,24 +51,10 @@
 
 
 template <typename PointT>
-pcl::LCCPSegmentation<PointT>::LCCPSegmentation () :
-  concavity_tolerance_threshold_ (10),
-  grouping_data_valid_ (false),
-  supervoxels_set_ (false),
-  use_smoothness_check_ (false),
-  smoothness_threshold_ (0.1),
-  use_sanity_check_ (false),  
-  seed_resolution_ (0),
-  voxel_resolution_ (0),
-  k_factor_ (0),
-  min_segment_size_ (0)
-{
-}
+pcl::LCCPSegmentation<PointT>::LCCPSegmentation () = default;
 
 template <typename PointT>
-pcl::LCCPSegmentation<PointT>::~LCCPSegmentation ()
-{
-}
+pcl::LCCPSegmentation<PointT>::~LCCPSegmentation () = default;
 
 template <typename PointT> void
 pcl::LCCPSegmentation<PointT>::reset ()
@@ -179,7 +165,6 @@ pcl::LCCPSegmentation<PointT>::mergeSmallSegments ()
   while (continue_filtering)
   {
     continue_filtering = false;
-    unsigned int nr_filtered = 0;
 
     VertexIterator sv_itr, sv_itr_end;
     // Iterate through all supervoxels, check if they are in a "small" segment -> change label to largest neighborID
@@ -197,7 +182,6 @@ pcl::LCCPSegmentation<PointT>::mergeSmallSegments ()
       if (seg_label_to_sv_list_map_[current_seg_label].size () <= min_segment_size_)
       {
         continue_filtering = true;
-        nr_filtered++;
 
         // Find largest neighbor
         for (auto neighbors_itr = seg_label_to_neighbor_set_map_[current_seg_label].cbegin (); neighbors_itr != seg_label_to_neighbor_set_map_[current_seg_label].cend (); ++neighbors_itr)
@@ -254,7 +238,7 @@ pcl::LCCPSegmentation<PointT>::prepareSegmentation (const std::map<std::uint32_t
   std::map<std::uint32_t, VertexID> label_ID_map;
 
   // Add all supervoxel labels as vertices
-  for (typename std::map<std::uint32_t, typename pcl::Supervoxel<PointT>::Ptr>::iterator svlabel_itr = sv_label_to_supervoxel_map_.begin ();
+  for (auto svlabel_itr = sv_label_to_supervoxel_map_.begin ();
       svlabel_itr != sv_label_to_supervoxel_map_.end (); ++svlabel_itr)
   {
     const std::uint32_t& sv_label = svlabel_itr->first;
@@ -278,7 +262,7 @@ pcl::LCCPSegmentation<PointT>::prepareSegmentation (const std::map<std::uint32_t
   // Initialization
   // clear the processed_ map
   seg_label_to_sv_list_map_.clear ();
-  for (typename std::map<std::uint32_t, typename pcl::Supervoxel<PointT>::Ptr>::iterator svlabel_itr = sv_label_to_supervoxel_map_.begin ();
+  for (auto svlabel_itr = sv_label_to_supervoxel_map_.begin ();
       svlabel_itr != sv_label_to_supervoxel_map_.end (); ++svlabel_itr)
   {
     const std::uint32_t& sv_label = svlabel_itr->first;
@@ -295,7 +279,7 @@ pcl::LCCPSegmentation<PointT>::doGrouping ()
 {
   // clear the processed_ map
   seg_label_to_sv_list_map_.clear ();
-  for (typename std::map<std::uint32_t, typename pcl::Supervoxel<PointT>::Ptr>::iterator svlabel_itr = sv_label_to_supervoxel_map_.begin ();
+  for (auto svlabel_itr = sv_label_to_supervoxel_map_.begin ();
       svlabel_itr != sv_label_to_supervoxel_map_.end (); ++svlabel_itr)
   {
     const std::uint32_t& sv_label = svlabel_itr->first;

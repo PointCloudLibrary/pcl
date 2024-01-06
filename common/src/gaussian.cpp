@@ -36,6 +36,7 @@
  */
 
 #include <pcl/common/gaussian.h>
+#include <cassert>
 
 void 
 pcl::GaussianKernel::compute (float sigma, 
@@ -83,7 +84,7 @@ pcl::GaussianKernel::compute (float sigma,
   kernel.resize (kernel_width);
   derivative.resize (kernel_width);
   const float factor = 0.01f;
-  float max_gauss = 1.0f, max_deriv = float (sigma * std::exp (-0.5));
+  float max_gauss = 1.0f, max_deriv = static_cast<float>(sigma * std::exp (-0.5));
   int hw = kernel_width / 2;
 
   float sigma_sqr = 1.0f / (2.0f * sigma * sigma);

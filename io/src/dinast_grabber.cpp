@@ -42,18 +42,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::DinastGrabber::DinastGrabber (const int device_position)
-  : image_width_ (320)
-  , image_height_ (240)
-  , sync_packet_size_ (512)
-  , fov_ (64. * M_PI / 180.)
-  , context_ (nullptr)
-  , device_handle_ (nullptr)
-  , bulk_ep_ (std::numeric_limits<unsigned char>::max ())
-  , second_image_ (false)
-  , running_ (false)
 {
-  image_size_ = image_width_ * image_height_;
-  dist_max_2d_ = 1. / (image_width_ / 2.);
   onInit(device_position);
   
   point_cloud_signal_ = createSignal<sig_cb_dinast_point_cloud> ();
@@ -95,7 +84,7 @@ pcl::DinastGrabber::getFramesPerSecond () const
 { 
   static double last = pcl::getTime ();
   double now = pcl::getTime (); 
-  float rate = 1 / float(now - last);
+  float rate = 1 / static_cast<float>(now - last);
   last = now; 
 
   return (rate);
@@ -158,13 +147,13 @@ pcl::DinastGrabber::setupDevice (int device_position, const int id_vendor, const
     libusb_get_config_descriptor (devs[i], 0, &config);
 
     // Iterate over all interfaces available
-    for (int f = 0; f < int (config->bNumInterfaces); ++f)
+    for (int f = 0; f < static_cast<int>(config->bNumInterfaces); ++f)
     {
       // Iterate over the number of alternate settings
       for (int j = 0; j < config->interface[f].num_altsetting; ++j)
       {
         // Iterate over the number of end points present
-        for (int k = 0; k < int (config->interface[f].altsetting[j].bNumEndpoints); ++k) 
+        for (int k = 0; k < static_cast<int>(config->interface[f].altsetting[j].bNumEndpoints); ++k) 
         {
           if (config->interface[f].altsetting[j].endpoint[k].bmAttributes == LIBUSB_TRANSFER_TYPE_BULK)
           {
@@ -204,7 +193,7 @@ pcl::DinastGrabber::getDeviceVersion ()
      PCL_THROW_EXCEPTION (pcl::IOException, "[pcl::DinastGrabber::getDeviceVersion] Error trying to get device version");
  
   //data[21] = 0;
-  return (std::string (reinterpret_cast<const char*> (data)));
+  return {reinterpret_cast<const char*>(data)};
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -254,7 +243,7 @@ pcl::DinastGrabber::readImage ()
                                     RGB16 * (image_size_) + sync_packet_size_, &actual_length, 1000);
     if (res != 0 || actual_length == 0)
     {
-      memset (&image_[0], 0x00, image_size_);
+      std::fill_n(image_, image_size_, 0x00);
       PCL_THROW_EXCEPTION (pcl::IOException, "[pcl::DinastGrabber::readImage] USB read error!");
     }
 
@@ -262,7 +251,7 @@ pcl::DinastGrabber::readImage ()
     PCL_DEBUG ("[pcl::DinastGrabber::readImage] Read: %d, size of the buffer: %d\n" ,actual_length, g_buffer_.size ());
     
     // Copy data into the buffer
-    int back = int (g_buffer_.size ());
+    int back = static_cast<int>(g_buffer_.size ());
     g_buffer_.resize (back + actual_length);
 
     for (int i = 0; i < actual_length; ++i)
@@ -375,7 +364,7 @@ pcl::DinastGrabber::USBRxControlData (const unsigned char req_code,
   
   int nr_read = libusb_control_transfer (device_handle_, requesttype,
                                          req_code, value, index, buffer, static_cast<std::uint16_t> (length), timeout);
-  if (nr_read != int(length))
+  if (nr_read != (length))
     PCL_THROW_EXCEPTION (pcl::IOException, "[pcl::DinastGrabber::USBRxControlData] Control data error");
 
   return (true);
@@ -399,7 +388,7 @@ pcl::DinastGrabber::USBTxControlData (const unsigned char req_code,
   
   int nr_read = libusb_control_transfer (device_handle_, requesttype,
                                          req_code, value, index, buffer, static_cast<std::uint16_t> (length), timeout);
-  if (nr_read != int(length))
+  if (nr_read != (length))
   {
     std::stringstream sstream;
     sstream << "[pcl::DinastGrabber::USBTxControlData] USB control data error, LIBUSB_ERROR: " << nr_read;
@@ -427,7 +416,7 @@ pcl::DinastGrabber::checkHeader ()
         (g_buffer_[i + 4] == 0xBB) && (g_buffer_[i + 5] == 0xBB) &&
         (g_buffer_[i + 6] == 0x77) && (g_buffer_[i + 7] == 0x77))
     {
-      data_ptr = int (i) + sync_packet_size_;
+      data_ptr = static_cast<int>(i) + sync_packet_size_;
       break;
     }
   }

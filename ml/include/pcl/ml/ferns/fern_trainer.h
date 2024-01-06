@@ -58,9 +58,6 @@ public:
   /** Constructor. */
   FernTrainer();
 
-  /** Destructor. */
-  virtual ~FernTrainer();
-
   /** Sets the feature handler used to create and evaluate features.
    *
    * \param[in] feature_handler the feature handler
@@ -152,7 +149,7 @@ public:
   train(Fern<FeatureType, NodeType>& fern);
 
 protected:
-  /** Creates uniformely distrebuted thresholds over the range of the supplied
+  /** Creates uniformly distributed thresholds over the range of the supplied
    *  values.
    *
    * \param[in] num_of_thresholds the number of thresholds to create

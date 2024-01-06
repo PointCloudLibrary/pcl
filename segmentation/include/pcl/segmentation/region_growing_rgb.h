@@ -88,7 +88,7 @@ namespace pcl
 
       /** \brief Destructor that frees memory. */
       
-      ~RegionGrowingRGB ();
+      ~RegionGrowingRGB () override;
 
       /** \brief Returns the color threshold value used for testing if points belong to the same region. */
       float
@@ -205,7 +205,7 @@ namespace pcl
         * \param[out] dist the array of distances to the corresponding neighbours
         */
       void
-      findRegionsKNN (index_t index, int nghbr_number, Indices& nghbrs, std::vector<float>& dist);
+      findRegionsKNN (pcl::index_t index, pcl::uindex_t nghbr_number, Indices& nghbrs, std::vector<float>& dist);
 
       /** \brief This function implements the merging algorithm described in the article
         * "Color-based segmentation of point clouds"
@@ -230,7 +230,7 @@ namespace pcl
         * to the corresponding homogeneous region.
         */
       void
-      findRegionNeighbours (std::vector< std::vector< std::pair<float, int> > >& neighbours_out, std::vector< std::vector<int> >& regions_in);
+      findRegionNeighbours (std::vector< std::vector< std::pair<float, pcl::index_t> > >& neighbours_out, std::vector< std::vector<int> >& regions_in);
 
       /** \brief This function simply assembles the regions from list of point labels.
         * \param[in] num_pts_in_region for each final region it stores the corresponding number of points in it
@@ -252,22 +252,22 @@ namespace pcl
     protected:
 
       /** \brief Thershold used in color test for points. */
-      float color_p2p_threshold_;
+      float color_p2p_threshold_{1225.0f};
 
       /** \brief Thershold used in color test for regions. */
-      float color_r2r_threshold_;
+      float color_r2r_threshold_{10.0f};
 
       /** \brief Threshold that tells which points we need to assume neighbouring. */
-      float distance_threshold_;
+      float distance_threshold_{0.05f};
 
       /** \brief Number of neighbouring segments to find. */
-      unsigned int region_neighbour_number_;
+      unsigned int region_neighbour_number_{100};
 
       /** \brief Stores distances for the point neighbours from point_neighbours_ */
       std::vector< std::vector<float> > point_distances_;
 
       /** \brief Stores the neighboures for the corresponding segments. */
-      std::vector< std::vector<int> > segment_neighbours_;
+      std::vector< pcl::Indices > segment_neighbours_;
 
       /** \brief Stores distances for the segment neighbours from segment_neighbours_ */
       std::vector< std::vector<float> > segment_distances_;

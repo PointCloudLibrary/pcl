@@ -69,7 +69,7 @@ namespace pcl
               state_(UNDEF)
             {}
 
-            virtual ~Node (){}
+            virtual ~Node () = default;
 
             inline const std::set<Node*>&
             getNeighbors () const
@@ -124,13 +124,13 @@ namespace pcl
         };
 
       public:
-        ORRGraph (){}
+        ORRGraph () = default;
         virtual ~ORRGraph (){ this->clear ();}
 
         inline void
         clear ()
         {
-          for ( typename std::vector<Node*>::iterator nit = nodes_.begin () ; nit != nodes_.end () ; ++nit )
+          for ( auto nit = nodes_.begin () ; nit != nodes_.end () ; ++nit )
             delete *nit;
 
           nodes_.clear ();
@@ -143,7 +143,7 @@ namespace pcl
           if ( !n )
             return;
 
-          for ( typename std::vector<Node*>::iterator nit = nodes_.begin () ; nit != nodes_.end () ; ++nit )
+          for ( auto nit = nodes_.begin () ; nit != nodes_.end () ; ++nit )
             delete *nit;
 
           nodes_.resize (static_cast<std::size_t> (n));
@@ -159,7 +159,7 @@ namespace pcl
           int i = 0;
 
           // Set all nodes to undefined
-          for ( typename std::vector<Node*>::iterator it = nodes_.begin () ; it != nodes_.end () ; ++it )
+          for ( auto it = nodes_.begin () ; it != nodes_.end () ; ++it )
           {
             sorted_nodes[i++] = *it;
             (*it)->state_ = Node::UNDEF;
@@ -169,7 +169,7 @@ namespace pcl
           std::sort (sorted_nodes.begin (), sorted_nodes.end (), Node::compare);
 
           // Now run through the array and start switching nodes on and off
-          for ( typename std::vector<Node*>::iterator it = sorted_nodes.begin () ; it != sorted_nodes.end () ; ++it )
+          for ( auto it = sorted_nodes.begin () ; it != sorted_nodes.end () ; ++it )
           {
             // Ignore graph nodes which are already OFF
             if ( (*it)->state_ == Node::OFF )
@@ -179,7 +179,7 @@ namespace pcl
             (*it)->state_ = Node::ON;
 
             // Set all its neighbors to OFF
-            for ( typename std::set<Node*>::iterator neigh = (*it)->neighbors_.begin () ; neigh != (*it)->neighbors_.end () ; ++neigh )
+            for ( auto neigh = (*it)->neighbors_.begin () ; neigh != (*it)->neighbors_.end () ; ++neigh )
             {
               (*neigh)->state_ = Node::OFF;
               off_nodes.push_back (*neigh);

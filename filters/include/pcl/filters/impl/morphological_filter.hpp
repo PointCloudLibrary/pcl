@@ -43,7 +43,6 @@
 #define PCL_FILTERS_IMPL_MORPHOLOGICAL_FILTER_H_
 
 #include <limits>
-#include <vector>
 
 #include <Eigen/Core>
 

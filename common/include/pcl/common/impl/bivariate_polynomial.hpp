@@ -52,16 +52,14 @@ namespace pcl
 {
 
 template<typename real>
-BivariatePolynomialT<real>::BivariatePolynomialT (int new_degree) :
-  degree(0), parameters(nullptr), gradient_x(nullptr), gradient_y(nullptr)
+BivariatePolynomialT<real>::BivariatePolynomialT (int new_degree)
 {
   setDegree(new_degree);
 }
 
 
 template<typename real>
-BivariatePolynomialT<real>::BivariatePolynomialT (const BivariatePolynomialT& other) :
-  degree(0), parameters(NULL), gradient_x(NULL), gradient_y(NULL)
+BivariatePolynomialT<real>::BivariatePolynomialT (const BivariatePolynomialT& other)
 {
   deepCopy (other);
 }
@@ -140,11 +138,11 @@ BivariatePolynomialT<real>::deepCopy (const pcl::BivariatePolynomialT<real>& oth
 template<typename real> void
 BivariatePolynomialT<real>::calculateGradient (bool forceRecalc)
 {
-  if (gradient_x!=NULL && !forceRecalc) return;
+  if (gradient_x!=nullptr && !forceRecalc) return;
 
-  if (gradient_x == NULL)
+  if (gradient_x == nullptr)
     gradient_x = new pcl::BivariatePolynomialT<real> (degree-1);
-  if (gradient_y == NULL)
+  if (gradient_y == nullptr)
     gradient_y = new pcl::BivariatePolynomialT<real> (degree-1);
 
   unsigned int parameterPosDx=0, parameterPosDy=0;
@@ -208,19 +206,19 @@ BivariatePolynomialT<real>::findCriticalPoints (std::vector<real>& x_values, std
 
   if (degree == 2)
   {
-    real x = (real(2)*parameters[2]*parameters[3] - parameters[1]*parameters[4]) /
-             (parameters[1]*parameters[1] - real(4)*parameters[0]*parameters[3]),
-         y = (real(-2)*parameters[0]*x - parameters[2]) / parameters[1];
+    real x = (static_cast<real>(2)*parameters[2]*parameters[3] - parameters[1]*parameters[4]) /
+             (parameters[1]*parameters[1] - static_cast<real>(4)*parameters[0]*parameters[3]),
+         y = (static_cast<real>(-2)*parameters[0]*x - parameters[2]) / parameters[1];
 
     if (!std::isfinite(x) || !std::isfinite(y))
       return;
 
     int type = 2;
-    real det_H = real(4)*parameters[0]*parameters[3] - parameters[1]*parameters[1];
+    real det_H = static_cast<real>(4)*parameters[0]*parameters[3] - parameters[1]*parameters[1];
     //std::cout << "det(H) = "<<det_H<<"\n";
-    if (det_H > real(0))  // Check Hessian determinant
+    if (det_H > static_cast<real>(0))  // Check Hessian determinant
     {
-      if (parameters[0]+parameters[3] < real(0))  // Check Hessian trace
+      if (parameters[0]+parameters[3] < static_cast<real>(0))  // Check Hessian trace
         type = 0;
       else
         type = 1;

@@ -43,6 +43,8 @@
 
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 
+#include <cassert>
+
 /// @brief The abstract parent class of all the command classes. Commands are
 /// non-copyable.
 class Command
@@ -50,8 +52,7 @@ class Command
   public:
     /// @brief Destructor
     virtual ~Command ()
-    {
-    }
+    = default;
 
   protected:
     /// Allows command queues to be the only objects which are able to execute

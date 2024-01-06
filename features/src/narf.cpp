@@ -41,6 +41,7 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <map> // for std::multimap
 using std::cout;
 using std::cerr;
 using std::vector;
@@ -54,10 +55,7 @@ namespace pcl
 int Narf::max_no_of_threads = 1;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Narf::Narf() : 
-  surface_patch_ (nullptr), 
-  surface_patch_pixel_size_ (0), surface_patch_world_size_ (), 
-  surface_patch_rotation_ (), descriptor_ (nullptr), descriptor_size_ (0)
+Narf::Narf()
 {
   reset();
 }
@@ -69,10 +67,7 @@ Narf::~Narf()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Narf::Narf (const Narf& other) : 
-  surface_patch_ (nullptr), 
-  surface_patch_pixel_size_ (0), surface_patch_world_size_ (), 
-  surface_patch_rotation_ (), descriptor_ (nullptr), descriptor_size_ (0)
+Narf::Narf (const Narf& other)
 {
   deepCopy (other);
 }
@@ -116,7 +111,7 @@ Narf::deepCopy (const Narf& other)
     delete[] surface_patch_;
     surface_patch_ = new float[surface_patch_pixel_size_*surface_patch_pixel_size_];
   }
-  memcpy(surface_patch_, other.surface_patch_, sizeof(*surface_patch_)*surface_patch_pixel_size_*surface_patch_pixel_size_);
+  std::copy(other.surface_patch_, other.surface_patch_ + surface_patch_pixel_size_*surface_patch_pixel_size_, surface_patch_);
   surface_patch_world_size_ = other.surface_patch_world_size_;
   surface_patch_rotation_ = other.surface_patch_rotation_;
   
@@ -126,7 +121,7 @@ Narf::deepCopy (const Narf& other)
     delete[] descriptor_;
     descriptor_ = new float[descriptor_size_];
   }
-  memcpy(descriptor_, other.descriptor_, sizeof(*descriptor_)*descriptor_size_);
+  std::copy(other.descriptor_, other.descriptor_ + descriptor_size_, descriptor_);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -135,7 +130,7 @@ Narf::extractDescriptor (int descriptor_size)
 {
   float weight_for_first_point = 2.0f; // The weight for the last point is always 1.0f
   int no_of_beam_points = getNoOfBeamPoints();
-  float weight_factor = -2.0f*(weight_for_first_point-1.0f) / ((weight_for_first_point+1.0f)*float(no_of_beam_points-1)),
+  float weight_factor = -2.0f*(weight_for_first_point-1.0f) / ((weight_for_first_point+1.0f)*static_cast<float>(no_of_beam_points-1)),
         weight_offset = 2.0f*weight_for_first_point / (weight_for_first_point+1.0f);
 
   if (descriptor_size != descriptor_size_)
@@ -147,7 +142,7 @@ Narf::extractDescriptor (int descriptor_size)
   float angle_step_size = deg2rad (360.0f) / static_cast<float> (descriptor_size_);
   //std::cout << PVARN(no_of_beam_points)<<PVARN(surface_patch_pixel_size_);
 
-  float cell_size = surface_patch_world_size_/float(surface_patch_pixel_size_),
+  float cell_size = surface_patch_world_size_/static_cast<float>(surface_patch_pixel_size_),
         cell_factor = 1.0f/cell_size,
         cell_offset = 0.5f*(surface_patch_world_size_ - cell_size),
         max_dist = 0.5f*surface_patch_world_size_,
@@ -187,7 +182,7 @@ Narf::extractDescriptor (int descriptor_size)
       float beam_value1=beam_values[beam_value_idx],
             beam_value2=beam_values[beam_value_idx+1];
 
-      float current_weight = weight_factor*float(beam_value_idx) + weight_offset;
+      float current_weight = weight_factor*static_cast<float>(beam_value_idx) + weight_offset;
       float diff = beam_value2-beam_value1;
       current_cell += current_weight * diff;
     }
@@ -272,7 +267,7 @@ Narf::extractFromRangeImageWithBestRotation (const RangeImage& range_image, cons
 float* 
 Narf::getBlurredSurfacePatch (int new_pixel_size, int blur_radius) const
 {
-  float new_to_old_factor = float(surface_patch_pixel_size_)/float(new_pixel_size);
+  float new_to_old_factor = static_cast<float>(surface_patch_pixel_size_)/static_cast<float>(new_pixel_size);
   int new_size = new_pixel_size*new_pixel_size;
   
   float* integral_image = new float[new_size];
@@ -375,6 +370,8 @@ Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<
   schedule(dynamic, 10) \
   num_threads(max_no_of_threads)
   //!!! nizar 20110408 : for OpenMP sake on MSVC this must be kept signed
+  // Disable lint since this 'for' is part of the pragma
+  // NOLINTNEXTLINE(modernize-loop-convert)
   for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t>(interest_points.size ()); ++idx)
   {
     const auto& interest_point = interest_points[idx];
@@ -388,7 +385,7 @@ Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<
     else {
       if (!rotation_invariant)
       {
-#       pragma omp critical
+#pragma omp critical
         {
           feature_list.push_back(feature);
         }
@@ -408,7 +405,7 @@ Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<
               delete feature2;
               continue;
             }
-#           pragma omp critical
+#pragma omp critical
             {
               feature_list.push_back(feature2);
             }
@@ -476,14 +473,14 @@ Narf::getRotations (std::vector<float>& rotations, std::vector<float>& strengths
   
   while (!scored_orientations.empty())
   {
-    std::multimap<float, float>::iterator best_remaining_orientation_it = scored_orientations.end();
+    auto best_remaining_orientation_it = scored_orientations.end();
     --best_remaining_orientation_it;
     rotations.push_back(best_remaining_orientation_it->second);
     strengths.push_back(best_remaining_orientation_it->first);
     scored_orientations.erase(best_remaining_orientation_it);
-    for (std::multimap<float, float>::iterator it = scored_orientations.begin(); it!=scored_orientations.end();)
+    for (auto it = scored_orientations.begin(); it!=scored_orientations.end();)
     {
-      std::multimap<float, float>::iterator current_it = it++;
+      auto current_it = it++;
       if (normAngle(current_it->second - rotations.back()) < min_angle_dist_between_rotations)
         scored_orientations.erase(current_it);
     }
@@ -601,25 +598,22 @@ Narf::loadBinary (const std::string& filename)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-NarfDescriptor::NarfDescriptor (const RangeImage* range_image, const std::vector<int>* indices) : 
-  range_image_ ()
+NarfDescriptor::NarfDescriptor (const RangeImage* range_image, const pcl::Indices* indices)
 {
   setRangeImage (range_image, indices);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-NarfDescriptor::~NarfDescriptor ()
-{
-}
+NarfDescriptor::~NarfDescriptor () = default;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
-NarfDescriptor::setRangeImage (const RangeImage* range_image, const std::vector<int>* indices)
+NarfDescriptor::setRangeImage (const RangeImage* range_image, const pcl::Indices* indices)
 {
   range_image_ = range_image;
   if (indices != nullptr)
   {
-    IndicesPtr indicesptr (new std::vector<int> (*indices));
+    IndicesPtr indicesptr (new pcl::Indices (*indices));
     setIndices (indicesptr);
   }
 }

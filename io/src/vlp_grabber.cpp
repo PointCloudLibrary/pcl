@@ -58,9 +58,7 @@ pcl::VLPGrabber::VLPGrabber (const boost::asio::ip::address& ipAddress,
 }
 
 /////////////////////////////////////////////////////////////////////////////
-pcl::VLPGrabber::~VLPGrabber () noexcept
-{
-}
+pcl::VLPGrabber::~VLPGrabber () noexcept = default;
 
 /////////////////////////////////////////////////////////////////////////////
 void
@@ -217,7 +215,7 @@ pcl::VLPGrabber::toPointClouds (HDLDataPacket *dataPacket)
 std::string
 pcl::VLPGrabber::getName () const
 {
-  return (std::string ("Velodyne LiDAR (VLP) Grabber"));
+  return {"Velodyne LiDAR (VLP) Grabber"};
 }
 
 /////////////////////////////////////////////////////////////////////////////

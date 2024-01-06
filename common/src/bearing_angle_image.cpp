@@ -114,7 +114,7 @@ BearingAngleImage::generateBAImage (PointCloud<PointXYZ>& point_cloud)
       points[(i + 1) * width + j].y = point_cloud.at (j, i + 1).y;
       points[(i + 1) * width + j].z = point_cloud.at (j, i + 1).z;
       // set the gray value for every pixel point
-      points[(i + 1) * width + j].rgba = ((int)r) << 24 | ((int)g) << 16 | ((int)b) << 8 | 0xff;
+      points[(i + 1) * width + j].rgba = (static_cast<int>(r)) << 24 | (static_cast<int>(g)) << 16 | (static_cast<int>(b)) << 8 | 0xff;
     }
   }
 }

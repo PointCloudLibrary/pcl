@@ -80,10 +80,10 @@ namespace pcl
 
 
       /** \brief Empty constructor. */
-      RIFTEstimation () : gradient_ (), nr_distance_bins_ (4), nr_gradient_bins_ (8)
+      RIFTEstimation ()
       {
         feature_name_ = "RIFTEstimation";
-      };
+      }
 
       /** \brief Provide a pointer to the input gradient data
         * \param[in] gradient a pointer to the input gradient data
@@ -127,7 +127,7 @@ namespace pcl
         */
       void 
       computeRIFT (const PointCloudIn &cloud, const PointCloudGradient &gradient, int p_idx, float radius,
-                   const std::vector<int> &indices, const std::vector<float> &squared_distances, 
+                   const pcl::Indices &indices, const std::vector<float> &squared_distances, 
                    Eigen::MatrixXf &rift_descriptor);
 
     protected:
@@ -141,13 +141,13 @@ namespace pcl
       computeFeature (PointCloudOut &output) override;
 
       /** \brief The intensity gradient of the input point cloud data*/
-      PointCloudGradientConstPtr gradient_;
+      PointCloudGradientConstPtr gradient_{nullptr};
 
       /** \brief The number of distance bins in the descriptor. */
-      int nr_distance_bins_;
+      int nr_distance_bins_{4};
 
       /** \brief The number of gradient orientation bins in the descriptor. */
-      int nr_gradient_bins_;
+      int nr_gradient_bins_{8};
   };
 }
 

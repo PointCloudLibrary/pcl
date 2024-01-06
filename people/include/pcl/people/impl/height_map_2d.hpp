@@ -80,19 +80,19 @@ pcl::people::HeightMap2D<PointT>::compute (pcl::people::PersonCluster<PointT>& c
 
   // Create a height map with the projection of cluster points onto the ground plane:
   if (!vertical_)    // camera horizontal
-    buckets_.resize(std::size_t((cluster.getMax()(0) - cluster.getMin()(0)) / bin_size_) + 1, 0);
+    buckets_.resize(static_cast<std::size_t>((cluster.getMax()(0) - cluster.getMin()(0)) / bin_size_) + 1, 0);
   else        // camera vertical
-    buckets_.resize(std::size_t((cluster.getMax()(1) - cluster.getMin()(1)) / bin_size_) + 1, 0);
+    buckets_.resize(static_cast<std::size_t>((cluster.getMax()(1) - cluster.getMin()(1)) / bin_size_) + 1, 0);
   buckets_cloud_indices_.resize(buckets_.size(), 0);
 
-  for(std::vector<int>::const_iterator pit = cluster.getIndices().indices.begin(); pit != cluster.getIndices().indices.end(); ++pit)
+  for(const auto& cluster_idx : cluster.getIndices().indices)
   {
-    PointT* p = &(*cloud_)[*pit];
+    PointT* p = &(*cloud_)[cluster_idx];
     int index;
     if (!vertical_)    // camera horizontal
-      index = int((p->x - cluster.getMin()(0)) / bin_size_);
+      index = static_cast<int>((p->x - cluster.getMin()(0)) / bin_size_);
     else        // camera vertical
-      index = int((p->y - cluster.getMin()(1)) / bin_size_);
+      index = static_cast<int>((p->y - cluster.getMin()(1)) / bin_size_);
     if (index > (static_cast<int> (buckets_.size ()) - 1))
       std::cout << "Error: out of array - " << index << " of " << buckets_.size() << std::endl;
     else
@@ -103,7 +103,7 @@ pcl::people::HeightMap2D<PointT>::compute (pcl::people::PersonCluster<PointT>& c
       if ((heightp * 60) > buckets_[index])   // compare the height of the new point with the existing one
       {
         buckets_[index] = heightp * 60;   // maximum height
-        buckets_cloud_indices_[index] = *pit;     // point cloud index of the point with maximum height
+        buckets_cloud_indices_[index] = cluster_idx;     // point cloud index of the point with maximum height
       }
     }
   }
@@ -122,8 +122,8 @@ pcl::people::HeightMap2D<PointT>::searchLocalMaxima ()
   maxima_number_ = 0;
   int left = buckets_[0];         // current left element
   float offset = 0;           // used to center the maximum to the right place
-  maxima_indices_.resize(std::size_t(buckets_.size()), 0);
-  maxima_cloud_indices_.resize(std::size_t(buckets_.size()), 0);
+  maxima_indices_.resize(static_cast<std::size_t>(buckets_.size()), 0);
+  maxima_cloud_indices_.resize(static_cast<std::size_t>(buckets_.size()), 0);
 
   // Handle first element:
   if (buckets_[0] > buckets_[1])
@@ -153,7 +153,7 @@ pcl::people::HeightMap2D<PointT>::searchLocalMaxima ()
         maxima_cloud_indices_[m] = maxima_cloud_indices_[m-1];
       }
       // Insert the new element:
-      maxima_indices_[t] = i - int(offset/2 + 0.5);
+      maxima_indices_[t] = i - static_cast<int>(offset/2 + 0.5);
       maxima_cloud_indices_[t] = buckets_cloud_indices_[maxima_indices_[t]];
       left = buckets_[i+1];
       i +=2;
@@ -191,7 +191,7 @@ pcl::people::HeightMap2D<PointT>::searchLocalMaxima ()
       maxima_cloud_indices_[m] = maxima_cloud_indices_[m-1];
     }
     // Insert the new element:
-    maxima_indices_[t] = i - int(offset/2 + 0.5);
+    maxima_indices_[t] = i - static_cast<int>(offset/2 + 0.5);
     maxima_cloud_indices_[t] = buckets_cloud_indices_[maxima_indices_[t]];
 
     maxima_number_++;
@@ -304,8 +304,5 @@ pcl::people::HeightMap2D<PointT>::getMaximaCloudIndicesFiltered ()
 }
 
 template <typename PointT>
-pcl::people::HeightMap2D<PointT>::~HeightMap2D ()
-{
-  // TODO Auto-generated destructor stub
-}
+pcl::people::HeightMap2D<PointT>::~HeightMap2D () = default;
 #endif /* PCL_PEOPLE_HEIGHT_MAP_2D_HPP_ */

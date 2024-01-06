@@ -116,25 +116,16 @@ public:
 private:
   OUTPUT_TYPE output_type_;
   DETECTOR_KERNEL_TYPE detector_kernel_type_;
-  bool non_maximal_suppression_;
-  bool hysteresis_thresholding_;
+  bool non_maximal_suppression_{false};
+  bool hysteresis_thresholding_{false};
 
-  float hysteresis_threshold_low_;
-  float hysteresis_threshold_high_;
-  float non_max_suppression_radius_x_;
-  float non_max_suppression_radius_y_;
+  float hysteresis_threshold_low_{20.0f};
+  float hysteresis_threshold_high_{80.0f};
+  float non_max_suppression_radius_x_{3.0f};
+  float non_max_suppression_radius_y_{3.0f};
 
 public:
-  Edge()
-  : output_type_(OUTPUT_X)
-  , detector_kernel_type_(SOBEL)
-  , non_maximal_suppression_(false)
-  , hysteresis_thresholding_(false)
-  , hysteresis_threshold_low_(20)
-  , hysteresis_threshold_high_(80)
-  , non_max_suppression_radius_x_(3)
-  , non_max_suppression_radius_y_(3)
-  {}
+  Edge() : output_type_(OUTPUT_X), detector_kernel_type_(SOBEL) {}
 
   /** \brief Set the output type.
    * \param[in] output_type the output type

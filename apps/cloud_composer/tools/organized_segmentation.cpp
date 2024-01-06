@@ -17,11 +17,6 @@ pcl::cloud_composer::OrganizedSegmentationTool::OrganizedSegmentationTool (Prope
   
 }
 
-pcl::cloud_composer::OrganizedSegmentationTool::~OrganizedSegmentationTool ()
-{
-  
-}
-
 QList <pcl::cloud_composer::CloudComposerItem*>
 pcl::cloud_composer::OrganizedSegmentationTool::performAction (ConstItemList input_data, PointTypeFlags::PointType type)
 {

@@ -38,8 +38,12 @@
 #include <pcl/io/obj_io.h>
 #include <fstream>
 #include <pcl/common/io.h>
-#include <pcl/io/boost.h>
 #include <pcl/console/time.h>
+#include <pcl/io/split.h>
+
+#include <boost/lexical_cast.hpp> // for lexical_cast
+#include <boost/filesystem.hpp> // for exists
+#include <boost/algorithm/string.hpp> // for trim
 
 pcl::MTLReader::MTLReader ()
 {
@@ -131,7 +135,7 @@ pcl::MTLReader::fillRGBfromRGB (const std::vector<std::string>& split_line,
 std::vector<pcl::TexMaterial>::const_iterator
 pcl::MTLReader::getMaterial (const std::string& material_name) const
 {
-  std::vector<pcl::TexMaterial>::const_iterator mat_it = materials_.begin ();
+  auto mat_it = materials_.begin ();
   for (; mat_it != materials_.end (); ++mat_it)
     if (mat_it->tex_name == material_name)
       break;
@@ -142,14 +146,20 @@ int
 pcl::MTLReader::read (const std::string& obj_file_name,
                       const std::string& mtl_file_name)
 {
-  if (obj_file_name.empty() || !boost::filesystem::exists (obj_file_name))
+  if (obj_file_name.empty ())
+  {
+    PCL_ERROR ("[pcl::MTLReader::read] No OBJ file name given!\n");
+    return (-1);
+  }
+
+  if (!boost::filesystem::exists (obj_file_name))
   {
     PCL_ERROR ("[pcl::MTLReader::read] Could not find file '%s'!\n",
                obj_file_name.c_str ());
     return (-1);
   }
 
-  if (mtl_file_name.empty())
+  if (mtl_file_name.empty ())
   {
     PCL_ERROR ("[pcl::MTLReader::read] MTL file name is empty!\n");
     return (-1);
@@ -164,14 +174,23 @@ pcl::MTLReader::read (const std::string& obj_file_name,
 int
 pcl::MTLReader::read (const std::string& mtl_file_path)
 {
-  if (mtl_file_path.empty() || !boost::filesystem::exists (mtl_file_path))
+  if (mtl_file_path.empty ())
+  {
+    PCL_ERROR ("[pcl::MTLReader::read] No file name given!\n");
+    return (-1);
+  }
+
+  // Open file in binary mode to avoid problem of
+  // std::getline() corrupting the result of ifstream::tellg()
+  std::ifstream mtl_file;
+  mtl_file.open (mtl_file_path.c_str (), std::ios::binary);
+
+  if (!mtl_file.good ())
   {
     PCL_ERROR ("[pcl::MTLReader::read] Could not find file '%s'.\n", mtl_file_path.c_str ());
     return (-1);
   }
 
-  std::ifstream mtl_file;
-  mtl_file.open (mtl_file_path.c_str (), std::ios::binary);
   if (!mtl_file.is_open () || mtl_file.fail ())
   {
     PCL_ERROR ("[pcl::MTLReader::read] Could not open file '%s'! Error : %s\n",
@@ -195,11 +214,7 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
         continue;
 
       // Tokenize the line
-      std::stringstream sstream (line);
-      sstream.imbue (std::locale::classic ());
-      line = sstream.str ();
-      boost::trim (line);
-      boost::split (st, line, boost::is_any_of ("\t\r "), boost::token_compress_on);
+      pcl::split (st, line, "\t\r ");
       // Ignore comments
       if (st[0] == "#")
         continue;
@@ -340,18 +355,25 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   data_type = 0;
   data_idx = offset;
 
-  std::ifstream fs;
   std::string line;
 
-  if (file_name.empty() || !boost::filesystem::exists (file_name))
+  if (file_name.empty ())
   {
-    PCL_ERROR ("[pcl::OBJReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
+    PCL_ERROR ("[pcl::OBJReader::readHeader] No file name given!\n");
     return (-1);
   }
 
   // Open file in binary mode to avoid problem of
   // std::getline() corrupting the result of ifstream::tellg()
+  std::ifstream fs;
   fs.open (file_name.c_str (), std::ios::binary);
+
+  if (!fs.good ())
+  {
+    PCL_ERROR ("[pcl::OBJReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
+    return (-1);
+  }
+
   if (!fs.is_open () || fs.fail ())
   {
     PCL_ERROR ("[pcl::OBJReader::readHeader] Could not open file '%s'! Error : %s\n", file_name.c_str (), strerror(errno));
@@ -380,6 +402,7 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
         continue;
 
       // Trim the line
+      //TODO: we can easily do this without boost
       boost::trim (line);
       
       // Ignore comments
@@ -414,7 +437,7 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
       if (line.substr (0, 6) == "mtllib")
       {
         std::vector<std::string> st;
-        boost::split(st, line, boost::is_any_of("\t\r "), boost::token_compress_on);
+        pcl::split(st, line, "\t\r ");
         material_files.push_back (st.at (1));
         continue;
       }
@@ -534,25 +557,21 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
   //   rgba_field = i;
 
   std::vector<std::string> st;
+  std::string line;
   try
   {
-    index_t point_idx = 0;
-    index_t normal_idx = 0;
+    uindex_t point_idx = 0;
+    uindex_t normal_idx = 0;
 
     while (!fs.eof ())
     {
-      std::string line;
       getline (fs, line);
       // Ignore empty lines
       if (line.empty())
         continue;
 
       // Tokenize the line
-      std::stringstream sstream (line);
-      sstream.imbue (std::locale::classic ());
-      line = sstream.str ();
-      boost::trim (line);
-      boost::split (st, line, boost::is_any_of ("\t\r "), boost::token_compress_on);
+      pcl::split (st, line, "\t\r ");
 
       // Ignore comments
       if (st[0] == "#")
@@ -681,7 +700,6 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
   try
   {
     std::size_t vn_idx = 0;
-    std::size_t vt_idx = 0;
 
     while (!fs.eof ())
     {
@@ -691,11 +709,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
         continue;
 
       // Tokenize the line
-      std::stringstream sstream (line);
-      sstream.imbue (std::locale::classic ());
-      line = sstream.str ();
-      boost::trim (line);
-      boost::split (st, line, boost::is_any_of ("\t\r "), boost::token_compress_on);
+      pcl::split (st, line, "\t\r ");
 
       // Ignore comments
       if (st[0] == "#")
@@ -754,7 +768,6 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
             coordinates.emplace_back(c[0], c[1]);
           else
             coordinates.emplace_back(c[0]/c[2], c[1]/c[2]);
-          ++vt_idx;
         }
         catch (const boost::bad_lexical_cast&)
         {
@@ -767,6 +780,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
       if (st[0] == "usemtl")
       {
         mesh.tex_polygons.emplace_back();
+        mesh.tex_coord_indices.emplace_back();
         mesh.tex_materials.emplace_back();
         for (const auto &companion : companions_)
         {
@@ -787,16 +801,24 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
       // Face
       if (st[0] == "f")
       {
-        //We only care for vertices indices
+        // TODO read in normal indices properly
         pcl::Vertices face_v; face_v.vertices.resize (st.size () - 1);
+        pcl::Vertices tex_indices; tex_indices.vertices.reserve (st.size () - 1);
         for (std::size_t i = 1; i < st.size (); ++i)
         {
-          int v;
-          sscanf (st[i].c_str (), "%d", &v);
+          char* str_end;
+          int v = std::strtol(st[i].c_str(), &str_end, 10);
           v = (v < 0) ? v_idx + v : v - 1;
           face_v.vertices[i-1] = v;
+          if (str_end[0] == '/' && str_end[1] != '/' && str_end[1] != '\0')
+          {
+            // texture coordinate indices are optional
+            int tex_index = std::strtol(str_end+1, &str_end, 10);
+            tex_indices.vertices.push_back (tex_index - 1);
+          }
         }
         mesh.tex_polygons.back ().push_back (face_v);
+        mesh.tex_coord_indices.back ().push_back (tex_indices);
         ++f_idx;
         continue;
       }
@@ -810,9 +832,9 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
   }
 
   double total_time = tt.toc ();
-  PCL_DEBUG ("[pcl::OBJReader::read] Loaded %s as a TextureMesh in %g ms with %g points, %g texture materials, %g polygons.\n",
+  PCL_DEBUG ("[pcl::OBJReader::read] Loaded %s as a TextureMesh in %g ms with %zu points, %zu texture materials, %zu polygons.\n",
              file_name.c_str (), total_time,
-             v_idx -1, mesh.tex_materials.size (), f_idx -1);
+             v_idx, mesh.tex_materials.size (), f_idx);
   fs.close ();
   return (0);
 }
@@ -880,11 +902,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
         continue;
 
       // Tokenize the line
-      std::stringstream sstream (line);
-      sstream.imbue (std::locale::classic ());
-      line = sstream.str ();
-      boost::trim (line);
-      boost::split (st, line, boost::is_any_of ("\t\r "), boost::token_compress_on);
+      pcl::split (st, line, "\t\r ");
 
       // Ignore comments
       if (st[0] == "#")
@@ -958,9 +976,9 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
   }
 
   double total_time = tt.toc ();
-  PCL_DEBUG ("[pcl::OBJReader::read] Loaded %s as a PolygonMesh in %g ms with %g points and %g polygons.\n",
+  PCL_DEBUG ("[pcl::OBJReader::read] Loaded %s as a PolygonMesh in %g ms with %zu points and %zu polygons.\n",
              file_name.c_str (), total_time,
-             mesh.cloud.width * mesh.cloud.height, mesh.polygons.size ());
+             static_cast<std::size_t> (mesh.cloud.width * mesh.cloud.height), mesh.polygons.size ());
   fs.close ();
   return (0);
 }
@@ -988,10 +1006,10 @@ pcl::io::saveOBJFile (const std::string &file_name,
   /* Write 3D information */
   // number of points
   unsigned nr_points  = tex_mesh.cloud.width * tex_mesh.cloud.height;
-  unsigned point_size = static_cast<unsigned> (tex_mesh.cloud.data.size () / nr_points);
+  auto point_size = static_cast<unsigned> (tex_mesh.cloud.data.size () / nr_points);
 
   // mesh size
-  unsigned nr_meshes = static_cast<unsigned> (tex_mesh.tex_polygons.size ());
+  auto nr_meshes = static_cast<unsigned> (tex_mesh.tex_polygons.size ());
   // number of faces for header
   unsigned nr_faces = 0;
   for (unsigned m = 0; m < nr_meshes; ++m)
@@ -1091,13 +1109,9 @@ pcl::io::saveOBJFile (const std::string &file_name,
     }
   }
 
-  unsigned f_idx = 0;
-
   // int idx_vt =0;
   for (unsigned m = 0; m < nr_meshes; ++m)
   {
-    if (m > 0) f_idx += static_cast<unsigned> (tex_mesh.tex_polygons[m-1].size ());
-
     fs << "# The material will be used for mesh " << m << '\n';
     fs << "usemtl " <<  tex_mesh.tex_materials[m].tex_name << '\n';
     fs << "# Faces" << '\n';
@@ -1106,14 +1120,14 @@ pcl::io::saveOBJFile (const std::string &file_name,
     {
       // Write faces with "f"
       fs << "f";
-      // There's one UV per vertex per face, i.e., the same vertex can have
-      // different UV depending on the face.
       for (std::size_t j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size (); ++j)
       {
         std::uint32_t idx = tex_mesh.tex_polygons[m][i].vertices[j] + 1;
-        fs << " " << idx
-           << "/" << tex_mesh.tex_polygons[m][i].vertices.size () * (i+f_idx) +j+1
-           << "/" << idx; // vertex index in obj file format starting with 1
+        fs << " " << idx << "/";
+        // texture coordinate indices are optional
+        if (!tex_mesh.tex_coord_indices[m][i].vertices.empty())
+          fs << tex_mesh.tex_coord_indices[m][i].vertices[j] + 1;
+        fs << "/" << idx; // vertex index in obj file format starting with 1
       }
       fs << '\n';
     }
@@ -1171,9 +1185,9 @@ pcl::io::saveOBJFile (const std::string &file_name,
   // number of points
   int nr_points  = mesh.cloud.width * mesh.cloud.height;
   // point size
-  unsigned point_size = static_cast<unsigned> (mesh.cloud.data.size () / nr_points);
+  auto point_size = static_cast<unsigned> (mesh.cloud.data.size () / nr_points);
   // number of faces for header
-  unsigned nr_faces = static_cast<unsigned> (mesh.polygons.size ());
+  auto nr_faces = static_cast<unsigned> (mesh.polygons.size ());
   // Do we have vertices normals?
   int normal_index = getFieldIndex (mesh.cloud, "normal_x");
 

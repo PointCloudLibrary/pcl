@@ -44,6 +44,7 @@
 #include <pcl/common/distances.h>
 #include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/common/vector_average.h> // for VectorAverage3f
+#include <vector>
 
 namespace pcl
 {
@@ -135,9 +136,11 @@ RangeImage::createFromPointCloud (const PointCloudType& point_cloud,
   int top=height, right=-1, bottom=-1, left=width;
   doZBuffer (point_cloud, noise_level, min_range, top, right, bottom, left);
   
-  cropImage (border_size, top, right, bottom, left);
+  if (border_size != std::numeric_limits<int>::min()) {
+    cropImage (border_size, top, right, bottom, left);
   
-  recalculate3DPointPositions ();
+    recalculate3DPointPositions ();
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -196,9 +199,11 @@ RangeImage::createFromPointCloudWithKnownSize (const PointCloudType& point_cloud
   int top=height, right=-1, bottom=-1, left=width;
   doZBuffer (point_cloud, noise_level, min_range, top, right, bottom, left);
   
-  cropImage (border_size, top, right, bottom, left);
+  if (border_size != std::numeric_limits<int>::min()) {
+    cropImage (border_size, top, right, bottom, left);
   
-  recalculate3DPointPositions ();
+    recalculate3DPointPositions ();
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -236,9 +241,8 @@ RangeImage::doZBuffer (const PointCloudType& point_cloud, float noise_level, flo
   const typename pcl::PointCloud<PointType2>::VectorType &points2 = point_cloud.points;
   
   unsigned int size = width*height;
-  int* counters = new int[size];
-  ERASE_ARRAY (counters, size);
-  
+  std::vector<int> counters(size, 0);
+
   top=height; right=-1; bottom=-1; left=width;
   
   float x_real, y_real, range_of_current_point;
@@ -276,7 +280,7 @@ RangeImage::doZBuffer (const PointCloudType& point_cloud, float noise_level, flo
       if (isInImage (n_x, n_y))
       {
         int neighbor_array_pos = n_y*width + n_x;
-        if (counters[neighbor_array_pos]==0)
+        if (counters[neighbor_array_pos] == 0)
         {
           float& neighbor_range = points[neighbor_array_pos].range;
           neighbor_range = (std::isinf (neighbor_range) ? range_of_current_point : (std::min) (neighbor_range, range_of_current_point));
@@ -321,8 +325,6 @@ RangeImage::doZBuffer (const PointCloudType& point_cloud, float noise_level, flo
       range_at_image_point += (range_of_current_point-range_at_image_point)/counter;
     }
   }
-  
-  delete[] counters;
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -356,6 +358,11 @@ RangeImage::getImagePoint (const Eigen::Vector3f& point, float& image_x, float& 
 {
   Eigen::Vector3f transformedPoint = to_range_image_system_ * point;
   range = transformedPoint.norm ();
+  if (range < std::numeric_limits<float>::epsilon()) {
+    PCL_DEBUG ("[pcl::RangeImage::getImagePoint] Transformed point is (0,0,0), cannot project it.\n");
+    image_x = image_y = 0.0f;
+    return;
+  }
   float angle_x = atan2LookUp (transformedPoint[0], transformedPoint[2]),
         angle_y = asinLookUp (transformedPoint[1]/range);
   getImagePointFromAngles (angle_x, angle_y, image_x, image_y);
@@ -654,7 +661,7 @@ RangeImage::getAcutenessValue (const PointWithRange& point1, const PointWithRang
   float impact_angle = getImpactAngle (point1, point2);
   if (std::isinf (impact_angle))
     return -std::numeric_limits<float>::infinity ();
-  float ret = 1.0f - float (std::fabs (impact_angle)/ (0.5f*M_PI));
+  float ret = 1.0f - static_cast<float>(std::fabs (impact_angle)/ (0.5f*M_PI));
   if (impact_angle < 0.0f)
     ret = -ret;
   //if (std::abs (ret)>1)
@@ -675,7 +682,7 @@ RangeImage::getAcutenessValue (int x1, int y1, int x2, int y2) const
 const Eigen::Vector3f 
 RangeImage::getSensorPos () const
 {
-  return Eigen::Vector3f (to_world_system_ (0,3), to_world_system_ (1,3), to_world_system_ (2,3));
+  return {to_world_system_ (0,3), to_world_system_ (1,3), to_world_system_ (2,3)};
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -794,7 +801,7 @@ RangeImage::getMaxAngleSize (const Eigen::Affine3f& viewer_pose, const Eigen::Ve
 Eigen::Vector3f 
 RangeImage::getEigenVector3f (const PointWithRange& point)
 {
-  return Eigen::Vector3f (point.x, point.y, point.z);
+  return {point.x, point.y, point.z};
 }
 
 /////////////////////////////////////////////////////////////////////////

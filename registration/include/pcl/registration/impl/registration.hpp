@@ -124,8 +124,8 @@ Registration<PointSource, PointTarget, Scalar>::getFitnessScore(
 {
   unsigned int nr_elem =
       static_cast<unsigned int>(std::min(distances_a.size(), distances_b.size()));
-  Eigen::VectorXf map_a = Eigen::VectorXf::Map(&distances_a[0], nr_elem);
-  Eigen::VectorXf map_b = Eigen::VectorXf::Map(&distances_b[0], nr_elem);
+  Eigen::VectorXf map_a = Eigen::VectorXf::Map(distances_a.data(), nr_elem);
+  Eigen::VectorXf map_b = Eigen::VectorXf::Map(distances_b.data(), nr_elem);
   return (static_cast<double>((map_a - map_b).sum()) / static_cast<double>(nr_elem));
 }
 
@@ -139,7 +139,7 @@ Registration<PointSource, PointTarget, Scalar>::getFitnessScore(double max_range
   PointCloudSource input_transformed;
   transformPointCloud(*input_, input_transformed, final_transformation_);
 
-  std::vector<int> nn_indices(1);
+  pcl::Indices nn_indices(1);
   std::vector<float> nn_dists(1);
 
   // For each point in the source dataset

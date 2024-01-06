@@ -49,7 +49,7 @@ using namespace pcl::io;
 using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 
 PointCloud<PointXYZ> cloud;
-std::vector<int> indices;
+pcl::Indices indices;
 KdTreePtr tree;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -116,7 +116,7 @@ TEST (PCL, PrincipalCurvaturesEstimation)
   pc.compute (*pcs);
   EXPECT_EQ (pcs->size (), indices.size ());
 
-  // Adjust for small numerical inconsitencies (due to nn_indices not being sorted)
+  // Adjust for small numerical inconsistencies (due to nn_indices not being sorted)
   EXPECT_NEAR (std::abs ((*pcs)[0].principal_curvature[0]), 0.98509, 1e-4);
   EXPECT_NEAR (std::abs ((*pcs)[0].principal_curvature[1]), 0.10713, 1e-4);
   EXPECT_NEAR (std::abs ((*pcs)[0].principal_curvature[2]), 0.13462, 1e-4);

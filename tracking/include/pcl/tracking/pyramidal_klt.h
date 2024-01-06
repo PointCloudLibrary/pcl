@@ -49,7 +49,7 @@ namespace tracking {
 /** Pyramidal Kanade Lucas Tomasi tracker.
  * This is an implementation of the Pyramidal Kanade Lucas Tomasi tracker that
  * operates on organized 3D keypoints with color/intensity information (this is
- * the default behaviour but you can alterate it by providing another operator
+ * the default behaviour but you can alternate it by providing another operator
  * as second template argument). It is an affine tracker that iteratively
  * computes the optical flow to find the best guess for a point p at t given its
  * location at t-1. User is advised to respect the Tomasi condition: the
@@ -100,7 +100,7 @@ public:
   }
 
   /** Destructor */
-  ~PyramidalKLTTracker() {}
+  ~PyramidalKLTTracker() override = default;
 
   /** \brief Set the number of pyramid levels
    * \param levels desired number of pyramid levels
@@ -260,8 +260,24 @@ public:
    * Status == -1 --> point is out of bond;
    * Status == -2 --> optical flow can not be computed for this point.
    */
+  PCL_DEPRECATED(1, 15, "use getStatusOfPointsToTrack instead")
   inline pcl::PointIndicesConstPtr
   getPointsToTrackStatus() const
+  {
+    pcl::PointIndicesPtr res(new pcl::PointIndices);
+    res->indices.insert(
+        res->indices.end(), keypoints_status_->begin(), keypoints_status_->end());
+    return (res);
+  }
+
+  /** \return the status of points to track.
+   * Status == 0  --> points successfully tracked;
+   * Status < 0   --> point is lost;
+   * Status == -1 --> point is out of bond;
+   * Status == -2 --> optical flow can not be computed for this point.
+   */
+  inline pcl::shared_ptr<const std::vector<int>>
+  getStatusOfPointsToTrack() const
   {
     return (keypoints_status_);
   }
@@ -333,7 +349,7 @@ protected:
   convolveRows(const FloatImageConstPtr& input, FloatImage& output) const;
 
   /** \brief extract the patch from the previous image, previous image gradients
-   * surrounding pixel alocation while interpolating image and gradients data
+   * surrounding pixel allocation while interpolating image and gradients data
    * and compute covariation matrix of derivatives.
    * \param[in] img original image
    * \param[in] grad_x original image gradient along X direction
@@ -398,7 +414,7 @@ protected:
   /** \brief detected keypoints 2D coordinates */
   pcl::PointCloud<pcl::PointUV>::ConstPtr keypoints_;
   /** \brief status of keypoints of t-1 at t */
-  pcl::PointIndicesPtr keypoints_status_;
+  pcl::shared_ptr<std::vector<int>> keypoints_status_;
   /** \brief number of points to detect */
   std::size_t keypoints_nbr_;
   /** \brief tracking width */

@@ -81,8 +81,8 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
     data.shared_radius = data.cube_size/30.f;
     data.printParams();
 
-    const float host_octree_resolution = 25.f;
-    const int k = 1; // only this is supported
+    constexpr float host_octree_resolution = 25.f;
+    constexpr int k = 1; // only this is supported
 
     //generate
     data();
@@ -113,7 +113,7 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
     queries_device.upload(data.queries);
 
     //prepare output buffers on host
-    std::vector<std::vector<  int> > result_host(data.tests_num);   
+    std::vector<pcl::Indices > result_host(data.tests_num);
     std::vector<std::vector<float> >  dists_host(data.tests_num);
     for(std::size_t i = 0; i < data.tests_num; ++i)
     {
@@ -147,7 +147,7 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
     for(std::size_t i = 0; i < data.tests_num; ++i)    
     {           
         //std::cout << i << std::endl;
-        std::vector<int>&   results_host_cur = result_host[i];
+        const auto&   results_host_cur = result_host[i];
         std::vector<float>&   dists_host_cur = dists_host[i];
                 
         int beg = i * k;

@@ -40,13 +40,13 @@
 #include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
+#include <pcl/filters/filter.h> // for removeNaNFromPointCloud
 #include <pcl/registration/icp.h>
 #include <pcl/registration/icp_nl.h>
 #include <pcl/registration/incremental_registration.h>
 
 #include <string>
 #include <iostream>
-#include <fstream>
 #include <vector>
 
 using PointType = pcl::PointXYZ;
@@ -98,6 +98,8 @@ main (int argc, char **argv)
       std::cout << "Could not read file" << std::endl;
       return -1;
     }
+    pcl::Indices dummy_indices;
+    pcl::removeNaNFromPointCloud(*data, *data, dummy_indices);
 
     if (!iicp.registerCloud (data))
     {

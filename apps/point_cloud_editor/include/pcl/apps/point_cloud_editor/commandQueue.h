@@ -41,6 +41,7 @@
 
 #pragma once
 
+#include <cassert>
 #include <deque>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 
@@ -65,8 +66,7 @@ class CommandQueue
 
     /// @brief Destructor
     ~CommandQueue ()
-    {
-    }
+    = default;
 
     /// @brief Executes a command. If the command has an undo function, then
     /// adds the command to the queue.

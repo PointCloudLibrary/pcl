@@ -99,13 +99,13 @@ public:
    * Sets the number of neighbors to be considered in the target point cloud (k_) to 10.
    */
   CorrespondenceEstimationBackProjection()
-  : source_normals_(), source_normals_transformed_(), target_normals_(), k_(10)
+  : source_normals_(), source_normals_transformed_(), target_normals_()
   {
     corr_name_ = "CorrespondenceEstimationBackProjection";
   }
 
   /** \brief Empty destructor */
-  virtual ~CorrespondenceEstimationBackProjection() {}
+  virtual ~CorrespondenceEstimationBackProjection() = default;
 
   /** \brief Set the normals computed on the source point cloud
    * \param[in] normals the normals computed for the source cloud
@@ -250,7 +250,7 @@ private:
   NormalsConstPtr target_normals_;
 
   /** \brief The number of neighbours to be considered in the target point cloud */
-  unsigned int k_;
+  unsigned int k_{10};
 };
 } // namespace registration
 } // namespace pcl

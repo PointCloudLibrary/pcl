@@ -39,6 +39,8 @@
 
 #include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
 
+#include <vtkInteractorStyleTrackballActor.h>
+
 namespace pcl
 {
   namespace cloud_composer
@@ -51,8 +53,6 @@ namespace pcl
         vtkTypeMacro(ClickTrackballStyleInteractor,vtkInteractorStyleTrackballActor);
         
         ClickTrackballStyleInteractor ();
-        
-        ~ClickTrackballStyleInteractor ();
                
         /** \brief Pass a pointer to the actor map
           * \param[in] actors the actor map that will be used with this style

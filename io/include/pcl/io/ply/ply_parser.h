@@ -40,7 +40,6 @@
 
 #pragma once
 
-#include <pcl/io/boost.h>
 #include <pcl/io/ply/ply.h>
 #include <pcl/io/ply/io_operators.h>
 #include <pcl/pcl_macros.h>
@@ -50,6 +49,13 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include <boost/lexical_cast.hpp> // for lexical_cast
+#include <boost/mpl/fold.hpp> // for fold
+#include <boost/mpl/inherit.hpp> // for inherit
+#include <boost/mpl/inherit_linearly.hpp> // for inherit_linearly
+#include <boost/mpl/joint_view.hpp> // for joint_view
+#include <boost/mpl/transform.hpp> // for transform
+#include <boost/mpl/vector.hpp> // for vector
 
 namespace pcl
 {
@@ -287,9 +293,7 @@ namespace pcl
           using flags_type = int;
           enum flags { };
 
-          ply_parser () :
-            line_number_ (0), current_element_ ()
-          {}
+          ply_parser () = default;
               
           bool parse (const std::string& filename);
           //inline bool parse (const std::string& filename);
@@ -299,7 +303,7 @@ namespace pcl
           struct property
           {
             property (const std::string& name) : name (name) {}
-            virtual ~property () {}
+            virtual ~property () = default;
             virtual bool parse (class ply_parser& ply_parser, format_type format, std::istream& istream) = 0;
             std::string name;
           };
@@ -408,8 +412,8 @@ namespace pcl
                                const typename list_property_element_callback_type<SizeType, ScalarType>::type& list_property_element_callback, 
                                const typename list_property_end_callback_type<SizeType, ScalarType>::type& list_property_end_callback);
             
-          std::size_t line_number_;
-          element* current_element_;
+          std::size_t line_number_{0};
+          element* current_element_{nullptr};
       };
     } // namespace ply
   } // namespace io
@@ -559,7 +563,7 @@ inline bool pcl::io::ply::ply_parser::parse_scalar_property (format_type format,
     if (!istream || !isspace (space))
     {
       if (error_callback_)
-        error_callback_ (line_number_, "parse error");
+        error_callback_ (line_number_, "error while parsing scalar property (file format: ascii)");
       return (false);
     }
     if (scalar_property_callback)
@@ -571,7 +575,7 @@ inline bool pcl::io::ply::ply_parser::parse_scalar_property (format_type format,
   if (!istream)
   {
     if (error_callback_)
-      error_callback_ (line_number_, "parse error");
+      error_callback_ (line_number_, "error while parsing scalar property (file format: binary)");
     return (false);
   }
   if (((format == binary_big_endian_format) && (host_byte_order == little_endian_byte_order)) ||
@@ -604,7 +608,7 @@ inline bool pcl::io::ply::ply_parser::parse_list_property (format_type format, s
     {
       if (error_callback_)
       {
-        error_callback_ (line_number_, "parse error");
+        error_callback_ (line_number_, "error while parsing list (file format: ascii)");
       }
       return (false);
     }
@@ -635,7 +639,7 @@ inline bool pcl::io::ply::ply_parser::parse_list_property (format_type format, s
       {
         if (error_callback_)
         {
-          error_callback_ (line_number_, "parse error");
+          error_callback_ (line_number_, "error while parsing list (file format: ascii)");
         }
         return (false);
       }
@@ -661,7 +665,7 @@ inline bool pcl::io::ply::ply_parser::parse_list_property (format_type format, s
   {
     if (error_callback_)
     {
-      error_callback_ (line_number_, "parse error");
+      error_callback_ (line_number_, "error while parsing list (file format: binary)");
     }
     return (false);
   }
@@ -674,7 +678,7 @@ inline bool pcl::io::ply::ply_parser::parse_list_property (format_type format, s
     istream.read (reinterpret_cast<char*> (&value), sizeof (scalar_type));
     if (!istream) {
       if (error_callback_) {
-        error_callback_ (line_number_, "parse error");
+        error_callback_ (line_number_, "error while parsing list (file format: binary)");
       }
       return (false);
     }

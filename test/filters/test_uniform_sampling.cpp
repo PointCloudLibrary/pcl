@@ -44,7 +44,7 @@
 TEST(UniformSampling, extractRemovedIndices)
 {
   using namespace pcl::common;
-  const int SEED = 1234;
+  constexpr int SEED = 1234;
   CloudGenerator<pcl::PointXYZ, UniformGenerator<float>> generator;
   UniformGenerator<float>::Parameters x_params(0, 1, SEED + 1);
   generator.setParametersForX(x_params);
@@ -71,7 +71,7 @@ TEST(UniformSampling, extractRemovedIndices)
   ASSERT_EQ(output.size(), 1000);
   EXPECT_EQ(removed_indices->size(), xyz->size() - 1000);
   std::set<int> removed_indices_set(removed_indices->begin(), removed_indices->end());
-  ASSERT_TRUE(removed_indices_set.size() == removed_indices->size());
+  ASSERT_EQ(removed_indices_set.size(), removed_indices->size());
 }
 
 int

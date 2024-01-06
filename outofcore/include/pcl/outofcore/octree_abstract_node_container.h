@@ -38,10 +38,10 @@
 
 #pragma once
 
+#include <boost/filesystem.hpp>
+
 #include <mutex>
 #include <vector>
-
-#include <pcl/outofcore/boost.h>
 
 namespace pcl
 {
@@ -61,7 +61,7 @@ namespace pcl
         OutofcoreAbstractNodeContainer (const boost::filesystem::path&) {}
 
         virtual 
-        ~OutofcoreAbstractNodeContainer () {}        
+        ~OutofcoreAbstractNodeContainer () = default;        
 
         virtual void
         insertRange (const PointT* start, const std::uint64_t count)=0;

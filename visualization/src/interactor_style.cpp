@@ -36,6 +36,7 @@
  *
  */
 
+#include <fstream>
 #include <list>
 #include <pcl/common/angles.h>
 #include <pcl/visualization/common/io.h>
@@ -44,6 +45,7 @@
 #include <vtkLODActor.h>
 #include <vtkPolyData.h>
 #include <vtkPolyDataMapper.h>
+#include <vtkDataSetMapper.h>
 #include <vtkCellArray.h>
 #include <vtkTextProperty.h>
 #include <vtkAbstractPropPicker.h>
@@ -68,10 +70,6 @@
 #include <boost/algorithm/string/classification.hpp> // for is_any_of
 #include <boost/algorithm/string/split.hpp> // for split
 #include <boost/filesystem.hpp> // for exists
-
-#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
-#include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
-#endif
 
 #define ORIENT_MODE 0
 #define SELECT_MODE 1
@@ -141,7 +139,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::saveCameraParameters (const st
 {
   FindPokedRenderer (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
 
-  ofstream ofs_cam (file.c_str ());
+  std::ofstream ofs_cam (file.c_str ());
   if (!ofs_cam.is_open ())
   {
     return (false);
@@ -669,22 +667,11 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         data->SetPoints (points);
         data->SetVerts (vertices);
         // Modify the mapper
-#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
-        if (use_vbos_)
-        {
-          vtkVertexBufferObjectMapper* mapper = static_cast<vtkVertexBufferObjectMapper*>(act.actor->GetMapper ());
-          mapper->SetInput (data);
-          // Modify the actor
-          act.actor->SetMapper (mapper);
-        }
-        else
-#endif
-        {
-          vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act.actor->GetMapper ());
-          mapper->SetInputData (data);
-          // Modify the actor
-          act.actor->SetMapper (mapper);
-        }
+        auto* mapper = dynamic_cast<vtkDataSetMapper*>(act.actor->GetMapper ());
+        mapper->SetInputData (data);
+        // Modify the actor
+        act.actor->SetMapper (mapper);
+
         act.actor->Modified ();
       }
     }
@@ -707,33 +694,22 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         double minmax[2];
         scalars->GetRange (minmax);
         // Update the data
-        vtkPolyData *data = static_cast<vtkPolyData*>(act.actor->GetMapper ()->GetInput ());
+        auto *data = dynamic_cast<vtkPolyData*>(act.actor->GetMapper ()->GetInput ());
         data->GetPointData ()->SetScalars (scalars);
         // Modify the mapper
-#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
-        if (use_vbos_)
-        {
-          vtkVertexBufferObjectMapper* mapper = static_cast<vtkVertexBufferObjectMapper*>(act.actor->GetMapper ());
-          mapper->SetScalarRange (minmax);
-          mapper->SetScalarModeToUsePointData ();
-          mapper->SetInput (data);
-          // Modify the actor
-          act.actor->SetMapper (mapper);
-        }
-        else
-#endif
-        {
-          vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act.actor->GetMapper ());
-          mapper->SetScalarRange (minmax);
-          mapper->SetScalarModeToUsePointData ();
-          mapper->SetInputData (data);
-          // Modify the actor
-          act.actor->SetMapper (mapper);
-        }
+        auto* mapper = dynamic_cast<vtkDataSetMapper*>(act.actor->GetMapper ());
+        mapper->SetScalarRange (minmax);
+        mapper->SetScalarModeToUsePointData ();
+        mapper->SetInputData (data);
+        // Modify the actor
+        act.actor->SetMapper (mapper);
+
         act.actor->Modified ();
       }
     }
 
+    KeyboardEvent event (true, Interactor->GetKeySym (), Interactor->GetKeyCode (), Interactor->GetAltKey (), Interactor->GetControlKey (), Interactor->GetShiftKey ());
+    keyboard_signal_ (event);
     Interactor->Render ();
     return;
   }
@@ -744,7 +720,17 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
   else if (key.find ("XF86ZoomOut") != std::string::npos)
     zoomOut ();
 
-  switch (Interactor->GetKeyCode ())
+  char KeyCodeChar = Interactor->GetKeyCode ();
+  if (KeyCodeChar == 0)
+  {
+    std::string KeyString(Interactor->GetKeySym());
+    if (KeyString == "KP_Add")
+      KeyCodeChar = '+';
+    else if (KeyString == "KP_Subtract")
+      KeyCodeChar = '-';
+  }
+
+  switch (KeyCodeChar)
   {
     case 'h': case 'H':
     {
@@ -857,11 +843,11 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     case 'j': case 'J':
     {
       char cam_fn[80], snapshot_fn[80];
-      unsigned t = static_cast<unsigned> (time (nullptr));
-      sprintf (snapshot_fn, "screenshot-%d.png" , t);
+      auto t = static_cast<unsigned> (time (nullptr));
+      sprintf (snapshot_fn, "screenshot-%u.png" , t);
       saveScreenshot (snapshot_fn);
 
-      sprintf (cam_fn, "screenshot-%d.cam", t);
+      sprintf (cam_fn, "screenshot-%u.cam", t);
       saveCameraParameters (cam_fn);
 
       pcl::console::print_info ("Screenshot (%s) and camera information (%s) successfully captured.\n", snapshot_fn, cam_fn);
@@ -918,7 +904,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         {
           for (actor->InitPathTraversal (); vtkAssemblyPath* path = actor->GetNextPath (); )
           {
-            vtkSmartPointer<vtkActor> apart = static_cast<vtkActor*> (path->GetLastNode ()->GetViewProp ());
+            vtkSmartPointer<vtkActor> apart = dynamic_cast<vtkActor*> (path->GetLastNode ()->GetViewProp ());
             float psize = apart->GetProperty ()->GetPointSize ();
             if (psize > 1.0f)
               apart->GetProperty ()->SetPointSize (psize - 1.0f);
@@ -1065,17 +1051,20 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       {
         FindPokedRenderer(Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
         if(CurrentRenderer)
+        {
           CurrentRenderer->ResetCamera ();
+          CurrentRenderer->Render ();
+        }
         else
+        {
           PCL_WARN ("no current renderer on the interactor style.\n");
-
-        CurrentRenderer->Render ();
+        }
         break;
       }
 
       vtkSmartPointer<vtkCamera> cam = CurrentRenderer->GetActiveCamera ();
       
-      static CloudActorMap::iterator it = cloud_actors_->begin ();
+      static auto it = cloud_actors_->begin ();
       // it might be that some actors don't have a valid transformation set -> we skip them to avoid a seg fault.
       bool found_transformation = false;
       for (unsigned idx = 0; idx < cloud_actors_->size (); ++idx, ++it)
@@ -1132,7 +1121,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       if (CurrentMode == SELECT_MODE)
       {
         // Save the point picker
-        point_picker_ = static_cast<vtkPointPicker*> (Interactor->GetPicker ());
+        point_picker_ = dynamic_cast<vtkPointPicker*> (Interactor->GetPicker ());
         // Switch for an area picker
         vtkSmartPointer<vtkAreaPicker> area_picker = vtkSmartPointer<vtkAreaPicker>::New ();
         Interactor->SetPicker (area_picker);

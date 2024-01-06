@@ -7,6 +7,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp> // for split, is_any_of
 namespace bf = boost::filesystem;
 
 inline void
@@ -86,11 +87,15 @@ main (int argc, char ** argv)
   }
 
   ObjectRecognitionParameters params;
-  ifstream params_stream;
+  std::ifstream params_stream;
 
   //Parse filter parameters
   std::string filter_parameters_file;
-  pcl::console::parse_argument (argc, argv, "--filter", filter_parameters_file) > 0;
+  if (pcl::console::parse_argument (argc, argv, "--filter", filter_parameters_file) < 0)
+  {
+    pcl::console::print_error ("Missing option --filter\n");
+    return (1);
+  }
   params_stream.open (filter_parameters_file.c_str ());
   if (params_stream.is_open())
   {
@@ -109,7 +114,11 @@ main (int argc, char ** argv)
 
   // Parse segmentation parameters
   std::string segmentation_parameters_file;
-  pcl::console::parse_argument (argc, argv, "--segment", segmentation_parameters_file) > 0;
+  if (pcl::console::parse_argument (argc, argv, "--segment", segmentation_parameters_file) < 0)
+  {
+    pcl::console::print_error ("Missing option --segment\n");
+    return (1);
+  }
   params_stream.open (segmentation_parameters_file.c_str ());
   if (params_stream.is_open())
   {
@@ -129,7 +138,11 @@ main (int argc, char ** argv)
 
   // Parse feature estimation parameters
   std::string feature_estimation_parameters_file;
-  pcl::console::parse_argument (argc, argv, "--feature", feature_estimation_parameters_file) > 0;
+  if (pcl::console::parse_argument (argc, argv, "--feature", feature_estimation_parameters_file) < 0)
+  {
+    pcl::console::print_error ("Missing option --feature\n");
+    return (1);
+  }
   params_stream.open (feature_estimation_parameters_file.c_str ());
   if (params_stream.is_open())
   {
@@ -150,7 +163,11 @@ main (int argc, char ** argv)
 
   // Parse the registration parameters
   std::string registration_parameters_file;
-  pcl::console::parse_argument (argc, argv, "--registration", registration_parameters_file) > 0;
+  if (pcl::console::parse_argument (argc, argv, "--registration", registration_parameters_file) < 0)
+  {
+    pcl::console::print_error ("Missing option --registration\n");
+    return (1);
+  }
   params_stream.open (registration_parameters_file.c_str ());
   if (params_stream.is_open())
   {
@@ -177,17 +194,17 @@ main (int argc, char ** argv)
   std::string start = "";
   getModelsInDirectory (dir_path, start, files);
 
-  for(std::size_t i=0; i < files.size(); i++) {
+  for(const auto& file : files) {
     // Load input file
 
     std::string filename = directory;
     filename.append("/");
-    filename.append(files[i]);
+    filename.append(file);
     PointCloudPtr input (new PointCloud);
     pcl::io::loadPCDFile (filename, *input);
     pcl::console::print_info ("Loaded %s (%lu points)\n", filename.c_str(), input->size ());
 
-    std::cout << files[i] << std::endl;
+    std::cout << file << std::endl;
     // Construct the object model
     ObjectRecognition obj_rec (params);
     ObjectModel model;
@@ -195,7 +212,7 @@ main (int argc, char ** argv)
 
     //get directory name
     std::vector < std::string > strs;
-    boost::split (strs, files[i], boost::is_any_of ("/\\"));
+    boost::split (strs, file, boost::is_any_of ("/\\"));
 
     std::string id = strs[0];
     std::string raw_file = strs[1];

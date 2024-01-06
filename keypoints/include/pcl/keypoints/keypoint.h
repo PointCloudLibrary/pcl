@@ -67,8 +67,8 @@ namespace pcl
       using PointCloudInPtr = typename PointCloudIn::Ptr;
       using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
       using PointCloudOut = pcl::PointCloud<PointOutT>;
-      using SearchMethod = std::function<int (int, double, std::vector<int> &, std::vector<float> &)>;
-      using SearchMethodSurface = std::function<int (const PointCloudIn &cloud, int index, double, std::vector<int> &, std::vector<float> &)>;
+      using SearchMethod = std::function<int (pcl::index_t, double, pcl::Indices &, std::vector<float> &)>;
+      using SearchMethodSurface = std::function<int (const PointCloudIn &cloud, pcl::index_t index, double, pcl::Indices &, std::vector<float> &)>;
 
     public:
       /** \brief Empty constructor. */
@@ -76,14 +76,12 @@ namespace pcl
         BaseClass (), 
         search_method_surface_ (),
         surface_ (), 
-        tree_ (), 
-        search_parameter_ (0), 
-        search_radius_ (0), 
-        k_ (0) 
+        tree_ () 
+        
       {};
       
       /** \brief Empty destructor */
-      ~Keypoint () {}
+      ~Keypoint () override = default;
 
       /** \brief Provide a pointer to the input dataset that we need to estimate features at every point for.
         * \param cloud the const boost shared pointer to a PointCloud message
@@ -152,7 +150,7 @@ namespace pcl
         * k-nearest neighbors
         */
       inline int
-      searchForNeighbors (int index, double parameter, std::vector<int> &indices, std::vector<float> &distances) const
+      searchForNeighbors (pcl::index_t index, double parameter, pcl::Indices &indices, std::vector<float> &distances) const
       {
         if (surface_ == input_)       // if the two surfaces are the same
           return (search_method_ (index, parameter, indices, distances));
@@ -181,13 +179,13 @@ namespace pcl
       KdTreePtr tree_;
 
       /** \brief The actual search parameter (casted from either \a search_radius_ or \a k_). */
-      double search_parameter_;
+      double search_parameter_{0.0};
 
       /** \brief The nearest neighbors search radius for each point. */
-      double search_radius_;
+      double search_radius_{0.0};
 
       /** \brief The number of K nearest neighbors to use for each point. */
-      int k_;
+      int k_{0};
 
       /** \brief Indices of the keypoints in the input cloud. */
       pcl::PointIndicesPtr keypoints_indices_;

@@ -19,7 +19,7 @@ run(pcl::RFFaceDetectorTrainer& fdrf, bool heat_map = false, bool show_votes = f
   OpenNIFrameSource::OpenNIFrameSource camera;
   OpenNIFrameSource::PointCloudPtr scene_vis;
 
-  pcl::visualization::PCLVisualizer vis("Face dection");
+  pcl::visualization::PCLVisualizer vis("Face detection");
   vis.addCoordinateSystem(0.1, "global");
 
   // keyboard callback to stop getting frames and finalize application
@@ -103,8 +103,9 @@ main(int argc, char** argv)
   int pose_refinement_ = 0;
   int icp_iterations = 5;
 
-  std::string forest_fn = "../data/forests/forest.txt";
-  std::string model_path_ = "../data/ply_models/face.pcd";
+  // Use for example biwi_face_database from https://github.com/PointCloudLibrary/data
+  std::string forest_fn = "../data/biwi_face_database/forest_example.txt";
+  std::string model_path_ = "../data/biwi_face_database/model.pcd";
 
   pcl::console::parse_argument(argc, argv, "-forest_fn", forest_fn);
   pcl::console::parse_argument(argc, argv, "-max_variance", trans_max_variance);
@@ -119,7 +120,6 @@ main(int argc, char** argv)
   pcl::console::parse_argument(argc, argv, "-icp_iterations", icp_iterations);
 
   pcl::RFFaceDetectorTrainer fdrf;
-  fdrf.setForestFilename(forest_fn);
   fdrf.setWSize(80);
   fdrf.setUseNormals(static_cast<bool>(use_normals));
   fdrf.setWStride(STRIDE_SW);
@@ -134,7 +134,10 @@ main(int argc, char** argv)
 
   // load forest from file and pass it to the detector
   std::filebuf fb;
-  fb.open(forest_fn.c_str(), std::ios::in);
+  if (!fb.open(forest_fn.c_str(), std::ios::in)) {
+    PCL_ERROR("Could not open file %s\n", forest_fn.c_str());
+    return 1;
+  }
   std::istream os(&fb);
 
   using NodeType = pcl::face_detection::RFTreeNode<pcl::face_detection::FeatureType>;

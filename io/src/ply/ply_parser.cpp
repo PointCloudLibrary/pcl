@@ -40,6 +40,7 @@
 
 #include <pcl/io/ply/ply_parser.h>
 
+#include <algorithm> // for find_if
 #include <fstream> // for ifstream
 #include <sstream> // for istringstream
 
@@ -52,9 +53,6 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
 
   std::size_t number_of_format_statements = 0;
   std::size_t number_of_element_statements = 0;
-  std::size_t number_of_property_statements = 0;
-  std::size_t number_of_obj_info_statements = 0;
-  std::size_t number_of_comment_statements = 0;
 
   format_type format = pcl::io::ply::unknown;
   std::vector<std::shared_ptr<element>> elements;
@@ -113,6 +111,11 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
       std::string format_string, version;
       char space_format_format_string, space_format_string_version;
       stringstream >> space_format_format_string >> std::ws >> format_string >> space_format_string_version >> std::ws >> version;
+      if (!stringstream.eof ())
+      {
+        stringstream >> std::ws;
+        warning_callback_ (line_number_, "parse warning: trailing whitespaces in the header");
+      }
       if (!stringstream ||
           !stringstream.eof () ||
           !isspace (space_format_format_string) ||
@@ -158,6 +161,11 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
       std::size_t count;
       char space_element_name, space_name_count;
       stringstream >> space_element_name >> std::ws >> name >> space_name_count >> std::ws >> count;
+      if (!stringstream.eof ())
+      {
+        stringstream >> std::ws;
+        warning_callback_ (line_number_, "parse warning: trailing whitespaces in the header");
+      }
       if (!stringstream ||
           !stringstream.eof () ||
           !isspace (space_element_name) ||
@@ -252,7 +260,6 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
           error_callback_ (line_number_, "parse error: unknown type");
           return false;
         }
-        ++number_of_property_statements;
       }
       else
       {
@@ -359,7 +366,10 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
             return false;
           }
         }
-        else if ((size_type_string == type_traits<uint32>::name ()) || (size_type_string == type_traits<uint32>::old_name ()))
+        // It is safe to use size_type = uint32 here even if it is actually int32, because the size/number of list entries is never negative,
+        // uint32 and int32 have the same width, and all allowed (non-negative) values have the same binary encoding in int32 and uint32.
+        else if ((size_type_string == type_traits<uint32>::name ()) || (size_type_string == type_traits<uint32>::old_name ()) ||
+                 (size_type_string == type_traits< int32>::name ()) || (size_type_string == type_traits< int32>::old_name ()))
         {
           using size_type = uint32;
           if ((scalar_type_string == type_traits<int8>::name ()) || (scalar_type_string == type_traits<int8>::old_name ()))
@@ -405,7 +415,6 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
           error_callback_ (line_number_, "parse error: unknown list size type");
           return false;
         }
-        ++number_of_property_statements;
       }
     }
 
@@ -413,14 +422,12 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
     else if (keyword == "comment")
     {
       comment_callback_ (line);
-      ++number_of_comment_statements;
     }
 
     // obj_info
     else if (keyword == "obj_info")
     {
       obj_info_callback_ (line);
-      ++number_of_obj_info_statements;
     }
 
     // end_header
@@ -448,7 +455,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
   {
     for (const auto &element_ptr: elements)
     {
-      auto& element = *(element_ptr.get ());
+      auto& element = *(element_ptr);
       for (std::size_t element_index = 0; element_index < element.count; ++element_index)
       {
         if (element.begin_element_callback)
@@ -466,7 +473,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
 
         for (const auto &property_ptr: element.properties)
         {
-          auto& property = *(property_ptr.get ());
+          auto& property = *(property_ptr);
           if (!property.parse (*this, format, stringstream))
           {
             error_callback_ (line_number_, "parse error: element property count doesn't match the declaration in the header");
@@ -502,14 +509,14 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
 
   for (const auto &element_ptr: elements)
   {
-    auto& element = *(element_ptr.get ());
+    auto& element = *(element_ptr);
     for (std::size_t element_index = 0; element_index < element.count; ++element_index)
     {
       if (element.begin_element_callback)
         element.begin_element_callback ();
       for (const auto &property_ptr: element.properties)
       {
-        auto& property = *(property_ptr.get ());
+        auto& property = *(property_ptr);
         if (!property.parse (*this, format, istream))
         {
           return false;

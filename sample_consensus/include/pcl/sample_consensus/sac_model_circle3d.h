@@ -102,7 +102,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      ~SampleConsensusModelCircle3D () {}
+      ~SampleConsensusModelCircle3D () override = default;
 
       /** \brief Copy constructor.
         * \param[in] source the model to copy into this

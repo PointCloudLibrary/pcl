@@ -40,9 +40,10 @@
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/features/eigen.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_representation.h>
+
+#include <algorithm>
 
 namespace pcl
 {
@@ -240,8 +241,11 @@ namespace pcl
         using PointT = Narf *;
         FeaturePointRepresentation(int nr_dimensions) { this->nr_dimensions_ = nr_dimensions; }
         /** \brief Empty destructor */
-        ~FeaturePointRepresentation () {}
-        void copyToFloatArray (const PointT& p, float* out) const override { memcpy(out, p->getDescriptor(), sizeof(*p->getDescriptor())*this->nr_dimensions_); }
+        ~FeaturePointRepresentation () override = default;
+        void copyToFloatArray (const PointT& p, float* out) const override {
+          auto descriptor = p->getDescriptor();
+          std::copy(descriptor, descriptor + this->nr_dimensions_, out);
+        }
       };
       
     protected:
@@ -273,12 +277,12 @@ namespace pcl
       // =====PROTECTED MEMBER VARIABLES=====
       Eigen::Vector3f position_;
       Eigen::Affine3f transformation_;
-      float* surface_patch_;
-      int surface_patch_pixel_size_;
-      float surface_patch_world_size_;
-      float surface_patch_rotation_;
-      float* descriptor_;
-      int descriptor_size_;
+      float* surface_patch_{nullptr};
+      int surface_patch_pixel_size_{0};
+      float surface_patch_world_size_{0.0f};
+      float surface_patch_rotation_{0.0f};
+      float* descriptor_{nullptr};
+      int descriptor_size_{0};
 
       // =====STATIC PROTECTED=====
       

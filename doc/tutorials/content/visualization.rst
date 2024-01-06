@@ -43,7 +43,7 @@ accompanying the library.
    Due to historical reasons, PCL 1.x stores RGB data as a packed float (to
    preserve backward compatibility). To learn more about this, please see the
    `PointXYZRGB
-   <http://docs.pointclouds.org/trunk/structpcl_1_1_point_x_y_z_r_g_b.html>`_.
+   <https://pointclouds.org/documentation/structpcl_1_1_point_x_y_z_r_g_b.html>`_.
 
 Simple Cloud Visualization
 --------------------------

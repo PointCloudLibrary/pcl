@@ -49,8 +49,9 @@ namespace registration {
  * aligned to the previous cloud.
  *
  * \code
- * IterativeClosestPoint<PointXYZ,PointXYZ>::Ptr icp (new
- * IterativeClosestPoint<PointXYZ,PointXYZ>); icp->setMaxCorrespondenceDistance (0.05);
+ * IterativeClosestPoint<PointXYZ,PointXYZ>::Ptr icp
+ *   (new IterativeClosestPoint<PointXYZ,PointXYZ>);
+ * icp->setMaxCorrespondenceDistance (0.05);
  * icp->setMaximumIterations (50);
  *
  * IncrementalRegistration<PointXYZ> iicp;
@@ -82,7 +83,7 @@ public:
   IncrementalRegistration();
 
   /** \brief Empty destructor */
-  virtual ~IncrementalRegistration() {}
+  virtual ~IncrementalRegistration() = default;
 
   /** \brief Register new point cloud incrementally
    * \note You have to set a valid registration object with @ref setRegistration before
@@ -109,6 +110,8 @@ public:
 
   /** \brief Set registration instance used to align clouds */
   inline void setRegistration(RegistrationPtr);
+
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 
 protected:
   /** \brief last registered point cloud */

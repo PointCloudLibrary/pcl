@@ -47,7 +47,7 @@
 #include <pcl/registration/correspondence_rejection_median_distance.h>
 #include <pcl/registration/correspondence_rejection_poly.h>
 
-pcl::PointCloud<pcl::PointXYZ> cloud;
+pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (CorrespondenceRejectors, CorrespondenceRejectionMedianDistance)
@@ -76,7 +76,7 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionMedianDistance)
 TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
 {
   // Size of point cloud
-  const int size = static_cast<int> (cloud.size ());
+  const int size = static_cast<int> (cloud->size ());
   
   // Ground truth correspondences
   pcl::Correspondences corr (size);
@@ -90,38 +90,39 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
     corr[i].index_match += inc;  
   
   // Transform the target
-  pcl::PointCloud<pcl::PointXYZ> target;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr target(new pcl::PointCloud<pcl::PointXYZ>);
   Eigen::Vector3f t(0.1f, 0.2f, 0.3f);
-  Eigen::Quaternionf q (float (std::cos (0.5*M_PI_4)), 0.0f, 0.0f, float (std::sin (0.5*M_PI_4)));
-  pcl::transformPointCloud (cloud, target, t, q);
+  Eigen::Quaternionf q (static_cast<float>(std::cos (0.5*M_PI_4)), 0.0f, 0.0f, static_cast<float>(std::sin (0.5*M_PI_4)));
+  pcl::transformPointCloud (*cloud, *target, t, q);
   
   // Noisify the target with a known seed and N(0, 0.005) using deterministic sampling
   pcl::common::NormalGenerator<float> nd(0, 0.005, 1e6);
-  for (auto &point : target)
+  for (auto &point : *target)
   {
     point.x += nd.run();
     point.y += nd.run();
     point.z += nd.run();
   }
   
-  // Ensure deterministic sampling inside the rejector
-  std::srand (1e6);
+  // Test rejector with varying seeds
+  const unsigned int seed = std::time(nullptr);
+  std::srand (seed);
   
   // Create a rejection object
   pcl::registration::CorrespondenceRejectorPoly<pcl::PointXYZ, pcl::PointXYZ> reject;
-  reject.setIterations (10000);
+  reject.setIterations (20000);
   reject.setCardinality (3);
-  reject.setSimilarityThreshold (0.75f);
-  reject.setInputSource (cloud.makeShared ());
-  reject.setInputTarget (target.makeShared ());
+  reject.setSimilarityThreshold (0.8f);
+  reject.setInputSource (cloud);
+  reject.setInputTarget (target);
   
   // Run rejection
   pcl::Correspondences result;
   reject.getRemainingCorrespondences (corr, result);
   
   // Ground truth fraction of inliers and estimated fraction of inliers
-  const float ground_truth_frac = float (size-last) / float (size);
-  const float accepted_frac = float (result.size()) / float (size);
+  const float ground_truth_frac = static_cast<float>(size-last) / static_cast<float>(size);
+  const float accepted_frac = static_cast<float>(result.size()) / static_cast<float>(size);
 
   /*
    * Test criterion 1: verify that the method accepts at least 25 % of the input correspondences,
@@ -142,8 +143,8 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
       ++true_positives;
   const std::size_t false_positives = result.size() - true_positives;
 
-  const double precision = double(true_positives) / double(true_positives+false_positives);
-  const double recall = double(true_positives) / double(size-last);
+  const double precision = static_cast<double>(true_positives) / static_cast<double>(true_positives+false_positives);
+  const double recall = static_cast<double>(true_positives) / static_cast<double>(size-last);
   EXPECT_NEAR(precision, 1.0, 0.4);
   EXPECT_NEAR(recall, 1.0, 0.2);
 }
@@ -160,7 +161,8 @@ int
   }
 
   // Input
-  if (pcl::io::loadPCDFile (argv[1], cloud) < 0)
+  cloud.reset(new pcl::PointCloud<pcl::PointXYZ>);
+  if (pcl::io::loadPCDFile (argv[1], *cloud) < 0)
   {
     std::cerr << "Failed to read test file. Please download `bunny.pcd` and pass its path to the test." << std::endl;
     return (-1);

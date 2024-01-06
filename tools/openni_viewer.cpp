@@ -39,7 +39,6 @@
 #include <pcl/common/time.h> //fps calculations
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/boost.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
@@ -110,12 +109,10 @@ class OpenNIViewer
     using Cloud = pcl::PointCloud<PointType>;
     using CloudConstPtr = typename Cloud::ConstPtr;
 
-    OpenNIViewer (pcl::Grabber& grabber)
-      : cloud_viewer_ (new pcl::visualization::PCLVisualizer ("PCL OpenNI cloud"))
-      , grabber_ (grabber)
-      , rgb_data_ (nullptr), rgb_data_size_ (0)
-    {
-    }
+    OpenNIViewer(pcl::Grabber& grabber)
+    : cloud_viewer_(new pcl::visualization::PCLVisualizer("PCL OpenNI cloud"))
+    , grabber_(grabber)
+    {}
 
     void
     cloud_callback (const CloudConstPtr& cloud)
@@ -264,8 +261,8 @@ class OpenNIViewer
     
     CloudConstPtr cloud_;
     openni_wrapper::Image::Ptr image_;
-    unsigned char* rgb_data_;
-    unsigned rgb_data_size_;
+    unsigned char* rgb_data_{nullptr};
+    unsigned rgb_data_size_{0};
 };
 
 // Create the PCLVisualizer object
@@ -297,18 +294,18 @@ main (int argc, char** argv)
         auto device = grabber.getDevice();
         std::cout << "Supported depth modes for device: " << device->getVendorName() << " , " << device->getProductName() << std::endl;
         std::vector<std::pair<int, XnMapOutputMode > > modes = grabber.getAvailableDepthModes();
-        for (std::vector<std::pair<int, XnMapOutputMode > >::const_iterator it = modes.begin(); it != modes.end(); ++it)
+        for (const auto& mode : modes)
         {
-          std::cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << std::endl;
+          std::cout << mode.first << " = " << mode.second.nXRes << " x " << mode.second.nYRes << " @ " << mode.second.nFPS << std::endl;
         }
 
         if (device->hasImageStream ())
         {
           std::cout << std::endl << "Supported image modes for device: " << device->getVendorName() << " , " << device->getProductName() << std::endl;
           modes = grabber.getAvailableImageModes();
-          for (std::vector<std::pair<int, XnMapOutputMode > >::const_iterator it = modes.begin(); it != modes.end(); ++it)
+          for (const auto& mode : modes)
           {
-            std::cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << std::endl;
+            std::cout << mode.first << " = " << mode.second.nXRes << " x " << mode.second.nYRes << " @ " << mode.second.nFPS << std::endl;
           }
         }
       }
@@ -341,10 +338,10 @@ main (int argc, char** argv)
   
   unsigned mode;
   if (pcl::console::parse(argc, argv, "-depthmode", mode) != -1)
-    depth_mode = pcl::OpenNIGrabber::Mode (mode);
+    depth_mode = static_cast<pcl::OpenNIGrabber::Mode>(mode);
 
   if (pcl::console::parse(argc, argv, "-imagemode", mode) != -1)
-    image_mode = pcl::OpenNIGrabber::Mode (mode);
+    image_mode = static_cast<pcl::OpenNIGrabber::Mode>(mode);
   
   if (pcl::console::find_argument (argc, argv, "-xyz") != -1)
     xyz = true;

@@ -78,13 +78,13 @@ template <typename PointSource, typename PointTarget, typename FeatureT>
 void
 SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::selectSamples(
     const PointCloudSource& cloud,
-    int nr_samples,
+    unsigned int nr_samples,
     float min_sample_distance,
-    std::vector<int>& sample_indices)
+    pcl::Indices& sample_indices)
 {
-  if (nr_samples > static_cast<int>(cloud.size())) {
+  if (nr_samples > cloud.size()) {
     PCL_ERROR("[pcl::%s::selectSamples] ", getClassName().c_str());
-    PCL_ERROR("The number of samples (%d) must not be greater than the number of "
+    PCL_ERROR("The number of samples (%u) must not be greater than the number of "
               "points (%zu)!\n",
               nr_samples,
               static_cast<std::size_t>(cloud.size()));
@@ -95,9 +95,9 @@ SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::selectSampl
   index_t iterations_without_a_sample = 0;
   const auto max_iterations_without_a_sample = 3 * cloud.size();
   sample_indices.clear();
-  while (static_cast<int>(sample_indices.size()) < nr_samples) {
+  while (sample_indices.size() < nr_samples) {
     // Choose a sample at random
-    int sample_index = getRandomIndex(static_cast<int>(cloud.size()));
+    const auto sample_index = getRandomIndex(cloud.size());
 
     // Check to see if the sample is 1) unique and 2) far away from the other samples
     bool valid_sample = true;
@@ -140,10 +140,10 @@ template <typename PointSource, typename PointTarget, typename FeatureT>
 void
 SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::
     findSimilarFeatures(const FeatureCloud& input_features,
-                        const std::vector<int>& sample_indices,
-                        std::vector<int>& corresponding_indices)
+                        const pcl::Indices& sample_indices,
+                        pcl::Indices& corresponding_indices)
 {
-  std::vector<int> nn_indices(k_correspondences_);
+  pcl::Indices nn_indices(k_correspondences_);
   std::vector<float> nn_distances(k_correspondences_);
 
   corresponding_indices.resize(sample_indices.size());
@@ -156,7 +156,7 @@ SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::
                                   nn_distances);
 
     // Select one at random and add it to corresponding_indices
-    int random_correspondence = getRandomIndex(k_correspondences_);
+    const auto random_correspondence = getRandomIndex(k_correspondences_);
     corresponding_indices[i] = nn_indices[random_correspondence];
   }
 }
@@ -166,16 +166,16 @@ float
 SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::computeErrorMetric(
     const PointCloudSource& cloud, float)
 {
-  std::vector<int> nn_index(1);
+  pcl::Indices nn_index(1);
   std::vector<float> nn_distance(1);
 
   const ErrorFunctor& compute_error = *error_functor_;
   float error = 0;
 
-  for (int i = 0; i < static_cast<int>(cloud.size()); ++i) {
-    // Find the distance between cloud[i] and its nearest neighbor in the target point
+  for (const auto& point : cloud) {
+    // Find the distance between point and its nearest neighbor in the target point
     // cloud
-    tree_->nearestKSearch(cloud, i, 1, nn_index, nn_distance);
+    tree_->nearestKSearch(point, 1, nn_index, nn_distance);
 
     // Compute the error
     error += compute_error(nn_distance[0]);
@@ -223,8 +223,8 @@ SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::
   if (!error_functor_)
     error_functor_.reset(new TruncatedError(static_cast<float>(corr_dist_threshold_)));
 
-  std::vector<int> sample_indices(nr_samples_);
-  std::vector<int> corresponding_indices(nr_samples_);
+  pcl::Indices sample_indices(nr_samples_);
+  pcl::Indices corresponding_indices(nr_samples_);
   PointCloudSource input_transformed;
   float lowest_error(0);
 

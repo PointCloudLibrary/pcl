@@ -54,8 +54,10 @@ namespace registration {
  * \code
  * pcl::PointCloud<pcl::PointNormal>::Ptr source, target;
  * // ... read or fill in source and target
- * pcl::CorrespondenceEstimationNormalShooting<pcl::PointNormal, pcl::PointNormal,
- * pcl::PointNormal> est; est.setInputSource (source); est.setSourceNormals (source);
+ * pcl::CorrespondenceEstimationNormalShooting
+ *   <pcl::PointNormal, pcl::PointNormal, pcl::PointNormal> est;
+ * est.setInputSource (source);
+ * est.setSourceNormals (source);
  *
  * est.setInputTarget (target);
  *
@@ -99,8 +101,18 @@ public:
       point_representation_;
   using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::target_indices_;
 
-  using KdTree = pcl::search::KdTree<PointTarget>;
-  using KdTreePtr = typename KdTree::Ptr;
+  using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::KdTree;
+  using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::
+      KdTreePtr;
+  using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::
+      KdTreeConstPtr;
+
+  using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::
+      KdTreeReciprocal;
+  using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::
+      KdTreeReciprocalPtr;
+  using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::
+      KdTreeReciprocalConstPtr;
 
   using PointCloudSource = pcl::PointCloud<PointSource>;
   using PointCloudSourcePtr = typename PointCloudSource::Ptr;
@@ -120,13 +132,13 @@ public:
    * Sets the number of neighbors to be considered in the target point cloud (k_) to 10.
    */
   CorrespondenceEstimationNormalShooting()
-  : source_normals_(), source_normals_transformed_(), k_(10)
+  : source_normals_(), source_normals_transformed_()
   {
     corr_name_ = "CorrespondenceEstimationNormalShooting";
   }
 
   /** \brief Empty destructor */
-  ~CorrespondenceEstimationNormalShooting() {}
+  ~CorrespondenceEstimationNormalShooting() override = default;
 
   /** \brief Set the normals computed on the source point cloud
    * \param[in] normals the normals computed for the source cloud
@@ -236,7 +248,7 @@ private:
   NormalsPtr source_normals_transformed_;
 
   /** \brief The number of neighbours to be considered in the target point cloud */
-  unsigned int k_;
+  unsigned int k_{10};
 };
 } // namespace registration
 } // namespace pcl

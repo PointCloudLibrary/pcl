@@ -39,7 +39,7 @@
 
 #include <pcl/filters/filter_indices.h>
 #include <ctime>
-#include <climits>
+#include <limits>
 
 namespace pcl
 {
@@ -76,7 +76,7 @@ namespace pcl
       /** \brief Empty constructor. */
       RandomSample (bool extract_removed_indices = false) : 
         FilterIndices<PointT> (extract_removed_indices),
-        sample_ (UINT_MAX), 
+        sample_ (std::numeric_limits<unsigned int>::max()),
         seed_ (static_cast<unsigned int> (time (nullptr)))
       {
         filter_name_ = "RandomSample";
@@ -135,7 +135,7 @@ namespace pcl
       inline float
       unifRand ()
       {
-        return (static_cast<float>(rand () / double (RAND_MAX)));
+        return (static_cast<float>(rand () / static_cast<double>(RAND_MAX)));
         //return (((214013 * seed_ + 2531011) >> 16) & 0x7FFF);
       }
   };
@@ -160,7 +160,9 @@ namespace pcl
       using ConstPtr = shared_ptr<const RandomSample<pcl::PCLPointCloud2> >;
   
       /** \brief Empty constructor. */
-      RandomSample () : sample_ (UINT_MAX), seed_ (static_cast<unsigned int> (time (nullptr)))
+      RandomSample ():
+        sample_ (std::numeric_limits<unsigned int>::max()),
+        seed_ (static_cast<unsigned int>(time(nullptr)))
       {
         filter_name_ = "RandomSample";
       }
@@ -224,7 +226,7 @@ namespace pcl
       inline float
       unifRand ()
       {
-        return (static_cast<float> (rand () / double (RAND_MAX)));
+        return (static_cast<float> (rand () / static_cast<double>(RAND_MAX)));
       }
    };
 }

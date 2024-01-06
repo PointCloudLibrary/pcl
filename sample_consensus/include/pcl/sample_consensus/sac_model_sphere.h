@@ -40,11 +40,22 @@
 
 #pragma once
 
+#ifdef __SSE__
+#include <xmmintrin.h> // for __m128
+#endif // ifdef __SSE__
+#ifdef __AVX__
+#include <immintrin.h> // for __m256
+#endif // ifdef __AVX__
+
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
 
 namespace pcl
 {
+  namespace internal {
+    int optimizeModelCoefficientsSphere (Eigen::VectorXf& coeff, const Eigen::ArrayXf& pts_x, const Eigen::ArrayXf& pts_y, const Eigen::ArrayXf& pts_z);
+  } // namespace internal
+
   /** \brief SampleConsensusModelSphere defines a model for 3D sphere segmentation.
     * The model coefficients are defined as:
     *   - \b center.x : the X coordinate of the sphere's center
@@ -102,7 +113,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      ~SampleConsensusModelSphere () {}
+      ~SampleConsensusModelSphere () override = default;
 
       /** \brief Copy constructor.
         * \param[in] source the model to copy into this
@@ -212,10 +223,14 @@ namespace pcl
         if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
           return (false);
 
-        if (radius_min_ != -std::numeric_limits<double>::max() && model_coefficients[3] < radius_min_)
+        if (radius_min_ != -std::numeric_limits<double>::max() && model_coefficients[3] < radius_min_) {
+          PCL_DEBUG("[SampleConsensusModelSphere::isModelValid] Model radius %g is smaller than user specified minimum radius %g\n", model_coefficients[3], radius_min_);
           return (false);
-        if (radius_max_ != std::numeric_limits<double>::max() && model_coefficients[3] > radius_max_)
+        }
+        if (radius_max_ != std::numeric_limits<double>::max() && model_coefficients[3] > radius_max_) {
+          PCL_DEBUG("[SampleConsensusModelSphere::isModelValid] Model radius %g is bigger than user specified maximum radius %g\n", model_coefficients[3], radius_max_);
           return (false);
+        }
 
         return (true);
       }
@@ -256,40 +271,6 @@ namespace pcl
 #endif
 
     private:
-      struct OptimizationFunctor : pcl::Functor<float>
-      {
-        /** Functor constructor
-          * \param[in] indices the indices of data points to evaluate
-          * \param[in] estimator pointer to the estimator object
-          */
-        OptimizationFunctor (const pcl::SampleConsensusModelSphere<PointT> *model, const Indices& indices) :
-          pcl::Functor<float> (indices.size ()), model_ (model), indices_ (indices) {}
-
-        /** Cost function to be minimized
-          * \param[in] x the variables array
-          * \param[out] fvec the resultant functions evaluations
-          * \return 0
-          */
-        int 
-        operator() (const Eigen::VectorXf &x, Eigen::VectorXf &fvec) const
-        {
-          Eigen::Vector4f cen_t;
-          cen_t[3] = 0;
-          for (int i = 0; i < values (); ++i)
-          {
-            // Compute the difference between the center of the sphere and the datapoint X_i
-            cen_t.head<3>() = (*model_->input_)[indices_[i]].getVector3fMap() - x.head<3>();
-
-            // g = sqrt ((x-a)^2 + (y-b)^2 + (z-c)^2) - R
-            fvec[i] = std::sqrt (cen_t.dot (cen_t)) - x[3];
-          }
-          return (0);
-        }
-
-        const pcl::SampleConsensusModelSphere<PointT> *model_;
-        const Indices &indices_;
-      };
-
 #ifdef __AVX__
       inline __m256 sqr_dist8 (const std::size_t i, const __m256 a_vec, const __m256 b_vec, const __m256 c_vec) const;
 #endif

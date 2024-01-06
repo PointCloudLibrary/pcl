@@ -88,10 +88,7 @@ namespace pcl
 
       /** \brief Empty constructor. */
       VFHEstimation () :
-        nr_bins_f_ ({45, 45, 45, 45}), nr_bins_vp_ (128),
-        vpx_ (0), vpy_ (0), vpz_ (0),
-        use_given_normal_ (false), use_given_centroid_ (false),
-        normalize_bins_ (true), normalize_distances_ (false), size_component_ (false),
+        nr_bins_f_ ({45, 45, 45, 45}), 
         d_pi_ (1.0f / (2.0f * static_cast<float> (M_PI)))
       {
         for (int i = 0; i < 4; ++i)
@@ -114,7 +111,7 @@ namespace pcl
       void
       computePointSPFHSignature (const Eigen::Vector4f &centroid_p, const Eigen::Vector4f &centroid_n,
                                  const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals,
-                                 const std::vector<int> &indices);
+                                 const pcl::Indices &indices);
 
       /** \brief Set the viewpoint.
         * \param[in] vpx the X coordinate of the viewpoint
@@ -215,12 +212,12 @@ namespace pcl
 
       /** \brief The number of subdivisions for each feature interval. */
       std::array<int, 4> nr_bins_f_;
-      int nr_bins_vp_;
+      int nr_bins_vp_{128};
 
       /** \brief Values describing the viewpoint ("pinhole" camera model assumed). For per point viewpoints, inherit
         * from VFHEstimation and provide your own computeFeature (). By default, the viewpoint is set to 0,0,0.
         */
-      float vpx_, vpy_, vpz_;
+      float vpx_{0.0f}, vpy_{0.0f}, vpz_{0.0f};
 
       /** \brief Estimate the Viewpoint Feature Histograms (VFH) descriptors at a set of points given by
         * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () and the spatial locator in
@@ -248,15 +245,15 @@ namespace pcl
       // VFH configuration parameters because CVFH instantiates it. See constructor for default values.
 
       /** \brief Use the normal_to_use_ */
-      bool use_given_normal_;
+      bool use_given_normal_{false};
       /** \brief Use the centroid_to_use_ */
-      bool use_given_centroid_;
+      bool use_given_centroid_{false};
       /** \brief Normalize bins by the number the total number of points. */
-      bool normalize_bins_;
+      bool normalize_bins_{true};
       /** \brief Normalize the shape distribution component of VFH */
-      bool normalize_distances_;
+      bool normalize_distances_{false};
       /** \brief Activate or deactivate the size component of VFH */
-      bool size_component_;
+      bool size_component_{false};
 
     private:
       /** \brief Float constant = 1.0 / (2.0 * M_PI) */

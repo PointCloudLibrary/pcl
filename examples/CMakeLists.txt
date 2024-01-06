@@ -5,7 +5,7 @@ set(SUBSYS_DEPS common io features search kdtree octree filters keypoints segmen
 set(DEFAULT FALSE)
 set(REASON "Code examples are disabled by default.")
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 
 if(NOT build)
   return()

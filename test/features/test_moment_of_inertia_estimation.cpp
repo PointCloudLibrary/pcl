@@ -70,8 +70,8 @@ TEST (MomentOfInertia, FeatureExtraction)
   std::vector <float> eccentricity;
   feature_extractor.getMomentOfInertia (moment_of_inertia);
   feature_extractor.getEccentricity (eccentricity);
-  unsigned int m_size = static_cast <unsigned int> (moment_of_inertia.size ());
-  unsigned int e_size = static_cast <unsigned int> (eccentricity.size ());
+  auto m_size = static_cast <unsigned int> (moment_of_inertia.size ());
+  auto e_size = static_cast <unsigned int> (eccentricity.size ());
   EXPECT_EQ (m_size, e_size);
   EXPECT_NE (0, m_size);
 }
@@ -116,7 +116,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  cloud = (new pcl::PointCloud<pcl::PointXYZ> ())->makeShared ();
+  cloud.reset (new pcl::PointCloud<pcl::PointXYZ> ());
   if (pcl::io::loadPCDFile (argv[1], *cloud) < 0)
   {
     std::cerr << "Failed to read test file. Please download `lamppost.pcd` and pass its path to the test." << std::endl;

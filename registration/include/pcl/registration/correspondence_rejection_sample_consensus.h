@@ -40,7 +40,6 @@
 
 #pragma once
 
-#include <pcl/common/transforms.h>
 #include <pcl/registration/correspondence_rejection.h>
 #include <pcl/memory.h>
 
@@ -68,20 +67,13 @@ public:
   /** \brief Empty constructor. Sets the inlier threshold to 5cm (0.05m),
    * and the maximum number of iterations to 1000.
    */
-  CorrespondenceRejectorSampleConsensus()
-  : inlier_threshold_(0.05)
-  , max_iterations_(1000) // std::numeric_limits<int>::max ()
-  , input_()
-  , input_transformed_()
-  , target_()
-  , refine_(false)
-  , save_inliers_(false)
+  CorrespondenceRejectorSampleConsensus() : input_(), input_transformed_(), target_()
   {
     rejection_name_ = "CorrespondenceRejectorSampleConsensus";
   }
 
   /** \brief Empty destructor. */
-  ~CorrespondenceRejectorSampleConsensus() {}
+  ~CorrespondenceRejectorSampleConsensus() override = default;
 
   /** \brief Get a list of valid correspondences after rejection from the original set
    * of correspondences. \param[in] original_correspondences the set of initial
@@ -226,7 +218,7 @@ public:
    * \param[out] inlier_indices Indices for the inliers
    */
   inline void
-  getInliersIndices(std::vector<int>& inlier_indices)
+  getInliersIndices(pcl::Indices& inlier_indices)
   {
     inlier_indices = inlier_indices_;
   }
@@ -257,9 +249,9 @@ protected:
     getRemainingCorrespondences(*input_correspondences_, correspondences);
   }
 
-  double inlier_threshold_;
+  double inlier_threshold_{0.05};
 
-  int max_iterations_;
+  int max_iterations_{1000};
 
   PointCloudConstPtr input_;
   PointCloudPtr input_transformed_;
@@ -267,9 +259,9 @@ protected:
 
   Eigen::Matrix4f best_transformation_;
 
-  bool refine_;
-  std::vector<int> inlier_indices_;
-  bool save_inliers_;
+  bool refine_{false};
+  pcl::Indices inlier_indices_;
+  bool save_inliers_{false};
 
 public:
   PCL_MAKE_ALIGNED_OPERATOR_NEW

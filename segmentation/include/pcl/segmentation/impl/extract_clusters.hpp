@@ -87,7 +87,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
 
       for (std::size_t j = nn_start_idx; j < nn_indices.size (); ++j)             // can't assume sorted (default isn't!)
       {
-        if (nn_indices[j] == -1 || processed[nn_indices[j]])        // Has this point been processed before ?
+        if (nn_indices[j] == UNAVAILABLE || processed[nn_indices[j]])        // Has this point been processed before ?
           continue;
 
         // Perform a simple Euclidean clustering
@@ -106,18 +106,21 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
       for (std::size_t j = 0; j < seed_queue.size (); ++j)
         r.indices[j] = seed_queue[j];
 
-      // These two lines should not be needed: (can anyone confirm?) -FF
+      // After clustering, indices are out of order, so sort them
       std::sort (r.indices.begin (), r.indices.end ());
-      r.indices.erase (std::unique (r.indices.begin (), r.indices.end ()), r.indices.end ());
 
       r.header = cloud.header;
       clusters.push_back (r);   // We could avoid a copy by working directly in the vector
+    }
+    else
+    {
+      PCL_DEBUG("[pcl::extractEuclideanClusters] This cluster has %zu points, which is not between %u and %u points, so it is not a final cluster\n",
+                seed_queue.size (), min_pts_per_cluster, max_pts_per_cluster);
     }
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** @todo: fix the return value, make sure the exit is not needed anymore*/
 template <typename PointT> void
 pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
                                const Indices &indices,
@@ -169,7 +172,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
       if( ret == -1)
       {
         PCL_ERROR("[pcl::extractEuclideanClusters] Received error code -1 from radiusSearch\n");
-        exit(0);
+        return;
       }
       if (!ret)
       {
@@ -179,7 +182,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
 
       for (std::size_t j = nn_start_idx; j < nn_indices.size (); ++j)             // can't assume sorted (default isn't!)
       {
-        if (nn_indices[j] == -1 || processed[nn_indices[j]])        // Has this point been processed before ?
+        if (nn_indices[j] == UNAVAILABLE || processed[nn_indices[j]])        // Has this point been processed before ?
           continue;
 
         // Perform a simple Euclidean clustering
@@ -199,13 +202,16 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
         // This is the only place where indices come into play
         r.indices[j] = seed_queue[j];
 
-      // These two lines should not be needed: (can anyone confirm?) -FF
-      //r.indices.assign(seed_queue.begin(), seed_queue.end());
+      // After clustering, indices are out of order, so sort them
       std::sort (r.indices.begin (), r.indices.end ());
-      r.indices.erase (std::unique (r.indices.begin (), r.indices.end ()), r.indices.end ());
 
       r.header = cloud.header;
       clusters.push_back (r);   // We could avoid a copy by working directly in the vector
+    }
+    else
+    {
+      PCL_DEBUG("[pcl::extractEuclideanClusters] This cluster has %zu points, which is not between %u and %u points, so it is not a final cluster\n",
+                seed_queue.size (), min_pts_per_cluster, max_pts_per_cluster);
     }
   }
 }
@@ -249,6 +255,6 @@ pcl::EuclideanClusterExtraction<PointT>::extract (std::vector<PointIndices> &clu
 
 #define PCL_INSTANTIATE_EuclideanClusterExtraction(T) template class PCL_EXPORTS pcl::EuclideanClusterExtraction<T>;
 #define PCL_INSTANTIATE_extractEuclideanClusters(T) template void PCL_EXPORTS pcl::extractEuclideanClusters<T>(const pcl::PointCloud<T> &, const typename pcl::search::Search<T>::Ptr &, float , std::vector<pcl::PointIndices> &, unsigned int, unsigned int);
-#define PCL_INSTANTIATE_extractEuclideanClusters_indices(T) template void PCL_EXPORTS pcl::extractEuclideanClusters<T>(const pcl::PointCloud<T> &, const std::vector<int> &, const typename pcl::search::Search<T>::Ptr &, float , std::vector<pcl::PointIndices> &, unsigned int, unsigned int);
+#define PCL_INSTANTIATE_extractEuclideanClusters_indices(T) template void PCL_EXPORTS pcl::extractEuclideanClusters<T>(const pcl::PointCloud<T> &, const pcl::Indices &, const typename pcl::search::Search<T>::Ptr &, float , std::vector<pcl::PointIndices> &, unsigned int, unsigned int);
 
 #endif        // PCL_EXTRACT_CLUSTERS_IMPL_H_

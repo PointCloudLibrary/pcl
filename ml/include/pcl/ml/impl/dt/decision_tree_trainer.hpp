@@ -45,18 +45,7 @@ template <class FeatureType,
           class ExampleIndex,
           class NodeType>
 DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    DecisionTreeTrainer()
-: max_tree_depth_(15)
-, num_of_features_(1000)
-, num_of_thresholds_(10)
-, feature_handler_(nullptr)
-, stats_estimator_(nullptr)
-, data_set_()
-, label_data_()
-, examples_()
-, decision_tree_trainer_data_provider_()
-, random_features_at_split_node_(false)
-{}
+    DecisionTreeTrainer() = default;
 
 template <class FeatureType,
           class DataSet,
@@ -64,8 +53,7 @@ template <class FeatureType,
           class ExampleIndex,
           class NodeType>
 DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    ~DecisionTreeTrainer()
-{}
+    ~DecisionTreeTrainer() = default;
 
 template <class FeatureType,
           class DataSet,
@@ -160,21 +148,15 @@ DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
     if (!thresholds_.empty()) {
       // compute information gain for each threshold and store threshold with highest
       // information gain
-      for (std::size_t threshold_index = 0; threshold_index < thresholds_.size();
-           ++threshold_index) {
+      for (const float& threshold : thresholds_) {
 
-        const float information_gain =
-            stats_estimator_->computeInformationGain(data_set_,
-                                                     examples,
-                                                     label_data,
-                                                     feature_results,
-                                                     flags,
-                                                     thresholds_[threshold_index]);
+        const float information_gain = stats_estimator_->computeInformationGain(
+            data_set_, examples, label_data, feature_results, flags, threshold);
 
         if (information_gain > best_feature_information_gain) {
           best_feature_information_gain = information_gain;
           best_feature_index = static_cast<int>(feature_index);
-          best_feature_threshold = thresholds_[threshold_index];
+          best_feature_threshold = threshold;
         }
       }
     }

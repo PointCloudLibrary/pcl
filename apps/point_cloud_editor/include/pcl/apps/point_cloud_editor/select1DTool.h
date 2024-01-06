@@ -44,6 +44,8 @@
 
 #include <pcl/memory.h>  // for pcl::shared_ptr
 
+#include <cassert>
+
 class Selection;
 
 class Select1DTool : public ToolInterface
@@ -58,9 +60,8 @@ class Select1DTool : public ToolInterface
     Select1DTool (SelectionPtr selection_ptr, CloudPtr cloud_ptr);
 
     /// @brief Destructor
-    ~Select1DTool ()
-    {
-    }
+    ~Select1DTool () override
+    = default;
   
     /// @brief Does nothing for 1D selection.
     /// @sa end

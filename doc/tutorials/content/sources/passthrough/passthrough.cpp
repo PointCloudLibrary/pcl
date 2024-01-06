@@ -3,7 +3,7 @@
 #include <pcl/filters/passthrough.h>
 
 int
- main (int argc, char** argv)
+ main ()
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
@@ -31,7 +31,7 @@ int
   pass.setInputCloud (cloud);
   pass.setFilterFieldName ("z");
   pass.setFilterLimits (0.0, 1.0);
-  //pass.setFilterLimitsNegative (true);
+  //pass.setNegative (true);
   pass.filter (*cloud_filtered);
 
   std::cerr << "Cloud after filtering: " << std::endl;

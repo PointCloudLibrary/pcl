@@ -4,7 +4,7 @@ set(SUBSYS_DEPS common sample_consensus search kdtree octree)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
-PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS})
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS OpenMP)
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
@@ -22,6 +22,7 @@ set(srcs
   src/passthrough.cpp
   src/shadowpoints.cpp
   src/project_inliers.cpp
+  src/pyramid.cpp
   src/radius_outlier_removal.cpp
   src/random_sample.cpp
   src/normal_space.cpp
@@ -45,6 +46,7 @@ set(srcs
   src/morphological_filter.cpp
   src/local_maximum.cpp
   src/model_outlier_removal.cpp
+  src/farthest_point_sampling.cpp
 )
 
 set(incs
@@ -85,6 +87,7 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/morphological_filter.h"
   "include/pcl/${SUBSYS_NAME}/local_maximum.h"
   "include/pcl/${SUBSYS_NAME}/model_outlier_removal.h"
+  "include/pcl/${SUBSYS_NAME}/farthest_point_sampling.h"
 )
 set(experimental_incs
   "include/pcl/${SUBSYS_NAME}/experimental/functor_filter.h"
@@ -125,6 +128,7 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/morphological_filter.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/local_maximum.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/model_outlier_removal.hpp"
+  "include/pcl/${SUBSYS_NAME}/impl/farthest_point_sampling.hpp"
 )
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")

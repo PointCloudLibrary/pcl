@@ -84,17 +84,14 @@ namespace pcl
         */
       HarrisKeypoint3D (ResponseMethod method = HARRIS, float radius = 0.01f, float threshold = 0.0f)
       : threshold_ (threshold)
-      , refine_ (true)
-      , nonmax_ (true)
       , method_ (method)
-      , threads_ (0)
       {
         name_ = "HarrisKeypoint3D";
         search_radius_ = radius;
       }
       
       /** \brief Empty destructor */
-      ~HarrisKeypoint3D () {}
+      ~HarrisKeypoint3D () override = default;
 
       /** \brief Provide a pointer to the input dataset
         * \param[in] cloud the const boost shared pointer to a PointCloud message
@@ -108,7 +105,7 @@ namespace pcl
       void 
       setMethod (ResponseMethod type);
 
-      /** \brief Set the radius for normal estimation and non maxima supression.
+      /** \brief Set the radius for normal estimation and non maxima suppression.
         * \param[in] radius
         */
       void 
@@ -129,7 +126,7 @@ namespace pcl
       setNonMaxSupression (bool = false);
 
       /** \brief Whether the detected key points should be refined or not. If turned of, the key points are a subset of the original point cloud. Otherwise the key points may be arbitrary.
-        * \brief note non maxima supression needs to be on in order to use this feature.
+        * \brief note non maxima suppression needs to be on in order to use this feature.
         * \param[in] do_refine
         */
       void 
@@ -168,14 +165,14 @@ namespace pcl
       void responseCurvature (PointCloudOut &output) const;
       void refineCorners (PointCloudOut &corners) const;
       /** \brief calculates the upper triangular part of unnormalized covariance matrix over the normals given by the indices.*/
-      void calculateNormalCovar (const std::vector<int>& neighbors, float* coefficients) const;
+      void calculateNormalCovar (const pcl::Indices& neighbors, float* coefficients) const;
     private:
       float threshold_;
-      bool refine_;
-      bool nonmax_;
+      bool refine_{true};
+      bool nonmax_{true};
       ResponseMethod method_;
       PointCloudNConstPtr normals_;
-      unsigned int threads_;
+      unsigned int threads_{0};
   };
 }
 

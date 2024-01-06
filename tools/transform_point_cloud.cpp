@@ -60,8 +60,8 @@ printHelp (int, char **argv)
   print_info ("           -quat x,y,z,w             = rotation as quaternion\n");
   print_info ("           -axisangle ax,ay,az,theta = rotation in axis-angle form\n"); 
   print_info ("           -scale x,y,z              = scale each dimension with these values\n"); 
-  print_info ("           -matrix v1,v2,...,v8,v9   = a 3x3 affine transform\n");
-  print_info ("           -matrix v1,v2,...,v15,v16 = a 4x4 transformation matrix\n");
+  print_info ("           -matrix v1,v2,...,v8,v9   = a 3x3 affine transform in column-major order\n");
+  print_info ("           -matrix v1,v2,...,v15,v16 = a 4x4 transformation matrix in column-major order\n");
   print_info ("   Note: If a rotation is not specified, it will default to no rotation.\n");
   print_info ("         If redundant or conflicting transforms are specified, then:\n");
   print_info ("           -axisangle will override -quat\n");
@@ -189,6 +189,19 @@ multiply (pcl::PCLPointCloud2 &cloud, int field_offset, double multiplier)
   val = static_cast<T> (val * static_cast<T> (multiplier));
   memcpy (&cloud.data[field_offset], &val, sizeof (T));
 }
+template <> void
+multiply<bool> (pcl::PCLPointCloud2 &cloud, int field_offset, double multiplier)
+{
+  if (multiplier != static_cast<bool>(multiplier)) {
+    PCL_WARN("Invalid value for scaling a boolean: %f. Only 0 or 1 is valid", multiplier);
+    return;
+  }
+
+  bool val;
+  memcpy (&val, &cloud.data[field_offset], sizeof (bool));
+  val = val && static_cast<bool> (multiplier);
+  memcpy (&cloud.data[field_offset], &val, sizeof (bool));
+}
 
 void
 scaleInPlace (pcl::PCLPointCloud2 &cloud, double* multiplier)
@@ -198,39 +211,39 @@ scaleInPlace (pcl::PCLPointCloud2 &cloud, double* multiplier)
   int y_idx = pcl::getFieldIndex (cloud, "y");
   int z_idx = pcl::getFieldIndex (cloud, "z");
   Eigen::Array3i xyz_offset (cloud.fields[x_idx].offset, cloud.fields[y_idx].offset, cloud.fields[z_idx].offset);
- 
-  for (index_t cp = 0; cp < cloud.width * cloud.height; ++cp)
+
+  if (cloud.fields[x_idx].datatype == pcl::PCLPointField::BOOL) {
+    PCL_WARN("Datatype of point was deduced as boolean. Please check, there might be "
+             "an error somewhere");
+  }
+
+  for (uindex_t cp = 0; cp < cloud.width * cloud.height; ++cp)
   {
     // Assume all 3 fields are the same (XYZ)
     assert ((cloud.fields[x_idx].datatype == cloud.fields[y_idx].datatype));
     assert ((cloud.fields[x_idx].datatype == cloud.fields[z_idx].datatype));
+#define MULTIPLY(CASE_LABEL)                                                           \
+  case CASE_LABEL: {                                                                   \
+    for (int i = 0; i < 3; ++i)                                                        \
+      multiply<pcl::traits::asType_t<CASE_LABEL>>(                                     \
+          cloud, xyz_offset[i], multiplier[i]);                                        \
+    break;                                                                             \
+  }
     switch (cloud.fields[x_idx].datatype)
     {
-      case pcl::PCLPointField::INT8:
-        for (int i = 0; i < 3; ++i) multiply<std::int8_t> (cloud, xyz_offset[i], multiplier[i]);
-        break;
-      case pcl::PCLPointField::UINT8:
-        for (int i = 0; i < 3; ++i) multiply<std::uint8_t> (cloud, xyz_offset[i], multiplier[i]);
-        break;
-      case pcl::PCLPointField::INT16:
-        for (int i = 0; i < 3; ++i) multiply<std::int16_t> (cloud, xyz_offset[i], multiplier[i]);
-        break;
-      case pcl::PCLPointField::UINT16:
-        for (int i = 0; i < 3; ++i) multiply<std::uint16_t> (cloud, xyz_offset[i], multiplier[i]);
-        break;
-      case pcl::PCLPointField::INT32:
-        for (int i = 0; i < 3; ++i) multiply<std::int32_t> (cloud, xyz_offset[i], multiplier[i]);
-        break;
-      case pcl::PCLPointField::UINT32:
-        for (int i = 0; i < 3; ++i) multiply<std::uint32_t> (cloud, xyz_offset[i], multiplier[i]);
-        break;
-      case pcl::PCLPointField::FLOAT32:
-        for (int i = 0; i < 3; ++i) multiply<float> (cloud, xyz_offset[i], multiplier[i]);
-        break;
-      case pcl::PCLPointField::FLOAT64:
-        for (int i = 0; i < 3; ++i) multiply<double> (cloud, xyz_offset[i], multiplier[i]);
-        break;
+      MULTIPLY(pcl::PCLPointField::BOOL)
+      MULTIPLY(pcl::PCLPointField::INT8)
+      MULTIPLY(pcl::PCLPointField::UINT8)
+      MULTIPLY(pcl::PCLPointField::INT16)
+      MULTIPLY(pcl::PCLPointField::UINT16)
+      MULTIPLY(pcl::PCLPointField::INT32)
+      MULTIPLY(pcl::PCLPointField::UINT32)
+      MULTIPLY(pcl::PCLPointField::INT64)
+      MULTIPLY(pcl::PCLPointField::UINT64)
+      MULTIPLY(pcl::PCLPointField::FLOAT32)
+      MULTIPLY(pcl::PCLPointField::FLOAT64)
     }
+#undef MULTIPLY
     xyz_offset += cloud.point_step;
   }
 }

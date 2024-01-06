@@ -1,4 +1,3 @@
-// PCL
 #include <pcl/point_types.h>
 
 #include <pcl/io/pcd_io.h>
@@ -19,10 +18,6 @@
 
 // PCL - visualziation
 #include <pcl/visualization/common/common.h>
-
-#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
-#include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
-#endif
 
 // VTK
 #include <vtkVersion.h>
@@ -109,7 +104,7 @@ OutofcoreCloud::pcdReaderThread ()
 // Operators
 // -----------------------------------------------------------------------------
 OutofcoreCloud::OutofcoreCloud (std::string name, boost::filesystem::path& tree_root) :
-    Object (name), display_depth_ (1), points_loaded_ (0), data_loaded_(0), render_camera_(nullptr), lod_pixel_threshold_(10000)
+    Object (name)
 {
 
   // Create the pcd reader thread once for all outofcore nodes
@@ -235,15 +230,10 @@ OutofcoreCloud::render (vtkRenderer* renderer)
           vtkSmartPointer<vtkActor> cloud_actor = vtkSmartPointer<vtkActor>::New ();
           CloudDataCacheItem *cloud_data_cache_item = &cloud_data_cache.get(pcd_file);
 
-#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
-          vtkSmartPointer<vtkVertexBufferObjectMapper> mapper = vtkSmartPointer<vtkVertexBufferObjectMapper>::New ();
-          mapper->SetInput (cloud_data_cache_item->item);
-#else
           vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
           // Usually we choose between SetInput and SetInputData based on VTK version. But OpenGL ≥ 2 automatically
           // means VTK version is ≥ 6.3
           mapper->SetInputData (cloud_data_cache_item->item);
-#endif
 
           cloud_actor->SetMapper (mapper);
           cloud_actor->GetProperty ()->SetColor (0.0, 0.0, 1.0);

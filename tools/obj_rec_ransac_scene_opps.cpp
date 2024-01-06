@@ -46,7 +46,6 @@
 #include <pcl/recognition/ransac_based/obj_rec_ransac.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/console/print.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/point_cloud.h>
 #include <vtkVersion.h>
 #include <vtkPolyDataReader.h>
@@ -97,7 +96,7 @@ main (int argc, char** argv)
 {
   printf ("\nUsage: ./pcl_obj_rec_ransac_scene_opps <pair_width> <voxel_size> <max_coplanarity_angle>\n\n");
 
-  const int num_params = 3;
+  constexpr int num_params = 3;
   float parameters[num_params] = {40.0f/*pair width*/, 5.0f/*voxel size*/, 15.0f/*max co-planarity angle*/};
   std::string parameter_names[num_params] = {"pair_width", "voxel_size", "max_coplanarity_angle"};
 

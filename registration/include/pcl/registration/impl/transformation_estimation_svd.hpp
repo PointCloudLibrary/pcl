@@ -72,7 +72,7 @@ template <typename PointSource, typename PointTarget, typename Scalar>
 void
 TransformationEstimationSVD<PointSource, PointTarget, Scalar>::
     estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                                const std::vector<int>& indices_src,
+                                const pcl::Indices& indices_src,
                                 const pcl::PointCloud<PointTarget>& cloud_tgt,
                                 Matrix4& transformation_matrix) const
 {
@@ -93,9 +93,9 @@ template <typename PointSource, typename PointTarget, typename Scalar>
 inline void
 TransformationEstimationSVD<PointSource, PointTarget, Scalar>::
     estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                                const std::vector<int>& indices_src,
+                                const pcl::Indices& indices_src,
                                 const pcl::PointCloud<PointTarget>& cloud_tgt,
-                                const std::vector<int>& indices_tgt,
+                                const pcl::Indices& indices_tgt,
                                 Matrix4& transformation_matrix) const
 {
   if (indices_src.size() != indices_tgt.size()) {
@@ -214,6 +214,13 @@ TransformationEstimationSVD<PointSource, PointTarget, Scalar>::
   transformation_matrix.topLeftCorner(3, 3) = R;
   const Eigen::Matrix<Scalar, 3, 1> Rc(R * centroid_src.head(3));
   transformation_matrix.block(0, 3, 3, 1) = centroid_tgt.head(3) - Rc;
+
+  if (pcl::console::isVerbosityLevelEnabled(pcl::console::L_DEBUG)) {
+    size_t N = cloud_src_demean.cols();
+    PCL_DEBUG("[pcl::registration::TransformationEstimationSVD::"
+              "getTransformationFromCorrelation] Loss: %.10e\n",
+              (cloud_tgt_demean - R * cloud_src_demean).squaredNorm() / N);
+  }
 }
 
 } // namespace registration

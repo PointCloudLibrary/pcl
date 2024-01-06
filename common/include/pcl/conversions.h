@@ -50,9 +50,9 @@
 #include <pcl/type_traits.h>
 #include <pcl/for_each_type.h>
 #include <pcl/console/print.h>
-#ifndef Q_MOC_RUN
-#include <boost/foreach.hpp>
-#endif
+
+#include <algorithm>
+#include <iterator>
 
 namespace pcl
 {
@@ -67,10 +67,10 @@ namespace pcl
       template<typename U> void operator() ()
       {
         pcl::PCLPointField f;
-        f.name = traits::name<PointT, U>::value;
-        f.offset = traits::offset<PointT, U>::value;
-        f.datatype = traits::datatype<PointT, U>::value;
-        f.count = traits::datatype<PointT, U>::size;
+        f.name = pcl::traits::name<PointT, U>::value;
+        f.offset = pcl::traits::offset<PointT, U>::value;
+        f.datatype = pcl::traits::datatype<PointT, U>::value;
+        f.count = pcl::traits::datatype<PointT, U>::size;
         fields_.push_back (f);
       }
 
@@ -96,14 +96,14 @@ namespace pcl
           {
             FieldMapping mapping;
             mapping.serialized_offset = field.offset;
-            mapping.struct_offset = traits::offset<PointT, Tag>::value;
-            mapping.size = sizeof (typename traits::datatype<PointT, Tag>::type);
+            mapping.struct_offset = pcl::traits::offset<PointT, Tag>::value;
+            mapping.size = sizeof (typename pcl::traits::datatype<PointT, Tag>::type);
             map_.push_back (mapping);
             return;
           }
         }
         // Disable thrown exception per #595: http://dev.pointclouds.org/issues/595
-        PCL_WARN ("Failed to find match for field '%s'.\n", traits::name<PointT, Tag>::value);
+        PCL_WARN ("Failed to find match for field '%s'.\n", pcl::traits::name<PointT, Tag>::value);
         //throw pcl::InvalidConversionException (ss.str ());
       }
 
@@ -151,6 +151,80 @@ namespace pcl
   }
 
   /** \brief Convert a PCLPointCloud2 binary data blob into a pcl::PointCloud<T> object using a field_map.
+    * \param[in] msg the PCLPointCloud2 binary blob (note that the binary point data in msg.data will not be used!)
+    * \param[out] cloud the resultant pcl::PointCloud<T>
+    * \param[in] field_map a MsgFieldMap object
+    * \param[in] msg_data pointer to binary blob data, used instead of msg.data
+    *
+    * \note Use fromPCLPointCloud2 (PCLPointCloud2, PointCloud<T>) instead, except if you have a binary blob of
+    * point data that you do not want to copy into a pcl::PCLPointCloud2 in order to use fromPCLPointCloud2.
+    */
+  template <typename PointT> void
+  fromPCLPointCloud2 (const pcl::PCLPointCloud2& msg, pcl::PointCloud<PointT>& cloud,
+              const MsgFieldMap& field_map, const std::uint8_t* msg_data)
+  {
+    // Copy info fields
+    cloud.header   = msg.header;
+    cloud.width    = msg.width;
+    cloud.height   = msg.height;
+    cloud.is_dense = msg.is_dense == 1;
+
+    // Resize cloud
+    cloud.resize (msg.width * msg.height);
+
+    // check if there is data to copy
+    if (msg.width * msg.height == 0)
+    {
+      PCL_WARN("[pcl::fromPCLPointCloud2] No data to copy.\n");
+      return;
+    }
+
+    // Copy point data
+    std::uint8_t* cloud_data = reinterpret_cast<std::uint8_t*>(cloud.data());
+
+    // Check if we can copy adjacent points in a single memcpy.  We can do so if there
+    // is exactly one field to copy and it is the same size as the source and destination
+    // point types.
+    if (field_map.size() == 1 &&
+        field_map[0].serialized_offset == 0 &&
+        field_map[0].struct_offset == 0 &&
+        field_map[0].size == msg.point_step &&
+        field_map[0].size == sizeof(PointT))
+    {
+      const auto cloud_row_step = (sizeof (PointT) * cloud.width);
+      // Should usually be able to copy all rows at once
+      if (msg.row_step == cloud_row_step)
+      {
+        memcpy (cloud_data, msg_data, msg.width * msg.height * sizeof(PointT));
+      }
+      else
+      {
+        for (uindex_t i = 0; i < msg.height; ++i, cloud_data += cloud_row_step, msg_data += msg.row_step)
+          memcpy (cloud_data, msg_data, cloud_row_step);
+      }
+
+    }
+    else
+    {
+      // If not, memcpy each group of contiguous fields separately
+      for (std::size_t row = 0; row < msg.height; ++row)
+      {
+        const std::uint8_t* row_data = msg_data + row * msg.row_step;
+        for (std::size_t col = 0; col < msg.width; ++col)
+        {
+          const std::uint8_t* msg_data = row_data + col * msg.point_step;
+          for (const detail::FieldMapping& mapping : field_map)
+          {
+            std::copy(msg_data + mapping.serialized_offset, msg_data + mapping.serialized_offset + mapping.size,
+                        cloud_data + mapping.struct_offset);
+          }
+          cloud_data += sizeof (PointT);
+        }
+      }
+    }
+  }
+
+  /** \brief Convert a PCLPointCloud2 binary data blob into a pcl::PointCloud<T> object using a field_map.
     * \param[in] msg the PCLPointCloud2 binary blob
     * \param[out] cloud the resultant pcl::PointCloud<T>
     * \param[in] field_map a MsgFieldMap object
@@ -167,57 +241,7 @@ namespace pcl
   fromPCLPointCloud2 (const pcl::PCLPointCloud2& msg, pcl::PointCloud<PointT>& cloud,
               const MsgFieldMap& field_map)
   {
-    // Copy info fields
-    cloud.header   = msg.header;
-    cloud.width    = msg.width;
-    cloud.height   = msg.height;
-    cloud.is_dense = msg.is_dense == 1;
-
-    // Copy point data
-    std::uint32_t num_points = msg.width * msg.height;
-    cloud.resize (num_points);
-    std::uint8_t* cloud_data = reinterpret_cast<std::uint8_t*>(&cloud[0]);
-
-    // Check if we can copy adjacent points in a single memcpy.  We can do so if there
-    // is exactly one field to copy and it is the same size as the source and destination
-    // point types.
-    if (field_map.size() == 1 &&
-        field_map[0].serialized_offset == 0 &&
-        field_map[0].struct_offset == 0 &&
-        field_map[0].size == msg.point_step &&
-        field_map[0].size == sizeof(PointT))
-    {
-      std::uint32_t cloud_row_step = static_cast<std::uint32_t> (sizeof (PointT) * cloud.width);
-      const std::uint8_t* msg_data = &msg.data[0];
-      // Should usually be able to copy all rows at once
-      if (msg.row_step == cloud_row_step)
-      {
-        memcpy (cloud_data, msg_data, msg.data.size ());
-      }
-      else
-      {
-        for (std::uint32_t i = 0; i < msg.height; ++i, cloud_data += cloud_row_step, msg_data += msg.row_step)
-          memcpy (cloud_data, msg_data, cloud_row_step);
-      }
-
-    }
-    else
-    {
-      // If not, memcpy each group of contiguous fields separately
-      for (index_t row = 0; row < msg.height; ++row)
-      {
-        const std::uint8_t* row_data = &msg.data[row * msg.row_step];
-        for (index_t col = 0; col < msg.width; ++col)
-        {
-          const std::uint8_t* msg_data = row_data + col * msg.point_step;
-          for (const detail::FieldMapping& mapping : field_map)
-          {
-            memcpy (cloud_data + mapping.struct_offset, msg_data + mapping.serialized_offset, mapping.size);
-          }
-          cloud_data += sizeof (PointT);
-        }
-      }
-    }
+    fromPCLPointCloud2 (msg, cloud, field_map, msg.data.data());
   }
 
   /** \brief Convert a PCLPointCloud2 binary data blob into a pcl::PointCloud<T> object.
@@ -257,7 +281,7 @@ namespace pcl
     msg.data.resize (data_size);
     if (data_size)
     {
-      memcpy(&msg.data[0], &cloud[0], data_size);
+      memcpy(msg.data.data(), cloud.data(), data_size);
     }
 
     // Fill fields metadata
@@ -266,7 +290,7 @@ namespace pcl
 
     msg.header     = cloud.header;
     msg.point_step = sizeof (PointT);
-    msg.row_step   = static_cast<std::uint32_t> (sizeof (PointT) * msg.width);
+    msg.row_step   = (sizeof (PointT) * msg.width);
     msg.is_dense   = cloud.is_dense;
     /// @todo msg.is_bigendian = ?;
   }
@@ -292,6 +316,7 @@ namespace pcl
     }
 
     // ensor_msgs::image_encodings::BGR8;
+    msg.header = cloud.header;
     msg.encoding = "bgr8";
     msg.step = msg.width * sizeof (std::uint8_t) * 3;
     msg.data.resize (msg.step * msg.height);
@@ -326,12 +351,13 @@ namespace pcl
       msg.height = cloud.height;
       msg.width = cloud.width;
     }
-    int rgb_offset = cloud.fields[rgb_index].offset;
-    int point_step = cloud.point_step;
+    auto rgb_offset = cloud.fields[rgb_index].offset;
+    const auto point_step = cloud.point_step;
 
     // pcl::image_encodings::BGR8;
+    msg.header = cloud.header;
     msg.encoding = "bgr8";
-    msg.step = static_cast<std::uint32_t>(msg.width * sizeof (std::uint8_t) * 3);
+    msg.step = (msg.width * sizeof (std::uint8_t) * 3);
     msg.data.resize (msg.step * msg.height);
 
     for (std::size_t y = 0; y < cloud.height; y++)
@@ -339,7 +365,7 @@ namespace pcl
       for (std::size_t x = 0; x < cloud.width; x++, rgb_offset += point_step)
       {
         std::uint8_t * pixel = &(msg.data[y * msg.step + x * 3]);
-        memcpy (pixel, &(cloud.data[rgb_offset]), 3 * sizeof (std::uint8_t));
+        std::copy(&cloud.data[rgb_offset], &cloud.data[rgb_offset] + 3, pixel);
       }
     }
   }

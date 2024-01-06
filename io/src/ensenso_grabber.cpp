@@ -49,8 +49,8 @@
 // Handle Ensenso SDK exceptions
 // This function is called whenever an exception is raised to provide details about the error
 void
-ensensoExceptionHandling (const NxLibException &ex,
-                          std::string func_nam)
+ensensoExceptionHandling (const NxLibException& ex,
+                          const std::string& func_nam)
 {
   PCL_ERROR ("%s: NxLib error %s (%d) occurred while accessing item %s.\n", func_nam.c_str (), ex.getErrorText ().c_str (), ex.getErrorCode (),
             ex.getItemPath ().c_str ());
@@ -62,10 +62,7 @@ ensensoExceptionHandling (const NxLibException &ex,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::EnsensoGrabber::EnsensoGrabber () :
-    device_open_ (false),
-    tcp_open_ (false),
-    running_ (false)
+pcl::EnsensoGrabber::EnsensoGrabber ()
 {
   point_cloud_signal_ = createSignal<sig_cb_ensenso_point_cloud> ();
   images_signal_ = createSignal<sig_cb_ensenso_images> ();
@@ -123,9 +120,17 @@ pcl::EnsensoGrabber::enumDevices () const
 
     for (int n = 0; n < cams.count (); ++n)
     {
+#if NXLIB_VERSION_MAJOR > 2 
       PCL_INFO ("%s   %s   %s\n", cams[n][itmSerialNumber].asString ().c_str (),
                                   cams[n][itmModelName].asString ().c_str (),
-                                  cams[n][itmStatus].asString ().c_str ());
+                                  cams[n][itmStatus][itmOpen].asBool()
+                                  ? "Open"
+                                  : (cams[n][itmStatus][itmAvailable].asBool() ? "Available" : "In Use"));
+#else
+      PCL_INFO ("%s   %s   %s\n", cams[n][itmSerialNumber].asString().c_str(),
+                                  cams[n][itmModelName].asString().c_str(),
+                                  cams[n][itmStatus].asString().c_str());
+#endif
     }
     PCL_INFO ("\n");
   }
@@ -312,9 +317,9 @@ pcl::EnsensoGrabber::grabSingleCloud (pcl::PointCloud<pcl::PointXYZ> &cloud) con
     double timestamp;
     std::vector<float> pointMap;
     int width, height;
-    camera_[itmImages][itmRaw][itmLeft].getBinaryDataInfo (0, 0, 0, 0, 0, &timestamp);  // Get raw image timestamp
-    camera_[itmImages][itmPointMap].getBinaryDataInfo (&width, &height, 0, 0, 0, 0);
-    camera_[itmImages][itmPointMap].getBinaryData (pointMap, 0);
+    camera_[itmImages][itmRaw][itmLeft].getBinaryDataInfo (nullptr, nullptr, nullptr, nullptr, nullptr, &timestamp);  // Get raw image timestamp
+    camera_[itmImages][itmPointMap].getBinaryDataInfo (&width, &height, nullptr, nullptr, nullptr, nullptr);
+    camera_[itmImages][itmPointMap].getBinaryData (pointMap, nullptr);
 
     // Copy point cloud and convert in meters
     cloud.header.stamp = getPCLStamp (timestamp);
@@ -971,7 +976,7 @@ pcl::EnsensoGrabber::processGrabbing ()
 
         NxLibCommand (cmdCapture).execute ();
         double timestamp;
-        camera_[itmImages][itmRaw][itmLeft].getBinaryDataInfo (0, 0, 0, 0, 0, &timestamp);
+        camera_[itmImages][itmRaw][itmLeft].getBinaryDataInfo (nullptr, nullptr, nullptr, nullptr, nullptr, &timestamp);
 
         // Gather images
         if (num_slots<sig_cb_ensenso_images> () > 0 || num_slots<sig_cb_ensenso_point_cloud_images> () > 0)
@@ -995,7 +1000,7 @@ pcl::EnsensoGrabber::processGrabbing ()
 
           if (collected_pattern)
           {
-            camera_[itmImages][itmWithOverlay][itmLeft].getBinaryDataInfo (&width, &height, &channels, &bpe, &isFlt, 0);
+            camera_[itmImages][itmWithOverlay][itmLeft].getBinaryDataInfo (&width, &height, &channels, &bpe, &isFlt, nullptr);
             images->first.header.stamp = images->second.header.stamp = getPCLStamp (timestamp);
             images->first.width = images->second.width = width;
             images->first.height = images->second.height = height;
@@ -1003,12 +1008,12 @@ pcl::EnsensoGrabber::processGrabbing ()
             images->second.data.resize (width * height * sizeof(float));
             images->first.encoding = images->second.encoding = getOpenCVType (channels, bpe, isFlt);
 
-            camera_[itmImages][itmWithOverlay][itmLeft].getBinaryData (images->first.data.data (), images->first.data.size (), 0, 0);
-            camera_[itmImages][itmWithOverlay][itmRight].getBinaryData (images->second.data.data (), images->second.data.size (), 0, 0);
+            camera_[itmImages][itmWithOverlay][itmLeft].getBinaryData (images->first.data.data (), images->first.data.size (), nullptr, nullptr);
+            camera_[itmImages][itmWithOverlay][itmRight].getBinaryData (images->second.data.data (), images->second.data.size (), nullptr, nullptr);
           }
           else
           {
-            camera_[itmImages][itmRaw][itmLeft].getBinaryDataInfo (&width, &height, &channels, &bpe, &isFlt, 0);
+            camera_[itmImages][itmRaw][itmLeft].getBinaryDataInfo (&width, &height, &channels, &bpe, &isFlt, nullptr);
             images->first.header.stamp = images->second.header.stamp = getPCLStamp (timestamp);
             images->first.width = images->second.width = width;
             images->first.height = images->second.height = height;
@@ -1016,8 +1021,8 @@ pcl::EnsensoGrabber::processGrabbing ()
             images->second.data.resize (width * height * sizeof(float));
             images->first.encoding = images->second.encoding = getOpenCVType (channels, bpe, isFlt);
 
-            camera_[itmImages][itmRaw][itmLeft].getBinaryData (images->first.data.data (), images->first.data.size (), 0, 0);
-            camera_[itmImages][itmRaw][itmRight].getBinaryData (images->second.data.data (), images->second.data.size (), 0, 0);
+            camera_[itmImages][itmRaw][itmLeft].getBinaryData (images->first.data.data (), images->first.data.size (), nullptr, nullptr);
+            camera_[itmImages][itmRaw][itmRight].getBinaryData (images->second.data.data (), images->second.data.size (), nullptr, nullptr);
           }
         }
 
@@ -1033,8 +1038,8 @@ pcl::EnsensoGrabber::processGrabbing ()
           // Get info about the computed point map and copy it into a std::vector
           std::vector<float> pointMap;
           int width, height;
-          camera_[itmImages][itmPointMap].getBinaryDataInfo (&width, &height, 0, 0, 0, 0);
-          camera_[itmImages][itmPointMap].getBinaryData (pointMap, 0);
+          camera_[itmImages][itmPointMap].getBinaryDataInfo (&width, &height, nullptr, nullptr, nullptr, nullptr);
+          camera_[itmImages][itmPointMap].getBinaryData (pointMap, nullptr);
 
           // Copy point cloud and convert in meters
           cloud->header.stamp = getPCLStamp (timestamp);

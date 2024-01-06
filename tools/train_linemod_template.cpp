@@ -106,7 +106,7 @@ maskForegroundPoints (const PointCloudXYZRGBA::ConstPtr & input,
   std::vector<bool> foreground_mask (input->size (), false);
 
   // Mask off points outside the specified near and far depth thresholds
-  pcl::IndicesPtr indices (new std::vector<int>);
+  pcl::IndicesPtr indices (new pcl::Indices);
   for (std::size_t i = 0; i < input->size (); ++i)
   {
     const float z = (*input)[i].z;
@@ -118,8 +118,8 @@ maskForegroundPoints (const PointCloudXYZRGBA::ConstPtr & input,
   }
 
   // Find the dominant plane between the specified near/far thresholds
-  const float distance_threshold = 0.02f;
-  const int max_iterations = 500;
+  constexpr float distance_threshold = 0.02f;
+  constexpr int max_iterations = 500;
   pcl::SACSegmentation<pcl::PointXYZRGBA> seg;
   seg.setOptimizeCoefficients (true);
   seg.setModelType (pcl::SACMODEL_PLANE);

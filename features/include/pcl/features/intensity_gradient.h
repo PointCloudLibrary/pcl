@@ -69,10 +69,10 @@ namespace pcl
       using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
 
       /** \brief Empty constructor. */
-      IntensityGradientEstimation () : intensity_ (), threads_ (0)
+      IntensityGradientEstimation () : intensity_ ()
       {
         feature_name_ = "IntensityGradientEstimation";
-      };
+      }
 
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
@@ -90,7 +90,7 @@ namespace pcl
 
       /** \brief Estimate the intensity gradient around a given point based on its spatial neighborhood of points
         * \param cloud a point cloud dataset containing XYZI coordinates (Cartesian coordinates + intensity)
-        * \param indices the indices of the neighoring points in the dataset
+        * \param indices the indices of the neighboring points in the dataset
         * \param point the 3D Cartesian coordinates of the point at which to estimate the gradient
         * \param mean_intensity
         * \param normal the 3D surface normal of the given point
@@ -98,7 +98,7 @@ namespace pcl
         */
       void
       computePointIntensityGradient (const pcl::PointCloud<PointInT> &cloud,
-                                     const std::vector<int> &indices,
+                                     const pcl::Indices &indices,
                                      const Eigen::Vector3f &point, 
                                      float mean_intensity, 
                                      const Eigen::Vector3f &normal,
@@ -108,7 +108,7 @@ namespace pcl
       ///intensity field accessor structure
       IntensitySelectorT intensity_;
       ///number of threads to be used, default 0 (auto)
-      unsigned int threads_;
+      unsigned int threads_{0};
   };
 }
 

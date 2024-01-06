@@ -20,7 +20,7 @@ public:
   }
 
   virtual
-  ~LRUCacheItem () { }
+  ~LRUCacheItem () = default;
 
   T item;
   std::size_t timestamp;
@@ -38,7 +38,7 @@ public:
   using CacheIterator = typename Cache::iterator;
 
   LRUCache (std::size_t c) :
-      capacity_ (c), size_ (0)
+      capacity_ (c)
   {
     assert(capacity_ != 0);
   }
@@ -89,7 +89,7 @@ public:
     int evict_count = 0;
 
     // Get LRU key iterator
-    KeyIndexIterator key_it = key_index_.begin ();
+    auto key_it = key_index_.begin ();
 
     while (size + item_size >= capacity_)
     {
@@ -116,7 +116,7 @@ public:
     size_ += item_size;
 
     // Insert most-recently-used key at the end of our key index
-    KeyIndexIterator it = key_index_.insert (key_index_.end (), key);
+    auto it = key_index_.insert (key_index_.end (), key);
 
     // Add to cache
     cache_.insert (std::make_pair (key, std::make_pair (value, it)));
@@ -169,7 +169,7 @@ public:
   std::size_t capacity_;
 
   // Current cache size in kilobytes
-  std::size_t size_;
+  std::size_t size_{0};
 
   // LRU key index LRU[0] ... MRU[N]
   KeyIndex key_index_;

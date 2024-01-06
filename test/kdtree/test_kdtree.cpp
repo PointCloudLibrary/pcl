@@ -99,7 +99,7 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   for (std::size_t i=0; i < cloud.size(); ++i)
     if (euclideanDistance(cloud[i], test_point) < max_dist)
       brute_force_result.insert(i);
-  std::vector<int> k_indices;
+  pcl::Indices k_indices;
   std::vector<float> k_distances;
   kdtree.radiusSearch (test_point, max_dist, k_indices, k_distances, 100);
   
@@ -107,7 +107,7 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   
   for (const auto &k_index : k_indices)
   {
-    std::set<int>::iterator brute_force_result_it = brute_force_result.find (k_index);
+    auto brute_force_result_it = brute_force_result.find (k_index);
     bool ok = brute_force_result_it != brute_force_result.end ();
     //if (!ok)  std::cerr << k_indices[i] << " is not correct...\n";
     //else      std::cerr << k_indices[i] << " is correct...\n";
@@ -172,13 +172,13 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
   }
   float max_dist = 0.0f;
   unsigned int counter = 0;
-  for (std::multimap<float, int>::iterator it = sorted_brute_force_result.begin (); it != sorted_brute_force_result.end () && counter < no_of_neighbors; ++it)
+  for (auto it = sorted_brute_force_result.begin (); it != sorted_brute_force_result.end () && counter < no_of_neighbors; ++it)
   {
     max_dist = std::max (max_dist, it->first);
     ++counter;
   }
 
-  std::vector<int> k_indices;
+  pcl::Indices k_indices;
   k_indices.resize (no_of_neighbors);
   std::vector<float> k_distances;
   k_distances.resize (no_of_neighbors);
@@ -187,7 +187,7 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
   EXPECT_EQ (k_indices.size (), no_of_neighbors);
 
   // Check if all found neighbors have distance smaller than max_dist
-  for (const int &k_index : k_indices)
+  for (const auto &k_index : k_indices)
   {
     const MyPoint& point = cloud[k_index];
     bool ok = euclideanDistance (test_point, point) <= max_dist;
@@ -242,8 +242,8 @@ TEST (PCL, KdTreeFLANN_setPointRepresentation)
   MyPoint p (50.0f, 50.0f, 50.0f);
   
   // Find k nearest neighbors
-  const int k = 10;
-  std::vector<int> k_indices (k);
+  constexpr int k = 10;
+  pcl::Indices k_indices (k);
   std::vector<float> k_distances (k);
   kdtree.nearestKSearch (p, k, k_indices, k_distances);
   for (int i = 0; i < k; ++i)
@@ -294,11 +294,11 @@ TEST (PCL, KdTreeFLANN_32_vs_64_bit)
   KdTreeFLANN<PointXYZ> tree;
   tree.setInputCloud (cloud_in);
 
-  std::vector<std::vector<int> > nn_indices_vector;
+  std::vector<pcl::Indices > nn_indices_vector;
   for (std::size_t i = 0; i < cloud_in->size (); ++i)
     if (isFinite ((*cloud_in)[i]))
     {
-      std::vector<int> nn_indices;
+      pcl::Indices nn_indices;
       std::vector<float> nn_dists;
       tree.radiusSearch ((*cloud_in)[i], 0.02, nn_indices, nn_dists);
 
@@ -310,7 +310,7 @@ TEST (PCL, KdTreeFLANN_32_vs_64_bit)
   for (std::size_t vec_i = 0; vec_i < nn_indices_vector.size (); ++vec_i)
   {
     char str[512];
-    sprintf (str, "point_%d", int (vec_i));
+    sprintf (str, "point_%d", static_cast<int>(vec_i));
     boost::optional<boost::property_tree::ptree&> tree = xml_property_tree.get_child_optional (str);
     if (!tree)
       FAIL ();
@@ -320,7 +320,7 @@ TEST (PCL, KdTreeFLANN_32_vs_64_bit)
 
     for (std::size_t n_i = 0; n_i < nn_indices_vector[vec_i].size (); ++n_i)
     {
-      sprintf (str, "nn_%d", int (n_i));
+      sprintf (str, "nn_%d", static_cast<int>(n_i));
       int neighbor_index = tree.get ().get<int> (str);
       EXPECT_EQ (neighbor_index, nn_indices_vector[vec_i][n_i]);
     }

@@ -73,7 +73,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   if (surface_ != input_ ||
       indices_->size () != surface_->size ())
   { 
-    std::vector<int> nn_indices (k_); // \note These resizes are irrelevant for a radiusSearch ().
+    pcl::Indices nn_indices (k_); // \note These resizes are irrelevant for a radiusSearch ().
     std::vector<float> nn_dists (k_); 
 
     std::set<int> spfh_indices_set;
@@ -103,7 +103,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   hist_f2_.setZero (data_size, nr_bins_f2_);
   hist_f3_.setZero (data_size, nr_bins_f3_);
 
-  std::vector<int> nn_indices (k_); // \note These resizes are irrelevant for a radiusSearch ().
+  pcl::Indices nn_indices (k_); // \note These resizes are irrelevant for a radiusSearch ().
   std::vector<float> nn_dists (k_); 
 
   // Compute SPFH signatures for every point that needs them
@@ -119,7 +119,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     int p_idx = spfh_indices_vec[i];
 
     // Find the neighborhood around p_idx
-    if (!isFinite ((*input_)[p_idx]) ||
+    if (!isFinite ((*surface_)[p_idx]) ||
         this->searchForNeighbors (*surface_, p_idx, search_parameter_, nn_indices, nn_dists) == 0)
       continue;
 
@@ -158,7 +158,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 
     // ... and remap the nn_indices values so that they represent row indices in the spfh_hist_* matrices 
     // instead of indices into surface_->points
-    for (int &nn_index : nn_indices)
+    for (auto &nn_index : nn_indices)
       nn_index = spfh_hist_lookup[nn_index];
 
     // Compute the FPFH signature (i.e. compute a weighted combination of local SPFH signatures) ...

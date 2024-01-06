@@ -47,7 +47,6 @@
 #include <boost/uuid/random_generator.hpp>
 
 #include <pcl/common/utils.h> // pcl::utils::ignore
-#include <pcl/outofcore/boost.h>
 #include <pcl/outofcore/octree_abstract_node_container.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/PCLPointCloud2.h>
@@ -94,7 +93,7 @@ namespace pcl
         OutofcoreOctreeDiskContainer (const boost::filesystem::path &dir);
 
         /** \brief flushes write buffer, then frees memory */
-        ~OutofcoreOctreeDiskContainer ();
+        ~OutofcoreOctreeDiskContainer () override;
 
         /** \brief provides random access to points based on a linear index
          */
@@ -211,7 +210,7 @@ namespace pcl
           writebuff_.clear ();
           //remove the binary data in the directory
           PCL_DEBUG ("[Octree Disk Container] Removing the point data from disk, in file %s\n", disk_storage_filename_.c_str ());
-          boost::filesystem::remove (boost::filesystem::path (disk_storage_filename_.c_str ()));
+          boost::filesystem::remove (static_cast<boost::filesystem::path> (disk_storage_filename_.c_str ()));
           //reset the size-of-file counter
           filelen_ = 0;
         }
@@ -228,7 +227,7 @@ namespace pcl
             FILE* fxyz = fopen (path.string ().c_str (), "we");
 
             FILE* f = fopen (disk_storage_filename_.c_str (), "rbe");
-            assert (f != NULL);
+            assert (f != nullptr);
 
             std::uint64_t num = size ();
             PointT p;

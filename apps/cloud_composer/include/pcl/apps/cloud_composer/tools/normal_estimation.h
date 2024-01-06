@@ -49,7 +49,6 @@ namespace pcl
       Q_OBJECT
       public:
         NormalEstimationTool (PropertiesModel* parameter_model, QObject* parent);
-        ~NormalEstimationTool ();
         
        QList <CloudComposerItem*>
         performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) override;

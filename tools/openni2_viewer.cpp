@@ -41,7 +41,6 @@
 #include <pcl/io/openni2/openni.h>
 #include <pcl/io/openni2/openni2_device_manager.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/boost.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
@@ -115,7 +114,6 @@ public:
   OpenNI2Viewer (pcl::io::OpenNI2Grabber& grabber)
     : cloud_viewer_ (new pcl::visualization::PCLVisualizer ("PCL OpenNI2 cloud"))
     , grabber_ (grabber)
-    , rgb_data_ (nullptr), rgb_data_size_ (0)
   {
   }
 
@@ -248,7 +246,7 @@ public:
         }
 
         if (image->getEncoding () == pcl::io::openni2::Image::RGB)
-          image_viewer_->addRGBImage ( (const unsigned char*)image->getData (), image->getWidth (), image->getHeight ());
+          image_viewer_->addRGBImage ( reinterpret_cast<const unsigned char*>(image->getData ()), image->getWidth (), image->getHeight ());
         else
           image_viewer_->addRGBImage (rgb_data_, image->getWidth (), image->getHeight ());
         image_viewer_->spinOnce ();
@@ -267,18 +265,14 @@ public:
   pcl::visualization::ImageViewer::Ptr image_viewer_;
 
   pcl::io::OpenNI2Grabber& grabber_;
-  std::mutex cloud_mutex_;
-  std::mutex image_mutex_;
+  std::mutex cloud_mutex_{};
+  std::mutex image_mutex_{};
 
-  CloudConstPtr cloud_;
-  pcl::io::openni2::Image::Ptr image_;
-  unsigned char* rgb_data_;
-  unsigned rgb_data_size_;
+  CloudConstPtr cloud_{nullptr};
+  pcl::io::openni2::Image::Ptr image_{nullptr};
+  unsigned char* rgb_data_{nullptr};
+  unsigned rgb_data_size_{0};
 };
-
-// Create the PCLVisualizer object
-pcl::visualization::PCLVisualizer::Ptr cld;
-pcl::visualization::ImageViewer::Ptr img;
 
 /* ---[ */
 int
@@ -337,10 +331,10 @@ main (int argc, char** argv)
 
   unsigned mode;
   if (pcl::console::parse (argc, argv, "-depthmode", mode) != -1)
-    depth_mode = pcl::io::OpenNI2Grabber::Mode (mode);
+    depth_mode = static_cast<pcl::io::OpenNI2Grabber::Mode> (mode);
 
   if (pcl::console::parse (argc, argv, "-imagemode", mode) != -1)
-    image_mode = pcl::io::OpenNI2Grabber::Mode (mode);
+    image_mode = static_cast<pcl::io::OpenNI2Grabber::Mode> (mode);
 
   if (pcl::console::find_argument (argc, argv, "-xyz") != -1)
     xyz = true;

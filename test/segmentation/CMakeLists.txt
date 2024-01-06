@@ -6,7 +6,7 @@ set(OPT_DEPS) # module does not depend on these
 set(DEFAULT ON)
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
-PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
 
 if(NOT build)
   return()
@@ -14,7 +14,7 @@ endif()
 
 PCL_ADD_TEST(random_walker test_random_walker
              FILES test_random_walker.cpp
-             LINK_WITH pcl_gtest
+             LINK_WITH pcl_gtest pcl_segmentation
              ARGUMENTS "${PCL_SOURCE_DIR}/test/segmentation/data")
 
 PCL_ADD_TEST(a_segmentation_test test_segmentation

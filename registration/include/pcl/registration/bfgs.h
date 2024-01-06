@@ -15,7 +15,7 @@ public:
   EIGEN_POLYNOMIAL_SOLVER_BASE_INHERITED_TYPES(PS_Base)
 
 public:
-  virtual ~PolynomialSolver() {}
+  virtual ~PolynomialSolver() = default;
 
   template <typename OtherPolynomial>
   inline PolynomialSolver(const OtherPolynomial& poly, bool& hasRealRoot)
@@ -28,7 +28,7 @@ public:
   void
   compute(const OtherPolynomial& poly, bool& hasRealRoot)
   {
-    const Scalar ZERO(0);
+    constexpr Scalar ZERO(0);
     Scalar a2(2 * poly[2]);
     assert(ZERO != poly[poly.size() - 1]);
     Scalar discriminant((poly[1] * poly[1]) - (4 * poly[0] * poly[2]));
@@ -87,7 +87,7 @@ struct BFGSDummyFunctor {
   BFGSDummyFunctor() : m_inputs(InputsAtCompileTime) {}
   BFGSDummyFunctor(int inputs) : m_inputs(inputs) {}
 
-  virtual ~BFGSDummyFunctor() {}
+  virtual ~BFGSDummyFunctor() = default;
   int
   inputs() const
   {
@@ -101,7 +101,7 @@ struct BFGSDummyFunctor {
   virtual void
   fdf(const VectorType& x, Scalar& f, VectorType& df) = 0;
   virtual BFGSSpace::Status
-  checkGradient(const VectorType& g)
+  checkGradient(const VectorType& /*g*/)
   {
     return BFGSSpace::NotStarted;
   };
@@ -110,7 +110,7 @@ struct BFGSDummyFunctor {
 /**
  * BFGS stands for Broyden–Fletcher–Goldfarb–Shanno (BFGS) method for solving
  * unconstrained nonlinear optimization problems.
- * For further details please visit: http://en.wikipedia.org/wiki/BFGS_method
+ * For further details please visit: https://en.wikipedia.org/wiki/BFGS_method
  * The method provided here is almost similar to the one provided by GSL.
  * It reproduces Fletcher's original algorithm in Practical Methods of Optimization
  * algorithms : 2.6.2 and 2.6.4 and uses the same politics in GSL with cubic
@@ -160,8 +160,6 @@ public:
   minimizeOneStep(FVectorType& x);
   BFGSSpace::Status
   testGradient();
-  PCL_DEPRECATED(1, 13, "Use `testGradient()` instead")
-  BFGSSpace::Status testGradient(Scalar) { return testGradient(); }
   void
   resetParameters(void)
   {
@@ -353,7 +351,7 @@ BFGS<FunctorType>::minimize(FVectorType& x)
   BFGSSpace::Status status = minimizeInit(x);
   do {
     status = minimizeOneStep(x);
-    iter++;
+    ++iter;
   } while (status == BFGSSpace::Success && iter < parameters.max_iters);
   return status;
 }

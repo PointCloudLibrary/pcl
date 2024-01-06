@@ -54,7 +54,7 @@ namespace pcl
     * Code example:
     *
     * \code
-    * pcl::PointCloud<pcl::PointXYZRGBA>::Ptr model (new pcl::PointCloud<pcl::PointXYZRGBA> ());;
+    * pcl::PointCloud<pcl::PointXYZRGBA>::Ptr model (new pcl::PointCloud<pcl::PointXYZRGBA> ());
     * pcl::PointCloud<pcl::PointXYZRGBA>::Ptr model_keypoints (new pcl::PointCloud<pcl::PointXYZRGBA> ());
     * pcl::search::KdTree<pcl::PointXYZRGBA>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZRGBA> ());
     *
@@ -111,24 +111,16 @@ namespace pcl
         */
       ISSKeypoint3D (double salient_radius = 0.0001)
       : salient_radius_ (salient_radius)
-      , non_max_radius_ (0.0)
-      , normal_radius_ (0.0)
-      , border_radius_ (0.0)
-      , gamma_21_ (0.975)
-      , gamma_32_ (0.975)
-      , third_eigen_value_ (nullptr)
-      , edge_points_ (nullptr)
-      , min_neighbors_ (5)
       , normals_ (new pcl::PointCloud<NormalT>)
       , angle_threshold_ (static_cast<float> (M_PI) / 2.0f)
-      , threads_ (0)
       {
         name_ = "ISSKeypoint3D";
         search_radius_ = salient_radius_;
+        setNumberOfThreads(threads_); // Reset number of threads with the member's initialization value to apply input validation.
       }
 
       /** \brief Destructor. */
-      ~ISSKeypoint3D ()
+      ~ISSKeypoint3D () override
       {
         delete[] third_eigen_value_;
         delete[] edge_points_;
@@ -140,7 +132,7 @@ namespace pcl
       void
       setSalientRadius (double salient_radius);
 
-      /** \brief Set the radius for the application of the non maxima supression algorithm.
+      /** \brief Set the radius for the application of the non maxima suppression algorithm.
         * \param[in] non_max_radius the non maxima suppression radius
         */
       void
@@ -197,8 +189,8 @@ namespace pcl
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param[in] nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
-      inline void
-      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
+      void
+      setNumberOfThreads (unsigned int nr_threads = 0);
 
     protected:
 
@@ -235,28 +227,28 @@ namespace pcl
       double salient_radius_;
 
       /** \brief The non maxima suppression radius. */
-      double non_max_radius_;
+      double non_max_radius_{0.0};
 
       /** \brief The radius used to compute the normals of the input cloud. */
-      double normal_radius_;
+      double normal_radius_{0.0};
 
       /** \brief The radius used to compute the boundary points of the input cloud. */
-      double border_radius_;
+      double border_radius_{0.0};
 
       /** \brief The upper bound on the ratio between the second and the first eigenvalue returned by the EVD. */
-      double gamma_21_;
+      double gamma_21_{0.975};
 
       /** \brief The upper bound on the ratio between the third and the second eigenvalue returned by the EVD. */
-      double gamma_32_;
+      double gamma_32_{0.975};
 
       /** \brief Store the third eigen value associated to each point in the input cloud. */
-      double *third_eigen_value_;
+      double *third_eigen_value_{nullptr};
 
       /** \brief Store the information about the boundary points of the input cloud. */
-      bool *edge_points_;
+      bool *edge_points_{nullptr};
 
       /** \brief Minimum number of neighbors that has to be found while applying the non maxima suppression algorithm. */
-      int min_neighbors_;
+      int min_neighbors_{5};
 
       /** \brief The cloud of normals related to the input surface. */
       PointCloudNConstPtr normals_;
@@ -265,7 +257,7 @@ namespace pcl
       float angle_threshold_;
 
       /** \brief The number of threads that has to be used by the scheduler. */
-      unsigned int threads_;
+      unsigned int threads_{0};
 
   };
 

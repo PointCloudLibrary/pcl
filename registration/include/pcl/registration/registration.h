@@ -41,7 +41,6 @@
 #pragma once
 
 // PCL includes
-#include <pcl/common/transforms.h>
 #include <pcl/registration/correspondence_estimation.h>
 #include <pcl/registration/correspondence_rejection.h>
 #include <pcl/registration/transformation_estimation.h>
@@ -102,40 +101,28 @@ public:
    * cloud_tgt
    */
   using UpdateVisualizerCallbackSignature = void(const pcl::PointCloud<PointSource>&,
-                                                 const std::vector<int>&,
+                                                 const pcl::Indices&,
                                                  const pcl::PointCloud<PointTarget>&,
-                                                 const std::vector<int>&);
+                                                 const pcl::Indices&);
 
   /** \brief Empty constructor. */
   Registration()
   : tree_(new KdTree)
   , tree_reciprocal_(new KdTreeReciprocal)
-  , nr_iterations_(0)
-  , max_iterations_(10)
-  , ransac_iterations_(0)
   , target_()
   , final_transformation_(Matrix4::Identity())
   , transformation_(Matrix4::Identity())
   , previous_transformation_(Matrix4::Identity())
-  , transformation_epsilon_(0.0)
-  , transformation_rotation_epsilon_(0.0)
   , euclidean_fitness_epsilon_(-std::numeric_limits<double>::max())
   , corr_dist_threshold_(std::sqrt(std::numeric_limits<double>::max()))
-  , inlier_threshold_(0.05)
-  , converged_(false)
-  , min_number_correspondences_(3)
   , correspondences_(new Correspondences)
   , transformation_estimation_()
   , correspondence_estimation_()
-  , target_cloud_updated_(true)
-  , source_cloud_updated_(true)
-  , force_no_recompute_(false)
-  , force_no_recompute_reciprocal_(false)
   , point_representation_()
   {}
 
   /** \brief destructor. */
-  ~Registration() {}
+  ~Registration() override = default;
 
   /** \brief Provide a pointer to the transformation estimation object.
    * (e.g., SVD, point to plane etc.)
@@ -145,13 +132,14 @@ public:
    * Code example:
    *
    * \code
-   * TransformationEstimationPointToPlaneLLS<PointXYZ, PointXYZ>::Ptr trans_lls (new
-   * TransformationEstimationPointToPlaneLLS<PointXYZ, PointXYZ>);
+   * TransformationEstimationPointToPlaneLLS<PointXYZ, PointXYZ>::Ptr trans_lls
+   *   (new TransformationEstimationPointToPlaneLLS<PointXYZ, PointXYZ>);
    * icp.setTransformationEstimation (trans_lls);
    * // or...
-   * TransformationEstimationSVD<PointXYZ, PointXYZ>::Ptr trans_svd (new
-   * TransformationEstimationSVD<PointXYZ, PointXYZ>); icp.setTransformationEstimation
-   * (trans_svd); \endcode
+   * TransformationEstimationSVD<PointXYZ, PointXYZ>::Ptr trans_svd
+   *   (new TransformationEstimationSVD<PointXYZ, PointXYZ>);
+   * icp.setTransformationEstimation (trans_svd);
+   * \endcode
    */
   void
   setTransformationEstimation(const TransformationEstimationPtr& te)
@@ -167,13 +155,14 @@ public:
    * Code example:
    *
    * \code
-   * CorrespondenceEstimation<PointXYZ, PointXYZ>::Ptr ce (new
-   * CorrespondenceEstimation<PointXYZ, PointXYZ>); ce->setInputSource (source);
+   * CorrespondenceEstimation<PointXYZ, PointXYZ>::Ptr
+   *   ce (new CorrespondenceEstimation<PointXYZ, PointXYZ>);
+   * ce->setInputSource (source);
    * ce->setInputTarget (target);
    * icp.setCorrespondenceEstimation (ce);
    * // or...
    * CorrespondenceEstimationNormalShooting<PointNormal, PointNormal, PointNormal>::Ptr
-   * cens (new CorrespondenceEstimationNormalShooting<PointNormal, PointNormal>);
+   *   cens (new CorrespondenceEstimationNormalShooting<PointNormal, PointNormal>);
    * ce->setInputSource (source);
    * ce->setInputTarget (target);
    * ce->setSourceNormals (source);
@@ -226,9 +215,7 @@ public:
   setSearchMethodTarget(const KdTreePtr& tree, bool force_no_recompute = false)
   {
     tree_ = tree;
-    if (force_no_recompute) {
-      force_no_recompute_ = true;
-    }
+    force_no_recompute_ = force_no_recompute;
     // Since we just set a new tree, we need to check for updates
     target_cloud_updated_ = true;
   }
@@ -253,9 +240,7 @@ public:
                         bool force_no_recompute = false)
   {
     tree_reciprocal_ = tree;
-    if (force_no_recompute) {
-      force_no_recompute_reciprocal_ = true;
-    }
+    force_no_recompute_reciprocal_ = force_no_recompute;
     // Since we just set a new tree, we need to check for updates
     source_cloud_updated_ = true;
   }
@@ -449,6 +434,8 @@ public:
   {
     if (visualizerCallback) {
       update_visualizer_ = visualizerCallback;
+      pcl::Indices indices;
+      update_visualizer_(*input_, indices, *target_, indices);
       return (true);
     }
     return (false);
@@ -568,15 +555,15 @@ protected:
 
   /** \brief The number of iterations the internal optimization ran for (used
    * internally). */
-  int nr_iterations_;
+  int nr_iterations_{0};
 
   /** \brief The maximum number of iterations the internal optimization should run for.
    * The default value is 10.
    */
-  int max_iterations_;
+  int max_iterations_{10};
 
   /** \brief The number of iterations RANSAC should run for. */
-  int ransac_iterations_;
+  int ransac_iterations_{0};
 
   /** \brief The input point cloud dataset target. */
   PointCloudTargetConstPtr target_;
@@ -595,12 +582,12 @@ protected:
   /** \brief The maximum difference between two consecutive transformations in order to
    * consider convergence (user defined).
    */
-  double transformation_epsilon_;
+  double transformation_epsilon_{0.0};
 
   /** \brief The maximum rotation difference between two consecutive transformations in
    * order to consider convergence (user defined).
    */
-  double transformation_rotation_epsilon_;
+  double transformation_rotation_epsilon_{0.0};
 
   /** \brief The maximum allowed Euclidean error between two consecutive steps in the
    * ICP loop, before the algorithm is considered to have converged. The error is
@@ -620,15 +607,15 @@ protected:
    * target data index and the transformed source index is smaller than the given inlier
    * distance threshold. The default value is 0.05.
    */
-  double inlier_threshold_;
+  double inlier_threshold_{0.05};
 
   /** \brief Holds internal convergence state, given user parameters. */
-  bool converged_;
+  bool converged_{false};
 
   /** \brief The minimum number of correspondences that the algorithm needs before
    * attempting to estimate the transformation. The default value is 3.
    */
-  int min_number_correspondences_;
+  unsigned int min_number_correspondences_{3};
 
   /** \brief The set of correspondences determined at this ICP step. */
   CorrespondencesPtr correspondences_;
@@ -647,18 +634,18 @@ protected:
   /** \brief Variable that stores whether we have a new target cloud, meaning we need to
    * pre-process it again. This way, we avoid rebuilding the kd-tree for the target
    * cloud every time the determineCorrespondences () method is called. */
-  bool target_cloud_updated_;
+  bool target_cloud_updated_{true};
   /** \brief Variable that stores whether we have a new source cloud, meaning we need to
    * pre-process it again. This way, we avoid rebuilding the reciprocal kd-tree for the
    * source cloud every time the determineCorrespondences () method is called. */
-  bool source_cloud_updated_;
+  bool source_cloud_updated_{true};
   /** \brief A flag which, if set, means the tree operating on the target cloud
    * will never be recomputed*/
-  bool force_no_recompute_;
+  bool force_no_recompute_{false};
 
   /** \brief A flag which, if set, means the tree operating on the source cloud
    * will never be recomputed*/
-  bool force_no_recompute_reciprocal_;
+  bool force_no_recompute_reciprocal_{false};
 
   /** \brief Callback function to update intermediate source point cloud position during
    * it's registration to the target point cloud.
@@ -675,7 +662,7 @@ protected:
   inline bool
   searchForNeighbors(const PointCloudSource& cloud,
                      int index,
-                     std::vector<int>& indices,
+                     pcl::Indices& indices,
                      std::vector<float>& distances)
   {
     int k = tree_->nearestKSearch(cloud, index, 1, indices, distances);

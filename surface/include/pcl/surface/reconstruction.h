@@ -41,7 +41,6 @@
 
 #include <pcl/pcl_base.h>
 #include <pcl/PolygonMesh.h>
-#include <pcl/conversions.h>
 #include <pcl/search/search.h> // for Search
 
 namespace pcl
@@ -54,6 +53,7 @@ namespace pcl
     *  - \b reconstruct(&PolygonMesh): creates a PolygonMesh object from the input data
     *
     * \author Radu B. Rusu, Michael Dixon, Alexandru E. Ichim
+    * \ingroup surface
     */
   template <typename PointInT>
   class PCLSurfaceBase: public PCLBase<PointInT>
@@ -69,7 +69,7 @@ namespace pcl
       PCLSurfaceBase () : tree_ () {}
       
       /** \brief Empty destructor */
-      ~PCLSurfaceBase () {}
+      ~PCLSurfaceBase () override = default;
 
       /** \brief Provide an optional pointer to a search object.
         * \param[in] tree a pointer to the spatial search object.
@@ -128,10 +128,10 @@ namespace pcl
       using PCLSurfaceBase<PointInT>::getClassName;
 
       /** \brief Constructor. */
-      SurfaceReconstruction () : check_tree_ (true) {}
+      SurfaceReconstruction () = default;
 
       /** \brief Destructor. */
-      ~SurfaceReconstruction () {}
+      ~SurfaceReconstruction () override = default;
 
        /** \brief Base method for surface reconstruction for all points given in
         * <setInputCloud (), setIndices ()> 
@@ -153,7 +153,7 @@ namespace pcl
     protected:
       /** \brief A flag specifying whether or not the derived reconstruction
         * algorithm needs the search object \a tree.*/
-      bool check_tree_;
+      bool check_tree_{true};
 
       /** \brief Abstract surface reconstruction method. 
         * \param[out] output the output polygonal mesh 
@@ -197,10 +197,10 @@ namespace pcl
       using PCLSurfaceBase<PointInT>::getClassName;
 
       /** \brief Constructor. */
-      MeshConstruction () : check_tree_ (true) {}
+      MeshConstruction () = default;
 
       /** \brief Destructor. */
-      ~MeshConstruction () {}
+      ~MeshConstruction () override = default;
 
       /** \brief Base method for surface reconstruction for all points given in
         * <setInputCloud (), setIndices ()> 
@@ -225,7 +225,7 @@ namespace pcl
     protected:
       /** \brief A flag specifying whether or not the derived reconstruction
         * algorithm needs the search object \a tree.*/
-      bool check_tree_;
+      bool check_tree_{true};
 
       /** \brief Abstract surface reconstruction method. 
         * \param[out] output the output polygonal mesh 

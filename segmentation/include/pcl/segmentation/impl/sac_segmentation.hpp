@@ -68,7 +68,10 @@
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/sample_consensus/sac_model_sphere.h>
 #include <pcl/sample_consensus/sac_model_normal_sphere.h>
+#define SAC_MODEL_STICK_DONT_WARN_DEPRECATED
 #include <pcl/sample_consensus/sac_model_stick.h>
+#undef SAC_MODEL_STICK_DONT_WARN_DEPRECATED
+#include <pcl/sample_consensus/sac_model_ellipse3d.h>
 
 #include <pcl/memory.h>  // for static_pointer_cast
 
@@ -108,23 +111,23 @@ pcl::SACSegmentation<PointT>::segment (PointIndices &inliers, ModelCoefficients 
   sac_->getInliers (inliers.indices);
 
   // Get the model coefficients
-  Eigen::VectorXf coeff;
+  Eigen::VectorXf coeff (model_->getModelSize ());
   sac_->getModelCoefficients (coeff);
 
   // If the user needs optimized coefficients
   if (optimize_coefficients_)
   {
-    Eigen::VectorXf coeff_refined;
+    Eigen::VectorXf coeff_refined (model_->getModelSize ());
     model_->optimizeModelCoefficients (inliers.indices, coeff, coeff_refined);
     model_coefficients.values.resize (coeff_refined.size ());
-    memcpy (&model_coefficients.values[0], &coeff_refined[0], coeff_refined.size () * sizeof (float));
+    memcpy (model_coefficients.values.data(), coeff_refined.data(), coeff_refined.size () * sizeof (float));
     // Refine inliers
     model_->selectWithinDistance (coeff_refined, threshold_, inliers.indices);
   }
   else
   {
     model_coefficients.values.resize (coeff.size ());
-    memcpy (&model_coefficients.values[0], &coeff[0], coeff.size () * sizeof (float));
+    memcpy (model_coefficients.values.data(), coeff.data(), coeff.size () * sizeof (float));
   }
 
   deinitCompute ();
@@ -154,6 +157,7 @@ pcl::SACSegmentation<PointT>::initSACModel (const int model_type)
     }
     case SACMODEL_STICK:
     {
+      PCL_WARN ("[pcl::%s::initSACModel] SACMODEL_STICK is deprecated: Use SACMODEL_LINE instead (It will be removed in PCL 1.17)\n", getClassName ().c_str ());
       PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_STICK\n", getClassName ().c_str ());
       model_.reset (new SampleConsensusModelStick<PointT> (input_, *indices_));
       double min_radius, max_radius;
@@ -257,6 +261,28 @@ pcl::SACSegmentation<PointT>::initSACModel (const int model_type)
         model_parallel->setEpsAngle (eps_angle_);
       }
       break;
+    }
+    case SACMODEL_ELLIPSE3D:
+    {
+      PCL_DEBUG("[pcl::%s::initSACModel] Using a model of type: SACMODEL_ELLIPSE3D\n", getClassName().c_str());
+      model_.reset(new SampleConsensusModelEllipse3D<PointT>(input_, *indices_));
+      typename SampleConsensusModelEllipse3D<PointT>::Ptr model_ellipse3d = static_pointer_cast<SampleConsensusModelEllipse3D<PointT>>(model_);
+      double min_radius, max_radius;
+      model_ellipse3d->getRadiusLimits(min_radius, max_radius);
+      if (radius_min_ != min_radius && radius_max_ != max_radius) {
+        PCL_DEBUG("[pcl::%s::initSACModel] Setting radius limits to %f/%f\n", getClassName().c_str(), radius_min_, radius_max_);
+        model_ellipse3d->setRadiusLimits(radius_min_, radius_max_);
+      }
+      break;
+    }
+    case SACMODEL_CYLINDER:
+    case SACMODEL_NORMAL_PLANE:
+    case SACMODEL_NORMAL_PARALLEL_PLANE:
+    case SACMODEL_CONE:
+    case SACMODEL_NORMAL_SPHERE:
+    {
+      PCL_ERROR ("[pcl::%s::initSACModel] Use SACSegmentationFromNormals for this model instead!\n", getClassName ().c_str ());
+      return (false);
     }
     default:
     {

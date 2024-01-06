@@ -74,10 +74,10 @@ namespace pcl
       using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
 
       /** \brief Empty constructor. */
-      IntensitySpinEstimation () : nr_distance_bins_ (4), nr_intensity_bins_ (5), sigma_ (1.0)
+      IntensitySpinEstimation ()
       {
         feature_name_ = "IntensitySpinEstimation";
-      };
+      }
 
       /** \brief Estimate the intensity-domain spin image descriptor for a given point based on its spatial
         * neighborhood of 3D points and their intensities. 
@@ -92,7 +92,7 @@ namespace pcl
       void 
       computeIntensitySpinImage (const PointCloudIn &cloud, 
                                  float radius, float sigma, int k, 
-                                 const std::vector<int> &indices, 
+                                 const pcl::Indices &indices, 
                                  const std::vector<float> &squared_distances, 
                                  Eigen::MatrixXf &intensity_spin_image);
 
@@ -135,13 +135,13 @@ namespace pcl
       computeFeature (PointCloudOut &output) override;
     
       /** \brief The number of distance bins in the descriptor. */
-      int nr_distance_bins_;
+      int nr_distance_bins_{4};
 
       /** \brief The number of intensity bins in the descriptor. */
-      int nr_intensity_bins_;
+      int nr_intensity_bins_{5};
 
       /** \brief The standard deviation of the Gaussian smoothing kernel used to construct the spin images. */
-      float sigma_;
+      float sigma_{1.0};
   };
 }
 

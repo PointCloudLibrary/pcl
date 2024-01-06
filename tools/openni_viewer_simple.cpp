@@ -46,7 +46,6 @@
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
-#include <pcl/visualization/boost.h>
 #include <pcl/visualization/mouse_event.h>
 
 #include <vtkImageViewer.h>
@@ -122,10 +121,10 @@ class SimpleOpenNIViewer
     void 
     keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* cookie)
     {
-      string* message = (string*)cookie;
+      auto message = static_cast<std::string*>(cookie);
       std::cout << (*message) << " :: ";
       if (event.getKeyCode())
-        std::cout << "the key \'" << event.getKeyCode() << "\' (" << (int)event.getKeyCode() << ") was";
+        std::cout << "the key \'" << event.getKeyCode() << "\' (" << static_cast<int>(event.getKeyCode()) << ") was";
       else
         std::cout << "the special key \'" << event.getKeySym() << "\' was";
       if (event.keyDown())
@@ -136,7 +135,7 @@ class SimpleOpenNIViewer
     
     void mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
     {
-      string* message = (string*) cookie;
+      auto message = static_cast<std::string*>(cookie);
       if (mouse_event.getType() == pcl::visualization::MouseEvent::MouseButtonPress && mouse_event.getButton() == pcl::visualization::MouseEvent::LeftButton)
       {
         std::cout << (*message) << " :: " << mouse_event.getX () << " , " << mouse_event.getY () << std::endl;
@@ -168,8 +167,10 @@ class SimpleOpenNIViewer
 
       std::string mouseMsg3D("Mouse coordinates in PCL Visualizer");
       std::string keyMsg3D("Key event for PCL Visualizer");
-      cloud_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&mouseMsg3D));    
-      cloud_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&keyMsg3D));
+      cloud_viewer_.registerMouseCallback(
+          &SimpleOpenNIViewer::mouse_callback, *this, static_cast<void*>(&mouseMsg3D));
+      cloud_viewer_.registerKeyboardCallback(
+          &SimpleOpenNIViewer::keyboard_callback, *this, static_cast<void*>(&keyMsg3D));
       std::function<void (const CloudConstPtr&)> cloud_cb = [this] (const CloudConstPtr& cloud) { cloud_callback (cloud); };
       boost::signals2::connection cloud_connection = grabber_.registerCallback (cloud_cb);
       
@@ -178,12 +179,16 @@ class SimpleOpenNIViewer
       {
           std::string mouseMsg2D("Mouse coordinates in image viewer");
           std::string keyMsg2D("Key event for image viewer");
-          image_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&mouseMsg2D));
-          image_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&keyMsg2D));
+          image_viewer_.registerMouseCallback(&SimpleOpenNIViewer::mouse_callback,
+                                              *this,
+                                              static_cast<void*>(&mouseMsg2D));
+          image_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback,
+                                                 *this,
+                                                 static_cast<void*>(&keyMsg2D));
           std::function<void (const openni_wrapper::Image::Ptr&)> image_cb = [this] (const openni_wrapper::Image::Ptr& img) { image_callback (img); };
           image_connection = grabber_.registerCallback (image_cb);
       }
-      unsigned char* rgb_data = 0;
+      unsigned char* rgb_data = nullptr;
       unsigned rgb_data_size = 0;
       
       grabber_.start ();
@@ -272,7 +277,7 @@ usage(char ** argv)
 int
 main(int argc, char ** argv)
 {
-  std::string device_id("");
+  std::string device_id;
   pcl::OpenNIGrabber::Mode depth_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
   pcl::OpenNIGrabber::Mode image_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
   bool xyz = false;
@@ -293,18 +298,18 @@ main(int argc, char ** argv)
         auto device = grabber.getDevice();
         std::cout << "Supported depth modes for device: " << device->getVendorName() << " , " << device->getProductName() << std::endl;
         std::vector<std::pair<int, XnMapOutputMode > > modes = grabber.getAvailableDepthModes();
-        for (std::vector<std::pair<int, XnMapOutputMode > >::const_iterator it = modes.begin(); it != modes.end(); ++it)
+        for (const auto& mode : modes)
         {
-          std::cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << std::endl;
+          std::cout << mode.first << " = " << mode.second.nXRes << " x " << mode.second.nYRes << " @ " << mode.second.nFPS << std::endl;
         }
 
         if (device->hasImageStream ())
         {
           std::cout << std::endl << "Supported image modes for device: " << device->getVendorName() << " , " << device->getProductName() << std::endl;
           modes = grabber.getAvailableImageModes();
-          for (std::vector<std::pair<int, XnMapOutputMode > >::const_iterator it = modes.begin(); it != modes.end(); ++it)
+          for (const auto& mode : modes)
           {
-            std::cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << std::endl;
+            std::cout << mode.first << " = " << mode.second.nXRes << " x " << mode.second.nYRes << " @ " << mode.second.nFPS << std::endl;
           }
         }
       }
@@ -316,7 +321,7 @@ main(int argc, char ** argv)
           for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices(); ++deviceIdx)
           {
             std::cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName(deviceIdx) << ", product: " << driver.getProductName(deviceIdx)
-              << ", connected: " << (int) driver.getBus(deviceIdx) << " @ " << (int) driver.getAddress(deviceIdx) << ", serial number: \'" << driver.getSerialNumber(deviceIdx) << "\'" << std::endl;
+              << ", connected: " << static_cast<int>(driver.getBus(deviceIdx)) << " @ " << static_cast<int>(driver.getAddress(deviceIdx)) << ", serial number: \'" << driver.getSerialNumber(deviceIdx) << "\'" << std::endl;
           }
 
         }
@@ -337,10 +342,10 @@ main(int argc, char ** argv)
   
   unsigned mode;
   if (pcl::console::parse(argc, argv, "-depthmode", mode) != -1)
-    depth_mode = (pcl::OpenNIGrabber::Mode) mode;
+    depth_mode = static_cast<pcl::OpenNIGrabber::Mode>(mode);
 
   if (pcl::console::parse(argc, argv, "-imagemode", mode) != -1)
-    image_mode = (pcl::OpenNIGrabber::Mode) mode;
+    image_mode = static_cast<pcl::OpenNIGrabber::Mode>(mode);
   
   if (pcl::console::find_argument(argc, argv, "-xyz") != -1)
     xyz = true;

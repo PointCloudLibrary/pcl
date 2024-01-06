@@ -36,7 +36,7 @@
 
 #pragma once
 
-PCL_DEPRECATED_HEADER(1, 13, "Use <pcl/memory.h> instead.")
+PCL_DEPRECATED_HEADER(1, 15, "Use <pcl/memory.h> instead.")
 
 #include <pcl/memory.h>
 

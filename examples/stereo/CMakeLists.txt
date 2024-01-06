@@ -2,7 +2,7 @@ if(NOT BUILD_visualization)
   return()
 endif()
 
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS visualization)
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS visualization)
 
 ## Find VTK
 if(NOT VTK_FOUND)
@@ -11,7 +11,6 @@ if(NOT VTK_FOUND)
 else()
   set(DEFAULT TRUE)
   set(REASON)
-  include(${VTK_USE_FILE})
 endif()
 
 PCL_ADD_EXAMPLE(pcl_example_stereo_baseline FILES example_stereo_baseline.cpp

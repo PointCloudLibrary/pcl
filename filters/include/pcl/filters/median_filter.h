@@ -64,10 +64,7 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      MedianFilter ()
-        : window_size_ (5)
-        , max_allowed_movement_ (std::numeric_limits<float>::max ())
-      { }
+      MedianFilter () = default;
 
       /** \brief Set the window size of the filter.
         * \param[in] window_size the new window size
@@ -104,8 +101,8 @@ namespace pcl
       applyFilter (PointCloud &output) override;
 
     protected:
-      int window_size_;
-      float max_allowed_movement_;
+      int window_size_{5};
+      float max_allowed_movement_{std::numeric_limits<float>::max ()};
   };
 }
 

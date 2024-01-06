@@ -39,7 +39,7 @@ identity (double val)
 //............................................................................
 
 int
-main (int argc, char * argv [])
+main ()
 {
   //defining a plotter
   PCLPlotter *plotter = new PCLPlotter ("My Plotter");
@@ -47,7 +47,7 @@ main (int argc, char * argv [])
   //setting some properties
   plotter->setShowLegend (true);
 
-  //generating point correspondances
+  //generating point correspondences
   int numPoints = 69;
   double ax[100], acos[100], asin[100];
   generateData (ax, acos, asin, numPoints);

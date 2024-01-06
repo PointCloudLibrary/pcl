@@ -10,9 +10,7 @@ namespace pcl
 {
   struct ModelCoefficients
   {
-    ModelCoefficients ()
-    {
-    }
+    ModelCoefficients () = default;
 
     ::pcl::PCLHeader header;
 

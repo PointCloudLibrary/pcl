@@ -105,7 +105,7 @@ pcl::visualization::ImageViewer::addMask (
     return (false);
 
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  auto am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addMask] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
@@ -159,7 +159,7 @@ pcl::visualization::ImageViewer::addPlanarPolygon (
     return (false);
 
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  auto am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addPlanarPolygon] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
@@ -218,7 +218,7 @@ pcl::visualization::ImageViewer::addRectangle (
     return (false);
 
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  auto am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addRectangle] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
@@ -298,7 +298,7 @@ pcl::visualization::ImageViewer::addRectangle (
     return (false);
 
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  auto am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addRectangle] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
@@ -363,7 +363,7 @@ pcl::visualization::ImageViewer::showCorrespondences (
   }
 
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  auto am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addCorrespondences] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
@@ -399,7 +399,7 @@ pcl::visualization::ImageViewer::showCorrespondences (
     }
     else
     {
-      memcpy (&data_[j], 0, source_img.width * 3);
+      std::fill_n(&data_[j], source_img.width * 3, 0);
       j += source_img.width * 3;
     }
 
@@ -415,7 +415,7 @@ pcl::visualization::ImageViewer::showCorrespondences (
     }
     else
     {
-      memcpy (&data_[j], 0, target_img.width * 3);
+      std::fill_n(&data_[j], target_img.width * 3, 0);
       j += target_img.width * 3;
     }
   }
@@ -437,9 +437,9 @@ pcl::visualization::ImageViewer::showCorrespondences (
   {
     double r, g, b;
     getRandomColors (r, g, b);
-    unsigned char u_r = static_cast<unsigned char> (255.0 * r);
-    unsigned char u_g = static_cast<unsigned char> (255.0 * g);
-    unsigned char u_b = static_cast<unsigned char> (255.0 * b);
+    auto u_r = static_cast<unsigned char> (255.0 * r);
+    auto u_g = static_cast<unsigned char> (255.0 * g);
+    auto u_b = static_cast<unsigned char> (255.0 * b);
     vtkSmartPointer<context_items::Circle> query_circle = vtkSmartPointer<context_items::Circle>::New ();
     query_circle->setColors (u_r, u_g, u_b);
     vtkSmartPointer<context_items::Circle> match_circle = vtkSmartPointer<context_items::Circle>::New ();

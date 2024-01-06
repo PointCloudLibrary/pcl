@@ -156,13 +156,14 @@ template <typename DataType, unsigned Dimension> void
 IntegralImage2D<DataType, Dimension>::computeIntegralImages (
     const DataType *data, unsigned row_stride, unsigned element_stride)
 {
-  ElementType* previous_row = &first_order_integral_image_[0];
+  ElementType* previous_row = first_order_integral_image_.data();
   ElementType* current_row  = previous_row + (width_ + 1);
-  memset (previous_row, 0, sizeof (ElementType) * (width_ + 1));
+  for (unsigned int i = 0; i < (width_ + 1); ++i)
+    previous_row[i].setZero();
 
-  unsigned* count_previous_row = &finite_values_integral_image_[0];
+  unsigned* count_previous_row = finite_values_integral_image_.data();
   unsigned* count_current_row  = count_previous_row + (width_ + 1);
-  memset (count_previous_row, 0, sizeof (unsigned) * (width_ + 1));
+  std::fill_n(count_previous_row, width_ + 1, 0);
 
   if (!compute_second_order_integral_images_)
   {
@@ -176,7 +177,7 @@ IntegralImage2D<DataType, Dimension>::computeIntegralImages (
       {
         current_row [colIdx + 1] = previous_row [colIdx + 1] + current_row [colIdx] - previous_row [colIdx];
         count_current_row [colIdx + 1] = count_previous_row [colIdx + 1] + count_current_row [colIdx] - count_previous_row [colIdx];
-        const InputType* element = reinterpret_cast <const InputType*> (&data [valIdx]);
+        const auto* element = reinterpret_cast <const InputType*> (&data [valIdx]);
         if (std::isfinite (element->sum ()))
         {
           current_row [colIdx + 1] += element->template cast<typename IntegralImageTypeTraits<DataType>::IntegralType>();
@@ -187,9 +188,10 @@ IntegralImage2D<DataType, Dimension>::computeIntegralImages (
   }
   else
   {
-    SecondOrderType* so_previous_row = &second_order_integral_image_[0];
+    SecondOrderType* so_previous_row = second_order_integral_image_.data();
     SecondOrderType* so_current_row  = so_previous_row + (width_ + 1);
-    memset (so_previous_row, 0, sizeof (SecondOrderType) * (width_ + 1));
+    for (unsigned int i = 0; i < (width_ + 1); ++i)
+      so_previous_row[i].setZero();
 
     SecondOrderType so_element;
     for (unsigned rowIdx = 0; rowIdx < height_; ++rowIdx, data += row_stride,
@@ -206,7 +208,7 @@ IntegralImage2D<DataType, Dimension>::computeIntegralImages (
         so_current_row [colIdx + 1] = so_previous_row [colIdx + 1] + so_current_row [colIdx] - so_previous_row [colIdx];
         count_current_row [colIdx + 1] = count_previous_row [colIdx + 1] + count_current_row [colIdx] - count_previous_row [colIdx];
 
-        const InputType* element = reinterpret_cast <const InputType*> (&data [valIdx]);
+        const auto* element = reinterpret_cast <const InputType*> (&data [valIdx]);
         if (std::isfinite (element->sum ()))
         {
           current_row [colIdx + 1] += element->template cast<typename IntegralImageTypeTraits<DataType>::IntegralType>();
@@ -325,13 +327,13 @@ template <typename DataType> void
 IntegralImage2D<DataType, 1>::computeIntegralImages (
     const DataType *data, unsigned row_stride, unsigned element_stride)
 {
-  ElementType* previous_row = &first_order_integral_image_[0];
+  ElementType* previous_row = first_order_integral_image_.data();
   ElementType* current_row  = previous_row + (width_ + 1);
-  memset (previous_row, 0, sizeof (ElementType) * (width_ + 1));
+  std::fill_n(previous_row, width_ + 1, 0);
 
-  unsigned* count_previous_row = &finite_values_integral_image_[0];
+  unsigned* count_previous_row = finite_values_integral_image_.data();
   unsigned* count_current_row  = count_previous_row + (width_ + 1);
-  memset (count_previous_row, 0, sizeof (unsigned) * (width_ + 1));
+  std::fill_n(count_previous_row, width_ + 1, 0);
 
   if (!compute_second_order_integral_images_)
   {
@@ -355,9 +357,9 @@ IntegralImage2D<DataType, 1>::computeIntegralImages (
   }
   else
   {
-    SecondOrderType* so_previous_row = &second_order_integral_image_[0];
+    SecondOrderType* so_previous_row = second_order_integral_image_.data();
     SecondOrderType* so_current_row  = so_previous_row + (width_ + 1);
-    memset (so_previous_row, 0, sizeof (SecondOrderType) * (width_ + 1));
+    std::fill_n(so_previous_row, width_ + 1, 0);
 
     for (unsigned rowIdx = 0; rowIdx < height_; ++rowIdx, data += row_stride,
                                                 previous_row = current_row, current_row += (width_ + 1),

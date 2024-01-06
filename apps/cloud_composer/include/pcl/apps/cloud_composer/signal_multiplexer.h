@@ -42,6 +42,8 @@
 
 #pragma once
 
+#include <QList>
+#include <QObject>
 #include <QPointer>
 
 namespace pcl
@@ -94,7 +96,7 @@ namespace pcl
         connect (const char *signal, QObject *receiver, const char *slot);
 
         /**
-                Disconencts a signal from a multiplexed object to a receiving (action)
+                Disconnects a signal from a multiplexed object to a receiving (action)
                 object.
                 @see connect(const char *signal, QObject *receiver, const char *slot)
         */

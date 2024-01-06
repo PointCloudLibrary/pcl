@@ -55,14 +55,9 @@ namespace pcl
   {
     public:
       /** \brief Constructor. */
-      EnergyMaps () : width_ (0), height_ (0), nr_bins_ (0)
-      {
-      }
-
+      EnergyMaps () = default;
       /** \brief Destructor. */
-      virtual ~EnergyMaps () 
-      {
-      }
+      virtual ~EnergyMaps () = default;
 
       /** \brief Returns the width of the energy maps. */
       inline std::size_t 
@@ -104,7 +99,7 @@ namespace pcl
         {
           //maps_[map_index] = new unsigned char[mapsSize];
           map = reinterpret_cast<unsigned char*> (aligned_malloc (mapsSize));
-          memset (map, 0, mapsSize);
+          std::fill_n(map, mapsSize, 0);
         }
       }
 
@@ -184,11 +179,11 @@ namespace pcl
 
     private:
       /** \brief The width of the energy maps. */
-      std::size_t width_;
+      std::size_t width_{0};
       /** \brief The height of the energy maps. */
-      std::size_t height_;
+      std::size_t height_{0};
       /** \brief The number of quantization bins (== the number of internally stored energy maps). */
-      std::size_t nr_bins_;
+      std::size_t nr_bins_{0};
       /** \brief Storage for the energy maps. */
       std::vector<unsigned char*> maps_;
   };
@@ -200,14 +195,10 @@ namespace pcl
   {
     public:
       /** \brief Constructor. */
-      LinearizedMaps () : width_ (0), height_ (0), mem_width_ (0), mem_height_ (0), step_size_ (0)
-      {
-      }
+      LinearizedMaps () = default;
       
       /** \brief Destructor. */
-      virtual ~LinearizedMaps () 
-      {
-      }
+      virtual ~LinearizedMaps () = default;
 
       /** \brief Returns the width of the linearized map. */
       inline std::size_t 
@@ -246,7 +237,7 @@ namespace pcl
         {
           //maps_[map_index] = new unsigned char[2*mapsSize];
           map = reinterpret_cast<unsigned char*> (aligned_malloc (2*mapsSize));
-          memset (map, 0, 2*mapsSize);
+          std::fill_n(map, 2*mapsSize, 0);
         }
       }
 
@@ -294,15 +285,15 @@ namespace pcl
 
     private:
       /** \brief the original width of the data represented by the map. */
-      std::size_t width_;
+      std::size_t width_{0};
       /** \brief the original height of the data represented by the map. */
-      std::size_t height_;
+      std::size_t height_{0};
       /** \brief the actual width of the linearized map. */
-      std::size_t mem_width_;
+      std::size_t mem_width_{0};
       /** \brief the actual height of the linearized map. */
-      std::size_t mem_height_;
+      std::size_t mem_height_{0};
       /** \brief the step-size used for sampling the original data. */
-      std::size_t step_size_;
+      std::size_t step_size_{0};
       /** \brief a vector containing all the linearized maps. */
       std::vector<unsigned char*> maps_;
   };
@@ -313,23 +304,24 @@ namespace pcl
   struct PCL_EXPORTS LINEMODDetection
   {
     /** \brief Constructor. */
-    LINEMODDetection () : x (0), y (0), template_id (0), score (0.0f), scale (1.0f) {}
+    LINEMODDetection () = default;
 
     /** \brief x-position of the detection. */
-    int x;
+    int x{0};
     /** \brief y-position of the detection. */
-    int y;
+    int y{0};
     /** \brief ID of the detected template. */
-    int template_id;
+    int template_id{0};
     /** \brief score of the detection. */
-    float score;
+    float score{0.0f};
     /** \brief scale at which the template was detected. */
-    float scale;
+    float scale{1.0f};
   };
 
   /**
     * \brief Template matching using the LINEMOD approach.
     * \author Stefan Holzer, Stefan Hinterstoisser
+    * \ingroup recognition
     */
   class PCL_EXPORTS LINEMOD
   {
@@ -464,13 +456,13 @@ namespace pcl
 
     private:
       /** template response threshold */
-      float template_threshold_;
+      float template_threshold_{0.75f};
       /** states whether non-max-suppression on detections is enabled or not */
-      bool use_non_max_suppression_;
+      bool use_non_max_suppression_{false};
       /** states whether to return an averaged detection */
-      bool average_detections_;
+      bool average_detections_{false};
       /** template storage */
-      std::vector<SparseQuantizedMultiModTemplate> templates_;
+      std::vector<SparseQuantizedMultiModTemplate> templates_{};
   };
 
 }

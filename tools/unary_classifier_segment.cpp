@@ -42,8 +42,10 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
+#include <pcl/filters/filter.h> // for removeNaNFromPointCloud
 
 #include <pcl/segmentation/unary_classifier.h>
+#include <boost/filesystem.hpp> // for path, exists, ...
 
 using namespace pcl;
 using namespace pcl::io;
@@ -82,15 +84,14 @@ loadTrainedFeatures (std::vector<FeatureT::Ptr> &out,
   for (boost::filesystem::directory_iterator it (base_dir); it != boost::filesystem::directory_iterator (); ++it)
   {    
     if (!boost::filesystem::is_directory (it->status ()) &&
-        boost::filesystem::extension (it->path ()) == ".pcd")
+        it->path ().extension ().string () == ".pcd")
     {   
-      std::stringstream ss;
-      ss << it->path ().string ();
+      const std::string path = it->path ().string ();
 
-      print_highlight ("Loading %s \n", ss.str ().c_str ());
+      print_highlight ("Loading %s \n", path.c_str ());
       
       FeatureT::Ptr features (new FeatureT);
-      if (loadPCDFile (ss.str (), *features) < 0)
+      if (loadPCDFile (path, *features) < 0)
         return false;
 
       out.push_back (features);
@@ -184,7 +185,7 @@ main (int argc, char** argv)
     return (-1);
 
   // TODO:: make this as an optional argument ??
-  std::vector<int> tmp_indices;
+  pcl::Indices tmp_indices;
   pcl::removeNaNFromPointCloud (*cloud, *cloud, tmp_indices);
   
   // parse optional input arguments from the command line

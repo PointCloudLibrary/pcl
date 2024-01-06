@@ -356,6 +356,7 @@ namespace pcl
     * Lorensen W.E., Cline H.E., "Marching cubes: A high resolution 3d surface construction algorithm",
     * SIGGRAPH '87
     *
+    * \tparam PointNT Use `pcl::PointNormal` or `pcl::PointXYZRGBNormal` or `pcl::PointXYZINormal`
     * \author Alexandru E. Ichim
     * \ingroup surface
     */
@@ -383,7 +384,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      ~MarchingCubes ();
+      ~MarchingCubes () override;
 
 
       /** \brief Method that sets the iso level of the surface to be extracted.

@@ -65,9 +65,7 @@ pcl::io::DepthImage::DepthImage (FrameWrapper::Ptr depth_metadata, float baselin
 {}
 
 
-pcl::io::DepthImage::~DepthImage ()
-{}
-
+pcl::io::DepthImage::~DepthImage () = default;
 
 const unsigned short*
 pcl::io::DepthImage::getData ()
@@ -184,7 +182,7 @@ pcl::io::DepthImage::fillDepthImageRaw (unsigned width, unsigned height, unsigne
   short bad_point = std::numeric_limits<short>::quiet_NaN ();
   unsigned depthIdx = 0;
 
-  const unsigned short* inputBuffer = static_cast<const unsigned short*> (wrapper_->getData ());
+  const auto* inputBuffer = static_cast<const unsigned short*> (wrapper_->getData ());
 
   for (unsigned yIdx = 0; yIdx < height; ++yIdx, depthIdx += ySkip)
   {
@@ -231,7 +229,7 @@ pcl::io::DepthImage::fillDepthImage (unsigned width, unsigned height, float* dep
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
   unsigned depthIdx = 0;
 
-  const unsigned short* inputBuffer = static_cast<const unsigned short*> (wrapper_->getData ());
+  const auto* inputBuffer = static_cast<const unsigned short*> (wrapper_->getData ());
 
   for (unsigned yIdx = 0; yIdx < height; ++yIdx, depthIdx += ySkip)
   {
@@ -277,7 +275,7 @@ pcl::io::DepthImage::fillDisparityImage (unsigned width, unsigned height, float*
   // focal length is for the native image resolution -> focal_length = focal_length_ / xStep;
   float constant = focal_length_ * baseline_ * 1000.0f / static_cast<float> (xStep);
 
-  const unsigned short* inputBuffer = static_cast<const unsigned short*> (wrapper_->getData ());
+  const auto* inputBuffer = static_cast<const unsigned short*> (wrapper_->getData ());
 
   for (unsigned yIdx = 0, depthIdx = 0; yIdx < height; ++yIdx, depthIdx += ySkip)
   {

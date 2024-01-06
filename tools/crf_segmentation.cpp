@@ -195,7 +195,7 @@ main (int argc, char** argv)
 
 
   // TODO:: make this as an optional argument ??
-  std::vector<int> tmp_indices;
+  pcl::Indices tmp_indices;
   pcl::removeNaNFromPointCloud (*cloud, *cloud, tmp_indices);
   
   // parse optional input arguments from the command line

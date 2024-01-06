@@ -74,9 +74,6 @@ public:
   /** Constructor for Permutohedral class. */
   Permutohedral();
 
-  /** Deconstructor for Permutohedral class. */
-  ~Permutohedral(){};
-
   /** Initialization. */
   void
   init(const std::vector<float>& feature, const int feature_dimension, const int N);
@@ -105,7 +102,7 @@ public:
   void
   debug();
 
-  /** Pseudo radnom generator. */
+  /** Pseudo random generator. */
   inline std::size_t
   generateHashKey(const std::vector<short>& k)
   {
@@ -148,9 +145,9 @@ class HashTableOLD {
   HashTableOLD(const HashTableOLD& o)
   : key_size_(o.key_size_), filled_(0), capacity_(o.capacity_)
   {
-    table_ = new int[capacity_];
-    keys_ = new short[(capacity_ / 2 + 10) * key_size_];
-    memset(table_, -1, capacity_ * sizeof(int));
+    table_ = new int[capacity_]{};
+    keys_ = new short[(capacity_ / 2 + 10) * key_size_]{};
+    std::fill(table_, table_ + capacity_, -1);
   }
 
 protected:
@@ -169,10 +166,10 @@ protected:
     int old_capacity = static_cast<int>(capacity_);
     capacity_ *= 2;
     // Allocate the new memory
-    keys_ = new short[(old_capacity + 10) * key_size_];
-    table_ = new int[capacity_];
-    memset(table_, -1, capacity_ * sizeof(int));
-    memcpy(keys_, old_keys, filled_ * key_size_ * sizeof(short));
+    keys_ = new short[(old_capacity + 10) * key_size_]{};
+    table_ = new int[capacity_]{};
+    std::fill(table_, table_ + capacity_, -1);
+    std::copy(old_keys, old_keys + filled_ * key_size_, keys_);
 
     // Reinsert each element
     for (int i = 0; i < old_capacity; i++)
@@ -203,9 +200,9 @@ public:
   explicit HashTableOLD(int key_size, int n_elements)
   : key_size_(key_size), filled_(0), capacity_(2 * n_elements)
   {
-    table_ = new int[capacity_];
-    keys_ = new short[(capacity_ / 2 + 10) * key_size_];
-    memset(table_, -1, capacity_ * sizeof(int));
+    table_ = new int[capacity_]{};
+    keys_ = new short[(capacity_ / 2 + 10) * key_size_]{};
+    std::fill(table_, table_ + capacity_, -1);
   }
 
   ~HashTableOLD()
@@ -224,7 +221,7 @@ public:
   reset()
   {
     filled_ = 0;
-    memset(table_, -1, capacity_ * sizeof(int));
+    std::fill(table_, table_ + capacity_, -1);
   }
 
   int

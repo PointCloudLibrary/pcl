@@ -193,7 +193,7 @@ template <typename PointT> bool
 pcl::PackedRGBComparison<PointT>::evaluate (const PointT &point) const
 {
   // extract the component value
-  const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
+  const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
   std::uint8_t my_val = *(pt_data + component_offset_);
 
   // now do the comparison
@@ -298,8 +298,8 @@ pcl::PackedHSIComparison<PointT>::evaluate (const PointT &point) const
   static std::uint8_t i_ = 0;
 
   // We know that rgb data is 32 bit aligned (verified in the ctor) so...
-  const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
-  const std::uint32_t* rgb_data = reinterpret_cast<const std::uint32_t*> (pt_data + rgb_offset_);
+  const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
+  const auto* rgb_data = reinterpret_cast<const std::uint32_t*> (pt_data + rgb_offset_);
   std::uint32_t new_rgb_val = *rgb_data;
 
   if (rgb_val_ != new_rgb_val) 
@@ -310,7 +310,7 @@ pcl::PackedHSIComparison<PointT>::evaluate (const PointT &point) const
     g_ = static_cast <std::uint8_t> (rgb_val_ >> 8);
     b_ = static_cast <std::uint8_t> (rgb_val_);
 
-    // definitions taken from http://en.wikipedia.org/wiki/HSL_and_HSI
+    // definitions taken from https://en.wikipedia.org/wiki/HSL_and_HSI
     float hx = (2.0f * r_ - g_ - b_) / 4.0f;  // hue x component -127 to 127
     float hy = static_cast<float> (g_ - b_) * 111.0f / 255.0f; // hue y component -111 to 111
     h_ = static_cast<std::int8_t> (std::atan2(hy, hx) * 128.0f / M_PI);
@@ -523,62 +523,35 @@ pcl::PointDataAtOffset<PointT>::compare (const PointT& p, const double& val)
   // if p(data) == val return 0
   // if p(data) < val return -1 
   
-  const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&p);
+  const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&p);
 
-  switch (datatype_) 
+#define SAFE_COMPARE(CASE_LABEL)                                                       \
+  case CASE_LABEL: {                                                                   \
+    pcl::traits::asType_t<CASE_LABEL> pt_val;                                          \
+    memcpy(&pt_val, pt_data + this->offset_, sizeof(pt_val));                          \
+    return (pt_val > static_cast<pcl::traits::asType_t<CASE_LABEL>>(val)) -            \
+           (pt_val < static_cast<pcl::traits::asType_t<CASE_LABEL>>(val));             \
+  }
+
+  switch (datatype_)
   {
-    case pcl::PCLPointField::INT8 :
-    {
-      std::int8_t pt_val;
-      memcpy (&pt_val, pt_data + this->offset_, sizeof (std::int8_t));
-      return (pt_val > static_cast<std::int8_t>(val)) - (pt_val < static_cast<std::int8_t> (val));
-    }
-    case pcl::PCLPointField::UINT8 :
-    {
-      std::uint8_t pt_val;
-      memcpy (&pt_val, pt_data + this->offset_, sizeof (std::uint8_t));
-      return (pt_val > static_cast<std::uint8_t>(val)) - (pt_val < static_cast<std::uint8_t> (val));
-    }
-    case pcl::PCLPointField::INT16 :
-    {
-      std::int16_t pt_val;
-      memcpy (&pt_val, pt_data + this->offset_, sizeof (std::int16_t));
-      return (pt_val > static_cast<std::int16_t>(val)) - (pt_val < static_cast<std::int16_t> (val));
-    }
-    case pcl::PCLPointField::UINT16 :
-    {
-      std::uint16_t pt_val;
-      memcpy (&pt_val, pt_data + this->offset_, sizeof (std::uint16_t));
-      return (pt_val > static_cast<std::uint16_t> (val)) - (pt_val < static_cast<std::uint16_t> (val));
-    }
-    case pcl::PCLPointField::INT32 :
-    {
-      std::int32_t pt_val;
-      memcpy (&pt_val, pt_data + this->offset_, sizeof (std::int32_t));
-      return (pt_val > static_cast<std::int32_t> (val)) - (pt_val < static_cast<std::int32_t> (val));
-    }
-    case pcl::PCLPointField::UINT32 :
-    {
-      std::uint32_t pt_val;
-      memcpy (&pt_val, pt_data + this->offset_, sizeof (std::uint32_t));
-      return (pt_val > static_cast<std::uint32_t> (val)) - (pt_val < static_cast<std::uint32_t> (val));
-    }
-    case pcl::PCLPointField::FLOAT32 :
-    {
-      float pt_val;
-      memcpy (&pt_val, pt_data + this->offset_, sizeof (float));
-      return (pt_val > static_cast<float> (val)) - (pt_val < static_cast<float> (val));
-    }
-    case pcl::PCLPointField::FLOAT64 :
-    {
-      double pt_val;
-      memcpy (&pt_val, pt_data + this->offset_, sizeof (double));
-      return (pt_val > val) - (pt_val < val);
-    }
-    default : 
+    SAFE_COMPARE(pcl::PCLPointField::BOOL)
+    SAFE_COMPARE(pcl::PCLPointField::INT8)
+    SAFE_COMPARE(pcl::PCLPointField::UINT8)
+    SAFE_COMPARE(pcl::PCLPointField::INT16)
+    SAFE_COMPARE(pcl::PCLPointField::UINT16)
+    SAFE_COMPARE(pcl::PCLPointField::INT32)
+    SAFE_COMPARE(pcl::PCLPointField::UINT32)
+    SAFE_COMPARE(pcl::PCLPointField::INT64)
+    SAFE_COMPARE(pcl::PCLPointField::UINT64)
+    SAFE_COMPARE(pcl::PCLPointField::FLOAT32)
+    SAFE_COMPARE(pcl::PCLPointField::FLOAT64)
+
+    default :
       PCL_WARN ("[pcl::PointDataAtOffset::compare] unknown data_type!\n");
       return (0);
   }
+#undef SAFE_COMPARE
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -651,7 +624,7 @@ pcl::ConditionalRemoval<PointT>::setCondition (ConditionBasePtr condition)
 template <typename PointT> void
 pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
 {
-  if (capable_ == false)
+  if (!capable_)
   {
     PCL_WARN ("[pcl::%s::applyFilter] not capable!\n", getClassName ().c_str ());
     return;

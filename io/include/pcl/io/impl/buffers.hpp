@@ -79,8 +79,7 @@ Buffer<T>::Buffer (std::size_t size)
 
 template <typename T>
 Buffer<T>::~Buffer ()
-{
-}
+= default;
 
 template <typename T>
 SingleBuffer<T>::SingleBuffer (std::size_t size)
@@ -91,8 +90,7 @@ SingleBuffer<T>::SingleBuffer (std::size_t size)
 
 template <typename T>
 SingleBuffer<T>::~SingleBuffer ()
-{
-}
+= default;
 
 template <typename T> T
 SingleBuffer<T>::operator[] (std::size_t idx) const
@@ -138,8 +136,7 @@ MedianBuffer<T>::MedianBuffer (std::size_t size,
 
 template <typename T>
 MedianBuffer<T>::~MedianBuffer ()
-{
-}
+= default;
 
 template <typename T> T
 MedianBuffer<T>::operator[] (std::size_t idx) const
@@ -248,8 +245,7 @@ AverageBuffer<T>::AverageBuffer (std::size_t size,
 
 template <typename T>
 AverageBuffer<T>::~AverageBuffer ()
-{
-}
+= default;
 
 template <typename T> T
 AverageBuffer<T>::operator[] (std::size_t idx) const

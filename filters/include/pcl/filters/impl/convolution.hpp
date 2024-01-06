@@ -55,9 +55,6 @@ Convolution<PointIn, PointOut>::Convolution ()
   : borders_policy_ (BORDERS_POLICY_IGNORE)
   , distance_threshold_ (std::numeric_limits<float>::infinity ())
   , input_ ()
-  , half_width_ ()
-  , kernel_width_ ()
-  , threads_ (1)
 {}
 
 template <typename PointIn, typename PointOut> void
@@ -556,6 +553,9 @@ Convolution<PointIn, PointOut>::convolve_cols_mirror (PointCloudOut& output)
     }
   }
 }
+
+#define PCL_INSTANTIATE_Convolution(Tin, Tout)                                         \
+  template class PCL_EXPORTS Convolution<Tin, Tout>;
 
 } // namespace filters
 } // namespace pcl

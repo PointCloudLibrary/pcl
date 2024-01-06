@@ -56,13 +56,15 @@ namespace pcl
      *  \author Stephen Fox (foxstephend@gmail.com)
      */
     template<typename PointT, typename ContainerT>
-    class OutofcoreIteratorBase : public std::iterator<std::forward_iterator_tag,     /*iterator type*/
-                                                      const OutofcoreOctreeBaseNode<ContainerT, PointT>,
-                                                       void,  /*no defined distance between iterator*/
-                                                       const OutofcoreOctreeBaseNode<ContainerT, PointT>*,/*Pointer type*/
-                                                       const OutofcoreOctreeBaseNode<ContainerT, PointT>&>/*Reference type*/
+    class OutofcoreIteratorBase
     {
       public:
+        using iterator_category = std::forward_iterator_tag;
+        using value_type = const OutofcoreOctreeBaseNode<ContainerT, PointT>;
+        using difference_type = void;
+        using pointer = const OutofcoreOctreeBaseNode<ContainerT, PointT>*;
+        using reference = const OutofcoreOctreeBaseNode<ContainerT, PointT>&;
+
         using OctreeDisk = pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT>;
         using OctreeDiskNode = pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT>;
         
@@ -79,9 +81,7 @@ namespace pcl
         }
         
         virtual
-        ~OutofcoreIteratorBase ()
-        {
-        }
+        ~OutofcoreIteratorBase () = default;
 
         OutofcoreIteratorBase (const OutofcoreIteratorBase& src)
           : octree_ (src.octree_), currentNode_ (src.currentNode_)

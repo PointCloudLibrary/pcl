@@ -279,21 +279,6 @@ pcl::simulation::RangeLikelihood::RangeLikelihood(
 , cols_(cols)
 , row_height_(row_height)
 , col_width_(col_width)
-, depth_buffer_dirty_(true)
-, color_buffer_dirty_(true)
-, score_buffer_dirty_(true)
-, fbo_(0)
-, depth_render_buffer_(0)
-, color_render_buffer_(0)
-, depth_texture_(0)
-, score_texture_(0)
-, score_summarized_texture_(0)
-, sensor_texture_(0)
-, likelihood_texture_(0)
-, compute_likelihood_on_cpu_(false)
-, aggregate_on_cpu_(false)
-, use_instancing_(false)
-, use_color_(true)
 , sum_reduce_(cols * col_width, rows * row_height, max_level(col_width, row_height))
 {
   height_ = rows_ * row_height;
@@ -470,7 +455,7 @@ pcl::simulation::RangeLikelihood::RangeLikelihood(
   glBindBuffer(GL_ARRAY_BUFFER, quad_vbo_);
   glBufferData(GL_ARRAY_BUFFER,
                sizeof(Eigen::Vector3f) * vertices_.size(),
-               &(vertices_[0]),
+               vertices_.data(),
                GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 

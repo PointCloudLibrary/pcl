@@ -240,6 +240,8 @@ and the fourth coordinate is D = nc . p_plane (centroid here) + p. The output su
 
    \sigma = \frac{\lambda_0}{\lambda_0 + \lambda_1 + \lambda_2}
 
+For a detailed description of this property, see M. Pauly, M. Gross and L. P. Kobbelt, "Efficient simplification of point-sampled surfaces".
+
 Speeding Normal Estimation with OpenMP
 --------------------------------------
 
@@ -248,11 +250,9 @@ normal estimation which uses multi-core/multi-threaded paradigms using OpenMP
 to speed the computation. The name of the class is
 **pcl::NormalEstimationOMP**, and its API is 100% compatible to the
 single-threaded **pcl::NormalEstimation**, which makes it suitable as a drop-in
-replacement. On a system with 8 cores, you should get anything between 6-8
-times faster computation times.
+replacement. On a system with n cores, you should get m times faster computation, with m<=n depending on several factors including CPU architecture, 
+point cloud characteristics, search parameters chosen, CPU global load.
 
 .. note::
 
    If your dataset is organized (e.g., acquired using a TOF camera, stereo camera, etc -- that is, it has a width and a height), for even faster results see the :ref:`normal_estimation_using_integral_images`.
-
-

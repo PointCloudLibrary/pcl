@@ -1,16 +1,17 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/common/common.h>
-#include <pcl/common/transforms.h>
+#include <pcl/common/centroid.h> // for compute3DCentroid
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/io/pcd_io.h>
 #include <iostream>
+#include <limits>
 #include <flann/flann.h>
 #include <flann/io/hdf5.h>
 #include <boost/filesystem.hpp>
-
+#include <boost/algorithm/string/replace.hpp> // for replace_last
 typedef std::pair<std::string, std::vector<float> > vfh_model;
 
 /** \brief Loads an n-D histogram file as a VFH signature
@@ -112,7 +113,7 @@ main (int argc, char** argv)
 {
   int k = 6;
 
-  double thresh = DBL_MAX;     // No threshold, disabled by default
+  double thresh = std::numeric_limits<double>::max();     // No threshold, disabled by default
 
   if (argc < 2)
   {
@@ -266,7 +267,7 @@ main (int argc, char** argv)
     // Add the cluster name
     p.addText (cloud_name, 20, 10, cloud_name, viewport);
   }
-  // Add coordianate systems to all viewports
+  // Add coordinate systems to all viewports
   p.addCoordinateSystem (0.1, "global", 0);
 
   p.spin ();

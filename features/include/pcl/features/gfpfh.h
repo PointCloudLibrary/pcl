@@ -59,6 +59,7 @@ namespace pcl
     *
     * \author Radu B. Rusu
     * \ingroup features
+    * \tparam PointOutT Suggested type is `pcl::GFPFHSignature16`
     */
   template <typename PointInT, typename PointLT, typename PointOutT>
   class GFPFHEstimation : public FeatureFromLabels<PointInT, PointLT, PointOutT>
@@ -81,8 +82,7 @@ namespace pcl
 
       /** \brief Empty constructor. */
       GFPFHEstimation () : 
-        octree_leaf_size_ (0.01),
-        number_of_classes_ (16),
+        
         descriptor_size_ (PointOutT::descriptorSize ())
       {
         feature_name_ = "GFPFHEstimation";
@@ -133,7 +133,7 @@ namespace pcl
 
       /** \brief Return the dominant label of a set of points. */
       std::uint32_t
-      getDominantLabel (const std::vector<int>& indices);
+      getDominantLabel (const pcl::Indices& indices);
 
       /** \brief Compute the fixed-length histograms of transitions. */
       void computeTransitionHistograms (const std::vector< std::vector<int> >& label_histograms,
@@ -161,10 +161,10 @@ namespace pcl
 
     private:
       /** \brief Size of octree leaves. */
-      double octree_leaf_size_;
+      double octree_leaf_size_{0.01};
 
       /** \brief Number of possible classes/labels. */
-      std::uint32_t number_of_classes_;
+      std::uint32_t number_of_classes_{16};
 
       /** \brief Dimension of the descriptors. */
       int descriptor_size_;

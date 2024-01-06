@@ -1,25 +1,7 @@
 set(SUBSUBSYS_NAME 3d_rec_framework)
 set(SUBSUBSYS_DESC "3D recognition framework")
 set(SUBSUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search recognition ml)
-
-# Find VTK
-if(NOT VTK_FOUND)
-  set(DEFAULT AUTO_OFF)
-  set(REASON "VTK was not found.")
-else()
-  set(DEFAULT TRUE)
-  set(REASON)
-  include("${VTK_USE_FILE}")
-endif()
-
-# OpenNI found?
-if(NOT WITH_OPENNI)
-  set(DEFAULT AUTO_OFF)
-  set(REASON "OpenNI was not found or was disabled by the user.")
-elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
-  set(DEFAULT TRUE)
-  set(REASON)
-endif()
+set(SUBSUBSYS_EXT_DEPS vtk openni)
 
 # Default to not building for now
 if(${DEFAULT} STREQUAL "TRUE")
@@ -27,7 +9,7 @@ if(${DEFAULT} STREQUAL "TRUE")
 endif()
 
 PCL_SUBSUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" ${DEFAULT} "${REASON}")
-PCL_SUBSUBSYS_DEPEND(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" DEPS ${SUBSUBSYS_DEPS} EXT_DEPS vtk openni)
+PCL_SUBSYS_DEPEND(build NAME ${SUBSUBSYS_NAME} PARENT_NAME ${SUBSYS_NAME} DEPS ${SUBSUBSYS_DEPS} EXT_DEPS ${SUBSUBSYS_EXT_DEPS})
 
 if(NOT build)
   return()
@@ -108,14 +90,10 @@ PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSYS_NAME}/${SUBSUBSYS_NAME}/pipeline/
 
 set(LIB_NAME "pcl_${SUBSUBSYS_NAME}")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSUBSYS_NAME} SOURCES ${srcs} ${impl_incs_pipeline} ${incs_utils} ${incs_fw} ${incs_fw_global} ${incs_fw_local} ${incc_tools_framework} ${incs_pipelines} ${incs_pc_source})
-target_link_libraries("${LIB_NAME}" pcl_apps pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search)
+target_link_libraries("${LIB_NAME}" pcl_apps pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search pcl_registration)
 
 if(WITH_OPENNI)
   target_link_libraries("${LIB_NAME}" ${OPENNI_LIBRARIES})
-  if(NOT WIN32)
-    find_package(libusb-1.0 REQUIRED)
-    target_link_libraries("${LIB_NAME}" ${LIBUSB_1_LIBRARIES})
-  endif()
 endif()
 
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSUBSYS_NAME} DESC ${SUBSUBSYS_DESC})

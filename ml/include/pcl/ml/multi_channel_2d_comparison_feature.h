@@ -52,7 +52,7 @@ public:
   MultiChannel2DComparisonFeature() : p1(), p2(), channel(0) {}
 
   /** Destructor. */
-  virtual ~MultiChannel2DComparisonFeature() {}
+  virtual ~MultiChannel2DComparisonFeature() = default;
 
   /** Serializes the feature to a stream.
    *

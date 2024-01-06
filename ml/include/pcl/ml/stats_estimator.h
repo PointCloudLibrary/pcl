@@ -50,9 +50,9 @@ class PCL_EXPORTS StatsEstimator {
 
 public:
   /** Destructor. */
-  virtual ~StatsEstimator(){};
+  virtual ~StatsEstimator() = default;
 
-  /** Returns the number of brances a node can have (e.g. a binary tree has 2). */
+  /** Returns the number of branches a node can have (e.g. a binary tree has 2). */
   virtual std::size_t
   getNumOfBranches() const = 0;
 

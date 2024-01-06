@@ -54,7 +54,6 @@
 #include <vtkHedgeHog.h>
 #include <cstdio>
 #include <thread>
-#include <vector>
 
 using namespace std::chrono_literals;
 using namespace pcl;
@@ -77,7 +76,7 @@ main (int argc, char** argv)
 {
   printf ("\nUsage: ./pcl_obj_rec_ransac_model_opps <pair_width> <voxel_size> <max_coplanarity_angle>\n\n");
 
-  const int num_params = 3;
+  constexpr int num_params = 3;
   float parameters[num_params] = {10.0f/*pair width*/, 5.0f/*voxel size*/, 5.0f/*max co-planarity angle*/};
   std::string parameter_names[num_params] = {"pair_width", "voxel_size", "max_coplanarity_angle"};
 
@@ -187,7 +186,7 @@ void showModelOpps (PCLVisualizer& viz, const ModelLibrary::HashTable& hash_tabl
   for (int i = 0 ; i < num_cells ; ++i )
   {
     // Make sure that we get only point pairs belonging to 'model'
-	ModelLibrary::HashTableCell::const_iterator res = cells[i].find (model);
+	auto res = cells[i].find (model);
     if ( res == cells[i].end () )
       continue;
 

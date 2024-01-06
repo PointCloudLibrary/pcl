@@ -47,7 +47,7 @@
 using namespace pcl;
 
 const Eigen::Vector4f subsampling_leaf_size(0.01f, 0.01f, 0.01f, 0.0f);
-const float normal_estimation_search_radius = 0.05f;
+constexpr float normal_estimation_search_radius = 0.05f;
 
 void
 subsampleAndCalculateNormals(PointCloud<PointXYZ>::Ptr& cloud,
@@ -108,7 +108,7 @@ main(int argc, char** argv)
   feature_persistence.setDistanceMetric(pcl::CS);
 
   PointCloud<FPFHSignature33>::Ptr output_features(new PointCloud<FPFHSignature33>());
-  auto output_indices = pcl::make_shared<std::vector<int>>();
+  auto output_indices = pcl::make_shared<pcl::Indices>();
   feature_persistence.determinePersistentFeatures(*output_features, output_indices);
 
   PCL_INFO("persistent features cloud size: %zu\n",

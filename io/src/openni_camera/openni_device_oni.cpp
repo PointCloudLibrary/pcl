@@ -54,9 +54,6 @@ openni_wrapper::DeviceONI::DeviceONI (
     bool streaming)
   : OpenNIDevice (context)
   , streaming_  (streaming)
-  , depth_stream_running_ (false)
-  , image_stream_running_ (false)
-  , ir_stream_running_ (false)
 {
   XnStatus status;
 #if (XN_MINOR_VERSION >= 3)
@@ -161,21 +158,21 @@ openni_wrapper::DeviceONI::stopIRStream ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool 
-openni_wrapper::DeviceONI::isImageStreamRunning () const throw ()
+openni_wrapper::DeviceONI::isImageStreamRunning () const noexcept
 {
  return (image_stream_running_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool 
-openni_wrapper::DeviceONI::isDepthStreamRunning () const throw ()
+openni_wrapper::DeviceONI::isDepthStreamRunning () const noexcept
 {
   return (depth_stream_running_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool 
-openni_wrapper::DeviceONI::isIRStreamRunning () const throw ()
+openni_wrapper::DeviceONI::isIRStreamRunning () const noexcept
 {
   return (ir_stream_running_);
 }
@@ -205,7 +202,7 @@ openni_wrapper::DeviceONI::trigger (int relative_offset)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool 
-openni_wrapper::DeviceONI::isStreaming () const throw ()
+openni_wrapper::DeviceONI::isStreaming () const noexcept
 {
   return (streaming_);
 }
@@ -223,7 +220,7 @@ openni_wrapper::DeviceONI::PlayerThreadFunction ()
 void __stdcall 
 openni_wrapper::DeviceONI::NewONIDepthDataAvailable (xn::ProductionNode&, void* cookie) noexcept
 {
-  DeviceONI* device = reinterpret_cast<DeviceONI*>(cookie);
+  auto* device = reinterpret_cast<DeviceONI*>(cookie);
   if (device->depth_stream_running_)
     device->depth_condition_.notify_all ();
 }
@@ -232,7 +229,7 @@ openni_wrapper::DeviceONI::NewONIDepthDataAvailable (xn::ProductionNode&, void* 
 void __stdcall 
 openni_wrapper::DeviceONI::NewONIImageDataAvailable (xn::ProductionNode&, void* cookie) noexcept
 {
-  DeviceONI* device = reinterpret_cast<DeviceONI*> (cookie);
+  auto* device = reinterpret_cast<DeviceONI*> (cookie);
   if (device->image_stream_running_)
     device->image_condition_.notify_all ();
 }
@@ -241,21 +238,21 @@ openni_wrapper::DeviceONI::NewONIImageDataAvailable (xn::ProductionNode&, void* 
 void __stdcall 
 openni_wrapper::DeviceONI::NewONIIRDataAvailable (xn::ProductionNode&, void* cookie) noexcept
 {
-  DeviceONI* device = reinterpret_cast<DeviceONI*> (cookie);
+  auto* device = reinterpret_cast<DeviceONI*> (cookie);
   if (device->ir_stream_running_)
     device->ir_condition_.notify_all ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::Image::Ptr 
-openni_wrapper::DeviceONI::getCurrentImage(pcl::shared_ptr<xn::ImageMetaData> image_meta_data) const throw ()
+openni_wrapper::DeviceONI::getCurrentImage(pcl::shared_ptr<xn::ImageMetaData> image_meta_data) const noexcept
 {
   return (openni_wrapper::Image::Ptr (new openni_wrapper::ImageRGB24 (image_meta_data)));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool 
-openni_wrapper::DeviceONI::isImageResizeSupported(unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw ()
+openni_wrapper::DeviceONI::isImageResizeSupported(unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const noexcept
 {
   return (openni_wrapper::ImageRGB24::resizingSupported (input_width, input_height, output_width, output_height));
 }

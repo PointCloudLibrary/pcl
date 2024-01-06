@@ -13,11 +13,6 @@ pcl::cloud_composer::NormalEstimationTool::NormalEstimationTool (PropertiesModel
   
 }
 
-pcl::cloud_composer::NormalEstimationTool::~NormalEstimationTool ()
-{
-  
-}
-
 QList <pcl::cloud_composer::CloudComposerItem*>
 pcl::cloud_composer::NormalEstimationTool::performAction (ConstItemList input_data, PointTypeFlags::PointType)
 {

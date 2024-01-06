@@ -183,7 +183,7 @@ pcl::cloud_composer::ToolBoxModel::updateEnabledTools (const QItemSelection& cur
     else if ( ! type_items_map.keys ().contains (input_type))
     {
       enabled_itr.remove ();
-      disabled_tools.insert (tool_item, tr("Tool Requires item type %1 selected").arg (ITEM_TYPES_STRINGS.value (input_type - QStandardItem::UserType)));
+      disabled_tools.insert (tool_item, tr("Tool Requires item type %1 selected").arg (ITEM_TYPES_STRINGS.value (input_type - CloudComposerItem::CLOUD_COMPOSER_ITEM)));
     }
     //Check if any of selected items have required children
     else if ( !required_children_types.empty ())
@@ -222,7 +222,7 @@ pcl::cloud_composer::ToolBoxModel::updateEnabledTools (const QItemSelection& cur
         enabled_itr.remove ();
         QString missing_children_string;
         foreach (CloudComposerItem::ItemType type, missing_children)
-          missing_children_string.append (" "+ITEM_TYPES_STRINGS.value (type - QStandardItem::UserType));
+          missing_children_string.append (" "+ITEM_TYPES_STRINGS.value (type - CloudComposerItem::CLOUD_COMPOSER_ITEM));
         disabled_tools.insert (tool_item, tr ("Tool Requires child item of type(s) %1").arg (missing_children_string));
       }
     }

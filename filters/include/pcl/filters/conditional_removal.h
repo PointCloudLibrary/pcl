@@ -93,10 +93,10 @@ namespace pcl
       using ConstPtr = shared_ptr<const ComparisonBase<PointT> >;
 
       /** \brief Constructor. */
-      ComparisonBase () : capable_ (false), offset_ (), op_ () {}
+      ComparisonBase () = default;
 
       /** \brief Destructor. */
-      virtual ~ComparisonBase () {}
+      virtual ~ComparisonBase () = default;
 
       /** \brief Return if the comparison is capable. */
       inline bool
@@ -111,16 +111,16 @@ namespace pcl
 
     protected:
       /** \brief True if capable. */
-      bool capable_;
+      bool capable_{false};
 
       /** \brief Field name to compare data on. */
       std::string field_name_;
 
       /** \brief The data offset. */
-      std::uint32_t offset_;
+      std::uint32_t offset_{0};
 
       /** \brief The comparison operator type. */
-      ComparisonOps::CompareOp op_;
+      ComparisonOps::CompareOp op_{ComparisonOps::GT};
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////
@@ -165,7 +165,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      ~FieldComparison ();
+      ~FieldComparison () override;
 
       /** \brief Determine the result of this comparison.  
         * \param point the point to evaluate
@@ -208,7 +208,7 @@ namespace pcl
       PackedRGBComparison (const std::string &component_name, ComparisonOps::CompareOp op, double compare_val);
 
       /** \brief Destructor. */
-      ~PackedRGBComparison () {}
+      ~PackedRGBComparison () override = default;
 
       /** \brief Determine the result of this comparison.  
         * \param point the point to evaluate
@@ -255,7 +255,7 @@ namespace pcl
       PackedHSIComparison (const std::string &component_name, ComparisonOps::CompareOp op, double compare_val);
 
       /** \brief Destructor. */
-      ~PackedHSIComparison () {}
+      ~PackedHSIComparison () override = default;
 
       /** \brief Determine the result of this comparison.  
         * \param point the point to evaluate
@@ -299,10 +299,11 @@ namespace pcl
    * One can also use TfQuadraticXYZComparison for simpler geometric shapes by defining the
    * quadratic parts (i.e. the matrix A) to be zero. By combining different instances of
    * TfQuadraticXYZComparison one can get more complex shapes. For example, to have a simple
-   * cylinder (along the x-axis) of specific length one needs three comparisons combined as AND condition:
-   *   1. The cylinder: A = [0 0 0, 0 1 0, 0 0 1]; v = [0, 0, 0]; c = radius²; OP = LT (meaning "<")
-   *   2. X-min limit: A = 0; v = [1, 0, 0]; c = x_min; OP = GT
-   *   3. X-max ...
+   * cylinder (along the x-axis) of specific radius and length, three comparisons need to be
+   * combined as AND condition:
+   *   1. side: A = [0 0 0, 0 1 0, 0 0 1]; v = [0, 0, 0]; c = -radius²; OP = LT (meaning "<")
+   *   2. bottom base: A = 0; v = [0.5, 0, 0]; c = -x_min; OP = GT
+   *   3. top base: A = 0; v = [0.5, 0, 0]; c = -x_max; OP = LT
    *
    * \author Julian Löchner
    */
@@ -320,7 +321,7 @@ namespace pcl
       TfQuadraticXYZComparison ();
       
       /** \brief Empty destructor */
-      ~TfQuadraticXYZComparison () {}
+      ~TfQuadraticXYZComparison () override = default;
 
       /** \brief Constructor.
        * \param op the operator "[OP]" of the comparison "p'Ap + 2v'p + c [OP] 0".
@@ -454,7 +455,7 @@ namespace pcl
       using ConstPtr = shared_ptr<const ConditionBase<PointT> >;
 
       /** \brief Constructor. */
-      ConditionBase () : capable_ (true), comparisons_ (), conditions_ ()
+      ConditionBase () :  comparisons_ (), conditions_ ()
       {
       }
 
@@ -488,7 +489,7 @@ namespace pcl
 
     protected:
       /** \brief True if capable. */
-      bool capable_;
+      bool capable_{true};
 
       /** \brief The collection of all comparisons that need to be verified. */
       std::vector<ComparisonBaseConstPtr> comparisons_;
@@ -604,6 +605,10 @@ namespace pcl
       using ConditionBase = pcl::ConditionBase<PointT>;
       using ConditionBasePtr = typename ConditionBase::Ptr;
       using ConditionBaseConstPtr = typename ConditionBase::ConstPtr;
+      
+      using Ptr = shared_ptr<ConditionalRemoval<PointT> >;    
+      using ConstPtr = shared_ptr<const ConditionalRemoval<PointT> >;
+
 
       /** \brief the default constructor.  
         *
@@ -612,7 +617,7 @@ namespace pcl
         * \param extract_removed_indices extract filtered indices from indices vector
         */
       ConditionalRemoval (int extract_removed_indices = false) :
-        Filter<PointT>::Filter (extract_removed_indices), capable_ (false), keep_organized_ (false), condition_ (),
+        Filter<PointT>::Filter (extract_removed_indices),  condition_ (),
         user_filter_value_ (std::numeric_limits<float>::quiet_NaN ())
       {
         filter_name_ = "ConditionalRemoval";
@@ -666,12 +671,12 @@ namespace pcl
       applyFilter (PointCloud &output) override;
 
       /** \brief True if capable. */
-      bool capable_;
+      bool capable_{false};
 
       /** \brief Keep the structure of the data organized, by setting the
         * filtered points to the a user given value (NaN by default).
         */
-      bool keep_organized_;
+      bool keep_organized_{false};
 
       /** \brief The condition to use for filtering */
       ConditionBasePtr condition_;

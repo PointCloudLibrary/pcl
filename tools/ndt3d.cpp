@@ -41,7 +41,6 @@
 
 #include <string>
 #include <iostream>
-#include <fstream>
 #include <vector>
 
 
@@ -118,7 +117,7 @@ main (int argc, char **argv)
     }
     std::cout << argv[pcd_indices[i]] << " width: " << data->width << " height: " << data->height << std::endl;
 
-    pcl::NormalDistributionsTransform<PointType, PointType> * ndt = new pcl::NormalDistributionsTransform<PointType, PointType>();
+    auto * ndt = new pcl::NormalDistributionsTransform<PointType, PointType>();
 
     ndt->setMaximumIterations (iter);
     ndt->setResolution (ndt_res);

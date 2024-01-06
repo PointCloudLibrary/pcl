@@ -59,8 +59,9 @@ pcl::io::PointCloudImageExtractor<PointT>::extract (const PointCloud& cloud, pcl
   {
     std::size_t size = img.encoding == "mono16" ? 2 : 3;
     for (std::size_t i = 0; i < cloud.size (); ++i)
-      if (!pcl::isFinite (cloud[i]))
-        std::memset (&img.data[i * size], 0, size);
+      if (!pcl::isFinite (cloud[i])) {
+        std::fill_n(&img.data[i * size], size, 0);
+      }
   }
 
   return (result);
@@ -153,7 +154,7 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       img.height = cloud.height;
       img.step = img.width * sizeof (unsigned short);
       img.data.resize (img.step * img.height);
-      unsigned short* data = reinterpret_cast<unsigned short*>(&img.data[0]);
+      auto* data = reinterpret_cast<unsigned short*>(img.data.data());
       for (std::size_t i = 0; i < cloud.size (); ++i)
       {
         std::uint32_t val;
@@ -254,7 +255,7 @@ pcl::io::PointCloudImageExtractorWithScaling<PointT>::extractImpl (const PointCl
   img.height = cloud.height;
   img.step = img.width * sizeof (unsigned short);
   img.data.resize (img.step * img.height);
-  unsigned short* data = reinterpret_cast<unsigned short*>(&img.data[0]);
+  auto* data = reinterpret_cast<unsigned short*>(img.data.data());
 
   float scaling_factor = scaling_factor_;
   float data_min = 0.0f;

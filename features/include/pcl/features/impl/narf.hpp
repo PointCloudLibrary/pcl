@@ -59,7 +59,7 @@ inline void Narf::copyToNarf36(Narf36& narf36) const
     return;
   }
   getTranslationAndEulerAngles(transformation_.inverse (), narf36.x, narf36.y, narf36.z, narf36.roll, narf36.pitch, narf36.yaw);
-  memcpy(narf36.descriptor, descriptor_, 36*sizeof(*descriptor_));
+  std::copy(descriptor_, descriptor_ + 36, narf36.descriptor);
 }
 
 //inline float Narf::getDescriptorDistance(const Narf& other) const

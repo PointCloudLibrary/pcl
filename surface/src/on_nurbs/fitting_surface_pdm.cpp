@@ -41,6 +41,7 @@
 #include <Eigen/Cholesky> // for ldlt
 #include <Eigen/Geometry> // for cross
 #include <Eigen/LU> // for inverse
+#include <limits>
 #include <stdexcept>
 
 using namespace pcl;
@@ -469,8 +470,12 @@ FittingSurface::initNurbsPCABoundingBox (int order, NurbsDataSurface *m_data, Ei
   eigenvalues /= s; // seems that the eigenvalues are dependent on the number of points (???)
   Eigen::Matrix3d eigenvectors_inv = eigenvectors.inverse ();
 
-  Eigen::Vector3d v_max (-DBL_MAX, -DBL_MAX, -DBL_MAX);
-  Eigen::Vector3d v_min (DBL_MAX, DBL_MAX, DBL_MAX);
+  Eigen::Vector3d v_max(std::numeric_limits<double>::lowest(),
+                        std::numeric_limits<double>::lowest(),
+                        std::numeric_limits<double>::lowest());
+  Eigen::Vector3d v_min(std::numeric_limits<double>::max(),
+                        std::numeric_limits<double>::max(),
+                        std::numeric_limits<double>::max());
   for (unsigned i = 0; i < s; i++)
   {
     Eigen::Vector3d p (eigenvectors_inv * (m_data->interior[i] - mean));
@@ -1116,7 +1121,7 @@ FittingSurface::findClosestElementMidPoint (const ON_NurbsSurface &nurbs, const 
   std::vector<double> elementsU = getElementVector (nurbs, 0);
   std::vector<double> elementsV = getElementVector (nurbs, 1);
 
-  double d_shortest (DBL_MAX);
+  double d_shortest (std::numeric_limits<double>::max());
   for (std::size_t i = 0; i < elementsU.size () - 1; i++)
   {
     for (std::size_t j = 0; j < elementsV.size () - 1; j++)

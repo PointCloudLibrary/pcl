@@ -45,6 +45,8 @@
 #  pragma GCC system_header 
 #endif
 
+#include <limits>
+
 #include <boost/math/distributions/binomial.hpp>
 #include <pcl/sample_consensus/prosac.h>
 
@@ -54,7 +56,7 @@ template<typename PointT> bool
 pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
 {
   // Warn and exit if no threshold was set
-  if (threshold_ == DBL_MAX)
+  if (threshold_ == std::numeric_limits<double>::max())
   {
     PCL_ERROR ("[pcl::ProgressiveSampleConsensus::computeModel] No threshold set!\n");
     return (false);
@@ -84,7 +86,7 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
 
   Indices inliers;
   Indices selection;
-  Eigen::VectorXf model_coefficients;
+  Eigen::VectorXf model_coefficients (sac_model_->getModelSize ());
 
   // We will increase the pool so the indices_ vector can only contain m elements at first
   Indices index_pool;

@@ -41,6 +41,7 @@
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
+#include <pcl/common/io.h> // for copyPointCloud
 #include <pcl/io/file_io.h>
 #include <pcl/io/ply/ply_parser.h>
 #include <pcl/PolygonMesh.h>
@@ -87,30 +88,12 @@ namespace pcl
       
       PLYReader ()
         : origin_ (Eigen::Vector4f::Zero ())
-        , orientation_ (Eigen::Matrix3f::Zero ())
-        , cloud_ ()
-        , vertex_count_ (0)
-        , vertex_offset_before_ (0)
-        , range_grid_ (nullptr)
-        , rgb_offset_before_ (0)
-        , do_resize_ (false)
-        , polygons_ (nullptr)
-        , r_(0), g_(0), b_(0)
-        , a_(0), rgba_(0)
+        , orientation_ (Eigen::Matrix3f::Identity ())
       {}
 
       PLYReader (const PLYReader &p)
         : origin_ (Eigen::Vector4f::Zero ())
-        , orientation_ (Eigen::Matrix3f::Zero ())
-        , cloud_ ()
-        , vertex_count_ (0)
-        , vertex_offset_before_ (0)
-        , range_grid_ (nullptr)
-        , rgb_offset_before_ (0)
-        , do_resize_ (false)
-        , polygons_ (nullptr)
-        , r_(0), g_(0), b_(0)
-        , a_(0), rgba_(0)
+        , orientation_ (Eigen::Matrix3f::Identity ())
       {
         *this = p;
       }
@@ -125,7 +108,7 @@ namespace pcl
         return (*this);
       }
 
-      ~PLYReader () { delete range_grid_; }
+      ~PLYReader () override { delete range_grid_; }
       /** \brief Read a point cloud data header from a PLY file.
         *
         * Load only the meta information (number of points, their types, etc),
@@ -137,8 +120,8 @@ namespace pcl
         *  * > 0 on success
         * \param[in] file_name the name of the file to load
         * \param[out] cloud the resultant point cloud dataset (only the header will be filled)
-        * \param[in] origin the sensor data acquisition origin (translation)
-        * \param[in] orientation the sensor data acquisition origin (rotation)
+        * \param[out] origin the sensor data acquisition origin (translation)
+        * \param[out] orientation the sensor data acquisition origin (rotation)
         * \param[out] ply_version the PLY version read from the file
         * \param[out] data_type the type of PLY data stored in the file
         * \param[out] data_idx the data index
@@ -156,8 +139,8 @@ namespace pcl
       /** \brief Read a point cloud data from a PLY file and store it into a pcl/PCLPointCloud2.
         * \param[in] file_name the name of the file containing the actual PointCloud data
         * \param[out] cloud the resultant PointCloud message read from disk
-        * \param[in] origin the sensor data acquisition origin (translation)
-        * \param[in] orientation the sensor data acquisition origin (rotation)
+        * \param[out] origin the sensor data acquisition origin (translation)
+        * \param[out] orientation the sensor data acquisition origin (rotation)
         * \param[out] ply_version the PLY version read from the file
         * \param[in] offset the offset in the file where to expect the true header to begin.
         * One usage example for setting the offset parameter is for reading
@@ -216,8 +199,8 @@ namespace pcl
         *
         * \param[in] file_name the name of the file containing the actual PointCloud data
         * \param[out] mesh the resultant PolygonMesh message read from disk
-        * \param[in] origin the sensor data acquisition origin (translation)
-        * \param[in] orientation the sensor data acquisition origin (rotation)
+        * \param[out] origin the sensor data acquisition origin (translation)
+        * \param[out] orientation the sensor data acquisition origin (rotation)
         * \param[out] ply_version the PLY version read from the file
         * \param[in] offset the offset in the file where to expect the true header to begin.
         * One usage example for setting the offset parameter is for reading
@@ -447,10 +430,13 @@ namespace pcl
 
       /** Amend property from cloud fields identified by \a old_name renaming
         * it \a new_name.
+        *  * Returns:
+        *  * false on error
+        *  * true success
         * param[in] old_name property old name
         * param[in] new_name property new name
         */
-      void
+      bool
       amendProperty (const std::string& old_name, const std::string& new_name, std::uint8_t datatype = 0);
 
       /** Callback function for the begin of vertex line */
@@ -520,23 +506,23 @@ namespace pcl
       Eigen::Matrix3f orientation_;
 
       //vertex element artifacts
-      pcl::PCLPointCloud2 *cloud_;
-      std::size_t vertex_count_;
-      int vertex_offset_before_;
+      pcl::PCLPointCloud2 *cloud_{nullptr};
+      std::size_t vertex_count_{0};
+      int vertex_offset_before_{0};
       //range element artifacts
-      std::vector<std::vector <int> > *range_grid_;
-      std::size_t rgb_offset_before_;
-      bool do_resize_;
+      std::vector<std::vector <int> > *range_grid_{nullptr};
+      std::size_t rgb_offset_before_{0};
+      bool do_resize_{false};
       //face element artifact
-      std::vector<pcl::Vertices> *polygons_;
+      std::vector<pcl::Vertices> *polygons_{nullptr};
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW
       
     private:
       // RGB values stored by vertexColorCallback()
-      std::int32_t r_, g_, b_;
+      std::int32_t r_{0}, g_{0}, b_{0};
       // Color values stored by vertexAlphaCallback()
-      std::uint32_t a_, rgba_;
+      std::uint32_t a_{0}, rgba_{0};
   };
 
   /** \brief Point Cloud Data (PLY) file format writer.
@@ -547,10 +533,10 @@ namespace pcl
   {
     public:
       ///Constructor
-      PLYWriter () {};
+      PLYWriter () = default;
 
       ///Destructor
-      ~PLYWriter () {};
+      ~PLYWriter () override = default;
 
       /** \brief Generate the header of a PLY v.7 file format
         * \param[in] cloud the point cloud data message
@@ -719,16 +705,14 @@ namespace pcl
                       int valid_points);
       
       void
-      writeContentWithCameraASCII (int nr_points, 
-                                   int point_size,
+      writeContentWithCameraASCII (int nr_points,
                                    const pcl::PCLPointCloud2 &cloud,
                                    const Eigen::Vector4f &origin, 
                                    const Eigen::Quaternionf &orientation,
                                    std::ofstream& fs);
 
       void
-      writeContentWithRangeGridASCII (int nr_points, 
-                                      int point_size,
+      writeContentWithRangeGridASCII (int nr_points,
                                       const pcl::PCLPointCloud2 &cloud,
                                       std::ostringstream& fs,
                                       int& nb_valid_points);
@@ -736,7 +720,7 @@ namespace pcl
 
   namespace io
   {
-    /** \brief Load a PLY v.6 file into a templated PointCloud type.
+    /** \brief Load a PLY v.6 file into a PCLPointCloud2 type.
       *
       * Any PLY files containing sensor data will generate a warning as a
       * pcl/PCLPointCloud2 message cannot hold the sensor origin.
@@ -752,11 +736,11 @@ namespace pcl
       return (p.read (file_name, cloud));
     }
 
-    /** \brief Load any PLY file into a templated PointCloud type.
+    /** \brief Load any PLY file into a PCLPointCloud2 type.
       * \param[in] file_name the name of the file to load
-      * \param[in] cloud the resultant templated point cloud
-      * \param[in] origin the sensor acquisition origin (only for > PLY_V7 - null if not present)
-      * \param[in] orientation the sensor acquisition orientation if available, 
+      * \param[out] cloud the resultant templated point cloud
+      * \param[out] origin the sensor acquisition origin (only for > PLY_V7 - null if not present)
+      * \param[out] orientation the sensor acquisition orientation if available, 
       * identity if not present
       * \ingroup io
       */
@@ -864,7 +848,7 @@ namespace pcl
       */
     template<typename PointT> int
     savePLYFile (const std::string &file_name, const pcl::PointCloud<PointT> &cloud,
-                 const std::vector<int> &indices, bool binary_mode = false)
+                 const pcl::Indices &indices, bool binary_mode = false)
     {
       // Copy indices to a new point cloud
       pcl::PointCloud<PointT> cloud_out;

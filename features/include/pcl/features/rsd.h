@@ -86,7 +86,7 @@ namespace pcl
     */
   template <typename PointInT, typename PointNT, typename PointOutT> Eigen::MatrixXf
   computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud<PointNT> &normals,
-              const std::vector<int> &indices, double max_dist,
+              const pcl::Indices &indices, double max_dist,
               int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram = false);
 
   /** \brief Estimate the Radius-based Surface Descriptor (RSD) for a given point based on its spatial neighborhood of 3D points with normals
@@ -102,7 +102,7 @@ namespace pcl
     */
   template <typename PointNT, typename PointOutT> Eigen::MatrixXf
   computeRSD (const pcl::PointCloud<PointNT> &normals,
-              const std::vector<int> &indices, const std::vector<float> &sqr_dists, double max_dist,
+              const pcl::Indices &indices, const std::vector<float> &sqr_dists, double max_dist,
               int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram = false);
 
   /** \brief @b RSDEstimation estimates the Radius-based Surface Descriptor (minimal and maximal radius of the local surface's curves)
@@ -126,6 +126,7 @@ namespace pcl
     * @note The code is stateful as we do not expect this class to be multicore parallelized.
     * \author Zoltan-Csaba Marton
     * \ingroup features
+    * \tparam PointOutT Suggested type is `pcl::PrincipalRadiiRSD`
     */
   template <typename PointInT, typename PointNT, typename PointOutT>
   class RSDEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
@@ -147,10 +148,10 @@ namespace pcl
 
 
       /** \brief Empty constructor. */
-      RSDEstimation () : nr_subdiv_ (5), plane_radius_ (0.2), save_histograms_ (false)
+      RSDEstimation ()
       {
         feature_name_ = "RadiusSurfaceDescriptor";
-      };
+      }
 
       /** \brief Set the number of subdivisions for the considered distance interval.
         * \param[in] nr_subdiv the number of subdivisions
@@ -166,7 +167,7 @@ namespace pcl
 
       /** \brief Set the maximum radius, above which everything can be considered planar.
         * \note the order of magnitude should be around 10-20 times the search radius (0.2 works well for typical datasets).
-        * \note on accurate 3D data (e.g. openni sernsors) a search radius as low as 0.01 still gives good results.
+        * \note on accurate 3D data (e.g. openni sensors) a search radius as low as 0.01 still gives good results.
         * \param[in] plane_radius the new plane radius
         */
       inline void 
@@ -219,13 +220,13 @@ namespace pcl
 
     private:
       /** \brief The number of subdivisions for the considered distance interval. */
-      int nr_subdiv_;
+      int nr_subdiv_{5};
 
       /** \brief The maximum radius, above which everything can be considered planar. */
-      double plane_radius_;
+      double plane_radius_{0.2};
 
       /** \brief Signals whether the full distance-angle histograms are being saved. */
-      bool save_histograms_;
+      bool save_histograms_{false};
 
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW

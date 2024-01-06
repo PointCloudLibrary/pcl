@@ -74,10 +74,8 @@ namespace pcl
        */
       HarrisKeypoint6D (float radius = 0.01, float threshold = 0.0)
       : threshold_ (threshold)
-      , refine_ (true)
-      , nonmax_ (true)
-      , threads_ (0)
-      , normals_ (new pcl::PointCloud<NormalT>)
+      , 
+       normals_ (new pcl::PointCloud<NormalT>)
       , intensity_gradients_ (new pcl::PointCloud<pcl::IntensityGradient>)
       {
         name_ = "HarrisKeypoint6D";
@@ -85,10 +83,10 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      virtual ~HarrisKeypoint6D () {}
+      virtual ~HarrisKeypoint6D () = default;
 
       /**
-       * @brief set the radius for normal estimation and non maxima supression.
+       * @brief set the radius for normal estimation and non maxima suppression.
        * @param radius
        */
       void setRadius (float radius);
@@ -109,7 +107,7 @@ namespace pcl
 
       /**
        * @brief whether the detected key points should be refined or not. If turned of, the key points are a subset of the original point cloud. Otherwise the key points may be arbitrary.
-       * @brief note non maxima supression needs to be on in order to use this feature.
+       * @brief note non maxima suppression needs to be on in order to use this feature.
        * @param do_refine
        */
       void setRefine (bool do_refine);
@@ -126,12 +124,12 @@ namespace pcl
       void detectKeypoints (PointCloudOut &output);
       void responseTomasi (PointCloudOut &output) const;
       void refineCorners (PointCloudOut &corners) const;
-      void calculateCombinedCovar (const std::vector<int>& neighbors, float* coefficients) const;
+      void calculateCombinedCovar (const pcl::Indices& neighbors, float* coefficients) const;
     private:
       float threshold_;
-      bool refine_;
-      bool nonmax_;
-      unsigned int threads_;    
+      bool refine_{true};
+      bool nonmax_{true};
+      unsigned int threads_{0};    
       typename pcl::PointCloud<NormalT>::Ptr normals_;
       pcl::PointCloud<pcl::IntensityGradient>::Ptr intensity_gradients_;
   } ;

@@ -107,7 +107,7 @@ namespace pcl
 
       /** \brief Virtual destructor which frees the memory. */
       
-      ~MomentOfInertiaEstimation ();
+      ~MomentOfInertiaEstimation () override;
 
       /** \brief This method allows to set the angle step. It is used for the rotation
         * of the axis which is used for moment of inertia/eccentricity calculation.
@@ -291,16 +291,16 @@ namespace pcl
 
       /** \brief Indicates if the stored values (eccentricity, moment of inertia, AABB etc.)
         * are valid when accessed with the get methods. */
-      bool is_valid_;
+      bool is_valid_{false};
 
       /** \brief Stores the angle step */
-      float step_;
+      float step_{10.0f};
 
       /** \brief Stores the mass of point in the cloud */
-      float point_mass_;
+      float point_mass_{0.0001f};
 
       /** \brief Stores the flag for mass normalization */
-      bool normalize_;
+      bool normalize_{true};
 
       /** \brief Stores the mean value (center of mass) of the cloud */
       Eigen::Vector3f mean_value_;
@@ -315,13 +315,13 @@ namespace pcl
       Eigen::Vector3f minor_axis_;
 
       /** \brief Major eigen value */
-      float major_value_;
+      float major_value_{0.0f};
 
       /** \brief Middle eigen value */
-      float middle_value_;
+      float middle_value_{0.0f};
 
       /** \brief Minor eigen value */
-      float minor_value_;
+      float minor_value_{0.0f};
 
       /** \brief Stores calculated moments of inertia */
       std::vector <float> moment_of_inertia_;

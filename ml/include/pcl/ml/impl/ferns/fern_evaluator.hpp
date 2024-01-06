@@ -59,14 +59,6 @@ template <class FeatureType,
           class LabelType,
           class ExampleIndex,
           class NodeType>
-FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::~FernEvaluator()
-{}
-
-template <class FeatureType,
-          class DataSet,
-          class LabelType,
-          class ExampleIndex,
-          class NodeType>
 void
 FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::evaluate(
     pcl::Fern<FeatureType, NodeType>& fern,

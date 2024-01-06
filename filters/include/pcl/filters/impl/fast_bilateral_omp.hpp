@@ -116,15 +116,15 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
 #endif
   for (long int i = 0; i < static_cast<long int> (small_width * small_height); ++i)
   {
-    std::size_t small_x = static_cast<std::size_t> (i % small_width);
-    std::size_t small_y = static_cast<std::size_t> (i / small_width);
-    std::size_t start_x = static_cast<std::size_t>( 
+    auto small_x = static_cast<std::size_t> (i % small_width);
+    auto small_y = static_cast<std::size_t> (i / small_width);
+    auto start_x = static_cast<std::size_t>( 
         std::max ((static_cast<float> (small_x) - static_cast<float> (padding_xy) - 0.5f) * sigma_s_ + 1, 0.f));
-    std::size_t end_x = static_cast<std::size_t>( 
+    auto end_x = static_cast<std::size_t>( 
       std::max ((static_cast<float> (small_x) - static_cast<float> (padding_xy) + 0.5f) * sigma_s_ + 1, 0.f));
-    std::size_t start_y = static_cast<std::size_t>( 
+    auto start_y = static_cast<std::size_t>( 
       std::max ((static_cast<float> (small_y) - static_cast<float> (padding_xy) - 0.5f) * sigma_s_ + 1, 0.f));
-    std::size_t end_y = static_cast<std::size_t>( 
+    auto end_y = static_cast<std::size_t>( 
       std::max ((static_cast<float> (small_y) - static_cast<float> (padding_xy) + 0.5f) * sigma_s_ + 1, 0.f));
     for (std::size_t x = start_x; x < end_x && x < input_->width; ++x)
     {
@@ -165,8 +165,8 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
 #endif
       for(long int i = 0; i < static_cast<long int> ((small_width - 2)*(small_height - 2)); ++i)
       {
-        std::size_t x = static_cast<std::size_t> (i % (small_width - 2) + 1);
-        std::size_t y = static_cast<std::size_t> (i / (small_width - 2) + 1);
+        auto x = static_cast<std::size_t> (i % (small_width - 2) + 1);
+        auto y = static_cast<std::size_t> (i / (small_width - 2) + 1);
         const long int off = offset[dim];
         Eigen::Vector2f* d_ptr = &(current_data->operator() (x,y,1));
         Eigen::Vector2f* b_ptr = &(current_buffer->operator() (x,y,1));
@@ -182,7 +182,7 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
 
   if (early_division_)
   {
-    for (std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> >::iterator d = data.begin (); d != data.end (); ++d)
+    for (auto d = data.begin (); d != data.end (); ++d)
       *d /= ((*d)[0] != 0) ? (*d)[1] : 1;
 
 #pragma omp parallel for \
@@ -191,8 +191,8 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
   num_threads(threads_)
     for (long int i = 0; i < static_cast<long int> (input_->size ()); ++i)
     {
-      std::size_t x = static_cast<std::size_t> (i % input_->width);
-      std::size_t y = static_cast<std::size_t> (i / input_->width);
+      auto x = static_cast<std::size_t> (i % input_->width);
+      auto y = static_cast<std::size_t> (i / input_->width);
       const float z = output (x,y).z - base_min;
       const Eigen::Vector2f D = data.trilinear_interpolation (static_cast<float> (x) / sigma_s_ + padding_xy,
                                                               static_cast<float> (y) / sigma_s_ + padding_xy,
@@ -208,8 +208,8 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
   num_threads(threads_)
     for (long i = 0; i < static_cast<long int> (input_->size ()); ++i)
     {
-      std::size_t x = static_cast<std::size_t> (i % input_->width);
-      std::size_t y = static_cast<std::size_t> (i / input_->width);
+      auto x = static_cast<std::size_t> (i % input_->width);
+      auto y = static_cast<std::size_t> (i / input_->width);
       const float z = output (x,y).z - base_min;
       const Eigen::Vector2f D = data.trilinear_interpolation (static_cast<float> (x) / sigma_s_ + padding_xy,
                                                               static_cast<float> (y) / sigma_s_ + padding_xy,

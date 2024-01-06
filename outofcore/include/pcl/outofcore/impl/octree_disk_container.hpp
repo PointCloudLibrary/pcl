@@ -46,7 +46,6 @@
 #include <ctime>
 
 // Boost
-#include <pcl/outofcore/boost.h>
 #include <boost/random/bernoulli_distribution.hpp>
 #include <boost/random/uniform_int.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -206,7 +205,7 @@ namespace pcl
         PointT temp;
         //open our file
         FILE* f = fopen (disk_storage_filename_.c_str (), "rbe");
-        assert (f != NULL);
+        assert (f != nullptr);
 
         //seek the right length; 
         int seekret = _fseeki64 (f, idx * sizeof(PointT), SEEK_SET);
@@ -331,7 +330,7 @@ namespace pcl
         std::sort (offsets.begin (), offsets.end ());
 
         FILE* f = fopen (disk_storage_filename_.c_str (), "rbe");
-        assert (f != NULL);
+        assert (f != nullptr);
         PointT p;
         char* loc = reinterpret_cast<char*> (&p);
         
@@ -384,7 +383,7 @@ namespace pcl
         buffcount = count - filecount;
       }
 
-      std::uint64_t filesamp = static_cast<std::uint64_t> (percent * static_cast<double> (filecount));
+      auto filesamp = static_cast<std::uint64_t> (percent * static_cast<double> (filecount));
       
       std::uint64_t buffsamp = (buffcount > 0) ? (static_cast<std::uint64_t > (percent * static_cast<double> (buffcount))) : 0;
 
@@ -430,7 +429,7 @@ namespace pcl
         std::sort (offsets.begin (), offsets.end ());
 
         FILE* f = fopen (disk_storage_filename_.c_str (), "rbe");
-        assert (f != NULL);
+        assert (f != nullptr);
         PointT p;
         char* loc = reinterpret_cast<char*> (&p);
         for (std::uint64_t i = 0; i < filesamp; i++)

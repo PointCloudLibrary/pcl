@@ -197,7 +197,7 @@ pcl::visualization::context_items::Polygon::Paint (vtkContext2D *painter)
 {
   painter->GetBrush ()->SetColor (colors[0], colors[1], colors[2], static_cast<unsigned char> ((255.0 * GetOpacity ())));
   painter->GetPen ()->SetColor (colors[0], colors[1], colors[2], static_cast<unsigned char> ((255.0 * GetOpacity ())));
-  painter->DrawPolygon (&params[0], static_cast<int> (params.size () / 2));
+  painter->DrawPolygon (params.data(), static_cast<int> (params.size () / 2));
   return (true);
 }
 
@@ -215,7 +215,7 @@ bool
 pcl::visualization::context_items::Points::Paint (vtkContext2D *painter)
 {
   painter->GetPen ()->SetColor (colors[0], colors[1], colors[2], static_cast<unsigned char> ((255.0 * GetOpacity ())));
-  painter->DrawPoints (&params[0], static_cast<int> (params.size () / 2));
+  painter->DrawPoints (params.data(), static_cast<int> (params.size () / 2));
   return (true);
 }
 
@@ -246,7 +246,7 @@ pcl::visualization::context_items::Markers::setPointColors (unsigned char r, uns
 void
 pcl::visualization::context_items::Markers::setPointColors (unsigned char rgb[3])
 {
-  memcpy (point_colors, rgb, 3 * sizeof (unsigned char));
+  std::copy(rgb, rgb + 3, point_colors);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -259,10 +259,10 @@ pcl::visualization::context_items::Markers::Paint (vtkContext2D *painter)
 
   painter->GetPen ()->SetWidth (size);
   painter->GetPen ()->SetColor (colors[0], colors[1], colors[2], static_cast<unsigned char> ((255.0 * GetOpacity ())));
-  painter->DrawPointSprites (nullptr, &params[0], nb_points);
+  painter->DrawPointSprites (nullptr, params.data(), nb_points);
   painter->GetPen ()->SetWidth (1);
   painter->GetPen ()->SetColor (point_colors[0], point_colors[1], point_colors[2], static_cast<unsigned char> ((255.0 * GetOpacity ())));
-  painter->DrawPointSprites (nullptr, &params[0], nb_points);
+  painter->DrawPointSprites (nullptr, params.data(), nb_points);
   return (true);
 }
 

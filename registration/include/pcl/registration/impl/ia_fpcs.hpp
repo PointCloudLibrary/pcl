@@ -45,6 +45,8 @@
 #include <pcl/registration/transformation_estimation_3point.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
 
+#include <limits>
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 inline float
@@ -53,24 +55,20 @@ pcl::getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud
                          int nr_threads)
 {
   const float max_dist_sqr = max_dist * max_dist;
-  const std::size_t s = cloud.size();
+  const std::size_t s = cloud->size();
 
   pcl::search::KdTree<PointT> tree;
   tree.setInputCloud(cloud);
 
   float mean_dist = 0.f;
   int num = 0;
-  std::vector<int> ids(2);
+  pcl::Indices ids(2);
   std::vector<float> dists_sqr(2);
 
   pcl::utils::ignore(nr_threads);
-#pragma omp parallel for \
-  default(none) \
-  shared(tree, cloud) \
-  firstprivate(ids, dists_sqr) \
-  reduction(+:mean_dist, num) \
-  firstprivate(s, max_dist_sqr) \
-  num_threads(nr_threads)
+#pragma omp parallel for default(none) shared(tree, cloud)                             \
+    firstprivate(ids, dists_sqr) reduction(+ : mean_dist, num)                         \
+    firstprivate(s, max_dist_sqr) num_threads(nr_threads)
   for (int i = 0; i < 1000; i++) {
     tree.nearestKSearch((*cloud)[rand() % s], 2, ids, dists_sqr);
     if (dists_sqr[1] < max_dist_sqr) {
@@ -86,7 +84,7 @@ pcl::getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud
 template <typename PointT>
 inline float
 pcl::getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud,
-                         const std::vector<int>& indices,
+                         const pcl::Indices& indices,
                          float max_dist,
                          int nr_threads)
 {
@@ -98,24 +96,16 @@ pcl::getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud
 
   float mean_dist = 0.f;
   int num = 0;
-  std::vector<int> ids(2);
+  pcl::Indices ids(2);
   std::vector<float> dists_sqr(2);
 
   pcl::utils::ignore(nr_threads);
 #if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
-#pragma omp parallel for \
-  default(none) \
-  shared(tree, cloud, indices) \
-  firstprivate(ids, dists_sqr) \
-  reduction(+:mean_dist, num) \
-  num_threads(nr_threads)
+#pragma omp parallel for default(none) shared(tree, cloud, indices)                    \
+    firstprivate(ids, dists_sqr) reduction(+ : mean_dist, num) num_threads(nr_threads)
 #else
-#pragma omp parallel for \
-  default(none) \
-  shared(tree, cloud, indices, s, max_dist_sqr) \
-  firstprivate(ids, dists_sqr) \
-  reduction(+:mean_dist, num) \
-  num_threads(nr_threads)
+#pragma omp parallel for default(none) shared(tree, cloud, indices, s, max_dist_sqr)   \
+    firstprivate(ids, dists_sqr) reduction(+ : mean_dist, num) num_threads(nr_threads)
 #endif
   for (int i = 0; i < 1000; i++) {
     tree.nearestKSearch((*cloud)[indices[rand() % s]], 2, ids, dists_sqr);
@@ -134,24 +124,8 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
     FPCSInitialAlignment()
 : source_normals_()
 , target_normals_()
-, nr_threads_(1)
-, approx_overlap_(0.5f)
-, delta_(1.f)
-, score_threshold_(FLT_MAX)
-, nr_samples_(0)
-, max_norm_diff_(90.f)
-, max_runtime_(0)
-, fitness_score_(FLT_MAX)
-, diameter_()
-, max_base_diameter_sqr_()
-, use_normals_(false)
-, normalize_delta_(true)
-, max_pair_diff_()
-, max_edge_diff_()
-, coincidation_limit_()
-, max_mse_()
-, max_inlier_dist_sqr_()
-, small_error_(0.00001f)
+, score_threshold_(std::numeric_limits<float>::max())
+, fitness_score_(std::numeric_limits<float>::max())
 {
   reg_name_ = "pcl::registration::FPCSInitialAlignment";
   max_iterations_ = 0;
@@ -178,14 +152,17 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
     num_threads(nr_threads_)
   {
 #ifdef _OPENMP
-    std::srand(static_cast<unsigned int>(std::time(NULL)) ^ omp_get_thread_num());
+    const unsigned int seed =
+        static_cast<unsigned int>(std::time(nullptr)) ^ omp_get_thread_num();
+    std::srand(seed);
+    PCL_DEBUG("[%s::computeTransformation] Using seed=%u\n", reg_name_.c_str(), seed);
 #pragma omp for schedule(dynamic)
 #endif
     for (int i = 0; i < max_iterations_; i++) {
 #pragma omp flush(abort)
 
       MatchingCandidates candidates(1);
-      std::vector<int> base_indices(4);
+      pcl::Indices base_indices(4);
       all_candidates[i] = candidates;
 
       if (!abort) {
@@ -200,7 +177,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
                   0) {
             // determine candidate matches by combining pair correspondences based on
             // segment distances
-            std::vector<std::vector<int>> matches;
+            std::vector<pcl::Indices> matches;
             if (determineBaseMatches(base_indices, matches, pairs_a, pairs_b, ratio) ==
                 0) {
               // check and evaluate candidate matches and store them
@@ -236,7 +213,9 @@ bool
 pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
     initCompute()
 {
-  std::srand(static_cast<unsigned int>(std::time(nullptr)));
+  const unsigned int seed = std::time(nullptr);
+  std::srand(seed);
+  PCL_DEBUG("[%s::initCompute] Using seed=%u\n", reg_name_.c_str(), seed);
 
   // basic pcl initialization
   if (!pcl::PCLBase<PointSource>::initCompute())
@@ -250,20 +229,20 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   }
 
   if (!target_indices_ || target_indices_->empty()) {
-    target_indices_.reset(new std::vector<int>(static_cast<int>(target_->size())));
+    target_indices_.reset(new pcl::Indices(target_->size()));
     int index = 0;
-    for (int& target_index : *target_indices_)
+    for (auto& target_index : *target_indices_)
       target_index = index++;
     target_cloud_updated_ = true;
   }
 
-  // if a sample size for the point clouds is given; prefarably no sampling of target
+  // if a sample size for the point clouds is given; preferably no sampling of target
   // cloud
   if (nr_samples_ != 0) {
     const int ss = static_cast<int>(indices_->size());
     const int sample_fraction_src = std::max(1, static_cast<int>(ss / nr_samples_));
 
-    source_indices_ = pcl::IndicesPtr(new std::vector<int>);
+    source_indices_ = pcl::IndicesPtr(new pcl::Indices);
     for (int i = 0; i < ss; i++)
       if (rand() % sample_fraction_src == 0)
         source_indices_->push_back((*indices_)[i]);
@@ -283,8 +262,8 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   }
 
   // set predefined variables
-  const int min_iterations = 4;
-  const float diameter_fraction = 0.3f;
+  constexpr int min_iterations = 4;
+  constexpr float diameter_fraction = 0.3f;
 
   // get diameter of input cloud (distance between farthest points)
   Eigen::Vector4f pt_min, pt_max;
@@ -305,22 +284,22 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   // heuristic determination of number of trials to have high probability of finding a
   // good solution
   if (max_iterations_ == 0) {
-    float first_est =
-        std::log(small_error_) /
-        std::log(1.0 - std::pow((double)approx_overlap_, (double)min_iterations));
+    float first_est = std::log(small_error_) /
+                      std::log(1.0 - std::pow(static_cast<double>(approx_overlap_),
+                                              static_cast<double>(min_iterations)));
     max_iterations_ =
         static_cast<int>(first_est / (diameter_fraction * approx_overlap_ * 2.f));
   }
 
   // set further parameter
-  if (score_threshold_ == FLT_MAX)
+  if (score_threshold_ == std::numeric_limits<float>::max())
     score_threshold_ = 1.f - approx_overlap_;
 
   if (max_iterations_ < 4)
     max_iterations_ = 4;
 
   if (max_runtime_ < 1)
-    max_runtime_ = INT_MAX;
+    max_runtime_ = std::numeric_limits<int>::max();
 
   // calculate internal parameters based on the the estimated point density
   max_pair_diff_ = delta_ * 2.f;
@@ -330,7 +309,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   max_inlier_dist_sqr_ = powf(delta_ * 2.f, 2.f);
 
   // reset fitness_score
-  fitness_score_ = FLT_MAX;
+  fitness_score_ = std::numeric_limits<float>::max();
 
   return (true);
 }
@@ -339,7 +318,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 int
 pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
-    selectBase(std::vector<int>& base_indices, float (&ratio)[2])
+    selectBase(pcl::Indices& base_indices, float (&ratio)[2])
 {
   const float too_close_sqr = max_base_diameter_sqr_ * 0.01;
 
@@ -347,7 +326,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   pcl::SampleConsensusModelPlane<PointTarget> plane(target_);
   plane.setIndices(target_indices_);
   Eigen::Vector4f centre_pt;
-  float nearest_to_plane = FLT_MAX;
+  float nearest_to_plane = std::numeric_limits<float>::max();
 
   // repeat base search until valid quadruple was found or ransac_iterations_ number of
   // tries were unsuccessful
@@ -356,7 +335,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
     if (selectBaseTriangle(base_indices) < 0)
       continue;
 
-    std::vector<int> base_triple(base_indices.begin(), base_indices.end() - 1);
+    pcl::Indices base_triple(base_indices.begin(), base_indices.end() - 1);
     plane.computeModelCoefficients(base_triple, coefficients);
     pcl::compute3DCentroid(*target_, base_triple, centre_pt);
 
@@ -389,8 +368,8 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
     }
 
     // check if at least one point fulfilled the conditions
-    if (nearest_to_plane != FLT_MAX) {
-      // order points to build largest quadrangle and calcuate intersection ratios of
+    if (nearest_to_plane != std::numeric_limits<float>::max()) {
+      // order points to build largest quadrangle and calculate intersection ratios of
       // diagonals
       setupBase(base_indices, ratio);
       return (0);
@@ -405,19 +384,19 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 int
 pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
-    selectBaseTriangle(std::vector<int>& base_indices)
+    selectBaseTriangle(pcl::Indices& base_indices)
 {
-  int nr_points = static_cast<int>(target_indices_->size());
+  const auto nr_points = target_indices_->size();
   float best_t = 0.f;
 
   // choose random first point
   base_indices[0] = (*target_indices_)[rand() % nr_points];
-  int* index1 = &base_indices[0];
+  auto* index1 = base_indices.data();
 
   // random search for 2 other points (as far away as overlap allows)
   for (int i = 0; i < ransac_iterations_; i++) {
-    int* index2 = &(*target_indices_)[rand() % nr_points];
-    int* index3 = &(*target_indices_)[rand() % nr_points];
+    auto* index2 = &(*target_indices_)[rand() % nr_points];
+    auto* index3 = &(*target_indices_)[rand() % nr_points];
 
     Eigen::Vector3f u =
         (*target_)[*index2].getVector3fMap() - (*target_)[*index1].getVector3fMap();
@@ -443,27 +422,23 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 void
 pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
-    setupBase(std::vector<int>& base_indices, float (&ratio)[2])
+    setupBase(pcl::Indices& base_indices, float (&ratio)[2])
 {
-  float best_t = FLT_MAX;
-  const std::vector<int> copy(base_indices.begin(), base_indices.end());
-  std::vector<int> temp(base_indices.begin(), base_indices.end());
+  float best_t = std::numeric_limits<float>::max();
+  const pcl::Indices copy(base_indices.begin(), base_indices.end());
+  pcl::Indices temp(base_indices.begin(), base_indices.end());
 
   // loop over all combinations of base points
-  for (std::vector<int>::const_iterator i = copy.begin(), i_e = copy.end(); i != i_e;
-       ++i)
-    for (std::vector<int>::const_iterator j = copy.begin(), j_e = copy.end(); j != j_e;
-         ++j) {
+  for (auto i = copy.begin(), i_e = copy.end(); i != i_e; ++i)
+    for (auto j = copy.begin(), j_e = copy.end(); j != j_e; ++j) {
       if (i == j)
         continue;
 
-      for (std::vector<int>::const_iterator k = copy.begin(), k_e = copy.end();
-           k != k_e;
-           ++k) {
+      for (auto k = copy.begin(), k_e = copy.end(); k != k_e; ++k) {
         if (k == j || k == i)
           continue;
 
-        std::vector<int>::const_iterator l = copy.begin();
+        auto l = copy.begin();
         while (l == i || l == j || l == k)
           ++l;
 
@@ -490,7 +465,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 float
 pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
-    segmentToSegmentDist(const std::vector<int>& base_indices, float (&ratio)[2])
+    segmentToSegmentDist(const pcl::Indices& base_indices, float (&ratio)[2])
 {
   // get point vectors
   Eigen::Vector3f u = (*target_)[base_indices[1]].getVector3fMap() -
@@ -629,8 +604,8 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 int
 pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
-    determineBaseMatches(const std::vector<int>& base_indices,
-                         std::vector<std::vector<int>>& matches,
+    determineBaseMatches(const pcl::Indices& base_indices,
+                         std::vector<pcl::Indices>& matches,
                          const pcl::Correspondences& pairs_a,
                          const pcl::Correspondences& pairs_b,
                          const float (&ratio)[2])
@@ -650,7 +625,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   // point cloud
   PointCloudSourcePtr cloud_e(new PointCloudSource);
   cloud_e->resize(pairs_a.size() * 2);
-  PointCloudSourceIterator it_pt = cloud_e->begin();
+  auto it_pt = cloud_e->begin();
   for (const auto& pair : pairs_a) {
     const PointSource* pt1 = &((*input_)[pair.index_match]);
     const PointSource* pt2 = &((*input_)[pair.index_query]);
@@ -667,7 +642,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   KdTreeReciprocalPtr tree_e(new KdTreeReciprocal);
   tree_e->setInputCloud(cloud_e);
 
-  std::vector<int> ids;
+  pcl::Indices ids;
   std::vector<float> dists_sqr;
 
   // loop over second point pair correspondences
@@ -685,12 +660,12 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
       // search for corresponding intermediate points
       tree_e->radiusSearch(pt_e, coincidation_limit_, ids, dists_sqr);
       for (const auto& id : ids) {
-        std::vector<int> match_indices(4);
+        pcl::Indices match_indices(4);
 
         match_indices[0] =
-            pairs_a[static_cast<int>(std::floor((float)(id / 2.f)))].index_match;
+            pairs_a[static_cast<int>(std::floor((id / 2.f)))].index_match;
         match_indices[1] =
-            pairs_a[static_cast<int>(std::floor((float)(id / 2.f)))].index_query;
+            pairs_a[static_cast<int>(std::floor((id / 2.f)))].index_query;
         match_indices[2] = pair.index_match;
         match_indices[3] = pair.index_query;
 
@@ -711,7 +686,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 int
 pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
-    checkBaseMatch(const std::vector<int>& match_indices, const float (&dist_ref)[4])
+    checkBaseMatch(const pcl::Indices& match_indices, const float (&dist_ref)[4])
 {
   float d0 =
       pcl::euclideanDistance((*input_)[match_indices[0]], (*input_)[match_indices[2]]);
@@ -735,19 +710,19 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 void
 pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
-    handleMatches(const std::vector<int>& base_indices,
-                  std::vector<std::vector<int>>& matches,
+    handleMatches(const pcl::Indices& base_indices,
+                  std::vector<pcl::Indices>& matches,
                   MatchingCandidates& candidates)
 {
   candidates.resize(1);
-  float fitness_score = FLT_MAX;
+  float fitness_score = std::numeric_limits<float>::max();
 
   // loop over all Candidate matches
   for (auto& match : matches) {
     Eigen::Matrix4f transformation_temp;
     pcl::Correspondences correspondences_temp;
 
-    // determine corresondences between base and match according to their distance to
+    // determine correspondences between base and match according to their distance to
     // centroid
     linkMatchWithBase(base_indices, match, correspondences_temp);
 
@@ -773,8 +748,8 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 void
 pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
-    linkMatchWithBase(const std::vector<int>& base_indices,
-                      std::vector<int>& match_indices,
+    linkMatchWithBase(const pcl::Indices& base_indices,
+                      pcl::Indices& match_indices,
                       pcl::Correspondences& correspondences)
 {
   // calculate centroid of base and target
@@ -793,7 +768,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   centre_pt_match.z = centre_match[2];
 
   // find corresponding points according to their distance to the centroid
-  std::vector<int> copy = match_indices;
+  pcl::Indices copy = match_indices;
 
   auto it_match_orig = match_indices.begin();
   for (auto it_base = base_indices.cbegin(), it_base_e = base_indices.cend();
@@ -801,7 +776,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
        it_base++, it_match_orig++) {
     float dist_sqr_1 =
         pcl::squaredEuclideanDistance((*target_)[*it_base], centre_pt_base);
-    float best_diff_sqr = FLT_MAX;
+    float best_diff_sqr = std::numeric_limits<float>::max();
     int best_index = -1;
 
     for (const auto& match_index : copy) {
@@ -826,12 +801,12 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 int
 pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
-    validateMatch(const std::vector<int>& base_indices,
-                  const std::vector<int>& match_indices,
+    validateMatch(const pcl::Indices& base_indices,
+                  const pcl::Indices& match_indices,
                   const pcl::Correspondences& correspondences,
                   Eigen::Matrix4f& transformation)
 {
-  // only use triplet of points to simlify process (possible due to planar case)
+  // only use triplet of points to simplify process (possible due to planar case)
   pcl::Correspondences correspondences_temp = correspondences;
   correspondences_temp.erase(correspondences_temp.end() - 1);
 
@@ -871,9 +846,9 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
                         : static_cast<std::size_t>((1.f - fitness_score) * nr_points);
 
   float inlier_score_temp = 0;
-  std::vector<int> ids;
+  pcl::Indices ids;
   std::vector<float> dists_sqr;
-  PointCloudSourceIterator it = source_transformed.begin();
+  auto it = source_transformed.begin();
 
   for (std::size_t i = 0; i < nr_points; it++, i++) {
     // search for nearest point using kd tree search
@@ -905,7 +880,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   // get best fitness_score over all tries
   int nr_candidates = static_cast<int>(candidates.size());
   int best_index = -1;
-  float best_score = FLT_MAX;
+  float best_score = std::numeric_limits<float>::max();
   for (int i = 0; i < nr_candidates; i++) {
     const float& fitness_score = candidates[i][0].fitness_score;
     if (fitness_score < best_score) {

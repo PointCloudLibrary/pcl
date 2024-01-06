@@ -76,7 +76,7 @@ public:
   KFPCSInitialAlignment();
 
   /** \brief Destructor. */
-  ~KFPCSInitialAlignment(){};
+  ~KFPCSInitialAlignment() override = default;
 
   /** \brief Set the upper translation threshold used for score evaluation.
    * \param[in] upper_trl_boundary upper translation threshold
@@ -205,8 +205,8 @@ protected:
    * contains the candidates matches M
    */
   void
-  handleMatches(const std::vector<int>& base_indices,
-                std::vector<std::vector<int>>& matches,
+  handleMatches(const pcl::Indices& base_indices,
+                std::vector<pcl::Indices>& matches,
                 MatchingCandidates& candidates) override;
 
   /** \brief Validate the transformation by calculating the score value after
@@ -235,23 +235,23 @@ protected:
   /** \brief Lower boundary for translation costs calculation.
    * \note If not set by the user, the translation costs are not used during evaluation.
    */
-  float lower_trl_boundary_;
+  float lower_trl_boundary_{-1.f};
 
   /** \brief Upper boundary for translation costs calculation.
    * \note If not set by the user, it is calculated from the estimated overlap and the
    * diameter of the point cloud.
    */
-  float upper_trl_boundary_;
+  float upper_trl_boundary_{-1.f};
 
   /** \brief Weighting factor for translation costs (standard = 0.5). */
-  float lambda_;
+  float lambda_{0.5f};
 
   /** \brief Container for resulting vector of registration candidates. */
   MatchingCandidates candidates_;
 
   /** \brief Flag if translation score should be used in validation (internal
    * calculation). */
-  bool use_trl_score_;
+  bool use_trl_score_{false};
 
   /** \brief Subset of input indices on which we evaluate candidates.
    * To speed up the evaluation, we only use a fix number of indices defined during

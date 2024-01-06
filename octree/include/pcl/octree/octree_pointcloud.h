@@ -82,8 +82,8 @@ public:
   OctreePointCloud(const double resolution_arg);
 
   // public typedefs
-  using IndicesPtr = shared_ptr<std::vector<int>>;
-  using IndicesConstPtr = shared_ptr<const std::vector<int>>;
+  using IndicesPtr = shared_ptr<Indices>;
+  using IndicesConstPtr = shared_ptr<const Indices>;
 
   using PointCloud = pcl::PointCloud<PointT>;
   using PointCloudPtr = typename PointCloud::Ptr;
@@ -164,7 +164,11 @@ public:
   setResolution(double resolution_arg)
   {
     // octree needs to be empty to change its resolution
-    assert(this->leaf_count_ == 0);
+    if (this->leaf_count_ > 0) {
+      PCL_ERROR("[pcl::octree::OctreePointCloud::setResolution] Octree needs to be "
+                "empty to change its resolution(leaf count should must be 0)!\n");
+      return;
+    }
 
     resolution_ = resolution_arg;
 
@@ -183,7 +187,7 @@ public:
   /** \brief Get the maximum depth of the octree.
    *  \return depth_arg: maximum depth of octree
    * */
-  inline unsigned int
+  inline uindex_t
   getTreeDepth() const
   {
     return this->octree_depth_;
@@ -200,7 +204,7 @@ public:
    * setInputCloud)
    */
   void
-  addPointFromCloud(const int point_idx_arg, IndicesPtr indices_arg);
+  addPointFromCloud(uindex_t point_idx_arg, IndicesPtr indices_arg);
 
   /** \brief Add point simultaneously to octree and input point cloud.
    *  \param[in] point_arg point to be added
@@ -236,7 +240,7 @@ public:
   deleteTree()
   {
     // reset bounding box
-    min_x_ = min_y_ = max_y_ = min_z_ = max_z_ = 0;
+    min_x_ = max_x_ = min_y_ = max_y_ = min_z_ = max_z_ = 0;
     this->bounding_box_defined_ = false;
 
     OctreeT::deleteTree();
@@ -258,14 +262,14 @@ public:
    * \return "true" if voxel exist; "false" otherwise
    */
   bool
-  isVoxelOccupiedAtPoint(const int& point_idx_arg) const;
+  isVoxelOccupiedAtPoint(const index_t& point_idx_arg) const;
 
   /** \brief Get a PointT vector of centers of all occupied voxels.
    * \param[out] voxel_center_list_arg results are written to this vector of PointT
    * elements
    * \return number of occupied voxels
    */
-  int
+  uindex_t
   getOccupiedVoxelCenters(AlignedPointTVector& voxel_center_list_arg) const;
 
   /** \brief Get a PointT vector of centers of voxels intersected by a line segment.
@@ -279,7 +283,7 @@ public:
    * octree_resolution x precision
    * \return number of intersected voxels
    */
-  int
+  uindex_t
   getApproxIntersectedVoxelCentersBySegment(const Eigen::Vector3f& origin,
                                             const Eigen::Vector3f& end,
                                             AlignedPointTVector& voxel_center_list,
@@ -295,7 +299,7 @@ public:
    *  \param[in] point_idx_arg index of point addressing the voxel to be deleted.
    */
   void
-  deleteVoxelAtPoint(const int& point_idx_arg);
+  deleteVoxelAtPoint(const index_t& point_idx_arg);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Bounding box methods
@@ -365,7 +369,7 @@ public:
    * \return squared diameter
    */
   double
-  getVoxelSquaredDiameter(unsigned int tree_depth_arg) const;
+  getVoxelSquaredDiameter(uindex_t tree_depth_arg) const;
 
   /** \brief Calculates the squared diameter of a voxel at leaf depth
    * \return squared diameter
@@ -381,7 +385,7 @@ public:
    * \return squared voxel cube side length
    */
   double
-  getVoxelSquaredSideLen(unsigned int tree_depth_arg) const;
+  getVoxelSquaredSideLen(uindex_t tree_depth_arg) const;
 
   /** \brief Calculates the squared voxel cube side length at leaf level
    * \return squared voxel cube side length
@@ -416,7 +420,11 @@ public:
   inline void
   enableDynamicDepth(std::size_t maxObjsPerLeaf)
   {
-    assert(this->leaf_count_ == 0);
+    if (this->leaf_count_ > 0) {
+      PCL_ERROR("[pcl::octree::OctreePointCloud::enableDynamicDepth] Leaf count should "
+                "must be 0!\n");
+      return;
+    }
     max_objs_per_leaf_ = maxObjsPerLeaf;
 
     this->dynamic_depth_enabled_ = max_objs_per_leaf_ > 0;
@@ -428,7 +436,7 @@ protected:
    * \a setInputCloud to be added
    */
   virtual void
-  addPointIdx(const int point_idx_arg);
+  addPointIdx(uindex_t point_idx_arg);
 
   /** \brief Add point at index from input pointcloud dataset to octree
    * \param[in] leaf_node to be expanded
@@ -440,7 +448,7 @@ protected:
   expandLeafNode(LeafNode* leaf_node,
                  BranchNode* parent_branch,
                  unsigned char child_idx,
-                 unsigned int depth_mask);
+                 uindex_t depth_mask);
 
   /** \brief Get point at index from input pointcloud dataset
    * \param[in] index_arg index representing the point in the dataset given by \a
@@ -448,7 +456,7 @@ protected:
    * \return PointT from input pointcloud dataset
    */
   const PointT&
-  getPointByIndex(const unsigned int index_arg) const;
+  getPointByIndex(uindex_t index_arg) const;
 
   /** \brief Find octree leaf node at a given point
    * \param[in] point_arg query point
@@ -520,7 +528,7 @@ protected:
    * are assignable
    */
   virtual bool
-  genOctreeKeyForDataT(const int& data_arg, OctreeKey& key_arg) const;
+  genOctreeKeyForDataT(const index_t& data_arg, OctreeKey& key_arg) const;
 
   /** \brief Generate a point at center of leaf node voxel
    * \param[in] key_arg octree key addressing a leaf node.
@@ -536,7 +544,7 @@ protected:
    */
   void
   genVoxelCenterFromOctreeKey(const OctreeKey& key_arg,
-                              unsigned int tree_depth_arg,
+                              uindex_t tree_depth_arg,
                               PointT& point_arg) const;
 
   /** \brief Generate bounds of an octree voxel using octree key and tree depth
@@ -548,7 +556,7 @@ protected:
    */
   void
   genVoxelBoundsFromOctreeKey(const OctreeKey& key_arg,
-                              unsigned int tree_depth_arg,
+                              uindex_t tree_depth_arg,
                               Eigen::Vector3f& min_pt,
                               Eigen::Vector3f& max_pt) const;
 
@@ -560,7 +568,7 @@ protected:
    * elements
    * \return number of voxels found
    */
-  int
+  uindex_t
   getOccupiedVoxelCentersRecursive(const BranchNode* node_arg,
                                    const OctreeKey& key_arg,
                                    AlignedPointTVector& voxel_center_list_arg) const;
@@ -575,28 +583,28 @@ protected:
   IndicesConstPtr indices_;
 
   /** \brief Epsilon precision (error bound) for nearest neighbors searches. */
-  double epsilon_;
+  double epsilon_{0.0};
 
   /** \brief Octree resolution. */
   double resolution_;
 
   // Octree bounding box coordinates
-  double min_x_;
+  double min_x_{0.0};
   double max_x_;
 
-  double min_y_;
+  double min_y_{0.0};
   double max_y_;
 
-  double min_z_;
+  double min_z_{0.0};
   double max_z_;
 
   /** \brief Flag indicating if octree has defined bounding box. */
-  bool bounding_box_defined_;
+  bool bounding_box_defined_{false};
 
   /** \brief Amount of DataT objects per leafNode before expanding branch
    *  \note zero indicates a fixed/maximum depth octree structure
    * **/
-  std::size_t max_objs_per_leaf_;
+  std::size_t max_objs_per_leaf_{0};
 };
 
 } // namespace octree

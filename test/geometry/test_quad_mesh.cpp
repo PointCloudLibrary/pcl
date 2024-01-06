@@ -221,7 +221,7 @@ TYPED_TEST (TestQuadMesh, OneQuad)
 TYPED_TEST (TestQuadMesh, NineQuads)
 {
   using Mesh = typename TestFixture::Mesh;
-  const int int_max = std::numeric_limits <int>::max ();
+  constexpr int int_max = std::numeric_limits<int>::max();
 
   // Order
   //    -   -   -   //
@@ -345,9 +345,7 @@ TYPED_TEST (TestQuadMesh, NineQuads)
   ASSERT_EQ (9, faces.size ());
   for (std::size_t i=0; i<order_vec.size (); ++i)
   {
-    std::stringstream ss;
-    ss << "Configuration " << i;
-    SCOPED_TRACE (ss.str ());
+    SCOPED_TRACE ("Configuration " + std::to_string(i));
 
     const std::vector <int> order = order_vec [i];
 

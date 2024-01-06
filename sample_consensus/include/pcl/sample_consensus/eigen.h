@@ -38,7 +38,7 @@
  */
 
 #pragma once
-
+PCL_DEPRECATED_HEADER(1, 15, "Please include the needed eigen headers directly.")
 #if defined __GNUC__
 #  pragma GCC system_header 
 #endif

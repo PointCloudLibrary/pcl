@@ -41,17 +41,17 @@
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 
-namespace pcl 
+namespace pcl
 {
   /** Principal Component analysis (PCA) class.\n
-    *  Principal components are extracted by singular values decomposition on the 
-    * covariance matrix of the centered input cloud. Available data after pca computation 
+    *  Principal components are extracted by singular values decomposition on the
+    * covariance matrix of the centered input cloud. Available data after pca computation
     * are:\n
     * - The Mean of the input data\n
     * - The Eigenvectors: Ordered set of vectors representing the resultant principal components and the eigenspace cartesian basis (right-handed coordinate system).\n
     * - The Eigenvalues: Eigenvectors correspondent loadings ordered in descending order.\n\n
-    * Other methods allow projection in the eigenspace, reconstruction from eigenspace and 
-    *  update of the eigenspace with a new datum (according Matej Artec, Matjaz Jogan and 
+    * Other methods allow projection in the eigenspace, reconstruction from eigenspace and
+    *  update of the eigenspace with a new datum (according Matej Artec, Matjaz Jogan and
     * Ales Leonardis: "Incremental PCA for On-line Visual Learning and Recognition").
     *
     * \author Nizar Sallem
@@ -74,30 +74,29 @@ namespace pcl
       using Base::setInputCloud;
 
       /** Updating method flag */
-      enum FLAG 
+      enum FLAG
       {
         /** keep the new basis vectors if possible */
-        increase, 
+        increase,
         /** preserve subspace dimension */
         preserve
       };
-    
+
       /** \brief Default Constructor
         * \param basis_only flag to compute only the PCA basis
         */
       PCA (bool basis_only = false)
         : Base ()
-        , compute_done_ (false)
-        , basis_only_ (basis_only) 
+        , basis_only_ (basis_only)
       {}
 
       /** Copy Constructor
         * \param[in] pca PCA object
         */
-      PCA (PCA const & pca) 
+      PCA (PCA const & pca)
         : Base (pca)
         , compute_done_ (pca.compute_done_)
-        , basis_only_ (pca.basis_only_) 
+        , basis_only_ (pca.basis_only_)
         , eigenvectors_ (pca.eigenvectors_)
         , coefficients_ (pca.coefficients_)
         , mean_ (pca.mean_)
@@ -107,8 +106,8 @@ namespace pcl
       /** Assignment operator
         * \param[in] pca PCA object
         */
-      inline PCA& 
-      operator= (PCA const & pca) 
+      inline PCA&
+      operator= (PCA const & pca)
       {
         eigenvectors_ = pca.eigenvectors_;
         coefficients_ = pca.coefficients_;
@@ -116,13 +115,13 @@ namespace pcl
         mean_         = pca.mean_;
         return (*this);
       }
-      
+
       /** \brief Provide a pointer to the input dataset
         * \param cloud the const boost shared pointer to a PointCloud message
         */
-      inline void 
-      setInputCloud (const PointCloudConstPtr &cloud) override 
-      { 
+      inline void
+      setInputCloud (const PointCloudConstPtr &cloud) override
+      {
         Base::setInputCloud (cloud);
         compute_done_ = false;
       }
@@ -175,74 +174,74 @@ namespace pcl
       /** \brief Mean accessor
         * \throw InitFailedException
         */
-      inline Eigen::Vector4f& 
-      getMean () 
+      inline Eigen::Vector4f&
+      getMean ()
       {
         if (!compute_done_)
           initCompute ();
         if (!compute_done_)
-          PCL_THROW_EXCEPTION (InitFailedException, 
+          PCL_THROW_EXCEPTION (InitFailedException,
                                "[pcl::PCA::getMean] PCA initCompute failed");
         return (mean_);
       }
 
       /** Eigen Vectors accessor
-        * \return Column ordered eigenvectors, representing the eigenspace cartesian basis (right-handed coordinate system).        
+        * \return Column ordered eigenvectors, representing the eigenspace cartesian basis (right-handed coordinate system).
         * \throw InitFailedException
         */
-      inline Eigen::Matrix3f& 
-      getEigenVectors () 
+      inline Eigen::Matrix3f&
+      getEigenVectors ()
       {
         if (!compute_done_)
           initCompute ();
         if (!compute_done_)
-          PCL_THROW_EXCEPTION (InitFailedException, 
+          PCL_THROW_EXCEPTION (InitFailedException,
                                "[pcl::PCA::getEigenVectors] PCA initCompute failed");
         return (eigenvectors_);
       }
-      
+
       /** Eigen Values accessor
         * \throw InitFailedException
         */
-      inline Eigen::Vector3f& 
+      inline Eigen::Vector3f&
       getEigenValues ()
       {
         if (!compute_done_)
           initCompute ();
         if (!compute_done_)
-          PCL_THROW_EXCEPTION (InitFailedException, 
+          PCL_THROW_EXCEPTION (InitFailedException,
                                "[pcl::PCA::getEigenVectors] PCA getEigenValues failed");
         return (eigenvalues_);
       }
-      
+
       /** Coefficients accessor
         * \throw InitFailedException
         */
-      inline Eigen::MatrixXf& 
-      getCoefficients () 
+      inline Eigen::MatrixXf&
+      getCoefficients ()
       {
         if (!compute_done_)
           initCompute ();
         if (!compute_done_)
-          PCL_THROW_EXCEPTION (InitFailedException, 
+          PCL_THROW_EXCEPTION (InitFailedException,
                                "[pcl::PCA::getEigenVectors] PCA getCoefficients failed");
         return (coefficients_);
       }
-            
+
       /** update PCA with a new point
-        * \param[in] input input point 
+        * \param[in] input input point
         * \param[in] flag update flag
         * \throw InitFailedException
         */
-      inline void 
+      inline void
       update (const PointT& input, FLAG flag = preserve);
-      
+
       /** Project point on the eigenspace.
         * \param[in] input point from original dataset
         * \param[out] projection the point in eigen vectors space
         * \throw InitFailedException
         */
-      inline void 
+      inline void
       project (const PointT& input, PointT& projection);
 
       /** Project cloud on the eigenspace.
@@ -252,13 +251,13 @@ namespace pcl
         */
       inline void
       project (const PointCloud& input, PointCloud& projection);
-      
+
       /** Reconstruct point from its projection
         * \param[in] projection point from eigenvector space
         * \param[out] input reconstructed point
         * \throw InitFailedException
         */
-      inline void 
+      inline void
       reconstruct (const PointT& projection, PointT& input);
 
       /** Reconstruct cloud from its projection
@@ -272,7 +271,7 @@ namespace pcl
       inline bool
       initCompute ();
 
-      bool compute_done_;
+      bool compute_done_{false};
       bool basis_only_;
       Eigen::Matrix3f eigenvectors_;
       Eigen::MatrixXf coefficients_;

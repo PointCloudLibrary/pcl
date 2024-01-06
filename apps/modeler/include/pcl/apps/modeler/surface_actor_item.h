@@ -58,7 +58,6 @@ public:
   SurfaceActorItem(QTreeWidgetItem* parent,
                    const CloudMesh::Ptr& cloud_mesh,
                    const vtkSmartPointer<vtkRenderWindow>& render_window);
-  ~SurfaceActorItem();
 
   std::string
   getItemName() const override

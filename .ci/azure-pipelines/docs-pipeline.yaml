@@ -1,0 +1,44 @@
+trigger:
+  paths:
+    include:
+    - doc
+
+pr:
+  paths:
+    include:
+    - doc
+
+resources:
+  pipelines:
+    - pipeline: Build-CI
+      source: Build
+      trigger:
+        stages:
+        - build_gcc
+  containers:
+    - container: doc # for documentation.yaml
+      image: pointcloudlibrary/doc
+    - container: env2204 # for tutorials.yaml
+      image: pointcloudlibrary/env:22.04
+
+stages:
+  - stage: formatting
+    displayName: Formatting
+    # if docs pipeline triggered by build_gcc stage,
+    # the formatting stage has already run, thus it
+    # won't run for a second time here.
+    condition: ne(variables['Build.Reason'], 'ResourceTrigger')
+    jobs:
+      - template: formatting.yaml
+
+  - stage: documentation
+    displayName: Documentation
+    condition: in(dependencies.formatting.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
+    jobs:
+      - template: documentation.yaml
+
+  - stage: tutorials
+    displayName: Tutorials
+    condition: in(dependencies.documentation.result, 'Succeeded', 'SucceededWithIssues')
+    jobs:
+      - template: tutorials.yaml

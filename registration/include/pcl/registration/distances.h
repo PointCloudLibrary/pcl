@@ -42,9 +42,8 @@
 
 #include <Eigen/Core>
 
-#include <string.h>
-
 #include <algorithm>
+#include <cstring>
 #include <vector>
 
 namespace pcl {
@@ -58,8 +57,7 @@ inline double
 computeMedian(double* fvec, int m)
 {
   // Copy the values to vectors for faster sorting
-  std::vector<double> data(m);
-  memcpy(&data[0], fvec, sizeof(double) * m);
+  std::vector<double> data(fvec, fvec + m);
 
   std::nth_element(data.begin(), data.begin() + (data.size() >> 1), data.end());
   return (data[data.size() >> 1]);

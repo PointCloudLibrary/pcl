@@ -103,13 +103,13 @@ pcl::io::saveRgbPNGFile (const std::string& file_name, const unsigned char *rgb_
 void
 pcl::io::savePNGFile (const std::string& file_name, const pcl::PointCloud<unsigned char>& cloud)
 {
-  saveCharPNGFile(file_name, &cloud[0], cloud.width, cloud.height, 1);
+  saveCharPNGFile(file_name, cloud.data(), cloud.width, cloud.height, 1);
 }
 
 void
 pcl::io::savePNGFile (const std::string& file_name, const pcl::PointCloud<unsigned short>& cloud)
 {
-  saveShortPNGFile(file_name, &cloud[0], cloud.width, cloud.height, 1);
+  saveShortPNGFile(file_name, cloud.data(), cloud.width, cloud.height, 1);
 }
 
 void
@@ -117,15 +117,15 @@ pcl::io::savePNGFile (const std::string& file_name, const pcl::PCLImage& image)
 {
     if (image.encoding == "rgb8")
     {
-        saveRgbPNGFile(file_name, &image.data[0], image.width, image.height);
+        saveRgbPNGFile(file_name, image.data.data(), image.width, image.height);
     }
     else if (image.encoding == "mono8")
     {
-        saveCharPNGFile(file_name, &image.data[0], image.width, image.height, 1);
+        saveCharPNGFile(file_name, image.data.data(), image.width, image.height, 1);
     }
     else if (image.encoding == "mono16")
     {
-        saveShortPNGFile(file_name, reinterpret_cast<const unsigned short*>(&image.data[0]), image.width, image.height, 1);
+        saveShortPNGFile(file_name, reinterpret_cast<const unsigned short*>(image.data.data()), image.width, image.height, 1);
     }
     else
     {

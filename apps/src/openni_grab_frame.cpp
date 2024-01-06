@@ -40,6 +40,7 @@
 #include <pcl/console/print.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/io/timestamp.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -157,23 +158,20 @@ public:
   saveCloud()
   {
     FPS_CALC("I/O");
-    std::stringstream ss;
-    ss << dir_name_ << "/" << file_name_ << "_"
-       << boost::posix_time::to_iso_string(
-              boost::posix_time::microsec_clock::local_time())
-       << ".pcd";
+    const std::string time = pcl::getTimestamp();
+    const std::string filepath = dir_name_ + '/' + file_name_ + '_' + time + ".pcd";
 
     if (format_ & 1) {
-      writer_.writeBinary<PointType>(ss.str(), *cloud_);
+      writer_.writeBinary<PointType>(filepath, *cloud_);
       // std::cerr << "Data saved in BINARY format to " << ss.str () << std::endl;
     }
 
     if (format_ & 2) {
-      writer_.writeBinaryCompressed<PointType>(ss.str(), *cloud_);
+      writer_.writeBinaryCompressed<PointType>(filepath, *cloud_);
     }
 
     if (format_ & 4) {
-      writer_.writeBinaryCompressed<PointType>(ss.str(), *cloud_);
+      writer_.writeBinaryCompressed<PointType>(filepath, *cloud_);
     }
   }
 

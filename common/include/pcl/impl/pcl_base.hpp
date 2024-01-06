@@ -139,7 +139,10 @@ pcl::PCLBase<PointT>::initCompute ()
 {
   // Check if input was set
   if (!input_)
+  {
+    PCL_ERROR ("[initCompute] No input set.\n");
     return (false);
+  }
 
   // If no point indices have been given, construct a set of indices for the entire input point cloud
   if (!indices_)
@@ -159,6 +162,7 @@ pcl::PCLBase<PointT>::initCompute ()
     catch (const std::bad_alloc&)
     {
       PCL_ERROR ("[initCompute] Failed to allocate %lu indices.\n", input_->size ());
+      return (false);
     }
     for (auto i = indices_size; i < indices_->size (); ++i) { (*indices_)[i] = static_cast<int>(i); }
   }

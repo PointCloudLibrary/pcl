@@ -71,13 +71,13 @@ namespace pcl
 
 
       /** \brief Empty constructor. */
-      ProjectInliers () : sacmodel_ (), model_type_ (), copy_all_data_ (false)
+      ProjectInliers () : sacmodel_ ()
       {
         filter_name_ = "ProjectInliers";
       }
       
       /** \brief Empty destructor */
-      ~ProjectInliers () {}
+      ~ProjectInliers () override = default;
 
       /** \brief The type of model to use (user given parameter).
         * \param model the model type (check \a model_types.h)
@@ -142,10 +142,10 @@ namespace pcl
       SampleConsensusModelPtr sacmodel_;
 
       /** \brief The type of model to use (user given parameter). */
-      int model_type_;
+      int model_type_{0};
 
       /** \brief True if all data will be returned, false if only the projected inliers. Default: false. */
-      bool copy_all_data_;
+      bool copy_all_data_{false};
 
       /** \brief Initialize the Sample Consensus model and set its parameters.
         * \param model_type the type of SAC model that is to be used
@@ -157,7 +157,6 @@ namespace pcl
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b ProjectInliers uses a model and a set of inlier indices from a PointCloud to project them into a
     * separate PointCloud.
-    * \note setFilterFieldName (), setFilterLimits (), and setFilterLimitNegative () are ignored.
     * \author Radu Bogdan Rusu
     * \ingroup filters
     */
@@ -175,13 +174,13 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      ProjectInliers () : model_type_ (), copy_all_data_ (false), copy_all_fields_ (true)
+      ProjectInliers ()
       {
         filter_name_ = "ProjectInliers";
       }
       
       /** \brief Empty destructor */
-      ~ProjectInliers () {}
+      ~ProjectInliers () override = default;
 
       /** \brief The type of model to use (user given parameter).
         * \param[in] model the model type (check \a model_types.h)
@@ -248,13 +247,13 @@ namespace pcl
       }
     protected:
       /** \brief The type of model to use (user given parameter). */
-      int model_type_;
+      int model_type_{0};
 
       /** \brief True if all data will be returned, false if only the projected inliers. Default: false. */
-      bool copy_all_data_;
+      bool copy_all_data_{false};
 
       /** \brief True if all fields will be returned, false if only XYZ. Default: true. */
-      bool copy_all_fields_;
+      bool copy_all_fields_{true};
 
       /** \brief A pointer to the vector of model coefficients. */
       ModelCoefficientsConstPtr model_;

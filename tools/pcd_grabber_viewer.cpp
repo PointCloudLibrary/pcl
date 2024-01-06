@@ -39,10 +39,10 @@
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
-#include <pcl/visualization/boost.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/image_viewer.h>
-
+#include <boost/filesystem.hpp> // for exists, extension, ...
+#include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 #include <mutex>
 #include <thread>
 
@@ -103,7 +103,7 @@ keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
 void 
 mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
 {
-  std::string* message = static_cast<std::string*> (cookie);
+  auto* message = static_cast<std::string*> (cookie);
   if (mouse_event.getType() == pcl::visualization::MouseEvent::MouseButtonPress && mouse_event.getButton() == pcl::visualization::MouseEvent::LeftButton)
   {
     std::cout << (*message) << " :: " << mouse_event.getX () << " , " << mouse_event.getY () << std::endl;
@@ -114,7 +114,7 @@ mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
 int
 main (int argc, char** argv)
 {
-  srand (unsigned (time (nullptr)));
+  srand (static_cast<unsigned>(time (nullptr)));
 
   if (argc > 1)
   {
@@ -193,7 +193,7 @@ main (int argc, char** argv)
       boost::filesystem::directory_iterator end_itr;
       for (boost::filesystem::directory_iterator itr (path); itr != end_itr; ++itr)
       {
-        if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ())) == ".PCD" )
+        if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (itr->path ().extension ().string ()) == ".PCD" )
         {
           pcd_files.push_back (itr->path ().string ());
           std::cout << "added: " << itr->path ().string () << std::endl;

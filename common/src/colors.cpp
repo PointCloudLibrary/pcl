@@ -38,6 +38,7 @@
 #include <pcl/point_types.h>
 #include <pcl/common/colors.h>
 
+#include <cassert>
 #include <array>
 
 /// Glasbey lookup table
@@ -609,9 +610,9 @@ pcl::getRandomColor (double min, double max)
   }
   while (sum <= min || sum >= max);
   pcl::RGB color;
-  color.r = std::uint8_t (r * 255.0);
-  color.g = std::uint8_t (g * 255.0);
-  color.b = std::uint8_t (b * 255.0);
+  color.r = static_cast<std::uint8_t>(r * 255.0);
+  color.g = static_cast<std::uint8_t>(g * 255.0);
+  color.b = static_cast<std::uint8_t>(b * 255.0);
   return (color);
 }
 

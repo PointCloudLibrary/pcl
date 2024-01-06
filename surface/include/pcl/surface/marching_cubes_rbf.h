@@ -47,6 +47,9 @@ namespace pcl
     * "Reconstruction and representation of 3D objects with radial basis functions"
     * SIGGRAPH '01
     *
+    * \note This algorithm in its current implementation may not be suitable for very
+    * large point clouds, due to high memory requirements.
+    * \tparam PointNT Use `pcl::PointNormal` or `pcl::PointXYZRGBNormal` or `pcl::PointXYZINormal`
     * \author Alexandru E. Ichim
     * \ingroup surface
     */
@@ -83,7 +86,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      ~MarchingCubesRBF ();
+      ~MarchingCubesRBF () override;
 
       /** \brief Convert the point cloud into voxel data.
         */

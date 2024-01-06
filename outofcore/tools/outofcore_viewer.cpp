@@ -56,9 +56,6 @@
 // PCL - visualziation
 //#include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/common/common.h>
-#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
-#include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
-#endif
 
 //#include "vtkVBOPolyDataMapper.h"
 
@@ -115,7 +112,6 @@ using AlignedPointT = Eigen::aligned_allocator<PointT>;
 #include <vtkLODActor.h>
 #include <vtkMath.h>
 #include <vtkMatrix4x4.h>
-#include <vtkMutexLock.h>
 #include <vtkObjectFactory.h>
 #include <vtkPolyData.h>
 #include <vtkProperty.h>
@@ -131,7 +127,6 @@ using AlignedPointT = Eigen::aligned_allocator<PointT>;
 #include <vtkParallelCoordinatesInteractorStyle.h>
 
 // Boost
-#include <boost/date_time.hpp>
 #include <boost/filesystem.hpp>
 
 // Globals
@@ -163,7 +158,7 @@ public:
     std::cout << "Key Pressed: " << key << std::endl;
 
     Scene *scene = Scene::instance ();
-    OutofcoreCloud *cloud = static_cast<OutofcoreCloud*> (scene->getObjectByName ("my_octree"));
+    OutofcoreCloud *cloud = dynamic_cast<OutofcoreCloud*> (scene->getObjectByName ("my_octree"));
 
     if (key == "Up" || key == "Down")
     {
@@ -233,7 +228,7 @@ outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octr
   Scene *scene = Scene::instance ();
 
   // Clouds
-  OutofcoreCloud *cloud = new OutofcoreCloud ("my_octree", tree_root);
+  auto *cloud = new OutofcoreCloud ("my_octree", tree_root);
   cloud->setDisplayDepth (depth);
   cloud->setDisplayVoxels (display_octree);
   OutofcoreCloud::cloud_data_cache.setCapacity(gpu_cache_size*1024);
@@ -387,7 +382,7 @@ main (int argc, char* argv[])
       const boost::filesystem::path& file = *diter;
       if (!boost::filesystem::is_directory (file))
       {
-        if (boost::filesystem::extension (file) == octree_disk_node::node_index_extension)
+        if (file.extension ().string () == octree_disk_node::node_index_extension)
         {
           tree_root = file;
         }

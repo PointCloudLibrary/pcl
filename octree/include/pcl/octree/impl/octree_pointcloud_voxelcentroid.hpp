@@ -70,7 +70,7 @@ pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafContainerT, BranchContain
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename LeafContainerT, typename BranchContainerT>
-std::size_t
+pcl::uindex_t
 pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafContainerT, BranchContainerT>::
     getVoxelCentroids(
         typename OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::
@@ -118,7 +118,7 @@ pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafContainerT, BranchContain
       case LEAF_NODE: {
         PointT new_centroid;
 
-        LeafNode* container = static_cast<LeafNode*>(child_node);
+        auto* container = static_cast<LeafNode*>(child_node);
 
         container->getContainer().getCentroid(new_centroid);
 

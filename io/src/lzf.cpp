@@ -41,7 +41,7 @@
 #include <cerrno>
 #include <climits>
 #include <cstddef>
-#include <cstring>
+#include <algorithm>
 
 /*
  * Size of hashtable is (1 << HLOG) * sizeof (char *)
@@ -90,9 +90,9 @@ unsigned int
 pcl::lzfCompress (const void *const in_data, unsigned int in_len,
                   void *out_data, unsigned int out_len)
 {
-  LZF_STATE htab;
-  const unsigned char *ip = static_cast<const unsigned char *> (in_data);
-        unsigned char *op = static_cast<unsigned char *> (out_data);
+  LZF_STATE htab{};
+  const auto *ip = static_cast<const unsigned char *> (in_data);
+        auto *op = static_cast<unsigned char *> (out_data);
   const unsigned char *in_end  = ip + in_len;
         unsigned char *out_end = op + out_len;
 
@@ -101,9 +101,6 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
     PCL_WARN ("[pcl::lzf_compress] Input or output has 0 size!\n");
     return (0);
   }
-
-  // Initialize the htab
-  memset (htab, 0, sizeof (htab));
 
   // Start run
   int lit = 0;
@@ -280,8 +277,8 @@ unsigned int
 pcl::lzfDecompress (const void *const in_data,  unsigned int in_len,
                     void             *out_data, unsigned int out_len)
 {
-  unsigned char const *ip = static_cast<const unsigned char *> (in_data);
-  unsigned char       *op = static_cast<unsigned char *> (out_data);
+  auto const *ip = static_cast<const unsigned char *> (in_data);
+  auto       *op = static_cast<unsigned char *> (out_data);
   unsigned char const *const in_end  = ip + in_len;
   unsigned char       *const out_end = op + out_len;
 
@@ -352,8 +349,8 @@ pcl::lzfDecompress (const void *const in_data,  unsigned int in_len,
 
         if (op >= ref + len)
         {
-          // Disjunct areas
-          memcpy (op, ref, len);
+          // Disjunct
+          std::copy(ref, ref + len, op);
           op += len;
         }
         else

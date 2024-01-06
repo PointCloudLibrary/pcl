@@ -81,6 +81,16 @@ pcl::PassThrough<PointT>::applyFilterIndices (Indices &indices)
       removed_indices_->clear ();
       return;
     }
+    if (fields[distance_idx].datatype != pcl::PCLPointField::PointFieldTypes::FLOAT32)
+    {
+      PCL_ERROR ("[pcl::%s::applyFilter] PassThrough currently only works with float32 fields. To filter fields of other types see ConditionalRemoval or FunctorFilter/FunctionFilter.\n", getClassName ().c_str ());
+      indices.clear ();
+      removed_indices_->clear ();
+      return;
+    }
+    if (filter_field_name_ == "rgb")
+      PCL_WARN ("[pcl::%s::applyFilter] You told PassThrough to operate on the 'rgb' field. This will likely not do what you expect. Consider using ConditionalRemoval or FunctorFilter/FunctionFilter.\n", getClassName ().c_str ());
+    const auto field_offset = fields[distance_idx].offset;
 
     // Filter for non-finite entries and the specified field limits
     for (const auto ii : *indices_)  // ii = input index
@@ -96,9 +106,9 @@ pcl::PassThrough<PointT>::applyFilterIndices (Indices &indices)
       }
 
       // Get the field's value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&(*input_)[ii]);
+      const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&(*input_)[ii]);
       float field_value = 0;
-      memcpy (&field_value, pt_data + fields[distance_idx].offset, sizeof (float));
+      memcpy (&field_value, pt_data + field_offset, sizeof (float));
 
       // Remove NAN/INF/-INF values. We expect passthrough to output clean valid data.
       if (!std::isfinite (field_value))

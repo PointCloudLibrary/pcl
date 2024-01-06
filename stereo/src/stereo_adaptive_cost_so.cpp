@@ -60,18 +60,15 @@ pcl::AdaptiveCostSOStereoMatching::compute_impl(unsigned char* ref_img,
 
   float** acc = new float*[width_];
   for (int d = 0; d < width_; d++) {
-    acc[d] = new float[max_disp_];
-    memset(acc[d], 0, sizeof(float) * max_disp_);
+    acc[d] = new float[max_disp_]{};
   }
 
   // data structures for Scanline Optimization
   float** fwd = new float*[width_];
   float** bck = new float*[width_];
   for (int d = 0; d < width_; d++) {
-    fwd[d] = new float[max_disp_];
-    memset(fwd[d], 0, sizeof(float) * max_disp_);
-    bck[d] = new float[max_disp_];
-    memset(bck[d], 0, sizeof(float) * max_disp_);
+    fwd[d] = new float[max_disp_]{};
+    bck[d] = new float[max_disp_]{};
   }
 
   // spatial distance init
@@ -82,7 +79,7 @@ pcl::AdaptiveCostSOStereoMatching::compute_impl(unsigned char* ref_img,
   // LUT for color distance weight computation
   float lut[256];
   for (int j = 0; j < 256; j++)
-    lut[j] = float(std::exp(-j / gamma_c_));
+    lut[j] = static_cast<float>(std::exp(-j / gamma_c_));
 
   // left weight array alloc
   float* wl = new float[2 * radius_ + 1];

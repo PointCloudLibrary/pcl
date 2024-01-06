@@ -106,22 +106,18 @@ namespace pcl
           color_coder_ (),
           point_coder_ (),
           do_voxel_grid_enDecoding_ (doVoxelGridDownDownSampling_arg), i_frame_rate_ (iFrameRate_arg),
-          i_frame_counter_ (0), frame_ID_ (0), point_count_ (0), i_frame_ (true),
-          do_color_encoding_ (doColorEncoding_arg), cloud_with_color_ (false), data_with_color_ (false),
-          point_color_offset_ (0), b_show_statistics_ (showStatistics_arg), 
-          compressed_point_data_len_ (), compressed_color_data_len_ (), selected_profile_(compressionProfile_arg),
+          
+          do_color_encoding_ (doColorEncoding_arg),  b_show_statistics_ (showStatistics_arg), 
+           selected_profile_(compressionProfile_arg),
           point_resolution_(pointResolution_arg), octree_resolution_(octreeResolution_arg),
-          color_bit_resolution_(colorBitResolution_arg),
-          object_count_(0)
+          color_bit_resolution_(colorBitResolution_arg)
         {
           initialization();
         }
 
         /** \brief Empty deconstructor. */
         
-        ~OctreePointCloudCompression ()
-        {
-        }
+        ~OctreePointCloudCompression () override = default;
 
         /** \brief Initialize globals */
         void initialization () {
@@ -158,7 +154,7 @@ namespace pcl
          * \param[in] pointIdx_arg the index representing the point in the dataset given by \a setInputCloud to be added
          */
         void
-        addPointIdx (const int pointIdx_arg) override
+        addPointIdx (const uindex_t pointIdx_arg) override
         {
           ++object_count_;
           OctreePointCloud<PointT, LeafT, BranchT, OctreeT>::addPointIdx(pointIdx_arg);
@@ -195,6 +191,7 @@ namespace pcl
         /** \brief Decode point cloud from input stream
           * \param compressed_tree_data_in_arg: binary input stream containing compressed data
           * \param cloud_arg: reference to decoded point cloud
+          * \warning This function is blocking until there is data available from the input stream. If the stream never contains any data, this will hang forever!
           */
         void
         decodePointCloud (std::istream& compressed_tree_data_in_arg, PointCloudPtr &cloud_arg);
@@ -252,9 +249,6 @@ namespace pcl
         /** \brief Vector for storing binary tree structure */
         std::vector<char> binary_tree_data_vector_;
 
-        /** \brief Iterator on binary tree structure vector */
-        std::vector<char> binary_color_tree_vector_;
-
         /** \brief Vector for storing points per voxel information  */
         std::vector<unsigned int> point_count_data_vector_;
 
@@ -270,22 +264,22 @@ namespace pcl
         /** \brief Static range coder instance */
         StaticRangeCoder entropy_coder_;
 
-        bool do_voxel_grid_enDecoding_;
-        std::uint32_t i_frame_rate_;
-        std::uint32_t i_frame_counter_;
-        std::uint32_t frame_ID_;
-        std::uint64_t point_count_;
-        bool i_frame_;
+        bool do_voxel_grid_enDecoding_{false};
+        std::uint32_t i_frame_rate_{0};
+        std::uint32_t i_frame_counter_{0};
+        std::uint32_t frame_ID_{0};
+        std::uint64_t point_count_{0};
+        bool i_frame_{true};
 
-        bool do_color_encoding_;
-        bool cloud_with_color_;
-        bool data_with_color_;
-        unsigned char point_color_offset_;
+        bool do_color_encoding_{false};
+        bool cloud_with_color_{false};
+        bool data_with_color_{false};
+        unsigned char point_color_offset_{0};
 
         //bool activating statistics
-        bool b_show_statistics_;
-        std::uint64_t compressed_point_data_len_;
-        std::uint64_t compressed_color_data_len_;
+        bool b_show_statistics_{false};
+        std::uint64_t compressed_point_data_len_{0};
+        std::uint64_t compressed_color_data_len_{0};
 
         // frame header identifier
         static const char* frame_header_identifier_;
@@ -295,7 +289,7 @@ namespace pcl
         const double octree_resolution_;
         const unsigned char color_bit_resolution_;
 
-        std::size_t object_count_;
+        std::size_t object_count_{0};
 
       };
 

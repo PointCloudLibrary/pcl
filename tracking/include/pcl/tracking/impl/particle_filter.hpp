@@ -62,8 +62,8 @@ ParticleFilterTracker<PointInT, StateT>::genAliasTable(
 {
   /* generate an alias table, a and q */
   std::vector<int> HL(particles->size());
-  std::vector<int>::iterator H = HL.begin();
-  std::vector<int>::iterator L = HL.end() - 1;
+  auto H = HL.begin();
+  auto L = HL.end() - 1;
   const auto num = particles->size();
   for (std::size_t i = 0; i < num; i++)
     q[i] = (*particles)[i].weight * static_cast<float>(num);
@@ -164,9 +164,9 @@ ParticleFilterTracker<PointInT, StateT>::cropInputPointCloud(
 {
   double x_min, y_min, z_min, x_max, y_max, z_max;
   calcBoundingBox(x_min, x_max, y_min, y_max, z_min, z_max);
-  pass_x_.setFilterLimits(float(x_min), float(x_max));
-  pass_y_.setFilterLimits(float(y_min), float(y_max));
-  pass_z_.setFilterLimits(float(z_min), float(z_max));
+  pass_x_.setFilterLimits(static_cast<float>(x_min), static_cast<float>(x_max));
+  pass_y_.setFilterLimits(static_cast<float>(y_min), static_cast<float>(y_max));
+  pass_z_.setFilterLimits(static_cast<float>(z_min), static_cast<float>(z_max));
 
   // x
   PointCloudInPtr xcloud(new PointCloudIn);
@@ -220,7 +220,7 @@ ParticleFilterTracker<PointInT, StateT>::testChangeDetection(
 {
   change_detector_->setInputCloud(input);
   change_detector_->addPointsFromInputCloud();
-  std::vector<int> newPointIdxVector;
+  pcl::Indices newPointIdxVector;
   change_detector_->getPointIndicesFromNewVoxels(newPointIdxVector,
                                                  change_detector_filter_);
   change_detector_->switchBuffers();
@@ -250,7 +250,7 @@ ParticleFilterTracker<PointInT, StateT>::weight()
   }
   else {
     for (std::size_t i = 0; i < particles_->size(); i++) {
-      IndicesPtr indices(new std::vector<int>);
+      IndicesPtr indices(new pcl::Indices);
       computeTransformedPointCloudWithNormal(
           (*particles_)[i], *indices, *transed_reference_vector_[i]);
     }
@@ -261,7 +261,7 @@ ParticleFilterTracker<PointInT, StateT>::weight()
     coherence_->setTargetCloud(coherence_input);
     coherence_->initCompute();
     for (std::size_t i = 0; i < particles_->size(); i++) {
-      IndicesPtr indices(new std::vector<int>);
+      IndicesPtr indices(new pcl::Indices);
       coherence_->compute(
           transed_reference_vector_[i], indices, (*particles_)[i].weight);
     }
@@ -273,7 +273,7 @@ ParticleFilterTracker<PointInT, StateT>::weight()
 template <typename PointInT, typename StateT>
 void
 ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloud(
-    const StateT& hypothesis, std::vector<int>& indices, PointCloudIn& cloud)
+    const StateT& hypothesis, pcl::Indices& indices, PointCloudIn& cloud)
 {
   if (use_normal_)
     computeTransformedPointCloudWithNormal(hypothesis, indices, cloud);
@@ -293,15 +293,11 @@ ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloudWithoutNorm
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename StateT>
+template <typename PointT, pcl::traits::HasNormal<PointT>>
 void
 ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloudWithNormal(
-#ifdef PCL_TRACKING_NORMAL_SUPPORTED
-    const StateT& hypothesis, std::vector<int>& indices, PointCloudIn& cloud)
-#else
-    const StateT&, std::vector<int>&, PointCloudIn&)
-#endif
+    const StateT& hypothesis, pcl::Indices& indices, PointCloudIn& cloud)
 {
-#ifdef PCL_TRACKING_NORMAL_SUPPORTED
   const Eigen::Affine3f trans = toEigenMatrix(hypothesis);
   // destructively assigns to cloud
   pcl::transformPointCloudWithNormals<PointInT>(*ref_, cloud, trans);
@@ -318,11 +314,6 @@ ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloudWithNormal(
     if (theta > occlusion_angle_thr_)
       indices.push_back(i);
   }
-#else
-  PCL_WARN("[pcl::%s::computeTransformedPointCloudWithoutNormal] "
-           "use_normal_ == true is not supported in this Point Type.\n",
-           getClassName().c_str());
-#endif
 }
 
 template <typename PointInT, typename StateT>
@@ -374,13 +365,11 @@ template <typename PointInT, typename StateT>
 void
 ParticleFilterTracker<PointInT, StateT>::update()
 {
-
   StateT orig_representative = representative_state_;
   representative_state_.zero();
   representative_state_.weight = 0.0;
-  for (const auto& p : *particles_) {
-    representative_state_ = representative_state_ + p * p.weight;
-  }
+  representative_state_ =
+      StateT::weightedAverage(particles_->begin(), particles_->end());
   representative_state_.weight = 1.0f / static_cast<float>(particles_->size());
   motion_ = representative_state_ - orig_representative;
 }

@@ -51,7 +51,9 @@
 #include <pcl/console/time.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
-#include <pcl/io/vtk_lib_io.h>
+#include <vtkImageData.h> // for vtkImageData
+#include <vtkSmartPointer.h> // for vtkSmartPointer
+#include <vtkPNGReader.h> // for vtkPNGReader
 
 #define RED_MULTIPLIER 0.299
 #define GREEN_MULTIPLIER 0.587
@@ -224,8 +226,7 @@ main (int argc, char** argv)
   }
 
   // Retrieve the entries from the image data and copy them into the output RGB cloud
-  double* pixel = new double [4];
-  memset (pixel, 0, sizeof (double) * 4);
+  double* pixel = new double [4]{0.0};
   float depth;
 
   std::string intensity_type;

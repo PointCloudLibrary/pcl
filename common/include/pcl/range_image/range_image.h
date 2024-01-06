@@ -41,8 +41,8 @@
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
-#include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
 #include <pcl/common/angles.h> // for deg2rad
+namespace pcl { struct PCLPointCloud2; }
 
 namespace pcl
 {
@@ -139,7 +139,7 @@ namespace pcl
         *                      but the mean of the points. If 0.0 it is equivalent to a normal z-buffer and
         *                      will always take the minimum per cell.
         * \param min_range the minimum visible range (defaults to 0)
-        * \param border_size the border size (defaults to 0)
+        * \param border_size the border size (defaults to 0). Set to `std::numeric_limits<int>::min()` to turn cropping off.
         */
       template <typename PointCloudType> void
       createFromPointCloud (const PointCloudType& point_cloud, float angular_resolution=pcl::deg2rad (0.5f),
@@ -163,7 +163,7 @@ namespace pcl
         *                      but the mean of the points. If 0.0 it is equivalent to a normal z-buffer and
         *                      will always take the minimum per cell.
         * \param min_range the minimum visible range (defaults to 0)
-        * \param border_size the border size (defaults to 0)
+        * \param border_size the border size (defaults to 0). Set to `std::numeric_limits<int>::min()` to turn cropping off.
         */
       template <typename PointCloudType> void
       createFromPointCloud (const PointCloudType& point_cloud,
@@ -186,7 +186,7 @@ namespace pcl
         *                      but the mean of the points. If 0.0 it is equivalent to a normal z-buffer and
         *                      will always take the minimum per cell.
         * \param min_range the minimum visible range (defaults to 0)
-        * \param border_size the border size (defaults to 0)
+        * \param border_size the border size (defaults to 0). Set to `std::numeric_limits<int>::min()` to turn cropping off.
         */
       template <typename PointCloudType> void
       createFromPointCloudWithKnownSize (const PointCloudType& point_cloud, float angular_resolution,
@@ -211,7 +211,7 @@ namespace pcl
         *                      but the mean of the points. If 0.0 it is equivalent to a normal z-buffer and
         *                      will always take the minimum per cell.
         * \param min_range the minimum visible range (defaults to 0)
-        * \param border_size the border size (defaults to 0)
+        * \param border_size the border size (defaults to 0). Set to `std::numeric_limits<int>::min()` to turn cropping off.
         */
       template <typename PointCloudType> void
       createFromPointCloudWithKnownSize (const PointCloudType& point_cloud,
@@ -232,7 +232,7 @@ namespace pcl
         *                      but the mean of the points. If 0.0 it is equivalent to a normal z-buffer and
         *                      will always take the minimum per cell.
         * \param min_range the minimum visible range (defaults to 0)
-        * \param border_size the border size (defaults to 0)
+        * \param border_size the border size (defaults to 0). Set to `std::numeric_limits<int>::min()` to turn cropping off.
         * \note If wrong_coordinate_system is true, the sensor pose will be rotated to change from a coordinate frame
         * with x to the front, y to the left and z to the top to the coordinate frame we use here (x to the right, y
         * to the bottom and z to the front) */
@@ -256,7 +256,7 @@ namespace pcl
         *                      but the mean of the points. If 0.0 it is equivalent to a normal z-buffer and
         *                      will always take the minimum per cell.
         * \param min_range the minimum visible range (defaults to 0)
-        * \param border_size the border size (defaults to 0)
+        * \param border_size the border size (defaults to 0). Set to `std::numeric_limits<int>::min()` to turn cropping off.
         * \note If wrong_coordinate_system is true, the sensor pose will be rotated to change from a coordinate frame
         * with x to the front, y to the left and z to the top to the coordinate frame we use here (x to the right, y
         * to the bottom and z to the front) */
@@ -397,7 +397,7 @@ namespace pcl
       inline PointWithRange&
       getPoint (float image_x, float image_y);
 
-      /** \brief Return the 3D point with range at the given image position.  This methd performs no error checking
+      /** \brief Return the 3D point with range at the given image position.  This method performs no error checking
         * to make sure the specified image position is inside of the image!
         * \param image_x the x coordinate
         * \param image_y the y coordinate
@@ -590,13 +590,13 @@ namespace pcl
       getAcutenessValueImages (int pixel_distance, float*& acuteness_value_image_x,
                                float*& acuteness_value_image_y) const;
 
-      /** Calculates, how much the surface changes at a point. Pi meaning a flat suface and 0.0f
+      /** Calculates, how much the surface changes at a point. Pi meaning a flat surface and 0.0f
        *  would be a needle point */
       //inline float
       //  getSurfaceChange (const PointWithRange& point, const PointWithRange& neighbor1,
       //                   const PointWithRange& neighbor2) const;
 
-      /** Calculates, how much the surface changes at a point. 1 meaning a 90deg angle and 0 a flat suface */
+      /** Calculates, how much the surface changes at a point. 1 meaning a 90deg angle and 0 a flat surface */
       PCL_EXPORTS float
       getSurfaceChange (int x, int y, int radius) const;
 
@@ -767,13 +767,13 @@ namespace pcl
       // =====PROTECTED MEMBER VARIABLES=====
       Eigen::Affine3f to_range_image_system_;  /**< Inverse of to_world_system_ */
       Eigen::Affine3f to_world_system_;        /**< Inverse of to_range_image_system_ */
-      float angular_resolution_x_;             /**< Angular resolution of the range image in x direction in radians per pixel */
-      float angular_resolution_y_;             /**< Angular resolution of the range image in y direction in radians per pixel */
-      float angular_resolution_x_reciprocal_;  /**< 1.0/angular_resolution_x_ - provided for better performance of
+      float angular_resolution_x_{0.0f};             /**< Angular resolution of the range image in x direction in radians per pixel */
+      float angular_resolution_y_{0.0f};             /**< Angular resolution of the range image in y direction in radians per pixel */
+      float angular_resolution_x_reciprocal_{0.0f};  /**< 1.0/angular_resolution_x_ - provided for better performance of
                                                 *   multiplication compared to division */
-      float angular_resolution_y_reciprocal_;  /**< 1.0/angular_resolution_y_ - provided for better performance of
+      float angular_resolution_y_reciprocal_{0.0f};  /**< 1.0/angular_resolution_y_ - provided for better performance of
                                                 *   multiplication compared to division */
-      int image_offset_x_, image_offset_y_;    /**< Position of the top left corner of the range image compared to
+      int image_offset_x_{0}, image_offset_y_{0};    /**< Position of the top left corner of the range image compared to
                                                 *   an image of full size (360x180 degrees) */
       PointWithRange unobserved_point;         /**< This point is used to be able to return
                                                 *   a reference to a non-existing point */

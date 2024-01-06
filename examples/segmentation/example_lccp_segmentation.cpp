@@ -73,26 +73,26 @@ keyboardEventOccurred (const pcl::visualization::KeyboardEvent& event_arg,
   if (event_arg.keyUp ())
     switch (key)
     {
-      case (int) '1':
+      case static_cast<int>('1'):
         show_normals = !show_normals;
         normals_changed = true;
         break;
-      case (int) '2':
+      case static_cast<int>('2'):
         show_adjacency = !show_adjacency;
         break;
-      case (int) '3':
+      case static_cast<int>('3'):
         show_supervoxels = !show_supervoxels;
         break;
-      case (int) '4':
+      case static_cast<int>('4'):
         normals_scale *= 1.25;
         normals_changed = true;
         break;
-      case (int) '5':
+      case static_cast<int>('5'):
         normals_scale *= 0.8;
         normals_changed = true;
         break;
-      case (int) 'd':
-      case (int) 'D':
+      case static_cast<int>('d'):
+      case static_cast<int>('D'):
         show_help = !show_help;
         break;
       default:
@@ -296,7 +296,7 @@ LCCPSegmentation Parameters: \n\
   std::multimap<std::uint32_t, std::uint32_t> supervoxel_adjacency;
   super.getSupervoxelAdjacency (supervoxel_adjacency);
 
-  /// Get the cloud of supervoxel centroid with normals and the colored cloud with supervoxel coloring (this is used for visulization)
+  /// Get the cloud of supervoxel centroid with normals and the colored cloud with supervoxel coloring (this is used for visualization)
   pcl::PointCloud<pcl::PointNormal>::Ptr sv_centroid_normal_cloud = pcl::SupervoxelClustering<PointT>::makeSupervoxelNormalCloud (supervoxel_clusters);
 
   /// The Main Step: Perform LCCPSegmentation
@@ -379,7 +379,7 @@ LCCPSegmentation Parameters: \n\
     
     // Create a polydata to store everything in
     vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New ();
-    for (VertexIterator itr = vertex_iterator_range.first; itr != vertex_iterator_range.second; ++itr)
+    for (auto itr = vertex_iterator_range.first; itr != vertex_iterator_range.second; ++itr)
     {
       const std::uint32_t sv_label = sv_adjacency_list[*itr];
       std::pair<AdjacencyIterator, AdjacencyIterator> neighbors = boost::adjacent_vertices (*itr, sv_adjacency_list);

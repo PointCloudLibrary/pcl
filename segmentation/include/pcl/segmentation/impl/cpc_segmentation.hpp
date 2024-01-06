@@ -38,23 +38,14 @@
 #ifndef PCL_SEGMENTATION_IMPL_CPC_SEGMENTATION_HPP_
 #define PCL_SEGMENTATION_IMPL_CPC_SEGMENTATION_HPP_
 
+#include <pcl/sample_consensus/sac_model_plane.h> // for SampleConsensusModelPlane
 #include <pcl/segmentation/cpc_segmentation.h>
 
 template <typename PointT>
-pcl::CPCSegmentation<PointT>::CPCSegmentation () :
-    max_cuts_ (20),
-    min_segment_size_for_cutting_ (400),
-    min_cut_score_ (0.16),
-    use_local_constrains_ (true),
-    use_directed_weights_ (true),
-    ransac_itrs_ (10000)
-{
-}
+pcl::CPCSegmentation<PointT>::CPCSegmentation () = default;
 
 template <typename PointT>
-pcl::CPCSegmentation<PointT>::~CPCSegmentation ()
-{
-}
+pcl::CPCSegmentation<PointT>::~CPCSegmentation () = default;
 
 template <typename PointT> void
 pcl::CPCSegmentation<PointT>::segment ()
@@ -200,7 +191,6 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (std::uint32_t depth_levels_left
       for (const auto &cluster_index : cluster_indices)
       {
         // get centroids of vertices        
-        int cluster_concave_pts = 0;
         float cluster_score = 0;
 //         std::cout << "Cluster has " << cluster_indices[cc].indices.size () << " points" << std::endl;
         for (const auto &current_index : cluster_index.indices)
@@ -209,8 +199,6 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (std::uint32_t depth_levels_left
           if (use_directed_weights_)
             index_score *= 1.414 * (std::abs (plane_normal.dot (edge_cloud_cluster->at (current_index).getNormalVector3fMap ())));
           cluster_score += index_score;
-          if (weights[current_index] > 0)
-            ++cluster_concave_pts;
         }
         // check if the score is below the threshold. If that is the case this segment should not be split
         cluster_score /= cluster_index.indices.size ();
@@ -294,7 +282,7 @@ pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::computeModel (int)
   iterations_ = 0;
   best_score_ = -std::numeric_limits<double>::max ();
 
-  std::vector<int> selection;
+  pcl::Indices selection;
   Eigen::VectorXf model_coefficients;
 
   unsigned skipped_count = 0;

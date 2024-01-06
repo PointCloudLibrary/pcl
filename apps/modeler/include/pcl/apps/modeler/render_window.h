@@ -35,8 +35,7 @@
  */
 
 #pragma once
-
-#include <QVTKWidget.h>
+#include <pcl/visualization/qvtk_compatibility.h>
 
 #include <vtkSmartPointer.h>
 
@@ -47,11 +46,11 @@ namespace modeler {
 
 class RenderWindowItem;
 
-class RenderWindow : public QVTKWidget {
+class RenderWindow : public PCLQVTKWidget {
 public:
   RenderWindow(RenderWindowItem* render_window_item,
                QWidget* parent = nullptr,
-               Qt::WindowFlags flags = nullptr);
+               Qt::WindowFlags flags = {});
   ~RenderWindow();
 
   QSize

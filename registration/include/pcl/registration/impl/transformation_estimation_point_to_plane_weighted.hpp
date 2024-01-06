@@ -53,10 +53,8 @@ pcl::registration::TransformationEstimationPointToPlaneWeighted<
     MatScalar>::TransformationEstimationPointToPlaneWeighted()
 : tmp_src_()
 , tmp_tgt_()
-, tmp_idx_src_()
-, tmp_idx_tgt_()
 , warp_point_(new WarpPointRigid6D<PointSource, PointTarget, MatScalar>)
-, use_correspondence_weights_(true){};
+{}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename MatScalar>
@@ -135,7 +133,7 @@ void
 pcl::registration::
     TransformationEstimationPointToPlaneWeighted<PointSource, PointTarget, MatScalar>::
         estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                                    const std::vector<int>& indices_src,
+                                    const pcl::Indices& indices_src,
                                     const pcl::PointCloud<PointTarget>& cloud_tgt,
                                     Matrix4& transformation_matrix) const
 {
@@ -161,7 +159,7 @@ pcl::registration::
   transformation_matrix.setIdentity();
 
   const auto nr_correspondences = cloud_tgt.size();
-  std::vector<int> indices_tgt;
+  pcl::Indices indices_tgt;
   indices_tgt.resize(nr_correspondences);
   for (std::size_t i = 0; i < nr_correspondences; ++i)
     indices_tgt[i] = i;
@@ -176,9 +174,9 @@ inline void
 pcl::registration::
     TransformationEstimationPointToPlaneWeighted<PointSource, PointTarget, MatScalar>::
         estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                                    const std::vector<int>& indices_src,
+                                    const pcl::Indices& indices_src,
                                     const pcl::PointCloud<PointTarget>& cloud_tgt,
-                                    const std::vector<int>& indices_tgt,
+                                    const pcl::Indices& indices_tgt,
                                     Matrix4& transformation_matrix) const
 {
   if (indices_src.size() != indices_tgt.size()) {
@@ -242,7 +240,7 @@ pcl::registration::
 
   tmp_src_ = NULL;
   tmp_tgt_ = NULL;
-  tmp_idx_src_ = tmp_idx_tgt_ = NULL;
+  tmp_idx_src_ = tmp_idx_tgt_ = nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -256,8 +254,8 @@ pcl::registration::
                                     Matrix4& transformation_matrix) const
 {
   const int nr_correspondences = static_cast<int>(correspondences.size());
-  std::vector<int> indices_src(nr_correspondences);
-  std::vector<int> indices_tgt(nr_correspondences);
+  pcl::Indices indices_src(nr_correspondences);
+  pcl::Indices indices_tgt(nr_correspondences);
   for (int i = 0; i < nr_correspondences; ++i) {
     indices_src[i] = correspondences[i].index_query;
     indices_tgt[i] = correspondences[i].index_match;
@@ -315,8 +313,8 @@ pcl::registration::TransformationEstimationPointToPlaneWeighted<
 {
   const PointCloud<PointSource>& src_points = *estimator_->tmp_src_;
   const PointCloud<PointTarget>& tgt_points = *estimator_->tmp_tgt_;
-  const std::vector<int>& src_indices = *estimator_->tmp_idx_src_;
-  const std::vector<int>& tgt_indices = *estimator_->tmp_idx_tgt_;
+  const pcl::Indices& src_indices = *estimator_->tmp_idx_src_;
+  const pcl::Indices& tgt_indices = *estimator_->tmp_idx_tgt_;
 
   // Initialize the warp function with the given parameters
   estimator_->warp_point_->setParam(x);

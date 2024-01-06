@@ -7,16 +7,18 @@ if(NOT BUILD_all_in_one_installer)
   return()
 endif()
 
-get_filename_component(BOOST_ROOT "${Boost_INCLUDE_DIR}" PATH)
-get_filename_component(BOOST_ROOT "${BOOST_ROOT}" PATH)
-get_filename_component(EIGEN_ROOT "${EIGEN_INCLUDE_DIRS}" PATH)
-get_filename_component(QHULL_ROOT "${QHULL_INCLUDE_DIRS}" PATH)
-get_filename_component(VTK_ROOT "${VTK_DIR}" PATH)
-get_filename_component(VTK_ROOT "${VTK_ROOT}" PATH)
-get_filename_component(VTK_ROOT "${VTK_ROOT}" PATH)
+# get root directory of each dependency libraries to be copied to PCL/3rdParty
+get_filename_component(BOOST_ROOT "${Boost_INCLUDE_DIR}" PATH)  # ../Boost/include/boost-x_x/ -> ../Boost/include/
+get_filename_component(BOOST_ROOT "${BOOST_ROOT}" PATH)         # ../Boost/include/           -> ../Boost/
+get_filename_component(QHULL_ROOT "${Qhull_DIR}" PATH)          # ../qhull/lib/cmake/Qhull/   -> ../qhull/lib/cmake
+get_filename_component(QHULL_ROOT "${QHULL_ROOT}" PATH)         # ../qhull/lib/cmake/         -> ../qhull/lib/
+get_filename_component(QHULL_ROOT "${QHULL_ROOT}" PATH)         # ../qhull/lib/               -> ../qhull/
+get_filename_component(VTK_ROOT "${VTK_DIR}" PATH)              # ../VTK/lib/cmake/vtk-x.x/   -> ../VTK/lib/cmake/
+get_filename_component(VTK_ROOT "${VTK_ROOT}" PATH)             # ../VTK/lib/cmake/           -> ../VTK/lib/
+get_filename_component(VTK_ROOT "${VTK_ROOT}" PATH)             # ../VTK/lib/                 -> ../VTK/
 
 set(PCL_3RDPARTY_COMPONENTS)
-foreach(dep Eigen Boost Qhull FLANN VTK)
+foreach(dep Boost Qhull FLANN VTK)
   string(TOUPPER ${dep} DEP)
   install(
     DIRECTORY "${${DEP}_ROOT}/"
@@ -26,6 +28,57 @@ foreach(dep Eigen Boost Qhull FLANN VTK)
   )
   list(APPEND PCL_3RDPARTY_COMPONENTS ${dep})
 endforeach()
+
+# Try to set EIGEN3_INCLUDE_DIR in case it is
+# no longer exported by Eigen3 itself.
+if (NOT EXISTS ${EIGEN3_INCLUDE_DIR})
+  if (EXISTS ${EIGEN3_INCLUDE_DIRS})
+    set(EIGEN3_INCLUDE_DIR ${EIGEN3_INCLUDE_DIRS})
+  else()
+    set(EIGEN3_INCLUDE_DIR "${Eigen3_DIR}/../../../include/eigen3/")
+  endif()
+endif()
+if(NOT EXISTS ${EIGEN3_INCLUDE_DIR})
+  message(FATAL_ERROR "EIGEN3_INCLUDE_DIR is not existing: ${EIGEN3_INCLUDE_DIR}")
+endif()
+
+# Try to find EIGEN3_COMMON_ROOT_PATH, which is meant to hold
+# the first common root folder of Eigen3_DIR and EIGEN3_INCLUDE_DIR.
+# E.g. Eigen3_DIR              = /usr/local/share/eigen3/cmake/
+#      EIGEN3_INCLUDE_DIR      = /usr/local/include/eigen3/
+#   => EIGEN3_COMMON_ROOT_PATH = /usr/local/
+file(TO_CMAKE_PATH ${Eigen3_DIR} Eigen3_DIR)
+file(TO_CMAKE_PATH ${EIGEN3_INCLUDE_DIR} EIGEN3_INCLUDE_DIR)
+set(EIGEN3_INCLUDE_PATH_LOOP ${EIGEN3_INCLUDE_DIR})
+set(PREVIOUS_EIGEN3_INCLUDE_PATH_LOOP "INVALID")
+while (NOT ${PREVIOUS_EIGEN3_INCLUDE_PATH_LOOP} STREQUAL ${EIGEN3_INCLUDE_PATH_LOOP})
+  if (${Eigen3_DIR} MATCHES ${EIGEN3_INCLUDE_PATH_LOOP})
+    set(EIGEN3_COMMON_ROOT_PATH ${EIGEN3_INCLUDE_PATH_LOOP})
+    break()
+  endif()
+  set(PREVIOUS_EIGEN3_INCLUDE_PATH_LOOP ${EIGEN3_INCLUDE_PATH_LOOP})
+  get_filename_component(EIGEN3_INCLUDE_PATH_LOOP ${EIGEN3_INCLUDE_PATH_LOOP} DIRECTORY)
+endwhile()
+if(NOT EXISTS ${EIGEN3_COMMON_ROOT_PATH})
+  message(FATAL_ERROR "Could not copy Eigen3.")
+endif()
+
+# Install Eigen3 to 3rdParty directory
+string(LENGTH ${EIGEN3_COMMON_ROOT_PATH} LENGTH_OF_EIGEN3_COMMON_ROOT_PATH)
+string(SUBSTRING ${Eigen3_DIR} ${LENGTH_OF_EIGEN3_COMMON_ROOT_PATH} -1 DESTINATION_EIGEN3_DIR)
+string(SUBSTRING ${EIGEN3_INCLUDE_DIR} ${LENGTH_OF_EIGEN3_COMMON_ROOT_PATH} -1 DESTINATION_EIGEN3_INCLUDE_DIR)
+set(dep_Eigen3 Eigen3)
+install(
+  DIRECTORY "${Eigen3_DIR}/"
+  DESTINATION 3rdParty/${dep_Eigen3}${DESTINATION_EIGEN3_DIR}
+  COMPONENT ${dep_Eigen3}
+)
+install(
+  DIRECTORY "${EIGEN3_INCLUDE_DIR}/"
+  DESTINATION 3rdParty/${dep_Eigen3}${DESTINATION_EIGEN3_INCLUDE_DIR}
+  COMPONENT ${dep_Eigen3}
+)
+list(APPEND PCL_3RDPARTY_COMPONENTS ${dep_Eigen3})
 
 if(WITH_RSSDK2)
   get_filename_component(RSSDK2_ROOT "${RSSDK2_INCLUDE_DIRS}" PATH)
@@ -70,8 +123,7 @@ if(WITH_OPENNI)
       COMPONENT OpenNI
     )
     list(APPEND PCL_3RDPARTY_COMPONENTS OpenNI)
-    set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS
-      "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}\n    ExecWait 'msiexec /i \\\"$INSTDIR\\\\3rdParty\\\\OpenNI\\\\${OPENNI_PACKAGE}\\\" /quiet '")
+    string(APPEND CPACK_NSIS_EXTRA_INSTALL_COMMANDS "\n    ExecWait 'msiexec /i \\\"$INSTDIR\\\\3rdParty\\\\OpenNI\\\\${OPENNI_PACKAGE}\\\" /quiet '")
   else()
     message("WARNING : Could not download ${OPENNI_URL}, error code : ${_error_code}, error message : ${_error_message}")
   endif()
@@ -89,13 +141,12 @@ if(WITH_OPENNI)
       COMPONENT OpenNI
     )
     list(APPEND PCL_3RDPARTY_COMPONENTS OpenNI)
-    set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS
-      "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}\n    ExecWait 'msiexec /i \\\"$INSTDIR\\\\3rdParty\\\\OpenNI\\\\${OPENNI_SENSOR_PACKAGE}\\\" /quiet '")
+    string(APPEND CPACK_NSIS_EXTRA_INSTALL_COMMANDS "\n    ExecWait 'msiexec /i \\\"$INSTDIR\\\\3rdParty\\\\OpenNI\\\\${OPENNI_SENSOR_PACKAGE}\\\" /quiet '")
   else()
     message("WARNING : Could not download ${OPENNI_SENSOR_URL}, error code : ${_error_code}, error message : ${_error_message}")
   endif()
   list(REMOVE_DUPLICATES PCL_3RDPARTY_COMPONENTS)
-  set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}\n  noinstall_openni_packages:\n")
+  string(APPEND CPACK_NSIS_EXTRA_INSTALL_COMMANDS "\n  noinstall_openni_packages:\n")
 endif()
 
 if(WITH_OPENNI2)
@@ -133,8 +184,7 @@ if(WITH_OPENNI2)
         COMPONENT OpenNI2
       )
       list(APPEND PCL_3RDPARTY_COMPONENTS OpenNI2)
-      set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS
-        "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}\n    ExecWait 'msiexec /i \\\"$INSTDIR\\\\3rdParty\\\\OpenNI2\\\\${OPENNI2_PACKAGE}\\\" /quiet '")
+      string(APPEND CPACK_NSIS_EXTRA_INSTALL_COMMANDS "\n    ExecWait 'msiexec /i \\\"$INSTDIR\\\\3rdParty\\\\OpenNI2\\\\${OPENNI2_PACKAGE}\\\" /quiet '")
     else()
       message("WARNING : Could not unzip ${OPENNI2_ZIP}, error code : ${_error_code}, error message : ${_error_message}")
     endif()
@@ -142,5 +192,5 @@ if(WITH_OPENNI2)
     message("WARNING : Could not download ${OPENNI2_ZIP_URL}, error code : ${_error_code}, error message : ${_error_message}")
   endif()
   list(REMOVE_DUPLICATES PCL_3RDPARTY_COMPONENTS)
-  set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}\n  noinstall_openni2_packages:\n")
+  string(APPEND CPACK_NSIS_EXTRA_INSTALL_COMMANDS "\n  noinstall_openni2_packages:\n")
 endif()

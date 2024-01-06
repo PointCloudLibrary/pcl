@@ -64,7 +64,7 @@ getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud,
 template <typename PointT>
 inline float
 getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud,
-                    const std::vector<int>& indices,
+                    const pcl::Indices& indices,
                     float max_dist,
                     int nr_threads = 1);
 
@@ -109,7 +109,7 @@ public:
   FPCSInitialAlignment();
 
   /** \brief Destructor. */
-  ~FPCSInitialAlignment(){};
+  ~FPCSInitialAlignment() override = default;
 
   /** \brief Provide a pointer to the vector of target indices.
    * \param[in] target_indices a pointer to the target indices
@@ -318,7 +318,7 @@ protected:
    * * = 0 a set of four congruent points was selected
    */
   int
-  selectBase(std::vector<int>& base_indices, float (&ratio)[2]);
+  selectBase(pcl::Indices& base_indices, float (&ratio)[2]);
 
   /** \brief Select randomly a triplet of points with large point-to-point distances.
    * The minimum point sampling distance is calculated based on the estimated point
@@ -327,10 +327,10 @@ protected:
    * \param[out] base_indices indices of base B
    * \return
    * * < 0 no triangle with large enough base lines could be selected
-   * * = 0 base triangle succesully selected
+   * * = 0 base triangle successfully selected
    */
   int
-  selectBaseTriangle(std::vector<int>& base_indices);
+  selectBaseTriangle(pcl::Indices& base_indices);
 
   /** \brief Setup the base (four coplanar points) by ordering the points and computing
    * intersection ratios and segment to segment distances of base diagonal.
@@ -339,14 +339,14 @@ protected:
    * \param[out] ratio diagonal intersection ratios of base points
    */
   void
-  setupBase(std::vector<int>& base_indices, float (&ratio)[2]);
+  setupBase(pcl::Indices& base_indices, float (&ratio)[2]);
 
   /** \brief Calculate intersection ratios and segment to segment distances of base
    * diagonals. \param[in] base_indices indices of base B \param[out] ratio diagonal
    * intersection ratios of base points \return quality value of diagonal intersection
    */
   float
-  segmentToSegmentDist(const std::vector<int>& base_indices, float (&ratio)[2]);
+  segmentToSegmentDist(const pcl::Indices& base_indices, float (&ratio)[2]);
 
   /** \brief Search for corresponding point pairs given the distance between two base
    * points.
@@ -375,8 +375,8 @@ protected:
    * * = 0 at least one base match was found
    */
   virtual int
-  determineBaseMatches(const std::vector<int>& base_indices,
-                       std::vector<std::vector<int>>& matches,
+  determineBaseMatches(const pcl::Indices& base_indices,
+                       std::vector<pcl::Indices>& matches,
                        const pcl::Correspondences& pairs_a,
                        const pcl::Correspondences& pairs_b,
                        const float (&ratio)[2]);
@@ -391,7 +391,7 @@ protected:
    * * = 0 edges of match M fits to the ones of base B
    */
   int
-  checkBaseMatch(const std::vector<int>& match_indices, const float (&ds)[4]);
+  checkBaseMatch(const pcl::Indices& match_indices, const float (&ds)[4]);
 
   /** \brief Method to handle current candidate matches. Here we validate and evaluate
    * the matches w.r.t the base and store the best fitting match (together with its
@@ -404,8 +404,8 @@ protected:
    * contains the candidates matches M
    */
   virtual void
-  handleMatches(const std::vector<int>& base_indices,
-                std::vector<std::vector<int>>& matches,
+  handleMatches(const pcl::Indices& base_indices,
+                std::vector<pcl::Indices>& matches,
                 MatchingCandidates& candidates);
 
   /** \brief Sets the correspondences between the base B and the match M by using the
@@ -416,8 +416,8 @@ protected:
    * \param[out] correspondences resulting correspondences
    */
   virtual void
-  linkMatchWithBase(const std::vector<int>& base_indices,
-                    std::vector<int>& match_indices,
+  linkMatchWithBase(const pcl::Indices& base_indices,
+                    pcl::Indices& match_indices,
                     pcl::Correspondences& correspondences);
 
   /** \brief Validate the matching by computing the transformation between the source
@@ -427,15 +427,15 @@ protected:
    *
    * \param[in] base_indices indices of base B
    * \param[in] match_indices indices of match M
-   * \param[in] correspondences corresondences between source and target
+   * \param[in] correspondences correspondences between source and target
    * \param[out] transformation resulting transformation matrix
    * \return
    * * < 0 MSE bigger than max_mse_
    * * = 0 MSE smaller than max_mse_
    */
   virtual int
-  validateMatch(const std::vector<int>& base_indices,
-                const std::vector<int>& match_indices,
+  validateMatch(const pcl::Indices& base_indices,
+                const pcl::Indices& match_indices,
                 const pcl::Correspondences& correspondences,
                 Eigen::Matrix4f& transformation);
 
@@ -470,10 +470,10 @@ protected:
   /** \brief Number of threads for parallelization (standard = 1).
    * \note Only used if run compiled with OpenMP.
    */
-  int nr_threads_;
+  int nr_threads_{1};
 
   /** \brief Estimated overlap between source and target (standard = 0.5). */
-  float approx_overlap_;
+  float approx_overlap_{0.5f};
 
   /** \brief Delta value of 4pcs algorithm (standard = 1.0).
    * It can be used as:
@@ -482,43 +482,43 @@ protected:
    * * relative value (normalization = true), to adjust the internally calculated point
    * accuracy (= point density)
    */
-  float delta_;
+  float delta_{1.f};
 
   /** \brief Score threshold to stop calculation with success.
-   * If not set by the user it is equal to the approximated overlap
+   * If not set by the user it depends on the size of the approximated overlap
    */
   float score_threshold_;
 
   /** \brief The number of points to uniformly sample the source point cloud. (standard
    * = 0 => full cloud). */
-  int nr_samples_;
+  int nr_samples_{0};
 
   /** \brief Maximum normal difference of corresponding point pairs in degrees (standard
    * = 90). */
-  float max_norm_diff_;
+  float max_norm_diff_{90.f};
 
   /** \brief Maximum allowed computation time in seconds (standard = 0 => ~unlimited).
    */
-  int max_runtime_;
+  int max_runtime_{0};
 
   /** \brief Resulting fitness score of the best match. */
   float fitness_score_;
 
-  /** \brief Estimated diamter of the target point cloud. */
-  float diameter_;
+  /** \brief Estimated diameter of the target point cloud. */
+  float diameter_{0.0f};
 
   /** \brief Estimated squared metric overlap between source and target.
    * \note Internally calculated using the estimated overlap and the extent of the
    * source cloud. It is used to derive the minimum sampling distance of the base points
    * as well as to calculated the number of tries to reliably find a correct match.
    */
-  float max_base_diameter_sqr_;
+  float max_base_diameter_sqr_{0.0f};
 
   /** \brief Use normals flag. */
-  bool use_normals_;
+  bool use_normals_{false};
 
   /** \brief Normalize delta flag. */
-  bool normalize_delta_;
+  bool normalize_delta_{true};
 
   /** \brief A pointer to the vector of source point indices to use after sampling. */
   pcl::IndicesPtr source_indices_;
@@ -529,30 +529,30 @@ protected:
   /** \brief Maximal difference between corresponding point pairs in source and target.
    * \note Internally calculated using an estimation of the point density.
    */
-  float max_pair_diff_;
+  float max_pair_diff_{0.0f};
 
   /** \brief Maximal difference between the length of the base edges and valid match
    * edges. \note Internally calculated using an estimation of the point density.
    */
-  float max_edge_diff_;
+  float max_edge_diff_{0.0f};
 
   /** \brief Maximal distance between coinciding intersection points to find valid
    * matches. \note Internally calculated using an estimation of the point density.
    */
-  float coincidation_limit_;
+  float coincidation_limit_{0.0f};
 
   /** \brief Maximal mean squared errors of a transformation calculated from a candidate
    * match. \note Internally calculated using an estimation of the point density.
    */
-  float max_mse_;
+  float max_mse_{0.0f};
 
   /** \brief Maximal squared point distance between source and target points to count as
    * inlier. \note Internally calculated using an estimation of the point density.
    */
-  float max_inlier_dist_sqr_;
+  float max_inlier_dist_sqr_{0.0f};
 
   /** \brief Definition of a small error. */
-  const float small_error_;
+  const float small_error_{0.00001f};
 };
 }; // namespace registration
 }; // namespace pcl

@@ -121,11 +121,8 @@ public:
   SampleConsensusPrerejective()
   : input_features_()
   , target_features_()
-  , nr_samples_(3)
-  , k_correspondences_(2)
   , feature_tree_(new pcl::KdTreeFLANN<FeatureT>)
   , correspondence_rejector_poly_(new CorrespondenceRejectorPoly)
-  , inlier_fraction_(0.0f)
   {
     reg_name_ = "SampleConsensusPrerejective";
     correspondence_rejector_poly_->setSimilarityThreshold(0.6f);
@@ -135,7 +132,7 @@ public:
   };
 
   /** \brief Destructor */
-  ~SampleConsensusPrerejective() {}
+  ~SampleConsensusPrerejective() override = default;
 
   /** \brief Provide a boost shared pointer to the source point cloud's feature
    * descriptors \param features the source point cloud's features
@@ -240,7 +237,7 @@ public:
    * transformation
    * @return inlier indices
    */
-  inline const std::vector<int>&
+  inline const pcl::Indices&
   getInliers() const
   {
     return inliers_;
@@ -264,7 +261,7 @@ protected:
   void
   selectSamples(const PointCloudSource& cloud,
                 int nr_samples,
-                std::vector<int>& sample_indices);
+                pcl::Indices& sample_indices);
 
   /** \brief For each of the sample points, find a list of points in the target cloud
    * whose features are similar to the sample points' features. From these, select one
@@ -275,9 +272,9 @@ protected:
    * point in the target cloud
    */
   void
-  findSimilarFeatures(const std::vector<int>& sample_indices,
-                      std::vector<std::vector<int>>& similar_features,
-                      std::vector<int>& corresponding_indices);
+  findSimilarFeatures(const pcl::Indices& sample_indices,
+                      std::vector<pcl::Indices>& similar_features,
+                      pcl::Indices& corresponding_indices);
 
   /** \brief Rigid transformation computation method.
    * \param output the transformed input point cloud dataset using the rigid
@@ -296,7 +293,7 @@ protected:
    * \param fitness_score output fitness score as RMSE
    */
   void
-  getFitness(std::vector<int>& inliers, float& fitness_score);
+  getFitness(pcl::Indices& inliers, float& fitness_score);
 
   /** \brief The source point cloud's feature descriptors. */
   FeatureCloudConstPtr input_features_;
@@ -305,11 +302,11 @@ protected:
   FeatureCloudConstPtr target_features_;
 
   /** \brief The number of samples to use during each iteration. */
-  int nr_samples_;
+  int nr_samples_{3};
 
   /** \brief The number of neighbors to use when selecting a random feature
    * correspondence. */
-  int k_correspondences_;
+  int k_correspondences_{2};
 
   /** \brief The KdTree used to compare feature descriptors. */
   FeatureKdTreePtr feature_tree_;
@@ -319,10 +316,10 @@ protected:
 
   /** \brief The fraction [0,1] of inlier points required for accepting a transformation
    */
-  float inlier_fraction_;
+  float inlier_fraction_{0.0f};
 
   /** \brief Inlier points of final transformation as indices into source */
-  std::vector<int> inliers_;
+  pcl::Indices inliers_;
 };
 } // namespace pcl
 

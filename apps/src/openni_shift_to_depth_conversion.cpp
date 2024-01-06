@@ -164,7 +164,7 @@ protected:
     int centerY = static_cast<int>(height_arg / 2);
 
     const float fl_const = 1.0f / focalLength_arg;
-    static const float bad_point = std::numeric_limits<float>::quiet_NaN();
+    constexpr float bad_point = std::numeric_limits<float>::quiet_NaN();
 
     std::size_t i = 0;
     for (int y = -centerY; y < +centerY; ++y)

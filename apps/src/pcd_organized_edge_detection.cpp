@@ -227,7 +227,7 @@ compute(const pcl::PCLPointCloud2::ConstPtr& input,
   pcl::copyPointCloud(*cloud, label_indices[3].indices, *high_curvature_edges);
   pcl::copyPointCloud(*cloud, label_indices[4].indices, *rgb_edges);
 
-  const int point_size = 2;
+  constexpr int point_size = 2;
   viewer.addPointCloud<pcl::PointXYZRGBA>(nan_boundary_edges, "nan boundary edges");
   viewer.setPointCloudRenderingProperties(
       pcl::visualization::PCL_VISUALIZER_POINT_SIZE, point_size, "nan boundary edges");

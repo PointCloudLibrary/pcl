@@ -40,6 +40,38 @@
 #include <pcl/surface/mls.h>
 #include <pcl/surface/impl/mls.hpp>
 
+Eigen::Vector2f
+pcl::MLSResult::calculatePrincipalCurvatures (const double u, const double v) const
+{
+  Eigen::Vector2f k (1e-5, 1e-5);
+
+  // Note: this use the Monge Patch to derive the Gaussian curvature and Mean Curvature found here http://mathworld.wolfram.com/MongePatch.html
+  // Then:
+  //      k1 = H + sqrt(H^2 - K)
+  //      k2 = H - sqrt(H^2 - K)
+  if (order > 1 && c_vec.size () >= (order + 1) * (order + 2) / 2 && std::isfinite (c_vec[0]))
+  {
+    const PolynomialPartialDerivative d = getPolynomialPartialDerivative (u, v);
+    const double Z = 1 + d.z_u * d.z_u + d.z_v * d.z_v;
+    const double Zlen = std::sqrt (Z);
+    const double K = (d.z_uu * d.z_vv - d.z_uv * d.z_uv) / (Z * Z);
+    const double H = ((1.0 + d.z_v * d.z_v) * d.z_uu - 2.0 * d.z_u * d.z_v * d.z_uv + (1.0 + d.z_u * d.z_u) * d.z_vv) / (2.0 * Zlen * Zlen * Zlen);
+    const double disc2 = H * H - K;
+    assert (disc2 >= 0.0);
+    const double disc = std::sqrt (disc2);
+    k[0] = H + disc;
+    k[1] = H - disc;
+
+    if (std::abs (k[0]) > std::abs (k[1])) std::swap (k[0], k[1]);
+  }
+  else
+  {
+    PCL_ERROR ("No Polynomial fit data, unable to calculate the principal curvatures!\n");
+  }
+
+  return (k);
+}
+
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
@@ -48,6 +80,15 @@
   PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal)(pcl::PointNormal))
                                               ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal)(pcl::PointNormal)))
 #else
-  PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, (PCL_XYZ_POINT_TYPES)(PCL_XYZ_POINT_TYPES))
+  // PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, (PCL_XYZ_POINT_TYPES)(PCL_XYZ_POINT_TYPES))
+  // All instantiations that are available with PCL_ONLY_CORE_POINT_TYPES, plus instantiations for all XYZ types where PointInT and PointOutT are the same
+  #define PCL_INSTANTIATE_MovingLeastSquaresSameInAndOut(T) template class PCL_EXPORTS pcl::MovingLeastSquares<T,T>;
+  PCL_INSTANTIATE(MovingLeastSquaresSameInAndOut, PCL_XYZ_POINT_TYPES)
+  PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, ((pcl::PointXYZ))((pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal)(pcl::PointNormal)))
+  PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, ((pcl::PointXYZI))((pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal)(pcl::PointNormal)))
+  PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, ((pcl::PointXYZRGB))((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal)(pcl::PointNormal)))
+  PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, ((pcl::PointXYZRGBA))((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal)(pcl::PointNormal)))
+  PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, ((pcl::PointXYZRGBNormal))((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointNormal)))
+  PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, ((pcl::PointNormal))((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal)))
 #endif
 #endif    // PCL_NO_PRECOMPILE

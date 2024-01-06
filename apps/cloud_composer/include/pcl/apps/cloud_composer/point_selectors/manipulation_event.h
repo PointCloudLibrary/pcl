@@ -37,7 +37,6 @@
 
 #pragma once
 
-#include <pcl/visualization/vtk.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
 
 namespace pcl
@@ -52,8 +51,6 @@ namespace pcl
       public:
         ManipulationEvent () 
         {}
-        
-        ~ManipulationEvent ();
         
         void
         addManipulation (const QString& id, const vtkSmartPointer<vtkMatrix4x4>& start, const vtkSmartPointer<vtkMatrix4x4>& end);

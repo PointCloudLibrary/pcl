@@ -90,16 +90,13 @@ namespace pcl
       BriskKeypoint2D (int octaves = 4, int threshold = 60)
         : threshold_ (threshold)
         , octaves_ (octaves)
-        , remove_invalid_3D_keypoints_ (false)
       {
         k_ = 1;
         name_ = "BriskKeypoint2D";
       }
 
       /** \brief Destructor. */
-      ~BriskKeypoint2D ()
-      {
-      }
+      ~BriskKeypoint2D () override = default;
 
       /** \brief Sets the threshold for corner detection.
         * \param[in] threshold the threshold used for corner detection.
@@ -159,8 +156,8 @@ namespace pcl
                              float x, float y,
                              PointOutT &pt)
       {
-        int u = int (x);
-        int v = int (y);
+        int u = static_cast<int>(x);
+        int v = static_cast<int>(y);
         
         pt.x = pt.y = pt.z = 0;
 
@@ -169,7 +166,7 @@ namespace pcl
         const PointInT &p3 = (*cloud)(u,   v+1);
         const PointInT &p4 = (*cloud)(u+1, v+1);
         
-        float fx = x - float (u), fy = y - float (v);
+        float fx = x - static_cast<float>(u), fy = y - static_cast<float>(v);
         float fx1 = 1.0f - fx, fy1 = 1.0f - fy;
 
         float w1 = fx1 * fy1, w2 = fx * fy1, w3 = fx1 * fy, w4 = fx * fy;
@@ -234,7 +231,7 @@ namespace pcl
       /** \brief Specify whether the keypoints that do not have a valid 3D position are
         * kept (false) or removed (true).
         */
-      bool remove_invalid_3D_keypoints_;
+      bool remove_invalid_3D_keypoints_{false};
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -475,8 +472,8 @@ namespace pcl
           std::uint8_t safe_threshold_;
 
           // some constant parameters
-          float safety_factor_;
-          float basic_size_;
+          float safety_factor_{1.0};
+          float basic_size_{12.0};
       };
     } // namespace brisk
   } // namespace keypoints

@@ -2,7 +2,7 @@
 
 
 Introduction
------------
+------------
 
 The following links describe a set of basic PCL tutorials. Please note that
 their source codes may already be provided as part of the PCL regular releases,
@@ -70,7 +70,7 @@ Basic Usage
   * :ref:`compiling_pcl_posix`
 
      =======  ======
-     |mi_11|  Title: **Compiling PCL from source on POSIX compliant systems**
+     |mi_12|  Title: **Compiling PCL from source on POSIX compliant systems**
 
               Author: *Victor Lamoine*
 
@@ -79,7 +79,7 @@ Basic Usage
               In this tutorial, we will explain how to compile PCL from sources on POSIX/Unix systems.
      =======  ======
 
-     .. |mi_11| image:: images/pcl_logo.png
+     .. |mi_12| image:: images/pcl_logo.png
                :height: 120px
 
   * :ref:`building_pcl`
@@ -95,6 +95,21 @@ Basic Usage
      ======  ======
 
      .. |mi_3| image:: images/pcl_ccmake.png
+               :height: 100px
+
+  * :ref:`pcl_vcpkg_windows`
+
+     ======  ======
+     |mi_4|  Title: **Install PCL using VCPKG**
+
+             Author: *Lars Glud*
+
+             Compatibility: PCL version available on VCPKG and Master, unless VCPKG updates a dependency before PCL is ready for it.
+
+             In this tutorial,it is explained how to install PCL or PCL dependencies.
+     ======  ======
+
+     .. |mi_4| image:: images/windows_logo.png
                :height: 100px
 
   * :ref:`compiling_pcl_dependencies_windows`
@@ -140,6 +155,21 @@ Basic Usage
      ======  ======
 
      .. |mi_6| image:: images/macosx_logo.png
+               :height: 100px
+
+  * :ref:`compiling_pcl_docker`
+
+     =======  ======
+     |mi_13|  Title: **Compiling PCL using docker**
+
+              Author: *Theodoros Nikolaou*
+
+              Compatibility: > PCL 1.12
+
+              This tutorial explains how to build and install PCL from source using docker
+     =======  ======
+
+     .. |mi_13| image:: images/pcl_logo.png
                :height: 100px
 
   * :ref:`installing_homebrew`

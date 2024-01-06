@@ -44,6 +44,8 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <pcl/filters/grid_minimum.h>
+#include <boost/filesystem.hpp> // for path, exists, ...
+#include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 
 using namespace pcl;
 using namespace pcl::io;
@@ -115,7 +117,6 @@ int
 batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir,
               float resolution)
 {
-  std::vector<std::string> st;
   for (const auto &pcd_file : pcd_files)
   {
     // Load the first file
@@ -128,14 +129,11 @@ batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir
     compute (cloud, output, resolution);
 
     // Prepare output file name
-    std::string filename = pcd_file;
-    boost::trim (filename);
-    boost::split (st, filename, boost::is_any_of ("/\\"), boost::token_compress_on);
+    std::string filename = boost::filesystem::path(pcd_file).filename().string();
     
     // Save into the second file
-    std::stringstream ss;
-    ss << output_dir << "/" << st.at (st.size () - 1);
-    saveCloud (ss.str (), output);
+    const std::string filepath = output_dir + '/' + filename;
+    saveCloud (filepath, output);
   }
   return (0);
 }
@@ -204,7 +202,7 @@ main (int argc, char** argv)
       for (boost::filesystem::directory_iterator itr (input_dir); itr != end_itr; ++itr)
       {
         // Only add PCD files
-        if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ())) == ".PCD" )
+        if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (itr->path ().extension ().string ()) == ".PCD" )
         {
           pcd_files.push_back (itr->path ().string ());
           PCL_INFO ("[Batch processing mode] Added %s for processing.\n", itr->path ().string ().c_str ());

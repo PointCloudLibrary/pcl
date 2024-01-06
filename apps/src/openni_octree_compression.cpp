@@ -149,7 +149,7 @@ public:
   {
 
     // create a new grabber for OpenNI devices
-    pcl::OpenNIGrabber interface{};
+    pcl::OpenNIGrabber interface;
 
     // make callback function from member function
     std::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
@@ -206,7 +206,7 @@ struct EventHelper {
   run()
   {
     // create a new grabber for OpenNI devices
-    pcl::OpenNIGrabber interface{};
+    pcl::OpenNIGrabber interface;
 
     // make callback function from member function
     std::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
@@ -382,8 +382,9 @@ main(int argc, char** argv)
   if (!bServerFileMode) {
     if (bEnDecode) {
       // ENCODING
-      ofstream compressedPCFile;
-      compressedPCFile.open(fileName.c_str(), std::ios::out | std::ios::trunc | std::ios::binary);
+      std::ofstream compressedPCFile;
+      compressedPCFile.open(fileName.c_str(),
+                            std::ios::out | std::ios::trunc | std::ios::binary);
 
       if (!bShowInputCloud) {
         EventHelper v(compressedPCFile, octreeCoder, field_name, min_v, max_v);

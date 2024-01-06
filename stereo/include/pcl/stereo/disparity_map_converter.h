@@ -221,35 +221,35 @@ protected:
    * \param[in] row
    * \param[in] column
    * \param[in] disparity
-   * \return the 3D point, that corresponds to the input parametres and the camera
+   * \return the 3D point, that corresponds to the input parameters and the camera
    * calibration.
    */
   PointXYZ
   translateCoordinates(std::size_t row, std::size_t column, float disparity) const;
 
   /** \brief X-coordinate of the image center. */
-  float center_x_;
+  float center_x_{0.0f};
   /** \brief Y-coordinate of the image center. */
-  float center_y_;
+  float center_y_{0.0f};
   /** \brief Focal length. */
-  float focal_length_;
+  float focal_length_{0.0f};
   /** \brief Baseline. */
-  float baseline_;
+  float baseline_{0.0f};
 
   /** \brief Is color image is set. */
-  bool is_color_;
+  bool is_color_{false};
   /** \brief Color image of the scene. */
   pcl::PointCloud<pcl::RGB>::ConstPtr image_;
 
   /** \brief Vector for the disparity map. */
   std::vector<float> disparity_map_;
   /** \brief X-size of the disparity map. */
-  std::size_t disparity_map_width_;
+  std::size_t disparity_map_width_{640};
   /** \brief Y-size of the disparity map. */
-  std::size_t disparity_map_height_;
+  std::size_t disparity_map_height_{480};
 
   /** \brief Thresholds of the disparity. */
-  float disparity_threshold_min_;
+  float disparity_threshold_min_{0.0f};
   float disparity_threshold_max_;
 };
 

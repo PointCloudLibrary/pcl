@@ -45,10 +45,6 @@
 #include <pcl/point_types.h>
 
 #include <pcl/features/fpfh.h>
-#include <pcl/features/normal_3d.h>
-
-#include <pcl/filters/filter_indices.h>
-#include <pcl/segmentation/extract_clusters.h>
 
 #include <pcl/ml/kmeans.h>
 
@@ -88,11 +84,11 @@ namespace pcl
       void
       queryFeatureDistances (std::vector<pcl::PointCloud<pcl::FPFHSignature33>::Ptr> &trained_features,
                              pcl::PointCloud<pcl::FPFHSignature33>::Ptr query_features,
-                             std::vector<int> &indi,
+                             pcl::Indices &indi,
                              std::vector<float> &dist);
 
       void
-      assignLabels (std::vector<int> &indi,
+      assignLabels (pcl::Indices &indi,
                     std::vector<float> &dist,
                     int n_feature_means,
                     float feature_threshold,
@@ -149,18 +145,18 @@ namespace pcl
 
 
       /** \brief Contains the input cloud */
-      typename pcl::PointCloud<PointT>::Ptr input_cloud_;
+      typename pcl::PointCloud<PointT>::Ptr input_cloud_{new pcl::PointCloud<PointT>};
       
-      bool label_field_;
+      bool label_field_{false};
       
-      unsigned int cluster_size_;
+      unsigned int cluster_size_{0};
 
-      float normal_radius_search_;
-      float fpfh_radius_search_;
-      float feature_threshold_;
+      float normal_radius_search_{0.01f};
+      float fpfh_radius_search_{0.05f};
+      float feature_threshold_{5.0};
       
       
-      std::vector<pcl::PointCloud<pcl::FPFHSignature33>::Ptr> trained_features_;
+      std::vector<pcl::PointCloud<pcl::FPFHSignature33>::Ptr> trained_features_{};
 
       /** \brief Contains normals of the points that will be segmented. */
       //typename pcl::PointCloud<pcl::Normal>::Ptr normals_;

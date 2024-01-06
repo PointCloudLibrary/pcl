@@ -79,13 +79,9 @@ namespace pcl
 
       /** \brief Empty constructor. */
       CVFHEstimation () :
-        vpx_ (0), vpy_ (0), vpz_ (0), 
-        leaf_size_ (0.005f), 
-        normalize_bins_ (false),
-        curv_threshold_ (0.03f), 
+         
         cluster_tolerance_ (leaf_size_ * 3), 
-        eps_angle_threshold_ (0.125f), 
-        min_points_ (50),
+        
         radius_normals_ (leaf_size_ * 3)
       {
         search_radius_ = 0;
@@ -102,8 +98,8 @@ namespace pcl
         * \param[in] threshold threshold value for curvature
         */
       void
-      filterNormalsWithHighCurvature (const pcl::PointCloud<PointNT> & cloud, std::vector<int> & indices_to_use, std::vector<int> &indices_out,
-                                      std::vector<int> &indices_in, float threshold);
+      filterNormalsWithHighCurvature (const pcl::PointCloud<PointNT> & cloud, pcl::Indices & indices_to_use, pcl::Indices &indices_out,
+                                      pcl::Indices &indices_in, float threshold);
 
       /** \brief Set the viewpoint.
         * \param[in] vpx the X coordinate of the viewpoint
@@ -216,29 +212,29 @@ namespace pcl
       /** \brief Values describing the viewpoint ("pinhole" camera model assumed). 
         * By default, the viewpoint is set to 0,0,0.
         */
-      float vpx_, vpy_, vpz_;
+      float vpx_{0.0f}, vpy_{0.0f}, vpz_{0.0f};
 
       /** \brief Size of the voxels after voxel gridding. IMPORTANT: Must match the voxel 
         * size of the training data or the normalize_bins_ flag must be set to true.
         */
-      float leaf_size_;
+      float leaf_size_{0.005f};
 
       /** \brief Whether to normalize the signatures or not. Default: false. */
-      bool normalize_bins_;
+      bool normalize_bins_{false};
 
       /** \brief Curvature threshold for removing normals. */
-      float curv_threshold_;
+      float curv_threshold_{0.03f};
 
       /** \brief allowed Euclidean distance between points to be added to the cluster. */
       float cluster_tolerance_;
 
       /** \brief deviation of the normals between two points so they can be clustered together. */
-      float eps_angle_threshold_;
+      float eps_angle_threshold_{0.125f};
 
       /** \brief Minimum amount of points in a clustered region to be considered stable for CVFH
         * computation.
         */
-      std::size_t min_points_;
+      std::size_t min_points_{50};
 
       /** \brief Radius for the normals computation. */
       float radius_normals_;

@@ -42,9 +42,8 @@
 #if defined __GNUC__
 #  pragma GCC system_header 
 #endif
+PCL_DEPRECATED_HEADER(1, 16, "Please include the needed boost headers directly.")
 
-//https://bugreports.qt-project.org/browse/QTBUG-22829
-#ifndef Q_MOC_RUN
 #include <boost/shared_array.hpp>
 #define BOOST_PARAMETER_MAX_ARITY 7
 #include <boost/signals2.hpp>
@@ -52,8 +51,4 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/foreach.hpp>
-#ifndef Q_MOC_RUN
-#include <boost/date_time/posix_time/posix_time.hpp>
-#endif
 #include <boost/filesystem.hpp>
-#endif

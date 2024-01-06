@@ -118,9 +118,8 @@ std::string
 Selection::getStat () const
 {
   if (selected_indices_.empty ())
-    return ("");
-  std::string title = "Total number of selected points: ";
-  std::string num_str;
-  ::toString(selected_indices_.size(), num_str);
-  return (title + num_str);
+    return "";
+  const std::string title = "Total number of selected points: ";
+  const std::string num_str = std::to_string(selected_indices_.size());
+  return title + num_str;
 }

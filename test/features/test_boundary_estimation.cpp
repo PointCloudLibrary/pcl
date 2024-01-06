@@ -49,7 +49,7 @@ using namespace pcl::io;
 using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 
 PointCloud<PointXYZ> cloud;
-std::vector<int> indices;
+pcl::Indices indices;
 KdTreePtr tree;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -86,23 +86,23 @@ TEST (PCL, BoundaryEstimation)
 
   // isBoundaryPoint (indices)
   bool pt = false;
-  pt = b.isBoundaryPoint (cloud, 0, indices, u, v, float (M_PI) / 2.0);
+  pt = b.isBoundaryPoint (cloud, 0, indices, u, v, static_cast<float>(M_PI) / 2.0);
   EXPECT_FALSE (pt);
-  pt = b.isBoundaryPoint (cloud, static_cast<int> (indices.size ()) / 3, indices, u, v, float (M_PI) / 2.0);
+  pt = b.isBoundaryPoint (cloud, static_cast<int> (indices.size ()) / 3, indices, u, v, static_cast<float>(M_PI) / 2.0);
   EXPECT_FALSE (pt);
-  pt = b.isBoundaryPoint (cloud, static_cast<int> (indices.size ()) / 2, indices, u, v, float (M_PI) / 2.0);
+  pt = b.isBoundaryPoint (cloud, static_cast<int> (indices.size ()) / 2, indices, u, v, static_cast<float>(M_PI) / 2.0);
   EXPECT_FALSE (pt);
-  pt = b.isBoundaryPoint (cloud, static_cast<int> (indices.size ()) - 1, indices, u, v, float (M_PI) / 2.0);
+  pt = b.isBoundaryPoint (cloud, static_cast<int> (indices.size ()) - 1, indices, u, v, static_cast<float>(M_PI) / 2.0);
   EXPECT_TRUE (pt);
 
   // isBoundaryPoint (points)
-  pt = b.isBoundaryPoint (cloud, cloud[0], indices, u, v, float (M_PI) / 2.0);
+  pt = b.isBoundaryPoint (cloud, cloud[0], indices, u, v, static_cast<float>(M_PI) / 2.0);
   EXPECT_FALSE (pt);
-  pt = b.isBoundaryPoint (cloud, cloud[indices.size () / 3], indices, u, v, float (M_PI) / 2.0);
+  pt = b.isBoundaryPoint (cloud, cloud[indices.size () / 3], indices, u, v, static_cast<float>(M_PI) / 2.0);
   EXPECT_FALSE (pt);
-  pt = b.isBoundaryPoint (cloud, cloud[indices.size () / 2], indices, u, v, float (M_PI) / 2.0);
+  pt = b.isBoundaryPoint (cloud, cloud[indices.size () / 2], indices, u, v, static_cast<float>(M_PI) / 2.0);
   EXPECT_FALSE (pt);
-  pt = b.isBoundaryPoint (cloud, cloud[indices.size () - 1], indices, u, v, float (M_PI) / 2.0);
+  pt = b.isBoundaryPoint (cloud, cloud[indices.size () - 1], indices, u, v, static_cast<float>(M_PI) / 2.0);
   EXPECT_TRUE (pt);
 
   // Object

@@ -54,6 +54,7 @@ namespace pcl {
  * 2743–2748, Las Vegas, USA, October 2003.
  *
  * \author James Crosby
+ * \ingroup registration
  */
 template <typename PointSource, typename PointTarget>
 class NormalDistributionsTransform2D : public Registration<PointSource, PointTarget> {
@@ -85,7 +86,7 @@ public:
   }
 
   /** \brief Empty destructor */
-  ~NormalDistributionsTransform2D() {}
+  ~NormalDistributionsTransform2D() override = default;
 
   /** \brief centre of the ndt grid (target coordinate system)
    * \param centre value to set

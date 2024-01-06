@@ -44,6 +44,10 @@
 
 namespace pcl
 {
+  namespace internal {
+    int optimizeModelCoefficientsCone (Eigen::VectorXf& coeff, const Eigen::ArrayXf& pts_x, const Eigen::ArrayXf& pts_y, const Eigen::ArrayXf& pts_z);
+  } // namespace internal
+
   /** \brief @b SampleConsensusModelCone defines a model for 3D cone segmentation.
     * The model coefficients are defined as:
     * <ul>
@@ -128,7 +132,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      ~SampleConsensusModelCone () {}
+      ~SampleConsensusModelCone () override = default;
 
       /** \brief Copy constructor.
         * \param[in] source the model to copy into this
@@ -299,54 +303,6 @@ namespace pcl
       /** \brief The minimum and maximum allowed opening angles of valid cone model. */
       double min_angle_;
       double max_angle_;
-
-      /** \brief Functor for the optimization function */
-      struct OptimizationFunctor : pcl::Functor<float>
-      {
-        /** Functor constructor
-          * \param[in] indices the indices of data points to evaluate
-          * \param[in] estimator pointer to the estimator object
-          */
-        OptimizationFunctor (const pcl::SampleConsensusModelCone<PointT, PointNT> *model, const Indices& indices) :
-          pcl::Functor<float> (indices.size ()), model_ (model), indices_ (indices) {}
-
-        /** Cost function to be minimized
-          * \param[in] x variables array
-          * \param[out] fvec resultant functions evaluations
-          * \return 0
-          */
-        int 
-        operator() (const Eigen::VectorXf &x, Eigen::VectorXf &fvec) const
-        {
-          Eigen::Vector4f apex  (x[0], x[1], x[2], 0);
-          Eigen::Vector4f axis_dir (x[3], x[4], x[5], 0);
-          float opening_angle = x[6];
-
-          float apexdotdir = apex.dot (axis_dir);
-          float dirdotdir = 1.0f / axis_dir.dot (axis_dir);
-
-          for (int i = 0; i < values (); ++i)
-          {
-            // dist = f - r
-            Eigen::Vector4f pt = (*model_->input_)[indices_[i]].getVector4fMap();
-            pt[3] = 0;
-
-            // Calculate the point's projection on the cone axis
-            float k = (pt.dot (axis_dir) - apexdotdir) * dirdotdir;
-            Eigen::Vector4f pt_proj = apex + k * axis_dir;
-
-            // Calculate the actual radius of the cone at the level of the projected point
-            Eigen::Vector4f height = apex-pt_proj;
-            float actual_cone_radius = tanf (opening_angle) * height.norm ();
-
-            fvec[i] = static_cast<float> (pcl::sqrPointToLineDistance (pt, apex, axis_dir) - actual_cone_radius * actual_cone_radius);
-          }
-          return (0);
-        }
-
-        const pcl::SampleConsensusModelCone<PointT, PointNT> *model_;
-        const Indices &indices_;
-      };
   };
 }
 

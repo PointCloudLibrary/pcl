@@ -35,14 +35,14 @@ Install ``colorgcc`` on an Ubuntu system with ::
 
 To enable colorgcc, perform the following steps:
 
-.. code-block:: cmake
+.. code-block:: shell
 
   cp /etc/colorgcc/colorgccrc $HOME/.colorgccrc
 
 
 * edit the $HOME/.colorgccrc file, search for the following lines:
 
-.. code-block:: cmake
+.. code-block:: text
 
     g++: /usr/bin/g++
     gcc: /usr/bin/gcc
@@ -54,7 +54,7 @@ To enable colorgcc, perform the following steps:
     
 and replace them with:
 
-.. code-block:: cmake
+.. code-block:: text
 
     g++: ccache /usr/bin/g++
     gcc: ccache /usr/bin/gcc
@@ -66,7 +66,7 @@ and replace them with:
 
 * create a $HOME/bin or $HOME/sbin directory, and create the following softlinks in it
 
-.. code-block:: cmake
+.. code-block:: shell
 
     ln -s /usr/bin/colorgcc c++
     ln -s /usr/bin/colorgcc cc

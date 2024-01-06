@@ -3,6 +3,14 @@
 
 #include <QDebug>
 
+#include <vtkSmartPointer.h>
+#include <vtkIdFilter.h>
+#include <vtkExtractGeometry.h>
+#include <vtkVertexGlyphFilter.h>
+#include <vtkPlanes.h>
+#include <vtkAreaPicker.h>
+#include <vtkObjectFactory.h>
+
 namespace pcl
 {
   namespace cloud_composer
@@ -15,12 +23,6 @@ pcl::cloud_composer::RectangularFrustumSelector::RectangularFrustumSelector ()
 {
   selection_complete_event_ = interactor_events::SELECTION_COMPLETE_EVENT;
 }
-
-pcl::cloud_composer::RectangularFrustumSelector::~RectangularFrustumSelector ()
-{
-  
-}
-
 
 void
 pcl::cloud_composer::RectangularFrustumSelector::OnLeftButtonUp ()

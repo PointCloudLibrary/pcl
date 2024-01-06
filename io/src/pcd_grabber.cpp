@@ -246,7 +246,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::closeTARFile ()
   io::raw_close (tar_fd_);
   tar_fd_ = -1;
   tar_offset_ = 0;
-  memset (&tar_header_.file_name[0], 0, 512);
+  tar_header_ = pcl::io::TARHeader{};
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

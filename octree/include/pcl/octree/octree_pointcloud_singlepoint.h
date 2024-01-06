@@ -80,11 +80,14 @@ public:
   {}
 
   /** \brief Empty class constructor. */
-  ~OctreePointCloudSinglePoint() {}
+  ~OctreePointCloudSinglePoint() override = default;
 };
 
 } // namespace octree
 } // namespace pcl
+
+// needed since OctreePointCloud is not instantiated with template parameters used above
+#include <pcl/octree/impl/octree_pointcloud.hpp>
 
 #define PCL_INSTANTIATE_OctreePointCloudSinglePoint(T)                                 \
   template class PCL_EXPORTS pcl::octree::OctreePointCloudSinglePoint<T>;

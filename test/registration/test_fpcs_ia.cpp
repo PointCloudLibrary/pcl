@@ -55,7 +55,7 @@ TEST (PCL, FPCSInitialAlignment)
   // transform the source cloud by a large amount
   Eigen::Vector3f initial_offset (1.f, 0.f, 0.f);
   float angle = static_cast<float> (M_PI) / 2.f;
-  Eigen::Quaternionf initial_rotation (std::cos (angle / 2.f), 0, 0, sin (angle / 2.f));
+  Eigen::Quaternionf initial_rotation (std::cos (angle / 2.f), 0, 0, std::sin (angle / 2.f));
   PointCloud<PointXYZ> cloud_source_transformed;
   transformPointCloud (cloud_source, cloud_source_transformed, initial_offset, initial_rotation);
 
@@ -79,7 +79,7 @@ TEST (PCL, FPCSInitialAlignment)
   fpcs_ia.align (source_aligned);
   EXPECT_EQ (source_aligned.size (), cloud_source.size ());
 
-  // check for correct coarse transformation marix
+  // check for correct coarse transformation matrix
   //Eigen::Matrix4f transform_res_from_fpcs = fpcs_ia.getFinalTransformation ();
   //for (int i = 0; i < 4; ++i)
   //  for (int j = 0; j < 4; ++j)

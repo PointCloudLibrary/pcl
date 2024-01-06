@@ -54,7 +54,6 @@ namespace pcl
         /** \brief Constructor used for item parameters */
         PropertiesModel (CloudComposerItem* parent_item, QObject *parent = nullptr);
         PropertiesModel (const PropertiesModel& to_copy);
-        ~PropertiesModel ();
         
         /** \brief Helper function for adding a new property */
         void

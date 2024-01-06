@@ -30,6 +30,7 @@ namespace pcl
   /** \brief A hypothesis verification method proposed in
     * "A Global Hypotheses Verification Method for 3D Object Recognition", A. Aldoma and F. Tombari and L. Di Stefano and Markus Vincze, ECCV 2012
     * \author Aitor Aldoma
+    * \ingroup recognition
     */
   template<typename ModelT, typename SceneT>
   class PCL_EXPORTS GlobalHypothesesVerification: public HypothesisVerification<ModelT, SceneT>
@@ -72,7 +73,7 @@ namespace pcl
 
           void copy_from(const mets::copyable& o) override
           {
-            const SAModel& s = dynamic_cast<const SAModel&> (o);
+            const auto& s = dynamic_cast<const SAModel&> (o);
             solution_ = s.solution_;
             opt_ = s.opt_;
             cost_ = s.cost_;
@@ -137,7 +138,7 @@ namespace pcl
 
           mets::gol_type apply_and_evaluate(mets::feasible_solution& cs)
           {
-            SAModel& model = dynamic_cast<SAModel&> (cs);
+            auto& model = dynamic_cast<SAModel&> (cs);
             return model.apply_and_evaluate (index_, !model.solution_[index_]);
           }
 
@@ -147,7 +148,7 @@ namespace pcl
 
           void unapply(mets::feasible_solution& s) const
           {
-            SAModel& model = dynamic_cast<SAModel&> (s);
+            auto& model = dynamic_cast<SAModel&> (s);
             model.unapply (index_, !model.solution_[index_]);
           }
       };
@@ -175,7 +176,7 @@ namespace pcl
           ~move_manager()
           {
             // delete all moves
-            for (iterator ii = begin (); ii != end (); ++ii)
+            for (auto ii = begin (); ii != end (); ++ii)
               delete (*ii);
           }
 

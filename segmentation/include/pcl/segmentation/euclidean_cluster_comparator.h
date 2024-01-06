@@ -39,16 +39,16 @@
 
 #pragma once
 
+#include <set> // for std::set
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
-#include <pcl/segmentation/boost.h>
 #include <pcl/segmentation/comparator.h>
 
 
 namespace pcl
 {
-  /** \brief EuclideanClusterComparator is a comparator used for finding clusters based on euclidian distance.
+  /** \brief EuclideanClusterComparator is a comparator used for finding clusters based on euclidean distance.
   *
   * \author Alex Trevor
   */
@@ -126,7 +126,7 @@ namespace pcl
         return labels_;
       }
 
-      /** \brief Get exlude labels */
+      /** \brief Get exclude labels */
       const ExcludeLabelSetConstPtr&
       getExcludeLabels () const
       {

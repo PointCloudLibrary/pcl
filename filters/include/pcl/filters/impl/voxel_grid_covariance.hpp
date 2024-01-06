@@ -82,7 +82,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
 
   if((dx*dy*dz) > std::numeric_limits<std::int32_t>::max())
   {
-    PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.", getClassName().c_str());
+    PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.\n", getClassName().c_str());
     output.clear();
     return;
   }
@@ -140,7 +140,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
           continue;
 
       // Get the distance value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
+      const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
       float distance_value = 0;
       memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
@@ -267,7 +267,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   if (save_leaf_layout_)
     leaf_layout_.resize (div_b_[0] * div_b_[1] * div_b_[2], -1);
 
-  // Eigen values and vectors calculated to prevent near singluar matrices
+  // Eigen values and vectors calculated to prevent near singular matrices
   Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> eigensolver;
   Eigen::Matrix3d eigen_val;
   Eigen::Vector3d pt_sum;
@@ -275,7 +275,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   // Eigen values less than a threshold of max eigen value are inflated to a set fraction of the max eigen value.
   double min_covar_eigvalue;
 
-  for (typename std::map<std::size_t, Leaf>::iterator it = leaves_.begin (); it != leaves_.end (); ++it)
+  for (auto it = leaves_.begin (); it != leaves_.end (); ++it)
   {
 
     // Normalize the centroid
@@ -289,7 +289,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
     leaf.mean_ /= leaf.nr_points;
 
     // If the voxel contains sufficient points, its covariance is calculated and is added to the voxel centroids and output clouds.
-    // Points with less than the minimum points will have a can not be accuratly approximated using a normal distribution.
+    // Points with less than the minimum points will have a can not be accurately approximated using a normal distribution.
     if (leaf.nr_points >= min_points_per_voxel_)
     {
       if (save_leaf_layout_)
@@ -330,8 +330,9 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
       eigen_val = eigensolver.eigenvalues ().asDiagonal ();
       leaf.evecs_ = eigensolver.eigenvectors ();
 
-      if (eigen_val (0, 0) < 0 || eigen_val (1, 1) < 0 || eigen_val (2, 2) <= 0)
+      if (eigen_val (0, 0) < -Eigen::NumTraits<double>::dummy_precision () || eigen_val (1, 1) < -Eigen::NumTraits<double>::dummy_precision () || eigen_val (2, 2) <= 0)
       {
+        PCL_WARN ("[VoxelGridCovariance::applyFilter] Invalid eigen value! (%g, %g, %g)\n", eigen_val (0, 0), eigen_val (1, 1), eigen_val (2, 2));
         leaf.nr_points = -1;
         continue;
       }
@@ -447,7 +448,7 @@ pcl::VoxelGridCovariance<PointT>::getDisplayCloud (pcl::PointCloud<PointXYZ>& ce
 
   int pnt_per_cell = 1000;
   boost::mt19937 rng;
-  boost::normal_distribution<> nd (0.0, leaf_size_.head (3).norm ());
+  boost::normal_distribution<> nd (0.0, 1.0);
   boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > var_nor (rng, nd);
 
   Eigen::LLT<Eigen::Matrix3d> llt_of_cov;
@@ -456,8 +457,11 @@ pcl::VoxelGridCovariance<PointT>::getDisplayCloud (pcl::PointCloud<PointXYZ>& ce
   Eigen::Vector3d rand_point;
   Eigen::Vector3d dist_point;
 
+  cell_cloud.reserve (pnt_per_cell * std::count_if (leaves_.begin (), leaves_.end (),
+      [this] (auto& l) { return (l.second.nr_points >= min_points_per_voxel_); }));
+
   // Generate points for each occupied voxel with sufficient points.
-  for (typename std::map<std::size_t, Leaf>::iterator it = leaves_.begin (); it != leaves_.end (); ++it)
+  for (auto it = leaves_.begin (); it != leaves_.end (); ++it)
   {
     Leaf& leaf = it->second;
 

@@ -56,9 +56,6 @@ pcl::modeler::NormalsActorItem::NormalsActorItem(
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::NormalsActorItem::~NormalsActorItem() {}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::modeler::NormalsActorItem::createNormalLines()
 {
@@ -95,7 +92,7 @@ pcl::modeler::NormalsActorItem::createNormalLines()
     }
   }
   else {
-    pcl::IndicesPtr indices(new std::vector<int>());
+    pcl::IndicesPtr indices(new pcl::Indices());
     pcl::removeNaNFromPointCloud(*cloud, *indices);
 
     vtkIdType nr_normals = static_cast<vtkIdType>((indices->size() - 1) / level_ + 1);

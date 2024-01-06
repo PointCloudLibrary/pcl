@@ -44,8 +44,7 @@ namespace pcl
         filter_len_(filter_len)
       {}
 
-      OpenNI2TimerFilter::~OpenNI2TimerFilter ()
-      {}
+      OpenNI2TimerFilter::~OpenNI2TimerFilter () = default;
 
       void OpenNI2TimerFilter::addSample (double sample)
       {

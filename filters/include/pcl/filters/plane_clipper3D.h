@@ -54,6 +54,8 @@ namespace pcl
       using Ptr = shared_ptr< PlaneClipper3D<PointT> >;
       using ConstPtr = shared_ptr< const PlaneClipper3D<PointT> >;
 
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
+
       /**
        * @author Suat Gedikli <gedikli@willowgarage.com>
        * @brief Constructor taking the homogeneous representation of the plane as a Eigen::Vector4f
@@ -61,7 +63,7 @@ namespace pcl
        */
       PlaneClipper3D (const Eigen::Vector4f& plane_params);
 
-      virtual ~PlaneClipper3D () noexcept;
+      virtual ~PlaneClipper3D () noexcept = default;
 
       /**
         * \brief Set new plane parameters

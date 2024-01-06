@@ -36,14 +36,18 @@
  */
 
 #include <pcl/common/time.h> //fps calculations
+#include <pcl/io/timestamp.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
-#include <pcl/visualization/vtk.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
-#include "boost.h"
+#include <vtkSmartPointer.h>
+#include <vtkImageImport.h>
+#include <vtkTIFFWriter.h>
+#include <vtkImageFlip.h>
 
+#include <chrono>
 #include <mutex>
 #include <string>
 #include <vector>
@@ -122,7 +126,8 @@ class SimpleOpenNIViewer
       {
         std::lock_guard<std::mutex> lock (image_mutex_);
 
-        std::string time = boost::posix_time::to_iso_string (boost::posix_time::microsec_clock::local_time ());
+        const auto timestamp = pcl::getTimestamp();
+
         if (image_)
         {
           FPS_CALC ("writer callback");
@@ -148,13 +153,12 @@ class SimpleOpenNIViewer
             data = reinterpret_cast<const void*> (rgb_data);
           }
 
-          std::stringstream ss;
-          ss << "frame_" + time + "_rgb.tiff";
+          const std::string filename = "frame_" + timestamp + "_rgb.tiff";
           importer_->SetImportVoidPointer (const_cast<void*>(data), 1);
           importer_->Update ();
           flipper_->SetInputConnection (importer_->GetOutputPort ());
           flipper_->Update ();
-          writer_->SetFileName (ss.str ().c_str ());
+          writer_->SetFileName (filename.c_str ());
           writer_->SetInputConnection (flipper_->GetOutputPort ());
           writer_->Write ();
         }
@@ -164,8 +168,7 @@ class SimpleOpenNIViewer
           openni_wrapper::DepthImage::Ptr depth_image;
           depth_image.swap (depth_image_);
 
-          std::stringstream ss;
-          ss << "frame_" + time + "_depth.tiff";
+          const std::string filename = "frame_" + timestamp + "_depth.tiff";
 
           depth_importer_->SetWholeExtent (0, depth_image->getWidth () - 1, 0, depth_image->getHeight () - 1, 0, 0);
           depth_importer_->SetDataExtentToWholeExtent ();
@@ -173,7 +176,7 @@ class SimpleOpenNIViewer
           depth_importer_->Update ();
           flipper_->SetInputConnection (depth_importer_->GetOutputPort ());
           flipper_->Update ();
-          writer_->SetFileName (ss.str ().c_str ());
+          writer_->SetFileName (filename.c_str ());
           writer_->SetInputConnection (flipper_->GetOutputPort ());
           writer_->Write ();
         }
@@ -254,9 +257,9 @@ main(int argc, char ** argv)
         {
           std::cout << std::endl << "Supported image modes for device: " << device->getVendorName () << " , " << device->getProductName () << std::endl;
           modes = grabber.getAvailableImageModes ();
-          for (std::vector<std::pair<int, XnMapOutputMode> >::const_iterator it = modes.begin (); it != modes.end (); ++it)
+          for (const auto& mode : modes)
           {
-            std::cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << std::endl;
+            std::cout << mode.first << " = " << mode.second.nXRes << " x " << mode.second.nYRes << " @ " << mode.second.nFPS << std::endl;
           }
         }
       }
@@ -289,10 +292,10 @@ main(int argc, char ** argv)
   
   unsigned imagemode;
   if (pcl::console::parse (argc, argv, "-imagemode", imagemode) != -1)
-    image_mode = pcl::OpenNIGrabber::Mode (imagemode);
+    image_mode = static_cast<pcl::OpenNIGrabber::Mode>(imagemode);
   unsigned depthmode;
   if (pcl::console::parse (argc, argv, "-depthmode", depthmode) != -1)
-    depth_mode = pcl::OpenNIGrabber::Mode (depthmode);
+    depth_mode = static_cast<pcl::OpenNIGrabber::Mode>(depthmode);
   
 
   pcl::OpenNIGrabber grabber (device_id, depth_mode, image_mode);

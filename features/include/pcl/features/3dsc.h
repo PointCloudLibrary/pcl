@@ -43,7 +43,6 @@
 #include <random>
 
 #include <pcl/point_types.h>
-#include <pcl/features/boost.h>
 #include <pcl/features/feature.h>
 
 namespace pcl
@@ -98,12 +97,7 @@ namespace pcl
         theta_divisions_(0),
         phi_divisions_(0),
         volume_lut_(0),
-        azimuth_bins_(12),
-        elevation_bins_(11),
-        radius_bins_(15),
-        min_radius_(0.1),
-        point_density_radius_(0.2),
-        descriptor_length_ (),
+        
         rng_dist_ (0.0f, 1.0f)
       {
         feature_name_ = "ShapeContext3DEstimation";
@@ -119,7 +113,7 @@ namespace pcl
           rng_.seed (12345u);
       }
 
-      ~ShapeContext3DEstimation() {}
+      ~ShapeContext3DEstimation() override = default;
 
       //inline void
       //setAzimuthBins (std::size_t bins) { azimuth_bins_ = bins; }
@@ -171,7 +165,7 @@ namespace pcl
       /** \brief Estimate a descriptor for a given point.
         * \param[in] index the index of the point to estimate a descriptor for
         * \param[in] normals a pointer to the set of normals
-        * \param[in] rf the reference frame
+        * \param[out] rf the reference frame
         * \param[out] desc the resultant estimated descriptor
         * \return true if the descriptor was computed successfully, false if there was an error
         * (e.g. the nearest neighbor didn't return any neighbors)
@@ -198,22 +192,22 @@ namespace pcl
       std::vector<float> volume_lut_;
 
       /** \brief Bins along the azimuth dimension */
-      std::size_t azimuth_bins_;
+      std::size_t azimuth_bins_{12};
 
       /** \brief Bins along the elevation dimension */
-      std::size_t elevation_bins_;
+      std::size_t elevation_bins_{11};
 
       /** \brief Bins along the radius dimension */
-      std::size_t radius_bins_;
+      std::size_t radius_bins_{15};
 
       /** \brief Minimal radius value */
-      double min_radius_;
+      double min_radius_{0.1};
 
       /** \brief Point density radius */
-      double point_density_radius_;
+      double point_density_radius_{0.2};
 
       /** \brief Descriptor length */
-      std::size_t descriptor_length_;
+      std::size_t descriptor_length_{};
 
       /** \brief Random number generator algorithm. */
       std::mt19937 rng_;

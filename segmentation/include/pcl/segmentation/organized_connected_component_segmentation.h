@@ -53,6 +53,7 @@ namespace pcl
     * See OrganizedMultiPlaneSegmentation for an example application.
     *
     * \author Alex Trevor, Suat Gedikli
+    * \ingroup segmentation
     */
   template <typename PointT, typename PointLT>
   class OrganizedConnectedComponentSegmentation : public PCLBase<PointT>
@@ -85,9 +86,7 @@ namespace pcl
 
       /** \brief Destructor for OrganizedConnectedComponentSegmentation. */
       
-      ~OrganizedConnectedComponentSegmentation ()
-      {
-      }
+      ~OrganizedConnectedComponentSegmentation () override = default;
 
       /** \brief Provide a pointer to the comparator to be used for segmentation.
         * \param[in] compare the comparator

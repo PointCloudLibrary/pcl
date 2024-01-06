@@ -227,13 +227,11 @@ transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   {
     cloud_out.header   = cloud_in.header;
     cloud_out.is_dense = cloud_in.is_dense;
-    cloud_out.width    = cloud_in.width;
-    cloud_out.height   = cloud_in.height;
     cloud_out.reserve (cloud_in.size ());
     if (copy_all_fields)
-      cloud_out.assign (cloud_in.begin (), cloud_in.end ());
+      cloud_out.assign (cloud_in.begin (), cloud_in.end (), cloud_in.width);
     else
-      cloud_out.resize (cloud_in.size ());
+      cloud_out.resize (cloud_in.width, cloud_in.height);
     cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
     cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
   }
@@ -308,6 +306,45 @@ transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 }
 
 
+inline void
+transformPointCloud(const pcl::PointCloud<pcl::PointXY> &cloud_in, 
+                    pcl::PointCloud<pcl::PointXY> &cloud_out, 
+                    const Eigen::Affine2f &transform, 
+                    bool copy_all_fields)
+  {
+    if (&cloud_in != &cloud_out)
+    {
+      cloud_out.header   = cloud_in.header;
+      cloud_out.is_dense = cloud_in.is_dense;
+      cloud_out.reserve (cloud_in.size ());
+      if (copy_all_fields)
+        cloud_out.assign (cloud_in.begin (), cloud_in.end (), cloud_in.width);
+      else
+        cloud_out.resize (cloud_in.width, cloud_in.height);
+      cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
+      cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
+    }
+    if(cloud_in.is_dense)
+    {
+      for (std::size_t i = 0; i < cloud_out.size (); ++i)
+      { 
+        cloud_out[i].getVector2fMap () = transform * cloud_in[i].getVector2fMap();
+      }
+    }
+    else
+    {
+      for (std::size_t i = 0; i < cloud_out.size (); ++i)
+      {
+        if (!std::isfinite(cloud_in[i].x) || !std::isfinite(cloud_in[i].y))
+        {
+          continue;
+        }
+        cloud_out[i].getVector2fMap () = transform * cloud_in[i].getVector2fMap();
+      }
+    }
+  }
+
+
 template <typename PointT, typename Scalar> void
 transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
                                 pcl::PointCloud<PointT> &cloud_out,
@@ -318,14 +355,12 @@ transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
   {
     // Note: could be replaced by cloud_out = cloud_in
     cloud_out.header   = cloud_in.header;
-    cloud_out.width    = cloud_in.width;
-    cloud_out.height   = cloud_in.height;
     cloud_out.is_dense = cloud_in.is_dense;
-    cloud_out.reserve (cloud_out.size ());
+    cloud_out.reserve (cloud_in.size ());
     if (copy_all_fields)
-      cloud_out.assign (cloud_in.begin (), cloud_in.end ());
+      cloud_out.assign (cloud_in.begin (), cloud_in.end (), cloud_in.width);
     else
-      cloud_out.resize (cloud_in.size ());
+      cloud_out.resize (cloud_in.width, cloud_in.height);
     cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
     cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
   }
@@ -479,4 +514,3 @@ getPrincipalTransformation (const pcl::PointCloud<PointT> &cloud,
 }
 
 } // namespace pcl
-

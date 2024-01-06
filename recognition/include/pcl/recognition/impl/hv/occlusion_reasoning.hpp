@@ -67,7 +67,7 @@ template<typename ModelT, typename SceneT> void
 pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::filter (typename pcl::PointCloud<ModelT>::ConstPtr & model,
                                                               typename pcl::PointCloud<ModelT>::Ptr & filtered, float thres)
 {
-  std::vector<int> indices_to_keep;
+  pcl::Indices indices_to_keep;
   filter(model, indices_to_keep, thres);
   pcl::copyPointCloud (*model, indices_to_keep, *filtered);
 }
@@ -75,7 +75,7 @@ pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::filter (typename pcl::Poin
 ///////////////////////////////////////////////////////////////////////////////////////////
 template<typename ModelT, typename SceneT> void
 pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::filter (typename pcl::PointCloud<ModelT>::ConstPtr & model,
-                                                                      std::vector<int> & indices_to_keep, float thres)
+                                                                      pcl::Indices & indices_to_keep, float thres)
 {
 
   float cx, cy;
@@ -164,7 +164,7 @@ pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::computeDepthMap (typename 
   {
     //Dilate and smooth the depth map
     int ws = wsize;
-    int ws2 = int (std::floor (static_cast<float> (ws) / 2.f));
+    int ws2 = static_cast<int>(std::floor (static_cast<float> (ws) / 2.f));
     float * depth_smooth = new float[cx_ * cy_];
     for (int i = 0; i < (cx_ * cy_); i++)
       depth_smooth[i] = std::numeric_limits<float>::quiet_NaN ();
@@ -192,7 +192,7 @@ pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::computeDepthMap (typename 
       }
     }
 
-    memcpy (depth_, depth_smooth, sizeof(float) * cx_ * cy_);
+    std::copy(depth_smooth, depth_smooth + cx_ * cy_, depth_);
     delete[] depth_smooth;
   }
 }

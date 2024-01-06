@@ -40,7 +40,6 @@
 
 #pragma once
 
-#include <pcl/registration/boost.h>
 #include <pcl/registration/boost_graph.h>
 #include <pcl/registration/icp.h>
 #include <pcl/registration/registration.h>
@@ -91,11 +90,10 @@ public:
   , loop_start_(0)
   , loop_end_(0)
   , reg_(new pcl::IterativeClosestPoint<PointT, PointT>)
-  , compute_loop_(true)
   , vd_(){};
 
   /** \brief Empty destructor */
-  ~ELCH() {}
+  ~ELCH() override = default;
 
   /** \brief Add a new point cloud to the internal graph.
    * \param[in] cloud the new point cloud
@@ -240,7 +238,7 @@ private:
 
   /** \brief The transformation between that start and end of the loop. */
   Eigen::Matrix4f loop_transform_;
-  bool compute_loop_;
+  bool compute_loop_{true};
 
   /** \brief previously added node in the loop_graph_. */
   typename boost::graph_traits<LoopGraph>::vertex_descriptor vd_;

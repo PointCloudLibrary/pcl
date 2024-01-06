@@ -72,11 +72,11 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::setNonMaxSupression (bool n
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT> void
-pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::calculateCombinedCovar (const std::vector<int>& neighbors, float* coefficients) const
+pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::calculateCombinedCovar (const pcl::Indices& neighbors, float* coefficients) const
 {
-  memset (coefficients, 0, sizeof (float) * 21);
+  std::fill_n(coefficients, 21, 0);
   unsigned count = 0;
-  for (const int &neighbor : neighbors)
+  for (const auto &neighbor : neighbors)
   {
     if (std::isfinite ((*normals_)[neighbor].normal_x) && std::isfinite ((*intensity_gradients_)[neighbor].gradient [0]))
     {
@@ -112,7 +112,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::calculateCombinedCovar (con
   }
   if (count > 0)
   {
-    float norm = 1.0 / float (count);
+    float norm = 1.0 / static_cast<float>(count);
     coefficients[ 0] *= norm;
     coefficients[ 1] *= norm;
     coefficients[ 2] *= norm;
@@ -195,7 +195,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
     // Suat: ToDo: remove this magic number or expose using set/get
     if (len > 200.0)
     {
-      len = 1.0 / sqrt (len);
+      len = 1.0 / std::sqrt (len);
       intensity_gradients_->points [idx].gradient_x *= len;
       intensity_gradients_->points [idx].gradient_y *= len;
       intensity_gradients_->points [idx].gradient_z *= len;
@@ -234,7 +234,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
       if (!isFinite ((*response)[idx]) || (*response)[idx].intensity < threshold_)
         continue;
 
-      std::vector<int> nn_indices;
+      pcl::Indices nn_indices;
       std::vector<float> nn_dists;
       tree_->radiusSearch (idx, search_radius_, nn_indices, nn_dists);
       bool is_maxima = true;
@@ -282,7 +282,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
     pointOut.intensity = 0.0; //std::numeric_limits<float>::quiet_NaN ();
     if (isFinite (pointIn))
     {
-      std::vector<int> nn_indices;
+      pcl::Indices nn_indices;
       std::vector<float> nn_dists;
       tree_->radiusSearch (pointIn, search_radius_, nn_indices, nn_dists);
       calculateCombinedCovar (nn_indices, covar);
@@ -376,7 +376,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
       corner.x = cornerIt->x;
       corner.y = cornerIt->y;
       corner.z = cornerIt->z;
-      std::vector<int> nn_indices;
+      pcl::Indices nn_indices;
       std::vector<float> nn_dists;      
       search.radiusSearch (corner, search_radius_, nn_indices, nn_dists);
       for (const auto& index : nn_indices)

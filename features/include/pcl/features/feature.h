@@ -123,8 +123,8 @@ namespace pcl
 
       using PointCloudOut = pcl::PointCloud<PointOutT>;
 
-      using SearchMethod = std::function<int (std::size_t, double, std::vector<int> &, std::vector<float> &)>;
-      using SearchMethodSurface = std::function<int (const PointCloudIn &cloud, std::size_t index, double, std::vector<int> &, std::vector<float> &)>;
+      using SearchMethod = std::function<int (std::size_t, double, pcl::Indices &, std::vector<float> &)>;
+      using SearchMethodSurface = std::function<int (const PointCloudIn &cloud, std::size_t index, double, pcl::Indices &, std::vector<float> &)>;
 
     public:
       /** \brief Empty constructor. */
@@ -134,9 +134,6 @@ namespace pcl
         search_parameter_(0), search_radius_(0), k_(0),
         fake_surface_(false)
       {}
-
-      /** \brief Empty destructor */
-      virtual ~Feature () {}
 
       /** \brief Provide a pointer to a dataset to add additional information
         * to estimate the features for every point in the input dataset.  This
@@ -269,7 +266,7 @@ namespace pcl
         */
       inline int
       searchForNeighbors (std::size_t index, double parameter,
-                          std::vector<int> &indices, std::vector<float> &distances) const
+                          pcl::Indices &indices, std::vector<float> &distances) const
       {
         return (search_method_surface_ (*input_, index, parameter, indices, distances));
       }
@@ -287,7 +284,7 @@ namespace pcl
         */
       inline int
       searchForNeighbors (const PointCloudIn &cloud, std::size_t index, double parameter,
-                          std::vector<int> &indices, std::vector<float> &distances) const
+                          pcl::Indices &indices, std::vector<float> &distances) const
       {
         return (search_method_surface_ (cloud, index, parameter, indices, distances));
       }
@@ -330,9 +327,6 @@ namespace pcl
 
       /** \brief Empty constructor. */
       FeatureFromNormals () : normals_ () {}
-
-      /** \brief Empty destructor */
-      virtual ~FeatureFromNormals () {}
 
       /** \brief Provide a pointer to the input dataset that contains the point normals of
         * the XYZ dataset.
@@ -394,9 +388,6 @@ namespace pcl
         k_ = 1; // Search tree is not always used here.
       }
 
-      /** \brief Empty destructor */
-      virtual ~FeatureFromLabels () {}
-
       /** \brief Provide a pointer to the input dataset that contains the point labels of
         * the XYZ dataset.
         * In case of search surface is set to be different from the input cloud,
@@ -455,8 +446,9 @@ namespace pcl
       /** \brief Empty constructor. */
       FeatureWithLocalReferenceFrames () : frames_ (), frames_never_defined_ (true) {}
 
-       /** \brief Empty destructor. */
-      virtual ~FeatureWithLocalReferenceFrames () {}
+      /** \brief Default virtual destructor. */
+      virtual
+      ~FeatureWithLocalReferenceFrames() = default;
 
       /** \brief Provide a pointer to the input dataset that contains the local
         * reference frames of the XYZ dataset.

@@ -41,13 +41,13 @@
 #ifndef PCL_FEATURES_IMPL_RSD_H_
 #define PCL_FEATURES_IMPL_RSD_H_
 
-#include <cfloat>
+#include <limits>
 #include <pcl/features/rsd.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> Eigen::MatrixXf
 pcl::computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud<PointNT> &normals,
-		 const std::vector<int> &indices, double max_dist,
+		 const pcl::Indices &indices, double max_dist,
 		 int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram)
 {
   // Check if the full histogram has to be saved or not
@@ -74,7 +74,7 @@ pcl::computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud
   min_max_angle_by_dist[0][0] = min_max_angle_by_dist[0][1] = 0.0;
 
   // Compute distance by normal angle distribution for points
-  std::vector<int>::const_iterator i, begin (indices.begin()), end (indices.end());
+  pcl::Indices::const_iterator i, begin (indices.begin()), end (indices.end());
   for (i = begin+1; i != end; ++i)
   {
     // compute angle between the two lines going through normals (disregard orientation!)
@@ -124,8 +124,8 @@ pcl::computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud
       Amaxt_d += p_max * f;
     }
   }
-  float min_radius = Amint_Amin == 0.0f ? float (plane_radius) : float (std::min (Amint_d/Amint_Amin, plane_radius));
-  float max_radius = Amaxt_Amax == 0.0f ? float (plane_radius) : float (std::min (Amaxt_d/Amaxt_Amax, plane_radius));
+  float min_radius = Amint_Amin == 0.0f ? static_cast<float>(plane_radius) : static_cast<float>(std::min (Amint_d/Amint_Amin, plane_radius));
+  float max_radius = Amaxt_Amax == 0.0f ? static_cast<float>(plane_radius) : static_cast<float>(std::min (Amaxt_d/Amaxt_Amax, plane_radius));
 
   // Small correction of the systematic error of the estimation (based on analysis with nr_subdiv_ = 5)
   min_radius *= 1.1f;
@@ -147,7 +147,7 @@ pcl::computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT, typename PointOutT> Eigen::MatrixXf
 pcl::computeRSD (const pcl::PointCloud<PointNT> &normals,
-		 const std::vector<int> &indices, const std::vector<float> &sqr_dists, double max_dist,
+		 const pcl::Indices &indices, const std::vector<float> &sqr_dists, double max_dist,
 		 int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram)
 {
   // Check if the full histogram has to be saved or not
@@ -170,12 +170,12 @@ pcl::computeRSD (const pcl::PointCloud<PointNT> &normals,
   for (int di=1; di<nr_subdiv; di++)
   {
     min_max_angle_by_dist[di].resize (2);
-    min_max_angle_by_dist[di][0] = +DBL_MAX;
-    min_max_angle_by_dist[di][1] = -DBL_MAX;
+    min_max_angle_by_dist[di][0] = std::numeric_limits<double>::max();
+    min_max_angle_by_dist[di][1] = std::numeric_limits<double>::lowest();
   }
   
   // Compute distance by normal angle distribution for points
-  std::vector<int>::const_iterator i, begin (indices.begin()), end (indices.end());
+  pcl::Indices::const_iterator i, begin (indices.begin()), end (indices.end());
   for (i = begin+1; i != end; ++i)
   {
     // compute angle between the two lines going through normals (disregard orientation!)
@@ -223,8 +223,8 @@ pcl::computeRSD (const pcl::PointCloud<PointNT> &normals,
       Amaxt_d += p_max * f;
     }
   }
-  float min_radius = Amint_Amin == 0.0f ? float (plane_radius) : float (std::min (Amint_d/Amint_Amin, plane_radius));
-  float max_radius = Amaxt_Amax == 0.0f ? float (plane_radius) : float (std::min (Amaxt_d/Amaxt_Amax, plane_radius));
+  float min_radius = Amint_Amin == 0.0f ? static_cast<float>(plane_radius) : static_cast<float>(std::min (Amint_d/Amint_Amin, plane_radius));
+  float max_radius = Amaxt_Amax == 0.0f ? static_cast<float>(plane_radius) : static_cast<float>(std::min (Amaxt_d/Amaxt_Amax, plane_radius));
 
   // Small correction of the systematic error of the estimation (based on analysis with nr_subdiv_ = 5)
   min_radius *= 1.1f;
@@ -258,7 +258,7 @@ pcl::RSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
   // List of indices and corresponding squared distances for a neighborhood
   // \note resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices;
+  pcl::Indices nn_indices;
   std::vector<float> nn_sqr_dists;
 
   // Check if the full histogram has to be saved or not

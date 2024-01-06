@@ -39,7 +39,7 @@
  */
 
 #pragma once
-
+PCL_DEPRECATED_HEADER(1, 15, "Please include the needed boost headers directly.")
 #ifdef __GNUC__
 #pragma GCC system_header
 #endif

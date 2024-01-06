@@ -95,8 +95,6 @@ namespace pcl
                       : AbstractTool (parameter_model, parent) 
                       {}
         
-        ~ModifyItemTool () { }
-        
         QList <CloudComposerItem*>
         performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) override = 0;
         
@@ -118,8 +116,6 @@ namespace pcl
         NewItemTool (PropertiesModel* parameter_model, QObject* parent) 
                       : AbstractTool (parameter_model, parent)
                       {}
-        
-        ~NewItemTool () { }
         
         QList <CloudComposerItem*>
         performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) override = 0;
@@ -143,8 +139,6 @@ namespace pcl
                       : AbstractTool (parameter_model, parent) 
                       {}
         
-        ~SplitItemTool () { }
-        
         QList <CloudComposerItem*>
         performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) override = 0;
         
@@ -166,8 +160,6 @@ namespace pcl
         MergeCloudTool (PropertiesModel* parameter_model, QObject* parent) 
                       : AbstractTool (parameter_model, parent) 
                       {}
-        
-        ~MergeCloudTool () { }
         
         QList <CloudComposerItem*>
         performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) override = 0;

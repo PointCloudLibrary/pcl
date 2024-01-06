@@ -39,7 +39,6 @@
 #include <thread>
 
 #include <pcl/console/print.h>
-#include <pcl/io/boost.h>
 #include <pcl/io/hdl_grabber.h>
 #include <boost/version.hpp>
 #include <boost/foreach.hpp>
@@ -473,8 +472,8 @@ pcl::HDLGrabber::enqueueHDLPacket (const std::uint8_t *data,
 {
   if (bytesReceived == 1206)
   {
-    std::uint8_t *dup = static_cast<std::uint8_t *> (malloc (bytesReceived * sizeof(std::uint8_t)));
-    memcpy (dup, data, bytesReceived * sizeof (std::uint8_t));
+    auto *dup = static_cast<std::uint8_t *> (malloc (bytesReceived * sizeof(std::uint8_t)));
+    std::copy(data, data + bytesReceived, dup);
 
     hdl_data_.enqueue (dup);
   }
@@ -537,6 +536,20 @@ pcl::HDLGrabber::stop ()
   terminate_read_packet_thread_ = true;
   hdl_data_.stopQueue ();
 
+  if (hdl_read_socket_ != nullptr)
+  {
+    try
+    {
+      hdl_read_socket_->shutdown (boost::asio::ip::tcp::socket::shutdown_both);
+    }
+    catch (const boost::system::system_error& e)
+    {
+      PCL_ERROR("[pcl::HDLGrabber::stop] Failed to shutdown the socket. %s\n", e.what ());
+    }
+
+    hdl_read_socket_->close ();
+  }
+
   if (hdl_read_packet_thread_ != nullptr)
   {
     hdl_read_packet_thread_->join ();
@@ -565,7 +578,7 @@ pcl::HDLGrabber::isRunning () const
 std::string
 pcl::HDLGrabber::getName () const
 {
-  return (std::string ("Velodyne High Definition Laser (HDL) Grabber"));
+  return {"Velodyne High Definition Laser (HDL) Grabber"};
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -646,12 +659,21 @@ pcl::HDLGrabber::readPacketsFromSocket ()
 
   while (!terminate_read_packet_thread_ && hdl_read_socket_->is_open ())
   {
-    std::size_t length = hdl_read_socket_->receive_from (boost::asio::buffer (data, 1500), sender_endpoint);
-
-    if (isAddressUnspecified (source_address_filter_)
-        || (source_address_filter_ == sender_endpoint.address () && source_port_filter_ == sender_endpoint.port ()))
+    try
     {
-      enqueueHDLPacket (data, length);
+      std::size_t length = hdl_read_socket_->receive_from (boost::asio::buffer (data, 1500), sender_endpoint);
+
+      if (isAddressUnspecified (source_address_filter_)
+          || (source_address_filter_ == sender_endpoint.address () && source_port_filter_ == sender_endpoint.port ()))
+      {
+        enqueueHDLPacket (data, length);
+      }
+    }
+    catch (const boost::system::system_error& e)
+    {
+      // We must ignore those errors triggered on socket close/shutdown request.
+      if (!(e.code () == boost::asio::error::interrupted || e.code () == boost::asio::error::operation_aborted))
+        throw;
     }
   }
 }

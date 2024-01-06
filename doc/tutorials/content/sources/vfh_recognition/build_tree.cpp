@@ -1,12 +1,12 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
-#include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/io/pcd_io.h>
 #include <boost/filesystem.hpp>
 #include <flann/flann.h>
 #include <flann/io/hdf5.h>
 #include <fstream>
+
 
 typedef std::pair<std::string, std::vector<float> > vfh_model;
 
@@ -78,7 +78,7 @@ loadFeatureModels (const boost::filesystem::path &base_dir, const std::string &e
       pcl::console::print_highlight ("Loading %s (%lu models loaded so far).\n", ss.str ().c_str (), (unsigned long)models.size ());
       loadFeatureModels (it->path (), extension, models);
     }
-    if (boost::filesystem::is_regular_file (it->status ()) && boost::filesystem::extension (it->path ()) == extension)
+    if (boost::filesystem::is_regular_file (it->status ()) && it->path ().extension ().string () == extension)
     {
       vfh_model m;
       if (loadHist (base_dir / it->path ().filename (), m))

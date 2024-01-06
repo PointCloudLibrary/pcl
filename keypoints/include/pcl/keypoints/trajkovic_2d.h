@@ -43,7 +43,7 @@
 namespace pcl
 {
   /** \brief TrajkovicKeypoint2D implements Trajkovic and Hedley corner detector on
-    * organized pooint cloud using intensity information.
+    * organized point cloud using intensity information.
     * It uses first order statistics to find variation of intensities in horizontal
     * or vertical directions.
     *
@@ -81,7 +81,6 @@ namespace pcl
         , window_size_ (window_size)
         , first_threshold_ (first_threshold)
         , second_threshold_ (second_threshold)
-        , threads_ (1)
       {
         name_ = "TrajkovicKeypoint2D";
       }
@@ -164,7 +163,7 @@ namespace pcl
       /// second threshold for corner evaluation
       float second_threshold_;
       /// number of threads to be used
-      unsigned int threads_;
+      unsigned int threads_{1};
       /// point cloud response
       pcl::PointCloud<float>::Ptr response_;
   };

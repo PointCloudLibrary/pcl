@@ -64,27 +64,16 @@ namespace pcl
 
       using Ptr = shared_ptr<BilateralFilter<PointT> >;
       using ConstPtr = shared_ptr<const BilateralFilter<PointT> >;
- 
 
       /** \brief Constructor. 
         * Sets sigma_s_ to 0 and sigma_r_ to MAXDBL
         */
-      BilateralFilter () : sigma_s_ (0), 
-                           sigma_r_ (std::numeric_limits<double>::max ()),
-                           tree_ ()
+      BilateralFilter () : tree_ ()
       {
       }
-
-
-      /** \brief Filter the input data and store the results into output
-        * \param[out] output the resultant point cloud message
-        */
-      void
-      applyFilter (PointCloud &output) override;
-
       /** \brief Compute the intensity average for a single point
         * \param[in] pid the point index to compute the weight for
-        * \param[in] indices the set of nearest neighor indices 
+        * \param[in] indices the set of nearest neighbor indices 
         * \param[in] distances the set of nearest neighbor distances
         * \return the intensity average at a given point index
         */
@@ -122,8 +111,14 @@ namespace pcl
       setSearchMethod (const KdTreePtr &tree)
       { tree_ = tree; }
 
-    private:
+    protected:
+      /** \brief Filter the input data and store the results into output
+        * \param[out] output the resultant point cloud message
+        */
+      void
+      applyFilter (PointCloud &output) override;
 
+    private:
       /** \brief The bilateral filter Gaussian distance kernel.
         * \param[in] x the spatial distance (distance or intensity)
         * \param[in] sigma standard deviation
@@ -133,9 +128,9 @@ namespace pcl
       { return (std::exp (- (x*x)/(2*sigma*sigma))); }
 
       /** \brief The half size of the Gaussian bilateral filter window (e.g., spatial extents in Euclidean). */
-      double sigma_s_;
+      double sigma_s_{0.0};
       /** \brief The standard deviation of the bilateral filter (e.g., standard deviation in intensity). */
-      double sigma_r_;
+      double sigma_r_{std::numeric_limits<double>::max ()};
 
       /** \brief A pointer to the spatial search object. */
       KdTreePtr tree_;

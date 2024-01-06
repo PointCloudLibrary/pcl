@@ -47,8 +47,8 @@
 namespace pcl {
 /** \brief @b SampleConsensusInitialAlignment is an implementation of the initial
  * alignment algorithm described in section IV of "Fast Point Feature Histograms (FPFH)
- * for 3D Registration," Rusu et al. \author Michael Dixon, Radu B. Rusu \ingroup
- * registration
+ * for 3D Registration," Rusu et al. \author Michael Dixon, Radu B. Rusu
+ * \ingroup registration
  */
 template <typename PointSource, typename PointTarget, typename FeatureT>
 class SampleConsensusInitialAlignment : public Registration<PointSource, PointTarget> {
@@ -99,12 +99,12 @@ public:
 
   class HuberPenalty : public ErrorFunctor {
   private:
-    HuberPenalty() {}
+    HuberPenalty() = default;
 
   public:
     HuberPenalty(float threshold) : threshold_(threshold) {}
-    virtual float
-    operator()(float e) const
+    float
+    operator()(float e) const override
     {
       if (e <= threshold_)
         return (0.5 * e * e);
@@ -112,15 +112,15 @@ public:
     }
 
   protected:
-    float threshold_;
+    float threshold_{0.0f};
   };
 
   class TruncatedError : public ErrorFunctor {
   private:
-    TruncatedError() {}
+    TruncatedError() = default;
 
   public:
-    ~TruncatedError() {}
+    ~TruncatedError() override = default;
 
     TruncatedError(float threshold) : threshold_(threshold) {}
     float
@@ -132,7 +132,7 @@ public:
     }
 
   protected:
-    float threshold_;
+    float threshold_{0.0f};
   };
 
   using ErrorFunctorPtr = typename ErrorFunctor::Ptr;
@@ -142,9 +142,6 @@ public:
   SampleConsensusInitialAlignment()
   : input_features_()
   , target_features_()
-  , nr_samples_(3)
-  , min_sample_distance_(0.0f)
-  , k_correspondences_(10)
   , feature_tree_(new pcl::KdTreeFLANN<FeatureT>)
   , error_functor_()
   {
@@ -261,10 +258,10 @@ protected:
   /** \brief Choose a random index between 0 and n-1
    * \param n the number of possible indices to choose from
    */
-  inline int
+  inline pcl::index_t
   getRandomIndex(int n)
   {
-    return (static_cast<int>(n * (rand() / (RAND_MAX + 1.0))));
+    return (static_cast<pcl::index_t>(n * (rand() / (RAND_MAX + 1.0))));
   };
 
   /** \brief Select \a nr_samples sample points from cloud while making sure that their
@@ -275,9 +272,9 @@ protected:
    */
   void
   selectSamples(const PointCloudSource& cloud,
-                int nr_samples,
+                unsigned int nr_samples,
                 float min_sample_distance,
-                std::vector<int>& sample_indices);
+                pcl::Indices& sample_indices);
 
   /** \brief For each of the sample points, find a list of points in the target cloud
    * whose features are similar to the sample points' features. From these, select one
@@ -288,8 +285,8 @@ protected:
    */
   void
   findSimilarFeatures(const FeatureCloud& input_features,
-                      const std::vector<int>& sample_indices,
-                      std::vector<int>& corresponding_indices);
+                      const pcl::Indices& sample_indices,
+                      pcl::Indices& corresponding_indices);
 
   /** \brief An error metric for that computes the quality of the alignment between the
    * given cloud and the target. \param cloud the input cloud \param threshold distances
@@ -313,14 +310,14 @@ protected:
   FeatureCloudConstPtr target_features_;
 
   /** \brief The number of samples to use during each iteration. */
-  int nr_samples_;
+  int nr_samples_{3};
 
   /** \brief The minimum distances between samples. */
-  float min_sample_distance_;
+  float min_sample_distance_{0.0f};
 
   /** \brief The number of neighbors to use when selecting a random feature
    * correspondence. */
-  int k_correspondences_;
+  int k_correspondences_{10};
 
   /** \brief The KdTree used to compare feature descriptors. */
   FeatureKdTreePtr feature_tree_;

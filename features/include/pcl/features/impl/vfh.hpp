@@ -93,7 +93,7 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (con
                                                                              const Eigen::Vector4f &centroid_n,
                                                                              const pcl::PointCloud<PointInT> &cloud,
                                                                              const pcl::PointCloud<PointNT> &normals,
-                                                                             const std::vector<int> &indices)
+                                                                             const pcl::Indices &indices)
 {
   Eigen::Vector4f pfh_tuple;
   // Reset the whole thing
@@ -125,7 +125,7 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (con
   if (normalize_bins_)
     hist_incr = 100.0f / static_cast<float> (indices.size () - 1);
 
-  float hist_incr_size_component = 0;;
+  float hist_incr_size_component = 0;
   if (size_component_)
     hist_incr_size_component = hist_incr;
 
@@ -226,7 +226,7 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
                             (*normals_)[index].normal[2], 0);
     // Normalize
     double alpha = (normal.dot (d_vp_p) + 1.0) * 0.5;
-    std::size_t fi = static_cast<std::size_t> (std::floor (alpha * hist_vp_.size ()));
+    auto fi = static_cast<std::size_t> (std::floor (alpha * hist_vp_.size ()));
     fi = std::max<std::size_t> (0u, fi);
     fi = std::min<std::size_t> (hist_vp_.size () - 1, fi);
     // Bin into the histogram
@@ -243,9 +243,9 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
   for (int i = 0; i < 4; ++i)
   {
-    outPtr = std::copy_n (hist_f_[i].data (), hist_f_[i].size (), outPtr);
+    outPtr = std::copy (hist_f_[i].data (), hist_f_[i].data () + hist_f_[i].size (), outPtr);
   }
-  outPtr = std::copy_n (hist_vp_.data (), hist_vp_.size (), outPtr);
+  outPtr = std::copy (hist_vp_.data (), hist_vp_.data () + hist_vp_.size (), outPtr);
 }
 
 #define PCL_INSTANTIATE_VFHEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::VFHEstimation<T,NT,OutT>;

@@ -39,8 +39,7 @@
 
 #include <pcl/ml/densecrf.h>
 
-pcl::DenseCrf::DenseCrf(int N, int m)
-: N_(N), M_(m), xyz_(false), rgb_(false), normal_(false)
+pcl::DenseCrf::DenseCrf(int N, int m) : N_(N), M_(m)
 {
   current_.resize(N_ * M_, 0.0f);
   next_.resize(N_ * M_, 0.0f);
@@ -271,8 +270,9 @@ pcl::DenseCrf::runInference(float relax)
     next_[i] = -unary_[i];
 
   // Add up all pairwise potentials
-  for (auto& p : pairwise_potential_)
+  for (auto& p : pairwise_potential_) {
     p->compute(next_, current_, tmp_, M_);
+  }
 
   // Exponentiate and normalize
   expAndNormalize(current_, next_, 1.0, relax);

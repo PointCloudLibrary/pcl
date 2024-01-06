@@ -38,7 +38,6 @@
 /// @author  Yue Li and Matthew Hielsberg
 
 #include <algorithm>
-#include <qgl.h>
 #include <pcl/apps/point_cloud_editor/cloud.h>
 #include <pcl/apps/point_cloud_editor/selection.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
@@ -445,10 +444,9 @@ Cloud::restore (const CopyBuffer& copy_buffer, const Selection& selection)
 std::string
 Cloud::getStat () const
 {
-  std::string title = "Total number of points: ";
-  std::string num_str;
-  ::toString(cloud_.size(), num_str);
-  return (title + num_str);
+  const std::string title = "Total number of points: ";
+  const std::string num_str = std::to_string(cloud_.size());
+  return title + num_str;
 }
 
 void

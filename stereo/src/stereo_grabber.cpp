@@ -37,7 +37,6 @@
 
 #include <pcl/stereo/stereo_grabber.h>
 #include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
-#include <pcl/point_types.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////// GrabberImplementation //////////////////////
@@ -79,11 +78,11 @@ pcl::StereoGrabberBase::StereoGrabberImpl::StereoGrabberImpl(
 , frames_per_second_(frames_per_second)
 , repeat_(repeat)
 , running_(false)
+, pair_files_({pair_files})
 , time_trigger_(1.0 / static_cast<double>(std::max(frames_per_second, 0.001f)),
                 [this] { trigger(); })
 , valid_(false)
 {
-  pair_files_.push_back(pair_files);
   pair_iterator_ = pair_files_.begin();
 }
 
@@ -97,11 +96,11 @@ pcl::StereoGrabberBase::StereoGrabberImpl::StereoGrabberImpl(
 , frames_per_second_(frames_per_second)
 , repeat_(repeat)
 , running_(false)
+, pair_files_(files)
 , time_trigger_(1.0 / static_cast<double>(std::max(frames_per_second, 0.001f)),
                 [this] { trigger(); })
 , valid_(false)
 {
-  pair_files_ = files;
   pair_iterator_ = pair_files_.begin();
 }
 

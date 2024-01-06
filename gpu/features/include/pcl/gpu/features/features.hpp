@@ -142,7 +142,6 @@ namespace pcl
         {
         public:
             FPFHEstimation();
-            virtual ~FPFHEstimation();
 
             void compute(DeviceArray2D<FPFHSignature33>& features);
 

@@ -93,7 +93,7 @@ namespace pcl
 
       /** \brief Empty constructor. */
       FPFHEstimation () : 
-        nr_bins_f1_ (11), nr_bins_f2_ (11), nr_bins_f3_ (11), 
+         
         d_pi_ (1.0f / (2.0f * static_cast<float> (M_PI)))
       {
         feature_name_ = "FPFHEstimation";
@@ -129,8 +129,8 @@ namespace pcl
         */
       void 
       computePointSPFHSignature (const pcl::PointCloud<PointInT> &cloud, 
-                                 const pcl::PointCloud<PointNT> &normals, int p_idx, int row, 
-                                 const std::vector<int> &indices, 
+                                 const pcl::PointCloud<PointNT> &normals, pcl::index_t p_idx, int row, 
+                                 const pcl::Indices &indices, 
                                  Eigen::MatrixXf &hist_f1, Eigen::MatrixXf &hist_f2, Eigen::MatrixXf &hist_f3);
 
       /** \brief Weight the SPFH (Simple Point Feature Histograms) individual histograms to create the final FPFH
@@ -146,7 +146,7 @@ namespace pcl
       weightPointSPFHSignature (const Eigen::MatrixXf &hist_f1, 
                                 const Eigen::MatrixXf &hist_f2, 
                                 const Eigen::MatrixXf &hist_f3, 
-                                const std::vector<int> &indices, 
+                                const pcl::Indices &indices, 
                                 const std::vector<float> &dists, 
                                 Eigen::VectorXf &fpfh_histogram);
 
@@ -197,7 +197,7 @@ namespace pcl
       computeFeature (PointCloudOut &output) override;
 
       /** \brief The number of subdivisions for each angular feature interval. */
-      int nr_bins_f1_, nr_bins_f2_, nr_bins_f3_;
+      int nr_bins_f1_{11}, nr_bins_f2_{11}, nr_bins_f3_{11};
 
       /** \brief Placeholder for the f1 histogram. */
       Eigen::MatrixXf hist_f1_;

@@ -90,9 +90,7 @@ namespace pcl
 
         /** \brief Destructor for KdTree. */
         
-        ~KdTree ()
-        {
-        }
+        ~KdTree () override = default;
 
         /** \brief Provide a pointer to the point representation to use to convert points into k-D vectors. 
           * \param[in] point_representation the const boost shared pointer to a PointRepresentation
@@ -130,7 +128,7 @@ namespace pcl
           * \param[in] cloud the const boost shared pointer to a PointCloud message
           * \param[in] indices the point indices subset that is to be used from \a cloud 
           */
-        void
+        bool
         setInputCloud (const PointCloudConstPtr& cloud, 
                        const IndicesConstPtr& indices = IndicesConstPtr ()) override;
 

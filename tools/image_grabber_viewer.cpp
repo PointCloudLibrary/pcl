@@ -40,13 +40,12 @@
 #include <pcl/io/image_grabber.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
-#include <pcl/visualization/boost.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/image_viewer.h>
-#include <pcl/io/pcd_io.h>
 
 #include <mutex>
 #include <thread>
+#include <boost/filesystem.hpp> // for exists
 
 using namespace std::chrono_literals;
 using pcl::console::print_error;
@@ -119,7 +118,7 @@ keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
 void 
 mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
 {
-  std::string* message = static_cast<std::string*> (cookie);
+  auto* message = static_cast<std::string*> (cookie);
   if (mouse_event.getType() == pcl::visualization::MouseEvent::MouseButtonPress && mouse_event.getButton() == pcl::visualization::MouseEvent::LeftButton)
   {
     std::cout << (*message) << " :: " << mouse_event.getX () << " , " << mouse_event.getY () << std::endl;
@@ -130,7 +129,7 @@ mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
 int
 main (int argc, char** argv)
 {
-  srand (unsigned (time (nullptr)));
+  srand (static_cast<unsigned>(time (nullptr)));
 
   if (argc > 1)
   {
@@ -208,7 +207,7 @@ main (int argc, char** argv)
     printHelp (argc, argv);
     return (-1);
   }
-  grabber->setDepthImageUnits (float (1E-3));
+  grabber->setDepthImageUnits (static_cast<float>(1E-3));
 
   // Before manually setting
   double fx, fy, cx, cy;

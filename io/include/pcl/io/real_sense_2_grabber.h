@@ -40,7 +40,6 @@
 #include <thread>
 #include <mutex>
 
-#include <pcl/io/boost.h>
 #include <pcl/io/grabber.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -62,11 +61,12 @@ namespace pcl
   public:
     /** \brief Constructor
     * \param[in] file_name_or_serial_number used for either loading bag file or specific device by serial number
+    * \param[in] repeat_playback whether to repeat playback when reading from file
     */
     RealSense2Grabber ( const std::string& file_name_or_serial_number = "", const bool repeat_playback = true );
 
     /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
-    ~RealSense2Grabber ();
+    ~RealSense2Grabber () override;
 
     /** \brief Set the device options
     * \param[in] width resolution
@@ -101,13 +101,14 @@ namespace pcl
 
     /** \brief defined grabber name*/
     std::string
-    getName () const override { return std::string ( "RealSense2Grabber" ); }
+    getName () const override {
+      return {"RealSense2Grabber"}; }
 
     //define callback signature typedefs
-    typedef void (signal_librealsense_PointXYZ) ( const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& );
-    typedef void (signal_librealsense_PointXYZI) ( const pcl::PointCloud<pcl::PointXYZI>::ConstPtr& );
-    typedef void (signal_librealsense_PointXYZRGB) ( const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& );
-    typedef void (signal_librealsense_PointXYZRGBA) ( const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& );
+    using signal_librealsense_PointXYZ = void( const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& );
+    using signal_librealsense_PointXYZI = void( const pcl::PointCloud<pcl::PointXYZI>::ConstPtr& );
+    using signal_librealsense_PointXYZRGB = void( const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& );
+    using signal_librealsense_PointXYZRGBA = void( const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& );
 
   protected:
 
@@ -198,17 +199,17 @@ namespace pcl
     /** \brief Repeat playback when reading from file */
     bool repeat_playback_;
     /** \brief controlling the state of the thread. */
-    bool quit_;
+    bool quit_{false};
     /** \brief Is the grabber running. */
-    bool running_;
+    bool running_{false};
     /** \brief Calculated FPS for the grabber. */
-    float fps_;
+    float fps_{0.0f};
     /** \brief Width for the depth and color sensor. Default 424*/
-    std::uint32_t device_width_;
+    std::uint32_t device_width_{424};
     /** \brief Height for the depth and color sensor. Default 240 */
-    std::uint32_t device_height_;
+    std::uint32_t device_height_{240};
     /** \brief Target FPS for the device. Default 30. */
-    std::uint32_t target_fps_;
+    std::uint32_t target_fps_{30};
     /** \brief Declare pointcloud object, for calculating pointclouds and texture mappings */
     rs2::pointcloud pc_;
     /** \brief Declare RealSense pipeline, encapsulating the actual device and sensors */

@@ -3,10 +3,10 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/visualization/cloud_viewer.h>
-#include <pcl/filters/passthrough.h>
+#include <pcl/filters/filter_indices.h> // for pcl::removeNaNFromPointCloud
 #include <pcl/segmentation/min_cut_segmentation.h>
 
-int main (int argc, char** argv)
+int main ()
 {
   pcl::PointCloud <pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud <pcl::PointXYZ>);
   if ( pcl::io::loadPCDFile <pcl::PointXYZ> ("min_cut_segmentation_tutorial.pcd", *cloud) == -1 )
@@ -16,11 +16,7 @@ int main (int argc, char** argv)
   }
 
   pcl::IndicesPtr indices (new std::vector <int>);
-  pcl::PassThrough<pcl::PointXYZ> pass;
-  pass.setInputCloud (cloud);
-  pass.setFilterFieldName ("z");
-  pass.setFilterLimits (0.0, 1.0);
-  pass.filter (*indices);
+  pcl::removeNaNFromPointCloud(*cloud, *indices);
 
   pcl::MinCutSegmentation<pcl::PointXYZ> seg;
   seg.setInputCloud (cloud);

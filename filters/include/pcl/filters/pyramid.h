@@ -52,7 +52,7 @@ namespace pcl
       * It is an iterative smoothing subsampling algorithm.
       * The subsampling is fixed to 2. Two smoothing kernels may be used:
       * - [1/16 1/4 3/8 1/4 1/16] slower but produces finer result;
-      * - [1/4 1/2 1/2] the more conventional binomial kernel which is faster.
+      * - [1/4 1/2 1/4] the more conventional binomial kernel which is faster.
       * We use a memory efficient algorithm so the convolving and subsampling are combined in a 
       * single step.
       *
@@ -69,11 +69,8 @@ namespace pcl
  
         Pyramid (int levels = 4)
           : levels_ (levels)
-          , large_ (false)
-          , threshold_ (0.01)
-          , threads_ (0)
+          , name_ ("Pyramid")
         {
-          name_ = "Pyramid";
         }
       
         /** \brief Provide a pointer to the input dataset
@@ -148,17 +145,17 @@ namespace pcl
         /// \brief The input point cloud dataset.
         PointCloudConstPtr input_;
         /// \brief number of pyramid levels
-        int levels_;
+        int levels_{4};
         /// \brief use large smoothing kernel
-        bool large_;
+        bool large_{false};
         /// \brief filter name
         std::string name_;
         /// \brief smoothing kernel
         Eigen::MatrixXf kernel_;
         /// Threshold distance between adjacent points
-        float threshold_;
+        float threshold_{0.01f};
         /// \brief number of threads
-        unsigned int threads_;
+        unsigned int threads_{0};
 
       public:
         PCL_MAKE_ALIGNED_OPERATOR_NEW

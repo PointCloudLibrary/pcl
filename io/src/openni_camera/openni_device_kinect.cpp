@@ -53,7 +53,7 @@ namespace openni_wrapper
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool 
-openni_wrapper::DeviceKinect::isSynchronizationSupported () const throw ()
+openni_wrapper::DeviceKinect::isSynchronizationSupported () const noexcept
 {
   return (false);
 }
@@ -61,7 +61,6 @@ openni_wrapper::DeviceKinect::isSynchronizationSupported () const throw ()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::DeviceKinect::DeviceKinect (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node)
 : OpenNIDevice (context, device_node, image_node, depth_node, ir_node)
-, debayering_method_ (ImageBayerGRBG::EdgeAwareWeighted)
 {
   // setup stream modes
   enumAvailableModes ();
@@ -105,7 +104,7 @@ openni_wrapper::DeviceKinect::~DeviceKinect () noexcept
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool 
-openni_wrapper::DeviceKinect::isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw ()
+openni_wrapper::DeviceKinect::isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const noexcept
 {
   return (ImageBayerGRBG::resizingSupported (input_width, input_height, output_width, output_height));
 }
@@ -132,7 +131,7 @@ openni_wrapper::DeviceKinect::enumAvailableModes () noexcept
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::Image::Ptr 
-openni_wrapper::DeviceKinect::getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_data) const throw ()
+openni_wrapper::DeviceKinect::getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_data) const noexcept
 {
   return (Image::Ptr (new ImageBayerGRBG (image_data, debayering_method_)));
 }

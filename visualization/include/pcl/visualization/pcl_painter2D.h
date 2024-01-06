@@ -95,6 +95,13 @@ namespace pcl
         this->brush_->DeepCopy (b);
         this->transform_->SetMatrix (t->GetMatrix());
       }
+
+      virtual ~Figure2D()
+      {
+        pen_->Delete();
+        brush_->Delete();
+        transform_->Delete();
+      }
       
       void applyInternals (vtkContext2D *painter) const
       {
@@ -116,7 +123,7 @@ namespace pcl
       void draw (vtkContext2D * painter) override
       {
         applyInternals(painter);  
-        painter->DrawPoly (&info_[0], static_cast<unsigned int> (info_.size ()) / 2);
+        painter->DrawPoly (info_.data(), static_cast<unsigned int> (info_.size ()) / 2);
       }
     };
 
@@ -130,7 +137,7 @@ namespace pcl
       void draw (vtkContext2D * painter) override
       {
         applyInternals(painter);  
-        painter->DrawPoints (&info_[0], static_cast<unsigned int> (info_.size ()) / 2);
+        painter->DrawPoints (info_.data(), static_cast<unsigned int> (info_.size ()) / 2);
       }
     };
 
@@ -144,7 +151,7 @@ namespace pcl
       void draw (vtkContext2D * painter) override
       {
         applyInternals(painter);  
-        painter->DrawQuad (&info_[0]);
+        painter->DrawQuad (info_.data());
       }
     };
     
@@ -158,7 +165,7 @@ namespace pcl
       void draw (vtkContext2D * painter) override
       {
         applyInternals(painter);  
-        painter->DrawPolygon (&info_[0], static_cast<unsigned int> (info_.size ()) / 2);
+        painter->DrawPolygon (info_.data(), static_cast<unsigned int> (info_.size ()) / 2);
       }
     };
     

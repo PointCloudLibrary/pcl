@@ -46,8 +46,8 @@
 #include <vector>
 #include <sstream>
 #include <pcl/pcl_macros.h>
-#include <pcl/io/boost.h>
 #include <pcl/exceptions.h>
+#include <boost/signals2.hpp> // for connection, signal, ...
 
 namespace pcl
 {
@@ -85,11 +85,7 @@ namespace pcl
       Grabber& operator=(Grabber&&) = default;
 
       /** \brief virtual destructor. */
-      #if defined(_MSC_VER)
-        virtual inline ~Grabber () noexcept {}
-      #else
-        virtual inline ~Grabber () noexcept = default;
-      #endif
+      virtual inline ~Grabber () noexcept = default;
 
       /** \brief registers a callback function/method to a signal with the corresponding signature
         * \param[in] callback: the callback function/method
@@ -97,18 +93,6 @@ namespace pcl
         */
       template<typename T> boost::signals2::connection
       registerCallback (const std::function<T>& callback);
-
-      /** \brief registers a callback function/method to a signal with the corresponding signature
-        * \param[in] callback: the callback function/method
-        * \return Connection object, that can be used to disconnect the callback method from the signal again.
-        */
-      template<typename T, template<typename> class FunctionT>
-      PCL_DEPRECATED (1, 12, "please assign the callback to a std::function.")
-      boost::signals2::connection
-      registerCallback (const FunctionT<T>& callback)
-      {
-        return registerCallback (std::function<T> (callback));
-      }
 
       /** \brief indicates whether a signal with given parameter-type exists or not
         * \return true if signal exists, false otherwise
@@ -278,6 +262,7 @@ namespace pcl
       operator std::unique_ptr<Base>() const { return std::make_unique<Signal>(); }
     };
     // TODO: remove later for C++17 features: structured bindings and try_emplace
+    std::string signame{typeid (T).name ()};
     #ifdef __cpp_structured_bindings
       const auto [iterator, success] =
     #else
@@ -291,7 +276,7 @@ namespace pcl
     #else
       signals_.emplace (
     #endif
-                         std::string (typeid (T).name ()), DefferedPtr ());
+            signame, DefferedPtr ());
     if (!success)
     {
       return nullptr;

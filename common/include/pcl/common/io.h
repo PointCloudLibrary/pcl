@@ -43,9 +43,8 @@
 #include <numeric>
 #include <string>
 
+#include <pcl/point_cloud.h>
 #include <pcl/PointIndices.h>
-#include <pcl/conversions.h>
-#include <pcl/exceptions.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/PolygonMesh.h>
 #include <locale>
@@ -55,6 +54,7 @@ namespace pcl
   /** \brief Get the index of a specified field (i.e., dimension/channel)
     * \param[in] cloud the point cloud message
     * \param[in] field_name the string defining the field name
+    * \return the index of the field or a negative integer if no field with the given name exists
     * \ingroup common
     */
   inline int
@@ -72,6 +72,7 @@ namespace pcl
     * \tparam PointT datatype for which fields is being queries
     * \param[in] field_name the string defining the field name
     * \param[out] fields a vector to the original \a PCLPointField vector that the raw PointCloud message contains
+    * \return the index of the field or a negative integer if no field with the given name exists
     * \ingroup common
     */
   template <typename PointT> inline int
@@ -108,8 +109,14 @@ namespace pcl
   inline std::string
   getFieldsList (const pcl::PCLPointCloud2 &cloud)
   {
-    return std::accumulate(std::next (cloud.fields.begin ()), cloud.fields.end (), cloud.fields[0].name,
-        [](const auto& acc, const auto& field) { return acc + " " + field.name; });
+    if (cloud.fields.empty())
+    {
+      return "";
+    } else
+    {
+      return std::accumulate(std::next (cloud.fields.begin ()), cloud.fields.end (), cloud.fields[0].name,
+          [](const auto& acc, const auto& field) { return acc + " " + field.name; });
+    }
   }
 
   /** \brief Obtains the size of a specific field data type in bytes
@@ -121,19 +128,24 @@ namespace pcl
   {
     switch (datatype)
     {
-      case pcl::PCLPointField::INT8:
+      case pcl::PCLPointField::BOOL:
+          return sizeof(bool);
+
+      case pcl::PCLPointField::INT8: PCL_FALLTHROUGH
       case pcl::PCLPointField::UINT8:
         return (1);
 
-      case pcl::PCLPointField::INT16:
+      case pcl::PCLPointField::INT16: PCL_FALLTHROUGH
       case pcl::PCLPointField::UINT16:
         return (2);
 
-      case pcl::PCLPointField::INT32:
-      case pcl::PCLPointField::UINT32:
+      case pcl::PCLPointField::INT32: PCL_FALLTHROUGH
+      case pcl::PCLPointField::UINT32: PCL_FALLTHROUGH
       case pcl::PCLPointField::FLOAT32:
         return (4);
 
+      case pcl::PCLPointField::INT64: PCL_FALLTHROUGH
+      case pcl::PCLPointField::UINT64: PCL_FALLTHROUGH
       case pcl::PCLPointField::FLOAT64:
         return (8);
 
@@ -152,13 +164,23 @@ namespace pcl
 
   /** \brief Obtains the type of the PCLPointField from a specific size and type
     * \param[in] size the size in bytes of the data field
-    * \param[in] type a char describing the type of the field  ('F' = float, 'I' = signed, 'U' = unsigned)
+    * \param[in] type a char describing the type of the field  ('B' = bool, 'F' = float, 'I' = signed, 'U' = unsigned)
     * \ingroup common
     */
   inline int
   getFieldType (const int size, char type)
   {
     type = std::toupper (type, std::locale::classic ());
+
+    // extra logic for bool because its size is undefined
+    if (type == 'B') {
+      if (size == sizeof(bool)) {
+        return pcl::PCLPointField::BOOL;
+      } else {
+        return -1;
+      }
+    }
+
     switch (size)
     {
       case 1:
@@ -185,6 +207,10 @@ namespace pcl
         break;
 
       case 8:
+        if (type == 'I')
+          return (pcl::PCLPointField::INT64);
+        if (type == 'U')
+          return (pcl::PCLPointField::UINT64);
         if (type == 'F')
           return (pcl::PCLPointField::FLOAT64);
         break;
@@ -201,19 +227,25 @@ namespace pcl
   {
     switch (type)
     {
-      case pcl::PCLPointField::INT8:
-      case pcl::PCLPointField::INT16:
-      case pcl::PCLPointField::INT32:
+      case pcl::PCLPointField::BOOL:
+        return ('B');
+
+      case pcl::PCLPointField::INT8: PCL_FALLTHROUGH
+      case pcl::PCLPointField::INT16: PCL_FALLTHROUGH
+      case pcl::PCLPointField::INT32: PCL_FALLTHROUGH
+      case pcl::PCLPointField::INT64:
         return ('I');
 
-      case pcl::PCLPointField::UINT8:
-      case pcl::PCLPointField::UINT16:
-      case pcl::PCLPointField::UINT32:
+      case pcl::PCLPointField::UINT8: PCL_FALLTHROUGH
+      case pcl::PCLPointField::UINT16: PCL_FALLTHROUGH
+      case pcl::PCLPointField::UINT32: PCL_FALLTHROUGH
+      case pcl::PCLPointField::UINT64:
         return ('U');
 
-      case pcl::PCLPointField::FLOAT32:
+      case pcl::PCLPointField::FLOAT32: PCL_FALLTHROUGH
       case pcl::PCLPointField::FLOAT64:
         return ('F');
+
       default:
         return ('?');
     }
@@ -255,10 +287,8 @@ namespace pcl
 
   /** \brief Concatenate two pcl::PCLPointCloud2
     *
-    * \warning This function subtly differs from the deprecated concatenatePointCloud()
-    * The difference is that this function will concatenate IFF the non-skip fields
-    * are in the correct order and same in number. The deprecated function skipped
-    * fields even if both clouds didn't agree on the number of output fields
+    * \warning This function will concatenate IFF the non-skip fields are in the correct
+    * order and same in number.
     * \param[in] cloud1 the first input point cloud dataset
     * \param[in] cloud2 the second input point cloud dataset
     * \param[out] cloud_out the resultant output point cloud dataset
@@ -288,19 +318,6 @@ namespace pcl
     return pcl::PolygonMesh::concatenate(mesh1, mesh2, mesh_out);
   }
 
-  /** \brief Concatenate two pcl::PCLPointCloud2
-    * \param[in] cloud1 the first input point cloud dataset
-    * \param[in] cloud2 the second input point cloud dataset
-    * \param[out] cloud_out the resultant output point cloud dataset
-    * \return true if successful, false otherwise (e.g., name/number of fields differs)
-    * \ingroup common
-    */
-  PCL_DEPRECATED(1, 12, "use pcl::concatenate() instead, but beware of subtle difference in behavior (see documentation)")
-  PCL_EXPORTS bool
-  concatenatePointCloud (const pcl::PCLPointCloud2 &cloud1,
-                         const pcl::PCLPointCloud2 &cloud2,
-                         pcl::PCLPointCloud2 &cloud_out);
-
   /** \brief Extract the indices of a given point cloud as a new point cloud
     * \param[in] cloud_in the input point cloud dataset
     * \param[in] indices the vector of indices representing the points to be copied from \a cloud_in
@@ -322,7 +339,7 @@ namespace pcl
     */
   PCL_EXPORTS void
   copyPointCloud (const pcl::PCLPointCloud2 &cloud_in,
-                  const IndicesAllocator< Eigen::aligned_allocator<int> > &indices,
+                  const IndicesAllocator< Eigen::aligned_allocator<index_t> > &indices,
                   pcl::PCLPointCloud2 &cloud_out);
 
   /** \brief Copy fields and point cloud data from \a cloud_in to \a cloud_out
@@ -335,10 +352,10 @@ namespace pcl
                   pcl::PCLPointCloud2 &cloud_out);
 
   /** \brief Check if two given point types are the same or not. */
-  template <typename Point1T, typename Point2T> inline bool
-  isSamePointType ()
+template <typename Point1T, typename Point2T> constexpr bool
+  isSamePointType() noexcept
   {
-    return (typeid (Point1T) == typeid (Point2T));
+    return (std::is_same<remove_cvref_t<Point1T>, remove_cvref_t<Point2T>>::value);
   }
 
   /** \brief Extract the indices of a given point cloud as a new point cloud
@@ -348,7 +365,7 @@ namespace pcl
     * \note Assumes unique indices.
     * \ingroup common
     */
-  template <typename PointT, typename IndicesVectorAllocator = std::allocator<int>> void
+  template <typename PointT, typename IndicesVectorAllocator = std::allocator<index_t>> void
   copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                   const IndicesAllocator< IndicesVectorAllocator> &indices,
                   pcl::PointCloud<PointT> &cloud_out);
@@ -393,7 +410,7 @@ namespace pcl
     * \note Assumes unique indices.
     * \ingroup common
     */
-  template <typename PointInT, typename PointOutT, typename IndicesVectorAllocator = std::allocator<int>> void
+  template <typename PointInT, typename PointOutT, typename IndicesVectorAllocator = std::allocator<index_t>> void
   copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
                   const IndicesAllocator<IndicesVectorAllocator> &indices,
                   pcl::PointCloud<PointOutT> &cloud_out);

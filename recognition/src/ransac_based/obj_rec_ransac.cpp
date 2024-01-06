@@ -48,17 +48,8 @@ pcl::recognition::ObjRecRANSAC::ObjRecRANSAC (float pair_width, float voxel_size
   position_discretization_ (5.0f*voxel_size_),
   rotation_discretization_ (5.0f*AUX_DEG_TO_RADIANS),
   abs_zdist_thresh_ (1.5f*voxel_size_),
-  relative_obj_size_ (0.05f),
-  visibility_ (0.2f),
-  relative_num_of_illegal_pts_ (0.02f),
-  intersection_fraction_ (0.03f),
   max_coplanarity_angle_ (3.0f*AUX_DEG_TO_RADIANS),
-  scene_bounds_enlargement_factor_ (0.25f), // 25% enlargement
-  ignore_coplanar_opps_ (true),
-  frac_of_points_for_icp_refinement_ (0.3f),
-  do_icp_hypotheses_refinement_ (true),
-  model_library_ (pair_width, voxel_size, max_coplanarity_angle_),
-  rec_mode_ (ObjRecRANSAC::FULL_RECOGNITION)
+  model_library_ (pair_width, voxel_size, max_coplanarity_angle_)
 {
 }
 
@@ -133,10 +124,10 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn& scene, const Poin
   int i = 0;
 
   // Initialize the vector with bounded objects
-  for ( std::vector<Hypothesis>::iterator hypo = accepted_hypotheses_.begin () ; hypo != accepted_hypotheses_.end () ; ++hypo, ++i )
+  for ( auto hypo = accepted_hypotheses_.begin () ; hypo != accepted_hypotheses_.end () ; ++hypo, ++i )
   {
     // Create, initialize and save a bounded object based on the hypothesis
-    BVHH::BoundedObject *bounded_object = new BVHH::BoundedObject (&(*hypo));
+    auto *bounded_object = new BVHH::BoundedObject (&(*hypo));
     hypo->computeCenterOfMass (bounded_object->getCentroid ());
     hypo->computeBounds (bounded_object->getBounds ());
     bounded_objects[i] = bounded_object;
@@ -423,7 +414,7 @@ pcl::recognition::ObjRecRANSAC::buildGraphOfCloseHypotheses (HypothesisOctree& h
 
   graph.resize (static_cast<int> (hypo_leaves.size ()));
 
-  for ( std::vector<HypothesisOctree::Node*>::iterator hypo = hypo_leaves.begin () ; hypo != hypo_leaves.end () ; ++hypo, ++i )
+  for ( auto hypo = hypo_leaves.begin () ; hypo != hypo_leaves.end () ; ++hypo, ++i )
     (*hypo)->getData ().setLinearId (i);
 
   i = 0;
@@ -493,7 +484,7 @@ pcl::recognition::ObjRecRANSAC::buildGraphOfConflictingHypotheses (const BVHH& b
   graph.resize (static_cast<int> (bounded_objects->size ()));
 
   // Setup the hypotheses' ids
-  for ( std::vector<BVHH::BoundedObject*>::const_iterator obj = bounded_objects->begin () ; obj != bounded_objects->end () ; ++obj, ++lin_id )
+  for ( auto obj = bounded_objects->begin () ; obj != bounded_objects->end () ; ++obj, ++lin_id )
   {
     (*obj)->getData ()->setLinearId (lin_id);
     graph.getNodes ()[lin_id]->setData ((*obj)->getData ());
@@ -680,7 +671,7 @@ pcl::recognition::ObjRecRANSAC::testHypothesisNormalBased (Hypothesis* hypothesi
       // Compute the match based on the normal agreement
       const std::set<ORROctree::Node*, bool(*)(ORROctree::Node*,ORROctree::Node*)>* nodes = scene_octree_proj_.getOctreeNodes (transformed_point);
 
-      std::set<ORROctree::Node*, bool(*)(ORROctree::Node*,ORROctree::Node*)>::const_iterator n = nodes->begin ();
+      auto n = nodes->begin ();
       ORROctree::Node *closest_node = *n;
       float min_sqr_dist = aux::sqrDistance3 (closest_node->getData ()->getPoint (), transformed_point);
 

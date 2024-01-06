@@ -56,9 +56,7 @@ namespace pcl
       {
       }
 
-      ~DefaultIterator ()
-      {
-      }
+      ~DefaultIterator () = default;
 
       void operator ++ ()
       {
@@ -130,7 +128,7 @@ namespace pcl
       {
       }
 
-      virtual ~IteratorIdx () {}
+      virtual ~IteratorIdx () = default;
 
       void operator ++ ()
       {
@@ -196,9 +194,7 @@ namespace pcl
       {
       }
 
-      ~DefaultConstIterator ()
-      {
-      }
+      ~DefaultConstIterator () override = default;
 
       void operator ++ () override
       {
@@ -222,12 +218,12 @@ namespace pcl
 
       unsigned getCurrentPointIndex () const override
       {
-        return (unsigned (iterator_ - cloud_.begin ()));
+        return (static_cast<unsigned>(iterator_ - cloud_.begin ()));
       }
 
       unsigned getCurrentIndex () const override
       {
-        return (unsigned (iterator_ - cloud_.begin ()));
+        return (static_cast<unsigned>(iterator_ - cloud_.begin ()));
       }
 
       std::size_t size () const override
@@ -272,7 +268,7 @@ namespace pcl
       {
       }
 
-      ~ConstIteratorIdx () {}
+      ~ConstIteratorIdx () override = default;
 
       void operator ++ () override
       {
@@ -296,12 +292,12 @@ namespace pcl
 
       unsigned getCurrentPointIndex () const override
       {
-        return (unsigned (*iterator_));
+        return (static_cast<unsigned>(*iterator_));
       }
 
       unsigned getCurrentIndex () const override
       {
-        return (unsigned (iterator_ - indices_.begin ()));
+        return (static_cast<unsigned>(iterator_ - indices_.begin ()));
       }
 
       std::size_t size () const override

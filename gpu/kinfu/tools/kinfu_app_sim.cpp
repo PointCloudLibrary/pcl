@@ -807,9 +807,9 @@ struct SceneCloudView
 
     switch (extraction_mode_)
     {
-    case 0: std::cout << "Cloud exctraction mode: GPU, Connected-6" << std::endl; break;
-    case 1: std::cout << "Cloud exctraction mode: CPU, Connected-6    (requires a lot of memory)" << std::endl; break;
-    case 2: std::cout << "Cloud exctraction mode: CPU, Connected-26   (requires a lot of memory)" << std::endl; break;
+    case 0: std::cout << "Cloud extraction mode: GPU, Connected-6" << std::endl; break;
+    case 1: std::cout << "Cloud extraction mode: CPU, Connected-6    (requires a lot of memory)" << std::endl; break;
+    case 2: std::cout << "Cloud extraction mode: CPU, Connected-26   (requires a lot of memory)" << std::endl; break;
     }
     ;
   }
@@ -1217,8 +1217,8 @@ struct KinFuApp
     std::cout << "   Esc   : exit" << std::endl;
     std::cout << "    T    : take cloud" << std::endl;
     std::cout << "    A    : take mesh" << std::endl;
-    std::cout << "    M    : toggle cloud exctraction mode" << std::endl;
-    std::cout << "    N    : toggle normals exctraction" << std::endl;
+    std::cout << "    M    : toggle cloud extraction mode" << std::endl;
+    std::cout << "    N    : toggle normals extraction" << std::endl;
     std::cout << "    I    : toggle independent camera mode" << std::endl;
     std::cout << "    B    : toggle volume bounds" << std::endl;
     std::cout << "    *    : toggle scene view painting ( requires registration mode )" << std::endl;
@@ -1357,7 +1357,7 @@ print_cli_help ()
   std::cout << "";
   std::cout << " For RGBD benchmark (Requires OpenCV):" << std::endl;
   std::cout << "    -eval <eval_folder> [-match_file <associations_file_in_the_folder>]" << std::endl;
-  std::cout << " For Simuation (Requires pcl::simulation):" << std::endl;
+  std::cout << " For Simulation (Requires pcl::simulation):" << std::endl;
   std::cout << "    -plyfile                        : path to ply file for simulation testing " << std::endl;
 
   return 0;

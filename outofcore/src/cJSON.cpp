@@ -26,13 +26,13 @@
 #include <pcl/outofcore/cJSON.h>
 #include <pcl/pcl_macros.h>
 
-#include <cstring>
+#include <algorithm>
 #include <cstdio>
 #include <cmath>
 #include <cstdlib>
-#include <cfloat>
-#include <climits>
+#include <cstring>
 #include <cctype>
+#include <limits>
 
 static const char *ep;
 
@@ -59,8 +59,8 @@ static char* cJSON_strdup(const char* str)
       {
         return (nullptr);
       }
-      
-      memcpy(copy,str,len);
+
+      std::copy(str, str + len, copy);
       return (copy);
 }
 
@@ -80,7 +80,9 @@ void cJSON_InitHooks(cJSON_Hooks* hooks)
 static cJSON *cJSON_New_Item()
 {
 	cJSON* node = static_cast<cJSON*> (cJSON_malloc(sizeof(cJSON)));
-	if (node) memset(node,0,sizeof(cJSON));
+	if (node) {
+	    *node = cJSON{};
+    }
 	return node;
 }
 
@@ -127,7 +129,8 @@ static char *print_number(cJSON *item)
 {
 	char *str;
 	double d=item->valuedouble;
-	if (std::abs((static_cast<double>(item->valueint)-d))<=DBL_EPSILON && d<=INT_MAX && d>=INT_MIN)
+	if (std::abs((static_cast<double>(item->valueint)-d))<=std::numeric_limits<double>::epsilon() &&
+			d <= std::numeric_limits<int>::max() && d >= std::numeric_limits<int>::min())
 	{
 		str=static_cast<char*>(cJSON_malloc(21));	/* 2^64+1 can be represented in 21 chars. */
 		if (str) sprintf(str,"%d",item->valueint);
@@ -137,7 +140,7 @@ static char *print_number(cJSON *item)
 		str=static_cast<char*>(cJSON_malloc(64));	/* This is a nice tradeoff. */
 		if (str)
 		{
-			if (std::abs(std::floor(d)-d)<=DBL_EPSILON)			sprintf(str,"%.0f",d);
+			if (std::abs(std::floor(d)-d)<=std::numeric_limits<double>::epsilon())			sprintf(str,"%.0f",d);
 			else sprintf(str,"%.16g",d);
 		}
 	}
@@ -349,7 +352,7 @@ static char *print_array(cJSON *item,int depth,int fmt)
 	/* Allocate an array to hold the values for each */
 	entries=static_cast<char**>(cJSON_malloc(numentries*sizeof(char*)));
 	if (!entries) return nullptr;
-	memset(entries,0,numentries*sizeof(char*));
+  std::fill_n(entries, numentries, nullptr);
 	/* Retrieve all the results: */
 	child=item->child;
 	while (child && !fail)
@@ -437,8 +440,8 @@ static char *print_object(cJSON *item,int depth,int fmt)
 	if (!entries) return nullptr;
 	char **names=static_cast<char**>(cJSON_malloc(numentries*sizeof(char*)));
 	if (!names) {cJSON_free(entries);return nullptr;}
-	memset(entries,0,sizeof(char*)*numentries);
-	memset(names,0,sizeof(char*)*numentries);
+  std::fill_n(entries, numentries, nullptr);
+  std::fill_n(names, numentries, nullptr);
 
 	/* Collect all the results into our arrays: */
 	child=item->child;depth++;if (fmt) len+=depth;
@@ -496,7 +499,19 @@ cJSON *cJSON_GetObjectItem(cJSON *object,const char *string)	{cJSON *c=object->c
 /* Utility for array list handling. */
 static void suffix_object(cJSON *prev,cJSON *item) {prev->next=item;item->prev=prev;}
 /* Utility for handling references. */
-static cJSON *create_reference(cJSON *item) {cJSON *ref=cJSON_New_Item();if (!ref) return nullptr;memcpy(ref,item,sizeof(cJSON));ref->string=nullptr;ref->type|=cJSON_IsReference;ref->next=ref->prev=nullptr;return ref;}
+static cJSON*
+create_reference(cJSON* item)
+{
+  cJSON* ref = cJSON_New_Item();
+  if (!ref) {
+    return nullptr;
+  }
+  *ref = *item;
+  ref->string = nullptr;
+  ref->type |= cJSON_IsReference;
+  ref->next = ref->prev = nullptr;
+  return ref;
+}
 
 /* Add item to array/object. */
 void   cJSON_AddItemToArray(cJSON *array, cJSON *item)						{cJSON *c=array->child;if (!item) return; if (!c) {array->child=item;} else {while (c && c->next) c=c->next; suffix_object(c,item);}}

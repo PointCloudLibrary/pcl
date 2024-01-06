@@ -136,7 +136,7 @@ NurbsSolve::solve ()
 {
   //  m_xeig = m_Keig.colPivHouseholderQr().solve(m_feig);
   //  Eigen::MatrixXd x = A.householderQr().solve(b);
-  m_xeig = m_Keig.jacobiSvd (Eigen::ComputeThinU | Eigen::ComputeThinV).solve (m_feig);
+  m_xeig = m_Keig.completeOrthogonalDecomposition().solve (m_feig);
 
   return true;
 }

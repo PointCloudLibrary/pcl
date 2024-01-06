@@ -16,11 +16,6 @@ pcl::cloud_composer::ItemInspector::ItemInspector (QWidget* parent)
   
 }
 
-pcl::cloud_composer::ItemInspector::~ItemInspector ()
-{
-  
-}
-
 void
 pcl::cloud_composer::ItemInspector::setModel (ProjectModel* new_model)
 {

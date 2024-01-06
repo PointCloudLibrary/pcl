@@ -37,9 +37,16 @@
 
 #pragma once
 
+#ifdef __SSE__
+#include <xmmintrin.h> // for __m128
+#endif // ifdef __SSE__
+#ifdef __AVX__
+#include <immintrin.h> // for __m256
+#endif // ifdef __AVX__
+
 #include <pcl/point_cloud.h> // for PointCloud
 #include <pcl/PointIndices.h> // for PointIndices
-#include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
+namespace pcl { struct PCLPointCloud2; }
 
 /**
   * \file pcl/common/common.h
@@ -53,6 +60,7 @@ namespace pcl
   /** \brief Compute the smallest angle between two 3D vectors in radians (default) or degree.
     * \param v1 the first 3D vector (represented as a \a Eigen::Vector4f)
     * \param v2 the second 3D vector (represented as a \a Eigen::Vector4f)
+    * \param in_degree determine if angle should be in radians or degrees
     * \return the angle between v1 and v2 in radians or degrees
     * \note Handles rounding error for parallel and anti-parallel vectors
     * \ingroup common
@@ -262,6 +270,46 @@ namespace pcl
   PCL_EXPORTS void
   getMeanStdDev (const std::vector<float> &values, double &mean, double &stddev);
 
+  /** \brief Compute the median of a list of values (fast). If the number of values is even, take the mean of the two middle values.
+    * This function can be used like this:
+    * \code{.cpp}
+    * std::vector<double> vector{1.0, 25.0, 9.0, 4.0, 16.0};
+    * const double median = pcl::computeMedian (vector.begin (), vector.end (), static_cast<double(*)(double)>(std::sqrt)); // = 3
+    * \endcode
+    * \param[in,out] begin,end Iterators that mark the beginning and end of the value range. These values will be reordered!
+    * \param[in] f A lamda, function pointer, or similar that is implicitly applied to all values before median computation. In reality, it will be applied lazily (i.e. at most twice) and thus may not change the sorting order (e.g. monotonic functions like sqrt are allowed)
+    * \return the median
+    * \ingroup common
+    */
+  template<typename IteratorT, typename Functor> inline auto
+  computeMedian (IteratorT begin, IteratorT end, Functor f) noexcept ->
+  #if __cpp_lib_is_invocable
+  std::invoke_result_t<Functor, decltype(*begin)>
+  #else
+  std::result_of_t<Functor(decltype(*begin))>
+  #endif
+  {
+    const std::size_t size = std::distance(begin, end);
+    const std::size_t mid = size/2;
+    if (size%2==0)
+    { // Even number of values
+      std::nth_element (begin, begin + (mid-1), end);
+      return (f(begin[mid-1]) + f(*(std::min_element (begin + mid, end)))) / 2.0;
+    }
+    else
+    { // Odd number of values
+      std::nth_element (begin, begin + mid, end);
+      return f(begin[mid]);
+    }
+  }
+
+  /** \brief Compute the median of a list of values (fast). See the other overloaded function for more information.
+    */
+  template<typename IteratorT> inline auto
+  computeMedian (IteratorT begin, IteratorT end) noexcept -> typename std::iterator_traits<IteratorT>::value_type
+  {
+    return computeMedian (begin, end, [](const auto& x){return x;});
+  }
 }
 /*@}*/
 #include <pcl/common/impl/common.hpp>

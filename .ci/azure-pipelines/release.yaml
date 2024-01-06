@@ -204,8 +204,9 @@ stages:
       # find the commit hash on a quick non-forced update too
       fetchDepth: 10
     - bash: |
-        if [ -z $RC ] || [ $RC -eq 0 ]; then isPreRelease=false; else isPreRelease=true; fi
+        if [ -z $RC ] || [ $RC -eq 0 ]; then isPreRelease=false; tagName="pcl-$(VERSION)"; else isPreRelease=true; tagName="pcl-$(VERSION)-rc$(RC)"; fi
         echo "##vso[task.setvariable variable=isPreRelease]${isPreRelease}"
+        echo "##vso[task.setvariable variable=tagName]${tagName}"
     - task: DownloadBuildArtifacts@0
       inputs:
         downloadType: 'all'  # can be anything except single
@@ -223,7 +224,7 @@ stages:
         releaseNotesFilePath: '$(DOWNLOAD_LOCATION)/changelog/changelog.md'
         repositoryName: $(Build.Repository.Name)
         tagSource: 'userSpecifiedTag'
-        tag: "pcl-$(VERSION)-rc$(RC)"
+        tag: "$(tagName)"
         tagPattern: 'pcl-*'
         target: '$(Build.SourceVersion)'
         title: 'PCL $(VERSION)'

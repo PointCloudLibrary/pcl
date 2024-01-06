@@ -47,7 +47,6 @@
 #include <QMainWindow>
 #include <QMutex>
 #include <QTimer>
-#include <ui_pcd_video_player.h>
 
 #include <ctime>
 #include <iostream>
@@ -84,9 +83,12 @@ public:
 
   PCDVideoPlayer();
 
-  ~PCDVideoPlayer() {}
+  ~PCDVideoPlayer() override = default;
 
 protected:
+  void
+  refreshView();
+
   pcl::visualization::PCLVisualizer::Ptr vis_;
   pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_;
 

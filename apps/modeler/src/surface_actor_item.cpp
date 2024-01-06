@@ -54,9 +54,6 @@ pcl::modeler::SurfaceActorItem::SurfaceActorItem(
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::SurfaceActorItem::~SurfaceActorItem() {}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::modeler::SurfaceActorItem::initImpl()
 {
@@ -77,9 +74,6 @@ pcl::modeler::SurfaceActorItem::initImpl()
   mapper->SetScalarModeToUsePointData();
   mapper->InterpolateScalarsBeforeMappingOn();
   mapper->ScalarVisibilityOn();
-#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
-  mapper->ImmediateModeRenderingOff();
-#endif
 
   vtkSmartPointer<vtkLODActor> actor =
       vtkSmartPointer<vtkLODActor>(dynamic_cast<vtkLODActor*>(actor_.GetPointer()));

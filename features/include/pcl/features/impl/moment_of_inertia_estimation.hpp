@@ -48,17 +48,12 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 pcl::MomentOfInertiaEstimation<PointT>::MomentOfInertiaEstimation () :
-  is_valid_ (false),
-  step_ (10.0f),
-  point_mass_ (0.0001f),
-  normalize_ (true),
+  
   mean_value_ (0.0f, 0.0f, 0.0f),
   major_axis_ (0.0f, 0.0f, 0.0f),
   middle_axis_ (0.0f, 0.0f, 0.0f),
   minor_axis_ (0.0f, 0.0f, 0.0f),
-  major_value_ (0.0f),
-  middle_value_ (0.0f),
-  minor_value_ (0.0f),
+  
   aabb_min_point_ (),
   aabb_max_point_ (),
   obb_min_point_ (),
@@ -232,7 +227,7 @@ pcl::MomentOfInertiaEstimation<PointT>::computeOBB ()
   obb_max_point_.y = std::numeric_limits <float>::min ();
   obb_max_point_.z = std::numeric_limits <float>::min ();
 
-  unsigned int number_of_points = static_cast <unsigned int> (indices_->size ());
+  auto number_of_points = static_cast <unsigned int> (indices_->size ());
   for (unsigned int i_point = 0; i_point < number_of_points; i_point++)
   {
     float x = ((*input_)[(*indices_)[i_point]].x - mean_value_ (0)) * major_axis_ (0) +
@@ -301,7 +296,7 @@ template <typename PointT> bool
 pcl::MomentOfInertiaEstimation<PointT>::getMomentOfInertia (std::vector <float>& moment_of_inertia) const
 {
   moment_of_inertia.resize (moment_of_inertia_.size (), 0.0f);
-  std::copy (moment_of_inertia_.begin (), moment_of_inertia_.end (), moment_of_inertia.begin ());
+  std::copy (moment_of_inertia_.cbegin (), moment_of_inertia_.cend (), moment_of_inertia.begin ());
 
   return (is_valid_);
 }
@@ -311,7 +306,7 @@ template <typename PointT> bool
 pcl::MomentOfInertiaEstimation<PointT>::getEccentricity (std::vector <float>& eccentricity) const
 {
   eccentricity.resize (eccentricity_.size (), 0.0f);
-  std::copy (eccentricity_.begin (), eccentricity_.end (), eccentricity.begin ());
+  std::copy (eccentricity_.cbegin (), eccentricity_.cend (), eccentricity.begin ());
 
   return (is_valid_);
 }
@@ -332,7 +327,7 @@ pcl::MomentOfInertiaEstimation<PointT>::computeMeanValue ()
   aabb_max_point_.y = -std::numeric_limits <float>::max ();
   aabb_max_point_.z = -std::numeric_limits <float>::max ();
 
-  unsigned int number_of_points = static_cast <unsigned int> (indices_->size ());
+  auto number_of_points = static_cast <unsigned int> (indices_->size ());
   for (unsigned int i_point = 0; i_point < number_of_points; i_point++)
   {
     mean_value_ (0) += (*input_)[(*indices_)[i_point]].x;
@@ -362,7 +357,7 @@ pcl::MomentOfInertiaEstimation<PointT>::computeCovarianceMatrix (Eigen::Matrix <
 {
   covariance_matrix.setZero ();
 
-  unsigned int number_of_points = static_cast <unsigned int> (indices_->size ());
+  auto number_of_points = static_cast <unsigned int> (indices_->size ());
   float factor = 1.0f / static_cast <float> ((number_of_points - 1 > 0)?(number_of_points - 1):1);
   for (unsigned int i_point = 0; i_point < number_of_points; i_point++)
   {
@@ -482,7 +477,7 @@ template <typename PointT> float
 pcl::MomentOfInertiaEstimation<PointT>::calculateMomentOfInertia (const Eigen::Vector3f& current_axis, const Eigen::Vector3f& mean_value) const
 {
   float moment_of_inertia = 0.0f;
-  unsigned int number_of_points = static_cast <unsigned int> (indices_->size ());
+  auto number_of_points = static_cast <unsigned int> (indices_->size ());
   for (unsigned int i_point = 0; i_point < number_of_points; i_point++)
   {
     Eigen::Vector3f vector;
@@ -506,7 +501,7 @@ pcl::MomentOfInertiaEstimation<PointT>::getProjectedCloud (const Eigen::Vector3f
 {
   const float D = - normal_vector.dot (point);
 
-  unsigned int number_of_points = static_cast <unsigned int> (indices_->size ());
+  auto number_of_points = static_cast <unsigned int> (indices_->size ());
   projected_cloud->points.resize (number_of_points, PointT ());
 
   for (unsigned int i_point = 0; i_point < number_of_points; i_point++)
@@ -567,8 +562,7 @@ pcl::MomentOfInertiaEstimation<PointT>::getMassCenter (Eigen::Vector3f& mass_cen
 template <typename PointT> void
 pcl::MomentOfInertiaEstimation<PointT>::setInputCloud (const PointCloudConstPtr& cloud)
 {
-  input_ = cloud;
-
+  pcl::PCLBase<PointT>::setInputCloud (cloud);
   is_valid_ = false;
 }
 
@@ -576,10 +570,7 @@ pcl::MomentOfInertiaEstimation<PointT>::setInputCloud (const PointCloudConstPtr&
 template <typename PointT> void
 pcl::MomentOfInertiaEstimation<PointT>::setIndices (const IndicesPtr& indices)
 {
-  indices_ = indices;
-  fake_indices_ = false;
-  use_indices_  = true;
-
+  pcl::PCLBase<PointT>::setIndices (indices);
   is_valid_ = false;
 }
 
@@ -587,10 +578,7 @@ pcl::MomentOfInertiaEstimation<PointT>::setIndices (const IndicesPtr& indices)
 template <typename PointT> void
 pcl::MomentOfInertiaEstimation<PointT>::setIndices (const IndicesConstPtr& indices)
 {
-  indices_.reset (new std::vector<int> (*indices));
-  fake_indices_ = false;
-  use_indices_  = true;
-
+  pcl::PCLBase<PointT>::setIndices (indices);
   is_valid_ = false;
 }
 
@@ -598,10 +586,7 @@ pcl::MomentOfInertiaEstimation<PointT>::setIndices (const IndicesConstPtr& indic
 template <typename PointT> void
 pcl::MomentOfInertiaEstimation<PointT>::setIndices (const PointIndicesConstPtr& indices)
 {
-  indices_.reset (new std::vector<int> (indices->indices));
-  fake_indices_ = false;
-  use_indices_  = true;
-
+  pcl::PCLBase<PointT>::setIndices (indices);
   is_valid_ = false;
 }
 
@@ -609,40 +594,7 @@ pcl::MomentOfInertiaEstimation<PointT>::setIndices (const PointIndicesConstPtr& 
 template <typename PointT> void
 pcl::MomentOfInertiaEstimation<PointT>::setIndices (std::size_t row_start, std::size_t col_start, std::size_t nb_rows, std::size_t nb_cols)
 {
-  if ((nb_rows > input_->height) || (row_start > input_->height))
-  {
-    PCL_ERROR ("[PCLBase::setIndices] cloud is only %d height\n", input_->height);
-    return;
-  }
-
-  if ((nb_cols > input_->width) || (col_start > input_->width))
-  {
-    PCL_ERROR ("[PCLBase::setIndices] cloud is only %d width\n", input_->width);
-    return;
-  }
-
-  const std::size_t row_end = row_start + nb_rows;
-  if (row_end > input_->height)
-  {
-    PCL_ERROR ("[PCLBase::setIndices] %d is out of rows range %d\n", row_end, input_->height);
-    return;
-  }
-
-  const std::size_t col_end = col_start + nb_cols;
-  if (col_end > input_->width)
-  {
-    PCL_ERROR ("[PCLBase::setIndices] %d is out of columns range %d\n", col_end, input_->width);
-    return;
-  }
-
-  indices_.reset (new std::vector<int>);
-  indices_->reserve (nb_cols * nb_rows);
-  for(std::size_t i = row_start; i < row_end; i++)
-    for(std::size_t j = col_start; j < col_end; j++)
-      indices_->push_back (static_cast<int> ((i * input_->width) + j));
-  fake_indices_ = false;
-  use_indices_  = true;
-
+  pcl::PCLBase<PointT>::setIndices (row_start, col_start, nb_rows, nb_cols);
   is_valid_ = false;
 }
 

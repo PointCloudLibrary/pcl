@@ -10,10 +10,6 @@ pcl::cloud_composer::SanitizeCloudTool::SanitizeCloudTool (PropertiesModel* para
 {
 }
 
-pcl::cloud_composer::SanitizeCloudTool::~SanitizeCloudTool ()
-{
-}
-
 QList <pcl::cloud_composer::CloudComposerItem*>
 pcl::cloud_composer::SanitizeCloudTool::performAction (ConstItemList input_data, PointTypeFlags::PointType)
 {

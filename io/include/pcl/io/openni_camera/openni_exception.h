@@ -46,7 +46,7 @@
 //#include <pcl/pcl_macros.h> <-- because current header is included in NVCC-compiled code and contains <Eigen/Core>. Consider <pcl/pcl_exports.h>
 
 
-//fom <pcl/pcl_macros.h>
+//from <pcl/pcl_macros.h>
 #if defined _WIN32 && defined _MSC_VER && !defined __PRETTY_FUNCTION__
   #define __PRETTY_FUNCTION__ __FUNCTION__  
 #endif
@@ -80,7 +80,7 @@ namespace openni_wrapper
     /**
      * @brief virtual Destructor that never throws an exception
      */
-    ~OpenNIException () noexcept;
+    ~OpenNIException () noexcept override;
 
     /**
      * @brief Assignment operator to allow copying the message of another exception variable.
@@ -93,22 +93,22 @@ namespace openni_wrapper
      * @brief virtual method, derived from std::exception
      * @return the message of the exception.
      */
-    const char* what () const throw () override;
+    const char* what () const noexcept override;
 
     /**
      * @return the function name in which the exception was created.
      */
-    const std::string& getFunctionName () const throw ();
+    const std::string& getFunctionName () const noexcept;
 
     /**
      * @return the filename in which the exception was created.
      */
-    const std::string& getFileName () const throw ();
+    const std::string& getFileName () const noexcept;
 
     /**
      * @return the line number where the exception was created.
      */
-    unsigned getLineNumber () const throw ();
+    unsigned getLineNumber () const noexcept;
   protected:
     std::string function_name_;
     std::string file_name_;
@@ -132,6 +132,7 @@ namespace openni_wrapper
     va_list args;
     va_start (args, format);
     vsprintf (msg, format, args);
+    va_end (args);
     throw OpenNIException (function_name, file_name, line_number, msg);
   }
 } // namespace openni_camera

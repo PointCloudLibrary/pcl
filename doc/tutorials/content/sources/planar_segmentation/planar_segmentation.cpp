@@ -7,7 +7,7 @@
 #include <pcl/segmentation/sac_segmentation.h>
 
 int
- main (int argc, char** argv)
+ main ()
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
 
@@ -61,7 +61,6 @@ int
                                       << coefficients->values[3] << std::endl;
 
   std::cerr << "Model inliers: " << inliers->indices.size () << std::endl;
-  for (std::size_t i = 0; i < inliers->indices.size (); ++i)
   for (const auto& idx: inliers->indices)
     std::cerr << idx << "    " << cloud->points[idx].x << " "
                                << cloud->points[idx].y << " "

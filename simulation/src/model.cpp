@@ -1,4 +1,5 @@
 #include <pcl/simulation/model.h>
+#include <pcl/conversions.h> // for fromPCLPointCloud2
 using namespace pcl::simulation;
 
 pcl::simulation::TriangleMeshModel::TriangleMeshModel(pcl::PolygonMesh::Ptr plg)
@@ -21,7 +22,7 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel(pcl::PolygonMesh::Ptr plg)
 
     Eigen::Vector4f tmp;
     for (const auto& polygon : plg->polygons) {
-      for (const unsigned int& point : polygon.vertices) {
+      for (const auto& point : polygon.vertices) {
         tmp = newcloud[point].getVector4fMap();
         vertices.push_back(Vertex(Eigen::Vector3f(tmp(0), tmp(1), tmp(2)),
                                   Eigen::Vector3f(newcloud[point].r / 255.0f,
@@ -36,7 +37,7 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel(pcl::PolygonMesh::Ptr plg)
     pcl::fromPCLPointCloud2(plg->cloud, newcloud);
     Eigen::Vector4f tmp;
     for (const auto& polygon : plg->polygons) {
-      for (const unsigned int& point : polygon.vertices) {
+      for (const auto& point : polygon.vertices) {
         tmp = newcloud[point].getVector4fMap();
         vertices.push_back(Vertex(Eigen::Vector3f(tmp(0), tmp(1), tmp(2)),
                                   Eigen::Vector3f(1.0, 1.0, 1.0)));
@@ -52,7 +53,7 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel(pcl::PolygonMesh::Ptr plg)
   glBindBuffer(GL_ARRAY_BUFFER, vbo_);
   glBufferData(GL_ARRAY_BUFFER,
                vertices.size() * sizeof(vertices[0]),
-               &(vertices[0]),
+               vertices.data(),
                GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -60,7 +61,7 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel(pcl::PolygonMesh::Ptr plg)
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER,
                indices.size() * sizeof(indices[0]),
-               &(indices[0]),
+               indices.data(),
                GL_STATIC_DRAW);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
@@ -223,8 +224,8 @@ pcl::simulation::PointCloudModel::PointCloudModel(
 
 pcl::simulation::PointCloudModel::~PointCloudModel()
 {
-  delete vertices_;
-  delete colors_;
+  delete[] vertices_;
+  delete[] colors_;
 }
 
 void
@@ -277,7 +278,8 @@ pcl::simulation::Quad::render() const
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, nullptr);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (const GLvoid*)12);
+  glVertexAttribPointer(
+      1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, reinterpret_cast<const GLvoid*>(12));
 
   glDrawArrays(GL_QUADS, 0, 4);
 
@@ -287,10 +289,11 @@ pcl::simulation::Quad::render() const
 }
 
 pcl::simulation::TexturedQuad::TexturedQuad(int width, int height)
-: width_(width), height_(height)
+: width_(width)
+, height_(height)
+, program_(
+      gllib::Program::loadProgramFromFile("single_texture.vert", "single_texture.frag"))
 {
-  program_ =
-      gllib::Program::loadProgramFromFile("single_texture.vert", "single_texture.frag");
   program_->use();
   Eigen::Matrix<float, 4, 4> MVP;
   MVP.setIdentity();

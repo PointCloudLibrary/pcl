@@ -50,9 +50,8 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::Window::Window (const std::string& window_name)
-  : stopped_ ()
-  , timer_id_ ()
-  , mouse_command_ (vtkCallbackCommand::New ())
+  : 
+   mouse_command_ (vtkCallbackCommand::New ())
   , keyboard_command_ (vtkCallbackCommand::New ())
   , style_ (vtkSmartPointer<pcl::visualization::PCLVisualizerInteractorStyle>::New ())
   , rens_ (vtkSmartPointer<vtkRendererCollection>::New ())
@@ -301,7 +300,7 @@ pcl::visualization::Window::emitMouseEvent (unsigned long event_id)
 void 
 pcl::visualization::Window::emitKeyboardEvent (unsigned long event_id)
 {
-  KeyboardEvent event (bool(event_id == vtkCommand::KeyPressEvent), interactor_->GetKeySym (), interactor_->GetKeyCode (), interactor_->GetAltKey (), interactor_->GetControlKey (), interactor_->GetShiftKey ());
+  KeyboardEvent event ((event_id == vtkCommand::KeyPressEvent), interactor_->GetKeySym (), interactor_->GetKeyCode (), interactor_->GetAltKey (), interactor_->GetControlKey (), interactor_->GetShiftKey ());
   keyboard_signal_ (event);
 }
 
@@ -322,10 +321,7 @@ pcl::visualization::Window::KeyboardCallback (vtkObject*, unsigned long eid, voi
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-pcl::visualization::Window::ExitMainLoopTimerCallback::ExitMainLoopTimerCallback () 
-  : right_timer_id (-1), window (nullptr) 
-{
-}
+pcl::visualization::Window::ExitMainLoopTimerCallback::ExitMainLoopTimerCallback () = default;
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -342,10 +338,7 @@ pcl::visualization::Window::ExitMainLoopTimerCallback::Execute (
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-pcl::visualization::Window::ExitCallback::ExitCallback () 
-  : window (nullptr)
-{
-}
+pcl::visualization::Window::ExitCallback::ExitCallback () = default;
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void

@@ -371,7 +371,7 @@ protected:
 class PCL_EXPORTS GrayStereoMatching : public StereoMatching {
 public:
   GrayStereoMatching();
-  ~GrayStereoMatching();
+  ~GrayStereoMatching() override;
 
   /** \brief stereo processing, it computes a disparity map stored internally by the
    * class
@@ -428,7 +428,7 @@ protected:
 class PCL_EXPORTS BlockBasedStereoMatching : public GrayStereoMatching {
 public:
   BlockBasedStereoMatching();
-  ~BlockBasedStereoMatching(){};
+  ~BlockBasedStereoMatching() override = default;
 
   /** \brief setter for the radius of the squared window
    * \param[in] radius radius of the squared window used to compute the block-based
@@ -452,7 +452,7 @@ private:
  * This class implements an adaptive-cost stereo matching algorithm based on 2-pass
  * Scanline Optimization. The algorithm is inspired by the paper: [1] L. Wang et al.,
  * "High Quality Real-time Stereo using Adaptive Cost Aggregation and Dynamic
- * Programming", 3DPVT 2006 Cost aggregation is performed using adaptive weigths
+ * Programming", 3DPVT 2006 Cost aggregation is performed using adaptive weights
  * computed on a single column as proposed in [1]. Instead of using Dynamic Programming
  * as in [1], the optimization is performed via 2-pass Scanline Optimization. The
  * algorithm is based on the Sum of Absolute Differences (SAD) matching function Only
@@ -465,7 +465,7 @@ class PCL_EXPORTS AdaptiveCostSOStereoMatching : public GrayStereoMatching {
 public:
   AdaptiveCostSOStereoMatching();
 
-  ~AdaptiveCostSOStereoMatching(){};
+  ~AdaptiveCostSOStereoMatching() override = default;
 
   /** \brief setter for the radius (half length) of the column used for cost aggregation
    * \param[in] radius radius (half length) of the column used for cost aggregation; the

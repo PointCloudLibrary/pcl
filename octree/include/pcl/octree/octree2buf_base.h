@@ -44,6 +44,7 @@
 #include <pcl/octree/octree_nodes.h>
 #include <pcl/pcl_macros.h>
 
+#include <array>
 #include <vector>
 
 namespace pcl {
@@ -66,18 +67,19 @@ public:
   inline BufferedBranchNode&
   operator=(const BufferedBranchNode& source_arg)
   {
-    memset(child_node_array_, 0, sizeof(child_node_array_));
-
-    for (unsigned char b = 0; b < 2; ++b)
-      for (unsigned char i = 0; i < 8; ++i)
-        if (source_arg.child_node_array_[b][i])
+    child_node_array_ = {};
+    for (unsigned char b = 0; b < 2; ++b) {
+      for (unsigned char i = 0; i < 8; ++i) {
+        if (source_arg.child_node_array_[b][i]) {
           child_node_array_[b][i] = source_arg.child_node_array_[b][i]->deepCopy();
-
+        }
+      }
+    }
     return (*this);
   }
 
   /** \brief Empty constructor. */
-  ~BufferedBranchNode() {}
+  ~BufferedBranchNode() override = default;
 
   /** \brief Method to perform a deep copy of the octree */
   BufferedBranchNode*
@@ -87,8 +89,8 @@ public:
   }
 
   /** \brief Get child pointer in current branch node
-   *  \param buffer_arg: buffer selector
-   *  \param index_arg: index of child in node
+   *  \param buffer_arg: buffer selector, must be less than 2
+   *  \param index_arg: index of child in node, must be less than 8
    *  \return pointer to child node
    */
   inline OctreeNode*
@@ -99,8 +101,8 @@ public:
   }
 
   /** \brief Set child pointer in current branch node
-   *  \param buffer_arg: buffer selector
-   *  \param index_arg: index of child in node
+   *  \param buffer_arg: buffer selector, must be less than 2
+   *  \param index_arg: index of child in node, must be less than 8
    *  \param newNode_arg: pointer to new child node
    */
   inline void
@@ -113,8 +115,8 @@ public:
   }
 
   /** \brief Check if branch is pointing to a particular child node
-   *  \param buffer_arg: buffer selector
-   *  \param index_arg: index of child in node
+   *  \param buffer_arg: buffer selector, must be less than 2
+   *  \param index_arg: index of child in node, must be less than 8
    *  \return "true" if pointer to child node exists; "false" otherwise
    */
   inline bool
@@ -135,7 +137,7 @@ public:
   inline void
   reset()
   {
-    memset(&child_node_array_[0][0], 0, sizeof(OctreeNode*) * 8 * 2);
+    child_node_array_ = {};
   }
 
   /** \brief Get const pointer to container */
@@ -197,7 +199,10 @@ public:
 protected:
   ContainerT container_;
 
-  OctreeNode* child_node_array_[2][8];
+  template <typename T, std::size_t ROW, std::size_t COL>
+  using OctreeMatrix = std::array<std::array<T, COL>, ROW>;
+
+  OctreeMatrix<OctreeNode*, 2, 8> child_node_array_{};
 };
 
 /** \brief @b Octree double buffer class
@@ -212,7 +217,7 @@ protected:
  * \ingroup octree
  * \author Julius Kammerl (julius@kammerl.de)
  */
-template <typename LeafContainerT = int,
+template <typename LeafContainerT = index_t,
           typename BranchContainerT = OctreeContainerEmpty>
 class Octree2BufBase {
 
@@ -236,7 +241,7 @@ public:
   using Iterator = OctreeDepthFirstIterator<OctreeT>;
   using ConstIterator = const OctreeDepthFirstIterator<OctreeT>;
   Iterator
-  begin(unsigned int max_depth_arg = 0)
+  begin(uindex_t max_depth_arg = 0)
   {
     return Iterator(this, max_depth_arg);
   };
@@ -253,12 +258,12 @@ public:
   using LeafNodeIterator = OctreeLeafNodeDepthFirstIterator<OctreeT>;
   using ConstLeafNodeIterator = const OctreeLeafNodeDepthFirstIterator<OctreeT>;
 
-  // The currently valide names
+  // The currently valid names
   using LeafNodeDepthFirstIterator = OctreeLeafNodeDepthFirstIterator<OctreeT>;
   using ConstLeafNodeDepthFirstIterator =
       const OctreeLeafNodeDepthFirstIterator<OctreeT>;
   LeafNodeDepthFirstIterator
-  leaf_depth_begin(unsigned int max_depth_arg = 0)
+  leaf_depth_begin(uindex_t max_depth_arg = 0)
   {
     return LeafNodeDepthFirstIterator(this, max_depth_arg);
   };
@@ -273,7 +278,7 @@ public:
   using DepthFirstIterator = OctreeDepthFirstIterator<OctreeT>;
   using ConstDepthFirstIterator = const OctreeDepthFirstIterator<OctreeT>;
   DepthFirstIterator
-  depth_begin(unsigned int maxDepth_arg = 0)
+  depth_begin(uindex_t maxDepth_arg = 0)
   {
     return DepthFirstIterator(this, maxDepth_arg);
   };
@@ -287,7 +292,7 @@ public:
   using BreadthFirstIterator = OctreeBreadthFirstIterator<OctreeT>;
   using ConstBreadthFirstIterator = const OctreeBreadthFirstIterator<OctreeT>;
   BreadthFirstIterator
-  breadth_begin(unsigned int max_depth_arg = 0)
+  breadth_begin(uindex_t max_depth_arg = 0)
   {
     return BreadthFirstIterator(this, max_depth_arg);
   };
@@ -303,7 +308,7 @@ public:
       const OctreeLeafNodeBreadthFirstIterator<OctreeT>;
 
   LeafNodeBreadthIterator
-  leaf_breadth_begin(unsigned int max_depth_arg = 0u)
+  leaf_breadth_begin(uindex_t max_depth_arg = 0u)
   {
     return LeafNodeBreadthIterator(this,
                                    max_depth_arg ? max_depth_arg : this->octree_depth_);
@@ -354,18 +359,18 @@ public:
    *  \param max_voxel_index_arg: maximum amount of voxels per dimension
    */
   void
-  setMaxVoxelIndex(unsigned int max_voxel_index_arg);
+  setMaxVoxelIndex(uindex_t max_voxel_index_arg);
 
   /** \brief Set the maximum depth of the octree.
    *  \param depth_arg: maximum depth of octree
    */
   void
-  setTreeDepth(unsigned int depth_arg);
+  setTreeDepth(uindex_t depth_arg);
 
   /** \brief Get the maximum depth of the octree.
    *  \return depth_arg: maximum depth of octree
    */
-  inline unsigned int
+  inline uindex_t
   getTreeDepth() const
   {
     return this->octree_depth_;
@@ -379,7 +384,7 @@ public:
    *  \return pointer to new leaf node container.
    */
   LeafContainerT*
-  createLeaf(unsigned int idx_x_arg, unsigned int idx_y_arg, unsigned int idx_z_arg);
+  createLeaf(uindex_t idx_x_arg, uindex_t idx_y_arg, uindex_t idx_z_arg);
 
   /** \brief Find leaf node at (idx_x_arg, idx_y_arg, idx_z_arg).
    *  \note If leaf node already exist, this method returns the existing node
@@ -389,7 +394,7 @@ public:
    *  \return pointer to leaf node container if found, null pointer otherwise.
    */
   LeafContainerT*
-  findLeaf(unsigned int idx_x_arg, unsigned int idx_y_arg, unsigned int idx_z_arg);
+  findLeaf(uindex_t idx_x_arg, uindex_t idx_y_arg, uindex_t idx_z_arg);
 
   /** \brief Check for the existence of leaf node at (idx_x_arg, idx_y_arg, idx_z_arg).
    *  \param idx_x_arg: index of leaf node in the X axis.
@@ -398,9 +403,7 @@ public:
    *  \return "true" if leaf node search is successful, otherwise it returns "false".
    */
   bool
-  existLeaf(unsigned int idx_x_arg,
-            unsigned int idx_y_arg,
-            unsigned int idx_z_arg) const;
+  existLeaf(uindex_t idx_x_arg, uindex_t idx_y_arg, uindex_t idx_z_arg) const;
 
   /** \brief Remove leaf node at (idx_x_arg, idx_y_arg, idx_z_arg).
    *  \param idx_x_arg: index of leaf node in the X axis.
@@ -408,7 +411,7 @@ public:
    *  \param idx_z_arg: index of leaf node in the Z axis.
    */
   void
-  removeLeaf(unsigned int idx_x_arg, unsigned int idx_y_arg, unsigned int idx_z_arg);
+  removeLeaf(uindex_t idx_x_arg, uindex_t idx_y_arg, uindex_t idx_z_arg);
 
   /** \brief Return the amount of existing leafs in the octree.
    *  \return amount of registered leaf nodes.
@@ -787,7 +790,7 @@ protected:
   inline BranchNode*
   createBranchChild(BranchNode& branch_arg, unsigned char child_idx_arg)
   {
-    BranchNode* new_branch_child = new BranchNode();
+    auto* new_branch_child = new BranchNode();
 
     branch_arg.setChildPtr(
         buffer_selector_, child_idx_arg, static_cast<OctreeNode*>(new_branch_child));
@@ -803,7 +806,7 @@ protected:
   inline LeafNode*
   createLeafChild(BranchNode& branch_arg, unsigned char child_idx_arg)
   {
-    LeafNode* new_leaf_child = new LeafNode();
+    auto* new_leaf_child = new LeafNode();
 
     branch_arg.setChildPtr(buffer_selector_, child_idx_arg, new_leaf_child);
 
@@ -825,9 +828,9 @@ protected:
    * \param branch_reset_arg: Reset pointer array of current branch
    * \return depth mask at which leaf node was created/found
    **/
-  unsigned int
+  uindex_t
   createLeafRecursive(const OctreeKey& key_arg,
-                      unsigned int depth_mask_arg,
+                      uindex_t depth_mask_arg,
                       BranchNode* branch_arg,
                       LeafNode*& return_leaf_arg,
                       BranchNode*& parent_of_leaf_arg,
@@ -843,7 +846,7 @@ protected:
    **/
   void
   findLeafRecursive(const OctreeKey& key_arg,
-                    unsigned int depth_mask_arg,
+                    uindex_t depth_mask_arg,
                     BranchNode* branch_arg,
                     LeafContainerT*& result_arg) const;
 
@@ -857,7 +860,7 @@ protected:
    **/
   bool
   deleteLeafRecursive(const OctreeKey& key_arg,
-                      unsigned int depth_mask_arg,
+                      uindex_t depth_mask_arg,
                       BranchNode* branch_arg);
 
   /** \brief Recursively explore the octree and output binary octree description
@@ -901,7 +904,7 @@ protected:
   void
   deserializeTreeRecursive(
       BranchNode* branch_arg,
-      unsigned int depth_mask_arg,
+      uindex_t depth_mask_arg,
       OctreeKey& key_arg,
       typename std::vector<char>::const_iterator& binary_tree_in_it_arg,
       typename std::vector<char>::const_iterator& binary_tree_in_it_end_arg,
@@ -969,32 +972,33 @@ protected:
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /** \brief Amount of leaf nodes   **/
-  std::size_t leaf_count_;
+  std::size_t leaf_count_{0};
 
   /** \brief Amount of branch nodes   **/
-  std::size_t branch_count_;
+  std::size_t branch_count_{1};
 
   /** \brief Pointer to root branch node of octree   **/
   BranchNode* root_node_;
 
   /** \brief Depth mask based on octree depth   **/
-  unsigned int depth_mask_;
+  uindex_t depth_mask_{0};
 
   /** \brief key range */
   OctreeKey max_key_;
 
   /** \brief Currently active octree buffer  **/
-  unsigned char buffer_selector_;
+  unsigned char buffer_selector_{0};
 
-  // flags indicating if unused branches and leafs might exist in previous buffer
-  bool tree_dirty_flag_;
+  /** \brief flags indicating if unused branches and leafs might exist in previous
+   * buffer  **/
+  bool tree_dirty_flag_{false};
 
   /** \brief Octree depth */
-  unsigned int octree_depth_;
+  uindex_t octree_depth_{0};
 
   /** \brief Enable dynamic_depth
    *  \note Note that this parameter is ignored in octree2buf! */
-  bool dynamic_depth_enabled_;
+  bool dynamic_depth_enabled_{false};
 };
 } // namespace octree
 } // namespace pcl

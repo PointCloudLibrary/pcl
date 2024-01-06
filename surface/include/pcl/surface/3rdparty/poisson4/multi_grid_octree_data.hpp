@@ -48,9 +48,9 @@ namespace pcl
   namespace poisson
   {
 
-    const Real MATRIX_ENTRY_EPSILON = Real(0);
-    const Real EPSILON=Real(1e-6);
-    const Real ROUND_EPS=Real(1e-5);
+    constexpr Real MATRIX_ENTRY_EPSILON = Real(0);
+    constexpr Real EPSILON=Real(1e-6);
+    constexpr Real ROUND_EPS = Real(1e-5);
 
     void atomicOr(volatile int& dest, int value)
     {
@@ -736,7 +736,7 @@ namespace pcl
       Real w;
       node->centerAndWidth( center , w );
       width=w;
-      const double SAMPLE_SCALE = 1. / ( 0.125 * 0.125 + 0.75 * 0.75 + 0.125 * 0.125 );
+      constexpr double SAMPLE_SCALE = 1. / ( 0.125 * 0.125 + 0.75 * 0.75 + 0.125 * 0.125 );
 
       for( int i=0 ; i<DIMENSION ; i++ )
       {
@@ -2373,7 +2373,7 @@ namespace pcl
                 (*vertexCount)[key1].second--;
                 (*vertexCount)[key2].second++;
               }
-              else fprintf( stderr , "Bad Edge 1: %d %d\n" , ri1.key , ri2.key );
+              else fprintf( stderr , "Bad Edge 1: %lld %lld\n" , ri1.key , ri2.key );
       }
     }
 
@@ -3550,13 +3550,13 @@ namespace pcl
                 {
                   int r1 = MarchingCubes::HasEdgeRoots( node->nodeData.mcIndex , isoTri[j*3+k] );
                   int r2 = MarchingCubes::HasEdgeRoots( node->nodeData.mcIndex , isoTri[j*3+((k+1)%3)] );
-                  fprintf( stderr , "Bad Edge 2: %d %d\t%d %d\n" , ri1.key , ri2.key , r1 , r2 );
+                  fprintf( stderr , "Bad Edge 2: %lld %lld\t%d %d\n" , ri1.key , ri2.key , r1 , r2 );
                 }
         }
       }
       for( int i=0 ; i<int(edges.size()) ; i++ )
       {
-        if( vertexCount.count( edges[i].first.key )==0 ) printf( "Could not find vertex: %lld\n" , edges[i].first );
+        if( vertexCount.count( edges[i].first.key )==0 ) printf( "Could not find vertex: %lld\n" , edges[i].first.key );
         else if( vertexCount[ edges[i].first.key ].second )
         {
           RootInfo ri;
@@ -3576,7 +3576,7 @@ namespace pcl
           }
         }
 
-        if( vertexCount.count( edges[i].second.key )==0 ) printf( "Could not find vertex: %lld\n" , edges[i].second );
+        if( vertexCount.count( edges[i].second.key )==0 ) printf( "Could not find vertex: %lld\n" , edges[i].second.key );
         else if( vertexCount[edges[i].second.key].second )
         {
           RootInfo ri;

@@ -42,6 +42,7 @@
 
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/cloud_iterator.h>
+#include <pcl/pcl_config.h> // for PCL_NO_PRECOMPILE
 
 namespace pcl {
 namespace registration {
@@ -68,7 +69,7 @@ public:
    * \param[in] use_umeyama Toggles whether or not to use 3rd party software*/
   TransformationEstimationSVD(bool use_umeyama = true) : use_umeyama_(use_umeyama) {}
 
-  ~TransformationEstimationSVD(){};
+  ~TransformationEstimationSVD() override = default;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using SVD. \param[in] cloud_src the source point cloud dataset
@@ -83,28 +84,30 @@ public:
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using SVD. \param[in] cloud_src the source point cloud dataset
    * \param[in] indices_src the vector of indices describing the points of interest in
-   * \a cloud_src \param[in] cloud_tgt the target point cloud dataset \param[out]
-   * transformation_matrix the resultant transformation matrix
+   * \a cloud_src
+   * \param[in] cloud_tgt the target point cloud dataset
+   * \param[out] transformation_matrix the resultant transformation matrix
    */
   inline void
   estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const std::vector<int>& indices_src,
+                              const pcl::Indices& indices_src,
                               const pcl::PointCloud<PointTarget>& cloud_tgt,
                               Matrix4& transformation_matrix) const override;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using SVD. \param[in] cloud_src the source point cloud dataset
    * \param[in] indices_src the vector of indices describing the points of interest in
-   * \a cloud_src \param[in] cloud_tgt the target point cloud dataset \param[in]
-   * indices_tgt the vector of indices describing the correspondences of the interest
-   * points from \a indices_src \param[out] transformation_matrix the resultant
-   * transformation matrix
+   * \a cloud_src
+   * \param[in] cloud_tgt the target point cloud dataset
+   * \param[in] indices_tgt the vector of indices describing the correspondences of the
+   * interest points from \a indices_src
+   * \param[out] transformation_matrix the resultant transformation matrix
    */
   inline void
   estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const std::vector<int>& indices_src,
+                              const pcl::Indices& indices_src,
                               const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              const std::vector<int>& indices_tgt,
+                              const pcl::Indices& indices_tgt,
                               Matrix4& transformation_matrix) const override;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
@@ -152,3 +155,13 @@ protected:
 } // namespace pcl
 
 #include <pcl/registration/impl/transformation_estimation_svd.hpp>
+
+#if !defined(PCL_NO_PRECOMPILE) &&                                                     \
+    !defined(PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_CPP_)
+extern template class pcl::registration::TransformationEstimationSVD<pcl::PointXYZ,
+                                                                     pcl::PointXYZ>;
+extern template class pcl::registration::TransformationEstimationSVD<pcl::PointXYZI,
+                                                                     pcl::PointXYZI>;
+extern template class pcl::registration::TransformationEstimationSVD<pcl::PointXYZRGB,
+                                                                     pcl::PointXYZRGB>;
+#endif // PCL_NO_PRECOMPILE

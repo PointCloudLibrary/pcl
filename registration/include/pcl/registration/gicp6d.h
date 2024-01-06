@@ -47,38 +47,6 @@
 #include <pcl/point_types.h>
 
 namespace pcl {
-struct EIGEN_ALIGN16 _PointXYZLAB {
-  PCL_ADD_POINT4D; // this adds the members x,y,z
-  union {
-    struct {
-      float L;
-      float a;
-      float b;
-    };
-    float data_lab[4];
-  };
-  PCL_MAKE_ALIGNED_OPERATOR_NEW
-};
-
-/** \brief A custom point type for position and CIELAB color value */
-struct PointXYZLAB : public _PointXYZLAB {
-  inline PointXYZLAB()
-  {
-    x = y = z = 0.0f;
-    data[3] = 1.0f; // important for homogeneous coordinates
-    L = a = b = 0.0f;
-    data_lab[3] = 0.0f;
-  }
-};
-} // namespace pcl
-
-// register the custom point type in PCL
-POINT_CLOUD_REGISTER_POINT_STRUCT(
-    pcl::_PointXYZLAB,
-    (float, x, x)(float, y, y)(float, z, z)(float, L, L)(float, a, a)(float, b, b))
-POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointXYZLAB, pcl::_PointXYZLAB)
-
-namespace pcl {
 /** \brief GeneralizedIterativeClosestPoint6D integrates L*a*b* color space information
  * into the Generalized Iterative Closest Point (GICP) algorithm.
  *
@@ -117,7 +85,7 @@ public:
   /** \brief Provide a pointer to the input target
    * (e.g., the point cloud that we want to align the input source to)
    *
-   * \param[in] cloud the input point cloud target
+   * \param[in] target the input point cloud target
    */
   void
   setInputTarget(const PointCloudTargetConstPtr& target) override;
@@ -139,7 +107,7 @@ protected:
    */
   inline bool
   searchForNeighbors(const PointXYZLAB& query,
-                     std::vector<int>& index,
+                     pcl::Indices& index,
                      std::vector<float>& distance);
 
 protected:
@@ -171,7 +139,7 @@ protected:
       trivial_ = false;
     }
 
-    ~MyPointRepresentation() {}
+    ~MyPointRepresentation() override = default;
 
     inline Ptr
     makeShared() const

@@ -10,7 +10,7 @@ COPY ${flavor}_rosinstall.yaml ${workspace}/src/.rosinstall
 
 # Be careful:
 # * ROS uses Python2
-# * source ROS setup file in evey RUN snippet
+# * source ROS setup file in every RUN snippet
 #
 # The dependencies of PCL can be reduced since
 # * we don't need to build visualization or docs
@@ -35,6 +35,6 @@ COPY package.xml ${workspace}/src/pcl/
 RUN cd ${workspace} \
  && . "/opt/ros/${flavor}/setup.sh" \
  && catkin config --install --link-devel \
- && catkin build -j2 libpcl-all-dev --cmake-args -DWITH_OPENGL:BOOL=OFF \
+ && catkin build --no-status --verbose --summary -j2 libpcl-all-dev --cmake-args -DWITH_OPENGL:BOOL=OFF \
  && rm -fr build/libpcl-all-dev \
- && catkin build --start-with pcl_msgs
+ && catkin build --no-status --verbose --summary --start-with pcl_msgs

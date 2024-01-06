@@ -40,13 +40,16 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QMouseEvent>
-#include <qgl.h>
+#include <QApplication>
 
 #include <pcl/pcl_config.h>
 
 #ifdef OPENGL_IS_A_FRAMEWORK
 # include <OpenGL/glu.h>
 #else
+# ifdef _WIN32
+#  include <windows.h>
+# endif // _WIN32
 # include <GL/glu.h>
 #endif
 
@@ -70,8 +73,7 @@
 #include <pcl/apps/point_cloud_editor/mainWindow.h>
 
 CloudEditorWidget::CloudEditorWidget (QWidget *parent)
-  : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer |
-                        QGL::Rgba | QGL::StencilBuffer), parent),
+  : QOpenGLWidget(parent),
     point_size_(2.0f), selected_point_size_(4.0f),
     cam_fov_(60.0), cam_aspect_(1.0), cam_near_(0.0001), cam_far_(100.0),
     color_scheme_(COLOR_BY_PURE), is_colored_(false)
@@ -83,8 +85,7 @@ CloudEditorWidget::CloudEditorWidget (QWidget *parent)
 }
 
 CloudEditorWidget::~CloudEditorWidget ()
-{
-}
+= default;
 
 void
 CloudEditorWidget::loadFile(const std::string &filename)
@@ -101,7 +102,7 @@ void
 CloudEditorWidget::load ()
 {
   QString file_path = QFileDialog::getOpenFileName(this, tr("Open File"));
-    
+
   if (file_path.isEmpty())
     return;
 
@@ -115,7 +116,6 @@ CloudEditorWidget::load ()
                              tr("Can not load %1.").arg(file_path));
   }
   update();
-  updateGL();
 }
 
 void
@@ -129,7 +129,7 @@ CloudEditorWidget::save ()
   }
 
   QString file_path = QFileDialog::getSaveFileName(this,tr("Save point cloud"));
-  
+
   std::string file_path_std = file_path.toStdString();
   if ( (file_path_std.empty()) || (!cloud_ptr_) )
     return;
@@ -204,7 +204,7 @@ CloudEditorWidget::select2D ()
   if (!cloud_ptr_)
     return;
   tool_ptr_ = std::shared_ptr<Select2DTool>(new Select2DTool(selection_ptr_,
-                                                               cloud_ptr_));
+                                                               cloud_ptr_, [this](GLint * viewport, GLfloat * projection_matrix){ std::copy_n(this->viewport_.begin(), 4, viewport); std::copy_n(this->projection_matrix_.begin(), 16, projection_matrix); }));
   update();
 }
 
@@ -475,11 +475,16 @@ CloudEditorWidget::paintGL ()
 void
 CloudEditorWidget::resizeGL (int width, int height)
 {
+  const auto ratio = this->devicePixelRatio();
+  width = static_cast<int>(width*ratio);
+  height = static_cast<int>(height*ratio);
   glViewport(0, 0, width, height);
+  viewport_ = {0, 0, width, height};
   cam_aspect_ = double(width) / double(height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(cam_fov_, cam_aspect_, cam_near_, cam_far_);
+  glGetFloatv(GL_PROJECTION_MATRIX, projection_matrix_.data());
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 }
@@ -487,9 +492,10 @@ CloudEditorWidget::resizeGL (int width, int height)
 void
 CloudEditorWidget::mousePressEvent (QMouseEvent *event)
 {
+  auto ratio = this->devicePixelRatio();
   if (!tool_ptr_)
     return;
-  tool_ptr_ -> start(event -> x(), event -> y(),
+  tool_ptr_ -> start(event -> x()*ratio, event -> y()*ratio,
                      event -> modifiers(), event -> buttons());
   update();
 }
@@ -497,9 +503,10 @@ CloudEditorWidget::mousePressEvent (QMouseEvent *event)
 void
 CloudEditorWidget::mouseMoveEvent (QMouseEvent *event)
 {
+  auto ratio = this->devicePixelRatio();
   if (!tool_ptr_)
     return;
-  tool_ptr_ -> update(event -> x(), event -> y(),
+  tool_ptr_ -> update(event -> x()*ratio, event -> y()*ratio,
                       event -> modifiers(), event -> buttons());
   update();
 }
@@ -507,9 +514,10 @@ CloudEditorWidget::mouseMoveEvent (QMouseEvent *event)
 void
 CloudEditorWidget::mouseReleaseEvent (QMouseEvent *event)
 {
+  auto ratio = this->devicePixelRatio();
   if (!tool_ptr_)
     return;
-  tool_ptr_ -> end(event -> x(), event -> y(),
+  tool_ptr_ -> end(event -> x()*ratio, event -> y()*ratio,
                    event -> modifiers(), event -> button());
   update();
 }
@@ -528,13 +536,13 @@ CloudEditorWidget::keyPressEvent (QKeyEvent *event)
 
 void
 CloudEditorWidget::loadFilePCD(const std::string &filename)
-{   
+{
   PclCloudPtr pcl_cloud_ptr;
   Cloud3D tmp;
   if (pcl::io::loadPCDFile<Point3D>(filename, tmp) == -1)
     throw;
   pcl_cloud_ptr = PclCloudPtr(new Cloud3D(tmp));
-  std::vector<int> index;
+  pcl::Indices index;
   pcl::removeNaNFromPointCloud(*pcl_cloud_ptr, *pcl_cloud_ptr, index);
   Statistics::clear();
   cloud_ptr_ = CloudPtr(new Cloud(*pcl_cloud_ptr, true));
@@ -597,7 +605,7 @@ CloudEditorWidget::swapRBValues ()
 
 void
 CloudEditorWidget::initKeyMap ()
-{   
+{
   key_map_[Qt::Key_1] = &CloudEditorWidget::colorByPure;
   key_map_[Qt::Key_2] = &CloudEditorWidget::colorByX;
   key_map_[Qt::Key_3] = &CloudEditorWidget::colorByY;

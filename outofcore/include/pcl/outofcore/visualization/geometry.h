@@ -24,7 +24,7 @@ protected:
 public:
 
   
-  ~Geometry () { }
+  ~Geometry () override = default;
 
 public:
 

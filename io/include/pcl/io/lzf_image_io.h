@@ -88,7 +88,7 @@ namespace pcl
         /** Empty constructor */
         LZFImageReader ();
         /** Empty destructor */
-        virtual ~LZFImageReader () {}
+        virtual ~LZFImageReader () = default;
 
         /** \brief Read camera parameters from a given file and store them internally.
           * \return true if operation successful, false otherwise
@@ -161,10 +161,10 @@ namespace pcl
                     std::vector<char> &output); 
 
         /** \brief The image width, as read from the file. */
-        std::uint32_t width_;
+        std::uint32_t width_{0};
 
         /** \brief The image height, as read from the file. */
-        std::uint32_t height_;
+        std::uint32_t height_{0};
 
         /** \brief The image type string, as read from the file. */
         std::string image_type_identifier_;
@@ -189,12 +189,10 @@ namespace pcl
         using LZFImageReader::readParameters;
 
         /** Empty constructor */
-        LZFDepth16ImageReader () 
-          : z_multiplication_factor_ (0.001)      // Set default multiplication factor
-        {}
+        LZFDepth16ImageReader () = default;
 
         /** Empty destructor */
-        ~LZFDepth16ImageReader () {}
+        ~LZFDepth16ImageReader () override = default;
 
         /** \brief Read the data stored in a PCLZF depth file and convert it to a pcl::PointCloud type.
           * \param[in] filename the file name to read the data from
@@ -223,7 +221,7 @@ namespace pcl
         /** \brief Z-value depth multiplication factor 
           * (i.e., if raw data is in [mm] and we want [m], we need to multiply with 0.001)
           */
-        double z_multiplication_factor_;
+        double z_multiplication_factor_{0.001};
     };
 
     /** \brief PCL-LZF 24-bit RGB image format reader.
@@ -242,9 +240,9 @@ namespace pcl
         using LZFImageReader::readParameters;
 
         /** Empty constructor */
-        LZFRGB24ImageReader () {}
+        LZFRGB24ImageReader () = default;
         /** Empty destructor */
-        ~LZFRGB24ImageReader () {}
+        ~LZFRGB24ImageReader () override = default;
 
         /** \brief Read the data stored in a PCLZF RGB file and convert it to a pcl::PointCloud type.
           * \param[in] filename the file name to read the data from
@@ -289,9 +287,9 @@ namespace pcl
         using LZFRGB24ImageReader::readParameters;
 
         /** Empty constructor */
-        LZFYUV422ImageReader () {}
+        LZFYUV422ImageReader () = default;
         /** Empty destructor */
-        ~LZFYUV422ImageReader () {}
+        ~LZFYUV422ImageReader () override = default;
 
         /** \brief Read the data stored in a PCLZF YUV422 16bit file and convert it to a pcl::PointCloud type.
           * \param[in] filename the file name to read the data from
@@ -327,9 +325,9 @@ namespace pcl
         using LZFRGB24ImageReader::readParameters;
 
         /** Empty constructor */
-        LZFBayer8ImageReader () {}
+        LZFBayer8ImageReader () = default;
         /** Empty destructor */
-        ~LZFBayer8ImageReader () {}
+        ~LZFBayer8ImageReader () override = default;
 
         /** \brief Read the data stored in a PCLZF Bayer 8bit file and convert it to a pcl::PointCloud type.
           * \param[in] filename the file name to read the data from
@@ -377,9 +375,9 @@ namespace pcl
     {
       public:
         /** Empty constructor */
-        LZFImageWriter () {}
+        LZFImageWriter () = default;
         /** Empty destructor */
-        virtual ~LZFImageWriter () {}
+        virtual ~LZFImageWriter () = default;
 
         /** \brief Save an image into PCL-LZF format. Virtual.
           * \param[in] data the array holding the image
@@ -480,12 +478,10 @@ namespace pcl
     {
       public:
         /** Empty constructor */
-        LZFDepth16ImageWriter () 
-          : z_multiplication_factor_ (0.001)      // Set default multiplication factor
-        {}
+        LZFDepth16ImageWriter () = default;
 
         /** Empty destructor */
-        ~LZFDepth16ImageWriter () {}
+        ~LZFDepth16ImageWriter () override = default;
 
         /** \brief Save a 16-bit depth image into PCL-LZF format.
           * \param[in] data the array holding the depth image
@@ -519,7 +515,7 @@ namespace pcl
         /** \brief Z-value depth multiplication factor 
           * (i.e., if raw data is in [mm] and we want [m], we need to multiply with 0.001)
           */
-        double z_multiplication_factor_;
+        double z_multiplication_factor_{0.001};
     };
 
     /** \brief PCL-LZF 24-bit RGB image format writer.
@@ -536,9 +532,9 @@ namespace pcl
     {
       public:
         /** Empty constructor */
-        LZFRGB24ImageWriter () {}
+        LZFRGB24ImageWriter () = default;
         /** Empty destructor */
-        ~LZFRGB24ImageWriter () {}
+        ~LZFRGB24ImageWriter () override = default;
 
         /** \brief Save a 24-bit RGB image into PCL-LZF format.
           * \param[in] data the array holding the RGB image (as [RGB..RGB] or [BGR..BGR])
@@ -578,9 +574,9 @@ namespace pcl
     {
       public:
         /** Empty constructor */
-        LZFYUV422ImageWriter () {}
+        LZFYUV422ImageWriter () = default;
         /** Empty destructor */
-        ~LZFYUV422ImageWriter () {}
+        ~LZFYUV422ImageWriter () override = default;
 
         /** \brief Save a 16-bit YUV422 image into PCL-LZF format.
           * \param[in] data the array holding the YUV422 image (as [YUYV...YUYV])
@@ -609,9 +605,9 @@ namespace pcl
     {
       public:
         /** Empty constructor */
-        LZFBayer8ImageWriter () {}
+        LZFBayer8ImageWriter () = default;
         /** Empty destructor */
-        ~LZFBayer8ImageWriter () {}
+        ~LZFBayer8ImageWriter () override = default;
 
         /** \brief Save a 8-bit Bayer image into PCL-LZF format.
           * \param[in] data the array holding the 8-bit Bayer array
