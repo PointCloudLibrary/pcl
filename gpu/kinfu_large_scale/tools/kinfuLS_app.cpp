@@ -55,7 +55,13 @@ Work in progress: patch by Marco (AUG,19th 2012)
 #include <pcl/pcl_macros.h>
 #include <pcl/console/parse.h>
 
+#if (__cplusplus >= 201703L)
+#include <filesystem>
+namespace pcl_fs = std::filesystem;
+#else
 #include <boost/filesystem.hpp>
+namespace pcl_fs = boost::filesystem;
+#endif
 
 #include <pcl/gpu/kinfu_large_scale/kinfu.h>
 #include <pcl/gpu/kinfu_large_scale/raycaster.h>
@@ -123,19 +129,18 @@ namespace pcl
 
 std::vector<std::string> getPcdFilesInDir(const std::string& directory)
 {
-  namespace fs = boost::filesystem;
-  fs::path dir(directory);
+  pcl_fs::path dir(directory);
 
   std::cout << "path: " << directory << std::endl;
-  if (directory.empty() || !fs::exists(dir) || !fs::is_directory(dir))
+  if (directory.empty() || !pcl_fs::exists(dir) || !pcl_fs::is_directory(dir))
           PCL_THROW_EXCEPTION (pcl::IOException, "No valid PCD directory given!\n");
 
   std::vector<std::string> result;
-  fs::directory_iterator pos(dir);
-  fs::directory_iterator end;           
+  pcl_fs::directory_iterator pos(dir);
+  pcl_fs::directory_iterator end;           
 
   for(; pos != end ; ++pos)
-    if (fs::is_regular_file(pos->status()) )
+    if (pcl_fs::is_regular_file(pos->status()) )
       if (pos->path().extension().string() == ".pcd")
       {
         result.push_back (pos->path ().string ());

@@ -44,7 +44,14 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/io/ifs_io.h>
+
+#if (__cplusplus >= 201703L)
+#include <filesystem> // for path
+namespace pcl_fs = std::filesystem;
+#else
 #include <boost/filesystem.hpp> // for path
+namespace pcl_fs = boost::filesystem;
+#endif
 
 namespace pcl
 {
@@ -53,7 +60,7 @@ namespace pcl
     template<typename PointT> int
     load (const std::string& file_name, pcl::PointCloud<PointT>& cloud)
     {
-      boost::filesystem::path p (file_name.c_str ());
+      pcl_fs::path p (file_name.c_str ());
       std::string extension = p.extension ().string ();
       int result = -1;
       if (extension == ".pcd")
@@ -75,7 +82,7 @@ namespace pcl
     template<typename PointT> int
     save (const std::string& file_name, const pcl::PointCloud<PointT>& cloud)
     {
-      boost::filesystem::path p (file_name.c_str ());
+      pcl_fs::path p (file_name.c_str ());
       std::string extension = p.extension ().string ();
       int result = -1;
       if (extension == ".pcd")

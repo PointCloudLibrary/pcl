@@ -41,7 +41,15 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
+
+#if (__cplusplus >= 201703L)
+#include <filesystem>
+namespace pcl_fs = std::filesystem;
+#else
 #include <boost/filesystem.hpp>
+namespace pcl_fs = boost::filesystem;
+#endif
+
 #include <algorithm>
 #include <string>
 
@@ -129,7 +137,7 @@ saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 
   PCDWriter w_pcd;
   PLYWriter w_ply;
-  std::string output_ext = boost::filesystem::path (filename).extension ().string ();
+  std::string output_ext = pcl_fs::path (filename).extension ().string ();
   std::transform (output_ext.begin (), output_ext.end (), output_ext.begin (), ::tolower);
 
   if (output_ext == ".pcd")

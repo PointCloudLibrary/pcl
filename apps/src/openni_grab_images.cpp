@@ -44,12 +44,9 @@
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/point_types.h>
 
-#include <boost/filesystem.hpp>
-
 #include <mutex>
 
 using namespace pcl::console;
-using namespace boost::filesystem;
 
 class OpenNIGrabFrame {
 public:

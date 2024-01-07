@@ -39,6 +39,8 @@
 
 #pragma once
 
+#include <list>
+
 #include <pcl/common/io.h>
 
 //outofcore classes
@@ -200,7 +202,7 @@ namespace pcl
          * \param load_all Load entire tree metadata (does not load any points from disk)
          * \throws PCLException for bad extension (root node metadata must be .oct_idx extension)
          */
-        OutofcoreOctreeBase (const boost::filesystem::path &root_node_name, const bool load_all);
+        OutofcoreOctreeBase (const pcl_fs::path &root_node_name, const bool load_all);
 
         /** \brief Create a new tree
          *
@@ -215,7 +217,7 @@ namespace pcl
          * \param coord_sys Coordinate system which is stored in the JSON metadata
          * \throws PCLException if root file extension does not match \ref pcl::outofcore::OutofcoreOctreeBaseNode::node_index_extension
          */
-        OutofcoreOctreeBase (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const double resolution_arg, const boost::filesystem::path &root_node_name, const std::string &coord_sys);
+        OutofcoreOctreeBase (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const double resolution_arg, const pcl_fs::path &root_node_name, const std::string &coord_sys);
 
         /** \brief Create a new tree; will not overwrite existing tree of same name
          *
@@ -230,7 +232,7 @@ namespace pcl
          * \throws PCLException if the parent directory has existing children (detects an existing tree)
          * \throws PCLException if file extension is not ".oct_idx"
          */
-        OutofcoreOctreeBase (const std::uint64_t max_depth, const Eigen::Vector3d &min, const Eigen::Vector3d &max, const boost::filesystem::path &root_node_name, const std::string &coord_sys);
+        OutofcoreOctreeBase (const std::uint64_t max_depth, const Eigen::Vector3d &min, const Eigen::Vector3d &max, const pcl_fs::path &root_node_name, const std::string &coord_sys);
 
         virtual
         ~OutofcoreOctreeBase ();
@@ -536,7 +538,7 @@ namespace pcl
         /** \brief Write a python script using the vpython module containing all
          * the bounding boxes */
         void
-        writeVPythonVisual (const boost::filesystem::path& filename);
+        writeVPythonVisual (const pcl_fs::path& filename);
 
         OutofcoreNodeType*
         getBranchChildPtr (const BranchNode& branch_arg, unsigned char childIdx_arg) const;
@@ -568,7 +570,7 @@ namespace pcl
 	
       protected:
         void
-        init (const std::uint64_t& depth, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::filesystem::path& root_name, const std::string& coord_sys);
+        init (const std::uint64_t& depth, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const pcl_fs::path& root_name, const std::string& coord_sys);
 
         OutofcoreOctreeBase (OutofcoreOctreeBase &rval);
 
@@ -608,7 +610,7 @@ namespace pcl
          *  \return 0 if bad; 1 if extension is .oct_idx
          */
         bool
-        checkExtension (const boost::filesystem::path& path_name);
+        checkExtension (const pcl_fs::path& path_name);
 
         /** \brief Flush all nodes' cache */
         void

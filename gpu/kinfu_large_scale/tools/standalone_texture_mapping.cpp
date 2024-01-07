@@ -37,7 +37,13 @@
  */
 
 
+#if (__cplusplus >= 201703L)
+#include <filesystem>
+namespace pcl_fs = std::filesystem;
+#else
 #include <boost/filesystem.hpp>
+namespace pcl_fs = boost::filesystem;
+#endif
 
 #include <fstream>
 #include <iostream>
@@ -432,11 +438,11 @@ main (int argc, char** argv)
   PCL_INFO ("\nLoading textures and camera poses...\n");
   pcl::texture_mapping::CameraVector my_cams;
   
-  const boost::filesystem::path base_dir (".");
+  const pcl_fs::path base_dir (".");
   std::string extension (".txt");
-  for (boost::filesystem::directory_iterator it (base_dir); it != boost::filesystem::directory_iterator (); ++it)
+  for (pcl_fs::directory_iterator it (base_dir); it != pcl_fs::directory_iterator (); ++it)
   {
-    if(boost::filesystem::is_regular_file (it->status ()) && it->path ().extension ().string () == extension)
+    if(pcl_fs::is_regular_file (it->status ()) && it->path ().extension ().string () == extension)
     {
       pcl::TextureMapping<pcl::PointXYZ>::Camera cam;
       readCamPoseFile(it->path ().string (), cam);

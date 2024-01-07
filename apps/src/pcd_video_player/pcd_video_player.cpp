@@ -167,10 +167,10 @@ PCDVideoPlayer::selectFolderButtonPressed()
                                            QFileDialog::ShowDirsOnly |
                                                QFileDialog::DontResolveSymlinks);
 
-  boost::filesystem::directory_iterator end_itr;
+  pcl_fs::directory_iterator end_itr;
 
-  if (boost::filesystem::is_directory(dir_.toStdString())) {
-    for (boost::filesystem::directory_iterator itr(dir_.toStdString()); itr != end_itr;
+  if (pcl_fs::is_directory(dir_.toStdString())) {
+    for (pcl_fs::directory_iterator itr(dir_.toStdString()); itr != end_itr;
          ++itr) {
       std::string ext = itr->path().extension().string();
       if (ext == ".pcd") {
@@ -211,7 +211,7 @@ void
 PCDVideoPlayer::selectFilesButtonPressed()
 {
   pcd_files_.clear(); // Clear the std::vector
-  pcd_paths_.clear(); // Clear the boost filesystem paths
+  pcd_paths_.clear(); // Clear the filesystem paths
 
   QStringList qt_pcd_files = QFileDialog::getOpenFileNames(
       this, "Select one or more PCD files to open", "/home", "PointClouds (*.pcd)");
