@@ -59,11 +59,11 @@ public:
   }
 
   void
-  getViewsFilenames(bf::path& path_with_views, std::vector<std::string>& view_filenames)
+  getViewsFilenames(pcl_fs::path& path_with_views, std::vector<std::string>& view_filenames)
   {
     int number_of_views = 0;
-    for (const auto& dir_entry : bf::directory_iterator(path_with_views)) {
-      if (!(bf::is_directory(dir_entry))) {
+    for (const auto& dir_entry : pcl_fs::directory_iterator(path_with_views)) {
+      if (!(pcl_fs::is_directory(dir_entry))) {
         std::vector<std::string> strs;
         std::vector<std::string> strs_;
 
@@ -101,19 +101,19 @@ public:
   loadOrGenerate(std::string& dir, std::string& model_path, ModelT& model)
   {
     const std::string pathmodel = dir + '/' + model.class_ + '/' + model.id_;
-    const bf::path trained_dir = pathmodel;
+    const pcl_fs::path trained_dir = pathmodel;
 
     model.views_.reset(new std::vector<typename pcl::PointCloud<PointInT>::Ptr>);
     model.poses_.reset(
         new std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>);
     model.self_occlusions_.reset(new std::vector<float>);
 
-    if (bf::exists(trained_dir)) {
+    if (pcl_fs::exists(trained_dir)) {
       // load views and poses
       std::vector<std::string> view_filenames;
-      for (const auto& dir_entry : bf::directory_iterator(trained_dir)) {
+      for (const auto& dir_entry : pcl_fs::directory_iterator(trained_dir)) {
         // check if its a directory, then get models in it
-        if (!(bf::is_directory(*itr))) {
+        if (!(pcl_fs::is_directory(*itr))) {
           // check that it is a ply file and then add, otherwise ignore..
           std::vector<std::string> strs;
           std::vector<std::string> strs_;
@@ -174,7 +174,7 @@ public:
       createClassAndModelDirectories(dir, model.class_, model.id_);
 
       std::vector<std::string> view_filenames;
-      bf::path model_dir = model_path;
+      pcl_fs::path model_dir = model_path;
 
       getViewsFilenames(model_dir, view_filenames);
       std::cout << view_filenames.size() << std::endl;
@@ -213,11 +213,11 @@ public:
   }
 
   bool
-  isleafDirectory(bf::path& path)
+  isleafDirectory(pcl_fs::path& path)
   {
     bool no_dirs_inside = true;
-    for (const auto& dir_entry : bf::directory_iterator(path)) {
-      if (bf::is_directory(dir_entry)) {
+    for (const auto& dir_entry : pcl_fs::directory_iterator(path)) {
+      if (pcl_fs::is_directory(dir_entry)) {
         no_dirs_inside = false;
       }
     }
@@ -226,16 +226,16 @@ public:
   }
 
   void
-  getModelsInDirectory(bf::path& dir,
+  getModelsInDirectory(pcl_fs::path& dir,
                        std::string& rel_path_so_far,
                        std::vector<std::string>& relative_paths)
   {
-    for (const auto& dir_entry : bf::directory_iterator(dir)) {
+    for (const auto& dir_entry : pcl_fs::directory_iterator(dir)) {
       // check if its a directory, then get models in it
-      if (bf::is_directory(dir_entry)) {
+      if (pcl_fs::is_directory(dir_entry)) {
         std::string so_far =
             rel_path_so_far + (dir_entry.path().filename()).string() + '/';
-        bf::path curr_path = dir_entry.path();
+        pcl_fs::path curr_path = dir_entry.path();
 
         if (isleafDirectory(curr_path)) {
           std::string path = rel_path_so_far + (dir_entry.path().filename()).string();
@@ -262,7 +262,7 @@ public:
     // get models in directory
     std::vector<std::string> files;
     std::string start = "";
-    bf::path dir = path_;
+    pcl_fs::path dir = path_;
     getModelsInDirectory(dir, start, files);
 
     models_.reset(new std::vector<ModelT>);
