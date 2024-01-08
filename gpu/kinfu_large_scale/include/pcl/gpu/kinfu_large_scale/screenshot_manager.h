@@ -48,8 +48,14 @@
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/containers/kernel_containers.h>
 #include <pcl/gpu/kinfu_large_scale/pixel_rgb.h> 
+
+#if (__cplusplus >= 201703L)
+#include <filesystem>
+namespace pcl_fs = std::filesystem;
+#else
 #include <boost/filesystem.hpp> 
-//#include <boost/graph/buffer_concepts.hpp>
+namespace pcl_fs = boost::filesystem;
+#endif
 
 #include <pcl/io/png_io.h>
 
