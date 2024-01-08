@@ -170,8 +170,7 @@ PCDVideoPlayer::selectFolderButtonPressed()
   pcl_fs::directory_iterator end_itr;
 
   if (pcl_fs::is_directory(dir_.toStdString())) {
-    for (pcl_fs::directory_iterator itr(dir_.toStdString()); itr != end_itr;
-         ++itr) {
+    for (pcl_fs::directory_iterator itr(dir_.toStdString()); itr != end_itr; ++itr) {
       std::string ext = itr->path().extension().string();
       if (ext == ".pcd") {
         pcd_files_.push_back(itr->path().string());

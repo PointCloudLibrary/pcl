@@ -36,7 +36,6 @@
  *  Author: Raphael Favier, Technical University Eindhoven, (r.mysurname <aT> tue.nl)
  */
 
-
 #if (__cplusplus >= 201703L)
 #include <filesystem>
 namespace pcl_fs = std::filesystem;

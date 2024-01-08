@@ -15,8 +15,6 @@
 #include <vtkRendererCollection.h>
 #include <vtkRenderWindow.h>
 
-#include <boost/signals2/connection.hpp> // for boost::signals2::connection
-
 void
 displayPlanarRegions(
     std::vector<pcl::PlanarRegion<PointT>,

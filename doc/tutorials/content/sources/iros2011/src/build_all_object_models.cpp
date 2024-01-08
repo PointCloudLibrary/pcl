@@ -15,7 +15,6 @@ namespace pcl_fs = std::filesystem;
 namespace pcl_fs = boost::filesystem;
 #endif
 
-
 #include <boost/algorithm/string.hpp> // for split, is_any_of
 
 inline void
