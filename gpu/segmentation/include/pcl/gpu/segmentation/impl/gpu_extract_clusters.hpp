@@ -39,12 +39,13 @@
 #pragma once
 #include <pcl/common/copy_point.h>
 #include <pcl/gpu/segmentation/gpu_extract_clusters.h>
+#include <pcl/pcl_exports.h>
 
 namespace pcl {
 namespace detail {
 
 //// Downloads only the neccssary cluster indices from the device to the host.
-void
+PCL_EXPORTS void
 economical_download(const pcl::gpu::NeighborIndices& source_indices,
                     const pcl::Indices& buffer_indices,
                     std::size_t buffer_size,
