@@ -41,11 +41,12 @@
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/common/distances.h>
+#include <pcl/pcl_exports.h>
 
 namespace pcl
 {
   namespace internal {
-    int optimizeModelCoefficientsCone (Eigen::VectorXf& coeff, const Eigen::ArrayXf& pts_x, const Eigen::ArrayXf& pts_y, const Eigen::ArrayXf& pts_z);
+    PCL_EXPORTS int optimizeModelCoefficientsCone (Eigen::VectorXf& coeff, const Eigen::ArrayXf& pts_x, const Eigen::ArrayXf& pts_y, const Eigen::ArrayXf& pts_z);
   } // namespace internal
 
   /** \brief @b SampleConsensusModelCone defines a model for 3D cone segmentation.

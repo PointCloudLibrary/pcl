@@ -38,5 +38,6 @@
 #pragma once
 
 #include <vtkRenderWindowInteractor.h>
+#include <pcl/pcl_exports.h>
 
-vtkRenderWindowInteractor* vtkRenderWindowInteractorFixNew ();
+PCL_EXPORTS vtkRenderWindowInteractor* vtkRenderWindowInteractorFixNew ();
