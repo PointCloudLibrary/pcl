@@ -8,7 +8,11 @@
 find_package(PkgConfig QUIET)
 pkg_check_modules(PC_SPHINX sphinx-build)
 
-find_package(PythonInterp)
+if(CMAKE_VERSION VERSION_LESS 3.12.0)
+  find_package(PythonInterp)
+else()
+  find_package(Python)
+endif()
 
 if(PYTHONINTERP_FOUND)
   get_filename_component(PYTHON_DIR "${PYTHON_EXECUTABLE}" PATH)
