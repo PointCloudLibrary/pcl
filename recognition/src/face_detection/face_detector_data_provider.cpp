@@ -50,7 +50,7 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
 {
   std::string start;
   std::string ext = std::string ("pcd");
-  pcl_fs::path dir = data_dir;
+  bf::path dir = data_dir;
 
   std::vector < std::string > files;
   getFilesInDirectory (dir, start, files, ext);

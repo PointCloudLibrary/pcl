@@ -12,18 +12,13 @@
 #include <pcl/recognition/face_detection/face_common.h>
 
 #include <boost/algorithm/string.hpp>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp>
-namespace pcl_fs = boost::filesystem;
-#endif
+#include <boost/filesystem/operations.hpp>
 
 #include <fstream>
 #include <string>
 
+
+namespace bf = boost::filesystem;
 
 namespace pcl
 {
@@ -40,15 +35,15 @@ namespace pcl
         int patches_per_image_;
         int min_images_per_bin_;
 
-        void getFilesInDirectory(pcl_fs::path & dir, std::string & rel_path_so_far, std::vector<std::string> & relative_paths, std::string & ext)
+        void getFilesInDirectory(bf::path & dir, std::string & rel_path_so_far, std::vector<std::string> & relative_paths, std::string & ext)
         {
-          for (const auto& dir_entry : pcl_fs::directory_iterator(dir))
+          for (const auto& dir_entry : bf::directory_iterator(dir))
           {
             //check if its a directory, then get models in it
-            if (pcl_fs::is_directory (dir_entry))
+            if (bf::is_directory (dir_entry))
             {
               std::string so_far = rel_path_so_far + (dir_entry.path ().filename ()).string () + "/";
-              pcl_fs::path curr_path = dir_entry.path ();
+              bf::path curr_path = dir_entry.path ();
               getFilesInDirectory (curr_path, so_far, relative_paths, ext);
             } else
             {
