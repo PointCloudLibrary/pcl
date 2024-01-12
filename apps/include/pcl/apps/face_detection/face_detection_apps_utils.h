@@ -7,6 +7,14 @@
 
 #pragma once
 
+#if (__cplusplus >= 201703L)
+#include <filesystem>
+namespace pcl_fs = std::filesystem;
+#else
+#include <boost/filesystem.hpp>
+namespace pcl_fs = boost::filesystem;
+#endif
+
 namespace face_detection_apps_utils {
 
 inline bool
