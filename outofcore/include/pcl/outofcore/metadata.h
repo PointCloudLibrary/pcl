@@ -38,14 +38,7 @@
 
 #pragma once
 
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-namespace pcl_fs = std::filesystem;
-#else
 #include <boost/filesystem.hpp>
-namespace pcl_fs = boost::filesystem;
-#endif
-
 #include <vector>
 #include <ostream>
 
@@ -79,7 +72,7 @@ namespace pcl
       /** \brief Method which should read and parse metadata and store
        *  it in variables that have public getters and setters*/
       virtual int
-      loadMetadataFromDisk (const pcl_fs::path& path_to_metadata) = 0;
+      loadMetadataFromDisk (const boost::filesystem::path& path_to_metadata) = 0;
       
       /** \brief Should write the same ascii metadata that is saved on
        *   disk, or a human readable format of the metadata in case a binary format is being used */

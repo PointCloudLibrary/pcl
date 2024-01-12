@@ -129,7 +129,7 @@ namespace pcl
     
     ////////////////////////////////////////////////////////////////////////////////
 
-    const pcl_fs::path&
+    const boost::filesystem::path&
     OutofcoreOctreeNodeMetadata::getDirectoryPathname () const
     {
       return (directory_);
@@ -137,14 +137,14 @@ namespace pcl
 
     ////////////////////////////////////////////////////////////////////////////////
     void
-    OutofcoreOctreeNodeMetadata::setDirectoryPathname (const pcl_fs::path& directory_pathname)
+    OutofcoreOctreeNodeMetadata::setDirectoryPathname (const boost::filesystem::path& directory_pathname)
     {
       directory_ = directory_pathname;
     }
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    const pcl_fs::path&
+    const boost::filesystem::path&
     OutofcoreOctreeNodeMetadata::getPCDFilename () const
     {
       return (binary_point_filename_);
@@ -153,7 +153,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     void 
-    OutofcoreOctreeNodeMetadata::setPCDFilename (const pcl_fs::path& point_filename)
+    OutofcoreOctreeNodeMetadata::setPCDFilename (const boost::filesystem::path& point_filename)
     {
       binary_point_filename_ = point_filename;
     }
@@ -177,7 +177,7 @@ namespace pcl
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    const pcl_fs::path&
+    const boost::filesystem::path&
     OutofcoreOctreeNodeMetadata::getMetadataFilename () const
     {
       return (metadata_filename_);
@@ -186,7 +186,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     void 
-    OutofcoreOctreeNodeMetadata::setMetadataFilename (const pcl_fs::path& path_to_metadata)
+    OutofcoreOctreeNodeMetadata::setMetadataFilename (const boost::filesystem::path& path_to_metadata)
     {
       directory_ = path_to_metadata.parent_path ();
       metadata_filename_ = path_to_metadata;
@@ -249,12 +249,12 @@ namespace pcl
       }
       
       //if the file to load doesn't exist, return failure
-      if (!pcl_fs::exists (metadata_filename_))
+      if (!boost::filesystem::exists (metadata_filename_))
       {
         PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeNodeMetadata] Can not find index metadata at %s.\n", metadata_filename_.c_str ());
         return (0);
       }
-      if(pcl_fs::is_directory (metadata_filename_))
+      if(boost::filesystem::is_directory (metadata_filename_))
       {
         PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeNodeMetadata] Got a directory, but no oct_idx metadata?\n");
         return (0);
@@ -262,7 +262,7 @@ namespace pcl
 
       //load CJSON
       std::vector<char> idx_input;
-      std::uintmax_t len = pcl_fs::file_size (metadata_filename_);
+      std::uintmax_t len = boost::filesystem::file_size (metadata_filename_);
       idx_input.resize (len + 1);
       
       std::ifstream f (metadata_filename_.string ().c_str (), std::ios::in);
@@ -322,7 +322,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     int 
-    OutofcoreOctreeNodeMetadata::loadMetadataFromDisk (const pcl_fs::path& path_to_metadata)
+    OutofcoreOctreeNodeMetadata::loadMetadataFromDisk (const boost::filesystem::path& path_to_metadata)
     {
       this->setMetadataFilename (path_to_metadata);
       this->setDirectoryPathname (path_to_metadata.parent_path ());

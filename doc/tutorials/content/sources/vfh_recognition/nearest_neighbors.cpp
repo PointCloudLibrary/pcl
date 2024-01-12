@@ -10,15 +10,7 @@
 #include <limits>
 #include <flann/flann.h>
 #include <flann/io/hdf5.h>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-namespace pcl_fs = std::filesystem;
-#else
 #include <boost/filesystem.hpp>
-namespace pcl_fs = boost::filesystem;
-#endif
-
 #include <boost/algorithm/string/replace.hpp> // for replace_last
 typedef std::pair<std::string, std::vector<float> > vfh_model;
 
@@ -27,7 +19,7 @@ typedef std::pair<std::string, std::vector<float> > vfh_model;
   * \param vfh the resultant VFH model
   */
 bool
-loadHist (const pcl_fs::path &path, vfh_model &vfh)
+loadHist (const boost::filesystem::path &path, vfh_model &vfh)
 {
   int vfh_idx;
   // Load the file as a PCD
@@ -160,7 +152,7 @@ main (int argc, char** argv)
   flann::Matrix<float> k_distances;
   flann::Matrix<float> data;
   // Check if the data has already been saved to disk
-  if (!pcl_fs::exists ("training_data.h5") || !pcl_fs::exists ("training_data.list"))
+  if (!boost::filesystem::exists ("training_data.h5") || !boost::filesystem::exists ("training_data.list"))
   {
     pcl::console::print_error ("Could not find training data models files %s and %s!\n", 
         training_data_h5_file_name.c_str (), training_data_list_file_name.c_str ());
@@ -175,7 +167,7 @@ main (int argc, char** argv)
   }
 
   // Check if the tree index has already been saved to disk
-  if (!pcl_fs::exists (kdtree_idx_file_name))
+  if (!boost::filesystem::exists (kdtree_idx_file_name))
   {
     pcl::console::print_error ("Could not find kd-tree index in file %s!", kdtree_idx_file_name.c_str ());
     return (-1);

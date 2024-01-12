@@ -66,7 +66,7 @@ namespace pcl
 
         /** \brief empty constructor (with a path parameter?)
           */
-        OutofcoreOctreeRamContainer (const pcl_fs::path&) : container_ () { }
+        OutofcoreOctreeRamContainer (const boost::filesystem::path&) : container_ () { }
         
         /** \brief inserts count number of points into container; uses the container_ type's insert function
           * \param[in] start - address of first point in array
@@ -141,7 +141,7 @@ namespace pcl
           *  \param path The path/filename destination of the ascii xyz data
           */
         void
-        convertToXYZ (const pcl_fs::path &path);
+        convertToXYZ (const boost::filesystem::path &path);
 
         inline PointT
         operator[] (std::uint64_t index) const

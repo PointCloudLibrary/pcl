@@ -2,15 +2,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/console/print.h>
 #include <pcl/io/pcd_io.h>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-namespace pcl_fs = std::filesystem;
-#else
 #include <boost/filesystem.hpp>
-namespace pcl_fs = boost::filesystem;
-#endif
-
 #include <flann/flann.h>
 #include <flann/io/hdf5.h>
 #include <fstream>
@@ -23,7 +15,7 @@ typedef std::pair<std::string, std::vector<float> > vfh_model;
   * \param vfh the resultant VFH model
   */
 bool
-loadHist (const pcl_fs::path &path, vfh_model &vfh)
+loadHist (const boost::filesystem::path &path, vfh_model &vfh)
 {
   int vfh_idx;
   // Load the file as a PCD
@@ -71,22 +63,22 @@ loadHist (const pcl_fs::path &path, vfh_model &vfh)
   * \param models the resultant vector of histogram models
   */
 void
-loadFeatureModels (const pcl_fs::path &base_dir, const std::string &extension, 
+loadFeatureModels (const boost::filesystem::path &base_dir, const std::string &extension, 
                    std::vector<vfh_model> &models)
 {
-  if (!pcl_fs::exists (base_dir) && !pcl_fs::is_directory (base_dir))
+  if (!boost::filesystem::exists (base_dir) && !boost::filesystem::is_directory (base_dir))
     return;
 
-  for (pcl_fs::directory_iterator it (base_dir); it != pcl_fs::directory_iterator (); ++it)
+  for (boost::filesystem::directory_iterator it (base_dir); it != boost::filesystem::directory_iterator (); ++it)
   {
-    if (pcl_fs::is_directory (it->status ()))
+    if (boost::filesystem::is_directory (it->status ()))
     {
       std::stringstream ss;
       ss << it->path ();
       pcl::console::print_highlight ("Loading %s (%lu models loaded so far).\n", ss.str ().c_str (), (unsigned long)models.size ());
       loadFeatureModels (it->path (), extension, models);
     }
-    if (pcl_fs::is_regular_file (it->status ()) && it->path ().extension ().string () == extension)
+    if (boost::filesystem::is_regular_file (it->status ()) && it->path ().extension ().string () == extension)
     {
       vfh_model m;
       if (loadHist (base_dir / it->path ().filename (), m))

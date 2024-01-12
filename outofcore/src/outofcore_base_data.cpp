@@ -63,7 +63,7 @@ namespace pcl
       
     ////////////////////////////////////////////////////////////////////////////////
 
-    OutofcoreOctreeBaseMetadata::OutofcoreOctreeBaseMetadata (const pcl_fs::path& metadata_filename) 
+    OutofcoreOctreeBaseMetadata::OutofcoreOctreeBaseMetadata (const boost::filesystem::path& metadata_filename) 
       : metadata_filename_ (metadata_filename)
       , outofcore_version_ ()
       , point_type_ ("urp")
@@ -112,7 +112,7 @@ namespace pcl
       
     ////////////////////////////////////////////////////////////////////////////////
 
-    pcl_fs::path
+    boost::filesystem::path
     OutofcoreOctreeBaseMetadata::getMetadataFilename () const
     {
       return (metadata_filename_);
@@ -121,7 +121,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     void
-    OutofcoreOctreeBaseMetadata::setMetadataFilename (const pcl_fs::path& path_to_metadata)
+    OutofcoreOctreeBaseMetadata::setMetadataFilename (const boost::filesystem::path& path_to_metadata)
     {
       metadata_filename_ = path_to_metadata;
     }
@@ -173,7 +173,7 @@ namespace pcl
     {
       // Open JSON
       std::vector<char> idx_input;
-      std::uintmax_t len = pcl_fs::file_size (metadata_filename_);
+      std::uintmax_t len = boost::filesystem::file_size (metadata_filename_);
       idx_input.resize (len + 1);
 
       std::ifstream f (metadata_filename_.string ().c_str (), std::ios::in);
@@ -237,7 +237,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     int
-    OutofcoreOctreeBaseMetadata::loadMetadataFromDisk (const pcl_fs::path& path_to_metadata)
+    OutofcoreOctreeBaseMetadata::loadMetadataFromDisk (const boost::filesystem::path& path_to_metadata)
     {
       this->setMetadataFilename (path_to_metadata);
       return (this->loadMetadataFromDisk ());

@@ -103,7 +103,7 @@ OutofcoreCloud::pcdReaderThread ()
 
 // Operators
 // -----------------------------------------------------------------------------
-OutofcoreCloud::OutofcoreCloud (std::string name, pcl_fs::path& tree_root) :
+OutofcoreCloud::OutofcoreCloud (std::string name, boost::filesystem::path& tree_root) :
     Object (name)
 {
 
