@@ -55,7 +55,7 @@ int main (int, char** argv)
   Eigen::Vector3d max (10.0, 10.0, 10.0);
 
   //specify the destination of the tree
-  pcl_fs::path file_location ("tree/tree.oct_idx");
+  boost::filesystem::path file_location ("tree/tree.oct_idx");
   
   //create the tree with bounding box that will encompass the region of points in the PCD files
   OctreeDisk* octree;

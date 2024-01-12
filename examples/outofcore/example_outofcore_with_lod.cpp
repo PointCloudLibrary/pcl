@@ -54,7 +54,7 @@ int main (int, char** argv)
   int depth = 3;
   Eigen::Vector3d min (-10.0, -10.0, -10.0);
   Eigen::Vector3d max (10.0, 10.0, 10.0);
-  pcl_fs::path file_location ("tree/tree.oct_idx");
+  boost::filesystem::path file_location ("tree/tree.oct_idx");
   
   OctreeDisk* octree;
   
