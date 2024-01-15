@@ -173,6 +173,7 @@ macro(PCL_ADD_INCLUDES _component _subdir)
           COMPONENT pcl_${_component})
 endmacro()
 
+
 ###############################################################################
 # Add a library target.
 # _name The library name.
@@ -192,32 +193,35 @@ function(PCL_ADD_LIBRARY _name)
     message(FATAL_ERROR "PCL_ADD_LIBRARY requires parameter COMPONENT.")
   endif()
 
+  PCL_ADD_VERSION_INFO(${_name})
+
   if(NOT ARGS_SOURCES)
     add_library(${_name} INTERFACE)
   else()
     add_library(${_name} ${PCL_LIB_TYPE} ${ARGS_SOURCES})
+
+    target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
+
+    target_link_libraries(${_name} Threads::Threads)
+
+    if(TARGET OpenMP::OpenMP_CXX)
+        target_link_libraries(${_name} OpenMP::OpenMP_CXX)
+    endif()
+
+    if((UNIX AND NOT ANDROID) OR MINGW)
+        target_link_libraries(${_name} m ${ATOMIC_LIBRARY})
+    endif()
+
+    if(MINGW)
+        target_link_libraries(${_name} gomp)
+    endif()
+
+    if(MSVC)
+        target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
+    endif()
+
   endif()
   
-  PCL_ADD_VERSION_INFO(${_name})
-  target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
-
-  target_link_libraries(${_name} Threads::Threads)
-  if(TARGET OpenMP::OpenMP_CXX)
-    target_link_libraries(${_name} OpenMP::OpenMP_CXX)
-  endif()
-
-  if((UNIX AND NOT ANDROID) OR MINGW)
-    target_link_libraries(${_name} m ${ATOMIC_LIBRARY})
-  endif()
-
-  if(MINGW)
-    target_link_libraries(${_name} gomp)
-  endif()
-
-  if(MSVC)
-    target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
-  endif()
-
   set_target_properties(${_name} PROPERTIES
     VERSION ${PCL_VERSION}
     SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
