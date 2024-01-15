@@ -220,14 +220,14 @@ function(PCL_ADD_LIBRARY _name)
         target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
     endif()
 
-  endif()
-  
-  set_target_properties(${_name} PROPERTIES
+    set_target_properties(${_name} PROPERTIES
     VERSION ${PCL_VERSION}
     SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
     DEFINE_SYMBOL "PCLAPI_EXPORTS")
-  set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
-
+    
+    set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
+  endif()
+  
   install(TARGETS ${_name}
           RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
           LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
