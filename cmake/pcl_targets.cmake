@@ -193,12 +193,12 @@ function(PCL_ADD_LIBRARY _name)
     message(FATAL_ERROR "PCL_ADD_LIBRARY requires parameter COMPONENT.")
   endif()
 
-  PCL_ADD_VERSION_INFO(${_name})
-
   if(NOT ARGS_SOURCES)
     add_library(${_name} INTERFACE)
   else()
     add_library(${_name} ${PCL_LIB_TYPE} ${ARGS_SOURCES})
+
+    PCL_ADD_VERSION_INFO(${_name})
 
     target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
 
