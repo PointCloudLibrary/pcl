@@ -54,7 +54,6 @@ stages:
               CC: gcc
               CXX: g++
               BUILD_GPU: ON
-              CMAKE_ARGS: '-DCMAKE_CXX_STANDARD=17'
         container: $[ variables['CONTAINER'] ]
         timeoutInMinutes: 0
         variables:
