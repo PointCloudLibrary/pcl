@@ -47,7 +47,14 @@
 #include <pcl/exceptions.h>
 #include <iostream>
 #include <thread>
+
+#if (__cplusplus >= 201703L)
+#include <filesystem> // for exists
+namespace pcl_fs = std::filesystem;
+#else
 #include <boost/filesystem.hpp> // for exists
+namespace pcl_fs = boost::filesystem;
+#endif
 
 using namespace std::chrono_literals;
 
@@ -303,7 +310,7 @@ pcl::OpenNIGrabber::setupDevice (const std::string& device_id, const Mode& depth
 
   try
   {
-    if (boost::filesystem::exists (device_id))
+    if (pcl_fs::exists (device_id))
     {
       device_ = driver.createVirtualDevice (device_id, true, true);
     }

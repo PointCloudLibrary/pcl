@@ -13,9 +13,13 @@
 #include <pcl/apps/face_detection/face_detection_apps_utils.h>
 // clang-format on
 
+#if (__cplusplus >= 201703L)
+#include <filesystem>
+namespace pcl_fs = std::filesystem;
+#else
 #include <boost/filesystem.hpp>
-
-namespace bf = boost::filesystem;
+namespace pcl_fs = boost::filesystem;
+#endif
 
 bool SHOW_GT = false;
 bool VIDEO = false;
@@ -222,7 +226,7 @@ main(int argc, char** argv)
     // recognize all files in directory...
     std::string start;
     std::string ext = std::string("pcd");
-    bf::path dir = test_directory;
+    pcl_fs::path dir = test_directory;
 
     std::vector<std::string> files;
     face_detection_apps_utils::getFilesInDirectory(dir, start, files, ext);

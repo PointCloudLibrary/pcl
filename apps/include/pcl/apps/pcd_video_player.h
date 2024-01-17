@@ -42,7 +42,13 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
+#if (__cplusplus >= 201703L)
+#include <filesystem>
+namespace pcl_fs = std::filesystem;
+#else
 #include <boost/filesystem.hpp>
+namespace pcl_fs = boost::filesystem;
+#endif
 
 #include <QMainWindow>
 #include <QMutex>
@@ -100,7 +106,7 @@ protected:
   QString dir_;
 
   std::vector<std::string> pcd_files_;
-  std::vector<boost::filesystem::path> pcd_paths_;
+  std::vector<pcl_fs::path> pcd_paths_;
 
   /** \brief The current displayed frame */
   unsigned int current_frame_;

@@ -50,7 +50,13 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/ModelCoefficients.h>
 
+#if (__cplusplus >= 201703L)
+#include <filesystem> // for directory_iterator
+namespace pcl_fs = std::filesystem;
+#else
 #include <boost/filesystem.hpp> // for directory_iterator
+namespace pcl_fs = boost::filesystem;
+#endif
 
 #include <mutex>
 
@@ -541,13 +547,13 @@ main(int argc, char** argv)
 
   // Get list of stereo files
   std::vector<std::string> left_images;
-  boost::filesystem::directory_iterator end_itr;
-  for (boost::filesystem::directory_iterator itr(argv[1]); itr != end_itr; ++itr) {
+  pcl_fs::directory_iterator end_itr;
+  for (pcl_fs::directory_iterator itr(argv[1]); itr != end_itr; ++itr) {
     left_images.push_back(itr->path().string());
   }
   sort(left_images.begin(), left_images.end());
   std::vector<std::string> right_images;
-  for (boost::filesystem::directory_iterator itr(argv[2]); itr != end_itr; ++itr) {
+  for (pcl_fs::directory_iterator itr(argv[2]); itr != end_itr; ++itr) {
     right_images.push_back(itr->path().string());
   }
   sort(right_images.begin(), right_images.end());

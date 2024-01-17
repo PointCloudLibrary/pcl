@@ -41,7 +41,15 @@
 #include <pcl/console/print.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/image_viewer.h>
+
+#if (__cplusplus >= 201703L)
+#include <filesystem> // for exists, extension, ...
+namespace pcl_fs = std::filesystem;
+#else
 #include <boost/filesystem.hpp> // for exists, extension, ...
+namespace pcl_fs = boost::filesystem;
+#endif
+
 #include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 #include <mutex>
 #include <thread>
@@ -179,7 +187,7 @@ main (int argc, char** argv)
   std::string path;
   pcl::console::parse_argument (argc, argv, "-file", path);
   std::cout << "path: " << path << std::endl;
-  if (!path.empty() && boost::filesystem::exists (path))
+  if (!path.empty() && pcl_fs::exists (path))
   {
     grabber.reset (new pcl::PCDGrabber<pcl::PointXYZRGBA> (path, frames_per_second, repeat));
   }
@@ -188,10 +196,10 @@ main (int argc, char** argv)
     std::vector<std::string> pcd_files;
     pcl::console::parse_argument (argc, argv, "-dir", path);
     std::cout << "path: " << path << std::endl;
-    if (!path.empty() && boost::filesystem::exists (path))
+    if (!path.empty() && pcl_fs::exists (path))
     {
-      boost::filesystem::directory_iterator end_itr;
-      for (boost::filesystem::directory_iterator itr (path); itr != end_itr; ++itr)
+      pcl_fs::directory_iterator end_itr;
+      for (pcl_fs::directory_iterator itr (path); itr != end_itr; ++itr)
       {
         if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (itr->path ().extension ().string ()) == ".PCD" )
         {

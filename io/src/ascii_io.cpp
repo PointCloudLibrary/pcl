@@ -40,7 +40,15 @@
 #include <pcl/io/ascii_io.h>
 #include <istream>
 #include <fstream>
+
+#if (__cplusplus >= 201703L)
+#include <filesystem>
+namespace pcl_fs = std::filesystem;
+#else
 #include <boost/filesystem.hpp>
+namespace pcl_fs = boost::filesystem;
+#endif
+
 #include <boost/lexical_cast.hpp> // for lexical_cast
 #include <boost/algorithm/string.hpp> // for split
 #include <cstdint>
@@ -88,9 +96,9 @@ pcl::ASCIIReader::readHeader (const std::string& file_name,
 {
   pcl::utils::ignore(offset); //offset is not used for ascii file implementation
 	
-  boost::filesystem::path fpath = file_name;
+  pcl_fs::path fpath = file_name;
 
-  if (!boost::filesystem::exists (fpath))
+  if (!pcl_fs::exists (fpath))
   {
     PCL_ERROR ("[%s] File %s does not exist.\n", name_.c_str (), file_name.c_str ());
     return (-1);

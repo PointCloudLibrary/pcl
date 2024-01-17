@@ -50,7 +50,14 @@
 #include <pcl/console/print.h>
 #include <pcl/exceptions.h>
 #include <iostream>
+
+#if (__cplusplus >= 201703L)
+#include <filesystem> // for exists
+namespace pcl_fs = std::filesystem;
+#else
 #include <boost/filesystem.hpp> // for exists
+namespace pcl_fs = boost::filesystem;
+#endif
 
 using namespace pcl::io::openni2;
 
@@ -292,7 +299,7 @@ pcl::io::OpenNI2Grabber::setupDevice (const std::string& device_id, const Mode& 
 
   try
   {
-    if (boost::filesystem::exists (device_id))
+    if (pcl_fs::exists (device_id))
     {
       device_ = deviceManager->getFileDevice (device_id);	// Treat as file path
     }

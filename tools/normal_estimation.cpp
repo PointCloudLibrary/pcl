@@ -45,7 +45,15 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
+
+#if (__cplusplus >= 201703L)
+#include <filesystem> // for path, exists, ...
+namespace pcl_fs = std::filesystem;
+#else
 #include <boost/filesystem.hpp> // for path, exists, ...
+namespace pcl_fs = boost::filesystem;
+#endif
+
 #include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 
 using namespace pcl;
@@ -150,7 +158,7 @@ batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir
     compute (cloud, output, k, radius);
 
     // Prepare output file name
-    std::string filename = boost::filesystem::path(pcd_files[i]).filename().string();
+    std::string filename = pcl_fs::path(pcd_files[i]).filename().string();
     
     // Save into the second file
     const std::string filepath = output_dir + '/' + filename;
@@ -222,11 +230,11 @@ main (int argc, char** argv)
   }
   else
   {
-    if (!input_dir.empty() && boost::filesystem::exists (input_dir))
+    if (!input_dir.empty() && pcl_fs::exists (input_dir))
     {
       std::vector<std::string> pcd_files;
-      boost::filesystem::directory_iterator end_itr;
-      for (boost::filesystem::directory_iterator itr (input_dir); itr != end_itr; ++itr)
+      pcl_fs::directory_iterator end_itr;
+      for (pcl_fs::directory_iterator itr (input_dir); itr != end_itr; ++itr)
       {
         // Only add PCD files
         if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (itr->path ().extension ().string ()) == ".PCD" )

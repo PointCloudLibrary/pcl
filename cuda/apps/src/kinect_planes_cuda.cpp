@@ -61,7 +61,13 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
+#if (__cplusplus >= 201703L)
+#include <filesystem>
+namespace pcl_fs = std::filesystem;
+#else
 #include <boost/filesystem.hpp>
+namespace pcl_fs = boost::filesystem;
+#endif
 
 #include <functional>
 #include <iostream>
@@ -273,7 +279,7 @@ class MultiRansac
       //bool repeat = false;
 
       //std::string path = "./pcl_logo.pcd";
-      //if (path.empty() || !boost::filesystem::exists (path))
+      //if (path.empty() || !pcl_fs::exists (path))
       //{
       //  std::cerr << "did not find file" << std::endl;
       //}

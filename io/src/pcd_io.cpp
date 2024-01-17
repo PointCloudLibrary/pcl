@@ -51,7 +51,14 @@
 
 #include <cstring>
 #include <cerrno>
+
+#if (__cplusplus >= 201703L)
+#include <filesystem> // for permissions
+namespace pcl_fs = std::filesystem;
+#else
 #include <boost/filesystem.hpp> // for permissions
+namespace pcl_fs = boost::filesystem;
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -69,10 +76,13 @@ pcl::PCDWriter::setLockingPermissions (const std::string &file_name,
   else
     PCL_DEBUG ("[pcl::PCDWriter::setLockingPermissions] File %s could not be locked!\n", file_name.c_str ());
 
-  namespace fs = boost::filesystem;
   try
   {
-    fs::permissions (fs::path (file_name), fs::add_perms | fs::set_gid_on_exe);
+#if (__cplusplus >= 201703L)
+    pcl_fs::permissions (pcl_fs::path (file_name), pcl_fs::perms::set_gid, pcl_fs::perm_options::add);
+#else
+    pcl_fs::permissions (pcl_fs::path (file_name), pcl_fs::add_perms | pcl_fs::set_gid_on_exe);
+#endif
   }
   catch (const std::exception &e)
   {
@@ -90,10 +100,13 @@ pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
   pcl::utils::ignore(file_name, lock);
 #ifndef _WIN32
 #ifndef NO_MANDATORY_LOCKING
-  namespace fs = boost::filesystem;
   try
   {
-    fs::permissions (fs::path (file_name), fs::remove_perms | fs::set_gid_on_exe);
+#if (__cplusplus >= 201703L)
+    pcl_fs::permissions (pcl_fs::path (file_name), pcl_fs::perms::set_gid, pcl_fs::perm_options::remove);
+#else
+    pcl_fs::permissions (pcl_fs::path (file_name), pcl_fs::remove_perms | pcl_fs::set_gid_on_exe);
+#endif
   }
   catch (const std::exception &e)
   {
@@ -677,7 +690,7 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
     return (-1);
   }
 
-  if (!boost::filesystem::exists (file_name))
+  if (!pcl_fs::exists (file_name))
   {
     PCL_ERROR ("[pcl::PCDReader::read] Could not find file '%s'.\n", file_name.c_str ());
     return (-1);

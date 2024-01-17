@@ -64,7 +64,14 @@
 #include <vtkMath.h>
 
 #include <boost/algorithm/string.hpp>  // for boost::is_any_of, boost::split, boost::token_compress_on, boost::trim
+
+#if (__cplusplus >= 201703L)
+#include <filesystem>  // for std::filesystem::create_directories, std::filesystem::exists, std::filesystem::path, std::filesystem::path::extension
+namespace pcl_fs = std::filesystem;
+#else
 #include <boost/filesystem.hpp>  // for boost::filesystem::create_directories, boost::filesystem::exists, boost::filesystem::path, boost::filesystem::path::extension
+namespace pcl_fs = boost::filesystem;
+#endif
 
 using namespace pcl;
 
@@ -87,7 +94,7 @@ struct ScanParameters
 vtkPolyData*
 loadDataSet (const char* file_name)
 {
-  std::string extension = boost::filesystem::path (file_name).extension ().string ();
+  std::string extension = pcl_fs::path (file_name).extension ().string ();
   if (extension == ".ply")
   {
     vtkPLYReader* reader = vtkPLYReader::New ();
@@ -413,10 +420,10 @@ main (int argc, char** argv)
 
     const std::string output_dir = st.at (st.size () - 1) + "_output";
 
-    boost::filesystem::path outpath (output_dir);
-    if (!boost::filesystem::exists (outpath))
+    pcl_fs::path outpath (output_dir);
+    if (!pcl_fs::exists (outpath))
     {
-      if (!boost::filesystem::create_directories (outpath))
+      if (!pcl_fs::create_directories (outpath))
       {
         PCL_ERROR ("Error creating directory %s.\n", output_dir.c_str ());
         return (-1);

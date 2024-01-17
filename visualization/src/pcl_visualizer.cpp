@@ -102,7 +102,15 @@
 #else
 #include <boost/uuid/sha1.hpp>
 #endif
+
+#if (__cplusplus >= 201703L)
+#include <filesystem>
+namespace pcl_fs = std::filesystem;
+#else
 #include <boost/filesystem.hpp>
+namespace pcl_fs = boost::filesystem;
+#endif
+
 #include <boost/algorithm/string.hpp> // for split
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/console/parse.h>
@@ -465,7 +473,7 @@ void pcl::visualization::PCLVisualizer::setupCamera (int argc, char **argv)
     std::string camera_file = getUniqueCameraFile (argc, argv);
     if (!camera_file.empty ())
     {
-      if (boost::filesystem::exists (camera_file) && style_->loadCameraParameters (camera_file))
+      if (pcl_fs::exists (camera_file) && style_->loadCameraParameters (camera_file))
       {
         camera_file_loaded_ = true;
       }
@@ -4451,39 +4459,39 @@ pcl::visualization::PCLVisualizer::textureFromTexMaterial (const pcl::TexMateria
     return (-1);
   }
 
-  boost::filesystem::path full_path (tex_mat.tex_file.c_str ());
-  if (!boost::filesystem::exists (full_path))
+  pcl_fs::path full_path (tex_mat.tex_file.c_str ());
+  if (!pcl_fs::exists (full_path))
   {
-    boost::filesystem::path parent_dir = full_path.parent_path ();
+    pcl_fs::path parent_dir = full_path.parent_path ();
     std::string upper_filename = tex_mat.tex_file;
     boost::to_upper (upper_filename);
     std::string real_name;
 
     try
     {
-      if (!boost::filesystem::exists (parent_dir))
+      if (!pcl_fs::exists (parent_dir))
       {
         PCL_WARN ("[PCLVisualizer::textureFromTexMaterial] Parent directory '%s' doesn't exist!\n",
                    parent_dir.string ().c_str ());
         return (-1);
       }
 
-      if (!boost::filesystem::is_directory (parent_dir))
+      if (!pcl_fs::is_directory (parent_dir))
       {
         PCL_WARN ("[PCLVisualizer::textureFromTexMaterial] Parent '%s' is not a directory !\n",
                    parent_dir.string ().c_str ());
         return (-1);
       }
 
-      using paths_vector = std::vector<boost::filesystem::path>;
+      using paths_vector = std::vector<pcl_fs::path>;
       paths_vector paths;
-      std::copy (boost::filesystem::directory_iterator (parent_dir),
-                 boost::filesystem::directory_iterator (),
+      std::copy (pcl_fs::directory_iterator (parent_dir),
+                 pcl_fs::directory_iterator (),
                  back_inserter (paths));
 
       for (const auto& path : paths)
       {
-        if (boost::filesystem::is_regular_file (path))
+        if (pcl_fs::is_regular_file (path))
         {
           std::string name = path.string ();
           boost::to_upper (name);
@@ -4502,7 +4510,7 @@ pcl::visualization::PCLVisualizer::textureFromTexMaterial (const pcl::TexMateria
         return (-1);
       }
     }
-    catch (const boost::filesystem::filesystem_error& ex)
+    catch (const pcl_fs::filesystem_error& ex)
     {
 
       PCL_WARN ("[PCLVisualizer::textureFromTexMaterial] Error %s when looking for file %s\n!",
@@ -4577,10 +4585,10 @@ pcl::visualization::PCLVisualizer::getUniqueCameraFile (int argc, char **argv)
     // Calculate sha1 using canonical paths
     for (const int &p_file_index : p_file_indices)
     {
-      boost::filesystem::path path (argv[p_file_index]);
-      if (boost::filesystem::exists (path))
+      pcl_fs::path path (argv[p_file_index]);
+      if (pcl_fs::exists (path))
       {
-        path = boost::filesystem::canonical (path);
+        path = pcl_fs::canonical (path);
         const auto pathStr = path.string ();
         sha1.process_bytes (pathStr.c_str(), pathStr.size());
         valid = true;

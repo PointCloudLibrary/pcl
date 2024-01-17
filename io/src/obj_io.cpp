@@ -42,7 +42,15 @@
 #include <pcl/io/split.h>
 
 #include <boost/lexical_cast.hpp> // for lexical_cast
+
+#if (__cplusplus >= 201703L)
+#include <filesystem> // for exists
+namespace pcl_fs = std::filesystem;
+#else
 #include <boost/filesystem.hpp> // for exists
+namespace pcl_fs = boost::filesystem;
+#endif
+
 #include <boost/algorithm/string.hpp> // for trim
 
 pcl::MTLReader::MTLReader ()
@@ -152,7 +160,7 @@ pcl::MTLReader::read (const std::string& obj_file_name,
     return (-1);
   }
 
-  if (!boost::filesystem::exists (obj_file_name))
+  if (!pcl_fs::exists (obj_file_name))
   {
     PCL_ERROR ("[pcl::MTLReader::read] Could not find file '%s'!\n",
                obj_file_name.c_str ());
@@ -165,8 +173,8 @@ pcl::MTLReader::read (const std::string& obj_file_name,
     return (-1);
   }
 
-  boost::filesystem::path obj_file_path (obj_file_name.c_str ());
-  boost::filesystem::path mtl_file_path = obj_file_path.parent_path ();
+  pcl_fs::path obj_file_path (obj_file_name.c_str ());
+  pcl_fs::path mtl_file_path = obj_file_path.parent_path ();
   mtl_file_path /=  mtl_file_name;
   return (read (mtl_file_path.string ()));
 }
@@ -201,7 +209,7 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
 
   std::string line;
   std::vector<std::string> st;
-  boost::filesystem::path parent_path = mtl_file_path.c_str ();
+  pcl_fs::path parent_path = mtl_file_path.c_str ();
   parent_path = parent_path.parent_path ();
 
   try
@@ -322,7 +330,7 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
 
       if (st[0] == "map_Kd")
       {
-        boost::filesystem::path full_path = parent_path;
+        pcl_fs::path full_path = parent_path;
         full_path/= st.back ().c_str ();
         materials_.back ().tex_file = full_path.string ();
         continue;

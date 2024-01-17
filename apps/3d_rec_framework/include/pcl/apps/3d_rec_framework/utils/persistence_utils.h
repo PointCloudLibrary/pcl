@@ -1,7 +1,14 @@
 #include <pcl/io/pcd_io.h>
 
 #include <boost/algorithm/string.hpp>
+
+#if (__cplusplus >= 201703L)
+#include <filesystem>
+namespace pcl_fs = std::filesystem;
+#else
 #include <boost/filesystem.hpp>
+namespace pcl_fs = boost::filesystem;
+#endif
 
 #include <fstream>
 

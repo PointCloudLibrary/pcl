@@ -45,7 +45,13 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
+#if (__cplusplus >= 201703L)
+#include <filesystem>
+namespace pcl_fs = std::filesystem;
+#else
 #include <boost/filesystem.hpp>
+namespace pcl_fs = boost::filesystem;
+#endif
 
 #include <mutex>
 
@@ -75,7 +81,6 @@ using namespace std::chrono_literals;
 #endif
 
 using namespace pcl::console;
-using namespace boost::filesystem;
 
 template <typename PointType>
 class OpenNIGrabFrame {
@@ -222,7 +227,7 @@ public:
              bool paused,
              bool visualizer)
   {
-    boost::filesystem::path path(filename);
+    pcl_fs::path path(filename);
 
     if (filename.empty()) {
       dir_name_ = ".";
@@ -231,7 +236,7 @@ public:
     else {
       dir_name_ = path.parent_path().string();
 
-      if (!dir_name_.empty() && !boost::filesystem::exists(path.parent_path())) {
+      if (!dir_name_.empty() && !pcl_fs::exists(path.parent_path())) {
         std::cerr << "directory \"" << path.parent_path() << "\" does not exist!\n";
         exit(1);
       }
