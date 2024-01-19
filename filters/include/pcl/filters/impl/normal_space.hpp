@@ -82,9 +82,9 @@ pcl::NormalSpaceSampling<PointT, NormalT>::findBin (const float *normal)
 {
   // in the case where normal[0] == 1.0f, ix will be binsx_, which is out of range.
   // thus, use std::min to avoid this situation.
-  const auto ix = std::min (binsx_ - 1, static_cast<unsigned> (std::floor (0.5f * (binsx_) * (normal[0] + 1.f))));
-  const auto iy = std::min (binsy_ - 1, static_cast<unsigned> (std::floor (0.5f * (binsy_) * (normal[1] + 1.f))));
-  const auto iz = std::min (binsz_ - 1, static_cast<unsigned> (std::floor (0.5f * (binsz_) * (normal[2] + 1.f))));
+  const auto ix = std::min (binsx_ - 1, static_cast<unsigned> (std::max (0.0f, std::floor (0.5f * (binsx_) * (normal[0] + 1.f)))));
+  const auto iy = std::min (binsy_ - 1, static_cast<unsigned> (std::max (0.0f, std::floor (0.5f * (binsy_) * (normal[1] + 1.f)))));
+  const auto iz = std::min (binsz_ - 1, static_cast<unsigned> (std::max (0.0f, std::floor (0.5f * (binsz_) * (normal[2] + 1.f)))));
   return ix * (binsy_*binsz_) + iy * binsz_ + iz;
 }
 
