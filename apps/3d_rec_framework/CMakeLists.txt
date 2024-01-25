@@ -3,6 +3,10 @@ set(SUBSUBSYS_DESC "3D recognition framework")
 set(SUBSUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search recognition ml)
 set(SUBSUBSYS_EXT_DEPS vtk openni)
 
+if(NOT TARGET Boost::filesystem)
+  return()
+endif()
+
 # Default to not building for now
 if(${DEFAULT} STREQUAL "TRUE")
   set(DEFAULT FALSE)

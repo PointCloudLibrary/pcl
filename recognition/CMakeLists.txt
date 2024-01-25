@@ -1,15 +1,14 @@
 set(SUBSYS_NAME recognition)
 set(SUBSYS_DESC "Point cloud recognition library")
 set(SUBSYS_DEPS common io search kdtree octree features filters registration sample_consensus ml)
-set(SUBSYS_EXT_DEPS boost_filesystem)
+
+if(PCL_VERSION STRLESS "1.15.0" AND NOT TARGET Boost::filesystem)
+  return()
+endif()
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
-if(PCL_VERSION STRLESS "1.15.0" AND NOT TARGET Boost::filesystem)
-  PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS ${SUBSYS_EXT_DEPS})
-else()
-  PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
-endif()
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
