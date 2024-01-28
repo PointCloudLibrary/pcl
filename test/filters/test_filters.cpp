@@ -2460,6 +2460,27 @@ TEST (NormalRefinement, Filters)
   EXPECT_LT(err_refined_var, err_est_var);
 }
 
+TEST (VoxelGridOcclusionEstimation, Filters)
+{
+  auto input_cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
+  input_cloud->emplace_back(0.0, 0.0, 0.0);
+  input_cloud->emplace_back(9.9, 9.9, 9.9); // we want a nice bounding box from (0, 0, 0) to (10, 10, 10)
+  input_cloud->sensor_origin_ << -0.1, 0.5, 0.5; // just outside the bounding box. Most rays will enter at voxel (0, 0, 0)
+  pcl::VoxelGridOcclusionEstimation<pcl::PointXYZ> vg;
+  vg.setInputCloud (input_cloud);
+  vg.setLeafSize (1.0, 1.0, 1.0);
+  vg.initializeVoxelGrid ();
+  std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> > occluded_voxels;
+  vg.occlusionEstimationAll (occluded_voxels);
+  for(std::size_t y=0; y<10; ++y) {
+    for (std::size_t z=0; z<10; ++z) {
+      if(y==9 && z==9) continue; // voxel (9, 9, 9) is occupied by point (9.9, 9.9, 9.9), so it will not be counted as occluded
+      Eigen::Vector3i cell(9, y, z);
+      EXPECT_NE(std::find(occluded_voxels.begin(), occluded_voxels.end(), cell), occluded_voxels.end()); // not equal means it was found
+    }
+  }
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)
