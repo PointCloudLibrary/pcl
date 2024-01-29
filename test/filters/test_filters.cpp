@@ -48,6 +48,7 @@
 #include <pcl/filters/frustum_culling.h>
 #include <pcl/filters/sampling_surface_normal.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/filters/voxel_grid_occlusion_estimation.h>
 #include <pcl/filters/voxel_grid_covariance.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/filters/project_inliers.h>
