@@ -4,7 +4,10 @@ set(SUBSUBSYS_DEPS common geometry io filters sample_consensus segmentation visu
 set(SUBSUBSYS_EXT_DEPS vtk openni)
 
 if(NOT TARGET Boost::filesystem)
-  return()
+  set(DEFAULT FALSE)
+  set(REASON "Boost filesystem is not available.")
+else()
+  set(DEFAULT TRUE)
 endif()
 
 # Default to not building for now
