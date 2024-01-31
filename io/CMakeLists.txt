@@ -204,15 +204,6 @@ set(PLY_INCLUDES
   "include/pcl/${SUBSYS_NAME}/ply/ply_parser.h"
 )
 
-PCL_ADD_LIBRARY(pcl_io_ply COMPONENT ${SUBSYS_NAME} SOURCES ${PLY_SOURCES} ${PLY_INCLUDES})
-if(MINGW)
-  # libws2_32 isn't added by default for MinGW
-  target_link_libraries(pcl_io_ply ws2_32)
-endif()
-PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/ply" ${PLY_INCLUDES})
-target_include_directories(pcl_io_ply PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_link_libraries(pcl_io_ply pcl_common Boost::boost)
-
 set(srcs
   src/debayer.cpp
   src/pcd_grabber.cpp
@@ -242,6 +233,7 @@ set(srcs
   ${DSSDK_GRABBER_SOURCES}
   ${RSSDK_GRABBER_SOURCES}
   ${RSSDK2_GRABBER_SOURCES}
+  ${PLY_SOURCES}
 )
 
 if(PNG_FOUND)
@@ -295,6 +287,7 @@ set(incs
   ${DSSDK_GRABBER_INCLUDES}
   ${RSSDK_GRABBER_INCLUDES}
   ${RSSDK2_GRABBER_INCLUDES}
+  ${PLY_INCLUDES}
 )
 
 set(compression_incs
@@ -343,7 +336,7 @@ PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${c
 
 target_include_directories(${LIB_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-target_link_libraries("${LIB_NAME}" Boost::boost Boost::filesystem Boost::iostreams pcl_common pcl_io_ply)
+target_link_libraries("${LIB_NAME}" Boost::boost Boost::filesystem Boost::iostreams pcl_common)
 
 if(VTK_FOUND)
   if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
