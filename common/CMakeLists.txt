@@ -98,6 +98,7 @@ set(common_incs
   include/pcl/common/file_io.h
   include/pcl/common/intersections.h
   include/pcl/common/norms.h
+  include/pcl/common/pcl_filesystem.h
   include/pcl/common/piecewise_linear_function.h
   include/pcl/common/polynomial_calculations.h
   include/pcl/common/poses_from_matches.h

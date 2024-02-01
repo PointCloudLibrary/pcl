@@ -43,6 +43,7 @@
 #include <cstdlib>
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/common/io.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/io/low_level_io.h>
 #include <pcl/io/lzf.h>
 #include <pcl/io/pcd_io.h>
@@ -51,14 +52,6 @@
 
 #include <cstring>
 #include <cerrno>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem> // for permissions
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp> // for permissions
-namespace pcl_fs = boost::filesystem;
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void

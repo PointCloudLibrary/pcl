@@ -40,17 +40,10 @@
 #include <pcl/sample_consensus/ransac.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/segmentation/extract_clusters.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem> // for path, exists, ...
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp> // for path, exists, ...
-namespace pcl_fs = boost::filesystem;
-#endif
 
 #include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 

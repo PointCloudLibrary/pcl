@@ -35,6 +35,7 @@
  *
  */
 // Looking for PCL_BUILT_WITH_VTK
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/for_each_type.h>
 #include <pcl/io/timestamp.h>
 #include <pcl/io/image_grabber.h>
@@ -42,14 +43,6 @@
 #include <pcl/memory.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem> // for exists, basename, is_directory, ...
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp> // for exists, basename, is_directory, ...
-namespace pcl_fs = boost::filesystem;
-#endif
 
 #include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 

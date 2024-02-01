@@ -36,18 +36,11 @@
  */
 
 #include <pcl/common/io.h>  // for getFieldSize
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/io/ascii_io.h>
 #include <istream>
 #include <fstream>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp>
-namespace pcl_fs = boost::filesystem;
-#endif
 
 #include <boost/lexical_cast.hpp> // for lexical_cast
 #include <boost/algorithm/string.hpp> // for split

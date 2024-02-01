@@ -39,13 +39,7 @@
 #ifndef PCL_COMMON_FILE_IO_IMPL_HPP_
 #define PCL_COMMON_FILE_IO_IMPL_HPP_
 
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp>
-namespace pcl_fs = boost::filesystem;
-#endif
+#include <pcl/common/pcl_filesystem.h>
 
 #include <boost/range/iterator_range.hpp>
 

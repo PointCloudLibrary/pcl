@@ -3,17 +3,10 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp>
-namespace pcl_fs = boost::filesystem;
-#endif
 
 #include <boost/algorithm/string.hpp> // for split, is_any_of
 

@@ -41,15 +41,8 @@
 #include <iostream>
 #include <vector>
 
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/console/parse.h>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp>
-namespace pcl_fs = boost::filesystem;
-#endif
 
 #include <pcl/gpu/kinfu/kinfu.h>
 #include <pcl/gpu/kinfu/raycaster.h>

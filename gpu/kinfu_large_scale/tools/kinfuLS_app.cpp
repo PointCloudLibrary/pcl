@@ -53,15 +53,8 @@ Work in progress: patch by Marco (AUG,19th 2012)
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/console/parse.h>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp>
-namespace pcl_fs = boost::filesystem;
-#endif
 
 #include <pcl/gpu/kinfu_large_scale/kinfu.h>
 #include <pcl/gpu/kinfu_large_scale/raycaster.h>

@@ -39,6 +39,7 @@
 #include <fstream>
 #include <list>
 #include <pcl/common/angles.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/visualization/common/io.h>
 #include <pcl/visualization/interactor_style.h>
 #include <vtkVersion.h>
@@ -69,14 +70,6 @@
 
 #include <boost/algorithm/string/classification.hpp> // for is_any_of
 #include <boost/algorithm/string/split.hpp> // for split
-
-#if (__cplusplus >= 201703L)
-#include <filesystem> // for exists
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp> // for exists
-namespace pcl_fs = boost::filesystem;
-#endif
 
 #define ORIENT_MODE 0
 #define SELECT_MODE 1

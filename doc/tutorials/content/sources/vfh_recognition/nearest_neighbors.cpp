@@ -3,6 +3,7 @@
 #include <pcl/common/common.h>
 #include <pcl/common/centroid.h> // for compute3DCentroid
 #include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/io/pcd_io.h>
@@ -10,14 +11,6 @@
 #include <limits>
 #include <flann/flann.h>
 #include <flann/io/hdf5.h>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp>
-namespace pcl_fs = boost::filesystem;
-#endif
 
 #include <boost/algorithm/string/replace.hpp> // for replace_last
 typedef std::pair<std::string, std::vector<float> > vfh_model;

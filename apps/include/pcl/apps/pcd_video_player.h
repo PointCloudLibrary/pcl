@@ -35,20 +35,13 @@
  */
 
 #include <pcl/common/common.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/common/time.h>
 #include <pcl/registration/transformation_estimation_svd.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp>
-namespace pcl_fs = boost::filesystem;
-#endif
 
 #include <QMainWindow>
 #include <QMutex>
