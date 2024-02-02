@@ -250,7 +250,8 @@ pcl::VoxelGridOcclusionEstimation<PointT>::rayTraversal (const Eigen::Vector3i& 
                                                          const Eigen::Vector4f& direction,
                                                          const float t_min)
 {
-  // coordinate of the boundary of the voxel grid
+  // coordinate of the boundary of the voxel grid. To avoid numerical imprecision
+  // causing the start voxel index to be off by one, we add the machine epsilon
   Eigen::Vector4f start = origin + (t_min > 0.0f ? (t_min + std::numeric_limits<float>::epsilon()) : t_min) * direction;
 
   // i,j,k coordinate of the voxel were the ray enters the voxel grid
@@ -347,8 +348,9 @@ pcl::VoxelGridOcclusionEstimation<PointT>::rayTraversal (std::vector<Eigen::Vect
   int reserve_size = div_b_.maxCoeff () * div_b_.maxCoeff ();
   out_ray.reserve (reserve_size);
 
-  // coordinate of the boundary of the voxel grid
-  Eigen::Vector4f start = origin + t_min * direction;
+  // coordinate of the boundary of the voxel grid. To avoid numerical imprecision
+  // causing the start voxel index to be off by one, we add the machine epsilon
+  Eigen::Vector4f start = origin + (t_min > 0.0f ? (t_min + std::numeric_limits<float>::epsilon()) : t_min) * direction;
 
   // i,j,k coordinate of the voxel were the ray enters the voxel grid
   Eigen::Vector3i ijk = this->getGridCoordinates (start[0], start[1], start[2]);
