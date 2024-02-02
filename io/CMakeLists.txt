@@ -3,7 +3,6 @@ set(SUBSYS_DESC "Point cloud IO library")
 set(SUBSYS_DEPS common octree)
 set(SUBSYS_EXT_DEPS boost eigen3)
 
-set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 if(WIN32)
   PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk rssdk2 pcap png vtk OpenMP EXT_DEPS ${SUBSYS_EXT_DEPS})

@@ -2,7 +2,6 @@ set(SUBSYS_NAME common)
 set(SUBSYS_DESC "Point cloud common library")
 set(SUBSYS_DEPS)
 
-set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS eigen3 boost)
 

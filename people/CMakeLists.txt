@@ -11,7 +11,6 @@ else()
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 endif()
 
-set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 
