@@ -2,7 +2,7 @@ set(SUBSUBSYS_NAME tools)
 set(SUBSUBSYS_DESC "Kinfu tools")
 set(SUBSUBSYS_DEPS gpu_kinfu visualization)
 set(SUBSUBSYS_OPT_DEPS opencv)
-set(EXT_DEPS openni)
+set(EXT_DEPS glew openni)
 set(DEFAULT TRUE)
 set(REASON "")
 
