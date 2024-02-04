@@ -92,9 +92,6 @@ endif()
 if(Boost_SERIALIZATION_FOUND)
   string(APPEND PCLCONFIG_AVAILABLE_BOOST_MODULES " serialization")
 endif()
-if(Boost_CHRONO_FOUND)
-  string(APPEND PCLCONFIG_AVAILABLE_BOOST_MODULES " chrono")
-endif()
 
 configure_file("${PCL_SOURCE_DIR}/PCLConfig.cmake.in"
                "${PCL_BINARY_DIR}/PCLConfig.cmake" @ONLY)
