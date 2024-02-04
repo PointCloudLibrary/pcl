@@ -37,6 +37,7 @@
 
 #include <pcl/point_types.h>
 #include <pcl/common/io.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/io/ply_io.h>
 
 #include <algorithm>
@@ -45,16 +46,6 @@
 #include <functional>
 #include <string>
 #include <tuple>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-namespace pcl_fs = std::filesystem;
-#else
-// https://www.boost.org/doc/libs/1_70_0/libs/filesystem/doc/index.htm#Coding-guidelines
-#define BOOST_FILESYSTEM_NO_DEPRECATED
-#include <boost/filesystem.hpp>
-namespace pcl_fs = boost::filesystem;
-#endif
 
 #include <boost/algorithm/string.hpp> // for split
 

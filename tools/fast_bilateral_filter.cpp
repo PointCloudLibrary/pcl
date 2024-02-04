@@ -38,17 +38,10 @@
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/fast_bilateral.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem> // for path, exists, ...
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp> // for path, exists, ...
-namespace pcl_fs = boost::filesystem;
-#endif
 
 #include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 

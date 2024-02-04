@@ -5,6 +5,7 @@
  *      Author: Aitor Aldoma
  */
 
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/recognition/face_detection/rf_face_detector_trainer.h>
@@ -12,14 +13,6 @@
 // clang-format off
 #include <pcl/apps/face_detection/face_detection_apps_utils.h>
 // clang-format on
-
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp>
-namespace pcl_fs = boost::filesystem;
-#endif
 
 bool SHOW_GT = false;
 bool VIDEO = false;

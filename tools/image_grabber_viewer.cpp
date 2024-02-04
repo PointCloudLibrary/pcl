@@ -38,6 +38,7 @@
  */
 
 #include <pcl/io/image_grabber.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/visualization/cloud_viewer.h>
@@ -45,14 +46,6 @@
 
 #include <mutex>
 #include <thread>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem> // for exists
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp> // for exists
-namespace pcl_fs = boost::filesystem;
-#endif
 
 using namespace std::chrono_literals;
 using pcl::console::print_error;

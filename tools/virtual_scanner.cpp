@@ -53,6 +53,7 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/memory.h>  // for pcl::make_shared
 #include <pcl/point_types.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/console/parse.h>
 
 #include <vtkGeneralTransform.h>
@@ -64,14 +65,6 @@
 #include <vtkMath.h>
 
 #include <boost/algorithm/string.hpp>  // for boost::is_any_of, boost::split, boost::token_compress_on, boost::trim
-
-#if (__cplusplus >= 201703L)
-#include <filesystem>  // for std::filesystem::create_directories, std::filesystem::exists, std::filesystem::path, std::filesystem::path::extension
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp>  // for boost::filesystem::create_directories, boost::filesystem::exists, boost::filesystem::path, boost::filesystem::path::extension
-namespace pcl_fs = boost::filesystem;
-#endif
 
 using namespace pcl;
 

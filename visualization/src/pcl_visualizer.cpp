@@ -93,6 +93,7 @@
 #endif
 
 #include <pcl/common/time.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/visualization/common/shapes.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
@@ -101,14 +102,6 @@
 #include <boost/uuid/detail/sha1.hpp>
 #else
 #include <boost/uuid/sha1.hpp>
-#endif
-
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp>
-namespace pcl_fs = boost::filesystem;
 #endif
 
 #include <boost/algorithm/string.hpp> // for split

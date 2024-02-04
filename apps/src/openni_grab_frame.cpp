@@ -35,6 +35,7 @@
  *         Christian Potthast (potthast@usc.edu)
  */
 
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/common/time.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
@@ -44,14 +45,6 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp>
-namespace pcl_fs = boost::filesystem;
-#endif
 
 #include <mutex>
 
