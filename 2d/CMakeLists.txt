@@ -3,7 +3,7 @@ set(SUBSYS_DESC "Point cloud 2d")
 set(SUBSYS_DEPS common filters)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
-PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS vtk)
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
@@ -28,10 +28,6 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/edge.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/morphology.hpp"
 )
-
-if(${VTK_FOUND})
-  set(VTK_IO_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets vtkIO vtkImaging)
-endif()
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
