@@ -1,10 +1,9 @@
 set(SUBSYS_NAME people)
 set(SUBSYS_DESC "Point cloud people library")
 set(SUBSYS_DEPS common kdtree search sample_consensus filters io visualization geometry segmentation octree)
-set(EXT_DEPS vtk)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
-PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS ${EXT_DEPS})
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
@@ -43,8 +42,6 @@ PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_
 # Install include files
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
-
-#SET_TARGET_PROPERTIES("${LIB_NAME}" PROPERTIES LINKER_LANGUAGE CXX)
 
 if(WITH_OPENNI)
   PCL_ADD_EXECUTABLE(pcl_ground_based_rgbd_people_detector COMPONENT ${SUBSYS_NAME} SOURCES apps/main_ground_based_people_detection.cpp BUNDLE)
