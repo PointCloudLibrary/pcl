@@ -3,7 +3,6 @@ set(SUBSYS_PATH gpu/segmentation)
 set(SUBSYS_DESC "Point cloud GPU segmentation library")
 set(SUBSYS_DEPS common gpu_containers gpu_utils gpu_octree)
 
-set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 PCL_SET_SUBSYS_INCLUDE_DIR("${SUBSYS_NAME}" "${SUBSYS_PATH}")

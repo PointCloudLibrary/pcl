@@ -3,7 +3,6 @@ set(SUBSYS_PATH gpu/containers)
 set(SUBSYS_DESC "Containers with reference counting for GPU memory. This module can be compiled without Cuda Toolkit.")
 set(SUBSYS_DEPS common)
 
-set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 PCL_SET_SUBSYS_INCLUDE_DIR("${SUBSYS_NAME}" "${SUBSYS_PATH}")

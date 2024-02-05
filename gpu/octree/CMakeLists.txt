@@ -3,7 +3,6 @@ set(SUBSYS_PATH gpu/octree)
 set(SUBSYS_DESC "Octree GPU")
 set(SUBSYS_DEPS common gpu_containers gpu_utils)
 
-set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 mark_as_advanced("BUILD_${SUBSYS_NAME}")
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
