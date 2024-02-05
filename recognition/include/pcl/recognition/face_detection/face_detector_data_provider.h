@@ -7,19 +7,12 @@
 
 #pragma once
 
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/memory.h>
 #include <pcl/ml/dt/decision_tree_data_provider.h>
 #include <pcl/recognition/face_detection/face_common.h>
 
 #include <boost/algorithm/string.hpp>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp>
-namespace pcl_fs = boost::filesystem;
-#endif
 
 #include <fstream>
 #include <string>
