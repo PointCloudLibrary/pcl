@@ -110,8 +110,10 @@ macro(PCL_SUBSYS_DEPEND _var)
   if(ARGS_OPT_DEPS)
     SET_IN_GLOBAL_MAP(PCL_SUBSYS_OPT_DEPS ${_name} "${ARGS_OPT_DEPS}")
   endif()
+
   GET_IN_MAP(subsys_status PCL_SUBSYS_HYPERSTATUS ${_name})
-  if(${_var} AND (NOT ("${subsys_status}" STREQUAL "AUTO_OFF")))
+  
+  if(NOT ("${subsys_status}" STREQUAL "AUTO_OFF"))
     if(ARGS_DEPS)
       foreach(_dep ${ARGS_DEPS})
         PCL_GET_SUBSYS_STATUS(_status ${_dep})
