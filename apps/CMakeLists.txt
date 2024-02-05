@@ -117,8 +117,8 @@ if(VTK_FOUND)
     target_link_libraries(pcl_openni_octree_compression pcl_common pcl_io pcl_filters pcl_visualization pcl_octree)
 
     if(HAVE_PNG)
-    PCL_ADD_EXECUTABLE(pcl_openni_organized_compression COMPONENT ${SUBSYS_NAME} SOURCES src/openni_organized_compression.cpp BUNDLE)
-    target_link_libraries(pcl_openni_organized_compression pcl_common pcl_io pcl_filters pcl_visualization pcl_octree)
+      PCL_ADD_EXECUTABLE(pcl_openni_organized_compression COMPONENT ${SUBSYS_NAME} SOURCES src/openni_organized_compression.cpp BUNDLE)
+      target_link_libraries(pcl_openni_organized_compression pcl_common pcl_io pcl_filters pcl_visualization pcl_octree)
     endif()
 
     PCL_ADD_EXECUTABLE(pcl_openni_shift_to_depth_conversion COMPONENT ${SUBSYS_NAME} SOURCES src/openni_shift_to_depth_conversion.cpp BUNDLE)

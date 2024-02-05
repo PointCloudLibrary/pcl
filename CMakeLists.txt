@@ -363,7 +363,6 @@ if(WITH_PNG)
   find_package(PNG)
   if(PNG_FOUND)
     set(HAVE_PNG ON)
-    include_directories(SYSTEM "${PNG_INCLUDE_DIR}")
   endif()
 endif()
 
