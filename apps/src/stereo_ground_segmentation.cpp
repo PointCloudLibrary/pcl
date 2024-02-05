@@ -36,6 +36,7 @@
 #include <pcl/common/centroid.h> // for computeMeanAndCovarianceMatrix
 #include <pcl/common/distances.h>
 #include <pcl/common/intersections.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
@@ -49,14 +50,6 @@
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/ModelCoefficients.h>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem> // for directory_iterator
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp> // for directory_iterator
-namespace pcl_fs = boost::filesystem;
-#endif
 
 #include <mutex>
 

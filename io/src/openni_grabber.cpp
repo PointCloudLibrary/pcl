@@ -42,19 +42,12 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
 #include <pcl/exceptions.h>
 #include <iostream>
 #include <thread>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem> // for exists
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp> // for exists
-namespace pcl_fs = boost::filesystem;
-#endif
 
 using namespace std::chrono_literals;
 

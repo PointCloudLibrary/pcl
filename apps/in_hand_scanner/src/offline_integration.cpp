@@ -40,19 +40,12 @@
 
 #include <pcl/apps/in_hand_scanner/integration.h>
 #include <pcl/apps/in_hand_scanner/offline_integration.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/common/transforms.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/io/pcd_io.h>
 
 #include <boost/algorithm/string/case_conv.hpp>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp>
-namespace pcl_fs = boost::filesystem;
-#endif
 
 #include <QApplication>
 #include <QFileDialog>

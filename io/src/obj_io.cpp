@@ -38,19 +38,11 @@
 #include <pcl/io/obj_io.h>
 #include <fstream>
 #include <pcl/common/io.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/console/time.h>
 #include <pcl/io/split.h>
 
 #include <boost/lexical_cast.hpp> // for lexical_cast
-
-#if (__cplusplus >= 201703L)
-#include <filesystem> // for exists
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp> // for exists
-namespace pcl_fs = boost::filesystem;
-#endif
-
 #include <boost/algorithm/string.hpp> // for trim
 
 pcl::MTLReader::MTLReader ()

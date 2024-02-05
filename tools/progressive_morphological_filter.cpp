@@ -40,20 +40,13 @@
 
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/segmentation/approximate_progressive_morphological_filter.h>
 #include <pcl/segmentation/progressive_morphological_filter.h>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem> // for path, exists, ...
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp> // for path, exists, ...
-namespace pcl_fs = boost::filesystem;
-#endif
 
 #include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 

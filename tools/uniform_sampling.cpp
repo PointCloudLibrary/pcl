@@ -38,17 +38,10 @@
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/io/auto_io.h>
 #include <pcl/filters/uniform_sampling.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp>
-namespace pcl_fs = boost::filesystem;
-#endif
 
 #include <algorithm>
 #include <string>

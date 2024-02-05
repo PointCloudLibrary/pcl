@@ -37,17 +37,10 @@
 #include <pcl/io/low_level_io.h>
 #include <pcl/io/lzf_image_io.h>
 #include <pcl/io/lzf.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/console/print.h>
 #include <fcntl.h>
 #include <cstring>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp>
-namespace pcl_fs = boost::filesystem;
-#endif
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>

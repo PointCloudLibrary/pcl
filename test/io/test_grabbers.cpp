@@ -1,4 +1,5 @@
 #include <pcl/test/gtest.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/pcd_grabber.h>
@@ -7,14 +8,6 @@
 #include <string>
 #include <thread>
 #include <vector>
-
-#if (__cplusplus >= 201703L)
-#include <filesystem> // for directory_iterator, extension
-namespace pcl_fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp> // for directory_iterator, extension
-namespace pcl_fs = boost::filesystem;
-#endif
 
 #include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 
