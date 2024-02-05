@@ -2,7 +2,6 @@ set(SUBSYS_NAME search)
 set(SUBSYS_DESC "Point cloud generic search library")
 set(SUBSYS_DEPS common kdtree octree)
 
-set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS flann)
 

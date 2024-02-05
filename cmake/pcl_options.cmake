@@ -88,8 +88,6 @@ mark_as_advanced(CMAKE_MSVC_CODE_LINK_OPTIMIZATION)
 # Project folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-option(BUILD_tools "Useful PCL-based command line tools" ON)
-
 option(WITH_DOCS "Build doxygen documentation" OFF)
 
 # set index size

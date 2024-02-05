@@ -2,11 +2,6 @@ set(SUBSYS_NAME simulation)
 set(SUBSYS_DESC "Point Cloud Library Simulation")
 set(SUBSYS_DEPS common io surface kdtree features search octree visualization filters geometry)
 
-set(build FALSE)
-find_package(OpenGL)
-
-find_package(GLEW)
-
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" OFF)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS opengl glew)
 

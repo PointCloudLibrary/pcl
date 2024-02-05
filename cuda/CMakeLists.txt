@@ -2,7 +2,7 @@ set(SUBSYS_NAME cuda)
 set(SUBSYS_DESC "Point cloud CUDA libraries")
 set(SUBSYS_DEPS)
 
-option(BUILD_CUDA "Build the CUDA-related subsystems" ${DEFAULT})
+option(BUILD_CUDA "Build the CUDA-related subsystems" OFF)
 
 if(NOT (BUILD_CUDA AND CUDA_FOUND))
   return()

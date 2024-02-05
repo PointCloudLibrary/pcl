@@ -419,6 +419,12 @@ if(WITH_OPENGL)
   include("${PCL_SOURCE_DIR}/cmake/pcl_find_gl.cmake")
 endif()
 
+# GLEW
+option(WITH_GLEW "Support for GLEW" TRUE)
+if(WITH_GLEW)
+  find_package(GLEW QUIET)
+endif()
+
 # Boost (required)
 include("${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake")
 

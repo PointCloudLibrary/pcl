@@ -2,7 +2,7 @@ set(SUBSYS_NAME gpu)
 set(SUBSYS_DESC "Point cloud GPU libraries")
 set(SUBSYS_DEPS)
 
-option(BUILD_GPU "Build the GPU-related subsystems" ${DEFAULT})
+option(BUILD_GPU "Build the GPU-related subsystems" OFF)
 
 if(NOT (BUILD_GPU AND CUDA_FOUND))
   return()

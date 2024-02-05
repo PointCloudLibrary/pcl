@@ -2,7 +2,6 @@ set(SUBSYS_NAME tracking)
 set(SUBSYS_DESC "Point cloud tracking library")
 set(SUBSYS_DEPS common search kdtree filters octree)
 
-set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS OpenMP)
 
