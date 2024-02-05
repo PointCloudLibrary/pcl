@@ -691,8 +691,8 @@ namespace pcl
     inline constexpr PointXYZLAB() : PointXYZLAB{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f} {}
 
     inline constexpr PointXYZLAB (float _x, float _y, float _z,
-                        float _L, float _a, float _b) :
-      _PointXYZLAB{ {{_x, _y, _z, 1.0f}}, {{_L, _a, _b}} } {}
+                        float _l, float _a, float _b) :
+      _PointXYZLAB{ {{_x, _y, _z, 1.0f}}, {{_l, _a, _b}} } {}
 
     friend std::ostream& operator << (std::ostream& os, const PointXYZLAB& p);
     PCL_MAKE_ALIGNED_OPERATOR_NEW
