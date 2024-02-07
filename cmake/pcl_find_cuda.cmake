@@ -9,6 +9,13 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.11)
   check_language(CUDA)
   if(CMAKE_CUDA_COMPILER)
     enable_language(CUDA)
+
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.17)
+      find_package(CUDAToolkit REQUIRED)
+    else()
+      find_package(CUDA 9.0)
+    endif()
+
     set(CUDA_FOUND TRUE)
     set(CUDA_VERSION_STRING ${CMAKE_CUDA_COMPILER_VERSION})
   else()
