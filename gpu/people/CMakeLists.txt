@@ -3,6 +3,13 @@ set(SUBSYS_PATH gpu/people)
 set(SUBSYS_DESC "Point cloud people library")
 set(SUBSYS_DEPS common features filters geometry gpu_containers gpu_utils io kdtree octree search segmentation surface visualization)
 
+if(${CUDA_VERSION_STRING} VERSION_GREATER_EQUAL "12.0")
+  set(DEFAULT FALSE)
+  set(REASON "gpu_people uses textures which was removed in CUDA 12")
+else()
+  set(DEFAULT TRUE)
+endif()
+
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} OFF)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 mark_as_advanced("BUILD_${SUBSYS_NAME}")
