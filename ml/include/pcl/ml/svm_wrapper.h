@@ -47,7 +47,7 @@
 #include <limits> // for numeric_limits
 #include <string> // for string
 #include <vector>
-#define Malloc(type, n) static_cast<type*>(malloc((n) * sizeof(type)))
+#define Malloc(type, n) (static_cast<(type)*>(malloc((n) * sizeof(type))))
 
 namespace pcl {
 

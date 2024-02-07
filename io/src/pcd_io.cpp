@@ -509,7 +509,7 @@ pcl::PCDReader::readBodyASCII (std::istream &fs, pcl::PCLPointCloud2 &cloud, int
         {
 #define COPY_STRING(CASE_LABEL)                                                        \
   case CASE_LABEL: {                                                                   \
-    copyStringValue<pcl::traits::asType_t<CASE_LABEL>>(                                \
+    copyStringValue<pcl::traits::asType_t<(CASE_LABEL)>>(                              \
         st.at(total + c), cloud, idx, d, c, is);                                       \
     break;                                                                             \
   }
@@ -640,11 +640,11 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
     {
       for (uindex_t c = 0; c < cloud.fields[d].count; ++c)
       {
-#define SET_CLOUD_DENSE(CASE_LABEL)                                                    \
-  case CASE_LABEL: {                                                                   \
-    if (!isValueFinite<pcl::traits::asType_t<CASE_LABEL>>(cloud, i, point_size, d, c)) \
-      cloud.is_dense = false;                                                          \
-    break;                                                                             \
+#define SET_CLOUD_DENSE(CASE_LABEL)                                                      \
+  case CASE_LABEL: {                                                                     \
+    if (!isValueFinite<pcl::traits::asType_t<(CASE_LABEL)>>(cloud, i, point_size, d, c)) \
+      cloud.is_dense = false;                                                            \
+    break;                                                                               \
   }
         switch (cloud.fields[d].datatype)
         {
@@ -1156,7 +1156,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PCLPointClo
       {
 #define COPY_VALUE(CASE_LABEL)                                                         \
   case CASE_LABEL: {                                                                   \
-    copyValueString<pcl::traits::asType_t<CASE_LABEL>>(                                \
+    copyValueString<pcl::traits::asType_t<(CASE_LABEL)>>(                              \
         cloud, i, point_size, d, c, stream);                                           \
     break;                                                                             \
   }

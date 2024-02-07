@@ -49,7 +49,7 @@
 #define PCL_THROW_EXCEPTION(ExceptionName, message)                         \
 {                                                                           \
   std::ostringstream s;                                                     \
-  s << message;                                                             \
+  s << (message);                                                           \
   throw ExceptionName(s.str(), __FILE__, BOOST_CURRENT_FUNCTION, __LINE__); \
 }
 

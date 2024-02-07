@@ -529,8 +529,8 @@ pcl::PointDataAtOffset<PointT>::compare (const PointT& p, const double& val)
   case CASE_LABEL: {                                                                   \
     pcl::traits::asType_t<CASE_LABEL> pt_val;                                          \
     memcpy(&pt_val, pt_data + this->offset_, sizeof(pt_val));                          \
-    return (pt_val > static_cast<pcl::traits::asType_t<CASE_LABEL>>(val)) -            \
-           (pt_val < static_cast<pcl::traits::asType_t<CASE_LABEL>>(val));             \
+    return (pt_val > static_cast<pcl::traits::asType_t<(CASE_LABEL)>>(val)) -          \
+           (pt_val < static_cast<pcl::traits::asType_t<(CASE_LABEL)>>(val));           \
   }
 
   switch (datatype_)

@@ -104,8 +104,8 @@ powi(double base, int times)
 
 #define INF HUGE_VAL
 #define TAU 1e-12
-#define Malloc(type, n) static_cast<type*>(malloc((n) * sizeof(type)))
-#define Realloc(var, type, n) static_cast<type*>(realloc(var, (n) * sizeof(type)))
+#define Malloc(type, n) (static_cast<(type)*>(malloc((n) * sizeof(type))))
+#define Realloc(var, type, n) (static_cast<(type)*>(realloc(var, (n) * sizeof(type))))
 
 static void
 print_string_stdout(const char* s)
