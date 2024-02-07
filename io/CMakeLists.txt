@@ -373,6 +373,7 @@ if(VTK_FOUND)
 endif()
 
 if(PNG_FOUND)
+  target_include_directories("${LIB_NAME}" SYSTEM PRIVATE ${PNG_INCLUDE_DIRS})
   target_link_libraries("${LIB_NAME}" ${PNG_LIBRARIES})
 endif()
 
