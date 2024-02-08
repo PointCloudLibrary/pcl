@@ -92,6 +92,7 @@ namespace pcl
     /** \brief Load a \ref PolygonMesh object given an input file name, based on the file extension
       * \param[in] file_name the name of the file containing the polygon data
       * \param[out] mesh the object that we want to load the data in 
+      * \return Number of points in the point cloud of the mesh.
       * \ingroup io
       */ 
     PCL_EXPORTS int
@@ -113,6 +114,7 @@ namespace pcl
     /** \brief Load a VTK file into a \ref PolygonMesh object
       * \param[in] file_name the name of the file that contains the data
       * \param[out] mesh the object that we want to load the data in 
+      * \return Number of points in the point cloud of the mesh.
       * \ingroup io
       */
     PCL_EXPORTS int
@@ -122,6 +124,7 @@ namespace pcl
     /** \brief Load a PLY file into a \ref PolygonMesh object
       * \param[in] file_name the name of the file that contains the data
       * \param[out] mesh the object that we want to load the data in 
+      * \return Number of points in the point cloud of the mesh.
       * \ingroup io
       */
     PCL_EXPORTS int
@@ -131,6 +134,7 @@ namespace pcl
     /** \brief Load an OBJ file into a \ref PolygonMesh object
       * \param[in] file_name the name of the file that contains the data
       * \param[out] mesh the object that we want to load the data in 
+      * \return Number of points in the point cloud of the mesh.
       * \ingroup io
       */
     PCL_EXPORTS int
@@ -143,6 +147,7 @@ namespace pcl
       * load the material information.
       * \param[in] file_name the name of the file that contains the data
       * \param[out] mesh the object that we want to load the data in
+      * \return Number of points in the point cloud of the mesh.
       * \ingroup io
       */
     PCL_EXPORTS int
@@ -153,6 +158,7 @@ namespace pcl
     /** \brief Load an STL file into a \ref PolygonMesh object
       * \param[in] file_name the name of the file that contains the data
       * \param[out] mesh the object that we want to load the data in 
+      * \return Number of points in the point cloud of the mesh.
       * \ingroup io
       */
     PCL_EXPORTS int
