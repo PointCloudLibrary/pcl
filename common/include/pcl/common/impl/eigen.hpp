@@ -308,10 +308,21 @@ eigen33 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& eigenve
   computeRoots (scaledMat, eigenvalues);
 
   eigenvalue = eigenvalues (0) * scale;
-
-  scaledMat.diagonal ().array () -= eigenvalues (0);
-
-  eigenvector = detail::getLargest3x3Eigenvector<Vector> (scaledMat).vector;
+  if ( (eigenvalues (1) - eigenvalues (0)) > Eigen::NumTraits < Scalar > ::epsilon ()) {
+    // usual case: first and second are not equal (so first and third are also not equal).
+    // second and third could be equal, but that does not matter here
+    scaledMat.diagonal ().array () -= eigenvalues (0);
+    eigenvector = detail::getLargest3x3Eigenvector<Vector> (scaledMat).vector;
+  }
+  else if ( (eigenvalues (2) - eigenvalues (0)) > Eigen::NumTraits < Scalar > ::epsilon ()) {
+    // first and second equal: choose any unit vector that is orthogonal to third eigenvector
+    scaledMat.diagonal ().array () -= eigenvalues (2);
+    eigenvector = detail::getLargest3x3Eigenvector<Vector> (scaledMat).vector.unitOrthogonal ();
+  }
+  else {
+    // all three equal: just use an arbitrary unit vector
+    eigenvector << Scalar (1.0), Scalar (0.0), Scalar (0.0);
+  }
 }
 
 
