@@ -198,15 +198,16 @@ function(PCL_ADD_LIBRARY _name)
     )
   else()
     add_library(${_name} ${PCL_LIB_TYPE} ${ARGS_SOURCES})
-    PCL_ADD_VERSION_INFO(${_name})
+   
     target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
-
+    
     target_include_directories(${_name} PUBLIC
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
       $<INSTALL_INTERFACE:${INCLUDE_INSTALL_ROOT}> 
     )
 
     target_link_libraries(${_name} Threads::Threads)
+
     if(TARGET OpenMP::OpenMP_CXX)
       target_link_libraries(${_name} OpenMP::OpenMP_CXX)
     endif()
@@ -222,7 +223,11 @@ function(PCL_ADD_LIBRARY _name)
     if(MSVC)
       target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
     endif()
+  endif()
+  
+  PCL_ADD_VERSION_INFO(${_name})
     
+  if(ARGS_SOURCES OR CMAKE_VERSION VERSION_GREATER_EQUAL 3.19)
     set_target_properties(${_name} PROPERTIES
       VERSION ${PCL_VERSION}
       SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
@@ -231,10 +236,20 @@ function(PCL_ADD_LIBRARY _name)
       set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
   endif()
 
+    set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
+  endif()
   install(TARGETS ${_name}
+          EXPORT ${_name}Targets
           RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
           LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
           ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT})
+
+  install(
+    EXPORT ${_name}Targets
+    NAMESPACE pcl::
+    FILE ${_name}.cmake
+    DESTINATION ${PCLCONFIG_INSTALL_DIR}
+  )
 
   # Copy PDB if available
   if(MSVC AND ${PCL_LIB_TYPE} EQUAL "SHARED")
@@ -296,9 +311,17 @@ function(PCL_CUDA_ADD_LIBRARY _name)
   endif()
 
   install(TARGETS ${_name}
+          EXPORT ${_name}Targets
           RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
           LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
           ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT})
+
+  install(
+    EXPORT ${_name}Targets
+    NAMESPACE pcl::
+    FILE ${_name}.cmake
+    DESTINATION ${LIB_INSTALL_DIR}/cmake
+  )        
 endfunction()
 
 ###############################################################################
@@ -926,7 +949,6 @@ macro(PCL_ADD_GRABBER_DEPENDENCY _name _description)
       message(STATUS "${_description}: not building because ${_name} not found")
     else()
       set(HAVE_${_name_capitalized} TRUE)
-      include_directories(SYSTEM "${${_name_capitalized}_INCLUDE_DIRS}")
     endif()
   endif()
 endmacro()
