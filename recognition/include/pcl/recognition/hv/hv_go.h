@@ -19,9 +19,8 @@
 
 #include <pcl/pcl_macros.h>
 #include <pcl/recognition/hv/hypotheses_verification.h>
+#include <pcl/recognition/3rdparty/metslib/mets.hh>
 #include <pcl/features/normal_3d.h>
-
-#include <metslib/mets.hh> // Either include 3.party in pcl/recognition/3rdparty or system installed metslib
 
 #include <memory>
 
