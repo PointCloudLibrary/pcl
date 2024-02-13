@@ -6,12 +6,7 @@ set(SUBSUBSYS_EXT_DEPS ${QTX} OpenGL OpenGL_GLU openni)
 
 ################################################################################
 
-# Default to not building for now
-if(${DEFAULT} STREQUAL "TRUE")
-  set(DEFAULT FALSE)
-endif()
-
-pcl_subsubsys_option(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" ${DEFAULT} "${REASON}")
+pcl_subsubsys_option(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" OFF)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSUBSYS_NAME} PARENT_NAME ${SUBSYS_NAME} DEPS ${SUBSUBSYS_DEPS} EXT_DEPS ${SUBSUBSYS_EXT_DEPS})
 
 pcl_add_doc("${SUBSUBSYS_NAME}")
