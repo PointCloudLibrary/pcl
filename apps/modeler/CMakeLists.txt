@@ -3,16 +3,18 @@ set(SUBSUBSYS_DESC "PCLModeler: PCL based reconstruction platform")
 set(SUBSUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search apps)
 set(SUBSUBSYS_EXT_DEPS vtk ${QTX})
 set(REASON "")
+set(DEFAULT OFF)
 
 # QVTK?
 if(NOT HAVE_QVTK)
-  set(DEFAULT OFF)
   set(REASON "VTK was not built with Qt support.")
-else()
-  set(DEFAULT ON)
 endif()
 
-PCL_SUBSUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" ${DFEAULT} "${REASON}")
+if(NOT HAVE_QVTK)  
+  set(REASON "VTK was not built with Qt support.")
+endif()
+
+PCL_SUBSUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" ${DEFAULT} "${REASON}")
 PCL_SUBSYS_DEPEND(build NAME ${SUBSUBSYS_NAME} PARENT_NAME ${SUBSYS_NAME} DEPS ${SUBSUBSYS_DEPS} EXT_DEPS ${SUBSUBSYS_EXT_DEPS})
 
 PCL_ADD_DOC("${SUBSUBSYS_NAME}")

@@ -8,12 +8,10 @@ set(SUBSUBSYS_DESC "Cloud Composer - Application for Manipulating Point Clouds")
 set(SUBSUBSYS_DEPS common io visualization filters apps)
 set(SUBSUBSYS_EXT_DEPS vtk ${QTX})
 set(REASON "")
-
 set(DEFAULT OFF)
 
 # Have Qt?
 if("${QTX}" STREQUAL "")
-  set(DEFAULT OFF)
   set(REASON "Cloud composer requires Qt.")
 endif()
 
