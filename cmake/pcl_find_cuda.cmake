@@ -11,8 +11,9 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.11)
     enable_language(CUDA)
 
     if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.17)
-      find_package(CUDAToolkit REQUIRED)
+      find_package(CUDAToolkit QUIET)
     else()
+      set(CUDA_FIND_QUIETLY TRUE)
       find_package(CUDA 9.0)
     endif()
 
@@ -78,4 +79,6 @@ if(CUDA_FOUND)
     target_include_directories(pcl_cuda INTERFACE ${CUDA_TOOLKIT_INCLUDE})
     
   endif ()
+else()
+  message(STATUS "CUDA was not found.")
 endif()
