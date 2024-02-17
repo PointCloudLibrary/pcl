@@ -6,7 +6,6 @@ set(SUBSYS_EXT_DEPS openni)
 
 # ---[ Point Cloud Library - pcl/cuda/io
 
-set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" OFF)
 mark_as_advanced("BUILD_${SUBSYS_NAME}")
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS ${SUBSYS_EXT_DEPS})

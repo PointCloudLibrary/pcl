@@ -1,10 +1,7 @@
 set(SUBSYS_NAME global_tests)
 set(SUBSYS_DESC "Point cloud library global unit tests")
 
-set(DEFAULT OFF)
-set(build TRUE)
-set(REASON "Disabled by default")
-PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
+PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" OFF)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
 
 if(NOT build)

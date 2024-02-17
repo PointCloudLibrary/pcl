@@ -7,19 +7,16 @@ set(SUBSUBSYS_NAME cloud_composer)
 set(SUBSUBSYS_DESC "Cloud Composer - Application for Manipulating Point Clouds")
 set(SUBSUBSYS_DEPS common io visualization filters apps)
 set(SUBSUBSYS_EXT_DEPS vtk ${QTX})
+set(REASON "")
+set(DEFAULT OFF)
 
-# QVTK?
-if(NOT HAVE_QVTK)
-  set(DEFAULT AUTO_OFF)
-  set(REASON "Cloud composer requires QVTK")
-elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
-  set(DEFAULT TRUE)
-  set(REASON)
+# Have Qt?
+if("${QTX}" STREQUAL "")
+  set(REASON "Cloud composer requires Qt.")
 endif()
 
-#Default to not building for now
-if("${DEFAULT}" STREQUAL "TRUE")
-  set(DEFAULT FALSE)
+if(NOT HAVE_QVTK)  
+  set(REASON "VTK was not built with Qt support.")
 endif()
 
 PCL_SUBSUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" ${DEFAULT} "${REASON}")
