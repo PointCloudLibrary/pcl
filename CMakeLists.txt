@@ -246,6 +246,7 @@ if(WIN32)
   set(PCL_POINTCLOUDS_DIR "${PCL_RESOURCES_DIR}/pointclouds")
 endif()
 
+#Set up output directory for builds
 set(PCL_OUTPUT_LIB_DIR "${PCL_BINARY_DIR}/${LIB_INSTALL_DIR}")
 set(PCL_OUTPUT_BIN_DIR "${PCL_BINARY_DIR}/${BIN_INSTALL_DIR}")
 make_directory("${PCL_OUTPUT_LIB_DIR}")
@@ -274,6 +275,7 @@ if(CMAKE_GENERATOR_IS_IDE)
 else()
   set(UNINSTALL_TARGET_NAME uninstall)
 endif()
+
 configure_file("${PCL_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
                "${PCL_BINARY_DIR}/uninstall_target.cmake" IMMEDIATE @ONLY)
 add_custom_target(${UNINSTALL_TARGET_NAME} "${CMAKE_COMMAND}" -P

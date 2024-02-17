@@ -40,7 +40,7 @@
 
 #pragma once
 
-#include <pcl/io/ply/byte_order.h>
+#include <pcl/io_ply/byte_order.h>
 #include <cstdint> // for int8_t, int16_t, ...
 
 /** \file ply.h contains standard typedefs and generic type traits

@@ -1,13 +1,13 @@
 set(SUBSYS_NAME io)
 set(SUBSYS_DESC "Point cloud IO library")
-set(SUBSYS_DEPS common octree)
+set(SUBSYS_DEPS common io_ply octree)
 set(SUBSYS_EXT_DEPS boost eigen3)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 if(WIN32)
   PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk rssdk2 pcap png vtk OpenMP EXT_DEPS ${SUBSYS_EXT_DEPS})
 else()
-  PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk pcap png vtk libusb OpenMP EXT_DEPS ${SUBSYS_EXT_DEPS})
+  PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk rssdk2 pcap png vtk OpenMP libusb EXT_DEPS ${SUBSYS_EXT_DEPS})
 endif()
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
@@ -195,23 +195,6 @@ if(VTK_FOUND AND NOT ANDROID)
   set(VTK_DEFINES -DPCL_BUILT_WITH_VTK)
 endif()
 
-set(PLY_SOURCES src/ply/ply_parser.cpp)
-set(PLY_INCLUDES
-  "include/pcl/${SUBSYS_NAME}/ply/byte_order.h"
-  "include/pcl/${SUBSYS_NAME}/ply/io_operators.h"
-  "include/pcl/${SUBSYS_NAME}/ply/ply.h"
-  "include/pcl/${SUBSYS_NAME}/ply/ply_parser.h"
-)
-
-PCL_ADD_LIBRARY(pcl_io_ply COMPONENT ${SUBSYS_NAME} SOURCES ${PLY_SOURCES} ${PLY_INCLUDES})
-if(MINGW)
-  # libws2_32 isn't added by default for MinGW
-  target_link_libraries(pcl_io_ply ws2_32)
-endif()
-PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/ply" ${PLY_INCLUDES})
-target_include_directories(pcl_io_ply PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_link_libraries(pcl_io_ply pcl_common Boost::boost)
-
 set(srcs
   src/debayer.cpp
   src/pcd_grabber.cpp
@@ -340,9 +323,8 @@ add_definitions(${VTK_DEFINES})
 
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES} ${OPENNI2_INCLUDES})
 
-target_include_directories(${LIB_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
-
 target_link_libraries("${LIB_NAME}" Boost::boost Boost::iostreams pcl_common pcl_io_ply)
+
 if(TARGET Boost::filesystem)
   target_link_libraries("${LIB_NAME}" Boost::filesystem)
 endif()
@@ -382,10 +364,12 @@ if(LIBUSB_FOUND)
 endif()
 
 if(WITH_OPENNI2)
+  target_include_directories(${LIB_NAME} SYSTEM PUBLIC ${OPENNI2_INCLUDE_DIRS})
   target_link_libraries(${LIB_NAME} ${OPENNI2_LIBRARIES})
 endif()
 
 if(WITH_OPENNI)
+  target_include_directories(${LIB_NAME} SYSTEM PUBLIC ${OPENNI_INCLUDE_DIRS})
   target_link_libraries("${LIB_NAME}" ${OPENNI_LIBRARIES})
   if(VTK_FOUND AND (NOT ${VTK_VERSION} VERSION_LESS 9.0))
     target_link_libraries("${LIB_NAME}" VTK::FiltersCore VTK::FiltersGeneral)
@@ -393,6 +377,7 @@ if(WITH_OPENNI)
 endif()
 
 if(WITH_FZAPI)
+  target_include_directories(${LIB_NAME} SYSTEM PUBLIC ${FZAPI_INCLUDE_DIRS})
   target_link_libraries("${LIB_NAME}" ${FZAPI_LIBS})
   if(WIN32)
   target_link_libraries("${LIB_NAME}" Version.lib)
@@ -400,26 +385,32 @@ if(WITH_FZAPI)
 endif()
 
 if(WITH_ENSENSO)
+  target_include_directories(${LIB_NAME} SYSTEM PUBLIC ${ENSENSO_INCLUDE_DIRS})
   target_link_libraries(${LIB_NAME} ${ENSENSO_LIBRARIES})
 endif()
 
 if(WITH_DAVIDSDK)
+  target_include_directories(${LIB_NAME} SYSTEM PUBLIC ${DAVIDSDK_INCLUDE_DIRS})
   target_link_libraries(${LIB_NAME} ${DAVIDSDK_LIBRARIES})
 endif()
 
 if(WITH_DSSDK)
+  target_include_directories(${LIB_NAME} SYSTEM PUBLIC ${DSSDK_INCLUDE_DIRS})
   target_link_libraries(${LIB_NAME} ${DSSDK_LIBRARIES})
 endif()
 
 if(WITH_RSSDK)
+  target_include_directories(${LIB_NAME} SYSTEM PUBLIC ${RSSDK_INCLUDE_DIRS})
   target_link_libraries(${LIB_NAME} ${RSSDK_LIBRARIES})
 endif()
 
 if(WITH_RSSDK2)
+  target_include_directories(${LIB_NAME} SYSTEM PUBLIC ${RSSDK2_INCLUDE_DIRS})
   target_link_libraries(${LIB_NAME} ${RSSDK2_LIBRARIES})
 endif()
 
 if(PCAP_FOUND)
+  target_include_directories(${LIB_NAME} SYSTEM PUBLIC ${PCAP_INCLUDE_DIRS})
   target_link_libraries("${LIB_NAME}" ${PCAP_LIBRARIES})
 endif()
 

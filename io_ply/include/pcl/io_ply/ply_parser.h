@@ -40,8 +40,8 @@
 
 #pragma once
 
-#include <pcl/io/ply/ply.h>
-#include <pcl/io/ply/io_operators.h>
+#include <pcl/io_ply/ply.h>
+#include <pcl/io_ply/io_operators.h>
 #include <pcl/pcl_macros.h>
 
 #include <istream>

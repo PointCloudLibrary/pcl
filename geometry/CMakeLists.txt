@@ -39,8 +39,8 @@ set(impl_incs
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-add_library(${LIB_NAME} INTERFACE)
-target_include_directories(${LIB_NAME} INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME})
+
 target_link_libraries(${LIB_NAME} INTERFACE Boost::boost pcl_common)
 
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS} HEADER_ONLY)

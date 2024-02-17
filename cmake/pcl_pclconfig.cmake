@@ -93,10 +93,18 @@ if(Boost_SERIALIZATION_FOUND)
   string(APPEND PCLCONFIG_AVAILABLE_BOOST_MODULES " serialization")
 endif()
 
-configure_file("${PCL_SOURCE_DIR}/PCLConfig.cmake.in"
-               "${PCL_BINARY_DIR}/PCLConfig.cmake" @ONLY)
-configure_file("${PCL_SOURCE_DIR}/PCLConfigVersion.cmake.in"
-               "${PCL_BINARY_DIR}/PCLConfigVersion.cmake" @ONLY)
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(PCLConfig.cmake.in
+  ${PCL_BINARY_DIR}/PCLConfig.cmake
+  INSTALL_DESTINATION cmake
+  PATH_VARS INCLUDE_INSTALL_DIR)
+
+write_basic_package_version_file(
+    ${PCL_BINARY_DIR}/PCLConfigVersion.cmake
+    COMPATIBILITY AnyNewerVersion
+    )
+
 install(FILES
         "${PCL_BINARY_DIR}/PCLConfig.cmake"
         "${PCL_BINARY_DIR}/PCLConfigVersion.cmake"
