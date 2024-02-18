@@ -600,11 +600,9 @@ namespace pcl
 	   * camera else element range_grid will be used
 	   */
 	  int
-	  pcl::PLYWriter::writeBinary(std::ofstream& fs,
-								  const pcl::PCLPointCloud2& cloud,
-								  const Eigen::Vector4f& origin,
-								  const Eigen::Quaternionf& orientation,
-								  bool use_camera);
+	  writeBinary(std::ofstream& fs,const pcl::PCLPointCloud2& cloud,
+				  const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation= Eigen::Quaternionf::Identity (),
+				  bool use_camera=true);
 
       /** \brief Save point cloud data to a PLY file containing n-D points, in BINARY format
         * \param[in] file_name the output file name
