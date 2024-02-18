@@ -1,7 +1,7 @@
 set(SUBSUBSYS_NAME point_cloud_editor)
 set(SUBSUBSYS_DESC "Point Cloud Editor - Simple editor for 3D point clouds")
 set(SUBSUBSYS_DEPS common filters io apps)
-set(SUBSUBSYS_EXT_DEPS vtk ${QTX} OpenGL)
+set(SUBSUBSYS_EXT_DEPS vtk ${QTX} OpenGL OpenGL_GLU)
 set(REASON "")
 set(DEFAULT OFF)
 
