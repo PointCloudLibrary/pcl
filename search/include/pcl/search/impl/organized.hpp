@@ -358,7 +358,7 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
   }
 
   double residual_sqr = pcl::estimateProjectionMatrix<PointT> (input_, projection_matrix_, indices);
-  PCL_DEBUG_STREAM("[pcl::" << this->getName () << "::estimateProjectionMatrix] projection matrix=" << std::endl << projection_matrix_ << std::endl << "residual_sqr=" << residual_sqr << std::endl);
+  PCL_DEBUG_STREAM(std::string("[pcl::").append(this->getName ()) << std::string("::estimateProjectionMatrix] projection matrix=") << std::endl << projection_matrix_ << std::endl << std::string("residual_sqr=") << residual_sqr << std::endl);
   
   if (std::abs (residual_sqr) > eps_ * static_cast<float>(indices.size ()))
   {
