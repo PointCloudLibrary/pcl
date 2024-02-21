@@ -125,7 +125,7 @@ namespace pcl
       {
         Leaf () = default;
         int idx{-1};
-        int count{0};
+        unsigned int count{0};
       };
 
       /** \brief The 3D grid leaves. */
@@ -143,7 +143,7 @@ namespace pcl
       /** \brief The nearest neighbors search radius for each point. */
       double search_radius_{0.0};
 
-      /** \brief Minimum number of points per voxel for the centroid to be computed */
+      /** \brief Minimum number of points per voxel. */
       unsigned int min_points_per_voxel_{0};
 
       /** \brief Downsample a Point Cloud using a voxelized grid approach
