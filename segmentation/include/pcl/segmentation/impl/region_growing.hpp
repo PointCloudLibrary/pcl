@@ -705,5 +705,5 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloudRGBA ()
   return (colored_cloud);
 }
 
-#define PCL_INSTANTIATE_RegionGrowing(T) template class pcl::RegionGrowing<T, pcl::Normal>;
+#define PCL_INSTANTIATE_RegionGrowing(T) template class PCL_EXPORTS pcl::RegionGrowing<T, pcl::Normal>;
 

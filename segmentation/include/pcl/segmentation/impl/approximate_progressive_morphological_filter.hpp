@@ -266,7 +266,7 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (Indices& ground
 }
 
 
-#define PCL_INSTANTIATE_ApproximateProgressiveMorphologicalFilter(T) template class pcl::ApproximateProgressiveMorphologicalFilter<T>;
+#define PCL_INSTANTIATE_ApproximateProgressiveMorphologicalFilter(T) template class PCL_EXPORTS pcl::ApproximateProgressiveMorphologicalFilter<T>;
 
 #endif    // PCL_SEGMENTATION_APPROXIMATE_PROGRESSIVE_MORPHOLOGICAL_FILTER_HPP_
 

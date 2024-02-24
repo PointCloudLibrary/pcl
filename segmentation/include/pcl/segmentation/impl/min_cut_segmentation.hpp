@@ -579,6 +579,6 @@ pcl::MinCutSegmentation<PointT>::getColoredCloud ()
   return (colored_cloud);
 }
 
-#define PCL_INSTANTIATE_MinCutSegmentation(T) template class pcl::MinCutSegmentation<T>;
+#define PCL_INSTANTIATE_MinCutSegmentation(T) template class PCL_EXPORTS pcl::MinCutSegmentation<T>;
 
 #endif    // PCL_SEGMENTATION_MIN_CUT_SEGMENTATION_HPP_
