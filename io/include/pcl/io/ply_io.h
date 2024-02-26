@@ -603,7 +603,7 @@ namespace pcl
 	  writeBinary(std::ostream& fs, const pcl::PCLPointCloud2& cloud,
 				  const Eigen::Vector4f& origin = Eigen::Vector4f::Zero (), const Eigen::Quaternionf& orientation= Eigen::Quaternionf::Identity (),
 				  bool use_camera=true);
-
+      
       /** \brief Save point cloud data to a PLY file containing n-D points, in BINARY format
         * \param[in] file_name the output file name
         * \param[in] cloud the point cloud data message

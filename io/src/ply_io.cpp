@@ -1222,26 +1222,22 @@ pcl::PLYWriter::writeBinary (const std::string& file_name,
 
   if (!(writeBinary (fs, cloud, origin, orientation, use_camera) == 0))
   {
-
+    fs.close();
     return -1;
   }
-
+  fs.close();
   return 0;
 }
 
 int
-pcl::PLYWriter::writeBinary (std::ofstream& fs,
+pcl::PLYWriter::writeBinary (std::ostream& fs,
                              const pcl::PCLPointCloud2& cloud,
                              const Eigen::Vector4f& origin,
                              const Eigen::Quaternionf& orientation,
                              bool use_camera)
 {
-  if (!fs.is_open ())
-  {
-    PCL_ERROR ("[pcl::PLYWriter::writeBinary] Output stream is not open!\n");
-    return (-1);
-  }
-
+  fs.imbue(std::locale::classic());
+  
   unsigned int nr_points = cloud.width * cloud.height;
 
   // Compute the range_grid, if necessary, and then write out the PLY header
@@ -1479,7 +1475,7 @@ pcl::PLYWriter::writeBinary (std::ofstream& fs,
   }
 
   // Close file
-  fs.close ();
+  
   return (0);
 }
 
