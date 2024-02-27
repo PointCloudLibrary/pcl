@@ -352,7 +352,7 @@ namespace pcl
   };
 }
 
-#define PCL_INSTANTIATE_MomentOfInertiaEstimation(T) template class pcl::MomentOfInertiaEstimation<T>;
+#define PCL_INSTANTIATE_MomentOfInertiaEstimation(T) template class PCL_EXPORTS pcl::MomentOfInertiaEstimation<T>;
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/moment_of_inertia_estimation.hpp>

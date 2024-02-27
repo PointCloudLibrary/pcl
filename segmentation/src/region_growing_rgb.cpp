@@ -43,7 +43,7 @@
 #include <pcl/segmentation/impl/region_growing_rgb.hpp>
 
 // Instantiations of specific point types
-template class pcl::RegionGrowingRGB<pcl::PointXYZRGBA>;
-template class pcl::RegionGrowingRGB<pcl::PointXYZRGB>;
-template class pcl::RegionGrowingRGB<pcl::PointXYZRGBL>;
-template class pcl::RegionGrowingRGB<pcl::PointXYZRGBNormal>;
+template class PCL_EXPORTS pcl::RegionGrowingRGB<pcl::PointXYZRGBA>;
+template class PCL_EXPORTS pcl::RegionGrowingRGB<pcl::PointXYZRGB>;
+template class PCL_EXPORTS pcl::RegionGrowingRGB<pcl::PointXYZRGBL>;
+template class PCL_EXPORTS pcl::RegionGrowingRGB<pcl::PointXYZRGBNormal>;

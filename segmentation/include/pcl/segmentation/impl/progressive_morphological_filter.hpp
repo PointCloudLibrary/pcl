@@ -134,7 +134,7 @@ pcl::ProgressiveMorphologicalFilter<PointT>::extract (Indices& ground)
   deinitCompute ();
 }
 
-#define PCL_INSTANTIATE_ProgressiveMorphologicalFilter(T) template class pcl::ProgressiveMorphologicalFilter<T>;
+#define PCL_INSTANTIATE_ProgressiveMorphologicalFilter(T) template class PCL_EXPORTS pcl::ProgressiveMorphologicalFilter<T>;
 
 #endif    // PCL_SEGMENTATION_PROGRESSIVE_MORPHOLOGICAL_FILTER_HPP_
 
