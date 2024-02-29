@@ -261,7 +261,7 @@ Kd-tree
 
 **Documentation:** https://pointclouds.org/documentation/group__kdtree.html
 
-**Tutorials:** http://pointclouds.org/documentation/tutorials/#kdtree-tutorial
+**Tutorials:** https://pcl.readthedocs.io/projects/tutorials/en/master/kdtree_search.html
 
 **Interacts with:** Common_
 
