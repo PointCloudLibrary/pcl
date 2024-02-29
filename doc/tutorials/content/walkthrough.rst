@@ -249,7 +249,7 @@ Kd-tree
 
 	A theoretical primer explaining how Kd-trees work can be found in the `Kd-tree tutorial <https://pcl.readthedocs.io/projects/tutorials/en/master/kdtree_search.html>`_.
 
-	The *kdtree* library provides the kd-tree data-structure, using `FLANN <http://www.cs.ubc.ca/~mariusm/index.php/FLANN/FLANN>`_, that allows for fast `nearest neighbor searches <https://en.wikipedia.org/wiki/Nearest_neighbor_search>`_.
+	The *kdtree* library provides the kd-tree data-structure, using `FLANN <http://www.cs.ubc.ca/research/flann/>`_, that allows for fast `nearest neighbor searches <https://en.wikipedia.org/wiki/Nearest_neighbor_search>`_.
 
 	A `Kd-tree <https://en.wikipedia.org/wiki/Kd-tree>`_ (k-dimensional tree) is a space-partitioning data structure that stores a set of k-dimensional points in a tree structure that enables efficient range searches and nearest neighbor searches. Nearest neighbor searches are a core operation when working with point cloud data and can be used to find correspondences between groups of points or feature descriptors or to define the local neighborhood around a point or points.
 
