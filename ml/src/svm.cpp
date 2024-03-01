@@ -104,10 +104,9 @@ powi(double base, int times)
 
 #define INF HUGE_VAL
 #define TAU 1e-12
-// NOLINTBEGIN(bugprone-macro-parentheses)
 #define Malloc(type, n) static_cast<type*>(malloc((n) * sizeof(type)))
 #define Realloc(var, type, n) static_cast<type*>(realloc(var, (n) * sizeof(type)))
-// NOLINTEND(bugprone-macro-parentheses)
+
 static void
 print_string_stdout(const char* s)
 {
@@ -1909,7 +1908,7 @@ struct decision_function {
 static decision_function
 svm_train_one(const svm_problem* prob, const svm_parameter* param, double Cp, double Cn)
 {
-  double* alpha = new double[prob->l];
+  double* alpha = Malloc(double, prob->l);
   Solver::SolutionInfo si;
 
   switch (param->svm_type) {
