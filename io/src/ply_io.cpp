@@ -1230,13 +1230,13 @@ pcl::PLYWriter::writeBinary (const std::string& file_name,
 }
 
 int
-pcl::PLYWriter::writeBinary (std::ostream& fs,
+pcl::PLYWriter::writeBinary (std::ostream& os,
                              const pcl::PCLPointCloud2& cloud,
                              const Eigen::Vector4f& origin,
                              const Eigen::Quaternionf& orientation,
                              bool use_camera)
 {
-  fs.imbue(std::locale::classic());
+  os.imbue(std::locale::classic());
   
   unsigned int nr_points = cloud.width * cloud.height;
 
@@ -1274,11 +1274,11 @@ pcl::PLYWriter::writeBinary (std::ostream& fs,
           rangegrid[i] = -1;
       }
     }
-    fs << generateHeader (cloud, origin, orientation, true, use_camera, valid_points);
+    os << generateHeader (cloud, origin, orientation, true, use_camera, valid_points);
   }
   else
   {
-    fs << generateHeader (cloud, origin, orientation, true, use_camera, nr_points);
+    os << generateHeader (cloud, origin, orientation, true, use_camera, nr_points);
   }
 
   // Iterate through the points
@@ -1297,7 +1297,7 @@ pcl::PLYWriter::writeBinary (std::ostream& fs,
       if (count > 1)
       {
         static unsigned int ucount (count);
-        fs.write (reinterpret_cast<const char*> (&ucount), sizeof (unsigned int));
+        os.write (reinterpret_cast<const char*> (&ucount), sizeof (unsigned int));
       }
       // Ignore invalid padded dimensions that are inherited from binary data
       if (cloud.fields[d].name == "_")
@@ -1313,14 +1313,14 @@ pcl::PLYWriter::writeBinary (std::ostream& fs,
         {
         case pcl::PCLPointField::INT8:
         {
-          fs.write (
+          os.write (
               &cloud.at<char> (i, cloud.fields[d].offset + (total + c) * sizeof (char)),
               sizeof (char));
           break;
         }
         case pcl::PCLPointField::UINT8:
         {
-          fs.write (
+          os.write (
               reinterpret_cast<const char*> (&cloud.at<unsigned char> (
                   i, cloud.fields[d].offset + (total + c) * sizeof (unsigned char))),
               sizeof (unsigned char));
@@ -1328,14 +1328,14 @@ pcl::PLYWriter::writeBinary (std::ostream& fs,
         }
         case pcl::PCLPointField::INT16:
         {
-          fs.write (reinterpret_cast<const char*> (&cloud.at<short> (
+          os.write (reinterpret_cast<const char*> (&cloud.at<short> (
                         i, cloud.fields[d].offset + (total + c) * sizeof (short))),
                     sizeof (short));
           break;
         }
         case pcl::PCLPointField::UINT16:
         {
-          fs.write (
+          os.write (
               reinterpret_cast<const char*> (&cloud.at<unsigned short> (
                   i, cloud.fields[d].offset + (total + c) * sizeof (unsigned short))),
               sizeof (unsigned short));
@@ -1343,7 +1343,7 @@ pcl::PLYWriter::writeBinary (std::ostream& fs,
         }
         case pcl::PCLPointField::INT32:
         {
-          fs.write (reinterpret_cast<const char*> (&cloud.at<int> (
+          os.write (reinterpret_cast<const char*> (&cloud.at<int> (
                         i, cloud.fields[d].offset + (total + c) * sizeof (int))),
                     sizeof (int));
           break;
@@ -1352,7 +1352,7 @@ pcl::PLYWriter::writeBinary (std::ostream& fs,
         {
           if (cloud.fields[d].name.find ("rgba") == std::string::npos)
           {
-            fs.write (
+            os.write (
                 reinterpret_cast<const char*> (&cloud.at<unsigned int> (
                     i, cloud.fields[d].offset + (total + c) * sizeof (unsigned int))),
                 sizeof (unsigned int));
@@ -1361,10 +1361,10 @@ pcl::PLYWriter::writeBinary (std::ostream& fs,
           {
             const auto& color = cloud.at<pcl::RGB> (
                 i, cloud.fields[d].offset + (total + c) * sizeof (pcl::RGB));
-            fs.write (reinterpret_cast<const char*> (&color.r), sizeof (unsigned char));
-            fs.write (reinterpret_cast<const char*> (&color.g), sizeof (unsigned char));
-            fs.write (reinterpret_cast<const char*> (&color.b), sizeof (unsigned char));
-            fs.write (reinterpret_cast<const char*> (&color.a), sizeof (unsigned char));
+            os.write (reinterpret_cast<const char*> (&color.r), sizeof (unsigned char));
+            os.write (reinterpret_cast<const char*> (&color.g), sizeof (unsigned char));
+            os.write (reinterpret_cast<const char*> (&color.b), sizeof (unsigned char));
+            os.write (reinterpret_cast<const char*> (&color.a), sizeof (unsigned char));
           }
           break;
         }
@@ -1372,7 +1372,7 @@ pcl::PLYWriter::writeBinary (std::ostream& fs,
         {
           if (cloud.fields[d].name.find ("rgb") == std::string::npos)
           {
-            fs.write (reinterpret_cast<const char*> (&cloud.at<float> (
+            os.write (reinterpret_cast<const char*> (&cloud.at<float> (
                           i, cloud.fields[d].offset + (total + c) * sizeof (float))),
                       sizeof (float));
           }
@@ -1380,15 +1380,15 @@ pcl::PLYWriter::writeBinary (std::ostream& fs,
           {
             const auto& color = cloud.at<pcl::RGB> (
                 i, cloud.fields[d].offset + (total + c) * sizeof (pcl::RGB));
-            fs.write (reinterpret_cast<const char*> (&color.r), sizeof (unsigned char));
-            fs.write (reinterpret_cast<const char*> (&color.g), sizeof (unsigned char));
-            fs.write (reinterpret_cast<const char*> (&color.b), sizeof (unsigned char));
+            os.write (reinterpret_cast<const char*> (&color.r), sizeof (unsigned char));
+            os.write (reinterpret_cast<const char*> (&color.g), sizeof (unsigned char));
+            os.write (reinterpret_cast<const char*> (&color.b), sizeof (unsigned char));
           }
           break;
         }
         case pcl::PCLPointField::FLOAT64:
         {
-          fs.write (reinterpret_cast<const char*> (&cloud.at<double> (
+          os.write (reinterpret_cast<const char*> (&cloud.at<double> (
                         i, cloud.fields[d].offset + (total + c) * sizeof (double))),
                     sizeof (double));
           break;
@@ -1413,13 +1413,13 @@ pcl::PLYWriter::writeBinary (std::ostream& fs,
         t = origin[i] / origin[3];
       else
         t = origin[i];
-      fs.write (reinterpret_cast<const char*> (&t), sizeof (float));
+      os.write (reinterpret_cast<const char*> (&t), sizeof (float));
     }
     Eigen::Matrix3f R = orientation.toRotationMatrix ();
     for (int i = 0; i < 3; ++i)
       for (int j = 0; j < 3; ++j)
       {
-        fs.write (reinterpret_cast<const char*> (&R (i, j)), sizeof (float));
+        os.write (reinterpret_cast<const char*> (&R (i, j)), sizeof (float));
       }
 
     /////////////////////////////////////////////////////
@@ -1438,17 +1438,17 @@ pcl::PLYWriter::writeBinary (std::ostream& fs,
 
     const float zerof = 0;
     for (int i = 0; i < 5; ++i)
-      fs.write (reinterpret_cast<const char*> (&zerof), sizeof (float));
+      os.write (reinterpret_cast<const char*> (&zerof), sizeof (float));
 
     // width and height
     int width = cloud.width;
-    fs.write (reinterpret_cast<const char*> (&width), sizeof (int));
+    os.write (reinterpret_cast<const char*> (&width), sizeof (int));
 
     int height = cloud.height;
-    fs.write (reinterpret_cast<const char*> (&height), sizeof (int));
+    os.write (reinterpret_cast<const char*> (&height), sizeof (int));
 
     for (int i = 0; i < 2; ++i)
-      fs.write (reinterpret_cast<const char*> (&zerof), sizeof (float));
+      os.write (reinterpret_cast<const char*> (&zerof), sizeof (float));
   }
   else if (doRangeGrid)
   {
@@ -1460,15 +1460,15 @@ pcl::PLYWriter::writeBinary (std::ostream& fs,
       if (rangegrid[i] >= 0)
       {
         listlen = 1;
-        fs.write (reinterpret_cast<const char*> (&listlen),
+        os.write (reinterpret_cast<const char*> (&listlen),
                   sizeof (pcl::io::ply::uint8));
-        fs.write (reinterpret_cast<const char*> (&rangegrid[i]),
+        os.write (reinterpret_cast<const char*> (&rangegrid[i]),
                   sizeof (pcl::io::ply::int32));
       }
       else
       {
         listlen = 0;
-        fs.write (reinterpret_cast<const char*> (&listlen),
+        os.write (reinterpret_cast<const char*> (&listlen),
                   sizeof (pcl::io::ply::uint8));
       }
     }

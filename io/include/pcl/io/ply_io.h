@@ -592,7 +592,7 @@ namespace pcl
                   int precision = 8,
                   bool use_camera = true);
 	  /** \brief Save point cloud data to a std::ostream containing n-D points, in BINARY format
-	   * \param[in] fs the output buffer
+	   * \param[in] os the output buffer
 	   * \param[in] cloud the point cloud data message
 	   * \param[in] origin the sensor data acquisition origin
 	   * (translation) \param[in] orientation the sensor data acquisition origin
@@ -600,7 +600,7 @@ namespace pcl
 	   * camera else element range_grid will be used
 	   */
 	  int
-	  writeBinary(std::ostream& fs, const pcl::PCLPointCloud2& cloud,
+	  writeBinary(std::ostream& os, const pcl::PCLPointCloud2& cloud,
 				  const Eigen::Vector4f& origin = Eigen::Vector4f::Zero (), const Eigen::Quaternionf& orientation= Eigen::Quaternionf::Identity (),
 				  bool use_camera=true);
       
