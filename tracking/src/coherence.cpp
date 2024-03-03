@@ -45,13 +45,15 @@
 #include <pcl/point_types.h>
 
 // clang-format off
-PCL_INSTANTIATE(ApproxNearestPairPointCloudCoherence, PCL_XYZ_POINT_TYPES)
 PCL_INSTANTIATE(DistanceCoherence, PCL_XYZ_POINT_TYPES)
 PCL_INSTANTIATE(HSVColorCoherence,
                 (pcl::PointXYZRGB)
                 (pcl::PointXYZRGBNormal)
                 (pcl::PointXYZRGBA))
 PCL_INSTANTIATE(NearestPairPointCloudCoherence, PCL_XYZ_POINT_TYPES)
+// NearestPairPointCloudCoherence is the parent class of ApproxNearestPairPointCloudCoherence.
+// They must be instantiated in this order, otherwise visibility attributes of the former are not applied correctly.
+PCL_INSTANTIATE(ApproxNearestPairPointCloudCoherence, PCL_XYZ_POINT_TYPES)
 PCL_INSTANTIATE(NormalCoherence, PCL_NORMAL_POINT_TYPES)
 // clang-format on
 #endif // PCL_NO_PRECOMPILE

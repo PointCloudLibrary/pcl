@@ -420,6 +420,6 @@ pcl::UnaryClassifier<PointT>::segment (pcl::PointCloud<pcl::PointXYZRGBL>::Ptr &
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define PCL_INSTANTIATE_UnaryClassifier(T) template class pcl::UnaryClassifier<T>;
+#define PCL_INSTANTIATE_UnaryClassifier(T) template class PCL_EXPORTS pcl::UnaryClassifier<T>;
 
 #endif    // PCL_UNARY_CLASSIFIER_HPP_
