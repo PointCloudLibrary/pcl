@@ -166,7 +166,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
   // translation score (solutions with small translation are down-voted)
   float scale = 1.f;
   if (use_trl_score_) {
-    float trl = transformation.rightCols<1>().head(3).norm();
+    float trl = transformation.rightCols<1>().head<3>().norm();
     float trl_ratio =
         (trl - lower_trl_boundary_) / (upper_trl_boundary_ - lower_trl_boundary_);
 
@@ -244,7 +244,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getNBestCandid
     for (const auto& c2 : candidates) {
       Eigen::Matrix4f diff =
           candidate.transformation.colPivHouseholderQr().solve(c2.transformation);
-      const float angle3d = Eigen::AngleAxisf(diff.block<3, 3>(0, 0)).angle();
+      const float angle3d = Eigen::AngleAxisf(diff.topLeftCorner<3, 3>()).angle();
       const float translation3d = diff.block<3, 1>(0, 3).norm();
       unique = angle3d > min_angle3d && translation3d > min_translation3d;
       if (!unique) {
@@ -281,7 +281,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getTBestCandid
     for (const auto& c2 : candidates) {
       Eigen::Matrix4f diff =
           candidate.transformation.colPivHouseholderQr().solve(c2.transformation);
-      const float angle3d = Eigen::AngleAxisf(diff.block<3, 3>(0, 0)).angle();
+      const float angle3d = Eigen::AngleAxisf(diff.topLeftCorner<3, 3>()).angle();
       const float translation3d = diff.block<3, 1>(0, 3).norm();
       unique = angle3d > min_angle3d && translation3d > min_translation3d;
       if (!unique) {

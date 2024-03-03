@@ -635,9 +635,9 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
                             p_trans_src[1] - p_tgt[1],
                             p_trans_src[2] - p_tgt[2]);
     const Eigen::Matrix3d& M = gicp_->mahalanobis(src_idx);
-    const Eigen::Vector3d Md(M * d); // Md = M*d
-    gradient.head<3>() += Md;        // translation gradient
-    hessian.block<3, 3>(0, 0) += M;  // translation-translation hessian
+    const Eigen::Vector3d Md(M * d);    // Md = M*d
+    gradient.head<3>() += Md;           // translation gradient
+    hessian.topLeftCorner<3, 3>() += M; // translation-translation hessian
     p_trans_src = base_transformation_float * p_src;
     const Eigen::Vector3d p_base_src(p_trans_src[0], p_trans_src[1], p_trans_src[2]);
     dCost_dR_T.noalias() += p_base_src * Md.transpose();
@@ -657,7 +657,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
   gradient.head<3>() *= 2.0 / m; // translation gradient
   dCost_dR_T *= 2.0 / m;
   gicp_->computeRDerivative(x, dCost_dR_T, gradient); // rotation gradient
-  hessian.block<3, 3>(0, 0) *= 2.0 / m;               // translation-translation hessian
+  hessian.topLeftCorner<3, 3>() *= 2.0 / m;           // translation-translation hessian
   // translation-rotation hessian
   dCost_dR_T1.row(0) = dCost_dR_T1b.col(0);
   dCost_dR_T1.row(1) = dCost_dR_T2b.col(0);

@@ -225,7 +225,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters (const Eig
   Eigen::Vector3f pos_vec = extrinsics.block<3, 1> (0, 3);
 
   // Rotate the view vector
-  Eigen::Matrix3f rotation = extrinsics.block<3, 3> (0, 0);
+  Eigen::Matrix3f rotation = extrinsics.topLeftCorner<3, 3> ();
   Eigen::Vector3f y_axis (0.f, 1.f, 0.f);
   Eigen::Vector3f up_vec (rotation * y_axis);
 
