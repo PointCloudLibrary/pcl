@@ -19,6 +19,7 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.11)
 
     set(CUDA_FOUND TRUE)
     set(CUDA_VERSION_STRING ${CMAKE_CUDA_COMPILER_VERSION})
+    set(CUDA_TOOLKIT_INCLUDE ${CUDAToolkit_INCLUDE_DIRS})
   else()
     message(STATUS "No CUDA compiler found")
   endif()
