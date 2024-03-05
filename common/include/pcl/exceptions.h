@@ -46,12 +46,14 @@
   * PCL_THROW_EXCEPTION(IOException,
   *                     "encountered an error while opening " << filename << " PCD file");
   */
+// NOLINTBEGIN(bugprone-macro-parentheses)
 #define PCL_THROW_EXCEPTION(ExceptionName, message)                         \
 {                                                                           \
   std::ostringstream s;                                                     \
   s << message;                                                             \
   throw ExceptionName(s.str(), __FILE__, BOOST_CURRENT_FUNCTION, __LINE__); \
 }
+// NOLINTEND(bugprone-macro-parentheses)
 
 namespace pcl
 {

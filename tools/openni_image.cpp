@@ -97,7 +97,7 @@ do \
     ++count; \
     if (now - last >= 1.0) \
     { \
-      std::cerr << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz. Queue size: " << buff.getSize () << ", number of frames written so far: " << nr_frames_total << "\n"; \
+      std::cerr << "Average framerate("<< (_WHAT_) << "): " << double(count)/double(now - last) << " Hz. Queue size: " << (buff).getSize () << ", number of frames written so far: " << nr_frames_total << "\n"; \
       count = 0; \
       last = now; \
     } \
@@ -112,7 +112,7 @@ do \
     ++count; \
     if (now - last >= 1.0) \
     { \
-      std::cerr << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz. Queue size: " << buff.getSize () << "\n"; \
+      std::cerr << "Average framerate("<< (_WHAT_) << "): " << double(count)/double(now - last) << " Hz. Queue size: " << (buff).getSize () << "\n"; \
       count = 0; \
       last = now; \
     } \
@@ -128,9 +128,9 @@ do \
     if (now - last >= 1.0) \
     { \
       if (visualize && global_visualize) \
-        std::cerr << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz. Queue size: " << buff1.getSize () << " (w) / " << buff2.getSize () << " (v)\n"; \
+        std::cerr << "Average framerate("<< (_WHAT_) << "): " << double(count)/double(now - last) << " Hz. Queue size: " << (buff1).getSize () << " (w) / " << (buff2).getSize () << " (v)\n"; \
       else \
-        std::cerr << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz. Queue size: " << buff1.getSize () << " (w)\n"; \
+        std::cerr << "Average framerate("<< (_WHAT_) << "): " << double(count)/double(now - last) << " Hz. Queue size: " << (buff1).getSize () << " (w)\n"; \
       count = 0; \
       last = now; \
     } \

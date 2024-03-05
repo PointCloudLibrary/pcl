@@ -225,7 +225,7 @@ scaleInPlace (pcl::PCLPointCloud2 &cloud, double* multiplier)
 #define MULTIPLY(CASE_LABEL)                                                           \
   case CASE_LABEL: {                                                                   \
     for (int i = 0; i < 3; ++i)                                                        \
-      multiply<pcl::traits::asType_t<CASE_LABEL>>(                                     \
+      multiply<pcl::traits::asType_t<(CASE_LABEL)>>(                                   \
           cloud, xyz_offset[i], multiplier[i]);                                        \
     break;                                                                             \
   }
