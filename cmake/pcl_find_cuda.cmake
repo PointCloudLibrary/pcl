@@ -12,6 +12,7 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.11)
 
     if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.17)
       find_package(CUDAToolkit QUIET)
+      set(CUDA_TOOLKIT_INCLUDE ${CUDAToolkit_INCLUDE_DIRS})
     else()
       set(CUDA_FIND_QUIETLY TRUE)
       find_package(CUDA 9.0)
