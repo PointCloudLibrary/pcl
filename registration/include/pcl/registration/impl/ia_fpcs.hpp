@@ -350,7 +350,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
       float d1 = pcl::squaredEuclideanDistance(*pt4, *pt1);
       float d2 = pcl::squaredEuclideanDistance(*pt4, *pt2);
       float d3 = pcl::squaredEuclideanDistance(*pt4, *pt3);
-      float d4 = (pt4->getVector3fMap() - centre_pt.head(3)).squaredNorm();
+      float d4 = (pt4->getVector3fMap() - centre_pt.head<3>()).squaredNorm();
 
       // check distance between points w.r.t minimum sampling distance; EDITED -> 4th
       // point now also limited by max base line

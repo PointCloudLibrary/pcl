@@ -194,7 +194,7 @@ TransformationEstimationSVD<PointSource, PointTarget, Scalar>::
 
   // Assemble the correlation matrix H = source * target'
   Eigen::Matrix<Scalar, 3, 3> H =
-      (cloud_src_demean * cloud_tgt_demean.transpose()).topLeftCorner(3, 3);
+      (cloud_src_demean * cloud_tgt_demean.transpose()).template topLeftCorner<3, 3>();
 
   // Compute the Singular Value Decomposition
   Eigen::JacobiSVD<Eigen::Matrix<Scalar, 3, 3>> svd(
@@ -211,9 +211,10 @@ TransformationEstimationSVD<PointSource, PointTarget, Scalar>::
   Eigen::Matrix<Scalar, 3, 3> R = v * u.transpose();
 
   // Return the correct transformation
-  transformation_matrix.topLeftCorner(3, 3) = R;
-  const Eigen::Matrix<Scalar, 3, 1> Rc(R * centroid_src.head(3));
-  transformation_matrix.block(0, 3, 3, 1) = centroid_tgt.head(3) - Rc;
+  transformation_matrix.template topLeftCorner<3, 3>() = R;
+  const Eigen::Matrix<Scalar, 3, 1> Rc(R * centroid_src.template head<3>());
+  transformation_matrix.template block<3, 1>(0, 3) =
+      centroid_tgt.template head<3>() - Rc;
 
   if (pcl::console::isVerbosityLevelEnabled(pcl::console::L_DEBUG)) {
     size_t N = cloud_src_demean.cols();

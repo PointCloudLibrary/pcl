@@ -1249,10 +1249,10 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
 
   Eigen::Affine3f source_transformation;
   source_transformation.linear () = source_points->sensor_orientation_.matrix ();
-  source_transformation.translation () = source_points->sensor_origin_.head (3);
+  source_transformation.translation () = source_points->sensor_origin_.template head<3> ();
   Eigen::Affine3f target_transformation;
   target_transformation.linear () = target_points->sensor_orientation_.matrix ();
-  target_transformation.translation () = target_points->sensor_origin_.head (3);
+  target_transformation.translation () = target_points->sensor_origin_.template head<3> ();
 
   int j = 0;
   // Draw lines between the best corresponding points

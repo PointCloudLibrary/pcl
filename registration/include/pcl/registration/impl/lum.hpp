@@ -254,8 +254,8 @@ LUM<PointT>::compute()
 
         // Fill in elements of G and B
         if (vj > 0)
-          G.block(6 * (vi - 1), 6 * (vj - 1), 6, 6) = -(*slam_graph_)[e].cinv_;
-        G.block(6 * (vi - 1), 6 * (vi - 1), 6, 6) += (*slam_graph_)[e].cinv_;
+          G.block<6, 6>(6 * (vi - 1), 6 * (vj - 1)) = -(*slam_graph_)[e].cinv_;
+        G.block<6, 6>(6 * (vi - 1), 6 * (vi - 1)) += (*slam_graph_)[e].cinv_;
         B.segment(6 * (vi - 1), 6) += (present1 ? 1 : -1) * (*slam_graph_)[e].cinvd_;
       }
     }

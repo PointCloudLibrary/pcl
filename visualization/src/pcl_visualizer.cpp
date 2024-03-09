@@ -4162,8 +4162,8 @@ pcl::visualization::PCLVisualizer::getTransformationMatrix (
     Eigen::Matrix4f &transformation)
 {
   transformation.setIdentity ();
-  transformation.block<3, 3> (0, 0) = orientation.toRotationMatrix ();
-  transformation.block<3, 1> (0, 3) = origin.head (3);
+  transformation.topLeftCorner<3, 3> () = orientation.toRotationMatrix ();
+  transformation.block<3, 1> (0, 3) = origin.head<3> ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

@@ -695,8 +695,8 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
   //[R^t  , -R^t*Centroid ]
   //[0    , 1             ]
   Eigen::Matrix<Scalar, 4, 4> transform = Eigen::Matrix<Scalar, 4, 4>::Identity();
-  transform.topLeftCorner(3, 3) = obb_rotational_matrix.transpose();
-  transform.topRightCorner(3, 1) =-transform.topLeftCorner(3, 3)*centroid;
+  transform.template topLeftCorner<3, 3>() = obb_rotational_matrix.transpose();
+  transform.template topRightCorner<3, 1>() =-transform.template topLeftCorner<3, 3>()*centroid;
 
   //when Scalar==double on a Windows 10 machine and MSVS:
   //if you substitute the following Scalars with floats you get a 20% worse processing time, if with 2 PointT 55% worse
@@ -829,8 +829,8 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
   //[R^t  , -R^t*Centroid ]
   //[0    , 1             ]
   Eigen::Matrix<Scalar, 4, 4> transform = Eigen::Matrix<Scalar, 4, 4>::Identity();
-  transform.topLeftCorner(3, 3) = obb_rotational_matrix.transpose();
-  transform.topRightCorner(3, 1) =-transform.topLeftCorner(3, 3)*centroid;
+  transform.template topLeftCorner<3, 3>() = obb_rotational_matrix.transpose();
+  transform.template topRightCorner<3, 1>() =-transform.template topLeftCorner<3, 3>()*centroid;
 
   //when Scalar==double on a Windows 10 machine and MSVS:
   //if you substitute the following Scalars with floats you get a 20% worse processing time, if with 2 PointT 55% worse

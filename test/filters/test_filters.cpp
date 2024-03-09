@@ -1998,11 +1998,11 @@ TEST (FrustumCulling, Filters)
     Eigen::AngleAxisf (0 * M_PI / 180, Eigen::Vector3f::UnitY ()) *
     Eigen::AngleAxisf (0 * M_PI / 180, Eigen::Vector3f::UnitZ ());
 
-  camera_pose.block (0, 0, 3, 3) = R;
+  camera_pose.topLeftCorner<3, 3> () = R;
 
   Eigen::Vector3f T;
   T (0) = -5; T (1) = 0; T (2) = 0;
-  camera_pose.block (0, 3, 3, 1) = T;
+  camera_pose.block<3, 1> (0, 3) = T;
   camera_pose (3, 3) = 1;
 
   fc.setCameraPose (camera_pose);
