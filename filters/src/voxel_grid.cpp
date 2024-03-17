@@ -48,10 +48,9 @@ using Array4size_t = Eigen::Array<std::size_t, 4, 1>;
 // NOLINTBEGIN(readability-container-data-pointer)
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
-                  Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt)
+pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, const pcl::Indices &indices, int x_idx, int y_idx, int z_idx,
+            Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt)
 {
-  // @todo fix this
   if (cloud->fields[x_idx].datatype != pcl::PCLPointField::FLOAT32 ||
       cloud->fields[y_idx].datatype != pcl::PCLPointField::FLOAT32 ||
       cloud->fields[z_idx].datatype != pcl::PCLPointField::FLOAT32)
@@ -64,28 +63,39 @@ pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx
   min_p.setConstant (std::numeric_limits<float>::max());
   max_p.setConstant (std::numeric_limits<float>::lowest());
 
-  std::size_t nr_points = cloud->width * cloud->height;
-
   Eigen::Array4f pt = Eigen::Array4f::Zero ();
   Array4size_t xyz_offset (cloud->fields[x_idx].offset, cloud->fields[y_idx].offset, cloud->fields[z_idx].offset, 0);
 
-  for (std::size_t cp = 0; cp < nr_points; ++cp)
+  if(cloud->is_dense) // no need to check validity of points
   {
-    // Unoptimized memcpys: assume fields x, y, z are in random order
-    memcpy (&pt[0], &cloud->data[xyz_offset[0]], sizeof (float));
-    memcpy (&pt[1], &cloud->data[xyz_offset[1]], sizeof (float));
-    memcpy (&pt[2], &cloud->data[xyz_offset[2]], sizeof (float));
-    // Check if the point is invalid
-    if (!std::isfinite (pt[0]) || 
-        !std::isfinite (pt[1]) || 
-        !std::isfinite (pt[2]))
+    for (const auto& index : indices)
     {
-      xyz_offset += cloud->point_step;
-      continue;
+      // Unoptimized memcpys: assume fields x, y, z are in random order
+      memcpy(&pt[0],&cloud->data[xyz_offset[0] + cloud->point_step * index],sizeof(float));
+      memcpy(&pt[1],&cloud->data[xyz_offset[1] + cloud->point_step * index],sizeof(float));
+      memcpy(&pt[2],&cloud->data[xyz_offset[2] + cloud->point_step * index],sizeof(float));
+      min_p = (min_p.min)(pt);
+      max_p = (max_p.max)(pt);
     }
-    xyz_offset += cloud->point_step;
-    min_p = (min_p.min) (pt);
-    max_p = (max_p.max) (pt);
+  }
+  else
+  {
+    for (const auto& index : indices)
+    {
+      // Unoptimized memcpys: assume fields x, y, z are in random order
+      memcpy(&pt[0],&cloud->data[xyz_offset[0] + cloud->point_step * index],sizeof(float));
+      memcpy(&pt[1],&cloud->data[xyz_offset[1] + cloud->point_step * index],sizeof(float));
+      memcpy(&pt[2],&cloud->data[xyz_offset[2] + cloud->point_step * index],sizeof(float));
+      // Check if the point is invalid
+      if (!std::isfinite(pt[0]) ||
+          !std::isfinite(pt[1]) ||
+          !std::isfinite(pt[2]))
+      {
+        continue;
+      }
+      min_p = (min_p.min)(pt);
+      max_p = (max_p.max)(pt);
+    }
   }
   min_pt = min_p;
   max_pt = max_p;
@@ -93,9 +103,9 @@ pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
-                  const std::string &distance_field_name, float min_distance, float max_distance,
-                  Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative)
+pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, const pcl::Indices &indices, int x_idx, int y_idx, int z_idx,
+            const std::string &distance_field_name, float min_distance, float max_distance,
+            Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative)
 {
   // @todo fix this
   if (cloud->fields[x_idx].datatype != pcl::PCLPointField::FLOAT32 ||
@@ -120,59 +130,98 @@ pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx
     return;
   }
 
-  std::size_t nr_points = cloud->width * cloud->height;
-
   Eigen::Array4f pt = Eigen::Array4f::Zero ();
   Array4size_t xyz_offset (cloud->fields[x_idx].offset,
                            cloud->fields[y_idx].offset,
                            cloud->fields[z_idx].offset,
                            0);
   float distance_value = 0;
-  for (std::size_t cp = 0; cp < nr_points; ++cp)
+  if(cloud->is_dense)
   {
-    std::size_t point_offset = cp * cloud->point_step;
+    for (const auto& index : indices) {
+      std::size_t point_offset = index * cloud->point_step;
 
-    // Get the distance value
-    memcpy (&distance_value, &cloud->data[point_offset + cloud->fields[distance_idx].offset], sizeof (float));
+      // Get the distance value
+      memcpy(&distance_value,
+             &cloud->data[point_offset + cloud->fields[distance_idx].offset],
+             sizeof(float));
 
-    if (limit_negative)
-    {
-      // Use a threshold for cutting out points which inside the interval
-      if ((distance_value < max_distance) && (distance_value > min_distance))
-      {
-        xyz_offset += cloud->point_step;
+      if (limit_negative) {
+        // Use a threshold for cutting out points which inside the interval
+        if ((distance_value < max_distance) && (distance_value > min_distance)) {
+          continue;
+        }
+      }
+      else {
+        // Use a threshold for cutting out points which are too close/far away
+        if ((distance_value > max_distance) || (distance_value < min_distance)) {
+          continue;
+        }
+      }
+
+      // Unoptimized memcpys: assume fields x, y, z are in random order
+      memcpy(&pt[0],
+             &cloud->data[xyz_offset[0] + index * cloud->point_step],
+             sizeof(float));
+      memcpy(&pt[1],
+             &cloud->data[xyz_offset[1] + index * cloud->point_step],
+             sizeof(float));
+      memcpy(&pt[2],
+             &cloud->data[xyz_offset[2] + index * cloud->point_step],
+             sizeof(float));
+      // Check if the point is invalid
+      if (!std::isfinite(pt[0]) || !std::isfinite(pt[1]) || !std::isfinite(pt[2])) {
         continue;
       }
+      min_p = (min_p.min)(pt);
+      max_p = (max_p.max)(pt);
     }
-    else
+  }
+  else
+  {
+    for (const auto& index : indices)
     {
-      // Use a threshold for cutting out points which are too close/far away
-      if ((distance_value > max_distance) || (distance_value < min_distance))
+      std::size_t point_offset = index * cloud->point_step;
+
+      // Get the distance value
+      memcpy(&distance_value,&cloud->data[point_offset + cloud->fields[distance_idx].offset],sizeof(float));
+
+      if (limit_negative)
       {
-        xyz_offset += cloud->point_step;
+        // Use a threshold for cutting out points which inside the interval
+        if ((distance_value < max_distance) && (distance_value > min_distance))
+        {
+          continue;
+        }
+      }
+      else
+      {
+        // Use a threshold for cutting out points which are too close/far away
+        if ((distance_value > max_distance) || (distance_value < min_distance))
+        {
+          continue;
+        }
+      }
+
+      // Unoptimized memcpys: assume fields x, y, z are in random order
+      memcpy(&pt[0],&cloud->data[xyz_offset[0] + index * cloud->point_step],sizeof(float));
+      memcpy(&pt[1],&cloud->data[xyz_offset[1] + index * cloud->point_step],sizeof(float));
+      memcpy(&pt[2],&cloud->data[xyz_offset[2] + index * cloud->point_step],sizeof(float));
+      // Check if the point is invalid
+      if (!std::isfinite(pt[0])
+          || !std::isfinite(pt[1])
+          || !std::isfinite(pt[2]))
+      {
         continue;
       }
+      min_p = (min_p.min)(pt);
+      max_p = (max_p.max)(pt);
     }
-
-    // Unoptimized memcpys: assume fields x, y, z are in random order
-    memcpy (&pt[0], &cloud->data[xyz_offset[0]], sizeof (float));
-    memcpy (&pt[1], &cloud->data[xyz_offset[1]], sizeof (float));
-    memcpy (&pt[2], &cloud->data[xyz_offset[2]], sizeof (float));
-    // Check if the point is invalid
-    if (!std::isfinite (pt[0]) || 
-        !std::isfinite (pt[1]) || 
-        !std::isfinite (pt[2]))
-    {
-      xyz_offset += cloud->point_step;
-      continue;
-    }
-    xyz_offset += cloud->point_step;
-    min_p = (min_p.min) (pt);
-    max_p = (max_p.max) (pt);
   }
   min_pt = min_p;
   max_pt = max_p;
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -186,7 +235,6 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     output.data.clear ();
     return;
   }
-  std::size_t nr_points  = input_->width * input_->height;
 
   // Copy the header (and thus the frame_id) + allocate enough space for points
   output.height         = 1;                    // downsampling breaks the organized structure
@@ -217,11 +265,11 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   Eigen::Vector4f min_p, max_p;
   // Get the minimum and maximum dimensions
   if (!filter_field_name_.empty ()) // If we don't want to process the entire cloud...
-    getMinMax3D (input_, x_idx_, y_idx_, z_idx_, filter_field_name_, 
-                 static_cast<float> (filter_limit_min_), 
+    getMinMax3D (input_, *indices_, x_idx_, y_idx_, z_idx_, filter_field_name_,
+                 static_cast<float> (filter_limit_min_),
                  static_cast<float> (filter_limit_max_), min_p, max_p, filter_limit_negative_);
   else
-    getMinMax3D (input_, x_idx_, y_idx_, z_idx_, min_p, max_p);
+    getMinMax3D (input_, *indices_, x_idx_, y_idx_, z_idx_, min_p, max_p);
 
   // Check that the leaf size is not too small, given the size of the data
   std::int64_t dx = static_cast<std::int64_t>((max_p[0] - min_p[0]) * inverse_leaf_size_[0])+1;
@@ -249,7 +297,7 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   div_b_[3] = 0;
 
   std::vector<cloud_point_index_idx> index_vector;
-  index_vector.reserve (nr_points);
+  index_vector.reserve (indices_->size());
 
   // Create the first xyz_offset, and set up the division multiplier
   Array4size_t xyz_offset (input_->fields[x_idx_].offset,
@@ -265,8 +313,8 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   if (downsample_all_data_)
   {
     centroid_size = static_cast<int> (input_->fields.size ());
-    
-    // ---[ RGB special case 
+
+    // ---[ RGB special case
     // if the data contains "rgba" or "rgb", add an extra field for r/g/b in centroid
     for (int d = 0; d < centroid_size; ++d)
     {
@@ -278,7 +326,7 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       }
     }
   }
-  
+
   // If we don't want to process the entire cloud, but rather filter points far away from the viewpoint first...
   if (!filter_field_name_.empty ())
   {
@@ -298,9 +346,9 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     // with calculated idx. Points with the same idx value will contribute to the
     // same point of resulting CloudPoint
     float distance_value = 0;
-    for (std::size_t cp = 0; cp < nr_points; ++cp)
+    for (const auto &index : *indices_)
     {
-      std::size_t point_offset = cp * input_->point_step;
+      std::size_t point_offset = index * input_->point_step;
       // Get the distance value
       memcpy (&distance_value, &input_->data[point_offset + input_->fields[distance_idx].offset], sizeof (float));
 
@@ -309,7 +357,6 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
         // Use a threshold for cutting out points which inside the interval
         if (distance_value < filter_limit_max_ && distance_value > filter_limit_min_)
         {
-          xyz_offset += input_->point_step;
           continue;
         }
       }
@@ -318,22 +365,20 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
         // Use a threshold for cutting out points which are too close/far away
         if (distance_value > filter_limit_max_ || distance_value < filter_limit_min_)
         {
-          xyz_offset += input_->point_step;
           continue;
         }
       }
 
       // Unoptimized memcpys: assume fields x, y, z are in random order
-      memcpy (&pt[0], &input_->data[xyz_offset[0]], sizeof (float));
-      memcpy (&pt[1], &input_->data[xyz_offset[1]], sizeof (float));
-      memcpy (&pt[2], &input_->data[xyz_offset[2]], sizeof (float));
+      memcpy (&pt[0], &input_->data[xyz_offset[0] + index * input_->point_step], sizeof (float));
+      memcpy (&pt[1], &input_->data[xyz_offset[1] + index * input_->point_step], sizeof (float));
+      memcpy (&pt[2], &input_->data[xyz_offset[2] + index * input_->point_step], sizeof (float));
 
       // Check if the point is invalid
-      if (!std::isfinite (pt[0]) || 
-          !std::isfinite (pt[1]) || 
+      if (!std::isfinite (pt[0]) ||
+          !std::isfinite (pt[1]) ||
           !std::isfinite (pt[2]))
       {
-        xyz_offset += input_->point_step;
         continue;
       }
 
@@ -342,28 +387,26 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       int ijk2 = static_cast<int> (std::floor (pt[2] * inverse_leaf_size_[2]) - min_b_[2]);
       // Compute the centroid leaf index
       int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
-      index_vector.emplace_back(idx, static_cast<unsigned int> (cp));
+      index_vector.emplace_back(idx, static_cast<unsigned int> (index));
 
-      xyz_offset += input_->point_step;
     }
   }
   // No distance filtering, process all data
   else
   {
     // First pass: go over all points and insert them into the right leaf
-    for (std::size_t cp = 0; cp < nr_points; ++cp)
+    for (const auto &index : *indices_)
     {
       // Unoptimized memcpys: assume fields x, y, z are in random order
-      memcpy (&pt[0], &input_->data[xyz_offset[0]], sizeof (float));
-      memcpy (&pt[1], &input_->data[xyz_offset[1]], sizeof (float));
-      memcpy (&pt[2], &input_->data[xyz_offset[2]], sizeof (float));
+      memcpy (&pt[0], &input_->data[xyz_offset[0] + index * input_->point_step], sizeof (float));
+      memcpy (&pt[1], &input_->data[xyz_offset[1] + index * input_->point_step], sizeof (float));
+      memcpy (&pt[2], &input_->data[xyz_offset[2] + index * input_->point_step], sizeof (float));
 
       // Check if the point is invalid
-      if (!std::isfinite (pt[0]) || 
-          !std::isfinite (pt[1]) || 
+      if (!std::isfinite (pt[0]) ||
+          !std::isfinite (pt[1]) ||
           !std::isfinite (pt[2]))
       {
-        xyz_offset += input_->point_step;
         continue;
       }
 
@@ -372,8 +415,7 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       int ijk2 = static_cast<int> (std::floor (pt[2] * inverse_leaf_size_[2]) - min_b_[2]);
       // Compute the centroid leaf index
       int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
-      index_vector.emplace_back(idx, static_cast<unsigned int> (cp));
-      xyz_offset += input_->point_step;
+      index_vector.emplace_back(idx, static_cast<unsigned int> (index));
     }
   }
 
@@ -392,10 +434,10 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   std::vector<std::pair<index_t, index_t> > first_and_last_indices_vector;
   // Worst case size
   first_and_last_indices_vector.reserve (index_vector.size ());
-  while (index < index_vector.size ()) 
+  while (index < index_vector.size ())
   {
     std::size_t i = index + 1;
-    while (i < index_vector.size () && index_vector[i].idx == index_vector[index].idx) 
+    while (i < index_vector.size () && index_vector[i].idx == index_vector[index].idx)
       ++i;
     if ((i - index) >= min_points_per_voxel_)
     {
@@ -410,7 +452,7 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   output.row_step = output.point_step * output.width;
   output.data.resize (output.width * output.point_step);
 
-  if (save_leaf_layout_) 
+  if (save_leaf_layout_)
   {
     try
     {
@@ -421,21 +463,21 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       for (std::uint32_t i = 0; i < reinit_size; i++)
       {
         leaf_layout_[i] = -1;
-      }        
-      leaf_layout_.resize (new_layout_size, -1);           
+      }
+      leaf_layout_.resize (new_layout_size, -1);
     }
     catch (std::bad_alloc&)
     {
-      throw PCLException("VoxelGrid bin size is too low; impossible to allocate memory for layout", 
-        "voxel_grid.cpp", "applyFilter");	
+      throw PCLException("VoxelGrid bin size is too low; impossible to allocate memory for layout",
+        "voxel_grid.cpp", "applyFilter");
     }
     catch (std::length_error&)
     {
-      throw PCLException("VoxelGrid bin size is too low; impossible to allocate memory for layout", 
-        "voxel_grid.cpp", "applyFilter");	
+      throw PCLException("VoxelGrid bin size is too low; impossible to allocate memory for layout",
+        "voxel_grid.cpp", "applyFilter");
     }
   }
-  
+
   // If we downsample each field, the {x,y,z}_idx_ offsets should correspond in input_ and output
   if (downsample_all_data_)
     xyz_offset = Array4size_t (output.fields[x_idx_].offset,
@@ -506,7 +548,7 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
         centroid += temporary;
       }
       centroid /= static_cast<float> (last_index - first_index);
-      
+
       std::size_t point_offset = index * output.point_step;
       // Copy all the fields
       for (std::size_t d = 0; d < output.fields.size (); ++d)
@@ -514,14 +556,14 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 
       // ---[ RGB special case
       // full extra r/g/b centroid field
-      if (rgba_index >= 0) 
+      if (rgba_index >= 0)
       {
         float r = centroid[centroid_size-4], g = centroid[centroid_size-3], b = centroid[centroid_size-2], a = centroid[centroid_size-1];
         int rgb = (static_cast<int> (a) << 24) | (static_cast<int> (r) << 16) | (static_cast<int> (g) << 8) | static_cast<int> (b);
         memcpy (&output.data[point_offset + output.fields[rgba_index].offset], &rgb, sizeof (float));
       }
     }
-     
+
     ++index;
   }
 }
