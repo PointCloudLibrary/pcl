@@ -48,6 +48,51 @@ using Array4size_t = Eigen::Array<std::size_t, 4, 1>;
 // NOLINTBEGIN(readability-container-data-pointer)
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
+pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
+                 Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt)
+{
+  // @todo fix this
+  if (cloud->fields[x_idx].datatype != pcl::PCLPointField::FLOAT32 ||
+      cloud->fields[y_idx].datatype != pcl::PCLPointField::FLOAT32 ||
+      cloud->fields[z_idx].datatype != pcl::PCLPointField::FLOAT32)
+  {
+    PCL_ERROR ("[pcl::getMinMax3D] XYZ dimensions are not float type!\n");
+    return;
+  }
+
+  Eigen::Array4f min_p, max_p;
+  min_p.setConstant (std::numeric_limits<float>::max());
+  max_p.setConstant (std::numeric_limits<float>::lowest());
+
+  std::size_t nr_points = cloud->width * cloud->height;
+
+  Eigen::Array4f pt = Eigen::Array4f::Zero ();
+  Array4size_t xyz_offset (cloud->fields[x_idx].offset, cloud->fields[y_idx].offset, cloud->fields[z_idx].offset, 0);
+
+  for (std::size_t cp = 0; cp < nr_points; ++cp)
+  {
+    // Unoptimized memcpys: assume fields x, y, z are in random order
+    memcpy (&pt[0], &cloud->data[xyz_offset[0]], sizeof (float));
+    memcpy (&pt[1], &cloud->data[xyz_offset[1]], sizeof (float));
+    memcpy (&pt[2], &cloud->data[xyz_offset[2]], sizeof (float));
+    // Check if the point is invalid
+    if (!std::isfinite (pt[0]) ||
+        !std::isfinite (pt[1]) ||
+        !std::isfinite (pt[2]))
+    {
+      xyz_offset += cloud->point_step;
+      continue;
+    }
+    xyz_offset += cloud->point_step;
+    min_p = (min_p.min) (pt);
+    max_p = (max_p.max) (pt);
+  }
+  min_pt = min_p;
+  max_pt = max_p;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+void
 pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, const pcl::Indices &indices, int x_idx, int y_idx, int z_idx,
             Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt)
 {
@@ -96,6 +141,89 @@ pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, const pcl::Indices &
       min_p = (min_p.min)(pt);
       max_p = (max_p.max)(pt);
     }
+  }
+  min_pt = min_p;
+  max_pt = max_p;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
+                 const std::string &distance_field_name, float min_distance, float max_distance,
+                 Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative)
+{
+  // @todo fix this
+  if (cloud->fields[x_idx].datatype != pcl::PCLPointField::FLOAT32 ||
+      cloud->fields[y_idx].datatype != pcl::PCLPointField::FLOAT32 ||
+      cloud->fields[z_idx].datatype != pcl::PCLPointField::FLOAT32)
+  {
+    PCL_ERROR ("[pcl::getMinMax3D] XYZ dimensions are not float type!\n");
+    return;
+  }
+
+  Eigen::Array4f min_p, max_p;
+  min_p.setConstant (std::numeric_limits<float>::max());
+  max_p.setConstant (std::numeric_limits<float>::lowest());
+
+  // Get the distance field index
+  int distance_idx = pcl::getFieldIndex (*cloud, distance_field_name);
+
+  // @todo fix this
+  if (cloud->fields[distance_idx].datatype != pcl::PCLPointField::FLOAT32)
+  {
+    PCL_ERROR ("[pcl::getMinMax3D] Filtering dimensions is not float type!\n");
+    return;
+  }
+
+  std::size_t nr_points = cloud->width * cloud->height;
+
+  Eigen::Array4f pt = Eigen::Array4f::Zero ();
+  Array4size_t xyz_offset (cloud->fields[x_idx].offset,
+                          cloud->fields[y_idx].offset,
+                          cloud->fields[z_idx].offset,
+                          0);
+  float distance_value = 0;
+  for (std::size_t cp = 0; cp < nr_points; ++cp)
+  {
+    std::size_t point_offset = cp * cloud->point_step;
+
+    // Get the distance value
+    memcpy (&distance_value, &cloud->data[point_offset + cloud->fields[distance_idx].offset], sizeof (float));
+
+    if (limit_negative)
+    {
+      // Use a threshold for cutting out points which inside the interval
+      if ((distance_value < max_distance) && (distance_value > min_distance))
+      {
+        xyz_offset += cloud->point_step;
+        continue;
+      }
+    }
+    else
+    {
+      // Use a threshold for cutting out points which are too close/far away
+      if ((distance_value > max_distance) || (distance_value < min_distance))
+      {
+        xyz_offset += cloud->point_step;
+        continue;
+      }
+    }
+
+    // Unoptimized memcpys: assume fields x, y, z are in random order
+    memcpy (&pt[0], &cloud->data[xyz_offset[0]], sizeof (float));
+    memcpy (&pt[1], &cloud->data[xyz_offset[1]], sizeof (float));
+    memcpy (&pt[2], &cloud->data[xyz_offset[2]], sizeof (float));
+    // Check if the point is invalid
+    if (!std::isfinite (pt[0]) ||
+        !std::isfinite (pt[1]) ||
+        !std::isfinite (pt[2]))
+    {
+      xyz_offset += cloud->point_step;
+      continue;
+    }
+    xyz_offset += cloud->point_step;
+    min_p = (min_p.min) (pt);
+    max_p = (max_p.max) (pt);
   }
   min_pt = min_p;
   max_pt = max_p;
