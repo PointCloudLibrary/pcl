@@ -93,11 +93,11 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
       continue;
     }
 
-    // Calculate the mean distance to its neighbors
+    // Calculate the mean distance to its neighbors.
     double dist_sum = 0.0;
-    for (int k = 1; k < searcher_k; ++k)  // k = 0 is the query point
-      dist_sum += sqrt (nn_dists[k]);
-    distances[iii] = static_cast<float> (dist_sum / mean_k_);
+    for (int k = 1; k < nn_dists.size(); ++k) // k = 0 is the query point
+      dist_sum += sqrt(nn_dists[k]);
+    distances[iii] = static_cast<float>(dist_sum / (nn_dists.size() + 1));
     valid_distances++;
   }
 
