@@ -229,7 +229,7 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::generateStatistics (double&
 
     // Calculate the mean distance to its neighbors.
     double dist_sum = 0.0;
-    for (int k = 1; k < nn_dists.size(); ++k) // k = 0 is the query point
+    for (std::size_t k = 1; k < nn_dists.size(); ++k) // k = 0 is the query point
       dist_sum += sqrt(nn_dists[k]);
     distances[cp] = static_cast<float>(dist_sum / (nn_dists.size() - 1));
     valid_distances++;
