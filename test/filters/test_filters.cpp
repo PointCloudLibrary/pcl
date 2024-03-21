@@ -640,10 +640,12 @@ TEST (VoxelGrid, Filters)
 
   // indices must be handled correctly
   auto indices = grid.getIndices(); // original cloud indices
+  auto cloud_copied = std::make_shared<PointCloud<PointXYZ>>();
+  *cloud_copied = *cloud;
   for (int i = 0; i < 100; i++) {
-    cloud->emplace_back(100 + i, 100 + i, 100 + i);
+    cloud_copied->emplace_back(100 + i, 100 + i, 100 + i);
   }
-  grid.setInputCloud(cloud);
+  grid.setInputCloud(cloud_copied);
   grid.setIndices(indices);
   grid.filter(output);
 
@@ -734,7 +736,7 @@ TEST (VoxelGrid, Filters)
   // indices must be handled correctly
   auto indices2 = grid2.getIndices(); // original cloud indices
   auto cloud_blob2 = std::make_shared<PCLPointCloud2>();
-  toPCLPointCloud2(*cloud, *cloud_blob2);
+  toPCLPointCloud2(*cloud_copied, *cloud_blob2);
 
   grid2.setInputCloud(cloud_blob2);
   grid2.setIndices(indices2);
