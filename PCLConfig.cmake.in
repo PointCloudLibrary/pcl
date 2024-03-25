@@ -399,6 +399,8 @@ endif()
 find_package(PkgConfig QUIET)
 
 file(TO_CMAKE_PATH "${PCL_DIR}" PCL_DIR)
+get_filename_component(PCL_DIR "${PCL_DIR}" REALPATH)
+
 if(WIN32 AND NOT MINGW)
 # PCLConfig.cmake is installed to PCL_ROOT/cmake
   get_filename_component(PCL_ROOT "${PCL_DIR}" PATH)
@@ -407,7 +409,8 @@ if(WIN32 AND NOT MINGW)
   endif()
 else()
 # PCLConfig.cmake is installed to PCL_ROOT/share/pcl-x.y
-  get_filename_component(PCL_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
+  get_filename_component(PCL_CONFIG_PATH "${CMAKE_CURRENT_LIST_DIR}" REALPATH)
+  get_filename_component(PCL_ROOT "${PCL_CONFIG_PATH}/../.." ABSOLUTE)
 endif()
 
 # check whether PCLConfig.cmake is found into a PCL installation or in a build tree
