@@ -141,32 +141,24 @@ set(srcs
   src/implicit_shape_model.cpp
 )
 
-if(HAVE_METSLIB)
-  set(metslib_incs "")
-else()
-  set(metslib_incs
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/abstract-search.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/local-search.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/mets.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/metslib_config.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/model.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/observer.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/simulated-annealing.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/tabu-search.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/termination-criteria.hh"
-  )
-endif()
+set(metslib_incs
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/abstract-search.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/local-search.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/mets.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/metslib_config.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/model.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/observer.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/simulated-annealing.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/tabu-search.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/termination-criteria.hh"
+)
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs} ${face_detection_incs} ${ransac_based_incs} ${ransac_based_impl_incs} ${hv_incs} ${hv_impl_incs} ${cg_incs} ${cg_impl_incs} ${metslib_incs})
 target_link_libraries("${LIB_NAME}" pcl_common pcl_kdtree pcl_octree pcl_search pcl_features pcl_registration pcl_sample_consensus pcl_filters pcl_ml pcl_io)
 
-if(HAVE_METSLIB)
-  target_include_directories(${LIB_NAME} SYSTEM PUBLIC ${METSLIB_INCLUDE_DIRS})
-else()
-  target_include_directories(${LIB_NAME} SYSTEM PUBLIC ${PCL_SOURCE_DIR}/recognition/include/pcl/recognition/3rdparty/)
-endif()
+target_include_directories(${LIB_NAME} SYSTEM PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS})
 # Install include files
@@ -182,7 +174,4 @@ PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl/hv" ${hv_impl_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl/cg" ${cg_impl_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/linemod" ${LINEMOD_INCLUDES})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl/linemod" ${LINEMOD_IMPLS})
-
-if(NOT HAVE_METSLIB)
-  PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/3rdparty/metslib" ${metslib_incs})
-endif()
+PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/3rdparty/metslib" ${metslib_incs})
