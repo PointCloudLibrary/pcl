@@ -56,7 +56,7 @@ include_directories(
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 
 PCL_CUDA_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${hdrs} ${srcs_cuda})
-target_link_libraries(${LIB_NAME} pcl_cuda pcl_common pcl_search pcl_surface pcl_segmentation pcl_features pcl_sample_consensus pcl_gpu_utils pcl_gpu_containers ${CUDA_CUDART_LIBRARY} ${CUDA_npp_LIBRARY})
+target_link_libraries(${LIB_NAME} pcl_common pcl_search pcl_surface pcl_segmentation pcl_features pcl_sample_consensus pcl_gpu_utils pcl_gpu_containers ${CUDA_CUDART_LIBRARY} ${CUDA_npp_LIBRARY})
 
 if(UNIX OR APPLE)
   target_compile_options(${LIB_NAME} INTERFACE $<$<COMPILE_LANGUAGE:CUDA>:"-Xcompiler=-fPIC">)
