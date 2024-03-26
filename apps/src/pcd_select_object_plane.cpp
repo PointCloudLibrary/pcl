@@ -494,7 +494,7 @@ public:
     // Else, draw it on screen
     cloud_viewer_->addPolygon(region, 0.0, 0.0, 1.0, "region");
     cloud_viewer_->setShapeRenderingProperties(
-        visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "region");
+        visualization::RenderingProperties::PCL_VISUALIZER_LINE_WIDTH, 10, "region");
 
     // Draw in image space
     if (image_viewer_) {

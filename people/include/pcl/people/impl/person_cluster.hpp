@@ -412,8 +412,8 @@ void pcl::people::PersonCluster<PointT>::drawTBoundingBox (pcl::visualization::P
   const std::string bbox_name = "bbox_person_" + std::to_string(person_number);
   viewer.removeShape (bbox_name);
   viewer.addCube (coeffs, bbox_name);
-  viewer.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 1.0, 0.0, bbox_name);
-  viewer.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 2, bbox_name);
+  viewer.setShapeRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_COLOR, 0.0, 1.0, 0.0, bbox_name);
+  viewer.setShapeRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_LINE_WIDTH, 2, bbox_name);
 }
 
 template <typename PointT>
