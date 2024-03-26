@@ -47,6 +47,7 @@
 #include <pcl/sample_consensus/sac_model_circle3d.h>
 #include <pcl/sample_consensus/sac_model_normal_sphere.h>
 #include <pcl/sample_consensus/sac_model_ellipse3d.h>
+#include <pcl/sample_consensus/sac_model_torus.h>
 
 using namespace pcl;
 
@@ -915,6 +916,96 @@ TEST(SampleConsensusModelEllipse3D, RANSAC)
   EXPECT_NEAR(0.0, coeff_refined[9], 1e-3);
   // Use abs in z component because both variants are valid local vectors
   EXPECT_NEAR(1.0, std::abs(coeff_refined[10]), 1e-3);
+}
+
+TEST(SampleConsensusModelTorus, RANSAC)
+{
+  srand(0);
+
+  // Using a custom point cloud on a tilted plane
+  PointCloud<PointXYZ> cloud;
+  cloud.resize(22);
+
+  cloud[ 0].getVector3fMap() << 1.000000, 5.000000, 3.000000;
+  cloud[ 1].getVector3fMap() << 0.690983, 5.000000, 2.902110;
+  cloud[ 2].getVector3fMap() << 0.412215, 5.000000, 2.618030;
+  cloud[ 3].getVector3fMap() << 0.190983, 5.000000, 2.175570;
+  cloud[ 4].getVector3fMap() << 0.048944, 5.000000, 1.618030;
+  cloud[ 5].getVector3fMap() << 0.000000, 5.000000, 1.000000;
+  cloud[ 6].getVector3fMap() << 0.048944, 5.000000, 0.381966;
+  cloud[ 7].getVector3fMap() << 0.190983, 5.000000, -0.175571;
+  cloud[ 8].getVector3fMap() << 0.412215, 5.000000, -0.618034;
+  cloud[ 9].getVector3fMap() << 0.690983, 5.000000, -0.902113;
+  cloud[10].getVector3fMap() << 1.000000, 5.000000, -1.000000;
+  cloud[11].getVector3fMap() << 1.309020, 5.000000, -0.902113;
+  cloud[12].getVector3fMap() << 1.587790, 5.000000, -0.618034;
+  cloud[13].getVector3fMap() << 1.809020, 5.000000, -0.175571;
+  cloud[14].getVector3fMap() << 1.951060, 5.000000, 0.381966;
+  cloud[15].getVector3fMap() << 2.000000, 5.000000, 1.000000;
+  cloud[16].getVector3fMap() << 1.951060, 5.000000, 1.618030;
+  cloud[17].getVector3fMap() << 1.809020, 5.000000, 2.175570;
+  cloud[18].getVector3fMap() << 1.587790, 5.000000, 2.618030;
+  cloud[19].getVector3fMap() << 1.309020, 5.000000, 2.902110;
+
+  cloud[20].getVector3fMap() << 0.85000002f, 4.8499999f, -3.1500001f;
+  cloud[21].getVector3fMap() << 1.15000000f, 5.1500001f, -2.8499999f;
+
+  // Create a shared 3d torus model pointer directly
+  SampleConsensusModelTorus<PointXYZ>::Ptr model( new SampleConsensusModelTorus<PointXYZ>(cloud.makeShared()));
+
+  // Create the RANSAC object
+  RandomSampleConsensus<PointXYZ> sac(model, 0.0011);
+
+  // Algorithm tests
+  bool result = sac.computeModel();
+  ASSERT_TRUE(result);
+
+  pcl::Indices sample;
+  sac.getModel(sample);
+  EXPECT_EQ(6, sample.size());
+  pcl::Indices inliers;
+  sac.getInliers(inliers);
+  EXPECT_EQ(20, inliers.size());
+
+  Eigen::VectorXf coeff;
+  sac.getModelCoefficients(coeff);
+  //EXPECT_EQ(11, coeff.size());
+  //EXPECT_NEAR(1.0, coeff[0], 1e-3);
+  //EXPECT_NEAR(5.0, coeff[1], 1e-3);
+  //EXPECT_NEAR(1.0, coeff[2], 1e-3);
+
+  //EXPECT_NEAR(2.0, coeff[3], 1e-3);
+  //EXPECT_NEAR(1.0, coeff[4], 1e-3);
+
+  //EXPECT_NEAR(0.0, coeff[5], 1e-3);
+  // Use abs in y component because both variants are valid normal vectors
+  //EXPECT_NEAR(1.0, std::abs(coeff[6]), 1e-3);
+  //EXPECT_NEAR(0.0, coeff[7], 1e-3);
+
+  //EXPECT_NEAR(0.0, coeff[8], 1e-3);
+  //EXPECT_NEAR(0.0, coeff[9], 1e-3);
+  // Use abs in z component because both variants are valid local vectors
+  //EXPECT_NEAR(1.0, std::abs(coeff[10]), 1e-3);
+
+  Eigen::VectorXf coeff_refined;
+  model->optimizeModelCoefficients(inliers, coeff, coeff_refined);
+  //EXPECT_EQ(11, coeff_refined.size());
+  //EXPECT_NEAR(1.0, coeff_refined[0], 1e-3);
+  //EXPECT_NEAR(5.0, coeff_refined[1], 1e-3);
+  //EXPECT_NEAR(1.0, coeff_refined[2], 1e-3);
+
+  //EXPECT_NEAR(2.0, coeff_refined[3], 1e-3);
+  //EXPECT_NEAR(1.0, coeff_refined[4], 1e-3);
+
+  //EXPECT_NEAR(0.0, coeff_refined[5], 1e-3);
+  // Use abs in y component because both variants are valid normal vectors
+  //EXPECT_NEAR(1.0, std::abs(coeff_refined[6]), 1e-3);
+  //EXPECT_NEAR(0.0, coeff_refined[7], 1e-3);
+
+  //EXPECT_NEAR(0.0, coeff_refined[8], 1e-3);
+  //EXPECT_NEAR(0.0, coeff_refined[9], 1e-3);
+  // Use abs in z component because both variants are valid local vectors
+  //EXPECT_NEAR(1.0, std::abs(coeff_refined[10]), 1e-3);
 }
 
 int
