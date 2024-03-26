@@ -261,6 +261,16 @@ public:
     return (use_reciprocal_correspondence_);
   }
 
+  /** \brief Set the number of threads to use.
+   * \param nr_threads the number of hardware threads to use (0 sets the value back to
+   * automatic)
+   */
+  void
+  setNumberOfThreads(unsigned int nr_threads)
+  {
+    correspondence_estimation_->setNumberOfThreads(nr_threads);
+  }
+
 protected:
   /** \brief Apply a rigid transform to a given dataset. Here we check whether
    * the dataset has surface normals in addition to XYZ, and rotate normals as well.
